@@ -2,7 +2,7 @@ import Mathlib.Data.Set.Basic
 
 open Function
 
-structure BundledSet (α : Type _) (p : Set α → Prop) where
+structure BundledSet (α : Type*) (p : Set α → Prop) where
   carrier : Set α
   prop : p carrier
 
@@ -12,14 +12,15 @@ attribute [coe] carrier
 
 initialize_simps_projections BundledSet
 
-variable {p : Set α → Prop} {s t : BundledSet α p} {a b : α}
+universe u
+variable {α : Type u} {p : Set α → Prop} {s t : BundledSet α p} {a b : α}
 
 instance : CoeTC (BundledSet α p) (Set α) := ⟨carrier⟩
 instance : Membership α (BundledSet α p) := ⟨(· ∈ carrier ·)⟩
-instance : CoeSort (BundledSet α p) (Type _) := ⟨fun s ↦ {x // x ∈ s}⟩
+instance : CoeSort (BundledSet α p) (Type u) := ⟨fun s ↦ {x // x ∈ s}⟩
 
 @[simp] theorem mem_carrier : a ∈ s.carrier ↔ a ∈ s := Iff.rfl
-@[simp, norm_cast] theorem coeSort_carrier : ((s : Set α) : Type _) = s := rfl
+@[simp, norm_cast] theorem coeSort_carrier : ((s : Set α) : Type u) = s := rfl
 @[simp] theorem coe_mem (x : s) : ↑x ∈ s := x.2
 @[simp] theorem mem_mk {x : α} {s : Set α} {hs : p s} : x ∈ mk s hs ↔ x ∈ s := Iff.rfl
 theorem carrier_mk (s : Set α) (hs : p s) : (mk s hs).1 = s := rfl

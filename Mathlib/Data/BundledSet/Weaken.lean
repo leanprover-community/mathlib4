@@ -2,7 +2,7 @@ import Mathlib.Data.BundledSet.Basic
 
 namespace BundledSet
 
-variable {p q r : Set α → Prop}
+variable {α : Type*} {p q r : Set α → Prop}
 
 class Implies (p q : Set α → Prop) : Prop where
   implies : ∀ s, p s → q s

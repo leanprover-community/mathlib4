@@ -7,10 +7,10 @@ namespace BundledSet
 
 section SemilatticeInf
 
-class InterPred (α : Type _) (p : Set α → Prop) : Prop where
+class InterPred (α : Type*) (p : Set α → Prop) : Prop where
   inter (s t : Set α) : p s → p t → p (s ∩ t)
 
-variable {p : Set α → Prop} [InterPred α p]
+variable {α : Type*} {p : Set α → Prop} [InterPred α p]
 
 protected instance instInf : Inf (BundledSet α p) where
   inf s t := ⟨s ∩ t, InterPred.inter s t s.2 t.2⟩
@@ -30,10 +30,10 @@ end SemilatticeInf
 
 section OrderTop
 
-class UnivPred (α : Type _) (p : Set α → Prop) : Prop where
+class UnivPred (α : Type*) (p : Set α → Prop) : Prop where
   univ : p univ
 
-variable [UnivPred α p]
+variable {α : Type*} {p : Set α → Prop} [UnivPred α p]
 
 protected instance instOrderTop : OrderTop (BundledSet α p) where
   top := ⟨univ, UnivPred.univ⟩
@@ -46,11 +46,11 @@ end OrderTop
 
 section OrderBot
 
-class BotPred (α : Type _) (p : Set α → Prop) (b : outParam (Set α)) : Prop where
+class BotPred (α : Type*) (p : Set α → Prop) (b : outParam (Set α)) : Prop where
   bot : p b
   bot_subset {t} : p t → b ⊆ t
 
-variable {p : Set α → Prop} {b : Set α} [BotPred α p b]
+variable {α : Type*} {p : Set α → Prop} {b : Set α} [BotPred α p b]
 
 protected instance instOrderBot : OrderBot (BundledSet α p) where
   bot := ⟨b, BotPred.bot⟩
@@ -71,14 +71,17 @@ theorem nontrivial_iff : Nontrivial (BundledSet α p) ↔ b ≠ univ := by
 
 end OrderBot
 
-@[simp] theorem not_mem_bot [BotPred α p ∅] {x : α} : x ∉ (⊥ : BundledSet α p) := id
+@[simp]
+theorem not_mem_bot {α : Type*} {p : Set α → Prop} [BotPred α p ∅] {x : α} :
+    x ∉ (⊥ : BundledSet α p) :=
+  not_false
 
 section CompleteLattice
 
-class SetInterPred (α : Type _) (p : Set α → Prop) : Prop where
+class SetInterPred (α : Type*) (p : Set α → Prop) : Prop where
   sInter (S : Set (Set α)) : (∀ s ∈ S, p s) → p (⋂₀ S)
 
-variable {p : Set α → Prop} [SetInterPred α p]
+variable {α : Type*} {ι : Sort*} {p : Set α → Prop} [SetInterPred α p]
 
 instance (priority := low) : InterPred α p where
   inter (s t) := by simpa using SetInterPred.sInter {s, t}
@@ -157,7 +160,8 @@ theorem closure_eq (s : BundledSet α p) : BundledSet.closure p s = s :=
 
 theorem subset_closure {s : Set α} : s ⊆ BundledSet.closure p s := closure_le.1 le_rfl
 
-theorem not_mem_of_not_mem_closure (hx : x ∉ BundledSet.closure p s) : x ∉ s := fun h =>
+theorem not_mem_of_not_mem_closure {x : α} {s : Set α} (hx : x ∉ BundledSet.closure p s) :
+    x ∉ s := fun h =>
   hx (subset_closure h)
 
 theorem closure_eq_of_le {s : Set α} {S : BundledSet α p} (h₁ : s ⊆ S)
@@ -171,10 +175,10 @@ theorem closure_singleton_le {a : α} {t : BundledSet α p} :
 @[simp] theorem closure_univ : BundledSet.closure p univ = ⊤ := (BundledSet.gi p).l_top
 
 @[simp]
-theorem closure_empty [BotPred α p b] : BundledSet.closure p ∅ = ⊥ :=
+theorem closure_empty {b} [BotPred α p b] : BundledSet.closure p ∅ = ⊥ :=
   (BundledSet.gc p).l_bot
 
-@[simp] theorem closure_eq_bot [BotPred α p b] : BundledSet.closure p s = ⊥ ↔ s ⊆ b :=
+@[simp] theorem closure_eq_bot {b s} [BotPred α p b] : BundledSet.closure p s = ⊥ ↔ s ⊆ b :=
   (BundledSet.gc p).l_eq_bot
 
 @[mono]
