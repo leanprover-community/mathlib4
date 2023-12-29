@@ -19,7 +19,7 @@ Let `α` and `ι` by types.
 
 * `DomMulAct.stabilizerMulEquiv` is the `MulEquiv` from
   the MulOpposite of this stabilizer to the product,
-  for `i : ι`, of `Equiv.Perm {a | p a = i}`.
+  for `i : ι`, of `Equiv.Perm {a // p a = i}`.
 
 -/
 
@@ -34,19 +34,19 @@ lemma mem_stabilizer_iff {g : DomMulAct (Perm α)} :
   simp only [MulAction.mem_stabilizer_iff]; rfl
 
 /-- The `invFun` component of `MulEquiv` from `MulAction.stabilizer (Perm α) p`
-  to the product of the `Equiv.Perm {a | p a = i} -/
-def stabilizerEquiv_invFun (g : ∀ i, Perm {a | p a = i}) (a : α) : α := g (p a) ⟨a, rfl⟩
+  to the product of the `Equiv.Perm {a // p a = i} -/
+def stabilizerEquiv_invFun (g : ∀ i, Perm {a // p a = i}) (a : α) : α := g (p a) ⟨a, rfl⟩
 
-lemma stabilizerEquiv_invFun_eq (g : ∀ i, Perm {a | p a = i}) {a : α} {i : ι} (h : p a = i) :
+lemma stabilizerEquiv_invFun_eq (g : ∀ i, Perm {a // p a = i}) {a : α} {i : ι} (h : p a = i) :
     stabilizerEquiv_invFun g a = g i ⟨a, h⟩ := by subst h; rfl
 
-lemma comp_stabilizerEquiv_invFun (g : ∀ i, Perm {a | p a = i}) (a : α) :
+lemma comp_stabilizerEquiv_invFun (g : ∀ i, Perm {a // p a = i}) (a : α) :
     p (stabilizerEquiv_invFun g a) = p a :=
   (g (p a) ⟨a, rfl⟩).prop
 
 /-- The `invFun` component of `MulEquiv` from `MulAction.stabilizer (Perm α) p`
   to the product of the `Equiv.Perm {a | p a = i} (as an `Equiv.Perm α`) -/
-def stabilizerEquiv_invFun_aux (g : ∀ i, Perm {a | p a = i}) : Perm α where
+def stabilizerEquiv_invFun_aux (g : ∀ i, Perm {a // p a = i}) : Perm α where
   toFun := stabilizerEquiv_invFun g
   invFun := stabilizerEquiv_invFun (fun i ↦ (g i).symm)
   left_inv a := by
@@ -59,10 +59,9 @@ def stabilizerEquiv_invFun_aux (g : ∀ i, Perm {a | p a = i}) : Perm α where
 variable (p)
 
 /-- The `MulEquiv` from the `MulOpposite` of `MulAction.stabilizer (DomMulAct (Perm α)) p`
-  to the product of the `Equiv.Perm {a | p a = i} -/
-def stabilizerMulEquiv : (stabilizer (DomMulAct (Perm α)) p)ᵐᵒᵖ ≃* (∀ i, Perm {a | p a = i}) where
+  to the product of the `Equiv.Perm {a // p a = i}` -/
+def stabilizerMulEquiv : (stabilizer (DomMulAct (Perm α)) p)ᵐᵒᵖ ≃* (∀ i, Perm {a // p a = i}) where
   toFun g i := Perm.subtypePerm (DomMulAct.mk.symm g.unop) fun a ↦ by
-    simp only [Set.mem_setOf_eq]
     rw [← Function.comp_apply (f := p), DomMulAct.mem_stabilizer_iff.mp g.unop.prop]
   invFun g := ⟨DomMulAct.mk (stabilizerEquiv_invFun_aux g), by
     ext a
