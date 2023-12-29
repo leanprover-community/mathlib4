@@ -18,7 +18,7 @@ The main ingredients are:
   an irreducible polynomial with an `IsSolvableByRad` root has solvable Galois group
  * `Polynomial.X_pow_sub_X_sub_one_irreducible_rat` and `Polynomial.X_pow_sub_X_sub_one_gal` in
   `RingTheory/Polynomial/Selmer.lean`: `X ^ 5 - X - 1` is irreducible and has full Galois group
-* `Equiv.Perm.not_solvable` in `Mathlib/GroupTheory/Solvable.lean` : the symmetric group is not
+ * `Equiv.Perm.not_solvable` in `Mathlib/GroupTheory/Solvable.lean` : the symmetric group is not
   solvable
 
 -/
