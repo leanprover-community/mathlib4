@@ -49,61 +49,47 @@ theorem chromaticNumber_pathGraph (n : ℕ) (h : 2 ≤ n) :
       hc.chromaticNumber_mono_of_embedding (pathGraph_two_embedding n h)
 
 /-- In a bicolored graph colors alternate on every path -/
-theorem pathGraph_Hom_coloring {α} (G : SimpleGraph α) (c : G.Coloring Prop) {n : ℕ} (hn : 1 ≤ n)
-    (hom : pathGraph n →g G) (hc0 : c (hom ⟨0, hn⟩)) (u : Fin n) :
+theorem pathGraph_Hom_coloring {α} (G : SimpleGraph α) (c : G.Coloring Prop) {n : ℕ}
+    (hom : pathGraph (n + 1) →g G) (hc0 : c (hom ⊥)) (u : Fin (n + 1)) :
     c (hom u) ↔ Even u.val := by
   induction n with
-  | zero => exact (Nat.not_succ_le_zero 0 hn).elim
+  | zero =>
+    have hu : u = ⊥ := eq_bot_of_bot_eq_top (by decide) u
+    simp [hu]
+    exact hc0
   | succ n ih =>
-    have hn_cases : n = 0 ∨ 1 ≤ n := or_iff_not_imp_right.mpr Nat.eq_zero_of_not_pos
-    apply Or.elim hn_cases
-    · intro (hn' : n = 0)
-      have hu : u = 0 :=
-        Fin.le_zero_iff.mp (le_of_le_of_eq (Fin.le_val_last u) (congrArg Nat.cast hn'))
-      simp [hu]
-      exact hc0
-    · intro (hn' : 1 ≤ n)
-      let new_hom : pathGraph n →g G :=
-        Hom.comp hom (Hom.pathGraph (Nat.le_add_right n 1))
-      have hhom0 : c (new_hom ⟨0, hn'⟩) := by
-        simp
-        exact hc0
-      have h_new_hom := ih hn' new_hom hhom0
-      have hu : u.val < n ∨ u.val = n := le_iff_lt_or_eq.mp u.is_le
-      apply Or.elim hu
-      · intro (hun : u.val < n)
-        exact h_new_hom ⟨u.val, hun⟩
-      · intro (hun : u.val = n)
-        -- c (hom u) ↔ Even ↑u
-        let last : Fin (n + 1) := ⟨n, Nat.lt.base n⟩
-        let prev_last : Fin (n + 1) := ⟨n - 1, Nat.sub_lt_succ n 1⟩
-        have hpgadj : (pathGraph (n + 1)).Adj prev_last last := by
-          simp [pathGraph_adj]
-          exact Or.intro_left (n + 1 = n - 1) (Nat.sub_add_cancel hn')
-        have hGadj : G.Adj (hom prev_last) (hom last) := hom.map_rel hpgadj
-        have h_c_prev_last : c (hom prev_last) ↔ Even (n - 1) :=
-          h_new_hom ⟨n-1, Nat.sub_lt hn' Nat.one_pos⟩
-        have h_c_last : c (hom last) ↔ ¬Even (n - 1) := by
-          have h := eq_iff_iff.not.mp (c.valid hGadj).symm
-          rw [h_c_prev_last] at h
-          exact (not_iff_comm.mp (not_iff.mp h)).symm
-        simp [Fin.eq_mk_iff_val_eq.mpr hun, h_c_last]
-        rw [← @Nat.sub_add_cancel n 1 hn']
-        exact Nat.even_add_one.symm
+    let new_hom : pathGraph (n + 1) →g G := hom.comp (Hom.pathGraph ((n + 1).le_add_right 1))
+    have h_new_hom := ih new_hom hc0
+    have hu : u.val < n + 1 ∨ u.val = n + 1 := le_iff_lt_or_eq.mp u.is_le
+    apply Or.elim hu
+    · intro (hun : u.val < n + 1)
+      exact h_new_hom ⟨u.val, hun⟩
+    · intro (hun : u.val = n + 1)
+      -- c (hom u) ↔ Even ↑u
+      let last : Fin (n + 2) := ⟨n + 1, Nat.lt.base (n + 1)⟩
+      let prev_last : Fin (n + 2) := ⟨n, Nat.sub_lt_succ (n + 1) 1⟩
+      have hpgadj : (pathGraph (n + 2)).Adj prev_last last := by
+        simp [pathGraph_adj]
+      have hGadj : G.Adj (hom prev_last) (hom last) := hom.map_rel hpgadj
+      have h_c_prev_last : c (hom prev_last) ↔ Even n := h_new_hom ⟨n, Nat.lt.base n⟩
+      have h_c_last : c (hom last) ↔ ¬Even n := by
+        have h := eq_iff_iff.not.mp (c.valid hGadj).symm
+        rw [h_c_prev_last] at h
+        exact (not_iff_comm.mp (not_iff.mp h)).symm
+      simp [Fin.eq_mk_iff_val_eq.mpr hun, h_c_last]
+      exact Nat.even_add_one.symm
 
-theorem pathGraph_Hom_coloring' {α} (G : SimpleGraph α) (c : G.Coloring Prop) {n : ℕ} (hn : 1 ≤ n)
-    (hom : pathGraph n →g G) (hc0 : ¬c (hom ⟨0, hn⟩)) (u : Fin n) :
+theorem pathGraph_Hom_coloring' {α} (G : SimpleGraph α) (c : G.Coloring Prop) {n : ℕ}
+    (hom : pathGraph (n + 1) →g G) (hc0 : ¬c (hom ⊥)) (u : Fin (n + 1)) :
     c (hom u) ↔ Odd u.val := by
   let neg : Prop ↪ Prop := ⟨Not, fun a b ↦ (by simp [propext]; exact not_iff_not.mp)⟩
   let c' : G.Coloring Prop := (recolorOfEmbedding G neg) c
   have hc'c : ∀ (a : α), c' a ↔ ¬c a := fun a ↦ Iff.rfl
-  have hcc' : ∀ (a : α), c a ↔ ¬c' a := by
-    intro a
-    exact iff_not_comm.mp (hc'c a)
-  have hc'0 : c' (hom ⟨0, hn⟩) := by
+  have hcc' : ∀ (a : α), c a ↔ ¬c' a := fun a ↦ iff_not_comm.mp (hc'c a)
+  have hc'0 : c' (hom ⊥) := by
     rw [hc'c]
     exact hc0
   rw [hcc', Nat.odd_iff_not_even]
-  exact Iff.not (pathGraph_Hom_coloring G c' hn hom hc'0 u)
+  exact Iff.not (pathGraph_Hom_coloring G c' hom hc'0 u)
 
 end SimpleGraph
