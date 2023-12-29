@@ -178,6 +178,13 @@ theorem eval₂_eq_smeval (R : Type*) [Semiring R] {S : Type*} [Semiring S] (f :
   rw [smeval_eq_sum, eval₂_eq_sum]
   exact rfl
 
+theorem leval_coe_eq_smeval {R : Type*} [Semiring R] (r : R) :
+    ⇑(leval r) = fun p => p.smeval r := by
+  rw [@Function.funext_iff]
+  intro p
+  rw [leval_apply, smeval_def, eval_eq_sum]
+  exact rfl
+
 theorem leval_eq_smeval {R : Type*} [Semiring R] (r : R) : leval r =
     {
       toFun := fun p => p.smeval r
