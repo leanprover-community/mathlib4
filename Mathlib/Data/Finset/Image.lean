@@ -421,7 +421,7 @@ protected theorem Nonempty.image (h : s.Nonempty) (f : α → β) : (s.image f).
   nonempty_image_iff.2 h
 #align finset.nonempty.image Finset.Nonempty.image
 
-alias ⟨_, Nonempty.of_image⟩ := nonempty_image_iff
+alias ⟨Nonempty.of_image, _⟩ := nonempty_image_iff
 
 @[deprecated] -- Since 29 December 2023
 theorem Nonempty.image_iff (f : α → β) : (s.image f).Nonempty ↔ s.Nonempty :=

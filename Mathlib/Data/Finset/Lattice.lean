@@ -936,8 +936,8 @@ theorem _root_.map_finset_sup' [SemilatticeSup β] [SupHomClass F α β] (f : F)
 
 @[simp]
 theorem sup'_image [DecidableEq β] {s : Finset γ} {f : γ → β} (hs : (s.image f).Nonempty)
-    (g : β → α) (hs' : s.Nonempty := (Nonempty.image_iff _).1 hs) :
-    (s.image f).sup' hs g = s.sup' hs' (g ∘ f) := by
+    (g : β → α) :
+    (s.image f).sup' hs g = s.sup' hs.of_image (g ∘ f) := by
   rw [← WithBot.coe_eq_coe]; simp only [coe_sup', sup_image, WithBot.coe_sup]; rfl
 #align finset.sup'_image Finset.sup'_image
 
@@ -1087,9 +1087,9 @@ theorem _root_.map_finset_inf' [SemilatticeInf β] [InfHomClass F α β] (f : F)
 
 @[simp]
 theorem inf'_image [DecidableEq β] {s : Finset γ} {f : γ → β} (hs : (s.image f).Nonempty)
-    (g : β → α) (hs' : s.Nonempty := (Nonempty.image_iff _).1 hs) :
-    (s.image f).inf' hs g = s.inf' hs' (g ∘ f) :=
-  @sup'_image αᵒᵈ _ _ _ _ _ _ hs _ hs'
+    (g : β → α)  :
+    (s.image f).inf' hs g = s.inf' hs.of_image (g ∘ f) :=
+  @sup'_image αᵒᵈ _ _ _ _ _ _ hs _
 #align finset.inf'_image Finset.inf'_image
 
 @[simp]
