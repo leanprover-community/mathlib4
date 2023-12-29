@@ -169,6 +169,8 @@ instance membership : Membership α (RelSeries r) :=
 theorem mem_def {x : α} {s : RelSeries r} : x ∈ s ↔ x ∈ Set.range s :=
   Iff.rfl
 
+variable {r}
+
 lemma mem_toList {s : RelSeries r} {x : α} : x ∈ s.toList ↔ x ∈ s := by
   rw [List.mem_ofFn, mem_def]
 
@@ -205,8 +207,6 @@ def last (x : RelSeries r) : α := x <| Fin.last _
 lemma head_mem (x : RelSeries r) : x.head ∈ x := ⟨_, rfl⟩
 
 lemma last_mem (x : RelSeries r) : x.last ∈ x := ⟨_, rfl⟩
-
-variable {r}
 
 /--
 If `a₀ -r→ a₁ -r→ ... -r→ aₙ` and `b₀ -r→ b₁ -r→ ... -r→ bₘ` are two strict series
@@ -357,22 +357,23 @@ lemma cons_succ (p : RelSeries r) (a : α) (rel : r a (p 0)) (x) :
 given a series `a_0 --r-> a_1 --r-> ... --r-> a_n` and an `a` such that `r a_n a`, there is a series
 of length `n+1`: `a_0 --r-> a_1 --r-> ... --r-> a_n --r-> a`.
 -/
-@[simps!]
+@[simps! length]
 def snoc (p : RelSeries r) (a : α) (rel : r (p (Fin.last _)) a) : RelSeries r :=
 p.append (singleton r a) rel
 
-lemma snoc_last (p : RelSeries r) (a : α) (rel : r (p (Fin.last _)) a) :
-    p.snoc a rel (Fin.last _) = a := by
-  rw [snoc_toFun]
+@[simp] lemma snoc_last (p : RelSeries r) (a : α) (rel : r (p (Fin.last _)) a) :
+    (p.snoc a rel).last = a := by
+  change p.snoc a rel (Fin.last _) = a
+  dsimp [snoc]
   exact Fin.append_right _ _ 0
 
-lemma snoc_castSucc (s : RelSeries r) (a : α) (connect : r s.last a)
+@[simp] lemma snoc_castSucc (s : RelSeries r) (a : α) (connect : r s.last a)
     (i : Fin (s.length + 1)) : snoc s a connect (Fin.castSucc i) = s i := by
   unfold snoc
   simp only [append_toFun]
   exact Fin.append_left _ _ i
 
-lemma head_snoc (s : RelSeries r) (a : α) (connect : r s.last a) :
+@[simp] lemma head_snoc (s : RelSeries r) (a : α) (connect : r s.last a) :
     (snoc s a connect).head = s.head := by
   unfold snoc head
   simp only [append_toFun]
@@ -437,8 +438,8 @@ def eraseLast (p : RelSeries r) : RelSeries r where
 @[elab_as_elim]
 lemma snoc_induction {motive : (x : RelSeries r) → Prop}
     (x : RelSeries r)
-    (single : ∀ (a : α), motive (singleton r a))
-    (snoc : ∀ (x : RelSeries r) (a : α) (ha : r x.last a), motive x → motive (x.snoc a ha)) :
+    (singleton_ : ∀ (a : α), motive (singleton r a))
+    (snoc_ : ∀ (x : RelSeries r) (a : α) (ha : r x.last a), motive x → motive (x.snoc a ha)) :
     motive x := by
   induction' hn : x.length with n ih generalizing x
   · have x_eq : x = singleton r (x 0)
@@ -451,7 +452,7 @@ lemma snoc_induction {motive : (x : RelSeries r) → Prop}
         simp_rw [hn] at hi
         simpa using hi
     rw [x_eq]
-    apply single
+    apply singleton_
   · have x_eq : x = x.eraseLast.snoc x.last (by
       simp only [eraseLast_length, eraseLast_toFun, Fin.val_last]
       convert x.step ⟨x.length - 1, Nat.pred_lt (show x.length ≠ 0 by rw [hn]; norm_num)⟩
@@ -465,7 +466,9 @@ lemma snoc_induction {motive : (x : RelSeries r) → Prop}
         · subst ineq1
           have eq1 : Fin.cast h2 (Fin.last _) = Fin.last _
           · ext; simp
-          erw [eq1, snoc_last]
+          rw [eq1]
+          change _ = (snoc _ _ _).last
+          rw [snoc_last]
           rfl
         have eq1 : Fin.cast h2 i = Fin.castSucc ⟨i.1, by
           simp only [snoc_length, eraseLast_length]
@@ -475,11 +478,11 @@ lemma snoc_induction {motive : (x : RelSeries r) → Prop}
           rw [lt_top_iff_ne_top]
           exact ineq1⟩
         · ext; rfl
-        rw [eq1, RelSeries.snoc_toFun]
-        erw [Fin.append_left]
+        rw [eq1]
+        erw [snoc_castSucc]
         rfl
     rw [x_eq]
-    exact snoc _ _ _ (ih _ <| by simp [hn])
+    exact snoc_ _ _ _ (ih _ <| by simp [hn])
 
 @[simp] lemma last_eraseLast (p : RelSeries r) :
     p.eraseLast.last = p ⟨p.length - 1, lt_of_le_of_lt tsub_le_self (Nat.lt_succ_self _)⟩ :=
@@ -519,7 +522,7 @@ theorem mem_eraseLast_of_ne_of_mem {s : RelSeries r} {x : α} (hx : x ≠ s.last
 Give two series `a₀ --r-> ... --r-> X` and `X --r-> b ---> ...` can be combined together to form
 `a₀ --r-> ... --r-> x --r-> b ...`
 -/
-@[simps]
+@[simps length]
 def combine (p q : RelSeries r) (connect : p.last = q.head) : RelSeries r where
   length := p.length + q.length
   toFun := fun i =>
@@ -560,16 +563,16 @@ def combine (p q : RelSeries r) (connect : p.last = q.head) : RelSeries r where
           rw [not_lt] at h₁
           exact h₁
 
-lemma combine_castAdd {p q : RelSeries r} (connect : p.last = q.head) (i : Fin p.length) :
+@[simp] lemma combine_castAdd {p q : RelSeries r} (connect : p.last = q.head) (i : Fin p.length) :
     p.combine q connect (Fin.castSucc <| Fin.castAdd q.length i) = p (Fin.castSucc i) := by
   unfold combine
   dsimp
   rw [dif_pos i.2]
   rfl
 
-lemma combine_succ_castAdd {s₁ s₂ : RelSeries r} (h : s₁.last = s₂.head)
+@[simp] lemma combine_succ_castAdd {s₁ s₂ : RelSeries r} (h : s₁.last = s₂.head)
     (i : Fin s₁.length) : combine s₁ s₂ h (Fin.castAdd s₂.length i).succ = s₁ i.succ := by
-  rw [combine_toFun]
+  dsimp [combine]
   split_ifs with H
   · congr
   · simp only [Fin.val_succ, Fin.coe_castAdd] at H
@@ -582,23 +585,22 @@ lemma combine_succ_castAdd {s₁ s₂ : RelSeries r} (h : s₁.last = s₂.head)
       change i.1 + 1 = s₁.length
       linarith [i.2]
 
-lemma combine_natAdd {s₁ s₂ : RelSeries r} (h : s₁.last = s₂.head) (i : Fin s₂.length) :
+@[simp] lemma combine_natAdd {s₁ s₂ : RelSeries r} (h : s₁.last = s₂.head) (i : Fin s₂.length) :
     combine s₁ s₂ h (Fin.castSucc <| Fin.natAdd s₁.length i) = s₂ (Fin.castSucc i) := by
-  rw [combine_toFun]
+  dsimp [combine]
   split_ifs with H
   · simp only [Fin.coe_castSucc, Fin.coe_natAdd, add_lt_iff_neg_left, not_lt_zero'] at H
   · congr
     exact Nat.add_sub_self_left _ _
 
-lemma combine_succ_natAdd {s₁ s₂ : RelSeries r} (h : s₁.last = s₂.head) (i : Fin s₂.length) :
+@[simp] lemma combine_succ_natAdd {s₁ s₂ : RelSeries r} (h : s₁.last = s₂.head) (i : Fin s₂.length) :
     combine s₁ s₂ h (Fin.natAdd s₁.length i).succ = s₂ i.succ := by
-  rw [combine_toFun]
+  dsimp [combine]
   split_ifs with H
   · have H' : s₁.length < s₁.length + (i.1 + 1)
     · linarith
     exact (lt_irrefl _ (H.trans H')).elim
   · congr
-    simp only [Fin.val_succ, Fin.coe_natAdd]
     rw [add_assoc, Nat.add_sub_cancel_left]
 
 @[simp] lemma combine_head {s₁ s₂ : RelSeries r} (h : s₁.last = s₂.head) :
@@ -696,16 +698,16 @@ instance [Unique β] : FiniteDimensionalOrder β :=
   by_contra h
   exact ne_of_lt (y.step ⟨0, Nat.pos_iff_ne_zero.mpr h⟩) <| Subsingleton.elim _ _⟩
 
-/-- an alternative constructor of `LTSeries` using `StrictMono` functions. -/
-def mk (length : ℕ) (toFun : Fin (length + 1) → α) (strictMono : StrictMono toFun) : LTSeries α :=
-{ toFun := toFun
-  step := fun i => strictMono <| lt_add_one i.1 }
-
 lemma strictMono (x : LTSeries α) : StrictMono x :=
   fun _ _ h => x.rel_of_lt h
 
 lemma monotone (x : LTSeries α) : Monotone x :=
   x.strictMono.monotone
+
+/-- an alternative constructor of `LTSeries` using `StrictMono` functions. -/
+def mk (length : ℕ) (toFun : Fin (length + 1) → α) (strictMono : StrictMono toFun) : LTSeries α :=
+{ toFun := toFun
+  step := fun i => strictMono <| lt_add_one i.1 }
 
 /--
 For two preorders `α, β`, if `f : α → β` is strictly monotonic, then a strict chain of `α`
