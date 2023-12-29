@@ -1358,17 +1358,12 @@ theorem exists_eq_add_of_lt {n : ℕ} {a b : Fin (n + 1)} (h : a < b) :
 @[simp]
 theorem neg_last (n : ℕ) : -Fin.last n = 1 := by simp [neg_eq_iff_add_eq_zero]
 
-@[simp]
 theorem neg_nat_cast_eq_one (n : ℕ) : -(n : Fin (n + 1)) = 1 := by
-  simp [neg_eq_iff_add_eq_zero, ext_iff, val_add, cast_nat_eq_last]
+  simp only [cast_nat_eq_last, neg_last]
 
 lemma pos_of_ne_zero {n : ℕ} {a : Fin (n + 1)} (h : a ≠ 0) :
     0 < a :=
   Nat.pos_of_ne_zero (val_ne_of_ne h)
-
-@[simp]
-theorem nat_cast_add_one_eq_zero (n : ℕ) : (n : Fin (n + 1)) + 1 = 0 := by
-  rw [← neg_nat_cast_eq_one, ← sub_eq_add_neg, sub_self]
 
 end AddGroup
 
@@ -1916,3 +1911,4 @@ instance toExpr (n : ℕ) : Lean.ToExpr (Fin n) where
 #align fin.reflect Fin.toExprₓ
 
 end Fin
+#lint
