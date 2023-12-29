@@ -149,7 +149,7 @@ lemma mem_piAntidiagonal {s : Finset ι} {n : μ} {f : ι →₀ μ} :
   · rintro ⟨hsupp, rfl⟩
     refine (restrictSupportEquiv (s : Set ι) μ).surjective.exists.mpr ⟨⟨f, hsupp⟩, ?_, ?_⟩
     · simp_rw [sum, restrictSupportEquiv]
-      rw [←sum_subtype_of_mem (p := (· ∈ s)) _ hsupp]
+      rw [← sum_subtype_of_mem (p := (· ∈ s)) _ hsupp]
       dsimp [subtypeDomain]
       convert rfl
     · ext i

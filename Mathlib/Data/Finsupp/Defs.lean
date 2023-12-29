@@ -1022,7 +1022,7 @@ noncomputable def addEquivFunOnFinite {ι : Type*} [Finite ι] :
 /-- AddEquiv between (ι →₀ M) and M, when ι has a unique element -/
 noncomputable def _root_.AddEquiv.finsuppUnique {ι : Type*} [Unique ι] :
     (ι →₀ M) ≃+ M where
-  __ := Equiv.finsuppUnique with
+  __ := Equiv.finsuppUnique
   map_add' _ _ := rfl
 
 instance instIsRightCancelAdd [IsRightCancelAdd M] : IsRightCancelAdd (α →₀ M) where
