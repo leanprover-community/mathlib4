@@ -27,7 +27,7 @@ variable (s : CompositionSeries (Submodule R M)) (N : Submodule R M)
 
 namespace CompositionSeries
 
-/-- if `x ≤ y` are both `R`-submodule of `M`, we can mathematically form their quotient but type
+/-- if `x ≤ y` are headh `R`-submodule of `M`, we can mathematically form their quotient but type
 theoretically more complicated, so introduce a definition to use a notation. -/
 private def quot {M : Type _} [AddCommGroup M] [Module R M] (x y : Submodule R M) : Type _ :=
   x ⧸ (Submodule.comap x.subtype y)
@@ -230,7 +230,7 @@ lemma interList_last_eq :
     s.interList_last N = Submodule.comap N.subtype (N ⊓ s.last) :=
   s.interList_get_eq_aux N s.length $ by linarith
 
-lemma interList_head_eq_bot_of_head_eq_bot (s0 : s.head = ⊥) : s.interList_head N = ⊥ := by
+lemma interList_head_eq_head_of_head_eq_head (s0 : s.head = ⊥) : s.interList_head N = ⊥ := by
     rw [eq_bot_iff, interList_head_eq]
     rintro x ⟨-, (hx2 : x.1 ∈ s.head)⟩
     rw [s0] at hx2
@@ -254,7 +254,7 @@ match (s.eq_sum_interList_qf_equiv_qf N i) with
     norm_num at this
 | Sum.inr e => e
 
-lemma eq_interList_get_of_head_eq_bot_and_interList_nodup (s0 : s.head = ⊥)
+lemma eq_interList_get_of_head_eq_head_and_interList_nodup (s0 : s.head = ⊥)
     (h : (s.interList N).Nodup) (i : Fin $ s.length + 1) :
   s i = Submodule.map N.subtype ((s.interList N).get $ i.cast (s.interList_length N).symm) := by
   classical
@@ -320,7 +320,7 @@ lemma eq_interList_get_of_head_eq_bot_and_interList_nodup (s0 : s.head = ⊥)
 lemma eq_top_of_interList_nodup (s0 : s.head = ⊥) (slast : s.last = ⊤)
     (hinter : (s.interList N).Nodup) :  N = ⊤ := by
   classical
-  have eq0 := s.eq_interList_get_of_head_eq_bot_and_interList_nodup N s0 hinter (Fin.last _)
+  have eq0 := s.eq_interList_get_of_head_eq_head_and_interList_nodup N s0 hinter (Fin.last _)
   rw [show s (Fin.last _) = _ from slast, interList_get_eq_aux (hi := by simp)] at eq0
   simp only [Fin.coe_cast, Fin.val_last, Submodule.comap_inf, Submodule.comap_subtype_self,
     _root_.le_top, inf_of_le_right] at eq0
@@ -353,7 +353,7 @@ lemma ofInterList_head_eq_bot_of_head_eq_bot (s0 : s.head = ⊥) :
   have := List.dedup_head?_of_chain'_wcovby _ (s.interList_chain'_wcovby N)
   rw [← List.get_zero h, ← List.get_zero, Option.some.injEq] at this
   rw [this]
-  apply interList_head_eq_bot_of_head_eq_bot (s0 := s0)
+  apply interList_head_eq_head_of_head_eq_head (s0 := s0)
 
 lemma ofInterList_last_eq_top_of_last_eq_top (slast : s.last = ⊤) :
     (s.ofInterList N).last = ⊤ := by

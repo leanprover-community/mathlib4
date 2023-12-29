@@ -114,9 +114,9 @@ lemma _root_.CompositionSeries.moduleLength_eq_length
   delta moduleLength
   split_ifs with h
   · refine WithTop.coe_eq_coe.mpr $ (CompositionSeries.jordan_holder _ _ ?_ ?_).length_eq
-    · rw [show s.bot = _ from s0, show h.finite.some.compositionSeries.bot = _ from
+    · rw [show s.head = _ from s0, show h.finite.some.compositionSeries.head = _ from
         h.finite.some.head_eq]
-    · rw [show s.top = _ from slast, show h.finite.some.compositionSeries.top = _ from
+    · rw [show s.last = _ from slast, show h.finite.some.compositionSeries.last = _ from
         h.finite.some.last_eq]
   · exact (h ⟨_, s0, slast⟩).elim
 
@@ -384,7 +384,7 @@ let wf : WellFounded ((. < .) : Submodule R M → Submodule R M → Prop) :=
   (inferInstance : IsArtinian R M).1
 wf.succ N
 
-lemma _root_.Submodule.exists_of_ne_top (ne_top : N ≠ ⊤) : ∃ (x : Submodule R M), N < x := by
+lemma _root_.Submodule.exists_of_ne_last (ne_top : N ≠ ⊤) : ∃ (x : Submodule R M), N < x := by
   obtain ⟨m, _, nm⟩ := SetLike.exists_of_lt (Ne.lt_top ne_top : N < ⊤)
   refine ⟨N ⊔ R ∙ m, SetLike.lt_iff_le_and_exists.mpr ⟨le_sup_left, ⟨m, ?_, nm⟩⟩⟩
   exact (le_sup_right : (R ∙ m) ≤ _) (Submodule.mem_span_singleton_self _)
@@ -398,17 +398,17 @@ lemma _root_.Submodule.le_next : N ≤ N.next := by
     · exact (H h).elim
     · rfl
 
-lemma _root_.Submodule.lt_next_of_ne_top (ne_top : N ≠ ⊤) : N < N.next :=
-  WellFounded.lt_succ _ (N.exists_of_ne_top ne_top)
+lemma _root_.Submodule.lt_next_of_ne_last (ne_last : N ≠ ⊤) : N < N.next :=
+  WellFounded.lt_succ _ (N.exists_of_ne_last ne_last)
 
-lemma _root_.Submodule.eq_top_of_eq_next (eq_next : N = N.next) : N = ⊤ := by
+lemma _root_.Submodule.eq_last_of_eq_next (eq_next : N = N.next) : N = ⊤ := by
   contrapose! eq_next
-  exact ne_of_lt (N.lt_next_of_ne_top eq_next)
+  exact ne_of_lt (N.lt_next_of_ne_last eq_next)
 
-lemma _root_.Submodule.covby_next_of_ne_top (ne_top : N ≠ ⊤) : N ⋖ N.next := by
+lemma _root_.Submodule.covby_next_of_ne_last (ne_last : N ≠ ⊤) : N ⋖ N.next := by
   classical
   rw [covby_iff_lt_and_eq_or_eq]
-  refine ⟨N.lt_next_of_ne_top ne_top, λ x hx1 hx2 ↦ ?_⟩
+  refine ⟨N.lt_next_of_ne_last ne_last, λ x hx1 hx2 ↦ ?_⟩
   dsimp only [Submodule.next] at hx2 ⊢
   -- generalize_proofs h at hx2
   rw [le_iff_lt_or_eq] at hx2
@@ -416,7 +416,7 @@ lemma _root_.Submodule.covby_next_of_ne_top (ne_top : N ≠ ⊤) : N ⋖ N.next 
   · left
     refine le_antisymm ?_ hx1
     delta WellFounded.succ at hx2
-    rw [dif_pos (N.exists_of_ne_top ne_top)] at hx2
+    rw [dif_pos (N.exists_of_ne_last ne_last)] at hx2
     have : ¬ _ < _ := not_imp_not.mpr (WellFounded.not_lt_min _ _ _) (not_not.mpr hx2)
     rw [SetLike.lt_iff_le_and_exists, not_and_or] at this
     push_neg at this
@@ -451,9 +451,9 @@ lemma nthSubmodule_stabilize_after_indexOfTopSubmodule_aux :
       nthSubmodule R M (indexOfTopSubmodule R M) = nthSubmodule R M m :=
   Nat.find_spec (nthSubmodule_eventually_stabilize_of_isNoetherian R M)
 
-lemma nthSubmodule_indexOfTopSubmodule_eq_top :
+lemma nthSubmodule_indexOfTopSubmodule_eq_last :
     nthSubmodule R M (indexOfTopSubmodule R M) = ⊤ := by
-  apply Submodule.eq_top_of_eq_next
+  apply Submodule.eq_last_of_eq_next
   rw [show (nthSubmodule R M (indexOfTopSubmodule R M)).next =
     (nthSubmodule R M (indexOfTopSubmodule R M + 1)) from _]
   · exact nthSubmodule_stabilize_after_indexOfTopSubmodule_aux R M _ $ le_of_lt $ lt_add_one _
@@ -462,11 +462,11 @@ lemma nthSubmodule_indexOfTopSubmodule_eq_top :
 lemma nthSubmodule_stabilize_after_indexOfTopSubmodule :
     ∀ (m : ℕ), indexOfTopSubmodule R M ≤ m → nthSubmodule R M m = ⊤ := by
   intro m hm
-  rw [← nthSubmodule_indexOfTopSubmodule_eq_top]
+  rw [← nthSubmodule_indexOfTopSubmodule_eq_last]
   symm
   apply nthSubmodule_stabilize_after_indexOfTopSubmodule_aux _ _ _ hm
 
-lemma ne_top_of_lt_indexOfTopSubmodule (n : ℕ) (lt : n < indexOfTopSubmodule R M) :
+lemma ne_last_of_lt_indexOfTopSubmodule (n : ℕ) (lt : n < indexOfTopSubmodule R M) :
     nthSubmodule R M n ≠ ⊤ := by
   have H := (Nat.lt_find_iff (nthSubmodule_eventually_stabilize_of_isNoetherian R M) n).mp lt n
     (le_refl _)
@@ -478,7 +478,7 @@ lemma ne_top_of_lt_indexOfTopSubmodule (n : ℕ) (lt : n < indexOfTopSubmodule R
   rw [rid] at ineq1
   exact not_top_lt ineq1
 
-/-- If an `R`-module `M` is both artinian and noetherian, then it has a composition series, hence a
+/-- If an `R`-module `M` is headh artinian and noetherian, then it has a composition series, hence a
 module of finite length. -/
 @[simps]
 noncomputable def _root_.CompositionSeries.ofIsArtinianOfIsNoetherian :
@@ -487,8 +487,8 @@ noncomputable def _root_.CompositionSeries.ofIsArtinianOfIsNoetherian :
   toFun := nthSubmodule R M ∘ Fin.val
   step := λ i ↦ by
     simpa only [Function.comp_apply, Fin.coe_castSucc, nthSubmodule_coe, Fin.val_succ,
-      Function.iterate_succ'] using Submodule.covby_next_of_ne_top _
-      (ne_top_of_lt_indexOfTopSubmodule R M _ i.2)
+      Function.iterate_succ'] using Submodule.covby_next_of_ne_last _
+      (ne_last_of_lt_indexOfTopSubmodule R M _ i.2)
 
 lemma _root_.CompositionSeries.ofIsArtinianOfIsNoetherian_head_eq :
     (CompositionSeries.ofIsArtinianOfIsNoetherian R M).head = ⊥ := by
@@ -499,7 +499,7 @@ lemma _root_.CompositionSeries.ofIsArtinianOfIsNoetherian_last_eq :
     (CompositionSeries.ofIsArtinianOfIsNoetherian R M).last = ⊤ := by
   simpa only [RelSeries.last, CompositionSeries.ofIsArtinianOfIsNoetherian_length,
     CompositionSeries.ofIsArtinianOfIsNoetherian_toFun, Function.comp_apply, Fin.val_last,
-    nthSubmodule_coe] using nthSubmodule_indexOfTopSubmodule_eq_top R M
+    nthSubmodule_coe] using nthSubmodule_indexOfTopSubmodule_eq_last R M
 
 noncomputable instance FiniteLengthModule.of_noetherian_of_artinian
     [IsArtinian R M] [IsNoetherian R M] : FiniteLengthModule R M where
@@ -556,10 +556,10 @@ def CompositionSeries.liftQuotient : CompositionSeries (Submodule R M) where
     exact Submodule.mkQ_surjective N
 
 lemma CompositionSeries.liftQuotient_head :
-    CompositionSeries.bot c.liftQuotient = N.comapMkQRelIso c.bot := rfl
+    c.liftQuotient.head  = N.comapMkQRelIso c.head := rfl
 
 lemma CompositionSeries.liftQuotient_last :
-    CompositionSeries.top c.liftQuotient = N.comapMkQRelIso c.top := rfl
+    c.liftQuotient.last = N.comapMkQRelIso c.last := rfl
 
 /--
 Give a composition series `p₀ ⋖ p₁ ⋖ ... ⋖  pₙ` of `N`, we can also view it as a composition series
@@ -588,10 +588,10 @@ def CompositionSeries.liftSubmodule : CompositionSeries (Submodule R M) where
     exact ⟨Submodule.MapSubtype.relIso N |>.symm ⟨p, hp3⟩, hp1', hp2'⟩
 
 lemma CompositionSeries.liftSubmodule_head :
-    CompositionSeries.bot d.liftSubmodule = (Submodule.map N.subtype d.bot) := rfl
+    d.liftSubmodule.head = (Submodule.map N.subtype d.head) := rfl
 
 lemma CompositionSeries.liftSubmodule_last :
-    CompositionSeries.top d.liftSubmodule = (Submodule.map N.subtype d.top) := rfl
+    d.liftSubmodule.last = (Submodule.map N.subtype d.last) := rfl
 
 variable (R M) in
 /--
@@ -614,7 +614,7 @@ noncomputable def FiniteLengthModule.quotient [finLen : FiniteLengthModule R M] 
 
 variable (N) in
 /--
-Let `N` be a submodule of `M`, if both `N` and `M ⧸ N` have finite length, `M` has finite length as
+Let `N` be a submodule of `M`, if headh `N` and `M ⧸ N` have finite length, `M` has finite length as
 well.
 -/
 def FiniteLengthModule.of_quotient_of_submodule
@@ -623,25 +623,25 @@ def FiniteLengthModule.of_quotient_of_submodule
   compositionSeries :=
     let c1 := quotFin.compositionSeries.liftQuotient
     let c2 := subFin.compositionSeries.liftSubmodule
-    c2.append c1  <| by
+    c2.combine c1  <| by
       rw [CompositionSeries.liftQuotient_head, CompositionSeries.liftSubmodule_last]
       ext m
       simp only [Submodule.mem_map, Submodule.coeSubtype, Subtype.exists, exists_and_right,
         exists_eq_right, Submodule.comapMkQRelIso, RelIso.coe_fn_mk, Equiv.coe_fn_mk,
         Submodule.mem_comap, Submodule.mkQ_apply]
-      set x : Submodule R N := CompositionSeries.top compositionSeries
-      set y : Submodule R (M ⧸ N) := CompositionSeries.bot compositionSeries
+      set x : Submodule R N := compositionSeries.last
+      set y : Submodule R (M ⧸ N) := compositionSeries.head
       have x_eq := show x = ⊤ from subFin.last_eq
       have y_eq := show y = ⊥ from quotFin.head_eq
       rw [x_eq, y_eq]
       simp only [Submodule.mem_top, exists_prop, and_true, Submodule.mem_bot,
         Submodule.Quotient.mk_eq_zero]
   head_eq := by
-    simp only [CompositionSeries.append, RelSeries.combine_head]
+    simp only [RelSeries.combine_head]
     show Submodule.map _ _ = ⊥
     rw [show RelSeries.toFun compositionSeries 0 = ⊥ from subFin.head_eq, Submodule.map_bot]
   last_eq := by
-    simp only [CompositionSeries.append, RelSeries.combine_last]
+    simp only [RelSeries.combine_last]
     show Submodule.comap _ _ = ⊤
     erw [show RelSeries.toFun compositionSeries (Fin.last _) = ⊤ from quotFin.last_eq,
       Submodule.comap_top]
@@ -686,7 +686,7 @@ variable (x : RelSeries ((· ≤ ·) : Submodule R M → Submodule R M → Prop)
 lemma LESeries.monotone : Monotone x :=
   Fin.monotone_iff_le_succ.mpr x.step
 
-/-- if `x ≤ y` are both `R`-submodule of `M`, we can mathematically form their quotient but type
+/-- if `x ≤ y` are headh `R`-submodule of `M`, we can mathematically form their quotient but type
 theoretically more complicated, so introduce a definition to use a notation. -/
 private def quot {M : Type _} [AddCommGroup M] [Module R M] (x y : Submodule R M) : Type _ :=
   x ⧸ (Submodule.comap x.subtype y)
