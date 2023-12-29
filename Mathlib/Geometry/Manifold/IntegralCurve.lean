@@ -61,9 +61,6 @@ variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
   {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H}
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [SmoothManifoldWithCorners I M]
-  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace ℝ E']
-  {H' : Type*} [TopologicalSpace H'] {I' : ModelWithCorners ℝ E' H'}
-  {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M'] [SmoothManifoldWithCorners I' M']
 
 /-- If `γ : ℝ → M`, `v : M → TM` is a vector field on `M`, and `s ∈ Set ℝ`,
   `IsIntegralCurveOn γ v s` means `γ t` is tangent to `v (γ t)` for all `t ∈ s`. The value of `γ`
@@ -310,3 +307,44 @@ lemma exists_isIntegralCurveAt_of_contMDiffAt_boundaryless [I.Boundaryless]
     (hv : ContMDiffAt I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)) x₀) :
     ∃ (γ : ℝ → M), γ t₀ = x₀ ∧ IsIntegralCurveAt γ v t₀ :=
   exists_isIntegralCurveAt_of_contMDiffAt t₀ hv I.isInteriorPoint
+
+section Naturality
+
+variable
+  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace ℝ E']
+  {H' : Type*} [TopologicalSpace H'] {I' : ModelWithCorners ℝ E' H'}
+  {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M'] [SmoothManifoldWithCorners I' M']
+  {v' : (x : M') → TangentSpace I' x}
+
+/-- Let `v` and `v'` be vector fields on `M` and `M'`, respectively, and let `f : M → M'` be a
+  differentiable map. If `v` and `v'` are `f`-related, then `f` maps integral curves of `v` to
+  integral curves of `v'`. The converse is stated below. -/
+lemma IsIntegralCurveAt.of_mdifferentiable_related {f : M → M'} (hf : MDifferentiable I I' f)
+    (h : IsIntegralCurveAt γ v t₀) (hv : ∀ x : M, v' (f x) = mfderiv I I' f x (v x)) :
+    IsIntegralCurveAt (f ∘ γ) v' t₀ := by
+  obtain ⟨s, hs, h⟩ := h
+  refine ⟨s, hs, ?_⟩
+  intros t ht
+  apply (HasMFDerivAt.comp t (hf (γ t)).hasMFDerivAt (h t ht)).congr_mfderiv
+  rw [Function.comp_apply, hv]
+  ext
+  simp
+
+/-- Let `v` and `v'` be vector fields on `M` and `M'`, respectively, and let `f : M → M'` be a
+  differentiable map. If `f` maps integral curves of `v` to integral curves of `v'`, then `v` and
+  `v'` are `f`-related. The converse is stated above.
+
+  Even though the lemma is true for manifolds with corners, we include the boundaryless assumption
+  because the existence theorem for integral curves is currently only proven for boundaryless
+  models. -/
+lemma naturality [I.Boundaryless]
+    (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)))
+    {f : M → M'} (hf : MDifferentiable I I' f)
+    (h : ∀ (γ : ℝ → M) (t₀ : ℝ), IsIntegralCurveAt γ v t₀ → IsIntegralCurveAt (f ∘ γ) v' t₀)
+    (x : M) : v' (f x) = mfderiv I I' f x (v x) := by
+  obtain ⟨γ, h0, hγ⟩ : ∃ γ : ℝ → M, γ 0 = x ∧ IsIntegralCurveAt γ v 0 :=
+    exists_isIntegralCurveAt_of_contMDiffAt_boundaryless 0 hv.contMDiffAt
+  have hγ' := h γ 0 hγ
+  rw [IsIntegralCurveAt] at hγ hγ'
+
+end Naturality
