@@ -15,8 +15,13 @@ a bicomplex `K : HomologicalComplex₂ C c₁ c₂`, and a third complex shape `
 equipped with `[TotalComplexShape c₁ c₂ c₁₂]`, we construct the total complex
 `K.total c₁₂ : HomologicalComplex C c₁₂`.
 
--/
+In particular, if `c := ComplexShape.up ℤ` and `K : HomologicalComplex₂ c c`, then for any
+`n : ℤ`, `(K.total c).X n` identifies to the coproduct of the `(K.X p).X q` such that
+`p + q = n`, and the differential on `(K.total c).X n` is induced by the sum of horizontal
+differentials `(K.X p).X q ⟶ (K.X (p + 1)).X q` and `(-1) ^ p` times the vertical
+differentials `(K.X p).X q ⟶ (K.X p).X (q + 1)`.
 
+-/
 
 open CategoryTheory Category Limits Preadditive
 
