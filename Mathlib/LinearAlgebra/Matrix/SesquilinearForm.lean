@@ -36,7 +36,7 @@ sesquilinear_form, matrix, basis
 -/
 
 
-variable {R R₁ R₂ M M₁ M₂ M₁' M₂' n m n' m' ι : Type*}
+variable {R R₁ R₂ M M₁ M₂ M₁' M₂' N₂ n m n' m' ι : Type*}
 
 open BigOperators
 
@@ -46,7 +46,7 @@ open Matrix
 
 section AuxToLinearMap
 
-variable [CommSemiring R] [CommSemiring R₁] [CommSemiring R₂]
+variable [CommSemiring R] [CommSemiring R₁] [CommSemiring R₂] [AddCommMonoid N₂] [Module R N₂]
 
 variable [Fintype n] [Fintype m]
 
@@ -55,13 +55,15 @@ variable (σ₁ : R₁ →+* R) (σ₂ : R₂ →+* R)
 /-- The map from `Matrix n n R` to bilinear forms on `n → R`.
 
 This is an auxiliary definition for the equivalence `Matrix.toLinearMap₂'`. -/
-def Matrix.toLinearMap₂'Aux (f : Matrix n m R) : (n → R₁) →ₛₗ[σ₁] (m → R₂) →ₛₗ[σ₂] R :=
+def Matrix.toLinearMap₂'Aux (f : Matrix n m N₂) : (n → R₁) →ₛₗ[σ₁] (m → R₂) →ₛₗ[σ₂] N₂ :=
   -- porting note: we don't seem to have `∑ i j` as valid notation yet
-  mk₂'ₛₗ σ₁ σ₂ (fun (v : n → R₁) (w : m → R₂) => ∑ i, ∑ j, σ₁ (v i) * f i j * σ₂ (w j))
-    (fun _ _ _ => by simp only [Pi.add_apply, map_add, add_mul, sum_add_distrib])
-    (fun _ _ _ => by simp only [Pi.smul_apply, smul_eq_mul, RingHom.map_mul, mul_assoc, mul_sum])
-    (fun _ _ _ => by simp only [Pi.add_apply, map_add, mul_add, sum_add_distrib]) fun _ _ _ => by
-    simp only [Pi.smul_apply, smul_eq_mul, RingHom.map_mul, mul_assoc, mul_left_comm, mul_sum]
+  mk₂'ₛₗ σ₁ σ₂ (fun (v : n → R₁) (w : m → R₂) => ∑ i, ∑ j, σ₁ (v i) • σ₂ (w j) • f i j )
+    (fun _ _ _ => by simp only [Pi.add_apply, map_add, add_smul, sum_add_distrib])
+    (fun _ _ _ => by simp only [Pi.smul_apply, smul_eq_mul, _root_.map_mul, MulAction.mul_smul,
+      smul_sum])
+    (fun _ _ _ => by simp only [Pi.add_apply, map_add, add_smul, smul_add, sum_add_distrib]) fun _ v _ => by
+      simp only [Pi.smul_apply, smul_eq_mul, _root_.map_mul, MulAction.mul_smul, smul_sum]
+      simp_rw [smul_algebra_smul_comm (σ₁ (v _))]
 #align matrix.to_linear_map₂'_aux Matrix.toLinearMap₂'Aux
 
 variable [DecidableEq n] [DecidableEq m]
@@ -193,13 +195,13 @@ theorem Matrix.toLinearMapₛₗ₂'_aux_eq (M : Matrix n m R) :
 
 theorem Matrix.toLinearMapₛₗ₂'_apply (M : Matrix n m R) (x : n → R₁) (y : m → R₂) :
     -- porting note: we don't seem to have `∑ i j` as valid notation yet
-    Matrix.toLinearMapₛₗ₂' σ₁ σ₂ M x y = ∑ i, ∑ j, σ₁ (x i) * M i j * σ₂ (y j) :=
+    Matrix.toLinearMapₛₗ₂' σ₁ σ₂ M x y = ∑ i, ∑ j, σ₁ (x i) • σ₂ (y j) • M i j :=
   rfl
 #align matrix.to_linear_mapₛₗ₂'_apply Matrix.toLinearMapₛₗ₂'_apply
 
 theorem Matrix.toLinearMap₂'_apply (M : Matrix n m R) (x : n → R) (y : m → R) :
     -- porting note: we don't seem to have `∑ i j` as valid notation yet
-    Matrix.toLinearMap₂' M x y = ∑ i, ∑ j, x i * M i j * y j :=
+    Matrix.toLinearMap₂' M x y = ∑ i, ∑ j, x i • y j • M i j :=
   rfl
 #align matrix.to_linear_map₂'_apply Matrix.toLinearMap₂'_apply
 
@@ -209,7 +211,7 @@ theorem Matrix.toLinearMap₂'_apply' (M : Matrix n m R) (v : n → R) (w : m �
   refine' Finset.sum_congr rfl fun _ _ => _
   rw [Finset.mul_sum]
   refine' Finset.sum_congr rfl fun _ _ => _
-  rw [← mul_assoc]
+  rw [smul_eq_mul, smul_eq_mul, mul_comm (w _), ← mul_assoc]
 #align matrix.to_linear_map₂'_apply' Matrix.toLinearMap₂'_apply'
 
 @[simp]
