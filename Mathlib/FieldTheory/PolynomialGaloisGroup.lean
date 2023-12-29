@@ -52,7 +52,8 @@ namespace Polynomial
 variable {F : Type*} [Field F] (p q : F[X]) (E : Type*) [Field E] [Algebra F E]
 
 /-- The Galois group of a polynomial. -/
-def Gal := p.SplittingField ≃ₐ[F] p.SplittingField
+def Gal :=
+  p.SplittingField ≃ₐ[F] p.SplittingField
 -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5020):
 -- deriving Group, Fintype
 #align polynomial.gal Polynomial.Gal
@@ -63,10 +64,6 @@ instance instGroup : Group (Gal p) :=
   inferInstanceAs (Group (p.SplittingField ≃ₐ[F] p.SplittingField))
 instance instFintype : Fintype (Gal p) :=
   inferInstanceAs (Fintype (p.SplittingField ≃ₐ[F] p.SplittingField))
-
-instance : CoeFun p.Gal fun _ => p.SplittingField → p.SplittingField :=
-  -- Porting note: was AlgEquiv.hasCoeToFun
-  inferInstanceAs (CoeFun (p.SplittingField ≃ₐ[F] p.SplittingField) _)
 
 instance : AlgEquivClass p.Gal F p.SplittingField p.SplittingField :=
   inferInstanceAs (AlgEquivClass (p.SplittingField ≃ₐ[F] p.SplittingField) F _ _)
