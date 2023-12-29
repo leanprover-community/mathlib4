@@ -662,7 +662,7 @@ theorem isPretransitive_compHom
   exact ⟨e, rfl⟩
 
 @[to_additive]
-theorem isPretransitive_of_compHom
+theorem IsPretransitive.of_compHom
     {E F G : Type*} [Monoid E] [Monoid F] [MulAction F G]
     (f : E →* F) [h : letI := compHom G f; IsPretransitive E G] :
     IsPretransitive F G :=
