@@ -70,11 +70,6 @@ open Order
 -- because we use the base - 1
 -- If P and Q are sets then Q^P is the set of all mappings of P into Q
 
--- TODO
-@[simp]
-theorem Nat.mod_succ (n : ℕ) : n % n.succ = n :=
-  Nat.mod_eq_of_lt (Nat.lt_succ_self _)
-
 instance base_nontrivial {b : ℕ} [hb : Fact (0 < b)] : Nontrivial (Fin (b + 1)) :=
   ⟨⟨0, 1, by
       have : 1 < b + 1 := Nat.succ_lt_succ_iff.mpr hb.out
@@ -266,11 +261,9 @@ instance charP (n : ℕ) : CharP (Fin (n + 1)) (n + 1) where
     cast_eq_zero_iff' := by
       simp [Fin.eq_iff_veq, Nat.dvd_iff_mod_eq_zero]
 
-@[simp]
 theorem nat_cast_add_one_eq_zero (n : ℕ) : (n : Fin (n + 1)) + 1 = 0 := by
   rw [← Nat.cast_add_one, CharP.cast_eq_zero]
 
-@[simp]
 theorem neg_coe_eq_one (n : ℕ) : -(n : Fin (n + 1)) = 1 := by
   simp [neg_eq_iff_add_eq_zero]
 
@@ -348,7 +341,6 @@ theorem coe_sub (z : Z) :
   · exact absurd hb.out (lt_irrefl _)
   rw [← Nat.cast_succ]
   rcases lt_trichotomy (f z) (g z) with (h | h | h)
-  any_goals have h' := h; rw [Fin.lt_iff_val_lt_val] at h'
   · simp only [difcar_pred_eq_one h, Fin.val_one, Nat.cast_one, mul_one]
     rw [← Int.add_emod_self, Int.emod_eq_of_lt]
     · rw [sub_add, sub_sub, le_sub_comm, sub_zero, add_sub, tsub_le_iff_right, ← Nat.cast_add, ←
@@ -362,6 +354,8 @@ theorem coe_sub (z : Z) :
     · simp [hd, Int.emod_self]
     · rw [hd, Fin.val_one, ← Nat.cast_sub, ← Int.coe_nat_mod] <;> simp [Nat.succ_le_succ_iff]
   · simp only [difcar_pred_eq_zero h, Fin.val_zero, Nat.cast_zero, MulZeroClass.mul_zero, add_zero]
+    have h' := h
+    rw [Fin.lt_iff_val_lt_val] at h'
     rw [← Nat.cast_sub h'.le, Int.emod_eq_of_lt]
     · rw [sub_nonneg, Nat.cast_le, le_tsub_iff_right h'.le, add_comm]
       cases' difcar_eq_zero_or_one f g z with hd hd <;> simp [hd, Nat.succ_le_iff, h, h.le]
@@ -764,7 +758,7 @@ theorem Negative.exists_least_cap (hf : f.Negative) : ∃ x, f x ≠ b ∧ ∀ y
     · exact hx _ hxy
     · specialize H y hxy hy
       refine' le_antisymm ((Fin.le_last _).trans _) H
-      simpa using Fin.cast_nat_eq_last b
+      simp
 
 theorem Positive.not_negative (h : f.Positive) : ¬f.Negative := fun H => by
   suffices (b : Fin (b + 1)) = 0 by simp [Fin.ext_iff, ne_of_gt hb.out] at this
@@ -787,7 +781,6 @@ theorem Negative.not_positive (h : f.Negative) : ¬f.Positive := fun H => by
     exact (pred_lt _).trans hxz
 
 theorem Positive.sub_negative (hf : f.Positive) (hg : g.Negative) : (f - g).Positive := by
-  have := hf.not_negative
   refine' ⟨_, _⟩
   · rw [Ne.def, sub_eq_zero]
     rintro rfl
@@ -1051,15 +1044,10 @@ instance : LT (DigitExpansion.real Z b) :=
 variable {Z} {b}
 variable {f g : DigitExpansion Z b}
 
-protected theorem DigitExpansion.real.apply_eq_coe_apply (f : DigitExpansion.real Z b) (z : Z) :
-    (f : DigitExpansion Z b) z = (f : DigitExpansion Z b) z :=
-  rfl
-
 protected theorem DigitExpansion.real.lt_def {f g : DigitExpansion.real Z b} :
     f < g ↔ (g - f : DigitExpansion Z b).Positive :=
   Iff.rfl
 
-@[simp]
 lemma DigitExpansion.real.eq_zero_of_isEmpty [IsEmpty Z] (f : DigitExpansion.real Z b) : f = 0 := by
   rcases f with ⟨_, hf|hf|rfl⟩
   · exact absurd hf (not_positive_of_isEmpty _)
@@ -1112,7 +1100,8 @@ protected theorem DigitExpansion.real.le_def {f g : DigitExpansion.real Z b} :
   Iff.rfl
 
 -- 7.2(i)
-noncomputable instance : LinearOrder (DigitExpansion.real Z b) :=
+noncomputable instance DigitExpansion.real.instLinearOrder :
+    LinearOrder (DigitExpansion.real Z b) :=
   { DigitExpansion.real.PartialOrder _
       _ with
     le_total := fun f g => by
@@ -1254,7 +1243,7 @@ theorem real.dense {f g : real Z b} (hfg : f > g) :
   · intro z hz
     simp only [DigitExpansion.sub_def, AddSubgroup.coeSubtype, AddSubgroup.coe_sub, Subtype.coe_mk,
       mk_apply, ne_of_gt hz, not_le_of_lt ((lt_trans (lt_succ x)) hz),
-      real.apply_eq_coe_apply, difcar_eq_zero_iff, if_false, sub_self, zero_sub,
+      difcar_eq_zero_iff, if_false, sub_self, zero_sub,
       neg_eq_zero, gt_iff_lt]
     intro w hzw
     simp [not_le_of_lt (lt_trans (lt_succ x) (lt_trans hz hzw)), ne_of_gt (lt_trans hz hzw)]
@@ -1279,8 +1268,7 @@ theorem real.exists_lt_zStar [Zero Z] (f : real Z b) :
     obtain ⟨x, hx, hx'⟩ := exists_bounded (f : DigitExpansion Z b) (max (succ z) (succ 0))
     refine' hx'.ne _
     simp only at hz
-    rw [← hz x (lt_trans _ hx), if_neg (not_le_of_lt (lt_trans _ hx)),
-        real.apply_eq_coe_apply] <;>
+    rw [← hz x (lt_trans _ hx), if_neg (not_le_of_lt (lt_trans _ hx))] <;>
       simp
   have qneg : q'.Negative := by
     refine' ⟨fun H => _, 0, fun y hy => _⟩
@@ -1294,7 +1282,7 @@ theorem real.exists_lt_zStar [Zero Z] (f : real Z b) :
     · simp [q', hy.not_lt]
   let q : real Z b := ⟨q', Or.inr (Or.inl qneg)⟩
   refine' ⟨⟨f - q, (f - q).prop, fun z zpos => _⟩, _⟩
-  · simp only [DigitExpansion.sub_def, not_le_of_lt zpos, real.apply_eq_coe_apply,
+  · simp only [DigitExpansion.sub_def, not_le_of_lt zpos,
       difcar_eq_zero_iff, Subtype.coe_mk, mk_apply, if_false, sub_self, zero_sub,
       neg_eq_zero, gt_iff_lt]
     intro x hx
