@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
 import Mathlib.Topology.CompactOpen
+import Mathlib.Topology.UniformSpace.CompactConvergence
 import Mathlib.Topology.UniformSpace.Equicontinuity
 import Mathlib.Topology.UniformSpace.Equiv
 
@@ -281,110 +282,18 @@ theorem ArzelaAscoli.isCompact_closure_of_closedEmbedding [TopologicalSpace ι] 
     (F_clemb.comp isClosed_closure.closedEmbedding_subtype_val) cls_eqcont
     fun K hK x hx ↦ (cls_pointwiseCompact K hK x hx).imp fun Q hQ ↦ ⟨hQ.1, by simpa using hQ.2⟩
 
----------------------------------------------------------------------------------------------------
-
--- Specialize ArzelaAscoli to the case 𝔖 = Set.range Set.singleton
-theorem ArzelaAscoli.compactSpace_of_closed_inducing_ptwise [TopologicalSpace ι]
-    (F_ind : Inducing F)
-    (F_cl : IsClosed (range F))
-    (F_pointwiseCompact : ∀ x, ∃ K, IsCompact K ∧ ∀ ι, F ι x ∈ K) :
-    CompactSpace ι := by
-  let 𝔖 : Set (Set X) := Set.range Set.singleton
-  have 𝔖_compact : ∀ K ∈ 𝔖, IsCompact K := by
-    rintro K ⟨x, rfl⟩
-    exact isCompact_singleton
-  have 𝔖_covers : ⋃₀ 𝔖 = univ := by
-    rw [sUnion_range, Set.eq_univ_iff_forall]
-    exact fun x ↦ mem_iUnion_of_mem x rfl
-  have F_ind : Inducing (UniformOnFun.ofFun 𝔖 ∘ F) := by
-    refine' (Homeomorph.mk (UniformOnFun.ofFun 𝔖) _
-      (UniformOnFun.uniformContinuous_toFun 𝔖_covers).continuous).inducing.comp F_ind
-    rw [continuous_iff_continuousAt]
-    intro f
-    rw [ContinuousAt, UniformOnFun.tendsto_iff_tendstoUniformlyOn]
-    rintro x ⟨x, rfl⟩
-    rw [Set.singleton, setOf_eq_eq_singleton, tendstoUniformlyOn_singleton_iff_tendsto]
-    exact (continuous_apply x).tendsto f
-  have F_eqcont : ∀ K ∈ 𝔖, Equicontinuous (K.restrict ∘ F) := by
-    rintro K ⟨x, rfl⟩
-    rw [equicontinuous_iff_continuous]
-    exact continuous_of_discreteTopology
-  exact ArzelaAscoli.compactSpace_of_closed_inducing
-    𝔖_compact 𝔖_covers F_ind F_cl F_eqcont F_pointwiseCompact
+theorem keyThm {X Y : Type*} [TopologicalSpace X] [UniformSpace Y] [CompactSpace Y] :
+    Inducing (fun f ↦ UniformOnFun.ofFun {K | IsCompact K} f : C(X, Y) → (X →ᵤ[{K | IsCompact K}] Y)) :=
+  inducing_iff_nhds.mpr <| fun _ ↦ eq_of_forall_le_iff <| fun _ ↦
+    ContinuousMap.tendsto_iff_forall_compact_tendstoUniformlyOn.trans <| UniformOnFun.tendsto_iff_tendstoUniformlyOn.symm.trans tendsto_iff_comap
 
 theorem ArzelaAscoli.ofEquicontinuous {X Y : Type*} [TopologicalSpace X] [UniformSpace Y]
     [CompactSpace Y] (S : Set C(X, Y)) (hS1 : IsClosed (ContinuousMap.toFun '' S))
     (hS2 : Equicontinuous ((↑) : S → X → Y)) :
-    IsCompact S := by
-  refine' isCompact_iff_compactSpace.mpr
-    (ArzelaAscoli.compactSpace_of_closed_inducing_ptwise _
-      (image_eq_range ContinuousMap.toFun S ▸ hS1)
-      (fun x ↦ ⟨Set.univ, isCompact_univ, fun _ ↦ trivial⟩))
-  change Inducing (ContinuousMap.toFun ∘ Subtype.val : S → X → Y)
-
-  -- At this point, we need to know that S → X → Y is inducing
-
-  rw [inducing_iff_nhds]
-  rintro ⟨ϕ, hϕ⟩
-  apply le_antisymm
-  · rw [←Filter.map_le_iff_le_comap]
-    exact (ContinuousMap.continuous_coe.comp continuous_subtype_val).continuousAt
-  · rw [inducing_subtype_val.nhds_eq_comap ⟨ϕ, hϕ⟩, ← Filter.map_le_iff_le_comap]
-    conv_rhs => rw [TopologicalSpace.nhds_generateFrom]
-    simp only [le_iInf_iff]
-    rintro - ⟨hg, K, hK, U, hU, rfl⟩
-    have key : ∃ V ∈ uniformity Y, ∀ x ∈ K, ∀ y : Y, (ϕ x, y) ∈ V → y ∈ U
-    · obtain ⟨V, hV, hV'⟩ := Disjoint.exists_uniform_thickening (hK.image ϕ.2) hU.isClosed_compl
-        (disjoint_compl_right_iff.mpr hg)
-      refine' ⟨V, hV, _⟩
-      intro x hx y hy
-      contrapose! hV'
-      rw [Set.not_disjoint_iff]
-      refine' ⟨y, _, _⟩
-      · simp only [Set.mem_iUnion]
-        refine' ⟨ϕ x, ⟨x, hx, rfl⟩, hy⟩
-      · simp only [Set.mem_iUnion]
-        refine' ⟨y, hV', _⟩
-        exact UniformSpace.mem_ball_self y hV
-    obtain ⟨V, hV, hVU⟩ := key
-    obtain ⟨W₀, hW₀, hW₀V⟩ := comp3_mem_uniformity hV -- three epsilon trick!
-    let W := symmetrizeRel W₀
-    have hW : W ∈ uniformity Y := symmetrize_mem_uniformity hW₀
-    have hWV : compRel W (compRel W W) ⊆ V
-    · refine' Set.Subset.trans _ hW₀V
-      refine' compRel_mono _ (compRel_mono _ _) <;> exact symmetrizeRel_subset_self W₀
-    obtain ⟨t, _, htW⟩ := hK.elim_nhds_subcover
-      (fun x => {x' | ∀ ψ : S, ((ψ : X → Y) x, (ψ : X → Y) x') ∈ W})
-      (fun x _ => hS2 x W hW)
-    intro F hF
-    refine' ⟨⋂ x ∈ t, {ψ | (ϕ x, ψ x) ∈ W}, _, _⟩
-    · rw [Filter.biInter_finset_mem]
-      intro x _
-      simp only
-      change _ ∈ nhds ϕ.toFun
-      let Z : Set Y := {y | (ϕ x, y) ∈ W}
-      change {ψ | ψ x ∈ Z} ∈ nhds ϕ.toFun
-      have key' := Set.singleton_pi' x (fun _ ↦ Z)
-      rw [← key', set_pi_mem_nhds_iff]
-      rintro - ⟨-, -⟩
-      rw [mem_nhds_uniformity_iff_right]
-      refine' Filter.mem_of_superset hW _
-      intro a b c
-      rwa [← a.eta, c] at b
-      exact Set.finite_singleton x
-    · rintro ⟨ψ, hψ⟩ h
-      apply hF
-      rintro - ⟨x, hx, rfl⟩
-      refine' hVU x hx (ψ x) _
-      specialize htW hx
-      simp only [Set.mem_iUnion] at htW
-      obtain ⟨x', hx', h'⟩ := htW
-      have h1 := h' ⟨ϕ, hϕ⟩
-      have h2 := h' ⟨ψ, hψ⟩
-      simp only at h1 h2
-      simp only [Set.mem_preimage, Set.mem_iInter] at h
-      specialize h x' hx'
-      change (ϕ x', ψ x') ∈ W at h
-      apply hWV
-      refine' ⟨ϕ x', _, ψ x', h, h2⟩
-      exact (symmetric_symmetrizeRel W₀).mk_mem_comm.mp h1
+    IsCompact S :=
+  isCompact_iff_compactSpace.mpr <| ArzelaAscoli.compactSpace_of_closed_inducing (fun _ ↦ id)
+    (eq_univ_iff_forall.mpr <| fun x ↦ mem_sUnion_of_mem (mem_singleton x) isCompact_singleton)
+    (keyThm.comp inducing_subtype_val)
+    (image_eq_range ContinuousMap.toFun S ▸ hS1)
+    (fun K _ ↦ (equicontinuous_restrict_iff _).mpr (hS2.equicontinuousOn K))
+    (fun _ ↦ ⟨univ, isCompact_univ, mem_univ⟩)
