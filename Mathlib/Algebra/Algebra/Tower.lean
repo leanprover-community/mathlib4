@@ -181,7 +181,6 @@ instance (priority := 999) of_algHom {R A B : Type*} [CommSemiring R] [CommSemir
   letI := (f : A →+* B).toAlgebra
   of_algebraMap_eq fun x => (f.commutes x).symm
 #align is_scalar_tower.of_ring_hom IsScalarTower.of_algHom
-@[deprecated] alias of_ring_hom := IsScalarTower.of_algHom
 
 end Semiring
 
