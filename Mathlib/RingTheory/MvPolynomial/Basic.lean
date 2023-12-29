@@ -149,13 +149,11 @@ theorem linearIndependent_X : LinearIndependent R (X : σ → MvPolynomial σ R)
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.linear_independent_X MvPolynomial.linearIndependent_X
 
-instance {R σ : Type*} [CommSemiring R] [Finite σ] (N : ℕ) :
-    Module.Finite R (restrictDegree σ R N) :=
+instance [Finite σ] (N : ℕ) : Module.Finite R (restrictDegree σ R N) :=
   have := Finsupp.finite_setOf_bounded σ N
   Module.Finite.of_basis (basisRestrictSupport R _)
 
-instance {R σ : Type*} [CommSemiring R] [Finite σ] (N : ℕ) :
-    Module.Finite R (restrictTotalDegree σ R N) :=
+instance [Finite σ] (N : ℕ) : Module.Finite R (restrictTotalDegree σ R N) :=
   have := Finsupp.finite_setOf_bounded σ N
   have : Finite {s : σ →₀ ℕ | s.sum (fun _ e ↦ e) ≤ N} := by
     rw [Set.finite_coe_iff] at this ⊢
