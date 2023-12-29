@@ -1066,6 +1066,8 @@ protected noncomputable def divisionMonoid : DivisionMonoid (Set α) :=
 #align set.division_monoid Set.divisionMonoid
 #align set.subtraction_monoid Set.subtractionMonoid
 
+scoped[Pointwise] attribute [instance] Set.divisionMonoid Set.subtractionMonoid
+
 @[to_additive (attr := simp 500)]
 theorem isUnit_iff : IsUnit s ↔ ∃ a, s = {a} ∧ IsUnit a := by
   constructor
@@ -1078,6 +1080,9 @@ theorem isUnit_iff : IsUnit s ↔ ∃ a, s = {a} ∧ IsUnit a := by
     exact ha.set
 #align set.is_unit_iff Set.isUnit_iff
 #align set.is_add_unit_iff Set.isAddUnit_iff
+
+@[to_additive (attr := simp)]
+lemma univ_div_univ : (univ / univ : Set α) = univ := by simp [div_eq_mul_inv]
 
 end DivisionMonoid
 
@@ -1102,9 +1107,7 @@ protected noncomputable def hasDistribNeg [Mul α] [HasDistribNeg α] : HasDistr
 #align set.has_distrib_neg Set.hasDistribNeg
 
 scoped[Pointwise]
-  attribute [instance]
-    Set.divisionMonoid Set.subtractionMonoid Set.divisionCommMonoid Set.subtractionCommMonoid
-    Set.hasDistribNeg
+  attribute [instance] Set.divisionCommMonoid Set.subtractionCommMonoid Set.hasDistribNeg
 
 section Distrib
 
@@ -1311,13 +1314,10 @@ theorem preimage_mul_preimage_subset {s t : Set β} : m ⁻¹' s * m ⁻¹' t �
 
 @[to_additive]
 lemma preimage_mul (hm : Injective m) {s t : Set β} (hs : s ⊆ range m) (ht : t ⊆ range m) :
-    m ⁻¹' (s * t) = m ⁻¹' s * m ⁻¹' t := by
-  refine subset_antisymm ?_ (preimage_mul_preimage_subset m)
-  rintro a ⟨b, c, hb, hc, ha⟩
-  obtain ⟨b, rfl⟩ := hs hb
-  obtain ⟨c, rfl⟩ := ht hc
-  simp only [← map_mul, hm.eq_iff] at ha
-  exact ⟨b, c, hb, hc, ha⟩
+    m ⁻¹' (s * t) = m ⁻¹' s * m ⁻¹' t :=
+  hm.image_injective <| by
+    rw [image_mul, image_preimage_eq_iff.2 hs, image_preimage_eq_iff.2 ht,
+      image_preimage_eq_iff.2 (mul_subset_range m hs ht)]
 
 end Mul
 
@@ -1347,25 +1347,19 @@ theorem preimage_div_preimage_subset {s t : Set β} : m ⁻¹' s / m ⁻¹' t �
 
 @[to_additive]
 lemma preimage_div (hm : Injective m) {s t : Set β} (hs : s ⊆ range m) (ht : t ⊆ range m) :
-    m ⁻¹' (s / t) = m ⁻¹' s / m ⁻¹' t := by
-  refine subset_antisymm ?_ (preimage_div_preimage_subset m)
-  rintro a ⟨b, c, hb, hc, ha⟩
-  obtain ⟨b, rfl⟩ := hs hb
-  obtain ⟨c, rfl⟩ := ht hc
-  simp only [← map_div, hm.eq_iff] at ha
-  exact ⟨b, c, hb, hc, ha⟩
+    m ⁻¹' (s / t) = m ⁻¹' s / m ⁻¹' t :=
+  hm.image_injective <| by
+    rw [image_div, image_preimage_eq_iff.2 hs, image_preimage_eq_iff.2 ht,
+      image_preimage_eq_iff.2 (div_subset_range m hs ht)]
 
 end Group
 
 @[to_additive]
-theorem bddAbove_mul [OrderedCommMonoid α] {A B : Set α} :
-    BddAbove A → BddAbove B → BddAbove (A * B) := by
-  rintro ⟨bA, hbA⟩ ⟨bB, hbB⟩
-  use bA * bB
-  rintro x ⟨xa, xb, hxa, hxb, rfl⟩
-  exact mul_le_mul' (hbA hxa) (hbB hxb)
-#align set.bdd_above_mul Set.bddAbove_mul
-#align set.bdd_above_add Set.bddAbove_add
+theorem BddAbove.mul [OrderedCommMonoid α] {A B : Set α} (hA : BddAbove A) (hB : BddAbove B) :
+    BddAbove (A * B) :=
+  hA.image2 (fun _ _ _ h ↦ mul_le_mul_right' h _) (fun _ _ _ h ↦ mul_le_mul_left' h _) hB
+#align set.bdd_above_mul Set.BddAbove.mul
+#align set.bdd_above_add Set.BddAbove.add
 
 end Set
 

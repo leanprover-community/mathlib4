@@ -164,7 +164,7 @@ theorem piPremeasure_pi {s : ∀ i, Set (α i)} (hs : (pi univ s).Nonempty) :
 theorem piPremeasure_pi' {s : ∀ i, Set (α i)} : piPremeasure m (pi univ s) = ∏ i, m i (s i) := by
   cases isEmpty_or_nonempty ι
   · simp [piPremeasure]
-  cases' (pi univ s).eq_empty_or_nonempty with h h
+  rcases (pi univ s).eq_empty_or_nonempty with h | h
   · rcases univ_pi_eq_empty_iff.mp h with ⟨i, hi⟩
     have : ∃ i, m i (s i) = 0 := ⟨i, by simp [hi]⟩
     simpa [h, Finset.card_univ, zero_pow (Fintype.card_pos_iff.mpr ‹_›), @eq_comm _ (0 : ℝ≥0∞),
@@ -194,7 +194,7 @@ protected def pi (m : ∀ i, OuterMeasure (α i)) : OuterMeasure (∀ i, α i) :
 
 theorem pi_pi_le (m : ∀ i, OuterMeasure (α i)) (s : ∀ i, Set (α i)) :
     OuterMeasure.pi m (pi univ s) ≤ ∏ i, m i (s i) := by
-  cases' (pi univ s).eq_empty_or_nonempty with h h; simp [h]
+  rcases (pi univ s).eq_empty_or_nonempty with h | h; simp [h]
   exact (boundedBy_le _).trans_eq (piPremeasure_pi h)
 #align measure_theory.outer_measure.pi_pi_le MeasureTheory.OuterMeasure.pi_pi_le
 
@@ -420,6 +420,11 @@ theorem pi_of_empty {α : Type*} [Fintype α] [IsEmpty α] {β : α → Type*}
   rw [Fintype.prod_empty, dirac_apply_of_mem]
   exact isEmptyElim (α := α)
 #align measure_theory.measure.pi_of_empty MeasureTheory.Measure.pi_of_empty
+
+lemma volume_pi_eq_dirac {ι : Type*} [Fintype ι] [IsEmpty ι]
+    {α : ι → Type*} [∀ i, MeasureSpace (α i)] (x : ∀ a, α a := isEmptyElim) :
+    (volume : Measure (∀ i, α i)) = Measure.dirac x :=
+  Measure.pi_of_empty _ _
 
 @[simp]
 theorem pi_empty_univ {α : Type*} [Fintype α] [IsEmpty α] {β : α → Type*}
