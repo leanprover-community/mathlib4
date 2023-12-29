@@ -386,7 +386,7 @@ theorem curry_apply (f : C(α × β, γ)) (a : α) (b : β) : f.curry a b = f (a
 lemma _root_.Continuous.isOpen_setOf_mapsTo_curry_isCompact_isOpen {f : α × β → γ}
     (hf : Continuous f) {K : Set β} (hK : IsCompact K) {W : Set γ} (hW : IsOpen W) :
     IsOpen {x | MapsTo (f.curry x) K W} :=
-  (ContinuousMap.mk f hf).curry.isOpen_setOf_mapsTo_isCompact_isOpen hK hW
+  (isOpen_setOf_mapsTo hK hW).preimage (ContinuousMap.mk f hf).curry.2
 
 lemma _root_.Continuous.isClopen_setOf_mapsTo_curry_isCompact_isClopen {f : α × β → γ}
     (hf : Continuous f) {K : Set β} (hK : IsCompact K) {W : Set γ} (hW : IsClopen W) :
