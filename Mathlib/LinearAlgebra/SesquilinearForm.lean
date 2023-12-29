@@ -35,7 +35,7 @@ lemmas about construction and elementary calculations are found there.
 
 ## Tags
 
-Sesquilinear form,
+Sesquilinear form, Sesquilinear map,
 -/
 
 
@@ -55,7 +55,7 @@ variable [CommSemiring R] [CommSemiring R₁] [AddCommMonoid M₁] [Module R₁ 
   [AddCommMonoid M₂] [Module R₂ M₂] [AddCommMonoid M] [Module R M]
   {I₁ : R₁ →+* R} {I₂ : R₂ →+* R} {I₁' : R₁ →+* R}
 
-/-- The proposition that two elements of a sesquilinear form space are orthogonal -/
+/-- The proposition that two elements of a sesquilinear map space are orthogonal -/
 def IsOrtho (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M) (x : M₁) (y : M₂) : Prop :=
   B x y = 0
 #align linear_map.is_ortho LinearMap.IsOrtho
@@ -77,7 +77,7 @@ theorem isOrtho_flip {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₁'] M} {x y} : 
   simp_rw [isOrtho_def, flip_apply]
 #align linear_map.is_ortho_flip LinearMap.isOrtho_flip
 
-/-- A set of vectors `v` is orthogonal with respect to some bilinear form `B` if and only
+/-- A set of vectors `v` is orthogonal with respect to some bilinear map `B` if and only
 if for all `i ≠ j`, `B (v i) (v j) = 0`. For orthogonality between two elements, use
 `BilinForm.isOrtho` -/
 def IsOrthoᵢ (B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₁'] M) (v : n → M₁) : Prop :=
@@ -137,7 +137,7 @@ theorem ortho_smul_right {B : V₁ →ₛₗ[I₁] V₂ →ₛₗ[I₂] V} {x y}
     · exact H
 #align linear_map.ortho_smul_right LinearMap.ortho_smul_right
 
-/-- A set of orthogonal vectors `v` with respect to some sesquilinear form `B` is linearly
+/-- A set of orthogonal vectors `v` with respect to some sesquilinear map `B` is linearly
   independent if for all `i`, `B (v i) (v i) ≠ 0`. -/
 theorem linearIndependent_of_isOrthoᵢ {B : V₁ →ₛₗ[I₁] V₁ →ₛₗ[I₁'] V} {v : n → V₁}
     (hv₁ : B.IsOrthoᵢ v) (hv₂ : ∀ i, ¬B.IsOrtho (v i) (v i)) : LinearIndependent K₁ v := by
@@ -159,7 +159,7 @@ set_option linter.uppercaseLean3 false in
 
 end Field
 
-/-! ### Reflexive bilinear forms -/
+/-! ### Reflexive bilinear maps -/
 
 
 section Reflexive
@@ -167,7 +167,7 @@ section Reflexive
 variable [CommSemiring R] [AddCommMonoid M] [Module R M] [CommSemiring R₁] [AddCommMonoid M₁]
   [Module R₁ M₁] {I₁ : R₁ →+* R} {I₂ : R₁ →+* R} {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] M}
 
-/-- The proposition that a sesquilinear form is reflexive -/
+/-- The proposition that a sesquilinear map is reflexive -/
 def IsRefl (B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] M) : Prop :=
   ∀ x y, B x y = 0 → B y x = 0
 #align linear_map.is_refl LinearMap.IsRefl
@@ -255,7 +255,7 @@ theorem isSymm_iff_eq_flip {B : M →ₗ[R] M →ₗ[R] R} : B.IsSymm ↔ B = B.
 
 end Symmetric
 
-/-! ### Alternating bilinear forms -/
+/-! ### Alternating bilinear maps -/
 
 
 section Alternating
@@ -263,7 +263,7 @@ section Alternating
 variable [CommRing R] [AddCommGroup M] [Module R M] [CommSemiring R₁] [AddCommMonoid M₁]
   [Module R₁ M₁] {I₁ : R₁ →+* R} {I₂ : R₁ →+* R} {I : R₁ →+* R} {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] M}
 
-/-- The proposition that a sesquilinear form is alternating -/
+/-- The proposition that a sesquilinear map is alternating -/
 def IsAlt (B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] M) : Prop :=
   ∀ x, B x x = 0
 #align linear_map.is_alt LinearMap.IsAlt
@@ -318,10 +318,10 @@ namespace Submodule
 variable [CommRing R] [CommRing R₁] [AddCommGroup M₁] [Module R₁ M₁] [AddCommGroup M] [Module R M]
   {I₁ : R₁ →+* R} {I₂ : R₁ →+* R} {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] M}
 
-/-- The orthogonal complement of a submodule `N` with respect to some bilinear form is the set of
+/-- The orthogonal complement of a submodule `N` with respect to some bilinear map is the set of
 elements `x` which are orthogonal to all elements of `N`; i.e., for all `y` in `N`, `B x y = 0`.
 
-Note that for general (neither symmetric nor antisymmetric) bilinear forms this definition has a
+Note that for general (neither symmetric nor antisymmetric) bilinear maps this definition has a
 chirality; in addition to this "left" orthogonal complement one could define a "right" orthogonal
 complement for which, for all `y` in `N`, `B y x = 0`.  This variant definition is not currently
 provided in mathlib. -/
@@ -431,7 +431,7 @@ variable {f f' : M →ₗ[R] M₁} {g g' : M₁ →ₗ[R] M}
 
 variable (B B' f g)
 
-/-- Given a pair of modules equipped with bilinear forms, this is the condition for a pair of
+/-- Given a pair of modules equipped with bilinear maps, this is the condition for a pair of
 maps between them to be mutually adjoint. -/
 def IsAdjointPair :=
   ∀ x y, B' (f x) y = B x (g y)
@@ -516,15 +516,15 @@ variable {I : R →+* R}
 
 variable (B F : M →ₗ[R] M →ₛₗ[I] M₁)
 
-/-- The condition for an endomorphism to be "self-adjoint" with respect to a pair of bilinear forms
-on the underlying module. In the case that these two forms are identical, this is the usual concept
-of self adjointness. In the case that one of the forms is the negation of the other, this is the
+/-- The condition for an endomorphism to be "self-adjoint" with respect to a pair of bilinear maps
+on the underlying module. In the case that these two maps are identical, this is the usual concept
+of self adjointness. In the case that one of the maps is the negation of the other, this is the
 usual concept of skew adjointness. -/
 def IsPairSelfAdjoint (f : Module.End R M) :=
   IsAdjointPair B F f f
 #align linear_map.is_pair_self_adjoint LinearMap.IsPairSelfAdjoint
 
-/-- An endomorphism of a module is self-adjoint with respect to a bilinear form if it serves as an
+/-- An endomorphism of a module is self-adjoint with respect to a bilinear map if it serves as an
 adjoint for itself. -/
 protected def IsSelfAdjoint (f : Module.End R M) :=
   IsAdjointPair B B f f
@@ -548,19 +548,19 @@ def isPairSelfAdjointSubmodule : Submodule R (Module.End R M) where
   smul_mem' c _ h := h.smul c
 #align linear_map.is_pair_self_adjoint_submodule LinearMap.isPairSelfAdjointSubmodule
 
-/-- An endomorphism of a module is skew-adjoint with respect to a bilinear form if its negation
+/-- An endomorphism of a module is skew-adjoint with respect to a bilinear map if its negation
 serves as an adjoint. -/
 def IsSkewAdjoint (f : Module.End R M) :=
   IsAdjointPair B B f (-f)
 #align linear_map.is_skew_adjoint LinearMap.IsSkewAdjoint
 
-/-- The set of self-adjoint endomorphisms of a module with bilinear form is a submodule. (In fact
+/-- The set of self-adjoint endomorphisms of a module with bilinear map is a submodule. (In fact
 it is a Jordan subalgebra.) -/
 def selfAdjointSubmodule :=
   isPairSelfAdjointSubmodule B B
 #align linear_map.self_adjoint_submodule LinearMap.selfAdjointSubmodule
 
-/-- The set of skew-adjoint endomorphisms of a module with bilinear form is a submodule. (In fact
+/-- The set of skew-adjoint endomorphisms of a module with bilinear map is a submodule. (In fact
 it is a Lie subalgebra.) -/
 def skewAdjointSubmodule :=
   isPairSelfAdjointSubmodule (-B) B
