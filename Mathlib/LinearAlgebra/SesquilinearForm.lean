@@ -356,10 +356,10 @@ namespace LinearMap
 section Orthogonal
 
 variable [Field K] [AddCommGroup V] [Module K V] [Field K₁] [AddCommGroup V₁] [Module K₁ V₁]
-  {J : K →+* K} {J₁ : K₁ →+* K} {J₁' : K₁ →+* K}
+  [AddCommGroup V₂] [Module K V₂] {J : K →+* K} {J₁ : K₁ →+* K} {J₁' : K₁ →+* K}
 
 -- ↓ This lemma only applies in fields as we require `a * b = 0 → a = 0 ∨ b = 0`
-theorem span_singleton_inf_orthogonal_eq_bot (B : V₁ →ₛₗ[J₁] V₁ →ₛₗ[J₁'] K) (x : V₁)
+theorem span_singleton_inf_orthogonal_eq_bot (B : V₁ →ₛₗ[J₁] V₁ →ₛₗ[J₁'] V₂) (x : V₁)
     (hx : ¬B.IsOrtho x x) : (K₁ ∙ x) ⊓ Submodule.orthogonalBilin (K₁ ∙ x) B = ⊥ := by
   rw [← Finset.coe_singleton]
   refine' eq_bot_iff.2 fun y h ↦ _
@@ -368,14 +368,14 @@ theorem span_singleton_inf_orthogonal_eq_bot (B : V₁ →ₛₗ[J₁] V₁ →�
   rw [Finset.sum_singleton] at h ⊢
   suffices hμzero : μ x = 0
   · rw [hμzero, zero_smul, Submodule.mem_bot]
-  rw [isOrtho_def, map_smulₛₗ, smul_eq_mul] at h
-  exact Or.elim (zero_eq_mul.mp h.symm)
+  rw [isOrtho_def, map_smulₛₗ] at h
+  exact Or.elim (smul_eq_zero.mp h)
       (fun y ↦ by simpa using y)
       (fun hfalse ↦ False.elim $ hx hfalse)
 #align linear_map.span_singleton_inf_orthogonal_eq_bot LinearMap.span_singleton_inf_orthogonal_eq_bot
 
 -- ↓ This lemma only applies in fields since we use the `mul_eq_zero`
-theorem orthogonal_span_singleton_eq_to_lin_ker {B : V →ₗ[K] V →ₛₗ[J] K} (x : V) :
+theorem orthogonal_span_singleton_eq_to_lin_ker {B : V →ₗ[K] V →ₛₗ[J] V₂} (x : V) :
     Submodule.orthogonalBilin (K ∙ x) B = LinearMap.ker (B x) := by
   ext y
   simp_rw [Submodule.mem_orthogonalBilin_iff, LinearMap.mem_ker, Submodule.mem_span_singleton]
