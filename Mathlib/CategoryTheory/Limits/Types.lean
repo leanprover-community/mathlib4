@@ -467,16 +467,18 @@ theorem colimit_eq {F : J ⥤ TypeMax.{v, u}} {j j' : J} {x : F.obj j} {x' : F.o
   simpa using congr_arg (colimitEquivQuot.{v, u} F) w
 #align category_theory.limits.types.colimit_eq CategoryTheory.Limits.Types.colimit_eq
 
+theorem jointly_surjective_of_isColimit {F : J ⥤ Type u} {t : Cocone F} (h : IsColimit t)
+    (x : t.pt) : ∃ j y, t.ι.app j y = x := by
+  by_contra hx
+  simp_rw [not_exists] at hx
+  apply (_ : (fun _ ↦ ULift.up True) ≠ (⟨· ≠ x⟩))
+  · refine h.hom_ext fun j ↦ ?_
+    ext y
+    exact (true_iff _).mpr (hx j y)
+  · exact fun he ↦ of_eq_true (congr_arg ULift.down <| congr_fun he x).symm rfl
+
 theorem jointly_surjective (F : J ⥤ TypeMax.{v, u}) {t : Cocone F} (h : IsColimit t) (x : t.pt) :
-    ∃ j y, t.ι.app j y = x := by
-  suffices (fun x : t.pt => ULift.up (∃ j y, t.ι.app j y = x)) = fun _ => ULift.up.{max v u} True by
-    have := congr_fun this x
-    simpa using congr_arg ULift.down this
-  refine' h.hom_ext _
-  intro j
-  funext y
-  simp only [Functor.const_obj_obj, types_comp_apply, ULift.up_inj, eq_iff_iff, iff_true]
-  exact ⟨j, y, rfl⟩
+    ∃ j y, t.ι.app j y = x := jointly_surjective_of_isColimit h x
 #align category_theory.limits.types.jointly_surjective CategoryTheory.Limits.Types.jointly_surjective
 
 /-- A variant of `jointly_surjective` for `x : colimit F`. -/

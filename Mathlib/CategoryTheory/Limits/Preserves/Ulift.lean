@@ -55,16 +55,6 @@ noncomputable instance : CreatesLimitsOfSize.{w, u} uliftFunctor.{v, u} where
   CreatesLimitsOfShape := { CreatesLimit := fun {_} ↦ createsLimitOfFullyFaithfulOfPreserves }
 
 variable {J : Type*} [Category J] {K : J ⥤ Type u} {c : Cocone K} (hc : IsColimit c)
-
-lemma jointly_surjective_of_isColimit (x : c.pt) : ∃ j y, x = c.ι.app j y := by
-  by_contra hx
-  simp_rw [not_exists] at hx
-  apply (_ : (fun _ ↦ ULift.up True) ≠ fun y ↦ ⟨x ≠ y⟩)
-  · refine hc.hom_ext fun j ↦ ?_
-    ext y
-    exact (true_iff _).mpr (hx j y)
-  · exact fun he ↦ of_eq_true (congr_arg ULift.down <| congr_fun he x).symm rfl
-
 variable {lc : Cocone (K ⋙ uliftFunctor.{v, u})}
 
 /-- Given a subset of the cocone point of a cocone over the lifted functor,
@@ -138,7 +128,7 @@ lemma descFun_spec (f : c.pt → lc.pt) :
   · rintro rfl j; ext
     apply (descFun_apply_spec hc lc).mpr
     rw [mem_descSet_singleton]; rfl
-  · rw [(jointly_surjective_of_isColimit hc x).choose_spec.choose_spec, mem_descSet_singleton]
+  · rw [← (jointly_surjective_of_isColimit hc x).choose_spec.choose_spec, mem_descSet_singleton]
     exact (congr_fun (he _) _).symm
 
 /--
