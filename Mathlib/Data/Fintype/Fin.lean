@@ -33,10 +33,8 @@ theorem Ioi_zero_eq_map : Ioi (0 : Fin n.succ) = univ.map (Fin.succEmbedding _).
 #align fin.Ioi_zero_eq_map Fin.Ioi_zero_eq_map
 
 @[simp]
-theorem Iio_last_eq_map : Iio (Fin.last n) = Finset.univ.map Fin.castSuccEmb.toEmbedding := by
-  apply Finset.map_injective Fin.valEmbedding
-  rw [Finset.map_map, Fin.map_valEmbedding_Iio, Fin.val_last]
-  exact map_valEmbedding_univ.symm
+theorem Iio_last_eq_map : Iio (Fin.last n) = Finset.univ.map Fin.castSuccEmb.toEmbedding :=
+  coe_injective <| by ext; simp [lt_def]
 #align fin.Iio_last_eq_map Fin.Iio_last_eq_map
 
 @[simp]
