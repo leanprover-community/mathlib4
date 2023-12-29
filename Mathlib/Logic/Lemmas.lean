@@ -19,6 +19,7 @@ We spell those lemmas out with `dite` and `ite` rather than the `if then else` n
 would result in less delta-reduced statements.
 -/
 
+open Function
 
 protected alias ⟨HEq.eq, Eq.heq⟩ := heq_iff_eq
 #align heq.eq HEq.eq
@@ -75,7 +76,4 @@ lemma Prop.exists {f : Prop → Prop} : (∃ p, f p) ↔ f True ∨ f False :=
     by rintro (h | h) <;> exact ⟨_, h⟩⟩
 #align Prop.exists Prop.exists
 
-lemma Function.injective_Not : Function.Injective Not := by
-  intro a b
-  simp [propext]
-  exact not_iff_not.mp
+lemma injective_not : Injective Not := fun _ _ ↦ by simpa using not_iff_not.1
