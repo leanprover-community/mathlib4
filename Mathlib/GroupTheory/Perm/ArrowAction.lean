@@ -71,6 +71,6 @@ def stabilizerMulEquiv : stabilizer (Perm α) p ≃* (∀ i, Perm {a | p a = i})
   map_mul' g h := rfl
 
 lemma stabilizerMulEquiv_apply (g : stabilizer (Perm α) p) {a : α} {i : ι} (h : p a = i) :
-   ((stabilizerMulEquiv p)) g i ⟨a, h⟩ = (g : Equiv.Perm α) a := rfl
+    ((stabilizerMulEquiv p)) g i ⟨a, h⟩ = (g : Equiv.Perm α) a := rfl
 
 end arrowAction
