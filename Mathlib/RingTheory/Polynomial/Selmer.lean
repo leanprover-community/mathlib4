@@ -195,7 +195,7 @@ theorem X_pow_sub_X_sub_one_gal :
   · rcases eq_or_ne n 1 with rfl | hn
     · have : IsEmpty (rootSet f ℂ) := by simp
       infer_instance
-    exact galAction_isPretransitive (X_pow_sub_X_sub_one_irreducible_rat hn)
+    exact Gal.galAction_isPretransitive _ _ (X_pow_sub_X_sub_one_irreducible_rat hn)
   let K := f.SplittingField
   let R := 𝓞 K
   let S0 : Set f.Gal := ⋃ (q : Ideal R) (hq : q.IsMaximal), {σ | ∀ x : R, res σ x - x ∈ q}
