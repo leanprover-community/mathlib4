@@ -1472,12 +1472,6 @@ import Mathlib.Data.Complex.Orientation
 import Mathlib.Data.Countable.Basic
 import Mathlib.Data.Countable.Defs
 import Mathlib.Data.Countable.Small
-import Mathlib.Data.DigitExpansion.Add
-import Mathlib.Data.DigitExpansion.Defs
-import Mathlib.Data.DigitExpansion.Hensel
-import Mathlib.Data.DigitExpansion.Integer
-import Mathlib.Data.DigitExpansion.Real.Basic
-import Mathlib.Data.DigitExpansion.Real.ConditionallyComplete
 import Mathlib.Data.DFinsupp.Basic
 import Mathlib.Data.DFinsupp.Encodable
 import Mathlib.Data.DFinsupp.Interval
@@ -1486,6 +1480,12 @@ import Mathlib.Data.DFinsupp.Multiset
 import Mathlib.Data.DFinsupp.NeLocus
 import Mathlib.Data.DFinsupp.Order
 import Mathlib.Data.DFinsupp.WellFounded
+import Mathlib.Data.DigitExpansion.Add
+import Mathlib.Data.DigitExpansion.Defs
+import Mathlib.Data.DigitExpansion.Hensel
+import Mathlib.Data.DigitExpansion.Integer
+import Mathlib.Data.DigitExpansion.Real.Basic
+import Mathlib.Data.DigitExpansion.Real.ConditionallyComplete
 import Mathlib.Data.DList.Basic
 import Mathlib.Data.DList.Defs
 import Mathlib.Data.DList.Instances
