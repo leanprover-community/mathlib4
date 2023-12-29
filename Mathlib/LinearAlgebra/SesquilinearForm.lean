@@ -615,47 +615,49 @@ end AddCommGroup
 
 end SelfadjointPair
 
-/-! ### Nondegenerate bilinear forms -/
+/-! ### Nondegenerate bilinear maps -/
 
 
 section Nondegenerate
 
 section CommSemiring
 
-variable [CommSemiring R] [CommSemiring R₁] [AddCommMonoid M₁] [Module R₁ M₁] [CommSemiring R₂]
-  [AddCommMonoid M₂] [Module R₂ M₂] {I₁ : R₁ →+* R} {I₂ : R₂ →+* R} {I₁' : R₁ →+* R}
+variable [CommSemiring R] [AddCommMonoid M] [Module R M] [CommSemiring R₁] [AddCommMonoid M₁]
+  [Module R₁ M₁] [CommSemiring R₂] [AddCommMonoid M₂] [Module R₂ M₂]
+  {I₁ : R₁ →+* R} {I₂ : R₂ →+* R} {I₁' : R₁ →+* R}
 
-/-- A bilinear form is called left-separating if
+/-- A bilinear map is called left-separating if
 the only element that is left-orthogonal to every other element is `0`; i.e.,
 for every nonzero `x` in `M₁`, there exists `y` in `M₂` with `B x y ≠ 0`.-/
-def SeparatingLeft (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] R) : Prop :=
+def SeparatingLeft (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M) : Prop :=
   ∀ x : M₁, (∀ y : M₂, B x y = 0) → x = 0
 #align linear_map.separating_left LinearMap.SeparatingLeft
 
 variable (M₁ M₂ I₁ I₂)
 
 /-- In a non-trivial module, zero is not non-degenerate. -/
-theorem not_separatingLeft_zero [Nontrivial M₁] : ¬(0 : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] R).SeparatingLeft :=
+theorem not_separatingLeft_zero [Nontrivial M₁] : ¬(0 : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M).SeparatingLeft :=
   let ⟨m, hm⟩ := exists_ne (0 : M₁)
   fun h ↦ hm (h m fun _n ↦ rfl)
 #align linear_map.not_separating_left_zero LinearMap.not_separatingLeft_zero
 
 variable {M₁ M₂ I₁ I₂}
 
-theorem SeparatingLeft.ne_zero [Nontrivial M₁] {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] R}
+theorem SeparatingLeft.ne_zero [Nontrivial M₁] {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M}
     (h : B.SeparatingLeft) : B ≠ 0 := fun h0 ↦ not_separatingLeft_zero M₁ M₂ I₁ I₂ <| h0 ▸ h
 #align linear_map.separating_left.ne_zero LinearMap.SeparatingLeft.ne_zero
 
 section Linear
 
 variable [AddCommMonoid Mₗ₁] [AddCommMonoid Mₗ₂] [AddCommMonoid Mₗ₁'] [AddCommMonoid Mₗ₂']
+  [AddCommMonoid M]
 
-variable [Module R Mₗ₁] [Module R Mₗ₂] [Module R Mₗ₁'] [Module R Mₗ₂']
+variable [Module R Mₗ₁] [Module R Mₗ₂] [Module R Mₗ₁'] [Module R Mₗ₂'] [Module R M]
 
-variable {B : Mₗ₁ →ₗ[R] Mₗ₂ →ₗ[R] R} (e₁ : Mₗ₁ ≃ₗ[R] Mₗ₁') (e₂ : Mₗ₂ ≃ₗ[R] Mₗ₂')
+variable {B : Mₗ₁ →ₗ[R] Mₗ₂ →ₗ[R] M} (e₁ : Mₗ₁ ≃ₗ[R] Mₗ₁') (e₂ : Mₗ₂ ≃ₗ[R] Mₗ₂')
 
 theorem SeparatingLeft.congr (h : B.SeparatingLeft) :
-    (e₁.arrowCongr (e₂.arrowCongr (LinearEquiv.refl R R)) B).SeparatingLeft := by
+    (e₁.arrowCongr (e₂.arrowCongr (LinearEquiv.refl R M)) B).SeparatingLeft := by
   intro x hx
   rw [← e₁.symm.map_eq_zero_iff]
   refine' h (e₁.symm x) fun y ↦ _
@@ -667,7 +669,7 @@ theorem SeparatingLeft.congr (h : B.SeparatingLeft) :
 
 @[simp]
 theorem separatingLeft_congr_iff :
-    (e₁.arrowCongr (e₂.arrowCongr (LinearEquiv.refl R R)) B).SeparatingLeft ↔ B.SeparatingLeft :=
+    (e₁.arrowCongr (e₂.arrowCongr (LinearEquiv.refl R M)) B).SeparatingLeft ↔ B.SeparatingLeft :=
   ⟨fun h ↦ by
     convert h.congr e₁.symm e₂.symm
     ext x y
@@ -677,35 +679,35 @@ theorem separatingLeft_congr_iff :
 
 end Linear
 
-/-- A bilinear form is called right-separating if
+/-- A bilinear map is called right-separating if
 the only element that is right-orthogonal to every other element is `0`; i.e.,
 for every nonzero `y` in `M₂`, there exists `x` in `M₁` with `B x y ≠ 0`.-/
-def SeparatingRight (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] R) : Prop :=
+def SeparatingRight (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M) : Prop :=
   ∀ y : M₂, (∀ x : M₁, B x y = 0) → y = 0
 #align linear_map.separating_right LinearMap.SeparatingRight
 
-/-- A bilinear form is called non-degenerate if it is left-separating and right-separating. -/
-def Nondegenerate (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] R) : Prop :=
+/-- A bilinear map is called non-degenerate if it is left-separating and right-separating. -/
+def Nondegenerate (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M) : Prop :=
   SeparatingLeft B ∧ SeparatingRight B
 #align linear_map.nondegenerate LinearMap.Nondegenerate
 
 @[simp]
-theorem flip_separatingRight {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] R} :
+theorem flip_separatingRight {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M} :
     B.flip.SeparatingRight ↔ B.SeparatingLeft :=
   ⟨fun hB x hy ↦ hB x hy, fun hB x hy ↦ hB x hy⟩
 #align linear_map.flip_separating_right LinearMap.flip_separatingRight
 
 @[simp]
-theorem flip_separatingLeft {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] R} :
+theorem flip_separatingLeft {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M} :
     B.flip.SeparatingLeft ↔ SeparatingRight B := by rw [← flip_separatingRight, flip_flip]
 #align linear_map.flip_separating_left LinearMap.flip_separatingLeft
 
 @[simp]
-theorem flip_nondegenerate {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] R} : B.flip.Nondegenerate ↔ B.Nondegenerate :=
+theorem flip_nondegenerate {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M} : B.flip.Nondegenerate ↔ B.Nondegenerate :=
   Iff.trans and_comm (and_congr flip_separatingRight flip_separatingLeft)
 #align linear_map.flip_nondegenerate LinearMap.flip_nondegenerate
 
-theorem separatingLeft_iff_linear_nontrivial {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] R} :
+theorem separatingLeft_iff_linear_nontrivial {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M} :
     B.SeparatingLeft ↔ ∀ x : M₁, B x = 0 → x = 0 := by
   constructor <;> intro h x hB
   · simpa only [hB, zero_apply, eq_self_iff_true, forall_const] using h x
@@ -716,19 +718,19 @@ theorem separatingLeft_iff_linear_nontrivial {B : M₁ →ₛₗ[I₁] M₂ →�
   exact h x h'
 #align linear_map.separating_left_iff_linear_nontrivial LinearMap.separatingLeft_iff_linear_nontrivial
 
-theorem separatingRight_iff_linear_flip_nontrivial {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] R} :
+theorem separatingRight_iff_linear_flip_nontrivial {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M} :
     B.SeparatingRight ↔ ∀ y : M₂, B.flip y = 0 → y = 0 := by
   rw [← flip_separatingLeft, separatingLeft_iff_linear_nontrivial]
 #align linear_map.separating_right_iff_linear_flip_nontrivial LinearMap.separatingRight_iff_linear_flip_nontrivial
 
-/-- A bilinear form is left-separating if and only if it has a trivial kernel. -/
-theorem separatingLeft_iff_ker_eq_bot {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] R} :
+/-- A bilinear map is left-separating if and only if it has a trivial kernel. -/
+theorem separatingLeft_iff_ker_eq_bot {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M} :
     B.SeparatingLeft ↔ LinearMap.ker B = ⊥ :=
   Iff.trans separatingLeft_iff_linear_nontrivial LinearMap.ker_eq_bot'.symm
 #align linear_map.separating_left_iff_ker_eq_bot LinearMap.separatingLeft_iff_ker_eq_bot
 
-/-- A bilinear form is right-separating if and only if its flip has a trivial kernel. -/
-theorem separatingRight_iff_flip_ker_eq_bot {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] R} :
+/-- A bilinear map is right-separating if and only if its flip has a trivial kernel. -/
+theorem separatingRight_iff_flip_ker_eq_bot {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M} :
     B.SeparatingRight ↔ LinearMap.ker B.flip = ⊥ := by
   rw [← flip_separatingLeft, separatingLeft_iff_ker_eq_bot]
 #align linear_map.separating_right_iff_flip_ker_eq_bot LinearMap.separatingRight_iff_flip_ker_eq_bot
@@ -737,26 +739,26 @@ end CommSemiring
 
 section CommRing
 
-variable [CommRing R] [AddCommGroup M] [Module R M] {I I' : R →+* R}
+variable [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup M₁] [Module R M₁] {I I' : R →+* R}
 
-theorem IsRefl.nondegenerate_of_separatingLeft {B : M →ₗ[R] M →ₗ[R] R} (hB : B.IsRefl)
+theorem IsRefl.nondegenerate_of_separatingLeft {B : M →ₗ[R] M →ₗ[R] M₁} (hB : B.IsRefl)
     (hB' : B.SeparatingLeft) : B.Nondegenerate := by
   refine' ⟨hB', _⟩
   rw [separatingRight_iff_flip_ker_eq_bot, hB.ker_eq_bot_iff_ker_flip_eq_bot.mp]
   rwa [← separatingLeft_iff_ker_eq_bot]
 #align linear_map.is_refl.nondegenerate_of_separating_left LinearMap.IsRefl.nondegenerate_of_separatingLeft
 
-theorem IsRefl.nondegenerate_of_separatingRight {B : M →ₗ[R] M →ₗ[R] R} (hB : B.IsRefl)
+theorem IsRefl.nondegenerate_of_separatingRight {B : M →ₗ[R] M →ₗ[R] M₁} (hB : B.IsRefl)
     (hB' : B.SeparatingRight) : B.Nondegenerate := by
   refine' ⟨_, hB'⟩
   rw [separatingLeft_iff_ker_eq_bot, hB.ker_eq_bot_iff_ker_flip_eq_bot.mpr]
   rwa [← separatingRight_iff_flip_ker_eq_bot]
 #align linear_map.is_refl.nondegenerate_of_separating_right LinearMap.IsRefl.nondegenerate_of_separatingRight
 
-/-- The restriction of a reflexive bilinear form `B` onto a submodule `W` is
+/-- The restriction of a reflexive bilinear map `B` onto a submodule `W` is
 nondegenerate if `W` has trivial intersection with its orthogonal complement,
 that is `Disjoint W (W.orthogonalBilin B)`. -/
-theorem nondegenerateRestrictOfDisjointOrthogonal {B : M →ₗ[R] M →ₗ[R] R} (hB : B.IsRefl)
+theorem nondegenerateRestrictOfDisjointOrthogonal {B : M →ₗ[R] M →ₗ[R] M₁} (hB : B.IsRefl)
     {W : Submodule R M} (hW : Disjoint W (W.orthogonalBilin B)) :
     (B.domRestrict₁₂ W W).Nondegenerate := by
   refine' (hB.domRestrict W).nondegenerate_of_separatingLeft _
@@ -769,10 +771,10 @@ theorem nondegenerateRestrictOfDisjointOrthogonal {B : M →ₗ[R] M →ₗ[R] R
   exact b₁
 #align linear_map.nondegenerate_restrict_of_disjoint_orthogonal LinearMap.nondegenerateRestrictOfDisjointOrthogonal
 
-/-- An orthogonal basis with respect to a left-separating bilinear form has no self-orthogonal
+/-- An orthogonal basis with respect to a left-separating bilinear map has no self-orthogonal
 elements. -/
 theorem IsOrthoᵢ.not_isOrtho_basis_self_of_separatingLeft [Nontrivial R]
-    {B : M →ₛₗ[I] M →ₛₗ[I'] R} {v : Basis n R M} (h : B.IsOrthoᵢ v) (hB : B.SeparatingLeft)
+    {B : M →ₛₗ[I] M →ₛₗ[I'] M₁} {v : Basis n R M} (h : B.IsOrthoᵢ v) (hB : B.SeparatingLeft)
     (i : n) : ¬B.IsOrtho (v i) (v i) := by
   intro ho
   refine' v.ne_zero i (hB (v i) fun m ↦ _)
@@ -782,17 +784,17 @@ theorem IsOrthoᵢ.not_isOrtho_basis_self_of_separatingLeft [Nontrivial R]
   rintro j -
   rw [map_smulₛₗ]
   suffices : B (v i) (v j) = 0
-  · rw [this, smul_eq_mul, mul_zero]
+  · rw [this, smul_zero]
   obtain rfl | hij := eq_or_ne i j
   · exact ho
   · exact h hij
 set_option linter.uppercaseLean3 false in
 #align linear_map.is_Ortho.not_is_ortho_basis_self_of_separating_left LinearMap.IsOrthoᵢ.not_isOrtho_basis_self_of_separatingLeft
 
-/-- An orthogonal basis with respect to a right-separating bilinear form has no self-orthogonal
+/-- An orthogonal basis with respect to a right-separating bilinear map has no self-orthogonal
 elements. -/
 theorem IsOrthoᵢ.not_isOrtho_basis_self_of_separatingRight [Nontrivial R]
-    {B : M →ₛₗ[I] M →ₛₗ[I'] R} {v : Basis n R M} (h : B.IsOrthoᵢ v) (hB : B.SeparatingRight)
+    {B : M →ₛₗ[I] M →ₛₗ[I'] M₁} {v : Basis n R M} (h : B.IsOrthoᵢ v) (hB : B.SeparatingRight)
     (i : n) : ¬B.IsOrtho (v i) (v i) := by
   rw [isOrthoᵢ_flip] at h
   rw [isOrtho_flip]
@@ -800,33 +802,34 @@ theorem IsOrthoᵢ.not_isOrtho_basis_self_of_separatingRight [Nontrivial R]
 set_option linter.uppercaseLean3 false in
 #align linear_map.is_Ortho.not_is_ortho_basis_self_of_separating_right LinearMap.IsOrthoᵢ.not_isOrtho_basis_self_of_separatingRight
 
-/-- Given an orthogonal basis with respect to a bilinear form, the bilinear form is left-separating
-if the basis has no elements which are self-orthogonal. -/
-theorem IsOrthoᵢ.separatingLeft_of_not_isOrtho_basis_self [NoZeroDivisors R] {B : M →ₗ[R] M →ₗ[R] R}
-    (v : Basis n R M) (hO : B.IsOrthoᵢ v) (h : ∀ i, ¬B.IsOrtho (v i) (v i)) : B.SeparatingLeft := by
+/-- Given an orthogonal basis with respect to a bilinear map, the bilinear map is left-separating if
+the basis has no elements which are self-orthogonal. -/
+theorem IsOrthoᵢ.separatingLeft_of_not_isOrtho_basis_self [NoZeroSMulDivisors R M₁]
+    {B : M →ₗ[R] M →ₗ[R] M₁} (v : Basis n R M) (hO : B.IsOrthoᵢ v) (h : ∀ i, ¬B.IsOrtho (v i) (v i)) : B.SeparatingLeft := by
   intro m hB
   obtain ⟨vi, rfl⟩ := v.repr.symm.surjective m
   rw [LinearEquiv.map_eq_zero_iff]
   ext i
   rw [Finsupp.zero_apply]
   specialize hB (v i)
-  simp_rw [Basis.repr_symm_apply, Finsupp.total_apply, Finsupp.sum, map_sum₂, map_smulₛₗ₂,
-    smul_eq_mul] at hB
+  simp_rw [Basis.repr_symm_apply, Finsupp.total_apply, Finsupp.sum, map_sum₂, map_smulₛₗ₂] at hB
   rw [Finset.sum_eq_single i] at hB
-  · exact eq_zero_of_ne_zero_of_mul_right_eq_zero (h i) hB
+  · exact Or.elim (smul_eq_zero.mp hB)
+      (fun y ↦ by simpa using y)
+      (fun hfalse ↦ False.elim $ (h i) hfalse)
   · intro j _hj hij
     replace hij : B (v j) (v i) = 0 := hO hij
-    rw [hij, RingHom.id_apply, mul_zero]
+    rw [hij, RingHom.id_apply, smul_zero]
   · intro hi
     replace hi : vi i = 0 := Finsupp.not_mem_support_iff.mp hi
-    rw [hi, RingHom.id_apply, zero_mul]
+    rw [hi, RingHom.id_apply, zero_smul]
 set_option linter.uppercaseLean3 false in
 #align linear_map.is_Ortho.separating_left_of_not_is_ortho_basis_self LinearMap.IsOrthoᵢ.separatingLeft_of_not_isOrtho_basis_self
 
-/-- Given an orthogonal basis with respect to a bilinear form, the bilinear form is right-separating
+/-- Given an orthogonal basis with respect to a bilinear map, the bilinear map is right-separating
 if the basis has no elements which are self-orthogonal. -/
-theorem IsOrthoᵢ.separatingRight_iff_not_isOrtho_basis_self [NoZeroDivisors R]
-    {B : M →ₗ[R] M →ₗ[R] R} (v : Basis n R M) (hO : B.IsOrthoᵢ v)
+theorem IsOrthoᵢ.separatingRight_iff_not_isOrtho_basis_self [NoZeroSMulDivisors R M₁]
+    {B : M →ₗ[R] M →ₗ[R] M₁} (v : Basis n R M) (hO : B.IsOrthoᵢ v)
     (h : ∀ i, ¬B.IsOrtho (v i) (v i)) : B.SeparatingRight := by
   rw [isOrthoᵢ_flip] at hO
   rw [← flip_separatingLeft]
@@ -836,10 +839,11 @@ theorem IsOrthoᵢ.separatingRight_iff_not_isOrtho_basis_self [NoZeroDivisors R]
 set_option linter.uppercaseLean3 false in
 #align linear_map.is_Ortho.separating_right_iff_not_is_ortho_basis_self LinearMap.IsOrthoᵢ.separatingRight_iff_not_isOrtho_basis_self
 
-/-- Given an orthogonal basis with respect to a bilinear form, the bilinear form is nondegenerate
+/-- Given an orthogonal basis with respect to a bilinear map, the bilinear map is nondegenerate
 if the basis has no elements which are self-orthogonal. -/
-theorem IsOrthoᵢ.nondegenerate_of_not_isOrtho_basis_self [NoZeroDivisors R] {B : M →ₗ[R] M →ₗ[R] R}
-    (v : Basis n R M) (hO : B.IsOrthoᵢ v) (h : ∀ i, ¬B.IsOrtho (v i) (v i)) : B.Nondegenerate :=
+theorem IsOrthoᵢ.nondegenerate_of_not_isOrtho_basis_self [NoZeroSMulDivisors R M₁]
+    {B : M →ₗ[R] M →ₗ[R] M₁} (v : Basis n R M) (hO : B.IsOrthoᵢ v)
+    (h : ∀ i, ¬B.IsOrtho (v i) (v i)) : B.Nondegenerate :=
   ⟨IsOrthoᵢ.separatingLeft_of_not_isOrtho_basis_self v hO h,
     IsOrthoᵢ.separatingRight_iff_not_isOrtho_basis_self v hO h⟩
 set_option linter.uppercaseLean3 false in
