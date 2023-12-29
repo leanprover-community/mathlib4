@@ -1,7 +1,22 @@
+/-
+Copyright (c) 2023 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.CategoryTheory.Linear.Basic
 import Mathlib.Algebra.Homology.ComplexShapeSigns
-import Mathlib.Algebra.Homology.Additive
 import Mathlib.Algebra.Homology.HomologicalBicomplex
+
+/-!
+# The total complex of a bicomplex
+
+Given a preadditive `C`, two complex shapes `c₁ : ComplexShape I₁`, `c₂ : ComplexShape I₂`,
+a bicomplex `K : HomologicalComplex₂ C c₁ c₂`, and a third complex shape `c₁₂ : ComplexShape I₁₂`
+equipped with `[TotalComplexShape c₁ c₂ c₁₂]`, we construct the total complex
+`K.total c₁₂ : HomologicalComplex C c₁₂`.
+
+-/
+
 
 open CategoryTheory Category Limits Preadditive
 

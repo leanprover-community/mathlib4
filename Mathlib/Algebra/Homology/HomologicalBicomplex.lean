@@ -43,7 +43,8 @@ variable {C c₁ c₂}
 
 /-- The graded object indexed by `I₁ × I₂` induced by a bicomplex. -/
 def toGradedObject (K : HomologicalComplex₂ C c₁ c₂) :
-  GradedObject (I₁ × I₂) C := fun ⟨i₁, i₂⟩ => (K.X i₁).X i₂
+    GradedObject (I₁ × I₂) C :=
+  fun ⟨i₁, i₂⟩ => (K.X i₁).X i₂
 
 lemma shape_f (K : HomologicalComplex₂ C c₁ c₂) (i₁ i₁' : I₁) (h : ¬ c₁.Rel i₁ i₁') (i₂ : I₂) :
     (K.d i₁ i₁').f i₂ = 0 := by
@@ -62,7 +63,7 @@ lemma d_comm (K : HomologicalComplex₂ C c₁ c₂) (i₁ i₁' : I₁) (i₂ i
 
 @[reassoc (attr := simp)]
 lemma comm_f {K L : HomologicalComplex₂ C c₁ c₂} (f : K ⟶ L) (i₁ i₁' : I₁) (i₂ : I₂) :
-      (f.f i₁).f i₂ ≫ (L.d i₁ i₁').f i₂ = (K.d i₁ i₁').f i₂ ≫ (f.f i₁').f i₂ :=
+    (f.f i₁).f i₂ ≫ (L.d i₁ i₁').f i₂ = (K.d i₁ i₁').f i₂ ≫ (f.f i₁').f i₂ :=
   congr_hom (f.comm i₁ i₁') i₂
 
 /-- Flip a complex of complexes over the diagonal,
