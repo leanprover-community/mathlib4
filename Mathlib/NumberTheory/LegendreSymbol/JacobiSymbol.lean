@@ -517,7 +517,8 @@ open NumberTheorySymbols
 
 namespace jacobiSym
 
-/-- Given basic assumptions, this evaluates to `J(a | b)`, or `-J(a | b)` if `flip`. -/
+/-- Computes `J(a | b)` (or `-J(a | b)` if `flip` is set to `true`) given assumptions, by reducing
+`a` to odd by repeated division and then using quadratic reciprocity to swap `a`, `b`. -/
 def fastJacobiSymAux (a b : ℕ) (flip : Bool)
     (hab : a < b) (hb2 : b % 2 = 1) (ha0 : a > 0) (hb1 : b > 1) : ℤ :=
   if ha4 : a % 4 = 0 then
@@ -596,7 +597,8 @@ decreasing_by
   try exact a.div_lt_self ha0 (by decide)
   try exact b.mod_lt ha0
 
-/-- Efficiently evaluates `J(a | b)`. -/
+/-- Computes `J(a | b)` by reducing `b` to odd by repeated division and then using
+`fastJacobiSymAux`. -/
 def fastJacobiSym (a : ℤ) (b : ℕ) : ℤ :=
   if hb0 : b = 0 then
     1
@@ -645,11 +647,12 @@ end jacobiSym
 
 namespace legendreSym
 
+/-- Computes `legendreSym p a` using `jacobiSym.fastJacobiSym`. -/
 def fastLegendreSym (p : ℕ) [Fact p.Prime] (a : ℤ) : ℤ :=
   jacobiSym.fastJacobiSym a p
 
 @[csimp]
-theorem fastLegendreSym.eq : legendreSym = fastLegendreSym :=
+theorem fastLegendreSym.eq : @legendreSym = @fastLegendreSym :=
   funext₃ fun p _ a ↦ (jacobiSym.legendreSym.to_jacobiSym p a).trans <|
     congr_fun₂ jacobiSym.fastJacobiSym.eq a p
 
