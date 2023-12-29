@@ -40,7 +40,7 @@ theorem IsMinOn.of_isLocalMinOn_of_convexOn_Icc {f : ℝ → β} {a b : ℝ} (a_
   rcases (H₁.and H₂).exists with ⟨y, hfy, hy_ac⟩
   rcases (Convex.mem_Ioc a_lt_c).mp hy_ac with ⟨ya, yc, ya₀, yc₀, yac, rfl⟩
   suffices : ya • f a + yc • f a ≤ ya • f a + yc • f c
-  exact (smul_le_smul_iff_of_pos yc₀).1 (le_of_add_le_add_left this)
+  exact (smul_le_smul_iff_of_pos_left yc₀).1 (le_of_add_le_add_left this)
   calc
     ya • f a + yc • f a = f a := by rw [← add_smul, yac, one_smul]
     _ ≤ f (ya * a + yc * c) := hfy

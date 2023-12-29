@@ -230,9 +230,11 @@ theorem irreducible_or_factor {α} [Monoid α] (x : α) (h : ¬IsUnit x) :
     Irreducible x ∨ ∃ a b, ¬IsUnit a ∧ ¬IsUnit b ∧ a * b = x := by
   haveI := Classical.dec
   refine' or_iff_not_imp_right.2 fun H => _
-  simp [h, irreducible_iff] at H ⊢
+  simp? [h, irreducible_iff] at H ⊢ says
+    simp only [exists_and_left, not_exists, not_and, irreducible_iff, h, not_false_eq_true,
+      true_and] at H ⊢
   refine' fun a b h => by_contradiction fun o => _
-  simp [not_or] at o
+  simp? [not_or] at o says simp only [not_or] at o
   exact H _ o.1 _ o.2 h.symm
 #align irreducible_or_factor irreducible_or_factor
 
@@ -324,7 +326,7 @@ protected theorem Prime.irreducible (hp : Prime p) : Irreducible p :=
           (isUnit_iff_dvd_one.2
             ⟨x,
               mul_right_cancel₀ (show a ≠ 0 from fun h => by
-                simp [Prime] at *
+                simp only [Prime, ne_eq, IsUnit.mul_iff] at *
                 rw [h, zero_mul] at hab
                 have := hp.left
                 contradiction
@@ -339,7 +341,7 @@ protected theorem Prime.irreducible (hp : Prime p) : Irreducible p :=
         (isUnit_iff_dvd_one.2
           ⟨x,
             mul_right_cancel₀ (show b ≠ 0 from fun h => by
-            simp [Prime] at *
+            simp only [Prime, ne_eq, IsUnit.mul_iff] at *
             rw [h, mul_zero] at hab
             have := hp.left
             contradiction
@@ -1141,25 +1143,23 @@ theorem one_or_eq_of_le_of_prime : ∀ p m : Associates α, Prime p → m ≤ p 
     rw [r]
     match h m d dvd_rfl' with
     | Or.inl h' =>
-      by_cases h : m = 0
-      case pos =>
+      if h : m = 0 then
         simp [h, zero_mul]
-      case neg =>
+      else
         rw [r] at h'
         have : m * d ≤ m * 1 := by simpa using h'
         have : d ≤ 1 := Associates.le_of_mul_le_mul_left m d 1 ‹m ≠ 0› this
         have : d = 1 := bot_unique this
         simp [this]
     | Or.inr h' =>
-        by_cases h : d = 0
-        case pos =>
-          rw [r] at hp0
-          have : m * d = 0 := by rw [h]; simp
-          contradiction
-        case neg =>
-          rw [r] at h'
-          have : d * m ≤ d * 1 := by simpa [mul_comm] using h'
-          exact Or.inl <| bot_unique <| Associates.le_of_mul_le_mul_left d m 1 ‹d ≠ 0› this
+      if h : d = 0 then
+        rw [r] at hp0
+        have : m * d = 0 := by rw [h]; simp
+        contradiction
+      else
+        rw [r] at h'
+        have : d * m ≤ d * 1 := by simpa [mul_comm] using h'
+        exact Or.inl <| bot_unique <| Associates.le_of_mul_le_mul_left d m 1 ‹d ≠ 0› this
 #align associates.one_or_eq_of_le_of_prime Associates.one_or_eq_of_le_of_prime
 
 instance : CanonicallyOrderedCommMonoid (Associates α) where

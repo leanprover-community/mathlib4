@@ -3,6 +3,7 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Logic.Pairwise
 import Mathlib.Order.CompleteBooleanAlgebra
 import Mathlib.Order.Directed
 import Mathlib.Order.GaloisConnection
@@ -1683,7 +1684,7 @@ theorem InjOn.image_iInter_eq [Nonempty ι] {s : ι → Set α} {f : α → β} 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i hi) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i hi) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i hi) -/
-theorem InjOn.image_biInter_eq {p : ι → Prop} {s : ∀ (i) (_ : p i), Set α} (hp : ∃ i, p i)
+theorem InjOn.image_biInter_eq {p : ι → Prop} {s : ∀ i, p i → Set α} (hp : ∃ i, p i)
     {f : α → β} (h : InjOn f (⋃ (i) (hi), s i hi)) :
     (f '' ⋂ (i) (hi), s i hi) = ⋂ (i) (hi), f '' s i hi := by
   simp only [iInter, iInf_subtype']
@@ -2002,16 +2003,17 @@ section Image2
 
 variable (f : α → β → γ) {s : Set α} {t : Set β}
 
+/-- The `Set.image2` version of `Set.image_eq_iUnion` -/
+theorem image2_eq_iUnion (s : Set α) (t : Set β) : image2 f s t = ⋃ (i ∈ s) (j ∈ t), {f i j} := by
+  ext; simp [eq_comm]
+#align set.image2_eq_Union Set.image2_eq_iUnion
+
 theorem iUnion_image_left : ⋃ a ∈ s, f a '' t = image2 f s t := by
-  ext y
-  constructor <;> simp only [mem_iUnion] <;> rintro ⟨a, ha, x, hx, ax⟩ <;> exact ⟨a, x, ha, hx, ax⟩
+  simp only [image2_eq_iUnion, image_eq_iUnion]
 #align set.Union_image_left Set.iUnion_image_left
 
-theorem iUnion_image_right : ⋃ b ∈ t, (fun a => f a b) '' s = image2 f s t := by
-  ext y
-  constructor <;> simp only [mem_iUnion] <;> rintro ⟨a, b, c, d, e⟩
-  exact ⟨c, a, d, b, e⟩
-  exact ⟨b, d, a, c, e⟩
+theorem iUnion_image_right : ⋃ b ∈ t, (f · b) '' s = image2 f s t := by
+  rw [image2_swap, iUnion_image_left]
 #align set.Union_image_right Set.iUnion_image_right
 
 theorem image2_iUnion_left (s : ι → Set α) (t : Set β) :
@@ -2065,17 +2067,10 @@ theorem image2_iInter₂_subset_right (s : Set α) (t : ∀ i, κ i → Set β) 
   exact fun x hx y hy i j => mem_image2_of_mem hx (hy _ _)
 #align set.image2_Inter₂_subset_right Set.image2_iInter₂_subset_right
 
-/-- The `Set.image2` version of `Set.image_eq_iUnion` -/
-theorem image2_eq_iUnion (s : Set α) (t : Set β) : image2 f s t = ⋃ (i ∈ s) (j ∈ t), {f i j} := by
-  simp_rw [← image_eq_iUnion, iUnion_image_left]
-#align set.image2_eq_Union Set.image2_eq_iUnion
-
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem prod_eq_biUnion_left : s ×ˢ t = ⋃ a ∈ s, (fun b => (a, b)) '' t := by
   rw [iUnion_image_left, image2_mk_eq_prod]
 #align set.prod_eq_bUnion_left Set.prod_eq_biUnion_left
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem prod_eq_biUnion_right : s ×ˢ t = ⋃ b ∈ t, (fun a => (a, b)) '' s := by
   rw [iUnion_image_right, image2_mk_eq_prod]
 #align set.prod_eq_bUnion_right Set.prod_eq_biUnion_right
@@ -2086,13 +2081,8 @@ section Seq
 
 /-- Given a set `s` of functions `α → β` and `t : Set α`, `seq s t` is the union of `f '' t` over
 all `f ∈ s`. -/
-def seq (s : Set (α → β)) (t : Set α) : Set β :=
-  { b | ∃ f ∈ s, ∃ a ∈ t, (f : α → β) a = b }
+def seq (s : Set (α → β)) (t : Set α) : Set β := image2 (fun f ↦ f) s t
 #align set.seq Set.seq
-
-theorem seq_def {s : Set (α → β)} {t : Set α} : seq s t = ⋃ f ∈ s, f '' t :=
-  Set.ext <| by simp [seq]
-#align set.seq_def Set.seq_def
 
 @[simp]
 theorem mem_seq_iff {s : Set (α → β)} {t : Set α} {b : β} :
@@ -2100,48 +2090,43 @@ theorem mem_seq_iff {s : Set (α → β)} {t : Set α} {b : β} :
   Iff.rfl
 #align set.mem_seq_iff Set.mem_seq_iff
 
+lemma seq_eq_image2 (s : Set (α → β)) (t : Set α) : seq s t = image2 (fun f a ↦ f a) s t := rfl
+
+theorem seq_def {s : Set (α → β)} {t : Set α} : seq s t = ⋃ f ∈ s, f '' t := by
+  rw [seq_eq_image2, iUnion_image_left]
+#align set.seq_def Set.seq_def
+
 theorem seq_subset {s : Set (α → β)} {t : Set α} {u : Set β} :
     seq s t ⊆ u ↔ ∀ f ∈ s, ∀ a ∈ t, (f : α → β) a ∈ u :=
-  Iff.intro (fun h f hf a ha => h ⟨f, hf, a, ha, rfl⟩) fun h _ ⟨f, hf, a, ha, eq⟩ =>
-    eq ▸ h f hf a ha
+  image2_subset_iff
 #align set.seq_subset Set.seq_subset
 
 @[gcongr]
 theorem seq_mono {s₀ s₁ : Set (α → β)} {t₀ t₁ : Set α} (hs : s₀ ⊆ s₁) (ht : t₀ ⊆ t₁) :
-    seq s₀ t₀ ⊆ seq s₁ t₁ := fun _ ⟨f, hf, a, ha, eq⟩ => ⟨f, hs hf, a, ht ha, eq⟩
+    seq s₀ t₀ ⊆ seq s₁ t₁ := image2_subset hs ht
 #align set.seq_mono Set.seq_mono
 
 theorem singleton_seq {f : α → β} {t : Set α} : Set.seq ({f} : Set (α → β)) t = f '' t :=
-  Set.ext <| by simp
+  image2_singleton_left
 #align set.singleton_seq Set.singleton_seq
 
 theorem seq_singleton {s : Set (α → β)} {a : α} : Set.seq s {a} = (fun f : α → β => f a) '' s :=
-  Set.ext <| by simp
+  image2_singleton_right
 #align set.seq_singleton Set.seq_singleton
 
 theorem seq_seq {s : Set (β → γ)} {t : Set (α → β)} {u : Set α} :
     seq s (seq t u) = seq (seq ((· ∘ ·) '' s) t) u := by
-  refine' Set.ext fun c => Iff.intro _ _
-  · rintro ⟨f, hfs, b, ⟨g, hg, a, hau, rfl⟩, rfl⟩
-    exact ⟨f ∘ g, ⟨(· ∘ ·) f, mem_image_of_mem _ hfs, g, hg, rfl⟩, a, hau, rfl⟩
-  · rintro ⟨fg, ⟨fc, ⟨f, hfs, rfl⟩, g, hgt, rfl⟩, a, ha, rfl⟩
-    exact ⟨f, hfs, g a, ⟨g, hgt, a, ha, rfl⟩, rfl⟩
+  simp only [seq_eq_image2, image2_image_left]
+  exact .symm <| image2_assoc fun _ _ _ ↦ rfl
 #align set.seq_seq Set.seq_seq
 
 theorem image_seq {f : β → γ} {s : Set (α → β)} {t : Set α} :
     f '' seq s t = seq ((f ∘ ·) '' s) t := by
-  rw [← singleton_seq, ← singleton_seq, seq_seq, image_singleton]
+  simp only [seq, image_image2, image2_image_left, comp_apply]
 #align set.image_seq Set.image_seq
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem prod_eq_seq {s : Set α} {t : Set β} : s ×ˢ t = (Prod.mk '' s).seq t := by
-  ext ⟨a, b⟩
-  constructor
-  · rintro ⟨ha, hb⟩
-    exact ⟨Prod.mk a, ⟨a, ha, rfl⟩, b, hb, rfl⟩
-  · rintro ⟨f, ⟨x, hx, rfl⟩, y, hy, eq⟩
-    rw [← eq]
-    exact ⟨hx, hy⟩
+  rw [seq_eq_image2, image2_image_left, image2_mk_eq_prod]
 #align set.prod_eq_seq Set.prod_eq_seq
 
 theorem prod_image_seq_comm (s : Set α) (t : Set β) :
@@ -2150,8 +2135,7 @@ theorem prod_image_seq_comm (s : Set α) (t : Set β) :
 #align set.prod_image_seq_comm Set.prod_image_seq_comm
 
 theorem image2_eq_seq (f : α → β → γ) (s : Set α) (t : Set β) : image2 f s t = seq (f '' s) t := by
-  ext
-  simp
+  rw [seq_eq_image2, image2_image_left]
 #align set.image2_eq_seq Set.image2_eq_seq
 
 end Seq
@@ -2325,24 +2309,25 @@ theorem sigmaToiUnion_surjective : Surjective (sigmaToiUnion t)
     ⟨⟨a, b, hb⟩, rfl⟩
 #align set.sigma_to_Union_surjective Set.sigmaToiUnion_surjective
 
-theorem sigmaToiUnion_injective (h : ∀ i j, i ≠ j → Disjoint (t i) (t j)) :
+theorem sigmaToiUnion_injective (h : Pairwise fun i j => Disjoint (t i) (t j)) :
     Injective (sigmaToiUnion t)
   | ⟨a₁, b₁, h₁⟩, ⟨a₂, b₂, h₂⟩, eq =>
     have b_eq : b₁ = b₂ := congr_arg Subtype.val eq
     have a_eq : a₁ = a₂ :=
       by_contradiction fun ne =>
         have : b₁ ∈ t a₁ ∩ t a₂ := ⟨h₁, b_eq.symm ▸ h₂⟩
-        (h _ _ ne).le_bot this
+        (h ne).le_bot this
     Sigma.eq a_eq <| Subtype.eq <| by subst b_eq; subst a_eq; rfl
 #align set.sigma_to_Union_injective Set.sigmaToiUnion_injective
 
-theorem sigmaToiUnion_bijective (h : ∀ i j, i ≠ j → Disjoint (t i) (t j)) :
+theorem sigmaToiUnion_bijective (h : Pairwise fun i j => Disjoint (t i) (t j)) :
     Bijective (sigmaToiUnion t) :=
   ⟨sigmaToiUnion_injective t h, sigmaToiUnion_surjective t⟩
 #align set.sigma_to_Union_bijective Set.sigmaToiUnion_bijective
 
 /-- Equivalence between a disjoint union and a dependent sum. -/
-noncomputable def unionEqSigmaOfDisjoint {t : α → Set β} (h : ∀ i j, i ≠ j → Disjoint (t i) (t j)) :
+noncomputable def unionEqSigmaOfDisjoint {t : α → Set β}
+    (h : Pairwise fun i j => Disjoint (t i) (t j)) :
     (⋃ i, t i) ≃ Σi, t i :=
   (Equiv.ofBijective _ <| sigmaToiUnion_bijective t h).symm
 #align set.Union_eq_sigma_of_disjoint Set.unionEqSigmaOfDisjoint

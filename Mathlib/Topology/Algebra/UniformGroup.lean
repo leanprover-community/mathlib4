@@ -765,8 +765,8 @@ variable (hφ : Continuous (fun p : β × δ => φ p.1 p.2))
 
 variable {W' : Set G} (W'_nhd : W' ∈ 𝓝 (0 : G))
 
-private theorem extend_Z_bilin_aux (x₀ : α) (y₁ : δ) : ∃ U₂ ∈ comap e (𝓝 x₀), ∀ (x) (_ : x ∈ U₂)
-    (x') (_ : x' ∈ U₂), (fun p : β × δ => φ p.1 p.2) (x' - x, y₁) ∈ W' := by
+private theorem extend_Z_bilin_aux (x₀ : α) (y₁ : δ) : ∃ U₂ ∈ comap e (𝓝 x₀), ∀ x ∈ U₂, ∀ x' ∈ U₂,
+    (fun p : β × δ => φ p.1 p.2) (x' - x, y₁) ∈ W' := by
   let Nx := 𝓝 x₀
   let ee := fun u : β × β => (e u.1, e u.2)
   have lim1 : Tendsto (fun a : β × β => (a.2 - a.1, y₁))
@@ -784,7 +784,7 @@ private theorem extend_Z_bilin_aux (x₀ : α) (y₁ : δ) : ∃ U₂ ∈ comap 
 #noalign dense_inducing.extend_Z_bilin_aux
 
 private theorem extend_Z_bilin_key (x₀ : α) (y₀ : γ) : ∃ U ∈ comap e (𝓝 x₀), ∃ V ∈ comap f (𝓝 y₀),
-    ∀ (x) (_ : x ∈ U) (x') (_ : x' ∈ U), ∀ (y) (_ : y ∈ V) (y') (_ : y' ∈ V),
+    ∀ x ∈ U, ∀ x' ∈ U, ∀ (y) (_ : y ∈ V) (y') (_ : y' ∈ V),
     (fun p : β × δ => φ p.1 p.2) (x', y') - (fun p : β × δ => φ p.1 p.2) (x, y) ∈ W' := by
   let ee := fun u : β × β => (e u.1, e u.2)
   let ff := fun u : δ × δ => (f u.1, f u.2)
@@ -961,7 +961,7 @@ instance QuotientGroup.completeSpace' (G : Type u) [Group G] [TopologicalSpace G
     exact fun m =>
       ⟨m, fun n hmn =>
         Nat.decreasingInduction'
-          (fun k _ _ hk => u_mul k ⟨_, _, hx' k, hk, div_mul_div_cancel' _ _ _⟩) hmn
+          (fun k _ _ hk => u_mul k ⟨_, hx' k, _, hk, div_mul_div_cancel' _ _ _⟩) hmn
           (by simpa only [div_self'] using mem_of_mem_nhds (hu.mem _))⟩
   /- Since `G` is complete, `x'` converges to some `x₀`, and so the image of this sequence under
     the quotient map converges to `↑x₀`. The image of `x'` is a convergent subsequence of `x`, and

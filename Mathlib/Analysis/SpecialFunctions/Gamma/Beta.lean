@@ -71,8 +71,8 @@ theorem betaIntegral_convergent_left {u : ℂ} (hu : 0 < re u) (v : ℂ) :
     apply ContinuousAt.cpow
     · exact (continuous_const.sub continuous_ofReal).continuousAt
     · exact continuousAt_const
-    · rw [sub_re, one_re, ofReal_re, sub_pos]
-      exact Or.inl (hx.2.trans_lt (by norm_num : (1 / 2 : ℝ) < 1))
+    · norm_cast
+      exact ofReal_mem_slitPlane.2 <| by linarith only [hx.2]
 #align complex.beta_integral_convergent_left Complex.betaIntegral_convergent_left
 
 /-- The Beta integral is convergent for all `u, v` of positive real part. -/
@@ -94,7 +94,9 @@ theorem betaIntegral_symm (u v : ℂ) : betaIntegral v u = betaIntegral u v := b
   have := intervalIntegral.integral_comp_mul_add (a := 0) (b := 1) (c := -1)
     (fun x : ℝ => (x : ℂ) ^ (u - 1) * (1 - (x : ℂ)) ^ (v - 1)) neg_one_lt_zero.ne 1
   rw [inv_neg, inv_one, neg_one_smul, ← intervalIntegral.integral_symm] at this
-  simp at this
+  simp? at this says
+    simp only [neg_mul, one_mul, ofReal_add, ofReal_neg, ofReal_one, sub_add_cancel'', neg_neg,
+      mul_one, add_left_neg, mul_zero, zero_add] at this
   conv_lhs at this => arg 1; intro x; rw [add_comm, ← sub_eq_add_neg, mul_comm]
   exact this
 #align complex.beta_integral_symm Complex.betaIntegral_symm
@@ -298,7 +300,7 @@ theorem approx_Gamma_integral_tendsto_Gamma_integral {s : ℂ} (hs : 0 < re s) :
     intro n
     rw [integrable_indicator_iff (measurableSet_Ioc : MeasurableSet (Ioc (_ : ℝ) _)), IntegrableOn,
       Measure.restrict_restrict_of_subset Ioc_subset_Ioi_self, ← IntegrableOn, ←
-      intervalIntegrable_iff_integrable_Ioc_of_le (by positivity : (0 : ℝ) ≤ n)]
+      intervalIntegrable_iff_integrableOn_Ioc_of_le (by positivity : (0 : ℝ) ≤ n)]
     apply IntervalIntegrable.continuousOn_mul
     · refine' intervalIntegral.intervalIntegrable_cpow' _
       rwa [sub_re, one_re, ← zero_sub, sub_lt_sub_iff_right]
@@ -530,26 +532,21 @@ theorem one_div_Gamma_eq_self_mul_one_div_Gamma_add_one (s : ℂ) :
   · rw [zero_add, Gamma_zero, inv_zero, zero_mul]
 #align complex.one_div_Gamma_eq_self_mul_one_div_Gamma_add_one Complex.one_div_Gamma_eq_self_mul_one_div_Gamma_add_one
 
-/-- The reciprocal of the Gamma function is differentiable everywhere (including the points where
-Gamma itself is not). -/
-theorem differentiable_one_div_Gamma : Differentiable ℂ fun s : ℂ => (Gamma s)⁻¹ := by
-  suffices : ∀ n : ℕ, ∀ (s : ℂ) (_ : -s.re < n), DifferentiableAt ℂ (fun u : ℂ => (Gamma u)⁻¹) s
-  exact fun s =>
-    let ⟨n, h⟩ := exists_nat_gt (-s.re)
-    this n s h
-  intro n
-  induction' n with m hm
-  · intro s hs
+/-- The reciprocal of the Gamma function is differentiable everywhere
+(including the points where Gamma itself is not). -/
+theorem differentiable_one_div_Gamma : Differentiable ℂ fun s : ℂ => (Gamma s)⁻¹ := fun s ↦ by
+  rcases exists_nat_gt (-s.re) with ⟨n, hs⟩
+  induction n generalizing s with
+  | zero =>
     rw [Nat.cast_zero, neg_lt_zero] at hs
     suffices : ∀ m : ℕ, s ≠ -↑m; exact (differentiableAt_Gamma _ this).inv (Gamma_ne_zero this)
-    contrapose! hs
-    rcases hs with ⟨m, rfl⟩
-    simpa only [neg_re, ← ofReal_nat_cast, ofReal_re, neg_nonpos] using Nat.cast_nonneg m
-  · intro s hs
+    rintro m rfl
+    apply hs.not_le
+    simp
+  | succ n ihn =>
     rw [funext one_div_Gamma_eq_self_mul_one_div_Gamma_add_one]
-    specialize hm (s + 1) (by rwa [add_re, one_re, neg_add', sub_lt_iff_lt_add, ← Nat.cast_succ])
-    refine' differentiableAt_id.mul (hm.comp s _)
-    exact differentiableAt_id.add (differentiableAt_const _)
+    specialize ihn (s + 1) (by rwa [add_re, one_re, neg_add', sub_lt_iff_lt_add, ← Nat.cast_succ])
+    exact differentiableAt_id.mul (ihn.comp s <| differentiableAt_id.add_const _)
 #align complex.differentiable_one_div_Gamma Complex.differentiable_one_div_Gamma
 
 end Complex

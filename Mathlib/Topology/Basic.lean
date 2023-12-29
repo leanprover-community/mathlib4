@@ -3,9 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
-import Mathlib.Order.Filter.Ultrafilter
-import Mathlib.Algebra.Support
+import Mathlib.Algebra.Function.Support
 import Mathlib.Order.Filter.Lift
+import Mathlib.Order.Filter.Ultrafilter
 import Mathlib.Tactic.Continuity
 
 #align_import topology.basic from "leanprover-community/mathlib"@"e354e865255654389cc46e6032160238df2e0f40"
@@ -709,6 +709,11 @@ theorem closure_diff_interior (s : Set α) : closure s \ interior s = frontier s
   rfl
 #align closure_diff_interior closure_diff_interior
 
+/-- Interior and frontier are disjoint. -/
+lemma disjoint_interior_frontier : Disjoint (interior s) (frontier s) := by
+  rw [disjoint_iff_inter_eq_empty, ← closure_diff_interior, diff_eq,
+    ← inter_assoc, inter_comm, ← inter_assoc, compl_inter_self, empty_inter]
+
 @[simp]
 theorem closure_diff_frontier (s : Set α) : closure s \ frontier s = interior s := by
   rw [frontier, diff_diff_right_self, inter_eq_self_of_subset_right interior_subset_closure]
@@ -1320,6 +1325,9 @@ theorem mem_closure_iff_nhds_neBot {s : Set α} : a ∈ closure s ↔ 𝓝 a ⊓
 theorem mem_closure_iff_nhdsWithin_neBot {s : Set α} {x : α} : x ∈ closure s ↔ NeBot (𝓝[s] x) :=
   mem_closure_iff_clusterPt
 #align mem_closure_iff_nhds_within_ne_bot mem_closure_iff_nhdsWithin_neBot
+
+lemma not_mem_closure_iff_nhdsWithin_eq_bot {s : Set α} {x : α} : x ∉ closure s ↔ 𝓝[s] x = ⊥ := by
+  rw [mem_closure_iff_nhdsWithin_neBot, not_neBot]
 
 /-- If `x` is not an isolated point of a topological space, then `{x}ᶜ` is dense in the whole
 space. -/

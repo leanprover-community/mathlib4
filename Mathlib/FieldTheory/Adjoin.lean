@@ -749,7 +749,7 @@ theorem adjoin_finset_isCompactElement (S : Finset E) :
     IsCompactElement (adjoin F S : IntermediateField F E) := by
   rw [← biSup_adjoin_simple]
   simp_rw [Finset.mem_coe, ← Finset.sup_eq_iSup]
-  exact finset_sup_compact_of_compact S fun x _ => adjoin_simple_isCompactElement x
+  exact isCompactElement_finsetSup S fun x _ => adjoin_simple_isCompactElement x
 #align intermediate_field.adjoin_finset_is_compact_element IntermediateField.adjoin_finset_isCompactElement
 
 /-- Adjoining a finite subset is compact in the lattice of intermediate fields. -/
@@ -848,13 +848,19 @@ theorem finrank_eq_one_iff : finrank F K = 1 ↔ K = ⊥ := by
     bot_toSubalgebra]
 #align intermediate_field.finrank_eq_one_iff IntermediateField.finrank_eq_one_iff
 
-@[simp]
+@[simp] protected
 theorem rank_bot : Module.rank F (⊥ : IntermediateField F E) = 1 := by rw [rank_eq_one_iff]
 #align intermediate_field.rank_bot IntermediateField.rank_bot
 
-@[simp]
+@[simp] protected
 theorem finrank_bot : finrank F (⊥ : IntermediateField F E) = 1 := by rw [finrank_eq_one_iff]
 #align intermediate_field.finrank_bot IntermediateField.finrank_bot
+
+@[simp] protected theorem rank_top : Module.rank (⊤ : IntermediateField F E) E = 1 :=
+  Subalgebra.bot_eq_top_iff_rank_eq_one.mp <| top_le_iff.mp fun x _ ↦ ⟨⟨x, trivial⟩, rfl⟩
+
+@[simp] protected theorem finrank_top : finrank (⊤ : IntermediateField F E) E = 1 :=
+  rank_eq_one_iff_finrank_eq_one.mp IntermediateField.rank_top
 
 theorem rank_adjoin_eq_one_iff : Module.rank F (adjoin F S) = 1 ↔ S ⊆ (⊥ : IntermediateField F E) :=
   Iff.trans rank_eq_one_iff adjoin_eq_bot_iff
@@ -1036,6 +1042,26 @@ theorem adjoin_minpoly_coeff_of_exists_primitive_element
   convert natDegree_le_of_dvd dvd_g
     ((g.monic_toSubring _ _).mpr <| (minpoly.monic <| .of_finite K α).map _).ne_zero using 1
   rw [natDegree_toSubring, natDegree_map]
+
+variable {F} in
+/-- If `E / F` is an infinite algebraic extension, then there exists an intermediate field
+`L / F` with arbitrarily large finite extension degree. -/
+theorem exists_lt_finrank_of_infinite_dimensional
+    (halg : Algebra.IsAlgebraic F E) (hnfd : ¬ FiniteDimensional F E) (n : ℕ) :
+    ∃ L : IntermediateField F E, FiniteDimensional F L ∧ n < finrank F L := by
+  induction' n with n ih
+  · exact ⟨⊥, Subalgebra.finiteDimensional_bot, finrank_pos⟩
+  obtain ⟨L, fin, hn⟩ := ih
+  obtain ⟨x, hx⟩ : ∃ x : E, x ∉ L := by
+    contrapose! hnfd
+    rw [show L = ⊤ from eq_top_iff.2 fun x _ ↦ hnfd x] at fin
+    exact topEquiv.toLinearEquiv.finiteDimensional
+  let L' := L ⊔ F⟮x⟯
+  haveI := adjoin.finiteDimensional (halg x).isIntegral
+  refine ⟨L', inferInstance, by_contra fun h ↦ ?_⟩
+  have h1 : L = L' := eq_of_le_of_finrank_le le_sup_left ((not_lt.1 h).trans hn)
+  have h2 : F⟮x⟯ ≤ L' := le_sup_right
+  exact hx <| (h1.symm ▸ h2) <| mem_adjoin_simple_self F x
 
 theorem _root_.minpoly.natDegree_le (x : L) [FiniteDimensional K L] :
     (minpoly K x).natDegree ≤ finrank K L :=
@@ -1295,6 +1321,25 @@ theorem exists_algHom_of_splits_of_aeval : ∃ φ : E →ₐ[F] K, φ x = y :=
 end AlgHomMkAdjoinSplits
 
 end IntermediateField
+
+section Algebra.IsAlgebraic
+
+/-- Let `K/F` be an algebraic extension of fields and `L` a field in which all the minimal
+polynomial over `F` of elements of `K` splits. Then, for `x ∈ K`, the images of `x` by the
+`F`-algebra morphisms from `K` to `L` are exactly the roots in `L` of the minimal polynomial
+of `x` over `F`. -/
+theorem Algebra.IsAlgebraic.range_eval_eq_rootSet_minpoly_of_splits {F K : Type*} (L : Type*)
+    [Field F] [Field K] [Field L] [Algebra F L] [Algebra F K]
+    (hA : ∀ x : K, (minpoly F x).Splits (algebraMap F L))
+    (hK : Algebra.IsAlgebraic F K) (x : K) :
+    (Set.range fun (ψ : K →ₐ[F] L) => ψ x) = (minpoly F x).rootSet L := by
+  ext a
+  rw [mem_rootSet_of_ne (minpoly.ne_zero (hK.isIntegral x))]
+  refine ⟨fun ⟨ψ, hψ⟩ ↦ ?_, fun ha ↦ IntermediateField.exists_algHom_of_splits_of_aeval
+    (fun x ↦ ⟨hK.isIntegral x, hA x⟩) ha⟩
+  rw [← hψ, Polynomial.aeval_algHom_apply ψ x, minpoly.aeval, map_zero]
+
+end Algebra.IsAlgebraic
 
 section PowerBasis
 
