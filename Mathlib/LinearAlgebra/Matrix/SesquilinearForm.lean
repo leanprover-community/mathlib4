@@ -69,13 +69,13 @@ def Matrix.toLinearMap₂'Aux (f : Matrix n m N₂) : (n → R₁) →ₛₗ[σ�
 
 variable [DecidableEq n] [DecidableEq m]
 
-theorem Matrix.toLinearMap₂'Aux_stdBasis (f : Matrix n m R) (i : n) (j : m) :
+theorem Matrix.toLinearMap₂'Aux_stdBasis (f : Matrix n m N₂) (i : n) (j : m) :
     f.toLinearMap₂'Aux σ₁ σ₂ (LinearMap.stdBasis R₁ (fun _ => R₁) i 1)
       (LinearMap.stdBasis R₂ (fun _ => R₂) j 1) = f i j := by
   rw [Matrix.toLinearMap₂'Aux, mk₂'ₛₗ_apply]
-  have : (∑ i', ∑ j', (if i = i' then 1 else 0) * f i' j' * if j = j' then 1 else 0) = f i j := by
-    simp_rw [mul_assoc, ← Finset.mul_sum]
-    simp only [boole_mul, Finset.sum_ite_eq, Finset.mem_univ, if_true, mul_comm (f _ _)]
+  have : (∑ i', ∑ j', (if i = i' then 1 else 0) • (if j = j' then 1 else 0) • f i' j') = f i j := by
+    simp_rw [← Finset.smul_sum]
+    simp only [boole_smul, Finset.sum_ite_eq, Finset.mem_univ, if_true, smul_comm (f _ _)]
   rw [← this]
   exact Finset.sum_congr rfl fun _ _ => Finset.sum_congr rfl fun _ _ => by simp
 #align matrix.to_linear_map₂'_aux_std_basis Matrix.toLinearMap₂'Aux_stdBasis
