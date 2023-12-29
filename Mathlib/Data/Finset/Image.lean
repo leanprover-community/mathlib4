@@ -408,22 +408,24 @@ theorem fiber_nonempty_iff_mem_image (f : α → β) (s : Finset α) (y : β) :
 #align finset.fiber_nonempty_iff_mem_image Finset.fiber_nonempty_iff_mem_image
 
 @[simp, norm_cast]
-theorem coe_image {f : α → β} : ↑(s.image f) = f '' ↑s :=
+theorem coe_image : ↑(s.image f) = f '' ↑s :=
   Set.ext <| by simp only [mem_coe, mem_image, Set.mem_image, implies_true]
 #align finset.coe_image Finset.coe_image
 
+@[simp]
+lemma nonempty_image_iff : (s.image f).Nonempty ↔ s.Nonempty := by
+  exact_mod_cast Set.nonempty_image_iff (f := f) (s := (s : Set α))
+#align finset.nonempty.image_iff Finset.nonempty_image_iff
+
 protected theorem Nonempty.image (h : s.Nonempty) (f : α → β) : (s.image f).Nonempty :=
-  let ⟨a, ha⟩ := h
-  ⟨f a, mem_image_of_mem f ha⟩
+  nonempty_image_iff.2 h
 #align finset.nonempty.image Finset.Nonempty.image
 
-@[simp]
+alias ⟨_, Nonempty.of_image⟩ := nonempty_image_iff
+
+@[deprecated] -- Since 29 December 2023
 theorem Nonempty.image_iff (f : α → β) : (s.image f).Nonempty ↔ s.Nonempty :=
-  ⟨fun ⟨_, hy⟩ =>
-    let ⟨x, hx, _⟩ := mem_image.mp hy
-    ⟨x, hx⟩,
-    fun h => h.image f⟩
-#align finset.nonempty.image_iff Finset.Nonempty.image_iff
+  nonempty_image_iff
 
 theorem image_toFinset [DecidableEq α] {s : Multiset α} :
     s.toFinset.image f = (s.map f).toFinset :=
