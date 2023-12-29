@@ -791,7 +791,7 @@ end SMul
 
 section SMulZeroClass
 
-variable [Zero β] [SMulZeroClass α β] {s : Set α} {t : Set β}
+variable [Zero β] [SMulZeroClass α β] {s : Set α} {t : Set β} {a : α}
 
 theorem smul_zero_subset (s : Set α) : s • (0 : Set β) ⊆ 0 := by simp [subset_def, mem_smul]
 #align set.smul_zero_subset Set.smul_zero_subset
@@ -800,11 +800,10 @@ theorem Nonempty.smul_zero (hs : s.Nonempty) : s • (0 : Set β) = 0 :=
   s.smul_zero_subset.antisymm <| by simpa [mem_smul] using hs
 #align set.nonempty.smul_zero Set.Nonempty.smul_zero
 
-theorem zero_mem_smul_set {a : α} (h : (0 : β) ∈ t) : (0 : β) ∈ a • t :=
-  ⟨0, h, smul_zero _⟩
+theorem zero_mem_smul_set (h : (0 : β) ∈ t) : (0 : β) ∈ a • t := ⟨0, h, smul_zero _⟩
 #align set.zero_mem_smul_set Set.zero_mem_smul_set
 
-variable [Zero α] [NoZeroSMulDivisors α β] {a : α}
+variable [Zero α] [NoZeroSMulDivisors α β]
 
 theorem zero_mem_smul_set_iff (ha : a ≠ 0) : (0 : β) ∈ a • t ↔ (0 : β) ∈ t := by
   refine' ⟨_, zero_mem_smul_set⟩
