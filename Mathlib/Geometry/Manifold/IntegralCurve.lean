@@ -331,9 +331,7 @@ lemma IsIntegralCurveAt.of_mdifferentiable_related {f : M → M'} (hf : MDiffere
   refine ⟨s, hs, ?_⟩
   intros t ht
   apply (HasMFDerivAt.comp t (hf (γ t)).hasMFDerivAt (h t ht)).congr_mfderiv
-  rw [Function.comp_apply, hv]
-  ext
-  simp
+  rw [Function.comp_apply, hv, ContinuousLinearMap.comp_smulRight]
 
 /-- Let `v` and `v'` be vector fields on `M` and `M'`, respectively, and let `f : M → M'` be a
   differentiable map. If `f` maps integral curves of `v` to integral curves of `v'`, then `v` and
@@ -350,10 +348,7 @@ lemma naturality [I.Boundaryless]
   rw [Function.comp_apply, h0] at hγ'
   rw [h0] at hγ
   have := hasMFDerivAt_unique hγ' <| HasMFDerivAt.comp 0 (hf (γ 0)).hasMFDerivAt hγ
-  rw [ContinuousLinearMap.ext_iff] at this
-  have := this 1
-  rw [ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.one_apply, one_smul, h0] at this
-  rw [this]
-  simp
+  rw [ContinuousLinearMap.comp_smulRight, ContinuousLinearMap.smulRight_one_eq_iff, h0] at this
+  exact this
 
 end Naturality
