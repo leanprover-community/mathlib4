@@ -489,9 +489,9 @@ def ofRepeat {α : Sort _} : ∀ {n i}, «repeat» n α i → α
 #align typevec.of_repeat TypeVec.ofRepeat
 
 theorem const_iff_true {α : TypeVec n} {i x p} : ofRepeat (TypeVec.const p α i x) ↔ p := by
-  induction i
-  case fz      => rfl
-  case fs _ ih => erw [TypeVec.const, @ih (drop α) x]
+  induction i with
+  | fz      => rfl
+  | fs _ ih => erw [TypeVec.const, @ih (drop α) x]
 #align typevec.const_iff_true TypeVec.const_iff_true
 
 
@@ -556,28 +556,28 @@ protected def prod.map : ∀ {n} {α α' β β' : TypeVec.{u} n}, α ⟹ β → 
 
 theorem fst_prod_mk {α α' β β' : TypeVec n} (f : α ⟹ β) (g : α' ⟹ β') :
     TypeVec.prod.fst ⊚ (f ⊗' g) = f ⊚ TypeVec.prod.fst := by
-  funext i; induction i
-  case fz => rfl
-  case fs _ _ i_ih => apply i_ih
+  funext i; induction i with
+  | fz => rfl
+  | fs _ i_ih => apply i_ih
 #align typevec.fst_prod_mk TypeVec.fst_prod_mk
 
 theorem snd_prod_mk {α α' β β' : TypeVec n} (f : α ⟹ β) (g : α' ⟹ β') :
     TypeVec.prod.snd ⊚ (f ⊗' g) = g ⊚ TypeVec.prod.snd := by
-  funext i; induction i
-  case fz => rfl
-  case fs _ _ i_ih => apply i_ih
+  funext i; induction i with
+  | fz => rfl
+  | fs _ i_ih => apply i_ih
 #align typevec.snd_prod_mk TypeVec.snd_prod_mk
 
 theorem fst_diag {α : TypeVec n} : TypeVec.prod.fst ⊚ (prod.diag : α ⟹ _) = id := by
-  funext i; induction i
-  case fz => rfl
-  case fs _ _ i_ih => apply i_ih
+  funext i; induction i with
+  | fz => rfl
+  | fs _ i_ih => apply i_ih
 #align typevec.fst_diag TypeVec.fst_diag
 
 theorem snd_diag {α : TypeVec n} : TypeVec.prod.snd ⊚ (prod.diag : α ⟹ _) = id := by
-  funext i; induction i
-  case fz => rfl
-  case fs _ _ i_ih => apply i_ih
+  funext i; induction i with
+  | fz => rfl
+  | fs _ i_ih => apply i_ih
 #align typevec.snd_diag TypeVec.snd_diag
 
 theorem repeatEq_iff_eq {α : TypeVec n} {i x y} :

@@ -139,9 +139,9 @@ instance (priority := 100) CompletelyDistribLattice.toCompleteDistribLattice
     _ = ⨅ b : s, ⨆ x : Bool, cond x a b := by simp_rw [iInf_subtype, iSup_bool_eq, cond]
     _ = _ := iInf_iSup_eq
     _ ≤ _ := iSup_le fun f => by
-      by_cases h : ∀ i, f i = false
-      case pos => simp [h, iInf_subtype, ← sInf_eq_iInf]
-      case neg =>
+      if h : ∀ i, f i = false then
+        simp [h, iInf_subtype, ← sInf_eq_iInf]
+      else
         have ⟨i, h⟩ : ∃ i, f i = true := by simpa using h
         refine le_trans (iInf_le _ i) ?_
         simp [h]
@@ -162,8 +162,7 @@ instance (priority := 100) CompleteLinearOrder.toCompletelyDistribLattice [Compl
     let lhs := ⨅ a, ⨆ b, g a b
     let rhs := ⨆ h : ∀ a, β a, ⨅ a, g a (h a)
     suffices lhs ≤ rhs from le_antisymm this le_iInf_iSup
-    by_cases h : ∃ x, rhs < x ∧ x < lhs
-    case pos =>
+    if h : ∃ x, rhs < x ∧ x < lhs then
       rcases h with ⟨x, hr, hl⟩
       suffices rhs ≥ x from nomatch not_lt.2 this hr
       have : ∀ a, ∃ b, x < g a b := fun a =>
@@ -172,7 +171,7 @@ instance (priority := 100) CompleteLinearOrder.toCompletelyDistribLattice [Compl
       choose f hf using this
       refine le_trans ?_ (le_iSup _ f)
       refine le_iInf fun a => le_of_lt (hf a)
-    case neg =>
+    else
       refine le_of_not_lt fun hrl : rhs < lhs => not_le_of_lt hrl ?_
       replace h : ∀ x, x ≤ rhs ∨ lhs ≤ x := by
         simpa only [not_exists, not_and_or, not_or, not_lt] using h

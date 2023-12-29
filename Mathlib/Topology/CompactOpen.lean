@@ -210,6 +210,14 @@ theorem continuous_coe : Continuous ((⇑) : C(X, Y) → (X → Y)) :=
 #align continuous_map.continuous_coe' ContinuousMap.continuous_coe
 #align continuous_map.continuous_coe ContinuousMap.continuous_coe
 
+lemma isClosed_setOf_mapsTo {t : Set Y} (ht : IsClosed t) (s : Set X) :
+    IsClosed {f : C(X, Y) | MapsTo f s t} :=
+  ht.setOf_mapsTo fun _ _ ↦ continuous_eval_const _
+
+lemma isClopen_setOf_mapsTo {K : Set X} (hK : IsCompact K) {U : Set Y} (hU : IsClopen U) :
+    IsClopen {f : C(X, Y) | MapsTo f K U} :=
+  ⟨isOpen_setOf_mapsTo hK hU.isOpen, isClosed_setOf_mapsTo hU.isClosed K⟩
+
 instance [T0Space Y] : T0Space C(X, Y) :=
   t0Space_of_injective_of_continuous FunLike.coe_injective continuous_coe
 
@@ -361,8 +369,7 @@ def curry' (f : C(X × Y, Z)) (a : X) : C(Y, Z) :=
 
 /-- If a map `X × Y → Z` is continuous, then its curried form `X → C(Y, Z)` is continuous. -/
 theorem continuous_curry' (f : C(X × Y, Z)) : Continuous (curry' f) :=
-  have hf : curry' f = ContinuousMap.comp f ∘ coev _ _ := by ext; rfl
-  hf ▸ Continuous.comp (continuous_comp f) continuous_coev
+  Continuous.comp (continuous_comp f) continuous_coev
 #align continuous_map.continuous_curry' ContinuousMap.continuous_curry'
 
 /-- To show continuity of a map `X → C(Y, Z)`, it suffices to show that its uncurried form

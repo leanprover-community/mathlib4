@@ -110,7 +110,7 @@ theorem mem_add (l m : Language α) (x : List α) : x ∈ l + m ↔ x ∈ l ∨ 
   Iff.rfl
 #align language.mem_add Language.mem_add
 
-theorem mem_mul : x ∈ l * m ↔ ∃ a b, a ∈ l ∧ b ∈ m ∧ a ++ b = x :=
+theorem mem_mul : x ∈ l * m ↔ ∃ a ∈ l, ∃ b ∈ m, a ++ b = x :=
   mem_image2
 #align language.mem_mul Language.mem_mul
 
@@ -240,11 +240,11 @@ theorem mem_pow {l : Language α} {x : List α} {n : ℕ} :
       rfl
   · simp only [pow_succ, mem_mul, ihn]
     constructor
-    · rintro ⟨a, b, ha, ⟨S, rfl, rfl, hS⟩, rfl⟩
+    · rintro ⟨a, ha, b, ⟨S, rfl, rfl, hS⟩, rfl⟩
       exact ⟨a :: S, rfl, rfl, forall_mem_cons.2 ⟨ha, hS⟩⟩
     · rintro ⟨_ | ⟨a, S⟩, rfl, hn, hS⟩ <;> cases hn
       rw [forall_mem_cons] at hS
-      exact ⟨a, _, hS.1, ⟨S, rfl, rfl, hS.2⟩, rfl⟩
+      exact ⟨a, hS.1, _, ⟨S, rfl, rfl, hS.2⟩, rfl⟩
 #align language.mem_pow Language.mem_pow
 
 theorem kstar_eq_iSup_pow (l : Language α) : l∗ = ⨆ i : ℕ, l ^ i := by
