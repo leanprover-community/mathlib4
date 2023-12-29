@@ -7,6 +7,7 @@ import Mathlib.Combinatorics.SimpleGraph.Coloring
 import Mathlib.Combinatorics.SimpleGraph.Hasse
 import Mathlib.Data.Nat.Parity
 import Mathlib.Data.ZMod.Basic
+import Mathlib.Logic.Lemmas
 
 /-!
 # Concrete colorings of common graphs
@@ -79,8 +80,7 @@ theorem pathGraph_Hom_coloring {α} (G : SimpleGraph α) (c : G.Coloring Prop) {
 theorem pathGraph_Hom_coloring' {α} (G : SimpleGraph α) (c : G.Coloring Prop) {n : ℕ}
     (hom : pathGraph (n + 1) →g G) (hc0 : ¬c (hom ⊥)) (u : Fin (n + 1)) :
     c (hom u) ↔ Odd u.val := by
-  let neg : Prop ↪ Prop := ⟨Not, fun a b ↦ (by simp [propext]; exact not_iff_not.mp)⟩
-  let c' : G.Coloring Prop := (recolorOfEmbedding G neg) c
+  let c' : G.Coloring Prop := (recolorOfEmbedding G ⟨Not, Function.injective_Not⟩) c
   have hc'c : ∀ (a : α), c' a ↔ ¬c a := fun a ↦ Iff.rfl
   have hcc' : ∀ (a : α), c a ↔ ¬c' a := fun a ↦ iff_not_comm.mp (hc'c a)
   have hc'0 : c' (hom ⊥) := by

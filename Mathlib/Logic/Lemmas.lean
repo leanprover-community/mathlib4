@@ -3,6 +3,7 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.Init.Function
 import Mathlib.Logic.Basic
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.SplitIfs
@@ -73,3 +74,8 @@ lemma Prop.exists {f : Prop → Prop} : (∃ p, f p) ↔ f True ∨ f False :=
   ⟨fun ⟨p, h⟩ ↦ by refine' (em p).imp _ _ <;> intro H <;> convert h <;> simp [H],
     by rintro (h | h) <;> exact ⟨_, h⟩⟩
 #align Prop.exists Prop.exists
+
+lemma Function.injective_Not : Function.Injective Not := by
+  intro a b
+  simp [propext]
+  exact not_iff_not.mp
