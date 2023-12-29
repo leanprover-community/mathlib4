@@ -170,7 +170,7 @@ theorem epi_iff_surjective {A B : NonemptyFinLinOrd.{u}} (f : A ⟶ B) :
   constructor
   · intro
     dsimp only [Function.Surjective]
-    by_contra' hf'
+    by_contra! hf'
     rcases hf' with ⟨m, hm⟩
     let Y := NonemptyFinLinOrd.of (ULift (Fin 2))
     let p₁ : B ⟶ Y :=

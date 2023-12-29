@@ -731,7 +731,7 @@ theorem isOpenMap_snd : IsOpenMap (@Prod.snd α β) :=
 empty -/
 theorem isOpen_prod_iff' {s : Set α} {t : Set β} :
     IsOpen (s ×ˢ t) ↔ IsOpen s ∧ IsOpen t ∨ s = ∅ ∨ t = ∅ := by
-  cases' (s ×ˢ t).eq_empty_or_nonempty with h h
+  rcases (s ×ˢ t).eq_empty_or_nonempty with h | h
   · simp [h, prod_eq_empty_iff.1 h]
   · have st : s.Nonempty ∧ t.Nonempty := prod_nonempty_iff.1 h
     constructor
@@ -1649,6 +1649,16 @@ theorem openEmbedding_sigma_map {f₁ : ι → κ} {f₂ : ∀ i, σ i → τ (f
 end Sigma
 
 section ULift
+
+theorem ULift.isOpen_iff [TopologicalSpace α] {s : Set (ULift.{v} α)} :
+    IsOpen s ↔ IsOpen (ULift.up ⁻¹' s) := by
+  unfold ULift.topologicalSpace
+  erw [← Equiv.ulift.coinduced_symm]
+  rfl
+
+theorem ULift.isClosed_iff [TopologicalSpace α] {s : Set (ULift.{v} α)} :
+    IsClosed s ↔ IsClosed (ULift.up ⁻¹' s) := by
+  rw [← isOpen_compl_iff, ← isOpen_compl_iff, isOpen_iff, preimage_compl]
 
 @[continuity]
 theorem continuous_uLift_down [TopologicalSpace α] : Continuous (ULift.down : ULift.{v, u} α → α) :=

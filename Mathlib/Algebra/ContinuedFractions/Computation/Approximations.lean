@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann
 -/
 import Mathlib.Algebra.ContinuedFractions.Computation.CorrectnessTerminating
-import Mathlib.Data.Nat.Fib
+import Mathlib.Data.Nat.Fib.Basic
 import Mathlib.Tactic.Monotonicity
 import Mathlib.Tactic.SolveByElim
 

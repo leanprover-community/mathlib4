@@ -135,7 +135,7 @@ theorem lcm_mul_left {m n k : ℕ} : (m * n).lcm (m * k) = m * n.lcm k := by
   apply dvd_antisymm
   · exact lcm_dvd (mul_dvd_mul_left m (dvd_lcm_left n k)) (mul_dvd_mul_left m (dvd_lcm_right n k))
   · have h : m ∣ lcm (m * n) (m * k) := (dvd_mul_right m n).trans (dvd_lcm_left (m * n) (m * k))
-    rw [←dvd_div_iff h, lcm_dvd_iff, dvd_div_iff h, dvd_div_iff h, ←lcm_dvd_iff]
+    rw [← dvd_div_iff h, lcm_dvd_iff, dvd_div_iff h, dvd_div_iff h, ← lcm_dvd_iff]
 
 theorem lcm_mul_right {m n k : ℕ} : (m * n).lcm (k * n) = m.lcm k * n := by
  rw [mul_comm, mul_comm k n, lcm_mul_left, mul_comm]
@@ -308,7 +308,7 @@ theorem dvd_mul {x m n : ℕ} : x ∣ m * n ↔ ∃ y z, y ∣ m ∧ z ∣ n ∧
 
 theorem pow_dvd_pow_iff {a b n : ℕ} (n0 : 0 < n) : a ^ n ∣ b ^ n ↔ a ∣ b := by
   refine' ⟨fun h => _, fun h => pow_dvd_pow_of_dvd h _⟩
-  cases' Nat.eq_zero_or_pos (gcd a b) with g0 g0
+  rcases Nat.eq_zero_or_pos (gcd a b) with g0 | g0
   · simp [eq_zero_of_gcd_eq_zero_right g0]
   rcases exists_coprime' g0 with ⟨g, a', b', g0', co, rfl, rfl⟩
   rw [mul_pow, mul_pow] at h

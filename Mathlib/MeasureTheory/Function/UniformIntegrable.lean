@@ -488,7 +488,7 @@ theorem tendsto_Lp_of_tendsto_ae_of_meas [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp
     Tendsto (fun n => snorm (f n - g) p μ) atTop (𝓝 0) := by
   rw [ENNReal.tendsto_atTop_zero]
   intro ε hε
-  by_cases ε < ∞; swap
+  by_cases h : ε < ∞; swap
   · rw [not_lt, top_le_iff] at h
     exact ⟨0, fun n _ => by simp [h]⟩
   by_cases hμ : μ = 0
@@ -926,7 +926,7 @@ theorem uniformIntegrable_average
   · exact (Finset.aestronglyMeasurable_sum' _ fun i _ => hf₁ i).const_smul _
   · obtain ⟨δ, hδ₁, hδ₂⟩ := hf₂ hε
     refine' ⟨δ, hδ₁, fun n s hs hle => _⟩
-    simp_rw [Finset.smul_sum, Set.indicator_finset_sum]
+    simp_rw [Finset.smul_sum, Finset.indicator_sum]
     refine' le_trans (snorm_sum_le (fun i _ => ((hf₁ i).const_smul _).indicator hs) hp) _
     have : ∀ i, s.indicator ((n : ℝ) ⁻¹ • f i) = (↑n : ℝ)⁻¹ • s.indicator (f i) :=
       fun i ↦ indicator_const_smul _ _ _

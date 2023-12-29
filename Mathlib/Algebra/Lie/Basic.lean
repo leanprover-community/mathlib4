@@ -633,6 +633,9 @@ theorem symm_symm (e : L₁ ≃ₗ⁅R⁆ L₂) : e.symm.symm = e := by
   rfl
 #align lie_equiv.symm_symm LieEquiv.symm_symm
 
+theorem symm_bijective : Function.Bijective (LieEquiv.symm : (L₁ ≃ₗ⁅R⁆ L₂) → L₂ ≃ₗ⁅R⁆ L₁) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
+
 @[simp]
 theorem apply_symm_apply (e : L₁ ≃ₗ⁅R⁆ L₂) : ∀ x, e (e.symm x) = x :=
   e.toLinearEquiv.apply_symm_apply
@@ -918,9 +921,9 @@ theorem neg_apply (f : M →ₗ⁅R,L⁆ N) (m : M) : (-f) m = -f m :=
   rfl
 #align lie_module_hom.neg_apply LieModuleHom.neg_apply
 
-instance hasNsmul : SMul ℕ (M →ₗ⁅R,L⁆ N) where
+instance hasNSMul : SMul ℕ (M →ₗ⁅R,L⁆ N) where
   smul n f := { n • (f : M →ₗ[R] N) with map_lie' := by simp }
-#align lie_module_hom.has_nsmul LieModuleHom.hasNsmul
+#align lie_module_hom.has_nsmul LieModuleHom.hasNSMul
 
 @[norm_cast, simp]
 theorem coe_nsmul (n : ℕ) (f : M →ₗ⁅R,L⁆ N) : ⇑(n • f) = n • (⇑f) :=
@@ -931,9 +934,9 @@ theorem nsmul_apply (n : ℕ) (f : M →ₗ⁅R,L⁆ N) (m : M) : (n • f) m = 
   rfl
 #align lie_module_hom.nsmul_apply LieModuleHom.nsmul_apply
 
-instance hasZsmul : SMul ℤ (M →ₗ⁅R,L⁆ N) where
+instance hasZSMul : SMul ℤ (M →ₗ⁅R,L⁆ N) where
   smul z f := { z • (f : M →ₗ[R] N) with map_lie' := by simp }
-#align lie_module_hom.has_zsmul LieModuleHom.hasZsmul
+#align lie_module_hom.has_zsmul LieModuleHom.hasZSMul
 
 @[norm_cast, simp]
 theorem coe_zsmul (z : ℤ) (f : M →ₗ⁅R,L⁆ N) : ⇑(z • f) = z • (⇑f) :=
@@ -1107,6 +1110,10 @@ theorem apply_eq_iff_eq_symm_apply {m : M} {n : N} (e : M ≃ₗ⁅R,L⁆ N) :
 theorem symm_symm (e : M ≃ₗ⁅R,L⁆ N) : e.symm.symm = e := by
   rfl
 #align lie_module_equiv.symm_symm LieModuleEquiv.symm_symm
+
+theorem symm_bijective :
+    Function.Bijective (LieModuleEquiv.symm : (M ≃ₗ⁅R,L⁆ N) → N ≃ₗ⁅R,L⁆ M) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
 /-- Lie module equivalences are transitive. -/
 @[trans]

@@ -241,7 +241,7 @@ theorem factorization_pow (n k : ℕ) : factorization (n ^ k) = k • n.factoriz
 
 /-- The only prime factor of prime `p` is `p` itself, with multiplicity `1` -/
 @[simp]
-theorem Prime.factorization {p : ℕ} (hp : Prime p) : p.factorization = single p 1 := by
+protected theorem Prime.factorization {p : ℕ} (hp : Prime p) : p.factorization = single p 1 := by
   ext q
   rw [← factors_count_eq, factors_prime hp, single_apply, count_singleton', if_congr eq_comm] <;>
     rfl
@@ -395,12 +395,8 @@ theorem ord_compl_mul (a b p : ℕ) : ord_compl[p] (a * b) = ord_compl[p] a * or
 /-- A crude upper bound on `n.factorization p` -/
 theorem factorization_lt {n : ℕ} (p : ℕ) (hn : n ≠ 0) : n.factorization p < n := by
   by_cases pp : p.Prime
-  case neg =>
-    simp only [factorization_eq_zero_of_non_prime n pp]
-    exact hn.bot_lt
-  rw [← pow_lt_iff_lt_right pp.two_le]
-  apply lt_of_le_of_lt (ord_proj_le p hn)
-  exact lt_of_lt_of_le (lt_two_pow n) (pow_le_pow_of_le_left pp.two_le n)
+  · exact (pow_lt_pow_iff_right pp.one_lt).1 $ (ord_proj_le p hn).trans_lt $ lt_pow_self pp.one_lt _
+  · simpa only [factorization_eq_zero_of_non_prime n pp] using hn.bot_lt
 #align nat.factorization_lt Nat.factorization_lt
 
 /-- An upper bound on `n.factorization p` -/
@@ -408,7 +404,7 @@ theorem factorization_le_of_le_pow {n p b : ℕ} (hb : n ≤ p ^ b) : n.factoriz
   rcases eq_or_ne n 0 with (rfl | hn)
   · simp
   by_cases pp : p.Prime
-  · exact (pow_le_iff_le_right pp.two_le).1 (le_trans (ord_proj_le p hn) hb)
+  · exact (pow_le_pow_iff_right pp.one_lt).1 ((ord_proj_le p hn).trans hb)
   · simp [factorization_eq_zero_of_non_prime n pp]
 #align nat.factorization_le_of_le_pow Nat.factorization_le_of_le_pow
 
@@ -419,7 +415,7 @@ theorem factorization_le_iff_dvd {d n : ℕ} (hd : d ≠ 0) (hn : n ≠ 0) :
     set K := n.factorization - d.factorization with hK
     use K.prod (· ^ ·)
     rw [← factorization_prod_pow_eq_self hn, ← factorization_prod_pow_eq_self hd,
-        ←Finsupp.prod_add_index' pow_zero pow_add, hK, add_tsub_cancel_of_le hdn]
+        ← Finsupp.prod_add_index' pow_zero pow_add, hK, add_tsub_cancel_of_le hdn]
   · rintro ⟨c, rfl⟩
     rw [factorization_mul hd (right_ne_zero_of_mul hn)]
     simp
@@ -630,7 +626,7 @@ theorem prod_primeFactors_dvd (n : ℕ) : ∏ p in n.primeFactors, p ∣ n := by
 theorem factorization_gcd {a b : ℕ} (ha_pos : a ≠ 0) (hb_pos : b ≠ 0) :
     (gcd a b).factorization = a.factorization ⊓ b.factorization := by
   let dfac := a.factorization ⊓ b.factorization
-  let d := dfac.prod Nat.pow
+  let d := dfac.prod (· ^ ·)
   have dfac_prime : ∀ p : ℕ, p ∈ dfac.support → Prime p := by
     intro p hp
     have : p ∈ a.factors ∧ p ∈ b.factors := by simpa using hp
@@ -702,8 +698,8 @@ theorem Ico_filter_pow_dvd_eq {n p b : ℕ} (pp : p.Prime) (hn : n ≠ 0) (hb : 
   ext x
   simp only [Finset.mem_filter, mem_Ico, mem_Icc, and_congr_left_iff, and_congr_right_iff]
   rintro h1 -
-  simp [lt_of_pow_dvd_right hn pp.two_le h1,
-    (pow_le_iff_le_right pp.two_le).1 ((le_of_dvd hn.bot_lt h1).trans hb)]
+  exact iff_of_true (lt_of_pow_dvd_right hn pp.two_le h1) $
+    (pow_le_pow_iff_right pp.one_lt).1 $ (le_of_dvd hn.bot_lt h1).trans hb
 #align nat.Ico_filter_pow_dvd_eq Nat.Ico_filter_pow_dvd_eq
 
 /-! ### Factorization and coprimes -/
@@ -763,10 +759,7 @@ def recOnPrimePow {P : ℕ → Sort*} (h0 : P 0) (h1 : P 1)
       · rw [Nat.mul_div_cancel' hpt]
       · rw [Nat.dvd_div_iff hpt, ← pow_succ]
         exact pow_succ_factorization_not_dvd (k + 1).succ_ne_zero hp
-      · rw [lt_mul_iff_one_lt_left Nat.succ_pos', one_lt_pow_iff htp.ne]
-        exact hp.one_lt
-        -- Porting note: was
-        -- simp [lt_mul_iff_one_lt_left Nat.succ_pos', one_lt_pow_iff htp.ne, hp.one_lt]
+      · simp [lt_mul_iff_one_lt_left Nat.succ_pos', one_lt_pow_iff htp.ne', hp.one_lt]
 #align nat.rec_on_prime_pow Nat.recOnPrimePow
 
 /-- Given `P 0`, `P 1`, and `P (p ^ n)` for positive prime powers, and a way to extend `P a` and
@@ -873,7 +866,8 @@ theorem prod_pow_prime_padicValNat (n : Nat) (hn : n ≠ 0) (m : Nat) (pr : n < 
 
 
 -- TODO: Port lemmas from `Data/Nat/Multiplicity` to here, re-written in terms of `factorization`
-/-- Exactly `n / p` naturals in `[1, n]` are multiples of `p`. -/
+/-- Exactly `n / p` naturals in `[1, n]` are multiples of `p`.
+See `Nat.card_multiples'` for an alternative spelling of the statement.  -/
 theorem card_multiples (n p : ℕ) : card ((Finset.range n).filter fun e => p ∣ e + 1) = n / p := by
   induction' n with n hn
   · simp
@@ -893,5 +887,17 @@ theorem Ioc_filter_dvd_card_eq_div (n p : ℕ) : ((Ioc 0 n).filter fun x => p �
   simp [Nat.succ_div, add_ite, add_zero, h1, filter_insert, apply_ite card, card_insert_eq_ite, IH,
     Finset.mem_filter, mem_Ioc, not_le.2 (lt_add_one n), Nat.succ_eq_add_one]
 #align nat.Ioc_filter_dvd_card_eq_div Nat.Ioc_filter_dvd_card_eq_div
+
+/-- There are exactly `⌊N/n⌋` positive multiples of `n` that are `≤ N`.
+See `Nat.card_multiples` for a "shifted-by-one" version. -/
+lemma card_multiples' (N n : ℕ) :
+    ((Finset.range N.succ).filter (fun k ↦ k ≠ 0 ∧ n ∣ k)).card = N / n := by
+  induction N with
+    | zero => simp
+    | succ N ih =>
+        rw [Finset.range_succ, Finset.filter_insert]
+        by_cases h : n ∣ N.succ
+        · simp [h, succ_div_of_dvd, ih]
+        · simp [h, succ_div_of_not_dvd, ih]
 
 end Nat

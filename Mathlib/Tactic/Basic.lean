@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Kyle Miller
 import Lean
 import Std
 import Mathlib.Tactic.PPWithUniv
+import Mathlib.Tactic.ExtendDoc
 
 set_option autoImplicit true
 
@@ -57,13 +58,6 @@ def pushFVarAliasInfo [Monad m] [MonadInfoTree m]
     if old != new then
       let decl := newLCtx.get! new
       pushInfoLeaf (.ofFVarAliasInfo { id := new, baseId := old, userName := decl.userName })
-
-/--
-`by_cases p` makes a case distinction on `p`,
-resulting in two subgoals `h : p ⊢` and `h : ¬ p ⊢`.
--/
-macro "by_cases " e:term : tactic =>
-  `(tactic| by_cases $(mkIdent `h) : $e)
 
 syntax "transitivity" (ppSpace colGt term)? : tactic
 set_option hygiene false in
