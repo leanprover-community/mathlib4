@@ -243,7 +243,7 @@ theorem card_rootsOfUnity : Fintype.card (rootsOfUnity k R) ≤ k :=
   calc
     Fintype.card (rootsOfUnity k R) = Fintype.card { x // x ∈ nthRoots k (1 : R) } :=
       Fintype.card_congr (rootsOfUnityEquivNthRoots R k)
-    _ ≤ Multiset.card (nthRoots k (1 : R)).attach := (Multiset.card_le_of_le (Multiset.dedup_le _))
+    _ ≤ Multiset.card (nthRoots k (1 : R)).attach := (Multiset.card_le_card (Multiset.dedup_le _))
     _ = Multiset.card (nthRoots k (1 : R)) := Multiset.card_attach
     _ ≤ k := card_nthRoots k 1
 #align card_roots_of_unity card_rootsOfUnity
@@ -821,14 +821,14 @@ theorem card_rootsOfUnity {ζ : R} {n : ℕ+} (h : IsPrimitiveRoot ζ n) :
 if there is a primitive root of unity in `R`. -/
 nonrec theorem card_nthRoots {ζ : R} {n : ℕ} (h : IsPrimitiveRoot ζ n) :
     Multiset.card (nthRoots n (1 : R)) = n := by
-  cases' Nat.eq_zero_or_pos n with hzero hpos
+  rcases Nat.eq_zero_or_pos n with hzero | hpos
   · simp only [hzero, Multiset.card_zero, nthRoots_zero]
   rw [eq_iff_le_not_lt]
   use card_nthRoots n 1
   · rw [not_lt]
     have hcard :
         Fintype.card { x // x ∈ nthRoots n (1 : R) } ≤ Multiset.card (nthRoots n (1 : R)).attach :=
-      Multiset.card_le_of_le (Multiset.dedup_le _)
+      Multiset.card_le_card (Multiset.dedup_le _)
     rw [Multiset.card_attach] at hcard
     rw [← PNat.toPNat'_coe hpos] at hcard h ⊢
     set m := Nat.toPNat' n
@@ -839,14 +839,14 @@ nonrec theorem card_nthRoots {ζ : R} {n : ℕ} (h : IsPrimitiveRoot ζ n) :
 /-- The multiset `nthRoots ↑n (1 : R)` has no repeated elements
 if there is a primitive root of unity in `R`. -/
 theorem nthRoots_nodup {ζ : R} {n : ℕ} (h : IsPrimitiveRoot ζ n) : (nthRoots n (1 : R)).Nodup := by
-  cases' Nat.eq_zero_or_pos n with hzero hpos
+  rcases Nat.eq_zero_or_pos n with hzero | hpos
   · simp only [hzero, Multiset.nodup_zero, nthRoots_zero]
   apply (Multiset.dedup_eq_self (α := R)).1
   rw [eq_iff_le_not_lt]
   constructor
   · exact Multiset.dedup_le (nthRoots n (1 : R))
   · by_contra ha
-    replace ha := Multiset.card_lt_of_lt ha
+    replace ha := Multiset.card_lt_card ha
     rw [card_nthRoots h] at ha
     have hrw : Multiset.card (nthRoots n (1 : R)).dedup =
         Fintype.card { x // x ∈ nthRoots n (1 : R) } := by

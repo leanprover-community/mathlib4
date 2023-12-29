@@ -140,7 +140,7 @@ theorem prop_y (a : Solution₁ d) : d * a.y ^ 2 = a.x ^ 2 - 1 := by rw [← a.p
 /-- Two solutions are equal if their `x` and `y` components are equal. -/
 @[ext]
 theorem ext {a b : Solution₁ d} (hx : a.x = b.x) (hy : a.y = b.y) : a = b :=
-  Subtype.ext <| ext.mpr ⟨hx, hy⟩
+  Subtype.ext <| Zsqrtd.ext _ _ hx hy
 #align pell.solution₁.ext Pell.Solution₁.ext
 
 /-- Construct a solution from `x`, `y` and a proof that the equation is satisfied. -/
@@ -161,7 +161,7 @@ theorem y_mk (x y : ℤ) (prop : x ^ 2 - d * y ^ 2 = 1) : (mk x y prop).y = y :=
 
 @[simp]
 theorem coe_mk (x y : ℤ) (prop : x ^ 2 - d * y ^ 2 = 1) : (↑(mk x y prop) : ℤ√d) = ⟨x, y⟩ :=
-  Zsqrtd.ext.mpr ⟨x_mk x y prop, y_mk x y prop⟩
+  Zsqrtd.ext _ _ (x_mk x y prop) (y_mk x y prop)
 #align pell.solution₁.coe_mk Pell.Solution₁.coe_mk
 
 @[simp]
@@ -267,7 +267,7 @@ theorem x_mul_pos {a b : Solution₁ d} (ha : 0 < a.x) (hb : 0 < b.x) : 0 < (a *
   rw [← abs_of_pos ha, ← abs_of_pos hb, ← abs_mul, ← sq_lt_sq, mul_pow a.x, a.prop_x, b.prop_x, ←
     sub_pos]
   ring_nf
-  cases' le_or_lt 0 d with h h
+  rcases le_or_lt 0 d with h | h
   · positivity
   · rw [(eq_zero_of_d_neg h a).resolve_left ha.ne', (eq_zero_of_d_neg h b).resolve_left hb.ne']
     -- Porting note: was
@@ -552,7 +552,7 @@ theorem y_strictMono {a : Solution₁ d} (h : IsFundamental a) :
     · simp only [zpow_zero, y_one, le_refl]
     · exact (y_zpow_pos h.x_pos h.2.1 hn).le
   refine' strictMono_int_of_lt_succ fun n => _
-  cases' le_or_lt 0 n with hn hn
+  rcases le_or_lt 0 n with hn | hn
   · exact H n hn
   · let m : ℤ := -n - 1
     have hm : n = -m - 1 := by simp only [neg_sub, sub_neg_eq_add, add_tsub_cancel_left]
@@ -664,7 +664,7 @@ theorem eq_pow_of_nonneg {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : So
   -- Porting note: added
   clear hax
   induction' ax using Nat.strong_induction_on with x ih generalizing a
-  cases' hay.eq_or_lt with hy hy
+  rcases hay.eq_or_lt with hy | hy
   · -- case 1: `a = 1`
     refine' ⟨0, _⟩
     simp only [pow_zero]

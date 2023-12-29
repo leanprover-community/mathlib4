@@ -13,6 +13,7 @@ import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 import Mathlib.FieldTheory.PrimitiveElement
 import Mathlib.FieldTheory.Galois
 import Mathlib.RingTheory.PowerBasis
+import Mathlib.FieldTheory.Minpoly.MinpolyDiv
 
 #align_import ring_theory.trace from "leanprover-community/mathlib"@"3e068ece210655b7b9a9477c3aff38a492400aa1"
 
@@ -43,6 +44,8 @@ the roots of the minimal polynomial of `s` over `R`.
    algebraically closed field
  * `traceForm_nondegenerate`: the trace form over a separable extension is a nondegenerate
    bilinear form
+* `traceForm_dualBasis_powerBasis_eq`: The dual basis of a powerbasis `{1, x, x²...}` under the
+   trace form is `aᵢ / f'(x)`, with `f` being the minpoly of `x` and `f / (X - x) = ∑ aᵢxⁱ`.
 
 ## Implementation notes
 
@@ -659,5 +662,33 @@ theorem Algebra.trace_surjective [FiniteDimensional K L] [IsSeparable K L] :
   apply (IsSimpleOrder.eq_bot_or_eq_top (α := Ideal K) _).resolve_left
   rw [LinearMap.range_eq_bot]
   exact Algebra.trace_ne_zero K L
+
+variable {K L}
+
+/--
+The dual basis of a powerbasis `{1, x, x²...}` under the trace form is `aᵢ / f'(x)`,
+with `f` being the minimal polynomial of `x` and `f / (X - x) = ∑ aᵢxⁱ`.
+-/
+lemma traceForm_dualBasis_powerBasis_eq [FiniteDimensional K L] [IsSeparable K L]
+    (pb : PowerBasis K L) (i) :
+    (Algebra.traceForm K L).dualBasis (traceForm_nondegenerate K L) pb.basis i =
+      (minpolyDiv K pb.gen).coeff i / aeval pb.gen (derivative <| minpoly K pb.gen) := by
+  classical
+  apply ((Algebra.traceForm K L).toDual (traceForm_nondegenerate K L)).injective
+  apply pb.basis.ext
+  intro j
+  simp only [BilinForm.toDual_def, BilinForm.apply_dualBasis_left]
+  apply (algebraMap K (AlgebraicClosure K)).injective
+  have := congr_arg (coeff · i) (sum_smul_minpolyDiv_eq_X_pow (AlgebraicClosure K)
+    pb.adjoin_gen_eq_top (r := j) (pb.finrank.symm ▸ j.prop))
+  simp only [AlgEquiv.toAlgHom_eq_coe, Polynomial.map_smul, map_div₀,
+    map_pow, RingHom.coe_coe, AlgHom.coe_coe, finset_sum_coeff, coeff_smul, coeff_map, smul_eq_mul,
+    coeff_X_pow, ← Fin.ext_iff, @eq_comm _ i] at this
+  rw [PowerBasis.coe_basis, Algebra.traceForm_apply, RingHom.map_ite_one_zero,
+  ← this, trace_eq_sum_embeddings (E := AlgebraicClosure K)]
+  apply Finset.sum_congr rfl
+  intro σ _
+  simp only [_root_.map_mul, map_div₀, map_pow]
+  ring
 
 end DetNeZero
