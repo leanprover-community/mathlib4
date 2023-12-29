@@ -1,9 +1,28 @@
+/-
+Copyright (c) 2023 Jujian Zhang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jujian Zhang
+-/
+
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
 import Mathlib.AlgebraicGeometry.StructureSheaf
 import Mathlib.RingTheory.Artinian
 import Mathlib.Topology.Sheaves.SheafCondition.EqualizerProducts
 import Mathlib.Algebra.Category.Ring.Constructions
 import Mathlib.Algebra.Module.Length
+
+/-!
+# Properties of Artinian Rings
+
+- `IsArtinianRing.equivProdLocalization` : if `R` is an artinian ring, then `R` is isomorphic to
+  product of all its prime localizations
+- Artinian rings are Noetherian.
+
+## Implementations notes
+
+The proof here probably does not generalize to non-commutative cases.
+
+-/
 
 open TopologicalSpace AlgebraicGeometry Opposite CategoryTheory
 

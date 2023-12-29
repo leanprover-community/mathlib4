@@ -1,6 +1,16 @@
+/-
+Copyright (c) 2023 Jujian Zhang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jujian Zhang
+-/
+
 import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.RingTheory.Finiteness
 import Mathlib.Data.Fintype.BigOperators
+
+/-!
+# Ideals of products of a ring
+-/
 
 universe u v
 

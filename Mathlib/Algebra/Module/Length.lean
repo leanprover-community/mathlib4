@@ -556,7 +556,7 @@ def CompositionSeries.liftQuotient : CompositionSeries (Submodule R M) where
     exact Submodule.mkQ_surjective N
 
 lemma CompositionSeries.liftQuotient_head :
-  CompositionSeries.bot c.liftQuotient = N.comapMkQRelIso c.bot := rfl
+    CompositionSeries.bot c.liftQuotient = N.comapMkQRelIso c.bot := rfl
 
 lemma CompositionSeries.liftQuotient_last :
     CompositionSeries.top c.liftQuotient = N.comapMkQRelIso c.top := rfl
@@ -604,7 +604,7 @@ noncomputable def FiniteLengthModule.quotient [finLen : FiniteLengthModule R M] 
 
 variable (N) in
 def FiniteLengthModule.of_quotient_of_submodule
-      [quotFin : FiniteLengthModule R (M ⧸ N)] [subFin : FiniteLengthModule R N] :
+    [quotFin : FiniteLengthModule R (M ⧸ N)] [subFin : FiniteLengthModule R N] :
     FiniteLengthModule R M where
   compositionSeries :=
     let c1 := quotFin.compositionSeries.liftQuotient
@@ -726,7 +726,8 @@ noncomputable def RelSeries.cdfSuccEquiv (i : Fin x.length) :
   let x_i : Submodule R (x i.succ) :=
     Submodule.map (Submodule.inclusion <| x.step _ : x i.castSucc →ₗ[R] x i.succ) ⊤
   let x_0 : Submodule R (x i.succ) :=
-    Submodule.map (Submodule.inclusion <| LESeries.monotone _ <| Fin.zero_le _ : x.head →ₗ[R] x i.succ) ⊤
+    Submodule.map (Submodule.inclusion <| LESeries.monotone _ <|
+      Fin.zero_le _ : x.head →ₗ[R] x i.succ) ⊤
 
   let e := @Submodule.quotientQuotientEquivQuotient (R := R) (M := x i.succ)
     (T := x_i) (S := x_0) (fun m hm ↦ by
