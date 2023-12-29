@@ -60,6 +60,7 @@ theorem sup_insert [DecidableEq β] {b : β} : (insert b s : Finset β).sup f = 
   fold_insert_idem
 #align finset.sup_insert Finset.sup_insert
 
+@[simp]
 theorem sup_image [DecidableEq β] (s : Finset γ) (f : γ → β) (g : β → α) :
     (s.image f).sup g = s.sup (g ∘ f) :=
   fold_image_idem
@@ -794,32 +795,34 @@ theorem coe_sup' : ((s.sup' H f : α) : WithBot α) = s.sup ((↑) ∘ f) := by
 #align finset.coe_sup' Finset.coe_sup'
 
 @[simp]
-theorem sup'_cons {b : β} {hb : b ∉ s} {h : (cons b s hb).Nonempty} :
-    (cons b s hb).sup' h f = f b ⊔ s.sup' H f := by
+theorem sup'_cons {b : β} {hb : b ∉ s} :
+    (cons b s hb).sup' (nonempty_cons hb) f = f b ⊔ s.sup' H f := by
   rw [← WithBot.coe_eq_coe]
   simp [WithBot.coe_sup]
 #align finset.sup'_cons Finset.sup'_cons
 
 @[simp]
-theorem sup'_insert [DecidableEq β] {b : β} {h : (insert b s).Nonempty} :
-    (insert b s).sup' h f = f b ⊔ s.sup' H f := by
+theorem sup'_insert [DecidableEq β] {b : β} :
+    (insert b s).sup' (insert_nonempty _ _) f = f b ⊔ s.sup' H f := by
   rw [← WithBot.coe_eq_coe]
   simp [WithBot.coe_sup]
 #align finset.sup'_insert Finset.sup'_insert
 
 @[simp]
-theorem sup'_singleton {b : β} {h : ({b} : Finset β).Nonempty} : ({b} : Finset β).sup' h f = f b :=
+theorem sup'_singleton {b : β} : ({b} : Finset β).sup' (singleton_nonempty _) f = f b :=
   rfl
 #align finset.sup'_singleton Finset.sup'_singleton
 
-theorem sup'_le {a : α} (hs : ∀ b ∈ s, f b ≤ a) : s.sup' H f ≤ a := by
-  rw [← WithBot.coe_le_coe, coe_sup']
-  exact Finset.sup_le fun b h => WithBot.coe_le_coe.2 <| hs b h
+@[simp]
+theorem sup'_le_iff {a : α} : s.sup' H f ≤ a ↔ ∀ b ∈ s, f b ≤ a := by
+  simp_rw [← @WithBot.coe_le_coe α, coe_sup', Finset.sup_le_iff]; rfl
+#align finset.sup'_le_iff Finset.sup'_le_iff
+
+alias ⟨_, sup'_le⟩ := sup'_le_iff
 #align finset.sup'_le Finset.sup'_le
 
-theorem le_sup' {b : β} (h : b ∈ s) : f b ≤ s.sup' ⟨b, h⟩ f := by
-  rw [← WithBot.coe_le_coe, coe_sup']
-  exact le_sup (f := fun c => WithBot.some (f c)) h
+theorem le_sup' {b : β} (h : b ∈ s) : f b ≤ s.sup' ⟨b, h⟩ f :=
+  (sup'_le_iff ⟨b, h⟩ f).1 le_rfl b h
 #align finset.le_sup' Finset.le_sup'
 
 theorem le_sup'_of_le {a : α} {b : β} (hb : b ∈ s) (h : a ≤ f b) : a ≤ s.sup' ⟨b, hb⟩ f :=
@@ -834,11 +837,6 @@ theorem sup'_const (a : α) : s.sup' H (fun _ => a) = a := by
     exact le_rfl
   · apply le_sup' (fun _ => a) H.choose_spec
 #align finset.sup'_const Finset.sup'_const
-
-@[simp]
-theorem sup'_le_iff {a : α} : s.sup' H f ≤ a ↔ ∀ b ∈ s, f b ≤ a :=
-  Iff.intro (fun h _ hb => le_trans (le_sup' f hb) h) (sup'_le H f)
-#align finset.sup'_le_iff Finset.sup'_le_iff
 
 theorem sup'_union [DecidableEq β] {s₁ s₂ : Finset β} (h₁ : s₁.Nonempty) (h₂ : s₂.Nonempty)
     (f : β → α) :
@@ -981,21 +979,26 @@ theorem coe_inf' : ((s.inf' H f : α) : WithTop α) = s.inf ((↑) ∘ f) :=
 #align finset.coe_inf' Finset.coe_inf'
 
 @[simp]
-theorem inf'_cons {b : β} {hb : b ∉ s} {h : (cons b s hb).Nonempty} :
-    (cons b s hb).inf' h f = f b ⊓ s.inf' H f :=
-  @sup'_cons αᵒᵈ _ _ _ H f _ _ h
+theorem inf'_cons {b : β} {hb : b ∉ s} :
+    (cons b s hb).inf' (nonempty_cons hb) f = f b ⊓ s.inf' H f :=
+  @sup'_cons αᵒᵈ _ _ _ H f _ _
 #align finset.inf'_cons Finset.inf'_cons
 
 @[simp]
-theorem inf'_insert [DecidableEq β] {b : β} {h : (insert b s).Nonempty} :
-    (insert b s).inf' h f = f b ⊓ s.inf' H f :=
-  @sup'_insert αᵒᵈ _ _ _ H f _ _ h
+theorem inf'_insert [DecidableEq β] {b : β} :
+    (insert b s).inf' (insert_nonempty _ _) f = f b ⊓ s.inf' H f :=
+  @sup'_insert αᵒᵈ _ _ _ H f _ _
 #align finset.inf'_insert Finset.inf'_insert
 
 @[simp]
-theorem inf'_singleton {b : β} {h : ({b} : Finset β).Nonempty} : ({b} : Finset β).inf' h f = f b :=
+theorem inf'_singleton {b : β} : ({b} : Finset β).inf' (singleton_nonempty _) f = f b :=
   rfl
 #align finset.inf'_singleton Finset.inf'_singleton
+
+@[simp]
+theorem le_inf'_iff {a : α} : a ≤ s.inf' H f ↔ ∀ b ∈ s, a ≤ f b :=
+  sup'_le_iff (α := αᵒᵈ) H f
+#align finset.le_inf'_iff Finset.le_inf'_iff
 
 theorem le_inf' {a : α} (hs : ∀ b ∈ s, a ≤ f b) : a ≤ s.inf' H f :=
   sup'_le (α := αᵒᵈ) H f hs
@@ -1012,11 +1015,6 @@ theorem inf'_le_of_le (hb : b ∈ s) (h : f b ≤ a) : s.inf' ⟨b, hb⟩ f ≤ 
 theorem inf'_const (a : α) : (s.inf' H fun _ => a) = a :=
   sup'_const (α := αᵒᵈ) H a
 #align finset.inf'_const Finset.inf'_const
-
-@[simp]
-theorem le_inf'_iff {a : α} : a ≤ s.inf' H f ↔ ∀ b ∈ s, a ≤ f b :=
-  sup'_le_iff (α := αᵒᵈ) H f
-#align finset.le_inf'_iff Finset.le_inf'_iff
 
 theorem inf'_union [DecidableEq β] {s₁ s₂ : Finset β} (h₁ : s₁.Nonempty) (h₂ : s₂.Nonempty)
     (f : β → α) :
