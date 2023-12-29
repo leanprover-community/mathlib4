@@ -324,8 +324,8 @@ variable
 /-- Let `v` and `v'` be vector fields on `M` and `M'`, respectively, and let `f : M → M'` be a
   differentiable map. If `v` and `v'` are `f`-related, then `f` maps integral curves of `v` to
   integral curves of `v'`. The converse is stated below. -/
-lemma IsIntegralCurveAt.of_mdifferentiable_related {f : M → M'} (hf : MDifferentiable I I' f)
-    (h : IsIntegralCurveAt γ v t₀) (hv : ∀ x : M, v' (f x) = mfderiv I I' f x (v x)) :
+lemma IsIntegralCurveAt.of_mdifferentiable_related (h : IsIntegralCurveAt γ v t₀)
+    {f : M → M'} (hf : MDifferentiable I I' f) (hv : ∀ x : M, v' (f x) = mfderiv I I' f x (v x)) :
     IsIntegralCurveAt (f ∘ γ) v' t₀ := by
   obtain ⟨s, hs, h⟩ := h
   refine ⟨s, hs, ?_⟩
@@ -336,7 +336,7 @@ lemma IsIntegralCurveAt.of_mdifferentiable_related {f : M → M'} (hf : MDiffere
 /-- Let `v` and `v'` be vector fields on `M` and `M'`, respectively, and let `f : M → M'` be a
   differentiable map. If `f` maps integral curves of `v` to integral curves of `v'`, then `v` and
   `v'` are `f`-related. The converse is stated above. -/
-lemma naturality [I.Boundaryless]
+lemma mdifferentiable_related_of_isIntegralCurveAt [I.Boundaryless]
     (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)))
     {f : M → M'} (hf : MDifferentiable I I' f)
     (h : ∀ (γ : ℝ → M) (t₀ : ℝ), IsIntegralCurveAt γ v t₀ → IsIntegralCurveAt (f ∘ γ) v' t₀)
