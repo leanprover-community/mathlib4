@@ -236,10 +236,6 @@ theorem separableClosure.isPurelyInseparable (halg : Algebra.IsAlgebraic F E) :
   set L := separableClosure F E
   refine ⟨(halg.tower_top L x).isIntegral, fun h ↦ ?_⟩
   haveI := (isSeparable_adjoin_simple_iff_separable L E).2 h
-  letI : Algebra L L⟮x⟯ := Subalgebra.algebra L⟮x⟯.toSubalgebra
-  letI : Module L L⟮x⟯ := Algebra.toModule
-  letI : SMul L L⟮x⟯ := Algebra.toSMul
-  haveI : IsScalarTower F L L⟮x⟯ := IntermediateField.isScalarTower L⟮x⟯
   haveI : IsSeparable F (restrictScalars F L⟮x⟯) := IsSeparable.trans F L L⟮x⟯
   have hx : x ∈ restrictScalars F L⟮x⟯ := mem_adjoin_simple_self _ x
   exact ⟨⟨x, (mem_separableClosure_iff F E).2 <| separable_of_mem_isSeparable F E hx⟩, rfl⟩
@@ -257,7 +253,7 @@ theorem separableClosure_le_iff (halg : Algebra.IsAlgebraic F E) (L : Intermedia
     separableClosure F E ≤ L ↔ IsPurelyInseparable L E := by
   refine ⟨fun h ↦ ?_, fun _ ↦ separableClosure_le F E L⟩
   haveI := separableClosure.isPurelyInseparable F E halg
-  letI : Algebra (separableClosure F E) L := (inclusion h).toAlgebra
+  letI := (inclusion h).toAlgebra
   letI : Module (separableClosure F E) L := Algebra.toModule
   letI : SMul (separableClosure F E) L := Algebra.toSMul
   haveI : IsScalarTower (separableClosure F E) L E := IsScalarTower.of_algebraMap_eq (congrFun rfl)
@@ -308,10 +304,6 @@ private theorem isPurelyInseparable_adjoin_finset_of_mem_pow (q : ℕ) [hF : Exp
   obtain ⟨n, y, h⟩ := h x hx
   haveI := expChar_of_injective_algebraMap (algebraMap F L).injective q
   replace h := (isPurelyInseparable_adjoin_simple_iff_mem_pow L E q).2 ⟨n, (algebraMap F L) y, h⟩
-  letI : Algebra L L⟮x⟯ := Subalgebra.algebra L⟮x⟯.toSubalgebra
-  letI : Module L L⟮x⟯ := Algebra.toModule
-  letI : SMul L L⟮x⟯ := Algebra.toSMul
-  haveI : IsScalarTower F L L⟮x⟯ := IntermediateField.isScalarTower L⟮x⟯
   exact IsPurelyInseparable.trans F L L⟮x⟯
 
 variable {F E} in
@@ -320,12 +312,10 @@ lemma exists_finset_of_mem_adjoin {S : Set E} {x : E} (hx : x ∈ adjoin F S) :
     ∃ T : Finset E, (T : Set E) ⊆ S ∧ x ∈ adjoin F (T : Set E) := by
   simp_rw [← biSup_adjoin_simple S, ← iSup_subtype''] at hx
   obtain ⟨s, hx'⟩ := exists_finset_of_mem_iSup hx
-  let T := s.map ⟨Subtype.val, Subtype.val_injective⟩
-  refine ⟨T, by simp, SetLike.le_def.mp ?_ hx'⟩
-  simp only [Finset.coe_map, Function.Embedding.coeFn_mk, iSup_le_iff, adjoin_le_iff,
+  refine ⟨s.map ⟨Subtype.val, Subtype.val_injective⟩, by simp, SetLike.le_def.mp ?_ hx'⟩
+  simp_rw [Finset.coe_map, Function.Embedding.coeFn_mk, iSup_le_iff, adjoin_le_iff,
     Set.le_eq_subset, Set.singleton_subset_iff, SetLike.mem_coe]
-  intro _ h
-  exact subset_adjoin F _ <| Set.mem_image_of_mem Subtype.val h
+  exact fun _ h ↦ subset_adjoin F _ <| Set.mem_image_of_mem Subtype.val h
 
 /-- If `F` is of exponential characteristic `q`, then `F(S) / F` is a purely inseparable extension
 if and only if for any `x ∈ S`, `x ^ (q ^ n)` is contained in `F` for some `n : ℕ`. -/
@@ -403,7 +393,7 @@ theorem finSepDegree_mul_finInsepDegree : finSepDegree F E * finInsepDegree F E 
 
 end Field
 
-section prefectClosure
+section perfectClosure
 
 /-- The (relative) perfect closure of `E / F`, or called maximal purely inseparable subextension
 of `E / F`, is defined to be the compositum of all purely inseparable intermediate fields
@@ -512,7 +502,148 @@ instance perfectClosure.perfect (p : ℕ) [Fact p.Prime] [CharP F p] [CharP E p]
   exact ⟨⟨x', (mem_perfectClosure_iff F E p).2 ⟨n + 1, y, hy⟩⟩, by
     simp_rw [frobenius_def, SubmonoidClass.mk_pow, hx]⟩
 
-end prefectClosure
+end perfectClosure
+
+section AbsolutePerfectClosure
+
+namespace perfectClosure
+
+variable (p : ℕ) [Fact p.Prime] [CharP F p]
+
+private theorem mapPerfectClosure_aux (x : perfectClosure F E) :
+    ∃ y : ℕ × F, (algebraMap F E) y.2 = x.1 ^ p ^ y.1 := by
+  haveI : ExpChar F p := ExpChar.prime Fact.out
+  obtain ⟨n, y, h⟩ := (mem_perfectClosure_iff F E p).1 x.2
+  exact ⟨⟨n, y⟩, h⟩
+
+/-- If `E / F` are fields of characteristic `p`, then there is a map from (relative)
+perfect closure `perfectClosure F E` to the (absolute) perfect closure `PerfectClosure F p`. -/
+def mapPerfectClosure (x : perfectClosure F E) :=
+  PerfectClosure.mk F p <| Classical.choose <| mapPerfectClosure_aux F E p x
+
+/-- If `E / F` are fields of characteristic `p`, `x` is an element of (relative) perfect closure
+`perfectClosure F E` such that `x ^ (p ^ n) = y` for some `n : ℕ` and `y : F`, then
+`perfectClosure.mapPerfectClosure` maps `x` to `PerfectClosure.mk F p (n, y)` (namely,
+`y ^ (p ^ -n)`). -/
+theorem mapPerfectClosure_apply
+    (x : perfectClosure F E) (n : ℕ) (y : F) (h : (algebraMap F E) y = x.1 ^ p ^ n) :
+    mapPerfectClosure F E p x = PerfectClosure.mk F p (n, y) := by
+  rw [mapPerfectClosure, PerfectClosure.eq_iff']
+  apply_fun (· ^ p ^ (Classical.choose <| mapPerfectClosure_aux F E p x).1) at h
+  have h' := Classical.choose_spec <| mapPerfectClosure_aux F E p x
+  apply_fun (· ^ p ^ n) at h'
+  rw [← pow_mul, ← pow_add, add_comm] at h
+  rw [← pow_mul, ← pow_add, ← h, ← map_pow, ← map_pow] at h'
+  exact ⟨0, by simp only [add_zero, iterate_frobenius, (algebraMap F E).injective h']⟩
+
+/-- If `E / F` are fields of characteristic `p`, then there is a ring homomorphism from (relative)
+perfect closure `perfectClosure F E` to the (absolute) perfect closure `PerfectClosure F p`. -/
+def ringHomPerfectClosure : perfectClosure F E →+* PerfectClosure F p where
+  toFun := mapPerfectClosure F E p
+  map_one' := by
+    refine (mapPerfectClosure_apply F E p _ _ _ ?_).trans (PerfectClosure.one_def F p).symm
+    simp only [map_one, OneMemClass.coe_one, one_pow]
+  map_mul' x1 x2 := by
+    haveI : ExpChar F p := ExpChar.prime Fact.out
+    obtain ⟨n1, y1, h1⟩ := (mem_perfectClosure_iff F E p).1 x1.2
+    obtain ⟨n2, y2, h2⟩ := (mem_perfectClosure_iff F E p).1 x2.2
+    simp only [mapPerfectClosure_apply F E p _ _ _ h1, mapPerfectClosure_apply F E p _ _ _ h2,
+      PerfectClosure.mk_mul_mk, iterate_frobenius]
+    refine mapPerfectClosure_apply F E p _ _ _ ?_
+    simp_rw [map_mul, map_pow, h1, h2, ← pow_mul, ← pow_add, add_comm n2 n1]
+    exact mul_pow x1.1 x2.1 (p ^ (n1 + n2)) |>.symm
+  map_zero' := by
+    refine (mapPerfectClosure_apply F E p _ _ _ ?_).trans (PerfectClosure.zero_def F p).symm
+    simp only [map_zero, ZeroMemClass.coe_zero, pow_zero, pow_one]
+  map_add' x1 x2 := by
+    haveI : ExpChar F p := ExpChar.prime Fact.out
+    haveI := charP_of_injective_algebraMap' F E p
+    obtain ⟨n1, y1, h1⟩ := (mem_perfectClosure_iff F E p).1 x1.2
+    obtain ⟨n2, y2, h2⟩ := (mem_perfectClosure_iff F E p).1 x2.2
+    simp only [mapPerfectClosure_apply F E p _ _ _ h1, mapPerfectClosure_apply F E p _ _ _ h2,
+      PerfectClosure.mk_add_mk, iterate_frobenius]
+    refine mapPerfectClosure_apply F E p _ _ _ ?_
+    simp_rw [map_add, map_pow, h1, h2, ← pow_mul, ← pow_add, add_comm n2 n1]
+    exact add_pow_char_pow E x1.1 x2.1 |>.symm
+
+/-- If `E / F` are fields of characteristic `p`, then there is an `F`-algebra homomorphism from
+(relative) perfect closure `perfectClosure F E` to the (absolute) perfect closure
+`PerfectClosure F p`. -/
+def algHomPerfectClosure :
+    letI := (PerfectClosure.of F p).toAlgebra
+    perfectClosure F E →ₐ[F] PerfectClosure F p :=
+  letI := (PerfectClosure.of F p).toAlgebra
+  {
+    __ := ringHomPerfectClosure F E p
+    commutes' := fun x ↦ mapPerfectClosure_apply F E p _ 0 x (by rw [pow_zero, pow_one]; rfl)
+  }
+
+-- TODO: move to suitable location
+theorem _root_.PerfectClosure.lift_apply (K : Type u) [Field K] (p : ℕ) [Fact p.Prime] [CharP K p]
+    (L : Type v) [CommSemiring L] [CharP L p] [PerfectRing L p] (f : K →+* L) (x : ℕ × K) :
+    PerfectClosure.lift K p L f (PerfectClosure.mk K p x) =
+    (frobeniusEquiv L p).symm^[x.1] (f x.2) := by
+  simp only [PerfectClosure.lift, Equiv.coe_fn_mk, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
+    PerfectClosure.liftOn_mk]
+
+-- TODO: move to suitable location
+theorem _root_.iterate_frobeniusEquiv_symm_apply_iterate_frobenius (R : Type*) (p : ℕ)
+    [CommSemiring R] [Fact p.Prime] [CharP R p] [PerfectRing R p] (x : R) (n : ℕ) :
+    (frobeniusEquiv R p).symm^[n] ((frobenius R p)^[n] x) = x := by
+  induction' n with n ih
+  · rfl
+  rwa [Function.iterate_succ_apply, Function.iterate_succ_apply',
+    frobeniusEquiv_symm_apply_frobenius]
+
+-- TODO: move to suitable location
+theorem _root_.iterate_frobenius_apply_iterate_frobeniusEquiv_symm (R : Type*) (p : ℕ)
+    [CommSemiring R] [Fact p.Prime] [CharP R p] [PerfectRing R p] (x : R) (n : ℕ) :
+    (frobenius R p)^[n] ((frobeniusEquiv R p).symm^[n] x) = x := by
+  induction' n with n ih
+  · rfl
+  rwa [Function.iterate_succ_apply, Function.iterate_succ_apply',
+    frobenius_apply_frobeniusEquiv_symm]
+
+variable [CharP E p] [PerfectRing E p]
+
+/-- If `E` is a perfect field of characteristic `p`, then the (relative) perfect closure
+`perfectClosure F E` is isomorphic to the (absolute) perfect closure `PerfectClosure F p`
+as rings. -/
+def ringEquivPerfectClosure : perfectClosure F E ≃+* PerfectClosure F p where
+  __ := ringHomPerfectClosure F E p
+  invFun := PerfectClosure.lift F p (perfectClosure F E) (algebraMap F _)
+  left_inv x := by
+    haveI : ExpChar F p := ExpChar.prime Fact.out
+    obtain ⟨n, y, h⟩ := (mem_perfectClosure_iff F E p).1 x.2
+    simp only [ringHomPerfectClosure, RingHom.toMonoidHom_eq_coe, RingHom.coe_monoidHom_mk,
+      OneHom.toFun_eq_coe, OneHom.coe_mk, mapPerfectClosure_apply F E p x n y h,
+      PerfectClosure.lift_apply]
+    replace h : (algebraMap F (perfectClosure F E)) y = x ^ p ^ n := (algebraMap _ E).injective h
+    apply_fun (frobeniusEquiv (perfectClosure F E) p).symm^[n] at h
+    rw [h, ← iterate_frobenius, iterate_frobeniusEquiv_symm_apply_iterate_frobenius]
+  right_inv x := PerfectClosure.induction_on x fun x ↦ by
+    simp only [RingHom.toMonoidHom_eq_coe, PerfectClosure.lift_apply, OneHom.toFun_eq_coe,
+      MonoidHom.toOneHom_coe, MonoidHom.coe_coe]
+    refine mapPerfectClosure_apply F E p _ x.1 x.2 ?_
+    have := congr_arg (algebraMap _ E) (iterate_frobenius_apply_iterate_frobeniusEquiv_symm
+      (perfectClosure F E) p (algebraMap F (perfectClosure F E) x.2) x.1).symm
+    rwa [iterate_frobenius, map_pow] at this
+
+/-- If `E` is a perfect field of characteristic `p`, then the (relative) perfect closure
+`perfectClosure F E` is isomorphic to the (absolute) perfect closure `PerfectClosure F p`
+as `F`-algebras. -/
+def algEquivPerfectClosure :
+    letI := (PerfectClosure.of F p).toAlgebra
+    perfectClosure F E ≃ₐ[F] PerfectClosure F p :=
+  letI := (PerfectClosure.of F p).toAlgebra
+  {
+    __ := ringEquivPerfectClosure F E p
+    commutes' := (algHomPerfectClosure F E p).commutes'
+  }
+
+end perfectClosure
+
+end AbsolutePerfectClosure
 
 -- theorem separableClosure.eq_adjoin_of_isAlgebraic [Algebra E K] [IsScalarTower F E K]
 --     (halg : Algebra.IsAlgebraic F E) :

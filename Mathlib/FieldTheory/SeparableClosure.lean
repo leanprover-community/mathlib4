@@ -108,6 +108,18 @@ theorem separableClosure.map_le_of_algHom (i : E →ₐ[F] K) :
   obtain ⟨y, hy, rfl⟩ := hx
   exact (map_mem_separableClosure_iff F E K i).2 hy
 
+/-- If `K / E / F` is a field extension tower, such that `K / E` has no non-trivial separable
+subextensions (when `K / E` is algebraic, this means that it is purely inseparable),
+then `separableClosure F K` is equal to `separableClosure F E`. -/
+theorem separableClosure.eq_map_of_separableClosure_eq_bot [Algebra E K] [IsScalarTower F E K]
+    (h : separableClosure E K = ⊥) :
+    separableClosure F K = (separableClosure F E).map (IsScalarTower.toAlgHom F E K) := by
+  refine le_antisymm (fun x hx ↦ ?_) (map_le_of_algHom F E K _)
+  rw [mem_separableClosure_iff] at hx
+  obtain ⟨y, hy⟩ := mem_bot.1 <| h ▸ (mem_separableClosure_iff E K).2 (hx.map_minpoly E)
+  rw [← hy, minpoly.algebraMap_eq (algebraMap E K).injective, ← mem_separableClosure_iff] at hx
+  exact ⟨y, hx, hy⟩
+
 /-- If `i` is an `F`-algebra isomorphism of `E` and `K`, then `separableClosure F K` is equal to
 the image of `separableClosure F E` under the map `i`. -/
 theorem separableClosure.eq_map_of_algEquiv (i : E ≃ₐ[F] K) :
@@ -150,6 +162,16 @@ theorem le_separableClosure_iff (L : IntermediateField F E) :
   ⟨fun h ↦ (isSeparable_def _ _).2 fun x ↦ by simpa only [minpoly_eq] using h x.2,
     fun _ ↦ le_separableClosure _ _ _⟩
 
+/-- The (relative) separable closure of the (relative) separable closure of `E / F` is equal to
+itself. -/
+theorem separableClosure.separableClosure_eq_bot :
+    separableClosure (separableClosure F E) E = ⊥ := bot_unique fun x hx ↦ by
+  rw [mem_separableClosure_iff, ← isSeparable_adjoin_simple_iff_separable] at hx
+  set L := separableClosure F E
+  haveI : IsSeparable F (L⟮x⟯.restrictScalars F) := IsSeparable.trans F L L⟮x⟯
+  exact mem_bot.2 ⟨⟨x, (mem_separableClosure_iff F E).2 (separable_of_mem_isSeparable F E <|
+    show x ∈ L⟮x⟯.restrictScalars F from mem_adjoin_simple_self L x)⟩, rfl⟩
+
 /-- The normal closure of the (relative) separable closure of `E / F` is equal to itself. -/
 theorem separableClosure.normalClosure_eq_self :
     normalClosure F (separableClosure F E) E = separableClosure F E := by
@@ -171,10 +193,6 @@ instance separableClosure.isSepClosure [IsSepClosed E] : IsSepClosure F (separab
   obtain ⟨x, hx⟩ := IsSepClosed.exists_aeval_eq_zero E p (degree_pos_of_irreducible hirr).ne' hsep
   haveI := (isSeparable_adjoin_simple_iff_separable _ E).2 <| hsep.of_dvd <| minpoly.dvd _ x hx
   let L := separableClosure F E
-  letI : Algebra L L⟮x⟯ := Subalgebra.algebra L⟮x⟯.toSubalgebra
-  letI : Module L L⟮x⟯ := Algebra.toModule
-  letI : SMul L L⟮x⟯ := Algebra.toSMul
-  haveI : IsScalarTower F L L⟮x⟯ := IntermediateField.isScalarTower L⟮x⟯
   haveI : IsSeparable F (restrictScalars F L⟮x⟯) := IsSeparable.trans F L L⟮x⟯
   have : x ∈ restrictScalars F L⟮x⟯ := mem_adjoin_simple_self _ x
   use ⟨x, le_separableClosure F E (restrictScalars F L⟮x⟯) this⟩
