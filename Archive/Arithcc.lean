@@ -303,13 +303,11 @@ theorem write_eq_implies_stateEq {t : Register} {v : Word} {ζ₁ ζ₂ : State}
 
 Unlike Theorem 1 in the paper, both `map` and the assumption on `t` are explicit.
 -/
-theorem compiler_correctness :
-    ∀ (map : Identifier → Register) (e : Expr) (ξ : Identifier → Word) (η : State) (t : Register),
-      (∀ x, read (loc x map) η = ξ x) →
-        (∀ x, loc x map < t) → outcome (compile map e t) η ≃[t] { η with ac := value e ξ } := by
-  intro map e ξ η t hmap ht
-  revert η t
-  induction e with intro η t hmap ht
+theorem compiler_correctness
+    (map : Identifier → Register) (e : Expr) (ξ : Identifier → Word) (η : State) (t : Register)
+    (hmap : ∀ x, read (loc x map) η = ξ x) (ht : ∀ x, loc x map < t) :
+    outcome (compile map e t) η ≃[t] { η with ac := value e ξ } := by
+  induction e generalizing η t with
   -- 5.I
   | const => simp [StateEq, step]; rfl
   -- 5.II
