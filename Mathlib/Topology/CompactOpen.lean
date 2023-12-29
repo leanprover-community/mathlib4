@@ -188,15 +188,15 @@ theorem continuous_eval [LocallyCompactPair X Y] : Continuous fun p : C(X, Y) ×
 
 @[deprecated] alias continuous_eval' := continuous_eval
 
-/-- Evaluation of a continuous map `f` at a point `a` is continuous in `f`.
+/-- Evaluation of a continuous map `f` at a point `x` is continuous in `f`.
 
 Porting note: merged `continuous_eval_const` with `continuous_eval_const'` removing unneeded
 assumptions. -/
 @[continuity]
-theorem continuous_eval_const (a : X) :
-    Continuous fun f : C(X, Y) => f a := by
+theorem continuous_eval_const (x : X) :
+    Continuous fun f : C(X, Y) => f x := by
   refine continuous_def.2 fun U hU ↦ ?_
-  convert ContinuousMap.isOpen_gen (isCompact_singleton (x := a)) hU using 1
+  convert ContinuousMap.isOpen_gen (isCompact_singleton (x := x)) hU using 1
   ext; simp [CompactOpen.gen]
 #align continuous_map.continuous_eval_const' ContinuousMap.continuous_eval_const
 #align continuous_map.continuous_eval_const ContinuousMap.continuous_eval_const
@@ -329,8 +329,8 @@ variable (X Y)
 
 /-- The coevaluation map `Y → C(X, Y × X)` sending a point `x : Y` to the continuous function
 on `X` sending `y` to `(x, y)`. -/
-def coev (b : Y) : C(X, Y × X) :=
-  { toFun := Prod.mk b }
+def coev (y : Y) : C(X, Y × X) :=
+  { toFun := Prod.mk y }
 #align continuous_map.coev ContinuousMap.coev
 
 variable {X Y}
@@ -362,8 +362,8 @@ end Coev
 section Curry
 
 /-- Auxiliary definition, see `ContinuousMap.curry` and `Homeomorph.curry`. -/
-def curry' (f : C(X × Y, Z)) (a : X) : C(Y, Z) :=
-  ⟨Function.curry f a, Continuous.comp f.2 (continuous_const.prod_mk continuous_id)⟩
+def curry' (f : C(X × Y, Z)) (x : X) : C(Y, Z) :=
+  ⟨Function.curry f x, Continuous.comp f.2 (continuous_const.prod_mk continuous_id)⟩
   -- Porting note: proof was `by continuity`
 #align continuous_map.curry' ContinuousMap.curry'
 
@@ -380,14 +380,14 @@ theorem continuous_of_continuous_uncurry (f : X → C(Y, Z))
 #align continuous_map.continuous_of_continuous_uncurry ContinuousMap.continuous_of_continuous_uncurry
 
 /-- The curried form of a continuous map `X × Y → Z` as a continuous map `X → C(Y, Z)`.
-    If `a × Y` is locally compact, this is continuous. If `X` and `Y` are both locally
+    If `X × Y` is locally compact, this is continuous. If `X` and `Y` are both locally
     compact, then this is a homeomorphism, see `Homeomorph.curry`. -/
 def curry (f : C(X × Y, Z)) : C(X, C(Y, Z)) :=
   ⟨_, continuous_curry' f⟩
 #align continuous_map.curry ContinuousMap.curry
 
 @[simp]
-theorem curry_apply (f : C(X × Y, Z)) (a : X) (b : Y) : f.curry a b = f (a, b) :=
+theorem curry_apply (f : C(X × Y, Z)) (x : X) (y : Y) : f.curry x y = f (x, y) :=
   rfl
 #align continuous_map.curry_apply ContinuousMap.curry_apply
 
@@ -460,17 +460,17 @@ def curry [LocallyCompactSpace X] [LocallyCompactSpace Y] : C(X × Y, Z) ≃ₜ 
 def continuousMapOfUnique [Unique X] : Y ≃ₜ C(X, Y) where
   toFun := const X
   invFun f := f default
-  left_inv a := rfl
+  left_inv _ := rfl
   right_inv f := by
-    ext a
-    rw [Unique.eq_default a]
+    ext x
+    rw [Unique.eq_default x]
     rfl
   continuous_toFun := continuous_const'
   continuous_invFun := continuous_eval_const _
 #align homeomorph.continuous_map_of_unique Homeomorph.continuousMapOfUnique
 
 @[simp]
-theorem continuousMapOfUnique_apply [Unique X] (b : Y) (a : X) : continuousMapOfUnique b a = b :=
+theorem continuousMapOfUnique_apply [Unique X] (y : Y) (x : X) : continuousMapOfUnique y x = y :=
   rfl
 #align homeomorph.continuous_map_of_unique_apply Homeomorph.continuousMapOfUnique_apply
 
