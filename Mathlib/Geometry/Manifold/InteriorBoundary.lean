@@ -103,40 +103,6 @@ lemma _root_.range_mem_nhds_isInteriorPoint {x : M} (h : I.IsInteriorPoint x) :
   rw [mem_nhds_iff]
   exact ⟨interior (range I), interior_subset, isOpen_interior, h⟩
 
-@[reducible] def toPartialHomeomorph_partialEquiv (x : M) : PartialEquiv M E :=
-  ((extChartAt I x).symm.restr (interior (range I))).symm
-
-lemma toPartialHomeomorph_invFun {x : M} :
-    (I.toPartialHomeomorph_partialEquiv x).invFun =
-      (extChartAt I x).symm.restr (interior (range I)) := rfl
-
-lemma toPartialHomeomorph_source {x : M} :
-    (I.toPartialHomeomorph_partialEquiv x).source =
-      (extChartAt I x).source ∩ (extChartAt I x) ⁻¹' interior (range I) := rfl
-
-lemma toPartialHomeomorph_target {x : M} :
-    (I.toPartialHomeomorph_partialEquiv x).target =
-      (extChartAt I x).target ∩ interior (range I) := rfl
-
-/-- Every interior point defines a partial homeomorphism between the manifold and the model vector
-  space. -/
-@[reducible] def toPartialHomeomorph (x : M) : PartialHomeomorph M E where
-  __ := I.toPartialHomeomorph_partialEquiv x
-  open_source := (continuousOn_open_iff (isOpen_extChartAt_source ..)).mp
-    (continuousOn_extChartAt I x) _ isOpen_interior
-  open_target := by
-    rw [toPartialHomeomorph_target, extChartAt_target, inter_assoc,
-      inter_eq_self_of_subset_right interior_subset, inter_comm]
-    exact isOpen_interior.inter <| I.continuous_symm.isOpen_preimage _ <|
-      PartialHomeomorph.open_target _
-  continuousOn_toFun := (continuousOn_extChartAt I x).congr_mono
-    (fun _ _ ↦ rfl) (inter_subset_left ..)
-  continuousOn_invFun := (continuousOn_extChartAt_symm I x).congr_mono
-    (fun _ _ ↦ rfl) (inter_subset_left ..)
-
-lemma mem_toPartialHomeomorph_source {x : M} (h : I.IsInteriorPoint x) :
-    x ∈ (I.toPartialHomeomorph x).source := ⟨mem_extChartAt_source .., h⟩
-
 /-- Type class for manifold without boundary. This differs from `ModelWithCorners.Boundaryless`,
   which states that the `ModelWithCorners` maps to the whole model vector space. -/
 class _root_.BoundarylessManifold {𝕜 : Type*} [NontriviallyNormedField 𝕜]
