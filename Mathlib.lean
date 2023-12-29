@@ -2082,6 +2082,7 @@ import Mathlib.FieldTheory.PolynomialGaloisGroup
 import Mathlib.FieldTheory.PrimitiveElement
 import Mathlib.FieldTheory.PurelyInseparable
 import Mathlib.FieldTheory.RatFunc
+import Mathlib.FieldTheory.RelPerfectClosure
 import Mathlib.FieldTheory.Separable
 import Mathlib.FieldTheory.SeparableClosure
 import Mathlib.FieldTheory.SeparableDegree
