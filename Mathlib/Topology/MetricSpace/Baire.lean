@@ -239,10 +239,8 @@ theorem mem_residual {s : Set α} : s ∈ residual α ↔ ∃ t ⊆ s, IsGδ t �
 /-- A property holds on a residual (comeagre) set if and only if it holds on some dense `Gδ` set. -/
 theorem eventually_residual {p : α → Prop} :
     (∀ᶠ x in residual α, p x) ↔ ∃ t : Set α, IsGδ t ∧ Dense t ∧ ∀ x : α, x ∈ t → p x := by
-  -- this can probably be improved...
-  convert@mem_residual _ _ _ p
-  simp_rw [exists_prop, @and_comm ((_ : Set α) ⊆ p), and_assoc]
-  rfl
+  simp only [Filter.Eventually, mem_residual, subset_def, mem_setOf_eq]
+  tauto
 #align eventually_residual eventually_residual
 
 theorem dense_of_mem_residual {s : Set α} (hs : s ∈ residual α) : Dense s :=
