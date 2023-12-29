@@ -337,11 +337,7 @@ lemma IsIntegralCurveAt.of_mdifferentiable_related {f : M → M'} (hf : MDiffere
 
 /-- Let `v` and `v'` be vector fields on `M` and `M'`, respectively, and let `f : M → M'` be a
   differentiable map. If `f` maps integral curves of `v` to integral curves of `v'`, then `v` and
-  `v'` are `f`-related. The converse is stated above.
-
-  Even though the lemma is true for manifolds with corners, we include the boundaryless assumption
-  because the existence theorem for integral curves is currently only proven for boundaryless
-  models. -/
+  `v'` are `f`-related. The converse is stated above. -/
 lemma naturality [I.Boundaryless]
     (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)))
     {f : M → M'} (hf : MDifferentiable I I' f)
@@ -349,7 +345,15 @@ lemma naturality [I.Boundaryless]
     (x : M) : v' (f x) = mfderiv I I' f x (v x) := by
   obtain ⟨γ, h0, hγ⟩ : ∃ γ : ℝ → M, γ 0 = x ∧ IsIntegralCurveAt γ v 0 :=
     exists_isIntegralCurveAt_of_contMDiffAt_boundaryless 0 hv.contMDiffAt
-  have hγ' := h γ 0 hγ
-  rw [IsIntegralCurveAt] at hγ hγ'
+  have hγ' := (h γ 0 hγ).hasMFDerivAt
+  have hγ := hγ.hasMFDerivAt
+  rw [Function.comp_apply, h0] at hγ'
+  rw [h0] at hγ
+  have := hasMFDerivAt_unique hγ' <| HasMFDerivAt.comp 0 (hf (γ 0)).hasMFDerivAt hγ
+  rw [ContinuousLinearMap.ext_iff] at this
+  have := this 1
+  rw [ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.one_apply, one_smul, h0] at this
+  rw [this]
+  simp
 
 end Naturality
