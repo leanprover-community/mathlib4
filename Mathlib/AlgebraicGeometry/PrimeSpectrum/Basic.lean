@@ -963,21 +963,21 @@ protected def minimalPrimes.equivIrreducibleComponents :
   (e.trans <| PrimeSpectrum.pointsEquivIrreducibleCloseds R).minimalsIsoMaximals.trans
     (OrderIso.setCongr _ _ <| by simp_rw [irreducibleComponents_eq_maximals_closed, and_comm]).dual
 
-open PrimeSpectrum in
-lemma minimalPrimes.eq_irreducibleComponents :
-    minimalPrimes R =
-    PrimeSpectrum.vanishingIdeal '' (irreducibleComponents <| PrimeSpectrum R) := by
+namespace PrimeSpectrum
+
+lemma vanishingIdeal_irreducibleComponents :
+    vanishingIdeal '' (irreducibleComponents <| PrimeSpectrum R) =
+    minimalPrimes R := by
   rw [irreducibleComponents_eq_maximals_closed, minimalPrimes_eq_minimals, ← minimals_swap,
     ← PrimeSpectrum.vanishingIdeal_isClosed_isIrreducible, image_minimals_of_rel_iff_rel]
   intro s t hs _
   exact vanishingIdeal_anti_mono_iff hs.1
 
-namespace PrimeSpectrum
 
 lemma zeroLocus_minimalPrimes :
     zeroLocus ∘ (↑) '' minimalPrimes R =
     irreducibleComponents (PrimeSpectrum R) := by
-  rw [minimalPrimes.eq_irreducibleComponents, ← Set.image_comp, Set.EqOn.image_eq_self]
+  rw [← vanishingIdeal_irreducibleComponents, ← Set.image_comp, Set.EqOn.image_eq_self]
   intros s hs
   simpa [zeroLocus_vanishingIdeal_eq_closure, closure_eq_iff_isClosed]
     using isClosed_of_mem_irreducibleComponents s hs
@@ -989,15 +989,14 @@ lemma vanishingIdeal_mem_minimalPrimes
   · conv_rhs => rw [← zeroLocus_minimalPrimes,
       ← zeroLocus_vanishingIdeal_eq_closure]
     exact Set.mem_image_of_mem _
-  · rw [minimalPrimes.eq_irreducibleComponents, ← vanishingIdeal_closure]
+  · rw [← vanishingIdeal_irreducibleComponents, ← vanishingIdeal_closure]
     exact Set.mem_image_of_mem _
 
 lemma zeroLocus_ideal_mem_irreducibleComponents
     {I : Ideal R} :
     zeroLocus I ∈ irreducibleComponents (PrimeSpectrum R) ↔ I.radical ∈ minimalPrimes R := by
   constructor
-  · conv_rhs => rw [minimalPrimes.eq_irreducibleComponents,
-      ← vanishingIdeal_zeroLocus_eq_radical]
+  · conv_rhs => rw [← vanishingIdeal_irreducibleComponents, ← vanishingIdeal_zeroLocus_eq_radical]
     exact Set.mem_image_of_mem _
   · rw [← PrimeSpectrum.zeroLocus_minimalPrimes, ← zeroLocus_radical]
     exact Set.mem_image_of_mem _
