@@ -94,7 +94,8 @@ theorem LocallyCompactSpace.of_hasBasis {ι : X → Type*} {p : ∀ x, ι x → 
     ⟨s x i, (h x).mem_of_mem hp, ht, hc x i hp⟩⟩
 #align locally_compact_space_of_has_basis LocallyCompactSpace.of_hasBasis
 
-@[deprecated] alias locallyCompactSpace_of_hasBasis := LocallyCompactSpace.of_hasBasis
+@[deprecated] -- since 29 Dec 2023
+alias locallyCompactSpace_of_hasBasis := LocallyCompactSpace.of_hasBasis
 
 instance Prod.locallyCompactSpace (X : Type*) (Y : Type*) [TopologicalSpace X]
     [TopologicalSpace Y] [LocallyCompactSpace X] [LocallyCompactSpace Y] :
