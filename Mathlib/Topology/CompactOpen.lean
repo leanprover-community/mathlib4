@@ -210,6 +210,14 @@ theorem continuous_coe : Continuous ((⇑) : C(α, β) → (α → β)) :=
 #align continuous_map.continuous_coe' ContinuousMap.continuous_coe
 #align continuous_map.continuous_coe ContinuousMap.continuous_coe
 
+lemma isClosed_setOf_mapsTo {t : Set β} (ht : IsClosed t) (s : Set α) :
+    IsClosed {f : C(α, β) | MapsTo f s t} :=
+  ht.setOf_mapsTo fun _ _ ↦ continuous_eval_const _
+
+lemma isClopen_setOf_mapsTo {K : Set α} (hK : IsCompact K) {U : Set β} (hU : IsClopen U) :
+    IsClopen {f : C(α, β) | MapsTo f K U} :=
+  ⟨isOpen_setOf_mapsTo hK hU.isOpen, isClosed_setOf_mapsTo hU.isClosed K⟩
+
 instance [T0Space β] : T0Space C(α, β) :=
   t0Space_of_injective_of_continuous FunLike.coe_injective continuous_coe
 
@@ -361,8 +369,7 @@ def curry' (f : C(α × β, γ)) (a : α) : C(β, γ) :=
 
 /-- If a map `α × β → γ` is continuous, then its curried form `α → C(β, γ)` is continuous. -/
 theorem continuous_curry' (f : C(α × β, γ)) : Continuous (curry' f) :=
-  have hf : curry' f = ContinuousMap.comp f ∘ coev _ _ := by ext; rfl
-  hf ▸ Continuous.comp (continuous_comp f) continuous_coev
+  Continuous.comp (continuous_comp f) continuous_coev
 #align continuous_map.continuous_curry' ContinuousMap.continuous_curry'
 
 /-- To show continuity of a map `α → C(β, γ)`, it suffices to show that its uncurried form
