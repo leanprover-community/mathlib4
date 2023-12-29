@@ -213,10 +213,10 @@ theorem zpow_sub_one (a : G) (n : ℤ) : a ^ (n - 1) = a ^ n * a⁻¹ :=
 
 @[to_additive add_zsmul]
 theorem zpow_add (a : G) (m n : ℤ) : a ^ (m + n) = a ^ m * a ^ n := by
-  induction' n using Int.induction_on with n ihn n ihn
-  case hz => simp
-  · simp only [← add_assoc, zpow_add_one, ihn, mul_assoc]
-  · rw [zpow_sub_one, ← mul_assoc, ← ihn, ← zpow_sub_one, add_sub_assoc]
+  induction n using Int.induction_on with
+  | hz => simp
+  | hp n ihn => simp only [← add_assoc, zpow_add_one, ihn, mul_assoc]
+  | hn n ihn => rw [zpow_sub_one, ← mul_assoc, ← ihn, ← zpow_sub_one, add_sub_assoc]
 #align zpow_add zpow_add
 #align add_zsmul add_zsmul
 

@@ -393,8 +393,9 @@ theorem not_subset : ¬s ⊆ t ↔ ∃ a ∈ s, a ∉ t := by
   simp only [subset_def, not_forall, exists_prop]
 #align set.not_subset Set.not_subset
 
-/-! ### Definition of strict subsets `s ⊂ t` and basic properties. -/
+lemma eq_of_forall_subset_iff (h : ∀ u, s ⊆ u ↔ t ⊆ u) : s = t := eq_of_forall_ge_iff h
 
+/-! ### Definition of strict subsets `s ⊂ t` and basic properties. -/
 
 protected theorem eq_or_ssubset_of_subset (h : s ⊆ t) : s = t ∨ s ⊂ t :=
   eq_or_lt_of_le h
