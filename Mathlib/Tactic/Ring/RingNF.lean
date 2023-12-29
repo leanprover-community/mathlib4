@@ -242,8 +242,11 @@ nonterminal normalization option. -/
 register_option ring.terminal : Bool :=
   { defValue := false
     group := ""
-    descr := "Make the `ring` tactic terminal, i.e. turn off the Try This offering `ring_nf` as a nonterminal normalization option" }
+    descr :=
+      "Make the `ring` tactic terminal, i.e. turn off the Try This offering `ring_nf` as a \
+      nonterminal normalization option" }
 
+/-- Underlying implementation of the `ring` and `ring!` tactics. -/
 elab (name := conditionalRingNF) "ring1_conditional_ring_nf" tk:"!"? : tactic => do
   if ← Lean.getBoolOption `ring.terminal then
     evalTactic (← `(tactic | ring1))
