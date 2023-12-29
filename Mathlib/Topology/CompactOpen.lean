@@ -210,6 +210,14 @@ theorem continuous_coe : Continuous ((⇑) : C(α, β) → (α → β)) :=
 #align continuous_map.continuous_coe' ContinuousMap.continuous_coe
 #align continuous_map.continuous_coe ContinuousMap.continuous_coe
 
+lemma isClosed_setOf_mapsTo {t : Set β} (ht : IsClosed t) (s : Set α) :
+    IsClosed {f : C(α, β) | MapsTo f s t} :=
+  ht.setOf_mapsTo fun _ _ ↦ continuous_eval_const _
+
+lemma isClopen_setOf_mapsTo {K : Set α} (hK : IsCompact K) {U : Set β} (hU : IsClopen U) :
+    IsClopen {f : C(α, β) | MapsTo f K U} :=
+  ⟨isOpen_setOf_mapsTo hK hU.isOpen, isClosed_setOf_mapsTo hU.isClosed K⟩
+
 instance [T0Space β] : T0Space C(α, β) :=
   t0Space_of_injective_of_continuous FunLike.coe_injective continuous_coe
 
@@ -382,27 +390,6 @@ def curry (f : C(α × β, γ)) : C(α, C(β, γ)) :=
 theorem curry_apply (f : C(α × β, γ)) (a : α) (b : β) : f.curry a b = f (a, b) :=
   rfl
 #align continuous_map.curry_apply ContinuousMap.curry_apply
-
-lemma _root_.Continuous.isOpen_setOf_mapsTo_curry_isCompact_isOpen {f : α × β → γ}
-    (hf : Continuous f) {K : Set β} (hK : IsCompact K) {W : Set γ} (hW : IsOpen W) :
-    IsOpen {x | MapsTo (f.curry x) K W} :=
-  (isOpen_setOf_mapsTo hK hW).preimage (ContinuousMap.mk f hf).curry.2
-
-lemma _root_.Continuous.isClopen_setOf_mapsTo_curry_isCompact_isClopen {f : α × β → γ}
-    (hf : Continuous f) {K : Set β} (hK : IsCompact K) {W : Set γ} (hW : IsClopen W) :
-    IsClopen {x | MapsTo (f.curry x) K W} :=
-  ⟨hf.isOpen_setOf_mapsTo_curry_isCompact_isOpen hK hW.isOpen,
-    .setOf_mapsTo hW.isClosed fun y _ ↦ hf.comp <| Continuous.Prod.mk_left y⟩
-
-lemma _root_.Continuous.isOpen_setOf_mapsTo_isCompact_isOpen {f : α → β → γ}
-    (hf : Continuous f.uncurry) {K : Set β} (hK : IsCompact K) {W : Set γ} (hW : IsOpen W) :
-    IsOpen {x | MapsTo (f x) K W} :=
-  hf.isOpen_setOf_mapsTo_curry_isCompact_isOpen hK hW
-
-lemma _root_.Continuous.isClopen_setOf_mapsTo_isCompact_isClopen {f : α → β → γ}
-    (hf : Continuous f.uncurry) {K : Set β} (hK : IsCompact K) {W : Set γ} (hW : IsClopen W) :
-    IsClopen {x | MapsTo (f x) K W} :=
-  hf.isClopen_setOf_mapsTo_curry_isCompact_isClopen hK hW
 
 /-- The currying process is a continuous map between function spaces. -/
 theorem continuous_curry [LocallyCompactSpace (α × β)] :
