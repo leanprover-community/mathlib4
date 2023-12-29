@@ -975,7 +975,7 @@ lemma minimalPrimes.eq_irreducibleComponents :
 namespace PrimeSpectrum
 
 lemma zeroLocus_minimalPrimes :
-  zeroLocus ∘ (↑) '' minimalPrimes R =
+    zeroLocus ∘ (↑) '' minimalPrimes R =
     irreducibleComponents (PrimeSpectrum R) := by
   rw [minimalPrimes.eq_irreducibleComponents, ← Set.image_comp, Set.EqOn.image_eq_self]
   intros s hs
