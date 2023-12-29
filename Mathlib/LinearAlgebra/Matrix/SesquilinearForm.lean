@@ -88,7 +88,8 @@ section CommSemiring
 
 variable [CommSemiring R] [CommSemiring R₁] [CommSemiring R₂]
 
-variable [AddCommMonoid M₁] [Module R₁ M₁] [AddCommMonoid M₂] [Module R₂ M₂]
+variable [AddCommMonoid M₁] [Module R₁ M₁] [AddCommMonoid M₂] [Module R₂ M₂] [AddCommMonoid N₂]
+  [Module R N₂]
 
 variable {σ₁ : R₁ →+* R} {σ₂ : R₂ →+* R}
 
@@ -97,14 +98,14 @@ and an `m`-indexed basis for `M₂`.
 
 This is an auxiliary definition for the equivalence `Matrix.toLinearMapₛₗ₂'`. -/
 def LinearMap.toMatrix₂Aux (b₁ : n → M₁) (b₂ : m → M₂) :
-    (M₁ →ₛₗ[σ₁] M₂ →ₛₗ[σ₂] R) →ₗ[R] Matrix n m R where
+    (M₁ →ₛₗ[σ₁] M₂ →ₛₗ[σ₂] N₂) →ₗ[R] Matrix n m N₂ where
   toFun f := of fun i j => f (b₁ i) (b₂ j)
   map_add' _f _g := rfl
   map_smul' _f _g := rfl
 #align linear_map.to_matrix₂_aux LinearMap.toMatrix₂Aux
 
 @[simp]
-theorem LinearMap.toMatrix₂Aux_apply (f : M₁ →ₛₗ[σ₁] M₂ →ₛₗ[σ₂] R) (b₁ : n → M₁) (b₂ : m → M₂)
+theorem LinearMap.toMatrix₂Aux_apply (f : M₁ →ₛₗ[σ₁] M₂ →ₛₗ[σ₂] N₂) (b₁ : n → M₁) (b₂ : m → M₂)
     (i : n) (j : m) : LinearMap.toMatrix₂Aux b₁ b₂ f i j = f (b₁ i) (b₂ j) :=
   rfl
 #align linear_map.to_matrix₂_aux_apply LinearMap.toMatrix₂Aux_apply
