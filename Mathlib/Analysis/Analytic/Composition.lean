@@ -616,7 +616,7 @@ def compPartialSumTargetSet (m M N : ℕ) : Set (Σ n, Composition n) :=
 
 theorem compPartialSumTargetSet_image_compPartialSumSource (m M N : ℕ)
     (i : Σ n, Composition n) (hi : i ∈ compPartialSumTargetSet m M N) :
-    ∃ (j : _) (hj : j ∈ compPartialSumSource m M N), i = compChangeOfVariables m M N j hj := by
+    ∃ (j : _) (hj : j ∈ compPartialSumSource m M N), compChangeOfVariables m M N j hj = i := by
   rcases i with ⟨n, c⟩
   refine' ⟨⟨c.length, c.blocksFun⟩, _, _⟩
   · simp only [compPartialSumTargetSet, Set.mem_setOf_eq] at hi
@@ -625,7 +625,7 @@ theorem compPartialSumTargetSet_image_compPartialSumSource (m M N : ℕ)
   · dsimp [compChangeOfVariables]
     rw [Composition.sigma_eq_iff_blocks_eq]
     simp only [Composition.blocksFun, Composition.blocks, Subtype.coe_eta, List.get_map]
-    conv_lhs => rw [← List.ofFn_get c.blocks]
+    conv_rhs => rw [← List.ofFn_get c.blocks]
 #align formal_multilinear_series.comp_partial_sum_target_subset_image_comp_partial_sum_source FormalMultilinearSeries.compPartialSumTargetSet_image_compPartialSumSource
 
 /-- Target set in the change of variables to compute the composition of partial sums of formal
@@ -665,11 +665,8 @@ theorem compChangeOfVariables_sum {α : Type*} [AddCommMonoid α] (m M N : ℕ)
       map_ofFn, length_ofFn, true_and_iff, compChangeOfVariables]
     intro j
     simp only [Composition.blocksFun, (H.right _).right, List.get_ofFn]
-  -- 2 - show that the composition gives the `comp_along_composition` application
-  · rintro ⟨k, blocks_fun⟩ H
-    rw [h]
-  -- 3 - show that the map is injective
-  · rintro ⟨k, blocks_fun⟩ ⟨k', blocks_fun'⟩ H H' heq
+  -- 2 - show that the map is injective
+  · rintro ⟨k, blocks_fun⟩ H ⟨k', blocks_fun'⟩ H' heq
     obtain rfl : k = k' := by
       have := (compChangeOfVariables_length m M N H).symm
       rwa [heq, compChangeOfVariables_length] at this
@@ -682,10 +679,13 @@ theorem compChangeOfVariables_sum {α : Type*} [AddCommMonoid α] (m M N : ℕ)
         apply Composition.blocksFun_congr <;>
         first | rw [heq] | rfl
       _ = blocks_fun' i := compChangeOfVariables_blocksFun m M N H' i
-  -- 4 - show that the map is surjective
+  -- 3 - show that the map is surjective
   · intro i hi
     apply compPartialSumTargetSet_image_compPartialSumSource m M N i
     simpa [compPartialSumTarget] using hi
+  -- 4 - show that the composition gives the `comp_along_composition` application
+  · rintro ⟨k, blocks_fun⟩ H
+    rw [h]
 #align formal_multilinear_series.comp_change_of_variables_sum FormalMultilinearSeries.compChangeOfVariables_sum
 
 /-- The auxiliary set corresponding to the composition of partial sums asymptotically contains
