@@ -728,9 +728,8 @@ theorem div_mem_nhds_one_of_haar_pos (μ : Measure G) [IsHaarMeasure μ] [Locall
   suffices V ⊆ E / E from Filter.mem_of_superset hV1 this
   intro v hvV
   obtain ⟨x, hxK, hxvK⟩ : ∃ x : G, x ∈ {v} * K ∧ x ∈ K := Set.not_disjoint_iff.1 (hv v hvV)
-  refine' ⟨x, v⁻¹ * x, hKE hxvK, _, _⟩
-  · apply hKE
-    simpa only [singleton_mul, image_mul_left, mem_preimage] using hxK
+  refine ⟨x, hKE hxvK, v⁻¹ * x, hKE ?_, ?_⟩
+  · simpa only [singleton_mul, image_mul_left, mem_preimage] using hxK
   · simp only [div_eq_iff_eq_mul, ← mul_assoc, mul_right_inv, one_mul]
 #align measure_theory.measure.div_mem_nhds_one_of_haar_pos MeasureTheory.Measure.div_mem_nhds_one_of_haar_pos
 #align measure_theory.measure.sub_mem_nhds_zero_of_add_haar_pos MeasureTheory.Measure.sub_mem_nhds_zero_of_addHaar_pos
