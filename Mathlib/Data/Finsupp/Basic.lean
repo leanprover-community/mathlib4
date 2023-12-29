@@ -1694,12 +1694,32 @@ end
 section
 variable {M : Type*} [Zero M] {P : α → Prop} [DecidablePred P]
 
-/-- Extend the domain of a `Finsupp` by using `0` where `P x` does not hold. -/
+/-- Combine finitely supported functions over `{a // P a}` and `{a // ¬P a}`, by case-splitting on
+`P a`. -/
 @[simps]
-def extendDomain (f : Subtype P →₀ M) : α →₀ M where
-  toFun a := if h : P a then f ⟨a, h⟩ else 0
-  support := f.support.map (.subtype _)
-  mem_support_toFun a := by simp
+def piecewise (f : Subtype P →₀ M) (g : {a // ¬ P a} →₀ M) : α →₀ M where
+  toFun a := if h : P a then f ⟨a, h⟩ else g ⟨a, h⟩
+  support := (f.support.map (.subtype _)).disjUnion (g.support.map (.subtype _)) <| by
+    simp_rw [Finset.disjoint_left, mem_map, forall_exists_index, Embedding.coe_subtype,
+      Subtype.forall, Subtype.exists]
+    rintro _ a ha ⟨-, rfl⟩ ⟨b, hb, -, rfl⟩
+    exact hb ha
+  mem_support_toFun a := by
+    by_cases ha : P a <;> simp [ha]
+
+@[simp]
+theorem subtypeDomain_piecewise (f : Subtype P →₀ M) (g : {a // ¬ P a} →₀ M) :
+    subtypeDomain P (f.piecewise g) = f :=
+  Finsupp.ext fun a => dif_pos a.prop
+
+@[simp]
+theorem subtypeDomain_not_piecewise (f : Subtype P →₀ M) (g : {a // ¬ P a} →₀ M) :
+    subtypeDomain (¬P ·) (f.piecewise g) = g :=
+  Finsupp.ext fun a => dif_neg a.prop
+
+/-- Extend the domain of a `Finsupp` by using `0` where `P x` does not hold. -/
+@[simps! support toFun]
+def extendDomain (f : Subtype P →₀ M) : α →₀ M := piecewise f 0
 
 theorem extendDomain_eq_embDomain_subtype (f : Subtype P →₀ M) :
     extendDomain f = embDomain (.subtype _) f := by
@@ -1720,8 +1740,7 @@ theorem support_extendDomain_subset (f : Subtype P →₀ M) :
 @[simp]
 theorem subtypeDomain_extendDomain (f : Subtype P →₀ M) :
     subtypeDomain P f.extendDomain = f :=
-  Finsupp.ext fun a => dif_pos a.prop
-
+  subtypeDomain_piecewise _ _
 
 theorem extendDomain_subtypeDomain (f : α →₀ M) (hf : ∀ a ∈ f.support, P a) :
     (subtypeDomain P f).extendDomain = f := by
