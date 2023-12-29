@@ -66,6 +66,11 @@ lean_exe graph where
   root := `ImportGraph.Main
   supportInterpreter := true
 
+/-- `lake exe shake` checks files for unnecessary imports. -/
+lean_exe shake where
+  root := `Shake.Main
+  supportInterpreter := true
+
 /-!
 ## Other configuration
 -/
