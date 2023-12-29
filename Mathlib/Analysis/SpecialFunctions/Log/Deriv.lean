@@ -77,7 +77,7 @@ theorem deriv_log' : deriv log = Inv.inv :=
 
 theorem contDiffOn_log {n : ℕ∞} : ContDiffOn ℝ n log {0}ᶜ := by
   suffices : ContDiffOn ℝ ⊤ log {0}ᶜ; exact this.of_le le_top
-  refine' (contDiffOn_top_iff_deriv_of_open isOpen_compl_singleton).2 _
+  refine' (contDiffOn_top_iff_deriv_of_isOpen isOpen_compl_singleton).2 _
   simp [differentiableOn_log, contDiffOn_inv]
 #align real.cont_diff_on_log Real.contDiffOn_log
 
@@ -297,7 +297,7 @@ theorem hasSum_log_sub_log_of_abs_lt_1 {x : ℝ} (h : |x| < 1) :
       (log (1 + x) - log (1 - x)) := by
   set term := fun n : ℕ => -1 * ((-x) ^ (n + 1) / ((n : ℝ) + 1)) + x ^ (n + 1) / (n + 1)
   have h_term_eq_goal :
-      term ∘ (· * ·) 2 = fun k : ℕ => 2 * (1 / (2 * k + 1)) * x ^ (2 * k + 1) := by
+      term ∘ (2 * ·) = fun k : ℕ => 2 * (1 / (2 * k + 1)) * x ^ (2 * k + 1) := by
     ext n
     dsimp only [(· ∘ ·)]
     rw [Odd.neg_pow (⟨n, rfl⟩ : Odd (2 * n + 1)) x]

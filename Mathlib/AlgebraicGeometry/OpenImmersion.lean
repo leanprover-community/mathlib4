@@ -267,7 +267,7 @@ theorem affineBasisCover_is_basis (X : Scheme) :
     TopologicalSpace.IsTopologicalBasis
       {x : Set X |
         ∃ a : X.affineBasisCover.J, x = Set.range (X.affineBasisCover.map a).1.base} := by
-  apply TopologicalSpace.isTopologicalBasis_of_open_of_nhds
+  apply TopologicalSpace.isTopologicalBasis_of_isOpen_of_nhds
   · rintro _ ⟨a, rfl⟩
     exact IsOpenImmersion.open_range (X.affineBasisCover.map a)
   · rintro a U haU hU

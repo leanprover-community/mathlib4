@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Neil Strickland
 -/
 import Mathlib.Algebra.Ring.InjSurj
-import Mathlib.Algebra.Group.Units
+import Mathlib.Algebra.Group.Units.Hom
+import Mathlib.Algebra.Ring.Hom.Defs
 
 #align_import algebra.ring.units from "leanprover-community/mathlib"@"2ed7e4aec72395b6a7c3ac4ac7873a7a43ead17c"
 
@@ -88,6 +89,15 @@ theorem divp_sub (a b : α) (u : αˣ) : a /ₚ u - b = (a - b * u) /ₚ u := by
   rw [mul_assoc, Units.mul_inv, mul_one]
 #align units.divp_sub Units.divp_sub
 
+@[simp]
+protected theorem map_neg {F : Type*} [Ring β] [RingHomClass F α β] (f : F) (u : αˣ) :
+    map (f : α →* β) (-u) = -map (f : α →* β) u :=
+  ext (by simp only [coe_map, Units.val_neg, MonoidHom.coe_coe, map_neg])
+
+protected theorem map_neg_one {F : Type*} [Ring β] [RingHomClass F α β] (f : F) :
+    map (f : α →* β) (-1) = -1 :=
+  by simp only [Units.map_neg, map_one]
+
 end Ring
 
 end Units
@@ -114,7 +124,7 @@ theorem divp_add_divp [CommRing α] (a b : α) (u₁ u₂ : αˣ) :
     a /ₚ u₁ + b /ₚ u₂ = (a * u₂ + u₁ * b) /ₚ (u₁ * u₂) := by
   simp only [divp, add_mul, mul_inv_rev, val_mul]
   rw [mul_comm (↑u₁ * b), mul_comm b]
-  rw [←mul_assoc, ←mul_assoc, mul_assoc a, mul_assoc (↑u₂⁻¹ : α), mul_inv, inv_mul, mul_one,
+  rw [← mul_assoc, ← mul_assoc, mul_assoc a, mul_assoc (↑u₂⁻¹ : α), mul_inv, inv_mul, mul_one,
     mul_one]
   -- porting note: `assoc_rw` not ported: `assoc_rw [mul_inv, mul_inv, mul_one, mul_one]`
 #align units.divp_add_divp Units.divp_add_divp

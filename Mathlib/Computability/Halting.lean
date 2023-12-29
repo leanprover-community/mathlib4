@@ -202,7 +202,7 @@ theorem rice (C : Set (ℕ →. ℕ)) (h : ComputablePred fun c => eval c ∈ C)
     fixed_point₂
       (Partrec.cond (h.comp fst) ((Partrec.nat_iff.2 hg).comp snd).to₂
           ((Partrec.nat_iff.2 hf).comp snd).to₂).to₂
-  simp at e
+  simp? at e says simp only [Bool.cond_decide] at e
   by_cases H : eval c ∈ C
   · simp only [H, if_true] at e
     change (fun b => g b) ∈ C
@@ -230,10 +230,12 @@ theorem rice₂ (C : Set Code) (H : ∀ cf cg, eval cf = eval cg → (cf ∈ C �
             exact ⟨by infer_instance, Computable.const _⟩ }⟩
 #align computable_pred.rice₂ ComputablePred.rice₂
 
+/-- The Halting problem is recursively enumerable -/
 theorem halting_problem_re (n) : RePred fun c => (eval c n).Dom :=
   (eval_part.comp Computable.id (Computable.const _)).dom_re
 #align computable_pred.halting_problem_re ComputablePred.halting_problem_re
 
+/-- The **Halting problem** is not computable -/
 theorem halting_problem (n) : ¬ComputablePred fun c => (eval c n).Dom
   | h => rice { f | (f n).Dom } h Nat.Partrec.zero Nat.Partrec.none trivial
 #align computable_pred.halting_problem ComputablePred.halting_problem
@@ -250,12 +252,13 @@ theorem computable_iff_re_compl_re {p : α → Prop} [DecidablePred p] :
         Partrec.merge (h₁.map (Computable.const true).to₂) (h₂.map (Computable.const false).to₂)
         (by
           intro a x hx y hy
-          simp at hx hy
+          simp only [Part.mem_map_iff, Part.mem_assert_iff, Part.mem_some_iff, exists_prop,
+            and_true, exists_const] at hx hy
           cases hy.1 hx.1)
       · refine' Partrec.of_eq pk fun n => Part.eq_some_iff.2 _
         rw [hk]
         simp only [Part.mem_map_iff, Part.mem_assert_iff, Part.mem_some_iff, exists_prop, and_true,
-          Bool.true_eq_decide_iff, and_self, exists_const, Bool.false_eq_decide_iff]
+          true_eq_decide_iff, and_self, exists_const, false_eq_decide_iff]
         apply Decidable.em⟩⟩
 #align computable_pred.computable_iff_re_compl_re ComputablePred.computable_iff_re_compl_re
 

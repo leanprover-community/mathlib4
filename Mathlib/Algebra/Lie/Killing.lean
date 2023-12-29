@@ -54,7 +54,6 @@ variable (R K L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
   [Module.Free R M] [Module.Finite R M]
   [Field K] [LieAlgebra K L] [Module K M] [LieModule K L M] [FiniteDimensional K M]
 
-attribute [local instance] isNoetherian_of_isNoetherianRing_of_finite
 attribute [local instance] Module.free_of_finite_type_torsion_free'
 
 local notation "φ" => LieModule.toEndomorphism R L M
@@ -190,7 +189,9 @@ lemma eq_zero_of_mem_weightSpace_mem_posFitting [LieAlgebra.IsNilpotent R L]
     B m₀ m₁ = 0 := by
   replace hB : ∀ x (k : ℕ) m n, B m ((φ x ^ k) n) = (- 1 : R) ^ k • B ((φ x ^ k) m) n := by
     intro x k
-    induction' k with k ih; simp
+    induction k with
+    | zero => simp
+    | succ k ih =>
     intro m n
     replace hB : ∀ m, B m (φ x n) = (- 1 : R) • B (φ x m) n := by simp [hB]
     have : (-1 : R) ^ k • (-1 : R) = (-1 : R) ^ (k + 1) := by rw [pow_succ' (-1 : R), smul_eq_mul]
@@ -242,7 +243,8 @@ lemma traceForm_eq_sum_weightSpaceOf [IsTriangularizable R L M] (z : L) :
     LinearMap.trace_eq_sum_trace_restrict' hds hfin hxy]
   exact Finset.sum_congr (by simp) (fun χ _ ↦ rfl)
 
--- In characteristic zero a stronger result holds (no `⊓ LieAlgebra.center K L`) TODO prove this!
+-- In characteristic zero (or even just `LinearWeights R L M`) a stronger result holds (no
+-- `⊓ LieAlgebra.center R L`) TODO prove this using `LieModule.traceForm_eq_sum_finrank_nsmul_mul`.
 lemma lowerCentralSeries_one_inf_center_le_ker_traceForm :
     lowerCentralSeries R L L 1 ⊓ LieAlgebra.center R L ≤ LinearMap.ker (traceForm R L M) := by
   /- Sketch of proof (due to Zassenhaus):
@@ -490,32 +492,33 @@ lemma LieModule.traceForm_eq_sum_finrank_nsmul_mul [LieAlgebra.IsNilpotent K L]
     LinearMap.trace_eq_sum_trace_restrict' hds hfin hxy]
   exact Finset.sum_congr (by simp) (fun χ _ ↦ traceForm_weightSpace_eq K L M χ x y)
 
-@[simp]
-lemma LieModule.span_weight_eq_top_of_ker_traceForm_eq_bot [LieAlgebra.IsNilpotent K L]
-    [LinearWeights K L M] [IsTriangularizable K L M] [FiniteDimensional K L]
-    (h : LinearMap.ker (traceForm K L M) = ⊥) :
-    span K (range (weight.toLinear K L M)) = ⊤ := by
+-- The reverse inclusion should also hold: TODO prove this!
+lemma LieModule.dualAnnihilator_ker_traceForm_le_span_weight [LieAlgebra.IsNilpotent K L]
+    [LinearWeights K L M] [IsTriangularizable K L M] [FiniteDimensional K L] :
+    (LinearMap.ker (traceForm K L M)).dualAnnihilator ≤ span K (range (weight.toLinear K L M)) := by
+  intro g hg
+  simp only [Submodule.mem_dualAnnihilator, LinearMap.mem_ker] at hg
   by_contra contra
   obtain ⟨f : Module.Dual K (Module.Dual K L), hf, hf'⟩ :=
-    Module.exists_dual_map_eq_bot_of_lt_top K (lt_top_iff_ne_top.mpr contra) inferInstance
+    Submodule.exists_dual_map_eq_bot_of_nmem contra inferInstance
   let x : L := (Module.evalEquiv K L).symm f
   replace hf' : ∀ χ ∈ weight K L M, χ x = 0 := by
     intro χ hχ
     change weight.toLinear K L M ⟨χ, hχ⟩ x = 0
     rw [Module.apply_evalEquiv_symm_apply, ← Submodule.mem_bot (R := K), ← hf', Submodule.mem_map]
     exact ⟨weight.toLinear K L M ⟨χ, hχ⟩, Submodule.subset_span (mem_range_self _), rfl⟩
-  have hx : x ≠ 0 := (LinearEquiv.map_ne_zero_iff _).mpr hf
-  apply hx
-  rw [← Submodule.mem_bot (R := K), ← h, LinearMap.mem_ker]
+  have hx : g x ≠ 0 := by simpa
+  refine hx (hg _ ?_)
   ext y
   rw [LieModule.traceForm_eq_sum_finrank_nsmul_mul, LinearMap.zero_apply]
   exact Finset.sum_eq_zero fun χ hχ ↦ by simp [hf' χ hχ]
 
 /-- Given a splitting Cartan subalgebra `H` of a finite-dimensional Lie algebra with non-singular
 Killing form, the corresponding roots span the dual space of `H`. -/
+@[simp]
 lemma LieAlgebra.IsKilling.span_weight_eq_top [FiniteDimensional K L] [IsKilling K L]
     (H : LieSubalgebra K L) [H.IsCartanSubalgebra] [IsTriangularizable K H L] :
     span K (range (weight.toLinear K H L)) = ⊤ := by
-  simp
+  simpa using LieModule.dualAnnihilator_ker_traceForm_le_span_weight K H L
 
 end Field

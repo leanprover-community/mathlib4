@@ -191,7 +191,7 @@ theorem exists_countable_union_perfect_of_isClosed [SecondCountableTopology α]
       have : U ∈ v := ⟨hUb, hU_cnt⟩
       apply xD.2
       exact mem_biUnion this xU
-    by_contra' h
+    by_contra! h
     exact absurd (Countable.mono h (Set.countable_singleton _)) this
   · rw [inter_comm, inter_union_diff]
 #align exists_countable_union_perfect_of_is_closed exists_countable_union_perfect_of_isClosed

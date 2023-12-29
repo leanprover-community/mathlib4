@@ -133,10 +133,10 @@ theorem BlankRel.trans {Γ} [Inhabited Γ] {l₁ l₂ l₃ : List Γ} :
     BlankRel l₁ l₂ → BlankRel l₂ l₃ → BlankRel l₁ l₃ := by
   rintro (h₁ | h₁) (h₂ | h₂)
   · exact Or.inl (h₁.trans h₂)
-  · cases' le_total l₁.length l₃.length with h h
+  · rcases le_total l₁.length l₃.length with h | h
     · exact Or.inl (h₁.above_of_le h₂ h)
     · exact Or.inr (h₂.above_of_le h₁ h)
-  · cases' le_total l₁.length l₃.length with h h
+  · rcases le_total l₁.length l₃.length with h | h
     · exact Or.inl (h₁.below_of_le h₂ h)
     · exact Or.inr (h₂.below_of_le h₁ h)
   · exact Or.inr (h₂.trans h₁)
@@ -284,7 +284,7 @@ def ListBlank.nth {Γ} [Inhabited Γ] (l : ListBlank Γ) (n : ℕ) : Γ := by
   cases' lt_or_le n _ with h h
   · rw [List.getI_append _ _ _ h]
   rw [List.getI_eq_default _ h]
-  cases' le_or_lt _ n with h₂ h₂
+  rcases le_or_lt _ n with h₂ | h₂
   · rw [List.getI_eq_default _ h₂]
   rw [List.getI_eq_get _ h₂, List.get_append_right' h, List.get_replicate]
 #align turing.list_blank.nth Turing.ListBlank.nth
@@ -1015,12 +1015,12 @@ set_option linter.uppercaseLean3 false
 
 section
 
+-- type of "labels" or TM states
 variable (Γ : Type*) [Inhabited Γ]
 
 -- type of tape symbols
 variable (Λ : Type*) [Inhabited Λ]
 
--- type of "labels" or TM states
 /-- A Turing machine "statement" is just a command to either move
   left or right, or write a symbol on the tape. -/
 inductive Stmt
@@ -1207,8 +1207,8 @@ state, but the statements themselves have a fixed structure. The `Stmt`s can be 
 
 Note that here most statements do not have labels; `goto` commands can only go to a new function.
 Only the `goto` and `halt` statements actually take a step; the rest is done by recursion on
-statements and so take 0 steps. (There is a uniform bound on many statements can be executed before
-the next `goto`, so this is an `O(1)` speedup with the constant depending on the machine.)
+statements and so take 0 steps. (There is a uniform bound on how many statements can be executed
+before the next `goto`, so this is an `O(1)` speedup with the constant depending on the machine.)
 
 The `halt` command has a one step stutter before actually halting so that any changes made before
 the halt have a chance to be "committed", since the `eval` relation uses the final configuration

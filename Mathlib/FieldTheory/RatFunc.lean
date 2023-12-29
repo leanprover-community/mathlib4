@@ -528,7 +528,7 @@ macro "smul_tac" : tactic => `(tactic|
       (first
         | rintro (⟨⟩ : RatFunc _)
         | intro) <;>
-    simp_rw [←ofFractionRing_smul] <;>
+    simp_rw [← ofFractionRing_smul] <;>
     simp only [add_comm, mul_comm, zero_smul, succ_nsmul, zsmul_eq_mul, mul_add, mul_one, mul_zero,
       neg_add, mul_neg,
       Int.ofNat_eq_coe, Int.cast_zero, Int.cast_add, Int.cast_one,
@@ -1284,7 +1284,7 @@ theorem num_denom_mul (x y : RatFunc K) :
 #align ratfunc.num_denom_mul RatFunc.num_denom_mul
 
 theorem num_dvd {x : RatFunc K} {p : K[X]} (hp : p ≠ 0) :
-    num x ∣ p ↔ ∃ (q : K[X]) (_ : q ≠ 0), x = algebraMap _ _ p / algebraMap _ _ q := by
+    num x ∣ p ↔ ∃ q : K[X], q ≠ 0 ∧ x = algebraMap _ _ p / algebraMap _ _ q := by
   constructor
   · rintro ⟨q, rfl⟩
     obtain ⟨_hx, hq⟩ := mul_ne_zero_iff.mp hp

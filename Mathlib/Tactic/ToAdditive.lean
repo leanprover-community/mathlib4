@@ -544,7 +544,7 @@ partial def transformDeclAux
       return
   -- if this declaration is not `pre` and not an internal declaration, we return an error,
   -- since we should have already translated this declaration.
-  if src != pre && !src.isInternal' then
+  if src != pre && !src.isInternalDetail then
     throwError "The declaration {pre} depends on the declaration {src} which is in the namespace {
       pre}, but does not have the `@[to_additive]` attribute. This is not supported.\n{""
       }Workaround: move {src} to a different namespace."
@@ -732,7 +732,10 @@ def nameDict : String → List String
   | "prehaar"     => ["add", "Prehaar"]
   | "unit"        => ["add", "Unit"]
   | "units"       => ["add", "Units"]
+  | "cyclic"      => ["add", "Cyclic"]
   | "rootable"    => ["divisible"]
+  | "commute"     => ["add", "Commute"]
+  | "semiconj"    => ["add", "Semiconj"]
   | x             => [x]
 
 /--
@@ -807,6 +810,10 @@ def fixAbbreviation : List String → List String
   | "Is"::"Of"::"Fin"::"Order"::s     => "IsOfFinAddOrder" :: fixAbbreviation s
   | "is" :: "Central" :: "Scalar" :: s  => "isCentralVAdd" :: fixAbbreviation s
   | "Is" :: "Central" :: "Scalar" :: s  => "IsCentralVAdd" :: fixAbbreviation s
+  | "function" :: "_" :: "add" :: "Semiconj" :: s
+                                      => "function" :: "_" :: "semiconj" :: fixAbbreviation s
+  | "function" :: "_" :: "add" :: "Commute" :: s
+                                      => "function" :: "_" :: "commute" :: fixAbbreviation s
   | x :: s                            => x :: fixAbbreviation s
   | []                                => []
 

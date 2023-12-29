@@ -184,12 +184,11 @@ theorem subset_tangentCone_prod_right {t : Set F} {y : F} (hs : x ∈ closure s)
 /-- The tangent cone of a product contains the tangent cone of each factor. -/
 theorem mapsTo_tangentCone_pi {ι : Type*} [DecidableEq ι] {E : ι → Type*}
     [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)] {s : ∀ i, Set (E i)} {x : ∀ i, E i}
-    {i : ι} (hi : ∀ (j) (_ : j ≠ i), x j ∈ closure (s j)) :
+    {i : ι} (hi : ∀ j ≠ i, x j ∈ closure (s j)) :
     MapsTo (LinearMap.single i : E i →ₗ[𝕜] ∀ j, E j) (tangentConeAt 𝕜 (s i) (x i))
       (tangentConeAt 𝕜 (Set.pi univ s) x) := by
   rintro w ⟨c, d, hd, hc, hy⟩
-  have : ∀ (n) (j) (_ : j ≠ i), ∃ d', x j + d' ∈ s j ∧ ‖c n • d'‖ < (1 / 2 : ℝ) ^ n := by
-    intro n j hj
+  have : ∀ n, ∀ j ≠ i, ∃ d', x j + d' ∈ s j ∧ ‖c n • d'‖ < (1 / 2 : ℝ) ^ n := fun n j hj ↦ by
     rcases mem_closure_iff_nhds.1 (hi j hj) _
         (eventually_nhds_norm_smul_sub_lt (c n) (x j) (pow_pos one_half_pos n)) with
       ⟨z, hz, hzs⟩

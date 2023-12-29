@@ -62,7 +62,7 @@ private theorem cyclotomic_neg_one_pos {n : ℕ} (hn : 2 < n) {R} [LinearOrdered
   simp only [Int.cast_one, Int.cast_neg]
   have h0 := cyclotomic_coeff_zero ℝ hn.le
   rw [coeff_zero_eq_eval_zero] at h0
-  by_contra' hx
+  by_contra! hx
   have := intermediate_value_univ (-1) 0 (cyclotomic n ℝ).continuous
   obtain ⟨y, hy : IsRoot _ y⟩ := this (show (0 : ℝ) ∈ Set.Icc _ _ by simpa [h0] using hx)
   rw [@isRoot_cyclotomic_iff] at hy
@@ -264,7 +264,7 @@ theorem cyclotomic_eval_lt_add_one_pow_totient {n : ℕ} {q : ℝ} (hn' : 3 ≤ 
     rw [this] at hζ
     linarith [hζ.unique <| IsPrimitiveRoot.neg_one 0 two_ne_zero.symm]
     · contrapose! hζ₀
-      ext <;> simp [hζ₀, h.2]
+      apply Complex.ext <;> simp [hζ₀, h.2]
   have : ¬eval (↑q) (cyclotomic n ℂ) = 0 := by
     erw [cyclotomic.eval_apply q n (algebraMap ℝ ℂ)]
     simp only [Complex.coe_algebraMap, Complex.ofReal_eq_zero]
