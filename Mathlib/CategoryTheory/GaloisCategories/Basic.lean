@@ -338,6 +338,11 @@ lemma surject_to_connected_of_nonempty_fibre {A X : C} (h : Nonempty (F.obj A))
   have : Epi f := epi_of_nonempty_to_connected F h f
   exact surjective_on_fibre_of_epi F f
 
+instance (X : C) : MulAction (Aut F) (F.obj X) where
+  smul σ x := σ.hom.app X x
+  one_smul := by aesop
+  mul_smul := by aesop
+
 end More
 
 section Examples
@@ -441,6 +446,10 @@ instance (X : Action FintypeCat (MonCat.of G)) : MulAction G X.V where
 
 lemma Action.connected_iff_transitive (X : Action FintypeCat (MonCat.of G)) :
     ConnectedObject X ↔ MulAction.IsPretransitive G X.V :=
+  sorry
+
+lemma Action.pretransitive_of_connected (X : Action FintypeCat (MonCat.of G))
+    [ConnectedObject X] : MulAction.IsPretransitive G X.V :=
   sorry
 
 variable (G)

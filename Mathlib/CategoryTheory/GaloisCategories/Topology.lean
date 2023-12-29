@@ -171,7 +171,7 @@ instance : ContinuousInv (Aut F) := by
 
 instance : TopologicalGroup (Aut F) := ⟨⟩
 
-instance (X : C) : SMul (Aut F) (F.obj X) := ⟨fun σ a => (σ.app X).hom a⟩
+--instance (X : C) : SMul (Aut F) (F.obj X) := ⟨fun σ a => (σ.app X).hom a⟩
 instance (X : C) : SMul (Aut (F.obj X)) (F.obj X) := ⟨fun σ a => σ.hom a⟩
 
 instance (X : C) : ContinuousSMul (Aut (F.obj X)) (F.obj X) := by
@@ -180,26 +180,27 @@ instance (X : C) : ContinuousSMul (Aut (F.obj X)) (F.obj X) := by
 
 instance (X : C) : ContinuousSMul (Aut F) (F.obj X) := by
   constructor
-  let f : Aut F × F.obj X → F.obj X := fun ⟨σ, x⟩ => (σ.app X).hom x
-  show Continuous f
-  admit
+  let g : Aut (F.obj X) × F.obj X → F.obj X := fun ⟨σ, x⟩ => σ.hom x
+  let h' : Aut F → Aut (F.obj X) := fun σ => σ.app X
+  let h : Aut F × F.obj X → Aut (F.obj X) × F.obj X :=
+    fun ⟨σ, x⟩ => ⟨h' σ, x⟩
+  have : Continuous g := continuous_smul
+  show Continuous (g ∘ h)
+  apply Continuous.comp
+  trivial
+  refine Continuous.prod_map ?_ continuous_id
+  show Continuous ((fun p => p X) ∘ autEmbedding F)
+  apply Continuous.comp (continuous_apply X) (continuous_induced_dom)
 
 end Topology
 
 section Action
 
-variable {C : Type u} [Category.{v, u} C] (F : C ⥤ FintypeCat.{u})
+variable {C : Type u} [Category.{u, u} C] (F : C ⥤ FintypeCat.{u})
   [PreGaloisCategory C] [FibreFunctor F]
 
 def H : C ⥤ Action FintypeCat (MonCat.of (Aut F)) where
-  obj X := {
-    V := F.obj X
-    ρ := MonCat.ofHom {
-      toFun := fun (g : Aut F) => g.hom.app X
-      map_one' := rfl
-      map_mul' := by aesop
-    }
-  }
+  obj X := Action.ofMulAction (Aut F) (F.obj X)
   map f := {
     hom := F.map f
     comm := by
@@ -209,134 +210,114 @@ def H : C ⥤ Action FintypeCat (MonCat.of (Aut F)) where
 
 lemma H_forget_eq_F : H F ⋙ forget₂ _ FintypeCat = F := rfl
 
-instance : PreservesMonomorphisms (H F) := sorry
+instance : Faithful (H F) := by
+  have : Faithful (H F ⋙ forget₂ _ FintypeCat) := by
+    show Faithful F
+    exact fibreFunctorFaithful
+  apply Faithful.of_comp (H F) (forget₂ _ FintypeCat)
 
-instance : PreservesConnectedObjects (H F) := sorry
+instance : PreservesMonomorphisms (H F) := by
+  have : PreservesMonomorphisms (H F ⋙ forget₂ _ FintypeCat) := by
+    show PreservesMonomorphisms F
+    infer_instance
+  apply preservesMonomorphisms_of_preserves_of_reflects (H F) (forget₂ _ FintypeCat)
 
-lemma lift_transitive_subobjects (X : C) (Y : FintypeCat.{u}) (i : Y ⟶ F.obj X)
-    [Mono i] [MulAction (Aut F) Y] [MulAction.IsPretransitive (Aut F) Y]
-    [Nonempty Y]
-    (h : ∀ (σ : Aut F) (y : Y), i (σ • y) = σ • i y) :
-    ∃ (Z : C) (f : Z ⟶ X) (u : Y ≅ F.obj Z),
-    ConnectedObject Z ∧ Mono f ∧ i = u.hom ≫ F.map f := by
-  have : Nonempty Y := inferInstance
-  obtain ⟨y⟩ := this
+instance : ReflectsMonomorphisms (H F) := reflectsMonomorphisms_of_faithful _
+
+instance : PreservesFiniteCoproducts (H F) := by
+  constructor
+  intro J h1
+  apply Action.preservesColimitOfShapeOfPreserves FintypeCat (MonCat.of (Aut F)) (H F)
+  show PreservesColimitsOfShape (Discrete J) F
+  infer_instance
+
+instance : PreservesConnectedObjects (H F) := by
+  constructor
+  intro X h
+  apply connected_of_transitive (Aut F) (F.obj X)
+
+lemma lift_transitive_subobjects (X : C) (Y : Action FintypeCat (MonCat.of (Aut F)))
+    (i : Y ⟶ (H F).obj X) [Mono i] [ConnectedObject Y] : ∃ (Z : C) (f : Z ⟶ X)
+    (u : Y ≅ (H F).obj Z),
+    ConnectedObject Z ∧ Mono f ∧ i = u.hom ≫ (H F).map f := by
+  obtain ⟨y⟩ := @nonempty_fibre_of_connected _ _ (forget₂ _ FintypeCat) _ _ Y _
   let x : F.obj X := i y
   obtain ⟨Z, f, z, hz, hc, hm⟩ := fibre_in_connected_component F X x
   use Z
   use f
-  let X' : Action FintypeCat (MonCat.of (Aut F)) := (H F).obj X
-  let Z' : Action FintypeCat (MonCat.of (Aut F)) := (H F).obj Z
-  let Y' : Action FintypeCat (MonCat.of (Aut F)) := Action.ofMulAction (Aut F) Y
-  let i' : Y' ⟶ X' := { hom := i }
-  let j' : Z' ⟶ X' := (H F).map f
-  have : ReflectsMonomorphisms
-      (forget₂ (Action FintypeCat.{u} (MonCat.of (Aut F))) FintypeCat.{u}) :=
-    reflectsMonomorphisms_of_faithful _
-  have : Mono i' := by
-    apply Functor.mono_of_mono_map (forget₂ _ FintypeCat.{u})
-    show Mono i
-    infer_instance
+  let j' : (H F).obj Z ⟶ (H F).obj X := (H F).map f
   have : Mono j' := Functor.map_mono (H F) f
-  have : ConnectedObject Z' := PreservesConnectedObjects.preserves
-  have : ConnectedObject Y' := connected_of_transitive (Aut F) Y
-  have h : (forget₂ (Action FintypeCat (MonCat.of (Aut F))) FintypeCat).map i' y
-      = (forget₂ (Action FintypeCat (MonCat.of (Aut F))) FintypeCat).map j' z :=
-    hz.symm
-  obtain ⟨u', hu'⟩ :=
+  have : ConnectedObject ((H F).obj Z) := PreservesConnectedObjects.preserves
+  obtain ⟨u, hu⟩ :=
     @connected_component_unique
     (Action FintypeCat (MonCat.of (Aut F))) _
     (forget₂ (Action FintypeCat (MonCat.of (Aut F))) FintypeCat)
-    _ _ X' Y' Z'
+    _ _ ((H F).obj X) Y ((H F).obj Z)
     _ _
-    y z i' j' h _ _
-  let u : Y ≅ F.obj Z :=
-    (forget₂ (Action FintypeCat (MonCat.of (Aut F))) FintypeCat).mapIso u'
+    y z i j' hz.symm _ _
   use u
   refine ⟨?_, ?_, ?_⟩
-  exact hc
-  exact hm
-  have h2 : i' = u'.hom ≫ (H F).map f := by
-    apply @evaluationInjectiveOfConnected _ _
-      (forget₂ (Action FintypeCat (MonCat.of (Aut F))) FintypeCat) _ _ Y' X' _ y
-    show (forget₂ (Action FintypeCat (MonCat.of (Aut F))) FintypeCat).map i' y
-      = (forget₂ (Action FintypeCat (MonCat.of (Aut F))) FintypeCat).map (u'.hom ≫ (H F).map f) y
-    simp only [End.one_def, id_eq, eq_mpr_eq_cast, OneHom.toFun_eq_coe, OneHom.coe_mk, map_comp,
-      FintypeCat.comp_apply, hu']
-    exact hz.symm
-  have h3 :
-    (forget₂ (Action FintypeCat (MonCat.of (Aut F))) FintypeCat).map ((H F).map f)
-    = F.map f := rfl
-  have h4 :
-    (forget₂ (Action FintypeCat (MonCat.of (Aut F))) FintypeCat).map i' = i := rfl
-  simp
-  rw [←h3, ←h4]
-  simp
-  show
-    (forget₂ (Action FintypeCat (MonCat.of (Aut F))) FintypeCat).map
-    (i') =
-    (forget₂ (Action FintypeCat (MonCat.of (Aut F))) FintypeCat).map
-    (u'.hom ≫ (H F).map f)
-  congr
+  assumption
+  assumption
+  apply @evaluationInjectiveOfConnected _ _
+    (forget₂ (Action FintypeCat (MonCat.of (Aut F))) FintypeCat) _ _ Y ((H F).obj X) _ y
+  show (forget₂ (Action FintypeCat (MonCat.of (Aut F))) FintypeCat).map i y
+    = (forget₂ (Action FintypeCat (MonCat.of (Aut F))) FintypeCat).map (u.hom ≫ (H F).map f) y
+  simp only [End.one_def, id_eq, eq_mpr_eq_cast, OneHom.toFun_eq_coe, OneHom.coe_mk, map_comp,
+    FintypeCat.comp_apply, hu]
+  exact hz.symm
 
-lemma lift_subobjects (X : C) (Y : FintypeCat.{u}) (i : Y ⟶ F.obj X)
-      [Mono i] [MulAction (Aut F) Y]
-      (h : ∀ (σ : Aut F) (y : Y), i (σ • y) = σ • i y)
-    : ∃ (Z : C) (f : Z ⟶ X) (u : F.obj Z ≅ Y),
-    Mono f ∧ u.hom ≫ i = F.map f := by
-  let Y' : Action FintypeCat.{u} (MonCat.of (Aut F)) := Action.ofMulAction (Aut F) Y
-  obtain ⟨ι, hf, f, t, hc⟩ := hasDecompConnectedComponents'
-    (forget₂ _ FintypeCat.{u}) Y'
-  let f' (i : ι) : FintypeCat.{u} := (f i).V
-  have (i : ι) : MulAction (Aut F) (f' i) := sorry
-  have (i : ι) : MulAction.IsPretransitive (Aut F) (f' i) := sorry
-  have (i : ι) : Nonempty (f' i) := sorry
+lemma lift_subobjects (X : C) (Y : Action FintypeCat.{u} (MonCat.of (Aut F)))
+      (i : Y ⟶ (H F).obj X)
+      [Mono i]
+    : ∃ (Z : C) (f : Z ⟶ X) (u : (H F).obj Z ≅ Y),
+    Mono f ∧ u.hom ≫ i = (H F).map f := by
+  obtain ⟨ι, hf, f, t, hc⟩ := hasDecompConnectedComponents' (forget₂ _ FintypeCat.{u}) Y
   have : Fintype ι := Fintype.ofFinite ι
-  let is1 : (∐ f).V ≅ ∐ f' := PreservesCoproduct.iso (forget₂ _ FintypeCat) f
-  let i' (j : ι) : f' j ⟶ F.obj X := Sigma.ι f' j ≫ is1.inv ≫ (forget₂ _ FintypeCat).map t.hom ≫ i
-  have (i : ι) : Mono (i' i) := sorry
-  have h' (i : ι) : ∀ (σ : Aut F) (y : f' i), (i' i) (σ • y) = σ • (i' i) y := sorry
-  have (i : ι) : ∃ (Z : C) (f : Z ⟶ X) (u : (f' i) ≅ F.obj Z), ConnectedObject Z ∧ Mono f ∧ i' i = u.hom ≫ F.map f :=
-    lift_transitive_subobjects F X (f' i) (i' i) (h' i)
-  choose gZ gf gu h3 h4 h5 using this
+  let i' (j : ι) : f j ⟶ (H F).obj X := Sigma.ι f j ≫ t.hom ≫ i
+  have (j : ι) : Mono (i' j) := by
+    have : Mono (Sigma.ι f j) := by
+      let t : ColimitCocone (Discrete.functor f) :=
+        ⟨colimit.cocone (Discrete.functor f), colimit.isColimit (Discrete.functor f)⟩
+      show Mono (Cofan.inj t.cocone j)
+      exact mono_coprod_inclusion (forget₂ _ FintypeCat) t j
+    have : Mono (t.hom ≫ i) := by
+      apply mono_comp
+    have : Mono (t.hom ≫ i) := by
+      apply mono_comp
+    apply mono_comp
+  have (i : ι) : ∃ (Z : C) (g : Z ⟶ X) (u : (f i) ≅ (H F).obj Z),
+      ConnectedObject Z ∧ Mono g ∧ i' i = u.hom ≫ (H F).map g :=
+    lift_transitive_subobjects F X (f i) (i' i)
+  choose gZ gf gu _ _ h5 using this
   use ∐ gZ
   use Sigma.desc gf
-  let t' : (∐ f).V ≅ Y := (forget₂ _ FintypeCat).mapIso t
-  let is2 : F.obj (∐ gZ) ≅ ∐ fun i => F.obj (gZ i) := PreservesCoproduct.iso F gZ
-  let u' : ∐ f' ≅ ∐ fun i => F.obj (gZ i) := Sigma.mapIso gu
-  use is2 ≪≫ u'.symm ≪≫ is1.symm ≪≫ t'
-  constructor
-  admit
-  apply (cancel_epi is2.inv).mp
-  show is2.inv ≫ (is2 ≪≫ u'.symm ≪≫ is1.symm ≪≫ t').hom ≫ i = is2.inv ≫ F.map (Sigma.desc gf)
-  simp
-  apply Sigma.hom_ext
-  intro j
-  simp
-  rw [←ι_comp_sigmaComparison, ←PreservesCoproduct.inv_hom]
-  show Sigma.ι (fun b ↦ F.obj (gZ b)) j
-    ≫ ((PreservesCoproduct.iso F fun b ↦ gZ b).inv ≫
-    (PreservesCoproduct.iso F gZ).hom) ≫
-      colimMap _ ≫
-        sigmaComparison (forget₂ (Action FintypeCat (MonCat.of (Aut F))) FintypeCat) f ≫
-          (forget₂ (Action FintypeCat (MonCat.of (Aut F))) FintypeCat).map t.hom ≫ i =
-    F.map (gf j)
-  rw [Iso.inv_hom_id, Category.id_comp]
-  simp
-  have : (forget₂ _ FintypeCat).map (Sigma.ι (fun b ↦ f b) j) = Sigma.ι f' j ≫ is1.inv := by
-    rw [PreservesCoproduct.inv_hom]
-    show (forget₂ _ FintypeCat).map (Sigma.ι (fun b ↦ f b) j) =
-      Sigma.ι (fun i => (forget₂ _ FintypeCat).obj (f i)) j
-      ≫ sigmaComparison (forget₂ _ FintypeCat) f
+  let is2 : (H F).obj (∐ gZ) ≅ ∐ fun i => (H F).obj (gZ i) := PreservesCoproduct.iso (H F) gZ
+  let u' : ∐ f ≅ ∐ fun i => (H F).obj (gZ i) := Sigma.mapIso gu
+  use is2 ≪≫ u'.symm ≪≫ t
+  have heq : (is2 ≪≫ u'.symm ≪≫ t).hom ≫ i = (H F).map (Sigma.desc gf) := by
+    apply (cancel_epi is2.inv).mp
+    show is2.inv ≫ (is2 ≪≫ u'.symm ≪≫ t).hom ≫ i = is2.inv ≫ (H F).map (Sigma.desc gf)
     simp
-  have : (forget₂ _ FintypeCat).map (Sigma.ι (fun b ↦ f b) j) ≫
-      (forget₂ _ FintypeCat).map t.hom ≫ i = i' j := by
-    show (forget₂ _ FintypeCat).map (Sigma.ι (fun b ↦ f b) j) ≫
-      (forget₂ _ FintypeCat).map t.hom ≫ i =
-      Sigma.ι f' j ≫ is1.inv ≫ (forget₂ _ FintypeCat).map t.hom ≫ i
-    rw [this, Category.assoc]
-  rw [this, h5]
-  simp
+    apply Sigma.hom_ext
+    intro j
+    simp
+    rw [←ι_comp_sigmaComparison, ←PreservesCoproduct.inv_hom, Category.assoc]
+    show Sigma.ι (fun b ↦ (H F).obj (gZ b)) j ≫
+      ((PreservesCoproduct.iso (H F) gZ).inv ≫
+        (PreservesCoproduct.iso (H F) gZ).hom) ≫ colimMap _ ≫ t.hom ≫ i =
+      (H F).map (gf j)
+    rw [Iso.inv_hom_id, Category.id_comp]
+    simp
+    have : colimit.ι (Discrete.functor f) ⟨j⟩ ≫ t.hom ≫ i = i' j := by
+      simp only [Discrete.functor_obj]
+    rw [this, h5]
+    simp
+  constructor
+  apply mono_of_mono_map (H F)
+  rw [←heq]
+  apply mono_comp
+  exact heq
 
 noncomputable instance H_full : Full (H F) := by
   apply Functor.fullOfExists
@@ -368,6 +349,7 @@ noncomputable instance H_full : Full (H F) := by
       intro g h ⟨q, hq⟩
       rfl
   }
+  let Γ_sA := Action.ofMulAction (Aut F) Γ_s
   let u : Γ_s ⟶ F.obj X ⨯ F.obj Y := prod.lift p1 p2
   let is1 : F.obj (X ⨯ Y) ≅ F.obj X ⨯ F.obj Y := PreservesLimitPair.iso F X Y
   let i : Γ_s ⟶ F.obj (X ⨯ Y) := u ≫ is1.inv
@@ -385,34 +367,44 @@ noncomputable instance H_full : Full (H F) := by
     exact hp1
     exact hp2
   have : Mono i := mono_comp u is1.inv
-  have h (σ : Aut F) : ∀ y : Γ_s, i (σ • y) = σ • i y := by
+  let iA : Γ_sA ⟶ (H F).obj (X ⨯ Y) := by
+    constructor
+    intro (σ : Aut F)
     let sf : Γ_s ⟶ Γ_s := fun y => σ • y
-    have : sf ≫ i = i ≫ ((H F).obj (X ⨯ Y)).ρ σ := by
-      apply (cancel_mono is1.hom).mp
-      show sf ≫ u ≫ is1.inv ≫ is1.hom = u ≫ is1.inv ≫ ((H F).obj (X ⨯ Y)).ρ σ ≫ is1.hom
-      rw [Iso.inv_hom_id, Category.comp_id]
-      apply prod.hom_ext
-      show sf ≫ prod.lift p1 p2 ≫ prod.fst = u ≫ is1.inv ≫ ((H F).obj (X ⨯ Y)).ρ σ ≫ is1.hom ≫ prod.fst
-      rw [prod.lift_fst, PreservesLimitPair.iso_hom, prodComparison_fst]
-      show sf ≫ p1 = u ≫ is1.inv ≫ σ.hom.app (X ⨯ Y) ≫ F.map prod.fst
-      rw [←σ.hom.naturality, ←prodComparison_fst, ←PreservesLimitPair.iso_hom]
-      show sf ≫ p1 = u ≫ (is1.inv ≫ (PreservesLimitPair.iso F X Y).hom) ≫ prod.fst ≫ σ.hom.app X
-      rw [Iso.inv_hom_id, Category.id_comp]
-      show sf ≫ p1 = (prod.lift _ _ ≫ prod.fst) ≫ σ.hom.app X
-      rw [prod.lift_fst]
-      rfl
-      show sf ≫ prod.lift p1 p2 ≫ prod.snd = u ≫ is1.inv ≫ ((H F).obj (X ⨯ Y)).ρ σ ≫ is1.hom ≫ prod.snd
-      rw [prod.lift_snd, PreservesLimitPair.iso_hom, prodComparison_snd]
-      show sf ≫ p2 = u ≫ is1.inv ≫ σ.hom.app (X ⨯ Y) ≫ F.map prod.snd
-      rw [←σ.hom.naturality, ←prodComparison_snd, ←PreservesLimitPair.iso_hom]
-      show sf ≫ p2 = u ≫ (is1.inv ≫ (PreservesLimitPair.iso F X Y).hom) ≫ prod.snd ≫ σ.hom.app Y
-      rw [Iso.inv_hom_id, Category.id_comp]
-      show sf ≫ p2 = (prod.lift _ _ ≫ prod.snd) ≫ σ.hom.app Y
-      rw [prod.lift_snd]
-      rfl
-    intro ⟨q, hq⟩
-    exact congrFun this _
-  obtain ⟨Z, f', u', _, h2⟩ := lift_subobjects F (prod X Y) Γ_s i h
+    show sf ≫ i = i ≫ ((H F).obj (X ⨯ Y)).ρ σ
+    apply (cancel_mono is1.hom).mp
+    show sf ≫ u ≫ is1.inv ≫ is1.hom = u ≫ is1.inv ≫ ((H F).obj (X ⨯ Y)).ρ σ ≫ is1.hom
+    rw [Iso.inv_hom_id, Category.comp_id]
+    apply prod.hom_ext
+    show sf ≫ prod.lift p1 p2 ≫ prod.fst = u ≫ is1.inv ≫ ((H F).obj (X ⨯ Y)).ρ σ ≫ is1.hom ≫ prod.fst
+    rw [prod.lift_fst, PreservesLimitPair.iso_hom, prodComparison_fst]
+    show sf ≫ p1 = u ≫ is1.inv ≫ σ.hom.app (X ⨯ Y) ≫ F.map prod.fst
+    rw [←σ.hom.naturality, ←prodComparison_fst, ←PreservesLimitPair.iso_hom]
+    show sf ≫ p1 = u ≫ (is1.inv ≫ (PreservesLimitPair.iso F X Y).hom) ≫ prod.fst ≫ σ.hom.app X
+    rw [Iso.inv_hom_id, Category.id_comp]
+    show sf ≫ p1 = (prod.lift _ _ ≫ prod.fst) ≫ σ.hom.app X
+    rw [prod.lift_fst]
+    rfl
+    show sf ≫ prod.lift p1 p2 ≫ prod.snd = u ≫ is1.inv ≫ ((H F).obj (X ⨯ Y)).ρ σ ≫ is1.hom ≫ prod.snd
+    rw [prod.lift_snd, PreservesLimitPair.iso_hom, prodComparison_snd]
+    show sf ≫ p2 = u ≫ is1.inv ≫ σ.hom.app (X ⨯ Y) ≫ F.map prod.snd
+    rw [←σ.hom.naturality, ←prodComparison_snd, ←PreservesLimitPair.iso_hom]
+    show sf ≫ p2 = u ≫ (is1.inv ≫ (PreservesLimitPair.iso F X Y).hom) ≫ prod.snd ≫ σ.hom.app Y
+    rw [Iso.inv_hom_id, Category.id_comp]
+    show sf ≫ p2 = (prod.lift _ _ ≫ prod.snd) ≫ σ.hom.app Y
+    rw [prod.lift_snd]
+    rfl
+  have : Mono iA := by
+    apply mono_of_mono_map (forget₂ _ FintypeCat)
+    show Mono i
+    assumption
+  obtain ⟨Z, f', u'', _, h2'⟩ := lift_subobjects F (prod X Y) Γ_sA iA
+  let u' : F.obj Z ≅ Γ_s := (forget₂ _ FintypeCat).mapIso u''
+  let h2 : u'.hom ≫ i = F.map f' := by
+    show u'.hom ≫ (forget₂ _ FintypeCat).map iA = (H F ⋙ forget₂ _ FintypeCat).map f'
+    simp only [mapIso_hom]
+    rw [←Functor.map_comp, h2']
+    rfl
   let ψ : Z ⟶ X := f' ≫ prod.fst
   have : IsIso (F.map ψ) := by
     rw [F.map_comp, ←h2, Category.assoc]
@@ -455,12 +447,6 @@ noncomputable instance H_full : Full (H F) := by
   show p1 (u'.hom z) = (u'.hom ≫ u ≫ (is1.inv ≫ (PreservesLimitPair.iso F X Y).hom) ≫ prod.fst) z
   rw [Iso.inv_hom_id, Category.id_comp, prod.lift_fst]
   rfl
-
-instance : Faithful (H F) := by
-  have : Faithful (H F ⋙ forget₂ _ FintypeCat) := by
-    show Faithful F
-    exact fibreFunctorFaithful
-  apply Faithful.of_comp (H F) (forget₂ _ FintypeCat)
 
 end Action
 

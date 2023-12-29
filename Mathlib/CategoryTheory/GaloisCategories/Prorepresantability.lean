@@ -369,7 +369,8 @@ private def transitive_of_galois (X : C) [inst : GaloisObject F X] :
   rw [ha]
   simpa
 
-instance (X : C) [ConnectedObject X] : MulAction.IsPretransitive (Aut F) (F.obj X) := by
+instance pretransitiveOfConnected (X : C) [ConnectedObject X] :
+    MulAction.IsPretransitive (Aut F) (F.obj X) := by
   obtain ⟨A, f, hgal⟩ := exists_map_from_galois_of_connected F X
   have : ConnectedObject A := GaloisObject.connected F
   have hn : Nonempty (F.obj A) := nonempty_fibre_of_connected A
