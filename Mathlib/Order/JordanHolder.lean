@@ -320,7 +320,8 @@ theorem trans {s₁ s₂ s₃ : CompositionSeries X} (h₁ : Equivalent s₁ s�
     fun i => iso_trans (h₁.choose_spec i) (h₂.choose_spec (h₁.choose i))⟩
 #align composition_series.equivalent.trans CompositionSeries.Equivalent.trans
 
-theorem combine {s₁ s₂ t₁ t₂ : CompositionSeries X} (hs : s₁.last = s₂.head) (ht : t₁.last = t₂.head)
+theorem combine {s₁ s₂ t₁ t₂ : CompositionSeries X}
+    (hs : s₁.last = s₂.head) (ht : t₁.last = t₂.head)
     (h₁ : Equivalent s₁ t₁) (h₂ : Equivalent s₂ t₂) :
     Equivalent (combine s₁ s₂ hs) (combine t₁ t₂ ht) :=
   let e : Fin (s₁.length + s₂.length) ≃ Fin (t₁.length + t₂.length) :=
@@ -391,8 +392,9 @@ theorem snoc_snoc_swap {s : CompositionSeries X} {x₁ x₂ y₁ y₂ : X} {hsat
 
 end Equivalent
 
-theorem length_eq_zero_of_head_eq_head_of_last_eq_last_of_length_eq_zero {s₁ s₂ : CompositionSeries X}
-    (hb : s₁.head = s₂.head) (ht : s₁.last = s₂.last) (hs₁ : s₁.length = 0) : s₂.length = 0 := by
+theorem length_eq_zero_of_head_eq_head_of_last_eq_last_of_length_eq_zero
+    {s₁ s₂ : CompositionSeries X} (hb : s₁.head = s₂.head)
+    (ht : s₁.last = s₂.last) (hs₁ : s₁.length = 0) : s₂.length = 0 := by
   have : s₁.head = s₁.last := congr_arg s₁ (Fin.ext (by simp [hs₁]))
   have : Fin.last s₂.length = (0 : Fin s₂.length.succ) :=
     s₂.injective (hb.symm.trans (this.trans ht)).symm
@@ -416,7 +418,8 @@ theorem eq_of_head_eq_head_of_last_eq_last_of_length_eq_zero {s₁ s₂ : Compos
   have : ∀ x, x ∈ s₂ ↔ x = s₂.last := fun x =>
     ⟨fun hx =>
       forall_mem_eq_of_length_eq_zero
-        (length_eq_zero_of_head_eq_head_of_last_eq_last_of_length_eq_zero hb ht hs₁0) hx s₂.last_mem,
+        (length_eq_zero_of_head_eq_head_of_last_eq_last_of_length_eq_zero hb ht
+          hs₁0) hx s₂.last_mem,
       fun hx => hx.symm ▸ s₂.last_mem⟩
   ext
   simp [*]
@@ -468,7 +471,8 @@ theorem exists_last_eq_snoc_equivalent (s : CompositionSeries X) (x : X) (hm : I
 
 /-- The **Jordan-Hölder** theorem, stated for any `JordanHolderLattice`.
 If two composition series start and finish at the same place, they are equivalent. -/
-theorem jordan_holder (s₁ s₂ : CompositionSeries X) (hb : s₁.head = s₂.head) (ht : s₁.last = s₂.last) :
+theorem jordan_holder (s₁ s₂ : CompositionSeries X)
+    (hb : s₁.head = s₂.head) (ht : s₁.last = s₂.last) :
     Equivalent s₁ s₂ := by
   induction' hle : s₁.length with n ih generalizing s₁ s₂
   · rw [eq_of_head_eq_head_of_last_eq_last_of_length_eq_zero hb ht hle]
