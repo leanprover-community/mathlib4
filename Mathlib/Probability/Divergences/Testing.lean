@@ -6,6 +6,37 @@ open MeasureTheory Real
 
 variable {α : Type*} {mα : MeasurableSpace α}
 
+lemma set_lintegral_nnnorm_exp_neg_llr_le {μ ν : Measure α} [SigmaFinite ν] [SigmaFinite μ]
+    (hμν : μ ≪ ν) (s : Set α) :
+    ∫⁻ a in s, ‖rexp (-LLR μ ν a)‖₊ ∂μ ≤ ν s := by
+  set t := toMeasurable ν s
+  have ht : MeasurableSet t := measurableSet_toMeasurable ν s
+  calc ∫⁻ a in s, ‖rexp (-LLR μ ν a)‖₊ ∂μ
+      ≤ ∫⁻ a in t, ‖rexp (-LLR μ ν a)‖₊ ∂μ := lintegral_mono_set (subset_toMeasurable ν s)
+    _ = ∫⁻ a in t, ‖(ν.rnDeriv μ a).toReal‖₊ ∂μ := by
+        refine set_lintegral_congr_fun ht ?_
+        filter_upwards [exp_neg_llr hμν] with x hx _
+        rw [hx]
+    _ = ∫⁻ a in t, ν.rnDeriv μ a ∂μ := by
+        refine set_lintegral_congr_fun ht ?_
+        filter_upwards [Measure.rnDeriv_ne_top ν μ] with x hx _
+        rw [← ofReal_norm_eq_coe_nnnorm]
+        simp [hx]
+    _ ≤ ν t := Measure.set_lintegral_rnDeriv_le t
+    _ = ν s := measure_toMeasurable s
+
+lemma integrableOn_exp_neg_llr {μ ν : Measure α} [SigmaFinite ν] [SigmaFinite μ] (hμν : μ ≪ ν)
+    (s : Set α) (hνs : ν s ≠ ∞) :
+    IntegrableOn (fun x ↦ exp (- LLR μ ν x)) s μ := by
+  constructor
+  · refine AEStronglyMeasurable.restrict ?_
+    refine StronglyMeasurable.aestronglyMeasurable ?_
+    exact (measurable_llr _ _).neg.exp.stronglyMeasurable
+  · rw [hasFiniteIntegral_def]
+    calc ∫⁻ a in s, ‖rexp (-LLR μ ν a)‖₊ ∂μ
+      ≤ ν s := set_lintegral_nnnorm_exp_neg_llr_le hμν s
+    _ < ∞ := hνs.lt_top
+
 lemma set_integral_exp_neg_llr_le {μ ν : Measure α} [SigmaFinite ν] [SigmaFinite μ]
     (hμν : μ ≪ ν) (s : Set α) (hνs : ν s ≠ ∞) :
     ∫ x in s, exp (- LLR μ ν x) ∂μ ≤ (ν s).toReal := by

@@ -43,6 +43,21 @@ namespace MeasureTheory
 
 variable {α : Type*} {mα : MeasurableSpace α} {μ ν : Measure α}
 
+section move_this
+
+lemma todo_div [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
+    μ.rnDeriv ν =ᵐ[ν] fun x ↦ μ.rnDeriv (μ + ν) x / ν.rnDeriv (μ + ν) x := by
+  have hν_ac : ν ≪ μ + ν := by
+    rw [add_comm]; exact rfl.absolutelyContinuous.add_right _
+  have h_pos := Measure.rnDeriv_pos hν_ac
+  have h := Measure.rnDeriv_mul_rnDeriv hμν (κ := μ + ν)
+  filter_upwards [hν_ac.ae_le h, h_pos, hν_ac.ae_le (Measure.rnDeriv_ne_top ν (μ + ν))]
+    with x hx hx_pos hx_ne_top
+  rw [Pi.mul_apply] at hx
+  rwa [ENNReal.eq_div_iff hx_pos.ne' hx_ne_top, mul_comm]
+
+end move_this
+
 /-- Kullback-Leibler divergence between two measures, real-valued version. -/
 noncomputable def KLReal (μ ν : Measure α) : ℝ := ∫ x, LLR μ ν x ∂μ
 
