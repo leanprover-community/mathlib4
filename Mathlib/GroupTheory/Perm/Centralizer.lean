@@ -1338,9 +1338,11 @@ theorem Equiv.Perm.ofPartition_range
 #align equiv.perm.of_partition_range Equiv.Perm.ofPartition_range
  -/
 
-local instance {ι : Type*} :
+/-
+attribute [local instance] {ι : Type*} :
     MulAction (Equiv.Perm α) (α → ι) :=
   arrowAction
+-/
 
 /-- The cardinality of the subgroup of partitions preserving a fibration -/
 theorem Equiv.Perm.of_partition_card {ι : Type*} [Fintype ι] [DecidableEq ι] (p : α → ι) :
