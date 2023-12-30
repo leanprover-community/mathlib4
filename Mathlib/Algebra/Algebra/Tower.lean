@@ -175,12 +175,12 @@ instance (priority := 999) subsemiring (U : Subsemiring S) : IsScalarTower U S A
 #align is_scalar_tower.subsemiring IsScalarTower.subsemiring
 
 -- Porting note: @[nolint instance_priority]
-instance (priority := 999) of_ring_hom {R A B : Type*} [CommSemiring R] [CommSemiring A]
+instance (priority := 999) of_algHom {R A B : Type*} [CommSemiring R] [CommSemiring A]
     [CommSemiring B] [Algebra R A] [Algebra R B] (f : A →ₐ[R] B) :
     @IsScalarTower R A B _ f.toRingHom.toAlgebra.toSMul _ :=
   letI := (f : A →+* B).toAlgebra
   of_algebraMap_eq fun x => (f.commutes x).symm
-#align is_scalar_tower.of_ring_hom IsScalarTower.of_ring_hom
+#align is_scalar_tower.of_ring_hom IsScalarTower.of_algHom
 
 end Semiring
 
