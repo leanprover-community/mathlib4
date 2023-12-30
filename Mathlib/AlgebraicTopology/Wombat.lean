@@ -361,34 +361,16 @@ variable (h₀ : 0 < i) (hₙ : i < Fin.last (n+2))
 
 private
 def obj : Fin (n+3) → C :=
-  fun j ↦ (σ₀.app (op [0]) (horn.vertex n i j)).obj ⟨0, by simp⟩
+  fun j ↦ (σ₀.app (op [0]) (horn.vertex n i j)).obj 0
 
 private
 def mor (j : Fin (n+2)) : obj σ₀ j.castSucc ⟶ obj σ₀ j.succ := by
-  let e : Λ[n+2, i] _[1] := horn.primitiveEdge h₀ hₙ j
-  let f := σ₀.app (op [1]) e
-  let φ := nerve.arrow f
-  have := fun (k : Fin 2) (e : Λ[n+2, i] _[1]) ↦
-    congr_fun (σ₀.naturality (SimplexCategory.δ k).op) e
-  dsimp only [types_comp, Function.comp] at this
-  refine eqToHom ?_ ≫ φ ≫ eqToHom ?_
-  · rw [nerve.source_eq, ← this]
-    suffices : Λ[n+2, i].map (SimplexCategory.δ 1).op e = horn.vertex n i j.castSucc
-    · rw [this]; rfl
-    apply Subtype.ext
-    apply SimplexCategory.Hom.ext'
-    apply OrderHom.ext
-    apply funext
-    erw [Fin.forall_fin_one]
-    rfl
-  · rw [nerve.target_eq, ← this]
-    suffices : Λ[n+2, i].map (SimplexCategory.δ 0).op e = horn.vertex n i j.succ
-    · rw [this]; rfl
-    apply Subtype.ext
-    apply SimplexCategory.Hom.ext'
-    apply OrderHom.ext
-    apply funext
-    erw [Fin.forall_fin_one]
+  refine eqToHom ?_
+    ≫ (nerve.arrow (σ₀.app (op [1]) (horn.primitiveEdge h₀ hₙ j)))
+    ≫ eqToHom ?_
+  all_goals
+  · dsimp only [obj, nerve.source, nerve.target]
+    rw [nerve.horn_app_obj' _ _ _ (op [1])]
     rfl
 
 end filler
