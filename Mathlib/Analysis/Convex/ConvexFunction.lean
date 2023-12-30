@@ -165,8 +165,8 @@ theorem first_order_condition {s : Set E}
   have H11: ε ≤ 0:= nonpos_of_mul_nonpos_left H10 blt
   rw [← H9] at H8; linarith
 
-theorem first_order_condition_inverse {f: E → ℝ} {f' : E → (E →L[ℝ] ℝ)}
-  {s : Set E} (h : ∀ x ∈ s, HasFDerivAt f (f' x) x)(h₁: Convex ℝ s)
+theorem first_order_condition_inverse
+  (h : ∀ x ∈ s, HasFDerivAt f (f' x) x) (h₁: Convex ℝ s)
   (h₂: ∀ (x : E), x ∈ s → ∀ (y : E), y ∈ s → f x + f' x (y - x) ≤ f y): ConvexOn ℝ s f := by
   rw [ConvexOn]; constructor
   apply h₁; intro x xs y ys a b anonneg bnonneg sumab
@@ -214,20 +214,18 @@ theorem first_order_condition_inverse {f: E → ℝ} {f' : E → (E →L[ℝ] �
     simp only [map_sub, neg_mul, neg_add_cancel_right]
   have h1: a • (f x' + (f' x') (x - x')) ≤ a • f x:= mul_le_mul_of_nonneg_left H1 anonneg
   have h2: b • (f x' + (f' x') (y - x')) ≤ b • f y:= mul_le_mul_of_nonneg_left H2 bnonneg
-  have H3: a • (f x' + (f' x') (x - x')) + b • (f x' + (f' x') (y - x')) ≤ a • f x + b • f y
-      := add_le_add h1 h2
+  have H3: a • (f x' + (f' x') (x - x')) + b • (f x' + (f' x') (y - x')) ≤ a • f x + b • f y := by
+    exact add_le_add h1 h2
   rw [H] at H3
   apply H3
 
-theorem first_order_condition_iff {s : Set E} (h₁: Convex ℝ s)
-  (h : ∀ x ∈ s, HasFDerivAt f (f' x) x) :
-    ConvexOn ℝ s f ↔ ∀ (x: E),
-      x ∈ s → ∀ (y: E), y ∈ s → f x + f' x (y - x) ≤ f y:=
-        ⟨ fun h₂ x xs ↦ first_order_condition (h x xs) h₂ xs, first_order_condition_inverse h h₁ ⟩
+theorem first_order_condition_iff {s : Set E} (h₁: Convex ℝ s) (h : ∀ x ∈ s, HasFDerivAt f (f' x) x) :
+    ConvexOn ℝ s f ↔ ∀ (x: E), x ∈ s → ∀ (y: E), y ∈ s → f x + f' x (y - x) ≤ f y:=
+  ⟨ fun h₂ x xs ↦ first_order_condition (h x xs) h₂ xs, first_order_condition_inverse h h₁ ⟩
 
 theorem convex_monotone_gradient {s : Set E} (hfun: ConvexOn ℝ s f)
-(h : ∀ x ∈ s , HasFDerivAt f (f' x) x) :
-∀ x ∈ s, ∀ y ∈ s,  (f' x - f' y) (x - y) ≥ 0 := by
+    (h : ∀ x ∈ s , HasFDerivAt f (f' x) x) :
+    ∀ x ∈ s, ∀ y ∈ s,  (f' x - f' y) (x - y) ≥ 0 := by
   intro x hx y hy
   have h₁ : f x + f' x (y - x) ≤ f y := first_order_condition (h x hx) hfun hx y hy
   have h₂ : f y + f' y (x - y) ≤ f x := first_order_condition (h y hy) hfun hy x hx
@@ -244,7 +242,7 @@ section Gradient_First_Order
 
 open Set InnerProductSpace
 
-variable {f : E → ℝ} {f' : E → E} {s : Set E}
+variable {f : E → ℝ} {f' : E → E} {s : Set E} {x : E}
 
 theorem first_order_condition' (h : HasGradientAt f (f' x) x) (hf : ConvexOn ℝ s f) (xs : x ∈ s):
     ∀ (y : E), y ∈ s → f x + inner (f' x) (y - x) ≤ f y := by
