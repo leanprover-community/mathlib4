@@ -3,6 +3,7 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Jujian Zhang
 -/
+import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.Algebra.Algebra.NonUnitalHom
 import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.RingTheory.Localization.Basic
@@ -548,7 +549,7 @@ variable [Module R M] [Module R M'] [Module R M''] (f : M →ₗ[R] M') (g : M �
 `IsLocalizedModule S f` describes that `f : M ⟶ M'` is the localization map identifying `M'` as
 `LocalizedModule S M`.
 -/
-class IsLocalizedModule : Prop where
+@[mk_iff isLocalizedModule_iff] class IsLocalizedModule : Prop where
   map_units : ∀ x : S, IsUnit (algebraMap R (Module.End R M') x)
   surj' : ∀ y : M', ∃ x : M × S, x.2 • y = f x.1
   exists_of_eq : ∀ {x₁ x₂}, f x₁ = f x₂ → ∃ c : S, c • x₁ = c • x₂
@@ -578,6 +579,16 @@ lemma isLocalizedModule_id (R') [CommRing R'] [Algebra R R'] [IsLocalization S R
     exact (Module.End_isUnit_iff _).mp ((IsLocalization.map_units R' s).map _)
   surj' m := ⟨(m, 1), one_smul _ _⟩
   exists_of_eq h := ⟨1, congr_arg _ h⟩
+
+lemma isLocalizedModule_iff_isLocalization (R') [CommRing R'] [Algebra R R'] :
+    IsLocalizedModule S (Algebra.ofId R R').toLinearMap ↔ IsLocalization S R' := by
+  rw [isLocalizedModule_iff, isLocalization_iff]
+  refine and_congr (forall_congr' fun s ↦ ⟨fun h ↦ ?_, fun h ↦ ?_⟩) (and_congr ?_ Iff.rfl)
+  · obtain ⟨x, hx⟩ := ((Module.End_isUnit_iff _).mp h).2 1
+    rw [Module.algebraMap_end_apply, Algebra.smul_def] at hx
+    exact isUnit_of_mul_eq_one _ _ hx
+  · convert h.map (Algebra.lmul R R'); ext; simp
+  · simp_rw [mul_comm _ (algebraMap R R' _), ← Algebra.smul_def]; rfl
 
 namespace LocalizedModule
 
