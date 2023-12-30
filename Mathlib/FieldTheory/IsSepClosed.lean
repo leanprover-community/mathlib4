@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
 import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+import Mathlib.FieldTheory.Galois
 
 /-!
 # Separably Closed Field
@@ -194,8 +195,9 @@ namespace IsSepClosure
 instance isSeparable [Algebra k K] [IsSepClosure k K] : IsSeparable k K :=
   IsSepClosure.separable
 
-instance (priority := 100) normal [Algebra k K] [IsSepClosure k K] : Normal k K :=
-  ⟨fun x ↦ (IsSeparable.isIntegral k x).isAlgebraic,
+instance (priority := 100) isGalois [Algebra k K] [IsSepClosure k K] : IsGalois k K where
+  to_isSeparable := IsSepClosure.separable
+  to_normal := ⟨fun x ↦ (IsSeparable.isIntegral k x).isAlgebraic,
     fun x ↦ (IsSepClosure.sep_closed k).splits_codomain _ (IsSeparable.separable k x)⟩
 
 end IsSepClosure

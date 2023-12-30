@@ -41,7 +41,8 @@ This file contains basics about the (relative) separable closure of a field exte
 - `separableClosure.normalClosure_eq_self`: the normal closure of the (relative) separable
   closure of `E / F` is equal to itself.
 
-- `separableClosure.normal`: the (relative) separable closure of a normal extension is normal.
+- `separableClosure.isGalois`: the (relative) separable closure of a normal extension is Galois
+  (namely, normal and separable).
 
 - `separableClosure.isSepClosure`: the (relative) separable closure of a separably closed extension
   is a separable closure of the base field.
@@ -170,11 +171,13 @@ theorem separableClosure.normalClosure_eq_self :
     haveI : IsSeparable F i.fieldRange := (AlgEquiv.ofInjectiveField i).isSeparable
     le_separableClosure F E _) (le_normalClosure _)
 
-/-- If `E` is normal over `F`, then the (relative) separable closure of `E / F` is also normal
-over `F`. -/
-instance separableClosure.normal [Normal F E] : Normal F (separableClosure F E) := by
-  rw [← separableClosure.normalClosure_eq_self]
-  exact normalClosure.normal F _ E
+/-- If `E` is normal over `F`, then the (relative) separable closure of `E / F` is Galois (i.e.
+normal and separable) over `F`. -/
+instance separableClosure.isGalois [Normal F E] : IsGalois F (separableClosure F E) where
+  to_isSeparable := separableClosure.isSeparable F E
+  to_normal := by
+    rw [← separableClosure.normalClosure_eq_self]
+    exact normalClosure.normal F _ E
 
 /-- If `E` is separably closed, then the (relative) separable closure of `E / F` is a
 separable closure of `F`. -/
