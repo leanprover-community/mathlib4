@@ -549,7 +549,7 @@ theorem isIntegralCurve_Ioo_eq_of_contMDiff_boundaryless [I.Boundaryless]
   isIntegralCurve_eq_of_contMDiff (fun _ => I.isInteriorPoint) hv hγ hγ' h
 
 /-- If a global integral curve is not injective, then it is periodic. -/
-theorem periodic_iff_isIntegralCurve_not_injective [I.Boundaryless] (hγ : IsIntegralCurve γ v)
+lemma periodic_iff_isIntegralCurve_not_injective [I.Boundaryless] (hγ : IsIntegralCurve γ v)
     (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M))) :
     (∃ T > 0, Function.Periodic γ T) ↔ ¬Function.Injective γ := by
   constructor
