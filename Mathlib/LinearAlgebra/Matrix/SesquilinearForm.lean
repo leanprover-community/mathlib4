@@ -154,7 +154,7 @@ This section deals with the conversion between matrices and sesquilinear forms o
 -/
 
 
-variable [CommRing R] [CommRing R₁] [CommRing R₂]
+variable [CommRing R] [CommRing R₁] [CommRing R₂] [AddCommMonoid N₂] [Module R N₂]
 
 variable [Fintype n] [Fintype m]
 
@@ -163,7 +163,7 @@ variable [DecidableEq n] [DecidableEq m]
 variable {σ₁ : R₁ →+* R} {σ₂ : R₂ →+* R}
 
 /-- The linear equivalence between sesquilinear forms and `n × m` matrices -/
-def LinearMap.toMatrixₛₗ₂' : ((n → R₁) →ₛₗ[σ₁] (m → R₂) →ₛₗ[σ₂] R) ≃ₗ[R] Matrix n m R :=
+def LinearMap.toMatrixₛₗ₂' : ((n → R₁) →ₛₗ[σ₁] (m → R₂) →ₛₗ[σ₂] N₂) ≃ₗ[R] Matrix n m N₂ :=
   {
     LinearMap.toMatrix₂Aux (fun i => stdBasis R₁ (fun _ => R₁) i 1) fun j =>
       stdBasis R₂ (fun _ => R₂) j
@@ -175,34 +175,34 @@ def LinearMap.toMatrixₛₗ₂' : ((n → R₁) →ₛₗ[σ₁] (m → R₂) �
 #align linear_map.to_matrixₛₗ₂' LinearMap.toMatrixₛₗ₂'
 
 /-- The linear equivalence between bilinear forms and `n × m` matrices -/
-def LinearMap.toMatrix₂' : ((n → R) →ₗ[R] (m → R) →ₗ[R] R) ≃ₗ[R] Matrix n m R :=
+def LinearMap.toMatrix₂' : ((n → R) →ₗ[R] (m → R) →ₗ[R] N₂) ≃ₗ[R] Matrix n m N₂ :=
   LinearMap.toMatrixₛₗ₂'
 #align linear_map.to_matrix₂' LinearMap.toMatrix₂'
 
 variable (σ₁ σ₂)
 
 /-- The linear equivalence between `n × n` matrices and sesquilinear forms on `n → R` -/
-def Matrix.toLinearMapₛₗ₂' : Matrix n m R ≃ₗ[R] (n → R₁) →ₛₗ[σ₁] (m → R₂) →ₛₗ[σ₂] R :=
+def Matrix.toLinearMapₛₗ₂' : Matrix n m N₂ ≃ₗ[R] (n → R₁) →ₛₗ[σ₁] (m → R₂) →ₛₗ[σ₂] N₂ :=
   LinearMap.toMatrixₛₗ₂'.symm
 #align matrix.to_linear_mapₛₗ₂' Matrix.toLinearMapₛₗ₂'
 
 /-- The linear equivalence between `n × n` matrices and bilinear forms on `n → R` -/
-def Matrix.toLinearMap₂' : Matrix n m R ≃ₗ[R] (n → R) →ₗ[R] (m → R) →ₗ[R] R :=
+def Matrix.toLinearMap₂' : Matrix n m N₂ ≃ₗ[R] (n → R) →ₗ[R] (m → R) →ₗ[R] N₂ :=
   LinearMap.toMatrix₂'.symm
 #align matrix.to_linear_map₂' Matrix.toLinearMap₂'
 
-theorem Matrix.toLinearMapₛₗ₂'_aux_eq (M : Matrix n m R) :
+theorem Matrix.toLinearMapₛₗ₂'_aux_eq (M : Matrix n m N₂) :
     Matrix.toLinearMap₂'Aux σ₁ σ₂ M = Matrix.toLinearMapₛₗ₂' σ₁ σ₂ M :=
   rfl
 #align matrix.to_linear_mapₛₗ₂'_aux_eq Matrix.toLinearMapₛₗ₂'_aux_eq
 
-theorem Matrix.toLinearMapₛₗ₂'_apply (M : Matrix n m R) (x : n → R₁) (y : m → R₂) :
+theorem Matrix.toLinearMapₛₗ₂'_apply (M : Matrix n m N₂) (x : n → R₁) (y : m → R₂) :
     -- porting note: we don't seem to have `∑ i j` as valid notation yet
     Matrix.toLinearMapₛₗ₂' σ₁ σ₂ M x y = ∑ i, ∑ j, σ₁ (x i) • σ₂ (y j) • M i j :=
   rfl
 #align matrix.to_linear_mapₛₗ₂'_apply Matrix.toLinearMapₛₗ₂'_apply
 
-theorem Matrix.toLinearMap₂'_apply (M : Matrix n m R) (x : n → R) (y : m → R) :
+theorem Matrix.toLinearMap₂'_apply (M : Matrix n m N₂) (x : n → R) (y : m → R) :
     -- porting note: we don't seem to have `∑ i j` as valid notation yet
     Matrix.toLinearMap₂' M x y = ∑ i, ∑ j, x i • y j • M i j :=
   rfl
@@ -218,14 +218,14 @@ theorem Matrix.toLinearMap₂'_apply' (M : Matrix n m R) (v : n → R) (w : m �
 #align matrix.to_linear_map₂'_apply' Matrix.toLinearMap₂'_apply'
 
 @[simp]
-theorem Matrix.toLinearMapₛₗ₂'_stdBasis (M : Matrix n m R) (i : n) (j : m) :
+theorem Matrix.toLinearMapₛₗ₂'_stdBasis (M : Matrix n m N₂) (i : n) (j : m) :
     Matrix.toLinearMapₛₗ₂' σ₁ σ₂ M (LinearMap.stdBasis R₁ (fun _ => R₁) i 1)
       (LinearMap.stdBasis R₂ (fun _ => R₂) j 1) = M i j :=
   Matrix.toLinearMap₂'Aux_stdBasis σ₁ σ₂ M i j
 #align matrix.to_linear_mapₛₗ₂'_std_basis Matrix.toLinearMapₛₗ₂'_stdBasis
 
 @[simp]
-theorem Matrix.toLinearMap₂'_stdBasis (M : Matrix n m R) (i : n) (j : m) :
+theorem Matrix.toLinearMap₂'_stdBasis (M : Matrix n m N₂) (i : n) (j : m) :
     Matrix.toLinearMap₂' M (LinearMap.stdBasis R (fun _ => R) i 1)
       (LinearMap.stdBasis R (fun _ => R) j 1) = M i j :=
   Matrix.toLinearMap₂'Aux_stdBasis _ _ M i j
@@ -233,49 +233,49 @@ theorem Matrix.toLinearMap₂'_stdBasis (M : Matrix n m R) (i : n) (j : m) :
 
 @[simp]
 theorem LinearMap.toMatrixₛₗ₂'_symm :
-    (LinearMap.toMatrixₛₗ₂'.symm : Matrix n m R ≃ₗ[R] _) = Matrix.toLinearMapₛₗ₂' σ₁ σ₂ :=
+    (LinearMap.toMatrixₛₗ₂'.symm : Matrix n m N₂ ≃ₗ[R] _) = Matrix.toLinearMapₛₗ₂' σ₁ σ₂ :=
   rfl
 #align linear_map.to_matrixₛₗ₂'_symm LinearMap.toMatrixₛₗ₂'_symm
 
 @[simp]
 theorem Matrix.toLinearMapₛₗ₂'_symm :
-    ((Matrix.toLinearMapₛₗ₂' σ₁ σ₂).symm : _ ≃ₗ[R] Matrix n m R) = LinearMap.toMatrixₛₗ₂' :=
+    ((Matrix.toLinearMapₛₗ₂' σ₁ σ₂).symm : _ ≃ₗ[R] Matrix n m N₂) = LinearMap.toMatrixₛₗ₂' :=
   LinearMap.toMatrixₛₗ₂'.symm_symm
 #align matrix.to_linear_mapₛₗ₂'_symm Matrix.toLinearMapₛₗ₂'_symm
 
 @[simp]
-theorem Matrix.toLinearMapₛₗ₂'_toMatrix' (B : (n → R₁) →ₛₗ[σ₁] (m → R₂) →ₛₗ[σ₂] R) :
+theorem Matrix.toLinearMapₛₗ₂'_toMatrix' (B : (n → R₁) →ₛₗ[σ₁] (m → R₂) →ₛₗ[σ₂] N₂) :
     Matrix.toLinearMapₛₗ₂' σ₁ σ₂ (LinearMap.toMatrixₛₗ₂' B) = B :=
   (Matrix.toLinearMapₛₗ₂' σ₁ σ₂).apply_symm_apply B
 #align matrix.to_linear_mapₛₗ₂'_to_matrix' Matrix.toLinearMapₛₗ₂'_toMatrix'
 
 @[simp]
-theorem Matrix.toLinearMap₂'_toMatrix' (B : (n → R) →ₗ[R] (m → R) →ₗ[R] R) :
+theorem Matrix.toLinearMap₂'_toMatrix' (B : (n → R) →ₗ[R] (m → R) →ₗ[R] N₂) :
     Matrix.toLinearMap₂' (LinearMap.toMatrix₂' B) = B :=
   Matrix.toLinearMap₂'.apply_symm_apply B
 #align matrix.to_linear_map₂'_to_matrix' Matrix.toLinearMap₂'_toMatrix'
 
 @[simp]
-theorem LinearMap.toMatrix'_toLinearMapₛₗ₂' (M : Matrix n m R) :
+theorem LinearMap.toMatrix'_toLinearMapₛₗ₂' (M : Matrix n m N₂) :
     LinearMap.toMatrixₛₗ₂' (Matrix.toLinearMapₛₗ₂' σ₁ σ₂ M) = M :=
   LinearMap.toMatrixₛₗ₂'.apply_symm_apply M
 #align linear_map.to_matrix'_to_linear_mapₛₗ₂' LinearMap.toMatrix'_toLinearMapₛₗ₂'
 
 @[simp]
-theorem LinearMap.toMatrix'_toLinearMap₂' (M : Matrix n m R) :
-    LinearMap.toMatrix₂' (Matrix.toLinearMap₂' M) = M :=
+theorem LinearMap.toMatrix'_toLinearMap₂' (M : Matrix n m N₂) :
+    LinearMap.toMatrix₂' (Matrix.toLinearMap₂' (R := R) M) = M :=
   LinearMap.toMatrixₛₗ₂'.apply_symm_apply M
 #align linear_map.to_matrix'_to_linear_map₂' LinearMap.toMatrix'_toLinearMap₂'
 
 @[simp]
-theorem LinearMap.toMatrixₛₗ₂'_apply (B : (n → R₁) →ₛₗ[σ₁] (m → R₂) →ₛₗ[σ₂] R) (i : n) (j : m) :
+theorem LinearMap.toMatrixₛₗ₂'_apply (B : (n → R₁) →ₛₗ[σ₁] (m → R₂) →ₛₗ[σ₂] N₂) (i : n) (j : m) :
     LinearMap.toMatrixₛₗ₂' B i j =
       B (stdBasis R₁ (fun _ => R₁) i 1) (stdBasis R₂ (fun _ => R₂) j 1) :=
   rfl
 #align linear_map.to_matrixₛₗ₂'_apply LinearMap.toMatrixₛₗ₂'_apply
 
 @[simp]
-theorem LinearMap.toMatrix₂'_apply (B : (n → R) →ₗ[R] (m → R) →ₗ[R] R) (i : n) (j : m) :
+theorem LinearMap.toMatrix₂'_apply (B : (n → R) →ₗ[R] (m → R) →ₗ[R] N₂) (i : n) (j : m) :
     LinearMap.toMatrix₂' B i j = B (stdBasis R (fun _ => R) i 1) (stdBasis R (fun _ => R) j 1) :=
   rfl
 #align linear_map.to_matrix₂'_apply LinearMap.toMatrix₂'_apply
