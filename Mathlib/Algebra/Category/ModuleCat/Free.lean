@@ -179,6 +179,6 @@ theorem free_shortExact_finrank_add [Module.Free R S.X₁] [Module.Free R S.X₃
     FiniteDimensional.finrank R S.X₂ = n + p := by
   apply FiniteDimensional.finrank_eq_of_rank_eq
   rw [free_shortExact_rank_add hS', ← hN, ← hP]
-  simp only [Nat.cast_add, FiniteDimensional.finrank_eq_rank]
+  simp only [Nat.cast_add, finrank_eq_rank]
 
 end ModuleCat

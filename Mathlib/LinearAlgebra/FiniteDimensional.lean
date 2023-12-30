@@ -1310,7 +1310,7 @@ theorem cardinal_lt_aleph0_of_finiteDimensional (K V : Type u) [DivisionRing K] 
     [Module K V] [Finite K] [FiniteDimensional K V] : #V < ℵ₀ := by
   letI : IsNoetherian K V := IsNoetherian.iff_fg.2 inferInstance
   rw [cardinal_mk_eq_cardinal_mk_field_pow_rank K V]
-  exact Cardinal.power_lt_aleph0 (Cardinal.lt_aleph0_of_finite K) (IsNoetherian.rank_lt_aleph0 K V)
+  exact Cardinal.power_lt_aleph0 (Cardinal.lt_aleph0_of_finite K) (rank_lt_aleph0 K V)
 #align cardinal_lt_aleph_0_of_finite_dimensional cardinal_lt_aleph0_of_finiteDimensional
 
 end Module
