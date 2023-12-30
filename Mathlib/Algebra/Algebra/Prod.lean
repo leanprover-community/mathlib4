@@ -110,22 +110,27 @@ def prodEquiv : (A →ₐ[R] B) × (A →ₐ[R] C) ≃ (A →ₐ[R] B × C)
 
 end AlgHom
 
-section Unique
-
-/-- Multiplying by the trivial algebra from the left does not change the structure.
-
-This is the `AlgebraEquiv` version of `LinearEquiv.uniqueProd`. See also `RingEquiv.zeroRingProd`.-/
-def AlgebraEquiv.uniqueProd [Unique B] :
-    (B × A) ≃ₐ[R] A := by
-  refine AlgEquiv.ofLinearEquiv (AddEquiv.uniqueProd.toLinearEquiv ?_) ?_ ?_ <;>
-  simp [AddEquiv.uniqueProd]
+namespace AlgEquiv
 
 /-- Multiplying by the trivial algebra from the right does not change the structure.
 
-This is the `AlgebraEquiv` version of `LinearEquiv.prodUnique`. See also `RingEquiv.prodZeroRing`.-/
-def AlgebraEquiv.prodUnique [Unique B] :
-    (A × B) ≃ₐ[R] A := by
-  refine AlgEquiv.ofLinearEquiv (AddEquiv.prodUnique.toLinearEquiv ?_) ?_ ?_ <;>
-  simp [AddEquiv.prodUnique]
+This is the `AlgEquiv` version of `LinearEquiv.prodUnique` and `RingEquiv.prodZeroRing.symm`. -/
+@[simps!]
+def prodUnique [Unique B] : (A × B) ≃ₐ[R] A where
+  toFun := Prod.fst
+  invFun x := (x, 0)
+  __ := (RingEquiv.prodZeroRing A B).symm
+  commutes' _ := rfl
 
-end Unique
+/-- Multiplying by the trivial algebra from the left does not change the structure.
+
+This is the `AlgEquiv` version of `LinearEquiv.uniqueProd` and `RingEquiv.zeroRingProd.symm`.
+-/
+@[simps!]
+def uniqueProd [Unique B] : (B × A) ≃ₐ[R] A where
+  toFun := Prod.snd
+  invFun x := (0, x)
+  __ := (RingEquiv.zeroRingProd A B).symm
+  commutes' _ := rfl
+
+end AlgEquiv

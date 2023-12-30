@@ -475,6 +475,7 @@ def propEquivPEmpty {p : Prop} (h : ¬p) : p ≃ PEmpty := @equivPEmpty p <| IsE
 #align equiv.prop_equiv_pempty Equiv.propEquivPEmpty
 
 /-- If both `α` and `β` have a unique element, then `α ≃ β`. -/
+@[simps]
 def equivOfUnique (α β : Sort _) [Unique.{u} α] [Unique.{v} β] : α ≃ β where
   toFun := default
   invFun := default
@@ -483,6 +484,7 @@ def equivOfUnique (α β : Sort _) [Unique.{u} α] [Unique.{v} β] : α ≃ β w
 #align equiv.equiv_of_unique Equiv.equivOfUnique
 
 /-- If `α` has a unique element, then it is equivalent to any `PUnit`. -/
+@[simps!]
 def equivPUnit (α : Sort u) [Unique α] : α ≃ PUnit.{v} := equivOfUnique α _
 #align equiv.equiv_punit Equiv.equivPUnit
 
