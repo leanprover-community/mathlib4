@@ -172,6 +172,7 @@ theorem isPurelyInseparable_iff_minpoly_eq_X_sub_C_pow (q : ℕ) [hF : ExpChar F
   simp_rw [isPurelyInseparable_iff_natSepDegree_eq_one,
     minpoly.natSepDegree_eq_one_iff_eq_X_sub_C_pow q]
 
+-- TODO: remove `halg` assumption
 /-- If an algebraic extension has (finite) separable degree one, then it is purely inseparable. -/
 theorem isPurelyInseparable_of_finSepDegree_eq_one (halg : Algebra.IsAlgebraic F E)
     (hdeg : finSepDegree F E = 1) : IsPurelyInseparable F E := by
@@ -200,6 +201,7 @@ theorem IsPurelyInseparable.finSepDegree_eq_one [IsPurelyInseparable F E] :
   rw [← natSepDegree_eq_of_isAlgClosed] at this
   linarith only [this, (isPurelyInseparable_iff_natSepDegree_eq_one F E).1 inferInstance x]
 
+-- TODO: remove `halg` assumption
 /-- An algebraic extension is purely inseparable if and only if it has (finite) separable
 degree one. -/
 theorem isPurelyInseparable_iff_finSepDegree_eq_one (halg : Algebra.IsAlgebraic F E) :
@@ -266,6 +268,31 @@ theorem eq_separableClosure_iff (halg : Algebra.IsAlgebraic F E) (L : Intermedia
   ⟨by rintro rfl; exact ⟨separableClosure.isSeparable F E,
     separableClosure.isPurelyInseparable F E halg⟩, fun ⟨_, _⟩ ↦ le_antisymm
       (le_separableClosure F E L) (separableClosure_le F E L)⟩
+
+-- TODO: move to suitable file
+theorem _root_.iterate_frobenius_inj (R : Type*) [CommRing R] [IsReduced R] (p : ℕ) [Fact p.Prime]
+    [CharP R p] (n : ℕ) : Function.Injective (frobenius R p)^[n] := by
+  induction' n with n ih
+  exacts [Function.injective_id, ih.comp (frobenius_inj R p)]
+
+/-- If `E / F` is purely inseparable, then for any reduced ring `L`, the map `(E →+* L) → (F →+* L)`
+induced by `algebraMap F E` is injective. In other words, a purely inseparable field extension
+is an epimorphism in the category of fields. -/
+theorem IsPurelyInseparable.injective_comp_algebraMap [h : IsPurelyInseparable F E]
+    (L : Type w) [CommRing L] [IsReduced L] :
+    Function.Injective fun f : E →+* L ↦ f.comp (algebraMap F E) := fun f g heq ↦ by
+  ext x
+  obtain ⟨q, hF⟩ := ExpChar.exists F
+  obtain ⟨n, y, h⟩ := (isPurelyInseparable_iff_mem_pow F E q).1 h x
+  replace heq := congr($heq y)
+  simp_rw [RingHom.comp_apply, h] at heq
+  cases' hF with _ _ hprime _
+  · rwa [one_pow, pow_one] at heq
+  nontriviality L
+  haveI := charP_of_injective_ringHom (f.comp (algebraMap F E)).injective q
+  haveI := Fact.mk hprime
+  simp_rw [map_pow, ← iterate_frobenius] at heq
+  exact iterate_frobenius_inj L q n heq
 
 end IsPurelyInseparable
 
