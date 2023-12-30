@@ -328,6 +328,8 @@ theorem rank_pi [Finite η] : Module.rank R (∀ i, φ i) =
   simp [← b.mk_eq_rank'', fun i => (B i).mk_eq_rank'']
 #align rank_pi rank_pi
 
+variable (R)
+
 /-- The finrank of `(ι → R)` is `Fintype.card ι`. -/
 theorem FiniteDimensional.finrank_pi {ι : Type v} [Fintype ι] :
     finrank R (ι → R) = Fintype.card ι := by
@@ -345,6 +347,7 @@ theorem FiniteDimensional.finrank_pi_fintype
     mk_toNat_eq_card, Fintype.card_sigma]
 #align finite_dimensional.finrank_pi_fintype FiniteDimensional.finrank_pi_fintype
 
+variable {R}
 variable [Fintype η]
 
 theorem rank_fun {M η : Type u} [Fintype η] [AddCommGroup M] [Module R M] [Module.Free R M] :
@@ -364,6 +367,8 @@ theorem rank_fun' : Module.rank R (η → R) = Fintype.card η := by
 theorem rank_fin_fun (n : ℕ) : Module.rank R (Fin n → R) = n := by simp [rank_fun']
 #align rank_fin_fun rank_fin_fun
 
+variable (R)
+
 /-- The vector space of functions on a `Fintype ι` has finrank equal to the cardinality of `ι`. -/
 @[simp]
 theorem FiniteDimensional.finrank_fintype_fun_eq_card : finrank R (η → R) = Fintype.card η :=
@@ -374,6 +379,8 @@ theorem FiniteDimensional.finrank_fintype_fun_eq_card : finrank R (η → R) = F
 -- @[simp] -- Porting note: simp already proves this
 theorem FiniteDimensional.finrank_fin_fun {n : ℕ} : finrank R (Fin n → R) = n := by simp
 #align finite_dimensional.finrank_fin_fun FiniteDimensional.finrank_fin_fun
+
+variable {R}
 
 -- TODO: merge with the `Finrank` content
 /-- An `n`-dimensional `R`-vector space is equivalent to `Fin n → R`. -/
