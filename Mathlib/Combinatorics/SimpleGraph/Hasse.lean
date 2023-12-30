@@ -151,7 +151,7 @@ def pathGraph_hom_to_walk {α} (G : SimpleGraph α) {n : ℕ} (hom : pathGraph (
       rw [Fin.coe_eq_castSucc]
       rfl
     have hGadj : G.Adj (hom ⊤) (hom' ⊤) := by
-      rw [←hlast'] at hpgadj
+      rw [← hlast'] at hpgadj
       exact hom.map_rel hpgadj
     exact Walk.cons hGadj w
 
