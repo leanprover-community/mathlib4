@@ -39,43 +39,29 @@ theorem Int.Ico_filter_modEq_card (a b v : ℤ) {r : ℤ} (hr : 0 < r) :
     max (⌈(b - v) / (r : ℚ)⌉ - ⌈(a - v) / (r : ℚ)⌉) 0 := by
   suffices : ((Ico a b).filter (· ≡ v [ZMOD r])).card = ((Ico (a - v) (b - v)).filter (r ∣ ·)).card
   · simp only [this, Ico_filter_dvd_card _ _ hr, cast_sub]
-  refine (card_congr (fun x _ => x + v) ?_ (fun _ _ _ _ => (add_left_inj _).mp) ?_).symm
-  · simp only [mem_filter, mem_Ico, tsub_le_iff_right, lt_tsub_iff_right, and_imp]
-    intro c l u d
-    exact ⟨⟨l, u⟩, (modEq_of_dvd (by simpa)).symm⟩
-  · simp only [mem_filter, mem_Ico, and_imp]
+  refine card_congr (fun x _ => x - v) ?_ (fun _ _ _ _ => (add_left_inj _).mp) ?_
+  · simp only [mem_filter, mem_Ico, tsub_le_iff_right, sub_add_cancel, sub_lt_sub_iff_right,
+      and_imp]
     intro c l u m
-    exact ⟨c - v, by simp_all [modEq_iff_dvd.mp m.symm]⟩
-
-theorem nat_Ico_filter_map_eq_int_Ico_filter (a b v r : ℕ) :
-    ((Ico a b).filter (· ≡ v [MOD r])).map Nat.castEmbedding =
-    (Ico ↑a ↑b).filter (· ≡ v [ZMOD r]) := by
-  ext x
-  constructor
-  · simp only [mem_map, mem_filter, mem_Ico, Nat.castEmbedding_apply, forall_exists_index, and_imp]
-    intro x' lb ub m e
-    refine' ⟨⟨by subst e; simp_all, by subst e; simp_all⟩, _⟩
-    rw [← e, coe_nat_modEq_iff]; exact m
-  · simp only [mem_filter, mem_Ico, mem_map, Nat.castEmbedding_apply, and_imp]
-    intro lb ub m
-    have : 0 ≤ x := by linarith
-    lift x to ℕ using this
-    use x
-    norm_cast at *
-    refine' ⟨⟨⟨lb, ub⟩, coe_nat_modEq_iff.mp m⟩, rfl⟩
+    exact ⟨⟨l, u⟩, modEq_iff_dvd.mp m.symm⟩
+  · simp only [mem_filter, mem_Ico, lt_tsub_iff_right, and_imp]
+    intro c l u d
+    exact ⟨c + v, by simp_all [(modEq_of_dvd ((add_sub_cancel c v).symm ▸ d)).symm]⟩
 
 /-- `Int.Ico_filter_modEq_card` restricted to natural numbers. -/
 theorem Nat.Ico_filter_modEq_card (a b v : ℕ) {r : ℕ} (hr : 0 < r) :
     ((Ico a b).filter (· ≡ v [MOD r])).card =
     max (⌈(b - v) / (r : ℚ)⌉ - ⌈(a - v) / (r : ℚ)⌉) 0 := by
-  have seq := nat_Ico_filter_map_eq_int_Ico_filter a b v r
-  have ceq := card_map (s := (Ico a b).filter (· ≡ v [MOD r])) (Nat.castEmbedding (R := ℤ))
-  have hr' : 0 < (r : ℤ) := by linarith
-  have q := Int.Ico_filter_modEq_card a b v hr'
-  rw [seq] at ceq
-  rw [ceq] at q
-  rw [q]
-  norm_cast
+  suffices : ((Ico a b).filter (· ≡ v [MOD r])).card = ((Ico ↑a ↑b).filter (· ≡ v [ZMOD r])).card
+  · rw [this, Int.Ico_filter_modEq_card _ _ _ (cast_pos.mpr hr)]; norm_cast
+  refine card_congr (fun x _ => x) ?_ (fun _ _ _ _ e => by simpa only [cast_inj] using e) ?_
+  · simp only [mem_filter, mem_Ico, cast_le, cast_lt, and_imp]
+    intro c l u m
+    exact ⟨⟨l, u⟩, coe_nat_modEq_iff.mpr m⟩
+  · simp only [mem_filter, mem_Ico, and_imp]
+    intro c l u d
+    lift c to ℕ using (by linarith)
+    exact ⟨c, ⟨⟨⟨ofNat_le.mp l, ofNat_lt.mp u⟩, coe_nat_modEq_iff.mp d⟩, rfl⟩⟩
 
 /-- There are `⌈(n - v % r) / r⌉` numbers in `[0, n)` congruent to `v` mod `r`. -/
 theorem Nat.count_modEq_card' (n v : ℕ) {r : ℕ} (hr : 0 < r) :
