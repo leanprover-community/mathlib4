@@ -685,6 +685,21 @@ theorem rank_le_of_subset (hs : s ⊆ t) : G.rank s ≤ G.rank t := by
   exists u
   exact ⟨⟨h₁, subset_trans h₂ hs⟩, rfl⟩
 
+theorem ssubset_of_feasible_rank (hs : s ∈ G) (h : t ⊂ s) : G.rank t < G.rank s := by
+  apply (le_iff_lt_or_eq.mp (G.rank_le_of_subset (subset_of_ssubset h))).elim <;>
+    try simp only [imp_self]
+  intro h'
+  exfalso
+  have h₁ := bases_of_feasible_eq_singleton hs
+  have ⟨_, hb₁⟩ := G.bases_nonempty s
+  have hb₂ := rank_eq_basis_card hb₁
+  rw [h₁, Finset.mem_singleton] at hb₁
+  rw [hb₂, hb₁] at h'
+  have h₂ : s.card ≤ t.card := h' ▸ (rank_le_card _)
+  rw [ssubset_def] at h
+  exact absurd ((eq_of_subset_of_card_le h.1 h₂) ▸ h.2) (by simp only [Finset.Subset.refl,
+    not_true_eq_false, not_false_eq_true])
+
 @[simp]
 theorem rank_of_feasible (hs : s ∈ G) : G.rank s = s.card :=
   @induction_on_accessible α _ _ _ _ hs (fun x => G.rank x = x.card)
@@ -712,6 +727,24 @@ theorem card_feasible_subset_le_rank (hs : s ∈ G) {t : Finset α} (ht : s ⊆ 
     s.card ≤ G.rank t := by
   have ⟨b, hb⟩ := G.bases_nonempty t
   exact rank_eq_basis_card hb ▸ basis_max_card_of_feasible hb hs ht
+
+def exists_basis_containing_element_if_rank_insert_increases
+  (h : G.rank s < G.rank (insert x s)) :
+    ∃ t ∈ G.bases (insert x s), x ∈ t := by
+  by_contra h'
+  simp only [not_exists, not_and] at h'
+  let ⟨b, hb⟩ := G.bases_nonempty (insert x s)
+  have h₁ : x ∉ b := h' _ hb
+  have h₂ : b ⊆ s := by
+    intro e he
+    have h'' := (G.basis_subset hb) he
+    rw [mem_insert] at h''
+    exact h''.elim (fun h'' => False.elim (h₁ (h'' ▸ he))) (fun h'' => h'')
+  have h₃ : G.rank (insert x s) ≤ G.rank s := by
+    rw [rank_eq_basis_card hb]
+    exact card_feasible_subset_le_rank (G.basis_mem_feasible hb) h₂
+  rw [← not_lt_eq] at h₃
+  exact h₃ h
 
 @[simp]
 theorem rank_eq_card_iff_feasible : G.rank s = s.card ↔ s ∈ G :=
@@ -766,10 +799,8 @@ theorem local_submodularity
   have hb₁₂ := rank_eq_basis_card hb₁₁
   have hb₁₃ := basis_mem_feasible hb₁₁
   have ⟨b₂, hb₂₁⟩ := G.bases_nonempty (insert x (insert y s))
-  have hb₂₂ := rank_eq_basis_card hb₂₁
-  have hb₂₃ := basis_mem_feasible hb₂₁
-  rw [hb₁₂, hb₂₂] at h
-  have ⟨a, ha₁, ha₂⟩ := G.exchangeProperty hb₂₃ hb₁₃ h
+  rw [hb₁₂, rank_eq_basis_card hb₂₁] at h
+  have ⟨a, ha₁, ha₂⟩ := G.exchangeProperty (basis_mem_feasible hb₂₁) hb₁₃ h
   rw [system_feasible_set_mem_mem] at ha₂
   rw [mem_sdiff] at ha₁
   by_cases h₃ : a ∈ s
@@ -807,8 +838,6 @@ theorem stronger_local_submodularity_left
   symm
   by_contra h'
   have ⟨_, hb₁₁⟩ := G.bases_nonempty (s ∪ t)
-  have ⟨_, hb₂₁⟩ := G.bases_nonempty s
-  have hb₂₂ := rank_eq_basis_card hb₂₁
   have ⟨b₃, hb₃₁⟩ := G.bases_nonempty (s ∩ t)
   have hb₃₂ := rank_eq_basis_card hb₃₁
   have h' := lt_of_le_of_ne (G.rank_le_of_subset (subset_union_left s t)) h'
@@ -841,43 +870,10 @@ theorem stronger_local_submodularity_right
     G.rank (s ∪ t) = G.rank t := by
   simp only [h₂, ← h₁, stronger_local_submodularity_left h₁ h₂]
 
-theorem ssubset_of_feasible_rank (hs : s ∈ G) (h : t ⊂ s) : G.rank t < G.rank s := by
-  apply (le_iff_lt_or_eq.mp (G.rank_le_of_subset (subset_of_ssubset h))).elim <;>
-    try simp only [imp_self]
-  intro h'
-  exfalso
-  have h₁ := bases_of_feasible_eq_singleton hs
-  have ⟨_, hb₁⟩ := G.bases_nonempty s
-  have hb₂ := rank_eq_basis_card hb₁
-  rw [h₁, Finset.mem_singleton] at hb₁
-  rw [hb₂, hb₁] at h'
-  have h₂ : s.card ≤ t.card := h' ▸ (rank_le_card _)
-  rw [ssubset_def] at h
-  exact absurd ((eq_of_subset_of_card_le h.1 h₂) ▸ h.2) (by simp only [Finset.Subset.refl,
-    not_true_eq_false, not_false_eq_true])
-
 /-- List of axioms for rank of greedoid· -/
 def greedoidRankAxioms (r : Finset α → ℕ) :=
   (r ∅ = 0) ∧ (∀ {s}, r s ≤ s.card) ∧ (∀ {s t}, s ⊆ t → r s ≤ r t) ∧
   (∀ {s x y}, r s = r (insert x s) → r s = r (insert y s) → r s = r (insert x (insert y s)))
-
-def exists_basis_containing_element_if_rank_insert_increases
-  (h : G.rank s < G.rank (insert x s)) :
-    ∃ t ∈ G.bases (insert x s), x ∈ t := by
-  by_contra h'
-  simp only [not_exists, not_and] at h'
-  let ⟨b, hb⟩ := G.bases_nonempty (insert x s)
-  have h₁ : x ∉ b := h' _ hb
-  have h₂ : b ⊆ s := by
-    intro e he
-    have h'' := (G.basis_subset hb) he
-    rw [mem_insert] at h''
-    exact h''.elim (fun h'' => False.elim (h₁ (h'' ▸ he))) (fun h'' => h'')
-  have h₃ : G.rank (insert x s) ≤ G.rank s := by
-    rw [rank_eq_basis_card hb]
-    exact card_feasible_subset_le_rank (G.basis_mem_feasible hb) h₂
-  rw [← not_lt_eq] at h₃
-  exact h₃ h
 
 end Rank
 
@@ -1283,6 +1279,21 @@ def kernelClosureOperator (G : Greedoid α) (s : Finset α) : Finset α :=
 def kernel (G : Greedoid α) (s : Finset α) : Finset α :=
   (s.powerset.filter fun t => t ∈ G).biUnion id
 
+section PartialAlphabets
+
+variable {s : Finset α}
+
+theorem mem_partialAlphabets :
+    s ∈ G.partialAlphabets ↔ ∃ S, s = Finset.biUnion S id ∧ ∀ t ∈ S, t ∈ G := by
+  simp only [partialAlphabets, filter_congr_decidable, Finset.mem_filter, mem_univ, true_and]
+
+-- CRAPO, Henry. Selectors: a theory of formal languages, semimodular lattices,
+-- and branching and shelling processes. Advances in Mathematics, 1984, 54.3: 233-277.
+
+-- G.partialAlphabets is an antimatroid
+
+end PartialAlphabets
+
 section Kernel
 
 variable {s : Finset α}
@@ -1317,6 +1328,11 @@ theorem mem_kernel {x : α} :
     x ∈ G.kernel s ↔ ∃ t ∈ G, t ⊆ s ∧ x ∈ t := by
   constructor <;> intro h <;> simp only [kernel, filter_congr_decidable, mem_biUnion,
     Finset.mem_filter, mem_powerset, id_eq] at * <;> let ⟨a, _⟩ := h <;> exists a <;> tauto
+
+theorem mem_kernelClosureOperator {x : α} :
+    x ∈ G.kernelClosureOperator s ↔ ∃ a, a ∈ G ∧ rank G (s ∪ a) = rank G s ∧ x ∈ a := by
+  constructor <;> intro h <;> simp only [kernelClosureOperator, filter_congr_decidable, mem_biUnion,
+    Finset.mem_filter, system_feasible_set_mem_mem, id_eq] at * <;> tauto
 
 theorem kernelClosureOperator_eq_kernel_closure :
     G.kernelClosureOperator s = G.kernel (G.closure s) := by
@@ -1941,6 +1957,16 @@ theorem rank_le_of_rankFeasible_insert_not_mem_and_kernelClosureOperator_neq
   rw [← closure_insert_eq_iff_rank_eq] at h
   rw [kernelClosureOperator_eq_kernel_closure, kernelClosureOperator_eq_kernel_closure, h]
 
+theorem rank_eq_of_mem_kernelClosureOperator_isnert
+  {x : α} (h : x ∈ G.kernelClosureOperator s) :
+    G.rank (insert x s) = G.rank s := by
+  let ⟨_, _, h₁, h₂⟩ := mem_kernelClosureOperator.mp h
+  symm
+  apply rank_eq_of_subset_of_subset (subset_insert _ _) _ h₁.symm
+  intro _ h
+  simp only [mem_insert, mem_union] at *
+  exact h.elim (fun h => h ▸ Or.inr h₂) (fun h => Or.inl h)
+
 -- Chapter V. Lemma 3.5.
 theorem kernelClosureOperator_weak_exchange_property_over_rankFeasible
   (hs : G.rankFeasible s)
@@ -1952,23 +1978,33 @@ theorem kernelClosureOperator_weak_exchange_property_over_rankFeasible
   have h₂ : G.rank (insert z s) = G.rank s + 1 := by
     rw [← rank_le_of_rankFeasible_insert_not_mem_and_kernelClosureOperator_neq hs hz₁]
     have h₂ : y ∉ G.kernelClosureOperator s := by
-      intro h'
-      apply hy₂; clear hy₂
-      apply subset_antisymm <;> intro e he
-      · simp only [kernelClosureOperator_def_closure, mem_biUnion, Finset.mem_filter,
-          system_feasible_set_mem_mem, id_eq] at *
-        sorry
-      · sorry
+      intro h
+      simp only [kernelClosureOperator_def_closure, mem_biUnion, Finset.mem_filter,
+        system_feasible_set_mem_mem, id_eq] at h
+      let ⟨a₁, ⟨ha₁₁, ha₁₂⟩, ha₁₃⟩ := h
+      have h := ha₁₂ ha₁₃
+      simp only [mem_closure, h₁, add_right_eq_self] at h
     intro h'
     exact h₂ (h' ▸ hz₂)
   have h₃ : G.rank (insert z (insert y s)) = G.rank s + 1 := by
-    sorry
+    have h := rank_eq_of_mem_kernelClosureOperator_isnert hz₂
+    rw [Insert.comm] at h
+    rw [h, h₂]
   have h₄ : G.kernelClosureOperator (insert y s) = G.kernelClosureOperator (insert z s) := by
     sorry
   have ⟨b, hb₁, hb₂⟩ : ∃ b ∈ G.bases (insert z s), z ∈ b := by
     sorry
   have h₅ : s ∪ b = insert z s := by
-    sorry
+    ext x
+    constructor <;> intro h
+    · rw [mem_union] at h
+      apply h.elim <;> intro h
+      · rw [mem_insert]
+        tauto
+      · exact basis_subset hb₁ h
+    · rw [mem_union]
+      rw [mem_insert] at h
+      exact h.elim (fun h => Or.inr (h ▸ hb₂)) (fun h => Or.inl h)
   simp only [kernelClosureOperator_def_rank, insert_union, mem_biUnion, Finset.mem_filter,
     system_feasible_set_mem_mem, id_eq]
   exists b
