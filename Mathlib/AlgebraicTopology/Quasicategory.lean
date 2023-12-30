@@ -34,8 +34,8 @@ every map of simplicial sets `σ₀ : Λ[n, i] → S` can be extended to a map `
 [Kerodon, 003A] -/
 class Quasicategory (S : SSet) : Prop where
   hornFilling' : ∀ ⦃n : ℕ⦄ ⦃i : Fin (n+3)⦄ (σ₀ : Λ[n+2, i] ⟶ S)
-     (_h0 : 0 < i) (_hn : i < Fin.last (n+2)),
-       ∃ σ : Δ[n+2] ⟶ S, σ₀ = hornInclusion (n+2) i ≫ σ
+    (_h0 : 0 < i) (_hn : i < Fin.last (n+2)),
+      ∃ σ : Δ[n+2] ⟶ S, σ₀ = hornInclusion (n+2) i ≫ σ
 
 lemma Quasicategory.hornFilling {S : SSet} [Quasicategory S] ⦃n : ℕ⦄ ⦃i : Fin (n+1)⦄
     (h0 : 0 < i) (hn : i < Fin.last n)
@@ -54,5 +54,26 @@ lemma Quasicategory.hornFilling {S : SSet} [Quasicategory S] ⦃n : ℕ⦄ ⦃i 
 [Kerodon, 003C] -/
 instance (S : SSet) [KanComplex S] : Quasicategory S where
   hornFilling' _ _ σ₀ _ _ := KanComplex.hornFilling σ₀
+
+open SimplicialObject SimplexCategory in
+lemma quasicategory_of_filler (S : SSet)
+    (filler : ∀ ⦃n : ℕ⦄ ⦃i : Fin (n+3)⦄ (σ₀ : Λ[n+2, i] ⟶ S)
+      (_h0 : 0 < i) (_hn : i < Fin.last (n+2)),
+      ∃ σ : S _[n+2], ∀ (j) (h : j ≠ i), S.δ j σ = σ₀.app _ (horn.face i j h)) :
+    Quasicategory S where
+  hornFilling' n i σ₀ h₀ hₙ := by
+    obtain ⟨σ, h⟩ := filler σ₀ h₀ hₙ
+    use yonedaEquiv.symm σ
+    apply NatTrans.ext; apply funext; apply Opposite.rec; apply SimplexCategory.rec
+    intro m; ext f
+    obtain ⟨j, hji, hfj⟩ : ∃ j, ¬j = i ∧ ∀ k, f.1.toOrderHom k ≠ j := by
+      simpa [← Set.univ_subset_iff, Set.subset_def, asOrderHom, not_or] using f.2
+    have H : f = (Λ[n+2, i].map (factor_δ f.1 j).op) (horn.face i j hji) := by
+      apply Subtype.ext
+      exact (factor_δ_spec f.1 j hfj).symm
+    have := congrFun (σ₀.naturality (factor_δ f.1 j).op) (horn.face i j hji)
+    dsimp at this
+    erw [H, this, ← h, NatTrans.comp_app]
+    apply congrFun (S.map_comp (SimplexCategory.δ j).op _).symm
 
 end SSet

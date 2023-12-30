@@ -107,7 +107,7 @@ set_option linter.uppercaseLean3 false in
 #align sSet.boundary SSet.boundary
 
 -- mathport name: sSet.boundary
-scoped[Simplicial] notation "∂Δ[" n "]" => SSet.boundary n
+scoped[Simplicial] notation3 "∂Δ[" n "]" => SSet.boundary n
 
 /-- The inclusion of the boundary of the `n`-th standard simplex into that standard simplex. -/
 def boundaryInclusion (n : ℕ) : ∂Δ[n] ⟶ Δ[n] where app m (α : { α : Δ[n].obj m // _ }) := α
@@ -138,6 +138,12 @@ def hornInclusion (n : ℕ) (i : Fin (n + 1)) : Λ[n, i] ⟶ Δ[n] where
   app m (α : { α : Δ[n].obj m // _ }) := α
 set_option linter.uppercaseLean3 false in
 #align sSet.horn_inclusion SSet.hornInclusion
+
+/-- The `j`th subface of the `i`-th horn. -/
+@[simps]
+def horn.face {n : ℕ} (i j : Fin (n+2)) (h : j ≠ i) : Λ[n+1, i] _[n] := by
+  refine ⟨SimplexCategory.δ j, ?_⟩
+  simpa [← Set.univ_subset_iff, Set.subset_def, asOrderHom, SimplexCategory.δ, not_or]
 
 section Examples
 
