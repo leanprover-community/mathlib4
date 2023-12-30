@@ -7,7 +7,6 @@ import Mathlib.Data.Int.Interval
 import Mathlib.Data.Int.ModEq
 import Mathlib.Data.Nat.Count
 import Mathlib.Data.Rat.Floor
-import Mathlib.Tactic.Qify
 
 /-!
 # Number of elements in an integer/natural number interval congruent to a given number
