@@ -90,7 +90,10 @@ lemma stabilizerMulEquiv_apply (g : (stabilizer (Perm α)ᵈᵐᵃ p)ᵐᵒᵖ) 
 section Fintype
 
 variable [Fintype α] [Fintype ι] [DecidableEq α] [DecidableEq ι]
+
 open BigOperators
+
+variable (p)
 
 /-- The cardinality of the type of permutations preserving a function -/
 theorem stabilizer_card:
