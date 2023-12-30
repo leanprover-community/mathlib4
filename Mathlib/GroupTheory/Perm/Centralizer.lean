@@ -1828,7 +1828,8 @@ theorem sign_ψ
 #align on_cycle_factors.sign_ψ Equiv.Perm.OnCycleFactors.sign_ψ
 
 theorem odd_of_mem_kerφ
-    (h : MulAction.stabilizer (ConjAct (Equiv.Perm α)) g ≤ alternatingGroup α) :
+    (h : Subgroup.comap ConjAct.toConjAct.toMonoidHom
+      (MulAction.stabilizer (ConjAct (Equiv.Perm α)) g) ≤ alternatingGroup α) :
     ∀ i ∈ g.cycleType, Odd i := by
   intro i hi
   rw [Equiv.Perm.cycleType_def g, Multiset.mem_map] at hi
@@ -1844,12 +1845,11 @@ theorem odd_of_mem_kerφ
   suffices c = θ g ⟨1, Pi.mulSingle ⟨c, hc⟩ ⟨c, Subgroup.mem_zpowers c⟩⟩ by
     rw [this]
     apply h
-    change ConjAct.toConjAct _ ∈ _
+    rw [Subgroup.mem_comap, MulEquiv.coe_toMonoidHom]
     apply Subgroup.map_subtype_le
     rw [OnCycleFactors.hφ_ker_eq_θ_range]
     exact Set.mem_range_self _
   rw [θ_apply_single]
-
 
 end OnCycleFactors
 
@@ -2099,8 +2099,25 @@ theorem card_of_cycleType (m : Multiset ℕ) :
     rw [if_neg]; exact hm'
 #align on_cycle_factors.alternating_group.card_of_cycle_type AlternatingGroup.card_of_cycleType
 
+example :
+    MulAction.stabilizer (ConjAct (Equiv.Perm α)) g ≤
+      Subgroup.map ConjAct.toConjAct.toMonoidHom (alternatingGroup α) ↔
+    Subgroup.comap ConjAct.toConjAct.toMonoidHom
+      (MulAction.stabilizer (ConjAct (Equiv.Perm α)) g) ≤ alternatingGroup α := by
+  rw [Subgroup.comap_equiv_eq_map_symm]
+  rw [Subgroup.map_equiv_eq_comap_symm]
+  rw [← GaloisConnection.le_iff_le (Subgroup.gc_map_comap _)]
+
+ example :
+    MulAction.stabilizer (ConjAct (Equiv.Perm α)) g ≤
+      Subgroup.comap ConjAct.toConjAct.symm.toMonoidHom (alternatingGroup α) ↔
+    Subgroup.map ConjAct.toConjAct.symm.toMonoidHom
+      (MulAction.stabilizer (ConjAct (Equiv.Perm α)) g) ≤ alternatingGroup α := by
+  rw [← GaloisConnection.le_iff_le (Subgroup.gc_map_comap _)]
+
 theorem card_le_of_mem_kerφ
-    (h : MulAction.stabilizer (ConjAct (Equiv.Perm α)) g ≤ alternatingGroup α) :
+    (h : Subgroup.comap ConjAct.toConjAct.toMonoidHom
+      (MulAction.stabilizer (ConjAct (Equiv.Perm α)) g) ≤ alternatingGroup α) :
     Fintype.card α ≤ g.cycleType.sum + 1 := by
   rw [← not_lt]
   intro hm
@@ -2111,7 +2128,7 @@ theorem card_le_of_mem_kerφ
     suffices : Equiv.Perm.sign (θ g ⟨Equiv.swap a b, 1⟩) ≠ 1
     · apply this
       apply h
-      change ConjAct.toConjAct _ ∈ _
+      rw [Subgroup.mem_comap, MulEquiv.coe_toMonoidHom]
       apply Subgroup.map_subtype_le
       rw [hφ_ker_eq_θ_range]
       exact Set.mem_range_self _
@@ -2129,7 +2146,8 @@ theorem card_le_of_mem_kerφ
 
 -- FIND A BETTER NAME
 theorem _root_.Equiv.Perm.OnCycleFactors.count_le_one_of_kerφ_le_alternating
-    (h : MulAction.stabilizer (ConjAct (Equiv.Perm α)) g ≤ alternatingGroup α) :
+    (h : Subgroup.comap ConjAct.toConjAct.toMonoidHom
+      (MulAction.stabilizer (ConjAct (Equiv.Perm α)) g) ≤ alternatingGroup α) :
     ∀ i, g.cycleType.count i ≤ 1 := by
   rw [← Multiset.nodup_iff_count_le_one, Equiv.Perm.cycleType_def]
   rw [Multiset.nodup_map_iff_inj_on g.cycleFactorsFinset.nodup]
@@ -2332,18 +2350,20 @@ theorem _root_.Equiv.Perm.OnCycleFactors.count_le_one_of_kerφ_le_alternating
     · rw [Equiv.swap_apply_of_ne_of_ne hx hx']
 
 theorem _root_.Equiv.Perm.OnCycleFactors.kerφ_le_alternating_iff :
-    MulAction.stabilizer (ConjAct (Equiv.Perm α)) g ≤ alternatingGroup α ↔
-      (∀ i ∈ g.cycleType, Odd i) ∧
-        Fintype.card α ≤ g.cycleType.sum + 1 ∧
-          ∀ i, g.cycleType.count i ≤ 1 :=  by
+    Subgroup.comap ConjAct.toConjAct.toMonoidHom
+      (MulAction.stabilizer (ConjAct (Equiv.Perm α)) g) ≤ alternatingGroup α ↔
+    (∀ i ∈ g.cycleType, Odd i) ∧ Fintype.card α ≤ g.cycleType.sum + 1 ∧
+      ∀ i, g.cycleType.count i ≤ 1 :=  by
   rw [SetLike.le_def]
   constructor
   · exact fun h ↦ ⟨odd_of_mem_kerφ h, card_le_of_mem_kerφ g h,
       count_le_one_of_kerφ_le_alternating g h⟩
   · rintro ⟨h_odd, h_fixed, h_count⟩ x hx
-    suffices hx' : x ∈ Set.range (θ g)
-    obtain ⟨⟨y, uv⟩, rfl⟩ := Set.mem_range.mp hx'
-    rw [Equiv.Perm.mem_alternatingGroup, sign_ψ]
+    suffices hx' : x ∈ (θ g).range
+    obtain ⟨⟨y, uv⟩, rfl⟩ := MonoidHom.mem_range.mp hx'
+    rw [Equiv.Perm.mem_alternatingGroup]
+    have := sign_ψ (g := g) y uv
+    rw [this]
     convert mul_one _
     · apply Finset.prod_eq_one
       rintro ⟨c, hc⟩ _
