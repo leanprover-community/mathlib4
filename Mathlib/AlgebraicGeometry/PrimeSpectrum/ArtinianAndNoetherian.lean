@@ -444,11 +444,14 @@ end IsArtinianRing
 
 namespace IsNoetherianRing
 
-variable [Fact (ringKrullDim R = 0)] [IsNoetherianRing R]
+variable [dim0 : Fact (ringKrullDim R = 0)] [IsNoetherianRing R]
+
+noncomputable instance : Fintype (PrimeSpectrum R) := PrimeSpectrum.finTypeOfNoetherian dim0.out
 
 instance : IsArtinian R R := by
   rcases subsingleton_or_nontrivial R with H | H
   · exact isArtinian_of_finite
-  · refine @isArtinianRing_of_ringEquiv (f := equivProdLocalization.symm) <| ?_
+  · refine @isArtinianRing_of_ringEquiv (e := equivProdLocalization.symm) <| ?_
+    sorry
 
 end IsNoetherianRing

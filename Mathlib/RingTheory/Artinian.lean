@@ -424,6 +424,33 @@ lemma isArtinianRing_of_ringEquiv {R} [Ring R] {S} [Ring S] (e : R ≃+* S) [IsA
     IsArtinianRing S :=
   Function.Surjective.isArtinianRing (hf := e.surjective)
 
+instance isArtinianRing_prod {R} [Ring R] {S} [Ring S]
+    [IsArtinianRing R] [IsArtinianRing S] : IsArtinianRing (R × S) :=
+  sorry
+
+instance isArtinianRing_pi {ι : Type*} [Finite ι] (R : ι → Type*)
+    [∀ i, Ring (R i)] [∀ i, IsArtinianRing (R i)] :
+    IsArtinianRing (∀ i, R i) := by
+  revert R
+  apply Finite.induction_empty_option _ _ _ ι
+  · intro α β e hα R _ _
+    refine isArtinianRing_of_ringEquiv
+      (?_ : (∀ (i : α), R (e i)) ≃+* ∀ (i : β), R i)
+    · refine' { Equiv.piCongrLeft R e with .. } <;>
+      · intros x y
+        ext i
+        have eq1 : i = e (e.symm i) := e.apply_symm_apply i |>.symm
+        simp only [Equiv.toFun_as_coe, Pi.mul_apply, Pi.add_apply]
+        rw [eq1, Equiv.piCongrLeft_apply_apply, Equiv.piCongrLeft_apply_apply,
+          Equiv.piCongrLeft_apply_apply]
+        rfl
+  · intros
+    infer_instance
+  · intro α _ ih R _ _
+    refine isArtinianRing_of_ringEquiv (⟨Equiv.piOptionEquivProd (β := R), ?_, ?_⟩ :
+      ((a : Option α) → R a) ≃+* R none × ((a : α) → R (some a))).symm <;>
+    aesop
+
 namespace IsArtinianRing
 
 open IsArtinian
