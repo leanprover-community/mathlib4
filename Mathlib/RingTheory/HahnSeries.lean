@@ -993,7 +993,7 @@ theorem embDomain_mul [NonUnitalNonAssocSemiring R] (f : Γ ↪o Γ')
       exact ⟨i, j, h1, rfl⟩
   · rw [embDomain_notin_range hg, eq_comm]
     contrapose! hg
-    obtain ⟨_, _, hi, hj, rfl⟩ := support_mul_subset_add_support ((mem_support _ _).2 hg)
+    obtain ⟨_, hi, _, hj, rfl⟩ := support_mul_subset_add_support ((mem_support _ _).2 hg)
     obtain ⟨i, _, rfl⟩ := support_embDomain_subset hi
     obtain ⟨j, _, rfl⟩ := support_embDomain_subset hj
     refine' ⟨i + j, hf i j⟩
@@ -1342,7 +1342,7 @@ theorem isPwo_iUnion_support_powers [LinearOrderedCancelAddCommMonoid Γ] [Ring 
   · simp only [Nat.zero_eq, pow_zero, support_one, Set.mem_singleton_iff] at hn
     rw [hn, SetLike.mem_coe]
     exact AddSubmonoid.zero_mem _
-  · obtain ⟨i, j, hi, hj, rfl⟩ := support_mul_subset_add_support hn
+  · obtain ⟨i, hi, j, hj, rfl⟩ := support_mul_subset_add_support hn
     exact SetLike.mem_coe.2 (AddSubmonoid.add_mem _ (AddSubmonoid.subset_closure hi) (ih hj))
 #align hahn_series.is_pwo_Union_support_powers HahnSeries.isPwo_iUnion_support_powers
 
@@ -1538,7 +1538,7 @@ instance : SMul (HahnSeries Γ R) (SummableFamily Γ R α) where
             fun a ha => _
         · exact fun ij _ => Function.support fun a => (s a).coeff ij.2
         · apply s.finite_co_support
-        · obtain ⟨i, j, hi, hj, rfl⟩ := support_mul_subset_add_support ha
+        · obtain ⟨i, hi, j, hj, rfl⟩ := support_mul_subset_add_support ha
           simp only [exists_prop, Set.mem_iUnion, mem_addAntidiagonal, mul_coeff, mem_support,
             isPwo_support, Prod.exists]
           exact ⟨i, j, mem_coe.2 (mem_addAntidiagonal.2 ⟨hi, Set.mem_iUnion.2 ⟨a, hj⟩, rfl⟩), hj⟩ }
@@ -1729,7 +1729,7 @@ def powers (x : HahnSeries Γ R) (hx : 0 < addVal Γ R x) : SummableFamily Γ R 
           _
     · rintro (_ | n) hn
       · exact Set.mem_union_right _ (Set.mem_singleton 0)
-      · obtain ⟨i, j, hi, hj, rfl⟩ := support_mul_subset_add_support hn
+      · obtain ⟨i, hi, j, hj, rfl⟩ := support_mul_subset_add_support hn
         refine' Set.mem_union_left _ ⟨n, Set.mem_iUnion.2 ⟨⟨i, j⟩, Set.mem_iUnion.2 ⟨_, hj⟩⟩, rfl⟩
         simp only [and_true_iff, Set.mem_iUnion, mem_addAntidiagonal, mem_coe, eq_self_iff_true,
           Ne.def, mem_support, Set.mem_setOf_eq]
