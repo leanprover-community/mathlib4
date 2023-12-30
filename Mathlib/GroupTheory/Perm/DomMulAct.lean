@@ -7,19 +7,31 @@ Authors: Junyan Xu, Antoine Chambert-Loir
 import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 import Mathlib.GroupTheory.Subgroup.Basic
 import Mathlib.GroupTheory.GroupAction.Basic
--- import Mathlib.Data.Set.Card
 
-/-!  Subgroup of `Equiv.Perm α` preserving a function `p : α → ι`
+import Mathlib.Data.Set.Card
+import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Fintype.Perm
 
-Let `α` and `ι` by types.
+
+/-!  Subgroup of `Equiv.Perm α` preserving a function
+
+Let `α` and `ι` by types and let `p : α → ι`
 
 * `DomMulAct.mem_stabilizer_iff` proves that the stabilizer
   of `Equiv.Perm α` of `p : α → ι` is the subgroup of `g : Equiv.Perm α`
   such that `p ∘ g = p`.
 
+  The natural equivalence from `stabilizer (Perm α)ᵈᵐᵃ p` to `{ g : Perm α // p ∘ g = p }`
+  can be obtained as `subtypeEquiv mk.symm (fun _ => mem_stabilizer_iff)`
+
 * `DomMulAct.stabilizerMulEquiv` is the `MulEquiv` from
   the MulOpposite of this stabilizer to the product,
   for `i : ι`, of `Equiv.Perm {a // p a = i}`.
+
+* Under `Fintype α` and `Fintype ι`, `DomMulAct.stabilizer_card p` computes
+  the cardinality of the type of permutations preserving `p` :
+  `Nat.card {f : Perm α // p ∘ f = p} =
+    Finset.univ.prod fun i => (Nat.card {a // p a = i}).factorial `
 
 -/
 
@@ -71,7 +83,27 @@ def stabilizerMulEquiv : (stabilizer (Perm α)ᵈᵐᵃ p)ᵐᵒᵖ ≃* (∀ i,
   right_inv g := by ext i a; apply stabilizerEquiv_invFun_eq
   map_mul' g h := by rfl
 
+variable {p}
+
 lemma stabilizerMulEquiv_apply (g : (stabilizer (Perm α)ᵈᵐᵃ p)ᵐᵒᵖ) {a : α} {i : ι} (h : p a = i) :
     ((stabilizerMulEquiv p)) g i ⟨a, h⟩ = (mk.symm g.unop : Equiv.Perm α) a := rfl
+
+section Fintype
+
+variable [Fintype α] [Fintype ι] [DecidableEq α] [DecidableEq ι]
+
+/-- The cardinality of the type of permutations preserving a function -/
+theorem stabilizer_card:
+    Nat.card {f : Perm α // p ∘ f = p} =
+      Finset.univ.prod fun i => (Nat.card {a // p a = i}).factorial := by
+  rw [Nat.card_congr (subtypeEquiv mk ?_), Nat.card_congr MulOpposite.opEquiv,
+    Nat.card_congr (DomMulAct.stabilizerMulEquiv p).toEquiv, Nat.card_pi]
+  apply Finset.prod_congr rfl
+  intro i _
+  rw [Nat.card_eq_fintype_card, Fintype.card_perm, Nat.card_eq_fintype_card.symm]
+  · intro g
+    rw [DomMulAct.mem_stabilizer_iff, symm_apply_apply]
+
+end Fintype
 
 end DomMulAct
