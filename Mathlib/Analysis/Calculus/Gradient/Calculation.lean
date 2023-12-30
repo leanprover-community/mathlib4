@@ -40,9 +40,7 @@ section Composition
 
 open Set Filter
 
-variable {g : 𝕜 → 𝕜} {g' : 𝕜}
-
-variable {L' : Filter 𝕜} {t : Set 𝕜}
+variable {g : 𝕜 → 𝕜} {g' : 𝕜} {L' : Filter 𝕜} {t : Set 𝕜}
 
 theorem HasGradientAtFilter.comp
     (hg : HasGradientAtFilter g g' (f x) L') (hf : HasGradientAtFilter f f' x L)
