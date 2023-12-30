@@ -29,8 +29,7 @@ Let `α` and `ι` by types and let `f : α → ι`
 
 * Under `Fintype α` and `Fintype ι`, `DomMulAct.stabilizer_card p` computes
   the cardinality of the type of permutations preserving `p` :
-  `Fintype.card {g : Perm α // f ∘ g = f} =
-    ∏ i, (Fintype.card {a // f a = i}).factorial `
+  `Fintype.card {g : Perm α // f ∘ g = f} = ∏ i, (Fintype.card {a // f a = i})!`.
 
 -/
 
@@ -91,14 +90,13 @@ section Fintype
 
 variable [Fintype α] [Fintype ι] [DecidableEq α] [DecidableEq ι]
 
-open BigOperators
+open BigOperators Nat
 
 variable (f)
 
 /-- The cardinality of the type of permutations preserving a function -/
 theorem stabilizer_card:
-    Fintype.card {g : Perm α // f ∘ g = f} =
-      ∏ i , (Fintype.card ({a // f a = i})).factorial := by
+    Fintype.card {g : Perm α // f ∘ g = f} = ∏ i, (Fintype.card {a // f a = i})! := by
   -- rewriting via Nat.card because Fintype instance is not found
   rw [← Nat.card_eq_fintype_card, Nat.card_congr (subtypeEquiv mk ?_),
     Nat.card_congr MulOpposite.opEquiv,
