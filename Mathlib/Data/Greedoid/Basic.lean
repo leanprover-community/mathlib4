@@ -66,7 +66,7 @@ theorem exchangeProperty_exists_superset_of_card_le {α : Type _} [DecidableEq �
       have h := hb.2.2.1 h
       simp only [Finset.union_insert, Finset.mem_union, Finset.mem_insert] at h
       rw [Finset.mem_union]
-      apply h.elim _ (fun h => h)
+      apply h.elim _ id
       intro h
       simp only [← h, Finset.mem_sdiff] at hx₁
       simp only [hx₁, or_false], hb.2.2.2⟩
@@ -468,7 +468,7 @@ theorem bases_of_singleton {a : α} (hb : b ∈ G.bases {a}) :
 
 theorem bases_singleton_of_feasible {a : α} (ha : {a} ∈ G) (hb : b ∈ G.bases {a}) :
     b = {a} := by
-  apply (bases_of_singleton hb).elim _ (fun h => h)
+  apply (bases_of_singleton hb).elim _ id
   intro h
   rw [h] at hb; rw [h]
   simp only [bases, Finset.subset_singleton_iff, Finset.mem_singleton, system_feasible_set_mem_mem,
@@ -644,7 +644,7 @@ theorem rank_of_singleton_le_one {a : α} : G.rank {a} ≤ 1 := by
 
 @[simp]
 theorem rank_of_singleton_of_feasible {a : α} (ha : {a} ∈ G) : G.rank {a} = 1 := by
-  apply (le_iff_lt_or_eq.mp (rank_of_singleton_le_one : G.rank {a} ≤ 1)).elim _ (fun h => h)
+  apply (le_iff_lt_or_eq.mp (rank_of_singleton_le_one : G.rank {a} ≤ 1)).elim _ id
   intro h
   exfalso
   have ⟨_, h'⟩ := G.bases_nonempty {a}
@@ -1908,7 +1908,7 @@ theorem rankFeasible_iff_subset_subset_monotoneClosure :
         simp only [he.2, not_false_eq_true, and_true]
         have h : e ∈ b ∪ x := ha₃ he.1
         rw [mem_union] at h
-        apply h.elim (fun h => h)
+        apply h.elim id
         intro h
         rw [← h₂] at h
         rw [mem_inter] at h
@@ -1993,7 +1993,19 @@ theorem kernelClosureOperator_weak_exchange_property_over_rankFeasible
   have h₄ : G.kernelClosureOperator (insert y s) = G.kernelClosureOperator (insert z s) := by
     sorry
   have ⟨b, hb₁, hb₂⟩ : ∃ b ∈ G.bases (insert z s), z ∈ b := by
-    sorry
+    by_contra h'
+    simp only [not_exists, not_and] at h'
+    let ⟨b, hb⟩ := G.bases_nonempty (insert z s)
+    have h : b ∈ G.bases s := by
+      simp only [bases, system_feasible_set_mem_mem, Finset.mem_filter]
+      have h : b ⊆ s := fun _ he =>
+        (mem_insert.mp (basis_subset hb he)).elim (fun h => False.elim (h' _ hb (h ▸ he))) id
+      simp only [basis_mem_feasible hb, true_and, h]
+      intro _ ha₁ ha₂
+      simp only [bases, mem_insert, system_feasible_set_mem_mem, forall_eq_or_imp,
+        Finset.mem_filter] at hb
+      exact hb.2.2.2 _ ha₁ ha₂
+    simp only [rank_eq_basis_card hb, rank_eq_basis_card h, self_eq_add_right] at h₂
   have h₅ : s ∪ b = insert z s := by
     ext x
     constructor <;> intro h
