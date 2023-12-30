@@ -78,6 +78,16 @@ theorem AlgEquiv.isPurelyInseparable_iff (e : K ≃ₐ[F] E) :
 
 variable (F E K)
 
+/-- If `E / F` is both inseparable and separable, then `algebraMap F E` is surjective. -/
+theorem IsPurelyInseparable.surjective_algebraMap_of_isSeparable
+    [IsPurelyInseparable F E] [IsSeparable F E] : Function.Surjective (algebraMap F E) :=
+  fun x ↦ IsPurelyInseparable.inseparable F x (IsSeparable.separable F x)
+
+/-- If `E / F` is both inseparable and separable, then `algebraMap F E` is bijective. -/
+theorem IsPurelyInseparable.bijective_algebraMap_of_isSeparable
+    [IsPurelyInseparable F E] [IsSeparable F E] : Function.Bijective (algebraMap F E) :=
+  ⟨(algebraMap F E).injective, surjective_algebraMap_of_isSeparable F E⟩
+
 /-- If `E / F` is purely inseparable, then the (relative) separable closure of `E / F` is
 equal to `F`. -/
 theorem separableClosure.eq_bot_of_isPurelyInseparable [IsPurelyInseparable F E] :
