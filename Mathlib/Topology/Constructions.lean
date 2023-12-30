@@ -415,6 +415,12 @@ theorem Continuous.Prod.mk_left (b : β) : Continuous fun a : α => (a, b) :=
   continuous_id.prod_mk continuous_const
 #align continuous.prod.mk_left Continuous.Prod.mk_left
 
+/-- If `f x y` is continuous in `x` for all `y ∈ s`,
+then the set of `x` such that `f x` maps `s` to `t` is closed. -/
+lemma IsClosed.setOf_mapsTo {f : α → β → γ} {s : Set β} {t : Set γ} (ht : IsClosed t)
+    (hf : ∀ y ∈ s, Continuous (f · y)) : IsClosed {x | MapsTo (f x) s t} := by
+  simpa only [MapsTo, setOf_forall] using isClosed_biInter fun y hy ↦ ht.preimage (hf y hy)
+
 theorem Continuous.comp₂ {g : α × β → γ} (hg : Continuous g) {e : δ → α} (he : Continuous e)
     {f : δ → β} (hf : Continuous f) : Continuous fun x => g (e x, f x) :=
   hg.comp <| he.prod_mk hf

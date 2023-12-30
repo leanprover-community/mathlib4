@@ -1143,25 +1143,23 @@ theorem one_or_eq_of_le_of_prime : ∀ p m : Associates α, Prime p → m ≤ p 
     rw [r]
     match h m d dvd_rfl' with
     | Or.inl h' =>
-      by_cases h : m = 0
-      case pos =>
+      if h : m = 0 then
         simp [h, zero_mul]
-      case neg =>
+      else
         rw [r] at h'
         have : m * d ≤ m * 1 := by simpa using h'
         have : d ≤ 1 := Associates.le_of_mul_le_mul_left m d 1 ‹m ≠ 0› this
         have : d = 1 := bot_unique this
         simp [this]
     | Or.inr h' =>
-        by_cases h : d = 0
-        case pos =>
-          rw [r] at hp0
-          have : m * d = 0 := by rw [h]; simp
-          contradiction
-        case neg =>
-          rw [r] at h'
-          have : d * m ≤ d * 1 := by simpa [mul_comm] using h'
-          exact Or.inl <| bot_unique <| Associates.le_of_mul_le_mul_left d m 1 ‹d ≠ 0› this
+      if h : d = 0 then
+        rw [r] at hp0
+        have : m * d = 0 := by rw [h]; simp
+        contradiction
+      else
+        rw [r] at h'
+        have : d * m ≤ d * 1 := by simpa [mul_comm] using h'
+        exact Or.inl <| bot_unique <| Associates.le_of_mul_le_mul_left d m 1 ‹d ≠ 0› this
 #align associates.one_or_eq_of_le_of_prime Associates.one_or_eq_of_le_of_prime
 
 instance : CanonicallyOrderedCommMonoid (Associates α) where

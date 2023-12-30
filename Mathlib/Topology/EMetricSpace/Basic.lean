@@ -132,9 +132,9 @@ theorem edist_triangle4 (x y z t : α) : edist x t ≤ edist x y + edist y z + e
 /-- The triangle (polygon) inequality for sequences of points; `Finset.Ico` version. -/
 theorem edist_le_Ico_sum_edist (f : ℕ → α) {m n} (h : m ≤ n) :
     edist (f m) (f n) ≤ ∑ i in Finset.Ico m n, edist (f i) (f (i + 1)) := by
-  induction n, h using Nat.le_induction
-  case base => rw [Finset.Ico_self, Finset.sum_empty, edist_self]
-  case succ n hle ihn =>
+  induction n, h using Nat.le_induction with
+  | base => rw [Finset.Ico_self, Finset.sum_empty, edist_self]
+  | succ n hle ihn =>
     calc
       edist (f m) (f (n + 1)) ≤ edist (f m) (f n) + edist (f n) (f (n + 1)) := edist_triangle _ _ _
       _ ≤ (∑ i in Finset.Ico m n, _) + _ := add_le_add ihn le_rfl

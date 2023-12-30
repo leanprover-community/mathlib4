@@ -47,7 +47,7 @@ theorem card_div_mul_le_card_div_mul_card_div (A B C : Finset α) :
   refine' card_mul_le_card_mul (fun b ac ↦ ac.1 * ac.2 = b) (fun x hx ↦ _)
     fun x _ ↦ card_le_one_iff.2 fun hu hv ↦
       ((mem_bipartiteBelow _).1 hu).2.symm.trans ((mem_bipartiteBelow _).1 hv).2
-  obtain ⟨a, c, ha, hc, rfl⟩ := mem_div.1 hx
+  obtain ⟨a, ha, c, hc, rfl⟩ := mem_div.1 hx
   refine' card_le_card_of_inj_on (fun b ↦ (a / b, b / c)) (fun b hb ↦ _) fun b₁ _ b₂ _ h ↦ _
   · rw [mem_bipartiteAbove]
     exact ⟨mk_mem_product (div_mem_div ha hb) (div_mem_div hb hc), div_mul_div_cancel' _ _ _⟩

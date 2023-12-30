@@ -375,14 +375,14 @@ theorem le_generate_iff {s : Set (Set α)} {f : Filter α} : f ≤ generate s �
 theorem mem_generate_iff {s : Set <| Set α} {U : Set α} :
     U ∈ generate s ↔ ∃ t ⊆ s, Set.Finite t ∧ ⋂₀ t ⊆ U := by
   constructor <;> intro h
-  · induction h
-    case basic V V_in =>
+  · induction h with
+    | @basic V V_in =>
       exact ⟨{V}, singleton_subset_iff.2 V_in, finite_singleton _, (sInter_singleton _).subset⟩
-    case univ => exact ⟨∅, empty_subset _, finite_empty, subset_univ _⟩
-    case superset V W _ hVW hV =>
+    | univ => exact ⟨∅, empty_subset _, finite_empty, subset_univ _⟩
+    | superset _ hVW hV =>
       rcases hV with ⟨t, hts, ht, htV⟩
       exact ⟨t, hts, ht, htV.trans hVW⟩
-    case inter V W _ _ hV hW =>
+    | inter _ _ hV hW =>
       rcases hV, hW with ⟨⟨t, hts, ht, htV⟩, u, hus, hu, huW⟩
       exact
         ⟨t ∪ u, union_subset hts hus, ht.union hu,
@@ -972,9 +972,9 @@ theorem iInf_sets_induct {f : ι → Filter α} {s : Set α} (hs : s ∈ iInf f)
   rw [mem_iInf_finite'] at hs
   simp only [← Finset.inf_eq_iInf] at hs
   rcases hs with ⟨is, his⟩
-  induction is using Finset.induction_on generalizing s
-  case empty => rwa [mem_top.1 his]
-  case insert ih =>
+  induction is using Finset.induction_on generalizing s with
+  | empty => rwa [mem_top.1 his]
+  | insert _ ih =>
     rw [Finset.inf_insert, mem_inf_iff] at his
     rcases his with ⟨s₁, hs₁, s₂, hs₂, rfl⟩
     exact ins hs₁ (ih hs₂)
@@ -2957,11 +2957,11 @@ theorem mem_traverse_iff (fs : List β') (t : Set (List α')) :
     t ∈ traverse f fs ↔
       ∃ us : List (Set α'), Forall₂ (fun b (s : Set α') => s ∈ f b) fs us ∧ sequence us ⊆ t := by
   constructor
-  · induction fs generalizing t
-    case nil =>
+  · induction fs generalizing t with
+    | nil =>
       simp only [sequence, mem_pure, imp_self, forall₂_nil_left_iff, exists_eq_left, Set.pure_def,
         singleton_subset_iff, traverse_nil]
-    case cons b fs ih =>
+    | cons b fs ih =>
       intro ht
       rcases mem_seq_iff.1 ht with ⟨u, hu, v, hv, ht⟩
       rcases mem_map_iff_exists_image.1 hu with ⟨w, hw, hwu⟩

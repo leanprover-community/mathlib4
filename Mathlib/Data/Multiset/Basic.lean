@@ -2778,18 +2778,17 @@ theorem rel_eq {s t : Multiset α} : Rel (· = ·) s t ↔ s = t := by
 
 theorem Rel.mono {r p : α → β → Prop} {s t} (hst : Rel r s t)
     (h : ∀ a ∈ s, ∀ b ∈ t, r a b → p a b) : Rel p s t := by
-  induction hst
-  case zero => exact Rel.zero
-  case
-    cons a b s t hab _hst ih =>
+  induction hst with
+  | zero => exact Rel.zero
+  | @cons a b s t hab _hst ih =>
     apply Rel.cons (h a (mem_cons_self _ _) b (mem_cons_self _ _) hab)
     exact ih fun a' ha' b' hb' h' => h a' (mem_cons_of_mem ha') b' (mem_cons_of_mem hb') h'
 #align multiset.rel.mono Multiset.Rel.mono
 
 theorem Rel.add {s t u v} (hst : Rel r s t) (huv : Rel r u v) : Rel r (s + u) (t + v) := by
-  induction hst
-  case zero => simpa using huv
-  case cons a b s t hab hst ih => simpa using ih.cons hab
+  induction hst with
+  | zero => simpa using huv
+  | cons hab hst ih => simpa using ih.cons hab
 #align multiset.rel.add Multiset.Rel.add
 
 theorem rel_flip_eq {s t : Multiset α} : Rel (fun a b => b = a) s t ↔ s = t :=
@@ -2809,10 +2808,9 @@ theorem rel_cons_left {a as bs} :
   constructor
   · generalize hm : a ::ₘ as = m
     intro h
-    induction h generalizing as
-    case zero => simp at hm
-    case
-      cons a' b as' bs ha'b h ih =>
+    induction h generalizing as with
+    | zero => simp at hm
+    | @cons a' b as' bs ha'b h ih =>
       rcases cons_eq_cons.1 hm with (⟨eq₁, eq₂⟩ | ⟨_h, cs, eq₁, eq₂⟩)
       · subst eq₁
         subst eq₂

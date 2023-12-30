@@ -157,11 +157,11 @@ theorem sublistsAux_eq_bind :
 theorem sublists_append (l₁ l₂ : List α) :
     sublists (l₁ ++ l₂) = (sublists l₂) >>= (fun x => (sublists l₁).map (· ++ x)) := by
   simp only [sublists, foldr_append]
-  induction l₁
-  · case nil => simp
-  · case cons a l₁ ih =>
-      rw [foldr_cons, ih]
-      simp [List.bind, join_join, Function.comp]
+  induction l₁ with
+  | nil => simp
+  | cons a l₁ ih =>
+    rw [foldr_cons, ih]
+    simp [List.bind, join_join, Function.comp]
 #align list.sublists_append List.sublists_append
 
 --Portin note: New theorem
