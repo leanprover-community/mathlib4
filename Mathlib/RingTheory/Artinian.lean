@@ -420,6 +420,10 @@ instance isArtinianRing_range {R} [Ring R] {S} [Ring S] (f : R →+* S) [IsArtin
   f.rangeRestrict_surjective.isArtinianRing
 #align is_artinian_ring_range isArtinianRing_range
 
+lemma isArtinianRing_of_ringEquiv {R} [Ring R] {S} [Ring S] (e : R ≃+* S) [IsArtinianRing R] :
+    IsArtinianRing S :=
+  Function.Surjective.isArtinianRing (hf := e.surjective)
+
 namespace IsArtinianRing
 
 open IsArtinian

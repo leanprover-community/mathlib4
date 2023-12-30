@@ -10,6 +10,7 @@ import Mathlib.RingTheory.Artinian
 import Mathlib.Topology.Sheaves.SheafCondition.EqualizerProducts
 import Mathlib.Algebra.Category.Ring.Constructions
 import Mathlib.Algebra.Module.Length
+import Mathlib.RingTheory.KrullDimension
 
 /-!
 # Properties of Artinian Rings
@@ -27,21 +28,18 @@ The proof here probably does not generalize to non-commutative cases.
 open TopologicalSpace AlgebraicGeometry Opposite CategoryTheory
 
 universe u
-variable (R : Type u) [CommRing R] [IsArtinianRing R]
+variable (R : Type u) [CommRing R]
 
-namespace IsArtinianRing
+section zeroDimensional
 
-instance : Finite (PrimeSpectrum R) := @Finite.of_equiv _ {I : Ideal R | I.IsPrime}
-  (Set.finite_coe_iff.mpr <| IsArtinianRing.primeSpectrum_finite R)
-  ⟨fun x ↦ ⟨x.1, x.2⟩, fun x ↦ ⟨x.1, x.2⟩, fun _ ↦ by aesop, fun _ ↦ by aesop⟩
+variable [dim0 : Fact <| ringKrullDim R = 0] [Finite (PrimeSpectrum R)]
 
-noncomputable instance : Fintype (PrimeSpectrum R) :=
-  Classical.choice <| finite_iff_nonempty_fintype (PrimeSpectrum R) |>.mp inferInstance
+instance t1_space_of_dim_zero : T1Space (PrimeSpectrum R) where
+  t1 p := PrimeSpectrum.isClosed_singleton_iff_isMaximal _ |>.mpr <|
+    p.IsPrime.isMaximal_of_dim_zero dim0.out
 
-instance : T1Space (PrimeSpectrum R) where
-  t1 p := PrimeSpectrum.isClosed_singleton_iff_isMaximal _ |>.mpr (isMaximal_of_isPrime p.asIdeal)
+instance discrete_of_dim_zero : DiscreteTopology (PrimeSpectrum R) := discrete_of_t1_of_finite
 
-instance : DiscreteTopology (PrimeSpectrum R) := discrete_of_t1_of_finite
 
 variable {R}
 
@@ -162,11 +160,23 @@ noncomputable def equivProdLocalization :
     R ≃+* ((i : PrimeSpectrum R) → Localization.AtPrime i.asIdeal) :=
   Classical.choice equivProdLocalization'
 
+end zeroDimensional
+
+namespace IsArtinianRing
+
+variable [IsArtinianRing R]
+
+instance : Finite (PrimeSpectrum R) := @Finite.of_equiv _ {I : Ideal R | I.IsPrime}
+  (Set.finite_coe_iff.mpr <| IsArtinianRing.primeSpectrum_finite R)
+  ⟨fun x ↦ ⟨x.1, x.2⟩, fun x ↦ ⟨x.1, x.2⟩, fun _ ↦ by aesop, fun _ ↦ by aesop⟩
+
+noncomputable instance : Fintype (PrimeSpectrum R) :=
+  Classical.choice <| finite_iff_nonempty_fintype (PrimeSpectrum R) |>.mp inferInstance
+
 noncomputable section local_ring
 
 namespace artinian_ring_proof_auxs
 
-variable (R)
 variable [LocalRing R] [Nontrivial R]
 
 local notation "𝓂" => LocalRing.maximalIdeal (R := R)
@@ -424,7 +434,21 @@ instance isNoetherianRing_of_local [LocalRing R] : IsNoetherianRing R := by
 
 end local_ring
 
-instance : IsNoetherian R R :=
-  @isNoetherianRing_of_ringEquiv (f := equivProdLocalization.symm) <| IsNoetherianRing.Pi _
+instance : IsNoetherian R R := by
+  rcases subsingleton_or_nontrivial R with H | H
+  · exact isNoetherian_of_finite R R
+  · letI : Fact (ringKrullDim R = 0) := ⟨ringKrullDim.eq_zero_of_isArtinianRing R⟩
+    exact @isNoetherianRing_of_ringEquiv (f := equivProdLocalization.symm) <| IsNoetherianRing.Pi _
 
 end IsArtinianRing
+
+namespace IsNoetherianRing
+
+variable [Fact (ringKrullDim R = 0)] [IsNoetherianRing R]
+
+instance : IsArtinian R R := by
+  rcases subsingleton_or_nontrivial R with H | H
+  · exact isArtinian_of_finite
+  · refine @isArtinianRing_of_ringEquiv (f := equivProdLocalization.symm) <| ?_
+
+end IsNoetherianRing

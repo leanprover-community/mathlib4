@@ -137,6 +137,31 @@ lemma _root_.Ideal.IsPrime.isMinimal_of_dim_zero
   rw [dim0] at this
   norm_num at this
 
+lemma Ideal.eq_of_le (p q : Ideal R) [hp : p.IsPrime] [hq : q.IsPrime] (hpq : p ≤ q)
+    (dim_0 : ringKrullDim R = 0) : p = q :=
+  hp.isMaximal_of_dim_zero dim_0 |>.eq_of_le hq.1 hpq
+
+lemma zero_dimensional_of_isMaximal_eq_mem_minimalPrimes [Nontrivial R]
+    (h : Ideal.IsMaximal (α := R) = (· ∈ minimalPrimes R)) : ringKrullDim R = 0 :=
+  le_antisymm
+    (iSup_le fun x ↦ by
+      by_contra! rid
+      replace rid : 0 < x.length
+      · norm_num at rid; exact rid
+      obtain ⟨y, hy1, hy2⟩ := Ideal.exists_le_maximal (x 0).asIdeal (x 0).IsPrime.1
+      have hy0 := hy1
+      rw [h] at hy1
+      have x_0_eq := le_antisymm (hy1.2 ⟨(x 0).IsPrime, bot_le⟩ hy2) hy2
+      have ineq1 : (x 0) < (x 1)
+      · convert x.step ⟨0, rid⟩ using 1
+        congr
+        ext
+        simp only [Fin.val_one', Fin.succ_mk, zero_add, Nat.mod_succ_eq_iff_lt]
+        linarith
+      replace ineq1 : (x 0).asIdeal < (x 1).asIdeal := ineq1
+      rw [← x_0_eq, hy0.eq_of_le (x 1).IsPrime.1 ineq1.1] at ineq1
+      exact lt_irrefl _ ineq1) krullDim.nonneg_of_Nonempty
+
 end dimension_0
 
 section artinian_and_noetherian
@@ -176,13 +201,6 @@ noncomputable def _root_.PrimeSpectrum.finTypeOfNoetherian
   Fintype.ofInjective
     (fun p ↦ ⟨p.asIdeal, p.IsPrime.isMinimal_of_dim_zero h⟩ : PrimeSpectrum R → minimalPrimes R)
     (fun _ _ H ↦ PrimeSpectrum.ext _ _ <| Subtype.ext_iff.mp H)
-
--- open TopologicalSpace in
--- lemma artinian_of_zero_dimensional_noetherian [IsNoetherianRing R] (h : ringKrullDim R = 0) :
---    IsArtinianRing R := by
---  letI : Fintype (PrimeSpectrum R) := PrimeSpectrum.finTypeOfNoetherian h
-
---  sorry
 
 end artinian_and_noetherian
 
