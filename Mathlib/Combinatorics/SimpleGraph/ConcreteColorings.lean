@@ -56,7 +56,7 @@ theorem pathGraph_Hom_coloring {α} (G : SimpleGraph α) (c : G.Coloring Prop) {
   induction n with
   | zero => simpa [eq_bot_of_bot_eq_top (by decide) u] using hc0
   | succ n ih =>
-    let new_hom : pathGraph (n + 1) →g G := hom.comp (Hom.pathGraph ((n + 1).le_add_right 1))
+    let new_hom : pathGraph (n + 1) →g G := hom.comp (.pathGraph (n + 1).le_succ)
     have h_new_hom := ih new_hom hc0
     obtain (hu : u.val < n + 1) | (hu : u.val = n + 1) := u.is_le.lt_or_eq
     · exact h_new_hom ⟨u.val, hu⟩
