@@ -235,7 +235,7 @@ for a use of this lemma. -/
 lemma exact_of_δ₀ {S : ComposableArrows C (n + 2)}
     (h : (mk₂ (S.map' 0 1) (S.map' 1 2)).Exact) (h₀ : S.δ₀.Exact) : S.Exact := by
   rw [exact_iff_δ₀]
-  constructor <;> assumption?
+  constructor <;> assumption
 
 lemma exact_iff_δlast {n : ℕ} (S : ComposableArrows C (n + 2)) :
     S.Exact ↔ S.δlast.Exact ∧ (mk₂ (S.map' n (n + 1)) (S.map' (n + 1) (n + 2))).Exact := by
