@@ -598,6 +598,32 @@ lemma filler_spec_zero ⦃i : Fin 3⦄ (σ₀ : Λ[2, i] ⟶ nerve C)
     dsimp [horn.edge, horn.face, δ, Fin.succAbove] at b ⊢
     fin_cases b <;> simp
 
+theorem filler_spec_succ_aux
+  ⦃i : Fin (n + 4)⦄ (σ₀ : horn (n + 3) i ⟶ nerve C) (h₀ : 0 < i)
+  (hₙ : i < Fin.last (n + 3)) (j : Fin (n + 4)) (hj : j ≠ i) (k : ℕ) (hk : k < n + 2)
+  (hkj : ¬k + 1 < ↑j) (hkj' : k + 1 = ↑j)
+  (h1 : k < Nat.succ (n + 2)) (h2 : k < n + 2)
+  (h3 :
+    nerve.source (σ₀.app (op [1]) (horn.edge' (horn.face i j hj) k hk)) =
+      nerve.source (σ₀.app (op [1]) (horn.edge h₀ hₙ (Fin.castSucc { val := k, isLt := h2 }))))
+  (h4 : Nat.succ k < Nat.succ (n + 2))
+  (h5 :
+    nerve.target (σ₀.app (op [1]) (horn.edge h₀ hₙ (Fin.castSucc { val := k, isLt := h2 }))) =
+      nerve.source (σ₀.app (op [1]) (horn.edge h₀ hₙ (Fin.succ { val := k, isLt := h2 }))))
+  (h6 :
+    nerve.target (σ₀.app (op [1]) (horn.edge h₀ hₙ (Fin.succ { val := k, isLt := h2 }))) =
+      nerve.target (σ₀.app (op [1]) (horn.edge' (horn.face i j hj) k hk))) :
+  eqToHom h3 ≫
+      (nerve.arrow (σ₀.app (op [1]) (horn.edge h₀ hₙ { val := k, isLt := _ })) ≫
+          eqToHom h5 ≫ nerve.arrow (σ₀.app (op [1]) (horn.edge h₀ hₙ { val := k + 1, isLt := h4 }))) ≫
+        eqToHom h6 =
+    nerve.arrow (σ₀.app (op [1]) (horn.edge' (horn.face i j hj) k hk)) := by
+  let F := σ₀.app (op [2]) (horn.triangle i h₀ hₙ k h2)
+  have := F.map'_comp 0 1 2 (by omega) (by omega) (by dsimp; omega)
+  sorry
+
+#exit
+
 open SimplexCategory in
 lemma filler_spec_succ ⦃i : Fin (n + 4)⦄
     (σ₀ : Λ[n + 3, i] ⟶ nerve C) (h₀ : 0 < i) (hₙ : i < Fin.last (n + 3))
@@ -644,7 +670,11 @@ lemma filler_spec_succ ⦃i : Fin (n + 4)⦄
     slice_lhs 2 4 => skip
     simp only [unop_op, len_mk, Int.ofNat_eq_coe, Int.Nat.cast_ofNat_Int, id_eq, Fin.castSucc_mk,
       Fin.succ_mk]
-    sorry
+    apply filler_spec_succ_aux
+    any_goals assumption
+    apply lt_of_lt_of_le hk
+    dsimp
+    simp [Nat.succ_eq_add_one]
   · rw [← eqToHom_comp_iff, ← comp_eqToHom_iff]
     swap; rw [eq_comm, nerve.horn_app_obj']; rfl
     swap; rw [nerve.horn_app_obj']; rfl
