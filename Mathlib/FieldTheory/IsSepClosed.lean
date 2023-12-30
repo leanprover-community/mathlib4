@@ -93,7 +93,7 @@ theorem exists_root [IsSepClosed k] (p : k[X]) (hp : p.degree ≠ 0) (hsep : p.S
 
 theorem exists_pow_nat_eq [IsSepClosed k] (x : k) (n : ℕ) [hn : NeZero (n : k)] :
     ∃ z, z ^ n = x := by
-  have hn' : 0 < n := Nat.pos_of_ne_zero <| fun h => by
+  have hn' : 0 < n := Nat.pos_of_ne_zero fun h => by
     rw [h, Nat.cast_zero] at hn
     exact hn.out rfl
   have : degree (X ^ n - C x) ≠ 0 := by

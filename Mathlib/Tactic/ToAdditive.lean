@@ -441,7 +441,7 @@ def etaExpandN (n : Nat) (e : Expr) : MetaM Expr := do
 def expand (e : Expr) : MetaM Expr := do
   let env ← getEnv
   let reorderFn : Name → List (List ℕ) := fun nm ↦ (reorderAttr.find? env nm |>.getD [])
-  let e₂ ← Lean.Meta.transform (input := e) (post := fun e => return .done e) <| fun e ↦ do
+  let e₂ ← Lean.Meta.transform (input := e) (post := fun e => return .done e) fun e ↦ do
     let e0 := e.getAppFn
     let es := e.getAppArgs
     let some e0n := e0.constName? | return .continue
