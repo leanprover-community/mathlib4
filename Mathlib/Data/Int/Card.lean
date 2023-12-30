@@ -33,31 +33,20 @@ theorem Int.Ico_filter_dvd_card (a b : ℤ) {r : ℤ} (hr : 0 < r) :
     intro c ⟨⟨hac, hcb⟩, h⟩
     exact ⟨c / r, by simp [← cast_mul, Int.ediv_mul_cancel h, hac, hcb]⟩
 
-/-- Equivalence between the numbers in `[a, b)` congruent to `v` modulo `r` and
-the multiples of `r` in `[a - v, b - v)`. -/
-def icoFilterModEqEquivIcoFilterDvd (a b v : ℤ) {r : ℤ} :
-    (Ico a b).filter (· ≡ v [ZMOD r]) ≃ (Ico (a - v) (b - v)).filter (r ∣ ·) where
-  toFun := fun ⟨x, p⟩ ↦ ⟨x - v, by
-    simp_all only [mem_filter, mem_Ico, tsub_le_iff_right, sub_add_cancel,
-      sub_lt_sub_iff_right, and_self, true_and]
-    rw [modEq_iff_dvd, dvd_sub_comm] at p
-    exact p.2⟩
-  invFun := fun ⟨x, p⟩ ↦ ⟨x + v, by
-    simp_all only [mem_filter, mem_Ico, tsub_le_iff_right, true_and]
-    refine' ⟨lt_tsub_iff_right.mp p.1.2, _⟩
-    conv_rhs => rw [← zero_add v]
-    apply ModEq.add (modEq_zero_iff_dvd.mpr p.2) rfl⟩
-  left_inv := fun ⟨x, p⟩ ↦ by simp
-  right_inv := fun ⟨x, p⟩ ↦ by simp
-
 /-- There are `⌈(b - v) / r⌉ - ⌈(a - v) / r⌉` numbers congruent to `v` modulo `r` in `[a, b)`,
 if `a ≤ b`. -/
 theorem Int.Ico_filter_modEq_card (a b v : ℤ) {r : ℤ} (hr : 0 < r) :
     ((Ico a b).filter (· ≡ v [ZMOD r])).card =
     max (⌈(b - v) / (r : ℚ)⌉ - ⌈(a - v) / (r : ℚ)⌉) 0 := by
-  rw [Finset.card_eq_of_equiv (icoFilterModEqEquivIcoFilterDvd _ _ _),
-    Ico_filter_dvd_card _ _ hr]
-  norm_cast
+  suffices : ((Ico a b).filter (· ≡ v [ZMOD r])).card = ((Ico (a - v) (b - v)).filter (r ∣ ·)).card
+  · simp only [this, Ico_filter_dvd_card _ _ hr, cast_sub]
+  refine (card_congr (fun x _ => x + v) ?_ (fun _ _ _ _ => (add_left_inj _).mp) ?_).symm
+  · simp only [mem_filter, mem_Ico, tsub_le_iff_right, lt_tsub_iff_right, and_imp]
+    intro c l u d
+    exact ⟨⟨l, u⟩, (modEq_of_dvd (by simpa)).symm⟩
+  · simp only [mem_filter, mem_Ico, and_imp]
+    intro c l u m
+    exact ⟨c - v, by simp_all [modEq_iff_dvd.mp m.symm]⟩
 
 theorem nat_Ico_filter_map_eq_int_Ico_filter (a b v r : ℕ) :
     ((Ico a b).filter (· ≡ v [MOD r])).map Nat.castEmbedding =
@@ -76,6 +65,7 @@ theorem nat_Ico_filter_map_eq_int_Ico_filter (a b v r : ℕ) :
     norm_cast at *
     refine' ⟨⟨⟨lb, ub⟩, coe_nat_modEq_iff.mp m⟩, rfl⟩
 
+/-- `Int.Ico_filter_modEq_card` restricted to natural numbers. -/
 theorem Nat.Ico_filter_modEq_card (a b v : ℕ) {r : ℕ} (hr : 0 < r) :
     ((Ico a b).filter (· ≡ v [MOD r])).card =
     max (⌈(b - v) / (r : ℚ)⌉ - ⌈(a - v) / (r : ℚ)⌉) 0 := by
