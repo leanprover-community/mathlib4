@@ -1593,6 +1593,7 @@ import Mathlib.Data.Int.AbsoluteValue
 import Mathlib.Data.Int.Associated
 import Mathlib.Data.Int.Basic
 import Mathlib.Data.Int.Bitwise
+import Mathlib.Data.Int.Card
 import Mathlib.Data.Int.Cast.Basic
 import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Data.Int.Cast.Field
