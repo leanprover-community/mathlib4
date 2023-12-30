@@ -731,7 +731,7 @@ lemma AddMonoid.IsTorsionFree_iff_noZeroSMulDivisors {G : Type*} [AddCommGroup G
   rw [Submodule.noZeroSMulDivisors_iff_torsion_eq_bot,
     AddMonoid.isTorsionFree_iff_torsion_eq_bot,
     ← Submodule.toAddSubgroup_injective.eq_iff,
-    Submodule.torsion_int, Submodule.toAddSubgroup_bot]
+    Submodule.torsion_int, Submodule.bot_toAddSubgroup]
 
 end Torsion
 
