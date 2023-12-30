@@ -559,4 +559,9 @@ theorem periodic_of_isIntegralCurve_not_injective [I.Boundaryless] (hγ : IsInte
   · rw [gt_iff_lt, abs_pos, sub_ne_zero]
     exact hne
   · apply congrFun
-    apply isIntegralCurve_Ioo_eq_of_contMDiff_boundaryless hv
+    by_cases hle : t₁ - t₂ < 0
+    · apply isIntegralCurve_Ioo_eq_of_contMDiff_boundaryless (t₀ := t₁) hv (hγ.comp_add _) hγ
+      simp [abs_of_neg hle, heq]
+    · apply isIntegralCurve_Ioo_eq_of_contMDiff_boundaryless (t₀ := t₂) hv (hγ.comp_add _) hγ
+      rw [not_lt] at hle
+      simp [abs_of_nonneg hle, heq]
