@@ -77,12 +77,12 @@ of `E / F`, is defined to be the intermediate field of `E / F` consisting of all
 elements. The previous results prove that these elements are closed under field operations. -/
 def separableClosure : IntermediateField F E where
   carrier := {x | (minpoly F x).Separable}
-  mul_mem' := separable_mul F E
-  one_mem' := (map_one (algebraMap F E)) ▸ separable_algebraMap F E 1
-  add_mem' := separable_add F E
-  zero_mem' := (map_zero (algebraMap F E)) ▸ separable_algebraMap F E 0
-  algebraMap_mem' := separable_algebraMap F E
-  inv_mem' := separable_inv F E
+  mul_mem' := separable_mul
+  one_mem' := map_one (algebraMap F E) ▸ separable_algebraMap E 1
+  add_mem' := separable_add
+  zero_mem' := map_zero (algebraMap F E) ▸ separable_algebraMap E 0
+  algebraMap_mem' := separable_algebraMap E
+  inv_mem' := separable_inv
 
 /-- An element is contained in the (relative) separable closure of `E / F` if and only if
 it is a separable element. -/
