@@ -160,12 +160,8 @@ theorem le_separableClosure_iff (L : IntermediateField F E) :
 /-- The (relative) separable closure of the (relative) separable closure of `E / F` is equal to
 itself. -/
 theorem separableClosure.separableClosure_eq_bot :
-    separableClosure (separableClosure F E) E = ⊥ := bot_unique fun x hx ↦ by
-  rw [mem_separableClosure_iff, ← isSeparable_adjoin_simple_iff_separable] at hx
-  set L := separableClosure F E
-  haveI : IsSeparable F (L⟮x⟯.restrictScalars F) := IsSeparable.trans F L L⟮x⟯
-  exact mem_bot.2 ⟨⟨x, (mem_separableClosure_iff F E).2 (separable_of_mem_isSeparable F E <|
-    show x ∈ L⟮x⟯.restrictScalars F from mem_adjoin_simple_self L x)⟩, rfl⟩
+    separableClosure (separableClosure F E) E = ⊥ := bot_unique fun x hx ↦
+  mem_bot.2 ⟨⟨x, (mem_separableClosure_iff _ E).1 hx |>.comap_minpoly_of_isSeparable F⟩, rfl⟩
 
 /-- The normal closure of the (relative) separable closure of `E / F` is equal to itself. -/
 theorem separableClosure.normalClosure_eq_self :
@@ -217,13 +213,8 @@ theorem separableClosure.le_restrictScalars [Algebra E K] [IsScalarTower F E K] 
 /-- If `K / E / F` is a field extension tower, such that `E / F` is separable, then
 `separableClosure F K` is equal to `separableClosure E K`. -/
 theorem separableClosure.eq_restrictScalars_of_isSeparable [Algebra E K] [IsScalarTower F E K]
-    [IsSeparable F E] : separableClosure F K = (separableClosure E K).restrictScalars F := by
-  refine le_antisymm (separableClosure.le_restrictScalars F E K) fun x hx ↦ ?_
-  rw [mem_restrictScalars, mem_separableClosure_iff,
-    ← isSeparable_adjoin_simple_iff_separable] at hx
-  haveI : IsSeparable F (E⟮x⟯.restrictScalars F) := IsSeparable.trans F E E⟮x⟯
-  have h : x ∈ E⟮x⟯.restrictScalars F := mem_adjoin_simple_self E x
-  exact (mem_separableClosure_iff F _).2 <| separable_of_mem_isSeparable F _ h
+    [IsSeparable F E] : separableClosure F K = (separableClosure E K).restrictScalars F :=
+  (separableClosure.le_restrictScalars F E K).antisymm fun _ h ↦ h.comap_minpoly_of_isSeparable F
 
 /-- If `K / E / F` is a field extension tower, then `E` adjoin `separableClosure F K` is contained
 in `separableClosure E K`. -/
