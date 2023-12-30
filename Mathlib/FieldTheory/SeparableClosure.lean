@@ -193,7 +193,9 @@ instance separableClosure.isSepClosure [IsSepClosed E] : IsSepClosure F (separab
   rwa [map_zero, ← aeval_algebraMap_apply_eq_algebraMap_eval]
 
 /-- The (absolute) separable closure is defined to be the (relative) separable closure inside the
-algebraic closure. -/
+algebraic closure. It is indeed a separable closure (`IsSepClosure`) by
+`separableClosure.isSepClosure`, and it is Galois (`IsGalois`) by `separableClosure.isGalois`
+or `IsSepClosure.isGalois`, and every separable extension embeds into it (`IsSepClosed.lift`). -/
 abbrev SeparableClosure : Type _ := separableClosure F (AlgebraicClosure F)
 
 /-- `F(S) / F` is a separable extension if and only if all elements of `S` are
