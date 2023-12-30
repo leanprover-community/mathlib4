@@ -110,7 +110,7 @@ lemma Quasicategory.hornFilling {S : SSet} [Quasicategory S] ⦃n : ℕ⦄ ⦃i 
 instance (S : SSet) [KanComplex S] : Quasicategory S where
   hornFilling' _ _ σ₀ _ _ := KanComplex.hornFilling σ₀
 
-def horn.face {n : ℕ} (i j : Fin (n+1+1)) (h : j ≠ i) : Λ[n+1, i] _[n] := by
+def horn.face {n : ℕ} (i j : Fin (n+2)) (h : j ≠ i) : Λ[n+1, i] _[n] := by
   refine ⟨SimplexCategory.δ j, ?_⟩
   simpa only [unop_op, SimplexCategory.len_mk, asOrderHom, SimplexCategory.δ, SimplexCategory.mkHom,
     SimplexCategory.Hom.toOrderHom_mk, OrderEmbedding.toOrderHom_coe, Set.union_singleton, ne_eq,
@@ -465,6 +465,38 @@ lemma nerve.horn_app_map' (n : ℕ) (i : Fin (n+4)) (σ : Λ[n+3, i] ⟶ nerve C
 --   --   sorry
 --   -- | succ m =>
 --   sorry
+
+open SimplexCategory in
+/-- TODO: rename -/
+def horn.triangle' {n : ℕ} (k : ℕ) (h : k + 1 < n) : Δ[n] _[2] := by
+  refine Hom.mk ⟨![⟨k, by omega⟩, ⟨k+1, by omega⟩, ⟨k+2, by omega⟩], ?_⟩
+  rw [Fin.monotone_iff_le_succ]
+  simp only [unop_op, SimplexCategory.len_mk, Fin.forall_fin_two]
+  dsimp
+  simp only [Fin.le_iff_val_le_val, le_add_iff_nonneg_right, zero_le, Matrix.tail_cons,
+    Matrix.head_cons, add_le_add_iff_left, true_and]
+  decide
+
+def horn.triangle {n : ℕ} (i : Fin (n+4))
+    (h₀ : 0 < i) (hₙ : i < Fin.last (n+3))
+    (k : ℕ) (h : k < n+2) : Λ[n+3, i] _[2] := by
+  refine ⟨horn.triangle' k (by omega), ?_⟩
+  simp only [unop_op, SimplexCategory.len_mk, asOrderHom, SimplexCategory.Hom.toOrderHom_mk,
+    OrderHom.const_coe_coe, Set.union_singleton, ne_eq, ← Set.univ_subset_iff, Set.subset_def,
+    Set.mem_univ, Set.mem_insert_iff, Set.mem_range, Function.const_apply, exists_const,
+    forall_true_left, not_forall, not_or, unop_op, not_exists, triangle',
+    OrderHom.coe_mk, @eq_comm _ _ i]
+  dsimp
+  by_cases hk0 : k = 0
+  · subst hk0
+    use Fin.last (n+3)
+    simp only [hₙ.ne, not_false_eq_true, Fin.zero_eta, zero_add, true_and]
+    intro j
+    fin_cases j <;> simp [Fin.ext_iff] <;> omega
+  · use 0
+    simp only [h₀.ne', not_false_eq_true, true_and]
+    intro j
+    fin_cases j <;> simp [Fin.ext_iff, hk0]
 
 end nerve
 
