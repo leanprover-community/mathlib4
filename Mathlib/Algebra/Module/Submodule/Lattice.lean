@@ -142,6 +142,13 @@ theorem eq_bot_of_subsingleton [Subsingleton p] : p = ⊥ :=
 theorem nontrivial_iff_ne_bot : Nontrivial p ↔ p ≠ ⊥ := by
   rw [iff_not_comm, not_nontrivial_iff_subsingleton, subsingleton_iff_eq_bot]
 
+@[simp]
+lemma toAddSubmonoid_bot : (⊥ : Submodule R M).toAddSubmonoid = ⊥ := rfl
+
+@[simp]
+lemma toAddSubgroup_bot {R M} [Ring R] [AddCommGroup M]
+  [Module R M] : (⊥ : Submodule R M).toAddSubgroup = ⊥ := rfl
+
 /-!
 ## Top element of a submodule
 -/
@@ -203,6 +210,13 @@ def topEquiv : (⊤ : Submodule R M) ≃ₗ[R] M where
   left_inv _ := rfl
   right_inv _ := rfl
 #align submodule.top_equiv Submodule.topEquiv
+
+@[simp]
+lemma toAddSubmonoid_top : (⊤ : Submodule R M).toAddSubmonoid = ⊤ := rfl
+
+@[simp]
+lemma toAddSubgroup_top {R M} [Ring R] [AddCommGroup M]
+  [Module R M] : (⊤ : Submodule R M).toAddSubgroup = ⊤ := rfl
 
 /-!
 ## Infima & suprema in a submodule

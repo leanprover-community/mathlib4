@@ -422,6 +422,10 @@ theorem Module.free_of_finite_type_torsion_free' [Module.Finite R M] [NoZeroSMul
   exact Module.Free.of_basis b
 #align module.free_of_finite_type_torsion_free' Module.free_of_finite_type_torsion_free'
 
+theorem Module.free_iff_noZeroSMulDivisors [Module.Finite R M] :
+    Module.Free R M ↔ NoZeroSMulDivisors R M :=
+  ⟨fun _ ↦ inferInstance, Module.free_of_finite_type_torsion_free'⟩
+
 section SmithNormal
 
 /-- A Smith normal form basis for a submodule `N` of a module `M` consists of
