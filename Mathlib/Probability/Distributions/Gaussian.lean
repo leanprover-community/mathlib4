@@ -5,6 +5,7 @@ Authors: Lorenzo Luccioli, Rémy Degenne, Alexander Bentkamp
 -/
 import Mathlib.Analysis.SpecialFunctions.Gaussian
 import Mathlib.Probability.Notation
+import Mathlib.MeasureTheory.Decomposition.Lebesgue
 
 /-!
 # Gaussian distributions over ℝ

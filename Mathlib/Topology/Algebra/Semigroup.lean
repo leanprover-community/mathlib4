@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
 -/
 import Mathlib.Topology.Separation
+import Mathlib.Algebra.Group.Defs
 
 #align_import topology.algebra.semigroup from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 

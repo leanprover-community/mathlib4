@@ -5,7 +5,6 @@ Authors: Moritz Doll
 -/
 
 import Mathlib.Tactic.Continuity.Init
-import Mathlib.Algebra.Group.Defs
 
 /-!
 # Continuity

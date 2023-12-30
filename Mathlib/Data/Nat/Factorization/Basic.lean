@@ -9,6 +9,7 @@ import Mathlib.Data.Nat.PrimeFin
 import Mathlib.NumberTheory.Padics.PadicVal
 import Mathlib.Data.Nat.Interval
 import Mathlib.Tactic.IntervalCases
+import Mathlib.Algebra.GroupPower.Order
 
 #align_import data.nat.factorization.basic from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 
