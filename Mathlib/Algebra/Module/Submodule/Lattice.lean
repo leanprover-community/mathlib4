@@ -146,8 +146,8 @@ theorem nontrivial_iff_ne_bot : Nontrivial p ↔ p ≠ ⊥ := by
 lemma toAddSubmonoid_bot : (⊥ : Submodule R M).toAddSubmonoid = ⊥ := rfl
 
 @[simp]
-lemma toAddSubgroup_bot {R M} [Ring R] [AddCommGroup M]
-  [Module R M] : (⊥ : Submodule R M).toAddSubgroup = ⊥ := rfl
+lemma toAddSubgroup_bot {R M} [Ring R] [AddCommGroup M] [Module R M] :
+    (⊥ : Submodule R M).toAddSubgroup = ⊥ := rfl
 
 /-!
 ## Top element of a submodule
