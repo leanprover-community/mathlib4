@@ -19,7 +19,7 @@ Pass
 open Finset Int
 
 /-- There are `⌈b / r⌉ - ⌈a / r⌉` multiples of `r` in `[a, b)`, if `a ≤ b`. -/
-theorem filter_Ico_dvd_card (a b : ℤ) {r : ℤ} (hr : 0 < r) :
+theorem Int.Ico_filter_dvd_card (a b : ℤ) {r : ℤ} (hr : 0 < r) :
     ((Ico a b).filter (r ∣ ·)).card = max (⌈b / (r : ℚ)⌉ - ⌈a / (r : ℚ)⌉) 0 := by
   suffices : ((Ico a b).filter (r ∣ ·)).card = (Ico ⌈(a : ℚ) / r⌉ ⌈(b : ℚ) / r⌉).card
   · rw [this, card_Ico, toNat_eq_max]
@@ -52,11 +52,11 @@ def icoFilterModEqEquivIcoFilterDvd (a b v : ℤ) {r : ℤ} :
 
 /-- There are `⌈(b - v) / r⌉ - ⌈(a - v) / r⌉` numbers congruent to `v` modulo `r` in `[a, b)`,
 if `a ≤ b`. -/
-theorem Int.filter_Ico_modEq_card (a b v : ℤ) {r : ℤ} (hr : 0 < r) :
+theorem Int.Ico_filter_modEq_card (a b v : ℤ) {r : ℤ} (hr : 0 < r) :
     ((Ico a b).filter (· ≡ v [ZMOD r])).card =
     max (⌈(b - v) / (r : ℚ)⌉ - ⌈(a - v) / (r : ℚ)⌉) 0 := by
   rw [Finset.card_eq_of_equiv (icoFilterModEqEquivIcoFilterDvd _ _ _),
-    filter_Ico_dvd_card _ _ hr]
+    Ico_filter_dvd_card _ _ hr]
   norm_cast
 
 theorem nat_Ico_filter_map_eq_int_Ico_filter (a b v r : ℕ) :
@@ -76,13 +76,13 @@ theorem nat_Ico_filter_map_eq_int_Ico_filter (a b v r : ℕ) :
     norm_cast at *
     refine' ⟨⟨⟨lb, ub⟩, coe_nat_modEq_iff.mp m⟩, rfl⟩
 
-theorem Nat.filter_Ico_modEq_card (a b v : ℕ) {r : ℕ} (hr : 0 < r) :
+theorem Nat.Ico_filter_modEq_card (a b v : ℕ) {r : ℕ} (hr : 0 < r) :
     ((Ico a b).filter (· ≡ v [MOD r])).card =
     max (⌈(b - v) / (r : ℚ)⌉ - ⌈(a - v) / (r : ℚ)⌉) 0 := by
   have seq := nat_Ico_filter_map_eq_int_Ico_filter a b v r
   have ceq := card_map (s := (Ico a b).filter (· ≡ v [MOD r])) (Nat.castEmbedding (R := ℤ))
   have hr' : 0 < (r : ℤ) := by linarith
-  have q := Int.filter_Ico_modEq_card a b v hr'
+  have q := Int.Ico_filter_modEq_card a b v hr'
   rw [seq] at ceq
   rw [ceq] at q
   rw [q]
@@ -91,7 +91,7 @@ theorem Nat.filter_Ico_modEq_card (a b v : ℕ) {r : ℕ} (hr : 0 < r) :
 /-- There are `⌈(n - v % r) / r⌉` numbers in `[0, n)` congruent to `v` mod `r`. -/
 theorem Nat.count_modEq_card' (n v : ℕ) {r : ℕ} (hr : 0 < r) :
     n.count (· ≡ v [MOD r]) = ⌈(n - (v % r : ℕ)) / (r : ℚ)⌉ := by
-  rw [count_eq_card_filter_range, ← Ico_zero_eq_range, filter_Ico_modEq_card _ _ _ hr]
+  rw [count_eq_card_filter_range, ← Ico_zero_eq_range, Ico_filter_modEq_card _ _ _ hr]
   have : 0 ≤ (⌈(↑n - ↑v) / (r : ℚ)⌉ - ⌈(↑0 - ↑v) / (r : ℚ)⌉) := by
     rw [sub_nonneg]
     apply Int.ceil_mono
