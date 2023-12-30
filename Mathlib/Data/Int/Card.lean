@@ -33,6 +33,8 @@ theorem filter_Ico_dvd_card (a b : ℤ) {r : ℤ} (hr : 0 < r) :
     intro c ⟨⟨hac, hcb⟩, h⟩
     exact ⟨c / r, by simp [← cast_mul, Int.ediv_mul_cancel h, hac, hcb]⟩
 
+/-- Equivalence between the numbers in `[a, b)` congruent to `v` modulo `r` and
+the multiples of `r` in `[a - v, b - v)`. -/
 def icoFilterModEqEquivIcoFilterDvd (a b v : ℤ) {r : ℤ} :
     (Ico a b).filter (· ≡ v [ZMOD r]) ≃ (Ico (a - v) (b - v)).filter (r ∣ ·) where
   toFun := fun ⟨x, p⟩ ↦ ⟨x - v, by
