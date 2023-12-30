@@ -43,11 +43,8 @@ theorem iff_rank_lt_aleph0 : IsNoetherian K V ↔ Module.rank K V < ℵ₀ := by
 
 variable (K V)
 
-/-- The dimension of a noetherian module over a division ring, as a cardinal,
-is strictly less than the first infinite cardinal `ℵ₀`. -/
-theorem rank_lt_aleph0 : ∀ [IsNoetherian K V], Module.rank K V < ℵ₀ :=
-  @IsNoetherian.iff_rank_lt_aleph0.1
-#align is_noetherian.rank_lt_aleph_0 IsNoetherian.rank_lt_aleph0
+@[deprecated] protected alias IsNoetherian.rank_lt_aleph0 := rank_lt_aleph0
+#align is_noetherian.rank_lt_aleph_0 rank_lt_aleph0
 
 variable {K V}
 

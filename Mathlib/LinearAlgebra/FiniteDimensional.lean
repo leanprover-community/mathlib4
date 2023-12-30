@@ -139,7 +139,7 @@ theorem of_fintype_basis {ι : Type w} [Finite ι] (h : Basis ι K V) : FiniteDi
 /-- If a vector space is `FiniteDimensional`, all bases are indexed by a finite type -/
 noncomputable def fintypeBasisIndex {ι : Type*} [FiniteDimensional K V] (b : Basis ι K V) :
     Fintype ι :=
-  @Fintype.ofFinite _ (Module.Free.finite_basis b)
+  @Fintype.ofFinite _ (Module.Finite.finite_basis b)
 #align finite_dimensional.fintype_basis_index FiniteDimensional.fintypeBasisIndex
 
 /-- If a vector space is `FiniteDimensional`, `Basis.ofVectorSpace` is indexed by
@@ -163,7 +163,7 @@ instance finiteDimensional_submodule [FiniteDimensional K V] (S : Submodule K V)
   exact
     iff_fg.1
       (IsNoetherian.iff_rank_lt_aleph0.2
-        (lt_of_le_of_lt (rank_submodule_le _) (rank_lt_aleph0 K V)))
+        (lt_of_le_of_lt (rank_submodule_le _) (_root_.rank_lt_aleph0 K V)))
   infer_instance
 #align finite_dimensional.finite_dimensional_submodule FiniteDimensional.finiteDimensional_submodule
 
@@ -399,7 +399,7 @@ theorem finiteDimensional_of_le {S₁ S₂ : Submodule K V} [FiniteDimensional K
   haveI : IsNoetherian K S₂ := iff_fg.2 inferInstance
   iff_fg.1
     (IsNoetherian.iff_rank_lt_aleph0.2
-      (lt_of_le_of_lt (rank_le_of_submodule _ _ h) (FiniteDimensional.rank_lt_aleph0 K S₂)))
+      (lt_of_le_of_lt (rank_le_of_submodule _ _ h) (rank_lt_aleph0 K S₂)))
 #align submodule.finite_dimensional_of_le Submodule.finiteDimensional_of_le
 
 /-- The inf of two submodules, the first finite-dimensional, is
