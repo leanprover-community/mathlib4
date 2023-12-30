@@ -166,8 +166,8 @@ theorem first_order_condition {s : Set E}
   rw [← H9] at H8; linarith
 
 theorem first_order_condition_inverse
-  (h : ∀ x ∈ s, HasFDerivAt f (f' x) x) (h₁: Convex ℝ s)
-  (h₂: ∀ (x : E), x ∈ s → ∀ (y : E), y ∈ s → f x + f' x (y - x) ≤ f y): ConvexOn ℝ s f := by
+    (h : ∀ x ∈ s, HasFDerivAt f (f' x) x) (h₁: Convex ℝ s)
+    (h₂: ∀ (x : E), x ∈ s → ∀ (y : E), y ∈ s → f x + f' x (y - x) ≤ f y): ConvexOn ℝ s f := by
   rw [ConvexOn]; constructor
   apply h₁; intro x xs y ys a b anonneg bnonneg sumab
   let x' := a • x + b • y
@@ -219,7 +219,8 @@ theorem first_order_condition_inverse
   rw [H] at H3
   apply H3
 
-theorem first_order_condition_iff {s : Set E} (h₁: Convex ℝ s) (h : ∀ x ∈ s, HasFDerivAt f (f' x) x) :
+theorem first_order_condition_iff {s : Set E} (h₁: Convex ℝ s)
+    (h : ∀ x ∈ s, HasFDerivAt f (f' x) x) :
     ConvexOn ℝ s f ↔ ∀ (x: E), x ∈ s → ∀ (y: E), y ∈ s → f x + f' x (y - x) ≤ f y:=
   ⟨ fun h₂ x xs ↦ first_order_condition (h x xs) h₂ xs, first_order_condition_inverse h h₁ ⟩
 
