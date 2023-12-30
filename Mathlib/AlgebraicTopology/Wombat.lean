@@ -18,7 +18,8 @@ open CategoryTheory Simplicial Opposite
 
 namespace SSet
 
-def horn.face {n : ℕ} (i j : Fin (n+2)) (h : j ≠ i) : Λ[n+1, i] _[n] := by
+@[simps]
+def horn.δ {n : ℕ} (i j : Fin (n+2)) (h : j ≠ i) : Λ[n+1, i] _[n] := by
   refine ⟨SimplexCategory.δ j, ?_⟩
   simpa only [unop_op, SimplexCategory.len_mk, asOrderHom, SimplexCategory.δ, SimplexCategory.mkHom,
     SimplexCategory.Hom.toOrderHom_mk, OrderEmbedding.toOrderHom_coe, Set.union_singleton, ne_eq,
@@ -30,7 +31,7 @@ open SimplicialObject SimplexCategory in
 lemma quasicategory_of_filler (S : SSet)
     (H : ∀ ⦃n : ℕ⦄ ⦃i : Fin (n+3)⦄ (σ₀ : Λ[n+2, i] ⟶ S) (_h0 : 0 < i) (_hn : i < Fin.last (n+2)),
       ∃ σ : S _[n+2], ∀ (j) (h : j ≠ i),
-        S.δ j σ = σ₀.app _ (horn.face i j h)) :
+        S.δ j σ = σ₀.app _ (horn.δ i j h)) :
     Quasicategory S where
   hornFilling' n i σ₀ h₀ hₙ := by
     obtain ⟨σ, h⟩ := H σ₀ h₀ hₙ
@@ -63,11 +64,11 @@ lemma quasicategory_of_filler (S : SSet)
           apply dif_pos
           omega
 
-    have H : f = (Λ[n+2, i].map g.op) (horn.face i j hj₁) := by
+    have H : f = (Λ[n+2, i].map g.op) (horn.δ i j hj₁) := by
       apply Subtype.ext; exact hg
     have := σ₀.naturality g.op
     rw [Function.funext_iff] at this
-    specialize this (horn.face i j hj₁)
+    specialize this (horn.δ i j hj₁)
     dsimp at this
     erw [H, this, ← h, NatTrans.comp_app]
     have := (S.map_comp (SimplexCategory.δ j).op g.op).symm
@@ -157,24 +158,18 @@ lemma nerve.δ_mk (n : ℕ)
       ext; simp [Fin.succAbove, this]
 
 -- TODO: move
-def nerve.source (f : (nerve C) _[1]) : C := f.obj (0 : Fin 2)
-
--- TODO: move
-def nerve.target (f : (nerve C) _[1]) : C := f.obj (1 : Fin 2)
-
--- TODO: move
-def nerve.arrow (f : (nerve C) _[1]) : source f ⟶ target f :=
+def nerve.arrow (f : (nerve C) _[1]) : f.obj (0 : Fin 2) ⟶ f.obj (1 : Fin 2) :=
   f.map' 0 1 zero_le_one le_rfl
 
 -- TODO: move
 open SimplexCategory in
 lemma nerve.source_eq (f : (nerve C) _[1]) :
-    source f = ((nerve C).map (δ (1 : Fin 2)).op f).obj (0 : Fin 1) := rfl
+    f.obj (0 : Fin 2) = ((nerve C).map (δ (1 : Fin 2)).op f).obj (0 : Fin 1) := rfl
 
 -- TODO: move
 open SimplexCategory in
 lemma nerve.target_eq (f : (nerve C) _[1]) :
-    target f = ((nerve C).map (δ (0 : Fin 2)).op f).obj (0 : Fin 1) := rfl
+    f.obj (1 : Fin 2) = ((nerve C).map (δ (0 : Fin 2)).op f).obj (0 : Fin 1) := rfl
 
 open SimplexCategory in
 def horn.vertex (n : ℕ) (i k : Fin (n+3)) : Λ[n+2, i] _[0] := by
@@ -197,7 +192,7 @@ def horn.vertex (n : ℕ) (i k : Fin (n+3)) : Λ[n+2, i] _[0] := by
       simp [hi0, hk0, @eq_comm _ _ i]
 
 open SimplexCategory in
-lemma nerve.horn_app_obj' (n : ℕ) (i : Fin (n+3)) (σ : Λ[n+2, i] ⟶ nerve C)
+lemma nerve.horn_app_obj (n : ℕ) (i : Fin (n+3)) (σ : Λ[n+2, i] ⟶ nerve C)
     (m : SimplexCategoryᵒᵖ) (f : Λ[n+2, i].obj m) (k : Fin (m.unop.len + 1)) :
     (σ.app m f).obj k = (σ.app (op [0]) (horn.vertex _ i (f.1.toOrderHom k))).obj 0 := by
   let φ : ([0] : SimplexCategory) ⟶ m.unop :=
@@ -269,16 +264,16 @@ lemma nerve.arrow_app_congr (n : ℕ) (i : Fin (n+3)) (σ : Λ[n+2, i] ⟶ nerve
   subst h; simp
 
 open SimplexCategory in
-lemma nerve.horn_app_map'' (n : ℕ) (i : Fin (n+4)) (σ : Λ[n+3, i] ⟶ nerve C)
+lemma nerve.horn_app_map (n : ℕ) (i : Fin (n+4)) (σ : Λ[n+3, i] ⟶ nerve C)
     (m : ℕ) (f : Λ[n+3, i] _[m]) (a b : ℕ) (hab : a ≤ b) (hbm : b ≤ m) :
     (σ.app (op [m]) f).map' a b hab hbm =
-      eqToHom (by rw [source, nerve.horn_app_obj', eq_comm, nerve.horn_app_obj']; rfl) ≫
+      eqToHom (by rw [nerve.horn_app_obj, eq_comm, nerve.horn_app_obj]; rfl) ≫
       nerve.arrow (σ.app (op [1])
         (horn.edge'' f
           ⟨a, Nat.lt_add_one_iff.mpr <| hab.trans hbm⟩
           ⟨b, Nat.lt_add_one_iff.mpr <| hbm⟩
           <| Fin.mk_le_mk.mpr hab))
-      ≫ eqToHom (by rw [target, nerve.horn_app_obj', eq_comm, nerve.horn_app_obj']; rfl) := by
+      ≫ eqToHom (by rw [nerve.horn_app_obj, eq_comm, nerve.horn_app_obj]; rfl) := by
   let φ : ([1] : SimplexCategory) ⟶ [m] :=
     Hom.mk ⟨![⟨a, by omega⟩, ⟨b, by omega⟩], ?mono⟩
   case mono =>
@@ -292,10 +287,10 @@ lemma nerve.horn_app_map'' (n : ℕ) (i : Fin (n+4)) (σ : Λ[n+3, i] ⟶ nerve 
   refine this.symm.trans ?_; clear this; clear this
   apply morphism_heq
   case hX =>
-    rw [source, nerve.horn_app_obj', types_comp, Function.comp_apply, nerve.horn_app_obj']
+    rw [nerve.horn_app_obj, types_comp, Function.comp_apply, nerve.horn_app_obj]
     rfl
   case hY =>
-    rw [target, nerve.horn_app_obj', types_comp, Function.comp_apply, nerve.horn_app_obj']
+    rw [nerve.horn_app_obj, types_comp, Function.comp_apply, nerve.horn_app_obj]
     rfl
   simp only [Category.assoc, eqToHom_trans, eqToHom_trans_assoc, types_comp, Function.comp_apply]
   dsimp only [horn.edge', horn]
@@ -309,15 +304,6 @@ lemma nerve.horn_app_map'' (n : ℕ) (i : Fin (n+4)) (σ : Λ[n+3, i] ⟶ nerve 
   ext j
   dsimp at j ⊢
   fin_cases j <;> rfl
-
-open SimplexCategory in
-lemma nerve.horn_app_map' (n : ℕ) (i : Fin (n+4)) (σ : Λ[n+3, i] ⟶ nerve C)
-    (m : ℕ) (f : Λ[n+3, i] _[m]) (k : ℕ) (hk : k < m) :
-    (σ.app (op [m]) f).map' k (k+1) (Nat.le_add_right k 1) hk =
-      eqToHom (by rw [source, nerve.horn_app_obj', eq_comm, nerve.horn_app_obj']; rfl) ≫
-      nerve.arrow (σ.app (op [1]) (horn.edge' f k hk))
-      ≫ eqToHom (by rw [target, nerve.horn_app_obj', eq_comm, nerve.horn_app_obj']; rfl) := by
-  apply horn_app_map''
 
 open SimplexCategory in
 /-- TODO: rename -/
@@ -368,10 +354,7 @@ def mor (j : Fin (n+2)) : obj σ₀ j.castSucc ⟶ obj σ₀ j.succ := by
   refine eqToHom ?_
     ≫ (nerve.arrow (σ₀.app (op [1]) (horn.primitiveEdge h₀ hₙ j)))
     ≫ eqToHom ?_
-  all_goals
-  · dsimp only [obj, nerve.source, nerve.target]
-    rw [nerve.horn_app_obj' _ _ _ (op [1])]
-    rfl
+  all_goals rw [nerve.horn_app_obj _ _ _ (op [1])]; rfl
 
 end filler
 
@@ -388,12 +371,12 @@ def filler : (nerve C) _[n+2] :=
 open SimplexCategory in
 lemma filler_spec_zero ⦃i : Fin 3⦄ (σ₀ : Λ[2, i] ⟶ nerve C)
     (h₀ : 0 < i) (hₙ : i < Fin.last 2) (j : Fin 3) (hj : j ≠ i) :
-    (nerve C).δ j (filler σ₀ h₀ hₙ) = σ₀.app (op [1]) (horn.face i j hj) := by
+    (nerve C).δ j (filler σ₀ h₀ hₙ) = σ₀.app (op [1]) (horn.δ i j hj) := by
   rw [filler, nerve.δ_mk]
   dsimp only [nerve.mk]
   refine ComposableArrows.ext₁ ?_ ?_ ?_
-  · symm; apply nerve.horn_app_obj'
-  · symm; apply nerve.horn_app_obj'
+  · symm; apply nerve.horn_app_obj
+  · symm; apply nerve.horn_app_obj
   dsimp only [ComposableArrows.hom]
   rw [ComposableArrows.mkOfObjOfMapSucc_map_succ _ _ 0 zero_lt_one]
   obtain rfl : i = 1 := by
@@ -408,8 +391,8 @@ lemma filler_spec_zero ⦃i : Fin 3⦄ (σ₀ : Λ[2, i] ⟶ nerve C)
   split <;> rename_i hj'
   · obtain rfl : j = 2 := by fin_cases j <;> simp at hj hj'; rfl
     rw [← eqToHom_comp_iff, ← comp_eqToHom_iff]
-    swap; symm; apply nerve.horn_app_obj'
-    swap; apply nerve.horn_app_obj'
+    swap; symm; apply nerve.horn_app_obj
+    swap; apply nerve.horn_app_obj
     dsimp only [filler.mor]
     simp only [Category.assoc, eqToHom_trans, eqToHom_trans_assoc]
     symm
@@ -417,12 +400,12 @@ lemma filler_spec_zero ⦃i : Fin 3⦄ (σ₀ : Λ[2, i] ⟶ nerve C)
     apply Subtype.ext
     apply Hom.ext
     ext b
-    dsimp [horn.primitiveEdge, horn.edge, horn.face, δ, Fin.succAbove] at b ⊢
+    dsimp [horn.primitiveEdge, horn.edge, horn.δ, δ, Fin.succAbove] at b ⊢
     fin_cases b <;> simp
   · obtain rfl : j = 0 := by fin_cases j <;> simp at hj hj'; rfl
     rw [← eqToHom_comp_iff, ← comp_eqToHom_iff]
-    swap; symm; apply nerve.horn_app_obj'
-    swap; apply nerve.horn_app_obj'
+    swap; symm; apply nerve.horn_app_obj
+    swap; apply nerve.horn_app_obj
     dsimp only [filler.mor]
     simp only [Category.assoc, eqToHom_trans, eqToHom_trans_assoc]
     symm
@@ -430,7 +413,7 @@ lemma filler_spec_zero ⦃i : Fin 3⦄ (σ₀ : Λ[2, i] ⟶ nerve C)
     apply Subtype.ext
     apply Hom.ext
     ext b
-    dsimp [horn.primitiveEdge, horn.edge, horn.face, δ, Fin.succAbove] at b ⊢
+    dsimp [horn.primitiveEdge, horn.edge, horn.δ, δ, Fin.succAbove] at b ⊢
     fin_cases b <;> simp
 
 lemma nerve.arrow_app_congr' {n : ℕ} {i : Fin (n+4)} (σ : Λ[n+3, i] ⟶ nerve C)
@@ -457,31 +440,31 @@ lemma filler_spec_succ_aux
   (hₙ : i < Fin.last (n + 3)) (j : Fin (n + 4)) (hj : j ≠ i) (k : ℕ) (hk : k < n + 2)
   (hkj : ¬k + 1 < ↑j) (hkj' : k + 1 = ↑j) (h2 : k < n + 2)
   (h3 :
-    nerve.source (σ₀.app (op [1]) (horn.edge' (horn.face i j hj) k hk)) =
-      nerve.source (σ₀.app (op [1]) (horn.primitiveEdge h₀ hₙ (Fin.castSucc { val := k, isLt := h2 }))))
+    (σ₀.app (op [1]) (horn.edge' (horn.δ i j hj) k hk)).obj 0 =
+      (σ₀.app (op [1]) (horn.primitiveEdge h₀ hₙ (Fin.castSucc { val := k, isLt := h2 }))).obj 0)
   (h4 : Nat.succ k < Nat.succ (n + 2))
   (h5 :
-    nerve.target (σ₀.app (op [1]) (horn.primitiveEdge h₀ hₙ (Fin.castSucc { val := k, isLt := h2 }))) =
-      nerve.source (σ₀.app (op [1]) (horn.primitiveEdge h₀ hₙ (Fin.succ { val := k, isLt := h2 }))))
+    (σ₀.app (op [1]) (horn.primitiveEdge h₀ hₙ (Fin.castSucc { val := k, isLt := h2 }))).obj 1 =
+      (σ₀.app (op [1]) (horn.primitiveEdge h₀ hₙ (Fin.succ { val := k, isLt := h2 }))).obj 0)
   (h6 :
-    nerve.target (σ₀.app (op [1]) (horn.primitiveEdge h₀ hₙ (Fin.succ { val := k, isLt := h2 }))) =
-      nerve.target (σ₀.app (op [1]) (horn.edge' (horn.face i j hj) k hk))) :
+    (σ₀.app (op [1]) (horn.primitiveEdge h₀ hₙ (Fin.succ { val := k, isLt := h2 }))).obj 1 =
+      (σ₀.app (op [1]) (horn.edge' (horn.δ i j hj) k hk)).obj 1) :
   eqToHom h3 ≫
       (nerve.arrow (σ₀.app (op [1]) (horn.primitiveEdge h₀ hₙ { val := k, isLt := _ })) ≫
           eqToHom h5 ≫ nerve.arrow (σ₀.app (op [1]) (horn.primitiveEdge h₀ hₙ { val := k + 1, isLt := h4 }))) ≫
         eqToHom h6 =
-    nerve.arrow (σ₀.app (op [1]) (horn.edge' (horn.face i j hj) k hk)) := by
+    nerve.arrow (σ₀.app (op [1]) (horn.edge' (horn.δ i j hj) k hk)) := by
   obtain ⟨j, hj'⟩ := j
   dsimp only [Fin.eta] at *
   subst hkj'
   let F := σ₀.app (op [2]) (horn.triangle i h₀ hₙ k h2)
   have H := F.map'_comp 0 1 2 (by omega) (by omega) (by dsimp; omega)
   dsimp only at H
-  have := nerve.horn_app_map' n i σ₀ _ (horn.triangle i h₀ hₙ k h2) 0 zero_lt_two
+  have := nerve.horn_app_map n i σ₀ _ (horn.triangle i h₀ hₙ k h2) 0 1 zero_le' one_le_two
   rw [this] at H; clear this
-  have := nerve.horn_app_map' n i σ₀ _ (horn.triangle i h₀ hₙ k h2) 1 one_lt_two
+  have := nerve.horn_app_map n i σ₀ _ (horn.triangle i h₀ hₙ k h2) 1 2 one_le_two le_rfl
   rw [this] at H; clear this
-  have := nerve.horn_app_map'' n i σ₀ _ (horn.triangle i h₀ hₙ k h2) 0 2 zero_le' le_rfl
+  have := nerve.horn_app_map n i σ₀ _ (horn.triangle i h₀ hₙ k h2) 0 2 zero_le' le_rfl
   rw [this] at H; clear this
   rw [eqToHom_comp_iff, comp_eqToHom_iff] at H
   simp only [Category.assoc, eqToHom_trans, eqToHom_trans_assoc] at H
@@ -491,20 +474,20 @@ lemma filler_spec_succ_aux
   · apply Subtype.ext
     apply Hom.ext
     ext b
-    dsimp [horn.triangle, horn.triangle', horn.face, horn.edge'', horn.edge', horn.edge₄, horn.edge,
+    dsimp [horn.triangle, horn.triangle', horn.δ, horn.edge'', horn.edge', horn.edge₄, horn.edge,
       δ, Fin.succAbove] at b ⊢
     simp only [Matrix.cons_val_succ', Fin.mk_one, Matrix.cons_val_one, Matrix.head_cons,
       lt_add_iff_pos_right, zero_lt_one, ite_true, lt_self_iff_false, ite_false]
   · apply Subtype.ext
     apply Hom.ext
     ext b
-    dsimp [horn.primitiveEdge, horn.triangle, horn.triangle', horn.face, horn.edge'', horn.edge',
+    dsimp [horn.primitiveEdge, horn.triangle, horn.triangle', horn.δ, horn.edge'', horn.edge',
       horn.edge₄, horn.edge, δ, Fin.succAbove] at b ⊢
-    simp only [Matrix.cons_val_succ', Fin.zero_eta, Matrix.cons_val_zero]
+    -- simp only [Matrix.cons_val_succ', Fin.zero_eta, Matrix.cons_val_zero]
   · apply Subtype.ext
     apply Hom.ext
     ext b
-    dsimp [horn.primitiveEdge, horn.triangle, horn.triangle', horn.face, horn.edge'', horn.edge',
+    dsimp [horn.primitiveEdge, horn.triangle, horn.triangle', horn.δ, horn.edge'', horn.edge',
       horn.edge₄, horn.edge, δ, Fin.succAbove] at b ⊢
     simp only [Matrix.cons_val_succ', Fin.zero_eta, Matrix.cons_val_zero]
 
@@ -512,25 +495,25 @@ open SimplexCategory in
 lemma filler_spec_succ ⦃i : Fin (n + 4)⦄
     (σ₀ : Λ[n + 3, i] ⟶ nerve C) (h₀ : 0 < i) (hₙ : i < Fin.last (n + 3))
     (j : Fin (n + 4)) (hj : j ≠ i) :
-    (nerve C).δ j (filler σ₀ h₀ hₙ) = σ₀.app (op [n + 2]) (horn.face i j hj) := by
+    (nerve C).δ j (filler σ₀ h₀ hₙ) = σ₀.app (op [n + 2]) (horn.δ i j hj) := by
   rw [filler, nerve.δ_mk]
   refine ComposableArrows.ext ?_ ?_
   · dsimp [nerve.mk]
     intro k
     symm
-    apply nerve.horn_app_obj'
+    apply nerve.horn_app_obj
   intro k hk
   dsimp only [nerve.mk]
   rw [ComposableArrows.mkOfObjOfMapSucc_map_succ _ _ k (by omega)]
   dsimp only [nerve.δ_mor]
   split <;> rename_i hkj
   · rw [← eqToHom_comp_iff, ← comp_eqToHom_iff]
-    swap; rw [eq_comm, nerve.horn_app_obj']; rfl
-    swap; rw [nerve.horn_app_obj']; rfl
-    have := nerve.horn_app_map' n i σ₀ _ (horn.face i j hj) k hk
+    swap; rw [eq_comm, nerve.horn_app_obj]; rfl
+    swap; rw [nerve.horn_app_obj]; rfl
+    have := nerve.horn_app_map n i σ₀ _ (horn.δ i j hj) k (k+1) (k.le_add_right 1) hk
     rw [this, ← eqToHom_comp_iff, ← comp_eqToHom_iff]
-    swap; rw [nerve.target, nerve.horn_app_obj', eq_comm, nerve.horn_app_obj']; rfl
-    swap; rw [nerve.source, nerve.horn_app_obj', eq_comm, nerve.horn_app_obj']; rfl
+    swap; rw [nerve.horn_app_obj, eq_comm, nerve.horn_app_obj]; rfl
+    swap; rw [nerve.horn_app_obj, eq_comm, nerve.horn_app_obj]; rfl
     dsimp only [filler.mor]
     simp only [Category.assoc, eqToHom_trans, eqToHom_trans_assoc]
     symm
@@ -538,18 +521,18 @@ lemma filler_spec_succ ⦃i : Fin (n + 4)⦄
     apply Subtype.ext
     apply Hom.ext
     ext b
-    dsimp [horn.primitiveEdge, horn.triangle, horn.triangle', horn.face, horn.edge'', horn.edge',
+    dsimp [horn.primitiveEdge, horn.triangle, horn.triangle', horn.δ, horn.edge'', horn.edge',
       horn.edge₄, horn.edge, δ, Fin.succAbove] at b ⊢
     have hkj' : k < j.val := by omega
     simp only [hkj', ite_true, hkj]
   split <;> rename_i hkj'
   · rw [← eqToHom_comp_iff, ← comp_eqToHom_iff]
-    swap; rw [eq_comm, nerve.horn_app_obj']; rfl
-    swap; rw [nerve.horn_app_obj']; rfl
-    have := nerve.horn_app_map' n i σ₀ _ (horn.face i j hj) k hk
+    swap; rw [eq_comm, nerve.horn_app_obj]; rfl
+    swap; rw [nerve.horn_app_obj]; rfl
+    have := nerve.horn_app_map n i σ₀ _ (horn.δ i j hj) k (k+1) (k.le_add_right 1) hk
     rw [this, ← eqToHom_comp_iff, ← comp_eqToHom_iff]
-    swap; rw [nerve.target, nerve.horn_app_obj', eq_comm, nerve.horn_app_obj']; rfl
-    swap; rw [nerve.source, nerve.horn_app_obj', eq_comm, nerve.horn_app_obj']; rfl
+    swap; rw [nerve.horn_app_obj, eq_comm, nerve.horn_app_obj]; rfl
+    swap; rw [nerve.horn_app_obj, eq_comm, nerve.horn_app_obj]; rfl
     dsimp only [filler.mor]
     simp only [Category.assoc, eqToHom_trans, eqToHom_trans_assoc]
     slice_lhs 2 4 => skip
@@ -557,12 +540,12 @@ lemma filler_spec_succ ⦃i : Fin (n + 4)⦄
       Fin.succ_mk]
     apply filler_spec_succ_aux <;> assumption
   · rw [← eqToHom_comp_iff, ← comp_eqToHom_iff]
-    swap; rw [eq_comm, nerve.horn_app_obj']; rfl
-    swap; rw [nerve.horn_app_obj']; rfl
-    have := nerve.horn_app_map' n i σ₀ _ (horn.face i j hj) k hk
+    swap; rw [eq_comm, nerve.horn_app_obj]; rfl
+    swap; rw [nerve.horn_app_obj]; rfl
+    have := nerve.horn_app_map n i σ₀ _ (horn.δ i j hj) k (k+1) (k.le_add_right 1) hk
     rw [this, ← eqToHom_comp_iff, ← comp_eqToHom_iff]
-    swap; rw [nerve.target, nerve.horn_app_obj', eq_comm, nerve.horn_app_obj']; rfl
-    swap; rw [nerve.source, nerve.horn_app_obj', eq_comm, nerve.horn_app_obj']; rfl
+    swap; rw [nerve.horn_app_obj, eq_comm, nerve.horn_app_obj]; rfl
+    swap; rw [nerve.horn_app_obj, eq_comm, nerve.horn_app_obj]; rfl
     dsimp only [filler.mor]
     simp only [Category.assoc, eqToHom_trans, eqToHom_trans_assoc]
     symm
@@ -570,7 +553,7 @@ lemma filler_spec_succ ⦃i : Fin (n + 4)⦄
     apply Subtype.ext
     apply Hom.ext
     ext b
-    dsimp [horn.primitiveEdge, horn.triangle, horn.triangle', horn.face, horn.edge'', horn.edge',
+    dsimp [horn.primitiveEdge, horn.triangle, horn.triangle', horn.δ, horn.edge'', horn.edge',
       horn.edge₄, horn.edge, δ, Fin.succAbove] at b ⊢
     have hkj'' : ¬ k < j.val := by omega
     simp only [hkj'', ite_false, hkj]
