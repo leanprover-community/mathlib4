@@ -4,19 +4,21 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
 import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
+import Mathlib.Tactic
 
 /-!
 # The Lévy-Prokhorov distance on spaces of finite measures and probability measures
 
 ## Main definitions
 
-* `MeasureTheory.levyProkhorovEDist`: The Lévy-Prokhorov distance between two measures.
+* `MeasureTheory.levyProkhorovEDist`: The Lévy-Prokhorov edistance between two measures.
+* `MeasureTheory.levyProkhorovDist`: The Lévy-Prokhorov distance between two finite measures.
 
 ## Main results
 
-* `levyProkhorovEDist.pseudoEMetricSpace_finiteMeasure`: The Lévy-Prokhorov distance is a
+* `levyProkhorovDist_pseudoMetricSpace_finiteMeasure`: The Lévy-Prokhorov distance is a
   pseudoemetric on the space of finite measures.
-* `levyProkhorovEDist.pseudoEMetricSpace_probabilityMeasure`: The Lévy-Prokhorov distance is a
+* `levyProkhorovDist_pseudoMetricSpace_probabilityMeasure`: The Lévy-Prokhorov distance is a
   pseudoemetric on the space of probability measures.
 
 ## Todo
@@ -40,10 +42,9 @@ section Levy_Prokhorov
 
 /-! ### Lévy-Prokhorov metric -/
 
-variable {ι : Type*} {Ω : Type*} [MeasurableSpace Ω]
-variable [MetricSpace Ω] [OpensMeasurableSpace Ω]
+variable {ι : Type*} {Ω : Type*} [MeasurableSpace Ω] [MetricSpace Ω]
 
-/-- The Lévy-Prokhorov distance on the space of finite measures:
+/-- The Lévy-Prokhorov edistance between measures:
 `d(μ,ν) = inf {r ≥ 0 | ∀ B, μ B ≤ ν Bᵣ + r ∧ ν B ≤ μ Bᵣ + r}`. -/
 noncomputable def levyProkhorovEDist (μ ν : Measure Ω) : ℝ≥0∞ :=
   sInf {ε | ∀ B, MeasurableSet B →
@@ -113,7 +114,7 @@ lemma levyProkhorovEDist_comm (μ ν : Measure Ω) :
     levyProkhorovEDist μ ν = levyProkhorovEDist ν μ := by
   simp only [levyProkhorovEDist, and_comm]
 
-lemma levyProkhorovEDist_triangle (μ ν κ : Measure Ω) :
+lemma levyProkhorovEDist_triangle [OpensMeasurableSpace Ω] (μ ν κ : Measure Ω) :
     levyProkhorovEDist μ κ ≤ levyProkhorovEDist μ ν + levyProkhorovEDist ν κ := by
   by_cases LPμν_finite : levyProkhorovEDist μ ν = ∞
   · simp [LPμν_finite]
@@ -155,23 +156,67 @@ lemma levyProkhorovEDist_triangle (μ ν κ : Measure Ω) :
       add_le_add_right (measure_mono (thickening_thickening_subset _ _ _)) _
     _ = μ (thickening (s.toReal + r.toReal) B) + (s + r) := by rw [add_comm r.toReal]
 
-/-- The Lévy-Prokhorov distance `levyProkhorovEDist` makes `FiniteMeasure X` a pseudoemetric
-space. -/
-noncomputable def levyProkhorovEDist_pseudoEMetricSpace_finiteMeasure :
-    PseudoEMetricSpace (FiniteMeasure Ω) where
-  edist μ ν := levyProkhorovEDist μ.toMeasure ν.toMeasure
-  edist_self μ := levyProkhorovEDist_self μ.toMeasure
-  edist_comm μ ν := levyProkhorovEDist_comm μ.toMeasure ν.toMeasure
-  edist_triangle μ ν κ := levyProkhorovEDist_triangle μ.toMeasure ν.toMeasure κ.toMeasure
+/-- The Lévy-Prokhorov distance between finite measures:
+`d(μ,ν) = inf {r ≥ 0 | ∀ B, μ B ≤ ν Bᵣ + r ∧ ν B ≤ μ Bᵣ + r}`. -/
+noncomputable def levyProkhorovDist (μ ν : Measure Ω) : ℝ :=
+  (levyProkhorovEDist μ ν).toReal
 
-/-- The Lévy-Prokhorov distance `levyProkhorovEDist` makes `ProbabilityMeasure Ω` a pseudoemetric
-space. -/
-noncomputable def levyProkhorovEDist_pseudoEMetricSpace_probabilityMeasure :
-    PseudoEMetricSpace (ProbabilityMeasure Ω) where
-  edist μ ν := levyProkhorovEDist μ.toMeasure ν.toMeasure
-  edist_self μ := levyProkhorovEDist_self μ.toMeasure
-  edist_comm μ ν := levyProkhorovEDist_comm μ.toMeasure ν.toMeasure
-  edist_triangle μ ν κ := levyProkhorovEDist_triangle μ.toMeasure ν.toMeasure κ.toMeasure
+lemma levyProkhorovDist_self (μ : Measure Ω) :
+    levyProkhorovDist μ μ = 0 := by
+  simp only [levyProkhorovDist, levyProkhorovEDist_self, zero_toReal]
+
+lemma levyProkhorovDist_comm (μ ν : Measure Ω) :
+    levyProkhorovDist μ ν = levyProkhorovDist ν μ := by
+  simp only [levyProkhorovDist, levyProkhorovEDist_comm]
+
+lemma levyProkhorovDist_triangle [OpensMeasurableSpace Ω] (μ ν κ : Measure Ω)
+    [IsFiniteMeasure μ] [IsFiniteMeasure ν] [IsFiniteMeasure κ] :
+    levyProkhorovDist μ κ ≤ levyProkhorovDist μ ν + levyProkhorovDist ν κ := by
+  have dμκ_finite := (levyProkhorovEDist_lt_top μ κ).ne
+  have dμν_finite := (levyProkhorovEDist_lt_top μ ν).ne
+  have dνκ_finite := (levyProkhorovEDist_lt_top ν κ).ne
+  convert (ENNReal.toReal_le_toReal (a := levyProkhorovEDist μ κ)
+    (b := levyProkhorovEDist μ ν + levyProkhorovEDist ν κ)
+    _ _).mpr <| levyProkhorovEDist_triangle μ ν κ
+  · simp only [levyProkhorovDist, ENNReal.toReal_add dμν_finite dνκ_finite]
+  · exact dμκ_finite
+  · exact ENNReal.add_ne_top.mpr ⟨dμν_finite, dνκ_finite⟩
+
+/-- A type synonym, to be used for `Measure α`, `FiniteMeasure α`, or `ProbabilityMeasure α`,
+when they are to be equipped with the Lévy-Prokhorov distance. -/
+def LevyProkhorov (α : Type*) := α
+
+variable [OpensMeasurableSpace Ω]
+
+/-- The Lévy-Prokhorov distance `levyProkhorovEDist` makes `Measure Ω` a pseudoemetric
+space. The instance is recorded on the type synonym `LevyProkhorov (Measure Ω) := Measure Ω`. -/
+noncomputable instance : PseudoEMetricSpace (LevyProkhorov (Measure Ω)) where
+  edist := levyProkhorovEDist
+  edist_self := levyProkhorovEDist_self
+  edist_comm := levyProkhorovEDist_comm
+  edist_triangle := levyProkhorovEDist_triangle
+
+/-- The Lévy-Prokhorov distance `levyProkhorovDist` makes `FiniteMeasure Ω` a pseudometric
+space. The instance is recorded on the type synonym
+`LevyProkhorov (FiniteMeasure Ω) := FiniteMeasure Ω`. -/
+noncomputable instance levyProkhorovDist_pseudoMetricSpace_finiteMeasure :
+    PseudoMetricSpace (LevyProkhorov (FiniteMeasure Ω)) where
+  dist μ ν := levyProkhorovDist μ.toMeasure ν.toMeasure
+  dist_self μ := levyProkhorovDist_self _
+  dist_comm μ ν := levyProkhorovDist_comm _ _
+  dist_triangle μ ν κ := levyProkhorovDist_triangle _ _ _
+  edist_dist μ ν := by simp [← ENNReal.ofReal_coe_nnreal]
+
+/-- The Lévy-Prokhorov distance `levyProkhorovDist` makes `ProbabilityMeasure Ω` a pseudoemetric
+space. The instance is recorded on the type synonym
+`LevyProkhorov (ProbabilityMeasure Ω) := ProbabilityMeasure Ω`. -/
+noncomputable instance levyProkhorovDist_pseudoMetricSpace_probabilityMeasure :
+    PseudoMetricSpace (LevyProkhorov (ProbabilityMeasure Ω)) where
+  dist μ ν := levyProkhorovDist μ.toMeasure ν.toMeasure
+  dist_self μ := levyProkhorovDist_self _
+  dist_comm μ ν := levyProkhorovDist_comm _ _
+  dist_triangle μ ν κ := levyProkhorovDist_triangle _ _ _
+  edist_dist μ ν := by simp [← ENNReal.ofReal_coe_nnreal]
 
 end Levy_Prokhorov --section
 
