@@ -429,7 +429,49 @@ theorem finSepDegree_mul_finInsepDegree : finSepDegree F E * finInsepDegree F E 
 
 end Field
 
--- theorem separableClosure.eq_adjoin_of_isAlgebraic [Algebra E K] [IsScalarTower F E K]
---     (halg : Algebra.IsAlgebraic F E) :
---     separableClosure E K = adjoin E (separableClosure F K) := by
---   sorry
+namespace separableClosure
+
+variable [Algebra E K] [IsScalarTower F E K]
+
+private lemma eq_adjoin_of_isPurelyInseparable' [IsPurelyInseparable F E] [IsSeparable E K] :
+    adjoin E (separableClosure F K : Set K) = ⊤ := top_unique fun x _ ↦ by
+  set S := separableClosure F K
+  set L := adjoin E (S : Set K)
+  haveI := isSeparable_tower_top_of_isSeparable E L K
+  let i : S →+* L := {
+    toFun := fun x ↦ ⟨x.1, adjoin.mono E _ _ (Set.singleton_subset_iff.2 x.2)
+      (mem_adjoin_simple_self E x.1)⟩
+    map_one' := rfl
+    map_mul' := fun x y ↦ rfl
+    map_zero' := rfl
+    map_add' := fun x y ↦ rfl
+  }
+  letI : Algebra S L := i.toAlgebra
+  letI : Module S L := Algebra.toModule
+  letI : SMul S L := Algebra.toSMul
+  haveI : IsScalarTower S L K := IsScalarTower.of_algebraMap_eq (congrFun rfl)
+  haveI : IsPurelyInseparable S K := separableClosure.isPurelyInseparable F K <|
+    (IsPurelyInseparable.isAlgebraic F E).trans (IsSeparable.isAlgebraic E K)
+  haveI := IsPurelyInseparable.tower_top S L K
+  obtain ⟨y, rfl⟩ := IsPurelyInseparable.surjective_algebraMap_of_isSeparable L K x
+  exact y.2
+
+private lemma eq_adjoin_of_isPurelyInseparable [IsPurelyInseparable F E] :
+    separableClosure E K = adjoin E (separableClosure F K) := by
+  set S := separableClosure E K
+  have h := congr_arg IntermediateField.lift (eq_adjoin_of_isPurelyInseparable' F E S)
+  rw [lift_top, lift_adjoin] at h
+  haveI : IsScalarTower F S K := IsScalarTower.of_algebraMap_eq (congrFun rfl)
+  rw [← h, eq_map_of_separableClosure_eq_bot F S K (separableClosure_eq_bot E K)]
+  rfl
+
+/-- If `K / E / F` is a field extension tower, such that `E / F` is algebraic, then
+`separableClosure E K` is equal to `E` adjoin `separableClosure F K`. -/
+theorem eq_adjoin_of_isAlgebraic (halg : Algebra.IsAlgebraic F E) :
+    separableClosure E K = adjoin E (separableClosure F K) := by
+  set S := separableClosure F E
+  rw [eq_restrictScalars_of_isSeparable F S K]
+  haveI : IsPurelyInseparable S E := separableClosure.isPurelyInseparable F E halg
+  exact eq_adjoin_of_isPurelyInseparable S E K
+
+end separableClosure
