@@ -43,9 +43,8 @@ private lemma point_proportion {a b: ℝ} (_ : 0 ≤ a) (_ : 0 ≤ b) (sumab: a 
       _ = b • x - b • y:= by rw [← sumab]; ring_nf
       _ = b • (x - y):= Eq.symm (smul_sub b x y)
 
-theorem first_order_condition
-    (h : HasFDerivAt f (f' x) x) (hf : ConvexOn ℝ s f) (xs : x ∈ s):
-    ∀ (y : E), y ∈ s → f x + f' x (y - x) ≤ f y := by
+theorem first_order_condition (h : HasFDerivAt f (f' x) x) (hf : ConvexOn ℝ s f)
+    (xs : x ∈ s) : ∀ (y : E), y ∈ s → f x + f' x (y - x) ≤ f y := by
   have h₁ : ∀ ε > (0 : ℝ), ∃ δ > (0 : ℝ), ∀ (x' : E), ‖x - x'‖ ≤ δ
        → ‖f x' - f x - (f' x) (x' - x)‖ ≤ ε * ‖x - x'‖:= by
     rw [HasFDerivAt, hasFDerivAtFilter_iff_isLittleO, Asymptotics.isLittleO_iff] at h
@@ -159,11 +158,10 @@ theorem first_order_condition
   have H6: f x + (f' x) (x' - x) - ε * b / 2 ≤ f x + (f' x) (x' - x) - b * ε := le_trans H1 H2
   have H7: - ε * b / 2 ≤ - b * ε := by linarith
   have H8: - ε * b / 2 + b * ε ≤ 0 := by linarith
-  have H9: ε *b /2 = - ε * b / 2 + b * ε := by ring
   have blt: 0 < b:= by apply lt_min; apply b1pos; apply zero_lt_one
   have H10: ε * b ≤ 0:= by linarith
   have H11: ε ≤ 0:= nonpos_of_mul_nonpos_left H10 blt
-  rw [← H9] at H8; linarith
+  linarith
 
 theorem first_order_condition_inverse
     (h : ∀ x ∈ s, HasFDerivAt f (f' x) x) (h₁: Convex ℝ s)
