@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
 import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
-import Mathlib.Tactic
 
 /-!
 # The Lévy-Prokhorov distance on spaces of finite measures and probability measures
