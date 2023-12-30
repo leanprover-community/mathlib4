@@ -1173,19 +1173,25 @@ theorem hφ_mem_range_iff {τ} :
   rfl
 #align on_cycle_factors.hφ_mem_range_iff Equiv.Perm.OnCycleFactors.hφ_mem_range_iff
 
+/-
 /- For the moment, we can only analyse the permutations which
   respect a fibration when there is a `Fintype` assumption on the base.
   So we have to view the lengths of the cycles
    as members of the Fintype `Fin (Fintype.card α + 1)` -/
 
--- FIND A BETTER NAME
 /-- The lengths of the cycles, as a member of a Fintype -/
 def fsc : g.cycleFactorsFinset → Fin (Fintype.card α + 1) :=
   fun c => ⟨(c : Equiv.Perm α).support.card,
     Nat.lt_succ_iff.mpr (c : Equiv.Perm α).support.card_le_univ⟩
 #align on_cycle_factors.fsc Equiv.Perm.OnCycleFactors.fsc
+-/
 
 -- FIND A BETTER NAME
+/-- The lengths of the cycles -/
+abbrev fsc₀ (c : g.cycleFactorsFinset) : ℕ := (c : Equiv.Perm α).support.card
+
+-- FIND A BETTER NAME
+/-
 lemma hlc (n) :
     Fintype.card {a : g.cycleFactorsFinset // fsc a = n } = g.cycleType.count ↑n := by
   rcases n with ⟨i, hi⟩
@@ -1207,7 +1213,37 @@ lemma hlc (n) :
   congr
   ext c
   simp [and_comm]
+-/
 
+lemma hlc₀ (n : ℕ) :
+    Fintype.card {c : g.cycleFactorsFinset // fsc₀ c = n } = g.cycleType.count n  := by
+  apply symm
+  -- Rewrite the Multiset.count as a Fintype.card
+  have nd := (Finset.filter (fun a ↦ n = (Finset.card ∘ Equiv.Perm.support) a) (Equiv.Perm.cycleFactorsFinset g)).nodup
+  rw [Equiv.Perm.cycleType_def, Multiset.count_map, ← Finset.filter_val]
+  rw [← Multiset.toFinset_card_of_nodup nd, ← Multiset.toFinset_eq nd]
+  simp only [Function.comp_apply, Finset.filter_congr_decidable, Finset.filter_val]
+  rw [← Set.ncard_coe_Finset]
+  -- Rewrite the RHS using an equiv as a Set.ncard
+  rw [← Nat.card_eq_fintype_card]
+  change _ = Nat.card { c | fsc₀ c = n }
+  rw [Set.Nat.card_coe_set_eq]
+  -- Ugly hack
+  change _ = Set.ncard { x : g.cycleFactorsFinset | (x : Equiv.Perm α) ∈ { x |  Finset.card (Equiv.Perm.support x) = n } }
+  simp only [Set.ncard_subtype]
+  congr
+  ext c
+  simp [and_comm, eq_comm]
+
+theorem hφ_range'₀ :
+    ((φ g).range : Set (Equiv.Perm (g.cycleFactorsFinset : Set (Equiv.Perm α)))) =
+      {τ : Equiv.Perm g.cycleFactorsFinset | fsc₀ ∘ τ = fsc₀ } := by
+  rw [← Iφ_eq_range]
+  ext τ
+  simp only [Finset.coe_sort_coe, Set.mem_setOf_eq, Function.funext_iff, Function.comp_apply, SetLike.mem_coe, mem_Iφ_iff, fsc₀]
+
+
+/-
 theorem hφ_range' :
     ((φ g).range : Set (Equiv.Perm (g.cycleFactorsFinset : Set (Equiv.Perm α)))) =
       {τ : Equiv.Perm g.cycleFactorsFinset | fsc ∘ τ = fsc} := by
@@ -1219,16 +1255,37 @@ theorem hφ_range' :
   intro c
   simp only [← Function.Injective.eq_iff Fin.val_injective, fsc]
 #align on_cycle_factors.hφ_range' Equiv.Perm.OnCycleFactors.hφ_range'
+-/
 
+/-
 theorem hφ_range_card' :
     Nat.card (φ g).range =
       Fintype.card {k : Equiv.Perm g.cycleFactorsFinset | fsc ∘ k = fsc} := by
   simp_rw [← hφ_range', Nat.card_eq_fintype_card]
   rfl
 #align on_cycle_factors.hφ_range_card' Equiv.Perm.OnCycleFactors.hφ_range_card'
+-/
 
 open BigOperators
 
+theorem hφ_range_card :
+    Fintype.card (φ g).range =
+      ∏ n in g.cycleType.toFinset, (g.cycleType.count n).factorial := by
+  suffices : Fintype.card (φ g).range =
+    Fintype.card { k : Equiv.Perm g.cycleFactorsFinset | fsc₀ ∘ k = fsc₀ }
+  rw [this]
+  simp_rw [Set.coe_setOf]
+  rw [DomMulAct.stabilizer_card']
+  simp_rw [hlc₀]
+  apply Finset.prod_congr
+  · ext n
+    simp only [Finset.univ_eq_attach, Finset.mem_image, Finset.mem_attach, fsc₀, true_and,
+      Subtype.exists, exists_prop, Multiset.mem_toFinset]
+    simp only [cycleType_def, Function.comp_apply, Multiset.mem_map, Finset.mem_val]
+  · exact fun _ _ => rfl
+  · simp_rw [← hφ_range'₀]
+    rfl
+/-
 theorem hφ_range_card :
     Fintype.card (φ g).range =
       ∏ n in g.cycleType.toFinset, (g.cycleType.count n).factorial := by
@@ -1250,6 +1307,7 @@ theorem hφ_range_card :
     rw [Multiset.count_eq_zero_of_not_mem hi.2]
     exact Nat.factorial_zero
 #align on_cycle_factors.hφ_range_card Equiv.Perm.OnCycleFactors.hφ_range_card
+-/
 
 /-- A permutation `z : Equiv.Perm α` belongs to the kernel of `φ g` iff
   it commutes with each cycle of `g` -/
@@ -1536,9 +1594,9 @@ theorem hθ_injective (g : Equiv.Perm α) : Function.Injective (θ g) := by
 theorem hφ_ker_eq_θ_range (z : Equiv.Perm α) :
     ConjAct.toConjAct z ∈
         Subgroup.map (MulAction.stabilizer (ConjAct (Equiv.Perm α)) g).subtype (φ g).ker ↔
-      z ∈ Set.range (θ g) := by
+      z ∈ (θ g).range := by
   constructor
-  · rw [hφ_mem_ker_iff, Equiv.Perm.IsCycle.forall_commute_iff, Set.mem_range]
+  · rw [hφ_mem_ker_iff, Equiv.Perm.IsCycle.forall_commute_iff, MonoidHom.mem_range]
     intro Hz
     have hu : ∀ x : α,
       x ∈ Function.fixedPoints g ↔
@@ -1616,35 +1674,22 @@ theorem hφ_ker_eq_θ_range (z : Equiv.Perm α) :
       rw [θAux_cycleOf_apply_eq]
 #align on_cycle_factors.hφ_ker_eq_ψ_range Equiv.Perm.OnCycleFactors.hφ_ker_eq_θ_range
 
+lemma θ_range_eq : MonoidHom.range (θ g) =
+    Subgroup.map (ConjAct.toConjAct.symm.toMonoidHom.comp
+      (Subgroup.subtype (MulAction.stabilizer (ConjAct (Perm α)) g))) (MonoidHom.ker (φ g)) := by
+  ext z
+  rw [← hφ_ker_eq_θ_range]
+  rfl
+
 theorem hψ_range_card' (g : Equiv.Perm α) :
-    Fintype.card (Set.range (θ g)) = Fintype.card (φ g).ker := by
-  classical
-  let u : (Set.range (θ g)) → (φ g).ker := fun ⟨z, hz⟩ => by
-    rw [← hφ_ker_eq_θ_range] at hz
-    suffices : ConjAct.toConjAct z ∈ MulAction.stabilizer (ConjAct (Equiv.Perm α)) g
-    use ⟨ConjAct.toConjAct z, this⟩
-    have hK : Function.Injective (MulAction.stabilizer (ConjAct (Equiv.Perm α)) g).subtype
-    apply Subgroup.subtype_injective
-    rw [← Subgroup.mem_map_iff_mem hK]
-    simp only [Subgroup.coeSubtype, Subgroup.coe_mk]
-    exact hz
-    · obtain ⟨u, ⟨_, hu'⟩⟩ := hz
-      rw [← hu']
-      exact u.prop
-  suffices : Function.Bijective u
-  exact Fintype.card_of_bijective this
-  constructor
-  · -- injectivity
-    rintro ⟨z, hz⟩ ⟨w, hw⟩ hzw
-    simpa only [Subtype.mk_eq_mk, MulEquiv.apply_eq_iff_eq] using hzw
-  · -- surjectivity
-    rintro ⟨w, hw⟩
-    use! ConjAct.ofConjAct ((MulAction.stabilizer (ConjAct (Equiv.Perm α)) g).subtype w)
-    rw [← hφ_ker_eq_θ_range]
-    simp only [Subgroup.coeSubtype, ConjAct.toConjAct_ofConjAct, Subgroup.mem_map,
-      SetLike.coe_eq_coe, exists_prop, exists_eq_right, hw]
-    simp only [Subgroup.coeSubtype, ConjAct.toConjAct_ofConjAct, Subtype.mk_eq_mk, SetLike.eta]
-#align on_cycle_factors.hψ_range_card' Equiv.Perm.OnCycleFactors.hψ_range_card'
+    Fintype.card (MonoidHom.range (θ g)) = Fintype.card (φ g).ker := by
+  change Fintype.card (MonoidHom.range (θ g) : Set (Perm α)) = _
+  rw [← Nat.card_eq_fintype_card, Set.Nat.card_coe_set_eq, θ_range_eq, ← Subgroup.map_map]
+  rw [Subgroup.coe_map, Set.ncard_image_of_injective _ (by apply Equiv.injective)]
+  rw [Subgroup.coe_map, Set.ncard_image_of_injective _ (Subgroup.subtype_injective _)]
+  rw [← Set.Nat.card_coe_set_eq, Nat.card_eq_fintype_card]
+  rfl
+ #align on_cycle_factors.hψ_range_card' Equiv.Perm.OnCycleFactors.hψ_range_card'
 
 theorem _root_.Equiv.Perm.card_fixedBy (g : Equiv.Perm α) :
     Fintype.card (MulAction.fixedBy α g) =
@@ -1671,8 +1716,10 @@ theorem _root_.Fintype.card_pfun (p : Prop) [Decidable p] (β : p → Type _) [�
 #align on_cycle_factors.fintype.card_pfun Fintype.card_pfun
 
 theorem hψ_range_card (g : Equiv.Perm α) :
-    Fintype.card (Set.range (θ g)) =
+    Fintype.card (θ g).range =
       (Fintype.card α - g.cycleType.sum).factorial * g.cycleType.prod := by
+  change Fintype.card ((θ g).range : Set (Equiv.Perm α)) = _
+  simp only [MonoidHom.coe_range]
   rw [Set.card_range_of_injective (hθ_injective g)]
   rw [Fintype.card_prod]
   rw [Fintype.card_perm]

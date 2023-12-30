@@ -12,6 +12,7 @@ import Mathlib.Data.Set.Card
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Fintype.Perm
 
+import Mathlib.Algebra.BigOperators.Finsupp
 
 /-!  Subgroup of `Equiv.Perm α` preserving a function
 
@@ -31,6 +32,9 @@ Let `α` and `ι` by types and let `p : α → ι`
   the cardinality of the type of permutations preserving `p` :
   `Fintype.card {f : Perm α // p ∘ f = p} =
     ∏ i, (Fintype.card {a // p a = i}).factorial `
+
+* `DomMulAct.stabilizer_card' p` is a variant that holds without the finiteness
+  assumption on `ι`
 
 -/
 
@@ -89,11 +93,15 @@ lemma stabilizerMulEquiv_apply (g : (stabilizer (Perm α)ᵈᵐᵃ p)ᵐᵒᵖ) 
 
 section Fintype
 
-variable [Fintype α] [Fintype ι] [DecidableEq α] [DecidableEq ι]
+variable [Fintype α] [DecidableEq α]
 
 open BigOperators
 
 variable (p)
+
+section
+
+variable [Fintype ι] [DecidableEq ι]
 
 /-- The cardinality of the type of permutations preserving a function -/
 theorem stabilizer_card:
@@ -108,6 +116,43 @@ theorem stabilizer_card:
   rw [Nat.card_eq_fintype_card, Fintype.card_perm, Nat.card_eq_fintype_card.symm]
   · intro g
     rw [DomMulAct.mem_stabilizer_iff, symm_apply_apply]
+
+end
+
+variable [DecidableEq ι]
+
+/-- The cardinality of the type of permutations preserving a function
+  (without the finiteness assumption on target)-/
+theorem stabilizer_card':
+    Fintype.card {f : Perm α // p ∘ f = p} =
+      ∏ i in Finset.univ.image p, (Fintype.card ({a // p a = i})).factorial := by
+  -- rewriting via Nat.card because Fintype instance is not found
+  let π : α → Finset.univ.image p := Set.codRestrict p (Finset.univ.image p) (fun a => by simp)
+  suffices : Fintype.card { f : Perm α // p ∘ f = p } = Fintype.card { f : Perm α // π ∘ f = π }
+  rw [this, stabilizer_card]
+  apply Finset.prod_bij (fun f _ => f.val)
+  · exact fun f _ => Finset.coe_mem f
+  · exact fun f _ g _ =>  SetCoe.ext
+  · exact fun f hf => by
+      rw [Finset.mem_image] at hf
+      obtain ⟨a, _, rfl⟩ := hf
+      use ⟨p a, by simp only [Finset.mem_image, Finset.mem_univ, true_and, exists_apply_eq_apply]⟩
+      simp only [Finset.univ_eq_attach, Finset.mem_attach, exists_const]
+  · intro i _
+    apply congr_arg
+    apply Fintype.card_congr
+    apply Equiv.subtypeEquiv (Equiv.refl α)
+    intro a
+    rw [refl_apply, ← Subtype.coe_inj]
+    simp only [Set.val_codRestrict_apply]
+  · apply Fintype.card_congr
+    apply Equiv.subtypeEquiv (Equiv.refl _)
+    intro f
+    simp only [Function.funext_iff]
+    apply forall_congr'
+    intro a
+    rw [← Subtype.coe_inj]
+    simp only [Function.comp_apply, refl_apply, Set.val_codRestrict_apply]
 
 end Fintype
 
