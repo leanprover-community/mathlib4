@@ -361,10 +361,14 @@ theorem FiniteDimensional.finrank_zero_of_subsingleton [Subsingleton M] : finran
 lemma LinearIndependent.finrank_eq_zero_of_infinite {ι} [Nontrivial R] [Infinite ι] {v : ι → M}
     (hv : LinearIndependent R v) : finrank R M = 0 := toNat_eq_zero.mpr <| .inr hv.aleph0_le_rank
 
+variable (R M)
+
 @[simp]
 theorem finrank_bot : finrank R (⊥ : Submodule R M) = 0 :=
   finrank_eq_of_rank_eq (rank_bot _ _)
 #align finrank_bot finrank_bot
+
+variable {R M}
 
 section StrongRankCondition
 
