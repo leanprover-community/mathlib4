@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 
-import Mathlib.AlgebraicTopology.Nerve
+import Mathlib.AlgebraicTopology.ForMathlib
+import Mathlib.AlgebraicTopology.Quasicategory
 
 /-!
 # Kan complexes and quasicategories
@@ -13,81 +14,9 @@ import Mathlib.AlgebraicTopology.Nerve
 
 universe v u
 
-open CategoryTheory CategoryTheory.Limits Opposite
-
-open Simplicial
-
-lemma Finset.card_le_three {α : Type*} [DecidableEq α] (a b c : α) :
-  Finset.card {a, b, c} ≤ 3 := by
-  apply (card_insert_le _ _).trans; apply Nat.succ_le_succ
-  apply (card_insert_le _ _).trans; apply Nat.succ_le_succ
-  simp only [card_singleton, le_refl]
-
--- TODO: move
-instance fin_zero_le_one (n : ℕ) : ZeroLEOneClass (Fin (n+2)) where
-  zero_le_one := by rw [← Fin.val_fin_le]; exact zero_le'
-
-namespace CategoryTheory
-
-namespace Functor
-
-variable {C : Type*} [Category C] {D : Type*} [Category D]
-
-lemma map_eqToHom (F : C ⥤ D) (X Y : C) (h : X = Y) :
-    F.map (eqToHom h) = eqToHom (congrArg F.obj h) := by
-  subst h
-  simp only [eqToHom_refl, map_id]
-
-end Functor
-
-namespace ComposableArrows
-
-variable {C : Type*} [inst : Category C] {n : ℕ}
-
-lemma map'_def (F : ComposableArrows C n)
-    (i j : ℕ) (hij : i ≤ j := by linarith) (hjn : j ≤ n := by linarith) :
-    F.map' i j = F.map (homOfLE (Fin.mk_le_mk.mpr hij)) := rfl
-
-end ComposableArrows
-
-end CategoryTheory
+open CategoryTheory Simplicial Opposite
 
 namespace SSet
-
-/-- A *Kan complex* is a simplicial set `S` if it satisfies the following horn-filling condition:
-for every `n : ℕ` and `0 ≤ i ≤ n`,
-every map of simplicial sets `σ₀ : Λ[n, i] → S` can be extended to a map `σ : Δ[n] → S`. -/
-class KanComplex (S : SSet) : Prop :=
-  (hornFilling : ∀ ⦃n : ℕ⦄ ⦃i : Fin (n+1)⦄ (σ₀ : Λ[n, i] ⟶ S),
-    ∃ σ : Δ[n] ⟶ S, σ₀ = hornInclusion n i ≫ σ)
-
-/-- A *quasicategory* is a simplicial set `S` if it satisfies the following horn-filling condition:
-for every `n : ℕ` and `0 < i < n`,
-every map of simplicial sets `σ₀ : Λ[n, i] → S` can be extended to a map `σ : Δ[n] → S`.
-
-[Kerodon, 003A] -/
-class Quasicategory (S : SSet) : Prop :=
-  (hornFilling' : ∀ ⦃n : ℕ⦄ ⦃i : Fin (n+3)⦄ (σ₀ : Λ[n+2, i] ⟶ S)
-     (_h0 : 0 < i) (_hn : i < Fin.last (n+2)),
-       ∃ σ : Δ[n+2] ⟶ S, σ₀ = hornInclusion (n+2) i ≫ σ)
-
-lemma Quasicategory.hornFilling {S : SSet} [Quasicategory S] ⦃n : ℕ⦄ ⦃i : Fin (n+1)⦄
-    (h0 : 0 < i) (hn : i < Fin.last n)
-    (σ₀ : Λ[n, i] ⟶ S) : ∃ σ : Δ[n] ⟶ S, σ₀ = hornInclusion n i ≫ σ := by
-  cases n using Nat.casesAuxOn with
-  | zero => simp [Fin.lt_iff_val_lt_val] at hn
-  | succ n =>
-  cases n using Nat.casesAuxOn with
-  | zero =>
-    simp only [Fin.lt_iff_val_lt_val, Fin.val_zero, Fin.val_last, zero_add, Nat.lt_one_iff] at h0 hn
-    simp [hn] at h0
-  | succ n => exact Quasicategory.hornFilling' σ₀ h0 hn
-
-/-- Every Kan complex is a quasicategory.
-
-[Kerodon, 003C] -/
-instance (S : SSet) [KanComplex S] : Quasicategory S where
-  hornFilling' _ _ σ₀ _ _ := KanComplex.hornFilling σ₀
 
 def horn.face {n : ℕ} (i j : Fin (n+2)) (h : j ≠ i) : Λ[n+1, i] _[n] := by
   refine ⟨SimplexCategory.δ j, ?_⟩
