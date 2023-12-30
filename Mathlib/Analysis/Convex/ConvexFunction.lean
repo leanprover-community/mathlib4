@@ -31,7 +31,7 @@ section FirstOrderCondition
 
 open InnerProductSpace
 
-variable {f : E → ℝ} {f' : E → (E →L[ℝ] ℝ)} {x y x': E}
+variable {f : E → ℝ} {f' : E → (E →L[ℝ] ℝ)} {x y x': E} {s : Set E}
 
 private lemma point_proportion {a b: ℝ} (_ : 0 ≤ a) (_ : 0 ≤ b) (sumab: a + b = 1)
   (hpoint : x' = a • x + b • y) :  x - x' =  b • (x - y) := by
@@ -43,7 +43,7 @@ private lemma point_proportion {a b: ℝ} (_ : 0 ≤ a) (_ : 0 ≤ b) (sumab: a 
       _ = b • x - b • y:= by rw [← sumab]; ring_nf
       _ = b • (x - y):= Eq.symm (smul_sub b x y)
 
-theorem first_order_condition {s : Set E}
+theorem first_order_condition
     (h : HasFDerivAt f (f' x) x) (hf : ConvexOn ℝ s f) (xs : x ∈ s):
     ∀ (y : E), y ∈ s → f x + f' x (y - x) ≤ f y := by
   have h₁ : ∀ ε > (0 : ℝ), ∃ δ > (0 : ℝ), ∀ (x' : E), ‖x - x'‖ ≤ δ
@@ -219,13 +219,11 @@ theorem first_order_condition_inverse
   rw [H] at H3
   apply H3
 
-theorem first_order_condition_iff {s : Set E} (h₁: Convex ℝ s)
-    (h : ∀ x ∈ s, HasFDerivAt f (f' x) x) :
+theorem first_order_condition_iff (h₁: Convex ℝ s) (h : ∀ x ∈ s, HasFDerivAt f (f' x) x) :
     ConvexOn ℝ s f ↔ ∀ (x: E), x ∈ s → ∀ (y: E), y ∈ s → f x + f' x (y - x) ≤ f y:=
   ⟨ fun h₂ x xs ↦ first_order_condition (h x xs) h₂ xs, first_order_condition_inverse h h₁ ⟩
 
-theorem convex_monotone_gradient {s : Set E} (hfun: ConvexOn ℝ s f)
-    (h : ∀ x ∈ s , HasFDerivAt f (f' x) x) :
+theorem convex_monotone_gradient (hfun: ConvexOn ℝ s f) (h : ∀ x ∈ s , HasFDerivAt f (f' x) x) :
     ∀ x ∈ s, ∀ y ∈ s,  (f' x - f' y) (x - y) ≥ 0 := by
   intro x hx y hy
   have h₁ : f x + f' x (y - x) ≤ f y := first_order_condition (h x hx) hfun hx y hy
