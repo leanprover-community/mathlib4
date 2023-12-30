@@ -619,7 +619,12 @@ theorem filler_spec_succ_aux
         eqToHom h6 =
     nerve.arrow (σ₀.app (op [1]) (horn.edge' (horn.face i j hj) k hk)) := by
   let F := σ₀.app (op [2]) (horn.triangle i h₀ hₙ k h2)
-  have := F.map'_comp 0 1 2 (by omega) (by omega) (by dsimp; omega)
+  have H := F.map'_comp 0 1 2 (by omega) (by omega) (by dsimp; omega)
+  dsimp only at H
+  have := nerve.horn_app_map' n i σ₀ _ (horn.triangle i h₀ hₙ k h2) 0 zero_lt_two
+  rw [this] at H; clear this
+  have := nerve.horn_app_map' n i σ₀ _ (horn.triangle i h₀ hₙ k h2) 1 one_lt_two
+  rw [this] at H; clear this
   sorry
 
 #exit
