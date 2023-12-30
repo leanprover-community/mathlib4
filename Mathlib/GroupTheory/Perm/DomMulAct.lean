@@ -17,9 +17,8 @@ import Mathlib.Data.Fintype.Perm
 
 Let `α` and `ι` by types and let `p : α → ι`
 
-* `DomMulAct.mem_stabilizer_iff` proves that the stabilizer
-  of `Equiv.Perm α` of `p : α → ι` is the subgroup of `g : Equiv.Perm α`
-  such that `p ∘ g = p`.
+* `DomMulAct.mem_stabilizer_iff` proves that the stabilizer of `p : α → ι`
+  in `(Equiv.Perm α)ᵈᵐᵃ` is the set of `g : (Equiv.Perm α)ᵈᵐᵃ` such that `p ∘ (mk.symm g) = p`.
 
   The natural equivalence from `stabilizer (Perm α)ᵈᵐᵃ p` to `{ g : Perm α // p ∘ g = p }`
   can be obtained as `subtypeEquiv mk.symm (fun _ => mem_stabilizer_iff)`
