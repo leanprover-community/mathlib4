@@ -105,11 +105,8 @@ theorem separableClosure.eq_comap_of_algHom (i : E →ₐ[F] K) :
 /-- If `i` is an `F`-algebra homomorphism from `E` to `K`, then `separableClosure F K` contains
 the image of `separableClosure F E` under the map `i`. -/
 theorem separableClosure.map_le_of_algHom (i : E →ₐ[F] K) :
-    (separableClosure F E).map i ≤ separableClosure F K := fun x hx ↦ by
-  change x ∈ (_ : Set K) at hx
-  rw [coe_map, Set.mem_image] at hx
-  obtain ⟨y, hy, rfl⟩ := hx
-  exact (map_mem_separableClosure_iff F E K i).2 hy
+    (separableClosure F E).map i ≤ separableClosure F K :=
+  map_le_iff_le_comap.2 (eq_comap_of_algHom F E K i).le
 
 /-- If `K / E / F` is a field extension tower, such that `K / E` has no non-trivial separable
 subextensions (when `K / E` is algebraic, this means that it is purely inseparable),
@@ -177,11 +174,10 @@ theorem separableClosure.separableClosure_eq_bot :
 
 /-- The normal closure of the (relative) separable closure of `E / F` is equal to itself. -/
 theorem separableClosure.normalClosure_eq_self :
-    normalClosure F (separableClosure F E) E = separableClosure F E := by
-  apply le_antisymm (normalClosure_le_iff.2 fun i ↦ ?_) (le_normalClosure _)
-  let i' : (separableClosure F E) ≃ₐ[F] i.fieldRange := AlgEquiv.ofInjectiveField i
-  haveI := i'.isSeparable
-  exact le_separableClosure F E _
+    normalClosure F (separableClosure F E) E = separableClosure F E :=
+  le_antisymm (normalClosure_le_iff.2 fun i ↦
+    haveI : IsSeparable F i.fieldRange := (AlgEquiv.ofInjectiveField i).isSeparable
+    le_separableClosure F E _) (le_normalClosure _)
 
 /-- If `E` is normal over `F`, then the (relative) separable closure of `E / F` is also normal
 over `F`. -/
@@ -262,15 +258,15 @@ end separableClosure
 namespace Field
 
 /-- The (infinite) separable degree for a general field extension `E / F` is defined
-to be the degree of `(separableClosure F E) / F`. -/
+to be the degree of `separableClosure F E / F`. -/
 def sepDegree := Module.rank F (separableClosure F E)
 
 /-- The (infinite) inseparable degree for a general field extension `E / F` is defined
-to be the degree of `E / (separableClosure F E)`. -/
+to be the degree of `E / separableClosure F E`. -/
 def insepDegree := Module.rank (separableClosure F E) E
 
 /-- The (finite) inseparable degree for a general field extension `E / F` is defined
-to be the degree of `E / (separableClosure F E)` as a natural number. It is defined to be zero
+to be the degree of `E / separableClosure F E` as a natural number. It is defined to be zero
 if such field extension is infinite. -/
 def finInsepDegree : ℕ := Cardinal.toNat (insepDegree F E)
 
@@ -308,13 +304,11 @@ theorem finInsepDegree_eq_of_equiv (i : E ≃ₐ[F] K) :
 
 @[simp]
 theorem sepDegree_self : sepDegree F F = 1 := by
-  have : separableClosure F F = ⊥ := toSubalgebra_injective <| Subsingleton.elim _ _
-  rw [sepDegree, this, IntermediateField.rank_bot]
+  rw [sepDegree, Subsingleton.elim (separableClosure F F) ⊥, IntermediateField.rank_bot]
 
 @[simp]
 theorem insepDegree_self : insepDegree F F = 1 := by
-  have : separableClosure F F = ⊤ := toSubalgebra_injective <| Subsingleton.elim _ _
-  rw [insepDegree, this, IntermediateField.rank_top]
+  rw [insepDegree, Subsingleton.elim (separableClosure F F) ⊤, IntermediateField.rank_top]
 
 @[simp]
 theorem finInsepDegree_self : finInsepDegree F F = 1 := by
