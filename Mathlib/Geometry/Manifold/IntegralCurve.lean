@@ -549,19 +549,26 @@ theorem isIntegralCurve_Ioo_eq_of_contMDiff_boundaryless [I.Boundaryless]
   isIntegralCurve_eq_of_contMDiff (fun _ => I.isInteriorPoint) hv hγ hγ' h
 
 /-- If a global integral curve is not injective, then it is periodic. -/
-theorem periodic_of_isIntegralCurve_not_injective [I.Boundaryless] (hγ : IsIntegralCurve γ v)
-    (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M)))
-    (h : ¬Function.Injective γ) : ∃ T > 0, Function.Periodic γ T := by
-  rw [Function.Injective] at h
-  push_neg at h
-  obtain ⟨t₁, t₂, heq, hne⟩ := h
-  refine ⟨|t₁ - t₂|, ?_, ?_⟩
-  · rw [gt_iff_lt, abs_pos, sub_ne_zero]
-    exact hne
-  · apply congrFun
-    by_cases hle : t₁ - t₂ < 0
-    · apply isIntegralCurve_Ioo_eq_of_contMDiff_boundaryless (t₀ := t₁) hv (hγ.comp_add _) hγ
-      simp [abs_of_neg hle, heq]
-    · apply isIntegralCurve_Ioo_eq_of_contMDiff_boundaryless (t₀ := t₂) hv (hγ.comp_add _) hγ
-      rw [not_lt] at hle
-      simp [abs_of_nonneg hle, heq]
+theorem periodic_iff_isIntegralCurve_not_injective [I.Boundaryless] (hγ : IsIntegralCurve γ v)
+    (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M))) :
+    (∃ T > 0, Function.Periodic γ T) ↔ ¬Function.Injective γ := by
+  constructor
+  · intro h
+    rw [Function.Injective]
+    push_neg
+    obtain ⟨T, h0, hT⟩ := h
+    exact ⟨0, T, by rw [← hT 0, zero_add], ne_of_lt h0⟩
+  · intro h
+    rw [Function.Injective] at h
+    push_neg at h
+    obtain ⟨t₁, t₂, heq, hne⟩ := h
+    refine ⟨|t₁ - t₂|, ?_, ?_⟩
+    · rw [gt_iff_lt, abs_pos, sub_ne_zero]
+      exact hne
+    · apply congrFun
+      by_cases hle : t₁ - t₂ < 0
+      · apply isIntegralCurve_Ioo_eq_of_contMDiff_boundaryless (t₀ := t₁) hv (hγ.comp_add _) hγ
+        simp [abs_of_neg hle, heq]
+      · apply isIntegralCurve_Ioo_eq_of_contMDiff_boundaryless (t₀ := t₂) hv (hγ.comp_add _) hγ
+        rw [not_lt] at hle
+        simp [abs_of_nonneg hle, heq]
