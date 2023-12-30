@@ -3550,6 +3550,14 @@ def subgroupCongr (h : H = K) : H ≃* K :=
 #align mul_equiv.subgroup_congr MulEquiv.subgroupCongr
 #align add_equiv.add_subgroup_congr AddEquiv.addSubgroupCongr
 
+@[to_additive (attr := simp)]
+lemma subgroupCongr_apply (h : H = K) (x) :
+    (MulEquiv.subgroupCongr h x : G) = x := rfl
+
+@[to_additive (attr := simp)]
+lemma subgroupCongr_symm_apply (h : H = K) (x) :
+    ((MulEquiv.subgroupCongr h).symm x : G) = x := rfl
+
 /-- A subgroup is isomorphic to its image under an isomorphism. If you only have an injective map,
 use `Subgroup.equiv_map_of_injective`. -/
 @[to_additive

@@ -113,7 +113,7 @@ theorem roots_cyclotomic_nodup [NeZero (n : R)] : (cyclotomic n R).roots.Nodup :
   rw [mem_roots <| cyclotomic_ne_zero n R, isRoot_cyclotomic_iff] at hζ
   refine' Multiset.nodup_of_le
     (roots.le_of_dvd (X_pow_sub_C_ne_zero (NeZero.pos_of_neZero_natCast R) 1) <|
-      cyclotomic.dvd_X_pow_sub_one n R) hζ.nthRoots_nodup
+      cyclotomic.dvd_X_pow_sub_one n R) hζ.nthRoots_one_nodup
 #align polynomial.roots_cyclotomic_nodup Polynomial.roots_cyclotomic_nodup
 
 theorem cyclotomic.roots_to_finset_eq_primitiveRoots [NeZero (n : R)] :
