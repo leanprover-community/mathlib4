@@ -48,7 +48,7 @@ theorem first_order_condition
     ∀ (y : E), y ∈ s → f x + f' x (y - x) ≤ f y := by
   have h₁ : ∀ ε > (0 : ℝ), ∃ δ > (0 : ℝ), ∀ (x' : E), ‖x - x'‖ ≤ δ
        → ‖f x' - f x - (f' x) (x' - x)‖ ≤ ε * ‖x - x'‖:= by
-    rw [HasFDerivAt, HasFDerivAtFilter, Asymptotics.isLittleO_iff] at h
+    rw [HasFDerivAt, hasFDerivAtFilter_iff_isLittleO, Asymptotics.isLittleO_iff] at h
     intro ε epos
     specialize h epos
     rw [Filter.Eventually] at h
@@ -348,7 +348,7 @@ theorem monotone_gradient_convex' (h₁: Convex ℝ s) (hf : ∀ x ∈ s, HasGra
       rw [e4]
       apply convex_iff_forall_pos.mp h₁ xs ys (by linarith) (by linarith) (by norm_num)
     rw [add_sub_cancel', inner_smul_right] at hh
-    exact (zero_le_mul_left ht1).mp hh
+    exact (mul_nonneg_iff_of_pos_left ht1).mp hh
   have h2 : ∃ c ∈ Set.Ioo 0 1, g' c = (g 1 - g 0) / (1 - 0) := by
     apply exists_hasDerivAt_eq_slope
     · linarith
