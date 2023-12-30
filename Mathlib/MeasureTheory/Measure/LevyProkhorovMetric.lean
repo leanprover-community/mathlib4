@@ -121,56 +121,39 @@ lemma levyProkhorovEDist_triangle (μ ν κ : Measure Ω) :
   · simp [LPνκ_finite]
   apply levyProkhorovEDist_le_of_forall_add_pos_le
   intro ε B ε_pos ε_lt_top B_mble
-  simp only [ne_eq, FiniteMeasure.ennreal_coeFn_eq_coeFn_toMeasure] at *
-  have half_ε_pos : 0 < ε / 2 := by
-    simp only [ENNReal.div_pos_iff, ne_eq, ε_pos.ne.symm, not_false_eq_true, two_ne_top, and_self]
+  have half_ε_pos : 0 < ε / 2 := ENNReal.div_pos ε_pos.ne' two_ne_top
+  have half_ε_lt_top : ε / 2 < ∞ := ENNReal.div_lt_top ε_lt_top.ne two_ne_zero
   let r := levyProkhorovEDist μ ν + ε / 2
   let s := levyProkhorovEDist ν κ + ε / 2
-  have lt_r : levyProkhorovEDist μ ν < r := lt_add_right LPμν_finite half_ε_pos.ne.symm
-  have lt_s : levyProkhorovEDist ν κ < s := lt_add_right LPνκ_finite half_ε_pos.ne.symm
+  have lt_r : levyProkhorovEDist μ ν < r := lt_add_right LPμν_finite half_ε_pos.ne'
+  have lt_s : levyProkhorovEDist ν κ < s := lt_add_right LPνκ_finite half_ε_pos.ne'
+  have hs_add_r : s + r = levyProkhorovEDist μ ν + levyProkhorovEDist ν κ + ε := by
+    simp_rw [add_assoc, add_comm (ε / 2), add_assoc, ENNReal.add_halves, ← add_assoc,
+      add_comm (levyProkhorovEDist μ ν)]
+  have hs_add_r' : s.toReal + r.toReal
+      = (levyProkhorovEDist μ ν + levyProkhorovEDist ν κ + ε).toReal := by
+    rw [← hs_add_r, ← ENNReal.toReal_add]
+    · exact ENNReal.add_ne_top.mpr ⟨LPνκ_finite, half_ε_lt_top.ne⟩
+    · exact ENNReal.add_ne_top.mpr ⟨LPμν_finite, half_ε_lt_top.ne⟩
+  rw [← hs_add_r', add_assoc, ← hs_add_r, add_assoc _ _ ε, ← hs_add_r]
   refine ⟨?_, ?_⟩
-  · have obs₁ := left_measure_le_of_levyProkhorovEDist_lt lt_r B_mble
-    have mble_B₁ : MeasurableSet (thickening (ENNReal.toReal r) B) :=
-      isOpen_thickening.measurableSet
-    have obs₂ := left_measure_le_of_levyProkhorovEDist_lt lt_s mble_B₁
-    simp only [ENNReal.div_pos_iff, ne_eq, and_true, gt_iff_lt,
-               FiniteMeasure.ennreal_coeFn_eq_coeFn_toMeasure, ge_iff_le] at *
-    apply obs₁.trans
-    apply (add_le_add_right obs₂ _).trans
-    simp_rw [add_assoc, add_comm (ε / 2), add_assoc, ENNReal.add_halves]
-    simp_rw [← add_assoc (levyProkhorovEDist _ _),
-             add_comm (levyProkhorovEDist μ ν) (levyProkhorovEDist ν κ)]
-    congr
-    apply add_le_add_right (measure_mono _)
-    apply (thickening_thickening_subset _ _ _).trans (thickening_mono _ _)
-    rw [← ENNReal.toReal_add]
-    · simp_rw [add_assoc, add_comm (ε / 2), add_assoc, ENNReal.add_halves, ← add_assoc]
-      exact Eq.le rfl
-    · simp only [add_ne_top]
-      refine ⟨ne_top_of_lt lt_s, (ENNReal.div_lt_top ε_lt_top.ne two_ne_zero).ne⟩
-    · simp only [add_ne_top]
-      refine ⟨ne_top_of_lt lt_r, (ENNReal.div_lt_top ε_lt_top.ne two_ne_zero).ne⟩
-  · have obs₁ := right_measure_le_of_levyProkhorovEDist_lt lt_s B_mble
-    have mble_B₁ : MeasurableSet (thickening (ENNReal.toReal s) B) :=
-      isOpen_thickening.measurableSet
-    have obs₂ := right_measure_le_of_levyProkhorovEDist_lt lt_r mble_B₁
-    simp only [ENNReal.div_pos_iff, ne_eq, and_true, gt_iff_lt,
-      FiniteMeasure.ennreal_coeFn_eq_coeFn_toMeasure, ge_iff_le] at *
-    apply obs₁.trans
-    apply (add_le_add_right obs₂ _).trans
-    simp_rw [add_assoc, add_comm (ε / 2), add_assoc, ENNReal.add_halves]
-    simp_rw [← add_assoc (levyProkhorovEDist _ _),
-             add_comm (levyProkhorovEDist μ ν) (levyProkhorovEDist ν κ)]
-    congr
-    apply add_le_add_right (measure_mono _)
-    apply (thickening_thickening_subset _ _ _).trans (thickening_mono _ _)
-    rw [← ENNReal.toReal_add]
-    · simp_rw [add_assoc, add_comm (ε / 2), add_assoc, ENNReal.add_halves, ← add_assoc]
-      rw [add_comm (levyProkhorovEDist _ _)]
-    · simp only [add_ne_top]
-      refine ⟨ne_top_of_lt lt_r, (ENNReal.div_lt_top ε_lt_top.ne two_ne_zero).ne⟩
-    · simp only [add_ne_top]
-      refine ⟨ne_top_of_lt lt_s, (ENNReal.div_lt_top ε_lt_top.ne two_ne_zero).ne⟩
+  · calc μ B ≤ ν (thickening r.toReal B) + r :=
+      left_measure_le_of_levyProkhorovEDist_lt lt_r B_mble
+    _ ≤ κ (thickening s.toReal (thickening r.toReal B)) + s + r :=
+      add_le_add_right
+        (left_measure_le_of_levyProkhorovEDist_lt lt_s isOpen_thickening.measurableSet) _
+    _ = κ (thickening s.toReal (thickening r.toReal B)) + (s + r) := add_assoc _ _ _
+    _ ≤ κ (thickening (s.toReal + r.toReal) B) + (s + r) :=
+      add_le_add_right (measure_mono (thickening_thickening_subset _ _ _)) _
+  · calc κ B ≤ ν (thickening s.toReal B) + s :=
+      right_measure_le_of_levyProkhorovEDist_lt lt_s B_mble
+    _ ≤ μ (thickening r.toReal (thickening s.toReal B)) + r + s :=
+      add_le_add_right
+        (right_measure_le_of_levyProkhorovEDist_lt lt_r isOpen_thickening.measurableSet) s
+    _ = μ (thickening r.toReal (thickening s.toReal B)) + (s + r) := by rw [add_assoc, add_comm r]
+    _ ≤ μ (thickening (r.toReal + s.toReal) B) + (s + r) :=
+      add_le_add_right (measure_mono (thickening_thickening_subset _ _ _)) _
+    _ = μ (thickening (s.toReal + r.toReal) B) + (s + r) := by rw [add_comm r.toReal]
 
 /-- The Lévy-Prokhorov distance `levyProkhorovEDist` makes `FiniteMeasure X` a pseudoemetric
 space. -/
