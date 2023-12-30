@@ -29,8 +29,8 @@ Let `α` and `ι` by types and let `p : α → ι`
 
 * Under `Fintype α` and `Fintype ι`, `DomMulAct.stabilizer_card p` computes
   the cardinality of the type of permutations preserving `p` :
-  `Nat.card {f : Perm α // p ∘ f = p} =
-    Finset.univ.prod fun i => (Nat.card {a // p a = i}).factorial `
+  `Fintype.card {f : Perm α // p ∘ f = p} =
+    ∏ i, (Fintype.card {a // p a = i}).factorial `
 
 -/
 
@@ -90,12 +90,15 @@ lemma stabilizerMulEquiv_apply (g : (stabilizer (Perm α)ᵈᵐᵃ p)ᵐᵒᵖ) 
 section Fintype
 
 variable [Fintype α] [Fintype ι] [DecidableEq α] [DecidableEq ι]
+open BigOperators
 
 /-- The cardinality of the type of permutations preserving a function -/
 theorem stabilizer_card:
-    Nat.card {f : Perm α // p ∘ f = p} =
-      Finset.univ.prod fun i => (Nat.card {a // p a = i}).factorial := by
-  rw [Nat.card_congr (subtypeEquiv mk ?_), Nat.card_congr MulOpposite.opEquiv,
+    Fintype.card {f : Perm α // p ∘ f = p} =
+      ∏ i , (Fintype.card ({a // p a = i})).factorial := by
+  -- rewriting via Nat.card because Fintype instance is not found
+  rw [← Nat.card_eq_fintype_card, Nat.card_congr (subtypeEquiv mk ?_),
+    Nat.card_congr MulOpposite.opEquiv,
     Nat.card_congr (DomMulAct.stabilizerMulEquiv p).toEquiv, Nat.card_pi]
   apply Finset.prod_congr rfl
   intro i _
