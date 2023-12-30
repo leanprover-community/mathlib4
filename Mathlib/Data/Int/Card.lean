@@ -16,59 +16,35 @@ Pass
 -/
 
 
-open Finset
-
-def remb {r : ℤ} (hr : 0 < r) : ℤ ↪ ℤ where
-  toFun x := x * r
-  inj' := mul_left_injective₀ hr.ne.symm
-
-theorem Ico_map_eq_Ico_filter (a b : ℤ) {r : ℤ} (hr : 0 < r) :
-    (Ico ⌈a / (r : ℚ)⌉ ⌈b / (r : ℚ)⌉).map (remb hr) = (Ico a b).filter (r ∣ ·) := by
-  ext x
-  constructor
-  · simp only [mem_map, mem_Ico, mem_filter, forall_exists_index, and_imp]
-    intro d lb ub p
-    rw [remb, Function.Embedding.coeFn_mk] at p
-    qify at lb hr
-    replace lb := (div_le_iff hr).mp ((Int.le_ceil _).trans lb)
-    norm_cast at lb
-    rw [p] at lb
-    refine' ⟨⟨lb, _⟩, Dvd.intro_left d p⟩
-    contrapose! ub
-    rw [← p] at ub
-    qify at ub
-    exact Int.ceil_le.mpr ((div_le_iff hr).mpr ub)
-  · simp only [mem_filter, mem_Ico, mem_map, and_imp]
-    intro lb ub v
-    rw [dvd_def] at v
-    obtain ⟨d, p⟩ := v
-    use d
-    rw [mul_comm] at p
-    rw [remb, Function.Embedding.coeFn_mk]
-    subst p; qify at lb hr
-    refine' ⟨⟨Int.ceil_le.mpr ((div_le_iff hr).mpr lb), _⟩, rfl⟩
-    contrapose! ub
-    exact_mod_cast (div_le_iff hr).mp (Int.ceil_le.mp ub)
+open Finset Int
 
 /-- There are `⌈b / r⌉ - ⌈a / r⌉` multiples of `r` in `[a, b)`, if `a ≤ b`. -/
 theorem filter_Ico_dvd_card (a b : ℤ) {r : ℤ} (hr : 0 < r) :
     ((Ico a b).filter (r ∣ ·)).card = max (⌈b / (r : ℚ)⌉ - ⌈a / (r : ℚ)⌉) 0 := by
-  rw [← Ico_map_eq_Ico_filter a b hr, card_map, Int.card_Ico, Int.toNat_eq_max]
+  suffices : ((Ico a b).filter (r ∣ ·)).card = (Ico ⌈(a : ℚ) / r⌉ ⌈(b : ℚ) / r⌉).card
+  · rw [this, card_Ico, toNat_eq_max]
+  have hr' : (0 : ℚ) < r := by positivity
+  refine (card_congr (fun x _ => x * r) ?_ (fun _ _ _ _ => mul_right_cancel₀ hr.ne') ?_).symm
+  · simp only [mem_Ico, and_imp, mem_filter, dvd_mul_left, and_true, ceil_le, lt_ceil, div_le_iff,
+      lt_div_iff, hr', ← cast_mul, cast_le, cast_lt]
+    intro c h₁ h₂
+    exact ⟨h₁, h₂⟩
+  · simp only [mem_filter, mem_Ico, ceil_le, lt_ceil, div_le_iff, lt_div_iff, hr']
+    intro c ⟨⟨hac, hcb⟩, h⟩
+    exact ⟨c / r, by simp [← cast_mul, Int.ediv_mul_cancel h, hac, hcb]⟩
 
 def icoFilterModEqEquivIcoFilterDvd (a b v : ℤ) {r : ℤ} :
     (Ico a b).filter (· ≡ v [ZMOD r]) ≃ (Ico (a - v) (b - v)).filter (r ∣ ·) where
-  toFun := fun ⟨x, p⟩ ↦
-    ⟨x - v, by
-      simp_all only [mem_filter, mem_Ico, tsub_le_iff_right, sub_add_cancel,
-        sub_lt_sub_iff_right, and_self, true_and]
-      rw [Int.modEq_iff_dvd, dvd_sub_comm] at p
-      exact p.2⟩
-  invFun := fun ⟨x, p⟩ ↦
-    ⟨x + v, by
-      simp_all only [mem_filter, mem_Ico, tsub_le_iff_right, true_and]
-      refine' ⟨lt_tsub_iff_right.mp p.1.2, _⟩
-      conv_rhs => rw [← zero_add v]
-      apply Int.ModEq.add (Int.modEq_zero_iff_dvd.mpr p.2) rfl⟩
+  toFun := fun ⟨x, p⟩ ↦ ⟨x - v, by
+    simp_all only [mem_filter, mem_Ico, tsub_le_iff_right, sub_add_cancel,
+      sub_lt_sub_iff_right, and_self, true_and]
+    rw [modEq_iff_dvd, dvd_sub_comm] at p
+    exact p.2⟩
+  invFun := fun ⟨x, p⟩ ↦ ⟨x + v, by
+    simp_all only [mem_filter, mem_Ico, tsub_le_iff_right, true_and]
+    refine' ⟨lt_tsub_iff_right.mp p.1.2, _⟩
+    conv_rhs => rw [← zero_add v]
+    apply ModEq.add (modEq_zero_iff_dvd.mpr p.2) rfl⟩
   left_inv := fun ⟨x, p⟩ ↦ by simp
   right_inv := fun ⟨x, p⟩ ↦ by simp
 
@@ -89,14 +65,14 @@ theorem nat_Ico_filter_map_eq_int_Ico_filter (a b v r : ℕ) :
   · simp only [mem_map, mem_filter, mem_Ico, Nat.castEmbedding_apply, forall_exists_index, and_imp]
     intro x' lb ub m e
     refine' ⟨⟨by subst e; simp_all, by subst e; simp_all⟩, _⟩
-    rw [← e, Int.coe_nat_modEq_iff]; exact m
+    rw [← e, coe_nat_modEq_iff]; exact m
   · simp only [mem_filter, mem_Ico, mem_map, Nat.castEmbedding_apply, and_imp]
     intro lb ub m
     have : 0 ≤ x := by linarith
     lift x to ℕ using this
     use x
     norm_cast at *
-    refine' ⟨⟨⟨lb, ub⟩, Int.coe_nat_modEq_iff.mp m⟩, rfl⟩
+    refine' ⟨⟨⟨lb, ub⟩, coe_nat_modEq_iff.mp m⟩, rfl⟩
 
 theorem Nat.filter_Ico_modEq_card (a b v : ℕ) {r : ℕ} (hr : 0 < r) :
     ((Ico a b).filter (· ≡ v [MOD r])).card =
@@ -123,13 +99,13 @@ theorem Nat.count_modEq_card' (n v : ℕ) {r : ℕ} (hr : 0 < r) :
   rw [max_eq_left (by exact_mod_cast this)]
   conv_lhs =>
     rw [← div_add_mod v r, cast_add, cast_mul, add_comm,
-      ← sub_sub, sub_div, mul_div_cancel_left, Int.ceil_sub_nat,
-      ← sub_sub, sub_div (_ - _), mul_div_cancel_left, Int.ceil_sub_nat,
+      ← sub_sub, sub_div, mul_div_cancel_left, ceil_sub_nat,
+      ← sub_sub, sub_div (_ - _), mul_div_cancel_left, ceil_sub_nat,
       sub_sub_sub_cancel_right, cast_zero, zero_sub]
     case ha => tactic => exact_mod_cast hr.ne.symm
     case ha => tactic => exact_mod_cast hr.ne.symm
   have : ⌈-↑(v % r) / (r : ℚ)⌉ = 0 := by
-    rw [Int.ceil_eq_zero_iff, Set.mem_Ioc,
+    rw [ceil_eq_zero_iff, Set.mem_Ioc,
       div_le_iff (by exact_mod_cast hr), lt_div_iff (by exact_mod_cast hr),
       neg_one_mul, zero_mul, neg_lt_neg_iff, cast_lt]
     exact ⟨Nat.mod_lt _ hr, by simp⟩
@@ -144,13 +120,13 @@ theorem Nat.count_modEq_card (n v : ℕ) {r : ℕ} (hr : 0 < r) :
     rw [← div_add_mod n r, cast_add, cast_mul, ← add_sub,
       _root_.add_div, mul_div_cancel_left, add_comm, Int.ceil_add_nat, add_comm]
     case ha => tactic => exact_mod_cast hr.ne.symm
-  rw [Int.ofNat_ediv, add_right_inj]
+  rw [ofNat_ediv, add_right_inj]
   cases' le_or_gt (n % r) (v % r) with h h
   · conv_rhs => tactic => norm_cast
     rw [← ite_not]
     push_neg
     simp only [h, ite_true, cast_zero]
-    rw [Int.ceil_eq_zero_iff, Set.mem_Ioc,
+    rw [ceil_eq_zero_iff, Set.mem_Ioc,
       div_le_iff (by exact_mod_cast hr), lt_div_iff (by exact_mod_cast hr), neg_mul, one_mul,
       neg_lt_sub_iff_lt_add, zero_mul, tsub_le_iff_right, zero_add]
     norm_cast
