@@ -1901,8 +1901,7 @@ theorem _root_.Equiv.Perm.conj_class_card_mul_eq (g : Equiv.Perm α) :
 #align on_cycle_factors.equiv.perm.conj_class_card_mul_eq Equiv.Perm.conj_class_card_mul_eq
 
 theorem _root_.Multiset.prod_pos {R : Type _} [StrictOrderedCommSemiring R] (m : Multiset R)
-    (h : ∀ a ∈ m, (0 : R) < a) : 0 < m.prod :=
-  by
+    (h : ∀ a ∈ m, (0 : R) < a) : 0 < m.prod := by
   induction' m using Multiset.induction with a m ih
   · simp
   · rw [Multiset.prod_cons]
