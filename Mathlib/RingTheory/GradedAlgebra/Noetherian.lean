@@ -31,11 +31,3 @@ theorem GradeZero.subring_isNoetherianRing_of_isNoetherianRing : IsNoetherianRin
   (GradedRing.projZeroRingHom'_surjective 𝒜)
 
 end GradedRing
-
-/--
-If the internally graded ring `A` is Noetherian, then `⨁_{i>0} 𝒜ᵢ`
-is finitely generated as an ideal of `A`.
--/
-theorem HomogeneousIdeal.irrelevant_toIdeal_fg_of_isNoetherianRing :
-    Ideal.FG (HomogeneousIdeal.irrelevant 𝒜).toIdeal :=
-  (isNoetherianRing_iff_ideal_fg A).1 inferInstance (HomogeneousIdeal.irrelevant 𝒜).toIdeal
