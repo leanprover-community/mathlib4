@@ -24,6 +24,10 @@ lemma Finset.card_le_three {α : Type*} [DecidableEq α] (a b c : α) :
   apply (card_insert_le _ _).trans; apply Nat.succ_le_succ
   simp only [card_singleton, le_refl]
 
+-- TODO: move
+instance fin_zero_le_one (n : ℕ) : ZeroLEOneClass (Fin (n+2)) where
+  zero_le_one := by rw [← Fin.val_fin_le]; exact zero_le'
+
 namespace CategoryTheory
 
 namespace Functor
@@ -40,36 +44,6 @@ end Functor
 namespace ComposableArrows
 
 variable {C : Type*} [inst : Category C] {n : ℕ}
-
-private lemma arrow_ext_aux {X₁ X₂ Y₁ Y₂ : C} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂)
-    (hX : X₁ = X₂) (hY : Y₁ = Y₂) (H : mk₁ f₁ = mk₁ f₂) :
-    f₁ = eqToHom hX ≫ f₂ ≫ eqToHom hY.symm := by
-  subst hX hY
-  simp only [eqToHom_refl, Category.comp_id, Category.id_comp]
-  have := congr_arg_heq (fun f => f.map' 0 1) H
-  exact eq_of_heq this
-
-lemma arrow_ext {F G : ComposableArrows C n} (hn : n ≠ 0)
-    (w : ∀ (i : ℕ) (hi : i < n), F.arrow i = G.arrow i) : F = G := by
-  cases n using Nat.casesAuxOn
-  · contradiction
-  clear hn
-  have obj : ∀ i, F.obj i = G.obj i := by
-    intro i
-    by_cases H : i = Fin.last _
-    · subst H
-      specialize w _ (Nat.lt_succ_self _)
-      apply_fun (fun f ↦ f.obj 1) at w
-      exact w
-    · specialize w i ?lt
-      case lt => contrapose! H; cases i; ext; linarith
-      case neg =>
-        apply_fun (fun f ↦ f.obj 0) at w
-        exact w
-  apply ext obj
-  intro i hi
-  specialize w i hi
-  apply arrow_ext_aux _ _ _ (obj _) w
 
 lemma map'_def (F : ComposableArrows C n)
     (i j : ℕ) (hij : i ≤ j := by linarith) (hjn : j ≤ n := by linarith) :
@@ -140,13 +114,6 @@ lemma quasicategory_of_filler (S : SSet)
     obtain ⟨j, hj₁, hj₂⟩ : ∃ j, ¬j = i ∧ ∀ (k : Fin (m+1)), f.1.toOrderHom k ≠ j
     · simpa [← Set.univ_subset_iff, Set.subset_def, asOrderHom, not_or] using f.2
     specialize h j hj₁
-    -- let g_fun : Fin (m+1) → Fin (n+1) :=
-    --   fun k ↦ if f.1.toOrderHom k ≤ j then f.1.toOrderHom k else f.1.toOrderHom k
-    -- have g_mono : Monotone g_fun := sorry
-    -- let g : ([m] : SimplexCategory) ⟶ [n] := .mk ⟨g_fun, g_mono⟩
-    -- have hg : g ≫ SimplexCategory.δ j = f.1 := by
-    --   ext k
-    --   simp
     obtain ⟨g, hg⟩ : ∃ g, f.1 = g ≫ SimplexCategory.δ j := by
       let g : ([m] : SimplexCategory) ⟶ [n+1] := f.1 ≫ SimplexCategory.σ (Fin.predAbove 0 j)
       use g
@@ -178,11 +145,6 @@ lemma quasicategory_of_filler (S : SSet)
     have := (S.map_comp (SimplexCategory.δ j).op g.op).symm
     rw [Function.funext_iff] at this
     apply this
-
-
--- TODO: move
-instance fin_two_zero_le_one : ZeroLEOneClass (Fin 2) where
-  zero_le_one := by decide
 
 section nerve
 
@@ -307,16 +269,6 @@ def horn.vertex (n : ℕ) (i k : Fin (n+3)) : Λ[n+2, i] _[0] := by
       simp [hi0, hk0, @eq_comm _ _ i]
 
 open SimplexCategory in
-lemma nerve.horn_app_obj (n : ℕ) (i : Fin (n+3)) (σ : Λ[n+2, i] ⟶ nerve C)
-    (m : SimplexCategoryᵒᵖ) (f : Λ[n+2, i].obj m) :
-    σ.app m f = yonedaEquiv ((yonedaEquiv.symm f) ≫ σ) := by
-  apply congrArg (σ.app m)
-  apply Subtype.ext
-  apply Hom.ext
-  ext k
-  rfl
-
-open SimplexCategory in
 lemma nerve.horn_app_obj' (n : ℕ) (i : Fin (n+3)) (σ : Λ[n+2, i] ⟶ nerve C)
     (m : SimplexCategoryᵒᵖ) (f : Λ[n+2, i].obj m) (k : Fin (m.unop.len + 1)) :
     (σ.app m f).obj k = (σ.app (op [0]) (horn.vertex _ i (f.1.toOrderHom k))).obj 0 := by
@@ -326,17 +278,6 @@ lemma nerve.horn_app_obj' (n : ℕ) (i : Fin (n+3)) (σ : Λ[n+2, i] ⟶ nerve C
   rw [Function.funext_iff] at this
   specialize this f
   exact (congrArg (fun F ↦ F.obj 0) this).symm
-
-open Finset in
-lemma exists_ne_ne_ne_of_four_le (n : ℕ) (hn : 4 ≤ n) (a b c : Fin n) :
-    ∃ d, ¬a = d ∧ ¬b = d ∧ ¬c = d := by
-  by_contra! h
-  replace h : Finset.univ ⊆ {a, b, c} :=
-    fun d _ ↦ by simpa [or_iff_not_imp_left, eq_comm] using h d
-  replace h := card_le_card h
-  rw [card_fin] at h
-  have : ¬ (4:ℕ) ≤ 3 := by decide
-  exact this ((hn.trans h).trans $ card_le_three _ _ _)
 
 open Finset in
 def horn.edge (n : ℕ) (i a b : Fin (n+1)) (hab : a ≤ b) (H : Finset.card {i, a, b} ≤ n) :
@@ -449,41 +390,6 @@ lemma nerve.horn_app_map' (n : ℕ) (i : Fin (n+4)) (σ : Λ[n+3, i] ⟶ nerve C
       nerve.arrow (σ.app (op [1]) (horn.edge' f k hk))
       ≫ eqToHom (by rw [target, nerve.horn_app_obj', eq_comm, nerve.horn_app_obj']; rfl) := by
   apply horn_app_map''
-
--- lemma nerve.horn_ext {n : ℕ} {i : Fin (n+1)}
---     (h₀ : 0 < i) (hₙ : i < Fin.last n)
---     (σ₀ σ₁ : Λ[n, i] ⟶ nerve C)
---     (h : ∀ j, σ₀.app (op [1]) (horn.primitiveEdge h₀ hₙ j) = σ₁.app (op [1])  (horn.primitiveEdge h₀ hₙ j)) :
---     σ₀ = σ₁ := by
---   apply NatTrans.ext; apply funext
---   apply Opposite.rec
---   apply SimplexCategory.rec
---   apply Nat.recAux
---   · sorry
---   intro m IH
---   ext f
---   apply ComposableArrows.arrow_ext
---   · simp
---   -- dsimp
---   intro j hj
---   let F := (σ₀.app { unop := [m + 1] } f).arrow j
---   have : F.obj 0 = F.obj 1 := by
---     dsimp [F, ComposableArrows.arrow]
---     show (σ₀.app { unop := [m + 1] } f).obj _ = (σ₀.app { unop := [m + 1] } f).obj _
---   -- simp only [SimplexCategory.len_mk] at hj
---   -- cases m using Nat.casesAuxOn with
---   -- | zero => simp at hj
---   -- | succ m =>
---   -- cases m using Nat.casesAuxOn with
---   -- | zero =>
---   --   simp only [zero_add, SimplexCategory.len_mk, Nat.lt_one_iff] at hj
---   --   subst j
---   --   specialize h f
---   --   dsimp
---   --   dsimp [horn] at f
---   --   sorry
---   -- | succ m =>
---   sorry
 
 open SimplexCategory in
 /-- TODO: rename -/
@@ -772,72 +678,5 @@ instance (C : Type) [Category C] : Quasicategory (nerve C) := by
   cases n using Nat.casesAuxOn with
   | zero => apply filler_spec_zero
   | succ n => apply filler_spec_succ
-
-  -- split <;> rename_i hkj
-  -- apply ComposableArrows.arrow_ext
-  -- · simp
-  -- intro k hk
-  -- refine ComposableArrows.ext₁ ?_ ?_ ?_
-  -- · symm
-  --   apply nerve.horn_app_obj'
-  -- · symm
-  --   apply nerve.horn_app_obj'
-  -- dsimp only [SimplicialObject.δ]
-
-  -- hornFilling n i σ₀ h₀ hₙ := by
-  --   let v : Fin (n+1) → (horn n i).obj (op [0]) :=
-  --     fun j ↦ ⟨SimplexCategory.Hom.mk (OrderHom.const _ j), ?_⟩
-  --   swap
-  --   · simp only [unop_op, SimplexCategory.len_mk, asOrderHom, SimplexCategory.Hom.toOrderHom_mk,
-  --       OrderHom.const_coe_coe, Set.union_singleton, ne_eq, ← Set.univ_subset_iff, Set.subset_def,
-  --       Set.mem_univ, Set.mem_insert_iff, Set.mem_range, Function.const_apply, exists_const,
-  --       forall_true_left, not_forall]
-  --     by_cases h : j = 0
-  --     · refine ⟨Fin.last n, ?_⟩
-  --       simp [h, hₙ.ne', (h₀.trans hₙ).ne]
-  --     · refine ⟨0, ?_⟩
-  --       simp [h, h₀.ne]
-  --   let obj : Fin (n+1) → C := fun j ↦ (σ₀.app (op [0]) (v j)).obj ⟨0, by simp⟩
-  --   let σ : Δ[n] ⟶ nerve C :=
-  --     yonedaEquiv.symm <| nerve.mk n obj (fun j ↦ ?mor)
-  --   use σ
-  --   swap
-  --   let e : (horn n i).obj (op [1]) := horn.primitiveEdge h₀ hₙ j
-  --   let f := σ₀.app (op [1]) e
-  --   let φ := nerve.arrow f
-  --   -- let δ := fun (i : Fin 2) ↦ (nerve C).map (SimplexCategory.δ i).op
-  --   have := fun (k : Fin 2) (e : (horn n i).obj (op [1])) ↦
-  --     congr_fun (σ₀.naturality (SimplexCategory.δ k).op) e
-  --   dsimp only [types_comp, Function.comp] at this
-  --   refine ?_ ≫ φ ≫ ?_
-  --   · rw [nerve.source_eq, ← this]
-  --     apply eqToHom
-  --     suffices : (horn n i).map (SimplexCategory.δ 1).op e = v j.castSucc
-  --     · rw [this]; rfl
-  --     apply Subtype.ext
-  --     apply SimplexCategory.Hom.ext'
-  --     apply OrderHom.ext
-  --     apply funext
-  --     erw [Fin.forall_fin_one]
-  --     rfl
-  --   · rw [nerve.target_eq, ← this]
-  --     apply eqToHom
-  --     suffices : (horn n i).map (SimplexCategory.δ 0).op e = v j.succ
-  --     · rw [this]; rfl
-  --     apply Subtype.ext
-  --     apply SimplexCategory.Hom.ext'
-  --     apply OrderHom.ext
-  --     apply funext
-  --     erw [Fin.forall_fin_one]
-  --     rfl
-  --   apply nerve.horn_ext h₀ hₙ
-  --   rw [NatTrans.comp_app]
-  --   simp only [nerve_obj, unop_op, SimplexCategory.len_mk, ne_eq, Function.const_apply, id_eq,
-  --     eq_mpr_eq_cast, Nat.zero_eq, Fin.zero_eta, Fin.castSucc_zero, Matrix.cons_val_zero,
-  --     Fin.coe_castSucc, Fin.val_succ, OrderHom.coe_mk, Matrix.cons_val_one, Matrix.head_cons,
-  --     eq_mp_eq_cast, Fin.val_zero, Nat.rawCast, Nat.cast_id, Int.ofNat_one, Int.rawCast,
-  --     Int.cast_id, Int.ofNat_eq_coe, Int.ofNat_zero, Int.Nat.cast_ofNat_Int, cast_eq, Fin.val_last,
-  --     nerve_map, Quiver.Hom.unop_op, SimplexCategory.toCat_map, ComposableArrows.whiskerLeft_obj]
-  --   dsimp [hornInclusion]
 
 end SSet
