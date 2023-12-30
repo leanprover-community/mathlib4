@@ -746,6 +746,35 @@ def exists_basis_containing_element_if_rank_insert_increases
   rw [← not_lt_eq] at h₃
   exact h₃ h
 
+theorem every_basis_contains_element_if_rank_insert_increases
+  (h : G.rank s < G.rank (insert x s)) (ht : t ∈ G.bases (insert x s)) :
+    x ∈ t := by
+  have h₁ := (rank_eq_basis_card ht).symm
+  let ⟨b, hb⟩ := G.bases_nonempty s
+  have h₂ := (rank_eq_basis_card hb).symm
+  have ⟨e, he₁, he₂⟩ :=
+    G.exchangeProperty (basis_mem_feasible ht) (basis_mem_feasible hb) (h₂ ▸ h₁ ▸ h)
+  by_contra h'
+  have h₃ : e ∈ s := by
+    have := basis_subset ht
+    rw [mem_sdiff] at he₁
+    have := this he₁.1
+    rw [mem_insert] at this
+    apply this.elim <;> intro h
+    · rw [h] at he₁
+      exact False.elim (h' he₁.1)
+    · exact h
+  have h₄ : (insert e b).card = G.rank s + 1 := by
+    rw [mem_sdiff] at he₁
+    rw [card_insert_of_not_mem he₁.2, h₂]
+  have h₅ : G.rank s + 1 ≤ G.rank s := by
+    rw [← h₄]
+    apply card_feasible_subset_le_rank he₂
+    intro _ h
+    rw [mem_insert] at h
+    exact h.elim (fun h => h ▸ h₃) (fun h => basis_subset hb h)
+  simp only [add_le_iff_nonpos_right, nonpos_iff_eq_zero] at h₅
+
 @[simp]
 theorem rank_eq_card_iff_feasible : G.rank s = s.card ↔ s ∈ G :=
   Iff.intro (fun h => card_le_rank (h ▸ le_refl _)) (fun h => rank_of_feasible h)
@@ -1991,7 +2020,19 @@ theorem kernelClosureOperator_weak_exchange_property_over_rankFeasible
     rw [Insert.comm] at h
     rw [h, h₂]
   have h₄ : G.kernelClosureOperator (insert y s) = G.kernelClosureOperator (insert z s) := by
-    sorry
+    ext x
+    simp [mem_kernelClosureOperator]
+    constructor <;> intro h <;> let ⟨a, ha₁, ha₂, ha₃⟩ := h <;> clear h
+    · have h₁₁ : ∀ b ∈ G.bases (insert y s), y ∈ b := by
+        intro _ hb
+        apply G.every_basis_contains_element_if_rank_insert_increases _ hb
+        simp only [h₁, lt_add_iff_pos_right, zero_lt_one]
+      have h₂₁ : ∀ b ∈ G.bases (insert z s), z ∈ b := by
+        intro _ hb
+        apply G.every_basis_contains_element_if_rank_insert_increases _ hb
+        simp only [h₂, lt_add_iff_pos_right, zero_lt_one]
+      sorry
+    · sorry
   have ⟨b, hb₁, hb₂⟩ : ∃ b ∈ G.bases (insert z s), z ∈ b := by
     by_contra h'
     simp only [not_exists, not_and] at h'
@@ -2012,7 +2053,7 @@ theorem kernelClosureOperator_weak_exchange_property_over_rankFeasible
     · rw [mem_union] at h
       apply h.elim <;> intro h
       · rw [mem_insert]
-        tauto
+        exact Or.inr h
       · exact basis_subset hb₁ h
     · rw [mem_union]
       rw [mem_insert] at h
