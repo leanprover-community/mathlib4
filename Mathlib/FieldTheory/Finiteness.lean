@@ -43,7 +43,7 @@ theorem iff_rank_lt_aleph0 : IsNoetherian K V ↔ Module.rank K V < ℵ₀ := by
 
 variable (K V)
 
-@[deprecated] protected alias IsNoetherian.rank_lt_aleph0 := rank_lt_aleph0
+@[deprecated] protected alias rank_lt_aleph0 := _root_.rank_lt_aleph0
 #align is_noetherian.rank_lt_aleph_0 rank_lt_aleph0
 
 variable {K V}
