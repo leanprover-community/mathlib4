@@ -568,6 +568,17 @@ lemma IsLocalizedModule.eq_iff_exists [IsLocalizedModule S f] {x₁ x₂} :
     apply_fun f at h
     simp_rw [f.map_smul_of_tower, Submonoid.smul_def, ← Module.algebraMap_end_apply R R] at h
     exact ((Module.End_isUnit_iff _).mp <| map_units f c).1 h
+
+variable (M) in
+lemma isLocalizedModule_id (R') [CommRing R'] [Algebra R R'] [IsLocalization S R'] [Module R' M]
+    [IsScalarTower R R' M] : IsLocalizedModule S (.id : M →ₗ[R] M) where
+  map_units s := (Module.End_isUnit_iff _).mpr <| by
+    convert_to Function.Bijective (algebraMap R' (Module.End R' M) (algebraMap R R' s))
+    · ext; simp
+    exact (Module.End_isUnit_iff _).mp ((IsLocalization.map_units R' s).map _)
+  surj' m := ⟨(m, 1), one_smul _ _⟩
+  exists_of_eq h := ⟨1, congr_arg _ h⟩
+
 namespace LocalizedModule
 
 /--

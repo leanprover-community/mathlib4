@@ -49,19 +49,6 @@ variable {M M' : Type*} [AddCommMonoid M] [Module R M] [Module Rₛ M] [IsScalar
   [AddCommMonoid M'] [Module R M'] [Module Rₛ M'] [IsScalarTower R Rₛ M'] (f : M →ₗ[R] M')
   [IsLocalizedModule S f]
 
-theorem LinearIndependent.localization {ι : Type*} {b : ι → M} (hli : LinearIndependent R b) :
-    LinearIndependent Rₛ b := by
-  rw [linearIndependent_iff'] at hli ⊢
-  intro s g hg i hi
-  choose! a g' hg' using IsLocalization.exist_integer_multiples S s g
-  specialize hli s g' _ i hi
-  · rw [← @smul_zero _ M _ _ (a : R), ← hg, Finset.smul_sum]
-    refine' Finset.sum_congr rfl fun i hi => _
-    rw [← IsScalarTower.algebraMap_smul Rₛ, hg' i hi, smul_assoc]
-  refine' (IsLocalization.map_units Rₛ a).mul_right_eq_zero.mp _
-  rw [← Algebra.smul_def, ← _root_.map_zero (algebraMap R Rₛ), ← hli, hg' i hi]
-#align linear_independent.localization LinearIndependent.localization
-
 theorem span_eq_top_of_isLocalizedModule {v : Set M} (hv : span R v = ⊤) :
     span Rₛ (f '' v) = ⊤ := by
   rw [eq_top_iff]
@@ -91,6 +78,12 @@ theorem LinearIndependent.of_isLocalizedModule {ι : Type*} {v : ι → M}
   specialize hv t _ hs i hi
   rw [← (IsLocalization.map_units Rₛ a).mul_right_eq_zero, ← Algebra.smul_def, ← hg' i hi]
   exact (IsLocalization.map_eq_zero_iff S _ _).2 ⟨s, hv⟩
+
+theorem LinearIndependent.localization {ι : Type*} {b : ι → M} (hli : LinearIndependent R b) :
+    LinearIndependent Rₛ b :=
+  have := isLocalizedModule_id S M Rₛ
+  hli.of_isLocalizedModule Rₛ S .id
+#align linear_independent.localization LinearIndependent.localization
 
 end AddCommMonoid
 
