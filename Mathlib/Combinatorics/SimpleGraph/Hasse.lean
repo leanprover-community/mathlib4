@@ -3,6 +3,7 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.Combinatorics.SimpleGraph.Connectivity
 import Mathlib.Combinatorics.SimpleGraph.Prod
 import Mathlib.Data.Fin.SuccPred
 import Mathlib.Data.ZMod.Basic
@@ -129,5 +130,34 @@ protected def Hom.pathGraph {n m : ℕ} (hnm : n ≤ m) : pathGraph n →g pathG
 
 protected theorem Hom.pathGraph_val {n m : ℕ} (hnm : n ≤ m) (u : Fin n) :
     (Hom.pathGraph hnm u).val = u.val := rfl
+
+
+/-- Convert a homomrfism from a pathGraph to a walk -/
+def pathGraph_hom_to_walk {α} (G : SimpleGraph α) {n : ℕ} (hom : pathGraph (n + 1) →g G) :
+    G.Walk (hom ⊤) (hom ⊥) := by
+  induction n with
+  | zero => exact Walk.nil
+  | succ n ih =>
+    let hom' : pathGraph (n + 1) →g G := hom.comp (.pathGraph (n + 1).le_succ)
+    let w : Walk G (hom' ⊤) (hom' ⊥) := ih hom'
+    have hlast : Fin.last n = ⊤ := rfl
+    have hpgadj : (pathGraph (Nat.succ n + 1)).Adj ⊤ (Fin.last n) := by
+      rw [pathGraph_adj]
+      apply Or.inr
+      rw [hlast]
+      simp
+      rfl
+    have hlast' : (Hom.pathGraph (n + 1).le_succ) ⊤ = Fin.last n := by
+      rw [Fin.coe_eq_castSucc]
+      rfl
+    have hGadj : G.Adj (hom ⊤) (hom' ⊤) := by
+      rw [←hlast'] at hpgadj
+      exact hom.map_rel hpgadj
+    exact Walk.cons hGadj w
+
+-- def walk_to_pathGraph_hom {α} (G : SimpleGraph α) {u v : α} (w : G.Walk u v) :
+--     pathGraph w.length →g G where
+--   toFun v := sorry
+--   map_rel' := sorry
 
 end SimpleGraph
