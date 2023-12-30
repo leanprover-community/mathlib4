@@ -682,7 +682,8 @@ theorem erase_eq_update (f : α →₀ M) (a : α) : f.erase a = update f a 0 :=
   letI := Classical.decEq α
   ext fun _ => (Function.update_apply _ _ _ _).symm
 
-@[simp] theorem erase_idem (f : α →₀ M) (a : α) :
+-- not `simp` as `erase_of_not_mem_support` can prove this
+theorem erase_idem (f : α →₀ M) (a : α) :
     erase a (erase a f) = erase a f := by
   rw [erase_eq_update, erase_eq_update, update_idem]
 
