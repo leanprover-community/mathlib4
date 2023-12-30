@@ -9,15 +9,24 @@ namespace BundledSet
 section SemilatticeInf
 
 class InterPred (α : Type*) (p : Set α → Prop) : Prop where
-  inter : ∀ ⦃s⦄, p s → ∀ ⦃t⦄, p t → p (s ∩ t)
+  inter : ∀ s, p s → ∀ t, p t → p (s ∩ t)
 
 variable {α : Type*} {p : Set α → Prop} [InterPred α p]
 
-instance {q : Set α → Prop} [InterPred α q] : InterPred α (fun s ↦ p s ∧ q s) :=
-  ⟨fun _s hs _t ht ↦ ⟨InterPred.inter hs.1 ht.1, InterPred.inter hs.2 ht.2⟩⟩
+instance InterPred.and {q : Set α → Prop} [InterPred α q] : InterPred α (fun s ↦ p s ∧ q s) :=
+  ⟨fun s hs t ht ↦ ⟨inter s hs.1 t ht.1, inter s hs.2 t ht.2⟩⟩
+
+instance InterPred.mem_implies {x : α} : InterPred α (fun s ↦ x ∈ s → p s) :=
+  ⟨fun s hs t ht ⟨hxs, hxt⟩ ↦ inter s (hs hxs) t (ht hxt)⟩
+
+instance InterPred.forall {ι : Sort*} {p : ι → Set α → Prop} [∀ i, InterPred α (p i)] :
+    InterPred α (∀ i, p i ·) :=
+  ⟨fun s hs t ht i ↦ inter s (hs i) t (ht i)⟩
+
+instance InterPred.mem {x : α} : InterPred α (x ∈ ·) := ⟨fun _s hs _t ht ↦ ⟨hs, ht⟩⟩
 
 protected instance instInf : Inf (BundledSet α p) where
-  inf s t := ⟨s ∩ t, InterPred.inter s.2 t.2⟩
+  inf s t := ⟨s ∩ t, InterPred.inter s s.2 t t.2⟩
 
 @[simp]
 theorem inf_carrier (s t : BundledSet α p) : (s ⊓ t).carrier = ↑s ∩ ↑t := rfl
@@ -35,12 +44,21 @@ end SemilatticeInf
 section OrderTop
 
 class UnivPred (α : Type*) (p : Set α → Prop) : Prop where
-  univ : p univ
+  univ : p Set.univ
 
 variable {α : Type*} {p : Set α → Prop} [UnivPred α p]
 
-instance {q : Set α → Prop} [UnivPred α q] : UnivPred α (fun s ↦ p s ∧ q s) :=
-  ⟨⟨UnivPred.univ, UnivPred.univ⟩⟩
+instance UnivPred.and {q : Set α → Prop} [UnivPred α q] : UnivPred α (fun s ↦ p s ∧ q s) :=
+  ⟨univ, univ⟩
+
+instance UnivPred.mem_implies {x : α} : UnivPred α (fun s ↦ x ∈ s → p s) :=
+  ⟨fun _ ↦ univ⟩
+
+instance UnivPred.forall {ι : Sort*} {p : ι → Set α → Prop} [∀ i, UnivPred α (p i)] :
+    UnivPred α (∀ i, p i ·) :=
+  ⟨fun _ ↦ univ⟩
+
+instance UnivPred.mem {x : α} : UnivPred α (x ∈ ·) := ⟨mem_univ x⟩
 
 protected instance instOrderTop : OrderTop (BundledSet α p) where
   top := ⟨univ, UnivPred.univ⟩
@@ -90,8 +108,21 @@ class SetInterPred (α : Type*) (p : Set α → Prop) : Prop where
 
 variable {α : Type*} {ι : Sort*} {p : Set α → Prop} [SetInterPred α p]
 
+instance SetInterPred.and {q : Set α → Prop} [SetInterPred α q] :
+    SetInterPred α (fun s ↦ p s ∧ q s) :=
+  ⟨fun S hS ↦ ⟨sInter S fun s hs ↦ (hS s hs).1, sInter S fun s hs ↦ (hS s hs).2⟩⟩
+
+instance SetInterPred.mem_implies {x : α} : SetInterPred α (fun s ↦ x ∈ s → p s) :=
+  ⟨fun S hS hx ↦ sInter S fun s hs ↦ hS s hs <| sInter_subset_of_mem hs hx⟩
+
+instance SetInterPred.forall {ι : Sort*} {p : ι → Set α → Prop} [∀ i, SetInterPred α (p i)] :
+    SetInterPred α (∀ i, p i ·) :=
+  ⟨fun S hS i ↦ sInter S (hS · · i)⟩
+
+instance SetInterPred.mem {x : α} : SetInterPred α (x ∈ ·) := ⟨fun _ ↦ id⟩
+
 instance (priority := low) : InterPred α p where
-  inter (s t) := by simpa using SetInterPred.sInter {s, t}
+  inter (s hs t ht) := by simpa [*] using SetInterPred.sInter (p := p) {s, t}
 
 instance (priority := low) : UnivPred α p where
   univ := by simpa using SetInterPred.sInter ∅
@@ -206,5 +237,61 @@ theorem iSup_eq_closure (s : ι → BundledSet α p) :
   simp_rw [closure_iUnion, closure_eq]
 
 end CompleteLattice
+
+section DirectedUnion
+
+class DirectedSetUnionPred (α : Type*) (p : Set α → Prop) : Prop where
+  directedSUnion : ∀ S : Set (Set α), S.Nonempty → DirectedOn (· ⊆ ·) S → (∀ s ∈ S, p s) → p (⋃₀ S)
+
+variable {α : Type*} {p : Set α → Prop} [DirectedSetUnionPred α p]
+
+instance DirectedSetUnionPred.and {q : Set α → Prop} [DirectedSetUnionPred α q] :
+    DirectedSetUnionPred α (fun s ↦ p s ∧ q s) :=
+  ⟨fun S hne hdS hS ↦ ⟨directedSUnion S hne hdS fun s hs ↦ (hS s hs).1,
+    directedSUnion S hne hdS fun s hs ↦ (hS s hs).2⟩⟩
+
+instance DirectedSetUnionPred.mem_implies {x : α} : DirectedSetUnionPred α (fun s ↦ x ∈ s → p s) :=
+  ⟨fun S _ hdS hS hxS ↦ by
+    -- TODO: move to a lemma
+    have H₁ : ⋃₀ S = ⋃₀ (S ∩ {s | x ∈ s}) := by
+      refine Subset.antisymm ?_ (sUnion_mono <| inter_subset_left _ _)
+      rintro y ⟨s, hs, hys⟩
+      rcases hxS with ⟨t, ht, hxt⟩
+      rcases hdS s hs t ht with ⟨u, hu, hsu, htu⟩
+      exact ⟨u, ⟨hu, htu hxt⟩, hsu hys⟩
+    rw [H₁]
+    refine directedSUnion _ hxS ?_ fun s hs ↦ hS s hs.1 hs.2
+    -- TODO: move to a lemma
+    rintro s ⟨hs, hxs⟩ t ⟨ht, -⟩
+    rcases hdS s hs t ht with ⟨u, hu, hsu, htu⟩
+    exact ⟨u, ⟨hu, hsu hxs⟩, hsu, htu⟩⟩
+
+instance DirectedSetUnionPred.forall {ι : Sort*} {p : ι → Set α → Prop}
+    [∀ i, DirectedSetUnionPred α (p i)] : DirectedSetUnionPred α (∀ i, p i ·) :=
+  ⟨fun S hne hdS hS i ↦ directedSUnion S hne hdS (hS · · i)⟩
+
+instance DirectedSetUnionPred.mem {x : α} : DirectedSetUnionPred α (x ∈ ·) :=
+  ⟨fun _S ⟨s, hs⟩ _ hS ↦ ⟨s, hs, hS s hs⟩⟩
+
+variable [SetInterPred α p]
+
+lemma mem_sSup_of_directedOn {S : Set (BundledSet α p)} (hne : S.Nonempty)
+    (hd : DirectedOn (· ≤ ·) S) {x : α} : x ∈ sSup S ↔ ∃ s ∈ S, x ∈ s := by
+  have hU : p (⋃ s ∈ S, s) := by
+    rw [← sUnion_image]
+    apply DirectedSetUnionPred.directedSUnion
+    · exact hne.image _
+    · rwa [directedOn_image]
+    · exact ball_image_iff.2 fun s _ ↦ s.2
+  have : sSup S = ⟨_, hU⟩ := eq_of_forall_ge_iff fun _ ↦ sSup_le_iff.trans iUnion₂_subset_iff.symm
+  simp [this]
+
+lemma mem_iSup_of_directed {ι : Sort*} [Nonempty ι] {s : ι → BundledSet α p}
+    (hs : Directed (· ≤ ·) s) {x : α} : (x ∈ ⨆ i, s i) ↔ ∃ i, x ∈ s i :=
+  (mem_sSup_of_directedOn (range_nonempty _) hs.directedOn_range).trans exists_range_iff
+
+lemma 
+
+end DirectedUnion
 
 end BundledSet
