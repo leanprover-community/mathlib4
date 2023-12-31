@@ -27,23 +27,20 @@ theorem Int.Ico_filter_dvd_eq (a b : ℤ) {r : ℤ} (hr : 0 < r) : (Ico a b).fil
 /-- There are `⌈b / r⌉ - ⌈a / r⌉` multiples of `r` in `[a, b)`, if `a ≤ b`. -/
 theorem Int.Ico_filter_dvd_card (a b : ℤ) {r : ℤ} (hr : 0 < r) :
     ((Ico a b).filter (r ∣ ·)).card = max (⌈b / (r : ℚ)⌉ - ⌈a / (r : ℚ)⌉) 0 := by
-  rw [Ico_filter_dvd_eq a b hr, card_map, card_Ico, Int.toNat_eq_max]
+  rw [Ico_filter_dvd_eq _ _ hr, card_map, card_Ico, Int.toNat_eq_max]
+
+theorem Int.Ico_filter_modEq_eq (a b v : ℤ) {r : ℤ} : (Ico a b).filter (· ≡ v [ZMOD r]) =
+    ((Ico (a - v) (b - v)).filter (r ∣ ·)).map ⟨_, add_left_injective v⟩ := by
+  ext x
+  simp_rw [mem_map, mem_filter, mem_Ico, Function.Embedding.coeFn_mk, ← eq_sub_iff_add_eq,
+    exists_eq_right, modEq_comm, modEq_iff_dvd, sub_lt_sub_iff_right, sub_le_sub_iff_right]
 
 /-- There are `⌈(b - v) / r⌉ - ⌈(a - v) / r⌉` numbers congruent to `v` modulo `r` in `[a, b)`,
 if `a ≤ b`. -/
 theorem Int.Ico_filter_modEq_card (a b v : ℤ) {r : ℤ} (hr : 0 < r) :
     ((Ico a b).filter (· ≡ v [ZMOD r])).card =
     max (⌈(b - v) / (r : ℚ)⌉ - ⌈(a - v) / (r : ℚ)⌉) 0 := by
-  suffices : ((Ico a b).filter (· ≡ v [ZMOD r])).card = ((Ico (a - v) (b - v)).filter (r ∣ ·)).card
-  · simp only [this, Ico_filter_dvd_card _ _ hr, cast_sub]
-  refine card_congr (fun x _ => x - v) ?_ (fun _ _ _ _ => (add_left_inj _).mp) ?_
-  · simp only [mem_filter, mem_Ico, tsub_le_iff_right, sub_add_cancel, sub_lt_sub_iff_right,
-      and_imp]
-    intro c l u m
-    exact ⟨⟨l, u⟩, modEq_iff_dvd.mp m.symm⟩
-  · simp only [mem_filter, mem_Ico, lt_tsub_iff_right, and_imp]
-    intro c l u d
-    exact ⟨c + v, by simp_all [(modEq_of_dvd ((add_sub_cancel c v).symm ▸ d)).symm]⟩
+  simp [Ico_filter_modEq_eq, Ico_filter_dvd_eq, Int.toNat_eq_max, hr]
 
 /-- `Int.Ico_filter_modEq_card` restricted to natural numbers. -/
 theorem Nat.Ico_filter_modEq_card (a b v : ℕ) {r : ℕ} (hr : 0 < r) :
