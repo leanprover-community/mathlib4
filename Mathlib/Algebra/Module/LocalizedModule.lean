@@ -31,7 +31,6 @@ localize `M` by `S`. This gives us a `Localization S`-module.
   we have `mk r s • mk m t = mk (r • m) (s * t)` where `mk r s : Localization S` is localized ring
   by `S`.
 * `LocalizedModule.isModule` : `LocalizedModule M S` is a `Localization S`-module.
-* `IsLocalizedModule.IsBaseChange` : A localization of modules is a base change.
 
 ## Future work
 
