@@ -184,6 +184,13 @@ instance : CovariantClass (real Z b) (real Z b)
     (Function.swap (· + ·)) (· ≤ ·) :=
   ⟨fun _ _ _ => by simp_rw [real.le_def]; simp⟩
 
+noncomputable
+instance : LinearOrderedAddCommGroup (real Z b) :=
+  { real.instLinearOrder _ _ with
+    add_le_add_left := fun _ _ => by
+      simp_rw [real.le_def]
+      simp (config := { contextual := true }) }
+
 variable {Z} {b}
 
 theorem real.positive_iff {f : real Z b} :
@@ -639,6 +646,156 @@ lemma cutoff_succ_eq_cutoff_add_single (f : real Z b) (u : Z) :
       simp [this, (h.trans' (lt_succ _)).not_le] at hx
 
 end cutoff
+
+section shift
+
+/-- "Divide" the expansion by shifting the expansion one digit to the right. Also called
+"half" in the orignal de Bruijn paper. -/
+def shift (f : real Z b) : real Z b :=
+  ⟨DigitExpansion.shift f, f.prop.imp Positive.shift <| Or.imp Negative.shift (congr_arg _)⟩
+
+@[simp]
+lemma shift_zero : shift (0 : real Z b) = 0 :=
+  Subtype.ext DigitExpansion.shift_zero
+
+@[simp]
+lemma val_shift (f : real Z b) :
+    (shift f : DigitExpansion Z b) = DigitExpansion.shift f := rfl
+
+@[simp]
+lemma shift_eq_zero {f : real Z b} : shift f = 0 ↔ f = 0 := by
+  rw [Subtype.ext_iff]
+  simp
+
+@[simp]
+lemma shift_eq_self_iff {f : real Z b} : shift f = f ↔ f = 0 := by
+  rcases f.prop with h|h|h
+  · have := h.left
+    simp only [ne_eq, ZeroMemClass.coe_eq_zero] at this
+    simp only [this, iff_false]
+    rw [Subtype.ext_iff, ← ne_eq, FunLike.ne_iff]
+    refine h.exists_least_pos.imp ?_
+    intro x ⟨xpos, hx⟩
+    simp [hx (pred x), xpos.ne]
+  · have := h.left
+    simp only [ne_eq, ZeroMemClass.coe_eq_zero] at this
+    simp only [this, iff_false]
+    rw [Subtype.ext_iff, ← ne_eq, FunLike.ne_iff]
+    refine h.exists_least_cap.imp ?_
+    intro x ⟨xpos, hx⟩
+    simpa [hx (pred x)] using xpos.symm
+  · simp only [ZeroMemClass.coe_eq_zero] at h
+    simp [h]
+
+lemma lt_shift_iff {f : real Z b} :
+    f < shift f ↔ f < 0 := by
+  rw [← negative_iff]
+  rcases f.prop with h|h|h
+  · simp only [h.not_negative, iff_false, not_lt, real.le_def]
+    have := h.left
+    simp only [ne_eq, ZeroMemClass.coe_eq_zero] at this
+    simp only [shift_eq_self_iff, this, val_shift, false_or]
+    obtain ⟨x, xpos, hx⟩ := h.exists_least_pos
+    refine ⟨?_, x, ?_⟩
+    · rwa [sub_ne_zero, ne_comm, ←val_shift, ne_eq, ←Subtype.ext_iff, shift_eq_self_iff]
+    · intro y hy
+      simp only [DigitExpansion.sub_def, hx y hy, shift_apply,
+        hx (pred y) (hy.trans_le' (pred_le _)), sub_self, zero_sub, neg_eq_zero, difcar_eq_zero_iff,
+        gt_iff_lt]
+      intro z _ hz'
+      refine ⟨x, ?_, hy, ?_⟩
+      · contrapose! hz'
+        simp [hx _ ((pred_lt _).trans_le hz')]
+      · simp [hx _ (pred_lt x), xpos]
+  · simp only [h, iff_true, real.lt_def]
+    have := h.left
+    simp only [ne_eq, ZeroMemClass.coe_eq_zero] at this
+    simp only [shift_eq_self_iff, this, val_shift, false_or]
+    obtain ⟨x, xpos, hx⟩ := h.exists_least_cap
+    refine ⟨?_, x, ?_⟩
+    · rwa [sub_ne_zero, ←val_shift, ne_eq, ←Subtype.ext_iff, shift_eq_self_iff]
+    · intro y hy
+      simp only [DigitExpansion.sub_def, hx y hy, shift_apply,
+        hx (pred y) (hy.trans_le' (pred_le _)), sub_self, zero_sub, neg_eq_zero, difcar_eq_zero_iff,
+        gt_iff_lt]
+      intro z _ hz'
+      refine ⟨x, ?_, hy, ?_⟩
+      · contrapose! hz'
+        simp [hx _ ((pred_lt _).trans_le hz'), Fin.le_last]
+      · simpa [hx _ (pred_lt x)] using lt_of_le_of_ne (Fin.le_last _) (by simpa using xpos)
+  · simp only [ZeroMemClass.coe_eq_zero] at h
+    simp [h, DigitExpansion.Negative]
+
+lemma shift_lt_iff {f : real Z b} :
+    shift f < f ↔ 0 < f := by
+  rw [← not_iff_not, not_lt, le_iff_eq_or_lt, lt_shift_iff, eq_comm, shift_eq_self_iff, not_lt,
+      ← le_iff_eq_or_lt]
+
+@[simp]
+lemma shift_pos_iff {f : real Z b} :
+    0 < shift f ↔ 0 < f := by
+  rw [← positive_iff, ← positive_iff]
+  constructor
+  · contrapose!
+    intro H
+    rcases f.prop with h|h|h
+    · exact absurd h H
+    · exact h.shift.not_positive
+    · simp only [ZeroMemClass.coe_eq_zero] at h
+      simp [h, not_positive_zero]
+  · exact Positive.shift
+
+/-- Across all bases, "dividing" twice gives something less than half. Necessary for
+providing ε' < ε in convergence proofs. -/
+lemma shift_shift_add_shift_shift_lt_of_pos {f : real Z b} (hf : 0 < f) :
+    shift (shift f) + shift (shift f) < f := by
+  rw [← positive_iff] at hf
+  obtain ⟨x, xpos, hx⟩ := hf.exists_least_pos
+  have s0 : ∀ y ≤ succ x, (shift (shift f)).val y = 0 := by
+    intro _ hy
+    convert hx _ _ using 1
+    rwa [pred_lt_iff, ← succ_le_succ_iff, succ_pred]
+  have s1 : ∀ y ≤ succ x, (-shift (shift f)).val y = -1 := by
+    intros y hy
+    rw [AddSubgroupClass.coe_neg, val_shift, val_shift, DigitExpansion.neg_def,
+        DigitExpansion.sub_def]
+    have := s0 y hy
+    simp only [val_shift, shift_apply] at this
+    simp only [zero_apply, shift_apply, this, sub_self, zero_sub,
+      neg_inj, difcar_eq_one_iff, gt_iff_lt, Fin.zero_le, implies_true, and_true]
+    refine ⟨succ (succ x), ?_⟩
+    simp [xpos, le_succ, hy]
+  have sd : ∀ y ≤ x, difcar (shift (shift f)).val (-shift (shift f)).val y = 1 := by
+    intro y hy
+    rw [difcar_eq_one_iff]
+    refine ⟨succ y, lt_succ _, ?_, ?_⟩
+    · rw [s0 _ (succ_le_succ hy), s1 _ (succ_le_succ hy), Fin.lt_iff_val_lt_val]
+      simp [Nat.pos_of_ne_zero hb.out]
+    · intro y hy hy'
+      simp [hy'.not_le] at hy
+  simp only [val_shift, AddSubgroupClass.coe_neg] at s0 s1 sd
+  have : ∀ y ≤ x, (shift (shift f) + shift (shift f)).val y = 0 := by
+    intro _ hy
+    simp only [AddSubmonoid.coe_add, AddSubgroup.coe_toAddSubmonoid, val_shift, neg_neg, sub_self,
+               DigitExpansion.add_def, DigitExpansion.sub_def, zero_apply, zero_sub,
+               s0 _ (hy.trans (le_succ _)), s1 _ (hy.trans (le_succ _)), sd _ hy]
+  refine ⟨?_, x, ?_⟩
+  · rw [sub_ne_zero,  FunLike.ne_iff]
+    refine ⟨x, ?_⟩
+    rw [this _ le_rfl]
+    exact xpos.ne'
+  · intro _ hy
+    simp only [AddSubmonoid.coe_add, AddSubgroup.coe_toAddSubmonoid, val_shift] at this
+    simp only [AddSubmonoid.coe_add, AddSubgroup.coe_toAddSubmonoid, val_shift,
+               DigitExpansion.sub_def, hx _ hy, this _ hy.le, sub_self, zero_sub, neg_eq_zero,
+               difcar_eq_zero_iff]
+    intro z _ hz'
+    refine ⟨x, ?_, hy, ?_⟩
+    · contrapose! hz'
+      simp [this _ hz']
+    · rwa [this _ le_rfl]
+
+end shift
 
 end real
 

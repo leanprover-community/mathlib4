@@ -375,4 +375,48 @@ lemma difcar_single_single_of_lt_eq_one_iff_lt
 
 end single
 
+section shift
+
+variable {Z : Type*} [PartialOrder Z] [PredOrder Z] [SuccOrder Z] [NoMaxOrder Z] {b : ℕ}
+
+/-- "Divide" the expansion by shifting the expansion one digit to the right. Also called
+"half" in the orignal de Bruijn paper. -/
+def shift (f : DigitExpansion Z b) : DigitExpansion Z b :=
+  ⟨fun z ↦ f (pred z),
+   fun ⟨i, hi⟩ ↦ f.bounded' ⟨i, fun j hj ↦ by simpa using hi (succ j) (hj.trans (lt_succ _))⟩⟩
+
+@[simp]
+lemma shift_apply (f : DigitExpansion Z b) (z : Z) : shift f z = f (pred z) := rfl
+
+@[simp]
+lemma shift_zero [NeZero b] : shift (0 : DigitExpansion Z b) = 0 := rfl
+
+@[simp]
+lemma shift_eq_zero [NeZero b] {f : DigitExpansion Z b} : shift f = 0 ↔ f = 0 :=
+  ⟨fun h ↦ ext fun z ↦ by simpa using FunLike.ext_iff.mp h (succ z) , congr_arg _⟩
+
+lemma Positive.shift [NeZero b] {f : DigitExpansion Z b} (hf : f.Positive) :
+    (shift f).Positive :=
+  ⟨by simpa using hf.left,
+   hf.right.imp fun x hx y hy ↦ by simpa using hx (pred y) ((pred_le _).trans_lt hy)⟩
+
+lemma Negative.shift [NeZero b] {f : DigitExpansion Z b} (hf : f.Negative) :
+    (shift f).Negative :=
+  ⟨by simpa using hf.left,
+   hf.right.imp fun x hx y hy ↦ by simpa using hx (pred y) ((pred_le _).trans_lt hy)⟩
+
+@[simp]
+lemma shift_single {Z : Type*} [LinearOrder Z] [SuccOrder Z] [NoMaxOrder Z] [PredOrder Z]
+    [NoMinOrder Z] [IsSuccArchimedean Z] {b : ℕ} [hb : NeZero b](z : Z) (n : Fin (b + 1)) :
+    shift (single z n) = single (succ z) n := by
+  ext x
+  rcases lt_trichotomy (pred x) z with h|rfl|h
+  · have : x < succ z := by simpa using succ_lt_succ h
+    simp [h.ne', this.ne']
+  · simp
+  · have : succ z < x := by simpa using succ_lt_succ h
+    simp [h.ne, this.ne]
+
+end shift
+
 end DigitExpansion
