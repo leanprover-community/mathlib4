@@ -293,10 +293,10 @@ theorem integral_boundary_rect_eq_zero_of_differentiableOn (f : ℂ → E) (z w 
       inter_subset_inter (preimage_mono Ioo_subset_Icc_self) (preimage_mono Ioo_subset_Icc_self)
 #align complex.integral_boundary_rect_eq_zero_of_differentiable_on Complex.integral_boundary_rect_eq_zero_of_differentiableOn
 
-/-- If `f : ℂ → E` is continuous the closed annulus `r ≤ ‖z - c‖ ≤ R`, `0 < r ≤ R`, and is complex
-differentiable at all but countably many points of its interior, then the integrals of
-`f z / (z - c)` (formally, `(z - c)⁻¹ • f z`) over the circles `‖z - c‖ = r` and `‖z - c‖ = R` are
-equal to each other. -/
+/-- If `f : ℂ → E` is continuous on the closed annulus `r ≤ ‖z - c‖ ≤ R`, `0 < r ≤ R`,
+and is complex differentiable at all but countably many points of its interior,
+then the integrals of `f z / (z - c)` (formally, `(z - c)⁻¹ • f z`)
+over the circles `‖z - c‖ = r` and `‖z - c‖ = R` are equal to each other. -/
 theorem circleIntegral_sub_center_inv_smul_eq_of_differentiable_on_annulus_off_countable {c : ℂ}
     {r R : ℝ} (h0 : 0 < r) (hle : r ≤ R) {f : ℂ → E} {s : Set ℂ} (hs : s.Countable)
     (hc : ContinuousOn f (closedBall c R \ ball c r))
@@ -620,7 +620,7 @@ protected theorem _root_.Differentiable.analyticAt {f : ℂ → E} (hf : Differe
 /-- A complex differentiable function `f : ℂ → E` is continuously differentiable at every point. -/
 protected theorem _root_.Differentiable.contDiff {f : ℂ → E} (hf : Differentiable ℂ f) {n : ℕ∞} :
     ContDiff ℂ n f :=
-  contDiff_iff_contDiffAt.mpr $ fun z ↦ (hf.analyticAt z).contDiffAt
+  contDiff_iff_contDiffAt.mpr fun z ↦ (hf.analyticAt z).contDiffAt
 
 /-- When `f : ℂ → E` is differentiable, the `cauchyPowerSeries f z R` represents `f` as a power
 series centered at `z` in the entirety of `ℂ`, regardless of `R : ℝ≥0`, with `0 < R`. -/

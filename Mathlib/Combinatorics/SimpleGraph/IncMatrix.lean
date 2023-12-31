@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Moise, Yaël Dillies, Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.Basic
+import Mathlib.Data.Finset.Sym
 import Mathlib.Data.Matrix.Basic
 
 #align_import combinatorics.simple_graph.inc_matrix from "leanprover-community/mathlib"@"bb168510ef455e9280a152e7f31673cabd3d7496"
@@ -180,7 +181,7 @@ theorem incMatrix_mul_transpose_apply_of_adj (h : G.Adj a b) :
     simp_rw [Matrix.mul_apply, Matrix.transpose_apply, incMatrix_apply_mul_incMatrix_apply,
       Set.indicator_apply, Pi.one_apply, sum_boole]
     convert @Nat.cast_one R _
-    convert card_singleton ⟦(a, b)⟧
+    convert card_singleton s(a, b)
     rw [← coe_eq_singleton, coe_filter_univ]
     exact G.incidenceSet_inter_incidenceSet_of_adj h
 #align simple_graph.inc_matrix_mul_transpose_apply_of_adj SimpleGraph.incMatrix_mul_transpose_apply_of_adj

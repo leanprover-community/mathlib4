@@ -500,7 +500,7 @@ theorem disjSups_subset_sups : s ○ t ⊆ s ⊻ t := by
 variable (s t)
 
 theorem card_disjSups_le : (s ○ t).card ≤ s.card * t.card :=
-  (card_le_of_subset disjSups_subset_sups).trans <| card_sups_le _ _
+  (card_le_card disjSups_subset_sups).trans <| card_sups_le _ _
 #align finset.card_disj_sups_le Finset.card_disjSups_le
 
 variable {s s₁ s₂ t t₁ t₂}

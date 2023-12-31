@@ -580,7 +580,7 @@ theorem spanNorm_mul_spanNorm_le (I J : Ideal S) :
     spanNorm R I * spanNorm R J ≤ spanNorm R (I * J) := by
   rw [spanNorm, spanNorm, spanNorm, Ideal.span_mul_span', ← Set.image_mul]
   refine Ideal.span_mono (Set.monotone_image ?_)
-  rintro _ ⟨x, y, hxI, hyJ, rfl⟩
+  rintro _ ⟨x, hxI, y, hyJ, rfl⟩
   exact Ideal.mul_mem_mul hxI hyJ
 #align ideal.span_norm_mul_span_norm_le Ideal.spanNorm_mul_spanNorm_le
 
