@@ -83,3 +83,5 @@ lemma rank_eq [Nontrivial R] [Module.Free R M] :
 end CommRing
 
 end TensorAlgebra
+
+#minimize_imports
