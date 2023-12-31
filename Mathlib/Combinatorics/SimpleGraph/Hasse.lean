@@ -133,7 +133,7 @@ protected theorem Hom.pathGraph_val {n m : ℕ} (hnm : n ≤ m) (u : Fin n) :
 
 
 /-- Convert a homomrfism from a pathGraph to a walk -/
-def Walk.ofPathGraphHom {α} (G : SimpleGraph α) {n : ℕ} (hom : pathGraph (n + 1) →g G) :
+def Walk.ofPathGraphHom (G : SimpleGraph α) {n : ℕ} (hom : pathGraph (n + 1) →g G) :
     G.Walk (hom ⊤) (hom ⊥) := by
   induction n with
   | zero => exact Walk.nil
@@ -156,7 +156,7 @@ def Walk.ofPathGraphHom {α} (G : SimpleGraph α) {n : ℕ} (hom : pathGraph (n 
     exact Walk.cons hGadj w
 
 /-- Given a walk get a homomrfism from a pathGraph -/
-def Walk.toPathGraphHom {α} (G : SimpleGraph α) :
+theorem Walk.toPathGraphHom (G : SimpleGraph α) :
     ∀ {u v : α} (w : G.Walk u v), ∃(hom : pathGraph (w.length + 1) →g G), hom ⊥ = v ∧ hom ⊤ = u
   | _, _, nil' u => by
     let toFun : Fin 1 → α := fun _ => u
