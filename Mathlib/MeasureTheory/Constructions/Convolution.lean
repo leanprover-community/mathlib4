@@ -48,3 +48,21 @@ theorem comm {M : Type*} [CommMonoid M] [MeasurableSpace M] [MeasurableMul₂ M]
   rw [← prod_swap, map_map]
   · simp [Function.comp_def, mul_comm]
   all_goals { measurability }
+
+/-- Convolution with the dirac measure at 1 returns the original measure. -/
+theorem one_mul {M : Type*} [Monoid M] [MeasurableSpace M] [MeasurableMul₂ M]
+    (μ : Measure M) [SFinite μ] : (Measure.dirac 1).conv μ = μ := by
+  unfold conv
+  rw [MeasureTheory.Measure.dirac_prod]
+  rw [map_map]
+  simp [Function.comp_def]
+  all_goals { measurability }
+
+/-- Convolution with the dirac measure at 1 returns the original measure. -/
+theorem mul_one {M : Type*} [Monoid M] [MeasurableSpace M] [MeasurableMul₂ M]
+    (μ : Measure M) [SFinite μ] : μ.conv (Measure.dirac 1) = μ := by
+  unfold conv
+  rw [MeasureTheory.Measure.prod_dirac]
+  rw [map_map]
+  simp [Function.comp_def]
+  all_goals { measurability }
