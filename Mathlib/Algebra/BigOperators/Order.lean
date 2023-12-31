@@ -849,9 +849,11 @@ def evalFinsetSum : PositivityExt where eval {u α} zα pα e := do
      -- TODO: The following annotation is ignored. See leanprover/lean4#3126
     let so : Option Q(Finset.Nonempty $s) ← do
       try
-        let _no ← synthInstanceQ q(Nonempty $ι)
         match s with
         | ~q(@univ _ $fi) => do
+          -- TODO(Qq): doesn't type-check without explicit `u`, even though it works outside the
+          -- `match`.
+          let _no ← synthInstanceQ (u := 0) q(Nonempty $ι)
           return some q(Finset.univ_nonempty (α := $ι))
         | _ => throwError "`s` is not `univ`"
       catch _ => do
