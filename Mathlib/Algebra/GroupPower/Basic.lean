@@ -3,7 +3,6 @@ Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis
 -/
-import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Group.Commute.Units
 import Mathlib.Algebra.Group.TypeTags
 
@@ -229,19 +228,6 @@ theorem pow_mul_pow_eq_one {a b : M} (n : ℕ) (h : a * b = 1) : a ^ n * b ^ n =
       _ = 1 := by simp [h, hn]
 #align pow_mul_pow_eq_one pow_mul_pow_eq_one
 #align nsmul_add_nsmul_eq_zero nsmul_add_nsmul_eq_zero
-
-theorem dvd_pow {x y : M} (hxy : x ∣ y) : ∀ {n : ℕ} (_ : n ≠ 0), x ∣ y ^ n
-  | 0,     hn => (hn rfl).elim
-  | n + 1, _  => by
-    rw [pow_succ]
-    exact hxy.mul_right _
-#align dvd_pow dvd_pow
-
-alias Dvd.dvd.pow := dvd_pow
-
-theorem dvd_pow_self (a : M) {n : ℕ} (hn : n ≠ 0) : a ∣ a ^ n :=
-  dvd_rfl.pow hn
-#align dvd_pow_self dvd_pow_self
 
 end Monoid
 

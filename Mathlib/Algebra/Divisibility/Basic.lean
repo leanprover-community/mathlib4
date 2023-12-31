@@ -139,6 +139,16 @@ theorem dvd_of_eq (h : a = b) : a ∣ b := by rw [h]
 alias Eq.dvd := dvd_of_eq
 #align eq.dvd Eq.dvd
 
+lemma dvd_pow (hab : a ∣ b) : ∀ {n : ℕ} (_ : n ≠ 0), a ∣ b ^ n
+  | 0,     hn => (hn rfl).elim
+  | n + 1, _  => by rw [pow_succ]; exact hab.mul_right _
+#align dvd_pow dvd_pow
+
+alias Dvd.dvd.pow := dvd_pow
+
+lemma dvd_pow_self (a : α) {n : ℕ} (hn : n ≠ 0) : a ∣ a ^ n := dvd_rfl.pow hn
+#align dvd_pow_self dvd_pow_self
+
 end Monoid
 
 section CommSemigroup
