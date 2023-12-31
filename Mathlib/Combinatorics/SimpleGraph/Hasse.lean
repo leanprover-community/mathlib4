@@ -155,9 +155,82 @@ def Walk.ofPathGraphHom {α} (G : SimpleGraph α) {n : ℕ} (hom : pathGraph (n 
       exact hom.map_rel hpgadj
     exact Walk.cons hGadj w
 
--- def pathGraphHomOfWalk {α} (G : SimpleGraph α) {u v : α} (w : G.Walk u v) :
---     pathGraph w.length →g G where
---   toFun v := sorry
---   map_rel' := sorry
+/-- Given a walk get a homomrfism from a pathGraph -/
+def Walk.toPathGraphHom {α} (G : SimpleGraph α) :
+    ∀ {u v : α} (w : G.Walk u v), ∃(hom : pathGraph (w.length + 1) →g G), hom ⊥ = v ∧ hom ⊤ = u
+  | _, _, nil' u => by
+    let toFun : Fin 1 → α := fun _ => u
+    let map_rel' : ∀ {a b}, (pathGraph 1).Adj a b → G.Adj (toFun a) (toFun b) := by
+      intro (a : Fin 1) (b : Fin 1) (h : (pathGraph 1).Adj a b)
+      have hba : b = a := Subsingleton.elim b a
+      rw [hba] at h
+      exact ((pathGraph 1).loopless a h).elim
+    apply Exists.intro ⟨toFun, map_rel'⟩
+    exact Prod.mk.inj_iff.mp rfl
+  | _, _, cons' u v w h p => by
+    let hom'_w_v : ∃ (hom' : pathGraph (length p + 1) →g G), hom' ⊥ = w ∧ hom' ⊤ = v :=
+      Walk.toPathGraphHom G p
+    match hom'_w_v with
+    | ⟨hom', hw, hv⟩ =>
+      let fun' : Fin (length p + 1) → α := hom'.toFun
+      have rel' : ∀ {a b}, (pathGraph (p.length + 1)).Adj a b → G.Adj (fun' a) (fun' b) :=
+        hom'.map_rel
+      let toFun : Fin (p.length + 2) → α := fun i =>
+        if h : i.val < p.length + 1
+          then fun' ⟨i.val, h⟩
+          else u
+      have htoFun : ∀ (a : Fin (length p + 1)), toFun a = fun' a := by
+        intro a
+        simp [toFun]
+      have hv' : v = toFun (Fin.last p.length) := by
+        rw [htoFun]
+        simp
+        exact hv.symm
+      let map_rel' : ∀ {a b}, (pathGraph (p.length + 2)).Adj a b → G.Adj (toFun a) (toFun b) := by
+        intro (a : Fin (length p + 2)) (b : Fin (length p + 2))
+        intro (h' : (pathGraph (p.length + 2)).Adj a b)
+        have ha : a.val < p.length + 1 ∨ a.val = p.length + 1 :=
+          Nat.lt_or_eq_of_le (Nat.le_pred_of_lt a.is_lt)
+        have hb : b.val < p.length + 1 ∨ b.val = p.length + 1 :=
+          Nat.lt_or_eq_of_le (Nat.le_pred_of_lt b.is_lt)
+        match ha, hb with
+        | Or.inl ha, Or.inl hb =>
+          let a' : Fin (length p + 1) := ⟨a.val, ha⟩
+          let b' : Fin (length p + 1) := ⟨b.val, hb⟩
+          have hpgadj : (pathGraph (p.length + 1)).Adj a' b' := by
+            rw [pathGraph_adj] at *
+            exact h'
+          rw [a.cast_val_eq_self.symm, b.cast_val_eq_self.symm]
+          rw [htoFun a', htoFun b']
+          exact rel' hpgadj
+        | Or.inl ha, Or.inr hb =>
+          have ha' : a.val = p.length := by
+            rw [pathGraph_adj] at h'
+            have hab' : b.val + 1 ≠ a.val := by
+              rw [hb]
+              exact Nat.ne_of_gt a.prop
+            have hab : a.val + 1 = b.val := h'.elim id (fun a_1 ↦ (hab' a_1).elim)
+            rw [← hab] at hb
+            exact Nat.succ_inj'.mp hb
+          have ha'' : toFun a = v := by
+            rw [hv']
+            apply congrArg toFun
+            have hlast : (Fin.last p.length).val = p.length := rfl
+            rw [hlast]
+            apply Fin.ext
+            rw [ha']
+            simp
+            exact (Nat.mod_eq_of_lt (Nat.lt_add_right_iff_pos.mpr Nat.two_pos)).symm
+          have hb' : toFun b = u := by
+            simp [toFun, hb]
+          rw [ha'', hb']
+          exact adj_symm G h
+        | Or.inr ha, Or.inl hb => sorry
+        | Or.inr ha, Or.inr hb =>
+          have hab : b = a := Fin.ext (Eq.trans hb ha.symm)
+          rw [hab] at h'
+          exact ((pathGraph (p.length + 2)).loopless a h').elim
+      apply Exists.intro ⟨toFun, map_rel'⟩
+      sorry
 
 end SimpleGraph
