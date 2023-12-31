@@ -167,7 +167,7 @@ end zeroDimensionalAndFinite
 section zeroDimensionalAndNoetherianLocal
 
 lemma maximalIdeal_locally_nilpotent_of_zero_dimensional_local_ring
-    [LocalRing R] [Nontrivial R] (dim0 : ringKrullDim R = 0)
+    [LocalRing R] (dim0 : ringKrullDim R = 0)
     (x : R) (hx : x ∈ LocalRing.maximalIdeal R) : ∃ (n : ℕ), x ^ n = 0 := by
   suffices eq1 : LocalRing.maximalIdeal R = nilradical R
   · rw [eq1] at hx
