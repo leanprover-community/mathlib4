@@ -27,6 +27,8 @@ The proof here probably does not generalize to non-commutative cases.
 
 open TopologicalSpace AlgebraicGeometry Opposite CategoryTheory
 
+open BigOperators
+
 universe u
 variable (R : Type u) [CommRing R]
 
@@ -164,10 +166,118 @@ end zeroDimensionalAndFinite
 
 section zeroDimensionalAndNoetherianLocal
 
+lemma maximalIdeal_locally_nilpotent_of_zero_dimensional_local_ring
+    [LocalRing R] [Nontrivial R] (dim0 : ringKrullDim R = 0)
+    (x : R) (hx : x ∈ LocalRing.maximalIdeal R) : ∃ (n : ℕ), x ^ n = 0 := by
+  suffices eq1 : LocalRing.maximalIdeal R = nilradical R
+  · rw [eq1] at hx
+    exact hx
+  rw [nilradical_eq_sInf]
+  rw [show sInf {J : Ideal R | Ideal.IsPrime J} = sInf {J : Ideal R | Ideal.IsMaximal J} by
+    · congr 1
+      ext J
+      exact ⟨fun h ↦ Ideal.IsPrime.isMaximal_of_dim_zero h dim0, Ideal.IsMaximal.isPrime⟩,
+    show {J : Ideal R | Ideal.IsMaximal J} = {LocalRing.maximalIdeal R} by
+    · ext J
+      simp only [Set.mem_setOf_eq, Set.mem_singleton_iff]
+      exact ⟨fun h ↦ LocalRing.eq_maximalIdeal h,
+        by rintro rfl; exact LocalRing.maximalIdeal.isMaximal R⟩]
+  simp only [csInf_singleton]
+
+lemma _root_.Ideal.pow_eq_span (n : ℕ) (I : Ideal R) :
+    I ^ n =
+    Ideal.span { r : R | ∃ s : Fin n → I, r = ∏ i : Fin n, (s i).1 } := by
+  symm
+  induction' n with n ih
+  · simp
+
+  refine Submodule.span_eq_of_le _ ?_ ?_
+  · rintro _ ⟨s, hs, rfl⟩
+    rw [Fin.prod_univ_succ, pow_succ, ← ih]
+    exact Ideal.mul_mem_mul (s 0).2 (Submodule.subset_span ⟨_, rfl⟩)
+  · change Submodule.map₂ _ I (I ^ n) ≤ _
+    rw [Submodule.map₂_le]
+    intro r hr s hs
+    simp only [LinearMap.mul_apply', Ideal.submodule_span_eq]
+    rw [← ih] at hs
+    refine Submodule.span_induction hs ?_ ?_ ?_ ?_
+    · rintro _ ⟨t, rfl⟩
+      refine Ideal.subset_span ⟨Fin.cons ⟨r, hr⟩ t, ?_⟩
+      conv_rhs => rw [Fin.prod_univ_succ]
+    · simp
+    · intro t₁ t₂ h₁ h₂
+      rw [mul_add]
+      exact Submodule.add_mem _ h₁ h₂
+    · intro t x hx
+      rw [smul_eq_mul, ← mul_assoc, mul_comm r t, mul_assoc]
+      exact Ideal.mul_mem_left _ _ hx
+
+lemma IsNoetherianRing.pow_le_of_le_radical [noeth : IsNoetherianRing R] (I J : Ideal R)
+    (hIJ : I ≤ J.radical) : ∃ (n : ℕ), I ^ n ≤ J := by
+  classical
+  obtain ⟨S, rfl⟩ := isNoetherianRing_iff_ideal_fg _ |>.mp noeth I
+  induction' S using Finset.induction with r S _ ih
+  · simp only [Finset.coe_empty, Ideal.span_empty]
+    exact ⟨1, by simp⟩
+  · simp only [Finset.coe_insert, Ideal.span_insert, sup_le_iff] at hIJ ⊢
+    obtain ⟨n, hn⟩ := ih hIJ.2
+    rw [Ideal.span_le, Ideal.span_le] at hIJ
+    simp only [Set.singleton_subset_iff, SetLike.mem_coe] at hIJ
+    obtain ⟨m, hm⟩ := hIJ.1
+    refine ⟨n + m, ?_⟩
+    rw [Ideal.pow_eq_span, Ideal.span_le]
+    rintro _ ⟨t, rfl⟩
+    have H (i : Fin (n + m)) : (t i).1 ∈ Ideal.span {r} ⊔ Ideal.span S := (t i).2
+    simp_rw [Ideal.mem_span_singleton_sup] at H
+    choose a b hab1 hab2 using H
+
+    simp_rw [← hab2]
+    rw [Finset.prod_add]
+    refine Ideal.sum_mem _ fun s _ ↦ ?_
+    by_cases s_eq : m ≤ s.card
+    · refine Ideal.mul_mem_right _ _ ?_
+      rw [Finset.prod_mul_distrib]
+      simp only [Finset.prod_const]
+      refine Ideal.mul_mem_left _ _ ?_
+      rw [show s.card = m + (s.card - m) by rw [Nat.add_sub_cancel' s_eq], pow_add]
+      exact Ideal.mul_mem_right _ _ (by assumption)
+
+    · refine Ideal.mul_mem_left _ _ ?_
+      simp only [not_le] at s_eq
+      have s_eq' : n ≤ Finset.card (Finset.univ \ s)
+      · simp only [Finset.subset_univ, Finset.card_sdiff, Finset.card_fin]
+        rw [Nat.add_sub_assoc (le_of_lt s_eq)]
+        norm_num
+      let e := (Finset.univ \ s).equivFin
+
+      rw [← Finset.prod_attach,
+        show ∏ a in (Finset.univ \ s).attach, b a =
+          ∏ a : Fin ((Finset.univ \ s).card), b (e.symm a) by
+        rw [Finset.prod_equiv e] <;> aesop]
+
+      have eq0 : (Finset.univ \ s).card = n + ((Finset.univ \ s).card - n) :=
+        Nat.add_sub_cancel' s_eq' |>.symm
+      let e' := finCongr eq0
+      rw [show ∏ a : Fin ((Finset.univ \ s).card), b (e.symm a) =
+        ∏ a : Fin (n + ((Finset.univ \ s).card - n)), b (e.symm <| e'.symm a) by
+          rw [Finset.prod_equiv e']
+          · simp
+          · intro i
+            simp only [Finset.mem_univ, finCongr_symm, forall_true_left]
+            congr,
+        Fin.prod_univ_add]
+      refine Ideal.mul_mem_right _ _ <| hn ?_
+      rw [Ideal.pow_eq_span]
+      set g : Fin n → R := _
+      change ∏ i : Fin n, g i ∈ _
+      exact Ideal.subset_span ⟨fun i ↦ ⟨g i, hab1 _⟩, rfl⟩
+
 lemma IsNoetherianRing.nilpotent_maximalIdeal_of_zero_dimensional_localRing
     [noeth : IsNoetherianRing R] [LocalRing R] [Nontrivial R] (dim0 : ringKrullDim R = 0) :
     IsNilpotent (LocalRing.maximalIdeal R) := by
-  sorry
+  obtain ⟨n, hn⟩ := IsNoetherianRing.pow_le_of_le_radical R (LocalRing.maximalIdeal R) ⊥
+    (fun r hr ↦ maximalIdeal_locally_nilpotent_of_zero_dimensional_local_ring R dim0 r hr)
+  exact ⟨n, by simpa using hn⟩
 
 end zeroDimensionalAndNoetherianLocal
 
