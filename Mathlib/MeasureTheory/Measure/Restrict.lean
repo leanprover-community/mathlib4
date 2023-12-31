@@ -780,9 +780,7 @@ lemma NullMeasurable.measure_preimage_eq_measure_restrict_preimage_of_ae_compl_e
     {t : Set β} (t_mble : MeasurableSet t) (ht : b ∉ t) :
     μ (f ⁻¹' t) = μ.restrict s (f ⁻¹' t) := by
   rw [Measure.restrict_apply₀ (f_mble t_mble)]
-  simp only [EventuallyEq, Filter.Eventually, Pi.zero_apply, Measure.ae,
-             MeasurableSet.compl_iff, Filter.mem_mk, mem_setOf_eq] at hs
-  rw [Measure.restrict_apply₀] at hs
+  rw [EventuallyEq, ae_iff, Measure.restrict_apply₀] at hs
   · apply le_antisymm _ (measure_mono (inter_subset_left _ _))
     apply (measure_mono (Eq.symm (inter_union_compl (f ⁻¹' t) s)).le).trans
     apply (measure_union_le _ _).trans
