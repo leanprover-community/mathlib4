@@ -402,20 +402,6 @@ theorem pow_four_le_pow_two_of_pow_two_le {x y : R} (h : x ^ 2 ≤ y) : x ^ 4 �
 
 end LinearOrderedRing
 
-section LinearOrderedCommRing
-
-variable [LinearOrderedCommRing R]
-
-/-- Arithmetic mean-geometric mean (AM-GM) inequality for linearly ordered commutative rings. -/
-theorem two_mul_le_add_sq (a b : R) : 2 * a * b ≤ a ^ 2 + b ^ 2 :=
-  sub_nonneg.mp ((sub_add_eq_add_sub _ _ _).subst ((sub_sq a b).subst (sq_nonneg _)))
-#align two_mul_le_add_sq two_mul_le_add_sq
-
-alias two_mul_le_add_pow_two := two_mul_le_add_sq
-#align two_mul_le_add_pow_two two_mul_le_add_pow_two
-
-end LinearOrderedCommRing
-
 section LinearOrderedCommMonoidWithZero
 
 variable [LinearOrderedCommMonoidWithZero M] [NoZeroDivisors M] {a : M} {n : ℕ}
