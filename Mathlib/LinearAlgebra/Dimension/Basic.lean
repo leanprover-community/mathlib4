@@ -373,17 +373,3 @@ theorem rank_subsingleton [Subsingleton R] : Module.rank R M = 1 := by
 #align rank_subsingleton rank_subsingleton
 
 end
-
-theorem CompleteLattice.Independent.subtype_ne_bot_le_rank
-    {ι : Type w} [Nontrivial R] [NoZeroSMulDivisors R M]
-    {V : ι → Submodule R M} (hV : CompleteLattice.Independent V) :
-    Cardinal.lift.{v} #{ i : ι // V i ≠ ⊥ } ≤ Cardinal.lift.{w} (Module.rank R M) := by
-  set I := { i : ι // V i ≠ ⊥ }
-  have hI : ∀ i : I, ∃ v ∈ V i, v ≠ (0 : M) := by
-    intro i
-    rw [← Submodule.ne_bot_iff]
-    exact i.prop
-  choose v hvV hv using hI
-  have : LinearIndependent R v := (hV.comp Subtype.coe_injective).linearIndependent _ hvV hv
-  exact this.cardinal_lift_le_rank
-#align complete_lattice.independent.subtype_ne_bot_le_rank CompleteLattice.Independent.subtype_ne_bot_le_rank

@@ -165,31 +165,6 @@ theorem Basis.finite_index_of_rank_lt_aleph0 {ι : Type*} {s : Set ι} (b : Basi
   finite_def.2 (b.nonempty_fintype_index_of_rank_lt_aleph0 h)
 #align basis.finite_index_of_rank_lt_aleph_0 Basis.finite_index_of_rank_lt_aleph0
 
-variable (R M)
-
-/-- The rank of a finite module is finite. -/
-theorem rank_lt_aleph0 [Module.Finite R M] : Module.rank R M < ℵ₀ := by
-  simp only [Module.rank_def]
-  letI := nontrivial_of_invariantBasisNumber R
-  -- porting note: can't use `‹_›` as that pulls the unused `N` into the context
-  obtain ⟨S, hS⟩ := Module.finite_def.mp ‹Module.Finite R M›
-  refine' (ciSup_le' fun i => _).trans_lt (nat_lt_aleph0 S.card)
-  exact linearIndependent_le_span_finset _ i.prop S hS
-#align finite_dimensional.rank_lt_aleph_0 rank_lt_aleph0
-
-@[deprecated] protected alias FiniteDimensional.rank_lt_aleph0 := rank_lt_aleph0
-
-/-- If `M` is finite, `finrank M = rank M`. -/
-@[simp]
-theorem finrank_eq_rank [Module.Finite R M] :
-    ↑(FiniteDimensional.finrank R M) = Module.rank R M := by
-  rw [FiniteDimensional.finrank, cast_toNat_of_lt_aleph0 (rank_lt_aleph0 R M)]
-#align finite_dimensional.finrank_eq_rank finrank_eq_rank
-
-@[deprecated] protected alias FiniteDimensional.finrank_eq_rank := finrank_eq_rank
-
-variable {R M}
-
 namespace LinearIndependent
 
 theorem cardinal_mk_le_finrank [Module.Finite R M]
