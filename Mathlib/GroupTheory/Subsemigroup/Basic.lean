@@ -62,9 +62,11 @@ variable [Add A] {t : Set A}
 structure IsAddSubsemigroup (s : Set A) : Prop where
   add_mem {a b : A} : a ∈ s → b ∈ s → a + b ∈ s
 
-@[to_additive]
+@[to_additive (attr := mk_iff)]
 structure IsSubsemigroup (s : Set M) : Prop where
   mul_mem {a b : M} : a ∈ s → b ∈ s → a * b ∈ s
+
+attribute [to_additive existing] IsSubsemigroup_iff
 
 /-- A subsemigroup is closed under multiplication. -/
 @[to_additive "An additive subsemigroup is closed under addition."]
@@ -105,8 +107,9 @@ namespace Subsemigroup
 open BundledSet
 
 @[to_additive]
-instance : SetInterPred M IsSubsemigroup :=
-  ⟨fun _S hS ↦ ⟨fun ha hb s hs ↦ (hS s hs).1 (ha s hs) (hb s hs)⟩⟩
+instance : SetInterPred M IsSubsemigroup := by
+  rw [show IsSubsemigroup = _ by ext; simp [IsSubsemigroup_iff]; rfl]
+  infer_instance
 
 #align subsemigroup.mem_top BundledSet.mem_top
 #align add_subsemigroup.mem_top BundledSet.mem_top
