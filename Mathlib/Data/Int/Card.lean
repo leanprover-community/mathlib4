@@ -35,27 +35,27 @@ theorem Int.Ico_filter_modEq_eq (a b v : ℤ) {r : ℤ} : (Ico a b).filter (· �
   simp_rw [mem_map, mem_filter, mem_Ico, Function.Embedding.coeFn_mk, ← eq_sub_iff_add_eq,
     exists_eq_right, modEq_comm, modEq_iff_dvd, sub_lt_sub_iff_right, sub_le_sub_iff_right]
 
-/-- There are `⌈(b - v) / r⌉ - ⌈(a - v) / r⌉` numbers congruent to `v` modulo `r` in `[a, b)`,
+/-- There are `⌈(b - v) / r⌉ - ⌈(a - v) / r⌉` numbers congruent to `v` mod `r` in `[a, b)`,
 if `a ≤ b`. -/
 theorem Int.Ico_filter_modEq_card (a b v : ℤ) {r : ℤ} (hr : 0 < r) :
     ((Ico a b).filter (· ≡ v [ZMOD r])).card =
     max (⌈(b - v) / (r : ℚ)⌉ - ⌈(a - v) / (r : ℚ)⌉) 0 := by
   simp [Ico_filter_modEq_eq, Ico_filter_dvd_eq, Int.toNat_eq_max, hr]
 
+theorem Nat.Ico_filter_modEq_cast (a b v r : ℕ) :
+    ((Ico a b).filter (· ≡ v [MOD r])).map castEmbedding = (Ico ↑a ↑b).filter (· ≡ v [ZMOD r]) := by
+  ext x
+  simp only [mem_map, mem_filter, mem_Ico, castEmbedding_apply]
+  constructor
+  · simp_rw [forall_exists_index, ← coe_nat_modEq_iff]; intro y ⟨h, c⟩; subst c; exact_mod_cast h
+  · intro h; lift x to ℕ using (by linarith); exact ⟨x, by simp_all [coe_nat_modEq_iff]⟩
+
 /-- `Int.Ico_filter_modEq_card` restricted to natural numbers. -/
 theorem Nat.Ico_filter_modEq_card (a b v : ℕ) {r : ℕ} (hr : 0 < r) :
     ((Ico a b).filter (· ≡ v [MOD r])).card =
     max (⌈(b - v) / (r : ℚ)⌉ - ⌈(a - v) / (r : ℚ)⌉) 0 := by
-  suffices : ((Ico a b).filter (· ≡ v [MOD r])).card = ((Ico ↑a ↑b).filter (· ≡ v [ZMOD r])).card
-  · rw [this, Int.Ico_filter_modEq_card _ _ _ (cast_pos.mpr hr)]; norm_cast
-  refine card_congr (fun x _ => x) ?_ (fun _ _ _ _ e => by simpa only [cast_inj] using e) ?_
-  · simp only [mem_filter, mem_Ico, cast_le, cast_lt, and_imp]
-    intro c l u m
-    exact ⟨⟨l, u⟩, coe_nat_modEq_iff.mpr m⟩
-  · simp only [mem_filter, mem_Ico, and_imp]
-    intro c l u d
-    lift c to ℕ using (by linarith)
-    exact ⟨c, ⟨⟨⟨ofNat_le.mp l, ofNat_lt.mp u⟩, coe_nat_modEq_iff.mp d⟩, rfl⟩⟩
+  have := Nat.Ico_filter_modEq_cast a b v r ▸ card_map _
+  simp_rw [← this, Int.Ico_filter_modEq_card _ _ _ (ofNat_pos.mpr hr), Int.cast_ofNat]
 
 /-- There are `⌈(n - v % r) / r⌉` numbers in `[0, n)` congruent to `v` mod `r`. -/
 theorem Nat.count_modEq_card' (n v : ℕ) {r : ℕ} (hr : 0 < r) :
