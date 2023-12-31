@@ -17,20 +17,17 @@ Pass
 
 open Finset Int
 
+theorem Int.Ico_filter_dvd_eq (a b : ℤ) {r : ℤ} (hr : 0 < r) : (Ico a b).filter (r ∣ ·) =
+    (Ico ⌈a / (r : ℚ)⌉ ⌈b / (r : ℚ)⌉).map ⟨_, mul_left_injective₀ hr.ne'⟩ := by
+  ext x
+  simp only [mem_map, mem_filter, mem_Ico, ceil_le, lt_ceil, div_le_iff, lt_div_iff,
+    dvd_iff_exists_eq_mul_left, cast_pos.2 hr, ← cast_mul, cast_lt, cast_le]
+  aesop
+
 /-- There are `⌈b / r⌉ - ⌈a / r⌉` multiples of `r` in `[a, b)`, if `a ≤ b`. -/
 theorem Int.Ico_filter_dvd_card (a b : ℤ) {r : ℤ} (hr : 0 < r) :
     ((Ico a b).filter (r ∣ ·)).card = max (⌈b / (r : ℚ)⌉ - ⌈a / (r : ℚ)⌉) 0 := by
-  suffices : ((Ico a b).filter (r ∣ ·)).card = (Ico ⌈(a : ℚ) / r⌉ ⌈(b : ℚ) / r⌉).card
-  · rw [this, card_Ico, toNat_eq_max]
-  have hr' : (0 : ℚ) < r := by positivity
-  refine (card_congr (fun x _ => x * r) ?_ (fun _ _ _ _ => mul_right_cancel₀ hr.ne') ?_).symm
-  · simp only [mem_Ico, and_imp, mem_filter, dvd_mul_left, and_true, ceil_le, lt_ceil, div_le_iff,
-      lt_div_iff, hr', ← cast_mul, cast_le, cast_lt]
-    intro c h₁ h₂
-    exact ⟨h₁, h₂⟩
-  · simp only [mem_filter, mem_Ico, ceil_le, lt_ceil, div_le_iff, lt_div_iff, hr']
-    intro c ⟨⟨hac, hcb⟩, h⟩
-    exact ⟨c / r, by simp [← cast_mul, Int.ediv_mul_cancel h, hac, hcb]⟩
+  rw [Ico_filter_dvd_eq a b hr, card_map, card_Ico, Int.toNat_eq_max]
 
 /-- There are `⌈(b - v) / r⌉ - ⌈(a - v) / r⌉` numbers congruent to `v` modulo `r` in `[a, b)`,
 if `a ≤ b`. -/
