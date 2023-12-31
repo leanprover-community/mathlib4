@@ -89,7 +89,7 @@ namespace ComponentCompl
 for adjacent vertices.
 -/
 protected def lift {β : Sort*} (f : ∀ ⦃v⦄ (_ : v ∉ K), β)
-    (h : ∀ ⦃v w⦄ (hv : v ∉ K) (hw : w ∉ K) (_ : G.Adj v w), f hv = f hw) : G.ComponentCompl K → β :=
+    (h : ∀ ⦃v w⦄ (hv : v ∉ K) (hw : w ∉ K), G.Adj v w → f hv = f hw) : G.ComponentCompl K → β :=
   ConnectedComponent.lift (fun vv => f vv.prop) fun v w p => by
     induction' p with _ u v w a q ih
     · rintro _

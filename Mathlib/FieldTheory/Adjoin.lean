@@ -749,7 +749,7 @@ theorem adjoin_finset_isCompactElement (S : Finset E) :
     IsCompactElement (adjoin F S : IntermediateField F E) := by
   rw [← biSup_adjoin_simple]
   simp_rw [Finset.mem_coe, ← Finset.sup_eq_iSup]
-  exact finset_sup_compact_of_compact S fun x _ => adjoin_simple_isCompactElement x
+  exact isCompactElement_finsetSup S fun x _ => adjoin_simple_isCompactElement x
 #align intermediate_field.adjoin_finset_is_compact_element IntermediateField.adjoin_finset_isCompactElement
 
 /-- Adjoining a finite subset is compact in the lattice of intermediate fields. -/
@@ -1042,6 +1042,26 @@ theorem adjoin_minpoly_coeff_of_exists_primitive_element
   convert natDegree_le_of_dvd dvd_g
     ((g.monic_toSubring _ _).mpr <| (minpoly.monic <| .of_finite K α).map _).ne_zero using 1
   rw [natDegree_toSubring, natDegree_map]
+
+variable {F} in
+/-- If `E / F` is an infinite algebraic extension, then there exists an intermediate field
+`L / F` with arbitrarily large finite extension degree. -/
+theorem exists_lt_finrank_of_infinite_dimensional
+    (halg : Algebra.IsAlgebraic F E) (hnfd : ¬ FiniteDimensional F E) (n : ℕ) :
+    ∃ L : IntermediateField F E, FiniteDimensional F L ∧ n < finrank F L := by
+  induction' n with n ih
+  · exact ⟨⊥, Subalgebra.finiteDimensional_bot, finrank_pos⟩
+  obtain ⟨L, fin, hn⟩ := ih
+  obtain ⟨x, hx⟩ : ∃ x : E, x ∉ L := by
+    contrapose! hnfd
+    rw [show L = ⊤ from eq_top_iff.2 fun x _ ↦ hnfd x] at fin
+    exact topEquiv.toLinearEquiv.finiteDimensional
+  let L' := L ⊔ F⟮x⟯
+  haveI := adjoin.finiteDimensional (halg x).isIntegral
+  refine ⟨L', inferInstance, by_contra fun h ↦ ?_⟩
+  have h1 : L = L' := eq_of_le_of_finrank_le le_sup_left ((not_lt.1 h).trans hn)
+  have h2 : F⟮x⟯ ≤ L' := le_sup_right
+  exact hx <| (h1.symm ▸ h2) <| mem_adjoin_simple_self F x
 
 theorem _root_.minpoly.natDegree_le (x : L) [FiniteDimensional K L] :
     (minpoly K x).natDegree ≤ finrank K L :=
