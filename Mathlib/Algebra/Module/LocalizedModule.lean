@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Jujian Zhang
 -/
 import Mathlib.Algebra.Algebra.Bilinear
-import Mathlib.Algebra.Algebra.NonUnitalHom
 import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.RingTheory.Localization.Basic
 
