@@ -559,7 +559,7 @@ def TopologicalGroup.toUniformSpace : UniformSpace G where
     have : Tendsto (fun p : G × G ↦ (p.2 / p.1)⁻¹) (comap (fun p : G × G ↦ p.2 / p.1) (𝓝 1))
       (𝓝 1⁻¹) := tendsto_id.inv.comp tendsto_comap
     by simpa [tendsto_comap_iff]
-  comp := Tendsto.le_comap <| fun U H ↦ by
+  comp := Tendsto.le_comap fun U H ↦ by
     rcases exists_nhds_one_split H with ⟨V, V_nhds, V_mul⟩
     refine mem_map.2 (mem_of_superset (mem_lift' <| preimage_mem_comap V_nhds) ?_)
     rintro ⟨x, y⟩ ⟨z, hz₁, hz₂⟩
