@@ -846,13 +846,14 @@ def evalFinsetSum : PositivityExt where eval {u α} zα pα e := do
   match e with
   | ~q(@Finset.sum _ $ι $instα $s $f) =>
     let (lhs, _, (rhs : Q($α))) ← lambdaMetaTelescope f
-    let so : Option Q(Finset.Nonempty $s) ← do -- TODO: It doesn't complain if we make a typo?
+     -- TODO: The following annotation is ignored. See leanprover/lean4#3126
+    let so : Option Q(Finset.Nonempty $s) ← do
       try
-        let _fi ← synthInstanceQ q(Fintype $ι)
         let _no ← synthInstanceQ q(Nonempty $ι)
         match s with
-        | ~q(@univ _ $fi) => pure (some q(Finset.univ_nonempty (α := $ι)))
-        | _ => pure none
+        | ~q(@univ _ $fi) => do
+          return some q(Finset.univ_nonempty (α := $ι))
+        | _ => throwError "`s` is not `univ`"
       catch _ => do
         let .some fv ← findLocalDeclWithType? q(Finset.Nonempty $s) | pure none
         pure (some (.fvar fv))
@@ -861,12 +862,12 @@ def evalFinsetSum : PositivityExt where eval {u α} zα pα e := do
       let pα' ← synthInstanceQ q(OrderedAddCommMonoid $α)
       assertInstancesCommute
       let pr : Q(∀ i, 0 ≤ $f i) ← mkLambdaFVars lhs pb
-      pure (.nonnegative q(@sum_nonneg $ι $α $pα' $f $s fun i _ ↦ $pr i))
+      return .nonnegative q(@sum_nonneg $ι $α $pα' $f $s fun i _ ↦ $pr i)
     | .positive pb, .some (fi : Q(Finset.Nonempty $s)) => do
       let pα' ← synthInstanceQ q(OrderedCancelAddCommMonoid $α)
       assertInstancesCommute
       let pr : Q(∀ i, 0 < $f i) ← mkLambdaFVars lhs pb
-      pure (.positive q(@sum_pos $ι $α $pα' $f $s (fun i _ ↦ $pr i) $fi))
+      return .positive q(@sum_pos $ι $α $pα' $f $s (fun i _ ↦ $pr i) $fi)
     | _, _ => pure .none
   | _ => throwError "not Finset.sum"
 

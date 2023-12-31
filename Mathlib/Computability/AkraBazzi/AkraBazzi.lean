@@ -1243,9 +1243,6 @@ lemma T_isBigO_smoothingFn_mul_asympBound :
                 * ((1 + (∑ u in range (r i n), g u / u ^ ((p a b) + 1)))))) + g n with i
             · have := R.a_pos i
               positivity
-            · refine add_nonneg zero_le_one <| Finset.sum_nonneg fun j _ => ?_
-              rw [div_nonneg_iff]
-              exact Or.inl ⟨R.g_nonneg j (by positivity), by positivity⟩
             · exact bound1 n hn i
         _ = (∑ i, C * a i * ((b i) ^ (p a b) * n ^ (p a b) * (1 - ε n)
                 * ((1 + ((∑ u in range n, g u / u ^ ((p a b) + 1))
