@@ -30,7 +30,7 @@ open TopologicalSpace AlgebraicGeometry Opposite CategoryTheory
 universe u
 variable (R : Type u) [CommRing R]
 
-section zeroDimensional
+section zeroDimensionalAndFinite
 
 variable [dim0 : Fact <| ringKrullDim R = 0] [Finite (PrimeSpectrum R)]
 
@@ -160,7 +160,16 @@ noncomputable def equivProdLocalization :
     R ≃+* ((i : PrimeSpectrum R) → Localization.AtPrime i.asIdeal) :=
   Classical.choice equivProdLocalization'
 
-end zeroDimensional
+end zeroDimensionalAndFinite
+
+section zeroDimensionalAndNoetherianLocal
+
+lemma IsNoetherianRing.nilpotent_maximalIdeal_of_zero_dimensional_localRing
+    [noeth : IsNoetherianRing R] [LocalRing R] [Nontrivial R] (dim0 : ringKrullDim R = 0) :
+    IsNilpotent (LocalRing.maximalIdeal R) := by
+  sorry
+
+end zeroDimensionalAndNoetherianLocal
 
 
 noncomputable section local_ring
@@ -454,14 +463,6 @@ LinearEquiv.ofLinear
 
 end local_ring_with_nilpotent_maximal_ideal
 
--- instance isNoetherianRing_of_local [LocalRing R] : IsNoetherianRing R := by
---   suffices i1 : IsFiniteLengthModule R R
---   · exact isNoetherian_of_finiteLength R R
---   refine isFiniteLengthModule_congr (artinian_ring_proof_auxs.cdf_last_eq R) (h := ?_)
---   rw [RelSeries.cqf_finiteLength_iff_each_qf_finiteLength]
---   intros j
---   infer_instance
-
 end local_ring
 
 namespace IsArtinianRing
@@ -474,257 +475,6 @@ instance : Finite (PrimeSpectrum R) := @Finite.of_equiv _ {I : Ideal R | I.IsPri
 
 noncomputable instance : Fintype (PrimeSpectrum R) :=
   Classical.choice <| finite_iff_nonempty_fintype (PrimeSpectrum R) |>.mp inferInstance
-
--- noncomputable section local_ring
-
--- namespace local_ring_with_nilpotent_maximal_ideal
-
--- variable [LocalRing R] [Nontrivial R]
-
--- local notation "𝓂" => LocalRing.maximalIdeal (R := R)
--- local notation "κ" => LocalRing.ResidueField (R := R)
-
--- /--
--- Maximal ideal of an artinian local ring is nilpotent.
--- -/
--- lemma exists_K : ∃ K : ℕ, 𝓂 ^ K = 0 := by
---   have H := IsArtinianRing.isNilpotent_jacobson_bot (R := R)
---   rw [LocalRing.jacobson_eq_maximalIdeal] at H
---   pick_goal 2
---   · simp
---   exact H
-
--- /--
--- Let `K` be the smallest number such that `𝓂 ^ K = 0`
--- -/
--- def K : ℕ := exists_K R |>.choose
--- lemma K_spec : 𝓂 ^ K R = 0 := exists_K R |>.choose_spec
-
--- /--
--- Construct a series by `0 ≤ 𝓂ᵏ⁻¹ ≤ 𝓂ᵏ⁻² ≤ ... ≤ 𝓂 ≤ R`
--- -/
--- @[simps]
--- def series : RelSeries ((· ≤ ·) : Ideal R → Ideal R → Prop) where
---   length := K R
---   toFun i := 𝓂 ^ (K R - i.1)
---   step i := by
---     simp only [Fin.coe_castSucc, Fin.val_succ]
---     apply Ideal.pow_le_pow_right
---     apply Nat.sub_le_sub_left
---     norm_num
-
--- @[simp] lemma series_head : (series R).head = 0 := show 𝓂 ^ (K R - 0) = 0 from by
---   simp [K_spec]
-
--- @[simp] lemma series_last : (series R).last = ⊤ := show 𝓂 ^ (K R - K R) = ⊤ from by
---   simp
-
--- /--
--- Define the action of `R ⧸ 𝓂` on `𝓂ⁿ ⧸ 𝓂ⁿ⁺¹` by `[r] • [x] = [r • x]`
--- -/
--- def residualFieldActionOnQF (i : Fin (K R)) : κ →ₗ[R] Module.End R ((series R).qf i) :=
---   Submodule.liftQ _ (LinearMap.lsmul _ _) fun r hr ↦ by
---     simp only [series_length, series_toFun, Fin.val_succ, Fin.coe_castSucc, LinearMap.mem_ker]
---     ext m
---     simp only [LinearMap.lsmul_apply, LinearMap.zero_apply]
---     induction' m using Quotient.inductionOn' with m
---     simp only [series_length, series_toFun, Fin.val_succ, Fin.coe_castSucc,
---       Submodule.Quotient.mk''_eq_mk]
---     change Submodule.Quotient.mk (r • m) = 0
---     rw [Submodule.Quotient.mk_eq_zero]
---     simp only [series_length, series_toFun, Fin.val_succ, Submodule.mem_comap, map_smulₛₗ,
---       RingHom.id_apply, Submodule.coeSubtype, smul_eq_mul]
---     have mem1 := m.2
---     simp only [series_length, series_toFun, Fin.val_succ] at mem1
---     have eq1 : 𝓂 ^ (K R - i) = 𝓂 * 𝓂 ^ (K R - (i + 1))
---     · conv_rhs => lhs; rw [show 𝓂 = 𝓂 ^ 1 from pow_one _ |>.symm]
---       rw [← pow_add, add_comm]
---       congr
---       rw [Nat.sub_add_eq, Nat.sub_add_cancel]
---       apply Nat.sub_pos_of_lt i.2
---     rw [eq1]
---     refine Ideal.mul_mem_mul hr mem1
-
--- instance (i : Fin (K R)) : Module κ ((series R).qf i) where
---   smul x := residualFieldActionOnQF R i x
---   one_smul x := by
---     change residualFieldActionOnQF R i 1 x = x
---     induction' x using Quotient.inductionOn' with x
---     erw [Submodule.liftQ_apply]
---     simp
---   mul_smul a b x := by
---     change residualFieldActionOnQF R i (a * b) x = residualFieldActionOnQF R i a
---       (residualFieldActionOnQF R i b x)
---     induction' x using Quotient.inductionOn' with x
---     induction' a using Quotient.inductionOn' with a
---     induction' b using Quotient.inductionOn' with b
---     delta residualFieldActionOnQF
---     simp only [series_length, series_toFun, Fin.val_succ, Fin.coe_castSucc,
---       Submodule.Quotient.mk''_eq_mk, Ideal.Quotient.mk_eq_mk]
---     erw [Submodule.liftQ_apply, Submodule.liftQ_apply, Submodule.liftQ_apply]
---     simp only [series_length, series_toFun, Fin.val_succ, Fin.coe_castSucc, LinearMap.lsmul_apply,
---       map_smul]
---     rw [mul_comm, mul_smul]
---   smul_zero a := by
---     change residualFieldActionOnQF R i a 0 = 0
---     induction' a using Quotient.inductionOn' with a
---     delta residualFieldActionOnQF
---     simp
---   smul_add a x y := by
---     change residualFieldActionOnQF R i a (x + y) = residualFieldActionOnQF R i a x +
---       residualFieldActionOnQF R i a y
---     delta residualFieldActionOnQF
---     induction' x using Quotient.inductionOn' with x
---     induction' y using Quotient.inductionOn' with y
---     induction' a using Quotient.inductionOn' with a
---     simp
---   add_smul a b x := by
---     change residualFieldActionOnQF R i (a + b) x = residualFieldActionOnQF R i a x +
---       residualFieldActionOnQF R i b x
---     delta residualFieldActionOnQF
---     induction' x using Quotient.inductionOn' with x
---     induction' a using Quotient.inductionOn' with a
---     induction' b using Quotient.inductionOn' with b
---     simp
---   zero_smul x := by
---     change residualFieldActionOnQF R i 0 x = 0
---     delta residualFieldActionOnQF
---     induction' x using Quotient.inductionOn' with x
---     simp
-
--- /--
--- A semilinear map from `𝓂ⁿ ⧸ 𝓂ⁿ⁺¹` as `R`-module to `𝓂ⁿ ⧸ 𝓂ⁿ⁺¹` as `R ⧸ 𝓂` module
--- -/
--- @[simps]
--- def qfEquiv_κR (i : Fin (K R)) : (series R).qf i →ₛₗ[algebraMap R κ] (series R).qf i :=
--- { toFun := id
---   map_add' := fun _ _ ↦ rfl
---   map_smul' := fun r m ↦ by
---     induction' m using Quotient.inductionOn' with m
---     simp only [series_length, series_toFun, Fin.val_succ, Fin.coe_castSucc,
---       Submodule.Quotient.mk''_eq_mk, id_eq, LocalRing.ResidueField.algebraMap_eq]
---     rfl }
-
--- instance : RingHomSurjective (algebraMap R κ) where
---   is_surjective := Submodule.mkQ_surjective _
-
--- /--
--- The `R ⧸ 𝓂`-submodules of `𝓂ⁿ ⧸ 𝓂ⁿ⁺¹` are exactly the same as the `R`-submodules of `𝓂ⁿ ⧸ 𝓂ⁿ⁺¹`.
--- -/
--- @[simps]
--- def qfSubmoduleAgree (i : Fin (K R)) :
---     Submodule κ ((series R).qf i) ≃o
---     Submodule R ((series R).qf i) where
---   toFun p := Submodule.comap (qfEquiv_κR R i) p
---   invFun q := Submodule.map (qfEquiv_κR R i) q
---   left_inv p := by
---     simp only [series_length, series_toFun, Fin.val_succ, Fin.coe_castSucc]
---     rw [Submodule.map_comap_eq_of_surjective]
---     exact fun x ↦ ⟨x, rfl⟩
---   right_inv q := by
---     simp only [series_length, series_toFun, Fin.val_succ, Fin.coe_castSucc]
---     rw [Submodule.comap_map_eq_of_injective]
---     exact fun _ _ h ↦ h
---   map_rel_iff' {p q} := by
---     simp only [series_length, series_toFun, Fin.val_succ, Fin.coe_castSucc, Equiv.coe_fn_mk]
---     fconstructor
---     · intro h x hx
---       specialize h hx
---       simpa only [Submodule.mem_comap, qfEquiv_κR_apply, id_eq] using h
---     · intro h x hx
---       specialize h hx
---       simpa using h
-
--- /--
--- The `R ⧸ 𝓂`-submodules of `𝓂ⁿ ⧸ 𝓂ⁿ⁺¹` are exactly the same as the `R`-submodules of `𝓂ⁿ ⧸ 𝓂ⁿ⁺¹`.
--- (reverse the order)
--- -/
--- @[simps!]
--- def qfSubmoduleAgree' (i : Fin (K R)) :
---     Submodule κ ((series R).qf i)ᵒᵈ ≃o
---     Submodule R ((series R).qf i)ᵒᵈ :=
---  OrderIso.trans
---  { toFun := OrderDual.ofDual
---    invFun := OrderDual.toDual
---    left_inv := by intros p; rfl
---    right_inv := by intros p; rfl
---    map_rel_iff' := by intros; rfl } <| (qfSubmoduleAgree R i).trans
---   { toFun := OrderDual.ofDual
---     invFun := OrderDual.toDual
---     left_inv := by intros p; rfl
---     right_inv := by intros p; rfl
---     map_rel_iff' := by intros; rfl }
-
--- instance qf_artinian_R (i : Fin (K R)) : IsArtinian R ((series R).qf i) := by
---   change IsArtinian R (_ ⧸ _)
---   apply isArtinian_of_quotient_of_artinian
-
--- lemma qf_artinian_κR_iff (i : Fin (K R)) :
---     IsArtinian κ ((series R).qf i) ↔ IsArtinian R ((series R).qf i) := by
---   rw [← monotone_stabilizes_iff_artinian, ← monotone_stabilizes_iff_artinian]
---   fconstructor <;> intro h f
---   · let f' : ℕ →o (Submodule κ ((series R).qf i))ᵒᵈ := OrderHom.comp ?_ f
---     pick_goal 2
---     · fconstructor
---       · exact (qfSubmoduleAgree' R i).symm.toFun
---       · intro p q h
---         exact (qfSubmoduleAgree' R i).symm.monotone h
---     obtain ⟨n, hn⟩ := h f'
---     refine ⟨n, fun m hm ↦ ?_⟩
---     specialize hn m hm
---     exact (qfSubmoduleAgree' R i).symm.injective hn
---   · let f' : ℕ →o (Submodule R ((series R).qf i))ᵒᵈ := OrderHom.comp ?_ f
---     pick_goal 2
---     · fconstructor
---       · exact (qfSubmoduleAgree' R i).toFun
---       · intro p q h
---         exact (qfSubmoduleAgree' R i).monotone h
---     obtain ⟨n, hn⟩ := h f'
---     refine ⟨n, fun m hm ↦ ?_⟩
---     specialize hn m hm
---     exact (qfSubmoduleAgree' R i).injective hn
-
--- instance qf_artinian_κ (i : Fin (K R)) : IsArtinian κ ((series R).qf i) :=
---   qf_artinian_κR_iff R i |>.mpr inferInstance
-
--- instance qf_finiteLength_κ (i : Fin (K R)) : FiniteLengthModule κ ((series R).qf i) := by
---   suffices inst1 : IsFiniteLengthModule κ ((series R).qf i)
---   · exact Classical.choice inst1.finite
---   rw [finiteLengthModule_over_field_iff_finite_dimensional,
---     ← Module.finite_iff_artinian_over_divisionRing]
---   infer_instance
-
--- instance qf_finiteLength_R (i : Fin (K R)) : FiniteLengthModule R ((series R).qf i) := by
---   have i1 := isFiniteLengthModule_iff_restrictScalars R κ ((series R).qf i) |>.mp
---     ⟨⟨qf_finiteLength_κ R i⟩⟩
---   exact Classical.choice i1.1
-
--- /--
--- The last cumulative quotient factor is exactly `R`.
--- -/
--- def cdf_last_eq : (series R).cqf (Fin.last _) ≃ₗ[R] R :=
--- LinearEquiv.ofLinear
---   (Submodule.liftQ _ (Submodule.subtype _) fun x hx ↦ by simpa using hx)
---   { toFun := fun r ↦ Submodule.Quotient.mk ⟨r, by
---       change r ∈ (series R).last
---       rw [series_last]
---       simp only [Submodule.mem_top]⟩
---     map_add' := by intros; rfl
---     map_smul' := by intros; rfl }
---   (LinearMap.ext fun x ↦ by
---     simp only [series_length, series_toFun, Fin.val_last, LinearMap.coe_comp, Function.comp_apply,
---       LinearMap.id_coe, id_eq]
---     erw [Submodule.liftQ_apply]
---     rfl)
---   (LinearMap.ext fun x ↦ by
---     induction' x using Quotient.inductionOn' with x
---     simp only [series_length, series_toFun, Fin.val_last, Submodule.Quotient.mk''_eq_mk,
---       LinearMap.id_coe, id_eq]
---     erw [LinearMap.comp_apply]
---     erw [Submodule.liftQ_apply, Submodule.Quotient.eq]
---     simp)
-
--- end artinian_ring_proof_auxs
 
 instance isNoetherianRing_of_local [LocalRing R] : IsNoetherianRing R := by
   suffices i1 : IsFiniteLengthModule R R
@@ -751,18 +501,13 @@ namespace IsNoetherianRing
 
 variable [dim0 : Fact (ringKrullDim R = 0)] [IsNoetherianRing R]
 
--- section local_ring
-
--- instance isFiniteLengthModule_of_dim0 : IsFiniteLengthModule R R := sorry
-
--- end local_ring
-
 noncomputable instance : Fintype (PrimeSpectrum R) := PrimeSpectrum.finTypeOfNoetherian dim0.out
 
 instance isArtinianRing_of_local_dim0_noetherian [Nontrivial R] [LocalRing R] : IsArtinianRing R := by
   suffices i1 : IsFiniteLengthModule R R
   · exact isArtinian_of_finiteLength R R
-  have i2 : Fact (IsNilpotent (LocalRing.maximalIdeal R)) := sorry
+  have i2 : Fact (IsNilpotent (LocalRing.maximalIdeal R)) :=
+  ⟨IsNoetherianRing.nilpotent_maximalIdeal_of_zero_dimensional_localRing _ dim0.out⟩
 
   refine isFiniteLengthModule_congr (local_ring_with_nilpotent_maximal_ideal.cdf_last_eq R) (h := ?_)
   rw [RelSeries.cqf_finiteLength_iff_each_qf_finiteLength]
@@ -772,7 +517,52 @@ instance isArtinianRing_of_local_dim0_noetherian [Nontrivial R] [LocalRing R] : 
 instance : IsArtinianRing R := by
   rcases subsingleton_or_nontrivial R with H | H
   · exact isArtinian_of_finite
-  · have i1 (i : PrimeSpectrum R) : IsNoetherianRing (Localization.AtPrime i.asIdeal) := sorry
+  · have i1 (i : PrimeSpectrum R) : IsNoetherianRing (Localization.AtPrime i.asIdeal) :=
+      IsNoetherianRing.Localization (Ideal.primeCompl i.asIdeal) _
+    have i2 (i : PrimeSpectrum R) : Fact (ringKrullDim (Localization.AtPrime i.asIdeal) = 0)
+    · fconstructor
+      have : ringKrullDim (Localization.AtPrime i.asIdeal) ≤ ringKrullDim R :=
+        krullDim.le_of_strictMono (fun p ↦
+          ⟨IsLocalization.orderEmbedding i.asIdeal.primeCompl (Localization.AtPrime i.asIdeal) p.1,
+            ?_⟩) ?_
+      pick_goal 2
+      · simp only [IsLocalization.orderEmbedding, RelEmbedding.coe_mk, Function.Embedding.coeFn_mk]
+        exact Ideal.IsPrime.comap _
+      pick_goal 2
+      · intro p q hpq
+        simp only [IsLocalization.orderEmbedding, RelEmbedding.coe_mk, Function.Embedding.coeFn_mk]
+        change Ideal.comap _ _ < Ideal.comap _ _
+        refine ⟨Ideal.comap_mono hpq.1, ?_⟩
+        obtain ⟨x, hx1, hx2⟩ := Set.not_subset.mp hpq.2
+        induction' x using Localization.induction_on with data
+        rcases data with ⟨a, b⟩
+        dsimp at hx1 hx2
+        have eq1 : Localization.mk a b = Localization.mk 1 b * Localization.mk a 1
+        · rw [Localization.mk_mul]; simp
+        have hx3 : Localization.mk a 1 ∈ q.asIdeal
+        · rw [eq1] at hx1
+          refine q.IsPrime.mem_or_mem hx1 |>.resolve_left ?_
+          intro r
+          refine q.IsPrime.1 (Ideal.eq_top_iff_one _ |>.mpr ?_)
+          have eq2 : (Localization.mk 1 b : Localization.AtPrime i.asIdeal) *
+            (Localization.mk b 1 : Localization.AtPrime i.asIdeal) =
+            (1 : Localization.AtPrime i.asIdeal)
+          · rw [Localization.mk_mul]
+            simp
+          rw [← eq2]
+          exact q.asIdeal.mul_mem_right _ r
+        refine Set.not_subset.mpr ⟨a, ?_, ?_⟩ <;>
+        simp only [SetLike.mem_coe, Ideal.mem_comap]
+        · exact hx3
+        · rw [eq1] at hx2
+          have := p.IsPrime.mul_mem_iff_mem_or_mem.not.mp hx2
+          push_neg at this
+          exact this.2
+
+      rw [dim0.out] at this
+      refine le_antisymm this krullDim.nonneg_of_Nonempty
+
+
     refine @isArtinianRing_of_ringEquiv (e := equivProdLocalization.symm) inferInstance
 
 end IsNoetherianRing

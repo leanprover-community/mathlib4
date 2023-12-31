@@ -14,6 +14,7 @@ import Mathlib.Order.OrderIsoNat
 import Mathlib.RingTheory.Finiteness
 import Mathlib.RingTheory.Nilpotent
 import Mathlib.RingTheory.Ideal.Pi
+import Mathlib.RingTheory.Localization.Ideal
 
 #align_import ring_theory.noetherian from "leanprover-community/mathlib"@"210657c4ea4a4a7b234392f70a3a2a83346dfa90"
 
@@ -641,3 +642,16 @@ lemma IsNoetherianRing.Pi {ι : Type*} [Fintype ι] (f : ι → Type*)
   apply Ideal.Pi_fg_of_unPi_fg
   intro i
   exact noetherian i _
+
+lemma IsNoetherianRing.Localization
+    {R : Type*} [CommRing R] [noeth : IsNoetherianRing R] (s : Submonoid R)
+    (S : Type*) [CommRing S] [Algebra R S] [IsLocalization s S] :
+    IsNoetherianRing S := by
+  change IsNoetherian _ _ at noeth ⊢
+  rw [← monotone_stabilizes_iff_noetherian] at noeth ⊢
+  intro f
+  let f' : ℕ →o Submodule R R := OrderHom.comp (IsLocalization.orderEmbedding s S) f
+  obtain ⟨n, hn⟩ := noeth f'
+  refine ⟨n, fun m hm ↦ ?_⟩
+  specialize hn m hm
+  simpa using hn
