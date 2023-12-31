@@ -672,7 +672,15 @@ theorem IntermediateField.isSeparable_adjoin_pair_of_separable {x y : E}
 
 namespace Field
 
-variable {F E} in
+variable {F}
+
+/-- Any element `x` of `F` is a separable element of `E / F` when embedded into `E`. -/
+theorem separable_algebraMap (x : F) : (minpoly F ((algebraMap F E) x)).Separable := by
+  rw [minpoly.algebraMap_eq (algebraMap F E).injective]
+  exact IsSeparable.separable F x
+
+variable {E}
+
 /-- If `x` and `y` are both separable elements, then `x * y` is also a separable element. -/
 theorem separable_mul {x y : E} (hx : (minpoly F x).Separable) (hy : (minpoly F y).Separable) :
     (minpoly F (x * y)).Separable :=
@@ -680,7 +688,6 @@ theorem separable_mul {x y : E} (hx : (minpoly F x).Separable) (hy : (minpoly F 
   separable_of_mem_isSeparable F E <| F⟮x, y⟯.mul_mem (subset_adjoin F _ (.inl rfl))
     (subset_adjoin F _ (.inr rfl))
 
-variable {F E} in
 /-- If `x` and `y` are both separable elements, then `x + y` is also a separable element. -/
 theorem separable_add {x y : E} (hx : (minpoly F x).Separable) (hy : (minpoly F y).Separable) :
     (minpoly F (x + y)).Separable :=
@@ -688,13 +695,6 @@ theorem separable_add {x y : E} (hx : (minpoly F x).Separable) (hy : (minpoly F 
   separable_of_mem_isSeparable F E <| F⟮x, y⟯.add_mem (subset_adjoin F _ (.inl rfl))
     (subset_adjoin F _ (.inr rfl))
 
-variable {F} in
-/-- Any element `x` of `F` is a separable element of `E / F` when embedded into `E`. -/
-theorem separable_algebraMap (x : F) : (minpoly F ((algebraMap F E) x)).Separable := by
-  rw [minpoly.algebraMap_eq (algebraMap F E).injective]
-  exact IsSeparable.separable F x
-
-variable {F E} in
 /-- If `x` is a separable element, then `x⁻¹` is also a separable element. -/
 theorem separable_inv (x : E) (hx : (minpoly F x).Separable) : (minpoly F x⁻¹).Separable :=
   haveI := (isSeparable_adjoin_simple_iff_separable F E).2 hx

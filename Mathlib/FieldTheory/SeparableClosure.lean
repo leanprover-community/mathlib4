@@ -255,7 +255,9 @@ def insepDegree := Module.rank (separableClosure F E) E
 /-- The (finite) inseparable degree for a general field extension `E / F` is defined
 to be the degree of `E / separableClosure F E` as a natural number. It is defined to be zero
 if such field extension is infinite. -/
-def finInsepDegree : ℕ := Cardinal.toNat (insepDegree F E)
+def finInsepDegree : ℕ := finrank (separableClosure F E) E
+
+theorem finInsepDegree_def' : finInsepDegree F E = Cardinal.toNat (insepDegree F E) := rfl
 
 instance instNeZeroSepDegree : NeZero (sepDegree F E) := ⟨rank_pos.ne'⟩
 
@@ -308,7 +310,7 @@ theorem insepDegree_self : insepDegree F F = 1 := by
 
 @[simp]
 theorem finInsepDegree_self : finInsepDegree F F = 1 := by
-  simp only [finInsepDegree, insepDegree_self, Cardinal.one_toNat]
+  rw [finInsepDegree_def', insepDegree_self, Cardinal.one_toNat]
 
 end Field
 
@@ -357,7 +359,7 @@ theorem insepDegree_top : insepDegree F (⊤ : IntermediateField E K) = insepDeg
 
 @[simp]
 theorem finInsepDegree_top : finInsepDegree F (⊤ : IntermediateField E K) = finInsepDegree F K := by
-  simp only [finInsepDegree, insepDegree_top]
+  rw [finInsepDegree_def', insepDegree_top, ← finInsepDegree_def']
 
 variable (K : Type v) [Field K] [Algebra F K] [Algebra E K] [IsScalarTower F E K]
 
