@@ -275,8 +275,8 @@ instance DirectedSetUnionPred.mem {x : α} : DirectedSetUnionPred α (x ∈ ·) 
 
 variable [SetInterPred α p]
 
-lemma mem_sSup_of_directedOn {S : Set (BundledSet α p)} (hne : S.Nonempty)
-    (hd : DirectedOn (· ≤ ·) S) {x : α} : x ∈ sSup S ↔ ∃ s ∈ S, x ∈ s := by
+lemma carrier_sSup_of_directedOn {S : Set (BundledSet α p)} (hne : S.Nonempty)
+    (hd : DirectedOn (· ≤ ·) S) : (sSup S : BundledSet α p).1 = ⋃ s ∈ S, s := by
   have hU : p (⋃ s ∈ S, s) := by
     rw [← sUnion_image]
     apply DirectedSetUnionPred.directedSUnion
@@ -286,11 +286,58 @@ lemma mem_sSup_of_directedOn {S : Set (BundledSet α p)} (hne : S.Nonempty)
   have : sSup S = ⟨_, hU⟩ := eq_of_forall_ge_iff fun _ ↦ sSup_le_iff.trans iUnion₂_subset_iff.symm
   simp [this]
 
-lemma mem_iSup_of_directed {ι : Sort*} [Nonempty ι] {s : ι → BundledSet α p}
-    (hs : Directed (· ≤ ·) s) {x : α} : (x ∈ ⨆ i, s i) ↔ ∃ i, x ∈ s i :=
-  (mem_sSup_of_directedOn (range_nonempty _) hs.directedOn_range).trans exists_range_iff
+lemma mem_sSup_of_directedOn {S : Set (BundledSet α p)} (hne : S.Nonempty)
+    (hd : DirectedOn (· ≤ ·) S) {x : α} : x ∈ sSup S ↔ ∃ s ∈ S, x ∈ s := by
+  rw [← mem_carrier]
+  simp [carrier_sSup_of_directedOn hne hd]
 
-lemma 
+lemma carrier_iSup_of_directed {ι : Sort*} [Nonempty ι] {s : ι → BundledSet α p}
+    (hd : Directed (· ≤ ·) s) : (⨆ i, s i).1 = ⋃ i, s i :=
+  (carrier_sSup_of_directedOn (range_nonempty s) hd.directedOn_range).trans biUnion_range
+
+lemma mem_iSup_of_directed {ι : Sort*} [Nonempty ι] {s : ι → BundledSet α p}
+    (hd : Directed (· ≤ ·) s) {x : α} : (x ∈ ⨆ i, s i) ↔ ∃ i, x ∈ s i :=
+  (mem_sSup_of_directedOn (range_nonempty _) hd.directedOn_range).trans exists_range_iff
+
+lemma carrier_biSup_of_directedOn {ι : Type*} {I : Set ι} {s : ι → BundledSet α p}
+    (hne : I.Nonempty) (hd : DirectedOn (s · ≤ s ·) I) : (⨆ i ∈ I, s i).1 = ⋃ i ∈ I, s i := by
+  let _ := completeLatticeOfCompleteSemilatticeInf (BundledSet α p)
+  rw [← sSup_image, carrier_sSup_of_directedOn (hne.image _) (directedOn_image.2 hd), biUnion_image]
+
+lemma mem_biSup_of_directedOn {ι : Type*} {I : Set ι} {s : ι → BundledSet α p}
+    (hne : I.Nonempty) (hd : DirectedOn (s · ≤ s ·) I) {x : α} :
+    x ∈ ⨆ i ∈ I, s i ↔ ∃ i ∈ I, x ∈ s i := by
+  simp_rw [← mem_carrier, carrier_biSup_of_directedOn hne hd, mem_iUnion₂, exists_prop]
+
+variable [BotPred α p ∅]
+
+lemma mem_sSup_of_directedOn' {S : Set (BundledSet α p)} (hd : DirectedOn (· ≤ ·) S) {x : α} :
+    x ∈ sSup S ↔ ∃ s ∈ S, x ∈ s := by
+  rcases S.eq_empty_or_nonempty with rfl | hne
+  · simp
+  · exact mem_sSup_of_directedOn hne hd
+
+lemma carrier_sSup_of_directedOn' {S : Set (BundledSet α p)}
+    (hd : DirectedOn (· ≤ ·) S) : (sSup S : BundledSet α p).1 = ⋃ s ∈ S, s := by
+  ext; simp [mem_sSup_of_directedOn' hd]
+
+lemma mem_iSup_of_directed' {ι : Sort*} {s : ι → BundledSet α p} (hd : Directed (· ≤ ·) s) {x : α} :
+    (x ∈ ⨆ i, s i) ↔ ∃ i, x ∈ s i :=
+  (mem_sSup_of_directedOn' hd.directedOn_range).trans exists_range_iff
+
+lemma carrier_iSup_of_directed' {ι : Sort*} {s : ι → BundledSet α p} (hd : Directed (· ≤ ·) s) :
+    (⨆ i, s i).1 = ⋃ i, s i :=
+  (carrier_sSup_of_directedOn' hd.directedOn_range).trans biUnion_range
+
+lemma carrier_biSup_of_directedOn' {ι : Type*} {I : Set ι} {s : ι → BundledSet α p}
+    (hd : DirectedOn (s · ≤ s ·) I) : (⨆ i ∈ I, s i).1 = ⋃ i ∈ I, s i := by
+  let _ := completeLatticeOfCompleteSemilatticeInf (BundledSet α p)
+  rw [← sSup_image, carrier_sSup_of_directedOn' (directedOn_image.2 hd), biUnion_image]
+
+lemma mem_biSup_of_directedOn' {ι : Type*} {I : Set ι} {s : ι → BundledSet α p}
+    (hd : DirectedOn (s · ≤ s ·) I) {x : α} :
+    x ∈ ⨆ i ∈ I, s i ↔ ∃ i ∈ I, x ∈ s i := by
+  simp_rw [← mem_carrier, carrier_biSup_of_directedOn' hd, mem_iUnion₂, exists_prop]
 
 end DirectedUnion
 
