@@ -241,11 +241,11 @@ theorem isClosed_upperClosure (h : s.Finite) : IsClosed (upperClosure s : Set α
 theorem isLowerSet_of_isOpen (h : IsOpen s) : IsLowerSet s := by
   -- porting note: `rw` leaves a shadowed assumption
   replace h := isOpen_iff_generate_Ici_compl.1 h
-  induction h
-  case basic u h' => obtain ⟨a, rfl⟩ := h'; exact (isUpperSet_Ici a).compl
-  case univ => exact isLowerSet_univ
-  case inter u v _ _ hu2 hv2 => exact hu2.inter hv2
-  case sUnion _ _ ih => exact isLowerSet_sUnion ih
+  induction h with
+  | basic u h' => obtain ⟨a, rfl⟩ := h'; exact (isUpperSet_Ici a).compl
+  | univ => exact isLowerSet_univ
+  | inter u v _ _ hu2 hv2 => exact hu2.inter hv2
+  | sUnion _ _ ih => exact isLowerSet_sUnion ih
 #align lower_topology.is_lower_set_of_is_open Topology.IsLower.isLowerSet_of_isOpen
 
 theorem isUpperSet_of_isClosed (h : IsClosed s) : IsUpperSet s :=

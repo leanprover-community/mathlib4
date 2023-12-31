@@ -317,7 +317,7 @@ theorem sdiff_adj (x y : SimpleGraph V) (v w : V) : (x \ y).Adj v w ↔ x.Adj v 
 instance supSet : SupSet (SimpleGraph V) where
   sSup s :=
     { Adj := fun a b => ∃ G ∈ s, Adj G a b
-      symm := fun a b => Exists.imp $ fun _ => And.imp_right Adj.symm
+      symm := fun a b => Exists.imp fun _ => And.imp_right Adj.symm
       loopless := by
         rintro a ⟨G, _, ha⟩
         exact ha.ne rfl }
@@ -1024,7 +1024,7 @@ theorem card_edgeFinset_top_eq_card_choose_two :
 /-- Any graph on `n` vertices has at most `n.choose 2` edges. -/
 theorem card_edgeFinset_le_card_choose_two : G.edgeFinset.card ≤ (Fintype.card V).choose 2 := by
   rw [← card_edgeFinset_top_eq_card_choose_two]
-  exact card_le_of_subset (edgeFinset_mono le_top)
+  exact card_le_card (edgeFinset_mono le_top)
 
 end EdgeFinset
 
@@ -1292,11 +1292,11 @@ theorem deleteFar_iff :
   refine ⟨fun h H _ hHG hH ↦ ?_, fun h s hs hG ↦ ?_⟩
   · have := h (sdiff_subset G.edgeFinset H.edgeFinset)
     simp only [deleteEdges_sdiff_eq_of_le _ hHG, edgeFinset_mono hHG, card_sdiff,
-      card_le_of_subset, coe_sdiff, coe_edgeFinset, Nat.cast_sub] at this
+      card_le_card, coe_sdiff, coe_edgeFinset, Nat.cast_sub] at this
     exact this hH
   · classical
     simpa [card_sdiff hs, edgeFinset_deleteEdges, -Set.toFinset_card, Nat.cast_sub,
-      card_le_of_subset hs] using h (G.deleteEdges_le s) hG
+      card_le_card hs] using h (G.deleteEdges_le s) hG
 #align simple_graph.delete_far_iff SimpleGraph.deleteFar_iff
 
 alias ⟨DeleteFar.le_card_sub_card, _⟩ := deleteFar_iff
@@ -1794,7 +1794,7 @@ theorem maxDegree_lt_card_verts [DecidableRel G.Adj] [Nonempty V] :
 theorem card_commonNeighbors_le_degree_left [DecidableRel G.Adj] (v w : V) :
     Fintype.card (G.commonNeighbors v w) ≤ G.degree v := by
   rw [← card_neighborSet_eq_degree]
-  exact Set.card_le_of_subset (Set.inter_subset_left _ _)
+  exact Set.card_le_card (Set.inter_subset_left _ _)
 #align simple_graph.card_common_neighbors_le_degree_left SimpleGraph.card_commonNeighbors_le_degree_left
 
 theorem card_commonNeighbors_le_degree_right [DecidableRel G.Adj] (v w : V) :

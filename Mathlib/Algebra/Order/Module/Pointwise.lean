@@ -91,19 +91,19 @@ variable [LinearOrderedField α] [OrderedAddCommGroup β] [Module α β] [PosSMu
   {a : α}
 
 @[simp] lemma lowerBounds_smul_of_neg (ha : a < 0) : lowerBounds (a • s) = a • upperBounds s :=
-  (OrderIso.smulLeftDual β ha).upperBounds_image
+  (OrderIso.smulRightDual β ha).upperBounds_image
 #align lower_bounds_smul_of_neg lowerBounds_smul_of_neg
 
 @[simp] lemma upperBounds_smul_of_neg (ha : a < 0) : upperBounds (a • s) = a • lowerBounds s :=
-  (OrderIso.smulLeftDual β ha).lowerBounds_image
+  (OrderIso.smulRightDual β ha).lowerBounds_image
 #align upper_bounds_smul_of_neg upperBounds_smul_of_neg
 
 @[simp] lemma bddBelow_smul_iff_of_neg (ha : a < 0) : BddBelow (a • s) ↔ BddAbove s :=
-  (OrderIso.smulLeftDual β ha).bddAbove_image
+  (OrderIso.smulRightDual β ha).bddAbove_image
 #align bdd_below_smul_iff_of_neg bddBelow_smul_iff_of_neg
 
 @[simp] lemma bddAbove_smul_iff_of_neg (ha : a < 0) : BddAbove (a • s) ↔ BddBelow s :=
-  (OrderIso.smulLeftDual β ha).bddBelow_image
+  (OrderIso.smulRightDual β ha).bddBelow_image
 #align bdd_above_smul_iff_of_neg bddAbove_smul_iff_of_neg
 
 end LinearOrderedField

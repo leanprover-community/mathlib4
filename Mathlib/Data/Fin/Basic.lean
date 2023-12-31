@@ -347,6 +347,8 @@ theorem pos_iff_ne_zero' [NeZero n] (a : Fin n) : 0 < a ↔ a ≠ 0 := by
 #align fin.eq_zero_or_eq_succ Fin.eq_zero_or_eq_succ
 #align fin.eq_succ_of_ne_zero Fin.eq_succ_of_ne_zero
 
+@[simp] lemma cast_eq_self (a : Fin n) : cast rfl a = a := rfl
+
 theorem rev_involutive : Involutive (rev : Fin n → Fin n) := fun i =>
   ext <| by
     dsimp only [rev]
@@ -402,6 +404,10 @@ def revOrderIso {n} : (Fin n)ᵒᵈ ≃o Fin n :=
 theorem revOrderIso_symm_apply (i : Fin n) : revOrderIso.symm i = OrderDual.toDual (rev i) :=
   rfl
 #align fin.rev_order_iso_symm_apply Fin.revOrderIso_symm_apply
+
+theorem cast_rev (i : Fin n) (h : n = m) :
+    cast h i.rev = (i.cast h).rev := by
+  subst h; simp
 
 #align fin.last Fin.last
 #align fin.coe_last Fin.val_last
@@ -1613,6 +1619,14 @@ theorem one_succAbove_one {n : ℕ} : (1 : Fin (n + 3)).succAbove 1 = 2 := by
   simp only [succ_zero_eq_one, val_zero, Nat.cast_zero, zero_succAbove, succ_one_eq_two] at this
   exact this
 #align fin.one_succ_above_one Fin.one_succAbove_one
+
+lemma rev_succAbove (p : Fin (n + 1)) (i : Fin n) :
+    rev (succAbove p i) = succAbove (rev p) (rev i) := by
+  cases' lt_or_le (castSucc i) p with h h
+  · rw [succAbove_below _ _ h, rev_castSucc, succAbove_above]
+    rwa [← rev_succ, rev_le_rev]
+  · rw [succAbove_above _ _ h, rev_succ, succAbove_below]
+    rwa [← rev_succ, rev_lt_rev, lt_def, val_succ, Nat.lt_succ_iff]
 
 end SuccAbove
 

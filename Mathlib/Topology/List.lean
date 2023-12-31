@@ -26,9 +26,9 @@ instance : TopologicalSpace (List α) :=
 theorem nhds_list (as : List α) : 𝓝 as = traverse 𝓝 as := by
   refine' nhds_mkOfNhds _ _ _ _
   · intro l
-    induction l
-    case nil => exact le_rfl
-    case cons a l ih =>
+    induction l with
+    | nil => exact le_rfl
+    | cons a l ih =>
       suffices List.cons <$> pure a <*> pure l ≤ List.cons <$> 𝓝 a <*> traverse 𝓝 l by
         simpa only [functor_norm] using this
       exact Filter.seq_mono (Filter.map_mono <| pure_le_nhds a) ih
@@ -36,13 +36,13 @@ theorem nhds_list (as : List α) : 𝓝 as = traverse 𝓝 as := by
     rcases (mem_traverse_iff _ _).1 hs with ⟨u, hu, hus⟩
     clear as hs
     have : ∃ v : List (Set α), l.Forall₂ (fun a s => IsOpen s ∧ a ∈ s) v ∧ sequence v ⊆ s
-    induction hu generalizing s
-    case nil _hs =>
+    induction hu generalizing s with
+    | nil =>
       exists []
       simp only [List.forall₂_nil_left_iff, exists_eq_left]
       exact ⟨trivial, hus⟩
     -- porting note -- renamed reordered variables based on previous types
-    case cons a s as ss hts h ht _ ih =>
+    | cons ht _ ih =>
       rcases mem_nhds_iff.1 ht with ⟨u, hut, hu⟩
       rcases ih _ Subset.rfl with ⟨v, hv, hvss⟩
       exact
