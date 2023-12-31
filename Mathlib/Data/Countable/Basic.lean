@@ -74,7 +74,7 @@ instance [Countable α] : Countable (Option α) :=
   Countable.of_equiv _ (Equiv.optionEquivSumPUnit.{_, 0} α).symm
 
 instance Option.instUncountable [Uncountable α] : Uncountable (Option α) :=
-  some_injective.uncountable
+  Injective.uncountable fun _ _ ↦ Option.some_inj.1
 
 instance [Countable α] [Countable β] : Countable (α × β) := by
   rcases exists_injective_nat α with ⟨f, hf⟩
