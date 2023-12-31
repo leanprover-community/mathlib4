@@ -166,7 +166,7 @@ theorem abs_rpow_of_nonneg {x y : ℝ} (hx_nonneg : 0 ≤ x) : |x ^ y| = |x| ^ y
 #align real.abs_rpow_of_nonneg Real.abs_rpow_of_nonneg
 
 theorem abs_rpow_le_abs_rpow (x y : ℝ) : |x ^ y| ≤ |x| ^ y := by
-  cases' le_or_lt 0 x with hx hx
+  rcases le_or_lt 0 x with hx | hx
   · rw [abs_rpow_of_nonneg hx]
   · rw [abs_of_neg hx, rpow_def_of_neg hx, rpow_def_of_pos (neg_pos.2 hx), log_neg_eq_log, abs_mul,
       abs_of_pos (exp_pos _)]
@@ -297,7 +297,7 @@ theorem abs_cpow_of_ne_zero {z : ℂ} (hz : z ≠ 0) (w : ℂ) :
 theorem abs_cpow_of_imp {z w : ℂ} (h : z = 0 → w.re = 0 → w = 0) :
     abs (z ^ w) = abs z ^ w.re / Real.exp (arg z * im w) := by
   rcases ne_or_eq z 0 with (hz | rfl) <;> [exact abs_cpow_of_ne_zero hz w; rw [map_zero]]
-  cases' eq_or_ne w.re 0 with hw hw
+  rcases eq_or_ne w.re 0 with hw | hw
   · simp [hw, h rfl hw]
   · rw [Real.zero_rpow hw, zero_div, zero_cpow, map_zero]
     exact ne_of_apply_ne re hw

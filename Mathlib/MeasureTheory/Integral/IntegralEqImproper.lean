@@ -341,7 +341,7 @@ theorem AECover.biUnion_Iic_aecover [Preorder ι] {φ : ι → Set α} (hφ : AE
 -- porting note: generalized from `[SemilatticeSup ι] [Nonempty ι]` to `[Preorder ι]`
 theorem AECover.biInter_Ici_aecover [Preorder ι] {φ : ι → Set α}
     (hφ : AECover μ atTop φ) : AECover μ atTop fun n : ι => ⋂ (k) (_h : k ∈ Ici n), φ k where
-  ae_eventually_mem := hφ.ae_eventually_mem.mono <| fun x h ↦ by
+  ae_eventually_mem := hφ.ae_eventually_mem.mono fun x h ↦ by
     simpa only [mem_iInter, mem_Ici, eventually_forall_ge_atTop]
   measurableSet i := .biInter (to_countable _) fun n _ => hφ.measurableSet n
 #align measure_theory.ae_cover.bInter_Ici_ae_cover MeasureTheory.AECover.biInter_Ici_aecover

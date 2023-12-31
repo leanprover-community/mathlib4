@@ -252,7 +252,7 @@ protected theorem IsTopologicalBasis.prod {β} [TopologicalSpace β] {B₁ : Set
     {B₂ : Set (Set β)} (h₁ : IsTopologicalBasis B₁) (h₂ : IsTopologicalBasis B₂) :
     IsTopologicalBasis (image2 (· ×ˢ ·) B₁ B₂) := by
   refine' isTopologicalBasis_of_isOpen_of_nhds _ _
-  · rintro _ ⟨u₁, u₂, hu₁, hu₂, rfl⟩
+  · rintro _ ⟨u₁, hu₁, u₂, hu₂, rfl⟩
     exact (h₁.isOpen hu₁).prod (h₂.isOpen hu₂)
   · rintro ⟨a, b⟩ u hu uo
     rcases (h₁.nhds_hasBasis.prod_nhds h₂.nhds_hasBasis).mem_iff.1 (IsOpen.mem_nhds uo hu) with
@@ -290,9 +290,15 @@ theorem isTopologicalBasis_of_cover {ι} {U : ι → Set α} (Uo : ∀ i, IsOpen
       image_subset_iff.2 hvu⟩
 #align topological_space.is_topological_basis_of_cover TopologicalSpace.isTopologicalBasis_of_cover
 
+protected theorem IsTopologicalBasis.continuous_iff {β : Type*} [TopologicalSpace β]
+    {B : Set (Set β)} (hB : IsTopologicalBasis B) {f : α → β} :
+    Continuous f ↔ ∀ s ∈ B, IsOpen (f ⁻¹' s) := by
+  rw [hB.eq_generateFrom, continuous_generateFrom_iff]
+
+@[deprecated]
 protected theorem IsTopologicalBasis.continuous {β : Type*} [TopologicalSpace β] {B : Set (Set β)}
-    (hB : IsTopologicalBasis B) (f : α → β) (hf : ∀ s ∈ B, IsOpen (f ⁻¹' s)) : Continuous f := by
-  rw [hB.eq_generateFrom]; exact continuous_generateFrom hf
+    (hB : IsTopologicalBasis B) (f : α → β) (hf : ∀ s ∈ B, IsOpen (f ⁻¹' s)) : Continuous f :=
+  hB.continuous_iff.2 hf
 #align topological_space.is_topological_basis.continuous TopologicalSpace.IsTopologicalBasis.continuous
 
 variable (α)
