@@ -30,7 +30,7 @@ namespace Filter
 
 /-- The cofinite filter is the filter of subsets whose complements are finite. -/
 def cofinite : Filter α :=
-  comk Set.Finite finite_empty (fun _s _t hsub ht ↦ ht.subset hsub) fun _ _ ↦ Finite.union
+  comk Set.Finite finite_empty (fun _t ht _s hsub ↦ ht.subset hsub) fun _ h _ ↦ h.union
 #align filter.cofinite Filter.cofinite
 
 @[simp]

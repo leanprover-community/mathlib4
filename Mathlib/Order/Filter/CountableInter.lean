@@ -160,11 +160,11 @@ Another small difference from `Filter.ofCountableInter`
 is that this definition takes `p : Set α → Prop` instead of `Set (Set α)`. -/
 def Filter.ofCountableUnion (p : Set α → Prop)
     (hUnion : ∀ S : Set (Set α), S.Countable → (∀ s ∈ S, p s) → p (⋃₀ S))
-    (hmono : ∀ s t, p t → s ⊆ t → p s) : Filter α := by
+    (hmono : ∀ t, p t → ∀ s ⊆ t, p s) : Filter α := by
   refine .ofCountableInter {s | p sᶜ} (fun S hSc hSp ↦ ?_) fun s t ht hsub ↦ ?_
   · rw [mem_setOf_eq, compl_sInter]
     exact hUnion _ (hSc.image _) (ball_image_iff.2 hSp)
-  · exact hmono _ _ ht (compl_subset_compl.2 hsub)
+  · exact hmono _ ht _ (compl_subset_compl.2 hsub)
 
 instance Filter.countableInter_ofCountableUnion (p : Set α → Prop) (h₁ h₂) :
     CountableInterFilter (Filter.ofCountableUnion p h₁ h₂) :=
