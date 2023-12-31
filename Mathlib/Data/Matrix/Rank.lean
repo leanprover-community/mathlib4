@@ -3,13 +3,9 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Eric Wieser
 -/
-import Mathlib.LinearAlgebra.FreeModule.Finite.Rank
-import Mathlib.LinearAlgebra.Matrix.ToLin
-import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.Matrix.DotProduct
 import Mathlib.LinearAlgebra.Determinant
 import Mathlib.LinearAlgebra.Matrix.Diagonal
-import Mathlib.Data.Complex.Module
 
 #align_import data.matrix.rank from "leanprover-community/mathlib"@"17219820a8aa8abe85adf5dfde19af1dd1bd8ae7"
 
@@ -299,3 +295,4 @@ theorem rank_eq_finrank_span_row [LinearOrderedField R] [Finite m] (A : Matrix m
 #align matrix.rank_eq_finrank_span_row Matrix.rank_eq_finrank_span_row
 
 end Matrix
+#minimize_imports
