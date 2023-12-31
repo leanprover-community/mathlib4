@@ -404,26 +404,7 @@ section IsCyclic
 variable {L} [Field L] [Algebra K L] [IsGalois K L] [FiniteDimensional K L] [IsCyclic (L ≃ₐ[K] L)]
 variable (hK : (primitiveRoots (FiniteDimensional.finrank K L) K).Nonempty)
 
-open BigOperators
-
-/-- The minimal polynomial (over `K`) of `σ : Gal(L/K)` is `X ^ (orderOf σ) - 1`. -/
-lemma minpoly_algEquiv_toLinearMap {K L} [Field K] [Field L] [Algebra K L] (σ : L ≃ₐ[K] L) (hσ : IsOfFinOrder σ) :
-    minpoly K σ.toLinearMap = X ^ (orderOf σ) - C 1 := by
-  refine (minpoly.unique _ _ (monic_X_pow_sub_C _ hσ.orderOf_pos.ne.symm) ?_ ?_).symm
-  · rw [(aeval σ.toLinearMap).map_sub (X ^ orderOf σ) (C (1 : K))]
-    simp [← AlgEquiv.pow_toLinearMap, pow_orderOf_eq_one]
-  · intros q hq hs
-    rw [degree_eq_natDegree hq.ne_zero, degree_X_pow_sub_C hσ.orderOf_pos, Nat.cast_le, ← not_lt]
-    intro H
-    rw [aeval_eq_sum_range' H, ← Fin.sum_univ_eq_sum_range] at hs
-    simp_rw [← AlgEquiv.pow_toLinearMap] at hs
-    apply hq.ne_zero
-    simpa using Fintype.linearIndependent_iff.mp
-      (((linearIndependent_algHom_toLinearMap' K L).comp _ AlgEquiv.coe_algHom_injective).comp _
-        (Subtype.val_injective.comp ((finEquivPowers σ hσ).injective)))
-      (q.coeff ∘ (↑)) hs ⟨_, H⟩
-
-open FiniteDimensional
+open BigOperators FiniteDimensional
 variable (K L)
 
 /-- If `L/K` is a cyclic extension of degree `n`, and `K` contains all `n`-th roots of unity,
