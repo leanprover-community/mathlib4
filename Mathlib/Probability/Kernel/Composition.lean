@@ -676,7 +676,7 @@ instance IsSFiniteKernel.comap (κ : kernel α β) [IsSFiniteKernel κ] (hg : Me
   ⟨⟨fun n => kernel.comap (seq κ n) g hg, inferInstance, (sum_comap_seq κ hg).symm⟩⟩
 #align probability_theory.kernel.is_s_finite_kernel.comap ProbabilityTheory.kernel.IsSFiniteKernel.comap
 
-lemma comap_map (κ : kernel β γ) {f : α → β} {g : γ → δ}
+lemma comap_map_comm (κ : kernel β γ) {f : α → β} {g : γ → δ}
     (hf : Measurable f) (hg : Measurable g) :
     comap (map κ g hg) f hf = map (comap κ f hf) g hg := by
   ext x s _
