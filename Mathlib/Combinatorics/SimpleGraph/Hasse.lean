@@ -173,8 +173,6 @@ def Walk.toPathGraphHom {α} (G : SimpleGraph α) :
     match hom'_w_v with
     | ⟨hom', hw, hv⟩ =>
       let fun' : Fin (length p + 1) → α := hom'.toFun
-      let rel' : ∀ {a b}, (pathGraph (p.length + 1)).Adj a b → G.Adj (fun' a) (fun' b) :=
-        hom'.map_rel
       let toFun : Fin (p.length + 2) → α := fun i =>
         if h : i.val < p.length + 1
           then fun' ⟨i.val, h⟩
@@ -207,8 +205,8 @@ def Walk.toPathGraphHom {α} (G : SimpleGraph α) :
             exact h'
           rw [a.cast_val_eq_self.symm, b.cast_val_eq_self.symm]
           rw [htoFun a', htoFun b']
-          exact rel' hpgadj
-        | Or.inl ha, Or.inr hb =>
+          exact hom'.map_rel hpgadj
+        | Or.inl _, Or.inr hb =>
           have ha' : a.val = p.length := by
             have hab' : b.val + 1 ≠ a.val := by
               rw [hb]
