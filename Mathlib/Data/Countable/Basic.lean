@@ -46,7 +46,7 @@ protected theorem Function.Embedding.countable [Countable β] (f : α ↪ β) : 
   f.injective.countable
 #align function.embedding.countable Function.Embedding.countable
 
-protected lemma Function.Embddding.uncountable [Uncountable α] (f : α ↪ β) : Uncountable β :=
+protected lemma Function.Embedding.uncountable [Uncountable α] (f : α ↪ β) : Uncountable β :=
   f.injective.uncountable
 
 end Embedding
@@ -73,8 +73,8 @@ instance Sum.uncountable_inr [Uncountable β] : Uncountable (α ⊕ β) :=
 instance [Countable α] : Countable (Option α) :=
   Countable.of_equiv _ (Equiv.optionEquivSumPUnit.{_, 0} α).symm
 
-instance [Uncountable α] : Uncountable (Option α) :=
-  Injective.uncountable fun _ _ ↦ Option.some_inj.1
+instance Option.instUncountable [Uncountable α] : Uncountable (Option α) :=
+  some_injective.uncountable
 
 instance [Countable α] [Countable β] : Countable (α × β) := by
   rcases exists_injective_nat α with ⟨f, hf⟩
