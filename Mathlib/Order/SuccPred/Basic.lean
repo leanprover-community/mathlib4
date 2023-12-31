@@ -1443,6 +1443,26 @@ variable [LinearOrder α]
 
 section SuccOrder
 
+theorem succ_min [SuccOrder α] (x y : α) :
+    succ (min x y) = min (succ x) (succ y) := by
+  cases le_total x y with
+  | inl h =>
+    rw [min_eq_left h, min_eq_left]
+    simp [h]
+  | inr h =>
+    rw [min_eq_right h, min_eq_right]
+    simp [h]
+
+theorem succ_max [SuccOrder α] (x y : α) :
+    succ (max x y) = max (succ x) (succ y) := by
+  cases le_total x y with
+  | inl h =>
+    rw [max_eq_right h, max_eq_right]
+    simp [h]
+  | inr h =>
+    rw [max_eq_left h, max_eq_left]
+    simp [h]
+
 variable [SuccOrder α] [IsSuccArchimedean α] {a b : α}
 
 theorem exists_succ_iterate_or : (∃ n, succ^[n] a = b) ∨ ∃ n, succ^[n] b = a :=
@@ -1456,6 +1476,26 @@ theorem Succ.rec_linear {p : α → Prop} (hsucc : ∀ a, p a ↔ p (succ a)) (a
 end SuccOrder
 
 section PredOrder
+
+theorem pred_min [PredOrder α] (x y : α) :
+    pred (min x y) = min (pred x) (pred y) := by
+  cases le_total x y with
+  | inl h =>
+    rw [min_eq_left h, min_eq_left]
+    simp [h]
+  | inr h =>
+    rw [min_eq_right h, min_eq_right]
+    simp [h]
+
+theorem pred_max [PredOrder α] (x y : α) :
+    pred (max x y) = max (pred x) (pred y) := by
+  cases le_total x y with
+  | inl h =>
+    rw [max_eq_right h, max_eq_right]
+    simp [h]
+  | inr h =>
+    rw [max_eq_left h, max_eq_left]
+    simp [h]
 
 variable [PredOrder α] [IsPredArchimedean α] {a b : α}
 
