@@ -633,7 +633,7 @@ instance isArtinianRing_of_local_dim0_noetherian [Nontrivial R] [LocalRing R] :
   infer_instance
 
 instance : IsArtinianRing R := by
-  rcases subsingleton_or_nontrivial R with H | H
+  rcases subsingleton_or_nontrivial R with H | _
   · exact isArtinian_of_finite
   · have i1 (i : PrimeSpectrum R) : IsNoetherianRing (Localization.AtPrime i.asIdeal) :=
       IsNoetherianRing.Localization (Ideal.primeCompl i.asIdeal) _
