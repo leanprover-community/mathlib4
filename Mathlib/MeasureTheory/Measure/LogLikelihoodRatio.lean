@@ -119,7 +119,7 @@ section llr_tilted
 
 lemma llr_tilted_left [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν)
     (hf : Integrable (fun x ↦ exp (f x)) μ) (hfν : AEMeasurable f ν) :
-    (llr (μ.tilted f) ν) =ᵐ[μ] fun x ↦ f x - log (∫ x, exp (f x) ∂μ) + llr μ ν x := by
+    (llr (μ.tilted f) ν) =ᵐ[μ] fun x ↦ f x - log (∫ z, exp (f z) ∂μ) + llr μ ν x := by
   have hfμ : AEMeasurable f μ :=
     aemeasurable_of_aemeasurable_exp (AEStronglyMeasurable.aemeasurable hf.1)
   cases eq_zero_or_neZero μ with
@@ -160,7 +160,7 @@ lemma integral_llr_tilted_left [IsProbabilityMeasure μ] [SigmaFinite ν]
 
 lemma llr_tilted_right [SigmaFinite μ] [SigmaFinite ν]
     (hμν : μ ≪ ν) (hf : Integrable (fun x ↦ exp (f x)) ν) :
-    (llr μ (ν.tilted f)) =ᵐ[μ] fun x ↦ - f x + log (∫ x, exp (f x) ∂ν) + llr μ ν x := by
+    (llr μ (ν.tilted f)) =ᵐ[μ] fun x ↦ - f x + log (∫ z, exp (f z) ∂ν) + llr μ ν x := by
   cases eq_zero_or_neZero ν with
   | inl h =>
     have hμ : μ = 0 := by ext s _; exact hμν (by simp [h])
