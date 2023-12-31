@@ -9,62 +9,24 @@ import Mathlib.Algebra.Module.Torsion
 #align_import linear_algebra.dimension from "leanprover-community/mathlib"@"47a5f8186becdbc826190ced4312f8199f9db6a5"
 
 /-!
-# Dimension of modules and vector spaces
-
-## Main definitions
-
-* The rank of a module is defined as `Module.rank : Cardinal`.
-  This is defined as the supremum of the cardinalities of linearly independent subsets.
-
-* The rank of a linear map is defined as the rank of its range.
+# Rank of various constructions
 
 ## Main statements
 
-* `LinearMap.rank_le_of_injective`: the source of an injective linear map has dimension
-  at most that of the target.
-* `LinearMap.rank_le_of_surjective`: the target of a surjective linear map has dimension
-  at most that of that source.
-* `basis_finite_of_finite_spans`:
-  the existence of a finite spanning set implies that any basis is finite.
-* `infinite_basis_le_maximal_linearIndependent`:
-  if `b` is an infinite basis for a module `M`,
-  and `s` is a maximal linearly independent set,
-  then the cardinality of `b` is bounded by the cardinality of `s`.
+- `rank_quotient_add_rank_le` : `rank M/N + rank N ≤ rank M`.
+- `lift_rank_add_lift_rank_le_rank_prod`: `rank M × N ≤ rank M + rank N`.
+- `rank_span_le_of_finite`: `rank (span s) ≤ #s` for finite `s`.
 
-For modules over rings satisfying the rank condition
+For free modules, we have
 
-* `Basis.le_span`:
-  the cardinality of a basis is bounded by the cardinality of any spanning set
+- `rank_prod` : `rank M × N = rank M + rank N`.
+- `rank_finsupp` : `rank (ι →₀ M) = #ι * rank M`
+- `rank_directSum`: `rank (⨁ Mᵢ) = ∑ rank Mᵢ`
+- `rank_tensorProduct`: `rank (M ⊗ N) = rank M * rank N`.
 
-For modules over rings satisfying the strong rank condition
+Lemmas for ranks of submodules and subalgebras are also provided.
+We have finrank variants for most lemmas as well.
 
-* `linearIndependent_le_span`:
-  For any linearly independent family `v : ι → M`
-  and any finite spanning set `w : Set M`,
-  the cardinality of `ι` is bounded by the cardinality of `w`.
-* `linearIndependent_le_basis`:
-  If `b` is a basis for a module `M`,
-  and `s` is a linearly independent set,
-  then the cardinality of `s` is bounded by the cardinality of `b`.
-
-For modules over rings with invariant basis number
-(including all commutative rings and all noetherian rings)
-
-* `mk_eq_mk_of_basis`: the dimension theorem, any two bases of the same vector space have the same
-  cardinality.
-
-For vector spaces (i.e. modules over a field), we have
-
-* `rank_quotient_add_rank`: if `M₁` is a submodule of `M`, then
-  `Module.rank (M/M₁) + Module.rank M₁ = Module.rank M`.
-* `rank_range_add_rank_ker`: the rank-nullity theorem.
-
-## Implementation notes
-
-Many theorems in this file are not universe-generic when they relate dimensions
-in different universes. They should be as general as they can be without
-inserting `lift`s. The types `M`, `M'`, ... all live in different universes,
-and `M₁`, `V₂`, ... all live in the same universe.
 -/
 
 
@@ -175,6 +137,13 @@ theorem rank_prod : Module.rank R (M × M') =
 theorem rank_prod' : Module.rank R (M × M₁) = Module.rank R M + Module.rank R M₁ := by simp
 #align rank_prod' rank_prod'
 
+/-- The finrank of `M × M'` is `(finrank R M) + (finrank R M')`. -/
+@[simp]
+theorem FiniteDimensional.finrank_prod [Module.Finite R M] [Module.Finite R M'] :
+    finrank R (M × M') = finrank R M + finrank R M' := by
+  simp [finrank, rank_lt_aleph0 R M, rank_lt_aleph0 R M']
+#align finite_dimensional.finrank_prod FiniteDimensional.finrank_prod
+
 end Prod
 
 section Finsupp
@@ -271,37 +240,11 @@ theorem finrank_directSum {ι : Type v} [Fintype ι] (M : ι → Type w) [∀ i 
     mk_toNat_eq_card, card_sigma]
 #align finite_dimensional.finrank_direct_sum FiniteDimensional.finrank_directSum
 
-/-- The finrank of `M × M'` is `(finrank R M) + (finrank R M')`. -/
-@[simp]
-theorem finrank_prod : finrank R (M × M') = finrank R M + finrank R M' := by
-  simp [finrank, rank_lt_aleph0 R M, rank_lt_aleph0 R M']
-#align finite_dimensional.finrank_prod FiniteDimensional.finrank_prod
-
 /-- If `m` and `n` are `Fintype`, the finrank of `m × n` matrices is
   `(Fintype.card m) * (Fintype.card n)`. -/
 theorem finrank_matrix (m n : Type*) [Fintype m] [Fintype n] :
     finrank R (Matrix m n R) = card m * card n := by simp [finrank]
 #align finite_dimensional.finrank_matrix FiniteDimensional.finrank_matrix
-
-variable {R M M'}
-
-/-- Two finite and free modules are isomorphic if they have the same (finite) rank. -/
-theorem nonempty_linearEquiv_of_finrank_eq (cond : finrank R M = finrank R M') :
-    Nonempty (M ≃ₗ[R] M') :=
-  nonempty_linearEquiv_of_lift_rank_eq <| by simp only [← finrank_eq_rank, cond, lift_natCast]
-#align finite_dimensional.nonempty_linear_equiv_of_finrank_eq FiniteDimensional.nonempty_linearEquiv_of_finrank_eq
-
-/-- Two finite and free modules are isomorphic if and only if they have the same (finite) rank. -/
-theorem nonempty_linearEquiv_iff_finrank_eq : Nonempty (M ≃ₗ[R] M') ↔ finrank R M = finrank R M' :=
-  ⟨fun ⟨h⟩ => h.finrank_eq, fun h => nonempty_linearEquiv_of_finrank_eq h⟩
-#align finite_dimensional.nonempty_linear_equiv_iff_finrank_eq FiniteDimensional.nonempty_linearEquiv_iff_finrank_eq
-
-variable (M M')
-
-/-- Two finite and free modules are isomorphic if they have the same (finite) rank. -/
-noncomputable def _root_.LinearEquiv.ofFinrankEq (cond : finrank R M = finrank R M') : M ≃ₗ[R] M' :=
-  Classical.choice <| nonempty_linearEquiv_of_finrank_eq cond
-#align linear_equiv.of_finrank_eq LinearEquiv.ofFinrankEq
 
 end FiniteDimensional
 
@@ -474,16 +417,6 @@ theorem lt_top_of_finrank_lt_finrank {s : Submodule R M} (lt : finrank R s < fin
 end Submodule
 
 variable [StrongRankCondition R]
-
-theorem LinearMap.finrank_le_finrank_of_injective [Module.Finite R M'] {f : M →ₗ[R] M'}
-    (hf : Function.Injective f) : finrank R M ≤ finrank R M' :=
-  finrank_le_finrank_of_rank_le_rank (LinearMap.lift_rank_le_of_injective _ hf) (rank_lt_aleph0 _ _)
-#align linear_map.finrank_le_finrank_of_injective LinearMap.finrank_le_finrank_of_injective
-
-theorem LinearMap.finrank_range_le [Module.Finite R M] (f : M →ₗ[R] M') :
-    finrank R (LinearMap.range f) ≤ finrank R M :=
-  finrank_le_finrank_of_rank_le_rank (lift_rank_range_le f) (rank_lt_aleph0 _ _)
-#align linear_map.finrank_range_le LinearMap.finrank_range_le
 
 /-- The dimension of a submodule is bounded by the dimension of the ambient space. -/
 theorem Submodule.finrank_le [Module.Finite R M] (s : Submodule R M) :

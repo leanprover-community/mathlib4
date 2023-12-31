@@ -5,7 +5,13 @@ Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Scott Morrison
 -/
 import Mathlib.LinearAlgebra.Dimension.DivisionRing
 
-/-! # The rank of a linear map -/
+/-!
+# The rank of a linear map
+
+## Main Definition
+-  `LinearMap.rank`: The rank of a linear map.
+
+-/
 
 
 noncomputable section

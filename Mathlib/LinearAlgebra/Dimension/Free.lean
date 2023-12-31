@@ -10,62 +10,14 @@ import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 #align_import linear_algebra.dimension from "leanprover-community/mathlib"@"47a5f8186becdbc826190ced4312f8199f9db6a5"
 
 /-!
-# Dimension of modules and vector spaces
+# Rank of free modules
 
-## Main definitions
+## Main result
+- `LinearEquiv.nonempty_equiv_iff_lift_rank_eq`:
+  Two free modules are isomorphic iff they have the same dimension.
+- `FiniteDimensional.finBasis`:
+  An arbitrary basis of a finite free module indexed by `Fin n` given `finrank R M = n`.
 
-* The rank of a module is defined as `Module.rank : Cardinal`.
-  This is defined as the supremum of the cardinalities of linearly independent subsets.
-
-* The rank of a linear map is defined as the rank of its range.
-
-## Main statements
-
-* `LinearMap.rank_le_of_injective`: the source of an injective linear map has dimension
-  at most that of the target.
-* `LinearMap.rank_le_of_surjective`: the target of a surjective linear map has dimension
-  at most that of that source.
-* `basis_finite_of_finite_spans`:
-  the existence of a finite spanning set implies that any basis is finite.
-* `infinite_basis_le_maximal_linearIndependent`:
-  if `b` is an infinite basis for a module `M`,
-  and `s` is a maximal linearly independent set,
-  then the cardinality of `b` is bounded by the cardinality of `s`.
-
-For modules over rings satisfying the rank condition
-
-* `Basis.le_span`:
-  the cardinality of a basis is bounded by the cardinality of any spanning set
-
-For modules over rings satisfying the strong rank condition
-
-* `linearIndependent_le_span`:
-  For any linearly independent family `v : ι → M`
-  and any finite spanning set `w : Set M`,
-  the cardinality of `ι` is bounded by the cardinality of `w`.
-* `linearIndependent_le_basis`:
-  If `b` is a basis for a module `M`,
-  and `s` is a linearly independent set,
-  then the cardinality of `s` is bounded by the cardinality of `b`.
-
-For modules over rings with invariant basis number
-(including all commutative rings and all noetherian rings)
-
-* `mk_eq_mk_of_basis`: the dimension theorem, any two bases of the same vector space have the same
-  cardinality.
-
-For vector spaces (i.e. modules over a field), we have
-
-* `rank_quotient_add_rank`: if `V₁` is a submodule of `M`, then
-  `Module.rank (M/V₁) + Module.rank V₁ = Module.rank M`.
-* `rank_range_add_rank_ker`: the rank-nullity theorem.
-
-## Implementation notes
-
-Many theorems in this file are not universe-generic when they relate dimensions
-in different universes. They should be as general as they can be without
-inserting `lift`s. The types `M`, `M'`, ... all live in different universes,
-and `V₁`, `V₂`, ... all live in the same universe.
 -/
 
 
@@ -166,7 +118,30 @@ theorem LinearEquiv.nonempty_equiv_iff_rank_eq :
   ⟨fun ⟨h⟩ => LinearEquiv.rank_eq h, fun h => nonempty_linearEquiv_of_rank_eq h⟩
 #align linear_equiv.nonempty_equiv_iff_rank_eq LinearEquiv.nonempty_equiv_iff_rank_eq
 
-/-- See `FiniteDimensional.rank_lt_aleph0` for the inverse direction without `Module.Free R M`. -/
+/-- Two finite and free modules are isomorphic if they have the same (finite) rank. -/
+theorem FiniteDimensional.nonempty_linearEquiv_of_finrank_eq
+    [Module.Finite R M] [Module.Finite R M'] (cond : finrank R M = finrank R M') :
+    Nonempty (M ≃ₗ[R] M') :=
+  nonempty_linearEquiv_of_lift_rank_eq <| by simp only [← finrank_eq_rank, cond, lift_natCast]
+#align finite_dimensional.nonempty_linear_equiv_of_finrank_eq FiniteDimensional.nonempty_linearEquiv_of_finrank_eq
+
+/-- Two finite and free modules are isomorphic if and only if they have the same (finite) rank. -/
+theorem FiniteDimensional.nonempty_linearEquiv_iff_finrank_eq [Module.Finite R M]
+    [Module.Finite R M'] : Nonempty (M ≃ₗ[R] M') ↔ finrank R M = finrank R M' :=
+  ⟨fun ⟨h⟩ => h.finrank_eq, fun h => nonempty_linearEquiv_of_finrank_eq h⟩
+#align finite_dimensional.nonempty_linear_equiv_iff_finrank_eq FiniteDimensional.nonempty_linearEquiv_iff_finrank_eq
+
+variable (M M')
+
+/-- Two finite and free modules are isomorphic if they have the same (finite) rank. -/
+noncomputable def LinearEquiv.ofFinrankEq [Module.Finite R M] [Module.Finite R M']
+    (cond : finrank R M = finrank R M') : M ≃ₗ[R] M' :=
+  Classical.choice <| FiniteDimensional.nonempty_linearEquiv_of_finrank_eq cond
+#align linear_equiv.of_finrank_eq LinearEquiv.ofFinrankEq
+
+variable {M M'}
+
+/-- See `rank_lt_aleph0` for the inverse direction without `Module.Free R M`. -/
 lemma Module.rank_lt_alpeh0_iff :
     Module.rank R M < ℵ₀ ↔ Module.Finite R M := by
   rw [Free.rank_eq_card_chooseBasisIndex, mk_lt_aleph0_iff]
