@@ -3,7 +3,7 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.DirectSum.Module
+import Mathlib.LinearAlgebra.FreeModule.PID
 import Mathlib.LinearAlgebra.Eigenspace.Basic
 import Mathlib.LinearAlgebra.Trace
 
@@ -88,3 +88,4 @@ lemma trace_comp_eq_zero_of_commute_of_trace_restrict_eq_zero
     (f.isNilpotent_restrict_iSup_sub_algebraMap μ), hg, mul_zero]
 
 end LinearMap
+#minimize_imports
