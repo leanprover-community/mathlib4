@@ -61,8 +61,8 @@ We compute this subgroup as follows.
   and it acts on each cycle of `g` as a power of that cycle.
   This gives a description of the kernel of `Equiv.Perm.OnCycleFactors.φ g` as the product
   of a symmetric group and of a product of cyclic groups.
-  This analysis starts with the morphism `Equiv.Perm.OnCycleFactors.ψ`,
-  its injectivity `Equiv.Perm.OnCycleFactors.hψ_inj`,
+  This analysis starts with the morphism `Equiv.Perm.OnCycleFactors.θ`,
+  its injectivity `Equiv.Perm.OnCycleFactors.hθ_injective`,
   its range `Equiv.Perm.OnCycleFactors.hφ_ker_eq_θ_range`,
   and  its cardinality `Equiv.Perm.OnCycleFactors.hθ_range_card`.
 
