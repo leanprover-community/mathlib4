@@ -82,31 +82,6 @@ lemma rightShift_rightUnshift {a n' : ℤ} (γ : Cochain K (L⟦a⟧) n') (n : �
     γ.rightUnshift_v n hn' p (p + n) rfl q hpq,
     shiftFunctorObjXIso, assoc, Iso.hom_inv_id, comp_id]
 
-variable (K L n)
-
-@[simp]
-lemma rightShift_zero (a n' : ℤ) (hn' : n' + a = n) :
-    (0 : Cochain K L n).rightShift a n' hn' = 0 := by
-  ext p q hpq
-  dsimp
-  rw [rightShift_v _ a n' hn' p q hpq _ rfl, zero_v, zero_comp]
-
-@[simp]
-lemma rightUnshift_zero (a n' : ℤ) (hn' : n' + a = n) :
-    (0 : Cochain K (L⟦a⟧) n').rightUnshift n hn' = 0 := by
-  ext p q hpq
-  dsimp
-  rw [rightUnshift_v _ n _ _ _ _ (q - a) (by linarith), zero_v, zero_comp]
-
-variable {K L n}
-
-@[simp]
-lemma rightShift_neg (a n' : ℤ) (hn' : n' + a = n) :
-    (-γ).rightShift a n' hn' = -γ.rightShift a n' hn' := by
-  ext p q hpq
-  dsimp
-  simp only [rightShift_v _ a n' hn' p q hpq _ rfl, neg_v, neg_comp]
-
 @[simp]
 lemma rightShift_add (a n' : ℤ) (hn' : n' + a = n) :
     (γ₁ + γ₂).rightShift a n' hn' = γ₁.rightShift a n' hn' + γ₂.rightShift a n' hn' := by
@@ -129,16 +104,34 @@ def rightShiftAddEquiv (n a n' : ℤ) (hn' : n' + a = n) :
 variable {K L}
 
 @[simp]
+lemma rightShift_zero (a n' : ℤ) (hn' : n' + a = n) :
+    (0 : Cochain K L n).rightShift a n' hn' = 0 := by
+  change rightShiftAddEquiv K L n a n' hn' 0 = 0
+  apply _root_.map_zero
+
+@[simp]
+lemma rightUnshift_zero (a n' : ℤ) (hn' : n' + a = n) :
+    (0 : Cochain K (L⟦a⟧) n').rightUnshift n hn' = 0 := by
+  change (rightShiftAddEquiv K L n a n' hn').symm 0 = 0
+  apply _root_.map_zero
+
+@[simp]
+lemma rightShift_neg (a n' : ℤ) (hn' : n' + a = n) :
+    (-γ).rightShift a n' hn' = -γ.rightShift a n' hn' := by
+  change rightShiftAddEquiv K L n a n' hn' (-γ) = _
+  apply _root_.map_neg
+
+@[simp]
 lemma rightUnshift_neg {n' a : ℤ} (γ : Cochain K (L⟦a⟧) n') (n : ℤ) (hn : n' + a = n) :
     (-γ).rightUnshift n hn = -γ.rightUnshift n hn := by
-  apply (rightShiftAddEquiv K L n a n' hn).injective
-  simp only [rightShiftAddEquiv_apply, rightShift_rightUnshift, rightShift_neg]
+  change (rightShiftAddEquiv K L n a n' hn).symm (-γ) = _
+  apply _root_.map_neg
 
 @[simp]
 lemma rightUnshift_add {n' a : ℤ} (γ₁ γ₂ : Cochain K (L⟦a⟧) n') (n : ℤ) (hn : n' + a = n) :
     (γ₁ + γ₂).rightUnshift n hn = γ₁.rightUnshift n hn + γ₂.rightUnshift n hn := by
-  apply (rightShiftAddEquiv K L n a n' hn).injective
-  simp only [rightShiftAddEquiv_apply, rightShift_rightUnshift, rightShift_add]
+  change (rightShiftAddEquiv K L n a n' hn).symm (γ₁ + γ₂) = _
+  apply _root_.map_add
 
 @[simp]
 lemma rightShift_smul (a n' : ℤ) (hn' : n' + a = n) (x : R) :
@@ -146,6 +139,17 @@ lemma rightShift_smul (a n' : ℤ) (hn' : n' + a = n) (x : R) :
   ext p q hpq
   dsimp
   simp only [rightShift_v _ a n' hn' p q hpq _ rfl, smul_v, Linear.smul_comp]
+
+variable (K L R)
+
+/-- The linear equivalence `Cochain K L n ≃+ Cochain K L⟦a⟧ n'` when `n' + a = n` and
+the category is `R`-linear. -/
+@[simps!]
+def rightShiftLinearEquiv (n a n' : ℤ) (hn' : n' + a = n) :
+    Cochain K L n ≃ₗ[R] Cochain K (L⟦a⟧) n' :=
+  (rightShiftAddEquiv K L n a n' hn').toLinearEquiv (fun x γ => by simp)
+
+variable {K L R}
 
 @[simp]
 lemma rightShift_units_smul (a n' : ℤ) (hn' : n' + a = n) (x : Rˣ) :
@@ -155,9 +159,8 @@ lemma rightShift_units_smul (a n' : ℤ) (hn' : n' + a = n) (x : Rˣ) :
 @[simp]
 lemma rightUnshift_smul {n' a : ℤ} (γ : Cochain K (L⟦a⟧) n') (n : ℤ) (hn : n' + a = n) (x : R) :
     (x • γ).rightUnshift n hn = x • γ.rightUnshift n hn := by
-  ext p q hpq
-  dsimp
-  simp only [rightUnshift_v _ n hn p q hpq _ rfl, smul_v, Linear.smul_comp]
+  change (rightShiftLinearEquiv  R K L n a n' hn).symm (x • γ) = _
+  apply map_smul
 
 @[simp]
 lemma rightUnshift_units_smul {n' a : ℤ} (γ : Cochain K (L⟦a⟧) n') (n : ℤ)
