@@ -32,12 +32,7 @@ abbrev ModSumCongr (α β : Type*) :=
   _ ⧸ (Equiv.Perm.sumCongrHom α β).range
 #align equiv.perm.mod_sum_congr Equiv.Perm.ModSumCongr
 
-theorem ModSumCongr.swap_smul_involutive {α β : Type*} [DecidableEq (Sum α β)] (i j : Sum α β) :
-    Function.Involutive (SMul.smul (Equiv.swap i j) : ModSumCongr α β → ModSumCongr α β) :=
-  fun σ => by
-    refine Quotient.inductionOn' σ fun σ => ?_
-    exact _root_.congr_arg Quotient.mk'' (Equiv.swap_mul_involutive i j σ)
-#align equiv.perm.mod_sum_congr.swap_smul_involutive Equiv.Perm.ModSumCongr.swap_smul_involutive
+#align equiv.perm.mod_sum_congr.swap_smul_involutive Equiv.swap_smul_involutive
 
 end Equiv.Perm
 
@@ -171,7 +166,7 @@ def domCoprod (a : Mᵢ [Λ^ιa]→ₗ[R'] N₁) (b : Mᵢ [Λ^ιb]→ₗ[R'] N�
           (fun σ _ => domCoprod.summand_add_swap_smul_eq_zero a b σ hv hij)
           (fun σ _ => mt <| domCoprod.summand_eq_zero_of_smul_invariant a b σ hv hij)
           (fun σ _ => Finset.mem_univ _) fun σ _ =>
-          Equiv.Perm.ModSumCongr.swap_smul_involutive i j σ }
+          Equiv.swap_smul_involutive i j σ }
 #align alternating_map.dom_coprod AlternatingMap.domCoprod
 #align alternating_map.dom_coprod_apply AlternatingMap.domCoprod_apply
 

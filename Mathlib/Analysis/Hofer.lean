@@ -100,7 +100,7 @@ theorem hofer {X : Type*} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) (
     have hv₀ : 0 < v 0 := by
       have : 0 ≤ ϕ (u 0) := nonneg x
       calc
-        0 ≤ 2 * ϕ (u 0) := (zero_le_mul_left zero_lt_two).mpr this
+        0 ≤ 2 * ϕ (u 0) := (mul_nonneg_iff_of_pos_left zero_lt_two).mpr this
         _ < ϕ (u (0 + 1)) := key₂ 0
     apply tendsto_atTop_of_geom_le hv₀ one_lt_two
     exact fun n => (key₂ (n + 1)).le

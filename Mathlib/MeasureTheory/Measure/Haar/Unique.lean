@@ -102,7 +102,7 @@ lemma continuous_integral_apply_inv_mul
     · exact (hg.comp (continuous_snd.inv.mul continuous_fst)).continuousOn
     · intro p x hp hx
       contrapose! hx
-      refine ⟨p, p⁻¹ * x, hp, ?_, by simp⟩
+      refine ⟨p, hp, p⁻¹ * x, ?_, by simp⟩
       simpa only [Set.mem_inv, mul_inv_rev, inv_inv] using subset_tsupport _ hx
   exact A.continuousAt ht
 

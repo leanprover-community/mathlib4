@@ -53,10 +53,7 @@ theorem discr_eq_discr {ι : Type*} [Fintype ι] [DecidableEq ι] (b : Basis ι 
 theorem discr_eq_discr_of_algEquiv {L : Type*} [Field L] [NumberField L] (f : K ≃ₐ[ℚ] L) :
     discr K = discr L := by
   let f₀ : 𝓞 K ≃ₗ[ℤ] 𝓞 L := (f.restrictScalars ℤ).mapIntegralClosure.toLinearEquiv
-  let e : Module.Free.ChooseBasisIndex ℤ (𝓞 K) ≃ (K →ₐ[ℚ] ℂ) := by
-    refine Fintype.equivOfCardEq ?_
-    rw [← FiniteDimensional.finrank_eq_card_chooseBasisIndex, RingOfIntegers.rank, AlgHom.card]
-  rw [← Rat.intCast_inj, coe_discr, Algebra.discr_eq_discr_of_algEquiv ℚ ℂ (integralBasis K) e f,
+  rw [← Rat.intCast_inj, coe_discr, Algebra.discr_eq_discr_of_algEquiv (integralBasis K) f,
     ← discr_eq_discr L ((RingOfIntegers.basis K).map f₀)]
   change _ = algebraMap ℤ ℚ _
   rw [← Algebra.discr_localizationLocalization ℤ (nonZeroDivisors ℤ) L]
@@ -170,7 +167,7 @@ theorem abs_discr_ge (h : 1 < finrank ℚ K) :
   suffices ∀ n, 2 ≤ n → (4 / 9 : ℝ) * (3 * π / 4) ^ n ≤ a n by
     refine le_trans (this (finrank ℚ K) h) ?_
     refine div_le_div_of_le_left (by positivity) (by positivity) ?_
-    refine mul_le_mul_of_nonneg_right (pow_le_pow ?_ ?_) (by positivity)
+    refine mul_le_mul_of_nonneg_right (pow_le_pow_right ?_ ?_) (by positivity)
     · rw [_root_.le_div_iff Real.pi_pos, one_mul]
       exact Real.pi_le_four
     · rw [← card_add_two_mul_card_eq_rank, mul_comm]
@@ -200,7 +197,7 @@ theorem discr_gt_one (h : 1 < finrank ℚ K) : 2 < |discr K| := by
     exact Real.pi_gt_three
   refine Int.cast_lt.mp <| lt_of_lt_of_le ?_ (abs_discr_ge h)
   rw [← _root_.div_lt_iff' (by positivity), Int.int_cast_ofNat]
-  refine lt_of_lt_of_le ?_ (pow_le_pow (n := 2) h₁ h)
+  refine lt_of_lt_of_le ?_ (pow_le_pow_right (n := 2) h₁ h)
   rw [div_pow, _root_.lt_div_iff (by norm_num), mul_pow]
   norm_num
   rw [ ← _root_.div_lt_iff' (by positivity), show (72:ℝ) / 9 = 8 by norm_num]
@@ -231,3 +228,39 @@ theorem numberField_discr : discr ℚ = 1 := by
 alias _root_.NumberField.discr_rat := numberField_discr
 
 end Rat
+
+variable {ι ι'} (K) [Field K] [DecidableEq ι] [DecidableEq ι'] [Fintype ι] [Fintype ι']
+
+/-- If `b` and `b'` are `ℚ`-bases of a number field `K` such that
+`∀ i j, IsIntegral ℤ (b.toMatrix b' i j)` and `∀ i j, IsIntegral ℤ (b'.toMatrix b i j)` then
+`discr ℚ b = discr ℚ b'`. -/
+theorem Algebra.discr_eq_discr_of_toMatrix_coeff_isIntegral [NumberField K]
+    {b : Basis ι ℚ K} {b' : Basis ι' ℚ K} (h : ∀ i j, IsIntegral ℤ (b.toMatrix b' i j))
+    (h' : ∀ i j, IsIntegral ℤ (b'.toMatrix b i j)) : discr ℚ b = discr ℚ b' := by
+  replace h' : ∀ i j, IsIntegral ℤ (b'.toMatrix (b.reindex (b.indexEquiv b')) i j)
+  · intro i j
+    convert h' i ((b.indexEquiv b').symm j)
+-- Porting note: `simp; rfl` was `simpa`.
+    simp; rfl
+  classical
+  rw [← (b.reindex (b.indexEquiv b')).toMatrix_map_vecMul b', discr_of_matrix_vecMul,
+    ← one_mul (discr ℚ b), Basis.coe_reindex, discr_reindex]
+  congr
+  have hint : IsIntegral ℤ ((b.reindex (b.indexEquiv b')).toMatrix b').det :=
+    IsIntegral.det fun i j => h _ _
+  obtain ⟨r, hr⟩ := IsIntegrallyClosed.isIntegral_iff.1 hint
+  have hunit : IsUnit r := by
+    have : IsIntegral ℤ (b'.toMatrix (b.reindex (b.indexEquiv b'))).det :=
+      IsIntegral.det fun i j => h' _ _
+    obtain ⟨r', hr'⟩ := IsIntegrallyClosed.isIntegral_iff.1 this
+    refine' isUnit_iff_exists_inv.2 ⟨r', _⟩
+    suffices algebraMap ℤ ℚ (r * r') = 1 by
+      rw [← RingHom.map_one (algebraMap ℤ ℚ)] at this
+      exact (IsFractionRing.injective ℤ ℚ) this
+    rw [RingHom.map_mul, hr, hr', ← Matrix.det_mul,
+      Basis.toMatrix_mul_toMatrix_flip, Matrix.det_one]
+  rw [← RingHom.map_one (algebraMap ℤ ℚ), ← hr]
+  cases' Int.isUnit_iff.1 hunit with hp hm
+  · simp [hp]
+  · simp [hm]
+#align algebra.discr_eq_discr_of_to_matrix_coeff_is_integral Algebra.discr_eq_discr_of_toMatrix_coeff_isIntegral

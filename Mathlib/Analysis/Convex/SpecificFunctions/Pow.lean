@@ -47,13 +47,13 @@ lemma strictConcaveOn_rpow {p : ℝ} (hp₀ : 0 < p) (hp₁ : p < 1) :
 
 lemma concaveOn_rpow {p : ℝ} (hp₀ : 0 ≤ p) (hp₁ : p ≤ 1) :
     ConcaveOn ℝ≥0 univ fun x : ℝ≥0 ↦ x ^ p := by
-  by_cases hp : p = 0
-  case pos => exact ⟨convex_univ, fun _ _ _ _ _ _ _ _ hab => by simp [hp, hab]⟩
-  case neg =>
+  if hp : p = 0 then
+    exact ⟨convex_univ, fun _ _ _ _ _ _ _ _ hab => by simp [hp, hab]⟩
+  else
     push_neg at hp
-    by_cases hp' : p = 1
-    case pos => exact ⟨convex_univ, by simp [hp']⟩
-    case neg =>
+    if hp' : p = 1 then
+      exact ⟨convex_univ, by simp [hp']⟩
+    else
       push_neg at hp'
       exact (strictConcaveOn_rpow (by positivity) (lt_of_le_of_ne hp₁ hp')).concaveOn
 
@@ -86,13 +86,13 @@ lemma strictConcaveOn_rpow {p : ℝ} (hp₀ : 0 < p) (hp₁ : p < 1) :
 
 lemma concaveOn_rpow {p : ℝ} (hp₀ : 0 ≤ p) (hp₁ : p ≤ 1) :
     ConcaveOn ℝ (Set.Ici 0) fun x : ℝ ↦ x ^ p := by
-  by_cases hp : p = 0
-  case pos => exact ⟨convex_Ici 0, fun _ _ _ _ _ _ _ _ hab => by simp [hp, hab]⟩
-  case neg =>
+  if hp : p = 0 then
+    exact ⟨convex_Ici 0, fun _ _ _ _ _ _ _ _ hab => by simp [hp, hab]⟩
+  else
     push_neg at hp
-    by_cases hp' : p = 1
-    case pos => exact ⟨convex_Ici 0, by simp [hp']⟩
-    case neg =>
+    if hp' : p = 1 then
+      exact ⟨convex_Ici 0, by simp [hp']⟩
+    else
       push_neg at hp'
       exact (strictConcaveOn_rpow (by positivity) (lt_of_le_of_ne hp₁ hp')).concaveOn
 
