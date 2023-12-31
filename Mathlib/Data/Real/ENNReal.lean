@@ -265,6 +265,7 @@ theorem exists_ne_top' {p : ℝ≥0∞ → Prop} : (∃ (a : ℝ≥0∞) (_ : a 
   Option.bex_ne_none
 #align ennreal.exists_ne_top ENNReal.exists_ne_top'
 
+set_option linter.deprecated false in
 theorem exists_ne_top {p : ℝ≥0∞ → Prop} : (∃ a ≠ ∞, p a) ↔ ∃ r : ℝ≥0, p r := by
   simp only [exists_ne_top', ← exists_prop]
 
