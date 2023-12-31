@@ -216,10 +216,12 @@ theorem finrank_eq_card_basis' [FiniteDimensional K V] {ι : Type w} (h : Basis 
   Module.mk_finrank_eq_card_basis h
 #align finite_dimensional.finrank_eq_card_basis' FiniteDimensional.finrank_eq_card_basis'
 
-theorem lt_aleph0_of_linearIndependent {ι : Type w} [FiniteDimensional K V] {v : ι → V}
-    (h : LinearIndependent K v) : #ι < ℵ₀ :=
-  Module.Finite.lt_aleph0_of_linearIndependent h
-#align finite_dimensional.lt_aleph_0_of_linear_independent FiniteDimensional.lt_aleph0_of_linearIndependent
+theorem _root_.LinearIndependent.lt_aleph0_of_finiteDimensional {ι : Type w} [FiniteDimensional K V]
+    {v : ι → V} (h : LinearIndependent K v) : #ι < ℵ₀ :=
+  h.lt_aleph0_of_finite
+#align finite_dimensional.lt_aleph_0_of_linear_independent LinearIndependent.lt_aleph0_of_finiteDimensional
+@[deprecated] alias
+lt_aleph0_of_linearIndependent := LinearIndependent.lt_aleph0_of_finiteDimensional
 
 /-- If a submodule has maximal dimension in a finite dimensional space, then it is equal to the
 whole space. -/
@@ -233,11 +235,11 @@ theorem _root_.Submodule.eq_top_of_finrank_eq [FiniteDimensional K V] {S : Submo
   set b := Basis.extend this with b_eq
   -- porting note: `letI` now uses `this` so we need to give different names
   letI i1 : Fintype (this.extend _) :=
-    (finite_of_linearIndependent (by simpa using b.linearIndependent)).fintype
+    (LinearIndependent.set_finite_of_isNoetherian (by simpa using b.linearIndependent)).fintype
   letI i2 : Fintype (((↑) : S → V) '' Basis.ofVectorSpaceIndex K S) :=
-    (finite_of_linearIndependent this).fintype
+    (LinearIndependent.set_finite_of_isNoetherian this).fintype
   letI i3 : Fintype (Basis.ofVectorSpaceIndex K S) :=
-    (finite_of_linearIndependent (by simpa using bS.linearIndependent)).fintype
+    (LinearIndependent.set_finite_of_isNoetherian (by simpa using bS.linearIndependent)).fintype
   have : (↑) '' Basis.ofVectorSpaceIndex K S = this.extend (Set.subset_univ _) :=
     Set.eq_of_subset_of_card_le (this.subset_extend _)
       (by

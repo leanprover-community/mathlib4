@@ -20,7 +20,7 @@ is also a charted space over `H × F`.
 
 Now, we define `SmoothVectorBundle` as the `Prop` of having smooth transition functions.
 Recall the structure groupoid `smoothFiberwiseLinear` on `B × F` consisting of smooth, fiberwise
-linear local homeomorphisms.  We show that our definition of "smooth vector bundle" implies
+linear partial homeomorphisms.  We show that our definition of "smooth vector bundle" implies
 `HasGroupoid` for this groupoid, and show (by a "composition" of `HasGroupoid` instances) that
 this means that a smooth vector bundle is a smooth manifold.
 

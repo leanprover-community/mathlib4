@@ -441,7 +441,7 @@ def etaExpandN (n : Nat) (e : Expr) : MetaM Expr := do
 def expand (e : Expr) : MetaM Expr := do
   let env ← getEnv
   let reorderFn : Name → List (List ℕ) := fun nm ↦ (reorderAttr.find? env nm |>.getD [])
-  let e₂ ← Lean.Meta.transform (input := e) (post := fun e => return .done e) <| fun e ↦ do
+  let e₂ ← Lean.Meta.transform (input := e) (post := fun e => return .done e) fun e ↦ do
     let e0 := e.getAppFn
     let es := e.getAppArgs
     let some e0n := e0.constName? | return .continue
@@ -544,7 +544,7 @@ partial def transformDeclAux
       return
   -- if this declaration is not `pre` and not an internal declaration, we return an error,
   -- since we should have already translated this declaration.
-  if src != pre && !src.isInternal' then
+  if src != pre && !src.isInternalDetail then
     throwError "The declaration {pre} depends on the declaration {src} which is in the namespace {
       pre}, but does not have the `@[to_additive]` attribute. This is not supported.\n{""
       }Workaround: move {src} to a different namespace."

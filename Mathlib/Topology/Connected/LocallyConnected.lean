@@ -119,7 +119,7 @@ theorem locallyConnectedSpace_iff_connected_basis :
     LocallyConnectedSpace α ↔
       ∀ x, (𝓝 x).HasBasis (fun s : Set α => s ∈ 𝓝 x ∧ IsPreconnected s) id := by
   rw [locallyConnectedSpace_iff_connected_subsets]
-  exact forall_congr' <| fun x => Filter.hasBasis_self.symm
+  exact forall_congr' fun x => Filter.hasBasis_self.symm
 #align locally_connected_space_iff_connected_basis locallyConnectedSpace_iff_connected_basis
 
 theorem locallyConnectedSpace_of_connected_bases {ι : Type*} (b : α → ι → Set α) (p : α → ι → Prop)
