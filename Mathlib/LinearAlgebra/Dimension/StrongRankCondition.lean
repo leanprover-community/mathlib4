@@ -482,7 +482,7 @@ theorem finrank_eq_rank [Module.Finite R M] :
 
 @[deprecated] protected alias FiniteDimensional.finrank_eq_rank := finrank_eq_rank
 
-variable {M}
+variable {R M}
 variable {M'} [AddCommGroup M'] [Module R M']
 
 theorem LinearMap.finrank_le_finrank_of_injective [Module.Finite R M'] {f : M →ₗ[R] M'}
