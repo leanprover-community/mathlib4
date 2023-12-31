@@ -34,21 +34,6 @@ a measurable space. TODO: should get a to_additive version for AddMonoids -/
 def conv {M : Type*} [Monoid M] [MeasurableSpace M] (μ : Measure M) (ν : Measure M) :
     Measure M := Measure.map (fun x : M × M ↦ x.1 * x.2) (Measure.prod μ ν)
 
-theorem finite_of_finite_conv {M : Type*} [Monoid M] [MeasurableSpace M] (μ : Measure M)
-    (ν : Measure M) [IsFiniteMeasure μ] [IsFiniteMeasure ν] : IsFiniteMeasure (μ.conv ν) := by
-  have h : (μ.conv ν) Set.univ < ⊤ := by
-    unfold conv
-    exact IsFiniteMeasure.measure_univ_lt_top
-  exact { measure_univ_lt_top := h}
-
-/-- To get commutativity, we need the underlying multiplication to be commutative. -/
-theorem convolution_comm {M : Type*} [CommMonoid M] [MeasurableSpace M] [MeasurableMul₂ M]
-    (μ : Measure M) (ν : Measure M) [SFinite μ] [SFinite ν] : μ.conv ν = ν.conv μ := by
-  unfold conv
-  rw [← prod_swap, map_map]
-  · simp [Function.comp_def, mul_comm]
-  all_goals { measurability }
-
 /-- Convolution of the dirac measure at 1 with a measure μ returns μ. -/
 theorem one_convolution {M : Type*} [Monoid M] [MeasurableSpace M] [MeasurableMul₂ M]
     (μ : Measure M) [SFinite μ] : (Measure.dirac 1).conv μ = μ := by
@@ -91,3 +76,25 @@ theorem add_convolution {M : Type*} [Monoid M] [MeasurableSpace M] [MeasurableMu
   unfold conv
   rw [add_prod, map_add]
   measurability
+
+  /-- Convolution of SFinite maps is SFinite. -/
+theorem sfinite_convolution_of_sfinite {M : Type*} [Monoid M] [MeasurableSpace M] [MeasurableMul₂ M]
+    (μ : Measure M) [SFinite μ] (ν : Measure M) [SFinite ν] : SFinite (μ.conv ν) :=
+  instSFiniteMap (Measure.prod μ ν) fun x ↦ x.1 * x.2
+
+-- Additional results if we add commutativity to M
+
+/-- To get commutativity, we need the underlying multiplication to be commutative. -/
+theorem convolution_comm {M : Type*} [CommMonoid M] [MeasurableSpace M] [MeasurableMul₂ M]
+    (μ : Measure M) (ν : Measure M) [SFinite μ] [SFinite ν] : μ.conv ν = ν.conv μ := by
+  unfold conv
+  rw [← prod_swap, map_map]
+  · simp [Function.comp_def, mul_comm]
+  all_goals { measurability }
+
+theorem finite_of_finite_conv {M : Type*} [Monoid M] [MeasurableSpace M] (μ : Measure M)
+  (ν : Measure M) [IsFiniteMeasure μ] [IsFiniteMeasure ν] : IsFiniteMeasure (μ.conv ν) := by
+have h : (μ.conv ν) Set.univ < ⊤ := by
+  unfold conv
+  exact IsFiniteMeasure.measure_univ_lt_top
+exact { measure_univ_lt_top := h}
