@@ -652,7 +652,7 @@ noncomputable
 def orbitRelEquiv [IsGalois k K] :
     Quotient (MulAction.orbitRel (K ≃ₐ[k] K) (InfinitePlace K)) ≃ InfinitePlace k := by
   refine Equiv.ofBijective (Quotient.lift (comap · (algebraMap k K))
-    <| fun _ _ e ↦ (mem_orbit_iff.mp e).symm) ⟨?_, ?_⟩
+    fun _ _ e ↦ (mem_orbit_iff.mp e).symm) ⟨?_, ?_⟩
   · rintro ⟨w⟩ ⟨w'⟩ e
     exact Quotient.sound (mem_orbit_iff.mpr e.symm)
   · intro w
