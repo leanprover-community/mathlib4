@@ -115,7 +115,7 @@ variable {α : Sort u} {β : Sort v} {π : α → Sort w}
 -/
 
 instance [Countable α] [Countable β] : Countable (α ⊕' β) :=
-  Countable.of_equiv ((PLift α) ⊕ (PLift β)) (Equiv.plift.sumPSum Equiv.plift)
+  Countable.of_equiv (PLift α ⊕ PLift β) (Equiv.plift.sumPSum Equiv.plift)
 
 instance [Countable α] [Countable β] : Countable (PProd α β) :=
   Countable.of_equiv (PLift α × PLift β) (Equiv.plift.prodPProd Equiv.plift)
