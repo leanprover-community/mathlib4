@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis
 -/
 import Mathlib.Algebra.Group.Commute.Units
-import Mathlib.Algebra.Group.TypeTags
+import Mathlib.Algebra.GroupWithZero.Defs
+import Mathlib.Tactic.Convert
 
 #align_import algebra.group_power.basic from "leanprover-community/mathlib"@"9b2660e1b25419042c8da10bf411aa3c67f14383"
 
@@ -240,28 +241,13 @@ lemma eq_zero_or_one_of_sq_eq_self [CancelMonoidWithZero M] {x : M} (hx : x ^ 2 
 -/
 
 section CommMonoid
-
-variable [CommMonoid M] [AddCommMonoid A]
+variable [CommMonoid M]
 
 @[to_additive nsmul_add]
 theorem mul_pow (a b : M) (n : ℕ) : (a * b) ^ n = a ^ n * b ^ n :=
   (Commute.all a b).mul_pow n
 #align mul_pow mul_pow
 #align nsmul_add nsmul_add
-
-/-- The `n`th power map on a commutative monoid for a natural `n`, considered as a morphism of
-monoids. -/
-@[to_additive (attr := simps)
-      "Multiplication by a natural `n` on a commutative additive
-       monoid, considered as a morphism of additive monoids."]
-def powMonoidHom (n : ℕ) : M →* M where
-  toFun := (· ^ n)
-  map_one' := one_pow _
-  map_mul' a b := mul_pow a b n
-#align pow_monoid_hom powMonoidHom
-#align nsmul_add_monoid_hom nsmulAddMonoidHom
-#align pow_monoid_hom_apply powMonoidHom_apply
-#align nsmul_add_monoid_hom_apply nsmulAddMonoidHom_apply
 
 end CommMonoid
 
@@ -388,20 +374,6 @@ theorem div_zpow (a b : α) (n : ℤ) : (a / b) ^ n = a ^ n / b ^ n := by
   simp only [div_eq_mul_inv, mul_zpow, inv_zpow]
 #align div_zpow div_zpow
 #align zsmul_sub zsmul_sub
-
-/-- The `n`-th power map (for an integer `n`) on a commutative group, considered as a group
-homomorphism. -/
-@[to_additive (attr := simps)
-      "Multiplication by an integer `n` on a commutative additive group, considered as an
-       additive group homomorphism."]
-def zpowGroupHom (n : ℤ) : α →* α where
-  toFun := (· ^ n)
-  map_one' := one_zpow n
-  map_mul' a b := mul_zpow a b n
-#align zpow_group_hom zpowGroupHom
-#align zsmul_add_group_hom zsmulAddGroupHom
-#align zpow_group_hom_apply zpowGroupHom_apply
-#align zsmul_add_group_hom_apply zsmulAddGroupHom_apply
 
 end DivisionCommMonoid
 
