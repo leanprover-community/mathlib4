@@ -720,8 +720,8 @@ theorem noZeroSMulDivisors_iff_torsion_eq_bot : NoZeroSMulDivisors R M ↔ torsi
             exact ⟨⟨a, mem_nonZeroDivisors_of_ne_zero ha⟩, hax⟩ }
 #align submodule.no_zero_smul_divisors_iff_torsion_eq_bot Submodule.noZeroSMulDivisors_iff_torsion_eq_bot
 
-lemma Submodule.torsion_int {G} [AddCommGroup G] :
-    (Submodule.torsion ℤ G).toAddSubgroup = AddCommGroup.torsion G := by
+lemma torsion_int {G} [AddCommGroup G] :
+    (torsion ℤ G).toAddSubgroup = AddCommGroup.torsion G := by
   ext x
   refine ((isOfFinAddOrder_iff_zsmul_eq_zero (x := x)).trans ?_).symm
   simp [mem_nonZeroDivisors_iff_ne_zero]
