@@ -64,15 +64,15 @@ theorem zero_convolution {M : Type*} [Monoid M] [MeasurableSpace M]
   simp
 
 theorem convolution_add {M : Type*} [Monoid M] [MeasurableSpace M] [MeasurableMul₂ M]
-   (μ : Measure M) (ν : Measure M) (ρ : Measure M) [SFinite μ] [SFinite ν] [SFinite ρ]:
-   μ.conv (ν + ρ) = μ.conv ν + μ.conv ρ := by
+    (μ : Measure M) (ν : Measure M) (ρ : Measure M) [SFinite μ] [SFinite ν] [SFinite ρ]:
+    μ.conv (ν + ρ) = μ.conv ν + μ.conv ρ := by
   unfold conv
   rw [prod_add, map_add]
   measurability
 
 theorem add_convolution {M : Type*} [Monoid M] [MeasurableSpace M] [MeasurableMul₂ M]
-   (μ : Measure M) (ν : Measure M) (ρ : Measure M) [SFinite μ] [SFinite ν] [SFinite ρ]:
-   (μ + ν).conv ρ = μ.conv ρ + ν.conv ρ := by
+    (μ : Measure M) (ν : Measure M) (ρ : Measure M) [SFinite μ] [SFinite ν] [SFinite ρ]:
+    (μ + ν).conv ρ = μ.conv ρ + ν.conv ρ := by
   unfold conv
   rw [add_prod, map_add]
   measurability
@@ -93,7 +93,7 @@ theorem convolution_comm {M : Type*} [CommMonoid M] [MeasurableSpace M] [Measura
   all_goals { measurability }
 
 theorem finite_of_finite_conv {M : Type*} [Monoid M] [MeasurableSpace M] (μ : Measure M)
-  (ν : Measure M) [IsFiniteMeasure μ] [IsFiniteMeasure ν] : IsFiniteMeasure (μ.conv ν) := by
+    (ν : Measure M) [IsFiniteMeasure μ] [IsFiniteMeasure ν] : IsFiniteMeasure (μ.conv ν) := by
 have h : (μ.conv ν) Set.univ < ⊤ := by
   unfold conv
   exact IsFiniteMeasure.measure_univ_lt_top
