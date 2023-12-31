@@ -275,6 +275,35 @@ theorem LinearIndependent.map' (hv : LinearIndependent R v) (f : M →ₗ[R] M')
   hv.map <| by simp [hf_inj]
 #align linear_independent.map' LinearIndependent.map'
 
+/-- If `M / R` and `M' / R'` are modules, `i : R' → R` is a map, `j : M →+ M'` is a monoid map,
+such that they send non-zero elements to non-zero elements, and compatible with the scalar
+multiplications on `M` and `M'`, then `j` sends linearly independent families of vectors to
+linearly independent families of vectors. As a special case, taking `R = R'`
+it is `LinearIndependent.map'`. -/
+theorem LinearIndependent.map_of_injective_injective {R' : Type*} {M' : Type*}
+    [Semiring R'] [AddCommMonoid M'] [Module R' M'] (hv : LinearIndependent R v)
+    (i : R' → R) (j : M →+ M') (hi : ∀ r, i r = 0 → r = 0) (hj : ∀ m, j m = 0 → m = 0)
+    (hc : ∀ (r : R') (m : M), j (i r • m) = r • j m) : LinearIndependent R' (j ∘ v) := by
+  rw [linearIndependent_iff'] at hv ⊢
+  intro S r' H s hs
+  simp_rw [comp_apply, ← hc, ← map_sum] at H
+  exact hi _ <| hv _ _ (hj _ H) s hs
+
+/-- If `M / R` and `M' / R'` are modules, `i : R → R'` is a surjective map which maps zero to zero,
+`j : M →+ M'` is a monoid map which sends non-zero elements to non-zero elements, such that the
+scalar multiplications on `M` and `M'` are compatible, then `j` sends linearly independent families
+of vectors to linearly independent families of vectors. As a special case, taking `R = R'`
+it is `LinearIndependent.map'`. -/
+theorem LinearIndependent.map_of_surjective_injective {R' : Type*} {M' : Type*}
+    [Semiring R'] [AddCommMonoid M'] [Module R' M'] (hv : LinearIndependent R v)
+    (i : ZeroHom R R') (j : M →+ M') (hi : Surjective i) (hj : ∀ m, j m = 0 → m = 0)
+    (hc : ∀ (r : R) (m : M), j (r • m) = i r • j m) : LinearIndependent R' (j ∘ v) := by
+  obtain ⟨i', hi'⟩ := hi.hasRightInverse
+  refine hv.map_of_injective_injective i' j (fun _ h ↦ ?_) hj fun r m ↦ ?_
+  · apply_fun i at h
+    rwa [hi', i.map_zero] at h
+  rw [hc (i' r) m, hi']
+
 /-- If the image of a family of vectors under a linear map is linearly independent, then so is
 the original family. -/
 theorem LinearIndependent.of_comp (f : M →ₗ[R] M') (hfv : LinearIndependent R (f ∘ v)) :
@@ -976,7 +1005,7 @@ theorem exists_maximal_independent' (s : ι → M) :
 theorem exists_maximal_independent (s : ι → M) :
     ∃ I : Set ι,
       (LinearIndependent R fun x : I => s x) ∧
-        ∀ (i) (_ : i ∉ I), ∃ a : R, a ≠ 0 ∧ a • s i ∈ span R (s '' I) := by
+        ∀ i ∉ I, ∃ a : R, a ≠ 0 ∧ a • s i ∈ span R (s '' I) := by
   classical
     rcases exists_maximal_independent' R s with ⟨I, hIlinind, hImaximal⟩
     use I, hIlinind
@@ -1487,7 +1516,7 @@ theorem exists_finite_card_le_of_finite_of_linearIndependent_of_span (ht : t.Fin
   have : s ⊆ (span K ↑ht.toFinset : Submodule K V) := by simp; assumption
   let ⟨u, _hust, hsu, Eq⟩ := exists_of_linearIndependent_of_finite_span hs this
   have : s.Finite := u.finite_toSet.subset hsu
-  ⟨this, by rw [← Eq]; exact Finset.card_le_of_subset <| Finset.coe_subset.mp <| by simp [hsu]⟩
+  ⟨this, by rw [← Eq]; exact Finset.card_le_card <| Finset.coe_subset.mp <| by simp [hsu]⟩
 #align exists_finite_card_le_of_finite_of_linear_independent_of_span exists_finite_card_le_of_finite_of_linearIndependent_of_span
 
 end Module

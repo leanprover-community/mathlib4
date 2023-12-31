@@ -535,13 +535,20 @@ theorem swap_apply_apply (f : Perm α) (x y : α) : swap (f x) (f y) = f * swap 
   rw [mul_swap_eq_swap_mul, mul_inv_cancel_right]
 #align equiv.swap_apply_apply Equiv.swap_apply_apply
 
+@[simp]
+theorem swap_smul_self_smul [MulAction (Perm α) β] (i j : α) (x : β) :
+    swap i j • swap i j • x = x := by simp [smul_smul]
+
+theorem swap_smul_involutive [MulAction (Perm α) β] (i j : α) :
+    Function.Involutive (swap i j • · : β → β) := swap_smul_self_smul i j
+
 /-- Left-multiplying a permutation with `swap i j` twice gives the original permutation.
 
   This specialization of `swap_mul_self` is useful when using cosets of permutations.
 -/
 @[simp]
-theorem swap_mul_self_mul (i j : α) (σ : Perm α) : Equiv.swap i j * (Equiv.swap i j * σ) = σ := by
-  rw [← mul_assoc, swap_mul_self, one_mul]
+theorem swap_mul_self_mul (i j : α) (σ : Perm α) : Equiv.swap i j * (Equiv.swap i j * σ) = σ :=
+  swap_smul_self_smul i j σ
 #align equiv.swap_mul_self_mul Equiv.swap_mul_self_mul
 
 /-- Right-multiplying a permutation with `swap i j` twice gives the original permutation.
@@ -600,7 +607,7 @@ variable [AddGroup α] (a b : α)
 #align equiv.add_left_add Equiv.addLeft_add
 
 @[simp] lemma addRight_add : Equiv.addRight (a + b) = Equiv.addRight b * Equiv.addRight a :=
-  ext $ fun _ ↦ (add_assoc _ _ _).symm
+  ext fun _ ↦ (add_assoc _ _ _).symm
 #align equiv.add_right_add Equiv.addRight_add
 
 @[simp] lemma inv_addLeft : (Equiv.addLeft a)⁻¹ = Equiv.addLeft (-a) := Equiv.coe_inj.1 rfl
@@ -647,7 +654,7 @@ lemma mulLeft_mul : Equiv.mulLeft (a * b) = Equiv.mulLeft a * Equiv.mulLeft b :=
 
 @[to_additive existing (attr := simp)]
 lemma mulRight_mul : Equiv.mulRight (a * b) = Equiv.mulRight b * Equiv.mulRight a :=
-  ext $ fun _ ↦ (mul_assoc _ _ _).symm
+  ext fun _ ↦ (mul_assoc _ _ _).symm
 #align equiv.mul_right_mul Equiv.mulRight_mul
 
 @[to_additive existing (attr := simp) inv_addLeft]

@@ -970,10 +970,10 @@ theorem castNum_shiftRight (m : Num) (n : Nat) : ↑(m >>> n) = (m : ℕ) >>> (n
 @[simp]
 theorem castNum_testBit (m n) : testBit m n = Nat.testBit m n := by
   -- Porting note: `unfold` → `dsimp only`
-  cases m <;> dsimp only [testBit]
-  case zero =>
+  cases m with dsimp only [testBit]
+  | zero =>
     rw [show (Num.zero : Nat) = 0 from rfl, Nat.zero_testBit]
-  case pos m =>
+  | pos m =>
     rw [cast_pos]
     induction' n with n IH generalizing m <;> cases' m with m m
         <;> dsimp only [PosNum.testBit, Nat.zero_eq]

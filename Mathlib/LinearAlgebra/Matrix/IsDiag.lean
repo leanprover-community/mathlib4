@@ -34,7 +34,7 @@ open Matrix Kronecker
 
 /-- `A.IsDiag` means square matrix `A` is a diagonal matrix. -/
 def IsDiag [Zero α] (A : Matrix n n α) : Prop :=
-  ∀ ⦃i j⦄, i ≠ j → A i j = 0
+  Pairwise fun i j => A i j = 0
 #align matrix.is_diag Matrix.IsDiag
 
 @[simp]

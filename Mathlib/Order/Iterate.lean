@@ -143,7 +143,7 @@ theorem iterate_le_id_of_le_id (h : f ≤ id) (n : ℕ) : f^[n] ≤ id :=
 #align function.iterate_le_id_of_le_id Function.iterate_le_id_of_le_id
 
 theorem monotone_iterate_of_id_le (h : id ≤ f) : Monotone fun m => f^[m] :=
-  monotone_nat_of_le_succ $ fun n x => by
+  monotone_nat_of_le_succ fun n x => by
     rw [iterate_succ_apply']
     exact h _
 #align function.monotone_iterate_of_id_le Function.monotone_iterate_of_id_le
@@ -234,7 +234,7 @@ variable [Preorder α] {f : α → α} {x : α}
 /-- If `f` is a monotone map and `x ≤ f x` at some point `x`, then the iterates `f^[n] x` form
 a monotone sequence. -/
 theorem monotone_iterate_of_le_map (hf : Monotone f) (hx : x ≤ f x) : Monotone fun n => f^[n] x :=
-  monotone_nat_of_le_succ $ fun n => by
+  monotone_nat_of_le_succ fun n => by
     rw [iterate_succ_apply]
     exact hf.iterate n hx
 #align monotone.monotone_iterate_of_le_map Monotone.monotone_iterate_of_le_map
@@ -255,7 +255,7 @@ variable [Preorder α] {f : α → α} {x : α}
 form a strictly monotone sequence. -/
 theorem strictMono_iterate_of_lt_map (hf : StrictMono f) (hx : x < f x) :
     StrictMono fun n => f^[n] x :=
-  strictMono_nat_of_lt_succ $ fun n => by
+  strictMono_nat_of_lt_succ fun n => by
     rw [iterate_succ_apply]
     exact hf.iterate n hx
 #align strict_mono.strict_mono_iterate_of_lt_map StrictMono.strictMono_iterate_of_lt_map
