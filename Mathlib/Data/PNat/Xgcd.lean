@@ -70,7 +70,7 @@ instance : SizeOf XgcdType :=
  reflects the matrix/vector interpretation as above. -/
 instance : Repr XgcdType where
   reprPrec
-  | g, _ => s!"[[[ {repr (g.wp + 1)}, {(repr g.x)} ], \
+  | g, _ => s!"[[[{repr (g.wp + 1)}, {repr g.x}], \
                  [{repr g.y}, {repr (g.zp + 1)}]], \
                 [{repr (g.ap + 1)}, {repr (g.bp + 1)}]]"
 
