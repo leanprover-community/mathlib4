@@ -114,8 +114,8 @@ variable {α : Sort u} {β : Sort v} {π : α → Sort w}
 ### Operations on `Sort*`s
 -/
 
-instance [Countable α] [Countable β] : Countable (PSum α β) :=
-  Countable.of_equiv (Sum (PLift α) (PLift β)) (Equiv.plift.sumPSum Equiv.plift)
+instance [Countable α] [Countable β] : Countable (α ⊕' β) :=
+  Countable.of_equiv ((PLift α) ⊕ (PLift β)) (Equiv.plift.sumPSum Equiv.plift)
 
 instance [Countable α] [Countable β] : Countable (PProd α β) :=
   Countable.of_equiv (PLift α × PLift β) (Equiv.plift.prodPProd Equiv.plift)
