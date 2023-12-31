@@ -285,7 +285,7 @@ theorem equiv {C : Type*} [CommRing C] [Algebra A C] [h : IsCyclotomicExtension 
     (f : B ≃ₐ[A] C) : IsCyclotomicExtension S A C := by
   letI : Algebra B C := f.toAlgHom.toRingHom.toAlgebra
   haveI : IsCyclotomicExtension {1} B C := singleton_one_of_algebraMap_bijective f.surjective
-  haveI : IsScalarTower A B C := IsScalarTower.of_ring_hom f.toAlgHom
+  haveI : IsScalarTower A B C := IsScalarTower.of_algHom f.toAlgHom
   exact (iff_union_singleton_one _ _ _).2 (trans S {1} A B C f.injective)
 #align is_cyclotomic_extension.equiv IsCyclotomicExtension.equiv
 
@@ -352,8 +352,7 @@ theorem numberField [h : NumberField K] [Finite S] [IsCyclotomicExtension S K L]
 /-- A finite cyclotomic extension of an integral noetherian domain is integral -/
 theorem integral [IsDomain B] [IsNoetherianRing A] [Finite S] [IsCyclotomicExtension S A B] :
     Algebra.IsIntegral A B :=
-  letI := IsCyclotomicExtension.finite S A B; isIntegral_of_noetherian <|
-    isNoetherian_of_isNoetherianRing_of_finite A B
+  letI := IsCyclotomicExtension.finite S A B; isIntegral_of_noetherian inferInstance
 #align is_cyclotomic_extension.integral IsCyclotomicExtension.integral
 
 /-- If `S` is finite and `IsCyclotomicExtension S K A`, then `finiteDimensional K A`. -/

@@ -357,7 +357,7 @@ theorem eq_of_chain {c : Chain (Part α)} {a b : α} (ha : some a ∈ c) (hb : s
   cases' ha with i ha; replace ha := ha.symm
   cases' hb with j hb; replace hb := hb.symm
   rw [eq_some_iff] at ha hb
-  cases' le_total i j with hij hji
+  rcases le_total i j with hij | hji
   · have := c.monotone hij _ ha; apply mem_unique this hb
   · have := c.monotone hji _ hb; apply Eq.symm; apply mem_unique this ha
   --Porting note: Old proof
@@ -822,7 +822,7 @@ theorem forall_forall_merge' (c₀ : Chain (α →𝒄 β)) (c₁ : Chain α) (z
 of the functions in the `ω`-chain. -/
 @[simps!]
 protected def ωSup (c : Chain (α →𝒄 β)) : α →𝒄 β :=
-  .mk (ωSup <| c.map toMono) <| fun c' ↦ by
+  .mk (ωSup <| c.map toMono) fun c' ↦ by
     apply eq_of_forall_ge_iff; intro z
     simp only [ωSup_le_iff, (c _).continuous, Chain.map_coe, OrderHom.apply_coe, toMono_coe,
       OrderHom.omegaCompletePartialOrder_ωSup_coe, forall_forall_merge, OrderHomClass.coe_coe,

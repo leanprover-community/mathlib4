@@ -202,7 +202,7 @@ theorem rice (C : Set (ℕ →. ℕ)) (h : ComputablePred fun c => eval c ∈ C)
     fixed_point₂
       (Partrec.cond (h.comp fst) ((Partrec.nat_iff.2 hg).comp snd).to₂
           ((Partrec.nat_iff.2 hf).comp snd).to₂).to₂
-  simp at e
+  simp? at e says simp only [Bool.cond_decide] at e
   by_cases H : eval c ∈ C
   · simp only [H, if_true] at e
     change (fun b => g b) ∈ C
@@ -252,12 +252,13 @@ theorem computable_iff_re_compl_re {p : α → Prop} [DecidablePred p] :
         Partrec.merge (h₁.map (Computable.const true).to₂) (h₂.map (Computable.const false).to₂)
         (by
           intro a x hx y hy
-          simp at hx hy
+          simp only [Part.mem_map_iff, Part.mem_assert_iff, Part.mem_some_iff, exists_prop,
+            and_true, exists_const] at hx hy
           cases hy.1 hx.1)
       · refine' Partrec.of_eq pk fun n => Part.eq_some_iff.2 _
         rw [hk]
         simp only [Part.mem_map_iff, Part.mem_assert_iff, Part.mem_some_iff, exists_prop, and_true,
-          Bool.true_eq_decide_iff, and_self, exists_const, Bool.false_eq_decide_iff]
+          true_eq_decide_iff, and_self, exists_const, false_eq_decide_iff]
         apply Decidable.em⟩⟩
 #align computable_pred.computable_iff_re_compl_re ComputablePred.computable_iff_re_compl_re
 
@@ -296,10 +297,10 @@ open Nat (Partrec')
 open Nat.Partrec'
 
 theorem to_part {n f} (pf : @Partrec' n f) : _root_.Partrec f := by
-  induction pf
-  case prim n f hf => exact hf.to_prim.to_comp
-  case comp m n f g _ _ hf hg => exact (Partrec.vector_mOfFn fun i => hg i).bind (hf.comp snd)
-  case rfind n f _ hf =>
+  induction pf with
+  | prim hf => exact hf.to_prim.to_comp
+  | comp _ _ _ hf hg => exact (Partrec.vector_mOfFn hg).bind (hf.comp snd)
+  | rfind _ hf =>
     have := hf.comp (vector_cons.comp snd fst)
     have :=
       ((Primrec.eq.comp _root_.Primrec.id (_root_.Primrec.const 0)).to_comp.comp

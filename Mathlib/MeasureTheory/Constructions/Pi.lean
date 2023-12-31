@@ -164,7 +164,7 @@ theorem piPremeasure_pi {s : ∀ i, Set (α i)} (hs : (pi univ s).Nonempty) :
 theorem piPremeasure_pi' {s : ∀ i, Set (α i)} : piPremeasure m (pi univ s) = ∏ i, m i (s i) := by
   cases isEmpty_or_nonempty ι
   · simp [piPremeasure]
-  cases' (pi univ s).eq_empty_or_nonempty with h h
+  rcases (pi univ s).eq_empty_or_nonempty with h | h
   · rcases univ_pi_eq_empty_iff.mp h with ⟨i, hi⟩
     have : ∃ i, m i (s i) = 0 := ⟨i, by simp [hi]⟩
     simpa [h, Finset.card_univ, zero_pow (Fintype.card_pos_iff.mpr ‹_›), @eq_comm _ (0 : ℝ≥0∞),
@@ -194,7 +194,7 @@ protected def pi (m : ∀ i, OuterMeasure (α i)) : OuterMeasure (∀ i, α i) :
 
 theorem pi_pi_le (m : ∀ i, OuterMeasure (α i)) (s : ∀ i, Set (α i)) :
     OuterMeasure.pi m (pi univ s) ≤ ∏ i, m i (s i) := by
-  cases' (pi univ s).eq_empty_or_nonempty with h h; simp [h]
+  rcases (pi univ s).eq_empty_or_nonempty with h | h; simp [h]
   exact (boundedBy_le _).trans_eq (piPremeasure_pi h)
 #align measure_theory.outer_measure.pi_pi_le MeasureTheory.OuterMeasure.pi_pi_le
 
@@ -412,26 +412,31 @@ instance {α : ι → Type*} [∀ i, MeasureSpace (α i)] [∀ i, SigmaFinite (v
     SigmaFinite (volume : Measure (∀ i, α i)) :=
   pi.sigmaFinite _
 
-theorem pi_of_empty {α : Type*} [IsEmpty α] {β : α → Type*} {m : ∀ a, MeasurableSpace (β a)}
-    (μ : ∀ a : α, Measure (β a)) (x : ∀ a, β a := isEmptyElim) : Measure.pi μ = dirac x := by
+theorem pi_of_empty {α : Type*} [Fintype α] [IsEmpty α] {β : α → Type*}
+    {m : ∀ a, MeasurableSpace (β a)} (μ : ∀ a : α, Measure (β a)) (x : ∀ a, β a := isEmptyElim) :
+    Measure.pi μ = dirac x := by
   haveI : ∀ a, SigmaFinite (μ a) := isEmptyElim
   refine' pi_eq fun s _ => _
   rw [Fintype.prod_empty, dirac_apply_of_mem]
   exact isEmptyElim (α := α)
 #align measure_theory.measure.pi_of_empty MeasureTheory.Measure.pi_of_empty
 
+lemma volume_pi_eq_dirac {ι : Type*} [Fintype ι] [IsEmpty ι]
+    {α : ι → Type*} [∀ i, MeasureSpace (α i)] (x : ∀ a, α a := isEmptyElim) :
+    (volume : Measure (∀ i, α i)) = Measure.dirac x :=
+  Measure.pi_of_empty _ _
+
 @[simp]
-theorem pi_empty_univ {α : Type*} {β : α → Type*} [IsEmpty α] {m : ∀ α, MeasurableSpace (β α)}
-    (μ : ∀ a : α, Measure (β a)) : Measure.pi μ (Set.univ) = 1 := by
-    rw [pi_of_empty, measure_univ]
+theorem pi_empty_univ {α : Type*} [Fintype α] [IsEmpty α] {β : α → Type*}
+    {m : ∀ α, MeasurableSpace (β α)} (μ : ∀ a : α, Measure (β a)) :
+    Measure.pi μ (Set.univ) = 1 := by
+  rw [pi_of_empty, measure_univ]
 
 theorem pi_eval_preimage_null {i : ι} {s : Set (α i)} (hs : μ i s = 0) :
     Measure.pi μ (eval i ⁻¹' s) = 0 := by
   -- WLOG, `s` is measurable
   rcases exists_measurable_superset_of_null hs with ⟨t, hst, _, hμt⟩
-  suffices : Measure.pi μ (eval i ⁻¹' t) = 0
-  exact measure_mono_null (preimage_mono hst) this
-  clear! s
+  suffices Measure.pi μ (eval i ⁻¹' t) = 0 from measure_mono_null (preimage_mono hst) this
   -- Now rewrite it as `Set.pi`, and apply `pi_pi`
   rw [← univ_pi_update_univ, pi_pi]
   apply Finset.prod_eq_zero (Finset.mem_univ i)
@@ -792,24 +797,24 @@ theorem volume_measurePreserving_sumPiEquivProdPi (π : ι ⊕ ι' → Type*)
     MeasurePreserving (MeasurableEquiv.sumPiEquivProdPi π) volume volume :=
   measurePreserving_sumPiEquivProdPi (fun _ ↦ volume)
 
-theorem measurePreserving_piFinSuccAboveEquiv {n : ℕ} {α : Fin (n + 1) → Type u}
+theorem measurePreserving_piFinSuccAbove {n : ℕ} {α : Fin (n + 1) → Type u}
     {m : ∀ i, MeasurableSpace (α i)} (μ : ∀ i, Measure (α i)) [∀ i, SigmaFinite (μ i)]
     (i : Fin (n + 1)) :
-    MeasurePreserving (MeasurableEquiv.piFinSuccAboveEquiv α i) (Measure.pi μ)
+    MeasurePreserving (MeasurableEquiv.piFinSuccAbove α i) (Measure.pi μ)
       ((μ i).prod <| Measure.pi fun j => μ (i.succAbove j)) := by
-  set e := (MeasurableEquiv.piFinSuccAboveEquiv α i).symm
+  set e := (MeasurableEquiv.piFinSuccAbove α i).symm
   refine' MeasurePreserving.symm e _
   refine' ⟨e.measurable, (pi_eq fun s _ => _).symm⟩
   rw [e.map_apply, i.prod_univ_succAbove _, ← pi_pi, ← prod_prod]
   congr 1 with ⟨x, f⟩
   simp [i.forall_iff_succAbove]
-#align measure_theory.measure_preserving_pi_fin_succ_above_equiv MeasureTheory.measurePreserving_piFinSuccAboveEquiv
+#align measure_theory.measure_preserving_pi_fin_succ_above_equiv MeasureTheory.measurePreserving_piFinSuccAbove
 
-theorem volume_preserving_piFinSuccAboveEquiv {n : ℕ} (α : Fin (n + 1) → Type u)
+theorem volume_preserving_piFinSuccAbove {n : ℕ} (α : Fin (n + 1) → Type u)
     [∀ i, MeasureSpace (α i)] [∀ i, SigmaFinite (volume : Measure (α i))] (i : Fin (n + 1)) :
-    MeasurePreserving (MeasurableEquiv.piFinSuccAboveEquiv α i) :=
-  measurePreserving_piFinSuccAboveEquiv (fun _ => volume) i
-#align measure_theory.volume_preserving_pi_fin_succ_above_equiv MeasureTheory.volume_preserving_piFinSuccAboveEquiv
+    MeasurePreserving (MeasurableEquiv.piFinSuccAbove α i) :=
+  measurePreserving_piFinSuccAbove (fun _ => volume) i
+#align measure_theory.volume_preserving_pi_fin_succ_above_equiv MeasureTheory.volume_preserving_piFinSuccAbove
 
 theorem measurePreserving_piUnique {π : ι → Type*} [Unique ι] {m : ∀ i, MeasurableSpace (π i)}
     (μ : ∀ i, Measure (π i)) :
@@ -874,7 +879,7 @@ theorem volume_preserving_finTwoArrow (α : Type u) [MeasureSpace α]
   measurePreserving_finTwoArrow volume
 #align measure_theory.volume_preserving_fin_two_arrow MeasureTheory.volume_preserving_finTwoArrow
 
-theorem measurePreserving_pi_empty {ι : Type u} {α : ι → Type v} [IsEmpty ι]
+theorem measurePreserving_pi_empty {ι : Type u} {α : ι → Type v} [Fintype ι] [IsEmpty ι]
     {m : ∀ i, MeasurableSpace (α i)} (μ : ∀ i, Measure (α i)) :
     MeasurePreserving (MeasurableEquiv.ofUniqueOfUnique (∀ i, α i) Unit) (Measure.pi μ)
       (Measure.dirac ()) := by
@@ -883,7 +888,7 @@ theorem measurePreserving_pi_empty {ι : Type u} {α : ι → Type v} [IsEmpty �
   rw [Measure.pi_of_empty, Measure.map_dirac e.measurable]
 #align measure_theory.measure_preserving_pi_empty MeasureTheory.measurePreserving_pi_empty
 
-theorem volume_preserving_pi_empty {ι : Type u} (α : ι → Type v) [IsEmpty ι]
+theorem volume_preserving_pi_empty {ι : Type u} (α : ι → Type v) [Fintype ι] [IsEmpty ι]
     [∀ i, MeasureSpace (α i)] :
     MeasurePreserving (MeasurableEquiv.ofUniqueOfUnique (∀ i, α i) Unit) volume volume :=
   measurePreserving_pi_empty fun _ => volume

@@ -133,9 +133,9 @@ theorem arcsin_of_le_neg_one {x : ℝ} (hx : x ≤ -1) : arcsin x = -(π / 2) :=
 
 @[simp]
 theorem arcsin_neg (x : ℝ) : arcsin (-x) = -arcsin x := by
-  cases' le_total x (-1) with hx₁ hx₁
+  rcases le_total x (-1) with hx₁ | hx₁
   · rw [arcsin_of_le_neg_one hx₁, neg_neg, arcsin_of_one_le (le_neg.2 hx₁)]
-  cases' le_total 1 x with hx₂ hx₂
+  rcases le_total 1 x with hx₂ | hx₂
   · rw [arcsin_of_one_le hx₂, arcsin_of_le_neg_one (neg_le_neg hx₂)]
   refine' arcsin_eq_of_sin_eq _ _
   · rw [sin_neg, sin_arcsin hx₁ hx₂]
@@ -149,7 +149,7 @@ theorem arcsin_le_iff_le_sin {x y : ℝ} (hx : x ∈ Icc (-1 : ℝ) 1) (hy : y �
 
 theorem arcsin_le_iff_le_sin' {x y : ℝ} (hy : y ∈ Ico (-(π / 2)) (π / 2)) :
     arcsin x ≤ y ↔ x ≤ sin y := by
-  cases' le_total x (-1) with hx₁ hx₁
+  rcases le_total x (-1) with hx₁ | hx₁
   · simp [arcsin_of_le_neg_one hx₁, hy.1, hx₁.trans (neg_one_le_sin _)]
   cases' lt_or_le 1 x with hx₂ hx₂
   · simp [arcsin_of_one_le hx₂.le, hy.2.not_le, (sin_le_one y).trans_lt hx₂]
@@ -278,9 +278,9 @@ theorem mapsTo_sin_Ioo : MapsTo sin (Ioo (-(π / 2)) (π / 2)) (Ioo (-1) 1) := f
   rwa [mem_Ioo, ← arcsin_lt_pi_div_two, ← neg_pi_div_two_lt_arcsin, arcsin_sin h.1.le h.2.le]
 #align real.maps_to_sin_Ioo Real.mapsTo_sin_Ioo
 
-/-- `Real.sin` as a `LocalHomeomorph` between `(-π / 2, π / 2)` and `(-1, 1)`. -/
+/-- `Real.sin` as a `PartialHomeomorph` between `(-π / 2, π / 2)` and `(-1, 1)`. -/
 @[simp]
-def sinLocalHomeomorph : LocalHomeomorph ℝ ℝ where
+def sinPartialHomeomorph : PartialHomeomorph ℝ ℝ where
   toFun := sin
   invFun := arcsin
   source := Ioo (-(π / 2)) (π / 2)
@@ -293,7 +293,7 @@ def sinLocalHomeomorph : LocalHomeomorph ℝ ℝ where
   open_target := isOpen_Ioo
   continuousOn_toFun := continuous_sin.continuousOn
   continuousOn_invFun := continuous_arcsin.continuousOn
-#align real.sin_local_homeomorph Real.sinLocalHomeomorph
+#align real.sin_local_homeomorph Real.sinPartialHomeomorph
 
 theorem cos_arcsin_nonneg (x : ℝ) : 0 ≤ cos (arcsin x) :=
   cos_nonneg_of_mem_Icc ⟨neg_pi_div_two_le_arcsin _, arcsin_le_pi_div_two _⟩

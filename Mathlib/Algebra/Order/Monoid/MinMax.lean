@@ -23,7 +23,8 @@ variable {α β : Type*}
 
 @[to_additive]
 theorem fn_min_mul_fn_max [LinearOrder α] [CommSemigroup β] (f : α → β) (n m : α) :
-    f (min n m) * f (max n m) = f n * f m := by cases' le_total n m with h h <;> simp [h, mul_comm]
+    f (min n m) * f (max n m) = f n * f m := by
+  rcases le_total n m with h | h <;> simp [h, mul_comm]
 #align fn_min_mul_fn_max fn_min_mul_fn_max
 #align fn_min_add_fn_max fn_min_add_fn_max
 

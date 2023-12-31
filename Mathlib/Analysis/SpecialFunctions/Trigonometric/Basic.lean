@@ -164,17 +164,6 @@ theorem pi_pos : 0 < π :=
   lt_of_lt_of_le (by norm_num) two_le_pi
 #align real.pi_pos Real.pi_pos
 
-namespace Mathlib.Meta.Positivity
-open Lean.Meta Qq
-
-/-- Extension for the `positivity` tactic: `π` is always positive. -/
-@[positivity π]
-def evalExp : Mathlib.Meta.Positivity.PositivityExt where eval {_ _} _ _ _ := do
-  pure (.positive (q(Real.pi_pos) : Lean.Expr))
-
-end Mathlib.Meta.Positivity
-
-
 theorem pi_ne_zero : π ≠ 0 :=
   ne_of_gt pi_pos
 #align real.pi_ne_zero Real.pi_ne_zero
@@ -187,6 +176,16 @@ theorem two_pi_pos : 0 < 2 * π := by linarith [pi_pos]
 #align real.two_pi_pos Real.two_pi_pos
 
 end Real
+
+namespace Mathlib.Meta.Positivity
+open Lean.Meta Qq
+
+/-- Extension for the `positivity` tactic: `π` is always positive. -/
+@[positivity Real.pi]
+def evalRealPi : Mathlib.Meta.Positivity.PositivityExt where eval {_ _} _ _ _ := do
+  pure (.positive (q(Real.pi_pos) : Lean.Expr))
+
+end Mathlib.Meta.Positivity
 
 namespace NNReal
 

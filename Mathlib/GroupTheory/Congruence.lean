@@ -451,6 +451,10 @@ theorem coe_sInf (S : Set (Con M)) :
 #align con.Inf_def Con.coe_sInf
 #align add_con.Inf_def AddCon.coe_sInf
 
+@[to_additive (attr := simp, norm_cast)]
+theorem coe_iInf {ι : Sort*} (f : ι → Con M) : ⇑(iInf f) = ⨅ i, ⇑(f i) := by
+  rw [iInf, coe_sInf, ← Set.range_comp, sInf_range, Function.comp]
+
 @[to_additive]
 instance : PartialOrder (Con M) where
   le_refl _ _ _ := id
@@ -789,7 +793,7 @@ theorem mem_coe {c : Con M} {x y} : (x, y) ∈ (↑c : Submonoid (M × M)) ↔ (
 
 @[to_additive]
 theorem to_submonoid_inj (c d : Con M) (H : (c : Submonoid (M × M)) = d) : c = d :=
-  ext <| fun x y => show (x, y) ∈ c.submonoid ↔ (x, y) ∈ d from H ▸ Iff.rfl
+  ext fun x y => show (x, y) ∈ c.submonoid ↔ (x, y) ∈ d from H ▸ Iff.rfl
 #align con.to_submonoid_inj Con.to_submonoid_inj
 #align add_con.to_add_submonoid_inj AddCon.to_addSubmonoid_inj
 
