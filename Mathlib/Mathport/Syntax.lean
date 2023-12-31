@@ -213,9 +213,6 @@ syntax termList := " [" term,* "]"
 
 /- E -/ syntax (name := noncommRing) "noncomm_ring" : tactic
 
-
-/- S -/ syntax (name := omega) "omega" (&" manual")? (&" nat" <|> &" int")? : tactic
-
 /- B -/ syntax (name := acMono) "ac_mono" ("*" <|> ("^" num))?
   (config)? ((" : " term) <|> (" := " term))? : tactic
 

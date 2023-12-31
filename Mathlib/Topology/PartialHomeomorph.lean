@@ -1244,7 +1244,7 @@ def homeomorphOfImageSubsetSource {s : Set α} {t : Set β} (hs : s ⊆ e.source
     s ≃ₜ t :=
   have h₁ : MapsTo e s t := mapsTo'.2 ht.subset
   have h₂ : t ⊆ e.target := ht ▸ e.image_source_eq_target ▸ image_subset e hs
-  have h₃ : MapsTo e.symm t s := ht ▸ ball_image_iff.2 <| fun _x hx =>
+  have h₃ : MapsTo e.symm t s := ht ▸ ball_image_iff.2 fun _x hx =>
       (e.left_inv (hs hx)).symm ▸ hx
   { toFun := MapsTo.restrict e s t h₁
     invFun := MapsTo.restrict e.symm t s h₃

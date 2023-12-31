@@ -78,14 +78,14 @@ theorem image_restrict (f : α → β) (s t : Set α) :
 
 @[simp]
 theorem restrict_dite {s : Set α} [∀ x, Decidable (x ∈ s)] (f : ∀ a ∈ s, β)
-    (g : ∀ (a) (_ : a ∉ s), β) :
+    (g : ∀ a ∉ s, β) :
     (s.restrict fun a => if h : a ∈ s then f a h else g a h) = (fun a : s => f a a.2) :=
   funext fun a => dif_pos a.2
 #align set.restrict_dite Set.restrict_dite
 
 @[simp]
 theorem restrict_dite_compl {s : Set α} [∀ x, Decidable (x ∈ s)] (f : ∀ a ∈ s, β)
-    (g : ∀ (a) (_ : a ∉ s), β) :
+    (g : ∀ a ∉ s, β) :
     (sᶜ.restrict fun a => if h : a ∈ s then f a h else g a h) = (fun a : (sᶜ : Set α) => g a a.2) :=
   funext fun a => dif_neg a.2
 #align set.restrict_dite_compl Set.restrict_dite_compl
@@ -411,7 +411,7 @@ theorem mapsTo' : MapsTo f s t ↔ f '' s ⊆ t :=
 #align set.maps_to' Set.mapsTo'
 
 theorem mapsTo_prod_map_diagonal : MapsTo (Prod.map f f) (diagonal α) (diagonal β) :=
-  diagonal_subset_iff.2 <| fun _ => rfl
+  diagonal_subset_iff.2 fun _ => rfl
 #align set.maps_to_prod_map_diagonal Set.mapsTo_prod_map_diagonal
 
 theorem MapsTo.subset_preimage {f : α → β} {s : Set α} {t : Set β} (hf : MapsTo f s t) :
@@ -427,6 +427,10 @@ theorem mapsTo_singleton {x : α} : MapsTo f {x} t ↔ f x ∈ t :=
 theorem mapsTo_empty (f : α → β) (t : Set β) : MapsTo f ∅ t :=
   empty_subset _
 #align set.maps_to_empty Set.mapsTo_empty
+
+/-- If `f` maps `s` to `t` and `s` is non-empty, `t` is non-empty. -/
+theorem MapsTo.nonempty (h : MapsTo f s t) (hs : s.Nonempty) : t.Nonempty :=
+  (hs.image f).mono (mapsTo'.mp h)
 
 theorem MapsTo.image_subset (h : MapsTo f s t) : f '' s ⊆ t :=
   mapsTo'.1 h
@@ -534,10 +538,15 @@ theorem mapsTo_range (f : α → β) (s : Set α) : MapsTo f s (range f) :=
 #align set.maps_to_range Set.mapsTo_range
 
 @[simp]
-theorem maps_image_to (f : α → β) (g : γ → α) (s : Set γ) (t : Set β) :
+theorem mapsTo_image_iff {f : α → β} {g : γ → α} {s : Set γ} {t : Set β} :
     MapsTo f (g '' s) t ↔ MapsTo (f ∘ g) s t :=
   ⟨fun h c hc => h ⟨c, hc, rfl⟩, fun h _ ⟨_, hc⟩ => hc.2 ▸ h hc.1⟩
-#align set.maps_image_to Set.maps_image_to
+#align set.maps_image_to Set.mapsTo_image_iff
+
+@[deprecated]
+lemma maps_image_to (f : α → β) (g : γ → α) (s : Set γ) (t : Set β) :
+    MapsTo f (g '' s) t ↔ MapsTo (f ∘ g) s t :=
+  mapsTo_image_iff
 
 lemma MapsTo.comp_left (g : β → γ) (hf : MapsTo f s t) : MapsTo (g ∘ f) s (g '' t) :=
   fun x hx ↦ ⟨f x, hf hx, rfl⟩
@@ -548,13 +557,21 @@ lemma MapsTo.comp_right {s : Set β} {t : Set γ} (hg : MapsTo g s t) (f : α �
 #align set.maps_to.comp_right Set.MapsTo.comp_right
 
 @[simp]
-theorem maps_univ_to (f : α → β) (s : Set β) : MapsTo f univ s ↔ ∀ a, f a ∈ s :=
+lemma mapsTo_univ_iff : MapsTo f univ t ↔ ∀ x, f x ∈ t :=
   ⟨fun h _ => h (mem_univ _), fun h x _ => h x⟩
+
+@[deprecated]
+theorem maps_univ_to (f : α → β) (s : Set β) : MapsTo f univ s ↔ ∀ a, f a ∈ s :=
+  mapsTo_univ_iff
 #align set.maps_univ_to Set.maps_univ_to
 
 @[simp]
+lemma mapsTo_range_iff {g : ι → α} : MapsTo f (range g) t ↔ ∀ i, f (g i) ∈ t :=
+  forall_range_iff
+
+@[deprecated mapsTo_range_iff]
 theorem maps_range_to (f : α → β) (g : γ → α) (s : Set β) :
-    MapsTo f (range g) s ↔ MapsTo (f ∘ g) univ s := by rw [← image_univ, maps_image_to]
+    MapsTo f (range g) s ↔ MapsTo (f ∘ g) univ s := by rw [← image_univ, mapsTo_image_iff]
 #align set.maps_range_to Set.maps_range_to
 
 theorem surjective_mapsTo_image_restrict (f : α → β) (s : Set α) :
@@ -1489,19 +1506,19 @@ theorem piecewise_eqOn_compl (f g : α → β) : EqOn (s.piecewise f g) g sᶜ :
 #align set.piecewise_eq_on_compl Set.piecewise_eqOn_compl
 
 theorem piecewise_le {δ : α → Type*} [∀ i, Preorder (δ i)] {s : Set α} [∀ j, Decidable (j ∈ s)]
-    {f₁ f₂ g : ∀ i, δ i} (h₁ : ∀ i ∈ s, f₁ i ≤ g i) (h₂ : ∀ (i) (_ : i ∉ s), f₂ i ≤ g i) :
+    {f₁ f₂ g : ∀ i, δ i} (h₁ : ∀ i ∈ s, f₁ i ≤ g i) (h₂ : ∀ i ∉ s, f₂ i ≤ g i) :
     s.piecewise f₁ f₂ ≤ g := fun i => if h : i ∈ s then by simp [*] else by simp [*]
 #align set.piecewise_le Set.piecewise_le
 
 theorem le_piecewise {δ : α → Type*} [∀ i, Preorder (δ i)] {s : Set α} [∀ j, Decidable (j ∈ s)]
-    {f₁ f₂ g : ∀ i, δ i} (h₁ : ∀ i ∈ s, g i ≤ f₁ i) (h₂ : ∀ (i) (_ : i ∉ s), g i ≤ f₂ i) :
+    {f₁ f₂ g : ∀ i, δ i} (h₁ : ∀ i ∈ s, g i ≤ f₁ i) (h₂ : ∀ i ∉ s, g i ≤ f₂ i) :
     g ≤ s.piecewise f₁ f₂ :=
   @piecewise_le α (fun i => (δ i)ᵒᵈ) _ s _ _ _ _ h₁ h₂
 #align set.le_piecewise Set.le_piecewise
 
 theorem piecewise_le_piecewise {δ : α → Type*} [∀ i, Preorder (δ i)] {s : Set α}
     [∀ j, Decidable (j ∈ s)] {f₁ f₂ g₁ g₂ : ∀ i, δ i} (h₁ : ∀ i ∈ s, f₁ i ≤ g₁ i)
-    (h₂ : ∀ (i) (_ : i ∉ s), f₂ i ≤ g₂ i) : s.piecewise f₁ f₂ ≤ s.piecewise g₁ g₂ := by
+    (h₂ : ∀ i ∉ s, f₂ i ≤ g₂ i) : s.piecewise f₁ f₂ ≤ s.piecewise g₁ g₂ := by
   apply piecewise_le <;> intros <;> simp [*]
 #align set.piecewise_le_piecewise Set.piecewise_le_piecewise
 
@@ -1589,7 +1606,7 @@ theorem range_piecewise (f g : α → β) : range (s.piecewise f g) = f '' s ∪
 
 theorem injective_piecewise_iff {f g : α → β} :
     Injective (s.piecewise f g) ↔
-      InjOn f s ∧ InjOn g sᶜ ∧ ∀ x ∈ s, ∀ (y) (_ : y ∉ s), f x ≠ g y := by
+      InjOn f s ∧ InjOn g sᶜ ∧ ∀ x ∈ s, ∀ y ∉ s, f x ≠ g y := by
   rw [injective_iff_injOn_univ, ← union_compl_self s, injOn_union (@disjoint_compl_right _ _ s),
     (piecewise_eqOn s f g).injOn_iff, (piecewise_eqOn_compl s f g).injOn_iff]
   refine' and_congr Iff.rfl (and_congr Iff.rfl <| forall₄_congr fun x hx y hy => _)
@@ -1839,7 +1856,7 @@ lemma bijOn' (h₁ : MapsTo e s t) (h₂ : MapsTo e.symm t s) : BijOn e s t :=
 #align equiv.bij_on' Equiv.bijOn'
 
 protected lemma bijOn (h : ∀ a, e a ∈ t ↔ a ∈ s) : BijOn e s t :=
-  e.bijOn' (fun a ↦ (h _).2) $ fun b hb ↦ (h _).1 $ by rwa [apply_symm_apply]
+  e.bijOn' (fun a ↦ (h _).2) fun b hb ↦ (h _).1 $ by rwa [apply_symm_apply]
 #align equiv.bij_on Equiv.bijOn
 
 lemma invOn : InvOn e e.symm t s :=
@@ -1863,7 +1880,7 @@ alias ⟨_root_.Set.BijOn.of_equiv_symm, _root_.Set.BijOn.equiv_symm⟩ := bijOn
 variable [DecidableEq α] {a b : α}
 
 lemma bijOn_swap (ha : a ∈ s) (hb : b ∈ s) : BijOn (swap a b) s s :=
-  (swap a b).bijOn $ fun x ↦ by
+  (swap a b).bijOn fun x ↦ by
     obtain rfl | hxa := eq_or_ne x a <;>
     obtain rfl | hxb := eq_or_ne x b <;>
     simp [*, swap_apply_of_ne_of_ne]

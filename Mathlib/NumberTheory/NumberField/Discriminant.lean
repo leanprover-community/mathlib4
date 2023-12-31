@@ -177,7 +177,7 @@ theorem abs_discr_ge (h : 1 < finrank ℚ K) :
   suffices ∀ n, 2 ≤ n → (4 / 9 : ℝ) * (3 * π / 4) ^ n ≤ a n by
     refine le_trans (this (finrank ℚ K) h) ?_
     refine div_le_div_of_le_left (by positivity) (by positivity) ?_
-    refine mul_le_mul_of_nonneg_right (pow_le_pow ?_ ?_) (by positivity)
+    refine mul_le_mul_of_nonneg_right (pow_le_pow_right ?_ ?_) (by positivity)
     · rw [_root_.le_div_iff Real.pi_pos, one_mul]
       exact Real.pi_le_four
     · rw [← card_add_two_mul_card_eq_rank, mul_comm]

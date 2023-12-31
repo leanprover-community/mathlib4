@@ -916,7 +916,7 @@ theorem stoppedProcess_eq_of_mem_finset [LinearOrder ι] [AddCommMonoid E] {s : 
       ∑ i in s.filter (· < n), Set.indicator {ω | τ ω = i} (u i) := by
   ext ω
   rw [Pi.add_apply, Finset.sum_apply]
-  cases' le_or_lt n (τ ω) with h h
+  rcases le_or_lt n (τ ω) with h | h
   · rw [stoppedProcess_eq_of_le h, Set.indicator_of_mem, Finset.sum_eq_zero, add_zero]
     · intro m hm
       refine' Set.indicator_of_not_mem _ _

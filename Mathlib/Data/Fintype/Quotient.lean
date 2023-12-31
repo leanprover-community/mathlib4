@@ -62,7 +62,7 @@ def Quotient.finChoice {ι : Type*} [DecidableEq ι] [Fintype ι] {α : ι → T
     (@Quotient.recOn _ _ (fun l : Multiset ι => @Quotient (∀ i ∈ l, α i) (by infer_instance))
       Finset.univ.1 (fun l => Quotient.finChoiceAux l fun i _ => f i) (fun a b h => by
       have := fun a => Quotient.finChoiceAux_eq a fun i _ => Quotient.out (f i)
-      simp [Quotient.out_eq] at this
+      simp? [Quotient.out_eq] at this says simp only [out_eq] at this
       simp only [Multiset.quot_mk_to_coe, this]
       let g := fun a : Multiset ι =>
         (⟦fun (i : ι) (_ : i ∈ a) => Quotient.out (f i)⟧ : Quotient (by infer_instance))
