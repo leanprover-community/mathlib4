@@ -845,7 +845,7 @@ TC inference. -/
 def evalFinsetSum : PositivityExt where eval {u α} zα pα e := do
   match e with
   | ~q(@Finset.sum _ $ι $instα $s $f) =>
-    let (lhs, _, (rhs : Q($α))) ← lambdaMetaTelescope f
+    let (lhs, _, (rhs : Q($α))) ← lambdaMetaTelescope (if f.isLambda then f else q(fun x => $f x))
      -- TODO: The following annotation is ignored. See leanprover/lean4#3126
     let so : Option Q(Finset.Nonempty $s) ← do
       try
@@ -880,5 +880,7 @@ example (n : ℕ) (a : ℕ → ℤ) : 0 < ∑ j : Fin (n + 1), (a j^2 + 1) := by
 example (a : ℕ → ℤ) : 0 < ∑ j in ({1} : Finset ℕ), (a j^2 + 1) := by
   have : Finset.Nonempty {1} := singleton_nonempty 1
   positivity
+example (s : Finset (ℕ)) : 0 ≤ ∑ j in s, j := by positivity
+example (s : Finset (ℕ)) : 0 ≤ s.sum id := by positivity
 
 end Mathlib.Meta.Positivity
