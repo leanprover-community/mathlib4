@@ -3,11 +3,9 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Jujian Zhang
 -/
-import Mathlib.GroupTheory.MonoidLocalization
-import Mathlib.RingTheory.Localization.Basic
-import Mathlib.RingTheory.Localization.Module
+import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.Algebra.Algebra.RestrictScalars
-import Mathlib.RingTheory.IsTensorProduct
+import Mathlib.RingTheory.Localization.Basic
 
 #align_import algebra.module.localized_module from "leanprover-community/mathlib"@"831c494092374cfe9f50591ed0ac81a25efc5b86"
 
@@ -33,7 +31,6 @@ localize `M` by `S`. This gives us a `Localization S`-module.
   we have `mk r s • mk m t = mk (r • m) (s * t)` where `mk r s : Localization S` is localized ring
   by `S`.
 * `LocalizedModule.isModule` : `LocalizedModule M S` is a `Localization S`-module.
-* `IsLocalizedModule.IsBaseChange` : A localization of modules is a base change.
 
 ## Future work
 
@@ -141,12 +138,6 @@ theorem liftOn₂_mk {α : Type*} (f : M × S → M × S → α)
 
 instance : Zero (LocalizedModule S M) :=
   ⟨mk 0 1⟩
-
-/-- If `S` contains `0` then the localization at `S` is trivial. -/
-theorem subsingleton (h : 0 ∈ S) : Subsingleton (LocalizedModule S M) := by
-  refine ⟨fun a b ↦ ?_⟩
-  induction a,b using LocalizedModule.induction_on₂
-  exact mk_eq.mpr ⟨⟨0, h⟩, by simp only [Submonoid.mk_smul, zero_smul]⟩
 
 @[simp]
 theorem zero_mk (s : S) : mk (0 : M) s = 0 :=
@@ -556,7 +547,7 @@ variable [Module R M] [Module R M'] [Module R M''] (f : M →ₗ[R] M') (g : M �
 `IsLocalizedModule S f` describes that `f : M ⟶ M'` is the localization map identifying `M'` as
 `LocalizedModule S M`.
 -/
-class IsLocalizedModule : Prop where
+@[mk_iff isLocalizedModule_iff] class IsLocalizedModule : Prop where
   map_units : ∀ x : S, IsUnit (algebraMap R (Module.End R M') x)
   surj' : ∀ y : M', ∃ x : M × S, x.2 • y = f x.1
   exists_of_eq : ∀ {x₁ x₂}, f x₁ = f x₂ → ∃ c : S, c • x₁ = c • x₂
@@ -576,6 +567,27 @@ lemma IsLocalizedModule.eq_iff_exists [IsLocalizedModule S f] {x₁ x₂} :
     apply_fun f at h
     simp_rw [f.map_smul_of_tower, Submonoid.smul_def, ← Module.algebraMap_end_apply R R] at h
     exact ((Module.End_isUnit_iff _).mp <| map_units f c).1 h
+
+variable (M) in
+lemma isLocalizedModule_id (R') [CommRing R'] [Algebra R R'] [IsLocalization S R'] [Module R' M]
+    [IsScalarTower R R' M] : IsLocalizedModule S (.id : M →ₗ[R] M) where
+  map_units s := (Module.End_isUnit_iff _).mpr <| by
+    convert_to Function.Bijective (algebraMap R' (Module.End R' M) (algebraMap R R' s))
+    · ext; simp
+    exact (Module.End_isUnit_iff _).mp ((IsLocalization.map_units R' s).map _)
+  surj' m := ⟨(m, 1), one_smul _ _⟩
+  exists_of_eq h := ⟨1, congr_arg _ h⟩
+
+lemma isLocalizedModule_iff_isLocalization (R') [CommRing R'] [Algebra R R'] :
+    IsLocalizedModule S (Algebra.ofId R R').toLinearMap ↔ IsLocalization S R' := by
+  rw [isLocalizedModule_iff, isLocalization_iff]
+  refine and_congr (forall_congr' fun s ↦ ⟨fun h ↦ ?_, fun h ↦ ?_⟩) (and_congr ?_ Iff.rfl)
+  · obtain ⟨x, hx⟩ := ((Module.End_isUnit_iff _).mp h).2 1
+    rw [Module.algebraMap_end_apply, Algebra.smul_def] at hx
+    exact isUnit_of_mul_eq_one _ _ hx
+  · convert h.map (Algebra.lmul R R'); ext; simp
+  · simp_rw [mul_comm _ (algebraMap R R' _), ← Algebra.smul_def]; rfl
+
 namespace LocalizedModule
 
 /--
@@ -1087,33 +1099,5 @@ theorem mkOfAlgebra {R S S' : Type*} [CommRing R] [CommRing S] [CommRing S'] [Al
 #align is_localized_module.mk_of_algebra IsLocalizedModule.mkOfAlgebra
 
 end Algebra
-
-variable {A : Type*}
-  [CommRing A] [Algebra R A] [Module A M'] [IsScalarTower R A M'] [IsLocalization S A]
-
-
-/-- If `(f : M →ₗ[R] M')` is a localization of modules, then the map
-`(localization S) × M → N, (s, m) ↦ s • f m` is the tensor product (insomuch as it is the universal
-bilinear map).
-In particular, there is an isomorphism between `LocalizedModule S M` and `(Localization S) ⊗[R] M`
-given by `m/s ↦ (1/s) ⊗ₜ m`.
--/
-theorem isBaseChange : IsBaseChange A f := by
-  refine' IsBaseChange.of_lift_unique _ (fun Q _ _ _ _ g ↦ _)
-  have := IsLocalizedModule.is_universal S f g <| by
-    intro s
-    simp_rw [Module.End_isUnit_iff, Function.bijective_iff_existsUnique,
-      Module.algebraMap_end_apply]
-    intro q
-    refine' ⟨(IsLocalization.mk' _ 1 s : A) • q, _, _⟩
-    · simp only [← smul_assoc, IsLocalization.smul_mk'_self, map_one, one_smul]
-    · rintro q rfl
-      simp only [smul_comm _ (s : R), ← smul_assoc, IsLocalization.smul_mk'_self, map_one, one_smul]
-  rcases this with ⟨ℓ, rfl, h₂⟩
-  refine' ⟨ℓ.extendScalarsOfIsLocalization S A, by simp, fun g'' h ↦ _⟩
-  ext x
-  simp [← h₂ (LinearMap.restrictScalars R g'') h]
-
-end IsLocalizedModule
 
 end IsLocalizedModule

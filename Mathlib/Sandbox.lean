@@ -74,13 +74,19 @@ open Module
 open scoped nonZeroDivisors
 
 variable {R S : Type*} [CommRing R] [IsDomain R] [IsPrincipalIdealRing R] [CommRing S] [IsDomain S]
-  [Algebra R S] [Module.Free R S] [Module.Finite R S]  (I : (Ideal S)⁰)
+  [Algebra R S] [Module.Free R S] [Module.Finite R S]  (I : (Ideal S))
 
-instance : Module.Free R I :=
-  Free.of_basis (I.1.selfBasis (Free.chooseBasis R S) (mem_nonZeroDivisors_iff_ne_zero.mp I.2))
+instance : Module.Free R I := by
+  by_cases hI : I = ⊥
+  · have : Subsingleton I := Submodule.subsingleton_iff_eq_bot.mpr hI
+    exact Module.Free.of_subsingleton R I
+  · exact Free.of_basis (I.selfBasis (Free.chooseBasis R S) hI)
 
-instance : Module.Finite R I :=
-   Finite.of_basis (I.1.selfBasis (Free.chooseBasis R S) (mem_nonZeroDivisors_iff_ne_zero.mp I.2))
+instance : Module.Finite R I := by
+  by_cases hI : I = ⊥
+  · have : Subsingleton I := Submodule.subsingleton_iff_eq_bot.mpr hI
+    exact IsNoetherian.finite R ↥I
+  · exact Finite.of_basis (I.selfBasis (Free.chooseBasis R S) hI)
 
 end Ideal
 
