@@ -65,7 +65,7 @@ instance OrderedSMul.toPosSMulStrictMono : PosSMulStrictMono R M where
   elim _a ha _b₁ _b₂ hb := OrderedSMul.smul_lt_smul_of_pos hb ha
 
 instance OrderedSMul.toPosSMulReflectLT : PosSMulReflectLT R M :=
-  PosSMulReflectLT.of_pos $ fun _a ha _b₁ _b₂ h ↦ OrderedSMul.lt_of_smul_lt_smul_of_pos h ha
+  PosSMulReflectLT.of_pos fun _a ha _b₁ _b₂ h ↦ OrderedSMul.lt_of_smul_lt_smul_of_pos h ha
 
 instance OrderDual.instOrderedSMul [OrderedSemiring R] [OrderedAddCommMonoid M] [SMulWithZero R M]
     [OrderedSMul R M] : OrderedSMul R Mᵒᵈ where

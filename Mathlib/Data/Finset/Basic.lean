@@ -2979,7 +2979,7 @@ theorem filter_and (s : Finset α) : (s.filter fun a => p a ∧ q a) = s.filter 
 #align finset.filter_and Finset.filter_and
 
 theorem filter_not (s : Finset α) : (s.filter fun a => ¬p a) = s \ s.filter p :=
-  ext <| fun a => by
+  ext fun a => by
     simp only [Bool.decide_coe, Bool.not_eq_true', mem_filter, and_comm, mem_sdiff, not_and_or,
       Bool.not_eq_true, and_or_left, and_not_self, or_false]
 #align finset.filter_not Finset.filter_not

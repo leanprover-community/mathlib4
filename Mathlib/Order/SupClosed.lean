@@ -294,7 +294,7 @@ lemma sup_mem_supClosure (ha : a ∈ s) (hb : b ∈ s) : a ⊔ b ∈ supClosure 
 
 lemma finsetSup'_mem_supClosure {ι : Type*} {t : Finset ι} (ht : t.Nonempty) {f : ι → α}
     (hf : ∀ i ∈ t, f i ∈ s) : t.sup' ht f ∈ supClosure s :=
-  supClosed_supClosure.finsetSup'_mem _ $ fun _i hi ↦ subset_supClosure $ hf _ hi
+  supClosed_supClosure.finsetSup'_mem _ fun _i hi ↦ subset_supClosure $ hf _ hi
 
 lemma supClosure_min : s ⊆ t → SupClosed t → supClosure s ⊆ t := supClosure.closure_min
 
@@ -358,7 +358,7 @@ lemma inf_mem_infClosure (ha : a ∈ s) (hb : b ∈ s) : a ⊓ b ∈ infClosure 
 
 lemma finsetInf'_mem_infClosure {ι : Type*} {t : Finset ι} (ht : t.Nonempty) {f : ι → α}
     (hf : ∀ i ∈ t, f i ∈ s) : t.inf' ht f ∈ infClosure s :=
-  infClosed_infClosure.finsetInf'_mem _ $ fun _i hi ↦ subset_infClosure $ hf _ hi
+  infClosed_infClosure.finsetInf'_mem _ fun _i hi ↦ subset_infClosure $ hf _ hi
 
 lemma infClosure_min : s ⊆ t → InfClosed t → infClosure s ⊆ t := infClosure.closure_min
 
@@ -381,7 +381,7 @@ variable [Lattice α] {s t : Set α}
 /-- Every set in a join-semilattice generates a set closed under join. -/
 @[simps! isClosed]
 def latticeClosure : ClosureOperator (Set α) :=
-  .ofCompletePred IsSublattice $ fun _ ↦ isSublattice_sInter
+  .ofCompletePred IsSublattice fun _ ↦ isSublattice_sInter
 
 @[simp] lemma subset_latticeClosure : s ⊆ latticeClosure s := latticeClosure.le_closure _
 

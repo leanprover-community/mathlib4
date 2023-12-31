@@ -66,7 +66,7 @@ theorem sublists'_eq_sublists'Aux (l : List α) :
 
 theorem sublists'Aux_eq_map (a : α) (r₁ : List (List α)) : ∀ (r₂ : List (List α)),
     sublists'Aux a r₁ r₂ = r₂ ++ map (cons a) r₁ :=
-  List.reverseRecOn r₁ (fun _ => by simp [sublists'Aux]) <| fun r₁ l ih r₂ => by
+  List.reverseRecOn r₁ (fun _ => by simp [sublists'Aux]) fun r₁ l ih r₂ => by
     rw [map_append, map_singleton, ← append_assoc, ← ih, sublists'Aux, foldl_append, foldl]
     simp [sublists'Aux]
 
@@ -128,7 +128,7 @@ theorem sublistsAux_eq_array_foldl :
 
 theorem sublistsAux_eq_bind :
     sublistsAux = fun (a : α) (r : List (List α)) => r.bind fun l => [l, a :: l] :=
-  funext <| fun a => funext <| fun r =>
+  funext fun a => funext fun r =>
   List.reverseRecOn r
     (by simp [sublistsAux])
     (fun r l ih => by
