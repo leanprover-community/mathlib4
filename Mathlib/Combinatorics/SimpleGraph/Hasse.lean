@@ -155,7 +155,7 @@ def Walk.ofPathGraphHom (G : SimpleGraph α) {n : ℕ} (hom : pathGraph (n + 1) 
       exact hom.map_rel hpgadj
     exact Walk.cons hGadj w
 
-/-- Given a walk get a homomrfism from a pathGraph -/
+/-- Given a walk get a homomrfism from a pathGraph and a proof that it is as expected -/
 def Walk.toPathGraphHomAux (G : SimpleGraph α) :
     ∀ {u v : α} (w : G.Walk u v), Σ' (hom : pathGraph (w.length + 1) →g G), hom ⊥ = v ∧ hom ⊤ = u
   | _, _, nil' u => by
@@ -250,6 +250,7 @@ def Walk.toPathGraphHomAux (G : SimpleGraph α) :
           apply (Nat.lt_irrefl (p.length + 1)).elim h_
       exact ⟨hom, hhom⟩
 
+/-- Given a walk get a homomrfism from a pathGraph -/
 def Walk.toPathGraphHom (G : SimpleGraph α) :
     ∀ {u v : α} (w : G.Walk u v), pathGraph (w.length + 1) →g G :=
   fun {u v} w => (@Walk.toPathGraphHomAux α G u v w).fst
