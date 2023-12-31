@@ -373,6 +373,7 @@ theorem orderOf_units {y : Gˣ} : orderOf (y : G) = orderOf y :=
 #align order_of_units orderOf_units
 #align order_of_add_units addOrderOf_addUnits
 
+/-- If the order of `x` is finite, then `x` is a unit with inverse `x ^ (orderOf x - 1)`. -/
 @[simps]
 noncomputable
 def IsOfFinOrder.unit {M} [Monoid M] {x : M} (hx : IsOfFinOrder x) : Mˣ :=
