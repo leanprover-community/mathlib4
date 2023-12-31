@@ -1163,7 +1163,7 @@ end NonUnital
 
 end MultiplicationLinear
 
-section SmulLinear
+section SMulLinear
 
 variable (𝕜) (𝕜' : Type*) [NormedField 𝕜']
 
@@ -1203,7 +1203,7 @@ theorem op_norm_lsmul_le : ‖(lsmul 𝕜 𝕜' : 𝕜' →L[𝕜] E →L[𝕜] 
   exact op_norm_lsmul_apply_le _
 #align continuous_linear_map.op_norm_lsmul_le ContinuousLinearMap.op_norm_lsmul_le
 
-end SmulLinear
+end SMulLinear
 
 section RestrictScalars
 
@@ -1479,7 +1479,7 @@ theorem homothety_norm [RingHomIsometric σ₁₂] [Nontrivial E] (f : E →SL[�
     (hf : ∀ x, ‖f x‖ = a * ‖x‖) : ‖f‖ = a := by
   obtain ⟨x, hx⟩ : ∃ x : E, x ≠ 0 := exists_ne 0
   rw [← norm_pos_iff] at hx
-  have ha : 0 ≤ a := by simpa only [hf, hx, zero_le_mul_right] using norm_nonneg (f x)
+  have ha : 0 ≤ a := by simpa only [hf, hx, mul_nonneg_iff_of_pos_right] using norm_nonneg (f x)
   apply le_antisymm (f.op_norm_le_bound ha fun y => le_of_eq (hf y))
   simpa only [hf, hx, mul_le_mul_right] using f.le_op_norm x
 #align continuous_linear_map.homothety_norm ContinuousLinearMap.homothety_norm

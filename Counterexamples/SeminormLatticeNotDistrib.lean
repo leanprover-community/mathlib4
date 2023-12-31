@@ -57,8 +57,8 @@ theorem not_distrib : ¬(p ⊔ q1) ⊓ (p ⊔ q2) ≤ p ⊔ q1 ⊓ q2 := by
   apply c; nth_rw 1 [← eq_one]
   apply le_trans _ (le_sup_inf _)
   apply le_ciInf; intro x
-  cases' le_or_lt x.fst (1 / 3) with h1 h1
-  · cases' le_or_lt x.snd (2 / 3) with h2 h2
+  rcases le_or_lt x.fst (1 / 3) with h1 | h1
+  · rcases le_or_lt x.snd (2 / 3) with h2 | h2
     · calc
         4 / 3 = 4 * (1 - 2 / 3) := by norm_num
         _ ≤ 4 * (1 - x.snd) := (mul_le_mul_left zero_lt_four).mpr (sub_le_sub_left h2 _)

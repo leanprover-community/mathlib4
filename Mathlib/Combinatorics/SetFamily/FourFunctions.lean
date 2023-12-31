@@ -125,7 +125,7 @@ lemma le_collapse_of_insert_mem (ha : a ∉ s) (hf : 0 ≤ f) (hts : t = insert 
   · exact le_add_of_nonneg_left $ hf _
   · rw [zero_add]
 
-lemma collapse_nonneg (hf : 0 ≤ f) : 0 ≤ collapse 𝒜 a f := fun _s ↦ sum_nonneg $ fun _t _ ↦ hf _
+lemma collapse_nonneg (hf : 0 ≤ f) : 0 ≤ collapse 𝒜 a f := fun _s ↦ sum_nonneg fun _t _ ↦ hf _
 
 lemma collapse_modular (hu : a ∉ u) (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ f₂) (h₃ : 0 ≤ f₃) (h₄ : 0 ≤ f₄)
     (h : ∀ ⦃s⦄, s ⊆ insert a u → ∀ ⦃t⦄, t ⊆ insert a u →  f₁ s * f₂ t ≤ f₃ (s ∩ t) * f₄ (s ∪ t))
@@ -358,4 +358,5 @@ lemma Finset.le_card_diffs_mul_card_diffs (s t : Finset α) :
 
 /-- The **Marica-Schönheim Inequality**. -/
 lemma Finset.card_le_card_diffs (s : Finset α) : s.card ≤ (s \\ s).card :=
-  le_of_pow_le_pow 2 (zero_le _) two_pos $ by simpa [← sq] using s.le_card_diffs_mul_card_diffs s
+  le_of_pow_le_pow_left two_ne_zero (zero_le _) $ by
+    simpa [← sq] using s.le_card_diffs_mul_card_diffs s

@@ -93,7 +93,7 @@ theorem exists_root [IsSepClosed k] (p : k[X]) (hp : p.degree ≠ 0) (hsep : p.S
 
 theorem exists_pow_nat_eq [IsSepClosed k] (x : k) (n : ℕ) [hn : NeZero (n : k)] :
     ∃ z, z ^ n = x := by
-  have hn' : 0 < n := Nat.pos_of_ne_zero <| fun h => by
+  have hn' : 0 < n := Nat.pos_of_ne_zero fun h => by
     rw [h, Nat.cast_zero] at hn
     exact hn.out rfl
   have : degree (X ^ n - C x) ≠ 0 := by
@@ -112,7 +112,7 @@ theorem exists_eq_mul_self [IsSepClosed k] (x : k) [h2 : NeZero (2 : k)] : ∃ z
 theorem roots_eq_zero_iff [IsSepClosed k] {p : k[X]} (hsep : p.Separable) :
     p.roots = 0 ↔ p = Polynomial.C (p.coeff 0) := by
   refine' ⟨fun h => _, fun hp => by rw [hp, roots_C]⟩
-  cases' le_or_lt (degree p) 0 with hd hd
+  rcases le_or_lt (degree p) 0 with hd | hd
   · exact eq_C_of_degree_le_zero hd
   · obtain ⟨z, hz⟩ := IsSepClosed.exists_root p hd.ne' hsep
     rw [← mem_roots (ne_zero_of_degree_gt hd), h] at hz

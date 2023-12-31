@@ -52,8 +52,7 @@ theorem join_filter_isEmpty_eq_false [DecidablePred fun l : List α => l.isEmpty
   | [] :: L => by
       simp [join_filter_isEmpty_eq_false (L := L), isEmpty_iff_eq_nil]
   | (a :: l) :: L => by
-      have cons_not_empty : isEmpty (a :: l) = false := rfl
-      simp [join_filter_isEmpty_eq_false (L := L), cons_not_empty]
+      simp [join_filter_isEmpty_eq_false (L := L)]
 #align list.join_filter_empty_eq_ff List.join_filter_isEmpty_eq_false
 
 @[simp]
@@ -123,7 +122,7 @@ theorem drop_take_succ_eq_cons_nthLe (L : List α) {i : ℕ} (hi : i < L.length)
   · simp
     rfl
   have : i < tail.length := by
-    simp at hi
+    simp? at hi says simp only [length_cons] at hi
     exact Nat.lt_of_succ_lt_succ hi
   simp [*]
   rfl

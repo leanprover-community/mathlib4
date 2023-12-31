@@ -351,7 +351,7 @@ optional arguments:
   problems.
 * `transparency` controls how hard `linarith` will try to match atoms to each other. By default
   it will only unfold `reducible` definitions.
-* If `split_hypotheses` is true, `linarith` will split conjunctions in the context into separate
+* If `splitHypotheses` is true, `linarith` will split conjunctions in the context into separate
   hypotheses.
 * If `splitNe` is `true`, `linarith` will case split on disequality hypotheses.
   For a given `x ≠ y` hypothesis, `linarith` is run with both `x < y` and `x > y`,
