@@ -88,4 +88,3 @@ lemma trace_comp_eq_zero_of_commute_of_trace_restrict_eq_zero
     (f.isNilpotent_restrict_iSup_sub_algebraMap μ), hg, mul_zero]
 
 end LinearMap
-#minimize_imports

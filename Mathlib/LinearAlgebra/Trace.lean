@@ -344,4 +344,3 @@ lemma trace_baseChange [Module.Free R M] [Module.Finite R M]
 end
 
 end LinearMap
-#minimize_imports

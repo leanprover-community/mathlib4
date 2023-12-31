@@ -295,4 +295,3 @@ theorem rank_eq_finrank_span_row [LinearOrderedField R] [Finite m] (A : Matrix m
 #align matrix.rank_eq_finrank_span_row Matrix.rank_eq_finrank_span_row
 
 end Matrix
-#minimize_imports
