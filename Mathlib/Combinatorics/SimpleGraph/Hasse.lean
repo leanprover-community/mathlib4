@@ -156,8 +156,8 @@ def Walk.ofPathGraphHom (G : SimpleGraph α) {n : ℕ} (hom : pathGraph (n + 1) 
     exact Walk.cons hGadj w
 
 /-- Given a walk get a homomrfism from a pathGraph -/
-theorem Walk.toPathGraphHom (G : SimpleGraph α) :
-    ∀ {u v : α} (w : G.Walk u v), ∃(hom : pathGraph (w.length + 1) →g G), hom ⊥ = v ∧ hom ⊤ = u
+def Walk.toPathGraphHomAux (G : SimpleGraph α) :
+    ∀ {u v : α} (w : G.Walk u v), Σ' (hom : pathGraph (w.length + 1) →g G), hom ⊥ = v ∧ hom ⊤ = u
   | _, _, nil' u => by
     let toFun : Fin 1 → α := fun _ => u
     let map_rel' : ∀ {a b}, (pathGraph 1).Adj a b → G.Adj (toFun a) (toFun b) := by
@@ -165,11 +165,10 @@ theorem Walk.toPathGraphHom (G : SimpleGraph α) :
       have hba : b = a := Subsingleton.elim b a
       rw [hba] at h
       exact ((pathGraph 1).loopless a h).elim
-    apply Exists.intro ⟨toFun, map_rel'⟩
-    exact Prod.mk.inj_iff.mp rfl
+    exact ⟨⟨toFun, map_rel'⟩, Prod.mk.inj_iff.mp rfl⟩
   | _, _, cons' u v w h p => by
-    let hom'_w_v : ∃ (hom' : pathGraph (length p + 1) →g G), hom' ⊥ = w ∧ hom' ⊤ = v :=
-      Walk.toPathGraphHom G p
+    let hom'_w_v : Σ' (hom' : pathGraph (length p + 1) →g G), hom' ⊥ = w ∧ hom' ⊤ = v :=
+      Walk.toPathGraphHomAux G p
     match hom'_w_v with
     | ⟨hom', hw, hv⟩ =>
       let fun' : Fin (length p + 1) → α := hom'.toFun
@@ -235,19 +234,24 @@ theorem Walk.toPathGraphHom (G : SimpleGraph α) :
           rw [hab] at h'
           exact ((pathGraph (p.length + 2)).loopless a h').elim
       let hom : pathGraph (p.length + 2) →g G := ⟨toFun, map_rel'⟩
-      apply Exists.intro hom
-      have hhom : ∀ (a : Fin (p.length + 2)), hom a = toFun a := fun a ↦ rfl
-      simp only [length]
-      rw [hhom ⊥, hhom ⊤]
-      simp [toFun]
-      apply And.intro
-      · have hbot : (⊥ : Fin (p.length + 2)).val < p.length + 1 := Nat.compare_eq_gt.mp rfl
-        simp [hbot]
-        simp_rw [← hw]
-        exact congrArg hom' rfl
-      · intro h_
-        have htop : (⊤ : Fin (p.length + 2)).val = p.length + 1 := rfl
-        rw [htop] at h_
-        apply (Nat.lt_irrefl (p.length + 1)).elim h_
+      have hhom : hom ⊥ = w ∧ hom ⊤ = u := by
+        have hhom' : ∀ (a : Fin (p.length + 2)), hom a = toFun a := fun a ↦ rfl
+        simp only [length]
+        rw [hhom' ⊥, hhom' ⊤]
+        simp [toFun]
+        apply And.intro
+        · have hbot : (⊥ : Fin (p.length + 2)).val < p.length + 1 := Nat.compare_eq_gt.mp rfl
+          simp [hbot]
+          simp_rw [← hw]
+          exact congrArg hom' rfl
+        · intro h_
+          have htop : (⊤ : Fin (p.length + 2)).val = p.length + 1 := rfl
+          rw [htop] at h_
+          apply (Nat.lt_irrefl (p.length + 1)).elim h_
+      exact ⟨hom, hhom⟩
+
+def Walk.toPathGraphHom (G : SimpleGraph α) :
+    ∀ {u v : α} (w : G.Walk u v), pathGraph (w.length + 1) →g G :=
+  fun {u v} w => (@Walk.toPathGraphHomAux α G u v w).fst
 
 end SimpleGraph
