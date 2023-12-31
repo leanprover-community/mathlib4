@@ -50,7 +50,7 @@ theorem convolution_comm {M : Type*} [CommMonoid M] [MeasurableSpace M] [Measura
   all_goals { measurability }
 
 /-- Convolution of the dirac measure at 1 with a measure μ returns μ. -/
-theorem convolution_one_mul {M : Type*} [Monoid M] [MeasurableSpace M] [MeasurableMul₂ M]
+theorem one_convolution {M : Type*} [Monoid M] [MeasurableSpace M] [MeasurableMul₂ M]
     (μ : Measure M) [SFinite μ] : (Measure.dirac 1).conv μ = μ := by
   unfold conv
   rw [MeasureTheory.Measure.dirac_prod]
@@ -59,7 +59,7 @@ theorem convolution_one_mul {M : Type*} [Monoid M] [MeasurableSpace M] [Measurab
   all_goals { measurability }
 
 /-- Convolution of a measure μ with the dirac measure at 1 returns μ. -/
-theorem convolution_mul_one {M : Type*} [Monoid M] [MeasurableSpace M] [MeasurableMul₂ M]
+theorem convolution_one {M : Type*} [Monoid M] [MeasurableSpace M] [MeasurableMul₂ M]
     (μ : Measure M) [SFinite μ] : μ.conv (Measure.dirac 1) = μ := by
   unfold conv
   rw [MeasureTheory.Measure.prod_dirac, map_map]
@@ -67,13 +67,13 @@ theorem convolution_mul_one {M : Type*} [Monoid M] [MeasurableSpace M] [Measurab
   all_goals { measurability }
 
 /-- Convolution of the zero measure with a measure μ returns the zero measure. -/
-theorem convolution_zero_mul {M : Type*} [Monoid M] [MeasurableSpace M]
+theorem convolution_zero {M : Type*} [Monoid M] [MeasurableSpace M]
     (μ : Measure M) : (0 : Measure M).conv μ = (0 : Measure M) := by
   unfold conv
   simp
 
 /-- Convolution of a measure μ with the zero measure returns the zero measure. -/
-theorem convolution_mul_zero {M : Type*} [Monoid M] [MeasurableSpace M]
+theorem zero_convolution {M : Type*} [Monoid M] [MeasurableSpace M]
     (μ : Measure M) : μ.conv (0 : Measure M) = (0 : Measure M) := by
   unfold conv
   simp
