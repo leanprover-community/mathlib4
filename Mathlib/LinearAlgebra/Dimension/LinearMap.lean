@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2018 Mario Carneiro. All rights reserved.
+Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Scott Morrison
+Authors: Johannes Hölzl
 -/
 import Mathlib.LinearAlgebra.Dimension.DivisionRing
 
@@ -10,7 +10,6 @@ import Mathlib.LinearAlgebra.Dimension.DivisionRing
 
 ## Main Definition
 -  `LinearMap.rank`: The rank of a linear map.
-
 -/
 
 
