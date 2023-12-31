@@ -6,7 +6,7 @@ Authors: Josha Dekker
 import Mathlib.MeasureTheory.Constructions.Prod.Basic
 import Mathlib.MeasureTheory.Measure.MeasureSpace
 /-!
-# The product measure
+# The convolution of measures
 
 In this file we define and prove properties about the convolution of two measures
 
