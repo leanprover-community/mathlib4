@@ -462,7 +462,8 @@ instance qf_artinian_R [IsArtinianRing R] (i : Fin (K R)) : IsArtinian R ((serie
   change IsArtinian R (_ ⧸ _)
   infer_instance
 
-instance qf_noetherian_R [IsNoetherianRing R] (i : Fin (K R)) : IsNoetherian R ((series R).qf i) := by
+instance qf_noetherian_R [IsNoetherianRing R] (i : Fin (K R)) :
+    IsNoetherian R ((series R).qf i) := by
   change IsNoetherian R (_ ⧸ _)
   infer_instance
 
@@ -522,26 +523,30 @@ instance qf_artinian_κ [IsArtinianRing R] (i : Fin (K R)) : IsArtinian κ ((ser
 instance qf_noetherian_κ [IsNoetherianRing R] (i : Fin (K R)) : IsNoetherian κ ((series R).qf i) :=
   qf_noetherian_κR_iff R i |>.mpr inferInstance
 
-instance qf_finiteLength_κ_of_artinian [IsArtinianRing R] (i : Fin (K R)) : FiniteLengthModule κ ((series R).qf i) := by
+instance qf_finiteLength_κ_of_artinian [IsArtinianRing R] (i : Fin (K R)) :
+    FiniteLengthModule κ ((series R).qf i) := by
   suffices inst1 : IsFiniteLengthModule κ ((series R).qf i)
   · exact Classical.choice inst1.finite
   rw [finiteLengthModule_over_field_iff_finite_dimensional,
     ← Module.finite_iff_artinian_over_divisionRing]
   infer_instance
 
-instance qf_finiteLength_κ_of_noetherian [IsNoetherianRing R] (i : Fin (K R)) : FiniteLengthModule κ ((series R).qf i) := by
+instance qf_finiteLength_κ_of_noetherian [IsNoetherianRing R] (i : Fin (K R)) :
+    FiniteLengthModule κ ((series R).qf i) := by
   suffices inst1 : IsFiniteLengthModule κ ((series R).qf i)
   · exact Classical.choice inst1.finite
   rw [finiteLengthModule_over_field_iff_finite_dimensional,
     ← Module.finite_iff_artinian_over_divisionRing]
   infer_instance
 
-instance qf_finiteLength_R_of_artinian [IsArtinianRing R] (i : Fin (K R)) : FiniteLengthModule R ((series R).qf i) := by
+instance qf_finiteLength_R_of_artinian [IsArtinianRing R] (i : Fin (K R)) :
+    FiniteLengthModule R ((series R).qf i) := by
   have i1 := isFiniteLengthModule_iff_restrictScalars R κ ((series R).qf i) |>.mp
     ⟨⟨qf_finiteLength_κ_of_artinian R i⟩⟩
   exact Classical.choice i1.1
 
-instance qf_finiteLength_R_of_noetherian [IsNoetherianRing R] (i : Fin (K R)) : FiniteLengthModule R ((series R).qf i) := by
+instance qf_finiteLength_R_of_noetherian [IsNoetherianRing R] (i : Fin (K R)) :
+    FiniteLengthModule R ((series R).qf i) := by
   have i1 := isFiniteLengthModule_iff_restrictScalars R κ ((series R).qf i) |>.mp
     ⟨⟨qf_finiteLength_κ_of_noetherian R i⟩⟩
   exact Classical.choice i1.1
@@ -594,7 +599,8 @@ instance isNoetherianRing_of_local [LocalRing R] : IsNoetherianRing R := by
     have H := IsArtinianRing.isNilpotent_jacobson_bot (R := R)
     rwa [LocalRing.jacobson_eq_maximalIdeal (h := by simp)] at H
 
-  refine isFiniteLengthModule_congr (local_ring_with_nilpotent_maximal_ideal.cdf_last_eq R) (h := ?_)
+  refine isFiniteLengthModule_congr (local_ring_with_nilpotent_maximal_ideal.cdf_last_eq R)
+    (h := ?_)
   rw [RelSeries.cqf_finiteLength_iff_each_qf_finiteLength]
   intros j
   infer_instance
@@ -613,13 +619,15 @@ variable [dim0 : Fact (ringKrullDim R = 0)] [IsNoetherianRing R]
 
 noncomputable instance : Fintype (PrimeSpectrum R) := PrimeSpectrum.finTypeOfNoetherian dim0.out
 
-instance isArtinianRing_of_local_dim0_noetherian [Nontrivial R] [LocalRing R] : IsArtinianRing R := by
+instance isArtinianRing_of_local_dim0_noetherian [Nontrivial R] [LocalRing R] :
+    IsArtinianRing R := by
   suffices i1 : IsFiniteLengthModule R R
   · exact isArtinian_of_finiteLength R R
   have i2 : Fact (IsNilpotent (LocalRing.maximalIdeal R)) :=
   ⟨IsNoetherianRing.nilpotent_maximalIdeal_of_zero_dimensional_localRing _ dim0.out⟩
 
-  refine isFiniteLengthModule_congr (local_ring_with_nilpotent_maximal_ideal.cdf_last_eq R) (h := ?_)
+  refine isFiniteLengthModule_congr (local_ring_with_nilpotent_maximal_ideal.cdf_last_eq R)
+    (h := ?_)
   rw [RelSeries.cqf_finiteLength_iff_each_qf_finiteLength]
   intros j
   infer_instance
