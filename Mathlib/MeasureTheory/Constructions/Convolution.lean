@@ -55,16 +55,15 @@ theorem convolution_one_mul {M : Type*} [Monoid M] [MeasurableSpace M] [Measurab
   unfold conv
   rw [MeasureTheory.Measure.dirac_prod]
   rw [map_map]
-  simp [Function.comp_def]
+  simp only [Function.comp_def, one_mul, map_id']
   all_goals { measurability }
 
 /-- Convolution of a measure μ with the dirac measure at 1 returns μ. -/
 theorem convolution_mul_one {M : Type*} [Monoid M] [MeasurableSpace M] [MeasurableMul₂ M]
     (μ : Measure M) [SFinite μ] : μ.conv (Measure.dirac 1) = μ := by
   unfold conv
-  rw [MeasureTheory.Measure.prod_dirac]
-  rw [map_map]
-  simp [Function.comp_def]
+  rw [MeasureTheory.Measure.prod_dirac, map_map]
+  simp only [Function.comp_def, mul_one, map_id']
   all_goals { measurability }
 
 /-- Convolution of the zero measure with a measure μ returns the zero measure. -/
@@ -83,14 +82,12 @@ theorem convolution_add {M : Type*} [Monoid M] [MeasurableSpace M] [MeasurableMu
    (μ : Measure M) (ν : Measure M) (ρ : Measure M) [SFinite μ] [SFinite ν] [SFinite ρ]:
    μ.conv (ν + ρ) = μ.conv ν + μ.conv ρ := by
   unfold conv
-  rw [prod_add]
-  rw [map_add]
+  rw [prod_add, map_add]
   measurability
 
 theorem add_convolution {M : Type*} [Monoid M] [MeasurableSpace M] [MeasurableMul₂ M]
    (μ : Measure M) (ν : Measure M) (ρ : Measure M) [SFinite μ] [SFinite ν] [SFinite ρ]:
    (μ + ν).conv ρ = μ.conv ρ + ν.conv ρ := by
   unfold conv
-  rw [add_prod]
-  rw [map_add]
+  rw [add_prod, map_add]
   measurability
