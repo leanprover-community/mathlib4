@@ -167,9 +167,7 @@ theorem pow_lt_self_of_lt_one (h₀ : 0 < a) (h₁ : a < 1) (hn : 1 < n) : a ^ n
   simpa only [pow_one] using pow_lt_pow_right_of_lt_one h₀ h₁ hn
 #align pow_lt_self_of_lt_one pow_lt_self_of_lt_one
 
-theorem sq_pos_of_pos (ha : 0 < a) : 0 < a ^ 2 := by
-  rw [sq]
-  exact mul_pos ha ha
+theorem sq_pos_of_pos (ha : 0 < a) : 0 < a ^ 2 := pow_pos ha _
 #align sq_pos_of_pos sq_pos_of_pos
 
 end StrictOrderedSemiring
@@ -296,10 +294,6 @@ theorem pow_bit0_nonneg (a : R) (n : ℕ) : 0 ≤ a ^ bit0 n := by
   rw [pow_bit0]
   exact mul_self_nonneg _
 #align pow_bit0_nonneg pow_bit0_nonneg
-
-theorem sq_nonneg (a : R) : 0 ≤ a ^ 2 :=
-  pow_bit0_nonneg a 1
-#align sq_nonneg sq_nonneg
 
 alias pow_two_nonneg := sq_nonneg
 #align pow_two_nonneg pow_two_nonneg

@@ -429,10 +429,6 @@ theorem inv_pow_sub (a : G) {m n : ℕ} (h : n ≤ m) : a⁻¹ ^ (m - n) = (a ^ 
 
 end Group
 
-theorem pow_dvd_pow [Monoid R] (a : R) {m n : ℕ} (h : m ≤ n) : a ^ m ∣ a ^ n :=
-  ⟨a ^ (n - m), by rw [← pow_add, Nat.add_comm, Nat.sub_add_cancel h]⟩
-#align pow_dvd_pow pow_dvd_pow
-
 @[to_additive (attr := simp)]
 theorem SemiconjBy.zpow_right [Group G] {a x y : G} (h : SemiconjBy a x y) :
     ∀ m : ℤ, SemiconjBy a (x ^ m) (y ^ m)
