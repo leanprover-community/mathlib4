@@ -78,8 +78,8 @@ theorem add_convolution {M : Type*} [Monoid M] [MeasurableSpace M] [MeasurableMu
   measurability
 
   /-- Convolution of SFinite maps is SFinite. -/
-theorem sfinite_convolution_of_sfinite {M : Type*} [Monoid M] [MeasurableSpace M] [MeasurableMul₂ M]
-    (μ : Measure M) [SFinite μ] (ν : Measure M) [SFinite ν] : SFinite (μ.conv ν) :=
+theorem sfinite_convolution_of_sfinite {M : Type*} [Monoid M] [MeasurableSpace M] (μ : Measure M)
+    (ν : Measure M) [SFinite μ] [SFinite ν] : SFinite (μ.conv ν) :=
   instSFiniteMap (Measure.prod μ ν) fun x ↦ x.1 * x.2
 
 -- Additional results if we add commutativity to M
