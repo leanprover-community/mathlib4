@@ -1330,10 +1330,4 @@ theorem update_eq_sub_add_single [AddGroup G] (f : α →₀ G) (a : α) (b : G)
   rw [update_eq_erase_add_single, erase_eq_sub_single]
 #align finsupp.update_eq_sub_add_single Finsupp.update_eq_sub_add_single
 
-variable (α) in
-theorem finite_setOf_bounded [Finite α] (N : ℕ) : Finite {n : α →₀ ℕ | ∀ (i : α), n i ≤ N} := by
-  rw [equivFunOnFinite.subtypeEquivOfSubtype'.finite_iff, ← Set.coe_setOf, Set.finite_coe_iff]
-  convert Set.Finite.pi fun _ : α ↦ Set.finite_le_nat N using 1
-  ext; simp
-
 end Finsupp
