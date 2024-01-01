@@ -84,7 +84,7 @@ where
             ext
             · exact hij'.1
             · obtain ⟨-, rfl⟩ := hij'
-              rw [←(aux d i.2).prop ai |>.mp hai, ←(aux d j.2).prop ai |>.mp haj])
+              rw [← (aux d i.2).prop ai |>.mp hai, ← (aux d j.2).prop ai |>.mp haj])
         property := fun f => by
           simp_rw [mem_disjiUnion, mem_antidiagonal, mem_map, Embedding.coeFn_mk, Prod.exists,
             (aux d _).prop, Fin.sum_univ_succ]
