@@ -220,7 +220,7 @@ section Pi
 variable {ι : Type u} (R : ι → CommRingCat.{u})
 
 /--
-The categorical pi object and usual pi object
+The categorical product of rings is the cartesian product of rings. This is its `Fan`.
 -/
 @[simps! pt]
 def piFan : Fan R :=
@@ -232,7 +232,7 @@ def piFan : Fan R :=
       map_add' := by aesop }
 
 /--
-The categorical pi object and usual pi object
+The categorical product of rings is the cartesian product of rings.
 -/
 def piFanIsLimit : IsLimit (piFan R) where
   lift s :=
@@ -245,17 +245,19 @@ def piFanIsLimit : IsLimit (piFan R) where
   uniq s g h := FunLike.ext _ _ fun x ↦ funext fun i ↦ FunLike.congr_fun (h ⟨i⟩) x
 
 /--
-The categorical pi object and usual pi object
+The categorical product and the usual product agrees
 -/
 def piIsoPi : ∏ R ≅ CommRingCat.of ((i : ι) → R i) :=
   limit.isoLimitCone ⟨_, piFanIsLimit R⟩
 
 
 /--
-The categorical pi object and usual pi object
+The categorical product and the usual product agrees
 -/
-def piEquivPi : (∏ R : CommRingCat) ≃+* ((i : ι) → R i) :=
-  RingEquiv.ofHomInv (piIsoPi R).hom (piIsoPi R).inv (piIsoPi R).3 (piIsoPi R).4
+def _root_.RingEquiv.piEquivPi (R : ι → Type u) [∀ i, CommRing (R i)] :
+    (∏ (fun i : ι ↦ CommRingCat.of (R i)) : CommRingCat.{u}) ≃+* ((i : ι) → R i) :=
+  let R' : ι → CommRingCat.{u} := fun i : ι ↦ CommRingCat.of (R i)
+  RingEquiv.ofHomInv (piIsoPi R').hom (piIsoPi R').inv (piIsoPi R').3 (piIsoPi R').4
 
 
 end Pi
