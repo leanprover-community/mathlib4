@@ -78,28 +78,35 @@ theorem AlgEquiv.isPurelyInseparable_iff (e : K ≃ₐ[F] E) :
 
 variable (F E K)
 
-/-- If `E / F` is both inseparable and separable, then `algebraMap F E` is surjective. -/
+/-- If `E / F` is both purely inseparable and separable, then `algebraMap F E` is surjective. -/
 theorem IsPurelyInseparable.surjective_algebraMap_of_isSeparable
     [IsPurelyInseparable F E] [IsSeparable F E] : Function.Surjective (algebraMap F E) :=
   fun x ↦ IsPurelyInseparable.inseparable F x (IsSeparable.separable F x)
 
-/-- If `E / F` is both inseparable and separable, then `algebraMap F E` is bijective. -/
+/-- If `E / F` is both purely inseparable and separable, then `algebraMap F E` is bijective. -/
 theorem IsPurelyInseparable.bijective_algebraMap_of_isSeparable
     [IsPurelyInseparable F E] [IsSeparable F E] : Function.Bijective (algebraMap F E) :=
   ⟨(algebraMap F E).injective, surjective_algebraMap_of_isSeparable F E⟩
+
+/-- If an intermediate field of `E / F` is both purely inseparable and separable, then it is equal
+to `F`. -/
+theorem IntermediateField.eq_bot_of_isPurelyInseparable_of_isSeparable (L : IntermediateField F E)
+    [IsPurelyInseparable F L] [IsSeparable F L] : L = ⊥ := bot_unique fun x hx ↦ by
+  obtain ⟨y, hy⟩ := IsPurelyInseparable.surjective_algebraMap_of_isSeparable F L ⟨x, hx⟩
+  exact ⟨y, congr_arg (algebraMap L E) hy⟩
 
 /-- If `E / F` is purely inseparable, then the (relative) separable closure of `E / F` is
 equal to `F`. -/
 theorem separableClosure.eq_bot_of_isPurelyInseparable [IsPurelyInseparable F E] :
     separableClosure F E = ⊥ :=
-  bot_unique fun x h ↦ IsPurelyInseparable.inseparable F x ((mem_separableClosure_iff F E).1 h)
+  bot_unique fun x h ↦ IsPurelyInseparable.inseparable F x (mem_separableClosure_iff.1 h)
 
 /-- If `E / F` is an algebraic extension, then the (relative) separable closure of `E / F` is
 equal to `F` if and only if `E / F` is purely inseparable. -/
 theorem separableClosure.eq_bot_iff (halg : Algebra.IsAlgebraic F E) :
     separableClosure F E = ⊥ ↔ IsPurelyInseparable F E :=
   ⟨fun h ↦ isPurelyInseparable_iff.2 fun x ↦ have hx := (halg x).isIntegral; ⟨hx, fun hs ↦ by
-    simpa only [h] using (mem_separableClosure_iff F E).2 hs⟩,
+    simpa only [h] using mem_separableClosure_iff.2 hs⟩,
       fun _ ↦ eq_bot_of_isPurelyInseparable F E⟩
 
 instance isPurelyInseparable_self : IsPurelyInseparable F F :=
@@ -249,13 +256,13 @@ theorem separableClosure.isPurelyInseparable (halg : Algebra.IsAlgebraic F E) :
   haveI := (isSeparable_adjoin_simple_iff_separable L E).2 h
   haveI : IsSeparable F (restrictScalars F L⟮x⟯) := IsSeparable.trans F L L⟮x⟯
   have hx : x ∈ restrictScalars F L⟮x⟯ := mem_adjoin_simple_self _ x
-  exact ⟨⟨x, (mem_separableClosure_iff F E).2 <| separable_of_mem_isSeparable F E hx⟩, rfl⟩
+  exact ⟨⟨x, mem_separableClosure_iff.2 <| separable_of_mem_isSeparable F E hx⟩, rfl⟩
 
 /-- An intermediate field of `E / F` contains the (relative) separable closure of `E / F`
 if `E` is purely inseparable over it. -/
 theorem separableClosure_le (L : IntermediateField F E)
     [h : IsPurelyInseparable L E] : separableClosure F E ≤ L := fun x hx ↦ by
-  obtain ⟨y, rfl⟩ := h.inseparable' _ <| ((mem_separableClosure_iff F E).1 hx).map_minpoly L
+  obtain ⟨y, rfl⟩ := h.inseparable' _ <| (mem_separableClosure_iff.1 hx).map_minpoly L
   exact y.2
 
 /-- If `E / F` is algebraic, then an intermediate field of `E / F` contains the (relative)
@@ -462,7 +469,7 @@ private lemma eq_adjoin_of_isPurelyInseparable [IsPurelyInseparable F E] :
   have h := congr_arg IntermediateField.lift (eq_adjoin_of_isPurelyInseparable' F E S)
   rw [lift_top, lift_adjoin] at h
   haveI : IsScalarTower F S K := IsScalarTower.of_algebraMap_eq (congrFun rfl)
-  rw [← h, eq_map_of_separableClosure_eq_bot F S K (separableClosure_eq_bot E K)]
+  rw [← h, eq_map_of_separableClosure_eq_bot F (separableClosure_eq_bot E K)]
   rfl
 
 /-- If `K / E / F` is a field extension tower, such that `E / F` is algebraic, then
