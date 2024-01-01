@@ -56,7 +56,9 @@ section Fin
 variable {μ : Type*} [AddCommMonoid μ] [DecidableEq μ] [HasAntidiagonal μ]
 
 
-/-- `finAntidiagonal d n` is the type of d-tuples with sum n -/
+/-- `finAntidiagonal d n` is the type of `d`-tuples with sum `n`.
+
+TODO: deduplicate with the less general `Finset.Nat.antidiagonalTuple`. -/
 def finAntidiagonal (d : ℕ) (n : μ) : Finset (Fin d → μ) :=
   match d with
   | 0 => if n = 0 then {0} else ∅
@@ -212,52 +214,20 @@ theorem mem_piAntidiagonal_insert [DecidableEq ι] {a : ι} {s : Finset ι}
   constructor
   · rintro ⟨hsupp, rfl⟩
     refine ⟨_, _, rfl, Finsupp.erase a f, ?_, ?_, ?_⟩
-    · ext x
-      by_cases hx : x = a
-      · rw [hx]
-        simp only [coe_update, update_same]
-      · simp only [Finsupp.update, mem_support_iff, ne_eq, not_not, support_erase, coe_mk]
-        simp only [Function.update, dif_neg hx]
-        simp only [Finsupp.erase, coe_mk]
-        rw [if_neg hx]
-    · intro x hx
-      rw [mem_support_iff] at hx
-      suffices hx' : x ∈ insert a s
-      rw [mem_insert] at hx'
-      cases' hx' with hx' hx'
-      · exfalso
-        apply hx
-        rw [hx']
-        simp only [mem_support_iff, ne_eq, not_not, erase_same]
-      · exact hx'
-      apply hsupp
-      rw [mem_support_iff]
-      intro hx'
-      apply hx
-      simp only [Finsupp.erase, coe_mk, hx', ite_self]
+    · rw [update_erase, update_self]
+    · rwa [support_erase, ←subset_insert_iff]
     · apply sum_congr rfl
       intro x hx
-      simp only [Finsupp.erase, coe_mk, ite_eq_left_iff, if_neg (ne_of_mem_of_not_mem hx h)]
+      rw [Finsupp.erase_ne (ne_of_mem_of_not_mem hx h)]
   · rintro ⟨n1, n2, rfl, g, rfl, hgsupp, rfl⟩
     constructor
-    · intro x
-      simp only [mem_support_iff, Finset.mem_insert]
-      simp only [Finsupp.coe_update, ne_eq]
-      by_cases hx : x = a
-      · simp only [hx, ne_eq, not_true, true_or, implies_true]
-      · rw [Function.update, dif_neg hx]
-        intro hx
-        right
-        apply hgsupp
-        rw [mem_support_iff]
-        exact hx
-    · apply congr_arg₂
-      · simp only [coe_update, update_same]
+    · exact (support_update_subset _ _).trans (insert_subset_insert a hgsupp)
+    · simp only [coe_update]
+      apply congr_arg₂
+      · rw [update_same]
       · apply sum_congr rfl
         intro x hx
-        simp only [Finsupp.update, coe_mk]
-        unfold Function.update
-        rw [dif_neg (ne_of_mem_of_not_mem hx h)]
+        rw [update_noteq (ne_of_mem_of_not_mem hx h) n1 ⇑g]
 
 theorem piAntidiagonal_insert [DecidableEq ι] [DecidableEq μ] {a : ι} {s : Finset ι}
     (h : a ∉ s) (n : μ) :
