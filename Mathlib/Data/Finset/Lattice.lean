@@ -1640,7 +1640,7 @@ theorem min'_lt_of_mem_erase_min' [DecidableEq α] {a : α} (ha : a ∈ s.erase 
 
 @[simp]
 theorem max'_image [LinearOrder β] {f : α → β} (hf : Monotone f) (s : Finset α)
-    (h : (s.image f).Nonempty) : (s.image f).max' h = f (s.max' ((Nonempty.image_iff f).mp h)) := by
+    (h : (s.image f).Nonempty) : (s.image f).max' h = f (s.max' h.of_image) := by
   refine'
     le_antisymm (max'_le _ _ _ fun y hy => _) (le_max' _ _ (mem_image.mpr ⟨_, max'_mem _ _, rfl⟩))
   obtain ⟨x, hx, rfl⟩ := mem_image.mp hy
@@ -1649,7 +1649,7 @@ theorem max'_image [LinearOrder β] {f : α → β} (hf : Monotone f) (s : Finse
 
 @[simp]
 theorem min'_image [LinearOrder β] {f : α → β} (hf : Monotone f) (s : Finset α)
-    (h : (s.image f).Nonempty) : (s.image f).min' h = f (s.min' ((Nonempty.image_iff f).mp h)) := by
+    (h : (s.image f).Nonempty) : (s.image f).min' h = f (s.min' h.of_image) := by
   refine'
     le_antisymm (min'_le _ _ (mem_image.mpr ⟨_, min'_mem _ _, rfl⟩)) (le_min' _ _ _ fun y hy => _)
   obtain ⟨x, hx, rfl⟩ := mem_image.mp hy

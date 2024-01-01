@@ -232,8 +232,7 @@ theorem inv_empty : (∅ : Finset α)⁻¹ = ∅ :=
 #align finset.neg_empty Finset.neg_empty
 
 @[to_additive (attr := simp)]
-theorem inv_nonempty_iff : s⁻¹.Nonempty ↔ s.Nonempty :=
-  Nonempty.image_iff _
+theorem inv_nonempty_iff : s⁻¹.Nonempty ↔ s.Nonempty := nonempty_image_iff
 #align finset.inv_nonempty_iff Finset.inv_nonempty_iff
 #align finset.neg_nonempty_iff Finset.neg_nonempty_iff
 
