@@ -229,7 +229,7 @@ assuming `3 ≤ n`. -/
 @[simps!]
 def edge₃ (n : ℕ) (i a b : Fin (n+1)) (hab : a ≤ b) (H : 3 ≤ n) :
     Λ[n, i] _[1] :=
-  horn.edge n i a b hab <| (Finset.card_le_three i _ _).trans H
+  horn.edge n i a b hab <| Finset.card_le_three.trans H
 
 /-- The edge of `Λ[n, i]` with endpoints `j` and `j+1`.
 
@@ -245,7 +245,7 @@ def primitiveEdge {n : ℕ} {i : Fin (n+1)}
   obtain rfl|hn : n = 2 ∨ 2 < n := by
     rw [eq_comm, or_comm, ← le_iff_lt_or_eq]; omega
   · revert i j; decide
-  · exact le_trans (Finset.card_le_three i _ _) hn
+  · exact Finset.card_le_three.trans hn
 
 /-- The triangle in the standard simplex with vertices `k`, `k+1`, and `k+2`.
 
