@@ -586,10 +586,6 @@ theorem prodPrimeFactors_apply [CommMonoidWithZero R] {f: ℕ → R} {n : ℕ} (
     ∏ᵖ p ∣ n, f p = ∏ p in n.primeFactors, f p :=
   if_neg hn
 
-theorem prodPrimeFactors_apply_of_ne_zero [CommMonoidWithZero R] {f : ℕ → R} {n : ℕ}
-    (hn : n ≠ 0) : ∏ᵖ p ∣ n, f p = ∏ p in n.primeFactors, f p :=
-  prodPrimeFactors_apply hn
-
 end ProdPrimeFactors
 
 /-- Multiplicative functions -/
@@ -775,7 +771,7 @@ theorem prodPrimeFactors [CommMonoidWithZero R] (f : ℕ → R) :
 theorem prodPrimeFactors_add_of_squarefree [CommSemiring R] {f g : ArithmeticFunction R}
     (hf : IsMultiplicative f) (hg : IsMultiplicative g) {n : ℕ} (hn : Squarefree n) :
     ∏ᵖ p ∣ n, (f + g) p = (f * g) n := by
-  rw [prodPrimeFactors_apply_of_ne_zero hn.ne_zero]
+  rw [prodPrimeFactors_apply hn.ne_zero]
   simp_rw [add_apply (f:=f) (g:=g)]
   rw [Finset.prod_add, mul_apply, sum_divisorsAntidiagonal (f · * g ·),
     ← divisors_filter_squarefree_of_squarefree hn, sum_divisors_filter_squarefree hn.ne_zero,
