@@ -55,34 +55,48 @@ section Fin
 
 variable {μ : Type*} [AddCommMonoid μ] [DecidableEq μ] [HasAntidiagonal μ]
 
-
 /-- `finAntidiagonal d n` is the type of `d`-tuples with sum `n`.
 
 TODO: deduplicate with the less general `Finset.Nat.antidiagonalTuple`. -/
 def finAntidiagonal (d : ℕ) (n : μ) : Finset (Fin d → μ) :=
-  match d with
-  | 0 => if n = 0 then {0} else ∅
-  | d + 1 => (antidiagonal n).biUnion fun ab =>
-    (finAntidiagonal d ab.2).map {
-        toFun := Fin.cons (ab.1)
-        inj' := Fin.cons_right_injective _ }
+  aux d n
+where
+  /-- Auxiliary construction for `finAntidiagonal` that bundles a proof of lawfulness
+  (`mem_finAntidiagonal`), as this is needed to invoke `disjiUnion`. Using `Finset.disjiUnion` makes
+  this computationally much more efficient than using `Finset.biUnion`. -/
+  aux (d : ℕ) (n : μ) : {s : Finset (Fin d → μ) // ∀ f, f ∈ s ↔ ∑ i, f i = n} :=
+    match d with
+    | 0 =>
+      if h : n = 0 then
+        ⟨{0}, by simp [h, Subsingleton.elim finZeroElim ![]]⟩
+      else
+        ⟨∅, by simp [Ne.symm h]⟩
+    | d + 1 =>
+      { val := (antidiagonal n).disjiUnion
+          (fun ab => (aux d ab.2).1.map {
+              toFun := Fin.cons (ab.1)
+              inj' := Fin.cons_right_injective _ })
+          (fun i _hi j _hj hij => Finset.disjoint_left.2 fun t hti htj => hij <| by
+            simp_rw [Finset.mem_map, Embedding.coeFn_mk] at hti htj
+            obtain ⟨ai, hai, hij'⟩ := hti
+            obtain ⟨aj, haj, rfl⟩ := htj
+            rw [Fin.cons_eq_cons] at hij'
+            ext
+            · exact hij'.1
+            · obtain ⟨-, rfl⟩ := hij'
+              rw [←(aux d i.2).prop ai |>.mp hai, ←(aux d j.2).prop ai |>.mp haj])
+        property := fun f => by
+          simp_rw [mem_disjiUnion, mem_antidiagonal, mem_map, Embedding.coeFn_mk, Prod.exists,
+            (aux d _).prop, Fin.sum_univ_succ]
+          constructor
+          · rintro ⟨a, b, rfl, g, rfl, rfl⟩
+            simp only [Fin.cons_zero, Fin.cons_succ]
+          · intro hf
+            exact ⟨_, _, hf, _, rfl, Fin.cons_self_tail f⟩ }
 
 lemma mem_finAntidiagonal (d : ℕ) (n : μ) (f : Fin d → μ) :
-    f ∈ finAntidiagonal d n ↔ ∑ i, f i = n := by
-  induction d generalizing n with
-  | zero =>
-    simp_rw [finAntidiagonal, Matrix.zero_empty, Fin.sum_univ_zero]
-    obtain rfl | hn := Decidable.eq_or_ne n 0
-    · simp [if_pos rfl, mem_singleton, eq_iff_true_of_subsingleton]
-    · simpa only [if_neg hn, not_mem_empty, false_iff] using hn.symm
-  | succ d ih =>
-    simp only [finAntidiagonal, mem_biUnion, mem_antidiagonal, mem_map,
-      Embedding.coeFn_mk, Prod.exists, ih, Fin.sum_univ_succ]
-    constructor
-    · rintro ⟨a, b, rfl, g, rfl, rfl⟩
-      simp only [Fin.cons_zero, Fin.cons_succ]
-    · intro hf
-      exact ⟨_, _, hf, _, rfl, Fin.cons_self_tail f⟩
+    f ∈ finAntidiagonal d n ↔ ∑ i, f i = n :=
+  (finAntidiagonal.aux d n).prop f
 
 /-- `finAntidiagonal₀ d n` is the type of d-tuples with sum `n` -/
 def finAntidiagonal₀ (d : ℕ) (n : μ) : Finset (Fin d →₀ μ) :=
