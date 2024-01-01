@@ -187,13 +187,13 @@ theorem length_destutter' [IsEquiv α Rᶜ] (hab : ¬R a b) :
   induction l with
   | nil => simp
   | cons c cs ih =>
-    by_cases hac : (Rᶜ a c)
-    case pos =>
+    obtain hac | hac : R a c ∨ Rᶜ a c := em _
+    next =>
+      have hbc : ¬Rᶜ b c := mt (_root_.trans hab) (Classical.not_not.2 hac)
+      simp [destutter', if_pos hac, if_pos (Classical.not_not.1 hbc)]
+    next =>
       have hbc : ¬R b c := trans (symm hab) hac
       simpa [destutter', if_neg hac, if_neg hbc]
-    case neg =>
-      have hbc : ¬Rᶜ b c := (mt (_root_.trans hab)) hac
-      simp [destutter', if_pos (Classical.not_not.1 hac), if_pos (Classical.not_not.1 hbc)]
 
 /-- `destutter'` on a relation like ≠, whose negation is an equivalence, has length
     monotonic under List.cons --/
@@ -204,16 +204,16 @@ theorem le_length_destutter' [IsEquiv α Rᶜ] :
   | cons c cs =>
     by_cases hab : (R a b)
     case pos => simp [destutter', if_pos hab, Nat.le_succ]
-    by_cases hac : (Rᶜ a c)
-    case pos =>
+    obtain hac | hac : R a c ∨ Rᶜ a c := em _
+    next =>
+      have hbc : ¬Rᶜ b c := mt (_root_.trans hab) (Classical.not_not.2 hac)
+      simp [destutter', if_pos hac,
+        if_pos (Classical.not_not.1 hbc), if_neg hab]
+    next =>
       have hbc : ¬R b c := trans (symm hab) hac
-      apply le_of_eq;
+      apply le_of_eq
       simp only [destutter', if_neg hbc, if_neg hac, if_neg hab]
       exact (length_destutter' cs R hab).symm
-    case neg =>
-      have hbc : ¬Rᶜ b c := (mt (_root_.trans hab)) hac
-      simp [destutter', if_pos (Classical.not_not.1 hac),
-        if_pos (Classical.not_not.1 hbc), if_neg hab]
 
 /-- `destutter` on a relation like ≠, whose negation is an equivalence, has length
     monotonic under List.cons --/
