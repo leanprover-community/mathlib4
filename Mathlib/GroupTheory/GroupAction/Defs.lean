@@ -458,24 +458,6 @@ theorem Commute.smul_left [Mul α] [SMulCommClass M α α] [IsScalarTower M α �
 
 end
 
-section ite
-
-variable [SMul M α] (p : Prop) [Decidable p]
-
-@[to_additive]
-theorem ite_smul (a₁ a₂ : M) (b : α) : ite p a₁ a₂ • b = ite p (a₁ • b) (a₂ • b) := by
-  split_ifs <;> rfl
-#align ite_smul ite_smul
-#align ite_vadd ite_vadd
-
-@[to_additive]
-theorem smul_ite (a : M) (b₁ b₂ : α) : a • ite p b₁ b₂ = ite p (a • b₁) (a • b₂) := by
-  split_ifs <;> rfl
-#align smul_ite smul_ite
-#align vadd_ite vadd_ite
-
-end ite
-
 section
 
 variable [Monoid M] [MulAction M α]
@@ -734,7 +716,7 @@ theorem smul_zero (a : M) : a • (0 : A) = 0 :=
 
 @[simp]
 lemma smul_ite_zero (p : Prop) [Decidable p] (a : M) (b : A) :
-    (a • if p then b else 0) = if p then a • b else 0 := by rw [smul_ite, smul_zero]
+    (a • if p then b else 0) = if p then a • b else 0 := by split_ifs <;> simp
 
 /-- Pullback a zero-preserving scalar multiplication along an injective zero-preserving map.
 See note [reducible non-instances]. -/
