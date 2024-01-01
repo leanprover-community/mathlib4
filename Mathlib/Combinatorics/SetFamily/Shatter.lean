@@ -66,7 +66,7 @@ lemma shatters_iff : 𝒜.Shatters s ↔ 𝒜.image (fun t ↦ s ∩ t) = s.powe
     fun h t ht ↦ by rwa [← mem_powerset, ← h, mem_image] at ht⟩
 
 lemma univ_shatters [Fintype α] : univ.Shatters s :=
-  shatters_of_forall_subset <| fun _ _ ↦ mem_univ _
+  shatters_of_forall_subset fun _ _ ↦ mem_univ _
 
 @[simp] lemma shatters_univ [Fintype α] : 𝒜.Shatters univ ↔ 𝒜 = univ := by
   rw [shatters_iff, powerset_univ]; simp_rw [univ_inter, image_id']
@@ -75,7 +75,7 @@ lemma univ_shatters [Fintype α] : univ.Shatters s :=
 def shatterer (𝒜 : Finset (Finset α)) : Finset (Finset α) := (𝒜.biUnion powerset).filter 𝒜.Shatters
 
 @[simp] lemma mem_shatterer : s ∈ 𝒜.shatterer ↔ 𝒜.Shatters s := by
-  refine mem_filter.trans <| and_iff_right_of_imp <| fun h ↦ ?_
+  refine mem_filter.trans <| and_iff_right_of_imp fun h ↦ ?_
   simp_rw [mem_biUnion, mem_powerset]
   exact h.exists_superset
 
@@ -83,7 +83,7 @@ lemma shatterer_mono (h : 𝒜 ⊆ ℬ) : 𝒜.shatterer ⊆ ℬ.shatterer :=
   fun _ ↦ by simpa using Shatters.mono_left h
 
 lemma subset_shatterer (h : IsLowerSet (𝒜 : Set (Finset α))) : 𝒜 ⊆ 𝒜.shatterer :=
-  fun _s hs ↦ mem_shatterer.2 <| fun t ht ↦ ⟨t, h ht hs, inter_eq_right.2 ht⟩
+  fun _s hs ↦ mem_shatterer.2 fun t ht ↦ ⟨t, h ht hs, inter_eq_right.2 ht⟩
 
 @[simp] lemma isLowerSet_shatterer (𝒜 : Finset (Finset α)) :
     IsLowerSet (𝒜.shatterer : Set (Finset α)) := fun s t ↦ by simpa using Shatters.mono_right
@@ -191,7 +191,7 @@ lemma vcDim_compress_le (a : α) (𝒜 : Finset (Finset α)) : (𝓓 a 𝒜).vcD
 lemma card_shatterer_le_sum_vcDim [Fintype α] :
     𝒜.shatterer.card ≤ ∑ k in Iic 𝒜.vcDim, (Fintype.card α).choose k := by
   simp_rw [← card_univ, ← card_powersetCard]
-  refine (card_le_card <| fun s hs ↦ mem_biUnion.2 ⟨card s, ?_⟩).trans card_biUnion_le
+  refine (card_le_card fun s hs ↦ mem_biUnion.2 ⟨card s, ?_⟩).trans card_biUnion_le
   exact ⟨mem_Iic.2 (mem_shatterer.1 hs).card_le_vcDim, mem_powersetCard_univ.2 rfl⟩
 
 end Finset

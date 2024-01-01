@@ -407,7 +407,7 @@ instance ring : Ring (CauSeq β abv) :=
 
 instance {β : Type*} [CommRing β] {abv : β → α} [IsAbsoluteValue abv] : CommRing (CauSeq β abv) :=
   { CauSeq.ring with
-    mul_comm := fun a b => ext $ fun n => by simp [mul_left_comm, mul_comm] }
+    mul_comm := fun a b => ext fun n => by simp [mul_left_comm, mul_comm] }
 
 /-- `LimZero f` holds when `f` approaches 0. -/
 def LimZero {abv : β → α} (f : CauSeq β abv) : Prop :=

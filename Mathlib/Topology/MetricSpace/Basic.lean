@@ -371,7 +371,7 @@ end Metric
 section EqRel
 
 instance {α : Type u} [PseudoMetricSpace α] : Dist (UniformSpace.SeparationQuotient α) where
-  dist p q := Quotient.liftOn₂' p q dist <| fun x y x' y' hx hy => by
+  dist p q := Quotient.liftOn₂' p q dist fun x y x' y' hx hy => by
     rw [dist_edist, dist_edist, ← UniformSpace.SeparationQuotient.edist_mk x,
       ← UniformSpace.SeparationQuotient.edist_mk x', Quot.sound hx, Quot.sound hy]
 

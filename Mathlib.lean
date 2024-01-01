@@ -2070,6 +2070,7 @@ import Mathlib.FieldTheory.IsAlgClosed.Classification
 import Mathlib.FieldTheory.IsAlgClosed.Spectrum
 import Mathlib.FieldTheory.IsSepClosed
 import Mathlib.FieldTheory.KrullTopology
+import Mathlib.FieldTheory.KummerExtension
 import Mathlib.FieldTheory.Laurent
 import Mathlib.FieldTheory.Minpoly.Basic
 import Mathlib.FieldTheory.Minpoly.Field
@@ -2678,6 +2679,7 @@ import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
 import Mathlib.MeasureTheory.Measure.Lebesgue.VolumeOfBalls
+import Mathlib.MeasureTheory.Measure.LogLikelihoodRatio
 import Mathlib.MeasureTheory.Measure.MeasureSpace
 import Mathlib.MeasureTheory.Measure.MeasureSpaceDef
 import Mathlib.MeasureTheory.Measure.MutuallySingular
