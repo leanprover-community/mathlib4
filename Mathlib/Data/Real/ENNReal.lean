@@ -96,16 +96,22 @@ instance : OrderBot ℝ≥0∞ := inferInstanceAs (OrderBot (WithTop ℝ≥0))
 instance : BoundedOrder ℝ≥0∞ := inferInstanceAs (BoundedOrder (WithTop ℝ≥0))
 instance : CharZero ℝ≥0∞ := inferInstanceAs (CharZero (WithTop ℝ≥0))
 
-noncomputable instance : CanonicallyOrderedCommSemiring ℝ≥0∞ :=
-  inferInstanceAs (CanonicallyOrderedCommSemiring (WithTop ℝ≥0))
+noncomputable instance : OrderedCommSemiring ℝ≥0∞ :=
+  inferInstanceAs (OrderedCommSemiring (WithTop ℝ≥0))
+
+instance : CanonicallyOrderedAdd ℝ≥0∞ :=
+  inferInstanceAs (CanonicallyOrderedAdd (WithTop ℝ≥0))
+
+instance : NoZeroDivisors ℝ≥0∞ :=
+  inferInstanceAs (NoZeroDivisors (WithTop ℝ≥0))
 
 noncomputable instance : CompleteLinearOrder ℝ≥0∞ :=
   inferInstanceAs (CompleteLinearOrder (WithTop ℝ≥0))
 
 instance : DenselyOrdered ℝ≥0∞ := inferInstanceAs (DenselyOrdered (WithTop ℝ≥0))
 
-noncomputable instance : CanonicallyLinearOrderedAddCommMonoid ℝ≥0∞ :=
-  inferInstanceAs (CanonicallyLinearOrderedAddCommMonoid (WithTop ℝ≥0))
+noncomputable instance : LinearOrderedAddCommMonoid ℝ≥0∞ :=
+  inferInstanceAs (LinearOrderedAddCommMonoid (WithTop ℝ≥0))
 
 noncomputable instance instSub : Sub ℝ≥0∞ := inferInstanceAs (Sub (WithTop ℝ≥0))
 noncomputable instance : OrderedSub ℝ≥0∞ := inferInstanceAs (OrderedSub (WithTop ℝ≥0))
@@ -644,7 +650,7 @@ theorem mul_self_lt_top_iff {a : ℝ≥0∞} : a * a < ⊤ ↔ a < ⊤ := by
 #align ennreal.mul_self_lt_top_iff ENNReal.mul_self_lt_top_iff
 
 theorem mul_pos_iff : 0 < a * b ↔ 0 < a ∧ 0 < b :=
-  CanonicallyOrderedCommSemiring.mul_pos
+  CanonicallyOrderedAdd.mul_pos
 #align ennreal.mul_pos_iff ENNReal.mul_pos_iff
 
 theorem mul_pos (ha : a ≠ 0) (hb : b ≠ 0) : 0 < a * b :=
@@ -779,7 +785,7 @@ theorem max_zero_right : max a 0 = a :=
 #align ennreal.sup_eq_max ENNReal.sup_eq_max
 
 protected theorem pow_pos : 0 < a → ∀ n : ℕ, 0 < a ^ n :=
-  CanonicallyOrderedCommSemiring.pow_pos
+  CanonicallyOrderedAdd.pow_pos
 #align ennreal.pow_pos ENNReal.pow_pos
 
 protected theorem pow_ne_zero : a ≠ 0 → ∀ n : ℕ, a ^ n ≠ 0 := by

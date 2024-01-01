@@ -49,9 +49,10 @@ instance existsMulOfLe {ι : Type*} {α : ι → Type*} [∀ i, LE (α i)] [∀ 
 @[to_additive
       "The product of a family of canonically ordered additive monoids is
 a canonically ordered additive monoid."]
-instance {ι : Type*} {Z : ι → Type*} [∀ i, CanonicallyOrderedCommMonoid (Z i)] :
-    CanonicallyOrderedCommMonoid (∀ i, Z i) :=
-  { Pi.orderBot, Pi.orderedCommMonoid, Pi.existsMulOfLe with
+instance {ι : Type*} {Z : ι → Type*} [∀ i, Monoid (Z i)] [∀ i, PartialOrder (Z i)]
+    [∀ i, CanonicallyOrderedMul (Z i)] :
+    CanonicallyOrderedMul (∀ i, Z i) :=
+  { Pi.existsMulOfLe with
     le_self_mul := fun _ _ _ => le_self_mul }
 
 @[to_additive]

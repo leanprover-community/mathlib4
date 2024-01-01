@@ -23,15 +23,15 @@ open Function
 
 variable {M R : Type*}
 
-namespace CanonicallyOrderedCommSemiring
+namespace CanonicallyOrderedAdd
 
-variable [CanonicallyOrderedCommSemiring R]
+variable [Semiring R] [PartialOrder R] [CanonicallyOrderedAdd R] [NoZeroDivisors R]
 
 theorem pow_pos {a : R} (H : 0 < a) (n : ℕ) : 0 < a ^ n :=
   pos_iff_ne_zero.2 <| pow_ne_zero _ H.ne'
-#align canonically_ordered_comm_semiring.pow_pos CanonicallyOrderedCommSemiring.pow_pos
+#align canonically_ordered_comm_semiring.pow_pos CanonicallyOrderedAdd.pow_pos
 
-end CanonicallyOrderedCommSemiring
+end CanonicallyOrderedAdd
 
 section OrderedSemiring
 

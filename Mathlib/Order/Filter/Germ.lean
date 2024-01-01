@@ -860,10 +860,9 @@ instance existsMulOfLE [Mul β] [LE β] [ExistsMulOfLE β] : ExistsMulOfLE (Germ
     rw [dif_pos hx, hc]
 
 @[to_additive]
-instance CanonicallyOrderedCommMonoid [CanonicallyOrderedCommMonoid β] :
-    CanonicallyOrderedCommMonoid (Germ l β) :=
-  { orderedCommMonoid, orderBot, existsMulOfLE with
-    le_self_mul := fun x y ↦ inductionOn₂ x y fun _ _ ↦ eventually_of_forall fun _ ↦ le_self_mul }
+instance canonicallyOrderedMul [Monoid β] [PartialOrder β] [CanonicallyOrderedMul β] :
+    CanonicallyOrderedMul (Germ l β) where
+  le_self_mul := fun x y ↦ inductionOn₂ x y fun _ _ ↦ eventually_of_forall fun _ ↦ le_self_mul
 
 instance orderedSemiring [OrderedSemiring β] : OrderedSemiring (Germ l β) :=
   { Germ.semiring,

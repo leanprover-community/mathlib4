@@ -66,15 +66,12 @@ instance orderedCommSemiring : OrderedCommSemiring ℕ :=
 instance linearOrderedCancelAddCommMonoid : LinearOrderedCancelAddCommMonoid ℕ :=
   inferInstance
 
-instance canonicallyOrderedCommSemiring : CanonicallyOrderedCommSemiring ℕ :=
-  { Nat.nontrivial, Nat.orderBot, (inferInstance : OrderedAddCommMonoid ℕ),
-    (inferInstance : LinearOrderedSemiring ℕ), (inferInstance : CommSemiring ℕ) with
-    exists_add_of_le := fun {_ _} h => (Nat.le.dest h).imp fun _ => Eq.symm,
-    le_self_add := Nat.le_add_right,
-    eq_zero_or_eq_zero_of_mul_eq_zero := Nat.eq_zero_of_mul_eq_zero }
+instance canonicallyOrderedAdd : CanonicallyOrderedAdd ℕ :=
+  { exists_add_of_le := fun {_ _} h => (Nat.le.dest h).imp fun _ => Eq.symm,
+    le_self_add := Nat.le_add_right }
 
-instance canonicallyLinearOrderedAddCommMonoid : CanonicallyLinearOrderedAddCommMonoid ℕ :=
-  { (inferInstance : CanonicallyOrderedAddCommMonoid ℕ), Nat.linearOrder with }
+instance noZeroDivisors : NoZeroDivisors ℕ :=
+  { eq_zero_or_eq_zero_of_mul_eq_zero := Nat.eq_zero_of_mul_eq_zero }
 
 variable {m n k l : ℕ}
 
