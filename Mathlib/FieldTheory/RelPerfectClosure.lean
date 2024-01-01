@@ -39,6 +39,40 @@ variable (F : Type u) (E : Type v) [Field F] [Field E] [Algebra F E]
 
 variable (K : Type w) [Field K] [Algebra F K]
 
+section IsPerfectClosure
+
+/-- A field is a perfect field (which means that any irreducible polynomial is separable)
+if and only if every separable degree one polynomial splits. -/
+theorem perfectField_iff_splits_of_natSepDegree_eq_one :
+    PerfectField F ↔ ∀ f : F[X], f.natSepDegree = 1 → f.Splits (RingHom.id F) := by
+  refine ⟨fun ⟨h⟩ f hf ↦ or_iff_not_imp_left.2 fun hn g hg hd ↦ ?_, fun h ↦ ?_⟩
+  · rw [map_id] at hn hd
+    have := natSepDegree_le_of_dvd g f hd hn
+    rw [hf, (h hg).natSepDegree_eq_natDegree] at this
+    exact (degree_eq_iff_natDegree_eq_of_pos one_pos).2 <| this.antisymm <|
+      natDegree_pos_iff_degree_pos.2 (degree_pos_of_irreducible hg)
+  obtain ⟨p, hchar⟩ := CharP.exists F
+  by_cases hp : p = 0
+  · haveI := (CharP.charP_zero_iff_charZero F).1 (hp ▸ hchar)
+    exact PerfectField.ofCharZero F
+  haveI := NeZero.mk hp
+  haveI := CharP.char_is_prime_of_pos F p
+  haveI := PerfectRing.ofSurjective F p fun x ↦ by
+    haveI : ExpChar F p := ExpChar.prime Fact.out
+    obtain ⟨y, hy⟩ := exists_root_of_splits _
+      (h _ (pow_one p ▸ natSepDegree_X_pow_char_sub_C p 1 x))
+      ((degree_X_pow_sub_C (expChar_pos F p) x).symm ▸ Nat.cast_pos.2 (expChar_pos F p)).ne'
+    exact ⟨y, by rwa [← eval, eval_sub, eval_pow, eval_X, eval_C, sub_eq_zero] at hy⟩
+  exact PerfectRing.toPerfectField F p
+
+/-- If `E / F` is a field extension, then `E` is a perfect closure of `F` means that `E` is perfect
+and `E / F` is purely inseparable. -/
+class IsPerfectClosure : Prop where
+  [perfectField : PerfectField E]
+  [isPurelyInseparable : IsPurelyInseparable F E]
+
+end IsPerfectClosure
+
 section perfectClosure
 
 /-- The (relative) perfect closure of `E / F`, or called maximal purely inseparable subextension
@@ -133,13 +167,21 @@ def perfectClosure.algEquivOfAlgEquiv (i : E ≃ₐ[F] K) :
     (equivOfEq (eq_map_of_algEquiv F E K i).symm)
 
 -- TODO: move to suitable location
+instance IntermediateField.charZero [CharZero F] (L : IntermediateField F E) :
+    CharZero L := charZero_of_injective_algebraMap (algebraMap F _).injective
+
+-- TODO: move to suitable location
 instance IntermediateField.charP (p : ℕ) [CharP F p] (L : IntermediateField F E) :
     CharP L p := charP_of_injective_algebraMap (algebraMap F _).injective p
 
+-- TODO: move to suitable location
+instance IntermediateField.expChar (p : ℕ) [ExpChar F p] (L : IntermediateField F E) :
+    ExpChar L p := expChar_of_injective_algebraMap (algebraMap F _).injective p
+
 /-- If `E` is a perfect field of characteristic `p`, then the (relative) perfect closure
 `perfectClosure F E` is perfect. -/
-instance perfectClosure.perfect (p : ℕ) [Fact p.Prime] [CharP F p] [CharP E p] [PerfectRing E p] :
-    PerfectRing (perfectClosure F E) p := .ofSurjective _ p fun x ↦ by
+instance perfectClosure.perfectRing (p : ℕ) [Fact p.Prime] [CharP F p] [CharP E p]
+    [PerfectRing E p] : PerfectRing (perfectClosure F E) p := .ofSurjective _ p fun x ↦ by
   haveI : ExpChar F p := ExpChar.prime Fact.out
   obtain ⟨x', hx⟩ := surjective_frobenius E p x.1
   obtain ⟨n, y, hy⟩ := (mem_perfectClosure_iff F E p).1 x.2
@@ -147,6 +189,21 @@ instance perfectClosure.perfect (p : ℕ) [Fact p.Prime] [CharP F p] [CharP E p]
   rw [← hx, ← pow_mul, ← pow_succ] at hy
   exact ⟨⟨x', (mem_perfectClosure_iff F E p).2 ⟨n + 1, y, hy⟩⟩, by
     simp_rw [frobenius_def, SubmonoidClass.mk_pow, hx]⟩
+
+/-- If `E` is a perfect field, then the (relative) perfect closure
+`perfectClosure F E` is a perfect closre of `F`. -/
+instance perfectClosure.isPerfectClosure [PerfectField E] :
+    IsPerfectClosure F (perfectClosure F E) where
+  perfectField := by
+    obtain ⟨p, hchar⟩ := CharP.exists F
+    by_cases hp : p = 0
+    · haveI := (CharP.charP_zero_iff_charZero F).1 (hp ▸ hchar)
+      exact PerfectField.ofCharZero _
+    haveI := NeZero.mk hp
+    haveI := CharP.char_is_prime_of_pos F p
+    haveI := charP_of_injective_algebraMap (algebraMap F E).injective p
+    exact PerfectRing.toPerfectField _ p
+  isPurelyInseparable := perfectClosure.isPurelyInseparable F E
 
 end perfectClosure
 
