@@ -1413,7 +1413,7 @@ theorem rank_submodule_le_one_iff' (s : Submodule K V) :
 
 theorem Submodule.rank_le_one_iff_isPrincipal (W : Submodule K V) :
     Module.rank K W ≤ 1 ↔ W.IsPrincipal := by
-  simp only [rank_le_one_iff, Submodule.IsPrincipal_iff, le_antisymm_iff, le_span_singleton_iff,
+  simp only [rank_le_one_iff, Submodule.isPrincipal_iff, le_antisymm_iff, le_span_singleton_iff,
     span_singleton_le_iff_mem]
   constructor
   · rintro ⟨⟨m, hm⟩, hm'⟩
