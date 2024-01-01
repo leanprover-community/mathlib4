@@ -343,13 +343,13 @@ theorem zpow_mono_right (ha : 1 ≤ a) : Monotone fun n : ℤ => a ^ n := fun m 
 #align zpow_mono_right zpow_mono_right
 #align zsmul_mono_left zsmul_mono_left
 
-@[to_additive]
+@[to_additive (attr := gcongr)]
 theorem zpow_le_zpow (ha : 1 ≤ a) (h : m ≤ n) : a ^ m ≤ a ^ n :=
   zpow_mono_right ha h
 #align zpow_le_zpow zpow_le_zpow
 #align zsmul_le_zsmul zsmul_le_zsmul
 
-@[to_additive]
+@[to_additive (attr := gcongr)]
 theorem zpow_lt_zpow (ha : 1 < a) (h : m < n) : a ^ m < a ^ n :=
   zpow_right_strictMono ha h
 #align zpow_lt_zpow zpow_lt_zpow
@@ -385,13 +385,13 @@ theorem zpow_mono_left (hn : 0 ≤ n) : Monotone ((· ^ n) : α → α) := fun a
 
 variable {α}
 
-@[to_additive]
+@[to_additive (attr := gcongr)]
 theorem zpow_le_zpow' (hn : 0 ≤ n) (h : a ≤ b) : a ^ n ≤ b ^ n :=
   zpow_mono_left α hn h
 #align zpow_le_zpow' zpow_le_zpow'
 #align zsmul_le_zsmul' zsmul_le_zsmul'
 
-@[to_additive]
+@[to_additive (attr := gcongr)]
 theorem zpow_lt_zpow' (hn : 0 < n) (h : a < b) : a ^ n < b ^ n :=
   zpow_strictMono_left α hn h
 #align zpow_lt_zpow' zpow_lt_zpow'

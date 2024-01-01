@@ -91,6 +91,7 @@ theorem pow_right_mono (h : 1 ≤ a) : Monotone (a ^ ·) :=
     exact le_mul_of_one_le_left (pow_nonneg (zero_le_one.trans h) _) h
 #align pow_mono pow_right_mono
 
+@[gcongr]
 theorem pow_le_pow_right (ha : 1 ≤ a) (h : n ≤ m) : a ^ n ≤ a ^ m := pow_right_mono ha h
 #align pow_le_pow pow_le_pow_right
 
@@ -99,7 +100,7 @@ theorem le_self_pow (ha : 1 ≤ a) (h : m ≠ 0) : a ≤ a ^ m := by
 #align self_le_pow le_self_pow
 #align le_self_pow le_self_pow
 
-@[mono]
+@[mono, gcongr]
 theorem pow_le_pow_left {a b : R} (ha : 0 ≤ a) (hab : a ≤ b) : ∀ n, a ^ n ≤ b ^ n
   | 0 => by simp
   | n + 1 => by simpa only [pow_succ]
@@ -119,6 +120,7 @@ section StrictOrderedSemiring
 
 variable [StrictOrderedSemiring R] {a x y : R} {n m : ℕ}
 
+@[gcongr]
 theorem pow_lt_pow_left (h : x < y) (hx : 0 ≤ x) : ∀ {n : ℕ}, n ≠ 0 → x ^ n < y ^ n
   | 0, hn => by contradiction
   | n + 1, _ => by
@@ -138,6 +140,7 @@ lemma pow_right_strictMono (h : 1 < a) : StrictMono (a ^ ·) :=
     simpa only [one_mul, pow_succ] using mul_lt_mul h (le_refl (a ^ n)) (pow_pos this _) this.le
 #align pow_strict_mono_right pow_right_strictMono
 
+@[gcongr]
 theorem pow_lt_pow_right (h : 1 < a) (hmn : m < n) : a ^ m < a ^ n := pow_right_strictMono h hmn
 #align pow_lt_pow_right pow_lt_pow_right
 
