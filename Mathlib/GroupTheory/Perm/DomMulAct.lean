@@ -79,7 +79,7 @@ def stabilizerMulEquiv : (stabilizer (Perm α)ᵈᵐᵃ f)ᵐᵒᵖ ≃* (∀ i,
     apply comp_stabilizerEquiv_invFun⟩
   left_inv g := rfl
   right_inv g := by ext i a; apply stabilizerEquiv_invFun_eq
-  map_mul' g h := by rfl
+  map_mul' g h := rfl
 
 variable {f}
 
@@ -98,14 +98,11 @@ variable (f)
 theorem stabilizer_card:
     Fintype.card {g : Perm α // f ∘ g = f} = ∏ i, (Fintype.card {a // f a = i})! := by
   -- rewriting via Nat.card because Fintype instance is not found
-  rw [← Nat.card_eq_fintype_card, Nat.card_congr (subtypeEquiv mk ?_),
+  rw [← Nat.card_eq_fintype_card, Nat.card_congr (subtypeEquiv mk fun _ ↦ ?_),
     Nat.card_congr MulOpposite.opEquiv,
     Nat.card_congr (DomMulAct.stabilizerMulEquiv f).toEquiv, Nat.card_pi]
-  apply Finset.prod_congr rfl
-  intro i _
-  rw [Nat.card_eq_fintype_card, Fintype.card_perm, Nat.card_eq_fintype_card.symm]
-  · intro g
-    rw [DomMulAct.mem_stabilizer_iff, symm_apply_apply]
+  · exact Finset.prod_congr rfl fun i _ ↦ by rw [Nat.card_eq_fintype_card, Fintype.card_perm]
+  · rfl
 
 end Fintype
 
