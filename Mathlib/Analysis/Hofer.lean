@@ -71,7 +71,7 @@ theorem hofer {X : Type*} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) (
         d (u 0) (u (n + 1)) ≤ ∑ i in r, d (u i) (u <| i + 1) := dist_le_range_sum_dist u (n + 1)
         _ ≤ ∑ i in r, ε / 2 ^ i :=
           (sum_le_sum fun i i_in => (IH i <| Nat.lt_succ_iff.mp <| Finset.mem_range.mp i_in).1)
-        _ = (∑ i in r, (1 / 2 : ℝ)) ^ i) * ε := by
+        _ = (∑ i in r, (1 / 2 : ℝ) ^ i) * ε := by
           rw [Finset.sum_mul]
           congr with i
           field_simp

@@ -64,7 +64,7 @@ theorem MvPolynomial.sum_eval_eq_zero (f : MvPolynomial σ K)
   obtain ⟨i, hi⟩ : ∃ i, d i < q - 1; exact f.exists_degree_lt (q - 1) h hd
   calc
     (∑ x : σ → K, f.coeff d * ∏ i, x i ^ d i) = f.coeff d * ∑ x : σ → K, ∏ i, x i ^ d i :=
-      mul_sum.symm
+      (mul_sum ..).symm
     _ = 0 := (mul_eq_zero.mpr ∘ Or.inr) ?_
   calc
     (∑ x : σ → K, ∏ i, x i ^ d i) =
