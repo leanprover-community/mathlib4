@@ -215,7 +215,7 @@ theorem mem_piAntidiagonal_insert [DecidableEq ι] {a : ι} {s : Finset ι}
   · rintro ⟨hsupp, rfl⟩
     refine ⟨_, _, rfl, Finsupp.erase a f, ?_, ?_, ?_⟩
     · rw [update_erase, update_self]
-    · rwa [support_erase, ←subset_insert_iff]
+    · rwa [support_erase, ← subset_insert_iff]
     · apply sum_congr rfl
       intro x hx
       rw [Finsupp.erase_ne (ne_of_mem_of_not_mem hx h)]
