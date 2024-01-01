@@ -600,6 +600,13 @@ theorem support_update_ne_zero [DecidableEq α] (h : b ≠ 0) :
   congr; apply Subsingleton.elim
 #align finsupp.support_update_ne_zero Finsupp.support_update_ne_zero
 
+theorem support_update_subset [DecidableEq α] [DecidableEq M] :
+    support (f.update a b) ⊆ insert a f.support := by
+  rw [support_update]
+  split_ifs
+  · exact (erase_subset _ _).trans (subset_insert _ _)
+  · rfl
+
 @[simp] theorem update_idem (f : α →₀ M) (a : α) (b c : M) :
     update (update f a b) a c = update f a c :=
   letI := Classical.decEq α
