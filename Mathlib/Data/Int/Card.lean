@@ -109,26 +109,16 @@ theorem Ioc_filter_modEq_card (v : ℕ) : ((Ioc a b).filter (· ≡ v [MOD r])).
 theorem count_modEq_card' (v : ℕ) :
     b.count (· ≡ v [MOD r]) = ⌈(b - (v % r : ℕ)) / (r : ℚ)⌉ := by
   rw [count_eq_card_filter_range, ← Ico_zero_eq_range, Ico_filter_modEq_card _ _ hr]
-  have : 0 ≤ (⌈(↑b - ↑v) / (r : ℚ)⌉ - ⌈(↑0 - ↑v) / (r : ℚ)⌉) := by
-    rw [sub_nonneg]
-    apply Int.ceil_mono
-    rw [div_le_div_right (by norm_cast)]
-    apply tsub_le_tsub_right
-    exact cast_nonneg b
-  rw [max_eq_left (by exact_mod_cast this)]
+  have hr' : 0 < (r : ℚ) := by positivity
+  rw [max_eq_left (sub_nonneg.mpr <| Int.ceil_le_ceil _ _ <| div_le_div_of_le hr'.le <|
+    sub_le_sub_right (cast_le.mpr b.zero_le) (v : ℚ))]
   conv_lhs =>
-    rw [← div_add_mod v r, cast_add, cast_mul, add_comm,
-      ← sub_sub, sub_div, mul_div_cancel_left, ceil_sub_nat,
-      ← sub_sub, sub_div (_ - _), mul_div_cancel_left, ceil_sub_nat,
-      sub_sub_sub_cancel_right, cast_zero, zero_sub]
-    case ha => tactic => exact_mod_cast hr.ne.symm
-    case ha => tactic => exact_mod_cast hr.ne.symm
-  have : ⌈-↑(v % r) / (r : ℚ)⌉ = 0 := by
-    rw [ceil_eq_zero_iff, Set.mem_Ioc,
-      div_le_iff (by exact_mod_cast hr), lt_div_iff (by exact_mod_cast hr),
-      neg_one_mul, zero_mul, neg_lt_neg_iff, cast_lt]
-    exact ⟨mod_lt _ hr, by simp⟩
-  rw [this, sub_zero]
+    rw [← div_add_mod v r, cast_add, cast_mul, add_comm]
+    tactic => simp_rw [← sub_sub, sub_div (_ - _), mul_div_cancel_left _ hr'.ne', ceil_sub_nat]
+    rw [sub_sub_sub_cancel_right, cast_zero, zero_sub]
+  rw [sub_eq_self, ceil_eq_zero_iff, Set.mem_Ioc, div_le_iff hr', lt_div_iff hr', neg_one_mul,
+    zero_mul, neg_lt_neg_iff, cast_lt]
+  exact ⟨mod_lt _ hr, by simp⟩
 
 /-- There are `b / r + [v % r < b % r]` numbers in `[0, b)` congruent to `v` mod `r`,
 where `[·]` is the Iverson bracket. -/
