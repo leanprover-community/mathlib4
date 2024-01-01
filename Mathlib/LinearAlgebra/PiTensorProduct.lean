@@ -749,48 +749,17 @@ lift
     lmul (tprod R x) (tprod R y) = tprod R (x * y) := by
   simp only [lmul, lift.tprod, MultilinearMap.coe_mk]
 
-set_option maxHeartbeats 500000 in
 lemma lmul_assoc (x y z : ⨂[R] i, A i) : lmul (lmul x y) z = lmul x (lmul y z) := by
-  have reorder0 : ∀ (a b c d : ⨂[R] i, A i), a + b + (c + d) = (a + c) + (b + d)
-  · intros; abel
-  have reorder1 :
-    ∀ (a b c d e f g h : ⨂[R] i, A i), a + b + (c + d) + (e + f + (g + h)) =
-      (a + c + (e + g)) + (b + d + (f + h))
-  · intros; abel
-  induction' x using PiTensorProduct.induction_on with rx x x₁ x₂ hx₁ hx₂ <;>
-  induction' y using PiTensorProduct.induction_on with ry y y₁ y₂ hy₁ hy₂ <;>
-  induction' z using PiTensorProduct.induction_on with rz z z₁ z₂ hz₁ hz₂
-  · simp [mul_assoc]
-  · simp only [map_smul, LinearMap.smul_apply, lmul_tprod_tprod, map_add] at hz₁ hz₂ ⊢
-    rw [hz₁, hz₂]
-  · simp only [map_smul, LinearMap.smul_apply, map_add, LinearMap.add_apply,
-      smul_add] at hy₁ hy₂ ⊢
-    rw [hy₁, hy₂]
-  · simp only [map_smul, LinearMap.smul_apply, map_add, LinearMap.add_apply] at hy₁ hy₂ hz₁ hz₂ ⊢
-    rw [reorder0, hy₁, hy₂, ← add_assoc, ← add_assoc]
-    congr 1
-    rw [add_assoc, add_assoc]
-    congr 1
-    rw [add_comm]
-  · simp only [map_add, map_smul, LinearMap.add_apply, smul_add, LinearMap.smul_apply,
-      lmul_tprod_tprod] at hx₁ hx₂ ⊢
-    rw [hx₁, hx₂]
-  · simp only [map_smul, map_add, LinearMap.smul_apply, LinearMap.add_apply,
-      smul_add] at hx₁ hx₂ hz₁ hz₂ ⊢
-    rw [reorder0, hx₁, hx₂, ← add_assoc, ← add_assoc]
-    congr 1
-    rw [add_assoc, add_assoc]
-    congr 1
-    rw [add_comm]
-  · simp only [map_add, LinearMap.add_apply, map_smul, smul_add] at hx₁ hx₂ ⊢
-    rw [reorder0, hx₁, hx₂, ← add_assoc, ← add_assoc]
-    congr 1
-    rw [add_assoc, add_assoc]
-    congr 1
-    rw [add_comm]
+  induction' x using PiTensorProduct.induction_on with rx x x₁ x₂ hx₁ hx₂
+  · induction' y using PiTensorProduct.induction_on with ry y y₁ y₂ hy₁ hy₂
+    · induction' z using PiTensorProduct.induction_on with rz z z₁ z₂ hz₁ hz₂
+      · simp only [map_smul, LinearMap.smul_apply, lmul_tprod_tprod, mul_assoc]
+      · simp only [map_smul, LinearMap.smul_apply, lmul_tprod_tprod, map_add] at hz₁ hz₂ ⊢
+        rw [hz₁, hz₂]
+    · simp only [map_smul, LinearMap.smul_apply, map_add, LinearMap.add_apply] at hy₁ hy₂ ⊢
+      rw [hy₁, hy₂]
   · simp only [map_add, LinearMap.add_apply] at hx₁ hx₂ ⊢
-    conv_lhs => rw [reorder1, hx₁, hx₂]
-    conv_rhs => rw [reorder1]
+    rw [hx₁, hx₂]
 
 lemma one_lmul (x : ⨂[R] i, A i) : lmul (tprod R 1) x = x := by
   induction' x using PiTensorProduct.induction_on with rx x x₁ x₂ hx₁ hx₂
@@ -803,19 +772,15 @@ lemma lmul_one (x : ⨂[R] i, A i) : lmul x (tprod R 1) = x := by
   · simp only [map_add, LinearMap.add_apply, hx₁, hx₂]
 
 lemma lmul_comm (x y : ⨂[R] i, A i) : lmul x y = lmul y x :=  by
-  have reorder0 : ∀ (a b c d : ⨂[R] i, A i), a + b + (c + d) = (a + c) + (b + d)
-  · intros; abel
-  induction' x using PiTensorProduct.induction_on with rx x x₁ x₂ hx₁ hx₂ <;>
-  induction' y using PiTensorProduct.induction_on with ry y y₁ y₂ hy₁ hy₂
-  · simp only [map_smul, LinearMap.smul_apply, lmul_tprod_tprod]
-    rw [smul_comm, mul_comm]
-  · simp only [map_smul, LinearMap.smul_apply, map_add, LinearMap.add_apply, smul_add] at hy₁ hy₂ ⊢
-    rw [hy₁, hy₂]
-  · simp [map_add, map_smul, LinearMap.add_apply, smul_add, LinearMap.smul_apply] at hx₁ hx₂ ⊢
-    rw [hx₁, hx₂]
+  induction' x using PiTensorProduct.induction_on with rx x x₁ x₂ hx₁ hx₂
+  · induction' y using PiTensorProduct.induction_on with ry y y₁ y₂ hy₁ hy₂
+    · simp only [map_smul, LinearMap.smul_apply, lmul_tprod_tprod]
+      rw [smul_comm, mul_comm]
+    · simp only [map_smul, LinearMap.smul_apply, map_add, LinearMap.add_apply,
+        smul_add] at hy₁ hy₂ ⊢
+      rw [hy₁, hy₂]
   · simp only [map_add, LinearMap.add_apply] at hx₁ hx₂ ⊢
-    rw [reorder0, hx₁]
-    congr
+    rw [hx₁, hx₂]
 
 lemma zero_lmul (x : ⨂[R] i, A i) : lmul 0 x = 0 := by
   induction' x using PiTensorProduct.induction_on <;> simp
