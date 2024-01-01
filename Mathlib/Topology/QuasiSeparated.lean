@@ -52,7 +52,7 @@ class QuasiSeparatedSpace (α : Type*) [TopologicalSpace α] : Prop where
 
 theorem isQuasiSeparated_univ_iff {α : Type*} [TopologicalSpace α] :
     IsQuasiSeparated (Set.univ : Set α) ↔ QuasiSeparatedSpace α := by
-  rw [QuasiSeparatedSpace_iff]
+  rw [quasiSeparatedSpace_iff]
   simp [IsQuasiSeparated]
 #align is_quasi_separated_univ_iff isQuasiSeparated_univ_iff
 
