@@ -156,7 +156,7 @@ theorem degree_eq_one_of_irreducible [IsSepClosed k] {p : k[X]}
     (hp : Irreducible p) (hsep : p.Separable) : p.degree = 1 :=
   degree_eq_one_of_irreducible_of_splits hp (IsSepClosed.splits_codomain p hsep)
 
-variable {k}
+variable (K)
 
 theorem algebraMap_surjective
     [IsSepClosed k] [Algebra k K] [IsSeparable k K] :
@@ -172,6 +172,13 @@ theorem algebraMap_surjective
   exact (RingHom.map_neg (algebraMap k K) ((minpoly k x).coeff 0)).symm ▸ this.symm
 
 end IsSepClosed
+
+/-- If `k` is separably closed, `K / k` is a field extension, `L / k` is an intermediate field
+which is separable, then `L` is equal to `k`. A corollary of `IsSepClosed.algebraMap_surjective`. -/
+theorem IntermediateField.eq_bot_of_isSepClosed_of_isSeparable [IsSepClosed k] [Algebra k K]
+    (L : IntermediateField k K) [IsSeparable k L] : L = ⊥ := bot_unique fun x hx ↦ by
+  obtain ⟨y, hy⟩ := IsSepClosed.algebraMap_surjective k L ⟨x, hx⟩
+  exact ⟨y, congr_arg (algebraMap L K) hy⟩
 
 variable (k) (K)
 
