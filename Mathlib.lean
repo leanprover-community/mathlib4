@@ -205,6 +205,7 @@ import Mathlib.Algebra.Group.WithOne.Defs
 import Mathlib.Algebra.Group.WithOne.Units
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.GroupPower.CovariantClass
+import Mathlib.Algebra.GroupPower.Hom
 import Mathlib.Algebra.GroupPower.Identities
 import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Algebra.GroupPower.Lemmas
@@ -2085,6 +2086,7 @@ import Mathlib.FieldTheory.PolynomialGaloisGroup
 import Mathlib.FieldTheory.PrimitiveElement
 import Mathlib.FieldTheory.RatFunc
 import Mathlib.FieldTheory.Separable
+import Mathlib.FieldTheory.SeparableClosure
 import Mathlib.FieldTheory.SeparableDegree
 import Mathlib.FieldTheory.SplittingField.Construction
 import Mathlib.FieldTheory.SplittingField.IsSplittingField
