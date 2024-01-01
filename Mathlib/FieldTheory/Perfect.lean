@@ -168,7 +168,7 @@ class PerfectField (K : Type*) [Field K] : Prop where
 
 lemma PerfectRing.toPerfectField (K : Type*) (p : ℕ)
     [Field K] [hp : Fact p.Prime] [CharP K p] [PerfectRing K p] : PerfectField K := by
-  refine' PerfectField.mk $ fun hf ↦ _
+  refine' PerfectField.mk fun hf ↦ _
   rcases separable_or p hf with h | ⟨-, g, -, rfl⟩
   · assumption
   · exfalso; revert hf; simp
@@ -188,7 +188,7 @@ variable [PerfectField K]
 
 /-- A perfect field of characteristic `p` (prime) is a perfect ring. -/
 instance toPerfectRing (p : ℕ) [hp : Fact p.Prime] [CharP K p] : PerfectRing K p := by
-  refine' PerfectRing.ofSurjective _ _ $ fun y ↦ _
+  refine' PerfectRing.ofSurjective _ _ fun y ↦ _
   let f : K[X] := X ^ p - C y
   let L := f.SplittingField
   let ι := algebraMap K L

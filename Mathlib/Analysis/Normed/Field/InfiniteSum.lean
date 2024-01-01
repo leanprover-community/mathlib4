@@ -30,7 +30,7 @@ open Finset
 
 theorem Summable.mul_of_nonneg {f : ι → ℝ} {g : ι' → ℝ} (hf : Summable f) (hg : Summable g)
     (hf' : 0 ≤ f) (hg' : 0 ≤ g) : Summable fun x : ι × ι' => f x.1 * g x.2 :=
-  (summable_prod_of_nonneg <| fun _ ↦ mul_nonneg (hf' _) (hg' _)).2 ⟨fun x ↦ hg.mul_left (f x),
+  (summable_prod_of_nonneg fun _ ↦ mul_nonneg (hf' _) (hg' _)).2 ⟨fun x ↦ hg.mul_left (f x),
     by simpa only [hg.tsum_mul_left _] using hf.mul_right (∑' x, g x)⟩
 #align summable.mul_of_nonneg Summable.mul_of_nonneg
 

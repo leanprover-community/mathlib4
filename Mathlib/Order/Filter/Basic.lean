@@ -558,7 +558,7 @@ theorem generate_empty : Filter.generate ∅ = (⊤ : Filter α) :=
 #align filter.generate_empty Filter.generate_empty
 
 theorem generate_univ : Filter.generate univ = (⊥ : Filter α) :=
-  bot_unique <| fun _ _ => GenerateSets.basic (mem_univ _)
+  bot_unique fun _ _ => GenerateSets.basic (mem_univ _)
 #align filter.generate_univ Filter.generate_univ
 
 theorem generate_union {s t : Set (Set α)} :
@@ -817,7 +817,7 @@ theorem eq_iInf_of_mem_iff_exists_mem {f : ι → Filter α} {l : Filter α}
 theorem eq_biInf_of_mem_iff_exists_mem {f : ι → Filter α} {p : ι → Prop} {l : Filter α}
     (h : ∀ {s}, s ∈ l ↔ ∃ i, p i ∧ s ∈ f i) : l = ⨅ (i) (_ : p i), f i := by
   rw [iInf_subtype']
-  exact eq_iInf_of_mem_iff_exists_mem <| fun {_} => by simp only [Subtype.exists, h, exists_prop]
+  exact eq_iInf_of_mem_iff_exists_mem fun {_} => by simp only [Subtype.exists, h, exists_prop]
 #align filter.eq_binfi_of_mem_iff_exists_mem Filter.eq_biInf_of_mem_iff_exists_memₓ
 
 theorem iInf_sets_eq {f : ι → Filter α} (h : Directed (· ≥ ·) f) [ne : Nonempty ι] :
@@ -1156,7 +1156,7 @@ theorem Eventually.mono {p q : α → Prop} {f : Filter α} (hp : ∀ᶠ x in f,
 
 theorem forall_eventually_of_eventually_forall {f : Filter α} {p : α → β → Prop}
     (h : ∀ᶠ x in f, ∀ y, p x y) : ∀ y, ∀ᶠ x in f, p x y :=
-  fun y => h.mono <| fun _ h => h y
+  fun y => h.mono fun _ h => h y
 #align filter.forall_eventually_of_eventually_forall Filter.forall_eventually_of_eventually_forall
 
 @[simp]

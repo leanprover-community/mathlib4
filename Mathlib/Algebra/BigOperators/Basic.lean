@@ -666,7 +666,7 @@ lemma prod_fiberwise_of_maps_to' {g : ι → κ} (h : ∀ i ∈ s, g i ∈ t) (f
     ∏ j in t, ∏ _i in s.filter fun i ↦ g i = j, f j = ∏ i in s, f (g i) := by
   calc
     _ = ∏ y in t, ∏ x in s.filter fun x ↦ g x = y, f (g x) :=
-        prod_congr rfl $ fun y _ ↦ prod_congr rfl fun x hx ↦ by rw [(mem_filter.1 hx).2]
+        prod_congr rfl fun y _ ↦ prod_congr rfl fun x hx ↦ by rw [(mem_filter.1 hx).2]
     _ = _ := prod_fiberwise_of_maps_to h _
 
 variable [Fintype κ]
