@@ -519,8 +519,8 @@ theorem Set.Finite.convexHull_eq_image {s : Set E} (hs : s.Finite) : convexHull 
   simp_rw [Function.comp]
   apply congr_arg
   convert Subtype.range_coe.symm
-  -- Porting note: Original proof didn't need to specify `hs.fintype` and `(1 : R)`
-  simp [LinearMap.sum_apply, ite_smul _ (1 : R), Finset.filter_eq,
+  -- Porting note: Original proof didn't need to specify `hs.fintype`
+  simp [LinearMap.sum_apply, ite_smul, Finset.filter_eq,
     @Finset.mem_univ _ hs.fintype _]
 #align set.finite.convex_hull_eq_image Set.Finite.convexHull_eq_image
 
