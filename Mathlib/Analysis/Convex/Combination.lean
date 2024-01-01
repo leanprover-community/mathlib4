@@ -106,7 +106,7 @@ theorem Finset.centerMass_segment (s : Finset ι) (w₁ w₂ : ι → R) (z : ι
     a • s.centerMass w₁ z + b • s.centerMass w₂ z =
     s.centerMass (fun i => a * w₁ i + b * w₂ i) z := by
   have hw : (∑ i in s, (a * w₁ i + b * w₂ i)) = 1 := by
-    simp only [mul_sum.symm, sum_add_distrib, mul_one, *]
+    simp only [← mul_sum, sum_add_distrib, mul_one, *]
   simp only [Finset.centerMass_eq_of_sum_1, Finset.centerMass_eq_of_sum_1 _ _ hw,
     smul_sum, sum_add_distrib, add_smul, mul_smul, *]
 #align finset.center_mass_segment Finset.centerMass_segment
@@ -341,7 +341,7 @@ theorem convexHull_eq (s : Set E) : convexHull R s =
       rw [Finset.mem_disjSum] at hi
       rcases hi with (⟨j, hj, rfl⟩ | ⟨j, hj, rfl⟩) <;> simp only [Sum.elim_inl, Sum.elim_inr] <;>
         apply_rules [mul_nonneg, hwx₀, hwy₀]
-    · simp [Finset.sum_sum_elim, Finset.mul_sum.symm, *]
+    · simp [Finset.sum_sum_elim, ← mul_sum, *]
     · intro i hi
       rw [Finset.mem_disjSum] at hi
       rcases hi with (⟨j, hj, rfl⟩ | ⟨j, hj, rfl⟩) <;> apply_rules [hzx, hzy]
@@ -364,7 +364,7 @@ theorem Finset.convexHull_eq (s : Finset E) : convexHull R ↑s =
     refine' ⟨_, _, _, rfl⟩
     · rintro i hi
       apply_rules [add_nonneg, mul_nonneg, hwx₀, hwy₀]
-    · simp only [Finset.sum_add_distrib, Finset.mul_sum.symm, mul_one, *]
+    · simp only [Finset.sum_add_distrib, ← mul_sum, mul_one, *]
   · rintro _ ⟨w, hw₀, hw₁, rfl⟩
     exact
       s.centerMass_mem_convexHull (fun x hx => hw₀ _ hx) (hw₁.symm ▸ zero_lt_one) fun x hx => hx

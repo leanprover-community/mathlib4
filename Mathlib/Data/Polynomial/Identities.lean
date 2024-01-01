@@ -83,8 +83,8 @@ def binomExpansion (f : R[X]) (x y : R) :
   congr
   · rw [← eval_eq_sum]
   · rw [derivative_eval]
-    exact Finset.sum_mul.symm
-  · exact Finset.sum_mul.symm
+    exact (Finset.sum_mul ..).symm
+  · exact (Finset.sum_mul ..).symm
 #align polynomial.binom_expansion Polynomial.binomExpansion
 
 /-- `x^n - y^n` can be expressed as `z * (x - y)` for some `z` in the ring.
