@@ -278,7 +278,7 @@ theorem Basis.op_nnnorm_le {ι : Type*} [Fintype ι] (v : Basis ι 𝕜 E) {u : 
       _ ≤ ∑ i, ‖v.equivFun e i • (u <| v i)‖₊ := (nnnorm_sum_le _ _)
       _ = ∑ i, ‖v.equivFun e i‖₊ * ‖u (v i)‖₊ := by simp only [nnnorm_smul]
       _ ≤ ∑ i, ‖v.equivFun e i‖₊ * M := by gcongr; apply hu
-      _ = (∑ i, ‖v.equivFun e i‖₊) * M := Finset.sum_mul.symm
+      _ = (∑ i, ‖v.equivFun e i‖₊) * M := by rw [Finset.sum_mul]
       _ ≤ Fintype.card ι • (‖φ‖₊ * ‖e‖₊) * M := by
         gcongr
         calc
