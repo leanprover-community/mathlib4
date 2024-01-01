@@ -678,7 +678,7 @@ lemma prod_bijective (e : ι → κ) (he : e.Bijective) (hst : ∀ i, i ∈ s �
 
 @[to_additive]
 lemma prod_of_injOn (e : ι → κ) (he : Set.InjOn e s) (hest : Set.MapsTo e s t)
-   (h' : ∀ i ∈ t, i ∉ e '' s → g i = 1) (h : ∀ i ∈ s, f i = g (e i))  :
+    (h' : ∀ i ∈ t, i ∉ e '' s → g i = 1) (h : ∀ i ∈ s, f i = g (e i))  :
     ∏ i in s, f i = ∏ j in t, g j := by
   classical
   exact (prod_nbij e (fun a ↦ mem_image_of_mem e) he (by simp [Set.surjOn_image]) h).trans $
