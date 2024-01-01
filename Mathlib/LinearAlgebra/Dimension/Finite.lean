@@ -96,15 +96,15 @@ lemma rank_eq_zero_iff_isTorsion {R M} [CommRing R] [IsDomain R] [AddCommGroup M
   rw [Module.IsTorsion, rank_eq_zero_iff]
   simp [mem_nonZeroDivisors_iff_ne_zero]
 
+theorem rank_pos [NoZeroSMulDivisors R M] [Nontrivial M] : 0 < Module.rank R M :=
+  rank_pos_iff_nontrivial.mpr ‹_›
+#align rank_pos rank_pos
+
 variable (R M)
 
 /-- See `rank_subsingleton` that assumes `Subsingleton R` instead. -/
 theorem rank_subsingleton' [Subsingleton M] : Module.rank R M = 0 :=
   rank_eq_zero_iff.mpr fun _ ↦ ⟨1, one_ne_zero, Subsingleton.elim _ _⟩
-
-theorem rank_pos [NoZeroSMulDivisors R M] [Nontrivial M] : 0 < Module.rank R M :=
-  rank_pos_iff_nontrivial.mpr ‹_›
-#align rank_pos rank_pos
 
 @[simp]
 theorem rank_punit : Module.rank R PUnit = 0 := rank_subsingleton' _ _
