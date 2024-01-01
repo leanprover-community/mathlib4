@@ -419,4 +419,77 @@ lemma shift_single {Z : Type*} [LinearOrder Z] [SuccOrder Z] [NoMaxOrder Z] [Pre
 
 end shift
 
+section left_shift
+
+variable {Z : Type*} [PartialOrder Z] [PredOrder Z] [SuccOrder Z] [NoMaxOrder Z]
+  [NoMinOrder Z] {b : ℕ}
+
+/-- "Multiply" the expansion by shifting the expansion one digit to the left.
+The inverse to `DigitExpansion.shift`. -/
+def leftShift (f : DigitExpansion Z b) : DigitExpansion Z b :=
+  ⟨fun z ↦ f (succ z),
+   fun ⟨i, hi⟩ ↦ f.bounded' ⟨succ i, fun j hj ↦ by
+    simpa [pred_succ] using hi (pred j) (by simpa using pred_lt_pred hj)⟩⟩
+
+@[simp]
+lemma leftShift_apply (f : DigitExpansion Z b) (z : Z) : leftShift f z = f (succ z) := rfl
+
+lemma leftInverse_shift_leftShift :
+    Function.LeftInverse (α := DigitExpansion Z b) shift leftShift :=
+  fun _ ↦ ext <| by simp
+
+lemma leftInverse_leftShift_shift :
+    Function.LeftInverse (α := DigitExpansion Z b) leftShift shift :=
+  fun _ ↦ ext <| by simp
+
+@[simp]
+lemma leftShift_zero [NeZero b] : shift (0 : DigitExpansion Z b) = 0 := rfl
+
+@[simp]
+lemma leftShift_eq_zero [NeZero b] {f : DigitExpansion Z b} : leftShift f = 0 ↔ f = 0 := by
+  rw [← leftInverse_leftShift_shift.injective.eq_iff, leftInverse_shift_leftShift]
+  simp
+
+lemma Positive.of_shift [NeZero b] {f : DigitExpansion Z b} (hf : f.shift.Positive) :
+    f.Positive :=
+  ⟨by simpa using hf.left, by
+   obtain ⟨x, hx⟩ := hf.right
+   refine ⟨pred x, fun y hy ↦ ?_⟩
+   simpa using hx (succ y) (by simpa using succ_lt_succ hy)⟩
+
+lemma Negative.of_shift [NeZero b] {f : DigitExpansion Z b} (hf : f.shift.Negative) :
+    f.Negative :=
+  ⟨by simpa using hf.left, by
+   obtain ⟨x, hx⟩ := hf.right
+   refine ⟨pred x, fun y hy ↦ ?_⟩
+   simpa using hx (succ y) (by simpa using succ_lt_succ hy)⟩
+
+lemma Positive.leftShift [NeZero b] {f : DigitExpansion Z b} (hf : f.Positive) :
+    (leftShift f).Positive := by
+  rw [← leftInverse_shift_leftShift f] at hf
+  exact hf.of_shift
+
+lemma Negative.leftShift [NeZero b] {f : DigitExpansion Z b} (hf : f.Negative) :
+    (leftShift f).Negative := by
+  rw [← leftInverse_shift_leftShift f] at hf
+  exact hf.of_shift
+
+lemma Positive.of_leftShift [NeZero b] {f : DigitExpansion Z b} (hf : f.leftShift.Positive) :
+    f.Positive := by
+  rw [← leftInverse_shift_leftShift f]
+  exact hf.shift
+
+lemma Negative.of_leftShift [NeZero b] {f : DigitExpansion Z b} (hf : f.leftShift.Negative) :
+    f.Negative := by
+  rw [← leftInverse_shift_leftShift f]
+  exact hf.shift
+
+@[simp]
+lemma leftShift_single {Z : Type*} [LinearOrder Z] [SuccOrder Z] [NoMaxOrder Z] [PredOrder Z]
+    [NoMinOrder Z] [IsSuccArchimedean Z] {b : ℕ} [hb : NeZero b](z : Z) (n : Fin (b + 1)) :
+    leftShift (single z n) = single (pred z) n := by
+  rw [eq_comm, ← leftInverse_leftShift_shift (single _ _), shift_single, succ_pred]
+
+end left_shift
+
 end DigitExpansion

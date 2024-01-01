@@ -735,15 +735,7 @@ lemma shift_lt_iff {f : real Z b} :
 lemma shift_pos_iff {f : real Z b} :
     0 < shift f ↔ 0 < f := by
   rw [← positive_iff, ← positive_iff]
-  constructor
-  · contrapose!
-    intro H
-    rcases f.prop with h|h|h
-    · exact absurd h H
-    · exact h.shift.not_positive
-    · simp only [ZeroMemClass.coe_eq_zero] at h
-      simp [h, not_positive_zero]
-  · exact Positive.shift
+  exact ⟨Positive.of_shift, Positive.shift⟩
 
 /-- Across all bases, "dividing" twice gives something less than half. Necessary for
 providing ε' < ε in convergence proofs. -/
@@ -794,6 +786,53 @@ lemma shift_shift_add_shift_shift_lt_of_pos {f : real Z b} (hf : 0 < f) :
     · contrapose! hz'
       simp [this _ hz']
     · rwa [this _ le_rfl]
+
+/-- "Multiply" the expansion by shifting the expansion one digit to the left. -/
+def leftShift (f : real Z b) : real Z b :=
+  ⟨DigitExpansion.leftShift f,
+   f.prop.imp Positive.leftShift <| Or.imp Negative.leftShift (congr_arg _)⟩
+
+@[simp]
+lemma leftShift_zero : leftShift (0 : real Z b) = 0 :=
+  Subtype.ext DigitExpansion.leftShift_zero
+
+@[simp]
+lemma val_leftShift (f : real Z b) :
+    (leftShift f : DigitExpansion Z b) = DigitExpansion.leftShift f := rfl
+
+lemma leftInverse_shift_leftShift :
+    Function.LeftInverse (α := real Z b) shift leftShift :=
+  fun _ ↦ Subtype.ext (DigitExpansion.leftInverse_shift_leftShift _)
+
+lemma leftInverse_leftShift_shift :
+    Function.LeftInverse (α := real Z b) leftShift shift :=
+  fun _ ↦ Subtype.ext (DigitExpansion.leftInverse_leftShift_shift _)
+
+@[simp]
+lemma leftShift_eq_zero {f : real Z b} : leftShift f = 0 ↔ f = 0 := by
+  rw [Subtype.ext_iff]
+  simp
+
+@[simp]
+lemma leftShift_eq_self_iff {f : real Z b} : leftShift f = f ↔ f = 0 := by
+  rw [← leftInverse_shift_leftShift f, leftInverse_leftShift_shift, eq_comm, shift_eq_self_iff,
+      shift_eq_zero]
+
+@[simp]
+lemma leftShift_pos_iff {f : real Z b} :
+    0 < leftShift f ↔ 0 < f := by
+  rw [← positive_iff, ← positive_iff]
+  exact ⟨Positive.of_leftShift, Positive.leftShift⟩
+
+lemma lt_leftShift_iff {f : real Z b} :
+    f < leftShift f ↔ 0 < f := by
+  nth_rewrite 1 [← leftInverse_shift_leftShift f]
+  rw [shift_lt_iff, leftShift_pos_iff]
+
+lemma leftShift_lt_iff {f : real Z b} :
+    leftShift f < f ↔ f < 0 := by
+  rw [← not_iff_not, not_lt, le_iff_eq_or_lt, lt_leftShift_iff, eq_comm, leftShift_eq_self_iff,
+      not_lt, eq_comm, ← le_iff_eq_or_lt]
 
 end shift
 
