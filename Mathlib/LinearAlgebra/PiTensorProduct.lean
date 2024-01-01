@@ -5,6 +5,7 @@ Authors: Frédéric Dupuis, Eric Wieser
 -/
 import Mathlib.GroupTheory.Congruence
 import Mathlib.LinearAlgebra.Multilinear.TensorProduct
+import Mathlib.Algebra.Algebra.Pi
 import Mathlib.Tactic.LibrarySearch
 import Mathlib.Tactic.Ring.RingNF
 
@@ -680,6 +681,14 @@ this is false in the case where `ι` is empty. -/
 instance : AddCommGroup (⨂[R] i, s i) :=
   Module.addCommMonoidToAddCommGroup R
 
+/-!
+#### Tensor product of `R`-algebras
+
+If `(Aᵢ)` is a family of `R`-algebras then the `R`-tensor `⨂ᵢ Aᵢ` is an `R`-algebra as well with
+its structure map defined by `r ↦ ⨂ rᵢ` where `rᵢ` is the image of `R` in `Aᵢ`.
+
+In particular if we take `R` to be `ℤ`, then this collapse into tensor product of rings.
+-/
 section algebra
 
 variable {A : ι → Type*} [∀ i, CommRing (A i)] [∀ i, Algebra R (A i)]
@@ -855,28 +864,76 @@ instance commRing : CommRing (⨂[R] i, A i) where
     (tprod R x) * (tprod R y) = tprod R (x * y) :=
   lmul_tprod_tprod x y
 
-variable [DecidableEq ι]
+lemma smul_tprod_mul_smul_tprod (r s : R) (x y : Π i, A i) :
+    (r • tprod R x) * (s • tprod R y) = (r * s) • (tprod R (x * y)) := by
+  change lmul _ _ = _
+  rw [map_smul, map_smul, mul_comm r s, mul_smul]
+  simp only [LinearMap.smul_apply, lmul_tprod_tprod]
 
-variable (R A)
-
-@[simps]
-def fromComponentLinear (i : ι) : A i →ₗ[R] ⨂[R] i, A i where
-  toFun a := tprod R (Function.update 1 i a)
-  map_add' _ _ := MultilinearMap.map_add _ _ _ _ _
-  map_smul' _ _ := MultilinearMap.map_smul _ _ _ _ _
-
-@[simps]
-def fromComponentRingHom (i : ι) : A i →+* ⨂[R] i, A i where
-  __ := fromComponentLinear R A i
-  map_one' := by aesop
-  map_mul' a b := by
-    simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, fromComponentLinear_apply,
-      tprod_mul_tprod]
+instance algebra : Algebra R (⨂[R] i, A i) where
+  __ := hasSMul'
+  toFun := (· • 1)
+  map_one' := by simp
+  map_mul' r s :=show (r * s) • 1 = lmul (r • 1) (s • 1)  by
+    rw [map_smul, map_smul, LinearMap.smul_apply, mul_comm, mul_smul]
     congr
-    ext
+    show (1 : ⨂[R] i, A i) = 1 * 1
+    rw [mul_one]
+  map_zero' := by simp
+  map_add' := by simp [add_smul]
+  commutes' r x := by
+    simp only [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
+    change lmul _ _ = lmul _ _
+    rw [map_smul, map_smul, LinearMap.smul_apply]
+    change r • (1 * x) = r • (x * 1)
+    rw [mul_comm]
+  smul_def' r x := by
+    simp only [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
+    change _ = lmul _ _
+    rw [map_smul, LinearMap.smul_apply]
+    change _ = r • (1 * x)
+    rw [one_mul]
+
+/--
+the map `Aᵢ ⟶ ⨂ᵢ Aᵢ` given by `a ↦ 1 ⊗ ... ⊗ a ⊗ 1 ⊗ ...`
+-/
+@[simps]
+def fromComponentAlgHom [DecidableEq ι] (i : ι) : A i →ₐ[R] ⨂[R] i, A i where
+  toFun a := tprod R (Function.update 1 i a)
+  map_one' := by simp only [update_one]; rfl
+  map_mul' a a' := by
+    simp only [tprod_mul_tprod]
+    congr
+    ext j
     simp only [update, Pi.one_apply, Pi.mul_apply]
     aesop
-  map_zero' := by simp
+  map_zero' := MultilinearMap.map_update_zero _ _ _
+  map_add' _ _ := MultilinearMap.map_add _ _ _ _ _
+  commutes' r := show tprodCoeff R _ _ = r • tprodCoeff R _ _ by
+    rw [Algebra.algebraMap_eq_smul_one]
+    erw [smul_tprodCoeff]
+    rfl
+
+@[simps]
+def liftAlgHom {S : Type*} [CommRing S] [Algebra R S]
+    (f : MultilinearMap R A S)
+    (one : f 1 = 1)
+    (mul : ∀ x y, f (x * y) = f x * f y) : (⨂[R] i, A i) →ₐ[R] S where
+  toFun := lift f
+  map_one' := show lift f (tprod R 1) = 1 by simp [one]
+  map_mul' x y := show lift f (x * y) = lift f x * lift f y by
+    induction' x using PiTensorProduct.induction_on with rx x x₁ x₂ hx₁ hx₂
+    · induction' y using PiTensorProduct.induction_on with ry y y₁ y₂ hy₁ hy₂
+      · simp only [Algebra.mul_smul_comm, Algebra.smul_mul_assoc, tprod_mul_tprod, map_smul,
+          lift.tprod, mul]
+      · simp only [Algebra.smul_mul_assoc, map_smul, lift.tprod, map_add] at hy₁ hy₂ ⊢
+        rw [mul_add, map_add, smul_add, hy₁, hy₂, mul_add, smul_add]
+    · simp only [map_add] at hx₁ hx₂ ⊢
+      rw [add_mul, map_add, hx₁, hx₂, add_mul]
+  map_zero' := by simp only [map_zero]
+  map_add' x y := by simp only [map_add]
+  commutes' r := show lift f (r • tprod R 1) = _ by
+    rw [map_smul, lift.tprod, one, Algebra.algebraMap_eq_smul_one]
 
 end algebra
 
