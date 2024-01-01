@@ -1242,8 +1242,8 @@ theorem Lifts.exists_upper_bound (c : Set (Lifts F E K)) (hc : IsChain (· ≤ �
     exact Subalgebra.iSupLift_inclusion (K := t') (i := ⟨L, hL⟩) x (le_iSup t' ⟨L, hL⟩)
 #align intermediate_field.lifts.exists_upper_bound IntermediateField.Lifts.exists_upper_bound
 
-/-- Given an element `s : E` whose conjugates are all in `K`, any lift can be extended to one
-  whose carrier contains `s`. -/
+/-- Given a lift `x` and an integral element `s : E` over `x.carrier` whose conjugates over
+`x.carrier` are all in `K`, we can extend the lift to a lift whose carrier contains `s`. -/
 theorem Lifts.exists_lift_of_splits' (x : Lifts F E K) {s : E} (h1 : IsIntegral x.carrier s)
     (h2 : (minpoly x.carrier s).Splits x.emb.toRingHom) : ∃ y, x ≤ y ∧ s ∈ y.carrier :=
   have I2 := (minpoly.degree_pos h1).ne'
@@ -1259,6 +1259,8 @@ theorem Lifts.exists_lift_of_splits' (x : Lifts F E K) {s : E} (h1 : IsIntegral 
     ⟨fun z hz ↦ algebraMap_mem x.carrier⟮s⟯ ⟨z, hz⟩, φ.commutes⟩,
     mem_adjoin_simple_self x.carrier s⟩
 
+/-- Given an integral element `s : E` over `F` whose `F`-conjugates are all in `K`,
+any lift can be extended to one whose carrier contains `s`. -/
 theorem Lifts.exists_lift_of_splits (x : Lifts F E K) {s : E} (h1 : IsIntegral F s)
     (h2 : (minpoly F s).Splits (algebraMap F K)) : ∃ y, x ≤ y ∧ s ∈ y.carrier :=
   Lifts.exists_lift_of_splits' x h1.tower_top <| h1.minpoly_splits_tower_top' <| by
