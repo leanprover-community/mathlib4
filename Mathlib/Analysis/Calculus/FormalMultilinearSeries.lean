@@ -162,9 +162,10 @@ variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜
 variable (p : FormalMultilinearSeries 𝕜 E F)
 
 /-- Forgetting the zeroth term in a formal multilinear series, and interpreting the following terms
-as multilinear maps into `E →L[𝕜] F`. If `p` is the Taylor series of a function
-(see `HasFTaylorSeriesUpTo` and note the absence of the `1/n!` factor), then
-`p.shift` is the Taylor series of the derivative of the function. -/
+as multilinear maps into `E →L[𝕜] F`. If `p` is the Taylor series (`HasFTaylorSeriesUpTo`) of a
+function, then `p.shift` is the Taylor series of the derivative of the function. Note that the
+`p.sum` of a Taylor series `p` does not give the original function; for a formal multilinear
+series that sums to the derivative of `p.sum`, see `HasFPowerSeriesOnBall.fderiv`. -/
 def shift : FormalMultilinearSeries 𝕜 E (E →L[𝕜] F) := fun n => (p n.succ).curryRight
 #align formal_multilinear_series.shift FormalMultilinearSeries.shift
 
