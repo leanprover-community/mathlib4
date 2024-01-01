@@ -85,6 +85,8 @@ def separableClosure : IntermediateField F E where
   algebraMap_mem' := separable_algebraMap E
   inv_mem' := separable_inv
 
+variable {F E K}
+
 /-- An element is contained in the (relative) separable closure of `E / F` if and only if
 it is a separable element. -/
 theorem mem_separableClosure_iff {x : E} :
@@ -101,38 +103,43 @@ the preimage of `separableClosure F K` under the map `i`. -/
 theorem separableClosure.eq_comap_of_algHom (i : E →ₐ[F] K) :
     separableClosure F E = (separableClosure F K).comap i := by
   ext x
-  exact (map_mem_separableClosure_iff F E K i).symm
+  exact (map_mem_separableClosure_iff i).symm
 
 /-- If `i` is an `F`-algebra homomorphism from `E` to `K`, then `separableClosure F K` contains
 the image of `separableClosure F E` under the map `i`. -/
 theorem separableClosure.map_le_of_algHom (i : E →ₐ[F] K) :
     (separableClosure F E).map i ≤ separableClosure F K :=
-  map_le_iff_le_comap.2 (eq_comap_of_algHom F E K i).le
+  map_le_iff_le_comap.2 (eq_comap_of_algHom i).le
 
+variable (F) in
 /-- If `K / E / F` is a field extension tower, such that `K / E` has no non-trivial separable
 subextensions (when `K / E` is algebraic, this means that it is purely inseparable),
 then `separableClosure F K` is equal to `separableClosure F E`. -/
 theorem separableClosure.eq_map_of_separableClosure_eq_bot [Algebra E K] [IsScalarTower F E K]
     (h : separableClosure E K = ⊥) :
     separableClosure F K = (separableClosure F E).map (IsScalarTower.toAlgHom F E K) := by
-  refine le_antisymm (fun x hx ↦ ?_) (map_le_of_algHom F E K _)
-  obtain ⟨y, rfl⟩ := mem_bot.1 <| h ▸ (mem_separableClosure_iff E K).2
-    (mem_separableClosure_iff _ _ |>.mp hx |>.map_minpoly E)
-  exact ⟨y, (map_mem_separableClosure_iff _ _ _ <| IsScalarTower.toAlgHom F E K).mp hx, rfl⟩
+  refine le_antisymm (fun x hx ↦ ?_) (map_le_of_algHom _)
+  obtain ⟨y, rfl⟩ := mem_bot.1 <| h ▸ mem_separableClosure_iff.2
+    (mem_separableClosure_iff.1 hx |>.map_minpoly E)
+  exact ⟨y, (map_mem_separableClosure_iff <| IsScalarTower.toAlgHom F E K).mp hx, rfl⟩
 
 /-- If `i` is an `F`-algebra isomorphism of `E` and `K`, then `separableClosure F K` is equal to
 the image of `separableClosure F E` under the map `i`. -/
 theorem separableClosure.eq_map_of_algEquiv (i : E ≃ₐ[F] K) :
     separableClosure F K = (separableClosure F E).map i :=
-  le_antisymm (fun x h ↦ ⟨_, (map_mem_separableClosure_iff F K E i.symm).2 h, i.right_inv x⟩)
-    (map_le_of_algHom F E K i)
+  le_antisymm (fun x h ↦ ⟨_, (map_mem_separableClosure_iff i.symm).2 h, by simp⟩)
+    (map_le_of_algHom i.toAlgHom)
 
 /-- If `E` and `K` are isomorphic as `F`-algebras, then `separableClosure F E` and
 `separableClosure F K` are also isomorphic as `F`-algebras. -/
 def separableClosure.algEquivOfAlgEquiv (i : E ≃ₐ[F] K) :
     separableClosure F E ≃ₐ[F] separableClosure F K :=
   ((separableClosure F E).intermediateFieldMap i).trans
-    (equivOfEq (eq_map_of_algEquiv F E K i).symm)
+    (equivOfEq (eq_map_of_algEquiv i).symm)
+
+alias AlgEquiv.separableClosure := separableClosure.algEquivOfAlgEquiv
+
+variable (F E K)
 
 /-- The (relative) separable closure of `E / F` is algebraic over `F`. -/
 theorem separableClosure.isAlgebraic : Algebra.IsAlgebraic F (separableClosure F E) :=
@@ -162,7 +169,7 @@ theorem le_separableClosure_iff (L : IntermediateField F E) :
 itself. -/
 theorem separableClosure.separableClosure_eq_bot :
     separableClosure (separableClosure F E) E = ⊥ := bot_unique fun x hx ↦
-  mem_bot.2 ⟨⟨x, (mem_separableClosure_iff _ E).1 hx |>.comap_minpoly_of_isSeparable F⟩, rfl⟩
+  mem_bot.2 ⟨⟨x, mem_separableClosure_iff.1 hx |>.comap_minpoly_of_isSeparable F⟩, rfl⟩
 
 /-- The normal closure of the (relative) separable closure of `E / F` is equal to itself. -/
 theorem separableClosure.normalClosure_eq_self :
@@ -207,8 +214,8 @@ theorem IntermediateField.isSeparable_adjoin_iff_separable {S : Set E} :
 /-- The (relative) separable closure of `E / F` is equal to `E` if and only if `E / F` is
 separable. -/
 theorem separableClosure.eq_top_iff : separableClosure F E = ⊤ ↔ IsSeparable F E :=
-  ⟨fun h ↦ ⟨fun _ ↦ (mem_separableClosure_iff F E).1 (h ▸ mem_top)⟩,
-    fun _ ↦ top_unique fun x _ ↦ (mem_separableClosure_iff F E).2 (IsSeparable.separable _ x)⟩
+  ⟨fun h ↦ ⟨fun _ ↦ mem_separableClosure_iff.1 (h ▸ mem_top)⟩,
+    fun _ ↦ top_unique fun x _ ↦ mem_separableClosure_iff.2 (IsSeparable.separable _ x)⟩
 
 /-- If `K / E / F` is a field extension tower, then `separableClosure F K` is contained in
 `separableClosure E K`. -/
@@ -270,12 +277,12 @@ instance instNeZeroFinInsepDegree [FiniteDimensional F E] :
 separable degree over `F`. -/
 theorem lift_sepDegree_eq_of_equiv (i : E ≃ₐ[F] K) :
     Cardinal.lift.{w} (sepDegree F E) = Cardinal.lift.{v} (sepDegree F K) :=
-  (separableClosure.algEquivOfAlgEquiv F E K i).toLinearEquiv.lift_rank_eq
+  i.separableClosure.toLinearEquiv.lift_rank_eq
 
 /-- The same-universe version of `Field.lift_sepDegree_eq_of_equiv`. -/
 theorem sepDegree_eq_of_equiv (K : Type v) [Field K] [Algebra F K] (i : E ≃ₐ[F] K) :
     sepDegree F E = sepDegree F K :=
-  (separableClosure.algEquivOfAlgEquiv F E K i).toLinearEquiv.rank_eq
+  i.separableClosure.toLinearEquiv.rank_eq
 
 /-- The (infinite) separable degree multiply by the (infinite) inseparable degree is equal
 to the (infinite) field extension degree. -/
@@ -286,12 +293,12 @@ theorem sepDegree_mul_insepDegree : sepDegree F E * insepDegree F E = Module.ran
 inseparable degree over `F`. -/
 theorem lift_insepDegree_eq_of_equiv (i : E ≃ₐ[F] K) :
     Cardinal.lift.{w} (insepDegree F E) = Cardinal.lift.{v} (insepDegree F K) :=
-  Algebra.lift_rank_eq_of_equiv_equiv (separableClosure.algEquivOfAlgEquiv F E K i) i rfl
+  Algebra.lift_rank_eq_of_equiv_equiv i.separableClosure i rfl
 
 /-- The same-universe version of `Field.lift_insepDegree_eq_of_equiv`. -/
 theorem insepDegree_eq_of_equiv (K : Type v) [Field K] [Algebra F K] (i : E ≃ₐ[F] K) :
     insepDegree F E = insepDegree F K :=
-  Algebra.rank_eq_of_equiv_equiv (separableClosure.algEquivOfAlgEquiv F E K i) i rfl
+  Algebra.rank_eq_of_equiv_equiv i.separableClosure i rfl
 
 /-- If `E` and `K` are isomorphic as `F`-algebras, then they have the same (finite)
 inseparable degree over `F`. -/
