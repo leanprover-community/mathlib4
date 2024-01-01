@@ -5,6 +5,7 @@ Authors: Damiano Testa, Yuyang Zhao
 -/
 import Mathlib.Algebra.CovariantAndContravariant
 import Mathlib.Algebra.GroupWithZero.Defs
+import Mathlib.Algebra.Order.ZeroLEOne
 
 #align_import algebra.order.ring.lemmas from "leanprover-community/mathlib"@"44e29dbcff83ba7114a464d592b8c3743987c1e5"
 
@@ -709,319 +710,195 @@ theorem mul_lt_iff_lt_one_left [MulPosStrictMono α] [MulPosReflectLT α] (b0 : 
   Iff.trans (by rw [one_mul]) (mul_lt_mul_right b0)
 #align mul_lt_iff_lt_one_left mul_lt_iff_lt_one_left
 
-/-! Lemmas of the form `1 ≤ b → a ≤ a * b`.
+/-! Lemmas of the form `b ≤ 1 → a * b ≤ a`.
 
 Variants with `< 0` and `≤ 0` instead of `0 <` and `0 ≤` appear in `Mathlib/Algebra/Order/Ring/Defs`
 (which imports this file) as they need additional results which are not yet available here. -/
 
-
-theorem mul_le_of_le_one_left [MulPosMono α] (hb : 0 ≤ b) (h : a ≤ 1) : a * b ≤ b := by
-  simpa only [one_mul] using mul_le_mul_of_nonneg_right h hb
-#align mul_le_of_le_one_left mul_le_of_le_one_left
-
-theorem le_mul_of_one_le_left [MulPosMono α] (hb : 0 ≤ b) (h : 1 ≤ a) : b ≤ a * b := by
-  simpa only [one_mul] using mul_le_mul_of_nonneg_right h hb
-#align le_mul_of_one_le_left le_mul_of_one_le_left
-
-theorem mul_le_of_le_one_right [PosMulMono α] (ha : 0 ≤ a) (h : b ≤ 1) : a * b ≤ a := by
-  simpa only [mul_one] using mul_le_mul_of_nonneg_left h ha
+theorem mul_le_of_le_one_right [PosMulMono α] (a0 : 0 ≤ a) (h : b ≤ 1) : a * b ≤ a := by
+  simpa only [mul_one] using mul_le_mul_of_nonneg_left h a0
 #align mul_le_of_le_one_right mul_le_of_le_one_right
 
-theorem le_mul_of_one_le_right [PosMulMono α] (ha : 0 ≤ a) (h : 1 ≤ b) : a ≤ a * b := by
-  simpa only [mul_one] using mul_le_mul_of_nonneg_left h ha
+theorem le_mul_of_one_le_right [PosMulMono α] (a0 : 0 ≤ a) (h : 1 ≤ b) : a ≤ a * b := by
+  simpa only [mul_one] using mul_le_mul_of_nonneg_left h a0
 #align le_mul_of_one_le_right le_mul_of_one_le_right
 
-theorem mul_lt_of_lt_one_left [MulPosStrictMono α] (hb : 0 < b) (h : a < 1) : a * b < b := by
-  simpa only [one_mul] using mul_lt_mul_of_pos_right h hb
-#align mul_lt_of_lt_one_left mul_lt_of_lt_one_left
+theorem mul_le_of_le_one_left [MulPosMono α] (b0 : 0 ≤ b) (h : a ≤ 1) : a * b ≤ b := by
+  simpa only [one_mul] using mul_le_mul_of_nonneg_right h b0
+#align mul_le_of_le_one_left mul_le_of_le_one_left
 
-theorem lt_mul_of_one_lt_left [MulPosStrictMono α] (hb : 0 < b) (h : 1 < a) : b < a * b := by
-  simpa only [one_mul] using mul_lt_mul_of_pos_right h hb
-#align lt_mul_of_one_lt_left lt_mul_of_one_lt_left
+theorem le_mul_of_one_le_left [MulPosMono α] (b0 : 0 ≤ b) (h : 1 ≤ a) : b ≤ a * b := by
+  simpa only [one_mul] using mul_le_mul_of_nonneg_right h b0
+#align le_mul_of_one_le_left le_mul_of_one_le_left
 
-theorem mul_lt_of_lt_one_right [PosMulStrictMono α] (ha : 0 < a) (h : b < 1) : a * b < a := by
-  simpa only [mul_one] using mul_lt_mul_of_pos_left h ha
+theorem mul_lt_of_lt_one_right [PosMulStrictMono α] (a0 : 0 < a) (h : b < 1) : a * b < a := by
+  simpa only [mul_one] using mul_lt_mul_of_pos_left h a0
 #align mul_lt_of_lt_one_right mul_lt_of_lt_one_right
 
-theorem lt_mul_of_one_lt_right [PosMulStrictMono α] (ha : 0 < a) (h : 1 < b) : a < a * b := by
-  simpa only [mul_one] using mul_lt_mul_of_pos_left h ha
+theorem lt_mul_of_one_lt_right [PosMulStrictMono α] (a0 : 0 < a) (h : 1 < b) : a < a * b := by
+  simpa only [mul_one] using mul_lt_mul_of_pos_left h a0
 #align lt_mul_of_one_lt_right lt_mul_of_one_lt_right
 
-/-! Lemmas of the form `b ≤ c → a ≤ 1 → b * a ≤ c`. -/
+theorem mul_lt_of_lt_one_left [MulPosStrictMono α] (b0 : 0 < b) (h : a < 1) : a * b < b := by
+  simpa only [one_mul] using mul_lt_mul_of_pos_right h b0
+#align mul_lt_of_lt_one_left mul_lt_of_lt_one_left
 
+theorem lt_mul_of_one_lt_left [MulPosStrictMono α] (b0 : 0 < b) (h : 1 < a) : b < a * b := by
+  simpa only [one_mul] using mul_lt_mul_of_pos_right h b0
+#align lt_mul_of_one_lt_left lt_mul_of_one_lt_left
 
-/- Yaël: What's the point of these lemmas? They just chain an existing lemma with an assumption in
-all possible ways, thereby artificially inflating the API and making the truly relevant lemmas hard
-to find -/
-theorem mul_le_of_le_of_le_one_of_nonneg [PosMulMono α] (h : b ≤ c) (ha : a ≤ 1) (hb : 0 ≤ b) :
-    b * a ≤ c :=
-  (mul_le_of_le_one_right hb ha).trans h
-#align mul_le_of_le_of_le_one_of_nonneg mul_le_of_le_of_le_one_of_nonneg
-
-theorem mul_lt_of_le_of_lt_one_of_pos [PosMulStrictMono α] (bc : b ≤ c) (ha : a < 1) (b0 : 0 < b) :
-    b * a < c :=
-  (mul_lt_of_lt_one_right b0 ha).trans_le bc
-#align mul_lt_of_le_of_lt_one_of_pos mul_lt_of_le_of_lt_one_of_pos
-
-theorem mul_lt_of_lt_of_le_one_of_nonneg [PosMulMono α] (h : b < c) (ha : a ≤ 1) (hb : 0 ≤ b) :
-    b * a < c :=
-  (mul_le_of_le_one_right hb ha).trans_lt h
-#align mul_lt_of_lt_of_le_one_of_nonneg mul_lt_of_lt_of_le_one_of_nonneg
+/-! Lemmas of the form `a ≤ 1 → b ≤ 1 → a * b ≤ 1`. -/
 
 /-- Assumes left covariance. -/
-theorem Left.mul_le_one_of_le_of_le [PosMulMono α] (ha : a ≤ 1) (hb : b ≤ 1) (a0 : 0 ≤ a) :
-    a * b ≤ 1 :=
-  mul_le_of_le_of_le_one_of_nonneg ha hb a0
-#align left.mul_le_one_of_le_of_le Left.mul_le_one_of_le_of_le
+theorem mul_le_one_of_le_of_le_left [PosMulMono α]
+    (ha : a ≤ 1) (hb : b ≤ 1) (a0 : 0 ≤ a) : a * b ≤ 1 :=
+  (mul_le_of_le_one_right a0 hb).trans ha
+#align left.mul_le_one_of_le_of_le mul_le_one_of_le_of_le_left
 
 /-- Assumes left covariance. -/
-theorem Left.mul_lt_of_le_of_lt_one_of_pos [PosMulStrictMono α] (ha : a ≤ 1) (hb : b < 1)
-    (a0 : 0 < a) : a * b < 1 :=
-  _root_.mul_lt_of_le_of_lt_one_of_pos ha hb a0
-#align left.mul_lt_of_le_of_lt_one_of_pos Left.mul_lt_of_le_of_lt_one_of_pos
+theorem mul_lt_one_of_le_of_lt_left [PosMulStrictMono α]
+    (ha : a ≤ 1) (hb : b < 1) (a0 : 0 < a) : a * b < 1 :=
+  (mul_lt_of_lt_one_right a0 hb).trans_le ha
+#align left.mul_lt_of_le_of_lt_one_of_pos mul_lt_one_of_le_of_lt_left
 
 /-- Assumes left covariance. -/
-theorem Left.mul_lt_of_lt_of_le_one_of_nonneg [PosMulMono α] (ha : a < 1) (hb : b ≤ 1)
-    (a0 : 0 ≤ a) : a * b < 1 :=
-  _root_.mul_lt_of_lt_of_le_one_of_nonneg ha hb a0
-#align left.mul_lt_of_lt_of_le_one_of_nonneg Left.mul_lt_of_lt_of_le_one_of_nonneg
-
-theorem mul_le_of_le_of_le_one' [PosMulMono α] [MulPosMono α] (bc : b ≤ c) (ha : a ≤ 1) (a0 : 0 ≤ a)
-    (c0 : 0 ≤ c) : b * a ≤ c :=
-  (mul_le_mul_of_nonneg_right bc a0).trans <| mul_le_of_le_one_right c0 ha
-#align mul_le_of_le_of_le_one' mul_le_of_le_of_le_one'
-
-theorem mul_lt_of_lt_of_le_one' [PosMulMono α] [MulPosStrictMono α] (bc : b < c) (ha : a ≤ 1)
-    (a0 : 0 < a) (c0 : 0 ≤ c) : b * a < c :=
-  (mul_lt_mul_of_pos_right bc a0).trans_le <| mul_le_of_le_one_right c0 ha
-#align mul_lt_of_lt_of_le_one' mul_lt_of_lt_of_le_one'
-
-theorem mul_lt_of_le_of_lt_one' [PosMulStrictMono α] [MulPosMono α] (bc : b ≤ c) (ha : a < 1)
-    (a0 : 0 ≤ a) (c0 : 0 < c) : b * a < c :=
-  (mul_le_mul_of_nonneg_right bc a0).trans_lt <| mul_lt_of_lt_one_right c0 ha
-#align mul_lt_of_le_of_lt_one' mul_lt_of_le_of_lt_one'
-
-theorem mul_lt_of_lt_of_lt_one_of_pos [PosMulMono α] [MulPosStrictMono α] (bc : b < c) (ha : a ≤ 1)
-    (a0 : 0 < a) (c0 : 0 ≤ c) : b * a < c :=
-  (mul_lt_mul_of_pos_right bc a0).trans_le <| mul_le_of_le_one_right c0 ha
-#align mul_lt_of_lt_of_lt_one_of_pos mul_lt_of_lt_of_lt_one_of_pos
-
-/-! Lemmas of the form `b ≤ c → 1 ≤ a → b ≤ c * a`. -/
-
-
-theorem le_mul_of_le_of_one_le_of_nonneg [PosMulMono α] (h : b ≤ c) (ha : 1 ≤ a) (hc : 0 ≤ c) :
-    b ≤ c * a :=
-  h.trans <| le_mul_of_one_le_right hc ha
-#align le_mul_of_le_of_one_le_of_nonneg le_mul_of_le_of_one_le_of_nonneg
-
-theorem lt_mul_of_le_of_one_lt_of_pos [PosMulStrictMono α] (bc : b ≤ c) (ha : 1 < a) (c0 : 0 < c) :
-    b < c * a :=
-  bc.trans_lt <| lt_mul_of_one_lt_right c0 ha
-#align lt_mul_of_le_of_one_lt_of_pos lt_mul_of_le_of_one_lt_of_pos
-
-theorem lt_mul_of_lt_of_one_le_of_nonneg [PosMulMono α] (h : b < c) (ha : 1 ≤ a) (hc : 0 ≤ c) :
-    b < c * a :=
-  h.trans_le <| le_mul_of_one_le_right hc ha
-#align lt_mul_of_lt_of_one_le_of_nonneg lt_mul_of_lt_of_one_le_of_nonneg
+theorem mul_lt_one_of_lt_of_le_left [PosMulMono α]
+    (ha : a < 1) (hb : b ≤ 1) (a0 : 0 ≤ a) : a * b < 1 :=
+  (mul_le_of_le_one_right a0 hb).trans_lt ha
+#align left.mul_lt_of_lt_of_le_one_of_nonneg mul_lt_one_of_lt_of_le_left
 
 /-- Assumes left covariance. -/
-theorem Left.one_le_mul_of_le_of_le [PosMulMono α] (ha : 1 ≤ a) (hb : 1 ≤ b) (a0 : 0 ≤ a) :
-    1 ≤ a * b :=
-  le_mul_of_le_of_one_le_of_nonneg ha hb a0
-#align left.one_le_mul_of_le_of_le Left.one_le_mul_of_le_of_le
+theorem mul_lt_one_of_lt_of_lt_left [PosMulStrictMono α]
+    (ha : a < 1) (hb : b < 1) (a0 : 0 < a) : a * b < 1 :=
+  (mul_lt_of_lt_one_right a0 hb).trans ha
+
+/-- Assumes right covariance. -/
+theorem mul_le_one_of_le_of_le_right [MulPosMono α]
+    (ha : a ≤ 1) (hb : b ≤ 1) (b0 : 0 ≤ b) : a * b ≤ 1 :=
+  (mul_le_of_le_one_left b0 ha).trans hb
+#align right.mul_le_one_of_le_of_le mul_le_one_of_le_of_le_right
+
+/-- Assumes right covariance. -/
+theorem mul_lt_one_of_lt_of_le_right [MulPosStrictMono α]
+    (ha : a < 1) (hb : b ≤ 1) (b0 : 0 < b) : a * b < 1 :=
+  (mul_lt_of_lt_one_left b0 ha).trans_le hb
+#align right.mul_lt_one_of_lt_of_le_of_pos mul_lt_one_of_lt_of_le_right
+
+/-- Assumes right covariance. -/
+theorem mul_lt_one_of_le_of_lt_right [MulPosMono α]
+    (ha : a ≤ 1) (hb : b < 1) (b0 : 0 ≤ b) : a * b < 1 :=
+  (mul_le_of_le_one_left b0 ha).trans_lt hb
+#align right.mul_lt_one_of_le_of_lt_of_nonneg mul_lt_one_of_lt_of_le_right
+
+/-- Assumes right covariance. -/
+theorem mul_lt_one_of_lt_of_lt_right [MulPosStrictMono α]
+    (ha : a < 1) (hb : b < 1) (b0 : 0 < b) : a * b < 1 :=
+  (mul_lt_of_lt_one_left b0 ha).trans hb
+
+-- this lemma was in `Algebra.Order.Ring.Defs`
+theorem mul_le_one [MulPosMono α] (ha : a ≤ 1) (hb' : 0 ≤ b) (hb : b ≤ 1) : a * b ≤ 1 :=
+  mul_le_one_of_le_of_le_right ha hb hb'
+#align mul_le_one mul_le_one
+
+-- this lemma was in `Algebra.Order.Ring.Defs`
+theorem mul_lt_one_of_nonneg_of_lt_one_left [PosMulMono α]
+    (ha₀ : 0 ≤ a) (ha : a < 1) (hb : b ≤ 1) : a * b < 1 :=
+  mul_lt_one_of_lt_of_le_left ha hb ha₀
+#align mul_lt_one_of_nonneg_of_lt_one_left mul_lt_one_of_nonneg_of_lt_one_left
+
+-- this lemma was in `Algebra.Order.Ring.Defs`
+theorem mul_lt_one_of_nonneg_of_lt_one_right [MulPosMono α]
+    (ha : a ≤ 1) (hb₀ : 0 ≤ b) (hb : b < 1) : a * b < 1 :=
+  mul_lt_one_of_le_of_lt_right ha hb hb₀
+#align mul_lt_one_of_nonneg_of_lt_one_right mul_lt_one_of_nonneg_of_lt_one_right
+
+/-! Lemmas of the form `1 ≤ a → 1 ≤ b → 1 ≤ a * b`. -/
 
 /-- Assumes left covariance. -/
-theorem Left.one_lt_mul_of_le_of_lt_of_pos [PosMulStrictMono α] (ha : 1 ≤ a) (hb : 1 < b)
-    (a0 : 0 < a) : 1 < a * b :=
-  lt_mul_of_le_of_one_lt_of_pos ha hb a0
-#align left.one_lt_mul_of_le_of_lt_of_pos Left.one_lt_mul_of_le_of_lt_of_pos
+theorem Left.one_le_mul_of_le_of_leₚ [PosMulMono α] [ZeroLEOneClass α]
+    (ha : 1 ≤ a) (hb : 1 ≤ b) : 1 ≤ a * b :=
+  ha.trans (le_mul_of_one_le_right (zero_le_one.trans ha) hb)
+
+-- See `Left.one_lt_mul_of_le_of_ltₚ` for `1 ≤ a → 1 < b → 1 < a * b`
+-- It's not here because we do not have `ZeroLTOneClass`. We need `PartialOrder` to show `0 < 1`.
 
 /-- Assumes left covariance. -/
-theorem Left.lt_mul_of_lt_of_one_le_of_nonneg [PosMulMono α] (ha : 1 < a) (hb : 1 ≤ b)
-    (a0 : 0 ≤ a) : 1 < a * b :=
-  _root_.lt_mul_of_lt_of_one_le_of_nonneg ha hb a0
-#align left.lt_mul_of_lt_of_one_le_of_nonneg Left.lt_mul_of_lt_of_one_le_of_nonneg
+theorem Left.one_lt_mul_of_lt_of_leₚ [PosMulMono α] [ZeroLEOneClass α]
+    (ha : 1 < a) (hb : 1 ≤ b) : 1 < a * b :=
+  ha.trans_le (le_mul_of_one_le_right (zero_le_one.trans ha.le) hb)
 
-theorem le_mul_of_le_of_one_le' [PosMulMono α] [MulPosMono α] (bc : b ≤ c) (ha : 1 ≤ a)
-    (a0 : 0 ≤ a) (b0 : 0 ≤ b) : b ≤ c * a :=
-  (le_mul_of_one_le_right b0 ha).trans <| mul_le_mul_of_nonneg_right bc a0
-#align le_mul_of_le_of_one_le' le_mul_of_le_of_one_le'
-
-theorem lt_mul_of_le_of_one_lt' [PosMulStrictMono α] [MulPosMono α] (bc : b ≤ c) (ha : 1 < a)
-    (a0 : 0 ≤ a) (b0 : 0 < b) : b < c * a :=
-  (lt_mul_of_one_lt_right b0 ha).trans_le <| mul_le_mul_of_nonneg_right bc a0
-#align lt_mul_of_le_of_one_lt' lt_mul_of_le_of_one_lt'
-
-theorem lt_mul_of_lt_of_one_le' [PosMulMono α] [MulPosStrictMono α] (bc : b < c) (ha : 1 ≤ a)
-    (a0 : 0 < a) (b0 : 0 ≤ b) : b < c * a :=
-  (le_mul_of_one_le_right b0 ha).trans_lt <| mul_lt_mul_of_pos_right bc a0
-#align lt_mul_of_lt_of_one_le' lt_mul_of_lt_of_one_le'
-
-theorem lt_mul_of_lt_of_one_lt_of_pos [PosMulStrictMono α] [MulPosStrictMono α] (bc : b < c)
-    (ha : 1 < a) (a0 : 0 < a) (b0 : 0 < b) : b < c * a :=
-  (lt_mul_of_one_lt_right b0 ha).trans <| mul_lt_mul_of_pos_right bc a0
-#align lt_mul_of_lt_of_one_lt_of_pos lt_mul_of_lt_of_one_lt_of_pos
-
-/-! Lemmas of the form `a ≤ 1 → b ≤ c → a * b ≤ c`. -/
-
-
-theorem mul_le_of_le_one_of_le_of_nonneg [MulPosMono α] (ha : a ≤ 1) (h : b ≤ c) (hb : 0 ≤ b) :
-    a * b ≤ c :=
-  (mul_le_of_le_one_left hb ha).trans h
-#align mul_le_of_le_one_of_le_of_nonneg mul_le_of_le_one_of_le_of_nonneg
-
-theorem mul_lt_of_lt_one_of_le_of_pos [MulPosStrictMono α] (ha : a < 1) (h : b ≤ c) (hb : 0 < b) :
-    a * b < c :=
-  (mul_lt_of_lt_one_left hb ha).trans_le h
-#align mul_lt_of_lt_one_of_le_of_pos mul_lt_of_lt_one_of_le_of_pos
-
-theorem mul_lt_of_le_one_of_lt_of_nonneg [MulPosMono α] (ha : a ≤ 1) (h : b < c) (hb : 0 ≤ b) :
-    a * b < c :=
-  (mul_le_of_le_one_left hb ha).trans_lt h
-#align mul_lt_of_le_one_of_lt_of_nonneg mul_lt_of_le_one_of_lt_of_nonneg
+/-- Assumes left covariance. -/
+theorem Left.one_lt_mul_of_lt_of_ltₚ [PosMulStrictMono α] [ZeroLEOneClass α]
+    (ha : 1 < a) (hb : 1 < b) : 1 < a * b :=
+  ha.trans (lt_mul_of_one_lt_right (zero_le_one.trans_lt ha) hb)
 
 /-- Assumes right covariance. -/
-theorem Right.mul_lt_one_of_lt_of_le_of_pos [MulPosStrictMono α] (ha : a < 1) (hb : b ≤ 1)
-    (b0 : 0 < b) : a * b < 1 :=
-  mul_lt_of_lt_one_of_le_of_pos ha hb b0
-#align right.mul_lt_one_of_lt_of_le_of_pos Right.mul_lt_one_of_lt_of_le_of_pos
+theorem Right.one_le_mul_of_le_of_leₚ [MulPosMono α] [ZeroLEOneClass α]
+    (ha : 1 ≤ a) (hb : 1 ≤ b) : 1 ≤ a * b :=
+  hb.trans (le_mul_of_one_le_left (zero_le_one.trans hb) ha)
+
+-- See `Right.one_lt_mul_of_lt_of_leₚ` for `1 < a → 1 ≤ b → 1 < a * b`
+-- It's not here because we do not have `ZeroLTOneClass`. We need `PartialOrder` to show `0 < 1`.
 
 /-- Assumes right covariance. -/
-theorem Right.mul_lt_one_of_le_of_lt_of_nonneg [MulPosMono α] (ha : a ≤ 1) (hb : b < 1)
-    (b0 : 0 ≤ b) : a * b < 1 :=
-  mul_lt_of_le_one_of_lt_of_nonneg ha hb b0
-#align right.mul_lt_one_of_le_of_lt_of_nonneg Right.mul_lt_one_of_le_of_lt_of_nonneg
-
-theorem mul_lt_of_lt_one_of_lt_of_pos [PosMulStrictMono α] [MulPosStrictMono α] (ha : a < 1)
-    (bc : b < c) (a0 : 0 < a) (c0 : 0 < c) : a * b < c :=
-  (mul_lt_mul_of_pos_left bc a0).trans <| mul_lt_of_lt_one_left c0 ha
-#align mul_lt_of_lt_one_of_lt_of_pos mul_lt_of_lt_one_of_lt_of_pos
+theorem Right.one_lt_mul_of_le_of_ltₚ [MulPosMono α] [ZeroLEOneClass α]
+    (ha : 1 ≤ a) (hb : 1 < b) : 1 < a * b :=
+  hb.trans_le (le_mul_of_one_le_left (zero_le_one.trans hb.le) ha)
 
 /-- Assumes right covariance. -/
-theorem Right.mul_le_one_of_le_of_le [MulPosMono α] (ha : a ≤ 1) (hb : b ≤ 1) (b0 : 0 ≤ b) :
-    a * b ≤ 1 :=
-  mul_le_of_le_one_of_le_of_nonneg ha hb b0
-#align right.mul_le_one_of_le_of_le Right.mul_le_one_of_le_of_le
+theorem Right.one_lt_mul_of_lt_of_ltₚ [MulPosStrictMono α] [ZeroLEOneClass α]
+    (ha : 1 < a) (hb : 1 < b) : 1 < a * b :=
+  hb.trans (lt_mul_of_one_lt_left (zero_le_one.trans_lt hb) ha)
 
-theorem mul_le_of_le_one_of_le' [PosMulMono α] [MulPosMono α] (ha : a ≤ 1) (bc : b ≤ c) (a0 : 0 ≤ a)
-    (c0 : 0 ≤ c) : a * b ≤ c :=
-  (mul_le_mul_of_nonneg_left bc a0).trans <| mul_le_of_le_one_left c0 ha
-#align mul_le_of_le_one_of_le' mul_le_of_le_one_of_le'
+alias one_le_mul_of_le_of_le := Left.one_le_mul_of_le_of_leₚ
+alias one_lt_mul_of_le_of_lt := Right.one_lt_mul_of_le_of_ltₚ
+alias one_lt_mul_of_lt_of_le := Left.one_lt_mul_of_lt_of_leₚ
+alias one_lt_mul_of_lt_of_lt := Left.one_lt_mul_of_lt_of_ltₚ
 
-theorem mul_lt_of_lt_one_of_le' [PosMulMono α] [MulPosStrictMono α] (ha : a < 1) (bc : b ≤ c)
-    (a0 : 0 ≤ a) (c0 : 0 < c) : a * b < c :=
-  (mul_le_mul_of_nonneg_left bc a0).trans_lt <| mul_lt_of_lt_one_left c0 ha
-#align mul_lt_of_lt_one_of_le' mul_lt_of_lt_one_of_le'
-
-theorem mul_lt_of_le_one_of_lt' [PosMulStrictMono α] [MulPosMono α] (ha : a ≤ 1) (bc : b < c)
-    (a0 : 0 < a) (c0 : 0 ≤ c) : a * b < c :=
-  (mul_lt_mul_of_pos_left bc a0).trans_le <| mul_le_of_le_one_left c0 ha
-#align mul_lt_of_le_one_of_lt' mul_lt_of_le_one_of_lt'
-
-/-! Lemmas of the form `1 ≤ a → b ≤ c → b ≤ a * c`. -/
-
-
-theorem lt_mul_of_one_lt_of_le_of_pos [MulPosStrictMono α] (ha : 1 < a) (h : b ≤ c) (hc : 0 < c) :
-    b < a * c :=
-  h.trans_lt <| lt_mul_of_one_lt_left hc ha
-#align lt_mul_of_one_lt_of_le_of_pos lt_mul_of_one_lt_of_le_of_pos
-
-theorem lt_mul_of_one_le_of_lt_of_nonneg [MulPosMono α] (ha : 1 ≤ a) (h : b < c) (hc : 0 ≤ c) :
-    b < a * c :=
-  h.trans_le <| le_mul_of_one_le_left hc ha
-#align lt_mul_of_one_le_of_lt_of_nonneg lt_mul_of_one_le_of_lt_of_nonneg
-
-theorem lt_mul_of_one_lt_of_lt_of_pos [MulPosStrictMono α] (ha : 1 < a) (h : b < c) (hc : 0 < c) :
-    b < a * c :=
-  h.trans <| lt_mul_of_one_lt_left hc ha
-#align lt_mul_of_one_lt_of_lt_of_pos lt_mul_of_one_lt_of_lt_of_pos
-
-/-- Assumes right covariance. -/
-theorem Right.one_lt_mul_of_lt_of_le_of_pos [MulPosStrictMono α] (ha : 1 < a) (hb : 1 ≤ b)
-    (b0 : 0 < b) : 1 < a * b :=
-  lt_mul_of_one_lt_of_le_of_pos ha hb b0
-#align right.one_lt_mul_of_lt_of_le_of_pos Right.one_lt_mul_of_lt_of_le_of_pos
-
-/-- Assumes right covariance. -/
-theorem Right.one_lt_mul_of_le_of_lt_of_nonneg [MulPosMono α] (ha : 1 ≤ a) (hb : 1 < b)
-    (b0 : 0 ≤ b) : 1 < a * b :=
-  lt_mul_of_one_le_of_lt_of_nonneg ha hb b0
-#align right.one_lt_mul_of_le_of_lt_of_nonneg Right.one_lt_mul_of_le_of_lt_of_nonneg
-
-/-- Assumes right covariance. -/
-theorem Right.one_lt_mul_of_lt_of_lt [MulPosStrictMono α] (ha : 1 < a) (hb : 1 < b) (b0 : 0 < b) :
-    1 < a * b :=
-  lt_mul_of_one_lt_of_lt_of_pos ha hb b0
-#align right.one_lt_mul_of_lt_of_lt Right.one_lt_mul_of_lt_of_lt
-
-theorem lt_mul_of_one_lt_of_lt_of_nonneg [MulPosMono α] (ha : 1 ≤ a) (h : b < c) (hc : 0 ≤ c) :
-    b < a * c :=
-  h.trans_le <| le_mul_of_one_le_left hc ha
-#align lt_mul_of_one_lt_of_lt_of_nonneg lt_mul_of_one_lt_of_lt_of_nonneg
-
-theorem lt_of_mul_lt_of_one_le_of_nonneg_left [PosMulMono α] (h : a * b < c) (hle : 1 ≤ b)
-    (ha : 0 ≤ a) : a < c :=
-  (le_mul_of_one_le_right ha hle).trans_lt h
-#align lt_of_mul_lt_of_one_le_of_nonneg_left lt_of_mul_lt_of_one_le_of_nonneg_left
-
-theorem lt_of_lt_mul_of_le_one_of_nonneg_left [PosMulMono α] (h : a < b * c) (hc : c ≤ 1)
-    (hb : 0 ≤ b) : a < b :=
-  h.trans_le <| mul_le_of_le_one_right hb hc
-#align lt_of_lt_mul_of_le_one_of_nonneg_left lt_of_lt_mul_of_le_one_of_nonneg_left
-
-theorem lt_of_lt_mul_of_le_one_of_nonneg_right [MulPosMono α] (h : a < b * c) (hb : b ≤ 1)
-    (hc : 0 ≤ c) : a < c :=
-  h.trans_le <| mul_le_of_le_one_left hc hb
-#align lt_of_lt_mul_of_le_one_of_nonneg_right lt_of_lt_mul_of_le_one_of_nonneg_right
-
-theorem le_mul_of_one_le_of_le_of_nonneg [MulPosMono α] (ha : 1 ≤ a) (bc : b ≤ c) (c0 : 0 ≤ c) :
-    b ≤ a * c :=
-  bc.trans <| le_mul_of_one_le_left c0 ha
-#align le_mul_of_one_le_of_le_of_nonneg le_mul_of_one_le_of_le_of_nonneg
-
-/-- Assumes right covariance. -/
-theorem Right.one_le_mul_of_le_of_le [MulPosMono α] (ha : 1 ≤ a) (hb : 1 ≤ b) (b0 : 0 ≤ b) :
-    1 ≤ a * b :=
-  le_mul_of_one_le_of_le_of_nonneg ha hb b0
-#align right.one_le_mul_of_le_of_le Right.one_le_mul_of_le_of_le
-
-theorem le_of_mul_le_of_one_le_of_nonneg_left [PosMulMono α] (h : a * b ≤ c) (hb : 1 ≤ b)
-    (ha : 0 ≤ a) : a ≤ c :=
-  (le_mul_of_one_le_right ha hb).trans h
-#align le_of_mul_le_of_one_le_of_nonneg_left le_of_mul_le_of_one_le_of_nonneg_left
-
-theorem le_of_le_mul_of_le_one_of_nonneg_left [PosMulMono α] (h : a ≤ b * c) (hc : c ≤ 1)
-    (hb : 0 ≤ b) : a ≤ b :=
-  h.trans <| mul_le_of_le_one_right hb hc
-#align le_of_le_mul_of_le_one_of_nonneg_left le_of_le_mul_of_le_one_of_nonneg_left
-
-theorem le_of_mul_le_of_one_le_nonneg_right [MulPosMono α] (h : a * b ≤ c) (ha : 1 ≤ a)
-    (hb : 0 ≤ b) : b ≤ c :=
-  (le_mul_of_one_le_left hb ha).trans h
-#align le_of_mul_le_of_one_le_nonneg_right le_of_mul_le_of_one_le_nonneg_right
-
-theorem le_of_le_mul_of_le_one_of_nonneg_right [MulPosMono α] (h : a ≤ b * c) (hb : b ≤ 1)
-    (hc : 0 ≤ c) : a ≤ c :=
-  h.trans <| mul_le_of_le_one_left hc hb
-#align le_of_le_mul_of_le_one_of_nonneg_right le_of_le_mul_of_le_one_of_nonneg_right
+alias one_lt_mul := one_lt_mul_of_le_of_lt -- this name was in `Algebra.Order.Ring.Defs`
+#align one_lt_mul one_lt_mul
 
 end Preorder
 
-section LinearOrder
+section PartialOrder
 
-variable [LinearOrder α]
+variable [PartialOrder α]
 
--- Yaël: What's the point of this lemma? If we have `0 * 0 = 0`, then we can just take `b = 0`.
--- proven with `a0 : 0 ≤ a` as `exists_square_le`
-theorem exists_square_le' [PosMulStrictMono α] (a0 : 0 < a) : ∃ b : α, b * b ≤ a := by
-  obtain ha | ha := lt_or_le a 1
-  · exact ⟨a, (mul_lt_of_lt_one_right a0 ha).le⟩
-  · exact ⟨1, by rwa [mul_one]⟩
-#align exists_square_le' exists_square_le'
+/-- Assumes left covariance. -/
+theorem Left.one_lt_mul_of_le_of_ltₚ [PosMulStrictMono α] [ZeroLEOneClass α] [NeZero (1 : α)]
+    (ha : 1 ≤ a) (hb : 1 < b) : 1 < a * b :=
+  ha.trans_lt (lt_mul_of_one_lt_right (zero_lt_one.trans_le ha) hb)
 
-end LinearOrder
+/-- Assumes right covariance. -/
+theorem Right.one_lt_mul_of_lt_of_leₚ [MulPosStrictMono α] [ZeroLEOneClass α] [NeZero (1 : α)]
+    (ha : 1 < a) (hb : 1 ≤ b) : 1 < a * b :=
+  hb.trans_lt (lt_mul_of_one_lt_left (zero_lt_one.trans_le hb) ha)
+
+end PartialOrder
 
 end MulOneClass
+
+section MulZeroOneClass
+
+variable [MulZeroOneClass α]
+
+section Preorder
+
+variable [Preorder α]
+
+theorem Left.zero_lt_one_of_pos [PosMulReflectLT α]
+    (a0 : 0 < a) : (0 : α) < 1 :=
+  lt_of_mul_lt_mul_left ((mul_zero _).le.trans_lt (a0.trans_le (mul_one _).ge)) a0.le
+
+theorem Right.zero_lt_one_of_pos [MulPosReflectLT α]
+    (a0 : 0 < a) : (0 : α) < 1 :=
+  lt_of_mul_lt_mul_right ((zero_mul _).le.trans_lt (a0.trans_le (one_mul _).ge)) a0.le
+
+alias zero_lt_one_of_pos := Left.zero_lt_one_of_pos
+
+end Preorder
+
+end MulZeroOneClass
 
 section CancelMonoidWithZero
 
