@@ -6,6 +6,7 @@ Authors: Frédéric Dupuis, Eric Wieser
 import Mathlib.GroupTheory.Congruence
 import Mathlib.LinearAlgebra.Multilinear.TensorProduct
 import Mathlib.Tactic.LibrarySearch
+import Mathlib.Tactic.Ring.RingNF
 
 #align_import linear_algebra.pi_tensor_product from "leanprover-community/mathlib"@"ce11c3c2a285bbe6937e26d9792fda4e51f3fe1a"
 
@@ -530,7 +531,7 @@ variable (ι)
 attribute [local simp] eq_iff_true_of_subsingleton in
 /-- The tensor product over an empty index type `ι` is isomorphic to the base ring. -/
 @[simps symm_apply]
-def isEmptyEquiv [IsEmpty ι] : (⨂[R] _ : ι, M) ≃ₗ[R] R where
+def isEmptyEquiv [IsEmpty ι] : (⨂[R] i : ι, s i) ≃ₗ[R] R where
   toFun := lift (constOfIsEmpty R _ 1)
   invFun r := r • tprod R (@isEmptyElim _ _ _)
   left_inv x := by
@@ -551,7 +552,8 @@ def isEmptyEquiv [IsEmpty ι] : (⨂[R] _ : ι, M) ≃ₗ[R] R where
 #align pi_tensor_product.is_empty_equiv PiTensorProduct.isEmptyEquiv
 
 @[simp]
-theorem isEmptyEquiv_apply_tprod [IsEmpty ι] (f : ι → M) : isEmptyEquiv ι (tprod R f) = 1 :=
+theorem isEmptyEquiv_apply_tprod [IsEmpty ι] (f : (i : ι) → s i) :
+    isEmptyEquiv ι (tprod R f) = 1 :=
   lift.tprod _
 #align pi_tensor_product.is_empty_equiv_apply_tprod PiTensorProduct.isEmptyEquiv_apply_tprod
 
@@ -677,6 +679,206 @@ variable {s : ι → Type*} [∀ i, AddCommGroup (s i)] [∀ i, Module R (s i)]
 this is false in the case where `ι` is empty. -/
 instance : AddCommGroup (⨂[R] i, s i) :=
   Module.addCommMonoidToAddCommGroup R
+
+section algebra
+
+variable {A : ι → Type*} [∀ i, CommRing (A i)] [∀ i, Algebra R (A i)]
+
+/--
+The multiplication in tensor product of rings is given by `(xᵢ) * (yᵢ) = (xᵢ * yᵢ)`
+-/
+def lmul : (⨂[R] i, A i) →ₗ[R] (⨂[R] i, A i) →ₗ[R] (⨂[R] i, A i) :=
+lift
+{ toFun := fun x ↦ lift
+    { toFun := fun y ↦ tprod _ (x * y)
+      map_add' := fun z i a a' ↦ by
+        dsimp
+        rw [show x * update z i (a + a') = update (x * z) i (x i * (a + a')) by
+        · ext j
+          simp only [Pi.mul_apply, update]
+          aesop]
+        rw [mul_add, MultilinearMap.map_add]
+        congr <;> ext j <;> simp only [update, Pi.mul_apply] <;> aesop
+      map_smul' := fun z i r a ↦ by
+        dsimp
+        rw [show x * update z i (r • a) = update (x * z) i (x i * (r • a)) by
+        · ext j
+          simp only [Pi.mul_apply, update, Algebra.mul_smul_comm]
+          split_ifs <;> aesop,
+        show x i * r • a = r • (x i * a) by
+        · rw [Algebra.smul_def, ← mul_assoc, mul_comm (x i), mul_assoc, Algebra.smul_def]]
+        rw [MultilinearMap.map_smul]
+        congr
+        ext j
+        simp only [update, Pi.mul_apply]
+        aesop }
+  map_add' := fun z i a a' ↦ by
+    ext z'
+    simp only [LinearMap.compMultilinearMap_apply, lift.tprod, MultilinearMap.coe_mk,
+      LinearMap.add_apply]
+    rw [show update z i (a + a') * z' = update (z * z') i ((a + a') * (z' i)) by
+    · ext j
+      simp only [Pi.mul_apply, update]
+      aesop]
+    rw [add_mul, MultilinearMap.map_add]
+    congr <;> ext j <;> simp only [update, Pi.mul_apply] <;> aesop
+  map_smul' := fun z i r a ↦ by
+    ext z'
+    simp only [LinearMap.compMultilinearMap_apply, lift.tprod, MultilinearMap.coe_mk,
+      LinearMap.smul_apply]
+    rw [show update z i (r • a) * z' = update (z * z') i ((r • a) * z' i) by
+    · ext j
+      simp only [Pi.mul_apply, update]
+      aesop]
+    rw [Algebra.smul_mul_assoc, MultilinearMap.map_smul]
+    congr
+    ext j
+    simp only [update, Pi.mul_apply]
+    aesop }
+
+@[simp] lemma lmul_tprod_tprod (x y : (i : ι) → A i) :
+    lmul (tprod R x) (tprod R y) = tprod R (x * y) := by
+  simp only [lmul, lift.tprod, MultilinearMap.coe_mk]
+
+set_option maxHeartbeats 500000 in
+lemma lmul_assoc (x y z : ⨂[R] i, A i) : lmul (lmul x y) z = lmul x (lmul y z) := by
+  have reorder0 : ∀ (a b c d : ⨂[R] i, A i), a + b + (c + d) = (a + c) + (b + d)
+  · intros; abel
+  have reorder1 :
+    ∀ (a b c d e f g h : ⨂[R] i, A i), a + b + (c + d) + (e + f + (g + h)) =
+      (a + c + (e + g)) + (b + d + (f + h))
+  · intros; abel
+  induction' x using PiTensorProduct.induction_on with rx x x₁ x₂ hx₁ hx₂ <;>
+  induction' y using PiTensorProduct.induction_on with ry y y₁ y₂ hy₁ hy₂ <;>
+  induction' z using PiTensorProduct.induction_on with rz z z₁ z₂ hz₁ hz₂
+  · simp [mul_assoc]
+  · simp only [map_smul, LinearMap.smul_apply, lmul_tprod_tprod, map_add] at hz₁ hz₂ ⊢
+    rw [hz₁, hz₂]
+  · simp only [map_smul, LinearMap.smul_apply, map_add, LinearMap.add_apply,
+      smul_add] at hy₁ hy₂ ⊢
+    rw [hy₁, hy₂]
+  · simp only [map_smul, LinearMap.smul_apply, map_add, LinearMap.add_apply] at hy₁ hy₂ hz₁ hz₂ ⊢
+    rw [reorder0, hy₁, hy₂, ← add_assoc, ← add_assoc]
+    congr 1
+    rw [add_assoc, add_assoc]
+    congr 1
+    rw [add_comm]
+  · simp only [map_add, map_smul, LinearMap.add_apply, smul_add, LinearMap.smul_apply,
+      lmul_tprod_tprod] at hx₁ hx₂ ⊢
+    rw [hx₁, hx₂]
+  · simp only [map_smul, map_add, LinearMap.smul_apply, LinearMap.add_apply,
+      smul_add] at hx₁ hx₂ hz₁ hz₂ ⊢
+    rw [reorder0, hx₁, hx₂, ← add_assoc, ← add_assoc]
+    congr 1
+    rw [add_assoc, add_assoc]
+    congr 1
+    rw [add_comm]
+  · simp only [map_add, LinearMap.add_apply, map_smul, smul_add] at hx₁ hx₂ ⊢
+    rw [reorder0, hx₁, hx₂, ← add_assoc, ← add_assoc]
+    congr 1
+    rw [add_assoc, add_assoc]
+    congr 1
+    rw [add_comm]
+  · simp only [map_add, LinearMap.add_apply] at hx₁ hx₂ ⊢
+    conv_lhs => rw [reorder1, hx₁, hx₂]
+    conv_rhs => rw [reorder1]
+
+lemma one_lmul (x : ⨂[R] i, A i) : lmul (tprod R 1) x = x := by
+  induction' x using PiTensorProduct.induction_on with rx x x₁ x₂ hx₁ hx₂
+  · simp
+  · simp only [map_add, hx₁, hx₂]
+
+lemma lmul_one (x : ⨂[R] i, A i) : lmul x (tprod R 1) = x := by
+  induction' x using PiTensorProduct.induction_on with rx x x₁ x₂ hx₁ hx₂
+  · simp
+  · simp only [map_add, LinearMap.add_apply, hx₁, hx₂]
+
+lemma lmul_comm (x y : ⨂[R] i, A i) : lmul x y = lmul y x :=  by
+  have reorder0 : ∀ (a b c d : ⨂[R] i, A i), a + b + (c + d) = (a + c) + (b + d)
+  · intros; abel
+  induction' x using PiTensorProduct.induction_on with rx x x₁ x₂ hx₁ hx₂ <;>
+  induction' y using PiTensorProduct.induction_on with ry y y₁ y₂ hy₁ hy₂
+  · simp only [map_smul, LinearMap.smul_apply, lmul_tprod_tprod]
+    rw [smul_comm, mul_comm]
+  · simp only [map_smul, LinearMap.smul_apply, map_add, LinearMap.add_apply, smul_add] at hy₁ hy₂ ⊢
+    rw [hy₁, hy₂]
+  · simp [map_add, map_smul, LinearMap.add_apply, smul_add, LinearMap.smul_apply] at hx₁ hx₂ ⊢
+    rw [hx₁, hx₂]
+  · simp only [map_add, LinearMap.add_apply] at hx₁ hx₂ ⊢
+    rw [reorder0, hx₁]
+    congr
+
+lemma zero_lmul (x : ⨂[R] i, A i) : lmul 0 x = 0 := by
+  induction' x using PiTensorProduct.induction_on <;> simp
+
+lemma lmul_zero (x : ⨂[R] i, A i) : lmul x 0 = 0 := by
+  induction' x using PiTensorProduct.induction_on <;> simp
+
+lemma lmul_add (x y z : ⨂[R] i, A i) : lmul x (y + z) = lmul x y + lmul x z := by
+  induction' x using PiTensorProduct.induction_on <;> simp
+
+lemma add_lmul (x y z : ⨂[R] i, A i) : lmul (x + y) z = lmul x z + lmul y z := by
+  induction' x using PiTensorProduct.induction_on <;> simp
+
+instance mul : Mul (⨂[R] i, A i) where
+  mul x y := lmul x y
+
+lemma mul_def (x y : ⨂[R] i, A i) : x * y = lmul x y := rfl
+
+instance one : One (⨂[R] i, A i) where
+  one := tprod R 1
+
+instance monoid : Monoid (⨂[R] i, A i) where
+  __ := mul
+  __ := one
+  mul_assoc := lmul_assoc
+  one_mul := one_lmul
+  mul_one := lmul_one
+
+instance commMonoid : CommMonoid (⨂[R] i, A i) where
+  __ := monoid
+  mul_comm := lmul_comm
+
+instance ring : Ring (⨂[R] i, A i) where
+  __ := commMonoid
+  __ := inferInstanceAs <| AddCommGroup (⨂[R] i, A i)
+  left_distrib := lmul_add
+  right_distrib := add_lmul
+  zero_mul := zero_lmul
+  mul_zero := lmul_zero
+
+instance commRing : CommRing (⨂[R] i, A i) where
+  __ := commMonoid
+  __ := ring
+
+@[simp] lemma tprod_mul_tprod (x y : (i : ι) → A i) :
+    (tprod R x) * (tprod R y) = tprod R (x * y) :=
+  lmul_tprod_tprod x y
+
+variable [DecidableEq ι]
+
+variable (R A)
+
+@[simps]
+def fromComponentLinear (i : ι) : A i →ₗ[R] ⨂[R] i, A i where
+  toFun a := tprod R (Function.update 1 i a)
+  map_add' _ _ := MultilinearMap.map_add _ _ _ _ _
+  map_smul' _ _ := MultilinearMap.map_smul _ _ _ _ _
+
+@[simps]
+def fromComponentRingHom (i : ι) : A i →+* ⨂[R] i, A i where
+  __ := fromComponentLinear R A i
+  map_one' := by aesop
+  map_mul' a b := by
+    simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, fromComponentLinear_apply,
+      tprod_mul_tprod]
+    congr
+    ext
+    simp only [update, Pi.one_apply, Pi.mul_apply]
+    aesop
+  map_zero' := by simp
+
+end algebra
 
 end PiTensorProduct
 
