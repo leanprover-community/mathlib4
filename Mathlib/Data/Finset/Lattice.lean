@@ -921,6 +921,7 @@ theorem _root_.map_finset_sup' [SemilatticeSup β] [SupHomClass F α β] (f : F)
   comp_sup'_eq_sup'_comp hs _ (map_sup f)
 #align map_finset_sup' map_finset_sup'
 
+/-- To rewrite from right to left, use `Finset.sup'_comp_eq_image`. -/
 @[simp]
 theorem sup'_image [DecidableEq β] {s : Finset γ} {f : γ → β} (hs : (s.image f).Nonempty)
     (g : β → α) :
@@ -934,6 +935,7 @@ lemma sup'_comp_eq_image [DecidableEq β] {s : Finset γ} {f : γ → β} (hs : 
     s.sup' hs (g ∘ f) = (s.image f).sup' (hs.image f) g :=
   .symm <| sup'_image _ _
 
+/-- To rewrite from right to left, use `Finset.sup'_comp_eq_map`. -/
 @[simp]
 theorem sup'_map {s : Finset γ} {f : γ ↪ β} (g : β → α) (hs : (s.map f).Nonempty) :
     (s.map f).sup' hs g = s.sup' (map_nonempty.1 hs) (g ∘ f) := by
@@ -1084,6 +1086,7 @@ theorem _root_.map_finset_inf' [SemilatticeInf β] [InfHomClass F α β] (f : F)
   refine' hs.cons_induction _ _ <;> intros <;> simp [*]
 #align map_finset_inf' map_finset_inf'
 
+/-- To rewrite from right to left, use `Finset.inf'_comp_eq_image`. -/
 @[simp]
 theorem inf'_image [DecidableEq β] {s : Finset γ} {f : γ → β} (hs : (s.image f).Nonempty)
     (g : β → α)  :
@@ -1097,6 +1100,7 @@ lemma inf'_comp_eq_image [DecidableEq β] {s : Finset γ} {f : γ → β} (hs : 
     s.inf' hs (g ∘ f) = (s.image f).inf' (hs.image f) g :=
   sup'_comp_eq_image (α := αᵒᵈ) hs g
 
+/-- To rewrite from right to left, use `Finset.inf'_comp_eq_map`. -/
 @[simp]
 theorem inf'_map {s : Finset γ} {f : γ ↪ β} (g : β → α) (hs : (s.map f).Nonempty) :
     (s.map f).inf' hs g = s.inf' (map_nonempty.1 hs) (g ∘ f) :=
@@ -1649,6 +1653,7 @@ theorem min'_lt_of_mem_erase_min' [DecidableEq α] {a : α} (ha : a ∈ s.erase 
   @lt_max'_of_mem_erase_max' αᵒᵈ _ s H _ a ha
 #align finset.min'_lt_of_mem_erase_min' Finset.min'_lt_of_mem_erase_min'
 
+/-- To rewrite from right to left, use `Monotone.map_finset_max'`. -/
 @[simp]
 theorem max'_image [LinearOrder β] {f : α → β} (hf : Monotone f) (s : Finset α)
     (h : (s.image f).Nonempty) : (s.image f).max' h = f (s.max' h.of_image) := by
@@ -1656,12 +1661,25 @@ theorem max'_image [LinearOrder β] {f : α → β} (hf : Monotone f) (s : Finse
   exact .symm <| comp_sup'_eq_sup'_comp _ _ fun _ _ ↦ hf.map_max
 #align finset.max'_image Finset.max'_image
 
+/-- A version of `Finset.max'_image` with LHS and RHS reversed.
+Also, this version assumes that `s` is nonempty, not its image. -/
+lemma _root_.Monotone.map_finset_max' [LinearOrder β] {f : α → β} (hf : Monotone f) {s : Finset α}
+    (h : s.Nonempty) : f (s.max' h) = (s.image f).max' (h.image f) :=
+  .symm <| max'_image hf ..
+
+/-- To rewrite from right to left, use `Monotone.map_finset_min'`. -/
 @[simp]
 theorem min'_image [LinearOrder β] {f : α → β} (hf : Monotone f) (s : Finset α)
     (h : (s.image f).Nonempty) : (s.image f).min' h = f (s.min' h.of_image) := by
   simp only [min', inf'_image]
   exact .symm <| comp_inf'_eq_inf'_comp _ _ fun _ _ ↦ hf.map_min
 #align finset.min'_image Finset.min'_image
+
+/-- A version of `Finset.min'_image` with LHS and RHS reversed.
+Also, this version assumes that `s` is nonempty, not its image. -/
+lemma _root_.Monotone.map_finset_min' [LinearOrder β] {f : α → β} (hf : Monotone f) {s : Finset α}
+    (h : s.Nonempty) : f (s.min' h) = (s.image f).min' (h.image f) :=
+  .symm <| min'_image hf ..
 
 theorem coe_max' {s : Finset α} (hs : s.Nonempty) : ↑(s.max' hs) = s.max :=
   coe_sup' hs id
