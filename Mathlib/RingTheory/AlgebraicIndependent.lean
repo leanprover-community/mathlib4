@@ -31,7 +31,7 @@ This file defines algebraic independence of a family of element of an `R` algebr
 * [Stacks: Transcendence](https://stacks.math.columbia.edu/tag/030D)
 
 ## TODO
-Define the transcendence degree and show it is independent of the choice of an
+Define the transcendence degree and show it is independent of the choice of a
 trascendence basis.
 
 ## Tags
