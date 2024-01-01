@@ -183,7 +183,7 @@ derivative of `p m` for `m < n`, and is continuous for `m ≤ n`. This is a pred
 `HasFDerivWithinAt` but for higher order derivatives.
 
 Notice that `p` does not sum up to `f` on the diagonal (`FormalMultilinearSeries.sum`), even if
-`f` is analytic and `n = ∞`: an addition `1/m!` factor on the `m`th term is necessary for that. -/
+`f` is analytic and `n = ∞`: an additional `1/m!` factor on the `m`th term is necessary for that. -/
 structure HasFTaylorSeriesUpToOn (n : ℕ∞) (f : E → F) (p : E → FormalMultilinearSeries 𝕜 E F)
   (s : Set E) : Prop where
   zero_eq : ∀ x ∈ s, (p x 0).uncurry0 = f x
