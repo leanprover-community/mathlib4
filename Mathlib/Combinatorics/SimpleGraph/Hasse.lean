@@ -251,8 +251,13 @@ def Walk.toPathGraphHomAux (G : SimpleGraph α) :
       exact ⟨hom, hhom⟩
 
 /-- Given a walk get a homomrfism from a pathGraph -/
-def Walk.toPathGraphHom (G : SimpleGraph α) :
-    ∀ {u v : α} (w : G.Walk u v), pathGraph (w.length + 1) →g G :=
-  fun {u v} w => (@Walk.toPathGraphHomAux α G u v w).fst
+def Walk.toPathGraphHom (G : SimpleGraph α) {u v : α} (w : G.Walk u v) :
+    pathGraph (w.length + 1) →g G := (w.toPathGraphHomAux).1
+
+theorem Walk.toPathGraphHom_bot (G : SimpleGraph α) {u v : α} (w : G.Walk u v) :
+    (w.toPathGraphHom).toFun ⊥ = v := (w.toPathGraphHomAux).2.1
+
+theorem Walk.toPathGraphHom_top (G : SimpleGraph α) {u v : α} (w : G.Walk u v) :
+    (w.toPathGraphHom).toFun ⊤ = u := (w.toPathGraphHomAux).2.2
 
 end SimpleGraph
