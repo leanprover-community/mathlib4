@@ -1172,7 +1172,7 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
     have A : IsCompact ({q₀.1} ×ˢ k) := isCompact_singleton.prod hk
     obtain ⟨t, kt, t_open, ht⟩ : ∃ t, {q₀.1} ×ˢ k ⊆ t ∧ IsOpen t ∧ IsBounded (g' '' t) := by
       have B : ContinuousOn g' (s ×ˢ univ) :=
-        hg.continuousOn_fderiv_of_open (hs.prod isOpen_univ) le_rfl
+        hg.continuousOn_fderiv_of_isOpen (hs.prod isOpen_univ) le_rfl
       apply exists_isOpen_isBounded_image_of_isCompact_of_continuousOn A (hs.prod isOpen_univ) _ B
       simp only [prod_subset_prod_iff, hq₀, singleton_subset_iff, subset_univ, and_self_iff,
         true_or_iff]
@@ -1220,7 +1220,7 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
       HasCompactSupport.intro hk fun x hx => g'_zero q₀.1 x hq₀ hx
     apply (HasCompactSupport.convolutionExists_right (L.precompR (P × G) : _) T hf _ q₀.2).1
     have : ContinuousOn g' (s ×ˢ univ) :=
-      hg.continuousOn_fderiv_of_open (hs.prod isOpen_univ) le_rfl
+      hg.continuousOn_fderiv_of_isOpen (hs.prod isOpen_univ) le_rfl
     apply this.comp_continuous (continuous_const.prod_mk continuous_id')
     intro x
     simpa only [prod_mk_mem_set_prod_eq, mem_univ, and_true_iff] using hq₀
@@ -1310,7 +1310,7 @@ theorem contDiffOn_convolution_right_with_param_aux {G : Type uP} {E' : Type uP}
     have A : ∀ q₀ : P × G, q₀.1 ∈ s →
         HasFDerivAt (fun q : P × G => (f ⋆[L, μ] g q.1) q.2) (f' q₀.1 q₀.2) q₀ :=
       hasFDerivAt_convolution_right_with_param L hs hk hgs hf hg.one_of_succ
-    rw [contDiffOn_succ_iff_fderiv_of_open (hs.prod (@isOpen_univ G _))] at hg ⊢
+    rw [contDiffOn_succ_iff_fderiv_of_isOpen (hs.prod (@isOpen_univ G _))] at hg ⊢
     constructor
     · rintro ⟨p, x⟩ ⟨hp, -⟩
       exact (A (p, x) hp).differentiableAt.differentiableWithinAt

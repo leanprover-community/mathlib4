@@ -101,7 +101,7 @@ theorem exists_convex_convex_compl_subset (hs : Convex 𝕜 s) (ht : Convex 𝕜
         (hC.2.symm.mono (ht.segment_subset hut hvt) <| convexHull_min _ hC.1)
     simpa [insert_subset_iff, hp, hq, singleton_subset_iff.2 hzC]
   rintro c hc
-  by_contra' h
+  by_contra! h
   suffices h : Disjoint (convexHull 𝕜 (insert c C)) t
   · rw [←
       hCmax _ ⟨convex_convexHull _ _, h⟩ ((subset_insert _ _).trans <| subset_convexHull _ _)] at hc

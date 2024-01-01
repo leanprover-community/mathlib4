@@ -124,19 +124,19 @@ variable [Preorder α] [Preorder β] {f : α → β} {s : Set α}
 instance [i : Decidable (∀ a b, a ≤ b → f a ≤ f b)] : Decidable (Monotone f) := i
 instance [i : Decidable (∀ a b, a ≤ b → f b ≤ f a)] : Decidable (Antitone f) := i
 
-instance [i : Decidable (∀ (a) (_ : a ∈ s) (b) (_ : b ∈ s), a ≤ b → f a ≤ f b)] :
+instance [i : Decidable (∀ a ∈ s, ∀ b ∈ s, a ≤ b → f a ≤ f b)] :
     Decidable (MonotoneOn f s) := i
 
-instance [i : Decidable (∀ (a) (_ : a ∈ s) (b) (_ : b ∈ s), a ≤ b → f b ≤ f a)] :
+instance [i : Decidable (∀ a ∈ s, ∀ b ∈ s, a ≤ b → f b ≤ f a)] :
     Decidable (AntitoneOn f s) := i
 
 instance [i : Decidable (∀ a b, a < b → f a < f b)] : Decidable (StrictMono f) := i
 instance [i : Decidable (∀ a b, a < b → f b < f a)] : Decidable (StrictAnti f) := i
 
-instance [i : Decidable (∀ (a) (_ : a ∈ s) (b) (_ : b ∈ s), a < b → f a < f b)] :
+instance [i : Decidable (∀ a ∈ s, ∀ b ∈ s, a < b → f a < f b)] :
     Decidable (StrictMonoOn f s) := i
 
-instance [i : Decidable (∀ (a) (_ : a ∈ s) (b) (_ : b ∈ s), a < b → f b < f a)] :
+instance [i : Decidable (∀ a ∈ s, ∀ b ∈ s, a < b → f b < f a)] :
     Decidable (StrictAntiOn f s) := i
 
 end Decidable
@@ -959,7 +959,7 @@ downright. -/
 lemma not_monotone_not_antitone_iff_exists_lt_lt :
     ¬ Monotone f ∧ ¬ Antitone f ↔ ∃ a b c, a < b ∧ b < c ∧
     (f a < f b ∧ f c < f b ∨ f b < f a ∧ f b < f c) := by
-  simp_rw [not_monotone_not_antitone_iff_exists_le_le, ←and_assoc]
+  simp_rw [not_monotone_not_antitone_iff_exists_le_le, ← and_assoc]
   refine' exists₃_congr (fun a b c ↦ and_congr_left $
     fun h ↦ (Ne.le_iff_lt _).and $ Ne.le_iff_lt _) <;>
   (rintro rfl; simp at h)

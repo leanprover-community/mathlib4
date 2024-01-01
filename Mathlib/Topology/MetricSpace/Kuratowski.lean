@@ -93,7 +93,7 @@ theorem embeddingOfSubset_isometry (H : DenseRange x) : Isometry (embeddingOfSub
 /-- Every separable metric space embeds isometrically in `ℓ^∞(ℕ)`. -/
 theorem exists_isometric_embedding (α : Type u) [MetricSpace α] [SeparableSpace α] :
     ∃ f : α → ℓ^∞(ℕ), Isometry f := by
-  cases' (univ : Set α).eq_empty_or_nonempty with h h
+  rcases (univ : Set α).eq_empty_or_nonempty with h | h
   · use fun _ => 0; intro x; exact absurd h (Nonempty.ne_empty ⟨x, mem_univ x⟩)
   · -- We construct a map x : ℕ → α with dense image
     rcases h with ⟨basepoint⟩
@@ -155,7 +155,7 @@ theorem LipschitzOnWith.extend_lp_infty [PseudoMetricSpace α] {s : Set α} {f :
     · apply LipschitzWith.uniformly_bounded (swap g) hgl a₀
       use ‖f a₀‖
       rintro - ⟨i, rfl⟩
-      simp_rw [←hgeq i ha₀_in_s]
+      simp_rw [← hgeq i ha₀_in_s]
       exact lp.norm_apply_le_norm top_ne_zero (f a₀) i
     -- Construct witness by bundling the function with its certificate of membership in ℓ^∞
     let f_ext' : α → ℓ^∞(ι) := fun i ↦ ⟨swap g i, hf_extb i⟩

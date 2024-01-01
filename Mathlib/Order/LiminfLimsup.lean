@@ -459,6 +459,12 @@ theorem bliminf_eq : bliminf u f p = sSup { a | ∀ᶠ x in f, p x → a ≤ u x
   rfl
 #align filter.bliminf_eq Filter.bliminf_eq
 
+lemma liminf_comp (u : β → α) (v : γ → β) (f : Filter γ) :
+    liminf (u ∘ v) f = liminf u (map v f) := rfl
+
+lemma limsup_comp (u : β → α) (v : γ → β) (f : Filter γ) :
+    limsup (u ∘ v) f = limsup u (map v f) := rfl
+
 end
 
 @[simp]
@@ -817,7 +823,7 @@ theorem blimsup_congr' {f : Filter β} {p q : β → Prop} {u : β → α}
   simp only [blimsup_eq]
   congr with a
   refine' eventually_congr (h.mono fun b hb => _)
-  cases' eq_or_ne (u b) ⊥ with hu hu; · simp [hu]
+  rcases eq_or_ne (u b) ⊥ with hu | hu; · simp [hu]
   rw [hb hu]
 #align filter.blimsup_congr' Filter.blimsup_congr'
 
@@ -915,7 +921,7 @@ theorem CompleteLatticeHom.apply_limsup_iterate (f : CompleteLatticeHom α α) (
   rw [limsup_eq_iInf_iSup_of_nat', map_iInf]
   simp_rw [_root_.map_iSup, ← Function.comp_apply (f := f), ← Function.iterate_succ' f,
     ← Nat.add_succ]
-  conv_rhs => rw [iInf_split _ ((· < ·) (0 : ℕ))]
+  conv_rhs => rw [iInf_split _ (0 < ·)]
   simp only [not_lt, le_zero_iff, iInf_iInf_eq_left, add_zero, iInf_nat_gt_zero_eq, left_eq_inf]
   refine' (iInf_le (fun i => ⨆ j, f^[j + (i + 1)] a) 0).trans _
   simp only [zero_add, Function.comp_apply, iSup_le_iff]
@@ -1164,7 +1170,7 @@ lemma mem_liminf_iff_eventually_mem : (a ∈ liminf s 𝓕) ↔ (∀ᶠ i in �
     using ⟨fun ⟨S, hS, hS'⟩ ↦ mem_of_superset hS (by tauto), fun h ↦ ⟨{i | a ∈ s i}, h, by tauto⟩⟩
 
 lemma mem_limsup_iff_frequently_mem : (a ∈ limsup s 𝓕) ↔ (∃ᶠ i in 𝓕, a ∈ s i) := by
-  simp only [Filter.Frequently, iff_not_comm, ←mem_compl_iff, limsup_compl, comp_apply,
+  simp only [Filter.Frequently, iff_not_comm, ← mem_compl_iff, limsup_compl, comp_apply,
     mem_liminf_iff_eventually_mem]
 
 theorem cofinite.blimsup_set_eq :

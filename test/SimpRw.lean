@@ -5,6 +5,9 @@ Authors: Anne Baanen, Mario Carneiro
 -/
 
 import Mathlib.Tactic.SimpRw
+import Std.Tactic.GuardExpr
+
+private axiom test_sorry : ∀ {α}, α
 
 -- `simp_rw` can perform rewrites under binders:
 example : (λ (x y : Nat) => x + y) = (λ x y => y + x) := by simp_rw [Nat.add_comm]
@@ -31,3 +34,11 @@ example {a : Nat}
   (h2 : ∀ a b : Nat, a ≤ b ↔ ∀ c, c < a → c < b) :
   (∀ b, a - 1 ≤ b) = ∀ b c : Nat, c < a → c < b + 1 :=
 by simp_rw [h1, h2]
+
+-- `simp_rw` respects config options
+example : 1 = 2 := by
+  let a := 2
+  show 1 = a
+  simp_rw (config := {zeta := false}) []
+  guard_target =ₛ 1 = a
+  exact test_sorry

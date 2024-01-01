@@ -220,16 +220,16 @@ theorem op_div [DivInvMonoid α] (x y : α) : op (x / y) = (op y)⁻¹ * op x :=
 theorem semiconjBy_op [Mul α] {a x y : α} : SemiconjBy (op a) (op y) (op x) ↔ SemiconjBy a x y :=
   by simp only [SemiconjBy, ← op_mul, op_inj, eq_comm]
 #align mul_opposite.semiconj_by_op MulOpposite.semiconjBy_op
-#align add_opposite.semiconj_by_op AddOpposite.semiconjBy_op
+#align add_opposite.semiconj_by_op AddOpposite.addSemiconjBy_op
 
 @[to_additive (attr := simp, nolint simpComm)]
 theorem semiconjBy_unop [Mul α] {a x y : αᵐᵒᵖ} :
     SemiconjBy (unop a) (unop y) (unop x) ↔ SemiconjBy a x y := by
   conv_rhs => rw [← op_unop a, ← op_unop x, ← op_unop y, semiconjBy_op]
 #align mul_opposite.semiconj_by_unop MulOpposite.semiconjBy_unop
-#align add_opposite.semiconj_by_unop AddOpposite.semiconjBy_unop
+#align add_opposite.semiconj_by_unop AddOpposite.addSemiconjBy_unop
 
-attribute [nolint simpComm] AddOpposite.semiconjBy_unop
+attribute [nolint simpComm] AddOpposite.addSemiconjBy_unop
 
 @[to_additive]
 theorem _root_.SemiconjBy.op [Mul α] {a x y : α} (h : SemiconjBy a x y) :
@@ -252,24 +252,25 @@ theorem _root_.Commute.op [Mul α] {x y : α} (h : Commute x y) : Commute (op x)
 #align add_commute.op AddCommute.op
 
 @[to_additive]
-theorem Commute.unop [Mul α] {x y : αᵐᵒᵖ} (h : Commute x y) : Commute (unop x) (unop y) :=
+nonrec theorem _root_.Commute.unop [Mul α] {x y : αᵐᵒᵖ} (h : Commute x y) :
+    Commute (unop x) (unop y) :=
   h.unop
-#align mul_opposite.commute.unop MulOpposite.Commute.unop
-#align add_opposite.commute.unop AddOpposite.Commute.unop
+#align mul_opposite.commute.unop Commute.unop
+#align add_opposite.commute.unop AddCommute.unop
 
 @[to_additive (attr := simp)]
 theorem commute_op [Mul α] {x y : α} : Commute (op x) (op y) ↔ Commute x y :=
   semiconjBy_op
 #align mul_opposite.commute_op MulOpposite.commute_op
-#align add_opposite.commute_op AddOpposite.commute_op
+#align add_opposite.commute_op AddOpposite.addCommute_op
 
 @[to_additive (attr := simp, nolint simpComm)]
 theorem commute_unop [Mul α] {x y : αᵐᵒᵖ} : Commute (unop x) (unop y) ↔ Commute x y :=
   semiconjBy_unop
 #align mul_opposite.commute_unop MulOpposite.commute_unop
-#align add_opposite.commute_unop AddOpposite.commute_unop
+#align add_opposite.commute_unop AddOpposite.addCommute_unop
 
-attribute [nolint simpComm] AddOpposite.commute_unop
+attribute [nolint simpComm] AddOpposite.addCommute_unop
 
 /-- The function `MulOpposite.op` is an additive equivalence. -/
 @[simps! (config := { fullyApplied := false, simpRhs := true }) apply symm_apply]
