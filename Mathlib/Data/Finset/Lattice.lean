@@ -249,7 +249,7 @@ theorem sup_induction {p : α → Prop} (hb : p ⊥) (hp : ∀ a₁, p a₁ → 
 
 theorem sup_le_of_le_directed {α : Type*} [SemilatticeSup α] [OrderBot α] (s : Set α)
     (hs : s.Nonempty) (hdir : DirectedOn (· ≤ ·) s) (t : Finset α) :
-    (∀ x ∈ t, ∃ y ∈ s, x ≤ y) → ∃ x, x ∈ s ∧ t.sup id ≤ x := by
+    (∀ x ∈ t, ∃ y ∈ s, x ≤ y) → ∃ x ∈ s, t.sup id ≤ x := by
   classical
     induction' t using Finset.induction_on with a r _ ih h
     · simpa only [forall_prop_of_true, and_true_iff, forall_prop_of_false, bot_le, not_false_iff,
@@ -884,24 +884,6 @@ lemma sup'_prodMap (hst : (s ×ˢ t).Nonempty) (f : ι → α) (g : κ → β) :
 
 end Prod
 
-theorem comp_sup'_eq_sup'_comp [SemilatticeSup γ] {s : Finset β} (H : s.Nonempty) {f : β → α}
-    (g : α → γ) (g_sup : ∀ x y, g (x ⊔ y) = g x ⊔ g y) : g (s.sup' H f) = s.sup' H (g ∘ f) := by
-  rw [← WithBot.coe_eq_coe, coe_sup']
-  let g' := WithBot.map g
-  show g' ↑(s.sup' H f) = s.sup fun a => g' ↑(f a)
-  rw [coe_sup']
-  refine' comp_sup_eq_sup_comp g' _ rfl
-  intro f₁ f₂
-  cases f₁ using WithBot.recBotCoe with
-  | bot =>
-    rw [bot_sup_eq]
-    exact bot_sup_eq.symm
-  | coe f₁ =>
-    cases f₂ using WithBot.recBotCoe with
-    | bot => rfl
-    | coe f₂ => exact congr_arg _ (g_sup f₁ f₂)
-#align finset.comp_sup'_eq_sup'_comp Finset.comp_sup'_eq_sup'_comp
-
 theorem sup'_induction {p : α → Prop} (hp : ∀ a₁, p a₁ → ∀ a₂, p a₂ → p (a₁ ⊔ a₂))
     (hs : ∀ b ∈ s, p (f b)) : p (s.sup' H f) := by
   show @WithBot.recBotCoe α (fun _ => Prop) True p ↑(s.sup' H f)
@@ -928,10 +910,15 @@ theorem sup'_congr {t : Finset β} {f g : β → α} (h₁ : s = t) (h₂ : ∀ 
   simp (config := { contextual := true }) only [sup'_le_iff, h₂]
 #align finset.sup'_congr Finset.sup'_congr
 
+theorem comp_sup'_eq_sup'_comp [SemilatticeSup γ] {s : Finset β} (H : s.Nonempty) {f : β → α}
+    (g : α → γ) (g_sup : ∀ x y, g (x ⊔ y) = g x ⊔ g y) : g (s.sup' H f) = s.sup' H (g ∘ f) := by
+  refine' H.cons_induction _ _ <;> intros <;> simp [*]
+#align finset.comp_sup'_eq_sup'_comp Finset.comp_sup'_eq_sup'_comp
+
 @[simp]
 theorem _root_.map_finset_sup' [SemilatticeSup β] [SupHomClass F α β] (f : F) {s : Finset ι} (hs)
-    (g : ι → α) : f (s.sup' hs g) = s.sup' hs (f ∘ g) := by
-  refine' hs.cons_induction _ _ <;> intros <;> simp [*]
+    (g : ι → α) : f (s.sup' hs g) = s.sup' hs (f ∘ g) :=
+  comp_sup'_eq_sup'_comp hs _ (map_sup f)
 #align map_finset_sup' map_finset_sup'
 
 @[simp]
@@ -941,12 +928,24 @@ theorem sup'_image [DecidableEq β] {s : Finset γ} {f : γ → β} (hs : (s.ima
   rw [← WithBot.coe_eq_coe]; simp only [coe_sup', sup_image, WithBot.coe_sup]; rfl
 #align finset.sup'_image Finset.sup'_image
 
+/-- A version of `Finset.sup'_image` with LHS and RHS reversed.
+Also, this lemma assumes that `s` is nonempty instead of assuming that its image is nonempty. -/
+lemma sup'_comp_eq_image [DecidableEq β] {s : Finset γ} {f : γ → β} (hs : s.Nonempty) (g : β → α) :
+    s.sup' hs (g ∘ f) = (s.image f).sup' (hs.image f) g :=
+  .symm <| sup'_image _ _
+
 @[simp]
-theorem sup'_map {s : Finset γ} {f : γ ↪ β} (g : β → α) (hs : (s.map f).Nonempty)
-    (hs' : s.Nonempty := Finset.map_nonempty.mp hs) : (s.map f).sup' hs g = s.sup' hs' (g ∘ f) := by
+theorem sup'_map {s : Finset γ} {f : γ ↪ β} (g : β → α) (hs : (s.map f).Nonempty) :
+    (s.map f).sup' hs g = s.sup' (map_nonempty.1 hs) (g ∘ f) := by
   rw [← WithBot.coe_eq_coe, coe_sup', sup_map, coe_sup']
   rfl
 #align finset.sup'_map Finset.sup'_map
+
+/-- A version of `Finset.sup'_map` with LHS and RHS reversed.
+Also, this lemma assumes that `s` is nonempty instead of assuming that its image is nonempty. -/
+lemma sup'_comp_eq_map {s : Finset γ} {f : γ ↪ β} (g : β → α) (hs : s.Nonempty) :
+    s.sup' hs (g ∘ f) = (s.map f).sup' (map_nonempty.2 hs) g :=
+  .symm <| sup'_map _ _
 
 theorem sup'_mono {s₁ s₂ : Finset β} (h : s₁ ⊆ s₂) (h₁ : s₁.Nonempty):
     s₁.sup' h₁ f ≤ s₂.sup' (h₁.mono h) f :=
@@ -1092,11 +1091,23 @@ theorem inf'_image [DecidableEq β] {s : Finset γ} {f : γ → β} (hs : (s.ima
   @sup'_image αᵒᵈ _ _ _ _ _ _ hs _
 #align finset.inf'_image Finset.inf'_image
 
+/-- A version of `Finset.inf'_image` with LHS and RHS reversed.
+Also, this lemma assumes that `s` is nonempty instead of assuming that its image is nonempty. -/
+lemma inf'_comp_eq_image [DecidableEq β] {s : Finset γ} {f : γ → β} (hs : s.Nonempty) (g : β → α) :
+    s.inf' hs (g ∘ f) = (s.image f).inf' (hs.image f) g :=
+  sup'_comp_eq_image (α := αᵒᵈ) hs g
+
 @[simp]
-theorem inf'_map {s : Finset γ} {f : γ ↪ β} (g : β → α) (hs : (s.map f).Nonempty)
-    (hs' : s.Nonempty := Finset.map_nonempty.mp hs) : (s.map f).inf' hs g = s.inf' hs' (g ∘ f) :=
-  sup'_map (α := αᵒᵈ) _ hs hs'
+theorem inf'_map {s : Finset γ} {f : γ ↪ β} (g : β → α) (hs : (s.map f).Nonempty) :
+    (s.map f).inf' hs g = s.inf' (map_nonempty.1 hs) (g ∘ f) :=
+  sup'_map (α := αᵒᵈ) _ hs
 #align finset.inf'_map Finset.inf'_map
+
+/-- A version of `Finset.inf'_map` with LHS and RHS reversed.
+Also, this lemma assumes that `s` is nonempty instead of assuming that its image is nonempty. -/
+lemma inf'_comp_eq_map {s : Finset γ} {f : γ ↪ β} (g : β → α) (hs : s.Nonempty) :
+    s.inf' hs (g ∘ f) = (s.map f).inf' (map_nonempty.2 hs) g :=
+  sup'_comp_eq_map (α := αᵒᵈ) g hs
 
 theorem inf'_mono {s₁ s₂ : Finset β} (h : s₁ ⊆ s₂) (h₁ : s₁.Nonempty) :
     s₂.inf' (h₁.mono h) f ≤ s₁.inf' h₁ f :=
@@ -1641,19 +1652,15 @@ theorem min'_lt_of_mem_erase_min' [DecidableEq α] {a : α} (ha : a ∈ s.erase 
 @[simp]
 theorem max'_image [LinearOrder β] {f : α → β} (hf : Monotone f) (s : Finset α)
     (h : (s.image f).Nonempty) : (s.image f).max' h = f (s.max' h.of_image) := by
-  refine'
-    le_antisymm (max'_le _ _ _ fun y hy => _) (le_max' _ _ (mem_image.mpr ⟨_, max'_mem _ _, rfl⟩))
-  obtain ⟨x, hx, rfl⟩ := mem_image.mp hy
-  exact hf (le_max' _ _ hx)
+  simp only [max', sup'_image]
+  exact .symm <| comp_sup'_eq_sup'_comp _ _ fun _ _ ↦ hf.map_max
 #align finset.max'_image Finset.max'_image
 
 @[simp]
 theorem min'_image [LinearOrder β] {f : α → β} (hf : Monotone f) (s : Finset α)
     (h : (s.image f).Nonempty) : (s.image f).min' h = f (s.min' h.of_image) := by
-  refine'
-    le_antisymm (min'_le _ _ (mem_image.mpr ⟨_, min'_mem _ _, rfl⟩)) (le_min' _ _ _ fun y hy => _)
-  obtain ⟨x, hx, rfl⟩ := mem_image.mp hy
-  exact hf (min'_le _ _ hx)
+  simp only [min', inf'_image]
+  exact .symm <| comp_inf'_eq_inf'_comp _ _ fun _ _ ↦ hf.map_min
 #align finset.min'_image Finset.min'_image
 
 theorem coe_max' {s : Finset α} (hs : s.Nonempty) : ↑(s.max' hs) = s.max :=
@@ -1896,23 +1903,7 @@ theorem count_finset_sup [DecidableEq β] (s : Finset α) (f : α → Multiset �
 
 theorem mem_sup {α β} [DecidableEq β] {s : Finset α} {f : α → Multiset β} {x : β} :
     x ∈ s.sup f ↔ ∃ v ∈ s, x ∈ f v := by
-  classical
-    induction' s using Finset.induction_on with a s has hxs
-    · simp
-    · rw [Finset.sup_insert, Multiset.sup_eq_union, Multiset.mem_union]
-      constructor
-      · intro hxi
-        cases' hxi with hf hf
-        · refine' ⟨a, _, hf⟩
-          simp only [true_or_iff, eq_self_iff_true, Finset.mem_insert]
-        · rcases hxs.mp hf with ⟨v, hv, hfv⟩
-          refine' ⟨v, _, hfv⟩
-          simp only [hv, or_true_iff, Finset.mem_insert]
-      · rintro ⟨v, hv, hfv⟩
-        rw [Finset.mem_insert] at hv
-        rcases hv with (rfl | hv)
-        · exact Or.inl hfv
-        · refine' Or.inr (hxs.mpr ⟨v, hv, hfv⟩)
+  induction s using Finset.cons_induction <;> simp [*]
 #align multiset.mem_sup Multiset.mem_sup
 
 end Multiset
