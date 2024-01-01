@@ -186,18 +186,21 @@ instance separableClosure.isGalois [Normal F E] : IsGalois F (separableClosure F
     rw [← separableClosure.normalClosure_eq_self]
     exact normalClosure.normal F _ E
 
+/-- If `E / F` is a field extension, `E` is separably closed, then the (relative) separable closure
+of `E / F` is equal to `F` if and only if `F` is separably closed. -/
+theorem IsSepClosed.separableClosure_eq_bot_iff [IsSepClosed E] :
+    separableClosure F E = ⊥ ↔ IsSepClosed F := by
+  refine ⟨fun h ↦ IsSepClosed.of_exists_root _ fun p _ hirr hsep ↦ ?_,
+    fun _ ↦ IntermediateField.eq_bot_of_isSepClosed_of_isSeparable _⟩
+  obtain ⟨x, hx⟩ := IsSepClosed.exists_aeval_eq_zero E p (degree_pos_of_irreducible hirr).ne' hsep
+  obtain ⟨x, rfl⟩ := h ▸ mem_separableClosure_iff.2 (hsep.of_dvd <| minpoly.dvd _ x hx)
+  exact ⟨x, by simpa [Algebra.ofId_apply] using hx⟩
+
 /-- If `E` is separably closed, then the (relative) separable closure of `E / F` is a
 separable closure of `F`. -/
-instance separableClosure.isSepClosure [IsSepClosed E] : IsSepClosure F (separableClosure F E) := by
-  refine ⟨IsSepClosed.of_exists_root _ fun p _ hirr hsep ↦ ?_, isSeparable F E⟩
-  obtain ⟨x, hx⟩ := IsSepClosed.exists_aeval_eq_zero E p (degree_pos_of_irreducible hirr).ne' hsep
-  haveI := (isSeparable_adjoin_simple_iff_separable _ E).2 <| hsep.of_dvd <| minpoly.dvd _ x hx
-  let L := separableClosure F E
-  haveI : IsSeparable F (restrictScalars F L⟮x⟯) := IsSeparable.trans F L L⟮x⟯
-  have : x ∈ restrictScalars F L⟮x⟯ := mem_adjoin_simple_self _ x
-  use ⟨x, le_separableClosure F E (restrictScalars F L⟮x⟯) this⟩
-  apply_fun algebraMap L E using (algebraMap L E).injective
-  rwa [map_zero, ← aeval_algebraMap_apply_eq_algebraMap_eval]
+instance separableClosure.isSepClosure [IsSepClosed E] : IsSepClosure F (separableClosure F E) :=
+  ⟨(IsSepClosed.separableClosure_eq_bot_iff _ E).mp (separableClosure.separableClosure_eq_bot F E),
+    isSeparable F E⟩
 
 /-- The (absolute) separable closure is defined to be the (relative) separable closure inside the
 algebraic closure. It is indeed a separable closure (`IsSepClosure`) by
