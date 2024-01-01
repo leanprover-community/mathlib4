@@ -124,14 +124,14 @@ theorem card_support_eraseLead_add_one (h : f ≠ 0) :
     rfl
 
 @[simp]
-theorem card_support_eraseLead_one : f.eraseLead.support.card = f.support.card - 1 := by
+theorem card_support_eraseLead : f.eraseLead.support.card = f.support.card - 1 := by
   by_cases hf : f = 0
   · rw [hf, eraseLead_zero, support_zero, card_empty]
   · rw [← card_support_eraseLead_add_one hf, add_tsub_cancel_right]
 
 theorem eraseLead_card_support' {c : ℕ} (fc : f.support.card = c + 1) :
     f.eraseLead.support.card = c := by
-  rw [card_support_eraseLead_one, fc, add_tsub_cancel_right]
+  rw [card_support_eraseLead, fc, add_tsub_cancel_right]
 #align polynomial.erase_lead_card_support' Polynomial.eraseLead_card_support'
 
 theorem card_support_eq_one_of_eraseLead_zero (h₀ : f ≠ 0) (h₁ : f.eraseLead = 0) :
