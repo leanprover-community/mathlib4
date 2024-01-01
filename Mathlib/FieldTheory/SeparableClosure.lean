@@ -18,6 +18,9 @@ This file contains basics about the (relative) separable closure of a field exte
   subextension of `E / F`, is defined to be the intermediate field of `E / F` consisting of all
   separable elements.
 
+- `SeparableClosure`: the (absolute) separable closure, defined to be the (relative) separable
+  closure inside the algebraic closure.
+
 - `Field.sepDegree F E`: the (infinite) separable degree $[E:F]_s$ of an algebraic extension
   `E / F` of fields, defined to be the degree of `separableClosure F E / F`. Later we will show
   that (`Field.finSepDegree_eq`, not in this file), if `Field.Emb F E` is finite, then this
@@ -38,7 +41,8 @@ This file contains basics about the (relative) separable closure of a field exte
 - `separableClosure.normalClosure_eq_self`: the normal closure of the (relative) separable
   closure of `E / F` is equal to itself.
 
-- `separableClosure.normal`: the (relative) separable closure of a normal extension is normal.
+- `separableClosure.isGalois`: the (relative) separable closure of a normal extension is Galois
+  (namely, normal and separable).
 
 - `separableClosure.isSepClosure`: the (relative) separable closure of a separably closed extension
   is a separable closure of the base field.
@@ -74,12 +78,14 @@ of `E / F`, is defined to be the intermediate field of `E / F` consisting of all
 elements. The previous results prove that these elements are closed under field operations. -/
 def separableClosure : IntermediateField F E where
   carrier := {x | (minpoly F x).Separable}
-  mul_mem' := separable_mul F E
-  one_mem' := (map_one (algebraMap F E)) ▸ separable_algebraMap F E 1
-  add_mem' := separable_add F E
-  zero_mem' := (map_zero (algebraMap F E)) ▸ separable_algebraMap F E 0
-  algebraMap_mem' := separable_algebraMap F E
-  inv_mem' := separable_inv F E
+  mul_mem' := separable_mul
+  one_mem' := map_one (algebraMap F E) ▸ separable_algebraMap E 1
+  add_mem' := separable_add
+  zero_mem' := map_zero (algebraMap F E) ▸ separable_algebraMap E 0
+  algebraMap_mem' := separable_algebraMap E
+  inv_mem' := separable_inv
+
+variable {F E K}
 
 /-- An element is contained in the (relative) separable closure of `E / F` if and only if
 it is a separable element. -/
@@ -97,45 +103,43 @@ the preimage of `separableClosure F K` under the map `i`. -/
 theorem separableClosure.eq_comap_of_algHom (i : E →ₐ[F] K) :
     separableClosure F E = (separableClosure F K).comap i := by
   ext x
-  exact (map_mem_separableClosure_iff F E K i).symm
+  exact (map_mem_separableClosure_iff i).symm
 
 /-- If `i` is an `F`-algebra homomorphism from `E` to `K`, then `separableClosure F K` contains
 the image of `separableClosure F E` under the map `i`. -/
 theorem separableClosure.map_le_of_algHom (i : E →ₐ[F] K) :
-    (separableClosure F E).map i ≤ separableClosure F K := fun x hx ↦ by
-  change x ∈ (_ : Set K) at hx
-  rw [coe_map, Set.mem_image] at hx
-  obtain ⟨y, hy, rfl⟩ := hx
-  exact (map_mem_separableClosure_iff F E K i).2 hy
+    (separableClosure F E).map i ≤ separableClosure F K :=
+  map_le_iff_le_comap.2 (eq_comap_of_algHom i).le
 
+variable (F) in
 /-- If `K / E / F` is a field extension tower, such that `K / E` has no non-trivial separable
 subextensions (when `K / E` is algebraic, this means that it is purely inseparable),
 then `separableClosure F K` is equal to `separableClosure F E`. -/
 theorem separableClosure.eq_map_of_separableClosure_eq_bot [Algebra E K] [IsScalarTower F E K]
     (h : separableClosure E K = ⊥) :
     separableClosure F K = (separableClosure F E).map (IsScalarTower.toAlgHom F E K) := by
-  refine le_antisymm (fun x hx ↦ ?_) (map_le_of_algHom F E K _)
-  rw [mem_separableClosure_iff] at hx
-  obtain ⟨y, hy⟩ := mem_bot.1 <| h ▸ (mem_separableClosure_iff E K).2 (hx.map_minpoly E)
-  rw [← hy, minpoly.algebraMap_eq (algebraMap E K).injective, ← mem_separableClosure_iff] at hx
-  exact ⟨y, hx, hy⟩
+  refine le_antisymm (fun x hx ↦ ?_) (map_le_of_algHom _)
+  obtain ⟨y, rfl⟩ := mem_bot.1 <| h ▸ mem_separableClosure_iff.2
+    (mem_separableClosure_iff.1 hx |>.map_minpoly E)
+  exact ⟨y, (map_mem_separableClosure_iff <| IsScalarTower.toAlgHom F E K).mp hx, rfl⟩
 
 /-- If `i` is an `F`-algebra isomorphism of `E` and `K`, then `separableClosure F K` is equal to
 the image of `separableClosure F E` under the map `i`. -/
 theorem separableClosure.eq_map_of_algEquiv (i : E ≃ₐ[F] K) :
-    separableClosure F K = (separableClosure F E).map i.toAlgHom := by
-  refine le_antisymm (fun x hx ↦ ?_) (map_le_of_algHom F E K i.toAlgHom)
-  change x ∈ (_ : Set K)
-  rw [coe_map, Set.mem_image]
-  exact ⟨i.symm.toAlgHom x,
-    (map_mem_separableClosure_iff F K E i.symm.toAlgHom).2 hx, i.apply_symm_apply x⟩
+    separableClosure F K = (separableClosure F E).map i :=
+  le_antisymm (fun x h ↦ ⟨_, (map_mem_separableClosure_iff i.symm).2 h, by simp⟩)
+    (map_le_of_algHom i.toAlgHom)
 
 /-- If `E` and `K` are isomorphic as `F`-algebras, then `separableClosure F E` and
 `separableClosure F K` are also isomorphic as `F`-algebras. -/
 def separableClosure.algEquivOfAlgEquiv (i : E ≃ₐ[F] K) :
     separableClosure F E ≃ₐ[F] separableClosure F K :=
   ((separableClosure F E).intermediateFieldMap i).trans
-    (equivOfEq (eq_map_of_algEquiv F E K i).symm)
+    (equivOfEq (eq_map_of_algEquiv i).symm)
+
+alias AlgEquiv.separableClosure := separableClosure.algEquivOfAlgEquiv
+
+variable (F E K)
 
 /-- The (relative) separable closure of `E / F` is algebraic over `F`. -/
 theorem separableClosure.isAlgebraic : Algebra.IsAlgebraic F (separableClosure F E) :=
@@ -159,77 +163,73 @@ theorem le_separableClosure (L : IntermediateField F E) [IsSeparable F L] :
 if and only if it is separable over `F`. -/
 theorem le_separableClosure_iff (L : IntermediateField F E) :
     L ≤ separableClosure F E ↔ IsSeparable F L :=
-  ⟨fun h ↦ (isSeparable_def _ _).2 fun x ↦ by simpa only [minpoly_eq] using h x.2,
-    fun _ ↦ le_separableClosure _ _ _⟩
+  ⟨fun h ↦ ⟨fun x ↦ by simpa only [minpoly_eq] using h x.2⟩, fun _ ↦ le_separableClosure _ _ _⟩
 
 /-- The (relative) separable closure of the (relative) separable closure of `E / F` is equal to
 itself. -/
 theorem separableClosure.separableClosure_eq_bot :
-    separableClosure (separableClosure F E) E = ⊥ := bot_unique fun x hx ↦ by
-  rw [mem_separableClosure_iff, ← isSeparable_adjoin_simple_iff_separable] at hx
-  set L := separableClosure F E
-  haveI : IsSeparable F (L⟮x⟯.restrictScalars F) := IsSeparable.trans F L L⟮x⟯
-  exact mem_bot.2 ⟨⟨x, (mem_separableClosure_iff F E).2 (separable_of_mem_isSeparable F E <|
-    show x ∈ L⟮x⟯.restrictScalars F from mem_adjoin_simple_self L x)⟩, rfl⟩
+    separableClosure (separableClosure F E) E = ⊥ := bot_unique fun x hx ↦
+  mem_bot.2 ⟨⟨x, mem_separableClosure_iff.1 hx |>.comap_minpoly_of_isSeparable F⟩, rfl⟩
 
 /-- The normal closure of the (relative) separable closure of `E / F` is equal to itself. -/
 theorem separableClosure.normalClosure_eq_self :
-    normalClosure F (separableClosure F E) E = separableClosure F E := by
-  apply le_antisymm (normalClosure_le_iff.2 fun i ↦ ?_) (le_normalClosure _)
-  let i' : (separableClosure F E) ≃ₐ[F] i.fieldRange := AlgEquiv.ofInjectiveField i
-  haveI := i'.isSeparable
-  exact le_separableClosure F E _
+    normalClosure F (separableClosure F E) E = separableClosure F E :=
+  le_antisymm (normalClosure_le_iff.2 fun i ↦
+    haveI : IsSeparable F i.fieldRange := (AlgEquiv.ofInjectiveField i).isSeparable
+    le_separableClosure F E _) (le_normalClosure _)
 
-/-- If `E` is normal over `F`, then the (relative) separable closure of `E / F` is also normal
-over `F`. -/
-instance separableClosure.normal [Normal F E] : Normal F (separableClosure F E) := by
-  rw [← separableClosure.normalClosure_eq_self]
-  exact normalClosure.normal F _ E
+/-- If `E` is normal over `F`, then the (relative) separable closure of `E / F` is Galois (i.e.
+normal and separable) over `F`. -/
+instance separableClosure.isGalois [Normal F E] : IsGalois F (separableClosure F E) where
+  to_isSeparable := separableClosure.isSeparable F E
+  to_normal := by
+    rw [← separableClosure.normalClosure_eq_self]
+    exact normalClosure.normal F _ E
+
+/-- If `E / F` is a field extension, `E` is separably closed, then the (relative) separable closure
+of `E / F` is equal to `F` if and only if `F` is separably closed. -/
+theorem IsSepClosed.separableClosure_eq_bot_iff [IsSepClosed E] :
+    separableClosure F E = ⊥ ↔ IsSepClosed F := by
+  refine ⟨fun h ↦ IsSepClosed.of_exists_root _ fun p _ hirr hsep ↦ ?_,
+    fun _ ↦ IntermediateField.eq_bot_of_isSepClosed_of_isSeparable _⟩
+  obtain ⟨x, hx⟩ := IsSepClosed.exists_aeval_eq_zero E p (degree_pos_of_irreducible hirr).ne' hsep
+  obtain ⟨x, rfl⟩ := h ▸ mem_separableClosure_iff.2 (hsep.of_dvd <| minpoly.dvd _ x hx)
+  exact ⟨x, by simpa [Algebra.ofId_apply] using hx⟩
 
 /-- If `E` is separably closed, then the (relative) separable closure of `E / F` is a
 separable closure of `F`. -/
-instance separableClosure.isSepClosure [IsSepClosed E] : IsSepClosure F (separableClosure F E) := by
-  refine ⟨IsSepClosed.of_exists_root _ fun p _ hirr hsep ↦ ?_, isSeparable F E⟩
-  obtain ⟨x, hx⟩ := IsSepClosed.exists_aeval_eq_zero E p (degree_pos_of_irreducible hirr).ne' hsep
-  haveI := (isSeparable_adjoin_simple_iff_separable _ E).2 <| hsep.of_dvd <| minpoly.dvd _ x hx
-  let L := separableClosure F E
-  haveI : IsSeparable F (restrictScalars F L⟮x⟯) := IsSeparable.trans F L L⟮x⟯
-  have : x ∈ restrictScalars F L⟮x⟯ := mem_adjoin_simple_self _ x
-  use ⟨x, le_separableClosure F E (restrictScalars F L⟮x⟯) this⟩
-  apply_fun algebraMap L E using (algebraMap L E).injective
-  rwa [map_zero, ← aeval_algebraMap_apply_eq_algebraMap_eval]
+instance separableClosure.isSepClosure [IsSepClosed E] : IsSepClosure F (separableClosure F E) :=
+  ⟨(IsSepClosed.separableClosure_eq_bot_iff _ E).mp (separableClosure.separableClosure_eq_bot F E),
+    isSeparable F E⟩
+
+/-- The (absolute) separable closure is defined to be the (relative) separable closure inside the
+algebraic closure. It is indeed a separable closure (`IsSepClosure`) by
+`separableClosure.isSepClosure`, and it is Galois (`IsGalois`) by `separableClosure.isGalois`
+or `IsSepClosure.isGalois`, and every separable extension embeds into it (`IsSepClosed.lift`). -/
+abbrev SeparableClosure : Type _ := separableClosure F (AlgebraicClosure F)
 
 /-- `F(S) / F` is a separable extension if and only if all elements of `S` are
 separable elements. -/
 theorem IntermediateField.isSeparable_adjoin_iff_separable {S : Set E} :
-    IsSeparable F (adjoin F S) ↔ ∀ x ∈ S, (minpoly F x).Separable := by
-  simp only [← le_separableClosure_iff, ← mem_separableClosure_iff]
-  exact ⟨fun h x hx ↦ (adjoin.mono F _ _ <| Set.singleton_subset_iff.2 hx).trans h <|
-    mem_adjoin_simple_self F x, adjoin_le_iff.2⟩
+    IsSeparable F (adjoin F S) ↔ ∀ x ∈ S, (minpoly F x).Separable :=
+  (le_separableClosure_iff F E _).symm.trans adjoin_le_iff
 
 /-- The (relative) separable closure of `E / F` is equal to `E` if and only if `E / F` is
 separable. -/
 theorem separableClosure.eq_top_iff : separableClosure F E = ⊤ ↔ IsSeparable F E :=
-  ⟨fun h ↦ (isSeparable_def _ _).2 fun _ ↦ (mem_separableClosure_iff F E).1 (h ▸ mem_top),
-    fun h ↦ top_unique fun x _ ↦ (mem_separableClosure_iff F E).2 (((isSeparable_def _ _).1 h) x)⟩
+  ⟨fun h ↦ ⟨fun _ ↦ mem_separableClosure_iff.1 (h ▸ mem_top)⟩,
+    fun _ ↦ top_unique fun x _ ↦ mem_separableClosure_iff.2 (IsSeparable.separable _ x)⟩
 
 /-- If `K / E / F` is a field extension tower, then `separableClosure F K` is contained in
 `separableClosure E K`. -/
 theorem separableClosure.le_restrictScalars [Algebra E K] [IsScalarTower F E K] :
-    separableClosure F K ≤ (separableClosure E K).restrictScalars F := fun x hx ↦ by
-  simp only [mem_restrictScalars, mem_separableClosure_iff] at hx ⊢
-  exact hx.map_minpoly E
+    separableClosure F K ≤ (separableClosure E K).restrictScalars F := fun _ h ↦ h.map_minpoly E
 
 /-- If `K / E / F` is a field extension tower, such that `E / F` is separable, then
 `separableClosure F K` is equal to `separableClosure E K`. -/
 theorem separableClosure.eq_restrictScalars_of_isSeparable [Algebra E K] [IsScalarTower F E K]
-    [IsSeparable F E] : separableClosure F K = (separableClosure E K).restrictScalars F := by
-  refine le_antisymm (separableClosure.le_restrictScalars F E K) fun x hx ↦ ?_
-  rw [mem_restrictScalars, mem_separableClosure_iff,
-    ← isSeparable_adjoin_simple_iff_separable] at hx
-  haveI : IsSeparable F (E⟮x⟯.restrictScalars F) := IsSeparable.trans F E E⟮x⟯
-  have h : x ∈ E⟮x⟯.restrictScalars F := mem_adjoin_simple_self E x
-  exact (mem_separableClosure_iff F _).2 <| separable_of_mem_isSeparable F _ h
+    [IsSeparable F E] : separableClosure F K = (separableClosure E K).restrictScalars F :=
+  (separableClosure.le_restrictScalars F E K).antisymm fun _ h ↦ h.comap_minpoly_of_isSeparable F
 
 /-- If `K / E / F` is a field extension tower, then `E` adjoin `separableClosure F K` is contained
 in `separableClosure E K`. -/
@@ -255,17 +255,19 @@ end separableClosure
 namespace Field
 
 /-- The (infinite) separable degree for a general field extension `E / F` is defined
-to be the degree of `(separableClosure F E) / F`. -/
+to be the degree of `separableClosure F E / F`. -/
 def sepDegree := Module.rank F (separableClosure F E)
 
 /-- The (infinite) inseparable degree for a general field extension `E / F` is defined
-to be the degree of `E / (separableClosure F E)`. -/
+to be the degree of `E / separableClosure F E`. -/
 def insepDegree := Module.rank (separableClosure F E) E
 
 /-- The (finite) inseparable degree for a general field extension `E / F` is defined
-to be the degree of `E / (separableClosure F E)` as a natural number. It is defined to be zero
+to be the degree of `E / separableClosure F E` as a natural number. It is defined to be zero
 if such field extension is infinite. -/
-def finInsepDegree : ℕ := Cardinal.toNat (insepDegree F E)
+def finInsepDegree : ℕ := finrank (separableClosure F E) E
+
+theorem finInsepDegree_def' : finInsepDegree F E = Cardinal.toNat (insepDegree F E) := rfl
 
 instance instNeZeroSepDegree : NeZero (sepDegree F E) := ⟨rank_pos.ne'⟩
 
@@ -276,9 +278,14 @@ instance instNeZeroFinInsepDegree [FiniteDimensional F E] :
 
 /-- If `E` and `K` are isomorphic as `F`-algebras, then they have the same (infinite)
 separable degree over `F`. -/
-theorem sepDegree_eq_of_equiv (i : E ≃ₐ[F] K) :
+theorem lift_sepDegree_eq_of_equiv (i : E ≃ₐ[F] K) :
     Cardinal.lift.{w} (sepDegree F E) = Cardinal.lift.{v} (sepDegree F K) :=
-  (separableClosure.algEquivOfAlgEquiv F E K i).toLinearEquiv.lift_rank_eq
+  i.separableClosure.toLinearEquiv.lift_rank_eq
+
+/-- The same-universe version of `Field.lift_sepDegree_eq_of_equiv`. -/
+theorem sepDegree_eq_of_equiv (K : Type v) [Field K] [Algebra F K] (i : E ≃ₐ[F] K) :
+    sepDegree F E = sepDegree F K :=
+  i.separableClosure.toLinearEquiv.rank_eq
 
 /-- The (infinite) separable degree multiply by the (infinite) inseparable degree is equal
 to the (infinite) field extension degree. -/
@@ -287,31 +294,33 @@ theorem sepDegree_mul_insepDegree : sepDegree F E * insepDegree F E = Module.ran
 
 /-- If `E` and `K` are isomorphic as `F`-algebras, then they have the same (infinite)
 inseparable degree over `F`. -/
-theorem insepDegree_eq_of_equiv (i : E ≃ₐ[F] K) :
+theorem lift_insepDegree_eq_of_equiv (i : E ≃ₐ[F] K) :
     Cardinal.lift.{w} (insepDegree F E) = Cardinal.lift.{v} (insepDegree F K) :=
-  Algebra.lift_rank_eq_of_equiv_equiv (separableClosure.algEquivOfAlgEquiv F E K i).toRingEquiv
-    i.toRingEquiv (by rfl)
+  Algebra.lift_rank_eq_of_equiv_equiv i.separableClosure i rfl
+
+/-- The same-universe version of `Field.lift_insepDegree_eq_of_equiv`. -/
+theorem insepDegree_eq_of_equiv (K : Type v) [Field K] [Algebra F K] (i : E ≃ₐ[F] K) :
+    insepDegree F E = insepDegree F K :=
+  Algebra.rank_eq_of_equiv_equiv i.separableClosure i rfl
 
 /-- If `E` and `K` are isomorphic as `F`-algebras, then they have the same (finite)
 inseparable degree over `F`. -/
 theorem finInsepDegree_eq_of_equiv (i : E ≃ₐ[F] K) :
     finInsepDegree F E = finInsepDegree F K := by
   simpa only [Cardinal.toNat_lift] using congr_arg Cardinal.toNat
-    (insepDegree_eq_of_equiv F E K i)
+    (lift_insepDegree_eq_of_equiv F E K i)
 
 @[simp]
 theorem sepDegree_self : sepDegree F F = 1 := by
-  have : separableClosure F F = ⊥ := toSubalgebra_injective <| Subsingleton.elim _ _
-  rw [sepDegree, this, IntermediateField.rank_bot]
+  rw [sepDegree, Subsingleton.elim (separableClosure F F) ⊥, IntermediateField.rank_bot]
 
 @[simp]
 theorem insepDegree_self : insepDegree F F = 1 := by
-  have : separableClosure F F = ⊤ := toSubalgebra_injective <| Subsingleton.elim _ _
-  rw [insepDegree, this, IntermediateField.rank_top]
+  rw [insepDegree, Subsingleton.elim (separableClosure F F) ⊤, IntermediateField.rank_top]
 
 @[simp]
 theorem finInsepDegree_self : finInsepDegree F F = 1 := by
-  simp only [finInsepDegree, insepDegree_self, Cardinal.one_toNat]
+  rw [finInsepDegree_def', insepDegree_self, Cardinal.one_toNat]
 
 end Field
 
@@ -319,12 +328,12 @@ namespace IntermediateField
 
 @[simp]
 theorem sepDegree_bot : sepDegree F (⊥ : IntermediateField F E) = 1 := by
-  have := sepDegree_eq_of_equiv _ _ _ (botEquiv F E)
+  have := lift_sepDegree_eq_of_equiv _ _ _ (botEquiv F E)
   rwa [sepDegree_self, Cardinal.lift_one, ← Cardinal.lift_one.{u, v}, Cardinal.lift_inj] at this
 
 @[simp]
 theorem insepDegree_bot : insepDegree F (⊥ : IntermediateField F E) = 1 := by
-  have := insepDegree_eq_of_equiv _ _ _ (botEquiv F E)
+  have := lift_insepDegree_eq_of_equiv _ _ _ (botEquiv F E)
   rwa [insepDegree_self, Cardinal.lift_one, ← Cardinal.lift_one.{u, v}, Cardinal.lift_inj] at this
 
 @[simp]
@@ -337,11 +346,11 @@ variable [Algebra E K] [IsScalarTower F E K]
 
 theorem lift_sepDegree_bot' : Cardinal.lift.{v} (sepDegree F (⊥ : IntermediateField E K)) =
     Cardinal.lift.{w} (sepDegree F E) :=
-  sepDegree_eq_of_equiv _ _ _ ((botEquiv E K).restrictScalars F)
+  lift_sepDegree_eq_of_equiv _ _ _ ((botEquiv E K).restrictScalars F)
 
 theorem lift_insepDegree_bot' : Cardinal.lift.{v} (insepDegree F (⊥ : IntermediateField E K)) =
     Cardinal.lift.{w} (insepDegree F E) :=
-  insepDegree_eq_of_equiv _ _ _ ((botEquiv E K).restrictScalars F)
+  lift_insepDegree_eq_of_equiv _ _ _ ((botEquiv E K).restrictScalars F)
 
 variable {F}
 
@@ -351,28 +360,26 @@ theorem finInsepDegree_bot' :
   simpa only [Cardinal.toNat_lift] using congr_arg Cardinal.toNat (lift_insepDegree_bot' F E K)
 
 @[simp]
-theorem sepDegree_top : sepDegree F (⊤ : IntermediateField E K) = sepDegree F K := by
-  simpa only [Cardinal.lift_id] using sepDegree_eq_of_equiv _ _ _
-    ((topEquiv (F := E) (E := K)).restrictScalars F)
+theorem sepDegree_top : sepDegree F (⊤ : IntermediateField E K) = sepDegree F K :=
+  sepDegree_eq_of_equiv _ _ _ ((topEquiv (F := E) (E := K)).restrictScalars F)
 
 @[simp]
-theorem insepDegree_top : insepDegree F (⊤ : IntermediateField E K) = insepDegree F K := by
-  simpa only [Cardinal.lift_id] using insepDegree_eq_of_equiv _ _ _
-    ((topEquiv (F := E) (E := K)).restrictScalars F)
+theorem insepDegree_top : insepDegree F (⊤ : IntermediateField E K) = insepDegree F K :=
+  insepDegree_eq_of_equiv _ _ _ ((topEquiv (F := E) (E := K)).restrictScalars F)
 
 @[simp]
 theorem finInsepDegree_top : finInsepDegree F (⊤ : IntermediateField E K) = finInsepDegree F K := by
-  simp only [finInsepDegree, insepDegree_top]
+  rw [finInsepDegree_def', insepDegree_top, ← finInsepDegree_def']
 
 variable (K : Type v) [Field K] [Algebra F K] [Algebra E K] [IsScalarTower F E K]
 
 @[simp]
-theorem sepDegree_bot' : sepDegree F (⊥ : IntermediateField E K) = sepDegree F E := by
-  simpa only [Cardinal.lift_id] using lift_sepDegree_bot' F E K
+theorem sepDegree_bot' : sepDegree F (⊥ : IntermediateField E K) = sepDegree F E :=
+  sepDegree_eq_of_equiv _ _ _ ((botEquiv E K).restrictScalars F)
 
 @[simp]
-theorem insepDegree_bot' : insepDegree F (⊥ : IntermediateField E K) = insepDegree F E := by
-  simpa only [Cardinal.lift_id] using lift_insepDegree_bot' F E K
+theorem insepDegree_bot' : insepDegree F (⊥ : IntermediateField E K) = insepDegree F E :=
+  insepDegree_eq_of_equiv _ _ _ ((botEquiv E K).restrictScalars F)
 
 end Tower
 
