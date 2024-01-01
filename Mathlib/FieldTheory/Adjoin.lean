@@ -1244,25 +1244,75 @@ theorem Lifts.exists_upper_bound (c : Set (Lifts F E K)) (hc : IsChain (· ≤ �
 
 /-- Given an element `s : E` whose conjugates are all in `K`, any lift can be extended to one
   whose carrier contains `s`. -/
-theorem Lifts.exists_lift_of_splits (x : Lifts F E K) {s : E} (h1 : IsIntegral F s)
-    (h2 : (minpoly F s).Splits (algebraMap F K)) : ∃ y, x ≤ y ∧ s ∈ y.carrier :=
-  have I1 : IsIntegral x.carrier s := h1.tower_top
-  have I2 := (minpoly.degree_pos I1).ne'
-  have key : (minpoly x.carrier s).Splits x.emb.toRingHom :=
-    splits_of_splits_of_dvd _ (map_ne_zero (minpoly.ne_zero h1))
-      ((splits_map_iff _ _).2 (x.emb.comp_algebraMap ▸ h2)) (minpoly.dvd_map_of_isScalarTower _ _ _)
+theorem Lifts.exists_lift_of_splits' (x : Lifts F E K) {s : E} (h1 : IsIntegral x.carrier s)
+    (h2 : (minpoly x.carrier s).Splits x.emb.toRingHom) : ∃ y, x ≤ y ∧ s ∈ y.carrier :=
+  have I2 := (minpoly.degree_pos h1).ne'
   letI : Algebra x.carrier K := x.emb.toRingHom.toAlgebra
   let carrier := x.carrier⟮s⟯.restrictScalars F
   letI : Algebra x.carrier carrier := x.carrier⟮s⟯.toSubalgebra.algebra
-  let φ : carrier →ₐ[x.carrier] K := ((algHomAdjoinIntegralEquiv x.carrier I1).symm
-    ⟨rootOfSplits x.emb.toRingHom key I2, by
-      rw [mem_aroots, and_iff_right (minpoly.ne_zero I1)]
-      exact map_rootOfSplits x.emb.toRingHom key I2⟩)
+  let φ : carrier →ₐ[x.carrier] K := ((algHomAdjoinIntegralEquiv x.carrier h1).symm
+    ⟨rootOfSplits x.emb.toRingHom h2 I2, by
+      rw [mem_aroots, and_iff_right (minpoly.ne_zero h1)]
+      exact map_rootOfSplits x.emb.toRingHom h2 I2⟩)
   ⟨⟨carrier, (@algHomEquivSigma F x.carrier carrier K _ _ _ _ _ _ _ _
       (IsScalarTower.of_algebraMap_eq fun _ ↦ rfl)).symm ⟨x.emb, φ⟩⟩,
     ⟨fun z hz ↦ algebraMap_mem x.carrier⟮s⟯ ⟨z, hz⟩, φ.commutes⟩,
     mem_adjoin_simple_self x.carrier s⟩
+
+theorem Lifts.exists_lift_of_splits (x : Lifts F E K) {s : E} (h1 : IsIntegral F s)
+    (h2 : (minpoly F s).Splits (algebraMap F K)) : ∃ y, x ≤ y ∧ s ∈ y.carrier :=
+  Lifts.exists_lift_of_splits' x h1.tower_top <| h1.minpoly_splits_tower_top' <| by
+    rwa [← x.emb.comp_algebraMap] at h2
 #align intermediate_field.lifts.exists_lift_of_splits IntermediateField.Lifts.exists_lift_of_splits
+
+section
+
+private theorem exists_algHom_adjoin_of_splits'' {L : IntermediateField F E}
+     (f : L →ₐ[F] K) (hK : ∀ s ∈ S, IsIntegral L s ∧ (minpoly L s).Splits f.toRingHom) :
+    ∃ φ : adjoin L S →ₐ[F] K, φ.comp (IsScalarTower.toAlgHom F L _) = f := by
+  obtain ⟨φ, hfφ, hφ⟩ := zorn_nonempty_Ici₀ _
+    (fun c _ hc _ _ ↦ Lifts.exists_upper_bound c hc) ⟨L, f⟩ le_rfl
+  refine ⟨φ.emb.comp (inclusion <| (le_extendScalars_iff hfφ.1 <| adjoin L S).mp <|
+    adjoin_le_iff.mpr fun s h ↦ ?_), AlgHom.ext hfφ.2⟩
+  letI := (inclusion hfφ.1).toAlgebra
+  letI : SMul L φ.carrier := Algebra.toSMul
+  have : IsScalarTower L φ.carrier E := ⟨fun x y z ↦ smul_assoc x (y : E) z⟩
+  have := φ.exists_lift_of_splits' (hK s h).1.tower_top ((hK s h).1.minpoly_splits_tower_top' ?_)
+  · obtain ⟨y, h1, h2⟩ := this; exact (hφ y h1).1 h2
+  · convert (hK s h).2; ext; apply hfφ.2
+
+variable {L : Type*} [Field L] [Algebra F L] [Algebra L E] [IsScalarTower F L E]
+  (f : L →ₐ[F] K) (hK : ∀ s ∈ S, IsIntegral L s ∧ (minpoly L s).Splits f.toRingHom)
+
+theorem exists_algHom_adjoin_of_splits' :
+    ∃ φ : adjoin L S →ₐ[F] K, φ.comp (IsScalarTower.toAlgHom F L _) = f := by
+  let f' : (IsScalarTower.toAlgHom F L E).fieldRange →ₐ[F] K :=
+    f.comp (AlgEquiv.ofInjectiveField _).symm.toAlgHom
+  --have := adjoin L S = adjoin (↥(AlgHom.fieldRange (IsScalarTower.toAlgHom F L E))) S
+  have := exists_algHom_adjoin_of_splits'' f' (S := S) ?_
+  · obtain ⟨φ, hφ⟩ := this; refine ⟨?_, ?_⟩
+    · change (adjoin L S).restrictScalars F →ₐ[F] K
+      rw [restrictScalars_adjoin]
+      rw [← coe_restrictScalars F (E := adjoin L S)]
+    --restrictScalars_adjoin
+  obtain ⟨φ, hfφ, hφ⟩ := zorn_nonempty_Ici₀ _ (fun c _ hc _ _ ↦ Lifts.exists_upper_bound c hc)
+    ⟨(IsScalarTower.toAlgHom F L E).fieldRange, f.comp (AlgEquiv.ofInjectiveField _).symm.toAlgHom⟩
+    le_rfl
+  have : (adjoin L S).restrictScalars F ≤ φ.carrier
+
+    --apply adjoin_le_iff.mpr fun s hs ↦ ?_
+  let x : (IsScalarTower.toAlgHom F L E).fieldRange →ₐ[F] K :=
+    f.comp (AlgEquiv.ofInjectiveField _).symm.toAlgHom
+
+end
+
+/- theorem algHom_comp_surjective_of_splits {L : IntermediateField F E} (f : L →ₐ[F] K)
+    (h : ∀ s : E, IsIntegral L s ∧ (minpoly L s).Splits f) :
+    ∃ φ : E →ₐ[F] K, φ.comp L.val = f := by
+  rfl -/
+
+--theorem  :
+
 
 variable (hK : ∀ s ∈ S, IsIntegral F s ∧ (minpoly F s).Splits (algebraMap F K))
         (hK' : ∀ s : E, IsIntegral F s ∧ (minpoly F s).Splits (algebraMap F K))
