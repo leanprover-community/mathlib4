@@ -23,7 +23,8 @@ This notation is in the `DirectSum` locale, accessible after `open DirectSum`.
 * https://en.wikipedia.org/wiki/Direct_sum
 -/
 
-open BigOperators
+open Function
+open scoped BigOperators
 
 universe u v w u₁
 
@@ -212,6 +213,12 @@ theorem toAddMonoid.unique (f : ⨁ i, β i) : ψ f = toAddMonoid (fun i => ψ.c
   apply DFinsupp.addHom_ext'
   simp [toAddMonoid, of]
 #align direct_sum.to_add_monoid.unique DirectSum.toAddMonoid.unique
+
+lemma toAddMonoid_injective : Injective (toAddMonoid : (∀ i, β i →+ γ) → (⨁ i, β i) →+ γ) :=
+  DFinsupp.liftAddHom.injective
+
+@[simp] lemma toAddMonoid_inj {f g : ∀ i, β i →+ γ} : toAddMonoid f = toAddMonoid g ↔ f = g :=
+  toAddMonoid_injective.eq_iff
 
 end ToAddMonoid
 
