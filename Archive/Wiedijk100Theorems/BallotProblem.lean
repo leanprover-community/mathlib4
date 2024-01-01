@@ -174,7 +174,7 @@ theorem countedSequence_nonempty : ∀ p q : ℕ, (countedSequence p q).Nonempty
   | 0, q => by simp
   | p + 1, 0 => by simp
   | p + 1, q + 1 => by
-    rw [counted_succ_succ, union_nonempty, nonempty_image_iff]
+    rw [counted_succ_succ, union_nonempty, image_nonempty]
     exact Or.inl (countedSequence_nonempty _ _)
 #align ballot.counted_sequence_nonempty Ballot.countedSequence_nonempty
 

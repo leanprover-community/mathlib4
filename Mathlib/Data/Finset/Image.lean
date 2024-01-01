@@ -413,19 +413,19 @@ theorem coe_image : ↑(s.image f) = f '' ↑s :=
 #align finset.coe_image Finset.coe_image
 
 @[simp]
-lemma nonempty_image_iff : (s.image f).Nonempty ↔ s.Nonempty := by
-  exact_mod_cast Set.nonempty_image_iff (f := f) (s := (s : Set α))
-#align finset.nonempty.image_iff Finset.nonempty_image_iff
+lemma image_nonempty : (s.image f).Nonempty ↔ s.Nonempty := by
+  exact_mod_cast Set.image_nonempty (f := f) (s := (s : Set α))
+#align finset.nonempty.image_iff Finset.image_nonempty
 
 protected theorem Nonempty.image (h : s.Nonempty) (f : α → β) : (s.image f).Nonempty :=
-  nonempty_image_iff.2 h
+  image_nonempty.2 h
 #align finset.nonempty.image Finset.Nonempty.image
 
-alias ⟨Nonempty.of_image, _⟩ := nonempty_image_iff
+alias ⟨Nonempty.of_image, _⟩ := image_nonempty
 
 @[deprecated] -- Since 29 December 2023
 theorem Nonempty.image_iff (f : α → β) : (s.image f).Nonempty ↔ s.Nonempty :=
-  nonempty_image_iff
+  image_nonempty
 
 theorem image_toFinset [DecidableEq α] {s : Multiset α} :
     s.toFinset.image f = (s.map f).toFinset :=
