@@ -141,33 +141,17 @@ variable [hA : IsLocalization (Algebra.algebraMapSubmonoid A S) Aₛ]
 
 open Submodule
 
-theorem isLocalizedModule_of_isScalarTower :
-    IsLocalizedModule S (IsScalarTower.toAlgHom R A Aₛ).toLinearMap where
-  map_units s := by
-    have := IsUnit.map (Algebra.lmul R Aₛ) <| hA.map_units <|
-      ⟨algebraMap R A s, Algebra.mem_algebraMapSubmonoid_of_mem s⟩
-    rwa [← IsScalarTower.algebraMap_apply, ← AlgHom.algebraMap_eq_apply _ rfl] at this
-  surj' x := by
-    obtain ⟨⟨a, ⟨_, ⟨s, hs, rfl⟩⟩⟩, h⟩ := hA.surj' x
-    refine ⟨⟨a, ⟨s, hs⟩⟩, ?_⟩
-    rw [Submonoid.mk_smul, AlgHom.toLinearMap_apply, IsScalarTower.coe_toAlgHom', ← h,
-      ← IsScalarTower.algebraMap_apply, mul_comm, Algebra.smul_def]
-  exists_of_eq h := by
-    obtain ⟨⟨_, ⟨r, hrS, rfl⟩⟩, h⟩ := hA.exists_of_eq h
-    refine ⟨⟨r, hrS⟩, ?_⟩
-    rw [Submonoid.mk_smul, Submonoid.mk_smul, Algebra.smul_def, Algebra.smul_def, h]
-
 theorem LinearIndependent.localization_localization {ι : Type*} {v : ι → A}
     (hv : LinearIndependent R v) : LinearIndependent Rₛ ((algebraMap A Aₛ) ∘ v) := by
   have : IsLocalizedModule S (IsScalarTower.toAlgHom R A Aₛ).toLinearMap :=
-    isLocalizedModule_of_isScalarTower S Aₛ
+    (isLocalizedModule_iff_isLocalization _).mpr hA
   exact hv.of_isLocalizedModule Rₛ S (IsScalarTower.toAlgHom R A Aₛ).toLinearMap
 #align linear_independent.localization_localization LinearIndependent.localization_localization
 
 theorem span_eq_top_localization_localization {v : Set A} (hv : span R v = ⊤) :
     span Rₛ (algebraMap A Aₛ '' v) = ⊤ := by
   have : IsLocalizedModule S (IsScalarTower.toAlgHom R A Aₛ).toLinearMap :=
-    isLocalizedModule_of_isScalarTower S Aₛ
+    (isLocalizedModule_iff_isLocalization _).mpr hA
   exact span_eq_top_of_isLocalizedModule Rₛ S (IsScalarTower.toAlgHom R A Aₛ).toLinearMap hv
 #align span_eq_top.localization_localization span_eq_top_localization_localization
 
@@ -177,14 +161,14 @@ A suitable instance for `[Algebra A Aₛ]` is `localizationAlgebra`.
 -/
 noncomputable def Basis.localizationLocalization {ι : Type*} (b : Basis ι R A) : Basis ι Rₛ Aₛ := by
   have : IsLocalizedModule S (IsScalarTower.toAlgHom R A Aₛ).toLinearMap :=
-    isLocalizedModule_of_isScalarTower S Aₛ
+    (isLocalizedModule_iff_isLocalization _).mpr hA
   exact b.ofIsLocalizedModule Rₛ S (IsScalarTower.toAlgHom R A Aₛ).toLinearMap
 
 @[simp]
 theorem Basis.localizationLocalization_apply {ι : Type*} (b : Basis ι R A) (i) :
     b.localizationLocalization Rₛ S Aₛ i = algebraMap A Aₛ (b i) := by
   have : IsLocalizedModule S (IsScalarTower.toAlgHom R A Aₛ).toLinearMap :=
-    isLocalizedModule_of_isScalarTower S Aₛ
+    (isLocalizedModule_iff_isLocalization _).mpr hA
   exact b.ofIsLocalizedModule_apply Rₛ S _ i
 
 @[simp]
@@ -192,14 +176,14 @@ theorem Basis.localizationLocalization_repr_algebraMap {ι : Type*} (b : Basis �
     (b.localizationLocalization Rₛ S Aₛ).repr (algebraMap A Aₛ x) i =
       algebraMap R Rₛ (b.repr x i) := by
   have : IsLocalizedModule S (IsScalarTower.toAlgHom R A Aₛ).toLinearMap :=
-    isLocalizedModule_of_isScalarTower S Aₛ
+    (isLocalizedModule_iff_isLocalization _).mpr hA
   exact b.ofIsLocalizedModule_repr_apply Rₛ S _ _ i
 
 theorem Basis.localizationLocalization_span {ι : Type*} (b : Basis ι R A) :
     Submodule.span R (Set.range (b.localizationLocalization Rₛ S Aₛ)) =
       LinearMap.range (IsScalarTower.toAlgHom R A Aₛ) := by
   have : IsLocalizedModule S (IsScalarTower.toAlgHom R A Aₛ).toLinearMap :=
-    isLocalizedModule_of_isScalarTower S Aₛ
+    (isLocalizedModule_iff_isLocalization _).mpr hA
   exact b.ofIsLocalizedModule_span Rₛ S _
 
 end LocalizationLocalization

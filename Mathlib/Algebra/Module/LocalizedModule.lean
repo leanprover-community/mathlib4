@@ -584,15 +584,38 @@ lemma isLocalizedModule_id (R') [CommRing R'] [Algebra R R'] [IsLocalization S R
   surj' m := ⟨(m, 1), one_smul _ _⟩
   exists_of_eq h := ⟨1, congr_arg _ h⟩
 
-lemma isLocalizedModule_iff_isLocalization (R') [CommRing R'] [Algebra R R'] :
-    IsLocalizedModule S (Algebra.ofId R R').toLinearMap ↔ IsLocalization S R' := by
+theorem isLocalizedModule_iff_isLocalization {A Aₛ} [CommRing A] [Algebra R A][CommRing Aₛ]
+    [Algebra A Aₛ] [Algebra R Aₛ] [IsScalarTower R A Aₛ] :
+    IsLocalizedModule S (IsScalarTower.toAlgHom R A Aₛ).toLinearMap ↔
+      IsLocalization (Algebra.algebraMapSubmonoid A S) Aₛ := by
   rw [isLocalizedModule_iff, isLocalization_iff]
-  refine and_congr (forall_congr' fun s ↦ ⟨fun h ↦ ?_, fun h ↦ ?_⟩) (and_congr ?_ Iff.rfl)
-  · obtain ⟨x, hx⟩ := ((Module.End_isUnit_iff _).mp h).2 1
-    rw [Module.algebraMap_end_apply, Algebra.smul_def] at hx
-    exact isUnit_of_mul_eq_one _ _ hx
-  · convert h.map (Algebra.lmul R R'); ext; simp
-  · simp_rw [mul_comm _ (algebraMap R R' _), ← Algebra.smul_def]; rfl
+  refine and_congr ?_ (and_congr ?_ (forall₂_congr fun _ _ ↦ ?_))
+  · have : ∀ x, algebraMap R (Module.End R Aₛ) x = Algebra.lmul R Aₛ (algebraMap R Aₛ x) := by
+      intro _
+      rw [AlgHom.commutes]
+    simp_rw [this, Algebra.lmul_isUnit_iff, Subtype.forall]
+    refine ⟨?_, fun h s hs ↦ ?_⟩
+    · rintro h _ ⟨s, hs, rfl⟩
+      rw [← IsScalarTower.algebraMap_apply]
+      exact h s hs
+    · specialize h (algebraMap R A s) ⟨s, hs, rfl⟩
+      rwa [← IsScalarTower.algebraMap_apply] at h
+  · refine forall_congr' fun _ ↦ ⟨fun ⟨⟨x, s⟩, h⟩ ↦ ?_, fun ⟨⟨x, _, s, hs, rfl⟩, h⟩ ↦ ?_⟩
+    · refine ⟨⟨x, algebraMap R A s, Algebra.mem_algebraMapSubmonoid_of_mem s⟩, ?_⟩
+      rwa [← IsScalarTower.algebraMap_apply, mul_comm, ← Algebra.smul_def]
+    · refine ⟨⟨x, s, hs⟩, ?_⟩
+      rwa [← IsScalarTower.algebraMap_apply, mul_comm, ← Algebra.smul_def] at h
+  · congr!
+    refine ⟨fun ⟨s, hs⟩ ↦ ?_, ?_⟩
+    · refine ⟨⟨algebraMap R A s, Algebra.mem_algebraMapSubmonoid_of_mem s⟩, ?_⟩
+      rwa [← Algebra.smul_def, ← Algebra.smul_def]
+    · rintro ⟨⟨_, ⟨s, hs, rfl⟩⟩, h⟩
+      exact ⟨⟨s, hs⟩, by rwa [← Algebra.smul_def, ← Algebra.smul_def] at h⟩
+
+lemma isLocalizedModule_iff_isLocalization' (R') [CommRing R'] [Algebra R R'] :
+    IsLocalizedModule S (Algebra.ofId R R').toLinearMap ↔ IsLocalization S R' := by
+  convert isLocalizedModule_iff_isLocalization S (A := R) (Aₛ := R')
+  exact (Submonoid.map_id S).symm
 
 namespace LocalizedModule
 
