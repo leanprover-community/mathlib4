@@ -600,6 +600,11 @@ theorem support_update_ne_zero [DecidableEq α] (h : b ≠ 0) :
   congr; apply Subsingleton.elim
 #align finsupp.support_update_ne_zero Finsupp.support_update_ne_zero
 
+@[simp] theorem update_idem (f : α →₀ M) (a : α) (b c : M) :
+    update (update f a b) a c = update f a c :=
+  letI := Classical.decEq α
+  FunLike.coe_injective <| Function.update_idem _ _ _
+
 end Update
 
 /-! ### Declarations about `erase` -/
@@ -672,6 +677,23 @@ theorem erase_of_not_mem_support {f : α →₀ M} {a} (haf : a ∉ f.support) :
 theorem erase_zero (a : α) : erase a (0 : α →₀ M) = 0 := by
   classical rw [← support_eq_empty, support_erase, support_zero, erase_empty]
 #align finsupp.erase_zero Finsupp.erase_zero
+
+theorem erase_eq_update (f : α →₀ M) (a : α) : f.erase a = update f a 0 :=
+  letI := Classical.decEq α
+  ext fun _ => (Function.update_apply _ _ _ _).symm
+
+-- not `simp` as `erase_of_not_mem_support` can prove this
+theorem erase_idem (f : α →₀ M) (a : α) :
+    erase a (erase a f) = erase a f := by
+  rw [erase_eq_update, erase_eq_update, update_idem]
+
+@[simp] theorem update_erase (f : α →₀ M) (a : α) (b : M) :
+    update (erase a f) a b = update f a b := by
+  rw [erase_eq_update, update_idem]
+
+@[simp] theorem erase_update (f : α →₀ M) (a : α) (b : M) :
+    erase a (update f a b) = erase a f := by
+  rw [erase_eq_update, erase_eq_update, update_idem]
 
 end Erase
 

@@ -780,27 +780,9 @@ private theorem mul_assoc' [NonUnitalSemiring R] (x y z : HahnSeries Γ R) :
   rw [mul_coeff_left' (x.isPwo_support.add y.isPwo_support) support_mul_subset_add_support,
     mul_coeff_right' (y.isPwo_support.add z.isPwo_support) support_mul_subset_add_support]
   simp only [mul_coeff, add_coeff, sum_mul, mul_sum, sum_sigma']
-  refine' sum_bij_ne_zero (fun a _ _ => ⟨⟨a.2.1, a.2.2 + a.1.2⟩, ⟨a.2.2, a.1.2⟩⟩) _ _ _ _
-  · rintro ⟨⟨i, j⟩, ⟨k, l⟩⟩ H1 H2
-    simp only [and_true_iff, Set.image2_add, eq_self_iff_true, mem_addAntidiagonal, Ne.def,
-      Set.image_prod, mem_sigma, Set.mem_setOf_eq] at H1 H2 ⊢
-    obtain ⟨⟨H3, nz, rfl⟩, nx, ny, rfl⟩ := H1
-    exact ⟨⟨nx, Set.add_mem_add ny nz, (add_assoc _ _ _).symm⟩, ny, nz⟩
-  · rintro ⟨⟨i1, j1⟩, k1, l1⟩ ⟨⟨i2, j2⟩, k2, l2⟩ H1 H2 H3 H4 H5
-    simp only [Set.image2_add, Prod.mk.inj_iff, mem_addAntidiagonal, Ne.def, Set.image_prod,
-      mem_sigma, Set.mem_setOf_eq, heq_iff_eq] at H1 H3 H5
-    obtain (⟨⟨rfl, _⟩, rfl, rfl⟩ : (k1 = k2 ∧ l1 + j1 = l2 + j2) ∧ l1 = l2 ∧ j1 = j2) :=
-      by simpa using H5
-    simp only [and_true_iff, Prod.mk.inj_iff, eq_self_iff_true, heq_iff_eq, ← H1.2.2.2, ← H3.2.2.2]
-  · rintro ⟨⟨i, j⟩, ⟨k, l⟩⟩ H1 H2
-    simp only [exists_prop, Set.image2_add, Prod.mk.inj_iff, mem_addAntidiagonal, Sigma.exists,
-      Ne.def, Set.image_prod, mem_sigma, Set.mem_setOf_eq, heq_iff_eq, Prod.exists] at H1 H2 ⊢
-    obtain ⟨⟨nx, H, rfl⟩, ny, nz, rfl⟩ := H1
-    exact
-      ⟨i + k, l, i, k, ⟨⟨Set.add_mem_add nx ny, nz, add_assoc _ _ _⟩ , nx, ny, rfl⟩,
-        fun h => H2 <| by rw [← h, mul_assoc], rfl⟩
-  · rintro ⟨⟨i, j⟩, ⟨k, l⟩⟩ _ _
-    simp [mul_assoc]
+  apply Finset.sum_nbij' (fun ⟨⟨_i, j⟩, ⟨k, l⟩⟩ ↦ ⟨(k, l + j), (l, j)⟩)
+    (fun ⟨⟨i, _j⟩, ⟨k, l⟩⟩ ↦ ⟨(i + k, l), (i, k)⟩) <;>
+    aesop (add safe Set.add_mem_add) (add simp [add_assoc, mul_assoc])
 
 instance [NonUnitalNonAssocSemiring R] : NonUnitalNonAssocSemiring (HahnSeries Γ R) :=
   { inferInstanceAs (AddCommMonoid (HahnSeries Γ R)),
@@ -830,15 +812,12 @@ instance [Semiring R] : Semiring (HahnSeries Γ R) :=
   { inferInstanceAs (NonAssocSemiring (HahnSeries Γ R)),
     inferInstanceAs (NonUnitalSemiring (HahnSeries Γ R)) with }
 
-instance [NonUnitalCommSemiring R] : NonUnitalCommSemiring (HahnSeries Γ R) :=
-  { inferInstanceAs (NonUnitalSemiring (HahnSeries Γ R)) with
-    mul_comm := fun x y => by
-      ext
-      simp_rw [mul_coeff, mul_comm]
-      refine'
-          sum_bij (fun a _ => a.swap) (fun a ha => _) (fun a _ => rfl)
-            (fun _ _ _ _ => Prod.swap_inj.1) fun a ha => ⟨a.swap, _, a.swap_swap.symm⟩ <;>
-        rwa [swap_mem_addAntidiagonal] }
+instance [NonUnitalCommSemiring R] : NonUnitalCommSemiring (HahnSeries Γ R) where
+  __ : NonUnitalSemiring (HahnSeries Γ R) := inferInstance
+  mul_comm x y := by
+    ext
+    simp_rw [mul_coeff, mul_comm]
+    exact Finset.sum_equiv (Equiv.prodComm _ _) (fun _ ↦ swap_mem_addAntidiagonal.symm) $ by simp
 
 instance [CommSemiring R] : CommSemiring (HahnSeries Γ R) :=
   { inferInstanceAs (NonUnitalCommSemiring (HahnSeries Γ R)),
