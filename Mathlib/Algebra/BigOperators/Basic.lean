@@ -734,7 +734,7 @@ in the type of their element, `univ.pi t` is a `Finset (Π a ∈ univ, t a)` and
 but differ in the type of their element, `univ.pi t` is a `Finset (Π a ∈ univ, t a)` and
 `Fintype.piFinset t` is a `Finset (Π a, t a)`."]
 lemma prod_univ_pi [DecidableEq ι] [Fintype ι] {κ : ι → Type*} (t : ∀ i, Finset (κ i))
-   (f : (∀ i ∈ (univ : Finset ι), κ i) → β) :
+    (f : (∀ i ∈ (univ : Finset ι), κ i) → β) :
     ∏ x in univ.pi t, f x = ∏ x in Fintype.piFinset t, f fun a _ ↦ x a := by
   apply prod_nbij' (fun x i ↦ x i $ mem_univ _) (fun x i _ ↦ x i) <;> simp
 #align finset.prod_univ_pi Finset.prod_univ_pi
