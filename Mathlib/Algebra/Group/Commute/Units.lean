@@ -100,6 +100,17 @@ theorem _root_.isUnit_mul_self_iff : IsUnit (a * a) ↔ IsUnit a :=
 
 end Monoid
 
+section DivisionMonoid
+variable [DivisionMonoid G] {a b c d : G}
+
+@[to_additive]
+lemma div_eq_div_iff_of_isUnit (hbd : Commute b d) (hb : IsUnit b) (hd : IsUnit d) :
+    a / b = c / d ↔ a * d = c * b := by
+  rw [← (hb.mul hd).mul_left_inj, ← mul_assoc, hb.div_mul_cancel, ← mul_assoc, hbd.right_comm,
+    hd.div_mul_cancel]
+
+end DivisionMonoid
+
 section Group
 
 variable [Group G] {a b : G}
