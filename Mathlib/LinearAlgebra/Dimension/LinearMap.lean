@@ -15,11 +15,9 @@ import Mathlib.LinearAlgebra.Dimension.DivisionRing
 
 noncomputable section
 
-universe u v v' v'' u₁' w w'
+universe u v v' v''
 
-variable {K R : Type u} {V V₁ V₂ V₃ : Type v} {V' V'₁ : Type v'} {V'' : Type v''}
-
-variable {ι : Type w} {ι' : Type w'} {η : Type u₁'} {φ : η → Type*}
+variable {K : Type u} {V V₁ : Type v} {V' V'₁ : Type v'} {V'' : Type v''}
 
 open BigOperators Cardinal Basis Submodule Function Set
 

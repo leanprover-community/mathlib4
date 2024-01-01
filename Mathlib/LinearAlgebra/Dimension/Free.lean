@@ -23,11 +23,9 @@ import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 
 noncomputable section
 
-universe u v v' v'' u₁' w w'
+universe u v v'
 
-variable {R : Type u} {M V₁ V₂ V₃ : Type v} {M' V'₁ : Type v'} {V'' : Type v''}
-
-variable {ι : Type w} {ι' : Type w'} {η : Type u₁'} {φ : η → Type*}
+variable {R : Type u} {M M₁ : Type v} {M' : Type v'}
 
 open BigOperators Cardinal Basis Submodule Function Set DirectSum FiniteDimensional
 
@@ -37,7 +35,7 @@ variable [AddCommGroup M] [Module R M] [Module.Free R M]
 
 variable [AddCommGroup M'] [Module R M'] [Module.Free R M']
 
-variable [AddCommGroup V₁] [Module R V₁] [Module.Free R V₁]
+variable [AddCommGroup M₁] [Module R M₁] [Module.Free R M₁]
 
 namespace Module.Free
 
@@ -83,14 +81,14 @@ theorem nonempty_linearEquiv_of_lift_rank_eq
 #align nonempty_linear_equiv_of_lift_rank_eq nonempty_linearEquiv_of_lift_rank_eq
 
 /-- Two vector spaces are isomorphic if they have the same dimension. -/
-theorem nonempty_linearEquiv_of_rank_eq (cond : Module.rank R M = Module.rank R V₁) :
-    Nonempty (M ≃ₗ[R] V₁) :=
+theorem nonempty_linearEquiv_of_rank_eq (cond : Module.rank R M = Module.rank R M₁) :
+    Nonempty (M ≃ₗ[R] M₁) :=
   nonempty_linearEquiv_of_lift_rank_eq <| congr_arg _ cond
 #align nonempty_linear_equiv_of_rank_eq nonempty_linearEquiv_of_rank_eq
 
 section
 
-variable (M M' V₁)
+variable (M M' M₁)
 
 /-- Two vector spaces are isomorphic if they have the same dimension. -/
 def LinearEquiv.ofLiftRankEq
@@ -100,7 +98,7 @@ def LinearEquiv.ofLiftRankEq
 #align linear_equiv.of_lift_rank_eq LinearEquiv.ofLiftRankEq
 
 /-- Two vector spaces are isomorphic if they have the same dimension. -/
-def LinearEquiv.ofRankEq (cond : Module.rank R M = Module.rank R V₁) : M ≃ₗ[R] V₁ :=
+def LinearEquiv.ofRankEq (cond : Module.rank R M = Module.rank R M₁) : M ≃ₗ[R] M₁ :=
   Classical.choice (nonempty_linearEquiv_of_rank_eq cond)
 #align linear_equiv.of_rank_eq LinearEquiv.ofRankEq
 
@@ -114,7 +112,7 @@ theorem LinearEquiv.nonempty_equiv_iff_lift_rank_eq : Nonempty (M ≃ₗ[R] M') 
 
 /-- Two vector spaces are isomorphic if and only if they have the same dimension. -/
 theorem LinearEquiv.nonempty_equiv_iff_rank_eq :
-    Nonempty (M ≃ₗ[R] V₁) ↔ Module.rank R M = Module.rank R V₁ :=
+    Nonempty (M ≃ₗ[R] M₁) ↔ Module.rank R M = Module.rank R M₁ :=
   ⟨fun ⟨h⟩ => LinearEquiv.rank_eq h, fun h => nonempty_linearEquiv_of_rank_eq h⟩
 #align linear_equiv.nonempty_equiv_iff_rank_eq LinearEquiv.nonempty_equiv_iff_rank_eq
 

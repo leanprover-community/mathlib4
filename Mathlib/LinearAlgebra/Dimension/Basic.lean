@@ -28,8 +28,8 @@ import Mathlib.SetTheory.Cardinal.Ordinal
 
 Many theorems in this file are not universe-generic when they relate dimensions
 in different universes. They should be as general as they can be without
-inserting `lift`s. The types `V`, `V'`, ... all live in different universes,
-and `V₁`, `V₂`, ... all live in the same universe.
+inserting `lift`s. The types `M`, `M'`, ... all live in different universes,
+and `M₁`, `M₂`, ... all live in the same universe.
 -/
 
 

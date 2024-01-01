@@ -40,7 +40,7 @@ For modules over rings with invariant basis number
 
 noncomputable section
 
-universe u v v' v'' u₁' w w'
+universe u v w w'
 
 variable {R : Type u} {M : Type v} [Ring R] [AddCommGroup M] [Module R M]
 

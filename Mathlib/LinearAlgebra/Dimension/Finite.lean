@@ -21,7 +21,7 @@ Also contains characterization for when rank equals zero or rank equals one.
 
 noncomputable section
 
-universe u v v' v'' u₁' w w'
+universe u v v' w
 
 variable {R : Type u} {M M₁ : Type v} {M' : Type v'} {ι : Type w}
 

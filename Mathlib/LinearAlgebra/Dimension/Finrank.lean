@@ -32,7 +32,7 @@ You should not assume that there has been any effort to state lemmas as generall
 -/
 
 
-universe u v v' w
+universe u v w
 
 open Cardinal Submodule Module Function
 

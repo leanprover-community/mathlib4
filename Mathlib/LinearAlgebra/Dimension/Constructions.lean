@@ -32,7 +32,7 @@ We have finrank variants for most lemmas as well.
 
 noncomputable section
 
-universe u v v' v'' u₁' w w'
+universe u v v' u₁' w w'
 
 variable {R S : Type u} {M : Type v} {M' : Type v'} {M₁ : Type v}
 
