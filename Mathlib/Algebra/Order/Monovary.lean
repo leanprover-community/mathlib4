@@ -143,19 +143,19 @@ variable [OrderedCommGroup α] [LinearOrderedCommGroup β] {s : Set ι} {f f₁ 
 
 @[to_additive] lemma Monovary.mul_right (h₁ : Monovary f g₁) (h₂ : Monovary f g₂) :
     Monovary f (g₁ * g₂) :=
-  fun _i _j hij ↦ (lt_or_lt_of_mul_lt_mul hij).elim (fun h ↦ h₁ h) $ fun h ↦ h₂ h
+  fun _i _j hij ↦ (lt_or_lt_of_mul_lt_mul hij).elim (fun h ↦ h₁ h) fun h ↦ h₂ h
 
 @[to_additive] lemma Antivary.mul_right (h₁ : Antivary f g₁) (h₂ : Antivary f g₂) :
     Antivary f (g₁ * g₂) :=
-  fun _i _j hij ↦ (lt_or_lt_of_mul_lt_mul hij).elim (fun h ↦ h₁ h) $ fun h ↦ h₂ h
+  fun _i _j hij ↦ (lt_or_lt_of_mul_lt_mul hij).elim (fun h ↦ h₁ h) fun h ↦ h₂ h
 
 @[to_additive] lemma Monovary.div_right (h₁ : Monovary f g₁) (h₂ : Antivary f g₂) :
     Monovary f (g₁ / g₂) :=
-  fun _i _j hij ↦ (lt_or_lt_of_div_lt_div hij).elim (fun h ↦ h₁ h) $ fun h ↦ h₂ h
+  fun _i _j hij ↦ (lt_or_lt_of_div_lt_div hij).elim (fun h ↦ h₁ h) fun h ↦ h₂ h
 
 @[to_additive] lemma Antivary.div_right (h₁ : Antivary f g₁) (h₂ : Monovary f g₂) :
     Antivary f (g₁ / g₂) :=
-  fun _i _j hij ↦ (lt_or_lt_of_div_lt_div hij).elim (fun h ↦ h₁ h) $ fun h ↦ h₂ h
+  fun _i _j hij ↦ (lt_or_lt_of_div_lt_div hij).elim (fun h ↦ h₁ h) fun h ↦ h₂ h
 
 @[to_additive] lemma Monovary.pow_right (hfg : Monovary f g) (n : ℕ) : Monovary f (g ^ n) :=
   fun _i _j hij ↦ hfg $ lt_of_pow_lt_pow_left' _ hij
@@ -345,7 +345,7 @@ monovary_toDual_right.symm.trans $ by rw [monovary_iff_forall_smul_nonneg]; rfl
 lemma monovaryOn_iff_smul_rearrangement :
     MonovaryOn f g s ↔
       ∀ ⦃i⦄, i ∈ s → ∀ ⦃j⦄, j ∈ s → f i • g j + f j • g i ≤ f i • g i + f j • g j :=
-  monovaryOn_iff_forall_smul_nonneg.trans $ forall₄_congr $ fun i _ j _ ↦ by
+  monovaryOn_iff_forall_smul_nonneg.trans $ forall₄_congr fun i _ j _ ↦ by
     simp [smul_sub, sub_smul, ← add_sub_right_comm, le_sub_iff_add_le, add_comm (f i • g i),
       add_comm (f i • g j)]
 
