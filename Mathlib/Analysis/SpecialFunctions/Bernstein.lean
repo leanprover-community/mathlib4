@@ -287,7 +287,7 @@ theorem bernsteinApproximation_uniform (f : C(I, ℝ)) :
       -- Again enlarging the sum from `Sᶜ` to all of `Fin (n+1)`
       _ ≤ 2 * ‖f‖ * ∑ k : Fin (n + 1), δ ^ (-2 : ℤ) * ((x : ℝ) - k/ₙ) ^ 2 * bernstein n k x := by
         gcongr
-        refine Finset.sum_le_univ_sum_of_nonneg <| fun k => ?_
+        refine Finset.sum_le_univ_sum_of_nonneg fun k => ?_
         positivity
       _ = 2 * ‖f‖ * δ ^ (-2 : ℤ) * ∑ k : Fin (n + 1), ((x : ℝ) - k/ₙ) ^ 2 * bernstein n k x := by
         conv_rhs =>

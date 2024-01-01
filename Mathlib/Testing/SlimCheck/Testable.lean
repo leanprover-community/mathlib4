@@ -508,7 +508,7 @@ open Lean
 /-- Traverse the syntax of a proposition to find universal quantifiers
 quantifiers and add `NamedBinder` annotations next to them. -/
 partial def addDecorations (e : Expr) : MetaM Expr :=
-  Meta.transform e $ fun expr => do
+  Meta.transform e fun expr => do
     if not (← Meta.inferType e).isProp then
       return .continue
     else if let Expr.forallE name type body data := expr then

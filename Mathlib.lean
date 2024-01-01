@@ -205,6 +205,7 @@ import Mathlib.Algebra.Group.WithOne.Defs
 import Mathlib.Algebra.Group.WithOne.Units
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.GroupPower.CovariantClass
+import Mathlib.Algebra.GroupPower.Hom
 import Mathlib.Algebra.GroupPower.Identities
 import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Algebra.GroupPower.Lemmas
@@ -547,8 +548,10 @@ import Mathlib.AlgebraicTopology.FundamentalGroupoid.InducedMaps
 import Mathlib.AlgebraicTopology.FundamentalGroupoid.PUnit
 import Mathlib.AlgebraicTopology.FundamentalGroupoid.Product
 import Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected
+import Mathlib.AlgebraicTopology.KanComplex
 import Mathlib.AlgebraicTopology.MooreComplex
 import Mathlib.AlgebraicTopology.Nerve
+import Mathlib.AlgebraicTopology.Quasicategory
 import Mathlib.AlgebraicTopology.SimplexCategory
 import Mathlib.AlgebraicTopology.SimplicialObject
 import Mathlib.AlgebraicTopology.SimplicialSet
@@ -2068,6 +2071,7 @@ import Mathlib.FieldTheory.IsAlgClosed.Classification
 import Mathlib.FieldTheory.IsAlgClosed.Spectrum
 import Mathlib.FieldTheory.IsSepClosed
 import Mathlib.FieldTheory.KrullTopology
+import Mathlib.FieldTheory.KummerExtension
 import Mathlib.FieldTheory.Laurent
 import Mathlib.FieldTheory.Minpoly.Basic
 import Mathlib.FieldTheory.Minpoly.Field
@@ -2679,6 +2683,7 @@ import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
 import Mathlib.MeasureTheory.Measure.Lebesgue.VolumeOfBalls
+import Mathlib.MeasureTheory.Measure.LogLikelihoodRatio
 import Mathlib.MeasureTheory.Measure.MeasureSpace
 import Mathlib.MeasureTheory.Measure.MeasureSpaceDef
 import Mathlib.MeasureTheory.Measure.MutuallySingular
@@ -3553,6 +3558,7 @@ import Mathlib.Topology.Category.TopCat.Opens
 import Mathlib.Topology.Category.TopCommRingCat
 import Mathlib.Topology.Category.UniformSpace
 import Mathlib.Topology.Clopen
+import Mathlib.Topology.ClopenBox
 import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.Compactification.OnePoint
 import Mathlib.Topology.Compactness.Compact

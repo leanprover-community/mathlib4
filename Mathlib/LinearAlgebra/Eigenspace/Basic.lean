@@ -397,7 +397,7 @@ theorem independent_generalizedEigenspace [NoZeroSMulDivisors R M] (f : End R M)
 any eigenspace has trivial intersection with the span of all the other eigenspaces. -/
 theorem eigenspaces_independent [NoZeroSMulDivisors R M] (f : End R M) :
     CompleteLattice.Independent f.eigenspace :=
-  f.independent_generalizedEigenspace.mono <| fun μ ↦ le_iSup (generalizedEigenspace f μ) 1
+  f.independent_generalizedEigenspace.mono fun μ ↦ le_iSup (generalizedEigenspace f μ) 1
 
 /-- Eigenvectors corresponding to distinct eigenvalues of a linear operator are linearly
     independent. (Lemma 5.10 of [axler2015])
