@@ -582,15 +582,15 @@ lemma asympBound_def' {n : ℕ} :
     asympBound g a b n = n ^ p a b * (1 + (∑ u in range n, g u / u ^ (p a b + 1))) := by
   simp [asympBound_def, sumTransform, mul_add, mul_one, Finset.sum_Ico_eq_sum_range]
 
-lemma asympBound_pos (n : ℕ) (hn : 0 < n) : 0 < asympBound g a b n := by
-  calc 0 < (n:ℝ) ^ p a b * (1 + 0)    := by aesop (add safe Real.rpow_pos_of_pos)
-       _ ≤ asympBound g a b n    := by
-                    simp only [asympBound_def']
-                    gcongr n^p a b * (1 + ?_)
-                    have := R.g_nonneg
-                    aesop (add safe Real.rpow_nonneg,
-                               safe div_nonneg,
-                               safe Finset.sum_nonneg)
+lemma asympBound_pos (n : ℕ) (hn : 0 < n) : 0 < asympBound g a b n :=
+  calc
+    0 < (n : ℝ) ^ p a b * (1 + 0) := by aesop (add safe Real.rpow_pos_of_pos)
+      _ ≤ asympBound g a b n := by
+            simp only [asympBound_def']
+            gcongr n ^ p a b * (1 + ?_)
+            refine Finset.sum_nonneg fun i _ => ?_
+            have : 0 ≤ g i := R.g_nonneg _ i.cast_nonneg
+            positivity
 
 lemma eventually_asympBound_pos : ∀ᶠ (n:ℕ) in atTop, 0 < asympBound g a b n := by
   filter_upwards [eventually_gt_atTop 0] with n hn
