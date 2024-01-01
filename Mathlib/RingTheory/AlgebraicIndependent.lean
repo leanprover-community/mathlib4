@@ -32,7 +32,7 @@ This file defines algebraic independence of a family of element of an `R` algebr
 
 ## TODO
 Define the transcendence degree and show it is independent of the choice of a
-trascendence basis.
+transcendence basis.
 
 ## Tags
 transcendence basis, transcendence degree, transcendence
