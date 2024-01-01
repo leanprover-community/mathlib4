@@ -7,7 +7,6 @@ import Mathlib.GroupTheory.Congruence
 import Mathlib.LinearAlgebra.Multilinear.TensorProduct
 import Mathlib.Algebra.Algebra.Pi
 import Mathlib.Tactic.LibrarySearch
-import Mathlib.Tactic.Ring.RingNF
 
 #align_import linear_algebra.pi_tensor_product from "leanprover-community/mathlib"@"ce11c3c2a285bbe6937e26d9792fda4e51f3fe1a"
 
