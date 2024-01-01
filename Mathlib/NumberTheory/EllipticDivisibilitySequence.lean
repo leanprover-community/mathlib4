@@ -82,8 +82,8 @@ private def EllDivSequence'' (b c d : R) : ℕ → R
       have h2 : m + 2 < n + 5 := (lt_add_one _).trans h3
       have h1 : m + 1 < n + 5 := (lt_add_one _).trans h2
       EllDivSequence'' b c d (m + 4) * EllDivSequence'' b c d (m + 2) ^ 3 *
-          (if Even m then b ^ 4 else 1)
-        - EllDivSequence'' b c d (m + 1) * EllDivSequence'' b c d (m + 3) ^ 3 *
+          (if Even m then b ^ 4 else 1) -
+        EllDivSequence'' b c d (m + 1) * EllDivSequence'' b c d (m + 3) ^ 3 *
             (if Even m then 1 else b ^ 4)
     else
       let m := n / 2
@@ -95,8 +95,8 @@ private def EllDivSequence'' (b c d : R) : ℕ → R
       have h2 : m + 2 < n + 5 := (lt_add_one _).trans h3
       have h1 : m + 1 < n + 5 := (lt_add_one _).trans h2
       EllDivSequence'' b c d (m + 2) ^ 2 * EllDivSequence'' b c d (m + 3) *
-          EllDivSequence'' b c d (m + 5)
-        - EllDivSequence'' b c d (m + 1) * EllDivSequence'' b c d (m + 3) *
+          EllDivSequence'' b c d (m + 5) -
+        EllDivSequence'' b c d (m + 1) * EllDivSequence'' b c d (m + 3) *
             EllDivSequence'' b c d (m + 4) ^ 2
 
 variable (b c d : R)
@@ -130,8 +130,8 @@ lemma EllDivSequence'_four : EllDivSequence' b c d 4 = d * b := by
 
 @[simp]
 lemma EllDivSequence'_odd (m : ℕ) : EllDivSequence' b c d (2 * (m + 2) + 1) =
-    EllDivSequence' b c d (m + 4) * EllDivSequence' b c d (m + 2) ^ 3
-      - EllDivSequence' b c d (m + 1) * EllDivSequence' b c d (m + 3) ^ 3 := by
+    EllDivSequence' b c d (m + 4) * EllDivSequence' b c d (m + 2) ^ 3 -
+      EllDivSequence' b c d (m + 1) * EllDivSequence' b c d (m + 3) ^ 3 := by
   rw [EllDivSequence', if_neg <| fun h => Nat.even_add_one.mp h <| even_two_mul _,
     show 2 * (m + 2) + 1 = 2 * m + 5 by rfl, EllDivSequence'', dif_pos <| even_two_mul m]
   simp only [EllDivSequence', Nat.mul_div_right _ zero_lt_two]
@@ -152,8 +152,8 @@ lemma EllDivSequence'_odd (m : ℕ) : EllDivSequence' b c d (2 * (m + 2) + 1) =
 @[simp]
 lemma EllDivSequence'_even (m : ℕ) : EllDivSequence' b c d (2 * (m + 3)) * b =
     EllDivSequence' b c d (m + 2) ^ 2 * EllDivSequence' b c d (m + 3) *
-        EllDivSequence' b c d (m + 5)
-      - EllDivSequence' b c d (m + 1) * EllDivSequence' b c d (m + 3) *
+        EllDivSequence' b c d (m + 5) -
+      EllDivSequence' b c d (m + 1) * EllDivSequence' b c d (m + 3) *
           EllDivSequence' b c d (m + 4) ^ 2 := by
   rw [EllDivSequence', if_pos <| even_two_mul _, show 2 * (m + 3) = 2 * m + 1 + 5 by rfl,
     EllDivSequence'', dif_neg <| fun h => Nat.even_add_one.mp h <| even_two_mul _]
