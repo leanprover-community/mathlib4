@@ -1690,7 +1690,7 @@ theorem prod_pow (s : Finset α) (n : ℕ) (f : α → β) : ∏ x in s, f x ^ n
 @[to_additive sum_nsmul_assoc]
 lemma prod_pow_eq_pow_sum  (s : Finset ι) (f : ι → ℕ) (a : β) :
     ∏ i in s, a ^ f i = a ^ ∑ i in s, f i :=
-  cons_induction (by simp) (by simp (config := { contextual := true }) [prod_cons, sum_cons, pow_add]) s
+  cons_induction (by simp) (fun _ _ _ _ ↦ by simp [prod_cons, sum_cons, pow_add, *]) s
 #align finset.prod_pow_eq_pow_sum Finset.prod_pow_eq_pow_sum
 
 /-- A product over `Finset.powersetCard` which only depends on the size of the sets is constant. -/
