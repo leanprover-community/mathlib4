@@ -111,7 +111,7 @@ theorem count_modEq_card' (v : ℕ) :
   rw [count_eq_card_filter_range, ← Ico_zero_eq_range, Ico_filter_modEq_card _ _ hr]
   have hr' : 0 < (r : ℚ) := by positivity
   rw [max_eq_left (sub_nonneg.mpr <| Int.ceil_le_ceil _ _ <| div_le_div_of_le hr'.le <|
-    sub_le_sub_right (cast_le.mpr b.zero_le) (v : ℚ))]
+    sub_le_sub_right (cast_le.mpr b.zero_le) ↑v)]
   conv_lhs =>
     rw [← div_add_mod v r, cast_add, cast_mul, add_comm]
     tactic => simp_rw [← sub_sub, sub_div (_ - _), mul_div_cancel_left _ hr'.ne', ceil_sub_nat]
@@ -124,27 +124,17 @@ theorem count_modEq_card' (v : ℕ) :
 where `[·]` is the Iverson bracket. -/
 theorem count_modEq_card (v : ℕ) :
     b.count (· ≡ v [MOD r]) = b / r + if v % r < b % r then 1 else 0 := by
-  zify; rw [count_modEq_card' b hr]
-  conv_lhs =>
-    rw [← div_add_mod b r, cast_add, cast_mul, ← add_sub,
-      _root_.add_div, mul_div_cancel_left, add_comm, Int.ceil_add_nat, add_comm]
-    case ha => tactic => exact_mod_cast hr.ne.symm
-  rw [ofNat_ediv, add_right_inj]
-  cases' le_or_gt (b % r) (v % r) with h h
-  · conv_rhs => tactic => norm_cast
-    rw [← ite_not]
-    push_neg
-    simp only [h, ite_true, cast_zero]
-    rw [ceil_eq_zero_iff, Set.mem_Ioc,
-      div_le_iff (by exact_mod_cast hr), lt_div_iff (by exact_mod_cast hr), neg_mul, one_mul,
-      neg_lt_sub_iff_lt_add, zero_mul, tsub_le_iff_right, zero_add]
-    norm_cast
-    exact ⟨(mod_lt v hr).trans_le (by simp), h⟩
-  · conv_rhs => tactic => norm_cast
-    simp only [h, ite_true, cast_one]
-    rw [Int.ceil_eq_iff, div_le_iff (by exact_mod_cast hr), lt_div_iff (by exact_mod_cast hr),
-      Int.cast_one, sub_self, zero_mul, sub_pos, cast_lt, one_mul, tsub_le_iff_right]
-    norm_cast
+  have hr' : 0 < (r : ℚ) := by positivity
+  rw [← ofNat_inj, count_modEq_card' b hr, cast_add]
+  conv_lhs => rw [← div_add_mod b r, cast_add, cast_mul, ← add_sub, _root_.add_div,
+    mul_div_cancel_left _ hr'.ne', add_comm, Int.ceil_add_nat, add_comm]
+  rw [add_right_inj]
+  split_ifs with h
+  · rw [← cast_sub h.le, Int.ceil_eq_iff, div_le_iff hr', lt_div_iff hr', cast_one, Int.cast_one,
+      sub_self, zero_mul, cast_pos, tsub_pos_iff_lt, one_mul, cast_le, tsub_le_iff_right]
     exact ⟨h, ((mod_lt b hr).trans_le (by simp)).le⟩
+  · rw [cast_zero, ceil_eq_zero_iff, Set.mem_Ioc, div_le_iff hr', lt_div_iff hr', zero_mul,
+      tsub_nonpos, ← neg_eq_neg_one_mul, neg_lt_sub_iff_lt_add, ← cast_add, cast_lt, cast_le]
+    exact ⟨(mod_lt v hr).trans_le (by simp), not_lt.mp h⟩
 
 end Nat
