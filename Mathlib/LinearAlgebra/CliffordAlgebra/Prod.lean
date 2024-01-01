@@ -30,12 +30,11 @@ open scoped TensorProduct
 
 namespace CliffordAlgebra
 
-open QuadraticForm.Isometry in
 theorem map_inl_mul_map_inr_of_mem_evenOdd {i₁ i₂ : ZMod 2}
     (m₁ : CliffordAlgebra Q₁) (hm₁ : m₁ ∈ evenOdd Q₁ i₁)
     (m₂ : CliffordAlgebra Q₂) (hm₂ : m₂ ∈ evenOdd Q₂ i₂) :
-    map (inl Q₁ Q₂) m₁ * map (inr Q₁ Q₂) m₂ =
-      (-1 : ℤˣ) ^ (i₂ * i₁) • (map (inr Q₁ Q₂) m₂ * map (inl Q₁ Q₂) m₁) := by
+    map (.inl Q₁ Q₂) m₁ * map (.inr Q₁ Q₂) m₂ =
+      (-1 : ℤˣ) ^ (i₂ * i₁) • (map (.inr Q₁ Q₂) m₂ * map (.inl Q₁ Q₂) m₁) := by
   -- the strategy; for each variable, induct on powers of `ι`, then on the exponent of each
   -- power.
   induction hm₁ using Submodule.iSup_induction' with
@@ -53,7 +52,8 @@ theorem map_inl_mul_map_inr_of_mem_evenOdd {i₁ i₂ : ZMod 2}
       obtain ⟨v₁, rfl⟩ := hm₁
       -- this is the first interesting goal
       rw [map_mul, mul_assoc, ih₁, mul_smul_comm, map_apply_ι, Nat.cast_succ, mul_add_one,
-        uzpow_add, mul_smul, ← mul_assoc, ← mul_assoc, ← smul_mul_assoc ((-1) ^ i₂), inl_apply]
+        uzpow_add, mul_smul, ← mul_assoc, ← mul_assoc, ← smul_mul_assoc ((-1) ^ i₂),
+        QuadraticForm.Isometry.inl_apply]
       clear ih₁
       congr 2
       induction hm₂ using Submodule.iSup_induction' with
@@ -71,7 +71,7 @@ theorem map_inl_mul_map_inr_of_mem_evenOdd {i₁ i₂ : ZMod 2}
         | hmul m₂ hm₂ i x₂ _hx₂ ih₂ =>
           obtain ⟨v₂, rfl⟩ := hm₂
           -- this is the second interesting goal
-          rw [map_mul, map_apply_ι, inr_apply, Nat.cast_succ, ← mul_assoc,
+          rw [map_mul, map_apply_ι, QuadraticForm.Isometry.inr_apply, Nat.cast_succ, ← mul_assoc,
             ι_mul_ι_comm_of_isOrtho (.inl_inr _ _), neg_mul, mul_assoc, ih₂, mul_smul_comm,
             ← mul_assoc, ← Units.neg_smul, uzpow_add, uzpow_one, mul_neg_one]
 
@@ -81,9 +81,9 @@ def ofProd : CliffordAlgebra (Q₁.prod Q₂) →ₐ[R] (evenOdd Q₁ ᵍ⊗[R] 
   lift _ ⟨
     LinearMap.coprod
       ((GradedTensorProduct.includeLeft (evenOdd Q₁) (evenOdd Q₂)).toLinearMap
-          ∘ₗ Submodule.subtype (evenOdd Q₁ 1) ∘ₗ (ι Q₁).codRestrict _ (ι_mem_evenOdd_one Q₁))
+          ∘ₗ (evenOdd Q₁ 1).subtype ∘ₗ (ι Q₁).codRestrict _ (ι_mem_evenOdd_one Q₁))
       ((GradedTensorProduct.includeRight (evenOdd Q₁) (evenOdd Q₂)).toLinearMap
-          ∘ₗ Submodule.subtype (evenOdd Q₂ 1) ∘ₗ (ι Q₂).codRestrict _ (ι_mem_evenOdd_one Q₂)),
+          ∘ₗ (evenOdd Q₂ 1).subtype ∘ₗ (ι Q₂).codRestrict _ (ι_mem_evenOdd_one Q₂)),
     fun m => by
       dsimp only [LinearMap.coprod_apply, LinearMap.coe_comp, Function.comp_apply,
         AlgHom.toLinearMap_apply, QuadraticForm.prod_apply, Submodule.coeSubtype,
@@ -103,12 +103,11 @@ lemma ofProd_ι_mk (m₁ : M₁) (m₂ : M₂) :
   rw [ofProd, lift_ι_apply]
   rfl
 
-open QuadraticForm.Isometry in
 /-- The reverse direction of `CliffordAlgebra.prodEquiv`. -/
 def toProd : evenOdd Q₁ ᵍ⊗[R] evenOdd Q₂ →ₐ[R] CliffordAlgebra (Q₁.prod Q₂) :=
   GradedTensorProduct.lift _ _
-    (CliffordAlgebra.map <| QuadraticForm.Isometry.inl _ _)
-    (CliffordAlgebra.map <| QuadraticForm.Isometry.inr _ _)
+    (CliffordAlgebra.map <| .inl _ _)
+    (CliffordAlgebra.map <| .inr _ _)
     fun _i₁ _i₂ x₁ x₂ => map_inl_mul_map_inr_of_mem_evenOdd _ _ _ x₁.prop _ x₂.prop
 
 @[simp]
