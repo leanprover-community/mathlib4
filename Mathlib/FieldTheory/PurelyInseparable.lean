@@ -126,7 +126,7 @@ theorem isPurelyInseparable_iff_mem_pow (q : ℕ) [hF : ExpChar F q] :
   have halg : IsIntegral F x := by_contra fun h' ↦ by
     simp only [minpoly.eq_zero h', natSepDegree_zero, zero_ne_one] at hdeg
   refine ⟨halg, fun hsep ↦ ?_⟩
-  rw [natSepDegree_eq_natDegree_of_separable _ hsep, ← adjoin.finrank halg,
+  rw [hsep.natSepDegree_eq_natDegree, ← adjoin.finrank halg,
     IntermediateField.finrank_eq_one_iff] at hdeg
   simpa only [hdeg] using mem_adjoin_simple_self F x
 
