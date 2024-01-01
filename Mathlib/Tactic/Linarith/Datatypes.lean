@@ -63,7 +63,7 @@ partial def add : Linexp → Linexp → Linexp
 def scale (c : Int) (l : Linexp) : Linexp :=
   if c = 0 then []
   else if c = 1 then l
-  else l.map $ fun ⟨n, z⟩ => (n, z*c)
+  else l.map fun ⟨n, z⟩ => (n, z*c)
 
 /--
 `l.get n` returns the value in `l` associated with key `n`, if it exists, and `none` otherwise.

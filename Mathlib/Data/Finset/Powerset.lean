@@ -334,7 +334,7 @@ theorem powersetCard_card_add (s : Finset α) {i : ℕ} (hi : 0 < i) :
 
 theorem powersetCard_map {β : Type*} (f : α ↪ β) (n : ℕ) (s : Finset α) :
     powersetCard n (s.map f) = (powersetCard n s).map (mapEmbedding f).toEmbedding :=
-  ext <| fun t => by
+  ext fun t => by
     simp only [card_map, mem_powersetCard, le_eq_subset, gt_iff_lt, mem_map, mapEmbedding_apply]
     constructor
     · classical
