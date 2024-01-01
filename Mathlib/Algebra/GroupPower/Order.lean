@@ -126,7 +126,7 @@ theorem pow_lt_pow_left (h : x < y) (hx : 0 ≤ x) : ∀ {n : ℕ}, n ≠ 0 → 
       mul_lt_mul_of_le_of_le' (pow_le_pow_left hx h.le _) h (pow_pos (hx.trans_lt h) _) hx
 #align pow_lt_pow_of_lt_left pow_lt_pow_left
 
-/-- See also `pow_left_strictMonoOn`. -/
+/-- See also `pow_left_strictMono` and `Nat.pow_left_strictMonoOn`. -/
 lemma pow_left_strictMonoOn (hn : n ≠ 0) : StrictMonoOn (· ^ n : R → R) (Set.Ici 0) :=
   fun _a ha _b _ hab ↦ pow_lt_pow_left hab ha hn
 #align strict_mono_on_pow pow_left_strictMonoOn
