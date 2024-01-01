@@ -490,8 +490,8 @@ theorem map_zpow [Group G] [DivisionMonoid H] [MonoidHomClass F G H]
 #align map_zsmul map_zsmul
 
 @[to_additive (attr := simp)]
-lemma map_comp_zpow [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) (g : ι → G) (n : ℤ) :
-    f ∘ (g ^ n) = f ∘ g ^ n := by ext; simp
+lemma map_comp_zpow [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) (g : ι → G)
+    (n : ℤ) : f ∘ (g ^ n) = f ∘ g ^ n := by ext; simp
 
 end mul_one
 
