@@ -2,6 +2,7 @@ import Mathlib.NumberTheory.NumberField.Basic
 import Mathlib.RingTheory.ClassGroup
 import Mathlib.LinearAlgebra.FreeModule.PID
 import Mathlib.RingTheory.Ideal.Norm
+import Mathlib.RingTheory.Localization.Module
 
 section extendScalars
 
@@ -88,6 +89,7 @@ instance : Module.Finite R I := by
     exact IsNoetherian.finite R ↥I
   · exact Finite.of_basis (I.selfBasis (Free.chooseBasis R S) hI)
 
+
 end Ideal
 
 open NumberField FiniteDimensional Module
@@ -98,7 +100,7 @@ variable (K : Type*) [Field K] [NumberField K]
 
 open scoped nonZeroDivisors BigOperators
 
-variable (I : (Ideal (𝓞 K))⁰)
+variable (J : Ideal (𝓞 K)) (I : (Ideal (𝓞 K))⁰)
 
 attribute [local instance 2000] inst_ringOfIntegersAlgebra Algebra.toSMul Algebra.toModule
   Submodule.module
@@ -110,24 +112,26 @@ theorem ideal_rank_eq : finrank ℤ I = finrank ℤ (𝓞 K) := by
 noncomputable def Ideal.basis :
     Basis (Free.ChooseBasisIndex ℤ I) ℤ (I : Ideal (𝓞 K)) := Free.chooseBasis ℤ I
 
+def Ideal_inc : J →ₗ[ℤ] K :=
+  (Subalgebra.val (𝓞 K)).toLinearMap ∘ₗ ((Submodule.subtype J).restrictScalars ℤ)
+
+instance : IsLocalizedModule ℤ⁰
+  ((Subalgebra.val (𝓞 K)).toLinearMap ∘ₗ ((Submodule.subtype J).restrictScalars ℤ)) := sorry
+
 noncomputable def idealBasis :
-    Basis (Free.ChooseBasisIndex ℤ I) ℚ K := by
-  have : Function.Injective
-      ((Subalgebra.val (𝓞 K)).toLinearMap ∘ₗ ((Submodule.subtype I.1).restrictScalars ℤ)) := by
-    exact Subtype.val_injective.comp Subtype.val_injective
-  refine Basis.extendScalars ((Ideal.basis K I).map (LinearEquiv.ofInjective _ this)) ?_
-  rw [← finrank_eq_card_chooseBasisIndex, ideal_rank_eq, RingOfIntegers.rank]
+    Basis (Free.ChooseBasisIndex ℤ I) ℚ K :=
+  (Ideal.basis K I).ofIsLocalizedModule ℚ ℤ⁰
+    ((Subalgebra.val (𝓞 K)).toLinearMap ∘ₗ ((Submodule.subtype I.1).restrictScalars ℤ))
 
 theorem idealBasis_apply (i : Free.ChooseBasisIndex ℤ I) :
     idealBasis K I i = algebraMap (𝓞 K) K (Ideal.basis K I i) := by
-  simp only [idealBasis, Basis.extendScalars_apply, Basis.map_apply, LinearEquiv.ofInjective_apply,
-    LinearMap.coe_comp, LinearMap.coe_restrictScalars, Submodule.coeSubtype, Function.comp_apply,
+  rw [idealBasis, Basis.ofIsLocalizedModule_apply, LinearMap.coe_comp, LinearMap.coe_restrictScalars, Submodule.coeSubtype, Function.comp_apply,
     AlgHom.toLinearMap_apply, Subalgebra.coe_val]
   rfl
 
 theorem mem_span_idealBasis {x : K} :
     x ∈ Submodule.span ℤ (Set.range (idealBasis K I)) ↔ x ∈ algebraMap (𝓞 K) K '' I := by
-  simp_rw [idealBasis, Basis.extendScalars_mem_span, LinearMap.mem_range, Set.mem_image,
+  simp_rw [idealBasis, Basis.ofIsLocalizedModule_span, LinearMap.mem_range, Set.mem_image,
     LinearMap.coe_comp, LinearMap.coe_restrictScalars, Function.comp_apply, Submodule.coeSubtype,
     AlgHom.toLinearMap_apply, Subalgebra.coe_val]
   refine ⟨?_, ?_⟩
