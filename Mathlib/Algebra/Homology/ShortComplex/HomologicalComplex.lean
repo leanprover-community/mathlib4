@@ -311,6 +311,12 @@ lemma cyclesMap_i : cyclesMap φ i ≫ L.iCycles i = K.iCycles i ≫ φ.f i :=
 lemma p_opcyclesMap : K.pOpcycles i ≫ opcyclesMap φ i = φ.f i ≫ L.pOpcycles i :=
   ShortComplex.p_opcyclesMap _
 
+instance [Mono (φ.f i)] : Mono (cyclesMap φ i) := mono_of_mono_fac (cyclesMap_i φ i)
+
+attribute [local instance] epi_comp
+
+instance [Epi (φ.f i)] : Epi (opcyclesMap φ i) := epi_of_epi_fac (p_opcyclesMap φ i)
+
 variable (K)
 
 @[simp]
@@ -420,6 +426,20 @@ noncomputable def opcyclesFunctor [CategoryWithHomology C] : HomologicalComplex 
   obj K := K.opcycles i
   map f := opcyclesMap f i
 
+/-- The natural transformation `K.homologyπ i : K.cycles i ⟶ K.homology i`
+for all `K : HomologicalComplex C c`. -/
+@[simps]
+noncomputable def natTransHomologyπ [CategoryWithHomology C] :
+    cyclesFunctor C c i ⟶ homologyFunctor C c i where
+  app K := K.homologyπ i
+
+/-- The natural transformation `K.homologyι i : K.homology i ⟶ K.opcycles i`
+for all `K : HomologicalComplex C c`. -/
+@[simps]
+noncomputable def natTransHomologyι [CategoryWithHomology C] :
+    homologyFunctor C c i ⟶ opcyclesFunctor C c i where
+  app K := K.homologyι i
+
 /-- The natural isomorphism `K.homology i ≅ (K.sc i).homology`
 for all homological complexes `K`. -/
 @[simps!]
@@ -435,6 +455,10 @@ noncomputable def homologyFunctorIso' [CategoryWithHomology C]
     homologyFunctor C c j ≅
       shortComplexFunctor' C c i j k ⋙ ShortComplex.homologyFunctor C :=
   homologyFunctorIso C c j ≪≫ isoWhiskerRight (natIsoSc' C c i j k hi hk) _
+
+instance [CategoryWithHomology C] : (homologyFunctor C c i).PreservesZeroMorphisms where
+instance [CategoryWithHomology C] : (opcyclesFunctor C c i).PreservesZeroMorphisms where
+instance [CategoryWithHomology C] : (cyclesFunctor C c i).PreservesZeroMorphisms where
 
 end
 
@@ -681,8 +705,8 @@ variable {C : Type*} [Category C] [HasZeroMorphisms C] {ι : Type*} {c : Complex
   (i j k : ι) (hi : c.prev j = i) (hk : c.next j = k)
   [K.HasHomology j] [(K.sc' i j k).HasHomology]
 
-/-- The cycles of a homological complex in degree `j` by specifying a choice of
-`c.prev j` and `c.next j`. -/
+/-- The cycles of a homological complex in degree `j` can be computed
+by specifying a choice of `c.prev j` and `c.next j`. -/
 noncomputable def cyclesIsoSc' : K.cycles j ≅ (K.sc' i j k).cycles :=
   ShortComplex.cyclesMapIso (K.isoSc' i j k hi hk)
 
@@ -707,8 +731,8 @@ lemma toCycles_cyclesIsoSc'_hom :
   simp only [← cancel_mono (K.sc' i j k).iCycles, assoc, cyclesIsoSc'_hom_iCycles,
     toCycles_i, ShortComplex.toCycles_i, shortComplexFunctor'_obj_f]
 
-/-- The homology of a homological complex in degree `j` by specifying a choice of
-`c.prev j` and `c.next j`. -/
+/-- The homology of a homological complex in degree `j` can be computed
+by specifying a choice of `c.prev j` and `c.next j`. -/
 noncomputable def opcyclesIsoSc' : K.opcycles j ≅ (K.sc' i j k).opcycles :=
   ShortComplex.opcyclesMapIso (K.isoSc' i j k hi hk)
 
@@ -727,8 +751,15 @@ lemma pOpcycles_opcyclesIsoSc'_hom :
   erw [ShortComplex.p_opcyclesMap]
   apply id_comp
 
-/-- The opcycles of a homological complex in degree `j` by specifying a choice of
-`c.prev j` and `c.next j`. -/
+@[reassoc (attr := simp)]
+lemma opcyclesIsoSc'_inv_fromOpcycles :
+    (K.opcyclesIsoSc' i j k hi hk).inv ≫ K.fromOpcycles j k =
+      (K.sc' i j k).fromOpcycles := by
+  simp only [← cancel_epi (K.sc' i j k).pOpcycles,  pOpcycles_opcyclesIsoSc'_inv_assoc,
+    p_fromOpcycles, ShortComplex.p_fromOpcycles, shortComplexFunctor'_obj_g]
+
+/-- The opcycles of a homological complex in degree `j` can be computed
+by specifying a choice of `c.prev j` and `c.next j`. -/
 noncomputable def homologyIsoSc' : K.homology j ≅ (K.sc' i j k).homology :=
   ShortComplex.homologyMapIso (K.isoSc' i j k hi hk)
 
@@ -743,5 +774,17 @@ lemma π_homologyIsoSc'_inv :
     (K.sc' i j k).homologyπ ≫ (K.homologyIsoSc' i j k hi hk).inv =
       (K.cyclesIsoSc' i j k hi hk).inv ≫ K.homologyπ j := by
   apply ShortComplex.homologyπ_naturality
+
+@[reassoc (attr := simp)]
+lemma homologyIsoSc'_hom_ι :
+    (K.homologyIsoSc' i j k hi hk).hom ≫ (K.sc' i j k).homologyι =
+      K.homologyι j ≫ (K.opcyclesIsoSc' i j k hi hk).hom := by
+  apply ShortComplex.homologyι_naturality
+
+@[reassoc (attr := simp)]
+lemma homologyIsoSc'_inv_ι :
+    (K.homologyIsoSc' i j k hi hk).inv ≫ K.homologyι j =
+      (K.sc' i j k).homologyι ≫ (K.opcyclesIsoSc' i j k hi hk).inv := by
+  apply ShortComplex.homologyι_naturality
 
 end HomologicalComplex

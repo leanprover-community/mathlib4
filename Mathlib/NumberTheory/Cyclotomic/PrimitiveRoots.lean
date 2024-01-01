@@ -218,7 +218,7 @@ theorem norm_eq_one [IsDomain L] [IsCyclotomicExtension {n} K L] (hn : n ≠ 2)
   · rw [h1, one_coe, one_right_iff] at hζ
     rw [hζ, show 1 = algebraMap K L 1 by simp, Algebra.norm_algebraMap, one_pow]
   · replace h1 : 2 ≤ n
-    · by_contra' h
+    · by_contra! h
       exact h1 (PNat.eq_one_of_lt_two h)
 -- Porting note: specyfing the type of `cyclotomic_coeff_zero K h1` was not needed.
     rw [← hζ.powerBasis_gen K, PowerBasis.norm_gen_eq_coeff_zero_minpoly, hζ.powerBasis_gen K, ←
@@ -447,7 +447,7 @@ theorem sub_one_norm_two {k : ℕ} (hζ : IsPrimitiveRoot ζ (2 ^ k)) (hk : 2 �
   have : 2 < (2 : ℕ+) ^ k := by
     simp only [← coe_lt_coe, one_coe, pow_coe]
     nth_rw 1 [← pow_one 2]
-    exact pow_lt_pow one_lt_two (lt_of_lt_of_le one_lt_two hk)
+    exact pow_lt_pow_right one_lt_two (lt_of_lt_of_le one_lt_two hk)
 -- Porting note: `simpa using hirr` was `simp [hirr]`_
   replace hirr : Irreducible (cyclotomic ((2 : ℕ+) ^ k : ℕ+) K) := by simpa using hirr
 -- Porting note: `simpa using hζ` was `simp [hζ]`_

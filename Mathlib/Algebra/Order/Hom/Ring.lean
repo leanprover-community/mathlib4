@@ -558,7 +558,7 @@ instance OrderRingHom.subsingleton [LinearOrderedField α] [LinearOrderedField �
     Subsingleton (α →+*o β) :=
   ⟨fun f g => by
     ext x
-    by_contra' h' : f x ≠ g x
+    by_contra! h' : f x ≠ g x
     wlog h : f x < g x generalizing α β with h₂
     -- porting note: had to add the `generalizing` as there are random variables
     -- `F γ δ` flying around in context.

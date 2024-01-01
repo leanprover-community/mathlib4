@@ -5,7 +5,7 @@ Authors: Jeremy Avigad, Robert Y. Lewis
 -/
 
 import Mathlib.Algebra.Group.Units.Hom
-import Mathlib.Algebra.GroupPower.Basic
+import Mathlib.Algebra.GroupPower.Hom
 import Mathlib.Algebra.GroupWithZero.Commute
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Ring.Commute
