@@ -103,7 +103,6 @@ def edge (n : ℕ) (a b : Fin (n+1)) (hab : a ≤ b) : Δ[n] _[1] := by
   simp only [unop_op, len_mk, Fin.forall_fin_one]
   apply Fin.mk_le_mk.mpr hab
 
-@[simp]
 lemma coe_edge_toOrderHom (n : ℕ) (a b : Fin (n+1)) (hab : a ≤ b) :
     ↑(edge n a b hab).toOrderHom = ![a, b] :=
   rfl
@@ -116,7 +115,6 @@ def triangle {n : ℕ} (a b c : Fin (n+1)) (hab : a ≤ b) (hbc : b ≤ c) : Δ[
   dsimp
   simp only [*, Matrix.tail_cons, Matrix.head_cons, true_and]
 
-@[simp]
 lemma coe_triangle_toOrderHom {n : ℕ} (a b c : Fin (n+1)) (hab : a ≤ b) (hbc : b ≤ c) :
     ↑(triangle a b c hab hbc).toOrderHom = ![a, b, c] :=
   rfl
