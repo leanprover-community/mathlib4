@@ -557,7 +557,7 @@ variable [Module R M] [Module R M'] [Module R M''] (f : M →ₗ[R] M') (g : M �
 `IsLocalizedModule S f` describes that `f : M ⟶ M'` is the localization map identifying `M'` as
 `LocalizedModule S M`.
 -/
-@[mk_iff isLocalizedModule_iff] class IsLocalizedModule : Prop where
+@[mk_iff] class IsLocalizedModule : Prop where
   map_units : ∀ x : S, IsUnit (algebraMap R (Module.End R M') x)
   surj' : ∀ y : M', ∃ x : M × S, x.2 • y = f x.1
   exists_of_eq : ∀ {x₁ x₂}, f x₁ = f x₂ → ∃ c : S, c • x₁ = c • x₂
@@ -577,6 +577,22 @@ lemma IsLocalizedModule.eq_iff_exists [IsLocalizedModule S f] {x₁ x₂} :
     apply_fun f at h
     simp_rw [f.map_smul_of_tower, Submonoid.smul_def, ← Module.algebraMap_end_apply R R] at h
     exact ((Module.End_isUnit_iff _).mp <| map_units f c).1 h
+
+theorem IsLocalizedModule.of_linearEquiv (e : M' ≃ₗ[R] M'') [hf : IsLocalizedModule S f] :
+    IsLocalizedModule S (e ∘ₗ f : M →ₗ[R] M'') where
+  map_units s := by
+    rw [show algebraMap R (Module.End R M'') s = e ∘ₗ (algebraMap R (Module.End R M') s) ∘ₗ e.symm by
+      ext; simp, Module.End_isUnit_iff, LinearMap.coe_comp, LinearMap.coe_comp, LinearEquiv.coe_coe,
+      LinearEquiv.coe_coe, EquivLike.comp_bijective, EquivLike.bijective_comp]
+    exact (Module.End_isUnit_iff _).mp <| hf.map_units s
+  surj' x := by
+    obtain ⟨p, h⟩ := hf.surj' (e.symm x)
+    exact ⟨p, by rw [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, ← e.congr_arg h,
+      Submonoid.smul_def, Submonoid.smul_def, LinearEquiv.map_smul, LinearEquiv.apply_symm_apply]⟩
+  exists_of_eq h := by
+    simp_rw [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
+      EmbeddingLike.apply_eq_iff_eq] at h
+    exact hf.exists_of_eq h
 
 variable (M) in
 lemma isLocalizedModule_id (R') [CommRing R'] [Algebra R R'] [IsLocalization S R'] [Module R' M]
