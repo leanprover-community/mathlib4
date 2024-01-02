@@ -445,6 +445,62 @@ theorem eq_bot_iff_forall_lt (x : EReal) : x = ⊥ ↔ ∀ y : ℝ, x < (y : ERe
     exact ⟨x.toReal, coe_toReal_le h⟩
 #align ereal.eq_bot_iff_forall_lt EReal.eq_bot_iff_forall_lt
 
+/-! ### Intervals and coercion from reals -/
+
+lemma exists_between_ofReal_left {x : EReal} {z : ℝ} (h : x < z) : ∃ y : ℝ, x < y ∧ y < z := by
+  obtain ⟨a, ha₁, ha₂⟩ := exists_between h
+  induction' a using EReal.rec with a₀
+  · simp only [not_lt_bot] at ha₁
+  · exact ⟨a₀, by exact_mod_cast ha₁, by exact_mod_cast ha₂⟩
+  · simp only [not_top_lt] at ha₂
+
+lemma exists_between_ofReal_right {x : ℝ} {z : EReal} (h : x < z) : ∃ y : ℝ, x < y ∧ y < z := by
+  obtain ⟨a, ha₁, ha₂⟩ := exists_between h
+  induction' a using EReal.rec with a₀
+  · simp only [not_lt_bot] at ha₁
+  · exact ⟨a₀, by exact_mod_cast ha₁, by exact_mod_cast ha₂⟩
+  · simp only [not_top_lt] at ha₂
+
+lemma Icc_of_Real {x y : ℝ} : Real.toEReal '' Set.Icc x y = Set.Icc ↑x ↑y := by
+  refine (Set.image_comp WithBot.some WithTop.some _).trans ?_
+  rw [WithTop.image_coe_Icc, WithBot.image_coe_Icc]
+  rfl
+
+lemma Ico_of_Real {x y : ℝ} : Real.toEReal '' Set.Ico x y = Set.Ico ↑x ↑y := by
+  refine (Set.image_comp WithBot.some WithTop.some _).trans ?_
+  rw [WithTop.image_coe_Ico, WithBot.image_coe_Ico]
+  rfl
+
+lemma Ici_of_Real {x : ℝ} : Real.toEReal '' Set.Ici x = Set.Ico ↑x ⊤ := by
+  refine (Set.image_comp WithBot.some WithTop.some _).trans ?_
+  rw [WithTop.image_coe_Ici, WithBot.image_coe_Ico]
+  rfl
+
+lemma Ioc_of_Real {x y : ℝ} : Real.toEReal '' Set.Ioc x y = Set.Ioc ↑x ↑y := by
+  refine (Set.image_comp WithBot.some WithTop.some _).trans ?_
+  rw [WithTop.image_coe_Ioc, WithBot.image_coe_Ioc]
+  rfl
+
+lemma Ioo_of_Real {x y : ℝ} : Real.toEReal '' Set.Ioo x y = Set.Ioo ↑x ↑y := by
+  refine (Set.image_comp WithBot.some WithTop.some _).trans ?_
+  rw [WithTop.image_coe_Ioo, WithBot.image_coe_Ioo]
+  rfl
+
+lemma Ioi_ofReal {x : ℝ} : Real.toEReal '' Set.Ioi x = Set.Ioo ↑x ⊤ := by
+  refine (Set.image_comp WithBot.some WithTop.some _).trans ?_
+  rw [WithTop.image_coe_Ioi, WithBot.image_coe_Ioo]
+  rfl
+
+lemma Iic_ofReal {x : ℝ} : Real.toEReal '' Set.Iic x = Set.Ioc ⊥ ↑x := by
+  refine (Set.image_comp WithBot.some WithTop.some _).trans ?_
+  rw [WithTop.image_coe_Iic, WithBot.image_coe_Iic]
+  rfl
+
+lemma Iio_ofReal {x : ℝ} : Real.toEReal '' Set.Iio x = Set.Ioo ⊥ ↑x := by
+  refine (Set.image_comp WithBot.some WithTop.some _).trans ?_
+  rw [WithTop.image_coe_Iio, WithBot.image_coe_Iio]
+  rfl
+
 /-! ### ennreal coercion -/
 
 @[simp]
