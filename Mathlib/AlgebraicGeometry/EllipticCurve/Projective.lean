@@ -248,8 +248,7 @@ lemma nonsingular_some (X Y : R) : W.nonsingular ![X, Y, 1] ↔ W.toAffine.nonsi
   linear_combination (norm := ring1) 3 * h - X * hX - Y * hY
 
 lemma nonsingular_smul_iff (P : Fin 3 → R) (u : Rˣ) : W.nonsingular (u • P) ↔ W.nonsingular P :=
-  have (u : Rˣ) {P : Fin 3 → R} (h : W.nonsingular <| u • P) :
-      W.nonsingular P := by
+  have (u : Rˣ) {P : Fin 3 → R} (h : W.nonsingular <| u • P) : W.nonsingular P := by
     rcases (W.nonsingular_iff _).mp h with ⟨h, h'⟩
     refine (W.nonsingular_iff P).mpr ⟨(W.equation_smul_iff P u).mp h, ?_⟩
     contrapose! h'
@@ -435,8 +434,7 @@ def addY_of_Xne (P Q : Fin 3 → R) : R :=
   W.negY ![W.addX_of_Xne P Q, W.addY'_of_Xne P Q, addZ_of_Xne P Q]
 
 lemma addY_of_Xne_smul (P Q : Fin 3 → R) (u v : Rˣ) :
-    W.addY_of_Xne (u • P) (v • Q) =
-      (u : R) ^ 4 * (v : R) ^ 4 * W.addY_of_Xne P Q := by
+    W.addY_of_Xne (u • P) (v • Q) = (u : R) ^ 4 * (v : R) ^ 4 * W.addY_of_Xne P Q := by
   simp only [addY_of_Xne, negY, addX_of_Xne_smul, addY'_of_Xne_smul, addZ_of_Xne_smul]
   matrix_simp
   ring1
@@ -457,8 +455,8 @@ variable {F : Type u} [Field F] {W : Projective F}
 
 lemma negY_divZ {P : Fin 3 → F} (hPz : P z ≠ 0) :
     W.negY P / P z = W.toAffine.negY (P x / P z) (P y / P z) := by
-  rw [negY, Affine.negY]
-  linear_combination (norm := ring1) -W.a₃ * mul_inv_cancel hPz
+  field_simp [negY, Affine.negY]
+  ring1
 
 lemma Yne_of_Yne {P Q : Fin 3 → F} (hP : W.nonsingular P) (hQ : W.nonsingular Q) (hPz : P z ≠ 0)
     (hQz : Q z ≠ 0) (hx : P x * Q z = P z * Q x) (hy : P y * Q z ≠ P z * W.negY Q) :
@@ -470,6 +468,14 @@ lemma Yne_of_Yne {P Q : Fin 3 → F} (hP : W.nonsingular P) (hQ : W.nonsingular 
     ← mul_div_assoc, ← neg_div, ← sub_div, div_left_inj' hPz] at hy
   exact hy
 
+lemma addX_div_addZ_of_Xne {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0)
+    (hx : P x * Q z ≠ P z * Q x) : W.addX_of_Xne P Q / addZ_of_Xne P Q =
+      W.toAffine.addX (P x / P z) (Q x / Q z)
+        (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)) := by
+  rw [Affine.slope_of_Xne <| by rwa [ne_eq, div_eq_div_iff hPz hQz, mul_comm <| Q x]]
+  field_simp [sub_ne_zero_of_ne hx, addX_of_Xne, addX'_of_Xne, addZ_of_Xne]
+  ring1
+
 lemma addX_div_addZ_of_Yne {P Q : Fin 3 → F} (hP : W.nonsingular P) (hQ : W.nonsingular Q)
     (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z = P z * Q x) (hy : P y * Q z ≠ P z * W.negY Q) :
     W.addX_of_Yne P / W.addZ_of_Yne P = W.toAffine.addX (P x / P z) (Q x / Q z)
@@ -480,12 +486,13 @@ lemma addX_div_addZ_of_Yne {P Q : Fin 3 → F} (hP : W.nonsingular P) (hQ : W.no
   field_simp [addX_of_Yne, addX'_of_Yne, addZ_of_Yne]
   ring1
 
-lemma addX_div_addZ_of_Xne {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0)
-    (hx : P x * Q z ≠ P z * Q x) : W.addX_of_Xne P Q / addZ_of_Xne P Q =
-      W.toAffine.addX (P x / P z) (Q x / Q z)
+lemma addY'_div_addZ_of_Xne {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0)
+    (hx : P x * Q z ≠ P z * Q x) : W.addY'_of_Xne P Q / addZ_of_Xne P Q =
+      W.toAffine.addY' (P x / P z) (Q x / Q z) (P y / P z)
         (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)) := by
-  rw [Affine.slope_of_Xne <| by rwa [ne_eq, div_eq_div_iff hPz hQz, mul_comm <| Q x]]
-  field_simp [sub_ne_zero_of_ne hx, addX_of_Xne, addX'_of_Xne, addZ_of_Xne]
+  rw [Affine.addY', ← addX_div_addZ_of_Xne hPz hQz hx,
+    Affine.slope_of_Xne <| by rwa [ne_eq, div_eq_div_iff hPz hQz, mul_comm <| Q x]]
+  field_simp [sub_ne_zero_of_ne hx, addY'_of_Xne, addX_of_Xne, addZ_of_Xne]
   ring1
 
 lemma addY'_div_addZ_of_Yne {P Q : Fin 3 → F} (hP : W.nonsingular P) (hQ : W.nonsingular Q)
@@ -499,14 +506,9 @@ lemma addY'_div_addZ_of_Yne {P Q : Fin 3 → F} (hP : W.nonsingular P) (hQ : W.n
   field_simp [addY'_of_Yne, addX_of_Yne, addZ_of_Yne]
   ring1
 
-lemma addY'_div_addZ_of_Xne {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0)
-    (hx : P x * Q z ≠ P z * Q x) : W.addY'_of_Xne P Q / addZ_of_Xne P Q =
-      W.toAffine.addY' (P x / P z) (Q x / Q z) (P y / P z)
-        (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)) := by
-  rw [Affine.addY', ← addX_div_addZ_of_Xne hPz hQz hx,
-    Affine.slope_of_Xne <| by rwa [ne_eq, div_eq_div_iff hPz hQz, mul_comm <| Q x]]
-  field_simp [sub_ne_zero_of_ne hx, addY'_of_Xne, addX_of_Xne, addZ_of_Xne]
-  ring1
+lemma addZ_ne_zero_of_Xne {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0)
+    (hx : P x * Q z ≠ P z * Q x) : addZ_of_Xne P Q ≠ 0 :=
+  mul_ne_zero (mul_ne_zero hPz hQz) <| pow_ne_zero 3 <| sub_ne_zero_of_ne hx
 
 lemma addZ_ne_zero_of_Yne {P Q : Fin 3 → F} (hP : W.nonsingular P) (hQ : W.nonsingular Q)
     (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z = P z * Q x) (hy : P y * Q z ≠ P z * W.negY Q) :
@@ -514,9 +516,12 @@ lemma addZ_ne_zero_of_Yne {P Q : Fin 3 → F} (hP : W.nonsingular P) (hQ : W.non
   mul_ne_zero (pow_ne_zero 3 hPz) <| pow_ne_zero 3 <| sub_ne_zero_of_ne <|
     Yne_of_Yne hP hQ hPz hQz hx hy
 
-lemma addZ_ne_zero_of_Xne {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0)
-    (hx : P x * Q z ≠ P z * Q x) : addZ_of_Xne P Q ≠ 0 :=
-  mul_ne_zero (mul_ne_zero hPz hQz) <| pow_ne_zero 3 <| sub_ne_zero_of_ne hx
+lemma addY_div_addZ_of_Xne {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0)
+    (hx : P x * Q z ≠ P z * Q x) : W.addY_of_Xne P Q / addZ_of_Xne P Q =
+      W.toAffine.addY (P x / P z) (Q x / Q z) (P y / P z)
+        (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)) := by
+  rw [Affine.addY, ← addX_div_addZ_of_Xne hPz hQz hx, ← addY'_div_addZ_of_Xne hPz hQz hx]
+  exact negY_divZ <| addZ_ne_zero_of_Xne hPz hQz hx
 
 lemma addY_div_addZ_of_Yne {P Q : Fin 3 → F} (hP : W.nonsingular P) (hQ : W.nonsingular Q)
     (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z = P z * Q x) (hy : P y * Q z ≠ P z * W.negY Q) :
@@ -525,13 +530,6 @@ lemma addY_div_addZ_of_Yne {P Q : Fin 3 → F} (hP : W.nonsingular P) (hQ : W.no
   rw [Affine.addY, ← addX_div_addZ_of_Yne hP hQ hPz hQz hx hy,
     ← addY'_div_addZ_of_Yne hP hQ hPz hQz hx hy]
   exact negY_divZ <| addZ_ne_zero_of_Yne hP hQ hPz hQz hx hy
-
-lemma addY_div_addZ_of_Xne {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0)
-    (hx : P x * Q z ≠ P z * Q x) : W.addY_of_Xne P Q / addZ_of_Xne P Q =
-      W.toAffine.addY (P x / P z) (Q x / Q z) (P y / P z)
-        (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)) := by
-  rw [Affine.addY, ← addX_div_addZ_of_Xne hPz hQz hx, ← addY'_div_addZ_of_Xne hPz hQz hx]
-  exact negY_divZ <| addZ_ne_zero_of_Xne hPz hQz hx
 
 end Polynomial
 
@@ -633,16 +631,14 @@ lemma add_smul_equiv (P Q : Fin 3 → R) (u v : Rˣ) : W.add (u • P) (v • Q)
     · have hvz : v * Q z ≠ 0 := mul_ne_zero v.ne_zero hQz
       by_cases hx : P x * Q z = P z * Q x
       · by_cases hy : P y * Q z = P z * W.negY Q
-        · rw [W.add_of_Yeq huz hvz (by erw [mul_mul_mul_comm, hx, mul_mul_mul_comm]; rfl) <|
-            by simp only [smul_fin3_ext, negY_smul, mul_mul_mul_comm, hy],
-            W.add_of_Yeq hPz hQz hx hy]
-        · rw [W.add_of_Yne huz hvz (by erw [mul_mul_mul_comm, hx, mul_mul_mul_comm]; rfl) <|
-            by simpa only [smul_fin3_ext, negY_smul, mul_mul_mul_comm]
-              using hy ∘ mul_left_cancel₀ huv, addX_of_Yne_smul, addY_of_Yne_smul, addZ_of_Yne_smul,
-            W.add_of_Yne hPz hQz hx hy]
+        · rw [W.add_of_Yeq huz hvz (by simp_rw [smul_fin3_ext, mul_mul_mul_comm, hx]) <| by
+            simp_rw [smul_fin3_ext, negY_smul, mul_mul_mul_comm, hy], W.add_of_Yeq hPz hQz hx hy]
+        · rw [W.add_of_Yne huz hvz (by simp_rw [smul_fin3_ext, mul_mul_mul_comm, hx]) <| by
+            simp_rw [smul_fin3_ext, negY_smul, mul_mul_mul_comm]; exact hy ∘ mul_left_cancel₀ huv,
+            addX_of_Yne_smul, addY_of_Yne_smul, addZ_of_Yne_smul, W.add_of_Yne hPz hQz hx hy]
           exact ⟨u ^ 6, by simp only [smul_fin3, ← Units.val_pow_eq_pow_val]; rfl⟩
-      · rw [W.add_of_Xne huz hvz <|
-          by simpa only [smul_fin3_ext, mul_mul_mul_comm] using hx ∘ mul_left_cancel₀ huv,
+      · rw [W.add_of_Xne huz hvz <| by
+          simp_rw [smul_fin3_ext, mul_mul_mul_comm]; exact hx ∘ mul_left_cancel₀ huv,
           addX_of_Xne_smul, addY_of_Xne_smul, addZ_of_Xne_smul, W.add_of_Xne hPz hQz hx]
         exact ⟨u ^ 4 * v ^ 4, by simp only [smul_fin3, ← Units.val_pow_eq_pow_val]; rfl⟩
 
