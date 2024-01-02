@@ -613,7 +613,7 @@ theorem isLocalizedModule_iff_isLocalization {A Aₛ} [CommRing A] [Algebra R A]
     refine ⟨fun ⟨s, hs⟩ ↦ ?_, ?_⟩
     · refine ⟨⟨algebraMap R A s, Algebra.mem_algebraMapSubmonoid_of_mem s⟩, ?_⟩
       rwa [← Algebra.smul_def, ← Algebra.smul_def]
-    · rintro ⟨⟨_, ⟨s, hs, rfl⟩⟩, h⟩
+    · rintro ⟨⟨_, s, hs, rfl⟩, h⟩
       exact ⟨⟨s, hs⟩, by rwa [← Algebra.smul_def, ← Algebra.smul_def] at h⟩
 
 lemma isLocalizedModule_iff_isLocalization' (R') [CommRing R'] [Algebra R R'] :
