@@ -47,6 +47,7 @@ import Mathlib.Tactic.GeneralizeProofs
 import Mathlib.Tactic.Group
 import Mathlib.Tactic.GuardHypNums
 import Mathlib.Tactic.Hint
+import Mathlib.Tactic.ITauto
 import Mathlib.Tactic.InferParam
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.Inhabit
@@ -217,8 +218,8 @@ syntax generalizingClause := " generalizing" (ppSpace ident)+
 
 /- M -/ syntax (name := unfoldCases) "unfold_cases " tacticSeq : tactic
 
-/- B -/ syntax (name := equivRw) "equiv_rw" (config)? (termList <|> (ppSpace term)) (location)? :
-  tactic
+/- B -/ syntax (name := equivRw) "equiv_rw" (config)?
+  ((" [" term,* "]") <|> (ppSpace term)) (location)? : tactic
 /- B -/ syntax (name := equivRwType) "equiv_rw_type" (config)? ppSpace term : tactic
 
 /- E -/ syntax (name := nthRwLHS) "nth_rw_lhs " num rwRuleSeq (location)? : tactic
