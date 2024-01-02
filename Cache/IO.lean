@@ -286,7 +286,7 @@ def allExist (paths : List (FilePath × Bool)) : IO Bool := do
   pure true
 
 /-- Compresses build files into the local cache and returns an array with the compressed files -/
-def packCache (hashMap : HashMap) (overwrite : Bool) (comment : Option String := none) :
+def packCache (hashMap : HashMap) (overwrite verbose : Bool) (comment : Option String := none) :
     IO $ Array String := do
   mkDir CACHEDIR
   IO.println "Compressing cache"
@@ -305,6 +305,8 @@ def packCache (hashMap : HashMap) (overwrite : Bool) (comment : Option String :=
             | unreachable!
           runCmd (← getLeanTar) $ #[zipPath.toString, trace] ++
             (if let some c := comment then #["-c", s!"git=mathlib4@{c}"] else #[]) ++ args
+      if verbose then
+        println! "packing {path} as {zip}"
       acc := acc.push zip
   for task in tasks do
     _ ← IO.ofExcept task.get
