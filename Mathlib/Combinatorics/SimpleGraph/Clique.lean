@@ -345,7 +345,7 @@ theorem cliqueFree_two : G.CliqueFree 2 ↔ G = ⊥ := by
 #align simple_graph.clique_free_two SimpleGraph.cliqueFree_two
 
 /-- Adding an edge increases the clique number by at most one. -/
-theorem cliqueFree_of_addEdge_cliqueFree (v w) (h : G.CliqueFree n) :
+protected theorem CliqueFree.addEdge (h : G.CliqueFree n) (v w) :
     (G.addEdge v w).CliqueFree (n + 1) := by
   contrapose h
   obtain ⟨f, ha⟩ := topEmbeddingOfNotCliqueFree h
