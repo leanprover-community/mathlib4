@@ -94,6 +94,14 @@ theorem ext {φ ψ : PresentedGroup rels →* G} (hx : ∀ (x : α), φ (.of x) 
   ext
   apply hx
 
+/-- Presented groups of isomorphic types are isomorphic. -/
+def equivPresentedGroup {β : Type*} (e : α ≃ β) :
+    PresentedGroup rels ≃* PresentedGroup ((FreeGroup.freeGroupCongr e) '' rels) :=
+  QuotientGroup.congr (Subgroup.normalClosure rels)
+    (Subgroup.normalClosure ((FreeGroup.freeGroupCongr e)'' rels)) (FreeGroup.freeGroupCongr e)
+    (Subgroup.map_normalClosure rels (FreeGroup.freeGroupCongr e).toMonoidHom
+      (FreeGroup.freeGroupCongr e).surjective)
+
 end ToGroup
 
 instance (rels : Set (FreeGroup α)) : Inhabited (PresentedGroup rels) :=
