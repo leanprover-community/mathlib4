@@ -272,30 +272,25 @@ lemma spectralSequence_edgeMonoStep_compatibility
     (hi₃' : i₃' = X.i₃ data r' pq) :
     X.EMapFourδ₄Toδ₃' n₀ n₁ n₂ hn₁ hn₂ i₀' i₁ i₂ i₃ i₃' _ _ (X.le₂₃ data r pq hi₂ hi₃) (X.le₃₃' data hrr' pq hi₃ hi₃') ≫
     (X.spectralSequencePageXIso data r' pq n₀ n₁ n₂ hn₁ hn₂ hn₁' i₀' i₁ i₂ i₃' hi₀' hi₁ hi₂ hi₃').inv ≫
-    (X.spectralSequence data).edgeMonoStep pq r r' hrr' ≫
-    ((X.spectralSequencePageXIso data r pq n₀ n₁ n₂ hn₁ hn₂ hn₁' i₀ i₁ i₂ i₃ hi₀ hi₁ hi₂ hi₃)).hom =
-      X.EMapFourδ₁Toδ₀' n₀ n₁ n₂ hn₁ hn₂ i₀' i₀ i₁ i₂ i₃ (X.le₀'₀ data hrr' pq hi₀' hi₀) _ _ _ := by
+    (X.spectralSequence data).edgeMonoStep pq r r' hrr' =
+      X.EMapFourδ₁Toδ₀' n₀ n₁ n₂ hn₁ hn₂ i₀' i₀ i₁ i₂ i₃ (X.le₀'₀ data hrr' pq hi₀' hi₀) _ _ _ ≫
+    ((X.spectralSequencePageXIso data r pq n₀ n₁ n₂ hn₁ hn₂ hn₁' i₀ i₁ i₂ i₃ hi₀ hi₁ hi₂ hi₃)).inv := by
   let H := X.spectralSequenceHomologyData data r r' hrr' _ pq _ rfl rfl n₀ n₁ n₂ hn₁ hn₂ hn₁'
     i₀' i₀ i₁ i₂ i₃ i₃' hi₀' hi₀ hi₁ hi₂ hi₃ hi₃'
-  convert ((X.spectralSequence data).leftHomologyData_π_edgeMonoStep_compatibility r r' hrr' _ pq _ rfl rfl H.left) =≫
-    (X.spectralSequencePageXIso data r pq n₀ n₁ n₂ hn₁ hn₂ hn₁' i₀ i₁ i₂ i₃ hi₀ hi₁ hi₂ hi₃).hom using 1
-  · dsimp
-    simp only [assoc]
-    congr 1
-    -- the statement here should be a simp lemma
-    dsimp only [SpectralSequence.iso, SpectralSequence.iso', spectralSequence]
-    rw [HomologicalComplex.homologyIsoSc'_eq_rfl]
-    simp
-    erw [id_comp]
-    dsimp [spectralSequencePageXIso, SpectralSequence.pageXIso]
-    obtain rfl : n₀ = n₁ - 1 := by linarith
-    subst hn₁' hn₂ hi₀' hi₀ hi₁ hi₂ hi₃ hi₃'
-    simp
-    dsimp [SpectralSequence.homologyIso, spectralSequenceHomologyData, SpectralSequence.homologyIso']
-    simp
-    symm
-    apply id_comp
-  · simp
+  refine' Eq.trans _ ((X.spectralSequence data).leftHomologyData_π_edgeMonoStep_compatibility r r' hrr' _ pq _ rfl rfl H.left)
+  congr 1
+  dsimp [SpectralSequence.edgeMonoStep]
+  simp
+  obtain rfl : n₀ = n₁ - 1 := by linarith
+  subst hn₁' hn₂ hi₀' hi₀ hi₁ hi₂ hi₃ hi₃'
+  rw [HomologicalComplex.homologyIsoSc'_eq_rfl]
+  dsimp [spectralSequencePageXIso, SpectralSequence.pageXIso]
+  erw [id_comp, id_comp]
+  simp only [← assoc]
+  congr 1
+  congr 1
+  dsimp [SpectralSequence.iso, SpectralSequence.iso', spectralSequence]
+  apply id_comp
 
 @[reassoc]
 lemma spectralSequence_edgeEpiStep_compatibility
@@ -310,37 +305,28 @@ lemma spectralSequence_edgeEpiStep_compatibility
     (hi₂ : i₂ = data.i₂ pq)
     (hi₃ : i₃ = X.i₃ data r pq)
     (hi₃' : i₃' = X.i₃ data r' pq) :
-    (X.spectralSequencePageXIso data r pq n₀ n₁ n₂ hn₁ hn₂ hn₁' i₀ i₁ i₂ i₃ hi₀ hi₁ hi₂ hi₃).inv ≫
     (X.spectralSequence data).edgeEpiStep pq r r' hrr' ≫
     (X.spectralSequencePageXIso data r' pq n₀ n₁ n₂ hn₁ hn₂ hn₁' i₀' i₁ i₂ i₃' hi₀' hi₁ hi₂ hi₃').hom ≫
     X.EMapFourδ₁Toδ₀' n₀ n₁ n₂ hn₁ hn₂ i₀' i₀ i₁ i₂ i₃' (X.le₀'₀ data hrr' pq hi₀' hi₀) _ _ _ =
+    (X.spectralSequencePageXIso data r pq n₀ n₁ n₂ hn₁ hn₂ hn₁' i₀ i₁ i₂ i₃ hi₀ hi₁ hi₂ hi₃).hom ≫
     X.EMapFourδ₄Toδ₃' n₀ n₁ n₂ hn₁ hn₂ i₀ i₁ i₂ i₃ i₃' _ _ _ (X.le₃₃' data hrr' pq hi₃ hi₃') := by
   let H := X.spectralSequenceHomologyData data r r' hrr' _ pq _ rfl rfl n₀ n₁ n₂ hn₁ hn₂ hn₁'
     i₀' i₀ i₁ i₂ i₃ i₃' hi₀' hi₀ hi₁ hi₂ hi₃ hi₃'
-  convert (X.spectralSequencePageXIso data r pq n₀ n₁ n₂ hn₁ hn₂ hn₁'
-      i₀ i₁ i₂ i₃ hi₀ hi₁ hi₂ hi₃).inv ≫=
-    (X.spectralSequence data).rightHomologyData_ι_edgeEpiStep_compatibility
-      r r' hrr' _ pq _ rfl rfl H.right using 1
-  · dsimp
-    congr 2
-    simp only [← assoc]
-    congr 1
-  -- the statement here should be a simp lemma
-    dsimp only [SpectralSequence.iso, SpectralSequence.iso', spectralSequence]
-    rw [HomologicalComplex.homologyIsoSc'_eq_rfl]
-    simp
-    dsimp [spectralSequencePageXIso, SpectralSequence.pageXIso]
-    obtain rfl : n₀ = n₁ - 1 := by linarith
-    subst hn₁' hn₂ hi₀' hi₀ hi₁ hi₂ hi₃ hi₃'
-    simp
-    dsimp [SpectralSequence.homologyIso, spectralSequenceHomologyData, SpectralSequence.homologyIso']
-    simp
-    dsimp [SpectralSequence.pageXIso]
-    erw [id_comp]
-    erw [spectralSequenceHomologyData_right_homologyIso_eq_left_homologyIso]
-    erw [Iso.inv_hom_id]
-    rfl
-  · simp
+  refine' Eq.trans _ ((X.spectralSequence data).rightHomologyData_ι_edgeEpiStep_compatibility
+      r r' hrr' _ pq _ rfl rfl H.right)
+  congr 1
+  simp only [← assoc]
+  congr 1
+  simp
+  obtain rfl : n₀ = n₁ - 1 := by linarith
+  subst hn₁' hn₂ hi₀' hi₀ hi₁ hi₂ hi₃ hi₃'
+  rw [HomologicalComplex.homologyIsoSc'_eq_rfl]
+  dsimp [spectralSequencePageXIso, SpectralSequence.pageXIso]
+  erw [id_comp]
+  dsimp [SpectralSequence.iso, SpectralSequence.iso', spectralSequence, SpectralSequence.homologyIso,
+    SpectralSequence.homologyIso']
+  erw [id_comp, spectralSequenceHomologyData_right_homologyIso_eq_left_homologyIso, Iso.inv_hom_id]
+  rfl
 
 lemma hasPageInfinityAt (r : ℤ) [(X.spectralSequence data).HasPage r] (pq : κ)
     (n₀ n₂ : ℤ) (hn₀ : n₀ = data.deg pq - 1) (hn₂ : n₂ = data.deg pq + 1)
@@ -352,7 +338,7 @@ lemma hasPageInfinityAt (r : ℤ) [(X.spectralSequence data).HasPage r] (pq : κ
   nonempty_hasEdgeEpiSet := ⟨r, X.mem_spectralSequence_hasEdgeEpiSet data r pq n₂ hn₂ isZero₁⟩
   nonempty_hasEdgeMonoSet := ⟨r, X.mem_spectralSequence_hasEdgeMonoSet data r pq n₀ hn₀ isZero₂⟩
 
-/- -- the statement is wrong, it should be more similar to spectralSequence_edgeMonoStep_compatibility
+@[reassoc]
 lemma spectralSequence_edgeMonoSteps_compatibility
     (pq : κ) (r r' : ℤ) (hrr' : r ≤ r') [(X.spectralSequence data).HasPage r]
     [(X.spectralSequence data).HasPageInfinityAt pq]
@@ -366,11 +352,15 @@ lemma spectralSequence_edgeMonoSteps_compatibility
     (hi₂ : i₂ = data.i₂ pq)
     (hi₃ : i₃ = X.i₃ data r pq)
     (hi₃' : i₃' = X.i₃ data r' pq) :
-    (X.spectralSequence data).edgeMonoSteps pq r r' hrr' ≫
-      (X.spectralSequencePageXIso data r pq n₀ n₁ n₂ hn₁ hn₂ hn₁' i₀ i₁ i₂ i₃ hi₀ hi₁ hi₂ hi₃).hom ≫
-        X.EMapFourδ₄Toδ₃' n₀ n₁ n₂ hn₁ hn₂ i₀ i₁ i₂ i₃ i₃' _ _ _ (X.monotone_i₃ data r r' hrr' pq hi₃ hi₃') =
-      (X.spectralSequencePageXIso data r' pq n₀ n₁ n₂ hn₁ hn₂ hn₁' i₀' i₁ i₂ i₃' hi₀' hi₁ hi₂ hi₃').hom ≫
-        X.EMapFourδ₁Toδ₀' n₀ n₁ n₂ hn₁ hn₂ i₀' i₀ i₁ i₂ i₃' (X.antitone_i₀ data r r' hrr' pq hi₀ hi₀') _ _ _ := by
+    X.EMapFourδ₄Toδ₃' n₀ n₁ n₂ hn₁ hn₂ i₀' i₁ i₂ i₃ i₃' _ _
+      (X.le₂₃ data r pq hi₂ hi₃) (X.monotone_i₃ data r r' hrr' pq hi₃ hi₃') ≫
+      (X.spectralSequencePageXIso data r' pq n₀ n₁ n₂ hn₁ hn₂ hn₁'
+        i₀' i₁ i₂ i₃' hi₀' hi₁ hi₂ hi₃').inv ≫
+      (X.spectralSequence data).edgeMonoSteps pq r r' hrr' =
+        X.EMapFourδ₁Toδ₀' n₀ n₁ n₂ hn₁ hn₂ i₀' i₀ i₁ i₂ i₃
+          (X.antitone_i₀ data r r' hrr' pq hi₀ hi₀') _ _ _ ≫
+        (X.spectralSequencePageXIso data r pq n₀ n₁ n₂ hn₁ hn₂ hn₁'
+        i₀ i₁ i₂ i₃ hi₀ hi₁ hi₂ hi₃).inv := by
   obtain ⟨k, hk⟩ := Int.eq_add_ofNat_of_le hrr'
   revert r r' i₀' i₀ i₁ i₂ i₃ i₃'
   induction' k with k hk
@@ -378,23 +368,23 @@ lemma spectralSequence_edgeMonoSteps_compatibility
     obtain rfl : r' = r := by simpa using h
     obtain rfl : i₀' = i₀ := by rw [hi₀, hi₀']
     obtain rfl : i₃' = i₃ := by rw [hi₃, hi₃']
-    simp only [SpectralSequence.edgeMonoSteps_eq_id, id_comp, Iso.cancel_iso_hom_left]
+    simp only [SpectralSequence.edgeMonoSteps_eq_id, comp_id]
     rfl
   · intro r r'' hrr'' _ _ _ i₀'' i₀ i₁ i₂ i₃ i₃'' hi₀'' hi₀ hi₁ hi₂ hi₃ hi₃'' h
     simp only [Nat.cast_succ] at h
     rw [← (X.spectralSequence data).edgeMonoSteps_comp pq r (r + k) r''
-      (by linarith) (by linarith), assoc,
-      ← X.EMapFourδ₄Toδ₃'_comp n₀ n₁ n₂ hn₁ hn₂ i₀ i₁ i₂ i₃ _ i₃'' _ _ _
+        (by linarith) (by linarith),
+      ← X.EMapFourδ₄Toδ₃'_comp n₀ n₁ n₂ hn₁ hn₂ i₀'' i₁ i₂ i₃ _ i₃'' _ _ _
       (X.monotone_i₃ data r (r + k) (by linarith) pq hi₃ rfl)
-      (X.monotone_i₃ data (r + k) r'' (by linarith) pq rfl hi₃''),
-      reassoc_of% (hk r (r + k) (by linarith) _ i₀ i₁ i₂ i₃ _ rfl hi₀ hi₁ hi₂ hi₃ rfl rfl),
+      (X.monotone_i₃ data (r + k) r'' (by linarith) pq rfl hi₃''), assoc,
       (X.spectralSequence data).edgeMonoSteps_eq_edgeMonoStep pq (r + k) r'' (by linarith),
-      X.EMapFourδ₁Toδ₀'_EMapFourδ₃Toδ₃',
       X.spectralSequence_edgeMonoStep_compatibility_assoc data pq (r + k) r'' (by linarith)
-        n₀ n₁ n₂ hn₁ hn₂ hn₁' i₀'' _ i₁ i₂ _ i₃'' hi₀'' rfl hi₁ hi₂ rfl hi₃'',
-        X.EMapFourδ₁Toδ₀'_comp]
+      n₀ n₁ n₂ hn₁ hn₂ hn₁' i₀'' _ i₁ i₂ _ i₃'' hi₀'' rfl hi₁ hi₂ rfl hi₃'',
+      ← EMapFourδ₁Toδ₀'_EMapFourδ₃Toδ₃'_assoc,
+      hk r (r + k) (by linarith) _ i₀ i₁ i₂ i₃ _ rfl hi₀ hi₁ hi₂ hi₃ rfl rfl,
+      X.EMapFourδ₁Toδ₀'_comp_assoc]
 
--- the statement is wrong, it should be more similar to spectralSequence_edgeEpiStep_compatibility
+@[reassoc]
 lemma spectralSequence_edgeEpiSteps_compatibility
     (pq : κ) (r r' : ℤ) (hrr' : r ≤ r') [(X.spectralSequence data).HasPage r]
     [(X.spectralSequence data).HasPageInfinityAt pq]
@@ -408,10 +398,15 @@ lemma spectralSequence_edgeEpiSteps_compatibility
     (hi₂ : i₂ = data.i₂ pq)
     (hi₃ : i₃ = X.i₃ data r pq)
     (hi₃' : i₃' = X.i₃ data r' pq) :
-    X.EMapFourδ₁Toδ₀' n₀ n₁ n₂ hn₁ hn₂ i₀' i₀ i₁ i₂ i₃ (X.antitone_i₀ data r r' hrr' pq hi₀ hi₀') _ _ _ ≫
-      (X.spectralSequencePageXIso data r pq n₀ n₁ n₂ hn₁ hn₂ hn₁' i₀ i₁ i₂ i₃ hi₀ hi₁ hi₂ hi₃).inv ≫ (X.spectralSequence data).edgeEpiSteps pq r r' hrr' =
-      X.EMapFourδ₄Toδ₃' n₀ n₁ n₂ hn₁ hn₂ i₀' i₁ i₂ i₃ i₃' _ _ _ (X.monotone_i₃ data r r' hrr' pq hi₃ hi₃') ≫
-        (X.spectralSequencePageXIso data r' pq n₀ n₁ n₂ hn₁ hn₂ hn₁' i₀' i₁ i₂ i₃' hi₀' hi₁ hi₂ hi₃').inv := by
+    (X.spectralSequence data).edgeEpiSteps pq r r' hrr' ≫
+      (X.spectralSequencePageXIso data r' pq n₀ n₁ n₂ hn₁ hn₂ hn₁'
+        i₀' i₁ i₂ i₃' hi₀' hi₁ hi₂ hi₃').hom ≫
+        X.EMapFourδ₁Toδ₀' n₀ n₁ n₂ hn₁ hn₂ i₀' i₀ i₁ i₂ i₃'
+          (X.antitone_i₀ data r r' hrr' pq hi₀ hi₀') _ _ _ =
+      (X.spectralSequencePageXIso data r pq n₀ n₁ n₂ hn₁ hn₂ hn₁'
+        i₀ i₁ i₂ i₃ hi₀ hi₁ hi₂ hi₃).hom ≫
+        X.EMapFourδ₄Toδ₃' n₀ n₁ n₂ hn₁ hn₂ i₀ i₁ i₂ i₃ i₃' _ _ _
+          (X.monotone_i₃ data r r' hrr' pq hi₃ hi₃') := by
   obtain ⟨k, hk⟩ := Int.eq_add_ofNat_of_le hrr'
   revert r r' i₀' i₀ i₁ i₂ i₃ i₃'
   induction' k with k hk
@@ -419,21 +414,21 @@ lemma spectralSequence_edgeEpiSteps_compatibility
     obtain rfl : r' = r := by simpa using h
     obtain rfl : i₀' = i₀ := by rw [hi₀, hi₀']
     obtain rfl : i₃' = i₃ := by rw [hi₃, hi₃']
-    simp only [SpectralSequence.edgeEpiSteps_eq_id, comp_id, Iso.cancel_iso_inv_right]
+    simp only [SpectralSequence.edgeEpiSteps_eq_id, id_comp]
     rfl
   · intro r r'' hrr'' _ _ _ i₀'' i₀ i₁ i₂ i₃ i₃'' hi₀'' hi₀ hi₁ hi₂ hi₃ hi₃'' h
     simp only [Nat.cast_succ] at h
     rw [← (X.spectralSequence data).edgeEpiSteps_comp pq r (r + k) r''
       (by linarith) (by linarith),
-      ← X.EMapFourδ₁Toδ₀'_comp n₀ n₁ n₂ hn₁ hn₂ i₀'' _ i₀ i₁ i₂ i₃
+      ← X.EMapFourδ₁Toδ₀'_comp n₀ n₁ n₂ hn₁ hn₂ i₀'' _ i₀ i₁ i₂ i₃''
       (X.antitone_i₀ data (r + k) r'' (by linarith) pq rfl hi₀'')
       (X.antitone_i₀ data r (r + k) (by linarith) pq hi₀ rfl), assoc,
-      reassoc_of% (hk r (r + k) (by linarith) _ i₀ i₁ i₂ i₃ _ rfl hi₀ hi₁ hi₂ hi₃ rfl rfl),
       (X.spectralSequence data).edgeEpiSteps_eq_edgeEpiStep pq (r + k) r'' (by linarith),
-      X.EMapFourδ₁Toδ₀'_EMapFourδ₃Toδ₃'_assoc,
-      X.spectralSequence_edgeEpiStep_compatibility data pq (r + k) r'' (by linarith)
+      X.spectralSequence_edgeEpiStep_compatibility_assoc data pq (r + k) r'' (by linarith)
         n₀ n₁ n₂ hn₁ hn₂ hn₁' i₀'' _ i₁ i₂ _ i₃'' hi₀'' rfl hi₁ hi₂ rfl hi₃'',
-      X.EMapFourδ₄Toδ₃'_comp_assoc]-/
+      ← EMapFourδ₁Toδ₀'_EMapFourδ₃Toδ₃',
+      reassoc_of% (hk r (r + k) (by linarith) _ i₀ i₁ i₂ i₃ _ rfl hi₀ hi₁ hi₂ hi₃ rfl rfl),
+      X.EMapFourδ₄Toδ₃'_comp]
 
 variable [OrderBot ι] [OrderTop ι]
 
@@ -544,7 +539,6 @@ section
 
 variable (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂) (hn₁' : n₁ = data.deg pq)
 
-
 noncomputable def spectralSequencePageInfinityIso
     (i₁ i₂ : ι) (hi₁ : i₁ = data.i₁ pq) (hi₂ : i₂ = data.i₂ pq) :
     (X.spectralSequence data).pageInfinity pq ≅ X.pageInfinity n₀ n₁ n₂ hn₁ hn₂ i₁ i₂
@@ -574,12 +568,36 @@ noncomputable def spectralSequencePageInfinityIso_hom
     (i₀ i₁ i₂ i₃ : ι) (hi₀ : i₀ = X.i₀ data r pq) (hi₁ : i₁ = data.i₁ pq)
     (hi₂ : i₂ = data.i₂ pq) (hi₃ : i₃ = X.i₃ data r pq)
     [(X.spectralSequence data).HasEdgeEpiAtFrom pq r] :
-    (X.spectralSequencePageXIso data r pq n₀ n₁ n₂ hn₁ hn₂ hn₁' i₀ i₁ i₂ i₃ hi₀ hi₁ hi₂ hi₃).inv ≫
     (X.spectralSequence data).edgeEpi pq r ≫
     (X.spectralSequencePageInfinityIso data pq n₀ n₁ n₂ hn₁ hn₂ hn₁' i₁ i₂ hi₁ hi₂).hom ≫
       X.EMapFourδ₁Toδ₀' n₀ n₁ n₂ hn₁ hn₂ ⊥ i₀ i₁ i₂ ⊤ bot_le (X.le₀₁ data r pq hi₀ hi₁)
       (X.le₁₂ data pq hi₁ hi₂) le_top =
+      (X.spectralSequencePageXIso data r pq n₀ n₁ n₂ hn₁ hn₂ hn₁' i₀ i₁ i₂ i₃ hi₀ hi₁ hi₂ hi₃).hom ≫
       X.EMapFourδ₄Toδ₃' n₀ n₁ n₂ hn₁ hn₂ i₀ i₁ i₂ i₃ ⊤ _ _ (X.le₂₃ data r pq hi₂ hi₃) le_top := by
+  let r' := SpectralSequence.rMin (spectralSequence X data) pq
+  by_cases h : r ≤ r'
+  · convert X.spectralSequence_edgeEpiSteps_compatibility data pq _ _ h n₀ n₁ n₂ hn₁ hn₂ hn₁'
+      _ i₀ i₁ i₂ i₃ _ rfl hi₀ hi₁ hi₂ hi₃ rfl =≫
+      X.EMapFourδ₄Toδ₃' n₀ n₁ n₂ hn₁ hn₂ i₀ i₁ i₂ (X.i₃ data r' pq) ⊤ _ _ _ le_top using 1
+    · rw [← (X.spectralSequence data).edgeEpiSteps_pageInfinityIso_inv' pq r r' h, assoc, assoc,
+        assoc]
+      congr 1
+      rw [EMapFourδ₁Toδ₀'_EMapFourδ₃Toδ₃']
+      sorry
+    · rw [assoc, X.EMapFourδ₄Toδ₃'_comp ]
+  · simp only [not_le] at h
+    sorry
+
+lemma spectralSequence_edgeMono_compatibility (r : ℤ) [(X.spectralSequence data).HasPage r]
+    (i₀ i₁ i₂ i₃ : ι) (hi₀ : i₀ = X.i₀ data r pq) (hi₁ : i₁ = data.i₁ pq)
+    (hi₂ : i₂ = data.i₂ pq) (hi₃ : i₃ = X.i₃ data r pq)
+    [(X.spectralSequence data).HasEdgeMonoAtFrom pq r] :
+    X.EMapFourδ₄Toδ₃' n₀ n₁ n₂ hn₁ hn₂ ⊥ i₁ i₂ i₃ ⊤ bot_le (X.le₁₂ data pq hi₁ hi₂) (X.le₂₃ data r pq hi₂ hi₃) le_top ≫
+      (X.spectralSequencePageInfinityIso data pq n₀ n₁ n₂ hn₁ hn₂ hn₁' i₁ i₂ hi₁ hi₂).inv ≫
+      (X.spectralSequence data).edgeMono pq r =
+    X.EMapFourδ₁Toδ₀' n₀ n₁ n₂ hn₁ hn₂ ⊥ i₀ i₁ i₂ i₃ bot_le (X.le₀₁ data r pq hi₀ hi₁) _ _ ≫
+      (X.spectralSequencePageXIso data r pq n₀ n₁ n₂ hn₁ hn₂ hn₁'
+        i₀ i₁ i₂ i₃ hi₀ hi₁ hi₂ hi₃).inv := by
   sorry-/
 
 end
