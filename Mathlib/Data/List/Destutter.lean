@@ -232,14 +232,14 @@ theorem length_destutter'_cotrans_ge [i : IsTrans α Rᶜ] (hba : ¬R b a) :
   | cons c cs ih =>
     by_cases hbc : R b c
     case pos =>
-      have hac : ¬Rᶜ a c := (mt (_root_.trans hba)) (Classical.not_not.2 hbc)
-      simp_rw [destutter', if_pos (Classical.not_not.1 hac), if_pos hbc, length_cons, le_refl]
+      have hac : ¬Rᶜ a c := (mt (_root_.trans hba)) (not_not.2 hbc)
+      simp_rw [destutter', if_pos (not_not.1 hac), if_pos hbc, length_cons, le_refl]
     case neg =>
       simp only [destutter', if_neg hbc]
       by_cases hac : R a c
       case pos =>
         simp only [if_pos hac, length_cons]
-        exact Nat.le_succ_of_le (ih hbc)
+        exact le_succ_of_le (ih hbc)
       case neg =>
         simp only [if_neg hac]
         exact ih hba
