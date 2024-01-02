@@ -878,6 +878,9 @@ def fromComponentAlgHom [DecidableEq ι] (i : ι) : A i →ₐ[R] ⨂[R] i, A i 
     erw [smul_tprodCoeff]
     rfl
 
+/--
+Lifting a multilinear map to an algebra homomorphism from tensor product
+-/
 @[simps]
 def liftAlgHom {S : Type*} [CommRing S] [Algebra R S]
     (f : MultilinearMap R A S)
