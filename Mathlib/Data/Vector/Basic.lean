@@ -585,7 +585,7 @@ theorem removeNth_insertNth' {v : Vector α (n + 1)} : ∀ {i : Fin (n + 1)} {j 
       ← List.insertNth_removeNth_of_le _ _ _ H h]
     rfl
   · rw [Fin.castSucc_lt_iff_succ_le] at h
-    rcases Fin.exists_succ_eq_iff.mpr (h.trans_lt' (Fin.succ_pos _)).ne' with ⟨j, rfl⟩
+    rcases Fin.exists_succ_eq.mpr (h.trans_lt' (Fin.succ_pos _)).ne' with ⟨j, rfl⟩
     rw [Fin.succ_le_succ_iff] at h
     rw [Fin.predAbove_succ_above _ _ h, Fin.succAbove_succ_below_apply _ _ h,
       Fin.coe_castSucc, Fin.val_succ, ← List.insertNth_removeNth_of_ge _ _ _ H h]
