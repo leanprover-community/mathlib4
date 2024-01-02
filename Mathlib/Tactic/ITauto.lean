@@ -178,15 +178,15 @@ open Lean (Name)
 /-- A reified inductive proof type for intuitionistic propositional logic. -/
 inductive Proof
   /-- `⊢ A`, causes failure during reconstruction -/
-  | sorry : Proof
+  | sorry (A : IProp) : Proof
   /-- `(n: A) ⊢ A` -/
   | hyp (n : Name) : Proof
   /-- `⊢ ⊤` -/
   | triv : Proof
   /-- `(p: ⊥) ⊢ A` -/
-  | exfalso' (p : Proof) : Proof
+  | exfalso' (A : IProp) (p : Proof) : Proof
   /-- `(p: (x: A) ⊢ B) ⊢ A → B` -/
-  | intro (x : Name) (p : Proof) : Proof
+  | intro (x : Name) (A : IProp) (p : Proof) : Proof
   /--
   * `ak = .and`: `(p: A ∧ B) ⊢ A`
   * `ak = .iff`: `(p: A ↔ B) ⊢ A → B`
@@ -220,26 +220,26 @@ inductive Proof
   /-- `(p: A → B) (q: A) ⊢ B` -/
   | app' : Proof → Proof → Proof
   /-- `(p: A ∨ B → C) ⊢ A → C` -/
-  | orImpL (p : Proof) : Proof
+  | orImpL (B : IProp) (p : Proof) : Proof
   /-- `(p: A ∨ B → C) ⊢ B → C` -/
-  | orImpR (p : Proof) : Proof
+  | orImpR (A : IProp) (p : Proof) : Proof
   /-- `(p: A) ⊢ A ∨ B` -/
-  | orInL (p : Proof) : Proof
+  | orInL (B : IProp) (p : Proof) : Proof
   /-- `(p: B) ⊢ A ∨ B` -/
-  | orInR (p : Proof) : Proof
+  | orInR (A : IProp) (p : Proof) : Proof
   /-- `(p₁: A ∨ B) (p₂: (x: A) ⊢ C) (p₃: (x: B) ⊢ C) ⊢ C` -/
   | orElim' (p₁ : Proof) (x : Name) (p₂ p₃ : Proof) : Proof
   /-- `(p₁: Decidable A) (p₂: (x: A) ⊢ C) (p₃: (x: ¬ A) ⊢ C) ⊢ C` -/
-  | decidableElim (classical : Bool) (p₁ x : Name) (p₂ p₃ : Proof) : Proof
+  | decidableElim (classical : Bool) (A : IProp) (p₁ x : Name) (p₂ p₃ : Proof) : Proof
   /--
   * `classical = false`: `(p: Decidable A) ⊢ A ∨ ¬A`
   * `classical = true`: `(p: Prop) ⊢ p ∨ ¬p`
   -/
-  | em (classical : Bool) (p : Name) : Proof
+  | em (classical : Bool) (p : Name) (A : IProp) : Proof
   /-- The variable `x` here names the variable that will be used in the elaborated proof.
   * `(p: ((x:A) → B) → C) ⊢ B → C`
   -/
-  | impImpSimp (x : Name) (p : Proof) : Proof
+  | impImpSimp (x : Name) (A : IProp) (p : Proof) : Proof
   deriving Lean.ToExpr
 #align tactic.itauto.proof Mathlib.Tactic.ITauto.Proof
 
@@ -247,26 +247,26 @@ instance : Inhabited Proof := ⟨.triv⟩
 
 /-- Debugging printer for proof objects. -/
 def Proof.format : Proof → Std.Format
-  | .sorry => "sorry"
+  | .sorry _ => "sorry"
   | .hyp i => Std.format i
   | .triv => "triv"
-  | .exfalso' p => f!"(exfalso {p.format})"
-  | .intro x p => f!"(fun {x} ↦ {p.format})"
+  | .exfalso' _ p => f!"(exfalso {p.format})"
+  | .intro x _ p => f!"(fun {x} ↦ {p.format})"
   | .andLeft _ p => f!"{p.format} .1"
   | .andRight _ p => f!"{p.format} .2"
   | .andIntro _ p q => f!"⟨{p.format}, {q.format}⟩"
   | .curry _ p => f!"(curry {p.format})"
   | .curry₂ _ p q => f!"(curry {p.format} {q.format})"
   | .app' p q => f!"({p.format} {q.format})"
-  | .orImpL p => f!"(orImpL {p.format})"
-  | .orImpR p => f!"(orImpR {p.format})"
-  | .orInL p => f!"(Or.inl {p.format})"
-  | .orInR p => f!"(Or.inr {p.format})"
+  | .orImpL _ p => f!"(orImpL {p.format})"
+  | .orImpR _ p => f!"(orImpR {p.format})"
+  | .orInL _ p => f!"(Or.inl {p.format})"
+  | .orInR _ p => f!"(Or.inr {p.format})"
   | .orElim' p x q r => f!"({p.format}.elim (fun {x} ↦ {q.format}) (fun {x} ↦ {r.format})"
-  | .em false p => f!"(Decidable.em {p})"
-  | .em true p => f!"(Classical.em {p})"
-  | .decidableElim _ p x q r => f!"({p}.elim (fun {x} ↦ {q.format}) (fun {x} ↦ {r.format})"
-  | .impImpSimp _ p => f!"(impImpSimp {p.format})"
+  | .em false p _ => f!"(Decidable.em {p})"
+  | .em true p _ => f!"(Classical.em {p})"
+  | .decidableElim _ _ p x q r => f!"({p}.elim (fun {x} ↦ {q.format}) (fun {x} ↦ {r.format})"
+  | .impImpSimp _ _ p => f!"(impImpSimp {p.format})"
 #align tactic.itauto.proof.to_format Mathlib.Tactic.ITauto.Proof.format
 
 instance : Std.ToFormat Proof := ⟨Proof.format⟩
@@ -274,12 +274,12 @@ instance : Std.ToFormat Proof := ⟨Proof.format⟩
 /-- A variant on `Proof.exfalso'` that performs opportunistic simplification. -/
 def Proof.exfalso : IProp → Proof → Proof
   | .false, p => p
-  | _, p => .exfalso' p
+  | A, p => .exfalso' A p
 #align tactic.itauto.proof.exfalso Mathlib.Tactic.ITauto.Proof.exfalso
 
 /-- A variant on `Proof.orElim'` that performs opportunistic simplification. -/
 def Proof.orElim : Proof → Name → Proof → Proof → Proof
-  | .em cl p, x, q, r => .decidableElim cl p x q r
+  | .em cl p A, x, q, r => .decidableElim cl A p x q r
   | p, x, q, r => .orElim' p x q r
 #align tactic.itauto.proof.or_elim Mathlib.Tactic.ITauto.Proof.orElim
 
@@ -288,61 +288,66 @@ def Proof.orElim : Proof → Name → Proof → Proof → Proof
 def Proof.app : Proof → Proof → Proof
   | .curry ak p, q => .curry₂ ak p q
   | .curry₂ ak p q, r => p.app (q.andIntro ak r)
-  | .orImpL p, q => p.app q.orInL
-  | .orImpR p, q => p.app q.orInR
-  | .impImpSimp x p, q => p.app (.intro x q)
+  | .orImpL B p, q => p.app (q.orInL B)
+  | .orImpR A p, q => p.app (q.orInR A)
+  | .impImpSimp x A p, q => p.app (.intro x A q)
   | p, q => p.app' q
 #align tactic.itauto.proof.app Mathlib.Tactic.ITauto.Proof.app
 
--- Note(Mario): the typechecker is disabled because it requires proofs to carry around additional
--- props. These can be retrieved from the git history if you want to re-enable this.
-/-
 /-- A typechecker for the `Proof` type. This is not used by the tactic but can be used for
 debugging. -/
-meta def proof.check : name_map prop → proof → option prop
-| Γ (proof.hyp i) := Γ.find i
-| Γ proof.triv := some prop.true
-| Γ (proof.exfalso' A p) := guard (p.check Γ = some prop.false) $> A
-| Γ (proof.intro x A p) := do B ← p.check (Γ.insert x A), pure (prop.imp A B)
-| Γ (proof.andLeft ak p) := do
-  prop.and' ak' A B ← p.check Γ | none,
-  guard (ak = ak') $> (ak.sides A B).1
-| Γ (proof.andRight ak p) := do
-  prop.and' ak' A B ← p.check Γ | none,
-  guard (ak = ak') $> (ak.sides A B).2
-| Γ (proof.andIntro and_kind.and p q) := do
-  A ← p.check Γ, B ← q.check Γ,
-  pure (A.and B)
-| Γ (proof.andIntro ak p q) := do
-  prop.imp A B ← p.check Γ | none,
-  C ← q.check Γ, guard (C = prop.imp B A) $> (A.and' ak B)
-| Γ (proof.curry ak p) := do
-  prop.imp (prop.and' ak' A B) C ← p.check Γ | none,
-  let (A', B') := ak.sides A B,
-  guard (ak = ak') $> (A'.imp $ B'.imp C)
-| Γ (proof.curry₂ ak p q) := do
-  prop.imp (prop.and' ak' A B) C ← p.check Γ | none,
-  A₂ ← q.check Γ,
-  let (A', B') := ak.sides A B,
-  guard (ak = ak' ∧ A₂ = A') $> (B'.imp C)
-| Γ (proof.app' p q) := do prop.imp A B ← p.check Γ | none, A' ← q.check Γ, guard (A = A') $> B
-| Γ (proof.orImpL B p) := do
-  prop.imp (prop.or A B') C ← p.check Γ | none,
-  guard (B = B') $> (A.imp C)
-| Γ (proof.orImpR A p) := do
-  prop.imp (prop.or A' B) C ← p.check Γ | none,
-  guard (A = A') $> (B.imp C)
-| Γ (proof.orInL B p) := do A ← p.check Γ | none, pure (A.or B)
-| Γ (proof.orInR A p) := do B ← p.check Γ | none, pure (A.or B)
-| Γ (proof.orElim p x q r) := do
-  prop.or A B ← p.check Γ | none,
-  C ← q.check (Γ.insert x A),
-  C' ← r.check (Γ.insert x B),
-  guard (C = C') $> C
-| Γ (proof.impImpSimp x A p) := do
-  prop.imp (prop.imp A' B) C ← p.check Γ | none,
-  guard (A = A') $> (B.imp C)
--/
+def Proof.check : Lean.NameMap IProp → Proof → Option IProp
+  | _, .sorry A => some A
+  | Γ, .hyp i => Γ.find? i
+  | _, triv => some .true
+  | Γ, .exfalso' A p => guard (p.check Γ = some .false) *> pure A
+  | Γ, .intro x A p => do let B ← p.check (Γ.insert x A); pure (.imp A B)
+  | Γ, .andLeft ak p => do
+    let .and' ak' A B ← p.check Γ | none
+    guard (ak = ak') *> pure (ak.sides A B).1
+  | Γ, .andRight ak p => do
+    let .and' ak' A B ← p.check Γ | none
+    guard (ak = ak') *> pure (ak.sides A B).2
+  | Γ, .andIntro .and p q => do
+    let A ← p.check Γ; let B ← q.check Γ
+    pure (A.and B)
+  | Γ, .andIntro ak p q => do
+    let .imp A B ← p.check Γ | none
+    let C ← q.check Γ; guard (C = .imp B A) *> pure (A.and' ak B)
+  | Γ, .curry ak p => do
+    let .imp (.and' ak' A B) C ← p.check Γ | none
+    let (A', B') := ak.sides A B
+    guard (ak = ak') *> pure (A'.imp $ B'.imp C)
+  | Γ, .curry₂ ak p q => do
+    let .imp (.and' ak' A B) C ← p.check Γ | none
+    let A₂ ← q.check Γ
+    let (A', B') := ak.sides A B
+    guard (ak = ak' ∧ A₂ = A') *> pure (B'.imp C)
+  | Γ, .app' p q => do
+    let .imp A B ← p.check Γ | none
+    let A' ← q.check Γ
+    guard (A = A') *> pure B
+  | Γ, .orImpL B p => do
+    let .imp (.or A B') C ← p.check Γ | none
+    guard (B = B') *> pure (A.imp C)
+  | Γ, .orImpR A p => do
+    let .imp (.or A' B) C ← p.check Γ | none
+    guard (A = A') *> pure (B.imp C)
+  | Γ, .orInL B p => do let A ← p.check Γ; pure (A.or B)
+  | Γ, .orInR A p => do let B ← p.check Γ; pure (A.or B)
+  | Γ, .orElim' p x q r => do
+    let .or A B ← p.check Γ | none
+    let C ← q.check (Γ.insert x A)
+    let C' ← r.check (Γ.insert x B)
+    guard (C = C') *> pure C
+  | _, .em _ _ A => pure (A.or A.not)
+  | Γ, .decidableElim _ A _ x p₂ p₃ => do
+    let C ← p₂.check (Γ.insert x A)
+    let C' ← p₃.check (Γ.insert x A.not)
+    guard (C = C') *> pure C
+  | Γ, .impImpSimp _ A p => do
+    let .imp (.imp A' B) C ← p.check Γ | none
+    guard (A = A') *> pure (B.imp C)
 
 /-- Get a new name in the pattern `h0, h1, h2, ...` -/
 @[inline] def freshName : StateM Nat Name := fun n => (Name.mkSimple s!"h{n}", n + 1)
@@ -377,8 +382,8 @@ partial def Context.add : IProp → Proof → Context → Except (IProp → Proo
     let (A, B) := ak.sides A B
     Γ.add (A.imp (B.imp C)) (p.curry ak)
   | .imp (.or A B) C, p, Γ => do
-    let Γ ← Γ.add (A.imp C) p.orImpL
-    Γ.add (B.imp C) p.orImpR
+    let Γ ← Γ.add (A.imp C) (p.orImpL B)
+    Γ.add (B.imp C) (p.orImpR A)
   | .imp _ .true, _, Γ => pure Γ
   | A, p, Γ => pure (Γ.insert A p)
 #align tactic.itauto.context.add Mathlib.Tactic.ITauto.Context.add
@@ -405,9 +410,9 @@ def isOk : (Bool × Proof) × Nat → Option (Proof × Nat)
 #align tactic.itauto.is_ok Mathlib.Tactic.ITauto.isOk
 
 /-- Skip the continuation and return a failed proof if the boolean is false. -/
-def whenOk : Bool → StateM Nat (Bool × Proof) → StateM Nat (Bool × Proof)
-  | false, _ => pure (false, .sorry)
-  | true, f => f
+def whenOk : Bool → IProp → StateM Nat (Bool × Proof) → StateM Nat (Bool × Proof)
+  | false, A, _ => pure (false, .sorry A)
+  | true, _, f => f
 #align tactic.itauto.when_ok Mathlib.Tactic.ITauto.whenOk
 
 mutual
@@ -436,15 +441,15 @@ partial def search (Γ : Context) (B : IProp) : StateM Nat (Bool × Proof) := do
       let Γ : Context := Γ.erase A
       let (a, n) := freshName n
       let (p₁, n) ← isOk <| Γ.withAdd A₁ (.hyp a) A₂ (fun Γ_A₁ A₂ =>
-        Γ_A₁.withAdd (IProp.imp A₂ C) (.impImpSimp a p) A₂ prove) n
-      isOk <| Γ.withAdd C (p.app (.intro a p₁)) B prove n
+        Γ_A₁.withAdd (IProp.imp A₂ C) (.impImpSimp a A₁ p) A₂ prove) n
+      isOk <| Γ.withAdd C (p.app (.intro a A₁ p₁)) B prove n
   if let some (r, n) := search₁ then
     ((true, r), n)
   else if let .or B₁ B₂ := B then
-    match (mapProof .orInL <$> prove Γ B₁) n with
-    | ((false, _), _) => (mapProof .orInR <$> prove Γ B₂) n
+    match (mapProof (.orInL B₂) <$> prove Γ B₁) n with
+    | ((false, _), _) => (mapProof (.orInR B₁) <$> prove Γ B₂) n
     | r => r
-  else ((false, .sorry), n)
+  else ((false, .sorry B), n)
 
 /-- The main prover. This receives a context of proven or assumed lemmas and a target proposition,
 and returns a proof or `none` (with state for the fresh variable generator).
@@ -466,11 +471,11 @@ partial def prove (Γ : Context) (B : IProp) : StateM Nat (Bool × Proof) :=
   | .true => pure (true, .triv)
   | .imp A B => do
     let a ← freshName
-    mapProof (.intro a) <$> Γ.withAdd A (.hyp a) B prove
+    mapProof (.intro a A) <$> Γ.withAdd A (.hyp a) B prove
   | .and' ak A B => do
     let (A, B) := ak.sides A B
     let (ok, p) ← prove Γ A
-    mapProof (p.andIntro ak) <$> whenOk ok (prove Γ B)
+    mapProof (p.andIntro ak) <$> whenOk ok B (prove Γ B)
   | B =>
     Γ.fold
       (init := fun found Γ => bif found then prove Γ B else search Γ B)
@@ -480,7 +485,7 @@ partial def prove (Γ : Context) (B : IProp) : StateM Nat (Bool × Proof) :=
           let a ← freshName
           let (ok, p₁) ← Γ.withAdd A₁ (.hyp a) B fun Γ _ => IH true Γ
           mapProof (.orElim p a p₁) <$>
-            whenOk ok (Γ.withAdd A₂ (.hyp a) B fun Γ _ => IH true Γ)
+            whenOk ok B (Γ.withAdd A₂ (.hyp a) B fun Γ _ => IH true Γ)
         else IH found Γ)
       (found := false) (Γ := Γ)
 
@@ -511,15 +516,15 @@ partial def reify (e : Q(Prop)) : AtomM IProp :=
 
 /-- Once we have a proof object, we have to apply it to the goal. -/
 partial def applyProof (g : MVarId) : NameMap Expr → Proof → MetaM Unit
-  | _, .sorry => throwError "itauto failed\n{g}"
+  | _, .sorry _ => throwError "itauto failed\n{g}"
   | Γ, .hyp n => do g.assignIfDefeq (← liftOption (Γ.find? n))
   | _, .triv => g.assignIfDefeq q(trivial)
-  | Γ, .exfalso' p => do
+  | Γ, .exfalso' _ p => do
     let A ← mkFreshExprMVarQ q(Prop)
     let t ← mkFreshExprMVarQ q(False)
     g.assignIfDefeq q(@False.elim $A $t)
     applyProof t.mvarId! Γ p
-  | Γ, .intro x p => do
+  | Γ, .intro x _ p => do
     let (e, g) ← g.intro x; g.withContext do
       applyProof g (Γ.insert x (.fvar e)) p
   | Γ, .andLeft .and p => do
@@ -596,19 +601,19 @@ partial def applyProof (g : MVarId) : NameMap Expr → Proof → MetaM Unit
     g.assignIfDefeq q($t₁ $t₂)
     applyProof t₁.mvarId! Γ p
     applyProof t₂.mvarId! Γ q
-  | Γ, .orImpL p => do
+  | Γ, .orImpL B p => do
     let (e, g) ← g.intro1; g.withContext do
-      applyProof g (Γ.insert e.name (.fvar e)) (p.app (.orInL (.hyp e.name)))
-  | Γ, .orImpR p => do
+      applyProof g (Γ.insert e.name (.fvar e)) (p.app (.orInL B (.hyp e.name)))
+  | Γ, .orImpR A p => do
     let (e, g) ← g.intro1; g.withContext do
-      applyProof g (Γ.insert e.name (.fvar e)) (p.app (.orInR (.hyp e.name)))
-  | Γ, .orInL p => do
+      applyProof g (Γ.insert e.name (.fvar e)) (p.app (.orInR A (.hyp e.name)))
+  | Γ, .orInL _ p => do
     let A ← mkFreshExprMVarQ q(Prop)
     let B ← mkFreshExprMVarQ q(Prop)
     let t ← mkFreshExprMVarQ (u := .zero) A
     g.assignIfDefeq q(@Or.inl $A $B $t)
     applyProof t.mvarId! Γ p
-  | Γ, .orInR p => do
+  | Γ, .orInR _ p => do
     let A ← mkFreshExprMVarQ q(Prop)
     let B ← mkFreshExprMVarQ q(Prop)
     let t ← mkFreshExprMVarQ (u := .zero) B
@@ -627,15 +632,15 @@ partial def applyProof (g : MVarId) : NameMap Expr → Proof → MetaM Unit
       applyProof t₂ (Γ.insert x (.fvar e)) p₁
     let (e, t₃) ← t₃.mvarId!.intro x; t₃.withContext do
       applyProof t₃ (Γ.insert x (.fvar e)) p₂
-  | Γ, .em false n => do
+  | Γ, .em false n _ => do
     let A ← mkFreshExprMVarQ q(Prop)
     let e : Q(Decidable $A) ← liftOption (Γ.find? n)
     let .true ← Meta.isDefEq (← Meta.inferType e) q(Decidable $A) | failure
     g.assignIfDefeq q(@Decidable.em $A $e)
-  | Γ, .em true n => do
+  | Γ, .em true n _ => do
     let A : Q(Prop) ← liftOption (Γ.find? n)
     g.assignIfDefeq q(@Classical.em $A)
-  | Γ, .decidableElim false n x p₁ p₂ => do
+  | Γ, .decidableElim false _ n x p₁ p₂ => do
     let A ← mkFreshExprMVarQ q(Prop)
     let e : Q(Decidable $A) ← liftOption (Γ.find? n)
     let .true ← Meta.isDefEq (← Meta.inferType e) q(Decidable $A) | failure
@@ -647,7 +652,7 @@ partial def applyProof (g : MVarId) : NameMap Expr → Proof → MetaM Unit
       applyProof t₁ (Γ.insert x (.fvar e)) p₁
     let (e, t₂) ← t₂.mvarId!.intro x; t₂.withContext do
       applyProof t₂ (Γ.insert x (.fvar e)) p₂
-  | Γ, .decidableElim true n x p₁ p₂ => do
+  | Γ, .decidableElim true _ n x p₁ p₂ => do
     let A : Q(Prop) ← liftOption (Γ.find? n)
     let B ← mkFreshExprMVarQ q(Prop)
     let t₁ ← mkFreshExprMVarQ q($A → $B)
@@ -657,9 +662,9 @@ partial def applyProof (g : MVarId) : NameMap Expr → Proof → MetaM Unit
       applyProof t₁ (Γ.insert x (.fvar e)) p₁
     let (e, t₂) ← t₂.mvarId!.intro x; t₂.withContext do
       applyProof t₂ (Γ.insert x (.fvar e)) p₂
-  | Γ, .impImpSimp x p => do
+  | Γ, .impImpSimp x A p => do
     let (e, g) ← g.intro1; g.withContext do
-      applyProof g (Γ.insert e.name (.fvar e)) (p.app (.intro x (.hyp e.name)))
+      applyProof g (Γ.insert e.name (.fvar e)) (p.app (.intro x A (.hyp e.name)))
 #align tactic.itauto.apply_proof Mathlib.Tactic.ITauto.applyProof
 
 /-- A decision procedure for intuitionistic propositional logic.
@@ -678,6 +683,7 @@ def itautoCore (g : MVarId)
     let (g, t) ← if ← isProp t then pure (g, ← reify t) else pure (← g.exfalso, .false)
     let mut Γ : Except (IProp → Proof) ITauto.Context := .ok (mkRBMap ..)
     let mut decs := mkRBMap ..
+    let mut Γ₀ := mkRBMap ..
     for ldecl in ← getLCtx do
       if !ldecl.isImplementationDetail then
         let e := ldecl.type
@@ -685,6 +691,7 @@ def itautoCore (g : MVarId)
           let A ← reify e
           let n := ldecl.fvarId.name
           hs := hs.insert n (Expr.fvar ldecl.fvarId)
+          Γ₀ := Γ₀.insert n A
           Γ := do (← Γ).add A (.hyp n)
         else
           if let .const ``Decidable _ := e.getAppFn then
@@ -717,11 +724,12 @@ def itautoCore (g : MVarId)
     for (A, cl, pf) in decs do
       let n ← mkFreshId
       hs := hs.insert n pf
-      Γ := return (← Γ).insert (A.or A.not) (.em cl n)
+      Γ := return (← Γ).insert (A.or A.not) (.em cl n A)
     let p : Proof :=
       match Γ with
       | .ok Γ => (prove Γ t 0).1.2
       | .error p => p t
+    let some _ := p.check Γ₀ | throwError "proof precheck failed"
     applyProof g hs p
 #align tactic.itauto Mathlib.Tactic.ITauto.itautoCore
 
