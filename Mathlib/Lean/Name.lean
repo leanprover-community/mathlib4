@@ -19,7 +19,7 @@ open Lean Meta Elab
 private def isBlackListed (declName : Name) : CoreM Bool := do
   if declName.toString.startsWith "Lean" then return true
   let env ← getEnv
-  pure $ declName.isInternal'
+  pure $ declName.isInternalDetail
    || isAuxRecursor env declName
    || isNoConfusion env declName
   <||> isRec declName <||> isMatcher declName
@@ -55,3 +55,9 @@ def getModule (name : Name) (s := "") : Name :=
     | .anonymous => s
     | .num _ _ => panic s!"panic in `getModule`: did not expect numerical name: {name}."
     | .str pre s => getModule pre s
+
+/-- Decapitalize the last component of a name. -/
+def Lean.Name.decapitalize (n : Name) : Name :=
+  n.modifyBase fun
+    | .str p s => .str p s.decapitalize
+    | n       => n

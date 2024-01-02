@@ -276,7 +276,7 @@ theorem id_f (C : HomologicalComplex V c) (i : ι) : Hom.f (𝟙 C) i = 𝟙 (C.
   rfl
 #align homological_complex.id_f HomologicalComplex.id_f
 
-@[simp]
+@[simp, reassoc]
 theorem comp_f {C₁ C₂ C₃ : HomologicalComplex V c} (f : C₁ ⟶ C₂) (g : C₂ ⟶ C₃) (i : ι) :
     (f ≫ g).f i = f.f i ≫ g.f i :=
   rfl

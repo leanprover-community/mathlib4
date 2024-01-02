@@ -202,7 +202,7 @@ attribute [pp_dot] Indep E
       have := (hB₀fin.diff I).to_subtype
       refine ⟨iUnion f ∪ (B₀ ∩ I),
         union_subset (iUnion_subset (fun i ↦ (hf i).1)) (inter_subset_right _ _),
-        (finite_iUnion <| fun i ↦ (hf i).2.1).union (hB₀fin.subset (inter_subset_left _ _)),
+        (finite_iUnion fun i ↦ (hf i).2.1).union (hB₀fin.subset (inter_subset_left _ _)),
         fun x ⟨hxB₀, hxn⟩ hi ↦ ?_⟩
       have hxI : x ∉ I := fun hxI ↦ hxn <| Or.inr ⟨hxB₀, hxI⟩
       refine (hf ⟨x, ⟨hxB₀, hxI⟩⟩).2.2 (indep_subset hi <| insert_subset_insert ?_)
