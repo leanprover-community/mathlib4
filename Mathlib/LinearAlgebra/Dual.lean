@@ -1593,11 +1593,11 @@ theorem dualMap_bijective_iff {f : V₁ →ₗ[K] V₂} :
   simp_rw [Function.Bijective, dualMap_surjective_iff, dualMap_injective_iff, and_comm]
 #align linear_map.dual_map_bijective_iff LinearMap.dualMap_bijective_iff
 
-lemma dualAnnihilator_ker_eq_range_of_comm (f : V₂ →ₗ[K] Dual K V₂) (h : ∀ x y, f x y = f y x) :
+lemma dualAnnihilator_ker_eq_range_of_flip_eq [IsReflexive K V₂]
+    (f : V₂ →ₗ[K] Dual K V₂) (h : f.flip = f) :
     (ker f).dualAnnihilator = range f := by
   change _ = range (f.flip.dualMap.comp (Module.evalEquiv K V₂).toLinearMap)
-  rw [← range_dualMap_eq_dualAnnihilator_ker, range_comp_of_range_eq_top _ (LinearEquiv.range _)]
-  congr; ext; apply h
+  rw [← range_dualMap_eq_dualAnnihilator_ker, range_comp_of_range_eq_top _ (LinearEquiv.range _), h]
 
 variable {B : V₁ →ₗ[K] V₂ →ₗ[K] K}
 
