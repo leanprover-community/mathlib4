@@ -56,7 +56,7 @@ section Inducing
 /-- A function `f : α → β` between topological spaces is inducing if the topology on `α` is induced
 by the topology on `β` through `f`, meaning that a set `s : Set α` is open iff it is the preimage
 under `f` of some open set `t : Set β`. -/
-@[mk_iff inducing_iff]
+@[mk_iff]
 structure Inducing [tα : TopologicalSpace α] [tβ : TopologicalSpace β] (f : α → β) : Prop where
   /-- The topology on the domain is equal to the induced topology. -/
   induced : tα = tβ.induced f
@@ -187,7 +187,7 @@ section Embedding
 
 /-- A function between topological spaces is an embedding if it is injective,
   and for all `s : Set α`, `s` is open iff it is the preimage of an open set. -/
-@[mk_iff embedding_iff]
+@[mk_iff]
 structure Embedding [TopologicalSpace α] [TopologicalSpace β] (f : α → β) extends
   Inducing f : Prop where
   /-- A topological embedding is injective. -/
@@ -571,7 +571,7 @@ section OpenEmbedding
 variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
 
 /-- An open embedding is an embedding with open image. -/
-@[mk_iff openEmbedding_iff]
+@[mk_iff]
 structure OpenEmbedding (f : α → β) extends Embedding f : Prop where
   /-- The range of an open embedding is an open set. -/
   open_range : IsOpen <| range f
@@ -677,7 +677,7 @@ section ClosedEmbedding
 variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
 
 /-- A closed embedding is an embedding with closed image. -/
-@[mk_iff closedEmbedding_iff]
+@[mk_iff]
 structure ClosedEmbedding (f : α → β) extends Embedding f : Prop where
   /-- The range of a closed embedding is a closed set. -/
   closed_range : IsClosed <| range f

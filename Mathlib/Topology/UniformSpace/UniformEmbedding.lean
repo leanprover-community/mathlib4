@@ -30,7 +30,7 @@ variable {α : Type u} {β : Type v} {γ : Type w} [UniformSpace α] [UniformSpa
 /-- A map `f : α → β` between uniform spaces is called *uniform inducing* if the uniformity filter
 on `α` is the pullback of the uniformity filter on `β` under `Prod.map f f`. If `α` is a separated
 space, then this implies that `f` is injective, hence it is a `UniformEmbedding`. -/
-@[mk_iff uniformInducing_iff]
+@[mk_iff]
 structure UniformInducing (f : α → β) : Prop where
   /-- The uniformity filter on the domain is the pullback of the uniformity filter on the codomain
   under `Prod.map f f`. -/
@@ -131,7 +131,7 @@ protected theorem UniformInducing.injective [T0Space α] {f : α → β} (h : Un
 
 /-- A map `f : α → β` between uniform spaces is a *uniform embedding* if it is uniform inducing and
 injective. If `α` is a separated space, then the latter assumption follows from the former. -/
-@[mk_iff uniformEmbedding_iff]
+@[mk_iff]
 structure UniformEmbedding (f : α → β) extends UniformInducing f : Prop where
   /-- A uniform embedding is injective. -/
   inj : Function.Injective f

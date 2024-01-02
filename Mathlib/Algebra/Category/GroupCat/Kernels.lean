@@ -26,7 +26,7 @@ def kernelCone : KernelFork f :=
 /-- The kernel of a group homomorphism is a kernel in the categorical sense. -/
 def kernelIsLimit : IsLimit <| kernelCone f :=
   Fork.IsLimit.mk _
-    (fun s => (by exact Fork.ι s : _ →+ G).codRestrict _ <| fun c => f.mem_ker.mpr <|
+    (fun s => (by exact Fork.ι s : _ →+ G).codRestrict _ fun c => f.mem_ker.mpr <|
       by exact FunLike.congr_fun s.condition c)
     (fun _ => by rfl)
     (fun _ _ h => ext fun x => Subtype.ext_iff_val.mpr <| by exact FunLike.congr_fun h x)
