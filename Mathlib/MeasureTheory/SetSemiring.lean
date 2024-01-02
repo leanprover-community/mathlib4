@@ -63,7 +63,7 @@ lemma partialSups_eq_biUnion_range {α : Type*} (s : ℕ → Set α) (n : ℕ) :
   simp only [Set.le_eq_subset, partialSups_eq_biSup, iSup_eq_iUnion, mem_iUnion, exists_prop,
     Finset.mem_range, Nat.lt_succ]
 
-lemma Finset.sUnion_disjUnion {α β : Type _} {f : α → Finset (Set β)} (I : Finset α)
+lemma Finset.sUnion_disjUnion {α β : Type*} {f : α → Finset (Set β)} (I : Finset α)
     (hf : (I : Set α).PairwiseDisjoint f) :
     ⋃₀ (I.disjiUnion f hf : Set (Set β)) = ⋃ a ∈ I, ⋃₀ ↑(f a) := by
   ext1 b
@@ -100,7 +100,7 @@ lemma Finset.sum_image_of_disjoint {α ι : Type*} [PartialOrder α] [OrderBot �
     simp only [sum_filter, sum_ite_eq', if_pos hnI]
 
 -- TODO: move this
-lemma Finset.sum_image_le {ι α β : Type _} [DecidableEq α] [OrderedSemiring β] (J : Finset ι)
+lemma Finset.sum_image_le {ι α β : Type*} [DecidableEq α] [OrderedSemiring β] (J : Finset ι)
     (g : ι → α) (f : α → β) (hf : ∀ u ∈ J.image g, 0 ≤ f u) :
     ∑ u in J.image g, f u ≤ ∑ u in J, f (g u) := by
   rw [sum_comp f g]
@@ -118,6 +118,7 @@ lemma Finset.sum_image_le {ι α β : Type _} [DecidableEq α] [OrderedSemiring 
   exact ⟨hi, hig⟩
 
 section Ordered
+-- TODO: move this
 
 variable {α : Type*}
 
@@ -148,7 +149,7 @@ lemma ordered_mem {J : Finset α} (n : Fin J.card) : J.ordered n ∈ J := by
   simp_rw [Finset.ordered]
   exact coe_mem _
 
-lemma sum_ordered {β : Type _} [AddCommMonoid β] (J : Finset α) (m : α → β) :
+lemma sum_ordered {β : Type*} [AddCommMonoid β] (J : Finset α) (m : α → β) :
     ∑ i : Fin J.card, m (J.ordered i) = ∑ u in J, m u := by
   conv_rhs => rw [← map_ordered J]
   rw [sum_map]
@@ -186,6 +187,9 @@ lemma mem_finsetLT (J : Finset α) (n : Fin J.card) {s : α} :
     Function.comp_apply, exists_prop]
   simp_rw [@eq_comm _ _ s]
 
+lemma ordered_mem_finsetLT (J : Finset α) {n m : Fin J.card} (hnm : n < m) :
+    J.ordered n ∈ finsetLT J m := by rw [mem_finsetLT _ _]; exact ⟨n, hnm, rfl⟩
+
 section FinsetSet
 
 variable {C : Set (Set α)} {J : Finset (Set α)}
@@ -196,9 +200,6 @@ lemma iUnion_ordered (J : Finset (Set α)) : (⋃ i : Fin J.card, J.ordered i) =
   conv_rhs => rw [← map_ordered J]
   simp_rw [sUnion_eq_biUnion, coe_map, Set.biUnion_image]
   simp only [mem_coe, Finset.mem_univ, iUnion_true]
-
-lemma ordered_mem_finsetLT (J : Finset (Set α)) {n m : Fin J.card} (hnm : n < m) :
-    J.ordered n ∈ finsetLT J m := by rw [mem_finsetLT _ _]; exact ⟨n, hnm, rfl⟩
 
 lemma finsetLT_subset' (J : Finset (Set α)) (hJ : ↑J ⊆ C) (n : Fin J.card) :
     ↑(finsetLT J n) ⊆ C :=
