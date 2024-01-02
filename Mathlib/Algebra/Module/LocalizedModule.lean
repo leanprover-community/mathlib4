@@ -581,9 +581,9 @@ lemma IsLocalizedModule.eq_iff_exists [IsLocalizedModule S f] {x₁ x₂} :
 theorem IsLocalizedModule.of_linearEquiv (e : M' ≃ₗ[R] M'') [hf : IsLocalizedModule S f] :
     IsLocalizedModule S (e ∘ₗ f : M →ₗ[R] M'') where
   map_units s := by
-    rw [show algebraMap R (Module.End R M'') s = e ∘ₗ (algebraMap R (Module.End R M') s) ∘ₗ e.symm by
-      ext; simp, Module.End_isUnit_iff, LinearMap.coe_comp, LinearMap.coe_comp, LinearEquiv.coe_coe,
-      LinearEquiv.coe_coe, EquivLike.comp_bijective, EquivLike.bijective_comp]
+    rw [show algebraMap R (Module.End R M'') s = e ∘ₗ (algebraMap R (Module.End R M') s) ∘ₗ e.symm
+      by ext; simp, Module.End_isUnit_iff, LinearMap.coe_comp, LinearMap.coe_comp,
+      LinearEquiv.coe_coe, LinearEquiv.coe_coe, EquivLike.comp_bijective, EquivLike.bijective_comp]
     exact (Module.End_isUnit_iff _).mp <| hf.map_units s
   surj' x := by
     obtain ⟨p, h⟩ := hf.surj' (e.symm x)
