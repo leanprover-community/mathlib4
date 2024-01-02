@@ -26,7 +26,7 @@ variable [LinearOrderedSemifield α] {a b c d e : α} {m n : ℤ}
 
 /-! ### Integer powers -/
 
-
+@[gcongr]
 theorem zpow_le_of_le (ha : 1 ≤ a) (h : m ≤ n) : a ^ m ≤ a ^ n := by
   have ha₀ : 0 < a := one_pos.trans_le ha
   lift n - m to ℕ using sub_nonneg.2 h with k hk
@@ -79,6 +79,8 @@ theorem zpow_strictAnti (h₀ : 0 < a) (h₁ : a < 1) : StrictAnti (a ^ · : ℤ
 theorem zpow_lt_iff_lt (hx : 1 < a) : a ^ m < a ^ n ↔ m < n :=
   (zpow_strictMono hx).lt_iff_lt
 #align zpow_lt_iff_lt zpow_lt_iff_lt
+
+@[gcongr] alias ⟨_, zpow_lt_of_lt⟩ := zpow_lt_iff_lt
 
 @[simp]
 theorem zpow_le_iff_le (hx : 1 < a) : a ^ m ≤ a ^ n ↔ m ≤ n :=
