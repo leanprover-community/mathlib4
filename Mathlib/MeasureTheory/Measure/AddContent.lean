@@ -212,7 +212,7 @@ theorem iUnion_eq_tsum_of_disjoint_of_iUnion_le (m : AddContent C) (hC : IsSetSe
     rw [Set.mem_image] at hs ht
     obtain ⟨i, _, rfl⟩ := hs
     obtain ⟨j, _, rfl⟩ := ht
-    have hij : i ≠ j := by intro h_eq; rw [h_eq] at hst ; exact hst rfl
+    have hij : i ≠ j := by intro h_eq; rw [h_eq] at hst; exact hst rfl
     exact hf_disj hij
   · exact hf_Union
   · simp only [coe_image, sUnion_image, mem_coe, iUnion_subset_iff]
@@ -284,7 +284,7 @@ theorem tendsto_atTop_iUnion_of_iUnion_eq_tsum (m : AddContent C) (hC : IsSetRin
       rw [mem_coe, Finset.mem_image] at hs ht
       obtain ⟨i, _, rfl⟩ := hs
       obtain ⟨j, _, rfl⟩ := ht
-      have hij : i ≠ j := by intro h_eq; rw [h_eq] at hst ; exact hst rfl
+      have hij : i ≠ j := by intro h_eq; rw [h_eq] at hst; exact hst rfl
       exact disjoint_disjointed f hij
     · rw [← h1]; exact hf n
     rw [sum_image_of_disjoint m m.empty g (disjoint_disjointed f)]
