@@ -20,24 +20,25 @@ The `itauto` tactic will prove any intuitionistic tautology. It implements the w
 `G4ip` algorithm:
 [Dyckhoff, *Contraction-free sequent calculi for intuitionistic logic*][dyckhoff_1992].
 
-All built in propositional connectives are supported: `true`, `false`, `and`, `or`, `implies`,
-`not`, `iff`, `xor`, as well as `eq` and `ne` on propositions. Anything else, including definitions
-and predicate logical connectives (`forall` and `exists`), are not supported, and will have to be
+All built in propositional connectives are supported: `True`, `False`, `And`, `Or`, `→`,
+`Not`, `Iff`, `Xor'`, as well as `Eq` and `Ne` on propositions. Anything else, including definitions
+and predicate logical connectives (`∀` and `∃`), are not supported, and will have to be
 simplified or instantiated before calling this tactic.
 
 The resulting proofs will never use any axioms except possibly `propext`, and `propext` is only
-used if the input formula contains an equality of propositions `p = q`.
+used if the input formula contains an equality of propositions `p = q`. Using `itauto!`, one can
+enable the selective use of LEM for case splitting on specified propositions.
 
 ## Implementation notes
 
 The core logic of the prover is in three functions:
 
-* `prove : context → prop → state_t Nat option proof`: The main entry point.
-  Gets a context and a goal, and returns a `proof` object or fails, using `state_t Nat` for the name
+* `prove : Context → IProp → StateM Nat (Bool × Proof)`: The main entry point.
+  Gets a context and a goal, and returns a `proof` object or fails, using `StateM Nat` for the name
   generator.
-* `search : context → prop → state_t Nat option proof`: Same meaning as `proof`, called during the
+* `search : Context → IProp → StateM Nat (Bool × Proof)`: Same meaning as `proof`, called during the
   search phase (see below).
-* `context.add : prop → proof → context → except (prop → proof) context`: Adds a proposition with
+* `Context.add : IProp → Proof → Context → Except (IProp → Proof) Context`: Adds a proposition with
   its proof into the context, but it also does some simplifications on the spot while doing so.
   It will either return the new context, or if it happens to notice a proof of false, it will
   return a function to compute a proof of any proposition in the original context.
@@ -45,8 +46,8 @@ The core logic of the prover is in three functions:
 The intuitionistic logic rules are separated into three groups:
 
 * level 1: No splitting, validity preserving: apply whenever you can.
-  Left rules in `context.add`, right rules in `prove`.
-  * `context.add`:
+  Left rules in `Context.add`, right rules in `prove`.
+  * `Context.add`:
     * simplify `Γ, ⊤ ⊢ B` to `Γ ⊢ B`
     * `Γ, ⊥ ⊢ B` is true
     * simplify `Γ, A ∧ B ⊢ C` to `Γ, A, B ⊢ C`
@@ -69,11 +70,11 @@ The intuitionistic logic rules are separated into three groups:
   * `Γ ⊢ A ∨ B` follows from `Γ ⊢ B`
   * `Γ, (A₁ → A₂) → C ⊢ B` follows from `Γ, A₂ → C, A₁ ⊢ A₂` and `Γ, C ⊢ B`
 
-This covers the core algorithm, which only handles `true`, `false`, `and`, `or`, and `implies`.
-For `iff` and `eq`, we treat them essentially the same as `(p → q) ∧ (q → p)`, although we use
-a different `prop` representation because we have to remember to apply different theorems during
-replay. For definitions like `not` and `xor`, we just eagerly unfold them. (This could potentially
-cause a blowup issue for `xor`, but it isn't used very often anyway. We could add it to the `prop`
+This covers the core algorithm, which only handles `True`, `False`, `And`, `Or`, and `→`.
+For `Iff` and `Eq`, we treat them essentially the same as `(p → q) ∧ (q → p)`, although we use
+a different `IProp` representation because we have to remember to apply different theorems during
+replay. For definitions like `Not` and `Xor'`, we just eagerly unfold them. (This could potentially
+cause a blowup issue for `Xor'`, but it isn't used very often anyway. We could add it to the `IProp`
 grammar if it matters.)
 
 ## Tags
@@ -86,28 +87,23 @@ namespace Mathlib.Tactic.ITauto
 
 /-- Different propositional constructors that are variants of "and" for the purposes of the
 theorem prover. -/
-inductive AndKind
-  | and
-  | iff
-  | eq
+inductive AndKind | and | iff | eq
   deriving Lean.ToExpr, DecidableEq
 #align tactic.itauto.and_kind Mathlib.Tactic.ITauto.AndKind
 
-instance : Inhabited AndKind :=
-  ⟨AndKind.and⟩
+instance : Inhabited AndKind := ⟨AndKind.and⟩
 
 /-- A reified inductive type for propositional logic. -/
 inductive IProp : Type
-  | var : Nat → IProp                        -- propositional atoms P_i
-  | true : IProp                           -- ⊤
-  | false : IProp                          -- ⊥
+  | var : Nat → IProp            -- propositional atoms P_i
+  | true : IProp                 -- ⊤
+  | false : IProp                -- ⊥
   | and' : AndKind → IProp → IProp → IProp -- p ∧ q, p ↔ q, p = q
-  | or : IProp → IProp → IProp             -- p ∨ q
-  | imp : IProp → IProp → IProp            -- p → q
+  | or : IProp → IProp → IProp   -- p ∨ q
+  | imp : IProp → IProp → IProp  -- p → q
   deriving Lean.ToExpr, DecidableEq
 #align tactic.itauto.prop Mathlib.Tactic.ITauto.IProp
 
--- p → q
 /-- Constructor for `p ∧ q`. -/
 @[match_pattern] def IProp.and : IProp → IProp → IProp := .and' .and
 #align tactic.itauto.prop.and Mathlib.Tactic.ITauto.IProp.and
@@ -130,7 +126,7 @@ inductive IProp : Type
 
 instance : Inhabited IProp := ⟨IProp.true⟩
 
-/-- Given the contents of an `and` variant, return the two conjuncts. -/
+/-- Given the contents of an `And` variant, return the two conjuncts. -/
 def AndKind.sides : AndKind → IProp → IProp → IProp × IProp
   | .and, A, B => (A, B)
   | _, A, B => (A.imp B, B.imp A)
@@ -150,9 +146,7 @@ def IProp.format : IProp → Std.Format
 
 instance : Std.ToFormat IProp := ⟨IProp.format⟩
 
-section
-
-/-- A comparator for `and_kind`. (There should really be a derive handler for this.) -/
+/-- A comparator for `AndKind`. (There should really be a derive handler for this.) -/
 def AndKind.cmp (p q : AndKind) : Ordering := by
   cases p <;> cases q
   exacts [.eq, .lt, .lt, .gt, .eq, .lt, .gt, .gt, .eq]
@@ -179,73 +173,71 @@ instance : LT IProp := ⟨fun p q => p.cmp q = .lt⟩
 
 instance : DecidableRel (@LT.lt IProp _) := fun _ _ => inferInstanceAs (Decidable (_ = _))
 
-end
-
 open Lean (Name)
 
 /-- A reified inductive proof type for intuitionistic propositional logic. -/
 inductive Proof
-  /-- ⊢ A, causes failure during reconstruction -/
+  /-- `⊢ A`, causes failure during reconstruction -/
   | sorry : Proof
-  /-- (n: A) ⊢ A -/
+  /-- `(n: A) ⊢ A` -/
   | hyp (n : Name) : Proof
-  /-- ⊢ ⊤ -/
+  /-- `⊢ ⊤` -/
   | triv : Proof
-  /-- (p: ⊥) ⊢ A -/
+  /-- `(p: ⊥) ⊢ A` -/
   | exfalso' (p : Proof) : Proof
-  /-- (p: (x: A) ⊢ B) ⊢ A → B -/
+  /-- `(p: (x: A) ⊢ B) ⊢ A → B` -/
   | intro (x : Name) (p : Proof) : Proof
   /--
-  * ak = and:  (p: A ∧ B) ⊢ A
-  * ak = iff:  (p: A ↔ B) ⊢ A → B
-  * ak = eq:  (p: A = B) ⊢ A → B
+  * `ak = .and`: `(p: A ∧ B) ⊢ A`
+  * `ak = .iff`: `(p: A ↔ B) ⊢ A → B`
+  * `ak = .eq`: `(p: A = B) ⊢ A → B`
   -/
   | and_left (ak : AndKind) (p : Proof) : Proof
   /--
-  * ak = and:  (p: A ∧ B) ⊢ B
-  * ak = iff:  (p: A ↔ B) ⊢ B → A
-  * ak = eq:  (p: A = B) ⊢ B → A
+  * `ak = .and`: `(p: A ∧ B) ⊢ B`
+  * `ak = .iff`: `(p: A ↔ B) ⊢ B → A`
+  * `ak = .eq`: `(p: A = B) ⊢ B → A`
   -/
   | and_right (ak : AndKind) (p : Proof) : Proof
   /--
-  * ak = and:  (p₁: A) (p₂: B) ⊢ A ∧ B
-  * ak = iff:  (p₁: A → B) (p₁: B → A) ⊢ A ↔ B
-  * ak = eq:  (p₁: A → B) (p₁: B → A) ⊢ A = B
+  * `ak = .and`: `(p₁: A) (p₂: B) ⊢ A ∧ B`
+  * `ak = .iff`: `(p₁: A → B) (p₁: B → A) ⊢ A ↔ B`
+  * `ak = .eq`: `(p₁: A → B) (p₁: B → A) ⊢ A = B`
   -/
   | and_intro (ak : AndKind) (p₁ p₂ : Proof) : Proof
   /--
-  * ak = and:  (p: A ∧ B → C) ⊢ A → B → C
-  * ak = iff:  (p: (A ↔ B) → C) ⊢ (A → B) → (B → A) → C
-  * ak = eq:  (p: (A = B) → C) ⊢ (A → B) → (B → A) → C
+  * `ak = .and`: `(p: A ∧ B → C) ⊢ A → B → C`
+  * `ak = .iff`: `(p: (A ↔ B) → C) ⊢ (A → B) → (B → A) → C`
+  * `ak = .eq`: `(p: (A = B) → C) ⊢ (A → B) → (B → A) → C`
   -/
   | curry (ak : AndKind) (p : Proof) : Proof
   /-- This is a partial application of curry.
-  * ak = and:  (p: A ∧ B → C) (q : A) ⊢ B → C
-  * ak = iff:  (p: (A ↔ B) → C) (q: A → B) ⊢ (B → A) → C
-  * ak = eq:  (p: (A ↔ B) → C) (q: A → B) ⊢ (B → A) → C
+  * `ak = .and`: `(p: A ∧ B → C) (q : A) ⊢ B → C`
+  * `ak = .iff`: `(p: (A ↔ B) → C) (q: A → B) ⊢ (B → A) → C`
+  * `ak = .eq`: `(p: (A ↔ B) → C) (q: A → B) ⊢ (B → A) → C`
   -/
   | curry₂ (ak : AndKind) (p q : Proof) : Proof
-  /-- (p: A → B) (q: A) ⊢ B -/
+  /-- `(p: A → B) (q: A) ⊢ B` -/
   | app' : Proof → Proof → Proof
-  /-- (p: A ∨ B → C) ⊢ A → C -/
+  /-- `(p: A ∨ B → C) ⊢ A → C` -/
   | or_imp_left (p : Proof) : Proof
-  /-- (p: A ∨ B → C) ⊢ B → C -/
+  /-- `(p: A ∨ B → C) ⊢ B → C` -/
   | or_imp_right (p : Proof) : Proof
-  /-- (p: A) ⊢ A ∨ B -/
+  /-- `(p: A) ⊢ A ∨ B` -/
   | or_inl (p : Proof) : Proof
-  /-- (p: B) ⊢ A ∨ B -/
+  /-- `(p: B) ⊢ A ∨ B` -/
   | or_inr (p : Proof) : Proof
-  /-- (p₁: A ∨ B) (p₂: (x: A) ⊢ C) (p₃: (x: B) ⊢ C) ⊢ C -/
+  /-- `(p₁: A ∨ B) (p₂: (x: A) ⊢ C) (p₃: (x: B) ⊢ C) ⊢ C` -/
   | or_elim' (p₁ : Proof) (x : Name) (p₂ p₃ : Proof) : Proof
-  /-- (p₁: decidable A) (p₂: (x: A) ⊢ C) (p₃: (x: ¬ A) ⊢ C) ⊢ C -/
+  /-- `(p₁: Decidable A) (p₂: (x: A) ⊢ C) (p₃: (x: ¬ A) ⊢ C) ⊢ C` -/
   | decidable_elim (classical : Bool) (p₁ x : Name) (p₂ p₃ : Proof) : Proof
   /--
-  * classical = false: (p: decidable A) ⊢ A ∨ ¬A
-  * classical = true: (p: Prop) ⊢ p ∨ ¬p
+  * `classical = false`: `(p: Decidable A) ⊢ A ∨ ¬A`
+  * `classical = true`: `(p: Prop) ⊢ p ∨ ¬p`
   -/
   | em (classical : Bool) (p : Name) : Proof
-  /-- The variable x here names the variable that will be used in the elaborated proof
-  (p: ((x:A) → B) → C) ⊢ B → C
+  /-- The variable `x` here names the variable that will be used in the elaborated proof.
+  * `(p: ((x:A) → B) → C) ⊢ B → C`
   -/
   | imp_imp_simp (x : Name) (p : Proof) : Proof
   deriving Lean.ToExpr
@@ -259,7 +251,7 @@ def Proof.format : Proof → Std.Format
   | .hyp i => Std.format i
   | .triv => "triv"
   | .exfalso' p => f!"(exfalso {p.format})"
-  | .intro x p => f!"(λ {x}, {p.format})"
+  | .intro x p => f!"(fun {x} ↦ {p.format})"
   | .and_left _ p => f!"{p.format} .1"
   | .and_right _ p => f!"{p.format} .2"
   | .and_intro _ p q => f!"⟨{p.format}, {q.format}⟩"
@@ -268,30 +260,30 @@ def Proof.format : Proof → Std.Format
   | .app' p q => f!"({p.format} {q.format})"
   | .or_imp_left p => f!"(or_imp_left {p.format})"
   | .or_imp_right p => f!"(or_imp_right {p.format})"
-  | .or_inl p => f!"(or.inl {p.format})"
-  | .or_inr p => f!"(or.inr {p.format})"
-  | .or_elim' p x q r => f!"({p.format}.elim (λ {x}, {q.format}) (λ {x}, {r.format})"
-  | .em false p => f!"(decidable.em {p})"
-  | .em true p => f!"(classical.em {p})"
-  | .decidable_elim _ p x q r => f!"({p}.elim (λ {x}, {q.format}) (λ {x}, {r.format})"
+  | .or_inl p => f!"(Or.inl {p.format})"
+  | .or_inr p => f!"(Or.inr {p.format})"
+  | .or_elim' p x q r => f!"({p.format}.elim (fun {x} ↦ {q.format}) (fun {x} ↦ {r.format})"
+  | .em false p => f!"(Decidable.em {p})"
+  | .em true p => f!"(Classical.em {p})"
+  | .decidable_elim _ p x q r => f!"({p}.elim (fun {x} ↦ {q.format}) (fun {x} ↦ {r.format})"
   | .imp_imp_simp _ p => f!"(imp_imp_simp {p.format})"
 #align tactic.itauto.proof.to_format Mathlib.Tactic.ITauto.Proof.format
 
 instance : Std.ToFormat Proof := ⟨Proof.format⟩
 
-/-- A variant on `proof.exfalso'` that performs opportunistic simplification. -/
+/-- A variant on `Proof.exfalso'` that performs opportunistic simplification. -/
 def Proof.exfalso : IProp → Proof → Proof
   | .false, p => p
   | _, p => Proof.exfalso' p
 #align tactic.itauto.proof.exfalso Mathlib.Tactic.ITauto.Proof.exfalso
 
-/-- A variant on `proof.or_elim` that performs opportunistic simplification. -/
+/-- A variant on `Proof.or_elim'` that performs opportunistic simplification. -/
 def Proof.or_elim : Proof → Name → Proof → Proof → Proof
   | .em cl p, x, q, r => Proof.decidable_elim cl p x q r
   | p, x, q, r => Proof.or_elim' p x q r
 #align tactic.itauto.proof.or_elim Mathlib.Tactic.ITauto.Proof.or_elim
 
-/-- A variant on `proof.app'` that performs opportunistic simplification.
+/-- A variant on `Proof.app'` that performs opportunistic simplification.
 (This doesn't do full normalization because we don't want the proof size to blow up.) -/
 def Proof.app : Proof → Proof → Proof
   | .curry ak p, q => Proof.curry₂ ak p q
@@ -305,7 +297,7 @@ def Proof.app : Proof → Proof → Proof
 -- Note(Mario): the typechecker is disabled because it requires proofs to carry around additional
 -- props. These can be retrieved from the git history if you want to re-enable this.
 /-
-/-- A typechecker for the `proof` type. This is not used by the tactic but can be used for
+/-- A typechecker for the `Proof` type. This is not used by the tactic but can be used for
 debugging. -/
 meta def proof.check : name_map prop → proof → option prop
 | Γ (proof.hyp i) := Γ.find i
@@ -351,8 +343,9 @@ meta def proof.check : name_map prop → proof → option prop
   prop.imp (prop.imp A' B) C ← p.check Γ | none,
   guard (A = A') $> (B.imp C)
 -/
+
 /-- Get a new name in the pattern `h0, h1, h2, ...` -/
-@[inline] def fresh_name : Nat → Name × Nat := fun n => (Name.mkSimple ("h" ++ toString n), n + 1)
+@[inline] def fresh_name (n : Nat) : Name × Nat := (Name.mkSimple ("h" ++ toString n), n + 1)
 #align tactic.itauto.fresh_name Mathlib.Tactic.ITauto.fresh_name
 
 /-- The context during proof search is a map from propositions to proof values. -/
@@ -390,7 +383,7 @@ partial def Context.add : IProp → Proof → Context → Except (IProp → Proo
   | A, p, Γ => pure (Γ.insert A p)
 #align tactic.itauto.context.add Mathlib.Tactic.ITauto.Context.add
 
-/-- Add `A` to the context `Γ` with proof `p`. This version of `context.add` takes a continuation
+/-- Add `A` to the context `Γ` with proof `p`. This version of `Context.add` takes a continuation
 and a target proposition `B`, so that in the case that `⊥` is found we can skip the continuation
 and just prove `B` outright. -/
 @[inline] def Context.with_add (Γ : Context) (A : IProp) (p : Proof) (B : IProp)
@@ -461,7 +454,7 @@ and returns a proof or `none` (with state for the fresh variable generator).
 The intuitionistic logic rules are separated into three groups:
 
 * level 1: No splitting, validity preserving: apply whenever you can.
-  Left rules in `context.add`, right rules in `prove`
+  Left rules in `Context.add`, right rules in `prove`
 * level 2: Splitting rules, validity preserving: apply after level 1 rules. Done in `prove`
 * level 3: Splitting rules, not validity preserving: apply only if nothing else applies.
   Done in `search`
@@ -504,8 +497,8 @@ def reify_atom (e : Expr) : AtomM IProp := .var <$> AtomM.addAtom e
 
 open Qq Meta
 
-/-- Reify an `expr` into a `prop`, allocating anything non-propositional as an atom in the
-`atoms` list. -/
+/-- Reify an `Expr` into a `IProp`, allocating anything non-propositional as an atom in the
+`AtomM` state. -/
 partial def reify (e : Q(Prop)) : AtomM IProp :=
   match e with
   | ~q(True) => pure .true
@@ -522,9 +515,7 @@ partial def reify (e : Q(Prop)) : AtomM IProp :=
     else reify_atom e
 #align tactic.itauto.reify Mathlib.Tactic.ITauto.reify
 
-/-- Once we have a proof object, we have to apply it to the goal. (Some of these cases are a bit
-annoying because `applyc` gets the arguments wrong sometimes so we have to use `to_expr` instead.)
--/
+/-- Once we have a proof object, we have to apply it to the goal. -/
 partial def apply_proof (g : MVarId) : NameMap Expr → Proof → MetaM Unit
   | _, .sorry => throwError "itauto failed"
   | Γ, .hyp n => do g.assignIfDefeq (← liftOption (Γ.find? n))
@@ -752,7 +743,7 @@ example (p : Prop) : ¬ (p ↔ ¬ p) := by itauto
 ```
 
 `itauto [a, b]` will additionally attempt case analysis on `a` and `b` assuming that it can derive
-`decidable a` and `decidable b`. `itauto *` will case on all decidable propositions that it can
+`Decidable a` and `Decidable b`. `itauto *` will case on all decidable propositions that it can
 find among the atomic propositions, and `itauto! *` will case on all propositional atoms.
 *Warning:* This can blow up the proof search, so it should be used sparingly.
 -/
