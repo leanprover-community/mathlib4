@@ -231,7 +231,7 @@ theorem first_vote_pos :
         ((countedSequence_finite _ _).image _) (disjoint_bits _ _),
       ← counted_succ_succ,
       condCount_eq_one_of ((countedSequence_finite p (q + 1)).image _)
-        (nonempty_image_iff.2 (countedSequence_nonempty _ _))]
+        ((countedSequence_nonempty _ _).image _)]
     · have : List.cons (-1) '' countedSequence (p + 1) q ∩ {l : List ℤ | l.headI = 1} = ∅ := by
         ext
         simp only [mem_inter_iff, mem_image, mem_setOf_eq, mem_empty_iff_false, iff_false_iff,
