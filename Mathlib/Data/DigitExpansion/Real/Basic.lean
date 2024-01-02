@@ -834,6 +834,16 @@ lemma leftShift_lt_iff {f : real Z b} :
   rw [← not_iff_not, not_lt, le_iff_eq_or_lt, lt_leftShift_iff, eq_comm, leftShift_eq_self_iff,
       not_lt, eq_comm, ← le_iff_eq_or_lt]
 
+@[simp]
+lemma shift_single (z : Z) (n : Fin (b + 1)) :
+    shift (single z n) = single (succ z) n :=
+  Subtype.ext <| by simp
+
+@[simp]
+lemma leftShift_single (z : Z) (n : Fin (b + 1)) :
+    leftShift (single z n) = single (pred z) n :=
+  Subtype.ext <| by simp
+
 end shift
 
 end real
