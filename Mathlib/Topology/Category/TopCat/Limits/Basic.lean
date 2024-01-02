@@ -91,7 +91,7 @@ def limitConeIsLimit (F : J ⥤ TopCatMax.{v, u}) : IsLimit (limitCone.{v,u} F) 
           erw [← S.w f]
           rfl⟩
       continuous_toFun :=
-        Continuous.subtype_mk (continuous_pi <| fun j => (S.π.app j).2) fun x i j f => by
+        Continuous.subtype_mk (continuous_pi fun j => (S.π.app j).2) fun x i j f => by
           dsimp
           rw [← S.w f]
           rfl }
@@ -112,7 +112,7 @@ def limitConeInfiIsLimit (F : J ⥤ TopCatMax.{v, u}) : IsLimit (limitConeInfi.{
     (fun s => ⟨fun v => ⟨ fun j => (Functor.mapCone forget s).π.app j v, ?_⟩, ?_⟩) fun s => ?_
   · dsimp [Functor.sections]
     intro _ _ _
-    rw [←comp_apply', forget_map_eq_coe, ←s.π.naturality, forget_map_eq_coe]
+    rw [← comp_apply', forget_map_eq_coe, ← s.π.naturality, forget_map_eq_coe]
     dsimp
     rw [Category.id_comp]
   · exact

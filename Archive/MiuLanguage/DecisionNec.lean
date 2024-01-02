@@ -61,7 +61,7 @@ theorem mod3_eq_1_or_mod3_eq_2 {a b : ℕ} (h1 : a % 3 = 1 ∨ a % 3 = 2)
   · rw [h2]; exact h1
   · cases' h1 with h1 h1
     · right; simp [h2, mul_mod, h1, Nat.succ_lt_succ]
-    · left; simp [h2, mul_mod, h1]
+    · left; simp only [h2, mul_mod, h1, mod_mod]; decide
 #align miu.mod3_eq_1_or_mod3_eq_2 Miu.mod3_eq_1_or_mod3_eq_2
 
 /-- `count_equiv_one_or_two_mod3_of_derivable` shows any derivable string must have a `count I` that
@@ -80,7 +80,7 @@ theorem count_equiv_one_or_two_mod3_of_derivable (en : Miustr) :
     simp_rw [count_cons_self, count_nil, count_cons, ite_false, add_right_comm, add_mod_right]
     simp
   · left; rw [count_append, count_append, count_append]
-    simp only [ne_eq, count_cons_of_ne, count_nil, add_zero]
+    simp only [ne_eq, not_false_eq_true, count_cons_of_ne, count_nil, add_zero]
 #align miu.count_equiv_one_or_two_mod3_of_derivable Miu.count_equiv_one_or_two_mod3_of_derivable
 
 /-- Using the above theorem, we solve the MU puzzle, showing that `"MU"` is not derivable.
@@ -134,7 +134,7 @@ theorem goodm_of_rule1 (xs : Miustr) (h₁ : Derivable (xs ++ ↑[I])) (h₂ : G
     exact mhead
   · change ¬M ∈ tail (xs ++ ↑([I] ++ [U]))
     rw [← append_assoc, tail_append_singleton_of_ne_nil]
-    · simp_rw [mem_append, not_or, and_true]; exact nmtail
+    · simp_rw [mem_append, mem_singleton, or_false]; exact nmtail
     · exact append_ne_nil_of_ne_nil_left _ _ this
 #align miu.goodm_of_rule1 Miu.goodm_of_rule1
 

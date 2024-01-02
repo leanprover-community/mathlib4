@@ -62,6 +62,8 @@ results for general rings are instead stated about `Ring.inverse`:
 
 open scoped Matrix BigOperators
 
+open NormedSpace -- For `exp`.
+
 variable (𝕂 : Type*) {m n p : Type*} {n' : m → Type*} {𝔸 : Type*}
 
 namespace Matrix

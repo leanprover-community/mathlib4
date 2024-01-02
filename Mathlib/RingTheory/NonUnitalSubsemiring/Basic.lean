@@ -467,28 +467,59 @@ theorem eq_top_iff' (A : NonUnitalSubsemiring R) : A = ⊤ ↔ ∀ x : R, x ∈ 
   eq_top_iff.trans ⟨fun h m => h <| mem_top m, fun h m _ => h m⟩
 #align non_unital_subsemiring.eq_top_iff' NonUnitalSubsemiring.eq_top_iff'
 
-section Center
+section NonUnitalNonAssocSemiring
 
-/-- The center of a semiring `R` is the set of elements that commute with everything in `R` -/
-def center (R) [NonUnitalSemiring R] : NonUnitalSubsemiring R :=
+variable (R) [NonUnitalNonAssocSemiring R]
+
+/-- The center of a semiring `R` is the set of elements that commute and associate with everything
+in `R` -/
+def center : NonUnitalSubsemiring R :=
   { Subsemigroup.center R with
-    carrier := Set.center R
     zero_mem' := Set.zero_mem_center R
     add_mem' := Set.add_mem_center }
 #align non_unital_subsemiring.center NonUnitalSubsemiring.center
 
-theorem coe_center (R) [NonUnitalSemiring R] : ↑(center R) = Set.center R :=
+theorem coe_center : ↑(center R) = Set.center R :=
   rfl
 #align non_unital_subsemiring.coe_center NonUnitalSubsemiring.coe_center
 
 @[simp]
-theorem center_toSubsemigroup (R) [NonUnitalSemiring R] :
+theorem center_toSubsemigroup :
     (center R).toSubsemigroup = Subsemigroup.center R :=
   rfl
 #align non_unital_subsemiring.center_to_subsemigroup NonUnitalSubsemiring.center_toSubsemigroup
 
-theorem mem_center_iff {R} [NonUnitalSemiring R] {z : R} : z ∈ center R ↔ ∀ g, g * z = z * g :=
-  Iff.rfl
+/-- The center is commutative and associative. -/
+instance center.instNonUnitalCommSemiring : NonUnitalCommSemiring (center R) :=
+  { Subsemigroup.center.commSemigroup,
+    NonUnitalSubsemiringClass.toNonUnitalNonAssocSemiring (center R) with }
+
+/-- A point-free means of proving membership in the center, for a non-associative ring.
+
+This can be helpful when working with types that have ext lemmas for `R →+ R`. -/
+lemma _root_.Set.mem_center_iff_addMonoidHom (a : R) :
+    a ∈ Set.center R ↔
+      AddMonoidHom.mulLeft a = .mulRight a ∧
+      AddMonoidHom.compr₂ .mul (.mulLeft a) = .comp .mul (.mulLeft a) ∧
+      AddMonoidHom.comp .mul (.mulRight a) = .compl₂ .mul (.mulLeft a) ∧
+      AddMonoidHom.compr₂ .mul (.mulRight a) = .compl₂ .mul (.mulRight a) := by
+  rw [Set.mem_center_iff, isMulCentral_iff]
+  simp_rw [FunLike.ext_iff]
+  rfl
+
+end NonUnitalNonAssocSemiring
+
+section NonUnitalSemiring
+
+-- no instance diamond, unlike the unital version
+example {R} [NonUnitalSemiring R] :
+    (center.instNonUnitalCommSemiring _).toNonUnitalSemiring =
+      NonUnitalSubsemiringClass.toNonUnitalSemiring (center R) :=
+  rfl
+
+theorem mem_center_iff {R} [NonUnitalSemiring R] {z : R} : z ∈ center R ↔ ∀ g, g * z = z * g := by
+  rw [← Semigroup.mem_center_iff]
+  exact Iff.rfl
 #align non_unital_subsemiring.mem_center_iff NonUnitalSubsemiring.mem_center_iff
 
 instance decidableMemCenter {R} [NonUnitalSemiring R] [DecidableEq R] [Fintype R] :
@@ -500,13 +531,7 @@ theorem center_eq_top (R) [NonUnitalCommSemiring R] : center R = ⊤ :=
   SetLike.coe_injective (Set.center_eq_univ R)
 #align non_unital_subsemiring.center_eq_top NonUnitalSubsemiring.center_eq_top
 
-/-- The center is commutative. -/
-instance center.instNonUnitalCommSemiring {R} [NonUnitalSemiring R] :
-    NonUnitalCommSemiring (center R) :=
-  { Subsemigroup.center.commSemigroup,
-    NonUnitalSubsemiringClass.toNonUnitalSemiring (center R) with }
-
-end Center
+end NonUnitalSemiring
 
 section Centralizer
 

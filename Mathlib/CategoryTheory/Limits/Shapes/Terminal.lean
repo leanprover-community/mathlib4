@@ -380,12 +380,13 @@ instance uniqueFromInitial [HasInitial C] (P : C) : Unique (⊥_ C ⟶ P) :=
 
 @[simp]
 theorem terminal.comp_from [HasTerminal C] {P Q : C} (f : P ⟶ Q) :
-    f ≫ terminal.from Q = terminal.from P := by aesop
+    f ≫ terminal.from Q = terminal.from P := by
+  simp [eq_iff_true_of_subsingleton]
 #align category_theory.limits.terminal.comp_from CategoryTheory.Limits.terminal.comp_from
 
 @[simp]
 theorem initial.to_comp [HasInitial C] {P Q : C} (f : P ⟶ Q) : initial.to P ≫ f = initial.to Q := by
-  aesop
+  simp [eq_iff_true_of_subsingleton]
 #align category_theory.limits.initial.to_comp CategoryTheory.Limits.initial.to_comp
 
 /-- The (unique) isomorphism between the chosen initial object and any other initial object. -/

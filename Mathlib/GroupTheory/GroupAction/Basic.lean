@@ -77,7 +77,7 @@ theorem orbit_nonempty (a : α) : Set.Nonempty (orbit M a) :=
 #align add_action.orbit_nonempty AddAction.orbit_nonempty
 
 @[to_additive]
-theorem mapsTo_smul_orbit (m : M) (a : α) : Set.MapsTo ((· • ·) m) (orbit M a) (orbit M a) :=
+theorem mapsTo_smul_orbit (m : M) (a : α) : Set.MapsTo (m • ·) (orbit M a) (orbit M a) :=
   Set.range_subset_iff.2 fun m' => ⟨m * m', mul_smul _ _ _⟩
 #align mul_action.maps_to_smul_orbit MulAction.mapsTo_smul_orbit
 #align add_action.maps_to_vadd_orbit AddAction.mapsTo_vadd_orbit
@@ -224,12 +224,9 @@ theorem smul_cancel_of_non_zero_divisor {M R : Type*} [Monoid M] [NonUnitalNonAs
 #align smul_cancel_of_non_zero_divisor smul_cancel_of_non_zero_divisor
 
 namespace MulAction
-
-variable (G : Type u) [Group G] (α : Type v) [MulAction G α]
+variable {G α β : Type*} [Group G] [MulAction G α] [MulAction G β]
 
 section Orbit
-
-variable {G α}
 
 @[to_additive (attr := simp)]
 theorem smul_orbit (g : G) (a : α) : g • orbit G a = orbit G a :=
@@ -303,7 +300,7 @@ of the orbit of `U` under `G`. -/
       union of the orbit of `U` under `G`."]
 theorem quotient_preimage_image_eq_union_mul (U : Set α) :
     letI := orbitRel G α
-    Quotient.mk' ⁻¹' (Quotient.mk' '' U) = ⋃ g : G, (· • ·) g '' U := by
+    Quotient.mk' ⁻¹' (Quotient.mk' '' U) = ⋃ g : G, (g • ·) '' U := by
   letI := orbitRel G α
   set f : α → Quotient (MulAction.orbitRel G α) := Quotient.mk'
   ext a
@@ -385,7 +382,7 @@ theorem orbitRel.Quotient.mem_orbit {a : α} {x : orbitRel.Quotient G α} :
 #align add_action.orbit_rel.quotient.mem_orbit AddAction.orbitRel.Quotient.mem_orbit
 
 /-- Note that `hφ = Quotient.out_eq'` is a useful choice here. -/
-@[to_additive "Note that `hφ = quotient.out_eq'` is m useful choice here."]
+@[to_additive "Note that `hφ = Quotient.out_eq'` is a useful choice here."]
 theorem orbitRel.Quotient.orbit_eq_orbit_out (x : orbitRel.Quotient G α)
     {φ : orbitRel.Quotient G α → α} (hφ : letI := orbitRel G α; RightInverse φ Quotient.mk') :
     orbitRel.Quotient.orbit x = MulAction.orbit G (φ x) := by
@@ -431,8 +428,7 @@ def selfEquivSigmaOrbits : α ≃ Σω : Ω, orbit G ω.out' :=
 end Orbit
 
 section Stabilizer
-
-variable {α}
+variable (G)
 
 /-- The stabilizer of an element under an action, i.e. what sends the element to itself.
 A subgroup. -/
@@ -457,6 +453,36 @@ theorem mem_stabilizer_iff {a : α} {g : G} : g ∈ stabilizer G a ↔ g • a =
 #align mul_action.mem_stabilizer_iff MulAction.mem_stabilizer_iff
 #align add_action.mem_stabilizer_iff AddAction.mem_stabilizer_iff
 
+@[to_additive]
+lemma le_stabilizer_smul_left [SMul α β] [IsScalarTower G α β] (a : α) (b : β) :
+    stabilizer G a ≤ stabilizer G (a • b) := by
+  simp_rw [SetLike.le_def, mem_stabilizer_iff, ← smul_assoc]; rintro a h; rw [h]
+
+@[to_additive]
+lemma le_stabilizer_smul_right [SMul α β] [SMulCommClass G α β] (a : α) (b : β) :
+    stabilizer G b ≤ stabilizer G (a • b) := by
+  simp_rw [SetLike.le_def, mem_stabilizer_iff, smul_comm]; rintro a h; rw [h]
+
+@[to_additive (attr := simp)]
+lemma stabilizer_smul_eq_left [SMul α β] [IsScalarTower G α β] (a : α) (b : β)
+    (h : Injective (· • b : α → β)) : stabilizer G (a • b) = stabilizer G a := by
+  refine' (le_stabilizer_smul_left _ _).antisymm' fun a ha ↦ _
+  simpa only [mem_stabilizer_iff, ← smul_assoc, h.eq_iff] using ha
+
+@[to_additive (attr := simp)]
+lemma stabilizer_smul_eq_right [Group α] [MulAction α β] [SMulCommClass G α β] (a : α) (b : β) :
+    stabilizer G (a • b) = stabilizer G b :=
+  (le_stabilizer_smul_right _ _).antisymm' $ (le_stabilizer_smul_right a⁻¹ _).trans_eq $ by
+    rw [inv_smul_smul]
+
+@[to_additive (attr := simp)]
+lemma stabilizer_mul_eq_left [Group α] [IsScalarTower G α α] (a b : α)  :
+    stabilizer G (a * b) = stabilizer G a := stabilizer_smul_eq_left a _ $ mul_left_injective _
+
+@[to_additive (attr := simp)]
+lemma stabilizer_mul_eq_right [Group α] [SMulCommClass G α α] (a b : α) :
+    stabilizer G (a * b) = stabilizer G b := stabilizer_smul_eq_right a _
+
 /-- If the stabilizer of `a` is `S`, then the stabilizer of `g • a` is `gSg⁻¹`. -/
 theorem stabilizer_smul_eq_stabilizer_map_conj (g : G) (a : α) :
     stabilizer G (g • a) = (stabilizer G a).map (MulAut.conj g).toMonoidHom := by
@@ -480,8 +506,7 @@ end Stabilizer
 end MulAction
 
 namespace AddAction
-
-variable (G : Type u) [AddGroup G] (α : Type v) [AddAction G α]
+variable {G α : Type*} [AddGroup G] [AddAction G α]
 
 /-- If the stabilizer of `x` is `S`, then the stabilizer of `g +ᵥ x` is `g + S + (-g)`. -/
 theorem stabilizer_vadd_eq_stabilizer_map_conj (g : G) (a : α) :
@@ -503,3 +528,6 @@ noncomputable def stabilizerEquivStabilizerOfOrbitRel {a b : α} (h : (orbitRel 
 #align add_action.stabilizer_equiv_stabilizer_of_orbit_rel AddAction.stabilizerEquivStabilizerOfOrbitRel
 
 end AddAction
+
+attribute [to_additive existing] MulAction.stabilizer_smul_eq_stabilizer_map_conj
+attribute [to_additive existing] MulAction.stabilizerEquivStabilizerOfOrbitRel

@@ -259,7 +259,7 @@ theorem prefix_take_le_iff {L : List (List (Option α))} (hm : m < L.length) :
       | zero =>
         refine' iff_of_false _ (zero_lt_succ _).not_le
         rw [take_zero, take_nil]
-        simp only [take]
+        simp only [take, not_false_eq_true]
       | succ n =>
         simp only [length] at hm
         have specializedIH := @IH n ls (Nat.lt_of_succ_lt_succ hm)
@@ -469,9 +469,10 @@ theorem insert_nil (a : α) : insert a nil = [a] :=
   rfl
 #align list.insert_nil List.insert_nil
 
-theorem insert.def (a : α) (l : List α) : insert a l = if a ∈ l then l else a :: l :=
+theorem insert_eq_ite (a : α) (l : List α) : insert a l = if a ∈ l then l else a :: l := by
+  simp only [← elem_iff]
   rfl
-#align list.insert.def List.insert.def
+#align list.insert.def List.insert_eq_ite
 
 #align list.insert_of_mem List.insert_of_mem
 #align list.insert_of_not_mem List.insert_of_not_mem

@@ -45,7 +45,7 @@ theorem monic_zero_iff_subsingleton' :
   Polynomial.monic_zero_iff_subsingleton.trans
     ⟨by
       intro
-      simp, fun h => subsingleton_iff.mpr h.2⟩
+      simp [eq_iff_true_of_subsingleton], fun h => subsingleton_iff.mpr h.2⟩
 #align polynomial.monic_zero_iff_subsingleton' Polynomial.monic_zero_iff_subsingleton'
 
 theorem Monic.as_sum (hp : p.Monic) :
@@ -253,6 +253,11 @@ theorem Monic.eq_one_of_isUnit (hm : Monic p) (hpu : IsUnit p) : p = 1 := by
 theorem Monic.isUnit_iff (hm : p.Monic) : IsUnit p ↔ p = 1 :=
   ⟨hm.eq_one_of_isUnit, fun h => h.symm ▸ isUnit_one⟩
 #align polynomial.monic.is_unit_iff Polynomial.Monic.isUnit_iff
+
+theorem eq_of_monic_of_associated (hp : p.Monic) (hq : q.Monic) (hpq : Associated p q) : p = q := by
+  obtain ⟨u, rfl⟩ := hpq
+  rw [(hp.of_mul_monic_left hq).eq_one_of_isUnit u.isUnit, mul_one]
+#align polynomial.eq_of_monic_of_associated Polynomial.eq_of_monic_of_associated
 
 end Semiring
 

@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel, Mario Carneiro
 -/
 import Qq.MetaM
 import Mathlib.Logic.Nontrivial.Basic
+import Mathlib.Tactic.Attr.Core
 import Mathlib.Tactic.SolveByElim
 
 /-! # The `nontriviality` tactic. -/
@@ -26,7 +27,7 @@ including `Subsingleton.le` and `eq_iff_true_of_subsingleton`.
 -/
 def nontrivialityByElim (α : Q(Type u)) (g : MVarId) (simpArgs : Array Syntax) : MetaM MVarId := do
   let p : Q(Prop) ← g.getType
-  guard (←instantiateMVars (← inferType p)).isProp
+  guard (← instantiateMVars (← inferType p)).isProp
   g.withContext do
     let g₁ ← mkFreshExprMVarQ q(Subsingleton $α → $p)
     let (_, g₁') ← g₁.mvarId!.intro1
@@ -69,19 +70,19 @@ a list of additional `simp` lemmas that can be passed to `nontriviality` using t
 
 ```
 example {R : Type} [OrderedRing R] {a : R} (h : 0 < a) : 0 < a := by
-  nontriviality -- There is now a `nontrivial R` hypothesis available.
+  nontriviality -- There is now a `Nontrivial R` hypothesis available.
   assumption
 ```
 
 ```
 example {R : Type} [CommRing R] {r s : R} : r * s = s * r := by
-  nontriviality -- There is now a `nontrivial R` hypothesis available.
+  nontriviality -- There is now a `Nontrivial R` hypothesis available.
   apply mul_comm
 ```
 
 ```
 example {R : Type} [OrderedRing R] {a : R} (h : 0 < a) : (2 : ℕ) ∣ 4 := by
-  nontriviality R -- there is now a `nontrivial R` hypothesis available.
+  nontriviality R -- there is now a `Nontrivial R` hypothesis available.
   dec_trivial
 ```
 
@@ -90,7 +91,7 @@ def myeq {α : Type} (a b : α) : Prop := a = b
 
 example {α : Type} (a b : α) (h : a = b) : myeq a b := by
   success_if_fail nontriviality α -- Fails
-  nontriviality α using myeq -- There is now a `nontrivial α` hypothesis available
+  nontriviality α using myeq -- There is now a `Nontrivial α` hypothesis available
   assumption
 ```
 -/
@@ -108,8 +109,8 @@ syntax (name := nontriviality) "nontriviality" (ppSpace colGt term)?
       if let some (α, _) := tgt.eq? then return α
       if let some (α, _) := tgt.app4? ``LE.le then return α
       if let some (α, _) := tgt.app4? ``LT.lt then return α
-      throwError "The goal is not an (in)equality, so you'll need to specify the desired {""
-        }`Nontrivial α` instance by invoking `nontriviality α`.")
+      throwError "The goal is not an (in)equality, so you'll need to specify the desired \
+        `Nontrivial α` instance by invoking `nontriviality α`.")
     let .sort u ← whnf (← inferType α) | unreachable!
     let some v := u.dec | throwError "not a type{indentExpr α}"
     let α : Q(Type v) := α
