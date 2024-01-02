@@ -243,7 +243,7 @@ inductive Proof
   deriving Lean.ToExpr
 #align tactic.itauto.proof Mathlib.Tactic.ITauto.Proof
 
-instance : Inhabited Proof := ⟨Proof.triv⟩
+instance : Inhabited Proof := ⟨.triv⟩
 
 /-- Debugging printer for proof objects. -/
 def Proof.format : Proof → Std.Format
@@ -274,23 +274,23 @@ instance : Std.ToFormat Proof := ⟨Proof.format⟩
 /-- A variant on `Proof.exfalso'` that performs opportunistic simplification. -/
 def Proof.exfalso : IProp → Proof → Proof
   | .false, p => p
-  | _, p => Proof.exfalso' p
+  | _, p => .exfalso' p
 #align tactic.itauto.proof.exfalso Mathlib.Tactic.ITauto.Proof.exfalso
 
 /-- A variant on `Proof.orElim'` that performs opportunistic simplification. -/
 def Proof.orElim : Proof → Name → Proof → Proof → Proof
-  | .em cl p, x, q, r => Proof.decidableElim cl p x q r
-  | p, x, q, r => Proof.orElim' p x q r
+  | .em cl p, x, q, r => .decidableElim cl p x q r
+  | p, x, q, r => .orElim' p x q r
 #align tactic.itauto.proof.or_elim Mathlib.Tactic.ITauto.Proof.orElim
 
 /-- A variant on `Proof.app'` that performs opportunistic simplification.
 (This doesn't do full normalization because we don't want the proof size to blow up.) -/
 def Proof.app : Proof → Proof → Proof
-  | .curry ak p, q => Proof.curry₂ ak p q
+  | .curry ak p, q => .curry₂ ak p q
   | .curry₂ ak p q, r => p.app (q.andIntro ak r)
   | .orImpL p, q => p.app q.orInL
   | .orImpR p, q => p.app q.orInR
-  | .impImpSimp x p, q => p.app (Proof.intro x q)
+  | .impImpSimp x p, q => p.app (.intro x q)
   | p, q => p.app' q
 #align tactic.itauto.proof.app Mathlib.Tactic.ITauto.Proof.app
 
@@ -345,7 +345,7 @@ meta def proof.check : name_map prop → proof → option prop
 -/
 
 /-- Get a new name in the pattern `h0, h1, h2, ...` -/
-@[inline] def freshName (n : Nat) : Name × Nat := (Name.mkSimple ("h" ++ toString n), n + 1)
+@[inline] def freshName : StateM Nat Name := fun n => (Name.mkSimple s!"h{n}", n + 1)
 #align tactic.itauto.fresh_name Mathlib.Tactic.ITauto.freshName
 
 /-- The context during proof search is a map from propositions to proof values. -/
@@ -366,7 +366,7 @@ hypothesis, split all conjunctions, and also simplify `⊥ → A` (drop), `⊤ �
 `A ∧ B → C` (curry to `A → B → C`) and `A ∨ B → C` (rewrite to `(A → C) ∧ (B → C)` and split). -/
 partial def Context.add : IProp → Proof → Context → Except (IProp → Proof) Context
   | .true, _, Γ => pure Γ
-  | .false, p, _ => .error fun A => .exfalso A p
+  | .false, p, _ => throw fun A => .exfalso A p
   | .and' ak A B, p, Γ => do
     let (A, B) := ak.sides A B
     let Γ ← Γ.add A (p.andLeft ak)
@@ -375,7 +375,7 @@ partial def Context.add : IProp → Proof → Context → Except (IProp → Proo
   | .imp .true A, p, Γ => Γ.add A (p.app .triv)
   | .imp (.and' ak A B) C, p, Γ =>
     let (A, B) := ak.sides A B
-    Γ.add (IProp.imp A (B.imp C)) (p.curry ak)
+    Γ.add (A.imp (B.imp C)) (p.curry ak)
   | .imp (.or A B) C, p, Γ => do
     let Γ ← Γ.add (A.imp C) p.orImpL
     Γ.add (B.imp C) p.orImpR
@@ -387,28 +387,30 @@ partial def Context.add : IProp → Proof → Context → Except (IProp → Proo
 and a target proposition `B`, so that in the case that `⊥` is found we can skip the continuation
 and just prove `B` outright. -/
 @[inline] def Context.withAdd (Γ : Context) (A : IProp) (p : Proof) (B : IProp)
-    (f : Context → IProp → Nat → Bool × Proof × Nat) (n : Nat) : Bool × Proof × Nat :=
+    (f : Context → IProp → StateM Nat (Bool × Proof)) : StateM Nat (Bool × Proof) :=
   match Γ.add A p with
-  | Except.ok Γ_A => f Γ_A B n
-  | Except.error p => (true, p B, n)
+  | .ok Γ_A => f Γ_A B
+  | .error p => pure (true, p B)
 #align tactic.itauto.context.with_add Mathlib.Tactic.ITauto.Context.withAdd
 
 /-- Map a function over the proof (regardless of whether the proof is successful or not). -/
-def mapProof (f : Proof → Proof) : Bool × Proof × Nat → Bool × Proof × Nat
-  | (b, p, n) => (b, f p, n)
+def mapProof (f : Proof → Proof) : Bool × Proof → Bool × Proof
+  | (b, p) => (b, f p)
 #align tactic.itauto.map_proof Mathlib.Tactic.ITauto.mapProof
 
 /-- Convert a value-with-success to an optional value. -/
-def isOk {α} : Bool × α → Option α
-  | (false, _) => none
-  | (true, p) => some p
+def isOk : (Bool × Proof) × Nat → Option (Proof × Nat)
+  | ((false, _), _) => none
+  | ((true, p), n) => some (p, n)
 #align tactic.itauto.is_ok Mathlib.Tactic.ITauto.isOk
 
 /-- Skip the continuation and return a failed proof if the boolean is false. -/
-def whenOk : Bool → (Nat → Bool × Proof × Nat) → Nat → Bool × Proof × Nat
-  | false, _, n => (false, .sorry, n)
-  | true, f, n => f n
+def whenOk : Bool → StateM Nat (Bool × Proof) → StateM Nat (Bool × Proof)
+  | false, _ => pure (false, .sorry)
+  | true, f => f
 #align tactic.itauto.when_ok Mathlib.Tactic.ITauto.whenOk
+
+mutual
 
 /-- The search phase, which deals with the level 3 rules, which are rules that are not validity
 preserving and so require proof search. One obvious one is the or-introduction rule: we prove
@@ -421,33 +423,28 @@ prove `A₁ → A₂`, which can be written `A₂ → C, A₁ ⊢ A₂` (where w
 `(A₁ → A₂) → C`), and one to use the consequent, `C ⊢ B`. The search here is that there are
 potentially many implications to split like this, and we have to try all of them if we want to be
 complete. -/
-def search (prove : Context → IProp → Nat → Bool × Proof × Nat)
-    (Γ : Context) (B : IProp) (n : Nat) : Bool × Proof × Nat :=
-  match Γ.find? B with
-  | some p => (true, p, n)
-  | none =>
-    let search₁ := Γ.fold (init := none) fun r A p => do
-      if let some r := r then return r
-      let .imp A' C := A | none
-      if let some q := Γ.find? A' then
-        isOk <| Context.withAdd (Γ.erase A) C (p.app q) B prove n
-      else
-        let .imp A₁ A₂ := A' | none
-        let Γ : Context := Γ.erase A
-        let (a, n) := freshName n
-        let (p₁, n) ← isOk <| Γ.withAdd A₁ (Proof.hyp a) A₂ (n := n) fun Γ_A₁ A₂ =>
-          Γ_A₁.withAdd (IProp.imp A₂ C) (Proof.impImpSimp a p) A₂ prove
-        isOk <| Γ.withAdd C (p.app (.intro a p₁)) B prove n
-    match search₁ with
-    | some r => (true, r)
-    | none =>
-      match B with
-      | .or B₁ B₂ =>
-        match mapProof .orInL (prove Γ B₁ n) with
-        | (false, _) => mapProof .orInR (prove Γ B₂ n)
-        | r => r
-      | _ => (false, .sorry, n)
-#align tactic.itauto.search Mathlib.Tactic.ITauto.search
+partial def search (Γ : Context) (B : IProp) : StateM Nat (Bool × Proof) := do
+  if let some p := Γ.find? B then return (true, p)
+  fun n =>
+  let search₁ := Γ.fold (init := none) fun r A p => do
+    if let some r := r then return r
+    let .imp A' C := A | none
+    if let some q := Γ.find? A' then
+      isOk <| Context.withAdd (Γ.erase A) C (p.app q) B prove n
+    else
+      let .imp A₁ A₂ := A' | none
+      let Γ : Context := Γ.erase A
+      let (a, n) := freshName n
+      let (p₁, n) ← isOk <| Γ.withAdd A₁ (.hyp a) A₂ (fun Γ_A₁ A₂ =>
+        Γ_A₁.withAdd (IProp.imp A₂ C) (.impImpSimp a p) A₂ prove) n
+      isOk <| Γ.withAdd C (p.app (.intro a p₁)) B prove n
+  if let some (r, n) := search₁ then
+    ((true, r), n)
+  else if let .or B₁ B₂ := B then
+    match (mapProof .orInL <$> prove Γ B₁) n with
+    | ((false, _), _) => (mapProof .orInR <$> prove Γ B₂) n
+    | r => r
+  else ((false, .sorry), n)
 
 /-- The main prover. This receives a context of proven or assumed lemmas and a target proposition,
 and returns a proof or `none` (with state for the fresh variable generator).
@@ -464,28 +461,32 @@ handle. The rule `Γ ⊢ A ∧ B` is a level 2 rule, also handled here. If none 
 the level 2 rule `A ∨ B ⊢ C` by searching the context and splitting all ors we find. Finally, if
 we don't make any more progress, we go to the search phase.
 -/
-partial def prove (Γ : Context) (B : IProp) (n : Nat) : Bool × Proof × Nat :=
+partial def prove (Γ : Context) (B : IProp) : StateM Nat (Bool × Proof) :=
   match B with
-  | .true => (true, .triv, n)
-  | .imp A B =>
-    let (a, n) := freshName n
-    mapProof (.intro a) <| Γ.withAdd A (.hyp a) B prove n
-  | .and' ak A B =>
+  | .true => pure (true, .triv)
+  | .imp A B => do
+    let a ← freshName
+    mapProof (.intro a) <$> Γ.withAdd A (.hyp a) B prove
+  | .and' ak A B => do
     let (A, B) := ak.sides A B
-    let (b, p, n) := prove Γ A n
-    mapProof (p.andIntro ak) <| whenOk b (prove Γ B) n
+    let (ok, p) ← prove Γ A
+    mapProof (p.andIntro ak) <$> whenOk ok (prove Γ B)
   | B =>
-    Γ.fold (init := fun b Γ => cond b prove (search prove) Γ B)
-      (fun IH A p b Γ n =>
-        match A with
-        | .or A₁ A₂ =>
+    Γ.fold
+      (init := fun found Γ => bif found then prove Γ B else search Γ B)
+      (f := fun IH A p found Γ => do
+        if let .or A₁ A₂ := A then
           let Γ : Context := Γ.erase A
-          let (a, n) := freshName n
-          let (b, p₁, n) := Γ.withAdd A₁ (.hyp a) B (fun Γ _ => IH true Γ) n
-          mapProof (.orElim p a p₁) <|
-            whenOk b (Γ.withAdd A₂ (.hyp a) B fun Γ _ => IH true Γ) n
-        | _ => IH b Γ n)
-      false Γ n
+          let a ← freshName
+          let (ok, p₁) ← Γ.withAdd A₁ (.hyp a) B fun Γ _ => IH true Γ
+          mapProof (.orElim p a p₁) <$>
+            whenOk ok (Γ.withAdd A₂ (.hyp a) B fun Γ _ => IH true Γ)
+        else IH found Γ)
+      (found := false) (Γ := Γ)
+
+end
+
+#align tactic.itauto.search Mathlib.Tactic.ITauto.search
 #align tactic.itauto.prove Mathlib.Tactic.ITauto.prove
 
 open Lean Qq Meta
@@ -494,23 +495,23 @@ open Lean Qq Meta
 `AtomM` state. -/
 partial def reify (e : Q(Prop)) : AtomM IProp :=
   match e with
-  | ~q(True) => pure .true
-  | ~q(False) => pure .false
-  | ~q(¬ $a) => .not <$> reify a
-  | ~q($a ∧ $b) => .and <$> reify a <*> reify b
-  | ~q($a ∨ $b) => .or <$> reify a <*> reify b
-  | ~q($a ↔ $b) => .iff <$> reify a <*> reify b
-  | ~q(Xor' $a $b) => .xor <$> reify a <*> reify b
-  | ~q(@Eq Prop $a $b) => .eq <$> reify a <*> reify b
-  | ~q(@Ne Prop $a $b) => .not <$> (.eq <$> reify a <*> reify b)
+  | ~q(True) => return .true
+  | ~q(False) => return .false
+  | ~q(¬ $a) => return .not (← reify a)
+  | ~q($a ∧ $b) => return .and (← reify a) (← reify b)
+  | ~q($a ∨ $b) => return .or (← reify a) (← reify b)
+  | ~q($a ↔ $b) => return .iff (← reify a) (← reify b)
+  | ~q(Xor' $a $b) => return .xor (← reify a) (← reify b)
+  | ~q(@Eq Prop $a $b) => return .eq (← reify a) (← reify b)
+  | ~q(@Ne Prop $a $b) => return .not (.eq (← reify a) (← reify b))
   | e =>
-    if e.isArrow then .imp <$> reify e.bindingDomain! <*> reify e.bindingBody!
-    else .var <$> AtomM.addAtom e
+    if e.isArrow then return .imp (← reify e.bindingDomain!) (← reify e.bindingBody!)
+    else return .var (← AtomM.addAtom e)
 #align tactic.itauto.reify Mathlib.Tactic.ITauto.reify
 
 /-- Once we have a proof object, we have to apply it to the goal. -/
 partial def applyProof (g : MVarId) : NameMap Expr → Proof → MetaM Unit
-  | _, .sorry => throwError "itauto failed"
+  | _, .sorry => throwError "itauto failed\n{g}"
   | Γ, .hyp n => do g.assignIfDefeq (← liftOption (Γ.find? n))
   | _, .triv => g.assignIfDefeq q(trivial)
   | Γ, .exfalso' p => do
@@ -672,10 +673,10 @@ partial def applyProof (g : MVarId) : NameMap Expr → Proof → MetaM Unit
 def itautoCore (g : MVarId)
     (useDec useClassical : Bool) (extraDec : Array Expr) : MetaM Unit := do
   AtomM.run (← getTransparency) do
-    let hs ← IO.mkRef (mkRBMap ..)
+    let mut hs := mkRBMap ..
     let t ← g.getType
     let (g, t) ← if ← isProp t then pure (g, ← reify t) else pure (← g.exfalso, .false)
-    let mut Γ : Except (IProp → Proof) ITauto.Context := Except.ok (mkRBMap ..)
+    let mut Γ : Except (IProp → Proof) ITauto.Context := .ok (mkRBMap ..)
     let mut decs := mkRBMap ..
     for ldecl in ← getLCtx do
       if !ldecl.isImplementationDetail then
@@ -683,7 +684,7 @@ def itautoCore (g : MVarId)
         if ← isProp e then
           let A ← reify e
           let n := ldecl.fvarId.name
-          hs.modify fun Γ => Γ.insert n (Expr.fvar ldecl.fvarId)
+          hs := hs.insert n (Expr.fvar ldecl.fvarId)
           Γ := do (← Γ).add A (.hyp n)
         else
           if let .const ``Decidable _ := e.getAppFn then
@@ -715,13 +716,13 @@ def itautoCore (g : MVarId)
           decs ← addDec false decs e
     for (A, cl, pf) in decs do
       let n ← mkFreshId
-      hs.modify (·.insert n pf)
+      hs := hs.insert n pf
       Γ := return (← Γ).insert (A.or A.not) (.em cl n)
     let p : Proof :=
       match Γ with
-      | Except.ok Γ => (prove Γ t 0).2.1
-      | Except.error p => p t
-    applyProof g (← hs.get) p
+      | .ok Γ => (prove Γ t 0).1.2
+      | .error p => p t
+    applyProof g hs p
 #align tactic.itauto Mathlib.Tactic.ITauto.itautoCore
 
 open Elab Tactic
