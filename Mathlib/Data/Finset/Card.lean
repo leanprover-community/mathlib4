@@ -120,6 +120,26 @@ theorem card_insert_le (a : α) (s : Finset α) : card (insert a s) ≤ s.card +
   · rw [card_insert_of_not_mem h]
 #align finset.card_insert_le Finset.card_insert_le
 
+section
+
+variable {a b c d e f : α}
+
+theorem card_le_two : card {a, b} ≤ 2 := card_insert_le _ _
+
+theorem card_le_three : card {a, b, c} ≤ 3 :=
+  (card_insert_le _ _).trans (Nat.succ_le_succ card_le_two)
+
+theorem card_le_four : card {a, b, c, d} ≤ 4 :=
+  (card_insert_le _ _).trans (Nat.succ_le_succ card_le_three)
+
+theorem card_le_five : card {a, b, c, d, e} ≤ 5 :=
+  (card_insert_le _ _).trans (Nat.succ_le_succ card_le_four)
+
+theorem card_le_six : card {a, b, c, d, e, f} ≤ 6 :=
+  (card_insert_le _ _).trans (Nat.succ_le_succ card_le_five)
+
+end
+
 /-- If `a ∈ s` is known, see also `Finset.card_insert_of_mem` and `Finset.card_insert_of_not_mem`.
 -/
 theorem card_insert_eq_ite : card (insert a s) = if a ∈ s then s.card else s.card + 1 := by
