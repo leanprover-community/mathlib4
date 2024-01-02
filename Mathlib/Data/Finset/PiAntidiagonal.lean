@@ -228,7 +228,7 @@ theorem mem_piAntidiagonal_insert [DecidableEq ι] {a : ι} {s : Finset ι}
   constructor
   · rintro ⟨hsupp, rfl⟩
     refine ⟨_, _, rfl, Finsupp.erase a f, ?_, ?_, ?_⟩
-    · rw [update_erase, update_self]
+    · rw [update_erase_eq_update, update_self]
     · rwa [support_erase, ← subset_insert_iff]
     · apply sum_congr rfl
       intro x hx
