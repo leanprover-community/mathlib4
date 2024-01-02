@@ -344,8 +344,7 @@ elab_rules : tactic |
       let results ← rewrites hyps lems goal target (stopAtRfl := false) forbidden
       reportOutOfHeartbeats `rewrites tk
       if results.isEmpty then
-        throwError "Could not find any lemmas which can rewrite the hypothesis {
-          ← f.getUserName}"
+        throwError "Could not find any lemmas which can rewrite the hypothesis {← f.getUserName}"
       for r in results do withMCtx r.mctx do
         addRewriteSuggestion tk [(r.expr, r.symm)]
           r.result.eNew (loc? := .some (.fvar f)) (origSpan? := ← getRef)

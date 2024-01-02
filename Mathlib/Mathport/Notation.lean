@@ -590,13 +590,14 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
         elabCommand <|
           ← `(command| attribute [$attrKind delab $(mkIdent key)] $(Lean.mkIdent delabName))
     else
-      logWarning s!"Was not able to generate a pretty printer for this notation.{
-        ""} If you do not expect it to be pretty printable, then you can use{
-        ""} `notation3 (prettyPrint := false)`.{
-        ""} If the notation expansion refers to section variables, be sure to do `local notation3`.{
-        ""} Otherwise, you might be able to adjust the notation expansion to make it matchable;{
-        ""} pretty printing relies on deriving an expression matcher from the expansion.{
-        ""} (Use `set_option trace.notation3 true` to get some debug information.)"
+      logWarning s!"\
+        Was not able to generate a pretty printer for this notation. \
+        If you do not expect it to be pretty printable, then you can use \
+        `notation3 (prettyPrint := false)`. \
+        If the notation expansion refers to section variables, be sure to do `local notation3`. \
+        Otherwise, you might be able to adjust the notation expansion to make it matchable; \
+        pretty printing relies on deriving an expression matcher from the expansion. \
+        (Use `set_option trace.notation3 true` to get some debug information.)"
 
 initialize Std.Linter.UnreachableTactic.addIgnoreTacticKind ``«notation3»
 
