@@ -274,7 +274,8 @@ theorem self_eq_zero (x : M₁) : B x x = 0 :=
 
 theorem neg (x y : M₁) : -B x y = B y x := by
   have H1 : B (y + x) (y + x) = 0 := self_eq_zero H (y + x)
-  simp [map_add, self_eq_zero H] at H1
+  simp? [map_add, self_eq_zero H] at H1 says
+    simp only [map_add, add_apply, self_eq_zero H, zero_add, add_zero] at H1
   rw [add_eq_zero_iff_neg_eq] at H1
   exact H1
 #align linear_map.is_alt.neg LinearMap.IsAlt.neg

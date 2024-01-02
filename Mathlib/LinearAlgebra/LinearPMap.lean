@@ -605,7 +605,7 @@ end
 
 private theorem sSup_aux (c : Set (E →ₗ.[R] F)) (hc : DirectedOn (· ≤ ·) c) :
     ∃ f : ↥(sSup (domain '' c)) →ₗ[R] F, (⟨_, f⟩ : E →ₗ.[R] F) ∈ upperBounds c := by
-  cases' c.eq_empty_or_nonempty with ceq cne
+  rcases c.eq_empty_or_nonempty with ceq | cne
   · subst c
     simp
   have hdir : DirectedOn (· ≤ ·) (domain '' c) :=
