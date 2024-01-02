@@ -133,7 +133,7 @@ theorem card_pair (h : a ≠ b) : ({a, b} : Finset α).card = 2 := by
   rw [card_insert_of_not_mem (not_mem_singleton.2 h), card_singleton]
 #align finset.card_doubleton Finset.card_pair
 
-@[deprecated] alias Finset.card_doubleton := Finset.card_pair
+@[deprecated] alias card_doubleton := Finset.card_pair
 
 /-- $\#(s \setminus \{a\}) = \#s - 1$ if $a \in s$. -/
 @[simp]
