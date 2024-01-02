@@ -185,10 +185,6 @@ syntax generalizingClause := " generalizing" (ppSpace ident)+
 /- S -/ syntax (name := induction'') "induction''" casesTarget
   (fixingClause <|> generalizingClause)? (" with" (ppSpace colGt withPattern)+)? : tactic
 
-syntax termList := " [" term,* "]"
-/- B -/ syntax (name := itauto) "itauto" (" *" <|> termList)? : tactic
-/- B -/ syntax (name := itauto!) "itauto!" (" *" <|> termList)? : tactic
-
 /- B -/ syntax (name := obviously) "obviously" : tactic
 
 /- S -/ syntax (name := prettyCases) "pretty_cases" : tactic
