@@ -519,55 +519,56 @@ partial def reify (e : Q(Prop)) : AtomM IProp :=
 #align tactic.itauto.reify Mathlib.Tactic.ITauto.reify
 
 /-- Once we have a proof object, we have to apply it to the goal. -/
-partial def applyProof (g : MVarId) : NameMap Expr → Proof → MetaM Unit
-  | _, .sorry => throwError "itauto failed\n{g}"
-  | Γ, .hyp n => do g.assignIfDefeq (← liftOption (Γ.find? n))
-  | _, .triv => g.assignIfDefeq q(trivial)
-  | Γ, .exfalso' p => do
+partial def applyProof (g : MVarId) (Γ : NameMap Expr) (p : Proof) : MetaM Unit :=
+  match p with
+  | .sorry => throwError "itauto failed\n{g}"
+  | .hyp n => do g.assignIfDefeq (← liftOption (Γ.find? n))
+  | .triv => g.assignIfDefeq q(trivial)
+  | .exfalso' p => do
     let A ← mkFreshExprMVarQ q(Prop)
     let t ← mkFreshExprMVarQ q(False)
     g.assignIfDefeq q(@False.elim $A $t)
     applyProof t.mvarId! Γ p
-  | Γ, .intro x p => do
+  | .intro x p => do
     let (e, g) ← g.intro x; g.withContext do
       applyProof g (Γ.insert x (.fvar e)) p
-  | Γ, .andLeft .and p => do
+  | .andLeft .and p => do
     let A ← mkFreshExprMVarQ q(Prop)
     let B ← mkFreshExprMVarQ q(Prop)
     let t ← mkFreshExprMVarQ q($A ∧ $B)
     g.assignIfDefeq q(And.left $t)
     applyProof t.mvarId! Γ p
-  | Γ, .andLeft .iff p => do
+  | .andLeft .iff p => do
     let A ← mkFreshExprMVarQ q(Prop)
     let B ← mkFreshExprMVarQ q(Prop)
     let t ← mkFreshExprMVarQ q($A ↔ $B)
     g.assignIfDefeq q(Iff.mp $t)
     applyProof t.mvarId! Γ p
-  | Γ, .andLeft .eq p => do
+  | .andLeft .eq p => do
     let A ← mkFreshExprMVarQ q(Prop)
     let B ← mkFreshExprMVarQ q(Prop)
     let t ← mkFreshExprMVarQ q($A = $B)
     g.assignIfDefeq q(cast $t)
     applyProof t.mvarId! Γ p
-  | Γ, .andRight .and p => do
+  | .andRight .and p => do
     let A ← mkFreshExprMVarQ q(Prop)
     let B ← mkFreshExprMVarQ q(Prop)
     let t ← mkFreshExprMVarQ q($A ∧ $B)
     g.assignIfDefeq q(And.right $t)
     applyProof t.mvarId! Γ p
-  | Γ, .andRight .iff p => do
+  | .andRight .iff p => do
     let A ← mkFreshExprMVarQ q(Prop)
     let B ← mkFreshExprMVarQ q(Prop)
     let t ← mkFreshExprMVarQ q($A ↔ $B)
     g.assignIfDefeq q(Iff.mpr $t)
     applyProof t.mvarId! Γ p
-  | Γ, .andRight .eq p => do
+  | .andRight .eq p => do
     let A ← mkFreshExprMVarQ q(Prop)
     let B ← mkFreshExprMVarQ q(Prop)
     let t ← mkFreshExprMVarQ q($A = $B)
     g.assignIfDefeq q(cast (Eq.symm $t))
     applyProof t.mvarId! Γ p
-  | Γ, .andIntro .and p q => do
+  | .andIntro .and p q => do
     let A ← mkFreshExprMVarQ q(Prop)
     let B ← mkFreshExprMVarQ q(Prop)
     let t₁ ← mkFreshExprMVarQ (u := .zero) A
@@ -575,7 +576,7 @@ partial def applyProof (g : MVarId) : NameMap Expr → Proof → MetaM Unit
     g.assignIfDefeq q(And.intro $t₁ $t₂)
     applyProof t₁.mvarId! Γ p
     applyProof t₂.mvarId! Γ q
-  | Γ, .andIntro .iff p q => do
+  | .andIntro .iff p q => do
     let A ← mkFreshExprMVarQ q(Prop)
     let B ← mkFreshExprMVarQ q(Prop)
     let t₁ ← mkFreshExprMVarQ q($A → $B)
@@ -583,7 +584,7 @@ partial def applyProof (g : MVarId) : NameMap Expr → Proof → MetaM Unit
     g.assignIfDefeq q(Iff.intro $t₁ $t₂)
     applyProof t₁.mvarId! Γ p
     applyProof t₂.mvarId! Γ q
-  | Γ, .andIntro .eq p q => do
+  | .andIntro .eq p q => do
     let A ← mkFreshExprMVarQ q(Prop)
     let B ← mkFreshExprMVarQ q(Prop)
     let t₁ ← mkFreshExprMVarQ q($A → $B)
@@ -591,13 +592,7 @@ partial def applyProof (g : MVarId) : NameMap Expr → Proof → MetaM Unit
     g.assignIfDefeq q(propext (Iff.intro $t₁ $t₂))
     applyProof t₁.mvarId! Γ p
     applyProof t₂.mvarId! Γ q
-  | Γ, .curry ak p => do
-    let (e, g) ← g.intro1; g.withContext do
-      applyProof g (Γ.insert e.name (.fvar e)) (.curry₂ ak p (.hyp e.name))
-  | Γ, .curry₂ ak p q => do
-    let (e, g) ← g.intro1; g.withContext do
-      applyProof g (Γ.insert e.name (.fvar e)) (p.app (q.andIntro ak (.hyp e.name)))
-  | Γ, .app' p q => do
+  | .app' p q => do
     let A ← mkFreshExprMVarQ q(Prop)
     let B ← mkFreshExprMVarQ q(Prop)
     let t₁ ← mkFreshExprMVarQ q($A → $B)
@@ -605,25 +600,19 @@ partial def applyProof (g : MVarId) : NameMap Expr → Proof → MetaM Unit
     g.assignIfDefeq q($t₁ $t₂)
     applyProof t₁.mvarId! Γ p
     applyProof t₂.mvarId! Γ q
-  | Γ, .orImpL p => do
-    let (e, g) ← g.intro1; g.withContext do
-      applyProof g (Γ.insert e.name (.fvar e)) (p.app (.orInL (.hyp e.name)))
-  | Γ, .orImpR p => do
-    let (e, g) ← g.intro1; g.withContext do
-      applyProof g (Γ.insert e.name (.fvar e)) (p.app (.orInR (.hyp e.name)))
-  | Γ, .orInL p => do
+  | .orInL p => do
     let A ← mkFreshExprMVarQ q(Prop)
     let B ← mkFreshExprMVarQ q(Prop)
     let t ← mkFreshExprMVarQ (u := .zero) A
     g.assignIfDefeq q(@Or.inl $A $B $t)
     applyProof t.mvarId! Γ p
-  | Γ, .orInR p => do
+  | .orInR p => do
     let A ← mkFreshExprMVarQ q(Prop)
     let B ← mkFreshExprMVarQ q(Prop)
     let t ← mkFreshExprMVarQ (u := .zero) B
     g.assignIfDefeq q(@Or.inr $A $B $t)
     applyProof t.mvarId! Γ p
-  | Γ, .orElim' p x p₁ p₂ => do
+  | .orElim' p x p₁ p₂ => do
     let A ← mkFreshExprMVarQ q(Prop)
     let B ← mkFreshExprMVarQ q(Prop)
     let C ← mkFreshExprMVarQ q(Prop)
@@ -636,15 +625,15 @@ partial def applyProof (g : MVarId) : NameMap Expr → Proof → MetaM Unit
       applyProof t₂ (Γ.insert x (.fvar e)) p₁
     let (e, t₃) ← t₃.mvarId!.intro x; t₃.withContext do
       applyProof t₃ (Γ.insert x (.fvar e)) p₂
-  | Γ, .em false n => do
+  | .em false n => do
     let A ← mkFreshExprMVarQ q(Prop)
     let e : Q(Decidable $A) ← liftOption (Γ.find? n)
     let .true ← Meta.isDefEq (← Meta.inferType e) q(Decidable $A) | failure
     g.assignIfDefeq q(@Decidable.em $A $e)
-  | Γ, .em true n => do
+  | .em true n => do
     let A : Q(Prop) ← liftOption (Γ.find? n)
     g.assignIfDefeq q(@Classical.em $A)
-  | Γ, .decidableElim false n x p₁ p₂ => do
+  | .decidableElim false n x p₁ p₂ => do
     let A ← mkFreshExprMVarQ q(Prop)
     let e : Q(Decidable $A) ← liftOption (Γ.find? n)
     let .true ← Meta.isDefEq (← Meta.inferType e) q(Decidable $A) | failure
@@ -656,7 +645,7 @@ partial def applyProof (g : MVarId) : NameMap Expr → Proof → MetaM Unit
       applyProof t₁ (Γ.insert x (.fvar e)) p₁
     let (e, t₂) ← t₂.mvarId!.intro x; t₂.withContext do
       applyProof t₂ (Γ.insert x (.fvar e)) p₂
-  | Γ, .decidableElim true n x p₁ p₂ => do
+  | .decidableElim true n x p₁ p₂ => do
     let A : Q(Prop) ← liftOption (Γ.find? n)
     let B ← mkFreshExprMVarQ q(Prop)
     let t₁ ← mkFreshExprMVarQ q($A → $B)
@@ -666,9 +655,9 @@ partial def applyProof (g : MVarId) : NameMap Expr → Proof → MetaM Unit
       applyProof t₁ (Γ.insert x (.fvar e)) p₁
     let (e, t₂) ← t₂.mvarId!.intro x; t₂.withContext do
       applyProof t₂ (Γ.insert x (.fvar e)) p₂
-  | Γ, .impImpSimp x p => do
+  | .curry .. | .curry₂ .. | .orImpL .. | .orImpR .. | .impImpSimp .. => do
     let (e, g) ← g.intro1; g.withContext do
-      applyProof g (Γ.insert e.name (.fvar e)) (p.app (.intro x (.hyp e.name)))
+      applyProof g (Γ.insert e.name (.fvar e)) (p.app (.hyp e.name))
 #align tactic.itauto.apply_proof Mathlib.Tactic.ITauto.applyProof
 
 /-- A decision procedure for intuitionistic propositional logic.
