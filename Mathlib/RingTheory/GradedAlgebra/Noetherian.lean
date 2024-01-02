@@ -15,7 +15,7 @@ This file proves some properties of a graded Noetherian ring:
    `⨁_{i>0} 𝒜ᵢ` is finitely generated as an ideal of `A`.
 -/
 
-variable {ι A σ : Type*}
+variable {A ι σ : Type*}
 variable [Ring A] [IsNoetherianRing A]
 variable [DecidableEq ι] [CanonicallyOrderedAddCommMonoid ι]
 variable [SetLike σ A] [AddSubgroupClass σ A]
