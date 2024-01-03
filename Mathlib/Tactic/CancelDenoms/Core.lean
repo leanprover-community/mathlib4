@@ -149,7 +149,7 @@ partial def findCancelFactor (e : Expr) : ℕ × Tree ℕ :=
     | none => (1, .node 1 .nil .nil)
   | _ => (1, .node 1 .nil .nil)
 
-def synthesizeUsingNormNum (type : Expr) : MetaM Expr := do
+def synthesizeUsingNormNum (type : Q(Prop)) : MetaM Q($type) := do
   try
     synthesizeUsingTactic' type (← `(tactic| norm_num))
   catch e =>
@@ -180,8 +180,7 @@ partial def mkProdPrf (α : Q(Type u)) (sα : Q(Field $α)) (v : ℕ) (t : Tree 
     have ln' := (← mkOfNat α amwo <| mkRawNatLit ln).1
     have vln' := (← mkOfNat α amwo <| mkRawNatLit (v/ln)).1
     have v' := (← mkOfNat α amwo <| mkRawNatLit v).1
-    let ntp : Q(Prop) := q($ln' * $vln' = $v')
-    let npf ← synthesizeUsingNormNum ntp
+    let npf ← synthesizeUsingNormNum q($ln' * $vln' = $v')
     mkAppM ``CancelDenoms.mul_subst #[v1, v2, npf]
   | .node _ lhs (.node rn _ _), ~q($e1 / $e2) => do
     -- Invariant: e2 is equal to the natural number rn
@@ -189,10 +188,8 @@ partial def mkProdPrf (α : Q(Type u)) (sα : Q(Field $α)) (v : ℕ) (t : Tree 
     have rn' := (← mkOfNat α amwo <| mkRawNatLit rn).1
     have vrn' := (← mkOfNat α amwo <| mkRawNatLit <| v / rn).1
     have v' := (← mkOfNat α amwo <| mkRawNatLit <| v).1
-    let ntp : Q(Prop) := q($rn' / $e2 = 1)
-    let npf ← synthesizeUsingNormNum ntp
-    let ntp2 : Q(Prop) := q($vrn' * $rn' = $v')
-    let npf2 ← synthesizeUsingNormNum ntp2
+    let npf ← synthesizeUsingNormNum q($rn' / $e2 = 1)
+    let npf2 ← synthesizeUsingNormNum q($vrn' * $rn' = $v')
     mkAppM ``CancelDenoms.div_subst #[v1, npf, npf2]
   | t, ~q(-$e) => do
     let v ← mkProdPrf α sα v t e
@@ -203,17 +200,14 @@ partial def mkProdPrf (α : Q(Type u)) (sα : Q(Field $α)) (v : ℕ) (t : Tree 
     have k1' := (← mkOfNat α amwo <| mkRawNatLit k1).1
     have v' := (← mkOfNat α amwo <| mkRawNatLit v).1
     have l' := (← mkOfNat α amwo <| mkRawNatLit l).1
-    let ntp : Q(Prop) := q($l' * $k1' ^ $e2 = $v')
-    let npf ← synthesizeUsingNormNum ntp
+    let npf ← synthesizeUsingNormNum q($l' * $k1' ^ $e2 = $v')
     mkAppM ``CancelDenoms.pow_subst #[v1, npf]
   | .node _ .nil (.node rn _ _), ~q($e ⁻¹) => do
     have rn' := (← mkOfNat α amwo <| mkRawNatLit rn).1
     have vrn' := (← mkOfNat α amwo <| mkRawNatLit <| v / rn).1
     have v' := (← mkOfNat α amwo <| mkRawNatLit <| v).1
-    let ntp : Q(Prop) := q($rn' ≠ 0)
-    let npf ← synthesizeUsingNormNum ntp
-    let ntp2 : Q(Prop) := q($vrn' * $rn' = $v')
-    let npf2 ← synthesizeUsingNormNum ntp2
+    let npf ← synthesizeUsingNormNum q($rn' ≠ 0)
+    let npf2 ← synthesizeUsingNormNum q($vrn' * $rn' = $v')
     mkAppM ``CancelDenoms.inv_subst #[npf, npf2]
   | _, _ => do
     have v' := (← mkOfNat α amwo <| mkRawNatLit <| v).1
