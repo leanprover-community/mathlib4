@@ -249,8 +249,6 @@ The categorical product and the usual product agrees
 -/
 def piIsoPi : ∏ R ≅ CommRingCat.of ((i : ι) → R i) :=
   limit.isoLimitCone ⟨_, piFanIsLimit R⟩
-
-
 /--
 The categorical product and the usual product agrees
 -/
@@ -258,8 +256,6 @@ def _root_.RingEquiv.piEquivPi (R : ι → Type u) [∀ i, CommRing (R i)] :
     (∏ (fun i : ι ↦ CommRingCat.of (R i)) : CommRingCat.{u}) ≃+* ((i : ι) → R i) :=
   let R' : ι → CommRingCat.{u} := fun i : ι ↦ CommRingCat.of (R i)
   RingEquiv.ofHomInv (piIsoPi R').hom (piIsoPi R').inv (piIsoPi R').3 (piIsoPi R').4
-
-
 end Pi
 
 section Equalizer
