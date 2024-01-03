@@ -20,7 +20,7 @@ In this file we provide the explicit (co)cones for various (co)limits in `CommRi
 * `Z` is the initial object
 * `0` is the strict terminal object
 * cartesian product is the product
-* arbitrary product of a family of rings is the product object (Pi object)
+* arbitrary direct product of a family of rings is the product object (Pi object)
 * `RingHom.eqLocus` is the equalizer
 
 -/
