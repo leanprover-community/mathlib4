@@ -162,7 +162,7 @@ by `findCancelFactor`.
 -/
 partial def mkProdPrf (α : Q(Type u)) (sα : Q(Field $α)) (v : ℕ) (t : Tree ℕ)
     (e : Q($α)) : MetaM Expr := do
-  let amwo ← synthInstanceQ q(AddMonoidWithOne $α)
+  let amwo : Q(AddMonoidWithOne $α) := q(inferInstance)
   trace[CancelDenoms] "mkProdPrf {e} {v}"
   match t, e with
   | .node _ lhs rhs, ~q($e1 + $e2) => do
