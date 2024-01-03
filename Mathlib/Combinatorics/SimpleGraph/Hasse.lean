@@ -260,7 +260,8 @@ theorem Walk.toPathGraphHom_bot (G : SimpleGraph α) {u v : α} (w : G.Walk u v)
 theorem Walk.toPathGraphHom_top (G : SimpleGraph α) {u v : α} (w : G.Walk u v) :
     (w.toPathGraphHom).toFun ⊤ = u := (w.toPathGraphHomAux).2.2
 
-theorem Walk.ofPathGraphHom_lenght (G : SimpleGraph α) {n : ℕ} (hom : pathGraph (n + 1) →g G) :
+@[simp]
+theorem Walk.length_ofPathGraphHom {G : SimpleGraph α} {n : ℕ} (hom : pathGraph (n + 1) →g G) :
     (ofPathGraphHom α G hom).length = n := by
   induction n with
   | zero => rfl
