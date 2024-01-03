@@ -609,15 +609,15 @@ def submonoid : Submonoid R where
 /-- The monoid `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`. -/
 instance instMonoid : Monoid (A 0) := inferInstanceAs <| Monoid (GradeZero.submonoid A)
 
-/- The linter message "error: SetLike.GradeZero.coe_one.{u_3, u_2, u_1} Left-hand side does
+/-- The linter message "error: SetLike.GradeZero.coe_one.{u_3, u_2, u_1} Left-hand side does
   not simplify, when using the simp lemma on itself." is wrong. The LHS does simplify. -/
 @[nolint simpNF, simp, norm_cast] theorem coe_one : ↑(1 : A 0) = (1 : R) := rfl
 
-/- The linter message "error: SetLike.GradeZero.coe_mul.{u_3, u_2, u_1} Left-hand side does
+/-- The linter message "error: SetLike.GradeZero.coe_mul.{u_3, u_2, u_1} Left-hand side does
   not simplify, when using the simp lemma on itself." is wrong. The LHS does simplify. -/
 @[nolint simpNF, simp, norm_cast] theorem coe_mul (a b : A 0) : ↑(a * b) = (↑a * ↑b : R) := rfl
 
-/- The linter message "error: SetLike.GradeZero.coe_pow.{u_3, u_2, u_1} Left-hand side does
+/-- The linter message "error: SetLike.GradeZero.coe_pow.{u_3, u_2, u_1} Left-hand side does
   not simplify, when using the simp lemma on itself." is wrong. The LHS does simplify. -/
 @[nolint simpNF, simp, norm_cast] theorem coe_pow (a : A 0) (n : ℕ) : ↑(a ^ n) = (↑a : R) ^ n := rfl
 
