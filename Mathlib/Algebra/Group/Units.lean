@@ -690,7 +690,7 @@ lemma IsUnit.exists_left_inv (h : IsUnit a) : ∃ b, b * a = 1 := by
 #align is_add_unit.exists_neg' IsAddUnit.exists_neg'
 
 @[to_additive] lemma IsUnit.mul : IsUnit a → IsUnit b → IsUnit (a * b) := by
-  rintro ⟨x, rfl⟩ ⟨y, rfl⟩ ; exact ⟨x * y, rfl⟩
+  rintro ⟨x, rfl⟩ ⟨y, rfl⟩; exact ⟨x * y, rfl⟩
 #align is_unit.mul IsUnit.mul
 #align is_add_unit.add IsAddUnit.add
 
