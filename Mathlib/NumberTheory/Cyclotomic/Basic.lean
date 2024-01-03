@@ -103,18 +103,18 @@ theorem iff_adjoin_eq_top :
 theorem iff_singleton :
     IsCyclotomicExtension {n} A B ↔
       (∃ r : B, IsPrimitiveRoot r n) ∧ ∀ x, x ∈ adjoin A {b : B | b ^ (n : ℕ) = 1} :=
-  by simp [IsCyclotomicExtension_iff]
+  by simp [isCyclotomicExtension_iff]
 #align is_cyclotomic_extension.iff_singleton IsCyclotomicExtension.iff_singleton
 
 /-- If `IsCyclotomicExtension ∅ A B`, then the image of `A` in `B` equals `B`. -/
 theorem empty [h : IsCyclotomicExtension ∅ A B] : (⊥ : Subalgebra A B) = ⊤ := by
-  simpa [Algebra.eq_top_iff, IsCyclotomicExtension_iff] using h
+  simpa [Algebra.eq_top_iff, isCyclotomicExtension_iff] using h
 #align is_cyclotomic_extension.empty IsCyclotomicExtension.empty
 
 /-- If `IsCyclotomicExtension {1} A B`, then the image of `A` in `B` equals `B`. -/
 theorem singleton_one [h : IsCyclotomicExtension {1} A B] : (⊥ : Subalgebra A B) = ⊤ :=
   Algebra.eq_top_iff.2 fun x => by
-    simpa [adjoin_singleton_one] using ((IsCyclotomicExtension_iff _ _ _).1 h).2 x
+    simpa [adjoin_singleton_one] using ((isCyclotomicExtension_iff _ _ _).1 h).2 x
 #align is_cyclotomic_extension.singleton_one IsCyclotomicExtension.singleton_one
 
 variable {A B}
@@ -137,16 +137,16 @@ theorem trans (C : Type w) [CommRing C] [Algebra A C] [Algebra B C] [IsScalarTow
     (h : Function.Injective (algebraMap B C)) : IsCyclotomicExtension (S ∪ T) A C := by
   refine' ⟨fun hn => _, fun x => _⟩
   · cases' hn with hn hn
-    · obtain ⟨b, hb⟩ := ((IsCyclotomicExtension_iff _ _ _).1 hS).1 hn
+    · obtain ⟨b, hb⟩ := ((isCyclotomicExtension_iff _ _ _).1 hS).1 hn
       refine' ⟨algebraMap B C b, _⟩
       exact hb.map_of_injective h
-    · exact ((IsCyclotomicExtension_iff _ _ _).1 hT).1 hn
-  · refine' adjoin_induction (((IsCyclotomicExtension_iff T B _).1 hT).2 x)
+    · exact ((isCyclotomicExtension_iff _ _ _).1 hT).1 hn
+  · refine' adjoin_induction (((isCyclotomicExtension_iff T B _).1 hT).2 x)
       (fun c ⟨n, hn⟩ => subset_adjoin ⟨n, Or.inr hn.1, hn.2⟩) (fun b => _)
       (fun x y hx hy => Subalgebra.add_mem _ hx hy) fun x y hx hy => Subalgebra.mul_mem _ hx hy
     · let f := IsScalarTower.toAlgHom A B C
       have hb : f b ∈ (adjoin A {b : B | ∃ a : ℕ+, a ∈ S ∧ b ^ (a : ℕ) = 1}).map f :=
-        ⟨b, ((IsCyclotomicExtension_iff _ _ _).1 hS).2 b, rfl⟩
+        ⟨b, ((isCyclotomicExtension_iff _ _ _).1 hS).2 b, rfl⟩
       rw [IsScalarTower.toAlgHom_apply, ← adjoin_image] at hb
       refine' adjoin_mono (fun y hy => _) hb
       obtain ⟨b₁, ⟨⟨n, hn⟩, h₁⟩⟩ := hy
@@ -185,8 +185,8 @@ theorem union_right [h : IsCyclotomicExtension (S ∪ T) A B] :
     · rintro x (⟨n, hn⟩ | ⟨n, hn⟩)
       · exact ⟨n, Or.inl hn.1, hn.2⟩
       · exact ⟨n, Or.inr hn.1, hn.2⟩
-  refine' ⟨fun hn => ((IsCyclotomicExtension_iff _ A _).1 h).1 (mem_union_right S hn), fun b => _⟩
-  replace h := ((IsCyclotomicExtension_iff _ _ _).1 h).2 b
+  refine' ⟨fun hn => ((isCyclotomicExtension_iff _ A _).1 h).1 (mem_union_right S hn), fun b => _⟩
+  replace h := ((isCyclotomicExtension_iff _ _ _).1 h).2 b
   rwa [this, adjoin_union_eq_adjoin_adjoin, Subalgebra.mem_restrictScalars] at h
 #align is_cyclotomic_extension.union_right IsCyclotomicExtension.union_right
 
@@ -196,7 +196,7 @@ given by roots of unity of order in `S`. -/
 theorem union_left [h : IsCyclotomicExtension T A B] (hS : S ⊆ T) :
     IsCyclotomicExtension S A (adjoin A {b : B | ∃ a : ℕ+, a ∈ S ∧ b ^ (a : ℕ) = 1}) := by
   refine' ⟨@fun n hn => _, fun b => _⟩
-  · obtain ⟨b, hb⟩ := ((IsCyclotomicExtension_iff _ _ _).1 h).1 (hS hn)
+  · obtain ⟨b, hb⟩ := ((isCyclotomicExtension_iff _ _ _).1 h).1 (hS hn)
     refine' ⟨⟨b, subset_adjoin ⟨n, hn, hb.pow_eq_one⟩⟩, _⟩
     rwa [← IsPrimitiveRoot.coe_submonoidClass_iff, Subtype.coe_mk]
   · convert mem_top (R := A) (x := b)
@@ -443,7 +443,7 @@ theorem splits_X_pow_sub_one [H : IsCyclotomicExtension S K L] (hS : n ∈ S) :
     Splits (algebraMap K L) (X ^ (n : ℕ) - 1) := by
   rw [← splits_id_iff_splits, Polynomial.map_sub, Polynomial.map_one, Polynomial.map_pow,
     Polynomial.map_X]
-  obtain ⟨z, hz⟩ := ((IsCyclotomicExtension_iff _ _ _).1 H).1 hS
+  obtain ⟨z, hz⟩ := ((isCyclotomicExtension_iff _ _ _).1 H).1 hS
   exact X_pow_sub_one_splits hz
 set_option linter.uppercaseLean3 false in
 #align is_cyclotomic_extension.splits_X_pow_sub_one IsCyclotomicExtension.splits_X_pow_sub_one
