@@ -454,8 +454,6 @@ noncomputable def nullHomotopicMap : K.cylinder ⟶ K.cylinder :=
 noncomputable def nullHomotopy : Homotopy (nullHomotopicMap K) 0 :=
   Homotopy.nullHomotopy' _
 
-attribute [reassoc] HomologicalComplex.comp_f
-
 lemma inlX_nullHomotopy_f (i j : ι) (hij : c.Rel j i) :
     inlX K i j hij ≫ (nullHomotopicMap K).f j =
       inlX K i j hij ≫ (π K ≫ ι₀ K - 𝟙 _).f j := by
