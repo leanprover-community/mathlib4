@@ -96,8 +96,8 @@ theorem multichoose_zero_succ [NatPowAssoc R]
     (k : ℕ) : multichoose (0 : R) (k + 1) = 0 := by
   refine nsmul_right_injective R (Nat.factorial (k + 1)) (Nat.factorial_ne_zero (k + 1)) ?_
   simp only
-  rw [factorial_nsmul_multichoose_eq_ascPochhammer, smul_zero, ascPochhammer_succ_left, smeval_X_mul,
-    zero_mul]
+  rw [factorial_nsmul_multichoose_eq_ascPochhammer, smul_zero, ascPochhammer_succ_left,
+    smeval_X_mul, zero_mul]
 
 theorem ascPochhammer_succ_succ [NatPowAssoc R] (r : R) (k : ℕ) :
     smeval (r + 1) (ascPochhammer ℕ (k + 1)) = Nat.factorial (k + 1) • multichoose (r + 1) k +
@@ -292,8 +292,8 @@ def choose {R: Type _} [NonAssocRing R] [Pow R ℕ] [BinomialRing R]
 theorem descPochhammer_eq_factorial_smul_choose [NatPowAssoc R] (r : R) (n : ℕ) :
     smeval r (descPochhammer ℤ n) = n.factorial • choose r n := by
   unfold choose
-  rw [factorial_nsmul_multichoose_eq_ascPochhammer, descPochhammer_eq_ascPochhammer, smeval_comp ℤ r,
-    add_comm_sub, smeval_add, smeval_X, npow_one]
+  rw [factorial_nsmul_multichoose_eq_ascPochhammer, descPochhammer_eq_ascPochhammer,
+    smeval_comp ℤ r, add_comm_sub, smeval_add, smeval_X, npow_one]
   have h : smeval r (1 - n : Polynomial ℤ) = 1 - n := by
     rw [← C_eq_nat_cast, ← C_1, ← C_sub, smeval_C]
     simp only [npow_zero, zsmul_eq_mul, Int.cast_sub, Int.cast_one, Int.cast_ofNat, zsmul_one]
