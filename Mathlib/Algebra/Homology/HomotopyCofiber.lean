@@ -19,7 +19,7 @@ When we assume `hc : ∀ j, ∃ i, c.Rel i j` (which holds in the case of chain 
 or cochain complexes indexed by `ℤ`), then for any homological complex `K`,
 there is a bijection `HomologicalComplex.homotopyCofiber.descEquiv φ K hc`
 between `homotopyCofiber φ ⟶ K` and the tuples `(α, hα)` with
-`α : G ⟶ K` and `hα : Homotopy (φ ≫ α) 0` (TODO).
+`α : G ⟶ K` and `hα : Homotopy (φ ≫ α) 0`.
 
 We shall also study the cylinder of a homological complex `K`: this is the
 homotopy cofiber of the morphism  `biprod.lift (𝟙 K) (-𝟙 K) : K ⟶ K ⊞ K`.
@@ -453,8 +453,6 @@ noncomputable def nullHomotopicMap : K.cylinder ⟶ K.cylinder :=
 /-- The obvious homotopy from `nullHomotopicMap K` to zero. -/
 noncomputable def nullHomotopy : Homotopy (nullHomotopicMap K) 0 :=
   Homotopy.nullHomotopy' _
-
-attribute [reassoc] HomologicalComplex.comp_f
 
 lemma inlX_nullHomotopy_f (i j : ι) (hij : c.Rel j i) :
     inlX K i j hij ≫ (nullHomotopicMap K).f j =
