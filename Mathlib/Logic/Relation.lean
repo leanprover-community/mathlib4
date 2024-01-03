@@ -256,16 +256,15 @@ inductive ReflTransGen (r : α → α → Prop) (a : α) : α → Prop
 attribute [refl] ReflTransGen.refl
 
 /-- `ReflGen r`: reflexive closure of `r` -/
-@[mk_iff reflGen_iff]
+@[mk_iff]
 inductive ReflGen (r : α → α → Prop) (a : α) : α → Prop
   | refl : ReflGen r a a
   | single {b} : r a b → ReflGen r a b
 #align relation.refl_gen Relation.ReflGen
-
 #align relation.refl_gen_iff Relation.reflGen_iff
 
 /-- `TransGen r`: transitive closure of `r` -/
-@[mk_iff transGen_iff]
+@[mk_iff]
 inductive TransGen (r : α → α → Prop) (a : α) : α → Prop
   | single {b} : r a b → TransGen r a b
   | tail {b c} : TransGen r a b → r b c → TransGen r a c
