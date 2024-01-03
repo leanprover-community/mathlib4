@@ -566,7 +566,8 @@ theorem TotallyBounded.image [UniformSpace β] {f : α → β} {s : Set α} (hs 
   ⟨f '' c, hfc.image f, by
     simp only [mem_image, iUnion_exists, biUnion_and', iUnion_iUnion_eq_right, image_subset_iff,
       preimage_iUnion, preimage_setOf_eq]
-    simp [subset_def] at hct
+    simp? [subset_def] at hct says
+      simp only [mem_setOf_eq, subset_def, mem_iUnion, exists_prop] at hct
     intro x hx; simp
     exact hct x hx⟩
 #align totally_bounded.image TotallyBounded.image
@@ -654,7 +655,7 @@ theorem CauchySeq.totallyBounded_range {s : ℕ → α} (hs : CauchySeq s) :
   rw [range_subset_iff, biUnion_image]
   intro m
   rw [mem_iUnion₂]
-  cases' le_total m n with hm hm
+  rcases le_total m n with hm | hm
   exacts [⟨m, hm, refl_mem_uniformity ha⟩, ⟨n, le_refl n, hn m hm n le_rfl⟩]
 #align cauchy_seq.totally_bounded_range CauchySeq.totallyBounded_range
 

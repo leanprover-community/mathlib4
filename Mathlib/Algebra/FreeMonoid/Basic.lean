@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Yury Kudryashov
 -/
 import Mathlib.Data.List.BigOperators.Basic
+import Mathlib.GroupTheory.GroupAction.Defs
 
 #align_import algebra.free_monoid.basic from "leanprover-community/mathlib"@"657df4339ae6ceada048c8a2980fb10e393143ec"
 
@@ -349,5 +350,12 @@ theorem map_comp (g : β → γ) (f : α → β) : map (g ∘ f) = (map g).comp 
 theorem map_id : map (@id α) = MonoidHom.id (FreeMonoid α) := hom_eq fun _ ↦ rfl
 #align free_monoid.map_id FreeMonoid.map_id
 #align free_add_monoid.map_id FreeAddMonoid.map_id
+
+/-- The only invertible element of the free monoid is 1; this instance enables `units_eq_one`. -/
+@[to_additive]
+instance uniqueUnits : Unique (FreeMonoid α)ˣ where
+  uniq u := Units.ext <| toList.injective <|
+    have : toList u.val ++ toList u.inv = [] := FunLike.congr_arg toList u.val_inv
+    (List.append_eq_nil.mp this).1
 
 end FreeMonoid

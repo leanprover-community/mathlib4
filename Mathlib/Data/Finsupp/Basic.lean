@@ -1052,9 +1052,8 @@ theorem subtypeDomain_eq_zero_iff {f : α →₀ M} (hf : ∀ x ∈ f.support, p
 
 @[to_additive]
 theorem prod_subtypeDomain_index [CommMonoid N] {v : α →₀ M} {h : α → M → N}
-    (hp : ∀ x ∈ v.support, p x) : ((v.subtypeDomain p).prod fun a b => h a b) = v.prod h :=
-  prod_bij (fun p _ => p.val) (fun _ => by classical exact mem_subtype.1) (fun _ _ => rfl)
-    (fun _ _ _ _ => Subtype.eq) fun b hb => ⟨⟨b, hp b hb⟩, by classical exact mem_subtype.2 hb, rfl⟩
+    (hp : ∀ x ∈ v.support, p x) : (v.subtypeDomain p).prod (fun a b ↦ h a b) = v.prod h := by
+  refine Finset.prod_bij (fun p _ ↦ p) ?_ ?_ ?_ ?_ <;> aesop
 #align finsupp.prod_subtype_domain_index Finsupp.prod_subtypeDomain_index
 #align finsupp.sum_subtype_domain_index Finsupp.sum_subtypeDomain_index
 
@@ -1265,7 +1264,6 @@ theorem filter_curry (f : α × β →₀ M) (p : α → Prop) :
       sum_filter]
     refine' Finset.sum_congr rfl _
     rintro ⟨a₁, a₂⟩ _
-    dsimp only
     split_ifs with h
     · rw [filter_apply_pos, filter_single_of_pos] <;> exact h
     · rwa [filter_single_of_neg]
@@ -1300,7 +1298,7 @@ def sumElim {α β γ : Type*} [Zero γ] (f : α →₀ γ) (g : β →₀ γ) :
     simpa
 #align finsupp.sum_elim Finsupp.sumElim
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_sumElim {α β γ : Type*} [Zero γ] (f : α →₀ γ) (g : β →₀ γ) :
     ⇑(sumElim f g) = Sum.elim f g :=
   rfl
@@ -1416,12 +1414,12 @@ variable [Monoid G] [MulAction G α] [AddCommMonoid M]
 
 This is not an instance as it would conflict with the action on the range.
 See the `instance_diamonds` test for examples of such conflicts. -/
-def comapSMul : SMul G (α →₀ M) where smul g := mapDomain ((· • ·) g)
+def comapSMul : SMul G (α →₀ M) where smul g := mapDomain (g • ·)
 #align finsupp.comap_has_smul Finsupp.comapSMul
 
 attribute [local instance] comapSMul
 
-theorem comapSMul_def (g : G) (f : α →₀ M) : g • f = mapDomain ((· • ·) g) f :=
+theorem comapSMul_def (g : G) (f : α →₀ M) : g • f = mapDomain (g • ·) f :=
   rfl
 #align finsupp.comap_smul_def Finsupp.comapSMul_def
 
@@ -1474,7 +1472,7 @@ end
 section
 
 instance smulZeroClass [Zero M] [SMulZeroClass R M] : SMulZeroClass R (α →₀ M) where
-  smul a v := v.mapRange ((· • ·) a) (smul_zero _)
+  smul a v := v.mapRange (a • ·) (smul_zero _)
   smul_zero a := by
     ext
     apply smul_zero
@@ -1485,7 +1483,7 @@ Throughout this section, some `Monoid` and `Semiring` arguments are specified wi
 `[]`. See note [implicit instance arguments].
 -/
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_smul [Zero M] [SMulZeroClass R M] (b : R) (v : α →₀ M) : ⇑(b • v) = b • ⇑v :=
   rfl
 #align finsupp.coe_smul Finsupp.coe_smul
@@ -1506,6 +1504,9 @@ instance faithfulSMul [Nonempty α] [Zero M] [SMulZeroClass R M] [FaithfulSMul R
     let ⟨a⟩ := ‹Nonempty α›
     eq_of_smul_eq_smul fun m : M => by simpa using FunLike.congr_fun (h (single a m)) a
 #align finsupp.faithful_smul Finsupp.faithfulSMul
+
+instance instSMulWithZero [Zero R] [Zero M] [SMulWithZero R M] : SMulWithZero R (α →₀ M) where
+  zero_smul f := by ext i; exact zero_smul _ _
 
 variable (α M)
 
@@ -1589,7 +1590,7 @@ theorem mapRange_smul {_ : Monoid R} [AddMonoid M] [DistribMulAction R M] [AddMo
     [DistribMulAction R N] {f : M → N} {hf : f 0 = 0} (c : R) (v : α →₀ M)
     (hsmul : ∀ x, f (c • x) = c • f x) : mapRange f hf (c • v) = c • mapRange f hf v := by
   erw [← mapRange_comp]
-  have : f ∘ (· • ·) c = (· • ·) c ∘ f := funext hsmul
+  have : f ∘ (c • ·) = (c • ·) ∘ f := funext hsmul
   simp_rw [this]
   apply mapRange_comp
   simp only [Function.comp_apply, smul_zero, hf]

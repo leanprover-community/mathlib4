@@ -248,10 +248,10 @@ case `f.fix a` returns `f a`), or it is undefined (in which case `f.fix a` is un
 it is in the `α` part of `β ⊕ α` (in which case we repeat the procedure, so `f.fix a` will return
 `f.fix (f a)`). -/
 def fix (f : α →. Sum β α) : α →. β := fun a =>
-  Part.assert (Acc (fun x y => Sum.inr x ∈ f y) a) $ fun h =>
+  Part.assert (Acc (fun x y => Sum.inr x ∈ f y) a) fun h =>
     WellFounded.fixF
       (fun a IH =>
-        Part.assert (f a).Dom $ fun hf =>
+        Part.assert (f a).Dom fun hf =>
           match e : (f a).get hf with
           | Sum.inl b => Part.some b
           | Sum.inr a' => IH a' ⟨hf, e⟩)
@@ -342,7 +342,7 @@ theorem fixInduction_spec {C : α → Sort*} {f : α →. Sum β α} {b : β} {a
     @fixInduction _ _ C _ _ _ h H = H a h fun a' h' => fixInduction (fix_fwd h h') H := by
   unfold fixInduction
   -- Porting note: `generalize` required to address `generalize_proofs` bug
-  generalize (Part.mem_assert_iff.1 h).fst = ha
+  generalize @fixInduction.proof_1 α β f b a h = ha
   induction ha
   rfl
 #align pfun.fix_induction_spec PFun.fixInduction_spec

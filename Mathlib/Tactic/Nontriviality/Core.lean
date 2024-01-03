@@ -109,8 +109,8 @@ syntax (name := nontriviality) "nontriviality" (ppSpace colGt term)?
       if let some (α, _) := tgt.eq? then return α
       if let some (α, _) := tgt.app4? ``LE.le then return α
       if let some (α, _) := tgt.app4? ``LT.lt then return α
-      throwError "The goal is not an (in)equality, so you'll need to specify the desired {""
-        }`Nontrivial α` instance by invoking `nontriviality α`.")
+      throwError "The goal is not an (in)equality, so you'll need to specify the desired \
+        `Nontrivial α` instance by invoking `nontriviality α`.")
     let .sort u ← whnf (← inferType α) | unreachable!
     let some v := u.dec | throwError "not a type{indentExpr α}"
     let α : Q(Type v) := α

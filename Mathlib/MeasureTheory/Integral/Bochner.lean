@@ -155,7 +155,7 @@ namespace MeasureTheory
 
 variable {α E F 𝕜 : Type*}
 
-section WeightedSmul
+section WeightedSMul
 
 open ContinuousLinearMap
 
@@ -250,7 +250,7 @@ theorem weightedSMul_nonneg (s : Set α) (x : ℝ) (hx : 0 ≤ x) : 0 ≤ weight
   exact mul_nonneg toReal_nonneg hx
 #align measure_theory.weighted_smul_nonneg MeasureTheory.weightedSMul_nonneg
 
-end WeightedSmul
+end WeightedSMul
 
 -- mathport name: «expr →ₛ »
 local infixr:25 " →ₛ " => SimpleFunc
@@ -1291,6 +1291,14 @@ theorem integral_pos_iff_support_of_nonneg {f : α → ℝ} (hf : 0 ≤ f) (hfi 
   integral_pos_iff_support_of_nonneg_ae (eventually_of_forall hf) hfi
 #align measure_theory.integral_pos_iff_support_of_nonneg MeasureTheory.integral_pos_iff_support_of_nonneg
 
+lemma integral_exp_pos {μ : Measure α} {f : α → ℝ} [hμ : NeZero μ]
+    (hf : Integrable (fun x ↦ Real.exp (f x)) μ) :
+    0 < ∫ x, Real.exp (f x) ∂μ := by
+  rw [integral_pos_iff_support_of_nonneg (fun x ↦ (Real.exp_pos _).le) hf]
+  suffices (Function.support fun x ↦ Real.exp (f x)) = Set.univ by simp [this, hμ.out]
+  ext1 x
+  simp only [Function.mem_support, ne_eq, (Real.exp_pos _).ne', not_false_eq_true, Set.mem_univ]
+
 section NormedAddCommGroup
 
 variable {H : Type*} [NormedAddCommGroup H]
@@ -1645,6 +1653,10 @@ theorem MeasurePreserving.integral_comp {β} {_ : MeasurableSpace β} {f : α �
     ∫ x, g (f x) ∂μ = ∫ y, g y ∂ν :=
   h₁.map_eq ▸ (h₂.integral_map g).symm
 #align measure_theory.measure_preserving.integral_comp MeasureTheory.MeasurePreserving.integral_comp
+
+theorem MeasurePreserving.integral_comp' {β} [MeasurableSpace β] {ν} {f : α ≃ᵐ β}
+    (h : MeasurePreserving f μ ν) (g : β → G) :
+    ∫ x, g (f x) ∂μ = ∫ y, g y ∂ν := MeasurePreserving.integral_comp h f.measurableEmbedding _
 
 theorem integral_subtype_comap {α} [MeasurableSpace α] {μ : Measure α} {s : Set α}
     (hs : MeasurableSet s) (f : α → G) :
