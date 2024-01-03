@@ -119,34 +119,6 @@ lemma root_X_pow_sub_C_ne_zero_iff {n : ℕ} {a : K} (H : Irreducible (X ^ n - C
     (AdjoinRoot.root (X ^ n - C a)) ≠ 0 ↔ a ≠ 0 :=
   (root_X_pow_sub_C_eq_zero_iff H).not
 
--- Mathlib/FieldTheory/Adjoin.lean
-theorem IntermediateField.adjoin_adjoinRoot_root_eq_top {K : Type*} [Field K]
-    (p : K[X]) [Fact (Irreducible p)] : K⟮AdjoinRoot.root p⟯ = ⊤ :=
-  (IntermediateField.eq_adjoin_of_eq_algebra_adjoin K _ ⊤
-    (AdjoinRoot.adjoinRoot_eq_top (f := p)).symm).symm
-
--- Mathlib/Data/Polynomial/Degree/Lemmas.lean
-theorem Polynomial.associated_of_dvd_of_natDegree_le {K : Type*} [Field K]
-    {P₁ P₂ : K[X]} (h₁ : P₁ ∣ P₂) (h₂ : P₂.natDegree ≤ P₁.natDegree) (hP₂ : P₂ ≠ 0) :
-    Associated P₁ P₂ := by
-  replace h₂ := (natDegree_le_of_dvd h₁ hP₂).antisymm h₂
-  obtain ⟨u, rfl⟩ := h₁
-  rw [mul_ne_zero_iff] at hP₂
-  rw [natDegree_mul hP₂.1 hP₂.2, self_eq_add_right, natDegree_eq_zero_iff_degree_le_zero,
-    le_iff_eq_or_lt, ← not_le, zero_le_degree_iff, not_ne_iff, or_iff_left hP₂.2,
-    ← isUnit_iff_degree_eq_zero] at h₂
-  exact associated_mul_unit_right P₁ u h₂
-
--- Mathlib/Data/Polynomial/Degree/Lemmas.lean
-theorem Polynomial.associated_of_dvd_of_degree_eq {K : Type*} [Field K]
-    {P₁ P₂ : K[X]} (h₁ : P₁ ∣ P₂) (h₂ : P₁.degree = P₂.degree) :
-    Associated P₁ P₂ := by
-  by_cases h : P₂ = 0
-  · subst h
-    rw [degree_zero, degree_eq_bot] at h₂
-    exact h₂ ▸ Associated.refl _
-  · exact associated_of_dvd_of_natDegree_le h₁ (natDegree_le_natDegree h₂.ge) h
-
 -- Mathlib/Algebra/GroupWithZero/Power.lean
 theorem mem_range_pow_of_coprime_of_pow_mem_range_pow {G₀} [CommGroupWithZero G₀] {m n : ℕ}
     (hmn : m.Coprime n) (a : G₀) :
@@ -167,19 +139,6 @@ theorem mem_range_pow_of_coprime_of_pow_mem_range_pow {G₀} [CommGroupWithZero 
   · rintro ⟨x, rfl⟩
     exact ⟨x ^ m, by simp [← pow_mul, mul_comm m n]⟩
 
-@[simp]
-lemma IntermediateField.algebraMap_apply {F K} [Field F] [Field K] [Algebra F K]
-    (F' : IntermediateField F K) (x : F') : algebraMap F' K x = x := rfl
-
-@[simp]
-lemma IntermediateField.coe_algebraMap_apply {F K} [Field F] [Field K] [Algebra F K]
-    (F' : IntermediateField F K) (x : F) : ↑(algebraMap F F' x) = algebraMap F K x := rfl
-
-open FiniteDimensional in
-@[simp]
-lemma IntermediateField.finrank_top' {F K} [Field F] [Field K] [Algebra F K] :
-    finrank F (⊤ : IntermediateField F K) = finrank F K := finrank_top F K
-
 theorem pow_ne_of_irreducible_X_pow_sub_C {n : ℕ} {a : K}
     (H : Irreducible (X ^ n - C a)) {m : ℕ} (hm : m ∣ n) (hm' : m ≠ 1) (b : K) : b ^ m ≠ a := by
   have hn : n ≠ 0 := fun e ↦ not_irreducible_C
@@ -198,7 +157,8 @@ theorem pow_ne_of_irreducible_X_pow_sub_C {n : ℕ} {a : K}
   exact hm' ((mul_eq_right₀ (mul_ne_zero_iff.mp hn).2).mp hq)
 
 open FiniteDimensional in
-theorem Polynomial.irreducible_comp {f g : K[X]} (hfm : f.Monic) (hgm : g.Monic) (hf : Irreducible f)
+theorem Polynomial.irreducible_comp {f g : K[X]} (hfm : f.Monic) (hgm : g.Monic)
+    (hf : Irreducible f)
     (hg : ∀ (E : Type u) [Field E] [Algebra K E] (x : E) (hx : minpoly K x = f),
       Irreducible (g.map (algebraMap _ _) - C (AdjoinSimple.gen K x))) :
     Irreducible (f.comp g) := by
@@ -236,7 +196,7 @@ theorem Polynomial.irreducible_comp {f g : K[X]} (hfm : f.Monic) (hgm : g.Monic)
     · have : K⟮aeval (root p) g⟯⟮root p⟯ = ⊤
       · apply restrictScalars_injective K
         rw [restrictScalars_top, adjoin_adjoin_left, Set.union_comm, ← adjoin_adjoin_left,
-          adjoin_adjoinRoot_root_eq_top p, restrictScalars_adjoin]
+          adjoin_root_eq_top p, restrictScalars_adjoin]
         simp
       rw [← finrank_top', ← this, adjoin.finrank]
       exact IsIntegral.of_finite _ _
@@ -262,7 +222,7 @@ theorem X_pow_sub_C_irreducible_of_prime {p : ℕ} (hp : p.Prime) {a : K} (ha : 
   · have := eval₂_eq_zero_of_dvd_of_eval₂_eq_zero _ _ hg' (AdjoinRoot.eval₂_root g)
     rw [eval₂_sub, eval₂_pow, eval₂_C, eval₂_X, sub_eq_zero] at this
     rw [← map_pow, this, ← AdjoinRoot.algebraMap_eq, Algebra.norm_algebraMap,
-      ← finrank_top', ← IntermediateField.adjoin_adjoinRoot_root_eq_top g,
+      ← finrank_top', ← IntermediateField.adjoin_root_eq_top g,
       IntermediateField.adjoin.finrank,
       AdjoinRoot.minpoly_root hg.ne_zero, natDegree_mul_C]
     · simpa using hg.ne_zero
@@ -292,7 +252,7 @@ theorem X_pow_mul_sub_C_irreducible
 
 -- TODO: generalize to even `n`
 theorem X_pow_sub_C_irreducible_of_odd
-  {n : ℕ} (hn : Odd n) {a : K} (ha : ∀ p : ℕ, p.Prime → p ∣ n → ∀ b : K, b ^ p ≠ a) :
+    {n : ℕ} (hn : Odd n) {a : K} (ha : ∀ p : ℕ, p.Prime → p ∣ n → ∀ b : K, b ^ p ≠ a) :
     Irreducible (X ^ n - C a) := by
   induction n using induction_on_primes generalizing K a with
   | h₀ => simp at hn
