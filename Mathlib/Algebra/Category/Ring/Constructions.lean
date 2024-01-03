@@ -225,12 +225,7 @@ The categorical product of rings is the cartesian product of rings. This is its 
 -/
 @[simps! pt]
 def piFan : Fan R :=
-  Fan.mk (CommRingCat.of ((i : ι) → R i)) fun i ↦
-    { toFun := fun g ↦ g i
-      map_one' := by aesop
-      map_mul' := by aesop
-      map_zero' := by aesop
-      map_add' := by aesop }
+  Fan.mk (CommRingCat.of ((i : ι) → R i)) (Pi.evalRingHom _)
 
 /--
 The categorical product of rings is the cartesian product of rings.
