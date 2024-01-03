@@ -9,7 +9,7 @@ open ContinuousLinearMap Filter Set Matrix
 
 variable {m n : Type*}
 variable [Fintype m] [Fintype n]
--- variable (A : (EuclideanSpace ℝ m) →ₗ[ℝ] (EuclideanSpace ℝ n))
+variable (A : (EuclideanSpace ℝ m) →L[ℝ] (EuclideanSpace ℝ n))
 
 /-
 
@@ -26,10 +26,11 @@ Finally, work with hyperplane_separation for PointedCone to show Farkas lemma.
 
 -/
 
-
-
 namespace EuclideanSpace
 
+/-
+Need to define module structures on ProperCones for any of this to work.
+-/
 
 noncomputable def positive (n) [Fintype n] : ProperCone ℝ (EuclideanSpace ℝ n) where
   carrier := (EuclideanSpace.equiv n ℝ).symm '' Set.Ici 0
@@ -58,14 +59,13 @@ theorem mem_positive {x : EuclideanSpace ℝ n} :
 
 @[simp]
 theorem mem_positive_dual [DecidableEq n] {x : EuclideanSpace ℝ n} :
-    x ∈ (positive n).dual ↔ 0 ≤ (EuclideanSpace.equiv n ℝ) x := by
+    x ∈ (positive n).dual ↔ (0 : n → ℝ) ≤ x := by
   rw [ProperCone.mem_dual]
   constructor
   · rintro h i
-    rw [Pi.zero_apply, PiLp.continuousLinearEquiv_apply, WithLp.equiv_pi_apply]
-    set xi' := (EuclideanSpace.equiv n ℝ).symm <| LinearMap.stdBasis ℝ (fun _ => ℝ) i 1 with hxi'
+    let xi' := (EuclideanSpace.equiv n ℝ).symm <| LinearMap.stdBasis ℝ (fun _ => ℝ) i 1
     have : xi' ∈ positive n := by
-      simp_rw [mem_positive, hxi', PiLp.continuousLinearEquiv_symm_apply,
+      simp_rw [PiLp.continuousLinearEquiv_symm_apply, mem_positive,
         PiLp.continuousLinearEquiv_apply, Equiv.apply_symm_apply]
       unfold LinearMap.stdBasis
       rintro _
@@ -78,33 +78,21 @@ theorem mem_positive_dual [DecidableEq n] {x : EuclideanSpace ℝ n} :
     rw [mem_positive] at hx₂
     exact Finset.sum_nonneg <| fun i _ => mul_nonneg (by aesop) (by aesop)
 
-
-@[simp]
-theorem mem_positive_dual' [DecidableEq n] {x : n → ℝ} :
-    x ∈ (positive n).dual ↔ 0 ≤ x := by
-  sorry
-
-
--- def image_cone := (PointedCone.map A <| positive m : Set <| EuclideanSpace ℝ n)
-
--- theorem image_closed : IsClosed <| image_cone A := by sorry
-
--- theorem image_mem (b : EuclideanSpace ℝ n) : b ∈ image_cone ↔ ∃ x, A x = b := by sorry
-
-
-
 end EuclideanSpace
 
 
-theorem extracted (A : EuclideanSpace ℝ m →L[ℝ] EuclideanSpace ℝ n) (b : EuclideanSpace ℝ n) :
+theorem extracted (b : EuclideanSpace ℝ n) :
     ((∃ x, A x = b ∧ (0 : m → ℝ) ≤ x) ↔ b ∈ ProperCone.map A (EuclideanSpace.positive m)) := by
   -- unfold ProperCone.map
   rw [ProperCone.mem_map]
+  rw [PointedCone.mem_closure]
+  -- rw [PointedCone.closure]
+  -- extract_goal
   sorry
 
 
 theorem farkas_lemma [DecidableEq m]
-    (A : (EuclideanSpace ℝ m) →L[ℝ] (EuclideanSpace ℝ n)) (b : EuclideanSpace ℝ n) :
+    (b : EuclideanSpace ℝ n) :
       (∃ x, A x = b ∧ (0 : m → ℝ) ≤ x) ↔
         ¬(∃ y, (0 : m → ℝ) ≤ adjoint A y ∧ ⟪y, b⟫_ℝ < 0) := by
   push_neg
@@ -113,4 +101,4 @@ theorem farkas_lemma [DecidableEq m]
   rw [hK] at this
   convert this
   rw [extracted]
-  rw [EuclideanSpace.mem_positive_dual'] -- single `rw` does not work!
+  rw [EuclideanSpace.mem_positive_dual] -- single `rw` does not work!
