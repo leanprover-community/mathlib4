@@ -16,7 +16,7 @@ In this file we prove the following lemma:
 
 ## Tags
 
-MvPolynomial, continuity
+multivariate polynomial, continuity
 -/
 
 variable {X σ : Type*} [TopologicalSpace X] [CommSemiring X] [TopologicalSemiring X]
