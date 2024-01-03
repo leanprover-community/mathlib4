@@ -758,8 +758,14 @@ theorem domDomCongr_eq_iff (σ : ι₁ ≃ ι₂) (f g : MultilinearMap R (fun _
   (domDomCongrEquiv σ : _ ≃+ MultilinearMap R (fun _ => M₂) M₃).apply_eq_iff_eq
 #align multilinear_map.dom_dom_congr_eq_iff MultilinearMap.domDomCongr_eq_iff
 
+/-- Transfer the arguments to a map along an equivalence between argument indices.
+
+The naming is derived from `Finsupp.domCongr`, noting that here the permutation applies to the
+domain of the domain.
+This is a dependent version of `domDomCongr`
+-/
 @[simps apply]
-def domDomCongr'
+def domDomCongrₗ
     (σ : ι ≃ ι₂) (m : MultilinearMap R M₁ M₂) :
     MultilinearMap R (fun i : ι₂ ↦ M₁ (σ.symm i)) M₂ where
   toFun v := m fun i ↦ cast (by simp) (v (σ i))
@@ -771,6 +777,65 @@ def domDomCongr'
     letI := σ.injective.decidableEq
     simp_rw [Function.update_apply_equiv_symm_apply'']
     rw [m.map_smul]
+
+@[simps apply]
+def domDomCongrᵣ
+    (σ : ι ≃ ι₂) (m : MultilinearMap R (fun i : ι₂ ↦ M₁ (σ.symm i)) M₂) :
+    MultilinearMap R M₁ M₂ where
+  toFun v := m fun i ↦ v _
+  map_add' v i a b := by
+    letI := σ.symm.injective.decidableEq
+    simp_rw [Function.update_apply_equiv_apply']
+    rw [cast_add, m.map_add]
+    simp
+  map_smul' v i r a := by
+    letI := σ.symm.injective.decidableEq
+    simp_rw [Function.update_apply_equiv_apply']
+    rw [cast_smul, m.map_smul]
+    simp
+
+theorem domDomCongrₗ_trans (σ₁ : ι ≃ ι₂) (σ₂ : ι₂ ≃ ι₃)
+    (m : MultilinearMap R M₁ M₃) :
+    m.domDomCongrₗ (σ₁.trans σ₂) = (m.domDomCongrₗ σ₁).domDomCongrₗ σ₂ := by
+  ext
+  simp only [Equiv.symm_trans_apply, domDomCongrₗ_apply, cast_cast]
+  rfl
+
+theorem domDomCongrᵣ_trans (σ₁ : ι ≃ ι₂) (σ₂ : ι₂ ≃ ι₃)
+    (m : MultilinearMap R (fun i : ι₃ ↦ M₁ ((σ₁.trans σ₂).symm i)) M₃) :
+    m.domDomCongrᵣ (σ₁.trans σ₂) = (m.domDomCongrᵣ σ₂).domDomCongrᵣ σ₁ :=
+  rfl
+
+theorem domDomCongrₗ_mul (σ₁ : Equiv.Perm ι) (σ₂ : Equiv.Perm ι)
+    (m : MultilinearMap R M₁ M₃) :
+    m.domDomCongrₗ (σ₂ * σ₁) = (m.domDomCongrₗ σ₁).domDomCongrₗ σ₂ := by
+  ext
+  simp only [domDomCongrₗ_apply, Equiv.Perm.coe_mul, comp_apply]
+  erw [domDomCongrₗ_apply, domDomCongrₗ_apply]
+  simp only [Equiv.Perm.coe_mul, comp_apply, cast_cast]
+
+@[simps apply symm_apply]
+def domDomCongrEquivₗᵣ (σ : ι ≃ ι₂) :
+    MultilinearMap R M₁ M₂ ≃+ MultilinearMap R (fun i : ι₂ ↦ M₁ (σ.symm i)) M₂ where
+  toFun := domDomCongrₗ σ
+  invFun := domDomCongrᵣ σ
+  left_inv m := by
+    ext
+    simp only [domDomCongrᵣ_apply, domDomCongrₗ_apply]
+    congr
+    ext j
+    rw [cast_eval]
+    simp
+  right_inv m := by
+    ext
+    simp only [domDomCongrᵣ_apply, domDomCongrₗ_apply]
+    congr
+    ext j
+    rw [cast_eval]
+    simp
+  map_add' a b := by
+    ext
+    simp only [domDomCongrₗ_apply, add_apply]
 
 end
 
@@ -827,6 +892,21 @@ theorem compMultilinearMap_domDomCongr (σ : ι₁ ≃ ι₂) (g : M₂ →ₗ[R
   ext
   simp [MultilinearMap.domDomCongr]
 #align linear_map.comp_multilinear_map_dom_dom_congr LinearMap.compMultilinearMap_domDomCongr
+
+@[simp]
+theorem compMultilinearMap_domDomCongrₗ (σ : ι ≃ ι₂) (g : M₂ →ₗ[R] M₃)
+    (f : MultilinearMap R M₁ M₂) :
+    (g.compMultilinearMap f).domDomCongrₗ σ = g.compMultilinearMap (f.domDomCongrₗ σ) := by
+  ext
+  simp only [MultilinearMap.domDomCongrₗ_apply, compMultilinearMap_apply]
+
+
+@[simp]
+theorem compMultilinearMap_domDomCongrᵣ (σ : ι ≃ ι₂) (g : M₂ →ₗ[R] M₃)
+    (f : MultilinearMap R (fun i : ι₂ ↦ M₁ (σ.symm i)) M₂) :
+    (g.compMultilinearMap f).domDomCongrᵣ σ = g.compMultilinearMap (f.domDomCongrᵣ σ) := by
+  ext
+  simp only [MultilinearMap.domDomCongrᵣ_apply, compMultilinearMap_apply]
 
 end LinearMap
 

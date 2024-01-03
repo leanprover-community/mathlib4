@@ -546,6 +546,23 @@ theorem eq_equivalence : Equivalence (@Eq α) :=
   | rfl, rfl, _ => rfl
 #align cast_cast cast_cast
 
+lemma cast_add {f : ι → Type*} {i j : ι} (h : i = j) [∀ i, Add (f i)] (a b : f i) :
+    cast (by rw [h] : f i = f j) (a + b) =
+    cast (by rw [h] : f i = f j) a + cast (by rw [h] : f i = f j) b := by
+  subst h
+  simp
+
+lemma cast_mul {f : ι → Type*} {i j : ι} (h : i = j) [∀ i, Mul (f i)] (a b : f i) :
+    cast (by rw [h] : f i = f j) (a * b) =
+    cast (by rw [h] : f i = f j) a * cast (by rw [h] : f i = f j) b := by
+  subst h
+  simp
+
+lemma cast_eval {f : ι → Type*} {i j : ι} (h : i = j) (v : (i : ι) → f i) :
+    cast (by rw [h] : f i = f j) (v i) = (v j) := by
+  induction h
+  simp
+
 -- @[simp] -- FIXME simp ignores proof rewrites
 theorem congr_refl_left (f : α → β) {a b : α} (h : a = b) :
     congr (Eq.refl f) h = congr_arg f h := rfl

@@ -144,6 +144,13 @@ theorem SMul.smul_eq_hSMul {α β} [SMul α β] : (SMul.smul : α → β → β)
 
 attribute [to_additive existing (reorder := 1 2)] instHPow
 
+lemma cast_smul {ι α : Type*} {f : ι → Type*} {i j : ι} [∀ i, SMul α (f i)]
+    (h : i = j) (a : α) (b : f i) :
+    cast (by rw [h] : f i = f j) (a • b) =
+    a • cast (by rw [h] : f i = f j) b := by
+  subst h
+  simp
+
 variable {G : Type*}
 
 /-- Class of types that have an inversion operation. -/
