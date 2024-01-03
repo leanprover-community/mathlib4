@@ -24,26 +24,27 @@ namespace Complex
 ### Integral representation of the complex log
 -/
 
-lemma continousOn_one_add_mul_inv {z : ℂ} (hz : 1 + z ∈ slitPlane) :
-    ContinuousOn (fun t : ℝ ↦ (1 + t * z)⁻¹) (Set.Icc 0 1) :=
+lemma continuousOn_one_add_mul_inv {z : ℂ} (hz : 1 + z ∈ slitPlane) :
+    ContinuousOn (fun t : ℝ ↦ (1 + t • z)⁻¹) (Set.Icc 0 1) :=
   ContinuousOn.inv₀ (Continuous.continuousOn (by continuity))
-    (fun t ht ↦ slitPlane_ne_zero <| starConvex_one_slitPlane' hz ht)
+    (fun t ht ↦ slitPlane_ne_zero <| StarConvex.add_smul_mem starConvex_one_slitPlane hz ht.1 ht.2)
 
 open intervalIntegral in
 /-- Represent `log (1 + z)` as an integral over the unit interval -/
 lemma log_eq_integral {z : ℂ} (hz : 1 + z ∈ slitPlane) :
-    log (1 + z) = z * ∫ (t : ℝ) in (0 : ℝ)..1, (1 + t * z)⁻¹ := by
-  convert (integral_unitInterval_deriv_eq_sub (continousOn_one_add_mul_inv hz)
-    (fun _ ht ↦ hasDerivAt_log <| starConvex_one_slitPlane' hz ht)).symm using 1
+    log (1 + z) = z * ∫ (t : ℝ) in (0 : ℝ)..1, (1 + t • z)⁻¹ := by
+  convert (integral_unitInterval_deriv_eq_sub (continuousOn_one_add_mul_inv hz)
+    (fun _ ht ↦ hasDerivAt_log <|
+      StarConvex.add_smul_mem starConvex_one_slitPlane hz ht.1 ht.2)).symm using 1
   simp only [log_one, sub_zero]
 
 /-- Represent `log (1 - z)⁻¹` as an integral over the unit interval -/
 lemma log_inv_eq_integral {z : ℂ} (hz : 1 - z ∈ slitPlane) :
-    log (1 - z)⁻¹ = z * ∫ (t : ℝ) in (0 : ℝ)..1, (1 - t * z)⁻¹ := by
+    log (1 - z)⁻¹ = z * ∫ (t : ℝ) in (0 : ℝ)..1, (1 - t • z)⁻¹ := by
   rw [sub_eq_add_neg 1 z] at hz ⊢
   rw [log_inv _ <| slitPlane_arg_ne_pi hz, neg_eq_iff_eq_neg, ← neg_mul]
   convert log_eq_integral hz using 5
-  rw [sub_eq_add_neg, mul_neg]
+  rw [sub_eq_add_neg, smul_neg]
 
 /-!
 ### The Taylor polynomials of the logarithm
@@ -122,7 +123,7 @@ lemma norm_one_add_mul_inv_le {t : ℝ} (ht : t ∈ Set.Icc 0 1) {z : ℂ} (hz :
 
 lemma integrable_pow_mul_norm_one_add_mul_inv (n : ℕ) {z : ℂ} (hz : ‖z‖ < 1) :
     IntervalIntegrable (fun t : ℝ ↦ t ^ n * ‖(1 + t * z)⁻¹‖) MeasureTheory.volume 0 1 := by
-  have := continousOn_one_add_mul_inv <| mem_slitPlane_of_norm_lt_one hz
+  have := continuousOn_one_add_mul_inv <| mem_slitPlane_of_norm_lt_one hz
   rw [← Set.uIcc_of_le zero_le_one] at this
   exact ContinuousOn.intervalIntegrable <|
     Continuous.continuousOn (by continuity) |>.mul <| ContinuousOn.norm this
@@ -140,11 +141,11 @@ lemma log_sub_logTaylor_norm_le (n : ℕ) {z : ℂ} (hz : ‖z‖ < 1) :
   · intro t ht
     rw [zero_add]
     exact hasDerivAt_log_sub_logTaylor n <|
-      starConvex_one_slitPlane' (mem_slitPlane_of_norm_lt_one hz) ht
+      StarConvex.add_smul_mem starConvex_one_slitPlane (mem_slitPlane_of_norm_lt_one hz) ht.1 ht.2
   have hcont : ContinuousOn (fun t : ℝ ↦ f' (0 + t * z)) (Set.Icc 0 1)
   · simp only [zero_add, zero_le_one, not_true_eq_false]
     exact (Continuous.continuousOn (by continuity)).mul <|
-      continousOn_one_add_mul_inv <| mem_slitPlane_of_norm_lt_one hz
+      continuousOn_one_add_mul_inv <| mem_slitPlane_of_norm_lt_one hz
   have H : f z = z * ∫ t in (0 : ℝ)..1, (-(t * z)) ^ n * (1 + t * z)⁻¹
   · convert (integral_unitInterval_deriv_eq_sub hcont hderiv).symm using 1
     · simp only [zero_add, add_zero, log_one, logTaylor_at_zero, sub_self, sub_zero]
