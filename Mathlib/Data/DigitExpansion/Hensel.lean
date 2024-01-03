@@ -21,6 +21,8 @@ variable (Z : Type*) [Nonempty Z] [LinearOrder Z] [SuccOrder Z] [NoMaxOrder Z] [
 
 namespace DigitExpansion
 
+open Order
+
 /-- A sequence is a Hensel (or b-adic) number if it has a right-tail of solely digit 0. These
 sequences form an additive subgroup. -/
 def hensel : AddSubgroup (DigitExpansion Z b) :=
@@ -47,5 +49,33 @@ def henselInt [Zero Z] : AddSubgroup (DigitExpansion Z b) :=
         sub_self, neg_zero, zero_sub, neg_eq_zero, gt_iff_lt]
       intro w hw
       simp [hf _ (hw.trans' hz), hg _ (hw.trans' hz)])
+
+variable {Z} {b}
+
+lemma single_hensel (z : Z) (n : Fin (b + 1)) : single z n ∈ hensel Z b :=
+  ⟨z, fun _ hx ↦ single_apply_of_ne _ _ _ hx.ne⟩
+
+lemma single_henselInt [Zero Z] (z : Z) (n : Fin (b + 1)) (hz : z ≤ 0) :
+    single z n ∈ henselInt Z b :=
+  fun _ hx ↦ single_apply_of_ne _ _ _ (hx.trans_le' hz).ne
+
+lemma leftShift_hensel {f : DigitExpansion Z b} (hf : f ∈ hensel Z b) :
+    leftShift f ∈ hensel Z b := by
+  obtain ⟨z, hz⟩ := hf
+  refine' ⟨succ z, fun y hy ↦ ?_⟩
+  have : z < succ y := (le_succ _).trans_lt (hy.trans_le (le_succ _))
+  simp [hz _ this]
+
+lemma leftShift_henselInt [Zero Z] {f : DigitExpansion Z b} (hf : f ∈ henselInt Z b) :
+    leftShift f ∈ henselInt Z b := by
+  intro y hy
+  have : 0 < succ y := (le_succ _).trans_lt' hy
+  simp [hf _ this]
+
+lemma zero_hensel : 0 ∈ hensel Z b := by
+  inhabit Z
+  exact ⟨default, by simp⟩
+
+lemma zero_henselInt [Zero Z] : 0 ∈ henselInt Z b := fun _ _ ↦ by simp
 
 end DigitExpansion

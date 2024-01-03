@@ -36,6 +36,47 @@ theorem Succ.rec' {Z : Type*} [LinearOrder Z] [SuccOrder Z] [IsSuccArchimedean Z
     · exact h1 _ hmn IH
     · exact IH _ hmk (Order.le_of_lt_succ hkn')
 
+-- TODO
+-- TODO
+lemma Fin.rev_add {n : ℕ} (a b : Fin n) : rev (a + b) = rev a - b := by
+  cases' n
+  · exact a.elim0
+  rw [← last_sub, ← last_sub, sub_add_eq_sub_sub]
+
+lemma Fin.rev_sub {n : ℕ} (a b : Fin n) : rev (a - b) = rev a + b := by
+  cases' n
+  · exact a.elim0
+  rw [← last_sub, ← last_sub, sub_sub_eq_add_sub, add_sub_right_comm]
+
+lemma Fin.lt_sub_iff {n : ℕ} {a b : Fin n} : a < a - b ↔ a < b := by
+  cases' n with n
+  · exact a.elim0
+  rcases lt_or_le a b with h|h
+  · simp only [h, iff_true]
+    rw [lt_iff_val_lt_val, sub_def]
+    simp only
+    obtain ⟨k, hk⟩ := Nat.exists_eq_add_of_lt b.is_lt
+    have : n.succ - b = k + 1 := by
+      simp_rw [hk]
+      rw [add_assoc, add_tsub_cancel_left]
+    rw [this, Nat.mod_eq_of_lt]
+    · simp
+    · refine' hk.ge.trans_lt' ?_
+      simp [add_assoc, h]
+  · simp only [h.not_lt, iff_false, not_lt]
+    obtain ⟨l, hl⟩ := Nat.exists_eq_add_of_le h
+    rw [le_iff_val_le_val, sub_def, hl]
+    simp only
+    rw [add_right_comm, add_tsub_cancel_of_le b.is_lt.le, Nat.add_mod_left, Nat.mod_eq_of_lt]
+    · simp
+    · refine a.is_lt.trans_le' ?_
+      simp [hl]
+
+lemma Fin.add_lt_left_iff {n : ℕ} {a b : Fin n} : a + b < a ↔ rev b < a := by
+  cases' n
+  · exact a.elim0
+  rw [← Fin.rev_lt_rev, Iff.comm, ← Fin.rev_lt_rev, rev_add, lt_sub_iff, rev_rev]
+
 open Order
 
 namespace DigitExpansion
@@ -688,5 +729,120 @@ theorem Negative.sub_negative (hf : f.Negative) (hg : g.Negative) (hne : f ≠ g
       rcases hz.eq_or_lt with (rfl | hz')
       · exact H.le
       · exact (hx₀.right _ hz').le
+
+lemma Positive.positive_or_eq_sub_single {f : DigitExpansion Z b} (hf : f.Positive) (z : Z) :
+    DigitExpansion.Positive (f - single z (f z)) ∨ f = single z (f z) := by
+  obtain ⟨x, xpos, hx⟩ := hf.exists_least_pos
+  rcases lt_or_le z x with hz|hz
+  · simp [hx _ hz, hf]
+  rcases eq_or_ne (f z) 0 with hz'|hz'
+  · simp [hz', hf]
+  by_cases H : ∃ y > x, 0 < f y
+  · obtain ⟨y, hy, ypos⟩ := H
+    refine Or.inl ⟨?_, x, ?_⟩
+    · rw [FunLike.ne_iff]
+      rcases eq_or_ne z y with rfl|hy'
+      · refine ⟨x, ?_⟩
+        simp only [DigitExpansion.sub_def, single_apply_of_ne _ _ _ hy.ne', sub_zero,
+          zero_apply, ne_eq]
+        rw [difcar_eq_zero_iff.mpr]
+        · simpa using xpos.ne'
+        intro w _ hw'
+        have : w = z := by
+          contrapose! hw'
+          simp [single_apply_of_ne _ _ _ hw'.symm]
+        simp [this] at hw'
+      · refine ⟨y, ?_⟩
+        simp only [DigitExpansion.sub_def, single_apply_of_ne _ _ _ hy', sub_zero,
+          zero_apply, ne_eq]
+        rw [difcar_eq_zero_iff.mpr]
+        · simpa using ypos.ne'
+        intro w _ hw'
+        have : w = z := by
+          contrapose! hw'
+          simp [single_apply_of_ne _ _ _ hw'.symm]
+        simp [this] at hw'
+    · intro w hw
+      simp only [DigitExpansion.sub_def, hx _ hw, single_apply_of_ne _ _ _ (hw.trans_le hz).ne',
+        sub_self, zero_sub, neg_eq_zero, difcar_eq_zero_iff, gt_iff_lt]
+      intro u _ hu
+      have : z = u := by
+        contrapose! hu
+        simp [single_apply_of_ne _ _ _ hu]
+      simp [this] at hu
+  · push_neg at H
+    simp only [gt_iff_lt, Fin.le_zero_iff] at H
+    refine Or.inr ?_
+    have : z = x := by
+      contrapose! hz'
+      rw [H]
+      exact lt_of_le_of_ne hz hz'.symm
+    subst z
+    ext z
+    rcases lt_trichotomy z x with hz|rfl|hz
+    · simp [single_apply_of_ne _ _ _ hz.ne', hx _ hz]
+    · simp
+    · simp [single_apply_of_ne _ _ _ hz.ne, H _ hz]
+
+lemma single_add_single_of_lt (z : Z) (k l : Fin (b + 1)) (h : k.val + l.val < (b + 1)) :
+    single z k + single z l = single z (k + l) := by
+  rw [eq_comm, ← sub_eq_iff_eq_add]
+  ext w : 1
+  rcases eq_or_ne w z with rfl|hw
+  · simp [DigitExpansion.sub_def]
+  · simp only [DigitExpansion.sub_def, single_apply_of_ne _ _ _ hw.symm, sub_self, zero_sub,
+      neg_eq_zero, difcar_eq_zero_iff, gt_iff_lt]
+    intro y _ hy'
+    rcases eq_or_ne y z with rfl|hz
+    · simp only [single_apply_self, Fin.lt_iff_val_lt_val, Fin.add_def, Nat.mod_eq_of_lt h] at hy'
+      simp at hy'
+    · simp [single_apply_of_ne _ _ _ hz.symm] at hy'
+
+lemma single_add_single_of_le (z : Z) (k l : Fin (b + 1)) (h : (b + 1) < k.val + l.val) :
+    single z k + single z l = single z (k + l) + single (pred z) 1 := by
+  rw [eq_comm, ← sub_eq_iff_eq_add, add_sub_assoc, add_comm, eq_comm, ← sub_eq_iff_eq_add]
+  ext w : 1
+  rcases eq_or_ne w z with rfl|hw
+  · simp only [DigitExpansion.sub_def, single_apply_self, sub_add_cancel',
+    difcar_single_single_self, sub_zero, ne_eq, pred_eq_iff_isMin, not_isMin, not_false_eq_true,
+    single_apply_of_ne, zero_sub]
+    rw [difcar_eq_zero_iff.mpr]
+    · simp
+    intro _ hx
+    simp [single_apply_of_ne _ _ _ hx.ne]
+  · simp only [DigitExpansion.sub_def, single_apply_of_ne _ _ _ hw.symm, sub_self, zero_sub,
+      neg_eq_zero, difcar_eq_zero_iff, gt_iff_lt]
+    have hk : k + l < k := by
+      rw [Fin.add_lt_left_iff, Fin.lt_iff_val_lt_val, ← Fin.last_sub, Fin.sub_def]
+      simp only [Fin.val_last]
+      rw [← add_tsub_assoc_of_le l.is_lt.le, add_comm, add_tsub_assoc_of_le l.is_le,
+          Nat.add_mod_left, Nat.mod_eq_of_lt (tsub_lt_of_lt (Nat.lt_succ_self _)),
+          tsub_lt_iff_left l.is_le, add_comm]
+      exact (h.trans' (Nat.lt_succ_self _))
+    rcases eq_or_ne w (pred z) with rfl|hw'
+    · simp only [single_apply_self, sub_zero]
+      rw [difcar_pred_eq_zero, difcar_pred_eq_one, neg_zero, sub_self]
+      · simp only [ne_eq, pred_eq_iff_isMin, not_isMin, not_false_eq_true, single_apply_of_ne,
+        single_apply_self]
+        contrapose! h
+        simp only [Fin.le_zero_iff] at h
+        simp [h]
+      · simp only [single_apply_self]
+        exact hk
+    · rw [single_apply_of_ne _ _ _ hw'.symm, sub_self, zero_sub, neg_inj, eq_comm,
+          difcar_eq_zero_iff.mpr]
+      · rcases lt_or_le w z with hwz|hwz
+        · rw [(difcar_single_single_of_lt_eq_zero_iff_le hwz).mpr]
+          exact hk.le
+        · rw [difcar_single_single_eq_zero_of_le _ _ hwz]
+      · intros x hx hx'
+        have : x = z := by
+          contrapose! hx'
+          simp [single_apply_of_ne _ _ _ hx'.symm]
+        subst x
+        refine ⟨pred z, pred_lt _, lt_of_le_of_ne (le_pred_of_lt hx) hw', ?_⟩
+        simp only [single_apply_of_ne _ _ _ (pred_lt _).ne', single_apply_self]
+        refine lt_of_le_of_ne (Fin.zero_le _) ?_
+        simp [hb.out]
 
 end DigitExpansion

@@ -373,6 +373,15 @@ lemma difcar_single_single_of_lt_eq_one_iff_lt
   cases' difcar_eq_zero_or_one (single z n) (single z m) x with H H <;>
   simp [H, hb.out]
 
+@[simp]
+lemma difcar_self_single_eq_zero (f : DigitExpansion Z b) (z x : Z) :
+    difcar f (single z (f z)) x = 0 := by
+  rw [difcar_eq_zero_iff (f := f) (g := single z (f z))]
+  intro y hy hy'
+  rcases eq_or_ne z y with rfl|hz
+  · simp at hy'
+  · simp [single_apply_of_ne _ _ _ hz] at hy'
+
 end single
 
 section shift
@@ -407,7 +416,7 @@ lemma Negative.shift [NeZero b] {f : DigitExpansion Z b} (hf : f.Negative) :
 
 @[simp]
 lemma shift_single {Z : Type*} [LinearOrder Z] [SuccOrder Z] [NoMaxOrder Z] [PredOrder Z]
-    [NoMinOrder Z] [IsSuccArchimedean Z] {b : ℕ} [hb : NeZero b](z : Z) (n : Fin (b + 1)) :
+    [NoMinOrder Z] {b : ℕ} [hb : NeZero b](z : Z) (n : Fin (b + 1)) :
     shift (single z n) = single (succ z) n := by
   ext x
   rcases lt_trichotomy (pred x) z with h|rfl|h
