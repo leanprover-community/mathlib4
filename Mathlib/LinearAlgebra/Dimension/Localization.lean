@@ -66,7 +66,6 @@ lemma IsLocalizedModule.lift_rank_eq :
       rw [map_zero, smul_zero]
     obtain ⟨c, hc⟩ := IsLocalizedModule.exists_of_eq (S := p) this
     simp_rw [smul_zero, Finset.smul_sum, ← mul_smul, Submonoid.smul_def, ← mul_smul, mul_comm] at hc
-    have := hs t _ hc _ hit
     simp only [hsec, zero_mul, map_eq_zero_iff (algebraMap R S) (IsLocalization.injective S hp)]
     apply hp (c * u i).prop
     exact hs t _ hc _ hit
