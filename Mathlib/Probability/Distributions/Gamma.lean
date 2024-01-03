@@ -193,7 +193,8 @@ lemma lintegral_gammaPdf_eq_one (a r : ℝ) (ha : 0 < a) (hr : 0 < r) : ∫⁻ x
     rw [set_lintegral_congr_fun measurableSet_Iio
       (ae_of_all _ (fun x (hx : x < 0) ↦ gammaPdf_of_neg hx)), lintegral_zero]
   have rightSide :
-      ∫⁻ x in Ici 0, gammaPdf a r x = ∫⁻ x in Ici 0, ENNReal.ofReal (r^a/(Real.Gamma a) * x^(a-1) * rexp (-(r * x))) :=
+      ∫⁻ x in Ici 0, gammaPdf a r x =
+      ∫⁻ x in Ici 0, ENNReal.ofReal (r^a/(Real.Gamma a) * x^(a-1) * rexp (-(r * x))) :=
     set_lintegral_congr_fun isClosed_Ici.measurableSet
       (ae_of_all _ (fun x (hx : 0 ≤ x) ↦ gammaPdf_of_nonneg hx))
   simp only [leftSide, add_zero]
