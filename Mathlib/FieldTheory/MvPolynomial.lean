@@ -45,6 +45,10 @@ theorem quotient_mk_comp_C_injective (I : Ideal (MvPolynomial σ K)) (hI : I ≠
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.quotient_mk_comp_C_injective MvPolynomial.quotient_mk_comp_C_injective
 
+open Cardinal in
+theorem rank_eq : Module.rank K (MvPolynomial σ K) = lift.{v} #(σ →₀ ℕ) := by
+  rw [← Cardinal.lift_inj, ← (basisMonomials σ K).mk_eq_rank, lift_lift, lift_umax.{u,v}]
+
 end MvPolynomial
 
 namespace MvPolynomial
