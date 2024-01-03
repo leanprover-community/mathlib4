@@ -175,8 +175,8 @@ theorem Polynomial.irreducible_comp {f g : K[X]} (hfm : f.Monic) (hgm : g.Monic)
   have H₂ : ¬ IsUnit (f.comp g) := fun h ↦
     by simpa [hf', hg', natDegree_comp] using natDegree_eq_zero_of_isUnit h
   have ⟨p, hp₁, hp₂⟩ := WfDvdMonoid.exists_irreducible_factor H₂ H₁
-  suffices natDegree p = natDegree f * natDegree g from (associated_of_dvd_of_natDegree_le hp₂
-    (this.trans natDegree_comp.symm).ge H₁).irreducible hp₁
+  suffices natDegree p = natDegree f * natDegree g from (associated_of_dvd_of_natDegree_le hp₂ H₁
+    (this.trans natDegree_comp.symm).ge).irreducible hp₁
   have := Fact.mk hp₁
   let Kx := AdjoinRoot p
   letI := (AdjoinRoot.powerBasis hp₁.ne_zero).finiteDimensional
@@ -213,7 +213,7 @@ theorem X_pow_sub_C_irreducible_of_prime {p : ℕ} (hp : p.Prime) {a : K} (ha : 
   have ⟨g, hg, hg'⟩ := WfDvdMonoid.exists_irreducible_factor this (X_pow_sub_C_ne_zero hp.pos a)
   -- It suffices to show that `deg g = p`.
   suffices natDegree g = p from (associated_of_dvd_of_natDegree_le hg'
-    (this.trans natDegree_X_pow_sub_C.symm).ge (X_pow_sub_C_ne_zero hp.pos a)).irreducible hg
+    (X_pow_sub_C_ne_zero hp.pos a) (this.trans natDegree_X_pow_sub_C.symm).ge).irreducible hg
   -- Suppose `deg g ≠ p`.
   by_contra h
   have : Fact (Irreducible g) := ⟨hg⟩
