@@ -758,6 +758,20 @@ theorem domDomCongr_eq_iff (σ : ι₁ ≃ ι₂) (f g : MultilinearMap R (fun _
   (domDomCongrEquiv σ : _ ≃+ MultilinearMap R (fun _ => M₂) M₃).apply_eq_iff_eq
 #align multilinear_map.dom_dom_congr_eq_iff MultilinearMap.domDomCongr_eq_iff
 
+@[simps apply]
+def domDomCongr'
+    (σ : ι ≃ ι₂) (m : MultilinearMap R M₁ M₂) :
+    MultilinearMap R (fun i : ι₂ ↦ M₁ (σ.symm i)) M₂ where
+  toFun v := m fun i ↦ cast (by simp) (v (σ i))
+  map_add' v i a b := by
+    letI := σ.injective.decidableEq
+    simp_rw [Function.update_apply_equiv_symm_apply'']
+    rw [m.map_add]
+  map_smul' v i a b := by
+    letI := σ.injective.decidableEq
+    simp_rw [Function.update_apply_equiv_symm_apply'']
+    rw [m.map_smul]
+
 end
 
 end Semiring

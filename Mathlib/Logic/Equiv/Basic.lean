@@ -2055,6 +2055,40 @@ theorem update_apply_equiv_apply [DecidableEq α'] [DecidableEq α] (f : α → 
   congr_fun (update_comp_equiv f g a v) a'
 #align function.update_apply_equiv_apply Function.update_apply_equiv_apply
 
+theorem update_apply_equiv_apply' {β : α → Type*}  [DecidableEq α'] [DecidableEq α]
+    (f : (a : α) → β a) (g : α' ≃ α) (a : α) (v : β a) (a' : α') :
+    update f a v (g a') =
+    update (fun i ↦ f (g i)) (g.symm a) (cast (by simp) v) a' := by
+  delta update
+  by_cases eq1 : g a' = a
+  · rw [dif_pos eq1, dif_pos (show a' = g.symm a by rw [← eq1]; simp)]
+    change cast _ _ = cast _ (cast _ _)
+    rw [cast_cast]
+  · rw [dif_neg eq1, dif_neg (show a' ≠ g.symm a by contrapose! eq1; rw [eq1]; simp)]
+
+theorem update_apply_equiv_symm_apply' {β : α → Type*}  [DecidableEq α'] [DecidableEq α]
+    (f : (a : α) → β a) (g : α ≃ α') (a : α) (v : β a) (a' : α') :
+    update f a v (g.symm a') =
+    update (fun i ↦ f (g.symm i)) (g a) (cast (by simp) v) a' := by
+  delta update
+  by_cases eq1 : g.symm a' = a
+  · rw [dif_pos eq1, dif_pos (show a' = g a by rw [← eq1]; simp)]
+    change cast _ _ = cast _ (cast _ _)
+    rw [cast_cast]
+  · rw [dif_neg eq1, dif_neg (show a' ≠ g a by contrapose! eq1; rw [eq1]; simp)]
+
+theorem update_apply_equiv_symm_apply'' {β : α → Type*}  [DecidableEq α'] [DecidableEq α]
+    (g : α ≃ α') (f : (a : α') → β (g.symm a))
+    (a : α') (v : β (g.symm a)) (a' : α) :
+    (cast (by simp) (update f a v (g a')) : β a') =
+    update (fun i ↦ (cast (by simp : β (g.symm (g i)) = β i)
+      (f (g i)) : β i)) (g.symm a) v a' := by
+  delta update
+  by_cases eq1 : g a' = a
+  · rw [dif_pos eq1, dif_pos (show a' = g.symm a by rw [← eq1]; simp)]
+    simp
+  · rw [dif_neg eq1, dif_neg (show a' ≠ g.symm a by contrapose! eq1; rw [eq1]; simp)]
+
 -- porting note: EmbeddingLike.apply_eq_iff_eq broken here too
 theorem piCongrLeft'_update [DecidableEq α] [DecidableEq β] (P : α → Sort*) (e : α ≃ β)
     (f : ∀ a, P a) (b : β) (x : P (e.symm b)) :

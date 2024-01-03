@@ -559,7 +559,7 @@ variable {α : Sort u} {β : α → Sort v} {α' : Sort w} [DecidableEq α] [Dec
 
 /-- Replacing the value of a function at a given point by a given value. -/
 def update (f : ∀ a, β a) (a' : α) (v : β a') (a : α) : β a :=
-  if h : a = a' then Eq.ndrec v h.symm else f a
+  if h : a = a' then cast (by rw [h]) v else f a
 #align function.update Function.update
 
 @[simp]
