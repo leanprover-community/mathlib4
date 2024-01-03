@@ -164,53 +164,71 @@ partial def mkProdPrf {u : Level} (α : Q(Type u)) (sα : Q(Field $α)) (v : ℕ
   trace[CancelDenoms] "mkProdPrf {e} {v}"
   match t, e with
   | .node _ lhs rhs, ~q($e1 + $e2) => do
-    let v1 ← mkProdPrf α sα v lhs e1
-    let v2 ← mkProdPrf α sα v rhs e2
-    mkAppM ``CancelDenoms.add_subst #[v1, v2]
+    let ⟨_, v1⟩ ← mkProdPrf α sα v lhs e1
+    let ⟨_, v2⟩ ← mkProdPrf α sα v rhs e2
+    return ⟨_, q(CancelDenoms.add_subst $v1 $v2)⟩
   | .node _ lhs rhs, ~q($e1 - $e2) => do
-    let v1 ← mkProdPrf α sα v lhs e1
-    let v2 ← mkProdPrf α sα v rhs e2
-    mkAppM ``CancelDenoms.sub_subst #[v1, v2]
+    let ⟨_, v1⟩ ← mkProdPrf α sα v lhs e1
+    let ⟨_, v2⟩ ← mkProdPrf α sα v rhs e2
+    return ⟨_, q(CancelDenoms.sub_subst $v1 $v2)⟩
   | .node _ lhs@(.node ln _ _) rhs, ~q($e1 * $e2) => do
     trace[CancelDenoms] "recursing into mul"
-    let v1 ← mkProdPrf α sα ln lhs e1
-    let v2 ← mkProdPrf α sα (v / ln) rhs e2
+    let ⟨_, v1⟩ ← mkProdPrf α sα ln lhs e1
+    let ⟨_, v2⟩ ← mkProdPrf α sα (v / ln) rhs e2
     have ln' := (← mkOfNat α amwo <| mkRawNatLit ln).1
     have vln' := (← mkOfNat α amwo <| mkRawNatLit (v/ln)).1
     have v' := (← mkOfNat α amwo <| mkRawNatLit v).1
+    -- TODO: we discarded the proofs of these above, this assumes they were rfl
+    have _ : $ln' =Q ↑$ln := ⟨⟩
+    have _ : $vln' =Q ↑($v / $ln) := ⟨⟩
+    have _ : $v' =Q ↑$v := ⟨⟩
     let npf ← synthesizeUsingNormNum q($ln' * $vln' = $v')
-    mkAppM ``CancelDenoms.mul_subst #[v1, v2, npf]
+    return ⟨_, q(CancelDenoms.mul_subst $v1 $v2 $npf)⟩
   | .node _ lhs (.node rn _ _), ~q($e1 / $e2) => do
     -- Invariant: e2 is equal to the natural number rn
-    let v1 ← mkProdPrf α sα (v / rn) lhs e1
+    let ⟨_, v1⟩ ← mkProdPrf α sα (v / rn) lhs e1
     have rn' := (← mkOfNat α amwo <| mkRawNatLit rn).1
     have vrn' := (← mkOfNat α amwo <| mkRawNatLit <| v / rn).1
     have v' := (← mkOfNat α amwo <| mkRawNatLit <| v).1
+    -- TODO: we discarded the proofs of these above, this assumes they were rfl
+    have _ : $rn' =Q ↑$rn := ⟨⟩
+    have _ : $vrn' =Q ↑($v / $rn) := ⟨⟩
+    have _ : $v' =Q ↑$v := ⟨⟩
     let npf ← synthesizeUsingNormNum q($rn' / $e2 = 1)
     let npf2 ← synthesizeUsingNormNum q($vrn' * $rn' = $v')
-    mkAppM ``CancelDenoms.div_subst #[v1, npf, npf2]
+    return ⟨_, q(CancelDenoms.div_subst $v1 $npf $npf2)⟩
   | t, ~q(-$e) => do
-    let v ← mkProdPrf α sα v t e
-    mkAppM ``CancelDenoms.neg_subst #[v]
+    let ⟨_, v⟩ ← mkProdPrf α sα v t e
+    return ⟨_, q(CancelDenoms.neg_subst $v)⟩
   | .node _ lhs@(.node k1 _ _) (.node k2 .nil .nil), ~q($e1 ^ $e2) => do
-    let v1 ← mkProdPrf α sα k1 lhs e1
-    have l := v / (k1 ^ k2)
+    let ⟨_, v1⟩ ← mkProdPrf α sα k1 lhs e1
+    have l : ℕ := v / (k1 ^ k2)
     have k1' := (← mkOfNat α amwo <| mkRawNatLit k1).1
     have v' := (← mkOfNat α amwo <| mkRawNatLit v).1
     have l' := (← mkOfNat α amwo <| mkRawNatLit l).1
+    -- TODO: we discarded the proofs of these above, this assumes they were rfl
+    have _ : $k1' =Q ↑$k1 := ⟨⟩
+    have _ : $v' =Q ↑$v := ⟨⟩
+    have _ : $l' =Q ↑$l := ⟨⟩
     let npf ← synthesizeUsingNormNum q($l' * $k1' ^ $e2 = $v')
-    mkAppM ``CancelDenoms.pow_subst #[v1, npf]
-  | .node _ .nil (.node rn _ _), ~q($e ⁻¹) => do
+    return ⟨_, q(CancelDenoms.pow_subst $v1 $npf)⟩
+  | .node _ .nil (.node rn _ _), ~q($ei ⁻¹) => do
     have rn' := (← mkOfNat α amwo <| mkRawNatLit rn).1
     have vrn' := (← mkOfNat α amwo <| mkRawNatLit <| v / rn).1
     have v' := (← mkOfNat α amwo <| mkRawNatLit <| v).1
+    have _ : $rn' =Q $ei := ⟨⟩
+    -- TODO: we discarded the proofs of these above, this assumes they were rfl
+    -- have _ : $rn' =Q ↑$rn := ⟨⟩
+    have _ : $vrn' =Q ↑($v / $rn) := ⟨⟩
+    have _ : $v' =Q ↑$v := ⟨⟩
     let npf ← synthesizeUsingNormNum q($rn' ≠ 0)
     let npf2 ← synthesizeUsingNormNum q($vrn' * $rn' = $v')
-    mkAppM ``CancelDenoms.inv_subst #[npf, npf2]
+    return ⟨_, q(CancelDenoms.inv_subst $npf $npf2)⟩
   | _, _ => do
     have v' := (← mkOfNat α amwo <| mkRawNatLit <| v).1
-    let e' ← mkAppM ``HMul.hMul #[v', e]
-    mkEqRefl e'
+    -- TODO: we discarded the proofs of these above, this assumes they were rfl
+    have _ : $v' =Q ↑$v := ⟨⟩
+    return ⟨_, q(Eq.refl ($v' * $e))⟩
 
 /-- Theorems to get expression into a form that `findCancelFactor` and `mkProdPrf`
 can more easily handle. These are important for dividing by rationals and negative integers. -/
@@ -232,7 +250,8 @@ def derive (e : Expr) : MetaM (ℕ × Expr) := do
   let ⟨u, tp, e⟩ ← inferTypeQ' eSimp.expr
   let stp ← synthInstance q(Field $tp)
   try
-    let pf ← mkProdPrf tp stp n t eSimp.expr
+    let ⟨e', pf⟩ ← mkProdPrf tp stp n t eSimp.expr
+    trace[CancelDenoms] "e' : {e'}"
     trace[CancelDenoms] "pf : {← inferType pf}"
     let pf' ←
       if let some pfSimp := eSimp.proof? then
