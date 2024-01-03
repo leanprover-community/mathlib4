@@ -231,13 +231,8 @@ def piFan : Fan R :=
 The categorical product of rings is the cartesian product of rings.
 -/
 def piFanIsLimit : IsLimit (piFan R) where
-  lift s :=
-  { toFun := fun x i ↦ s.π.app ⟨i⟩ x
-    map_one' := by aesop
-    map_mul' := by aesop
-    map_zero' := by aesop
-    map_add' := by aesop }
-  fac := by aesop
+  lift s := Pi.ringHom _
+  fac s i := by rfl
   uniq s g h := FunLike.ext _ _ fun x ↦ funext fun i ↦ FunLike.congr_fun (h ⟨i⟩) x
 
 /--
@@ -251,8 +246,7 @@ The categorical product and the usual product agrees
 -/
 def _root_.RingEquiv.piEquivPi (R : ι → Type u) [∀ i, CommRing (R i)] :
     (∏ (fun i : ι ↦ CommRingCat.of (R i)) : CommRingCat.{u}) ≃+* ((i : ι) → R i) :=
-  let R' : ι → CommRingCat.{u} := fun i : ι ↦ CommRingCat.of (R i)
-  RingEquiv.ofHomInv (piIsoPi R').hom (piIsoPi R').inv (piIsoPi R').3 (piIsoPi R').4
+  (piIsoPi (CommRingCat.of <| R ·)).commRingCatIsoToRingEquiv
 end Pi
 
 section Equalizer
