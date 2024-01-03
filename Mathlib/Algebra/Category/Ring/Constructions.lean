@@ -250,6 +250,7 @@ The categorical product and the usual product agrees
 -/
 def piIsoPi : ∏ R ≅ CommRingCat.of ((i : ι) → R i) :=
   limit.isoLimitCone ⟨_, piFanIsLimit R⟩
+
 /--
 The categorical product and the usual product agrees
 -/
