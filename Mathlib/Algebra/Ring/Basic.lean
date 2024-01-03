@@ -193,9 +193,27 @@ lemma NoZeroDivisors.to_isDomain [Ring α] [h : Nontrivial α] [NoZeroDivisors �
   { NoZeroDivisors.to_isCancelMulZero α, h with .. }
 #align no_zero_divisors.to_is_domain NoZeroDivisors.to_isDomain
 
+
+
 instance (priority := 100) IsDomain.to_noZeroDivisors [Ring α] [IsDomain α] :
     NoZeroDivisors α :=
   IsRightCancelMulZero.to_noZeroDivisors α
 #align is_domain.to_no_zero_divisors IsDomain.to_noZeroDivisors
+
+instance Subsingleton.to_noZeroDivisors [Ring α] [Subsingleton α] : NoZeroDivisors α :=
+  NoZeroDivisors.mk (fun _ => Or.inl (Subsingleton.eq_zero _))
+
+
+lemma NoZeroDivisors_iff_IsDomain_or_Subsingleton [Ring α]:
+      NoZeroDivisors α ↔ (IsDomain α ∨ Subsingleton α) := by
+  refine ⟨fun t ↦ ?_, fun h ↦ h.elim (fun _ ↦ inferInstance)
+    (fun _ ↦ inferInstance)⟩
+  rw [or_iff_not_imp_right, not_subsingleton_iff_nontrivial]
+  exact fun _ ↦ t.to_isDomain
+
+lemma isDomain_iff_noZeroDivisors_and_nontrivial [Ring α]:
+    IsDomain α ↔ (NoZeroDivisors α ∧ Nontrivial α) :=
+  ⟨fun _ => ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ => {}⟩
+
 
 end NoZeroDivisors
