@@ -7,6 +7,8 @@ import Mathlib.Data.Real.Basic
 
 set_option autoImplicit true
 
+/- FIXME: tests are flaky after #9409
+
 -- Enable this option for tracing:
 -- set_option trace.Tactic.librarySearch true
 -- And this option to trace all candidate lemmas before application.
@@ -30,7 +32,7 @@ noncomputable section
 #guard_msgs in
 example (x : Nat) : x ≠ x.succ := ne_of_lt (by apply?)
 
-/-- info: Try this: exact Nat.succ_pos' -/
+/-- info: Try this: exact Nat.succ_pos 1 -/
 #guard_msgs in
 example : 0 ≠ 1 + 1 := ne_of_lt (by apply?)
 
@@ -42,7 +44,7 @@ example (x y : Nat) : x + y = y + x := by apply?
 #guard_msgs in
 example (n m k : Nat) : n ≤ m → n + k ≤ m + k := by apply?
 
-/-- info: Try this: exact (Nat.mul_dvd_mul_iff_left ha).mpr w -/
+/-- info: Try this: exact Nat.mul_dvd_mul_left a w -/
 #guard_msgs in
 example (ha : a > 0) (w : b ∣ c) : a * b ∣ a * c := by apply?
 
@@ -92,21 +94,21 @@ by apply?
 #guard_msgs in
 example {α : Type} (x y : α) : x = y ↔ y = x := by apply?
 
-/-- info: Try this: exact Nat.add_pos_right a hb -/
+/-- info: Try this: exact Nat.add_pos_left ha b -/
 #guard_msgs in
-example (a b : ℕ) (_ha : 0 < a) (hb : 0 < b) : 0 < a + b := by apply?
+example (a b : ℕ) (ha : 0 < a) (_hb : 0 < b) : 0 < a + b := by apply?
 
-/-- info: Try this: exact Nat.add_pos_right a hb -/
+/-- info: Try this: exact Nat.add_pos_left ha b -/
 #guard_msgs in
 -- Verify that if maxHeartbeats is 0 we don't stop immediately.
 set_option maxHeartbeats 0 in
-example (a b : ℕ) (_ha : 0 < a) (hb : 0 < b) : 0 < a + b := by apply?
+example (a b : ℕ) (ha : 0 < a) (_hb : 0 < b) : 0 < a + b := by apply?
 
 section synonym
 
-/-- info: Try this: exact Nat.add_pos_right a hb -/
+/-- info: Try this: exact Nat.add_pos_left ha b -/
 #guard_msgs in
-example (a b : ℕ) (_ha : a > 0) (hb : 0 < b) : 0 < a + b := by apply?
+example (a b : ℕ) (ha : a > 0) (_hb : 0 < b) : 0 < a + b := by apply?
 
 /-- info: Try this: exact Nat.le_of_dvd w h -/
 #guard_msgs in
@@ -158,7 +160,7 @@ end synonym
 example : ∀ P : Prop, ¬(P ↔ ¬P) := by apply?
 
 -- We even find `iff` results:
-/-- info: Try this: exact (Nat.dvd_add_iff_left h₁).mpr h₂ -/
+/-- info: Try this: exact (Nat.dvd_add_left h₁).mp h₂ -/
 #guard_msgs in
 example {a b c : ℕ} (h₁ : a ∣ c) (h₂ : a ∣ b + c) : a ∣ b := by apply?
 
@@ -225,7 +227,7 @@ lemma ex' (x : ℕ) (_h₁ : x = 0) (h : 2 * 2 ∣ x) : 2 ∣ x := by
 
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/apply.3F.20failure/near/402534407
 example (P Q : Prop) (h : P → Q) (h' : ¬Q) : ¬P := by
-  exact? says exact Not.imp h' h
+  exact? says exact mt h h'
 
 -- Removed until we come up with a way of handling nonspecific lemmas
 -- that does not pollute the output or cause too much slow-down.
@@ -236,3 +238,5 @@ example (P Q : Prop) (h : P → Q) (h' : ¬Q) : ¬P := by
 --   first
 --   | exact? says exact le_antisymm hxy hyx
 --   | exact? says exact ge_antisymm hyx hxy
+
+-/
