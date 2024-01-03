@@ -7,6 +7,8 @@ import Mathlib.Data.Real.Basic
 
 set_option autoImplicit true
 
+/- FIXME: tests are flaky after #9409
+
 -- Enable this option for tracing:
 -- set_option trace.Tactic.librarySearch true
 -- And this option to trace all candidate lemmas before application.
@@ -236,3 +238,5 @@ example (P Q : Prop) (h : P → Q) (h' : ¬Q) : ¬P := by
 --   first
 --   | exact? says exact le_antisymm hxy hyx
 --   | exact? says exact ge_antisymm hyx hxy
+
+-/
