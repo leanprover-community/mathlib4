@@ -177,11 +177,13 @@ def putFiles (fileNames : Array String) (overwrite : Bool) (token : String) : IO
   if size > 0 then
     IO.FS.writeFile IO.CURLCFG (← mkPutConfigContent fileNames)
     IO.println s!"Attempting to upload {size} file(s)"
-    let _ ← IO.Process.run {
+    let exitCode ← IO.Process.spawn {
       cmd := (← IO.getCurl),
       args := #["-X", "PUT", "--aws-sigv4", "aws:amz:auto:s3", "--user", token,
-        "--parallel", "--retry", "3", "-K", IO.CURLCFG.toString]
-    }
+        "--parallel", "--retry", "3", "-v", "-K", IO.CURLCFG.toString]
+    } >>= (·.wait)
+    if exitCode != 0 then
+      throw <| IO.userError s!"process 'curl' exited with code {exitCode}"
   else IO.println "No files to upload"
 
 end Put
