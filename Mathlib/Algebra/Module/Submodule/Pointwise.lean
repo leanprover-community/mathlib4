@@ -508,7 +508,7 @@ protected def pointwiseSetMulAction [SMulCommClass R R M] :
       fun h => ⟨m, h, (one_smul _ _).symm⟩⟩
   mul_smul s t x := le_antisymm
     (set_smul_le _ _ _ <| by rintro _ _ ⟨_, _, _, _, rfl⟩ _; rw [mul_smul]; aesop)
-    (set_smul_le _ _ _ <| fun r m hr hm ↦ by
+    (set_smul_le _ _ _ fun r m hr hm ↦ by
       have : SMulCommClass R R x := ⟨fun r s m => Subtype.ext <| smul_comm _ _ _⟩
       obtain ⟨c, hc1, rfl⟩ := mem_set_smul _ _ _ |>.mp hm
       simp only [Finsupp.sum, AddSubmonoid.coe_finset_sum, coe_toAddSubmonoid, SetLike.val_smul,
