@@ -93,7 +93,7 @@ abbrev Submodule.toLocalizedQuotient : M ⧸ M' →ₗ[R] LocalizedModule p M �
 
 @[simp]
 lemma Submodule.toLocalizedQuotient'_mk (x : M) :
-  M'.toLocalizedQuotient' S p f (Submodule.Quotient.mk x) = Submodule.Quotient.mk (f x) := rfl
+    M'.toLocalizedQuotient' S p f (Submodule.Quotient.mk x) = Submodule.Quotient.mk (f x) := rfl
 
 open Submodule Submodule.Quotient IsLocalization in
 instance IsLocalizedModule.toLocalizedQuotient' (M' : Submodule R M) :
