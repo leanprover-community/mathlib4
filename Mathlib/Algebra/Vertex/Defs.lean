@@ -92,12 +92,18 @@ noncomputable instance [CommRing R] [AddCommGroup V] [Module R V] : One (VertexO
 theorem one : (1 : VertexOperator R V) = HahnSeries.single.linearMap 0 := by
   exact rfl
 
-theorem one_coeff_zero' (x : V) : @coeff R V _ _ _ 1 0 x = x := by
-  rw [one, ]
+theorem one_coeff_ite (x : V) (n : ℤ) : @coeff R V _ _ _ 1 n x = if n = 0 then x else 0 := by
+  rw [one]
   unfold HahnSeries.single.linearMap HahnSeries.single.addMonoidHom HahnSeries.single Pi.single
     Function.update
-  simp only
+  simp_all only [eq_rec_constant, Pi.zero_apply, dite_eq_ite]
   exact rfl
+
+theorem one_coeff_zero' (x : V) : @coeff R V _ _ _ 1 0 x = x := by
+  rw [one_coeff_ite, if_pos rfl]
+
+theorem one_coeff_ne (x : V) (n : ℤ) (hn : n ≠ 0): @coeff R V _ _ _ 1 n x = 0 := by
+  rw [one_coeff_ite, if_neg hn]
 
 /-- Locality to order `≤ n` means `(x-y)^N[A(x),B(y)] = 0` for `N ≥ n`.  We may want to write this
 in terms of composition of endomorphisms. -/
