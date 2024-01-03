@@ -500,6 +500,6 @@ theorem Zlattice.rank : finrank ℤ L = finrank K E := by
   · -- To prove that `finrank K E ≤ finrank ℤ L`, we use the fact `b` generates `E` over `K`
     -- and thus `finrank K E ≤ card b = finrank ℤ L`
     rw [← topEquiv.finrank_eq, ← h_spanE]
-    convert finrank_span_le_card (K := K) (Set.range b)
+    convert finrank_span_le_card (R := K) (Set.range b)
 
 end Zlattice
