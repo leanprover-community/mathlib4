@@ -586,9 +586,11 @@ noncomputable def spectralSequencePageInfinityIso_hom
       sorry
     · rw [assoc, X.EMapFourδ₄Toδ₃'_comp ]
   · simp only [not_le] at h
-    sorry
+    have := (spectralSequence X data).hasEdgeMonoAtFrom_of_GE pq _ _ h.le
+    rw [(X.spectralSequence data).edgeEpi_eq_pageInfinityIso_inv pq r]
+    sorry-/
 
-lemma spectralSequence_edgeMono_compatibility (r : ℤ) [(X.spectralSequence data).HasPage r]
+/-lemma spectralSequence_edgeMono_compatibility (r : ℤ) [(X.spectralSequence data).HasPage r]
     (i₀ i₁ i₂ i₃ : ι) (hi₀ : i₀ = X.i₀ data r pq) (hi₁ : i₁ = data.i₁ pq)
     (hi₂ : i₂ = data.i₂ pq) (hi₃ : i₃ = X.i₃ data r pq)
     [(X.spectralSequence data).HasEdgeMonoAtFrom pq r] :

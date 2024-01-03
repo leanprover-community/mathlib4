@@ -634,6 +634,12 @@ lemma pageInfinityIso_hom_edgeMonoSteps' (r r' : ℤ) (h : r ≤ r') [E.HasPage 
     rw [edgeEpiSteps_eq_id, comp_id]
   · rfl
 
+lemma edgeMono_eq_pageInfinityIso_hom (r : ℤ) [E.HasPage r]
+    [E.HasEdgeEpiAtFrom pq r] [E.HasEdgeMonoAtFrom pq r] :
+    E.edgeMono pq r = (E.pageInfinityIso pq r).hom := by
+  rw [← E.pageInfinityIso_hom_edgeMonoSteps' pq r r (by rfl),
+    edgeMonoSteps_eq_id, comp_id]
+
 @[reassoc (attr := simp 900)]
 lemma pageInfinityIso_hom_edgeMonoStep' (r r' : ℤ) (h : r + 1 = r') [E.HasPage r] [E.HasPage r']
     [E.HasEdgeMonoAtFrom pq r] [E.HasEdgeMonoAtFrom pq r'] [E.HasEdgeEpiAtFrom pq r'] :
@@ -697,6 +703,12 @@ lemma edgeEpiStep_pageInfinityIso_inv' (r r' : ℤ) (h : r + 1 = r') [E.HasPage 
     [E.HasEdgeEpiAtFrom pq r] [E.HasEdgeMonoAtFrom pq r'] [E.HasEdgeEpiAtFrom pq r'] :
     E.edgeEpiStep pq r r' h ≫ (E.pageInfinityIso pq r').inv = E.edgeEpi pq r := by
   rw [← E.edgeEpiSteps_eq_edgeEpiStep, edgeEpiSteps_pageInfinityIso_inv']
+
+lemma edgeEpi_eq_pageInfinityIso_inv (r : ℤ) [E.HasPage r]
+    [E.HasEdgeEpiAtFrom pq r] [E.HasEdgeMonoAtFrom pq r] :
+    E.edgeEpi pq r = (E.pageInfinityIso pq r).inv := by
+  rw [← E.edgeEpiSteps_pageInfinityIso_inv' pq r r (by rfl),
+    edgeEpiSteps_eq_id, id_comp]
 
 end
 
