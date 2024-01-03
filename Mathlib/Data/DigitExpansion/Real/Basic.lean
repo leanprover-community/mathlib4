@@ -697,7 +697,7 @@ lemma lt_shift_iff {f : real Z b} :
     simp only [shift_eq_self_iff, this, val_shift, false_or]
     obtain ⟨x, xpos, hx⟩ := h.exists_least_pos
     refine ⟨?_, x, ?_⟩
-    · rwa [sub_ne_zero, ne_comm, ←val_shift, ne_eq, ← Subtype.ext_iff, shift_eq_self_iff]
+    · rwa [sub_ne_zero, ne_comm, ← val_shift, ne_eq, ← Subtype.ext_iff, shift_eq_self_iff]
     · intro y hy
       simp only [DigitExpansion.sub_def, hx y hy, shift_apply,
         hx (pred y) (hy.trans_le' (pred_le _)), sub_self, zero_sub, neg_eq_zero, difcar_eq_zero_iff,
@@ -713,7 +713,7 @@ lemma lt_shift_iff {f : real Z b} :
     simp only [shift_eq_self_iff, this, val_shift, false_or]
     obtain ⟨x, xpos, hx⟩ := h.exists_least_cap
     refine ⟨?_, x, ?_⟩
-    · rwa [sub_ne_zero, ←val_shift, ne_eq, ← Subtype.ext_iff, shift_eq_self_iff]
+    · rwa [sub_ne_zero, ← val_shift, ne_eq, ← Subtype.ext_iff, shift_eq_self_iff]
     · intro y hy
       simp only [DigitExpansion.sub_def, hx y hy, shift_apply,
         hx (pred y) (hy.trans_le' (pred_le _)), sub_self, zero_sub, neg_eq_zero, difcar_eq_zero_iff,
