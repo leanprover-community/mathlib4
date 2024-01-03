@@ -134,14 +134,14 @@ theorem eraseLead_card_support' {c : ℕ} (fc : f.support.card = c + 1) :
   rw [card_support_eraseLead, fc, add_tsub_cancel_right]
 #align polynomial.erase_lead_card_support' Polynomial.eraseLead_card_support'
 
-theorem card_support_eq_one_of_eraseLead_zero (h₀ : f ≠ 0) (h₁ : f.eraseLead = 0) :
+theorem card_support_eq_one_of_eraseLead_eq_zero (h₀ : f ≠ 0) (h₁ : f.eraseLead = 0) :
     f.support.card = 1 :=
   (card_support_eq_zero.mpr h₁ ▸ card_support_eraseLead_add_one h₀).symm
 
-theorem card_support_lt_one_of_eraseLead_zero (h : f.eraseLead = 0) : f.support.card ≤ 1 := by
+theorem card_support_le_one_of_eraseLead_eq_zero (h : f.eraseLead = 0) : f.support.card ≤ 1 := by
   by_cases hpz : f = 0
   case pos => simp [hpz]
-  case neg => exact le_of_eq (card_support_eq_one_of_eraseLead_zero hpz h)
+  case neg => exact le_of_eq (card_support_eq_one_of_eraseLead_eq_zero hpz h)
 
 @[simp]
 theorem eraseLead_monomial (i : ℕ) (r : R) : eraseLead (monomial i r) = 0 := by
