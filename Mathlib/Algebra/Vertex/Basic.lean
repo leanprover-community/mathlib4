@@ -48,9 +48,9 @@ section NonUnital
 
 variable [CommRing R] [AddCommGroup V] [NonAssocNonUnitalVertexAlgebra R V]
 
-lemma toNat_sub_eq_zero_leq {m n : ℤ} (h : Int.toNat (-m - n) = 0) : -n ≤ m := by
-   rw [← @sub_nonpos, neg_sub_left, neg_add']
-   exact Int.toNat_eq_zero.mp h
+theorem toNat_sub_eq_zero_leq {m n : ℤ} : Int.toNat (-m - n) = 0 ↔ -n ≤ m := by
+  simp only [Int.toNat_eq_zero, tsub_le_iff_right, zero_add]
+  exact neg_le
 
 theorem associativity_left (a b c : V) (s t : ℤ) : Borcherds_sum_1 R a b c 0 s t =
     index (Y R (index (Y R a) t b)) s c := by
@@ -58,8 +58,8 @@ theorem associativity_left (a b c : V) (s t : ℤ) : Borcherds_sum_1 R a b c 0 s
   cases h : (Int.toNat (-t - order R a b)) with
     | zero =>
       rw [Finset.range_zero, Finset.sum_empty]
-      rw [index_zero_if_neg_order_leq a b t (toNat_sub_eq_zero_leq h), LinearMap.map_zero,
-        VertexAlg.zero_index, LinearMap.zero_apply]
+      rw [index_zero_if_neg_order_leq R a b t (toNat_sub_eq_zero_leq.mp h), LinearMap.map_zero]
+      exact rfl
     | succ n =>
       rw [Finset.eventually_constant_sum ?_ (Nat.one_le_iff_ne_zero.mpr
         (Nat.succ_ne_zero n)), Finset.sum_range_one, zero_add, Ring.choose_zero_right (0 : ℤ),
@@ -88,7 +88,7 @@ theorem commutator_right_2 (a b c : V) (r s : ℤ) : Borcherds_sum_2 R a b c r s
   cases h : (Int.toNat (-s - order R b c)) with
   | zero =>
     rw [Finset.range_zero, Finset.sum_empty]
-    rw [index_zero_if_neg_order_leq b c s (toNat_sub_eq_zero_leq h), LinearMap.map_zero]
+    rw [index_zero_if_neg_order_leq R b c s (toNat_sub_eq_zero_leq.mp h), LinearMap.map_zero]
   | succ n =>
     rw [Finset.eventually_constant_sum ?_ (Nat.one_le_iff_ne_zero.mpr
         (Nat.succ_ne_zero n)), Finset.sum_range_one, add_zero, Ring.choose_zero_right (0 : ℤ),
@@ -102,8 +102,8 @@ theorem commutator_right_3 (a b c : V) (r s : ℤ) : Borcherds_sum_3 R a b c r s
   unfold Borcherds_sum_3
   cases h : (Int.toNat (-r - order R a c)) with
   | zero =>
-    rw [Finset.range_zero, Finset.sum_empty]
-    rw [index_zero_if_neg_order_leq a c r (toNat_sub_eq_zero_leq h), LinearMap.map_zero, neg_zero]
+    rw [Finset.range_zero, Finset.sum_empty, index_zero_if_neg_order_leq R a c r
+      (toNat_sub_eq_zero_leq.mp h), LinearMap.map_zero, neg_zero]
   | succ n =>
     rw [Finset.eventually_constant_sum ?_ (Nat.one_le_iff_ne_zero.mpr (Nat.succ_ne_zero n)),
         Finset.sum_range_one, add_zero, Ring.choose_zero_right (0 : ℤ), one_smul, Nat.cast_zero,
@@ -119,21 +119,26 @@ theorem Borcherds_id_at_zero_iff_commutator_formula (a b c : V) (r s : ℤ) :
   simp_rw [zero_add]
   exact eq_comm
 
-theorem locality_left (a b c : V) (r s t : ℤ) (h : - order R a b ≤ t) :
+theorem Borcherds_sum_1_eq_zero (a b c : V) (r s t : ℤ) (h : - order R a b ≤ t) :
     Borcherds_sum_1 R a b c r s t = 0 := by
   unfold Borcherds_sum_1
   have hrange : Int.toNat (-t - order R a b) = 0 := by
     rw [Int.toNat_eq_zero, tsub_le_iff_right, zero_add, neg_le]
     exact h
   rw [hrange, Finset.range_zero, Finset.sum_empty]
+/-!
 
--- need to revise locality : every field is local...
+theorem locality_iff_Borcherds_sums_2_3_eq (a b c : V) (r s t : ℤ) :
+    locality R a b ↔ Borcherds_sum_2 R a b c r s t = Borcherds_sum_3 R a b c r s t := by
+  sorry
 
 theorem Borcherds_id_at_large_t_iff_locality (a b c : V) (r s t : ℤ) (h : - order R a b ≤ t) :
-    Borcherds_id R a b c r s t ↔ locality R a b c r s t := by
-  unfold Borcherds_id locality
+    Borcherds_id R a b c r s t ↔ locality R a b := by
+  unfold Borcherds_id locality isLocal
   rw [locality_left a b c r s t h]
+  --need more
   exact eq_comm
+-/
 
 theorem weak_assoc_right (a b c : V) (r s t: ℤ) (h : r ≥ - order R a c) :
     Borcherds_sum_3 R a b c r s t = 0 := by

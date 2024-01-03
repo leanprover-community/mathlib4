@@ -285,7 +285,7 @@ theorem ascPochhammer_smeval_nat_int [NatPowAssoc R] (r : R) : ∀(n : ℕ),
 
 /-- The binomial coefficient `choose r n` generalizes the natural number choose function,
   interpreted in terms of choosing without replacement. -/
-noncomputable def choose {R: Type _} [NonAssocRing R] [Pow R ℕ] [BinomialRing R]
+def choose {R: Type _} [NonAssocRing R] [Pow R ℕ] [BinomialRing R]
     (r : R) (n : ℕ): R :=
   multichoose (r-n+1) n
 
@@ -331,6 +331,13 @@ theorem choose_zero_ite (S : Type*) [NonAssocRing S] [Pow S ℕ] [NatPowAssoc S]
   rw [← @Nat.le_zero, Nat.not_le] at hk
   rw [choose_zero_pos S k hk]
 
+theorem choose_one_right' (r : R) : choose r 1 = r ^ 1 := by
+  unfold choose
+  rw [Nat.cast_one, sub_add_cancel, multichoose_one_right']
+
+theorem choose_one_right [NatPowAssoc R] (r : R) : choose r 1 = r := by
+  rw [choose_one_right', npow_one]
+
 theorem descPochhammer_succ_succ_smeval {S : Type*} [NonAssocRing S] [Pow S ℕ] [NatPowAssoc S]
     (r : S) (k : ℕ) : smeval (r + 1) (descPochhammer ℤ (Nat.succ k)) =
     (k + 1) • smeval r (descPochhammer ℤ k) + smeval r (descPochhammer ℤ (Nat.succ k)) := by
@@ -348,6 +355,8 @@ theorem choose_succ_succ [NatPowAssoc R] (r:R) (k : ℕ) :
   simp only [smul_add, ← descPochhammer_eq_factorial_smul_choose]
   rw [Nat.factorial_succ, mul_smul,
     ← descPochhammer_eq_factorial_smul_choose r, descPochhammer_succ_succ_smeval r k]
+
+
 
 end Ring
 

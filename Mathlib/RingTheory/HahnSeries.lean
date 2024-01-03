@@ -548,6 +548,10 @@ def single.linearMap (a : Γ) : V →ₗ[R] HahnSeries Γ V :=
       by_cases h : b = a <;> simp [h] }
 #align hahn_series.single.linear_map HahnSeries.single.linearMap
 
+@[simp]
+theorem single.linearMap_eq (a : Γ) (x : V) : @single.linearMap Γ R _ _ V _ _ a x = single a x := by
+  exact rfl
+
 /-- `coeff g` as a linear map -/
 @[simps]
 def coeff.linearMap (g : Γ) : HahnSeries Γ V →ₗ[R] V :=
