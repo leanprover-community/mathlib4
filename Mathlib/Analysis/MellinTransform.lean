@@ -398,7 +398,7 @@ theorem mellin_hasDerivAt_of_isBigO_rpow [CompleteSpace E] [NormedSpace ℂ E] {
       refine' mellin_convergent_of_isBigO_scalar _ _ hw1' _ hw2
       · simp_rw [mul_comm]
         refine' hfc.norm.mul_continuousOn _ isOpen_Ioi
-        refine' Continuous.comp_continuousOn continuous_abs (continuousOn_log.mono _)
+        refine' Continuous.comp_continuousOn _root_.continuous_abs (continuousOn_log.mono _)
         exact subset_compl_singleton_iff.mpr not_mem_Ioi_self
       · refine (isBigO_rpow_top_log_smul hw2' hf_top).norm_left.congr_left fun t ↦ ?_
         simp only [norm_smul, Real.norm_eq_abs]

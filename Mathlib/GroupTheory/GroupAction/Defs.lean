@@ -1287,3 +1287,20 @@ See note [reducible non-instances]. -/
 def AddAction.ofEndHom [AddMonoid M] (f : M →+ Additive (Function.End α)) : AddAction M α :=
   AddAction.compHom α f
 #align add_action.of_End_hom AddAction.ofEndHom
+
+section Monoid
+variable [Monoid M] [Monoid N]
+
+lemma smul_pow [MulAction M N] [IsScalarTower M N N] [SMulCommClass M N N] (k : M) (x : N) :
+    ∀ n, (k • x) ^ n = k ^ n • x ^ n
+  | 0 => by simp
+  | n + 1 => by rw [pow_succ', smul_pow _ _ n, smul_mul_smul, ← pow_succ', ← pow_succ']
+#align smul_pow smul_pow
+
+@[simp]
+lemma smul_pow' [MulDistribMulAction M N] (x : M) (m : N) : ∀ n, x • m ^ n = (x • m) ^ n
+  | 0 => by rw [pow_zero, pow_zero, smul_one]
+  | n + 1 => by rw [pow_succ, pow_succ, smul_mul', smul_pow' _ _ n]
+#align smul_pow' smul_pow'
+
+end Monoid

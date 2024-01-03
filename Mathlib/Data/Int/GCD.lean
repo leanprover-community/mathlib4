@@ -3,10 +3,10 @@ Copyright (c) 2018 Guy Leroy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sangwoo Jo (aka Jason), Guy Leroy, Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.Nat.GCD.Basic
-import Mathlib.Algebra.GroupPower.Lemmas
+import Mathlib.Algebra.Group.Commute.Units
 import Mathlib.Algebra.Ring.Regular
 import Mathlib.Data.Int.Dvd.Basic
+import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Order.Bounds.Basic
 
 #align_import data.int.gcd from "leanprover-community/mathlib"@"47a1a73351de8dd6c8d3d32b569c8e434b03ca47"

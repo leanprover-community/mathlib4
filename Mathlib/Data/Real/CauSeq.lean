@@ -3,12 +3,12 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.Order.AbsoluteValue
 import Mathlib.Algebra.Order.Group.MinMax
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Ring.Pi
 import Mathlib.GroupTheory.GroupAction.Pi
+import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.Init.Align
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.Ring
@@ -1002,3 +1002,5 @@ protected theorem sup_inf_distrib_right (a b c : CauSeq α abs) : a ⊓ b ⊔ c 
 end Abs
 
 end CauSeq
+
+assert_not_exists Module

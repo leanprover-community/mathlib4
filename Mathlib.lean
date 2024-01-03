@@ -1,4 +1,3 @@
-import Mathlib.Algebra.Abs
 import Mathlib.Algebra.AddTorsor
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Algebra.Algebra.Bilinear
@@ -208,7 +207,6 @@ import Mathlib.Algebra.GroupPower.CovariantClass
 import Mathlib.Algebra.GroupPower.Hom
 import Mathlib.Algebra.GroupPower.Identities
 import Mathlib.Algebra.GroupPower.IterateHom
-import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.GroupPower.NegOnePow
 import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Algebra.GroupPower.Ring
@@ -367,6 +365,7 @@ import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Group.DenselyOrdered
 import Mathlib.Algebra.Order.Group.InjSurj
 import Mathlib.Algebra.Order.Group.Instances
+import Mathlib.Algebra.Order.Group.Lattice
 import Mathlib.Algebra.Order.Group.MinMax
 import Mathlib.Algebra.Order.Group.OrderIso
 import Mathlib.Algebra.Order.Group.Prod
@@ -379,7 +378,6 @@ import Mathlib.Algebra.Order.Hom.Ring
 import Mathlib.Algebra.Order.Interval
 import Mathlib.Algebra.Order.Invertible
 import Mathlib.Algebra.Order.Kleene
-import Mathlib.Algebra.Order.LatticeGroup
 import Mathlib.Algebra.Order.Module.Defs
 import Mathlib.Algebra.Order.Module.OrderedSMul
 import Mathlib.Algebra.Order.Module.Pointwise

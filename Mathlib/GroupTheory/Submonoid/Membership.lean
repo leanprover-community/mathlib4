@@ -8,6 +8,7 @@ import Mathlib.GroupTheory.Submonoid.Operations
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Algebra.FreeMonoid.Basic
 import Mathlib.Data.Finset.NoncommProd
+import Mathlib.Data.Int.Order.Lemmas
 
 #align_import group_theory.submonoid.membership from "leanprover-community/mathlib"@"e655e4ea5c6d02854696f97494997ba4c31be802"
 

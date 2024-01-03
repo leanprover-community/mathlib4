@@ -120,7 +120,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
         _ ≤ ε * c n := by
           refine' mul_le_mul_of_nonneg_right _ (Nat.cast_nonneg _)
           simp only [mul_one, Real.norm_eq_abs, abs_one] at hn
-          exact le_trans (neg_le_abs_self _) hn
+          exact le_trans (neg_le_abs _) hn
     obtain ⟨a, ha⟩ :
       ∃ a : ℕ,
         ∀ b : ℕ, a ≤ b → (c (b + 1) : ℝ) ≤ (1 + ε) * c b ∧ (c b : ℝ) * l - u (c b) ≤ ε * c b :=
