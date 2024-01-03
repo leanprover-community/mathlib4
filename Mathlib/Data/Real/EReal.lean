@@ -447,59 +447,217 @@ theorem eq_bot_iff_forall_lt (x : EReal) : x = ⊥ ↔ ∀ y : ℝ, x < (y : ERe
 
 /-! ### Intervals and coercion from reals -/
 
-lemma exists_between_ofReal_left {x : EReal} {z : ℝ} (h : x < z) : ∃ y : ℝ, x < y ∧ y < z := by
+lemma exists_between_ofReal {x z : EReal} (h : x < z) : ∃ y : ℝ, x < y ∧ y < z := by
   obtain ⟨a, ha₁, ha₂⟩ := exists_between h
   induction' a using EReal.rec with a₀
-  · simp only [not_lt_bot] at ha₁
+  · exact (not_lt_bot ha₁).elim
   · exact ⟨a₀, by exact_mod_cast ha₁, by exact_mod_cast ha₂⟩
-  · simp only [not_top_lt] at ha₂
+  · exact (not_top_lt ha₂).elim
 
-lemma exists_between_ofReal_right {x : ℝ} {z : EReal} (h : x < z) : ∃ y : ℝ, x < y ∧ y < z := by
-  obtain ⟨a, ha₁, ha₂⟩ := exists_between h
-  induction' a using EReal.rec with a₀
-  · simp only [not_lt_bot] at ha₁
-  · exact ⟨a₀, by exact_mod_cast ha₁, by exact_mod_cast ha₂⟩
-  · simp only [not_top_lt] at ha₂
-
-lemma Icc_of_Real {x y : ℝ} : Real.toEReal '' Set.Icc x y = Set.Icc ↑x ↑y := by
-  refine (Set.image_comp WithBot.some WithTop.some _).trans ?_
+@[simp]
+lemma image_coe_Icc {x y : ℝ} : Real.toEReal '' Icc x y = Icc ↑x ↑y := by
+  refine (image_comp WithBot.some WithTop.some _).trans ?_
   rw [WithTop.image_coe_Icc, WithBot.image_coe_Icc]
   rfl
 
-lemma Ico_of_Real {x y : ℝ} : Real.toEReal '' Set.Ico x y = Set.Ico ↑x ↑y := by
-  refine (Set.image_comp WithBot.some WithTop.some _).trans ?_
+@[simp]
+lemma image_coe_Ico {x y : ℝ} : Real.toEReal '' Ico x y = Ico ↑x ↑y := by
+  refine (image_comp WithBot.some WithTop.some _).trans ?_
   rw [WithTop.image_coe_Ico, WithBot.image_coe_Ico]
   rfl
 
-lemma Ici_of_Real {x : ℝ} : Real.toEReal '' Set.Ici x = Set.Ico ↑x ⊤ := by
-  refine (Set.image_comp WithBot.some WithTop.some _).trans ?_
+@[simp]
+lemma image_coe_Ici {x : ℝ} : Real.toEReal '' Ici x = Ico ↑x ⊤ := by
+  refine (image_comp WithBot.some WithTop.some _).trans ?_
   rw [WithTop.image_coe_Ici, WithBot.image_coe_Ico]
   rfl
 
-lemma Ioc_of_Real {x y : ℝ} : Real.toEReal '' Set.Ioc x y = Set.Ioc ↑x ↑y := by
-  refine (Set.image_comp WithBot.some WithTop.some _).trans ?_
+@[simp]
+lemma image_coe_Ioc {x y : ℝ} : Real.toEReal '' Ioc x y = Ioc ↑x ↑y := by
+  refine (image_comp WithBot.some WithTop.some _).trans ?_
   rw [WithTop.image_coe_Ioc, WithBot.image_coe_Ioc]
   rfl
 
-lemma Ioo_of_Real {x y : ℝ} : Real.toEReal '' Set.Ioo x y = Set.Ioo ↑x ↑y := by
-  refine (Set.image_comp WithBot.some WithTop.some _).trans ?_
+@[simp]
+lemma image_coe_Ioo {x y : ℝ} : Real.toEReal '' Ioo x y = Ioo ↑x ↑y := by
+  refine (image_comp WithBot.some WithTop.some _).trans ?_
   rw [WithTop.image_coe_Ioo, WithBot.image_coe_Ioo]
   rfl
 
-lemma Ioi_ofReal {x : ℝ} : Real.toEReal '' Set.Ioi x = Set.Ioo ↑x ⊤ := by
-  refine (Set.image_comp WithBot.some WithTop.some _).trans ?_
+@[simp]
+lemma image_coe_Ioi {x : ℝ} : Real.toEReal '' Ioi x = Ioo ↑x ⊤ := by
+  refine (image_comp WithBot.some WithTop.some _).trans ?_
   rw [WithTop.image_coe_Ioi, WithBot.image_coe_Ioo]
   rfl
 
-lemma Iic_ofReal {x : ℝ} : Real.toEReal '' Set.Iic x = Set.Ioc ⊥ ↑x := by
-  refine (Set.image_comp WithBot.some WithTop.some _).trans ?_
+@[simp]
+lemma image_coe_Iic {x : ℝ} : Real.toEReal '' Iic x = Ioc ⊥ ↑x := by
+  refine (image_comp WithBot.some WithTop.some _).trans ?_
   rw [WithTop.image_coe_Iic, WithBot.image_coe_Iic]
   rfl
 
-lemma Iio_ofReal {x : ℝ} : Real.toEReal '' Set.Iio x = Set.Ioo ⊥ ↑x := by
-  refine (Set.image_comp WithBot.some WithTop.some _).trans ?_
+@[simp]
+lemma image_coe_Iio {x : ℝ} : Real.toEReal '' Iio x = Ioo ⊥ ↑x := by
+  refine (image_comp WithBot.some WithTop.some _).trans ?_
   rw [WithTop.image_coe_Iio, WithBot.image_coe_Iio]
   rfl
+
+@[simp]
+lemma preimage_coe_Icc {x y : ℝ} : Real.toEReal ⁻¹' Icc x y = Icc x y := by
+  change (WithBot.some ∘ WithTop.some) ⁻¹'
+    (Icc (WithBot.some (WithTop.some x)) (WithBot.some (WithTop.some y))) = _
+  refine preimage_comp.trans ?_
+  simp only [WithBot.preimage_coe_Icc, WithTop.preimage_coe_Icc]
+
+@[simp]
+lemma preimage_coe_Ico {x y : ℝ} : Real.toEReal ⁻¹' Ico x y = Ico x y := by
+  change (WithBot.some ∘ WithTop.some) ⁻¹'
+    (Ico (WithBot.some (WithTop.some x)) (WithBot.some (WithTop.some y))) = _
+  refine preimage_comp.trans ?_
+  simp only [WithBot.preimage_coe_Ico, WithTop.preimage_coe_Ico]
+
+@[simp]
+lemma preimage_coe_Ioc {x y : ℝ} : Real.toEReal ⁻¹' Ioc x y = Ioc x y := by
+  change (WithBot.some ∘ WithTop.some) ⁻¹'
+    (Ioc (WithBot.some (WithTop.some x)) (WithBot.some (WithTop.some y))) = _
+  refine preimage_comp.trans ?_
+  simp only [WithBot.preimage_coe_Ioc, WithTop.preimage_coe_Ioc]
+
+@[simp]
+lemma preimage_coe_Ioo {x y : ℝ} : Real.toEReal ⁻¹' Ioo x y = Ioo x y := by
+  change (WithBot.some ∘ WithTop.some) ⁻¹'
+    (Ioo (WithBot.some (WithTop.some x)) (WithBot.some (WithTop.some y))) = _
+  refine preimage_comp.trans ?_
+  simp only [WithBot.preimage_coe_Ioo, WithTop.preimage_coe_Ioo]
+
+@[simp]
+lemma preimage_coe_Icc_top {x : ℝ} : Real.toEReal ⁻¹' Icc x ⊤ = Ici x := by
+  change (WithBot.some ∘ WithTop.some) ⁻¹'
+    (Icc (WithBot.some (WithTop.some x)) (WithBot.some ⊤)) = _
+  refine preimage_comp.trans ?_
+  simp only [WithBot.preimage_coe_Icc, Icc_top, WithTop.preimage_coe_Ici]
+
+@[simp]
+lemma preimage_coe_Ico_top {x : ℝ} : Real.toEReal ⁻¹' Ico x ⊤ = Ici x := by
+  change (WithBot.some ∘ WithTop.some) ⁻¹'
+    (Ico (WithBot.some (WithTop.some x)) (WithBot.some ⊤)) = _
+  refine preimage_comp.trans ?_
+  simp only [WithBot.preimage_coe_Ico, WithTop.preimage_coe_Ico_top]
+
+@[simp]
+lemma preimage_coe_Ioc_top {x : ℝ} : Real.toEReal ⁻¹' Ioc x ⊤ = Ioi x := by
+  change (WithBot.some ∘ WithTop.some) ⁻¹'
+    (Ioc (WithBot.some (WithTop.some x)) (WithBot.some ⊤)) = _
+  refine preimage_comp.trans ?_
+  simp only [WithBot.preimage_coe_Ioc, Ioc_top, WithTop.preimage_coe_Ioi]
+
+@[simp]
+lemma preimage_coe_Ioo_top {x : ℝ} : Real.toEReal ⁻¹' Ioo x ⊤ = Ioi x := by
+  change (WithBot.some ∘ WithTop.some) ⁻¹'
+    (Ioo (WithBot.some (WithTop.some x)) (WithBot.some ⊤)) = _
+  refine preimage_comp.trans ?_
+  simp only [WithBot.preimage_coe_Ioo, WithTop.preimage_coe_Ioo_top]
+
+@[simp]
+lemma preimage_coe_Icc_bot {y : ℝ} : Real.toEReal ⁻¹' Icc ⊥ y = Iic y := by
+  change (WithBot.some ∘ WithTop.some) ⁻¹'
+    (Icc ⊥ (WithBot.some (WithTop.some y))) = _
+  refine preimage_comp.trans ?_
+  simp only [Icc_bot, WithBot.preimage_coe_Iic, WithTop.preimage_coe_Iic]
+
+@[simp]
+lemma preimage_coe_Ico_bot {y : ℝ} : Real.toEReal ⁻¹' Ico ⊥ y = Iio y := by
+  change (WithBot.some ∘ WithTop.some) ⁻¹'
+    (Ico ⊥ (WithBot.some (WithTop.some y))) = _
+  refine preimage_comp.trans ?_
+  simp only [Ico_bot, WithBot.preimage_coe_Iio, WithTop.preimage_coe_Iio]
+
+@[simp]
+lemma preimage_coe_Ioc_bot {y : ℝ} : Real.toEReal ⁻¹' Ioc ⊥ y = Iic y := by
+  change (WithBot.some ∘ WithTop.some) ⁻¹'
+    (Ioc ⊥ (WithBot.some (WithTop.some y))) = _
+  refine preimage_comp.trans ?_
+  simp only [WithBot.preimage_coe_Ioc_bot, WithTop.preimage_coe_Iic]
+
+@[simp]
+lemma preimage_coe_Ioo_bot {y : ℝ} : Real.toEReal ⁻¹' Ioo ⊥ y = Iio y := by
+  change (WithBot.some ∘ WithTop.some) ⁻¹'
+    (Ioo ⊥ (WithBot.some (WithTop.some y))) = _
+  refine preimage_comp.trans ?_
+  simp only [WithBot.preimage_coe_Ioo_bot, WithTop.preimage_coe_Iio]
+
+@[simp]
+lemma preimage_coe_Icc_bot_top : Real.toEReal ⁻¹' Icc ⊥ ⊤ = univ := by
+  change (WithBot.some ∘ WithTop.some) ⁻¹' (Icc ⊥ (WithBot.some ⊤)) = _
+  refine preimage_comp.trans ?_
+  simp only [Icc_bot, WithBot.preimage_coe_Iic, Iic_top, preimage_univ]
+
+@[simp]
+lemma preimage_coe_Ico_bot_top : Real.toEReal ⁻¹' Ico ⊥ ⊤ = univ := by
+  change (WithBot.some ∘ WithTop.some) ⁻¹' (Ico ⊥ (WithBot.some ⊤)) = _
+  refine preimage_comp.trans ?_
+  simp only [Ico_bot, WithBot.preimage_coe_Iio, WithTop.preimage_coe_Iio_top]
+
+@[simp]
+lemma preimage_coe_Ioc_bot_top : Real.toEReal ⁻¹' Ioc ⊥ ⊤ = univ := by
+  change (WithBot.some ∘ WithTop.some) ⁻¹' (Ioc ⊥ (WithBot.some ⊤)) = _
+  refine preimage_comp.trans ?_
+  simp only [WithBot.preimage_coe_Ioc_bot, Iic_top, preimage_univ]
+
+@[simp]
+lemma preimage_coe_Ioo_bot_top : Real.toEReal ⁻¹' Ioo ⊥ ⊤ = univ := by
+  change (WithBot.some ∘ WithTop.some) ⁻¹' (Ioo ⊥ (WithBot.some ⊤)) = _
+  refine preimage_comp.trans ?_
+  simp only [WithBot.preimage_coe_Ioo_bot, WithTop.preimage_coe_Iio_top]
+
+@[simp]
+lemma preimage_coe_Ici {x : ℝ} : Real.toEReal ⁻¹' Ici x = Ici x := by
+  change (WithBot.some ∘ WithTop.some) ⁻¹' (Ici (WithBot.some (WithTop.some x))) = _
+  refine preimage_comp.trans ?_
+  simp only [WithBot.preimage_coe_Ici, WithTop.preimage_coe_Ici]
+
+@[simp]
+lemma preimage_coe_Ioi {x : ℝ} : Real.toEReal ⁻¹' Ioi x = Ioi x := by
+  change (WithBot.some ∘ WithTop.some) ⁻¹' (Ioi (WithBot.some (WithTop.some x))) = _
+  refine preimage_comp.trans ?_
+  simp only [WithBot.preimage_coe_Ioi, WithTop.preimage_coe_Ioi]
+
+@[simp]
+lemma preimage_coe_Ici_bot : Real.toEReal ⁻¹' Ici ⊥ = univ := by
+  change (WithBot.some ∘ WithTop.some) ⁻¹' (Ici ⊥) = _
+  refine preimage_comp.trans ?_
+  simp only [Ici_bot, preimage_univ]
+
+@[simp]
+lemma preimage_coe_Ioi_bot : Real.toEReal ⁻¹' Ioi ⊥ = univ := by
+  change (WithBot.some ∘ WithTop.some) ⁻¹' (Ioi ⊥) = _
+  refine preimage_comp.trans ?_
+  simp only [WithBot.preimage_coe_Ioi_bot, preimage_univ]
+
+@[simp]
+lemma preimage_coe_Iic {y : ℝ} : Real.toEReal ⁻¹' Iic y = Iic y := by
+  change (WithBot.some ∘ WithTop.some) ⁻¹' (Iic (WithBot.some (WithTop.some y))) = _
+  refine preimage_comp.trans ?_
+  simp only [WithBot.preimage_coe_Iic, WithTop.preimage_coe_Iic]
+
+@[simp]
+lemma preimage_coe_Iio {y : ℝ} : Real.toEReal ⁻¹' Iio y = Iio y := by
+  change (WithBot.some ∘ WithTop.some) ⁻¹' (Iio (WithBot.some (WithTop.some y))) = _
+  refine preimage_comp.trans ?_
+  simp only [WithBot.preimage_coe_Iio, WithTop.preimage_coe_Iio]
+
+@[simp]
+lemma preimage_coe_Iic_top : Real.toEReal ⁻¹' Iic ⊤ = univ := by
+  change (WithBot.some ∘ WithTop.some) ⁻¹' (Iic (WithBot.some ⊤)) = _
+  refine preimage_comp.trans ?_
+  simp only [WithBot.preimage_coe_Iic, Iic_top, preimage_univ]
+
+@[simp]
+lemma preimage_coe_Iio_top : Real.toEReal ⁻¹' Iio ⊤ = univ := by
+  change (WithBot.some ∘ WithTop.some) ⁻¹' (Iio (WithBot.some ⊤)) = _
+  refine preimage_comp.trans ?_
+  simp only [WithBot.preimage_coe_Iio, WithTop.preimage_coe_Iio_top]
+
 
 /-! ### ennreal coercion -/
 
