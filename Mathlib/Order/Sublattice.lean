@@ -144,9 +144,9 @@ instance instInf : Inf (Sublattice α) where
 /-- The inf of sublattices is their intersection. -/
 instance instInfSet : InfSet (Sublattice α) where
   sInf S := { carrier := ⨅ L ∈ S, L
-              supClosed' := supClosed_sInter $ forall_range_iff.2 $ fun L ↦ supClosed_sInter $
+              supClosed' := supClosed_sInter $ forall_range_iff.2 fun L ↦ supClosed_sInter $
                 forall_range_iff.2 fun _ ↦ L.supClosed
-              infClosed' := infClosed_sInter $ forall_range_iff.2 $ fun L ↦ infClosed_sInter $
+              infClosed' := infClosed_sInter $ forall_range_iff.2 fun L ↦ infClosed_sInter $
                 forall_range_iff.2 fun _ ↦ L.infClosed }
 
 instance instInhabited : Inhabited (Sublattice α) := ⟨⊥⟩

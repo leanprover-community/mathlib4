@@ -120,6 +120,26 @@ theorem card_insert_le (a : α) (s : Finset α) : card (insert a s) ≤ s.card +
   · rw [card_insert_of_not_mem h]
 #align finset.card_insert_le Finset.card_insert_le
 
+section
+
+variable {a b c d e f : α}
+
+theorem card_le_two : card {a, b} ≤ 2 := card_insert_le _ _
+
+theorem card_le_three : card {a, b, c} ≤ 3 :=
+  (card_insert_le _ _).trans (Nat.succ_le_succ card_le_two)
+
+theorem card_le_four : card {a, b, c, d} ≤ 4 :=
+  (card_insert_le _ _).trans (Nat.succ_le_succ card_le_three)
+
+theorem card_le_five : card {a, b, c, d, e} ≤ 5 :=
+  (card_insert_le _ _).trans (Nat.succ_le_succ card_le_four)
+
+theorem card_le_six : card {a, b, c, d, e, f} ≤ 6 :=
+  (card_insert_le _ _).trans (Nat.succ_le_succ card_le_five)
+
+end
+
 /-- If `a ∈ s` is known, see also `Finset.card_insert_of_mem` and `Finset.card_insert_of_not_mem`.
 -/
 theorem card_insert_eq_ite : card (insert a s) = if a ∈ s then s.card else s.card + 1 := by
@@ -398,14 +418,14 @@ theorem surj_on_of_inj_on_of_card_le {t : Finset β} (f : ∀ a ∈ s, β) (hf :
 #align finset.surj_on_of_inj_on_of_card_le Finset.surj_on_of_inj_on_of_card_le
 
 theorem inj_on_of_surj_on_of_card_le {t : Finset β} (f : ∀ a ∈ s, β) (hf : ∀ a ha, f a ha ∈ t)
-    (hsurj : ∀ b ∈ t, ∃ a ha, b = f a ha) (hst : s.card ≤ t.card) ⦃a₁ a₂⦄ (ha₁ : a₁ ∈ s)
+    (hsurj : ∀ b ∈ t, ∃ a ha, f a ha = b) (hst : s.card ≤ t.card) ⦃a₁⦄ (ha₁ : a₁ ∈ s) ⦃a₂⦄
     (ha₂ : a₂ ∈ s) (ha₁a₂ : f a₁ ha₁ = f a₂ ha₂) : a₁ = a₂ :=
   haveI : Inhabited { x // x ∈ s } := ⟨⟨a₁, ha₁⟩⟩
   let f' : { x // x ∈ s } → { x // x ∈ t } := fun x => ⟨f x.1 x.2, hf x.1 x.2⟩
   let g : { x // x ∈ t } → { x // x ∈ s } :=
     @surjInv _ _ f' fun x =>
       let ⟨y, hy₁, hy₂⟩ := hsurj x.1 x.2
-      ⟨⟨y, hy₁⟩, Subtype.eq hy₂.symm⟩
+      ⟨⟨y, hy₁⟩, Subtype.eq hy₂⟩
   have hg : Injective g := injective_surjInv _
   have hsg : Surjective g := fun x =>
     let ⟨y, hy⟩ :=

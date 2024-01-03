@@ -445,11 +445,10 @@ elab_rules : tactic | `(tactic| compute_degree $[!%$bang]?) => focus <| withMain
     | _ => none
   let twoH := twoHeadsArgs gt
   match twoH with
-    | (_, .anonymous, _) => throwError
-        (m!"'compute_degree' inapplicable. The goal{indentD gt}\nis expected to be '≤' or '='.")
-    | (.anonymous, _, _) => throwError
-        (m!"'compute_degree' inapplicable. The LHS must be an application of {
-          ""}'natDegree', 'degree', or 'coeff'.")
+    | (_, .anonymous, _) => throwError m!"'compute_degree' inapplicable. \
+        The goal{indentD gt}\nis expected to be '≤' or '='."
+    | (.anonymous, _, _) => throwError m!"'compute_degree' inapplicable. \
+        The LHS must be an application of 'natDegree', 'degree', or 'coeff'."
     | _ =>
       let lem := dispatchLemma twoH
       trace[Tactic.compute_degree] f!"'compute_degree' first applies lemma '{lem.getString}'"

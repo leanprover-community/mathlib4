@@ -201,7 +201,7 @@ partial def derive (e : Expr) : MetaM Simp.Result := do
   let r := {expr := e}
 
   let pre e := do
-    Simp.andThen (← Simp.preDefault e discharge) <| fun e =>
+    Simp.andThen (← Simp.preDefault e discharge) fun e =>
       try return (Simp.Step.done (← matchAndNorm e))
       catch _ => pure (Simp.Step.visit {expr := e})
   let post e := do

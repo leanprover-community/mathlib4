@@ -349,8 +349,8 @@ def unpackCache (hashMap : HashMap) (force : Bool) : IO Unit := do
 
 /-- Retrieves the azure token from the environment -/
 def getToken : IO String := do
-  let some token ← IO.getEnv "MATHLIB_CACHE_SAS"
-    | throw $ IO.userError "environment variable MATHLIB_CACHE_SAS must be set to upload caches"
+  let some token ← IO.getEnv "MATHLIB_CACHE_S3_TOKEN"
+    | throw $ IO.userError "environment variable MATHLIB_CACHE_S3_TOKEN must be set to upload caches"
   return token
 
 instance : Ord FilePath where

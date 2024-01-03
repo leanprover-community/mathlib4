@@ -317,7 +317,7 @@ theorem sdiff_adj (x y : SimpleGraph V) (v w : V) : (x \ y).Adj v w ↔ x.Adj v 
 instance supSet : SupSet (SimpleGraph V) where
   sSup s :=
     { Adj := fun a b => ∃ G ∈ s, Adj G a b
-      symm := fun a b => Exists.imp $ fun _ => And.imp_right Adj.symm
+      symm := fun a b => Exists.imp fun _ => And.imp_right Adj.symm
       loopless := by
         rintro a ⟨G, _, ha⟩
         exact ha.ne rfl }
