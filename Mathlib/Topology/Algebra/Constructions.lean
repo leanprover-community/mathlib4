@@ -195,8 +195,7 @@ continuous_iff_le_induced.1 (by
 lemma top_eq_iff_cont_inv {α : Type*} [Monoid α] [TopologicalSpace α] :
     TopologicalSpace.induced (Units.coeHom α) inferInstance = Units.instTopologicalSpaceUnits ↔
     @Continuous _ _ (TopologicalSpace.induced (Units.coeHom α) inferInstance)
-      inferInstance (@Units.inv α _) :=
-by
+      inferInstance (@Units.inv α _) := by
   refine' ⟨λ h => _, λ h =>
     le_antisymm (top_eq_if_cont_inv' h) (continuous_iff_le_induced.1 Units.continuous_val)⟩
   rw [h]
