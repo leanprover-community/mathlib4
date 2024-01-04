@@ -77,6 +77,17 @@ lemma Fin.add_lt_left_iff {n : ℕ} {a b : Fin n} : a + b < a ↔ rev b < a := b
   · exact a.elim0
   rw [← Fin.rev_lt_rev, Iff.comm, ← Fin.rev_lt_rev, rev_add, lt_sub_iff, rev_rev]
 
+-- TODO
+@[simp]
+theorem Fin.neg_last (n : ℕ) : -Fin.last n = 1 := by simp [neg_eq_iff_add_eq_zero]
+
+-- TODO
+@[simp]
+lemma Fin.lt_one_iff' {n : ℕ} [hn : NeZero n] (x : Fin (n + 1)) : x < 1 ↔ x = 0 := by
+  cases' n
+  · simp at hn
+  simp [Fin.lt_iff_val_lt_val, Fin.ext_iff]
+
 open Order
 
 namespace DigitExpansion
@@ -844,5 +855,70 @@ lemma single_add_single_of_le (z : Z) (k l : Fin (b + 1)) (h : (b + 1) < k.val +
         simp only [single_apply_of_ne _ _ _ (pred_lt _).ne', single_apply_self]
         refine lt_of_le_of_ne (Fin.zero_le _) ?_
         simp [hb.out]
+
+lemma nsmul_single_eq_single (z : Z) (n : Fin (b + 1)) :
+    n.val • single z 1 = single z n := by
+  induction' hn' : n.val with n' hn generalizing n
+  · simp [zero_nsmul, Fin.ext_iff, hn', eq_comm]
+  have : 1 < b + 1 := Nat.succ_lt_succ (Nat.pos_of_ne_zero hb.out)
+  have H : ((n - 1 : Fin (b + 1)) : ℕ) = n' := by
+    rw [Fin.coe_sub, hn', Fin.val_one', Nat.mod_eq_of_lt this]
+    suffices n' < b + 1 by
+      simp [Nat.succ_eq_add_one, add_right_comm, add_assoc, this]
+    exact n.is_lt.trans_le' (hn'.ge.trans' (Nat.le_succ _))
+  rw [succ_nsmul, hn _ H, eq_comm, ← sub_eq_iff_eq_add]
+  ext x : 1
+  rcases eq_or_ne x z with rfl|hx
+  · simp [DigitExpansion.sub_def]
+  · simp only [DigitExpansion.sub_def, single_apply_of_ne _ _ _ hx.symm, sub_self, zero_sub,
+    neg_eq_zero, difcar_eq_zero_iff, gt_iff_lt]
+    intro y _ hy'
+    rcases eq_or_ne y z with rfl|hz
+    · simp [Fin.lt_iff_val_lt_val, H, hn', (Nat.le_succ _).not_lt] at hy'
+    · simp [single_apply_of_ne _ _ _ hz.symm] at hy'
+
+lemma base_nsmul_single_one_succ_one_eq_single (z : Z) :
+    (b + 1) • single (succ z) (1 : Fin (b + 1)) = single z 1 := by
+  have : b • single (succ z) 1 = (b : Fin (b + 1)).val • single (succ z) (1 : Fin (b + 1)) := by
+    congr
+    simp
+  rw [succ_nsmul, this, nsmul_single_eq_single _ b, eq_comm, ← sub_eq_iff_eq_add]
+  ext x : 1
+  rcases eq_or_ne x (succ z) with rfl|hx
+  · simp only [Fin.cast_nat_eq_last, DigitExpansion.sub_def, ne_eq, pred_eq_iff_isMin, not_isMin,
+    not_false_eq_true, single_apply_of_ne, single_apply_self, zero_sub, Fin.neg_last, sub_eq_self,
+    difcar_eq_zero_iff, gt_iff_lt, (lt_succ z).ne]
+    intro y hy
+    simp [single_apply_of_ne _ _ _ hy.ne]
+  · rcases eq_or_ne x z with rfl|hz
+    · simp only [Fin.cast_nat_eq_last, DigitExpansion.sub_def, single_apply_self,
+      single_apply_of_ne _ _ _ hx.symm, sub_zero]
+      rw [difcar_eq_one_iff.mpr]
+      · simp
+      · refine ⟨succ x, lt_succ _, ?_, ?_⟩
+        · simp [Fin.lt_iff_val_lt_val, Nat.pos_of_ne_zero hb.out,
+                single_apply_of_ne _ _ _ (lt_succ _).ne]
+        · simp only [lt_succ_iff]
+          intro _ h h'
+          exact absurd h h'.not_le
+    · simp only [Fin.cast_nat_eq_last, DigitExpansion.sub_def, ne_eq, hz.symm, not_false_eq_true,
+      single_apply_of_ne, hx.symm, sub_self, zero_sub, neg_eq_zero, difcar_eq_zero_iff]
+      intro y hy hy'
+      have : y = succ z := by
+        contrapose! hy'
+        simp [single_apply_of_ne _ _ _ hy'.symm]
+      subst y
+      refine ⟨z, lt_succ _, ?_, ?_⟩
+      · contrapose! hy
+        rw [succ_le_iff]
+        exact lt_of_le_of_ne hy hz.symm
+      · simp [single_apply_of_ne _ _ _ (pred_lt z).ne']
+
+lemma base_nsmul_single_succ_one_eq_single (z : Z) (n : Fin (b + 1)) :
+    (b + 1) • single (succ z) n = single z n := by
+  have : b • n.val • (single (succ z) (1 : Fin (b + 1))) = n.val • b • (single (succ z) 1) := by
+    rw [← mul_nsmul, mul_nsmul']
+  rw [succ_nsmul, ← nsmul_single_eq_single, nsmul_left_comm, ← nsmul_add,
+      ← nsmul_single_eq_single z, ← base_nsmul_single_one_succ_one_eq_single z, succ_nsmul]
 
 end DigitExpansion

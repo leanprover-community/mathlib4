@@ -179,6 +179,41 @@ protected lemma one_pos : (0 : zStar Z b) < 1 := by
 @[simp]
 lemma val_one_apply_zero : (1 : zStar Z b).val 0 = 1 := if_pos rfl
 
+lemma val_one_apply_ne {z : Z} (hz : z ≠ 0) : (1 : zStar Z b).val z = 0 := if_neg hz.symm
+
+@[simp]
+lemma neg_val_one_apply_zero : (-(1 : zStar Z b).val) 0 = b := by
+  have : ((1 : zStar Z b) + -1).val 0 = 0 := by simp
+  simp only [AddSubmonoid.coe_add, AddSubgroup.coe_toAddSubmonoid,
+    DigitExpansion.add_def, DigitExpansion.sub_def] at this
+  simp only [val_one_apply_zero, zero_apply, zero_sub, sub_neg_eq_add, zero_add, difcar_self,
+  sub_zero] at this
+  rw [sub_sub_eq_add_sub, sub_eq_zero, difcar_eq_zero_iff.mpr, add_zero] at this
+  · nth_rewrite 1 [AddSubgroup.coe_neg] at this
+    simp only [neg_neg, difcar_self, AddSubgroupClass.coe_neg, sub_neg_eq_add] at this
+    rw [add_comm 1, add_eq_zero_iff_eq_neg] at this
+    simp [this, neg_eq_iff_add_eq_zero, add_comm]
+  · simp only [gt_iff_lt, zero_apply, Fin.not_lt_zero, and_false, exists_const, imp_false,
+    not_lt, Fin.le_zero_iff]
+    intro x hx
+    exact (_ : zStar Z b).prop.right _ hx
+
+lemma neg_val_one_apply_of_le {z : Z} (hz : z ≤ 0) : (-(1 : zStar Z b).val) z = b := by
+  have : ((1 : zStar Z b) + -1).val z = 0 := by simp
+  simp only [AddSubmonoid.coe_add, AddSubgroup.coe_toAddSubmonoid,
+    DigitExpansion.add_def, DigitExpansion.sub_def] at this
+  rcases hz.eq_or_lt with rfl|hz
+  · simp
+  · simp only [ne_eq, hz.ne, not_false_eq_true, val_one_apply_ne, zero_apply, zero_sub, neg_sub,
+    AddSubgroupClass.coe_neg, sub_neg_eq_add, zero_add, difcar_self, sub_zero] at this
+    rw [add_eq_zero_iff_neg_eq] at this
+    rcases difcar_eq_zero_or_one 0 (-(1 : zStar Z b).val) z with hd|hd
+    · rw [difcar_eq_zero_iff] at hd
+      specialize hd 0 hz
+      simp [Fin.ext_iff, hb.out] at hd
+    rw [← this, hd]
+    simp [neg_eq_iff_add_eq_zero, add_comm]
+
 instance : ZeroLEOneClass (zStar Z b) where
   zero_le_one := zStar.one_pos.le
 
@@ -257,13 +292,6 @@ lemma exists_greatest_pos_of_ne_zero {a : zStar Z b} (h : a ≠ 0) :
   · rw [← hk]
     exact succ_iterate_strict_mono key _
 
--- TODO
-@[simp]
-lemma Fin.lt_one_iff' {n : ℕ} [hn : NeZero n] (x : Fin (n + 1)) : x < 1 ↔ x = 0 := by
-  cases' n
-  · simp at hn
-  simp [Fin.lt_iff_val_lt_val, Fin.ext_iff]
-
 lemma one_le_iff_pos {x : zStar Z b} :
     1 ≤ x ↔ 0 < x := by
   constructor
@@ -280,22 +308,22 @@ lemma one_le_iff_pos {x : zStar Z b} :
       · refine Or.inl ?_
         ext y
         rcases lt_trichotomy y 0 with hy|rfl|hy
-        · simp [zStar.one_def, single_apply_of_ne _ _ _ hy.ne', hz' _ hy]
-        · simp [zStar.one_def, hx']
-        · simp [zStar.one_def, single_apply_of_ne _ _ _ hy.ne, x.prop.right _ hy]
+        · simp [val_one_apply_ne, hy.ne, hz' _ hy]
+        · simp [hx']
+        · simp [val_one_apply_ne, hy.ne', x.prop.right _ hy]
       · refine Or.inr ⟨?_, 0, ?_⟩
         · rw [sub_ne_zero]
           simp only [SetLike.coe_eq_coe, FunLike.ne_iff]
           refine ⟨0, ?_⟩
-          simp [zStar.one_def, hx']
+          simp [hx']
         · intro y hy
-          simp only [zStar.one_def, val_single, DigitExpansion.sub_def, hz' _ hy, ne_eq, hy.ne',
+          simp only [val_one_apply_ne, hy.ne, DigitExpansion.sub_def, hz' _ hy, ne_eq, hy.ne',
             not_false_eq_true, single_apply_of_ne, sub_self, zero_sub, neg_eq_zero,
             difcar_eq_zero_iff, gt_iff_lt]
           intro w
           rcases eq_or_ne w 0 with rfl|hw
           · simp [zpos.ne']
-          · simp [single_apply_of_ne _ _ _ hw.symm]
+          · simp [val_one_apply_ne, hw]
     · refine Or.inr ⟨?_, z, ?_⟩
       · rw [sub_ne_zero]
         simp only [SetLike.coe_eq_coe, FunLike.ne_iff]
@@ -372,6 +400,73 @@ instance : PredOrder (zStar Z b) where
     contrapose! h
     simp only [le_sub_iff_add_le, ge_iff_le]
     exact succ_le_of_lt h
+
+lemma single_eq_nsmul_one {x : Z} (k : ℕ) (hk : succ^[k] x = 0) (n : Fin (b + 1))
+    (hx : x ≤ 0 := hk.le.trans' (succ_iterate_mono (Nat.zero_le k) x)) :
+    single hx n = (((b + 1) ^ k) * n.val) • 1 := by
+  induction' k with k IH generalizing x n
+  · simp only [Nat.zero_eq, Function.iterate_zero, id_eq] at hk
+    simp [Subtype.ext_iff, zStar.one_def, nsmul_single_eq_single, hk]
+  · specialize @IH (succ x) _ n _
+    · simp [← hk, Function.iterate_succ']
+    · simp only [← hk, Function.iterate_succ, Function.comp_apply, succ_le_iff]
+      exact (lt_succ _).trans_le (succ_iterate_mono (Nat.zero_le k) _)
+    rw [pow_succ, mul_assoc, mul_comm, mul_nsmul, ← IH]
+    simp [Subtype.ext_iff, base_nsmul_single_succ_one_eq_single]
+
+instance : IsSuccArchimedean (zStar Z b) where
+  exists_succ_iterate_of_le := by
+    intro x y h
+    suffices ∃ k : ℕ, x + k • 1 = y by
+      clear h
+      obtain ⟨k, rfl⟩ := this
+      induction' k with k IH generalizing x
+      · refine ⟨0, ?_⟩
+        simp
+      · obtain ⟨k', hk'⟩ := @IH (x + 1)
+        refine ⟨k' + 1, ?_⟩
+        simpa [succ_nsmul, ← add_assoc] using hk'
+    rcases h.eq_or_lt with rfl|h
+    · exact ⟨0, by simp⟩
+    replace h : 0 < y - x := by simp [h]
+    rw [← positive_iff] at h
+    obtain ⟨z, zpos, hz⟩ := h.exists_least_pos
+    have negz : z ≤ 0 := by
+      contrapose! zpos
+      rw [(y - x).prop.right _ zpos]
+    obtain ⟨k, hk⟩ := exists_succ_iterate_of_le negz
+    clear h zpos negz
+    clear h
+    induction' k with k IH generalizing x y z
+    · simp only [Nat.zero_eq, Function.iterate_zero, id_eq] at hk
+      subst hk
+      refine ⟨(y - x).val 0, ?_⟩
+      rw [eq_comm, ← sub_eq_iff_eq_add']
+      convert single_eq_nsmul_one 0 rfl ((y - x).val 0) _
+      · ext z : 2
+        rcases lt_trichotomy 0 z with h|rfl|h
+        · rw [(_ : zStar Z b).prop.right _ h, (_ : zStar Z b).prop.right _ h]
+          simp
+        · simp
+        · rw [val_single, single_apply_of_ne _ _ _ h.ne', hz _ h]
+      · simp
+    · have hz' : z ≤ 0 := by
+        rw [← hk]
+        exact succ_iterate_mono (Nat.zero_le _) _
+      suffices key : ∀ w < succ z, (y - x - single hz' ((y - x).val z)).val w = 0 by
+        obtain ⟨l, hl⟩ := @IH (single hz' ((y - x).val z)) (y - x) (succ z) key hk
+        rw [eq_comm, sub_eq_iff_eq_add, single_eq_nsmul_one (k + 1) hk, ← add_nsmul, add_comm] at hl
+        exact ⟨_, hl.symm⟩
+      intro w hw
+      simp only [lt_succ_iff] at hw
+      rcases hw.eq_or_lt with rfl|hw
+      · simp only [AddSubgroupClass.coe_sub, DigitExpansion.sub_def, val_single, single_apply_self,
+        sub_self, zero_sub, neg_eq_zero, difcar_eq_zero_iff, gt_iff_lt]
+        intro u hu hu'
+        rw [single_apply_of_ne _ _ _ hu.ne] at hu'
+        exact absurd (Fin.zero_le _) hu'.not_le
+      · rw [AddSubgroupClass.coe_sub, DigitExpansion.sub_def, hz _ hw, zero_sub]
+        simp [single_apply_of_ne _ _ _ hw.ne']
 
 end zStar
 
