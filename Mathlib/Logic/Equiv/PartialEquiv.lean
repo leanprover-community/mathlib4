@@ -148,7 +148,7 @@ instance [Inhabited α] [Inhabited β] : Inhabited (PartialEquiv α β) :=
       eqOn_empty _ _⟩⟩
 
 /-- The inverse of a partial equivalence -/
-@[symm, pp_dot]
+@[symm]
 protected def symm : PartialEquiv β α where
   toFun := e.invFun
   invFun := e.toFun
@@ -676,7 +676,7 @@ theorem ofSet_symm (s : Set α) : (PartialEquiv.ofSet s).symm = PartialEquiv.ofS
 
 /-- Composing two partial equivs if the target of the first coincides with the source of the
 second. -/
-@[simps, pp_dot]
+@[simps]
 protected def trans' (e' : PartialEquiv β γ) (h : e.target = e'.source) : PartialEquiv α γ where
   toFun := e' ∘ e
   invFun := e.symm ∘ e'.symm
@@ -690,7 +690,7 @@ protected def trans' (e' : PartialEquiv β γ) (h : e.target = e'.source) : Part
 
 /-- Composing two partial equivs, by restricting to the maximal domain where their composition
 is well defined. -/
-@[trans, pp_dot]
+@[trans]
 protected def trans : PartialEquiv α γ :=
   PartialEquiv.trans' (e.symm.restr e'.source).symm (e'.restr e.target) (inter_comm _ _)
 #align local_equiv.trans PartialEquiv.trans
