@@ -20,7 +20,7 @@ Define the Gamma Measure over the Reals
 * `gammaPdf`: `ℝ≥0∞`-valued pdf,
   `gammaPdf a r = ENNReal.ofReal (gammaPdfReal a r)`.
 * `gammaMeasure`: a Gamma measure on `ℝ`, parametrized by its shape `a` and rate `r`.
-* `gammaCdfReal`: the Cdf given by the Definition of CDF in `ProbabilityTheory.Cdf` on `ℝ`.
+* `gammaCdfReal`: the CDF given by the definition of CDF in `ProbabilityTheory.Cdf` applied to the Gamma measure.
 
 ## Main results
 * `gammaCdfReal_eq`: Proof that the `gammaCdfReal` given by the Definition equals the
@@ -63,7 +63,7 @@ noncomputable
 def gammaPdfReal (a r x : ℝ) : ℝ :=
   if 0 ≤ x then r ^ a / (Gamma a) * x ^ (a-1) * exp (-(r * x)) else 0
 
-/-- The PDF of the gamma Distribution on the extended real Numbers-/
+/-- The PDF of the Gamma distribution, as a function valued in `ℝ≥0∞` -/
 noncomputable
 def gammaPdf (a r x : ℝ) : ℝ≥0∞ :=
   ENNReal.ofReal (gammaPdfReal a r x)
@@ -79,7 +79,7 @@ lemma gammaPdf_of_nonneg {a r x : ℝ} (hx : 0 ≤ x) :
     gammaPdf a r x = ENNReal.ofReal (r ^ a / (Gamma a) * x ^ (a-1) * exp (-(r * x))) := by
   simp only [gammaPdf_eq, if_pos hx]
 
-/-- the Lebesgue integral of the gamma PDF over nonpositive reals equals 0-/
+/-- the Lebesgue integral of the Gamma PDF over nonpositive reals equals 0 -/
 lemma lintegral_gammaPdf_of_nonpos {x a r : ℝ} (hx : x ≤ 0) :
     ∫⁻ y in Iio x, gammaPdf a r y = 0 := by
   rw [set_lintegral_congr_fun (g := fun _ ↦ 0) measurableSet_Iio]
@@ -92,13 +92,13 @@ lemma measurable_gammaPdfReal (a r : ℝ) : Measurable (gammaPdfReal a r) :=
   Measurable.ite measurableSet_Ici (((measurable_id'.pow_const _).const_mul _).mul
     (measurable_id'.const_mul _).neg.exp) measurable_const
 
-/-- the gamma Pdf is positive for all positive reals-/
+/-- the Gamma PDF is positive for all positive reals -/
 lemma gammaPdfReal_pos {x a r : ℝ} (ha : 0 < a) (hr : 0 < r) (hx : 0 < x) :
     0 < gammaPdfReal a r x := by
   simp only [gammaPdfReal, if_pos hx.le]
   positivity
 
-/-- The gamma Pdf is nonnegative-/
+/-- The Gamma PDF is nonnegative -/
 lemma gammaPdfReal_nonneg {a r : ℝ} (ha : 0 < a) (hr : 0 < r) (x : ℝ) :
     0 ≤ gammaPdfReal a r x := by
   unfold gammaPdfReal
@@ -124,7 +124,7 @@ lemma pow_exp_integral_Ioi_insert_1 {a r : ℝ} (ha : 0 < a) (hr : 0 < r) :
 
 open Measure
 
-/-- The Pdf of the gamma Distribution integrates to 1-/
+/-- The PDF of the Gamma distribution integrates to 1 -/
 @[simp]
 lemma lintegral_gammaPdf_eq_one (a r : ℝ) (ha : 0 < a) (hr : 0 < r) :
     ∫⁻ x, gammaPdf a r x = 1 := by
@@ -162,7 +162,7 @@ end GammaPdf
 
 open MeasureTheory
 
-/-- Measure defined by the Gamma Distribution -/
+/-- Measure defined by the Gamma distribution -/
 noncomputable
 def gammaMeasure (a r : ℝ) : Measure ℝ :=
   volume.withDensity (gammaPdf a r)
@@ -173,7 +173,7 @@ lemma IsProbabilityMeasureGamma {a r : ℝ} (ha : 0 < a) (hr : 0 < r) :
 
 section GammaCdf
 
-/-- CDF of the Gamma Distribution -/
+/-- CDF of the Gamma distribution -/
 noncomputable
 def gammaCdfReal (a r : ℝ) : StieltjesFunction :=
   cdf (gammaMeasure a r)
@@ -183,8 +183,8 @@ lemma gammaCdfReal_eq_integral (a r x : ℝ) (ha : 0 < a) (hr : 0 < r) :
   have : IsProbabilityMeasure (gammaMeasure a r) := IsProbabilityMeasureGamma ha hr
   rw [gammaCdfReal, cdf_eq_toReal, gammaMeasure, withDensity_apply _ measurableSet_Iic]
   refine (integral_eq_lintegral_of_nonneg_ae ?_ ?_).symm
-  · exact ae_of_all _ fun b ↦ by simp [Pi.zero_apply, gammaPdfReal_nonneg ha hr]
-  · exact (Measurable.aestronglyMeasurable (measurable_gammaPdfReal a r)).restrict
+  · exact ae_of_all _ fun b ↦ by simp only [Pi.zero_apply, gammaPdfReal_nonneg ha hr]
+  · exact (measurable_gammaPdfReal a r).aestronglyMeasurable.restrict
 
 lemma gammaCdfReal_eq_lintegral (a r x : ℝ) (ha : 0 < a) (hr : 0 < r) :
     gammaCdfReal a r x = ENNReal.toReal (∫⁻ x in Iic x, gammaPdf a r x) := by
