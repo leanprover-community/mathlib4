@@ -389,7 +389,7 @@ theorem Gamma_conj (s : ℂ) : Gamma (conj s) = conj (Gamma s) := by
     rw [RingHom.map_add, RingHom.map_one]
 #align complex.Gamma_conj Complex.Gamma_conj
 
-/-- Expresses the integral over Ioi 0 of t^(a-1) * exp(-r*t) in terms of the Gamma function,
+/-- Expresses the integral over Ioi 0 of t ^ (a - 1) * exp(- r * t) in terms of the Gamma function,
 for complex a. -/
 lemma integral_cpow_mul_exp_neg_mul_Ioi {a : ℂ} {r : ℝ} (ha : 0 < a.re) (hr : 0 < r) :
     ∫ (t : ℝ) in Ioi 0, t ^ (a - 1) * Complex.exp (-(r * t))
@@ -618,11 +618,25 @@ theorem Gamma_nonneg_of_nonneg {s : ℝ} (hs : 0 ≤ s) : 0 ≤ Gamma s := by
 
 /-- Expresses the integral over Ioi 0 of t^(a-1) * exp(-r*t) in terms of the Gamma function. -/
 lemma integral_rpow_mul_exp_neg_mul_Ioi {a r : ℝ} (ha : 0 < a) (hr : 0 < r) :
-    ∫ (t : ℝ) in Ioi 0, t ^ (a - 1) * exp (-(r * t))
-    = (1 / r) ^ a * Gamma (a) := by
+    ∫ (t : ℝ) in Ioi 0, t ^ (a - 1) * rexp (-(r * t))
+    = (1 / r) ^ a * Real.Gamma (a) := by
   have hac : 0 < (a : ℂ).re := ha
-  have := Complex.integral_cpow_mul_exp_neg_mul_Ioi hac hr
-  sorry
+  apply_fun Complex.ofReal' using Complex.ofReal_injective
+  convert Complex.integral_cpow_mul_exp_neg_mul_Ioi hac hr
+  · trans ∫ (t : ℝ) in Ioi 0, ((t ^ (a - 1) * rexp (-(r * t)) : ℝ) : ℂ)
+    · apply symm
+      apply _root_.integral_ofReal
+    · refine integral_congr_ae ?_
+      refine EqOn.eventuallyEq_of_mem ?_ (self_mem_ae_restrict measurableSet_Ioi)
+      intro x hx
+      simp at hx
+      simp only
+      norm_cast
+      rw [← Complex.ofReal_cpow hx.le, ← Complex.ofReal_mul]
+  · norm_cast
+    simp only [Complex.Gamma_ofReal]
+    rw [← Complex.ofReal_cpow, ← Complex.ofReal_mul]
+    positivity
 
 open Lean.Meta Qq in
 /-- The `positivity` extension which identifies expressions of the form `Gamma a`. -/
