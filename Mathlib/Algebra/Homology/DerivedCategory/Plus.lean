@@ -1,6 +1,7 @@
 import Mathlib.Algebra.Homology.HomotopyCategory.Plus
 import Mathlib.Algebra.Homology.HomotopyCategory.KInjective
 import Mathlib.Algebra.Homology.DerivedCategory.TStructure
+import Mathlib.CategoryTheory.Shift.SingleFunctorsLift
 
 open CategoryTheory Category Triangulated Limits
 
@@ -248,6 +249,20 @@ instance : Qh.IsLocalization (HomotopyCategory.Plus.qis C) := by
   exact Functor.IsLocalization.of_equivalence_target
     (HomotopyCategory.Plus.subcategoryAcyclic C).W.Q (HomotopyCategory.Plus.subcategoryAcyclic C).W Qh
     (QhIsLocalization.π C).asEquivalence (Localization.fac _ _ _)
+
+noncomputable def singleFunctors : SingleFunctors C (Plus C) ℤ :=
+  SingleFunctors.lift (DerivedCategory.singleFunctors C) Plus.ι
+      (fun n => t.plus.lift (DerivedCategory.singleFunctor C n) (fun X => by
+        refine' ⟨n, _⟩
+        constructor
+        change ((singleFunctor C n).obj X).IsGE n
+        infer_instance))
+      (fun n => Iso.refl _)
+
+noncomputable abbrev singleFunctor (n : ℤ) : C ⥤ Plus C := (singleFunctors C).functor n
+
+noncomputable def homologyFunctor (n : ℤ) : Plus C ⥤ C :=
+    Plus.ι ⋙ DerivedCategory.homologyFunctor C n
 
 end Plus
 

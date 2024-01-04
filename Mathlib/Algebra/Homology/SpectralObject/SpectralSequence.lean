@@ -500,19 +500,10 @@ noncomputable def mk₃π :=
     (f₃ data pq' i₁ i₂ hi₁ hi₂) (f₄ data r hr pq' i₂ i₃ hi₂ hi₃)
     (f₅ data r r' hrr' hr pq' i₃ i₃' hi₃ hi₃') _ rfl
 
---noncomputable def mk₃ι :=
---  fourδ₁Toδ₀ (f₁ data r r' hrr' hr pq' i₀' i₀ hi₀' hi₀) (f₂ data r hr pq' i₀ i₁ hi₀ hi₁) (f₃ data pq' i₁ i₂ hi₁ hi₂)
---    (f₄ data r hr pq' i₂ i₃ hi₂ hi₃ ≫ f₅ data r r' hrr' hr pq' i₃ i₃' hi₃ hi₃') _ rfl
-
 instance : Epi (X.EMap n₀ n₁ n₂ hn₁ hn₂ _ _ _ _ _ _
     (mk₃π data r r' hrr' hr pq' i₀' i₀ i₁ i₂ i₃ i₃' hi₀' hi₀ hi₁ hi₂ hi₃ hi₃')) := by
   dsimp only [mk₃π]
   infer_instance
-
---instance : Mono (X.EMap n₀ n₁ n₂ hn₁ hn₂ _ _ _ _ _ _
---    (mk₃ι data r r' hrr' hr pq' i₀' i₀ i₁ i₂ i₃ i₃' hi₀' hi₀ hi₁ hi₂ hi₃ hi₃')) := by
---  dsimp only [mk₃ι]
---  infer_instance
 
 lemma mk₃fac :
     fourδ₁Toδ₀' i₀' i₀ i₁ i₂ i₃ (le₀'₀ data hrr' hr pq' hi₀' hi₀)

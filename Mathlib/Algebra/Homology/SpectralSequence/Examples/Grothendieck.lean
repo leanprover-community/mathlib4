@@ -13,6 +13,7 @@ noncomputable def grothendieckSpectralSequence : E₂CohomologicalSpectralSequen
   TStructure.spectralSequence t (F.obj ((singleFunctor A 0).obj X))
     (G ⋙ DerivedCategory.homologyFunctor C 0)
 
+/-- Computation of `E₂^{p,q}` of the Grothendieck spectral sequence -/
 noncomputable def grothendieckSpectralSequenceE₂Iso (pq : ℤ × ℤ) :
   (grothendieckSpectralSequence F G X).page 2 pq ≅
     (singleFunctor A 0 ⋙ F ⋙ homologyFunctor B pq.2 ⋙

@@ -221,6 +221,7 @@ instance : Mono ((lowDegreesComposableArrows hE).map' 0 1) := by
   infer_instance
 
 open LowDegreesExactSequence in
+/-- The exact sequence `0 → E₂¹⁰ → X¹ → E₂⁰¹ → E₂²⁰ → X²` -/
 lemma lowDegreesComposableArrows_exact :
     (lowDegreesComposableArrows hE).Exact := by
   apply ComposableArrows.exact_of_δlast

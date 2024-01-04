@@ -253,12 +253,16 @@ instance : F.rightDerivedFunctorPlus.IsRightDerivedFunctor F.rightDerivedFunctor
   dsimp only [rightDerivedFunctorPlus, rightDerivedFunctorPlusUnit]
   infer_instance
 
-end
-
-instance [EnoughInjectives C] (X : HomotopyCategory.Plus (Injectives C)) :
+instance (X : HomotopyCategory.Plus (Injectives C)) :
     IsIso (F.rightDerivedFunctorPlusUnit.app ((Injectives.ι C).mapHomotopyCategoryPlus.obj X)) := by
   dsimp only [rightDerivedFunctorPlus, rightDerivedFunctorPlusUnit]
   infer_instance
+
+noncomputable def rightDerived (n : ℕ) : C ⥤ D :=
+  DerivedCategory.Plus.singleFunctor C 0 ⋙ F.rightDerivedFunctorPlus ⋙
+    DerivedCategory.Plus.homologyFunctor D n
+
+end
 
 end Functor
 
