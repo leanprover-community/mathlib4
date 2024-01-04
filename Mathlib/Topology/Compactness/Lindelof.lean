@@ -70,7 +70,7 @@ theorem IsLindelof.compl_mem_sets_of_nhdsWithin (hs : IsLindelof s) {f : Filter 
 /-- If `p : Set X → Prop` is stable under restriction and union, and each point `x`
   of a Lindelöf set `s` has a neighborhood `t` within `s` such that `p t`, then `p s` holds. -/
 @[elab_as_elim]
-theorem IsLindelof.induction_on (hs : IsLindelof s) {p : Set X → Prop} (he : p ∅)
+theorem IsLindelof.induction_on (hs : IsLindelof s) {p : Set X → Prop}
     (hmono : ∀ ⦃s t⦄, s ⊆ t → p t → p s)
     (hcountable_union : ∀ (S : Set (Set X)), S.Countable → (∀ s ∈ S, p s) → p (⋃ s ∈ S, s))
     (hnhds : ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, p t) : p s := by
@@ -159,7 +159,7 @@ theorem IsLindelof.elim_countable_subcover {ι : Type v} (hs : IsLindelof s) (U 
     refine ⟨U i, mem_nhdsWithin_of_mem_nhds ((hUo i).mem_nhds hi),{i}, by simp, ?_⟩
     simp only [mem_singleton_iff, iUnion_iUnion_eq_left]
     exact Subset.refl _
-  exact hs.induction_on he hmono hcountable_union h_nhds
+  exact hs.induction_on hmono hcountable_union h_nhds
 
 theorem IsLindelof.elim_nhds_subcover' (hs : IsLindelof s) (U : ∀ x ∈ s, Set X)
     (hU : ∀ x (hx : x ∈ s), U x ‹x ∈ s› ∈ 𝓝 x) :
