@@ -36,11 +36,6 @@ example (K L M : List α) (w : L.Disjoint M) (m : K ⊆ L) : True := by
 
 set_option autoImplicit true
 
-/-- Visualize an `Except` using a checkmark or a cross. -/
-private def Except.emoji {ε α} : Except ε α → String
-  | .error _ => Lean.crossEmoji
-  | .ok _ => Lean.checkEmoji
-
 namespace Mathlib.Tactic.Propose
 
 open Lean Meta Std.Tactic TryThis

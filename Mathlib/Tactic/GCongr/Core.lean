@@ -121,11 +121,6 @@ example {a b x c d : ℝ} (h1 : a ≤ b) (h2 : c ≤ d) :
 The `rel` tactic is finishing-only: if fails if any main or side goals are not resolved.
 -/
 
-/-- Visualize an `Except` using a checkmark or a cross. -/
-private def Except.emoji {ε α} : Except ε α → String
-  | .error _ => Lean.crossEmoji
-  | .ok _ => Lean.checkEmoji
-
 namespace Mathlib.Tactic.GCongr
 open Lean Meta
 
