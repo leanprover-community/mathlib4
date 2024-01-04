@@ -56,7 +56,7 @@ The main role of this property is to ensure that the differential within `s` at 
 hence this name. The uniqueness it asserts is proved in `UniqueDiffWithinAt.eq` in `Fderiv.Basic`.
 To avoid pathologies in dimension 0, we also require that `x` belongs to the closure of `s` (which
 is automatic when `E` is not `0`-dimensional). -/
-@[mk_iff uniqueDiffWithinAt_iff]
+@[mk_iff]
 structure UniqueDiffWithinAt (s : Set E) (x : E) : Prop where
   dense_tangentCone : Dense (Submodule.span 𝕜 (tangentConeAt 𝕜 s x) : Set E)
   mem_closure : x ∈ closure s
