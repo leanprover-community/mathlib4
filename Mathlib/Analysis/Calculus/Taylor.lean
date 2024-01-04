@@ -335,7 +335,7 @@ theorem taylor_mean_remainder_bound {f : ℝ → E} {a b C x : ℝ} {n : ℕ} (h
     gcongr
     · rw [abs_mul, abs_pow, abs_inv, Nat.abs_cast]
       gcongr
-      rw [abs_of_nonneg, abs_of_nonneg] <;> linarith
+      exact sub_nonneg.2 hyx.le
     -- Estimate the iterated derivative by `C`
     · exact hC y ⟨hay, hyx.le.trans hx.2⟩
   -- Apply the mean value theorem for vector valued functions:
