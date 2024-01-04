@@ -287,7 +287,7 @@ def allExist (paths : List (FilePath × Bool)) : IO Bool := do
   pure true
 
 /-- Compresses build files into the local cache and returns an array with the compressed files -/
-def packCache (hashMap : HashMap) (overwrite : Bool) (comment : Option String := none) :
+def packCache (hashMap : HashMap) (overwrite verbose : Bool) (comment : Option String := none) :
     IO $ Array String := do
   mkDir CACHEDIR
   IO.println "Compressing cache"
@@ -306,10 +306,14 @@ def packCache (hashMap : HashMap) (overwrite : Bool) (comment : Option String :=
             | unreachable!
           runCmd (← getLeanTar) $ #[zipPath.toString, trace] ++
             (if let some c := comment then #["-c", s!"git=mathlib4@{c}"] else #[]) ++ args
-      acc := acc.push zip
+      acc := acc.push (path, zip)
   for task in tasks do
     _ ← IO.ofExcept task.get
-  return acc
+  acc := acc.qsort (·.1.1 < ·.1.1)
+  if verbose then
+    for (path, zip) in acc do
+      println! "packing {path} as {zip}"
+  return acc.map (·.2)
 
 /-- Gets the set of all cached files -/
 def getLocalCacheSet : IO $ Lean.RBTree String compare := do
