@@ -9,7 +9,7 @@ import Mathlib.Data.MvPolynomial.CommRing
 /-!
 # Jacobian coordinates for Weierstrass curves
 
-This file defines the type of points on a Weierstrass curve as a tuple, consisting of a equivalence
+This file defines the type of points on a Weierstrass curve as a tuple, consisting of an equivalence
 class of triples up to scaling by weights, satisfying a Weierstrass equation with a nonsingular
 condition. This file also defines the negation and addition operations of the group law for this
 type, and proves that they respect the Weierstrass equation and the nonsingular condition. The fact
