@@ -119,26 +119,6 @@ lemma root_X_pow_sub_C_ne_zero_iff {n : ℕ} {a : K} (H : Irreducible (X ^ n - C
     (AdjoinRoot.root (X ^ n - C a)) ≠ 0 ↔ a ≠ 0 :=
   (root_X_pow_sub_C_eq_zero_iff H).not
 
--- Mathlib/Algebra/GroupWithZero/Power.lean
-theorem mem_range_pow_of_coprime_of_pow_mem_range_pow {G₀} [CommGroupWithZero G₀] {m n : ℕ}
-    (hmn : m.Coprime n) (a : G₀) :
-    a ^ m ∈ Set.range (· ^ n : G₀ → G₀) ↔ a ∈ Set.range (· ^ n : G₀ → G₀) := by
-  constructor
-  · obtain ⟨k, l, e⟩ := Nat.isCoprime_iff_coprime.mpr hmn
-    by_cases hn : n = 0
-    · simp only [hn, Nat.coprime_zero_right] at hmn
-      rw [hmn, pow_one]
-      exact id
-    by_cases ha' : a = 0
-    · exact fun _ ↦ ⟨0, by simpa only [ha', zero_pow_eq_zero, pos_iff_ne_zero]⟩
-    intro ⟨x, hx⟩
-    use x ^ k * a ^ l
-    conv_rhs => rw [← zpow_one a, ← e]
-    simp only [← zpow_ofNat, mul_zpow, zpow_add₀ ha', ← zpow_mul, mul_comm k]
-    rw [zpow_mul, zpow_ofNat, zpow_mul a m, zpow_ofNat, ← hx]
-  · rintro ⟨x, rfl⟩
-    exact ⟨x ^ m, by simp [← pow_mul, mul_comm m n]⟩
-
 theorem pow_ne_of_irreducible_X_pow_sub_C {n : ℕ} {a : K}
     (H : Irreducible (X ^ n - C a)) {m : ℕ} (hm : m ∣ n) (hm' : m ≠ 1) (b : K) : b ^ m ≠ a := by
   have hn : n ≠ 0 := fun e ↦ not_irreducible_C
@@ -155,54 +135,6 @@ theorem pow_ne_of_irreducible_X_pow_sub_C {n : ℕ} {a : K}
     Nat.pos_iff_ne_zero.mpr (mul_ne_zero_iff.mp hn).2, degree_mul, ← map_pow, add_zero,
     Nat.cast_injective.eq_iff] at hq
   exact hm' ((mul_eq_right₀ (mul_ne_zero_iff.mp hn).2).mp hq)
-
-open FiniteDimensional in
-theorem Polynomial.irreducible_comp {f g : K[X]} (hfm : f.Monic) (hgm : g.Monic)
-    (hf : Irreducible f)
-    (hg : ∀ (E : Type u) [Field E] [Algebra K E] (x : E) (hx : minpoly K x = f),
-      Irreducible (g.map (algebraMap _ _) - C (AdjoinSimple.gen K x))) :
-    Irreducible (f.comp g) := by
-  have hf' : natDegree f ≠ 0 :=
-    fun e ↦ not_irreducible_C (f.coeff 0) (eq_C_of_natDegree_eq_zero e ▸ hf)
-  have hg' : natDegree g ≠ 0
-  · have := Fact.mk hf
-    intro e
-    apply not_irreducible_C ((g.map (algebraMap _ _)).coeff 0 - AdjoinSimple.gen K (root f))
-    rw [map_sub, coeff_map, ← map_C, ← eq_C_of_natDegree_eq_zero e]
-    apply hg
-    rw [AdjoinRoot.minpoly_root hf.ne_zero, hfm, inv_one, map_one, mul_one]
-  have H₁ : f.comp g ≠ 0 := fun h ↦ by simpa [hf', hg', natDegree_comp] using congr_arg natDegree h
-  have H₂ : ¬ IsUnit (f.comp g) := fun h ↦
-    by simpa [hf', hg', natDegree_comp] using natDegree_eq_zero_of_isUnit h
-  have ⟨p, hp₁, hp₂⟩ := WfDvdMonoid.exists_irreducible_factor H₂ H₁
-  suffices natDegree p = natDegree f * natDegree g from (associated_of_dvd_of_natDegree_le hp₂ H₁
-    (this.trans natDegree_comp.symm).ge).irreducible hp₁
-  have := Fact.mk hp₁
-  let Kx := AdjoinRoot p
-  letI := (AdjoinRoot.powerBasis hp₁.ne_zero).finiteDimensional
-  have key₁ : f = minpoly K (aeval (root p) g)
-  · refine minpoly.eq_of_irreducible_of_monic hf ?_ hfm
-    rw [← aeval_comp]
-    exact aeval_eq_zero_of_dvd_aeval_eq_zero hp₂ (AdjoinRoot.eval₂_root p)
-  have key₁' : finrank K K⟮aeval (root p) g⟯ = natDegree f
-  · rw [adjoin.finrank, ← key₁]
-    exact IsIntegral.of_finite _ _
-  have key₂ : g.map (algebraMap _ _) - C (AdjoinSimple.gen K (aeval (root p) g)) =
-      minpoly K⟮aeval (root p) g⟯ (root p)
-  · exact minpoly.eq_of_irreducible_of_monic (hg _ _ key₁.symm) (by simp [AdjoinSimple.gen])
-      (Monic.sub_of_left (hgm.map _) (degree_lt_degree (by simpa [Nat.pos_iff_ne_zero] using hg')))
-  have key₂' : finrank K⟮aeval (root p) g⟯ Kx = natDegree g
-  · trans natDegree (minpoly K⟮aeval (root p) g⟯ (root p))
-    · have : K⟮aeval (root p) g⟯⟮root p⟯ = ⊤
-      · apply restrictScalars_injective K
-        rw [restrictScalars_top, adjoin_adjoin_left, Set.union_comm, ← adjoin_adjoin_left,
-          adjoin_root_eq_top p, restrictScalars_adjoin]
-        simp
-      rw [← finrank_top', ← this, adjoin.finrank]
-      exact IsIntegral.of_finite _ _
-    · simp [← key₂]
-  have := FiniteDimensional.finrank_mul_finrank K K⟮aeval (root p) g⟯ Kx
-  rwa [key₁', key₂', (AdjoinRoot.powerBasis hp₁.ne_zero).finrank, powerBasis_dim, eq_comm] at this
 
 theorem X_pow_sub_C_irreducible_of_prime {p : ℕ} (hp : p.Prime) {a : K} (ha : ∀ b : K, b ^ p ≠ a) :
     Irreducible (X ^ p - C a) := by
@@ -232,7 +164,7 @@ theorem X_pow_sub_C_irreducible_of_prime {p : ℕ} (hp : p.Prime) {a : K} (ha : 
   have : p.Coprime (natDegree g) := hp.coprime_iff_not_dvd.mpr (fun e ↦ h (((natDegree_le_of_dvd hg'
     (X_pow_sub_C_ne_zero hp.pos a)).trans_eq natDegree_X_pow_sub_C).antisymm (Nat.le_of_dvd
       (natDegree_pos_iff_degree_pos.mpr <| Polynomial.degree_pos_of_irreducible hg) e)))
-  exact ha _ ((mem_range_pow_of_coprime_of_pow_mem_range_pow this.symm a).mp ⟨_, key⟩).choose_spec
+  exact ha _ ((pow_mem_range_pow_of_coprime this.symm a).mp ⟨_, key⟩).choose_spec
 
 theorem X_pow_sub_C_irreducible_iff_of_prime {p : ℕ} (hp : p.Prime) {a : K} :
     Irreducible (X ^ p - C a) ↔ ∀ b, b ^ p ≠ a :=
