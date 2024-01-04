@@ -382,7 +382,7 @@ theorem stereographic'_target {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphe
 
 /-- The unit sphere in an `n + 1`-dimensional inner product space `E` is a charted space
 modelled on the Euclidean space of dimension `n`. -/
-instance chartedSpace {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
+instance Metric.sphere.instChartedSpace {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
     ChartedSpace (EuclideanSpace ℝ (Fin n)) (sphere (0 : E) 1) where
   atlas := {f | ∃ v : sphere (0 : E) 1, f = stereographic' n v}
   chartAt v := stereographic' n (-v)
@@ -411,7 +411,7 @@ theorem stereographic'_symm_apply {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : 
 
 /-- The unit sphere in an `n + 1`-dimensional inner product space `E` is a smooth manifold,
 modelled on the Euclidean space of dimension `n`. -/
-instance smoothMfldWithCorners {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
+instance Metric.sphere.instSmoothManifoldWithCorners {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
     SmoothManifoldWithCorners (𝓡 n) (sphere (0 : E) 1) :=
   smoothManifoldWithCorners_of_contDiffOn (𝓡 n) (sphere (0 : E) 1)
     (by
@@ -443,7 +443,7 @@ instance smoothMfldWithCorners {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
 theorem contMDiff_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
     ContMDiff (𝓡 n) 𝓘(ℝ, E) ∞ ((↑) : sphere (0 : E) 1 → E) := by
   -- Porting note: trouble with filling these implicit variables in the instance
-  have := smoothMfldWithCorners (E := E) (n := n)
+  have := Metric.sphere.instSmoothManifoldWithCorners (E := E) (n := n)
   rw [contMDiff_iff]
   constructor
   · exact continuous_subtype_val
@@ -589,10 +589,10 @@ attribute [local instance] finrank_real_complex_fact'
 /-- The unit circle in `ℂ` is a charted space modelled on `EuclideanSpace ℝ (Fin 1)`.  This
 follows by definition from the corresponding result for `Metric.Sphere`. -/
 instance : ChartedSpace (EuclideanSpace ℝ (Fin 1)) circle :=
-  chartedSpace
+  Metric.sphere.instChartedSpace
 
 instance : SmoothManifoldWithCorners (𝓡 1) circle :=
-  smoothMfldWithCorners (E := ℂ)
+  Metric.sphere.instSmoothManifoldWithCorners (E := ℂ)
 
 /-- The unit circle in `ℂ` is a Lie group. -/
 instance : LieGroup (𝓡 1) circle where
