@@ -389,6 +389,68 @@ theorem Gamma_conj (s : ℂ) : Gamma (conj s) = conj (Gamma s) := by
     rw [RingHom.map_add, RingHom.map_one]
 #align complex.Gamma_conj Complex.Gamma_conj
 
+/-- Expresses the integral over Ioi 0 of t^(a-1) * exp(-r*t) in terms of the Gamma function,
+for complex a. -/
+lemma integral_cpow_mul_exp_neg_mul_Ioi {a : ℂ} {r : ℝ} (ha : 0 < a.re) (hr : 0 < r) :
+    ∫ (t : ℝ) in Ioi 0, t ^ (a - 1) * Complex.exp (-(r * t))
+    = (1 / r) ^ a * Complex.Gamma (a) := by
+  have hri : 0 < 1/r := by positivity
+  calc ∫ (t : ℝ) in Ioi 0, t ^ (a - 1) * Complex.exp (-(r * t))
+    _ = ∫ (t : ℝ) in Ioi 0, (1 / r) ^ (a-1) * (r * t) ^ (a - 1) * Complex.exp (-(r * t)) := by
+      apply MeasureTheory.set_integral_congr
+      · simp
+      · intro x (hx : 0 < x)
+        simp_rw [mul_eq_mul_right_iff]
+        apply Or.inl
+        rw [mul_cpow_ofReal_nonneg (by positivity) (by positivity)]
+        congr
+        norm_cast
+        field_simp
+        ring_nf
+        have hlogr : (Complex.log ↑r * -1).im = 0 := by
+          rw [mul_neg, mul_one, neg_im, ← Complex.ofReal_log, ofReal_im, neg_zero]
+          exact hr.le
+        rw [mul_assoc, ← cpow_neg_one, ← cpow_mul, ← cpow_add _ _ (ofReal_ne_zero.mpr hr.ne')]
+        · group
+          rw [cpow_zero]
+          simp
+        · rw [hlogr]
+          simp only [Left.neg_neg_iff]
+          exact Real.pi_pos
+        · rw [hlogr]
+          exact Real.pi_pos.le
+    _ =  |1 / r| * ∫ (t : ℝ) in Ioi (r * 0), (1 / r) ^ (a-1) * t ^ (a - 1) * Complex.exp (-t) := by
+      have : ∫ (t : ℝ) in Ioi 0, (1 / ↑r) ^ (a - 1) * (↑r * ↑t) ^ (a - 1) * cexp (-(↑r * ↑t)) =
+        ∫ (t : ℝ) in Ioi 0, (1 / ↑r) ^ (a - 1) * ↑(r * t) ^ (a - 1) * cexp (-↑(r * t)) := by simp
+      rw [this,
+        integral_comp_mul_left_Ioi
+          (fun x ↦ (1 / r) ^ (a - 1) * x ^ (a - 1) * Complex.exp (-x)) (0 : ℝ) hr]
+      simp
+    _ =  (1 / r) * ∫ (t : ℝ) in Ioi 0, (1 / r) ^ (a-1) * t ^ (a - 1) * Complex.exp (-t) := by
+      have : Ioi (r * 0) = Ioi 0 := by refine Ioi_inj.mpr (by simp)
+      rw [this, _root_.abs_of_nonneg hri.le]
+      simp
+    _ =  1 / r * ∫ (t : ℝ) in Ioi 0, (1 / r : ℂ) ^ (a-1) • (t ^ (a - 1) * Complex.exp (-t)) := by
+      congr
+      ext x
+      rw [mul_assoc, ← smul_eq_mul]
+    _ =  1 / r * (1 / r : ℂ) ^ (a-1) • (∫ (t : ℝ) in Ioi 0, t ^ (a - 1) * Complex.exp (-t)) := by
+      rw [MeasureTheory.integral_smul]
+    _ = (1 / r : ℂ) ^ a • (∫ (t : ℝ) in Ioi 0, t ^ (a - 1) * Complex.exp (-t)) := by
+      have : (1 / r : ℂ) ^ a = 1 / r * (1 / r)^(a-1) := by
+        nth_rewrite 2 [← cpow_one (1 / r : ℂ)]
+        rw [← cpow_add]
+        simp only [one_div, add_sub_cancel'_right]
+        exact one_div_ne_zero (ofReal_ne_zero.mpr hr.ne')
+      rw [this, smul_eq_mul, smul_eq_mul, mul_assoc]
+    _ = (1 / r) ^ a * Complex.Gamma (a) := by
+      rw [Complex.Gamma_eq_integral ha]
+      congr
+      ext x
+      group
+      simp
+
+
 end GammaDef
 
 /-! Now check that the `Γ` function is differentiable, wherever this makes sense. -/
@@ -608,66 +670,3 @@ theorem differentiableAt_Gamma {s : ℝ} (hs : ∀ m : ℕ, s ≠ -m) : Differen
 #align real.differentiable_at_Gamma Real.differentiableAt_Gamma
 
 end Real
-
-open Complex
-
-/-- Expresses the integral over Ioi 0 of t^(a-1) * exp(-r*t) in terms of the Gamma function,
-for complex a. -/
-lemma pow_exp_integral_to_Gamma {a : ℂ} {r : ℝ} (ha : 0 < a.re) (hr : 0 < r) :
-    ∫ (t : ℝ) in Ioi 0, t ^ (a - 1) * Complex.exp (-(r * t))
-    = (1 / r) ^ a * Complex.Gamma (a) := by
-  have hri : 0 < 1/r := by positivity
-  calc ∫ (t : ℝ) in Ioi 0, t ^ (a - 1) * Complex.exp (-(r * t))
-    _ = ∫ (t : ℝ) in Ioi 0, (1 / r) ^ (a-1) * (r * t) ^ (a - 1) * Complex.exp (-(r * t)) := by
-      apply MeasureTheory.set_integral_congr
-      · simp
-      · intro x (hx : 0 < x)
-        simp_rw [mul_eq_mul_right_iff]
-        apply Or.inl
-        rw [mul_cpow_ofReal_nonneg (by positivity) (by positivity)]
-        congr
-        norm_cast
-        field_simp
-        ring_nf
-        have hlogr : (Complex.log ↑r * -1).im = 0 := by
-          rw [mul_neg, mul_one, neg_im, ← Complex.ofReal_log, ofReal_im, neg_zero]
-          exact hr.le
-        rw [mul_assoc, ← cpow_neg_one, ← cpow_mul, ← cpow_add _ _ (ofReal_ne_zero.mpr hr.ne')]
-        · group
-          rw [cpow_zero]
-          simp
-        · rw [hlogr]
-          simp only [Left.neg_neg_iff]
-          exact Real.pi_pos
-        · rw [hlogr]
-          exact Real.pi_pos.le
-    _ =  |1 / r| * ∫ (t : ℝ) in Ioi (r * 0), (1 / r) ^ (a-1) * t ^ (a - 1) * Complex.exp (-t) := by
-      have : ∫ (t : ℝ) in Ioi 0, (1 / ↑r) ^ (a - 1) * (↑r * ↑t) ^ (a - 1) * cexp (-(↑r * ↑t)) =
-        ∫ (t : ℝ) in Ioi 0, (1 / ↑r) ^ (a - 1) * ↑(r * t) ^ (a - 1) * cexp (-↑(r * t)) := by simp
-      rw [this,
-        integral_comp_mul_left_Ioi
-          (fun x ↦ (1 / r) ^ (a - 1) * x ^ (a - 1) * Complex.exp (-x)) (0 : ℝ) hr]
-      simp
-    _ =  (1 / r) * ∫ (t : ℝ) in Ioi 0, (1 / r) ^ (a-1) * t ^ (a - 1) * Complex.exp (-t) := by
-      have : Ioi (r * 0) = Ioi 0 := by refine Ioi_inj.mpr (by simp)
-      rw [this, _root_.abs_of_nonneg hri.le]
-      simp
-    _ =  1 / r * ∫ (t : ℝ) in Ioi 0, (1 / r : ℂ) ^ (a-1) • (t ^ (a - 1) * Complex.exp (-t)) := by
-      congr
-      ext x
-      rw [mul_assoc, ← smul_eq_mul]
-    _ =  1 / r * (1 / r : ℂ) ^ (a-1) • (∫ (t : ℝ) in Ioi 0, t ^ (a - 1) * Complex.exp (-t)) := by
-      rw [MeasureTheory.integral_smul]
-    _ = (1 / r : ℂ) ^ a • (∫ (t : ℝ) in Ioi 0, t ^ (a - 1) * Complex.exp (-t)) := by
-      have : (1 / r : ℂ) ^ a = 1 / r * (1 / r)^(a-1) := by
-        nth_rewrite 2 [← cpow_one (1 / r : ℂ)]
-        rw [← cpow_add]
-        simp only [one_div, add_sub_cancel'_right]
-        exact one_div_ne_zero (ofReal_ne_zero.mpr hr.ne')
-      rw [this, smul_eq_mul, smul_eq_mul, mul_assoc]
-    _ = (1 / r) ^ a * Complex.Gamma (a) := by
-      rw [Complex.Gamma_eq_integral ha]
-      congr
-      ext x
-      group
-      simp

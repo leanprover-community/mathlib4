@@ -7,6 +7,7 @@ Authors: Josha Dekker
 import Mathlib.Analysis.SpecialFunctions.Gaussian
 import Mathlib.Probability.Notation
 import Mathlib.Probability.Cdf
+import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
 
 /-! # Gamma distributions over ℝ
 
@@ -110,7 +111,15 @@ lemma gammaPdfReal_nonneg {a r : ℝ} (ha : 0 < a) (hr : 0 < r) (x : ℝ) :
   split_ifs <;> positivity
 
 /-- Expresses the integral over Ioi 0 of t^(a-1) * exp(-r*t) in terms of the Gamma function. -/
-lemma pow_exp_integral_Ioi {a r : ℝ} (ha : 0 < a) (hr : 0 < r) :
+lemma integral_rpow_mul_exp_neg_mul_Ioi {a r : ℝ} (ha : 0 < a) (hr : 0 < r) :
+    ∫ (t : ℝ) in Ioi 0, t ^ (a - 1) * exp (-(r * t))
+    = (1 / r) ^ a * Gamma (a) := by
+  have hac : 0 < (a : ℂ).re := ha
+  have := Complex.integral_cpow_mul_exp_neg_mul_Ioi hac hr
+  sorry
+
+/-- Expresses the integral over Ioi 0 of t^(a-1) * exp(-r*t) in terms of the Gamma function. -/
+lemma integral_rpow_mul_exp_neg_mul_Ioi2 {a r : ℝ} (ha : 0 < a) (hr : 0 < r) :
     ∫ (t : ℝ) in Ioi 0, t ^ (a - 1) * exp (-(r * t))
     = (1 / r) ^ a * Gamma (a) := by
   have hri : 0 < 1/r := by positivity
@@ -159,7 +168,7 @@ lemma pow_exp_integral_Ioi_insert_1 {a r : ℝ} (ha : 0 < a) (hr : 0 < r) :
   _ = (r ^ a / Gamma a) • ∫ (t : ℝ) in Ioi 0, t ^ (a - 1) * exp (-(r * t)) := by
     apply integral_smul
   _ = (r ^ a / Gamma a) * (1 / r) ^ a * Gamma (a) := by
-    rw [pow_exp_integral_Ioi ha hr, smul_eq_mul, mul_assoc]
+    rw [integral_rpow_mul_exp_neg_mul_Ioi ha hr, smul_eq_mul, mul_assoc]
   _ = 1 := by
     rw [mul_assoc, div_mul_eq_mul_div, ← mul_assoc, mul_div_assoc,
       div_self (Gamma_pos_of_pos ha).ne', mul_one, div_rpow zero_le_one hr.le, one_rpow,
