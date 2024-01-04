@@ -290,7 +290,7 @@ def toInductive (mvar : MVarId) (cs : List Name)
           let _ ← isDefEq t mt -- infer values for those mvars we just made
           mvar'.assign e
 
-/-- Implementation for both `mk_iff` and `mk_iff_of_inductive_prop`.y
+/-- Implementation for both `mk_iff` and `mk_iff_of_inductive_prop`.
 -/
 def mkIffOfInductivePropImpl (ind : Name) (rel : Name) (relStx : Syntax) : MetaM Unit := do
   let .inductInfo inductVal ← getConstInfo ind |
@@ -333,6 +333,70 @@ def mkIffOfInductivePropImpl (ind : Name) (rel : Name) (relStx : Syntax) : MetaM
     selectionRange := ← getDeclarationRange relStx
   }
   addConstInfo relStx rel
+
+/-- Implementation for `mk_eq`. -/
+def mkEqImpl (ind : Name) (rel : Name) (relStx : Syntax) : MetaM Unit := do
+  let .inductInfo inductVal ← getConstInfo ind |
+    throwError "mk_eq only applies to inductive declarations"
+  let constrs := inductVal.ctors
+  let params := inductVal.numParams
+  let type := inductVal.type
+
+  let univNames := inductVal.levelParams
+  let univs := univNames.map mkLevelParam
+  /- we use these names for our universe parameters, maybe we should construct a copy of them
+  using `uniq_name` -/
+
+  let (thmTy, shape) ← Meta.forallTelescope type fun fvars ty ↦ do
+    if !ty.isProp then throwError "mk_iff only applies to prop-valued declarations"
+    let fvars' := fvars.toList
+    let shape_rhss ← constrs.mapM (constrToProp univs (fvars'.take params) (fvars'.drop params))
+    let (shape, rhss) := shape_rhss.unzip
+    pure (mkApp2 (mkConst `Eq) (mkConst ind univs) (← mkForallFVars fvars <| mkOrList rhss), shape)
+
+  let mvar ← mkFreshExprMVar (some thmTy)
+  let mvarId := mvar.mvarId!
+  let (fvars, mvarId') ← do
+    mvarId.intros
+  let [mp, mpr] ← mvarId'.apply (mkConst `Iff.intro) | throwError "failed to split goal"
+
+  toCases mp shape
+
+  let ⟨mprFvar, mpr'⟩ ← mpr.intro1
+  toInductive mpr' constrs ((fvars.toList.take params).map .fvar) shape mprFvar
+
+  addDecl <| .thmDecl {
+    name := rel
+    levelParams := univNames
+    type := thmTy
+    value := ← instantiateMVars mvar
+  }
+  addDeclarationRanges rel {
+    range := ← getDeclarationRange (← getRef)
+    selectionRange := ← getDeclarationRange relStx
+  }
+  addConstInfo relStx rel
+
+def mkEqRHS (n : Name) : MetaM Expr := do
+  let .inductInfo inductVal ← getConstInfo n |
+    throwError "mk_iff only applies to inductive declarations"
+  let constrs := inductVal.ctors
+  let params := inductVal.numParams
+  let type := inductVal.type
+
+  let univNames := inductVal.levelParams
+  let univs := univNames.map mkLevelParam
+  /- we use these names for our universe parameters, maybe we should construct a copy of them
+  using `uniq_name` -/
+
+  let thmTy ← Meta.forallTelescope type fun fvars ty ↦ do
+    if !ty.isProp then throwError "mk_iff only applies to prop-valued declarations"
+    -- let lhs := mkAppN (mkConst n univs) fvars
+    let fvars' := fvars.toList
+    let shape_rhss ← constrs.mapM (constrToProp univs (fvars'.take params) (fvars'.drop params))
+    let (_, rhss) := shape_rhss.unzip
+    pure <| mkApp2 (mkConst `Eq) (mkConst n) (← mkForallFVars fvars <| mkOrList rhss) -- (← mkForallFVars fvars (mkApp2 (mkConst `Iff) lhs (mkOrList rhss)))
+  pure thmTy
 
 /--
 Applying the `mk_iff` attribute to an inductively-defined proposition `mk_iff` makes an `iff` rule

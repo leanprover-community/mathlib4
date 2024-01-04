@@ -122,6 +122,19 @@ def subsingletonElim (mvarId : MVarId) : MetaM Bool :=
       return true
     return res.getD false
 
+def funext1 (mvarId : MVarId) (n : Option Name) : MetaM (FVarId × MVarId) := do
+  let [mvarId'] ← mvarId.apply (← mkConstWithFreshMVarLevels `funext)
+    | throwError "Expected one goal"
+  mvarId'.intro <| n.getD (← mkFreshUserName `a)
+
+def funextArray (mvarId : MVarId) (names : Array (Option Name)) : MetaM (Array FVarId × MVarId) :=
+  names.foldlM (fun ⟨fvarIds, mvarId⟩ name ↦ do
+    let ⟨fvarId, mvarId⟩ ← funext1 mvarId name
+    pure (fvarIds.push fvarId, mvarId)) (.mkEmpty names.size, mvarId)
+
+def funextN (mvarId : MVarId) (n : Nat) : MetaM (Array FVarId × MVarId) :=
+  funextArray mvarId (.mkArray n none)
+
 end Lean.MVarId
 
 namespace Lean.Meta
