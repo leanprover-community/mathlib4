@@ -469,7 +469,6 @@ theorem reindex_comp_tprod (e : ι ≃ ι₂) :
   MultilinearMap.ext <| reindex_tprod e
 #align pi_tensor_product.reindex_comp_tprod PiTensorProduct.reindex_comp_tprod
 
-@[simp]
 theorem lift_comp_reindex (e : ι ≃ ι₂) (φ : MultilinearMap R (fun i ↦ s (e.symm i)) E) :
     lift φ ∘ₗ (reindex R s e) = lift ((domDomCongrLinearEquiv' R R s _ e).symm φ) := by
   ext; simp [reindex]
@@ -480,7 +479,6 @@ theorem lift_comp_reindex_symm (e : ι ≃ ι₂) (φ : MultilinearMap R s E) :
     lift φ ∘ₗ (reindex R s e).symm = lift (domDomCongrLinearEquiv' R R s _ e φ) := by
   ext; simp [reindex]
 
-@[simp]
 theorem lift_reindex
     (e : ι ≃ ι₂) (φ : MultilinearMap R (fun i ↦ s (e.symm i)) E) (x : ⨂[R] i, s i) :
     lift φ (reindex R s e x) = lift ((domDomCongrLinearEquiv' R R s _ e).symm φ) x :=
@@ -504,7 +502,6 @@ theorem reindex_trans (e : ι ≃ ι₂) (e' : ι₂ ≃ ι₃) :
   congr
 #align pi_tensor_product.reindex_trans PiTensorProduct.reindex_trans
 
-@[simp]
 theorem reindex_reindex (e : ι ≃ ι₂) (e' : ι₂ ≃ ι₃) (x : ⨂[R] i, s i) :
     reindex R _ e' (reindex R s e x) = reindex R s (e.trans e') x :=
   LinearEquiv.congr_fun (reindex_trans e e' : _ = reindex R s (e.trans e')) x
@@ -513,7 +510,7 @@ theorem reindex_reindex (e : ι ≃ ι₂) (e' : ι₂ ≃ ι₃) (x : ⨂[R] i,
 -- This doesn't have a dependent counterpart
 @[simp]
 theorem reindex_symm (e : ι ≃ ι₂) :
-    (reindex R (fun i ↦ M) e).symm = reindex R (fun i ↦ M) e.symm := by
+    (reindex R (fun _ ↦ M) e).symm = reindex R (fun _ ↦ M) e.symm := by
   ext x
   simp only [reindex, domDomCongrLinearEquiv', LinearEquiv.coe_symm_mk, LinearEquiv.coe_mk,
     LinearEquiv.ofLinear_symm_apply, Equiv.symm_symm_apply, LinearEquiv.ofLinear_apply]
