@@ -148,7 +148,7 @@ instance [Inhabited α] [Inhabited β] : Inhabited (PartialEquiv α β) :=
       eqOn_empty _ _⟩⟩
 
 /-- The inverse of a partial equivalence -/
-@[pp_dot]
+@[symm, pp_dot]
 protected def symm : PartialEquiv β α where
   toFun := e.invFun
   invFun := e.toFun
@@ -690,7 +690,7 @@ protected def trans' (e' : PartialEquiv β γ) (h : e.target = e'.source) : Part
 
 /-- Composing two partial equivs, by restricting to the maximal domain where their composition
 is well defined. -/
-@[pp_dot]
+@[trans, pp_dot]
 protected def trans : PartialEquiv α γ :=
   PartialEquiv.trans' (e.symm.restr e'.source).symm (e'.restr e.target) (inter_comm _ _)
 #align local_equiv.trans PartialEquiv.trans

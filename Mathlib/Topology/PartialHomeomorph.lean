@@ -76,7 +76,7 @@ instance : CoeFun (PartialHomeomorph α β) fun _ => α → β :=
   ⟨fun e => e.toFun'⟩
 
 /-- The inverse of a partial homeomorphism -/
-@[pp_dot]
+@[symm, pp_dot]
 protected def symm : PartialHomeomorph β α where
   toPartialEquiv := e.toPartialEquiv.symm
   open_source := e.open_target
@@ -817,7 +817,7 @@ protected def trans' (h : e.target = e'.source) : PartialHomeomorph α γ where
 
 /-- Composing two partial homeomorphisms, by restricting to the maximal domain where their
 composition is well defined. -/
-@[pp_dot]
+@[trans, pp_dot]
 protected def trans : PartialHomeomorph α γ :=
   PartialHomeomorph.trans' (e.symm.restrOpen e'.source e'.open_source).symm
     (e'.restrOpen e.target e.open_target) (by simp [inter_comm])
