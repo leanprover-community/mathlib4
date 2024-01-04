@@ -4,11 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
 import Mathlib.Algebra.Group.Defs
-import Mathlib.Algebra.Group.PowAssoc
+import Mathlib.Algebra.Group.NatPowAssoc
+import Mathlib.Algebra.Group.PNatPowAssoc
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Data.Int.Cast.Defs
-import Mathlib.Data.PNat.Defs
-import Mathlib.Data.PNat.Basic
 import Mathlib.Data.Polynomial.Induction
 import Mathlib.Data.Polynomial.Basic
 
