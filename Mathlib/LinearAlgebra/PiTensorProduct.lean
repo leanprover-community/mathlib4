@@ -444,61 +444,58 @@ section
 
 variable (R M)
 
-/-- Re-index the components of the tensor power by `e`.
-
-For simplicity, this is defined only for homogeneously- (rather than dependently-) typed components.
--/
-def reindex (e : ι ≃ ι₂) : (⨂[R] _ : ι, M) ≃ₗ[R] ⨂[R] _ : ι₂, M :=
-  LinearEquiv.ofLinear (lift (domDomCongr e.symm (tprod R : MultilinearMap R _ (⨂[R] _ : ι₂, M))))
-    (lift (domDomCongr e (tprod R : MultilinearMap R _ (⨂[R] _ : ι, M))))
-    (by
-      ext
-      simp only [LinearMap.comp_apply, LinearMap.id_apply, lift_tprod,
-        LinearMap.compMultilinearMap_apply, lift.tprod, domDomCongr_apply]
-      congr
-      ext
-      rw [e.apply_symm_apply])
-    (by
-      ext
-      simp only [LinearMap.comp_apply, LinearMap.id_apply, lift_tprod,
-        LinearMap.compMultilinearMap_apply, lift.tprod, domDomCongr_apply]
-      congr
-      ext
-      rw [e.symm_apply_apply])
+variable (s) in
+/-- Re-index the components of the tensor power by `e`.-/
+def reindex (e : ι ≃ ι₂) : (⨂[R] i : ι, s i) ≃ₗ[R] ⨂[R] i : ι₂, s (e.symm i) :=
+  let f := domDomCongrLinearEquiv' R R s (⨂[R] (i : ι₂), s (e.symm i)) e
+  let g := domDomCongrLinearEquiv' R R s (⨂[R] (i : ι), s i) e
+  LinearEquiv.ofLinear (lift <| f.symm <| tprod R) (lift <| g <| tprod R) (by aesop) (by aesop)
 #align pi_tensor_product.reindex PiTensorProduct.reindex
 
 end
 
 @[simp]
-theorem reindex_tprod (e : ι ≃ ι₂) (f : ∀ _, M) :
-    reindex R M e (tprod R f) = tprod R fun i ↦ f (e.symm i) := by
+theorem reindex_tprod (e : ι ≃ ι₂) (f : ∀ i, s i) :
+    reindex R s e (tprod R f) = tprod R fun i ↦ f (e.symm i) := by
   dsimp [reindex]
   exact liftAux_tprod _ f
 #align pi_tensor_product.reindex_tprod PiTensorProduct.reindex_tprod
 
 @[simp]
 theorem reindex_comp_tprod (e : ι ≃ ι₂) :
-    (reindex R M e : (⨂[R] _ : ι, M) →ₗ[R] ⨂[R] _ : ι₂, M).compMultilinearMap (tprod R) =
-      (tprod R : MultilinearMap R (fun _ ↦ M) _).domDomCongr e.symm :=
+    (reindex R s e : (⨂[R] i : ι, s i) →ₗ[R] ⨂[R] i : ι₂, s (e.symm i)).compMultilinearMap
+      (tprod R) =
+    (domDomCongrLinearEquiv' R R s _ e).symm (tprod R) :=
   MultilinearMap.ext <| reindex_tprod e
 #align pi_tensor_product.reindex_comp_tprod PiTensorProduct.reindex_comp_tprod
 
 @[simp]
-theorem lift_comp_reindex (e : ι ≃ ι₂) (φ : MultilinearMap R (fun _ : ι₂ ↦ M) E) :
-    lift φ ∘ₗ ↑(reindex R M e) = lift (φ.domDomCongr e.symm) := by
-  ext
-  simp
+theorem lift_comp_reindex (e : ι ≃ ι₂) (φ : MultilinearMap R (fun i ↦ s (e.symm i)) E) :
+    lift φ ∘ₗ (reindex R s e) = lift ((domDomCongrLinearEquiv' R R s _ e).symm φ) := by
+  ext; simp [reindex]
 #align pi_tensor_product.lift_comp_reindex PiTensorProduct.lift_comp_reindex
 
 @[simp]
-theorem lift_reindex (e : ι ≃ ι₂) (φ : MultilinearMap R (fun _ ↦ M) E) (x : ⨂[R] _, M) :
-    lift φ (reindex R M e x) = lift (φ.domDomCongr e.symm) x :=
+theorem lift_comp_reindex_symm (e : ι ≃ ι₂) (φ : MultilinearMap R s E) :
+    lift φ ∘ₗ (reindex R s e).symm = lift (domDomCongrLinearEquiv' R R s _ e φ) := by
+  ext; simp [reindex]
+
+@[simp]
+theorem lift_reindex
+    (e : ι ≃ ι₂) (φ : MultilinearMap R (fun i ↦ s (e.symm i)) E) (x : ⨂[R] i, s i) :
+    lift φ (reindex R s e x) = lift ((domDomCongrLinearEquiv' R R s _ e).symm φ) x :=
   LinearMap.congr_fun (lift_comp_reindex e φ) x
 #align pi_tensor_product.lift_reindex PiTensorProduct.lift_reindex
 
 @[simp]
+theorem lift_reindex_symm
+    (e : ι ≃ ι₂) (φ : MultilinearMap R s E) (x : ⨂[R] i, s (e.symm i)) :
+    lift φ (reindex R s e |>.symm x) = lift (domDomCongrLinearEquiv' R R s _ e φ) x :=
+  LinearMap.congr_fun (lift_comp_reindex_symm e φ) x
+
+@[simp]
 theorem reindex_trans (e : ι ≃ ι₂) (e' : ι₂ ≃ ι₃) :
-    (reindex R M e).trans (reindex R M e') = reindex R M (e.trans e') := by
+    (reindex R s e).trans (reindex R _ e') = reindex R s (e.trans e') := by
   apply LinearEquiv.toLinearMap_injective
   ext f
   simp only [LinearEquiv.trans_apply, LinearEquiv.coe_coe, reindex_tprod,
@@ -508,21 +505,37 @@ theorem reindex_trans (e : ι ≃ ι₂) (e' : ι₂ ≃ ι₃) :
 #align pi_tensor_product.reindex_trans PiTensorProduct.reindex_trans
 
 @[simp]
-theorem reindex_reindex (e : ι ≃ ι₂) (e' : ι₂ ≃ ι₃) (x : ⨂[R] _, M) :
-    reindex R M e' (reindex R M e x) = reindex R M (e.trans e') x :=
-  LinearEquiv.congr_fun (reindex_trans e e' : _ = reindex R M (e.trans e')) x
+theorem reindex_reindex (e : ι ≃ ι₂) (e' : ι₂ ≃ ι₃) (x : ⨂[R] i, s i) :
+    reindex R _ e' (reindex R s e x) = reindex R s (e.trans e') x :=
+  LinearEquiv.congr_fun (reindex_trans e e' : _ = reindex R s (e.trans e')) x
 #align pi_tensor_product.reindex_reindex PiTensorProduct.reindex_reindex
 
+-- This doesn't have a dependent counterpart
 @[simp]
-theorem reindex_symm (e : ι ≃ ι₂) : (reindex R M e).symm = reindex R M e.symm := rfl
+theorem reindex_symm (e : ι ≃ ι₂) :
+    (reindex R (fun i ↦ M) e).symm = reindex R (fun i ↦ M) e.symm := by
+  ext x
+  simp only [reindex, domDomCongrLinearEquiv', LinearEquiv.coe_symm_mk, LinearEquiv.coe_mk,
+    LinearEquiv.ofLinear_symm_apply, Equiv.symm_symm_apply, LinearEquiv.ofLinear_apply]
+  refine x.induction_on ?_ ?_
+  · intro r x
+    simp only [map_smul, lift.tprod, coe_mk, comp_apply, Equiv.symm_symm_apply]
+    congr
+    ext y j
+    simp
+  · intro x y hx hy
+    rw [map_add, map_add, hx, hy]
 #align pi_tensor_product.reindex_symm PiTensorProduct.reindex_symm
 
 @[simp]
-theorem reindex_refl : reindex R M (Equiv.refl ι) = LinearEquiv.refl R _ := by
+theorem reindex_refl : reindex R s (Equiv.refl ι) = LinearEquiv.refl R _ := by
   apply LinearEquiv.toLinearMap_injective
   ext
-  rw [reindex_comp_tprod, LinearEquiv.refl_toLinearMap, Equiv.refl_symm]
-  rfl
+  simp only [Equiv.refl_symm, Equiv.refl_apply, reindex, domDomCongrLinearEquiv',
+    LinearEquiv.coe_symm_mk, LinearMap.compMultilinearMap_apply, LinearEquiv.coe_coe,
+    LinearEquiv.refl_toLinearMap, LinearMap.id_coe, id_eq]
+  erw [lift.tprod]
+  congr
 #align pi_tensor_product.reindex_refl PiTensorProduct.reindex_refl
 
 variable (ι)
@@ -530,7 +543,7 @@ variable (ι)
 attribute [local simp] eq_iff_true_of_subsingleton in
 /-- The tensor product over an empty index type `ι` is isomorphic to the base ring. -/
 @[simps symm_apply]
-def isEmptyEquiv [IsEmpty ι] : (⨂[R] _ : ι, M) ≃ₗ[R] R where
+def isEmptyEquiv [IsEmpty ι] : (⨂[R] i : ι, s i) ≃ₗ[R] R where
   toFun := lift (constOfIsEmpty R _ 1)
   invFun r := r • tprod R (@isEmptyElim _ _ _)
   left_inv x := by
@@ -551,7 +564,8 @@ def isEmptyEquiv [IsEmpty ι] : (⨂[R] _ : ι, M) ≃ₗ[R] R where
 #align pi_tensor_product.is_empty_equiv PiTensorProduct.isEmptyEquiv
 
 @[simp]
-theorem isEmptyEquiv_apply_tprod [IsEmpty ι] (f : ι → M) : isEmptyEquiv ι (tprod R f) = 1 :=
+theorem isEmptyEquiv_apply_tprod [IsEmpty ι] (f : (i : ι) → s i) :
+    isEmptyEquiv ι (tprod R f) = 1 :=
   lift.tprod _
 #align pi_tensor_product.is_empty_equiv_apply_tprod PiTensorProduct.isEmptyEquiv_apply_tprod
 
