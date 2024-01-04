@@ -26,8 +26,6 @@ There are likely some rough edges to it.
 Improving this tactic would be a good project for someone interested in learning tactic programming.
 -/
 
-set_option autoImplicit true
-
 open Lean Parser Tactic Mathlib Meta NormNum Qq
 
 initialize registerTraceClass `CancelDenoms
@@ -160,7 +158,7 @@ def synthesizeUsingNormNum (type : Q(Prop)) : MetaM Q($type) := do
 canceled in `e'`, distributing `v` proportionally according to the tree `tr` computed
 by `findCancelFactor`.
 -/
-partial def mkProdPrf (α : Q(Type u)) (sα : Q(Field $α)) (v : ℕ) (t : Tree ℕ)
+partial def mkProdPrf {u : Level} (α : Q(Type u)) (sα : Q(Field $α)) (v : ℕ) (t : Tree ℕ)
     (e : Q($α)) : MetaM Expr := do
   let amwo : Q(AddMonoidWithOne $α) := q(inferInstance)
   trace[CancelDenoms] "mkProdPrf {e} {v}"
@@ -220,7 +218,7 @@ def deriveThms : List Name :=
   [``div_div_eq_mul_div, ``div_neg]
 
 /-- Helper lemma to chain together a `simp` proof and the result of `mkProdPrf`. -/
-theorem derive_trans [Mul α] {a b c d : α} (h : a = b) (h' : c * b = d) : c * a = d := h ▸ h'
+theorem derive_trans {α} [Mul α] {a b c d : α} (h : a = b) (h' : c * b = d) : c * a = d := h ▸ h'
 
 /--
 Given `e`, a term with rational division, produces a natural number `n` and a proof of `n*e = e'`,
