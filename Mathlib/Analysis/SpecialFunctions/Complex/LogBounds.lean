@@ -194,4 +194,50 @@ lemma norm_log_inv_sub_self_le {z : ℂ} (hz : ‖z‖ < 1) :
   · simp [logTaylor_succ, logTaylor_zero, sub_eq_add_neg]
   · norm_num
 
+open Filter Asymptotics in
+/-- The Taylor series of the complex logarithm at `1` converges to the logarithm in the
+open unit disk. -/
+lemma hasSum_taylorSeries_log {z : ℂ} (hz : ‖z‖ < 1) :
+    HasSum (fun n : ℕ ↦ (-1) ^ (n + 1) * z ^ n / n) (log (1 + z)) := by
+  refine (hasSum_iff_tendsto_nat_of_summable_norm ?_).mpr ?_
+  · refine (summable_geometric_of_norm_lt_1 hz).norm.of_nonneg_of_le (fun _ ↦ norm_nonneg _) ?_
+    intro n
+    simp only [norm_div, norm_mul, norm_pow, norm_neg, norm_one, one_pow, one_mul, norm_nat]
+    rcases n.eq_zero_or_pos with rfl | hn
+    · simp
+    conv => enter [2]; rw [← div_one (‖z‖ ^ n)]
+    gcongr
+    norm_cast
+  · rw [← tendsto_sub_nhds_zero_iff]
+    conv => enter [1, x]; rw [← div_one (_ - _), ← logTaylor]
+    rw [← isLittleO_iff_tendsto fun _ h ↦ (one_ne_zero h).elim]
+    refine IsLittleO.trans_isBigO ?_ <| isBigO_const_one ℂ (1 : ℝ) atTop
+    have H : (fun n ↦ logTaylor n z - log (1 + z)) =O[atTop] (fun n : ℕ ↦ ‖z‖ ^ n)
+    · have (n : ℕ) : ‖logTaylor n z - log (1 + z)‖ ≤ (max ‖log (1 + z)‖ (1 - ‖z‖)⁻¹) * ‖(‖z‖ ^ n)‖
+      · rw [norm_sub_rev, norm_pow, norm_norm]
+        cases n with
+        | zero => simp [logTaylor_zero]
+        | succ n =>
+            refine (log_sub_logTaylor_norm_le n hz).trans ?_
+            rw [mul_comm, ← div_one ((max _ _) * _)]
+            gcongr
+            · exact le_max_right ..
+            · linarith
+      exact (isBigOWith_of_le' atTop this).isBigO
+    refine IsBigO.trans_isLittleO H ?_
+    convert isLittleO_pow_pow_of_lt_left (norm_nonneg z) hz
+    exact (one_pow _).symm
+
+/-- The series `∑ z^n/n` converges to `-log (1-z)` on the open unit disk. -/
+lemma hasSum_taylorSeries_neg_log {z : ℂ} (hz : ‖z‖ < 1) :
+    HasSum (fun n : ℕ ↦ z ^ n / n) (-log (1 - z)) := by
+  conv => enter [1, n]; rw [← neg_neg (z ^ n / n)]
+  refine HasSum.neg ?_
+  convert hasSum_taylorSeries_log (z := -z) (norm_neg z ▸ hz) using 2 with n
+  rcases n.eq_zero_or_pos with rfl | hn
+  · simp
+  field_simp
+  rw [div_eq_div_iff, pow_succ, mul_assoc (-1), ← mul_pow, neg_mul_neg, neg_one_mul, one_mul]
+  all_goals {norm_cast; exact hn.ne'}
+
 end Complex
