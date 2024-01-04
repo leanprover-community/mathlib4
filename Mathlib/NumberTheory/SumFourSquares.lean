@@ -161,7 +161,7 @@ protected theorem Prime.sum_four_squares {p : ℕ} (hp : p.Prime) :
   by_cases hm : 2 ∣ m
   · -- If `m` is an even number, then `(m / 2) * p` can be represented as a sum of four squares
     rcases hm with ⟨m, rfl⟩
-    rw [zero_lt_mul_left two_pos] at hm₀
+    rw [mul_pos_iff_of_pos_left two_pos] at hm₀
     have hm₂ : m < 2 * m := by simpa [two_mul]
     apply_fun (Nat.cast : ℕ → ℤ) at habcd
     push_cast [mul_assoc] at habcd
