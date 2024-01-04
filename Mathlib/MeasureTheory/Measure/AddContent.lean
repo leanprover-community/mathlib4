@@ -64,6 +64,7 @@ variable {α : Type*} {C : Set (Set α)} {s t : Set α} {I : Finset (Set α)}
 /-- An additive content is a set function with value 0 at the empty set which is finitely additive
 on a given set of sets. -/
 structure AddContent (C : Set (Set α)) where
+  /-- The value of the content on a set. -/
   toFun : Set α → ℝ≥0∞
   empty' : toFun ∅ = 0
   add' : ∀ (I : Finset (Set α)) (_h_ss : ↑I ⊆ C) (_h_dis : PairwiseDisjoint (I : Set (Set α)) id)
