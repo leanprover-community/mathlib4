@@ -190,12 +190,11 @@ theorem hom_ext ⦃f g : ℍ[R,c₁,c₂] →ₐ[R] A⦄
 end QuaternionAlgebra
 
 namespace Quaternion
-
-variable {R : Type*} {A B : Type*} [CommRing R] [Ring A] [Ring B] [Algebra R A] [Algebra R B]
+variable {R A : Type*} [CommRing R] [Ring A] [Algebra R A]
 
 open QuaternionAlgebra (Basis)
 
-/-- Two `R`-algebra morphisms the quaternions are equal if they agree on `i` and `j`. -/
+/-- Two `R`-algebra morphisms from the quaternions are equal if they agree on `i` and `j`. -/
 @[ext]
 theorem Quaternion.hom_ext ⦃f g : ℍ[R] →ₐ[R] A⦄
     (hi : f (Basis.self R).i = g (Basis.self R).i) (hj : f (Basis.self R).j = g (Basis.self R).j) :
