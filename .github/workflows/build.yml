@@ -167,6 +167,8 @@ jobs:
         run: |
           lean --version
           lake --version
+          curl --version
+          exit 1
 
       - name: get cache
         run: |
