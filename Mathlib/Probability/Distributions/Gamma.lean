@@ -167,7 +167,7 @@ noncomputable
 def gammaMeasure (a r : ℝ) : Measure ℝ :=
   volume.withDensity (gammaPdf a r)
 
-def IsProbabilityMeasureGamma {a r : ℝ} (ha : 0 < a) (hr : 0 < r) :
+lemma IsProbabilityMeasureGamma {a r : ℝ} (ha : 0 < a) (hr : 0 < r) :
     IsProbabilityMeasure (gammaMeasure a r) where
   measure_univ := by simp [gammaMeasure, lintegral_gammaPdf_eq_one a r ha hr]
 
