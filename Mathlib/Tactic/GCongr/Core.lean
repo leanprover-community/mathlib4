@@ -155,9 +155,9 @@ initialize registerBuiltinAttribute {
   add := fun decl _ kind ↦ MetaM.run' do
     let declTy := (← getConstInfo decl).type
     withReducible <| forallTelescopeReducing declTy fun xs targetTy => do
-    let fail := throwError
-      "@[gcongr] attribute only applies to lemmas proving {
-      ""}x₁ ~₁ x₁' → ... xₙ ~ₙ xₙ' → f x₁ ... xₙ ∼ f x₁' ... xₙ', got {declTy}"
+    let fail := throwError "\
+      @[gcongr] attribute only applies to lemmas proving \
+      x₁ ~₁ x₁' → ... xₙ ~ₙ xₙ' → f x₁ ... xₙ ∼ f x₁' ... xₙ', got {declTy}"
     -- verify that conclusion of the lemma is of the form `rel (head x₁ ... xₙ) (head y₁ ... yₙ)`
     let .app (.app rel lhs) rhs ← whnf targetTy | fail
     let some relName := rel.getAppFn.constName? | fail
@@ -404,8 +404,8 @@ partial def _root_.Lean.MVarId.gcongr
   let some (sErr, e) := ex?
     -- B. If there is a template, and there was no `@[gcongr]` lemma which matched the template,
     -- fail.
-    | throwError "gcongr failed, no @[gcongr] lemma applies for the template portion {""
-        }{template} and the relation {rel}"
+    | throwError "gcongr failed, no @[gcongr] lemma applies for the template portion \
+        {template} and the relation {rel}"
   -- B. If there is a template, and there was a `@[gcongr]` lemma which matched the template, but
   -- it was not possible to `apply` that lemma, then report the error message from `apply`-ing that
   -- lemma.
@@ -512,5 +512,5 @@ elab_rules : tactic
     | unsolvedGoalStates => do
       let unsolvedGoals ← @List.mapM MetaM _ _ _ MVarId.getType unsolvedGoalStates
       let g := Lean.MessageData.joinSep (unsolvedGoals.map Lean.MessageData.ofExpr) Format.line
-      throwError "rel failed, cannot prove goal by 'substituting' the listed relationships. {""
-        }The steps which could not be automatically justified were: \n{g}"
+      throwError "rel failed, cannot prove goal by 'substituting' the listed relationships. \
+        The steps which could not be automatically justified were:\n{g}"

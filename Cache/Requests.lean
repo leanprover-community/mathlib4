@@ -10,9 +10,9 @@ set_option autoImplicit true
 
 namespace Cache.Requests
 
-/-- Azure blob URL -/
+/-- FRO cache public URL -/
 def URL : String :=
-  "https://lakecache.blob.core.windows.net/mathlib4"
+  "https://mathlib4.lean-cache.cloud"
 
 open System (FilePath)
 
@@ -21,10 +21,8 @@ Given a file name like `"1234.tar.gz"`, makes the URL to that file on the server
 
 The `f/` prefix means that it's a common file for caching.
 -/
-def mkFileURL (fileName : String) (token : Option String) : IO String :=
-  return match token with
-  | some token => s!"{URL}/f/{fileName}?{token}"
-  | none => s!"{URL}/f/{fileName}"
+def mkFileURL (fileName : String) : String :=
+  s!"{URL}/f/{fileName}"
 
 section Get
 
@@ -47,13 +45,13 @@ def mkGetConfigContent (hashMap : IO.HashMap) : IO String := do
 
     -- Note we append a '.part' to the filenames here,
     -- which `downloadFiles` then removes when the download is successful.
-    pure $ acc ++ s!"url = {← mkFileURL fileName none}\n-o {
-      (IO.CACHEDIR / (fileName ++ ".part")).toString.quote}\n"
+    pure $ acc ++ s!"url = {mkFileURL fileName}\n\
+      -o {(IO.CACHEDIR / (fileName ++ ".part")).toString.quote}\n"
 
 /-- Calls `curl` to download a single file from the server to `CACHEDIR` (`.cache`) -/
 def downloadFile (hash : UInt64) : IO Bool := do
   let fileName := hash.asLTar
-  let url ← mkFileURL fileName none
+  let url := mkFileURL fileName
   let path := IO.CACHEDIR / fileName
   let partFileName := fileName ++ ".part"
   let partPath := IO.CACHEDIR / partFileName
@@ -161,25 +159,26 @@ end Get
 
 section Put
 
+/-- FRO cache S3 URL -/
+def UPLOAD_URL : String :=
+  "https://a09a7664adc082e00f294ac190827820.r2.cloudflarestorage.com/mathlib4"
+
 /-- Formats the config file for `curl`, containing the list of files to be uploaded -/
-def mkPutConfigContent (fileNames : Array String) (token : String) : IO String := do
+def mkPutConfigContent (fileNames : Array String) : IO String := do
   let l ← fileNames.data.mapM fun fileName : String => do
-    pure s!"-T {(IO.CACHEDIR / fileName).toString}\nurl = {← mkFileURL fileName (some token)}"
+    pure s!"-T {(IO.CACHEDIR / fileName).toString}\nurl = {UPLOAD_URL}/f/{fileName}"
   return "\n".intercalate l
 
 /-- Calls `curl` to send a set of cached files to the server -/
 def putFiles (fileNames : Array String) (overwrite : Bool) (token : String) : IO Unit := do
+  -- TODO: reimplement using HEAD requests?
+  let _ := overwrite
   let size := fileNames.size
   if size > 0 then
-    IO.FS.writeFile IO.CURLCFG (← mkPutConfigContent fileNames token)
+    IO.FS.writeFile IO.CURLCFG (← mkPutConfigContent fileNames)
     IO.println s!"Attempting to upload {size} file(s)"
-    if overwrite then
-      discard $ IO.runCurl #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob", "--parallel",
-        "-K", IO.CURLCFG.toString]
-    else
-      discard $ IO.runCurl #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob",
-        "-H", "If-None-Match: *", "--parallel", "-K", IO.CURLCFG.toString]
-    IO.FS.removeFile IO.CURLCFG
+    discard $ IO.runCurl #["-X", "PUT", "--aws-sigv4", "aws:amz:auto:s3", "--user", token,
+      "--parallel", "-K", IO.CURLCFG.toString]
   else IO.println "No files to upload"
 
 end Put
@@ -197,18 +196,20 @@ Sends a commit file to the server, containing the hashes of the respective commi
 The file name is the current Git hash and the `c/` prefix means that it's a commit file.
 -/
 def commit (hashMap : IO.HashMap) (overwrite : Bool) (token : String) : IO Unit := do
+  -- TODO: reimplement using HEAD requests?
+  let _ := overwrite
   let hash ← getGitCommitHash
   let path := IO.CACHEDIR / hash
   IO.mkDir IO.CACHEDIR
   IO.FS.writeFile path $ ("\n".intercalate $ hashMap.hashes.toList.map toString) ++ "\n"
-  let params := if overwrite
-    then #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob"]
-    else #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *"]
-  discard $ IO.runCurl $ params ++ #["-T", path.toString, s!"{URL}/c/{hash}?{token}"]
+  discard $ IO.runCurl $ #["-T", path.toString, "--aws-sigv4", "aws:amz:auto:s3",
+    "--user", token, s!"{UPLOAD_URL}/c/{hash}"]
   IO.FS.removeFile path
 
 end Commit
 
+-- TODO: unused, not adapted to the FRO cache yet
+/-
 section Collect
 
 inductive QueryType
@@ -248,5 +249,6 @@ def getFilesInfo (q : QueryType) : IO $ List (String × String) := do
       | _ => formatError
 
 end Collect
+-/
 
 end Cache.Requests
