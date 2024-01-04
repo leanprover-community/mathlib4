@@ -152,7 +152,7 @@ instance monoid : Monoid (⨂[R] i, A i) where
 
 instance semiring : Semiring (⨂[R] i, A i) where
   __ := monoid
-  __ := inferInstanceAs <| AddCommMonoid (⨂[R] i, A i)
+  __ := inferInstanceAs <| AddCommMonoidWithOne (⨂[R] i, A i)
   left_distrib := lmul_add
   right_distrib := add_lmul
   zero_mul := zero_lmul
