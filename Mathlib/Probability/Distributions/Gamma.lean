@@ -111,52 +111,6 @@ lemma gammaPdfReal_nonneg {a r : ℝ} (ha : 0 < a) (hr : 0 < r) (x : ℝ) :
   split_ifs <;> positivity
 
 /-- Expresses the integral over Ioi 0 of t^(a-1) * exp(-r*t) in terms of the Gamma function. -/
-lemma integral_rpow_mul_exp_neg_mul_Ioi {a r : ℝ} (ha : 0 < a) (hr : 0 < r) :
-    ∫ (t : ℝ) in Ioi 0, t ^ (a - 1) * exp (-(r * t))
-    = (1 / r) ^ a * Gamma (a) := by
-  have hac : 0 < (a : ℂ).re := ha
-  have := Complex.integral_cpow_mul_exp_neg_mul_Ioi hac hr
-  sorry
-
-/-- Expresses the integral over Ioi 0 of t^(a-1) * exp(-r*t) in terms of the Gamma function. -/
-lemma integral_rpow_mul_exp_neg_mul_Ioi2 {a r : ℝ} (ha : 0 < a) (hr : 0 < r) :
-    ∫ (t : ℝ) in Ioi 0, t ^ (a - 1) * exp (-(r * t))
-    = (1 / r) ^ a * Gamma (a) := by
-  have hri : 0 < 1/r := by positivity
-  calc ∫ (t : ℝ) in Ioi 0, t ^ (a - 1) * exp (-(r * t))
-    _ = ∫ (t : ℝ) in Ioi 0, (1 / r) ^ (a-1) * (r * t) ^ (a - 1) * exp (-(r * t)) := by
-      apply MeasureTheory.set_integral_congr
-      · simp
-      · intro x (hx : 0 < x)
-        simp_rw [mul_eq_mul_right_iff, mul_rpow hr.le hx.le, ← mul_assoc, ← mul_rpow hri.le hr.le,
-          mul_comm (1 / r), mul_div, mul_one, div_self hr.ne', one_rpow, one_mul, true_or]
-    _ =  |1 / r| * ∫ (t : ℝ) in Ioi (r * 0), (1 / r) ^ (a-1) * t ^ (a - 1) * exp (-t) := by
-      rw [integral_comp_mul_left_Ioi (fun t ↦ (1 / r) ^ (a-1) * t ^ (a - 1) * exp (-t)) (0 : ℝ) hr]
-      simp
-    _ =  1 / r * ∫ (t : ℝ) in Ioi 0, (1 / r) ^ (a-1) • t ^ (a - 1) * exp (-t) := by
-      have : Ioi (r * 0) = Ioi 0 := by refine Ioi_inj.mpr (by simp)
-      rw [this, abs_of_nonneg hri.le]
-      rfl
-    _ =  1 / r * ∫ (t : ℝ) in Ioi 0, (1 / r) ^ (a-1) • (t ^ (a - 1) * exp (-t)) := by
-      congr
-      ext x
-      exact smul_mul_assoc _ _ _
-    _ =  1 / r * (1 / r) ^ (a-1) • (∫ (t : ℝ) in Ioi 0, t ^ (a - 1) * exp (-t)) := by
-      rw [integral_smul]
-    _ = (1 / r) ^ a • (∫ (t : ℝ) in Ioi 0, t ^ (a - 1) * exp (-t)) := by
-      have : (1 / r) ^ a = 1 / r * (1 / r)^(a-1) := by
-        nth_rewrite 2 [← rpow_one (1 / r)]
-        rw [← rpow_add]
-        simp only [one_div, add_sub_cancel'_right]
-        exact hri
-      rw [this, smul_eq_mul, smul_eq_mul, mul_assoc]
-    _ = (1 / r) ^ a * Gamma (a) := by
-      rw [Gamma_eq_integral ha]
-      congr
-      ext x
-      group
-
-/-- Expresses the integral over Ioi 0 of t^(a-1) * exp(-r*t) in terms of the Gamma function. -/
 lemma pow_exp_integral_Ioi_insert_1 {a r : ℝ} (ha : 0 < a) (hr : 0 < r) :
     ∫ (t : ℝ) in Ioi 0, (r ^ a / Gamma a) * t ^ (a - 1) * exp (-(r * t))
     = 1 := by

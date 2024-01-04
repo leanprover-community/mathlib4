@@ -616,6 +616,14 @@ theorem Gamma_nonneg_of_nonneg {s : ℝ} (hs : 0 ≤ s) : 0 ≤ Gamma s := by
   · rw [Gamma_zero]
   · exact (Gamma_pos_of_pos h).le
 
+/-- Expresses the integral over Ioi 0 of t^(a-1) * exp(-r*t) in terms of the Gamma function. -/
+lemma integral_rpow_mul_exp_neg_mul_Ioi {a r : ℝ} (ha : 0 < a) (hr : 0 < r) :
+    ∫ (t : ℝ) in Ioi 0, t ^ (a - 1) * exp (-(r * t))
+    = (1 / r) ^ a * Gamma (a) := by
+  have hac : 0 < (a : ℂ).re := ha
+  have := Complex.integral_cpow_mul_exp_neg_mul_Ioi hac hr
+  sorry
+
 open Lean.Meta Qq in
 /-- The `positivity` extension which identifies expressions of the form `Gamma a`. -/
 @[positivity Gamma (_ : ℝ)]
