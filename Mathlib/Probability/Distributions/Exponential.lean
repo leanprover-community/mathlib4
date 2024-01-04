@@ -31,6 +31,10 @@ open scoped ENNReal NNReal Real
 
 open MeasureTheory Real Set Filter Topology
 
+lemma lintegral_eq_lintegral_Ici_add_Iio (f : ℝ → ℝ≥0∞) (c : ℝ) :
+    ∫⁻ x, f x = (∫⁻ x in Ici c, f x) + ∫⁻ x in Iio c, f x := by
+  rw [← lintegral_add_compl f (measurableSet_Ici (a := c)), compl_Ici]
+
 namespace ProbabilityTheory
 
 section ExponentialPdf

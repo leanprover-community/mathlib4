@@ -36,20 +36,6 @@ lemma lintegral_Iic_eq_lintegral_Iio_add_Icc {y z : ℝ} (f : ℝ → ℝ≥0∞
   rintro x ⟨h1 : x < _, h2, _⟩
   linarith
 
-lemma lintegral_eq_lintegral_Ici_add_Iio (f : ℝ → ℝ≥0∞) (c : ℝ) :
-    ∫⁻ x, f x = (∫⁻ x in Ici c, f x) + ∫⁻ x in Iio c, f x := by
-  have union : univ = {x : ℝ | x ≥ c} ∪ {x : ℝ | x < c} := by
-    ext x
-    simp [le_or_lt]
-  calc
-  ∫⁻ x, f x = ∫⁻ x in univ, f x ∂volume := (set_lintegral_univ f).symm
-  _ = ∫⁻ x in {x | x ≥ c} ∪ {x | x < c} , f x ∂volume := by rw [← union]
-  _ = _ := by
-    apply lintegral_union (isOpen_gt' c).measurableSet
-    rw [Set.disjoint_iff]
-    rintro x ⟨hxge : x ≥ _, hxlt : x < _⟩
-    linarith
-
 namespace ProbabilityTheory
 
 section GammaPdf
@@ -104,45 +90,26 @@ open Measure
 
 /-- The pdf of the Gamma distribution integrates to 1 -/
 @[simp]
-lemma lintegral_gammaPdf_eq_one (a r : ℝ) (ha : 0 < a) (hr : 0 < r) :
+lemma lintegral_gammaPdf_eq_one {a r : ℝ} (ha : 0 < a) (hr : 0 < r) :
     ∫⁻ x, gammaPdf a r x = 1 := by
-  rw [lintegral_eq_lintegral_Ici_add_Iio (gammaPdf a r) 0, ← ENNReal.toReal_eq_one_iff]
   have leftSide : ∫⁻ x in Iio 0, gammaPdf a r x = 0 := by
     rw [set_lintegral_congr_fun measurableSet_Iio
       (ae_of_all _ (fun x (hx : x < 0) ↦ gammaPdf_of_neg hx)), lintegral_zero]
-  have rightSide :
-      ∫⁻ x in Ici 0, gammaPdf a r x =
-      ∫⁻ x in Ici 0, ENNReal.ofReal (r ^ a / (Gamma a) * x ^ (a-1) * exp (-(r * x))) :=
-    set_lintegral_congr_fun isClosed_Ici.measurableSet
-      (ae_of_all _ (fun x (hx : 0 ≤ x) ↦ gammaPdf_of_nonneg hx))
-  simp only [leftSide, add_zero]
-  rw [rightSide]
-  rw [← integral_eq_lintegral_of_nonneg_ae]
-  · rw [MeasureTheory.integral_Ici_eq_integral_Ioi]
-    have : ∫ (t : ℝ) in Ioi 0, r ^ a / Gamma a * t ^ (a - 1) * rexp (-(r * t)) =
-      ∫ (t : ℝ) in Ioi 0, r ^ a / Gamma a * (t ^ (a - 1) * rexp (-(r * t))) := by
-        congr
-        ext t
-        rw [mul_assoc]
-    rw [this, integral_mul_left, integral_rpow_mul_exp_neg_mul_Ioi ha hr, div_mul_eq_mul_div,
+  have rightSide : ∫⁻ x in Ici 0, gammaPdf a r x =
+      ∫⁻ x in Ici 0, ENNReal.ofReal (r ^ a / Gamma a * x ^ (a - 1) * exp (-(r * x))) :=
+    set_lintegral_congr_fun measurableSet_Ici (ae_of_all _ (fun _ ↦ gammaPdf_of_nonneg))
+  rw [← ENNReal.toReal_eq_one_iff, ← lintegral_add_compl _ measurableSet_Ici, compl_Ici,
+    leftSide, rightSide, add_zero, ← integral_eq_lintegral_of_nonneg_ae]
+  · simp_rw [integral_Ici_eq_integral_Ioi, mul_assoc]
+    rw [integral_mul_left, integral_rpow_mul_exp_neg_mul_Ioi ha hr, div_mul_eq_mul_div,
       ← mul_assoc, mul_div_assoc, div_self (Gamma_pos_of_pos ha).ne', mul_one,
       div_rpow zero_le_one hr.le, one_rpow, mul_one_div, div_self (rpow_pos_of_pos hr _).ne']
-  · unfold EventuallyLE
-    simp only [Pi.zero_apply]
-    rw [ae_restrict_iff]
-    simp only [mem_Ici]
-    · apply ae_of_all
-      intro x hx
-      positivity
-    · refine measurableSet_le measurable_const ?_
-      refine Measurable.mul ?_ ?_
-      · measurability
-      · apply (Measurable.neg ?_).exp
-        exact measurable_id.const_mul _
-  · rw [← restrict_Ioi_eq_restrict_Ici]
-    refine ContinuousOn.aestronglyMeasurable ?_ measurableSet_Ioi
-    refine ContinuousOn.mul ?_ (Continuous.continuousOn (by continuity))
-    exact continuousOn_const.mul (continuousOn_id.rpow_const fun x hx ↦ Or.inl (ne_of_gt hx))
+  · rw [EventuallyLE, ae_restrict_iff' measurableSet_Ici]
+    exact ae_of_all _ (fun x (hx : 0 ≤ x) ↦ by positivity)
+  · apply (measurable_gammaPdfReal a r).aestronglyMeasurable.congr
+    rw [EventuallyEq, ae_restrict_iff' measurableSet_Ici]
+    refine ae_of_all _ (fun x (hx : 0 ≤ x) ↦ ?_)
+    simp_rw [gammaPdfReal, eq_true_intro hx, ite_true]
 
 end GammaPdf
 
@@ -155,7 +122,7 @@ def gammaMeasure (a r : ℝ) : Measure ℝ :=
 
 lemma isProbabilityMeasureGamma {a r : ℝ} (ha : 0 < a) (hr : 0 < r) :
     IsProbabilityMeasure (gammaMeasure a r) where
-  measure_univ := by simp [gammaMeasure, lintegral_gammaPdf_eq_one a r ha hr]
+  measure_univ := by simp [gammaMeasure, lintegral_gammaPdf_eq_one ha hr]
 
 section GammaCdf
 
