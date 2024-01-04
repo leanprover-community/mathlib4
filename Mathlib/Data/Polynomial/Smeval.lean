@@ -246,7 +246,7 @@ theorem smeval_assoc_X_pow (m n : ℕ) :
   | h_add p q ph qh =>
     simp only [smeval_add, ph, qh, add_mul]
   | h_monomial n a =>
-    rw [smeval_monomial, smul_mul_assoc, smul_mul_assoc, ← npow_assoc, ← smul_mul_assoc]
+    rw [smeval_monomial, smul_mul_assoc, smul_mul_assoc, npow_mul_assoc, ← smul_mul_assoc]
 
 theorem smeval_mul_X_pow : ∀(n : ℕ), (p * X^n).smeval x = p.smeval x * x^n
   | 0 => by
@@ -261,7 +261,7 @@ theorem smeval_X_pow_assoc (m n : ℕ) :
   | h_add p q ph qh =>
     simp only [smeval_add, ph, qh, mul_add]
   | h_monomial n a =>
-    simp only [smeval_monomial, mul_smul_comm, npow_assoc]
+    simp only [smeval_monomial, mul_smul_comm, npow_mul_assoc]
 
 theorem smeval_X_pow_mul : ∀(n : ℕ), (X^n * p).smeval x = x^n * p.smeval x
   | 0 => by
