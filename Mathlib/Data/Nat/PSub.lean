@@ -108,8 +108,8 @@ theorem psub_eq_sub {m n} (h : n ≤ m) : psub m n = some (m - n) :=
 theorem psub_add (m n k) :
     psub m (n + k) = (do psub (← psub m n) k) := by
     induction k
-    simp only [zero_eq, add_zero, psub_zero, Option.bind_eq_bind, Option.bind_some]
-    simp [*, Nat.add_succ, Option.bind]
+    · simp only [zero_eq, add_zero, psub_zero, Option.bind_eq_bind, Option.bind_some]
+    · simp [*, Nat.add_succ]
 #align nat.psub_add Nat.psub_add
 
 /-- Same as `psub`, but with a more efficient implementation. -/
