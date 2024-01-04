@@ -12,10 +12,10 @@ import Mathlib.Data.Fintype.Sum
 /-!
 # Stars and bars
 
-In this file, we prove (in `Sym.card_sym_eq_multichoose`) that the function `multichoose n k`
-defined in `Data/Nat/Choose/Basic` counts the number of multisets of cardinality `k` over an
-alphabet of cardinality `n`. In conjunction with `Nat.multichoose_eq` proved in
-`Data/Nat/Choose/Basic`, which shows that `multichoose n k = choose (n + k - 1) k`,
+In this file, we prove (in `Sym.card_sym_eq_multichoose`) that the function `Ring.multichoose n k`
+defined in `RingTheory/Binomial` counts the number of multisets of cardinality `k` over an
+alphabet of cardinality `n`. In conjunction with `Ring.multichoose_eq` proved in
+`RingTheory/Binomial`, which shows that `Ring.multichoose n k = Nat.choose (n + k - 1) k`,
 this is central to the "stars and bars" technique in combinatorics, where we switch between
 counting multisets of size `k` over an alphabet of size `n` to counting strings of `k` elements
 ("stars") separated by `n-1` dividers ("bars").
@@ -100,7 +100,7 @@ theorem card_sym_fin_eq_multichoose : ∀ n k : ℕ, card (Sym (Fin n) k) = Ring
   | n + 2, k + 1 => by
     rw [show n + 2 = n + 1 + 1 by linarith, Ring.multichoose_succ_succ (n+1) k,
       ← card_sym_fin_eq_multichoose (n + 1) (k + 1), ← card_sym_fin_eq_multichoose (n + 1 + 1) k,
-      add_comm (Fintype.card _), ← card_sum]
+      add_comm (Fintype.card _), ← Fintype.card_sum]
     refine Fintype.card_congr (Equiv.symm ?_)
     apply (Sym.e1.symm.sumCongr Sym.e2.symm).trans
     apply Equiv.sumCompl
@@ -131,7 +131,7 @@ variable [DecidableEq α]
 
 /-- The `diag` of `s : Finset α` is sent on a finset of `Sym2 α` of card `s.card`. -/
 theorem card_image_diag (s : Finset α) : (s.diag.image Sym2.mk).card = s.card := by
-  rw [card_image_of_injOn, diag_card]
+  rw [Finset.card_image_of_injOn, diag_card]
   rintro ⟨x₀, x₁⟩ hx _ _ h
   cases Sym2.eq.1 h
   · rfl
