@@ -316,8 +316,8 @@ lemma testBit_ones (w i : ℕ) : testBit (pred <| 1 <<< w) i = decide (i < w) :=
       exact two_pow_pos w
     )]
     cases i
-    · simp only [Nat.zero_eq, ← bit_true_eq_bit1, testBit_zero, zero_lt_succ, decide_True]
-    · simp only [testBit_succ, ih, ← bit_true_eq_bit1, decide_eq_decide]
+    · simp only [Nat.zero_eq, ← Nat.bit_true, testBit_zero, zero_lt_succ, decide_True]
+    · simp only [testBit_succ, ih, ← Nat.bit_true, decide_eq_decide]
       exact succ_lt_succ_iff.symm
 
 theorem bitwise_swap {f : Bool → Bool → Bool} :
