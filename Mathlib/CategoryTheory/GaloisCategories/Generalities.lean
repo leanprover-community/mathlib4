@@ -7,11 +7,14 @@ import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.MonoCoprod
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.SingleObj
+import Mathlib.CategoryTheory.Adjunction.Evaluation
 import Mathlib.Data.Finite.Card
 import Mathlib.Topology.Algebra.Group.Basic
 import Mathlib.RepresentationTheory.Action.Limits
+import Mathlib.Topology.Algebra.OpenSubgroup
+import Mathlib.Logic.Equiv.TransferInstance
 
-universe u v w v₁ u₁ u₂ w₂ w₁
+universe u v w v₁ u₁ u₂ w₂ w₁ v₂
 
 section Finite
 
@@ -30,16 +33,29 @@ open CategoryTheory Limits Functor
 
 section
 
---instance (G : Type v) [Group G] [Finite G] :
---    @HasColimitsOfShape (SingleObj G) (SingleObj.category G) FintypeCat.{v} _ := by
---  have : Fintype G := Fintype.ofFinite G
---  have : Category (SingleObj G) := SingleObj.category G
---  let inst1 : SmallCategory (SingleObj G) := (SingleObj.category G)
---  have : FinCategory (SingleObj G) := sorry
---  let inst : HasFiniteColimits FintypeCat := inferInstance
---  have : @HasColimitsOfShape (SingleObj G)
---    (SingleObj.category G) FintypeCat.{v} _ := inst.out (SingleObj G)
---  exact this
+def MulEquivSingleObjEquiv {G : Type v} {H : Type w} [Monoid G] [Monoid H] (e : G ≃* H) : SingleObj G ≌ SingleObj H :=
+  CategoryTheory.Equivalence.mk
+    (MonoidHom.toFunctor e.toMonoidHom)
+    (MonoidHom.toFunctor e.symm.toMonoidHom)
+    (by dsimp [MonoidHom.toFunctor, SingleObj.mapHom, Functor.comp]
+        apply eqToIso
+        simp only [MulEquiv.symm_apply_apply]
+        rfl)
+    (by dsimp [MonoidHom.toFunctor, SingleObj.mapHom, Functor.comp]
+        apply eqToIso
+        simp only [MulEquiv.apply_symm_apply]
+        rfl)
+
+attribute [-instance] Fin.instMulFin
+attribute [-instance] Distrib.toMul
+
+instance (G : Type v) [Group G] [Finite G] : HasColimitsOfShape (SingleObj G) FintypeCat.{w} := by
+  obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin G
+  let H : Type := Fin n
+  let groupH : Group H := Equiv.group e.symm
+  let e' : H ≃* G := Equiv.mulEquiv e.symm
+  let eq : SingleObj G ≌ SingleObj H := MulEquivSingleObjEquiv e'.symm
+  apply Limits.hasColimitsOfShape_of_equivalence eq.symm
 
 end
 
@@ -441,7 +457,11 @@ lemma Limit.π_mk [UnivLE.{v, u}] {J : Type v} [SmallCategory J] [FinCategory J]
     (F : J ⥤ FintypeCat.{u}) (x : ∀ j, F.obj j)
     (h : ∀ (j j') (f : j ⟶ j'), F.map f (x j) = x j') (j : J) :
     limit.π F j (Limit.mk F x h) = x j := by
-  admit
+  dsimp [Limit.mk]
+  show ((IsLimit.conePointUniqueUpToIso
+    (PreservesLimit.preserves _) (limit.isLimit (F ⋙ incl))).inv ≫ (limit.cone F).π.app j) _ = x j
+  erw [IsLimit.conePointUniqueUpToIso_inv_comp]
+  simp only [limit.cone_x, limit.cone_π, Types.Limit.π_mk]
 
 noncomputable def Pi.mk [UnivLE.{v, u}] {ι : Type v} [Fintype ι] (f : ι → FintypeCat.{u})
     (x : ∀ j, f j) : (∏ f : FintypeCat.{u}) := by
@@ -454,9 +474,68 @@ noncomputable def Pi.mk [UnivLE.{v, u}] {ι : Type v} [Fintype ι] (f : ι → F
 @[simp]
 lemma Pi.π_mk [UnivLE.{v, u}] {ι : Type v} [Fintype ι] (f : ι → FintypeCat.{u})
     (x : ∀ j, f j) (j : ι) : Pi.π f j (Pi.mk f x) = x j := by
-  admit
+  dsimp [Pi.mk]
+  simp only [Limit.π_mk]
+
+noncomputable def imageComplement {X Y : FintypeCat.{u}} (f : X ⟶ Y) :
+    FintypeCat.{u} := by
+  let h : Fintype (↑(Set.range f)ᶜ) := Fintype.ofFinite _
+  exact of (↑(Set.range f)ᶜ)
+
+noncomputable def imageComplementIncl {X Y : FintypeCat.{u}}
+    (f : X ⟶ Y) : imageComplement f ⟶ Y := Subtype.val
+
+--noncomputable def isCoprodOfMono {X Y : FintypeCat.{u}}
+--    (f : X ⟶ Y) [Mono f] : IsColimit
+--    (BinaryCofan.mk f (imageComplementIncl f)) := by
+--  apply isColimitOfReflects FintypeCat.incl
+--  dsimp [mapCocone]
+--  convert_to IsColimit (BinaryCofan.mk (incl.map f) (incl.map (imageComplementIncl f)))
+--  aesop
+--  apply CategoryTheory.Functor.ext
+--  intro i j u
+--  aesop
+--  admit
+--  admit
+--  admit
+--  admit
 
 end FintypeCat
+
+section Binary
+
+variable {D : Type w₁} [Category.{w₂, w₁} D]
+
+def mapPairIso' {X Y : C} (F : C ⥤ D) : pair X Y ⋙ F ≅ pair (F.obj X) (F.obj Y) := by
+  apply Discrete.natIso
+  intro ⟨j⟩
+  match j with
+  | WalkingPair.left => exact eqToIso rfl
+  | WalkingPair.right => exact eqToIso rfl
+
+def mapBinaryCofanIso {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
+  (F : C ⥤ D) : F.mapCocone (BinaryCofan.mk f g)
+    ≅ (Cocones.precompose (mapPairIso' F).hom).obj (BinaryCofan.mk (F.map f) (F.map g)) := by
+  apply Cocones.ext
+  swap
+  exact eqToIso rfl
+  intro ⟨j⟩
+  match j with
+  | WalkingPair.left => 
+      dsimp [mapPairIso']
+      simp only [Category.comp_id, Category.id_comp]
+  | WalkingPair.right => 
+      dsimp [mapPairIso']
+      simp only [Category.comp_id, Category.id_comp]
+
+def isColimitMapBinaryCofan {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) (F : C ⥤ D) :
+    IsColimit (F.mapCocone (BinaryCofan.mk f g)) ≃ IsColimit (BinaryCofan.mk (F.map f) (F.map g)) := by
+  trans
+  apply IsColimit.equivIsoColimit
+  exact mapBinaryCofanIso f g F
+  apply IsColimit.precomposeHomEquiv
+
+end Binary
 
 namespace Types
 
@@ -529,22 +608,8 @@ section Profinite
 
 variable {G : Type*} [Group G] [TopologicalSpace G] [TopologicalGroup G]
 
-lemma closed_of_open (U : Subgroup G) (h : IsOpen (U : Set G)) : IsClosed (U : Set G) := by
-  sorry
-
-def finiteQuotientOfOpen [CompactSpace G] (U : Subgroup G) (h : IsOpen (U : Set G)) :
-    Finite (G ⧸ U) :=
-  sorry
-
-def finiteQuotientSubgroups [CompactSpace G] (U K : Subgroup G) (hUopen : IsOpen (U : Set G))
-    (hKpoen : IsOpen (K : Set G)) : Finite (U ⧸ Subgroup.subgroupOf K U) :=
-  sorry
-
-end Profinite
-
-section
-
-variable {G : Type u} [Group G]
+lemma closed_of_open (U : Subgroup G) (h : IsOpen (U : Set G)) : IsClosed (U : Set G) :=
+  OpenSubgroup.isClosed ⟨U, h⟩
 
 open Function Set
 
@@ -555,22 +620,31 @@ lemma QuotientGroup.preimage_mk_singleton_mk (H : Subgroup G) (g : G) :
   rw [← H.inv_mem_iff]
   simp
 
-variable [TopologicalSpace G] [TopologicalGroup G] (U : Subgroup G)
-
-lemma Subgroup.discreteTopology  (U_open : IsOpen (U : Set G)) : DiscreteTopology (G ⧸ U) := by
+lemma Subgroup.discreteTopology (U : Subgroup G) (U_open : IsOpen (U : Set G)) : DiscreteTopology (G ⧸ U) := by
   apply singletons_open_iff_discrete.mp
   rintro ⟨g⟩
   erw [isOpen_mk, QuotientGroup.preimage_mk_singleton_mk]
   exact Homeomorph.mulLeft g |>.isOpen_image|>.mpr U_open
 
-lemma Subgroup.finiteQuotient [CompactSpace G] (U_open : IsOpen (U : Set G)) : Finite (G ⧸ U) :=
+def finiteQuotientOfOpen [CompactSpace G] (U : Subgroup G) (h : IsOpen (U : Set G)) :
+    Finite (G ⧸ U) :=
   have : CompactSpace (G ⧸ U) := Quotient.compactSpace
-  have : DiscreteTopology (G ⧸ U) := U.discreteTopology U_open
+  have : DiscreteTopology (G ⧸ U) := U.discreteTopology h
   finite_of_compact_of_discrete
 
-end
+def finiteQuotientSubgroups [CompactSpace G] (U K : Subgroup G) (hUopen : IsOpen (U : Set G))
+    (hKpoen : IsOpen (K : Set G)) : Finite (U ⧸ Subgroup.subgroupOf K U) := by
+  have : CompactSpace U := isCompact_iff_compactSpace.mp <| IsClosed.isCompact
+    <| closed_of_open U hUopen
+  apply finiteQuotientOfOpen (Subgroup.subgroupOf K U)
+  show IsOpen (((Subgroup.subtype U) ⁻¹' K) : Set U)
+  apply Continuous.isOpen_preimage
+  continuity
+  assumption
 
-section
+end Profinite
+
+section ActionLimitPreservation
 
 variable (V : Type (w + 1)) [LargeCategory.{w} V] [ConcreteCategory V] (G : MonCat.{w})
 
@@ -608,4 +682,83 @@ def Action.preservesColimitOfSizeOfPreserves (F : C ⥤ Action V G)
   apply Action.preservesColimitOfShapeOfPreserves
   exact PreservesColimitsOfSize.preservesColimitsOfShape
 
-end
+instance : ReflectsColimits (forget₂ (Action V G) V) := by
+  constructor
+  intro J _
+  constructor
+  intro K
+  constructor
+  intro c h
+  let c' : Cocone (K ⋙ (Action.functorCategoryEquivalence V G).functor) := (Action.functorCategoryEquivalence V G).functor.mapCocone c
+  apply isColimitOfReflects ((Action.functorCategoryEquivalence V G).functor)
+  exact evaluationJointlyReflectsColimits c' (fun _ => h)
+
+noncomputable instance forget₂PreservesFiniteColimits [HasFiniteColimits V] :
+    PreservesFiniteColimits (forget₂ (Action V G) V) := by
+  show PreservesFiniteColimits ((Action.functorCategoryEquivalence V G).functor ⋙ (evaluation (SingleObj G) V).obj (SingleObj.star G))
+  have : PreservesFiniteColimits ((evaluation (SingleObj G) V).obj (SingleObj.star G)) := by
+    constructor
+    intro J _ _
+    infer_instance
+  apply compPreservesFiniteColimits
+
+noncomputable instance [HasFiniteLimits V] : PreservesFiniteLimits (forget₂ (Action V G) V) := by
+  show PreservesFiniteLimits ((Action.functorCategoryEquivalence V G).functor ⋙ (evaluation (SingleObj G) V).obj (SingleObj.star G))
+  have : PreservesFiniteLimits ((evaluation (SingleObj G) V).obj (SingleObj.star G)) := by
+    constructor
+    intro J _ _
+    infer_instance
+  apply compPreservesFiniteLimits
+
+noncomputable instance forgetPreservesFiniteLimits [HasFiniteLimits V] [PreservesFiniteLimits (forget V)] :
+    PreservesFiniteLimits (forget (Action V G)) := by
+  show PreservesFiniteLimits (forget₂ (Action V G) V ⋙ forget V)
+  apply compPreservesFiniteLimits
+
+noncomputable instance {J : Type v₁} [Category.{v₂, v₁} J] [HasColimitsOfShape J V] :
+    PreservesColimitsOfShape J (forget₂ (Action V G) V) := by
+  show PreservesColimitsOfShape J ((Action.functorCategoryEquivalence V G).functor ⋙ (evaluation (SingleObj G) V).obj (SingleObj.star G))
+  infer_instance
+
+instance {J : Type v₁} [Category.{v₂, v₁} J] [HasColimitsOfShape J V] : HasColimitsOfShape J (Action V G) :=
+  Adjunction.hasColimitsOfShape_of_equivalence (Action.functorCategoryEquivalence _ _).functor
+
+noncomputable example (H : Type v) [Group H] [Finite H] : PreservesColimitsOfShape (SingleObj H) (forget₂ (Action FintypeCat G) FintypeCat) :=
+  inferInstance
+
+example (H : Type v) [Group H] [Finite H] : HasColimitsOfShape (SingleObj H) (Action FintypeCat G) := inferInstance
+
+instance : PreservesMonomorphisms (forget₂ (Action FintypeCat G) FintypeCat) := by
+  constructor
+  intro X Y f hf
+  apply ConcreteCategory.mono_of_injective
+  show Function.Injective f.hom
+  have : PreservesFiniteLimits (forget FintypeCat) := by
+    show PreservesFiniteLimits FintypeCat.incl
+    infer_instance
+  have : PreservesFiniteLimits (forget (Action FintypeCat G)) := forgetPreservesFiniteLimits FintypeCat G
+  apply ConcreteCategory.injective_of_mono_of_preservesPullback f
+
+instance : PreservesMonomorphisms (forget (Action FintypeCat G)) := by
+  show PreservesMonomorphisms ((forget₂ (Action FintypeCat G) FintypeCat) ⋙ FintypeCat.incl)
+  infer_instance
+
+end ActionLimitPreservation
+
+section ActionFintypeCat
+
+variable {G : MonCat.{w}}
+
+--noncomputable def imageComplement {X Y : Action FintypeCat G} (f : X ⟶ Y) :
+--    Action FintypeCat G where
+--  V := FintypeCat.imageComplement f.hom
+--  ρ := by
+--    let g : G →* End Y.V := Y.ρ
+--    
+--    admit
+--
+--noncomputable def imageComplementIncl {X Y : Action FintypeCat G}
+--    (f : X ⟶ Y) : imageComplement f ⟶ Y :=
+--  sorry
+
+end ActionFintypeCat

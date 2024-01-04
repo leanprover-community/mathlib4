@@ -347,93 +347,7 @@ end More
 
 section Examples
 
-variable {G : Type*} [Group G]
-
-instance : PreGaloisCategory (Action FintypeCat (MonCat.of G)) where
-  hasTerminalObject := inferInstance
-  hasPullbacks := inferInstance
-  hasFiniteCoproducts := inferInstance
-  hasQuotientsByFiniteGroups := sorry
-  monoInducesIsoOnDirectSummand := by
-    -- maybe use CategoryTheory.Limits.Types.isCoprodOfMono
-    intro X Y ⟨i, hi⟩ h
-    let Z₁ : Set Y.V := Set.range i
-    let Z₂ : Set Y.V := (Set.range i)ᶜ
-    have : Fintype Z₂ := Fintype.ofFinite Z₂
-    let Z : FintypeCat := FintypeCat.of Z₂
-    --let j : X.V → Z₁ := Set.codRestrict i Z₁ (by simp)
-    --have hinj : Function.Injective i := by exact?
-    --have h1 : Function.Injective j := Function.Injective.codRestrict _ hinj
-    --have h2 : Function.Surjective j := by
-    --  intro ⟨b, a, hab⟩
-    --  use a
-    --  ext
-    --  exact hab
-    --have : Function.Bijective j := ⟨h1, h2⟩
-    let ac (g : G) : Z → Z := by
-      let f : Y.V → Y.V := Y.ρ g
-      apply Set.MapsTo.restrict f Z₂ Z₂
-      intro z hz
-      by_contra hc
-      simp at hc
-      obtain ⟨x, hx⟩ := hc
-      have hx' : Y.ρ g⁻¹ (i x) = Y.ρ g⁻¹ (Y.ρ g z) := congrArg (Y.ρ g⁻¹) hx
-      have := congrFun (hi g⁻¹) x
-      simp at this
-      rw [←this] at hx'
-      have : Y.ρ g⁻¹ (Y.ρ g z) = z := by
-        show (Y.ρ g⁻¹ * Y.ρ g) z = z
-        rw [←MonoidHom.map_mul Y.ρ g⁻¹ g]
-        simp
-      rw [this] at hx'
-      apply hz
-      use X.ρ g⁻¹ x
-    let a : G →* End Z := by
-      apply MonoidHom.mk
-      swap
-      constructor
-      swap
-      exact ac
-      show Set.MapsTo.restrict (Y.ρ 1) Z₂ Z₂ _ = 𝟙 Z
-      ext
-      simp
-      intro g h
-      show ac (g * h) = ac g ∘ ac h
-      ext ⟨z, _⟩
-      apply Subtype.ext
-      show Y.ρ (g * h) z = Y.ρ g (Y.ρ h z)
-      rw [MonoidHom.map_mul]
-      show (Y.ρ g ∘ Y.ρ h) z = Y.ρ g (Y.ρ h z)
-      simp
-    let Z : Action FintypeCat (MonCat.of G) := {
-      V := Z
-      ρ := a
-    }
-    use Z
-    let u : Z ⟶ Y := by
-      constructor
-      swap
-      show Z₂ → Y.V
-      exact (↑)
-      intro g
-      aesop
-    use u
-    let s : BinaryCofan X Z := BinaryCofan.mk ⟨i, hi⟩ u
-    let t : IsColimit s := {
-      desc := by
-        intro s
-        show Y ⟶ s.pt
-        constructor
-        swap
-        --let v1 : Z.V ⟶ s.pt.V := (BinaryCofan.inl s).hom
-        admit
-        admit
-      fac := sorry
-      uniq := sorry
-    }
-    admit
-
-instance : FibreFunctor (forget₂ (Action FintypeCat (MonCat.of G)) FintypeCat) := sorry
+variable {G : Type u} [Group G]
 
 instance (X : Action FintypeCat (MonCat.of G)) : MulAction G X.V where
   smul g x := X.ρ g x
@@ -443,14 +357,6 @@ instance (X : Action FintypeCat (MonCat.of G)) : MulAction G X.V where
   mul_smul g h x := by
     show X.ρ (g * h) x = (X.ρ g * X.ρ h) x
     rw [MonoidHom.map_mul X.ρ g h]
-
-lemma Action.connected_iff_transitive (X : Action FintypeCat (MonCat.of G)) :
-    ConnectedObject X ↔ MulAction.IsPretransitive G X.V :=
-  sorry
-
-lemma Action.pretransitive_of_connected (X : Action FintypeCat (MonCat.of G))
-    [ConnectedObject X] : MulAction.IsPretransitive G X.V :=
-  sorry
 
 variable (G)
 
@@ -467,6 +373,42 @@ def Action.ofMulAction (X : FintypeCat) [MulAction G X] : Action FintypeCat (Mon
       rw [MulAction.mul_smul]
   }
 
+instance imageComplementAction {X Y : Action FintypeCat (MonCat.of G)} (f : X ⟶ Y) :
+    MulAction G (FintypeCat.imageComplement f.hom) where
+  smul g y := by
+    constructor
+    show ¬ Y.ρ g y.val ∈ Set.range f.hom
+    intro ⟨x, h⟩
+    apply y.property
+    use X.ρ g⁻¹ x
+    show (X.ρ g⁻¹ ≫ f.hom) x = y.val
+    rw [f.comm, FintypeCat.comp_apply, h]
+    show (Y.ρ g⁻¹ * Y.ρ g) y.val = y.val
+    rw [←MonoidHom.map_mul]
+    simp only [mul_left_inv, MonCat.one_of, Action.ρ_one, FintypeCat.id_apply]
+  one_smul y := by
+    apply Subtype.ext
+    show (1 : G) • y.val = y.val
+    simp only [one_smul]
+  mul_smul g h y := by
+    apply Subtype.ext
+    show (g * h) • y.val = g • h • y.val
+    simp only [mul_smul]
+
+noncomputable def Action.imageComplement {X Y : Action FintypeCat (MonCat.of G)} (f : X ⟶ Y) :
+    Action FintypeCat (MonCat.of G) :=
+  Action.ofMulAction G (FintypeCat.imageComplement f.hom)
+
+noncomputable def Action.imageComplementIncl {X Y : Action FintypeCat (MonCat.of G)} (f : X ⟶ Y) :
+    Action.imageComplement G f ⟶ Y where
+  hom := FintypeCat.imageComplementIncl f.hom
+  comm _ := rfl
+
+instance {X Y : Action FintypeCat (MonCat.of G)} (f : X ⟶ Y) : Mono (Action.imageComplementIncl G f) := by
+  apply Functor.mono_of_mono_map (forget _)
+  apply ConcreteCategory.mono_of_injective
+  exact Subtype.val_injective
+
 def Action.ofMulAction' (X : Type _) [Fintype X] [MulAction G X] :
     Action FintypeCat (MonCat.of G) where
   V := FintypeCat.of X
@@ -481,9 +423,117 @@ def Action.ofMulAction' (X : Type _) [Fintype X] [MulAction G X] :
       rw [MulAction.mul_smul]
   }
 
+variable {G}
+
+instance : PreGaloisCategory (Action FintypeCat (MonCat.of G)) where
+  hasTerminalObject := inferInstance
+  hasPullbacks := inferInstance
+  hasFiniteCoproducts := inferInstance
+  hasQuotientsByFiniteGroups := by
+    intro G _ _
+    infer_instance
+  monoInducesIsoOnDirectSummand := by
+    intro X Y i h
+    use Action.imageComplement G i
+    use Action.imageComplementIncl G i
+    constructor
+    have : ReflectsColimitsOfSize.{0, 0, _, _, _, _} (forget₂ (Action FintypeCat.{u} (MonCat.of G)) FintypeCat.{u}) :=
+      reflectsSmallestColimitsOfReflectsColimits (forget₂ _ FintypeCat)
+    apply isColimitOfReflects (forget₂ (Action FintypeCat (MonCat.of G)) FintypeCat)
+    apply isColimitOfReflects FintypeCat.incl
+    show IsColimit ((forget (Action _ _)).mapCocone (BinaryCofan.mk i _))
+    have : Mono ((forget _).map i) := by
+      apply map_mono
+    have : IsColimit (BinaryCofan.mk ((forget _).map i) ((forget _).map (Action.imageComplementIncl G i))) :=
+      Types.isCoprodOfMono ((forget _).map i)
+    exact (isColimitMapBinaryCofan i _ (forget _)).symm this
+
+noncomputable instance : FibreFunctor (forget₂ (Action FintypeCat (MonCat.of G)) FintypeCat) where
+  preservesTerminalObjects := inferInstance
+  preservesPullbacks := inferInstance
+  preservesFiniteCoproducts := by
+    constructor
+    intro J _
+    infer_instance
+  preservesEpis := inferInstance
+  preservesQuotientsByFiniteGroups := by
+    intro H _ _
+    infer_instance
+  reflectsIsos := by
+    constructor
+    intro X Y f (h : IsIso f.hom)
+    infer_instance
+
+variable (G)
+
+lemma Action.pretransitive_of_connected (X : Action FintypeCat (MonCat.of G))
+    [ConnectedObject X] : MulAction.IsPretransitive G X.V where
+  exists_smul_eq := by
+    intro x y
+    let T : Set X.V := MulAction.orbit G x
+    have : Fintype T := Fintype.ofFinite T
+    let T' : Action FintypeCat (MonCat.of G) := Action.ofMulAction' G T
+    let i : T' ⟶ X := {
+      hom := Subtype.val
+      comm := fun g => rfl
+    }
+    have hm : Mono i := by
+      apply ConcreteCategory.mono_of_injective
+      exact Subtype.val_injective
+    have hni : IsInitial T' → False := by
+      intro hi
+      have he : IsEmpty T := by
+        show IsEmpty ((forget₂ _ FintypeCat).obj T')
+        exact (initialIffFibreEmpty T').mp ⟨hi⟩
+      have : Set.Nonempty T := MulAction.orbit_nonempty x
+      have hn : Nonempty T := Set.Nonempty.coe_sort this
+      simp only [not_isEmpty_of_nonempty] at he
+    have : IsIso i := ConnectedObject.noTrivialComponent T' i hni
+    have : IsIso i.hom := by
+      show IsIso ((forget₂ _ FintypeCat).map i)
+      infer_instance
+    have : Function.Bijective i.hom := by
+      exact (FintypeCat.isIso_iff_bijective i.hom).mp this
+    have : Function.Surjective i.hom := this.2
+    obtain ⟨y', (hy' : y'.val = y)⟩ := this y
+    obtain ⟨g, (hg : g • x = y'.val)⟩ := y'.property
+    use g
+    rw [hy'] at hg
+    exact hg
+
 lemma connected_of_transitive (X : FintypeCat) [MulAction G X]
-    [MulAction.IsPretransitive G X] : ConnectedObject (Action.ofMulAction G X) :=
-  sorry
+    [MulAction.IsPretransitive G X] [h : Nonempty X] : ConnectedObject (Action.ofMulAction G X) where
+  notInitial := by
+    obtain ⟨(x : (forget₂ _ FintypeCat).obj (Action.ofMulAction G X))⟩ := h
+    exact notinitial_of_inhabited (x : (forget₂ _ FintypeCat).obj (Action.ofMulAction G X))
+  noTrivialComponent := by
+    intro Y i hm hni
+    have : Nonempty Y.V := by
+      by_contra h
+      simp only [not_nonempty_iff] at h
+      obtain ⟨hi⟩ := (@initialIffFibreEmpty _ _ (forget₂ _ _) _ _ Y).mpr h
+      exact hni hi
+    obtain ⟨y⟩ := this
+    let x : X := i.hom y
+    have : IsIso i.hom := by
+      refine (FintypeCat.isIso_iff_bijective i.hom).mpr ⟨?_, ?_⟩
+      have : Mono i.hom := map_mono (forget₂ _ _) i
+      exact ConcreteCategory.injective_of_mono_of_preservesPullback i.hom
+      intro (x' : X)
+      obtain ⟨σ, hσ⟩ := MulAction.exists_smul_eq G x x'
+      use σ • y
+      show (Y.ρ σ ≫ i.hom) y = x'
+      rw [i.comm, FintypeCat.comp_apply]
+      exact hσ
+    apply isIso_of_reflects_iso i (forget₂ _ FintypeCat)
+
+lemma Action.connected_iff_transitive (X : Action FintypeCat (MonCat.of G)) [Nonempty X.V] :
+    ConnectedObject X ↔ MulAction.IsPretransitive G X.V := by
+  constructor
+  intro hc
+  exact pretransitive_of_connected G X
+  intro hp
+  apply connected_of_transitive
 
 end Examples
 

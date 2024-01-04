@@ -234,6 +234,7 @@ instance : PreservesFiniteCoproducts (H F) := by
 instance : PreservesConnectedObjects (H F) := by
   constructor
   intro X h
+  have : Nonempty (F.obj X) := nonempty_fibre_of_connected X
   apply connected_of_transitive (Aut F) (F.obj X)
 
 lemma lift_transitive_subobjects (X : C) (Y : Action FintypeCat (MonCat.of (Aut F)))

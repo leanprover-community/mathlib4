@@ -39,8 +39,8 @@ lemma connected_as_quotient (X : Action FintypeCat (MonCat.of (Aut F))) [Connect
     Nonempty (X ≅ Action.ofMulAction' (Aut F) (Aut F ⧸ U.toSubgroup)) := by
   have : Nonempty ((forget₂ _ FintypeCat).obj X) := nonempty_fibre_of_connected X
   obtain ⟨x : X.V⟩ := this
-  have : MulAction.IsPretransitive (Aut F) X.V := by
-    exact (Action.connected_iff_transitive X).mp inferInstance
+  have : MulAction.IsPretransitive (Aut F) X.V :=
+    Action.pretransitive_of_connected (Aut F) X
   let e : X.V ≃ Aut F ⧸ MulAction.stabilizer (Aut F) x := by
     trans
     exact (Equiv.Set.univ X.V).symm
@@ -194,5 +194,8 @@ instance : EssSurj (Hc F) := by
   constructor
   exact preimageIso G u
 
-noncomputable instance : IsEquivalence (Hc F) :=
+noncomputable instance fibreFunctorInducesEquivalence :
+    IsEquivalence (Hc F) :=
   Equivalence.ofFullyFaithfullyEssSurj (Hc F)
+
+#print axioms fibreFunctorInducesEquivalence

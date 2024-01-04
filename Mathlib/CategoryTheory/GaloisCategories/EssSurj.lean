@@ -25,12 +25,6 @@ open CategoryTheory Limits Functor
 
 namespace Galois
 
---lemma ProfiniteGroup.open_of_closed_of_finite_index {G : Type*} [Group G]
---    [TopologicalSpace G] [CompactSpace G] [TotallyDisconnectedSpace G]
---    [T2Space G] (H : Subgroup G) (h : IsClosed (H : Set G)) [Finite (G ⧸ H)] :
---    IsOpen (H : Set G) :=
---  sorry
-
 variable {C : Type u} [Category.{u, u} C] (F : C ⥤ FintypeCat.{u})
   [PreGaloisCategory C] [FibreFunctor F]
 
@@ -52,10 +46,6 @@ lemma stabilizer_open (X : C) (x : ((H F).obj X).V) :
   assumption
   assumption
   trivial
-
---instance : EssSurj (H F) := EssSurj.mk <| by
---  intro Y
---  admit
 
 instance (G : Type u) [Group G] [Finite G] : PreservesColimitsOfShape (SingleObj G) (H F) := by
   apply Action.preservesColimitOfShapeOfPreserves
@@ -84,8 +74,8 @@ private lemma help0 (X : C) [GaloisObject F X] :
   have : MulAction (Aut F) (F.obj X) := by
     show MulAction (Aut F) ((H F).obj X).V
     infer_instance
-  have : MulAction.IsPretransitive (Aut F) ((H F).obj X).V := by
-    exact (Action.connected_iff_transitive ((H F).obj X)).mp hc
+  have : MulAction.IsPretransitive (Aut F) ((H F).obj X).V :=
+    Action.pretransitive_of_connected (Aut F) ((H F).obj X)
   have : MulAction.orbit (Aut F) x ≃ Aut F ⧸ MulAction.stabilizer (Aut F) x :=
     MulAction.orbitEquivQuotientStabilizer (Aut F) x
   have : MulAction.orbit (Aut F) x = Set.univ := MulAction.orbit_eq_univ (Aut F) x
