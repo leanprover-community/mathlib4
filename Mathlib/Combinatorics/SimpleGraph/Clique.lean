@@ -339,7 +339,7 @@ theorem cliqueFree_two : G.CliqueFree 2 ↔ G = ⊥ := by
   classical
   constructor
   · simp_rw [← edgeSet_eq_empty, Set.eq_empty_iff_forall_not_mem, Sym2.forall, mem_edgeSet]
-    exact fun h a b hab => h _ ⟨by simpa [hab.ne], card_doubleton hab.ne⟩
+    exact fun h a b hab => h _ ⟨by simpa [hab.ne], card_pair hab.ne⟩
   · rintro rfl
     exact cliqueFree_bot le_rfl
 #align simple_graph.clique_free_two SimpleGraph.cliqueFree_two
@@ -424,7 +424,7 @@ theorem cliqueFreeOn_of_card_lt {s : Finset α} (h : s.card < n) : G.CliqueFreeO
 @[simp]
 theorem cliqueFreeOn_two : G.CliqueFreeOn s 2 ↔ s.Pairwise (G.Adjᶜ) := by
   classical
-  refine' ⟨fun h a ha b hb _ hab => h _ ⟨by simpa [hab.ne], card_doubleton hab.ne⟩, _⟩
+  refine' ⟨fun h a ha b hb _ hab => h _ ⟨by simpa [hab.ne], card_pair hab.ne⟩, _⟩
   · push_cast
     exact Set.insert_subset_iff.2 ⟨ha, Set.singleton_subset_iff.2 hb⟩
   simp only [CliqueFreeOn, isNClique_iff, card_eq_two, coe_subset, not_and, not_exists]
