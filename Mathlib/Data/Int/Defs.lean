@@ -243,11 +243,5 @@ lemma sign_coe_nat_of_nonzero {n : ℕ} (hn : n ≠ 0) : Int.sign n = 1 := sign_
 #align int.mem_to_nat' Int.mem_toNat'
 #align int.to_nat_neg_nat Int.toNat_neg_nat
 
-
 -- Porting note: this was added in an ad hoc port for use in `Tactic/NormNum/Basic`
-
-@[simp] theorem pow_eq {m : ℤ} {n : ℕ} : m.pow n = m ^ n := rfl
-
-
-theorem coe_nat_strictMono : StrictMono (· : ℕ → ℤ) := fun _ _ ↦ Int.ofNat_lt.2
-#align int.coe_nat_strict_mono Int.coe_nat_strictMono
+@[simp] lemma pow_eq {m n : ℕ} : m.pow n = m ^ n := rfl

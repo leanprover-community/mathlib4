@@ -99,3 +99,6 @@ instance : CommSemiring ℤ     := by infer_instance
 instance : Semiring ℤ         := by infer_instance
 instance instRingInt : Ring ℤ             := by infer_instance
 instance : Distrib ℤ          := by infer_instance
+
+theorem coe_nat_strictMono : StrictMono (· : ℕ → ℤ) := fun _ _ ↦ Int.ofNat_lt.2
+#align int.coe_nat_strict_mono Int.coe_nat_strictMono
