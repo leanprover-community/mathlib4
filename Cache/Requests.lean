@@ -130,7 +130,7 @@ def downloadFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool
   else IO.println "No files to download"
 
 def checkForToolchainMismatch : IO Unit := do
-  let mathlibToolchainFile := IO.mathlibDepPath / "lean-toolchain"
+  let mathlibToolchainFile := (← IO.mathlibDepPath) / "lean-toolchain"
   let downstreamToolchain ← IO.FS.readFile "lean-toolchain"
   let mathlibToolchain ← IO.FS.readFile mathlibToolchainFile
   if !(mathlibToolchain.trim = downstreamToolchain.trim) then

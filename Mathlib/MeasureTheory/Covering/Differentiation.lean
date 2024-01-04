@@ -170,20 +170,21 @@ theorem ae_eventually_measure_zero_of_singular (hρ : ρ ⟂ₘ μ) :
     calc
       μ s ≤ μ (s ∩ o ∪ oᶜ) := by
         conv_lhs => rw [← inter_union_compl s o]
-        exact measure_mono (union_subset_union_right _ (inter_subset_right _ _))
+        gcongr
+        apply inter_subset_right
       _ ≤ μ (s ∩ o) + μ oᶜ := (measure_union_le _ _)
       _ = μ (s ∩ o) := by rw [μo, add_zero]
       _ = (ε : ℝ≥0∞)⁻¹ * (ε • μ) (s ∩ o) := by
         simp only [coe_nnreal_smul_apply, ← mul_assoc, mul_comm _ (ε : ℝ≥0∞)]
         rw [ENNReal.mul_inv_cancel (ENNReal.coe_pos.2 εpos).ne' ENNReal.coe_ne_top, one_mul]
       _ ≤ (ε : ℝ≥0∞)⁻¹ * ρ (s ∩ o) := by
-        refine' mul_le_mul_left' _ _
+        gcongr
         refine' v.measure_le_of_frequently_le ρ ((Measure.AbsolutelyContinuous.refl μ).smul ε) _ _
         intro x hx
         rw [hs] at hx
         simp only [mem_inter_iff, not_lt, not_eventually, mem_setOf_eq] at hx
         exact hx.1
-      _ ≤ (ε : ℝ≥0∞)⁻¹ * ρ o := (mul_le_mul_left' (measure_mono (inter_subset_right _ _)) _)
+      _ ≤ (ε : ℝ≥0∞)⁻¹ * ρ o := by gcongr; apply inter_subset_right
       _ = 0 := by rw [ρo, mul_zero]
   obtain ⟨u, _, u_pos, u_lim⟩ :
     ∃ u : ℕ → ℝ≥0, StrictAnti u ∧ (∀ n : ℕ, 0 < u n) ∧ Tendsto u atTop (𝓝 0) :=
@@ -403,7 +404,7 @@ theorem exists_measurable_supersets_limRatio {p q : ℝ≥0} (hpq : p < q) :
         p * μ (toMeasurable (ρ + μ) (u m) ∩ toMeasurable (ρ + μ) (w n)) :=
       A
     _ < q * μ (toMeasurable (ρ + μ) (u m) ∩ toMeasurable (ρ + μ) (w n)) := by
-      apply (ENNReal.mul_lt_mul_right h _).2 (ENNReal.coe_lt_coe.2 hpq)
+      gcongr
       suffices H : (ρ + μ) (toMeasurable (ρ + μ) (u m) ∩ toMeasurable (ρ + μ) (w n)) ≠ ∞
       · simp only [not_or, ENNReal.add_eq_top, Pi.add_apply, Ne.def, coe_add] at H
         exact H.2
@@ -448,10 +449,9 @@ theorem measure_le_mul_of_subset_limRatioMeas_lt {p : ℝ≥0} {s : Set α}
     calc
       ρ s = ρ (s ∩ t ∪ s ∩ tᶜ) := by rw [inter_union_compl]
       _ ≤ ρ (s ∩ t) + ρ (s ∩ tᶜ) := (measure_union_le _ _)
-      _ ≤ p * μ (s ∩ t) + 0 :=
-        (add_le_add H ((measure_mono (inter_subset_right _ _)).trans (hρ A).le))
-      _ ≤ p * μ s := by
-        rw [add_zero]; exact mul_le_mul_left' (measure_mono (inter_subset_left _ _)) _
+      _ ≤ (p • μ) (s ∩ t) + ρ tᶜ := by gcongr; apply inter_subset_right
+      _ ≤ p * μ (s ∩ t) := by simp [(hρ A)]
+      _ ≤ p * μ s := by gcongr; apply inter_subset_left
   refine' v.measure_le_of_frequently_le (p • μ) hρ _ fun x hx => _
   have I : ∀ᶠ b : Set α in v.filterAt x, ρ b / μ b < p := (tendsto_order.1 hx.2).2 _ (h hx.1)
   apply I.frequently.mono fun a ha => ?_
@@ -472,12 +472,9 @@ theorem mul_measure_le_of_subset_lt_limRatioMeas {q : ℝ≥0} {s : Set α}
     calc
       (q • μ) s = (q • μ) (s ∩ t ∪ s ∩ tᶜ) := by rw [inter_union_compl]
       _ ≤ (q • μ) (s ∩ t) + (q • μ) (s ∩ tᶜ) := (measure_union_le _ _)
-      _ ≤ ρ (s ∩ t) + q * μ tᶜ := by
-        apply add_le_add H
-        rw [coe_nnreal_smul_apply]
-        exact mul_le_mul_left' (measure_mono (inter_subset_right _ _)) _
-      _ ≤ ρ s := by
-        rw [A, mul_zero, add_zero]; exact measure_mono (inter_subset_left _ _)
+      _ ≤ ρ (s ∩ t) + (q • μ) tᶜ := by gcongr; apply inter_subset_right
+      _ = ρ (s ∩ t) := by simp [A]
+      _ ≤ ρ s := by gcongr; apply inter_subset_left
   refine' v.measure_le_of_frequently_le _ (AbsolutelyContinuous.rfl.smul _) _ _
   intro x hx
   have I : ∀ᶠ a in v.filterAt x, (q : ℝ≥0∞) < ρ a / μ a := (tendsto_order.1 hx.2).1 _ (h hx.1)
@@ -580,8 +577,8 @@ theorem withDensity_le_mul {s : Set α} (hs : MeasurableSet s) {t : ℝ≥0} (ht
         rw [← mul_assoc, ← ENNReal.zpow_add t_ne_zero ENNReal.coe_ne_top]
         congr 2
         abel
-      _ ≤ (t : ℝ≥0∞) ^ 2 * ρ (s ∩ f ⁻¹' I) := by
-        refine' mul_le_mul_left' _ _
+      _ ≤ (t : ℝ≥0∞) ^ (2 : ℤ) * ρ (s ∩ f ⁻¹' I) := by
+        gcongr
         rw [← ENNReal.coe_zpow (zero_lt_one.trans ht).ne']
         apply v.mul_measure_le_of_subset_lt_limRatioMeas hρ
         intro x hx
@@ -589,7 +586,7 @@ theorem withDensity_le_mul {s : Set α} (hs : MeasurableSet s) {t : ℝ≥0} (ht
         rw [← ENNReal.coe_zpow (zero_lt_one.trans ht).ne', ENNReal.coe_lt_coe, sub_eq_add_neg,
           zpow_add₀ t_ne_zero']
         conv_rhs => rw [← mul_one (t ^ n)]
-        refine' mul_lt_mul' le_rfl _ (zero_le _) (NNReal.zpow_pos t_ne_zero' _)
+        gcongr
         rw [zpow_neg_one]
         exact inv_lt_one ht
   calc
@@ -866,11 +863,11 @@ theorem ae_tendsto_lintegral_nnnorm_sub_div'_of_integrable {f : α → E} (hf : 
     _ = (∫⁻ y in a, ‖f y - c‖₊ ∂μ) + ∫⁻ _ in a, ‖f x - c‖₊ ∂μ :=
       (lintegral_add_right _ measurable_const)
     _ ≤ ε / 2 * μ a + ε / 2 * μ a := by
-      refine' add_le_add _ _
+      gcongr
       · rw [ENNReal.div_lt_iff (Or.inl h'a.ne') (Or.inl h''a.ne)] at ha
         exact ha.le
       · simp only [lintegral_const, Measure.restrict_apply, MeasurableSet.univ, univ_inter]
-        exact mul_le_mul_right' xc.le _
+        gcongr
     _ = ε * μ a := by rw [← add_mul, ENNReal.add_halves]
 #align vitali_family.ae_tendsto_lintegral_nnnorm_sub_div' VitaliFamily.ae_tendsto_lintegral_nnnorm_sub_div'_of_integrable
 

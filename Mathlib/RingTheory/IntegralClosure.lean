@@ -170,22 +170,29 @@ theorem isIntegral_iff_isIntegral_closure_finite {r : B} :
   exact hsr.of_subring _
 #align is_integral_iff_is_integral_closure_finite isIntegral_iff_isIntegral_closure_finite
 
-theorem IsIntegral.fg_adjoin_singleton {x : B} (hx : IsIntegral R x) :
-    (Algebra.adjoin R {x}).toSubmodule.FG := by
-  rcases hx with ⟨f, hfm, hfx⟩
-  use (Finset.range <| f.natDegree + 1).image (x ^ ·)
+theorem Submodule.span_range_natDegree_eq_adjoin {R A} [CommRing R] [Semiring A] [Algebra R A]
+    {x : A} {f : R[X]} (hf : f.Monic) (hfx : aeval x f = 0) :
+    span R (Finset.image (x ^ ·) (Finset.range (natDegree f))) =
+      Subalgebra.toSubmodule (Algebra.adjoin R {x}) := by
+  nontriviality A
+  have hf1 : f ≠ 1 := by rintro rfl; simp [one_ne_zero' A] at hfx
   refine (span_le.mpr fun s hs ↦ ?_).antisymm fun r hr ↦ ?_
   · rcases Finset.mem_image.1 hs with ⟨k, -, rfl⟩
     exact (Algebra.adjoin R {x}).pow_mem (Algebra.subset_adjoin rfl) k
   rw [Subalgebra.mem_toSubmodule, Algebra.adjoin_singleton_eq_range_aeval] at hr
   rcases (aeval x).mem_range.mp hr with ⟨p, rfl⟩
-  rw [← modByMonic_add_div p hfm, map_add, map_mul, aeval_def x f, hfx,
+  rw [← modByMonic_add_div p hf, map_add, map_mul, hfx,
       zero_mul, add_zero, ← sum_C_mul_X_pow_eq (p %ₘ f), aeval_def, eval₂_sum, sum_def]
   refine sum_mem fun k hkq ↦ ?_
   rw [C_mul_X_pow_eq_monomial, eval₂_monomial, ← Algebra.smul_def]
-  exact smul_mem _ _ (subset_span <| Finset.mem_image_of_mem _ <| Finset.mem_range_succ_iff.mpr <|
-    (le_natDegree_of_mem_supp _ hkq).trans <| natDegree_modByMonic_le p hfm)
-#align fg_adjoin_singleton_of_integral IsIntegral.fg_adjoin_singleton
+  exact smul_mem _ _ (subset_span <| Finset.mem_image_of_mem _ <| Finset.mem_range.mpr <|
+    (le_natDegree_of_mem_supp _ hkq).trans_lt <| natDegree_modByMonic_lt p hf hf1)
+
+theorem IsIntegral.fg_adjoin_singleton {x : B} (hx : IsIntegral R x) :
+    (Algebra.adjoin R {x}).toSubmodule.FG := by
+  rcases hx with ⟨f, hfm, hfx⟩
+  use (Finset.range <| f.natDegree).image (x ^ ·)
+  exact span_range_natDegree_eq_adjoin hfm (by rwa [aeval_def])
 
 theorem fg_adjoin_of_finite {s : Set A} (hfs : s.Finite) (his : ∀ x ∈ s, IsIntegral R x) :
     (Algebra.adjoin R s).toSubmodule.FG :=
@@ -267,8 +274,7 @@ theorem isIntegral_of_smul_mem_submodule {M : Type*} [AddCommGroup M] [Module R 
       (by ext; apply one_smul)
       (by intros x y; ext; apply mul_smul)
   obtain ⟨a, ha₁, ha₂⟩ : ∃ a ∈ N, a ≠ (0 : M) := by
-    by_contra h'
-    push_neg at h'
+    by_contra! h'
     apply hN
     rwa [eq_bot_iff]
   have : Function.Injective f := by
@@ -467,6 +473,28 @@ theorem integralClosure_map_algEquiv [Algebra R S] (f : A ≃ₐ[R] S) :
     use f.symm y, hy.map (f.symm : S →ₐ[R] A)
     simp
 #align integral_closure_map_alg_equiv integralClosure_map_algEquiv
+
+/-- An `AlgHom` between two rings restrict to an `AlgHom` between the integral closures inside
+them. -/
+def AlgHom.mapIntegralClosure [Algebra R S] (f : A →ₐ[R] S) :
+    integralClosure R A →ₐ[R] integralClosure R S :=
+  (f.restrictDomain (integralClosure R A)).codRestrict (integralClosure R S) (fun ⟨_, h⟩ => h.map f)
+
+@[simp]
+theorem AlgHom.coe_mapIntegralClosure [Algebra R S] (f : A →ₐ[R] S)
+    (x : integralClosure R A) : (f.mapIntegralClosure x : S) = f (x : A) := rfl
+
+/-- An `AlgEquiv` between two rings restrict to an `AlgEquiv` between the integral closures inside
+them. -/
+def AlgEquiv.mapIntegralClosure [Algebra R S] (f : A ≃ₐ[R] S) :
+    integralClosure R A ≃ₐ[R] integralClosure R S :=
+  AlgEquiv.ofAlgHom (f : A →ₐ[R] S).mapIntegralClosure (f.symm : S →ₐ[R] A).mapIntegralClosure
+    (AlgHom.ext fun _ ↦ Subtype.ext (f.right_inv _))
+    (AlgHom.ext fun _ ↦ Subtype.ext (f.left_inv _))
+
+@[simp]
+theorem AlgEquiv.coe_mapIntegralClosure [Algebra R S] (f : A ≃ₐ[R] S)
+    (x : integralClosure R A) : (f.mapIntegralClosure x : S) = f (x : A) := rfl
 
 theorem integralClosure.isIntegral (x : integralClosure R A) : IsIntegral R x :=
   let ⟨p, hpm, hpx⟩ := x.2

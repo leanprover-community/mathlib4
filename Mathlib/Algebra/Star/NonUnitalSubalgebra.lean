@@ -694,11 +694,11 @@ theorem toNonUnitalSubalgebra_eq_top {S : NonUnitalStarSubalgebra R A} :
   NonUnitalStarSubalgebra.toNonUnitalSubalgebra_injective.eq_iff' top_toNonUnitalSubalgebra
 
 theorem mem_sup_left {S T : NonUnitalStarSubalgebra R A} : ∀ {x : A}, x ∈ S → x ∈ S ⊔ T := by
-  rw [←SetLike.le_def]
+  rw [← SetLike.le_def]
   exact le_sup_left
 
 theorem mem_sup_right {S T : NonUnitalStarSubalgebra R A} : ∀ {x : A}, x ∈ T → x ∈ S ⊔ T := by
-  rw [←SetLike.le_def]
+  rw [← SetLike.le_def]
   exact le_sup_right
 
 theorem mul_mem_sup {S T : NonUnitalStarSubalgebra R A} {x y : A} (hx : x ∈ S) (hy : y ∈ T) :
@@ -823,7 +823,7 @@ theorem range_val : NonUnitalStarAlgHom.range (NonUnitalStarSubalgebraClass.subt
 The map `S → T` when `S` is a non-unital star subalgebra contained in the non-unital star
 algebra `T`.
 
-This is the non-unital star subalgebra version of `Submodule.ofLe`, or
+This is the non-unital star subalgebra version of `Submodule.inclusion`, or
 `NonUnitalSubalgebra.inclusion`  -/
 def inclusion {S T : NonUnitalStarSubalgebra R A} (h : S ≤ T) : S →⋆ₙₐ[R] T where
   toNonUnitalAlgHom := NonUnitalSubalgebra.inclusion h

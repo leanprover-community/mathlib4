@@ -68,12 +68,12 @@ theorem map₂_span_span (f : M →ₗ[R] N →ₗ[R] P) (s : Set M) (t : Set N)
     intro a ha
     apply @span_induction' R N _ _ _ t
     intro b hb
-    exact subset_span ⟨_, _, ‹_›, ‹_›, rfl⟩
+    exact subset_span ⟨_, ‹_›, _, ‹_›, rfl⟩
     all_goals intros; simp only [*, add_mem, smul_mem, zero_mem, _root_.map_zero, map_add,
                                  LinearMap.zero_apply, LinearMap.add_apply, LinearMap.smul_apply,
-                                 SMulHomClass.map_smul]
-  · rw [span_le]
-    rintro _ ⟨a, b, ha, hb, rfl⟩
+                                 map_smul]
+  · rw [span_le, image2_subset_iff]
+    intro a ha b hb
     exact apply_mem_map₂ _ (subset_span ha) (subset_span hb)
 #align submodule.map₂_span_span Submodule.map₂_span_span
 variable {R}
@@ -132,7 +132,7 @@ theorem map₂_sup_left (f : M →ₗ[R] N →ₗ[R] P) (p₁ p₂ : Submodule R
 
 theorem image2_subset_map₂ (f : M →ₗ[R] N →ₗ[R] P) (p : Submodule R M) (q : Submodule R N) :
     Set.image2 (fun m n => f m n) (↑p : Set M) (↑q : Set N) ⊆ (↑(map₂ f p q) : Set P) := by
-  rintro _ ⟨i, j, hi, hj, rfl⟩
+  rintro _ ⟨i, hi, j, hj, rfl⟩
   exact apply_mem_map₂ _ hi hj
 #align submodule.image2_subset_map₂ Submodule.image2_subset_map₂
 
@@ -163,14 +163,8 @@ theorem map₂_iSup_right (f : M →ₗ[R] N →ₗ[R] P) (s : Submodule R M) (t
 
 theorem map₂_span_singleton_eq_map (f : M →ₗ[R] N →ₗ[R] P) (m : M) :
     map₂ f (span R {m}) = map (f m) := by
-  funext; rw [map₂_eq_span_image2]; apply le_antisymm
-  · rw [span_le, Set.image2_subset_iff]
-    intro x hx y hy
-    obtain ⟨a, rfl⟩ := mem_span_singleton.1 hx
-    rw [f.map_smul]
-    exact smul_mem _ a (mem_map_of_mem hy)
-  · rintro _ ⟨n, hn, rfl⟩
-    exact subset_span ⟨m, n, mem_span_singleton_self m, hn, rfl⟩
+  funext s
+  rw [← span_eq s, map₂_span_span, image2_singleton_left, map_span]
 #align submodule.map₂_span_singleton_eq_map Submodule.map₂_span_singleton_eq_map
 
 theorem map₂_span_singleton_eq_map_flip (f : M →ₗ[R] N →ₗ[R] P) (s : Submodule R M) (n : N) :

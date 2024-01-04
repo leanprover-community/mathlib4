@@ -91,14 +91,15 @@ private theorem gosper_trick {n i : ℕ} (h : i ≤ n) :
   have l₂ : (n : ℚ) - i + 1 ≠ 0 := by norm_cast; exact (n - i).succ_ne_zero
   have h₁ := (mul_div_cancel_left (↑(Nat.centralBinom (i + 1))) l₁).symm
   have h₂ := (mul_div_cancel_left (↑(Nat.centralBinom (n - i + 1))) l₂).symm
-  have h₃ : ((i : ℚ) + 1) * (i + 1).centralBinom = 2 * (2 * i + 1) * i.centralBinom := by
-    exact_mod_cast Nat.succ_mul_centralBinom_succ i
+  have h₃ : ((i : ℚ) + 1) * (i + 1).centralBinom = 2 * (2 * i + 1) * i.centralBinom :=
+    mod_cast Nat.succ_mul_centralBinom_succ i
   have h₄ :
     ((n : ℚ) - i + 1) * (n - i + 1).centralBinom = 2 * (2 * (n - i) + 1) * (n - i).centralBinom :=
-    by exact_mod_cast Nat.succ_mul_centralBinom_succ (n - i)
+      mod_cast Nat.succ_mul_centralBinom_succ (n - i)
   simp only [gosperCatalan]
   push_cast
-  rw [show n + 1 - i = n - i + 1 by rw [Nat.add_comm (n - i) 1, ←(Nat.add_sub_assoc h 1), add_comm]]
+  rw [show n + 1 - i = n - i + 1 by rw [Nat.add_comm (n - i) 1, ← (Nat.add_sub_assoc h 1),
+    add_comm]]
   rw [h₁, h₂, h₃, h₄]
   field_simp
   ring
@@ -115,7 +116,7 @@ private theorem gosper_catalan_sub_eq_central_binom_div (n : ℕ) : gosperCatala
 theorem catalan_eq_centralBinom_div (n : ℕ) : catalan n = n.centralBinom / (n + 1) := by
   suffices (catalan n : ℚ) = Nat.centralBinom n / (n + 1) by
     have h := Nat.succ_dvd_centralBinom n
-    exact_mod_cast this
+    exact mod_cast this
   induction' n using Nat.case_strong_induction_on with d hd
   · simp
   · simp_rw [catalan_succ, Nat.cast_sum, Nat.cast_mul]

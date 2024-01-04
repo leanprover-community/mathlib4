@@ -1228,7 +1228,7 @@ variable {C f g}
 /-- The fork obtained by postcomposing an equalizer fork with a monomorphism is an equalizer. -/
 def isEqualizerCompMono {c : Fork f g} (i : IsLimit c) {Z : C} (h : Y ⟶ Z) [hm : Mono h] :
     have : Fork.ι c ≫ f ≫ h = Fork.ι c ≫ g ≫ h := by
-      simp only [←Category.assoc]
+      simp only [← Category.assoc]
       exact congrArg (· ≫ h) c.condition;
     IsLimit (Fork.ofι c.ι (by simp [this]) : Fork (f ≫ h) (g ≫ h)) :=
   Fork.IsLimit.mk' _ fun s =>

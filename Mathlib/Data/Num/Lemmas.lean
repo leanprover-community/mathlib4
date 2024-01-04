@@ -86,8 +86,8 @@ theorem add_one (n : PosNum) : n + 1 = succ n := by cases n <;> rfl
 
 @[norm_cast]
 theorem add_to_nat : ∀ m n, ((m + n : PosNum) : ℕ) = m + n
-  | 1, b => by rw [one_add b, succ_to_nat, add_comm]; rfl
-  | a, 1 => by rw [add_one a, succ_to_nat]; rfl
+  | 1, b => by rw [one_add b, succ_to_nat, add_comm, cast_one]
+  | a, 1 => by rw [add_one a, succ_to_nat, cast_one]
   | bit0 a, bit0 b => (congr_arg _root_.bit0 (add_to_nat a b)).trans <| add_add_add_comm _ _ _ _
   | bit0 a, bit1 b =>
     (congr_arg _root_.bit1 (add_to_nat a b)).trans <|
@@ -113,11 +113,11 @@ theorem add_succ : ∀ m n : PosNum, m + succ n = succ (m + n)
 theorem bit0_of_bit0 : ∀ n, _root_.bit0 n = bit0 n
   | 1 => rfl
   | bit0 p => congr_arg bit0 (bit0_of_bit0 p)
-  | bit1 p => show bit0 (succ (_root_.bit0 p)) = _ by rw [bit0_of_bit0 p]; rfl
+  | bit1 p => show bit0 (succ (_root_.bit0 p)) = _ by rw [bit0_of_bit0 p, succ]
 #align pos_num.bit0_of_bit0 PosNum.bit0_of_bit0
 
 theorem bit1_of_bit1 (n : PosNum) : _root_.bit1 n = bit1 n :=
-  show _root_.bit0 n + 1 = bit1 n by rw [add_one, bit0_of_bit0]; rfl
+  show _root_.bit0 n + 1 = bit1 n by rw [add_one, bit0_of_bit0, succ]
 #align pos_num.bit1_of_bit1 PosNum.bit1_of_bit1
 
 @[norm_cast]
@@ -218,7 +218,7 @@ theorem add_one : ∀ n : Num, n + 1 = succ n
 
 theorem add_succ : ∀ m n : Num, m + succ n = succ (m + n)
   | 0, n => by simp [zero_add]
-  | pos p, 0 => show pos (p + 1) = succ (pos p + 0) by rw [PosNum.add_one, add_zero]; rfl
+  | pos p, 0 => show pos (p + 1) = succ (pos p + 0) by rw [PosNum.add_one, add_zero, succ, succ']
   | pos p, pos q => congr_arg pos (PosNum.add_succ _ _)
 #align num.add_succ Num.add_succ
 
@@ -250,7 +250,7 @@ theorem bit1_succ : ∀ n : Num, n.bit1.succ = n.succ.bit0
 #align num.bit1_succ Num.bit1_succ
 
 theorem ofNat'_succ : ∀ {n}, ofNat' (n + 1) = ofNat' n + 1 :=
-  @(Nat.binaryRec (by simp; rfl) fun b n ih => by
+  @(Nat.binaryRec (by simp [zero_add]) fun b n ih => by
     cases b
     · erw [ofNat'_bit true n, ofNat'_bit]
       simp only [← bit1_of_bit1, ← bit0_of_bit0, cond, _root_.bit1]
@@ -420,7 +420,7 @@ instance commSemiring : CommSemiring Num := by
 instance orderedCancelAddCommMonoid : OrderedCancelAddCommMonoid Num where
   le := (· ≤ ·)
   lt := (· < ·)
-  lt_iff_le_not_le a b := by simp only [←lt_to_nat, ←le_to_nat, lt_iff_le_not_le]
+  lt_iff_le_not_le a b := by simp only [← lt_to_nat, ← le_to_nat, lt_iff_le_not_le]
   le_refl := by transfer
   le_trans a b c := by transfer_rw; apply le_trans
   le_antisymm a b := by transfer_rw; apply le_antisymm
@@ -897,8 +897,8 @@ theorem castNum_eq_bitwise {f : Num → Num → Num} {g : Bool → Bool → Bool
           intros b _; cases b <;> rfl]
       rw [Nat.bitwise_bit gff]
     any_goals rw [Nat.bitwise_zero, p11]; cases g true true <;> rfl
-    any_goals rw [Nat.bitwise_zero_left, ←Bool.cond_eq_ite, this, ← bit_to_nat, p1b]
-    any_goals rw [Nat.bitwise_zero_right, ←Bool.cond_eq_ite, this, ← bit_to_nat, pb1]
+    any_goals rw [Nat.bitwise_zero_left, ← Bool.cond_eq_ite, this, ← bit_to_nat, p1b]
+    any_goals rw [Nat.bitwise_zero_right, ← Bool.cond_eq_ite, this, ← bit_to_nat, pb1]
     all_goals
       rw [← show ∀ n : PosNum, ↑(p m n) = Nat.bitwise g ↑m ↑n from IH]
       rw [← bit_to_nat, pbb]
@@ -929,7 +929,7 @@ theorem castNum_xor : ∀ m n : Num, ↑(m ^^^ n) = (↑m ^^^ ↑n : ℕ) := by
 
 @[simp, norm_cast]
 theorem castNum_shiftLeft (m : Num) (n : Nat) : ↑(m <<< n) = (m : ℕ) <<< (n : ℕ) := by
-  cases m <;> dsimp only [←shiftl_eq_shiftLeft, shiftl]
+  cases m <;> dsimp only [← shiftl_eq_shiftLeft, shiftl]
   · symm
     apply Nat.zero_shiftLeft
   simp only [cast_pos]
@@ -943,16 +943,16 @@ theorem castNum_shiftLeft (m : Num) (n : Nat) : ↑(m <<< n) = (m : ℕ) <<< (n 
 @[simp, norm_cast]
 
 theorem castNum_shiftRight (m : Num) (n : Nat) : ↑(m >>> n) = (m : ℕ) >>> (n : ℕ)  := by
-  cases' m with m <;> dsimp only [←shiftr_eq_shiftRight, shiftr];
+  cases' m with m <;> dsimp only [← shiftr_eq_shiftRight, shiftr];
   · symm
     apply Nat.zero_shiftRight
   induction' n with n IH generalizing m
   · cases m <;> rfl
-  cases' m with m m <;> dsimp only [PosNum.shiftr, ←PosNum.shiftr_eq_shiftRight]
+  cases' m with m m <;> dsimp only [PosNum.shiftr, ← PosNum.shiftr_eq_shiftRight]
   · rw [Nat.shiftRight_eq_div_pow]
     symm
     apply Nat.div_eq_of_lt
-    simp [@Nat.pow_lt_pow_of_lt_right 2 (by decide) 0 (n + 1) (Nat.succ_pos _)]
+    simp
   · trans
     apply IH
     change Nat.shiftRight m n = Nat.shiftRight (_root_.bit1 m) (n + 1)
@@ -970,28 +970,19 @@ theorem castNum_shiftRight (m : Num) (n : Nat) : ↑(m >>> n) = (m : ℕ) >>> (n
 @[simp]
 theorem castNum_testBit (m n) : testBit m n = Nat.testBit m n := by
   -- Porting note: `unfold` → `dsimp only`
-  cases m <;> dsimp only [testBit, Nat.testBit]
-  case zero =>
-    change false = Nat.bodd (0 >>> n)
-    rw [Nat.zero_shiftRight]
-    rfl
-  case pos m =>
-    induction' n with n IH generalizing m <;> cases' m with m m <;> dsimp only [PosNum.testBit]
+  cases m with dsimp only [testBit]
+  | zero =>
+    rw [show (Num.zero : Nat) = 0 from rfl, Nat.zero_testBit]
+  | pos m =>
+    rw [cast_pos]
+    induction' n with n IH generalizing m <;> cases' m with m m
+        <;> dsimp only [PosNum.testBit, Nat.zero_eq]
     · rfl
-    · exact (Nat.bodd_bit _ _).symm
-    · exact (Nat.bodd_bit _ _).symm
-    · change false = Nat.bodd (1 >>> (n + 1))
-      rw [add_comm, Nat.shiftRight_add]
-      change false = Nat.bodd (0 >>> n)
-      rw [Nat.zero_shiftRight]; rfl
-    · change PosNum.testBit m n = Nat.bodd ((Nat.bit true m) >>> (n + 1))
-      rw [add_comm, Nat.shiftRight_add]
-      simp only [Nat.shiftRight_succ, Nat.shiftRight_zero, ← Nat.div2_val, Nat.div2_bit]
-      apply IH
-    · change PosNum.testBit m n = Nat.bodd ((Nat.bit false m) >>> (n + 1))
-      rw [add_comm, Nat.shiftRight_add]
-      simp only [Nat.shiftRight_succ, Nat.shiftRight_zero, ← Nat.div2_val, Nat.div2_bit]
-      apply IH
+    · rw [PosNum.cast_bit1, ← Nat.bit_true, Nat.testBit_zero]
+    · rw [PosNum.cast_bit0, ← Nat.bit_false, Nat.testBit_zero]
+    · rw [PosNum.cast_one', ← bit1_zero, ← Nat.bit_true, Nat.testBit_succ, Nat.zero_testBit]
+    · rw [PosNum.cast_bit1, ← Nat.bit_true, Nat.testBit_succ, IH]
+    · rw [PosNum.cast_bit0, ← Nat.bit_false, Nat.testBit_succ, IH]
 #align num.test_bit_to_nat Num.castNum_testBit
 
 end Num
@@ -1437,19 +1428,22 @@ instance linearOrder : LinearOrder ZNum where
   decidableLT := ZNum.decidableLT
 #align znum.linear_order ZNum.linearOrder
 
-instance addCommGroup : AddCommGroup ZNum where
+instance addMonoid : AddMonoid ZNum where
   add := (· + ·)
   add_assoc := by transfer
   zero := 0
   zero_add := zero_add
   add_zero := add_zero
-  add_comm := by transfer
-  neg := Neg.neg
-  add_left_neg := by transfer
+
+instance addCommGroup : AddCommGroup ZNum :=
+  { ZNum.addMonoid with
+    add_comm := by transfer
+    neg := Neg.neg
+    add_left_neg := by transfer }
 #align znum.add_comm_group ZNum.addCommGroup
 
 instance addMonoidWithOne : AddMonoidWithOne ZNum :=
-  { ZNum.addCommGroup with
+  { ZNum.addMonoid with
     one := 1
     natCast := fun n => ZNum.ofInt' n
     natCast_zero := show (Num.ofNat' 0).toZNum = 0 by rw [Num.ofNat'_zero]; rfl
