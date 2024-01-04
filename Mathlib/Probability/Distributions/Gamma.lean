@@ -169,7 +169,8 @@ open Measure
 
 /-- The Pdf of the gamma Distribution integrates to 1-/
 @[simp]
-lemma lintegral_gammaPdf_eq_one (a r : ℝ) (ha : 0 < a) (hr : 0 < r) : ∫⁻ x, gammaPdf a r x = 1 := by
+lemma lintegral_gammaPdf_eq_one (a r : ℝ) (ha : 0 < a) (hr : 0 < r) :
+    ∫⁻ x, gammaPdf a r x = 1 := by
   rw [lintegral_eq_lintegral_Ici_add_Iio (gammaPdf a r) 0, ← ENNReal.toReal_eq_one_iff]
   have leftSide : ∫⁻ x in Iio 0, gammaPdf a r x = 0 := by
     rw [set_lintegral_congr_fun measurableSet_Iio
@@ -271,7 +272,9 @@ lemma pow_exp_integral_Ioi_complex {a : ℂ} {r : ℝ} (ha : 0 < a.re) (hr : 0 <
     _ =  |1 / r| * ∫ (t : ℝ) in Ioi (r * 0), (1 / r) ^ (a-1) * t ^ (a - 1) * Complex.exp (-t) := by
       have : ∫ (t : ℝ) in Ioi 0, (1 / ↑r) ^ (a - 1) * (↑r * ↑t) ^ (a - 1) * cexp (-(↑r * ↑t)) =
         ∫ (t : ℝ) in Ioi 0, (1 / ↑r) ^ (a - 1) * ↑(r * t) ^ (a - 1) * cexp (-↑(r * t)) := by simp
-      rw [this, integral_comp_mul_left_Ioi (fun x ↦ (1 / r) ^ (a - 1) * x ^ (a - 1) * Complex.exp (-x)) (0 : ℝ) hr]
+      rw [this,
+        integral_comp_mul_left_Ioi
+          (fun x ↦ (1 / r) ^ (a - 1) * x ^ (a - 1) * Complex.exp (-x)) (0 : ℝ) hr]
       simp
     _ =  (1 / r) * ∫ (t : ℝ) in Ioi 0, (1 / r) ^ (a-1) * t ^ (a - 1) * Complex.exp (-t) := by
       have : Ioi (r * 0) = Ioi 0 := by refine Ioi_inj.mpr (by simp)
