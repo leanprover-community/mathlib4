@@ -5,9 +5,8 @@ Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.MonoidAlgebra.Support
 import Mathlib.Algebra.Regular.Pow
-import Mathlib.Data.Finset.NatAntidiagonal
-import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Data.Polynomial.Basic
+import Mathlib.Data.Nat.Choose.Sum
 
 #align_import data.polynomial.coeff from "leanprover-community/mathlib"@"2651125b48fc5c170ab1111afd0817c903b1fc6c"
 
@@ -68,7 +67,7 @@ theorem support_smul [Monoid S] [DistribMulAction S R] (r : S) (p : R[X]) :
 #align polynomial.support_smul Polynomial.support_smul
 
 theorem card_support_mul_le : (p * q).support.card ≤ p.support.card * q.support.card := by
-  calc (p*q).support.card
+  calc (p * q).support.card
    _ = (p.toFinsupp * q.toFinsupp).support.card := by rw [← support_toFinsupp, toFinsupp_mul]
    _ ≤ _ := Finset.card_le_of_subset (AddMonoidAlgebra.support_mul p.toFinsupp q.toFinsupp)
    _ ≤ _ := by
@@ -78,7 +77,6 @@ theorem card_support_mul_le : (p * q).support.card ≤ p.support.card * q.suppor
     apply Finset.card_biUnion_le_card_mul
     intro _ _
     exact (Finset.card_singleton _) ▸ le_rfl
-
 
 /-- `Polynomial.sum` as a linear map. -/
 @[simps]
