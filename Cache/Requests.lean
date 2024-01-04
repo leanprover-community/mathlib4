@@ -180,7 +180,7 @@ def putFiles (fileNames : Array String) (overwrite : Bool) (token : String) : IO
     let exitCode ← IO.Process.spawn {
       cmd := (← IO.getCurl),
       args := #["-X", "PUT", "--aws-sigv4", "aws:amz:auto:s3", "--user", token,
-        "--parallel", "--retry", "3", "-v", "-K", IO.CURLCFG.toString]
+        "--parallel", "--retry", "3", "--fail-with-body", "-K", IO.CURLCFG.toString]
     } >>= (·.wait)
     if exitCode != 0 then
       throw <| IO.userError s!"process 'curl' exited with code {exitCode}"
