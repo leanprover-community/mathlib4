@@ -28,11 +28,6 @@ instance GradeZero.smul_at_i (i : ιM) : SMul (𝒜 0) (ℳ i) where
     rw [zero_vadd] at this
     exact this⟩
 
-@[simp] lemma GradeZero.smul_coe_at_i (i : ιM) (a : 𝒜 0) (m : ℳ i) :
-    (GradeZero.smul_at_i 𝒜 ℳ i).smul a m = (a : A) • (m : M) := rfl
-
-@[simp] lemma GradeZero.one_coe : ((1 : 𝒜 0) : A) = 1 := rfl
-
 instance GradeZero.mulAction_at_i (i : ιM) : MulAction (𝒜 0) (ℳ i) :=
 { GradeZero.smul_at_i 𝒜 ℳ i with
   one_smul := fun _ => Subtype.ext <| show (1 : A) • _ = _ from one_smul _ _
