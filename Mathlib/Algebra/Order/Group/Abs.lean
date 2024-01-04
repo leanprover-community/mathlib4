@@ -120,6 +120,7 @@ theorem abs_of_neg (h : a < 0) : |a| = -a :=
   abs_of_nonpos h.le
 #align abs_of_neg abs_of_neg
 
+@[gcongr]
 theorem abs_le_abs_of_nonneg (ha : 0 ≤ a) (hab : a ≤ b) : |a| ≤ |b| := by
   rwa [abs_of_nonneg ha, abs_of_nonneg (ha.trans hab)]
 #align abs_le_abs_of_nonneg abs_le_abs_of_nonneg
