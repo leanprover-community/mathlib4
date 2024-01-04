@@ -308,7 +308,7 @@ def mkQuaternion : R × R →ₗ[R] ℍ[R,c₁,c₂] where
 theorem quaternionBasis_lift_mkQuaternion (v) :
     (quaternionBasis c₁ c₂).lift (mkQuaternion v : ℍ[R,c₁,c₂]) = ι _ v := by
   dsimp [quaternionBasis, Basis.lift]
-  rw [map_zero, zero_add, zero_smul, add_zero, ←map_smul, ←map_smul, ←map_add,
+  rw [map_zero, zero_add, zero_smul, add_zero, ← map_smul, ← map_smul, ← map_add,
     Prod.smul_mk, Prod.smul_mk, Prod.mk_add_mk, smul_zero, smul_zero, add_zero, zero_add,
     smul_eq_mul, smul_eq_mul, mul_one, mul_one]
 
@@ -513,34 +513,34 @@ theorem e_mul_j : e * j = -(j * e) := by
   rw [quaternionBasis_j, ι_mul_comm, this, map_zero, zero_sub]
 
 theorem e_mul_k : e * k = k * e := by
-  rw [←i_mul_j, ←mul_assoc, e_mul_i, neg_mul, mul_assoc, e_mul_j, mul_neg,
-    neg_neg, ←mul_assoc]
+  rw [← i_mul_j, ← mul_assoc, e_mul_i, neg_mul, mul_assoc, e_mul_j, mul_neg,
+    neg_neg, ← mul_assoc]
 
 /-- The element of the Clifford algebra corresponding to `DualNumber.eps`. -/
 def eps [Invertible c₁] [Invertible c₂] : CliffordAlgebra (Q c₁ c₂) := (⅟c₁ * ⅟c₂) • (k * e)
 
 lemma e_eq [Invertible c₁] [Invertible c₂] : e = -(k * eps c₁ c₂) := by
-  rw [eps, mul_smul_comm, ←mul_assoc, k_mul_k, neg_mul, smul_neg, smul_one_mul, smul_smul, neg_neg,
+  rw [eps, mul_smul_comm, ← mul_assoc, k_mul_k, neg_mul, smul_neg, smul_one_mul, smul_smul, neg_neg,
     mul_mul_mul_comm, invOf_mul_self, invOf_mul_self, one_mul, one_smul]
 
 theorem commute_eps_i [Invertible c₁] [Invertible c₂] : Commute (eps c₁ c₂) i := by
   show _ = _
   dsimp only [eps]
-  rw [smul_mul_assoc, mul_smul_comm, ←mul_assoc, i_mul_k, smul_mul_assoc, mul_assoc, e_mul_i,
-    mul_neg, ←mul_assoc, k_mul_i, smul_mul_assoc, neg_smul, neg_neg]
+  rw [smul_mul_assoc, mul_smul_comm, ← mul_assoc, i_mul_k, smul_mul_assoc, mul_assoc, e_mul_i,
+    mul_neg, ← mul_assoc, k_mul_i, smul_mul_assoc, neg_smul, neg_neg]
 
 theorem commute_eps_j [Invertible c₁] [Invertible c₂] : Commute (eps c₁ c₂) j := by
   show _ = _
-  rw [eps, smul_mul_assoc, mul_smul_comm, ←mul_assoc, j_mul_k, smul_mul_assoc, mul_assoc, e_mul_j,
-    mul_neg, ←mul_assoc, k_mul_j, smul_mul_assoc, neg_smul]
+  rw [eps, smul_mul_assoc, mul_smul_comm, ← mul_assoc, j_mul_k, smul_mul_assoc, mul_assoc, e_mul_j,
+    mul_neg, ← mul_assoc, k_mul_j, smul_mul_assoc, neg_smul]
 
 theorem commute_eps_k [Invertible c₁] [Invertible c₂] : Commute (eps c₁ c₂) k :=
   (commute_eps_i c₁ c₂).mul_right (commute_eps_j c₁ c₂)
 
 theorem eps_mul_eps [Invertible c₁] [Invertible c₂] : eps c₁ c₂ * eps c₁ c₂ = 0 := by
   rw [eps]
-  conv_lhs => enter [2]; rw [←e_mul_k]
-  rw [smul_mul_smul, mul_assoc k, ←mul_assoc _ _ k, ι_sq_scalar, Q_apply, ←Prod.zero_eq_mk,
+  conv_lhs => enter [2]; rw [← e_mul_k]
+  rw [smul_mul_smul, mul_assoc k, ← mul_assoc _ _ k, ι_sq_scalar, Q_apply, ← Prod.zero_eq_mk,
     map_zero, map_zero, zero_mul, mul_zero, smul_zero]
 
 /-- Build a quaternion from the vector space that we built `CliffordAlgebraDualQuaternion.Q` upon.
@@ -600,7 +600,7 @@ theorem toDualQuaternion_ι (v : (R × R) × R) :
 
 @[simp] theorem toDualQuaternion_k :
     toDualQuaternion c₁ c₂ k = TrivSqZeroExt.inl (QuaternionAlgebra.Basis.self R).k := by
-  rw [←i_mul_j, map_mul, toDualQuaternion_i, toDualQuaternion_j]
+  rw [← i_mul_j, map_mul, toDualQuaternion_i, toDualQuaternion_j]
   ext <;> simp
 
 @[simp] theorem toDualQuaternion_e :
@@ -663,10 +663,10 @@ theorem toDualQuaternion_comp_ofDualQuaternion :
   · ext : 1
     dsimp
     rw [ofDualQuaternion_smul_eps, map_mul, toDualQuaternion_eps,
-      ←QuaternionAlgebra.Basis.liftHom_apply, liftHom_apply, QuaternionAlgebra.Basis.lift]
+      ← QuaternionAlgebra.Basis.liftHom_apply, liftHom_apply, QuaternionAlgebra.Basis.lift]
     simp_rw [map_add, map_smul _ (_ : R), AlgHom.commutes,
       toDualQuaternion_i, toDualQuaternion_j, toDualQuaternion_k,
-      TrivSqZeroExt.algebraMap_eq_inl', ←TrivSqZeroExt.inl_smul, ←TrivSqZeroExt.inl_add,
+      TrivSqZeroExt.algebraMap_eq_inl', ← TrivSqZeroExt.inl_smul, ← TrivSqZeroExt.inl_add,
       DualNumber.inl_mul_eps]
     congr
     ext <;> simp
@@ -679,7 +679,7 @@ theorem ofDualQuaternion_comp_toDualQuaternion :
     dsimp only [AlgHom.comp_toLinearMap, LinearMap.coe_comp, LinearMap.coe_inl, Function.comp_apply,
       AlgHom.toLinearMap_apply, AlgHom.coe_id, id_eq]
     rw [toDualQuaternion_ι, mkDualQuaternion_inl, ofDualQuaternion_inl,
-      ←QuaternionAlgebra.Basis.liftHom_apply, quaternionBasis_liftHom_eq]
+      ← QuaternionAlgebra.Basis.liftHom_apply, quaternionBasis_liftHom_eq]
     dsimp
     rw [CliffordAlgebraQuaternion.quaternionBasis_lift_mkQuaternion, map_apply_ι]
     rfl
