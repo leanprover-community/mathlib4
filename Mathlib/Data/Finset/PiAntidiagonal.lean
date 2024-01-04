@@ -33,12 +33,12 @@ provides a natural `DecidableEq` instance.
 
 Consider types `ι` and `μ`, with `AddCommMonoid μ`, `HasAntidiagonal μ` and `DecidableEq μ`.
 
-* `Finset.HasAntidiagonal.piAntidiagonal s n` is the finite set of all functions
+* `Finset.piAntidiagonal s n` is the finite set of all functions
   with finite support contained in `s` and sum `n : μ`
-  That condition is expressed by `Finset.HasAntidiagonal.mem_piAntidiagonal`
-* `Finset.HasAntidiagonal.mem_piAntidiagonal'` rewrites the `Finsupp.sum`
+  That condition is expressed by `Finset.mem_piAntidiagonal`
+* `Finset.mem_piAntidiagonal'` rewrites the `Finsupp.sum`
   condition as a `Finset.sum`
-* The construction starts with `Finset.HasAntidiagonal.finAntidiagonal`,
+* The construction starts with `Finset.finAntidiagonal`,
   a variant of `Finset.Nat.antidiagonalTuple`
 
 -/
@@ -48,8 +48,6 @@ namespace Finset
 open scoped BigOperators
 
 open Function Fin Finsupp HasAntidiagonal
-
-namespace HasAntidiagonal
 
 section Fin
 
@@ -339,7 +337,5 @@ theorem piAntidiagonal_zero (s : Finset ι) :
     simp [hf]
 
 end CanonicallyOrderedAddCommMonoid
-
-end HasAntidiagonal
 
 end Finset
