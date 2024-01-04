@@ -650,8 +650,8 @@ theorem indepFun_iff_map_prod_eq_prod_map_map {mβ : MeasurableSpace β} {mβ' :
     rw [(h₀ hs ht).1, (h₀ hs ht).2, h, Measure.prod_prod]
 
 @[symm]
-nonrec theorem IndepFun.symm {_ : MeasurableSpace β} {f g : Ω → β} (hfg : IndepFun f g μ) :
-    IndepFun g f μ := hfg.symm
+nonrec theorem IndepFun.symm [MeasurableSpace β] [MeasurableSpace γ] {f : Ω → β} {g : Ω → γ}
+    (hfg : IndepFun f g μ) : IndepFun g f μ := hfg.symm
 #align probability_theory.indep_fun.symm ProbabilityTheory.IndepFun.symm
 
 theorem IndepFun.ae_eq {mβ : MeasurableSpace β} {f g f' g' : Ω → β} (hfg : IndepFun f g μ)
