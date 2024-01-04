@@ -320,15 +320,15 @@ theorem rpow_one_div_eq_iff {x y : ℝ≥0} {z : ℝ} (hz : z ≠ 0) : x ^ (1 / 
   rw [← rpow_eq_rpow_iff hz, rpow_self_rpow_inv hz]
 #align nnreal.rpow_one_div_eq_iff NNReal.rpow_one_div_eq_iff
 
-theorem pow_nat_rpow_nat_inv (x : ℝ≥0) {n : ℕ} (hn : n ≠ 0) : (x ^ n) ^ (n⁻¹ : ℝ) = x := by
+theorem pow_rpow_inv_natCast (x : ℝ≥0) {n : ℕ} (hn : n ≠ 0) : (x ^ n) ^ (n⁻¹ : ℝ) = x := by
   rw [← NNReal.coe_eq, coe_rpow, NNReal.coe_pow]
-  exact Real.pow_nat_rpow_nat_inv x.2 hn
-#align nnreal.pow_nat_rpow_nat_inv NNReal.pow_nat_rpow_nat_inv
+  exact Real.pow_rpow_inv_natCast x.2 hn
+#align nnreal.pow_nat_rpow_nat_inv NNReal.pow_rpow_inv_natCast
 
-theorem rpow_nat_inv_pow_nat (x : ℝ≥0) {n : ℕ} (hn : n ≠ 0) : (x ^ (n⁻¹ : ℝ)) ^ n = x := by
+theorem rpow_inv_natCast_pow (x : ℝ≥0) {n : ℕ} (hn : n ≠ 0) : (x ^ (n⁻¹ : ℝ)) ^ n = x := by
   rw [← NNReal.coe_eq, NNReal.coe_pow, coe_rpow]
-  exact Real.rpow_nat_inv_pow_nat x.2 hn
-#align nnreal.rpow_nat_inv_pow_nat NNReal.rpow_nat_inv_pow_nat
+  exact Real.rpow_inv_natCast_pow x.2 hn
+#align nnreal.rpow_nat_inv_pow_nat NNReal.rpow_inv_natCast_pow
 
 theorem _root_.Real.toNNReal_rpow_of_nonneg {x y : ℝ} (hx : 0 ≤ x) :
     Real.toNNReal (x ^ y) = Real.toNNReal x ^ y := by
@@ -594,9 +594,9 @@ theorem coe_mul_rpow (x y : ℝ≥0) (z : ℝ) : ((x : ℝ≥0∞) * y) ^ z = (x
 
 theorem prod_coe_rpow {ι} (s : Finset ι) (f : ι → ℝ≥0) (r : ℝ) :
     ∏ i in s, (f i : ℝ≥0∞) ^ r = ((∏ i in s, f i : ℝ≥0) : ℝ≥0∞) ^ r := by
-  induction s using Finset.induction
-  case empty => simp
-  case insert i s hi ih => simp_rw [prod_insert hi, ih, ← coe_mul_rpow, coe_mul]
+  induction s using Finset.induction with
+  | empty => simp
+  | insert hi ih => simp_rw [prod_insert hi, ih, ← coe_mul_rpow, coe_mul]
 
 theorem mul_rpow_of_ne_zero {x y : ℝ≥0∞} (hx : x ≠ 0) (hy : y ≠ 0) (z : ℝ) :
     (x * y) ^ z = x ^ z * y ^ z := by simp [*, mul_rpow_eq_ite]
@@ -608,18 +608,18 @@ theorem mul_rpow_of_nonneg (x y : ℝ≥0∞) {z : ℝ} (hz : 0 ≤ z) : (x * y)
 
 theorem prod_rpow_of_ne_top {ι} {s : Finset ι} {f : ι → ℝ≥0∞} (hf : ∀ i ∈ s, f i ≠ ∞) (r : ℝ) :
     ∏ i in s, f i ^ r = (∏ i in s, f i) ^ r := by
-  induction s using Finset.induction
-  case empty => simp
-  case insert i s hi ih =>
+  induction s using Finset.induction with
+  | empty => simp
+  | @insert i s hi ih =>
     have h2f : ∀ i ∈ s, f i ≠ ∞ := fun i hi ↦ hf i <| mem_insert_of_mem hi
     rw [prod_insert hi, prod_insert hi, ih h2f, ← mul_rpow_of_ne_top <| hf i <| mem_insert_self ..]
     apply prod_lt_top h2f |>.ne
 
 theorem prod_rpow_of_nonneg {ι} {s : Finset ι} {f : ι → ℝ≥0∞} {r : ℝ} (hr : 0 ≤ r) :
     ∏ i in s, f i ^ r = (∏ i in s, f i) ^ r := by
-  induction s using Finset.induction
-  case empty => simp
-  case insert i s hi ih => simp_rw [prod_insert hi, ih, ← mul_rpow_of_nonneg _ _ hr]
+  induction s using Finset.induction with
+  | empty => simp
+  | insert hi ih => simp_rw [prod_insert hi, ih, ← mul_rpow_of_nonneg _ _ hr]
 
 theorem inv_rpow (x : ℝ≥0∞) (y : ℝ) : x⁻¹ ^ y = (x ^ y)⁻¹ := by
   rcases eq_or_ne y 0 with (rfl | hy); · simp only [rpow_zero, inv_one]

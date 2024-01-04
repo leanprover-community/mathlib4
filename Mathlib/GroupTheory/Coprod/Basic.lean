@@ -573,9 +573,9 @@ theorem mk_of_inv_mul : ∀ x : G ⊕ H, mk (of (x.map Inv.inv Inv.inv)) * mk (o
 theorem con_mul_left_inv (x : FreeMonoid (G ⊕ H)) :
     coprodCon G H (ofList (x.toList.map (Sum.map Inv.inv Inv.inv)).reverse * x) 1 := by
   rw [← mk_eq_mk, map_mul, map_one]
-  induction x using FreeMonoid.recOn
-  case h0 => simp [map_one mk] -- TODO: fails without `[map_one mk]`
-  case ih x xs ihx =>
+  induction x using FreeMonoid.recOn with
+  | h0 => simp [map_one mk] -- TODO: fails without `[map_one mk]`
+  | ih x xs ihx =>
     simp only [toList_of_mul, map_cons, reverse_cons, ofList_append, map_mul, ihx, ofList_singleton]
     rwa [mul_assoc, ← mul_assoc (mk (of _)), mk_of_inv_mul, one_mul]
 
