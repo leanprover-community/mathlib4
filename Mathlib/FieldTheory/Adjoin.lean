@@ -558,6 +558,9 @@ def AdjoinSimple.gen : F⟮α⟯ :=
 #align intermediate_field.adjoin_simple.gen IntermediateField.AdjoinSimple.gen
 
 @[simp]
+theorem AdjoinSimple.coe_gen : (AdjoinSimple.gen F α : E) = α :=
+  rfl
+
 theorem AdjoinSimple.algebraMap_gen : algebraMap F⟮α⟯ E (AdjoinSimple.gen F α) = α :=
   rfl
 #align intermediate_field.adjoin_simple.algebra_map_gen IntermediateField.AdjoinSimple.algebraMap_gen
