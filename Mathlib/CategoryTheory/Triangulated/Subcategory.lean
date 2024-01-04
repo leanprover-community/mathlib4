@@ -651,6 +651,12 @@ lemma lift_comp_inclusion_eq : S.lift F hF ⋙ S.ι = F :=
 
 def liftCompInclusion : S.lift F hF ⋙ S.ι ≅ F := Iso.refl _
 
+instance [Faithful F] : Faithful (S.lift F hF) :=
+  Faithful.of_comp_iso (S.liftCompInclusion F hF)
+
+instance [Full F] : Full (S.lift F hF) :=
+  Full.ofCompFaithfulIso (S.liftCompInclusion F hF)
+
 -- should be generalized
 instance [Preadditive D] [F.Additive] : (S.lift F hF).Additive where
   map_add {X Y f g} := by

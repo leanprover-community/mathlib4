@@ -384,7 +384,9 @@ class HasInducedTStructure : Prop :=
       (f : X ⟶ A) (g : A ⟶ Y) (h : Y ⟶ X⟦(1 : ℤ)⟧) (_ : Triangle.mk f g h ∈ distTriang C),
     X ∈ S.ι.essImage ∧ Y ∈ S.ι.essImage
 
-def tStructure [h : S.HasInducedTStructure t] : TStructure S.category where
+variable [h : S.HasInducedTStructure t]
+
+def tStructure : TStructure S.category where
   setLE n X := t.setLE n (S.ι.obj X)
   setGE n X := t.setGE n (S.ι.obj X)
   setLE_respectsIso n := ⟨fun X Y e hX => (t.setLE n).mem_of_iso (S.ι.mapIso e) hX⟩
@@ -414,6 +416,11 @@ def tStructure [h : S.HasInducedTStructure t] : TStructure S.category where
       simp only [Functor.image_preimage, assoc, Iso.inv_hom_id_app, Functor.comp_obj,
         comp_id, Iso.cancel_iso_hom_left, ← Functor.map_comp, Iso.inv_hom_id,
         Functor.map_id]
+
+@[simp]
+lemma mem_tStructure_heart_iff (X : S.category) :
+    X ∈ (S.tStructure t).heart ↔ X.1 ∈ t.heart := by
+  rfl
 
 end Subcategory
 
