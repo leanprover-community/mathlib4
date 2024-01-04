@@ -147,13 +147,9 @@ jobs:
           lean --version
           lake --version
 
-      - name: get cache
+      - name: build cache cache
         run: |
-          lake exe cache clean
-          # We've been seeing many failures at this step recently because of network errors.
-          # As a band-aid, we try twice.
-          # The 'sleep 1' is small pause to let the network recover.
-          lake exe cache get || (sleep 1; lake exe cache get)
+          lake build cache
 
       - name: prune ProofWidgets .lake
         run: |
@@ -162,6 +158,14 @@ jobs:
           # This removes them.
           rm -rf .lake/packages/proofwidgets/.lake/build/lib
           rm -rf .lake/packages/proofwidgets/.lake/build/ir
+
+      - name: get cache
+        run: |
+          lake exe cache clean
+          # We've been seeing many failures at this step recently because of network errors.
+          # As a band-aid, we try twice.
+          # The 'sleep 1' is small pause to let the network recover.
+          lake exe cache get || (sleep 1; lake exe cache get)
 
       - name: build mathlib
         id: build
