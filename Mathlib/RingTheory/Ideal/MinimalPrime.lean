@@ -45,6 +45,10 @@ def minimalPrimes (R : Type*) [CommRing R] : Set (Ideal R) :=
   Ideal.minimalPrimes ⊥
 #align minimal_primes minimalPrimes
 
+lemma minimalPrimes_eq_minimals {R} [CommRing R] :
+    minimalPrimes R = minimals (· ≤ ·) (setOf Ideal.IsPrime) :=
+  congr_arg (minimals (· ≤ ·)) (by simp)
+
 variable {I J}
 
 theorem Ideal.exists_minimalPrimes_le [J.IsPrime] (e : I ≤ J) : ∃ p ∈ I.minimalPrimes, p ≤ J := by

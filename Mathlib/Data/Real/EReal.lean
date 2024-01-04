@@ -715,7 +715,7 @@ theorem add_lt_add_of_lt_of_le' {x y z t : EReal} (h : x < y) (h' : z ≤ t) (hb
 assumptions. -/
 theorem add_lt_add_of_lt_of_le {x y z t : EReal} (h : x < y) (h' : z ≤ t) (hz : z ≠ ⊥)
     (ht : t ≠ ⊤) : x + z < y + t :=
-  add_lt_add_of_lt_of_le' h h' (ne_bot_of_le_ne_bot hz h') <| fun ht' => (ht ht').elim
+  add_lt_add_of_lt_of_le' h h' (ne_bot_of_le_ne_bot hz h') fun ht' => (ht ht').elim
 #align ereal.add_lt_add_of_lt_of_le EReal.add_lt_add_of_lt_of_le
 
 theorem add_lt_top {x y : EReal} (hx : x ≠ ⊤) (hy : y ≠ ⊤) : x + y < ⊤ := by
