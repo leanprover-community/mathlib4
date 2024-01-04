@@ -908,18 +908,6 @@ protected theorem UniformEquicontinuousOn.closure {A : Set <| β → α} {S : Se
     (hA : A.UniformEquicontinuousOn S) : (closure A).UniformEquicontinuousOn S :=
   UniformEquicontinuousOn.closure' (u := id) hA (Pi.continuous_restrict _)
 
---theorem Filter.Tendsto.uniformContinuous_of_uniformEquicontinuous {l : Filter ι} [l.NeBot]
---    {F : ι → β → α} {f : β → α} (h₁ : Tendsto F l (𝓝 f)) (h₂ : UniformEquicontinuous F) :
---    UniformContinuous f :=
---  (uniformEquicontinuous_iff_range.mp h₂).closure.uniformContinuous
---    ⟨f, mem_closure_of_tendsto h₁ <| eventually_of_forall mem_range_self⟩
-
---theorem Filter.Tendsto.continuousAt_of_equicontinuousAt {l : Filter ι} [l.NeBot] {F : ι → X → α}
---    {f : X → α} {x₀ : X} (h₁ : Tendsto F l (𝓝 f)) (h₂ : EquicontinuousAt F x₀) :
---    ContinuousAt f x₀ :=
---  (equicontinuousAt_iff_range.mp h₂).closure.continuousAt
---    ⟨f, mem_closure_of_tendsto h₁ <| eventually_of_forall mem_range_self⟩
-
 /-
 Implementation note: The following lemma (as well as all the following variations) could
 theoretically be deduced from the "closure" statements above. For example, we could do:
