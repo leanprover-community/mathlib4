@@ -193,7 +193,7 @@ continuous_iff_le_induced.1 (by
     _ _ continuous_induced_dom h1)
 
 lemma top_eq_iff_cont_inv {α : Type*} [Monoid α] [TopologicalSpace α] :
-  TopologicalSpace.induced (Units.coeHom α) inferInstance = Units.instTopologicalSpaceUnits ↔
+    TopologicalSpace.induced (Units.coeHom α) inferInstance = Units.instTopologicalSpaceUnits ↔
     @Continuous _ _ (TopologicalSpace.induced (Units.coeHom α) inferInstance)
       inferInstance (@Units.inv α _) :=
 by
