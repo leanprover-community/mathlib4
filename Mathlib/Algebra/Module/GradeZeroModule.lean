@@ -18,13 +18,13 @@ variable [AddMonoid ιA] [DecidableEq ιA] [AddAction ιA ιM] [DecidableEq ιM]
 variable [Semiring A] [SetLike σ' A] [AddSubmonoidClass σ' A]
 variable [AddCommMonoid M] [Module A M] [SetLike σ M] [AddSubmonoidClass σ M]
 variable (𝒜 : ιA → σ') (ℳ : ιM → σ)
-variable [SetLike.GradedMonoid 𝒜] [GradedRing 𝒜] [SetLike.GradedSmul 𝒜 ℳ]
+variable [SetLike.GradedMonoid 𝒜] [GradedRing 𝒜] [SetLike.GradedSMul 𝒜 ℳ]
 
 namespace DirectSum
 
 instance GradeZero.smul_at_i (i : ιM) : SMul (𝒜 0) (ℳ i) where
   smul a0 mi := ⟨a0.1 • mi, by
-    have := SetLike.GradedSmul.smul_mem a0.2 mi.2
+    have := SetLike.GradedSMul.smul_mem a0.2 mi.2
     rw [zero_vadd] at this
     exact this⟩
 
