@@ -107,8 +107,7 @@ lemma lintegral_gammaPdf_eq_one {a r : ℝ} (ha : 0 < a) (hr : 0 < r) :
   · rw [EventuallyLE, ae_restrict_iff' measurableSet_Ici]
     exact ae_of_all _ (fun x (hx : 0 ≤ x) ↦ by positivity)
   · apply (measurable_gammaPdfReal a r).aestronglyMeasurable.congr
-    rw [EventuallyEq, ae_restrict_iff' measurableSet_Ici]
-    refine ae_of_all _ (fun x (hx : 0 ≤ x) ↦ ?_)
+    refine (ae_restrict_iff' measurableSet_Ici).mpr <| ae_of_all _ fun x (hx : 0 ≤ x) ↦ ?_
     simp_rw [gammaPdfReal, eq_true_intro hx, ite_true]
 
 end GammaPdf
