@@ -3,7 +3,7 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Devon Tuma
 -/
-import Mathlib.RingTheory.NonZeroDivisors
+import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.Data.Polynomial.AlgebraMap
 
 #align_import ring_theory.polynomial.scale_roots from "leanprover-community/mathlib"@"40ac1b258344e0c2b4568dc37bfad937ec35a727"

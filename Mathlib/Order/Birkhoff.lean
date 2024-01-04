@@ -52,7 +52,7 @@ variable [SemilatticeInf α] {s : UpperSet α} {a : α}
 @[simp] lemma infIrred_Ici (a : α) : InfIrred (Ici a) := by
   refine ⟨fun h ↦ Ici_ne_top h.eq_top, fun s t hst ↦ ?_⟩
   have := mem_Ici_iff.2 (le_refl a)
-  rw [←hst] at this
+  rw [← hst] at this
   exact this.imp (fun ha ↦ le_antisymm (le_Ici.2 ha) $ hst.ge.trans inf_le_left) fun ha ↦
       le_antisymm (le_Ici.2 ha) $ hst.ge.trans inf_le_right
 
@@ -74,7 +74,7 @@ variable [SemilatticeSup α] {s : LowerSet α} {a : α}
 @[simp] lemma supIrred_Iic (a : α) : SupIrred (Iic a) := by
   refine' ⟨fun h ↦ Iic_ne_bot h.eq_bot, fun s t hst ↦ _⟩
   have := mem_Iic_iff.2 (le_refl a)
-  rw [←hst] at this
+  rw [← hst] at this
   exact this.imp (fun ha ↦ (le_sup_left.trans_eq hst).antisymm $ Iic_le.2 ha) fun ha ↦
     (le_sup_right.trans_eq hst).antisymm $ Iic_le.2 ha
 

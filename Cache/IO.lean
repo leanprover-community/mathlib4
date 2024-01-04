@@ -70,7 +70,7 @@ def CURLBIN :=
 
 /-- leantar version at https://github.com/digama0/leangz -/
 def LEANTARVERSION :=
-  "0.1.9"
+  "0.1.10"
 
 def EXE := if System.Platform.isWindows then ".exe" else ""
 
@@ -349,8 +349,8 @@ def unpackCache (hashMap : HashMap) (force : Bool) : IO Unit := do
 
 /-- Retrieves the azure token from the environment -/
 def getToken : IO String := do
-  let some token ← IO.getEnv "MATHLIB_CACHE_SAS"
-    | throw $ IO.userError "environment variable MATHLIB_CACHE_SAS must be set to upload caches"
+  let some token ← IO.getEnv "MATHLIB_CACHE_S3_TOKEN"
+    | throw $ IO.userError "environment variable MATHLIB_CACHE_S3_TOKEN must be set to upload caches"
   return token
 
 instance : Ord FilePath where
@@ -360,5 +360,17 @@ instance : Ord FilePath where
 def cleanCache (keep : Lean.RBTree FilePath compare := default) : IO Unit := do
   for path in ← getFilesWithExtension CACHEDIR "ltar" do
     if !keep.contains path then IO.FS.removeFile path
+
+/-- Prints the LTAR file and embedded comments (in particular, the mathlib commit that built the
+file) regarding the files with specified paths. -/
+def lookup (hashMap : HashMap) (paths : List FilePath) : IO Unit := do
+  let mut err := false
+  for path in paths do
+    let some hash := hashMap.find? path | err := true
+    let ltar := CACHEDIR / hash.asLTar
+    IO.println s!"{path}: {ltar}"
+    for line in (← runCmd (← getLeanTar) #["-k", ltar.toString]).splitOn "\n" |>.dropLast do
+      println! "  comment: {line}"
+  if err then IO.Process.exit 1
 
 end Cache.IO

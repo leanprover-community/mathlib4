@@ -28,11 +28,11 @@ open MeasureTheory MeasureTheory.Measure Set Function TopologicalSpace Bornology
 
 open scoped Topology Interval ENNReal BigOperators
 
-variable {X Y E R : Type*} [MeasurableSpace X] [TopologicalSpace X]
+variable {X Y E F R : Type*} [MeasurableSpace X] [TopologicalSpace X]
 
 variable [MeasurableSpace Y] [TopologicalSpace Y]
 
-variable [NormedAddCommGroup E] {f g : X → E} {μ : Measure X} {s : Set X}
+variable [NormedAddCommGroup E] [NormedAddCommGroup F] {f g : X → E} {μ : Measure X} {s : Set X}
 
 namespace MeasureTheory
 
@@ -45,16 +45,23 @@ def LocallyIntegrableOn (f : X → E) (s : Set X) (μ : Measure X := by volume_t
   ∀ x : X, x ∈ s → IntegrableAtFilter f (𝓝[s] x) μ
 #align measure_theory.locally_integrable_on MeasureTheory.LocallyIntegrableOn
 
-theorem LocallyIntegrableOn.mono (hf : MeasureTheory.LocallyIntegrableOn f s μ) {t : Set X}
+theorem LocallyIntegrableOn.mono_set (hf : LocallyIntegrableOn f s μ) {t : Set X}
     (hst : t ⊆ s) : LocallyIntegrableOn f t μ := fun x hx =>
   (hf x <| hst hx).filter_mono (nhdsWithin_mono x hst)
-#align measure_theory.locally_integrable_on.mono MeasureTheory.LocallyIntegrableOn.mono
+#align measure_theory.locally_integrable_on.mono MeasureTheory.LocallyIntegrableOn.mono_set
 
 theorem LocallyIntegrableOn.norm (hf : LocallyIntegrableOn f s μ) :
     LocallyIntegrableOn (fun x => ‖f x‖) s μ := fun t ht =>
   let ⟨U, hU_nhd, hU_int⟩ := hf t ht
   ⟨U, hU_nhd, hU_int.norm⟩
 #align measure_theory.locally_integrable_on.norm MeasureTheory.LocallyIntegrableOn.norm
+
+theorem LocallyIntegrableOn.mono (hf : LocallyIntegrableOn f s μ) {g : X → F}
+    (hg : AEStronglyMeasurable g μ) (h : ∀ᵐ x ∂μ, ‖g x‖ ≤ ‖f x‖) :
+    LocallyIntegrableOn g s μ := by
+  intro x hx
+  rcases hf x hx with ⟨t, t_mem, ht⟩
+  exact ⟨t, t_mem, Integrable.mono ht hg.restrict (ae_restrict_of_ae h)⟩
 
 theorem IntegrableOn.locallyIntegrableOn (hf : IntegrableOn f s μ) : LocallyIntegrableOn f s μ :=
   fun _ _ => ⟨s, self_mem_nhdsWithin, hf⟩
@@ -69,7 +76,7 @@ theorem LocallyIntegrableOn.integrableOn_isCompact (hf : LocallyIntegrableOn f s
 
 theorem LocallyIntegrableOn.integrableOn_compact_subset (hf : LocallyIntegrableOn f s μ) {t : Set X}
     (hst : t ⊆ s) (ht : IsCompact t) : IntegrableOn f t μ :=
-  (hf.mono hst).integrableOn_isCompact ht
+  (hf.mono_set hst).integrableOn_isCompact ht
 #align measure_theory.locally_integrable_on.integrable_on_compact_subset MeasureTheory.LocallyIntegrableOn.integrableOn_compact_subset
 
 /-- If a function `f` is locally integrable on a set `s` in a second countable topological space,
@@ -171,6 +178,11 @@ def LocallyIntegrable (f : X → E) (μ : Measure X := by volume_tac) : Prop :=
   ∀ x : X, IntegrableAtFilter f (𝓝 x) μ
 #align measure_theory.locally_integrable MeasureTheory.LocallyIntegrable
 
+theorem locallyIntegrable_comap (hs : MeasurableSet s) :
+    LocallyIntegrable (fun x : s ↦ f x) (μ.comap Subtype.val) ↔ LocallyIntegrableOn f s μ := by
+  simp_rw [LocallyIntegrableOn, Subtype.forall', ← map_nhds_subtype_val]
+  exact forall_congr' fun _ ↦ (MeasurableEmbedding.subtype_coe hs).integrableAtFilter_iff_comap.symm
+
 theorem locallyIntegrableOn_univ : LocallyIntegrableOn f univ μ ↔ LocallyIntegrable f μ := by
   simp only [LocallyIntegrableOn, nhdsWithin_univ, mem_univ, true_imp_iff]; rfl
 #align measure_theory.locally_integrable_on_univ MeasureTheory.locallyIntegrableOn_univ
@@ -182,6 +194,12 @@ theorem LocallyIntegrable.locallyIntegrableOn (hf : LocallyIntegrable f μ) (s :
 theorem Integrable.locallyIntegrable (hf : Integrable f μ) : LocallyIntegrable f μ := fun _ =>
   hf.integrableAtFilter _
 #align measure_theory.integrable.locally_integrable MeasureTheory.Integrable.locallyIntegrable
+
+theorem LocallyIntegrable.mono (hf : LocallyIntegrable f μ) {g : X → F}
+    (hg : AEStronglyMeasurable g μ) (h : ∀ᵐ x ∂μ, ‖g x‖ ≤ ‖f x‖) :
+    LocallyIntegrable g μ := by
+  rw [← locallyIntegrableOn_univ] at hf ⊢
+  exact hf.mono hg h
 
 /-- If `f` is locally integrable with respect to `μ.restrict s`, it is locally integrable on `s`.
 (See `locallyIntegrableOn_iff_locallyIntegrable_restrict` for an iff statement when `s` is

@@ -5,6 +5,7 @@ Authors: Oliver Nash
 -/
 import Mathlib.Algebra.Lie.Weights.Basic
 import Mathlib.LinearAlgebra.Trace
+import Mathlib.LinearAlgebra.FreeModule.PID
 
 /-!
 # Lie modules with linear weights
@@ -17,6 +18,7 @@ non-linear weights do exist. For example if we take:
  * `R`: the field with two elements (or indeed any perfect field of characteristic two),
  * `L`: `sl₂` (this is nilpotent in characteristic two),
  * `M`: the natural two-dimensional representation of `L`,
+
 then there is a single weight and it is non-linear. (See remark following Proposition 9 of
 chapter VII, §1.3 in [N. Bourbaki, Chapters 7--9](bourbaki1975b).)
 
@@ -31,14 +33,15 @@ or `R` has characteristic zero.
    Abelian Lie algebra, the weights of any Lie module are linear.
  * `LieModule.instLinearWeightsOfIsLieAbelian`: a typeclass instance encoding the fact that in
    characteristic zero, the weights of any finite-dimensional Lie module are linear.
+ * `LieModule.exists_forall_lie_eq_smul_of_weightSpace_ne_bot`: existence of simultaneous
+   eigenvectors from existence of simultaneous generalized eigenvectors for Noetherian Lie modules
+   with linear weights.
 
 -/
 
 open Set
 
-attribute [local instance]
-  isNoetherian_of_isNoetherianRing_of_finite
-  Module.free_of_finite_type_torsion_free'
+attribute [local instance] Module.free_of_finite_type_torsion_free'
 
 variable (R L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
   [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
@@ -173,13 +176,7 @@ instance : LieModule R L (shiftedWeightSpace R L M χ) where
 
 /-- Forgetting the action of `L`, the spaces `weightSpace M χ` and `shiftedWeightSpace R L M χ` are
 equivalent. -/
-@[simps] def shift : weightSpace M χ ≃ₗ[R] shiftedWeightSpace R L M χ where
-  toFun := id
-  map_add' _ _ := rfl
-  map_smul' _ _ := rfl
-  invFun := id
-  left_inv _ := rfl
-  right_inv _ := rfl
+@[simps!] def shift : weightSpace M χ ≃ₗ[R] shiftedWeightSpace R L M χ := LinearEquiv.refl R _
 
 lemma toEndomorphism_eq (x : L) :
     toEndomorphism R L (shiftedWeightSpace R L M χ) x =
@@ -192,5 +189,19 @@ instance [IsNoetherian R M] : IsNilpotent R L (shiftedWeightSpace R L M χ) :=
   LieModule.isNilpotent_iff_forall'.mpr fun x ↦ isNilpotent_toEndomorphism_sub_algebraMap M χ x
 
 end shiftedWeightSpace
+
+/-- Given a Lie module `M` of a Lie algebra `L` with coefficients in `R`, if a function `χ : L → R`
+has a simultaneous generalized eigenvector for the action of `L` then it has a simultaneous true
+eigenvector, provided `M` is Noetherian and has linear weights. -/
+lemma exists_forall_lie_eq_smul_of_weightSpace_ne_bot
+    [IsNoetherian R M] (hχ : weightSpace M χ ≠ ⊥) :
+    ∃ m : M, m ≠ 0 ∧ ∀ x : L, ⁅x, m⁆ = χ x • m := by
+  replace hχ : Nontrivial (shiftedWeightSpace R L M χ) :=
+    (LieSubmodule.nontrivial_iff_ne_bot R L M).mpr hχ
+  obtain ⟨⟨⟨m, _⟩, hm₁⟩, hm₂⟩ :=
+    @exists_ne _ (nontrivial_max_triv_of_isNilpotent R L (shiftedWeightSpace R L M χ)) 0
+  simp_rw [LieSubmodule.mem_coeSubmodule, mem_maxTrivSubmodule, Subtype.ext_iff,
+    shiftedWeightSpace.coe_lie_shiftedWeightSpace_apply, ZeroMemClass.coe_zero, sub_eq_zero] at hm₁
+  exact ⟨m, by simpa using hm₂, hm₁⟩
 
 end LieModule

@@ -192,6 +192,11 @@ def MulEquivClass.toMulEquiv [Mul α] [Mul β] [MulEquivClass F α β] (f : F) :
 instance [Mul α] [Mul β] [MulEquivClass F α β] : CoeTC F (α ≃* β) :=
   ⟨MulEquivClass.toMulEquiv⟩
 
+@[to_additive]
+theorem MulEquivClass.toMulEquiv_injective [Mul α] [Mul β] [MulEquivClass F α β] :
+    Function.Injective ((↑) : F → α ≃* β) :=
+  fun _ _ e ↦ FunLike.ext _ _ fun a ↦ congr_arg (fun e : α ≃* β ↦ e.toFun a) e
+
 namespace MulEquiv
 
 @[to_additive]
@@ -343,8 +348,8 @@ theorem symm_symm (f : M ≃* N) : f.symm.symm = f := rfl
 #align add_equiv.symm_symm AddEquiv.symm_symm
 
 @[to_additive]
-theorem symm_bijective : Function.Bijective (symm : M ≃* N → N ≃* M) :=
-  Equiv.bijective ⟨symm, symm, symm_symm, symm_symm⟩
+theorem symm_bijective : Function.Bijective (symm : (M ≃* N) → N ≃* M) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 #align mul_equiv.symm_bijective MulEquiv.symm_bijective
 #align add_equiv.symm_bijective AddEquiv.symm_bijective
 

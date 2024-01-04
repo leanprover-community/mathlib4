@@ -342,7 +342,7 @@ theorem zero_mem_measureOfNegatives : (0 : ℝ) ∈ s.measureOfNegatives :=
 
 theorem bddBelow_measureOfNegatives : BddBelow s.measureOfNegatives := by
   simp_rw [BddBelow, Set.Nonempty, mem_lowerBounds]
-  by_contra' h
+  by_contra! h
   have h' : ∀ n : ℕ, ∃ y : ℝ, y ∈ s.measureOfNegatives ∧ y < -n := fun n => h (-n)
   choose f hf using h'
   have hf' : ∀ n : ℕ, ∃ B, MeasurableSet B ∧ s ≤[B] 0 ∧ s B < -n := by
@@ -395,7 +395,7 @@ theorem exists_compl_positive_negative (s : SignedMeasure α) :
   refine' ⟨Aᶜ, hA₁.compl, _, (compl_compl A).symm ▸ hA₂⟩
   rw [restrict_le_restrict_iff _ _ hA₁.compl]
   intro C _ hC₁
-  by_contra' hC₂
+  by_contra! hC₂
   rcases exists_subset_restrict_nonpos hC₂ with ⟨D, hD₁, hD, hD₂, hD₃⟩
   have : s (A ∪ D) < sInf s.measureOfNegatives := by
     rw [← hA₃,

@@ -102,6 +102,10 @@ theorem symm_symm (c : ComplexShape ι) : c.symm.symm = c := by
   simp
 #align complex_shape.symm_symm ComplexShape.symm_symm
 
+theorem symm_bijective :
+    Function.Bijective (ComplexShape.symm : ComplexShape ι → ComplexShape ι) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
+
 /-- The "composition" of two `ComplexShape`s.
 
 We need this to define "related in k steps" later.

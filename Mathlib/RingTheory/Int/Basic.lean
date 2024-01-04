@@ -265,7 +265,7 @@ def associatesIntEquivNat : Associates ℤ ≃ ℕ := by
 
 theorem Int.Prime.dvd_mul {m n : ℤ} {p : ℕ} (hp : Nat.Prime p) (h : (p : ℤ) ∣ m * n) :
     p ∣ m.natAbs ∨ p ∣ n.natAbs := by
-  rwa [← hp.dvd_mul, ← Int.natAbs_mul, ←Int.coe_nat_dvd_left]
+  rwa [← hp.dvd_mul, ← Int.natAbs_mul, ← Int.coe_nat_dvd_left]
 #align int.prime.dvd_mul Int.Prime.dvd_mul
 
 theorem Int.Prime.dvd_mul' {m n : ℤ} {p : ℕ} (hp : Nat.Prime p) (h : (p : ℤ) ∣ m * n) :
@@ -304,9 +304,9 @@ theorem Int.exists_prime_and_dvd {n : ℤ} (hn : n.natAbs ≠ 1) : ∃ p, Prime 
 open UniqueFactorizationMonoid
 
 theorem Nat.factors_eq {n : ℕ} : normalizedFactors n = n.factors := by
-  cases n
-  case zero => simp
-  case succ n =>
+  cases n with
+  | zero => simp
+  | succ n =>
     rw [← Multiset.rel_eq, ← associated_eq_eq]
     apply UniqueFactorizationMonoid.factors_unique irreducible_of_normalized_factor _
     · rw [Multiset.coe_prod, Nat.prod_factors n.succ_ne_zero]

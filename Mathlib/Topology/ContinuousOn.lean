@@ -3,6 +3,7 @@ Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+import Mathlib.Algebra.Function.Indicator
 import Mathlib.Topology.Constructions
 
 #align_import topology.continuous_on from "leanprover-community/mathlib"@"d4f691b9e5f94cfc64639973f3544c95f8d5d494"
@@ -720,6 +721,7 @@ theorem continuous_of_cover_nhds {ι : Sort*} {f : α → β} {s : ι → Set α
 theorem continuousOn_empty (f : α → β) : ContinuousOn f ∅ := fun _ => False.elim
 #align continuous_on_empty continuousOn_empty
 
+@[simp]
 theorem continuousOn_singleton (f : α → β) (a : α) : ContinuousOn f {a} :=
   forall_eq.2 <| by
     simpa only [ContinuousWithinAt, nhdsWithin_singleton, tendsto_pure_left] using fun s =>
@@ -1064,10 +1066,10 @@ theorem continuousOn_open_iff {f : α → β} {s : Set α} (hs : IsOpen s) :
     rw [@inter_comm _ s (f ⁻¹' t), inter_assoc, inter_self]
 #align continuous_on_open_iff continuousOn_open_iff
 
-theorem ContinuousOn.preimage_open_of_open {f : α → β} {s : Set α} {t : Set β}
+theorem ContinuousOn.isOpen_inter_preimage {f : α → β} {s : Set α} {t : Set β}
     (hf : ContinuousOn f s) (hs : IsOpen s) (ht : IsOpen t) : IsOpen (s ∩ f ⁻¹' t) :=
   (continuousOn_open_iff hs).1 hf t ht
-#align continuous_on.preimage_open_of_open ContinuousOn.preimage_open_of_open
+#align continuous_on.preimage_open_of_open ContinuousOn.isOpen_inter_preimage
 
 theorem ContinuousOn.isOpen_preimage {f : α → β} {s : Set α} {t : Set β} (h : ContinuousOn f s)
     (hs : IsOpen s) (hp : f ⁻¹' t ⊆ s) (ht : IsOpen t) : IsOpen (f ⁻¹' t) := by
@@ -1075,19 +1077,19 @@ theorem ContinuousOn.isOpen_preimage {f : α → β} {s : Set α} {t : Set β} (
   rw [inter_comm, inter_eq_self_of_subset_left hp]
 #align continuous_on.is_open_preimage ContinuousOn.isOpen_preimage
 
-theorem ContinuousOn.preimage_closed_of_closed {f : α → β} {s : Set α} {t : Set β}
+theorem ContinuousOn.preimage_isClosed_of_isClosed {f : α → β} {s : Set α} {t : Set β}
     (hf : ContinuousOn f s) (hs : IsClosed s) (ht : IsClosed t) : IsClosed (s ∩ f ⁻¹' t) := by
   rcases continuousOn_iff_isClosed.1 hf t ht with ⟨u, hu⟩
   rw [inter_comm, hu.2]
   apply IsClosed.inter hu.1 hs
-#align continuous_on.preimage_closed_of_closed ContinuousOn.preimage_closed_of_closed
+#align continuous_on.preimage_closed_of_closed ContinuousOn.preimage_isClosed_of_isClosed
 
 theorem ContinuousOn.preimage_interior_subset_interior_preimage {f : α → β} {s : Set α} {t : Set β}
     (hf : ContinuousOn f s) (hs : IsOpen s) : s ∩ f ⁻¹' interior t ⊆ s ∩ interior (f ⁻¹' t) :=
   calc
     s ∩ f ⁻¹' interior t ⊆ interior (s ∩ f ⁻¹' t) :=
       interior_maximal (inter_subset_inter (Subset.refl _) (preimage_mono interior_subset))
-        (hf.preimage_open_of_open hs isOpen_interior)
+        (hf.isOpen_inter_preimage hs isOpen_interior)
     _ = s ∩ interior (f ⁻¹' t) := by rw [interior_inter, hs.interior_eq]
 #align continuous_on.preimage_interior_subset_interior_preimage ContinuousOn.preimage_interior_subset_interior_preimage
 
@@ -1102,19 +1104,19 @@ theorem continuousOn_of_locally_continuousOn {f : α → β} {s : Set α}
 -- porting note: new lemma
 theorem continuousOn_to_generateFrom_iff {s : Set α} {T : Set (Set β)} {f : α → β} :
     @ContinuousOn α β _ (.generateFrom T) f s ↔ ∀ x ∈ s, ∀ t ∈ T, f x ∈ t → f ⁻¹' t ∈ 𝓝[s] x :=
-  forall₂_congr <| fun x _ => by
+  forall₂_congr fun x _ => by
     delta ContinuousWithinAt
     simp only [TopologicalSpace.nhds_generateFrom, tendsto_iInf, tendsto_principal, mem_setOf_eq,
       and_imp]
     exact forall_congr' fun t => forall_swap
 
 -- porting note: dropped an unneeded assumption
-theorem continuousOn_open_of_generateFrom {β : Type*} {s : Set α} {T : Set (Set β)} {f : α → β}
+theorem continuousOn_isOpen_of_generateFrom {β : Type*} {s : Set α} {T : Set (Set β)} {f : α → β}
     (h : ∀ t ∈ T, IsOpen (s ∩ f ⁻¹' t)) :
     @ContinuousOn α β _ (.generateFrom T) f s :=
   continuousOn_to_generateFrom_iff.2 fun _x hx t ht hxt => mem_nhdsWithin.2
     ⟨_, h t ht, ⟨hx, hxt⟩, fun _y hy => hy.1.2⟩
-#align continuous_on_open_of_generate_from continuousOn_open_of_generateFromₓ
+#align continuous_on_open_of_generate_from continuousOn_isOpen_of_generateFromₓ
 
 theorem ContinuousWithinAt.prod {f : α → β} {g : α → γ} {s : Set α} {x : α}
     (hf : ContinuousWithinAt f s x) (hg : ContinuousWithinAt g s x) :
@@ -1155,10 +1157,9 @@ theorem OpenEmbedding.map_nhdsWithin_preimage_eq {f : α → β} (hf : OpenEmbed
   rw [inter_assoc, inter_self]
 #align open_embedding.map_nhds_within_preimage_eq OpenEmbedding.map_nhdsWithin_preimage_eq
 
-theorem continuousWithinAt_of_not_mem_closure {f : α → β} {s : Set α} {x : α} :
-    x ∉ closure s → ContinuousWithinAt f s x := by
-  intro hx
-  rw [mem_closure_iff_nhdsWithin_neBot, neBot_iff, not_not] at hx
+theorem continuousWithinAt_of_not_mem_closure {f : α → β} {s : Set α} {x : α} (hx : x ∉ closure s) :
+    ContinuousWithinAt f s x := by
+  rw [mem_closure_iff_nhdsWithin_neBot, not_neBot] at hx
   rw [ContinuousWithinAt, hx]
   exact tendsto_bot
 #align continuous_within_at_of_not_mem_closure continuousWithinAt_of_not_mem_closure
@@ -1270,6 +1271,21 @@ theorem Continuous.piecewise {s : Set α} {f g : α → β} [∀ a, Decidable (a
     Continuous (piecewise s f g) :=
   hf.if hs hg
 #align continuous.piecewise Continuous.piecewise
+
+section Indicator
+variable [One β] {f : α → β} {s : Set α}
+
+@[to_additive]
+lemma continuous_mulIndicator (hs : ∀ a ∈ frontier s, f a = 1) (hf : ContinuousOn f (closure s)) :
+    Continuous (mulIndicator s f) := by
+  classical exact continuous_piecewise hs hf continuousOn_const
+
+@[to_additive]
+protected lemma Continuous.mulIndicator (hs : ∀ a ∈ frontier s, f a = 1) (hf : Continuous f) :
+    Continuous (mulIndicator s f) := by
+  classical exact hf.piecewise hs continuous_const
+
+end Indicator
 
 theorem IsOpen.ite' {s s' t : Set α} (hs : IsOpen s) (hs' : IsOpen s')
     (ht : ∀ x ∈ frontier t, x ∈ s ↔ x ∈ s') : IsOpen (t.ite s s') := by
