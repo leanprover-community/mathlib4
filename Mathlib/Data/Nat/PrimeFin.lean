@@ -35,7 +35,7 @@ instance Primes.countable : Countable Primes := ⟨⟨coeNat.coe, coe_nat_inject
 @[simp] lemma toFinset_factors (n : ℕ) : n.factors.toFinset = n.primeFactors := rfl
 
 @[simp] lemma mem_primeFactors : p ∈ n.primeFactors ↔ p.Prime ∧ p ∣ n ∧ n ≠ 0 := by
-  simp_rw [←toFinset_factors, List.mem_toFinset, mem_factors']
+  simp_rw [← toFinset_factors, List.mem_toFinset, mem_factors']
 
 lemma mem_primeFactors_of_ne_zero (hn : n ≠ 0) : p ∈ n.primeFactors ↔ p.Prime ∧ p ∣ n := by
   simp [hn]
@@ -67,6 +67,11 @@ lemma le_of_mem_primeFactors (h : p ∈ n.primeFactors) : p ≤ n :=
     exact Nonempty.ne_empty $ ⟨_, mem_primeFactors.2 ⟨hp, hpn, hn.1⟩⟩
   · rintro (rfl | rfl) <;> simp
 
+@[simp]
+lemma nonempty_primeFactors {n : ℕ} : n.primeFactors.Nonempty ↔ 1 < n := by
+  rw [← not_iff_not, Finset.not_nonempty_iff_eq_empty, primeFactors_eq_empty, not_lt,
+    Nat.le_one_iff_eq_zero_or_eq_one]
+
 @[simp] protected lemma Prime.primeFactors (hp : p.Prime) : p.primeFactors = {p} := by
   simp [Nat.primeFactors, factors_prime hp]
 
@@ -86,7 +91,7 @@ lemma primeFactors_gcd (ha : a ≠ 0) (hb : b ≠ 0) :
 
 @[simp] lemma disjoint_primeFactors (ha : a ≠ 0) (hb : b ≠ 0) :
     Disjoint a.primeFactors b.primeFactors ↔ Coprime a b := by
-  simp [disjoint_iff_inter_eq_empty, coprime_iff_gcd_eq_one, ←primeFactors_gcd, gcd_ne_zero_left,
+  simp [disjoint_iff_inter_eq_empty, coprime_iff_gcd_eq_one, ← primeFactors_gcd, gcd_ne_zero_left,
     ha, hb]
 
 protected lemma Coprime.disjoint_primeFactors (hab : Coprime a b) :

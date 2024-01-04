@@ -49,7 +49,7 @@ It must be the case that `projectObj id (LiftObj.lift x) = x` by defeq. -/
 class LiftObj (X : C) where
   protected lift : FreeMonoidalCategory C
 
-instance LiftObj_unit : LiftObj (𝟙_ C) := ⟨Unit⟩
+instance LiftObj_unit : LiftObj (𝟙_ C) := ⟨unit⟩
 
 instance LiftObj_tensor (X Y : C) [LiftObj X] [LiftObj Y] : LiftObj (X ⊗ Y) where
   lift := LiftObj.lift X ⊗ LiftObj.lift Y
@@ -329,8 +329,8 @@ def coherence_loop (maxSteps := 37) : TacticM Unit :=
     -- Otherwise, rearrange so we have a maximal prefix of each side
     -- that is built out of unitors and associators:
     evalTactic (← `(tactic| liftable_prefixes)) <|>
-      exception' ("Something went wrong in the `coherence` tactic: " ++
-        "is the target an equation in a monoidal category?")
+      exception' "Something went wrong in the `coherence` tactic: \
+        is the target an equation in a monoidal category?"
     -- The goal should now look like `f₀ ≫ f₁ = g₀ ≫ g₁`,
     liftMetaTactic MVarId.congrCore
     -- and now we have two goals `f₀ = g₀` and `f₁ = g₁`.

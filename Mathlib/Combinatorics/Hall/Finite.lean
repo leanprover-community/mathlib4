@@ -147,7 +147,7 @@ theorem hall_cond_of_compl {ι : Type u} {t : ι → Finset α} {s : Finset ι}
   rw [this, hus]
   refine' (tsub_le_tsub_right (ht _) _).trans _
   rw [← card_sdiff]
-  · refine' (card_le_of_subset _).trans le_rfl
+  · refine' (card_le_card _).trans le_rfl
     intro t
     simp only [mem_biUnion, mem_sdiff, not_exists, mem_image, and_imp, mem_union, exists_and_right,
       exists_imp]
@@ -261,7 +261,7 @@ theorem Finset.all_card_le_biUnion_card_iff_existsInjective' {ι α : Type*} [Fi
   · exact HallMarriageTheorem.hall_hard_inductive
   · rintro ⟨f, hf₁, hf₂⟩ s
     rw [← card_image_of_injective s hf₁]
-    apply card_le_of_subset
+    apply card_le_card
     intro
     rw [mem_image, mem_biUnion]
     rintro ⟨x, hx, rfl⟩

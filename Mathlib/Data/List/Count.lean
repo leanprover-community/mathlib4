@@ -73,7 +73,7 @@ theorem length_filter_lt_length_iff_exists (l) :
 
 -- porting note: `Lean.Internal.coeM` forces us to type-ascript `{x // x ∈ l}`
 lemma countP_attach (l : List α) : l.attach.countP (fun a : {x // x ∈ l} ↦ p a) = l.countP p := by
-  simp_rw [←Function.comp_apply (g := Subtype.val), ←countP_map, attach_map_val]
+  simp_rw [← Function.comp_apply (g := Subtype.val), ← countP_map, attach_map_val]
 #align list.countp_attach List.countP_attach
 
 #align list.countp_mono_left List.countP_mono_left

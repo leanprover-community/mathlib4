@@ -338,7 +338,7 @@ def toSubmodule : Subalgebra R A ↪o Submodule R A where
           carrier := S
           smul_mem' := fun c {x} hx ↦
             (Algebra.smul_def c x).symm ▸ mul_mem (S.range_le ⟨c, rfl⟩) hx }
-      inj' := fun _ _ h ↦ ext <| fun x ↦ SetLike.ext_iff.mp h x }
+      inj' := fun _ _ h ↦ ext fun x ↦ SetLike.ext_iff.mp h x }
   map_rel_iff' := SetLike.coe_subset_coe.symm.trans SetLike.coe_subset_coe
 #align subalgebra.to_submodule Subalgebra.toSubmodule
 
@@ -1031,7 +1031,7 @@ instance : Unique (Subalgebra R R) :=
 
 /-- The map `S → T` when `S` is a subalgebra contained in the subalgebra `T`.
 
-This is the subalgebra version of `Submodule.ofLe`, or `Subring.inclusion`  -/
+This is the subalgebra version of `Submodule.inclusion`, or `Subring.inclusion`  -/
 def inclusion {S T : Subalgebra R A} (h : S ≤ T) : S →ₐ[R] T
     where
   toFun := Set.inclusion h

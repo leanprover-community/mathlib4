@@ -127,7 +127,7 @@ theorem TFAE_exists_lt_isLittleO_pow (f : ℕ → ℝ) (R : ℝ) :
     TFAE
       [∃ a ∈ Ioo (-R) R, f =o[atTop] (a ^ ·), ∃ a ∈ Ioo 0 R, f =o[atTop] (a ^ ·),
         ∃ a ∈ Ioo (-R) R, f =O[atTop] (a ^ ·), ∃ a ∈ Ioo 0 R, f =O[atTop] (a ^ ·),
-        ∃ a < R, ∃ (C : _) (_ : 0 < C ∨ 0 < R), ∀ n, |f n| ≤ C * a ^ n,
+        ∃ a < R, ∃ C : ℝ, (0 < C ∨ 0 < R) ∧ ∀ n, |f n| ≤ C * a ^ n,
         ∃ a ∈ Ioo 0 R, ∃ C > 0, ∀ n, |f n| ≤ C * a ^ n, ∃ a < R, ∀ᶠ n in atTop, |f n| ≤ a ^ n,
         ∃ a ∈ Ioo 0 R, ∀ᶠ n in atTop, |f n| ≤ a ^ n] := by
   have A : Ico 0 R ⊆ Ioo (-R) R :=
@@ -233,7 +233,7 @@ theorem tendsto_pow_const_mul_const_pow_of_abs_lt_one (k : ℕ) {r : ℝ} (hr : 
     Tendsto (fun n ↦ (n : ℝ) ^ k * r ^ n : ℕ → ℝ) atTop (𝓝 0) := by
   by_cases h0 : r = 0
   · exact tendsto_const_nhds.congr'
-      (mem_atTop_sets.2 ⟨1, fun n hn ↦ by simp [zero_lt_one.trans_le hn, h0]⟩)
+      (mem_atTop_sets.2 ⟨1, fun n hn ↦ by simp [zero_lt_one.trans_le hn |>.ne', h0]⟩)
   have hr' : 1 < |r|⁻¹ := one_lt_inv (abs_pos.2 h0) hr
   rw [tendsto_zero_iff_norm_tendsto_zero]
   simpa [div_eq_mul_inv] using tendsto_pow_const_div_const_pow_of_one_lt k hr'
@@ -319,7 +319,7 @@ theorem summable_geometric_iff_norm_lt_1 : (Summable fun n : ℕ ↦ ξ ^ n) ↔
     (h.tendsto_cofinite_zero.eventually (ball_mem_nhds _ zero_lt_one)).exists
   simp only [norm_pow, dist_zero_right] at hk
   rw [← one_pow k] at hk
-  exact lt_of_pow_lt_pow _ zero_le_one hk
+  exact lt_of_pow_lt_pow_left _ zero_le_one hk
 #align summable_geometric_iff_norm_lt_1 summable_geometric_iff_norm_lt_1
 
 end Geometric
@@ -428,7 +428,7 @@ theorem NormedAddCommGroup.cauchy_series_of_le_geometric'' {C : ℝ} {u : ℕ �
     CauchySeq fun n ↦ ∑ k in range (n + 1), u k := by
   set v : ℕ → α := fun n ↦ if n < N then 0 else u n
   have hC : 0 ≤ C :=
-    (zero_le_mul_right <| pow_pos hr₀ N).mp ((norm_nonneg _).trans <| h N <| le_refl N)
+    (mul_nonneg_iff_of_pos_right <| pow_pos hr₀ N).mp ((norm_nonneg _).trans <| h N <| le_refl N)
   have : ∀ n ≥ N, u n = v n := by
     intro n hn
     simp [hn, if_neg (not_lt.mpr hn)]
@@ -513,7 +513,7 @@ theorem summable_of_ratio_norm_eventually_le {α : Type*} [SeminormedAddCommGrou
   · push_neg at hr₀
     refine' .of_norm_bounded_eventually_nat 0 summable_zero _
     filter_upwards [h] with _ hn
-    by_contra' h
+    by_contra! h
     exact not_lt.mpr (norm_nonneg _) (lt_of_le_of_lt hn <| mul_neg_of_neg_of_pos hr₀ h)
 #align summable_of_ratio_norm_eventually_le summable_of_ratio_norm_eventually_le
 

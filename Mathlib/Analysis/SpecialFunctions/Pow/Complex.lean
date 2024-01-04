@@ -58,7 +58,7 @@ theorem zero_cpow_eq_iff {x : ℂ} {a : ℂ} : (0 : ℂ) ^ x = a ↔ x ≠ 0 ∧
   constructor
   · intro hyp
     simp only [cpow_def, eq_self_iff_true, if_true] at hyp
-    by_cases x = 0
+    by_cases h : x = 0
     · subst h
       simp only [if_true, eq_self_iff_true] at hyp
       right
@@ -120,8 +120,8 @@ lemma cpow_int_mul (x : ℂ) (n : ℤ) (y : ℂ) : x ^ (n * y) = (x ^ y) ^ n := 
 
 lemma cpow_mul_int (x y : ℂ) (n : ℤ) : x ^ (y * n) = (x ^ y) ^ n := by rw [mul_comm, cpow_int_mul]
 
-lemma cpow_nat_mul (x : ℂ) (n : ℕ) (y : ℂ) : x ^ (n * y) = (x ^ y) ^ n := by
-  exact_mod_cast cpow_int_mul x n y
+lemma cpow_nat_mul (x : ℂ) (n : ℕ) (y : ℂ) : x ^ (n * y) = (x ^ y) ^ n :=
+  mod_cast cpow_int_mul x n y
 
 /-- See Note [no_index around OfNat.ofNat] -/
 lemma cpow_ofNat_mul (x : ℂ) (n : ℕ) [n.AtLeastTwo] (y : ℂ) :

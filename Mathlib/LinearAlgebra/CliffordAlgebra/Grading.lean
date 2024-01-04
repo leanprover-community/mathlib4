@@ -59,13 +59,11 @@ theorem ι_mul_ι_mem_evenOdd_zero (m₁ m₂ : M) : ι Q m₁ * ι Q m₂ ∈ e
 theorem evenOdd_mul_le (i j : ZMod 2) : evenOdd Q i * evenOdd Q j ≤ evenOdd Q (i + j) := by
   simp_rw [evenOdd, Submodule.iSup_eq_span, Submodule.span_mul_span]
   apply Submodule.span_mono
-  intro z hz
-  obtain ⟨x, y, hx, hy, rfl⟩ := hz
-  obtain ⟨xi, hx'⟩ := Set.mem_iUnion.mp hx
-  obtain ⟨yi, hy'⟩ := Set.mem_iUnion.mp hy
-  refine' Set.mem_iUnion.mpr ⟨⟨xi + yi, by simp only [Nat.cast_add, xi.prop, yi.prop]⟩, _⟩
+  simp_rw [Set.iUnion_mul, Set.mul_iUnion, Set.iUnion_subset_iff, Set.mul_subset_iff]
+  rintro ⟨xi, rfl⟩ ⟨yi, rfl⟩ x hx y hy
+  refine Set.mem_iUnion.mpr ⟨⟨xi + yi, Nat.cast_add _ _⟩, ?_⟩
   simp only [Subtype.coe_mk, Nat.cast_add, pow_add]
-  exact Submodule.mul_mem_mul hx' hy'
+  exact Submodule.mul_mem_mul hx hy
 #align clifford_algebra.even_odd_mul_le CliffordAlgebra.evenOdd_mul_le
 
 instance evenOdd.gradedMonoid : SetLike.GradedMonoid (evenOdd Q) where
