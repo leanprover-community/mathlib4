@@ -503,14 +503,10 @@ local notation3 "k" => QuaternionAlgebra.Basis.k (quaternionBasis c₁ c₂)
 local notation3 "e" => ι (Q c₁ c₂) ((0, 0), 1)
 
 theorem e_mul_i : e * i = -(i * e) := by
-  have : QuadraticForm.polar (Q c₁ c₂) ((0, 0), 1) ((1, 0), 0) = 0 := by
-    simp [Q_apply, CliffordAlgebraQuaternion.Q_apply, QuadraticForm.polar]
-  rw [quaternionBasis_i, ι_mul_comm, this, map_zero, zero_sub]
+  rw [quaternionBasis_i, ι_mul_ι_comm_of_isOrtho (.inr_inl _ _)]
 
 theorem e_mul_j : e * j = -(j * e) := by
-  have : QuadraticForm.polar (Q c₁ c₂) ((0, 0), 1) ((0, 1), 0) = 0 := by
-    simp [Q_apply, CliffordAlgebraQuaternion.Q_apply, QuadraticForm.polar]
-  rw [quaternionBasis_j, ι_mul_comm, this, map_zero, zero_sub]
+  rw [quaternionBasis_j, ι_mul_ι_comm_of_isOrtho (.inr_inl _ _)]
 
 theorem e_mul_k : e * k = k * e := by
   rw [← i_mul_j, ← mul_assoc, e_mul_i, neg_mul, mul_assoc, e_mul_j, mul_neg,
