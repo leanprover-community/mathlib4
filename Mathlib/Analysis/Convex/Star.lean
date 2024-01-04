@@ -94,7 +94,7 @@ theorem starConvex_iff_pointwise_add_subset :
   refine'
     ⟨_, fun h y hy a b ha hb hab =>
       h ha hb hab (add_mem_add (smul_mem_smul_set <| mem_singleton _) ⟨_, hy, rfl⟩)⟩
-  rintro hA a b ha hb hab w ⟨au, bv, ⟨u, rfl : u = x, rfl⟩, ⟨v, hv, rfl⟩, rfl⟩
+  rintro hA a b ha hb hab w ⟨au, ⟨u, rfl : u = x, rfl⟩, bv, ⟨v, hv, rfl⟩, rfl⟩
   exact hA hv ha hb hab
 #align star_convex_iff_pointwise_add_subset starConvex_iff_pointwise_add_subset
 
@@ -385,7 +385,7 @@ lemma starConvex_compl_Iic (h : x < y) : StarConvex 𝕜 y (Iic x)ᶜ := by
   refine (starConvex_iff_forall_pos <| by simp [h.not_le]).mpr fun z hz a b ha hb hab ↦ ?_
   rw [mem_compl_iff, mem_Iic] at hz ⊢
   contrapose! hz
-  refine (lt_of_smul_lt_smul_of_nonneg ?_ hb.le).le
+  refine (lt_of_smul_lt_smul_of_nonneg_left ?_ hb.le).le
   calc
     b • z ≤ (a + b) • x - a • y := by rwa [le_sub_iff_add_le', hab, one_smul]
     _ < b • x := by

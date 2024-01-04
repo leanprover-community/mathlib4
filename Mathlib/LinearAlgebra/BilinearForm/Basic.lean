@@ -236,17 +236,17 @@ theorem smul_apply {α} [Monoid α] [DistribMulAction α R] [SMulCommClass α R 
 instance {α β} [Monoid α] [Monoid β] [DistribMulAction α R] [DistribMulAction β R]
     [SMulCommClass α R R] [SMulCommClass β R R] [SMulCommClass α β R] :
     SMulCommClass α β (BilinForm R M) :=
-  ⟨fun a b B => ext $ fun x y => smul_comm a b (B x y)⟩
+  ⟨fun a b B => ext fun x y => smul_comm a b (B x y)⟩
 
 instance {α β} [Monoid α] [Monoid β] [SMul α β] [DistribMulAction α R] [DistribMulAction β R]
     [SMulCommClass α R R] [SMulCommClass β R R] [IsScalarTower α β R] :
     IsScalarTower α β (BilinForm R M) :=
-  ⟨fun a b B => ext $ fun x y => smul_assoc a b (B x y)⟩
+  ⟨fun a b B => ext fun x y => smul_assoc a b (B x y)⟩
 
 instance {α} [Monoid α] [DistribMulAction α R] [DistribMulAction αᵐᵒᵖ R]
     [SMulCommClass α R R] [IsCentralScalar α R] :
     IsCentralScalar α (BilinForm R M) :=
-  ⟨fun a B => ext $ fun x y => op_smul_eq_smul a (B x y)⟩
+  ⟨fun a B => ext fun x y => op_smul_eq_smul a (B x y)⟩
 
 instance : AddCommMonoid (BilinForm R M) :=
   Function.Injective.addCommMonoid _ coe_injective coe_zero coe_add fun _ _ => coe_smul _ _

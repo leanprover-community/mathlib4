@@ -39,9 +39,9 @@ theorem IsWf.mul (hs : s.IsWf) (ht : t.IsWf) : IsWf (s * t) :=
 @[to_additive]
 theorem IsWf.min_mul (hs : s.IsWf) (ht : t.IsWf) (hsn : s.Nonempty) (htn : t.Nonempty) :
     (hs.mul ht).min (hsn.mul htn) = hs.min hsn * ht.min htn := by
-  refine' le_antisymm (IsWf.min_le _ _ (mem_mul.2 ⟨_, _, hs.min_mem _, ht.min_mem _, rfl⟩)) _
+  refine' le_antisymm (IsWf.min_le _ _ (mem_mul.2 ⟨_, hs.min_mem _, _, ht.min_mem _, rfl⟩)) _
   rw [IsWf.le_min_iff]
-  rintro _ ⟨x, y, hx, hy, rfl⟩
+  rintro _ ⟨x, hx, y, hy, rfl⟩
   exact mul_le_mul' (hs.min_le _ hx) (ht.min_le _ hy)
 #align set.is_wf.min_mul Set.IsWf.min_mul
 #align set.is_wf.min_add Set.IsWf.min_add
@@ -101,7 +101,7 @@ theorem swap_mem_mulAntidiagonal :
 theorem support_mulAntidiagonal_subset_mul : { a | (mulAntidiagonal hs ht a).Nonempty } ⊆ s * t :=
   fun a ⟨b, hb⟩ => by
   rw [mem_mulAntidiagonal] at hb
-  exact ⟨b.1, b.2, hb⟩
+  exact ⟨b.1, hb.1, b.2, hb.2⟩
 #align finset.support_mul_antidiagonal_subset_mul Finset.support_mulAntidiagonal_subset_mul
 #align finset.support_add_antidiagonal_subset_add Finset.support_addAntidiagonal_subset_add
 

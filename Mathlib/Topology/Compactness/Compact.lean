@@ -191,20 +191,31 @@ theorem IsCompact.elim_finite_subcover {ι : Type v} (hs : IsCompact s) (U : ι 
     (directed_of_isDirected_le fun _ _ h => biUnion_subset_biUnion_left h)
 #align is_compact.elim_finite_subcover IsCompact.elim_finite_subcover
 
-theorem IsCompact.elim_nhds_subcover' (hs : IsCompact s) (U : ∀ x ∈ s, Set X)
-    (hU : ∀ x (hx : x ∈ s), U x ‹x ∈ s› ∈ 𝓝 x) : ∃ t : Finset s, s ⊆ ⋃ x ∈ t, U (x : s) x.2 :=
-  (hs.elim_finite_subcover (fun x : s => interior (U x x.2)) (fun _ => isOpen_interior) fun x hx =>
-        mem_iUnion.2 ⟨⟨x, hx⟩, mem_interior_iff_mem_nhds.2 <| hU _ _⟩).imp
-    fun _t ht => ht.trans <| iUnion₂_mono fun _ _ => interior_subset
-#align is_compact.elim_nhds_subcover' IsCompact.elim_nhds_subcover'
+lemma IsCompact.elim_nhds_subcover_nhdsSet' (hs : IsCompact s) (U : ∀ x ∈ s, Set X)
+    (hU : ∀ x hx, U x hx ∈ 𝓝 x) : ∃ t : Finset s, (⋃ x ∈ t, U x.1 x.2) ∈ 𝓝ˢ s := by
+  rcases hs.elim_finite_subcover (fun x : s ↦ interior (U x x.2)) (fun _ ↦ isOpen_interior)
+    fun x hx ↦ mem_iUnion.2 ⟨⟨x, hx⟩, mem_interior_iff_mem_nhds.2 <| hU _ _⟩ with ⟨t, hst⟩
+  refine ⟨t, mem_nhdsSet_iff_forall.2 fun x hx ↦ ?_⟩
+  rcases mem_iUnion₂.1 (hst hx) with ⟨y, hyt, hy⟩
+  refine mem_of_superset ?_ (subset_biUnion_of_mem hyt)
+  exact mem_interior_iff_mem_nhds.1 hy
 
-theorem IsCompact.elim_nhds_subcover (hs : IsCompact s) (U : X → Set X) (hU : ∀ x ∈ s, U x ∈ 𝓝 x) :
-    ∃ t : Finset X, (∀ x ∈ t, x ∈ s) ∧ s ⊆ ⋃ x ∈ t, U x :=
-  let ⟨t, ht⟩ := hs.elim_nhds_subcover' (fun x _ => U x) hU
+lemma IsCompact.elim_nhds_subcover_nhdsSet (hs : IsCompact s) {U : X → Set X}
+    (hU : ∀ x ∈ s, U x ∈ 𝓝 x) : ∃ t : Finset X, (∀ x ∈ t, x ∈ s) ∧ (⋃ x ∈ t, U x) ∈ 𝓝ˢ s :=
+  let ⟨t, ht⟩ := hs.elim_nhds_subcover_nhdsSet' (fun x _ => U x) hU
   ⟨t.image (↑), fun x hx =>
     let ⟨y, _, hyx⟩ := Finset.mem_image.1 hx
     hyx ▸ y.2,
     by rwa [Finset.set_biUnion_finset_image]⟩
+
+theorem IsCompact.elim_nhds_subcover' (hs : IsCompact s) (U : ∀ x ∈ s, Set X)
+    (hU : ∀ x (hx : x ∈ s), U x ‹x ∈ s› ∈ 𝓝 x) : ∃ t : Finset s, s ⊆ ⋃ x ∈ t, U (x : s) x.2 :=
+  (hs.elim_nhds_subcover_nhdsSet' U hU).imp fun _ ↦ subset_of_mem_nhdsSet
+#align is_compact.elim_nhds_subcover' IsCompact.elim_nhds_subcover'
+
+theorem IsCompact.elim_nhds_subcover (hs : IsCompact s) (U : X → Set X) (hU : ∀ x ∈ s, U x ∈ 𝓝 x) :
+    ∃ t : Finset X, (∀ x ∈ t, x ∈ s) ∧ s ⊆ ⋃ x ∈ t, U x :=
+  (hs.elim_nhds_subcover_nhdsSet hU).imp fun _ h ↦ h.imp_right subset_of_mem_nhdsSet
 #align is_compact.elim_nhds_subcover IsCompact.elim_nhds_subcover
 
 /-- The neighborhood filter of a compact set is disjoint with a filter `l` if and only if the
@@ -425,7 +436,7 @@ theorem Set.Subsingleton.isCompact (hs : s.Subsingleton) : IsCompact s :=
 -- porting note: golfed a proof instead of fixing it
 theorem Set.Finite.isCompact_biUnion {s : Set ι} {f : ι → Set X} (hs : s.Finite)
     (hf : ∀ i ∈ s, IsCompact (f i)) : IsCompact (⋃ i ∈ s, f i) :=
-  isCompact_iff_ultrafilter_le_nhds'.2 <| fun l hl => by
+  isCompact_iff_ultrafilter_le_nhds'.2 fun l hl => by
     rw [Ultrafilter.finite_biUnion_mem_iff hs] at hl
     rcases hl with ⟨i, his, hi⟩
     rcases (hf i his).ultrafilter_le_nhds _ (le_principal_iff.2 hi) with ⟨x, hxi, hlx⟩
