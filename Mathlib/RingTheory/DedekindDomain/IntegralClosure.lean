@@ -64,12 +64,13 @@ variable [Algebra K L] [Algebra A L] [IsScalarTower A K L]
 
 variable [Algebra C L] [IsIntegralClosure C A L] [Algebra A C] [IsScalarTower A C L]
 
-/- If `L` is a separable extension of `K = Frac(A)` and `L` has no zero smul divisors by `A`,
+/- If `L` is an algebraic extension of `K = Frac(A)` and `L` has no zero smul divisors by `A`,
 then `L` is the localization of the integral closure `C` of `A` in `L` at `A⁰`. -/
-theorem IsIntegralClosure.isLocalization [IsSeparable K L] [NoZeroSMulDivisors A L] :
+theorem IsIntegralClosure.isLocalization (hKL : Algebra.IsAlgebraic K L) :
     IsLocalization (Algebra.algebraMapSubmonoid C A⁰) L := by
   haveI : IsDomain C :=
     (IsIntegralClosure.equiv A C L (integralClosure A L)).toMulEquiv.isDomain (integralClosure A L)
+  haveI : NoZeroSMulDivisors A L := NoZeroSMulDivisors.trans A K L
   haveI : NoZeroSMulDivisors A C := IsIntegralClosure.noZeroSMulDivisors A L
   refine' ⟨_, fun z => _, fun {x y} h => ⟨1, _⟩⟩
   · rintro ⟨_, x, hx, rfl⟩
@@ -77,13 +78,17 @@ theorem IsIntegralClosure.isLocalization [IsSeparable K L] [NoZeroSMulDivisors A
       Subtype.coe_mk, map_ne_zero_iff _ (NoZeroSMulDivisors.algebraMap_injective A C)]
     exact mem_nonZeroDivisors_iff_ne_zero.mp hx
   · obtain ⟨m, hm⟩ :=
-      IsIntegral.exists_multiple_integral_of_isLocalization A⁰ z (IsSeparable.isIntegral K z)
+      IsIntegral.exists_multiple_integral_of_isLocalization A⁰ z (hKL z).isIntegral
     obtain ⟨x, hx⟩ : ∃ x, algebraMap C L x = m • z := IsIntegralClosure.isIntegral_iff.mp hm
     refine' ⟨⟨x, algebraMap A C m, m, SetLike.coe_mem m, rfl⟩, _⟩
     rw [Subtype.coe_mk, ← IsScalarTower.algebraMap_apply, hx, mul_comm, Submonoid.smul_def,
       smul_def]
   · simp only [IsIntegralClosure.algebraMap_injective C A L h]
-#align is_integral_closure.is_localization IsIntegralClosure.isLocalization
+
+theorem IsIntegralClosure.isLocalization_of_isSeparable [IsSeparable K L] :
+    IsLocalization (Algebra.algebraMapSubmonoid C A⁰) L :=
+  IsIntegralClosure.isLocalization A K L C (IsSeparable.isAlgebraic _ _)
+#align is_integral_closure.is_localization IsIntegralClosure.isLocalization_of_isSeparable
 
 variable [FiniteDimensional K L]
 
@@ -115,7 +120,7 @@ variable (A K)
 /-- Send a set of `x`s in a finite extension `L` of the fraction field of `R`
 to `(y : R) • x ∈ integralClosure R L`. -/
 theorem exists_integral_multiples (s : Finset L) :
-    ∃ (y : _) (_ : y ≠ (0 : A)), ∀ x ∈ s, IsIntegral A (y • x) := by
+    ∃ y ≠ (0 : A), ∀ x ∈ s, IsIntegral A (y • x) := by
   haveI := Classical.decEq L
   refine' s.induction _ _
   · use 1, one_ne_zero
@@ -210,7 +215,7 @@ theorem IsIntegralClosure.rank [IsPrincipalIdealRing A] [NoZeroSMulDivisors A L]
   haveI : Module.Free A C := IsIntegralClosure.module_free A K L C
   haveI : IsNoetherian A C := IsIntegralClosure.isNoetherian A K L C
   haveI : IsLocalization (Algebra.algebraMapSubmonoid C A⁰) L :=
-    IsIntegralClosure.isLocalization A K L C
+    IsIntegralClosure.isLocalization A K L C (Algebra.IsIntegral.of_finite _ _).isAlgebraic
   let b := Basis.localizationLocalization K A⁰ L (Module.Free.chooseBasis A C)
   rw [FiniteDimensional.finrank_eq_card_chooseBasisIndex, FiniteDimensional.finrank_eq_card_basis b]
 #align is_integral_closure.rank IsIntegralClosure.rank

@@ -48,7 +48,7 @@ theorem sym2_eq_zero_iff {m : Multiset α} : m.sym2 = 0 ↔ m = 0 :=
   m.inductionOn fun xs => by simp
 
 theorem mk_mem_sym2_iff {m : Multiset α} {a b : α} :
-    ⟦(a, b)⟧ ∈ m.sym2 ↔ a ∈ m ∧ b ∈ m :=
+    s(a, b) ∈ m.sym2 ↔ a ∈ m ∧ b ∈ m :=
   m.inductionOn fun xs => by simp [List.mk_mem_sym2_iff]
 
 theorem mem_sym2_iff {m : Multiset α} {z : Sym2 α} :

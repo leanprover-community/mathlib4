@@ -823,7 +823,7 @@ theorem blimsup_congr' {f : Filter β} {p q : β → Prop} {u : β → α}
   simp only [blimsup_eq]
   congr with a
   refine' eventually_congr (h.mono fun b hb => _)
-  cases' eq_or_ne (u b) ⊥ with hu hu; · simp [hu]
+  rcases eq_or_ne (u b) ⊥ with hu | hu; · simp [hu]
   rw [hb hu]
 #align filter.blimsup_congr' Filter.blimsup_congr'
 

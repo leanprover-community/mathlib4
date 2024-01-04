@@ -68,12 +68,12 @@ of great interest for the end user.
 /-- Shows that the fractional parts of the stream are in `[0,1)`. -/
 theorem nth_stream_fr_nonneg_lt_one {ifp_n : IntFractPair K}
     (nth_stream_eq : IntFractPair.stream v n = some ifp_n) : 0 ≤ ifp_n.fr ∧ ifp_n.fr < 1 := by
-  cases n
-  case zero =>
+  cases n with
+  | zero =>
     have : IntFractPair.of v = ifp_n := by injection nth_stream_eq
     rw [← this, IntFractPair.of]
     exact ⟨fract_nonneg _, fract_lt_one _⟩
-  case succ =>
+  | succ =>
     rcases succ_nth_stream_eq_some_iff.1 nth_stream_eq with ⟨_, _, _, ifp_of_eq_ifp_n⟩
     rw [← ifp_of_eq_ifp_n, IntFractPair.of]
     exact ⟨fract_nonneg _, fract_lt_one _⟩
@@ -238,9 +238,9 @@ theorem succ_nth_fib_le_of_nth_denom (hyp : n = 0 ∨ ¬(of v).TerminatedAt (n -
     (fib (n + 1) : K) ≤ (of v).denominators n := by
   rw [denom_eq_conts_b, nth_cont_eq_succ_nth_cont_aux]
   have : n + 1 ≤ 1 ∨ ¬(of v).TerminatedAt (n - 1) := by
-    cases' n with n
-    case zero => exact Or.inl <| le_refl 1
-    case succ => exact Or.inr (Or.resolve_left hyp n.succ_ne_zero)
+    cases n with
+    | zero => exact Or.inl <| le_refl 1
+    | succ n => exact Or.inr (Or.resolve_left hyp n.succ_ne_zero)
   exact fib_le_of_continuantsAux_b this
 #align generalized_continued_fraction.succ_nth_fib_le_of_nth_denom GeneralizedContinuedFraction.succ_nth_fib_le_of_nth_denom
 
@@ -249,9 +249,9 @@ theorem succ_nth_fib_le_of_nth_denom (hyp : n = 0 ∨ ¬(of v).TerminatedAt (n -
 
 theorem zero_le_of_continuantsAux_b : 0 ≤ ((of v).continuantsAux n).b := by
   let g := of v
-  induction' n with n IH
-  case zero => rfl
-  case succ =>
+  induction n with
+  | zero => rfl
+  | succ n IH =>
     cases' Decidable.em <| g.TerminatedAt (n - 1) with terminated not_terminated
     · -- terminating case
       cases' n with n
@@ -320,9 +320,9 @@ Next we prove the so-called *determinant formula* for `GeneralizedContinuedFract
 theorem determinant_aux (hyp : n = 0 ∨ ¬(of v).TerminatedAt (n - 1)) :
     ((of v).continuantsAux n).a * ((of v).continuantsAux (n + 1)).b -
       ((of v).continuantsAux n).b * ((of v).continuantsAux (n + 1)).a = (-1) ^ n := by
-  induction' n with n IH
-  case zero => simp [continuantsAux]
-  case succ =>
+  induction n with
+  | zero => simp [continuantsAux]
+  | succ n IH =>
     -- set up some shorthand notation
     let g := of v
     let conts := continuantsAux g (n + 2)

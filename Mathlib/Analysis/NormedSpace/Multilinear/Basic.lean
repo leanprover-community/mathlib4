@@ -494,8 +494,7 @@ section
 theorem norm_ofSubsingleton [Subsingleton ι] (i : ι) (f : G →L[𝕜] G') :
     ‖ofSubsingleton 𝕜 G G' i f‖ = ‖f‖ := by
   letI : Unique ι := uniqueOfSubsingleton i
-  simp only [norm_def, ContinuousLinearMap.norm_def, (Equiv.funUnique _ _).symm.surjective.forall,
-    Fintype.prod_subsingleton _ i]; rfl
+  simp [norm_def, ContinuousLinearMap.norm_def, (Equiv.funUnique _ _).symm.surjective.forall]
 
 @[simp]
 theorem nnnorm_ofSubsingleton [Subsingleton ι] (i : ι) (f : G →L[𝕜] G') :
@@ -663,7 +662,7 @@ theorem continuous_eval : Continuous
     _ ≤ (‖p‖ + 1) * Fintype.card ι * (‖p‖ + 1) ^ (Fintype.card ι - 1) * ‖q - p‖ +
         ‖q - p‖ * ∏ i, ‖p.2 i‖ := by
       apply_rules [add_le_add, mul_le_mul, le_refl, le_trans (norm_fst_le q) A, Nat.cast_nonneg,
-        mul_nonneg, pow_le_pow_of_le_left, pow_nonneg, norm_snd_le (q - p), norm_nonneg,
+        mul_nonneg, pow_le_pow_left, pow_nonneg, norm_snd_le (q - p), norm_nonneg,
         norm_fst_le (q - p), prod_nonneg]
     _ = ((‖p‖ + 1) * Fintype.card ι * (‖p‖ + 1) ^ (Fintype.card ι - 1) + ∏ i, ‖p.2 i‖)
           * dist q p := by

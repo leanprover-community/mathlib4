@@ -655,7 +655,7 @@ theorem CauchySeq.totallyBounded_range {s : ℕ → α} (hs : CauchySeq s) :
   rw [range_subset_iff, biUnion_image]
   intro m
   rw [mem_iUnion₂]
-  cases' le_total m n with hm hm
+  rcases le_total m n with hm | hm
   exacts [⟨m, hm, refl_mem_uniformity ha⟩, ⟨n, le_refl n, hn m hm n le_rfl⟩]
 #align cauchy_seq.totally_bounded_range CauchySeq.totallyBounded_range
 

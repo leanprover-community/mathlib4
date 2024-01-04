@@ -127,11 +127,11 @@ theorem ofNat_nat (n) : ofNat ℕ n = n :=
 /-- If `α` is denumerable, then so is `Option α`. -/
 instance option : Denumerable (Option α) :=
   ⟨fun n => by
-    cases n
-    case zero =>
+    cases n with
+    | zero =>
       refine' ⟨none, _, encode_none⟩
       rw [decode_option_zero, Option.mem_def]
-    case succ n =>
+    | succ n =>
       refine' ⟨some (ofNat α n), _, _⟩
       · rw [decode_option_succ, decode_eq_ofNat, Option.map_some', Option.mem_def]
       rw [encode_some, encode_ofNat]⟩
