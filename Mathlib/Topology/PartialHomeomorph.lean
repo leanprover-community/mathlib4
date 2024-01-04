@@ -1026,13 +1026,13 @@ theorem Set.EqOn.restr_eqOn_source {e e' : PartialHomeomorph α β}
 
 /-- Composition of a partial homeomorphism and its inverse is equivalent to the restriction of the
 identity to the source -/
-theorem trans_self_symm : e.trans e.symm ≈ PartialHomeomorph.ofSet e.source e.open_source :=
-  PartialEquiv.trans_self_symm _
-#align local_homeomorph.trans_self_symm PartialHomeomorph.trans_self_symm
+theorem self_trans_symm : e.trans e.symm ≈ PartialHomeomorph.ofSet e.source e.open_source :=
+  PartialEquiv.self_trans_symm _
+#align local_homeomorph.self_trans_symm PartialHomeomorph.self_trans_symm
 
-theorem trans_symm_self : e.symm.trans e ≈ PartialHomeomorph.ofSet e.target e.open_target :=
-  e.symm.trans_self_symm
-#align local_homeomorph.trans_symm_self PartialHomeomorph.trans_symm_self
+theorem symm_trans_self : e.symm.trans e ≈ PartialHomeomorph.ofSet e.target e.open_target :=
+  e.symm.self_trans_symm
+#align local_homeomorph.symm_trans_self PartialHomeomorph.symm_trans_self
 
 theorem eq_of_eqOnSource_univ {e e' : PartialHomeomorph α β} (h : e ≈ e') (s : e.source = univ)
     (t : e.target = univ) : e = e' :=
@@ -1447,7 +1447,7 @@ theorem subtypeRestr_symm_trans_subtypeRestr (f f' : PartialHomeomorph α β) :
   rw [ofSet_trans', sets_identity, ← trans_of_set' _ openness₂, trans_assoc]
   refine' EqOnSource.trans' (eqOnSource_refl _) _
   -- f has been eliminated !!!
-  refine' Setoid.trans (trans_symm_self s.localHomeomorphSubtypeCoe) _
+  refine' Setoid.trans (symm_trans_self s.localHomeomorphSubtypeCoe) _
   simp only [mfld_simps, Setoid.refl]
 #align local_homeomorph.subtype_restr_symm_trans_subtype_restr PartialHomeomorph.subtypeRestr_symm_trans_subtypeRestr
 

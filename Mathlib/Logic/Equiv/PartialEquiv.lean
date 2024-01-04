@@ -898,18 +898,18 @@ theorem EqOnSource.source_inter_preimage_eq {e e' : PartialEquiv α β} (he : e 
 
 /-- Composition of a partial equivlance and its inverse is equivalent to
 the restriction of the identity to the source. -/
-theorem trans_self_symm : e.trans e.symm ≈ ofSet e.source := by
+theorem self_trans_symm : e.trans e.symm ≈ ofSet e.source := by
   have A : (e.trans e.symm).source = e.source := by mfld_set_tac
   refine' ⟨by rw [A, ofSet_source], fun x hx => _⟩
   rw [A] at hx
   simp only [hx, mfld_simps]
-#align local_equiv.trans_self_symm PartialEquiv.trans_self_symm
+#align local_equiv.self_trans_symm PartialEquiv.self_trans_symm
 
 /-- Composition of the inverse of a partial equivalence and this partial equivalence is equivalent
 to the restriction of the identity to the target. -/
-theorem trans_symm_self : e.symm.trans e ≈ PartialEquiv.ofSet e.target :=
-  trans_self_symm e.symm
-#align local_equiv.trans_symm_self PartialEquiv.trans_symm_self
+theorem symm_trans_self : e.symm.trans e ≈ PartialEquiv.ofSet e.target :=
+  self_trans_symm e.symm
+#align local_equiv.symm_trans_self PartialEquiv.symm_trans_self
 
 /-- Two equivalent partial equivs are equal when the source and target are `univ`. -/
 theorem eq_of_eqOnSource_univ (e e' : PartialEquiv α β) (h : e ≈ e') (s : e.source = univ)
