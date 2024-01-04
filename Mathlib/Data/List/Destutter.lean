@@ -203,6 +203,11 @@ theorem length_destutter'_congr [IsEquiv α Rᶜ] (hab : ¬R a b) :
 
 /-- `List.destutter'` on a relation like ≠, whose negation is an equivalence, has length
     monotonic under List.cons -/
+/-
+TODO: Replace this lemma by the more general version:
+theorem Sublist.length_destutter'_mono [IsEquiv α Rᶜ] (h : a :: l₁ <+ b :: l₂) :
+    (List.destutter' R a l₁).length ≤ (List.destutter' R b l₂).length
+-/
 theorem le_length_destutter' [IsEquiv α Rᶜ] :
     (List.destutter' R b l).length ≤ (List.destutter' R a (b :: l)).length := by
   cases l with
