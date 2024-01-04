@@ -167,7 +167,7 @@ noncomputable
 def gammaMeasure (a r : ℝ) : Measure ℝ :=
   volume.withDensity (gammaPdf a r)
 
-def instIsProbabilityMeasureGamma {a r : ℝ} (ha : 0 < a) (hr : 0 < r) :
+def IsProbabilityMeasureGamma {a r : ℝ} (ha : 0 < a) (hr : 0 < r) :
     IsProbabilityMeasure (gammaMeasure a r) where
   measure_univ := by simp [gammaMeasure, lintegral_gammaPdf_eq_one a r ha hr]
 
@@ -180,7 +180,7 @@ def gammaCdfReal (a r : ℝ) : StieltjesFunction :=
 
 lemma gammaCdfReal_eq_integral (a r x : ℝ) (ha : 0 < a) (hr : 0 < r) :
     gammaCdfReal a r x = ∫ x in Iic x, gammaPdfReal a r x := by
-  have : IsProbabilityMeasure (gammaMeasure a r) := instIsProbabilityMeasureGamma ha hr
+  have : IsProbabilityMeasure (gammaMeasure a r) := IsProbabilityMeasureGamma ha hr
   rw [gammaCdfReal, cdf_eq_toReal, gammaMeasure, withDensity_apply _ measurableSet_Iic]
   refine (integral_eq_lintegral_of_nonneg_ae ?_ ?_).symm
   · exact ae_of_all _ fun b ↦ by simp [Pi.zero_apply, gammaPdfReal_nonneg ha hr]
@@ -188,7 +188,7 @@ lemma gammaCdfReal_eq_integral (a r x : ℝ) (ha : 0 < a) (hr : 0 < r) :
 
 lemma gammaCdfReal_eq_lintegral (a r x : ℝ) (ha : 0 < a) (hr : 0 < r) :
     gammaCdfReal a r x = ENNReal.toReal (∫⁻ x in Iic x, gammaPdf a r x) := by
-  have : IsProbabilityMeasure (gammaMeasure a r) := instIsProbabilityMeasureGamma ha hr
+  have : IsProbabilityMeasure (gammaMeasure a r) := IsProbabilityMeasureGamma ha hr
   simp only [gammaPdf, gammaCdfReal, cdf_eq_toReal]
   simp only [gammaMeasure, measurableSet_Iic, withDensity_apply, gammaPdf]
 
