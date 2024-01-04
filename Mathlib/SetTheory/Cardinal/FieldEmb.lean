@@ -87,6 +87,19 @@ private def IsNatEquiv {s : Set ι} (equiv : ∀ j : s, F j ≃ piLT X j) : Prop
   ∀ ⦃j k⦄ (hj : j ∈ s) (hk : k ∈ s) (h : k ≤ j) (x : F j),
     equiv ⟨k, hk⟩ (f h x) = piLTProj h (equiv ⟨j, hj⟩ x)
 
+variable (X) in
+structure PartialNatEquiv where
+  i : ι
+  equiv (j : Iic i) : F j ≃ piLT X j
+  isNatEquiv : IsNatEquiv f equiv
+
+instance : Preorder (PartialNatEquiv X f) where
+  le e₁ e₂ := ∃ h : e₁.i ≤ e₂.i, ∀ j, e₁.equiv j = e₂.equiv ⟨j, j.2.trans h⟩
+  le_refl _ := ⟨le_rfl, fun _ ↦ rfl⟩
+  le_trans := by
+    rintro _ _ _ ⟨le₁, eq₁⟩ ⟨le₂, eq₂⟩
+    exact ⟨le₁.trans le₂, fun _ ↦ (eq₁ _).trans (eq₂ _)⟩
+
 abbrev Order.IsSuccLimit.mid {ι} [LT ι] {i j : ι} (hi : IsSuccLimit i) (hj : j < i) :
     {k // j < k ∧ k < i} := Classical.indefiniteDescription _ ((not_covby_iff hj).mp <| hi j)
 
@@ -192,6 +205,10 @@ theorem isNatEquiv_piEquivLim [InverseSystem f] (H : ∀ x l, (equivLim x).1 l =
   · rw [piEquivLim, piSplitLE_lt (h.trans_lt hj), piSplitLE_lt hj]; apply nat
 
 end Lim
+
+theorem bddAbove_chain [OrderTop ι] {c : Set (PartialNatEquiv X f)} (hc : IsChain (· ≤ ·) c)
+    (hn : c.Nonempty) : BddAbove c := by
+  sorry
 
 section Unique
 
