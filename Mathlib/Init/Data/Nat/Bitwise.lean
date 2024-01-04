@@ -149,6 +149,14 @@ def bit (b : Bool) : ℕ → ℕ :=
   cond b bit1 bit0
 #align nat.bit Nat.bit
 
+theorem bit_true_eq_bit1 : bit true = bit1 := by
+  funext
+  rfl
+
+theorem bit_false_eq_bit0 : bit false = bit0 := by
+  funext
+  rfl
+
 theorem bit0_val (n : Nat) : bit0 n = 2 * n :=
   calc
     n + n = 0 + n + n := by rw [Nat.zero_add]
