@@ -24,18 +24,13 @@ open Nat
 
 namespace Int
 
-theorem le_coe_nat_sub (m n : ℕ) : (m - n : ℤ) ≤ ↑(m - n : ℕ) := by
-  by_cases h : m ≥ n
-  · exact le_of_eq (Int.ofNat_sub h).symm
-  · simp [le_of_not_ge h, ofNat_le]
+theorem le_coe_nat_sub (m n : ℕ) : (m - n : ℤ) ≤ ↑(m - n : ℕ) := by omega
 #align int.le_coe_nat_sub Int.le_coe_nat_sub
 
 /-! ### `succ` and `pred` -/
 
 
--- Porting note: simp can prove this @[simp]
-theorem succ_coe_nat_pos (n : ℕ) : 0 < (n : ℤ) + 1 :=
-  lt_add_one_iff.mpr (by simp)
+theorem succ_coe_nat_pos (n : ℕ) : 0 < (n : ℤ) + 1 := by omega
 #align int.succ_coe_nat_pos Int.succ_coe_nat_pos
 
 /-! ### `natAbs` -/
