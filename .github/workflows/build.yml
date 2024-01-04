@@ -392,7 +392,7 @@ jobs:
           cd leaff/
           echo "https://github.com/alexjbest/leaff reports" > leaff.diff
           echo "\`\`\`diff" >> leaff.diff
-          lake exe leaff Mathlib $(tr ':' ',' <<<"$(eval $(lake --dir ../old/ env) && echo $LEAN_PATH)") $(tr ':' ',' <<<"$(eval $(lake --dir ../new/ env) && echo $LEAN_PATH)") >> leaff.diff
+          ./runleaff.sh Mathlib ../old/ ../new/ >> leaff.diff
           echo "\`\`\`" >> leaff.diff
           cp leaff.diff $GITHUB_STEP_SUMMARY
 
