@@ -74,38 +74,11 @@ theorem IsLindelof.induction_on (hs : IsLindelof s) {p : Set X → Prop} (he : p
     (hmono : ∀ ⦃s t⦄, s ⊆ t → p t → p s)
     (hcountable_union : ∀ (S : Set (Set X)), S.Countable → (∀ s ∈ S, p s) → p (⋃ s ∈ S, s))
     (hnhds : ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, p t) : p s := by
-  let f : Filter X :=
-    { sets := { t | p tᶜ }
-      univ_sets := by simpa
-      sets_of_superset := fun ht₁ ht ↦ hmono (compl_subset_compl.2 ht) ht₁
-      inter_sets := by
-        intro ht₁ ht₂
-        simp only [mem_setOf_eq, compl_inter]
-        intro p₁ p₂
-        let Se : Set (Set X) := {ht₁ᶜ, ht₂ᶜ}
-        have hSe : Se.Countable := by simp
-        have : ∀ s ∈ Se, p s := by
-          rintro _ ⟨rfl|_⟩
-          · exact p₁
-          · have h : _ = ht₂ᶜ := by
-              assumption
-            rw [h]
-            exact p₂
-        have := hcountable_union Se hSe this
-        have : ⋃ s∈ Se, s = ht₁ᶜ ∪ ht₂ᶜ := by simp
-        rwa [← this]
-        }
-  have : CountableInterFilter f := by
-    apply CountableInterFilter.mk
-    simp only [Filter.mem_mk, mem_setOf_eq, compl_sInter, sUnion_image]
-    intro S hS hsp
-    let f := fun (x : Set X) ↦ xᶜ
-    let S' := f '' S
-    have hsp : ∀ s ∈ S', p s := by simpa
-    have hS' : S'.Countable := Countable.image hS _
-    have : ⋃ s ∈ S, sᶜ = ⋃ s ∈ S', s := by simp
-    rw [this]
-    apply hcountable_union S' hS' hsp
+  let f : Filter X := by
+    apply ofCountableUnion p ?_ (fun t ht _ hsub ↦ hmono hsub ht)
+    intro S hSc hS
+    rw [Set.sUnion_eq_biUnion]
+    exact hcountable_union S hSc hS
   have : sᶜ ∈ f := hs.compl_mem_sets_of_nhdsWithin (by simpa using hnhds)
   rwa [← compl_compl s]
 
