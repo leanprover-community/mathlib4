@@ -201,7 +201,7 @@ theorem iUnion_eq_tsum_of_disjoint_of_iUnion_le (m : AddContent C) (hC : IsSetSe
   refine le_antisymm (m_subadd f hf hf_Union hf_disj) ?_
   refine tsum_le_of_sum_le ENNReal.summable fun I ↦ ?_
   classical
-  rw [← Finset.sum_image_of_disjoint m m.empty f hf_disj]
+  rw [← Finset.sum_image_of_disjoint m m.empty f _ (hf_disj.pairwiseDisjoint _)]
   refine m.sum_le_of_subset hC (I := I.image f) ?_ ?_ ?_ ?_
   · simp only [coe_image, Set.image_subset_iff]
     refine (subset_preimage_image f I).trans (preimage_mono ?_)
@@ -287,7 +287,7 @@ theorem tendsto_atTop_iUnion_of_iUnion_eq_tsum (m : AddContent C) (hC : IsSetRin
       have hij : i ≠ j := by intro h_eq; rw [h_eq] at hst; exact hst rfl
       exact disjoint_disjointed f hij
     · rw [← h1]; exact hf n
-    rw [sum_image_of_disjoint m m.empty g (disjoint_disjointed f)]
+    rw [sum_image_of_disjoint m m.empty g _ ((disjoint_disjointed f).pairwiseDisjoint _)]
   simp_rw [h]
   change Tendsto (fun n ↦ (fun k ↦ ∑ i in range k, m (g i)) (n + 1)) atTop (𝓝 (∑' i, m (g i)))
   rw [tendsto_add_atTop_iff_nat (f := (fun k ↦ ∑ i in range k, m (g i))) 1]

@@ -7,6 +7,7 @@ import Mathlib.Data.Nat.Lattice
 import Mathlib.Data.Set.Pairwise.Lattice
 import Mathlib.Data.Real.ENNReal
 import Mathlib.MeasureTheory.PiSystem
+import Mathlib.Data.Finset.Ordered
 
 /-! # Semirings and rings of sets
 
@@ -77,7 +78,7 @@ lemma Finset.sUnion_disjUnion {α β : Type*} {f : α → Finset (Set β)} (I : 
 -- TODO: move this
 lemma Finset.sum_image_of_disjoint {α ι : Type*} [PartialOrder α] [OrderBot α] [DecidableEq α]
     (m : α → ℝ≥0∞) (m_bot : m ⊥ = 0)
-    (f : ι → α) (hf_disj : Pairwise (Disjoint on f)) (I : Finset ι) :
+    (f : ι → α) (I : Finset ι) (hf_disj : (I : Set ι).PairwiseDisjoint f) :
     ∑ s in image f I, m s = ∑ i in I, m (f i) := by
   rw [sum_image']
   intro n hnI
@@ -86,16 +87,17 @@ lemma Finset.sum_image_of_disjoint {α ι : Type*} [PartialOrder α] [OrderBot �
     refine (sum_eq_zero fun i hi ↦ ?_).symm
     rw [mem_filter] at hi
     rw [hi.2, m_bot]
-  · have : (fun j ↦ f j = f n) = fun j ↦ j = n := by
-      ext1 j
-      rw [eq_iff_iff]
+  · classical
+    have : filter (fun j ↦ f j = f n) I = filter (fun j ↦ j = n) I := by
+      ext j
+      simp only [mem_filter, and_congr_right_iff]
+      intro hj
       refine ⟨fun h ↦ ?_, fun h ↦ by rw [h]⟩
       by_contra hij
-      have h_dis : Disjoint (f j) (f n) := hf_disj hij
+      have h_dis : Disjoint (f j) (f n) := hf_disj hj hnI hij
       rw [h] at h_dis
       simp only [disjoint_self] at h_dis
       exact hfn h_dis
-    classical
     simp_rw [this]
     simp only [sum_filter, sum_ite_eq', if_pos hnI]
 
@@ -116,108 +118,6 @@ lemma Finset.sum_image_le {ι α β : Type*} [DecidableEq α] [OrderedSemiring �
   refine ⟨i, ?_⟩
   rw [mem_filter]
   exact ⟨hi, hig⟩
-
-section Ordered
--- TODO: move this
-
-variable {α : Type*}
-
-lemma Finset.mem_map_univ_asEmbedding {α β : Type*} [Fintype α] {p : β → Prop}
-    (e : α ≃ Subtype p) {b : β} :
-    b ∈ Finset.map e.asEmbedding univ ↔ p b := by
-  rw [mem_map]
-  simp only [Finset.mem_univ, Equiv.asEmbedding_apply, Function.comp_apply, exists_true_left,
-    true_and]
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · obtain ⟨a, rfl⟩ := h
-    exact (e a).prop
-  · suffices ∃ a, e a = ⟨b, h⟩ by
-      obtain ⟨a, ha⟩ := this
-      refine ⟨a, ?_⟩
-      rw [ha]
-    exact e.surjective _
-
-/-- An ordering of the elements of a finset. -/
-noncomputable def _root_.Finset.ordered (J : Finset α) : Fin J.card ↪ α :=
-  J.equivFin.symm.asEmbedding
-
-lemma map_ordered (J : Finset α) :
-    Finset.map J.ordered (univ : Finset (Fin J.card)) = J := by
-  ext1 s; simp_rw [Finset.ordered, Finset.mem_map_univ_asEmbedding]
-
-lemma ordered_mem {J : Finset α} (n : Fin J.card) : J.ordered n ∈ J := by
-  simp_rw [Finset.ordered]
-  exact coe_mem _
-
-lemma sum_ordered {β : Type*} [AddCommMonoid β] (J : Finset α) (m : α → β) :
-    ∑ i : Fin J.card, m (J.ordered i) = ∑ u in J, m u := by
-  conv_rhs => rw [← map_ordered J]
-  rw [sum_map]
-
-/-- The n first sets in `J.ordered`. -/
-noncomputable def finsetLT (J : Finset α) : Fin J.card → Finset α := fun n ↦
-  (Finset.filter (fun j : Fin J.card ↦ j < n) univ).map J.ordered
-
-lemma finsetLT_zero {J : Finset α} (hJ : 0 < J.card) : finsetLT J ⟨0, hJ⟩ = ∅ := by
-  rw [finsetLT]
-  simp only [univ_eq_attach, map_eq_empty]
-  rw [filter_eq_empty_iff]
-  intro n _
-  simp only [not_lt]
-  rw [← Fin.eta n n.2, Fin.mk_le_mk]
-  exact zero_le'
-
-lemma finsetLT_mono (J : Finset α) : Monotone (finsetLT J) := by
-  intro n m hnm s
-  rw [finsetLT, mem_map]
-  rintro ⟨i, hi, rfl⟩
-  simp only [Finset.ordered, finsetLT, Equiv.asEmbedding_apply, Function.comp_apply, mem_map,
-    mem_filter, Finset.mem_univ, true_and_iff, exists_prop]
-  refine ⟨i, ?_, rfl⟩
-  rw [mem_filter] at hi
-  exact hi.2.trans_le hnm
-
-lemma finsetLT_subset (J : Finset α) (n : Fin J.card) : finsetLT J n ⊆ J := by
-  intro u; rw [finsetLT, mem_map]; rintro ⟨i, _, rfl⟩; exact ordered_mem i
-
-lemma mem_finsetLT (J : Finset α) (n : Fin J.card) {s : α} :
-    s ∈ finsetLT J n ↔ ∃ m < n, s = J.ordered m := by
-  rw [finsetLT, mem_map]
-  simp only [mem_filter, Finset.mem_univ, true_and_iff, Equiv.asEmbedding_apply,
-    Function.comp_apply, exists_prop]
-  simp_rw [@eq_comm _ _ s]
-
-lemma ordered_mem_finsetLT (J : Finset α) {n m : Fin J.card} (hnm : n < m) :
-    J.ordered n ∈ finsetLT J m := by rw [mem_finsetLT _ _]; exact ⟨n, hnm, rfl⟩
-
-section FinsetSet
-
-variable {C : Set (Set α)} {J : Finset (Set α)}
-
-lemma ordered_mem' (hJ : ↑J ⊆ C) (n : Fin J.card) : J.ordered n ∈ C := hJ (ordered_mem n)
-
-lemma iUnion_ordered (J : Finset (Set α)) : (⋃ i : Fin J.card, J.ordered i) = ⋃₀ J := by
-  conv_rhs => rw [← map_ordered J]
-  simp_rw [sUnion_eq_biUnion, coe_map, Set.biUnion_image]
-  simp only [mem_coe, Finset.mem_univ, iUnion_true]
-
-lemma finsetLT_subset' (J : Finset (Set α)) (hJ : ↑J ⊆ C) (n : Fin J.card) :
-    ↑(finsetLT J n) ⊆ C :=
-  (Finset.coe_subset.mpr (finsetLT_subset J n)).trans hJ
-
-lemma sUnion_finsetLT_eq_bUnion (J : Finset (Set α)) (n : Fin J.card) :
-    ⋃₀ (finsetLT J n : Set (Set α)) = ⋃ i < n, J.ordered i := by
-  ext1 a
-  simp_rw [mem_sUnion, mem_coe, mem_finsetLT, mem_iUnion]
-  constructor
-  · rintro ⟨t, ⟨m, hmn, rfl⟩, hat⟩
-    exact ⟨m, hmn, hat⟩
-  · rintro ⟨m, hmn, hat⟩
-    exact ⟨J.ordered m, ⟨m, hmn, rfl⟩, hat⟩
-
-end FinsetSet
-
-end Ordered
 
 namespace MeasureTheory
 

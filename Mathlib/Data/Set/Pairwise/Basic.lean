@@ -243,6 +243,10 @@ def PairwiseDisjoint (s : Set ι) (f : ι → α) : Prop :=
   s.Pairwise (Disjoint on f)
 #align set.pairwise_disjoint Set.PairwiseDisjoint
 
+lemma _root_.Pairwise.pairwiseDisjoint (h : Pairwise (Disjoint on f)) (s : Set ι) :
+    s.PairwiseDisjoint f :=
+  Pairwise.set_pairwise h s
+
 theorem PairwiseDisjoint.subset (ht : t.PairwiseDisjoint f) (h : s ⊆ t) : s.PairwiseDisjoint f :=
   Pairwise.mono h ht
 #align set.pairwise_disjoint.subset Set.PairwiseDisjoint.subset
