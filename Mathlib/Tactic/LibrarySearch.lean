@@ -5,9 +5,10 @@ Authors: Gabriel Ebner, Scott Morrison
 -/
 import Std.Util.Pickle
 import Std.Util.Cache
-import Mathlib.Tactic.SolveByElim
+import Std.Tactic.SolveByElim
 import Std.Data.MLList.Heartbeats
 import Mathlib.Lean.Name
+import Mathlib.Lean.Meta
 import Mathlib.Lean.Meta.DiscrTree
 
 /-!
@@ -25,6 +26,11 @@ example : x < x + 1 := exact?%
 example : Nat := by exact?
 ```
 -/
+
+/-- Visualize an `Except` using a checkmark or a cross. -/
+private def Except.emoji {ε α} : Except ε α → String
+  | .error _ => Lean.crossEmoji
+  | .ok _ => Lean.checkEmoji
 
 namespace Mathlib.Tactic.LibrarySearch
 

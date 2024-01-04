@@ -40,7 +40,7 @@ def enumerate : Set α → ℕ → Option α
 
 theorem enumerate_eq_none_of_sel {s : Set α} (h : sel s = none) : ∀ {n}, enumerate sel s n = none
   | 0 => by simp [h, enumerate]
-  | n + 1 => by simp [h, enumerate]; rfl
+  | n + 1 => by simp [h, enumerate]
 #align set.enumerate_eq_none_of_sel Set.enumerate_eq_none_of_sel
 
 theorem enumerate_eq_none :

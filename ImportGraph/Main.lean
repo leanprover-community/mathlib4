@@ -5,7 +5,7 @@ Authors: Scott Morrison
 -/
 import Mathlib.Util.Imports
 import Mathlib.Lean.CoreM
-import Mathlib.Lean.Data.NameMap
+import Std.Lean.NameMap
 import Mathlib.Lean.IO.Process
 import Mathlib.Lean.Name
 import Std.Lean.Util.Path
