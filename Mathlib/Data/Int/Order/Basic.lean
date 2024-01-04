@@ -8,6 +8,7 @@ import Mathlib.Data.Int.Basic
 import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.Order.Ring.CharZero
+import Mathlib.Tactic.LibrarySearch
 
 #align_import data.int.order.basic from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
@@ -117,13 +118,9 @@ theorem le_sub_one_iff {a b : ℤ} : a ≤ b - 1 ↔ a < b :=
 #align int.le_sub_one_iff Int.le_sub_one_iff
 
 @[simp]
-theorem abs_lt_one_iff {a : ℤ} : |a| < 1 ↔ a = 0 :=
-  ⟨fun a0 => by
-    let ⟨hn, hp⟩ := abs_lt.mp a0
-    rw [← zero_add 1, lt_add_one_iff] at hp
-    -- Defeq abuse: `hn : -1 < a` but should be `hn : 0 λ a`.
-    exact hp.antisymm hn,
-    fun a0 => (abs_eq_zero.mpr a0).le.trans_lt zero_lt_one⟩
+theorem abs_lt_one_iff {a : ℤ} : |a| < 1 ↔ a = 0 := by
+  simp only [Int.abs_eq_natAbs]
+  constructor <;> (intros; omega)
 #align int.abs_lt_one_iff Int.abs_lt_one_iff
 
 theorem abs_le_one_iff {a : ℤ} : |a| ≤ 1 ↔ a = 0 ∨ a = 1 ∨ a = -1 := by

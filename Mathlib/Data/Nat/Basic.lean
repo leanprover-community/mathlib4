@@ -153,9 +153,7 @@ theorem _root_.LT.lt.nat_succ_le {n m : ℕ} (h : n < m) : succ n ≤ m :=
 -- Moved to Std
 #align nat.succ_eq_one_add Nat.succ_eq_one_add
 
-theorem eq_of_lt_succ_of_not_lt {a b : ℕ} (h1 : a < b + 1) (h2 : ¬a < b) : a = b :=
-  have h3 : a ≤ b := le_of_lt_succ h1
-  Or.elim (eq_or_lt_of_not_lt h2) (fun h => h) fun h => absurd h (not_lt_of_ge h3)
+theorem eq_of_lt_succ_of_not_lt {a b : ℕ} (h1 : a < b + 1) (h2 : ¬a < b) : a = b := by omega
 #align nat.eq_of_lt_succ_of_not_lt Nat.eq_of_lt_succ_of_not_lt
 
 theorem eq_of_le_of_lt_succ {n m : ℕ} (h₁ : n ≤ m) (h₂ : m < n + 1) : m = n :=
@@ -244,8 +242,7 @@ theorem two_lt_of_ne : ∀ {n}, n ≠ 0 → n ≠ 1 → n ≠ 2 → 2 < n
   | 0, h, _, _ => (h rfl).elim
   | 1, _, h, _ => (h rfl).elim
   | 2, _, _, h => (h rfl).elim
-  -- Porting note: was `by decide`
-  | n + 3, _, _, _ => by rw [Nat.lt_iff_add_one_le]; convert Nat.le_add_left 3 n
+  | n + 3, _, _, _ => by omega
 #align nat.two_lt_of_ne Nat.two_lt_of_ne
 
 theorem forall_lt_succ {P : ℕ → Prop} {n : ℕ} : (∀ m < n + 1, P m) ↔ (∀ m < n, P m) ∧ P n := by
@@ -343,9 +340,7 @@ theorem pred_one_add (n : ℕ) : pred (1 + n) = n := by rw [add_comm, add_one, N
 /-! ### `mul` -/
 
 
-theorem two_mul_ne_two_mul_add_one {n m} : 2 * n ≠ 2 * m + 1 :=
-  mt (congr_arg (· % 2))
-    (by rw [add_comm, add_mul_mod_self_left, mul_mod_right, mod_eq_of_lt] <;> simp)
+theorem two_mul_ne_two_mul_add_one {n m} : 2 * n ≠ 2 * m + 1 := by omega
 #align nat.two_mul_ne_two_mul_add_one Nat.two_mul_ne_two_mul_add_one
 
 theorem mul_ne_mul_left {a b c : ℕ} (ha : 0 < a) : b * a ≠ c * a ↔ b ≠ c :=
@@ -440,7 +435,6 @@ theorem leRecOn_trans {C : ℕ → Sort u} {n m k} (hnm : n ≤ m) (hmk : m ≤ 
     (leRecOn (le_trans hnm hmk) (@next) x : C k) = leRecOn hmk (@next) (leRecOn hnm (@next) x) := by
   induction' hmk with k hmk ih
   · rw [leRecOn_self]
-
   rw [leRecOn_succ (le_trans hnm hmk), ih, leRecOn_succ]
 #align nat.le_rec_on_trans Nat.leRecOn_trans
 
@@ -456,7 +450,6 @@ theorem leRecOn_injective {C : ℕ → Sort u} {n m} (hnm : n ≤ m) (next : ∀
   induction' hnm with m hnm ih
   · intro x y H
     rwa [leRecOn_self, leRecOn_self] at H
-
   intro x y H
   rw [leRecOn_succ hnm, leRecOn_succ hnm] at H
   exact ih (Hnext _ H)
@@ -469,7 +462,6 @@ theorem leRecOn_surjective {C : ℕ → Sort u} {n m} (hnm : n ≤ m) (next : �
   · intro x
     use x
     rw [leRecOn_self]
-
   intro x
   rcases Hnext _ x with ⟨w, rfl⟩
   rcases ih w with ⟨x, rfl⟩

@@ -104,8 +104,7 @@ theorem le_one_iff_eq_zero_or_eq_one : ∀ {n : ℕ}, n ≤ 1 ↔ n = 0 ∨ n = 
 protected theorem zero_eq_mul : 0 = m * n ↔ m = 0 ∨ n = 0 := by rw [eq_comm, Nat.mul_eq_zero]
 #align nat.zero_eq_mul Nat.zero_eq_mul
 
-theorem eq_zero_of_double_le (h : 2 * n ≤ n) : n = 0 :=
-  add_right_eq_self.mp <| le_antisymm ((two_mul n).symm.trans_le h) le_add_self
+theorem eq_zero_of_double_le (h : 2 * n ≤ n) : n = 0 := by omega
 #align nat.eq_zero_of_double_le Nat.eq_zero_of_double_le
 
 theorem eq_zero_of_mul_le (hb : 2 ≤ n) (h : n * m ≤ m) : m = 0 :=
@@ -163,18 +162,8 @@ theorem lt_one_iff {n : ℕ} : n < 1 ↔ n = 0 :=
 #align nat.add_pos_left Nat.add_pos_left
 #align nat.add_pos_right Nat.add_pos_right
 
-theorem add_pos_iff_pos_or_pos (m n : ℕ) : 0 < m + n ↔ 0 < m ∨ 0 < n :=
-  Iff.intro
-    (by
-      intro h
-      cases' m with m
-      · simp [zero_add] at h
-        exact Or.inr h
-      exact Or.inl (succ_pos _))
-    (by
-      intro h; cases' h with mpos npos
-      · apply Nat.add_pos_left mpos
-      apply Nat.add_pos_right _ npos)
+theorem add_pos_iff_pos_or_pos (m n : ℕ) : 0 < m + n ↔ 0 < m ∨ 0 < n := by
+  constructor <;> (intros; omega)
 #align nat.add_pos_iff_pos_or_pos Nat.add_pos_iff_pos_or_pos
 
 theorem add_eq_one_iff : m + n = 1 ↔ m = 0 ∧ n = 1 ∨ m = 1 ∧ n = 0 := by
@@ -182,35 +171,23 @@ theorem add_eq_one_iff : m + n = 1 ↔ m = 0 ∧ n = 1 ∨ m = 1 ∧ n = 0 := by
 #align nat.add_eq_one_iff Nat.add_eq_one_iff
 
 theorem add_eq_two_iff : m + n = 2 ↔ m = 0 ∧ n = 2 ∨ m = 1 ∧ n = 1 ∨ m = 2 ∧ n = 0 := by
-  cases n <;>
-  simp [(succ_ne_zero 1).symm, (show 2 = Nat.succ 1 from rfl),
-    succ_eq_add_one, ← add_assoc, succ_inj', add_eq_one_iff]
+  constructor <;> (intros; omega)
 #align nat.add_eq_two_iff Nat.add_eq_two_iff
 
 theorem add_eq_three_iff :
     m + n = 3 ↔ m = 0 ∧ n = 3 ∨ m = 1 ∧ n = 2 ∨ m = 2 ∧ n = 1 ∨ m = 3 ∧ n = 0 := by
-  cases n <;>
-  simp [(succ_ne_zero 1).symm, succ_eq_add_one, (show 3 = Nat.succ 2 from rfl),
-    ← add_assoc, succ_inj', add_eq_two_iff]
+  constructor <;> (intros; omega)
 #align nat.add_eq_three_iff Nat.add_eq_three_iff
 
-theorem le_add_one_iff : m ≤ n + 1 ↔ m ≤ n ∨ m = n + 1 :=
-  ⟨fun h =>
-    match Nat.eq_or_lt_of_le h with
-    | Or.inl h => Or.inr h
-    | Or.inr h => Or.inl <| Nat.le_of_succ_le_succ h,
-    Or.rec (fun h => le_trans h <| Nat.le_add_right _ _) le_of_eq⟩
+theorem le_add_one_iff : m ≤ n + 1 ↔ m ≤ n ∨ m = n + 1 := by
+  constructor <;> (intros; omega)
 #align nat.le_add_one_iff Nat.le_add_one_iff
 
 theorem le_and_le_add_one_iff : n ≤ m ∧ m ≤ n + 1 ↔ m = n ∨ m = n + 1 := by
-  rw [le_add_one_iff, and_or_left, ← le_antisymm_iff, eq_comm, and_iff_right_of_imp]
-  rintro rfl
-  exact n.le_succ
+  constructor <;> (intros; omega)
 #align nat.le_and_le_add_one_iff Nat.le_and_le_add_one_iff
 
-theorem add_succ_lt_add (hab : m < n) (hcd : k < l) : m + k + 1 < n + l := by
-  rw [add_assoc]
-  exact add_lt_add_of_lt_of_le hab (Nat.succ_le_iff.2 hcd)
+theorem add_succ_lt_add (hab : m < n) (hcd : k < l) : m + k + 1 < n + l := by omega
 #align nat.add_succ_lt_add Nat.add_succ_lt_add
 
 /-! ### `pred` -/
@@ -243,16 +220,7 @@ theorem lt_of_lt_pred (h : m < n - 1) : m < n :=
   lt_of_succ_lt (lt_pred_iff.1 h)
 #align nat.lt_of_lt_pred Nat.lt_of_lt_pred
 
-theorem le_or_le_of_add_eq_add_pred (h : k + l = m + n - 1) : m ≤ k ∨ n ≤ l := by
-  rcases le_or_lt m k with h' | h' <;> [left; right]
-  · exact h'
-  · replace h' := add_lt_add_right h' l
-    rw [h] at h'
-    rcases n.eq_zero_or_pos with hn | hn
-    · rw [hn]
-      exact zero_le l
-    rw [n.add_sub_assoc (Nat.succ_le_of_lt hn), add_lt_add_iff_left] at h'
-    exact Nat.le_of_pred_lt h'
+theorem le_or_le_of_add_eq_add_pred (h : k + l = m + n - 1) : m ≤ k ∨ n ≤ l := by omega
 #align nat.le_or_le_of_add_eq_add_pred Nat.le_or_le_of_add_eq_add_pred
 
 /-- A version of `Nat.sub_succ` in the form `_ - 1` instead of `Nat.pred _`. -/

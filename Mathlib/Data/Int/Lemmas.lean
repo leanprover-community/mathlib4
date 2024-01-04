@@ -111,8 +111,6 @@ This lemma is orphaned from `Data.Int.Bitwise` as it also requires material from
 -/
 
 
-attribute [local simp] Int.zero_div
-
 @[simp]
 theorem div2_bit (b n) : div2 (bit b n) = n := by
   rw [bit_val, div2_val, add_comm, Int.add_mul_ediv_left, (_ : (_ / 2 : ℤ) = 0), zero_add]
