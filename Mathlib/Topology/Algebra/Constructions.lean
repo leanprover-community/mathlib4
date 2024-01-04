@@ -181,7 +181,7 @@ theorem continuous_coe_inv : Continuous (fun u => ↑u⁻¹ : Mˣ → M) :=
 #align add_units.continuous_coe_neg AddUnits.continuous_coe_neg
 
 lemma top_eq_if_cont_inv' {α : Type*} [TopologicalSpace α] [Monoid α]
- (h : @Continuous _ _ (TopologicalSpace.induced (Units.coeHom α) inferInstance)
+    (h : @Continuous _ _ (TopologicalSpace.induced (Units.coeHom α) inferInstance)
   inferInstance (@Units.inv α _)) :
   TopologicalSpace.induced (Units.coeHom α) inferInstance ≤ Units.instTopologicalSpaceUnits :=
 continuous_iff_le_induced.1 (by
