@@ -285,7 +285,7 @@ The Scott topology on a partial order is T₀.
 -/
 -- see Note [lower instance priority]
 instance (priority := 90) : T0Space α :=
-    (t0Space_iff_inseparable α).2 $ fun x y h ↦ Iic_injective $
+    (t0Space_iff_inseparable α).2 fun x y h ↦ Iic_injective $
   by simpa only [inseparable_iff_closure_eq, IsScott.closure_singleton] using h
 
 end PartialOrder

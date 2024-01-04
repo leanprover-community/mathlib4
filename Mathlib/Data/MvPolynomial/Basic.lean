@@ -508,10 +508,10 @@ theorem algHom_C (f : MvPolynomial σ R →ₐ[R] MvPolynomial σ R) (r : R) : f
 theorem adjoin_range_X : Algebra.adjoin R (range (X : σ → MvPolynomial σ R)) = ⊤ := by
   set S := Algebra.adjoin R (range (X : σ → MvPolynomial σ R))
   refine' top_unique fun p hp => _; clear hp
-  induction p using MvPolynomial.induction_on
-  case h_C => exact S.algebraMap_mem _
-  case h_add p q hp hq => exact S.add_mem hp hq
-  case h_X p i hp => exact S.mul_mem hp (Algebra.subset_adjoin <| mem_range_self _)
+  induction p using MvPolynomial.induction_on with
+  | h_C => exact S.algebraMap_mem _
+  | h_add p q hp hq => exact S.add_mem hp hq
+  | h_X p i hp => exact S.mul_mem hp (Algebra.subset_adjoin <| mem_range_self _)
 #align mv_polynomial.adjoin_range_X MvPolynomial.adjoin_range_X
 
 @[ext]
