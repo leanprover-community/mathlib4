@@ -252,7 +252,7 @@ theorem powersetCard_succ_insert [DecidableEq α] {x : α} {s : Finset α} (h : 
     powersetCard n.succ s ∪ (powersetCard n s).image (insert x) := by
   rw [powersetCard_eq_filter, powerset_insert, filter_union, ← powersetCard_eq_filter]
   congr
-  rw [powersetCard_eq_filter, image_filter]
+  rw [powersetCard_eq_filter, filter_image]
   congr 1
   ext t
   simp only [mem_powerset, mem_filter, Function.comp_apply, and_congr_right_iff]
@@ -299,7 +299,7 @@ theorem powerset_card_disjiUnion (s : Finset α) :
   refine' ext fun a => ⟨fun ha => _, fun ha => _⟩
   · rw [mem_disjiUnion]
     exact
-      ⟨a.card, mem_range.mpr (Nat.lt_succ_of_le (card_le_of_subset (mem_powerset.mp ha))),
+      ⟨a.card, mem_range.mpr (Nat.lt_succ_of_le (card_le_card (mem_powerset.mp ha))),
         mem_powersetCard.mpr ⟨mem_powerset.mp ha, rfl⟩⟩
   · rcases mem_disjiUnion.mp ha with ⟨i, _hi, ha⟩
     exact mem_powerset.mpr (mem_powersetCard.mp ha).1
@@ -334,7 +334,7 @@ theorem powersetCard_card_add (s : Finset α) {i : ℕ} (hi : 0 < i) :
 
 theorem powersetCard_map {β : Type*} (f : α ↪ β) (n : ℕ) (s : Finset α) :
     powersetCard n (s.map f) = (powersetCard n s).map (mapEmbedding f).toEmbedding :=
-  ext <| fun t => by
+  ext fun t => by
     simp only [card_map, mem_powersetCard, le_eq_subset, gt_iff_lt, mem_map, mapEmbedding_apply]
     constructor
     · classical

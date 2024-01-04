@@ -2151,9 +2151,8 @@ theorem sum_single [∀ i, AddCommMonoid (β i)] [∀ (i) (x : β i), Decidable 
 @[to_additive]
 theorem prod_subtypeDomain_index [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
     [CommMonoid γ] {v : Π₀ i, β i} {p : ι → Prop} [DecidablePred p] {h : ∀ i, β i → γ}
-    (hp : ∀ x ∈ v.support, p x) : ((v.subtypeDomain p).prod fun i b => h i b) = v.prod h :=
-  Finset.prod_bij (fun p _ => p) (by simp) (by simp) (fun ⟨a₀, ha₀⟩ ⟨a₁, ha₁⟩ => by simp)
-    fun i hi => ⟨⟨i, hp i hi⟩, by simpa using hi, rfl⟩
+    (hp : ∀ x ∈ v.support, p x) : (v.subtypeDomain p).prod (fun i b => h i b) = v.prod h := by
+  refine Finset.prod_bij (fun p _ ↦ p) ?_ ?_ ?_ ?_ <;> aesop
 #align dfinsupp.prod_subtype_domain_index DFinsupp.prod_subtypeDomain_index
 #align dfinsupp.sum_subtype_domain_index DFinsupp.sum_subtypeDomain_index
 
