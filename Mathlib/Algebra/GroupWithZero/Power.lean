@@ -202,8 +202,7 @@ theorem div_sq_cancel (a b : G₀) : a ^ 2 * b / a = a * b := by
   rw [sq, mul_assoc, mul_div_cancel_left _ ha]
 #align div_sq_cancel div_sq_cancel
 
-theorem pow_mem_range_pow_of_coprime {G₀} [CommGroupWithZero G₀] {m n : ℕ}
-    (hmn : m.Coprime n) (a : G₀) :
+theorem pow_mem_range_pow_of_coprime {m n : ℕ} (hmn : m.Coprime n) (a : G₀) :
     a ^ m ∈ Set.range (· ^ n : G₀ → G₀) ↔ a ∈ Set.range (· ^ n : G₀ → G₀) := by
   constructor
   · intro ⟨x, hx⟩
