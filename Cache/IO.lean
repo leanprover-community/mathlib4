@@ -348,12 +348,6 @@ def unpackCache (hashMap : HashMap) (force : Bool) : IO Unit := do
     IO.println s!"unpacked in {(← IO.monoMsNow) - now} ms"
   else IO.println "No cache files to decompress"
 
-/-- Retrieves the azure token from the environment -/
-def getToken : IO String := do
-  let some token ← IO.getEnv "MATHLIB_CACHE_S3_TOKEN"
-    | throw $ IO.userError "environment variable MATHLIB_CACHE_S3_TOKEN must be set to upload caches"
-  return token
-
 instance : Ord FilePath where
   compare x y := compare x.toString y.toString
 

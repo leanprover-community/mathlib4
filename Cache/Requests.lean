@@ -20,6 +20,13 @@ def URL : String :=
   else
     "https://lakecache.blob.core.windows.net/mathlib4"
 
+/-- Retrieves the azure token from the environment -/
+def getToken : IO String := do
+  let envVar := if useFROCache then "MATHLIB_CACHE_S3_TOKEN" else "MATHLIB_CACHE_SAS"
+  let some token ← IO.getEnv envVar
+    | throw $ IO.userError s!"environment variable {envVar} must be set to upload caches"
+  return token
+
 open System (FilePath)
 
 /--
