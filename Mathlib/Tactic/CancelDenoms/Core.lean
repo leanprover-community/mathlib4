@@ -161,8 +161,8 @@ by `findCancelFactor`.
 The `v'` argument is a numeral expression corresponding to `v`, which we need in order to state
 the return ntype accurately.
 -/
-partial def mkProdPrf {u : Level} (α : Q(Type u)) (sα : Q(Field $α)) (v : ℕ) (v' : Q($α)) (t : Tree ℕ)
-    (e : Q($α)) : MetaM ((e' : Q($α)) × Q($v' * $e = $e')) := do
+partial def mkProdPrf {u : Level} (α : Q(Type u)) (sα : Q(Field $α)) (v : ℕ) (v' : Q($α))
+    (t : Tree ℕ) (e : Q($α)) : MetaM ((e' : Q($α)) × Q($v' * $e = $e')) := do
   let amwo : Q(AddMonoidWithOne $α) := q(inferInstance)
   trace[CancelDenoms] "mkProdPrf {e} {v}"
   match t, e with
