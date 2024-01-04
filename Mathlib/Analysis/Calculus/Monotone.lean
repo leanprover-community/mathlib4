@@ -171,11 +171,11 @@ theorem Monotone.ae_hasDerivAt {f : ℝ → ℝ} (hf : Monotone f) :
     · filter_upwards [self_mem_nhdsWithin]
       rintro y (hy : x < y)
       have : ↑0 < (y - x) ^ 2 := sq_pos_of_pos (sub_pos.2 hy)
-      apply div_le_div_of_le_of_nonneg _ (sub_pos.2 hy).le
+      apply div_le_div_of_le (sub_pos.2 hy).le
       exact (sub_le_sub_iff_right _).2 (hf.rightLim_le (by norm_num; linarith))
     · filter_upwards [self_mem_nhdsWithin]
       rintro y (hy : x < y)
-      apply div_le_div_of_le_of_nonneg _ (sub_pos.2 hy).le
+      apply div_le_div_of_le (sub_pos.2 hy).le
       exact (sub_le_sub_iff_right _).2 (hf.le_rightLim (le_refl y))
   -- prove differentiability on the left, by sandwiching with values of `g`
   have L2 : Tendsto (fun y => (f y - f x) / (y - x)) (𝓝[<] x)
