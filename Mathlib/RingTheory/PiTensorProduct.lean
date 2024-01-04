@@ -6,6 +6,7 @@ Authors: Jujian Zhang
 
 import Mathlib.LinearAlgebra.PiTensorProduct
 import Mathlib.Algebra.Algebra.Hom
+import Mathlib.Algebra.Group.Pi
 
 /-!
 # Tensor product of `R`-algebras and rings
@@ -187,14 +188,9 @@ the map `Aᵢ ⟶ ⨂ᵢ Aᵢ` given by `a ↦ 1 ⊗ ... ⊗ a ⊗ 1 ⊗ ...`
 -/
 @[simps]
 def fromComponentAlgHom [DecidableEq ι] (i : ι) : A i →ₐ[R] ⨂[R] i, A i where
-  toFun a := tprod R (Function.update 1 i a)
-  map_one' := by simp only [update_one]; rfl
-  map_mul' a a' := by
-    simp only [tprod_mul_tprod]
-    congr
-    ext j
-    simp only [update, Pi.one_apply, Pi.mul_apply]
-    aesop
+  toFun a := tprod R (MonoidHom.single _ i a)
+  map_one' := by simp only [_root_.map_one]; rfl
+  map_mul' a a' := by simp
   map_zero' := MultilinearMap.map_update_zero _ _ _
   map_add' _ _ := MultilinearMap.map_add _ _ _ _ _
   commutes' r := show tprodCoeff R _ _ = r • tprodCoeff R _ _ by
@@ -237,9 +233,9 @@ instance ring : Ring (⨂[R] i, A i) where
 
 end Ring
 
-noncomputable section CommRing
+noncomputable section CommSemiring
 
-variable [CommRing R] [∀ i, CommRing (A i)] [∀ i, Algebra R (A i)]
+variable [CommSemiring R] [∀ i, CommSemiring (A i)] [∀ i, Algebra R (A i)]
 
 lemma lmul_comm (x y : ⨂[R] i, A i) : lmul x y = lmul y x :=  by
   induction' x using PiTensorProduct.induction_on with rx x x₁ x₂ hx₁ hx₂
@@ -252,10 +248,19 @@ lemma lmul_comm (x y : ⨂[R] i, A i) : lmul x y = lmul y x :=  by
   · simp only [map_add, LinearMap.add_apply] at hx₁ hx₂ ⊢
     rw [hx₁, hx₂]
 
-instance commRing : CommRing (⨂[R] i, A i) where
-  __ := ring
-  __ := inferInstanceAs <| AddCommGroup (⨂[R] i, A i)
+instance commSemiring : CommSemiring (⨂[R] i, A i) where
+  __ := semiring
+  __ := inferInstanceAs <| AddCommMonoid (⨂[R] i, A i)
   mul_comm := lmul_comm
+
+end CommSemiring
+
+noncomputable section CommRing
+
+variable [CommRing R] [∀ i, CommRing (A i)] [∀ i, Algebra R (A i)]
+instance commRing : CommRing (⨂[R] i, A i) where
+  __ := commSemiring
+  __ := inferInstanceAs <| AddCommGroup (⨂[R] i, A i)
 
 end CommRing
 
