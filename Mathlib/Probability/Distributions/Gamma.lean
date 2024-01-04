@@ -26,12 +26,6 @@ Define the Gamma Measure over the Reals
 * `gammaCdfReal_eq`: Proof that the `gammaCdfReal` given by the Definition equals the
   known function given as `a r x ↦ r ^ a / (Gamma a) * x ^ (a-1) * exp (-(r * x))` for
   `0 ≤ x` or `0` else.
-
-## TODO: Refactoring notes
-* To refactor Exponential.lean using the resuls in this file:
-* - `lintegral_Iic_eq_lintegral_Iio_add_Icc` and `lintegral_eq_lintegral_Ici_add_Iio` are repeated
-    in this file, as this file should precede Exponential.lean after refactoring. Remove these
-    functions from there.
 -/
 
 open scoped ENNReal NNReal
