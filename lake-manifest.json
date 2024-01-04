@@ -34,7 +34,7 @@
    "rev": "8dd18350791c85c0fc9adbd6254c94a81d260d35",
    "name": "proofwidgets",
    "manifestFile": "lake-manifest.json",
-   "inputRev": "main",
+   "inputRev": "v0.0.25",
    "inherited": false,
    "configFile": "lakefile.lean"},
   {"url": "https://github.com/leanprover/lean4-cli",
