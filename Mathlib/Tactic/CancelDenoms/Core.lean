@@ -149,7 +149,7 @@ partial def findCancelFactor (e : Expr) : ℕ × Tree ℕ :=
     | none => (1, .node 1 .nil .nil)
   | _ => (1, .node 1 .nil .nil)
 
-def synthesizeUsingNormNum (type : Expr) : MetaM Expr := do
+def synthesizeUsingNormNum (type : Q(Prop)) : MetaM Q($type) := do
   try
     synthesizeUsingTactic' type (← `(tactic| norm_num))
   catch e =>
