@@ -60,7 +60,7 @@ variable [Fintype V] {s t} [DecidableRel G.Adj]
 
 theorem edgeFinset_replaceVertex_of_not_adj (hn : ¬G.Adj s t) :
     (G.replaceVertex s t).edgeFinset = G.edgeFinset \ G.incidenceFinset t ∪
-      (G.neighborFinset s).image (fun v => s(v, t)) := by
+      (G.neighborFinset s).image fun v ↦ s(v, t) := by
   ext e
   refine' e.inductionOn _
   simp only [Set.mem_toFinset, mem_edgeSet, mem_union, mem_sdiff, mem_incidenceFinset,
@@ -69,58 +69,45 @@ theorem edgeFinset_replaceVertex_of_not_adj (hn : ¬G.Adj s t) :
 
 theorem edgeFinset_replaceVertex_of_adj (ha : G.Adj s t) :
     (G.replaceVertex s t).edgeFinset = (G.edgeFinset \ G.incidenceFinset t ∪
-      (G.neighborFinset s).image (fun v => s(v, t))) \ {s(t, t)} := by
+      (G.neighborFinset s).image fun v ↦ s(v, t)) \ {s(t, t)} := by
   ext e
   refine' e.inductionOn _
   simp only [Set.mem_toFinset, mem_edgeSet, mem_union, mem_sdiff, mem_incidenceFinset,
     mk'_mem_incidenceSet_iff]
   intros; split_ifs; exacts [by simp_all, by aesop, by rw [adj_comm]; aesop, by aesop]
 
+lemma disjoint_sdiff_neighborFinset_image : Disjoint (G.edgeFinset \ G.incidenceFinset t)
+    ((G.neighborFinset s).image fun v ↦ s(v, t)) := by
+  rw [disjoint_iff_ne]
+  intro e he
+  have : t ∉ e := by
+    rw [mem_sdiff, mem_incidenceFinset] at he
+    obtain ⟨_, h⟩ := he
+    contrapose! h
+    simp_all [incidenceSet]
+  aesop
+
 theorem card_edgeFinset_replaceVertex_of_not_adj (hn : ¬G.Adj s t) :
     (G.replaceVertex s t).edgeFinset.card = G.edgeFinset.card + G.degree s - G.degree t := by
   have inc : G.incidenceFinset t ⊆ G.edgeFinset := by simp [incidenceFinset, incidenceSet_subset]
-  rw [G.edgeFinset_replaceVertex_of_not_adj hn, card_disjoint_union, card_sdiff inc,
+  rw [G.edgeFinset_replaceVertex_of_not_adj hn,
+    card_disjoint_union G.disjoint_sdiff_neighborFinset_image, card_sdiff inc,
     tsub_add_eq_add_tsub <| card_le_card inc, card_incidenceFinset_eq_degree]
-  · congr 2
-    rw [card_image_of_injective, card_neighborFinset_eq_degree]
-    unfold Function.Injective
-    aesop
-  · rw [disjoint_iff_ne]
-    intro e1 he1 e2 he2
-    have yes : t ∈ e2 := by
-      simp only [mem_image, mem_neighborFinset] at he2
-      obtain ⟨_, ⟨_, p⟩⟩ := he2
-      rw [← p]
-      exact Sym2.mem_mk_right _ t
-    have no : t ∉ e1 := by
-      rw [mem_sdiff, mem_incidenceFinset] at he1
-      obtain ⟨_, hb⟩ := he1
-      contrapose! hb
-      simp_all [incidenceSet]
-    intro; simp_all only [Sym2.mem_iff, or_true, not_true_eq_false]
+  congr 2
+  rw [card_image_of_injective, card_neighborFinset_eq_degree]
+  unfold Function.Injective
+  aesop
 
 theorem card_edgeFinset_replaceVertex_of_adj (ha : G.Adj s t) :
     (G.replaceVertex s t).edgeFinset.card = G.edgeFinset.card + G.degree s - G.degree t - 1 := by
   have inc : G.incidenceFinset t ⊆ G.edgeFinset := by simp [incidenceFinset, incidenceSet_subset]
-  rw [G.edgeFinset_replaceVertex_of_adj ha, card_sdiff (by simp [ha]), card_disjoint_union,
-    card_sdiff inc, tsub_add_eq_add_tsub <| card_le_card inc, card_incidenceFinset_eq_degree]
-  · congr 2
-    rw [card_image_of_injective, card_neighborFinset_eq_degree]
-    unfold Function.Injective
-    aesop
-  · rw [disjoint_iff_ne]
-    intro e1 he1 e2 he2
-    have yes : t ∈ e2 := by
-      simp only [mem_image, mem_neighborFinset] at he2
-      obtain ⟨_, ⟨_, p⟩⟩ := he2
-      rw [← p]
-      exact Sym2.mem_mk_right _ t
-    have no : t ∉ e1 := by
-      rw [mem_sdiff, mem_incidenceFinset] at he1
-      obtain ⟨_, hb⟩ := he1
-      contrapose! hb
-      simp_all [incidenceSet]
-    intro; simp_all only [Sym2.mem_iff, or_true, not_true_eq_false]
+  rw [G.edgeFinset_replaceVertex_of_adj ha, card_sdiff (by simp [ha]),
+    card_disjoint_union G.disjoint_sdiff_neighborFinset_image, card_sdiff inc,
+    tsub_add_eq_add_tsub <| card_le_card inc, card_incidenceFinset_eq_degree]
+  congr 2
+  rw [card_image_of_injective, card_neighborFinset_eq_degree]
+  unfold Function.Injective
+  aesop
 
 end ReplaceVertex
 
