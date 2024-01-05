@@ -64,17 +64,11 @@ theorem edgeFinset_replaceVertex_of_not_adj (hn : ¬G.Adj s t) : (G.replaceVerte
   refine' e.inductionOn _
   simp only [Set.mem_toFinset, mem_edgeSet, mem_union, mem_sdiff, mem_incidenceFinset,
     mk'_mem_incidenceSet_iff]
-  intros; split_ifs
-  · simp_all
-  · aesop
-  · constructor <;> (simp only [adj_comm]; aesop)
-  · aesop
+  intros; split_ifs; exacts [by simp_all, by aesop, by rw [adj_comm]; aesop, by aesop]
 
 theorem card_edgeFinset_replaceVertex_of_not_adj (hn : ¬G.Adj s t) :
     (G.replaceVertex s t).edgeFinset.card = G.edgeFinset.card + G.degree s - G.degree t := by
-  have inc : G.incidenceFinset t ⊆ G.edgeFinset := by
-    unfold incidenceFinset edgeFinset
-    simp [G.incidenceSet_subset t]
+  have inc : G.incidenceFinset t ⊆ G.edgeFinset := by simp [incidenceFinset, incidenceSet_subset]
   rw [G.edgeFinset_replaceVertex_of_not_adj hn, card_disjoint_union, card_sdiff inc,
     tsub_add_eq_add_tsub <| card_le_card inc, card_incidenceFinset_eq_degree]
   · congr 2
@@ -104,17 +98,11 @@ theorem edgeFinset_replaceVertex_of_adj (ha : G.Adj s t) :
   refine' e.inductionOn _
   simp only [Set.mem_toFinset, mem_edgeSet, mem_union, mem_sdiff, mem_incidenceFinset,
     mk'_mem_incidenceSet_iff]
-  intros; split_ifs
-  · simp_all
-  · aesop
-  · constructor <;> (simp only [adj_comm]; aesop)
-  · aesop
+  intros; split_ifs; exacts [by simp_all, by aesop, by rw [adj_comm]; aesop, by aesop]
 
 theorem card_edgeFinset_replaceVertex_of_adj (ha : G.Adj s t) :
     (G.replaceVertex s t).edgeFinset.card = G.edgeFinset.card + G.degree s - G.degree t - 1 := by
-  have inc : G.incidenceFinset t ⊆ G.edgeFinset := by
-    unfold incidenceFinset edgeFinset
-    simp [G.incidenceSet_subset t]
+  have inc : G.incidenceFinset t ⊆ G.edgeFinset := by simp [incidenceFinset, incidenceSet_subset]
   rw [G.edgeFinset_replaceVertex_of_adj ha, card_sdiff, card_disjoint_union, card_sdiff inc,
     tsub_add_eq_add_tsub <| card_le_card inc, card_incidenceFinset_eq_degree]
   · congr 2
