@@ -346,13 +346,6 @@ theorem div_le_div_of_le (hc : 0 ≤ c) (h : a ≤ b) : a / c ≤ b / c := by
   exact mul_le_mul_of_nonneg_right h (one_div_nonneg.2 hc)
 #align div_le_div_of_le div_le_div_of_le
 
--- Not a `mono` lemma b/c `div_le_div` is strictly more general
-@[gcongr] -- TODO: Do we need it?
-theorem div_le_div_of_le_left (ha : 0 ≤ a) (hc : 0 < c) (h : c ≤ b) : a / b ≤ a / c := by
-  rw [div_eq_mul_inv, div_eq_mul_inv]
-  exact mul_le_mul_of_nonneg_left ((inv_le_inv (hc.trans_le h) hc).mpr h) ha
-#align div_le_div_of_le_left div_le_div_of_le_left
-
 @[deprecated div_le_div_of_le]
 theorem div_le_div_of_le_of_nonneg (hab : a ≤ b) (hc : 0 ≤ c) : a / c ≤ b / c :=
   div_le_div_of_le hc hab
@@ -393,6 +386,12 @@ theorem div_le_div (hc : 0 ≤ c) (hac : a ≤ c) (hd : 0 < d) (hbd : d ≤ b) :
   rw [div_le_div_iff (hd.trans_le hbd) hd]
   exact mul_le_mul hac hbd hd.le hc
 #align div_le_div div_le_div
+
+-- Not a `mono` lemma b/c `div_le_div` is strictly more general
+@[gcongr]
+theorem div_le_div_of_le_left (ha : 0 ≤ a) (hc : 0 < c) (h : c ≤ b) : a / b ≤ a / c :=
+  div_le_div ha (le_refl a) hc h
+#align div_le_div_of_le_left div_le_div_of_le_left
 
 @[gcongr]
 theorem div_lt_div (hac : a < c) (hbd : d ≤ b) (c0 : 0 ≤ c) (d0 : 0 < d) : a / b < c / d :=
