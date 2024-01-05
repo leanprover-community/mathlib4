@@ -114,7 +114,7 @@ end CommSemiring
 
 section CommRing
 
-variable [CommRing R] [CommRing R₁] [CommRing R₂]
+variable [CommSemiring R] [Semiring R₁] [Semiring R₂]
 
 variable [AddCommMonoid M₁] [Module R₁ M₁] [AddCommMonoid M₂] [Module R₂ M₂] [AddCommMonoid N₂]
   [Module R N₂]
