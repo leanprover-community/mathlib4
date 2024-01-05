@@ -1074,7 +1074,7 @@ section ExtendFun
     defining `f i = a` for all `i ≥ n` and some given constant `a` -/
 @[simp]
 abbrev extendFun {α : Type*} {n : ℕ} (f : Fin n → α) (a : α) : ℕ → α :=
-  Subtype.extendFun (f ∘ equivSubtype.symm) (fun _ _ => a)
+  Subtype.extendFun (f ∘ equivSubtype.symm) (fun _ => a)
 
 @[simp] lemma extendFun_val' {α a n} (m) {f : Fin (n+m) → α} {i : Fin n} :
     extendFun f a i.val = f (i.castAdd _) := by
