@@ -75,11 +75,6 @@ theorem cast_mul [NonAssocRing α] : ∀ m n, ((m * n : ℤ) : α) = m * n := fu
 lemma cast_Nat_cast [AddGroupWithOne R] : (Int.cast (Nat.cast n) : R) = Nat.cast n :=
   Int.cast_ofNat _
 
-@[to_additive (attr := simp, norm_cast) coe_nat_zsmul]
-theorem _root_.zpow_coe_nat [DivInvMonoid G] (a : G) (n : ℕ) : a ^ (Nat.cast n : ℤ) = a ^ n :=
-  zpow_ofNat ..
-#align coe_nat_zsmul coe_nat_zsmul
-
 /-! ### Extra instances to short-circuit type class resolution
 
 These also prevent non-computable instances like `Int.normedCommRing` being used to construct

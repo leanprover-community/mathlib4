@@ -7,6 +7,7 @@ Authors: Claus Clausen, Patrick Massot
 import Mathlib.Analysis.SpecialFunctions.Gaussian
 import Mathlib.Probability.Notation
 import Mathlib.Probability.Cdf
+import Mathlib.Probability.Distributions.Gamma
 
 /-! # Exponential distributions over ℝ
 
@@ -30,26 +31,9 @@ open scoped ENNReal NNReal Real
 
 open MeasureTheory Real Set Filter Topology
 
-  /-- A Lebesgue Integral from -∞ to y can be expressed as the sum of one from -∞ to 0 and 0 to x -/
-lemma lintegral_Iic_eq_lintegral_Iio_add_Icc {y z : ℝ} (f : ℝ → ℝ≥0∞) (hzy : z ≤ y) :
-    ∫⁻ x in Iic y, f x = (∫⁻ x in Iio z, f x) + ∫⁻ x in Icc z y, f x := by
-  rw [← Iio_union_Icc_eq_Iic hzy, lintegral_union measurableSet_Icc]
-  rw [Set.disjoint_iff]
-  rintro x ⟨h1 : x < _, h2, _⟩
-  linarith
-
 lemma lintegral_eq_lintegral_Ici_add_Iio (f : ℝ → ℝ≥0∞) (c : ℝ) :
     ∫⁻ x, f x = (∫⁻ x in Ici c, f x) + ∫⁻ x in Iio c, f x := by
-  have union : univ = {x : ℝ | x ≥ c} ∪ {x : ℝ | x < c} := by
-    ext x; simp [le_or_lt]
-  calc
-  ∫⁻ x, f x = ∫⁻ x in univ, f x ∂volume := (set_lintegral_univ f).symm
-  _ = ∫⁻ x in {x | x ≥ c} ∪ {x | x < c} , f x ∂volume := by rw [← union]
-  _ = _ := by
-    apply lintegral_union (isOpen_gt' c).measurableSet
-    rw [Set.disjoint_iff]
-    rintro x ⟨hxge : x ≥ _, hxlt : x < _⟩
-    linarith
+  rw [← lintegral_add_compl f (measurableSet_Ici (a := c)), compl_Ici]
 
 namespace ProbabilityTheory
 
