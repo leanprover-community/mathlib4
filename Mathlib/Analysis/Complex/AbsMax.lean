@@ -484,7 +484,6 @@ theorem Complex.norm_le_of_forall_mem_frontier_norm_le_of_zero_at_infty [FiniteD
 /-- If two complex differentiable functions `f g : E → F` that vanish at infinity are equal on the
 boundary of a bounded set `U`, then they are equal on `closure U`. -/
 theorem Complex.eqOn_closure_of_eqOn_frontier_of_zero_at_infty [FiniteDimensional ℂ E]
-    [ContinuousSub F]
     {f g : E → F} {U : Set E} (hf_tendsto : Tendsto f (cocompact E ⊓ 𝓟 (closure U)) (𝓝 0))
     (hg_tendsto : Tendsto g (cocompact E ⊓ 𝓟 (closure U)) (𝓝 0))
     (hU : U ≠ univ) (hf : DiffContOnCl ℂ f U) (hg : DiffContOnCl ℂ g U)
