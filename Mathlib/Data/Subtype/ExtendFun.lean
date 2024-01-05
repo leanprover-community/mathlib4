@@ -16,9 +16,7 @@ variable {α β : Type*} {p : α → Prop} [DecidablePred p]
 
 /-- Extend a function on a subtype of `α` to a function on `α`.
 
-This is similar to `Function.extend`, but differs on two main points: it's computable, and
-the function `g`, that maps elements of `α` which are *not* in the subtype,
-is given access to a proof of non-membership of its argument in this definition.
+This is a computable alternative to `Function.extend`.
  -/
 abbrev extendFun (f : Subtype p → β) (g : Subtype (¬p ·) → β) : α → β :=
   Set.piecewiseMem {x | p x} (f ⟨·, ·⟩) (g ⟨·, ·⟩)
