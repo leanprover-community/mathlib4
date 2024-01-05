@@ -132,7 +132,7 @@ protected theorem Hom.pathGraph_val {n m : ℕ} (hnm : n ≤ m) (u : Fin n) :
     (Hom.pathGraph hnm u).val = u.val := rfl
 
 
-/-- Convert a homomrfism from a pathGraph to a walk -/
+/-- Create a walk from a path graph homomorphism. -/
 def Walk.ofPathGraphHom (G : SimpleGraph α) {n : ℕ} (hom : pathGraph (n + 1) →g G) :
     G.Walk (hom ⊤) (hom ⊥) := by
   induction n with
@@ -155,7 +155,7 @@ def Walk.ofPathGraphHom (G : SimpleGraph α) {n : ℕ} (hom : pathGraph (n + 1) 
       exact hom.map_rel hpgadj
     exact Walk.cons hGadj w
 
-/-- Given a walk get a homomrfism from a pathGraph and a proof that it is as expected -/
+/-- Create a path graph homomorphism and a proof that it is as expected from a walk -/
 def Walk.toPathGraphHomAux (G : SimpleGraph α) :
     ∀ {u v : α} (w : G.Walk u v), Σ' (hom : pathGraph (w.length + 1) →g G), hom ⊥ = v ∧ hom ⊤ = u
   | _, _, nil' u => by
@@ -250,7 +250,7 @@ def Walk.toPathGraphHomAux (G : SimpleGraph α) :
           apply (Nat.lt_irrefl (p.length + 1)).elim h_
       exact ⟨hom, hhom⟩
 
-/-- Given a walk get a homomrfism from a pathGraph -/
+/-- Create a path graph homomorphism from a walk -/
 def Walk.toPathGraphHom (G : SimpleGraph α) {u v : α} (w : G.Walk u v) :
     pathGraph (w.length + 1) →g G := (w.toPathGraphHomAux).1
 
