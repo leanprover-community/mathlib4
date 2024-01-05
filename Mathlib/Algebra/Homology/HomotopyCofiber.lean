@@ -18,7 +18,7 @@ When we assume `hc : ∀ j, ∃ i, c.Rel i j` (which holds in the case of chain 
 or cochain complexes indexed by `ℤ`), then for any homological complex `K`,
 there is a bijection `HomologicalComplex.homotopyCofiber.descEquiv φ K hc`
 between `homotopyCofiber φ ⟶ K` and the tuples `(α, hα)` with
-`α : G ⟶ K` and `hα : Homotopy (φ ≫ α) 0` (TODO).
+`α : G ⟶ K` and `hα : Homotopy (φ ≫ α) 0`.
 
 We shall also study the cylinder of a homological complex `K`: this is the
 homotopy cofiber of the morphism  `biprod.lift (𝟙 K) (-𝟙 K) : K ⟶ K ⊞ K`.
@@ -228,5 +228,143 @@ noncomputable def homotopyCofiber : HomologicalComplex C c where
       · simp [homotopyCofiber.inlX_d φ j k _ hjk hk]
       · simp [homotopyCofiber.inlX_d' φ j k hjk hk]
     · simp
+
+
+namespace homotopyCofiber
+
+/-- The right inclusion `G ⟶ homotopyCofiber φ`. -/
+@[simps!]
+noncomputable def inr : G ⟶ homotopyCofiber φ where
+  f i := inrX φ i
+
+section
+
+variable (hc : ∀ j, ∃ i, c.Rel i j)
+
+/-- The composition `φ ≫ mappingCone.inr φ` is homotopic to `0`. -/
+noncomputable def inrCompHomotopy :
+    Homotopy (φ ≫ inr φ) 0 where
+  hom i j :=
+    if hij : c.Rel j i then inlX φ i j hij else 0
+  zero i j hij := dif_neg hij
+  comm j := by
+    obtain ⟨i, hij⟩ := hc j
+    rw [prevD_eq _ hij, dif_pos hij]
+    by_cases hj : c.Rel j (c.next j)
+    · simp only [comp_f, homotopyCofiber_d, zero_f, add_zero,
+        inlX_d φ i j _ hij hj, dNext_eq _ hj, dif_pos hj,
+        add_neg_cancel_left, inr_f]
+    · rw [dNext_eq_zero _ _  hj, zero_add, zero_f, add_zero, homotopyCofiber_d,
+        inlX_d' _ _ _ _ hj, comp_f, inr_f]
+
+lemma inrCompHomotopy_hom (i j : ι) (hij : c.Rel j i) :
+    (inrCompHomotopy φ hc).hom i j = inlX φ i j hij := dif_pos hij
+
+lemma inrCompHomotopy_hom_eq_zero (i j : ι) (hij : ¬ c.Rel j i) :
+    (inrCompHomotopy φ hc).hom i j = 0 := dif_neg hij
+
+end
+
+section
+
+variable (α : G ⟶ K) (hα : Homotopy (φ ≫ α) 0)
+
+/-- The morphism `homotopyCofiber φ ⟶ K` that is induced by a morphism `α : G ⟶ K`
+and a homotopy `hα : Homotopy (φ ≫ α) 0`. -/
+noncomputable def desc :
+    homotopyCofiber φ ⟶ K where
+  f j :=
+    if hj : c.Rel j (c.next j)
+    then fstX φ j _ hj ≫ hα.hom _ j + sndX φ j ≫ α.f j
+    else sndX φ j ≫ α.f j
+  comm' j k hjk := by
+    obtain rfl := c.next_eq' hjk
+    dsimp
+    simp [dif_pos hjk]
+    have H := hα.comm (c.next j)
+    simp only [comp_f, zero_f, add_zero, prevD_eq _ hjk] at H
+    split_ifs with hj
+    · simp only [comp_add, d_sndX_assoc _ _ _ hjk, add_comp, assoc, H,
+        d_fstX_assoc _ _ _ _ hjk, neg_comp, dNext, AddMonoidHom.mk'_apply]
+      abel
+    · simp only [d_sndX_assoc _ _ _ hjk, add_comp, assoc, add_left_inj, H,
+        dNext_eq_zero _ _ hj, zero_add]
+
+lemma desc_f (j k : ι) (hjk : c.Rel j k) :
+    (desc φ α hα).f j = fstX φ j _ hjk ≫ hα.hom _ j + sndX φ j ≫ α.f j := by
+  obtain rfl := c.next_eq' hjk
+  apply dif_pos hjk
+
+lemma desc_f' (j : ι) (hj : ¬ c.Rel j (c.next j)) :
+    (desc φ α hα).f j = sndX φ j ≫ α.f j := by
+  apply dif_neg hj
+
+@[reassoc (attr := simp)]
+lemma inlX_desc_f (i j : ι) (hjk : c.Rel j i) :
+    inlX φ i j hjk ≫ (desc φ α hα).f j = hα.hom i j := by
+  obtain rfl := c.next_eq' hjk
+  dsimp [desc]
+  rw [dif_pos hjk, comp_add, inlX_fstX_assoc, inlX_sndX_assoc, zero_comp, add_zero]
+
+@[reassoc (attr := simp)]
+lemma inrX_desc_f (i : ι) :
+    inrX φ i ≫ (desc φ α hα).f i = α.f i := by
+  dsimp [desc]
+  split_ifs <;> simp
+
+@[reassoc (attr := simp)]
+lemma inr_desc :
+    inr φ ≫ desc φ α hα = α := by aesop_cat
+
+@[reassoc (attr := simp)]
+lemma inrCompHomotopy_hom_desc_hom (hc : ∀ j, ∃ i, c.Rel i j) (i j : ι) :
+    (inrCompHomotopy φ hc).hom i j ≫ (desc φ α hα).f j = hα.hom i j := by
+  by_cases hij : c.Rel j i
+  · dsimp
+    simp only [inrCompHomotopy_hom φ hc i j hij, desc_f φ α hα _ _ hij,
+      comp_add, inlX_fstX_assoc, inlX_sndX_assoc, zero_comp, add_zero]
+  · simp only [Homotopy.zero _ _ _ hij, zero_comp]
+
+lemma eq_desc (f : homotopyCofiber φ ⟶ K) (hc : ∀ j, ∃ i, c.Rel i j) :
+    f = desc φ (inr φ ≫ f) (Homotopy.trans (Homotopy.ofEq (by simp))
+      (((inrCompHomotopy φ hc).compRight f).trans (Homotopy.ofEq (by simp)))) := by
+  ext j
+  by_cases hj : c.Rel j (c.next j)
+  · apply ext_from_X φ _ _ hj
+    · simp [inrCompHomotopy_hom _ _ _ _ hj]
+    · simp
+  · apply ext_from_X' φ _ hj
+    simp
+
+end
+
+lemma descSigma_ext_iff {K : HomologicalComplex C c}
+    (x y : Σ (α : G ⟶ K), Homotopy (φ ≫ α) 0) :
+    x = y ↔ x.1 = y.1 ∧ (∀ (i j : ι) (_ : c.Rel j i), x.2.hom i j = y.2.hom i j) := by
+  constructor
+  · rintro rfl
+    tauto
+  · obtain ⟨x₁, x₂⟩ := x
+    obtain ⟨y₁, y₂⟩ := y
+    rintro ⟨rfl, h⟩
+    simp only [Sigma.mk.inj_iff, heq_eq_eq, true_and]
+    ext i j
+    by_cases hij : c.Rel j i
+    · exact h _ _ hij
+    · simp only [Homotopy.zero _ _ _ hij]
+
+/-- Morphisms `homotopyCofiber φ ⟶ K` are uniquely determined by
+a morphism `α : G ⟶ K` and a homotopy from `φ ≫ α` to `0`. -/
+noncomputable def descEquiv (K : HomologicalComplex C c) (hc : ∀ j, ∃ i, c.Rel i j) :
+    (Σ (α : G ⟶ K), Homotopy (φ ≫ α) 0) ≃ (homotopyCofiber φ ⟶ K) where
+  toFun := fun ⟨α, hα⟩ => desc φ α hα
+  invFun f := ⟨inr φ ≫ f, Homotopy.trans (Homotopy.ofEq (by simp))
+    (((inrCompHomotopy φ hc).compRight f).trans (Homotopy.ofEq (by simp)))⟩
+  right_inv f := (eq_desc φ f hc).symm
+  left_inv := fun ⟨α, hα⟩ => by
+    rw [descSigma_ext_iff]
+    aesop_cat
+
+end homotopyCofiber
 
 end HomologicalComplex
