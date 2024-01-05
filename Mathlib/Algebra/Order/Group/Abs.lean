@@ -108,6 +108,8 @@ variable [CovariantClass α α (· * ·) (· ≤ ·)]
   rwa [mabs_of_one_le ha, mabs_of_one_le (ha.trans hab)]
 #align abs_le_abs_of_nonneg abs_le_abs_of_nonneg
 
+attribute [gcongr] abs_le_abs_of_nonneg
+
 @[to_additive (attr := simp)] lemma mabs_one : |(1 : α)|ₘ = 1 := mabs_of_one_le le_rfl
 #align abs_zero abs_zero
 
