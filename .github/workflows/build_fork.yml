@@ -165,6 +165,18 @@ jobs:
           lean --version
           lake --version
 
+      - name: build cache cache
+        run: |
+          lake build cache
+
+      - name: prune ProofWidgets .lake
+        run: |
+          # The ProofWidgets release contains not just the `.js` (which we need to build)
+          # but also `.oleans`, which may be built with the wrong toolchain.
+          # This removes them.
+          rm -rf .lake/packages/proofwidgets/.lake/build/lib
+          rm -rf .lake/packages/proofwidgets/.lake/build/ir
+
       - name: get cache
         run: |
           lake exe cache clean
