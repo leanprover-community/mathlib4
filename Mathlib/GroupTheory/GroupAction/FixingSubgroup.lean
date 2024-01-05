@@ -175,13 +175,13 @@ theorem fixedPoints_subgroup_iSup {ι : Sort*} {P : ι → Subgroup M} :
   (fixingSubgroup_fixedPoints_gc M α).u_iInf
 #align fixed_points_subgroup_supr fixedPoints_subgroup_iSup
 
-/-- The orbit of the moving subgroup of `s` is a subset of `s` -/
+/-- The orbit of the fixing subgroup of `sᶜ` (ie. the moving subgroup of `s`) is a subset of `s` -/
 theorem orbit_fixingSubgroup_compl_subset {s : Set α}
     {a : α} (a_in_s : a ∈ s) : MulAction.orbit (fixingSubgroup M sᶜ) a ⊆ s := by
   intro b b_in_orbit
   let ⟨⟨g, g_fixing⟩, g_eq⟩ := MulAction.mem_orbit_iff.mp b_in_orbit
   rw [Submonoid.mk_smul] at g_eq
   rw [mem_fixingSubgroup_compl_iff_movedBy_subset] at g_fixing
-  rwa [<-g_eq, smul_in_set_of_movedBy_subset g_fixing]
+  rwa [<-g_eq, smul_mem_of_movedBy_subset g_fixing]
 
 end Group
