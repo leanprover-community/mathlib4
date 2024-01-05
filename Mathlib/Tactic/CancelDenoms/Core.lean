@@ -159,7 +159,7 @@ canceled in `e'`, distributing `v` proportionally according to the tree `tr` com
 by `findCancelFactor`.
 
 The `v'` argument is a numeral expression corresponding to `v`, which we need in order to state
-the return ntype accurately.
+the return type accurately.
 -/
 partial def mkProdPrf {u : Level} (α : Q(Type u)) (sα : Q(Field $α)) (v : ℕ) (v' : Q($α))
     (t : Tree ℕ) (e : Q($α)) : MetaM ((e' : Q($α)) × Q($v' * $e = $e')) := do
