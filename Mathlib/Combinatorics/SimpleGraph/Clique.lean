@@ -308,9 +308,8 @@ protected theorem CliqueFree.replaceVertex [DecidableEq α] (h : G.CliqueFree n)
   · obtain ⟨x, _⟩ := mt
     by_cases ms : s ∈ Set.range f
     · obtain ⟨y, _⟩ := ms
-      by_cases hst : s = t
-      · simp_all [not_cliqueFree_iff]
-      · replace ha := @ha x y; simp_all
+      have := @ha x y
+      simp_all [not_cliqueFree_iff]
     · use ⟨fun v ↦ if v = x then s else f v, ?_⟩ <;> intro a b
       · simp only [Function.Embedding.coeFn_mk, top_adj, ne_eq]
         split_ifs with h1 h2 h2
