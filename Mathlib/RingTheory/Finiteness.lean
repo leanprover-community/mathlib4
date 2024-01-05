@@ -490,6 +490,14 @@ def FG (I : Ideal R) : Prop :=
   ∃ S : Finset R, Ideal.span ↑S = I
 #align ideal.fg Ideal.FG
 
+/--
+A finite subset of `R` which spans the finitely generated ideal `I.toIdeal`.
+-/
+noncomputable def FG.spanningSet (I : Ideal R) (hI : I.FG) : Finset R := hI.choose
+
+lemma FG.spanningSet_span_eq (I : Ideal R) (hI : I.FG) :
+    Ideal.span (FG.spanningSet I hI) = I := hI.choose_spec
+
 /-- The image of a finitely generated ideal is finitely generated.
 
 This is the `Ideal` version of `Submodule.FG.map`. -/

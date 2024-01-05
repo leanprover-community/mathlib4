@@ -7,6 +7,7 @@ import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.RingTheory.GradedAlgebra.Basic
+import Mathlib.RingTheory.Finiteness
 
 #align_import ring_theory.graded_algebra.homogeneous_ideal from "leanprover-community/mathlib"@"4e861f25ba5ceef42ba0712d8ffeb32f38ad6441"
 
@@ -598,6 +599,114 @@ theorem Ideal.homogeneousHull_eq_iSup :
 #align ideal.homogeneous_hull_eq_supr Ideal.homogeneousHull_eq_iSup
 
 end HomogeneousHull
+
+section HomoSpanningSet
+
+variable [Semiring A]
+variable [DecidableEq ι] [AddMonoid ι]
+variable [SetLike σ A] [AddSubmonoidClass σ A]
+variable (𝒜 : ι → σ) [GradedRing 𝒜] (I : HomogeneousIdeal 𝒜) (hI : I.toIdeal.FG)
+
+namespace HomogeneousIdeal
+
+lemma FG.decompose_mem_toIdeal_of_mem_spanningSet (i : ι) (a : A) :
+    a ∈ Ideal.FG.spanningSet I.toIdeal hI →
+    ((DirectSum.decompose 𝒜 a) i : A) ∈ I.toIdeal :=
+  λ ha ↦ I.isHomogeneous i <| show a ∈ I.toIdeal by
+  rw [← Ideal.FG.spanningSet_span_eq I.toIdeal hI]; exact Ideal.subset_span ha
+
+variable [DecidableEq A]
+
+/--
+A finite subset of `A` which spans the finitely generated ideal `I.toIdeal` and only
+contains homogeneous elements.
+-/
+noncomputable def FG.homoSpanningSet : Finset A :=
+  Finset.sup (Ideal.FG.spanningSet I.toIdeal hI) (GradedRing.homogeneousComponents 𝒜)
+
+lemma FG.homoSpanningSet_def : FG.homoSpanningSet 𝒜 I hI = Finset.sup
+    (Ideal.FG.spanningSet I.toIdeal hI) (GradedRing.homogeneousComponents 𝒜) := rfl
+
+lemma FG.mem_homogeneousSubmonoid_of_mem_homoSpanningSet (a : A)
+    (ha : a ∈ FG.homoSpanningSet 𝒜 I hI) : a ∈ SetLike.homogeneousSubmonoid 𝒜 := by
+  rw [homoSpanningSet, Finset.mem_sup] at ha
+  exact GradedRing.mem_homogeneousSubmonoid_of_mem_homogeneousComponents 𝒜
+    ha.choose a ha.choose_spec.2
+
+lemma FG.ne_zero_of_mem_homoSpanningSet (a : A) (ha : a ∈ FG.homoSpanningSet 𝒜 I hI) :
+    a ≠ 0 := by
+  rw [homoSpanningSet, Finset.mem_sup] at ha
+  rcases ha with ⟨s, _, hsa⟩
+  rw [GradedRing.homogeneousComponents, Finset.mem_image] at hsa
+  rcases hsa with ⟨i, hi1, hi2⟩
+  rw [DFinsupp.mem_support_iff] at hi1
+  rw [← hi2]
+  simp only [ne_eq, ZeroMemClass.coe_eq_zero]
+  exact hi1
+
+lemma FG.exists_of_mem_homoSpanningSet (a : A) (ha : a ∈ FG.homoSpanningSet 𝒜 I hI) :
+    ∃ (s : Ideal.FG.spanningSet I.toIdeal hI) (i : ι), DirectSum.decompose 𝒜 s i = a := by
+  rw [homoSpanningSet] at ha
+  have : ∃ (s : Ideal.FG.spanningSet I.toIdeal hI),
+      a ∈ GradedRing.homogeneousComponents 𝒜 (s : A) := by
+    rw [Finset.mem_sup] at ha
+    exact ⟨⟨ha.choose, ha.choose_spec.1⟩, ha.choose_spec.2⟩
+  simp_rw [GradedRing.homogeneousComponents, Finset.mem_image] at this
+  rcases this with ⟨s, i, _, hsi⟩
+  exact ⟨s, i, hsi⟩
+
+lemma FG.mem_homoSpanningSet_of_ne_zero_and_eq_decompose (a s : A) (i : ι)
+    (hs : s ∈ Ideal.FG.spanningSet I.toIdeal hI) (ha1 : a ≠ 0)
+    (ha2 : a = DirectSum.decompose 𝒜 s i) :
+    a ∈ FG.homoSpanningSet 𝒜 I hI := by
+  rw [homoSpanningSet, Finset.mem_sup]; exact ⟨s, hs, by
+  rw [GradedRing.homogeneousComponents, Finset.mem_image]; exact ⟨i, by
+  rw [DFinsupp.mem_support_iff]; exact ⟨by subst ha2; exact Subtype.ne_of_val_ne ha1,
+  id ha2.symm⟩⟩⟩
+
+lemma FG.mem_homoSpanningSet_iff (a : A) : a ∈ FG.homoSpanningSet 𝒜 I hI ↔
+    a ≠ 0 ∧ ∃ (s : A) (i : ι), s ∈ Ideal.FG.spanningSet I.toIdeal hI ∧
+    a = DirectSum.decompose 𝒜 s i :=
+  ⟨λ ha ↦ ⟨ne_zero_of_mem_homoSpanningSet 𝒜 I hI a ha, by
+  rcases exists_of_mem_homoSpanningSet 𝒜 I hI a ha with ⟨s, i, hasi⟩;
+  exact ⟨s, i, Finset.coe_mem s, id hasi.symm⟩⟩, λ ha ↦ by
+  rcases ha with ⟨hane0, s, i, hs, hasi⟩;
+  exact mem_homoSpanningSet_of_ne_zero_and_eq_decompose 𝒜 I hI a s i hs hane0 hasi⟩
+
+lemma FG.decompose_mem_homoSpanningSet_of_mem_spanningSet
+    (a : A) (i : ι) (ha : a ∈ Ideal.FG.spanningSet I.toIdeal hI)
+    (hi : i ∈ DFinsupp.support (DirectSum.decompose 𝒜 a)):
+    (DirectSum.decompose 𝒜 a i : A) ∈ FG.homoSpanningSet 𝒜 I hI := by
+  rw [mem_homoSpanningSet_iff]
+  rw [DFinsupp.mem_support_iff] at hi
+  exact ⟨by simp only [ne_eq, ZeroMemClass.coe_eq_zero]; exact hi, by use a, i⟩
+
+lemma FG.toIdeal_le_homoSpanningSet_span :
+    I.toIdeal ≤ Ideal.span (FG.homoSpanningSet 𝒜 I hI) := by
+  rw [← Ideal.FG.spanningSet_span_eq I.toIdeal hI, Ideal.span_le]
+  exact (λ s hs ↦ by
+    rw [← DirectSum.sum_support_decompose 𝒜 s];
+    exact @Ideal.sum_mem A _ (Ideal.span (homoSpanningSet 𝒜 I hI)) ι
+      (DFinsupp.support (DirectSum.decompose 𝒜 s)) (fun i ↦ DirectSum.decompose 𝒜 s i) (λ i hi
+      ↦ Ideal.subset_span (decompose_mem_homoSpanningSet_of_mem_spanningSet 𝒜 I hI s i hs hi)))
+
+lemma FG.homoSpanningSet_span_le_toIdeal :
+    Ideal.span (FG.homoSpanningSet 𝒜 I hI) ≤ I.toIdeal := by
+  rw [Ideal.span_le]
+  intro x hx
+  exact (show ∀ (x : A), x ∈ homoSpanningSet 𝒜 I hI → x ∈ I.toIdeal by
+    intro x hx; rw [mem_homoSpanningSet_iff] at hx;
+    rcases hx with ⟨_, s, i, hs, hxsi⟩; rw [hxsi];
+    exact decompose_mem_toIdeal_of_mem_spanningSet 𝒜 I hI i s hs) x hx
+
+lemma FG.homoSpanningSet_span_eq_toIdeal :
+    Ideal.span (FG.homoSpanningSet 𝒜 I hI) = I.toIdeal :=
+  le_antisymm (homoSpanningSet_span_le_toIdeal 𝒜 I hI)
+  (toIdeal_le_homoSpanningSet_span 𝒜 I hI)
+
+end HomogeneousIdeal
+
+end HomoSpanningSet
 
 section GaloisConnection
 
