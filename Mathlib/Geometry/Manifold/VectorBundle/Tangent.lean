@@ -158,7 +158,7 @@ lemma hasFDerivWithinAt_tangentCoordChange {x y z : M}
     HasFDerivWithinAt ((extChartAt I y) ∘ (extChartAt I x).symm) (tangentCoordChange I x y z)
       (range I) (extChartAt I x z) :=
   have h' : extChartAt I x z ∈ ((extChartAt I x).symm ≫ (extChartAt I y)).source := by
-    rw [LocalEquiv.trans_source'', LocalEquiv.symm_symm, LocalEquiv.symm_target]
+    rw [PartialEquiv.trans_source'', PartialEquiv.symm_symm, PartialEquiv.symm_target]
     exact mem_image_of_mem _ h
   ((contDiffWithinAt_ext_coord_change I y x h').differentiableWithinAt (by simp)).hasFDerivWithinAt
 
