@@ -9,37 +9,29 @@ import Mathlib.Data.Finsupp.Antidiagonal
 import Mathlib.Data.Finsupp.Defs
 import Mathlib.Data.Finsupp.Interval
 
-/-! # Partial HasAntidiagonal for functions with finite support
+/-!
+# Partial HasAntidiagonal for functions with finite support
 
-Let `μ` be an AddCommMonoid.
-
-In `Mathlib.Data.Finset.Antidiagonal` is defined a TypeClass
-`HasAntidiagonal μ` which provides a function `μ → Finset (μ × μ)
-which maps `n : μ` to a `Finset` of pairs `(a,b)`
-such that `a + b = n`.
-
-These functions apply to `ι →₀ ℕ`, more generally to `ι →₀ μ`
-under the additional assumption `OrderedSub μ` that make it
-a canonically ordered additive monoid.
-In fact, we just need an AddMonoid with a compatible order,
-finite Iic, such that if a + b = n, then a, b ≤ n,
-and any other bound would be OK.
+For an `AddCommMonoid` `μ`,
+`Finset.HasAntidiagonal μ` provides a function `antidiagonal : μ → Finset (μ × μ)`
+which maps `n : μ` to a `Finset` of pairs `(a, b)` such that `a + b = n`.
 
 In this file, we provide an analogous definition for `ι →₀ μ`,
 with an explicit finiteness condition on the support,
-assuming `HasAntidiagonal μ` and `DecidableEq μ`
-This Finset could be viewed inside `ι → μ`, but the `Finsupp` condition
-provides a natural `DecidableEq` instance.
+assuming `AddCommMonoid μ`, `HasAntidiagonal μ`,
+For computability reasons, we also need `DecidableEq ι` and `DecidableEq μ`.
 
-Consider types `ι` and `μ`, with `AddCommMonoid μ`, `HasAntidiagonal μ` and `DecidableEq μ`.
+This Finset could be viewed inside `ι → μ`,
+but the `Finsupp` condition provides a natural `DecidableEq` instance.
+
+## Main definitions
 
 * `Finset.piAntidiagonal s n` is the finite set of all functions
   with finite support contained in `s` and sum `n : μ`
   That condition is expressed by `Finset.mem_piAntidiagonal`
-* `Finset.mem_piAntidiagonal'` rewrites the `Finsupp.sum`
-  condition as a `Finset.sum`
-* The construction starts with `Finset.finAntidiagonal`,
-  a variant of `Finset.Nat.antidiagonalTuple`
+* `Finset.mem_piAntidiagonal'` rewrites the `Finsupp.sum` condition as a `Finset.sum`.
+* `Finset.finAntidiagonal`, a more general case of `Finset.Nat.antidiagonalTuple`
+  (TODO: deduplicate).
 
 -/
 
