@@ -214,7 +214,7 @@ theorem dist_midpoint_midpoint_le' (p₁ p₂ p₃ p₄ : P) :
   rw [dist_eq_norm_vsub V, dist_eq_norm_vsub V, dist_eq_norm_vsub V, midpoint_vsub_midpoint]
   try infer_instance
   rw [midpoint_eq_smul_add, norm_smul, invOf_eq_inv, norm_inv, ← div_eq_inv_mul]
-  exact div_le_div_of_le_of_nonneg (norm_add_le _ _) (norm_nonneg _)
+  exact div_le_div_of_le (norm_nonneg _) (norm_add_le _ _)
 #align dist_midpoint_midpoint_le' dist_midpoint_midpoint_le'
 
 theorem nndist_midpoint_midpoint_le' (p₁ p₂ p₃ p₄ : P) :

@@ -5,6 +5,7 @@ Authors: Yaël Dillies, Christopher Hoskin
 -/
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Algebra.Module.Hom
+import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 import Mathlib.RingTheory.Subsemiring.Basic
 
@@ -278,13 +279,13 @@ instance instSMul : SMul M (CentroidHom α) where
 #noalign centroid_hom.has_nsmul
 
 instance [SMul M N] [IsScalarTower M N α] : IsScalarTower M N (CentroidHom α) where
-  smul_assoc _ _ _ := ext <| fun _ => smul_assoc _ _ _
+  smul_assoc _ _ _ := ext fun _ => smul_assoc _ _ _
 
 instance [SMulCommClass M N α] : SMulCommClass M N (CentroidHom α) where
-  smul_comm _ _ _ := ext <| fun _ => smul_comm _ _ _
+  smul_comm _ _ _ := ext fun _ => smul_comm _ _ _
 
 instance [DistribMulAction Mᵐᵒᵖ α] [IsCentralScalar M α] : IsCentralScalar M (CentroidHom α) where
-  op_smul_eq_smul _ _ := ext <| fun _ => op_smul_eq_smul _ _
+  op_smul_eq_smul _ _ := ext fun _ => op_smul_eq_smul _ _
 
 instance isScalarTowerRight : IsScalarTower M (CentroidHom α) (CentroidHom α) where
   smul_assoc _ _ _ := rfl
