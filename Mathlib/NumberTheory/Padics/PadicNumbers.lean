@@ -577,7 +577,7 @@ def padicNormE {p : ℕ} [hp : Fact p.Prime] : AbsoluteValue ℚ_[p] ℚ where
   toFun := Quotient.lift PadicSeq.norm <| @PadicSeq.norm_equiv _ _
   map_mul' q r := Quotient.inductionOn₂ q r <| PadicSeq.norm_mul
   nonneg' q := Quotient.inductionOn q <| PadicSeq.norm_nonneg
-  eq_zero' q := Quotient.inductionOn q <| fun r ↦ by
+  eq_zero' q := Quotient.inductionOn q fun r ↦ by
     rw [Padic.zero_def, Quotient.eq]
     exact PadicSeq.norm_zero_iff r
   add_le' q r := by
@@ -656,7 +656,7 @@ variable {p : ℕ} [Fact p.Prime] (f : CauSeq _ (@padicNormE p _))
 
 theorem rat_dense' (q : ℚ_[p]) {ε : ℚ} (hε : 0 < ε) : ∃ r : ℚ, padicNormE (q - r : ℚ_[p]) < ε :=
   Quotient.inductionOn q fun q' ↦
-    have : ∃ N, ∀ (m) (_ : m ≥ N) (n) (_ : n ≥ N), padicNorm p (q' m - q' n) < ε := cauchy₂ _ hε
+    have : ∃ N, ∀ m ≥ N, ∀ n ≥ N, padicNorm p (q' m - q' n) < ε := cauchy₂ _ hε
     let ⟨N, hN⟩ := this
     ⟨q' N, by
       dsimp [padicNormE]

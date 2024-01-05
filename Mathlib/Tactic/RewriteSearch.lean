@@ -143,11 +143,11 @@ def toString (n : SearchNode) : MetaM String := do
   | some (_, e, true) => do let pp ← ppExpr e; pure s!"rw [← {pp}]"
   | some (_, e, false) => do let pp ← ppExpr e; pure s!"rw [{pp}]"
   | none => pure ""
-  return s!"depth: {n.history.size}\n" ++
-    s!"history: {n.history.map fun p => hash p % 10000}\n" ++
-    tac ++ "\n" ++
-    "-- " ++ n.ppGoal ++ "\n" ++
-    s!"distance: {n.dist?.get!}+{n.history.size}, {n.ppGoal.length}"
+  return s!"depth: {n.history.size}\n\
+    history: {n.history.map fun p => hash p % 10000}\n\
+    {tac}\n\
+    -- {n.ppGoal}\n\
+    distance: {n.dist?.get!}+{n.history.size}, {n.ppGoal.length}"
 
 /-- Construct a `SearchNode`. -/
 def mk (history : Array (Nat × Expr × Bool)) (goal : MVarId) (ctx : Option MetavarContext := none) :

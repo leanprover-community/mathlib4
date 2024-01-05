@@ -72,7 +72,7 @@ theorem exists_eq_pow_of_mul_eq_pow_of_coprime {R : Type*} [CommSemiring R] [IsD
 nonrec
 theorem Finset.exists_eq_pow_of_mul_eq_pow_of_coprime {ι R : Type*} [CommSemiring R] [IsDomain R]
     [GCDMonoid R] [Unique Rˣ] {n : ℕ} {c : R} {s : Finset ι} {f : ι → R}
-    (h : ∀ (i) (_ : i ∈ s) (j) (_ : j ∈ s), i ≠ j → IsCoprime (f i) (f j))
+    (h : ∀ i ∈ s, ∀ j ∈ s, i ≠ j → IsCoprime (f i) (f j))
     (hprod : ∏ i in s, f i = c ^ n) : ∀ i ∈ s, ∃ d : R, f i = d ^ n := by
   classical
     intro i hi
@@ -255,15 +255,14 @@ theorem sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : ∑ g : G, f g = 0
       (∑ b : MonoidHom.range f.toHomUnits, ((b : Rˣ) : R))
         = ∑ n in range (orderOf x), ((x : Rˣ) : R) ^ n :=
         Eq.symm <|
-          sum_bij (fun n _ => x ^ n) (by simp only [mem_univ, forall_true_iff])
-            (by simp only [imp_true_iff, eq_self_iff_true, Subgroup.coe_pow,
-                Units.val_pow_eq_pow_val])
-            (fun m n hm hn => pow_injOn_Iio_orderOf (by simpa only [mem_range] using hm)
-                (by simpa only [mem_range] using hn))
+          sum_nbij (x ^ ·) (by simp only [mem_univ, forall_true_iff])
+            (by simpa using pow_injOn_Iio_orderOf)
             (fun b _ => let ⟨n, hn⟩ := hx b
               ⟨n % orderOf x, mem_range.2 (Nat.mod_lt _ (orderOf_pos _)),
                -- Porting note: have to use `dsimp` to apply the function
                by dsimp at hn ⊢; rw [pow_mod_orderOf, hn]⟩)
+            (by simp only [imp_true_iff, eq_self_iff_true, Subgroup.coe_pow,
+                Units.val_pow_eq_pow_val])
       _ = 0 := ?_
 
     rw [← mul_left_inj' hx1, zero_mul, geom_sum_mul]
