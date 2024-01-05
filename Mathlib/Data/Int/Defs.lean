@@ -244,4 +244,4 @@ lemma sign_coe_nat_of_nonzero {n : ℕ} (hn : n ≠ 0) : Int.sign n = 1 := sign_
 #align int.to_nat_neg_nat Int.toNat_neg_nat
 
 -- Porting note: this was added in an ad hoc port for use in `Tactic/NormNum/Basic`
-@[simp] lemma pow_eq {m n : ℕ} : m.pow n = m ^ n := rfl
+@[simp] lemma pow_eq (m : ℤ) (n : ℕ) : m.pow n = m ^ n := rfl
