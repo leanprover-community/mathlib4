@@ -228,13 +228,10 @@ def derive (e : Expr) : MetaM (ℕ × Expr) := do
   trace[CancelDenoms] "e simplified = {eSimp.expr}"
   let (n, t) := findCancelFactor eSimp.expr
   let ⟨u, tp, e⟩ ← inferTypeQ' eSimp.expr
-  let stp ← synthInstanceQ q(Field $tp)
+  let stp : Q(Field $tp) ← synthInstanceQ q(Field $tp)
   try
     have n' := (← mkOfNat tp q(inferInstance) <| mkRawNatLit <| n).1
-    let x ← mkProdPrf tp stp n n' t e
-    let pf := x.2
-    -- `let ⟨_, pf⟩ := x` fails with
-    --`(kernel) declaration has free variables 'CancelDenoms.derive.match_2'`
+    let ⟨_, pf⟩ ← mkProdPrf tp stp n n' t e
     trace[CancelDenoms] "pf : {← inferType pf}"
     let pf' ←
       if let some pfSimp := eSimp.proof? then
