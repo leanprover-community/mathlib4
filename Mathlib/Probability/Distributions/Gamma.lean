@@ -11,7 +11,7 @@ import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
 
 /-! # Gamma distributions over ℝ
 
-Define the Gamma Measure over the Reals
+Define the Gamma measure over the reals
 
 ## Main definitions
 * `gammaPdfReal`: the function `a r x ↦ r ^ a / (Gamma a) * x ^ (a-1) * exp (-(r * x))`
@@ -40,7 +40,7 @@ namespace ProbabilityTheory
 
 section GammaPdf
 
-/-- The pdf of the gamma distribution depending on its scale and rate-/
+/-- The pdf of the gamma distribution depending on its scale and rate -/
 noncomputable
 def gammaPdfReal (a r x : ℝ) : ℝ :=
   if 0 ≤ x then r ^ a / (Gamma a) * x ^ (a-1) * exp (-(r * x)) else 0
@@ -61,7 +61,7 @@ lemma gammaPdf_of_nonneg {a r x : ℝ} (hx : 0 ≤ x) :
     gammaPdf a r x = ENNReal.ofReal (r ^ a / (Gamma a) * x ^ (a-1) * exp (-(r * x))) := by
   simp only [gammaPdf_eq, if_pos hx]
 
-/-- the Lebesgue integral of the Gamma pdf over nonpositive reals equals 0 -/
+/-- The Lebesgue integral of the Gamma pdf over nonpositive reals equals 0 -/
 lemma lintegral_gammaPdf_of_nonpos {x a r : ℝ} (hx : x ≤ 0) :
     ∫⁻ y in Iio x, gammaPdf a r y = 0 := by
   rw [set_lintegral_congr_fun (g := fun _ ↦ 0) measurableSet_Iio]
@@ -74,7 +74,7 @@ lemma measurable_gammaPdfReal (a r : ℝ) : Measurable (gammaPdfReal a r) :=
   Measurable.ite measurableSet_Ici (((measurable_id'.pow_const _).const_mul _).mul
     (measurable_id'.const_mul _).neg.exp) measurable_const
 
-/-- the Gamma pdf is positive for all positive reals -/
+/-- The Gamma pdf is positive for all positive reals -/
 lemma gammaPdfReal_pos {x a r : ℝ} (ha : 0 < a) (hr : 0 < r) (hx : 0 < x) :
     0 < gammaPdfReal a r x := by
   simp only [gammaPdfReal, if_pos hx.le]
