@@ -1030,7 +1030,7 @@ theorem TopologicalGroup.exists_antitone_basis_nhds_one :
     intro n
     rcases this n with ⟨j, k, -, h⟩
     refine' atTop_basis.eventually_iff.mpr ⟨max j k, True.intro, fun m hm => _⟩
-    rintro - ⟨a, b, ha, hb, rfl⟩
+    rintro - ⟨a, ha, b, hb, rfl⟩
     exact h a b (u_anti ((le_max_left _ _).trans hm) ha) (u_anti ((le_max_right _ _).trans hm) hb)
   obtain ⟨φ, -, hφ, φ_anti_basis⟩ := HasAntitoneBasis.subbasis_with_rel ⟨hu, u_anti⟩ event_mul
   exact ⟨u ∘ φ, φ_anti_basis, fun n => hφ n.lt_succ_self⟩
@@ -1257,10 +1257,9 @@ variable [TopologicalSpace α] [TopologicalSpace β] [Group α] [MulAction α β
 theorem IsClosed.smul_left_of_isCompact (ht : IsClosed t) (hs : IsCompact s) :
     IsClosed (s • t) := by
   have : ∀ x ∈ s • t, ∃ g ∈ s, g⁻¹ • x ∈ t := by
-    intro x ⟨g, y, hgs, hyt, hgyx⟩
+    rintro x ⟨g, hgs, y, hyt, rfl⟩
     refine ⟨g, hgs, ?_⟩
-    convert hyt
-    rwa [inv_smul_eq_iff, eq_comm]
+    rwa [inv_smul_smul]
   choose! f hf using this
   refine isClosed_of_closure_subset (fun x hx ↦ ?_)
   rcases mem_closure_iff_ultrafilter.mp hx with ⟨u, hust, hux⟩
@@ -1270,7 +1269,7 @@ theorem IsClosed.smul_left_of_isCompact (ht : IsClosed t) (hs : IsCompact s) :
       _ ≤ 𝓟 s := principal_mono.mpr (image_subset_iff.mpr (fun x hx ↦ (hf x hx).1))
   rcases hs.ultrafilter_le_nhds (Ultrafilter.map f u) this with ⟨g, hg, hug⟩
   suffices g⁻¹ • x ∈ t from
-    ⟨g, g⁻¹ • x, hg, this, smul_inv_smul _ _⟩
+    ⟨g, hg, g⁻¹ • x, this, smul_inv_smul _ _⟩
   exact ht.mem_of_tendsto ((Tendsto.inv hug).smul hux)
     (Eventually.mono hust (fun y hy ↦ (hf y hy).2))
 
@@ -1415,9 +1414,9 @@ theorem subset_interior_div : interior s / interior t ⊆ interior (s / t) :=
 theorem IsOpen.mul_closure (hs : IsOpen s) (t : Set G) : s * closure t = s * t := by
   refine' (mul_subset_iff.2 fun a ha b hb => _).antisymm (mul_subset_mul_left subset_closure)
   rw [mem_closure_iff] at hb
-  have hbU : b ∈ s⁻¹ * {a * b} := ⟨a⁻¹, a * b, Set.inv_mem_inv.2 ha, rfl, inv_mul_cancel_left _ _⟩
-  obtain ⟨_, ⟨c, d, hc, rfl : d = _, rfl⟩, hcs⟩ := hb _ hs.inv.mul_right hbU
-  exact ⟨c⁻¹, _, hc, hcs, inv_mul_cancel_left _ _⟩
+  have hbU : b ∈ s⁻¹ * {a * b} := ⟨a⁻¹, Set.inv_mem_inv.2 ha, a * b, rfl, inv_mul_cancel_left _ _⟩
+  obtain ⟨_, ⟨c, hc, d, rfl : d = _, rfl⟩, hcs⟩ := hb _ hs.inv.mul_right hbU
+  exact ⟨c⁻¹, hc, _, hcs, inv_mul_cancel_left _ _⟩
 #align is_open.mul_closure IsOpen.mul_closure
 #align is_open.add_closure IsOpen.add_closure
 
@@ -1492,12 +1491,12 @@ lemma IsClosed.mul_closure_one_eq {F : Set G} (hF : IsClosed F) :
 lemma compl_mul_closure_one_eq {t : Set G} (ht : t * (closure {1} : Set G) = t) :
     tᶜ * (closure {1} : Set G) = tᶜ := by
   refine Subset.antisymm ?_ (subset_mul_closure_one tᶜ)
-  rintro - ⟨x, g, hx, hg, rfl⟩
+  rintro - ⟨x, hx, g, hg, rfl⟩
   by_contra H
   have : x ∈ t * (closure {1} : Set G) := by
     rw [← Subgroup.coe_topologicalClosure_bot G] at hg ⊢
     simp only [smul_eq_mul, mem_compl_iff, not_not] at H
-    exact ⟨x * g, g⁻¹, H, Subgroup.inv_mem _ hg, by simp⟩
+    exact ⟨x * g, H, g⁻¹, Subgroup.inv_mem _ hg, by simp⟩
   rw [ht] at this
   exact hx this
 
@@ -1761,7 +1760,7 @@ theorem exists_disjoint_smul_of_isCompact [NoncompactSpace G] {K L : Set G} (hK 
   refine' ⟨g, _⟩
   refine disjoint_left.2 fun a ha h'a => hg ?_
   rcases h'a with ⟨b, bL, rfl⟩
-  refine' ⟨g * b, b⁻¹, ha, by simpa only [Set.mem_inv, inv_inv] using bL, _⟩
+  refine' ⟨g * b, ha, b⁻¹, by simpa only [Set.mem_inv, inv_inv] using bL, _⟩
   simp only [smul_eq_mul, mul_inv_cancel_right]
 #align exists_disjoint_smul_of_is_compact exists_disjoint_smul_of_isCompact
 #align exists_disjoint_vadd_of_is_compact exists_disjoint_vadd_of_isCompact

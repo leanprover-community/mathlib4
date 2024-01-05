@@ -56,7 +56,7 @@ section Inducing
 /-- A function `f : α → β` between topological spaces is inducing if the topology on `α` is induced
 by the topology on `β` through `f`, meaning that a set `s : Set α` is open iff it is the preimage
 under `f` of some open set `t : Set β`. -/
-@[mk_iff inducing_iff]
+@[mk_iff]
 structure Inducing [tα : TopologicalSpace α] [tβ : TopologicalSpace β] (f : α → β) : Prop where
   /-- The topology on the domain is equal to the induced topology. -/
   induced : tα = tβ.induced f
@@ -187,7 +187,7 @@ section Embedding
 
 /-- A function between topological spaces is an embedding if it is injective,
   and for all `s : Set α`, `s` is open iff it is the preimage of an open set. -/
-@[mk_iff embedding_iff]
+@[mk_iff]
 structure Embedding [TopologicalSpace α] [TopologicalSpace β] (f : α → β) extends
   Inducing f : Prop where
   /-- A topological embedding is injective. -/
@@ -504,7 +504,7 @@ theorem of_inverse {f : α → β} {f' : β → α} (h : Continuous f') (l_inv :
 
 theorem of_nonempty {f : α → β} (h : ∀ s, IsClosed s → s.Nonempty → IsClosed (f '' s)) :
     IsClosedMap f := by
-  intro s hs; cases' eq_empty_or_nonempty s with h2s h2s
+  intro s hs; rcases eq_empty_or_nonempty s with h2s | h2s
   · simp_rw [h2s, image_empty, isClosed_empty]
   · exact h s hs h2s
 #align is_closed_map.of_nonempty IsClosedMap.of_nonempty
@@ -571,7 +571,7 @@ section OpenEmbedding
 variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
 
 /-- An open embedding is an embedding with open image. -/
-@[mk_iff openEmbedding_iff]
+@[mk_iff]
 structure OpenEmbedding (f : α → β) extends Embedding f : Prop where
   /-- The range of an open embedding is an open set. -/
   open_range : IsOpen <| range f
@@ -621,6 +621,11 @@ theorem openEmbedding_of_embedding_open {f : α → β} (h₁ : Embedding f) (h�
     OpenEmbedding f :=
   ⟨h₁, h₂.isOpen_range⟩
 #align open_embedding_of_embedding_open openEmbedding_of_embedding_open
+
+/-- A surjective embedding is an `OpenEmbedding`. -/
+theorem _root_.Embedding.toOpenEmbedding_of_surjective {f : α → β}
+    (hf : Embedding f) (hsurj: f.Surjective) : OpenEmbedding f :=
+  ⟨hf, hsurj.range_eq ▸ isOpen_univ⟩
 
 theorem openEmbedding_iff_embedding_open {f : α → β} :
     OpenEmbedding f ↔ Embedding f ∧ IsOpenMap f :=
@@ -672,7 +677,7 @@ section ClosedEmbedding
 variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
 
 /-- A closed embedding is an embedding with closed image. -/
-@[mk_iff closedEmbedding_iff]
+@[mk_iff]
 structure ClosedEmbedding (f : α → β) extends Embedding f : Prop where
   /-- The range of a closed embedding is a closed set. -/
   closed_range : IsClosed <| range f

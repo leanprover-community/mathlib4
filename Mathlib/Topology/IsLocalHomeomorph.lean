@@ -77,6 +77,11 @@ theorem mk (h : ∀ x ∈ s, ∃ e : PartialHomeomorph X Y, x ∈ e.source ∧ S
       hx, rfl⟩
 #align is_locally_homeomorph_on.mk IsLocalHomeomorphOn.mk
 
+/-- A `PartialHomeomorph` is a local homeomorphism on its source. -/
+lemma PartialHomeomorph.isLocalHomeomorphOn (e : PartialHomeomorph X Y) :
+    IsLocalHomeomorphOn e e.source :=
+  fun _ hx ↦ ⟨e, hx, rfl⟩
+
 variable {g f s t}
 
 theorem mono {t : Set X} (hf : IsLocalHomeomorphOn f t) (hst : s ⊆ t) : IsLocalHomeomorphOn f s :=
@@ -169,6 +174,10 @@ theorem mk (h : ∀ x : X, ∃ e : PartialHomeomorph X Y, x ∈ e.source ∧ Set
     (IsLocalHomeomorphOn.mk f Set.univ fun x _hx ↦ h x)
 #align is_locally_homeomorph.mk IsLocalHomeomorph.mk
 
+/-- A homeomorphism is a local homeomorphism. -/
+lemma Homeomorph.isLocalHomeomorph (h : X ≃ₜ Y) : IsLocalHomeomorph h :=
+  fun _ ↦ ⟨h.toPartialHomeomorph, trivial, rfl⟩
+
 variable {g f}
 
 lemma isLocallyInjective (hf : IsLocalHomeomorph f) : IsLocallyInjective f :=
@@ -204,6 +213,17 @@ protected theorem comp (hg : IsLocalHomeomorph g) (hf : IsLocalHomeomorph f) :
 theorem openEmbedding_of_injective (hf : IsLocalHomeomorph f) (hi : f.Injective) :
     OpenEmbedding f :=
   openEmbedding_of_continuous_injective_open hf.continuous hi hf.isOpenMap
+
+/-- A surjective embedding is a homeomorphism. -/
+noncomputable def _root_.Embedding.toHomeomeomorph_of_surjective (hf : Embedding f)
+    (hsurj : Function.Surjective f) : X ≃ₜ Y :=
+  Homeomorph.homeomorphOfContinuousOpen (Equiv.ofBijective f ⟨hf.inj, hsurj⟩)
+    hf.continuous (hf.toOpenEmbedding_of_surjective hsurj).isOpenMap
+
+/-- A bijective local homeomorphism is a homeomorphism. -/
+noncomputable def toHomeomorph_of_bijective (hf : IsLocalHomeomorph f) (hb : f.Bijective) :
+    X ≃ₜ Y :=
+  Homeomorph.homeomorphOfContinuousOpen (Equiv.ofBijective f hb) hf.continuous hf.isOpenMap
 
 /-- Continuous local sections of a local homeomorphism are open embeddings. -/
 theorem openEmbedding_of_comp (hf : IsLocalHomeomorph g) (hgf : OpenEmbedding (g ∘ f))

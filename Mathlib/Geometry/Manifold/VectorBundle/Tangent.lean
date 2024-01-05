@@ -126,10 +126,14 @@ theorem tangentBundleCore_coordChange_achart (x x' z : M) :
 
 section tangentCoordChange
 
-/-- Since `tangentBundleCore` has the same base sets as the preferred charts of the base manifold,
-  we define `tangentCoordChange I x y` as a convenient abbreviation for a change of coordinates
-  between the preferred charts at `x y : M`. -/
-abbrev tangentCoordChange (x y : M) := (tangentBundleCore I M).coordChange (achart H x) (achart H y)
+/-- In a manifold `M`, given two preferred charts indexed by `x y : M`, `tangentCoordChange I x y`
+is the family of derivatives of the corresponding change-of-coordinates map. It takes junk values
+outside the intersection of the sources of the two charts.
+
+Note that this definition takes advantage of the fact that `tangentBundleCore` has the same base
+sets as the preferred charts of the base manifold. -/
+abbrev tangentCoordChange (x y : M) : M → E →L[𝕜] E :=
+  (tangentBundleCore I M).coordChange (achart H x) (achart H y)
 
 variable {I}
 
