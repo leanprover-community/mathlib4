@@ -507,21 +507,14 @@ theorem reindex_reindex (e : ι ≃ ι₂) (e' : ι₂ ≃ ι₃) (x : ⨂[R] i,
   LinearEquiv.congr_fun (reindex_trans e e' : _ = reindex R s (e.trans e')) x
 #align pi_tensor_product.reindex_reindex PiTensorProduct.reindex_reindex
 
--- This doesn't have a dependent counterpart
+/-- This lemma is impractical to state in the dependent case. -/
 @[simp]
 theorem reindex_symm (e : ι ≃ ι₂) :
     (reindex R (fun _ ↦ M) e).symm = reindex R (fun _ ↦ M) e.symm := by
   ext x
   simp only [reindex, domDomCongrLinearEquiv', LinearEquiv.coe_symm_mk, LinearEquiv.coe_mk,
-    LinearEquiv.ofLinear_symm_apply, Equiv.symm_symm_apply, LinearEquiv.ofLinear_apply]
-  refine x.induction_on ?_ ?_
-  · intro r x
-    simp only [map_smul, lift.tprod, coe_mk, comp_apply, Equiv.symm_symm_apply]
-    congr
-    ext y j
-    simp
-  · intro x y hx hy
-    rw [map_add, map_add, hx, hy]
+    LinearEquiv.ofLinear_symm_apply, Equiv.symm_symm_apply, LinearEquiv.ofLinear_apply,
+    Equiv.piCongrLeft'_symm]
 #align pi_tensor_product.reindex_symm PiTensorProduct.reindex_symm
 
 @[simp]
