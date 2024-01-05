@@ -152,7 +152,7 @@ theorem geom_mean_weighted_of_constant (w z : ι → ℝ) (x : ℝ) (hw : ∀ i 
   calc
     ∏ i in s, z i ^ w i = ∏ i in s, x ^ w i := by
       refine' prod_congr rfl fun i hi => _
-      cases' eq_or_ne (w i) 0 with h₀ h₀
+      rcases eq_or_ne (w i) 0 with h₀ | h₀
       · rw [h₀, rpow_zero, rpow_zero]
       · rw [hx i hi h₀]
     _ = x := by
@@ -170,7 +170,7 @@ theorem arith_mean_weighted_of_constant (w z : ι → ℝ) (x : ℝ) (hw' : ∑ 
   calc
     ∑ i in s, w i * z i = ∑ i in s, w i * x := by
       refine' sum_congr rfl fun i hi => _
-      cases' eq_or_ne (w i) 0 with hwi hwi
+      rcases eq_or_ne (w i) 0 with hwi | hwi
       · rw [hwi, zero_mul, zero_mul]
       · rw [hx i hi hwi]
     _ = x := by rw [← sum_mul, hw', one_mul]

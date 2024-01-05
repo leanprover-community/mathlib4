@@ -180,7 +180,7 @@ protected theorem ne_zero {a : ℤ} {b : ℕ} (h : a.gcd b = 1) : J(a | b) ≠ 0
 /-- The symbol `J(a | b)` vanishes if and only if `b ≠ 0` and `a` and `b` are not coprime. -/
 theorem eq_zero_iff {a : ℤ} {b : ℕ} : J(a | b) = 0 ↔ b ≠ 0 ∧ a.gcd b ≠ 1 :=
   ⟨fun h => by
-    cases' eq_or_ne b 0 with hb hb
+    rcases eq_or_ne b 0 with hb | hb
     · rw [hb, zero_right] at h; cases h
     exact ⟨hb, mt jacobiSym.ne_zero <| Classical.not_not.2 h⟩, fun ⟨hb, h⟩ => by
     rw [← neZero_iff] at hb; exact eq_zero_iff_not_coprime.2 h⟩
@@ -272,7 +272,7 @@ theorem list_prod_right {a : ℤ} {l : List ℕ} (hl : ∀ n ∈ l, n ≠ 0) :
 
 /-- If `J(a | n) = -1`, then `n` has a prime divisor `p` such that `J(a | p) = -1`. -/
 theorem eq_neg_one_at_prime_divisor_of_eq_neg_one {a : ℤ} {n : ℕ} (h : J(a | n) = -1) :
-    ∃ (p : ℕ) (_ : p.Prime), p ∣ n ∧ J(a | p) = -1 := by
+    ∃ p : ℕ, p.Prime ∧ p ∣ n ∧ J(a | p) = -1 := by
   have hn₀ : n ≠ 0 := by
     rintro rfl
     rw [zero_right, eq_neg_self_iff] at h
@@ -323,7 +323,7 @@ namespace jacobiSym
 /-- If `χ` is a multiplicative function such that `J(a | p) = χ p` for all odd primes `p`,
 then `J(a | b)` equals `χ b` for all odd natural numbers `b`. -/
 theorem value_at (a : ℤ) {R : Type*} [CommSemiring R] (χ : R →* ℤ)
-    (hp : ∀ (p : ℕ) (pp : p.Prime) (_ : p ≠ 2), @legendreSym p ⟨pp⟩ a = χ p) {b : ℕ} (hb : Odd b) :
+    (hp : ∀ (p : ℕ) (pp : p.Prime), p ≠ 2 → @legendreSym p ⟨pp⟩ a = χ p) {b : ℕ} (hb : Odd b) :
     J(a | b) = χ b := by
   conv_rhs => rw [← prod_factors hb.pos.ne', cast_list_prod, χ.map_list_prod]
   rw [jacobiSym, List.map_map, ← List.pmap_eq_map Nat.Prime _ _ fun _ => prime_of_mem_factors]

@@ -76,6 +76,7 @@ instance : CoeFun (PartialHomeomorph α β) fun _ => α → β :=
   ⟨fun e => e.toFun'⟩
 
 /-- The inverse of a partial homeomorphism -/
+@[symm]
 protected def symm : PartialHomeomorph β α where
   toPartialEquiv := e.toPartialEquiv.symm
   open_source := e.open_target
@@ -816,6 +817,7 @@ protected def trans' (h : e.target = e'.source) : PartialHomeomorph α γ where
 
 /-- Composing two partial homeomorphisms, by restricting to the maximal domain where their
 composition is well defined. -/
+@[trans]
 protected def trans : PartialHomeomorph α γ :=
   PartialHomeomorph.trans' (e.symm.restrOpen e'.source e'.open_source).symm
     (e'.restrOpen e.target e.open_target) (by simp [inter_comm])
@@ -1024,13 +1026,13 @@ theorem Set.EqOn.restr_eqOn_source {e e' : PartialHomeomorph α β}
 
 /-- Composition of a partial homeomorphism and its inverse is equivalent to the restriction of the
 identity to the source -/
-theorem trans_self_symm : e.trans e.symm ≈ PartialHomeomorph.ofSet e.source e.open_source :=
-  PartialEquiv.trans_self_symm _
-#align local_homeomorph.trans_self_symm PartialHomeomorph.trans_self_symm
+theorem self_trans_symm : e.trans e.symm ≈ PartialHomeomorph.ofSet e.source e.open_source :=
+  PartialEquiv.self_trans_symm _
+#align local_homeomorph.self_trans_symm PartialHomeomorph.self_trans_symm
 
-theorem trans_symm_self : e.symm.trans e ≈ PartialHomeomorph.ofSet e.target e.open_target :=
-  e.symm.trans_self_symm
-#align local_homeomorph.trans_symm_self PartialHomeomorph.trans_symm_self
+theorem symm_trans_self : e.symm.trans e ≈ PartialHomeomorph.ofSet e.target e.open_target :=
+  e.symm.self_trans_symm
+#align local_homeomorph.symm_trans_self PartialHomeomorph.symm_trans_self
 
 theorem eq_of_eqOnSource_univ {e e' : PartialHomeomorph α β} (h : e ≈ e') (s : e.source = univ)
     (t : e.target = univ) : e = e' :=
@@ -1244,7 +1246,7 @@ def homeomorphOfImageSubsetSource {s : Set α} {t : Set β} (hs : s ⊆ e.source
     s ≃ₜ t :=
   have h₁ : MapsTo e s t := mapsTo'.2 ht.subset
   have h₂ : t ⊆ e.target := ht ▸ e.image_source_eq_target ▸ image_subset e hs
-  have h₃ : MapsTo e.symm t s := ht ▸ ball_image_iff.2 <| fun _x hx =>
+  have h₃ : MapsTo e.symm t s := ht ▸ ball_image_iff.2 fun _x hx =>
       (e.left_inv (hs hx)).symm ▸ hx
   { toFun := MapsTo.restrict e s t h₁
     invFun := MapsTo.restrict e.symm t s h₃
@@ -1445,7 +1447,7 @@ theorem subtypeRestr_symm_trans_subtypeRestr (f f' : PartialHomeomorph α β) :
   rw [ofSet_trans', sets_identity, ← trans_of_set' _ openness₂, trans_assoc]
   refine' EqOnSource.trans' (eqOnSource_refl _) _
   -- f has been eliminated !!!
-  refine' Setoid.trans (trans_symm_self s.localHomeomorphSubtypeCoe) _
+  refine' Setoid.trans (symm_trans_self s.localHomeomorphSubtypeCoe) _
   simp only [mfld_simps, Setoid.refl]
 #align local_homeomorph.subtype_restr_symm_trans_subtype_restr PartialHomeomorph.subtypeRestr_symm_trans_subtypeRestr
 
