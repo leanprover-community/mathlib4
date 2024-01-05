@@ -13,14 +13,10 @@ import Mathlib.Algebra.Group.Semiconj.Units
 
 -/
 
-
-variable {G : Type*}
+variable {M : Type*} [Monoid M]
 
 namespace Commute
-
-section Monoid
-
-variable {M : Type*} [Monoid M] {a b : M} {u u₁ u₂ : Mˣ}
+variable {a b : M} {u u₁ u₂ : Mˣ}
 
 @[to_additive]
 theorem units_inv_right : Commute a u → Commute a ↑u⁻¹ :=
@@ -98,5 +94,55 @@ theorem _root_.isUnit_mul_self_iff : IsUnit (a * a) ↔ IsUnit a :=
 #align is_unit_mul_self_iff isUnit_mul_self_iff
 #align is_add_unit_add_self_iff isAddUnit_add_self_iff
 
-end Monoid
+@[to_additive (attr := simp)]
+lemma units_zpow_right (h : Commute a u) (m : ℤ) : Commute a ↑(u ^ m) :=
+  SemiconjBy.units_zpow_right h m
+#align commute.units_zpow_right Commute.units_zpow_right
+#align add_commute.add_units_zsmul_right AddCommute.addUnits_zsmul_right
+
+@[to_additive (attr := simp)]
+lemma units_zpow_left (h : Commute ↑u a) (m : ℤ) : Commute ↑(u ^ m) a :=
+  (h.symm.units_zpow_right m).symm
+#align commute.units_zpow_left Commute.units_zpow_left
+#align add_commute.add_units_zsmul_left AddCommute.addUnits_zsmul_left
+
 end Commute
+
+variable {a : M} {n : ℕ}
+
+/-- If a natural power of `x` is a unit, then `x` is a unit. -/
+@[to_additive "If a natural multiple of `x` is an additive unit, then `x` is an additive unit."]
+def Units.ofPow (u : Mˣ) (x : M) {n : ℕ} (hn : n ≠ 0) (hu : x ^ n = u) : Mˣ :=
+  u.leftOfMul x (x ^ (n - 1))
+    (by rwa [← _root_.pow_succ, Nat.sub_add_cancel (Nat.succ_le_of_lt <| Nat.pos_of_ne_zero hn)])
+    (Commute.self_pow _ _)
+#align units.of_pow Units.ofPow
+#align add_units.of_nsmul AddUnits.ofNSMul
+
+@[to_additive (attr := simp)] lemma isUnit_pow_iff (hn : n ≠ 0) : IsUnit (a ^ n) ↔ IsUnit a :=
+  ⟨fun ⟨u, hu⟩ ↦ (u.ofPow a hn hu.symm).isUnit, IsUnit.pow n⟩
+#align is_unit_pow_iff isUnit_pow_iff
+#align is_add_unit_nsmul_iff isAddUnit_nsmul_iff
+
+@[to_additive]
+lemma isUnit_pow_succ_iff : IsUnit (a ^ (n + 1)) ↔ IsUnit a := isUnit_pow_iff n.succ_ne_zero
+#align is_unit_pow_succ_iff isUnit_pow_succ_iff
+#align is_add_unit_nsmul_succ_iff isAddUnit_nsmul_succ_iff
+
+/-- If `a ^ n = 1`, `n ≠ 0`, then `a` is a unit. -/
+@[to_additive (attr := simps!) "If `n • x = 0`, `n ≠ 0`, then `x` is an additive unit."]
+def Units.ofPowEqOne (a : M) (n : ℕ) (ha : a ^ n = 1) (hn : n ≠ 0) : Mˣ := Units.ofPow 1 a hn ha
+#align units.of_pow_eq_one Units.ofPowEqOne
+#align add_units.of_nsmul_eq_zero AddUnits.ofNSMulEqZero
+
+@[to_additive (attr := simp)]
+lemma Units.pow_ofPowEqOne (ha : a ^ n = 1) (hn : n ≠ 0) :
+    Units.ofPowEqOne _ n ha hn ^ n = 1 := Units.ext <| by simp [ha]
+#align units.pow_of_pow_eq_one Units.pow_ofPowEqOne
+#align add_units.nsmul_of_nsmul_eq_zero AddUnits.nsmul_ofNSMulEqZero
+
+@[to_additive]
+lemma isUnit_ofPowEqOne (ha : a ^ n = 1) (hn : n ≠ 0) : IsUnit a :=
+  (Units.ofPowEqOne _ n ha hn).isUnit
+#align is_unit_of_pow_eq_one isUnit_ofPowEqOne
+#align is_add_unit_of_nsmul_eq_zero isAddUnit_ofNSMulEqZero
