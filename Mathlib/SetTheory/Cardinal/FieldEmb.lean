@@ -50,12 +50,11 @@ def SuccOrder.ofWellOrder : SuccOrder ι :=
     fun i hi ↦ dif_neg (not_not_intro hi <| not_isMax_iff.mpr ·)
 -- OrderBot .. from Nonempty
 
-attribute [local instance] SuccOrder.ofWellOrder
-
 open scoped Classical in
-/-- Recursion principle on a well-order. -/
+/-- Recursion principle on a well-founded partial SuccOrder. -/
 @[elab_as_elim]
-def SuccOrder.limitRecOn {C : ι → Sort*} (i : ι)
+def SuccOrder.limitRecOn {ι} [PartialOrder ι] [WellFoundedLT ι] [SuccOrder ι]
+    {C : ι → Sort*} (i : ι)
     (H_succ : ∀ i, ¬IsMax i → C i → C (i⁺))
     (H_lim : ∀ i, IsSuccLimit i → (∀ j < i, C j) → C i) : C i :=
   wellFounded_lt.fix
@@ -139,7 +138,8 @@ variable {f : ∀ ⦃i j : ι⦄, i ≤ j → F j → F i}
 
 section Succ
 
-variable (equiv : ∀ j : Iic i, F j ≃ piLT X j) (e : F (i⁺) ≃ F i × X i) (hi : ¬ IsMax i)
+variable [SuccOrder ι]
+  (equiv : ∀ j : Iic i, F j ≃ piLT X j) (e : F (i⁺) ≃ F i × X i) (hi : ¬ IsMax i)
 
 def piEquivSucc : ∀ j : Iic (i⁺), F j ≃ piLT X j :=
   piSplitLE (X := fun i ↦ F i ≃ piLT X i)
@@ -198,7 +198,7 @@ end Lim
 
 section Unique
 
-variable (f) (equivSucc : ∀ ⦃i⦄, ¬IsMax i → F (i⁺) ≃ F i × X i)
+variable [SuccOrder ι] (f) (equivSucc : ∀ ⦃i⦄, ¬IsMax i → F (i⁺) ≃ F i × X i)
 
 @[ext] structure PEquivOn (s : Set ι) where
   /-- A partial family of equivalences between `F` and `piLT X` defined on some set in `ι`. -/
@@ -274,7 +274,7 @@ def pEquivOnLim [InverseSystem f]
 
 end Unique
 
-def globalEquiv [InverseSystem f]
+def globalEquiv [SuccOrder ι] [InverseSystem f]
     (equivSucc : ∀ i, ¬IsMax i → {e : F (i⁺) ≃ F i × X i // ∀ x, (e x).1 = f (le_succ i) x})
     (equivLim : ∀ i, IsSuccLimit i → {e : F i ≃ inverseLimit f i // ∀ x l, (e x).1 l = f l.2.le x})
     (i : ι) : F i ≃ piLT X i :=
@@ -430,31 +430,6 @@ open WithTop in
 
 def factor (i : WithTop ι) : Type _ := i.recTopCoe PUnit (X ·)
 
-def embFunctor ⦃i j : WithTop ι⦄ (h : i ≤ j) (f : filtration (F := F) alg j →ₐ[F] Ē) : filtration (F := F) alg i →ₐ[F] Ē :=
-  f.comp (Subalgebra.inclusion <| (filtration _).monotone h)
-
-def equivSucc (i : WithTop ι) : (filtration (F := F) alg (i⁺) →ₐ[F] Ē) ≃ (filtration (F := F) alg i →ₐ[F] Ē) × factor alg i :=
-  i.recTopCoe (((equivOfEq <| by rw [succ_top]).arrowCongr .refl).trans <| .symm <| .prodPUnit _) <|
-    (succEquiv alg ·)
-
---#help option
-set_option pp.analyze.checkInstances true in
-def x (i : WithTop ι) : (filtration alg ⊤ →ₐ[F] Ē) ≃ piLT (factor alg) ⊤ := by
-  haveI : InverseSystem (embFunctor alg) := sorry
-  apply @globalEquiv _ _ _ _ (factor alg) (embFunctor alg)
-  intro i _; refine ⟨Equiv.trans ?_ (equivSucc alg i), ?_⟩
-  --convert Equiv.refl ((filtration alg) (succ i) →ₐ[F] Ē)
-  apply AlgEquiv.arrowCongr _ .refl
-  show_term convert AlgEquiv.refl (R := F) (A₁ := filtration alg _) using 1
-  · convert rfl using 3; cases i; rfl -- the two ⁺ (succ) are not defeq
-  -- one comes from WithTop.succOrderOfNoMaxOrder, one comes directly from SuccOrder.ofWellOrder
-
-
-
-  cases i; sorry; apply AlgEquiv.arrowCongr _ .refl
-  -- (F := embFunctor alg) (X := factor alg)
-
-
 variable [IsSeparable F E] -- implies `alg`, but we keep using `alg` for convenience
 
 -- slow (typeclass inference reasonable, type checking takes 8s)
@@ -474,7 +449,7 @@ theorem two_le_deg (i : ι) : 2 ≤ #(X i) := by
 
 end
 
-local notation F"⟮<"i"⟯" => filtration alg i -- (F := F)
+local notation F"⟮<"i"⟯" => filtration (F := F) alg i
 --local notation "X" i => factor alg i
 
 def embFunctor ⦃i j : WithTop ι⦄ (h : i ≤ j) (f : F⟮<j⟯ →ₐ[F] Ē) : F⟮<i⟯ →ₐ[F] Ē :=
@@ -544,14 +519,13 @@ end Lim
 
 set_option pp.analyze true
 def embEquivPi : Field.Emb F E ≃ ∀ i : ι, factor alg i :=
-  let x := globalEquiv (f := embFunctor alg) (X := factor alg) (fun i _ ↦ ⟨by
-    cases i; apply equivSucc alg ⊤; apply Equiv.trans _ (equivSucc alg _); exact Equiv.refl _,
-    _⟩) _ ⊤
-  _
+  let e := globalEquiv
+    (fun i _ ↦ ⟨_, equivSucc_coherence alg i⟩) (fun _ hi ↦ ⟨_, equivLim_coherence alg hi⟩) ⊤
+  (topEquiv.arrowCongr .refl).symm.trans <| e.trans <| .trans (.piCongrSet WithTop.range_coe.symm)
+    <| .symm <| .piCongr (.ofInjective _ WithTop.coe_injective) fun _ ↦ .refl _
 
 theorem Field.cardinal_emb_of_aleph0_le_rank_of_isSeparable [IsSeparable F E]
     (rank_inf : ℵ₀ ≤ Module.rank F E) : #(Field.Emb F E) = 2 ^ Module.rank F E := by
-
-  ⟨equivSucc alg i, by
-    convert equivSucc_coherence alg i
-    ⟩) _ ⊤
+  rw [← card_ι, (embEquivPi alg).cardinal_eq, mk_pi, ← prod_const']
+  apply le_antisymm <;> apply prod_le_prod
+  --power_eq_two_power
