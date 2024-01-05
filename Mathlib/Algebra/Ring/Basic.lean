@@ -188,6 +188,11 @@ instance (priority := 100) NoZeroDivisors.to_isCancelMulZero [Ring α] [NoZeroDi
       exact sub_eq_zero.1 ((eq_zero_or_eq_zero_of_mul_eq_zero h).resolve_right hb) }
 #align no_zero_divisors.to_is_cancel_mul_zero NoZeroDivisors.to_isCancelMulZero
 
+/-- In a ring, `IsCancelMulZero` and `NoZeroDivisors` are equivalent. -/
+lemma isCancelMulZero_iff_noZeroDivisors [Ring α] :
+    IsCancelMulZero α ↔ NoZeroDivisors α :=
+  ⟨fun _ => IsRightCancelMulZero.to_noZeroDivisors _, fun _ => inferInstance⟩
+
 lemma NoZeroDivisors.to_isDomain [Ring α] [h : Nontrivial α] [NoZeroDivisors α] :
     IsDomain α :=
   { NoZeroDivisors.to_isCancelMulZero α, h with .. }
@@ -197,5 +202,30 @@ instance (priority := 100) IsDomain.to_noZeroDivisors [Ring α] [IsDomain α] :
     NoZeroDivisors α :=
   IsRightCancelMulZero.to_noZeroDivisors α
 #align is_domain.to_no_zero_divisors IsDomain.to_noZeroDivisors
+
+instance Subsingleton.to_isCancelMulZero [Mul α] [Zero α] [Subsingleton α] : IsCancelMulZero α where
+  mul_right_cancel_of_ne_zero hb := (hb <| Subsingleton.eq_zero _).elim
+  mul_left_cancel_of_ne_zero hb := (hb <| Subsingleton.eq_zero _).elim
+
+instance Subsingleton.to_noZeroDivisors [Mul α] [Zero α] [Subsingleton α] : NoZeroDivisors α where
+  eq_zero_or_eq_zero_of_mul_eq_zero _ := .inl (Subsingleton.eq_zero _)
+
+lemma isDomain_iff_cancelMulZero_and_nontrivial [Semiring α] :
+    IsDomain α ↔ IsCancelMulZero α ∧ Nontrivial α :=
+  ⟨fun _ => ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ => {}⟩
+
+lemma isCancelMulZero_iff_isDomain_or_subsingleton [Semiring α] :
+    IsCancelMulZero α ↔ IsDomain α ∨ Subsingleton α := by
+  refine ⟨fun t ↦ ?_, fun h ↦ h.elim (fun _ ↦ inferInstance) (fun _ ↦ inferInstance)⟩
+  rw [or_iff_not_imp_right, not_subsingleton_iff_nontrivial]
+  exact fun _ ↦ {}
+
+lemma isDomain_iff_noZeroDivisors_and_nontrivial [Ring α] :
+    IsDomain α ↔ NoZeroDivisors α ∧ Nontrivial α := by
+  rw [← isCancelMulZero_iff_noZeroDivisors, isDomain_iff_cancelMulZero_and_nontrivial]
+
+lemma noZeroDivisors_iff_isDomain_or_subsingleton [Ring α] :
+    NoZeroDivisors α ↔ IsDomain α ∨ Subsingleton α := by
+  rw [← isCancelMulZero_iff_noZeroDivisors, isCancelMulZero_iff_isDomain_or_subsingleton]
 
 end NoZeroDivisors
