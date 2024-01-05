@@ -136,6 +136,6 @@ theorem edgeFinset_addEdge (hn : ¬G.Adj s t) (h : s ≠ t) :
 
 theorem card_edgeFinset_addEdge (hn : ¬G.Adj s t) (h : s ≠ t) :
     (G.addEdge s t).edgeFinset.card = G.edgeFinset.card + 1 := by
-  rw [G.edgeFinset_addEdge hn h, card_disjoint_union (by simpa using hn)]; · rfl
+  rw [G.edgeFinset_addEdge hn h, card_disjoint_union (by simpa using hn)]; rfl
 
 end AddEdge
