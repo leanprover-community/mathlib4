@@ -998,6 +998,10 @@ theorem zpow_ofNat (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
 #align zpow_of_nat zpow_ofNat
 #align of_nat_zsmul ofNat_zsmul
 
+@[to_additive (attr := simp, norm_cast) coe_nat_zsmul]
+lemma zpow_coe_nat (a : G) (n : ℕ) : a ^ (Nat.cast n : ℤ) = a ^ n := zpow_ofNat ..
+#align coe_nat_zsmul coe_nat_zsmul
+
 theorem zpow_negSucc (a : G) (n : ℕ) : a ^ (Int.negSucc n) = (a ^ (n + 1))⁻¹ := by
   rw [← zpow_ofNat]
   exact DivInvMonoid.zpow_neg' n a
