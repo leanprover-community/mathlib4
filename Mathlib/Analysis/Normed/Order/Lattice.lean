@@ -97,10 +97,10 @@ theorem dual_solid (a b : α) (h : b ⊓ -b ≤ a ⊓ -a) : ‖a‖ ≤ ‖b‖ 
   apply solid
   rw [abs_eq_sup_neg]
   nth_rw 1 [← neg_neg a]
-  rw [← neg_inf_eq_sup_neg]
+  rw [← neg_inf]
   rw [abs_eq_sup_neg]
   nth_rw 1 [← neg_neg b]
-  rwa [← neg_inf_eq_sup_neg, neg_le_neg_iff, @inf_comm _ _ _ b, @inf_comm _ _ _ a]
+  rwa [← neg_inf, neg_le_neg_iff, @inf_comm _ _ _ b, @inf_comm _ _ _ a]
 #align dual_solid dual_solid
 
 -- see Note [lower instance priority]
