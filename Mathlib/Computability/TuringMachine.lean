@@ -1079,6 +1079,12 @@ def step (M : Machine₀) : Cfg₀ → Option Cfg₀ :=
     | Stmt.write a => T.write a⟩
 #align turing.TM0.step Turing.TM0.step
 
+/-- Chainable step function -/
+def step_chain (M : Machine₀) (cfg : Option Cfg₀) : Option Cfg₀ := cfg.bind (step M)
+
+/-- Step a given number of times -/
+def multistep (M : Machine₀) (n : ℕ) (cfg : Cfg₀) : Option Cfg₀ := (step_chain M)^[n] (some cfg)
+
 /-- The statement `Reaches M s₁ s₂` means that `s₂` is obtained
   starting from `s₁` after a finite number of steps from `s₂`. -/
 def Reaches (M : Machine₀) : Cfg₀ → Cfg₀ → Prop :=
@@ -1199,18 +1205,7 @@ def Machine [Inhabited Λ] := Λ → Γ → Option (Λ × Γ × Dir)
 
 local notation "MachineQ" => Machine Γ Λ
 
-/-- The configuration state of a Turing machine during operation
-  consists of a label (machine state), and a tape, represented in
-  the form `(a, L, R)` meaning the tape looks like `L.rev ++ [a] ++ R`
-  with the machine currently reading the `a`. The lists are
-  automatically extended with blanks as the machine moves around.
-  Coincides with the definition for TM0. -/
-@[nolint docBlame]
-structure Cfg where
-  q : Λ
-  Tape : Tape Γ
-
-local notation "Cfg₀" => Cfg Γ Λ
+local notation "Cfg₀" => TM0.Cfg Γ Λ
 
 variable {Γ Λ}
 
@@ -1226,10 +1221,10 @@ def eval (M : MachineQ) (l : List Γ) : Part (ListBlank Γ) :=
   (Turing.eval (step M) (init l)).map fun c ↦ c.Tape.right₀
 
 /-- Chainable step function -/
-def step' (M : MachineQ) (cfg : Option Cfg₀) : Option Cfg₀ := cfg.bind (step M)
+def step_chain (M : MachineQ) (cfg : Option Cfg₀) : Option Cfg₀ := cfg.bind (step M)
 
 /-- Step a given number of times -/
-def multistep (M : MachineQ) (n : ℕ) (cfg : Cfg₀) : Option Cfg₀ := (step' M)^[n] (some cfg)
+def multistep (M : MachineQ) (n : ℕ) (cfg : Cfg₀) : Option Cfg₀ := (step_chain M)^[n] (some cfg)
 
 end TMQ
 
@@ -1339,6 +1334,12 @@ def step (M : Λ → Stmt₁) : Cfg₁ → Option Cfg₁
   | ⟨none, _, _⟩ => none
   | ⟨some l, v, T⟩ => some (stepAux (M l) v T)
 #align turing.TM1.step Turing.TM1.step
+
+/-- Chainable step function -/
+def step_chain (M : Λ → Stmt₁) (cfg : Option Cfg₁) : Option Cfg₁ := cfg.bind (step M)
+
+/-- Step a given number of times -/
+def multistep (M : Λ → Stmt₁) (n : ℕ) (cfg : Cfg₁) : Option Cfg₁ := (step_chain M)^[n] (some cfg)
 
 /-- A set `S` of labels supports the statement `q` if all the `goto`
   statements in `q` refer only to other functions in `S`. -/
@@ -2202,6 +2203,12 @@ def step (M : Λ → Stmt₂) : Cfg₂ → Option Cfg₂
   | ⟨none, _, _⟩ => none
   | ⟨some l, v, S⟩ => some (stepAux (M l) v S)
 #align turing.TM2.step Turing.TM2.step
+
+/-- Chainable step function -/
+def step_chain (M : Λ → Stmt₂) (cfg : Option Cfg₂) : Option Cfg₂ := cfg.bind (step M)
+
+/-- Step a given number of times -/
+def multistep (M : Λ → Stmt₂) (n : ℕ) (cfg : Cfg₂) : Option Cfg₂ := (step_chain M)^[n] (some cfg)
 
 /-- The (reflexive) reachability relation for the TM2 model. -/
 def Reaches (M : Λ → Stmt₂) : Cfg₂ → Cfg₂ → Prop :=
