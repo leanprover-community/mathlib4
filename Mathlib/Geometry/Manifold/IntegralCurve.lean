@@ -330,7 +330,7 @@ variable {t₀}
   chosen starting point `x₀ : M`, an integral curve `γ : ℝ → M` exists such that `γ t₀ = x₀` and the
   tangent vector of `γ` at `t` coincides with the vector field at `γ t` for all `t` within an open
   interval around `t₀`. -/
-lemma exists_isIntegralCurveAt_of_contMDiffAt_boundaryless [I.Boundaryless]
+lemma exists_isIntegralCurveAt_of_contMDiffAt_boundaryless [BoundarylessManifold I M]
     (hv : ContMDiffAt I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)) x₀) :
     ∃ (γ : ℝ → M), γ t₀ = x₀ ∧ IsIntegralCurveAt γ v t₀ :=
   exists_isIntegralCurveAt_of_contMDiffAt t₀ hv (BoundarylessManifold.isInteriorPoint I)
@@ -453,7 +453,7 @@ theorem isIntegralCurveAt_eqOn_of_contMDiffAt (hγt₀ : I.IsInteriorPoint (γ t
   · intros t ht
     rw [Function.comp_apply, Function.comp_apply, h, PartialEquiv.left_inv _ (hsrc' _ ht)]
 
-theorem isIntegralCurveAt_eqOn_of_contMDiffAt_boundaryless [I.Boundaryless]
+theorem isIntegralCurveAt_eqOn_of_contMDiffAt_boundaryless [BoundarylessManifold I M]
     (hv : ContMDiffAt I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M)) (γ t₀))
     (hγ : IsIntegralCurveAt γ v t₀) (hγ' : IsIntegralCurveAt γ' v t₀) (h : γ t₀ = γ' t₀) :
     ∃ ε > 0, EqOn γ γ' (Ioo (t₀ - ε) (t₀ + ε)) :=
@@ -515,7 +515,7 @@ theorem isIntegralCurveOn_Ioo_eqOn_of_contMDiff (ht₀ : t₀ ∈ Ioo a b)
   intros t ht
   exact mem_setOf.mp ((subset_def ▸ hsub) t ht).1
 
-theorem isIntegralCurveOn_Ioo_eqOn_of_contMDiff_boundaryless [I.Boundaryless]
+theorem isIntegralCurveOn_Ioo_eqOn_of_contMDiff_boundaryless [BoundarylessManifold I M]
     (ht₀ : t₀ ∈ Ioo a b)
     (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M)))
     (hγ : IsIntegralCurveOn γ v (Ioo a b)) (hγ' : IsIntegralCurveOn γ' v (Ioo a b))
@@ -544,7 +544,7 @@ theorem isIntegralCurve_eq_of_contMDiff (hγt : ∀ t, I.IsInteriorPoint (γ t))
     (IsIntegralCurveOn.mono (hγ.isIntegralCurveOn _) (subset_univ _))
     (IsIntegralCurveOn.mono (hγ'.isIntegralCurveOn _) (subset_univ _)) h ht
 
-theorem isIntegralCurve_Ioo_eq_of_contMDiff_boundaryless [I.Boundaryless]
+theorem isIntegralCurve_Ioo_eq_of_contMDiff_boundaryless [BoundarylessManifold I M]
     (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M)))
     (hγ : IsIntegralCurve γ v) (hγ' : IsIntegralCurve γ' v) (h : γ t₀ = γ' t₀) : γ = γ' :=
   isIntegralCurve_eq_of_contMDiff
