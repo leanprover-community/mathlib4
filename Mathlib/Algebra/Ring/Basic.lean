@@ -222,10 +222,10 @@ lemma isCancelMulZero_iff_isDomain_or_subsingleton [Semiring α] :
 
 lemma isDomain_iff_noZeroDivisors_and_nontrivial [Ring α] :
     IsDomain α ↔ NoZeroDivisors α ∧ Nontrivial α := by
-  rw [←isCancelMulZero_iff_noZeroDivisors, isDomain_iff_cancelMulZero_and_nontrivial]
+  rw [← isCancelMulZero_iff_noZeroDivisors, isDomain_iff_cancelMulZero_and_nontrivial]
 
 lemma noZeroDivisors_iff_isDomain_or_subsingleton [Ring α] :
     NoZeroDivisors α ↔ IsDomain α ∨ Subsingleton α := by
-  rw [←isCancelMulZero_iff_noZeroDivisors, isCancelMulZero_iff_isDomain_or_subsingleton]
+  rw [← isCancelMulZero_iff_noZeroDivisors, isCancelMulZero_iff_isDomain_or_subsingleton]
 
 end NoZeroDivisors
