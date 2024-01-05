@@ -77,7 +77,7 @@ set_option linter.uppercaseLean3 false in
 #align sSet.standard_simplex SSet.standardSimplex
 
 -- mathport name: standard_simplex
-scoped[Simplicial] notation "Δ[" n "]" => SSet.standardSimplex.obj (SimplexCategory.mk n)
+scoped[Simplicial] notation3 "Δ[" n "]" => SSet.standardSimplex.obj (SimplexCategory.mk n)
 
 instance : Inhabited SSet :=
   ⟨Δ[0]⟩
@@ -131,7 +131,7 @@ set_option linter.uppercaseLean3 false in
 #align sSet.horn SSet.horn
 
 -- mathport name: sSet.horn
-scoped[Simplicial] notation "Λ[" n ", " i "]" => SSet.horn (n : ℕ) i
+scoped[Simplicial] notation3 "Λ[" n ", " i "]" => SSet.horn (n : ℕ) i
 
 /-- The inclusion of the `i`-th horn of the `n`-th standard simplex into that standard simplex. -/
 def hornInclusion (n : ℕ) (i : Fin (n + 1)) : Λ[n, i] ⟶ Δ[n] where
