@@ -71,8 +71,6 @@ integral, circle, Cauchy integral
 
 variable {E : Type*} [NormedAddCommGroup E]
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 noncomputable section
 
 open scoped Real NNReal Interval Pointwise Topology
@@ -97,7 +95,7 @@ theorem periodic_circleMap (c : ℂ) (R : ℝ) : Periodic (circleMap c R) (2 * �
 theorem Set.Countable.preimage_circleMap {s : Set ℂ} (hs : s.Countable) (c : ℂ) {R : ℝ}
     (hR : R ≠ 0) : (circleMap c R ⁻¹' s).Countable :=
   show (((↑) : ℝ → ℂ) ⁻¹' ((· * I) ⁻¹'
-      (exp ⁻¹' ((· * ·) (R : ℂ) ⁻¹' ((· + ·) c ⁻¹' s))))).Countable from
+      (exp ⁻¹' ((R * ·) ⁻¹' ((c + ·) ⁻¹' s))))).Countable from
     (((hs.preimage (add_right_injective _)).preimage <|
       mul_right_injective₀ <| ofReal_ne_zero.2 hR).preimage_cexp.preimage <|
         mul_left_injective₀ I_ne_zero).preimage ofReal_injective
@@ -142,8 +140,8 @@ theorem circleMap_ne_mem_ball {c : ℂ} {R : ℝ} {w : ℂ} (hw : w ∈ ball c R
 theorem range_circleMap (c : ℂ) (R : ℝ) : range (circleMap c R) = sphere c |R| :=
   calc
     range (circleMap c R) = c +ᵥ R • range fun θ : ℝ => exp (θ * I) := by
-      simp only [← image_vadd, ← image_smul, ← range_comp, vadd_eq_add, circleMap, (· ∘ ·),
-        real_smul]
+      simp (config := { unfoldPartialApp := true }) only [← image_vadd, ← image_smul, ← range_comp,
+        vadd_eq_add, circleMap, Function.comp_def, real_smul]
     _ = sphere c |R| := by
       rw [Complex.range_exp_mul_I, smul_sphere R 0 zero_le_one]
       simp
@@ -274,7 +272,7 @@ theorem circleIntegrable_iff [NormedSpace ℂ E] {f : ℂ → E} {c : ℂ} (R : 
     CircleIntegrable f c R ↔ IntervalIntegrable (fun θ : ℝ =>
       deriv (circleMap c R) θ • f (circleMap c R θ)) volume 0 (2 * π) := by
   by_cases h₀ : R = 0
-  · simp [h₀, const]
+  · simp (config := { unfoldPartialApp := true }) [h₀, const]
   refine' ⟨fun h => h.out, fun h => _⟩
   simp only [CircleIntegrable, intervalIntegrable_iff, deriv_circleMap] at h ⊢
   refine' (h.norm.const_mul |R|⁻¹).mono' _ _
@@ -357,7 +355,7 @@ namespace circleIntegral
 
 @[simp]
 theorem integral_radius_zero (f : ℂ → E) (c : ℂ) : (∮ z in C(c, 0), f z) = 0 := by
-  simp [circleIntegral, const]
+  simp (config := { unfoldPartialApp := true }) [circleIntegral, const]
 #align circle_integral.integral_radius_zero circleIntegral.integral_radius_zero
 
 theorem integral_congr {f g : ℂ → E} {c : ℂ} {R : ℝ} (hR : 0 ≤ R) (h : EqOn f g (sphere c R)) :
@@ -567,7 +565,7 @@ theorem le_radius_cauchyPowerSeries (f : ℂ → E) (c : ℂ) (R : ℝ≥0) :
   refine' (mul_le_mul_of_nonneg_right (norm_cauchyPowerSeries_le _ _ _ _)
     (pow_nonneg R.coe_nonneg _)).trans _
   rw [_root_.abs_of_nonneg R.coe_nonneg]
-  cases' eq_or_ne (R ^ n : ℝ) 0 with hR hR
+  rcases eq_or_ne (R ^ n : ℝ) 0 with hR | hR
   · rw_mod_cast [hR, mul_zero]
     exact mul_nonneg (inv_nonneg.2 Real.two_pi_pos.le)
       (intervalIntegral.integral_nonneg Real.two_pi_pos.le fun _ _ => norm_nonneg _)

@@ -53,7 +53,7 @@ We prove most results for an arbitrary field `𝕂`, and then specialize to `�
 -/
 
 
-open Filter IsROrC ContinuousMultilinearMap NormedField Asymptotics
+open Filter IsROrC ContinuousMultilinearMap NormedField NormedSpace Asymptotics
 
 open scoped Nat Topology BigOperators ENNReal
 
@@ -218,14 +218,14 @@ theorem hasDerivAt_exp_zero : HasDerivAt (exp) (1 : 𝕂) 0 :=
 
 end DerivROrC
 
-theorem Complex.exp_eq_exp_ℂ : Complex.exp = _root_.exp := by
+theorem Complex.exp_eq_exp_ℂ : Complex.exp = NormedSpace.exp := by
   refine' funext fun x => _
   rw [Complex.exp, exp_eq_tsum_div]
   have : CauSeq.IsComplete ℂ norm := Complex.instIsComplete
   exact tendsto_nhds_unique x.exp'.tendsto_limit (expSeries_div_summable ℝ x).hasSum.tendsto_sum_nat
 #align complex.exp_eq_exp_ℂ Complex.exp_eq_exp_ℂ
 
-theorem Real.exp_eq_exp_ℝ : Real.exp = _root_.exp := by
+theorem Real.exp_eq_exp_ℝ : Real.exp = NormedSpace.exp := by
   ext x; exact_mod_cast congr_fun Complex.exp_eq_exp_ℂ x
 #align real.exp_eq_exp_ℝ Real.exp_eq_exp_ℝ
 
@@ -285,9 +285,9 @@ theorem hasFDerivAt_exp_smul_const_of_mem_ball (x : 𝔸) (t : 𝕊)
         fun h =>
           exp ((t + h) • x) - exp (t • x) - (exp (t • x) • (1 : 𝕊 →L[𝕂] 𝕊).smulRight x) h by
     apply (IsLittleO.const_mul_left _ _).congr' this (EventuallyEq.refl _ _)
-    rw [← @hasFDerivAt_iff_isLittleO_nhds_zero _ _ _ _ _ _ _ _ (fun u => exp (u • x))
-      ((1 : 𝕊 →L[𝕂] 𝕊).smulRight x) 0]
-    have : HasFDerivAt (exp) (1 : 𝔸 →L[𝕂] 𝔸) ((1 : 𝕊 →L[𝕂] 𝕊).smulRight x 0) := by
+    rw [← hasFDerivAt_iff_isLittleO_nhds_zero (f := fun u => exp (u • x))
+      (f' := (1 : 𝕊 →L[𝕂] 𝕊).smulRight x) (x := 0)]
+    have : HasFDerivAt exp (1 : 𝔸 →L[𝕂] 𝔸) ((1 : 𝕊 →L[𝕂] 𝕊).smulRight x 0) := by
       rw [ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.one_apply, zero_smul]
       exact hasFDerivAt_exp_zero_of_radius_pos hpos
     exact this.comp 0 ((1 : 𝕊 →L[𝕂] 𝕊).smulRight x).hasFDerivAt

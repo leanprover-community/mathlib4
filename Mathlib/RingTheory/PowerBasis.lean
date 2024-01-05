@@ -426,7 +426,7 @@ open PowerBasis
 the powers of `x` less than the degree of `x`'s minimal polynomial are linearly independent. -/
 theorem linearIndependent_pow [Algebra K S] (x : S) :
     LinearIndependent K fun i : Fin (minpoly K x).natDegree => x ^ (i : ℕ) := by
-  by_cases IsIntegral K x; swap
+  by_cases h : IsIntegral K x; swap
   · rw [minpoly.eq_zero h, natDegree_zero]
     exact linearIndependent_empty_type
   refine' Fintype.linearIndependent_iff.2 fun g hg i => _

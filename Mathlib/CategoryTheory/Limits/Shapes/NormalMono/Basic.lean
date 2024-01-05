@@ -55,8 +55,6 @@ attribute [inherit_doc NormalMono] NormalMono.Z NormalMono.g NormalMono.w Normal
 
 section
 
-attribute [local instance] fullyFaithfulReflectsLimits
-
 attribute [local instance] Equivalence.essSurj_of_equivalence
 
 /-- If `F` is an equivalence and `F.map f` is a normal mono, then `f` is a normal mono. -/
@@ -173,8 +171,6 @@ class NormalEpi (f : X ⟶ Y) where
 attribute [inherit_doc NormalEpi] NormalEpi.W NormalEpi.g NormalEpi.w NormalEpi.isColimit
 
 section
-
-attribute [local instance] fullyFaithfulReflectsColimits
 
 attribute [local instance] Equivalence.essSurj_of_equivalence
 

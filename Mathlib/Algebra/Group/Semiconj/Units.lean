@@ -29,7 +29,7 @@ This file provides only basic operations (`mul_left`, `mul_right`, `inv_right` e
 operations (`pow_right`, field inverse etc) are in the files that define corresponding notions.
 -/
 
-set_option autoImplicit true
+variable {M G : Type*}
 
 namespace SemiconjBy
 
@@ -88,42 +88,10 @@ theorem units_val_iff {a x y : Mˣ} : SemiconjBy (a : M) x y ↔ SemiconjBy a x 
 #align add_semiconj_by.add_units_coe_iff AddSemiconjBy.addUnits_val_iff
 
 end Monoid
-
-section Group
-
-variable [Group G] {a x y : G}
-
-@[to_additive (attr := simp)]
-theorem inv_right_iff : SemiconjBy a x⁻¹ y⁻¹ ↔ SemiconjBy a x y :=
-  @units_inv_right_iff G _ a ⟨x, x⁻¹, mul_inv_self x, inv_mul_self x⟩
-    ⟨y, y⁻¹, mul_inv_self y, inv_mul_self y⟩
-#align semiconj_by.inv_right_iff SemiconjBy.inv_right_iff
-#align add_semiconj_by.neg_right_iff AddSemiconjBy.neg_right_iff
-
-@[to_additive]
-theorem inv_right : SemiconjBy a x y → SemiconjBy a x⁻¹ y⁻¹ :=
-  inv_right_iff.2
-#align semiconj_by.inv_right SemiconjBy.inv_right
-#align add_semiconj_by.neg_right AddSemiconjBy.neg_right
-
-@[to_additive (attr := simp)]
-theorem inv_symm_left_iff : SemiconjBy a⁻¹ y x ↔ SemiconjBy a x y :=
-  @units_inv_symm_left_iff G _ ⟨a, a⁻¹, mul_inv_self a, inv_mul_self a⟩ _ _
-#align semiconj_by.inv_symm_left_iff SemiconjBy.inv_symm_left_iff
-#align add_semiconj_by.neg_symm_left_iff AddSemiconjBy.neg_symm_left_iff
-
-@[to_additive]
-theorem inv_symm_left : SemiconjBy a x y → SemiconjBy a⁻¹ y x :=
-  inv_symm_left_iff.2
-#align semiconj_by.inv_symm_left SemiconjBy.inv_symm_left
-#align add_semiconj_by.neg_symm_left AddSemiconjBy.neg_symm_left
-
-end Group
-
 end SemiconjBy
 
 /-- `a` semiconjugates `x` to `a * x * a⁻¹`. -/
-@[to_additive AddUnits.mk_addSemiconjBy "`a` semiconjugates `x` to `a + x + -a`."]
+@[to_additive "`a` semiconjugates `x` to `a + x + -a`."]
 theorem Units.mk_semiconjBy [Monoid M] (u : Mˣ) (x : M) : SemiconjBy (↑u) x (u * x * ↑u⁻¹) := by
   unfold SemiconjBy; rw [Units.inv_mul_cancel_right]
 #align units.mk_semiconj_by Units.mk_semiconjBy

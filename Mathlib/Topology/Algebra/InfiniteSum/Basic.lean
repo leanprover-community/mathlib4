@@ -216,6 +216,12 @@ theorem hasSum_single {f : β → α} (b : β) (hf : ∀ (b') (_ : b' ≠ b), f 
   hasSum_sum_of_ne_finset_zero <| by simpa [hf]
 #align has_sum_single hasSum_single
 
+@[simp] lemma hasSum_unique [Unique β] (f : β → α) : HasSum f (f default) :=
+  hasSum_single default (fun _ hb ↦ False.elim <| hb <| Unique.uniq ..)
+
+@[simp] lemma hasSum_singleton (m : β) (f : β → α) : HasSum (({m} : Set β).restrict f) (f m) :=
+  hasSum_unique (Set.restrict {m} f)
+
 theorem hasSum_ite_eq (b : β) [DecidablePred (· = b)] (a : α) :
     HasSum (fun b' => if b' = b then a else 0) a := by
   convert @hasSum_single _ _ _ _ (fun b' => if b' = b then a else 0) b (fun b' hb' => if_neg hb')
@@ -355,7 +361,7 @@ theorem hasSum_sum_disjoint {ι} (s : Finset ι) {t : ι → Set β} {a : ι →
     (hs : (s : Set ι).Pairwise (Disjoint on t)) (hf : ∀ i ∈ s, HasSum (f ∘ (↑) : t i → α) (a i)) :
     HasSum (f ∘ (↑) : (⋃ i ∈ s, t i) → α) (∑ i in s, a i) := by
   simp_rw [hasSum_subtype_iff_indicator] at *
-  rw [Set.indicator_finset_biUnion _ _ hs]
+  rw [Finset.indicator_biUnion _ _ hs]
   exact hasSum_sum hf
 #align has_sum_sum_disjoint hasSum_sum_disjoint
 
@@ -469,9 +475,13 @@ section tsum
 
 variable [AddCommMonoid α] [TopologicalSpace α] {f g : β → α} {a a₁ a₂ : α}
 
-theorem tsum_congr_subtype (f : β → α) {s t : Set β} (h : s = t) :
+theorem tsum_congr_set_coe (f : β → α) {s t : Set β} (h : s = t) :
     ∑' x : s, f x = ∑' x : t, f x := by rw [h]
-#align tsum_congr_subtype tsum_congr_subtype
+#align tsum_congr_subtype tsum_congr_set_coe
+
+theorem tsum_congr_subtype (f : β → α) {P Q : β → Prop} (h : ∀ x, P x ↔ Q x):
+    ∑' x : {x // P x}, f x = ∑' x : {x // Q x}, f x :=
+  tsum_congr_set_coe f <| Set.ext h
 
 theorem tsum_eq_finsum (hf : (support f).Finite) :
     ∑' b, f b = ∑ᶠ b, f b := by simp [tsum_def, summable_of_finite_support hf, hf]
@@ -613,6 +623,11 @@ theorem tsum_eq_tsum_of_ne_zero_bij {g : γ → α} (i : support g → β)
   tsum_eq_tsum_of_hasSum_iff_hasSum (hasSum_iff_hasSum_of_ne_zero_bij i hi hf hfg)
 #align tsum_eq_tsum_of_ne_zero_bij tsum_eq_tsum_of_ne_zero_bij
 
+@[simp]
+lemma tsum_extend_zero {γ : Type*} {g : γ → β} (hg : Injective g) (f : γ → α) :
+    ∑' y, extend g f 0 y = ∑' x, f x :=
+  tsum_eq_tsum_of_hasSum_iff_hasSum <| hasSum_extend_zero hg
+
 /-! ### `tsum` on subsets -/
 
 theorem tsum_subtype (s : Set β) (f : β → α) : ∑' x : s, f x = ∑' x, s.indicator f x :=
@@ -641,6 +656,21 @@ theorem tsum_range {g : γ → β} (f : β → α) (hg : Injective g) :
   simp_rw [← comp_apply (g := g), tsum_univ (f ∘ g)]
 #align tsum_range tsum_range
 
+/-- If `f b = 0` for all `b ∈ t`, then the sum over `f a` with `a ∈ s` is the same as the
+sum over `f a` with `a ∈ s ∖ t`. -/
+lemma tsum_setElem_eq_tsum_setElem_diff [T2Space α] {f : β → α} (s t : Set β)
+    (hf₀ : ∀ b ∈ t, f b = 0) :
+    ∑' a : s, f a = ∑' a : (s \ t : Set β), f a :=
+  tsum_eq_tsum_of_hasSum_iff_hasSum fun {a} ↦ Iff.symm <|
+    (Set.inclusion_injective <| s.diff_subset t).hasSum_iff
+      (f := fun b : s ↦ f b) fun b hb ↦ hf₀ b <| by simpa using hb
+
+/-- If `f b = 0`, then the sum over `f a` with `a ∈ s` is the same as the sum over `f a` for
+`a ∈ s ∖ {b}`. -/
+lemma tsum_eq_tsum_diff_singleton [T2Space α] {f : β → α} (s : Set β) {b : β} (hf₀ : f b = 0) :
+    ∑' a : s, f a = ∑' a : (s \ {b} : Set β), f a :=
+  tsum_setElem_eq_tsum_setElem_diff s {b} fun _ ha ↦ ha ▸ hf₀
+
 section ContinuousAdd
 
 variable [ContinuousAdd α]
@@ -667,8 +697,8 @@ theorem tsum_eq_add_tsum_ite' [DecidableEq β] {f : β → α} (b : β) (hf : Su
     _ = ite (b = b) (f b) 0 + ∑' x, update f b 0 x := by
       congr
       exact tsum_eq_single b fun b' hb' => if_neg hb'
-    _ = f b + ∑' x, ite (x = b) 0 (f x) :=
-    by simp only [update, eq_self_iff_true, if_true, eq_rec_constant, dite_eq_ite]
+    _ = f b + ∑' x, ite (x = b) 0 (f x) := by
+      simp only [update, eq_self_iff_true, if_true, eq_rec_constant, dite_eq_ite]
 #align tsum_eq_add_tsum_ite' tsum_eq_add_tsum_ite'
 
 variable [AddCommMonoid δ] [TopologicalSpace δ] [T3Space δ] [ContinuousAdd δ]
@@ -1107,8 +1137,9 @@ theorem cauchySeq_finset_iff_vanishing :
     (CauchySeq fun s : Finset β ↦ ∑ b in s, f b) ↔
       ∀ e ∈ 𝓝 (0 : α), ∃ s : Finset β, ∀ t, Disjoint t s → (∑ b in t, f b) ∈ e := by
   classical
-  simp_rw [CauchySeq, cauchy_map_iff, and_iff_right atTop_neBot, prod_atTop_atTop_eq,
-    uniformity_eq_comap_nhds_zero α, tendsto_comap_iff, (· ∘ ·), tendsto_atTop']
+  simp only [CauchySeq, cauchy_map_iff, and_iff_right atTop_neBot, prod_atTop_atTop_eq,
+    uniformity_eq_comap_nhds_zero α, tendsto_comap_iff, (· ∘ ·), atTop_neBot, true_and]
+  rw [tendsto_atTop']
   constructor
   · intro h e he
     obtain ⟨⟨s₁, s₂⟩, h⟩ := h e he
@@ -1316,9 +1347,33 @@ theorem Summable.countable_support [FirstCountableTopology G] [T1Space G]
     (hf : Summable f) : f.support.Countable := by
   simpa only [ker_nhds] using hf.tendsto_cofinite_zero.countable_compl_preimage_ker
 
+theorem summable_const_iff [Infinite β] [T2Space G] (a : G) :
+    Summable (fun _ : β ↦ a) ↔ a = 0 := by
+  refine ⟨fun h ↦ ?_, ?_⟩
+  · by_contra ha
+    have : {a}ᶜ ∈ 𝓝 0 := compl_singleton_mem_nhds (Ne.symm ha)
+    have : Finite β := by
+      simpa [← Set.finite_univ_iff] using h.tendsto_cofinite_zero this
+    exact not_finite β
+  · rintro rfl
+    exact summable_zero
+
+@[simp]
+theorem tsum_const [T2Space G] : ∑' _ : β, (a : G) = Nat.card β • a := by
+  rcases finite_or_infinite β with hβ|hβ
+  · letI : Fintype β := Fintype.ofFinite β
+    rw [tsum_eq_sum (s := univ) (fun x hx ↦ (hx (mem_univ x)).elim)]
+    simp only [sum_const, Nat.card_eq_fintype_card]
+    rfl
+  · simp only [Nat.card_eq_zero_of_infinite, zero_smul]
+    rcases eq_or_ne a 0 with rfl|ha
+    · simp
+    · apply tsum_eq_zero_of_not_summable
+      simpa [summable_const_iff] using ha
+
 end TopologicalGroup
 
-section ConstSmul
+section ConstSMul
 
 variable [Monoid γ] [TopologicalSpace α] [AddCommMonoid α] [DistribMulAction γ α]
   [ContinuousConstSMul γ α] {f : β → α}
@@ -1368,7 +1423,7 @@ lemma tsum_const_smul'' {γ : Type*} [DivisionRing γ] [Module γ α] [Continuou
   change ¬ Summable (mul_g ∘ f)
   rwa [Summable.map_iff_of_equiv] <;> apply continuous_const_smul
 
-end ConstSmul
+end ConstSMul
 
 /-! ### Product and pi types -/
 

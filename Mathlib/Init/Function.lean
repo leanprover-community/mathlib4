@@ -24,8 +24,6 @@ variable {α : Sort u₁} {β : Sort u₂} {φ : Sort u₃} {δ : Sort u₄} {ζ
 
 #align function.comp Function.comp
 
-lemma comp_def {α β δ : Sort _} (f : β → δ) (g : α → β) : f ∘ g = fun x ↦ f (g x) := rfl
-
 attribute [eqns comp_def] comp
 
 lemma flip_def {f : α → β → φ} : flip f = fun b a => f a b := rfl

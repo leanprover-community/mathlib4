@@ -180,7 +180,10 @@ variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type uE} [NormedAdd
 
 /-- `HasFTaylorSeriesUpToOn n f p s` registers the fact that `p 0 = f` and `p (m+1)` is a
 derivative of `p m` for `m < n`, and is continuous for `m ≤ n`. This is a predicate analogous to
-`HasFDerivWithinAt` but for higher order derivatives. -/
+`HasFDerivWithinAt` but for higher order derivatives.
+
+Notice that `p` does not sum up to `f` on the diagonal (`FormalMultilinearSeries.sum`), even if
+`f` is analytic and `n = ∞`: an additional `1/m!` factor on the `m`th term is necessary for that. -/
 structure HasFTaylorSeriesUpToOn (n : ℕ∞) (f : E → F) (p : E → FormalMultilinearSeries 𝕜 E F)
   (s : Set E) : Prop where
   zero_eq : ∀ x ∈ s, (p x 0).uncurry0 = f x
@@ -226,7 +229,7 @@ theorem hasFTaylorSeriesUpToOn_zero_iff :
     HasFTaylorSeriesUpToOn 0 f p s ↔ ContinuousOn f s ∧ ∀ x ∈ s, (p x 0).uncurry0 = f x := by
   refine ⟨fun H => ⟨H.continuousOn, H.zero_eq⟩, fun H =>
       ⟨H.2, fun m hm => False.elim (not_le.2 hm bot_le), fun m hm ↦ ?_⟩⟩
-  obtain rfl : m = 0 := by exact_mod_cast hm.antisymm (zero_le _)
+  obtain rfl : m = 0 := mod_cast hm.antisymm (zero_le _)
   have : EqOn (p · 0) ((continuousMultilinearCurryFin0 𝕜 E F).symm ∘ f) s := fun x hx ↦
     (continuousMultilinearCurryFin0 𝕜 E F).eq_symm_apply.2 (H.2 x hx)
   rw [continuousOn_congr this, LinearIsometryEquiv.comp_continuousOn_iff]
@@ -1156,12 +1159,12 @@ theorem contDiffOn_succ_iff_has_fderiv_within {n : ℕ} (hs : UniqueDiffOn 𝕜 
 
 /-- A function is `C^(n + 1)` on an open domain if and only if it is
 differentiable there, and its derivative (expressed with `fderiv`) is `C^n`. -/
-theorem contDiffOn_succ_iff_fderiv_of_open {n : ℕ} (hs : IsOpen s) :
+theorem contDiffOn_succ_iff_fderiv_of_isOpen {n : ℕ} (hs : IsOpen s) :
     ContDiffOn 𝕜 (n + 1 : ℕ) f s ↔
       DifferentiableOn 𝕜 f s ∧ ContDiffOn 𝕜 n (fun y => fderiv 𝕜 f y) s := by
   rw [contDiffOn_succ_iff_fderivWithin hs.uniqueDiffOn]
   exact Iff.rfl.and (contDiffOn_congr fun x hx ↦ fderivWithin_of_isOpen hs hx)
-#align cont_diff_on_succ_iff_fderiv_of_open contDiffOn_succ_iff_fderiv_of_open
+#align cont_diff_on_succ_iff_fderiv_of_open contDiffOn_succ_iff_fderiv_of_isOpen
 
 /-- A function is `C^∞` on a domain with unique derivatives if and only if it is differentiable
 there, and its derivative (expressed with `fderivWithin`) is `C^∞`. -/
@@ -1182,11 +1185,11 @@ theorem contDiffOn_top_iff_fderivWithin (hs : UniqueDiffOn 𝕜 s) :
 
 /-- A function is `C^∞` on an open domain if and only if it is differentiable there, and its
 derivative (expressed with `fderiv`) is `C^∞`. -/
-theorem contDiffOn_top_iff_fderiv_of_open (hs : IsOpen s) :
+theorem contDiffOn_top_iff_fderiv_of_isOpen (hs : IsOpen s) :
     ContDiffOn 𝕜 ∞ f s ↔ DifferentiableOn 𝕜 f s ∧ ContDiffOn 𝕜 ∞ (fun y => fderiv 𝕜 f y) s := by
   rw [contDiffOn_top_iff_fderivWithin hs.uniqueDiffOn]
   exact Iff.rfl.and <| contDiffOn_congr fun x hx ↦ fderivWithin_of_isOpen hs hx
-#align cont_diff_on_top_iff_fderiv_of_open contDiffOn_top_iff_fderiv_of_open
+#align cont_diff_on_top_iff_fderiv_of_open contDiffOn_top_iff_fderiv_of_isOpen
 
 protected theorem ContDiffOn.fderivWithin (hf : ContDiffOn 𝕜 n f s) (hs : UniqueDiffOn 𝕜 s)
     (hmn : m + 1 ≤ n) : ContDiffOn 𝕜 m (fun y => fderivWithin 𝕜 f s y) s := by
@@ -1199,31 +1202,34 @@ protected theorem ContDiffOn.fderivWithin (hf : ContDiffOn 𝕜 n f s) (hs : Uni
     exact ((contDiffOn_succ_iff_fderivWithin hs).1 (hf.of_le hmn)).2
 #align cont_diff_on.fderiv_within ContDiffOn.fderivWithin
 
-theorem ContDiffOn.fderiv_of_open (hf : ContDiffOn 𝕜 n f s) (hs : IsOpen s) (hmn : m + 1 ≤ n) :
+theorem ContDiffOn.fderiv_of_isOpen (hf : ContDiffOn 𝕜 n f s) (hs : IsOpen s) (hmn : m + 1 ≤ n) :
     ContDiffOn 𝕜 m (fun y => fderiv 𝕜 f y) s :=
   (hf.fderivWithin hs.uniqueDiffOn hmn).congr fun _ hx => (fderivWithin_of_isOpen hs hx).symm
-#align cont_diff_on.fderiv_of_open ContDiffOn.fderiv_of_open
+#align cont_diff_on.fderiv_of_open ContDiffOn.fderiv_of_isOpen
 
 theorem ContDiffOn.continuousOn_fderivWithin (h : ContDiffOn 𝕜 n f s) (hs : UniqueDiffOn 𝕜 s)
     (hn : 1 ≤ n) : ContinuousOn (fun x => fderivWithin 𝕜 f s x) s :=
   ((contDiffOn_succ_iff_fderivWithin hs).1 (h.of_le hn)).2.continuousOn
 #align cont_diff_on.continuous_on_fderiv_within ContDiffOn.continuousOn_fderivWithin
 
-theorem ContDiffOn.continuousOn_fderiv_of_open (h : ContDiffOn 𝕜 n f s) (hs : IsOpen s)
+theorem ContDiffOn.continuousOn_fderiv_of_isOpen (h : ContDiffOn 𝕜 n f s) (hs : IsOpen s)
     (hn : 1 ≤ n) : ContinuousOn (fun x => fderiv 𝕜 f x) s :=
-  ((contDiffOn_succ_iff_fderiv_of_open hs).1 (h.of_le hn)).2.continuousOn
-#align cont_diff_on.continuous_on_fderiv_of_open ContDiffOn.continuousOn_fderiv_of_open
+  ((contDiffOn_succ_iff_fderiv_of_isOpen hs).1 (h.of_le hn)).2.continuousOn
+#align cont_diff_on.continuous_on_fderiv_of_open ContDiffOn.continuousOn_fderiv_of_isOpen
 
 /-! ### Functions with a Taylor series on the whole space -/
 
 /-- `HasFTaylorSeriesUpTo n f p` registers the fact that `p 0 = f` and `p (m+1)` is a
 derivative of `p m` for `m < n`, and is continuous for `m ≤ n`. This is a predicate analogous to
-`HasFDerivAt` but for higher order derivatives. -/
+`HasFDerivAt` but for higher order derivatives.
+
+Notice that `p` does not sum up to `f` on the diagonal (`FormalMultilinearSeries.sum`), even if
+`f` is analytic and `n = ∞`: an addition `1/m!` factor on the `m`th term is necessary for that. -/
 structure HasFTaylorSeriesUpTo (n : ℕ∞) (f : E → F) (p : E → FormalMultilinearSeries 𝕜 E F) :
   Prop where
   zero_eq : ∀ x, (p x 0).uncurry0 = f x
-  fderiv : ∀ (m : ℕ) (_ : (m : ℕ∞) < n), ∀ x, HasFDerivAt (fun y => p y m) (p x m.succ).curryLeft x
-  cont : ∀ (m : ℕ) (_ : (m : ℕ∞) ≤ n), Continuous fun x => p x m
+  fderiv : ∀ m : ℕ, (m : ℕ∞) < n → ∀ x, HasFDerivAt (fun y => p y m) (p x m.succ).curryLeft x
+  cont : ∀ m : ℕ, (m : ℕ∞) ≤ n → Continuous fun x => p x m
 #align has_ftaylor_series_up_to HasFTaylorSeriesUpTo
 
 theorem HasFTaylorSeriesUpTo.zero_eq' (h : HasFTaylorSeriesUpTo n f p) (x : E) :
@@ -1368,6 +1374,10 @@ theorem ContDiffAt.differentiableAt (h : ContDiffAt 𝕜 n f x) (hn : 1 ≤ n) :
     DifferentiableAt 𝕜 f x := by
   simpa [hn, differentiableWithinAt_univ] using h.differentiableWithinAt
 #align cont_diff_at.differentiable_at ContDiffAt.differentiableAt
+
+nonrec lemma ContDiffAt.contDiffOn {m : ℕ} (h : ContDiffAt 𝕜 n f x) (hm : m ≤ n) :
+    ∃ u ∈ 𝓝 x, ContDiffOn 𝕜 m f u := by
+  simpa [nhdsWithin_univ] using h.contDiffOn hm
 
 /-- A function is `C^(n + 1)` at a point iff locally, it has a derivative which is `C^n`. -/
 theorem contDiffAt_succ_iff_hasFDerivAt {n : ℕ} :

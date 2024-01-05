@@ -140,7 +140,8 @@ def ordConnectedSection (s : Set α) : Set α :=
 
 theorem dual_ordConnectedSection (s : Set α) :
     ordConnectedSection (ofDual ⁻¹' s) = ofDual ⁻¹' ordConnectedSection s := by
-  simp_rw [ordConnectedSection, ordConnectedProj]
+  simp only [ordConnectedSection]
+  simp (config := { unfoldPartialApp := true }) only [ordConnectedProj]
   ext x
   simp only [mem_range, Subtype.exists, mem_preimage, OrderDual.exists, dual_ordConnectedComponent,
     ofDual_toDual]
@@ -202,35 +203,32 @@ theorem disjoint_ordT5Nhd : Disjoint (ordT5Nhd s t) (ordT5Nhd t s) := by
   rcases mem_iUnion₂.1 hx₂ with ⟨b, hbt, hb⟩
   clear hx₂
   rw [mem_ordConnectedComponent, subset_inter_iff] at ha hb
-  cases' le_total a b with hab hab
-  on_goal 2 => swap_var a ↔ b, s ↔ t, ha ↔ hb, has ↔ hbt
-  all_goals
--- porting note: wlog not implemented yet, the following replaces the three previous lines
--- wlog (discharger := tactic.skip) hab : a ≤ b := le_total a b using a b s t, b a t s
-    cases' ha with ha ha'
-    cases' hb with hb hb'
-    have hsub : [[a, b]] ⊆ (ordSeparatingSet s t).ordConnectedSectionᶜ := by
-      rw [ordSeparatingSet_comm, uIcc_comm] at hb'
-      calc
-        [[a, b]] ⊆ [[a, x]] ∪ [[x, b]] := uIcc_subset_uIcc_union_uIcc
-        _ ⊆ (ordSeparatingSet s t).ordConnectedSectionᶜ := union_subset ha' hb'
-    clear ha' hb'
-    cases' le_total x a with hxa hax
-    · exact hb (Icc_subset_uIcc' ⟨hxa, hab⟩) has
-    cases' le_total b x with hbx hxb
-    · exact ha (Icc_subset_uIcc ⟨hab, hbx⟩) hbt
-    have h' : x ∈ ordSeparatingSet s t := ⟨mem_iUnion₂.2 ⟨a, has, ha⟩, mem_iUnion₂.2 ⟨b, hbt, hb⟩⟩
-    -- porting note: lift not implemented yet
-    -- lift x to ordSeparatingSet s t using this
-    suffices ordConnectedComponent (ordSeparatingSet s t) x ⊆ [[a, b]] from
-      hsub (this <| ordConnectedProj_mem_ordConnectedComponent _ ⟨x, h'⟩) (mem_range_self _)
-    rintro y (hy : [[x, y]] ⊆ ordSeparatingSet s t)
-    rw [uIcc_of_le hab, mem_Icc, ← not_lt, ← not_lt]
-    have sol1 := fun (hya : y < a) =>
-        (disjoint_left (t := ordSeparatingSet s t)).1 disjoint_left_ordSeparatingSet has
-          (hy <| Icc_subset_uIcc' ⟨hya.le, hax⟩)
-    have sol2 := fun (hby : b < y) =>
-        (disjoint_left (t := ordSeparatingSet s t)).1 disjoint_right_ordSeparatingSet hbt
-          (hy <| Icc_subset_uIcc ⟨hxb, hby.le⟩)
-    exact ⟨sol1, sol2⟩
+  wlog hab : a ≤ b with H
+  · exact H (x := x) (y := y) (z := z) b hbt hb a has ha (le_of_not_le hab)
+  cases' ha with ha ha'
+  cases' hb with hb hb'
+  have hsub : [[a, b]] ⊆ (ordSeparatingSet s t).ordConnectedSectionᶜ := by
+    rw [ordSeparatingSet_comm, uIcc_comm] at hb'
+    calc
+      [[a, b]] ⊆ [[a, x]] ∪ [[x, b]] := uIcc_subset_uIcc_union_uIcc
+      _ ⊆ (ordSeparatingSet s t).ordConnectedSectionᶜ := union_subset ha' hb'
+  clear ha' hb'
+  rcases le_total x a with hxa | hax
+  · exact hb (Icc_subset_uIcc' ⟨hxa, hab⟩) has
+  rcases le_total b x with hbx | hxb
+  · exact ha (Icc_subset_uIcc ⟨hab, hbx⟩) hbt
+  have h' : x ∈ ordSeparatingSet s t := ⟨mem_iUnion₂.2 ⟨a, has, ha⟩, mem_iUnion₂.2 ⟨b, hbt, hb⟩⟩
+  -- porting note: lift not implemented yet
+  -- lift x to ordSeparatingSet s t using this
+  suffices ordConnectedComponent (ordSeparatingSet s t) x ⊆ [[a, b]] from
+    hsub (this <| ordConnectedProj_mem_ordConnectedComponent _ ⟨x, h'⟩) (mem_range_self _)
+  rintro y (hy : [[x, y]] ⊆ ordSeparatingSet s t)
+  rw [uIcc_of_le hab, mem_Icc, ← not_lt, ← not_lt]
+  have sol1 := fun (hya : y < a) =>
+      (disjoint_left (t := ordSeparatingSet s t)).1 disjoint_left_ordSeparatingSet has
+        (hy <| Icc_subset_uIcc' ⟨hya.le, hax⟩)
+  have sol2 := fun (hby : b < y) =>
+      (disjoint_left (t := ordSeparatingSet s t)).1 disjoint_right_ordSeparatingSet hbt
+        (hy <| Icc_subset_uIcc ⟨hxb, hby.le⟩)
+  exact ⟨sol1, sol2⟩
 #align set.disjoint_ord_t5_nhd Set.disjoint_ordT5Nhd

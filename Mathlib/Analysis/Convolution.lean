@@ -124,7 +124,7 @@ theorem convolution_integrand_bound_right_of_le_of_subset {C : ℝ} (hC : ∀ i,
   · apply_rules [L.le_of_op_norm₂_le_of_le, le_rfl]
   · have : x - t ∉ support g := by
       refine mt (fun hxt => hu ?_) ht
-      refine' ⟨_, _, Set.neg_mem_neg.mpr (subset_closure hxt), hx, _⟩
+      refine' ⟨_, Set.neg_mem_neg.mpr (subset_closure hxt), _, hx, _⟩
       simp only [neg_sub, sub_add_cancel]
     simp only [nmem_support.mp this, (L _).map_zero, norm_zero, le_rfl]
 #align convolution_integrand_bound_right_of_le_of_subset convolution_integrand_bound_right_of_le_of_subset
@@ -560,7 +560,7 @@ theorem support_convolution_subset_swap : support (f ⋆[L, μ] g) ⊆ support g
   intro x h2x
   by_contra hx
   apply h2x
-  simp_rw [Set.mem_add, not_exists, not_and_or, nmem_support] at hx
+  simp_rw [Set.mem_add, ← exists_and_left, not_exists, not_and_or, nmem_support] at hx
   rw [convolution_def]
   convert integral_zero G F using 2
   ext t
@@ -641,7 +641,7 @@ theorem continuousOn_convolution_right_with_param {g : P → G → E'} {s : Set 
     rintro ⟨p, x⟩ y ⟨hp, hx⟩ hy
     apply hgs p _ hp
     contrapose! hy
-    exact ⟨y - x, x, by simpa using hy, hx, by simp⟩
+    exact ⟨y - x, by simpa using hy, x, hx, by simp⟩
   apply ContinuousWithinAt.mono_of_mem (B (q₀, x₀) ⟨hq₀, mem_of_mem_nhds ht⟩)
   exact mem_nhdsWithin_prod_iff.2 ⟨s, self_mem_nhdsWithin, t, nhdsWithin_le_nhds ht, Subset.rfl⟩
 #align continuous_on_convolution_right_with_param' continuousOn_convolution_right_with_param
@@ -1013,7 +1013,8 @@ theorem convolution_assoc (hL : ∀ (x : E) (y : E') (z : E''), L₂ (L x y) z =
     rw [← h3] at this
     convert this.comp_measurable (measurable_sub.prod_mk measurable_snd)
     ext ⟨x, y⟩
-    simp_rw [uncurry, Function.comp_apply, sub_sub_sub_cancel_right]
+    simp (config := { unfoldPartialApp := true }) only [uncurry, Function.comp_apply,
+      sub_sub_sub_cancel_right]
   simp_rw [integrable_prod_iff' h_meas]
   refine' ⟨((quasiMeasurePreserving_sub_left_of_right_invariant ν x₀).ae hgk).mono fun t ht =>
     (L₃ (f t)).integrable_comp <| ht.ofNorm L₄ hg hk, _⟩
@@ -1171,7 +1172,7 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
     have A : IsCompact ({q₀.1} ×ˢ k) := isCompact_singleton.prod hk
     obtain ⟨t, kt, t_open, ht⟩ : ∃ t, {q₀.1} ×ˢ k ⊆ t ∧ IsOpen t ∧ IsBounded (g' '' t) := by
       have B : ContinuousOn g' (s ×ˢ univ) :=
-        hg.continuousOn_fderiv_of_open (hs.prod isOpen_univ) le_rfl
+        hg.continuousOn_fderiv_of_isOpen (hs.prod isOpen_univ) le_rfl
       apply exists_isOpen_isBounded_image_of_isCompact_of_continuousOn A (hs.prod isOpen_univ) _ B
       simp only [prod_subset_prod_iff, hq₀, singleton_subset_iff, subset_univ, and_self_iff,
         true_or_iff]
@@ -1219,7 +1220,7 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
       HasCompactSupport.intro hk fun x hx => g'_zero q₀.1 x hq₀ hx
     apply (HasCompactSupport.convolutionExists_right (L.precompR (P × G) : _) T hf _ q₀.2).1
     have : ContinuousOn g' (s ×ˢ univ) :=
-      hg.continuousOn_fderiv_of_open (hs.prod isOpen_univ) le_rfl
+      hg.continuousOn_fderiv_of_isOpen (hs.prod isOpen_univ) le_rfl
     apply this.comp_continuous (continuous_const.prod_mk continuous_id')
     intro x
     simpa only [prod_mk_mem_set_prod_eq, mem_univ, and_true_iff] using hq₀
@@ -1309,7 +1310,7 @@ theorem contDiffOn_convolution_right_with_param_aux {G : Type uP} {E' : Type uP}
     have A : ∀ q₀ : P × G, q₀.1 ∈ s →
         HasFDerivAt (fun q : P × G => (f ⋆[L, μ] g q.1) q.2) (f' q₀.1 q₀.2) q₀ :=
       hasFDerivAt_convolution_right_with_param L hs hk hgs hf hg.one_of_succ
-    rw [contDiffOn_succ_iff_fderiv_of_open (hs.prod (@isOpen_univ G _))] at hg ⊢
+    rw [contDiffOn_succ_iff_fderiv_of_isOpen (hs.prod (@isOpen_univ G _))] at hg ⊢
     constructor
     · rintro ⟨p, x⟩ ⟨hp, -⟩
       exact (A (p, x) hp).differentiableAt.differentiableWithinAt

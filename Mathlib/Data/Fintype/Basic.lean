@@ -178,6 +178,11 @@ theorem coe_compl (s : Finset α) : ↑sᶜ = (↑s : Set α)ᶜ :=
 @[simp] lemma compl_subset_compl : sᶜ ⊆ tᶜ ↔ t ⊆ s := @compl_le_compl_iff_le (Finset α) _ _ _
 @[simp] lemma compl_ssubset_compl : sᶜ ⊂ tᶜ ↔ t ⊂ s := @compl_lt_compl_iff_lt (Finset α) _ _ _
 
+lemma subset_compl_comm : s ⊆ tᶜ ↔ t ⊆ sᶜ := le_compl_iff_le_compl (α := Finset α)
+
+@[simp] lemma subset_compl_singleton : s ⊆ {a}ᶜ ↔ a ∉ s := by
+  rw [subset_compl_comm, singleton_subset_iff, mem_compl]
+
 @[simp]
 theorem compl_empty : (∅ : Finset α)ᶜ = univ :=
   compl_bot
@@ -276,6 +281,11 @@ theorem image_univ_equiv [Fintype β] (f : β ≃ α) : univ.image f = univ :=
 
 end BooleanAlgebra
 
+-- @[simp] --Note this would loop with `Finset.univ_unique`
+lemma singleton_eq_univ [Subsingleton α] (a : α) : ({a} : Finset α) = univ := by
+  ext b; simp [Subsingleton.elim a b]
+
+
 theorem map_univ_of_surjective [Fintype β] {f : β ↪ α} (hf : Surjective f) : univ.map f = univ :=
   eq_univ_of_forall <| hf.forall.2 fun _ => mem_map_of_mem _ <| mem_univ _
 #align finset.map_univ_of_surjective Finset.map_univ_of_surjective
@@ -359,6 +369,9 @@ instance decidableExistsFintype {p : α → Prop} [DecidablePred p] [Fintype α]
 instance decidableMemRangeFintype [Fintype α] [DecidableEq β] (f : α → β) :
     DecidablePred (· ∈ Set.range f) := fun _ => Fintype.decidableExistsFintype
 #align fintype.decidable_mem_range_fintype Fintype.decidableMemRangeFintype
+
+instance decidableSubsingleton [Fintype α] [DecidableEq α] {s : Set α} [DecidablePred (· ∈ s)] :
+    Decidable s.Subsingleton := decidable_of_iff (∀ a ∈ s, ∀ b ∈ s, a = b) Iff.rfl
 
 section BundledHoms
 
@@ -471,6 +484,9 @@ end Fintype
 namespace Finset
 
 variable [Fintype α] [DecidableEq α] {s t : Finset α}
+
+@[simp]
+lemma filter_univ_mem (s : Finset α) : univ.filter (· ∈ s) = s := by simp [filter_mem_eq_inter]
 
 instance decidableCodisjoint : Decidable (Codisjoint s t) :=
   decidable_of_iff _ codisjoint_left.symm
@@ -596,18 +612,21 @@ theorem univ_ofSubsingleton (a : α) [Subsingleton α] : @univ _ (ofSubsingleton
   rfl
 #align fintype.univ_of_subsingleton Fintype.univ_ofSubsingleton
 
--- see Note [lower instance priority]
-instance (priority := 100) ofIsEmpty [IsEmpty α] : Fintype α :=
+/-- An empty type is a fintype. Not registered as an instance, to make sure that there aren't two
+conflicting `Fintype ι` instances around when casing over whether a fintype `ι` is empty or not. -/
+def ofIsEmpty [IsEmpty α] : Fintype α :=
   ⟨∅, isEmptyElim⟩
 #align fintype.of_is_empty Fintype.ofIsEmpty
 
--- no-lint since while `Finset.univ_eq_empty` can prove this, it isn't applicable for `dsimp`.
 /-- Note: this lemma is specifically about `Fintype.of_isEmpty`. For a statement about
 arbitrary `Fintype` instances, use `Finset.univ_eq_empty`. -/
-@[simp, nolint simpNF]
-theorem univ_of_isEmpty [IsEmpty α] : @univ α _ = ∅ :=
+@[simp]
+theorem univ_of_isEmpty [IsEmpty α] : @univ α Fintype.ofIsEmpty = ∅ :=
   rfl
 #align fintype.univ_of_is_empty Fintype.univ_of_isEmpty
+
+instance : Fintype Empty := Fintype.ofIsEmpty
+instance : Fintype PEmpty := Fintype.ofIsEmpty
 
 end Fintype
 
@@ -757,6 +776,7 @@ theorem toFinset_univ [Fintype α] [Fintype (Set.univ : Set α)] :
 
 @[simp]
 theorem toFinset_eq_empty [Fintype s] : s.toFinset = ∅ ↔ s = ∅ := by
+  let A : Fintype (∅ : Set α) := Fintype.ofIsEmpty
   rw [← toFinset_empty, toFinset_inj]
 #align set.to_finset_eq_empty Set.toFinset_eq_empty
 
@@ -1114,7 +1134,7 @@ instance pfunFintype (p : Prop) [Decidable p] (α : p → Type*) [∀ hp, Fintyp
     Fintype (∀ hp : p, α hp) :=
   if hp : p then Fintype.ofEquiv (α hp) ⟨fun a _ => a, fun f => f hp, fun _ => rfl, fun _ => rfl⟩
   else ⟨singleton fun h => (hp h).elim, fun h => mem_singleton.2
-    (funext $ fun x => by contradiction)⟩
+    (funext fun x => by contradiction)⟩
 #align pfun_fintype pfunFintype
 
 theorem mem_image_univ_iff_mem_range {α β : Type*} [Fintype α] [DecidableEq β] {f : α → β}
@@ -1227,7 +1247,7 @@ theorem count_univ [DecidableEq α] (a : α) : count a Finset.univ.val = 1 :=
 @[simp]
 theorem map_univ_val_equiv (e : α ≃ β) :
     map e univ.val = univ.val := by
-  rw [←congr_arg Finset.val (Finset.map_univ_equiv e), Finset.map_val, Equiv.coe_toEmbedding]
+  rw [← congr_arg Finset.val (Finset.map_univ_equiv e), Finset.map_val, Equiv.coe_toEmbedding]
 
 /-- For functions on finite sets, they are bijections iff they map universes into universes. -/
 @[simp]
@@ -1295,7 +1315,7 @@ function `f : ℕ → α` such that `r (f m) (f n)` holds whenever `m ≠ n`.
 We also ensure that all constructed points satisfy a given predicate `P`. -/
 theorem exists_seq_of_forall_finset_exists' {α : Type*} (P : α → Prop) (r : α → α → Prop)
     [IsSymm α r] (h : ∀ s : Finset α, (∀ x ∈ s, P x) → ∃ y, P y ∧ ∀ x ∈ s, r x y) :
-    ∃ f : ℕ → α, (∀ n, P (f n)) ∧ ∀ m n, m ≠ n → r (f m) (f n) := by
+    ∃ f : ℕ → α, (∀ n, P (f n)) ∧ Pairwise fun m n => r (f m) (f n) := by
   rcases exists_seq_of_forall_finset_exists P r h with ⟨f, hf, hf'⟩
   refine' ⟨f, hf, fun m n hmn => _⟩
   rcases lt_trichotomy m n with (h | rfl | h)

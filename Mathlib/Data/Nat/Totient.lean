@@ -131,7 +131,7 @@ theorem totient_even {n : ℕ} (hn : 2 < n) : Even n.totient := by
   haveI : NeZero n := NeZero.of_gt hn
   suffices 2 = orderOf (-1 : (ZMod n)ˣ) by
     rw [← ZMod.card_units_eq_totient, even_iff_two_dvd, this]
-    exact orderOf_dvd_card_univ
+    exact orderOf_dvd_card
   rw [← orderOf_units, Units.coe_neg_one, orderOf_neg_one, ringChar.eq (ZMod n) n, if_neg hn.ne']
 #align nat.totient_even Nat.totient_even
 
@@ -213,7 +213,7 @@ theorem totient_prime_pow_succ {p : ℕ} (hp : p.Prime) (n : ℕ) : φ (p ^ (n +
         rintro b ⟨h, rfl⟩
         rw [pow_succ]
         exact (mul_lt_mul_right hp.pos).2 h
-      rw [card_sdiff h2, card_image_of_injOn (h1.injOn _), card_range, card_range, ←
+      rw [card_sdiff h2, Finset.card_image_of_injective _ h1, card_range, card_range, ←
         one_mul (p ^ n), pow_succ', ← tsub_mul, one_mul, mul_comm]
 #align nat.totient_prime_pow_succ Nat.totient_prime_pow_succ
 

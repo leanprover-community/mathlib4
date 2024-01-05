@@ -338,7 +338,7 @@ def toSubmodule : Subalgebra R A ↪o Submodule R A where
           carrier := S
           smul_mem' := fun c {x} hx ↦
             (Algebra.smul_def c x).symm ▸ mul_mem (S.range_le ⟨c, rfl⟩) hx }
-      inj' := fun _ _ h ↦ ext <| fun x ↦ SetLike.ext_iff.mp h x }
+      inj' := fun _ _ h ↦ ext fun x ↦ SetLike.ext_iff.mp h x }
   map_rel_iff' := SetLike.coe_subset_coe.symm.trans SetLike.coe_subset_coe
 #align subalgebra.to_submodule Subalgebra.toSubmodule
 
@@ -1031,7 +1031,7 @@ instance : Unique (Subalgebra R R) :=
 
 /-- The map `S → T` when `S` is a subalgebra contained in the subalgebra `T`.
 
-This is the subalgebra version of `Submodule.ofLe`, or `Subring.inclusion`  -/
+This is the subalgebra version of `Submodule.inclusion`, or `Subring.inclusion`  -/
 def inclusion {S T : Subalgebra R A} (h : S ≤ T) : S →ₐ[R] T
     where
   toFun := Set.inclusion h
@@ -1317,7 +1317,7 @@ end Actions
 section Center
 
 theorem _root_.Set.algebraMap_mem_center (r : R) : algebraMap R A r ∈ Set.center A := by
-  simp [Algebra.commutes, Set.mem_center_iff]
+  simp only [Semigroup.mem_center_iff, commutes, forall_const]
 #align set.algebra_map_mem_center Set.algebraMap_mem_center
 
 variable (R A)
@@ -1357,7 +1357,7 @@ instance {A : Type*} [Ring A] [Algebra R A] : CommRing (center R A) :=
   inferInstanceAs (CommRing (Subring.center A))
 
 theorem mem_center_iff {a : A} : a ∈ center R A ↔ ∀ b : A, b * a = a * b :=
-  Iff.rfl
+  Subsemigroup.mem_center_iff
 #align subalgebra.mem_center_iff Subalgebra.mem_center_iff
 
 end Center

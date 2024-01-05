@@ -256,7 +256,7 @@ theorem ContinuousWithinAt.closure_le [TopologicalSpace β] {f g : β → α} {s
 then the set `{x ∈ s | f x ≤ g x}` is a closed set. -/
 theorem IsClosed.isClosed_le [TopologicalSpace β] {f g : β → α} {s : Set β} (hs : IsClosed s)
     (hf : ContinuousOn f s) (hg : ContinuousOn g s) : IsClosed ({ x ∈ s | f x ≤ g x }) :=
-  (hf.prod hg).preimage_closed_of_closed hs OrderClosedTopology.isClosed_le'
+  (hf.prod hg).preimage_isClosed_of_isClosed hs OrderClosedTopology.isClosed_le'
 #align is_closed.is_closed_le IsClosed.isClosed_le
 
 theorem le_on_closure [TopologicalSpace β] {f g : β → α} {s : Set β} (h : ∀ x ∈ s, f x ≤ g x)
@@ -954,7 +954,7 @@ theorem tendsto_order_unbounded {f : β → α} {a : α} {x : Filter β} (hu : �
 
 end Preorder
 
-instance tendstoIxxNhdsWithin {α : Type*} [Preorder α] [TopologicalSpace α] (a : α) {s t : Set α}
+instance tendstoIxxNhdsWithin {α : Type*} [TopologicalSpace α] (a : α) {s t : Set α}
     {Ixx} [TendstoIxxClass Ixx (𝓝 a) (𝓝 a)] [TendstoIxxClass Ixx (𝓟 s) (𝓟 t)] :
     TendstoIxxClass Ixx (𝓝[s] a) (𝓝[t] a) :=
   Filter.tendstoIxxClass_inf
@@ -1365,11 +1365,11 @@ theorem countable_setOf_covby_right [SecondCountableTopology α] :
     rcases hxx'.lt_or_lt with (h' | h')
     · refine' disjoint_left.2 fun u ux ux' => xt.2.2.1 _
       refine' h'z x' x't ⟨ux'.1.trans_le (ux.2.trans (hy x xt.1).le), _⟩
-      by_contra' H
+      by_contra! H
       exact lt_irrefl _ ((Hy _ _ xt.1 H).trans_lt h')
     · refine' disjoint_left.2 fun u ux ux' => x't.2.2.1 _
       refine' h'z x xt ⟨ux.1.trans_le (ux'.2.trans (hy x' x't.1).le), _⟩
-      by_contra' H
+      by_contra! H
       exact lt_irrefl _ ((Hy _ _ x't.1 H).trans_lt h')
   refine' this.countable_of_isOpen (fun x hx => _) fun x hx => ⟨x, hz x hx, le_rfl⟩
   suffices H : Ioc (z x) x = Ioo (z x) (y x)
@@ -2774,7 +2774,7 @@ theorem IsClosed.sInf_mem {α : Type u} [TopologicalSpace α] [CompleteLinearOrd
 this supremum to the supremum of the image of this set. -/
 theorem Monotone.map_sSup_of_continuousAt {f : α → β} {s : Set α} (Cf : ContinuousAt f (sSup s))
     (Mf : Monotone f) (fbot : f ⊥ = ⊥) : f (sSup s) = sSup (f '' s) := by
-  cases' s.eq_empty_or_nonempty with h h
+  rcases s.eq_empty_or_nonempty with h | h
   · simp [h, fbot]
   · exact Mf.map_sSup_of_continuousAt' Cf h
 #align monotone.map_Sup_of_continuous_at Monotone.map_sSup_of_continuousAt

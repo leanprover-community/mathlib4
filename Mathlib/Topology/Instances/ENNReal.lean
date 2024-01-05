@@ -309,7 +309,7 @@ protected theorem tendsto_atTop_zero [Nonempty β] [SemilatticeSup β] {f : β �
 
 theorem tendsto_sub : ∀ {a b : ℝ≥0∞}, (a ≠ ∞ ∨ b ≠ ∞) →
     Tendsto (fun p : ℝ≥0∞ × ℝ≥0∞ => p.1 - p.2) (𝓝 (a, b)) (𝓝 (a - b))
-  | ⊤, ⊤, h => by simp only at h
+  | ⊤, ⊤, h => by simp only [ne_eq, not_true_eq_false, or_self] at h
   | ⊤, (b : ℝ≥0), _ => by
     rw [top_sub_coe, tendsto_nhds_top_iff_nnreal]
     refine fun x => ((lt_mem_nhds <| @coe_lt_top (b + 1 + x)).prod_nhds
@@ -346,11 +346,11 @@ protected theorem tendsto_mul (ha : a ≠ 0 ∨ b ≠ ⊤) (hb : b ≠ 0 ∨ a �
     refine' this.mono fun c hc => _
     exact (ENNReal.div_mul_cancel hε.ne' coe_ne_top).symm.trans_lt (mul_lt_mul hc.1 hc.2)
   induction a using recTopCoe with
-  | top => simp only [ne_eq, or_false] at hb; simp [ht b hb, top_mul hb]
+  | top => simp only [ne_eq, or_false, not_true_eq_false] at hb; simp [ht b hb, top_mul hb]
   | coe a =>
     induction b using recTopCoe with
     | top =>
-      simp only [ne_eq, or_false] at ha
+      simp only [ne_eq, or_false, not_true_eq_false] at ha
       simpa [(· ∘ ·), mul_comm, mul_top ha]
         using (ht a ha).comp (continuous_swap.tendsto (ofNNReal a, ⊤))
     | coe b =>
@@ -403,7 +403,7 @@ theorem tendsto_finset_prod_of_ne_top {ι : Type*} {f : ι → α → ℝ≥0∞
 #align ennreal.tendsto_finset_prod_of_ne_top ENNReal.tendsto_finset_prod_of_ne_top
 
 protected theorem continuousAt_const_mul {a b : ℝ≥0∞} (h : a ≠ ⊤ ∨ b ≠ 0) :
-    ContinuousAt ((· * ·) a) b :=
+    ContinuousAt (a * ·) b :=
   Tendsto.const_mul tendsto_id h.symm
 #align ennreal.continuous_at_const_mul ENNReal.continuousAt_const_mul
 
@@ -412,7 +412,7 @@ protected theorem continuousAt_mul_const {a b : ℝ≥0∞} (h : a ≠ ⊤ ∨ b
   Tendsto.mul_const tendsto_id h.symm
 #align ennreal.continuous_at_mul_const ENNReal.continuousAt_mul_const
 
-protected theorem continuous_const_mul {a : ℝ≥0∞} (ha : a ≠ ⊤) : Continuous ((· * ·) a) :=
+protected theorem continuous_const_mul {a : ℝ≥0∞} (ha : a ≠ ⊤) : Continuous (a * ·) :=
   continuous_iff_continuousAt.2 fun _ => ENNReal.continuousAt_const_mul (Or.inl ha)
 #align ennreal.continuous_const_mul ENNReal.continuous_const_mul
 
@@ -1008,7 +1008,7 @@ theorem tsum_iUnion_le_tsum {ι : Type*} (f : α → ℝ≥0∞) (t : ι → Set
 
 theorem tsum_biUnion_le_tsum {ι : Type*} (f : α → ℝ≥0∞) (s : Set ι) (t : ι → Set α) :
     ∑' x : ⋃ i ∈ s , t i, f x ≤ ∑' i : s, ∑' x : t i, f x :=
-  calc ∑' x : ⋃ i ∈ s, t i, f x = ∑' x : ⋃ i : s, t i, f x := tsum_congr_subtype _ <| by simp
+  calc ∑' x : ⋃ i ∈ s, t i, f x = ∑' x : ⋃ i : s, t i, f x := tsum_congr_set_coe _ <| by simp
   _ ≤ ∑' i : s, ∑' x : t i, f x := tsum_iUnion_le_tsum _ _
 
 theorem tsum_biUnion_le {ι : Type*} (f : α → ℝ≥0∞) (s : Finset ι) (t : ι → Set α) :
@@ -1024,7 +1024,7 @@ theorem tsum_iUnion_le {ι : Type*} [Fintype ι] (f : α → ℝ≥0∞) (t : ι
 
 theorem tsum_union_le (f : α → ℝ≥0∞) (s t : Set α) :
     ∑' x : ↑(s ∪ t), f x ≤ ∑' x : s, f x + ∑' x : t, f x :=
-  calc ∑' x : ↑(s ∪ t), f x = ∑' x : ⋃ b, cond b s t, f x := tsum_congr_subtype _ union_eq_iUnion
+  calc ∑' x : ↑(s ∪ t), f x = ∑' x : ⋃ b, cond b s t, f x := tsum_congr_set_coe _ union_eq_iUnion
   _ ≤ _ := by simpa using tsum_iUnion_le f (cond · s t)
 #align ennreal.tsum_union_le ENNReal.tsum_union_le
 
@@ -1264,7 +1264,7 @@ theorem tendsto_sum_nat_add (f : ℕ → ℝ≥0∞) (hf : ∑' i, f i ≠ ∞) 
   lift f to ℕ → ℝ≥0 using ENNReal.ne_top_of_tsum_ne_top hf
   replace hf : Summable f := tsum_coe_ne_top_iff_summable.1 hf
   simp only [← ENNReal.coe_tsum, NNReal.summable_nat_add _ hf, ← ENNReal.coe_zero]
-  exact_mod_cast NNReal.tendsto_sum_nat_add f
+  exact mod_cast NNReal.tendsto_sum_nat_add f
 #align ennreal.tendsto_sum_nat_add ENNReal.tendsto_sum_nat_add
 
 theorem tsum_le_of_sum_range_le {f : ℕ → ℝ≥0∞} {c : ℝ≥0∞}
@@ -1338,7 +1338,7 @@ theorem ENNReal.ofReal_tsum_of_nonneg {f : α → ℝ} (hf_nonneg : ∀ n, 0 ≤
 theorem not_summable_iff_tendsto_nat_atTop_of_nonneg {f : ℕ → ℝ} (hf : ∀ n, 0 ≤ f n) :
     ¬Summable f ↔ Tendsto (fun n : ℕ => ∑ i in Finset.range n, f i) atTop atTop := by
   lift f to ℕ → ℝ≥0 using hf
-  exact_mod_cast NNReal.not_summable_iff_tendsto_nat_atTop
+  exact mod_cast NNReal.not_summable_iff_tendsto_nat_atTop
 #align not_summable_iff_tendsto_nat_at_top_of_nonneg not_summable_iff_tendsto_nat_atTop_of_nonneg
 
 theorem summable_iff_not_tendsto_nat_atTop_of_nonneg {f : ℕ → ℝ} (hf : ∀ n, 0 ≤ f n) :
@@ -1349,7 +1349,7 @@ theorem summable_iff_not_tendsto_nat_atTop_of_nonneg {f : ℕ → ℝ} (hf : ∀
 theorem summable_sigma_of_nonneg {β : α → Type*} {f : (Σ x, β x) → ℝ} (hf : ∀ x, 0 ≤ f x) :
     Summable f ↔ (∀ x, Summable fun y => f ⟨x, y⟩) ∧ Summable fun x => ∑' y, f ⟨x, y⟩ := by
   lift f to (Σx, β x) → ℝ≥0 using hf
-  exact_mod_cast NNReal.summable_sigma
+  exact mod_cast NNReal.summable_sigma
 #align summable_sigma_of_nonneg summable_sigma_of_nonneg
 
 theorem summable_prod_of_nonneg {f : (α × β) → ℝ} (hf : 0 ≤ f) :
@@ -1459,7 +1459,7 @@ theorem continuous_of_le_add_edist {f : α → ℝ≥0∞} (C : ℝ≥0∞) (hC 
 #align continuous_of_le_add_edist continuous_of_le_add_edist
 
 theorem continuous_edist : Continuous fun p : α × α => edist p.1 p.2 := by
-  apply continuous_of_le_add_edist 2 (by norm_num)
+  apply continuous_of_le_add_edist 2 (by decide)
   rintro ⟨x, y⟩ ⟨x', y'⟩
   calc
     edist x y ≤ edist x x' + edist x' y' + edist y' y := edist_triangle4 _ _ _ _

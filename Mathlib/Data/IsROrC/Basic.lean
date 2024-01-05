@@ -830,11 +830,11 @@ noncomputable instance Real.isROrC : IsROrC ℝ where
   mul_re_ax z w := by simp only [sub_zero, mul_zero, AddMonoidHom.zero_apply, AddMonoidHom.id_apply]
   mul_im_ax z w := by simp only [add_zero, zero_mul, mul_zero, AddMonoidHom.zero_apply]
   conj_re_ax z := by simp only [starRingEnd_apply, star_id_of_comm]
-  conj_im_ax z := by simp only [neg_zero, AddMonoidHom.zero_apply]
+  conj_im_ax _ := by simp only [neg_zero, AddMonoidHom.zero_apply]
   conj_I_ax := by simp only [RingHom.map_zero, neg_zero]
   norm_sq_eq_def_ax z := by simp only [sq, Real.norm_eq_abs, ← abs_mul, abs_mul_self z, add_zero,
     mul_zero, AddMonoidHom.zero_apply, AddMonoidHom.id_apply]
-  mul_im_I_ax z := by simp only [mul_zero, AddMonoidHom.zero_apply]
+  mul_im_I_ax _ := by simp only [mul_zero, AddMonoidHom.zero_apply]
   le_iff_re_im := (and_iff_left rfl).symm
 #align real.is_R_or_C Real.isROrC
 

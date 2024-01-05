@@ -375,7 +375,7 @@ variable (R M)
 
 theorem torsion_gc :
     @GaloisConnection (Submodule R M) (Ideal R)ᵒᵈ _ _ annihilator fun I =>
-      torsionBySet R M <| OrderDual.ofDual I :=
+      torsionBySet R M ↑(OrderDual.ofDual I) :=
   fun _ _ =>
   ⟨fun h x hx => (mem_torsionBySet_iff _ _).mpr fun ⟨_, ha⟩ => mem_annihilator.mp (h ha) x hx,
     fun h a ha => mem_annihilator.mpr fun _ hx => (mem_torsionBySet_iff _ _).mp (h hx) ⟨a, ha⟩⟩
@@ -394,7 +394,7 @@ variable (hp : (S : Set ι).Pairwise fun i j => p i ⊔ p j = ⊤)
 -- Porting note: mem_iSup_finset_iff_exists_sum now requires DecidableEq ι
 theorem iSup_torsionBySet_ideal_eq_torsionBySet_iInf [DecidableEq ι] :
     ⨆ i ∈ S, torsionBySet R M (p i) = torsionBySet R M ↑(⨅ i ∈ S, p i) := by
-  cases' S.eq_empty_or_nonempty with h h
+  rcases S.eq_empty_or_nonempty with h | h
   · simp only [h]
     -- Porting note: converts were not cooperating
     convert iSup_emptyset (f := fun i => torsionBySet R M (p i)) <;> simp

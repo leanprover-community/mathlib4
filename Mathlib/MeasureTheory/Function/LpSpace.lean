@@ -68,8 +68,6 @@ open TopologicalSpace MeasureTheory Filter
 
 open scoped NNReal ENNReal BigOperators Topology MeasureTheory Uniformity
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 variable {α E F G : Type*} {m m0 : MeasurableSpace α} {p : ℝ≥0∞} {q : ℝ} {μ ν : Measure α}
   [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G]
 
@@ -376,7 +374,7 @@ theorem nnnorm_le_mul_nnnorm_of_ae_le_mul {c : ℝ≥0} {f : Lp E p μ} {g : Lp 
 
 theorem norm_le_mul_norm_of_ae_le_mul {c : ℝ} {f : Lp E p μ} {g : Lp F p μ}
     (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ c * ‖g x‖) : ‖f‖ ≤ c * ‖g‖ := by
-  cases' le_or_lt 0 c with hc hc
+  rcases le_or_lt 0 c with hc | hc
   · lift c to ℝ≥0 using hc
     exact NNReal.coe_le_coe.mpr (nnnorm_le_mul_nnnorm_of_ae_le_mul h)
   · simp only [norm_def]
@@ -445,7 +443,7 @@ instance instNormedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (Lp E
         map_zero' := norm_zero
         neg' := by simp
         add_le' := fun f g => by
-          suffices (‖f + g‖₊ : ℝ≥0∞) ≤ ‖f‖₊ + ‖g‖₊ by exact_mod_cast this
+          suffices (‖f + g‖₊ : ℝ≥0∞) ≤ ‖f‖₊ + ‖g‖₊ from mod_cast this
           simp only [Lp.nnnorm_coe_ennreal]
           exact (snorm_congr_ae (AEEqFun.coeFn_add _ _)).trans_le
             (snorm_add_le (Lp.aestronglyMeasurable _) (Lp.aestronglyMeasurable _) hp.out)
@@ -514,7 +512,7 @@ instance instIsScalarTower [SMul 𝕜 𝕜'] [IsScalarTower 𝕜 𝕜' E] : IsSc
 instance instBoundedSMul [Fact (1 ≤ p)] : BoundedSMul 𝕜 (Lp E p μ) :=
   -- TODO: add `BoundedSMul.of_nnnorm_smul_le`
   BoundedSMul.of_norm_smul_le fun r f => by
-    suffices (‖r • f‖₊ : ℝ≥0∞) ≤ ‖r‖₊ * ‖f‖₊ by exact_mod_cast this
+    suffices (‖r • f‖₊ : ℝ≥0∞) ≤ ‖r‖₊ * ‖f‖₊ from mod_cast this
     rw [nnnorm_def, nnnorm_def, ENNReal.coe_toNNReal (Lp.snorm_ne_top _),
       snorm_congr_ae (coeFn_smul _ _), ENNReal.coe_toNNReal (Lp.snorm_ne_top _)]
     exact snorm_const_smul_le r f
@@ -576,7 +574,7 @@ theorem snormEssSup_indicator_const_le (s : Set α) (c : G) :
 theorem snormEssSup_indicator_const_eq (s : Set α) (c : G) (hμs : μ s ≠ 0) :
     snormEssSup (s.indicator fun _ : α => c) μ = ‖c‖₊ := by
   refine' le_antisymm (snormEssSup_indicator_const_le s c) _
-  by_contra' h
+  by_contra! h
   have h' := ae_iff.mp (ae_lt_of_essSup_lt h)
   push_neg at h'
   refine' hμs (measure_mono_null (fun x hx_mem => _) h')
@@ -899,7 +897,7 @@ theorem Lp.norm_const_le : ‖Lp.const p μ c‖ ≤ ‖c‖ * (μ Set.univ).toR
 @[simps! apply]
 protected def Lp.constL (𝕜 : Type*) [NormedField 𝕜] [NormedSpace 𝕜 E] [Fact (1 ≤ p)] :
     E →L[𝕜] Lp E p μ :=
-  (Lp.constₗ p μ 𝕜).mkContinuous ((μ Set.univ).toReal ^ (1 / p.toReal)) <| fun _ ↦
+  (Lp.constₗ p μ 𝕜).mkContinuous ((μ Set.univ).toReal ^ (1 / p.toReal)) fun _ ↦
     (Lp.norm_const_le _ _ _).trans_eq (mul_comm _ _)
 
 theorem Lp.norm_constL_le (𝕜 : Type*) [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E]
@@ -1181,7 +1179,7 @@ def compLpₗ (L : E →L[𝕜] F) : Lp E p μ →ₗ[𝕜] Lp F p μ where
     ext1
     filter_upwards [Lp.coeFn_smul c f, coeFn_compLp L (c • f), Lp.coeFn_smul c (L.compLp f),
       coeFn_compLp L f] with _ ha1 ha2 ha3 ha4
-    simp only [ha1, ha2, ha3, ha4, SMulHomClass.map_smul, Pi.smul_apply]
+    simp only [ha1, ha2, ha3, ha4, map_smul, Pi.smul_apply]
 #align continuous_linear_map.comp_Lpₗ ContinuousLinearMap.compLpₗ
 
 /-- Composing `f : Lp E p μ` with `L : E →L[𝕜] F`, seen as a continuous `𝕜`-linear map on
@@ -1682,7 +1680,7 @@ theorem cauchy_complete_ℒp [CompleteSpace E] (hp : 1 ≤ p) {f : ℕ → α �
     ∃ (f_lim : α → E), Memℒp f_lim p μ ∧
       atTop.Tendsto (fun n => snorm (f n - f_lim) p μ) (𝓝 0) := by
   obtain ⟨f_lim, h_f_lim_meas, h_lim⟩ :
-      ∃ (f_lim : α → E) (_ : StronglyMeasurable f_lim),
+      ∃ f_lim : α → E, StronglyMeasurable f_lim ∧
         ∀ᵐ x ∂μ, Tendsto (fun n => f n x) atTop (nhds (f_lim x)) :=
     exists_stronglyMeasurable_limit_of_tendsto_ae (fun n => (hf n).1)
       (ae_tendsto_of_cauchy_snorm (fun n => (hf n).1) hp hB h_cau)
