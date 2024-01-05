@@ -198,12 +198,10 @@ theorem _root_.Algebra.coe_lmul_eq_mul : ⇑(Algebra.lmul R A) = mul R A :=
 theorem _root_.Algebra.lmul_injective : Function.Injective (Algebra.lmul R A) :=
   fun a₁ a₂ h ↦ by simpa using FunLike.congr_fun h 1
 
-theorem _root_.Algebra.lmul_isUnit_iff {A : Type*} [CommSemiring A] [Algebra R A] (x : A) :
+theorem _root_.Algebra.lmul_isUnit_iff {x : A} :
     IsUnit (Algebra.lmul R A x) ↔ IsUnit x := by
-  refine ⟨fun h ↦ ?_, fun h ↦ h.map (Algebra.lmul R A)⟩
-  obtain ⟨x, hx⟩ := ((Module.End_isUnit_iff _).mp h).2 1
-  rw [Algebra.coe_lmul_eq_mul, LinearMap.mul_apply'] at hx
-  exact isUnit_of_mul_eq_one _ _ hx
+  rw [Module.End_isUnit_iff, Iff.comm]
+  exact isUnit_iff_mulLeft_bijective
 
 @[simp]
 theorem mulLeft_eq_zero_iff (a : A) : mulLeft R a = 0 ↔ a = 0 := by
