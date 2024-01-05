@@ -1199,10 +1199,15 @@ def Machine [Inhabited Λ] := Λ → Γ → Option (Λ × Γ × Dir)
 
 local notation "MachineQ" => Machine Γ Λ
 
-/-- The configuration state of a Turing machine, coincides with TM0 -/
+/-- The configuration state of a Turing machine during operation
+  consists of a label (machine state), and a tape, represented in
+  the form `(a, L, R)` meaning the tape looks like `L.rev ++ [a] ++ R`
+  with the machine currently reading the `a`. The lists are
+  automatically extended with blanks as the machine moves around.
+  Coincides with the definition for TM0. -/
 structure Cfg where
-  q : Λ -- current state
-  Tape : Tape Γ -- current Tape
+  q : Λ
+  Tape : Tape Γ
 
 local notation "Cfg₀" => Cfg Γ Λ
 
