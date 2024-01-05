@@ -671,7 +671,7 @@ lemma add_smul_equiv (P Q : Fin 3 → R) (u v : Rˣ) : W.add (u • P) (v • Q)
       · rw [W.add_of_Xne huz hvz <| by
           simp_rw [smul_fin3_ext, mul_pow, mul_mul_mul_comm]; exact hx ∘ mul_left_cancel₀ (huv 2),
           addX_of_Xne_smul, addY_of_Xne_smul, addZ_of_Xne_smul, W.add_of_Xne hPz hQz hx]
-        exact ⟨u ^ 3 * v ^ 3,
+        exact ⟨u ^ 2 * v ^ 2,
           by simp_rw [smul_fin3, ← Units.val_pow_eq_pow_val, mul_pow, ← pow_mul]; rfl⟩
 
 lemma add_equiv {P P' Q Q' : Fin 3 → R} (hP : P ≈ P') (hQ : Q ≈ Q') : W.add P Q ≈ W.add P' Q' := by
@@ -772,8 +772,8 @@ lemma nonsingular_add {P Q : Fin 3 → F} (hP : W.nonsingular P) (hQ : W.nonsing
             (nonsingular_affine_of_Zne0 hQ hQz) fun _ => (negY_divZ hQz).symm ▸ Function.comp
             (mul_comm (P z ^ 3) _ ▸ hy) (div_eq_div_iff (pow_ne_zero 3 hPz) (pow_ne_zero 3 hQz)).mp
       · erw [W.add_of_Xne hPz hQz hx,
-          nonsingular_iff_affine_of_Zne0 <| addZ_ne_zero_of_Xne hPz hQz hx,
-          addX_div_addZ_of_Xne hPz hQz hx, addY_div_addZ_of_Xne hPz hQz hx]
+          nonsingular_iff_affine_of_Zne0 <| addZ_ne_zero_of_Xne hx,
+          addX_div_addZ_of_Xne hP hQ hPz hQz hx, addY_div_addZ_of_Xne hP hQ hPz hQz hx]
         exact W.toAffine.nonsingular_add (nonsingular_affine_of_Zne0 hP hPz)
           (nonsingular_affine_of_Zne0 hQ hQz) fun h => False.elim <| hx <|
           mul_comm (Q x) _ ▸ (div_eq_div_iff (pow_ne_zero 2 hPz) (pow_ne_zero 2 hQz)).mp h
