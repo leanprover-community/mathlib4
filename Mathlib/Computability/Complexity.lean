@@ -33,6 +33,9 @@ namespace Turing
 def isPolyTimeTM (tm : BitString → BitString) : Prop := Nonempty (@TM2ComputableInPolyTime
     BitString BitString finEncodingBitString finEncodingBitString tm)
 
+/- thm: FP is closed under composition -/
+/- p-/
+
 /-- Complexity class FP: the set of functions computable in polynomial time -/
 def PolyTimeTMs : Set (BitString → BitString) := {tm | isPolyTimeTM tm}
 
@@ -48,20 +51,6 @@ def PolyTimeLanguage (tm : PolyTimeTMs) : Set BitString := L_M tm
 def PolyTimeLanguages : Set (Set BitString) := {L_M tm | tm : PolyTimeTMs}
 
 open Turing.TM2.Stmt
-
-/-- A Turing machine computing the identity on α. -/
-def acceptAll {α : Type} (ea : FinEncoding α) : FinTM2 where
-  K := Unit
-  k₀ := ⟨⟩
-  k₁ := ⟨⟩
-  Γ _ := ea.Γ
-  Λ := Unit
-  main := ⟨⟩
-  σ := Unit
-  initialState := ⟨⟩
-  Γk₀Fin := ea.ΓFin
-  m _ := halt
-
 
 -- TODO: existence of universal TM, undecidability of halting; Rice's Theorem
 -- TODO: Other definitions of NP and their equivalance
