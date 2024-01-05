@@ -309,9 +309,7 @@ def GradedRing.projZeroRingHom : A →+* A where
 
 section GradeZero
 
-/--
-The semiring homomorphism from `A` to `𝒜 0` sending every `a : A` to `a₀`.
--/
+/-- The ring homomorphism from `A` to `𝒜 0` sending every `a : A` to `a₀`. -/
 def GradedRing.projZeroRingHom' : A →+* 𝒜 0 :=
   ((GradedRing.projZeroRingHom 𝒜).codRestrict _ fun _x => SetLike.coe_mem _ :
   A →+* SetLike.GradeZero.subsemiring 𝒜)
@@ -323,9 +321,7 @@ def GradedRing.projZeroRingHom' : A →+* 𝒜 0 :=
     GradedRing.projZeroRingHom' 𝒜 a = a := by
   ext; simp only [coe_projZeroRingHom'_apply, projZeroRingHom_apply, decompose_coe, of_eq_same]
 
-/--
-The semiring homomorphism `GradedRing.projZeroRingHom' 𝒜` is surjective.
--/
+/-- The ring homomorphism `GradedRing.projZeroRingHom' 𝒜` is surjective. -/
 lemma GradedRing.projZeroRingHom'_surjective :
     Function.Surjective (GradedRing.projZeroRingHom' 𝒜) :=
   Function.RightInverse.surjective (GradedRing.projZeroRingHom'_apply_coe 𝒜)
