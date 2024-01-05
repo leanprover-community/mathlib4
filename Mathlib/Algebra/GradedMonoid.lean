@@ -606,8 +606,17 @@ def submonoid : Submonoid R where
   mul_mem' ha hb := add_zero (0 : ι) ▸ SetLike.mul_mem_graded ha hb
   one_mem' := SetLike.one_mem_graded A
 
+-- TODO: it might be expensive to unify `A` in this instances in practice
 /-- The monoid `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`. -/
 instance instMonoid : Monoid (A 0) := inferInstanceAs <| Monoid (GradeZero.submonoid A)
+
+-- TODO: it might be expensive to unify `A` in this instances in practice
+/-- The commutative monoid `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`. -/
+instance instCommMonoid
+    {R S : Type*} [SetLike S R] [CommMonoid R] [AddCommMonoid ι]
+    {A : ι → S} [SetLike.GradedMonoid A] :
+    CommMonoid (A 0) :=
+  inferInstanceAs <| CommMonoid (GradeZero.submonoid A)
 
 /-- The linter message "error: SetLike.GradeZero.coe_one.{u_3, u_2, u_1} Left-hand side does
   not simplify, when using the simp lemma on itself." is wrong. The LHS does simplify. -/

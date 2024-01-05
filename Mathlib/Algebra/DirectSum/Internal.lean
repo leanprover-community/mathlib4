@@ -361,6 +361,7 @@ def subsemiring : Subsemiring R where
   add_mem' := add_mem
   zero_mem' := zero_mem (A 0)
 
+-- TODO: it might be expensive to unify `A` in this instance in practice
 /-- The semiring `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`. -/
 instance instSemiring : Semiring (A 0) := (subsemiring A).toSemiring
 
@@ -379,6 +380,7 @@ section CommSemiring
 variable [CommSemiring R] [AddCommMonoid ι] [SetLike σ R] [AddSubmonoidClass σ R]
 variable (A : ι → σ) [SetLike.GradedMonoid A]
 
+-- TODO: it might be expensive to unify `A` in this instances in practice
 /--The commutative semiring `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`.-/
 instance instCommSemiring : CommSemiring (A 0) := (subsemiring A).toCommSemiring
 
@@ -394,6 +396,7 @@ def subring : Subring R where
   __ := subsemiring A
   neg_mem' := neg_mem
 
+-- TODO: it might be expensive to unify `A` in this instances in practice
 /-- The ring `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`. -/
 instance instRing : Ring (A 0) := (subring A).toRing
 
@@ -405,6 +408,7 @@ section CommRing
 variable [CommRing R] [AddCommMonoid ι] [SetLike σ R] [AddSubgroupClass σ R]
 variable (A : ι → σ) [SetLike.GradedMonoid A]
 
+-- TODO: it might be expensive to unify `A` in this instances in practice
 /-- The commutative ring `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`. -/
 instance instCommRing : CommRing (A 0) := (subring A).toCommRing
 
@@ -420,6 +424,7 @@ def subalgebra : Subalgebra S R where
   __ := subsemiring A
   algebraMap_mem' := algebraMap_mem_graded A
 
+-- TODO: it might be expensive to unify `A` in this instances in practice
 /-- The `S`-algebra `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`. -/
 instance instAlgebra : Algebra S (A 0) := inferInstanceAs <| Algebra S (subalgebra A)
 
