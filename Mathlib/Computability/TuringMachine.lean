@@ -1201,8 +1201,8 @@ local notation "MachineQ" => Machine Γ Λ
 
 /-- The configuration state of a Turing machine, coincides with TM0 -/
 structure Cfg where
-  q : Λ
-  Tape : Tape Γ
+  q : Λ -- current state
+  Tape : Tape Γ -- current Tape
 
 local notation "Cfg₀" => Cfg Γ Λ
 
@@ -1212,6 +1212,7 @@ variable {Γ Λ}
 def step (M : MachineQ) : Cfg₀ → Option Cfg₀ :=
   fun ⟨q, T⟩ ↦ (M q T.1).map fun ⟨q', a , m⟩ ↦ ⟨q', (T.write a).move m⟩
 
+/-- The initial configuration -/
 def init (l : List Γ) : Cfg₀ := ⟨default, Tape.mk₁ l⟩
 
 /-- Evaluate a Turing machine on initial input to a final state, if it terminates. -/
