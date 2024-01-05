@@ -434,7 +434,7 @@ theorem eqOn_of_eqOn_frontier {f g : E → F} {U : Set E} (hU : IsBounded U) (hf
 /-- **Maximum modulus principle**: if `f : E → F` is complex differentiable and vanishing at
 infinity on a nonempty set `U ≠ univ` and is continuous on its closure, then there exists a point
 `z ∈ frontier U` such that `(‖f ·‖)` takes it maximum value on `closure U` at `z`. -/
-theorem Complex.exists_mem_frontier_isMaxOn_norm_of_zero_at_infty [FiniteDimensional ℂ E]
+theorem exists_mem_frontier_isMaxOn_norm_of_zero_at_infty [FiniteDimensional ℂ E]
     {f : E → F} {U : Set E} (htendsto : Tendsto f (cocompact E ⊓ 𝓟 (closure U)) (𝓝 0))
     (hU : U ≠ univ) (hne : U.Nonempty)
     (hd : DiffContOnCl ℂ f U) : ∃ z ∈ frontier U, IsMaxOn (norm ∘ f) (closure U) z := by
@@ -469,7 +469,7 @@ theorem Complex.exists_mem_frontier_isMaxOn_norm_of_zero_at_infty [FiniteDimensi
 /-- **Maximum modulus principle**: if `f : E → F` is complex differentiable and vanishing at
 infinity on a set `U ≠ univ` and is continuous on its closure, and `‖f z‖ ≤ C` for any
 `z ∈ frontier U`, then the same is true for any `z ∈ closure U`. -/
-theorem Complex.norm_le_of_forall_mem_frontier_norm_le_of_zero_at_infty [FiniteDimensional ℂ E]
+theorem norm_le_of_forall_mem_frontier_norm_le_of_zero_at_infty [FiniteDimensional ℂ E]
     {f : E → F} {U : Set E} (htendsto : Tendsto f (cocompact E ⊓ 𝓟 (closure U)) (𝓝 0))
     (hU : U ≠ univ) (hd : DiffContOnCl ℂ f U) {C : ℝ} (hC : ∀ z ∈ frontier U, ‖f z‖ ≤ C) {z : E}
     (hz : z ∈ closure U) : ‖f z‖ ≤ C := by
@@ -483,7 +483,7 @@ theorem Complex.norm_le_of_forall_mem_frontier_norm_le_of_zero_at_infty [FiniteD
 
 /-- If two complex differentiable functions `f g : E → F` that vanish at infinity are equal on the
 boundary of a bounded set `U`, then they are equal on `closure U`. -/
-theorem Complex.eqOn_closure_of_eqOn_frontier_of_zero_at_infty [FiniteDimensional ℂ E]
+theorem eqOn_closure_of_eqOn_frontier_of_zero_at_infty [FiniteDimensional ℂ E]
     {f g : E → F} {U : Set E} (hf_tendsto : Tendsto f (cocompact E ⊓ 𝓟 (closure U)) (𝓝 0))
     (hg_tendsto : Tendsto g (cocompact E ⊓ 𝓟 (closure U)) (𝓝 0))
     (hU : U ≠ univ) (hf : DiffContOnCl ℂ f U) (hg : DiffContOnCl ℂ g U)
@@ -499,7 +499,7 @@ theorem Complex.eqOn_closure_of_eqOn_frontier_of_zero_at_infty [FiniteDimensiona
 
 /-- If two complex differentiable functions `f g : E → F` that vanish at infinity
 are equal on the boundary of a set `U`, then they are equal on `U`. -/
-theorem Complex.eqOn_of_eqOn_frontier_of_zero_at_infty [FiniteDimensional ℂ E] {f g : E → F}
+theorem eqOn_of_eqOn_frontier_of_zero_at_infty [FiniteDimensional ℂ E] {f g : E → F}
     {U : Set E}
     (hU : U ≠ univ) (hf_tendsto : Tendsto f (cocompact E ⊓ 𝓟 (closure U)) (𝓝 0))
     (hg_tendsto : Tendsto g (cocompact E ⊓ 𝓟 (closure U)) (𝓝 0))
