@@ -21,10 +21,10 @@ the function `g`, that maps elements of `α` which are *not* in the subtype,
 is given access to a proof of non-membership of its argument in this definition.
  -/
 abbrev extendFun (f : Subtype p → β) (g : Subtype (¬p ·) → β) : α → β :=
-  Set.piecewiseMem {x | p x} (f ⟨·, ·⟩) g
+  Set.piecewiseMem {x | p x} (f ⟨·, ·⟩) (g ⟨·, ·⟩)
 
 theorem extend_eq_extendFun (f : Subtype p → β) (g : α → β) :
-    Function.extend Subtype.val f g = extendFun f (fun a _ => g a) := by
+    Function.extend Subtype.val f g = extendFun f (fun ⟨a, _⟩ => g a) := by
   funext a
   simp only [Function.extend, Subtype.exists, exists_prop, exists_eq_right, extendFun,
     Set.piecewiseMem, Set.mem_setOf_eq]
@@ -35,7 +35,7 @@ theorem extend_eq_extendFun (f : Subtype p → β) (g : α → β) :
     rw [← Subtype.val_inj, Classical.choose_spec this]
   · rfl
 
-variable {f : Subtype p → β} {g : (a : α) → ¬p a → β}
+variable {f : Subtype p → β} {g : Subtype (¬p ·) → β}
 
 lemma extendFun_of_p (a : α) (h : p a) : extendFun f g a = f ⟨a, h⟩ := by
   simp only [extendFun, Set.piecewiseMem, coe_eta, Set.mem_setOf_eq, h, dite_true]
