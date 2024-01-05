@@ -20,7 +20,7 @@ This is similar to `Function.extend`, but differs on two main points: it's compu
 the function `g`, that maps elements of `α` which are *not* in the subtype,
 is given access to a proof of non-membership of its argument in this definition.
  -/
-abbrev extendFun (f : Subtype p → β) (g : (a : α) → ¬p a → β) : α → β :=
+abbrev extendFun (f : Subtype p → β) (g : Subtype (¬p ·) → β) : α → β :=
   Set.piecewiseMem {x | p x} (f ⟨·, ·⟩) g
 
 theorem extend_eq_extendFun (f : Subtype p → β) (g : α → β) :
