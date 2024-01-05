@@ -65,45 +65,22 @@ open Matrix
 /-- The map from `Matrix n n R` to bilinear forms on `n → R`.
 
 This is an auxiliary definition for the equivalence `Matrix.toBilin'`. -/
-def Matrix.toBilin'Aux [Fintype n] (M : Matrix n n R₂) : BilinForm R₂ (n → R₂) where
-  bilin v w := ∑ i, ∑ j, v i * M i j * w j
-  bilin_add_left x y z := by simp only [Pi.add_apply, add_mul, sum_add_distrib]
-  bilin_smul_left a x y := by simp only [Pi.smul_apply, smul_eq_mul, mul_assoc, mul_sum]
-  bilin_add_right x y z := by simp only [Pi.add_apply, mul_add, sum_add_distrib]
-  bilin_smul_right a x y := by
-    simp only [Pi.smul_apply, smul_eq_mul, mul_assoc, mul_left_comm, mul_sum]
+def Matrix.toBilin'Aux [Fintype n] (M : Matrix n n R₂) : BilinForm R₂ (n → R₂) :=
+  LinearMap.toBilin (Matrix.toLinearMap₂'Aux _ _ M)
 #align matrix.to_bilin'_aux Matrix.toBilin'Aux
 
 theorem Matrix.toBilin'Aux_stdBasis [Fintype n] [DecidableEq n] (M : Matrix n n R₂) (i j : n) :
     M.toBilin'Aux (LinearMap.stdBasis R₂ (fun _ => R₂) i 1)
       (LinearMap.stdBasis R₂ (fun _ => R₂) j 1) = M i j := by
   rw [Matrix.toBilin'Aux]
-  dsimp only -- Porting note: had to add `dsimp only` to get rid of the projections
-  rw [sum_eq_single i, sum_eq_single j]
-  · simp only [stdBasis_same, stdBasis_same, one_mul, mul_one]
-  · rintro j' - hj'
-    apply mul_eq_zero_of_right
-    exact stdBasis_ne R₂ (fun _ => R₂) _ _ hj' 1
-  · intros
-    have := Finset.mem_univ j
-    contradiction
-  · rintro i' - hi'
-    refine' Finset.sum_eq_zero fun j _ => _
-    apply mul_eq_zero_of_left
-    apply mul_eq_zero_of_left
-    exact stdBasis_ne R₂ (fun _ => R₂) _ _ hi' 1
-  · intros
-    have := Finset.mem_univ i
-    contradiction
+  apply Matrix.toLinearMap₂'Aux_stdBasis
 #align matrix.to_bilin'_aux_std_basis Matrix.toBilin'Aux_stdBasis
 
 /-- The linear map from bilinear forms to `Matrix n n R` given an `n`-indexed basis.
 
 This is an auxiliary definition for the equivalence `Matrix.toBilin'`. -/
-def BilinForm.toMatrixAux (b : n → M₂) : BilinForm R₂ M₂ →ₗ[R₂] Matrix n n R₂ where
-  toFun B := of fun i j => B (b i) (b j)
-  map_add' _ _ := rfl
-  map_smul' _ _ := rfl
+def BilinForm.toMatrixAux (b : n → M₂) : BilinForm R₂ M₂ →ₗ[R₂] Matrix n n R₂ :=
+  (LinearMap.toMatrix₂Aux b b) ∘ₗ  BilinForm.toLinHom (R₂ := R₂)
 #align bilin_form.to_matrix_aux BilinForm.toMatrixAux
 
 @[simp]
