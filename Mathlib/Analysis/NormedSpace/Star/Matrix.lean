@@ -3,17 +3,33 @@ Copyright (c) 2022 Hans Parshall. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hans Parshall
 -/
+import Mathlib.Analysis.InnerProductSpace.Adjoint
 import Mathlib.Analysis.Matrix
 import Mathlib.Analysis.NormedSpace.Basic
 import Mathlib.Data.IsROrC.Basic
 import Mathlib.LinearAlgebra.UnitaryGroup
+import Mathlib.Topology.UniformSpace.Matrix
 
 #align_import analysis.normed_space.star.matrix from "leanprover-community/mathlib"@"468b141b14016d54b479eb7a0fff1e360b7e3cf6"
 
 /-!
-# Unitary matrices
+# Analytic properties of the `star` operation on matrices
 
-This file collects facts about the unitary matrices over `𝕜` (either `ℝ` or `ℂ`).
+## Main definitions
+
+* `Matrix.instNormedRingCstar`: the (necessarily unique) normed ring structure on `Matrix n n 𝕜`
+  which ensure it is a `CstarRing` in `Matrix.instCstarRing`. This is a scoped instance in the
+  namespace `Matrix.CstarNorm` in order to avoid choosing a global norm for `Matrix`.
+
+## Main statements
+
+* `entry_norm_bound_of_unitary`: the entries of a unitary matrix are uniformly boundd by `1`.
+
+## Implementation details
+
+We take care to ensure the topology and uniformity induced by `Matrix.instMetricSpaceCstar`
+coincide with the existing topology and uniformity on matrices.
+
 -/
 
 
@@ -70,3 +86,79 @@ theorem entrywise_sup_norm_bound_of_unitary {U : Matrix n n 𝕜} (hU : U ∈ Ma
 #align entrywise_sup_norm_bound_of_unitary entrywise_sup_norm_bound_of_unitary
 
 end EntrywiseSupNorm
+
+noncomputable section EuclideanSpaceOpNorm
+
+variable [Fintype n] [DecidableEq n] [IsROrC 𝕜]
+
+/-- The natural star algebra equivalence between matrices and continuous linear endomoporphisms
+of Euclidean space induced by the orthonormal basis `EuclideanSpace.basisFun`. -/
+def Matrix.toEuclideanClm :
+    Matrix n n 𝕜 ≃⋆ₐ[𝕜] (EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n) :=
+  LinearMap.toMatrixOrthonormal (EuclideanSpace.basisFun n 𝕜) |>.symm.trans <|
+    { LinearMap.toContinuousLinearMap with
+      map_mul' := fun _ _ ↦ rfl
+      map_star' := LinearMap.adjoint_toContinuousLinearMap }
+
+/-- An auxiliary definition used only to construct the true `NormedRing` (and `Metric`) structure
+provided by `Matrix.instMetricSpaceCstar` and `Matrix.instNormedRingCstar`.  -/
+def Matrix.NormedRingAuxCstar : NormedRing (Matrix n n 𝕜) :=
+  @NormedRing.induced ((Matrix n n 𝕜) ≃⋆ₐ[𝕜] (EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n))
+    _ _ _ ContinuousLinearMap.toNormedRing _ _ Matrix.toEuclideanClm.injective
+
+open Bornology Filter
+open scoped Topology Uniformity
+
+/-- The metric on `Matrix n n 𝕜` arising from the operator norm given by the identification with
+(continuous) linear endmorphisms of `EuclideanSpace 𝕜 n`. -/
+def Matrix.instMetricSpaceCstar : MetricSpace (Matrix n n 𝕜) := by
+  /- We first replace the topology so that we can automatically replace the uniformity using
+  `UniformAddGroup.toUniformSpace_eq`. -/
+  letI normed_ring : NormedRing (Matrix n n 𝕜) :=
+    { NormedRingAuxCstar.replaceTopology <|
+        toLin (EuclideanSpace.basisFun n 𝕜).toBasis (EuclideanSpace.basisFun n 𝕜).toBasis
+          |>.trans LinearMap.toContinuousLinearMap
+          |>.toContinuousLinearEquiv.toHomeomorph.inducing.induced with
+      norm := NormedRingAuxCstar.norm
+      dist_eq := NormedRingAuxCstar.dist_eq
+      norm_mul := NormedRingAuxCstar.norm_mul }
+  exact normed_ring.replaceUniformity <| by
+    congr
+    rw [← @UniformAddGroup.toUniformSpace_eq _ (instUniformSpaceMatrix n n 𝕜) _ _]
+    exact @UniformAddGroup.toUniformSpace_eq _ PseudoEMetricSpace.toUniformSpace _ _
+
+scoped[Matrix.CstarNorm] attribute [instance] Matrix.instMetricSpaceCstar
+
+open scoped Matrix.CstarNorm
+
+/-- The normed ring structure on `Matrix n n 𝕜` arising from the operator norm given by the
+identification with (continuous) linear endmorphisms of `EuclideanSpace 𝕜 n`. -/
+def Matrix.instNormedRingCstar : NormedRing (Matrix n n 𝕜) where
+  norm := NormedRingAuxCstar.norm
+  dist_eq := NormedRingAuxCstar.dist_eq
+  norm_mul := NormedRingAuxCstar.norm_mul
+
+scoped[Matrix.CstarNorm] attribute [instance] Matrix.instNormedRingCstar
+
+set_option synthInstance.maxHeartbeats 50000
+lemma Matrix.cstar_norm_def (x : Matrix n n 𝕜) : ‖x‖ = ‖toEuclideanClm (n := n) (𝕜 := 𝕜) x‖ := rfl
+
+/-- The normed algebra structure on `Matrix n n 𝕜` arising from the operator norm given by the
+identification with (continuous) linear endmorphisms of `EuclideanSpace 𝕜 n`. -/
+def Matrix.instNormedAlgebraCstar : NormedAlgebra 𝕜 (Matrix n n 𝕜) where
+  norm_smul_le r x := by
+    rw [cstar_norm_def, SMulHomClass.map_smul toEuclideanClm]
+    exact norm_smul_le r (toEuclideanClm (n := n) (𝕜 := 𝕜) x)
+
+scoped[Matrix.CstarNorm] attribute [instance] Matrix.instNormedAlgebraCstar
+
+/-- The operator norm on `Matrix n n 𝕜` given by the identification with (continuous) linear
+endmorphisms of `EuclideanSpace 𝕜 n` makes it into a `CstarRing`. -/
+def Matrix.instCstarRing : CstarRing (Matrix n n 𝕜) where
+  norm_star_mul_self {x} := by
+    simp only [cstar_norm_def, _root_.map_mul, map_star,
+      CstarRing.norm_star_mul_self (x := toEuclideanClm (n := n) (𝕜 := 𝕜) x)]
+
+scoped[Matrix.CstarNorm] attribute [instance] Matrix.instCstarRing
+
+end EuclideanSpaceOpNorm
