@@ -1,7 +1,14 @@
 /-
-Copyright (c) 2023 Alex Kontorovich and Heather Macbeth. All rights reserved.
+Copyright (c) 2024 Alex Kontorovich and Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Kontorovich, Heather Macbeth
+-/
+
+/-
+1/5/24 TO DO:
+
+get rid of unnecessary imports
+
 -/
 
 import Mathlib.Analysis.Fourier.FourierTransform
@@ -13,20 +20,46 @@ import Mathlib.Analysis.Complex.RealDeriv
 import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 
 /-!
-# The Fourier transform of a Schwartz function is Schwartz
+# The Frechet Derivative of the Fourier transform
+
+In this file, we evaluate the Fréchet derivative of the Fourier transform
+
 -/
 
 open MeasureTheory RealInnerProductSpace Complex Real
 
+-- -- lemma that if you compose a `ContinuousLinearMap` with a homothety, then the operator norm scales
+-- -- by the homotheity factor
+-- -- MOVE TO : right after `LinearIsometry.norm_toContinuousLinearMap_comp`
+-- @[simp] lemma ContinuousLinearMap.norm_homothety_comp {𝕜 : Type*} {𝕜₂ : Type*} {E : Type*}
+--     {F : Type*} {D : Type*} [NormedAddCommGroup E] [NormedAddCommGroup D] [NormedAddCommGroup F]
+--     [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [NormedSpace 𝕜 E] [NormedSpace 𝕜 D]
+--     [NormedSpace 𝕜₂ F] {σ₁₂ : 𝕜 →+* 𝕜₂} {e : D →L[𝕜] E} [RingHomIsometric σ₁₂]
+--     (f : E →SL[σ₁₂] F) {a : ℝ} (hf : ∀ (x : E), ‖f x‖ = a * ‖x‖) :
+--     ‖(f.comp e)‖ = a * ‖e‖ := by
+--   sorry
+
+
+-- -- lemma that if you have `LinearIsometry.toSpanSingleton` and you forget the `isometry` part while
+-- -- preserving continuity, you get `ContinuousLinearMap.toSpanSingleton`
+-- -- MOVE TO : right after `LinearIsometry.toSpanSingleton`
+-- @[simp] lemma LinearIsometry.toSpanSingleton.toContinuousLinearMap {𝕜 : Type*}
+--     [NontriviallyNormedField 𝕜] {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] {v : E}
+--     (hv : ‖v‖ = 1) :
+--     (LinearIsometry.toSpanSingleton 𝕜 E hv).toContinuousLinearMap
+--       = ContinuousLinearMap.toSpanSingleton 𝕜 v := rfl
+
+
 variable (E F : Type*) [NormedAddCommGroup E] [InnerProductSpace ℝ E] [MeasurableSpace E]
   [BorelSpace E] [FiniteDimensional ℝ E] [NormedAddCommGroup F] [NormedSpace ℂ F] [CompleteSpace F]
 
--- move to `SchwartzSpace` file (not needed for us any longer! For now...)
-theorem SchwartzMap.coe_mk (f : E → F) (h₁ h₂) : (SchwartzMap.mk f h₁ h₂ : E → F) = f := by rfl
+-- -- move to `SchwartzSpace` file (not needed for us any longer! For now...)
+-- theorem SchwartzMap.coe_mk (f : E → F) (h₁ h₂) : (SchwartzMap.mk f h₁ h₂ : E → F) = f := by rfl
 
 noncomputable section
 
-abbrev integralFourier (f : E → F) := (VectorFourier.fourierIntegral (E := F)) Real.fourierChar (volume : Measure E) (innerₛₗ ℝ) f
+abbrev integralFourier (f : E → F) :=
+  (VectorFourier.fourierIntegral (E := F)) Real.fourierChar (volume : Measure E) (innerₛₗ ℝ) f
 
 -- belongs in Mathlib.Analysis.InnerProductSpace.Calculus
 -- TODO : Add after `HasFDerivAt.inner`
@@ -34,9 +67,14 @@ theorem hasFDerivAt_inner (𝕜 : Type*) {E : Type*} [IsROrC 𝕜] [NormedAddCom
     [InnerProductSpace 𝕜 E] (v : E) (x : E) : HasFDerivAt (inner (𝕜 := 𝕜) v)
     (innerSL 𝕜 v) x := (innerSL 𝕜 v).hasFDerivAt
 
-attribute [continuity] continuous_ofAdd -- TO DO: tag in place
 
 
+attribute [continuity] continuous_ofAdd -- TO DO: tag where `continuous_ofAdd` is defined
+
+/--
+The Fréchet derivative of the Fourier transform of `f` is the Fourier transform of
+`fun v ↦ ((-2 * π * I) • f v) ⊗ (innerSL ℝ v)`.
+-/
 theorem hasFDerivAt_fourier {f : E → F} (hf_int : Integrable f)
     (hvf_int : Integrable (fun v ↦ ‖v‖ * ‖f v‖)) (x : E) :
     HasFDerivAt (integralFourier E F f)
@@ -49,7 +87,7 @@ theorem hasFDerivAt_fourier {f : E → F} (hf_int : Integrable f)
   convert hasFDerivAt_integral_of_dominated_of_fderiv_le
     (ε_pos := (by norm_num : (0:ℝ) < 1)) (bound := bound) (F' := F') _ _ _ _ _ _
   · simp only [VectorFourier.fourierIntegral, ofAdd_neg, map_inv, coe_inv_unitSphere, ofReal_mul,
-      ofReal_ofNat, neg_smul, smul_neg, neg_mul, SchwartzMap.coe_mk, ← mul_smul]
+      ofReal_ofNat, neg_smul, smul_neg, neg_mul, ← mul_smul]
     rfl
   · filter_upwards [] with w
     refine AEStronglyMeasurable.smul (Continuous.aestronglyMeasurable ?_)
@@ -64,22 +102,18 @@ theorem hasFDerivAt_fourier {f : E → F} (hf_int : Integrable f)
       apply Measurable.comp measurable_inv
       apply Continuous.measurable
       continuity
+    · sorry
   · filter_upwards [] with w u hu
-    simp only [Multiplicative.toAdd_symm_eq, ContinuousLinearMap.toSpanSingleton, neg_smul,
-      norm_smul, norm_inv, norm_eq_of_mem_sphere, inv_one, one_mul, ge_iff_le]
-    rw [ContinuousLinearMap.coe_mk']
-    apply le_of_eq
-
-
-#exit
----- STOPPED HERE 11/20/23
-
-
-    --rw [_root_.abs_of_nonneg (by positivity)]
-    -- congr! 1
-    -- let nsE : NormedSpace ℝ E := InnerProductSpace.toNormedSpace -- Typeclass Inference???
-    calc _ = ‖ofRealLi.toContinuousLinearMap ∘L (innerSL ℝ) w‖ := ?_
-        _ = _ := by simp [LinearIsometry.norm_toContinuousLinearMap_comp]
+    simp only [Multiplicative.toAdd_symm_eq, neg_smul, norm_smul, norm_inv, norm_eq_of_mem_sphere,
+      inv_one, one_mul, ge_iff_le]
+    convert ContinuousLinearMap.op_norm_comp_le _ _
+    · rw [ContinuousLinearMap.norm_toSpanSingleton]
+      simp [norm_smul]
+      left
+      sorry
+    · simp
+    · infer_instance
+    · infer_instance
   · sorry -- Integrable
   · -- checking the derivative formula
     filter_upwards [] with w
@@ -105,27 +139,3 @@ theorem hasFDerivAt_fourier {f : E → F} (hf_int : Integrable f)
         smul_eq_mul]
       congr! 1
       ring
-
-
-#exit
-
-
-def SchwartzMap.fourierTransform (f : SchwartzMap E ℂ) : SchwartzMap E ℂ where
-  toFun := VectorFourier.fourierIntegral Real.fourierChar (volume : Measure E) (innerₛₗ ℝ) f
-  smooth' := by
-      refine contDiff_top.mpr ?_
-      intro n
-      have : n = 1 := by sorry
-      rw [this]
-      norm_cast
-      refine contDiff_one_iff_fderiv.mpr ?_
-      constructor
-      · intro x
-        refine (@hasFDerivAt_integral_of_dominated_of_fderiv_le (𝕜 := ℝ)
-          (ε_pos := (by norm_num : (0:ℝ) < 1)) (α := E) (H := E) (E := ℂ) _ volume _ _ _ _ _ _
-          _ _ ?_ x ?_ ?_ ?_ ?_ ?_ ?_ ?_).differentiableAt
-        ·
-      · sorry
-
-
-  decay' := _
