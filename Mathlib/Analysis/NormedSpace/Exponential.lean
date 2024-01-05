@@ -472,6 +472,7 @@ theorem expSeries_summable (x : 𝔸) : Summable fun n => expSeries 𝕂 𝔸 n 
   (norm_expSeries_summable x).of_norm
 #align exp_series_summable NormedSpace.expSeries_summable
 
+variable (𝕂) in
 theorem expSeries_summable' [Algebra ℚ 𝔸] (x : 𝔸) : Summable fun n => (n !⁻¹ : ℚ) • x ^ n :=
   (norm_expSeries_summable' 𝕂 x).of_norm
 #align exp_series_summable' NormedSpace.expSeries_summable'
