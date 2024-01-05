@@ -71,7 +71,8 @@ def oneLePart (a : α) : α := a ⊔ 1
 #align lattice_ordered_comm_group.pos_part_def posPart
 #align has_pos_part.pos posPart
 
-/-- The *negative part* of an element `a` in a lattice ordered group is `a⁻¹ ⊔ 1`, denoted `a⁻ᵐ `. -/
+/-- The *negative part* of an element `a` in a lattice ordered group is `a⁻¹ ⊔ 1`, denoted `a⁻ᵐ `.
+-/
 @[to_additive
 "The *negative part* of an element `a` in a lattice ordered group is `(-a) ⊔ 0`, denoted `a⁻`."]
 def leOnePart (a : α) : α := a⁻¹ ⊔ 1
