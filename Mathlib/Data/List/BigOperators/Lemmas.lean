@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 -/
-import Mathlib.Init.CCLemmas
+-- import Mathlib.Init.CCLemmas
 import Mathlib.Data.List.BigOperators.Basic
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.GroupPower.Basic
@@ -62,7 +62,7 @@ theorem prod_eq_one_iff [CanonicallyOrderedCommMonoid M] (l : List M) :
 
 /-- If a product of integers is `-1`, then at least one factor must be `-1`. -/
 theorem neg_one_mem_of_prod_eq_neg_one {l : List ℤ} (h : l.prod = -1) : (-1 : ℤ) ∈ l := by
-  obtain ⟨x, h₁, h₂⟩ := exists_mem_ne_one_of_prod_ne_one (ne_of_eq_of_ne h (by decide))
+  obtain ⟨x, h₁, h₂⟩ := exists_mem_ne_one_of_prod_ne_one (by rw [h]; decide)
   exact
     Or.resolve_left
         (Int.isUnit_iff.mp

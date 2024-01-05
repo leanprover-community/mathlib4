@@ -183,8 +183,8 @@ theorem eq_of_cmp_eq : ∀ {o₁ o₂}, cmp o₁ o₂ = Ordering.eq → o₁ = o
     obtain rfl := eq_of_cmp_eq h₁
     revert h; cases h₂ : _root_.cmp (n₁ : ℕ) n₂ <;> intro h <;> try cases h
     obtain rfl := eq_of_cmp_eq h
-    rw [_root_.cmp, cmpUsing_eq_eq] at h₂
-    obtain rfl := Subtype.eq (eq_of_incomp h₂)
+    rw [_root_.cmp, cmpUsing_eq_eq, not_lt, not_lt, ← le_antisymm_iff] at h₂
+    obtain rfl := Subtype.eq h₂
     simp
 #align onote.eq_of_cmp_eq ONote.eq_of_cmp_eq
 
@@ -351,10 +351,10 @@ theorem cmp_compares : ∀ (a b : ONote) [NF a] [NF b], (cmp a b).Compares a b
       cases' nh with nh nh
       · cases nh; contradiction
       cases' nh with nhl nhr
-      rw [ite_eq_iff] at nhr
+      rw [ite_eq_iff, not_lt] at nhr
       cases' nhr with nhr nhr
       · cases nhr; contradiction
-      obtain rfl := Subtype.eq (eq_of_incomp ⟨(not_lt_of_ge nhl), nhr.left⟩)
+      obtain rfl := Subtype.eq (le_antisymm nhl nhr.left)
       have IHa := @cmp_compares _ _ h₁.snd h₂.snd
       revert IHa; cases cmp a₁ a₂ <;> intro IHa <;> dsimp at IHa
       case lt => exact oadd_lt_oadd_3 IHa

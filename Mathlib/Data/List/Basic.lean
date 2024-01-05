@@ -2568,8 +2568,7 @@ theorem nthLe_succ_scanl {i : ℕ} {h : i + 1 < (scanl f b l).length} :
     · simp [scanl_cons, singleton_append, nthLe_zero_scanl, nthLe_cons]
   | succ i hi =>
     cases l
-    · simp only [length, add_lt_iff_neg_right, scanl_nil] at h
-      exact absurd h (not_lt_of_lt Nat.succ_pos')
+    · simp only [length, add_lt_iff_neg_right, scanl_nil, not_lt_zero] at h
     · simp_rw [scanl_cons]
       rw [nthLe_append_right]
       · simp only [length, zero_add 1, succ_add_sub_one, hi]; rfl

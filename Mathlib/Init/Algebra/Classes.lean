@@ -374,11 +374,6 @@ theorem trichotomous_of [IsTrichotomous α r] : ∀ a b : α, a ≺ b ∨ a = b 
   trichotomous
 #align trichotomous_of trichotomous_of
 
-@[elab_without_expected_type]
-theorem incomp_trans_of [IsIncompTrans α r] {a b c : α} :
-    ¬a ≺ b ∧ ¬b ≺ a → ¬b ≺ c ∧ ¬c ≺ b → ¬a ≺ c ∧ ¬c ≺ a :=
-  incomp_trans
-#align incomp_trans_of incomp_trans_of
 
 end ExplicitRelationVariants
 
@@ -451,48 +446,3 @@ theorem isStrictWeakOrder_of_isTotalPreorder {α : Type u} {le : α → α → P
       have hca : le c a := trans_of le hcb hba
       And.intro (fun n => absurd hca (Iff.mp (h _ _) n)) fun n => absurd hac (Iff.mp (h _ _) n) }
 #align is_strict_weak_order_of_is_total_preorder isStrictWeakOrder_of_isTotalPreorder
-
-theorem lt_of_lt_of_incomp {α : Type u} {lt : α → α → Prop} [IsStrictWeakOrder α lt]
-    [DecidableRel lt] : ∀ {a b c}, lt a b → ¬lt b c ∧ ¬lt c b → lt a c :=
-  @fun a b c hab ⟨nbc, ncb⟩ =>
-  have nca : ¬lt c a := fun hca => absurd (trans_of lt hca hab) ncb
-  Decidable.by_contradiction fun nac : ¬lt a c =>
-    have : ¬lt a b ∧ ¬lt b a := incomp_trans_of lt ⟨nac, nca⟩ ⟨ncb, nbc⟩
-    absurd hab this.1
-#align lt_of_lt_of_incomp lt_of_lt_of_incomp
-
-theorem lt_of_incomp_of_lt {α : Type u} {lt : α → α → Prop} [IsStrictWeakOrder α lt]
-    [DecidableRel lt] : ∀ {a b c}, ¬lt a b ∧ ¬lt b a → lt b c → lt a c :=
-  @fun a b c ⟨nab, nba⟩ hbc =>
-  have nca : ¬lt c a := fun hca => absurd (trans_of lt hbc hca) nba
-  Decidable.by_contradiction fun nac : ¬lt a c =>
-    have : ¬lt b c ∧ ¬lt c b := incomp_trans_of lt ⟨nba, nab⟩ ⟨nac, nca⟩
-    absurd hbc this.1
-#align lt_of_incomp_of_lt lt_of_incomp_of_lt
-
-theorem eq_of_incomp {α : Type u} {lt : α → α → Prop} [IsTrichotomous α lt] {a b} :
-    ¬lt a b ∧ ¬lt b a → a = b := fun ⟨nab, nba⟩ =>
-  match trichotomous_of lt a b with
-  | Or.inl hab => absurd hab nab
-  | Or.inr (Or.inl hab) => hab
-  | Or.inr (Or.inr hba) => absurd hba nba
-#align eq_of_incomp eq_of_incomp
-
-theorem eq_of_eqv_lt {α : Type u} {lt : α → α → Prop} [IsTrichotomous α lt] {a b} :
-    a ≈[lt]b → a = b :=
-  eq_of_incomp
-#align eq_of_eqv_lt eq_of_eqv_lt
-
-theorem incomp_iff_eq {α : Type u} {lt : α → α → Prop} [IsTrichotomous α lt] [IsIrrefl α lt] (a b) :
-    ¬lt a b ∧ ¬lt b a ↔ a = b :=
-  Iff.intro eq_of_incomp fun hab => hab ▸ And.intro (irrefl_of lt a) (irrefl_of lt a)
-#align incomp_iff_eq incomp_iff_eq
-
-theorem eqv_lt_iff_eq {α : Type u} {lt : α → α → Prop} [IsTrichotomous α lt] [IsIrrefl α lt] (a b) :
-    a ≈[lt]b ↔ a = b :=
-  incomp_iff_eq a b
-#align eqv_lt_iff_eq eqv_lt_iff_eq
-
-theorem not_lt_of_lt {α : Type u} {lt : α → α → Prop} [IsStrictOrder α lt] {a b} :
-    lt a b → ¬lt b a := fun h₁ h₂ => absurd (trans_of lt h₁ h₂) (irrefl_of lt _)
-#align not_lt_of_lt not_lt_of_lt

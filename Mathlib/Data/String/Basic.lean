@@ -82,7 +82,7 @@ theorem lt_iff_toList_lt : ∀ {s₁ s₂ : String}, s₁ < s₂ ↔ s₁.toList
       · apply List.nil_lt_cons
     · rename_i c₁ cs₁ ih; apply iff_of_false
       · rw [ltb]; simp [Iterator.hasNext, Iterator.curr]
-      · apply not_lt_of_lt; apply List.nil_lt_cons
+      · apply (List.nil_lt_cons _ _).not_lt
     · rename_i c₁ cs₁ ih c₂ cs₂; rw [ltb]
       simp [Iterator.hasNext, endPos, utf8ByteSize, utf8ByteSize.go, csize_pos, Iterator.curr, get,
             utf8GetAux, Iterator.next, next]

@@ -18,14 +18,12 @@ namespace Int
 /-! 1. Lemmas for reducing the problem to the case where the numerals are positive -/
 
 
-protected theorem ne_neg_of_ne {a b : ℤ} : a ≠ b → -a ≠ -b := fun h₁ h₂ =>
-  absurd (Int.neg_eq_neg h₂) h₁
+protected theorem ne_neg_of_ne {a b : ℤ} : a ≠ b → -a ≠ -b :=
+  mt Int.neg_eq_neg
 #align int.ne_neg_of_ne Int.ne_neg_of_ne
 
-protected theorem neg_ne_zero_of_ne {a : ℤ} : a ≠ 0 → -a ≠ 0 := fun h₁ h₂ => by
-  have : -a = -0 := by rwa [Int.neg_zero]
-  have : a = 0 := Int.neg_eq_neg this
-  contradiction
+protected theorem neg_ne_zero_of_ne {a : ℤ} : a ≠ 0 → -a ≠ 0 := fun h₁ =>
+  Int.neg_zero ▸ Int.ne_neg_of_ne h₁
 #align int.neg_ne_zero_of_ne Int.neg_ne_zero_of_ne
 
 protected theorem zero_ne_neg_of_ne {a : ℤ} (h : 0 ≠ a) : 0 ≠ -a :=
