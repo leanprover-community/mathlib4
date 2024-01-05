@@ -198,9 +198,8 @@ theorem smul_pow_mem_of_movedBy_subset {a : α} {s : Set α} {g : G} (s_subset :
   · rw [not_mem_movedBy_iff_mem_fixedBy, mem_fixedBy] at a_fixed
     rw [a_fixed]
 
--- TODO: rename to smul_mem
 @[to_additive]
-theorem smul_in_set_of_movedBy_subset {a : α} {s : Set α} {g : G} (superset : movedBy α g ⊆ s) :
+theorem smul_mem_of_movedBy_subset {a : α} {s : Set α} {g : G} (superset : movedBy α g ⊆ s) :
     g • a ∈ s ↔ a ∈ s := (zpow_one g) ▸ smul_pow_mem_of_movedBy_subset superset 1
 
 @[to_additive]
