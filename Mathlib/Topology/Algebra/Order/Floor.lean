@@ -66,7 +66,7 @@ variable [OrderClosedTopology α]
 
 -- porting note: new theorem
 theorem tendsto_floor_right_pure_floor (x : α) : Tendsto (floor : α → ℤ) (𝓝[≥] x) (pure ⌊x⌋) :=
-  tendsto_pure.2 <| mem_of_superset (Ico_mem_nhdsWithin_Ici' <| lt_floor_add_one x) <| fun _y hy =>
+  tendsto_pure.2 <| mem_of_superset (Ico_mem_nhdsWithin_Ici' <| lt_floor_add_one x) fun _y hy =>
     floor_eq_on_Ico _ _ ⟨(floor_le x).trans hy.1, hy.2⟩
 
 -- porting note: new theorem
@@ -76,7 +76,7 @@ theorem tendsto_floor_right_pure (n : ℤ) : Tendsto (floor : α → ℤ) (𝓝[
 -- porting note: new theorem
 theorem tendsto_ceil_left_pure_ceil (x : α) : Tendsto (ceil : α → ℤ) (𝓝[≤] x) (pure ⌈x⌉) :=
   tendsto_pure.2 <| mem_of_superset
-    (Ioc_mem_nhdsWithin_Iic' <| sub_lt_iff_lt_add.2 <| ceil_lt_add_one _) <| fun _y hy =>
+    (Ioc_mem_nhdsWithin_Iic' <| sub_lt_iff_lt_add.2 <| ceil_lt_add_one _) fun _y hy =>
       ceil_eq_on_Ioc _ _ ⟨hy.1, hy.2.trans (le_ceil _)⟩
 
 -- porting note: new theorem
@@ -88,7 +88,7 @@ theorem tendsto_floor_left_pure_ceil_sub_one (x : α) :
     Tendsto (floor : α → ℤ) (𝓝[<] x) (pure (⌈x⌉ - 1)) :=
   have h₁ : ↑(⌈x⌉ - 1) < x := by rw [cast_sub, cast_one, sub_lt_iff_lt_add]; exact ceil_lt_add_one _
   have h₂ : x ≤ ↑(⌈x⌉ - 1) + 1 := by rw [cast_sub, cast_one, sub_add_cancel]; exact le_ceil _
-  tendsto_pure.2 <| mem_of_superset (Ico_mem_nhdsWithin_Iio' h₁) <| fun _y hy =>
+  tendsto_pure.2 <| mem_of_superset (Ico_mem_nhdsWithin_Iio' h₁) fun _y hy =>
     floor_eq_on_Ico _ _ ⟨hy.1, hy.2.trans_le h₂⟩
 
 -- porting note: new theorem
@@ -100,7 +100,7 @@ theorem tendsto_floor_left_pure_sub_one (n : ℤ) :
 theorem tendsto_ceil_right_pure_floor_add_one (x : α) :
     Tendsto (ceil : α → ℤ) (𝓝[>] x) (pure (⌊x⌋ + 1)) :=
   have : ↑(⌊x⌋ + 1) - 1 ≤ x := by rw [cast_add, cast_one, add_sub_cancel]; exact floor_le _
-  tendsto_pure.2 <| mem_of_superset (Ioc_mem_nhdsWithin_Ioi' <| lt_succ_floor _) <| fun _y hy =>
+  tendsto_pure.2 <| mem_of_superset (Ioc_mem_nhdsWithin_Ioi' <| lt_succ_floor _) fun _y hy =>
     ceil_eq_on_Ioc _ _ ⟨this.trans_lt hy.1, hy.2⟩
 
 -- porting note: new theorem
