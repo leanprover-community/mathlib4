@@ -5,6 +5,7 @@ Authors: Antoine Chambert-Loir
 -/
 import Mathlib.GroupTheory.Subgroup.Actions
 import Mathlib.GroupTheory.GroupAction.Basic
+import Mathlib.GroupTheory.GroupAction.FixedPoints
 
 #align_import group_theory.group_action.fixing_subgroup from "leanprover-community/mathlib"@"f93c11933efbc3c2f0299e47b8ff83e9b539cbf6"
 
@@ -35,6 +36,10 @@ TODO :
 * Maybe other lemmas are useful
 
 * Treat semigroups ?
+
+* add `to_additive` for the various lemmas
+
+* `movingSubgroup`
 
 -/
 
@@ -120,6 +125,15 @@ theorem mem_fixingSubgroup_iff {s : Set α} {m : M} : m ∈ fixingSubgroup M s �
   ⟨fun hg y hy => hg ⟨y, hy⟩, fun h ⟨y, hy⟩ => h y hy⟩
 #align mem_fixing_subgroup_iff mem_fixingSubgroup_iff
 
+theorem mem_fixingSubgroup_iff_subset_fixedBy {s : Set α} {m : M} :
+    m ∈ fixingSubgroup M s ↔ s ⊆ fixedBy α m := by
+  rw [mem_fixingSubgroup_iff, Set.subset_def]
+  simp only [mem_fixedBy]
+
+theorem mem_fixingSubgroup_compl_iff_movedBy_subset {s : Set α} {m : M} :
+    m ∈ fixingSubgroup M sᶜ ↔ movedBy α m ⊆ s := by
+  rw [mem_fixingSubgroup_iff_subset_fixedBy, fixedBy_eq_compl_movedBy, Set.compl_subset_compl]
+
 variable (α)
 
 /-- The Galois connection between fixing subgroups and fixed points of a group action -/
@@ -160,5 +174,14 @@ theorem fixedPoints_subgroup_iSup {ι : Sort*} {P : ι → Subgroup M} :
     fixedPoints (↥(iSup P)) α = ⋂ i, fixedPoints (P i) α :=
   (fixingSubgroup_fixedPoints_gc M α).u_iInf
 #align fixed_points_subgroup_supr fixedPoints_subgroup_iSup
+
+/-- The orbit of the moving subgroup of `s` is a subset of `s` -/
+theorem orbit_fixingSubgroup_compl_subset {s : Set α}
+    {a : α} (a_in_s : a ∈ s) : MulAction.orbit (fixingSubgroup M sᶜ) a ⊆ s := by
+  intro b b_in_orbit
+  let ⟨⟨g, g_fixing⟩, g_eq⟩ := MulAction.mem_orbit_iff.mp b_in_orbit
+  rw [Submonoid.mk_smul] at g_eq
+  rw [mem_fixingSubgroup_compl_iff_movedBy_subset] at g_fixing
+  rwa [<-g_eq, smul_in_set_of_movedBy_subset g_fixing]
 
 end Group
