@@ -354,10 +354,10 @@ variable {t₀}
   chosen starting point `x₀ : M`, an integral curve `γ : ℝ → M` exists such that `γ t₀ = x₀` and the
   tangent vector of `γ` at `t` coincides with the vector field at `γ t` for all `t` within an open
   interval around `t₀`. -/
-lemma exists_isIntegralCurveAt_of_contMDiffAt_boundaryless [I.Boundaryless]
+lemma exists_isIntegralCurveAt_of_contMDiffAt_boundaryless [BoundarylessManifold I M]
     (hv : ContMDiffAt I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)) x₀) :
     ∃ (γ : ℝ → M), γ t₀ = x₀ ∧ IsIntegralCurveAt γ v t₀ :=
-  exists_isIntegralCurveAt_of_contMDiffAt t₀ hv I.isInteriorPoint
+  exists_isIntegralCurveAt_of_contMDiffAt t₀ hv (BoundarylessManifold.isInteriorPoint I)
 
 /-- If `γ` is an integral curve of a vector field `v`, then `γ t` is tangent to `v (γ t)` when
   expressed in the local chart around the initial point `γ t₀`. -/
@@ -477,11 +477,11 @@ theorem isIntegralCurveAt_eqOn_of_contMDiffAt (hγt₀ : I.IsInteriorPoint (γ t
   · intros t ht
     rw [Function.comp_apply, Function.comp_apply, h, PartialEquiv.left_inv _ (hsrc' _ ht)]
 
-theorem isIntegralCurveAt_eqOn_of_contMDiffAt_boundaryless [I.Boundaryless]
+theorem isIntegralCurveAt_eqOn_of_contMDiffAt_boundaryless [BoundarylessManifold I M]
     (hv : ContMDiffAt I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M)) (γ t₀))
     (hγ : IsIntegralCurveAt γ v t₀) (hγ' : IsIntegralCurveAt γ' v t₀) (h : γ t₀ = γ' t₀) :
     ∃ ε > 0, EqOn γ γ' (Ioo (t₀ - ε) (t₀ + ε)) :=
-  isIntegralCurveAt_eqOn_of_contMDiffAt I.isInteriorPoint hv hγ hγ' h
+  isIntegralCurveAt_eqOn_of_contMDiffAt (BoundarylessManifold.isInteriorPoint I) hv hγ hγ' h
 
 variable [T2Space M] {a b a' b' : ℝ}
 
@@ -539,12 +539,13 @@ theorem isIntegralCurveOn_Ioo_eqOn_of_contMDiff (ht₀ : t₀ ∈ Ioo a b)
   intros t ht
   exact mem_setOf.mp ((subset_def ▸ hsub) t ht).1
 
-theorem isIntegralCurveOn_Ioo_eqOn_of_contMDiff_boundaryless [I.Boundaryless]
+theorem isIntegralCurveOn_Ioo_eqOn_of_contMDiff_boundaryless [BoundarylessManifold I M]
     (ht₀ : t₀ ∈ Ioo a b)
     (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M)))
     (hγ : IsIntegralCurveOn γ v (Ioo a b)) (hγ' : IsIntegralCurveOn γ' v (Ioo a b))
     (h : γ t₀ = γ' t₀) : EqOn γ γ' (Ioo a b) :=
-  isIntegralCurveOn_Ioo_eqOn_of_contMDiff ht₀ (fun _ _ => I.isInteriorPoint) hv hγ hγ' h
+  isIntegralCurveOn_Ioo_eqOn_of_contMDiff
+    ht₀ (fun _ _ => BoundarylessManifold.isInteriorPoint I) hv hγ hγ' h
 
 /-- Global integral curves are unique.
 
@@ -567,12 +568,13 @@ theorem isIntegralCurve_eq_of_contMDiff (hγt : ∀ t, I.IsInteriorPoint (γ t))
     (IsIntegralCurveOn.mono (hγ.isIntegralCurveOn _) (subset_univ _))
     (IsIntegralCurveOn.mono (hγ'.isIntegralCurveOn _) (subset_univ _)) h ht
 
-theorem isIntegralCurve_Ioo_eq_of_contMDiff_boundaryless [I.Boundaryless]
+theorem isIntegralCurve_Ioo_eq_of_contMDiff_boundaryless [BoundarylessManifold I M]
     (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M)))
     (hγ : IsIntegralCurve γ v) (hγ' : IsIntegralCurve γ' v) (h : γ t₀ = γ' t₀) : γ = γ' :=
-  isIntegralCurve_eq_of_contMDiff (fun _ => I.isInteriorPoint) hv hγ hγ' h
+  isIntegralCurve_eq_of_contMDiff
+    (fun _ => BoundarylessManifold.isInteriorPoint I) hv hγ hγ' h
 
-lemma exists_isIntegralCurveOn_Ioo_eqOn [I.Boundaryless]
+lemma exists_isIntegralCurveOn_Ioo_eqOn [BoundarylessManifold I M]
     (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M))) {x : M}
     (h : ∀ a, ∃ γ, γ 0 = x ∧ IsIntegralCurveOn γ v (Ioo (-a) a)) {a a' : ℝ} (hpos : 0 < a')
     (hle : a' ≤ a) : EqOn (choose (h a')) (choose (h a)) (Ioo (-a') a') := by
@@ -588,7 +590,7 @@ lemma exists_isIntegralCurveOn_Ioo_eqOn [I.Boundaryless]
   `Ioo (-a) a`. We choose one for every `a` and call it `γ a`. We define a global curve
   `γ_ext := fun t ↦ γ (|t| + 1) t`. For every `a : ℝ`, `γ` agrees with `γ a` on `Ioo (-a) a`. This
   will help us show that `γ` is a global integral curve. -/
-lemma integralCurve_of_exists_isIntegralCurveOn_Ioo_eqOn [I.Boundaryless]
+lemma integralCurve_of_exists_isIntegralCurveOn_Ioo_eqOn [BoundarylessManifold I M]
     (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M))) {x : M}
     (h : ∀ a, ∃ γ, γ 0 = x ∧ IsIntegralCurveOn γ v (Ioo (-a) a)) {a : ℝ} :
     EqOn (fun t' ↦ choose (h (|t'| + 1)) t') (choose (h a)) (Ioo (-a) a) := by
@@ -608,7 +610,7 @@ lemma integralCurve_of_exists_isIntegralCurveOn_Ioo_eqOn [I.Boundaryless]
 
 /-- If for every `a : ℝ`, there exists an integral curve defined on `Ioo (-a) a`, then there exists
   a global integral curve. -/
-lemma exists_integralCurve_of_exists_isIntegralCurveOn_Ioo [I.Boundaryless] [T2Space M]
+lemma exists_integralCurve_of_exists_isIntegralCurveOn_Ioo [BoundarylessManifold I M] [T2Space M]
     (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M))) {x : M}
     (h : ∀ a, ∃ γ, γ 0 = x ∧ IsIntegralCurveOn γ v (Ioo (-a) a)) :
     ∃ γ, γ 0 = x ∧ IsIntegralCurve γ v := by
@@ -625,7 +627,7 @@ lemma exists_integralCurve_of_exists_isIntegralCurveOn_Ioo [I.Boundaryless] [T2S
       exact Ioo_mem_nhds this.1 this.2
     · apply integralCurve_of_exists_isIntegralCurveOn_Ioo_eqOn hv
 
-lemma exists_isIntegralCurve_iff_exists_isIntegralCurveOn_Ioo [I.Boundaryless] [T2Space M]
+lemma exists_isIntegralCurve_iff_exists_isIntegralCurveOn_Ioo [BoundarylessManifold I M] [T2Space M]
     (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M))) (x : M) :
     (∃ γ, γ 0 = x ∧ IsIntegralCurve γ v) ↔
       ∀ a, ∃ γ, γ 0 = x ∧ IsIntegralCurveOn γ v (Ioo (-a) a) := by
@@ -635,7 +637,7 @@ lemma exists_isIntegralCurve_iff_exists_isIntegralCurveOn_Ioo [I.Boundaryless] [
     exact ⟨γ, h1, h2.isIntegralCurveOn _⟩
   · apply exists_integralCurve_of_exists_isIntegralCurveOn_Ioo hv
 
-lemma piecewise_eqOn_symm [I.Boundaryless]
+lemma piecewise_eqOn_symm [BoundarylessManifold I M]
     (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M)))
     {a b a' b' : ℝ} (hγ : IsIntegralCurveOn γ v (Ioo a b))
     (hγ' : IsIntegralCurveOn γ' v (Ioo a' b'))
@@ -667,7 +669,7 @@ lemma piecewise_eqOn_symm [I.Boundaryless]
 
   This is stated for manifolds without boundary for simplicity. We actually only need to assume that
   the images of `γ` and `γ'` lie in the interior of the manifold. -/
-lemma isIntegralCurveOn_piecewise [I.Boundaryless]
+lemma isIntegralCurveOn_piecewise [BoundarylessManifold I M]
     (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M)))
     {a b a' b' : ℝ} (hγ : IsIntegralCurveOn γ v (Ioo a b))
     (hγ' : IsIntegralCurveOn γ' v (Ioo a' b')) {t₀ : ℝ}
@@ -693,7 +695,7 @@ lemma isIntegralCurveOn_piecewise [I.Boundaryless]
   curve passing through it.
 
   See Lemma 9.15, Lee -/
-lemma exists_isIntegralCurve_of_isIntegralCurveOn [I.Boundaryless] {M : Type*} [TopologicalSpace M]
+lemma exists_isIntegralCurve_of_isIntegralCurveOn [BoundarylessManifold I M] {M : Type*} [TopologicalSpace M]
     [ChartedSpace H M] [SmoothManifoldWithCorners I M] [T2Space M] {v : (x : M) → TangentSpace I x}
     (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M)))
     {ε : ℝ} (hε : 0 < ε) (h : ∀ x : M, ∃ γ : ℝ → M, γ 0 = x ∧ IsIntegralCurveOn γ v (Ioo (-ε) ε))
