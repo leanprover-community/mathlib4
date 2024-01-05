@@ -240,10 +240,6 @@ noncomputable def homotopyCofiber : HomologicalComplex C c where
       · simp [homotopyCofiber.inlX_d' φ j k hjk hk]
     · simp
 
-<<<<<<< HEAD
-=======
-
->>>>>>> origin
 namespace homotopyCofiber
 
 /-- The right inclusion `G ⟶ homotopyCofiber φ`. -/
