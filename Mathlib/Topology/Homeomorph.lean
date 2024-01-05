@@ -74,6 +74,7 @@ protected def empty [IsEmpty X] [IsEmpty Y] : X ≃ₜ Y where
   __ := Equiv.equivOfIsEmpty X Y
 
 /-- Inverse of a homeomorphism. -/
+@[symm]
 protected def symm (h : X ≃ₜ Y) : Y ≃ₜ X where
   continuous_toFun := h.continuous_invFun
   continuous_invFun := h.continuous_toFun
@@ -117,6 +118,7 @@ protected def refl (X : Type*) [TopologicalSpace X] : X ≃ₜ X where
 #align homeomorph.refl Homeomorph.refl
 
 /-- Composition of two homeomorphisms. -/
+@[trans]
 protected def trans (h₁ : X ≃ₜ Y) (h₂ : Y ≃ₜ Z) : X ≃ₜ Z where
   continuous_toFun := h₂.continuous_toFun.comp h₁.continuous_toFun
   continuous_invFun := h₁.continuous_invFun.comp h₂.continuous_invFun
