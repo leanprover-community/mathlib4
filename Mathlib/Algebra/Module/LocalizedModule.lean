@@ -604,6 +604,7 @@ lemma isLocalizedModule_id (R') [CommRing R'] [Algebra R R'] [IsLocalization S R
   surj' m := ⟨(m, 1), one_smul _ _⟩
   exists_of_eq h := ⟨1, congr_arg _ h⟩
 
+variable {S} in
 theorem isLocalizedModule_iff_isLocalization {A Aₛ} [CommRing A] [Algebra R A][CommRing Aₛ]
     [Algebra A Aₛ] [Algebra R Aₛ] [IsScalarTower R A Aₛ] :
     IsLocalizedModule S (IsScalarTower.toAlgHom R A Aₛ).toLinearMap ↔
@@ -632,9 +633,14 @@ theorem isLocalizedModule_iff_isLocalization {A Aₛ} [CommRing A] [Algebra R A]
     · rintro ⟨⟨_, s, hs, rfl⟩, h⟩
       exact ⟨⟨s, hs⟩, by rwa [← Algebra.smul_def, ← Algebra.smul_def] at h⟩
 
+instance {A Aₛ} [CommRing A] [Algebra R A][CommRing Aₛ] [Algebra A Aₛ] [Algebra R Aₛ]
+    [IsScalarTower R A Aₛ] [h : IsLocalization (Algebra.algebraMapSubmonoid A S) Aₛ] :
+    IsLocalizedModule S (IsScalarTower.toAlgHom R A Aₛ).toLinearMap :=
+  isLocalizedModule_iff_isLocalization.mpr h
+
 lemma isLocalizedModule_iff_isLocalization' (R') [CommRing R'] [Algebra R R'] :
     IsLocalizedModule S (Algebra.ofId R R').toLinearMap ↔ IsLocalization S R' := by
-  convert isLocalizedModule_iff_isLocalization S (A := R) (Aₛ := R')
+  convert isLocalizedModule_iff_isLocalization (S := S) (A := R) (Aₛ := R')
   exact (Submonoid.map_id S).symm
 
 namespace LocalizedModule
