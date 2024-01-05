@@ -88,6 +88,23 @@ theorem IsLUB.inv (h : IsLUB s a) : IsGLB s⁻¹ a⁻¹ :=
 #align is_lub.inv IsLUB.inv
 #align is_lub.neg IsLUB.neg
 
+@[to_additive]
+lemma BddBelow.bddAbove_range_inv  {α : Type*} {f : α → G} (hf : BddBelow (Set.range f)) :
+    BddAbove (Set.range (fun x => (f x)⁻¹)) := by
+  rw [bddAbove_def]
+  rw [bddBelow_def] at hf
+  obtain ⟨C, hC⟩ := hf
+  refine ⟨C⁻¹, fun y hy => ?_⟩
+  rw [Set.mem_range] at hy
+  obtain ⟨y', hy'⟩ := hy
+  calc y = (f y')⁻¹  := hy'.symm
+       _ ≤ C⁻¹ := inv_le_inv_iff.mpr (hC (f y') (by simp))
+
+@[to_additive]
+lemma BddAbove.bddBelow_range_inv  {α : Type*} {f : α → G} (hf : BddAbove (Set.range f)) :
+    BddBelow (Set.range (fun x => (f x)⁻¹)) :=
+  BddBelow.bddAbove_range_inv (G := Gᵒᵈ) hf
+
 end InvNeg
 
 section mul_add
@@ -134,6 +151,25 @@ theorem BddBelow.mul {s t : Set M} (hs : BddBelow s) (ht : BddBelow t) : BddBelo
   (Nonempty.mul hs ht).mono (subset_lowerBounds_mul s t)
 #align bdd_below.mul BddBelow.mul
 #align bdd_below.add BddBelow.add
+
+@[to_additive]
+lemma BddAbove.range_mul {α : Type*} {f g : α → M} (hf : BddAbove (Set.range f))
+    (hg : BddAbove (Set.range g)) : BddAbove (Set.range (fun x => f x * g x)) := by
+  rw [bddAbove_def] at hf hg ⊢
+  obtain ⟨Cf, hCf⟩ := hf
+  obtain ⟨Cg, hCg⟩ := hg
+  refine ⟨Cf * Cg, fun y hy => ?_⟩
+  rw [Set.mem_range] at hy
+  obtain ⟨y', hy'⟩ := hy
+  specialize hCf (f y') (by simp)
+  specialize hCg (g y') (by simp)
+  calc y = f y' * g y'  := hy'.symm
+       _ ≤ Cf * Cg := mul_le_mul' hCf hCg
+
+@[to_additive]
+lemma BddBelow.range_mul {α : Type*} {f g : α → M} (hf : BddBelow (Set.range f))
+    (hg : BddBelow (Set.range g)) : BddBelow (Set.range (fun x => f x * g x)) :=
+  BddAbove.range_mul (M := Mᵒᵈ) hf hg
 
 end mul_add
 
