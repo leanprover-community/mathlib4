@@ -14,7 +14,7 @@ import Mathlib.Topology.Instances.NNReal
 
 We define the natural functor from `SimplexCategory` to `TopCat` sending `[n]` to the
 topological `n`-simplex.
-This is used to define `TopCat.toSSet` in `AlgebraicTopology.SingularSet`.
+This is used to define `TopCat.toSSet` in `AlgebraicTopology.SimplicialSet`.
 -/
 
 set_option linter.uppercaseLean3 false
