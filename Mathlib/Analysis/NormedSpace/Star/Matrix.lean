@@ -154,7 +154,7 @@ scoped[Matrix.CstarNorm] attribute [instance] Matrix.instNormedAlgebraCstar
 
 /-- The operator norm on `Matrix n n 𝕜` given by the identification with (continuous) linear
 endmorphisms of `EuclideanSpace 𝕜 n` makes it into a `CstarRing`. -/
-def Matrix.instCstarRing : CstarRing (Matrix n n 𝕜) where
+lemma Matrix.instCstarRing : CstarRing (Matrix n n 𝕜) where
   norm_star_mul_self {x} := by
     simp only [cstar_norm_def, _root_.map_mul, map_star,
       CstarRing.norm_star_mul_self (x := toEuclideanClm (n := n) (𝕜 := 𝕜) x)]
