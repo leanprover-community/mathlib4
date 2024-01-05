@@ -269,7 +269,7 @@ private lemma star_nonneg_of_nonneg (hx : 0 ≤ x) : 0 ≤ star x := by
   have := hx (s.map $ starRingEnd R) (mem_of_subset_of_mem ?_ (image_subset _ hs))
   simpa only [starRingEnd_apply, star_involutive.eq_iff, AddSubmonoid.mem_map, exists_prop,
     exists_eq_right] using this
-  simp [←range_comp, mul_comm, Function.comp, starRingEnd_apply, Subset.rfl]
+  simp [← range_comp, mul_comm, Function.comp, starRingEnd_apply, Subset.rfl]
 
 @[simp] lemma star_nonneg : 0 ≤ star x ↔ 0 ≤ x :=
   ⟨fun hx ↦ by simpa only [star_star] using star_nonneg_of_nonneg hx, star_nonneg_of_nonneg⟩
@@ -282,7 +282,7 @@ end CommSemiring
 section CommRing
 variable [CommRing R] [PartialOrder R] [StarOrderedRing R] {x : R}
 
-@[simp] lemma star_nonpos : star x ≤ 0 ↔ x ≤ 0 := by simp_rw [←neg_nonneg, ←star_neg, star_nonneg]
-@[simp] lemma star_neg' : star x < 0 ↔ x < 0 := by simp_rw [←neg_pos, ←star_neg, star_pos]
+@[simp] lemma star_nonpos : star x ≤ 0 ↔ x ≤ 0 := by simp_rw [← neg_nonneg, ← star_neg, star_nonneg]
+@[simp] lemma star_neg' : star x < 0 ↔ x < 0 := by simp_rw [← neg_pos, ← star_neg, star_pos]
 
 end CommRing
