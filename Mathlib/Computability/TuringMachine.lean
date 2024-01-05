@@ -1206,11 +1206,11 @@ local notation "MachineQ" => Machine Γ Λ
   automatically extended with blanks as the machine moves around.
   Coincides with the definition for TM0. -/
 @[nolint docBlame]
-structure CfgQ where
+structure Cfg where
   q : Λ
   Tape : Tape Γ
 
-local notation "Cfg₀" => CfgQ Γ Λ
+local notation "Cfg₀" => Cfg Γ Λ
 
 variable {Γ Λ}
 
