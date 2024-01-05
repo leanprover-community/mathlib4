@@ -5,6 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Group.Units
 import Mathlib.GroupTheory.GroupAction.Defs
+import Mathlib.Tactic.Common
 
 #align_import group_theory.group_action.units from "leanprover-community/mathlib"@"f1a2caaf51ef593799107fe9a8d5e411599f3996"
 
@@ -64,10 +65,11 @@ instance instSMulZeroClass [Monoid M] [Zero α] [SMulZeroClass M α] : SMulZeroC
 instance instDistribSMulUnits [Monoid M] [AddZeroClass α] [DistribSMul M α] :
     DistribSMul Mˣ α where smul_add m := smul_add (m : M)
 
-instance instDistribMulAction [Monoid M] [AddMonoid α] [DistribMulAction M α] : DistribMulAction Mˣ α :=
-  { instDistribSMulUnits with
-    one_smul := fun b => one_smul M b
-    mul_smul := fun x y b => mul_smul (x : M) y b }
+instance instDistribMulAction [Monoid M] [AddMonoid α] [DistribMulAction M α] :
+    DistribMulAction Mˣ α where
+  __ := instDistribSMulUnits
+  one_smul := fun b => one_smul M b
+  mul_smul := fun x y b => mul_smul (x : M) y b
 
 instance instMulDistribMulAction [Monoid M] [Monoid α] [MulDistribMulAction M α] :
     MulDistribMulAction Mˣ α where
