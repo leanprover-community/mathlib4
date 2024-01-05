@@ -126,7 +126,7 @@ theorem pow_lt_pow_left (h : x < y) (hx : 0 ≤ x) : ∀ {n : ℕ}, n ≠ 0 → 
       mul_lt_mul_of_le_of_le' (pow_le_pow_left hx h.le _) h (pow_pos (hx.trans_lt h) _) hx
 #align pow_lt_pow_of_lt_left pow_lt_pow_left
 
-/-- See also `pow_left_strictMonoOn`. -/
+/-- See also `pow_left_strictMono` and `Nat.pow_left_strictMono`. -/
 lemma pow_left_strictMonoOn (hn : n ≠ 0) : StrictMonoOn (· ^ n : R → R) (Set.Ici 0) :=
   fun _a ha _b _ hab ↦ pow_lt_pow_left hab ha hn
 #align strict_mono_on_pow pow_left_strictMonoOn
@@ -167,9 +167,7 @@ theorem pow_lt_self_of_lt_one (h₀ : 0 < a) (h₁ : a < 1) (hn : 1 < n) : a ^ n
   simpa only [pow_one] using pow_lt_pow_right_of_lt_one h₀ h₁ hn
 #align pow_lt_self_of_lt_one pow_lt_self_of_lt_one
 
-theorem sq_pos_of_pos (ha : 0 < a) : 0 < a ^ 2 := by
-  rw [sq]
-  exact mul_pos ha ha
+theorem sq_pos_of_pos (ha : 0 < a) : 0 < a ^ 2 := pow_pos ha _
 #align sq_pos_of_pos sq_pos_of_pos
 
 end StrictOrderedSemiring
@@ -297,10 +295,6 @@ theorem pow_bit0_nonneg (a : R) (n : ℕ) : 0 ≤ a ^ bit0 n := by
   exact mul_self_nonneg _
 #align pow_bit0_nonneg pow_bit0_nonneg
 
-theorem sq_nonneg (a : R) : 0 ≤ a ^ 2 :=
-  pow_bit0_nonneg a 1
-#align sq_nonneg sq_nonneg
-
 alias pow_two_nonneg := sq_nonneg
 #align pow_two_nonneg pow_two_nonneg
 
@@ -402,20 +396,6 @@ theorem pow_four_le_pow_two_of_pow_two_le {x y : R} (h : x ^ 2 ≤ y) : x ^ 4 �
 
 end LinearOrderedRing
 
-section LinearOrderedCommRing
-
-variable [LinearOrderedCommRing R]
-
-/-- Arithmetic mean-geometric mean (AM-GM) inequality for linearly ordered commutative rings. -/
-theorem two_mul_le_add_sq (a b : R) : 2 * a * b ≤ a ^ 2 + b ^ 2 :=
-  sub_nonneg.mp ((sub_add_eq_add_sub _ _ _).subst ((sub_sq a b).subst (sq_nonneg _)))
-#align two_mul_le_add_sq two_mul_le_add_sq
-
-alias two_mul_le_add_pow_two := two_mul_le_add_sq
-#align two_mul_le_add_pow_two two_mul_le_add_pow_two
-
-end LinearOrderedCommRing
-
 section LinearOrderedCommMonoidWithZero
 
 variable [LinearOrderedCommMonoidWithZero M] [NoZeroDivisors M] {a : M} {n : ℕ}
@@ -458,3 +438,27 @@ theorem map_sub_swap (x y : R) : f (x - y) = f (y - x) := by rw [← map_neg, ne
 #align monoid_hom.map_sub_swap MonoidHom.map_sub_swap
 
 end MonoidHom
+
+/-!
+### Deprecated lemmas
+
+Those lemmas have been deprecated on 2023-12-23.
+-/
+
+@[deprecated] alias pow_mono := pow_right_mono
+@[deprecated] alias pow_le_pow := pow_le_pow_right
+@[deprecated] alias pow_le_pow_of_le_left := pow_le_pow_left
+@[deprecated] alias pow_lt_pow_of_lt_left := pow_lt_pow_left
+@[deprecated] alias strictMonoOn_pow := pow_left_strictMonoOn
+@[deprecated] alias pow_strictMono_right := pow_right_strictMono
+@[deprecated] alias pow_lt_pow := pow_lt_pow_right
+@[deprecated] alias pow_lt_pow_iff := pow_lt_pow_iff_right
+@[deprecated] alias pow_le_pow_iff := pow_le_pow_iff_right
+@[deprecated] alias self_lt_pow := lt_self_pow
+@[deprecated] alias strictAnti_pow := pow_right_strictAnti
+@[deprecated] alias pow_lt_pow_iff_of_lt_one := pow_lt_pow_iff_right_of_lt_one
+@[deprecated] alias pow_lt_pow_of_lt_one := pow_lt_pow_right_of_lt_one
+@[deprecated] alias lt_of_pow_lt_pow := lt_of_pow_lt_pow_left
+@[deprecated] alias le_of_pow_le_pow := le_of_pow_le_pow_left
+@[deprecated] alias pow_lt_pow₀ := pow_lt_pow_right₀
+@[deprecated] alias self_le_pow := le_self_pow
