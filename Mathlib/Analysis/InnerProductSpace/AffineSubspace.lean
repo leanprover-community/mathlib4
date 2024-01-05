@@ -199,20 +199,27 @@ lemma IsOrtho_comm {s t : AffineSubspace 𝕜 P} : s.IsOrtho t ↔ t.IsOrtho s :
 lemma symmetric_isOrtho : Symmetric (IsOrtho : AffineSubspace 𝕜 P → AffineSubspace 𝕜 P → Prop) :=
   fun _ _ => IsOrtho.symm
 
+/-- The empty subspace is orthogonal to all subspaces. -/
 @[simp]
 lemma isOrtho_bot_left {s : AffineSubspace 𝕜 P} : IsOrtho ⊥ s := by simp [IsOrtho]
 
+/-- All subspaces are orthogonal to the empty subspace -/
 @[simp]
 lemma isOrtho_bot_right {s : AffineSubspace 𝕜 P} : s.IsOrtho ⊥ := IsOrtho.symm isOrtho_bot_left
 
+/-- If a subspace `s₁` is orthogonal to `t`, then so is any subspace `s₂ ≤ s₁`. -/
 lemma IsOrtho.mono_left {s₁ s₂ t : AffineSubspace 𝕜 P} (hs : s₂ ≤ s₁) (h : s₁.IsOrtho t) :
     s₂.IsOrtho t := by
   simp [IsOrtho]
   exact Submodule.IsOrtho.mono_left (direction_le hs) h
 
+/-- If a subspace `s` is orthogonal to `t₁`, then it is also orthogonal to any subspace `t₂ ≤ t₁`.
+-/
 lemma IsOrtho.mono_right {s t₁ t₂ : AffineSubspace 𝕜 P} (ht : t₂ ≤ t₁) (h : s.IsOrtho t₁) :
     s.IsOrtho t₂ := (h.symm.mono_left ht).symm
 
+/-- If a subspace `s₁` is orthogonal to `t₁`, then any subspace `s₂ ≤ s₁` is also orthogonal to
+`t₂ ≤ t₁` -/
 lemma IsOrtho.mono {s₁ s₂ t₁ t₂ : AffineSubspace 𝕜 P} (hs : s₂ ≤ s₁) (ht : t₂ ≤ t₁)
     (h : s₁.IsOrtho t₁) : s₂.IsOrtho t₂ := (h.mono_right ht).mono_left hs
 
@@ -228,6 +235,8 @@ lemma isOrtho_orthogonal_right {s : AffineSubspace 𝕜 P} (b : P) : s.IsOrtho (
 lemma isOrtho_orthogonal_left {s : AffineSubspace 𝕜 P} (b : P) : (s.orthogonal b).IsOrtho s :=
   IsOrtho.symm (isOrtho_orthogonal_right b)
 
+/-- If a subspace `s` is orthogonal to `t`, then `s` is a subspace of the orthogonal complement to
+`t` through some point `b`. -/
 lemma IsOrtho.le {s t : AffineSubspace 𝕜 P} (h : s.IsOrtho t) :
     ∃ (b : P), s ≤ t.orthogonal b := by
   by_cases hs : s = ⊥
@@ -247,6 +256,8 @@ lemma IsOrtho.le {s t : AffineSubspace 𝕜 P} (h : s.IsOrtho t) :
       exact vsub_mem_direction hp hs.some_mem
     · rw [vsub_vadd]
 
+/-- If a subspace `s` is orthogonal `t`, then `t` is a subspace of the orthogonal complement to `s`
+through some point `b`. -/
 lemma IsOrtho.ge {s t : AffineSubspace 𝕜 P} (h : s.IsOrtho t) : ∃ (b : P), t ≤ s.orthogonal b :=
   h.symm.le
 
