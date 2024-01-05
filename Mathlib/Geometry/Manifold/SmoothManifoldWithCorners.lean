@@ -478,7 +478,9 @@ end ModelWithCornersProd
 
 section Boundaryless
 
-/-- Property ensuring that the model with corners `I` defines manifolds without boundary. -/
+/-- Property ensuring that the model with corners `I` defines manifolds without boundary. This
+  differs from the more general `BoundarylessManifold`, which requires every point on the manifold
+  to be an interior point.  -/
 class ModelWithCorners.Boundaryless {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
     (I : ModelWithCorners 𝕜 E H) : Prop where
