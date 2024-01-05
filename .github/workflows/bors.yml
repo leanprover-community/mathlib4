@@ -170,6 +170,7 @@ jobs:
           # The ProofWidgets release contains not just the `.js` (which we need in order to build)
           # but also `.oleans`, which may have been built with the wrong toolchain.
           # This removes them.
+          # See discussion at https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/nightly-testing/near/411225235
           rm -rf .lake/packages/proofwidgets/.lake/build/lib
           rm -rf .lake/packages/proofwidgets/.lake/build/ir
 
