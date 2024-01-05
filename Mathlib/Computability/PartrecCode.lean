@@ -812,7 +812,8 @@ theorem evaln_mono : ∀ {k₁ k₂ c n x}, k₁ ≤ k₂ → x ∈ evaln k₁ c
       · exact fun y h₁ h₂ => ⟨y, evaln_mono hl' h₁, hg _ _ h₂⟩
     · -- rfind' cf
       simp? [Bind.bind] at h ⊢ says
-        simp only [unpaired, bind, pair_unpair, Option.mem_def, Option.bind_eq_some] at h ⊢
+        simp only [unpaired, bind, pair_unpair, Option.pure_def, Option.mem_def,
+          Option.bind_eq_some] at h ⊢
       refine' h.imp fun x => And.imp (hf _ _) _
       by_cases x0 : x = 0 <;> simp [x0]
       exact evaln_mono hl'
