@@ -1218,32 +1218,6 @@ theorem conj_pow' (u : Mˣ) (x : M) (n : ℕ) :
 
 end Units
 
-namespace MulOpposite
-
-/-- Moving to the opposite monoid commutes with taking powers. -/
-@[simp]
-theorem op_pow [Monoid M] (x : M) (n : ℕ) : op (x ^ n) = op x ^ n :=
-  rfl
-#align mul_opposite.op_pow MulOpposite.op_pow
-
-@[simp]
-theorem unop_pow [Monoid M] (x : Mᵐᵒᵖ) (n : ℕ) : unop (x ^ n) = unop x ^ n :=
-  rfl
-#align mul_opposite.unop_pow MulOpposite.unop_pow
-
-/-- Moving to the opposite group or `GroupWithZero` commutes with taking powers. -/
-@[simp]
-theorem op_zpow [DivInvMonoid M] (x : M) (z : ℤ) : op (x ^ z) = op x ^ z :=
-  rfl
-#align mul_opposite.op_zpow MulOpposite.op_zpow
-
-@[simp]
-theorem unop_zpow [DivInvMonoid M] (x : Mᵐᵒᵖ) (z : ℤ) : unop (x ^ z) = unop x ^ z :=
-  rfl
-#align mul_opposite.unop_zpow MulOpposite.unop_zpow
-
-end MulOpposite
-
 -- Porting note: this was added in an ad hoc port for use in `Tactic/NormNum/Basic`
 
 @[simp] theorem pow_eq {m : ℤ} {n : ℕ} : m.pow n = m ^ n := rfl
