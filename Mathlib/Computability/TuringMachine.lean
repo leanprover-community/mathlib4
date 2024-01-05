@@ -1205,11 +1205,11 @@ local notation "MachineQ" => Machine Γ Λ
   with the machine currently reading the `a`. The lists are
   automatically extended with blanks as the machine moves around.
   Coincides with the definition for TM0. -/
-structure Cfg where
+structure CfgQ where
   q : Λ
   Tape : Tape Γ
 
-local notation "Cfg₀" => Cfg Γ Λ
+local notation "Cfg₀" => CfgQ Γ Λ
 
 variable {Γ Λ}
 
