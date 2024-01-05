@@ -695,8 +695,8 @@ lemma isIntegralCurveOn_piecewise [BoundarylessManifold I M]
   curve passing through it.
 
   See Lemma 9.15, Lee -/
-lemma exists_isIntegralCurve_of_isIntegralCurveOn [BoundarylessManifold I M] {M : Type*} [TopologicalSpace M]
-    [ChartedSpace H M] [SmoothManifoldWithCorners I M] [T2Space M] {v : (x : M) → TangentSpace I x}
+lemma exists_isIntegralCurve_of_isIntegralCurveOn [BoundarylessManifold I M]
+    {v : (x : M) → TangentSpace I x}
     (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M)))
     {ε : ℝ} (hε : 0 < ε) (h : ∀ x : M, ∃ γ : ℝ → M, γ 0 = x ∧ IsIntegralCurveOn γ v (Ioo (-ε) ε))
     (x : M) : ∃ γ : ℝ → M, γ 0 = x ∧ IsIntegralCurve γ v := by
