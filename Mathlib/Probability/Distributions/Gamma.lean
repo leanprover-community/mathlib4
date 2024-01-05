@@ -21,7 +21,7 @@ Define the Gamma Measure over the Reals
   `gammaPdf a r = ENNReal.ofReal (gammaPdfReal a r)`.
 * `gammaMeasure`: a Gamma measure on `ℝ`, parametrized by its shape `a` and rate `r`.
 * `gammaCdfReal`: the CDF given by the definition of CDF in `ProbabilityTheory.Cdf` applied to the
-Gamma measure.
+  Gamma measure.
 -/
 
 open scoped ENNReal NNReal
@@ -40,7 +40,7 @@ namespace ProbabilityTheory
 
 section GammaPdf
 
-/-- Define the pdf of the gamma distribution depending on its scale and rate-/
+/-- The pdf of the gamma distribution depending on its scale and rate-/
 noncomputable
 def gammaPdfReal (a r x : ℝ) : ℝ :=
   if 0 ≤ x then r ^ a / (Gamma a) * x ^ (a-1) * exp (-(r * x)) else 0
@@ -130,7 +130,7 @@ noncomputable
 def gammaCdfReal (a r : ℝ) : StieltjesFunction :=
   cdf (gammaMeasure a r)
 
-lemma gammaCdfReal_eq_integral {a r : ℝ} (ha : 0 < a) (hr : 0 < r) (x : ℝ):
+lemma gammaCdfReal_eq_integral {a r : ℝ} (ha : 0 < a) (hr : 0 < r) (x : ℝ) :
     gammaCdfReal a r x = ∫ x in Iic x, gammaPdfReal a r x := by
   have : IsProbabilityMeasure (gammaMeasure a r) := isProbabilityMeasureGamma ha hr
   rw [gammaCdfReal, cdf_eq_toReal, gammaMeasure, withDensity_apply _ measurableSet_Iic]
