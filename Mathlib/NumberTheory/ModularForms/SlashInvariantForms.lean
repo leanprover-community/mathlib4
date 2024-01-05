@@ -208,9 +208,14 @@ theorem coeHom_injective : Function.Injective (@coeHom Γ k) :=
 instance : Module ℂ (SlashInvariantForm Γ k) :=
   coeHom_injective.module ℂ coeHom fun _ _ => rfl
 
-instance : One (SlashInvariantForm Γ 0) :=
-  ⟨{toFun := 1
-    slash_action_eq' := fun A => ModularForm.is_invariant_one A }⟩
+/-- The `SlashInvariantForm` corresponding to `Function.const _ x`. -/
+@[simps (config := .asFn)]
+def const (x : ℂ) : SlashInvariantForm Γ 0 where
+  toFun := Function.const _ x
+  slash_action_eq' A := ModularForm.is_invariant_const A x
+
+instance : One (SlashInvariantForm Γ 0) where
+  one := { const 1 with toFun := 1 }
 
 @[simp]
 theorem one_coe_eq_one : ((1 : SlashInvariantForm Γ 0) : ℍ → ℂ) = 1 :=
@@ -232,5 +237,17 @@ def mul {k₁ k₂ : ℤ} {Γ : Subgroup SL(2, ℤ)} (f : SlashInvariantForm Γ 
 theorem coe_mul {k₁ k₂ : ℤ} {Γ : Subgroup SL(2, ℤ)} (f : SlashInvariantForm Γ k₁)
     (g : SlashInvariantForm Γ k₂) : ⇑(f.mul g) = ⇑f * ⇑g :=
   rfl
+
+instance (Γ : Subgroup SL(2, ℤ)) : NatCast (SlashInvariantForm Γ 0) where
+  natCast n := const n
+
+@[simp, norm_cast]
+theorem coe_natCast (n : ℕ) : ⇑(n : SlashInvariantForm Γ 0) = n := rfl
+
+instance (Γ : Subgroup SL(2, ℤ)) : IntCast (SlashInvariantForm Γ 0) where
+  intCast z := const z
+
+@[simp, norm_cast]
+theorem coe_intCast (z : ℤ) : ⇑(z : SlashInvariantForm Γ 0) = z := rfl
 
 end SlashInvariantForm

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
 import Mathlib.Data.Polynomial.Eval
-import Mathlib.LinearAlgebra.Dimension
+import Mathlib.LinearAlgebra.Dimension.Constructions
 
 #align_import algebra.linear_recurrence from "leanprover-community/mathlib"@"039a089d2a4b93c761b234f3e5f5aeb752bac60f"
 
