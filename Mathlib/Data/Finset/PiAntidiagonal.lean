@@ -183,9 +183,9 @@ variable {ι μ : Type*}
 variable [AddCommMonoid μ] [HasAntidiagonal μ] [DecidableEq ι] [DecidableEq μ]
 
 lemma mem_piAntidiagonal' (s : Finset ι) (n : μ) (f) :
-    f ∈ piAntidiagonal s n ↔ f.support ≤ s ∧ s.sum f = n := by
+    f ∈ piAntidiagonal s n ↔ f.support ⊆ s ∧ s.sum f = n := by
   rw [mem_piAntidiagonal]
-  simp only [le_eq_subset, and_congr_right_iff]
+  simp only [and_congr_right_iff]
   intro hs
   rw [sum_of_support_subset _ hs]
   exact fun _ _ => rfl
@@ -195,7 +195,7 @@ theorem piAntidiagonal_empty_of_zero :
     piAntidiagonal (∅ : Finset ι) (0 : μ) = {0} := by
   ext f
   rw [mem_piAntidiagonal]
-  simp only [le_eq_subset, mem_singleton, subset_empty]
+  simp only [mem_singleton, subset_empty]
   rw [support_eq_empty, and_iff_left_iff_imp]
   intro hf
   rw [hf, sum_zero_index]
@@ -204,7 +204,7 @@ theorem piAntidiagonal_empty_of_ne_zero {n : μ} (hn : n ≠ 0) :
     piAntidiagonal (∅ : Finset ι) n = ∅ := by
   ext f
   rw [mem_piAntidiagonal]
-  simp only [le_eq_subset, subset_empty, support_eq_empty, sum_empty,
+  simp only [subset_empty, support_eq_empty, sum_empty,
     not_mem_empty, iff_false, not_and]
   intro hf
   rw [hf, sum_zero_index]
@@ -222,7 +222,7 @@ theorem mem_piAntidiagonal_insert [DecidableEq ι] {a : ι} {s : Finset ι}
     f ∈ piAntidiagonal (insert a s) n ↔
       ∃ m ∈ antidiagonal n, ∃ (g : ι →₀ μ),
         f = Finsupp.update g a m.1 ∧ g ∈ piAntidiagonal s m.2 := by
-  simp only [mem_piAntidiagonal', le_eq_subset, mem_antidiagonal, Prod.exists, sum_insert h]
+  simp only [mem_piAntidiagonal', mem_antidiagonal, Prod.exists, sum_insert h]
   constructor
   · rintro ⟨hsupp, rfl⟩
     refine ⟨_, _, rfl, Finsupp.erase a f, ?_, ?_, ?_⟩
@@ -293,7 +293,7 @@ lemma mapRange_piAntidiagonal_subset {μ' : Type*} [AddCommMonoid μ']
   simp only [mem_map, mem_piAntidiagonal]
   rintro ⟨g, ⟨hsupp, hsum⟩, rfl⟩
   simp only [AddEquiv.toEquiv_eq_coe, mapRange.addEquiv_toEquiv, Equiv.coe_toEmbedding,
-    mapRange.equiv_apply, EquivLike.coe_coe, le_eq_subset]
+    mapRange.equiv_apply, EquivLike.coe_coe]
   constructor
   · exact subset_trans (support_mapRange) hsupp
   · rw [sum_mapRange_index (fun _ => rfl), ← hsum, _root_.map_finsupp_sum]
@@ -326,7 +326,7 @@ variable [CanonicallyOrderedAddCommMonoid μ] [HasAntidiagonal μ] [DecidableEq 
 theorem piAntidiagonal_zero (s : Finset ι) :
     piAntidiagonal s (0 : μ) = {(0 : ι →₀ μ)} := by
   ext f
-  simp only [mem_piAntidiagonal', mem_singleton, sum_eq_zero_iff, le_eq_subset]
+  simp only [mem_piAntidiagonal', mem_singleton, sum_eq_zero_iff]
   constructor
   · rintro ⟨hsupp, hsum⟩
     ext x
