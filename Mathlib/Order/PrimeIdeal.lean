@@ -129,10 +129,10 @@ theorem IsPrime.mem_or_mem (hI : IsPrime I) {x y : P} : x ⊓ y ∈ I → x ∈ 
 
 theorem IsPrime.of_mem_or_mem [IsProper I] (hI : ∀ {x y : P}, x ⊓ y ∈ I → x ∈ I ∨ y ∈ I) :
     IsPrime I := by
-  rw [IsPrime_iff]
+  rw [isPrime_iff]
   use ‹_›
   refine .of_def ?_ ?_ ?_
-  · exact Set.nonempty_compl.2 (I.IsProper_iff.1 ‹_›)
+  · exact Set.nonempty_compl.2 (I.isProper_iff.1 ‹_›)
   · intro x hx y hy
     exact ⟨x ⊓ y, fun h => (hI h).elim hx hy, inf_le_left, inf_le_right⟩
   · exact @mem_compl_of_ge _ _ _
@@ -195,7 +195,7 @@ theorem isPrime_iff_mem_or_compl_mem [IsProper I] : IsPrime I ↔ ∀ {x : P}, x
 #align order.ideal.is_prime_iff_mem_or_compl_mem Order.Ideal.isPrime_iff_mem_or_compl_mem
 
 instance (priority := 100) IsPrime.isMaximal [IsPrime I] : IsMaximal I := by
-  simp only [IsMaximal_iff, Set.eq_univ_iff_forall, IsPrime.toIsProper, true_and]
+  simp only [isMaximal_iff, Set.eq_univ_iff_forall, IsPrime.toIsProper, true_and]
   intro J hIJ x
   rcases Set.exists_of_ssubset hIJ with ⟨y, hyJ, hyI⟩
   suffices ass : x ⊓ y ⊔ x ⊓ yᶜ ∈ J by rwa [sup_inf_inf_compl] at ass
