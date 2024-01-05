@@ -933,9 +933,9 @@ lemma toAffine_add {P Q : Fin 3 → F} (hP : W.nonsingular P) (hQ : W.nonsingula
       · have hx' : P x / P z ^ 2 ≠ Q x / Q z ^ 2 :=
           (mul_comm (P z ^ 2) _ ▸ hx) ∘ (div_eq_div_iff (pow_ne_zero 2 hPz) (pow_ne_zero 2 hQz)).mp
         simp only [W.add_of_Xne hPz hQz hx]
-        rw [toAffine_of_Zne0 <| addZ_ne_zero_of_Xne hPz hQz hx, toAffine_of_Zne0 hPz,
-          toAffine_of_Zne0 hQz, Affine.Point.some_add_some_of_Xne hx', Affine.Point.some.injEq]
-        exact ⟨addX_div_addZ_of_Xne hPz hQz hx, addY_div_addZ_of_Xne hPz hQz hx⟩
+        rw [toAffine_of_Zne0 <| addZ_ne_zero_of_Xne hx, toAffine_of_Zne0 hPz, toAffine_of_Zne0 hQz,
+          Affine.Point.some_add_some_of_Xne hx', Affine.Point.some.injEq]
+        exact ⟨addX_div_addZ_of_Xne hP hQ hPz hQz hx, addY_div_addZ_of_Xne hP hQ hPz hQz hx⟩
 
 lemma toAffine_of_equiv (P Q : Fin 3 → F) (h : P ≈ Q) :
     HEq (toAffine (W := W) (P := P)) (toAffine (W := W) (P := Q)) := by
