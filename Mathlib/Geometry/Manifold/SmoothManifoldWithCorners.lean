@@ -619,7 +619,7 @@ the `C^n` groupoid. -/
 theorem symm_trans_mem_contDiffGroupoid (e : PartialHomeomorph M H) :
     e.symm.trans e ∈ contDiffGroupoid n I :=
   haveI : e.symm.trans e ≈ PartialHomeomorph.ofSet e.target e.open_target :=
-    PartialHomeomorph.trans_symm_self _
+    PartialHomeomorph.symm_trans_self _
   StructureGroupoid.eq_on_source _ (ofSet_mem_contDiffGroupoid n I e.open_target) this
 #align symm_trans_mem_cont_diff_groupoid symm_trans_mem_contDiffGroupoid
 
@@ -778,7 +778,7 @@ the analytic groupoid. -/
 theorem symm_trans_mem_analyticGroupoid (e : PartialHomeomorph M H) :
     e.symm.trans e ∈ analyticGroupoid I :=
   haveI : e.symm.trans e ≈ PartialHomeomorph.ofSet e.target e.open_target :=
-    PartialHomeomorph.trans_symm_self _
+    PartialHomeomorph.symm_trans_self _
   StructureGroupoid.eq_on_source _ (ofSet_mem_analyticGroupoid I e.open_target) this
 
 /-- The analytic groupoid is closed under restriction. -/
