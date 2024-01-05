@@ -1213,12 +1213,9 @@ variable {Γ Λ}
 def step (M : MachineQ) : Cfg₀ → Option Cfg₀ :=
   fun ⟨q, T⟩ ↦ (M q T.1).map fun ⟨q', a , m⟩ ↦ ⟨q', (T.write a).move m⟩
 
-/-- The initial configuration -/
-def init (l : List Γ) : Cfg₀ := ⟨default, Tape.mk₁ l⟩
-
 /-- Evaluate a Turing machine on initial input to a final state, if it terminates. -/
 def eval (M : MachineQ) (l : List Γ) : Part (ListBlank Γ) :=
-  (Turing.eval (step M) (init l)).map fun c ↦ c.Tape.right₀
+  (Turing.eval (step M) (TM0.init l)).map fun c ↦ c.Tape.right₀
 
 /-- Chainable step function -/
 def step_chain (M : MachineQ) (cfg : Option Cfg₀) : Option Cfg₀ := cfg.bind (step M)
