@@ -240,6 +240,10 @@ noncomputable def homotopyCofiber : HomologicalComplex C c where
       · simp [homotopyCofiber.inlX_d' φ j k hjk hk]
     · simp
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin
 namespace homotopyCofiber
 
 /-- The right inclusion `G ⟶ homotopyCofiber φ`. -/
@@ -535,7 +539,7 @@ noncomputable def homotopyEquiv : HomotopyEquiv K.cylinder K where
   homotopyHomInvId := πCompι₀Homotopy K hc
   homotopyInvHomId := Homotopy.ofEq (by simp)
 
-/-- The homotopy `cylinder.ι₀ K` and `cylinder.ι₁ K`. -/
+/-- The homotopy between `cylinder.ι₀ K` and `cylinder.ι₁ K`. -/
 noncomputable def homotopy₀₁ : Homotopy (ι₀ K) (ι₁ K) :=
   (Homotopy.ofEq (by simp)).trans (((πCompι₀Homotopy K hc).compLeft (ι₁ K)).trans
     (Homotopy.ofEq (by simp)))
