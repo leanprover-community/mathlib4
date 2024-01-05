@@ -196,7 +196,7 @@ open QuaternionAlgebra (Basis)
 
 /-- Two `R`-algebra morphisms from the quaternions are equal if they agree on `i` and `j`. -/
 @[ext]
-theorem Quaternion.hom_ext ⦃f g : ℍ[R] →ₐ[R] A⦄
+theorem hom_ext ⦃f g : ℍ[R] →ₐ[R] A⦄
     (hi : f (Basis.self R).i = g (Basis.self R).i) (hj : f (Basis.self R).j = g (Basis.self R).j) :
     f = g :=
   QuaternionAlgebra.hom_ext hi hj
