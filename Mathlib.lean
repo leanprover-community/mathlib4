@@ -1379,6 +1379,7 @@ import Mathlib.Combinatorics.SimpleGraph.IncMatrix
 import Mathlib.Combinatorics.SimpleGraph.Init
 import Mathlib.Combinatorics.SimpleGraph.Matching
 import Mathlib.Combinatorics.SimpleGraph.Metric
+import Mathlib.Combinatorics.SimpleGraph.Operations
 import Mathlib.Combinatorics.SimpleGraph.Partition
 import Mathlib.Combinatorics.SimpleGraph.Prod
 import Mathlib.Combinatorics.SimpleGraph.Regularity.Bound
@@ -1674,7 +1675,6 @@ import Mathlib.Data.List.Sym
 import Mathlib.Data.List.TFAE
 import Mathlib.Data.List.ToFinsupp
 import Mathlib.Data.List.Zip
-import Mathlib.Data.MLList.Basic
 import Mathlib.Data.MLList.BestFirst
 import Mathlib.Data.MLList.Dedup
 import Mathlib.Data.MLList.DepthFirst
@@ -1804,7 +1804,6 @@ import Mathlib.Data.Nat.Totient
 import Mathlib.Data.Nat.Units
 import Mathlib.Data.Nat.Upto
 import Mathlib.Data.Nat.WithBot
-import Mathlib.Data.Nondet.Basic
 import Mathlib.Data.Num.Basic
 import Mathlib.Data.Num.Bitwise
 import Mathlib.Data.Num.Lemmas
@@ -2198,6 +2197,7 @@ import Mathlib.GroupTheory.GroupAction.Option
 import Mathlib.GroupTheory.GroupAction.Pi
 import Mathlib.GroupTheory.GroupAction.Prod
 import Mathlib.GroupTheory.GroupAction.Quotient
+import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.GroupTheory.GroupAction.Sigma
 import Mathlib.GroupTheory.GroupAction.SubMulAction
 import Mathlib.GroupTheory.GroupAction.SubMulAction.Pointwise
@@ -2311,7 +2311,6 @@ import Mathlib.Init.Quot
 import Mathlib.Init.Set
 import Mathlib.Init.ZeroOne
 import Mathlib.Lean.CoreM
-import Mathlib.Lean.Data.NameMap
 import Mathlib.Lean.Elab.Tactic.Basic
 import Mathlib.Lean.Elab.Term
 import Mathlib.Lean.EnvExtension
@@ -2321,7 +2320,6 @@ import Mathlib.Lean.Expr.Basic
 import Mathlib.Lean.Expr.ExtraRecognizers
 import Mathlib.Lean.Expr.ReplaceRec
 import Mathlib.Lean.Expr.Traverse
-import Mathlib.Lean.IO.Process
 import Mathlib.Lean.Json
 import Mathlib.Lean.LocalContext
 import Mathlib.Lean.Message
@@ -2332,7 +2330,6 @@ import Mathlib.Lean.Meta.DiscrTree
 import Mathlib.Lean.Meta.Simp
 import Mathlib.Lean.Name
 import Mathlib.Lean.PrettyPrinter.Delaborator
-import Mathlib.Lean.SMap
 import Mathlib.Lean.Thunk
 import Mathlib.LinearAlgebra.AdicCompletion
 import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
@@ -2978,6 +2975,7 @@ import Mathlib.Probability.ConditionalExpectation
 import Mathlib.Probability.ConditionalProbability
 import Mathlib.Probability.Density
 import Mathlib.Probability.Distributions.Exponential
+import Mathlib.Probability.Distributions.Gamma
 import Mathlib.Probability.Distributions.Gaussian
 import Mathlib.Probability.IdentDistrib
 import Mathlib.Probability.Independence.Basic
@@ -3267,7 +3265,6 @@ import Mathlib.Tactic.ApplyFun
 import Mathlib.Tactic.ApplyWith
 import Mathlib.Tactic.Attr.Core
 import Mathlib.Tactic.Attr.Register
-import Mathlib.Tactic.Backtrack
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.CancelDenoms
@@ -3416,7 +3413,6 @@ import Mathlib.Tactic.SimpRw
 import Mathlib.Tactic.Simps.Basic
 import Mathlib.Tactic.Simps.NotationClass
 import Mathlib.Tactic.SlimCheck
-import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.Substs

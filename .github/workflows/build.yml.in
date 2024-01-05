@@ -147,6 +147,19 @@ jobs:
           lean --version
           lake --version
 
+      - name: build cache
+        run: |
+          lake build cache
+
+      - name: prune ProofWidgets .lake
+        run: |
+          # The ProofWidgets release contains not just the `.js` (which we need in order to build)
+          # but also `.oleans`, which may have been built with the wrong toolchain.
+          # This removes them.
+          # See discussion at https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/nightly-testing/near/411225235
+          rm -rf .lake/packages/proofwidgets/.lake/build/lib
+          rm -rf .lake/packages/proofwidgets/.lake/build/ir
+
       - name: get cache
         run: |
           lake exe cache clean
@@ -179,6 +192,7 @@ jobs:
           # try twice in case of network errors
           lake exe cache put || (sleep 1; lake exe cache put) || true
         env:
+          MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
           MATHLIB_CACHE_S3_TOKEN: ${{ secrets.MATHLIB_CACHE_S3_TOKEN }}
 
       - name: check the cache
@@ -206,6 +220,7 @@ jobs:
           lake build Archive
           lake exe cache put Archive.lean || (sleep 1; lake exe cache put Archive.lean)
         env:
+          MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
           MATHLIB_CACHE_S3_TOKEN: ${{ secrets.MATHLIB_CACHE_S3_TOKEN }}
 
       - name: build counterexamples
@@ -214,6 +229,7 @@ jobs:
           lake build Counterexamples
           lake exe cache put Counterexamples.lean || (sleep 1; lake exe cache put Counterexamples.lean)
         env:
+          MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
           MATHLIB_CACHE_S3_TOKEN: ${{ secrets.MATHLIB_CACHE_S3_TOKEN }}
 
       - name: check declarations in db files
