@@ -221,3 +221,5 @@ def LinearMap.extendScalarsOfIsLocalization (f : M →ₗ[R] N) : M →ₗ[A] N 
 
 @[simp] lemma LinearMap.extendScalarsOfIsLocalization_apply (f : M →ₗ[A] N) :
     f.extendScalarsOfIsLocalization S A = f := rfl
+
+end
