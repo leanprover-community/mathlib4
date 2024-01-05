@@ -255,7 +255,7 @@ def HeytingAlgebra.ofHImp [DistribLattice α] [BoundedOrder α] (himp : α → �
 def HeytingAlgebra.ofCompl [DistribLattice α] [BoundedOrder α] (compl : α → α)
     (le_himp_iff : ∀ a b c, a ≤ compl b ⊔ c ↔ a ⊓ b ≤ c) : HeytingAlgebra α :=
   { ‹DistribLattice α›, ‹BoundedOrder α› with
-    himp := fun a => (· ⊔ ·) (compl a),
+    himp := (compl · ⊔ ·),
     compl,
     le_himp_iff,
     himp_bot := fun a => sup_bot_eq }
@@ -441,6 +441,9 @@ theorem Codisjoint.himp_le_of_right_le (hac : Codisjoint a c) (hba : b ≤ a) : 
 theorem le_himp_himp : a ≤ (a ⇨ b) ⇨ b :=
   le_himp_iff.2 inf_himp_le
 #align le_himp_himp le_himp_himp
+
+@[simp] lemma himp_eq_himp_iff : b ⇨ a = a ⇨ b ↔ a = b := by simp [le_antisymm_iff]
+lemma himp_ne_himp_iff : b ⇨ a ≠ a ⇨ b ↔ a ≠ b := himp_eq_himp_iff.not
 
 theorem himp_triangle (a b c : α) : (a ⇨ b) ⊓ (b ⇨ c) ≤ a ⇨ c := by
   rw [le_himp_iff, inf_right_comm, ← le_himp_iff]
@@ -697,6 +700,9 @@ theorem Disjoint.le_sdiff_of_le_left (hac : Disjoint a c) (hab : a ≤ b) : a �
 theorem sdiff_sdiff_le : a \ (a \ b) ≤ b :=
   sdiff_le_iff.2 le_sdiff_sup
 #align sdiff_sdiff_le sdiff_sdiff_le
+
+@[simp] lemma sdiff_eq_sdiff_iff : a \ b = b \ a ↔ a = b := by simp [le_antisymm_iff]
+lemma sdiff_ne_sdiff_iff : a \ b ≠ b \ a ↔ a ≠ b := sdiff_eq_sdiff_iff.not
 
 theorem sdiff_triangle (a b c : α) : a \ c ≤ a \ b ⊔ b \ c := by
   rw [sdiff_le_iff, sup_left_comm, ← sdiff_le_iff]

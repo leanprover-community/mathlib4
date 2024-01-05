@@ -106,7 +106,6 @@ theorem length_set : ∀ {m : ℕ} {as : List α}, as {m ↦ a}.length = max as.
     · simp [Nat.le_add_right]
       exact Nat.succ_le_succ (Nat.zero_le _)
   | m + 1, [] => by
-    have := @length_set m []
     simp [set, length, @length_set m, Nat.zero_max]
   | m + 1, _ :: as => by
     simp [set, length, @length_set m, Nat.succ_max_succ]
@@ -171,20 +170,16 @@ theorem get_set_eq_of_ne {a : α} :
     contradiction
     cases as <;> simp only [set, get, get_nil]
   | as, k + 1, m, h1 => by
-    -- porting note : I somewhat rearranged the case split
-    cases as <;> cases m
-    case nil =>
-      simp only [set, get]
-    case nil m =>
-      have h3 : get m (nil {k ↦ a}) = default := by
-        rw [get_set_eq_of_ne k m, get_nil]
-        intro hc
-        apply h1
-        simp [hc]
-      apply h3
-    case zero =>
-      simp only [set, get]
-    case _ _ m =>
+    -- porting note: I somewhat rearranged the case split
+    match as, m with
+    | as, 0 => cases as <;> simp only [set, get]
+    | [], m+1 =>
+      show get m (nil {k ↦ a}) = default
+      rw [get_set_eq_of_ne k m, get_nil]
+      intro hc
+      apply h1
+      simp [hc]
+    | _::_, m+1 =>
       apply get_set_eq_of_ne k m
       intro hc
       apply h1

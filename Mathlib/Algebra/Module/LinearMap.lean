@@ -550,12 +550,11 @@ def comp : M₁ →ₛₗ[σ₁₃] M₃ where
   map_smul' r x := by simp only [Function.comp_apply, map_smulₛₗ, RingHomCompTriple.comp_apply]
 #align linear_map.comp LinearMap.comp
 
-set_option quotPrecheck false in -- Porting note: error message suggested to do this
 /-- `∘ₗ` is notation for composition of two linear (not semilinear!) maps into a linear map.
 This is useful when Lean is struggling to infer the `RingHomCompTriple` instance. -/
-infixr:80 " ∘ₗ " =>
+notation3:80 (name := compNotation) f:81 " ∘ₗ " g:80 =>
   @LinearMap.comp _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ (RingHom.id _) (RingHom.id _) (RingHom.id _)
-    RingHomCompTriple.ids
+    RingHomCompTriple.ids f g
 
 theorem comp_apply (x : M₁) : f.comp g x = f (g x) :=
   rfl
@@ -646,10 +645,10 @@ protected theorem map_sub (x y : M) : f (x - y) = f x - f y :=
 instance CompatibleSMul.intModule {S : Type*} [Semiring S] [Module S M] [Module S M₂] :
     CompatibleSMul M M₂ ℤ S :=
   ⟨fun fₗ c x ↦ by
-    induction c using Int.induction_on
-    case hz => simp
-    case hp n ih => simp [add_smul, ih]
-    case hn n ih => simp [sub_smul, ih]⟩
+    induction c using Int.induction_on with
+    | hz => simp
+    | hp n ih => simp [add_smul, ih]
+    | hn n ih => simp [sub_smul, ih]⟩
 #align linear_map.compatible_smul.int_module LinearMap.CompatibleSMul.intModule
 
 instance CompatibleSMul.units {R S : Type*} [Monoid R] [MulAction R M] [MulAction R M₂]
@@ -1375,6 +1374,22 @@ theorem coe_smulRight (f : M₁ →ₗ[R] S) (x : M) : (smulRight f x : M₁ →
 theorem smulRight_apply (f : M₁ →ₗ[R] S) (x : M) (c : M₁) : smulRight f x c = f c • x :=
   rfl
 #align linear_map.smul_right_apply LinearMap.smulRight_apply
+
+@[simp]
+lemma smulRight_zero (f : M₁ →ₗ[R] S) : f.smulRight (0 : M) = 0 := by ext; simp
+
+@[simp]
+lemma zero_smulRight (x : M) : (0 : M₁ →ₗ[R] S).smulRight x = 0 := by ext; simp
+
+@[simp]
+lemma smulRight_apply_eq_zero_iff {f : M₁ →ₗ[R] S} {x : M} [NoZeroSMulDivisors S M] :
+    f.smulRight x = 0 ↔ f = 0 ∨ x = 0 := by
+  rcases eq_or_ne x 0 with rfl | hx; simp
+  refine ⟨fun h ↦ Or.inl ?_, fun h ↦ by simp [h.resolve_right hx]⟩
+  ext v
+  replace h : f v • x = 0 := by simpa only [LinearMap.zero_apply] using LinearMap.congr_fun h v
+  rw [smul_eq_zero] at h
+  tauto
 
 end SMulRight
 

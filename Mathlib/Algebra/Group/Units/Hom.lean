@@ -93,6 +93,10 @@ theorem map_comp (f : M →* N) (g : N →* P) : map (g.comp f) = (map g).comp (
 #align units.map_comp Units.map_comp
 #align add_units.map_comp AddUnits.map_comp
 
+@[to_additive]
+lemma map_injective {f : M →* N} (hf : Function.Injective f) :
+    Function.Injective (map f) := fun _ _ e => ext (hf (congr_arg val e))
+
 variable (M)
 
 @[to_additive (attr := simp)]
@@ -156,7 +160,7 @@ this map is a monoid homomorphism too. -/
   is an AddMonoid homomorphism too."]
 def liftRight (f : M →* N) (g : M → Nˣ) (h : ∀ x, ↑(g x) = f x) : M →* Nˣ where
   toFun := g
-  map_one' := by ext; dsimp only; rw [h 1]; exact f.map_one -- Porting note: why is `dsimp` needed?
+  map_one' := by ext; rw [h 1]; exact f.map_one
   map_mul' x y := Units.ext <| by simp only [h, val_mul, f.map_mul]
 #align units.lift_right Units.liftRight
 #align add_units.lift_right AddUnits.liftRight
