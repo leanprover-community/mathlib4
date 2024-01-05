@@ -218,7 +218,7 @@ Both this and `PGame.recOn` describe Conway induction on games. -/
 @[elab_as_elim]
 def moveRecOn {C : PGame → Sort*} (x : PGame)
     (IH : ∀ y : PGame, (∀ i, C (y.moveLeft i)) → (∀ j, C (y.moveRight j)) → C y) : C x :=
-  x.recOn <| fun yl yr yL yR => IH (mk yl yr yL yR)
+  x.recOn fun yl yr yL yR => IH (mk yl yr yL yR)
 #align pgame.move_rec_on SetTheory.PGame.moveRecOn
 
 /-- `IsOption x y` means that `x` is either a left or right option for `y`. -/
@@ -1256,7 +1256,7 @@ theorem neg_ofLists (L R : List PGame) :
 #align pgame.neg_of_lists SetTheory.PGame.neg_ofLists
 
 theorem isOption_neg {x y : PGame} : IsOption x (-y) ↔ IsOption (-x) y := by
-  rw [IsOption_iff, IsOption_iff, or_comm]
+  rw [isOption_iff, isOption_iff, or_comm]
   cases y;
   apply or_congr <;>
     · apply exists_congr

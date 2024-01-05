@@ -79,7 +79,7 @@ def takeI [Inhabited α] (n : Nat) (l : List α) : List α :=
 /-- `findM tac l` returns the first element of `l` on which `tac` succeeds, and
 fails otherwise. -/
 def findM {α} {m : Type u → Type v} [Alternative m] (tac : α → m PUnit) : List α → m α :=
-  List.firstM <| fun a => (tac a) $> a
+  List.firstM fun a => (tac a) $> a
 #align list.mfind List.findM
 
 /-- `findM? p l` returns the first element `a` of `l` for which `p a` returns

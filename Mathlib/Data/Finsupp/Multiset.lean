@@ -143,7 +143,7 @@ the multiplicities of the elements of `s`. -/
 def toFinsupp : Multiset α ≃+ (α →₀ ℕ) where
   toFun s := ⟨s.toFinset, fun a => s.count a, fun a => by simp⟩
   invFun f := Finsupp.toMultiset f
-  map_add' s t := Finsupp.ext <| fun _ => count_add _ _ _
+  map_add' s t := Finsupp.ext fun _ => count_add _ _ _
   right_inv f :=
     Finsupp.ext fun a => by
       simp only [Finsupp.toMultiset_apply, Finsupp.sum, Multiset.count_sum',
@@ -230,7 +230,7 @@ theorem toMultiset_strictMono : StrictMono (@toMultiset ι) :=
 
 theorem sum_id_lt_of_lt (m n : ι →₀ ℕ) (h : m < n) : (m.sum fun _ => id) < n.sum fun _ => id := by
   rw [← card_toMultiset, ← card_toMultiset]
-  apply Multiset.card_lt_of_lt
+  apply Multiset.card_lt_card
   exact toMultiset_strictMono h
 #align finsupp.sum_id_lt_of_lt Finsupp.sum_id_lt_of_lt
 
