@@ -183,9 +183,9 @@ partial def mkProdPrf {u : Level} (α : Q(Type u)) (sα : Q(Field $α)) (v : ℕ
     let npf ← synthesizeUsingNormNum q($ln' * $vln' = $v')
     return ⟨_, q(CancelDenoms.mul_subst $v1 $v2 $npf)⟩
   | .node _ lhs (.node rn _ _), ~q($e1 / $e2) => do
+    -- Invariant: e2 is equal to the natural number rn
     have rn' := (← mkOfNat α amwo <| mkRawNatLit rn).1
     have vrn' := (← mkOfNat α amwo <| mkRawNatLit <| v / rn).1
-    -- Invariant: e2 is equal to the natural number rn
     let ⟨_, v1⟩ ← mkProdPrf α sα (v / rn) vrn' lhs e1
     let npf ← synthesizeUsingNormNum q($rn' / $e2 = 1)
     let npf2 ← synthesizeUsingNormNum q($vrn' * $rn' = $v')
