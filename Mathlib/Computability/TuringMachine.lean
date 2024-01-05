@@ -1205,6 +1205,7 @@ local notation "MachineQ" => Machine Γ Λ
   with the machine currently reading the `a`. The lists are
   automatically extended with blanks as the machine moves around.
   Coincides with the definition for TM0. -/
+@[nolint docBlame]
 structure CfgQ where
   q : Λ
   Tape : Tape Γ
