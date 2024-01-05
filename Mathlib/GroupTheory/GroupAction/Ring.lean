@@ -19,40 +19,38 @@ file they could go to. This is unfortunate and should be fixed by reorganising f
 
 open scoped Int
 
-variable {R : Type*}
+variable {α : Type*}
 
--- TODO: Can these four instances be moved to an earlier file?
-
-/-- Note that `AddCommMonoid.nat_smulCommClass` requires stronger assumptions on `R`. -/
-instance NonUnitalNonAssocSemiring.nat_smulCommClass [NonUnitalNonAssocSemiring R] :
-    SMulCommClass ℕ R R where
+/-- Note that `AddCommMonoid.nat_smulCommClass` requires stronger assumptions on `α`. -/
+instance NonUnitalNonAssocSemiring.nat_smulCommClass [NonUnitalNonAssocSemiring α] :
+    SMulCommClass ℕ α α where
   smul_comm n x y := by
     induction' n with n ih
     · simp [zero_nsmul]
     · simp_rw [succ_nsmul, smul_eq_mul, mul_add, ← smul_eq_mul, ih]
 #align non_unital_non_assoc_semiring.nat_smul_comm_class NonUnitalNonAssocSemiring.nat_smulCommClass
 
-/-- Note that `AddCommMonoid.nat_isScalarTower` requires stronger assumptions on `R`. -/
-instance NonUnitalNonAssocSemiring.nat_isScalarTower [NonUnitalNonAssocSemiring R] :
-    IsScalarTower ℕ R R where
+/-- Note that `AddCommMonoid.nat_isScalarTower` requires stronger assumptions on `α`. -/
+instance NonUnitalNonAssocSemiring.nat_isScalarTower [NonUnitalNonAssocSemiring α] :
+    IsScalarTower ℕ α α where
   smul_assoc n x y := by
     induction' n with n ih
     · simp [zero_nsmul]
     · simp_rw [succ_nsmul, ← ih, smul_eq_mul, add_mul]
 #align non_unital_non_assoc_semiring.nat_is_scalar_tower NonUnitalNonAssocSemiring.nat_isScalarTower
 
-/-- Note that `AddCommGroup.int_smulCommClass` requires stronger assumptions on `R`. -/
-instance NonUnitalNonAssocRing.int_smulCommClass [NonUnitalNonAssocRing R] :
-    SMulCommClass ℤ R R where
+/-- Note that `AddCommGroup.int_smulCommClass` requires stronger assumptions on `α`. -/
+instance NonUnitalNonAssocRing.int_smulCommClass [NonUnitalNonAssocRing α] :
+    SMulCommClass ℤ α α where
   smul_comm n x y :=
     match n with
     | (n : ℕ) => by simp_rw [coe_nat_zsmul, smul_comm]
     | -[n+1] => by simp_rw [negSucc_zsmul, smul_eq_mul, mul_neg, mul_smul_comm]
 #align non_unital_non_assoc_ring.int_smul_comm_class NonUnitalNonAssocRing.int_smulCommClass
 
-/-- Note that `AddCommGroup.int_isScalarTower` requires stronger assumptions on `R`. -/
-instance NonUnitalNonAssocRing.int_isScalarTower [NonUnitalNonAssocRing R] :
-    IsScalarTower ℤ R R where
+/-- Note that `AddCommGroup.int_isScalarTower` requires stronger assumptions on `α`. -/
+instance NonUnitalNonAssocRing.int_isScalarTower [NonUnitalNonAssocRing α] :
+    IsScalarTower ℤ α α where
   smul_assoc n x y :=
     match n with
     | (n : ℕ) => by simp_rw [coe_nat_zsmul, smul_assoc]
