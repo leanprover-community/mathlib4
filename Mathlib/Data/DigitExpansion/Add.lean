@@ -916,8 +916,6 @@ lemma base_nsmul_single_one_succ_one_eq_single (z : Z) :
 
 lemma base_nsmul_single_succ_one_eq_single (z : Z) (n : Fin (b + 1)) :
     (b + 1) • single (succ z) n = single z n := by
-  have : b • n.val • (single (succ z) (1 : Fin (b + 1))) = n.val • b • (single (succ z) 1) := by
-    rw [← mul_nsmul, mul_nsmul']
   rw [succ_nsmul, ← nsmul_single_eq_single, nsmul_left_comm, ← nsmul_add,
       ← nsmul_single_eq_single z, ← base_nsmul_single_one_succ_one_eq_single z, succ_nsmul]
 

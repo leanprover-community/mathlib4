@@ -19,6 +19,66 @@ variable (Z : Type*) [Nonempty Z] [LinearOrder Z] [SuccOrder Z] [NoMaxOrder Z] [
 
 open Order
 
+-- TODO: IsSuccArchimedean docstring fix
+
+-- TODO
+lemma succ_iterate_strict_mono {α : Type*} [Preorder α] [SuccOrder α] [NoMaxOrder α] {m n : ℕ}
+    (h : m < n) (x : α) : succ^[m] x < succ^[n] x := by
+  induction' n with n IH generalizing m x
+  · simp at h
+  · simp only [Function.iterate_succ', Function.comp_apply]
+    rcases (Nat.le_of_lt_succ h).eq_or_lt with rfl|h
+    · exact lt_succ _
+    exact (IH h _).trans (lt_succ _)
+
+lemma succ_iterate_mono {α : Type*} [Preorder α] [SuccOrder α] [NoMaxOrder α] {m n : ℕ}
+    (h : m ≤ n) (x : α) : succ^[m] x ≤ succ^[n] x := by
+  rcases h.eq_or_lt with rfl|h
+  · simp
+  · exact (succ_iterate_strict_mono h _).le
+
+-- TODO
+def succArchimedeanRecOn {Z : Type*} [LinearOrder Z] [SuccOrder Z] [PredOrder Z]
+    [IsSuccArchimedean Z] [NoMinOrder Z] [NoMaxOrder Z]
+    {motive : Z → Sort*} {z : Z}
+    (h0 : motive z)
+    (hs : ∀ x, motive x → motive (succ x))
+    (hp : ∀ x, motive x → motive (pred x)) (x : Z) : motive x :=
+  if h : x ≤ z then by
+    induction' hk : Nat.find (exists_succ_iterate_of_le h) with k IH generalizing x
+    · simp only [Nat.zero_eq, Nat.find_eq_zero, Function.iterate_zero, id_eq] at hk
+      exact hk ▸ h0
+    · have hxz : succ x ≤ z := by
+        rw [← Nat.find_spec (exists_succ_iterate_of_le h), hk, Function.iterate_succ',
+            Function.comp_apply, succ_le_succ_iff]
+        exact succ_iterate_mono (Nat.zero_le _) x
+      have hk' : Nat.find (exists_succ_iterate_of_le hxz) = k := by
+        rw [Nat.find_eq_iff] at hk ⊢
+        rw [Function.iterate_succ, Function.comp_apply] at hk
+        refine hk.imp_right ?_
+        rintro hn' n hn rfl
+        simpa using hn' (n + 1) (Nat.succ_lt_succ hn)
+      exact pred_succ x ▸ hp _ (IH _ hxz hk')
+  else by
+    simp at h
+    induction' hk : Nat.find (exists_succ_iterate_of_le (succ_le_of_lt h)) with k IH
+      generalizing x
+    · simp only [Nat.zero_eq, Nat.find_eq_zero, Function.iterate_zero, id_eq] at hk
+      exact hk ▸ (hs _ h0)
+    · simp only [Nat.find_eq_iff, Function.iterate_succ', Function.comp_apply] at hk
+      have hxz : z < pred x := by
+        rw [← hk.left, pred_succ]
+        exact (lt_succ _).trans_le (succ_iterate_mono (Nat.zero_le _) (succ z))
+      have hk' : Nat.find (exists_succ_iterate_of_le (succ_le_of_lt hxz)) = k := by
+        rw [Nat.find_eq_iff, ← hk.left, pred_succ]
+        rcases hk with ⟨rfl, hk⟩
+        refine ⟨rfl, ?_⟩
+        rintro n hn hn'
+        specialize hk (n + 1) (Nat.succ_lt_succ hn)
+        rw [Function.iterate_succ', Function.comp_apply, hn'] at hk
+        exact hk rfl
+      exact succ_pred x ▸ hs _ (IH _ hxz hk')
+
 namespace DigitExpansion
 
 /-- A sequence that is both real and Hensel is like the rationals. TODO: prove the equivalence.
@@ -137,10 +197,10 @@ instance : LinearOrderedAddCommGroup (zStar Z b) :=
       have : (⟨x, hx⟩ : real Z b) ≤ ⟨y, hy⟩ := h
       exact add_le_add_left this ⟨z, hz⟩ }
 
-protected lemma zStar.le_def {x y : zStar Z b} :
+protected lemma le_def {x y : zStar Z b} :
     x ≤ y ↔ (⟨x.val, x.prop.left⟩ : real Z b) ≤ ⟨y.val, y.prop.left⟩ := Iff.rfl
 
-protected lemma zStar.lt_def {x y : zStar Z b} :
+protected lemma lt_def {x y : zStar Z b} :
     x < y ↔ (⟨x.val, x.prop.left⟩ : real Z b) < ⟨y.val, y.prop.left⟩ := Iff.rfl
 
 lemma positive_iff {x : zStar Z b} :
@@ -219,24 +279,6 @@ instance : ZeroLEOneClass (zStar Z b) where
 
 instance : NeZero (1 : zStar Z b) :=
   ⟨zStar.one_pos.ne'⟩
-
--- TODO: IsSuccArchimedean docstring fix
-
--- TODO
-lemma succ_iterate_strict_mono {α : Type*} [Preorder α] [SuccOrder α] [NoMaxOrder α] {m n : ℕ}
-    (h : m < n) (x : α) : succ^[m] x < succ^[n] x := by
-  induction' n with n IH generalizing m x
-  · simp at h
-  · simp only [Function.iterate_succ', Function.comp_apply]
-    rcases (Nat.le_of_lt_succ h).eq_or_lt with rfl|h
-    · exact lt_succ _
-    exact (IH h _).trans (lt_succ _)
-
-lemma succ_iterate_mono {α : Type*} [Preorder α] [SuccOrder α] [NoMaxOrder α] {m n : ℕ}
-    (h : m ≤ n) (x : α) : succ^[m] x ≤ succ^[n] x := by
-  rcases h.eq_or_lt with rfl|h
-  · simp
-  · exact (succ_iterate_strict_mono h _).le
 
 -- TODO: put in Hensel file
 lemma exists_greatest_pos_of_ne_zero {a : zStar Z b} (h : a ≠ 0) :
@@ -469,5 +511,9 @@ instance : IsSuccArchimedean (zStar Z b) where
         simp [single_apply_of_ne _ _ _ hw.ne']
 
 end zStar
+
+namespace realHensel
+
+end realHensel
 
 end DigitExpansion

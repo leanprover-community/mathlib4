@@ -495,7 +495,7 @@ lemma Negative.of_leftShift [NeZero b] {f : DigitExpansion Z b} (hf : f.leftShif
 
 @[simp]
 lemma leftShift_single {Z : Type*} [LinearOrder Z] [SuccOrder Z] [NoMaxOrder Z] [PredOrder Z]
-    [NoMinOrder Z] [IsSuccArchimedean Z] {b : ℕ} [hb : NeZero b](z : Z) (n : Fin (b + 1)) :
+    [NoMinOrder Z] {b : ℕ} [hb : NeZero b] (z : Z) (n : Fin (b + 1)) :
     leftShift (single z n) = single (pred z) n := by
   rw [eq_comm, ← leftInverse_leftShift_shift (single _ _), shift_single, succ_pred]
 
