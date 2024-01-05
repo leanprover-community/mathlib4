@@ -17,6 +17,11 @@ theorem Int.neg_mod {a b : ℤ} : -a % b = (b - a) % b := by
   rw [← Int.add_emod_self_left, sub_eq_add_neg]
 
 -- TODO
+lemma Fin.pos_of_ne_zero {n : ℕ} {a : Fin (n + 1)} (h : a ≠ 0) :
+    0 < a :=
+  Nat.pos_of_ne_zero (Fin.val_ne_of_ne h)
+
+-- TODO
 theorem Fin.neg_coe_eq_one (n : ℕ) : -(n : Fin (n + 1)) = 1 := by
   simp [neg_eq_iff_add_eq_zero]
 

@@ -18,11 +18,6 @@ Constructing the actual subgroup of the reals.
 open Order
 
 -- TODO
-lemma Fin.pos_of_ne_zero {n : ℕ} {a : Fin (n + 1)} (h : a ≠ 0) :
-    0 < a :=
-  Nat.pos_of_ne_zero (Fin.val_ne_of_ne h)
-
--- TODO
 theorem pred_min {Z : Type*} [LinearOrder Z] [PredOrder Z] (x y : Z) :
     pred (min x y) = min (pred x) (pred y) := by
   cases' le_total x y with h h

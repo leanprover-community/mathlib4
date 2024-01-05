@@ -19,26 +19,9 @@ variable (Z : Type*) [Nonempty Z] [LinearOrder Z] [SuccOrder Z] [NoMaxOrder Z] [
 
 open Order
 
--- TODO: IsSuccArchimedean docstring fix
-
 -- TODO
-lemma succ_iterate_strict_mono {α : Type*} [Preorder α] [SuccOrder α] [NoMaxOrder α] {m n : ℕ}
-    (h : m < n) (x : α) : succ^[m] x < succ^[n] x := by
-  induction' n with n IH generalizing m x
-  · simp at h
-  · simp only [Function.iterate_succ', Function.comp_apply]
-    rcases (Nat.le_of_lt_succ h).eq_or_lt with rfl|h
-    · exact lt_succ _
-    exact (IH h _).trans (lt_succ _)
-
-lemma succ_iterate_mono {α : Type*} [Preorder α] [SuccOrder α] [NoMaxOrder α] {m n : ℕ}
-    (h : m ≤ n) (x : α) : succ^[m] x ≤ succ^[n] x := by
-  rcases h.eq_or_lt with rfl|h
-  · simp
-  · exact (succ_iterate_strict_mono h _).le
-
--- TODO
-def succArchimedeanRecOn {Z : Type*} [LinearOrder Z] [SuccOrder Z] [PredOrder Z]
+@[elab_as_elim]
+def succArchimedeanRec {Z : Type*} [LinearOrder Z] [SuccOrder Z] [PredOrder Z]
     [IsSuccArchimedean Z] [NoMinOrder Z] [NoMaxOrder Z]
     {motive : Z → Sort*} {z : Z}
     (h0 : motive z)
@@ -96,6 +79,9 @@ def zStar [Zero Z] : AddSubgroup (DigitExpansion Z b) :=
   real Z b ⊓ henselInt Z b
 
 variable {Z} {b}
+
+lemma zStar_le_realHensel [Zero Z] : zStar Z b ≤ realHensel Z b :=
+  inf_le_inf_left _ (henselInt_le_hensel)
 
 theorem real.dense {f g : real Z b} (hfg : f > g) :
     ∃ h ∈ real.hensel Z b, f > h ∧ h > g := by
@@ -281,58 +267,58 @@ instance : NeZero (1 : zStar Z b) :=
   ⟨zStar.one_pos.ne'⟩
 
 -- TODO: put in Hensel file
-lemma exists_greatest_pos_of_ne_zero {a : zStar Z b} (h : a ≠ 0) :
-    ∃ x ≤ 0, 0 < a.val x ∧ ∀ y > x, a.val y = 0 := by
-  rw [ne_eq, Subtype.ext_iff, ← ne_eq, FunLike.ne_iff] at h
-  obtain ⟨x, hx⟩ := h
-  have xneg : x ≤ 0 := by
-    contrapose! hx
-    simp [a.prop.right _ hx]
-  contrapose! xneg
-  rw [← not_le]
-  intro H
-  obtain ⟨k, hk⟩ := exists_succ_iterate_of_le H
-  replace this : ∀ m, a.val (succ^[m] x) ≠ 0 → ∃ y > (succ^[m] x), 0 < a.val y := by
-    intro m hm
-    have hn : succ^[m] x ≤ 0 := by
-      contrapose! hm
-      rw [a.prop.right _ hm]
-    refine (xneg _ hn (Fin.pos_of_ne_zero hm)).imp ?_
-    intro y ⟨hy, hy'⟩
-    exact ⟨hy, Fin.pos_of_ne_zero hy'⟩
-  have hf' : ∀ l, a.val (succ^[l] x) ≠ 0 → ∃ l', l < l' ∧ a.val (succ^[l'] x) ≠ 0 := by
-    intros l hl
-    obtain ⟨y, hy, hy'⟩ := this l hl
-    obtain ⟨l', rfl⟩ := exists_succ_iterate_of_le hy.le
-    refine ⟨l' + l, ?_, ?_⟩
-    · contrapose! hy
-      simp only [add_le_iff_nonpos_left, nonpos_iff_eq_zero] at hy
-      simp [hy]
-    · rw [Function.iterate_add, Function.comp_apply]
-      exact hy'.ne'
-  let f' : {l // a.val (succ^[l] x) ≠ 0} → {l // a.val (succ^[l] x) ≠ 0} := fun l ↦ ⟨
-    Nat.find (hf' l.val l.prop),
-    (Nat.find_spec (hf' l.val l.prop)).right
-  ⟩
-  have hf'' : ∀ l, l.val < (f' l).val := by
-    rintro ⟨l, hl⟩
-    have : (f' ⟨l, hl⟩).val = Nat.find (hf' l hl) := rfl
-    rw [this]
-    exact (Nat.find_spec (hf' l hl)).left
-  have key : k < (f'^[k + 1] ⟨0, by simpa using hx⟩).val := by
-    clear hk
-    simp only [ne_eq, Function.iterate_succ, Function.comp_apply]
-    induction' k with k IH
-    · simp
-    · rw [Function.iterate_succ', Function.comp_apply]
-      refine (Nat.succ_le_succ IH).trans ?_
-      rw [Nat.succ_le]
-      exact hf'' _
-  have hl := (f'^[k + 1] ⟨0, by simpa using hx⟩).prop
-  rw [a.prop.right] at hl
-  · exact absurd rfl hl
-  · rw [← hk]
-    exact succ_iterate_strict_mono key _
+-- lemma exists_greatest_pos_of_ne_zero {a : zStar Z b} (h : a ≠ 0) :
+--     ∃ x ≤ 0, 0 < a.val x ∧ ∀ y > x, a.val y = 0 := by
+--   rw [ne_eq, Subtype.ext_iff, ← ne_eq, FunLike.ne_iff] at h
+--   obtain ⟨x, hx⟩ := h
+--   have xneg : x ≤ 0 := by
+--     contrapose! hx
+--     simp [a.prop.right _ hx]
+--   contrapose! xneg
+--   rw [← not_le]
+--   intro H
+--   obtain ⟨k, hk⟩ := exists_succ_iterate_of_le H
+--   replace this : ∀ m, a.val (succ^[m] x) ≠ 0 → ∃ y > (succ^[m] x), 0 < a.val y := by
+--     intro m hm
+--     have hn : succ^[m] x ≤ 0 := by
+--       contrapose! hm
+--       rw [a.prop.right _ hm]
+--     refine (xneg _ hn (Fin.pos_of_ne_zero hm)).imp ?_
+--     intro y ⟨hy, hy'⟩
+--     exact ⟨hy, Fin.pos_of_ne_zero hy'⟩
+--   have hf' : ∀ l, a.val (succ^[l] x) ≠ 0 → ∃ l', l < l' ∧ a.val (succ^[l'] x) ≠ 0 := by
+--     intros l hl
+--     obtain ⟨y, hy, hy'⟩ := this l hl
+--     obtain ⟨l', rfl⟩ := exists_succ_iterate_of_le hy.le
+--     refine ⟨l' + l, ?_, ?_⟩
+--     · contrapose! hy
+--       simp only [add_le_iff_nonpos_left, nonpos_iff_eq_zero] at hy
+--       simp [hy]
+--     · rw [Function.iterate_add, Function.comp_apply]
+--       exact hy'.ne'
+--   let f' : {l // a.val (succ^[l] x) ≠ 0} → {l // a.val (succ^[l] x) ≠ 0} := fun l ↦ ⟨
+--     Nat.find (hf' l.val l.prop),
+--     (Nat.find_spec (hf' l.val l.prop)).right
+--   ⟩
+--   have hf'' : ∀ l, l.val < (f' l).val := by
+--     rintro ⟨l, hl⟩
+--     have : (f' ⟨l, hl⟩).val = Nat.find (hf' l hl) := rfl
+--     rw [this]
+--     exact (Nat.find_spec (hf' l hl)).left
+--   have key : k < (f'^[k + 1] ⟨0, by simpa using hx⟩).val := by
+--     clear hk
+--     simp only [ne_eq, Function.iterate_succ, Function.comp_apply]
+--     induction' k with k IH
+--     · simp
+--     · rw [Function.iterate_succ', Function.comp_apply]
+--       refine (Nat.succ_le_succ IH).trans ?_
+--       rw [Nat.succ_le]
+--       exact hf'' _
+--   have hl := (f'^[k + 1] ⟨0, by simpa using hx⟩).prop
+--   rw [a.prop.right] at hl
+--   · exact absurd rfl hl
+--   · rw [← hk]
+--     exact succ_iterate_strict_mono key _
 
 lemma one_le_iff_pos {x : zStar Z b} :
     1 ≤ x ↔ 0 < x := by
@@ -510,9 +496,89 @@ instance : IsSuccArchimedean (zStar Z b) where
       · rw [AddSubgroupClass.coe_sub, DigitExpansion.sub_def, hz _ hw, zero_sub]
         simp [single_apply_of_ne _ _ _ hw.ne']
 
+lemma fromRealHensel (f : realHensel Z b) :
+    ∃ (k : ℕ) (f' : zStar Z b), shift^[k] f'.val = f := by
+  obtain ⟨k, f', hf⟩ := henselInt.fromHensel ⟨f.val, f.prop.right⟩
+  refine ⟨k, ⟨f'.val, ?_, f'.prop⟩, hf⟩
+  simp only [AddSubgroup.coe_toAddSubmonoid, SetLike.mem_coe]
+  suffices f'.val = leftShift^[k] f.val by
+    rw [this]
+    convert (real.leftShift^[k] ⟨f.val, f.prop.left⟩).prop
+    clear this hf f'
+    induction' k with k IH
+    · simp
+    · simp [- Function.iterate_succ, Function.iterate_succ', Function.comp_apply, IH]
+  rw [← (leftInverse_shift_leftShift.iterate k).injective.eq_iff,
+      (leftInverse_leftShift_shift.iterate k) _] at hf
+  exact hf
+
 end zStar
 
 namespace realHensel
+
+noncomputable
+instance : LinearOrderedAddCommGroup (realHensel Z b) :=
+  { LinearOrder.lift' (fun ⟨x, hx⟩ ↦ ⟨x, hx.left⟩ : realHensel Z b → real Z b) (by
+      rintro ⟨x, hx, hx'⟩ ⟨y, hy, hy'⟩
+      simp) with
+    add_le_add_left := by
+      rintro ⟨x, hx, hx'⟩ ⟨y, hy, hy'⟩ h ⟨z, hz, hz'⟩
+      have : (⟨x, hx⟩ : real Z b) ≤ ⟨y, hy⟩ := h
+      exact add_le_add_left this ⟨z, hz⟩ }
+
+protected lemma le_def {x y : realHensel Z b} :
+    x ≤ y ↔ (⟨x.val, x.prop.left⟩ : real Z b) ≤ ⟨y.val, y.prop.left⟩ := Iff.rfl
+
+protected lemma lt_def {x y : realHensel Z b} :
+    x < y ↔ (⟨x.val, x.prop.left⟩ : real Z b) < ⟨y.val, y.prop.left⟩ := Iff.rfl
+
+lemma positive_iff {x : realHensel Z b} :
+    DigitExpansion.Positive x.val ↔ 0 < x :=
+  real.positive_iff (f := ⟨x.val, _⟩)
+
+lemma negative_iff {x : realHensel Z b} :
+    DigitExpansion.Negative x.val ↔ x < 0 :=
+  real.negative_iff (f := ⟨x.val, _⟩)
+
+variable [Zero Z]
+
+@[elab_as_elim]
+lemma shift_induction {motive : realHensel Z b → Prop}
+    (h0 : motive (AddSubgroup.inclusion zStar_le_realHensel 0))
+    (hs : ∀ f, motive f → motive (f + (AddSubgroup.inclusion zStar_le_realHensel 1)))
+    (hp : ∀ f, motive f → motive (f - (AddSubgroup.inclusion zStar_le_realHensel 1)))
+    (hd : ∀ f, motive f → motive (⟨
+      shift f.val,
+      by simpa using (real.shift ⟨f.val, f.prop.left⟩).prop,
+      shift_hensel f.prop.right⟩))
+    (f : realHensel Z b) : motive f := by
+  obtain ⟨k, f', hf⟩ := zStar.fromRealHensel f
+  induction' k with k IH generalizing f f'
+  · simp only [Nat.zero_eq, Function.iterate_zero, id_eq] at hf
+    revert f
+    refine succArchimedeanRec ?_ ?_ ?_ f'
+    · exact 0
+    · intro f hf
+      convert h0
+      rw [map_zero, Subtype.ext_iff, ← hf]
+      simp
+    · intro g IH f hf
+      convert hs _ (IH (AddSubgroup.inclusion zStar_le_realHensel g) rfl)
+      ext : 1
+      exact hf.symm
+    · intro g IH f hf
+      convert hp _ (IH (AddSubgroup.inclusion zStar_le_realHensel g) rfl)
+      ext : 1
+      exact hf.symm
+  · let g : realHensel Z b := ⟨real.leftShift ⟨f.val, f.prop.left⟩,
+      (real.leftShift _).prop, leftShift_hensel f.prop.right⟩
+    have hg : g.val = leftShift f.val := rfl
+    rw [Function.iterate_succ', Function.comp_apply,
+        ← leftInverse_shift_leftShift.injective.eq_iff,
+        leftInverse_leftShift_shift, ← hg] at hf
+    specialize IH _ _ hf
+    convert hd _ IH
+    rw [hg, leftInverse_shift_leftShift]
 
 end realHensel
 
