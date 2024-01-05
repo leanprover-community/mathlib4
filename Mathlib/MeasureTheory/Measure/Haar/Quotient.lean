@@ -345,11 +345,11 @@ variable (K : PositiveCompacts (G ⧸ Γ))
 /- Given a normal subgroup `Γ` of a topological group `G` with Haar measure `μ`, which is also
   right-invariant, and a finite volume fundamental domain `𝓕`, the quotient map to `G ⧸ Γ`,
   properly normalized, satisfies `QuotientVolumeEqVolumePreimage`. -/
-@[to_additive IsAddFundamentalDomain.AddQuotientVolumeEqVolumePreimage_bubHaarMeasure "Given a
+@[to_additive IsAddFundamentalDomain.AddQuotientVolumeEqVolumePreimage_vaddHaarMeasure "Given a
 normal subgroup `Γ` of an additive topological group `G` with Haar measure `μ`, which is also
 right-invariant, and a finite volume fundamental domain `𝓕`, the quotient map to `G ⧸ Γ`,
 properly normalized, satisfies `AddQuotientVolumeEqVolumePreimage`."]
-theorem IsFundamentalDomain.QuotientVolumeEqVolumePreimage_bubHaarMeasure {𝓕 : Set G}
+theorem IsFundamentalDomain.QuotientVolumeEqVolumePreimage_smulHaarMeasure {𝓕 : Set G}
     (h𝓕 : IsFundamentalDomain Γ.op 𝓕) (h𝓕_finite : volume 𝓕 ≠ ⊤) :
     QuotientVolumeEqVolumePreimage
       ((volume ((π ⁻¹' (K : Set (G ⧸ Γ))) ∩ 𝓕)) • haarMeasure K) := by
