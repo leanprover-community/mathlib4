@@ -185,7 +185,7 @@ theorem exists_gt (v : PartialRefinement u s) (hs : IsClosed s) (i : ι) (hi : i
   · intro j
     rcases eq_or_ne j i with (rfl| hne) <;> simp [*, v.isOpen]
   · refine' fun x hx => mem_iUnion.2 _
-    rcases em (∃ (j : _) (_ : j ≠ i), x ∈ v j) with (⟨j, hji, hj⟩ | h)
+    rcases em (∃ j ≠ i, x ∈ v j) with (⟨j, hji, hj⟩ | h)
     · use j
       rwa [update_noteq hji]
     · push_neg at h
