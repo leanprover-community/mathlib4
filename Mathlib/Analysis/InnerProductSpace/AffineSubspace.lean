@@ -23,13 +23,15 @@ variable [NormedAddCommGroup V] [InnerProductSpace 𝕜 V] [AffineSpace V P]
 
 namespace AffineSubspace
 
+variable (s : AffineSubspace 𝕜 P)
+
 open AffineEquiv
 
 /-- Orthogonal complement to an affine subspace passing through a given point. -/
-def orthogonal (s : AffineSubspace 𝕜 P) (b : P) : AffineSubspace 𝕜 P := mk' b s.directionᗮ
+def orthogonal (b : P) : AffineSubspace 𝕜 P := mk' b s.directionᗮ
 
 /-- When a point is in the orthogonal complement. -/
-lemma mem_orthogonal (s : AffineSubspace 𝕜 P) (b c : P) :
+lemma mem_orthogonal (b c : P) :
     c ∈ s.orthogonal b ↔ ∀ (v : V), v ∈ s.direction → @inner 𝕜 _ _ v (c -ᵥ b) = 0 := by
   apply Iff.intro
   · intro hc v hv
@@ -46,13 +48,13 @@ lemma mem_orthogonal (s : AffineSubspace 𝕜 P) (b c : P) :
     · simp
 
 /-- When a point is in the orthogonal complement, with the inner product the other way around. -/
-lemma mem_orthogonal' (s : AffineSubspace 𝕜 P) (b c : P) :
+lemma mem_orthogonal' (b c : P) :
     c ∈ s.orthogonal b ↔ ∀ (v : V), v ∈ s.direction → @inner 𝕜 _ _ (c -ᵥ b) v = 0 := by
   simp_rw [mem_orthogonal, inner_eq_zero_symm]
 
 /-- `orthogonal` reverses the `≤` ordering of two affine subspaces. -/
-lemma orthogonal_le (s t : AffineSubspace 𝕜 P) (b : P) (h : s ≤ t) :
-    t.orthogonal b ≤ s.orthogonal b := by
+lemma orthogonal_le {s₁ s₂ : AffineSubspace 𝕜 P} (b : P) (h : s₁ ≤ s₂) :
+    s₂.orthogonal b ≤ s₁.orthogonal b := by
   rw [orthogonal, orthogonal, le_def']
   intro p hp
   use p -ᵥ b
@@ -64,8 +66,8 @@ lemma orthogonal_le (s t : AffineSubspace 𝕜 P) (b : P) (h : s ≤ t) :
     exact vsub_vadd _ _
 
 /-- Double application of `orthogonal` preserves the `≤` ordering of two affine subspaces. -/
-lemma orthogonal_orthogonal_monotone {s t : AffineSubspace 𝕜 P} (b₁ b₂ c : P) (h : s ≤ t) :
-    (s.orthogonal b₁).orthogonal c ≤ (t.orthogonal b₂).orthogonal c := by
+lemma orthogonal_orthogonal_monotone {s₁ s₂ : AffineSubspace 𝕜 P} (b₁ b₂ c : P) (h : s₁ ≤ s₂) :
+    (s₁.orthogonal b₁).orthogonal c ≤ (s₂.orthogonal b₂).orthogonal c := by
   simp [orthogonal, le_def']
   intro p hp
   use p -ᵥ c
@@ -77,8 +79,7 @@ lemma orthogonal_orthogonal_monotone {s t : AffineSubspace 𝕜 P} (b₁ b₂ c 
     exact vsub_vadd _ _
 
 /-- `s` is contained in `(s.orthogonal b).orthogonal c` when `c ∈ s`. -/
-lemma le_orthogonal_orthogonal (s : AffineSubspace 𝕜 P) (b c : P) (hc : c ∈ s) :
-    s ≤ (s.orthogonal b).orthogonal c := by
+lemma le_orthogonal_orthogonal (b c : P) (hc : c ∈ s) : s ≤ (s.orthogonal b).orthogonal c := by
   simp [orthogonal, le_def']
   intros p hp
   exact ⟨ p -ᵥ c
@@ -103,8 +104,7 @@ lemma mk'_of_bot_orthogonal_eq_top (b c : P) : (mk' b (⊥ : Submodule 𝕜 V)).
   exact ⟨by simp, fun _ => ⟨x -ᵥ c, by simp⟩⟩
 
 @[simp]
-lemma orthogonal_eq_top_iff (s : AffineSubspace 𝕜 P) (b : P) :
-    s.orthogonal b = ⊤ ↔ s.direction = ⊥ := by
+lemma orthogonal_eq_top_iff (b : P) : s.orthogonal b = ⊤ ↔ s.direction = ⊥ := by
   apply Iff.intro
   · intro hs
     rw [orthogonal] at hs
@@ -148,14 +148,13 @@ lemma orthogonal_parallel_of_parallel (s t : AffineSubspace 𝕜 P) (b c : P) :
     exact ⟨v, hv, rfl⟩
 
 /-- The orthogonal complements of an affine subspace through any points are parallel. -/
-lemma orthogonal_parallel (s : AffineSubspace 𝕜 P) (b c : P) :
-    orthogonal s b ∥ orthogonal s c :=
+lemma orthogonal_parallel (b c : P) : orthogonal s b ∥ orthogonal s c :=
   orthogonal_parallel_of_parallel s s b c (Parallel.refl s)
 
 /-- The orthogonal complement through a point `c` of the orthogonal complement of an affine subspace
 is equal to the original subspace when `c` is in the original subspace and the `direction` of the
 original subspace is a `CompleteSpace`. -/
-lemma orthogonal_orthogonal (s : AffineSubspace 𝕜 P) [CompleteSpace s.direction] (b c : P) :
+lemma orthogonal_orthogonal [CompleteSpace s.direction] (b c : P) :
     c ∈ s → (s.orthogonal b).orthogonal c = s := by
   intro hc
   simp [orthogonal, hc]
