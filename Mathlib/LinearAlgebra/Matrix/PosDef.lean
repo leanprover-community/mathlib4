@@ -52,7 +52,7 @@ def PosSemidef (M : Matrix n n R) :=
 lemma posSemidef_diagonal_iff [DecidableEq n] {d : n → R} :
     PosSemidef (diagonal d) ↔ (∀ i : n, 0 ≤ d i) := by
   refine ⟨fun ⟨_, hP⟩ i ↦ by simpa using hP (Pi.single i 1), ?_⟩
-  refine fun hd ↦ ⟨isHermitian_diagonal_iff.2 <| fun i ↦ IsSelfAdjoint.of_nonneg (hd i), ?_⟩
+  refine fun hd ↦ ⟨isHermitian_diagonal_iff.2 fun i ↦ IsSelfAdjoint.of_nonneg (hd i), ?_⟩
   refine fun x ↦ Finset.sum_nonneg fun i _ ↦ ?_
   simpa only [mulVec_diagonal, mul_assoc] using conjugate_nonneg (hd i) _
 
