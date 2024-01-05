@@ -198,7 +198,7 @@ instance (priority := 100) IsDomain.to_noZeroDivisors [Ring α] [IsDomain α] :
   IsRightCancelMulZero.to_noZeroDivisors α
 #align is_domain.to_no_zero_divisors IsDomain.to_noZeroDivisors
 
-instance Subsingleton.to_noZeroDivisors [Ring α] [Subsingleton α] : NoZeroDivisors α :=
+instance Subsingleton.to_noZeroDivisors [Mul α] [Zero α] [Subsingleton α] : NoZeroDivisors α :=
   NoZeroDivisors.mk (fun _ => Or.inl (Subsingleton.eq_zero _))
 
 lemma NoZeroDivisors_iff_IsDomain_or_Subsingleton [Ring α]:
