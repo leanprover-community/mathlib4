@@ -308,10 +308,10 @@ theorem exists_isIntegralCurveAt_of_contMDiffAt
   chosen starting point `x₀ : M`, an integral curve `γ : ℝ → M` exists such that `γ t₀ = x₀` and the
   tangent vector of `γ` at `t` coincides with the vector field at `γ t` for all `t` within an open
   interval around `t₀`. -/
-lemma exists_isIntegralCurveAt_of_contMDiffAt_boundaryless [I.Boundaryless]
+lemma exists_isIntegralCurveAt_of_contMDiffAt_boundaryless [BoundarylessManifold I M]
     (hv : ContMDiffAt I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)) x₀) :
     ∃ (γ : ℝ → M), γ t₀ = x₀ ∧ IsIntegralCurveAt γ v t₀ :=
-  exists_isIntegralCurveAt_of_contMDiffAt t₀ hv I.isInteriorPoint
+  exists_isIntegralCurveAt_of_contMDiffAt t₀ hv (BoundarylessManifold.isInteriorPoint I)
 
 section Naturality
 
@@ -336,7 +336,7 @@ lemma IsIntegralCurveAt.of_mdifferentiable_related (h : IsIntegralCurveAt γ v t
 /-- Let `v` and `v'` be vector fields on `M` and `M'`, respectively, and let `f : M → M'` be a
   differentiable map. If `f` maps integral curves of `v` to integral curves of `v'`, then `v` and
   `v'` are `f`-related. The converse is stated above. -/
-lemma mdifferentiable_related_of_isIntegralCurveAt [I.Boundaryless]
+lemma mdifferentiable_related_of_isIntegralCurveAt [BoundarylessManifold I M]
     (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)))
     {f : M → M'} (hf : MDifferentiable I I' f)
     (h : ∀ (γ : ℝ → M) (t₀ : ℝ), IsIntegralCurveAt γ v t₀ → IsIntegralCurveAt (f ∘ γ) v' t₀)
