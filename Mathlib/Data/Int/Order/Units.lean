@@ -48,9 +48,7 @@ theorem units_coe_mul_self (u : ℤˣ) : (u * u : ℤ) = 1 := by
   rw [← Units.val_mul, units_mul_self, Units.val_one]
 #align int.units_coe_mul_self Int.units_coe_mul_self
 
-@[simp]
-theorem neg_one_pow_ne_zero {n : ℕ} : (-1 : ℤ) ^ n ≠ 0 :=
-  pow_ne_zero _ (abs_pos.mp (by simp))
+theorem neg_one_pow_ne_zero {n : ℕ} : (-1 : ℤ) ^ n ≠ 0 := by simp
 #align int.neg_one_pow_ne_zero Int.neg_one_pow_ne_zero
 
 theorem sq_eq_one_of_sq_lt_four {x : ℤ} (h1 : x ^ 2 < 4) (h2 : x ≠ 0) : x ^ 2 = 1 :=

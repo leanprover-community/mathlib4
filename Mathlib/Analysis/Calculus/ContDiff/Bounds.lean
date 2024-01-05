@@ -185,8 +185,7 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear (B : E →L
     simp only [LinearIsometryEquiv.coe_coe'', LinearIsometryEquiv.norm_map]
     calc
       ‖B (isoE y) (isoF x)‖ ≤ ‖B (isoE y)‖ * ‖isoF x‖ := ContinuousLinearMap.le_op_norm _ _
-      _ ≤ ‖B‖ * ‖isoE y‖ * ‖isoF x‖ :=
-        (mul_le_mul_of_nonneg_right (ContinuousLinearMap.le_op_norm _ _) (norm_nonneg _))
+      _ ≤ ‖B‖ * ‖isoE y‖ * ‖isoF x‖ := by gcongr; apply ContinuousLinearMap.le_op_norm
       _ = ‖B‖ * ‖y‖ * ‖x‖ := by simp only [LinearIsometryEquiv.norm_map]
   let su := isoD ⁻¹' s
   have hsu : UniqueDiffOn 𝕜 su := isoD.toContinuousLinearEquiv.uniqueDiffOn_preimage_iff.2 hs
@@ -404,33 +403,29 @@ theorem norm_iteratedFDerivWithin_comp_le_aux {Fu Gu : Type u} [NormedAddCommGro
     -- bound each of the terms using the estimates on previous derivatives (that use the inductive
     -- assumption for `g' ∘ f`).
     _ ≤ ∑ i in Finset.range (n + 1), (n.choose i : ℝ) * (i ! * C * D ^ i) * D ^ (n - i + 1) := by
-      apply Finset.sum_le_sum fun i hi => ?_
-      simp only [mul_assoc (n.choose i : ℝ)]
-      refine' mul_le_mul_of_nonneg_left _ (Nat.cast_nonneg _)
-      apply mul_le_mul (I i hi) (J i) (norm_nonneg _)
-      positivity
+      gcongr with i hi
+      · simp only [mul_assoc (n.choose i : ℝ)]
+        exact I i hi
+      · exact J i
     -- We are left with trivial algebraic manipulations to see that this is smaller than
     -- the claimed bound.
     _ = ∑ i in Finset.range (n + 1),
       -- porting note: had to insert a few more explicit type ascriptions in this and similar
       -- expressions.
         (n ! : ℝ) * ((i ! : ℝ)⁻¹ * i !) * C * (D ^ i * D ^ (n - i + 1)) * ((n - i)! : ℝ)⁻¹ := by
-      apply Finset.sum_congr rfl fun i hi => ?_
+      congr! 1 with i hi
       simp only [Nat.cast_choose ℝ (Finset.mem_range_succ_iff.1 hi), div_eq_inv_mul, mul_inv]
       ring
     _ = ∑ i in Finset.range (n + 1), (n ! : ℝ) * 1 * C * D ^ (n + 1) * ((n - i)! : ℝ)⁻¹ := by
-      apply Finset.sum_congr rfl fun i hi => ?_
-      congr 2
-      · congr
-        apply inv_mul_cancel
+      congr! with i hi
+      · apply inv_mul_cancel
         simpa only [Ne.def, Nat.cast_eq_zero] using i.factorial_ne_zero
       · rw [← pow_add]
         congr 1
         rw [Nat.add_succ, Nat.succ_inj']
         exact Nat.add_sub_of_le (Finset.mem_range_succ_iff.1 hi)
     _ ≤ ∑ i in Finset.range (n + 1), (n ! : ℝ) * 1 * C * D ^ (n + 1) * 1 := by
-      apply Finset.sum_le_sum fun i _hi => ?_
-      refine' mul_le_mul_of_nonneg_left _ (by positivity)
+      gcongr with i
       apply inv_le_one
       simpa only [Nat.one_le_cast] using (n - i).factorial_pos
     _ = (n + 1)! * C * D ^ (n + 1) := by

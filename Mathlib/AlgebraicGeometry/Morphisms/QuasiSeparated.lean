@@ -56,7 +56,7 @@ def QuasiSeparated.affineProperty : AffineTargetMorphismProperty := fun X _ _ _ 
 
 theorem quasiSeparatedSpace_iff_affine (X : Scheme) :
     QuasiSeparatedSpace X.carrier ↔ ∀ U V : X.affineOpens, IsCompact (U ∩ V : Set X.carrier) := by
-  rw [QuasiSeparatedSpace_iff]
+  rw [quasiSeparatedSpace_iff]
   constructor
   · intro H U V; exact H U V U.1.2 U.2.isCompact V.1.2 V.2.isCompact
   · intro H
@@ -115,7 +115,7 @@ theorem quasi_compact_affineProperty_iff_quasiSeparatedSpace {X Y : Scheme} [IsA
 #align algebraic_geometry.quasi_compact_affine_property_iff_quasi_separated_space AlgebraicGeometry.quasi_compact_affineProperty_iff_quasiSeparatedSpace
 
 theorem quasiSeparated_eq_diagonal_is_quasiCompact :
-    @QuasiSeparated = MorphismProperty.diagonal @QuasiCompact := by ext; exact QuasiSeparated_iff _
+    @QuasiSeparated = MorphismProperty.diagonal @QuasiCompact := by ext; exact quasiSeparated_iff _
 #align algebraic_geometry.quasi_separated_eq_diagonal_is_quasi_compact AlgebraicGeometry.quasiSeparated_eq_diagonal_is_quasiCompact
 
 theorem quasi_compact_affineProperty_diagonal_eq :
@@ -291,7 +291,7 @@ theorem quasiSeparatedOfComp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [H : Q
   rintro ⟨i, j⟩; dsimp at i j
   -- replace H := H (Scheme.OpenCover.pullbackCover (Scheme.affineCover Z) g) i
   specialize H _ i
-  -- rw [←isQuasiSeparated_iff_quasiSeparatedSpace] at H
+  -- rw [← isQuasiSeparated_iff_quasiSeparatedSpace] at H
   refine @quasiSeparatedSpace_of_quasiSeparated _ _ ?_ H ?_
   · exact pullback.map _ _ _ _ (𝟙 _) _ _ (by simp) (Category.comp_id _) ≫
       (pullbackRightPullbackFstIso g (Z.affineCover.map i) f).hom
