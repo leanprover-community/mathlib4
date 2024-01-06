@@ -390,7 +390,8 @@ protected def linftyOpNormedAlgebra [NormedField R] [SeminormedRing α] [NormedA
 section
 variable [NormedDivisionRing α] [NormedAlgebra ℝ α] [CompleteSpace α]
 
-private def unitOf (a : α) := by classical exact if a = 0 then 1 else ‖a‖ • a⁻¹
+/-- Auxiliary construction; an element of norm 1 such that `a * unitOf a = ‖a‖`. -/
+private def unitOf (a : α) : α := by classical exact if a = 0 then 1 else ‖a‖ • a⁻¹
 
 private theorem norm_unitOf (a : α) : ‖unitOf a‖₊ = 1 := by
   rw [unitOf]
@@ -415,28 +416,26 @@ section
 variable [NontriviallyNormedField α] [NormedAlgebra ℝ α]
 
 lemma linfty_op_nnnorm_eq_op_nnnorm (A : Matrix m n α) :
-    ‖A‖₊ = ‖ContinuousLinearMap.mk
-      (Matrix.mulVecLin A) (continuous_const.matrix_mulVec continuous_id)‖₊ := by
+    ‖A‖₊ = ‖ContinuousLinearMap.mk (Matrix.mulVecLin A)‖₊ := by
   rw [ContinuousLinearMap.op_nnnorm_eq_of_bounds _ (linfty_op_nnnorm_mulVec _) fun N hN => ?_]
   rw [linfty_op_nnnorm_def]
   refine Finset.sup_le fun i _ => ?_
   cases isEmpty_or_nonempty n
   · simp
   classical
-  set x := fun j => unitOf (A i j)
-  replace hxn : ‖x‖₊ = 1 := by
+  let x : n → α := fun j => unitOf (A i j)
+  have hxn : ‖x‖₊ = 1 := by
     simp_rw [Pi.nnnorm_def, norm_unitOf, Finset.sup_const Finset.univ_nonempty]
-  have := hN x
-  rw [hxn, mul_one, Pi.nnnorm_def] at this
-  simp [mulVec, dotProduct] at this
-  specialize this i
-  refine le_trans ?_ this
-  simp_rw [mul_unitOf, ← map_sum, nnnorm_algebraMap, ← NNReal.coe_sum]
-  simp only [NNReal.nnnorm_eq, nnnorm_one, mul_one, le_refl]
+  specialize hN x
+  rw [hxn, mul_one, Pi.nnnorm_def, Finset.sup_le_iff] at hN
+  replace hN := hN i (Finset.mem_univ _)
+  dsimp [mulVec, dotProduct] at hN
+  simp_rw [mul_unitOf, ← map_sum, nnnorm_algebraMap, ← NNReal.coe_sum, NNReal.nnnorm_eq, nnnorm_one,
+    mul_one] at hN
+  exact hN
 
 lemma linfty_op_norm_eq_op_norm (A : Matrix m n α) :
-    ‖A‖ = ‖ContinuousLinearMap.mk
-      (Matrix.mulVecLin A) (continuous_const.matrix_mulVec continuous_id)‖ :=
+    ‖A‖ = ‖ContinuousLinearMap.mk (Matrix.mulVecLin A)‖ :=
   congr_arg NNReal.toReal (linfty_op_nnnorm_eq_op_nnnorm A)
 
 variable [DecidableEq n]
