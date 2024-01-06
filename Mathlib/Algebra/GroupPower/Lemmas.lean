@@ -10,6 +10,7 @@ import Mathlib.Algebra.Order.Monoid.WithTop
 import Mathlib.Data.Nat.Pow
 import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.Algebra.Group.Opposite
+import Mathlib.GroupTheory.GroupAction.Ring
 
 #align_import algebra.group_power.lemmas from "leanprover-community/mathlib"@"a07d750983b94c530ab69a726862c2ab6802b38c"
 
@@ -511,24 +512,6 @@ theorem nsmul_eq_mul [NonAssocSemiring R] (n : ℕ) (a : R) : n • a = n * a :=
 #align nsmul_eq_mul nsmul_eq_mulₓ
 -- typeclasses do not match up exactly.
 
-/-- Note that `AddCommMonoid.nat_smulCommClass` requires stronger assumptions on `R`. -/
-instance NonUnitalNonAssocSemiring.nat_smulCommClass [NonUnitalNonAssocSemiring R] :
-    SMulCommClass ℕ R R :=
-  ⟨fun n x y => by
-    induction' n with n ih
-    · simp [zero_nsmul]
-    · simp_rw [succ_nsmul, smul_eq_mul, mul_add, ← smul_eq_mul, ih]⟩
-#align non_unital_non_assoc_semiring.nat_smul_comm_class NonUnitalNonAssocSemiring.nat_smulCommClass
-
-/-- Note that `AddCommMonoid.nat_isScalarTower` requires stronger assumptions on `R`. -/
-instance NonUnitalNonAssocSemiring.nat_isScalarTower [NonUnitalNonAssocSemiring R] :
-    IsScalarTower ℕ R R :=
-  ⟨fun n x y => by
-    induction' n with n ih
-    · simp [zero_nsmul]
-    · simp_rw [succ_nsmul, ← ih, smul_eq_mul, add_mul]⟩
-#align non_unital_non_assoc_semiring.nat_is_scalar_tower NonUnitalNonAssocSemiring.nat_isScalarTower
-
 @[simp, norm_cast]
 theorem Nat.cast_pow [Semiring R] (n m : ℕ) : (↑(n ^ m) : R) = (↑n : R) ^ m := by
   induction' m with m ih
@@ -595,24 +578,6 @@ theorem zsmul_eq_mul [Ring R] (a : R) : ∀ n : ℤ, n • a = n * a
 theorem zsmul_eq_mul' [Ring R] (a : R) (n : ℤ) : n • a = a * n := by
   rw [zsmul_eq_mul, (n.cast_commute a).eq]
 #align zsmul_eq_mul' zsmul_eq_mul'
-
-/-- Note that `AddCommGroup.int_smulCommClass` requires stronger assumptions on `R`. -/
-instance NonUnitalNonAssocRing.int_smulCommClass [NonUnitalNonAssocRing R] :
-    SMulCommClass ℤ R R :=
-  ⟨fun n x y =>
-    match n with
-    | (n : ℕ) => by simp_rw [coe_nat_zsmul, smul_comm]
-    | -[n+1] => by simp_rw [negSucc_zsmul, smul_eq_mul, mul_neg, mul_smul_comm]⟩
-#align non_unital_non_assoc_ring.int_smul_comm_class NonUnitalNonAssocRing.int_smulCommClass
-
-/-- Note that `AddCommGroup.int_isScalarTower` requires stronger assumptions on `R`. -/
-instance NonUnitalNonAssocRing.int_isScalarTower [NonUnitalNonAssocRing R] :
-    IsScalarTower ℤ R R :=
-  ⟨fun n x y =>
-    match n with
-    | (n : ℕ) => by simp_rw [coe_nat_zsmul, smul_assoc]
-    | -[n+1] => by simp_rw [negSucc_zsmul, smul_eq_mul, neg_mul, smul_mul_assoc]⟩
-#align non_unital_non_assoc_ring.int_is_scalar_tower NonUnitalNonAssocRing.int_isScalarTower
 
 theorem zsmul_int_int (a b : ℤ) : a • b = a * b := by simp
 #align zsmul_int_int zsmul_int_int
