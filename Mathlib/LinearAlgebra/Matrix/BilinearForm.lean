@@ -337,13 +337,17 @@ theorem BilinForm.toMatrix_comp (B : BilinForm R₂ M₂) (l r : M₂' →ₗ[R�
 
 theorem BilinForm.toMatrix_compLeft (B : BilinForm R₂ M₂) (f : M₂ →ₗ[R₂] M₂) :
     BilinForm.toMatrix b (B.compLeft f) = (LinearMap.toMatrix b b f)ᵀ * BilinForm.toMatrix b B := by
-  simp only [compLeft, BilinForm.toMatrix_comp b b, toMatrix_id, Matrix.mul_one]
+  rw [BilinForm.toMatrix, LinearEquiv.trans_apply, LinearEquiv.trans_apply,
+    LinearMap.mul_toMatrix₂ b b b, transpose_transpose, toLin_toMatrix,
+    EmbeddingLike.apply_eq_iff_eq]
+  exact rfl
 #align bilin_form.to_matrix_comp_left BilinForm.toMatrix_compLeft
 
 theorem BilinForm.toMatrix_compRight (B : BilinForm R₂ M₂) (f : M₂ →ₗ[R₂] M₂) :
     BilinForm.toMatrix b (B.compRight f) = BilinForm.toMatrix b B * LinearMap.toMatrix b b f := by
-  simp only [BilinForm.compRight, BilinForm.toMatrix_comp b b, toMatrix_id, transpose_one,
-    Matrix.one_mul]
+  rw [BilinForm.toMatrix, LinearEquiv.trans_apply, LinearEquiv.trans_apply,
+    LinearMap.toMatrix₂_mul b b b, toLin_toMatrix, EmbeddingLike.apply_eq_iff_eq]
+  rfl
 #align bilin_form.to_matrix_comp_right BilinForm.toMatrix_compRight
 
 @[simp]
