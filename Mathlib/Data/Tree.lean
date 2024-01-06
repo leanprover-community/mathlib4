@@ -3,7 +3,7 @@ Copyright (c) 2019 mathlib community. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Wojciech Nawrocki
 -/
-import Std.Data.RBMap
+import Std.Data.RBMap.Basic
 import Mathlib.Data.Num.Basic
 import Mathlib.Order.Basic
 import Mathlib.Init.Data.Ordering.Basic

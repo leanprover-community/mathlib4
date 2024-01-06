@@ -5,7 +5,7 @@ Authors: Jeremy Avigad, Robert Y. Lewis
 -/
 
 import Mathlib.Algebra.Group.Units.Hom
-import Mathlib.Algebra.GroupPower.Basic
+import Mathlib.Algebra.GroupPower.Hom
 import Mathlib.Algebra.GroupWithZero.Commute
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Ring.Commute
@@ -66,6 +66,7 @@ theorem pow_eq_zero_iff [NoZeroDivisors M] {a : M} {n : ℕ} (hn : 0 < n) : a ^ 
   exact zero_pow hn
 #align pow_eq_zero_iff pow_eq_zero_iff
 
+@[simp]
 theorem pow_eq_zero_iff' [NoZeroDivisors M] [Nontrivial M] {a : M} {n : ℕ} :
     a ^ n = 0 ↔ a = 0 ∧ n ≠ 0 := by cases (zero_le n).eq_or_gt <;> simp [*, ne_of_gt]
 #align pow_eq_zero_iff' pow_eq_zero_iff'

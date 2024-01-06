@@ -77,7 +77,7 @@ theorem bernoulli_zero : bernoulli 0 = 1 := by simp [bernoulli]
 theorem bernoulli_eval_zero (n : ℕ) : (bernoulli n).eval 0 = _root_.bernoulli n := by
   rw [bernoulli, eval_finset_sum, sum_range_succ]
   have : (∑ x : ℕ in range n, _root_.bernoulli x * n.choose x * 0 ^ (n - x)) = 0 := by
-    apply sum_eq_zero <| fun x hx => _
+    apply sum_eq_zero fun x hx => _
     intros x hx
     have h : x < n := (mem_range.1 hx)
     simp [h]
@@ -115,7 +115,7 @@ theorem derivative_bernoulli (k : ℕ) :
     Polynomial.derivative (bernoulli k) = k * bernoulli (k - 1) := by
   cases k with
   | zero => rw [Nat.cast_zero, zero_mul, bernoulli_zero, derivative_one]
-  | succ k => exact_mod_cast derivative_bernoulli_add_one k
+  | succ k => exact mod_cast derivative_bernoulli_add_one k
 #align polynomial.derivative_bernoulli Polynomial.derivative_bernoulli
 
 @[simp]
@@ -238,7 +238,7 @@ theorem bernoulli_generating_function (t : A) :
   simp only [RingHom.map_sub, tsub_self, constantCoeff_one, constantCoeff_exp,
     coeff_zero_eq_constantCoeff, mul_zero, sub_self, add_zero]
   -- Let's multiply both sides by (n+1)! (OK because it's a unit)
-  have hnp1 : IsUnit ((n + 1)! : ℚ) := IsUnit.mk0 _ (by exact_mod_cast factorial_ne_zero (n + 1))
+  have hnp1 : IsUnit ((n + 1)! : ℚ) := IsUnit.mk0 _ (mod_cast factorial_ne_zero (n + 1))
   rw [← (hnp1.map (algebraMap ℚ A)).mul_right_inj]
   -- do trivial rearrangements to make RHS (n+1)*t^n
   rw [mul_left_comm, ← RingHom.map_mul]

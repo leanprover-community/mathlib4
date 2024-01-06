@@ -9,7 +9,7 @@ import Std.Tactic.Ext
 import Std.Tactic.RCases
 import Std.Tactic.Where
 import Mathlib.Data.Matrix.Notation
-import Mathlib.Logic.Equiv.LocalEquiv
+import Mathlib.Logic.Equiv.PartialEquiv
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 import Mathlib.Order.Filter.Basic
 import Mathlib.RingTheory.WittVector.Basic
@@ -64,7 +64,6 @@ import Mathlib.Tactic.Monotonicity
 import Mathlib.Tactic.Nontriviality
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.NthRewrite
-import Mathlib.Tactic.PermuteGoals
 import Mathlib.Tactic.Polyrith
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.PushNeg
@@ -83,7 +82,6 @@ import Mathlib.Tactic.Set
 import Mathlib.Tactic.SimpIntro
 import Mathlib.Tactic.SimpRw
 import Mathlib.Tactic.Simps.Basic
-import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.Substs
 import Mathlib.Tactic.SwapVar
@@ -213,9 +211,6 @@ syntax termList := " [" term,* "]"
 /- E -/ syntax (name := applyNormed) "apply_normed " term : tactic
 
 /- E -/ syntax (name := noncommRing) "noncomm_ring" : tactic
-
-
-/- S -/ syntax (name := omega) "omega" (&" manual")? (&" nat" <|> &" int")? : tactic
 
 /- B -/ syntax (name := acMono) "ac_mono" ("*" <|> ("^" num))?
   (config)? ((" : " term) <|> (" := " term))? : tactic

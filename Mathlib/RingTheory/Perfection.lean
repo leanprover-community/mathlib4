@@ -490,7 +490,7 @@ theorem mul_ne_zero_of_pow_p_ne_zero {x y : ModP K v O hv p} (hx : x ^ p ≠ 0) 
   conv_lhs => rw [← rpow_one (v p)]
   rw [← rpow_add (ne_of_gt hvp)]
   refine' rpow_le_rpow_of_exponent_ge hvp (map_natCast (algebraMap O K) p ▸ hv.2 _) _
-  rw [← add_div, div_le_one (Nat.cast_pos.2 hp.1.pos : 0 < (p : ℝ))]; exact_mod_cast hp.1.two_le
+  rw [← add_div, div_le_one (Nat.cast_pos.2 hp.1.pos : 0 < (p : ℝ))]; exact mod_cast hp.1.two_le
 #align mod_p.mul_ne_zero_of_pow_p_ne_zero ModP.mul_ne_zero_of_pow_p_ne_zero
 
 end Classical
@@ -600,8 +600,8 @@ theorem valAux_add (f g : PreTilt K v O hv p) :
   rw [valAux_eq hm, valAux_eq hn, valAux_eq hk, RingHom.map_add]
   cases' le_max_iff.1
       (ModP.preVal_add (coeff _ _ (max (max m n) k) f) (coeff _ _ (max (max m n) k) g)) with h h
-  · exact le_max_of_le_left (pow_le_pow_of_le_left' h _)
-  · exact le_max_of_le_right (pow_le_pow_of_le_left' h _)
+  · exact le_max_of_le_left (pow_le_pow_left' h _)
+  · exact le_max_of_le_right (pow_le_pow_left' h _)
 #align pre_tilt.val_aux_add PreTilt.valAux_add
 
 variable (K v O hv p)

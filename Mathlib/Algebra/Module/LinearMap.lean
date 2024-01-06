@@ -62,10 +62,7 @@ open Function
 
 universe u u' v w x y z
 
-variable {R : Type*} {R₁ : Type*} {R₂ : Type*} {R₃ : Type*}
-variable {k : Type*} {S : Type*} {S₃ : Type*} {T : Type*}
-variable {M : Type*} {M₁ : Type*} {M₂ : Type*} {M₃ : Type*}
-variable {N₁ : Type*} {N₂ : Type*} {N₃ : Type*} {ι : Type*}
+variable {R R₁ R₂ R₃ k S S₃ T M M₁ M₂ M₃ N₁ N₂ N₃ ι : Type*}
 
 /-- A map `f` between modules over a semiring is linear if it satisfies the two properties
 `f (x + y) = f x + f y` and `f (c • x) = c • f x`. The predicate `IsLinearMap R f` asserts this
@@ -87,7 +84,7 @@ is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
 `M →ₛₗ[σ] M₂`) are bundled versions of such maps. For plain linear maps (i.e. for which
 `σ = RingHom.id R`), the notation `M →ₗ[R] M₂` is available. An unbundled version of plain linear
 maps is available with the predicate `IsLinearMap`, but it should be avoided most of the time. -/
-structure LinearMap {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R →+* S) (M : Type*)
+structure LinearMap {R S : Type*} [Semiring R] [Semiring S] (σ : R →+* S) (M : Type*)
     (M₂ : Type*) [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂] extends
     AddHom M M₂ where
   /-- A linear map preserves scalar multiplication.
@@ -150,7 +147,6 @@ namespace SemilinearMapClass
 variable (F : Type*)
 variable [Semiring R] [Semiring S]
 variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
-variable [AddCommMonoid N₁] [AddCommMonoid N₂] [AddCommMonoid N₃]
 variable [Module R M] [Module R M₂] [Module S M₃]
 variable {σ : R →+* S}
 
@@ -174,7 +170,22 @@ theorem map_smul_inv {σ' : S →+* R} [RingHomInvPair σ σ'] (c : S) (x : M) :
     c • f x = f (σ' c • x) := by simp
 #align semilinear_map_class.map_smul_inv SemilinearMapClass.map_smul_inv
 
+/-- Reinterpret an element of a type of semilinear maps as a semilinear map. -/
+abbrev semilinearMap : M →ₛₗ[σ] M₃ where
+  toFun := f
+  map_add' := map_add f
+  map_smul' := map_smulₛₗ f
+
 end SemilinearMapClass
+
+namespace LinearMapClass
+variable {F : Type*} [Semiring R] [AddCommMonoid M₁] [AddCommMonoid M₂] [Module R M₁] [Module R M₂]
+  (f : F) [LinearMapClass F R M₁ M₂]
+
+/-- Reinterpret an element of a type of linear maps as a linear map. -/
+abbrev linearMap : M₁ →ₗ[R] M₂ := SemilinearMapClass.semilinearMap f
+
+end LinearMapClass
 
 namespace LinearMap
 
@@ -539,12 +550,11 @@ def comp : M₁ →ₛₗ[σ₁₃] M₃ where
   map_smul' r x := by simp only [Function.comp_apply, map_smulₛₗ, RingHomCompTriple.comp_apply]
 #align linear_map.comp LinearMap.comp
 
-set_option quotPrecheck false in -- Porting note: error message suggested to do this
 /-- `∘ₗ` is notation for composition of two linear (not semilinear!) maps into a linear map.
 This is useful when Lean is struggling to infer the `RingHomCompTriple` instance. -/
-infixr:80 " ∘ₗ " =>
+notation3:80 (name := compNotation) f:81 " ∘ₗ " g:80 =>
   @LinearMap.comp _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ (RingHom.id _) (RingHom.id _) (RingHom.id _)
-    RingHomCompTriple.ids
+    RingHomCompTriple.ids f g
 
 theorem comp_apply (x : M₁) : f.comp g x = f (g x) :=
   rfl
@@ -566,7 +576,7 @@ theorem id_comp : id.comp f = f :=
 #align linear_map.id_comp LinearMap.id_comp
 
 theorem comp_assoc
-    {R₄ : Type*} {M₄ : Type*} [Semiring R₄] [AddCommMonoid M₄] [Module R₄ M₄]
+    {R₄ M₄ : Type*} [Semiring R₄] [AddCommMonoid M₄] [Module R₄ M₄]
     {σ₃₄ : R₃ →+* R₄} {σ₂₄ : R₂ →+* R₄} {σ₁₄ : R₁ →+* R₄}
     [RingHomCompTriple σ₂₃ σ₃₄ σ₂₄] [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄] [RingHomCompTriple σ₁₂ σ₂₄ σ₁₄]
     (f : M₁ →ₛₗ[σ₁₂] M₂) (g : M₂ →ₛₗ[σ₂₃] M₃) (h : M₃ →ₛₗ[σ₃₄] M₄) :
@@ -635,10 +645,10 @@ protected theorem map_sub (x y : M) : f (x - y) = f x - f y :=
 instance CompatibleSMul.intModule {S : Type*} [Semiring S] [Module S M] [Module S M₂] :
     CompatibleSMul M M₂ ℤ S :=
   ⟨fun fₗ c x ↦ by
-    induction c using Int.induction_on
-    case hz => simp
-    case hp n ih => simp [add_smul, ih]
-    case hn n ih => simp [sub_smul, ih]⟩
+    induction c using Int.induction_on with
+    | hz => simp
+    | hp n ih => simp [add_smul, ih]
+    | hn n ih => simp [sub_smul, ih]⟩
 #align linear_map.compatible_smul.int_module LinearMap.CompatibleSMul.intModule
 
 instance CompatibleSMul.units {R S : Type*} [Monoid R] [MulAction R M] [MulAction R M₂]
@@ -1364,6 +1374,22 @@ theorem coe_smulRight (f : M₁ →ₗ[R] S) (x : M) : (smulRight f x : M₁ →
 theorem smulRight_apply (f : M₁ →ₗ[R] S) (x : M) (c : M₁) : smulRight f x c = f c • x :=
   rfl
 #align linear_map.smul_right_apply LinearMap.smulRight_apply
+
+@[simp]
+lemma smulRight_zero (f : M₁ →ₗ[R] S) : f.smulRight (0 : M) = 0 := by ext; simp
+
+@[simp]
+lemma zero_smulRight (x : M) : (0 : M₁ →ₗ[R] S).smulRight x = 0 := by ext; simp
+
+@[simp]
+lemma smulRight_apply_eq_zero_iff {f : M₁ →ₗ[R] S} {x : M} [NoZeroSMulDivisors S M] :
+    f.smulRight x = 0 ↔ f = 0 ∨ x = 0 := by
+  rcases eq_or_ne x 0 with rfl | hx; simp
+  refine ⟨fun h ↦ Or.inl ?_, fun h ↦ by simp [h.resolve_right hx]⟩
+  ext v
+  replace h : f v • x = 0 := by simpa only [LinearMap.zero_apply] using LinearMap.congr_fun h v
+  rw [smul_eq_zero] at h
+  tauto
 
 end SMulRight
 

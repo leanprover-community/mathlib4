@@ -102,7 +102,7 @@ def lift (f : ∀ i, G i →* K) (k : H →* K)
     (hf : ∀ i, (f i).comp (φ i) = k) :
     PushoutI φ →* K :=
   Con.lift _ (Coprod.lift (CoprodI.lift f) k) <| by
-    apply Con.conGen_le <| fun x y => ?_
+    apply Con.conGen_le fun x y => ?_
     rintro ⟨i, x', rfl, rfl⟩
     simp only [FunLike.ext_iff, MonoidHom.coe_comp, comp_apply] at hf
     simp [hf]
@@ -220,18 +220,16 @@ variable (φ)
 canonical element of each coset. We also need all the maps in the diagram to be injective  -/
 structure Transversal : Type _ where
   /-- All maps in the diagram are injective -/
-  ( injective : ∀ i, Injective (φ i) )
+  injective : ∀ i, Injective (φ i)
   /-- The underlying set, containing exactly one element of each coset of the base group -/
-  ( set : ∀ i, Set (G i) )
+  set : ∀ i, Set (G i)
   /-- The chosen element of the base group itself is the identity -/
-  ( one_mem : ∀ i, 1 ∈ set i )
+  one_mem : ∀ i, 1 ∈ set i
   /-- We have exactly one element of each coset of the base group -/
-  ( compl : ∀ i, IsComplement (φ i).range (set i) )
+  compl : ∀ i, IsComplement (φ i).range (set i)
 
 theorem transversal_nonempty (hφ : ∀ i, Injective (φ i)) : Nonempty (Transversal φ) := by
-  have := fun i => exists_right_transversal (H := (φ i).range) 1
-  simp only [Classical.skolem] at this
-  rcases this with ⟨t, ht⟩
+  choose t ht using fun i => (φ i).range.exists_right_transversal 1
   apply Nonempty.intro
   exact
     { injective := hφ

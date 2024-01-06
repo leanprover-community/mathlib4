@@ -271,7 +271,7 @@ theorem xInTermsOfW_vars_aux (n : ℕ) :
     rw [vars_C_mul] at H
     swap
     · apply pow_ne_zero
-      exact_mod_cast hp.1.ne_zero
+      exact mod_cast hp.1.ne_zero
     rw [mem_range] at hj
     replace H := (ih j hj).2 (vars_pow _ _ H)
     rw [mem_range] at H

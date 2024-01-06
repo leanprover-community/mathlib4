@@ -71,11 +71,11 @@ variable {p}
 theorem modPart_lt_p : modPart p r < p := by
   convert Int.emod_lt _ _
   · simp
-  · exact_mod_cast hp_prime.1.ne_zero
+  · exact mod_cast hp_prime.1.ne_zero
 #align padic_int.mod_part_lt_p PadicInt.modPart_lt_p
 
 theorem modPart_nonneg : 0 ≤ modPart p r :=
-  Int.emod_nonneg _ <| by exact_mod_cast hp_prime.1.ne_zero
+  Int.emod_nonneg _ <| mod_cast hp_prime.1.ne_zero
 #align padic_int.mod_part_nonneg PadicInt.modPart_nonneg
 
 theorem isUnit_den (r : ℚ) (h : ‖(r : ℚ_[p])‖ ≤ 1) : IsUnit (r.den : ℤ_[p]) := by
@@ -182,7 +182,7 @@ theorem exists_mem_range : ∃ n : ℕ, n < p ∧ x - n ∈ maximalIdeal ℤ_[p]
   lift n to ℕ using hzn
   use n
   constructor
-  · exact_mod_cast hnp
+  · exact mod_cast hnp
   simp only [norm_def, coe_sub, Subtype.coe_mk, coe_nat_cast] at hn ⊢
   rw [show (x - n : ℚ_[p]) = x - r + (r - n) by ring]
   apply lt_of_le_of_lt (padicNormE.nonarchimedean _ _)
@@ -310,7 +310,7 @@ theorem appr_lt (x : ℤ_[p]) (n : ℕ) : x.appr n < p ^ n := by
   induction' n with n ih generalizing x
   · simp only [appr, zero_eq, _root_.pow_zero, zero_lt_one]
   simp only [appr, map_natCast, ZMod.nat_cast_self, RingHom.map_pow, Int.natAbs, RingHom.map_mul]
-  have hp : p ^ n < p ^ (n + 1) := by apply pow_lt_pow hp_prime.1.one_lt (lt_add_one n)
+  have hp : p ^ n < p ^ (n + 1) := by apply pow_lt_pow_right hp_prime.1.one_lt (lt_add_one n)
   split_ifs with h
   · apply lt_trans (ih _) hp
   · calc
@@ -515,7 +515,7 @@ theorem isCauSeq_nthHom (r : R) : IsCauSeq (padicNorm p) fun n => nthHom f r n :
   beta_reduce
   norm_cast
   rw [← padicNorm.dvd_iff_norm_le]
-  exact_mod_cast pow_dvd_nthHom_sub f_compat r k j hj
+  exact mod_cast pow_dvd_nthHom_sub f_compat r k j hj
 #align padic_int.is_cau_seq_nth_hom PadicInt.isCauSeq_nthHom
 
 /-- `nthHomSeq f_compat r` bundles `PadicInt.nthHom f r`

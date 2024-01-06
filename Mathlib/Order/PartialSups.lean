@@ -122,6 +122,10 @@ theorem partialSups_eq_sup'_range (f : ℕ → α) (n : ℕ) :
   eq_of_forall_ge_iff fun _ ↦ by simp [Nat.lt_succ_iff]
 #align partial_sups_eq_sup'_range partialSups_eq_sup'_range
 
+lemma partialSups_apply {ι : Type*} {π : ι → Type*} [(i : ι) → SemilatticeSup (π i)]
+    (f : ℕ → (i : ι) → π i) (n : ℕ) (i : ι) : partialSups f n i = partialSups (f · i) n := by
+  simp only [partialSups_eq_sup'_range, Finset.sup'_apply]
+
 end SemilatticeSup
 
 theorem partialSups_eq_sup_range [SemilatticeSup α] [OrderBot α] (f : ℕ → α) (n : ℕ) :

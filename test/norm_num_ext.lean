@@ -6,7 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Tactic.NormNum.BigOperators
 import Mathlib.Tactic.NormNum.GCD
 import Mathlib.Tactic.NormNum.IsCoprime
-import Mathlib.Tactic.NormNum.Mod
+import Mathlib.Tactic.NormNum.DivMod
 import Mathlib.Tactic.NormNum.NatFib
 import Mathlib.Tactic.NormNum.NatSqrt
 import Mathlib.Tactic.NormNum.Prime
@@ -376,8 +376,9 @@ example (f : ℕ → α) : ∑ i in {0, 1, 2}, f i = f 0 + f 1 + f 2 := by norm_
 example (f : ℕ → α) : ∑ i in {0, 2, 2, 3, 1, 0}, f i = f 0 + f 1 + f 2 + f 3 := by norm_num; ring
 example (f : ℕ → α) : ∑ i in {0, 2, 2 - 3, 3 - 1, 1, 0}, f i = f 0 + f 1 + f 2 := by norm_num; ring
 -/
-example : (∑ i in Finset.range 10, (i^2 : ℕ)) = 285 := by norm_num1
-example : (∏ i in Finset.range 4, ((i+1)^2 : ℕ)) = 576 := by norm_num1
+example : ∑ i in Finset.range 10, i = 45 := by norm_num1
+example : ∑ i in Finset.range 10, (i^2 : ℕ) = 285 := by norm_num1
+example : ∏ i in Finset.range 4, ((i+1)^2 : ℕ) = 576 := by norm_num1
 /-
 example : (∑ i in Finset.Icc 5 10, (i^2 : ℕ)) = 355 := by norm_num
 example : (∑ i in Finset.Ico 5 10, (i^2 : ℕ)) = 255 := by norm_num
@@ -435,5 +436,15 @@ example : (3 : ℤ) % 4 = 3 := by norm_num1
 example : (-3 : ℤ) % 4 = 1 := by norm_num1
 example : (3 : ℤ) % -4 = 3 := by norm_num1
 example : 3 + (42 : ℤ) % 5 = 5 := by norm_num1
+
+example : 2 ∣ 4 := by norm_num1
+example : ¬ 2 ∣ 5 := by norm_num1
+example : 553105253 ∣ 553105253 * 776531401 := by norm_num1
+example : ¬ 553105253 ∣ 553105253 * 776531401 + 1 := by norm_num1
+
+example : (2 : ℤ) ∣ 4 := by norm_num1
+example : ¬ (2 : ℤ) ∣ 5 := by norm_num1
+example : (553105253 : ℤ) ∣ 553105253 * 776531401 := by norm_num1
+example : ¬ (553105253 : ℤ) ∣ 553105253 * 776531401 + 1 := by norm_num1
 
 end mod

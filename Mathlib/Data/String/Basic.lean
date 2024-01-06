@@ -133,9 +133,9 @@ theorem asString_inv_toList (s : String) : s.toList.asString = s :=
 
 theorem toList_nonempty : ∀ {s : String}, s ≠ "" → s.toList = s.head :: (s.drop 1).toList
   | ⟨s⟩, h => by
-    cases s
-    · simp only [ne_eq, not_true_eq_false] at h
-    · rename_i c cs
+    cases s with
+    | nil => simp only [ne_eq, not_true_eq_false] at h
+    | cons c cs =>
       simp only [toList, List.cons.injEq]
       constructor <;> [rfl; simp [drop_eq]]
 #align string.to_list_nonempty String.toList_nonempty
@@ -165,7 +165,7 @@ instance : LinearOrder String where
     simp only [compare, compareOfLessAndEq, instLTString, List.instLTList, lt_iff_toList_lt,
       List.LT', toList]
     split_ifs <;>
-    simp [List.lt_iff_lex_lt] at * <;>
+    simp only [List.lt_iff_lex_lt] at * <;>
     contradiction
 
 end String

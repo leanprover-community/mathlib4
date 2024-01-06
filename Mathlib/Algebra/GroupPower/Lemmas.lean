@@ -10,6 +10,7 @@ import Mathlib.Algebra.Order.Monoid.WithTop
 import Mathlib.Data.Nat.Pow
 import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.Algebra.Group.Opposite
+import Mathlib.GroupTheory.GroupAction.Ring
 
 #align_import algebra.group_power.lemmas from "leanprover-community/mathlib"@"a07d750983b94c530ab69a726862c2ab6802b38c"
 
@@ -213,10 +214,10 @@ theorem zpow_sub_one (a : G) (n : ℤ) : a ^ (n - 1) = a ^ n * a⁻¹ :=
 
 @[to_additive add_zsmul]
 theorem zpow_add (a : G) (m n : ℤ) : a ^ (m + n) = a ^ m * a ^ n := by
-  induction' n using Int.induction_on with n ihn n ihn
-  case hz => simp
-  · simp only [← add_assoc, zpow_add_one, ihn, mul_assoc]
-  · rw [zpow_sub_one, ← mul_assoc, ← ihn, ← zpow_sub_one, add_sub_assoc]
+  induction n using Int.induction_on with
+  | hz => simp
+  | hp n ihn => simp only [← add_assoc, zpow_add_one, ihn, mul_assoc]
+  | hn n ihn => rw [zpow_sub_one, ← mul_assoc, ← ihn, ← zpow_sub_one, add_sub_assoc]
 #align zpow_add zpow_add
 #align add_zsmul add_zsmul
 
@@ -326,12 +327,12 @@ theorem one_lt_zpow' (ha : 1 < a) {k : ℤ} (hk : (0 : ℤ) < k) : 1 < a ^ k := 
 #align zsmul_pos zsmul_pos
 
 @[to_additive zsmul_strictMono_left]
-theorem zpow_strictMono_right (ha : 1 < a) : StrictMono fun n : ℤ => a ^ n := fun m n h =>
+theorem zpow_right_strictMono (ha : 1 < a) : StrictMono fun n : ℤ => a ^ n := fun m n h =>
   calc
     a ^ m = a ^ m * 1 := (mul_one _).symm
     _ < a ^ m * a ^ (n - m) := mul_lt_mul_left' (one_lt_zpow' ha <| sub_pos_of_lt h) _
     _ = a ^ n := by rw [← zpow_add]; simp
-#align zpow_strict_mono_right zpow_strictMono_right
+#align zpow_strict_mono_right zpow_right_strictMono
 #align zsmul_strict_mono_left zsmul_strictMono_left
 
 @[to_additive zsmul_mono_left]
@@ -351,19 +352,19 @@ theorem zpow_le_zpow (ha : 1 ≤ a) (h : m ≤ n) : a ^ m ≤ a ^ n :=
 
 @[to_additive]
 theorem zpow_lt_zpow (ha : 1 < a) (h : m < n) : a ^ m < a ^ n :=
-  zpow_strictMono_right ha h
+  zpow_right_strictMono ha h
 #align zpow_lt_zpow zpow_lt_zpow
 #align zsmul_lt_zsmul zsmul_lt_zsmul
 
 @[to_additive]
 theorem zpow_le_zpow_iff (ha : 1 < a) : a ^ m ≤ a ^ n ↔ m ≤ n :=
-  (zpow_strictMono_right ha).le_iff_le
+  (zpow_right_strictMono ha).le_iff_le
 #align zpow_le_zpow_iff zpow_le_zpow_iff
 #align zsmul_le_zsmul_iff zsmul_le_zsmul_iff
 
 @[to_additive]
 theorem zpow_lt_zpow_iff (ha : 1 < a) : a ^ m < a ^ n ↔ m < n :=
-  (zpow_strictMono_right ha).lt_iff_lt
+  (zpow_right_strictMono ha).lt_iff_lt
 #align zpow_lt_zpow_iff zpow_lt_zpow_iff
 #align zsmul_lt_zsmul_iff zsmul_lt_zsmul_iff
 
@@ -449,7 +450,7 @@ section LinearOrderedAddCommGroup
 variable [LinearOrderedAddCommGroup α] {a b : α}
 
 theorem abs_nsmul (n : ℕ) (a : α) : |n • a| = n • |a| := by
-  cases' le_total a 0 with hneg hpos
+  rcases le_total a 0 with hneg | hpos
   · rw [abs_of_nonpos hneg, ← abs_neg, ← neg_nsmul, abs_of_nonneg]
     exact nsmul_nonneg (neg_nonneg.mpr hneg) n
   · rw [abs_of_nonneg hpos, abs_of_nonneg]
@@ -510,24 +511,6 @@ theorem nsmul_eq_mul [NonAssocSemiring R] (n : ℕ) (a : R) : n • a = n * a :=
   rw [nsmul_eq_mul', (n.cast_commute a).eq]
 #align nsmul_eq_mul nsmul_eq_mulₓ
 -- typeclasses do not match up exactly.
-
-/-- Note that `AddCommMonoid.nat_smulCommClass` requires stronger assumptions on `R`. -/
-instance NonUnitalNonAssocSemiring.nat_smulCommClass [NonUnitalNonAssocSemiring R] :
-    SMulCommClass ℕ R R :=
-  ⟨fun n x y => by
-    induction' n with n ih
-    · simp [zero_nsmul]
-    · simp_rw [succ_nsmul, smul_eq_mul, mul_add, ← smul_eq_mul, ih]⟩
-#align non_unital_non_assoc_semiring.nat_smul_comm_class NonUnitalNonAssocSemiring.nat_smulCommClass
-
-/-- Note that `AddCommMonoid.nat_isScalarTower` requires stronger assumptions on `R`. -/
-instance NonUnitalNonAssocSemiring.nat_isScalarTower [NonUnitalNonAssocSemiring R] :
-    IsScalarTower ℕ R R :=
-  ⟨fun n x y => by
-    induction' n with n ih
-    · simp [zero_nsmul]
-    · simp_rw [succ_nsmul, ← ih, smul_eq_mul, add_mul]⟩
-#align non_unital_non_assoc_semiring.nat_is_scalar_tower NonUnitalNonAssocSemiring.nat_isScalarTower
 
 @[simp, norm_cast]
 theorem Nat.cast_pow [Semiring R] (n m : ℕ) : (↑(n ^ m) : R) = (↑n : R) ^ m := by
@@ -595,24 +578,6 @@ theorem zsmul_eq_mul [Ring R] (a : R) : ∀ n : ℤ, n • a = n * a
 theorem zsmul_eq_mul' [Ring R] (a : R) (n : ℤ) : n • a = a * n := by
   rw [zsmul_eq_mul, (n.cast_commute a).eq]
 #align zsmul_eq_mul' zsmul_eq_mul'
-
-/-- Note that `AddCommGroup.int_smulCommClass` requires stronger assumptions on `R`. -/
-instance NonUnitalNonAssocRing.int_smulCommClass [NonUnitalNonAssocRing R] :
-    SMulCommClass ℤ R R :=
-  ⟨fun n x y =>
-    match n with
-    | (n : ℕ) => by simp_rw [coe_nat_zsmul, smul_comm]
-    | -[n+1] => by simp_rw [negSucc_zsmul, smul_eq_mul, mul_neg, mul_smul_comm]⟩
-#align non_unital_non_assoc_ring.int_smul_comm_class NonUnitalNonAssocRing.int_smulCommClass
-
-/-- Note that `AddCommGroup.int_isScalarTower` requires stronger assumptions on `R`. -/
-instance NonUnitalNonAssocRing.int_isScalarTower [NonUnitalNonAssocRing R] :
-    IsScalarTower ℤ R R :=
-  ⟨fun n x y =>
-    match n with
-    | (n : ℕ) => by simp_rw [coe_nat_zsmul, smul_assoc]
-    | -[n+1] => by simp_rw [negSucc_zsmul, smul_eq_mul, neg_mul, smul_mul_assoc]⟩
-#align non_unital_non_assoc_ring.int_is_scalar_tower NonUnitalNonAssocRing.int_isScalarTower
 
 theorem zsmul_int_int (a b : ℤ) : a • b = a * b := by simp
 #align zsmul_int_int zsmul_int_int
@@ -743,12 +708,12 @@ theorem pow_bit1_pos_iff : 0 < a ^ bit1 n ↔ 0 < a :=
 
 theorem strictMono_pow_bit1 (n : ℕ) : StrictMono fun a : R => a ^ bit1 n := by
   intro a b hab
-  cases' le_total a 0 with ha ha
-  · cases' le_or_lt b 0 with hb hb
+  rcases le_total a 0 with ha | ha
+  · rcases le_or_lt b 0 with hb | hb
     · rw [← neg_lt_neg_iff, ← neg_pow_bit1, ← neg_pow_bit1]
-      exact pow_lt_pow_of_lt_left (neg_lt_neg hab) (neg_nonneg.2 hb) (bit1_pos (zero_le n))
+      exact pow_lt_pow_left (neg_lt_neg hab) (neg_nonneg.2 hb) n.bit1_ne_zero
     · exact (pow_bit1_nonpos_iff.2 ha).trans_lt (pow_bit1_pos_iff.2 hb)
-  · exact pow_lt_pow_of_lt_left hab ha (bit1_pos (zero_le n))
+  · exact pow_lt_pow_left hab ha n.bit1_ne_zero
 #align strict_mono_pow_bit1 strictMono_pow_bit1
 
 end bit1
@@ -791,8 +756,8 @@ alias le_self_pow_two := le_self_sq
 #align int.le_self_pow_two Int.le_self_pow_two
 
 theorem pow_right_injective {x : ℤ} (h : 1 < x.natAbs) :
-    Function.Injective ((· ^ ·) x : ℕ → ℤ) := by
-  suffices Function.Injective (natAbs ∘ ((· ^ ·) x : ℕ → ℤ)) by
+    Function.Injective ((x ^ ·) : ℕ → ℤ) := by
+  suffices Function.Injective (natAbs ∘ (x ^ · : ℕ → ℤ)) by
     exact Function.Injective.of_comp this
   convert Nat.pow_right_injective h using 2
   rw [Function.comp_apply, natAbs_pow]
@@ -1217,32 +1182,6 @@ theorem conj_pow' (u : Mˣ) (x : M) (n : ℕ) :
 #align units.conj_pow' Units.conj_pow'
 
 end Units
-
-namespace MulOpposite
-
-/-- Moving to the opposite monoid commutes with taking powers. -/
-@[simp]
-theorem op_pow [Monoid M] (x : M) (n : ℕ) : op (x ^ n) = op x ^ n :=
-  rfl
-#align mul_opposite.op_pow MulOpposite.op_pow
-
-@[simp]
-theorem unop_pow [Monoid M] (x : Mᵐᵒᵖ) (n : ℕ) : unop (x ^ n) = unop x ^ n :=
-  rfl
-#align mul_opposite.unop_pow MulOpposite.unop_pow
-
-/-- Moving to the opposite group or `GroupWithZero` commutes with taking powers. -/
-@[simp]
-theorem op_zpow [DivInvMonoid M] (x : M) (z : ℤ) : op (x ^ z) = op x ^ z :=
-  rfl
-#align mul_opposite.op_zpow MulOpposite.op_zpow
-
-@[simp]
-theorem unop_zpow [DivInvMonoid M] (x : Mᵐᵒᵖ) (z : ℤ) : unop (x ^ z) = unop x ^ z :=
-  rfl
-#align mul_opposite.unop_zpow MulOpposite.unop_zpow
-
-end MulOpposite
 
 -- Porting note: this was added in an ad hoc port for use in `Tactic/NormNum/Basic`
 

@@ -55,6 +55,7 @@ example (he : E (C r * D X + D X * h + 7 + 42 + f) = C r * D X + h * D X + 7 + 4
 
 end add
 
+section mul
 example [CommSemigroup R] (a b c d : R) (h : a * b * c = d) : b * (a * c) = d := by
   move_mul [← a]
   assumption
@@ -73,6 +74,25 @@ example {R : Type u} [Add R] [CommSemigroup R] {a b c d e f g : R} :
     a * (b * c * a) * ((d * e) * e) * f * g = (c * b * a) * (e * (e * d)) * g * f * a := by
   move_mul [a, a, b, c, d, e, f]
   rfl
+
+end mul
+
+section left_assoc
+example {a b c d e : Prop} (h : a ∧ b ∧ c ∧ d ∧ e) : a ∧ c ∧ e ∧ b ∧ d := by
+  move_oper And [a, b, c, d, e]
+  exact h
+
+example {a b c d e : Prop} (h : a ∨ b ∨ c ∨ d ∨ e) : a ∨ c ∨ e ∨ b ∨ d := by
+  move_oper Or [a, b, c, d, e]
+  exact h
+
+end left_assoc
+
+example (k : ℕ) (h0 : 0 + 2 = 9 + 0) (h9 : k + 2 = k + 9) : k + 2 = 9 + k := by
+  induction' k with k _ih
+  · exact h0
+  · move_add [9]
+    exact h9
 
 -- Testing internals of the tactic `move_add`.
 section tactic
