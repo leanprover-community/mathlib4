@@ -88,20 +88,26 @@ defined in `Algebra/GroupWithZero/Defs` as well. -/
     (h_add : ∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
     (h_mul : ∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :
     inst₁ = inst₂ := by
-  have h_one: (inst₁.toMulZeroOneClass).toMulOneClass = (letI := inst₂; inferInstance) :=
-    by ext; apply h_mul
-  -- Extract `NonUnitalNonAssocSemiring`, `One` instances and `natCast` function
-  rcases inst₁ with @⟨inst'₁, one₁, _, _, ⟨natCast₁⟩⟩
-  rcases inst₂ with @⟨inst'₂, one₂, _, _, ⟨natCast₂⟩⟩
+  have h : inst₁.toNonUnitalNonAssocSemiring = inst₂.toNonUnitalNonAssocSemiring := by
+    ext <;> apply_assumption
+  have h_zero : (inst₁.toMulZeroClass).toZero.zero = (inst₂.toMulZeroClass).toZero.zero :=
+    congrArg (fun inst' => (inst'.toMulZeroClass).toZero.zero) h
+  have h_one' : (inst₁.toMulZeroOneClass).toMulOneClass.toOne
+                = (inst₂.toMulZeroOneClass).toMulOneClass.toOne :=
+    congrArg (@MulOneClass.toOne R) <| by
+      ext; apply h_mul
+  have h_one : (inst₁.toMulZeroOneClass).toMulOneClass.toOne.one
+               = (inst₂.toMulZeroOneClass).toMulOneClass.toOne.one :=
+    congrArg (@One.one R) h_one'
+  have h_natCast : inst₁.toNatCast.natCast = inst₂.toNatCast.natCast := by
+    funext n; induction n with
+    | zero     => rewrite [inst₁.natCast_zero, inst₂.natCast_zero]; exact h_zero
+    | succ n h => rw [inst₁.natCast_succ, inst₂.natCast_succ, h_add]
+                  exact congrArg₂ _ h h_one
+  /- Extract `NonUnitalNonAssocSemiring`, `One` instances and `natCast` functions and prove equality
+  from that of subfields using congr. -/
+  rcases inst₁ with @⟨_, _, _, _, ⟨⟩⟩; rcases inst₂ with @⟨_, _, _, _, ⟨⟩⟩
   congr
-  show inst'₁ = inst'₂
-  · ext <;> apply_assumption
-  show one₁ = one₂
-  · injection h_one
-  show natCast₁ = natCast₂
-  · funext n; induction n with
-    | zero => sorry
-    | succ n => sorry
 
 theorem NonAssocSemiring.ext_iff (inst₁ inst₂ : NonAssocSemiring R) :
     inst₁ = inst₂ ↔
