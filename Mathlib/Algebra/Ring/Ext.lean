@@ -288,6 +288,25 @@ theorem Semiring.ext_iff (inst₁ inst₂ : Semiring R) :
   cases inst₁; cases inst₂
   congr <;> solve | injection h₂ | injection h₃
 
+theorem Ring.toNonUnitalRing_injective :
+    Function.Injective (@Ring.toNonUnitalRing R) := by
+  intro _ _ h
+  ext a b
+  · exact congrArg (·.toAdd.add a b) h
+  · exact congrArg (·.toMul.mul a b) h
+
+theorem Ring.toNonAssocRing_injective :
+    Function.Injective (@Ring.toNonAssocRing R) := by
+  intro _ _ _
+  ext <;> congr
+
+theorem Ring.toSemiring_injective :
+    Function.Injective (@Ring.toSemiring R) := by
+  intro _ _ h
+  ext a b
+  · exact congrArg (·.toAdd.add a b) h
+  · exact congrArg (·.toMul.mul a b) h
+
 theorem Ring.ext_iff (inst₁ inst₂ : Ring R) :
     inst₁ = inst₂ ↔
       (∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
