@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Amelia Livingston, Yury Kudryashov,
 Neil Strickland, Aaron Anderson
 -/
-import Mathlib.Algebra.Hom.Group.Defs
-import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.GroupPower.Basic
+import Mathlib.Algebra.Group.Hom.Defs
 
 #align_import algebra.divisibility.basic from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
@@ -95,17 +95,18 @@ theorem dvd_of_mul_right_dvd (h : a * b ∣ c) : a ∣ c :=
 
 section map_dvd
 
-variable {M N : Type*} [Monoid M] [Monoid N]
+variable {M N : Type*}
 
-theorem map_dvd {F : Type*} [MulHomClass F M N] (f : F) {a b} : a ∣ b → f a ∣ f b
+theorem map_dvd [Semigroup M] [Semigroup N] {F : Type*} [MulHomClass F M N] (f : F) {a b} :
+    a ∣ b → f a ∣ f b
   | ⟨c, h⟩ => ⟨f c, h.symm ▸ map_mul f a c⟩
 #align map_dvd map_dvd
 
-theorem MulHom.map_dvd (f : M →ₙ* N) {a b} : a ∣ b → f a ∣ f b :=
+theorem MulHom.map_dvd [Semigroup M] [Semigroup N] (f : M →ₙ* N) {a b} : a ∣ b → f a ∣ f b :=
   _root_.map_dvd f
 #align mul_hom.map_dvd MulHom.map_dvd
 
-theorem MonoidHom.map_dvd (f : M →* N) {a b} : a ∣ b → f a ∣ f b :=
+theorem MonoidHom.map_dvd [Monoid M] [Monoid N] (f : M →* N) {a b} : a ∣ b → f a ∣ f b :=
   _root_.map_dvd f
 #align monoid_hom.map_dvd MonoidHom.map_dvd
 
@@ -114,8 +115,7 @@ end map_dvd
 end Semigroup
 
 section Monoid
-
-variable [Monoid α] {a b : α}
+variable [Monoid α] {a b : α} {m n : ℕ}
 
 @[refl, simp]
 theorem dvd_refl (a : α) : a ∣ a :=
@@ -137,6 +137,20 @@ theorem dvd_of_eq (h : a = b) : a ∣ b := by rw [h]
 
 alias Eq.dvd := dvd_of_eq
 #align eq.dvd Eq.dvd
+
+lemma pow_dvd_pow (a : α) (h : m ≤ n) : a ^ m ∣ a ^ n :=
+  ⟨a ^ (n - m), by rw [← pow_add, Nat.add_comm, Nat.sub_add_cancel h]⟩
+#align pow_dvd_pow pow_dvd_pow
+
+lemma dvd_pow (hab : a ∣ b) : ∀ {n : ℕ} (_ : n ≠ 0), a ∣ b ^ n
+  | 0,     hn => (hn rfl).elim
+  | n + 1, _  => by rw [pow_succ]; exact hab.mul_right _
+#align dvd_pow dvd_pow
+
+alias Dvd.dvd.pow := dvd_pow
+
+lemma dvd_pow_self (a : α) {n : ℕ} (hn : n ≠ 0) : a ∣ a ^ n := dvd_rfl.pow hn
+#align dvd_pow_self dvd_pow_self
 
 end Monoid
 

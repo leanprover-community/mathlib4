@@ -5,8 +5,9 @@ Authors: Sébastien Gouëzel, Yaël Dillies
 -/
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Topology.MetricSpace.HausdorffDistance
+import Mathlib.Topology.MetricSpace.IsometricSMul
 
-#align_import analysis.normed.group.pointwise from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
+#align_import analysis.normed.group.pointwise from "leanprover-community/mathlib"@"c8f305514e0d47dfaa710f5a52f0d21b588e6328"
 
 /-!
 # Properties of pointwise addition of sets in normed groups
@@ -24,15 +25,22 @@ section SeminormedGroup
 
 variable [SeminormedGroup E] {ε δ : ℝ} {s t : Set E} {x y : E}
 
+-- note: we can't use `LipschitzOnWith.isBounded_image2` here without adding `[IsometricSMul E E]`
 @[to_additive]
 theorem Bornology.IsBounded.mul (hs : IsBounded s) (ht : IsBounded t) : IsBounded (s * t) := by
   obtain ⟨Rs, hRs⟩ : ∃ R, ∀ x ∈ s, ‖x‖ ≤ R := hs.exists_norm_le'
   obtain ⟨Rt, hRt⟩ : ∃ R, ∀ x ∈ t, ‖x‖ ≤ R := ht.exists_norm_le'
   refine' isBounded_iff_forall_norm_le'.2 ⟨Rs + Rt, _⟩
-  rintro z ⟨x, y, hx, hy, rfl⟩
+  rintro z ⟨x, hx, y, hy, rfl⟩
   exact norm_mul_le_of_le (hRs x hx) (hRt y hy)
 #align metric.bounded.mul Bornology.IsBounded.mul
 #align metric.bounded.add Bornology.IsBounded.add
+
+@[to_additive]
+theorem Bornology.IsBounded.of_mul (hst : IsBounded (s * t)) : IsBounded s ∨ IsBounded t :=
+  AntilipschitzWith.isBounded_of_image2_left _ (fun x => (isometry_mul_right x).antilipschitz) hst
+#align metric.bounded.of_mul Bornology.IsBounded.of_mul
+#align metric.bounded.of_add Bornology.IsBounded.of_add
 
 @[to_additive]
 theorem Bornology.IsBounded.inv : IsBounded s → IsBounded s⁻¹ := by
@@ -68,6 +76,15 @@ theorem infEdist_inv (x : E) (s : Set E) : infEdist x⁻¹ s = infEdist x s⁻¹
   rw [← infEdist_inv_inv, inv_inv]
 #align inf_edist_inv infEdist_inv
 #align inf_edist_neg infEdist_neg
+
+@[to_additive]
+theorem ediam_mul_le (x y : Set E) : EMetric.diam (x * y) ≤ EMetric.diam x + EMetric.diam y :=
+  (LipschitzOnWith.ediam_image2_le (· * ·) _ _
+        (fun _ _ => (isometry_mul_right _).lipschitz.lipschitzOnWith _) fun _ _ =>
+        (isometry_mul_left _).lipschitz.lipschitzOnWith _).trans_eq <|
+    by simp only [ENNReal.coe_one, one_mul]
+#align ediam_mul_le ediam_mul_le
+#align ediam_add_le ediam_add_le
 
 end EMetric
 

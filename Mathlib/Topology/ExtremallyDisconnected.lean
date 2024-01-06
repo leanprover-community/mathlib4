@@ -55,14 +55,14 @@ section TotallySeparated
 instance [ExtremallyDisconnected X] [T2Space X] : TotallySeparatedSpace X :=
 { isTotallySeparated_univ := by
     intro x _ y _ hxy
-    obtain ⟨U, V, hUV⟩ := T2Space.t2 x y hxy
+    obtain ⟨U, V, hUV⟩ := T2Space.t2 hxy
     refine ⟨closure U, (closure U)ᶜ, ExtremallyDisconnected.open_closure U hUV.1,
       by simp only [isOpen_compl_iff, isClosed_closure], subset_closure hUV.2.2.1, ?_,
       by simp only [Set.union_compl_self, Set.subset_univ], disjoint_compl_right⟩
     rw [Set.mem_compl_iff, mem_closure_iff]
     push_neg
     refine' ⟨V, ⟨hUV.2.1, hUV.2.2.2.1, _⟩⟩
-    rw [Set.not_nonempty_iff_eq_empty, ← Set.disjoint_iff_inter_eq_empty, disjoint_comm]
+    rw [← Set.disjoint_iff_inter_eq_empty, disjoint_comm]
     exact hUV.2.2.2.2 }
 
 end TotallySeparated
@@ -151,8 +151,9 @@ lemma exists_compact_surjective_zorn_subset [T1Space A] [CompactSpace D] {π : D
     refine ⟨E, isCompact_iff_compactSpace.mp E_closed.isCompact, E_surj, ?_⟩
     intro E₀ E₀_min E₀_closed
     contrapose! E₀_min
-    exact eq_univ_of_coe_eq <|
-      E_min E₀ ⟨E₀_closed.trans E_closed, image_coe_eq_restrict_image ▸ E₀_min⟩ coe_subset
+    exact eq_univ_of_image_val_eq <|
+      E_min E₀ ⟨E₀_closed.trans E_closed, image_image_val_eq_restrict_image ▸ E₀_min⟩
+        image_val_subset
   -- suffices to prove intersection of chain is minimal
   intro C C_sub C_chain
   -- prove intersection of chain is closed

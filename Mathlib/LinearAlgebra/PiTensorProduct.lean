@@ -114,10 +114,9 @@ def PiTensorProduct : Type _ :=
 variable {R}
 
 unsuppress_compilation in
--- This enables the notation `⨂[R] i : ι, s i` for the pi tensor product, given `s : ι → Type*`.
---scoped[TensorProduct] -- Porting note: `scoped` caused an error, so I commented it out.
-/-- notation for tensor product over some indexed type -/
-notation3:100"⨂["R"] "(...)", "r:(scoped f => PiTensorProduct R f) => r
+/-- This enables the notation `⨂[R] i : ι, s i` for the pi tensor product `PiTensorProduct`,
+given an indexed family of types `s : ι → Type*`. -/
+scoped[TensorProduct] notation3:100"⨂["R"] "(...)", "r:(scoped f => PiTensorProduct R f) => r
 
 open TensorProduct
 
@@ -311,9 +310,8 @@ variable {R}
 
 unsuppress_compilation in
 /-- pure tensor in tensor product over some index type -/
--- Porting note: use `FunLike.coe` as an explicit coercion to help `notation3` pretty print,
--- was just `tprod R f`.
-notation3:100 "⨂ₜ["R"] "(...)", "r:(scoped f => FunLike.coe (tprod R) f) => r
+-- TODO(kmill) The generated delaborator never applies; figure out why this doesn't pretty print.
+notation3:100 "⨂ₜ["R"] "(...)", "r:(scoped f => tprod R f) => r
 
 --Porting note: new theorem
 theorem tprod_eq_tprodCoeff_one :
@@ -529,6 +527,7 @@ theorem reindex_refl : reindex R M (Equiv.refl ι) = LinearEquiv.refl R _ := by
 
 variable (ι)
 
+attribute [local simp] eq_iff_true_of_subsingleton in
 /-- The tensor product over an empty index type `ι` is isomorphic to the base ring. -/
 @[simps symm_apply]
 def isEmptyEquiv [IsEmpty ι] : (⨂[R] _ : ι, M) ≃ₗ[R] R where
@@ -563,22 +562,21 @@ Tensor product of `M` over a singleton set is equivalent to `M`
 -/
 @[simps symm_apply]
 def subsingletonEquiv [Subsingleton ι] (i₀ : ι) : (⨂[R] _ : ι, M) ≃ₗ[R] M where
-  toFun := lift (MultilinearMap.ofSubsingleton R M i₀)
+  toFun := lift (MultilinearMap.ofSubsingleton R M M i₀ .id)
   invFun m := tprod R fun _ ↦ m
   left_inv x := by
     dsimp only
-    have : ∀ (f : ι → M) (z : M), (fun _ : ι ↦ z) = update f i₀ z := by
-      intro f z
+    have : ∀ (f : ι → M) (z : M), (fun _ : ι ↦ z) = update f i₀ z := fun f z ↦ by
       ext i
       rw [Subsingleton.elim i i₀, Function.update_same]
     refine x.induction_on ?_ ?_
     · intro r f
-      simp only [LinearMap.map_smul, lift.tprod, ofSubsingleton_apply, Function.eval, this f,
-        MultilinearMap.map_smul, update_eq_self]
+      simp only [LinearMap.map_smul, LinearMap.id_apply, lift.tprod, ofSubsingleton_apply_apply,
+        this f, MultilinearMap.map_smul, update_eq_self]
     · intro x y hx hy
       rw [LinearMap.map_add, this 0 (_ + _), MultilinearMap.map_add, ← this 0 (lift _ _), hx,
         ← this 0 (lift _ _), hy]
-  right_inv t := by simp only [ofSubsingleton_apply, lift.tprod, Function.eval_apply]
+  right_inv t := by simp only [ofSubsingleton_apply_apply, LinearMap.id_apply, lift.tprod]
   map_add' := LinearMap.map_add _
   map_smul' := fun r x => by
     simp only

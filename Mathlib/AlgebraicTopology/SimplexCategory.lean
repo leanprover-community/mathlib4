@@ -223,7 +223,7 @@ theorem δ_comp_δ {n} {i j : Fin (n + 2)} (H : i ≤ j) :
 
 theorem δ_comp_δ' {n} {i : Fin (n + 2)} {j : Fin (n + 3)} (H : Fin.castSucc i < j) :
     δ i ≫ δ j =
-      δ (j.pred <| fun (hj : j = 0) => by simp [hj, Fin.not_lt_zero] at H) ≫
+      δ (j.pred fun (hj : j = 0) => by simp [hj, Fin.not_lt_zero] at H) ≫
         δ (Fin.castSucc i) := by
   rw [← δ_comp_δ]
   · rw [Fin.succ_pred]
@@ -259,7 +259,7 @@ theorem δ_comp_σ_of_le {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : i ≤ Fin.
   rcases i with ⟨i, hi⟩
   rcases j with ⟨j, hj⟩
   ext ⟨k, hk⟩
-  simp at H hk
+  simp? at H hk says simp only [Fin.castSucc_mk, Fin.mk_le_mk, len_mk] at H hk
   dsimp [σ, δ, Fin.predAbove, Fin.succAbove]
   simp only [Fin.lt_iff_val_lt_val, Fin.dite_val, Fin.ite_val, Fin.coe_pred, ge_iff_le,
     Fin.coe_castLT, dite_eq_ite, Fin.coe_castSucc, Fin.val_succ]
@@ -274,7 +274,7 @@ theorem δ_comp_σ_self {n} {i : Fin (n + 1)} :
     δ (Fin.castSucc i) ≫ σ i = 𝟙 ([n] : SimplexCategory) := by
   rcases i with ⟨i, hi⟩
   ext ⟨j, hj⟩
-  simp at hj
+  simp? at hj says simp only [len_mk] at hj
   dsimp [σ, δ, Fin.predAbove, Fin.succAbove]
   simp only [Fin.lt_iff_val_lt_val, Fin.dite_val, Fin.ite_val, Fin.coe_pred, ge_iff_le,
     Fin.coe_castLT, dite_eq_ite]
@@ -314,7 +314,7 @@ theorem δ_comp_σ_of_gt {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : Fin.castSu
   ext ⟨k, hk⟩
   rcases i with ⟨i, hi⟩
   rcases j with ⟨j, hj⟩
-  simp at H hk
+  simp? at H hk says simp only [Fin.castSucc_mk, Fin.mk_lt_mk, len_mk] at H hk
   dsimp [δ, σ, Fin.predAbove, Fin.succAbove]
   simp only [Fin.lt_iff_val_lt_val, Fin.dite_val, Fin.ite_val, Fin.coe_pred, ge_iff_le,
     Fin.coe_castLT, dite_eq_ite, Fin.coe_castSucc, Fin.val_succ]
@@ -326,7 +326,7 @@ theorem δ_comp_σ_of_gt {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : Fin.castSu
 @[reassoc]
 theorem δ_comp_σ_of_gt' {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : j.succ < i) :
     δ i ≫ σ j = σ (j.castLT ((add_lt_add_iff_right 1).mp (lt_of_lt_of_le H i.is_le))) ≫
-      δ (i.pred <| fun (hi : i = 0) => by simp only [Fin.not_lt_zero, hi] at H) := by
+      δ (i.pred fun (hi : i = 0) => by simp only [Fin.not_lt_zero, hi] at H) := by
   rw [← δ_comp_σ_of_gt]
   · simp
   · rw [Fin.castSucc_castLT, ← Fin.succ_lt_succ_iff, Fin.succ_pred]
@@ -340,7 +340,7 @@ theorem σ_comp_σ {n} {i j : Fin (n + 1)} (H : i ≤ j) :
   ext ⟨k, hk⟩
   rcases i with ⟨i, hi⟩
   rcases j with ⟨j, hj⟩
-  simp at H hk
+  simp? at H hk says simp only [Fin.mk_le_mk, len_mk] at H hk
   dsimp [σ, Fin.predAbove]
   simp only [Fin.lt_iff_val_lt_val, Fin.ite_val, Fin.coe_pred, ge_iff_le, dite_eq_ite,
     Fin.coe_castLT]
@@ -512,7 +512,7 @@ instance {n : ℕ} {i : Fin (n + 1)} : Epi (σ i) := by
   rw [epi_iff_surjective]
   intro b
   simp only [σ, mkHom, Hom.toOrderHom_mk, OrderHom.coe_mk]
-  by_cases b ≤ i
+  by_cases h : b ≤ i
   · use b
     -- This was not needed before leanprover/lean4#2644
     dsimp
@@ -642,7 +642,7 @@ theorem eq_σ_comp_of_not_injective {n : ℕ} {Δ' : SimplexCategory} (θ : mk (
     by_cases h : x < y
     · exact ⟨x, y, ⟨h₁, h⟩⟩
     · refine' ⟨y, x, ⟨h₁.symm, _⟩⟩
-      cases' lt_or_eq_of_le (not_lt.mp h) with h' h'
+      rcases lt_or_eq_of_le (not_lt.mp h) with h' | h'
       · exact h'
       · exfalso
         exact h₂ h'.symm
@@ -661,7 +661,7 @@ theorem eq_σ_comp_of_not_injective {n : ℕ} {Δ' : SimplexCategory} (θ : mk (
 
 theorem eq_comp_δ_of_not_surjective' {n : ℕ} {Δ : SimplexCategory} (θ : Δ ⟶ mk (n + 1))
     (i : Fin (n + 2)) (hi : ∀ x, θ.toOrderHom x ≠ i) : ∃ θ' : Δ ⟶ mk n, θ = θ' ≫ δ i := by
-  by_cases i < Fin.last (n + 1)
+  by_cases h : i < Fin.last (n + 1)
   · use θ ≫ σ (Fin.castPred i)
     ext1
     ext1
@@ -696,7 +696,7 @@ theorem eq_comp_δ_of_not_surjective' {n : ℕ} {Δ : SimplexCategory} (θ : Δ 
       conv_rhs => dsimp
       erw [Fin.succ_pred]
       simpa only [Fin.le_iff_val_le_val, Fin.coe_castSucc, Fin.coe_pred] using
-        Nat.le_pred_of_lt (Fin.lt_iff_val_lt_val.mp h')
+        Nat.le_sub_one_of_lt (Fin.lt_iff_val_lt_val.mp h')
   · obtain rfl := le_antisymm (Fin.le_last i) (not_lt.mp h)
     use θ ≫ σ (Fin.last _)
     ext x : 4

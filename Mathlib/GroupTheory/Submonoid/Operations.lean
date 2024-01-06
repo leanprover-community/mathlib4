@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzzard,
 Amelia Livingston, Yury Kudryashov
 -/
-import Mathlib.Algebra.Order.Monoid.Cancel.Basic
+import Mathlib.Algebra.Order.Monoid.Basic
 import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.GroupTheory.Submonoid.Basic
 import Mathlib.GroupTheory.Subsemigroup.Operations
@@ -560,7 +560,7 @@ attribute [to_additive existing nSMul] nPow
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_pow {M} [Monoid M] {A : Type*} [SetLike A M] [SubmonoidClass A M] {S : A} (x : S)
-    (n : ℕ) : (x ^ n : M) = (x : M) ^ n :=
+    (n : ℕ) : ↑(x ^ n) = (x : M) ^ n :=
   rfl
 #align submonoid_class.coe_pow SubmonoidClass.coe_pow
 #align add_submonoid_class.coe_nsmul AddSubmonoidClass.coe_nsmul
@@ -1376,8 +1376,7 @@ theorem eq_bot_iff_forall : S = ⊥ ↔ ∀ x ∈ S, x = (1 : M) :=
 theorem eq_bot_of_subsingleton [Subsingleton S] : S = ⊥ := by
   rw [eq_bot_iff_forall]
   intro y hy
-  change ((⟨y, hy⟩ : S) : M) = (1 : S)
-  rw [Subsingleton.elim (⟨y, hy⟩ : S) 1]
+  simpa using _root_.congr_arg ((↑) : S → M) <| Subsingleton.elim (⟨y, hy⟩ : S) 1
 
 @[to_additive]
 theorem nontrivial_iff_exists_ne_one (S : Submonoid M) : Nontrivial S ↔ ∃ x ∈ S, x ≠ (1 : M) :=
@@ -1525,15 +1524,20 @@ instance isScalarTower [SMul α β] [SMul M' α] [SMul M' β] [IsScalarTower M' 
     IsScalarTower S α β :=
   ⟨fun a => (smul_assoc (a : M') : _)⟩
 
-@[to_additive]
-theorem smul_def [SMul M' α] {S : Submonoid M'} (g : S) (m : α) : g • m = (g : M') • m :=
-  rfl
+section SMul
+variable [SMul M' α] {S : Submonoid M'}
+
+@[to_additive] lemma smul_def (g : S) (a : α) : g • a = (g : M') • a := rfl
 #align submonoid.smul_def Submonoid.smul_def
 #align add_submonoid.vadd_def AddSubmonoid.vadd_def
 
-instance faithfulSMul [SMul M' α] [FaithfulSMul M' α] (S : Submonoid M') : FaithfulSMul S α :=
+@[to_additive (attr := simp)]
+lemma mk_smul (g : M') (hg : g ∈ S) (a : α) : (⟨g, hg⟩ : S) • a = g • a := rfl
+
+instance faithfulSMul [FaithfulSMul M' α] : FaithfulSMul S α :=
   ⟨fun h => Subtype.ext <| eq_of_smul_eq_smul h⟩
 
+end SMul
 end MulOneClass
 
 variable [Monoid M']

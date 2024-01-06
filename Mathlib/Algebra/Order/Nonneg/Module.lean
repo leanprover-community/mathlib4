@@ -5,7 +5,7 @@ Authors: Apurva Nakade
 -/
 import Mathlib.Algebra.Order.Nonneg.Ring
 import Mathlib.Algebra.Module.Basic
-import Mathlib.Algebra.Order.Module
+import Mathlib.Algebra.Order.Module.OrderedSMul
 
 /-!
 # Modules over nonnegative elements
@@ -21,8 +21,7 @@ variable {𝕜 𝕜' E : Type*}
 
 variable [OrderedSemiring 𝕜]
 
--- TODO: remove `prettyPrint := false` once #6833 is merged
-local notation3 (prettyPrint := false) "𝕜≥0" => {c : 𝕜 // 0 ≤ c}
+local notation3 "𝕜≥0" => {c : 𝕜 // 0 ≤ c}
 
 namespace Nonneg
 
@@ -62,14 +61,14 @@ instance instSMulWithZero : SMulWithZero 𝕜≥0 𝕜' where
 
 end SMulWithZero
 
-section OrderedSmul
+section OrderedSMul
 
 variable [OrderedAddCommMonoid E] [SMulWithZero 𝕜 E] [hE : OrderedSMul 𝕜 E]
 
-instance instOrderedSmul : OrderedSMul 𝕜≥0 E :=
+instance instOrderedSMul : OrderedSMul 𝕜≥0 E :=
   ⟨hE.1, hE.2⟩
 
-end OrderedSmul
+end OrderedSMul
 
 section Module
 

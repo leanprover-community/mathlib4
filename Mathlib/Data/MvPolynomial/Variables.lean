@@ -303,7 +303,7 @@ theorem vars_X [Nontrivial R] : (X n : MvPolynomial σ R).vars = {n} := by
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.vars_X MvPolynomial.vars_X
 
-theorem mem_vars (i : σ) : i ∈ p.vars ↔ ∃ (d : σ →₀ ℕ) (_ : d ∈ p.support), i ∈ d.support := by
+theorem mem_vars (i : σ) : i ∈ p.vars ↔ ∃ d ∈ p.support, i ∈ d.support := by
   classical simp only [vars_def, Multiset.mem_toFinset, mem_degrees, mem_support_iff, exists_prop]
 #align mv_polynomial.mem_vars MvPolynomial.mem_vars
 
@@ -348,7 +348,7 @@ theorem vars_mul [DecidableEq σ] (φ ψ : MvPolynomial σ R) : (φ * ψ).vars �
   cases hd
   rw [Finset.sum_eq_zero]
   rintro ⟨d₁, d₂⟩ H
-  rw [Finsupp.mem_antidiagonal] at H
+  rw [Finset.mem_antidiagonal] at H
   subst H
   obtain H | H : i ∈ d₁.support ∨ i ∈ d₂.support := by
     simpa only [Finset.mem_union] using Finsupp.support_add hi
@@ -469,7 +469,6 @@ theorem vars_eq_support_biUnion_support [DecidableEq σ] :
     p.vars = p.support.biUnion Finsupp.support := by
   ext i
   rw [mem_vars, Finset.mem_biUnion]
-  simp
 #align mv_polynomial.vars_eq_support_bUnion_support MvPolynomial.vars_eq_support_biUnion_support
 
 end Map
@@ -607,8 +606,12 @@ theorem totalDegree_le_degrees_card (p : MvPolynomial σ R) :
     p.totalDegree ≤ Multiset.card p.degrees := by
   classical
   rw [totalDegree_eq]
-  exact Finset.sup_le fun s hs => Multiset.card_le_of_le <| Finset.le_sup hs
+  exact Finset.sup_le fun s hs => Multiset.card_le_card <| Finset.le_sup hs
 #align mv_polynomial.total_degree_le_degrees_card MvPolynomial.totalDegree_le_degrees_card
+
+theorem totalDegree_le_of_support_subset (h : p.support ⊆ q.support) :
+    totalDegree p ≤ totalDegree q :=
+  Finset.sup_mono h
 
 @[simp]
 theorem totalDegree_C (a : R) : (C a : MvPolynomial σ R).totalDegree = 0 :=
@@ -686,7 +689,7 @@ theorem totalDegree_smul_le [CommSemiring S] [DistribMulAction R S] (a : R) (f :
 theorem totalDegree_pow (a : MvPolynomial σ R) (n : ℕ) :
     (a ^ n).totalDegree ≤ n * a.totalDegree := by
   induction' n with n ih
-  · simp only [Nat.zero_eq, zero_mul, pow_zero, totalDegree_one]
+  · simp only [Nat.zero_eq, pow_zero, totalDegree_one, zero_mul, le_refl]
   rw [pow_succ]
   calc
     totalDegree (a * a ^ n) ≤ a.totalDegree + (a ^ n).totalDegree := totalDegree_mul _ _

@@ -3,7 +3,8 @@ Copyright (c) 2021 Luke Kershaw. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Luke Kershaw
 -/
-import Mathlib.Data.Int.Basic
+import Mathlib.CategoryTheory.Adjunction.Limits
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 import Mathlib.CategoryTheory.Shift.Basic
 
@@ -193,6 +194,12 @@ def Triangle.isoMk (A B : Triangle C)
       Functor.map_id, Category.comp_id])
 #align category_theory.pretriangulated.triangle.iso_mk CategoryTheory.Pretriangulated.Triangle.isoMk
 
+lemma Triangle.isIso_of_isIsos {A B : Triangle C} (f : A ⟶ B)
+    (h₁ : IsIso f.hom₁) (h₂ : IsIso f.hom₂) (h₃ : IsIso f.hom₃) : IsIso f := by
+  let e := Triangle.isoMk A B (asIso f.hom₁) (asIso f.hom₂) (asIso f.hom₃)
+    (by simp) (by simp) (by simp)
+  exact (inferInstance : IsIso e.hom)
+
 lemma Triangle.eqToHom_hom₁ {A B : Triangle C} (h : A = B) :
     (eqToHom h).hom₁ = eqToHom (by subst h; rfl) := by subst h; rfl
 lemma Triangle.eqToHom_hom₂ {A B : Triangle C} (h : A = B) :
@@ -220,5 +227,71 @@ def binaryProductTriangleIsoBinaryBiproductTriangle
     binaryProductTriangle X₁ X₂ ≅ binaryBiproductTriangle X₁ X₂ :=
   Triangle.isoMk _ _ (Iso.refl _) (biprod.isoProd X₁ X₂).symm (Iso.refl _)
     (by aesop_cat) (by aesop_cat) (by aesop_cat)
+
+section
+
+variable {J : Type*} (T : J → Triangle C)
+  [HasProduct (fun j => (T j).obj₁)] [HasProduct (fun j => (T j).obj₂)]
+  [HasProduct (fun j => (T j).obj₃)] [HasProduct (fun j => (T j).obj₁⟦(1 : ℤ)⟧)]
+
+/-- The product of a family of triangles. -/
+@[simps!]
+def productTriangle : Triangle C :=
+  Triangle.mk (Pi.map (fun j => (T j).mor₁))
+    (Pi.map (fun j => (T j).mor₂))
+    (Pi.map (fun j => (T j).mor₃) ≫ inv (piComparison _ _))
+
+/-- A projection from the product of a family of triangles. -/
+@[simps]
+def productTriangle.π (j : J) :
+    productTriangle T ⟶ T j where
+  hom₁ := Pi.π _ j
+  hom₂ := Pi.π _ j
+  hom₃ := Pi.π _ j
+  comm₃ := by
+    dsimp
+    rw [← piComparison_comp_π, assoc, IsIso.inv_hom_id_assoc]
+    simp only [limMap_π, Discrete.natTrans_app]
+
+/-- The fan given by `productTriangle T`. -/
+@[simp]
+def productTriangle.fan : Fan T := Fan.mk (productTriangle T) (productTriangle.π T)
+
+/-- A family of morphisms `T' ⟶ T j` lifts to a morphism `T' ⟶ productTriangle T`. -/
+@[simps]
+def productTriangle.lift {T' : Triangle C} (φ : ∀ j, T' ⟶ T j) :
+    T' ⟶ productTriangle T where
+  hom₁ := Pi.lift (fun j => (φ j).hom₁)
+  hom₂ := Pi.lift (fun j => (φ j).hom₂)
+  hom₃ := Pi.lift (fun j => (φ j).hom₃)
+  comm₃ := by
+    dsimp
+    rw [← cancel_mono (piComparison _ _), assoc, assoc, assoc, IsIso.inv_hom_id, comp_id]
+    aesop_cat
+
+/-- The triangle `productTriangle T` satisfies the universal property of the categorical
+product of the triangles `T`. -/
+def productTriangle.isLimitFan : IsLimit (productTriangle.fan T) :=
+  mkFanLimit _ (fun s => productTriangle.lift T s.proj) (fun s j => by aesop_cat) (by
+    intro s m hm
+    ext1
+    all_goals
+      exact Pi.hom_ext _ _ (fun j => (by simp [← hm])))
+
+lemma productTriangle.zero₃₁ [HasZeroMorphisms C]
+    (h : ∀ j, (T j).mor₃ ≫ (T j).mor₁⟦(1 : ℤ)⟧' = 0) :
+    (productTriangle T).mor₃ ≫ (productTriangle T).mor₁⟦1⟧' = 0 := by
+  have : HasProduct (fun j => (T j).obj₂⟦(1 : ℤ)⟧) :=
+    ⟨_, isLimitFanMkObjOfIsLimit (shiftFunctor C (1 : ℤ)) _ _
+      (productIsProduct (fun j => (T j).obj₂))⟩
+  dsimp
+  change _ ≫ (Pi.lift (fun j => Pi.π _ j ≫ (T j).mor₁))⟦(1 : ℤ)⟧' = 0
+  rw [assoc, ← cancel_mono (piComparison _ _), zero_comp, assoc, assoc]
+  ext j
+  simp only [map_lift_piComparison, assoc, limit.lift_π, Fan.mk_π_app, zero_comp,
+    Functor.map_comp, ← piComparison_comp_π_assoc, IsIso.inv_hom_id_assoc,
+    limMap_π_assoc, Discrete.natTrans_app, h j, comp_zero]
+
+end
 
 end CategoryTheory.Pretriangulated

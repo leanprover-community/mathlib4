@@ -4,10 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
 
-import Std.Lean.NameMapAttribute
-import Mathlib.Lean.Expr.Basic
 import Lean.Elab.Exception
-import Qq.MetaM
+import Std.Lean.NameMapAttribute
+import Std.Lean.Expr
 import Std.Tactic.Lint
 
 /-!
@@ -36,7 +35,7 @@ in the file where we declare `@[simps]`. For further documentation, see `Tactic.
     arguments of classes that use the projection. -/
 syntax (name := notation_class) "notation_class" "*"? (ppSpace ident)? (ppSpace ident)? : attr
 
-open Lean Meta Elab Term Qq
+open Lean Meta Elab Term
 
 namespace Simps
 
@@ -54,8 +53,8 @@ def defaultfindArgs : findArgType := λ _ className args => do
   else if args.size == 1 then
     return mkArray arity args[0]!
   else
-    throwError "initialize_simps_projections cannot automatically find arguments for class {
-      className}"
+    throwError "initialize_simps_projections cannot automatically find arguments for class \
+      {className}"
 
 /-- Find arguments by duplicating the first argument. Used for `pow`. -/
 def copyFirst : findArgType := λ _ _ args => return (args.push <| args[0]?.getD default).map some
@@ -119,7 +118,7 @@ initialize notationClassAttr : NameMapExtension AutomaticProjectionData ← do
         match (← getEnv).find? findArgs with
         | none => throwError "no such declaration {findArgs}"
         | some declInfo =>
-          unless ← MetaM.run' <| isDefEq declInfo.type q(findArgType) do
+          unless ← MetaM.run' <| isDefEq declInfo.type (mkConst ``findArgType) do
             throwError "declaration {findArgs} has wrong type"
         ext.add projName ⟨src, coercion.isNone, findArgs⟩
       | _ => throwUnsupportedSyntax }

@@ -96,19 +96,18 @@ theorem hasEigenvalue_iff_isRoot : f.HasEigenvalue μ ↔ (minpoly K f).IsRoot �
   ⟨isRoot_of_hasEigenvalue, hasEigenvalue_of_isRoot⟩
 #align module.End.has_eigenvalue_iff_is_root Module.End.hasEigenvalue_iff_isRoot
 
+variable (f)
+
+lemma finite_hasEigenvalue : Set.Finite f.HasEigenvalue := by
+  have h : minpoly K f ≠ 0 := minpoly.ne_zero f.isIntegral
+  convert (minpoly K f).rootSet_finite K
+  ext μ
+  change f.HasEigenvalue μ ↔ _
+  rw [hasEigenvalue_iff_isRoot, mem_rootSet_of_ne h, IsRoot, coe_aeval_eq_eval]
+
 /-- An endomorphism of a finite-dimensional vector space has finitely many eigenvalues. -/
-noncomputable instance (f : End K V) : Fintype f.Eigenvalues :=
-  Set.Finite.fintype <| show {μ | eigenspace f μ ≠ ⊥}.Finite by
-    have h : minpoly K f ≠ 0 := minpoly.ne_zero f.isIntegral
-    convert (minpoly K f).rootSet_finite K
-    ext μ
-    -- Porting note: was the below, but this applied unwanted simp lemmas
-    -- ```
-    -- classical simp [Polynomial.rootSet_def, Polynomial.mem_roots h, ← hasEigenvalue_iff_isRoot,
-    --   HasEigenvalue]
-    -- ```
-    rw [Set.mem_setOf_eq, ← HasEigenvalue, hasEigenvalue_iff_isRoot, mem_rootSet_of_ne h, IsRoot,
-      coe_aeval_eq_eval]
+noncomputable instance : Fintype f.Eigenvalues :=
+  Set.Finite.fintype f.finite_hasEigenvalue
 
 end End
 

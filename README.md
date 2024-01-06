@@ -1,8 +1,7 @@
 # mathlib4
 
-![](https://github.com/leanprover-community/mathlib4/workflows/continuous%20integration/badge.svg?branch=master)
 ![GitHub CI](https://github.com/leanprover-community/mathlib4/workflows/continuous%20integration/badge.svg?branch=master)
-[![Bors enabled](https://bors.tech/images/badge_small.svg)](https://app.bors.tech/repositories/37904)
+[![Bors enabled](https://bors.tech/images/badge_small.svg)](https://mathlib-bors-ca18eefec4cb.herokuapp.com/repositories/16)
 [![project chat](https://img.shields.io/badge/zulip-join_chat-brightgreen.svg)](https://leanprover.zulipchat.com)
 
 This is a complete port of [mathlib](https://github.com/leanprover-community/mathlib) to [Lean 4](https://leanprover.github.io/).
@@ -135,7 +134,7 @@ For a list containing more detailed information, see https://leanprover-communit
 * Heather Macbeth (@hrmacbeth): geometry, analysis
 * Patrick Massot (@patrickmassot): documentation, topology, geometry
 * Bhavik Mehta (@b-mehta): category theory, combinatorics
-* Kyle Miller (@kmill): combinatorics, documentation
+* Kyle Miller (@kmill): combinatorics, tactics, metaprogramming
 * Scott Morrison (@semorrison): category theory, tactics
 * Oliver Nash (@ocfnash): algebra, geometry, topology
 * Joël Riou (@joelriou): category theory, homology, algebraic geometry

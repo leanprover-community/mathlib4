@@ -141,7 +141,7 @@ def restrictMonoidHom (G : Type*) [Monoid G] [TopologicalSpace G] [ChartedSpace 
     [SmoothMul I' G] {U V : Opens N} (h : U ≤ V) : C^∞⟮I, V; I', G⟯ →* C^∞⟮I, U; I', G⟯ where
   toFun f := ⟨f ∘ Set.inclusion h, f.smooth.comp (smooth_inclusion h)⟩
   map_one' := rfl
-  map_mul' _ _:= rfl
+  map_mul' _ _ := rfl
 #align smooth_map.restrict_monoid_hom SmoothMap.restrictMonoidHom
 #align smooth_map.restrict_add_monoid_hom SmoothMap.restrictAddMonoidHom
 

@@ -94,71 +94,9 @@ theorem isUnit_mul_iff (h : Commute a b) : IsUnit (a * b) ↔ IsUnit a ∧ IsUni
 
 @[to_additive (attr := simp)]
 theorem _root_.isUnit_mul_self_iff : IsUnit (a * a) ↔ IsUnit a :=
-  (Commute.refl a).isUnit_mul_iff.trans (and_self_iff _)
-  -- porting note: `and_self_iff` now has an implicit argument instead of an explicit one.
+  (Commute.refl a).isUnit_mul_iff.trans and_self_iff
 #align is_unit_mul_self_iff isUnit_mul_self_iff
 #align is_add_unit_add_self_iff isAddUnit_add_self_iff
 
 end Monoid
-
-section Group
-
-variable [Group G] {a b : G}
-
-@[to_additive]
-theorem inv_right : Commute a b → Commute a b⁻¹ :=
-  SemiconjBy.inv_right
-#align commute.inv_right Commute.inv_right
-#align add_commute.neg_right AddCommute.neg_right
-
-@[to_additive (attr := simp)]
-theorem inv_right_iff : Commute a b⁻¹ ↔ Commute a b :=
-  SemiconjBy.inv_right_iff
-#align commute.inv_right_iff Commute.inv_right_iff
-#align add_commute.neg_right_iff AddCommute.neg_right_iff
-
-@[to_additive]
-theorem inv_left : Commute a b → Commute a⁻¹ b :=
-  SemiconjBy.inv_symm_left
-#align commute.inv_left Commute.inv_left
-#align add_commute.neg_left AddCommute.neg_left
-
-@[to_additive (attr := simp)]
-theorem inv_left_iff : Commute a⁻¹ b ↔ Commute a b :=
-  SemiconjBy.inv_symm_left_iff
-#align commute.inv_left_iff Commute.inv_left_iff
-#align add_commute.neg_left_iff AddCommute.neg_left_iff
-
-@[to_additive]
-protected theorem inv_mul_cancel (h : Commute a b) : a⁻¹ * b * a = b := by
-  rw [h.inv_left.eq, inv_mul_cancel_right]
-#align commute.inv_mul_cancel Commute.inv_mul_cancel
-#align add_commute.neg_add_cancel AddCommute.neg_add_cancel
-
-@[to_additive]
-theorem inv_mul_cancel_assoc (h : Commute a b) : a⁻¹ * (b * a) = b := by
-  rw [← mul_assoc, h.inv_mul_cancel]
-#align commute.inv_mul_cancel_assoc Commute.inv_mul_cancel_assoc
-#align add_commute.neg_add_cancel_assoc AddCommute.neg_add_cancel_assoc
-
-end Group
-
 end Commute
-
-section CommGroup
-
-variable [CommGroup G] (a b : G)
-
-@[to_additive (attr := simp)]
-theorem inv_mul_cancel_comm : a⁻¹ * b * a = b :=
-  (Commute.all a b).inv_mul_cancel
-#align inv_mul_cancel_comm inv_mul_cancel_comm
-#align neg_add_cancel_comm neg_add_cancel_comm
-
-@[to_additive (attr := simp)]
-theorem inv_mul_cancel_comm_assoc : a⁻¹ * (b * a) = b :=
-  (Commute.all a b).inv_mul_cancel_assoc
-#align inv_mul_cancel_comm_assoc inv_mul_cancel_comm_assoc
-#align neg_add_cancel_comm_assoc neg_add_cancel_comm_assoc
-
-end CommGroup

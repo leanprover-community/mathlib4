@@ -57,20 +57,7 @@ universe u v w
 
 variable {α : Type u} {β : Type v}
 
--- TODO: move this eventually, if we decide to use them
--- Porting note: no ematch attribute
---attribute [ematch] le_trans lt_of_le_of_lt lt_of_lt_of_le lt_trans
-
-section
-
--- TODO: this seems crazy, but it also seems to work reasonably well
--- Porting note: no ematch attribute
---@[ematch]
-theorem le_antisymm' [PartialOrder α] : ∀ {a b : α}, a ≤ b → b ≤ a → a = b :=
-  @le_antisymm _ _
-#align le_antisymm' le_antisymm'
-
-end
+#align le_antisymm' le_antisymm
 
 /-!
 ### Join-semilattices
@@ -254,7 +241,7 @@ instance : IsCommutative α (· ⊔ ·) :=
   ⟨@sup_comm _ _⟩
 
 theorem sup_assoc : a ⊔ b ⊔ c = a ⊔ (b ⊔ c) :=
-  eq_of_forall_ge_iff $ fun x => by simp only [sup_le_iff]; rw [and_assoc]
+  eq_of_forall_ge_iff fun x => by simp only [sup_le_iff]; rw [and_assoc]
 #align sup_assoc sup_assoc
 
 instance : IsAssociative α (· ⊔ ·) :=
@@ -325,7 +312,7 @@ theorem SemilatticeSup.ext_sup {α} {A B : SemilatticeSup α}
     (H : ∀ x y : α, (haveI := A; x ≤ y) ↔ x ≤ y)
     (x y : α) :
     (haveI := A; x ⊔ y) = x ⊔ y :=
-  eq_of_forall_ge_iff $ fun c => by simp only [sup_le_iff]; rw [← H, @sup_le_iff α A, H, H]
+  eq_of_forall_ge_iff fun c => by simp only [sup_le_iff]; rw [← H, @sup_le_iff α A, H, H]
 #align semilattice_sup.ext_sup SemilatticeSup.ext_sup
 
 theorem SemilatticeSup.ext {α} {A B : SemilatticeSup α}
@@ -377,7 +364,7 @@ instance OrderDual.semilatticeInf (α) [SemilatticeSup α] : SemilatticeInf α�
 
 theorem SemilatticeSup.dual_dual (α : Type*) [H : SemilatticeSup α] :
     OrderDual.semilatticeSup αᵒᵈ = H :=
-  SemilatticeSup.ext $ fun _ _ => Iff.rfl
+  SemilatticeSup.ext fun _ _ => Iff.rfl
 #align semilattice_sup.dual_dual SemilatticeSup.dual_dual
 
 section SemilatticeInf
@@ -569,7 +556,7 @@ theorem SemilatticeInf.ext_inf {α} {A B : SemilatticeInf α}
     (H : ∀ x y : α, (haveI := A; x ≤ y) ↔ x ≤ y)
     (x y : α) :
     (haveI := A; x ⊓ y) = x ⊓ y :=
-  eq_of_forall_le_iff $ fun c => by simp only [le_inf_iff]; rw [← H, @le_inf_iff α A, H, H]
+  eq_of_forall_le_iff fun c => by simp only [le_inf_iff]; rw [← H, @le_inf_iff α A, H, H]
 #align semilattice_inf.ext_inf SemilatticeInf.ext_inf
 
 theorem SemilatticeInf.ext {α} {A B : SemilatticeInf α}
@@ -584,7 +571,7 @@ theorem SemilatticeInf.ext {α} {A B : SemilatticeInf α}
 
 theorem SemilatticeInf.dual_dual (α : Type*) [H : SemilatticeInf α] :
     OrderDual.semilatticeInf αᵒᵈ = H :=
-  SemilatticeInf.ext $ fun _ _ => Iff.rfl
+  SemilatticeInf.ext fun _ _ => Iff.rfl
 #align semilattice_inf.dual_dual SemilatticeInf.dual_dual
 
 theorem inf_le_ite (s s' : α) (P : Prop) [Decidable P] : s ⊓ s' ≤ ite P s s' :=
@@ -630,7 +617,7 @@ theorem semilatticeSup_mk'_partialOrder_eq_semilatticeInf_mk'_partialOrder
     (sup_inf_self : ∀ a b : α, a ⊔ a ⊓ b = a) (inf_sup_self : ∀ a b : α, a ⊓ (a ⊔ b) = a) :
     @SemilatticeSup.toPartialOrder _ (SemilatticeSup.mk' sup_comm sup_assoc sup_idem) =
       @SemilatticeInf.toPartialOrder _ (SemilatticeInf.mk' inf_comm inf_assoc inf_idem) :=
-  PartialOrder.ext $ fun a b =>
+  PartialOrder.ext fun a b =>
     show a ⊔ b = b ↔ b ⊓ a = a from
       ⟨fun h => by rw [← h, inf_comm, inf_sup_self], fun h => by rw [← h, sup_comm, sup_inf_self]⟩
 #align semilattice_sup_mk'_partial_order_eq_semilattice_inf_mk'_partial_order semilatticeSup_mk'_partialOrder_eq_semilatticeInf_mk'_partialOrder
@@ -684,7 +671,7 @@ theorem inf_le_sup : a ⊓ b ≤ a ⊔ b :=
 theorem sup_le_inf : a ⊔ b ≤ a ⊓ b ↔ a = b := by simp [le_antisymm_iff, and_comm]
 #align sup_le_inf sup_le_inf
 
-@[simp] lemma inf_eq_sup : a ⊓ b = a ⊔ b ↔ a = b := by rw [←inf_le_sup.ge_iff_eq, sup_le_inf]
+@[simp] lemma inf_eq_sup : a ⊓ b = a ⊔ b ↔ a = b := by rw [← inf_le_sup.ge_iff_eq, sup_le_inf]
 #align inf_eq_sup inf_eq_sup
 @[simp] lemma sup_eq_inf : a ⊔ b = a ⊓ b ↔ a = b := eq_comm.trans inf_eq_sup
 #align sup_eq_inf sup_eq_inf
@@ -1550,5 +1537,5 @@ instance [LinearOrder α] : LinearOrder (ULift.{v} α) :=
 end ULift
 
 --To avoid noncomputability poisoning from `Bool.completeBooleanAlgebra`
-instance : DistribLattice Bool :=
+instance Bool.instDistribLattice : DistribLattice Bool :=
   inferInstance

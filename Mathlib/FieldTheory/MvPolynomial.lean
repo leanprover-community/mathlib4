@@ -3,9 +3,7 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Data.MvPolynomial.CommRing
-import Mathlib.LinearAlgebra.Dimension
-import Mathlib.RingTheory.Ideal.Quotient
+import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 import Mathlib.RingTheory.MvPolynomial.Basic
 
 #align_import field_theory.mv_polynomial from "leanprover-community/mathlib"@"039a089d2a4b93c761b234f3e5f5aeb752bac60f"

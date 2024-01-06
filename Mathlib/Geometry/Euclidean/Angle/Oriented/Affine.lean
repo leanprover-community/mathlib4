@@ -742,7 +742,7 @@ theorem _root_.Collinear.oangle_sign_of_sameRay_vsub {p₁ p₂ p₃ p₄ : P} (
         exact smul_vsub_rev_mem_vectorSpan_pair _ _ _
     have hp₁p₂s : (p₁, p₅, p₂) ∈ s := by
       simp_rw [Set.mem_image, Set.mem_prod, Set.mem_setOf, Set.mem_univ, true_and_iff, Prod.ext_iff]
-      refine' ⟨⟨⟨p₁, left_mem_affineSpan_pair _ _ _⟩, p₂ -ᵥ p₁⟩,
+      refine' ⟨⟨⟨p₁, left_mem_affineSpan_pair ℝ _ _⟩, p₂ -ᵥ p₁⟩,
         ⟨SameRay.rfl, vsub_ne_zero.2 hp₁p₂.symm⟩, _⟩
       simp
     have hp₃p₄s : (p₃, p₅, p₄) ∈ s := by
