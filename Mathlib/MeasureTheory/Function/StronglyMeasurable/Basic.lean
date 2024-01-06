@@ -425,7 +425,7 @@ theorem const_mul [Mul β] [ContinuousMul β] (hf : StronglyMeasurable f) (c : �
 #align measure_theory.strongly_measurable.const_mul MeasureTheory.StronglyMeasurable.const_mul
 #align measure_theory.strongly_measurable.const_add MeasureTheory.StronglyMeasurable.const_add
 
-@[to_additive (attr := aesop safe 20 apply (rule_sets [Measurable]))]
+@[to_additive const_nsmul (attr := aesop safe 20 apply (rule_sets [Measurable]))]
 protected theorem pow [Monoid β] [ContinuousMul β] (hf : StronglyMeasurable f) (n : ℕ) :
     StronglyMeasurable (f ^ n) :=
   ⟨fun k => hf.approx k ^ n, fun x => (hf.tendsto_approx x).pow n⟩
@@ -1345,13 +1345,10 @@ protected theorem smul {𝕜} [TopologicalSpace 𝕜] [SMul 𝕜 β] [Continuous
 #align measure_theory.ae_strongly_measurable.smul MeasureTheory.AEStronglyMeasurable.smul
 #align measure_theory.ae_strongly_measurable.vadd MeasureTheory.AEStronglyMeasurable.vadd
 
-@[to_additive (attr := aesop safe 20 apply (rule_sets [Measurable]))]
+@[to_additive const_nsmul (attr := aesop safe 20 apply (rule_sets [Measurable]))]
 protected theorem pow [Monoid β] [ContinuousMul β] (hf : AEStronglyMeasurable f μ) (n : ℕ) :
     AEStronglyMeasurable (f ^ n) μ :=
-  ⟨hf.mk f ^ n, hf.stronglyMeasurable_mk.pow _,
-    hf.ae_eq_mk.mul hg.ae_eq_mk⟩
-#align measure_theory.ae_strongly_measurable.mul MeasureTheory.AEStronglyMeasurable.mul
-#align measure_theory.ae_strongly_measurable.add MeasureTheory.AEStronglyMeasurable.add
+  ⟨hf.mk f ^ n, hf.stronglyMeasurable_mk.pow _, hf.ae_eq_mk.pow_const _⟩
 
 @[measurability]
 protected theorem const_smul {𝕜} [SMul 𝕜 β] [ContinuousConstSMul 𝕜 β]
