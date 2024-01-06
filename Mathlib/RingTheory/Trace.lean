@@ -241,7 +241,7 @@ theorem PowerBasis.trace_gen_eq_nextCoeff_minpoly [Nontrivial S] (pb : PowerBasi
   have d_pos' : 0 < (minpoly K pb.gen).natDegree := by simpa
   haveI : Nonempty (Fin pb.dim) := ⟨⟨0, d_pos⟩⟩
   rw [trace_eq_matrix_trace pb.basis, trace_eq_neg_charpoly_coeff, charpoly_leftMulMatrix, ←
-    pb.natDegree_minpoly, Fintype.card_fin, ← nextCoeff_of_pos_natDegree _ d_pos']
+    pb.natDegree_minpoly, Fintype.card_fin, ← nextCoeff_of_natDegree_pos d_pos']
 #align power_basis.trace_gen_eq_next_coeff_minpoly PowerBasis.trace_gen_eq_nextCoeff_minpoly
 
 /-- Given `pb : PowerBasis K S`, then the trace of `pb.gen` is

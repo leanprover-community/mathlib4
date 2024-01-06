@@ -506,7 +506,7 @@ instance zeroLEOneClass [Zero α] [One α] [LE α] [ZeroLEOneClass α] : ZeroLEO
   ⟨some_le_some.2 zero_le_one⟩
 
 -- `by norm_cast` proves this lemma, so I did not tag it with `norm_cast`
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem coe_one [One α] : ((1 : α) : WithBot α) = 1 :=
   rfl
 #align with_bot.coe_one WithBot.coe_one

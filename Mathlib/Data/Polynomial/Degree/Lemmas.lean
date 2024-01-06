@@ -355,7 +355,7 @@ end Ring
 
 section NoZeroDivisors
 
-variable [Semiring R] [NoZeroDivisors R] {p q : R[X]}
+variable [Semiring R] [NoZeroDivisors R] {p q : R[X]} {a : R}
 
 theorem degree_mul_C (a0 : a ≠ 0) : (p * C a).degree = p.degree := by
   rw [degree_mul, degree_C a0, add_zero]
@@ -376,6 +376,24 @@ theorem natDegree_C_mul (a0 : a ≠ 0) : (C a * p).natDegree = p.natDegree := by
   simp only [natDegree, degree_C_mul a0]
 set_option linter.uppercaseLean3 false in
 #align polynomial.nat_degree_C_mul Polynomial.natDegree_C_mul
+
+@[simp]
+lemma nextCoeff_C_mul_X_add_C (ha : a ≠ 0) (c : R) : nextCoeff (C a * X + C c) = c := by
+  rw [nextCoeff_of_natDegree_pos] <;> simp [ha]
+
+lemma natDegree_eq_one : p.natDegree = 1 ↔ ∃ a ≠ 0, ∃ b, C a * X + C b = p := by
+  refine ⟨fun hp ↦ ⟨p.coeff 1, fun h ↦ ?_, p.coeff 0, ?_⟩, ?_⟩
+  · rw [← hp, coeff_natDegree, leadingCoeff_eq_zero] at h
+    aesop
+  · ext n
+    obtain _ | _ | n := n
+    · simp
+    · simp
+    · simp only [coeff_add, coeff_mul_X, coeff_C_succ, add_zero]
+      rw [coeff_eq_zero_of_natDegree_lt]
+      simp [hp]
+  · rintro ⟨a, ha, b, rfl⟩
+    simp [ha]
 
 theorem natDegree_comp : natDegree (p.comp q) = natDegree p * natDegree q := by
   by_cases q0 : q.natDegree = 0
