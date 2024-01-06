@@ -505,20 +505,44 @@ theorem im_inner_adjoint_mul_self_eq_zero (T : E →ₗ[𝕜] E) (x : E) :
 
 end LinearMap
 
-namespace Matrix
+section Matrix
+
+open Matrix LinearMap
 
 variable {m n : Type*} [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n]
+variable [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F]
+variable (v₁ : OrthonormalBasis n 𝕜 E) (v₂ : OrthonormalBasis m 𝕜 F)
+
+/- the linear map associated to the conjugate transpose of a matrix corresponding to two
+orthonormal bases is the adjoint of the linear map associated to the matrix. -/
+lemma Matrix.toLin_conjTranspose (A : Matrix m n 𝕜) :
+    toLin v₂.toBasis v₁.toBasis Aᴴ = adjoint (toLin v₁.toBasis v₂.toBasis A) := by
+  refine eq_adjoint_iff_basis v₂.toBasis v₁.toBasis _ _ |>.mpr fun i j ↦ ?_
+  simp_rw [toLin_self]
+  simp [sum_inner, inner_smul_left, inner_sum, inner_smul_right,
+    orthonormal_iff_ite.mp v₁.orthonormal, orthonormal_iff_ite.mp v₂.orthonormal]
+
+/-- The matrix associated to the adjoint of a linear map corresponding to two orthonormal bases
+is the conjugate tranpose of the matrix associated to the linear map. -/
+lemma LinearMap.toMatrix_adjoint (f : E →ₗ[𝕜] F) :
+    toMatrix v₂.toBasis v₁.toBasis (adjoint f) = (toMatrix v₁.toBasis v₂.toBasis f)ᴴ :=
+  toLin v₂.toBasis v₁.toBasis |>.injective <| by simp [toLin_conjTranspose]
+
+/-- The star algebra equivalence between the linear endomorphisms of finite-dimensional inner
+product space and square matrices induced by the choice of an orthonormal basis. -/
+@[simps]
+def LinearMap.toMatrixOrthonormal : (E →ₗ[𝕜] E) ≃⋆ₐ[𝕜] Matrix n n 𝕜 :=
+  { LinearMap.toMatrix v₁.toBasis v₁.toBasis with
+    map_mul' := LinearMap.toMatrix_mul v₁.toBasis
+    map_star' := LinearMap.toMatrix_adjoint v₁ v₁ }
 
 open scoped ComplexConjugate
 
 /-- The adjoint of the linear map associated to a matrix is the linear map associated to the
 conjugate transpose of that matrix. -/
-theorem toEuclideanLin_conjTranspose_eq_adjoint (A : Matrix m n 𝕜) :
-    Matrix.toEuclideanLin A.conjTranspose = LinearMap.adjoint (Matrix.toEuclideanLin A) := by
-  rw [LinearMap.eq_adjoint_iff]
-  intro x y
-  simp_rw [EuclideanSpace.inner_eq_star_dotProduct, piLp_equiv_toEuclideanLin, toLin'_apply,
-    star_mulVec, conjTranspose_conjTranspose, dotProduct_mulVec]
+theorem Matrix.toEuclideanLin_conjTranspose_eq_adjoint (A : Matrix m n 𝕜) :
+    Matrix.toEuclideanLin A.conjTranspose = LinearMap.adjoint (Matrix.toEuclideanLin A) :=
+  A.toLin_conjTranspose (EuclideanSpace.basisFun n 𝕜) (EuclideanSpace.basisFun m 𝕜)
 #align matrix.to_euclidean_lin_conj_transpose_eq_adjoint Matrix.toEuclideanLin_conjTranspose_eq_adjoint
 
 end Matrix

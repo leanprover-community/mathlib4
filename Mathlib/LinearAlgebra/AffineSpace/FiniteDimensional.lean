@@ -142,7 +142,7 @@ theorem finrank_vectorSpan_image_finset_le [DecidableEq P] (p : ι → P) (s : F
     (hc : Finset.card s = n + 1) : finrank k (vectorSpan k (s.image p : Set P)) ≤ n := by
   classical
   have hn : (s.image p).Nonempty := by
-    rw [Finset.Nonempty.image_iff, ← Finset.card_pos, hc]
+    rw [Finset.image_nonempty, ← Finset.card_pos, hc]
     apply Nat.succ_pos
   rcases hn with ⟨p₁, hp₁⟩
   rw [vectorSpan_eq_span_vsub_finset_right_ne k hp₁]
@@ -208,6 +208,14 @@ theorem finrank_vectorSpan_le_iff_not_affineIndependent [Fintype ι] (p : ι →
 #align finrank_vector_span_le_iff_not_affine_independent finrank_vectorSpan_le_iff_not_affineIndependent
 
 variable {k}
+
+lemma AffineIndependent.card_le_finrank_succ [Fintype ι] {p : ι → P} (hp : AffineIndependent k p) :
+    Fintype.card ι ≤ FiniteDimensional.finrank k (vectorSpan k (Set.range p)) + 1 := by
+  cases isEmpty_or_nonempty ι
+  · simp [Fintype.card_eq_zero]
+  rw [← tsub_le_iff_right]
+  exact (affineIndependent_iff_le_finrank_vectorSpan _ _
+    (tsub_add_cancel_of_le <| Nat.one_le_iff_ne_zero.2 Fintype.card_ne_zero).symm).1 hp
 
 /-- If the `vectorSpan` of a finite subset of an affinely independent
 family lies in a submodule with dimension one less than its

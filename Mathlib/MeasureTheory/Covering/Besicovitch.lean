@@ -128,7 +128,8 @@ structure Besicovitch.SatelliteConfig (α : Type*) [MetricSpace α] (N : ℕ) (�
   c : Fin N.succ → α
   r : Fin N.succ → ℝ
   rpos : ∀ i, 0 < r i
-  h : ∀ i j, i ≠ j → r i ≤ dist (c i) (c j) ∧ r j ≤ τ * r i ∨ r j ≤ dist (c j) (c i) ∧ r i ≤ τ * r j
+  h : Pairwise fun i j =>
+    r i ≤ dist (c i) (c j) ∧ r j ≤ τ * r i ∨ r j ≤ dist (c j) (c i) ∧ r i ≤ τ * r j
   hlast : ∀ i < last N, r i ≤ dist (c i) (c (last N)) ∧ r (last N) ≤ τ * r i
   inter : ∀ i < last N, dist (c i) (c (last N)) ≤ r i + r (last N)
 #align besicovitch.satellite_config Besicovitch.SatelliteConfig
@@ -310,7 +311,7 @@ theorem lastStep_nonempty :
   simp only [iUnionUpTo, not_exists, exists_prop, mem_iUnion, mem_closedBall, not_and, not_le,
     Subtype.exists, Subtype.coe_mk] at A
   specialize A x H
-  simp [hxy] at A
+  simp? [hxy] at A says simp only [hxy, mem_ball, dist_self, not_lt] at A
   exact (lt_irrefl _ ((p.rpos (p.index y)).trans_le A)).elim
 #align besicovitch.tau_package.last_step_nonempty Besicovitch.TauPackage.lastStep_nonempty
 
@@ -327,12 +328,11 @@ theorem mem_iUnionUpTo_lastStep (x : β) : p.c x ∈ p.iUnionUpTo p.lastStep := 
   have B : p.τ⁻¹ * p.R p.lastStep < p.R p.lastStep := by
     conv_rhs => rw [← one_mul (p.R p.lastStep)]
     exact mul_lt_mul (inv_lt_one p.one_lt_tau) le_rfl Rpos zero_le_one
-  obtain ⟨y, hy1, hy2⟩ :
-      ∃ y : β, p.c y ∉ p.iUnionUpTo p.lastStep ∧ p.τ⁻¹ * p.R p.lastStep < p.r y := by
+  obtain ⟨y, hy1, hy2⟩ : ∃ y, p.c y ∉ p.iUnionUpTo p.lastStep ∧ p.τ⁻¹ * p.R p.lastStep < p.r y := by
     have := exists_lt_of_lt_csSup ?_ B
     · simpa only [exists_prop, mem_range, exists_exists_and_eq_and, Subtype.exists,
       Subtype.coe_mk]
-    rw [← image_univ, nonempty_image_iff]
+    rw [← image_univ, image_nonempty]
     exact ⟨⟨_, h⟩, mem_univ _⟩
   rcases A y with (Hy | Hy)
   · exact hy1 Hy
@@ -377,7 +377,8 @@ theorem color_lt {i : Ordinal.{u}} (hi : i < p.lastStep) {N : ℕ}
     have : k ∈ A := by
       simpa only [true_and_iff, mem_univ, Classical.not_not, mem_diff] using
         Nat.not_mem_of_lt_sInf hk
-    simp [and_assoc, -exists_and_left] at this
+    simp only [mem_iUnion, mem_singleton_iff, exists_prop, Subtype.exists, exists_and_right,
+      and_assoc] at this
     simpa only [exists_prop, mem_iUnion, mem_singleton_iff, mem_closedBall, Subtype.exists,
       Subtype.coe_mk]
   choose! g hg using this
@@ -439,7 +440,7 @@ theorem color_lt {i : Ordinal.{u}} (hi : i < p.lastStep) {N : ℕ}
       h := by
         intro a b a_ne_b
         wlog G_le : G a ≤ G b generalizing a b
-        · exact (this b a a_ne_b.symm (le_of_not_le G_le)).symm
+        · exact (this a_ne_b.symm (le_of_not_le G_le)).symm
         have G_lt : G a < G b := by
           rcases G_le.lt_or_eq with (H | H); · exact H
           have A : (a : ℕ) ≠ b := Fin.val_injective.ne a_ne_b

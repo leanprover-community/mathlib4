@@ -181,6 +181,29 @@ instance commGroup [CommGroup α] : CommGroup αᵐᵒᵖ :=
   { MulOpposite.group α, MulOpposite.commMonoid α with }
 
 variable {α}
+
+section Monoid
+variable [Monoid α]
+
+@[simp] lemma op_pow (x : α) (n : ℕ) : op (x ^ n) = op x ^ n := rfl
+#align mul_opposite.op_pow MulOpposite.op_pow
+
+@[simp] lemma unop_pow (x : αᵐᵒᵖ) (n : ℕ) : unop (x ^ n) = unop x ^ n := rfl
+#align mul_opposite.unop_pow MulOpposite.unop_pow
+
+end Monoid
+
+section DivInvMonoid
+variable [DivInvMonoid α]
+
+@[simp] lemma op_zpow (x : α) (z : ℤ) : op (x ^ z) = op x ^ z := rfl
+#align mul_opposite.op_zpow MulOpposite.op_zpow
+
+@[simp] lemma unop_zpow (x : αᵐᵒᵖ) (z : ℤ) : unop (x ^ z) = unop x ^ z := rfl
+#align mul_opposite.unop_zpow MulOpposite.unop_zpow
+
+end DivInvMonoid
+
 @[to_additive (attr := simp, norm_cast)]
 theorem op_natCast [NatCast α] (n : ℕ) : op (n : α) = n :=
   rfl

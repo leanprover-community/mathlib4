@@ -333,6 +333,18 @@ def RingHom.toModule [Semiring R] [Semiring S] (f : R →+* S) : Module R S :=
   Module.compHom S f
 #align ring_hom.to_module RingHom.toModule
 
+/-- If the module action of `R` on `S` is compatible with multiplication on `S`, then
+`fun x => x • 1` is a ring homomorphism from `R` to `S`.
+
+This is the `RingHom` version of `MonoidHom.smulOneHom`.
+
+When `R` is commutative, usually `algebraMap` should be preferred. -/
+@[simps!] def RingHom.smulOneHom
+    [Semiring R] [NonAssocSemiring S] [Module R S] [IsScalarTower R S S] : R →+* S where
+  __ := MonoidHom.smulOneHom
+  map_zero' := zero_smul R 1
+  map_add' := (add_smul · · 1)
+
 section AddCommMonoid
 
 variable [Semiring R] [AddCommMonoid M] [Module R M]
@@ -574,6 +586,13 @@ theorem smul_eq_zero : c • x = 0 ↔ c = 0 ∨ x = 0 :=
 theorem smul_ne_zero_iff : c • x ≠ 0 ↔ c ≠ 0 ∧ x ≠ 0 := by rw [Ne.def, smul_eq_zero, not_or]
 #align smul_ne_zero_iff smul_ne_zero_iff
 
+lemma smul_eq_zero_iff_left (hx : x ≠ 0) : c • x = 0 ↔ c = 0 := by simp [hx]
+lemma smul_eq_zero_iff_right (hc : c ≠ 0) : c • x = 0 ↔ x = 0 := by simp [hc]
+#align smul_eq_zero_iff_eq' smul_eq_zero_iff_right
+lemma smul_ne_zero_iff_left (hx : x ≠ 0) : c • x ≠ 0 ↔ c ≠ 0 := by simp [hx]
+lemma smul_ne_zero_iff_right (hc : c ≠ 0) : c • x ≠ 0 ↔ x ≠ 0 := by simp [hc]
+#align smul_ne_zero_iff_ne' smul_ne_zero_iff_right
+
 end SMulWithZero
 
 section Module
@@ -708,7 +727,7 @@ variable [GroupWithZero R] [AddMonoid M] [DistribMulAction R M]
 -- see note [lower instance priority]
 /-- This instance applies to `DivisionSemiring`s, in particular `NNReal` and `NNRat`. -/
 instance (priority := 100) GroupWithZero.toNoZeroSMulDivisors : NoZeroSMulDivisors R M :=
-  ⟨fun {_ _} h => or_iff_not_imp_left.2 fun hc => (smul_eq_zero_iff_eq' hc).1 h⟩
+  ⟨fun {a _} h ↦ or_iff_not_imp_left.2 fun ha ↦ (smul_eq_zero_iff_eq $ Units.mk0 a ha).1 h⟩
 #align group_with_zero.to_no_zero_smul_divisors GroupWithZero.toNoZeroSMulDivisors
 
 end GroupWithZero

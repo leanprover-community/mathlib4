@@ -158,7 +158,7 @@ def galGroupBasis (K L : Type*) [Field K] [Field L] [Algebra K L] :
   mul' {U} hU :=
     ⟨U, hU, by
       rcases hU with ⟨H, _, rfl⟩
-      rintro x ⟨a, b, haH, hbH, rfl⟩
+      rintro x ⟨a, haH, b, hbH, rfl⟩
       exact H.mul_mem haH hbH⟩
   inv' {U} hU :=
     ⟨U, hU, by
