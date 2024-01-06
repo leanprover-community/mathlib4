@@ -46,69 +46,6 @@ theorem nsmul_one [AddMonoidWithOne A] : ∀ n : ℕ, n • (1 : A) = n := by
 
 variable [Monoid M] [Monoid N] [AddMonoid A] [AddMonoid B]
 
-instance invertiblePow (m : M) [Invertible m] (n : ℕ) :
-    Invertible (m ^ n) where
-  invOf := ⅟ m ^ n
-  invOf_mul_self := by rw [← (commute_invOf m).symm.mul_pow, invOf_mul_self, one_pow]
-  mul_invOf_self := by rw [← (commute_invOf m).mul_pow, mul_invOf_self, one_pow]
-#align invertible_pow invertiblePow
-
-theorem invOf_pow (m : M) [Invertible m] (n : ℕ) [Invertible (m ^ n)] : ⅟ (m ^ n) = ⅟ m ^ n :=
-  @invertible_unique M _ (m ^ n) (m ^ n) _ (invertiblePow m n) rfl
-#align inv_of_pow invOf_pow
-
-@[to_additive]
-theorem IsUnit.pow {m : M} (n : ℕ) : IsUnit m → IsUnit (m ^ n) := fun ⟨u, hu⟩ =>
-  ⟨u ^ n, hu ▸ u.val_pow_eq_pow_val _⟩
-#align is_unit.pow IsUnit.pow
-#align is_add_unit.nsmul IsAddUnit.nsmul
-
-/-- If a natural power of `x` is a unit, then `x` is a unit. -/
-@[to_additive "If a natural multiple of `x` is an additive unit, then `x` is an additive unit."]
-def Units.ofPow (u : Mˣ) (x : M) {n : ℕ} (hn : n ≠ 0) (hu : x ^ n = u) : Mˣ :=
-  u.leftOfMul x (x ^ (n - 1))
-    (by rwa [← _root_.pow_succ, Nat.sub_add_cancel (Nat.succ_le_of_lt <| Nat.pos_of_ne_zero hn)])
-    (Commute.self_pow _ _)
-#align units.of_pow Units.ofPow
-#align add_units.of_nsmul AddUnits.ofNSMul
-
-@[to_additive (attr := simp)]
-theorem isUnit_pow_iff {a : M} {n : ℕ} (hn : n ≠ 0) : IsUnit (a ^ n) ↔ IsUnit a :=
-  ⟨fun ⟨u, hu⟩ => (u.ofPow a hn hu.symm).isUnit, fun h => h.pow n⟩
-#align is_unit_pow_iff isUnit_pow_iff
-#align is_add_unit_nsmul_iff isAddUnit_nsmul_iff
-
-@[to_additive]
-theorem isUnit_pow_succ_iff {m : M} {n : ℕ} : IsUnit (m ^ (n + 1)) ↔ IsUnit m :=
-  isUnit_pow_iff n.succ_ne_zero
-#align is_unit_pow_succ_iff isUnit_pow_succ_iff
-#align is_add_unit_nsmul_succ_iff isAddUnit_nsmul_succ_iff
-
-/-- If `x ^ n = 1`, `n ≠ 0`, then `x` is a unit. -/
-@[to_additive (attr := simps!) "If `n • x = 0`, `n ≠ 0`, then `x` is an additive unit."]
-def Units.ofPowEqOne (x : M) (n : ℕ) (hx : x ^ n = 1) (hn : n ≠ 0) : Mˣ :=
-  Units.ofPow 1 x hn hx
-#align units.of_pow_eq_one Units.ofPowEqOne
-#align add_units.of_nsmul_eq_zero AddUnits.ofNSMulEqZero
-
-@[to_additive (attr := simp)]
-theorem Units.pow_ofPowEqOne {x : M} {n : ℕ} (hx : x ^ n = 1) (hn : n ≠ 0) :
-    Units.ofPowEqOne x n hx hn ^ n = 1 :=
-  Units.ext <| by simp [hx]
-#align units.pow_of_pow_eq_one Units.pow_ofPowEqOne
-#align add_units.nsmul_of_nsmul_eq_zero AddUnits.nsmul_ofNSMulEqZero
-
-@[to_additive]
-theorem isUnit_ofPowEqOne {x : M} {n : ℕ} (hx : x ^ n = 1) (hn : n ≠ 0) : IsUnit x :=
-  (Units.ofPowEqOne x n hx hn).isUnit
-#align is_unit_of_pow_eq_one isUnit_ofPowEqOne
-#align is_add_unit_of_nsmul_eq_zero isAddUnit_ofNSMulEqZero
-
-/-- If `x ^ n = 1` then `x` has an inverse, `x^(n - 1)`. -/
-def invertibleOfPowEqOne (x : M) (n : ℕ) (hx : x ^ n = 1) (hn : n ≠ 0) : Invertible x :=
-  (Units.ofPowEqOne x n hx hn).invertible
-#align invertible_of_pow_eq_one invertibleOfPowEqOne
-
 theorem smul_pow [MulAction M N] [IsScalarTower M N N] [SMulCommClass M N N] (k : M) (x : N)
     (p : ℕ) : (k • x) ^ p = k ^ p • x ^ p := by
   induction' p with p IH
@@ -987,17 +924,7 @@ theorem cast_nat_mul_cast_nat_mul (h : SemiconjBy a x y) (m n : ℕ) :
 
 end
 
-variable [Monoid M] [Group G] [Ring R]
-
-@[to_additive (attr := simp)]
-theorem units_zpow_right {a : M} {x y : Mˣ} (h : SemiconjBy a x y) :
-    ∀ m : ℤ, SemiconjBy a ↑(x ^ m) ↑(y ^ m)
-  | (n : ℕ) => by simp only [zpow_ofNat, Units.val_pow_eq_pow_val, h, pow_right]
-  | -[n+1] => by simp only [zpow_negSucc, Units.val_pow_eq_pow_val, units_inv_right, h, pow_right]
-#align semiconj_by.units_zpow_right SemiconjBy.units_zpow_right
-#align add_semiconj_by.add_units_zsmul_right AddSemiconjBy.addUnits_zsmul_right
-
-variable {a b x y x' y' : R}
+variable [Ring R] {a b x y x' y' : R}
 
 @[simp]
 theorem cast_int_mul_right (h : SemiconjBy a x y) (m : ℤ) : SemiconjBy a ((m : ℤ) * x) (m * y) :=
@@ -1070,23 +997,7 @@ theorem self_cast_nat_mul_cast_nat_mul : Commute (m * a : R) (n * a : R) :=
 
 end
 
-variable [Monoid M] [Group G] [Ring R]
-
-@[to_additive (attr := simp)]
-theorem units_zpow_right {a : M} {u : Mˣ} (h : Commute a u)
-    (m : ℤ) : Commute a ↑(u ^ m) :=
-  SemiconjBy.units_zpow_right h m
-#align commute.units_zpow_right Commute.units_zpow_right
-#align add_commute.add_units_zsmul_right AddCommute.addUnits_zsmul_right
-
-@[to_additive (attr := simp)]
-theorem units_zpow_left {u : Mˣ} {a : M} (h : Commute (↑u) a)
-    (m : ℤ) : Commute (↑(u ^ m)) a :=
-  (h.symm.units_zpow_right m).symm
-#align commute.units_zpow_left Commute.units_zpow_left
-#align add_commute.add_units_zsmul_left AddCommute.addUnits_zsmul_left
-
-variable {a b : R}
+variable [Ring R] {a b : R}
 
 @[simp]
 theorem cast_int_mul_right (h : Commute a b) (m : ℤ) : Commute a (m * b : R) :=
@@ -1165,23 +1076,6 @@ theorem Int.ofAdd_mul (a b : ℤ) : ofAdd (a * b) = ofAdd a ^ b :=
 #align int.of_add_mul Int.ofAdd_mul
 
 end Multiplicative
-
-namespace Units
-
-variable [Monoid M]
-
-theorem conj_pow (u : Mˣ) (x : M) (n : ℕ) :
-    ((↑u : M) * x * (↑u⁻¹ : M)) ^ n = (u : M) * x ^ n * (↑u⁻¹ : M) :=
-  (divp_eq_iff_mul_eq.2
-  ((u.mk_semiconjBy x).pow_right n).eq.symm).symm
-#align units.conj_pow Units.conj_pow
-
-theorem conj_pow' (u : Mˣ) (x : M) (n : ℕ) :
-    ((↑u⁻¹ : M) * x * (u : M)) ^ n = (↑u⁻¹ : M) * x ^ n * (u : M) :=
-  u⁻¹.conj_pow x n
-#align units.conj_pow' Units.conj_pow'
-
-end Units
 
 -- Porting note: this was added in an ad hoc port for use in `Tactic/NormNum/Basic`
 

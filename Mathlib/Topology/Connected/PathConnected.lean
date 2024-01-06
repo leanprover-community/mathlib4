@@ -991,7 +991,7 @@ nonrec theorem Inducing.isPathConnected_iff {f : X → Y} (hf : Inducing f) :
     IsPathConnected F ↔ IsPathConnected (f '' F) := by
   refine ⟨fun hF ↦ hF.image hf.continuous, fun hF ↦ ?_⟩
   simp? [isPathConnected_iff] at hF ⊢ says
-    simp only [isPathConnected_iff, nonempty_image_iff, mem_image, forall_exists_index,
+    simp only [isPathConnected_iff, image_nonempty, mem_image, forall_exists_index,
       and_imp, forall_apply_eq_imp_iff₂] at hF ⊢
   refine ⟨hF.1, fun x hx y hy ↦ ?_⟩
   rcases hF.2 x hx y hy with ⟨γ, hγ⟩
