@@ -127,35 +127,56 @@ end MonoidExponent
 
 section Divides
 
-/-! ## Multiples of `MulAction.period` in groups
+/-! ## Multiples of `MulAction.period`
 
-In a group, all exponents/multiples `n` will be a multiple of `period g a`
-if `g ^ n • a = a` (resp. `(n • g) +ᵥ a = a`).
+It is easy to convince onself that if `g ^ n • a = a` (resp. `(n • g) +ᵥ a = a`),
+then `n` must be a multiple of `period g a`.
 -/
 
--- TODO: actually move the implementations of `pow_smul_eq_iff_minimalPeriod_dvd` & others here
-
 @[to_additive]
-theorem pow_smul_eq_iff_period_dvd {n : ℕ} {g : G} {a : α}:
-    g ^ n • a = a ↔ period g a ∣ n := by
-  rw [pow_smul_eq_iff_minimalPeriod_dvd]
-  rfl
+theorem pow_smul_eq_iff_period_dvd {n : ℕ} {m : M} {a : α}:
+    m ^ n • a = a ↔ period m a ∣ n := by
+  rw [
+    period_eq_minimalPeriod,
+    <-Function.isPeriodicPt_iff_minimalPeriod_dvd,
+    fixed_iff_isPeriodicPt
+  ]
 
 @[to_additive]
 theorem zpow_smul_eq_iff_period_dvd {j : ℤ} {g : G} {a : α}:
     g ^ j • a = a ↔ (period g a : ℤ) ∣ j := by
-  rw [zpow_smul_eq_iff_minimalPeriod_dvd]
-  rfl
+  rcases j with n | n
+  · rw [Int.ofNat_eq_coe, zpow_ofNat, Int.coe_nat_dvd, pow_smul_eq_iff_period_dvd]
+  · rw [
+      Int.negSucc_coe, zpow_neg, zpow_ofNat,
+      inv_smul_eq_iff, eq_comm,
+      dvd_neg, Int.coe_nat_dvd,
+      pow_smul_eq_iff_period_dvd
+    ]
 
 @[to_additive (attr := simp)]
-theorem pow_smul_mod_period (n : ℕ) {g : G} {a : α}:
-    g ^ (n % period g a) • a = g ^ n • a := by
-  rw [period_eq_minimalPeriod, pow_smul_mod_minimalPeriod]
+theorem pow_smul_plus_period (n o : ℕ) (m : M) (a : α):
+    m ^ (n + (period m a) * o) • a = m ^ n • a := by
+  rw [pow_add, mul_smul, pow_smul_eq_iff_period_dvd.mpr (dvd_mul_right _ _)]
 
 @[to_additive (attr := simp)]
-theorem zpow_smul_mod_period (n : ℤ) {g : G} {a : α}:
-    g ^ (n % (period g a : ℤ)) • a = g ^ n • a := by
-  rw [period_eq_minimalPeriod, zpow_smul_mod_minimalPeriod]
+theorem zpow_smul_plus_period (i j : ℤ) (g : G) (a : α):
+    g ^ (i + (period g a : ℤ) * j) • a = g ^ i • a := by
+  rw [zpow_add, mul_smul, zpow_smul_eq_iff_period_dvd.mpr (dvd_mul_right _ _)]
+
+@[to_additive (attr := simp)]
+theorem pow_smul_mod_period (n : ℕ) {m : M} {a : α}:
+    m ^ (n % period m a) • a = m ^ n • a := by
+  conv_rhs => {
+    rw [<-Nat.mod_add_div n (period m a), pow_smul_plus_period]
+  }
+
+@[to_additive (attr := simp)]
+theorem zpow_smul_mod_period (j : ℤ) {g : G} {a : α}:
+    g ^ (j % (period g a : ℤ)) • a = g ^ j • a := by
+  conv_rhs => {
+    rw [<-Int.emod_add_ediv j (period g a), zpow_smul_plus_period]
+  }
 
 end Divides
 
