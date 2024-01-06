@@ -12,6 +12,13 @@ import Mathlib.Analysis.InnerProductSpace.Projection
 
 In this file, the `orthogonal` complement of an affine subspace `P` is defined, and basic API is
 established. The API is made to emulate that of `Submodule.orthogonal`.
+
+## Notation
+
+The orthogonal complement of a subspace `s` through `b` is denoted `sᗮᗮ b`.
+
+The proposition that two subspaces are orthogonal, `AffineSubspace.IsOrtho`, is denoted by `s ⟂⟂ t`.
+Note this is not the same unicode symbol as `⊥` (`Bot`).
 -/
 
 
@@ -30,9 +37,12 @@ open AffineEquiv
 /-- Orthogonal complement to an affine subspace passing through a given point. -/
 def orthogonal (b : P) : AffineSubspace 𝕜 P := mk' b s.directionᗮ
 
+@[inherit_doc]
+infixl:55 "ᗮᗮ " => AffineSubspace.orthogonal
+
 /-- When a point is in the orthogonal complement. -/
 lemma mem_orthogonal (b c : P) :
-    c ∈ s.orthogonal b ↔ ∀ (v : V), v ∈ s.direction → @inner 𝕜 _ _ v (c -ᵥ b) = 0 := by
+    c ∈ sᗮᗮ b ↔ ∀ (v : V), v ∈ s.direction → @inner 𝕜 _ _ v (c -ᵥ b) = 0 := by
   apply Iff.intro
   · intro hc v hv
     rcases hc with ⟨w, hw, hc⟩
@@ -49,7 +59,7 @@ lemma mem_orthogonal (b c : P) :
 
 /-- When a point is in the orthogonal complement, with the inner product the other way around. -/
 lemma mem_orthogonal' (b c : P) :
-    c ∈ s.orthogonal b ↔ ∀ (v : V), v ∈ s.direction → @inner 𝕜 _ _ (c -ᵥ b) v = 0 := by
+    c ∈ sᗮᗮ b ↔ ∀ (v : V), v ∈ s.direction → @inner 𝕜 _ _ (c -ᵥ b) v = 0 := by
   simp_rw [mem_orthogonal, inner_eq_zero_symm]
 
 /-- `orthogonal` reverses the `≤` ordering of two affine subspaces. -/
@@ -67,7 +77,7 @@ lemma orthogonal_le {s₁ s₂ : AffineSubspace 𝕜 P} (b : P) (h : s₁ ≤ s�
 
 /-- Double application of `orthogonal` preserves the `≤` ordering of two affine subspaces. -/
 lemma orthogonal_orthogonal_monotone {s₁ s₂ : AffineSubspace 𝕜 P} (b₁ b₂ c : P) (h : s₁ ≤ s₂) :
-    (s₁.orthogonal b₁).orthogonal c ≤ (s₂.orthogonal b₂).orthogonal c := by
+    s₁ᗮᗮ b₁ᗮᗮ c ≤ s₂ᗮᗮ b₂ᗮᗮ c := by
   simp [orthogonal, le_def']
   intro p hp
   use p -ᵥ c
@@ -79,7 +89,7 @@ lemma orthogonal_orthogonal_monotone {s₁ s₂ : AffineSubspace 𝕜 P} (b₁ b
     exact vsub_vadd _ _
 
 /-- `s` is contained in `(s.orthogonal b).orthogonal c` when `c ∈ s`. -/
-lemma le_orthogonal_orthogonal (b c : P) (hc : c ∈ s) : s ≤ (s.orthogonal b).orthogonal c := by
+lemma le_orthogonal_orthogonal (b c : P) (hc : c ∈ s) : s ≤ sᗮᗮ bᗮᗮ c := by
   simp [orthogonal, le_def']
   intros p hp
   exact ⟨ p -ᵥ c
@@ -98,13 +108,13 @@ lemma bot_orthogonal_eq_top (b : P) : orthogonal (⊥ : AffineSubspace 𝕜 P) b
   exact ⟨by simp, fun _ => ⟨x -ᵥ b, by simp⟩⟩
 
 @[simp]
-lemma mk'_of_bot_orthogonal_eq_top (b c : P) : (mk' b (⊥ : Submodule 𝕜 V)).orthogonal c = ⊤ := by
+lemma mk'_of_bot_orthogonal_eq_top (b c : P) : (mk' b (⊥ : Submodule 𝕜 V))ᗮᗮ c = ⊤ := by
   rw [orthogonal, direction_mk', Submodule.bot_orthogonal_eq_top]
   ext x
   exact ⟨by simp, fun _ => ⟨x -ᵥ c, by simp⟩⟩
 
 @[simp]
-lemma orthogonal_eq_top_iff (b : P) : s.orthogonal b = ⊤ ↔ s.direction = ⊥ := by
+lemma orthogonal_eq_top_iff (b : P) : sᗮᗮ b = ⊤ ↔ s.direction = ⊥ := by
   apply Iff.intro
   · intro hs
     rw [orthogonal] at hs
@@ -117,7 +127,7 @@ lemma orthogonal_eq_top_iff (b : P) : s.orthogonal b = ⊤ ↔ s.direction = ⊥
 
 /-- The orthogonal complements of two parallel affine subspaces through the same point are equal. -/
 lemma orthogonal_of_parallel_eq (s t : AffineSubspace 𝕜 P) (b : P) (h : s ∥ t) :
-    s.orthogonal b = t.orthogonal b := by
+    sᗮᗮ b = tᗮᗮ b := by
   repeat rw [orthogonal]
   congr! 2
   exact h.direction_eq
@@ -155,7 +165,7 @@ lemma orthogonal_parallel (b c : P) : orthogonal s b ∥ orthogonal s c :=
 is equal to the original subspace when `c` is in the original subspace and the `direction` of the
 original subspace is a `CompleteSpace`. -/
 lemma orthogonal_orthogonal [CompleteSpace s.direction] (b c : P) :
-    c ∈ s → (s.orthogonal b).orthogonal c = s := by
+    c ∈ s → sᗮᗮ bᗮᗮ c = s := by
   intro hc
   simp [orthogonal, hc]
 
@@ -177,7 +187,7 @@ end AffineSubspace
 /-!
 ### Orthogonality of affine subspaces
 
-In this section we define `AffineSubspace.IsOrtho`.
+In this section we define `AffineSubspace.IsOrtho`, with notation `s ⟂⟂ t`.
 
 The API emulates that of `Submodule.IsOrtho`.
 -/
@@ -185,14 +195,17 @@ The API emulates that of `Submodule.IsOrtho`.
 
 namespace AffineSubspace
 
-/-- The proposition that two affine subspaces are orthogonal. -/
+/-- The proposition that two affine subspaces are orthogonal. Has notation `s ⟂⟂ t`. -/
 def IsOrtho (s t : AffineSubspace 𝕜 P) : Prop := s.direction ⟂ t.direction
 
+@[inherit_doc]
+infixl:50 " ⟂⟂ " => AffineSubspace.IsOrtho
+
 @[symm]
-lemma IsOrtho.symm {s t : AffineSubspace 𝕜 P} : s.IsOrtho t → t.IsOrtho s :=
+lemma IsOrtho.symm {s t : AffineSubspace 𝕜 P} : s ⟂⟂ t → t ⟂⟂ s :=
   Submodule.IsOrtho.symm
 
-lemma IsOrtho_comm {s t : AffineSubspace 𝕜 P} : s.IsOrtho t ↔ t.IsOrtho s :=
+lemma IsOrtho_comm {s t : AffineSubspace 𝕜 P} : s ⟂⟂ t ↔ t ⟂⟂ s :=
   ⟨IsOrtho.symm, IsOrtho.symm⟩
 
 lemma symmetric_isOrtho : Symmetric (IsOrtho : AffineSubspace 𝕜 P → AffineSubspace 𝕜 P → Prop) :=
@@ -204,40 +217,40 @@ lemma isOrtho_bot_left {s : AffineSubspace 𝕜 P} : IsOrtho ⊥ s := by simp [I
 
 /-- All subspaces are orthogonal to the empty subspace -/
 @[simp]
-lemma isOrtho_bot_right {s : AffineSubspace 𝕜 P} : s.IsOrtho ⊥ := IsOrtho.symm isOrtho_bot_left
+lemma isOrtho_bot_right {s : AffineSubspace 𝕜 P} : s ⟂⟂ ⊥ := IsOrtho.symm isOrtho_bot_left
 
 /-- If a subspace `s₁` is orthogonal to `t`, then so is any subspace `s₂ ≤ s₁`. -/
-lemma IsOrtho.mono_left {s₁ s₂ t : AffineSubspace 𝕜 P} (hs : s₂ ≤ s₁) (h : s₁.IsOrtho t) :
-    s₂.IsOrtho t := by
+lemma IsOrtho.mono_left {s₁ s₂ t : AffineSubspace 𝕜 P} (hs : s₂ ≤ s₁) (h : s₁ ⟂⟂ t) :
+    s₂ ⟂⟂ t := by
   simp [IsOrtho]
   exact Submodule.IsOrtho.mono_left (direction_le hs) h
 
 /-- If a subspace `s` is orthogonal to `t₁`, then it is also orthogonal to any subspace `t₂ ≤ t₁`.
 -/
-lemma IsOrtho.mono_right {s t₁ t₂ : AffineSubspace 𝕜 P} (ht : t₂ ≤ t₁) (h : s.IsOrtho t₁) :
-    s.IsOrtho t₂ := (h.symm.mono_left ht).symm
+lemma IsOrtho.mono_right {s t₁ t₂ : AffineSubspace 𝕜 P} (ht : t₂ ≤ t₁) (h : s ⟂⟂ t₁) :
+    s ⟂⟂ t₂ := (h.symm.mono_left ht).symm
 
 /-- If a subspace `s₁` is orthogonal to `t₁`, then any subspace `s₂ ≤ s₁` is also orthogonal to
 `t₂ ≤ t₁` -/
 lemma IsOrtho.mono {s₁ s₂ t₁ t₂ : AffineSubspace 𝕜 P} (hs : s₂ ≤ s₁) (ht : t₂ ≤ t₁)
-    (h : s₁.IsOrtho t₁) : s₂.IsOrtho t₂ := (h.mono_right ht).mono_left hs
+    (h : s₁ ⟂⟂ t₁) : s₂ ⟂⟂ t₂ := (h.mono_right ht).mono_left hs
 
 @[simp]
-lemma isOrtho_self {s : AffineSubspace 𝕜 P} : s.IsOrtho s ↔ s.direction = ⊥ :=
+lemma isOrtho_self {s : AffineSubspace 𝕜 P} : s ⟂⟂ s ↔ s.direction = ⊥ :=
   Submodule.isOrtho_self
 
 @[simp]
-lemma isOrtho_orthogonal_right {s : AffineSubspace 𝕜 P} (b : P) : s.IsOrtho (s.orthogonal b) := by
+lemma isOrtho_orthogonal_right {s : AffineSubspace 𝕜 P} (b : P) : s ⟂⟂ (sᗮᗮ b) := by
   simp [IsOrtho, orthogonal]
 
 @[simp]
-lemma isOrtho_orthogonal_left {s : AffineSubspace 𝕜 P} (b : P) : (s.orthogonal b).IsOrtho s :=
+lemma isOrtho_orthogonal_left {s : AffineSubspace 𝕜 P} (b : P) : (sᗮᗮ b) ⟂⟂ s :=
   IsOrtho.symm (isOrtho_orthogonal_right b)
 
 /-- If a subspace `s` is orthogonal to `t`, then `s` is a subspace of the orthogonal complement to
 `t` through some point `b`. -/
-lemma IsOrtho.le {s t : AffineSubspace 𝕜 P} (h : s.IsOrtho t) :
-    ∃ (b : P), s ≤ t.orthogonal b := by
+lemma IsOrtho.le {s t : AffineSubspace 𝕜 P} (h : s ⟂⟂ t) :
+    ∃ (b : P), s ≤ tᗮᗮ b := by
   by_cases hs : s = ⊥
   · cases (AddTorsor.Nonempty : Nonempty P) with | intro b =>
     use b
@@ -257,11 +270,11 @@ lemma IsOrtho.le {s t : AffineSubspace 𝕜 P} (h : s.IsOrtho t) :
 
 /-- If a subspace `s` is orthogonal `t`, then `t` is a subspace of the orthogonal complement to `s`
 through some point `b`. -/
-lemma IsOrtho.ge {s t : AffineSubspace 𝕜 P} (h : s.IsOrtho t) : ∃ (b : P), t ≤ s.orthogonal b :=
+lemma IsOrtho.ge {s t : AffineSubspace 𝕜 P} (h : s ⟂⟂ t) : ∃ (b : P), t ≤ sᗮᗮ b :=
   h.symm.le
 
 @[simp]
-lemma isOrtho_top_right {s : AffineSubspace 𝕜 P} : s.IsOrtho ⊤ ↔ s.direction = ⊥ := by
+lemma isOrtho_top_right {s : AffineSubspace 𝕜 P} : s ⟂⟂ ⊤ ↔ s.direction = ⊥ := by
   rw [IsOrtho, direction_top]
   exact Submodule.isOrtho_top_right
 
@@ -270,34 +283,34 @@ lemma isOrtho_top_left {s : AffineSubspace 𝕜 P} : IsOrtho ⊤ s ↔ s.directi
   rw [IsOrtho_comm]
   exact isOrtho_top_right
 
-lemma IsOrtho.disjoint_direction {s t : AffineSubspace 𝕜 P} (h : s.IsOrtho t) :
+lemma IsOrtho.disjoint_direction {s t : AffineSubspace 𝕜 P} (h : s ⟂⟂ t) :
     Disjoint s.direction t.direction := Submodule.IsOrtho.disjoint h
 
-lemma IsOrtho.inf_direction {s t : AffineSubspace 𝕜 P} (h : s.IsOrtho t) :
+lemma IsOrtho.inf_direction {s t : AffineSubspace 𝕜 P} (h : s ⟂⟂ t) :
     (s ⊓ t).direction = ⊥ :=
   le_bot_iff.mp (le_trans (direction_inf s t) (disjoint_iff_inf_le.mp h.disjoint))
 
 @[simp]
-lemma isOrtho_sup_left {s₁ s₂ t : AffineSubspace 𝕜 P} (h : (s₁ ⊔ s₂).IsOrtho t) :
-    s₁.IsOrtho t ∧ s₂.IsOrtho t := by
+lemma isOrtho_sup_left {s₁ s₂ t : AffineSubspace 𝕜 P} (h : (s₁ ⊔ s₂) ⟂⟂ t) :
+    s₁ ⟂⟂ t ∧ s₂ ⟂⟂ t := by
   rw [IsOrtho, Submodule.IsOrtho] at h
   have := le_trans (sup_direction_le s₁ s₂) h
   exact Submodule.isOrtho_sup_left.mp this
 
 @[simp]
-lemma isOrtho_sup_right {s t₁ t₂ : AffineSubspace 𝕜 P} (h : s.IsOrtho (t₁ ⊔ t₂)) :
-    s.IsOrtho t₁ ∧ s.IsOrtho t₂ := by
+lemma isOrtho_sup_right {s t₁ t₂ : AffineSubspace 𝕜 P} (h : s ⟂⟂ (t₁ ⊔ t₂)) :
+    s ⟂⟂ t₁ ∧ s ⟂⟂ t₂ := by
   rw [IsOrtho_comm] at h
   repeat rw [@IsOrtho_comm _ _ _ _ _ _ _ s]
   exact isOrtho_sup_left h
 
 @[simp]
 lemma isOrtho_mk' (b c : P) (dir₁ dir₂ : Submodule 𝕜 V) :
-    (mk' b dir₁).IsOrtho (mk' c dir₂) ↔ dir₁ ⟂ dir₂ := by simp [IsOrtho]
+    (mk' b dir₁) ⟂⟂ (mk' c dir₂) ↔ dir₁ ⟂ dir₂ := by simp [IsOrtho]
 
 @[simp]
 lemma IsOrtho.trans_parallel_right {s₁ s₂ t : AffineSubspace 𝕜 P} (hs : s₁ ∥ s₂) :
-    s₁.IsOrtho t ↔ s₂.IsOrtho t := by
+    s₁ ⟂⟂ t ↔ s₂ ⟂⟂ t := by
   apply Iff.intro
   · intro h
     rw [IsOrtho, ← Parallel.direction_eq hs]
@@ -308,7 +321,7 @@ lemma IsOrtho.trans_parallel_right {s₁ s₂ t : AffineSubspace 𝕜 P} (hs : s
 
 @[simp]
 lemma IsOrtho.trans_parallel_left {s t₁ t₂ : AffineSubspace 𝕜 P} (ht : t₁ ∥ t₂) :
-    s.IsOrtho t₁ ↔ s.IsOrtho t₂ := by
+    s ⟂⟂ t₁ ↔ s ⟂⟂ t₂ := by
   repeat rw [IsOrtho]
   congr! 1
   exact Parallel.direction_eq ht
