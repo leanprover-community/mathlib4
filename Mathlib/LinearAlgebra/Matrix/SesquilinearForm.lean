@@ -345,7 +345,7 @@ a module with a fixed basis.
 -/
 
 
-variable [CommRing R]
+variable [CommSemiring R]
 
 variable [AddCommMonoid M₁] [Module R M₁] [AddCommMonoid M₂] [Module R M₂]
 
