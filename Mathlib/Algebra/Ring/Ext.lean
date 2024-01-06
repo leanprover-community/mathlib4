@@ -274,7 +274,19 @@ theorem Semiring.ext_iff (inst₁ inst₂ : Semiring R) :
     (h_add : ∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
     (h_mul : ∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :
     inst₁ = inst₂ := by
-  sorry
+  -- Show that enough substructures are equal.
+  have h₁ : inst₁.toSemiring = inst₂.toSemiring := by
+    ext <;> apply_assumption
+  have h₂ : inst₁.toNonAssocRing = inst₂.toNonAssocRing := by
+    ext <;> apply_assumption
+  /- We prove that the `SubNegMonoid`s are equal because they are one
+  field away from `Sub` and `Neg`, enabling use of `injection`. -/
+  have h₃ : (inst₁.toAddCommGroup).toAddGroup.toSubNegMonoid
+            = (inst₂.toAddCommGroup).toAddGroup.toSubNegMonoid :=
+    congrArg (@AddGroup.toSubNegMonoid R) <| by ext; apply h_add
+  -- Split into fields and prove they are equal using the above.
+  cases inst₁; cases inst₂
+  congr <;> solve | injection h₂ | injection h₃
 
 theorem Ring.ext_iff (inst₁ inst₂ : Ring R) :
     inst₁ = inst₂ ↔
