@@ -252,7 +252,7 @@ lemma isOrtho_orthogonal_left {s : AffineSubspace 𝕜 P} (b : P) : (sᗮᗮ b) 
 lemma IsOrtho.le {s t : AffineSubspace 𝕜 P} (h : s ⟂⟂ t) :
     ∃ (b : P), s ≤ tᗮᗮ b := by
   by_cases hs : s = ⊥
-  · cases (AddTorsor.Nonempty : Nonempty P) with | intro b =>
+  · cases (AddTorsor.nonempty : Nonempty P) with | intro b =>
     use b
     rw [hs]
     exact bot_le
