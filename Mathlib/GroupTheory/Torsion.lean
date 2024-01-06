@@ -373,6 +373,12 @@ theorem not_isTorsionFree_iff : ¬IsTorsionFree G ↔ ∃ g : G, g ≠ 1 ∧ IsO
 lemma isTorsionFree_of_subsingleton [Subsingleton G] : IsTorsionFree G :=
   fun _a ha _ => ha <| Subsingleton.elim _ _
 
+@[to_additive]
+lemma isTorsionFree_iff_torsion_eq_bot {G} [CommGroup G] :
+    IsTorsionFree G ↔ CommGroup.torsion G = ⊥ := by
+  rw [IsTorsionFree, eq_bot_iff, SetLike.le_def]
+  simp [not_imp_not, CommGroup.mem_torsion]
+
 end Monoid
 
 section Group
