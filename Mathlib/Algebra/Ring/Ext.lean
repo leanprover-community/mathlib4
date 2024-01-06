@@ -130,6 +130,30 @@ theorem NonAssocSemiring.ext_iff (inst₁ inst₂ : NonAssocSemiring R) :
       ∧ (∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :=
   ⟨fun h ↦ by constructor <;> (intros; congr), And.elim (NonAssocSemiring.ext · ·)⟩
 
+/-! ### NonUnitalNonAssocRing -/
+
+@[ext] theorem NonUnitalNonAssocRing.ext ⦃inst₁ inst₂ : NonUnitalNonAssocRing R⦄
+    (h_add : ∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
+    (h_mul : ∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :
+    inst₁ = inst₂ := by
+  -- Split into `AddCommGroup` instance, `mul` function and properties.
+  rcases inst₁ with @⟨_, ⟨⟩⟩; rcases inst₂ with @⟨_, ⟨⟩⟩
+  congr <;> (ext; apply_assumption)
+
+theorem NonUnitalNonAssocRing.toNonUnitalNonAssocSemiring_injective :
+    Function.Injective (@NonUnitalNonAssocRing.toNonUnitalNonAssocSemiring R) := by
+  intro _ _ h
+  -- Use above extensionality lemma to prove injectivity by showing that `h_add` and `h_mul` hold.
+  ext a b
+  · exact congrArg (·.toAdd.add a b) h
+  · exact congrArg (·.toMul.mul a b) h
+
+theorem NonUnitalNonAssocRing.ext_iff (inst₁ inst₂ : NonUnitalNonAssocRing R) :
+    inst₁ = inst₂ ↔
+      (∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
+      ∧ (∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :=
+  ⟨fun h ↦ by constructor <;> (intros; congr), And.elim (NonUnitalNonAssocRing.ext · ·)⟩
+
 /-! ### Semiring -/
 
 @[ext] theorem Semiring.ext ⦃inst₁ inst₂ : Semiring R⦄
