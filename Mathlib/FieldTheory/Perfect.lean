@@ -224,7 +224,11 @@ theorem Algebra.IsAlgebraic.isSeparable_of_perfectField {K L : Type*} [Field K] 
     [Algebra K L] [PerfectField K] (halg : Algebra.IsAlgebraic K L) : IsSeparable K L :=
   ⟨fun x ↦ PerfectField.separable_of_irreducible <| minpoly.irreducible (halg x).isIntegral⟩
 
--- TODO:
 /-- If `L / K` is an algebraic extension, `K` is a perfect field, then so is `L`. -/
-proof_wanted Algebra.IsAlgebraic.perfectField {K L : Type*} [Field K] [Field L]
-    [Algebra K L] [PerfectField K] (halg : Algebra.IsAlgebraic K L) : PerfectField L
+theorem Algebra.IsAlgebraic.perfectField {K L : Type*} [Field K] [Field L] [Algebra K L]
+    [PerfectField K] (halg : Algebra.IsAlgebraic K L) : PerfectField L := ⟨fun {f} hf ↦
+  haveI := Fact.mk hf
+  have h := hf.ne_zero
+  have h2 := isIntegral_trans halg.isIntegral _ (AdjoinRoot.isIntegral_root h)
+  have h3 := (AdjoinRoot.minpoly_root h) ▸ minpoly.dvd_map_of_isScalarTower K L (AdjoinRoot.root f)
+  (PerfectField.separable_of_irreducible (minpoly.irreducible h2)).map |>.of_dvd h3 |>.of_mul_left⟩

@@ -198,11 +198,19 @@ class IsSepClosure [Algebra k K] : Prop where
 instance IsSepClosure.self_of_isSepClosed [IsSepClosed k] : IsSepClosure k k :=
   ⟨by assumption, isSeparable_self k⟩
 
--- TODO: depends on `Algebra.IsAlgebraic.perfectField`
+/-- If `K` is perfect and is a separable closure of `k`,
+then it is also an algebraic closure of `k`. -/
+instance IsSepClosure.isAlgClosure_of_perfectField_top
+    [Algebra k K] [IsSepClosure k K] [PerfectField K] : IsAlgClosure k K :=
+  haveI : IsSepClosed K := IsSepClosure.sep_closed k
+  ⟨inferInstance, IsSepClosure.separable.isAlgebraic⟩
+
 /-- If `k` is perfect, `K` is a separable closure of `k`,
 then it is also an algebraic closure of `k`. -/
-proof_wanted IsSepClosure.isAlgClosure_of_perfectField
-    [Algebra k K] [IsSepClosure k K] [PerfectField k] : IsAlgClosure k K
+instance IsSepClosure.isAlgClosure_of_perfectField
+    [Algebra k K] [IsSepClosure k K] [PerfectField k] : IsAlgClosure k K :=
+  have halg : Algebra.IsAlgebraic k K := IsSepClosure.separable.isAlgebraic
+  haveI := halg.perfectField; inferInstance
 
 /-- If `k` is perfect, `K` is an algebraic closure of `k`,
 then it is also a separable closure of `k`. -/
