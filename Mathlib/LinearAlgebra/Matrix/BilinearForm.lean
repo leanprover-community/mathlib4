@@ -71,9 +71,8 @@ def Matrix.toBilin'Aux [Fintype n] (M : Matrix n n R₂) : BilinForm R₂ (n →
 
 theorem Matrix.toBilin'Aux_stdBasis [Fintype n] [DecidableEq n] (M : Matrix n n R₂) (i j : n) :
     M.toBilin'Aux (LinearMap.stdBasis R₂ (fun _ => R₂) i 1)
-      (LinearMap.stdBasis R₂ (fun _ => R₂) j 1) = M i j := by
-  rw [Matrix.toBilin'Aux]
-  apply Matrix.toLinearMap₂'Aux_stdBasis
+      (LinearMap.stdBasis R₂ (fun _ => R₂) j 1) = M i j :=
+  Matrix.toLinearMap₂'Aux_stdBasis _ _ _ _ _
 #align matrix.to_bilin'_aux_std_basis Matrix.toBilin'Aux_stdBasis
 
 /-- The linear map from bilinear forms to `Matrix n n R` given an `n`-indexed basis.
@@ -87,7 +86,7 @@ def BilinForm.toMatrixAux (b : n → M₂) : BilinForm R₂ M₂ →ₗ[R₂] Ma
 theorem BilinForm.toMatrixAux_apply (B : BilinForm R₂ M₂) (b : n → M₂) (i j : n) :
     -- porting note: had to hint the base ring even though it should be clear from context...
     BilinForm.toMatrixAux (R₂ := R₂) b B i j = B (b i) (b j) :=
-  rfl
+  LinearMap.toMatrix₂Aux_apply (toLin B) _ _ _ _
 #align bilin_form.to_matrix_aux_apply BilinForm.toMatrixAux_apply
 
 variable [Fintype n] [Fintype o]
