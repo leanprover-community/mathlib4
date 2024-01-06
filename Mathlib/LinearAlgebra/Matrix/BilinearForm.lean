@@ -305,8 +305,7 @@ theorem Matrix.toBilin_basisFun : Matrix.toBilin (Pi.basisFun R₂ n) = Matrix.t
 
 theorem BilinForm.toMatrix_basisFun :
     BilinForm.toMatrix (Pi.basisFun R₂ n) = BilinForm.toMatrix' := by
-  ext B
-  rw [BilinForm.toMatrix_apply, BilinForm.toMatrix'_apply, Pi.basisFun_apply, Pi.basisFun_apply]
+ rw [BilinForm.toMatrix, BilinForm.toMatrix', LinearMap.toMatrix₂_basisFun]
 #align bilin_form.to_matrix_basis_fun BilinForm.toMatrix_basisFun
 
 @[simp]
