@@ -113,14 +113,7 @@ variable [DecidableEq n] [DecidableEq o]
 
 /-- The linear equivalence between bilinear forms on `n → R` and `n × n` matrices -/
 def BilinForm.toMatrix' : BilinForm R₂ (n → R₂) ≃ₗ[R₂] Matrix n n R₂ :=
-  { BilinForm.toMatrixAux fun j =>
-      stdBasis R₂ (fun _ => R₂) j
-        1 with
-    invFun := Matrix.toBilin'Aux
-    left_inv := fun B ↦ by convert toBilin'Aux_toMatrixAux B
-    right_inv := fun M => by
-      ext i j
-      simp only [toFun_eq_coe, BilinForm.toMatrixAux_apply, Matrix.toBilin'Aux_stdBasis] }
+  BilinForm.toLin ≪≫ₗ  LinearMap.toMatrix₂'
 #align bilin_form.to_matrix' BilinForm.toMatrix'
 
 @[simp]
