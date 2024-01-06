@@ -396,3 +396,111 @@ lemma finrank_of_isSplittingField_X_pow_sub_C : FiniteDimensional.finrank K L = 
     (mem_primitiveRoots hn).mp hζ.choose_spec).toEquiv.trans Multiplicative.toAdd), ZMod.card]
 
 end IsSplittingField
+
+/-! ### Cyclic extensions of order `n` when `K` has all `n`-th roots of unity. -/
+
+section IsCyclic
+
+variable {L} [Field L] [Algebra K L] [IsGalois K L] [FiniteDimensional K L] [IsCyclic (L ≃ₐ[K] L)]
+variable (hK : (primitiveRoots (FiniteDimensional.finrank K L) K).Nonempty)
+
+open BigOperators FiniteDimensional
+variable (K L)
+
+/-- If `L/K` is a cyclic extension of degree `n`, and `K` contains all `n`-th roots of unity,
+then `L = K[α]` for some `α ^ n ∈ K`. -/
+lemma exists_root_adjoin_eq_top_of_isCyclic :
+    ∃ (α : L), α ^ (finrank K L) ∈ Set.range (algebraMap K L) ∧ K⟮α⟯ = ⊤ := by
+  -- Let `ζ` be an `n`-th root of unity, and `σ` be a generator of `L ≃ₐ[K] L`.
+  have ⟨ζ, hζ⟩ := hK
+  rw [mem_primitiveRoots finrank_pos] at hζ
+  obtain ⟨σ, hσ⟩ := ‹IsCyclic (L ≃ₐ[K] L)›
+  have hσ' := orderOf_eq_card_of_forall_mem_zpowers hσ
+  -- Since the minimal polynomial of `σ` over `K` is `Xⁿ - 1`,
+  -- `σ` has an eigenvector `v` with eigenvalue `ζ`.
+  have : IsRoot (minpoly K σ.toLinearMap) ζ := by
+    simpa [minpoly_algEquiv_toLinearMap σ (isOfFinOrder_of_finite σ), hσ',
+      sub_eq_zero, IsGalois.card_aut_eq_finrank] using hζ.pow_eq_one
+  obtain ⟨v, hv⟩ := (Module.End.hasEigenvalue_of_isRoot this).exists_hasEigenvector
+  have hv' := hv.pow_apply
+  simp_rw [← AlgEquiv.pow_toLinearMap, AlgEquiv.toLinearMap_apply] at hv'
+  -- We claim that `v` is the desired root.
+  refine ⟨v, ?_, ?_⟩
+  · -- Since `v ^ n` is fixed by `σ` (`σ (v ^ n) = ζ ^ n • v ^ n = v ^ n`), it is in `K`.
+    rw [← IntermediateField.mem_bot,
+      ← OrderIso.map_bot IsGalois.intermediateFieldEquivSubgroup.symm]
+    intro ⟨σ', hσ'⟩
+    obtain ⟨n, rfl : σ ^ n = σ'⟩ := mem_powers_iff_mem_zpowers.mpr (hσ σ')
+    rw [smul_pow', Submonoid.smul_def, AlgEquiv.smul_def, hv', smul_pow, ← pow_mul,
+      mul_comm, pow_mul, hζ.pow_eq_one, one_pow, one_smul]
+  · -- Since `σ` does not fix `K⟮α⟯`, `K⟮α⟯` is `L`.
+    apply IsGalois.intermediateFieldEquivSubgroup.injective
+    rw [map_top, eq_top_iff]
+    intros σ' hσ'
+    obtain ⟨n, rfl : σ ^ n = σ'⟩ := mem_powers_iff_mem_zpowers.mpr (hσ σ')
+    have := hσ' ⟨v, IntermediateField.mem_adjoin_simple_self K v⟩
+    simp only [AlgEquiv.smul_def, hv'] at this
+    conv_rhs at this => rw [← one_smul K v]
+    obtain ⟨k, rfl⟩ := hζ.dvd_of_pow_eq_one n (smul_left_injective K hv.2 this)
+    rw [pow_mul, ← IsGalois.card_aut_eq_finrank, pow_card_eq_one, one_pow]
+    exact one_mem _
+
+variable {K L}
+
+lemma irreducible_X_pow_sub_C_of_root_adjoin_eq_top
+    {a : K} {α : L} (ha : α ^ (finrank K L) = algebraMap K L a) (hα : K⟮α⟯ = ⊤) :
+    Irreducible (X ^ (finrank K L) - C a) := by
+  have : X ^ (finrank K L) - C a = minpoly K α
+  · refine minpoly.unique _ _ (monic_X_pow_sub_C _ finrank_pos.ne.symm) ?_ ?_
+    · simp only [aeval_def, eval₂_sub, eval₂_X_pow, ha, eval₂_C, sub_self]
+    · intros q hq hq'
+      refine le_trans ?_ (degree_le_of_dvd (minpoly.dvd _ _ hq') hq.ne_zero)
+      rw [degree_X_pow_sub_C finrank_pos,
+        degree_eq_natDegree (minpoly.ne_zero (IsIntegral.of_finite K α)),
+        ← IntermediateField.adjoin.finrank (IsIntegral.of_finite K α), hα, Nat.cast_le]
+      exact (finrank_top K L).ge
+  exact this ▸ minpoly.irreducible (IsIntegral.of_finite K α)
+
+lemma isSplittingField_X_pow_sub_C_of_root_adjoin_eq_top
+    {a : K} {α : L} (ha : α ^ (finrank K L) = algebraMap K L a) (hα : K⟮α⟯ = ⊤) :
+    IsSplittingField K L (X ^ (finrank K L) - C a) := by
+  constructor
+  · rw [← splits_id_iff_splits, Polynomial.map_sub, Polynomial.map_pow, Polynomial.map_C,
+      Polynomial.map_X]
+    have ⟨_, hζ⟩ := hK
+    rw [mem_primitiveRoots finrank_pos] at hζ
+    exact X_pow_sub_C_splits_of_isPrimitiveRoot (hζ.map_of_injective (algebraMap K _).injective) ha
+  · rw [eq_top_iff, ← IntermediateField.top_toSubalgebra, ← hα,
+      IntermediateField.adjoin_simple_toSubalgebra_of_integral (IsIntegral.of_finite K α)]
+    apply Algebra.adjoin_mono
+    rw [Set.singleton_subset_iff, mem_rootSet_of_ne (X_pow_sub_C_ne_zero finrank_pos a),
+      aeval_def, eval₂_sub, eval₂_X_pow, eval₂_C, ha, sub_self]
+
+end IsCyclic
+
+open FiniteDimensional in
+/--
+Suppose `L/K` is a finite extension of dimension `n`, and `K` contains all `n`-th roots of unity.
+Then `L/K` is cyclic iff
+`L` is a splitting field of some irreducible polynomial of the form `Xⁿ - a : K[X]` iff
+`L = K[α]` for some `αⁿ ∈ K`.
+-/
+lemma isCyclic_tfae (K L) [Field K] [Field L] [Algebra K L] [FiniteDimensional K L]
+    (hK : (primitiveRoots (FiniteDimensional.finrank K L) K).Nonempty) :
+    List.TFAE [
+      IsGalois K L ∧ IsCyclic (L ≃ₐ[K] L),
+      ∃ a : K, Irreducible (X ^ (finrank K L) - C a) ∧
+        IsSplittingField K L (X ^ (finrank K L) - C a),
+      ∃ (α : L), α ^ (finrank K L) ∈ Set.range (algebraMap K L) ∧ K⟮α⟯ = ⊤] := by
+  tfae_have 1 → 3
+  · intro ⟨inst₁, inst₂⟩
+    exact exists_root_adjoin_eq_top_of_isCyclic K L hK
+  tfae_have 3 → 2
+  · intro ⟨α, ⟨a, ha⟩, hα⟩
+    exact ⟨a, irreducible_X_pow_sub_C_of_root_adjoin_eq_top ha.symm hα,
+      isSplittingField_X_pow_sub_C_of_root_adjoin_eq_top hK ha.symm hα⟩
+  tfae_have 2 → 1
+  · intro ⟨a, H, inst⟩
+    exact ⟨isGalois_of_isSplittingField_X_pow_sub_C hK H L,
+      isCyclic_of_isSplittingField_X_pow_sub_C hK H L⟩
+  tfae_finish
