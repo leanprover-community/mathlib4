@@ -901,7 +901,7 @@ theorem comap_boundedBy {β} (f : β → α)
     exact (@H ⟨s, hs⟩ ⟨t, ht⟩ hst).trans (le_iSup (fun _ : t.Nonempty => m t) ht)
   · dsimp only [boundedBy]
     congr with s : 1
-    rw [nonempty_image_iff]
+    rw [image_nonempty]
 #align measure_theory.outer_measure.comap_bounded_by MeasureTheory.OuterMeasure.comap_boundedBy
 
 /-- If `m u = ∞` for any set `u` that has nonempty intersection both with `s` and `t`, then

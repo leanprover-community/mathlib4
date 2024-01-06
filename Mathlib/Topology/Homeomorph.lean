@@ -307,7 +307,7 @@ theorem isPreconnected_preimage {s : Set Y} (h : X ≃ₜ Y) :
 @[simp]
 theorem isConnected_image {s : Set X} (h : X ≃ₜ Y) :
     IsConnected (h '' s) ↔ IsConnected s :=
-  nonempty_image_iff.and h.isPreconnected_image
+  image_nonempty.and h.isPreconnected_image
 
 @[simp]
 theorem isConnected_preimage {s : Set Y} (h : X ≃ₜ Y) :
