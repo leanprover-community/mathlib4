@@ -1,4 +1,6 @@
 /-
+Copyright (c) 2023 Raghuram Sundararajan. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Raghuram Sundararajan
 -/
 import Mathlib.Algebra.Ring.Defs
