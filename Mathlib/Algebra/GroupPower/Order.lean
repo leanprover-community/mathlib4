@@ -309,8 +309,8 @@ protected lemma Even.add_pow_le (hn : ∃ k, 2 * k = n) :
     _ ≤ (2 * (a ^ 2 + b ^ 2)) ^ n := pow_le_pow_left (sq_nonneg _) add_sq_le _
     _ = 2 ^ n * (a ^ 2 + b ^ 2) ^ n := by -- TODO: Should be `Nat.cast_commute`
         rw [Commute.mul_pow]; simp [Commute, SemiconjBy, two_mul, mul_two]
-    _ ≤ 2 ^ n * (2 ^ (n - 1) * ((a ^ 2) ^ n + (b ^ 2) ^ n)) :=
-        mul_le_mul_of_nonneg_left (add_pow_le (sq_nonneg _) (sq_nonneg _) _) $ pow_nonneg (zero_le_two (α := R)) _
+    _ ≤ 2 ^ n * (2 ^ (n - 1) * ((a ^ 2) ^ n + (b ^ 2) ^ n)) := mul_le_mul_of_nonneg_left
+          (add_pow_le (sq_nonneg _) (sq_nonneg _) _) $ pow_nonneg (zero_le_two (α := R)) _
     _ = _ := by simp only [← mul_assoc, ← pow_add, ← pow_mul]; cases n; rfl; simp [two_mul]
 
 end LinearOrderedSemiring
