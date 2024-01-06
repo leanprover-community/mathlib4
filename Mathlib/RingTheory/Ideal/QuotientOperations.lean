@@ -90,11 +90,7 @@ noncomputable def quotientKerEquivOfSurjective (hf : Function.Surjective f) : R 
 
 /-- The **first isomorphism theorem** for commutative rings (Semiring target). -/
 noncomputable def quotientKerEquivRangeS (f : R →+* S) : R ⧸ ker f ≃+* f.rangeS :=
-  (Ideal.quotEquivOfEq (by
-    ext r
-    simp only [mem_ker]
-    rw [← Subtype.coe_inj, coe_rangeSRestrict, ZeroMemClass.coe_zero]
-    )).trans <|
+  (Ideal.quotEquivOfEq f.ker_rangeSRestrict.symm).trans <|
   quotientKerEquivOfSurjective f.rangeSRestrict_surjective
 
 variable {S : Type v} [Ring S] (f : R →+* S)
