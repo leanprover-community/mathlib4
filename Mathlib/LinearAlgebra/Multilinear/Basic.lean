@@ -775,7 +775,7 @@ of degree `1` in `f.linearDeriv`, which doesn't require a linear order on `ι`, 
 equivalence of the two definitions.-/
 
 lemma domDomRestrict_aux [DecidableEq ι] (s : Set ι) [(i : ι) → Decidable (i ∈ s)]
-    [DecidableEq s] (x : (i : s.compl)→ M₁ i) (z : (i : s) → M₁ i) (i : s)
+    [DecidableEq s] (x : (i : ↑sᶜ)→ M₁ i) (z : (i : s) → M₁ i) (i : s)
     (c : M₁ i) : (fun j ↦ if h : j ∈ s then Function.update z i c ⟨j, h⟩ else x ⟨j, h⟩) =
     Function.update (fun j => if h : j ∈ s then z ⟨j, h⟩ else x ⟨j, h⟩) i c := by
   ext j
