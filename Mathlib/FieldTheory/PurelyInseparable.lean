@@ -429,17 +429,6 @@ private theorem isPurelyInseparable_adjoin_finset_of_mem_pow (q : ℕ) [hF : Exp
   replace h := (isPurelyInseparable_adjoin_simple_iff_mem_pow L E q).2 ⟨n, (algebraMap F L) y, h⟩
   exact IsPurelyInseparable.trans F L L⟮x⟯
 
-variable {F E} in
--- TODO: move to Mathlib.FieldTheory.Adjoin
-lemma exists_finset_of_mem_adjoin {S : Set E} {x : E} (hx : x ∈ adjoin F S) :
-    ∃ T : Finset E, (T : Set E) ⊆ S ∧ x ∈ adjoin F (T : Set E) := by
-  simp_rw [← biSup_adjoin_simple S, ← iSup_subtype''] at hx
-  obtain ⟨s, hx'⟩ := exists_finset_of_mem_iSup hx
-  refine ⟨s.map ⟨Subtype.val, Subtype.val_injective⟩, by simp, SetLike.le_def.mp ?_ hx'⟩
-  simp_rw [Finset.coe_map, Function.Embedding.coeFn_mk, iSup_le_iff, adjoin_le_iff,
-    Set.le_eq_subset, Set.singleton_subset_iff, SetLike.mem_coe]
-  exact fun _ h ↦ subset_adjoin F _ <| Set.mem_image_of_mem Subtype.val h
-
 /-- If `F` is of exponential characteristic `q`, then `F(S) / F` is a purely inseparable extension
 if and only if for any `x ∈ S`, `x ^ (q ^ n)` is contained in `F` for some `n : ℕ`. -/
 theorem isPurelyInseparable_adjoin_iff_mem_pow (q : ℕ) [hF : ExpChar F q] {S : Set E} :
