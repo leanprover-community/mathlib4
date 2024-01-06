@@ -3,6 +3,8 @@ import Mathlib.Order.Sublattice
 import Mathlib.LinearAlgebra.EigenSpace.Basic
 import Mathlib.RingTheory.UniqueFactorizationDomain
 import Mathlib.LinearAlgebra.Charpoly.Basic
+import Mathlib.RingTheory.Ideal.Quotient
+import Mathlib.RingTheory.AdjoinRoot
 
 /-!
 # Jordan-Chevalley-Dunford decomposition of a linear operator (additive version)
@@ -224,6 +226,86 @@ theorem minpoly_squarefree_of_isSemisimple [Module.Finite K V]
       specialize this ⟨w', hw'⟩
       rw [← Subtype.coe_inj, aeval_restrict_apply] at this
       exact this
+
+section
+
+variable (p : K[X]) (hirr : Fact (Irreducible p)) (hdvd : p ∣ minpoly K f)
+
+noncomputable
+example : Field (K[X] ⧸ (Ideal.span {p})) := AdjoinRoot.field
+  /-
+  have : Ideal.IsMaximal (Ideal.span {p}) := AdjoinRoot.span_maximal_of_irreducible
+  refine Ideal.Quotient.field (Ideal.span {p}) -/
+
+
+section AdjoinRoot
+
+variable {R : Type*} [CommRing R] {S : Type*} [Ring S] [Algebra R S]
+
+/-- Lift a ring homomorphism `i : R →+* S` to `AdjoinRoot f →+* S`. -/
+example (i : R →+* S) (x : S) (h : f.eval₂ i x = 0) : AdjoinRoot f →+* S := by
+  apply Ideal.Quotient.lift _ (eval₂RingHom i x)
+  intro g H
+  rcases mem_span_singleton.1 H with ⟨y, hy⟩
+  rw [hy, RingHom.map_mul, coe_eval₂RingHom, h, zero_mul]
+#align adjoin_root.lift AdjoinRoot.lift
+
+end AdjoinRoot
+
+noncomputable
+def Ideal.module_of_quotient {R : Type*} [CommRing R] (I : Ideal R)
+    (V : Type*) [AddCommGroup V] [Module R V]
+    (h : ∀ a ∈ I, ∀ v : V, a • v = 0) : Module (R⧸I) V :=
+  let h' : ∀ (r s : R) (v : V), Ideal.Quotient.mk I s = Ideal.Quotient.mk I r → s • v = r • v :=
+    fun r s v hrs => by
+    rw [← sub_eq_zero, ← sub_smul]
+    exact h _ (Ideal.Quotient.eq.mp hrs) _
+  let smul_aux := fun (r : R⧸I) (v : V) => (Ideal.Quotient.mk_surjective r).choose • v
+  let smul_aux_eq : ∀ r v, smul_aux r v = (Ideal.Quotient.mk_surjective r).choose • v := fun _ _ => rfl
+  { smul := smul_aux
+    one_smul := fun v => by
+      conv_rhs => rw [← one_smul R v]
+      change smul_aux 1 v = _
+      rw [smul_aux_eq]
+      apply h'
+      rw [(Ideal.Quotient.mk_surjective (1 : R ⧸ I)).choose_spec, map_one]
+    mul_smul := fun r s v => by
+      change smul_aux (r * s) v = smul_aux r (smul_aux s v)
+      simp only [smul_aux_eq, ← mul_smul]
+      apply h'
+      simp only [map_mul]
+      simp only [(Ideal.Quotient.mk_surjective (_ : R ⧸ I)).choose_spec]
+    smul_zero := fun r => by
+      change smul_aux _ _ = 0
+      rw [smul_aux_eq, smul_zero]
+    smul_add := fun r v w => by
+      change smul_aux _ _ = smul_aux _ _ + smul_aux _ _
+      simp only [smul_aux_eq, ← smul_add]
+    add_smul := fun r s v => by
+      change smul_aux _ _ = smul_aux _ _ + smul_aux _ _
+      simp only [smul_aux_eq, ← add_smul]
+      apply h'
+      simp only [map_add]
+      simp only [(Ideal.Quotient.mk_surjective (_ : R ⧸ I)).choose_spec]
+    zero_smul := fun v => by
+      change smul_aux _ _ = _
+      simp only [smul_aux_eq]
+      conv_rhs => rw [← zero_smul R v]
+      apply h'
+      simp only [(Ideal.Quotient.mk_surjective (_ : R ⧸ I)).choose_spec, map_zero] }
+
+example (f : V →ₗ[K] V) : Module K[X] V where
+  smul p v := Polynomial.aeval f p v
+  one_smul := sorry
+  mul_smul := sorry
+  smul_zero := sorry
+  smul_add := sorry
+  add_smul := sorry
+  zero_smul := sorry
+
+example (f : V →ₗ[K] V) (p : K[X]) (hp : minpoly K f ∣ p) :
+    Module (AdjoinRoot p) V := by
+  sorry
 
 variable [PerfectField K] [FiniteDimensional K V]
 
