@@ -73,6 +73,16 @@ theorem isOfFinOrder_iff_pow_eq_one : IsOfFinOrder x ↔ ∃ n, 0 < n ∧ x ^ n 
 
 @[to_additive] alias ⟨IsOfFinOrder.exists_pow_eq_one, _⟩ := isOfFinOrder_iff_pow_eq_one
 
+@[to_additive]
+lemma isOfFinOrder_iff_zpow_eq_one {G} [Group G] {x : G} :
+    IsOfFinOrder x ↔ ∃ (n : ℤ), n ≠ 0 ∧ x ^ n = 1 := by
+  rw [isOfFinOrder_iff_pow_eq_one]
+  refine ⟨fun ⟨n, hn, hn'⟩ ↦ ⟨n, Int.coe_nat_ne_zero_iff_pos.mpr hn, zpow_coe_nat x n ▸ hn'⟩,
+    fun ⟨n, hn, hn'⟩ ↦ ⟨n.natAbs, Int.natAbs_pos.mpr hn, ?_⟩⟩
+  cases' (Int.natAbs_eq_iff (a := n)).mp rfl with h h;
+  · rwa [h, zpow_coe_nat] at hn'
+  · rwa [h, zpow_neg, inv_eq_one, zpow_coe_nat] at hn'
+
 /-- See also `injective_pow_iff_not_isOfFinOrder`. -/
 @[to_additive "See also `injective_nsmul_iff_not_isOfFinAddOrder`."]
 theorem not_isOfFinOrder_of_injective_pow {x : G} (h : Injective fun n : ℕ => x ^ n) :
