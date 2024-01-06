@@ -90,21 +90,25 @@ section MonoidExponent
 The period of a given element `m : M` can be bounded by the `Monoid.exponent M` or `orderOf m`.
 -/
 
+@[to_additive]
 theorem period_pos_of_orderOf_pos {m : M} (order_pos : 0 < orderOf m) (a : α):
     0 < period m a := by
   apply period_pos_of_fixed order_pos
   rw [pow_orderOf_eq_one, one_smul]
 
+@[to_additive]
 theorem period_le_orderOf {m : M} (order_pos : 0 < orderOf m) (a : α):
     period m a ≤ orderOf m := by
   apply period_le_of_fixed order_pos
   rw [pow_orderOf_eq_one, one_smul]
 
+@[to_additive]
 theorem period_pos_of_exponent_pos (exp_pos : 0 < Monoid.exponent M) (m : M) (a : α) :
     0 < period m a := by
   apply period_pos_of_fixed exp_pos
   rw [Monoid.pow_exponent_eq_one, one_smul]
 
+@[to_additive]
 theorem period_le_exponent (exp_pos : 0 < Monoid.exponent M) (m : M) (a : α) :
     period m a ≤ Monoid.exponent M := by
   apply period_le_of_fixed exp_pos
@@ -112,6 +116,7 @@ theorem period_le_exponent (exp_pos : 0 < Monoid.exponent M) (m : M) (a : α) :
 
 variable (α)
 
+@[to_additive]
 theorem period_bounded_of_exponent_pos (exp_pos : 0 < Monoid.exponent M) (m : M) :
     BddAbove (Set.range (fun a : α => period m a)) := by
   use Monoid.exponent M
@@ -119,5 +124,39 @@ theorem period_bounded_of_exponent_pos (exp_pos : 0 < Monoid.exponent M) (m : M)
   apply period_le_exponent exp_pos
 
 end MonoidExponent
+
+section Divides
+
+/-! ## Multiples of `MulAction.period` in groups
+
+In a group, all exponents/multiples `n` will be a multiple of `period g a`
+if `g ^ n • a = a` (resp. `(n • g) +ᵥ a = a`).
+-/
+
+-- TODO: actually move the implementations of `pow_smul_eq_iff_minimalPeriod_dvd` & others here
+
+@[to_additive]
+theorem pow_smul_eq_iff_period_dvd {n : ℕ} {g : G} {a : α}:
+    g ^ n • a = a ↔ period g a ∣ n := by
+  rw [pow_smul_eq_iff_minimalPeriod_dvd]
+  rfl
+
+@[to_additive]
+theorem zpow_smul_eq_iff_period_dvd {j : ℤ} {g : G} {a : α}:
+    g ^ j • a = a ↔ (period g a : ℤ) ∣ j := by
+  rw [zpow_smul_eq_iff_minimalPeriod_dvd]
+  rfl
+
+@[to_additive (attr := simp)]
+theorem pow_smul_mod_period (n : ℕ) {g : G} {a : α}:
+    g ^ (n % period g a) • a = g ^ n • a := by
+  rw [period_eq_minimalPeriod, pow_smul_mod_minimalPeriod]
+
+@[to_additive (attr := simp)]
+theorem zpow_smul_mod_period (n : ℤ) {g : G} {a : α}:
+    g ^ (n % (period g a : ℤ)) • a = g ^ n • a := by
+  rw [period_eq_minimalPeriod, zpow_smul_mod_minimalPeriod]
+
+end Divides
 
 end MulAction
