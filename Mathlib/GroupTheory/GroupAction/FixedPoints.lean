@@ -44,9 +44,9 @@ theorem fixedBy_eq_fixedBy_inv (g : G) : fixedBy α g = fixedBy α g⁻¹ := by
   ext x
   repeat rw [mem_fixedBy]
   constructor
-  all_goals (intro gx_eq_x; nth_rw 1 [<-gx_eq_x])
+  all_goals (intro gx_eq_x; nth_rw 1 [← gx_eq_x])
   · exact inv_smul_smul g x
-  · rw [<-mul_smul, mul_right_inv, one_smul]
+  · rw [← mul_smul, mul_right_inv, one_smul]
 
 @[to_additive]
 theorem smul_mem_fixedBy_iff_mem_fixedBy {a : α} {g : G} :
@@ -117,7 +117,7 @@ theorem movedBy_eq_compl_fixedBy {m : M} : movedBy α m = (fixedBy α m)ᶜ := r
 
 @[to_additive]
 theorem fixedBy_eq_compl_movedBy {m : M} : fixedBy α m = (movedBy α m)ᶜ := by
-  rw [<-compl_compl (fixedBy α m), movedBy_eq_compl_fixedBy]
+  rw [← compl_compl (fixedBy α m), movedBy_eq_compl_fixedBy]
 
 @[to_additive]
 theorem not_mem_fixedBy_iff_mem_movedBy {m : M} {a : α} : a ∉ fixedBy α m ↔ a ∈ movedBy α m :=
@@ -140,7 +140,7 @@ variable {α}
 @[to_additive]
 theorem smul_mem_movedBy_iff_mem_movedBy {a : α} {g : G} :
     g • a ∈ movedBy α g ↔ a ∈ movedBy α g := by
-  repeat rw [<-not_mem_fixedBy_iff_mem_movedBy]
+  repeat rw [← not_mem_fixedBy_iff_mem_movedBy]
   rw [smul_mem_fixedBy_iff_mem_fixedBy]
 
 @[to_additive]
@@ -166,7 +166,7 @@ variable {M}
 @[to_additive]
 theorem movedBy_mul (m₁ m₂ : M) : movedBy α (m₁ * m₂) ⊆ movedBy α m₁ ∪ movedBy α m₂ := by
   repeat rw [movedBy_eq_compl_fixedBy]
-  rw [<-Set.compl_inter, Set.compl_subset_compl]
+  rw [← Set.compl_inter, Set.compl_subset_compl]
   exact fixedBy_mul α m₁ m₂
 
 @[to_additive]
@@ -212,7 +212,7 @@ theorem smul_pow_preimage_eq_of_movedBy_subset {s : Set α} {g : G} (superset : 
 @[to_additive]
 theorem smul_pow_subset_of_movedBy_subset {s t : Set α} {g : G}  (t_superset : movedBy α g ⊆ t)
     (s_ss_t : s ⊆ t) (j : ℤ): (fun a => g^j • a) ⁻¹' s ⊆ t := by
-  rw [<-smul_pow_preimage_eq_of_movedBy_subset t_superset j]
+  rw [← smul_pow_preimage_eq_of_movedBy_subset t_superset j]
   repeat rw [Set.preimage_smul]
   exact Set.smul_set_mono s_ss_t
 
@@ -222,11 +222,11 @@ theorem smul_pow_mem_fixedBy_of_commute {g h : G} (comm : Commute g h) (x : α) 
     x ∈ fixedBy α g ↔ h^j • x ∈ fixedBy α g := by
   suffices ∀ x : α, ∀ h : G, Commute g h → x ∈ fixedBy α g → h^j • x ∈ fixedBy α g by
     refine ⟨this x h comm, fun hx_in_fixedBy => ?x_in_fixedBy⟩
-    have h₁ : x = h⁻¹^j • h^j • x := by rw [<-mul_smul, inv_zpow', zpow_neg, mul_left_inv, one_smul]
+    have h₁ : x = h⁻¹^j • h^j • x := by rw [← mul_smul, inv_zpow', zpow_neg, mul_left_inv, one_smul]
     rw [h₁]
     exact this _ _ comm.inv_right hx_in_fixedBy
   intro x h comm x_in_fixedBy
-  rw [mem_fixedBy, <-mul_smul]
+  rw [mem_fixedBy, ← mul_smul]
   rw [Commute.zpow_right comm j]
   rw [mul_smul, smul_left_cancel_iff]
   exact x_in_fixedBy
@@ -267,7 +267,7 @@ theorem movedBy_empty_iff_eq_one {m : M} : movedBy α m = ∅ ↔ m = 1 := ⟨
     intro a
     rw [one_smul]
     by_contra ma_ne_a
-    rwa [<-ne_eq, <-mem_movedBy, moved_empty] at ma_ne_a
+    rwa [← ne_eq, ← mem_movedBy, moved_empty] at ma_ne_a
   ),
   fun eq_one => eq_one.symm ▸ movedBy_one_eq_empty α M
 ⟩
