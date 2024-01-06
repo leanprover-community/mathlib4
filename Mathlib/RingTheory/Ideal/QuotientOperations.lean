@@ -23,7 +23,7 @@ universe u v w
 
 namespace RingHom
 
-variable {R : Type u} {S : Type v} [CommRing R] [CommRing S] (f : R →+* S)
+variable {R : Type u} {S : Type v} [CommRing R] [Semiring S] (f : R →+* S)
 
 /-- The induced map from the quotient by the kernel to the codomain.
 
@@ -39,12 +39,6 @@ theorem kerLift_mk (f : R →+* S) (r : R) : kerLift f (Ideal.Quotient.mk (ker f
   Ideal.Quotient.lift_mk _ _ _
 #align ring_hom.ker_lift_mk RingHom.kerLift_mk
 
-/-- The induced map from the quotient by the kernel is injective. -/
-theorem kerLift_injective (f : R →+* S) : Function.Injective (kerLift f) := fun a b =>
-  Quotient.inductionOn₂' a b fun a b (h : f a = f b) =>
-    Ideal.Quotient.eq.2 <| show a - b ∈ ker f by rw [mem_ker, map_sub, h, sub_self]
-#align ring_hom.ker_lift_injective RingHom.kerLift_injective
-
 theorem lift_injective_of_ker_le_ideal (I : Ideal R) {f : R →+* S} (H : ∀ a : R, a ∈ I → f a = 0)
     (hI : ker f ≤ I) : Function.Injective (Ideal.Quotient.lift I f H) := by
   rw [RingHom.injective_iff_ker_eq_bot, RingHom.ker_eq_bot_iff_eq_zero]
@@ -55,9 +49,15 @@ theorem lift_injective_of_ker_le_ideal (I : Ideal R) {f : R →+* S} (H : ∀ a 
   exact hI ((RingHom.mem_ker f).mpr hu)
 #align ring_hom.lift_injective_of_ker_le_ideal RingHom.lift_injective_of_ker_le_ideal
 
+/-- The induced map from the quotient by the kernel is injective. -/
+theorem kerLift_injective [Semiring S] (f : R →+* S) : Function.Injective (kerLift f) :=
+  lift_injective_of_ker_le_ideal (ker f)
+    (fun a => by simp only [mem_ker, imp_self]) (Eq.le rfl)
+#align ring_hom.ker_lift_injective RingHom.kerLift_injective
+
+
 variable {f}
 
-/-- The **first isomorphism theorem for commutative rings**, computable version. -/
 def quotientKerEquivOfRightInverse {g : S → R} (hf : Function.RightInverse g f) :
     R ⧸ ker f ≃+* S :=
   { kerLift f with
@@ -69,7 +69,6 @@ def quotientKerEquivOfRightInverse {g : S → R} (hf : Function.RightInverse g f
       simp only [Submodule.Quotient.quot_mk_eq_mk, Ideal.Quotient.mk_eq_mk, kerLift_mk,
         Function.comp_apply, hf (f x)]
     right_inv := hf }
-#align ring_hom.quotient_ker_equiv_of_right_inverse RingHom.quotientKerEquivOfRightInverse
 
 @[simp]
 theorem quotientKerEquivOfRightInverse.apply {g : S → R} (hf : Function.RightInverse g f)
@@ -88,6 +87,17 @@ noncomputable def quotientKerEquivOfSurjective (hf : Function.Surjective f) : R 
   quotientKerEquivOfRightInverse (Classical.choose_spec hf.hasRightInverse)
 #align ring_hom.quotient_ker_equiv_of_surjective RingHom.quotientKerEquivOfSurjective
 
+/-- The **first isomorphism theorem** for commutative rings (Semiring target). -/
+noncomputable def quotientKerEquivRangeS (f : R →+* S) : R ⧸ ker f ≃+* f.rangeS :=
+  (Ideal.quotEquivOfEq (by
+    ext r
+    simp only [mem_ker]
+    rw [← Subtype.coe_inj, coe_rangeSRestrict, ZeroMemClass.coe_zero]
+    )).trans <|
+  quotientKerEquivOfSurjective f.rangeSRestrict_surjective
+
+variable {S : Type v} [Ring S] (f : R →+* S)
+
 /-- The **first isomorphism theorem** for commutative rings. -/
 noncomputable def quotientKerEquivRange (f : R →+* S) : R ⧸ ker f ≃+* f.range :=
   (Ideal.quotEquivOfEq f.ker_rangeRestrict.symm).trans <|
@@ -98,7 +108,7 @@ end RingHom
 namespace Ideal
 open Function RingHom
 
-variable {R : Type u} {S : Type v} {F : Type w} [CommRing R] [CommRing S]
+variable {R : Type u} {S : Type v} {F : Type w} [CommRing R] [Semiring S]
 
 @[simp]
 theorem map_quotient_self (I : Ideal R) : map (Quotient.mk I) I = ⊥ :=
@@ -121,7 +131,7 @@ theorem map_mk_eq_bot_of_le {I J : Ideal R} (h : I ≤ J) : I.map (Quotient.mk J
   exact h
 #align ideal.map_mk_eq_bot_of_le Ideal.map_mk_eq_bot_of_le
 
-theorem ker_quotient_lift {S : Type v} [CommRing S] {I : Ideal R} (f : R →+* S)
+theorem ker_quotient_lift {I : Ideal R} (f : R →+* S)
     (H : I ≤ ker f) :
     ker (Ideal.Quotient.lift I f H) = f.ker.map (Quotient.mk I) := by
   apply Ideal.ext
@@ -450,6 +460,9 @@ noncomputable def quotientKerAlgEquivOfSurjective {f : A →ₐ[R₁] B} (hf : F
   quotientKerAlgEquivOfRightInverse (Classical.choose_spec hf.hasRightInverse)
 #align ideal.quotient_ker_alg_equiv_of_surjective Ideal.quotientKerAlgEquivOfSurjective
 
+section CommRing_CommRing
+
+variable {S : Type v} [CommRing S]
 /-- The ring hom `R/I →+* S/J` induced by a ring hom `f : R →+* S` with `I ≤ f⁻¹(J)` -/
 def quotientMap {I : Ideal R} (J : Ideal S) (f : R →+* S) (hIJ : I ≤ J.comap f) : R ⧸ I →+* S ⧸ J :=
   Quotient.lift I ((Quotient.mk J).comp f) fun _ ha => by
@@ -548,6 +561,8 @@ theorem comp_quotientMap_eq_of_comp_eq {R' S' : Type*} [CommRing R'] [CommRing S
   exact (Ideal.Quotient.mk I).congr_arg (_root_.trans (g'.comp_apply f r).symm
     (hfg ▸ f'.comp_apply g r))
 #align ideal.comp_quotient_map_eq_of_comp_eq Ideal.comp_quotientMap_eq_of_comp_eq
+
+end CommRing_CommRing
 
 /-- The algebra hom `A/I →+* B/J` induced by an algebra hom `f : A →ₐ[R₁] B` with `I ≤ f⁻¹(J)`. -/
 def quotientMapₐ {I : Ideal A} (J : Ideal B) (f : A →ₐ[R₁] B) (hIJ : I ≤ J.comap f) :
