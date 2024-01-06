@@ -167,7 +167,11 @@ theorem NonUnitalNonAssocRing.ext_iff (inst₁ inst₂ : NonUnitalNonAssocRing R
     (h_add : ∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
     (h_mul : ∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :
     inst₁ = inst₂ := by
-  sorry
+  have : inst₁.toNonUnitalNonAssocRing = inst₂.toNonUnitalNonAssocRing := by
+    ext <;> apply_assumption
+  -- Split into fields and prove they are equal using the above.
+  cases inst₁; cases inst₂
+  congr
 
 theorem NonUnitalRing.toNonUnitalSemiring_injective :
     Function.Injective (@NonUnitalRing.toNonUnitalSemiring R) := by
