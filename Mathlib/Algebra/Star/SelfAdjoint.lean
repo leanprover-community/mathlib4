@@ -234,8 +234,7 @@ variable {α : Type*} [CommSemiring α] [StarRing α] {a : α}
 
 open scoped ComplexConjugate
 
-lemma IsSelfAdjoint.conj_eq (ha : IsSelfAdjoint a) : conj a = a :=
-  ha.star_eq
+lemma conj_eq (ha : IsSelfAdjoint a) : conj a = a := ha.star_eq
 
 end CommSemiring
 
