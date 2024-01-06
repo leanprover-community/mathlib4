@@ -51,23 +51,9 @@ variable [Field 𝕜] [Ring R] [AddCommGroup M]
   [TopologicalSpace R] [TopologicalSpace M]
   [TopologicalRing R] [TopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M]
 
-theorem fst_expSeries (x : tsze R M) (n : ℕ) :
+@[simp] theorem fst_expSeries (x : tsze R M) (n : ℕ) :
     fst (expSeries 𝕜 (tsze R M) n fun _ => x) = expSeries 𝕜 R n fun _ => x.fst := by
   simp [expSeries_apply_eq]
-
-/-- If `exp R x.fst` converges to `e` then `(exp R x).fst` converges to `e`,
-and vice versa. -/
-theorem hasSum_fst_expSeries (x : tsze R M) {e : R} :
-    HasSum (fun n => fst (expSeries 𝕜 (tsze R M) n fun _ => x)) e ↔
-      HasSum (fun n => expSeries 𝕜 R n fun _ => x.fst) e := by
-  simp_rw [fst_expSeries]
-#align triv_sq_zero_ext.has_sum_fst_exp_series TrivSqZeroExt.hasSum_fst_expSeries
-
-/-- `(exp R x).fst` converges iff `exp R x.fst` converges. -/
-theorem summable_fst_expSeries (x : tsze R M) :
-    Summable (fun n => fst (expSeries 𝕜 (tsze R M) n fun _ => x)) ↔
-      Summable (fun n => expSeries 𝕜 R n fun _ => x.fst) :=
-  Function.surjective_id.summable_iff_of_hasSum_iff <| hasSum_fst_expSeries _ _
 
 end not_charZero
 
@@ -103,9 +89,10 @@ theorem hasSum_expSeries_of_smul_comm
     (x : tsze R M) (hx : MulOpposite.op x.fst • x.snd = x.fst • x.snd)
     {e : R} (h : HasSum (fun n => expSeries 𝕜 R n fun _ => x.fst) e) :
     HasSum (fun n => expSeries 𝕜 (tsze R M) n fun _ => x) (inl e + inr (e • x.snd)) := by
+  have : HasSum (fun n => fst (expSeries 𝕜 (tsze R M) n fun _ => x)) e := by
+    simpa [fst_expSeries] using h
   simpa only [inl_fst_add_inr_snd_eq] using
-    (hasSum_inl _ <| (hasSum_fst_expSeries 𝕜 x).mpr h).add
-      (hasSum_inr _ <| hasSum_snd_expSeries_of_smul_comm 𝕜 x hx h)
+    (hasSum_inl _ <| this).add (hasSum_inr _ <| hasSum_snd_expSeries_of_smul_comm 𝕜 x hx h)
 #align triv_sq_zero_ext.has_sum_exp_series_of_smul_comm TrivSqZeroExt.hasSum_expSeries_of_smul_comm
 
 variable [T2Space R] [T2Space M]
@@ -118,7 +105,7 @@ theorem exp_def_of_smul_comm (x : tsze R M) (hx : MulOpposite.op x.fst • x.snd
     exact h.hasSum
   · rw [tsum_eq_zero_of_not_summable h, zero_smul, inr_zero, inl_zero, zero_add,
       tsum_eq_zero_of_not_summable]
-    rw [←summable_fst_expSeries] at h
+    simp_rw [← fst_expSeries] at h
     refine mt ?_ h
     exact (Summable.map · (TrivSqZeroExt.fstHom 𝕜 R M).toLinearMap continuous_fst)
 
