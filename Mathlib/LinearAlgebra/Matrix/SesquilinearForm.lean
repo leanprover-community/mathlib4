@@ -154,7 +154,7 @@ This section deals with the conversion between matrices and sesquilinear maps on
 -/
 
 
-variable [CommRing R] [Semiring R₁] [Semiring R₂] [AddCommMonoid N₂] [Module R N₂]
+variable [CommSemiring R] [Semiring R₁] [Semiring R₂] [AddCommMonoid N₂] [Module R N₂]
 
 variable [Fintype n] [Fintype m]
 
@@ -350,7 +350,7 @@ a module with a fixed basis.
 -/
 
 
-variable [CommRing R]
+variable [CommSemiring R]
 
 variable [AddCommMonoid M₁] [Module R M₁] [AddCommMonoid M₂] [Module R M₂] [AddCommMonoid N₂]
   [Module R N₂]
