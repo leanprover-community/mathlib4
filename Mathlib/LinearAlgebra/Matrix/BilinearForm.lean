@@ -366,57 +366,22 @@ variable (J J₃ A A' : Matrix n n R₃)
 theorem isAdjointPair_toBilin' [DecidableEq n] :
     BilinForm.IsAdjointPair (Matrix.toBilin' J) (Matrix.toBilin' J₃) (Matrix.toLin' A)
         (Matrix.toLin' A') ↔
-      Matrix.IsAdjointPair J J₃ A A' := by
-  rw [BilinForm.isAdjointPair_iff_compLeft_eq_compRight]
-  have h :
-    ∀ B B' : BilinForm R₃ (n → R₃), B = B' ↔ BilinForm.toMatrix' B = BilinForm.toMatrix' B' := by
-    intro B B'
-    constructor <;> intro h
-    · rw [h]
-    · exact BilinForm.toMatrix'.injective h
-  rw [h, BilinForm.toMatrix'_compLeft, BilinForm.toMatrix'_compRight, LinearMap.toMatrix'_toLin',
-    LinearMap.toMatrix'_toLin', BilinForm.toMatrix'_toBilin', BilinForm.toMatrix'_toBilin']
-  rfl
+      Matrix.IsAdjointPair J J₃ A A' :=
+  isAdjointPair_toLinearMap₂' _ _ _ _
 #align is_adjoint_pair_to_bilin' isAdjointPair_toBilin'
 
 @[simp]
 theorem isAdjointPair_toBilin [DecidableEq n] :
     BilinForm.IsAdjointPair (Matrix.toBilin b J) (Matrix.toBilin b J₃) (Matrix.toLin b b A)
         (Matrix.toLin b b A') ↔
-      Matrix.IsAdjointPair J J₃ A A' := by
-  rw [BilinForm.isAdjointPair_iff_compLeft_eq_compRight]
-  have h : ∀ B B' : BilinForm R₃ M₃, B = B' ↔ BilinForm.toMatrix b B = BilinForm.toMatrix b B' := by
-    intro B B'
-    constructor <;> intro h
-    · rw [h]
-    · exact (BilinForm.toMatrix b).injective h
-  rw [h, BilinForm.toMatrix_compLeft, BilinForm.toMatrix_compRight, LinearMap.toMatrix_toLin,
-    LinearMap.toMatrix_toLin, BilinForm.toMatrix_toBilin, BilinForm.toMatrix_toBilin]
-  rfl
+      Matrix.IsAdjointPair J J₃ A A' :=
+  isAdjointPair_toLinearMap₂ _ _ _ _ _ _
 #align is_adjoint_pair_to_bilin isAdjointPair_toBilin
 
 theorem Matrix.isAdjointPair_equiv' [DecidableEq n] (P : Matrix n n R₃) (h : IsUnit P) :
     (Pᵀ * J * P).IsAdjointPair (Pᵀ * J * P) A A' ↔
-      J.IsAdjointPair J (P * A * P⁻¹) (P * A' * P⁻¹) := by
-  have h' : IsUnit P.det := P.isUnit_iff_isUnit_det.mp h
-  -- Porting note: the original proof used a complicated conv and timed out
-  let u := P.nonsingInvUnit h'
-  have coe_u : (u : Matrix n n R₃) = P := rfl
-  have coe_u_inv : (↑u⁻¹ : Matrix n n R₃) = P⁻¹ := rfl
-  let v := Pᵀ.nonsingInvUnit (P.isUnit_det_transpose h')
-  have coe_v : (v : Matrix n n R₃) = Pᵀ := rfl
-  have coe_v_inv : (↑v⁻¹ : Matrix n n R₃) = P⁻¹ᵀ := P.transpose_nonsing_inv.symm
-  set x := Aᵀ * Pᵀ * J with x_def
-  set y := J * P * A' with y_def
-  simp only [Matrix.IsAdjointPair]
-  calc (Aᵀ * (Pᵀ * J * P) = Pᵀ * J * P * A')
-         ↔ (x * ↑u = ↑v * y) := ?_
-       _ ↔ (↑v⁻¹ * x = y * ↑u⁻¹) := ?_
-       _ ↔ ((P * A * P⁻¹)ᵀ * J = J * (P * A' * P⁻¹)) := ?_
-  · simp only [mul_assoc, x_def, y_def, coe_u, coe_v]
-  · rw [Units.eq_mul_inv_iff_mul_eq, mul_assoc ↑v⁻¹ x, Units.inv_mul_eq_iff_eq_mul]
-  · rw [x_def, y_def, coe_u_inv, coe_v_inv]
-    simp only [Matrix.mul_assoc, Matrix.transpose_mul]
+      J.IsAdjointPair J (P * A * P⁻¹) (P * A' * P⁻¹) :=
+  Matrix.isAdjointPair_equiv _ _ _ _ h
 #align matrix.is_adjoint_pair_equiv' Matrix.isAdjointPair_equiv'
 
 variable [DecidableEq n]
