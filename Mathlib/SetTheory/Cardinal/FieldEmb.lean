@@ -127,6 +127,10 @@ one step further to `Iic i⁺` or `Iic i` respectively, so it must be the case t
 is everything. However, the author chose the `compat` approach in the end because it constructs
 the distinguished bijection that is compatible with the projections to all `X i`.
 
+Note that the bottom element in `ι` is technically also a limit according to `IsSuccLimit`,
+but the only place it requires special treatment is in `equivLim` (the bijection between
+`F⟮<i⟯ →ₐ[F] Ē` and the inverse limit of `F⟮<j⟯ →ₐ[F] Ē` over `j < i`).
+
 The final technical details is that, since we construct `PEquivOn`s on `Iic` intervals and
 since `ι` is a limit ordinal, we need to adjoin a top element to `ι` in order to obtain a
 `PEquivOn` on all of `ι`. Its node is the top intermediate field, namely `E` itself, so
