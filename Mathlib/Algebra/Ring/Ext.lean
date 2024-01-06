@@ -117,6 +117,11 @@ defined in `Algebra/GroupWithZero/Defs` as well. -/
   rcases inst₁ with @⟨_, _, _, _, ⟨⟩⟩; rcases inst₂ with @⟨_, _, _, _, ⟨⟩⟩
   congr
 
+theorem NonAssocSemiring.toNonUnitalNonAssocSemiring_injective :
+    Function.Injective (@NonAssocSemiring.toNonUnitalNonAssocSemiring R) := by
+  intro _ _ h
+  ext <;> congr
+
 theorem NonAssocSemiring.ext_iff (inst₁ inst₂ : NonAssocSemiring R) :
     inst₁ = inst₂ ↔
       (∀ a b, a +[R, inst₁] b = a +[R, inst₂] b) ∧
