@@ -34,6 +34,8 @@ universe u
 
 variable {R : Type u}
 
+/-! ### Distrib -/
+
 @[ext] theorem Distrib.ext ⦃inst₁ inst₂ : Distrib R⦄
     (h_add : ∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
     (h_mul : ∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :
@@ -49,6 +51,8 @@ theorem Distrib.ext_iff (inst₁ inst₂ : Distrib R) :
       (∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :=
   ⟨fun h ↦ by constructor <;> (intro _ _; congr), And.elim (Distrib.ext · ·)⟩
 
+/-! ### NonUnitalNonAssocSemiring -/
+
 @[ext] theorem NonUnitalNonAssocSemiring.ext ⦃inst₁ inst₂ : NonUnitalNonAssocSemiring R⦄
     (h_add : ∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
     (h_mul : ∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :
@@ -63,6 +67,8 @@ theorem NonUnitalNonAssocSemiring.ext_iff (inst₁ inst₂ : NonUnitalNonAssocSe
       (∀ a b, a +[R, inst₁] b = a +[R, inst₂] b) ∧
       (∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :=
   ⟨fun h ↦ by constructor <;> (intros; congr), And.elim (NonUnitalNonAssocSemiring.ext · ·)⟩
+
+/-! ### NonUnitalSemiring -/
 
 theorem NonUnitalSemiring.toNonUnitalNonAssocSemiring_injective :
     Function.Injective (@NonUnitalSemiring.toNonUnitalNonAssocSemiring R) := by
@@ -80,6 +86,8 @@ theorem NonUnitalSemiring.ext_iff (inst₁ inst₂ : NonUnitalSemiring R) :
       (∀ a b, a +[R, inst₁] b = a +[R, inst₂] b) ∧
       (∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :=
   ⟨fun h ↦ by constructor <;> (intros; congr), And.elim (NonUnitalSemiring.ext · ·)⟩
+
+/-! ### NonAssocSemiring -/
 
 /- The best place to prove that the `NatCast` is determined by the other operations is probably in
 an extensionality lemma for `AddMonoidWithOne`, in which case we may as well do the typeclasses
@@ -114,6 +122,8 @@ theorem NonAssocSemiring.ext_iff (inst₁ inst₂ : NonAssocSemiring R) :
       (∀ a b, a +[R, inst₁] b = a +[R, inst₂] b) ∧
       (∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :=
   ⟨fun h ↦ by constructor <;> (intros; congr), And.elim (NonAssocSemiring.ext · ·)⟩
+
+/-! ### Semiring -/
 
 @[ext] theorem Semiring.ext ⦃inst₁ inst₂ : Semiring R⦄
     (h_add : ∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
