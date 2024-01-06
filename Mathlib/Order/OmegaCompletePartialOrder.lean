@@ -822,7 +822,7 @@ theorem forall_forall_merge' (c₀ : Chain (α →𝒄 β)) (c₁ : Chain α) (z
 of the functions in the `ω`-chain. -/
 @[simps!]
 protected def ωSup (c : Chain (α →𝒄 β)) : α →𝒄 β :=
-  .mk (ωSup <| c.map toMono) <| fun c' ↦ by
+  .mk (ωSup <| c.map toMono) fun c' ↦ by
     apply eq_of_forall_ge_iff; intro z
     simp only [ωSup_le_iff, (c _).continuous, Chain.map_coe, OrderHom.apply_coe, toMono_coe,
       OrderHom.omegaCompletePartialOrder_ωSup_coe, forall_forall_merge, OrderHomClass.coe_coe,

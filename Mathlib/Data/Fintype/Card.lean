@@ -261,7 +261,7 @@ theorem Finset.card_eq_iff_eq_univ [Fintype α] (s : Finset α) :
 #align finset.card_eq_iff_eq_univ Finset.card_eq_iff_eq_univ
 
 theorem Finset.card_le_univ [Fintype α] (s : Finset α) : s.card ≤ Fintype.card α :=
-  card_le_of_subset (subset_univ s)
+  card_le_card (subset_univ s)
 #align finset.card_le_univ Finset.card_le_univ
 
 theorem Finset.card_lt_univ_of_not_mem [Fintype α] {s : Finset α} {x : α} (hx : x ∉ s) :
@@ -397,6 +397,12 @@ theorem Fintype.card_orderDual (α : Type*) [Fintype α] : Fintype.card αᵒᵈ
 theorem Fintype.card_lex (α : Type*) [Fintype α] : Fintype.card (Lex α) = Fintype.card α :=
   rfl
 #align fintype.card_lex Fintype.card_lex
+
+@[simp] lemma Fintype.card_multiplicative (α : Type*) [Fintype α] :
+    card (Multiplicative α) = card α := Finset.card_map _
+
+@[simp] lemma Fintype.card_additive (α : Type*) [Fintype α] : card (Additive α) = card α :=
+  Finset.card_map _
 
 /-- Given that `α ⊕ β` is a fintype, `α` is also a fintype. This is non-computable as it uses
 that `Sum.inl` is an injection, but there's no clear inverse if `α` is empty. -/
