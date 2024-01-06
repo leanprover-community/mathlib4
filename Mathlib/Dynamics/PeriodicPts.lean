@@ -714,14 +714,14 @@ theorem zpow_period_add_smul (i : ℤ) (g : G) (a : α) :
 
 variable {a : G} {b : α}
 
-@[to_additive]
+@[to_additive (attr := deprecated)]
 theorem pow_smul_eq_iff_minimalPeriod_dvd {n : ℕ} :
     a ^ n • b = b ↔ minimalPeriod (a • ·) b ∣ n := by
   rw [← period_eq_minimalPeriod, pow_smul_eq_iff_period_dvd]
 #align mul_action.pow_smul_eq_iff_minimal_period_dvd MulAction.pow_smul_eq_iff_minimalPeriod_dvd
 #align add_action.nsmul_vadd_eq_iff_minimal_period_dvd AddAction.nsmul_vadd_eq_iff_minimalPeriod_dvd
 
-@[to_additive]
+@[to_additive (attr := deprecated)]
 theorem zpow_smul_eq_iff_minimalPeriod_dvd {n : ℤ} :
     a ^ n • b = b ↔ (minimalPeriod (a • ·) b : ℤ) ∣ n := by
   rw [← period_eq_minimalPeriod, zpow_smul_eq_iff_period_dvd]
@@ -730,14 +730,14 @@ theorem zpow_smul_eq_iff_minimalPeriod_dvd {n : ℤ} :
 
 variable (a b)
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, deprecated)]
 theorem pow_smul_mod_minimalPeriod (n : ℕ) :
     a ^ (n % minimalPeriod (a • ·) b) • b = a ^ n • b := by
   rw [← period_eq_minimalPeriod, pow_mod_period_smul]
 #align mul_action.pow_smul_mod_minimal_period MulAction.pow_smul_mod_minimalPeriod
 #align add_action.nsmul_vadd_mod_minimal_period AddAction.nsmul_vadd_mod_minimalPeriod
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, deprecated)]
 theorem zpow_smul_mod_minimalPeriod (n : ℤ) :
     a ^ (n % (minimalPeriod (a • ·) b : ℤ)) • b = a ^ n • b := by
   rw [← period_eq_minimalPeriod, zpow_mod_period_smul]

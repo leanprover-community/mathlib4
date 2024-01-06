@@ -119,8 +119,8 @@ theorem transfer_eq_prod_quotient_orbitRel_zpowers_quot [FiniteIndex H] (g : G)
     transfer ϕ g =
       ∏ q : Quotient (orbitRel (zpowers g) (G ⧸ H)),
         ϕ
-          ⟨q.out'.out'⁻¹ * g ^ Function.minimalPeriod (g • ·) q.out' * q.out'.out',
-            QuotientGroup.out'_conj_pow_minimalPeriod_mem H g q.out'⟩ := by
+          ⟨q.out'.out'⁻¹ * g ^ period g q.out' * q.out'.out',
+            QuotientGroup.out'_conj_pow_period_mem H g q.out'⟩ := by
   classical
     letI := H.fintypeQuotientOfFiniteIndex
     calc
@@ -131,7 +131,7 @@ theorem transfer_eq_prod_quotient_orbitRel_zpowers_quot [FiniteIndex H] (g : G)
         refine' Fintype.prod_congr _ _ (fun q => _)
         simp only [quotientEquivSigmaZMod_symm_apply, transferTransversal_apply',
           transferTransversal_apply'']
-        rw [Fintype.prod_eq_single (0 : ZMod (Function.minimalPeriod (g • ·) q.out')) _]
+        rw [Fintype.prod_eq_single (0 : ZMod (period g q.out')) _]
         · simp only [if_pos, ZMod.cast_zero, zpow_zero, one_mul, mul_assoc]
         · intro k hk
           simp only [if_neg hk, inv_mul_self]
@@ -149,15 +149,15 @@ theorem transfer_eq_pow_aux (g : G)
   classical
     replace key : ∀ (k : ℕ) (g₀ : G), g₀⁻¹ * g ^ k * g₀ ∈ H → g ^ k ∈ H := fun k g₀ hk =>
       (_root_.congr_arg (· ∈ H) (key k g₀ hk)).mp hk
-    replace key : ∀ q : G ⧸ H, g ^ Function.minimalPeriod (g • ·) q ∈ H := fun q =>
-      key (Function.minimalPeriod (g • ·) q) q.out'
-        (QuotientGroup.out'_conj_pow_minimalPeriod_mem H g q)
+    replace key : ∀ q : G ⧸ H, g ^ period g q ∈ H := fun q =>
+      key (period g q) q.out'
+        (QuotientGroup.out'_conj_pow_period_mem H g q)
     let f : Quotient (orbitRel (zpowers g) (G ⧸ H)) → zpowers g := fun q =>
-      (⟨g, mem_zpowers g⟩ : zpowers g) ^ Function.minimalPeriod (g • ·) q.out'
+      (⟨g, mem_zpowers g⟩ : zpowers g) ^ period g q.out'
     have hf : ∀ q, f q ∈ H.subgroupOf (zpowers g) := fun q => key q.out'
     replace key :=
       Subgroup.prod_mem (H.subgroupOf (zpowers g)) fun q (_ : q ∈ Finset.univ) => hf q
-    simpa only [minimalPeriod_eq_card, Finset.prod_pow_eq_pow_sum, Fintype.card_sigma,
+    simpa only [period_eq_card_zpowers_orbit, Finset.prod_pow_eq_pow_sum, Fintype.card_sigma,
       Fintype.card_congr (selfEquivSigmaOrbits (zpowers g) (G ⧸ H)), index_eq_card] using key
 #align monoid_hom.transfer_eq_pow_aux MonoidHom.transfer_eq_pow_aux
 
@@ -174,7 +174,7 @@ theorem transfer_eq_pow [FiniteIndex H] (g : G)
     rw [H.coe_mk, ← (zpowers g).coe_mk g (mem_zpowers g), ← (zpowers g).coe_pow,
       index_eq_card, Fintype.card_congr (selfEquivSigmaOrbits (zpowers g) (G ⧸ H)),
       Fintype.card_sigma, ← Finset.prod_pow_eq_pow_sum, ← Finset.prod_to_list]
-    simp only [Subgroup.val_list_prod, List.map_map, ← minimalPeriod_eq_card]
+    simp only [Subgroup.val_list_prod, List.map_map, ← period_eq_card_zpowers_orbit]
     congr
     funext
     apply key
