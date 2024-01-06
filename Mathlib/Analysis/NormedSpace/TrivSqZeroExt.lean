@@ -114,10 +114,10 @@ theorem _root_.MeasureTheory.AEStronglyMeasurable.pow_const
   pow_mem (show f ∈ s from hf) n
 
 /-- If `exp R x.fst` converges to `e` then `(exp R x).snd` converges to `e • x.snd`. -/
-theorem hasSum_snd_expSeries' {R M} [Ring R] [NormedAddCommGroup M]
-    [Algebra ℝ R] [Module R M] [Module Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M] [NormedSpace ℝ M]
-    [IsScalarTower ℝ R M] [IsScalarTower ℝ Rᵐᵒᵖ M] [TopologicalSpace R] [TopologicalRing R]
-    [ContinuousSMul ℝ R]
+theorem hasSum_snd_expSeries' {R M} [NormedRing R] [NormedAddCommGroup M]
+    [NormedAlgebra ℝ R] [NormOneClass R] [Module R M] [BoundedSMul R M] [Module Rᵐᵒᵖ M]
+    [BoundedSMul Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M] [NormedSpace ℝ M]
+    [IsScalarTower ℝ R M] [IsScalarTower ℝ Rᵐᵒᵖ M]
     [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M] [CompleteSpace M] (x : tsze R M)
     {e : Set.Icc 0 (1 : ℝ) → R}
     (h : ∀ t, HasSum (fun n => expSeries ℝ R n fun _ => t.val • x.fst) (e t)) :
@@ -140,6 +140,10 @@ theorem hasSum_snd_expSeries' {R M} [Ring R] [NormedAddCommGroup M]
   simp_rw [beta_aux, ← integral_smul_const, mul_smul, smul_comm (_ • (1 - _)^_ : ℝ) (_ : R),
     ← smul_assoc, ← MulOpposite.op_smul, smul_assoc _ (_ ^ _), ← smul_pow]
   apply MeasureTheory.hasSum_integral_of_dominated_convergence
+  case bound =>
+    intro ⟨m, n⟩ a
+    exact ((Nat.factorial m : ℝ)⁻¹ * (‖a.val‖ ^ m * ‖fst x‖ ^ m)) *
+        (((Nat.factorial n : ℝ)⁻¹ * (‖1 - a.val‖ ^ n * ‖fst x‖ ^ n)) * ‖snd x‖)
   case h_lim =>
     filter_upwards
     exact h
@@ -150,8 +154,28 @@ theorem hasSum_snd_expSeries' {R M} [Ring R] [NormedAddCommGroup M]
     · exact MeasureTheory.stronglyMeasurable_const.aestronglyMeasurable
   · intro ⟨m, n⟩
     dsimp
-    sorry
-  · sorry
+    filter_upwards with a
+    refine le_trans (norm_smul_le _ _) ?_
+    gcongr
+    · refine (_root_.norm_smul_le _ _).trans ?_
+      gcongr
+      · simp
+      · refine (norm_pow_le _ _).trans ?_
+        rw [←mul_pow]
+        gcongr
+        refine (_root_.norm_smul_le _ _).trans ?_
+        simp
+    · refine (_root_.norm_smul_le _ _).trans ?_
+      gcongr
+      refine (_root_.norm_smul_le _ _).trans ?_
+      gcongr
+      · simp
+      · refine (norm_pow_le _ _).trans ?_
+        rw [←mul_pow]
+        gcongr
+        refine (_root_.norm_smul_le _ _).trans ?_
+        gcongr
+        sorry
   · sorry
   · sorry
 #align triv_sq_zero_ext.has_sum_snd_exp_series_of_smul_comm TrivSqZeroExt.hasSum_snd_expSeries_of_smul_comm
