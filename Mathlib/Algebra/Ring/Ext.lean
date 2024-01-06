@@ -40,10 +40,11 @@ variable {R : Type u}
     (h_add : ∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
     (h_mul : ∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :
     inst₁ = inst₂ := by
-  -- Extract `add` and `mul` functions
+  -- Split into `add` and `mul` functions and properties.
   rcases inst₁ with @⟨⟨⟩, ⟨⟩⟩
   rcases inst₂ with @⟨⟨⟩, ⟨⟩⟩
-  congr <;> (ext; apply_assumption)
+  -- Prove equality of parts using function extensionality.
+  congr <;> (apply funext₂; assumption)
 
 theorem Distrib.ext_iff (inst₁ inst₂ : Distrib R) :
     inst₁ = inst₂ ↔
@@ -57,9 +58,10 @@ theorem Distrib.ext_iff (inst₁ inst₂ : Distrib R) :
     (h_add : ∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
     (h_mul : ∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :
     inst₁ = inst₂ := by
-  -- Extract `AddMonoid` instance and `mul` function
+  -- Split into `AddMonoid` instance, `mul` function and properties.
   rcases inst₁ with @⟨_, ⟨⟩⟩
   rcases inst₂ with @⟨_, ⟨⟩⟩
+  -- Prove equality of parts using already-proved extensionality lemmas.
   congr <;> (ext; apply_assumption)
 
 theorem NonUnitalNonAssocSemiring.ext_iff (inst₁ inst₂ : NonUnitalNonAssocSemiring R) :
@@ -112,9 +114,9 @@ defined in `Algebra/GroupWithZero/Defs` as well. -/
     | zero     => rewrite [inst₁.natCast_zero, inst₂.natCast_zero]; exact h_zero
     | succ n h => rw [inst₁.natCast_succ, inst₂.natCast_succ, h_add]
                   exact congrArg₂ _ h h_one
-  /- Extract `NonUnitalNonAssocSemiring`, `One` instances and `natCast` functions and prove equality
-  from that of subfields using congr. -/
+  -- Split into `NonUnitalNonAssocSemiring`, `One` instances, `natCast` function and properties.
   rcases inst₁ with @⟨_, _, _, _, ⟨⟩⟩; rcases inst₂ with @⟨_, _, _, _, ⟨⟩⟩
+  -- Prove equality of parts using the above lemmas.
   congr
 
 theorem NonAssocSemiring.toNonUnitalNonAssocSemiring_injective :
@@ -134,14 +136,14 @@ theorem NonAssocSemiring.ext_iff (inst₁ inst₂ : NonAssocSemiring R) :
     (h_add : ∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
     (h_mul : ∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :
     inst₁ = inst₂ := by
-  -- Enough substructures are equal
+  -- Show that enough substructures are equal.
   have h₁ : inst₁.toNonUnitalSemiring = inst₂.toNonUnitalSemiring := by
     ext <;> apply_assumption
   have h₂ : inst₁.toNonAssocSemiring = inst₂.toNonAssocSemiring := by
     ext <;> apply_assumption
   have h₃ : (inst₁.toMonoidWithZero).toMonoid = (inst₂.toMonoidWithZero).toMonoid := by
     ext; apply h_mul
-  -- Split into fields and use congr
+  -- Split into fields and prove they are equal using the above.
   rcases inst₁ with ⟨⟩; rcases inst₂ with ⟨⟩
   congr <;> solve| injection h₁ | injection h₂ | injection h₃
 
