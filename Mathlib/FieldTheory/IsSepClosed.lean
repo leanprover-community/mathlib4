@@ -40,11 +40,12 @@ separable closure, separably closed
 
 - In particular, a separable closure (`SeparableClosure`) exists.
 
+- `Algebra.IsAlgebraic.isPurelyInseparable_of_isSepClosed`: an algebraic extension of a separably
+  closed field is purely inseparable.
+
 ## TODO
 
-- If `k` is a perfect field, then its separable closure coincides with its algebraic closure.
-
-- An algebraic extension of a separably closed field is purely inseparable.
+- if `k` is a perfect field, then its separable closure coincides with its algebraic closure.
 
 -/
 
@@ -93,6 +94,13 @@ namespace IsSepClosed
 theorem exists_root [IsSepClosed k] (p : k[X]) (hp : p.degree ≠ 0) (hsep : p.Separable) :
     ∃ x, IsRoot p x :=
   exists_root_of_splits _ (IsSepClosed.splits_of_separable p hsep) hp
+
+variable (k) in
+/-- A separably closed perfect field is also algebraically closed. -/
+instance isAlgClosed_of_perfectField [IsSepClosed k] [PerfectField k] :
+    IsAlgClosed k :=
+  IsAlgClosed.of_exists_root k fun p _ h ↦ exists_root p ((degree_pos_of_irreducible h).ne')
+    (PerfectField.separable_of_irreducible h)
 
 theorem exists_pow_nat_eq [IsSepClosed k] (x : k) (n : ℕ) [hn : NeZero (n : k)] :
     ∃ z, z ^ n = x := by
@@ -190,6 +198,13 @@ class IsSepClosure [Algebra k K] : Prop where
 /-- A separably closed field is its separable closure. -/
 instance IsSepClosure.self_of_isSepClosed [IsSepClosed k] : IsSepClosure k k :=
   ⟨by assumption, isSeparable_self k⟩
+
+-- TODO:
+/- If `k` is perfect, `K` is a separable closure of `k`,
+then it is also an algebraic closure of `k`. -/
+-- instance IsSepClosure.isAlgClosure_of_perfectField [IsSepClosure k K] [PerfectField k] :
+--     IsAlgClosure k K :=
+--   sorry
 
 variable {k} {K}
 

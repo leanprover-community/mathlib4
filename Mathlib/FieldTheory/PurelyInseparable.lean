@@ -13,15 +13,85 @@ This file contains basics about the purely inseparable extension of fields.
 
 ## Main definitions
 
-- ...
+- `IsPurelyInseparable`: typeclass for purely inseparable field extension: an algebraic extension
+  `E / F` is purely inseparable if and only if the minimal polynomial of every element of `E ∖ F`
+  is not separable.
 
 ## Main results
 
-- ...
+- `IsPurelyInseparable.surjective_algebraMap_of_isSeparable`,
+  `IsPurelyInseparable.bijective_algebraMap_of_isSeparable`,
+  `IntermediateField.eq_bot_of_isPurelyInseparable_of_isSeparable`:
+  if `E / F` is both purely inseparable and separable, then `algebraMap F E` is surjective
+  (resp. bijective). In particular, if an intermediate field of `E / F` is both purely inseparable
+  and separable, then it is equal to `F`.
+
+- `isPurelyInseparable_iff_mem_pow`: a field extension `E / F` of exponential characteristic `q` is
+  purely inseparable if and only if for every element `x` of `E`, there exists a natural number `n`
+  such that `x ^ (q ^ n)` is contained in `F`.
+
+- `IsPurelyInseparable.trans`: if `E / F` and `K / E` are both purely inseparable extensions, then
+  `K / F` is also purely inseparable.
+
+- `isPurelyInseparable_iff_natSepDegree_eq_one`: `E / F` is purely inseparable if and only if for
+  every element `x` of `E`, its minimal polynomial has separable degree one.
+
+- `isPurelyInseparable_iff_minpoly_eq_X_pow_sub_C`: a field extension `E / F` of exponential
+  characteristic `q` is purely inseparable if and only if for every element `x` of `E`, the minimal
+  polynomial of `x` over `F` is of form `X ^ (q ^ n) - y` for some natural number `n` and some
+  element `y` of `F`.
+
+- `isPurelyInseparable_iff_minpoly_eq_X_sub_C_pow`: a field extension `E / F` of exponential
+  characteristic `q` is purely inseparable if and only if for every element `x` of `E`, the minimal
+  polynomial of `x` over `F` is of form `(X - x) ^ (q ^ n)` for some natural number `n`.
+
+- `isPurelyInseparable_iff_finSepDegree_eq_one`: an algebraic extension is purely inseparable
+  if and only if it has (finite) separable degree one.
+
+  **TODO:** remove the algebraic assumption.
+
+- `IsPurelyInseparable.normal`: a purely inseparable extension is normal.
+
+- `separableClosure.isPurelyInseparable`: if `E / F` is algebraic, then `E` is purely inseparable
+  over the (relative) separable closure of `E / F`.
+
+- `separableClosure_le_iff`: if `E / F` is algebraic, then an intermediate field of `E / F` contains
+  the (relative) separable closure of `E / F` if and only if `E` is purely inseparable over it.
+
+- `eq_separableClosure_iff`: if `E / F` is algebraic, then an intermediate field of `E / F` is equal
+  to the (relative) separable closure of `E / F` if and only if it is separable over `F`, and `E`
+  is purely inseparable over it.
+
+- `IsPurelyInseparable.injective_comp_algebraMap`: if `E / F` is purely inseparable, then for any
+  reduced ring `L`, the map `(E →+* L) → (F →+* L)` induced by `algebraMap F E` is injective.
+  In other words, a purely inseparable field extension is an epimorphism in the category of fields.
+
+- `isPurelyInseparable_adjoin_iff_mem_pow`: if `F` is of exponential characteristic `q`, then
+  `F(S) / F` is a purely inseparable extension if and only if for any `x ∈ S`, `x ^ (q ^ n)` is
+  contained in `F` for some `n : ℕ`.
+
+- `Field.finSepDegree_eq`: if `E / F` is algebraic, then the `Field.finSepDegree F E` is equal to
+  `Field.sepDegree F E` as a natural number. This means that the cardinality of `Field.Emb F E`
+  and the degree of `(separableClosure F E) / F` are both finite or infinite, and when they are
+  finite, they coincide.
+
+- `finSepDegree_mul_finInsepDegree`: the (finite) separable degree multiply by the (finite)
+  inseparable degree is equal to the (finite) field extension degree.
 
 ## Tags
 
 separable degree, degree, separable closure, purely inseparable
+
+## TODO
+
+- `IsPurelyInseparable.of_injective_comp_algebraMap`: if `L` is an algebraically closed field
+  containing `E`, such that the map `(E →+* L) → (F →+* L)` induced by `algebraMap F E` is
+  injective, then `E / F` is purely inseparable. In other words, epimorphisms in the category of
+  fields must be purely inseparable extensions. Need to use the fact that `Emb F E` is infintie
+  when `E / F` is (purely) transcendental.
+
+- Prove that the (infinite) separable degree multiply by the (infinite) inseparable degree is equal
+  to the (infinite) field extension degree. Need to use the linearly disjoint argument.
 
 -/
 
@@ -75,6 +145,13 @@ theorem AlgEquiv.isPurelyInseparable (e : K ≃ₐ[F] E) [IsPurelyInseparable F 
 theorem AlgEquiv.isPurelyInseparable_iff (e : K ≃ₐ[F] E) :
     IsPurelyInseparable F K ↔ IsPurelyInseparable F E :=
   ⟨fun _ ↦ e.isPurelyInseparable, fun _ ↦ e.symm.isPurelyInseparable⟩
+
+/-- If `E / F` is an algebraic extension, `F` is separably closed,
+then `E / F` is purely inseparable. -/
+theorem Algebra.IsAlgebraic.isPurelyInseparable_of_isSepClosed (halg : Algebra.IsAlgebraic F E)
+    [IsSepClosed F] : IsPurelyInseparable F E :=
+  ⟨halg.isIntegral, fun x h ↦ minpoly.mem_range_of_degree_eq_one F x <|
+    IsSepClosed.degree_eq_one_of_irreducible F (minpoly.irreducible (halg x).isIntegral) h⟩
 
 variable (F E K)
 
@@ -310,6 +387,16 @@ theorem IsPurelyInseparable.injective_comp_algebraMap [h : IsPurelyInseparable F
   haveI := Fact.mk hprime
   simp_rw [map_pow, ← iterate_frobenius] at heq
   exact iterate_frobenius_inj L q n heq
+
+-- TODO:
+/- If `L` is an algebraically closed field containing `E`, such that the map
+`(E →+* L) → (F →+* L)` induced by `algebraMap F E` is injective, then `E / F` is
+purely inseparable. In other words, epimorphisms in the category of fields must be
+purely inseparable extensions. -/
+-- theorem IsPurelyInseparable.of_injective_comp_algebraMap (L : Type w) [Field L] [IsAlgClosed L]
+--     (hn : Nonempty (E →+* L)) (h : Function.Injective fun f : E →+* L ↦ f.comp (algebraMap F E)) :
+--     IsPurelyInseparable F E := by
+--   sorry
 
 end IsPurelyInseparable
 
