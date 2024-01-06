@@ -17,7 +17,7 @@ namespace LinearMap
 
 variable {ι₁ ι₂ : Type*}
 
-variable {R R₂ S S₂ M N P Rₗ: Type*}
+variable {R R₂ S S₂ M N P Rₗ : Type*}
 
 variable {Mₗ Nₗ Pₗ : Type*}
 
