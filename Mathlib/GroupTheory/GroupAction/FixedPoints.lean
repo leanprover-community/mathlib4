@@ -64,11 +64,8 @@ theorem minimalPeriod_eq_one_of_fixedBy {a : α} {g : G} (a_in_fixedBy : a ∈ f
 theorem fixedBy_subset_fixedBy_pow (g : G) (j : ℤ) :
     fixedBy α g ⊆ fixedBy α (g^j) := by
   intro a a_in_fixedBy
-  rw [
-    mem_fixedBy,
-    zpow_smul_eq_iff_minimalPeriod_dvd,
-    minimalPeriod_eq_one_of_fixedBy a_in_fixedBy
-  ]
+  rw [mem_fixedBy, zpow_smul_eq_iff_minimalPeriod_dvd,
+    minimalPeriod_eq_one_of_fixedBy a_in_fixedBy]
   rw [Nat.cast_one]
   exact one_dvd j
 
@@ -260,17 +257,17 @@ variable [FaithfulSMul M α]
 
 /-- If the action is faithful, then an empty `movedBy` set implies that `m = 1` -/
 @[to_additive]
-theorem movedBy_empty_iff_eq_one {m : M} : movedBy α m = ∅ ↔ m = 1 := ⟨
-  (by
-    intro moved_empty
+theorem movedBy_empty_iff_eq_one {m : M} : movedBy α m = ∅ ↔ m = 1 := by
+  constructor
+  · intro moved_empty
     apply FaithfulSMul.eq_of_smul_eq_smul (α := α)
     intro a
     rw [one_smul]
     by_contra ma_ne_a
     rwa [← ne_eq, ← mem_movedBy, moved_empty] at ma_ne_a
-  ),
-  fun eq_one => eq_one.symm ▸ movedBy_one_eq_empty α M
-⟩
+  · intro eq_one
+    rw [eq_one]
+    exact movedBy_one_eq_empty α M
 
 /--
 This theorem allows to deduce the non-commutativity of `g` and `h`
