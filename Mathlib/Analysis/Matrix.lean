@@ -396,7 +396,7 @@ private theorem norm_unitOf (a : α) : ‖unitOf a‖₊ = 1 := by
   rw [unitOf]
   split_ifs with h
   · simp
-  · rw [←nnnorm_eq_zero] at h
+  · rw [← nnnorm_eq_zero] at h
     rw [nnnorm_smul, nnnorm_inv, nnnorm_norm, mul_inv_cancel h]
 
 private theorem mul_unitOf (a : α) : a * unitOf a = algebraMap _ _ (‖a‖₊ : ℝ)  := by
@@ -431,7 +431,7 @@ lemma linfty_op_nnnorm_eq_op_nnnorm (A : Matrix m n α) :
   simp [mulVec, dotProduct] at this
   specialize this i
   refine le_trans ?_ this
-  simp_rw [mul_unitOf, ←map_sum, nnnorm_algebraMap, ←NNReal.coe_sum]
+  simp_rw [mul_unitOf, ← map_sum, nnnorm_algebraMap, ← NNReal.coe_sum]
   simp only [NNReal.nnnorm_eq, nnnorm_one, mul_one, le_refl]
 
 lemma linfty_op_norm_eq_op_norm (A : Matrix m n α) :
