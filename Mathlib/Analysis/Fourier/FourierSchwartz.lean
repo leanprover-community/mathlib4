@@ -24,35 +24,10 @@ Fourier tranform, Fréchet derivative
 
 -/
 
-open MeasureTheory RealInnerProductSpace Complex Real
-
--- -- lemma that if you compose a `ContinuousLinearMap` with a homothety, then the operator norm scales
--- -- by the homotheity factor
--- -- MOVE TO : right after `LinearIsometry.norm_toContinuousLinearMap_comp`
--- @[simp] lemma ContinuousLinearMap.norm_homothety_comp {𝕜 : Type*} {𝕜₂ : Type*} {E : Type*}
---     {F : Type*} {D : Type*} [NormedAddCommGroup E] [NormedAddCommGroup D] [NormedAddCommGroup F]
---     [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [NormedSpace 𝕜 E] [NormedSpace 𝕜 D]
---     [NormedSpace 𝕜₂ F] {σ₁₂ : 𝕜 →+* 𝕜₂} {e : D →L[𝕜] E} [RingHomIsometric σ₁₂]
---     (f : E →SL[σ₁₂] F) {a : ℝ} (hf : ∀ (x : E), ‖f x‖ = a * ‖x‖) :
---     ‖(f.comp e)‖ = a * ‖e‖ := by
---   sorry
-
-
--- -- lemma that if you have `LinearIsometry.toSpanSingleton` and you forget the `isometry` part while
--- -- preserving continuity, you get `ContinuousLinearMap.toSpanSingleton`
--- -- MOVE TO : right after `LinearIsometry.toSpanSingleton`
--- @[simp] lemma LinearIsometry.toSpanSingleton.toContinuousLinearMap {𝕜 : Type*}
---     [NontriviallyNormedField 𝕜] {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] {v : E}
---     (hv : ‖v‖ = 1) :
---     (LinearIsometry.toSpanSingleton 𝕜 E hv).toContinuousLinearMap
---       = ContinuousLinearMap.toSpanSingleton 𝕜 v := rfl
-
+open MeasureTheory Real Complex
 
 variable (E F : Type*) [NormedAddCommGroup E] [InnerProductSpace ℝ E] [MeasurableSpace E]
   [BorelSpace E] [FiniteDimensional ℝ E] [NormedAddCommGroup F] [NormedSpace ℂ F] [CompleteSpace F]
-
--- -- move to `SchwartzSpace` file (not needed for us any longer! For now...)
--- theorem SchwartzMap.coe_mk (f : E → F) (h₁ h₂) : (SchwartzMap.mk f h₁ h₂ : E → F) = f := by rfl
 
 noncomputable section
 
