@@ -5,6 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.Analysis.NormedSpace.Basic
 import Mathlib.Analysis.NormedSpace.Exponential
+import Mathlib.Analysis.NormedSpace.ProdLp
 import Mathlib.Topology.Instances.TrivSqZeroExt
 
 #align_import analysis.normed_space.triv_sq_zero_ext from "leanprover-community/mathlib"@"88a563b158f59f2983cfad685664da95502e8cdd"
@@ -20,11 +21,10 @@ For now, this file contains results about `exp` for this type.
 * `TrivSqZeroExt.snd_exp`
 * `TrivSqZeroExt.exp_inl`
 * `TrivSqZeroExt.exp_inr`
+*
 
 ## TODO
 
-* Actually define a sensible norm on `TrivSqZeroExt R M`, so that we have access to lemmas
-  like `exp_add`.
 * Generalize more of these results to non-commutative `R`. In principle, under sufficient conditions
   we should expect
  `(exp 𝕜 x).snd = ∫ t in 0..1, exp 𝕜 (t • x.fst) • op (exp 𝕜 ((1 - t) • x.fst)) • x.snd`
@@ -175,5 +175,88 @@ theorem eq_smul_exp_of_ne_zero (x : tsze R M) (hx : x.fst ≠ 0) :
 end Field
 
 end Topology
+
+/-!
+### The $ℓ^1$ norm on the trivial square zero extension
+
+This is not particularly canonical, but is sufficient to obtain a normed algebra, and thus
+to use `exp_add_of_commute`.
+-/
+
+noncomputable section Normed
+
+section Ring
+
+variable [NormedField 𝕜] [NormedRing R] [NormedAddCommGroup M]
+variable [NormedAlgebra 𝕜 R] [NormedSpace 𝕜 M] [Module R M] [Module Rᵐᵒᵖ M]
+variable [BoundedSMul R M] [BoundedSMul Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
+variable [IsScalarTower 𝕜 R M] [IsScalarTower 𝕜 Rᵐᵒᵖ M]
+
+instance instL1NormedAddCommGroup : NormedAddCommGroup (tsze R M) :=
+  inferInstanceAs <| NormedAddCommGroup (WithLp 1 <| R × M)
+
+theorem norm_def (x : tsze R M) : ‖x‖ = ‖fst x‖ + ‖snd x‖ := by
+  rw [WithLp.prod_norm_eq_add (by norm_num)]
+  simp only [ENNReal.one_toReal, Real.rpow_one, div_one]
+  rfl
+
+theorem nnnorm_def (x : tsze R M) : ‖x‖₊ = ‖fst x‖₊ + ‖snd x‖₊ := by
+  ext; simp [norm_def]
+
+instance instL1NormedSpace : NormedSpace 𝕜 (tsze R M) :=
+  inferInstanceAs <| NormedSpace 𝕜 (WithLp 1 <| R × M)
+
+instance instL1NormedRing : NormedRing (tsze R M) where
+  norm_mul
+  | ⟨r₁, m₁⟩, ⟨r₂, m₂⟩ => by
+    dsimp
+    rw [norm_def, norm_def, norm_def, add_mul, mul_add, mul_add, snd_mul, fst_mul]
+    dsimp [fst, snd]
+    rw [add_assoc]
+    gcongr
+    · exact norm_mul_le _ _
+    refine (norm_add_le _ _).trans ?_
+    gcongr
+    · exact norm_smul_le _ _
+    refine (_root_.norm_smul_le _ _).trans ?_
+    rw [← add_zero (_ * _), mul_comm, MulOpposite.norm_op]
+    gcongr
+    positivity
+  __ : NormedAddCommGroup (tsze R M) := inferInstance
+  __ : Ring (tsze R M) := inferInstance
+
+instance instL1NormedAlgebra : NormedAlgebra 𝕜 (tsze R M) where
+  norm_smul_le := _root_.norm_smul_le
+
+end Ring
+
+section CommRing
+
+variable [NormedField 𝕜] [NormedCommRing R] [NormedAddCommGroup M]
+variable [NormedAlgebra 𝕜 R] [NormedSpace 𝕜 M] [Module R M] [Module Rᵐᵒᵖ M] [IsCentralScalar R M]
+variable [BoundedSMul R M]
+variable [IsScalarTower 𝕜 R M] [IsScalarTower 𝕜 Rᵐᵒᵖ M]
+
+instance instL1NormedCommRing : NormedCommRing (tsze R M) where
+  __ : CommRing (tsze R M) := inferInstance
+  __ : NormedRing (tsze R M) := inferInstance
+
+end CommRing
+
+end Normed
+
+section
+
+variable [IsROrC 𝕜] [NormedRing R] [NormedAddCommGroup M]
+variable [NormedAlgebra 𝕜 R] [NormedSpace 𝕜 M] [Module R M] [Module Rᵐᵒᵖ M]
+variable [BoundedSMul R M] [BoundedSMul Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
+variable [IsScalarTower 𝕜 R M] [IsScalarTower 𝕜 Rᵐᵒᵖ M]
+variable [CompleteSpace R] [CompleteSpace M]
+
+-- Evidence that we have sufficient instances on `tsze R N` to make `exp_add_of_commute` usable
+example (a b : tsze R M) (h : Commute a b) : exp 𝕜 (a + b) = exp 𝕜 a * exp 𝕜 b :=
+  exp_add_of_commute h
+
+end
 
 end TrivSqZeroExt

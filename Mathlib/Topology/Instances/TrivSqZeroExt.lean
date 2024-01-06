@@ -34,13 +34,21 @@ local notation "tsze" => TrivSqZeroExt
 
 namespace TrivSqZeroExt
 
-variable [TopologicalSpace R] [TopologicalSpace M]
-
-instance : TopologicalSpace (tsze R M) :=
+instance instTopologicalSpace [TopologicalSpace R] [TopologicalSpace M] : TopologicalSpace (tsze R M) :=
   TopologicalSpace.induced fst ‹_› ⊓ TopologicalSpace.induced snd ‹_›
 
-instance [T2Space R] [T2Space M] : T2Space (tsze R M) :=
+instance [TopologicalSpace R] [TopologicalSpace M] [T2Space R] [T2Space M] : T2Space (tsze R M) :=
   Prod.t2Space
+
+instance [UniformSpace R] [UniformSpace M] : UniformSpace (tsze R M) where
+  toTopologicalSpace := instTopologicalSpace
+  __ := instUniformSpaceProd
+
+instance [UniformSpace R] [UniformSpace M] [CompleteSpace R] [CompleteSpace M] :
+    CompleteSpace (tsze R M) :=
+  inferInstanceAs <| CompleteSpace (R × M)
+
+variable [TopologicalSpace R] [TopologicalSpace M]
 
 theorem nhds_def (x : tsze R M) : nhds x = (nhds x.fst).prod (nhds x.snd) := by
   cases x
