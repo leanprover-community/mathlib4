@@ -100,9 +100,21 @@ def Matrix.toEuclideanClm :
       map_mul' := fun _ _ ↦ rfl
       map_star' := LinearMap.adjoint_toContinuousLinearMap }
 
+@[simp]
+theorem toEuclideanClm_piLp_equiv_symm (A : Matrix n n 𝕜) (x : n → 𝕜) :
+    Matrix.toEuclideanClm (n := n) (𝕜 := 𝕜) A ((WithLp.equiv _ _).symm x) =
+      (WithLp.equiv _ _).symm (Matrix.toLin' A x) :=
+  rfl
+
+@[simp]
+theorem piLp_equiv_toEuclideanClm (A : Matrix n n 𝕜) (x : EuclideanSpace 𝕜 n) :
+    WithLp.equiv _ _ (Matrix.toEuclideanClm (n := n) (𝕜 := 𝕜) A x) =
+      Matrix.toLin' A (WithLp.equiv _ _ x) :=
+  rfl
+
 /-- An auxiliary definition used only to construct the true `NormedRing` (and `Metric`) structure
 provided by `Matrix.instMetricSpaceCstar` and `Matrix.instNormedRingCstar`.  -/
-def Matrix.NormedRingAuxCstar : NormedRing (Matrix n n 𝕜) :=
+def Matrix.normedRingAuxCstar : NormedRing (Matrix n n 𝕜) :=
   @NormedRing.induced ((Matrix n n 𝕜) ≃⋆ₐ[𝕜] (EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n))
     _ _ _ ContinuousLinearMap.toNormedRing _ _ Matrix.toEuclideanClm.injective
 
@@ -115,13 +127,13 @@ def Matrix.instMetricSpaceCstar : MetricSpace (Matrix n n 𝕜) := by
   /- We first replace the topology so that we can automatically replace the uniformity using
   `UniformAddGroup.toUniformSpace_eq`. -/
   letI normed_ring : NormedRing (Matrix n n 𝕜) :=
-    { NormedRingAuxCstar.replaceTopology <|
+    { normedRingAuxCstar.replaceTopology <|
         toLin (EuclideanSpace.basisFun n 𝕜).toBasis (EuclideanSpace.basisFun n 𝕜).toBasis
           |>.trans LinearMap.toContinuousLinearMap
           |>.toContinuousLinearEquiv.toHomeomorph.inducing.induced with
-      norm := NormedRingAuxCstar.norm
-      dist_eq := NormedRingAuxCstar.dist_eq
-      norm_mul := NormedRingAuxCstar.norm_mul }
+      norm := normedRingAuxCstar.norm
+      dist_eq := normedRingAuxCstar.dist_eq
+      norm_mul := normedRingAuxCstar.norm_mul }
   exact normed_ring.replaceUniformity <| by
     congr
     rw [← @UniformAddGroup.toUniformSpace_eq _ (instUniformSpaceMatrix n n 𝕜) _ _]
@@ -134,9 +146,9 @@ open scoped Matrix.CstarNorm
 /-- The normed ring structure on `Matrix n n 𝕜` arising from the operator norm given by the
 identification with (continuous) linear endmorphisms of `EuclideanSpace 𝕜 n`. -/
 def Matrix.instNormedRingCstar : NormedRing (Matrix n n 𝕜) where
-  norm := NormedRingAuxCstar.norm
-  dist_eq := NormedRingAuxCstar.dist_eq
-  norm_mul := NormedRingAuxCstar.norm_mul
+  norm := normedRingAuxCstar.norm
+  dist_eq := normedRingAuxCstar.dist_eq
+  norm_mul := normedRingAuxCstar.norm_mul
 
 scoped[Matrix.CstarNorm] attribute [instance] Matrix.instNormedRingCstar
 
