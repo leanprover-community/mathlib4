@@ -48,8 +48,8 @@ variable {R : Type u}
 
 theorem Distrib.ext_iff (inst₁ inst₂ : Distrib R) :
     inst₁ = inst₂ ↔
-      (∀ a b, a +[R, inst₁] b = a +[R, inst₂] b) ∧
-      (∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :=
+      (∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
+      ∧ (∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :=
   ⟨fun h ↦ by constructor <;> (intro _ _; congr), And.elim (Distrib.ext · ·)⟩
 
 /-! ### NonUnitalNonAssocSemiring -/
@@ -66,8 +66,8 @@ theorem Distrib.ext_iff (inst₁ inst₂ : Distrib R) :
 
 theorem NonUnitalNonAssocSemiring.ext_iff (inst₁ inst₂ : NonUnitalNonAssocSemiring R) :
     inst₁ = inst₂ ↔
-      (∀ a b, a +[R, inst₁] b = a +[R, inst₂] b) ∧
-      (∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :=
+      (∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
+      ∧ (∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :=
   ⟨fun h ↦ by constructor <;> (intros; congr), And.elim (NonUnitalNonAssocSemiring.ext · ·)⟩
 
 /-! ### NonUnitalSemiring -/
@@ -85,8 +85,8 @@ theorem NonUnitalSemiring.toNonUnitalNonAssocSemiring_injective :
 
 theorem NonUnitalSemiring.ext_iff (inst₁ inst₂ : NonUnitalSemiring R) :
     inst₁ = inst₂ ↔
-      (∀ a b, a +[R, inst₁] b = a +[R, inst₂] b) ∧
-      (∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :=
+      (∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
+      ∧ (∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :=
   ⟨fun h ↦ by constructor <;> (intros; congr), And.elim (NonUnitalSemiring.ext · ·)⟩
 
 /-! ### NonAssocSemiring -/
@@ -126,8 +126,8 @@ theorem NonAssocSemiring.toNonUnitalNonAssocSemiring_injective :
 
 theorem NonAssocSemiring.ext_iff (inst₁ inst₂ : NonAssocSemiring R) :
     inst₁ = inst₂ ↔
-      (∀ a b, a +[R, inst₁] b = a +[R, inst₂] b) ∧
-      (∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :=
+      (∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
+      ∧ (∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :=
   ⟨fun h ↦ by constructor <;> (intros; congr), And.elim (NonAssocSemiring.ext · ·)⟩
 
 /-! ### Semiring -/
@@ -156,7 +156,7 @@ theorem Semiring.toNonUnitalNonAssocSemiring_injective :
 
 theorem Semiring.ext_iff (inst₁ inst₂ : Semiring R) :
     inst₁ = inst₂ ↔
-      (∀ a b, a +[R, inst₁] b = a +[R, inst₂] b) ∧
-      (∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :=
+      (∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
+      ∧ (∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :=
   ⟨fun h ↦ by constructor <;> (intros; congr), And.elim (Semiring.ext · ·)⟩
 
