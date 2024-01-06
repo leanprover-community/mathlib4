@@ -4,25 +4,23 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Kontorovich, Heather Macbeth
 -/
 
-/-
-1/5/24 TO DO:
-
-get rid of unnecessary imports
-
--/
-
 import Mathlib.Analysis.Fourier.FourierTransform
-import Mathlib.Analysis.Distribution.SchwartzSpace
-import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
 import Mathlib.Analysis.Calculus.ParametricIntegral
-import Mathlib.Analysis.InnerProductSpace.Calculus
-import Mathlib.Analysis.Complex.RealDeriv
 import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 
 /-!
 # The Frechet Derivative of the Fourier transform
 
 In this file, we evaluate the Fréchet derivative of the Fourier transform
+
+## Main result
+
+* `hasFDerivAt_fourier` : The Fréchet derivative of the Fourier transform of `f` is the
+    Fourier transform of `fun v ↦ ((-2 * π * I) • f v) ⊗ (innerSL ℝ v)`.
+
+## Tags
+
+Fourier tranform, Fréchet derivative
 
 -/
 
