@@ -205,8 +205,7 @@ theorem map_one [OneHomClass F M N] (f : F) : f 1 = 1 :=
 #align map_one map_one
 #align map_zero map_zero
 
-@[to_additive (attr := simp)]
-lemma map_comp_one [OneHomClass F M N] (f : F) : f ∘ (1 : ι → M) = 1 := by ext; simp
+@[to_additive] lemma map_comp_one [OneHomClass F M N] (f : F) : f ∘ (1 : ι → M) = 1 := by simp
 
 /-- In principle this could be an instance, but in practice it causes performance issues. -/
 @[to_additive]
@@ -441,9 +440,9 @@ theorem map_mul_inv [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) 
 #align map_mul_inv map_mul_inv
 #align map_add_neg map_add_neg
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma map_comp_mul_inv [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) (g h : ι → G) :
-    f ∘ (g * h⁻¹) = f ∘ g * (f ∘ h)⁻¹ := by ext; simp
+    f ∘ (g * h⁻¹) = f ∘ g * (f ∘ h)⁻¹ := by simp
 
 /-- Group homomorphisms preserve division. -/
 @[to_additive (attr := simp) "Additive group homomorphisms preserve subtraction."]
@@ -489,9 +488,9 @@ theorem map_zpow [Group G] [DivisionMonoid H] [MonoidHomClass F G H]
 #align map_zpow map_zpow
 #align map_zsmul map_zsmul
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma map_comp_zpow [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) (g : ι → G)
-    (n : ℤ) : f ∘ (g ^ n) = f ∘ g ^ n := by ext; simp
+    (n : ℤ) : f ∘ (g ^ n) = f ∘ g ^ n := by simp
 
 end mul_one
 
