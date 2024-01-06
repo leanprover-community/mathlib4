@@ -674,7 +674,7 @@ theorem pow_smul_eq_iff_period_dvd {n : ℕ} {m : M} {a : α}:
     m ^ n • a = a ↔ period m a ∣ n := by
   rw [
     period_eq_minimalPeriod,
-    <-Function.isPeriodicPt_iff_minimalPeriod_dvd,
+    ← Function.isPeriodicPt_iff_minimalPeriod_dvd,
     fixed_iff_isPeriodicPt
   ]
 
@@ -704,14 +704,14 @@ theorem zpow_smul_plus_period (i j : ℤ) (g : G) (a : α):
 theorem pow_smul_mod_period (n : ℕ) {m : M} {a : α}:
     m ^ (n % period m a) • a = m ^ n • a := by
   conv_rhs => {
-    rw [<-Nat.mod_add_div n (period m a), pow_smul_plus_period]
+    rw [← Nat.mod_add_div n (period m a), pow_smul_plus_period]
   }
 
 @[to_additive (attr := simp)]
 theorem zpow_smul_mod_period (j : ℤ) {g : G} {a : α}:
     g ^ (j % (period g a : ℤ)) • a = g ^ j • a := by
   conv_rhs => {
-    rw [<-Int.emod_add_ediv j (period g a), zpow_smul_plus_period]
+    rw [← Int.emod_add_ediv j (period g a), zpow_smul_plus_period]
   }
 
 variable {a : G} {b : α}
@@ -719,14 +719,14 @@ variable {a : G} {b : α}
 @[to_additive]
 theorem pow_smul_eq_iff_minimalPeriod_dvd {n : ℕ} :
     a ^ n • b = b ↔ Function.minimalPeriod (a • ·) b ∣ n := by
-  rw [<-period_eq_minimalPeriod, pow_smul_eq_iff_period_dvd]
+  rw [← period_eq_minimalPeriod, pow_smul_eq_iff_period_dvd]
 #align mul_action.pow_smul_eq_iff_minimal_period_dvd MulAction.pow_smul_eq_iff_minimalPeriod_dvd
 #align add_action.nsmul_vadd_eq_iff_minimal_period_dvd AddAction.nsmul_vadd_eq_iff_minimalPeriod_dvd
 
 @[to_additive]
 theorem zpow_smul_eq_iff_minimalPeriod_dvd {n : ℤ} :
     a ^ n • b = b ↔ (Function.minimalPeriod (a • ·) b : ℤ) ∣ n := by
-  rw [<-period_eq_minimalPeriod, zpow_smul_eq_iff_period_dvd]
+  rw [← period_eq_minimalPeriod, zpow_smul_eq_iff_period_dvd]
 #align mul_action.zpow_smul_eq_iff_minimal_period_dvd MulAction.zpow_smul_eq_iff_minimalPeriod_dvd
 #align add_action.zsmul_vadd_eq_iff_minimal_period_dvd AddAction.zsmul_vadd_eq_iff_minimalPeriod_dvd
 
@@ -735,14 +735,14 @@ variable (a b)
 @[to_additive (attr := simp)]
 theorem pow_smul_mod_minimalPeriod (n : ℕ) :
     a ^ (n % Function.minimalPeriod (a • ·) b) • b = a ^ n • b := by
-  rw [<-period_eq_minimalPeriod, pow_smul_mod_period]
+  rw [← period_eq_minimalPeriod, pow_smul_mod_period]
 #align mul_action.pow_smul_mod_minimal_period MulAction.pow_smul_mod_minimalPeriod
 #align add_action.nsmul_vadd_mod_minimal_period AddAction.nsmul_vadd_mod_minimalPeriod
 
 @[to_additive (attr := simp)]
 theorem zpow_smul_mod_minimalPeriod (n : ℤ) :
     a ^ (n % (Function.minimalPeriod (a • ·) b : ℤ)) • b = a ^ n • b := by
-  rw [<-period_eq_minimalPeriod, zpow_smul_mod_period]
+  rw [← period_eq_minimalPeriod, zpow_smul_mod_period]
 #align mul_action.zpow_smul_mod_minimal_period MulAction.zpow_smul_mod_minimalPeriod
 #align add_action.zsmul_vadd_mod_minimal_period AddAction.zsmul_vadd_mod_minimalPeriod
 
