@@ -133,7 +133,7 @@ theorem card_le_mul_sum {x k : ℕ} : (card (U x k) : ℝ) ≤ x * ∑ p in P x 
   calc
     (card (Finset.biUnion P N) : ℝ) ≤ ∑ p in P, (card (N p) : ℝ) := by assumption_mod_cast
     _ ≤ ∑ p in P, x * (1 / (p : ℝ)) := (sum_le_sum fun p _ => ?_)
-    _ = x * ∑ p in P, 1 / (p : ℝ) := mul_sum.symm
+    _ = x * ∑ p in P, 1 / (p : ℝ) := by rw [mul_sum]
   simp only [mul_one_div, Nat.card_multiples, Nat.cast_div_le]
 #align theorems_100.card_le_mul_sum Theorems100.card_le_mul_sum
 
