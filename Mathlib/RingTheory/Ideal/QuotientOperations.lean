@@ -14,7 +14,8 @@ import Mathlib.RingTheory.Ideal.Quotient
 ## Main results:
 
  - `quotientKerEquivRange` : the **first isomorphism theorem** for commutative rings.
- - `quotientKerEquivRangeS` : the **first isomorphism theorem** for a morphism from a commutative ring to a semiring.
+ - `quotientKerEquivRangeS` : the **first isomorphism theorem**
+  for a morphism from a commutative ring to a semiring.
  - `Ideal.quotientInfRingEquivPiQuotient`: the **Chinese Remainder Theorem**, version for coprime
    ideals (see also `ZMod.prodEquivPi` in `Data.ZMod.Quotient` for elementary versions about
    `ZMod`).
