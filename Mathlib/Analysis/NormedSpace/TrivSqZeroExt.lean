@@ -6,6 +6,7 @@ Authors: Eric Wieser
 import Mathlib.Analysis.NormedSpace.Basic
 import Mathlib.Analysis.NormedSpace.Exponential
 import Mathlib.Topology.Instances.TrivSqZeroExt
+import Mathlib.MeasureTheory.Integral.IntervalIntegral
 
 #align_import analysis.normed_space.triv_sq_zero_ext from "leanprover-community/mathlib"@"88a563b158f59f2983cfad685664da95502e8cdd"
 
@@ -78,6 +79,55 @@ theorem hasSum_snd_expSeries_of_smul_comm [Field 𝕜] [CharZero 𝕜] [Ring R] 
     Nat.succ_eq_add_one,
     mul_div_cancel_left _ ((@Nat.cast_ne_zero 𝕜 _ _ _).mpr <| Nat.succ_ne_zero _)]
   exact h
+
+open scoped BigOperators
+
+@[simp]
+theorem List.toFinset_range (n) : List.toFinset (List.range n) = Finset.range n := by ext; simp
+
+
+/-- An infinite triangular sum can be transposed. -/
+theorem HasSum_sum_range_iff {α} [TopologicalSpace α] [AddCommMonoid α] [ContinuousAdd α]
+    (f : ℕ → ℕ → α) (a : α):
+    HasSum (fun n => ∑ k in .range (n + 1), f n k) a ↔ HasSum (fun nk : ℕ × ℕ => f (nk.1 + nk.2) nk.2) a :=
+  sorry
+
+open Nat in
+theorem beta_aux
+    (a b : ℕ) : ((a + b + 1)! : ℝ)⁻¹ = ∫ x in Set.Icc 0 1,  ((a ! : ℝ)⁻¹ • (x ^ a)) * (b ! : ℝ)⁻¹ • (1 - x)^ b :=
+  sorry
+
+/-- If `exp R x.fst` converges to `e` then `(exp R x).snd` converges to `e • x.snd`. -/
+theorem hasSum_snd_expSeries' {R M} [Ring R] [NormedAddCommGroup M]
+    [Algebra ℝ R] [Module R M] [Module Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M] [NormedSpace ℝ M]
+    [IsScalarTower ℝ R M] [IsScalarTower ℝ Rᵐᵒᵖ M] [TopologicalSpace R] [TopologicalRing R]
+    [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M] [CompleteSpace M] (x : tsze R M)
+    {e : ℝ → R}
+    (h : ∀ t ∈ Set.Icc 0 1, HasSum (fun n => expSeries ℝ R n fun _ => t • x.fst) (e t)) :
+    HasSum (fun n => snd (expSeries ℝ (tsze R M) n fun _ => x))
+      (∫ t in Set.Icc (0 : ℝ) 1, e t • MulOpposite.op (e (1 - t)) • x.snd) := by
+  replace h : ∀ t ∈ Set.Icc 0 1, HasSum _ _ := fun t ht =>
+    (h t ht).smul ((h (1 - t) (by aesop)).op.smul_const x.snd) sorry
+  simp_rw [expSeries_apply_eq] at *
+  conv =>
+    congr
+    ext n
+    rw [snd_smul, snd_pow_eq_sum, ←List.sum_toFinset _ (List.nodup_range n), List.toFinset_range,
+      Finset.smul_sum]
+  rw [← hasSum_nat_add_iff' 1]
+  rw [Finset.range_one, Finset.sum_singleton, Finset.range_zero, Finset.sum_empty,
+    sub_zero]
+  simp_rw [Nat.pred_succ]
+  rw [HasSum_sum_range_iff]
+  simp only [add_tsub_cancel_right]
+  simp_rw [beta_aux, ←integral_smul_const, mul_smul, smul_comm (_ • (1 - _)^_ : ℝ) (_ : R),
+    ←smul_assoc, ←MulOpposite.op_smul, smul_assoc _ (_ ^ _), ←smul_pow]
+  apply MeasureTheory.hasSum_integral_of_dominated_convergence
+  case h_lim =>
+    rw [MeasureTheory.ae_restrict_iff sorry]
+    filter_upwards
+    exact h
+  repeat sorry
 #align triv_sq_zero_ext.has_sum_snd_exp_series_of_smul_comm TrivSqZeroExt.hasSum_snd_expSeries_of_smul_comm
 
 /-- If `exp R x.fst` converges to `e` then `exp R x` converges to `inl e + inr (e • x.snd)`. -/
