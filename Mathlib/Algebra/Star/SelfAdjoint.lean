@@ -40,6 +40,7 @@ We also define `IsStarNormal R`, a `Prop` that states that an element `x` satisf
 
 -/
 
+open Function
 
 variable {R A : Type*}
 
