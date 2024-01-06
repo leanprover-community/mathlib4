@@ -624,11 +624,11 @@ theorem Field.cardinal_emb_of_isSeparable [IsSeparable F E] :
 theorem Field.cardinal_emb_separableClosure (alg : Algebra.IsAlgebraic F E) :
     #(Field.Emb F <| separableClosure F E) = #(Field.Emb F E) := sorry
 
-theorem Field.cardinal_emb_of_aleph0_le_rank_separableClosure (alg : Algebra.IsAlgebraic F E)
-    (rank_inf : ℵ₀ ≤ Module.rank F (separableClosure F E)) :
-    #(Field.Emb F E) = 2 ^ Module.rank F (separableClosure F E) := by
+theorem Field.cardinal_emb_of_aleph0_le_sepDegree (alg : Algebra.IsAlgebraic F E)
+    (rank_inf : ℵ₀ ≤ sepDegree F E) : #(Field.Emb F E) = 2 ^ sepDegree F E := by
   rw [← cardinal_emb_separableClosure alg, cardinal_emb_of_aleph0_le_rank_of_isSeparable rank_inf]
+  rfl
 
-theorem Field.cardinal_emb (alg : Algebra.IsAlgebraic F E) : #(Field.Emb F E) =
-    (fun c ↦ if ℵ₀ ≤ c then 2 ^ c else c) (Module.rank F <| separableClosure F E) := by
-  rw [← cardinal_emb_separableClosure alg, cardinal_emb_of_isSeparable]
+theorem Field.cardinal_emb (alg : Algebra.IsAlgebraic F E) :
+    #(Field.Emb F E) = (fun c ↦ if ℵ₀ ≤ c then 2 ^ c else c) (sepDegree F E) := by
+  rw [← cardinal_emb_separableClosure alg, cardinal_emb_of_isSeparable]; rfl
