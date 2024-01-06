@@ -34,7 +34,8 @@ local notation "tsze" => TrivSqZeroExt
 
 namespace TrivSqZeroExt
 
-instance instTopologicalSpace [TopologicalSpace R] [TopologicalSpace M] : TopologicalSpace (tsze R M) :=
+instance instTopologicalSpace [TopologicalSpace R] [TopologicalSpace M] :
+    TopologicalSpace (tsze R M) :=
   TopologicalSpace.induced fst ‹_› ⊓ TopologicalSpace.induced snd ‹_›
 
 instance [TopologicalSpace R] [TopologicalSpace M] [T2Space R] [T2Space M] : T2Space (tsze R M) :=

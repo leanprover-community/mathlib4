@@ -228,6 +228,9 @@ instance instL1NormedRing : NormedRing (tsze R M) where
 instance instL1NormedAlgebra : NormedAlgebra 𝕜 (tsze R M) where
   norm_smul_le := _root_.norm_smul_le
 
+instance [NormOneClass R] : NormOneClass (tsze R M) where
+  norm_one := by rw [norm_def, fst_one, snd_one, norm_zero, norm_one, add_zero]
+
 end Ring
 
 section CommRing
