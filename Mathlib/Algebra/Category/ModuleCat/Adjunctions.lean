@@ -183,23 +183,20 @@ theorem associativity (X Y Z : Type u) :
     CategoryTheory.associator_hom_apply]; rfl
 #align Module.free.associativity ModuleCat.Free.associativity
 
-/-- The free R-module functor is lax monoidal. The structure part. -/
-@[simps]
-instance : LaxMonoidalStruct.{u} (free R).obj where
-  -- Send `R` to `PUnit →₀ R`
-  ε := ε R
-  -- Send `(α →₀ R) ⊗ (β →₀ R)` to `α × β →₀ R`
-  μ X Y := (μ R X Y).hom
-
 -- In fact, it's strong monoidal, but we don't yet have a typeclass for that.
 /-- The free R-module functor is lax monoidal. The property part. -/
+@[simps]
 instance : LaxMonoidal.{u} (free R).obj := .ofTensorHom
+  -- Send `R` to `PUnit →₀ R`
+  (ε := ε R)
+  -- Send `(α →₀ R) ⊗ (β →₀ R)` to `α × β →₀ R`
+  (μ := fun X Y => (μ R X Y).hom)
   (μ_natural := fun {_} {_} {_} {_} f g ↦ μ_natural R f g)
   (left_unitality := left_unitality R)
   (right_unitality := right_unitality R)
   (associativity := associativity R)
 
-instance : IsIso (@LaxMonoidalStruct.ε _ _ _ _ _ _ (free R).obj _ _) := by
+instance : IsIso (@LaxMonoidal.ε _ _ _ _ _ _ (free R).obj _ _) := by
   refine' ⟨⟨Finsupp.lapply PUnit.unit, ⟨_, _⟩⟩⟩
   · -- Porting note: broken ext
     apply LinearMap.ext_ring
@@ -228,7 +225,7 @@ variable [CommRing R]
 def monoidalFree : MonoidalFunctor (Type u) (ModuleCat.{u} R) :=
   { LaxMonoidalFunctor.of (free R).obj with
     -- Porting note: used to be dsimp
-    ε_isIso := inferInstanceAs <| IsIso LaxMonoidalStruct.ε
+    ε_isIso := inferInstanceAs <| IsIso LaxMonoidal.ε
     μ_isIso := fun X Y => by dsimp; infer_instance }
 #align Module.monoidal_free ModuleCat.monoidalFree
 

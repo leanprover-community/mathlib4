@@ -47,18 +47,14 @@ open MonoidalCategory
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C] {D : Type u₂} [Category.{v₂} D]
   [MonoidalCategory.{v₂} D]
 
-/-- An unbundled description of lax monoidal functors without axioms. See `LaxMonoidal` for
-the full description. -/
-class LaxMonoidalStruct (F : C → D) [Functorial.{v₁, v₂} F] where
+-- Perhaps in the future we'll redefine `LaxMonoidalFunctor` in terms of this,
+-- but that isn't the immediate plan.
+/-- An unbundled description of lax monoidal functors. -/
+class LaxMonoidal (F : C → D) [Functorial.{v₁, v₂} F] where
   /-- unit morphism -/
   ε : 𝟙_ D ⟶ F (𝟙_ C)
   /-- tensorator -/
   μ : ∀ X Y : C, F X ⊗ F Y ⟶ F (X ⊗ Y)
-
--- Perhaps in the future we'll redefine `LaxMonoidalFunctor` in terms of this,
--- but that isn't the immediate plan.
-/-- An unbundled description of lax monoidal functors. -/
-class LaxMonoidal (F : C → D) [Functorial.{v₁, v₂} F] extends LaxMonoidalStruct F where
   μ_natural_left :
     ∀ {X Y : C} (f : X ⟶ Y) (X' : C),
       (map F f ▷ F X') ≫ μ Y X' = μ X X' ≫ map F (f ▷ X') := by
@@ -78,11 +74,12 @@ class LaxMonoidal (F : C → D) [Functorial.{v₁, v₂} F] extends LaxMonoidalS
   right_unitality : ∀ X : C, (ρ_ (F X)).hom = (F X ◁ ε) ≫ μ X (𝟙_ C) ≫ map F (ρ_ X).hom :=
     by aesop_cat
 
--- Perhaps in the future we'll redefine `LaxMonoidalFunctor` in terms of this,
--- but that isn't the immediate plan.
-open LaxMonoidalStruct in
 /-- An unbundled description of lax monoidal functors. -/
-abbrev LaxMonoidal.ofTensorHom (F : C → D) [Functorial.{v₁, v₂} F] [LaxMonoidalStruct F]
+abbrev LaxMonoidal.ofTensorHom (F : C → D) [Functorial.{v₁, v₂} F]
+    /- unit morphism -/
+    (ε : 𝟙_ D ⟶ F (𝟙_ C))
+    /- tensorator -/
+    (μ : ∀ X Y : C, F X ⊗ F Y ⟶ F (X ⊗ Y))
     /- naturality -/
     (μ_natural :
       ∀ {X Y X' Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y'),
