@@ -17,10 +17,11 @@ namespace LinearMap
 
 variable {ι₁ ι₂ : Type*}
 
-variable {R R₂ S S₂ M N P Rₗ: Type*}
+variable {R R₂ S S₂ M N P Rₗ : Type*}
 
 variable {Mₗ Nₗ Pₗ : Type*}
 
+-- Could weaken [CommSemiring Rₗ] to [SMulCommClass Rₗ Rₗ Pₗ], but might impact performance
 variable [Semiring R] [Semiring S] [Semiring R₂] [Semiring S₂] [CommSemiring Rₗ]
 
 section AddCommMonoid
