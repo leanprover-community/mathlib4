@@ -297,10 +297,6 @@ variable [Module R S] [Module S A] [Module R A] [IsScalarTower R S A]
 
 open IsScalarTower
 
-theorem span_le_restrictScalars_span (t : Set A) : span R t ≤ (span S t).restrictScalars R :=
-  fun x hx ↦ closure_induction hx (zero_mem _) (fun _ _ ↦ add_mem) fun r x hx ↦ by
-    rw [← one_smul S x, ← IsScalarTower.smul_assoc]; exact (span S t).smul_mem _ (subset_span hx)
-
 theorem smul_mem_span_smul_of_mem {s : Set S} {t : Set A} {k : S} (hks : k ∈ span R s) {x : A}
     (hx : x ∈ t) : k • x ∈ span R (s • t) :=
   span_induction hks (fun c hc => subset_span <| Set.smul_mem_smul hc hx)
