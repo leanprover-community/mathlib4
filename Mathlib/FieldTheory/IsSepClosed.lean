@@ -26,6 +26,9 @@ and prove some of their properties.
 - `IsSepClosure.equiv` is a proof that any two separable closures of the
   same field are isomorphic.
 
+- `IsSepClosure.isAlgClosure_of_perfectField`, `IsSepClosure.of_isAlgClosure_of_perfectField`:
+  if `k` is a perfect field, then its separable closure coincides with its algebraic closure.
+
 ## Tags
 
 separable closure, separably closed
@@ -42,10 +45,6 @@ separable closure, separably closed
 
 - `Algebra.IsAlgebraic.isPurelyInseparable_of_isSepClosed`: an algebraic extension of a separably
   closed field is purely inseparable.
-
-## TODO
-
-- if `k` is a perfect field, then its separable closure coincides with its algebraic closure.
 
 -/
 
@@ -199,12 +198,18 @@ class IsSepClosure [Algebra k K] : Prop where
 instance IsSepClosure.self_of_isSepClosed [IsSepClosed k] : IsSepClosure k k :=
   ⟨by assumption, isSeparable_self k⟩
 
--- TODO:
-/- If `k` is perfect, `K` is a separable closure of `k`,
+-- TODO: depends on `Algebra.IsAlgebraic.perfectField`
+/-- If `k` is perfect, `K` is a separable closure of `k`,
 then it is also an algebraic closure of `k`. -/
--- instance IsSepClosure.isAlgClosure_of_perfectField [IsSepClosure k K] [PerfectField k] :
---     IsAlgClosure k K :=
---   sorry
+proof_wanted IsSepClosure.isAlgClosure_of_perfectField
+    [Algebra k K] [IsSepClosure k K] [PerfectField k] : IsAlgClosure k K
+
+/-- If `k` is perfect, `K` is an algebraic closure of `k`,
+then it is also a separable closure of `k`. -/
+instance IsSepClosure.of_isAlgClosure_of_perfectField
+    [Algebra k K] [IsAlgClosure k K] [PerfectField k] : IsSepClosure k K :=
+  ⟨haveI := IsAlgClosure.alg_closed (R := k) (K := K); inferInstance,
+    (IsAlgClosure.algebraic (R := k) (K := K)).isSeparable_of_perfectField⟩
 
 variable {k} {K}
 
