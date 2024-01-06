@@ -793,7 +793,6 @@ lemma domDomRestrict_aux [DecidableEq ι] (s : Set ι) [(i : ι) → Decidable (
 /-- Given a multilinear map `f` on `(i : ι) → M i`, an element `x` of `(i : ι) → M i` and s
 set `s` of `ι`, construct a multilinear map on `s → ((i : ι) → Mi)` whose value at `z`
 is `f` evaluated at the vector with `i`th coordinate `z i` if `i ∈ s` and `x i` otherwise.-/
-
 def domDomRestrict [DecidableEq ι] (f : MultilinearMap R M₁ M₂)
     (s : Set ι) [(i : ι) → Decidable (i ∈ s)] (x : (i : s.compl) → M₁ i) :
     MultilinearMap R (fun (i : s) => M₁ i) M₂ where
