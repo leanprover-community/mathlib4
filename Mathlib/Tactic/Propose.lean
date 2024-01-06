@@ -9,7 +9,7 @@ import Mathlib.Lean.Meta.Basic
 import Mathlib.Lean.Meta.DiscrTree
 import Std.Util.Cache
 import Mathlib.Tactic.Core
-import Mathlib.Tactic.SolveByElim
+import Std.Tactic.SolveByElim
 import Mathlib.Tactic.TryThis
 
 /-!
@@ -38,7 +38,7 @@ set_option autoImplicit true
 
 namespace Mathlib.Tactic.Propose
 
-open Lean Meta Std.Tactic.TryThis
+open Lean Meta Std.Tactic TryThis
 
 initialize registerTraceClass `Tactic.propose
 
@@ -46,7 +46,7 @@ initialize registerTraceClass `Tactic.propose
 def discrTreeConfig : WhnfCoreConfig := {}
 
 initialize proposeLemmas : DeclCache (DiscrTree Name) ←
-  DeclCache.mk "have?: init cache" {} fun name constInfo lemmas => do
+  DeclCache.mk "have?: init cache" failure {} fun name constInfo lemmas => do
     if constInfo.isUnsafe then return lemmas
     if ← name.isBlackListed then return lemmas
     withNewMCtxDepth do withReducible do

@@ -101,6 +101,10 @@ theorem Disjoint.eq_bot_of_ge (hab : Disjoint a b) : b ≤ a → b = ⊥ :=
   hab.symm.eq_bot_of_le
 #align disjoint.eq_bot_of_ge Disjoint.eq_bot_of_ge
 
+lemma Disjoint.eq_iff (hab : Disjoint a b) : a = b ↔ a = ⊥ ∧ b = ⊥ := by aesop
+lemma Disjoint.ne_iff (hab : Disjoint a b) : a ≠ b ↔ a ≠ ⊥ ∨ b ≠ ⊥ :=
+  hab.eq_iff.not.trans not_and_or
+
 end PartialOrderBot
 
 section PartialBoundedOrder
@@ -284,6 +288,10 @@ theorem Codisjoint.eq_top_of_le (hab : Codisjoint a b) (h : b ≤ a) : a = ⊤ :
 theorem Codisjoint.eq_top_of_ge (hab : Codisjoint a b) : a ≤ b → b = ⊤ :=
   hab.symm.eq_top_of_le
 #align codisjoint.eq_top_of_ge Codisjoint.eq_top_of_ge
+
+lemma Codisjoint.eq_iff (hab : Codisjoint a b) : a = b ↔ a = ⊤ ∧ b = ⊤ := by aesop
+lemma Codisjoint.ne_iff (hab : Codisjoint a b) : a ≠ b ↔ a ≠ ⊤ ∨ b ≠ ⊤ :=
+  hab.eq_iff.not.trans not_and_or
 
 end PartialOrderTop
 
@@ -473,6 +481,8 @@ variable [PartialOrder α] [BoundedOrder α] {x y z : α}
 protected theorem symm (h : IsCompl x y) : IsCompl y x :=
   ⟨h.1.symm, h.2.symm⟩
 #align is_compl.symm IsCompl.symm
+
+lemma _root_.isCompl_comm : IsCompl x y ↔ IsCompl y x := ⟨IsCompl.symm, IsCompl.symm⟩
 
 theorem dual (h : IsCompl x y) : IsCompl (toDual x) (toDual y) :=
   ⟨h.2, h.1⟩

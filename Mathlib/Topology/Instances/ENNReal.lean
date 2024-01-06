@@ -136,6 +136,9 @@ theorem tendsto_toReal {a : ℝ≥0∞} (ha : a ≠ ⊤) : Tendsto ENNReal.toRea
   NNReal.tendsto_coe.2 <| tendsto_toNNReal ha
 #align ennreal.tendsto_to_real ENNReal.tendsto_toReal
 
+lemma continuousOn_toReal : ContinuousOn ENNReal.toReal { a | a ≠ ∞ } :=
+  NNReal.continuous_coe.comp_continuousOn continuousOn_toNNReal
+
 /-- The set of finite `ℝ≥0∞` numbers is homeomorphic to `ℝ≥0`. -/
 def neTopHomeomorphNNReal : { a | a ≠ ∞ } ≃ₜ ℝ≥0 where
   toEquiv := neTopEquivNNReal
@@ -306,7 +309,7 @@ protected theorem tendsto_atTop_zero [Nonempty β] [SemilatticeSup β] {f : β �
 
 theorem tendsto_sub : ∀ {a b : ℝ≥0∞}, (a ≠ ∞ ∨ b ≠ ∞) →
     Tendsto (fun p : ℝ≥0∞ × ℝ≥0∞ => p.1 - p.2) (𝓝 (a, b)) (𝓝 (a - b))
-  | ⊤, ⊤, h => by simp only at h
+  | ⊤, ⊤, h => by simp only [ne_eq, not_true_eq_false, or_self] at h
   | ⊤, (b : ℝ≥0), _ => by
     rw [top_sub_coe, tendsto_nhds_top_iff_nnreal]
     refine fun x => ((lt_mem_nhds <| @coe_lt_top (b + 1 + x)).prod_nhds
@@ -343,13 +346,13 @@ protected theorem tendsto_mul (ha : a ≠ 0 ∨ b ≠ ⊤) (hb : b ≠ 0 ∨ a �
     refine' this.mono fun c hc => _
     exact (ENNReal.div_mul_cancel hε.ne' coe_ne_top).symm.trans_lt (mul_lt_mul hc.1 hc.2)
   induction a using recTopCoe with
-  | top => simp only [ne_eq, or_false] at hb; simp [ht b hb, top_mul hb]
+  | top => simp only [ne_eq, or_false, not_true_eq_false] at hb; simp [ht b hb, top_mul hb]
   | coe a =>
     induction b using recTopCoe with
     | top =>
-      simp only [ne_eq, or_false] at ha
+      simp only [ne_eq, or_false, not_true_eq_false] at ha
       simpa [(· ∘ ·), mul_comm, mul_top ha]
-        using (ht a ha).comp (continuous_swap.tendsto (some a, ⊤))
+        using (ht a ha).comp (continuous_swap.tendsto (ofNNReal a, ⊤))
     | coe b =>
       simp only [nhds_coe_coe, ← coe_mul, tendsto_coe, tendsto_map'_iff, (· ∘ ·), tendsto_mul]
 #align ennreal.tendsto_mul ENNReal.tendsto_mul
@@ -400,7 +403,7 @@ theorem tendsto_finset_prod_of_ne_top {ι : Type*} {f : ι → α → ℝ≥0∞
 #align ennreal.tendsto_finset_prod_of_ne_top ENNReal.tendsto_finset_prod_of_ne_top
 
 protected theorem continuousAt_const_mul {a b : ℝ≥0∞} (h : a ≠ ⊤ ∨ b ≠ 0) :
-    ContinuousAt ((· * ·) a) b :=
+    ContinuousAt (a * ·) b :=
   Tendsto.const_mul tendsto_id h.symm
 #align ennreal.continuous_at_const_mul ENNReal.continuousAt_const_mul
 
@@ -409,7 +412,7 @@ protected theorem continuousAt_mul_const {a b : ℝ≥0∞} (h : a ≠ ⊤ ∨ b
   Tendsto.mul_const tendsto_id h.symm
 #align ennreal.continuous_at_mul_const ENNReal.continuousAt_mul_const
 
-protected theorem continuous_const_mul {a : ℝ≥0∞} (ha : a ≠ ⊤) : Continuous ((· * ·) a) :=
+protected theorem continuous_const_mul {a : ℝ≥0∞} (ha : a ≠ ⊤) : Continuous (a * ·) :=
   continuous_iff_continuousAt.2 fun _ => ENNReal.continuousAt_const_mul (Or.inl ha)
 #align ennreal.continuous_const_mul ENNReal.continuous_const_mul
 
@@ -1005,7 +1008,7 @@ theorem tsum_iUnion_le_tsum {ι : Type*} (f : α → ℝ≥0∞) (t : ι → Set
 
 theorem tsum_biUnion_le_tsum {ι : Type*} (f : α → ℝ≥0∞) (s : Set ι) (t : ι → Set α) :
     ∑' x : ⋃ i ∈ s , t i, f x ≤ ∑' i : s, ∑' x : t i, f x :=
-  calc ∑' x : ⋃ i ∈ s, t i, f x = ∑' x : ⋃ i : s, t i, f x := tsum_congr_subtype _ <| by simp
+  calc ∑' x : ⋃ i ∈ s, t i, f x = ∑' x : ⋃ i : s, t i, f x := tsum_congr_set_coe _ <| by simp
   _ ≤ ∑' i : s, ∑' x : t i, f x := tsum_iUnion_le_tsum _ _
 
 theorem tsum_biUnion_le {ι : Type*} (f : α → ℝ≥0∞) (s : Finset ι) (t : ι → Set α) :
@@ -1021,7 +1024,7 @@ theorem tsum_iUnion_le {ι : Type*} [Fintype ι] (f : α → ℝ≥0∞) (t : ι
 
 theorem tsum_union_le (f : α → ℝ≥0∞) (s t : Set α) :
     ∑' x : ↑(s ∪ t), f x ≤ ∑' x : s, f x + ∑' x : t, f x :=
-  calc ∑' x : ↑(s ∪ t), f x = ∑' x : ⋃ b, cond b s t, f x := tsum_congr_subtype _ union_eq_iUnion
+  calc ∑' x : ↑(s ∪ t), f x = ∑' x : ⋃ b, cond b s t, f x := tsum_congr_set_coe _ union_eq_iUnion
   _ ≤ _ := by simpa using tsum_iUnion_le f (cond · s t)
 #align ennreal.tsum_union_le ENNReal.tsum_union_le
 
@@ -1261,7 +1264,7 @@ theorem tendsto_sum_nat_add (f : ℕ → ℝ≥0∞) (hf : ∑' i, f i ≠ ∞) 
   lift f to ℕ → ℝ≥0 using ENNReal.ne_top_of_tsum_ne_top hf
   replace hf : Summable f := tsum_coe_ne_top_iff_summable.1 hf
   simp only [← ENNReal.coe_tsum, NNReal.summable_nat_add _ hf, ← ENNReal.coe_zero]
-  exact_mod_cast NNReal.tendsto_sum_nat_add f
+  exact mod_cast NNReal.tendsto_sum_nat_add f
 #align ennreal.tendsto_sum_nat_add ENNReal.tendsto_sum_nat_add
 
 theorem tsum_le_of_sum_range_le {f : ℕ → ℝ≥0∞} {c : ℝ≥0∞}
@@ -1298,17 +1301,17 @@ theorem tsum_comp_le_tsum_of_inj {β : Type*} {f : α → ℝ} (hf : Summable f)
 #align tsum_comp_le_tsum_of_inj tsum_comp_le_tsum_of_inj
 
 /-- Comparison test of convergence of series of non-negative real numbers. -/
-theorem summable_of_nonneg_of_le {f g : β → ℝ} (hg : ∀ b, 0 ≤ g b) (hgf : ∀ b, g b ≤ f b)
+theorem Summable.of_nonneg_of_le {f g : β → ℝ} (hg : ∀ b, 0 ≤ g b) (hgf : ∀ b, g b ≤ f b)
     (hf : Summable f) : Summable g := by
   lift f to β → ℝ≥0 using fun b => (hg b).trans (hgf b)
   lift g to β → ℝ≥0 using hg
   rw [NNReal.summable_coe] at hf ⊢
   exact NNReal.summable_of_le (fun b => NNReal.coe_le_coe.1 (hgf b)) hf
-#align summable_of_nonneg_of_le summable_of_nonneg_of_le
+#align summable_of_nonneg_of_le Summable.of_nonneg_of_le
 
 theorem Summable.toNNReal {f : α → ℝ} (hf : Summable f) : Summable fun n => (f n).toNNReal := by
   apply NNReal.summable_coe.1
-  refine' summable_of_nonneg_of_le (fun n => NNReal.coe_nonneg _) (fun n => _) hf.abs
+  refine' .of_nonneg_of_le (fun n => NNReal.coe_nonneg _) (fun n => _) hf.abs
   simp only [le_abs_self, Real.coe_toNNReal', max_le_iff, abs_nonneg, and_self_iff]
 #align summable.to_nnreal Summable.toNNReal
 
@@ -1335,7 +1338,7 @@ theorem ENNReal.ofReal_tsum_of_nonneg {f : α → ℝ} (hf_nonneg : ∀ n, 0 ≤
 theorem not_summable_iff_tendsto_nat_atTop_of_nonneg {f : ℕ → ℝ} (hf : ∀ n, 0 ≤ f n) :
     ¬Summable f ↔ Tendsto (fun n : ℕ => ∑ i in Finset.range n, f i) atTop atTop := by
   lift f to ℕ → ℝ≥0 using hf
-  exact_mod_cast NNReal.not_summable_iff_tendsto_nat_atTop
+  exact mod_cast NNReal.not_summable_iff_tendsto_nat_atTop
 #align not_summable_iff_tendsto_nat_at_top_of_nonneg not_summable_iff_tendsto_nat_atTop_of_nonneg
 
 theorem summable_iff_not_tendsto_nat_atTop_of_nonneg {f : ℕ → ℝ} (hf : ∀ n, 0 ≤ f n) :
@@ -1346,7 +1349,7 @@ theorem summable_iff_not_tendsto_nat_atTop_of_nonneg {f : ℕ → ℝ} (hf : ∀
 theorem summable_sigma_of_nonneg {β : α → Type*} {f : (Σ x, β x) → ℝ} (hf : ∀ x, 0 ≤ f x) :
     Summable f ↔ (∀ x, Summable fun y => f ⟨x, y⟩) ∧ Summable fun x => ∑' y, f ⟨x, y⟩ := by
   lift f to (Σx, β x) → ℝ≥0 using hf
-  exact_mod_cast NNReal.summable_sigma
+  exact mod_cast NNReal.summable_sigma
 #align summable_sigma_of_nonneg summable_sigma_of_nonneg
 
 theorem summable_prod_of_nonneg {f : (α × β) → ℝ} (hf : 0 ≤ f) :
@@ -1376,7 +1379,7 @@ series and at least one term of `f` is strictly smaller than the corresponding t
 then the series of `f` is strictly smaller than the series of `g`. -/
 theorem tsum_lt_tsum_of_nonneg {i : ℕ} {f g : ℕ → ℝ} (h0 : ∀ b : ℕ, 0 ≤ f b)
     (h : ∀ b : ℕ, f b ≤ g b) (hi : f i < g i) (hg : Summable g) : ∑' n, f n < ∑' n, g n :=
-  tsum_lt_tsum h hi (summable_of_nonneg_of_le h0 h hg) hg
+  tsum_lt_tsum h hi (.of_nonneg_of_le h0 h hg) hg
 #align tsum_lt_tsum_of_nonneg tsum_lt_tsum_of_nonneg
 
 section
@@ -1456,7 +1459,7 @@ theorem continuous_of_le_add_edist {f : α → ℝ≥0∞} (C : ℝ≥0∞) (hC 
 #align continuous_of_le_add_edist continuous_of_le_add_edist
 
 theorem continuous_edist : Continuous fun p : α × α => edist p.1 p.2 := by
-  apply continuous_of_le_add_edist 2 (by norm_num)
+  apply continuous_of_le_add_edist 2 (by decide)
   rintro ⟨x, y⟩ ⟨x', y'⟩
   calc
     edist x y ≤ edist x x' + edist x' y' + edist y' y := edist_triangle4 _ _ _ _
@@ -1603,9 +1606,47 @@ theorem edist_le_tsum_of_edist_le_of_tendsto₀ {f : ℕ → α} (d : ℕ → �
 
 end
 
+namespace ENNReal
+
+section truncateToReal
+
+/-- With truncation level `t`, the truncated cast `ℝ≥0∞ → ℝ` is given by `x ↦ (min t x).toReal`.
+Unlike `ENNReal.toReal`, this cast is continuous and monotone when `t ≠ ∞`. -/
+noncomputable def truncateToReal (t x : ℝ≥0∞) : ℝ := (min t x).toReal
+
+lemma truncateToReal_eq_toReal {t x : ℝ≥0∞} (t_ne_top : t ≠ ∞) (x_le : x ≤ t) :
+    truncateToReal t x = x.toReal := by
+  have x_lt_top : x < ∞ := lt_of_le_of_lt x_le t_ne_top.lt_top
+  have obs : min t x ≠ ∞ := by
+    simp_all only [ne_eq, ge_iff_le, min_eq_top, false_and, not_false_eq_true]
+  exact (ENNReal.toReal_eq_toReal obs x_lt_top.ne).mpr (min_eq_right x_le)
+
+lemma truncateToReal_le {t : ℝ≥0∞} (t_ne_top : t ≠ ∞) {x : ℝ≥0∞} :
+    truncateToReal t x ≤ t.toReal := by
+  rw [truncateToReal]
+  apply (toReal_le_toReal _ t_ne_top).mpr (min_le_left t x)
+  simp_all only [ne_eq, ge_iff_le, min_eq_top, false_and, not_false_eq_true]
+
+lemma truncateToReal_nonneg {t x : ℝ≥0∞} : 0 ≤ truncateToReal t x := toReal_nonneg
+
+/-- The truncated cast `ENNReal.truncateToReal t : ℝ≥0∞ → ℝ` is monotone when `t ≠ ∞`. -/
+lemma monotone_truncateToReal {t : ℝ≥0∞} (t_ne_top : t ≠ ∞) : Monotone (truncateToReal t) := by
+  intro x y x_le_y
+  have obs_x : min t x ≠ ∞ := by
+    simp_all only [ne_eq, ge_iff_le, min_eq_top, false_and, not_false_eq_true]
+  have obs_y : min t y ≠ ∞ := by
+    simp_all only [ne_eq, ge_iff_le, min_eq_top, false_and, not_false_eq_true]
+  exact (ENNReal.toReal_le_toReal obs_x obs_y).mpr (min_le_min_left t x_le_y)
+
+/-- The truncated cast `ENNReal.truncateToReal t : ℝ≥0∞ → ℝ` is continuous when `t ≠ ∞`. -/
+lemma continuous_truncateToReal {t : ℝ≥0∞} (t_ne_top : t ≠ ∞) : Continuous (truncateToReal t) := by
+  apply continuousOn_toReal.comp_continuous (continuous_min.comp (Continuous.Prod.mk t))
+  simp [t_ne_top]
+
+end truncateToReal
+
 section LimsupLiminf
 
-namespace ENNReal
 set_option autoImplicit true
 
 lemma limsup_sub_const (F : Filter ι) [NeBot F] (f : ι → ℝ≥0∞) (c : ℝ≥0∞) :
@@ -1630,6 +1671,43 @@ lemma liminf_const_sub (F : Filter ι) [NeBot F] (f : ι → ℝ≥0∞)
   (Antitone.map_limsSup_of_continuousAt (F := F.map f) (f := fun (x : ℝ≥0∞) ↦ c - x)
     (fun _ _ h ↦ tsub_le_tsub_left h c) (continuous_sub_left c_ne_top).continuousAt).symm
 
-end ENNReal -- namespace
+/-- If `xs : ι → ℝ≥0∞` is bounded, then we have `liminf (toReal ∘ xs) = toReal (liminf xs)`. -/
+lemma liminf_toReal_eq {ι : Type*} {F : Filter ι} [NeBot F] {b : ℝ≥0∞} (b_ne_top : b ≠ ∞)
+    {xs : ι → ℝ≥0∞} (le_b : ∀ᶠ i in F, xs i ≤ b) :
+    F.liminf (fun i ↦ (xs i).toReal) = (F.liminf xs).toReal := by
+  have liminf_le : F.liminf xs ≤ b := by
+    apply liminf_le_of_le ⟨0, by simp⟩
+    intro y h
+    obtain ⟨i, hi⟩ := (Eventually.and h le_b).exists
+    exact hi.1.trans hi.2
+  have aux : ∀ᶠ i in F, (xs i).toReal = ENNReal.truncateToReal b (xs i) := by
+    filter_upwards [le_b] with i i_le_b
+    simp only [truncateToReal_eq_toReal b_ne_top i_le_b, implies_true]
+  have aux' : (F.liminf xs).toReal = ENNReal.truncateToReal b (F.liminf xs) := by
+    rw [truncateToReal_eq_toReal b_ne_top liminf_le]
+  simp_rw [liminf_congr aux, aux']
+  have key := Monotone.map_liminf_of_continuousAt (F := F) (monotone_truncateToReal b_ne_top) xs
+          (continuous_truncateToReal b_ne_top).continuousAt
+          ⟨b, by simpa only [eventually_map] using le_b⟩ ⟨0, eventually_of_forall (by simp)⟩
+  rw [key]
+  rfl
+
+/-- If `xs : ι → ℝ≥0∞` is bounded, then we have `liminf (toReal ∘ xs) = toReal (liminf xs)`. -/
+lemma limsup_toReal_eq {ι : Type*} {F : Filter ι} [NeBot F] {b : ℝ≥0∞} (b_ne_top : b ≠ ∞)
+    {xs : ι → ℝ≥0∞} (le_b : ∀ᶠ i in F, xs i ≤ b) :
+    F.limsup (fun i ↦ (xs i).toReal) = (F.limsup xs).toReal := by
+  have aux : ∀ᶠ i in F, (xs i).toReal = ENNReal.truncateToReal b (xs i) := by
+    filter_upwards [le_b] with i i_le_b
+    simp only [truncateToReal_eq_toReal b_ne_top i_le_b, implies_true]
+  have aux' : (F.limsup xs).toReal = ENNReal.truncateToReal b (F.limsup xs) := by
+    rw [truncateToReal_eq_toReal b_ne_top (limsup_le_of_le ⟨0, by simp⟩ le_b)]
+  simp_rw [limsup_congr aux, aux']
+  have key := Monotone.map_limsup_of_continuousAt (F := F) (monotone_truncateToReal b_ne_top) xs
+          (continuous_truncateToReal b_ne_top).continuousAt
+          ⟨b, by simpa only [eventually_map] using le_b⟩ ⟨0, eventually_of_forall (by simp)⟩
+  rw [key]
+  rfl
 
 end LimsupLiminf
+
+end ENNReal -- namespace

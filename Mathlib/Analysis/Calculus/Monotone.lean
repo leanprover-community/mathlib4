@@ -36,8 +36,6 @@ open Set Filter Function Metric MeasureTheory MeasureTheory.Measure IsUnifLocDou
 
 open scoped Topology
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 /-- If `(f y - f x) / (y - x)` converges to a limit as `y` tends to `x`, then the same goes if
 `y` is shifted a little bit, i.e., `f (y + (y-x)^2) - f x) / (y - x)` converges to the same limit.
 This lemma contains a slightly more general version of this statement (where one considers
@@ -173,11 +171,11 @@ theorem Monotone.ae_hasDerivAt {f : ℝ → ℝ} (hf : Monotone f) :
     · filter_upwards [self_mem_nhdsWithin]
       rintro y (hy : x < y)
       have : ↑0 < (y - x) ^ 2 := sq_pos_of_pos (sub_pos.2 hy)
-      apply div_le_div_of_le_of_nonneg _ (sub_pos.2 hy).le
+      apply div_le_div_of_le (sub_pos.2 hy).le
       exact (sub_le_sub_iff_right _).2 (hf.rightLim_le (by norm_num; linarith))
     · filter_upwards [self_mem_nhdsWithin]
       rintro y (hy : x < y)
-      apply div_le_div_of_le_of_nonneg _ (sub_pos.2 hy).le
+      apply div_le_div_of_le (sub_pos.2 hy).le
       exact (sub_le_sub_iff_right _).2 (hf.le_rightLim (le_refl y))
   -- prove differentiability on the left, by sandwiching with values of `g`
   have L2 : Tendsto (fun y => (f y - f x) / (y - x)) (𝓝[<] x)

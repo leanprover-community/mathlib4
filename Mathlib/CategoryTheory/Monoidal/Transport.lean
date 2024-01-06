@@ -17,7 +17,7 @@ we can transport a monoidal structure on `C` along the equivalence as
 More generally, we can transport the lawfulness of a monoidal structure along a suitable faithful
 functor, as `CategoryTheory.Monoidal.induced`.
 The comparison is analogous to the difference between `Equiv.monoid` and
-`Function.Injective.Monoid`.
+`Function.Injective.monoid`.
 
 We then upgrade the original functor and its inverse to monoidal functors
 with respect to the new monoidal structure on `D`.

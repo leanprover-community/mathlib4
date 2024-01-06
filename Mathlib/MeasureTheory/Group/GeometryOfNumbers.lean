@@ -3,9 +3,9 @@ Copyright (c) 2021 Alex J. Best. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best
 -/
+import Mathlib.Analysis.Convex.Body
 import Mathlib.Analysis.Convex.Measure
 import Mathlib.MeasureTheory.Group.FundamentalDomain
-import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 
 #align_import measure_theory.group.geometry_of_numbers from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
@@ -38,9 +38,9 @@ Hermann Minkowski.
 
 namespace MeasureTheory
 
-open ENNReal FiniteDimensional MeasureTheory MeasureTheory.Measure Set
+open ENNReal FiniteDimensional MeasureTheory MeasureTheory.Measure Set Filter
 
-open scoped Pointwise
+open scoped Pointwise NNReal
 
 variable {E L : Type*} [MeasurableSpace E] {μ : Measure E} {F s : Set E}
 
@@ -64,8 +64,8 @@ lattice point of `L`.  -/
 theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure [NormedAddCommGroup E]
     [NormedSpace ℝ E] [BorelSpace E] [FiniteDimensional ℝ E] [IsAddHaarMeasure μ]
     {L : AddSubgroup E} [Countable L] (fund : IsAddFundamentalDomain L F μ)
-    (h : μ F * 2 ^ finrank ℝ E < μ s) (h_symm : ∀ x ∈ s, -x ∈ s) (h_conv : Convex ℝ s) :
-    ∃ (x : _) (_ : x ≠ 0), ((x : L) : E) ∈ s := by
+    (h_symm : ∀ x ∈ s, -x ∈ s) (h_conv : Convex ℝ s) (h : μ F * 2 ^ finrank ℝ E < μ s) :
+    ∃ x ≠ 0, ((x : L) : E) ∈ s := by
   have h_vol : μ F < μ ((2⁻¹ : ℝ) • s) := by
     rw [addHaar_smul_of_nonneg μ (by norm_num : 0 ≤ (2 : ℝ)⁻¹) s, ←
       mul_lt_mul_right (pow_ne_zero (finrank ℝ E) (two_ne_zero' _)) (pow_ne_top two_ne_top),
@@ -82,5 +82,63 @@ theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure [NormedAddC
   rw [← hvw, ← inv_smul_smul₀ (two_ne_zero' ℝ) (_ - _), smul_sub, sub_eq_add_neg, smul_add]
   refine' h_conv hw (h_symm _ hv) _ _ _ <;> norm_num
 #align measure_theory.exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure MeasureTheory.exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure
+
+/-- The **Minkowski Convex Body Theorem for compact domain**. If `s` is a convex compact symmetric
+domain of `E` whose volume is large enough compared to the covolume of a lattice `L` of `E`, then it
+contains a non-zero lattice point of `L`. Compared to
+`exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure`, this version requires in addition
+that `s` is compact and `L` is discrete but provides a weaker inequality rather than a strict
+inequality. -/
+theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_le_measure [NormedAddCommGroup E]
+    [NormedSpace ℝ E] [BorelSpace E] [FiniteDimensional ℝ E] [Nontrivial E] [IsAddHaarMeasure μ]
+    {L : AddSubgroup E} [Countable L] [DiscreteTopology L] (fund : IsAddFundamentalDomain L F μ)
+    (h_symm : ∀ x ∈ s, -x ∈ s) (h_conv : Convex ℝ s) (h_cpt : IsCompact s)
+    (h : μ F * 2 ^ finrank ℝ E ≤ μ s) :
+    ∃ x ≠ 0, ((x : L) : E) ∈ s := by
+  have h_mes : μ s ≠ 0 := by
+    intro hμ
+    suffices μ F = 0 from fund.measure_ne_zero (NeZero.ne μ) this
+    rw [hμ, le_zero_iff, mul_eq_zero] at h
+    exact h.resolve_right <| (pow_ne_zero_iff finrank_pos).mpr two_ne_zero
+  have h_nemp : s.Nonempty := nonempty_of_measure_ne_zero h_mes
+  let u : ℕ → ℝ≥0 := (exists_seq_strictAnti_tendsto 0).choose
+  let K : ConvexBody E := ⟨s, h_conv, h_cpt, h_nemp⟩
+  let S : ℕ → ConvexBody E := fun n => (1 + u n) • K
+  let Z : ℕ → Set E := fun n => (S n) ∩ (L \ {0})
+  -- The convex bodies `S n` have volume strictly larger than `μ s` and thus we can apply
+  -- `exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure` to them and obtain that
+  -- `S n` contains a nonzero point of `L`. Since the intersection of the `S n` is equal to `s`,
+  -- it follows that `s` contains a nonzero point of `L`.
+  have h_zero : 0 ∈ K := K.zero_mem_of_symmetric h_symm
+  suffices Set.Nonempty (⋂ n, Z n) by
+    erw [← Set.iInter_inter, K.iInter_smul_eq_self h_zero] at this
+    · obtain ⟨x, hx⟩ := this
+      exact ⟨⟨x, by aesop⟩, by aesop⟩
+    · exact (exists_seq_strictAnti_tendsto (0:ℝ≥0)).choose_spec.2.2
+  have h_clos : IsClosed ((L : Set E) \ {0}) := by
+    rsuffices ⟨U, hU⟩ : ∃ U : Set E, IsOpen U ∧  U ∩ L = {0}
+    · rw [sdiff_eq_sdiff_iff_inf_eq_inf (z := U).mpr (by simp [Set.inter_comm .. ▸ hU.2, zero_mem])]
+      exact AddSubgroup.isClosed_of_discrete.sdiff hU.1
+    exact isOpen_inter_eq_singleton_of_mem_discrete (zero_mem L)
+  refine IsCompact.nonempty_iInter_of_sequence_nonempty_compact_closed Z (fun n => ?_)
+    (fun n => ?_) ((S 0).isCompact.inter_right h_clos) (fun n => (S n).isClosed.inter h_clos)
+  · refine Set.inter_subset_inter_left _ (SetLike.coe_subset_coe.mpr ?_)
+    refine ConvexBody.smul_le_of_le K h_zero ?_
+    rw [add_le_add_iff_left]
+    exact le_of_lt <| (exists_seq_strictAnti_tendsto (0:ℝ≥0)).choose_spec.1 (Nat.lt.base n)
+  · suffices μ F * 2 ^ finrank ℝ E < μ (S n : Set E) by
+      have h_symm' : ∀ x ∈ S n, -x ∈ S n := by
+        rintro _ ⟨y, hy, rfl⟩
+        exact ⟨-y, h_symm _ hy, by simp⟩
+      obtain ⟨x, hx_nz, hx_mem⟩ := exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure
+        fund h_symm' (S n).convex this
+      exact ⟨x, hx_mem, by aesop⟩
+    refine lt_of_le_of_lt h ?_
+    rw [ConvexBody.coe_smul', NNReal.smul_def, addHaar_smul_of_nonneg _ (NNReal.coe_nonneg _)]
+    rw [show μ s < _ ↔ 1 * μ s < _ by rw [one_mul]]
+    refine (mul_lt_mul_right h_mes (ne_of_lt h_cpt.measure_lt_top)).mpr ?_
+    rw [ofReal_pow (NNReal.coe_nonneg _)]
+    refine one_lt_pow ?_ (ne_of_gt finrank_pos)
+    simp [(exists_seq_strictAnti_tendsto (0:ℝ≥0)).choose_spec.2.1 n]
 
 end MeasureTheory

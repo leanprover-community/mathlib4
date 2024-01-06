@@ -228,7 +228,7 @@ attribute [simp]
 variable {C : Type u} [𝒞 : Category.{v} C] [MonoidalCategory C]
 
 @[reassoc]
-theorem tensorHom_def' {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g: X₂ ⟶ Y₂) :
+theorem tensorHom_def' {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) :
     f ⊗ g = X₁ ◁ g ≫ f ▷ Y₂ :=
   whisker_exchange f g ▸ tensorHom_def f g
 
@@ -702,7 +702,7 @@ abbrev ofTensorHom [MonoidalCategoryStruct C]
           tensorHom (rightUnitor X).hom (𝟙 Y) := by
             aesop_cat) :
       MonoidalCategory C where
-  tensorHom_def := by intros; simp [← id_tensorHom, ←tensorHom_id, ← tensor_comp]
+  tensorHom_def := by intros; simp [← id_tensorHom, ← tensorHom_id, ← tensor_comp]
   whiskerLeft_id := by intros; simp [← id_tensorHom, ← tensor_id]
   whiskerLeft_comp := by intros; simp [← id_tensorHom, ← tensor_comp]
   id_whiskerLeft := by intros; rw [← assoc, ← leftUnitor_naturality]; simp [← id_tensorHom]

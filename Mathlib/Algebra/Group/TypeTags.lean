@@ -116,11 +116,17 @@ theorem ofMul_toMul (x : Additive α) : ofMul (toMul x) = x :=
   rfl
 #align of_mul_to_mul ofMul_toMul
 
+instance [Subsingleton α] : Subsingleton (Additive α) := toMul.injective.subsingleton
+instance [Subsingleton α] : Subsingleton (Multiplicative α) := toAdd.injective.subsingleton
+
 instance [Inhabited α] : Inhabited (Additive α) :=
   ⟨ofMul default⟩
 
 instance [Inhabited α] : Inhabited (Multiplicative α) :=
   ⟨ofAdd default⟩
+
+instance [Unique α] : Unique (Additive α) := toMul.unique
+instance [Unique α] : Unique (Multiplicative α) := toAdd.unique
 
 instance [Finite α] : Finite (Additive α) :=
   Finite.of_equiv α (by rfl)
@@ -128,21 +134,21 @@ instance [Finite α] : Finite (Additive α) :=
 instance [Finite α] : Finite (Multiplicative α) :=
   Finite.of_equiv α (by rfl)
 
-instance [h: Infinite α] : Infinite (Additive α) := h
+instance [h : Infinite α] : Infinite (Additive α) := h
 
-instance [h: Infinite α] : Infinite (Multiplicative α) := h
+instance [h : Infinite α] : Infinite (Multiplicative α) := h
 
 instance [h : DecidableEq α] : DecidableEq (Multiplicative α) := h
 
 instance [h : DecidableEq α] : DecidableEq (Additive α) := h
 
-instance instNontrivialAdditive [Nontrivial α] : Nontrivial (Additive α) :=
+instance Additive.instNontrivial [Nontrivial α] : Nontrivial (Additive α) :=
   ofMul.injective.nontrivial
-#align additive.nontrivial instNontrivialAdditive
+#align additive.nontrivial Additive.instNontrivial
 
-instance instNontrivialMultiplicative [Nontrivial α] : Nontrivial (Multiplicative α) :=
+instance Multiplicative.instNontrivial [Nontrivial α] : Nontrivial (Multiplicative α) :=
   ofAdd.injective.nontrivial
-#align multiplicative.nontrivial instNontrivialMultiplicative
+#align multiplicative.nontrivial Multiplicative.instNontrivial
 
 instance Additive.add [Mul α] : Add (Additive α) where
   add x y := ofMul (toMul x * toMul y)

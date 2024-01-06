@@ -5,6 +5,9 @@ Authors: Manuel Candales
 -/
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Set.Finite
+import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.Abel
+import Mathlib.Tactic.Linarith
 
 #align_import imo.imo2008_q2 from "leanprover-community/mathlib"@"5f25c089cb34db4db112556f23c50d12da81b297"
 

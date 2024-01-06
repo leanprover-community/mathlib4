@@ -68,8 +68,6 @@ open Finpartition Finset Fintype Function SzemerediRegularity
 
 open scoped Classical
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 variable {α : Type*} [Fintype α] (G : SimpleGraph α) {ε : ℝ} {l : ℕ}
 
 /-- Effective **Szemerédi Regularity Lemma**: For any sufficiently large graph, there is an
@@ -106,21 +104,21 @@ theorem szemeredi_regularity (hε : 0 < ε) (hl : l ≤ card α) :
     refine' ⟨P, hP₁, (le_initialBound _ _).trans hP₂, hP₃.trans _,
       hP₄.resolve_right fun hPenergy => lt_irrefl (1 : ℝ) _⟩
     · rw [iterate_succ_apply']
-      exact mul_le_mul_left' (pow_le_pow_of_le_left (by norm_num) (by norm_num) _) _
+      exact mul_le_mul_left' (pow_le_pow_left (by norm_num) (by norm_num) _) _
     calc
       (1 : ℝ) = ε ^ 5 / ↑4 * (↑4 / ε ^ 5) := by
         rw [mul_comm, div_mul_div_cancel 4 (pow_pos hε 5).ne']; norm_num
       _ < ε ^ 5 / 4 * (⌊4 / ε ^ 5⌋₊ + 1) :=
         ((mul_lt_mul_left <| by positivity).2 (Nat.lt_floor_add_one _))
       _ ≤ (P.energy G : ℝ) := by rwa [← Nat.cast_add_one]
-      _ ≤ 1 := by exact_mod_cast P.energy_le_one G
+      _ ≤ 1 := mod_cast P.energy_le_one G
   -- Let's do the actual induction.
   intro i
   induction' i with i ih
   -- For `i = 0`, the dummy equipartition is enough.
   · refine' ⟨dum, hdum₁, hdum₂.ge, hdum₂.le, Or.inr _⟩
     rw [Nat.cast_zero, mul_zero]
-    exact_mod_cast dum.energy_nonneg G
+    exact mod_cast dum.energy_nonneg G
   -- For the induction step at `i + 1`, find `P` the equipartition at `i`.
   obtain ⟨P, hP₁, hP₂, hP₃, hP₄⟩ := ih
   by_cases huniform : P.IsUniform G ε
@@ -131,11 +129,11 @@ theorem szemeredi_regularity (hε : 0 < ε) (hl : l ≤ card α) :
   -- Else, `P` must instead have energy at least `ε ^ 5 / 4 * i`.
   replace hP₄ := hP₄.resolve_left huniform
   -- We gather a few numerical facts.
-  have hεl' : ↑100 < ↑4 ^ P.parts.card * ε ^ 5 :=
-    (hundred_lt_pow_initialBound_mul hε l).trans_le
-      (mul_le_mul_of_nonneg_right (pow_le_pow (by norm_num) hP₂) <| by positivity)
+  have hεl' : 100 ≤ 4 ^ P.parts.card * ε ^ 5 :=
+    (hundred_lt_pow_initialBound_mul hε l).le.trans
+      (mul_le_mul_of_nonneg_right (pow_le_pow_right (by norm_num) hP₂) <| by positivity)
   have hi : (i : ℝ) ≤ 4 / ε ^ 5 := by
-    have hi : ε ^ 5 / 4 * ↑i ≤ 1 := hP₄.trans (by exact_mod_cast P.energy_le_one G)
+    have hi : ε ^ 5 / 4 * ↑i ≤ 1 := hP₄.trans (mod_cast P.energy_le_one G)
     rw [div_mul_eq_mul_div, div_le_iff (show (0 : ℝ) < 4 by norm_num)] at hi
     norm_num at hi
     rwa [le_div_iff' (pow_pos hε _)]
@@ -145,7 +143,7 @@ theorem szemeredi_regularity (hε : 0 < ε) (hl : l ≤ card α) :
     (Nat.mul_le_mul hsize (Nat.pow_le_pow_of_le_right (by norm_num) hsize)).trans hα
   -- We return the increment equipartition of `P`, which has energy `≥ ε ^ 5 / 4 * (i + 1)`.
   refine' ⟨increment hP₁ G ε, increment_isEquipartition hP₁ G ε, _, _, Or.inr <| le_trans _ <|
-    energy_increment hP₁ ((seven_le_initialBound ε l).trans hP₂) hεl' hPα huniform hε₁⟩
+    energy_increment hP₁ ((seven_le_initialBound ε l).trans hP₂) hεl' hPα huniform hε.le hε₁⟩
   · rw [card_increment hPα huniform]
     exact hP₂.trans (le_stepBound _)
   · rw [card_increment hPα huniform, iterate_succ_apply']

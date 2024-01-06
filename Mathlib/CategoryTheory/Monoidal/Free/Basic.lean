@@ -44,7 +44,7 @@ tensor products of identities, unitors and associators.
 -/
 inductive FreeMonoidalCategory : Type u
   | of : C → FreeMonoidalCategory
-  | Unit : FreeMonoidalCategory
+  | unit : FreeMonoidalCategory
   | tensor : FreeMonoidalCategory → FreeMonoidalCategory → FreeMonoidalCategory
   deriving Inhabited
 #align category_theory.free_monoidal_category CategoryTheory.FreeMonoidalCategory
@@ -55,7 +55,7 @@ local notation "F" => FreeMonoidalCategory
 
 namespace FreeMonoidalCategory
 
-attribute [nolint simpNF] Unit.sizeOf_spec tensor.injEq tensor.sizeOf_spec
+attribute [nolint simpNF] unit.sizeOf_spec tensor.injEq tensor.sizeOf_spec
 
 /-- Formal compositions and tensor products of identities, unitors and associators. The morphisms
     of the free monoidal category are obtained as a quotient of these formal morphisms by the
@@ -66,10 +66,10 @@ inductive Hom : F C → F C → Type u
   | id (X) : Hom X X
   | α_hom (X Y Z : F C) : Hom ((X.tensor Y).tensor Z) (X.tensor (Y.tensor Z))
   | α_inv (X Y Z : F C) : Hom (X.tensor (Y.tensor Z)) ((X.tensor Y).tensor Z)
-  | l_hom (X) : Hom (Unit.tensor X) X
-  | l_inv (X) : Hom X (Unit.tensor X)
-  | ρ_hom (X : F C) : Hom (X.tensor Unit) X
-  | ρ_inv (X : F C) : Hom X (X.tensor Unit)
+  | l_hom (X) : Hom (unit.tensor X) X
+  | l_inv (X) : Hom X (unit.tensor X)
+  | ρ_hom (X : F C) : Hom (X.tensor unit) X
+  | ρ_inv (X : F C) : Hom X (X.tensor unit)
   | comp {X Y Z} (f : Hom X Y) (g : Hom Y Z) : Hom X Z
   | whiskerLeft (X : F C) {Y Z : F C} (f : Hom Y Z) :
       Hom (X.tensor Y) (X.tensor Z)
@@ -98,7 +98,7 @@ inductive HomEquiv : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (X ⟶ᵐ Y) → Prop
   | whisker_left_comp (W) {X Y Z} (f : X ⟶ᵐ Y) (g : Y ⟶ᵐ Z) :
       HomEquiv ((f.comp g).whiskerLeft W) ((f.whiskerLeft W).comp (g.whiskerLeft W))
   | id_whisker_left {X Y} (f : X ⟶ᵐ Y) :
-      HomEquiv (f.whiskerLeft Unit) ((Hom.l_hom X).comp <| f.comp (Hom.l_inv Y))
+      HomEquiv (f.whiskerLeft unit) ((Hom.l_hom X).comp <| f.comp (Hom.l_inv Y))
   | tensor_whisker_left (X Y) {Z Z'} (f : Z ⟶ᵐ Z') :
      HomEquiv (f.whiskerLeft (X.tensor Y))
       ((Hom.α_hom X Y Z).comp <| ((f.whiskerLeft Y).whiskerLeft X).comp <| Hom.α_inv X Y Z')
@@ -106,7 +106,7 @@ inductive HomEquiv : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (X ⟶ᵐ Y) → Prop
   | comp_whisker_right {X Y Z} (W) (f : X ⟶ᵐ Y) (g : Y ⟶ᵐ Z) :
       HomEquiv ((f.comp g).whiskerRight W) ((f.whiskerRight W).comp <| g.whiskerRight W)
   | whisker_right_id {X Y} (f : X ⟶ᵐ Y) :
-      HomEquiv (f.whiskerRight Unit) ((Hom.ρ_hom X).comp <| f.comp <| Hom.ρ_inv Y)
+      HomEquiv (f.whiskerRight unit) ((Hom.ρ_hom X).comp <| f.comp <| Hom.ρ_inv Y)
   | whisker_right_tensor {X X'} (f : X ⟶ᵐ X') (Y Z) :
       HomEquiv (f.whiskerRight <| Y.tensor Z)
         ((Hom.α_inv X Y Z).comp <| ((f.whiskerRight Y).whiskerRight Z).comp <| Hom.α_hom X' Y Z)
@@ -128,7 +128,7 @@ inductive HomEquiv : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (X ⟶ᵐ Y) → Prop
           ((Hom.α_hom W (X.tensor Y) Z).comp ((Hom.α_hom X Y Z).whiskerLeft W)))
         ((Hom.α_hom (W.tensor X) Y Z).comp (Hom.α_hom W X (Y.tensor Z)))
   | triangle {X Y} :
-      HomEquiv ((Hom.α_hom X Unit Y).comp ((Hom.l_hom Y).whiskerLeft X))
+      HomEquiv ((Hom.α_hom X unit Y).comp ((Hom.l_hom Y).whiskerLeft X))
         ((Hom.ρ_hom X).whiskerRight Y)
 set_option linter.uppercaseLean3 false
 #align category_theory.free_monoidal_category.HomEquiv CategoryTheory.FreeMonoidalCategory.HomEquiv
@@ -173,7 +173,7 @@ instance : MonoidalCategory (F C) where
   whiskerLeft := fun X _ _ f => Quotient.map (Hom.whiskerLeft X) (HomEquiv.whisker_left X) f
   whiskerRight := fun f Y =>
     Quotient.map (fun f' => Hom.whiskerRight f' Y) (fun _ _ h => HomEquiv.whisker_right _ _ _ h) f
-  tensorUnit := FreeMonoidalCategory.Unit
+  tensorUnit := FreeMonoidalCategory.unit
   associator X Y Z :=
     ⟨⟦Hom.α_hom X Y Z⟧, ⟦Hom.α_inv X Y Z⟧, Quotient.sound α_hom_inv, Quotient.sound α_inv_hom⟩
   leftUnitor X := ⟨⟦Hom.l_hom X⟧, ⟦Hom.l_inv X⟧, Quotient.sound l_hom_inv, Quotient.sound l_inv_hom⟩
@@ -278,7 +278,7 @@ theorem tensor_eq_tensor {X Y : F C} : X.tensor Y = X ⊗ Y :=
 #align category_theory.free_monoidal_category.tensor_eq_tensor CategoryTheory.FreeMonoidalCategory.tensor_eq_tensor
 
 @[simp]
-theorem unit_eq_unit : FreeMonoidalCategory.Unit = 𝟙_ (F C) :=
+theorem unit_eq_unit : FreeMonoidalCategory.unit = 𝟙_ (F C) :=
   rfl
 #align category_theory.free_monoidal_category.unit_eq_unit CategoryTheory.FreeMonoidalCategory.unit_eq_unit
 
@@ -289,7 +289,7 @@ variable {D : Type u'} [Category.{v'} D] [MonoidalCategory D] (f : C → D)
 /-- Auxiliary definition for `free_monoidal_category.project`. -/
 def projectObj : F C → D
   | FreeMonoidalCategory.of X => f X
-  | FreeMonoidalCategory.Unit => 𝟙_ D
+  | FreeMonoidalCategory.unit => 𝟙_ D
   | FreeMonoidalCategory.tensor X Y => projectObj X ⊗ projectObj Y
 #align category_theory.free_monoidal_category.project_obj CategoryTheory.FreeMonoidalCategory.projectObj
 
