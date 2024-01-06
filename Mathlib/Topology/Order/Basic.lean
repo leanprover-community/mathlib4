@@ -2937,7 +2937,7 @@ theorem Monotone.tendsto_nhdsWithin_Iio {α β : Type*} [LinearOrder α] [Topolo
   refine' tendsto_order.2 ⟨fun l hl => _, fun m hm => _⟩
   · obtain ⟨z, zx, lz⟩ : ∃ a : α, a < x ∧ l < f a := by
       simpa only [mem_image, exists_prop, exists_exists_and_eq_and] using
-        exists_lt_of_lt_csSup (nonempty_image_iff.2 h) hl
+        exists_lt_of_lt_csSup (h.image _) hl
     exact mem_of_superset (Ioo_mem_nhdsWithin_Iio' zx) fun y hy => lz.trans_le (Mf hy.1.le)
   · refine mem_of_superset self_mem_nhdsWithin fun _ hy => lt_of_le_of_lt ?_ hm
     exact le_csSup (Mf.map_bddAbove bddAbove_Iio) (mem_image_of_mem _ hy)

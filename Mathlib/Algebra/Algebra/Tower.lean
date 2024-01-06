@@ -175,12 +175,12 @@ instance (priority := 999) subsemiring (U : Subsemiring S) : IsScalarTower U S A
 #align is_scalar_tower.subsemiring IsScalarTower.subsemiring
 
 -- Porting note: @[nolint instance_priority]
-instance (priority := 999) of_ring_hom {R A B : Type*} [CommSemiring R] [CommSemiring A]
+instance (priority := 999) of_algHom {R A B : Type*} [CommSemiring R] [CommSemiring A]
     [CommSemiring B] [Algebra R A] [Algebra R B] (f : A →ₐ[R] B) :
     @IsScalarTower R A B _ f.toRingHom.toAlgebra.toSMul _ :=
   letI := (f : A →+* B).toAlgebra
   of_algebraMap_eq fun x => (f.commutes x).symm
-#align is_scalar_tower.of_ring_hom IsScalarTower.of_ring_hom
+#align is_scalar_tower.of_ring_hom IsScalarTower.of_algHom
 
 end Semiring
 
@@ -331,7 +331,7 @@ theorem smul_mem_span_smul' {s : Set S} (hs : span R s = ⊤) {t : Set A} {k : S
 theorem smul_mem_span_smul {s : Set S} (hs : span R s = ⊤) {t : Set A} {k : S} {x : A}
     (hx : x ∈ span R t) : k • x ∈ span R (s • t) := by
   rw [span_smul_of_span_eq_top hs]
-  exact (span S t).smul_mem k (by apply span_le_restrictScalars_span t hx)
+  exact (span S t).smul_mem k (span_le_restrictScalars R S t hx)
 #align submodule.smul_mem_span_smul Submodule.smul_mem_span_smul
 
 end Module

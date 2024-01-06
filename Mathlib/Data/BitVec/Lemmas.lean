@@ -140,7 +140,6 @@ variable (x y : Fin (2^w))
 lemma ofFin_zero : ofFin (0 : Fin (2^w)) = 0 := rfl
 lemma ofFin_one  : ofFin (1 : Fin (2^w)) = 1 := by
   simp only [OfNat.ofNat, BitVec.ofNat, and_pow_two_is_mod]
-  rfl
 
 lemma ofFin_nsmul (n : ℕ) (x : Fin (2^w)) : ofFin (n • x) = n • ofFin x := rfl
 lemma ofFin_zsmul (z : ℤ) (x : Fin (2^w)) : ofFin (z • x) = z • ofFin x := rfl
