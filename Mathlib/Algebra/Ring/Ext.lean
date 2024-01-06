@@ -185,6 +185,13 @@ theorem Semiring.toNonUnitalSemiring_injective :
   · exact congrArg (·.toAdd.add a b) h
   · exact congrArg (·.toMul.mul a b) h
 
+theorem Semiring.toNonAssocSemiring_injective :
+    Function.Injective (@Semiring.toNonAssocSemiring R) := by
+  intro _ _ h
+  ext a b
+  · exact congrArg (·.toAdd.add a b) h
+  · exact congrArg (·.toMul.mul a b) h
+
 theorem Semiring.ext_iff (inst₁ inst₂ : Semiring R) :
     inst₁ = inst₂ ↔
       (∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
