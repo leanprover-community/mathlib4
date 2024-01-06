@@ -120,8 +120,7 @@ theorem IsPurelyInseparable.isAlgebraic [IsPurelyInseparable F E] :
 
 variable {E}
 
-theorem IsPurelyInseparable.isIntegral [IsPurelyInseparable F E] :
-    ∀ x : E, IsIntegral F x :=
+theorem IsPurelyInseparable.isIntegral [IsPurelyInseparable F E] : Algebra.IsIntegral F E :=
   IsPurelyInseparable.isIntegral'
 
 theorem IsPurelyInseparable.inseparable [IsPurelyInseparable F E] :
@@ -363,12 +362,6 @@ theorem eq_separableClosure_iff (halg : Algebra.IsAlgebraic F E) (L : Intermedia
     separableClosure.isPurelyInseparable F E halg⟩, fun ⟨_, _⟩ ↦ le_antisymm
       (le_separableClosure F E L) (separableClosure_le F E L)⟩
 
--- TODO: move to suitable file
-theorem _root_.iterate_frobenius_inj (R : Type*) [CommRing R] [IsReduced R] (p : ℕ) [Fact p.Prime]
-    [CharP R p] (n : ℕ) : Function.Injective (frobenius R p)^[n] := by
-  induction' n with n ih
-  exacts [Function.injective_id, ih.comp (frobenius_inj R p)]
-
 /-- If `E / F` is purely inseparable, then for any reduced ring `L`, the map `(E →+* L) → (F →+* L)`
 induced by `algebraMap F E` is injective. In other words, a purely inseparable field extension
 is an epimorphism in the category of fields. -/
@@ -386,17 +379,16 @@ theorem IsPurelyInseparable.injective_comp_algebraMap [h : IsPurelyInseparable F
   haveI := charP_of_injective_ringHom (f.comp (algebraMap F E)).injective q
   haveI := Fact.mk hprime
   simp_rw [map_pow, ← iterate_frobenius] at heq
-  exact iterate_frobenius_inj L q n heq
+  exact (frobenius_inj L q).iterate n heq
 
 -- TODO:
-/- If `L` is an algebraically closed field containing `E`, such that the map
+/-- If `L` is an algebraically closed field containing `E`, such that the map
 `(E →+* L) → (F →+* L)` induced by `algebraMap F E` is injective, then `E / F` is
 purely inseparable. In other words, epimorphisms in the category of fields must be
 purely inseparable extensions. -/
--- theorem IsPurelyInseparable.of_injective_comp_algebraMap (L : Type w) [Field L] [IsAlgClosed L]
---     (hn : Nonempty (E →+* L)) (h : Function.Injective fun f : E →+* L ↦ f.comp (algebraMap F E)) :
---     IsPurelyInseparable F E := by
---   sorry
+proof_wanted IsPurelyInseparable.of_injective_comp_algebraMap (L : Type w) [Field L] [IsAlgClosed L]
+    (hn : Nonempty (E →+* L)) (h : Function.Injective fun f : E →+* L ↦ f.comp (algebraMap F E)) :
+    IsPurelyInseparable F E
 
 end IsPurelyInseparable
 
@@ -425,6 +417,7 @@ theorem isPurelyInseparable_adjoin_simple_iff_mem_pow (q : ℕ) [hF : ExpChar F 
   simp_rw [isPurelyInseparable_adjoin_simple_iff_natSepDegree_eq_one,
     minpoly.natSepDegree_eq_one_iff_mem_pow q]
 
+-- Marked as private since it's a special case of `isPurelyInseparable_adjoin_iff_mem_pow.2`.
 private theorem isPurelyInseparable_adjoin_finset_of_mem_pow (q : ℕ) [hF : ExpChar F q]
     (S : Finset E) (h : ∀ x ∈ S, ∃ n : ℕ, x ^ q ^ n ∈ (algebraMap F E).range) :
     IsPurelyInseparable F (adjoin F (S : Set E)) := by
@@ -527,6 +520,7 @@ namespace separableClosure
 
 variable [Algebra E K] [IsScalarTower F E K]
 
+-- Marked as private since it's a special case of `eq_adjoin_of_isAlgebraic`.
 private lemma eq_adjoin_of_isPurelyInseparable' [IsPurelyInseparable F E] [IsSeparable E K] :
     adjoin E (separableClosure F K : Set K) = ⊤ := top_unique fun x _ ↦ by
   set S := separableClosure F K
@@ -550,6 +544,7 @@ private lemma eq_adjoin_of_isPurelyInseparable' [IsPurelyInseparable F E] [IsSep
   obtain ⟨y, rfl⟩ := IsPurelyInseparable.surjective_algebraMap_of_isSeparable L K x
   exact y.2
 
+-- Marked as private since it's a special case of `eq_adjoin_of_isAlgebraic`.
 private lemma eq_adjoin_of_isPurelyInseparable [IsPurelyInseparable F E] :
     separableClosure E K = adjoin E (separableClosure F K) := by
   set S := separableClosure E K
