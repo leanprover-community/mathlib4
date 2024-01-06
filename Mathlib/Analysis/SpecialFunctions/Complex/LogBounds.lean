@@ -11,11 +11,15 @@ import Mathlib.Analysis.Calculus.Deriv.Shift
 # Estimates for the complex logarithm
 
 We show that `log (1+z)` differs from its Taylor polynomial up to degree `n` by at most
-`‖z‖^(n+1)/((n+1)*(1-‖z‖))` when `‖z‖ < 1`; see `Complex.log_sub_logTaylor_norm_le`.
+`‖z‖^(n+1)/((n+1)*(1-‖z‖))` when `‖z‖ < 1`; see `Complex.norm_log_sub_logTaylor_le`.
 
 To this end, we derive the representation of `log (1+z)` as the integral of `1/(1+tz)`
 over the unit interval (`Complex.log_eq_integral`) and introduce notation
 `Complex.logTaylor n` for the Taylor polynomial up to degree `n-1`.
+
+### TODO
+
+Refactor using general Taylor series theory, once this exists in Mathlib.
 -/
 
 namespace Complex
@@ -131,7 +135,7 @@ lemma integrable_pow_mul_norm_one_add_mul_inv (n : ℕ) {z : ℂ} (hz : ‖z‖ 
 open intervalIntegral in
 /-- The difference of `log (1+z)` and its `(n+1)`st Taylor polynomial can be bounded in
 terms of `‖z‖`. -/
-lemma log_sub_logTaylor_norm_le (n : ℕ) {z : ℂ} (hz : ‖z‖ < 1) :
+lemma norm_log_sub_logTaylor_le (n : ℕ) {z : ℂ} (hz : ‖z‖ < 1) :
     ‖log (1 + z) - logTaylor (n + 1) z‖ ≤ ‖z‖ ^ (n + 1) * (1 - ‖z‖)⁻¹ / (n + 1) := by
   have help : IntervalIntegrable (fun t : ℝ ↦ t ^ n * (1 - ‖z‖)⁻¹) MeasureTheory.volume 0 1 :=
     IntervalIntegrable.mul_const (Continuous.intervalIntegrable (by continuity) 0 1) (1 - ‖z‖)⁻¹
@@ -172,25 +176,25 @@ lemma log_sub_logTaylor_norm_le (n : ℕ) {z : ℂ} (hz : ‖z‖ < 1) :
         field_simp
 
 /-- The difference `log (1+z) - z` is bounded by `‖z‖^2/(2*(1-‖z‖))` when `‖z‖ < 1`. -/
-lemma norm_log_sub_self_le {z : ℂ} (hz : ‖z‖ < 1) :
+lemma norm_log_one_add_sub_self_le {z : ℂ} (hz : ‖z‖ < 1) :
     ‖log (1 + z) - z‖ ≤ ‖z‖ ^ 2 * (1 - ‖z‖)⁻¹ / 2 := by
-  convert log_sub_logTaylor_norm_le 1 hz using 2
+  convert norm_log_sub_logTaylor_le 1 hz using 2
   · simp [logTaylor_succ, logTaylor_zero, sub_eq_add_neg]
   · norm_num
 
 /-- The difference of `log (1-z)⁻¹` and its `(n+1)`st Taylor polynomial can be bounded in
 terms of `‖z‖`. -/
-lemma log_inv_add_logTaylor_neg_norm_le (n : ℕ) {z : ℂ} (hz : ‖z‖ < 1) :
+lemma norm_log_one_sub_inv_add_logTaylor_neg_le  (n : ℕ) {z : ℂ} (hz : ‖z‖ < 1) :
     ‖log (1 - z)⁻¹ + logTaylor (n + 1) (-z)‖ ≤ ‖z‖ ^ (n + 1) * (1 - ‖z‖)⁻¹ / (n + 1) := by
   rw [sub_eq_add_neg,
     log_inv _ <| slitPlane_arg_ne_pi <| mem_slitPlane_of_norm_lt_one <| (norm_neg z).symm ▸ hz,
     ← sub_neg_eq_add, ← neg_sub', norm_neg]
-  convert log_sub_logTaylor_norm_le n <| (norm_neg z).symm ▸ hz using 4 <;> rw [norm_neg]
+  convert norm_log_sub_logTaylor_le n <| (norm_neg z).symm ▸ hz using 4 <;> rw [norm_neg]
 
 /-- The difference `log (1-z)⁻¹ - z` is bounded by `‖z‖^2/(2*(1-‖z‖))` when `‖z‖ < 1`. -/
-lemma norm_log_inv_sub_self_le {z : ℂ} (hz : ‖z‖ < 1) :
+lemma norm_log_one_sub_inv_sub_self_le  {z : ℂ} (hz : ‖z‖ < 1) :
     ‖log (1 - z)⁻¹ - z‖ ≤ ‖z‖ ^ 2 * (1 - ‖z‖)⁻¹ / 2 := by
-  convert log_inv_add_logTaylor_neg_norm_le 1 hz using 2
+  convert norm_log_one_sub_inv_add_logTaylor_neg_le  1 hz using 2
   · simp [logTaylor_succ, logTaylor_zero, sub_eq_add_neg]
   · norm_num
 
@@ -218,7 +222,7 @@ lemma hasSum_taylorSeries_log {z : ℂ} (hz : ‖z‖ < 1) :
         cases n with
         | zero => simp [logTaylor_zero]
         | succ n =>
-            refine (log_sub_logTaylor_norm_le n hz).trans ?_
+            refine (norm_log_sub_logTaylor_le n hz).trans ?_
             rw [mul_comm, ← div_one ((max _ _) * _)]
             gcongr
             · exact le_max_right ..
