@@ -330,23 +330,9 @@ variable [DecidableEq o]
 theorem BilinForm.toMatrix_comp (B : BilinForm R₂ M₂) (l r : M₂' →ₗ[R₂] M₂) :
     BilinForm.toMatrix c (B.comp l r) =
       (LinearMap.toMatrix c b l)ᵀ * BilinForm.toMatrix b B * LinearMap.toMatrix c b r := by
-  ext i j
-  simp only [BilinForm.toMatrix_apply, BilinForm.comp_apply, transpose_apply, Matrix.mul_apply,
-    LinearMap.toMatrix', LinearEquiv.coe_mk, sum_mul]
-  rw [sum_comm]
-  conv_lhs => rw [← BilinForm.sum_repr_mul_repr_mul b]
-  rw [Finsupp.sum_fintype]
-  · apply sum_congr rfl
-    rintro i' -
-    rw [Finsupp.sum_fintype]
-    · apply sum_congr rfl
-      rintro j' -
-      simp only [smul_eq_mul, LinearMap.toMatrix_apply, Basis.equivFun_apply, mul_assoc, mul_comm,
-        mul_left_comm]
-    · intros
-      simp only [zero_smul, smul_zero]
-  · intros
-    simp only [zero_smul, Finsupp.sum_zero]
+  rw [BilinForm.toMatrix, BilinForm.toMatrix, LinearEquiv.trans_apply, LinearEquiv.trans_apply,
+    ← LinearMap.toMatrix₂_compl₁₂]
+  rfl
 #align bilin_form.to_matrix_comp BilinForm.toMatrix_comp
 
 theorem BilinForm.toMatrix_compLeft (B : BilinForm R₂ M₂) (f : M₂ →ₗ[R₂] M₂) :
