@@ -64,6 +64,13 @@ theorem Distrib.ext_iff (inst₁ inst₂ : Distrib R) :
   -- Prove equality of parts using already-proved extensionality lemmas.
   congr <;> (ext; apply_assumption)
 
+theorem NonUnitalNonAssocSemiring.toDistrib_injective :
+    Function.Injective (@NonUnitalNonAssocSemiring.toDistrib R) := by
+  intro _ _ h
+  ext a b
+  · exact congrArg (·.toAdd.add a b) h
+  · exact congrArg (·.toMul.mul a b) h
+
 theorem NonUnitalNonAssocSemiring.ext_iff (inst₁ inst₂ : NonUnitalNonAssocSemiring R) :
     inst₁ = inst₂ ↔
       (∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
