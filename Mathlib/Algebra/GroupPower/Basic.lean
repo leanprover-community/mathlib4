@@ -3,9 +3,9 @@ Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis
 -/
-import Mathlib.Algebra.Group.Commute.Units
+import Mathlib.Algebra.Group.Commute.Basic
 import Mathlib.Algebra.GroupWithZero.Defs
-import Mathlib.Tactic.Convert
+import Mathlib.Tactic.Common
 
 #align_import algebra.group_power.basic from "leanprover-community/mathlib"@"9b2660e1b25419042c8da10bf411aa3c67f14383"
 

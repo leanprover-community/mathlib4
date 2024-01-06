@@ -644,7 +644,7 @@ theorem sequence_mono_nat {r : β → β → Prop} {f : α → β} (hf : Directe
     r (f (hf.sequence f n)) (f (hf.sequence f (n + 1))) := by
   dsimp [Directed.sequence]
   generalize hf.sequence f n = p
-  cases' h : (decode n: Option α) with a
+  cases' (decode n : Option α) with a
   · exact (Classical.choose_spec (hf p p)).1
   · exact (Classical.choose_spec (hf p a)).1
 #align directed.sequence_mono_nat Directed.sequence_mono_nat
