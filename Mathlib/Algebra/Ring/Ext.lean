@@ -116,6 +116,7 @@ defined in `Algebra/GroupWithZero/Defs` as well. -/
   have h_one : (inst₁.toMulZeroOneClass).toMulOneClass.toOne.one
                = (inst₂.toMulZeroOneClass).toMulOneClass.toOne.one :=
     congrArg (@One.one R) h_one'
+  -- Mathematically non-trivial fact: `natCast` is determined by `0`, `1` and `+`.
   have h_natCast : inst₁.toNatCast.natCast = inst₂.toNatCast.natCast := by
     funext n; induction n with
     | zero     => rewrite [inst₁.natCast_zero, inst₂.natCast_zero]; exact h_zero
@@ -201,6 +202,7 @@ theorem NonUnitalRing.ext_iff (inst₁ inst₂ : NonUnitalRing R) :
     ext <;> apply_assumption
   have h₂ : inst₁.toNonAssocSemiring = inst₂.toNonAssocSemiring := by
     ext <;> apply_assumption
+  -- Mathematically non-trivial fact: `intCast` is determined by the rest.
   have h_intCast : inst₁.toIntCast.intCast = inst₂.toIntCast.intCast := by
     have : inst₁.toNatCast = inst₂.toNatCast := by injection h₂
     funext n; cases n with
