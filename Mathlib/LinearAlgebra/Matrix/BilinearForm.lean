@@ -366,18 +366,24 @@ theorem BilinForm.mul_toMatrix_mul (B : BilinForm R₂ M₂) (M : Matrix o n R�
 
 theorem BilinForm.mul_toMatrix (B : BilinForm R₂ M₂) (M : Matrix n n R₂) :
     M * BilinForm.toMatrix b B = BilinForm.toMatrix b (B.compLeft (Matrix.toLin b b Mᵀ)) := by
-  rw [B.toMatrix_compLeft b, toMatrix_toLin, transpose_transpose]
+  rw [BilinForm.toMatrix, LinearEquiv.trans_apply, LinearMap.mul_toMatrix₂ b b b]
+  rfl
 #align bilin_form.mul_to_matrix BilinForm.mul_toMatrix
 
 theorem BilinForm.toMatrix_mul (B : BilinForm R₂ M₂) (M : Matrix n n R₂) :
     BilinForm.toMatrix b B * M = BilinForm.toMatrix b (B.compRight (Matrix.toLin b b M)) := by
-  rw [B.toMatrix_compRight b, toMatrix_toLin]
+  rw [BilinForm.toMatrix, LinearEquiv.trans_apply, LinearMap.toMatrix₂_mul b b b]
+  rfl
 #align bilin_form.to_matrix_mul BilinForm.toMatrix_mul
 
 theorem Matrix.toBilin_comp (M : Matrix n n R₂) (P Q : Matrix n o R₂) :
-    (Matrix.toBilin b M).comp (toLin c b P) (toLin c b Q) = Matrix.toBilin c (Pᵀ * M * Q) :=
-  (BilinForm.toMatrix c).injective
-    (by simp only [BilinForm.toMatrix_comp b c, BilinForm.toMatrix_toBilin, toMatrix_toLin])
+    (Matrix.toBilin b M).comp (toLin c b P) (toLin c b Q) = Matrix.toBilin c (Pᵀ * M * Q) := by
+  rw [Matrix.toBilin,
+    BilinForm.toMatrix, Matrix.toBilin, BilinForm.toMatrix, LinearEquiv.trans_symm,
+    LinearEquiv.trans_symm, toMatrix₂_symm, BilinForm.toLin_symm, LinearEquiv.trans_apply,
+    toMatrix₂_symm, BilinForm.toLin_symm, LinearEquiv.trans_apply,
+    ← Matrix.toLinearMap₂_compl₁₂ b b c c]
+  rfl
 #align matrix.to_bilin_comp Matrix.toBilin_comp
 
 end ToMatrix
