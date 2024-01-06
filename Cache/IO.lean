@@ -286,7 +286,7 @@ def allExist (paths : List (FilePath × Bool)) : IO Bool := do
   pure true
 
 /-- Compresses build files into the local cache and returns an array with the compressed files -/
-def packCache (hashMap : HashMap) (overwrite : Bool) (comment : Option String := none) :
+def packCache (hashMap : HashMap) (overwrite verbose : Bool) (comment : Option String := none) :
     IO $ Array String := do
   mkDir CACHEDIR
   IO.println "Compressing cache"
@@ -305,10 +305,14 @@ def packCache (hashMap : HashMap) (overwrite : Bool) (comment : Option String :=
             | unreachable!
           runCmd (← getLeanTar) $ #[zipPath.toString, trace] ++
             (if let some c := comment then #["-c", s!"git=mathlib4@{c}"] else #[]) ++ args
-      acc := acc.push zip
+      acc := acc.push (path, zip)
   for task in tasks do
     _ ← IO.ofExcept task.get
-  return acc
+  acc := acc.qsort (·.1.1 < ·.1.1)
+  if verbose then
+    for (path, zip) in acc do
+      println! "packing {path} as {zip}"
+  return acc.map (·.2)
 
 /-- Gets the set of all cached files -/
 def getLocalCacheSet : IO $ Lean.RBTree String compare := do
@@ -346,12 +350,6 @@ def unpackCache (hashMap : HashMap) (force : Bool) : IO Unit := do
     if exitCode != 0 then throw $ IO.userError s!"leantar failed with error code {exitCode}"
     IO.println s!"unpacked in {(← IO.monoMsNow) - now} ms"
   else IO.println "No cache files to decompress"
-
-/-- Retrieves the azure token from the environment -/
-def getToken : IO String := do
-  let some token ← IO.getEnv "MATHLIB_CACHE_SAS"
-    | throw $ IO.userError "environment variable MATHLIB_CACHE_SAS must be set to upload caches"
-  return token
 
 instance : Ord FilePath where
   compare x y := compare x.toString y.toString
