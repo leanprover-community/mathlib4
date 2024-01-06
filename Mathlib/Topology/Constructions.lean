@@ -99,7 +99,7 @@ theorem continuous_ofMul : Continuous (ofMul : α → Additive α) := continuous
 theorem continuous_toMul : Continuous (toMul : Additive α → α) := continuous_id
 #align continuous_to_mul continuous_toMul
 
-theorem continuous_ofAdd : Continuous (ofAdd : α → Multiplicative α) := continuous_id
+@[continuity] theorem continuous_ofAdd : Continuous (ofAdd : α → Multiplicative α) := continuous_id
 #align continuous_of_add continuous_ofAdd
 
 theorem continuous_toAdd : Continuous (toAdd : Multiplicative α → α) := continuous_id

@@ -34,12 +34,8 @@ noncomputable section
 abbrev integralFourier (f : E → F) :=
   (VectorFourier.fourierIntegral (E := F)) Real.fourierChar (volume : Measure E) (innerₛₗ ℝ) f
 
-attribute [continuity] continuous_ofAdd -- TO DO: tag where `continuous_ofAdd` is defined
-
-/--
-The Fréchet derivative of the Fourier transform of `f` is the Fourier transform of
-`fun v ↦ ((-2 * π * I) • f v) ⊗ (innerSL ℝ v)`.
--/
+/-- The Fréchet derivative of the Fourier transform of `f` is the Fourier transform of
+    `fun v ↦ ((-2 * π * I) • f v) ⊗ (innerSL ℝ v)`. -/
 theorem hasFDerivAt_fourier {f : E → F} (hf_int : Integrable f)
     (hvf_int : Integrable (fun v ↦ ‖v‖ * ‖f v‖)) (x : E) :
     HasFDerivAt (integralFourier E F f)
