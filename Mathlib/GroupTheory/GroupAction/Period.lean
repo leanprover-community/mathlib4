@@ -12,9 +12,11 @@ import Mathlib.GroupTheory.Exponent
 # Period of a group action
 
 This module defines some helpful lemmas around [`MulAction.period`] and [`AddAction.period`].
-The period of a point `a` by a group element `g` is the smallest `m` such that `g ^ m • a = a` (resp. `(m • g) +ᵥ a = a`) for a given `g : G` and `a : α`.
+The period of a point `a` by a group element `g` is the smallest `m` such that `g ^ m • a = a`
+(resp. `(m • g) +ᵥ a = a`) for a given `g : G` and `a : α`.
 
-If such an `m` does not exist, then by convention `MulAction.period` and `AddAction.period` return 0.
+If such an `m` does not exist,
+then by convention `MulAction.period` and `AddAction.period` return 0.
 -/
 
 namespace MulAction
@@ -48,6 +50,14 @@ theorem period_pos_of_fixed {m : M} {a : α} {n : ℕ} (n_pos : 0 < n) (fixed : 
   rw [fixed_iff_isPeriodicPt] at fixed
   rw [period_eq_minimalPeriod]
   exact Function.IsPeriodicPt.minimalPeriod_pos n_pos fixed
+
+@[to_additive]
+theorem period_eq_one_of_fixed {m : M} {a : α} (fixed : m • a = a) : period m a = 1 := by
+  symm
+  rw [← pow_one m] at fixed
+  refine Nat.eq_of_le_of_lt_succ (period_le_of_fixed Nat.one_pos fixed) ?pos
+  rw [Nat.lt_add_left_iff_pos]
+  exact period_pos_of_fixed Nat.one_pos fixed
 
 /-- For any non-zero `n` less than the period, `a` is moved by `m^n`. -/
 @[to_additive]
