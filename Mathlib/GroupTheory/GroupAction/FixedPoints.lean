@@ -20,8 +20,8 @@ as well as the definition of [`MulAction.movedBy`].
   for the different relationship between the `movedBy`/`fixedBy` sets of `g*h`.
 * [`MulAction.fixedBy_conj`] and [`MulAction.movedBy_conj`]: the pointwise group action on the sets
   `fixedBy α g` and `movedBy α g` translates to the conjugation action on `g`.
-* [`MulAction.smul_in_set_of_movedBy_subset`] shows that if a set `s` is a superset of `movedBy α g`,
-  then the group action of `g` cannot send elements of `s` outside of `s`.
+* [`MulAction.smul_in_set_of_movedBy_subset`] shows that if a set `s` is a superset of
+  `movedBy α g`, then the group action of `g` cannot send elements of `s` outside of `s`.
 * [`MulAction.not_commute_of_disjoint_movedBy_preimage`] allows one to infer that two group elements
   do not commute from the behavior of their `movedBy` sets, which is useful in the proof of
   Rubin's theorem.
