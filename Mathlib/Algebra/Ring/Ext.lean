@@ -115,44 +115,27 @@ theorem NonAssocSemiring.ext_iff (inst₁ inst₂ : NonAssocSemiring R) :
       (∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :=
   ⟨fun h ↦ by constructor <;> (intros; congr), And.elim (NonAssocSemiring.ext · ·)⟩
 
-theorem Semiring.toNonUnitalSemiring_injective :
-    Function.Injective (@Semiring.toNonUnitalSemiring R) := by
-  intro inst₁ inst₂ h
-  have h_add a b : a +[R, inst₁] b = a +[R, inst₂] b :=
-    congrArg (·.toAdd.add a b) h
-  have h_mul a b : a *[R, inst₁] b = a *[R, inst₂] b :=
-    congrArg (·.toMul.mul a b) h
-  -- Enough substructures are equal
-  have h₁ : inst₁.toNonAssocSemiring = inst₂.toNonAssocSemiring := by
-    ext <;> apply_assumption
-  have h₂ : (inst₁.toMonoidWithZero).toMonoid = (inst₂.toMonoidWithZero).toMonoid := by
-    ext; apply h_mul
-  -- Split into fields and use congr
-  cases inst₁; cases inst₂
-  congr <;> solve| injection h | injection h₁ | injection h₂
-
-theorem Semiring.toNonAssocSemiring_injective :
-    Function.Injective (@Semiring.toNonAssocSemiring R) := by
-  intro inst₁ inst₂ h
-  have h_add a b : a +[R, inst₁] b = a +[R, inst₂] b :=
-    congrArg (·.toAdd.add a b) h
-  have h_mul a b : a *[R, inst₁] b = a *[R, inst₂] b :=
-    congrArg (·.toMul.mul a b) h
-  -- Enough substructures are equal
-  have h₁ : inst₁.toNonUnitalSemiring = inst₂.toNonUnitalSemiring := by
-    ext <;> apply_assumption
-  have h₂ : (inst₁.toMonoidWithZero).toMonoid = (inst₂.toMonoidWithZero).toMonoid := by
-    ext; apply h_mul
-  -- Split into fields and use congr
-  rcases inst₁ with ⟨⟩; rcases inst₂ with ⟨⟩
-  congr <;> solve| injection h | injection h₁ | injection h₂
-
 @[ext] theorem Semiring.ext ⦃inst₁ inst₂ : Semiring R⦄
     (h_add : ∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
     (h_mul : ∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :
-    inst₁ = inst₂ :=
-  Semiring.toNonUnitalSemiring_injective <|
-    NonUnitalSemiring.ext h_add h_mul
+    inst₁ = inst₂ := by
+  -- Enough substructures are equal
+  have h₁ : inst₁.toNonUnitalSemiring = inst₂.toNonUnitalSemiring := by
+    ext <;> apply_assumption
+  have h₂ : inst₁.toNonAssocSemiring = inst₂.toNonAssocSemiring := by
+    ext <;> apply_assumption
+  have h₃ : (inst₁.toMonoidWithZero).toMonoid = (inst₂.toMonoidWithZero).toMonoid := by
+    ext; apply h_mul
+  -- Split into fields and use congr
+  rcases inst₁ with ⟨⟩; rcases inst₂ with ⟨⟩
+  congr <;> solve| injection h₁ | injection h₂ | injection h₃
+
+theorem Semiring.toNonUnitalNonAssocSemiring_injective :
+    Function.Injective (@Semiring.toNonUnitalSemiring R) := by
+  intro _ _ h
+  ext a b
+  · exact congrArg (·.toAdd.add a b) h
+  · exact congrArg (·.toMul.mul a b) h
 
 theorem Semiring.ext_iff (inst₁ inst₂ : Semiring R) :
     inst₁ = inst₂ ↔
