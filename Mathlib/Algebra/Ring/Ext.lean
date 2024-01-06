@@ -161,6 +161,58 @@ theorem NonUnitalNonAssocRing.ext_iff (inst₁ inst₂ : NonUnitalNonAssocRing R
       ∧ (∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :=
   ⟨fun h ↦ by constructor <;> (intros; congr), And.elim (NonUnitalNonAssocRing.ext · ·)⟩
 
+/-! ### NonUnitalRing -/
+
+@[ext] theorem NonUnitalRing.ext ⦃inst₁ inst₂ : NonUnitalRing R⦄
+    (h_add : ∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
+    (h_mul : ∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :
+    inst₁ = inst₂ := by
+  sorry
+
+theorem NonUnitalRing.toNonUnitalSemiring_injective :
+    Function.Injective (@NonUnitalRing.toNonUnitalSemiring R) := by
+  intro _ _ h
+  ext a b
+  · exact congrArg (·.toAdd.add a b) h
+  · exact congrArg (·.toMul.mul a b) h
+
+theorem NonUnitalRing.toNonUnitalNonAssocring_injective :
+    Function.Injective (@NonUnitalRing.toNonUnitalNonAssocRing R) := by
+  intro _ _ _
+  ext <;> congr
+
+theorem NonUnitalRing.ext_iff (inst₁ inst₂ : NonUnitalRing R) :
+    inst₁ = inst₂ ↔
+      (∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
+      ∧ (∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :=
+  ⟨fun h ↦ by constructor <;> (intros; congr), And.elim (NonUnitalRing.ext · ·)⟩
+
+/-! ### NonAssocRing -/
+
+@[ext] theorem NonAssocRing.ext ⦃inst₁ inst₂ : NonAssocRing R⦄
+    (h_add : ∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
+    (h_mul : ∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :
+    inst₁ = inst₂ := by
+  sorry
+
+theorem NonAssocRing.toNonAssocSemiring_injective :
+    Function.Injective (@NonAssocRing.toNonAssocSemiring R) := by
+  intro _ _ h
+  ext a b
+  · exact congrArg (·.toAdd.add a b) h
+  · exact congrArg (·.toMul.mul a b) h
+
+theorem NonAssocRing.toNonUnitalNonAssocring_injective :
+    Function.Injective (@NonAssocRing.toNonUnitalNonAssocRing R) := by
+  intro _ _ _
+  ext <;> congr
+
+theorem NonAssocRing.ext_iff (inst₁ inst₂ : NonAssocRing R) :
+    inst₁ = inst₂ ↔
+      (∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
+      ∧ (∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :=
+  ⟨fun h ↦ by constructor <;> (intros; congr), And.elim (NonAssocRing.ext · ·)⟩
+
 /-! ### Semiring -/
 
 @[ext] theorem Semiring.ext ⦃inst₁ inst₂ : Semiring R⦄
@@ -198,3 +250,16 @@ theorem Semiring.ext_iff (inst₁ inst₂ : Semiring R) :
       ∧ (∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :=
   ⟨fun h ↦ by constructor <;> (intros; congr), And.elim (Semiring.ext · ·)⟩
 
+/-! ### Ring -/
+
+@[ext] theorem Ring.ext ⦃inst₁ inst₂ : Ring R⦄
+    (h_add : ∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
+    (h_mul : ∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :
+    inst₁ = inst₂ := by
+  sorry
+
+theorem Ring.ext_iff (inst₁ inst₂ : Ring R) :
+    inst₁ = inst₂ ↔
+      (∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
+      ∧ (∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :=
+  ⟨fun h ↦ by constructor <;> (intros; congr), And.elim (Ring.ext ·)⟩
