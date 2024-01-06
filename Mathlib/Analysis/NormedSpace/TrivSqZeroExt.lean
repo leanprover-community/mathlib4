@@ -91,28 +91,45 @@ theorem HasSum_sum_range_iff {α} [TopologicalSpace α] [AddCommMonoid α] [Cont
     (f : ℕ → ℕ → α) (a : α):
     HasSum (fun n => ∑ k in .range (n + 1), f n k) a ↔ HasSum (fun nk : ℕ × ℕ => f (nk.1 + nk.2) nk.2) a :=
   sorry
+open unitInterval
+
+noncomputable instance : MeasureTheory.MeasureSpace I where
+  volume := MeasureTheory.MeasureSpace.volume.comap Subtype.val
 
 open Nat in
-theorem beta_aux
-    (a b : ℕ) : ((a + b + 1)! : ℝ)⁻¹ = ∫ x in Set.Icc 0 1,  ((a ! : ℝ)⁻¹ • (x ^ a)) * (b ! : ℝ)⁻¹ • (1 - x)^ b :=
+theorem beta_aux (a b : ℕ) :
+  ((a + b + 1)! : ℝ)⁻¹ =
+      ∫ x : I, ((a ! : ℝ)⁻¹ • (x.val : ℝ) ^ a) * (b ! : ℝ)⁻¹ • (1 - x.val : ℝ)^ b :=
   sorry
+
+theorem _root_.MeasureTheory.AEStronglyMeasurable.pow_const
+  {α : Type u_1} {β : Type u_2}
+  {_ : MeasurableSpace α} {μ : MeasureTheory.Measure α} [TopologicalSpace β]
+  {f : α → β} [Monoid β] [ContinuousMul β] (hf : MeasureTheory.AEStronglyMeasurable f μ) (n : ℕ) :
+    MeasureTheory.AEStronglyMeasurable (f ^ n) μ :=
+  let s : Submonoid (α → β) :=
+    {carrier := { f | MeasureTheory.AEStronglyMeasurable f μ}
+     mul_mem' := MeasureTheory.AEStronglyMeasurable.mul
+     one_mem' := MeasureTheory.stronglyMeasurable_const.aestronglyMeasurable}
+  pow_mem (show f ∈ s from hf) n
 
 /-- If `exp R x.fst` converges to `e` then `(exp R x).snd` converges to `e • x.snd`. -/
 theorem hasSum_snd_expSeries' {R M} [Ring R] [NormedAddCommGroup M]
     [Algebra ℝ R] [Module R M] [Module Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M] [NormedSpace ℝ M]
     [IsScalarTower ℝ R M] [IsScalarTower ℝ Rᵐᵒᵖ M] [TopologicalSpace R] [TopologicalRing R]
+    [ContinuousSMul ℝ R]
     [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M] [CompleteSpace M] (x : tsze R M)
-    {e : ℝ → R}
-    (h : ∀ t ∈ Set.Icc 0 1, HasSum (fun n => expSeries ℝ R n fun _ => t • x.fst) (e t)) :
+    {e : Set.Icc 0 (1 : ℝ) → R}
+    (h : ∀ t, HasSum (fun n => expSeries ℝ R n fun _ => t.val • x.fst) (e t)) :
     HasSum (fun n => snd (expSeries ℝ (tsze R M) n fun _ => x))
-      (∫ t in Set.Icc (0 : ℝ) 1, e t • MulOpposite.op (e (1 - t)) • x.snd) := by
-  replace h : ∀ t ∈ Set.Icc 0 1, HasSum _ _ := fun t ht =>
-    (h t ht).smul ((h (1 - t) (by aesop)).op.smul_const x.snd) sorry
+      (∫ t : I, e t • MulOpposite.op (e (unitInterval.symm t)) • x.snd) := by
+  replace h : ∀ t : I, HasSum _ _ := fun t =>
+    (h t).smul ((h (unitInterval.symm t)).op.smul_const x.snd) sorry
   simp_rw [expSeries_apply_eq] at *
   conv =>
     congr
     ext n
-    rw [snd_smul, snd_pow_eq_sum, ←List.sum_toFinset _ (List.nodup_range n), List.toFinset_range,
+    rw [snd_smul, snd_pow_eq_sum, ← List.sum_toFinset _ (List.nodup_range n), List.toFinset_range,
       Finset.smul_sum]
   rw [← hasSum_nat_add_iff' 1]
   rw [Finset.range_one, Finset.sum_singleton, Finset.range_zero, Finset.sum_empty,
@@ -120,14 +137,23 @@ theorem hasSum_snd_expSeries' {R M} [Ring R] [NormedAddCommGroup M]
   simp_rw [Nat.pred_succ]
   rw [HasSum_sum_range_iff]
   simp only [add_tsub_cancel_right]
-  simp_rw [beta_aux, ←integral_smul_const, mul_smul, smul_comm (_ • (1 - _)^_ : ℝ) (_ : R),
-    ←smul_assoc, ←MulOpposite.op_smul, smul_assoc _ (_ ^ _), ←smul_pow]
+  simp_rw [beta_aux, ← integral_smul_const, mul_smul, smul_comm (_ • (1 - _)^_ : ℝ) (_ : R),
+    ← smul_assoc, ← MulOpposite.op_smul, smul_assoc _ (_ ^ _), ← smul_pow]
   apply MeasureTheory.hasSum_integral_of_dominated_convergence
   case h_lim =>
-    rw [MeasureTheory.ae_restrict_iff sorry]
     filter_upwards
     exact h
-  repeat sorry
+  · intro n
+    refine .smul (.const_smul (.pow_const (.smul_const ?_ _) _) _) (.smul ?_ ?_)
+    · sorry
+    · sorry
+    · exact MeasureTheory.stronglyMeasurable_const.aestronglyMeasurable
+  · intro ⟨m, n⟩
+    dsimp
+    sorry
+  · sorry
+  · sorry
+  · sorry
 #align triv_sq_zero_ext.has_sum_snd_exp_series_of_smul_comm TrivSqZeroExt.hasSum_snd_expSeries_of_smul_comm
 
 /-- If `exp R x.fst` converges to `e` then `exp R x` converges to `inl e + inr (e • x.snd)`. -/
