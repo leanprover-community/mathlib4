@@ -197,7 +197,19 @@ theorem NonUnitalRing.ext_iff (inst₁ inst₂ : NonUnitalRing R) :
     (h_add : ∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
     (h_mul : ∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :
     inst₁ = inst₂ := by
-  sorry
+  have h₁ : inst₁.toNonUnitalNonAssocRing = inst₂.toNonUnitalNonAssocRing := by
+    ext <;> apply_assumption
+  have h₂ : inst₁.toNonAssocSemiring = inst₂.toNonAssocSemiring := by
+    ext <;> apply_assumption
+  have h_intCast : inst₁.toIntCast.intCast = inst₂.toIntCast.intCast := by
+    have : inst₁.toNatCast = inst₂.toNatCast := by injection h₂
+    funext n; cases n with
+    | ofNat n   => rewrite [←Int.coe_nat_eq, inst₁.intCast_ofNat, inst₂.intCast_ofNat]; congr
+    | negSucc n => rewrite [inst₁.intCast_negSucc, inst₂.intCast_negSucc]; congr
+  -- Split into fields (extracting `intCast` function) and prove they are equal using the above.
+  rcases inst₁ with @⟨_, _, _, _, _, _, _, ⟨⟩⟩
+  rcases inst₂ with @⟨_, _, _, _, _, _, _, ⟨⟩⟩
+  congr <;> try solve| injection h₁ | injection h₂
 
 theorem NonAssocRing.toNonAssocSemiring_injective :
     Function.Injective (@NonAssocRing.toNonAssocSemiring R) := by
