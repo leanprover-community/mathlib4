@@ -61,8 +61,10 @@ theorem single_star [∀ i, AddMonoid (f i)] [∀ i, StarAddMonoid (f i)] [Decid
   single_op (fun i => @star (f i) _) (fun _ => star_zero _) i a
 #align pi.single_star Pi.single_star
 
+open scoped ComplexConjugate
+
 @[simp]
-lemma Pi.conj_apply {ι : Type*} {α : ι → Type*} [∀ i, CommSemiring (α i)] [∀ i, StarRing (α i)]
+lemma conj_apply {ι : Type*} {α : ι → Type*} [∀ i, CommSemiring (α i)] [∀ i, StarRing (α i)]
     (f : ∀ i, α i) (i : ι) : conj f i = conj (f i) := rfl
 
 end Pi
