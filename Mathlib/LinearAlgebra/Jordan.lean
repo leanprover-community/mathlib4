@@ -240,15 +240,49 @@ example : Field (K[X] ⧸ (Ideal.span {p})) := AdjoinRoot.field
 
 section AdjoinRoot
 
+open Ideal
 variable {R : Type*} [CommRing R] {S : Type*} [Ring S] [Algebra R S]
 
-/-- Lift a ring homomorphism `i : R →+* S` to `AdjoinRoot f →+* S`. -/
-example (i : R →+* S) (x : S) (h : f.eval₂ i x = 0) : AdjoinRoot f →+* S := by
-  apply Ideal.Quotient.lift _ (eval₂RingHom i x)
+
+
+#check Ideal.Quotient.liftₐ
+
+/-- Given a ring homomorphism `f : R →+* S` sending all elements of an ideal to zero,
+lift it to the quotient by this ideal. -/
+def _root_.Ideal.Quotient.lift' (I : Ideal R) (f : R →+* S) (H : ∀ a : R, a ∈ I → f a = 0) :
+    R ⧸ I →+* S :=
+  { QuotientAddGroup.lift I.toAddSubgroup f.toAddMonoidHom H with
+    map_one' := f.map_one
+    map_mul' := fun a₁ a₂ => Quotient.inductionOn₂' a₁ a₂ f.map_mul }
+
+variable (f : R[X])
+
+/-- Lift a algebra map `R →+* S` to `AdjoinRoot f →+* S`. -/
+def _root_.AdjoinRoot.lift'_aux (x : S) (h : Polynomial.aeval x f = 0) :
+    AdjoinRoot f →+* S :=
+  Ideal.Quotient.lift' _ (Polynomial.aeval x).toRingHom
+    (fun g H => by
+      rcases mem_span_singleton.1 H with ⟨y, hy⟩
+      simp only [hy, AlgHom.toRingHom_eq_coe, RingHom.coe_coe, _root_.map_mul, h, zero_mul])
+
+def _root.AdjoinRoot.lift' (x : S) (h : Polynomial.aeval x f = 0) :
+    AdjoinRoot f →ₐ[R] S := by
+    refine {
+      toRingHom := AdjoinRoot.lift'_aux f x h
+      commutes' := fun r => by
+        simp [AdjoinRoot.algebraMap_eq]
+        simp [AdjoinRoot.lift'_aux]
+        rw [AdjoinRoot.of]
+        simp only [RingHom.coe_comp, Function.comp_apply, AdjoinRoot.mk_C]
+        sorry }
+
+
+
+
+  apply Ideal.Quotient.lift' _ (Polynomial.aeval x).toRingHom
   intro g H
   rcases mem_span_singleton.1 H with ⟨y, hy⟩
-  rw [hy, RingHom.map_mul, coe_eval₂RingHom, h, zero_mul]
-#align adjoin_root.lift AdjoinRoot.lift
+  simp only [hy, AlgHom.toRingHom_eq_coe, RingHom.coe_coe, _root_.map_mul, h, zero_mul]
 
 end AdjoinRoot
 
