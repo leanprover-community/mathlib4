@@ -27,7 +27,8 @@ A point `x : α` is a periodic point of `f : α → α` of period `n` if `f^[n] 
 * `minimalPeriod f x` : the minimal period of a point `x` under an endomorphism `f` or zero
   if `x` is not a periodic point of `f`.
 * `orbit f x`: the cycle `[x, f x, f (f x), ...]` for a periodic point.
-* `MulAction.period g x` : the minimal period of a point `x` under the multiplicative action of `g`.
+* `MulAction.period g x` : the minimal period of a point `x` under the multiplicative action of `g`;
+  an equivalent `AddAction.period g x` is defined for additive actions.
 
 ## Main statements
 
@@ -638,7 +639,8 @@ variable {M : Type u} [Monoid M] [MulAction M α]
 The period of a multiplicative action of `g` on `a` is the smallest `n` such that `g ^ n • a = a`,
 or `0` if such an `n` does not exist.
 -/
-@[to_additive "The period of an additive action of `g` on `a` is the smallest `n` such that `(n • g) +ᵥ a = a`, or `0` if such an `n` does not exist."]
+@[to_additive "The period of an additive action of `g` on `a` is the smallest `n`
+such that `(n • g) +ᵥ a = a`, or `0` if such an `n` does not exist."]
 noncomputable def period (m : M) (a : α) : ℕ := Function.minimalPeriod (fun x => m • x) a
 
 /-- `MulAction.period m a` is definitionally equal to `Function.minimalPeriod (m • ·) a`. -/
