@@ -178,7 +178,7 @@ theorem NonUnitalNonAssocRing.ext_iff (inst₁ inst₂ : NonUnitalNonAssocRing R
   cases inst₁; cases inst₂
   congr <;> solve| injection h₁ | injection h₂ | injection h₃
 
-theorem Semiring.toNonUnitalNonAssocSemiring_injective :
+theorem Semiring.toNonUnitalSemiring_injective :
     Function.Injective (@Semiring.toNonUnitalSemiring R) := by
   intro _ _ h
   ext a b
