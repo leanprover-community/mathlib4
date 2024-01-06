@@ -46,8 +46,8 @@ open MonoidalCategory
 
 section
 
-variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategoryStruct.{v₁} C] {D : Type u₂} [Category.{v₂} D]
-  [MonoidalCategoryStruct.{v₂} D]
+variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategoryStruct.{v₁} C]
+  {D : Type u₂} [Category.{v₂} D] [MonoidalCategoryStruct.{v₂} D]
 
 /-- An unbundled description of lax monoidal functors without axioms. See `LaxMonoidal` for
 the full description. -/
