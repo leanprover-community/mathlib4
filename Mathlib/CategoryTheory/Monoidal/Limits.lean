@@ -60,6 +60,7 @@ instance limitLaxMonoidalStruct : LaxMonoidalStruct fun F : J ⥤ C => limit F w
             naturality := fun j j' f => by
               dsimp
               simp only [Category.id_comp, ← tensor_comp, limit.w] } }
+
 instance limitLaxMonoidal : LaxMonoidal fun F : J ⥤ C => limit F := .ofTensorHom
   (μ_natural:= fun f g => by
     ext; dsimp
