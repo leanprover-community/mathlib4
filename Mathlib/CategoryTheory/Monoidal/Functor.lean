@@ -422,7 +422,7 @@ def comp : LaxMonoidalFunctor.{v₁, v₃} C E :=
       simp only [comp_whiskerRight, assoc, μ_natural_left_assoc, MonoidalCategory.whiskerLeft_comp,
         μ_natural_right_assoc]
       slice_rhs 1 3 => rw [← G.associativity]
-      simp_rw [Category.assoc, ←G.toFunctor.map_comp, F.associativity] }
+      simp_rw [Category.assoc, ← G.toFunctor.map_comp, F.associativity] }
 #align category_theory.lax_monoidal_functor.comp CategoryTheory.LaxMonoidalFunctor.comp
 
 @[inherit_doc]
