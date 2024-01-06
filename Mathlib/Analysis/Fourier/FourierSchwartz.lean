@@ -34,14 +34,6 @@ noncomputable section
 abbrev integralFourier (f : E → F) :=
   (VectorFourier.fourierIntegral (E := F)) Real.fourierChar (volume : Measure E) (innerₛₗ ℝ) f
 
--- belongs in Mathlib.Analysis.InnerProductSpace.Calculus
--- TODO : Add after `HasFDerivAt.inner`
-theorem hasFDerivAt_inner (𝕜 : Type*) {E : Type*} [IsROrC 𝕜] [NormedAddCommGroup E]
-    [InnerProductSpace 𝕜 E] (v : E) (x : E) : HasFDerivAt (inner (𝕜 := 𝕜) v)
-    (innerSL 𝕜 v) x := (innerSL 𝕜 v).hasFDerivAt
-
-
-
 attribute [continuity] continuous_ofAdd -- TO DO: tag where `continuous_ofAdd` is defined
 
 /--

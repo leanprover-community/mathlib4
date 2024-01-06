@@ -108,6 +108,10 @@ theorem HasFDerivAt.inner (hf : HasFDerivAt f f' x) (hg : HasFDerivAt g g' x) :
   (isBoundedBilinearMap_inner.hasFDerivAt (f x, g x)).comp x (hf.prod hg)
 #align has_fderiv_at.inner HasFDerivAt.inner
 
+theorem hasFDerivAt_inner (𝕜 : Type*) {E : Type*} [IsROrC 𝕜] [NormedAddCommGroup E]
+    [InnerProductSpace 𝕜 E] (v : E) (x : E) :
+    HasFDerivAt (inner (𝕜 := 𝕜) v) (innerSL 𝕜 v) x := (innerSL 𝕜 v).hasFDerivAt
+
 theorem HasDerivWithinAt.inner {f g : ℝ → E} {f' g' : E} {s : Set ℝ} {x : ℝ}
     (hf : HasDerivWithinAt f f' s x) (hg : HasDerivWithinAt g g' s x) :
     HasDerivWithinAt (fun t => ⟪f t, g t⟫) (⟪f x, g'⟫ + ⟪f', g x⟫) s x := by
