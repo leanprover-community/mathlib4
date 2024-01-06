@@ -111,7 +111,7 @@ theorem exp_eq (q : Quaternion ℝ) :
   exact Algebra.commutes q.re (_ : ℍ[ℝ])
 #align quaternion.exp_eq Quaternion.exp_eq
 
-theorem re_exp (q : ℍ[ℝ]) : (exp ℝ q).re = exp ℝ q.re * Real.cos ‖q - q.re‖ := by simp [exp_eq]
+theorem re_exp (q : ℍ[ℝ]) : (exp ℝ q).re = exp ℝ q.re * Real.cos ‖q.im‖ := by simp [exp_eq]
 #align quaternion.re_exp Quaternion.re_exp
 
 theorem im_exp (q : ℍ[ℝ]) : (exp ℝ q).im = (exp ℝ q.re * (Real.sin ‖q.im‖ / ‖q.im‖)) • q.im := by
@@ -137,11 +137,13 @@ theorem normSq_exp (q : ℍ[ℝ]) : normSq (exp ℝ q) = exp ℝ q.re ^ 2 :=
 #align quaternion.norm_sq_exp Quaternion.normSq_exp
 
 /-- Note that this implies that exponentials of pure imaginary quaternions are unit quaternions
-since in that case the RHS is `1` via `exp_zero` and `norm_one`. -/
+since in that case the RHS is `1` via `exp_zero`. -/
 @[simp]
-theorem norm_exp (q : ℍ[ℝ]) : ‖exp ℝ q‖ = ‖exp ℝ q.re‖ := by
+theorem norm_exp (q : ℍ[ℝ]) : ‖exp ℝ q‖ = exp ℝ q.re := by
   rw [norm_eq_sqrt_real_inner (exp ℝ q), inner_self, normSq_exp, Real.sqrt_sq_eq_abs,
-    Real.norm_eq_abs]
+    abs_of_pos]
+  rw [←Real.exp_eq_exp_ℝ]
+  apply Real.exp_pos
 #align quaternion.norm_exp Quaternion.norm_exp
 
 end Quaternion
