@@ -411,13 +411,15 @@ noncomputable def Module.basisOfFiniteTypeTorsionFree' [Module.Finite R M]
   Module.basisOfFiniteTypeTorsionFree Module.Finite.exists_fin.choose_spec.choose_spec
 #align module.basis_of_finite_type_torsion_free' Module.basisOfFiniteTypeTorsionFree'
 
--- It would be nice to make this an instance but it is empirically problematic, possibly because
--- of the loop that it causes with `Module.Free.noZeroSMulDivisors`
-theorem Module.free_of_finite_type_torsion_free' [Module.Finite R M] [NoZeroSMulDivisors R M] :
+instance Module.free_of_finite_type_torsion_free' [Module.Finite R M] [NoZeroSMulDivisors R M] :
     Module.Free R M := by
   obtain ⟨n, b⟩ : Σn, Basis (Fin n) R M := Module.basisOfFiniteTypeTorsionFree'
   exact Module.Free.of_basis b
 #align module.free_of_finite_type_torsion_free' Module.free_of_finite_type_torsion_free'
+
+theorem Module.free_iff_noZeroSMulDivisors [Module.Finite R M] :
+    Module.Free R M ↔ NoZeroSMulDivisors R M :=
+  ⟨fun _ ↦ inferInstance, fun _ ↦ inferInstance⟩
 
 section SmithNormal
 
