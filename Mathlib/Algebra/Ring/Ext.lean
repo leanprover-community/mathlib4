@@ -50,7 +50,7 @@ theorem Distrib.ext_iff (inst₁ inst₂ : Distrib R) :
     inst₁ = inst₂ ↔
       (∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
       ∧ (∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :=
-  ⟨fun h ↦ by constructor <;> (intro _ _; congr), And.elim (Distrib.ext · ·)⟩
+  ⟨fun h ↦ by constructor <;> (intros; congr), And.elim (Distrib.ext · ·)⟩
 
 /-! ### NonUnitalNonAssocSemiring -/
 
@@ -81,7 +81,7 @@ theorem NonUnitalNonAssocSemiring.ext_iff (inst₁ inst₂ : NonUnitalNonAssocSe
 
 theorem NonUnitalSemiring.toNonUnitalNonAssocSemiring_injective :
     Function.Injective (@NonUnitalSemiring.toNonUnitalNonAssocSemiring R) := by
-  rintro ⟨⟩ ⟨⟩ h; congr
+  rintro ⟨⟩ ⟨⟩ _; congr
 
 @[ext] theorem NonUnitalSemiring.ext ⦃inst₁ inst₂ : NonUnitalSemiring R⦄
     (h_add : ∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
@@ -128,7 +128,7 @@ defined in `Algebra/GroupWithZero/Defs` as well. -/
 
 theorem NonAssocSemiring.toNonUnitalNonAssocSemiring_injective :
     Function.Injective (@NonAssocSemiring.toNonUnitalNonAssocSemiring R) := by
-  intro _ _ h
+  intro _ _ _
   ext <;> congr
 
 theorem NonAssocSemiring.ext_iff (inst₁ inst₂ : NonAssocSemiring R) :
@@ -175,7 +175,7 @@ theorem NonUnitalNonAssocRing.ext_iff (inst₁ inst₂ : NonUnitalNonAssocRing R
   have h₃ : (inst₁.toMonoidWithZero).toMonoid = (inst₂.toMonoidWithZero).toMonoid := by
     ext; apply h_mul
   -- Split into fields and prove they are equal using the above.
-  rcases inst₁ with ⟨⟩; rcases inst₂ with ⟨⟩
+  cases inst₁; cases inst₂
   congr <;> solve| injection h₁ | injection h₂ | injection h₃
 
 theorem Semiring.toNonUnitalNonAssocSemiring_injective :
