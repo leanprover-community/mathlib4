@@ -135,8 +135,9 @@ theorem Matrix.toBilin'Aux_eq (M : Matrix n n R₂) : Matrix.toBilin'Aux M = Mat
 #align matrix.to_bilin'_aux_eq Matrix.toBilin'Aux_eq
 
 theorem Matrix.toBilin'_apply (M : Matrix n n R₂) (x y : n → R₂) :
-    Matrix.toBilin' M x y = ∑ i, ∑ j, x i * M i j * y j :=
-  rfl
+    Matrix.toBilin' M x y = ∑ i, ∑ j, x i * M i j * y j := by
+  rw [ ← Matrix.toLinearMap₂'_apply]
+  exact rfl
 #align matrix.to_bilin'_apply Matrix.toBilin'_apply
 
 theorem Matrix.toBilin'_apply' (M : Matrix n n R₂) (v w : n → R₂) :
