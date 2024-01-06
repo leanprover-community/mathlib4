@@ -34,8 +34,6 @@ positive cone which is the _closure_ of the sums of elements `star r * r`. A wea
 the advantage of not requiring a topology.
 -/
 
-open Set
-
 universe u
 
 variable {R : Type u}
