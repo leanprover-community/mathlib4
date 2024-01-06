@@ -1264,7 +1264,7 @@ theorem leadingCoeff_divByMonic_X_sub_C (p : R[X]) (hp : degree p ≠ 0) (a : R)
 set_option linter.uppercaseLean3 false in
 #align polynomial.leading_coeff_div_by_monic_X_sub_C Polynomial.leadingCoeff_divByMonic_X_sub_C
 
-theorem eq_of_leadingCoeff_of_dvd_of_natDegree_le {p q : R[X]} (hpq : p ∣ q)
+theorem eq_of_dvd_of_natDegree_le_of_leadingCoeff {p q : R[X]} (hpq : p ∣ q)
     (h₁ : q.natDegree ≤ p.natDegree) (h₂ : p.leadingCoeff = q.leadingCoeff) :
     p = q := by
   by_cases hq : q = 0
@@ -1277,17 +1277,17 @@ theorem eq_of_leadingCoeff_of_dvd_of_natDegree_le {p q : R[X]} (hpq : p ∣ q)
     eq_comm, mul_eq_left₀ (leadingCoeff_ne_zero.mpr hq.1)] at h₂
   rw [eq_C_of_natDegree_eq_zero h₁, h₂, map_one, mul_one]
 
-theorem associated_of_leadingCoeff_of_dvd_of_natDegree_le {p q : R[X]} (hpq : p ∣ q)
+theorem associated_of_dvd_of_natDegree_le_of_leadingCoeff {p q : R[X]} (hpq : p ∣ q)
     (h₁ : q.natDegree ≤ p.natDegree) (h₂ : q.leadingCoeff ∣ p.leadingCoeff) :
     Associated p q :=
   have ⟨r, hr⟩ := hpq
   have ⟨u, hu⟩ := associated_of_dvd_dvd ⟨leadingCoeff r, hr ▸ leadingCoeff_mul p r⟩ h₂
-  ⟨Units.map C.toMonoidHom u, eq_of_leadingCoeff_of_dvd_of_natDegree_le
+  ⟨Units.map C.toMonoidHom u, eq_of_dvd_of_natDegree_le_of_leadingCoeff
     (by rwa [Units.mul_right_dvd]) (by simpa [natDegree_mul_C] using h₁) (by simpa using hu)⟩
 
 theorem associated_of_dvd_of_natDegree_le {K} [Field K] {p q : K[X]} (hpq : p ∣ q) (hq : q ≠ 0)
     (h₁ : q.natDegree ≤ p.natDegree) : Associated p q :=
-  associated_of_leadingCoeff_of_dvd_of_natDegree_le hpq h₁
+  associated_of_dvd_of_natDegree_le_of_leadingCoeff hpq h₁
     (IsUnit.dvd (by rwa [← leadingCoeff_ne_zero, ← isUnit_iff_ne_zero] at hq))
 
 theorem associated_of_dvd_of_degree_eq {K} [Field K] {p q : K[X]} (hpq : p ∣ q)
