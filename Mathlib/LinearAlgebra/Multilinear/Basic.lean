@@ -815,7 +815,7 @@ lemma domDomRestrict_apply [DecidableEq ι] (f : MultilinearMap R M₁ M₂)
 open Finset in
 /-- This is the nth term of a formal multilinear series corresponding to the multilinear map `f`.
 We use a linear order on ι to identify all finsets of `ι` of cardinality `n` to `Fin n`.-/
-def toFormalMultilinearSeries_fixedDegree [DecidableEq ι] [Fintype ι] [LinearOrder ι]
+def toFormalMultilinearSeriesFixedDegree [DecidableEq ι] [Fintype ι] [LinearOrder ι]
     (f : MultilinearMap R M₁ M₂) (x : (i : ι) → M₁ i) (n : ℕ) :
     MultilinearMap R (fun (_ : Fin n) => (i : ι) → M₁ i) M₂ :=
   ∑ s : univ.powersetCard n,
@@ -824,11 +824,11 @@ def toFormalMultilinearSeries_fixedDegree [DecidableEq ι] [Fintype ι] [LinearO
 
 open Finset in
 @[simp]
-lemma toFormalMultilinearSeries_fixedDegree_apply_diag [DecidableEq ι] [Fintype ι] [LinearOrder ι]
+lemma toFormalMultilinearSeriesFixedDegree_apply_diag [DecidableEq ι] [Fintype ι] [LinearOrder ι]
     (f : MultilinearMap R M₁ M₂) (x y : (i : ι) → M₁ i) (n : ℕ) :
-    f.toFormalMultilinearSeries_fixedDegree x n (fun _ => y) =
+    f.toFormalMultilinearSeriesFixedDegree x n (fun _ => y) =
     (∑ s : univ.powersetCard n, f (s.1.piecewise y x)) := by
-  unfold toFormalMultilinearSeries_fixedDegree
+  unfold toFormalMultilinearSeriesFixedDegree
   simp only [coe_sort_coe, coe_sum, Finset.sum_apply, domDomCongr_apply,
     compLinearMap_apply, LinearMap.coe_proj, eval]
   apply Finset.sum_congr rfl (fun _ _ => by erw [domDomRestrict_apply])
@@ -837,8 +837,8 @@ lemma toFormalMultilinearSeries_fixedDegree_apply_diag [DecidableEq ι] [Fintype
 `Fintype.card ι` (because there are no finsets of `ι` of cardinality `n`).-/
 lemma toFormalMultilinearSeriest_fixedDegree_zero [DecidableEq ι] [Fintype ι] [LinearOrder ι]
     (f : MultilinearMap R M₁ M₂) (x : (i : ι) → M₁ i) {n : ℕ} (hn : (Fintype.card ι).succ ≤ n) :
-    f.toFormalMultilinearSeries_fixedDegree x n = 0 := by
-  unfold toFormalMultilinearSeries_fixedDegree
+    f.toFormalMultilinearSeriesFixedDegree x n = 0 := by
+  unfold toFormalMultilinearSeriesFixedDegree
   convert Finset.sum_empty
   rw [Finset.univ_eq_empty_iff, Finset.isEmpty_coe_sort]
   apply Finset.powersetCard_empty
@@ -849,14 +849,14 @@ lemma toFormalMultilinearSeriest_fixedDegree_zero [DecidableEq ι] [Fintype ι] 
 lemma toFormalMultilinearSeries_partialSum [DecidableEq ι] [Fintype ι] [LinearOrder ι]
     (f : MultilinearMap R M₁ M₂) (x y : (i : ι) → M₁ i) :
     f (x + y) = ∑ n in Finset.range (Fintype.card ι).succ,
-    f.toFormalMultilinearSeries_fixedDegree x n (fun (_ : Fin n) => y) := by
+    f.toFormalMultilinearSeriesFixedDegree x n (fun (_ : Fin n) => y) := by
   rw [add_comm, map_add_univ, ← (Finset.sum_fiberwise_of_maps_to (g := fun s => s.card)
     (t := Finset.range (Fintype.card ι).succ) fun s _ =>
     by rw [Finset.mem_range, Nat.lt_succ]; exact Finset.card_le_univ _)]
   apply Finset.sum_congr rfl
   intro n hn
   simp only [Finset.mem_range] at hn
-  rw [toFormalMultilinearSeries_fixedDegree_apply_diag]
+  rw [toFormalMultilinearSeriesFixedDegree_apply_diag]
   rw [Finset.sum_subtype (f := fun (s : Finset ι) => f (s.piecewise y x))]
   exact fun _ => by simp only [Finset.mem_univ, forall_true_left, Finset.univ_filter_card_eq,
     gt_iff_lt, Finset.mem_powersetCard_univ, Finset.powerset_univ]
@@ -883,11 +883,11 @@ lemma linearDeriv_eq_toFormalMultilinearSeries_degreeOne
     [DecidableEq ι] [Fintype ι] [LinearOrder ι]
     (f : MultilinearMap R M₁ M₂) (x : (i : ι) → M₁ i) :
     MultilinearMap.ofSubsingleton (ι := Fin 1) R ((i : ι) → M₁ i) M₂ (⟨0, Nat.zero_lt_one⟩ : Fin 1)
-    (f.linearDeriv x) = f.toFormalMultilinearSeries_fixedDegree x 1 := by
+    (f.linearDeriv x) = f.toFormalMultilinearSeriesFixedDegree x 1 := by
   ext y
   rw [eq_const_of_subsingleton y 0, ← Function.const_def]
   simp only [zero_eta, ofSubsingleton_apply_apply, linearDeriv_apply,
-    toFormalMultilinearSeries_fixedDegree_apply_diag]
+    toFormalMultilinearSeriesFixedDegree_apply_diag]
   rw [Finset.sum_coe_sort _ (fun (s : Finset ι) => f (s.piecewise (y 0) x))]
   set I : (i : ι) → i ∈ Finset.univ → Finset ι := fun i _ => {i}
   rw [Finset.sum_bij I]
