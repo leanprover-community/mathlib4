@@ -12,9 +12,11 @@ import Mathlib.GroupTheory.Exponent
 # Period of a group action
 
 This module defines some helpful lemmas around [`MulAction.period`] and [`AddAction.period`].
-The period of a point `a` by a group element `g` is the smallest `m` such that `g ^ m • a = a` (resp. `(m • g) +ᵥ a = a`) for a given `g : G` and `a : α`.
+The period of a point `a` by a group element `g` is the smallest `m` such that `g ^ m • a = a`
+(resp. `(m • g) +ᵥ a = a`) for a given `g : G` and `a : α`.
 
-If such an `m` does not exist, then by convention `MulAction.period` and `AddAction.period` return 0.
+If such an `m` does not exist,
+then by convention `MulAction.period` and `AddAction.period` return 0.
 -/
 
 namespace MulAction
