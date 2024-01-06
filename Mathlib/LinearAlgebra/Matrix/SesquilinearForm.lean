@@ -149,7 +149,7 @@ This section deals with the conversion between matrices and sesquilinear forms o
 -/
 
 
-variable [CommRing R] [CommRing R₁] [CommRing R₂]
+variable [CommSemiring R] [Semiring R₁] [Semiring R₂]
 
 variable [Fintype n] [Fintype m]
 
