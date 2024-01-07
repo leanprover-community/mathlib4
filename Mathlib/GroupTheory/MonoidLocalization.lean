@@ -1955,7 +1955,7 @@ theorem leftCancelMulZero_of_le_isLeftRegular
         _ = a * z * g b.2 * (g y.2 * g x.2) :=by rw [hazw]
         _ = a * g b.2 * (z * g x.2 *g y.2 ) :=by
           rw [mul_comm (g y.2),mul_assoc a z,mul_comm z,
-            ←mul_assoc a,mul_assoc _ z,mul_assoc z]
+            ← mul_assoc a,mul_assoc _ z,mul_assoc z]
         _ = a * g b.2 * (g x.1 * g y.2) :=by rw[hx]
         _ = g b.1 * (g x.1 * g y.2) :=by rw[hb]
         _ = g b.1 * g (x.1 * y.2) :=by rw[map_mul g]
