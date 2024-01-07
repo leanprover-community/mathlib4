@@ -352,7 +352,8 @@ def mkEqImpl (ind : Name) (rel : Name) (relStx : Syntax) : MetaM Unit := do
     let fvars' := fvars.toList
     let shape_rhss ← constrs.mapM (constrToProp univs (fvars'.take params) (fvars'.drop params))
     let (shape, rhss) := shape_rhss.unzip
-    pure (mkApp2 (mkConst `Eq) (mkConst ind univs) (← mkForallFVars fvars <| mkOrList rhss), shape)
+    pure (mkApp2 (← mkConstWithFreshMVarLevels `Eq) (mkConst ind univs)
+      (← mkForallFVars fvars <| mkOrList rhss), shape)
 
   let mvar ← mkFreshExprMVar (some thmTy)
   let mvarId := mvar.mvarId!
