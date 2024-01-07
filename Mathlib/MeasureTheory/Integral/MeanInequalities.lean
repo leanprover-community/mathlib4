@@ -205,10 +205,10 @@ theorem lintegral_prod_norm_pow_le {α ι : Type*} [MeasurableSpace α] {μ : Me
     (s : Finset ι) {f : ι → α → ℝ≥0∞} (hf : ∀ i ∈ s, AEMeasurable (f i) μ)
     {p : ι → ℝ} (hp : ∑ i in s, p i = 1) (h2p : ∀ i ∈ s, 0 ≤ p i) :
     ∫⁻ a, ∏ i in s, f i a ^ p i ∂μ ≤ ∏ i in s, (∫⁻ a, f i a ∂μ) ^ p i := by
-  induction s using Finset.induction generalizing p
-  case empty =>
+  induction s using Finset.induction generalizing p with
+  | empty =>
     simp at hp
-  case insert i₀ s hi₀ ih =>
+  | @insert i₀ s hi₀ ih =>
     rcases eq_or_ne (p i₀) 1 with h2i₀|h2i₀
     · simp [hi₀]
       have h2p : ∀ i ∈ s, p i = 0 := by
@@ -239,7 +239,7 @@ theorem lintegral_prod_norm_pow_le {α ι : Type*} [MeasurableSpace α] {μ : Me
         _ ≤ (∫⁻ a, f i₀ a ∂μ) ^ p i₀ * (∫⁻ a, ∏ i in s, f i a ^ q i ∂μ) ^ (1 - p i₀) := by
             apply ENNReal.lintegral_mul_norm_pow_le
             · exact hf i₀ <| mem_insert_self ..
-            · exact s.aemeasurable_prod <| fun i hi ↦ (hf i <| mem_insert_of_mem hi).pow_const _
+            · exact s.aemeasurable_prod fun i hi ↦ (hf i <| mem_insert_of_mem hi).pow_const _
             · exact h2p i₀ <| mem_insert_self ..
             · exact hpi₀
             · apply add_sub_cancel'_right
@@ -322,10 +322,6 @@ theorem lintegral_Lp_mul_le_Lq_mul_Lr {α} [MeasurableSpace α] {p q r : ℝ} (h
   have hq0_lt : 0 < q := lt_of_le_of_lt hp0 hpq
   have hq0_ne : q ≠ 0 := (ne_of_lt hq0_lt).symm
   have h_one_div_r : 1 / r = 1 / p - 1 / q := by rw [hpqr]; simp
-  have _ : r ≠ 0 := by
-    have hr_inv_pos : 0 < 1 / r := by rwa [h_one_div_r, sub_pos, one_div_lt_one_div hq0_lt hp0_lt]
-    rw [one_div, _root_.inv_pos] at hr_inv_pos
-    exact (ne_of_lt hr_inv_pos).symm
   let p2 := q / p
   let q2 := p2.conjugateExponent
   have hp2q2 : p2.IsConjugateExponent q2 :=
@@ -335,7 +331,7 @@ theorem lintegral_Lp_mul_le_Lq_mul_Lr {α} [MeasurableSpace α] {p q r : ℝ} (h
       simp_rw [Pi.mul_apply, ENNReal.mul_rpow_of_nonneg _ _ hp0]
     _ ≤ ((∫⁻ a, f a ^ (p * p2) ∂μ) ^ (1 / p2) *
         (∫⁻ a, g a ^ (p * q2) ∂μ) ^ (1 / q2)) ^ (1 / p) := by
-      refine' ENNReal.rpow_le_rpow _ (by simp [hp0])
+      gcongr
       simp_rw [ENNReal.rpow_mul]
       exact ENNReal.lintegral_mul_le_Lp_mul_Lq μ hp2q2 (hf.pow_const _) (hg.pow_const _)
     _ = (∫⁻ a : α, f a ^ q ∂μ) ^ (1 / q) * (∫⁻ a : α, g a ^ r ∂μ) ^ (1 / r) := by
@@ -378,8 +374,7 @@ theorem lintegral_rpow_add_le_add_snorm_mul_lintegral_rpow_add {p q : ℝ}
         (∫⁻ a, (f a + g a) ^ p ∂μ) ^ (1 / q) := by
   calc
     (∫⁻ a, (f + g) a ^ p ∂μ) ≤ ∫⁻ a, (f + g) a * (f + g) a ^ (p - 1) ∂μ := by
-      refine' lintegral_mono fun a => _
-      dsimp only
+      gcongr with a
       by_cases h_zero : (f + g) a = 0
       · rw [h_zero, ENNReal.zero_rpow_of_pos hpq.pos]
         exact zero_le _
@@ -402,10 +397,9 @@ theorem lintegral_rpow_add_le_add_snorm_mul_lintegral_rpow_add {p q : ℝ}
         ((∫⁻ a, f a ^ p ∂μ) ^ (1 / p) + (∫⁻ a, g a ^ p ∂μ) ^ (1 / p)) *
           (∫⁻ a, (f a + g a) ^ p ∂μ) ^ (1 / q) := by
       rw [add_mul]
-      exact
-        add_le_add
-          (lintegral_mul_rpow_le_lintegral_rpow_mul_lintegral_rpow hpq hf (hf.add hg) hf_top)
-          (lintegral_mul_rpow_le_lintegral_rpow_mul_lintegral_rpow hpq hg (hf.add hg) hg_top)
+      gcongr
+      · exact lintegral_mul_rpow_le_lintegral_rpow_mul_lintegral_rpow hpq hf (hf.add hg) hf_top
+      · exact lintegral_mul_rpow_le_lintegral_rpow_mul_lintegral_rpow hpq hg (hf.add hg) hg_top
 #align ennreal.lintegral_rpow_add_le_add_snorm_mul_lintegral_rpow_add ENNReal.lintegral_rpow_add_le_add_snorm_mul_lintegral_rpow_add
 
 private theorem lintegral_Lp_add_le_aux {p q : ℝ} (hpq : p.IsConjugateExponent q) {f g : α → ℝ≥0∞}
@@ -440,7 +434,7 @@ private theorem lintegral_Lp_add_le_aux {p q : ℝ} (hpq : p.IsConjugateExponent
   conv_lhs at h => rw [← one_mul (∫⁻ a : α, (f + g) a ^ p ∂μ)]
   rwa [← mul_assoc, ENNReal.mul_le_mul_right h_add_zero h_add_top, mul_comm] at h
 
-/-- Minkowski's inequality for functions `α → ℝ≥0∞`: the `ℒp` seminorm of the sum of two
+/-- **Minkowski's inequality for functions** `α → ℝ≥0∞`: the `ℒp` seminorm of the sum of two
 functions is bounded by the sum of their `ℒp` seminorms. -/
 theorem lintegral_Lp_add_le {p : ℝ} {f g : α → ℝ≥0∞} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ)
     (hp1 : 1 ≤ p) :
@@ -483,9 +477,9 @@ theorem lintegral_Lp_add_le_of_le_one {p : ℝ} {f g : α → ℝ≥0∞} (hf : 
     rw [rpow_neg, rpow_one, ENNReal.inv_mul_cancel two_ne_zero two_ne_top]
   calc
     (∫⁻ a, (f + g) a ^ p ∂μ) ^ (1 / p) ≤ ((∫⁻ a, f a ^ p ∂μ) + ∫⁻ a, g a ^ p ∂μ) ^ (1 / p) := by
-      apply rpow_le_rpow _ (div_nonneg zero_le_one hp0)
       rw [← lintegral_add_left' (hf.pow_const p)]
-      exact lintegral_mono fun a => rpow_add_le_add_rpow _ _ hp0 hp1
+      gcongr with a
+      exact rpow_add_le_add_rpow _ _ hp0 hp1
     _ ≤ (2 : ℝ≥0∞) ^ (1 / p - 1) * ((∫⁻ a, f a ^ p ∂μ) ^ (1 / p) + (∫⁻ a, g a ^ p ∂μ) ^ (1 / p)) :=
       rpow_add_le_mul_rpow_add_rpow _ _ ((one_le_div hp).2 hp1)
 #align ennreal.lintegral_Lp_add_le_of_le_one ENNReal.lintegral_Lp_add_le_of_le_one

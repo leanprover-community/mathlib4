@@ -109,7 +109,7 @@ theorem mk_sub (f g : CauSeq β abv) : mk f - mk g = mk (f - g) :=
 #align cau_seq.completion.mk_sub CauSeq.Completion.mk_sub
 
 instance {γ : Type*} [SMul γ β] [IsScalarTower γ β β] : SMul γ (Cauchy abv) :=
-  ⟨fun c => (Quotient.map ((· • ·) c)) fun _ _ hf => smul_equiv_smul _ hf⟩
+  ⟨fun c => (Quotient.map (c • ·)) fun _ _ hf => smul_equiv_smul _ hf⟩
 
 @[simp]
 theorem mk_smul {γ : Type*} [SMul γ β] [IsScalarTower γ β β] (c : γ) (f : CauSeq β abv) :

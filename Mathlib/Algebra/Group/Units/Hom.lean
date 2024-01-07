@@ -93,6 +93,10 @@ theorem map_comp (f : M →* N) (g : N →* P) : map (g.comp f) = (map g).comp (
 #align units.map_comp Units.map_comp
 #align add_units.map_comp AddUnits.map_comp
 
+@[to_additive]
+lemma map_injective {f : M →* N} (hf : Function.Injective f) :
+    Function.Injective (map f) := fun _ _ e => ext (hf (congr_arg val e))
+
 variable (M)
 
 @[to_additive (attr := simp)]
@@ -114,21 +118,9 @@ theorem coeHom_apply (x : Mˣ) : coeHom M x = ↑x := rfl
 #align units.coe_hom_apply Units.coeHom_apply
 #align add_units.coe_hom_apply AddUnits.coeHom_apply
 
-@[to_additive (attr := simp, norm_cast)]
-theorem val_pow_eq_pow_val (u : Mˣ) (n : ℕ) : ((u ^ n : Mˣ) : M) = (u : M) ^ n :=
-  (Units.coeHom M).map_pow u n
-#align units.coe_pow Units.val_pow_eq_pow_val
-#align add_units.coe_nsmul AddUnits.val_nsmul_eq_nsmul_val
-
 section DivisionMonoid
 
 variable [DivisionMonoid α]
-
-@[to_additive (attr := simp, norm_cast)]
-theorem val_div_eq_div_val : ∀ u₁ u₂ : αˣ, ↑(u₁ / u₂) = (u₁ / u₂ : α) :=
-  (Units.coeHom α).map_div
-#align units.coe_div Units.val_div_eq_div_val
-#align add_units.coe_sub AddUnits.val_neg_eq_neg_val
 
 @[to_additive (attr := simp, norm_cast)]
 theorem val_zpow_eq_zpow_val : ∀ (u : αˣ) (n : ℤ), ((u ^ n : αˣ) : α) = (u : α) ^ n :=
@@ -156,7 +148,7 @@ this map is a monoid homomorphism too. -/
   is an AddMonoid homomorphism too."]
 def liftRight (f : M →* N) (g : M → Nˣ) (h : ∀ x, ↑(g x) = f x) : M →* Nˣ where
   toFun := g
-  map_one' := by ext; dsimp only; rw [h 1]; exact f.map_one -- Porting note: why is `dsimp` needed?
+  map_one' := by ext; rw [h 1]; exact f.map_one
   map_mul' x y := Units.ext <| by simp only [h, val_mul, f.map_mul]
 #align units.lift_right Units.liftRight
 #align add_units.lift_right AddUnits.liftRight
@@ -391,7 +383,7 @@ protected theorem one_div_mul_cancel (h : IsUnit a) : 1 / a * a = 1 := by simp [
 @[to_additive]
 theorem inv (h : IsUnit a) : IsUnit a⁻¹ := by
   rcases h with ⟨u, hu⟩
-  rw [←hu, ← Units.val_inv_eq_inv_val]
+  rw [← hu, ← Units.val_inv_eq_inv_val]
   exact Units.isUnit _
 #align is_unit.inv IsUnit.inv
 #align is_add_unit.neg IsAddUnit.neg

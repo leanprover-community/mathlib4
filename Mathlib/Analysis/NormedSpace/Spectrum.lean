@@ -226,9 +226,8 @@ theorem hasDerivAt_resolvent {a : A} {k : 𝕜} (hk : k ∈ ρ a) :
 #noalign spectrum.norm_resolvent_le_forall
 
 theorem eventually_isUnit_resolvent (a : A) : ∀ᶠ z in cobounded 𝕜, IsUnit (resolvent a z) := by
-  rw [←comap_norm_atTop, atTop_basis.comap (‖·‖) |>.eventually_iff]
-  refine ⟨‖a‖ * ‖(1 : A)‖ + 1, by trivial, fun z hz ↦ ?_⟩
-  exact isUnit_resolvent.mp <| mem_resolventSet_of_norm_lt_mul <| (lt_add_one (‖a‖ * _)).trans_le hz
+  rw [atTop_basis_Ioi.cobounded_of_norm.eventually_iff]
+  exact ⟨‖a‖ * ‖(1 : A)‖, trivial, fun _ ↦ isUnit_resolvent.mp ∘ mem_resolventSet_of_norm_lt_mul⟩
 
 theorem resolvent_isBigO_inv (a : A) : resolvent a =O[cobounded 𝕜] Inv.inv :=
   have h : (fun z ↦ resolvent (z⁻¹ • a) (1 : 𝕜)) =O[cobounded 𝕜] (fun _ ↦ (1 : ℝ)) := by
@@ -240,7 +239,7 @@ theorem resolvent_isBigO_inv (a : A) : resolvent a =O[cobounded 𝕜] Inv.inv :=
       filter_upwards [isBounded_singleton (x := 0)] with z hz
       lift z to 𝕜ˣ using Ne.isUnit hz
       simpa [Units.smul_def] using congr(z⁻¹ • $(units_smul_resolvent_self (r := z) (a := a)))
-    _ =O[cobounded 𝕜] (· ⁻¹) := IsBigO.of_norm_right <| by
+    _ =O[cobounded 𝕜] (· ⁻¹) := .of_norm_right <| by
       simpa using (isBigO_refl (· ⁻¹) (cobounded 𝕜)).norm_right.smul h
 
 theorem resolvent_tendsto_cobounded (a : A) : Tendsto (resolvent a) (cobounded 𝕜) (𝓝 0) :=
@@ -248,7 +247,7 @@ theorem resolvent_tendsto_cobounded (a : A) : Tendsto (resolvent a) (cobounded �
 
 end resolvent
 
-section OneSubSmul
+section OneSubSMul
 
 open ContinuousMultilinearMap ENNReal FormalMultilinearSeries
 
@@ -320,7 +319,7 @@ theorem differentiableOn_inverse_one_sub_smul [CompleteSpace A] {a : A} {r : ℝ
   exact DifferentiableAt.comp z (differentiableAt_inverse hu) H₁.differentiableAt
 #align spectrum.differentiable_on_inverse_one_sub_smul spectrum.differentiableOn_inverse_one_sub_smul
 
-end OneSubSmul
+end OneSubSMul
 
 section GelfandFormula
 
@@ -380,7 +379,7 @@ variable [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A] [Nontrivial A] (
 protected theorem nonempty : (spectrum ℂ a).Nonempty := by
   /- Suppose `σ a = ∅`, then resolvent set is `ℂ`, any `(z • 1 - a)` is a unit, and `resolvent a`
     is differentiable on `ℂ`. -/
-  by_contra' h
+  by_contra! h
   have H₀ : resolventSet ℂ a = Set.univ := by rwa [spectrum, Set.compl_empty_iff] at h
   have H₁ : Differentiable ℂ fun z : ℂ => resolvent a z := fun z =>
     (hasDerivAt_resolvent (H₀.symm ▸ Set.mem_univ z : z ∈ resolventSet ℂ a)).differentiableAt

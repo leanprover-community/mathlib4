@@ -88,6 +88,15 @@ theorem IsLeftRegular.right_of_commute {a : R}
   fun x y xy => h <| (ca x).trans <| xy.trans <| (ca y).symm
 #align is_left_regular.right_of_commute IsLeftRegular.right_of_commute
 
+theorem IsRightRegular.left_of_commute {a : R}
+    (ca : ∀ b, Commute a b) (h : IsRightRegular a) : IsLeftRegular a := by
+  simp_rw [@Commute.symm_iff R _ a] at ca
+  exact fun x y xy => h <| (ca x).trans <| xy.trans <| (ca y).symm
+
+theorem Commute.isRightRegular_iff {a : R} (ca : ∀ b, Commute a b) :
+    IsRightRegular a ↔ IsLeftRegular a :=
+  ⟨IsRightRegular.left_of_commute ca, IsLeftRegular.right_of_commute ca⟩
+
 theorem Commute.isRegular_iff {a : R} (ca : ∀ b, Commute a b) : IsRegular a ↔ IsLeftRegular a :=
   ⟨fun h => h.left, fun h => ⟨h, h.right_of_commute ca⟩⟩
 #align commute.is_regular_iff Commute.isRegular_iff
@@ -140,7 +149,7 @@ an add-right-regular element, then `b` is add-right-regular."]
 theorem IsRightRegular.of_mul (ab : IsRightRegular (b * a)) : IsRightRegular b := by
   refine' fun x y xy => ab (_ : x * (b * a) = y * (b * a))
   rw [← mul_assoc, ← mul_assoc]
-  exact congr_fun (congr_arg (· * ·) xy) a
+  exact congr_arg (· * a) xy
 #align is_right_regular.of_mul IsRightRegular.of_mul
 #align is_add_right_regular.of_add IsAddRightRegular.of_add
 

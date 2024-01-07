@@ -7,6 +7,7 @@ Authors: Claus Clausen, Patrick Massot
 import Mathlib.Analysis.SpecialFunctions.Gaussian
 import Mathlib.Probability.Notation
 import Mathlib.Probability.Cdf
+import Mathlib.Probability.Distributions.Gamma
 
 /-! # Exponential distributions over ℝ
 
@@ -30,27 +31,9 @@ open scoped ENNReal NNReal Real
 
 open MeasureTheory Real Set Filter Topology
 
-  /-- A Lebesgue Integral from -∞ to y can be expressed as the sum of one from -∞ to 0 and 0 to x -/
-lemma lintegral_Iic_eq_lintegral_Iio_add_Icc {y z : ℝ} (f : ℝ → ℝ≥0∞) (hzy : z ≤ y) :
-    ∫⁻ x in Iic y, f x = (∫⁻ x in Iio z, f x) + ∫⁻ x in Icc z y, f x := by
-  rw [← Iio_union_Icc_eq_Iic hzy, lintegral_union measurableSet_Icc]
-  rw [Set.disjoint_iff]
-  rintro x ⟨h1 : x < _, h2, _⟩
-  linarith
-
 lemma lintegral_eq_lintegral_Ici_add_Iio (f : ℝ → ℝ≥0∞) (c : ℝ) :
     ∫⁻ x, f x = (∫⁻ x in Ici c, f x) + ∫⁻ x in Iio c, f x := by
-  have union : univ = {x: ℝ | x ≥ c} ∪ {x : ℝ | x < c} := by
-    ext x; simp [le_or_lt]
-  have : IsOpen {x : ℝ | x < c} := by exact isOpen_gt' c
-  calc
-  ∫⁻ x, f x = ∫⁻ x in univ, f x ∂volume := (set_lintegral_univ f).symm
-  _ = ∫⁻ x in {x | x ≥ c} ∪ {x | x < c} , f x ∂volume := by rw [← union]
-  _ = _ := by
-    apply lintegral_union this.measurableSet
-    rw [Set.disjoint_iff]
-    rintro x ⟨hxge : x ≥ _, hxlt : x < _⟩
-    linarith
+  rw [← lintegral_add_compl f (measurableSet_Ici (a := c)), compl_Ici]
 
 namespace ProbabilityTheory
 
@@ -133,16 +116,16 @@ lemma lintegral_exponentialPdf_eq_one (r : ℝ) (hr : 0 < r) : ∫⁻ x, exponen
     rw [set_lintegral_congr_fun measurableSet_Iio
       (ae_of_all _ (fun x (hx : x < 0) ↦ exponentialPdf_of_neg hx)), lintegral_zero]
   have rightSide :
-    ∫⁻ x in Ici 0, exponentialPdf r x = ∫⁻ x in Ici 0, ENNReal.ofReal (r * rexp (-(r * x))) := by
-    exact set_lintegral_congr_fun isClosed_Ici.measurableSet
+      ∫⁻ x in Ici 0, exponentialPdf r x = ∫⁻ x in Ici 0, ENNReal.ofReal (r * rexp (-(r * x))) :=
+    set_lintegral_congr_fun isClosed_Ici.measurableSet
       (ae_of_all _ (fun x (hx : 0 ≤ x) ↦ exponentialPdf_of_nonneg hx))
   simp only [leftSide, add_zero]
-  rw [rightSide, ENNReal.toReal_eq_one_iff, ←ENNReal.toReal_eq_one_iff]
+  rw [rightSide, ENNReal.toReal_eq_one_iff, ← ENNReal.toReal_eq_one_iff]
   rw [← integral_eq_lintegral_of_nonneg_ae (ae_of_all _ (fun _ ↦ by positivity))]
-  · have IntegrOn : IntegrableOn (fun x ↦ rexp (-(r * x))) (Ioi 0) := by
+  · have integrOn : IntegrableOn (fun x ↦ rexp (-(r * x))) (Ioi 0) := by
       simp only [← neg_mul, exp_neg_integrableOn_Ioi 0 hr]
     rw [integral_mul_left, integral_Ici_eq_integral_Ioi,
-        integral_Ioi_of_hasDerivAt_of_tendsto' (m:=0) (fun _ _ ↦ hasDerivAt_exp_neg hr) IntegrOn]
+        integral_Ioi_of_hasDerivAt_of_tendsto' (m := 0) (fun _ _ ↦ hasDerivAt_exp_neg hr) integrOn]
     · field_simp
     · rw [← mul_zero (-1/r)]
       exact tendsto_const_nhds.mul (tendsto_exp_neg_atTop_nhds_0.comp
@@ -167,7 +150,7 @@ section ExponentialCdf
 /-- CDF of the exponential Distribution -/
 noncomputable
 def exponentialCdfReal (r : ℝ) : StieltjesFunction :=
-    cdf (expMeasure r)
+  cdf (expMeasure r)
 
 lemma exponentialCdfReal_eq_integral (r x : ℝ) [Fact (0 < r)] :
     exponentialCdfReal r x = ∫ x in Iic x, exponentialPdfReal r x := by
@@ -180,8 +163,7 @@ lemma exponentialCdfReal_eq_integral (r x : ℝ) [Fact (0 < r)] :
 lemma exponentialCdfReal_eq_lintegral (r x : ℝ) [Fact (0 < r)] :
     exponentialCdfReal r x = ENNReal.toReal (∫⁻ x in Iic x, exponentialPdf r x) := by
   simp only [exponentialPdf, exponentialCdfReal, cdf_eq_toReal]
-  simp only [expMeasure, measurableSet_Iic, withDensity_apply]
-  rfl
+  simp only [expMeasure, measurableSet_Iic, withDensity_apply, exponentialPdf]
 
 open Topology
 
@@ -197,9 +179,9 @@ lemma lintegral_exponentialPdf_eq_antiDeriv (r x : ℝ) (hr : 0 < r) :
     rw [lintegral_Iic_eq_lintegral_Iio_add_Icc _ h, lintegral_exponentialPdf_of_nonpos (le_refl 0),
       zero_add]
     simp only [exponentialPdf_eq]
-    rw[set_lintegral_congr_fun measurableSet_Icc (ae_of_all _
+    rw [set_lintegral_congr_fun measurableSet_Icc (ae_of_all _
         (by intro a ⟨(hle : _ ≤ a), _⟩; rw [if_pos hle]))]
-    rw [←ENNReal.toReal_eq_toReal _ ENNReal.ofReal_ne_top, ←integral_eq_lintegral_of_nonneg_ae
+    rw [← ENNReal.toReal_eq_toReal _ ENNReal.ofReal_ne_top, ← integral_eq_lintegral_of_nonneg_ae
         (eventually_of_forall fun _ ↦ le_of_lt (mul_pos hr (exp_pos _)))]
     have : ∫ a in uIoc 0 x, r * rexp (-(r * a)) = ∫ a in (0)..x, r * rexp (-(r * a)) := by
       rw [intervalIntegral.intervalIntegral_eq_integral_uIoc, smul_eq_mul, if_pos h, one_mul]

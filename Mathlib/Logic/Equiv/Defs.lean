@@ -106,6 +106,10 @@ instance : EquivLike (α ≃ β) α β where
 instance : FunLike (α ≃ β) α (fun _ => β) :=
   EmbeddingLike.toFunLike
 
+@[simp, norm_cast]
+lemma _root_.EquivLike.coe_coe {F} [EquivLike F α β] (e : F) :
+    ((e : α ≃ β) : α → β) = e := rfl
+
 @[simp] theorem coe_fn_mk (f : α → β) (g l r) : (Equiv.mk f g l r : α → β) = f :=
   rfl
 #align equiv.coe_fn_mk Equiv.coe_fn_mk
@@ -329,6 +333,9 @@ theorem eq_symm_apply {α β} (e : α ≃ β) {x y} : y = e.symm x ↔ e y = x :
 
 @[simp] theorem symm_symm (e : α ≃ β) : e.symm.symm = e := by cases e; rfl
 #align equiv.symm_symm Equiv.symm_symm
+
+theorem symm_bijective : Function.Bijective (Equiv.symm : (α ≃ β) → β ≃ α) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
 @[simp] theorem trans_refl (e : α ≃ β) : e.trans (Equiv.refl β) = e := by cases e; rfl
 #align equiv.trans_refl Equiv.trans_refl
@@ -623,7 +630,7 @@ def piUnique [Unique α] (β : α → Sort*) : (∀ i, β i) ≃ β default wher
   right_inv x := rfl
 
 /-- If `α` has a unique term, then the type of function `α → β` is equivalent to `β`. -/
-@[simps! (config := .asFn) apply]
+@[simps! (config := .asFn) apply symm_apply]
 def funUnique (α β) [Unique.{u} α] : (α → β) ≃ β := piUnique _
 #align equiv.fun_unique Equiv.funUnique
 #align equiv.fun_unique_apply Equiv.funUnique_apply

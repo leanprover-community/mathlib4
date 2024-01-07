@@ -212,7 +212,7 @@ instance Sum.discreteTopology [TopologicalSpace α] [TopologicalSpace β] [hα :
 
 instance Sigma.discreteTopology {β : α → Type v} [∀ a, TopologicalSpace (β a)]
     [h : ∀ a, DiscreteTopology (β a)] : DiscreteTopology (Sigma β) :=
-  ⟨iSup_eq_bot.2 <| fun _ => by simp only [(h _).eq_bot, coinduced_bot]⟩
+  ⟨iSup_eq_bot.2 fun _ => by simp only [(h _).eq_bot, coinduced_bot]⟩
 #align sigma.discrete_topology Sigma.discreteTopology
 
 section Topα
@@ -414,6 +414,12 @@ theorem Continuous.Prod.mk (a : α) : Continuous fun b : β => (a, b) :=
 theorem Continuous.Prod.mk_left (b : β) : Continuous fun a : α => (a, b) :=
   continuous_id.prod_mk continuous_const
 #align continuous.prod.mk_left Continuous.Prod.mk_left
+
+/-- If `f x y` is continuous in `x` for all `y ∈ s`,
+then the set of `x` such that `f x` maps `s` to `t` is closed. -/
+lemma IsClosed.setOf_mapsTo {f : α → β → γ} {s : Set β} {t : Set γ} (ht : IsClosed t)
+    (hf : ∀ y ∈ s, Continuous (f · y)) : IsClosed {x | MapsTo (f x) s t} := by
+  simpa only [MapsTo, setOf_forall] using isClosed_biInter fun y hy ↦ ht.preimage (hf y hy)
 
 theorem Continuous.comp₂ {g : α × β → γ} (hg : Continuous g) {e : δ → α} (he : Continuous e)
     {f : δ → β} (hf : Continuous f) : Continuous fun x => g (e x, f x) :=
@@ -731,7 +737,7 @@ theorem isOpenMap_snd : IsOpenMap (@Prod.snd α β) :=
 empty -/
 theorem isOpen_prod_iff' {s : Set α} {t : Set β} :
     IsOpen (s ×ˢ t) ↔ IsOpen s ∧ IsOpen t ∨ s = ∅ ∨ t = ∅ := by
-  cases' (s ×ˢ t).eq_empty_or_nonempty with h h
+  rcases (s ×ˢ t).eq_empty_or_nonempty with h | h
   · simp [h, prod_eq_empty_iff.1 h]
   · have st : s.Nonempty ∧ t.Nonempty := prod_nonempty_iff.1 h
     constructor
@@ -1649,6 +1655,16 @@ theorem openEmbedding_sigma_map {f₁ : ι → κ} {f₂ : ∀ i, σ i → τ (f
 end Sigma
 
 section ULift
+
+theorem ULift.isOpen_iff [TopologicalSpace α] {s : Set (ULift.{v} α)} :
+    IsOpen s ↔ IsOpen (ULift.up ⁻¹' s) := by
+  unfold ULift.topologicalSpace
+  erw [← Equiv.ulift.coinduced_symm]
+  rfl
+
+theorem ULift.isClosed_iff [TopologicalSpace α] {s : Set (ULift.{v} α)} :
+    IsClosed s ↔ IsClosed (ULift.up ⁻¹' s) := by
+  rw [← isOpen_compl_iff, ← isOpen_compl_iff, isOpen_iff, preimage_compl]
 
 @[continuity]
 theorem continuous_uLift_down [TopologicalSpace α] : Continuous (ULift.down : ULift.{v, u} α → α) :=

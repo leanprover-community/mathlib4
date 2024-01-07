@@ -255,7 +255,7 @@ theorem Chain'.cons {x y l} (h₁ : R x y) (h₂ : Chain' R (y :: l)) : Chain' R
   chain'_cons.2 ⟨h₁, h₂⟩
 #align list.chain'.cons List.Chain'.cons
 
-theorem Chain'.tail : ∀ {l} (_ : Chain' R l), Chain' R l.tail
+theorem Chain'.tail : ∀ {l}, Chain' R l → Chain' R l.tail
   | [], _ => trivial
   | [_], _ => trivial
   | _ :: _ :: _, h => (chain'_cons.mp h).right
@@ -457,7 +457,7 @@ theorem Chain'.cons_of_le [LinearOrder α] {a : α} {as m : List α}
       refine gt_of_gt_of_ge ha.1 ?_
       rw [le_iff_lt_or_eq] at hmas
       cases' hmas with hmas hmas
-      · by_contra' hh
+      · by_contra! hh
         rw [← not_le] at hmas
         apply hmas
         apply le_of_lt
