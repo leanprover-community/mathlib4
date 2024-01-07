@@ -38,8 +38,8 @@ variable {R : Type u}
 namespace Distrib
 
 @[ext] theorem ext ⦃inst₁ inst₂ : Distrib R⦄
-    (h_add : ∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
-    (h_mul : ∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :
+    (h_add : ∀ x y, x +[R, inst₁] y = x +[R, inst₂] y)
+    (h_mul : ∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :
     inst₁ = inst₂ := by
   -- Split into `add` and `mul` functions and properties.
   rcases inst₁ with @⟨⟨⟩, ⟨⟩⟩
@@ -49,8 +49,8 @@ namespace Distrib
 
 theorem ext_iff (inst₁ inst₂ : Distrib R) :
     inst₁ = inst₂ ↔
-      (∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
-      ∧ (∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :=
+      (∀ x y, x +[R, inst₁] y = x +[R, inst₂] y)
+      ∧ (∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :=
   ⟨fun h ↦ by constructor <;> (intros; congr), And.elim (ext · ·)⟩
 
 end Distrib
@@ -59,8 +59,8 @@ end Distrib
 namespace NonUnitalNonAssocSemiring
 
 @[ext] theorem ext ⦃inst₁ inst₂ : NonUnitalNonAssocSemiring R⦄
-    (h_add : ∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
-    (h_mul : ∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :
+    (h_add : ∀ x y, x +[R, inst₁] y = x +[R, inst₂] y)
+    (h_mul : ∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :
     inst₁ = inst₂ := by
   -- Split into `AddMonoid` instance, `mul` function and properties.
   rcases inst₁ with @⟨_, ⟨⟩⟩
@@ -70,14 +70,14 @@ namespace NonUnitalNonAssocSemiring
 
 theorem toDistrib_injective : Function.Injective (@toDistrib R) := by
   intro _ _ h
-  ext a b
-  · exact congrArg (·.toAdd.add a b) h
-  · exact congrArg (·.toMul.mul a b) h
+  ext x y
+  · exact congrArg (·.toAdd.add x y) h
+  · exact congrArg (·.toMul.mul x y) h
 
 theorem ext_iff (inst₁ inst₂ : NonUnitalNonAssocSemiring R) :
     inst₁ = inst₂ ↔
-      (∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
-      ∧ (∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :=
+      (∀ x y, x +[R, inst₁] y = x +[R, inst₂] y)
+      ∧ (∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :=
   ⟨fun h ↦ by constructor <;> (intros; congr), And.elim (ext · ·)⟩
 
 end NonUnitalNonAssocSemiring
@@ -90,16 +90,16 @@ theorem toNonUnitalNonAssocSemiring_injective :
   rintro ⟨⟩ ⟨⟩ _; congr
 
 @[ext] theorem ext ⦃inst₁ inst₂ : NonUnitalSemiring R⦄
-    (h_add : ∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
-    (h_mul : ∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :
+    (h_add : ∀ x y, x +[R, inst₁] y = x +[R, inst₂] y)
+    (h_mul : ∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :
     inst₁ = inst₂ :=
   toNonUnitalNonAssocSemiring_injective <|
     NonUnitalNonAssocSemiring.ext h_add h_mul
 
 theorem ext_iff (inst₁ inst₂ : NonUnitalSemiring R) :
     inst₁ = inst₂ ↔
-      (∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
-      ∧ (∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :=
+      (∀ x y, x +[R, inst₁] y = x +[R, inst₂] y)
+      ∧ (∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :=
   ⟨fun h ↦ by constructor <;> (intros; congr), And.elim (ext · ·)⟩
 
 end NonUnitalSemiring
@@ -111,13 +111,13 @@ namespace NonAssocSemiring
 an extensionality lemma for `AddMonoidWithOne`, in which case we may as well do the typeclasses
 defined in `Algebra/GroupWithZero/Defs` as well. -/
 @[ext] theorem ext ⦃inst₁ inst₂ : NonAssocSemiring R⦄
-    (h_add : ∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
-    (h_mul : ∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :
+    (h_add : ∀ x y, x +[R, inst₁] y = x +[R, inst₂] y)
+    (h_mul : ∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :
     inst₁ = inst₂ := by
   have h : inst₁.toNonUnitalNonAssocSemiring = inst₂.toNonUnitalNonAssocSemiring := by
     ext <;> apply_assumption
   have h_zero : (inst₁.toMulZeroClass).toZero.zero = (inst₂.toMulZeroClass).toZero.zero :=
-    congrArg (fun inst' => (inst'.toMulZeroClass).toZero.zero) h
+    congrArg (fun inst => (inst.toMulZeroClass).toZero.zero) h
   have h_one' : (inst₁.toMulZeroOneClass).toMulOneClass.toOne
                 = (inst₂.toMulZeroOneClass).toMulOneClass.toOne :=
     congrArg (@MulOneClass.toOne R) <| by
@@ -143,8 +143,8 @@ theorem toNonUnitalNonAssocSemiring_injective :
 
 theorem ext_iff (inst₁ inst₂ : NonAssocSemiring R) :
     inst₁ = inst₂ ↔
-      (∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
-      ∧ (∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :=
+      (∀ x y, x +[R, inst₁] y = x +[R, inst₂] y)
+      ∧ (∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :=
   ⟨fun h ↦ by constructor <;> (intros; congr), And.elim (ext · ·)⟩
 
 end NonAssocSemiring
@@ -153,8 +153,8 @@ end NonAssocSemiring
 namespace NonUnitalNonAssocRing
 
 @[ext] theorem ext ⦃inst₁ inst₂ : NonUnitalNonAssocRing R⦄
-    (h_add : ∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
-    (h_mul : ∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :
+    (h_add : ∀ x y, x +[R, inst₁] y = x +[R, inst₂] y)
+    (h_mul : ∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :
     inst₁ = inst₂ := by
   -- Split into `AddCommGroup` instance, `mul` function and properties.
   rcases inst₁ with @⟨_, ⟨⟩⟩; rcases inst₂ with @⟨_, ⟨⟩⟩
@@ -164,14 +164,14 @@ theorem toNonUnitalNonAssocSemiring_injective :
     Function.Injective (@toNonUnitalNonAssocSemiring R) := by
   intro _ _ h
   -- Use above extensionality lemma to prove injectivity by showing that `h_add` and `h_mul` hold.
-  ext a b
-  · exact congrArg (·.toAdd.add a b) h
-  · exact congrArg (·.toMul.mul a b) h
+  ext x y
+  · exact congrArg (·.toAdd.add x y) h
+  · exact congrArg (·.toMul.mul x y) h
 
 theorem ext_iff (inst₁ inst₂ : NonUnitalNonAssocRing R) :
     inst₁ = inst₂ ↔
-      (∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
-      ∧ (∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :=
+      (∀ x y, x +[R, inst₁] y = x +[R, inst₂] y)
+      ∧ (∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :=
   ⟨fun h ↦ by constructor <;> (intros; congr), And.elim (ext · ·)⟩
 
 end NonUnitalNonAssocRing
@@ -180,8 +180,8 @@ end NonUnitalNonAssocRing
 namespace NonUnitalRing
 
 @[ext] theorem ext ⦃inst₁ inst₂ : NonUnitalRing R⦄
-    (h_add : ∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
-    (h_mul : ∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :
+    (h_add : ∀ x y, x +[R, inst₁] y = x +[R, inst₂] y)
+    (h_mul : ∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :
     inst₁ = inst₂ := by
   have : inst₁.toNonUnitalNonAssocRing = inst₂.toNonUnitalNonAssocRing := by
     ext <;> apply_assumption
@@ -192,9 +192,9 @@ namespace NonUnitalRing
 theorem toNonUnitalSemiring_injective :
     Function.Injective (@toNonUnitalSemiring R) := by
   intro _ _ h
-  ext a b
-  · exact congrArg (·.toAdd.add a b) h
-  · exact congrArg (·.toMul.mul a b) h
+  ext x y
+  · exact congrArg (·.toAdd.add x y) h
+  · exact congrArg (·.toMul.mul x y) h
 
 theorem toNonUnitalNonAssocring_injective :
     Function.Injective (@toNonUnitalNonAssocRing R) := by
@@ -203,8 +203,8 @@ theorem toNonUnitalNonAssocring_injective :
 
 theorem ext_iff (inst₁ inst₂ : NonUnitalRing R) :
     inst₁ = inst₂ ↔
-      (∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
-      ∧ (∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :=
+      (∀ x y, x +[R, inst₁] y = x +[R, inst₂] y)
+      ∧ (∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :=
   ⟨fun h ↦ by constructor <;> (intros; congr), And.elim (ext · ·)⟩
 
 end NonUnitalRing
@@ -213,8 +213,8 @@ end NonUnitalRing
 namespace NonAssocRing
 
 @[ext] theorem ext ⦃inst₁ inst₂ : NonAssocRing R⦄
-    (h_add : ∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
-    (h_mul : ∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :
+    (h_add : ∀ x y, x +[R, inst₁] y = x +[R, inst₂] y)
+    (h_mul : ∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :
     inst₁ = inst₂ := by
   have h₁ : inst₁.toNonUnitalNonAssocRing = inst₂.toNonUnitalNonAssocRing := by
     ext <;> apply_assumption
@@ -234,9 +234,9 @@ namespace NonAssocRing
 theorem toNonAssocSemiring_injective :
     Function.Injective (@toNonAssocSemiring R) := by
   intro _ _ h
-  ext a b
-  · exact congrArg (·.toAdd.add a b) h
-  · exact congrArg (·.toMul.mul a b) h
+  ext x y
+  · exact congrArg (·.toAdd.add x y) h
+  · exact congrArg (·.toMul.mul x y) h
 
 theorem toNonUnitalNonAssocring_injective :
     Function.Injective (@toNonUnitalNonAssocRing R) := by
@@ -245,8 +245,8 @@ theorem toNonUnitalNonAssocring_injective :
 
 theorem ext_iff (inst₁ inst₂ : NonAssocRing R) :
     inst₁ = inst₂ ↔
-      (∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
-      ∧ (∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :=
+      (∀ x y, x +[R, inst₁] y = x +[R, inst₂] y)
+      ∧ (∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :=
   ⟨fun h ↦ by constructor <;> (intros; congr), And.elim (ext · ·)⟩
 
 end NonAssocRing
@@ -255,8 +255,8 @@ end NonAssocRing
 namespace Semiring
 
 @[ext] theorem ext ⦃inst₁ inst₂ : Semiring R⦄
-    (h_add : ∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
-    (h_mul : ∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :
+    (h_add : ∀ x y, x +[R, inst₁] y = x +[R, inst₂] y)
+    (h_mul : ∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :
     inst₁ = inst₂ := by
   -- Show that enough substructures are equal.
   have h₁ : inst₁.toNonUnitalSemiring = inst₂.toNonUnitalSemiring := by
@@ -272,21 +272,21 @@ namespace Semiring
 theorem toNonUnitalSemiring_injective :
     Function.Injective (@toNonUnitalSemiring R) := by
   intro _ _ h
-  ext a b
-  · exact congrArg (·.toAdd.add a b) h
-  · exact congrArg (·.toMul.mul a b) h
+  ext x y
+  · exact congrArg (·.toAdd.add x y) h
+  · exact congrArg (·.toMul.mul x y) h
 
 theorem toNonAssocSemiring_injective :
     Function.Injective (@toNonAssocSemiring R) := by
   intro _ _ h
-  ext a b
-  · exact congrArg (·.toAdd.add a b) h
-  · exact congrArg (·.toMul.mul a b) h
+  ext x y
+  · exact congrArg (·.toAdd.add x y) h
+  · exact congrArg (·.toMul.mul x y) h
 
 theorem ext_iff (inst₁ inst₂ : Semiring R) :
     inst₁ = inst₂ ↔
-      (∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
-      ∧ (∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :=
+      (∀ x y, x +[R, inst₁] y = x +[R, inst₂] y)
+      ∧ (∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :=
   ⟨fun h ↦ by constructor <;> (intros; congr), And.elim (ext · ·)⟩
 
 end Semiring
@@ -295,8 +295,8 @@ end Semiring
 namespace Ring
 
 @[ext] theorem ext ⦃inst₁ inst₂ : Ring R⦄
-    (h_add : ∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
-    (h_mul : ∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :
+    (h_add : ∀ x y, x +[R, inst₁] y = x +[R, inst₂] y)
+    (h_mul : ∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :
     inst₁ = inst₂ := by
   -- Show that enough substructures are equal.
   have h₁ : inst₁.toSemiring = inst₂.toSemiring := by
@@ -315,9 +315,9 @@ namespace Ring
 theorem toNonUnitalRing_injective :
     Function.Injective (@toNonUnitalRing R) := by
   intro _ _ h
-  ext a b
-  · exact congrArg (·.toAdd.add a b) h
-  · exact congrArg (·.toMul.mul a b) h
+  ext x y
+  · exact congrArg (·.toAdd.add x y) h
+  · exact congrArg (·.toMul.mul x y) h
 
 theorem toNonAssocRing_injective :
     Function.Injective (@toNonAssocRing R) := by
@@ -327,14 +327,14 @@ theorem toNonAssocRing_injective :
 theorem toSemiring_injective :
     Function.Injective (@toSemiring R) := by
   intro _ _ h
-  ext a b
-  · exact congrArg (·.toAdd.add a b) h
-  · exact congrArg (·.toMul.mul a b) h
+  ext x y
+  · exact congrArg (·.toAdd.add x y) h
+  · exact congrArg (·.toMul.mul x y) h
 
 theorem ext_iff (inst₁ inst₂ : Ring R) :
     inst₁ = inst₂ ↔
-      (∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
-      ∧ (∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :=
+      (∀ x y, x +[R, inst₁] y = x +[R, inst₂] y)
+      ∧ (∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :=
   ⟨fun h ↦ by constructor <;> (intros; congr), And.elim (ext ·)⟩
 
 end Ring
@@ -347,16 +347,16 @@ theorem toNonUnitalNonAssocSemiring_injective :
   rintro ⟨⟩ ⟨⟩ _; congr
 
 @[ext] theorem ext ⦃inst₁ inst₂ : NonUnitalNonAssocCommSemiring R⦄
-    (h_add : ∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
-    (h_mul : ∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :
+    (h_add : ∀ x y, x +[R, inst₁] y = x +[R, inst₂] y)
+    (h_mul : ∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :
     inst₁ = inst₂ :=
   toNonUnitalNonAssocSemiring_injective <|
     NonUnitalNonAssocSemiring.ext h_add h_mul
 
 theorem ext_iff (inst₁ inst₂ : NonUnitalNonAssocCommSemiring R) :
     inst₁ = inst₂ ↔
-      (∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
-      ∧ (∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :=
+      (∀ x y, x +[R, inst₁] y = x +[R, inst₂] y)
+      ∧ (∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :=
   ⟨fun h ↦ by constructor <;> (intros; congr), And.elim (ext · ·)⟩
 
 end NonUnitalNonAssocCommSemiring
@@ -369,16 +369,16 @@ theorem toNonUnitalSemiring_injective :
   rintro ⟨⟩ ⟨⟩ _; congr
 
 @[ext] theorem ext ⦃inst₁ inst₂ : NonUnitalCommSemiring R⦄
-    (h_add : ∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
-    (h_mul : ∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :
+    (h_add : ∀ x y, x +[R, inst₁] y = x +[R, inst₂] y)
+    (h_mul : ∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :
     inst₁ = inst₂ :=
   toNonUnitalSemiring_injective <|
     NonUnitalSemiring.ext h_add h_mul
 
 theorem ext_iff (inst₁ inst₂ : NonUnitalCommSemiring R) :
     inst₁ = inst₂ ↔
-      (∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
-      ∧ (∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :=
+      (∀ x y, x +[R, inst₁] y = x +[R, inst₂] y)
+      ∧ (∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :=
   ⟨fun h ↦ by constructor <;> (intros; congr), And.elim (ext · ·)⟩
 
 end NonUnitalCommSemiring
@@ -393,16 +393,16 @@ theorem toNonUnitalNonAssocRing_injective :
   rintro ⟨⟩ ⟨⟩ _; congr
 
 @[ext] theorem ext ⦃inst₁ inst₂ : NonUnitalNonAssocCommRing R⦄
-    (h_add : ∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
-    (h_mul : ∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :
+    (h_add : ∀ x y, x +[R, inst₁] y = x +[R, inst₂] y)
+    (h_mul : ∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :
     inst₁ = inst₂ :=
   toNonUnitalNonAssocRing_injective <|
     NonUnitalNonAssocRing.ext h_add h_mul
 
 theorem ext_iff (inst₁ inst₂ : NonUnitalNonAssocCommRing R) :
     inst₁ = inst₂ ↔
-      (∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
-      ∧ (∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :=
+      (∀ x y, x +[R, inst₁] y = x +[R, inst₂] y)
+      ∧ (∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :=
   ⟨fun h ↦ by constructor <;> (intros; congr), And.elim (ext · ·)⟩
 
 end NonUnitalNonAssocCommRing
@@ -415,16 +415,16 @@ theorem toNonUnitalRing_injective :
   rintro ⟨⟩ ⟨⟩ _; congr
 
 @[ext] theorem ext ⦃inst₁ inst₂ : NonUnitalCommRing R⦄
-    (h_add : ∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
-    (h_mul : ∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :
+    (h_add : ∀ x y, x +[R, inst₁] y = x +[R, inst₂] y)
+    (h_mul : ∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :
     inst₁ = inst₂ :=
   toNonUnitalRing_injective <|
     NonUnitalRing.ext h_add h_mul
 
 theorem ext_iff (inst₁ inst₂ : NonUnitalCommRing R) :
     inst₁ = inst₂ ↔
-      (∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
-      ∧ (∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :=
+      (∀ x y, x +[R, inst₁] y = x +[R, inst₂] y)
+      ∧ (∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :=
   ⟨fun h ↦ by constructor <;> (intros; congr), And.elim (ext · ·)⟩
 
 end NonUnitalCommRing
@@ -439,16 +439,16 @@ theorem toSemiring_injective :
   rintro ⟨⟩ ⟨⟩ _; congr
 
 @[ext] theorem ext ⦃inst₁ inst₂ : CommSemiring R⦄
-    (h_add : ∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
-    (h_mul : ∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :
+    (h_add : ∀ x y, x +[R, inst₁] y = x +[R, inst₂] y)
+    (h_mul : ∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :
     inst₁ = inst₂ :=
   toSemiring_injective <|
     Semiring.ext h_add h_mul
 
 theorem ext_iff (inst₁ inst₂ : CommSemiring R) :
     inst₁ = inst₂ ↔
-      (∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
-      ∧ (∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :=
+      (∀ x y, x +[R, inst₁] y = x +[R, inst₂] y)
+      ∧ (∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :=
   ⟨fun h ↦ by constructor <;> (intros; congr), And.elim (ext · ·)⟩
 
 end CommSemiring
@@ -460,15 +460,15 @@ theorem toRing_injective : Function.Injective (@toRing R) := by
   rintro ⟨⟩ ⟨⟩ _; congr
 
 @[ext] theorem ext ⦃inst₁ inst₂ : CommRing R⦄
-    (h_add : ∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
-    (h_mul : ∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :
+    (h_add : ∀ x y, x +[R, inst₁] y = x +[R, inst₂] y)
+    (h_mul : ∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :
     inst₁ = inst₂ :=
   toRing_injective <| Ring.ext h_add h_mul
 
 theorem ext_iff (inst₁ inst₂ : CommRing R) :
     inst₁ = inst₂ ↔
-      (∀ a b, a +[R, inst₁] b = a +[R, inst₂] b)
-      ∧ (∀ a b, a *[R, inst₁] b = a *[R, inst₂] b) :=
+      (∀ x y, x +[R, inst₁] y = x +[R, inst₂] y)
+      ∧ (∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :=
   ⟨fun h ↦ by constructor <;> (intros; congr), And.elim (ext ·)⟩
 
 end CommRing
