@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.HomologicalComplexBiprod
 import Mathlib.Algebra.Homology.Homotopy
-import Mathlib.Algebra.Homology.HomologicalComplexBiprod
 
 /-! The homotopy cofiber of a morphism of homological complexes
 
@@ -42,16 +41,6 @@ variable {C : Type*} [Category C] [Preadditive C]
 namespace HomologicalComplex
 
 variable {ι : Type*} {c : ComplexShape ι} {F G K : HomologicalComplex C c} (φ : F ⟶ G)
-
-lemma dNext_eq_zero (ho : ∀ i j, F.X i ⟶ G.X j) (i : ι) (hi : ¬ c.Rel i (c.next i)) :
-    dNext i ho = 0 := by
-  dsimp [dNext]
-  rw [shape _ _ _ hi, zero_comp]
-
-lemma prevD_eq_zero (ho : ∀ i j, F.X i ⟶ G.X j) (i : ι) (hi : ¬ c.Rel (c.prev i) i) :
-    prevD i ho = 0 := by
-  dsimp [prevD]
-  rw [shape _ _ _ hi, comp_zero]
 
 /-- A morphism of homological complexes `φ : F ⟶ G` has a homotopy cofiber if for all
 indices `i` and `j` such that `c.Rel i j`, the binary biproduct `F.X j ⊞ G.X i` exists. -/
