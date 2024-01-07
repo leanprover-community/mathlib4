@@ -73,7 +73,7 @@ theorem right [hf : FiniteDimensional F A] : FiniteDimensional K A :=
 #align finite_dimensional.right FiniteDimensional.right
 
 /-- Tower law: if `A` is a `K`-vector space and `K` is a field extension of `F` then
-`dim_F(A) = dim_F(K) * dim_K(A)`. 
+`dim_F(A) = dim_F(K) * dim_K(A)`.
   A special case of `FiniteDimensional.finrank_mul_finrank'` which assumes `Module.Free`.
 We keep this because Lean sometimes has trouble finding the `Module.Free` instances. -/
 theorem finrank_mul_finrank : finrank F K * finrank K A = finrank F A := finrank_mul_finrank' F K A
