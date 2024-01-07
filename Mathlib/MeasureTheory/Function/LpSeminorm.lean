@@ -512,7 +512,7 @@ theorem snorm'_norm_rpow (f : α → F) (p q : ℝ) (hq_pos : 0 < q) :
   congr
   ext1 x
   simp_rw [← ofReal_norm_eq_coe_nnnorm]
-  rw [Real.norm_eq_abs, abs_eq_self.mpr (Real.rpow_nonneg_of_nonneg (norm_nonneg _) _), mul_comm, ←
+  rw [Real.norm_eq_abs, abs_eq_self.mpr (Real.rpow_nonneg (norm_nonneg _) _), mul_comm, ←
     ENNReal.ofReal_rpow_of_nonneg (norm_nonneg _) hq_pos.le, ENNReal.rpow_mul]
 #align measure_theory.snorm'_norm_rpow MeasureTheory.snorm'_norm_rpow
 

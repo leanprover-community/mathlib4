@@ -625,9 +625,9 @@ instance normedSpace [∀ i, SeminormedAddCommGroup (β i)] [∀ i, NormedSpace 
         have smul_apply : ∀ i : ι, (c • f) i = c • (f i) := fun i => rfl
         simp only [norm_eq_sum (zero_lt_one.trans_le hp), norm_smul, Real.mul_rpow, norm_nonneg, ←
           Finset.mul_sum, smul_apply]
-        rw [mul_rpow (rpow_nonneg_of_nonneg (norm_nonneg _) _), ← rpow_mul (norm_nonneg _), this,
+        rw [mul_rpow (rpow_nonneg (norm_nonneg _) _), ← rpow_mul (norm_nonneg _), this,
           Real.rpow_one]
-        exact Finset.sum_nonneg fun i _ => rpow_nonneg_of_nonneg (norm_nonneg _) _ }
+        exact Finset.sum_nonneg fun i _ => rpow_nonneg (norm_nonneg _) _ }
 #align pi_Lp.normed_space PiLp.normedSpace
 
 /- Register simplification lemmas for the applications of `PiLp` elements, as the usual lemmas
