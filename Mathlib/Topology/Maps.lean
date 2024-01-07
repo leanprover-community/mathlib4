@@ -89,97 +89,101 @@ theorem inducing_iff_nhds {f : α → β} : Inducing f ↔ ∀ a, 𝓝 a = comap
   (inducing_iff _).trans (induced_iff_nhds_eq f)
 #align inducing_iff_nhds inducing_iff_nhds
 
-theorem Inducing.nhds_eq_comap {f : α → β} (hf : Inducing f) : ∀ a : α, 𝓝 a = comap f (𝓝 <| f a) :=
+namespace Inducing
+
+theorem nhds_eq_comap {f : α → β} (hf : Inducing f) : ∀ a : α, 𝓝 a = comap f (𝓝 <| f a) :=
   inducing_iff_nhds.1 hf
 #align inducing.nhds_eq_comap Inducing.nhds_eq_comap
 
-theorem Inducing.nhdsSet_eq_comap {f : α → β} (hf : Inducing f) (s : Set α) :
+theorem nhdsSet_eq_comap {f : α → β} (hf : Inducing f) (s : Set α) :
     𝓝ˢ s = comap f (𝓝ˢ (f '' s)) := by
   simp only [nhdsSet, sSup_image, comap_iSup, hf.nhds_eq_comap, iSup_image]
 #align inducing.nhds_set_eq_comap Inducing.nhdsSet_eq_comap
 
-theorem Inducing.map_nhds_eq {f : α → β} (hf : Inducing f) (a : α) : (𝓝 a).map f = 𝓝[range f] f a :=
+theorem map_nhds_eq {f : α → β} (hf : Inducing f) (a : α) : (𝓝 a).map f = 𝓝[range f] f a :=
   hf.induced.symm ▸ map_nhds_induced_eq a
 #align inducing.map_nhds_eq Inducing.map_nhds_eq
 
-theorem Inducing.map_nhds_of_mem {f : α → β} (hf : Inducing f) (a : α) (h : range f ∈ 𝓝 (f a)) :
+theorem map_nhds_of_mem {f : α → β} (hf : Inducing f) (a : α) (h : range f ∈ 𝓝 (f a)) :
     (𝓝 a).map f = 𝓝 (f a) :=
   hf.induced.symm ▸ map_nhds_induced_of_mem h
 #align inducing.map_nhds_of_mem Inducing.map_nhds_of_mem
 
 -- porting note: new lemma
-theorem Inducing.mapClusterPt_iff {f : α → β} (hf : Inducing f) {a : α} {l : Filter α} :
+theorem mapClusterPt_iff {f : α → β} (hf : Inducing f) {a : α} {l : Filter α} :
     MapClusterPt (f a) l f ↔ ClusterPt a l := by
   delta MapClusterPt ClusterPt
   rw [← Filter.push_pull', ← hf.nhds_eq_comap, map_neBot_iff]
 
-theorem Inducing.image_mem_nhdsWithin {f : α → β} (hf : Inducing f) {a : α} {s : Set α}
+theorem image_mem_nhdsWithin {f : α → β} (hf : Inducing f) {a : α} {s : Set α}
     (hs : s ∈ 𝓝 a) : f '' s ∈ 𝓝[range f] f a :=
   hf.map_nhds_eq a ▸ image_mem_map hs
 #align inducing.image_mem_nhds_within Inducing.image_mem_nhdsWithin
 
-theorem Inducing.tendsto_nhds_iff {ι : Type*} {f : ι → β} {g : β → γ} {a : Filter ι} {b : β}
+theorem tendsto_nhds_iff {ι : Type*} {f : ι → β} {g : β → γ} {a : Filter ι} {b : β}
     (hg : Inducing g) : Tendsto f a (𝓝 b) ↔ Tendsto (g ∘ f) a (𝓝 (g b)) := by
   rw [hg.nhds_eq_comap, tendsto_comap_iff]
 #align inducing.tendsto_nhds_iff Inducing.tendsto_nhds_iff
 
-theorem Inducing.continuousAt_iff {f : α → β} {g : β → γ} (hg : Inducing g) {x : α} :
+theorem continuousAt_iff {f : α → β} {g : β → γ} (hg : Inducing g) {x : α} :
     ContinuousAt f x ↔ ContinuousAt (g ∘ f) x :=
   hg.tendsto_nhds_iff
 #align inducing.continuous_at_iff Inducing.continuousAt_iff
 
-theorem Inducing.continuous_iff {f : α → β} {g : β → γ} (hg : Inducing g) :
+theorem continuous_iff {f : α → β} {g : β → γ} (hg : Inducing g) :
     Continuous f ↔ Continuous (g ∘ f) := by
   simp_rw [continuous_iff_continuousAt, hg.continuousAt_iff]
 #align inducing.continuous_iff Inducing.continuous_iff
 
-theorem Inducing.continuousAt_iff' {f : α → β} {g : β → γ} (hf : Inducing f) {x : α}
+theorem continuousAt_iff' {f : α → β} {g : β → γ} (hf : Inducing f) {x : α}
     (h : range f ∈ 𝓝 (f x)) : ContinuousAt (g ∘ f) x ↔ ContinuousAt g (f x) := by
   simp_rw [ContinuousAt, Filter.Tendsto, ← hf.map_nhds_of_mem _ h, Filter.map_map, comp]
 #align inducing.continuous_at_iff' Inducing.continuousAt_iff'
 
-protected theorem Inducing.continuous {f : α → β} (hf : Inducing f) : Continuous f :=
+protected theorem continuous {f : α → β} (hf : Inducing f) : Continuous f :=
   hf.continuous_iff.mp continuous_id
 #align inducing.continuous Inducing.continuous
 
-protected theorem Inducing.inducing_iff {f : α → β} {g : β → γ} (hg : Inducing g) :
+protected theorem inducing_iff {f : α → β} {g : β → γ} (hg : Inducing g) :
     Inducing f ↔ Inducing (g ∘ f) := by
   refine' ⟨fun h => hg.comp h, fun hgf => inducing_of_inducing_compose _ hg.continuous hgf⟩
   rw [hg.continuous_iff]
   exact hgf.continuous
 #align inducing.inducing_iff Inducing.inducing_iff
 
-theorem Inducing.closure_eq_preimage_closure_image {f : α → β} (hf : Inducing f) (s : Set α) :
+theorem closure_eq_preimage_closure_image {f : α → β} (hf : Inducing f) (s : Set α) :
     closure s = f ⁻¹' closure (f '' s) := by
   ext x
   rw [Set.mem_preimage, ← closure_induced, hf.induced]
 #align inducing.closure_eq_preimage_closure_image Inducing.closure_eq_preimage_closure_image
 
-theorem Inducing.isClosed_iff {f : α → β} (hf : Inducing f) {s : Set α} :
+theorem isClosed_iff {f : α → β} (hf : Inducing f) {s : Set α} :
     IsClosed s ↔ ∃ t, IsClosed t ∧ f ⁻¹' t = s := by rw [hf.induced, isClosed_induced_iff]
 #align inducing.is_closed_iff Inducing.isClosed_iff
 
-theorem Inducing.isClosed_iff' {f : α → β} (hf : Inducing f) {s : Set α} :
+theorem isClosed_iff' {f : α → β} (hf : Inducing f) {s : Set α} :
     IsClosed s ↔ ∀ x, f x ∈ closure (f '' s) → x ∈ s := by rw [hf.induced, isClosed_induced_iff']
 #align inducing.is_closed_iff' Inducing.isClosed_iff'
 
-theorem Inducing.isClosed_preimage {f : α → β} (h : Inducing f) (s : Set β) (hs : IsClosed s) :
+theorem isClosed_preimage {f : α → β} (h : Inducing f) (s : Set β) (hs : IsClosed s) :
     IsClosed (f ⁻¹' s) :=
-  (Inducing.isClosed_iff h).mpr ⟨s, hs, rfl⟩
+  (isClosed_iff h).mpr ⟨s, hs, rfl⟩
 #align inducing.is_closed_preimage Inducing.isClosed_preimage
 
-theorem Inducing.isOpen_iff {f : α → β} (hf : Inducing f) {s : Set α} :
+theorem isOpen_iff {f : α → β} (hf : Inducing f) {s : Set α} :
     IsOpen s ↔ ∃ t, IsOpen t ∧ f ⁻¹' t = s := by rw [hf.induced, isOpen_induced_iff]
 #align inducing.is_open_iff Inducing.isOpen_iff
 
-theorem Inducing.setOf_isOpen {f : α → β} (hf : Inducing f) :
+theorem setOf_isOpen {f : α → β} (hf : Inducing f) :
     {s : Set α | IsOpen s} = preimage f '' {t | IsOpen t} :=
   Set.ext fun _ ↦ hf.isOpen_iff
 
-theorem Inducing.dense_iff {f : α → β} (hf : Inducing f) {s : Set α} :
+theorem dense_iff {f : α → β} (hf : Inducing f) {s : Set α} :
     Dense s ↔ ∀ x, f x ∈ closure (f '' s) := by
   simp only [Dense, hf.closure_eq_preimage_closure_image, mem_preimage]
 #align inducing.dense_iff Inducing.dense_iff
+
+end Inducing
 
 end Inducing
 
