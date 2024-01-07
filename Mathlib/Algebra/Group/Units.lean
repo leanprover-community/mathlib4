@@ -98,7 +98,6 @@ theorem unique_one {α : Type*} [Unique α] [One α] : default = (1 : α) :=
 end HasElem
 
 namespace Units
-
 section Monoid
 variable [Monoid α]
 
@@ -673,7 +672,7 @@ theorem isUnit_of_mul_eq_one [CommMonoid M] (a b : M) (h : a * b = 1) : IsUnit a
 #align is_add_unit_of_add_eq_zero isAddUnit_of_add_eq_zero
 
 section Monoid
-variable [Monoid M] {a b: M}
+variable [Monoid M] {a b : M}
 
 @[to_additive IsAddUnit.exists_neg]
 lemma IsUnit.exists_right_inv (h : IsUnit a) : ∃ b, a * b = 1 := by
