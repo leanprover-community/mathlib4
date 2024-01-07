@@ -24,7 +24,7 @@ limits, see `sequentialFunctor_initial`.
 
 -/
 
-open CategoryTheory Opposite
+open CategoryTheory Opposite CountableCategory
 
 variable (C : Type*) [Category C] (J : Type*) [Countable J]
 
@@ -37,7 +37,7 @@ instance and `J : Type` has a limit.
 class HasCountableLimits : Prop where
   /-- `C` has all limits over any type `J` whose objects and morphisms lie in the same universe
   and which has countably many objects and morphisms-/
-  out (J : Type) [𝒥 : SmallCategory J] [@CountableCategory J 𝒥] : @HasLimitsOfShape J 𝒥 C _
+  out (J : Type) [SmallCategory J] [CountableCategory J] : HasLimitsOfShape J C
 
 instance (priority := 100) hasFiniteLimits_of_hasCountableLimits [HasCountableLimits C] :
     HasFiniteLimits C where
@@ -47,6 +47,10 @@ instance (priority := 100) hasCountableLimits_of_hasLimits [HasLimits C] :
     HasCountableLimits C where
   out := inferInstance
 
+instance [Category J] [CountableCategory J] [HasCountableLimits C] : HasLimitsOfShape J C :=
+  have : HasLimitsOfShape (ObjAsType J) C := HasCountableLimits.out _
+  hasLimitsOfShape_of_equivalence (objAsTypeEquiv J)
+
 /--
 A category has all countable colimits if every functor `J ⥤ C` with a `CountableCategory J`
 instance and `J : Type` has a colimit.
@@ -54,7 +58,7 @@ instance and `J : Type` has a colimit.
 class HasCountableColimits : Prop where
   /-- `C` has all limits over any type `J` whose objects and morphisms lie in the same universe
   and which has countably many objects and morphisms-/
-  out (J : Type) [𝒥 : SmallCategory J] [@CountableCategory J 𝒥] : @HasColimitsOfShape J 𝒥 C _
+  out (J : Type) [SmallCategory J] [CountableCategory J] : HasColimitsOfShape J C
 
 instance (priority := 100) hasFiniteColimits_of_hasCountableColimits [HasCountableColimits C] :
     HasFiniteColimits C where
@@ -63,6 +67,10 @@ instance (priority := 100) hasFiniteColimits_of_hasCountableColimits [HasCountab
 instance (priority := 100) hasCountableColimits_of_hasColimits [HasColimits C] :
     HasCountableColimits C where
   out := inferInstance
+
+instance [Category J] [CountableCategory J] [HasCountableColimits C] : HasColimitsOfShape J C :=
+  have : HasColimitsOfShape (ObjAsType J) C := HasCountableColimits.out _
+  hasColimitsOfShape_of_equivalence (objAsTypeEquiv J)
 
 section Preorder
 

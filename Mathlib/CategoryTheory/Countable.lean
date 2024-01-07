@@ -41,8 +41,12 @@ variable (α : Type*) [Countable α] [Category α] [CountableCategory α]
 abbrev ObjAsType : Type :=
   InducedCategory α (equivShrink.{0} α).symm
 
+instance : Countable (ObjAsType α) := Countable.of_equiv α (equivShrink.{0} α)
+
 instance {i j : ObjAsType α} : Countable (i ⟶ j) :=
   CountableCategory.countableHom ((equivShrink.{0} α).symm i) _
+
+instance : CountableCategory (ObjAsType α) where
 
 /-- The constructed category is indeed equivalent to `α`. -/
 noncomputable def objAsTypeEquiv : ObjAsType α ≌ α :=
@@ -50,18 +54,18 @@ noncomputable def objAsTypeEquiv : ObjAsType α ≌ α :=
 
 end CountableCategory
 
-instance (α : Type*) [SmallCategory α] [FinCategory α] : CountableCategory α where
+instance (α : Type*) [Category α] [FinCategory α] : CountableCategory α where
 
 open Opposite
 
 /-- The opposite of a countable category is countable. -/
-instance countableCategoryOpposite {J : Type*} [SmallCategory J] [CountableCategory J] :
+instance countableCategoryOpposite {J : Type*} [Category J] [CountableCategory J] :
     CountableCategory Jᵒᵖ where
   countableObj := Countable.of_equiv _ equivToOpposite
   countableHom j j' := Countable.of_equiv _ (opEquiv j j').symm
 
 /-- Applying `ULift` to morphisms and objects of a category preserves countability. -/
-instance countableCategoryUlift {J : Type v} [SmallCategory J] [CountableCategory J] :
+instance countableCategoryUlift {J : Type v} [Category J] [CountableCategory J] :
     CountableCategory.{max w v} (ULiftHom.{w, max w v} (ULift.{w, v} J)) where
   countableObj := instCountableULift
   countableHom := fun i j =>
