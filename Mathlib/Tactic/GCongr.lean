@@ -14,18 +14,4 @@ The core implementation of the `gcongr` ("generalized congruence") tactic is in 
 set of lemmas with the attribute `@[gcongr]` and by listing `positivity` as a first-pass
 discharger for side goals (`gcongr_discharger`). -/
 
-set_option autoImplicit true
-
 macro_rules | `(tactic| gcongr_discharger) => `(tactic| positivity)
-
-/-! # ≤, / -/
-
-protected theorem Nat.div_le_div {a b c d : ℕ} (h1 : a ≤ b) (h2 : d ≤ c) (h3 : d ≠ 0) :
-    a / c ≤ b / d :=
-  calc a / c ≤ b / c := Nat.div_le_div_right h1
-    _ ≤ b / d := Nat.div_le_div_left h2 (Nat.pos_of_ne_zero h3)
-
-attribute [gcongr]
-  Nat.div_le_div -- tt / tt
-  Nat.div_le_div_left -- ff / tt
-  Nat.div_le_div_right -- tt / ff

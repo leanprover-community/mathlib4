@@ -9,6 +9,7 @@ import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Tactic.PushNeg
 import Mathlib.Tactic.Use
+import Mathlib.Tactic.GCongr.Core
 
 #align_import data.nat.basic from "leanprover-community/mathlib"@"bd835ef554f37ef9b804f0903089211f89cb370b"
 
@@ -37,6 +38,11 @@ It may be possible to move some of these results here, by tweaking their proofs.
 universe u v
 
 namespace Nat
+
+/- Extra attributes for lemmas from core and std -/
+
+attribute [gcongr] succ_le_succ
+attribute [simp] Nat.not_lt_zero Nat.succ_ne_zero Nat.succ_ne_self Nat.zero_ne_one Nat.one_ne_zero
 
 /-! ### instances -/
 
@@ -115,11 +121,6 @@ instance cancelCommMonoidWithZero : CancelCommMonoidWithZero ℕ :=
     mul_left_cancel_of_ne_zero :=
       fun h1 h2 => Nat.eq_of_mul_eq_mul_left (Nat.pos_of_ne_zero h1) h2 }
 #align nat.cancel_comm_monoid_with_zero Nat.cancelCommMonoidWithZero
-
-attribute [simp]
-  Nat.not_lt_zero Nat.succ_ne_zero Nat.succ_ne_self Nat.zero_ne_one Nat.one_ne_zero
-  -- Nat.zero_ne_bit1 Nat.bit1_ne_zero Nat.bit0_ne_one Nat.one_ne_bit0 Nat.bit0_ne_bit1
-  -- Nat.bit1_ne_bit0
 
 variable {m n k : ℕ}
 
@@ -632,6 +633,7 @@ theorem div_lt_one_iff {a b : ℕ} (hb : 0 < b) : a / b < 1 ↔ a < b :=
   lt_iff_lt_of_le_iff_le <| one_le_div_iff hb
 #align nat.div_lt_one_iff Nat.div_lt_one_iff
 
+@[gcongr]
 protected theorem div_le_div_right {n m : ℕ} (h : n ≤ m) {k : ℕ} : n / k ≤ m / k :=
   ((Nat.eq_zero_or_pos k).elim fun k0 => by simp [k0]) fun hk =>
     (le_div_iff_mul_le' hk).2 <| le_trans (Nat.div_mul_le_self _ _) h
@@ -818,9 +820,15 @@ theorem eq_zero_of_dvd_of_div_eq_zero {a b : ℕ} (w : a ∣ b) (h : b / a = 0) 
   rw [← Nat.div_mul_cancel w, h, zero_mul]
 #align nat.eq_zero_of_dvd_of_div_eq_zero Nat.eq_zero_of_dvd_of_div_eq_zero
 
+@[gcongr]
 theorem div_le_div_left {a b c : ℕ} (h₁ : c ≤ b) (h₂ : 0 < c) : a / b ≤ a / c :=
   (Nat.le_div_iff_mul_le h₂).2 <| le_trans (Nat.mul_le_mul_left _ h₁) (div_mul_le_self _ _)
 #align nat.div_le_div_left Nat.div_le_div_left
+
+@[gcongr]
+protected theorem div_le_div {a b c d : ℕ} (h1 : a ≤ b) (h2 : d ≤ c) (h3 : d ≠ 0) : a / c ≤ b / d :=
+  calc a / c ≤ b / c := Nat.div_le_div_right h1
+    _ ≤ b / d := Nat.div_le_div_left h2 (Nat.pos_of_ne_zero h3)
 
 theorem lt_iff_le_pred : ∀ {m n : ℕ}, 0 < n → (m < n ↔ m ≤ n - 1)
   | _, _ + 1, _ => lt_succ_iff
