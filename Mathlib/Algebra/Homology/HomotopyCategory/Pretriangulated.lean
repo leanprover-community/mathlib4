@@ -18,7 +18,7 @@ cochain complexes `φ : K ⟶ L`.
 
 This result first appeared in the Liquid Tensor Experiment. In the LTE, the
 formalization followed the Stacks Project: in particular, the distinguished
-triangles were defined using termwise-split short exact sequences of cochain
+triangles were defined using degreewise-split short exact sequences of cochain
 complexes. Here, we follow the original definitions in [Verdiers's thesis, I.3][verdier1996]
 (with the better sign conventions from the introduction of
 [Brian Conrad's book *Grothendieck duality and base change*][conrad2000]).

@@ -341,7 +341,7 @@ partial def evalFinsetBigop {α : Q(Type u)} {β : Q(Type v)}
     match ← Finset.proveEmptyOrCons s with
     | .empty pf => pure <| res_empty.eq_trans q(congr_fun (congr_arg _ $pf) _)
     | .cons a s' h pf => do
-      let fa : Q($β) := Expr.app f a
+      let fa : Q($β) := Expr.betaRev f #[a]
       let res_fa ← derive fa
       let res_op_s' : Result q($op $s' $f) ← evalFinsetBigop op f res_empty @res_cons s'
       let res ← res_cons res_fa res_op_s'
