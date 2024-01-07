@@ -72,113 +72,113 @@ theorem inducing_id : Inducing (@id α) :=
   ⟨induced_id.symm⟩
 #align inducing_id inducing_id
 
-protected theorem Inducing.comp {g : β → γ} {f : α → β} (hg : Inducing g) (hf : Inducing f) :
+protected theorem Inducing.comp (hg : Inducing g) (hf : Inducing f) :
     Inducing (g ∘ f) :=
   ⟨by rw [hf.induced, hg.induced, induced_compose]⟩
 #align inducing.comp Inducing.comp
 
-theorem inducing_of_inducing_compose {f : α → β} {g : β → γ} (hf : Continuous f) (hg : Continuous g)
-    (hgf : Inducing (g ∘ f)) : Inducing f :=
+theorem inducing_of_inducing_compose
+    (hf : Continuous f) (hg : Continuous g) (hgf : Inducing (g ∘ f)) : Inducing f :=
   ⟨le_antisymm (by rwa [← continuous_iff_le_induced])
       (by
         rw [hgf.induced, ← induced_compose]
         exact induced_mono hg.le_induced)⟩
 #align inducing_of_inducing_compose inducing_of_inducing_compose
 
-theorem inducing_iff_nhds {f : α → β} : Inducing f ↔ ∀ a, 𝓝 a = comap f (𝓝 (f a)) :=
+theorem inducing_iff_nhds : Inducing f ↔ ∀ a, 𝓝 a = comap f (𝓝 (f a)) :=
   (inducing_iff _).trans (induced_iff_nhds_eq f)
 #align inducing_iff_nhds inducing_iff_nhds
 
 namespace Inducing
 
-theorem nhds_eq_comap {f : α → β} (hf : Inducing f) : ∀ a : α, 𝓝 a = comap f (𝓝 <| f a) :=
+theorem nhds_eq_comap (hf : Inducing f) : ∀ a : α, 𝓝 a = comap f (𝓝 <| f a) :=
   inducing_iff_nhds.1 hf
 #align inducing.nhds_eq_comap Inducing.nhds_eq_comap
 
-theorem nhdsSet_eq_comap {f : α → β} (hf : Inducing f) (s : Set α) :
+theorem nhdsSet_eq_comap (hf : Inducing f) (s : Set α) :
     𝓝ˢ s = comap f (𝓝ˢ (f '' s)) := by
   simp only [nhdsSet, sSup_image, comap_iSup, hf.nhds_eq_comap, iSup_image]
 #align inducing.nhds_set_eq_comap Inducing.nhdsSet_eq_comap
 
-theorem map_nhds_eq {f : α → β} (hf : Inducing f) (a : α) : (𝓝 a).map f = 𝓝[range f] f a :=
+theorem map_nhds_eq (hf : Inducing f) (a : α) : (𝓝 a).map f = 𝓝[range f] f a :=
   hf.induced.symm ▸ map_nhds_induced_eq a
 #align inducing.map_nhds_eq Inducing.map_nhds_eq
 
-theorem map_nhds_of_mem {f : α → β} (hf : Inducing f) (a : α) (h : range f ∈ 𝓝 (f a)) :
+theorem map_nhds_of_mem (hf : Inducing f) (a : α) (h : range f ∈ 𝓝 (f a)) :
     (𝓝 a).map f = 𝓝 (f a) :=
   hf.induced.symm ▸ map_nhds_induced_of_mem h
 #align inducing.map_nhds_of_mem Inducing.map_nhds_of_mem
 
 -- porting note: new lemma
-theorem mapClusterPt_iff {f : α → β} (hf : Inducing f) {a : α} {l : Filter α} :
+theorem mapClusterPt_iff (hf : Inducing f) {a : α} {l : Filter α} :
     MapClusterPt (f a) l f ↔ ClusterPt a l := by
   delta MapClusterPt ClusterPt
   rw [← Filter.push_pull', ← hf.nhds_eq_comap, map_neBot_iff]
 
-theorem image_mem_nhdsWithin {f : α → β} (hf : Inducing f) {a : α} {s : Set α}
-    (hs : s ∈ 𝓝 a) : f '' s ∈ 𝓝[range f] f a :=
+theorem image_mem_nhdsWithin (hf : Inducing f) {a : α} {s : Set α} (hs : s ∈ 𝓝 a) :
+    f '' s ∈ 𝓝[range f] f a :=
   hf.map_nhds_eq a ▸ image_mem_map hs
 #align inducing.image_mem_nhds_within Inducing.image_mem_nhdsWithin
 
-theorem tendsto_nhds_iff {ι : Type*} {f : ι → β} {g : β → γ} {a : Filter ι} {b : β}
+theorem tendsto_nhds_iff {ι : Type*} {f : ι → β} {a : Filter ι} {b : β}
     (hg : Inducing g) : Tendsto f a (𝓝 b) ↔ Tendsto (g ∘ f) a (𝓝 (g b)) := by
   rw [hg.nhds_eq_comap, tendsto_comap_iff]
 #align inducing.tendsto_nhds_iff Inducing.tendsto_nhds_iff
 
-theorem continuousAt_iff {f : α → β} {g : β → γ} (hg : Inducing g) {x : α} :
+theorem continuousAt_iff (hg : Inducing g) {x : α} :
     ContinuousAt f x ↔ ContinuousAt (g ∘ f) x :=
   hg.tendsto_nhds_iff
 #align inducing.continuous_at_iff Inducing.continuousAt_iff
 
-theorem continuous_iff {f : α → β} {g : β → γ} (hg : Inducing g) :
+theorem continuous_iff (hg : Inducing g) :
     Continuous f ↔ Continuous (g ∘ f) := by
   simp_rw [continuous_iff_continuousAt, hg.continuousAt_iff]
 #align inducing.continuous_iff Inducing.continuous_iff
 
-theorem continuousAt_iff' {f : α → β} {g : β → γ} (hf : Inducing f) {x : α}
-    (h : range f ∈ 𝓝 (f x)) : ContinuousAt (g ∘ f) x ↔ ContinuousAt g (f x) := by
+theorem continuousAt_iff' (hf : Inducing f) {x : α} (h : range f ∈ 𝓝 (f x)) :
+    ContinuousAt (g ∘ f) x ↔ ContinuousAt g (f x) := by
   simp_rw [ContinuousAt, Filter.Tendsto, ← hf.map_nhds_of_mem _ h, Filter.map_map, comp]
 #align inducing.continuous_at_iff' Inducing.continuousAt_iff'
 
-protected theorem continuous {f : α → β} (hf : Inducing f) : Continuous f :=
+protected theorem continuous (hf : Inducing f) : Continuous f :=
   hf.continuous_iff.mp continuous_id
 #align inducing.continuous Inducing.continuous
 
-protected theorem inducing_iff {f : α → β} {g : β → γ} (hg : Inducing g) :
+protected theorem inducing_iff (hg : Inducing g) :
     Inducing f ↔ Inducing (g ∘ f) := by
   refine' ⟨fun h => hg.comp h, fun hgf => inducing_of_inducing_compose _ hg.continuous hgf⟩
   rw [hg.continuous_iff]
   exact hgf.continuous
 #align inducing.inducing_iff Inducing.inducing_iff
 
-theorem closure_eq_preimage_closure_image {f : α → β} (hf : Inducing f) (s : Set α) :
+theorem closure_eq_preimage_closure_image (hf : Inducing f) (s : Set α) :
     closure s = f ⁻¹' closure (f '' s) := by
   ext x
   rw [Set.mem_preimage, ← closure_induced, hf.induced]
 #align inducing.closure_eq_preimage_closure_image Inducing.closure_eq_preimage_closure_image
 
-theorem isClosed_iff {f : α → β} (hf : Inducing f) {s : Set α} :
+theorem isClosed_iff (hf : Inducing f) {s : Set α} :
     IsClosed s ↔ ∃ t, IsClosed t ∧ f ⁻¹' t = s := by rw [hf.induced, isClosed_induced_iff]
 #align inducing.is_closed_iff Inducing.isClosed_iff
 
-theorem isClosed_iff' {f : α → β} (hf : Inducing f) {s : Set α} :
+theorem isClosed_iff' (hf : Inducing f) {s : Set α} :
     IsClosed s ↔ ∀ x, f x ∈ closure (f '' s) → x ∈ s := by rw [hf.induced, isClosed_induced_iff']
 #align inducing.is_closed_iff' Inducing.isClosed_iff'
 
-theorem isClosed_preimage {f : α → β} (h : Inducing f) (s : Set β) (hs : IsClosed s) :
+theorem isClosed_preimage (h : Inducing f) (s : Set β) (hs : IsClosed s) :
     IsClosed (f ⁻¹' s) :=
   (isClosed_iff h).mpr ⟨s, hs, rfl⟩
 #align inducing.is_closed_preimage Inducing.isClosed_preimage
 
-theorem isOpen_iff {f : α → β} (hf : Inducing f) {s : Set α} :
+theorem isOpen_iff (hf : Inducing f) {s : Set α} :
     IsOpen s ↔ ∃ t, IsOpen t ∧ f ⁻¹' t = s := by rw [hf.induced, isOpen_induced_iff]
 #align inducing.is_open_iff Inducing.isOpen_iff
 
-theorem setOf_isOpen {f : α → β} (hf : Inducing f) :
+theorem setOf_isOpen (hf : Inducing f) :
     {s : Set α | IsOpen s} = preimage f '' {t | IsOpen t} :=
   Set.ext fun _ ↦ hf.isOpen_iff
 
-theorem dense_iff {f : α → β} (hf : Inducing f) {s : Set α} :
+theorem dense_iff (hf : Inducing f) {s : Set α} :
     Dense s ↔ ∀ x, f x ∈ closure (f '' s) := by
   simp only [Dense, hf.closure_eq_preimage_closure_image, mem_preimage]
 #align inducing.dense_iff Inducing.dense_iff
@@ -215,13 +215,13 @@ theorem embedding_id : Embedding (@id α) :=
   ⟨inducing_id, fun _ _ h => h⟩
 #align embedding_id embedding_id
 
-protected theorem Embedding.comp {g : β → γ} {f : α → β} (hg : Embedding g) (hf : Embedding f) :
+protected theorem Embedding.comp (hg : Embedding g) (hf : Embedding f) :
     Embedding (g ∘ f) :=
   { hg.toInducing.comp hf.toInducing with inj := fun _ _ h => hf.inj <| hg.inj h }
 #align embedding.comp Embedding.comp
 
-theorem embedding_of_embedding_compose {f : α → β} {g : β → γ} (hf : Continuous f)
-    (hg : Continuous g) (hgf : Embedding (g ∘ f)) : Embedding f :=
+theorem embedding_of_embedding_compose
+    (hf : Continuous f) (hg : Continuous g) (hgf : Embedding (g ∘ f)) : Embedding f :=
   { induced := (inducing_of_inducing_compose hf hg hgf.toInducing).induced
     inj := fun a₁ a₂ h => hgf.inj <| by simp [h, (· ∘ ·)] }
 #align embedding_of_embedding_compose embedding_of_embedding_compose
@@ -231,27 +231,27 @@ protected theorem Function.LeftInverse.embedding {f : α → β} {g : β → α}
   embedding_of_embedding_compose hg hf <| h.comp_eq_id.symm ▸ embedding_id
 #align function.left_inverse.embedding Function.LeftInverse.embedding
 
-theorem Embedding.map_nhds_eq {f : α → β} (hf : Embedding f) (a : α) :
+theorem Embedding.map_nhds_eq (hf : Embedding f) (a : α) :
     (𝓝 a).map f = 𝓝[range f] f a :=
   hf.1.map_nhds_eq a
 #align embedding.map_nhds_eq Embedding.map_nhds_eq
 
-theorem Embedding.map_nhds_of_mem {f : α → β} (hf : Embedding f) (a : α) (h : range f ∈ 𝓝 (f a)) :
+theorem Embedding.map_nhds_of_mem (hf : Embedding f) (a : α) (h : range f ∈ 𝓝 (f a)) :
     (𝓝 a).map f = 𝓝 (f a) :=
   hf.1.map_nhds_of_mem a h
 #align embedding.map_nhds_of_mem Embedding.map_nhds_of_mem
 
-theorem Embedding.tendsto_nhds_iff {ι : Type*} {f : ι → β} {g : β → γ} {a : Filter ι} {b : β}
+theorem Embedding.tendsto_nhds_iff {ι : Type*} {f : ι → β} {a : Filter ι} {b : β}
     (hg : Embedding g) : Tendsto f a (𝓝 b) ↔ Tendsto (g ∘ f) a (𝓝 (g b)) :=
   hg.toInducing.tendsto_nhds_iff
 #align embedding.tendsto_nhds_iff Embedding.tendsto_nhds_iff
 
-theorem Embedding.continuous_iff {f : α → β} {g : β → γ} (hg : Embedding g) :
+theorem Embedding.continuous_iff (hg : Embedding g) :
     Continuous f ↔ Continuous (g ∘ f) :=
   Inducing.continuous_iff hg.1
 #align embedding.continuous_iff Embedding.continuous_iff
 
-theorem Embedding.continuous {f : α → β} (hf : Embedding f) : Continuous f :=
+theorem Embedding.continuous (hf : Embedding f) : Continuous f :=
   Inducing.continuous hf.1
 #align embedding.continuous Embedding.continuous
 
@@ -353,7 +353,7 @@ namespace IsOpenMap
 protected theorem id : IsOpenMap (@id α) := fun s hs => by rwa [image_id]
 #align is_open_map.id IsOpenMap.id
 
-protected theorem comp {g : β → γ} (hg : IsOpenMap g) (hf : IsOpenMap f) :
+protected theorem comp (hg : IsOpenMap g) (hf : IsOpenMap f) :
     IsOpenMap (g ∘ f) := fun s hs => by rw [image_comp]; exact hg _ (hf _ hs)
 #align is_open_map.comp IsOpenMap.comp
 
@@ -484,8 +484,7 @@ open Function
 protected theorem id : IsClosedMap (@id α) := fun s hs => by rwa [image_id]
 #align is_closed_map.id IsClosedMap.id
 
-protected theorem comp {g : β → γ} (hg : IsClosedMap g) (hf : IsClosedMap f) :
-    IsClosedMap (g ∘ f) := by
+protected theorem comp (hg : IsClosedMap g) (hf : IsClosedMap f) : IsClosedMap (g ∘ f) := by
   intro s hs
   rw [image_comp]
   exact hg _ (hf _ hs)
@@ -595,16 +594,16 @@ theorem OpenEmbedding.open_iff_image_open (hf : OpenEmbedding f) {s : Set α} :
     apply preimage_image_eq _ hf.inj⟩
 #align open_embedding.open_iff_image_open OpenEmbedding.open_iff_image_open
 
-theorem OpenEmbedding.tendsto_nhds_iff {ι : Type*} {f : ι → β} {g : β → γ} {a : Filter ι} {b : β}
+theorem OpenEmbedding.tendsto_nhds_iff {ι : Type*} {f : ι → β} {a : Filter ι} {b : β}
     (hg : OpenEmbedding g) : Tendsto f a (𝓝 b) ↔ Tendsto (g ∘ f) a (𝓝 (g b)) :=
   hg.toEmbedding.tendsto_nhds_iff
 #align open_embedding.tendsto_nhds_iff OpenEmbedding.tendsto_nhds_iff
 
-theorem OpenEmbedding.tendsto_nhds_iff' (hf : OpenEmbedding f) {g : β → γ}
-    {l : Filter γ} {a : α} : Tendsto (g ∘ f) (𝓝 a) l ↔ Tendsto g (𝓝 (f a)) l := by
+theorem OpenEmbedding.tendsto_nhds_iff' (hf : OpenEmbedding f) {l : Filter γ} {a : α} :
+    Tendsto (g ∘ f) (𝓝 a) l ↔ Tendsto g (𝓝 (f a)) l := by
   rw [Tendsto, ← map_map, hf.map_nhds_eq]; rfl
 
-theorem OpenEmbedding.continuousAt_iff (hf : OpenEmbedding f) {g : β → γ} {x : α} :
+theorem OpenEmbedding.continuousAt_iff (hf : OpenEmbedding f) {x : α} :
     ContinuousAt (g ∘ f) x ↔ ContinuousAt g (f x) :=
   hf.tendsto_nhds_iff'
 #align open_embedding.continuous_at_iff OpenEmbedding.continuousAt_iff
