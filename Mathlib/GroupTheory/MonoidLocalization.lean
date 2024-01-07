@@ -1609,16 +1609,13 @@ theorem of_mulEquivOfMulEquiv {k : LocalizationMap T Q} {j : M ≃* P} (H : S.ma
 #align submonoid.localization_map.of_mul_equiv_of_mul_equiv Submonoid.LocalizationMap.of_mulEquivOfMulEquiv
 #align add_submonoid.localization_map.of_add_equiv_of_add_equiv AddSubmonoid.LocalizationMap.of_addEquivOfAddEquiv
 
-
 @[to_additive]
 theorem injective_iff (f : LocalizationMap S N) :
     Injective (LocalizationMap.toMap f) ↔ ∀ ⦃x⦄, x ∈ S → IsLeftRegular x := by
   rw [Injective]
   constructor <;> intro h
-  · intro x hx
-    rw [IsLeftRegular,Injective]
+  · intro x hx y z hyz
     simp_rw [LocalizationMap.eq_iff_exists] at h
-    intro y z hyz
     apply (fun y z _ => h) y z x
     have : ∃(x' : S), x' = x := (CanLift.prf x hx)
     obtain ⟨x',hx'⟩ := this
@@ -1628,7 +1625,6 @@ theorem injective_iff (f : LocalizationMap S N) :
     rw [LocalizationMap.eq_iff_exists] at hab
     obtain ⟨c,hc⟩ := hab
     apply (fun x a => h a) c (SetLike.coe_mem c) hc
-
 
 end LocalizationMap
 
@@ -1922,7 +1918,7 @@ can be used for CommSemirings to show that the localization of a Domain,
 when it is injective, is a Domain -/
 theorem leftCancelMulZero_of_le_isLeftRegular
     (f : LocalizationWithZeroMap S N) [IsLeftCancelMulZero M]
-    (h : ∀ ⦃x⦄, x ∈ S → IsLeftRegular x): IsLeftCancelMulZero N := by
+    (h : ∀ ⦃x⦄, x ∈ S → IsLeftRegular x) : IsLeftCancelMulZero N := by
   let fl:=f.toLocalizationMap
   let g:=f.toMap
   --- We prove the property to be left cancellative.
@@ -1978,8 +1974,6 @@ theorem isLeftRegular_of_le_IsCancelMulZero (f : LocalizationWithZeroMap S N)
   have:IsLeftCancelMulZero N:=
     leftCancelMulZero_of_le_isLeftRegular f (fun x h' => (h h').left)
   exact IsLeftCancelMulZero.to_isCancelMulZero
-
-
 
 end LocalizationWithZeroMap
 
