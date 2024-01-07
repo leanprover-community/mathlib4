@@ -49,7 +49,7 @@ open Set Filter Function
 
 open TopologicalSpace Topology Filter
 
-variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
+variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*} {f : α → β} {g : β → γ}
 
 section Inducing
 
@@ -280,7 +280,6 @@ def QuotientMap {α : Type*} {β : Type*} [tα : TopologicalSpace α] [tβ : Top
 #align quotient_map QuotientMap
 
 variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ] [TopologicalSpace δ]
-  {g : β → γ} {f : α → β}
 
 theorem quotientMap_iff : QuotientMap f ↔ Surjective f ∧ ∀ s : Set β, IsOpen s ↔ IsOpen (f ⁻¹' s) :=
   and_congr Iff.rfl TopologicalSpace.ext_iff
@@ -347,7 +346,7 @@ def IsOpenMap [TopologicalSpace α] [TopologicalSpace β] (f : α → β) :=
   ∀ U : Set α, IsOpen U → IsOpen (f '' U)
 #align is_open_map IsOpenMap
 
-variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ] {f : α → β}
+variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
 
 namespace IsOpenMap
 
@@ -479,8 +478,6 @@ def IsClosedMap (f : α → β) :=
   ∀ U : Set α, IsClosed U → IsClosed (f '' U)
 #align is_closed_map IsClosedMap
 
-variable {f : α → β}
-
 namespace IsClosedMap
 open Function
 
@@ -581,8 +578,6 @@ structure OpenEmbedding (f : α → β) extends Embedding f : Prop where
   open_range : IsOpen <| range f
 #align open_embedding OpenEmbedding
 #align open_embedding_iff openEmbedding_iff
-
-variable {f : α → β} {g : β → γ}
 
 theorem OpenEmbedding.isOpenMap (hf : OpenEmbedding f) : IsOpenMap f :=
   hf.toEmbedding.toInducing.isOpenMap hf.open_range
@@ -693,8 +688,6 @@ structure ClosedEmbedding (f : α → β) extends Embedding f : Prop where
   closed_range : IsClosed <| range f
 #align closed_embedding ClosedEmbedding
 #align closed_embedding_iff closedEmbedding_iff
-
-variable {f : α → β} {g : β → γ}
 
 namespace ClosedEmbedding
 
