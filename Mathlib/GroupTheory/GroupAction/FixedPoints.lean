@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Emilie Burgun
 -/
 import Mathlib.GroupTheory.GroupAction.Basic
+import Mathlib.GroupTheory.GroupAction.Period
 import Mathlib.Dynamics.PeriodicPts
 import Mathlib.Data.Set.Pointwise.SMul
 
@@ -55,17 +56,15 @@ theorem smul_mem_fixedBy_iff_mem_fixedBy {a : α} {g : G} :
   rfl
 
 @[to_additive]
-theorem minimalPeriod_eq_one_of_fixedBy {a : α} {g : G} (a_in_fixedBy : a ∈ fixedBy α g) :
-    Function.minimalPeriod (fun x => g • x) a = 1 := by
-  rw [Function.minimalPeriod_eq_one_iff_isFixedPt]
-  exact a_in_fixedBy
+theorem period_eq_one_of_fixedBy {a : α} {g : G} (a_in_fixedBy : a ∈ fixedBy α g) :
+    period g a = 1 := period_eq_one_of_fixed a_in_fixedBy
 
 @[to_additive]
 theorem fixedBy_subset_fixedBy_pow (g : G) (j : ℤ) :
     fixedBy α g ⊆ fixedBy α (g^j) := by
   intro a a_in_fixedBy
-  rw [mem_fixedBy, zpow_smul_eq_iff_minimalPeriod_dvd,
-    minimalPeriod_eq_one_of_fixedBy a_in_fixedBy]
+  rw [mem_fixedBy, zpow_smul_eq_iff_period_dvd,
+    period_eq_one_of_fixed a_in_fixedBy]
   rw [Nat.cast_one]
   exact one_dvd j
 
