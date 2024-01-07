@@ -39,7 +39,8 @@ Further results in Elliot's paper:
 variables `X`.  (also, noncommutative version?)
 
 * Given a commutative binomial ring `A` and an `A`-algebra `B` that is complete with respect to an
-ideal `I`, formal exponentiation induces an `A`-module structure on `1 + I`.
+ideal `I`, formal exponentiation induces an `A`-module structure on the multiplicative subgroup
+`1 + I`.
 
 -/
 
@@ -51,7 +52,7 @@ suitable factorials.  We define this notion as a mixin for non-associative semir
 ring name.  We introduce `Ring.multichoose` as the uniquely defined quotient. -/
 class BinomialRing (R : Type*) [NonAssocSemiring R] [Pow R ℕ] where
   /-- Scalar multiplication by positive integers is injective. -/
-nsmul_right_injective (n : ℕ) (h : n ≠ 0) : Injective (n • · : R → R)
+  nsmul_right_injective (n : ℕ) (h : n ≠ 0) : Injective (n • · : R → R)
   /-- A multichoose function, giving the quotient of Pochhammer by factorial -/
   multichoose : R → ℕ → R
   /-- The `n`th ascending Pochhammer polynomial evaluated at any element is divisible by `n!`. -/
@@ -198,15 +199,13 @@ end Ring
 
 end Nat_Int
 
-section choose
+section neg
 
 namespace Ring
 
 open Polynomial
 
-variable {R : Type*}
-
-variable [NonAssocRing R] [Pow R ℕ] [BinomialRing R]
+variable {R : Type*} [NonAssocRing R] [Pow R ℕ] [BinomialRing R]
 
 theorem ascPochhammer_smeval_neg : ∀(n : ℕ),
     smeval (-n : ℤ) (ascPochhammer ℕ n) = (-1)^n * n.factorial
@@ -283,16 +282,26 @@ theorem ascPochhammer_smeval_nat_int [NatPowAssoc R] (r : R) : ∀(n : ℕ),
     simp only [smeval_add, smeval_X, ← C_eq_nat_cast, smeval_C, coe_nat_zsmul, nsmul_eq_mul,
     Nat.cast_id]
 
+end Ring
+
+end neg
+
+section choose
+
+namespace Ring
+
+open Polynomial
+
+variable {R : Type*} [NonAssocRing R] [Pow R ℕ] [BinomialRing R]
+
 /-- The binomial coefficient `choose r n` generalizes the natural number choose function,
   interpreted in terms of choosing without replacement. -/
-def choose {R: Type _} [NonAssocRing R] [Pow R ℕ] [BinomialRing R]
-    (r : R) (n : ℕ): R :=
+def choose {R: Type _} [NonAssocRing R] [Pow R ℕ] [BinomialRing R] (r : R) (n : ℕ): R :=
   multichoose (r-n+1) n
 
 theorem descPochhammer_eq_factorial_smul_choose [NatPowAssoc R] (r : R) (n : ℕ) :
     smeval r (descPochhammer ℤ n) = n.factorial • choose r n := by
-  unfold choose
-  rw [factorial_nsmul_multichoose_eq_ascPochhammer, descPochhammer_eq_ascPochhammer,
+  rw [choose, factorial_nsmul_multichoose_eq_ascPochhammer, descPochhammer_eq_ascPochhammer,
     smeval_comp ℤ r, add_comm_sub, smeval_add, smeval_X, npow_one]
   have h : smeval r (1 - n : Polynomial ℤ) = 1 - n := by
     rw [← C_eq_nat_cast, ← C_1, ← C_sub, smeval_C]
@@ -332,8 +341,7 @@ theorem choose_zero_ite (S : Type*) [NonAssocRing S] [Pow S ℕ] [NatPowAssoc S]
   rw [choose_zero_pos S k hk]
 
 theorem choose_one_right' (r : R) : choose r 1 = r ^ 1 := by
-  unfold choose
-  rw [Nat.cast_one, sub_add_cancel, multichoose_one_right']
+  rw [choose, Nat.cast_one, sub_add_cancel, multichoose_one_right']
 
 theorem choose_one_right [NatPowAssoc R] (r : R) : choose r 1 = r := by
   rw [choose_one_right', npow_one]
@@ -356,7 +364,14 @@ theorem choose_succ_succ [NatPowAssoc R] (r:R) (k : ℕ) :
   rw [Nat.factorial_succ, mul_smul,
     ← descPochhammer_eq_factorial_smul_choose r, descPochhammer_succ_succ_smeval r k]
 
-
+theorem choose_eq_Nat_choose [NatPowAssoc R] (n k : ℕ) : choose (n : R) k = Nat.choose n k := by
+  induction n generalizing k with
+  | zero => cases k with
+    | zero => rw [choose_zero_right, Nat.choose_zero_right, Nat.cast_one]
+    | succ k => rw [Nat.cast_zero, choose_zero_succ, Nat.choose_zero_succ, Nat.cast_zero]
+  | succ n ih => cases k with
+    | zero => rw [choose_zero_right, Nat.choose_zero_right, Nat.cast_one]
+    | succ k => rw [Nat.cast_succ, choose_succ_succ, ih, ih, Nat.choose_succ_succ, Nat.cast_add]
 
 end Ring
 

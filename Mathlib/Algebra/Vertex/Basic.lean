@@ -34,23 +34,61 @@ In the unital setting:
 ## References
 
 G. Mason `Vertex rings and Pierce bundles` ArXiv 1707.00328
-Matsuo-Nagatomo?
-Borcherds's original paper?
+Matsuo-Nagatomo `On axioms for a vertex algebra and the locality of quantum fields` ArXiv
+  hep-th/9706118
+Borcherds
 
 -/
-universe u v
 
-variable {V : Type u} {R : Type v}
+theorem Int.toNat_sub_eq_zero_leq {m n : ℤ} : Int.toNat (-m - n) = 0 ↔ -n ≤ m := by
+  simp only [Int.toNat_eq_zero, tsub_le_iff_right, zero_add]
+  exact neg_le
+
+theorem Int.neg_sub_one_sub_nat (i : ℕ) (r s t : ℤ) (hi: i ≤ t) :
+    -r - s - ↑(Int.toNat t - i) = ↑i - (r + Int.toNat t) - s := by
+  rw [Nat.cast_sub ((Int.le_toNat (le_trans (Int.ofNat_nonneg i) hi)).mpr hi),
+    sub_eq_sub_iff_add_eq_add, Int.sub_add_cancel, sub_add_sub_cancel', sub_add_cancel'']
+
+theorem Int.neg_one_pow_sub (n i : ℕ) (hi : i ≤ n) : (-1) ^ (n - i) = (-1) ^ n * (-1) ^ i := by
+  refine Int.eq_of_mul_eq_one ?_
+  rw [← pow_add, ← pow_add, add_rotate', Nat.add_sub_of_le hi, Even.neg_pow (even_add_self n),
+    one_pow]
+
+--#find_home Int.neg_sub_one_sub_nat
+
+/-! Perhaps this theorem should wait until we have more API for formal power series.
+theorem conv_pow_succ_X_sub_Y (A : Type*) [AddCommGroup A] (k l n : ℕ) (f : ℤ → ℤ → A) :
+    (Finset.sum (Finset.antidiagonal (n + 1)) fun m ↦ (-1) ^ m.2 • Nat.choose (n + 1) m.2 •
+    f (k - ↑m.1) (l - ↑m.2)) = Finset.sum (Finset.antidiagonal n) fun m ↦ (-1) ^ m.2 •
+    Nat.choose n m.2 • f (k - ↑m.1 - 1) (l - ↑m.2) - Finset.sum (Finset.antidiagonal n) fun m ↦
+    (-1) ^ m.2 • Nat.choose n m.2 • f (k - ↑m.1) (l - ↑m.2 - 1) := by
+  -- left side is convolution with `(X-Y)^{n+1}`, right side is with `(X-Y)^n` then `(X-Y)`.
+  sorry
+-/
+variable {R : Type*} {V : Type*}
 
 namespace VertexAlg
+
+section VertexOperator
+
+variable [CommRing R] [AddCommGroup V] [Module R V]
+
+/-!
+theorem isLocalToOrderLeq_succ (A B : VertexOperator R V) (n : ℕ)
+    (h : isLocalToOrderLeq R V A B n) : isLocalToOrderLeq R V A B (n + 1) := by
+  unfold isLocalToOrderLeq
+  intro k l x
+  -- use conv_pow_succ_X_sub_Y
+  sorry
+
+-- isAssocToOrderLeq_succ
+-/
+
+end VertexOperator
 
 section NonUnital
 
 variable [CommRing R] [AddCommGroup V] [NonAssocNonUnitalVertexAlgebra R V]
-
-theorem toNat_sub_eq_zero_leq {m n : ℤ} : Int.toNat (-m - n) = 0 ↔ -n ≤ m := by
-  simp only [Int.toNat_eq_zero, tsub_le_iff_right, zero_add]
-  exact neg_le
 
 theorem associativity_left (a b c : V) (s t : ℤ) : Borcherds_sum_1 R a b c 0 s t =
     index (Y R (index (Y R a) t b)) s c := by
@@ -58,7 +96,7 @@ theorem associativity_left (a b c : V) (s t : ℤ) : Borcherds_sum_1 R a b c 0 s
   cases h : (Int.toNat (-t - order R a b)) with
     | zero =>
       rw [Finset.range_zero, Finset.sum_empty]
-      rw [index_zero_if_neg_order_leq R a b t (toNat_sub_eq_zero_leq.mp h), LinearMap.map_zero]
+      rw [index_zero_if_neg_order_leq R a b t (Int.toNat_sub_eq_zero_leq.mp h), LinearMap.map_zero]
       exact rfl
     | succ n =>
       rw [Finset.eventually_constant_sum ?_ (Nat.one_le_iff_ne_zero.mpr
@@ -88,7 +126,7 @@ theorem commutator_right_2 (a b c : V) (r s : ℤ) : Borcherds_sum_2 R a b c r s
   cases h : (Int.toNat (-s - order R b c)) with
   | zero =>
     rw [Finset.range_zero, Finset.sum_empty]
-    rw [index_zero_if_neg_order_leq R b c s (toNat_sub_eq_zero_leq.mp h), LinearMap.map_zero]
+    rw [index_zero_if_neg_order_leq R b c s (Int.toNat_sub_eq_zero_leq.mp h), LinearMap.map_zero]
   | succ n =>
     rw [Finset.eventually_constant_sum ?_ (Nat.one_le_iff_ne_zero.mpr
         (Nat.succ_ne_zero n)), Finset.sum_range_one, add_zero, Ring.choose_zero_right (0 : ℤ),
@@ -103,7 +141,7 @@ theorem commutator_right_3 (a b c : V) (r s : ℤ) : Borcherds_sum_3 R a b c r s
   cases h : (Int.toNat (-r - order R a c)) with
   | zero =>
     rw [Finset.range_zero, Finset.sum_empty, index_zero_if_neg_order_leq R a c r
-      (toNat_sub_eq_zero_leq.mp h), LinearMap.map_zero, neg_zero]
+      (Int.toNat_sub_eq_zero_leq.mp h), LinearMap.map_zero, neg_zero]
   | succ n =>
     rw [Finset.eventually_constant_sum ?_ (Nat.one_le_iff_ne_zero.mpr (Nat.succ_ne_zero n)),
         Finset.sum_range_one, add_zero, Ring.choose_zero_right (0 : ℤ), one_smul, Nat.cast_zero,
@@ -126,11 +164,74 @@ theorem Borcherds_sum_1_eq_zero (a b c : V) (r s t : ℤ) (h : - order R a b ≤
     rw [Int.toNat_eq_zero, tsub_le_iff_right, zero_add, neg_le]
     exact h
   rw [hrange, Finset.range_zero, Finset.sum_empty]
-/-!
 
-theorem locality_iff_Borcherds_sums_2_3_eq (a b c : V) (r s t : ℤ) :
-    locality R a b ↔ Borcherds_sum_2 R a b c r s t = Borcherds_sum_3 R a b c r s t := by
+theorem locality_left_eq_Borcherds_sum_2 (a b c : V) (r s: ℤ) :
+    (Finset.sum (Finset.antidiagonal (Int.toNat (-s - order R b c))) fun m ↦
+    (-1) ^ m.2 • Nat.choose (Int.toNat (-s - order R b c)) m.2 •
+    (coeff (Y R a) (-r - 1 - m.1)) ((coeff (Y R b) (-s - 1 - m.2)) c)) =
+    Borcherds_sum_2 R a b c r s (Int.toNat (-s - order R b c)) := by
+  unfold Borcherds_sum_2 index
+  rw [Finset.Nat.antidiagonal_eq_map']
+  simp_all only [Finset.sum_map, Function.Embedding.coeFn_mk, neg_sub, neg_add_rev]
+  rw [Finset.eventually_constant_sum ?_ (Nat.le_succ (Int.toNat (-s - order R b c)))]
+  refine Finset.sum_congr rfl ?_
+  intro i hi
+  simp_all only [Finset.mem_range]
+  congr 1
+  rw [Ring.choose_eq_Nat_choose, coe_nat_zsmul]
+  congr 1
+  rw [Int.neg_sub_one_sub_nat i r 1 (-s - order R b c) (le_of_lt (Int.lt_toNat.mp hi)),
+    show -s - 1 - i = -i + -s - 1 by linarith]
+  intro i hi
+  have h : (coeff ((Y R) b) (-s - 1 - ↑i)) c = 0 := by
+    refine coeff_zero_if_lt_order R b c ?_ ?_
+    simp_all only [ge_iff_le, Int.toNat_le, tsub_le_iff_right]
+    linarith
+  rw [h, LinearMap.map_zero, smul_zero, smul_zero]
+
+theorem locality_right_eq_Borcherds_sum_3 (a b c : V) (r s: ℤ) : Finset.sum (Finset.antidiagonal (Int.toNat (-r - order R a c)))
+    (fun m => -(-1)^(m.2) • (Nat.choose (Int.toNat (-r - order R a c)) m.2) •
+    coeff (Y R b) (-s - 1 - m.2) (coeff (Y R a) (-r - 1 - m.1) c)) =
+    Borcherds_sum_3 R a b c r s (Int.toNat (-r - order R a c)) := by
+  unfold Borcherds_sum_3 index
+  rw [Finset.Nat.antidiagonal_eq_map]
+  simp_all only [Finset.sum_map, Function.Embedding.coeFn_mk, neg_sub, neg_add_rev]
+  rw [Finset.eventually_constant_sum ?_ (Nat.le_succ (Int.toNat (-r - order R a c)))]
+  refine Finset.sum_congr rfl ?_
+  intro i hi
+  simp_all only [Finset.mem_range]
+  congr 1
+  rw [Int.neg_one_pow_sub, ← Int.mul_neg_one]
+  simp only [zpow_add, mul_neg, mul_one, zpow_coe_nat, zpow_one, Units.val_neg, Units.val_mul,
+    Units.val_pow_eq_pow_val, Units.val_one]
+  exact le_of_lt hi
+  rw [Ring.choose_eq_Nat_choose, coe_nat_zsmul]
+  congr 1
+  rw [Nat.choose_symm (le_of_lt hi)]
+  rw [Int.neg_sub_one_sub_nat i s 1 (-r - order R a c) (le_of_lt (Int.lt_toNat.mp hi)),
+    show -r - 1 - i = -i + -r - 1 by linarith]
+  intro i hi
+  have h : (coeff ((Y R) a) (-r - 1 - ↑i)) c = 0 := by
+    refine coeff_zero_if_lt_order R a c ?_ ?_
+    simp_all only [ge_iff_le, Int.toNat_le, tsub_le_iff_right]
+    linarith
+  rw [h, LinearMap.map_zero, smul_zero, smul_zero]
+
+/-!
+theorem locality_if_Borcherds_sums_2_3_eq (a b : V) (h : ∀ (c : V) (r s : ℤ)
+    (t : ℕ), Int.toNat (-s - order R b c) ≤ t → Int.toNat (-r - order R a c) ≤ t →
+    Borcherds_sum_2 R a b c r s t = Borcherds_sum_3 R a b c r s t) : locality R a b := by
+  unfold locality isLocal isLocalToOrderLeq
+  --
+--  rw [locality_right_eq_Borcherds_sum_3 a b c ]
   sorry
+
+theorem Borcherds_sums_2_3_eq_if_locality (a b c : V) (r s t : ℤ)
+    (h₂ : Int.toNat (-s - order R b c) ≤ t) (h₃ : Int.toNat (-r - order R a c) ≤ t)
+    (h : locality R a b) : Borcherds_sum_2 R a b c r s t = Borcherds_sum_3 R a b c r s t := by
+  --rw [← locality_right_eq_Borcherds_sum_3, ]
+  sorry
+
 
 theorem Borcherds_id_at_large_t_iff_locality (a b c : V) (r s t : ℤ) (h : - order R a b ≤ t) :
     Borcherds_id R a b c r s t ↔ locality R a b := by
@@ -247,10 +348,10 @@ theorem borcherds3Recursion [CommRing R] [AddCommGroup V] [NonAssocNonUnitalVert
 
 -- theorem Borcherds on r s+1 t, r s t+1 implies r+1 s t (and two other versions)
 
--- theorem Borcherds_on_hyperplane_implies_half_space (and two other versions)
+-- theorem Borcherds_on_r_hyperplane_implies_r_half_space (and two other versions)
 
--- theorem Borcherds_on_two_half_spaces_implies Borcherds_everywhere
-  -- For fixed r s t, find propagation length to union of half-spaces?
+-- theorem Borcherds_on_two_transverse_half_spaces_implies Borcherds_everywhere
+  -- induct on maximal distance from r s t to union of half-spaces?
   -- Or, use induction on ℕ × ℕ
 
 

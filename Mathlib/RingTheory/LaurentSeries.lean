@@ -60,6 +60,7 @@ section Zero
 
 variable [Zero R]
 
+-- generalize to any locally finite linear order?
 theorem supp_bdd_below_supp_Pwo (f : ℤ → R) (n : ℤ) (hn : ∀(m : ℤ), m < n → f m = 0) :
     (Function.support f).IsPwo := by
   rw [← @Set.isWf_iff_isPwo]

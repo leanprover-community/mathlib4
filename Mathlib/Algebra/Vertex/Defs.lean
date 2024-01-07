@@ -52,8 +52,8 @@ section VertexOperator
 
 variable {R : Type*} {V : Type*} [CommRing R] [AddCommGroup V] [Module R V]
 
-/-- A vertex operator over a semiring `R` is an `R`-linear map from an `R`-module `V` to Laurent
-series with coefficients in `V`. -/
+/-- A vertex operator over a commutative ring `R` is an `R`-linear map from an `R`-module `V` to
+Laurent series with coefficients in `V`. -/
 
 abbrev VertexOperator (R : Type*) (V : Type*) [CommRing R] [AddCommGroup V]
     [Module R V] := V →ₗ[R] LaurentSeries V
@@ -105,13 +105,13 @@ theorem one_coeff_zero' (x : V) : @coeff R V _ _ _ 1 0 x = x := by
 theorem one_coeff_ne (x : V) (n : ℤ) (hn : n ≠ 0): @coeff R V _ _ _ 1 n x = 0 := by
   rw [one_coeff_ite, if_neg hn]
 
-/-- Locality to order `≤ n` means `(x-y)^N[A(x),B(y)] = 0` for `N ≥ n`.  We may want to write this
-in terms of composition of endomorphisms. -/
+/-- Locality to order `≤ n` means `(x-y)^n[A(x),B(y)] = 0`.  We write this condition as
+vanishing of the `x^k y^l` term, for all integers `k` and `l`. -/
 def isLocalToOrderLeq (R: Type*) (V : Type*) [CommRing R] [AddCommGroup V] [Module R V]
     (A B : VertexOperator R V) (n : ℕ) : Prop := ∀ (k l : ℤ) (x : V), Finset.sum
-    (Finset.antidiagonal n) (fun m => (-1)^(m.1) • (Nat.choose n m.1) •
-    coeff A (k + m.1) (coeff B (l + m.2) x)) = Finset.sum (Finset.antidiagonal n)
-    (fun m => (-1)^(m.1) • (Nat.choose n m.1) • coeff B (l + m.1) (coeff A (k + m.2) x))
+    (Finset.antidiagonal n) (fun m => (-1)^(m.2) • (Nat.choose n m.2) •
+    coeff A (k - m.1) (coeff B (l - m.2) x)) = Finset.sum (Finset.antidiagonal n)
+    (fun m => (-1)^(m.2) • (Nat.choose n m.2) • coeff B (l - m.2) (coeff A (k - m.1) x))
 
 /-- Two fields are local if they are local to order `≤ n` for some `n`. -/
 def isLocal (R: Type*) (V : Type*) [CommRing R] [AddCommGroup V] [Module R V]
@@ -154,6 +154,8 @@ def hasseDeriv.linearMap (k : ℕ) : VertexOperator R V →ₗ[R] VertexOperator
       intros
       simp only [hasseDeriv_smul, RingHom.id_apply]
   }
+
+-- hasseDeriv.linearMap_apply
 
 theorem hasseDeriv_coeff (k : ℕ) (A : VertexOperator R V) (n : ℤ) :
     coeff (hasseDeriv k A) n = (Ring.choose (n + k) k) • coeff A (n + k) := by
