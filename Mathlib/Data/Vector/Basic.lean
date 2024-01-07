@@ -580,14 +580,14 @@ theorem removeNth_insertNth' {v : Vector α (n + 1)} : ∀ {i : Fin (n + 1)} {j 
   rcases (le_or_lt j (i.castSucc)) with (h | h)
   · rcases Fin.exists_castSucc_eq.mpr (h.trans_lt (Fin.castSucc_lt_last _)).ne with ⟨j, rfl⟩
     rw [Fin.castSucc_le_castSucc_iff] at h
-    rw [Fin.predAbove_castSucc_below _ _ h, Fin.succAbove_castSucc_above_apply _ _ h,
+    rw [Fin.predAbove_castSucc_of_le h, Fin.succAbove_castSucc_of_le h,
       Fin.coe_castSucc, Fin.val_succ,
       ← List.insertNth_removeNth_of_le _ _ _ H h]
     rfl
   · rw [Fin.castSucc_lt_iff_succ_le] at h
     rcases Fin.exists_succ_eq.mpr (h.trans_lt' (Fin.succ_pos _)).ne' with ⟨j, rfl⟩
     rw [Fin.succ_le_succ_iff] at h
-    rw [Fin.predAbove_succ_above _ _ h, Fin.succAbove_succ_below_apply _ _ h,
+    rw [Fin.predAbove_succ_of_le h, Fin.succAbove_succ_of_le h,
       Fin.coe_castSucc, Fin.val_succ, ← List.insertNth_removeNth_of_ge _ _ _ H h]
     rfl
 #align vector.remove_nth_insert_nth' Vector.removeNth_insertNth'
