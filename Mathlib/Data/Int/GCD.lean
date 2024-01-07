@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sangwoo Jo (aka Jason), Guy Leroy, Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Commute.Units
+import Mathlib.Algebra.GroupWithZero.Power
 import Mathlib.Algebra.Ring.Regular
 import Mathlib.Data.Int.Dvd.Basic
 import Mathlib.Data.Nat.GCD.Basic
@@ -517,3 +518,44 @@ theorem pow_gcd_eq_one {M : Type*} [Monoid M] (x : M) {m n : ℕ} (hm : x ^ m = 
   simp only [Nat.gcd_eq_gcd_ab, zpow_add, zpow_mul, hm, hn, one_zpow, one_mul]
 #align pow_gcd_eq_one pow_gcd_eq_one
 #align gcd_nsmul_eq_zero gcd_nsmul_eq_zero
+
+variable {α : Type*}
+
+section GroupWithZero
+variable [GroupWithZero α] {a b : α} {m n : ℕ}
+
+protected lemma Commute.exists_eq_pow_of_pow_eq_pow_of_coprime (h : Commute a b) (hmn : m.Coprime n)
+    (hab : a ^ m = b ^ n) : ∃ c, a = c ^ n ∧ b = c ^ m := by
+  by_cases hn : n = 0; · aesop
+  by_cases hm : m = 0; · aesop
+  by_cases hb : b = 0; exact ⟨0, by aesop⟩
+  by_cases ha : a = 0; exact ⟨0, by have := hab.symm; aesop⟩
+  use a ^ (Nat.gcdB m n) * b ^ (Nat.gcdA m n)
+  constructor
+  all_goals
+    refine (pow_one _).symm.trans ?_
+    conv_lhs => rw [← zpow_ofNat, ← hmn, Nat.gcd_eq_gcd_ab]
+    simp only [zpow_add₀ ha, zpow_add₀ hb, ← zpow_ofNat, (h.zpow_zpow₀ _ _).mul_zpow, ← zpow_mul,
+      mul_comm (Nat.gcdB m n), mul_comm (Nat.gcdA m n)]
+    simp only [zpow_mul, zpow_ofNat, hab]
+    refine ((Commute.pow_pow ?_ _ _).zpow_zpow₀ _ _).symm
+    aesop
+
+end GroupWithZero
+
+section CommGroupWithZero
+variable [CommGroupWithZero α] {a b : α} {m n : ℕ}
+
+lemma exists_eq_pow_of_pow_eq_pow_of_coprime (hmn : m.Coprime n) (hab : a ^ m = b ^ n) :
+    ∃ c, a = c ^ n ∧ b = c ^ m := (Commute.all _ _).exists_eq_pow_of_pow_eq_pow_of_coprime hmn hab
+
+lemma pow_mem_range_pow_of_coprime (hmn : m.Coprime n) (a : α) :
+    a ^ m ∈ Set.range (· ^ n : α → α) ↔ a ∈ Set.range (· ^ n : α → α) := by
+  constructor
+  · intro ⟨x, hx⟩
+    obtain ⟨c, rfl, rfl⟩ := exists_eq_pow_of_pow_eq_pow_of_coprime hmn.symm hx
+    exact ⟨c, rfl⟩
+  · rintro ⟨x, rfl⟩
+    exact ⟨x ^ m, by simp [← pow_mul, mul_comm m n]⟩
+
+end CommGroupWithZero
