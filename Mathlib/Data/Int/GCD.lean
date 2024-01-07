@@ -3,7 +3,6 @@ Copyright (c) 2018 Guy Leroy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sangwoo Jo (aka Jason), Guy Leroy, Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Commute.Units
 import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.GroupWithZero.Power
 import Mathlib.Algebra.Ring.Regular
@@ -528,7 +527,8 @@ variable [GroupWithZero α] {a b : α} {m n : ℕ}
 protected lemma Commute.pow_eq_pow_iff_of_coprime (hab : Commute a b) (hmn : m.Coprime n) :
     a ^ m = b ^ n ↔ ∃ c, a = c ^ n ∧ b = c ^ m := by
   refine ⟨fun h ↦ ?_, by rintro ⟨c, rfl, rfl⟩; rw [← pow_mul, ← pow_mul']⟩
-  by_cases hn : n = 0; · aesop
+  by_cases m = 0; · aesop
+  by_cases n = 0; · aesop
   by_cases hb : b = 0; exact ⟨0, by aesop⟩
   by_cases ha : a = 0; exact ⟨0, by have := h.symm; aesop⟩
   refine ⟨a ^ Nat.gcdB m n * b ^ Nat.gcdA m n, ?_, ?_⟩
