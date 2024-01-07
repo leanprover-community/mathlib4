@@ -45,7 +45,7 @@ variable (α β : Type*) [TopologicalSpace α] [TopologicalSpace β]
 namespace TopologicalSpace
 
 /-- Type class for noetherian spaces. It is defined to be spaces whose open sets satisfies ACC. -/
-@[mk_iff noetherianSpace_iff]
+@[mk_iff]
 class NoetherianSpace : Prop where
   wellFounded_opens : WellFounded ((· > ·) : Opens α → Opens α → Prop)
 #align topological_space.noetherian_space TopologicalSpace.NoetherianSpace

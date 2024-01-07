@@ -422,8 +422,8 @@ def reduceProjStruct? (e : Expr) : MetaM (Option Expr) := do
     if hs : sidx < sfields.size then
       return some (sfields[sidx]'hs)
     else
-      throwError m!"ill-formed expression, {cname} is the {pinfo.i + 1}-th projection function {
-          ""}but {sarg} does not have enough arguments"
+      throwError m!"ill-formed expression, {cname} is the {pinfo.i + 1}-th projection function \
+        but {sarg} does not have enough arguments"
   else
     return none
 

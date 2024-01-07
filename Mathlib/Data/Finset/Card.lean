@@ -149,9 +149,11 @@ theorem card_insert_eq_ite : card (insert a s) = if a ∈ s then s.card else s.c
 #align finset.card_insert_eq_ite Finset.card_insert_eq_ite
 
 @[simp]
-theorem card_doubleton (h : a ≠ b) : ({a, b} : Finset α).card = 2 := by
+theorem card_pair (h : a ≠ b) : ({a, b} : Finset α).card = 2 := by
   rw [card_insert_of_not_mem (not_mem_singleton.2 h), card_singleton]
-#align finset.card_doubleton Finset.card_doubleton
+#align finset.card_doubleton Finset.card_pair
+
+@[deprecated] alias card_doubleton := Finset.card_pair
 
 /-- $\#(s \setminus \{a\}) = \#s - 1$ if $a \in s$. -/
 @[simp]
@@ -695,7 +697,7 @@ theorem card_eq_two : s.card = 2 ↔ ∃ x y, x ≠ y ∧ s = {x, y} := by
     rintro ⟨a, _, hab, rfl, b, rfl⟩
     exact ⟨a, b, not_mem_singleton.1 hab, rfl⟩
   · rintro ⟨x, y, h, rfl⟩
-    exact card_doubleton h
+    exact card_pair h
 #align finset.card_eq_two Finset.card_eq_two
 
 theorem card_eq_three : s.card = 3 ↔ ∃ x y z, x ≠ y ∧ x ≠ z ∧ y ≠ z ∧ s = {x, y, z} := by

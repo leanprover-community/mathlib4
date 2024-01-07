@@ -411,7 +411,7 @@ instance [SeparableSpace α] {s : Setoid α} : SeparableSpace (Quotient s) :=
 
 /-- A topological space with discrete topology is separable iff it is countable. -/
 theorem separableSpace_iff_countable [DiscreteTopology α] : SeparableSpace α ↔ Countable α := by
-  simp [SeparableSpace_iff, countable_univ_iff]
+  simp [separableSpace_iff, countable_univ_iff]
 
 /-- In a separable space, a family of nonempty disjoint open sets is countable. -/
 theorem _root_.Set.PairwiseDisjoint.countable_of_isOpen [SeparableSpace α] {ι : Type*}
