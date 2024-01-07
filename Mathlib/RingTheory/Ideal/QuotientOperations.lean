@@ -71,6 +71,7 @@ def quotientKerEquivOfRightInverse {g : S → R} (hf : Function.RightInverse g f
       simp only [Submodule.Quotient.quot_mk_eq_mk, Ideal.Quotient.mk_eq_mk, kerLift_mk,
         Function.comp_apply, hf (f x)]
     right_inv := hf }
+#align ring_hom.quotient_ker_equiv_of_right_inverse RingHom.quotientKerEquivOfRightInverse
 
 @[simp]
 theorem quotientKerEquivOfRightInverse.apply {g : S → R} (hf : Function.RightInverse g f)
@@ -89,14 +90,14 @@ noncomputable def quotientKerEquivOfSurjective (hf : Function.Surjective f) : R 
   quotientKerEquivOfRightInverse (Classical.choose_spec hf.hasRightInverse)
 #align ring_hom.quotient_ker_equiv_of_surjective RingHom.quotientKerEquivOfSurjective
 
-/-- The **first isomorphism theorem** for commutative rings (Semiring target). -/
+/-- The **first isomorphism theorem** for commutative rings (`RingHom.rangeS` version). -/
 noncomputable def quotientKerEquivRangeS (f : R →+* S) : R ⧸ ker f ≃+* f.rangeS :=
   (Ideal.quotEquivOfEq f.ker_rangeSRestrict.symm).trans <|
   quotientKerEquivOfSurjective f.rangeSRestrict_surjective
 
 variable {S : Type v} [Ring S] (f : R →+* S)
 
-/-- The **first isomorphism theorem** for commutative rings. -/
+/-- The **first isomorphism theorem** for commutative rings (`RingHom.range` version). -/
 noncomputable def quotientKerEquivRange (f : R →+* S) : R ⧸ ker f ≃+* f.range :=
   (Ideal.quotEquivOfEq f.ker_rangeRestrict.symm).trans <|
     quotientKerEquivOfSurjective f.rangeRestrict_surjective
