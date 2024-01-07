@@ -2645,8 +2645,21 @@ lemma predAbove_succAbove_succ {k i : Fin n} :
   · rw [succAbove_succ_of_le h, predAbove_castSucc_of_le h]
   · rw [succAbove_succ_of_lt h, predAbove_succ_of_le h.le]
 
+lemma succAbove_succ_predAbove {k : Fin (n + 1)} {i : Fin n} (hki : k ≠ succ i) :
+    succAbove (succ i) (predAbove i k) = k := by
+  rcases le_or_lt k (castSucc i) with (h | h)
+  · rw [← castSucc_inj, ← succAbove_castSucc_castSucc,
+    castSucc_predAbove_of_le_castSucc h, succAbove_castSucc_of_lt (le_castSucc_iff.mp h)]
+  · rw [← succ_inj, ← succAbove_succ_succ, succ_predAbove_of_castSucc_lt h]
+    rw [castSucc_lt_iff_succ_le, hki.symm.le_iff_lt] at h
+    rw [succAbove_succ_of_lt h]
+
+lemma succAbove_succ_predAbove_succ {i : Fin n} :
+    succAbove (succ i) (predAbove i (succ i)) = castSucc i := by
+  rw [predAbove_succ_self, succAbove_succ_self]
+
 /- Second part of the third simplicial identity. -/
-lemma precAbove_comp_succAbove_succ {i : Fin n} :
+lemma predAbove_comp_succAbove_succ {i : Fin n} :
     (predAbove i) ∘ (succAbove (succ i)) = id :=
   funext (fun _ => predAbove_succAbove_succ)
 
