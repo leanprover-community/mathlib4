@@ -118,21 +118,9 @@ theorem coeHom_apply (x : Mˣ) : coeHom M x = ↑x := rfl
 #align units.coe_hom_apply Units.coeHom_apply
 #align add_units.coe_hom_apply AddUnits.coeHom_apply
 
-@[to_additive (attr := simp, norm_cast)]
-theorem val_pow_eq_pow_val (u : Mˣ) (n : ℕ) : ((u ^ n : Mˣ) : M) = (u : M) ^ n :=
-  (Units.coeHom M).map_pow u n
-#align units.coe_pow Units.val_pow_eq_pow_val
-#align add_units.coe_nsmul AddUnits.val_nsmul_eq_nsmul_val
-
 section DivisionMonoid
 
 variable [DivisionMonoid α]
-
-@[to_additive (attr := simp, norm_cast)]
-theorem val_div_eq_div_val : ∀ u₁ u₂ : αˣ, ↑(u₁ / u₂) = (u₁ / u₂ : α) :=
-  (Units.coeHom α).map_div
-#align units.coe_div Units.val_div_eq_div_val
-#align add_units.coe_sub AddUnits.val_neg_eq_neg_val
 
 @[to_additive (attr := simp, norm_cast)]
 theorem val_zpow_eq_zpow_val : ∀ (u : αˣ) (n : ℤ), ((u ^ n : αˣ) : α) = (u : α) ^ n :=
