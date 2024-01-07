@@ -60,6 +60,7 @@ theorem kerLift_injective [Semiring S] (f : R →+* S) : Function.Injective (ker
 
 variable {f}
 
+/-- The **first isomorphism theorem for commutative rings**, computable version. -/
 def quotientKerEquivOfRightInverse {g : S → R} (hf : Function.RightInverse g f) :
     R ⧸ ker f ≃+* S :=
   { kerLift f with
