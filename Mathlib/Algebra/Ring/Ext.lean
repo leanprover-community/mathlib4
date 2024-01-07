@@ -227,7 +227,7 @@ namespace NonAssocRing
   have h_intCast : inst₁.toIntCast.intCast = inst₂.toIntCast.intCast := by
     have : inst₁.toNatCast = inst₂.toNatCast := by injection h₂
     funext n; cases n with
-    | ofNat n   => rewrite [←Int.coe_nat_eq, inst₁.intCast_ofNat, inst₂.intCast_ofNat]; congr
+    | ofNat n   => rewrite [← Int.coe_nat_eq, inst₁.intCast_ofNat, inst₂.intCast_ofNat]; congr
     | negSucc n => rewrite [inst₁.intCast_negSucc, inst₂.intCast_negSucc]; congr
   -- Split into fields (extracting `intCast` function) and prove they are equal using the above.
   rcases inst₁ with @⟨_, _, _, _, _, _, _, ⟨⟩⟩
