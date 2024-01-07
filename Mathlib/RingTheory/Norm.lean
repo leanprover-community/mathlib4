@@ -272,6 +272,7 @@ open IntermediateField IntermediateField.AdjoinSimple Polynomial
 
 variable (F) (E : Type*) [Field E] [Algebra K E]
 
+-- TODO (maybe?): raise RHS to the "natInsepDegree" of `minpoly R pb.gen` and remove `hfx`
 theorem norm_eq_prod_embeddings_gen [Algebra R F] (pb : PowerBasis R S)
     (hE : (minpoly R pb.gen).Splits (algebraMap R F)) (hfx : (minpoly R pb.gen).Separable) :
     algebraMap R F (norm R pb.gen) =
@@ -287,13 +288,14 @@ theorem norm_eq_prod_embeddings_gen [Algebra R F] (pb : PowerBasis R S)
   · intro σ; simp only [PowerBasis.liftEquiv'_apply_coe]
 #align algebra.norm_eq_prod_embeddings_gen Algebra.norm_eq_prod_embeddings_gen
 
-theorem norm_eq_prod_roots [IsSeparable K L] [FiniteDimensional K L] {x : L}
+theorem norm_eq_prod_roots [FiniteDimensional K L] {x : L}
     (hF : (minpoly K x).Splits (algebraMap K F)) :
     algebraMap K F (norm K x) =
       ((minpoly K x).aroots F).prod ^ finrank K⟮x⟯ L := by
   rw [norm_eq_norm_adjoin K x, map_pow, IntermediateField.AdjoinSimple.norm_gen_eq_prod_roots _ hF]
 #align algebra.norm_eq_prod_roots Algebra.norm_eq_prod_roots
 
+-- TODO: replace finrank by finSepDegree and remove IsSeparable
 theorem prod_embeddings_eq_finrank_pow [Algebra L F] [IsScalarTower K L F] [IsAlgClosed E]
     [IsSeparable K F] [FiniteDimensional K F] (pb : PowerBasis K L) :
     ∏ σ : F →ₐ[K] E, σ (algebraMap L F pb.gen) =
@@ -317,6 +319,7 @@ theorem prod_embeddings_eq_finrank_pow [Algebra L F] [IsScalarTower K L F] [IsAl
 
 variable (K)
 
+-- TODO: raise RHS to the `finInsepDegree K L`th power and remove IsSeparable
 /-- For `L/K` a finite separable extension of fields and `E` an algebraically closed extension
 of `K`, the norm (down to `K`) of an element `x` of `L` is equal to the product of the images
 of `x` over all the `K`-embeddings `σ` of `L` into `E`. -/
@@ -343,7 +346,7 @@ theorem norm_eq_prod_automorphisms [FiniteDimensional K L] [IsGalois K L] (x : L
       AlgEquiv.coe_ofBijective, AlgHom.restrictNormal_commutes, id.map_eq_id, RingHom.id_apply]
 #align algebra.norm_eq_prod_automorphisms Algebra.norm_eq_prod_automorphisms
 
-theorem isIntegral_norm [Algebra R L] [Algebra R K] [IsScalarTower R K L] [IsSeparable K L]
+theorem isIntegral_norm [Algebra R L] [Algebra R K] [IsScalarTower R K L]
     [FiniteDimensional K L] {x : L} (hx : IsIntegral R x) : IsIntegral R (norm K x) := by
   have hx' : IsIntegral K x := hx.tower_top
   rw [← isIntegral_algebraMap_iff (algebraMap K (AlgebraicClosure L)).injective, norm_eq_prod_roots]
@@ -394,7 +397,7 @@ lemma norm_eq_of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [CommRing A₁] [Ring
 
 variable {F} (L)
 
--- TODO. Generalize this proof to rings
+-- TODO. Remove IsSeparable; Generalize this proof to rings
 theorem norm_norm [Algebra L F] [IsScalarTower K L F] [IsSeparable K F] (x : F) :
     norm K (norm L x) = norm K x := by
   by_cases hKF : FiniteDimensional K F
