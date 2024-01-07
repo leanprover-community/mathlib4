@@ -31,13 +31,13 @@ open CategoryTheory.Limits
 
 section Abelian
 
-universe w v u
+universe w' w v u
 
 -- porting note: `C` was `Type (max v u)`, but making it more universe polymorphic
 --   solves some problems
 variable {C : Type u} [Category.{v} C]
 
-variable {D : Type w} [Category.{max v u} D] [Abelian D]
+variable {D : Type w} [Category.{w'} D] [Abelian D]
 
 variable {J : GrothendieckTopology C}
 
@@ -48,22 +48,9 @@ variable {J : GrothendieckTopology C}
 --instance : Abelian (Cᵒᵖ ⥤ D) :=
 --  @Abelian.functorCategoryAbelian Cᵒᵖ _ D _ _
 
--- This also needs to be specified manually, but I don't know why.
-instance hasFiniteProductsSheaf : HasFiniteProducts (Sheaf J D) where
-  out j := { has_limit := fun F => by infer_instance }
+variable [HasSheafify J D] [HasFiniteLimits (Sheaf J D)]
 
--- sheafification assumptions
-variable [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
-
-variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
-
-variable [ConcreteCategory.{max v u} D] [PreservesLimits (forget D)]
-
-variable [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)]
-
-variable [ReflectsIsomorphisms (forget D)]
-
-instance sheafIsAbelian [HasFiniteLimits D] : Abelian (Sheaf J D) :=
+instance sheafIsAbelian : Abelian (Sheaf J D) :=
   let adj := sheafificationAdjunction J D
   abelianOfAdjunction _ _ (asIso adj.counit) adj
 set_option linter.uppercaseLean3 false in
