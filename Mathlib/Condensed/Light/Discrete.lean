@@ -46,9 +46,12 @@ Discreteness is left adjoint to the forgetful functor. When `C` is `Type*`, this
 noncomputable def LightCondensed.discrete_underlying_adj : discrete C ⊣ underlying C :=
   constantSheafAdj _ _ terminalIsTerminal
 
+/-- A version of `LightCondensed.discrete` in the `LightCondSet` namespace -/
 noncomputable abbrev LightCondSet.discrete := LightCondensed.discrete (Type u)
 
+/-- A version of `LightCondensed.underlying` in the `LightCondSet` namespace -/
 noncomputable abbrev LightCondSet.underlying := LightCondensed.underlying (Type u)
 
+/-- A version of `LightCondensed.discrete_underlying_adj` in the `LightCondSet` namespace -/
 noncomputable abbrev LightCondSet.discrete_underlying_adj : discrete ⊣ underlying :=
   LightCondensed.discrete_underlying_adj _
