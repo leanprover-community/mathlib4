@@ -5,7 +5,6 @@ Authors: Scott Morrison
 -/
 import Std.Tactic.Lint
 import Std.Data.MLList.Basic
-import Mathlib.Data.MLList.Basic
 
 /-!
 # A nondeterminism monad.
