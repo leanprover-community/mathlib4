@@ -248,10 +248,10 @@ case `f.fix a` returns `f a`), or it is undefined (in which case `f.fix a` is un
 it is in the `α` part of `β ⊕ α` (in which case we repeat the procedure, so `f.fix a` will return
 `f.fix (f a)`). -/
 def fix (f : α →. Sum β α) : α →. β := fun a =>
-  Part.assert (Acc (fun x y => Sum.inr x ∈ f y) a) $ fun h =>
+  Part.assert (Acc (fun x y => Sum.inr x ∈ f y) a) fun h =>
     WellFounded.fixF
       (fun a IH =>
-        Part.assert (f a).Dom $ fun hf =>
+        Part.assert (f a).Dom fun hf =>
           match e : (f a).get hf with
           | Sum.inl b => Part.some b
           | Sum.inr a' => IH a' ⟨hf, e⟩)

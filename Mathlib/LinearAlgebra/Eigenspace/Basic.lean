@@ -109,6 +109,10 @@ theorem HasEigenvector.apply_eq_smul {f : End R M} {μ : R} {x : M} (hx : f.HasE
   mem_eigenspace_iff.mp hx.1
 #align module.End.has_eigenvector.apply_eq_smul Module.End.HasEigenvector.apply_eq_smul
 
+theorem HasEigenvector.pow_apply {f : End R M} {μ : R} {v : M} (hv : f.HasEigenvector μ v) (n : ℕ) :
+    (f ^ n) v = μ ^ n • v := by
+  induction n <;> simp [*, pow_succ f, hv.apply_eq_smul, smul_smul, pow_succ' μ]
+
 theorem HasEigenvalue.exists_hasEigenvector {f : End R M} {μ : R} (hμ : f.HasEigenvalue μ) :
     ∃ v, f.HasEigenvector μ v :=
   Submodule.exists_mem_ne_zero_of_ne_bot hμ
@@ -397,7 +401,7 @@ theorem independent_generalizedEigenspace [NoZeroSMulDivisors R M] (f : End R M)
 any eigenspace has trivial intersection with the span of all the other eigenspaces. -/
 theorem eigenspaces_independent [NoZeroSMulDivisors R M] (f : End R M) :
     CompleteLattice.Independent f.eigenspace :=
-  f.independent_generalizedEigenspace.mono <| fun μ ↦ le_iSup (generalizedEigenspace f μ) 1
+  f.independent_generalizedEigenspace.mono fun μ ↦ le_iSup (generalizedEigenspace f μ) 1
 
 /-- Eigenvectors corresponding to distinct eigenvalues of a linear operator are linearly
     independent. (Lemma 5.10 of [axler2015])

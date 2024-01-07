@@ -104,6 +104,8 @@ This file acts as a substitute for `Mathlib.Algebra.Order.SMul`. We now need to
 * rethink `OrderedSMul`
 -/
 
+open OrderDual
+
 variable (α β : Type*)
 
 section Defs
@@ -814,13 +816,13 @@ variable [OrderedAddCommGroup β] [Module α β]
 section PosSMulMono
 variable [PosSMulMono α β]
 
-lemma smul_le_smul_of_nonpos (h : b₁ ≤ b₂) (ha : a ≤ 0) : a • b₂ ≤ a • b₁ := by
+lemma smul_le_smul_of_nonpos_left (h : b₁ ≤ b₂) (ha : a ≤ 0) : a • b₂ ≤ a • b₁ := by
   rw [← neg_neg a, neg_smul, neg_smul (-a), neg_le_neg_iff]
   exact smul_le_smul_of_nonneg_left h (neg_nonneg_of_nonpos ha)
-#align smul_le_smul_of_nonpos smul_le_smul_of_nonpos
+#align smul_le_smul_of_nonpos smul_le_smul_of_nonpos_left
 
-lemma antitone_smul_left (ha : a ≤ 0) : Antitone (SMul.smul a : β → β) :=
-  fun _ _ h => smul_le_smul_of_nonpos h ha
+lemma antitone_smul_left (ha : a ≤ 0) : Antitone ((a • ·) : β → β) :=
+  fun _ _ h ↦ smul_le_smul_of_nonpos_left h ha
 #align antitone_smul_left antitone_smul_left
 
 instance PosSMulMono.toSMulPosMono : SMulPosMono α β where
@@ -831,14 +833,14 @@ end PosSMulMono
 section PosSMulStrictMono
 variable [PosSMulStrictMono α β]
 
-lemma smul_lt_smul_of_neg (hb : b₁ < b₂) (ha : a < 0) : a • b₂ < a • b₁ := by
+lemma smul_lt_smul_of_neg_left (hb : b₁ < b₂) (ha : a < 0) : a • b₂ < a • b₁ := by
   rw [← neg_neg a, neg_smul, neg_smul (-a), neg_lt_neg_iff]
   exact smul_lt_smul_of_pos_left hb (neg_pos_of_neg ha)
-#align smul_lt_smul_of_neg smul_lt_smul_of_neg
+#align smul_lt_smul_of_neg smul_lt_smul_of_neg_left
 
-lemma strict_anti_smul_left (ha : a < 0) : StrictAnti (SMul.smul a : β → β) :=
-  fun _ _ h => smul_lt_smul_of_neg h ha
-#align strict_anti_smul_left strict_anti_smul_left
+lemma strictAnti_smul_left (ha : a < 0) : StrictAnti ((a • ·) : β → β) :=
+  fun _ _ h ↦ smul_lt_smul_of_neg_left h ha
+#align strict_anti_smul_left strictAnti_smul_left
 
 instance PosSMulStrictMono.toSMulPosStrictMono : SMulPosStrictMono α β where
   elim _b hb a₁ a₂ ha := by rw [← sub_pos, ← sub_smul]; exact smul_pos (sub_pos.2 ha) hb
@@ -860,30 +862,30 @@ lemma smul_nonneg_of_nonpos_of_nonpos [SMulPosMono α β] (ha : a ≤ 0) (hb : b
   smul_nonpos_of_nonpos_of_nonneg (β := βᵒᵈ) ha hb
 #align smul_nonneg_of_nonpos_of_nonpos smul_nonneg_of_nonpos_of_nonpos
 
-lemma smul_le_smul_iff_of_neg [PosSMulMono α β] [PosSMulReflectLE α β] (ha : a < 0) :
+lemma smul_le_smul_iff_of_neg_left [PosSMulMono α β] [PosSMulReflectLE α β] (ha : a < 0) :
     a • b₁ ≤ a • b₂ ↔ b₂ ≤ b₁ := by
   rw [← neg_neg a, neg_smul, neg_smul (-a), neg_le_neg_iff]
   exact smul_le_smul_iff_of_pos_left (neg_pos_of_neg ha)
-#align smul_le_smul_iff_of_neg smul_le_smul_iff_of_neg
+#align smul_le_smul_iff_of_neg smul_le_smul_iff_of_neg_left
 
 section PosSMulStrictMono
 variable [PosSMulStrictMono α β] [PosSMulReflectLT α β]
 
-lemma smul_lt_smul_iff_of_neg (ha : a < 0) : a • b₁ < a • b₂ ↔ b₂ < b₁ := by
+lemma smul_lt_smul_iff_of_neg_left (ha : a < 0) : a • b₁ < a • b₂ ↔ b₂ < b₁ := by
   rw [← neg_neg a, neg_smul, neg_smul (-a), neg_lt_neg_iff]
   exact smul_lt_smul_iff_of_pos_left (neg_pos_of_neg ha)
-#align smul_lt_smul_iff_of_neg smul_lt_smul_iff_of_neg
+#align smul_lt_smul_iff_of_neg smul_lt_smul_iff_of_neg_left
 
-lemma smul_pos_iff_of_neg (ha : a < 0) : 0 < a • b₁ ↔ b₁ < 0 := by
-  simpa only [smul_zero] using smul_lt_smul_iff_of_neg ha (b₁ := (0 : β))
-#align smul_pos_iff_of_neg smul_pos_iff_of_neg
+lemma smul_pos_iff_of_neg_left (ha : a < 0) : 0 < a • b ↔ b < 0 := by
+  simpa only [smul_zero] using smul_lt_smul_iff_of_neg_left ha (b₁ := (0 : β))
+#align smul_pos_iff_of_neg smul_pos_iff_of_neg_left
 
-alias ⟨_, smul_pos_of_neg_of_neg⟩ := smul_pos_iff_of_neg
+alias ⟨_, smul_pos_of_neg_of_neg⟩ := smul_pos_iff_of_neg_left
 #align smul_pos_of_neg_of_neg smul_pos_of_neg_of_neg
 
-lemma smul_neg_iff_of_neg (ha : a < 0) : a • b₁ < 0 ↔ 0 < b₁ := by
-  simpa only [smul_zero] using smul_lt_smul_iff_of_neg ha (b₂ := (0 : β))
-#align smul_neg_iff_of_neg smul_neg_iff_of_neg
+lemma smul_neg_iff_of_neg_left (ha : a < 0) : a • b < 0 ↔ 0 < b := by
+  simpa only [smul_zero] using smul_lt_smul_iff_of_neg_left ha (b₂ := (0 : β))
+#align smul_neg_iff_of_neg smul_neg_iff_of_neg_left
 
 end PosSMulStrictMono
 
@@ -996,35 +998,32 @@ section PosSMulMono
 variable [PosSMulMono α β]
 
 lemma inv_smul_le_iff_of_neg (h : a < 0) : a⁻¹ • b₁ ≤ b₂ ↔ a • b₂ ≤ b₁ := by
-  rw [← smul_le_smul_iff_of_neg h, smul_inv_smul₀ h.ne]
+  rw [← smul_le_smul_iff_of_neg_left h, smul_inv_smul₀ h.ne]
 #align inv_smul_le_iff_of_neg inv_smul_le_iff_of_neg
 
 lemma smul_inv_le_iff_of_neg (h : a < 0) : b₁ ≤ a⁻¹ • b₂ ↔ b₂ ≤ a • b₁ := by
-  rw [← smul_le_smul_iff_of_neg h, smul_inv_smul₀ h.ne]
+  rw [← smul_le_smul_iff_of_neg_left h, smul_inv_smul₀ h.ne]
+#align smul_inv_le_iff_of_neg smul_inv_le_iff_of_neg
 
 variable (β)
 
 /-- Left scalar multiplication as an order isomorphism. -/
-@[simps]
-def OrderIso.smulLeftDual (ha : a < 0) : β ≃o βᵒᵈ where
-  toFun b₂ := OrderDual.toDual (a • b₂)
-  invFun b₂ := a⁻¹ • OrderDual.ofDual b₂
-  left_inv := inv_smul_smul₀ ha.ne
-  right_inv := smul_inv_smul₀ ha.ne
-  map_rel_iff' := (@OrderDual.toDual_le_toDual β).trans <| smul_le_smul_iff_of_neg ha
-#align order_iso.smul_left_dual OrderIso.smulLeftDual
-#align smul_inv_le_iff_of_neg smul_inv_le_iff_of_neg
+@[simps!]
+def OrderIso.smulRightDual (ha : a < 0) : β ≃o βᵒᵈ where
+  toEquiv := (Equiv.smulRight ha.ne).trans toDual
+  map_rel_iff' := (@OrderDual.toDual_le_toDual β).trans <| smul_le_smul_iff_of_neg_left ha
+#align order_iso.smul_left_dual OrderIso.smulRightDual
 
 end PosSMulMono
 
 variable [PosSMulStrictMono α β]
 
 lemma inv_smul_lt_iff_of_neg (h : a < 0) : a⁻¹ • b₁ < b₂ ↔ a • b₂ < b₁ := by
-  rw [← smul_lt_smul_iff_of_neg h, smul_inv_smul₀ h.ne]
+  rw [← smul_lt_smul_iff_of_neg_left h, smul_inv_smul₀ h.ne]
 #align inv_smul_lt_iff_of_neg inv_smul_lt_iff_of_neg
 
 lemma smul_inv_lt_iff_of_neg (h : a < 0) : b₁ < a⁻¹ • b₂ ↔ b₂ < a • b₁ := by
-  rw [← smul_lt_smul_iff_of_neg h, smul_inv_smul₀ h.ne]
+  rw [← smul_lt_smul_iff_of_neg_left h, smul_inv_smul₀ h.ne]
 #align smul_inv_lt_iff_of_neg smul_inv_lt_iff_of_neg
 
 end Field
@@ -1181,7 +1180,7 @@ end Mathlib.Meta.Positivity
 /-!
 ### Deprecated lemmas
 
-Those lemmas have been deprecated on the 2023/12/23.
+Those lemmas have been deprecated on 2023-12-23.
 -/
 
 @[deprecated] alias monotone_smul_left := monotone_smul_left_of_nonneg
@@ -1202,3 +1201,15 @@ Those lemmas have been deprecated on the 2023/12/23.
 @[deprecated] alias OrderIso.smulLeft_symm_apply := OrderIso.smulRight_symm_apply
 @[deprecated] alias OrderIso.smulLeft_apply := OrderIso.smulRight_apply
 @[deprecated] alias smul_neg_iff_of_pos := smul_neg_iff_of_pos_left
+
+/-!
+Those lemmas have been deprecated on 2023-12-27.
+-/
+
+@[deprecated] alias strict_anti_smul_left := strictAnti_smul_left
+@[deprecated] alias smul_le_smul_of_nonpos := smul_le_smul_of_nonpos_left
+@[deprecated] alias smul_lt_smul_of_neg := smul_lt_smul_of_neg_left
+@[deprecated] alias smul_pos_iff_of_neg := smul_pos_iff_of_neg_left
+@[deprecated] alias smul_neg_iff_of_neg := smul_neg_iff_of_neg_left
+@[deprecated] alias smul_le_smul_iff_of_neg := smul_le_smul_iff_of_neg_left
+@[deprecated] alias smul_lt_smul_iff_of_neg := smul_lt_smul_iff_of_neg_left
