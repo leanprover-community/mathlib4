@@ -1142,8 +1142,8 @@ namespace PartialEquiv
 /-- Postcompose a partial equivalence with an equivalence.
 We modify the source and target to have better definitional behavior. -/
 @[simps!]
-def transEquiv (e : PartialEquiv α β) (e' : β ≃ γ) : PartialEquiv α γ :=
-  (e.trans e'.toPartialEquiv).copy _ rfl _ rfl e.source (inter_univ _) (e'.symm ⁻¹' e.target)
+def transEquiv (e : PartialEquiv α β) (f' : β ≃ γ) : PartialEquiv α γ :=
+  (e.trans f'.toPartialEquiv).copy _ rfl _ rfl e.source (inter_univ _) (f'.symm ⁻¹' e.target)
     (univ_inter _)
 #align local_equiv.trans_equiv PartialEquiv.transEquiv
 #align local_equiv.trans_equiv_source PartialEquiv.transEquiv_source
