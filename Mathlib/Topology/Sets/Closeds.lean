@@ -315,6 +315,8 @@ theorem coe_mk (s : Set α) (h) : (mk s h : Set α) = s :=
   rfl
 #align topological_space.clopens.coe_mk TopologicalSpace.Clopens.coe_mk
 
+@[simp] lemma mem_mk {s : Set α} {x h} : x ∈ mk s h ↔ x ∈ s := .rfl
+
 instance : Sup (Clopens α) := ⟨fun s t => ⟨s ∪ t, s.isClopen.union t.isClopen⟩⟩
 instance : Inf (Clopens α) := ⟨fun s t => ⟨s ∩ t, s.isClopen.inter t.isClopen⟩⟩
 instance : Top (Clopens α) := ⟨⟨⊤, isClopen_univ⟩⟩
@@ -345,6 +347,22 @@ instance : BooleanAlgebra (Clopens α) :=
 #align topological_space.clopens.coe_compl TopologicalSpace.Clopens.coe_compl
 
 instance : Inhabited (Clopens α) := ⟨⊥⟩
+
+variable [TopologicalSpace β]
+
+instance : SProd (Clopens α) (Clopens β) (Clopens (α × β)) where
+  sprod s t := ⟨s ×ˢ t, s.2.prod t.2⟩
+
+@[simp]
+protected lemma mem_prod {s : Clopens α} {t : Clopens β} {x : α × β} :
+    x ∈ s ×ˢ t ↔ x.1 ∈ s ∧ x.2 ∈ t := .rfl
+
+/-- `Clopens` as a subtype -/
+def equivSubtype : Clopens α ≃ {s : Set α // IsClopen s} where
+  toFun s := ⟨s.1, s.2⟩
+  invFun s := ⟨s.1, s.2⟩
+  left_inv _ := by simp
+  right_inv _ := by simp
 
 end Clopens
 

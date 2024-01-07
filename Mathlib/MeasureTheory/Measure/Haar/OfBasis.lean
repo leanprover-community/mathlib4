@@ -46,7 +46,7 @@ def parallelepiped (v : ι → E) : Set E :=
 #align parallelepiped parallelepiped
 
 theorem mem_parallelepiped_iff (v : ι → E) (x : E) :
-    x ∈ parallelepiped v ↔ ∃ (t : ι → ℝ) (_ht : t ∈ Icc (0 : ι → ℝ) 1), x = ∑ i, t i • v i := by
+    x ∈ parallelepiped v ↔ ∃ t ∈ Icc (0 : ι → ℝ) 1, x = ∑ i, t i • v i := by
   simp [parallelepiped, eq_comm]
 #align mem_parallelepiped_iff mem_parallelepiped_iff
 
@@ -146,7 +146,7 @@ theorem parallelepiped_single [DecidableEq ι] (a : ι → ℝ) :
   · rintro ⟨t, ht, rfl⟩ i
     specialize ht i
     simp_rw [smul_eq_mul, Pi.mul_apply]
-    cases' le_total (a i) 0 with hai hai
+    rcases le_total (a i) 0 with hai | hai
     · rw [sup_eq_left.mpr hai, inf_eq_right.mpr hai]
       exact ⟨le_mul_of_le_one_left hai ht.2, mul_nonpos_of_nonneg_of_nonpos ht.1 hai⟩
     · rw [sup_eq_right.mpr hai, inf_eq_left.mpr hai]
@@ -154,14 +154,14 @@ theorem parallelepiped_single [DecidableEq ι] (a : ι → ℝ) :
   · intro h
     refine' ⟨fun i => x i / a i, fun i => _, funext fun i => _⟩
     · specialize h i
-      cases' le_total (a i) 0 with hai hai
+      rcases le_total (a i) 0 with hai | hai
       · rw [sup_eq_left.mpr hai, inf_eq_right.mpr hai] at h
         exact ⟨div_nonneg_of_nonpos h.2 hai, div_le_one_of_ge h.1 hai⟩
       · rw [sup_eq_right.mpr hai, inf_eq_left.mpr hai] at h
         exact ⟨div_nonneg h.1 hai, div_le_one_of_le h.2 hai⟩
     · specialize h i
       simp only [smul_eq_mul, Pi.mul_apply]
-      cases' eq_or_ne (a i) 0 with hai hai
+      rcases eq_or_ne (a i) 0 with hai | hai
       · rw [hai, inf_idem, sup_idem, ← le_antisymm_iff] at h
         rw [hai, ← h, zero_div, zero_mul]
       · rw [div_mul_cancel _ hai]
@@ -188,7 +188,7 @@ def Basis.parallelepiped (b : Basis ι ℝ E) : PositiveCompacts E where
       rw [← pi_univ_Icc, interior_pi_set (@finite_univ ι _)]
       simp only [univ_pi_nonempty_iff, Pi.zero_apply, Pi.one_apply, interior_Icc, nonempty_Ioo,
         zero_lt_one, imp_true_iff]
-    rwa [← Homeomorph.image_interior, nonempty_image_iff]
+    rwa [← Homeomorph.image_interior, image_nonempty]
 #align basis.parallelepiped Basis.parallelepiped
 
 @[simp]
