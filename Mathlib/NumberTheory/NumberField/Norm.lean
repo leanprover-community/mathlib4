@@ -44,21 +44,21 @@ variable {L : Type*} (K : Type*) [Field K] [Field L] [Algebra K L] [FiniteDimens
 
 /-- `Algebra.norm` as a morphism betwen the rings of integers. -/
 @[simps!]
-noncomputable def norm [IsSeparable K L] : 𝓞 L →* 𝓞 K :=
+noncomputable def norm : 𝓞 L →* 𝓞 K :=
   ((Algebra.norm K).restrict (𝓞 L)).codRestrict (𝓞 K) fun x => isIntegral_norm K x.2
 #align ring_of_integers.norm RingOfIntegers.norm
 
-theorem coe_algebraMap_norm [IsSeparable K L] (x : 𝓞 L) :
+theorem coe_algebraMap_norm (x : 𝓞 L) :
     (algebraMap (𝓞 K) (𝓞 L) (norm K x) : L) = algebraMap K L (Algebra.norm K (x : L)) :=
   rfl
 #align ring_of_integers.coe_algebra_map_norm RingOfIntegers.coe_algebraMap_norm
 
-theorem coe_norm_algebraMap [IsSeparable K L] (x : 𝓞 K) :
+theorem coe_norm_algebraMap (x : 𝓞 K) :
     (norm K (algebraMap (𝓞 K) (𝓞 L) x) : K) = Algebra.norm K (algebraMap K L x) :=
   rfl
 #align ring_of_integers.coe_norm_algebra_map RingOfIntegers.coe_norm_algebraMap
 
-theorem norm_algebraMap [IsSeparable K L] (x : 𝓞 K) :
+theorem norm_algebraMap (x : 𝓞 K) :
     norm K (algebraMap (𝓞 K) (𝓞 L) x) = x ^ finrank K L := by
   rw [← Subtype.coe_inj, RingOfIntegers.coe_norm_algebraMap, Algebra.norm_algebraMap,
     SubsemiringClass.coe_pow]
