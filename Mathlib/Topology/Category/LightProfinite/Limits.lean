@@ -222,6 +222,11 @@ instance : PreservesLimitsOfShape WalkingCospan lightToProfinite := by
   exact (isLimitMapConePullbackConeEquiv lightToProfinite (pullback.condition f g)).symm
     (Profinite.pullback.isLimit _ _)
 
+instance : HasTerminal LightProfinite.{u} :=
+  haveI : ∀ X, Unique (X ⟶ (FintypeCat.of PUnit.{u+1}).toLightProfinite) := fun X =>
+    ⟨⟨⟨fun _ => PUnit.unit, by continuity⟩⟩, fun f => by ext; aesop⟩
+  Limits.hasTerminal_of_unique (FintypeCat.of PUnit.{u+1}).toLightProfinite
+
 end HasPreserves
 
 end LightProfinite
