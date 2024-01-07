@@ -681,8 +681,8 @@ lemma prod_of_injOn (e : ι → κ) (he : Set.InjOn e s) (hest : Set.MapsTo e s 
     (h' : ∀ i ∈ t, i ∉ e '' s → g i = 1) (h : ∀ i ∈ s, f i = g (e i))  :
     ∏ i in s, f i = ∏ j in t, g j := by
   classical
-  exact (prod_nbij e (fun a ↦ mem_image_of_mem e) he (by simp [Set.surjOn_image]) h).trans $
-    prod_subset (image_subset_iff.2 hest) $ by simpa using h'
+  exact (prod_nbij e (fun a ↦ mem_image_of_mem e) he (by simp [Set.surjOn_image]) h).trans <|
+    prod_subset (image_subset_iff.2 hest) <| by simpa using h'
 
 variable [DecidableEq κ]
 
