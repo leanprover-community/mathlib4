@@ -1293,7 +1293,8 @@ lemma sub_one_lt (a : α) : a - 1 < a := sub_lt_iff_lt_add.2 <| lt_add_one a
 
 lemma mul_self_le_mul_self_of_le_of_neg_le (h₁ : a ≤ b) (h₂ : -a ≤ b) : a * a ≤ b * b :=
   (le_total 0 a).elim (mul_self_le_mul_self · h₁) fun h ↦
-    (neg_mul_neg a a).symm.trans_le <| mul_le_mul h₂ h₂ (neg_nonneg.2 h) <| (neg_nonneg.2 h).trans h₂
+    (neg_mul_neg a a).symm.trans_le <|
+      mul_le_mul h₂ h₂ (neg_nonneg.2 h) <| (neg_nonneg.2 h).trans h₂
 #align mul_self_le_mul_self_of_le_of_neg_le mul_self_le_mul_self_of_le_of_neg_le
 
 end LinearOrderedRing
