@@ -480,6 +480,9 @@ theorem card_sdiff (h : s ⊆ t) : card (t \ s) = t.card - s.card := by
   rw [card_disjoint_union sdiff_disjoint, add_tsub_cancel_right]
 #align finset.card_sdiff Finset.card_sdiff
 
+lemma cast_card_sdiff [AddGroupWithOne α] (h : s ⊆ t) : ((t \ s).card : α) = t.card - s.card := by
+  rw [card_sdiff h, Nat.cast_sub (card_mono h)]
+
 theorem card_sdiff_add_card_eq_card {s t : Finset α} (h : s ⊆ t) : card (t \ s) + card s = card t :=
   ((Nat.sub_eq_iff_eq_add (card_le_card h)).mp (card_sdiff h).symm).symm
 #align finset.card_sdiff_add_card_eq_card Finset.card_sdiff_add_card_eq_card

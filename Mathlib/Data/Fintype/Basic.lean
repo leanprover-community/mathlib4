@@ -496,6 +496,9 @@ instance decidableIsCompl : Decidable (IsCompl s t) :=
   decidable_of_iff' _ isCompl_iff
 #align finset.decidable_is_compl Finset.decidableIsCompl
 
+@[simp] lemma filter_mem_univ (s : Finset α) : univ.filter (· ∈ s) = s := by
+  rw [filter_mem_eq_inter, univ_inter]
+
 end Finset
 
 section Inv
