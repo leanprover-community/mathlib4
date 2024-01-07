@@ -94,7 +94,7 @@ theorem dvd_norm [IsGalois K L] (x : 𝓞 L) : x ∣ algebraMap (𝓞 K) (𝓞 L
 
 variable (F : Type*) [Field F] [Algebra K F] [IsSeparable K F] [FiniteDimensional K F]
 
-theorem norm_norm [IsSeparable K L] [Algebra F L] [IsSeparable F L] [FiniteDimensional F L]
+theorem norm_norm [IsSeparable K L] [Algebra F L] [FiniteDimensional F L]
     [IsScalarTower K F L] (x : 𝓞 L) : norm K (norm F x) = norm K x := by
   rw [← Subtype.coe_inj, norm_apply_coe, norm_apply_coe, norm_apply_coe, Algebra.norm_norm]
 #align ring_of_integers.norm_norm RingOfIntegers.norm_norm
