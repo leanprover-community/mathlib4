@@ -337,12 +337,30 @@ example {R : Type*} [CommSemiring R] {S : Type*} [Semiring S] [Algebra R S]
 
 example {R : Type*} [CommSemiring R] {S : Type*} [Semiring S] [Algebra R S]
   {V : Type*} [AddCommGroup V] [Module R V]
-  (h : S →ₐ[R] V →ₗ[R] V) : Module S V := sorry
+  (h : S →ₐ[R] V →ₗ[R] V) : Module S V :=
+  Module.compHom _ h.toRingHom
 
+
+example {R : Type*} [CommSemiring R]
+  {V : Type*} [AddCommGroup V] [Module R V] :
+  Module (V →ₗ[R] V) V := by
+  exact applyModule
+
+example (f : V →ₗ[K] V) : Module K[X] V :=
+  Module.compHom _ (aeval f).toRingHom
+
+theorem _root_.minpoly.dvd_iff {A : Type u_1} {B : Type u_2} [Field A] [Ring B]
+    [Algebra A B] {x : B} {p : Polynomial A} :
+    (Polynomial.aeval x) p = 0 ↔ minpoly A x ∣ p := by
+  constructor
+  · exact minpoly.dvd A x
+  · rintro ⟨q, rfl⟩
+    rw [map_mul, minpoly.aeval, zero_mul]
 
 example (f : V →ₗ[K] V) (p : K[X]) (hp : minpoly K f ∣ p) :
-    Module (AdjoinRoot p) V := by
-  sorry
+    Module (AdjoinRoot p) V :=
+  Module.compHom _ (AdjoinRoot.alift p f (minpoly.dvd_iff.mpr hp)).toRingHom
+
 
 end
 
