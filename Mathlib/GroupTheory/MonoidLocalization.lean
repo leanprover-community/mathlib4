@@ -1617,9 +1617,7 @@ theorem injective_iff (f : LocalizationMap S N) :
   · intro x hx y z hyz
     simp_rw [LocalizationMap.eq_iff_exists] at h
     apply (fun y z _ => h) y z x
-    have : ∃(x' : S), x' = x := (CanLift.prf x hx)
-    obtain ⟨x',hx'⟩ := this
-    rw [← hx'] at hyz
+    lift x to S using hx
     use x'
   · intro a b hab
     rw [LocalizationMap.eq_iff_exists] at hab
@@ -1903,7 +1901,7 @@ noncomputable def lift (f : LocalizationWithZeroMap S N) (g : M →*₀ P)
       exact f.toMonoidWithZeroHom.map_zero.symm }
 #align submonoid.localization_with_zero_map.lift Submonoid.LocalizationWithZeroMap.lift
 
-/-- Given a Localization map `f : M →*₀ N` for a Submonoid `S ⊆ M`,
+/-- Given a localization map `f : M →*₀ N` for a submonoid `S ⊆ M`,
 `f 0 * (f y)⁻¹ = 0` for any `y : M` -/
 theorem eq_zero_of_fst_eq_zero (f : LocalizationWithZeroMap S N)
     {z x} {y : S} (h : z * f.toFun y = f.toFun x)
