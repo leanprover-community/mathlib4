@@ -39,50 +39,6 @@ open BigOperators Cardinal Submodule
 
 variable (F : Type u) (K : Type v) (A : Type w)
 
-section Ring
-
-variable [Ring F] [Ring K] [AddCommGroup A]
-
-variable [Module F K] [Module K A] [Module F A] [IsScalarTower F K A]
-
-variable [StrongRankCondition F] [StrongRankCondition K] [Module.Free F K] [Module.Free K A]
-
-/-- Tower law: if `A` is a `K`-module and `K` is an extension of `F` then
-$\operatorname{rank}_F(A) = \operatorname{rank}_F(K) * \operatorname{rank}_K(A)$. -/
-theorem lift_rank_mul_lift_rank :
-    Cardinal.lift.{w} (Module.rank F K) * Cardinal.lift.{v} (Module.rank K A) =
-      Cardinal.lift.{v} (Module.rank F A) := by
-  -- porting note: `Module.Free.exists_basis` now has implicit arguments, but this is annoying
-  -- to fix as it is a projection.
-  obtain ⟨_, b⟩ := Module.Free.exists_basis (R := F) (M := K)
-  obtain ⟨_, c⟩ := Module.Free.exists_basis (R := K) (M := A)
-  rw [← (Module.rank F K).lift_id, ← b.mk_eq_rank, ← (Module.rank K A).lift_id, ← c.mk_eq_rank, ←
-    lift_umax.{w, v}, ← (b.smul c).mk_eq_rank, mk_prod, lift_mul, lift_lift, lift_lift, lift_lift,
-    lift_lift, lift_umax.{v, w}]
-#align lift_rank_mul_lift_rank lift_rank_mul_lift_rank
-
-/-- Tower law: if `A` is a `K`-module and `K` is an extension of `F` then
-$\operatorname{rank}_F(A) = \operatorname{rank}_F(K) * \operatorname{rank}_K(A)$.
-
-This is a simpler version of `lift_rank_mul_lift_rank` with `K` and `A` in the same universe. -/
-theorem rank_mul_rank (A : Type v) [AddCommGroup A]
-    [Module K A] [Module F A] [IsScalarTower F K A] [Module.Free K A] :
-    Module.rank F K * Module.rank K A = Module.rank F A := by
-  convert lift_rank_mul_lift_rank F K A <;> rw [lift_id]
-#align rank_mul_rank rank_mul_rank
-
-/-- Tower law: if `A` is a `K`-module and `K` is an extension of `F` then
-$\operatorname{rank}_F(A) = \operatorname{rank}_F(K) * \operatorname{rank}_K(A)$. -/
-theorem FiniteDimensional.finrank_mul_finrank' : finrank F K * finrank K A = finrank F A := by
-  letI := nontrivial_of_invariantBasisNumber F
-  let b := Module.Free.chooseBasis F K
-  let c := Module.Free.chooseBasis K A
-  rw [finrank_eq_nat_card_basis b, finrank_eq_nat_card_basis c,
-      finrank_eq_nat_card_basis (b.smul c), Nat.card_prod]
-#align finite_dimensional.finrank_mul_finrank' FiniteDimensional.finrank_mul_finrank'
-
-end Ring
-
 section Field
 
 variable [DivisionRing F] [DivisionRing K] [AddCommGroup A]
