@@ -90,17 +90,13 @@ variable {α β : Type*} [AddGroup α] (a : α) [AddAction α β] (b : β)
 noncomputable def zmultiplesQuotientStabilizerEquiv :
     zmultiples a ⧸ stabilizer (zmultiples a) b ≃+ ZMod (period a b) :=
   (ofBijective
-    (map _ (stabilizer (zmultiples a) b) (zmultiplesHom (zmultiples a) ⟨a, mem_zmultiples a⟩)
-      (by
-        rw [zmultiples_le, mem_comap, mem_stabilizer_iff, zmultiplesHom_apply, coe_nat_zsmul]
-        simp only [AddSubmonoidClass.mk_nsmul, AddSubmonoid.mk_vadd, vadd_nsmul_period_fixed]
-      )
-    )
+    (map _ (stabilizer (zmultiples a) b) (zmultiplesHom (zmultiples a) ⟨a, mem_zmultiples a⟩) (by
+      rw [zmultiples_le, mem_comap, mem_stabilizer_iff, zmultiplesHom_apply, coe_nat_zsmul]
+      simp only [AddSubmonoidClass.mk_nsmul, AddSubmonoid.mk_vadd, vadd_nsmul_period_fixed]))
     ⟨by
       rw [← ker_eq_bot_iff, eq_bot_iff]
       refine' fun q => induction_on' q fun n hn => _
-      rw [mem_bot, eq_zero_iff, Int.mem_zmultiples_iff, ←
-        zsmul_vadd_eq_iff_period_dvd]
+      rw [mem_bot, eq_zero_iff, Int.mem_zmultiples_iff, ← zsmul_vadd_eq_iff_period_dvd]
       exact (eq_zero_iff _).mp hn, fun q =>
       induction_on' q fun ⟨_, n, rfl⟩ => ⟨n, rfl⟩⟩).symm.trans
     (Int.quotientZMultiplesNatEquivZMod (period a b))
