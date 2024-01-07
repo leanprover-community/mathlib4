@@ -211,14 +211,14 @@ variable (K)
 
 theorem norm_eq_norm_adjoin [FiniteDimensional K L] (x : L) :
     norm K x = norm K (AdjoinSimple.gen K x) ^ finrank K⟮x⟯ L := by
-  let pbL := Module.Free.chooseBasis K⟮x⟯ L
+  let bL := Module.Free.chooseBasis K⟮x⟯ L
   let pbx := IntermediateField.adjoin.powerBasis (.of_finite K x)
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-  erw [← AdjoinSimple.algebraMap_gen K x, norm_eq_matrix_det (pbx.basis.smul pbL) _,
+  erw [← AdjoinSimple.algebraMap_gen K x, norm_eq_matrix_det (pbx.basis.smul bL) _,
     smul_leftMulMatrix_algebraMap, det_blockDiagonal, norm_eq_matrix_det pbx.basis]
   simp only [Finset.card_fin, Finset.prod_const]
   congr
-  rw [← Fintype.card, ← finrank_eq_card_basis pbL, AdjoinSimple.algebraMap_gen K x]
+  rw [← Fintype.card, ← finrank_eq_card_basis bL, AdjoinSimple.algebraMap_gen K x]
 #align algebra.norm_eq_norm_adjoin Algebra.norm_eq_norm_adjoin
 
 variable {K}
