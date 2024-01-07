@@ -247,6 +247,7 @@ import Mathlib.Algebra.Homology.Homotopy
 import Mathlib.Algebra.Homology.HomotopyCategory
 import Mathlib.Algebra.Homology.HomotopyCategory.HomComplex
 import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexShift
+import Mathlib.Algebra.Homology.HomotopyCategory.MappingCone
 import Mathlib.Algebra.Homology.HomotopyCategory.Shift
 import Mathlib.Algebra.Homology.HomotopyCofiber
 import Mathlib.Algebra.Homology.ImageToKernel
