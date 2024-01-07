@@ -774,10 +774,10 @@ multilinear map indexed by `s`, evaluated at `fun (_ : s) => y`; we use a linear
 of degree `1` in `f.linearDeriv`, which doesn't require a linear order on `ι`, and prove the
 equivalence of the two definitions.-/
 
-lemma domDomRestrict_aux [DecidableEq ι] (s : Set ι) [(i : ι) → Decidable (i ∈ s)]
-    [DecidableEq s] (x : (i : ↑sᶜ)→ M₁ i) (z : (i : s) → M₁ i) (i : s)
-    (c : M₁ i) : (fun j ↦ if h : j ∈ s then Function.update z i c ⟨j, h⟩ else x ⟨j, h⟩) =
-    Function.update (fun j => if h : j ∈ s then z ⟨j, h⟩ else x ⟨j, h⟩) i c := by
+lemma domDomRestrict_aux [DecidableEq ι] (P : ι → Prop) [DecidablePred p]
+    [DecidableEq s] (x : {a // P a} → M₁ i) (z : {a // ¬ P a} → M₁ i) (i : s)
+    (c : M₁ i) : (fun j ↦ if h : P j then Function.update x i c ⟨j, h⟩ else z ⟨j, h⟩) =
+    Function.update (fun j => if h : j ∈ s then x ⟨j, h⟩ else z ⟨j, h⟩) i c := by
   ext j
   by_cases h : j = i.1
   · rw [h, Function.update_same]
