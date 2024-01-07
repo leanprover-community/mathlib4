@@ -13,9 +13,9 @@ import Mathlib.Algebra.Group.Basic
 
 -/
 
+namespace SemiconjBy
 variable {G : Type*}
 
-namespace SemiconjBy
 section DivisionMonoid
 variable [DivisionMonoid G] {a x y : G}
 
