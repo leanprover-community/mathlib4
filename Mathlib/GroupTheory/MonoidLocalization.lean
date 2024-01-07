@@ -1622,7 +1622,7 @@ theorem injective_iff (f : LocalizationMap S N) :
     apply (fun y z _ => h) y z x
     have : ∃(x' : S), x' = x := (CanLift.prf x hx)
     obtain ⟨x',hx'⟩ := this
-    rw [←hx'] at hyz
+    rw [← hx'] at hyz
     use x'
   · intro a b hab
     rw [LocalizationMap.eq_iff_exists] at hab
@@ -1910,7 +1910,7 @@ noncomputable def lift (f : LocalizationWithZeroMap S N) (g : M →*₀ P)
 /-- Given a Localization map `f : M →*₀ N` for a Submonoid `S ⊆ M`,
 `f 0 * (f y)⁻¹ = 0` for any `y : M` -/
 theorem eq_zero_of_fst_eq_zero (f : LocalizationWithZeroMap S N)
-  {z x} {y : S} (h : z * f.toFun y = f.toFun x)
+    {z x} {y : S} (h : z * f.toFun y = f.toFun x)
   (hx : x = 0) : z = 0 := by
   rw [hx, f.map_zero'] at h
   exact (IsUnit.mul_left_eq_zero (LocalizationMap.map_units' f.toLocalizationMap y)).1 h
@@ -1950,8 +1950,8 @@ theorem leftCancelMulZero_of_le_isLeftRegular
         _ = a * g b.2 * (g y.1 * g x.2) :=by rw[hb]
         _ = a * g b.2 * (w * g y.2 * g x.2) :=by rw[hy]
         _ = a * w * g b.2 * (g y.2 * g x.2) :=by
-          rw[←mul_assoc _ _ _,←mul_assoc _ w _,mul_assoc a _ w,
-            mul_comm _ w,mul_assoc,←mul_assoc a w _]
+          rw[← mul_assoc _ _ _,← mul_assoc _ w _,mul_assoc a _ w,
+            mul_comm _ w,mul_assoc,← mul_assoc a w _]
         _ = a * z * g b.2 * (g y.2 * g x.2) :=by rw [hazw]
         _ = a * g b.2 * (z * g x.2 *g y.2 ) :=by
           rw [mul_comm (g y.2),mul_assoc a z,mul_comm z,
@@ -1959,14 +1959,14 @@ theorem leftCancelMulZero_of_le_isLeftRegular
         _ = a * g b.2 * (g x.1 * g y.2) :=by rw[hx]
         _ = g b.1 * (g x.1 * g y.2) :=by rw[hb]
         _ = g b.1 * g (x.1 * y.2) :=by rw[map_mul g]
-        _ = g (b.1 * (x.1 * y.2)) := by rw[←map_mul g]
+        _ = g (b.1 * (x.1 * y.2)) := by rw[← map_mul g]
       --- The hypothesis `h` gives that `f` (so, `f`) is injective.
       have : b.1 * (y.1 * x.2) =  b.1 * (x.1 * y.2) :=
         (LocalizationMap.injective_iff fl).mpr h this
       --- The hypothesis to be left cancellative allows us to cancel `b.1`
       have : (y.1 * x.2) =  (x.1 * y.2):=
         IsLeftCancelMulZero.mul_left_cancel_of_ne_zero b1ne0 this
-      rw [mul_comm,←this,mul_comm]
+      rw [mul_comm,← this,mul_comm]
   exact { mul_left_cancel_of_ne_zero := @mul_cancel }
 
 
