@@ -714,7 +714,6 @@ theorem smul_zero (a : M) : a • (0 : A) = 0 :=
   SMulZeroClass.smul_zero _
 #align smul_zero smul_zero
 
-@[simp]
 lemma smul_ite_zero (p : Prop) [Decidable p] (a : M) (b : A) :
     (a • if p then b else 0) = if p then a • b else 0 := by split_ifs <;> simp
 
