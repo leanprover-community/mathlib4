@@ -117,6 +117,15 @@ protected theorem norm_algebraMap {L : Type*} [Ring L] [Algebra K L] (x : K) :
     exact H ⟨s, ⟨b⟩⟩
 #align algebra.norm_algebra_map Algebra.norm_algebraMap
 
+theorem norm_algebraMap' {L S} [Field L] [Ring S] [Algebra K L] [Algebra K S] [Algebra L S]
+    [IsScalarTower K L S] [Module.Finite K L] [Module.Finite L S] (x : L) :
+    norm K (algebraMap L S x) = (norm K x) ^ finrank L S := by
+  let pbL := Module.Free.chooseBasis L S
+  let pbx := Module.Free.chooseBasis K L
+  rw [norm_eq_matrix_det (pbx.smul pbL) _,
+    smul_leftMulMatrix_algebraMap, det_blockDiagonal, norm_eq_matrix_det pbx]
+  simp only [Finset.card_fin, Finset.prod_const, ← finrank_eq_card_basis pbL, Finset.card_univ]
+
 section EqProdRoots
 
 /-- Given `pb : PowerBasis K S`, then the norm of `pb.gen` is
