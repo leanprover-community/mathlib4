@@ -1878,15 +1878,9 @@ end Pointwise
 /-! ### The `cofinite` filter -/
 
 /-- The filter of sets `s` such that `sᶜ` has finite measure. -/
-def cofinite {m0 : MeasurableSpace α} (μ : Measure α) : Filter α where
-  sets := { s | μ sᶜ < ∞ }
-  univ_sets := by simp
-  inter_sets {s t} hs ht := by
-    simp only [compl_inter, mem_setOf_eq]
-    calc
-      μ (sᶜ ∪ tᶜ) ≤ μ sᶜ + μ tᶜ := measure_union_le _ _
-      _ < ∞ := ENNReal.add_lt_top.2 ⟨hs, ht⟩
-  sets_of_superset {s t} hs hst := lt_of_le_of_lt (measure_mono <| compl_subset_compl.2 hst) hs
+def cofinite {m0 : MeasurableSpace α} (μ : Measure α) : Filter α :=
+  comk (μ · < ∞) (by simp) (fun t ht s hs ↦ (measure_mono hs).trans_lt ht) fun s hs t ht ↦
+    (measure_union_le s t).trans_lt <| ENNReal.add_lt_top.2 ⟨hs, ht⟩
 #align measure_theory.measure.cofinite MeasureTheory.Measure.cofinite
 
 theorem mem_cofinite : s ∈ μ.cofinite ↔ μ sᶜ < ∞ :=
