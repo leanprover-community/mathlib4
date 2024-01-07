@@ -788,22 +788,6 @@ theorem mem_symm_trans_source {e' : PartialEquiv α γ} {x : α} (he : x ∈ e.s
   ⟨e.mapsTo he, by rwa [mem_preimage, PartialEquiv.symm_symm, e.left_inv he]⟩
 #align local_equiv.mem_symm_trans_source PartialEquiv.mem_symm_trans_source
 
-/-- Postcompose a partial equivalence with an equivalence.
-We modify the source and target to have better definitional behavior. -/
-@[simps!]
-def transEquiv (e' : β ≃ γ) : PartialEquiv α γ :=
-  (e.trans e'.toPartialEquiv).copy _ rfl _ rfl e.source (inter_univ _) (e'.symm ⁻¹' e.target)
-    (univ_inter _)
-#align local_equiv.trans_equiv PartialEquiv.transEquiv
-#align local_equiv.trans_equiv_source PartialEquiv.transEquiv_source
-#align local_equiv.trans_equiv_apply PartialEquiv.transEquiv_apply
-#align local_equiv.trans_equiv_target PartialEquiv.transEquiv_target
-#align local_equiv.trans_equiv_symm_apply PartialEquiv.transEquiv_symm_apply
-
-theorem transEquiv_eq_trans (e' : β ≃ γ) : e.transEquiv e' = e.trans e'.toPartialEquiv :=
-  copy_eq ..
-#align local_equiv.trans_equiv_eq_trans PartialEquiv.transEquiv_eq_trans
-
 /-- `EqOnSource e e'` means that `e` and `e'` have the same source, and coincide there. Then `e`
 and `e'` should really be considered the same partial equiv. -/
 def EqOnSource (e e' : PartialEquiv α β) : Prop :=
@@ -1152,3 +1136,34 @@ theorem trans_transPartialEquiv (e : α ≃ β) (e' : β ≃ γ) (f'' : PartialE
   simp only [transPartialEquiv_eq_trans, PartialEquiv.trans_assoc, trans_toPartialEquiv]
 
 end Equiv
+
+namespace PartialEquiv
+
+/-- Postcompose a partial equivalence with an equivalence.
+We modify the source and target to have better definitional behavior. -/
+@[simps!]
+def transEquiv (e : PartialEquiv α β) (e' : β ≃ γ) : PartialEquiv α γ :=
+  (e.trans e'.toPartialEquiv).copy _ rfl _ rfl e.source (inter_univ _) (e'.symm ⁻¹' e.target)
+    (univ_inter _)
+#align local_equiv.trans_equiv PartialEquiv.transEquiv
+#align local_equiv.trans_equiv_source PartialEquiv.transEquiv_source
+#align local_equiv.trans_equiv_apply PartialEquiv.transEquiv_apply
+#align local_equiv.trans_equiv_target PartialEquiv.transEquiv_target
+#align local_equiv.trans_equiv_symm_apply PartialEquiv.transEquiv_symm_apply
+
+theorem transEquiv_eq_trans (e : PartialEquiv α β) (e' : β ≃ γ) :
+    e.transEquiv e' = e.trans e'.toPartialEquiv :=
+  copy_eq ..
+#align local_equiv.trans_equiv_eq_trans PartialEquiv.transEquiv_eq_trans
+
+@[simp, mfld_simps]
+theorem transEquiv_transEquiv (e : PartialEquiv α β) (f' : β ≃ γ) (f'' : γ ≃ δ) :
+    (e.transEquiv f').transEquiv f'' = e.transEquiv (f'.trans f'') := by
+  simp only [transEquiv_eq_trans, trans_assoc, Equiv.trans_toPartialEquiv]
+
+@[simp, mfld_simps]
+theorem trans_transEquiv (e : PartialEquiv α β) (e' : PartialEquiv β γ) (f'' : γ ≃ δ) :
+    (e.trans e').transEquiv f'' = e.trans (e'.transEquiv f'') := by
+  simp only [transEquiv_eq_trans, trans_assoc, Equiv.trans_toPartialEquiv]
+
+end PartialEquiv
