@@ -129,20 +129,18 @@ theorem norm_algebraMap' {L S} [Field L] [Ring S] [Algebra K L] [Algebra K S] [A
 -- TODO : remove Nontrivial
 theorem norm_algebraMap_tower [Nontrivial S] [Algebra K S] [Algebra L S] [IsScalarTower K L S]
     (x : L) : norm K (algebraMap L S x) = norm K x ^ finrank L S := by
-  by_cases h : FiniteDimensional K S
-  · have := left K L S
-    have := right K L S
-    let bS := Module.Free.chooseBasis L S
-    let bL := Module.Free.chooseBasis K L
-    classical
-    rw [norm_eq_matrix_det (bL.smul bS), smul_leftMulMatrix_algebraMap, det_blockDiagonal,
-      norm_eq_matrix_det bL, Finset.prod_const, ← Fintype.card, finrank_eq_card_basis bS]
-  rw [norm_eq_one_of_not_module_finite h]
   by_cases h_top : FiniteDimensional L S
   · by_cases h_bot : FiniteDimensional K L
-    · exact (h <| trans K L S).elim
-    · rw [norm_eq_one_of_not_module_finite h_bot, one_pow]
-  · rw [finrank_of_not_finite h_top, pow_zero]
+    · let bS := Module.Free.chooseBasis L S
+      let bL := Module.Free.chooseBasis K L
+      rw [norm_eq_matrix_det (bL.smul bS), smul_leftMulMatrix_algebraMap, det_blockDiagonal,
+        norm_eq_matrix_det bL, Finset.prod_const, ← Fintype.card, finrank_eq_card_basis bS]
+    · by_cases h : FiniteDimensional K S
+      · exact (h_bot <| left K L S).elim
+      · rw [norm_eq_one_of_not_module_finite h_bot, one_pow, norm_eq_one_of_not_module_finite h]
+  · by_cases h : FiniteDimensional K S
+    · exact (h_top <| right K L S).elim
+    · rw [finrank_of_not_finite h_top, pow_zero, norm_eq_one_of_not_module_finite h]
 
 section EqProdRoots
 
