@@ -218,17 +218,3 @@ instance toPerfectRing (p : ℕ) [hp : Fact p.Prime] [CharP K p] : PerfectRing K
   exact minpoly.degree_pos ha
 
 end PerfectField
-
-/-- If `L / K` is an algebraic extension, `K` is a perfect field, then `L / K` is separable. -/
-theorem Algebra.IsAlgebraic.isSeparable_of_perfectField {K L : Type*} [Field K] [Field L]
-    [Algebra K L] [PerfectField K] (halg : Algebra.IsAlgebraic K L) : IsSeparable K L :=
-  ⟨fun x ↦ PerfectField.separable_of_irreducible <| minpoly.irreducible (halg x).isIntegral⟩
-
-/-- If `L / K` is an algebraic extension, `K` is a perfect field, then so is `L`. -/
-theorem Algebra.IsAlgebraic.perfectField {K L : Type*} [Field K] [Field L] [Algebra K L]
-    [PerfectField K] (halg : Algebra.IsAlgebraic K L) : PerfectField L := ⟨fun {f} hf ↦
-  haveI := Fact.mk hf
-  have h := hf.ne_zero
-  have h2 := isIntegral_trans halg.isIntegral _ (AdjoinRoot.isIntegral_root h)
-  have h3 := (AdjoinRoot.minpoly_root h) ▸ minpoly.dvd_map_of_isScalarTower K L (AdjoinRoot.root f)
-  (PerfectField.separable_of_irreducible (minpoly.irreducible h2)).map |>.of_dvd h3 |>.of_mul_left⟩
