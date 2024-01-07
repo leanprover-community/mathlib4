@@ -310,11 +310,11 @@ theorem gcd_mul_right (i j k : ℤ) : gcd (i * j) (k * j) = gcd i k * natAbs j :
 #align int.gcd_mul_right Int.gcd_mul_right
 
 theorem gcd_pos_of_ne_zero_left {i : ℤ} (j : ℤ) (hi : i ≠ 0) : 0 < gcd i j :=
-  Nat.gcd_pos_of_pos_left _ $ natAbs_pos.2 hi
+  Nat.gcd_pos_of_pos_left _ <| natAbs_pos.2 hi
 #align int.gcd_pos_of_ne_zero_left Int.gcd_pos_of_ne_zero_left
 
 theorem gcd_pos_of_ne_zero_right (i : ℤ) {j : ℤ} (hj : j ≠ 0) : 0 < gcd i j :=
-  Nat.gcd_pos_of_pos_right _ $ natAbs_pos.2 hj
+  Nat.gcd_pos_of_pos_right _ <| natAbs_pos.2 hj
 #align int.gcd_pos_of_ne_zero_right Int.gcd_pos_of_ne_zero_right
 
 theorem gcd_eq_zero_iff {i j : ℤ} : gcd i j = 0 ↔ i = 0 ∧ j = 0 := by

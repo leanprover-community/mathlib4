@@ -79,7 +79,7 @@ lemma smul_eq_zero_of_right (a : R) (h : b = 0) : a • b = 0 := h.symm ▸ smul
 #align smul_eq_zero_of_right smul_eq_zero_of_right
 lemma left_ne_zero_of_smul : a • b ≠ 0 → a ≠ 0 := mt fun h ↦ smul_eq_zero_of_left h b
 #align left_ne_zero_of_smul left_ne_zero_of_smul
-lemma right_ne_zero_of_smul : a • b ≠ 0 → b ≠ 0 := mt $ smul_eq_zero_of_right a
+lemma right_ne_zero_of_smul : a • b ≠ 0 → b ≠ 0 := mt <| smul_eq_zero_of_right a
 #align right_ne_zero_of_smul right_ne_zero_of_smul
 
 variable [Zero R'] [Zero M'] [SMul R M']

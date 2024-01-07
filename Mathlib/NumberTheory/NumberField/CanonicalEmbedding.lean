@@ -576,7 +576,7 @@ theorem convexBodySumFun_eq_zero_iff (x : E K) :
       Finset.sum_eq_zero_iff_of_nonneg (fun _ _ => norm_nonneg _)] at h
     ext : 2
     · exact norm_eq_zero.mp (h.1 _ (Finset.mem_univ _))
-    · exact norm_eq_zero.1 $ eq_zero_of_ne_zero_of_mul_left_eq_zero two_ne_zero $ h.2 _ $
+    · exact norm_eq_zero.1 <| eq_zero_of_ne_zero_of_mul_left_eq_zero two_ne_zero <| h.2 _ <|
         Finset.mem_univ _
   · simp only [convexBodySumFun, h, Prod.fst_zero, Pi.zero_apply, norm_zero, Finset.sum_const_zero,
       Prod.snd_zero, mul_zero, add_zero]

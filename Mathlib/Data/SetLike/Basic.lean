@@ -62,7 +62,7 @@ end MySubobject
 
 An alternative to `SetLike` could have been an extensional `Membership` typeclass:
 ```
-class ExtMembership (α : out_param $ Type u) (β : Type v) extends Membership α β :=
+class ExtMembership (α : out_param <| Type u) (β : Type v) extends Membership α β :=
   (ext_iff : ∀ {s t : β}, s = t ↔ ∀ (x : α), x ∈ s ↔ x ∈ t)
 ```
 While this is equivalent, `SetLike` conveniently uses a carrier set projection directly.

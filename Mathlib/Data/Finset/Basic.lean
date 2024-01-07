@@ -1501,10 +1501,10 @@ theorem empty_union (s : Finset α) : ∅ ∪ s = s :=
 #align finset.empty_union Finset.empty_union
 
 theorem Nonempty.inl {s t : Finset α} (h : s.Nonempty) : (s ∪ t).Nonempty :=
-  h.mono $ subset_union_left s t
+  h.mono <| subset_union_left s t
 
 theorem Nonempty.inr {s t : Finset α} (h : t.Nonempty) : (s ∪ t).Nonempty :=
-  h.mono $ subset_union_right s t
+  h.mono <| subset_union_right s t
 
 theorem insert_eq (a : α) (s : Finset α) : insert a s = {a} ∪ s :=
   rfl
@@ -2092,7 +2092,7 @@ lemma Nonempty.exists_cons_eq (hs : s.Nonempty) : ∃ t a ha, cons a t ha = s :=
   exact ⟨s.erase a, a, not_mem_erase _ _, by simp [insert_erase ha]⟩
 
 lemma Nontrivial.exists_cons_eq (hs : s.Nontrivial) :
-    ∃ t a ha b hb hab, (cons b t hb).cons a (mem_cons.not.2 $ not_or_intro hab ha) = s := by
+    ∃ t a ha b hb hab, (cons b t hb).cons a (mem_cons.not.2 <| not_or_intro hab ha) = s := by
   classical
   obtain ⟨a, ha, b, hb, hab⟩ := hs
   have : b ∈ s.erase a := mem_erase.2 ⟨hab.symm, hb⟩
@@ -3695,7 +3695,7 @@ theorem biUnion_insert [DecidableEq α] {a : α} : (insert a s).biUnion t = t a 
       exists_eq_left]
 #align finset.bUnion_insert Finset.biUnion_insert
 
--- ext $ λ x, by simp [or_and_distrib_right, exists_or_distrib]
+-- ext <| λ x, by simp [or_and_distrib_right, exists_or_distrib]
 theorem biUnion_congr (hs : s₁ = s₂) (ht : ∀ a ∈ s₁, t₁ a = t₂ a) : s₁.biUnion t₁ = s₂.biUnion t₂ :=
   ext fun x => by
     simp_rw [mem_biUnion]
