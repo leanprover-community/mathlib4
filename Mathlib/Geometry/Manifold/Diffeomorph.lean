@@ -195,6 +195,7 @@ theorem coe_refl : ⇑(Diffeomorph.refl I M n) = id :=
 end
 
 /-- Composition of two diffeomorphisms. -/
+@[trans]
 protected def trans (h₁ : M ≃ₘ^n⟮I, I'⟯ M') (h₂ : M' ≃ₘ^n⟮I', J⟯ N) : M ≃ₘ^n⟮I, J⟯ N where
   contMDiff_toFun := h₂.contMDiff.comp h₁.contMDiff
   contMDiff_invFun := h₁.contMDiff_invFun.comp h₂.contMDiff_invFun
@@ -217,7 +218,7 @@ theorem coe_trans (h₁ : M ≃ₘ^n⟮I, I'⟯ M') (h₂ : M' ≃ₘ^n⟮I', J�
 #align diffeomorph.coe_trans Diffeomorph.coe_trans
 
 /-- Inverse of a diffeomorphism. -/
-@[pp_dot]
+@[symm]
 protected def symm (h : M ≃ₘ^n⟮I, J⟯ N) : N ≃ₘ^n⟮J, I⟯ M where
   contMDiff_toFun := h.contMDiff_invFun
   contMDiff_invFun := h.contMDiff_toFun

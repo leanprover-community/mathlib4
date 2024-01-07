@@ -163,6 +163,13 @@ instance [UniformSpace β] [Group β] [UniformGroup β] : UniformGroup (α × β
         (uniformContinuous_snd.comp uniformContinuous_snd))⟩
 
 @[to_additive]
+instance Pi.instUniformGroup {ι : Type*} {G : ι → Type*} [∀ i, UniformSpace (G i)]
+    [∀ i, Group (G i)] [∀ i, UniformGroup (G i)] : UniformGroup (∀ i, G i) where
+  uniformContinuous_div := uniformContinuous_pi.mpr fun i ↦
+    (uniformContinuous_proj G i).comp uniformContinuous_fst |>.div <|
+      (uniformContinuous_proj G i).comp uniformContinuous_snd
+
+@[to_additive]
 theorem uniformity_translate_mul (a : α) : ((𝓤 α).map fun x : α × α => (x.1 * a, x.2 * a)) = 𝓤 α :=
   le_antisymm (uniformContinuous_id.mul uniformContinuous_const)
     (calc
@@ -559,7 +566,7 @@ def TopologicalGroup.toUniformSpace : UniformSpace G where
     have : Tendsto (fun p : G × G ↦ (p.2 / p.1)⁻¹) (comap (fun p : G × G ↦ p.2 / p.1) (𝓝 1))
       (𝓝 1⁻¹) := tendsto_id.inv.comp tendsto_comap
     by simpa [tendsto_comap_iff]
-  comp := Tendsto.le_comap <| fun U H ↦ by
+  comp := Tendsto.le_comap fun U H ↦ by
     rcases exists_nhds_one_split H with ⟨V, V_nhds, V_mul⟩
     refine mem_map.2 (mem_of_superset (mem_lift' <| preimage_mem_comap V_nhds) ?_)
     rintro ⟨x, y⟩ ⟨z, hz₁, hz₂⟩

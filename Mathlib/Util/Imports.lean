@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Lean.Expr.Basic
-import Mathlib.Lean.Data.NameMap
+import Std.Lean.NameMap
 
 
 /-!
@@ -190,8 +190,8 @@ elab "#redundant_imports" : command => do
   if redundant.isEmpty then
     logInfo "No transitively redundant imports found."
   else
-    logInfo <| "Found the following transitively redundant imports:\n" ++
-      m!"{Format.joinSep redundant.toList "\n"}"
+    logInfo m!"Found the following transitively redundant imports:\n\
+      {Format.joinSep redundant.toList "\n"}"
 
 /--
 Return the names of the modules in which constants used in the current file were defined,
