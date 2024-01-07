@@ -189,9 +189,9 @@ theorem locality_left_eq_Borcherds_sum_2 (a b c : V) (r s: ℤ) :
     linarith
   rw [h, LinearMap.map_zero, smul_zero, smul_zero]
 
-theorem locality_right_eq_Borcherds_sum_3 (a b c : V) (r s: ℤ) : Finset.sum (Finset.antidiagonal (Int.toNat (-r - order R a c)))
-    (fun m => -(-1)^(m.2) • (Nat.choose (Int.toNat (-r - order R a c)) m.2) •
-    coeff (Y R b) (-s - 1 - m.2) (coeff (Y R a) (-r - 1 - m.1) c)) =
+theorem locality_right_eq_Borcherds_sum_3 (a b c : V) (r s: ℤ) : Finset.sum (Finset.antidiagonal
+    (Int.toNat (-r - order R a c))) (fun m => -(-1)^(m.2) • (Nat.choose (Int.toNat
+    (-r - order R a c)) m.2) • coeff (Y R b) (-s - 1 - m.2) (coeff (Y R a) (-r - 1 - m.1) c)) =
     Borcherds_sum_3 R a b c r s (Int.toNat (-r - order R a c)) := by
   unfold Borcherds_sum_3 index
   rw [Finset.Nat.antidiagonal_eq_map]
