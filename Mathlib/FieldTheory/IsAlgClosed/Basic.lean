@@ -36,8 +36,8 @@ algebraic closure, algebraically closed
 
 ## TODO
 
-- Porve that if `K / k` is algebraic, any monic irreducible polynomial over `k` splits in `K`, then
-  `K` is algebraically closed (in fact an algebraic closure of `k`).
+- Prove that if `K / k` is algebraic, any monic irreducible polynomial over `k` has a root in `K`,
+  then `K` is algebraically closed (in fact an algebraic closure of `k`).
 
   Reference: <https://kconrad.math.uconn.edu/blurbs/galoistheory/algclosure.pdf>, Theorem 2
 
