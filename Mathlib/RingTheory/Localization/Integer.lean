@@ -24,9 +24,9 @@ commutative ring, field of fractions
 -/
 
 
-variable {R : Type*} [CommRing R] {M : Submonoid R} {S : Type*} [CommRing S]
+variable {R : Type*} [CommSemiring R] {M : Submonoid R} {S : Type*} [CommSemiring S]
 
-variable [Algebra R S] {P : Type*} [CommRing P]
+variable [Algebra R S] {P : Type*} [CommSemiring P]
 
 open Function
 
@@ -42,25 +42,25 @@ variable (R)
 /-- Given `a : S`, `S` a localization of `R`, `IsInteger R a` iff `a` is in the image of
 the localization map from `R` to `S`. -/
 def IsInteger (a : S) : Prop :=
-  a ∈ (algebraMap R S).range
+  a ∈ (algebraMap R S).rangeS
 #align is_localization.is_integer IsLocalization.IsInteger
 
 end
 
 theorem isInteger_zero : IsInteger R (0 : S) :=
-  Subring.zero_mem _
+  Subsemiring.zero_mem _
 #align is_localization.is_integer_zero IsLocalization.isInteger_zero
 
 theorem isInteger_one : IsInteger R (1 : S) :=
-  Subring.one_mem _
+  Subsemiring.one_mem _
 #align is_localization.is_integer_one IsLocalization.isInteger_one
 
 theorem isInteger_add {a b : S} (ha : IsInteger R a) (hb : IsInteger R b) : IsInteger R (a + b) :=
-  Subring.add_mem _ ha hb
+  Subsemiring.add_mem _ ha hb
 #align is_localization.is_integer_add IsLocalization.isInteger_add
 
 theorem isInteger_mul {a b : S} (ha : IsInteger R a) (hb : IsInteger R b) : IsInteger R (a * b) :=
-  Subring.mul_mem _ ha hb
+  Subsemiring.mul_mem _ ha hb
 #align is_localization.is_integer_mul IsLocalization.isInteger_mul
 
 theorem isInteger_smul {a : R} {b : S} (hb : IsInteger R b) : IsInteger R (a • b) := by

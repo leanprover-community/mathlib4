@@ -540,7 +540,7 @@ section IsLocalizedModule
 
 universe u v
 
-variable {R : Type*} [CommRing R] (S : Submonoid R)
+variable {R : Type*} [CommSemiring R] (S : Submonoid R)
 
 variable {M M' M'' : Type*} [AddCommMonoid M] [AddCommMonoid M'] [AddCommMonoid M'']
 
@@ -1083,7 +1083,7 @@ theorem mkOfAlgebra {R S S' : Type*} [CommRing R] [CommRing S] [CommRing S'] [Al
 end Algebra
 
 variable {A : Type*}
-  [CommRing A] [Algebra R A] [Module A M'] [IsScalarTower R A M'] [IsLocalization S A]
+  [CommSemiring A] [Algebra R A] [Module A M'] [IsScalarTower R A M'] [IsLocalization S A]
 
 
 /-- If `(f : M →ₗ[R] M')` is a localization of modules, then the map
