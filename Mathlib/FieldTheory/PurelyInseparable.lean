@@ -382,13 +382,37 @@ theorem IsPurelyInseparable.injective_comp_algebraMap [h : IsPurelyInseparable F
   exact (frobenius_inj L q).iterate n heq
 
 -- TODO:
-/-- If `L` is an algebraically closed field containing `E`, such that the map
+/- If `L` is an algebraically closed field containing `E`, such that the map
 `(E →+* L) → (F →+* L)` induced by `algebraMap F E` is injective, then `E / F` is
 purely inseparable. In other words, epimorphisms in the category of fields must be
 purely inseparable extensions. -/
-proof_wanted IsPurelyInseparable.of_injective_comp_algebraMap (L : Type w) [Field L] [IsAlgClosed L]
+/-
+theorem IsPurelyInseparable.of_injective_comp_algebraMap (L : Type w) [Field L] [IsAlgClosed L]
     (hn : Nonempty (E →+* L)) (h : Function.Injective fun f : E →+* L ↦ f.comp (algebraMap F E)) :
-    IsPurelyInseparable F E
+    IsPurelyInseparable F E := sorry
+-/
+
+variable {F E} in
+/-- If `E / F` is an algebraic extension, `F` is separably closed,
+then `E` is also separably closed. -/
+theorem Algebra.IsAlgebraic.isSepClosed (halg : Algebra.IsAlgebraic F E)
+    [IsSepClosed F] : IsSepClosed E := .of_exists_root E fun f hm hi hs ↦ by
+  haveI := Fact.mk hi
+  have hf := AdjoinRoot.minpoly_root hi.ne_zero
+  rw [hm, inv_one, map_one, mul_one] at hf
+  rw [← hf, ← isSeparable_adjoin_simple_iff_separable] at hs
+  haveI := halg.isPurelyInseparable_of_isSepClosed
+  have halg2 := IsSeparable.isAlgebraic E E⟮AdjoinRoot.root f⟯
+  haveI := halg.trans halg2 |>.isPurelyInseparable_of_isSepClosed
+  have hdeg := finSepDegree_mul_finSepDegree_of_isAlgebraic F _ _ halg2
+  simp_rw [IsPurelyInseparable.finSepDegree_eq_one F _,
+    finSepDegree_eq_finrank_of_isSeparable E _, one_mul,
+    finrank_eq_one_iff (F := E) (E := AdjoinRoot f)] at hdeg
+  obtain ⟨x, h⟩ := hdeg ▸ mem_adjoin_simple_self E (AdjoinRoot.root f)
+  replace h := congr(aeval $h (minpoly E (AdjoinRoot.root f)))
+  erw [minpoly.aeval, hf, aeval_algebraMap_apply,
+    ← map_zero (f := algebraMap E (AdjoinRoot f))] at h
+  exact ⟨x, (algebraMap E _).injective h⟩
 
 end IsPurelyInseparable
 
