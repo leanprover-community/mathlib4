@@ -441,8 +441,8 @@ such that `norm_num` successfully recognises `a`. -/
   guard <|← withNewMCtxDepth <| isDefEq α q(Prop)
   let ⟨b, p⟩ ← deriveBool q($a)
   match b with
-  | false => return .isFalse q(not_not_intro $p)
-  | true => return .isTrue q($p)
+  | true => return .isFalse q(not_not_intro $p)
+  | false => return .isTrue q($p)
 
 /-! # (In)equalities -/
 
