@@ -981,8 +981,8 @@ end CommSemiRing
 
 end PrimeSpectrum
 
-section CommRing 
-variable [CommRing R] 
+section CommRing
+variable [CommRing R]
 
 open PrimeSpectrum in
 /--
