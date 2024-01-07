@@ -60,9 +60,10 @@ theorem liouvilleWith_one (x : ℝ) : LiouvilleWith 1 x := by
     exact Int.lt_floor_add_one _
   refine ⟨⌊x * n⌋ + 1, this.ne, ?_⟩
   rw [abs_sub_comm, abs_of_pos (sub_pos.2 this), rpow_one, sub_lt_iff_lt_add',
-    add_div_eq_mul_add_div _ _ hn'.ne', div_lt_div_right hn']
-  convert add_lt_add_right ((Int.floor_le (x * n)).trans_lt (lt_add_one _)) 1 using 1 <;>
-    (try push_cast) <;> ring
+    add_div_eq_mul_add_div _ _ hn'.ne']
+  gcongr
+  calc _ ≤ x * n + 1 := by push_cast; gcongr; apply Int.floor_le
+    _ < x * n + 2 := by linarith
 #align liouville_with_one liouvilleWith_one
 
 namespace LiouvilleWith
@@ -80,16 +81,17 @@ theorem exists_pos (h : LiouvilleWith p x) :
   refine ((eventually_ge_atTop 1).and_frequently hC).mono ?_
   rintro n ⟨hle, m, hne, hlt⟩
   refine ⟨hle, m, hne, hlt.trans_le ?_⟩
-  exact div_le_div_of_le (rpow_nonneg_of_nonneg n.cast_nonneg _) (le_max_left _ _)
+  gcongr
+  apply le_max_left
 #align liouville_with.exists_pos LiouvilleWith.exists_pos
 
 /-- If a number is Liouville with exponent `p`, then it is Liouville with any smaller exponent. -/
 theorem mono (h : LiouvilleWith p x) (hle : q ≤ p) : LiouvilleWith q x := by
   rcases h.exists_pos with ⟨C, hC₀, hC⟩
   refine ⟨C, hC.mono ?_⟩; rintro n ⟨hn, m, hne, hlt⟩
-  refine ⟨m, hne, hlt.trans_le <| div_le_div_of_le_left hC₀.le ?_ ?_⟩
-  exacts [rpow_pos_of_pos (Nat.cast_pos.2 hn) _,
-    rpow_le_rpow_of_exponent_le (Nat.one_le_cast.2 hn) hle]
+  refine ⟨m, hne, hlt.trans_le <| ?_⟩
+  gcongr
+  exact_mod_cast hn
 #align liouville_with.mono LiouvilleWith.mono
 
 /-- If `x` satisfies Liouville condition with exponent `p` and `q < p`, then `x`
@@ -119,12 +121,12 @@ theorem mul_rat (h : LiouvilleWith p x) (hr : r ≠ 0) : LiouvilleWith p (x * r)
   · rw [A]; simp [hne, hr]
   · rw [A, ← sub_mul, abs_mul]
     simp only [smul_eq_mul, id.def, Nat.cast_mul]
-    refine (mul_lt_mul_of_pos_right hlt <| abs_pos.2 <| Rat.cast_ne_zero.2 hr).trans_le ?_
+    calc _ < C / ↑n ^ p * |↑r| := by gcongr
+      _ = ↑r.den ^ p * (↑|r| * C) / (↑r.den * ↑n) ^ p := ?_
     rw [mul_rpow, mul_div_mul_left, mul_comm, mul_div_assoc]
     · simp only [Rat.cast_abs, le_refl]
-    · exact (rpow_pos_of_pos (Nat.cast_pos.2 r.pos) _).ne'
-    · exact Nat.cast_nonneg _
-    · exact Nat.cast_nonneg _
+    have := r.pos
+    all_goals positivity
 #align liouville_with.mul_rat LiouvilleWith.mul_rat
 
 /-- The product `x * r`, `r : ℚ`, `r ≠ 0`, is a Liouville number with exponent `p` if and only if
@@ -183,7 +185,7 @@ theorem add_rat (h : LiouvilleWith p x) (r : ℚ) : LiouvilleWith p (x + r) := b
   refine ⟨r.den ^ p * C, (tendsto_id.nsmul_atTop r.pos).frequently (hC.mono ?_)⟩
   rintro n ⟨hn, m, hne, hlt⟩
   have hr : (0 : ℝ) < r.den := Nat.cast_pos.2 r.pos
-  have hn' : (n : ℝ) ≠ 0 := Nat.cast_ne_zero.2 (zero_lt_one.trans_le hn).ne'
+  have hn' : (n : ℝ) ≠ 0 := by positivity
   have : (↑(r.den * m + r.num * n : ℤ) / ↑(r.den • id n) : ℝ) = m / n + r := by
     rw [Algebra.id.smul_eq_mul, id.def]
     nth_rewrite 4 [← Rat.num_div_den r]
@@ -318,7 +320,7 @@ theorem ne_cast_int (h : LiouvilleWith p x) (hp : 1 < p) (m : ℤ) : x ≠ m := 
   norm_cast
   rw [← zero_add (1 : ℤ), Int.add_one_le_iff, abs_pos, sub_ne_zero]
   rw [Ne.def, eq_div_iff hn'.ne'] at hne
-  exact_mod_cast hne
+  exact mod_cast hne
 #align liouville_with.ne_cast_int LiouvilleWith.ne_cast_int
 
 /-- A number satisfying the Liouville condition with exponent `p > 1` is an irrational number. -/
@@ -336,8 +338,6 @@ end LiouvilleWith
 namespace Liouville
 
 variable {x : ℝ}
-
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 /-- If `x` is a Liouville number, then for any `n`, for infinitely many denominators `b` there
 exists a numerator `a` such that `x ≠ a / b` and `|x - a / b| < 1 / b ^ n`. -/
@@ -360,11 +360,10 @@ theorem frequently_exists_num (hx : Liouville x) (n : ℕ) :
   rcases (this.and (eventually_ge_atTop n)).exists with ⟨m, hm, hnm⟩
   rcases hx m with ⟨a, b, hb, hne, hlt⟩
   lift b to ℕ using zero_le_one.trans hb.le; norm_cast at hb; push_cast at hne hlt
-  cases' le_or_lt N b with h h
+  rcases le_or_lt N b with h | h
   · refine' (hN b h a hne).not_lt (hlt.trans_le _)
-    replace hb : (1 : ℝ) < b := Nat.one_lt_cast.2 hb
-    have hb0 : (0 : ℝ) < b := zero_lt_one.trans hb
-    exact one_div_le_one_div_of_le (pow_pos hb0 _) (pow_le_pow hb.le hnm)
+    gcongr
+    exact_mod_cast hb.le
   · exact (hm b h hb _).not_lt hlt
 #align liouville.frequently_exists_num Liouville.frequently_exists_num
 
@@ -386,5 +385,5 @@ theorem forall_liouvilleWith_iff {x : ℝ} : (∀ p, LiouvilleWith p x) ↔ Liou
   rcases ((eventually_gt_atTop 1).and_frequently
     ((H (n + 1)).frequently_lt_rpow_neg (lt_add_one (n : ℝ)))).exists
     with ⟨b, hb, a, hne, hlt⟩
-  exact ⟨a, b, by exact_mod_cast hb, hne, by simpa [rpow_neg] using hlt⟩
+  exact ⟨a, b, mod_cast hb, hne, by simpa [rpow_neg] using hlt⟩
 #align forall_liouville_with_iff forall_liouvilleWith_iff

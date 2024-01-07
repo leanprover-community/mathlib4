@@ -463,7 +463,9 @@ def deriveLawfulTraversable (m : MVarId) : TermElabM Unit := do
     if b then
       let hs ← getPropHyps
       s ← hs.foldlM (fun s f => f.getDecl >>= fun d => s.add (.fvar f) #[] d.toExpr) s
-    return { config := { failIfUnchanged := false }, simpTheorems := #[s] }
+    pure <|
+    { config := { failIfUnchanged := false, unfoldPartialApp := true },
+      simpTheorems := #[s] }
   let .app (.app (.const ``LawfulTraversable _) F) _ ← m.getType >>= instantiateMVars | failure
   let some n := F.getAppFn.constName? | failure
   let [mit, mct, mtmi, mn] ← m.applyConst ``LawfulTraversable.mk | failure

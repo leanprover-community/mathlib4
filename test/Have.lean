@@ -3,6 +3,7 @@ Copyright (c) 2022 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino
 -/
+import Std.Tactic.GuardMsgs
 import Mathlib.Tactic.Have
 
 example : Nat := by
@@ -43,3 +44,10 @@ example : True := by
   have _q
   · exact 6
   simp
+
+/--
+error: type expected, got
+  (Nat.zero : Nat)
+-/
+#guard_msgs in
+example : True := by have h : Nat.zero

@@ -3,7 +3,9 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
+import Mathlib.MeasureTheory.Measure.Typeclasses
 import Mathlib.MeasureTheory.Measure.MutuallySingular
+
 /-!
 # Dirac measure
 
@@ -11,14 +13,12 @@ In this file we define the Dirac measure `MeasureTheory.Measure.dirac a`
 and prove some basic facts about it.
 -/
 
-set_option autoImplicit true
-
 open Function Set
 open scoped ENNReal Classical
 
 noncomputable section
 
-variable [MeasurableSpace α] [MeasurableSpace β] {s : Set α}
+variable {α β δ : Type*} [MeasurableSpace α] [MeasurableSpace β] {s : Set α} {a : α}
 
 namespace MeasureTheory
 
@@ -86,7 +86,7 @@ theorem restrict_singleton (μ : Measure α) (a : α) : μ.restrict {a} = μ {a}
 /-- If `f` is a map with countable codomain, then `μ.map f` is a sum of Dirac measures. -/
 theorem map_eq_sum [Countable β] [MeasurableSingletonClass β] (μ : Measure α) (f : α → β)
     (hf : Measurable f) : μ.map f = sum fun b : β => μ (f ⁻¹' {b}) • dirac b := by
-  ext1 s hs
+  ext s
   have : ∀ y ∈ s, MeasurableSet (f ⁻¹' {y}) := fun y _ => hf (measurableSet_singleton _)
   simp [← tsum_measure_preimage_singleton (to_countable s) this, *,
     tsum_subtype s fun b => μ (f ⁻¹' {b}), ← indicator_mul_right s fun b => μ (f ⁻¹' {b})]
@@ -138,10 +138,14 @@ theorem ae_eq_dirac [MeasurableSingletonClass α] {a : α} (f : α → δ) :
     f =ᵐ[dirac a] const α (f a) := by simp [Filter.EventuallyEq]
 #align measure_theory.ae_eq_dirac MeasureTheory.ae_eq_dirac
 
-instance Measure.dirac.isProbabilityMeasure [MeasurableSpace α] {x : α} :
-    IsProbabilityMeasure (dirac x) :=
+instance Measure.dirac.isProbabilityMeasure {x : α} : IsProbabilityMeasure (dirac x) :=
   ⟨dirac_apply_of_mem <| mem_univ x⟩
 #align measure_theory.measure.dirac.is_probability_measure MeasureTheory.Measure.dirac.isProbabilityMeasure
+
+/-! Extra instances to short-circuit type class resolution -/
+
+instance Measure.dirac.instIsFiniteMeasure {a : α} : IsFiniteMeasure (dirac a) := inferInstance
+instance Measure.dirac.instSigmaFinite {a : α} : SigmaFinite (dirac a) := inferInstance
 
 theorem restrict_dirac' (hs : MeasurableSet s) [Decidable (a ∈ s)] :
     (Measure.dirac a).restrict s = if a ∈ s then Measure.dirac a else 0 := by

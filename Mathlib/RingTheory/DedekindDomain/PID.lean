@@ -125,7 +125,7 @@ theorem FractionalIdeal.isPrincipal.of_finite_maximals_of_inv {A : Type*} [CommR
     left_lt_sup.1
       ((hf.mem_toFinset.1 hM).ne_top.lt_top.trans_eq (Ideal.sup_iInf_eq_top <| coprime M hM).symm)
   have : ∀ M ∈ s, ∃ a ∈ I, ∃ b ∈ I', a * b ∉ IsLocalization.coeSubmodule A M := by
-    intro M hM; by_contra' h
+    intro M hM; by_contra! h
     obtain ⟨x, hx, hxM⟩ :=
       SetLike.exists_of_lt
         ((IsLocalization.coeSubmodule_strictMono hS (hf.mem_toFinset.1 hM).ne_top.lt_top).trans_eq
@@ -239,8 +239,7 @@ theorem IsLocalization.OverPrime.mem_normalizedFactors_of_isPrime [DecidableEq (
     IsScalarTower.algebraMap_eq R (Localization.AtPrime p) Sₚ, ← Ideal.map_map,
     Localization.AtPrime.map_eq_maximalIdeal, Ideal.map_le_iff_le_comap,
     hpu (LocalRing.maximalIdeal _) ⟨this, _⟩, hpu (comap _ _) ⟨_, _⟩]
-  · have hRS : Algebra.IsIntegral R S :=
-      isIntegral_of_noetherian (isNoetherian_of_isNoetherianRing_of_finite R S)
+  · have hRS : Algebra.IsIntegral R S := isIntegral_of_noetherian inferInstance
     exact mt (Ideal.eq_bot_of_comap_eq_bot (isIntegral_localization hRS)) hP0
   · exact Ideal.comap_isPrime (algebraMap (Localization.AtPrime p) Sₚ) P
   · exact (LocalRing.maximalIdeal.isMaximal _).isPrime

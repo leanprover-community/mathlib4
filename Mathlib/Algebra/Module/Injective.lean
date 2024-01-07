@@ -8,6 +8,7 @@ import Mathlib.Algebra.Category.ModuleCat.EpiMono
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.LinearAlgebra.LinearPMap
 import Mathlib.Data.TypeMax -- Porting note: added for universe issues
+import Mathlib.Algebra.Module.ULift
 
 #align_import algebra.module.injective from "leanprover-community/mathlib"@"f8d8465c3c392a93b9ed226956e26dee00975946"
 
@@ -127,7 +128,7 @@ set_option linter.uppercaseLean3 false in
 theorem ExtensionOf.ext_iff {a b : ExtensionOf i f} :
     a = b ↔ ∃ _ : a.domain = b.domain, ∀ ⦃x : a.domain⦄ ⦃y : b.domain⦄,
     (x : N) = y → a.toLinearPMap x = b.toLinearPMap y :=
-  ⟨fun r => r ▸ ⟨rfl, fun x y h => congr_arg a.toFun <| by exact_mod_cast h⟩, fun ⟨h1, h2⟩ =>
+  ⟨fun r => r ▸ ⟨rfl, fun _ _ h => congr_arg a.toFun <| mod_cast h⟩, fun ⟨h1, h2⟩ =>
     ExtensionOf.ext h1 h2⟩
 set_option linter.uppercaseLean3 false in
 #align module.Baer.extension_of.ext_iff Module.Baer.ExtensionOf.ext_iff
@@ -160,7 +161,7 @@ instance : SemilatticeInf (ExtensionOf i f) :=
     fun X Y =>
     LinearPMap.ext rfl fun x y h => by
       congr
-      exact_mod_cast h
+      exact mod_cast h
 
 variable {i f}
 
@@ -175,8 +176,7 @@ set_option linter.uppercaseLean3 false in
 /-- The maximal element of every nonempty chain of `extension_of i f`. -/
 def ExtensionOf.max {c : Set (ExtensionOf i f)} (hchain : IsChain (· ≤ ·) c)
     (hnonempty : c.Nonempty) : ExtensionOf i f :=
-  {
-    LinearPMap.sSup _
+  { LinearPMap.sSup _
       (IsChain.directedOn <|
         chain_linearPMap_of_chain_extensionOf
           hchain) with
@@ -219,7 +219,7 @@ instance ExtensionOf.inhabited : Inhabited (ExtensionOf i f) where
             dsimp
             rw [← Fact.out (p := Function.Injective i) eq1, map_add]
           map_smul' := fun r x => by
-            have eq1 : r • _ = (r • x).1 := congr_arg ((· • ·) r) x.2.choose_spec
+            have eq1 : r • _ = (r • x).1 := congr_arg (r • ·) x.2.choose_spec
             rw [← LinearMap.map_smul, ← (r • x).2.choose_spec] at eq1
             dsimp
             rw [← Fact.out (p := Function.Injective i) eq1, LinearMap.map_smul] }
@@ -260,7 +260,7 @@ private theorem extensionOfMax_adjoin.aux1 {y : N} (x : supExtensionOfMaxSinglet
     ∃ (a : (extensionOfMax i f).domain) (b : R), x.1 = a.1 + b • y := by
   have mem1 : x.1 ∈ (_ : Set _) := x.2
   rw [Submodule.coe_sup] at mem1
-  rcases mem1 with ⟨a, b, a_mem, b_mem : b ∈ (Submodule.span R _ : Submodule R N), eq1⟩
+  rcases mem1 with ⟨a, a_mem, b, b_mem : b ∈ (Submodule.span R _ : Submodule R N), eq1⟩
   rw [Submodule.mem_span_singleton] at b_mem
   rcases b_mem with ⟨z, eq2⟩
   exact ⟨⟨a, a_mem⟩, z, by rw [← eq1, ← eq2]⟩
@@ -415,7 +415,7 @@ def extensionOfMaxAdjoin (h : Module.Baer R Q) (y : N) : ExtensionOf i f where
             ↑(r • ExtensionOfMaxAdjoin.fst i a) + (r • ExtensionOfMaxAdjoin.snd i a) • y := by
           rw [ExtensionOfMaxAdjoin.eqn, smul_add, smul_eq_mul, mul_smul]
           rfl
-        rw [ExtensionOfMaxAdjoin.extensionToFun_wd i f h (r • a) _ _ eq1, LinearMap.map_smul,
+        rw [ExtensionOfMaxAdjoin.extensionToFun_wd i f h (r • a :) _ _ eq1, LinearMap.map_smul,
           LinearPMap.map_smul, ← smul_add]
         congr }
   is_extension m := by
@@ -464,5 +464,14 @@ protected theorem injective (h : Module.Baer R Q) : Module.Injective R Q :=
         fun x => ((extensionOfMax i f).is_extension x).symm⟩ }
 set_option linter.uppercaseLean3 false in
 #align module.Baer.injective Module.Baer.injective
+
+protected theorem of_injective (inj : Module.Injective R Q) : Module.Baer R Q := fun I g ↦
+  let ⟨g', hg'⟩ := inj.1 (ULift.{max u v} I) (ULift.{max u v} R)
+    (ULift.moduleEquiv.symm.toLinearMap ∘ₗ I.subtype ∘ₗ ULift.moduleEquiv.toLinearMap)
+    (fun a b h ↦ by aesop) (g ∘ₗ ULift.moduleEquiv.toLinearMap)
+  ⟨g' ∘ₗ ULift.moduleEquiv.symm.toLinearMap, by aesop⟩
+
+protected theorem iff_injective : Module.Baer R Q ↔ Module.Injective R Q :=
+  ⟨Module.Baer.injective, Module.Baer.of_injective⟩
 
 end Module.Baer

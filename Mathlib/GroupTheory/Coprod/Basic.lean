@@ -573,9 +573,9 @@ theorem mk_of_inv_mul : ∀ x : G ⊕ H, mk (of (x.map Inv.inv Inv.inv)) * mk (o
 theorem con_mul_left_inv (x : FreeMonoid (G ⊕ H)) :
     coprodCon G H (ofList (x.toList.map (Sum.map Inv.inv Inv.inv)).reverse * x) 1 := by
   rw [← mk_eq_mk, map_mul, map_one]
-  induction x using FreeMonoid.recOn
-  case h0 => simp [map_one mk] -- TODO: fails without `[map_one mk]`
-  case ih x xs ihx =>
+  induction x using FreeMonoid.recOn with
+  | h0 => simp [map_one mk] -- TODO: fails without `[map_one mk]`
+  | ih x xs ihx =>
     simp only [toList_of_mul, map_cons, reverse_cons, ofList_append, map_mul, ihx, ofList_singleton]
     rwa [mul_assoc, ← mul_assoc (mk (of _)), mk_of_inv_mul, one_mul]
 
@@ -637,7 +637,7 @@ variable {M N M' N' : Type*} [MulOneClass M] [MulOneClass N] [MulOneClass M']
 
 /-- Lift two monoid equivalences `e : M ≃* N` and `e' : M' ≃* N'` to a monoid equivalence
 `(M ∗ M') ≃* (N ∗ N')`. -/
-@[to_additive (attr := simps! (config := { fullyApplied := false })) "Lift two additive monoid
+@[to_additive (attr := simps! (config := .asFn)) "Lift two additive monoid
 equivalences `e : M ≃+ N` and `e' : M' ≃+ N'` to an additive monoid equivalence
 `(AddMonoid.Coprod M M') ≃+ (AddMonoid.Coprod N N')`."]
 def coprodCongr (e : M ≃* N) (e' : M' ≃* N') : (M ∗ M') ≃* (N ∗ N') :=
@@ -647,7 +647,7 @@ def coprodCongr (e : M ≃* N) (e' : M' ≃* N') : (M ∗ M') ≃* (N ∗ N') :=
 variable (M N)
 
 /-- A `MulEquiv` version of `Coprod.swap`. -/
-@[to_additive (attr := simps! (config := { fullyApplied := false }))
+@[to_additive (attr := simps! (config := .asFn))
   "An `AddEquiv` version of `AddMonoid.Coprod.swap`."]
 def coprodComm : M ∗ N ≃* N ∗ M :=
   (Coprod.swap _ _).toMulEquiv (Coprod.swap _ _) (Coprod.swap_comp_swap _ _)
@@ -694,12 +694,12 @@ theorem coprodAssoc_symm_apply_inr_inr (x : P) :
 variable (M)
 
 /-- Isomorphism between `M ∗ PUnit` and `M`. -/
-@[simps! (config := {fullyApplied := false})]
+@[simps! (config := .asFn)]
 def coprodPUnit : M ∗ PUnit ≃* M :=
   MonoidHom.toMulEquiv fst inl (hom_ext rfl <| Subsingleton.elim _ _) fst_comp_inl
 
 /-- Isomorphism between `PUnit ∗ M` and `M`. -/
-@[simps! (config := {fullyApplied := false})]
+@[simps! (config := .asFn)]
 def punitCoprod : PUnit ∗ M ≃* M :=
   MonoidHom.toMulEquiv snd inr (hom_ext (Subsingleton.elim _ _) rfl) snd_comp_inr
 
@@ -712,13 +712,13 @@ namespace AddEquiv
 variable {M : Type*} [AddMonoid M]
 
 /-- Isomorphism between `M ∗ PUnit` and `M`. -/
-@[simps! (config := {fullyApplied := false})]
+@[simps! (config := .asFn)]
 def coprodUnit : AddMonoid.Coprod M PUnit ≃+ M :=
   AddMonoidHom.toAddEquiv AddMonoid.Coprod.fst AddMonoid.Coprod.inl
     (AddMonoid.Coprod.hom_ext rfl <| Subsingleton.elim _ _) AddMonoid.Coprod.fst_comp_inl
 
 /-- Isomorphism between `PUnit ∗ M` and `M`. -/
-@[simps! (config := {fullyApplied := false})]
+@[simps! (config := .asFn)]
 def punitCoprod : AddMonoid.Coprod PUnit M ≃+ M :=
   AddMonoidHom.toAddEquiv AddMonoid.Coprod.snd AddMonoid.Coprod.inr
     (AddMonoid.Coprod.hom_ext (Subsingleton.elim _ _) rfl) AddMonoid.Coprod.snd_comp_inr

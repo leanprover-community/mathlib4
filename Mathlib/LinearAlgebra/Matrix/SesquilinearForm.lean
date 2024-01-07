@@ -46,7 +46,7 @@ open Matrix
 
 section AuxToLinearMap
 
-variable [CommSemiring R] [CommSemiring R₁] [CommSemiring R₂]
+variable [CommSemiring R] [Semiring R₁] [Semiring R₂]
 
 variable [Fintype n] [Fintype m]
 
@@ -83,7 +83,7 @@ section AuxToMatrix
 
 section CommSemiring
 
-variable [CommSemiring R] [CommSemiring R₁] [CommSemiring R₂]
+variable [CommSemiring R] [Semiring R₁] [Semiring R₂]
 
 variable [AddCommMonoid M₁] [Module R₁ M₁] [AddCommMonoid M₂] [Module R₂ M₂]
 
@@ -110,7 +110,7 @@ end CommSemiring
 
 section CommRing
 
-variable [CommRing R] [CommRing R₁] [CommRing R₂]
+variable [CommSemiring R] [Semiring R₁] [Semiring R₂]
 
 variable [AddCommMonoid M₁] [Module R₁ M₁] [AddCommMonoid M₂] [Module R₂ M₂]
 
@@ -603,9 +603,9 @@ theorem Matrix.isAdjointPair_equiv (P : Matrix n n R) (h : IsUnit P) :
     simp only [← mul_assoc, P.transpose_nonsing_inv]
     -- porting note: the previous proof used `conv` and was causing timeouts, so we use `convert`
     convert this using 2
-    · rw [mul_assoc, mul_assoc, ←mul_assoc J]
+    · rw [mul_assoc, mul_assoc, ← mul_assoc J]
       rfl
-    · rw [mul_assoc, mul_assoc, ←mul_assoc _ _ J]
+    · rw [mul_assoc, mul_assoc, ← mul_assoc _ _ J]
       rfl
   rw [Units.eq_mul_inv_iff_mul_eq]
   conv_rhs => rw [mul_assoc]

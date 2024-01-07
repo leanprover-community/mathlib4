@@ -20,10 +20,7 @@ members.
 * `CommGroupWithZero`
 -/
 
-
 universe u
-
-set_option autoImplicit true
 
 -- We have to fix the universe of `G₀` here, since the default argument to
 -- `GroupWithZero.div'` cannot contain a universe metavariable.
@@ -52,7 +49,7 @@ theorem mul_left_cancel₀ (ha : a ≠ 0) (h : a * b = a * c) : b = c :=
   IsLeftCancelMulZero.mul_left_cancel_of_ne_zero ha h
 #align mul_left_cancel₀ mul_left_cancel₀
 
-theorem mul_right_injective₀ (ha : a ≠ 0) : Function.Injective ((· * ·) a) :=
+theorem mul_right_injective₀ (ha : a ≠ 0) : Function.Injective (a * ·) :=
   fun _ _ => mul_left_cancel₀ ha
 #align mul_right_injective₀ mul_right_injective₀
 

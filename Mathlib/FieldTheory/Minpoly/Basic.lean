@@ -86,11 +86,9 @@ variable (A x)
 @[simp]
 theorem aeval : aeval x (minpoly A x) = 0 := by
   delta minpoly
-  split_ifs with hx -- Porting note: `split_ifs` doesn't remove the `if`s
-  · rw [dif_pos hx]
-    exact (degree_lt_wf.min_mem _ hx).2
-  · rw [dif_neg hx]
-    exact aeval_zero _
+  split_ifs with hx
+  · exact (degree_lt_wf.min_mem _ hx).2
+  · exact aeval_zero _
 #align minpoly.aeval minpoly.aeval
 
 /-- A minimal polynomial is not `1`. -/
@@ -168,8 +166,9 @@ theorem subsingleton [Subsingleton B] : minpoly A x = 1 := by
   nontriviality A
   have := minpoly.min A x monic_one (Subsingleton.elim _ _)
   rw [degree_one] at this
-  cases' le_or_lt (minpoly A x).degree 0 with h h
-  · rwa [(monic ⟨1, monic_one, by simp⟩ : (minpoly A x).Monic).degree_le_zero_iff_eq_one] at h
+  rcases le_or_lt (minpoly A x).degree 0 with h | h
+  · rwa [(monic ⟨1, monic_one, by simp [eq_iff_true_of_subsingleton]⟩ :
+           (minpoly A x).Monic).degree_le_zero_iff_eq_one] at h
   · exact (this.not_lt h).elim
 #align minpoly.subsingleton minpoly.subsingleton
 
@@ -200,6 +199,34 @@ theorem natDegree_pos [Nontrivial B] (hx : IsIntegral A x) : 0 < natDegree (minp
 theorem degree_pos [Nontrivial B] (hx : IsIntegral A x) : 0 < degree (minpoly A x) :=
   natDegree_pos_iff_degree_pos.mp (natDegree_pos hx)
 #align minpoly.degree_pos minpoly.degree_pos
+
+section
+variable [Nontrivial B]
+
+open Polynomial in
+theorem degree_eq_one_iff : (minpoly A x).degree = 1 ↔ x ∈ (algebraMap A B).range := by
+  refine ⟨minpoly.mem_range_of_degree_eq_one _ _, ?_⟩
+  rintro ⟨x, rfl⟩
+  haveI := Module.nontrivial A B
+  exact (degree_X_sub_C x ▸ minpoly.min A (algebraMap A B x) (monic_X_sub_C x) (by simp)).antisymm
+    (Nat.WithBot.add_one_le_of_lt <| minpoly.degree_pos isIntegral_algebraMap)
+
+theorem natDegree_eq_one_iff :
+    (minpoly A x).natDegree = 1 ↔ x ∈ (algebraMap A B).range := by
+  rw [← Polynomial.degree_eq_iff_natDegree_eq_of_pos zero_lt_one]
+  exact degree_eq_one_iff
+
+theorem two_le_natDegree_iff (int : IsIntegral A x) :
+    2 ≤ (minpoly A x).natDegree ↔ x ∉ (algebraMap A B).range := by
+  rw [iff_not_comm, ← natDegree_eq_one_iff, not_le]
+  exact ⟨fun h ↦ h.trans_lt one_lt_two, fun h ↦ by linarith only [minpoly.natDegree_pos int, h]⟩
+
+theorem two_le_natDegree_subalgebra {B} [CommRing B] [Algebra A B] [Nontrivial B]
+    {S : Subalgebra A B} {x : B} (int : IsIntegral S x) : 2 ≤ (minpoly S x).natDegree ↔ x ∉ S := by
+  rw [two_le_natDegree_iff int, Iff.not]
+  apply Set.ext_iff.mp Subtype.range_val_subtype
+
+end
 
 /-- If `B/A` is an injective ring extension, and `a` is an element of `A`,
 then the minimal polynomial of `algebraMap A B a` is `X - C a`. -/
@@ -245,7 +272,7 @@ variable [IsDomain A] [IsDomain B]
 theorem irreducible (hx : IsIntegral A x) : Irreducible (minpoly A x) := by
   refine' (irreducible_of_monic (monic hx) <| ne_one A x).2 fun f g hf hg he => _
   rw [← hf.isUnit_iff, ← hg.isUnit_iff]
-  by_contra' h
+  by_contra! h
   have heval := congr_arg (Polynomial.aeval x) he
   rw [aeval A x, aeval_mul, mul_eq_zero] at heval
   cases' heval with heval heval

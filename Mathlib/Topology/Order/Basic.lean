@@ -256,7 +256,7 @@ theorem ContinuousWithinAt.closure_le [TopologicalSpace β] {f g : β → α} {s
 then the set `{x ∈ s | f x ≤ g x}` is a closed set. -/
 theorem IsClosed.isClosed_le [TopologicalSpace β] {f g : β → α} {s : Set β} (hs : IsClosed s)
     (hf : ContinuousOn f s) (hg : ContinuousOn g s) : IsClosed ({ x ∈ s | f x ≤ g x }) :=
-  (hf.prod hg).preimage_closed_of_closed hs OrderClosedTopology.isClosed_le'
+  (hf.prod hg).preimage_isClosed_of_isClosed hs OrderClosedTopology.isClosed_le'
 #align is_closed.is_closed_le IsClosed.isClosed_le
 
 theorem le_on_closure [TopologicalSpace β] {f g : β → α} {s : Set β} (h : ∀ x ∈ s, f x ≤ g x)
@@ -954,7 +954,7 @@ theorem tendsto_order_unbounded {f : β → α} {a : α} {x : Filter β} (hu : �
 
 end Preorder
 
-instance tendstoIxxNhdsWithin {α : Type*} [Preorder α] [TopologicalSpace α] (a : α) {s t : Set α}
+instance tendstoIxxNhdsWithin {α : Type*} [TopologicalSpace α] (a : α) {s t : Set α}
     {Ixx} [TendstoIxxClass Ixx (𝓝 a) (𝓝 a)] [TendstoIxxClass Ixx (𝓟 s) (𝓟 t)] :
     TendstoIxxClass Ixx (𝓝[s] a) (𝓝[t] a) :=
   Filter.tendstoIxxClass_inf
@@ -1326,7 +1326,7 @@ variable (α)
 /-- Let `α` be a densely ordered linear order with order topology. If `α` is a separable space, then
 it has second countable topology. Note that the "densely ordered" assumption cannot be dropped, see
 [double arrow space](https://topology.pi-base.org/spaces/S000093) for a counterexample. -/
-theorem TopologicalSpace.SecondCountableTopology.of_separableSpace_orderTopology [DenselyOrdered α]
+theorem SecondCountableTopology.of_separableSpace_orderTopology [DenselyOrdered α]
     [SeparableSpace α] : SecondCountableTopology α := by
   rcases exists_countable_dense α with ⟨s, hc, hd⟩
   refine ⟨⟨_, ?_, hd.topology_eq_generateFrom⟩⟩
@@ -1365,11 +1365,11 @@ theorem countable_setOf_covby_right [SecondCountableTopology α] :
     rcases hxx'.lt_or_lt with (h' | h')
     · refine' disjoint_left.2 fun u ux ux' => xt.2.2.1 _
       refine' h'z x' x't ⟨ux'.1.trans_le (ux.2.trans (hy x xt.1).le), _⟩
-      by_contra' H
+      by_contra! H
       exact lt_irrefl _ ((Hy _ _ xt.1 H).trans_lt h')
     · refine' disjoint_left.2 fun u ux ux' => x't.2.2.1 _
       refine' h'z x xt ⟨ux.1.trans_le (ux'.2.trans (hy x' x't.1).le), _⟩
-      by_contra' H
+      by_contra! H
       exact lt_irrefl _ ((Hy _ _ x't.1 H).trans_lt h')
   refine' this.countable_of_isOpen (fun x hx => _) fun x hx => ⟨x, hz x hx, le_rfl⟩
   suffices H : Ioc (z x) x = Ioo (z x) (y x)
@@ -1680,6 +1680,9 @@ theorem mem_nhdsWithin_Ioi_iff_exists_Ioo_subset' {a u' : α} {s : Set α} (hu' 
 theorem nhdsWithin_Ioi_basis' {a : α} (h : ∃ b, a < b) : (𝓝[>] a).HasBasis (a < ·) (Ioo a) :=
   let ⟨_, h⟩ := h
   ⟨fun _ => mem_nhdsWithin_Ioi_iff_exists_Ioo_subset' h⟩
+
+lemma nhdsWithin_Ioi_basis [NoMaxOrder α] (a : α) : (𝓝[>] a).HasBasis (a < ·) (Ioo a) :=
+  nhdsWithin_Ioi_basis' <| exists_gt a
 
 theorem nhdsWithin_Ioi_eq_bot_iff {a : α} : 𝓝[>] a = ⊥ ↔ IsTop a ∨ ∃ b, a ⋖ b := by
   by_cases ha : IsTop a
@@ -2771,7 +2774,7 @@ theorem IsClosed.sInf_mem {α : Type u} [TopologicalSpace α] [CompleteLinearOrd
 this supremum to the supremum of the image of this set. -/
 theorem Monotone.map_sSup_of_continuousAt {f : α → β} {s : Set α} (Cf : ContinuousAt f (sSup s))
     (Mf : Monotone f) (fbot : f ⊥ = ⊥) : f (sSup s) = sSup (f '' s) := by
-  cases' s.eq_empty_or_nonempty with h h
+  rcases s.eq_empty_or_nonempty with h | h
   · simp [h, fbot]
   · exact Mf.map_sSup_of_continuousAt' Cf h
 #align monotone.map_Sup_of_continuous_at Monotone.map_sSup_of_continuousAt
@@ -2934,7 +2937,7 @@ theorem Monotone.tendsto_nhdsWithin_Iio {α β : Type*} [LinearOrder α] [Topolo
   refine' tendsto_order.2 ⟨fun l hl => _, fun m hm => _⟩
   · obtain ⟨z, zx, lz⟩ : ∃ a : α, a < x ∧ l < f a := by
       simpa only [mem_image, exists_prop, exists_exists_and_eq_and] using
-        exists_lt_of_lt_csSup (nonempty_image_iff.2 h) hl
+        exists_lt_of_lt_csSup (h.image _) hl
     exact mem_of_superset (Ioo_mem_nhdsWithin_Iio' zx) fun y hy => lz.trans_le (Mf hy.1.le)
   · refine mem_of_superset self_mem_nhdsWithin fun _ hy => lt_of_le_of_lt ?_ hm
     exact le_csSup (Mf.map_bddAbove bddAbove_Iio) (mem_image_of_mem _ hy)

@@ -461,7 +461,7 @@ theorem mvPolynomial_aeval_of_surjective_of_closure [AddCommMonoid M] [CommSemir
   intro f
   induction' f using induction_on with m f g ihf ihg r f ih
   · have : m ∈ closure S := hS.symm ▸ mem_top _
-    refine' closure_induction this (fun m hm => _) _ _
+    refine' AddSubmonoid.closure_induction this (fun m hm => _) _ _
     · exact ⟨MvPolynomial.X ⟨m, hm⟩, MvPolynomial.aeval_X _ _⟩
     · exact ⟨1, AlgHom.map_one _⟩
     · rintro m₁ m₂ ⟨P₁, hP₁⟩ ⟨P₂, hP₂⟩
@@ -487,7 +487,7 @@ theorem freeAlgebra_lift_of_surjective_of_closure [CommSemiring R] {S : Set M}
   intro f
   induction' f using induction_on with m f g ihf ihg r f ih
   · have : m ∈ closure S := hS.symm ▸ mem_top _
-    refine' closure_induction this (fun m hm => _) _ _
+    refine' AddSubmonoid.closure_induction this (fun m hm => _) _ _
     · exact ⟨FreeAlgebra.ι R ⟨m, hm⟩, FreeAlgebra.lift_ι_apply _ _⟩
     · exact ⟨1, AlgHom.map_one _⟩
     · rintro m₁ m₂ ⟨P₁, hP₁⟩ ⟨P₂, hP₂⟩
@@ -640,7 +640,7 @@ theorem mvPolynomial_aeval_of_surjective_of_closure [CommMonoid M] [CommSemiring
   intro f
   induction' f using induction_on with m f g ihf ihg r f ih
   · have : m ∈ closure S := hS.symm ▸ mem_top _
-    refine' closure_induction this (fun m hm => _) _ _
+    refine' Submonoid.closure_induction this (fun m hm => _) _ _
     · exact ⟨MvPolynomial.X ⟨m, hm⟩, MvPolynomial.aeval_X _ _⟩
     · exact ⟨1, AlgHom.map_one _⟩
     · rintro m₁ m₂ ⟨P₁, hP₁⟩ ⟨P₂, hP₂⟩
@@ -665,7 +665,7 @@ theorem freeAlgebra_lift_of_surjective_of_closure [CommSemiring R] {S : Set M}
   intro f
   induction' f using induction_on with m f g ihf ihg r f ih
   · have : m ∈ closure S := hS.symm ▸ mem_top _
-    refine' closure_induction this (fun m hm => _) _ _
+    refine' Submonoid.closure_induction this (fun m hm => _) _ _
     · exact ⟨FreeAlgebra.ι R ⟨m, hm⟩, FreeAlgebra.lift_ι_apply _ _⟩
     · exact ⟨1, AlgHom.map_one _⟩
     · rintro m₁ m₂ ⟨P₁, hP₁⟩ ⟨P₂, hP₂⟩
@@ -722,7 +722,7 @@ theorem Module.Finite.injective_of_surjective_endomorphism {R : Type*} [CommRing
   have : (⊤ : Submodule R[X] (AEval' f)) ≤ Ideal.span {(X : R[X])} • ⊤
   · intro a _
     obtain ⟨y, rfl⟩ := f_surj.comp (AEval'.of f).symm.surjective a
-    rw [Function.comp_apply, ←AEval'.of_symm_X_smul]
+    rw [Function.comp_apply, ← AEval'.of_symm_X_smul]
     exact Submodule.smul_mem_smul (Ideal.mem_span_singleton.mpr (dvd_refl _)) trivial
   obtain ⟨F, hFa, hFb⟩ :=
     Submodule.exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul _ (⊤ : Submodule R[X] (AEval' f))

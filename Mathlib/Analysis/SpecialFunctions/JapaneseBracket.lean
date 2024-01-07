@@ -26,7 +26,6 @@ than the dimension.
 
 noncomputable section
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 open scoped BigOperators NNReal Filter Topology ENNReal
 
 open Asymptotics Filter Set Real MeasureTheory FiniteDimensional
@@ -84,14 +83,14 @@ theorem finite_integral_rpow_sub_one_pow_aux {r : ℝ} (n : ℕ) (hnr : (n : ℝ
       ENNReal.ofReal ((x ^ (-r⁻¹) - 1) ^ n) ≤ ENNReal.ofReal (x ^ (-(r⁻¹ * n))) := fun x hx ↦ by
     apply ENNReal.ofReal_le_ofReal
     rw [← neg_mul, rpow_mul hx.1.le, rpow_nat_cast]
-    refine' pow_le_pow_of_le_left _ (by simp only [sub_le_self_iff, zero_le_one]) n
+    refine' pow_le_pow_left _ (by simp only [sub_le_self_iff, zero_le_one]) n
     rw [le_sub_iff_add_le', add_zero]
     refine' Real.one_le_rpow_of_pos_of_le_one_of_nonpos hx.1 hx.2 _
     rw [Right.neg_nonpos_iff, inv_nonneg]
     exact hr.le
   refine' lt_of_le_of_lt (set_lintegral_mono' measurableSet_Ioc h_int) _
   refine' IntegrableOn.set_lintegral_lt_top _
-  rw [← intervalIntegrable_iff_integrable_Ioc_of_le zero_le_one]
+  rw [← intervalIntegrable_iff_integrableOn_Ioc_of_le zero_le_one]
   apply intervalIntegral.intervalIntegrable_rpow'
   rwa [neg_lt_neg_iff, inv_mul_lt_iff' hr, one_mul]
 #align finite_integral_rpow_sub_one_pow_aux finite_integral_rpow_sub_one_pow_aux

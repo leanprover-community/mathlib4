@@ -29,9 +29,8 @@ theorem isPrimePow_of_minFac_pow_factorization_eq {n : ℕ}
   rcases eq_or_ne n 0 with (rfl | hn')
   · simp_all
   refine' ⟨_, _, (Nat.minFac_prime hn).prime, _, h⟩
-  rw [pos_iff_ne_zero, ← Finsupp.mem_support_iff, Nat.factor_iff_mem_factorization,
-    Nat.mem_factors_iff_dvd hn' (Nat.minFac_prime hn)]
-  apply Nat.minFac_dvd
+  simp [pos_iff_ne_zero, ← Finsupp.mem_support_iff, Nat.support_factorization, hn',
+    Nat.minFac_prime hn, Nat.minFac_dvd]
 #align is_prime_pow_of_min_fac_pow_factorization_eq isPrimePow_of_minFac_pow_factorization_eq
 
 theorem isPrimePow_iff_minFac_pow_factorization_eq {n : ℕ} (hn : n ≠ 1) :
@@ -51,15 +50,15 @@ theorem isPrimePow_iff_factorization_eq_single {n : ℕ} :
       rintro rfl
       simp_all only [Finsupp.single_eq_zero, eq_comm, Nat.factorization_zero, hk.ne']
     rw [Nat.eq_pow_of_factorization_eq_single hn0 hn]
-    exact
-      ⟨Nat.prime_of_mem_factorization (by simp [hn, hk.ne'] : p ∈ n.factorization.support), hk, rfl⟩
+    exact ⟨Nat.prime_of_mem_primeFactors $
+      Finsupp.mem_support_iff.2 (by simp [hn, hk.ne'] : n.factorization p ≠ 0), hk, rfl⟩
 #align is_prime_pow_iff_factorization_eq_single isPrimePow_iff_factorization_eq_single
 
-theorem isPrimePow_iff_card_support_factorization_eq_one {n : ℕ} :
-    IsPrimePow n ↔ n.factorization.support.card = 1 := by
-  simp_rw [isPrimePow_iff_factorization_eq_single, Finsupp.card_support_eq_one', exists_prop,
-    pos_iff_ne_zero]
-#align is_prime_pow_iff_card_support_factorization_eq_one isPrimePow_iff_card_support_factorization_eq_one
+theorem isPrimePow_iff_card_primeFactors_eq_one {n : ℕ} :
+    IsPrimePow n ↔ n.primeFactors.card = 1 := by
+  simp_rw [isPrimePow_iff_factorization_eq_single, ← Nat.support_factorization,
+    Finsupp.card_support_eq_one', pos_iff_ne_zero]
+#align is_prime_pow_iff_card_support_factorization_eq_one isPrimePow_iff_card_primeFactors_eq_one
 
 theorem IsPrimePow.exists_ord_compl_eq_one {n : ℕ} (h : IsPrimePow n) :
     ∃ p : ℕ, p.Prime ∧ ord_compl[p] n = 1 := by
@@ -137,7 +136,7 @@ theorem Nat.Coprime.isPrimePow_dvd_mul {n a b : ℕ} (hab : Nat.Coprime a b) (hn
     rw [← Finsupp.not_mem_support_iff, ← Finsupp.not_mem_support_iff, ← not_and_or, ←
       Finset.mem_inter]
     intro t -- porting note: used to be `exact` below, but the definition of `∈` has changed.
-    simpa using (Nat.factorization_disjoint_of_coprime hab).le_bot t
+    simpa using hab.disjoint_primeFactors.le_bot t
   cases' this with h h <;> simp [h, imp_or]
 #align nat.coprime.is_prime_pow_dvd_mul Nat.Coprime.isPrimePow_dvd_mul
 
