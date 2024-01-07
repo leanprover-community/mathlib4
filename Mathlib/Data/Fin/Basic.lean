@@ -2173,14 +2173,6 @@ theorem pred_succAbove_of_succ_lt {x : Fin n} {y : Fin (n + 1)} (h : y < succ x)
     (y.succAbove x).pred h' = x :=
   pred_succAbove_of_castSucc_le (le_castSucc_iff.mpr h)
 
-lemma rev_succAbove (p : Fin (n + 1)) (i : Fin n) :
-    rev (succAbove p i) = succAbove (rev p) (rev i) := by
-  cases' lt_or_le (castSucc i) p with h h
-  · rw [succAbove_below _ _ h, rev_castSucc, succAbove_above]
-    rwa [← rev_succ, rev_le_rev]
-  · rw [succAbove_above _ _ h, rev_succ, succAbove_below]
-    rwa [← rev_succ, rev_lt_rev, lt_def, val_succ, Nat.lt_succ_iff]
-
 end SuccAbove
 
 section PredAbove
