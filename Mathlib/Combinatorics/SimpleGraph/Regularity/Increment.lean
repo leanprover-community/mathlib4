@@ -147,7 +147,7 @@ theorem energy_increment (hP : P.IsEquipartition) (hP₇ : 7 ≤ P.parts.card)
         rw [coe_energy, add_div, mul_div_cancel_left]; positivity
     _ ≤ (∑ x in P.parts.offDiag.attach, (∑ i in distinctPairs G ε hP x,
           G.edgeDensity i.1 i.2 ^ 2 : ℝ) / 16 ^ P.parts.card) / P.parts.card ^ 2 :=
-        div_le_div_of_le_of_nonneg ?_ $ by positivity
+        div_le_div_of_le (by positivity) ?_
     _ = (∑ x in P.parts.offDiag.attach, ∑ i in distinctPairs G ε hP x,
           G.edgeDensity i.1 i.2 ^ 2 : ℝ) / (increment hP G ε).parts.card ^ 2 := by
         rw [card_increment hPα hPG, coe_stepBound, mul_pow, pow_right_comm,

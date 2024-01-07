@@ -382,6 +382,14 @@ theorem prod_congr (h : s₁ = s₂) : (∀ x ∈ s₂, f x = g x) → s₁.prod
 #align finset.sum_congr Finset.sum_congr
 
 @[to_additive]
+theorem prod_eq_one {f : α → β} {s : Finset α} (h : ∀ x ∈ s, f x = 1) : ∏ x in s, f x = 1 :=
+  calc
+    ∏ x in s, f x = ∏ _x in s, 1 := Finset.prod_congr rfl h
+    _ = 1 := Finset.prod_const_one
+#align finset.prod_eq_one Finset.prod_eq_one
+#align finset.sum_eq_zero Finset.sum_eq_zero
+
+@[to_additive]
 theorem prod_disjUnion (h) :
     ∏ x in s₁.disjUnion s₂ h, f x = (∏ x in s₁, f x) * ∏ x in s₂, f x := by
   refine' Eq.trans _ (fold_disjUnion h)
@@ -498,6 +506,22 @@ theorem prod_sdiff [DecidableEq α] (h : s₁ ⊆ s₂) :
   rw [← prod_union sdiff_disjoint, sdiff_union_of_subset h]
 #align finset.prod_sdiff Finset.prod_sdiff
 #align finset.sum_sdiff Finset.sum_sdiff
+
+@[to_additive]
+theorem prod_subset_one_on_sdiff [DecidableEq α] (h : s₁ ⊆ s₂) (hg : ∀ x ∈ s₂ \ s₁, g x = 1)
+    (hfg : ∀ x ∈ s₁, f x = g x) : ∏ i in s₁, f i = ∏ i in s₂, g i := by
+  rw [← prod_sdiff h, prod_eq_one hg, one_mul]
+  exact prod_congr rfl hfg
+#align finset.prod_subset_one_on_sdiff Finset.prod_subset_one_on_sdiff
+#align finset.sum_subset_zero_on_sdiff Finset.sum_subset_zero_on_sdiff
+
+@[to_additive]
+theorem prod_subset (h : s₁ ⊆ s₂) (hf : ∀ x ∈ s₂, x ∉ s₁ → f x = 1) :
+    ∏ x in s₁, f x = ∏ x in s₂, f x :=
+  haveI := Classical.decEq α
+  prod_subset_one_on_sdiff h (by simpa) fun _ _ => rfl
+#align finset.prod_subset Finset.prod_subset
+#align finset.sum_subset Finset.sum_subset
 
 @[to_additive (attr := simp)]
 theorem prod_disj_sum (s : Finset α) (t : Finset γ) (f : Sum α γ → β) :
@@ -651,6 +675,14 @@ See `Fintype.sum_bijective` for the version where `s` and `t` are `univ`."]
 lemma prod_bijective (e : ι → κ) (he : e.Bijective) (hst : ∀ i, i ∈ s ↔ e i ∈ t)
     (hfg : ∀ i ∈ s, f i = g (e i)) :
     ∏ i in s, f i = ∏ i in t, g i := prod_equiv (.ofBijective e he) hst hfg
+
+@[to_additive]
+lemma prod_of_injOn (e : ι → κ) (he : Set.InjOn e s) (hest : Set.MapsTo e s t)
+    (h' : ∀ i ∈ t, i ∉ e '' s → g i = 1) (h : ∀ i ∈ s, f i = g (e i))  :
+    ∏ i in s, f i = ∏ j in t, g j := by
+  classical
+  exact (prod_nbij e (fun a ↦ mem_image_of_mem e) he (by simp [Set.surjOn_image]) h).trans $
+    prod_subset (image_subset_iff.2 hest) $ by simpa using h'
 
 variable [DecidableEq κ]
 
@@ -812,30 +844,6 @@ theorem prod_hom_rel [CommMonoid γ] {r : β → γ → Prop} {f : α → β} {g
   apply Multiset.prod_hom_rel <;> assumption
 #align finset.prod_hom_rel Finset.prod_hom_rel
 #align finset.sum_hom_rel Finset.sum_hom_rel
-
-@[to_additive]
-theorem prod_eq_one {f : α → β} {s : Finset α} (h : ∀ x ∈ s, f x = 1) : ∏ x in s, f x = 1 :=
-  calc
-    ∏ x in s, f x = ∏ _x in s, 1 := Finset.prod_congr rfl h
-    _ = 1 := Finset.prod_const_one
-#align finset.prod_eq_one Finset.prod_eq_one
-#align finset.sum_eq_zero Finset.sum_eq_zero
-
-@[to_additive]
-theorem prod_subset_one_on_sdiff [DecidableEq α] (h : s₁ ⊆ s₂) (hg : ∀ x ∈ s₂ \ s₁, g x = 1)
-    (hfg : ∀ x ∈ s₁, f x = g x) : ∏ i in s₁, f i = ∏ i in s₂, g i := by
-  rw [← prod_sdiff h, prod_eq_one hg, one_mul]
-  exact prod_congr rfl hfg
-#align finset.prod_subset_one_on_sdiff Finset.prod_subset_one_on_sdiff
-#align finset.sum_subset_zero_on_sdiff Finset.sum_subset_zero_on_sdiff
-
-@[to_additive]
-theorem prod_subset (h : s₁ ⊆ s₂) (hf : ∀ x ∈ s₂, x ∉ s₁ → f x = 1) :
-    ∏ x in s₁, f x = ∏ x in s₂, f x :=
-  haveI := Classical.decEq α
-  prod_subset_one_on_sdiff h (by simpa) fun _ _ => rfl
-#align finset.prod_subset Finset.prod_subset
-#align finset.sum_subset Finset.sum_subset
 
 @[to_additive]
 theorem prod_filter_of_ne {p : α → Prop} [DecidablePred p] (hp : ∀ x ∈ s, f x ≠ 1 → p x) :
@@ -2207,6 +2215,11 @@ lemma _root_.Equiv.prod_comp (e : ι ≃ κ) (g : κ → α) : ∏ i, g (e i) = 
   prod_equiv e _ _ fun _ ↦ rfl
 #align equiv.prod_comp Equiv.prod_comp
 #align equiv.sum_comp Equiv.sum_comp
+
+@[to_additive]
+lemma prod_of_injective (e : ι → κ) (hf : Injective e) (f : ι → α) (g : κ → α)
+    (h' : ∀ i ∉ Set.range e, g i = 1) (h : ∀ i, f i = g (e i)) : ∏ i, f i = ∏ j, g j :=
+  prod_of_injOn e (hf.injOn _) (by simp) (by simpa using h') (fun i _ ↦ h i)
 
 @[to_additive]
 lemma prod_fiberwise [DecidableEq κ] [Fintype ι] (g : ι → κ) (f : ι → α) :

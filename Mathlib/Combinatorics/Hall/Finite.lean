@@ -52,7 +52,7 @@ theorem hall_cond_of_erase {x : ι} (a : α)
     (s' : Finset { x' : ι | x' ≠ x }) : s'.card ≤ (s'.biUnion fun x' => (t x').erase a).card := by
   haveI := Classical.decEq ι
   specialize ha (s'.image fun z => z.1)
-  rw [Nonempty.image_iff, Finset.card_image_of_injective s' Subtype.coe_injective] at ha
+  rw [image_nonempty, Finset.card_image_of_injective s' Subtype.coe_injective] at ha
   by_cases he : s'.Nonempty
   · have ha' : s'.card < (s'.biUnion fun x => t x).card := by
       convert ha he fun h => by simpa [← h] using mem_univ x using 2

@@ -136,7 +136,7 @@ theorem sum_incMatrix_apply_of_mem_edgeSet :
     refine' e.ind _
     intro a b h
     rw [mem_edgeSet] at h
-    rw [← Nat.cast_two, ← card_doubleton h.ne]
+    rw [← Nat.cast_two, ← card_pair h.ne]
     simp only [incMatrix_apply', sum_boole, mk'_mem_incidenceSet_iff, h, true_and_iff]
     congr 2
     ext e
@@ -157,7 +157,7 @@ theorem incMatrix_transpose_mul_diag [DecidableRel G.Adj] :
     · revert h
       refine' e.ind _
       intro v w h
-      rw [← Nat.cast_two, ← card_doubleton (G.ne_of_adj h)]
+      rw [← Nat.cast_two, ← card_pair (G.ne_of_adj h)]
       simp only [mk'_mem_incidenceSet_iff, G.mem_edgeSet.mp h, true_and, mem_univ, forall_true_left,
         forall_eq_or_imp, forall_eq, and_self, mem_singleton, ne_eq]
       congr 2
