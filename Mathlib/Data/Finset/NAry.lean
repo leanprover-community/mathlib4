@@ -244,7 +244,7 @@ lemma le_inf_image₂ [SemilatticeInf δ] [OrderTop δ] {g : γ → δ} {a : δ}
 variable (s t)
 
 lemma sup_image₂_left [SemilatticeSup δ] [OrderBot δ] (g : γ → δ) :
-    sup (image₂ f s t) g = sup s fun x ↦ sup t (g ∘ f x) := by
+    sup (image₂ f s t) g = sup s fun x ↦ sup t (g <| f x ·) := by
   simp only [image₂, sup_image, sup_product_left]; rfl
 
 lemma sup_image₂_right [SemilatticeSup δ] [OrderBot δ] (g : γ → δ) :
