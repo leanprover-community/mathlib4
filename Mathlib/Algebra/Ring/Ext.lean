@@ -21,6 +21,9 @@ We follow `Algebra/Group/Ext` in using the term `(letI := i; HMul.hMul : R → R
 multiplcation specified by a typeclass instance `i` on a type `R` (and similarly for addition). We
 abbreviate these using some local notations.
 
+Since `Algebra/Group/Ext` proved several injectivity lemmas, we do so as well — even if sometimes we
+don't need them to prove extensionality.
+
 ## Tags
 semiring, ring, extensionality
 -/
