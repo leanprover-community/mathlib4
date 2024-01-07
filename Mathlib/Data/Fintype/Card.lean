@@ -581,7 +581,7 @@ theorem card_le_one_iff : card α ≤ 1 ↔ ∀ a b : α, a = b :=
       let ⟨x, hx⟩ := card_eq_one_iff.1 ha.symm
       rw [hx a, hx b], fun _ => ha ▸ le_rfl⟩
   | n + 2, ha =>
-    ⟨fun h => False.elim $ by rw [← ha] at h; cases h with | step h => cases h; done, fun h =>
+    ⟨fun h => False.elim <| by rw [← ha] at h; cases h with | step h => cases h; done, fun h =>
       card_unit ▸ card_le_of_injective (fun _ => ()) fun _ _ _ => h _ _⟩
 #align fintype.card_le_one_iff Fintype.card_le_one_iff
 
@@ -1118,7 +1118,7 @@ private theorem natEmbeddingAux_injective (α : Type*) [Infinite α] :
   rintro m n h
   letI := Classical.decEq α
   wlog hmlen : m ≤ n generalizing m n
-  · exact (this h.symm $ le_of_not_le hmlen).symm
+  · exact (this h.symm <| le_of_not_le hmlen).symm
   by_contra hmn
   have hmn : m < n := lt_of_le_of_ne hmlen hmn
   refine (Classical.choose_spec (exists_not_mem_finset

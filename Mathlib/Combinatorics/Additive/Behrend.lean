@@ -462,7 +462,7 @@ theorem roth_lower_bound_explicit (hN : 4096 ≤ N) :
   have hn : 0 < (n : ℝ) := cast_pos.2 (nValue_pos <| hN.trans' <| by norm_num1)
   have hd : 0 < dValue N := dValue_pos (hN.trans' <| by norm_num1)
   have hN₀ : 0 < (N : ℝ) := cast_pos.2 (hN.trans' <| by norm_num1)
-  have hn₂ : 2 < n := three_le_nValue $ hN.trans' $ by norm_num1
+  have hn₂ : 2 < n := three_le_nValue <| hN.trans' <| by norm_num1
   have : (2 * dValue N - 1) ^ n ≤ N := le_N (hN.trans' <| by norm_num1)
   calc
     _ ≤ (N ^ (nValue N : ℝ)⁻¹ / rexp 1 : ℝ) ^ (n - 2) / n := ?_
