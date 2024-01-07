@@ -215,12 +215,12 @@ instance preserveFiniteLimits_plusFunctor
 instance preservesLimitsOfShape_sheafification
     (K : Type max v u) [SmallCategory K] [FinCategory K] [HasLimitsOfShape K D]
     [PreservesLimitsOfShape K (forget D)] [ReflectsLimitsOfShape K (forget D)] :
-    PreservesLimitsOfShape K (J.plusPlusFunctor D) :=
+    PreservesLimitsOfShape K (J.sheafification D) :=
   Limits.compPreservesLimitsOfShape _ _
 
 instance preservesFiniteLimits_sheafification
     [HasFiniteLimits D] [PreservesFiniteLimits (forget D)] [ReflectsIsomorphisms (forget D)] :
-    PreservesFiniteLimits (J.plusPlusFunctor D) :=
+    PreservesFiniteLimits (J.sheafification D) :=
   Limits.compPreservesFiniteLimits _ _
 
 end CategoryTheory.GrothendieckTopology
@@ -279,11 +279,11 @@ def plusPlusSheafIsoPresheafToSheaf : plusPlusSheaf J D ≅ presheafToSheaf J D 
   (plusPlusAdjunction J D).leftAdjointUniq (sheafificationAdjunction J D)
 
 /-- `plusPlusFunctor` is isomorphic to `sheafification`. -/
-def plusPlusFunctorIsoSheafification : J.plusPlusFunctor D ≅ J.sheafification D :=
+def plusPlusFunctorIsoSheafification : J.sheafification D ≅ sheafification J D :=
   isoWhiskerRight (plusPlusSheafIsoPresheafToSheaf J D) (sheafToPresheaf J D)
 
 /-- `plusPlus` is isomorphic to `sheafify`. -/
-def plusPlusIsoSheafify (P : Cᵒᵖ ⥤ D) : J.plusPlus P ≅ J.sheafify P :=
+def plusPlusIsoSheafify (P : Cᵒᵖ ⥤ D) : J.sheafify P ≅ sheafify J P :=
   (sheafToPresheaf J D).mapIso  ((plusPlusSheafIsoPresheafToSheaf J D).app P)
 
 instance [HasFiniteLimits D] : HasSheafify J D := HasSheafify.mk' J D (plusPlusAdjunction J D)

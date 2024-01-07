@@ -465,92 +465,92 @@ variable [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.
 
 /-- The sheafification of a presheaf `P`.
 *NOTE:* Additional hypotheses are needed to obtain a proof that this is a sheaf! -/
-noncomputable def plusPlus (P : Cᵒᵖ ⥤ D) : Cᵒᵖ ⥤ D :=
+noncomputable def sheafify (P : Cᵒᵖ ⥤ D) : Cᵒᵖ ⥤ D :=
   J.plusObj (J.plusObj P)
 
 /-- The canonical map from `P` to its sheafification. -/
-noncomputable def toPlusPlus (P : Cᵒᵖ ⥤ D) : P ⟶ J.plusPlus P :=
+noncomputable def toSheafify (P : Cᵒᵖ ⥤ D) : P ⟶ J.sheafify P :=
   J.toPlus P ≫ J.plusMap (J.toPlus P)
 
 /-- The canonical map on sheafifications induced by a morphism. -/
-noncomputable def plusPlusMap {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) : J.plusPlus P ⟶ J.plusPlus Q :=
+noncomputable def sheafifyMap {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) : J.sheafify P ⟶ J.sheafify Q :=
   J.plusMap <| J.plusMap η
 
 @[simp]
-theorem plusPlusMap_id (P : Cᵒᵖ ⥤ D) : J.plusPlusMap (𝟙 P) = 𝟙 (J.plusPlus P) := by
-  dsimp [plusPlusMap, plusPlus]
+theorem sheafifyMap_id (P : Cᵒᵖ ⥤ D) : J.sheafifyMap (𝟙 P) = 𝟙 (J.sheafify P) := by
+  dsimp [sheafifyMap, sheafify]
   simp
 
 @[simp]
-theorem plusPlusMap_comp {P Q R : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (γ : Q ⟶ R) :
-    J.plusPlusMap (η ≫ γ) = J.plusPlusMap η ≫ J.plusPlusMap γ := by
-  dsimp [plusPlusMap, plusPlus]
+theorem sheafifyMap_comp {P Q R : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (γ : Q ⟶ R) :
+    J.sheafifyMap (η ≫ γ) = J.sheafifyMap η ≫ J.sheafifyMap γ := by
+  dsimp [sheafifyMap, sheafify]
   simp
 
 @[reassoc (attr := simp)]
-theorem toPlusPlus_naturality {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) :
-    η ≫ J.toPlusPlus _ = J.toPlusPlus _ ≫ J.plusPlusMap η := by
-  dsimp [plusPlusMap, plusPlus, toPlusPlus]
+theorem toSheafify_naturality {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) :
+    η ≫ J.toSheafify _ = J.toSheafify _ ≫ J.sheafifyMap η := by
+  dsimp [sheafifyMap, sheafify, toSheafify]
   simp
 
 variable (D)
 
 /-- The sheafification of a presheaf `P`, as a functor.
 *NOTE:* Additional hypotheses are needed to obtain a proof that this is a sheaf! -/
-noncomputable def plusPlusFunctor : (Cᵒᵖ ⥤ D) ⥤ Cᵒᵖ ⥤ D :=
+noncomputable def sheafification : (Cᵒᵖ ⥤ D) ⥤ Cᵒᵖ ⥤ D :=
   J.plusFunctor D ⋙ J.plusFunctor D
 
 @[simp]
-theorem plusPlusFunctor_obj (P : Cᵒᵖ ⥤ D) : (J.plusPlusFunctor D).obj P = J.plusPlus P :=
+theorem sheafification_obj (P : Cᵒᵖ ⥤ D) : (J.sheafification D).obj P = J.sheafify P :=
   rfl
 
 @[simp]
-theorem plusPlusFunctor_map {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) :
-    (J.plusPlusFunctor D).map η = J.plusPlusMap η :=
+theorem sheafification_map {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) :
+    (J.sheafification D).map η = J.sheafifyMap η :=
   rfl
 
 /-- The canonical map from `P` to its sheafification, as a natural transformation.
 *Note:* We only show this is a sheaf under additional hypotheses on `D`. -/
-noncomputable def toPlusPlusFunctor : 𝟭 _ ⟶ plusPlusFunctor J D :=
+noncomputable def toSheafification : 𝟭 _ ⟶ sheafification J D :=
   J.toPlusNatTrans D ≫ whiskerRight (J.toPlusNatTrans D) (J.plusFunctor D)
 
 @[simp]
-theorem toPlusPlusFunctor_app (P : Cᵒᵖ ⥤ D) :
-    (J.toPlusPlusFunctor D).app P = J.toPlusPlus P :=
+theorem toSheafification_app (P : Cᵒᵖ ⥤ D) :
+    (J.toSheafification D).app P = J.toSheafify P :=
   rfl
 
 variable {D}
 
-theorem isIso_toPlusPlus {P : Cᵒᵖ ⥤ D} (hP : Presheaf.IsSheaf J P) : IsIso (J.toPlusPlus P) := by
-  dsimp [toPlusPlus]
+theorem isIso_toSheafify {P : Cᵒᵖ ⥤ D} (hP : Presheaf.IsSheaf J P) : IsIso (J.toSheafify P) := by
+  dsimp [toSheafify]
   haveI := isIso_toPlus_of_isSheaf J P hP
   change (IsIso (toPlus J P ≫ (J.plusFunctor D).map (toPlus J P)))
   infer_instance
 
 /-- If `P` is a sheaf, then `P` is isomorphic to `J.plusPlus P`. -/
-noncomputable def isoPlusPlus {P : Cᵒᵖ ⥤ D} (hP : Presheaf.IsSheaf J P) : P ≅ J.plusPlus P :=
-  letI := isIso_toPlusPlus J hP
-  asIso (J.toPlusPlus P)
+noncomputable def isoSheafify {P : Cᵒᵖ ⥤ D} (hP : Presheaf.IsSheaf J P) : P ≅ J.sheafify P :=
+  letI := isIso_toSheafify J hP
+  asIso (J.toSheafify P)
 
 @[simp]
-theorem isoPlusPlus_hom {P : Cᵒᵖ ⥤ D} (hP : Presheaf.IsSheaf J P) :
-    (J.isoPlusPlus hP).hom = J.toPlusPlus P :=
+theorem isoSheafify_hom {P : Cᵒᵖ ⥤ D} (hP : Presheaf.IsSheaf J P) :
+    (J.isoSheafify hP).hom = J.toSheafify P :=
   rfl
 
 /-- Given a sheaf `Q` and a morphism `P ⟶ Q`, construct a morphism from
 `J.plusPlus P` to `Q`. -/
-noncomputable def plusPlusLift {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (hQ : Presheaf.IsSheaf J Q) :
-    J.plusPlus P ⟶ Q :=
+noncomputable def sheafifyLift {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (hQ : Presheaf.IsSheaf J Q) :
+    J.sheafify P ⟶ Q :=
   J.plusLift (J.plusLift η hQ) hQ
 
 @[reassoc (attr := simp)]
-theorem toPlusPlus_plusPlusLift {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (hQ : Presheaf.IsSheaf J Q) :
-    J.toPlusPlus P ≫ plusPlusLift J η hQ = η := by
-  dsimp only [plusPlusLift, toPlusPlus]
+theorem toSheafify_sheafifyLift {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (hQ : Presheaf.IsSheaf J Q) :
+    J.toSheafify P ≫ sheafifyLift J η hQ = η := by
+  dsimp only [sheafifyLift, toSheafify]
   simp
 
-theorem plusPlusLift_unique {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (hQ : Presheaf.IsSheaf J Q)
-    (γ : J.plusPlus P ⟶ Q) : J.toPlusPlus P ≫ γ = η → γ = plusPlusLift J η hQ := by
+theorem sheafifyLift_unique {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (hQ : Presheaf.IsSheaf J Q)
+    (γ : J.sheafify P ⟶ Q) : J.toSheafify P ≫ γ = η → γ = sheafifyLift J η hQ := by
   intro h
   apply plusLift_unique
   apply plusLift_unique
@@ -558,24 +558,24 @@ theorem plusPlusLift_unique {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (hQ : Presheaf.
   exact h
 
 @[simp]
-theorem isoPlusPlus_inv {P : Cᵒᵖ ⥤ D} (hP : Presheaf.IsSheaf J P) :
-    (J.isoPlusPlus hP).inv = J.plusPlusLift (𝟙 _) hP := by
-  apply J.plusPlusLift_unique
+theorem isoSheafify_inv {P : Cᵒᵖ ⥤ D} (hP : Presheaf.IsSheaf J P) :
+    (J.isoSheafify hP).inv = J.sheafifyLift (𝟙 _) hP := by
+  apply J.sheafifyLift_unique
   simp [Iso.comp_inv_eq]
 
-theorem plusPlus_hom_ext {P Q : Cᵒᵖ ⥤ D} (η γ : J.plusPlus P ⟶ Q) (hQ : Presheaf.IsSheaf J Q)
-    (h : J.toPlusPlus P ≫ η = J.toPlusPlus P ≫ γ) : η = γ := by
+theorem sheafify_hom_ext {P Q : Cᵒᵖ ⥤ D} (η γ : J.sheafify P ⟶ Q) (hQ : Presheaf.IsSheaf J Q)
+    (h : J.toSheafify P ≫ η = J.toSheafify P ≫ γ) : η = γ := by
   apply J.plus_hom_ext _ _ hQ
   apply J.plus_hom_ext _ _ hQ
   rw [← Category.assoc, ← Category.assoc, ← plusMap_toPlus]
   exact h
 
 @[reassoc (attr := simp)]
-theorem plusPlusMap_plusPlusLift {P Q R : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (γ : Q ⟶ R)
+theorem sheafifyMap_sheafifyLift {P Q R : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (γ : Q ⟶ R)
     (hR : Presheaf.IsSheaf J R) :
-    J.plusPlusMap η ≫ J.plusPlusLift γ hR = J.plusPlusLift (η ≫ γ) hR := by
-  apply J.plusPlusLift_unique
-  rw [← Category.assoc, ← J.toPlusPlus_naturality, Category.assoc, toPlusPlus_plusPlusLift]
+    J.sheafifyMap η ≫ J.sheafifyLift γ hR = J.sheafifyLift (η ≫ γ) hR := by
+  apply J.sheafifyLift_unique
+  rw [← Category.assoc, ← J.toSheafify_naturality, Category.assoc, toSheafify_sheafifyLift]
 
 end GrothendieckTopology
 
@@ -586,7 +586,7 @@ variable [ConcreteCategory.{max v u} D] [PreservesLimits (forget D)]
   [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
   [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)] [ReflectsIsomorphisms (forget D)]
 
-theorem GrothendieckTopology.plusPlus_isSheaf (P : Cᵒᵖ ⥤ D) : Presheaf.IsSheaf J (J.plusPlus P) :=
+theorem GrothendieckTopology.sheafify_isSheaf (P : Cᵒᵖ ⥤ D) : Presheaf.IsSheaf J (J.sheafify P) :=
   GrothendieckTopology.Plus.isSheaf_plus_plus _ _
 
 variable (D)
@@ -594,10 +594,10 @@ variable (D)
 /-- The sheafification functor, as a functor taking values in `Sheaf`. -/
 @[simps]
 noncomputable def plusPlusSheaf : (Cᵒᵖ ⥤ D) ⥤ Sheaf J D where
-  obj P := ⟨J.plusPlus P, J.plusPlus_isSheaf P⟩
-  map η := ⟨J.plusPlusMap η⟩
-  map_id _ := Sheaf.Hom.ext _ _ <| J.plusPlusMap_id _
-  map_comp _ _ := Sheaf.Hom.ext _ _ <| J.plusPlusMap_comp _ _
+  obj P := ⟨J.sheafify P, J.sheafify_isSheaf P⟩
+  map η := ⟨J.sheafifyMap η⟩
+  map_id _ := Sheaf.Hom.ext _ _ <| J.sheafifyMap_id _
+  map_comp _ _ := Sheaf.Hom.ext _ _ <| J.sheafifyMap_comp _ _
 
 instance plusPlusSheaf_preservesZeroMorphisms [Preadditive D] :
     (plusPlusSheaf J D).PreservesZeroMorphisms where
@@ -611,13 +611,13 @@ instance plusPlusSheaf_preservesZeroMorphisms [Preadditive D] :
 noncomputable def plusPlusAdjunction : plusPlusSheaf J D ⊣ sheafToPresheaf J D :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun P Q =>
-        { toFun := fun e => J.toPlusPlus P ≫ e.val
-          invFun := fun e => ⟨J.plusPlusLift e Q.2⟩
-          left_inv := fun e => Sheaf.Hom.ext _ _ <| (J.plusPlusLift_unique _ _ _ rfl).symm
-          right_inv := fun e => J.toPlusPlus_plusPlusLift _ _ }
+        { toFun := fun e => J.toSheafify P ≫ e.val
+          invFun := fun e => ⟨J.sheafifyLift e Q.2⟩
+          left_inv := fun e => Sheaf.Hom.ext _ _ <| (J.sheafifyLift_unique _ _ _ rfl).symm
+          right_inv := fun e => J.toSheafify_sheafifyLift _ _ }
       homEquiv_naturality_left_symm := by
         intro P Q R η γ; ext1; dsimp; symm
-        apply J.plusPlusMap_plusPlusLift
+        apply J.sheafifyMap_sheafifyLift
       homEquiv_naturality_right := fun η γ => by
         dsimp
         rw [Category.assoc] }
@@ -641,7 +641,7 @@ set_option linter.uppercaseLean3 false in
 @[simps! hom_app inv_app]
 noncomputable
 def GrothendieckTopology.sheafificationIsoPresheafToSheafCompSheafToPreasheaf :
-    J.plusPlusFunctor D ≅ plusPlusSheaf J D ⋙ sheafToPresheaf J D :=
+    J.sheafification D ≅ plusPlusSheaf J D ⋙ sheafToPresheaf J D :=
   NatIso.ofComponents fun P => Iso.refl _
 
 end CategoryTheory

@@ -57,21 +57,21 @@ set_option linter.uppercaseLean3 false in
 def composeEquiv (adj : G ⊣ F) (X : Sheaf J E) (Y : Sheaf J D) :
     ((composeAndSheafify J G).obj X ⟶ Y) ≃ (X ⟶ (sheafCompose J F).obj Y) :=
   let A := adj.whiskerRight Cᵒᵖ
-  { toFun := fun η => ⟨A.homEquiv _ _ (J.toSheafify _ ≫ η.val)⟩
-    invFun := fun γ => ⟨J.sheafifyLift ((A.homEquiv _ _).symm ((sheafToPresheaf _ _).map γ)) Y.2⟩
+  { toFun := fun η => ⟨A.homEquiv _ _ (toSheafify J _ ≫ η.val)⟩
+    invFun := fun γ => ⟨sheafifyLift J ((A.homEquiv _ _).symm ((sheafToPresheaf _ _).map γ)) Y.2⟩
     left_inv := by
       intro η
       ext1
       dsimp
       symm
-      apply J.sheafifyLift_unique
+      apply sheafifyLift_unique
       rw [Equiv.symm_apply_apply]
     right_inv := by
       intro γ
       ext1
       dsimp
       -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-      erw [J.toSheafify_sheafifyLift, Equiv.apply_symm_apply] }
+      erw [toSheafify_sheafifyLift, Equiv.apply_symm_apply] }
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf.compose_equiv CategoryTheory.Sheaf.composeEquiv
 
@@ -128,7 +128,7 @@ theorem adjunctionToTypes_unit_app_val {G : Type max v u ⥤ D} (adj : G ⊣ for
     (Y : SheafOfTypes J) :
     ((adjunctionToTypes J adj).unit.app Y).val =
       (adj.whiskerRight _).unit.app ((sheafOfTypesToPresheaf J).obj Y) ≫
-        whiskerRight (J.toSheafify _) (forget D) := by
+        whiskerRight (toSheafify J _) (forget D) := by
   dsimp [adjunctionToTypes, Adjunction.comp]
   simp
   rfl
@@ -139,12 +139,12 @@ set_option linter.uppercaseLean3 false in
 theorem adjunctionToTypes_counit_app_val {G : Type max v u ⥤ D} (adj : G ⊣ forget D)
     (X : Sheaf J D) :
     ((adjunctionToTypes J adj).counit.app X).val =
-      J.sheafifyLift ((Functor.associator _ _ _).hom ≫ (adj.whiskerRight _).counit.app _) X.2 := by
-  apply J.sheafifyLift_unique
+      sheafifyLift J ((Functor.associator _ _ _).hom ≫ (adj.whiskerRight _).counit.app _) X.2 := by
+  apply sheafifyLift_unique
   dsimp only [adjunctionToTypes, Adjunction.comp, NatTrans.comp_app,
     instCategorySheaf_comp_val, instCategorySheaf_id_val]
   rw [adjunction_counit_app_val]
-  erw [Category.id_comp, J.sheafifyMap_sheafifyLift, J.toSheafify_sheafifyLift]
+  erw [Category.id_comp, sheafifyMap_sheafifyLift, toSheafify_sheafifyLift]
   ext
   dsimp [sheafEquivSheafOfTypes, Equivalence.symm, Equivalence.toAdjunction,
     NatIso.ofComponents, Adjunction.whiskerRight, Adjunction.mkOfUnitCounit]

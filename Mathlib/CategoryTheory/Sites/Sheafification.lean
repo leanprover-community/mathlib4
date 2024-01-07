@@ -79,71 +79,69 @@ end
 
 variable {D : Type*} [Category D] [HasWeakSheafify J D]
 
-namespace GrothendieckTopology
-
 /-- The sheafification of a presheaf `P`. -/
 noncomputable abbrev sheafify (P : Cᵒᵖ ⥤ D) : Cᵒᵖ ⥤ D :=
   presheafToSheaf J D |>.obj P |>.val
-#align category_theory.grothendieck_topology.sheafify CategoryTheory.GrothendieckTopology.sheafify
+-- #align category_theory.grothendieck_topology.sheafify CategoryTheory.GrothendieckTopology.sheafify
 
 /-- The canonical map from `P` to its sheafification. -/
-noncomputable abbrev toSheafify (P : Cᵒᵖ ⥤ D) : P ⟶ J.sheafify P :=
+noncomputable abbrev toSheafify (P : Cᵒᵖ ⥤ D) : P ⟶ sheafify J P :=
   sheafificationAdjunction J D |>.unit.app P
-#align category_theory.grothendieck_topology.to_sheafify CategoryTheory.GrothendieckTopology.toSheafify
+-- #align category_theory.grothendieck_topology.to_sheafify CategoryTheory.GrothendieckTopology.toSheafify
 
 /-- The canonical map on sheafifications induced by a morphism. -/
-noncomputable abbrev sheafifyMap {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) : J.sheafify P ⟶ J.sheafify Q :=
+noncomputable abbrev sheafifyMap {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) : sheafify J P ⟶ sheafify J Q :=
   presheafToSheaf J D |>.map η |>.val
-#align category_theory.grothendieck_topology.sheafify_map CategoryTheory.GrothendieckTopology.sheafifyMap
+-- #align category_theory.grothendieck_topology.sheafify_map CategoryTheory.GrothendieckTopology.sheafifyMap
 
 @[simp]
-theorem sheafifyMap_id (P : Cᵒᵖ ⥤ D) : J.sheafifyMap (𝟙 P) = 𝟙 (J.sheafify P) := by
+theorem sheafifyMap_id (P : Cᵒᵖ ⥤ D) : sheafifyMap J (𝟙 P) = 𝟙 (sheafify J P) := by
   dsimp [sheafifyMap, sheafify]
   simp
-#align category_theory.grothendieck_topology.sheafify_map_id CategoryTheory.GrothendieckTopology.sheafifyMap_id
+-- #align category_theory.grothendieck_topology.sheafify_map_id CategoryTheory.GrothendieckTopology.sheafifyMap_id
 
 @[simp]
 theorem sheafifyMap_comp {P Q R : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (γ : Q ⟶ R) :
-    J.sheafifyMap (η ≫ γ) = J.sheafifyMap η ≫ J.sheafifyMap γ := by
+    sheafifyMap J (η ≫ γ) = sheafifyMap J η ≫ sheafifyMap J γ := by
   dsimp [sheafifyMap, sheafify]
   simp
-#align category_theory.grothendieck_topology.sheafify_map_comp CategoryTheory.GrothendieckTopology.sheafifyMap_comp
+-- #align category_theory.grothendieck_topology.sheafify_map_comp CategoryTheory.GrothendieckTopology.sheafifyMap_comp
 
 @[reassoc (attr := simp)]
 theorem toSheafify_naturality {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) :
-    η ≫ J.toSheafify _ = J.toSheafify _ ≫ J.sheafifyMap η :=
+    η ≫ toSheafify J _ = toSheafify J _ ≫ sheafifyMap J η :=
   sheafificationAdjunction J D |>.unit.naturality η
-#align category_theory.grothendieck_topology.to_sheafify_naturality CategoryTheory.GrothendieckTopology.toSheafify_naturality
+-- #align category_theory.grothendieck_topology.to_sheafify_naturality CategoryTheory.GrothendieckTopology.toSheafify_naturality
 
 variable (D)
 
 /-- The sheafification of a presheaf `P`, as a functor. -/
 noncomputable abbrev sheafification : (Cᵒᵖ ⥤ D) ⥤ Cᵒᵖ ⥤ D :=
   presheafToSheaf J D ⋙ sheafToPresheaf J D
-#align category_theory.grothendieck_topology.sheafification CategoryTheory.GrothendieckTopology.sheafification
+-- #align category_theory.grothendieck_topology.sheafification CategoryTheory.GrothendieckTopology.sheafification
 
-theorem sheafification_obj (P : Cᵒᵖ ⥤ D) : (J.sheafification D).obj P = J.sheafify P :=
+theorem sheafification_obj (P : Cᵒᵖ ⥤ D) : (sheafification J D).obj P = sheafify J P :=
   rfl
-#align category_theory.grothendieck_topology.sheafification_obj CategoryTheory.GrothendieckTopology.sheafification_obj
+-- #align category_theory.grothendieck_topology.sheafification_obj CategoryTheory.GrothendieckTopology.sheafification_obj
 
 theorem sheafification_map {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) :
-    (J.sheafification D).map η = J.sheafifyMap η :=
+    (sheafification J D).map η = sheafifyMap J η :=
   rfl
-#align category_theory.grothendieck_topology.sheafification_map CategoryTheory.GrothendieckTopology.sheafification_map
+-- #align category_theory.grothendieck_topology.sheafification_map CategoryTheory.GrothendieckTopology.sheafification_map
 
 /-- The canonical map from `P` to its sheafification, as a natural transformation. -/
 noncomputable abbrev toSheafification : 𝟭 _ ⟶ sheafification J D :=
   sheafificationAdjunction J D |>.unit
-#align category_theory.grothendieck_topology.to_sheafification CategoryTheory.GrothendieckTopology.toSheafification
+-- #align category_theory.grothendieck_topology.to_sheafification CategoryTheory.GrothendieckTopology.toSheafification
 
 @[simp]
-theorem toSheafification_app (P : Cᵒᵖ ⥤ D) : (J.toSheafification D).app P = J.toSheafify P :=
+theorem toSheafification_app (P : Cᵒᵖ ⥤ D) : (toSheafification J D).app P = toSheafify J P :=
   rfl
-#align category_theory.grothendieck_topology.to_sheafification_app CategoryTheory.GrothendieckTopology.toSheafification_app
+-- #align category_theory.grothendieck_topology.to_sheafification_app CategoryTheory.GrothendieckTopology.toSheafification_app
 
 variable {D}
 
-theorem isIso_toSheafify {P : Cᵒᵖ ⥤ D} (hP : Presheaf.IsSheaf J P) : IsIso (J.toSheafify P) := by
+theorem isIso_toSheafify {P : Cᵒᵖ ⥤ D} (hP : Presheaf.IsSheaf J P) : IsIso (toSheafify J P) := by
   refine ⟨(sheafificationAdjunction J D |>.counit.app ⟨P, hP⟩).val, ?_, ?_⟩
   · change _ = (𝟙 (sheafToPresheaf J D ⋙ 𝟭 (Cᵒᵖ ⥤ D)) : _).app ⟨P, hP⟩
     rw [← sheafificationAdjunction J D |>.right_triangle]
@@ -151,29 +149,29 @@ theorem isIso_toSheafify {P : Cᵒᵖ ⥤ D} (hP : Presheaf.IsSheaf J P) : IsIso
   · change (sheafToPresheaf _ _).map _ ≫ _ = _
     change _ ≫ (sheafificationAdjunction J D).unit.app ((sheafToPresheaf J D).obj ⟨P, hP⟩) = _
     erw [← inv_counit_map (sheafificationAdjunction J D) (X := ⟨P, hP⟩), comp_inv_eq_id]
-#align category_theory.grothendieck_topology.is_iso_to_sheafify CategoryTheory.GrothendieckTopology.isIso_toSheafify
+-- #align category_theory.grothendieck_topology.is_iso_to_sheafify CategoryTheory.GrothendieckTopology.isIso_toSheafify
 
-/-- If `P` is a sheaf, then `P` is isomorphic to `J.sheafify P`. -/
-noncomputable def isoSheafify {P : Cᵒᵖ ⥤ D} (hP : Presheaf.IsSheaf J P) : P ≅ J.sheafify P :=
+/-- If `P` is a sheaf, then `P` is isomorphic to `sheafify J P`. -/
+noncomputable def isoSheafify {P : Cᵒᵖ ⥤ D} (hP : Presheaf.IsSheaf J P) : P ≅ sheafify J P :=
   letI := isIso_toSheafify J hP
-  asIso (J.toSheafify P)
-#align category_theory.grothendieck_topology.iso_sheafify CategoryTheory.GrothendieckTopology.isoSheafify
+  asIso (toSheafify J P)
+-- #align category_theory.grothendieck_topology.iso_sheafify CategoryTheory.GrothendieckTopology.isoSheafify
 
 @[simp]
 theorem isoSheafify_hom {P : Cᵒᵖ ⥤ D} (hP : Presheaf.IsSheaf J P) :
-    (J.isoSheafify hP).hom = J.toSheafify P :=
+    (isoSheafify J hP).hom = toSheafify J P :=
   rfl
-#align category_theory.grothendieck_topology.iso_sheafify_hom CategoryTheory.GrothendieckTopology.isoSheafify_hom
+-- #align category_theory.grothendieck_topology.iso_sheafify_hom CategoryTheory.GrothendieckTopology.isoSheafify_hom
 
-/-- Given a sheaf `Q` and a morphism `P ⟶ Q`, construct a morphism from `J.sheafify P` to `Q`. -/
+/-- Given a sheaf `Q` and a morphism `P ⟶ Q`, construct a morphism from `sheafify J P` to `Q`. -/
 noncomputable def sheafifyLift {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (hQ : Presheaf.IsSheaf J Q) :
-    J.sheafify P ⟶ Q :=
+    sheafify J P ⟶ Q :=
   (sheafificationAdjunction J D).homEquiv P ⟨Q, hQ⟩ |>.symm η |>.val
-#align category_theory.grothendieck_topology.sheafify_lift CategoryTheory.GrothendieckTopology.sheafifyLift
+-- #align category_theory.grothendieck_topology.sheafify_lift CategoryTheory.GrothendieckTopology.sheafifyLift
 
 @[reassoc (attr := simp)]
 theorem toSheafify_sheafifyLift {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (hQ : Presheaf.IsSheaf J Q) :
-    J.toSheafify P ≫ sheafifyLift J η hQ = η := by
+    toSheafify J P ≫ sheafifyLift J η hQ = η := by
   rw [toSheafify, sheafifyLift, Adjunction.homEquiv_counit]
   change _ ≫ (sheafToPresheaf J D).map _ ≫ _ = _
   simp only [Adjunction.unit_naturality_assoc]
@@ -181,10 +179,10 @@ theorem toSheafify_sheafifyLift {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (hQ : Presh
   change _ ≫ _ ≫ (sheafToPresheaf J D).map _ = _
   rw [sheafificationAdjunction J D |>.right_triangle_components (Y := ⟨Q, hQ⟩)]
   simp
-#align category_theory.grothendieck_topology.to_sheafify_sheafify_lift CategoryTheory.GrothendieckTopology.toSheafify_sheafifyLift
+-- #align category_theory.grothendieck_topology.to_sheafify_sheafify_lift CategoryTheory.GrothendieckTopology.toSheafify_sheafifyLift
 
 theorem sheafifyLift_unique {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (hQ : Presheaf.IsSheaf J Q)
-    (γ : J.sheafify P ⟶ Q) : J.toSheafify P ≫ γ = η → γ = sheafifyLift J η hQ := by
+    (γ : sheafify J P ⟶ Q) : toSheafify J P ≫ γ = η → γ = sheafifyLift J η hQ := by
   intro h
   rw [toSheafify] at h
   rw [sheafifyLift]
@@ -192,42 +190,38 @@ theorem sheafifyLift_unique {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (hQ : Presheaf.
   change γ'.val = _
   rw [← Sheaf.Hom.ext_iff, ← Adjunction.homEquiv_apply_eq, Adjunction.homEquiv_unit]
   exact h
-#align category_theory.grothendieck_topology.sheafify_lift_unique CategoryTheory.GrothendieckTopology.sheafifyLift_unique
+-- #align category_theory.grothendieck_topology.sheafify_lift_unique CategoryTheory.GrothendieckTopology.sheafifyLift_unique
 
 @[simp]
 theorem isoSheafify_inv {P : Cᵒᵖ ⥤ D} (hP : Presheaf.IsSheaf J P) :
-    (J.isoSheafify hP).inv = J.sheafifyLift (𝟙 _) hP := by
-  apply J.sheafifyLift_unique
+    (isoSheafify J hP).inv = sheafifyLift J (𝟙 _) hP := by
+  apply sheafifyLift_unique
   simp [Iso.comp_inv_eq]
-#align category_theory.grothendieck_topology.iso_sheafify_inv CategoryTheory.GrothendieckTopology.isoSheafify_inv
+-- #align category_theory.grothendieck_topology.iso_sheafify_inv CategoryTheory.GrothendieckTopology.isoSheafify_inv
 
-theorem sheafify_hom_ext {P Q : Cᵒᵖ ⥤ D} (η γ : J.sheafify P ⟶ Q) (hQ : Presheaf.IsSheaf J Q)
-    (h : J.toSheafify P ≫ η = J.toSheafify P ≫ γ) : η = γ := by
+theorem sheafify_hom_ext {P Q : Cᵒᵖ ⥤ D} (η γ : sheafify J P ⟶ Q) (hQ : Presheaf.IsSheaf J Q)
+    (h : toSheafify J P ≫ η = toSheafify J P ≫ γ) : η = γ := by
   rw [sheafifyLift_unique J _ hQ _ h, ← h]
   exact (sheafifyLift_unique J _ hQ _ h.symm).symm
-#align category_theory.grothendieck_topology.sheafify_hom_ext CategoryTheory.GrothendieckTopology.sheafify_hom_ext
+-- #align category_theory.grothendieck_topology.sheafify_hom_ext CategoryTheory.GrothendieckTopology.sheafify_hom_ext
 
 @[reassoc (attr := simp)]
 theorem sheafifyMap_sheafifyLift {P Q R : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (γ : Q ⟶ R)
     (hR : Presheaf.IsSheaf J R) :
-    J.sheafifyMap η ≫ J.sheafifyLift γ hR = J.sheafifyLift (η ≫ γ) hR := by
-  apply J.sheafifyLift_unique
-  rw [← Category.assoc, ← J.toSheafify_naturality, Category.assoc, toSheafify_sheafifyLift]
-#align category_theory.grothendieck_topology.sheafify_map_sheafify_lift CategoryTheory.GrothendieckTopology.sheafifyMap_sheafifyLift
-
-end GrothendieckTopology
-
-open GrothendieckTopology
+    sheafifyMap J η ≫ sheafifyLift J γ hR = sheafifyLift J (η ≫ γ) hR := by
+  apply sheafifyLift_unique
+  rw [← Category.assoc, ← toSheafify_naturality, Category.assoc, toSheafify_sheafifyLift]
+-- #align category_theory.grothendieck_topology.sheafify_map_sheafify_lift CategoryTheory.GrothendieckTopology.sheafifyMap_sheafifyLift
 
 variable (D)
 
 @[simp]
 theorem sheafificationAdjunction_unit_app {P : Cᵒᵖ ⥤ D} :
-    (sheafificationAdjunction J D).unit.app P = J.toSheafify P := rfl
+    (sheafificationAdjunction J D).unit.app P = toSheafify J P := rfl
 
 @[simp]
 theorem sheafificationAdjunction_counit_app_val (P : Sheaf J D) :
-    ((sheafificationAdjunction J D).counit.app P).val = J.sheafifyLift (𝟙 P.val) P.cond := by
+    ((sheafificationAdjunction J D).counit.app P).val = sheafifyLift J (𝟙 P.val) P.cond := by
   unfold sheafifyLift
   rw [Adjunction.homEquiv_counit]
   simp
@@ -237,14 +231,14 @@ variable {J D}
 /-- A sheaf `P` is isomorphic to its own sheafification. -/
 @[simps]
 noncomputable def sheafificationIso (P : Sheaf J D) : P ≅ (presheafToSheaf J D).obj P.val where
-  hom := ⟨(J.isoSheafify P.2).hom⟩
-  inv := ⟨(J.isoSheafify P.2).inv⟩
+  hom := ⟨(isoSheafify J P.2).hom⟩
+  inv := ⟨(isoSheafify J P.2).inv⟩
   hom_inv_id := by
     ext1
-    apply (J.isoSheafify P.2).hom_inv_id
+    apply (isoSheafify J P.2).hom_inv_id
   inv_hom_id := by
     ext1
-    apply (J.isoSheafify P.2).inv_hom_id
+    apply (isoSheafify J P.2).inv_hom_id
 #align category_theory.sheafification_iso CategoryTheory.sheafificationIso
 
 instance isIso_sheafificationAdjunction_counit (P : Sheaf J D) :
