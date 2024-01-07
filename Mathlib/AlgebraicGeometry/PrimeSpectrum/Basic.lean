@@ -977,7 +977,12 @@ protected def pointsEquivIrreducibleCloseds :
   map_rel_iff' {p q} :=
     (RelIso.symm irreducibleSetEquivPoints).map_rel_iff.trans (le_iff_specializes p q).symm
 
+end CommSemiRing
+
 end PrimeSpectrum
+
+section CommRing 
+variable [CommRing R] 
 
 open PrimeSpectrum in
 /--
@@ -1026,6 +1031,8 @@ lemma zeroLocus_ideal_mem_irreducibleComponents {I : Ideal R} :
   exact vanishingIdeal_mem_minimalPrimes.symm
 
 end PrimeSpectrum
+
+end CommRing
 
 namespace LocalRing
 
