@@ -49,7 +49,7 @@ open Set Filter Function
 
 open TopologicalSpace Topology Filter
 
-variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*} {f : α → β} {g : β → γ}
+variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*} {ι : Type*} {f : α → β} {g : β → γ}
 
 section Inducing
 
@@ -120,8 +120,8 @@ theorem image_mem_nhdsWithin (hf : Inducing f) {a : α} {s : Set α} (hs : s ∈
   hf.map_nhds_eq a ▸ image_mem_map hs
 #align inducing.image_mem_nhds_within Inducing.image_mem_nhdsWithin
 
-theorem tendsto_nhds_iff {ι : Type*} {f : ι → β} {a : Filter ι} {b : β}
-    (hg : Inducing g) : Tendsto f a (𝓝 b) ↔ Tendsto (g ∘ f) a (𝓝 (g b)) := by
+theorem tendsto_nhds_iff {f : ι → β} {a : Filter ι} {b : β} (hg : Inducing g) :
+    Tendsto f a (𝓝 b) ↔ Tendsto (g ∘ f) a (𝓝 (g b)) := by
   rw [hg.nhds_eq_comap, tendsto_comap_iff]
 #align inducing.tendsto_nhds_iff Inducing.tendsto_nhds_iff
 
@@ -241,7 +241,7 @@ theorem Embedding.map_nhds_of_mem (hf : Embedding f) (a : α) (h : range f ∈ �
   hf.1.map_nhds_of_mem a h
 #align embedding.map_nhds_of_mem Embedding.map_nhds_of_mem
 
-theorem Embedding.tendsto_nhds_iff {ι : Type*} {f : ι → β} {a : Filter ι} {b : β}
+theorem Embedding.tendsto_nhds_iff {f : ι → β} {a : Filter ι} {b : β}
     (hg : Embedding g) : Tendsto f a (𝓝 b) ↔ Tendsto (g ∘ f) a (𝓝 (g b)) :=
   hg.toInducing.tendsto_nhds_iff
 #align embedding.tendsto_nhds_iff Embedding.tendsto_nhds_iff
@@ -594,8 +594,8 @@ theorem OpenEmbedding.open_iff_image_open (hf : OpenEmbedding f) {s : Set α} :
     apply preimage_image_eq _ hf.inj⟩
 #align open_embedding.open_iff_image_open OpenEmbedding.open_iff_image_open
 
-theorem OpenEmbedding.tendsto_nhds_iff {ι : Type*} {f : ι → β} {a : Filter ι} {b : β}
-    (hg : OpenEmbedding g) : Tendsto f a (𝓝 b) ↔ Tendsto (g ∘ f) a (𝓝 (g b)) :=
+theorem OpenEmbedding.tendsto_nhds_iff {f : ι → β} {a : Filter ι} {b : β} (hg : OpenEmbedding g) :
+    Tendsto f a (𝓝 b) ↔ Tendsto (g ∘ f) a (𝓝 (g b)) :=
   hg.toEmbedding.tendsto_nhds_iff
 #align open_embedding.tendsto_nhds_iff OpenEmbedding.tendsto_nhds_iff
 
@@ -690,8 +690,8 @@ structure ClosedEmbedding (f : α → β) extends Embedding f : Prop where
 
 namespace ClosedEmbedding
 
-theorem tendsto_nhds_iff {ι : Type*} {g : ι → α} {a : Filter ι} {b : α}
-    (hf : ClosedEmbedding f) : Tendsto g a (𝓝 b) ↔ Tendsto (f ∘ g) a (𝓝 (f b)) :=
+theorem tendsto_nhds_iff {g : ι → α} {a : Filter ι} {b : α} (hf : ClosedEmbedding f) :
+    Tendsto g a (𝓝 b) ↔ Tendsto (f ∘ g) a (𝓝 (f b)) :=
   hf.toEmbedding.tendsto_nhds_iff
 #align closed_embedding.tendsto_nhds_iff ClosedEmbedding.tendsto_nhds_iff
 
