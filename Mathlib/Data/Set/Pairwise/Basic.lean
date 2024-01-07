@@ -213,6 +213,8 @@ alias ⟨Pairwise.subsingleton, _⟩ := pairwise_bot_iff
 lemma injOn_iff_pairwise_ne {s : Set ι} : InjOn f s ↔ s.Pairwise (f · ≠ f ·) := by
   simp only [InjOn, Set.Pairwise, not_imp_not]
 
+alias ⟨InjOn.pairwise_ne, _⟩ := injOn_iff_pairwise_ne
+
 protected theorem Pairwise.image {s : Set ι} (h : s.Pairwise (r on f)) : (f '' s).Pairwise r :=
   ball_image_iff.2 fun _x hx ↦ ball_image_iff.2 fun _y hy hne ↦ h hx hy <| ne_of_apply_ne _ hne
 
