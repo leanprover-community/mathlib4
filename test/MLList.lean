@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Std.Data.MLList.Basic
+import Mathlib.Data.MLList.Parallel
 import Mathlib.Control.Basic
 import Mathlib.Tactic.RunCmd
 
@@ -67,3 +68,21 @@ run_cmd Lean.Elab.Command.liftTermElabM do
     guard (n = 5)
     pure n
   guard $ n = 5
+
+partial def collatz (n : Nat) : Nat :=
+  go 0 n
+where go (s n : Nat) :=
+  if n ≤ 1 then
+    s
+  else
+    go (s+1) (if n % 2 = 0 then n / 2 else 3 * n + 1)
+
+-- set_option profiler true in -- around 8.3s
+-- #eval do
+--   let R : MLList MetaM Nat := MLList.range |>.parallelMap collatz (chunkSize := 1000)
+--   _ ← R.takeAsArray 1000000
+
+-- set_option profiler true in -- around 77s
+-- #eval do
+--   let R : MLList MetaM Nat := MLList.range |>.map collatz
+--   _ ← R.takeAsArray 1000000

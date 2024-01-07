@@ -1681,6 +1681,7 @@ import Mathlib.Data.MLList.BestFirst
 import Mathlib.Data.MLList.Dedup
 import Mathlib.Data.MLList.DepthFirst
 import Mathlib.Data.MLList.IO
+import Mathlib.Data.MLList.Parallel
 import Mathlib.Data.MLList.Split
 import Mathlib.Data.Matrix.Auto
 import Mathlib.Data.Matrix.Basic
