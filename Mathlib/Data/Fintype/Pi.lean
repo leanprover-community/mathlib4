@@ -93,7 +93,7 @@ lemma eval_image_piFinset_subset (t : ∀ a, Finset (δ a)) (a : α) [DecidableE
 
 lemma eval_image_piFinset (t : ∀ a, Finset (δ a)) (a : α) [DecidableEq (δ a)]
     (ht : ∀ b, a ≠ b → (t b).Nonempty) : ((piFinset t).image fun f ↦ f a) = t a := by
-  refine (eval_image_piFinset_subset _ _).antisymm $ fun x h ↦ mem_image.2 ?_
+  refine (eval_image_piFinset_subset _ _).antisymm fun x h ↦ mem_image.2 ?_
   choose f hf using ht
   exact ⟨fun b ↦ if h : a = b then h ▸ x else f _ h, by aesop, by simp⟩
 

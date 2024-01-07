@@ -74,7 +74,7 @@ def x : MyTree (List Nat) :=
 in each node, traverses each list. For each `ℕ` visited, apply an action `ℕ → StateM (List ℕ) Unit`
 which adds its argument to the state. -/
 def ex : StateM (List ℕ) (MyTree <| List Unit) := do
-  let xs ← traverse (traverse <| fun a => modify $ List.cons a) x
+  let xs ← traverse (traverse fun a => modify $ List.cons a) x
   return xs
 
 example : (ex.run []).1 = node leaf (node (node leaf leaf [(), (), ()]) leaf [(), ()]) [()] := rfl

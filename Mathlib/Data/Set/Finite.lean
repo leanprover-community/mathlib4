@@ -71,7 +71,7 @@ theorem finite_def {s : Set α} : s.Finite ↔ Nonempty (Fintype s) :=
   ⟨fun ⟨h⟩ => ⟨h⟩, fun ⟨h⟩ => ⟨h⟩⟩
 #align set.finite_def Set.finite_def
 
-alias ⟨Finite.nonempty_fintype, _⟩ := finite_def
+protected alias ⟨Finite.nonempty_fintype, _⟩ := finite_def
 #align set.finite.nonempty_fintype Set.Finite.nonempty_fintype
 
 theorem finite_coe_iff {s : Set α} : Finite s ↔ s.Finite := by
@@ -192,7 +192,7 @@ theorem coeSort_toFinset : ↥hs.toFinset = ↥s := by
 /-- The identity map, bundled as an equivalence between the subtypes of `s : Set α` and of
 `h.toFinset : Finset α`, where `h` is a proof of finiteness of `s`. -/
 @[simps!] def subtypeEquivToFinset : {x // x ∈ s} ≃ {x // x ∈ hs.toFinset} :=
-  (Equiv.refl α).subtypeEquiv <| fun _ ↦ hs.mem_toFinset.symm
+  (Equiv.refl α).subtypeEquiv fun _ ↦ hs.mem_toFinset.symm
 
 variable {hs}
 
@@ -1057,15 +1057,24 @@ theorem Finite.finite_subsets {α : Type u} {a : Set α} (h : a.Finite) : { b | 
         and_assoc, Finset.coeEmb] using h.subset⟩
 #align set.finite.finite_subsets Set.Finite.finite_subsets
 
+section Pi
+variable {ι : Type*} [Finite ι] {κ : ι → Type*} {t : ∀ i, Set (κ i)}
+
 /-- Finite product of finite sets is finite -/
-theorem Finite.pi {δ : Type*} [Finite δ] {κ : δ → Type*} {t : ∀ d, Set (κ d)}
-    (ht : ∀ d, (t d).Finite) : (pi univ t).Finite := by
-  cases _root_.nonempty_fintype δ
+theorem Finite.pi (ht : ∀ i, (t i).Finite) : (pi univ t).Finite := by
+  cases nonempty_fintype ι
   lift t to ∀ d, Finset (κ d) using ht
   classical
     rw [← Fintype.coe_piFinset]
     apply Finset.finite_toSet
 #align set.finite.pi Set.Finite.pi
+
+/-- Finite product of finite sets is finite. Note this is a variant of `Set.Finite.pi` without the
+extra `i ∈ univ` binder. -/
+lemma Finite.pi' (ht : ∀ i, (t i).Finite) : {f : ∀ i, κ i | ∀ i, f i ∈ t i}.Finite := by
+  simpa [Set.pi] using Finite.pi ht
+
+end Pi
 
 /-- A finite union of finsets is finite. -/
 theorem union_finset_finite_of_range_finite (f : α → Finset β) (h : (range f).Finite) :
