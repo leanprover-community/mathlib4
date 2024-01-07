@@ -253,7 +253,7 @@ theorem natDegree_eraseLead_le_of_nextCoeff_eq_zero (h : f.nextCoeff = 0) :
   obtain ⟨a, rfl⟩ | ⟨hf, h⟩ := h
   · simp
   rw [eraseLead_coeff_of_ne _ (tsub_lt_self hf zero_lt_one).ne, ← nextCoeff_of_natDegree_pos hf]
-  simp [h, eq_zero_or_pos]
+  simp [nextCoeff_eq_zero, h, eq_zero_or_pos]
 
 lemma two_le_natDegree_of_nextCoeff_eraseLead (hlead : f.eraseLead ≠ 0) (hnext : f.nextCoeff = 0) :
     2 ≤ f.natDegree := by
