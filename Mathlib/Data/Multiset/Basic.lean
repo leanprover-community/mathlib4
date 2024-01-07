@@ -2744,7 +2744,7 @@ inductive Rel (r : α → β → Prop) : Multiset α → Multiset β → Prop
   | zero : Rel r 0 0
   | cons {a b as bs} : r a b → Rel r as bs → Rel r (a ::ₘ as) (b ::ₘ bs)
 #align multiset.rel Multiset.Rel
-#align multiset.rel_iff Multiset.Rel_iff
+#align multiset.rel_iff Multiset.rel_iff
 
 variable {δ : Type*} {r : α → β → Prop} {p : γ → δ → Prop}
 
@@ -2796,11 +2796,11 @@ theorem rel_flip_eq {s t : Multiset α} : Rel (fun a b => b = a) s t ↔ s = t :
 #align multiset.rel_flip_eq Multiset.rel_flip_eq
 
 @[simp]
-theorem rel_zero_left {b : Multiset β} : Rel r 0 b ↔ b = 0 := by rw [Rel_iff]; simp
+theorem rel_zero_left {b : Multiset β} : Rel r 0 b ↔ b = 0 := by rw [rel_iff]; simp
 #align multiset.rel_zero_left Multiset.rel_zero_left
 
 @[simp]
-theorem rel_zero_right {a : Multiset α} : Rel r a 0 ↔ a = 0 := by rw [Rel_iff]; simp
+theorem rel_zero_right {a : Multiset α} : Rel r a 0 ↔ a = 0 := by rw [rel_iff]; simp
 #align multiset.rel_zero_right Multiset.rel_zero_right
 
 theorem rel_cons_left {a as bs} :

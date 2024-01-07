@@ -9,7 +9,7 @@ import Mathlib.Lean.Meta.Basic
 import Mathlib.Lean.Meta.DiscrTree
 import Std.Util.Cache
 import Mathlib.Tactic.Core
-import Mathlib.Tactic.SolveByElim
+import Std.Tactic.SolveByElim
 import Mathlib.Tactic.TryThis
 
 /-!
@@ -54,7 +54,7 @@ initialize proposeLemmas : DeclCache (DiscrTree Name) ←
       let mut lemmas := lemmas
       for m in mvars do
         let path ← DiscrTree.mkPath (← inferType m) discrTreeConfig
-        lemmas := lemmas.insertIfSpecific path name discrTreeConfig
+        lemmas := lemmas.insertIfSpecific path name
       pure lemmas
 
 /-- Shortcut for calling `solveByElim`. -/

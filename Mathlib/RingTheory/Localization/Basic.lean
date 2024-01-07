@@ -383,6 +383,9 @@ theorem mk'_eq_of_eq' {a₁ b₁ : R} {a₂ b₂ : M} (H : b₁ * ↑a₂ = a₁
   (toLocalizationMap M S).mk'_eq_of_eq' H
 #align is_localization.mk'_eq_of_eq' IsLocalization.mk'_eq_of_eq'
 
+theorem mk'_cancel (a : R) (b c : M) :
+    mk' S (a * c) (b * c) = mk' S a b := (toLocalizationMap M S).mk'_cancel _ _ _
+
 variable (S)
 
 @[simp]
