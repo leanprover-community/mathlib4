@@ -1618,7 +1618,7 @@ theorem injective_iff (f : LocalizationMap S N) :
     simp_rw [LocalizationMap.eq_iff_exists] at h
     apply (fun y z _ => h) y z x
     lift x to S using hx
-    use x'
+    use x
   · intro a b hab
     rw [LocalizationMap.eq_iff_exists] at hab
     obtain ⟨c,hc⟩ := hab
