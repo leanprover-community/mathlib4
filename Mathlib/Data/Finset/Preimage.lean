@@ -113,13 +113,9 @@ theorem preimage_subset {f : α ↪ β} {s : Finset β} {t : Finset α} (hs : s 
 #align finset.preimage_subset Finset.preimage_subset
 
 theorem subset_map_iff {f : α ↪ β} {s : Finset β} {t : Finset α} :
-    s ⊆ t.map f ↔ ∃ (u : _) (_ : u ⊆ t), s = u.map f := by
+    s ⊆ t.map f ↔ ∃ u, u ⊆ t ∧ s = u.map f := by
   classical
-    refine' ⟨fun h => ⟨_, preimage_subset h, _⟩, _⟩
-    · rw [map_eq_image, image_preimage, filter_true_of_mem]
-      exact fun x hx ↦ coe_map_subset_range _ _ (h hx)
-    · rintro ⟨u, hut, rfl⟩
-      exact map_subset_map.2 hut
+  simp_rw [← coe_subset, coe_map, subset_image_iff, map_eq_image, eq_comm]
 #align finset.subset_map_iff Finset.subset_map_iff
 
 theorem sigma_preimage_mk {β : α → Type*} [DecidableEq α] (s : Finset (Σa, β a)) (t : Finset α) :

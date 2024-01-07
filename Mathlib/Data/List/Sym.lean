@@ -35,10 +35,10 @@ section Sym2
 If `xs` has no duplicates then neither does `xs.sym2`. -/
 protected def sym2 : List α → List (Sym2 α)
   | [] => []
-  | x :: xs => (x :: xs).map (fun y => ⟦(x, y)⟧) ++ xs.sym2
+  | x :: xs => (x :: xs).map (fun y => s(x, y)) ++ xs.sym2
 
 theorem mem_sym2_cons_iff {x : α} {xs : List α} {z : Sym2 α} :
-    z ∈ (x :: xs).sym2 ↔ z = ⟦(x, x)⟧ ∨ (∃ y, y ∈ xs ∧ z = ⟦(x, y)⟧) ∨ z ∈ xs.sym2 := by
+    z ∈ (x :: xs).sym2 ↔ z = s(x, x) ∨ (∃ y, y ∈ xs ∧ z = s(x, y)) ∨ z ∈ xs.sym2 := by
   simp only [List.sym2, map_cons, cons_append, mem_cons, mem_append, mem_map]
   simp only [eq_comm]
 
@@ -47,7 +47,7 @@ theorem sym2_eq_nil_iff {xs : List α} : xs.sym2 = [] ↔ xs = [] := by
   cases xs <;> simp [List.sym2]
 
 theorem left_mem_of_mk_mem_sym2 {xs : List α} {a b : α}
-    (h : ⟦(a, b)⟧ ∈ xs.sym2) : a ∈ xs := by
+    (h : s(a, b) ∈ xs.sym2) : a ∈ xs := by
   induction xs with
   | nil => exact (not_mem_nil _ h).elim
   | cons x xs ih =>
@@ -61,12 +61,12 @@ theorem left_mem_of_mk_mem_sym2 {xs : List α} {a b : α}
     · exact .inr <| ih h
 
 theorem right_mem_of_mk_mem_sym2 {xs : List α} {a b : α}
-    (h : ⟦(a, b)⟧ ∈ xs.sym2) : b ∈ xs := by
+    (h : s(a, b) ∈ xs.sym2) : b ∈ xs := by
   rw [Sym2.eq_swap] at h
   exact left_mem_of_mk_mem_sym2 h
 
 theorem mk_mem_sym2 {xs : List α} {a b : α} (ha : a ∈ xs) (hb : b ∈ xs) :
-    ⟦(a, b)⟧ ∈ xs.sym2 := by
+    s(a, b) ∈ xs.sym2 := by
   induction xs with
   | nil => simp at ha
   | cons x xs ih =>
@@ -79,7 +79,7 @@ theorem mk_mem_sym2 {xs : List α} {a b : α} (ha : a ∈ xs) (hb : b ∈ xs) :
     · right; right; exact ih ha hb
 
 theorem mk_mem_sym2_iff {xs : List α} {a b : α} :
-    ⟦(a, b)⟧ ∈ xs.sym2 ↔ a ∈ xs ∧ b ∈ xs := by
+    s(a, b) ∈ xs.sym2 ↔ a ∈ xs ∧ b ∈ xs := by
   constructor
   · intro h
     exact ⟨left_mem_of_mk_mem_sym2 h, right_mem_of_mk_mem_sym2 h⟩

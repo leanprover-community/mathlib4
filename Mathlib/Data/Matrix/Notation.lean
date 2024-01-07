@@ -103,9 +103,9 @@ macro_rules
     let n := if h : 0 < m then rows[0].size else 0
     let rowVecs ← rows.mapM fun row : Array Term => do
       unless row.size = n do
-        Macro.throwErrorAt (mkNullNode row)
-          s!"Rows must be of equal length; this row has {row.size} items, the previous rows {"
-          "}have {n}"
+        Macro.throwErrorAt (mkNullNode row) s!"\
+          Rows must be of equal length; this row has {row.size} items, \
+          the previous rows have {n}"
       `(![$row,*])
     `(@Matrix.of (Fin $(quote m)) (Fin $(quote n)) _ ![$rowVecs,*])
   | `(!![$[;%$semicolons]*]) => do
@@ -370,7 +370,7 @@ theorem vecMulVec_cons (v : m' → α) (x : α) (w : Fin n → α) :
 
 end VecMulVec
 
-section Smul
+section SMul
 
 variable [NonUnitalNonAssocSemiring α]
 
@@ -386,7 +386,7 @@ theorem smul_mat_cons (x : α) (v : n' → α) (A : Fin m → n' → α) :
   refine' Fin.cases _ _ i <;> simp
 #align matrix.smul_mat_cons Matrix.smul_mat_cons
 
-end Smul
+end SMul
 
 section Submatrix
 
