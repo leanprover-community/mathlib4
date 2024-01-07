@@ -247,6 +247,10 @@ lemma powersetCard_eq_empty : powersetCard n s = ∅ ↔ s.card < n := by
   exact fun h ↦ nonempty_iff_ne_empty.1 $ (exists_smaller_set _ _ h).imp $ by simp
 #align finset.powerset_len_empty Finset.powersetCard_eq_empty
 
+@[simp] lemma powersetCard_card_add (s : Finset α) (hn : 0 < n) :
+    s.powersetCard (s.card + n) = ∅ := by simpa
+#align finset.powerset_len_card_add Finset.powersetCard_card_add
+
 theorem powersetCard_eq_filter {n} {s : Finset α} :
     powersetCard n s = (powerset s).filter fun x => x.card = n := by
   ext
@@ -331,12 +335,6 @@ theorem powersetCard_sup [DecidableEq α] (u : Finset α) (n : ℕ) (hn : n < u.
       rw [← insert_erase hx, powersetCard_succ_insert (not_mem_erase _ _)]
       exact mem_union_right _ (mem_image_of_mem _ ht)
 #align finset.powerset_len_sup Finset.powersetCard_sup
-
-@[simp]
-theorem powersetCard_card_add (s : Finset α) {i : ℕ} (hi : 0 < i) :
-    s.powersetCard (s.card + i) = ∅ :=
-  Finset.powersetCard_eq_empty _ (lt_add_of_pos_right (Finset.card s) hi)
-#align finset.powerset_len_card_add Finset.powersetCard_card_add
 
 theorem powersetCard_map {β : Type*} (f : α ↪ β) (n : ℕ) (s : Finset α) :
     powersetCard n (s.map f) = (powersetCard n s).map (mapEmbedding f).toEmbedding :=
