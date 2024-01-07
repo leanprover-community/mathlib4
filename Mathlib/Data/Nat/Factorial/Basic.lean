@@ -207,6 +207,14 @@ theorem factorial_mul_pow_sub_le_factorial {n m : ℕ} (hnm : n ≤ m) : n ! * n
     _ ≤ _ := by simpa [hnm] using @Nat.factorial_mul_pow_le_factorial n (m - n)
 #align nat.factorial_mul_pow_sub_le_factorial Nat.factorial_mul_pow_sub_le_factorial
 
+lemma factorial_le_pow : ∀ n, n ! ≤ n ^ n
+  | 0 => le_rfl
+  | n + 1 =>
+    calc
+      _ ≤ (n + 1) * n ^ n := mul_le_mul_left' n.factorial_le_pow _
+      _ ≤ (n + 1) * (n + 1) ^ n := mul_le_mul_left' (Nat.pow_le_pow_left n.le_succ _) _
+      _ = _ := by rw [pow_succ']
+
 end Factorial
 
 /-! ### Ascending and descending factorials -/
