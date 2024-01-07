@@ -188,16 +188,16 @@ lemma inf_one [SemilatticeInf β] [OrderTop β] (f : α → β) : inf 1 f = f 1 
 lemma inf'_one [SemilatticeInf β] (f : α → β) : inf' 1 one_nonempty f = f 1 := rfl
 
 @[to_additive (attr := simp)]
-lemma max_one [LinearOrder α] : Finset.max (1 : Finset α) = 1 := rfl
+lemma max_one [LinearOrder α] : (1 : Finset α).max = 1 := rfl
 
 @[to_additive (attr := simp)]
-lemma min_one [LinearOrder α] : Finset.min (1 : Finset α) = 1 := rfl
+lemma min_one [LinearOrder α] : (1 : Finset α).min = 1 := rfl
 
 @[to_additive (attr := simp)]
-lemma max'_one [LinearOrder α] : Finset.max' (1 : Finset α) one_nonempty = 1 := rfl
+lemma max'_one [LinearOrder α] : (1 : Finset α).max' one_nonempty = 1 := rfl
 
 @[to_additive (attr := simp)]
-lemma min'_one [LinearOrder α] : Finset.min' (1 : Finset α) one_nonempty = 1 := rfl
+lemma min'_one [LinearOrder α] : (1 : Finset α).min' one_nonempty = 1 := rfl
 
 end One
 
@@ -284,22 +284,22 @@ theorem inv_insert (a : α) (s : Finset α) : (insert a s)⁻¹ = insert a⁻¹ 
 
 @[to_additive (attr := simp)]
 lemma sup_inv [SemilatticeSup β] [OrderBot β] (s : Finset α) (f : α → β) :
-    sup s⁻¹ f = sup s fun x ↦ f x⁻¹ :=
+    sup s⁻¹ f = sup s (f ·⁻¹) :=
   sup_image ..
 
 @[to_additive (attr := simp)]
 lemma sup'_inv [SemilatticeSup β] {s : Finset α} (hs : (s⁻¹).Nonempty) (f : α → β) :
-    sup' s⁻¹ hs f = sup' s (.of_inv hs) fun x ↦ f x⁻¹ :=
+    sup' s⁻¹ hs f = sup' s hs.of_inv (f ·⁻¹) :=
   sup'_image ..
 
 @[to_additive (attr := simp)]
 lemma inf_inv [SemilatticeInf β] [OrderTop β] (s : Finset α) (f : α → β) :
-    inf s⁻¹ f = inf s fun x ↦ f x⁻¹ :=
+    inf s⁻¹ f = inf s (f ·⁻¹) :=
   inf_image ..
 
 @[to_additive (attr := simp)]
 lemma inf'_inv [SemilatticeInf β] {s : Finset α} (hs : (s⁻¹).Nonempty) (f : α → β) :
-    inf' s⁻¹ hs f = inf' s (.of_inv hs) fun x ↦ f x⁻¹ :=
+    inf' s⁻¹ hs f = inf' s hs.of_inv (f ·⁻¹) :=
   inf'_image ..
 
 @[to_additive] lemma image_op_inv (s : Finset α) : s⁻¹.image op = (s.image op)⁻¹ :=

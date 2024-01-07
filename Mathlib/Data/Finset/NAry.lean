@@ -241,6 +241,36 @@ lemma le_inf_image₂ [SemilatticeInf δ] [OrderTop δ] {g : γ → δ} {a : δ}
     a ≤ inf (image₂ f s t) g ↔ ∀ x ∈ s, ∀ y ∈ t, a ≤ g (f x y) :=
   sup_image₂_le (δ := δᵒᵈ)
 
+@[simp (default + 1)] -- otherwise `simp` doesn't use `forall_image₂_iff`
+lemma sup'_image₂_le [SemilatticeSup δ] {g : γ → δ} {a : δ} (h : (image₂ f s t).Nonempty) :
+    sup' (image₂ f s t) h g ≤ a ↔ ∀ x ∈ s, ∀ y ∈ t, g (f x y) ≤ a := by
+  rw [sup'_le_iff, forall_image₂_iff]
+
+@[simp (default + 1)] -- otherwise `simp` doesn't use `forall_image₂_iff`
+lemma le_inf'_image₂ [SemilatticeInf δ] {g : γ → δ} {a : δ} (h : (image₂ f s t).Nonempty) :
+    a ≤ inf' (image₂ f s t) h g ↔ ∀ x ∈ s, ∀ y ∈ t, a ≤ g (f x y) := by
+  rw [le_inf'_iff, forall_image₂_iff]
+
+lemma sup'_image₂_left [SemilatticeSup δ] (g : γ → δ) (h : (image₂ f s t).Nonempty) :
+    sup' (image₂ f s t) h g =
+      sup' s h.of_image₂_left fun x ↦ sup' t h.of_image₂_right (g <| f x ·) := by
+  simp only [image₂, sup'_image, sup'_product_left]; rfl
+
+lemma sup'_image₂_right [SemilatticeSup δ] (g : γ → δ) (h : (image₂ f s t).Nonempty) :
+    sup' (image₂ f s t) h g =
+      sup' t h.of_image₂_right fun y ↦ sup' s h.of_image₂_left (g <| f · y) := by
+  simp only [image₂, sup'_image, sup'_product_right]; rfl
+
+lemma inf'_image₂_left [SemilatticeInf δ] (g : γ → δ) (h : (image₂ f s t).Nonempty) :
+    inf' (image₂ f s t) h g =
+      inf' s h.of_image₂_left fun x ↦ inf' t h.of_image₂_right (g <| f x ·) :=
+  sup'_image₂_left (δ := δᵒᵈ) g h
+
+lemma inf'_image₂_right [SemilatticeInf δ] (g : γ → δ) (h : (image₂ f s t).Nonempty) :
+    inf' (image₂ f s t) h g =
+      inf' t h.of_image₂_right fun y ↦ inf' s h.of_image₂_left (g <| f · y) :=
+  sup'_image₂_right (δ := δᵒᵈ) g h
+
 variable (s t)
 
 lemma sup_image₂_left [SemilatticeSup δ] [OrderBot δ] (g : γ → δ) :
