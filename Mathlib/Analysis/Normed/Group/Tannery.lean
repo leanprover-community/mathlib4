@@ -42,28 +42,23 @@ lemma tendsto_tsum_of_dominated {α β G : Type*} {𝓕 : Filter α}
   rcases 𝓕.eq_or_neBot with rfl | _
   · simp only [tendsto_bot]
   -- Auxiliary lemmas
-  have h_g_le (k : β) : ‖g k‖ ≤ bound k
-  · exact le_of_tendsto (tendsto_norm.comp (hab k)) <| eventually_of_forall <| (h_bound · k)
+  have h_g_le (k : β) : ‖g k‖ ≤ bound k :=
+    le_of_tendsto (tendsto_norm.comp (hab k)) <| eventually_of_forall (h_bound · k)
   have h_sumg : Summable (‖g ·‖) :=
     h_sum.of_norm_bounded _ (fun k ↦ (norm_norm (g k)).symm ▸ h_g_le k)
-  have h_suma (n : α) : Summable (‖f n ·‖)
-  · apply h_sum.of_norm_bounded
-    simpa only [norm_norm] using h_bound n
+  have h_suma (n : α) : Summable (‖f n ·‖) :=
+    h_sum.of_norm_bounded _ <| by simpa only [norm_norm] using h_bound n
   -- Now main proof, by an `ε / 3` argument
   rw [Metric.tendsto_nhds]
   intro ε hε
   let ⟨S, hS⟩ := h_sum
   rw [HasSum, Metric.tendsto_nhds] at hS
   obtain ⟨T, hT⟩ := eventually_atTop.mp (hS (ε / 3) (by positivity))
-  have h1 : ∑' (k : Set.compl T), bound k.val < ε / 3
-  · specialize hT T (le_refl _)
-    rw [← Metric.tendsto_nhds, ← HasSum] at hS
-    have := hS.tsum_eq
-    rw [← sum_add_tsum_compl (s := T) h_sum, ← eq_sub_iff_add_eq'] at this
-    erw [this]
-    refine lt_of_le_of_lt ?_ hT
-    rw [dist_eq_norm, ← norm_neg, neg_sub]
-    apply Real.le_norm_self
+  have h1 : ∑' (k : (Tᶜ : Set β)), bound k < ε / 3 := by
+    calc _ ≤ ‖∑' (k : (Tᶜ : Set β)), bound k‖ := Real.le_norm_self _
+         _ = ‖S - ∑ b in T, bound b‖          := congrArg _ ?_
+         _ < ε / 3                            := by rwa [dist_eq_norm, norm_sub_rev] at hT
+    simpa only [sum_add_tsum_compl h_sum, eq_sub_iff_add_eq'] using hS.tsum_eq
   have h2 : Tendsto (∑ k in T, f · k) 𝓕 (𝓝 (T.sum g)) := tendsto_finset_sum _ (fun i _ ↦ hab i)
   rw [Metric.tendsto_nhds] at h2
   refine (h2 (ε / 3) (by positivity)).mp (eventually_of_forall (fun n hn ↦ ?_))
