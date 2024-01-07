@@ -1198,6 +1198,21 @@ theorem linearIndependent_monoidHom (G : Type*) [Monoid G] (L : Type*) [CommRing
         (Finset.forall_mem_insert ..).2 ⟨h4, h3⟩
 #align linear_independent_monoid_hom linearIndependent_monoidHom
 
+lemma linearIndependent_algHom_toLinearMap
+    (K L) [CommSemiring K] [CommRing L] [IsDomain L] [Algebra K L] :
+    LinearIndependent L (AlgHom.toLinearMap : (L →ₐ[K] L) → L →ₗ[K] L) := by
+  apply LinearIndependent.of_comp (LinearMap.ltoFun K L L)
+  exact (linearIndependent_monoidHom L L).comp
+    (RingHom.toMonoidHom ∘ AlgHom.toRingHom)
+    (fun _ _ e ↦ AlgHom.ext (FunLike.congr_fun e : _))
+
+lemma linearIndependent_algHom_toLinearMap'
+    (K L) [CommRing K] [CommRing L] [IsDomain L] [Algebra K L] [NoZeroSMulDivisors K L] :
+    LinearIndependent K (AlgHom.toLinearMap : (L →ₐ[K] L) → L →ₗ[K] L) := by
+  apply (linearIndependent_algHom_toLinearMap K L).restrict_scalars
+  simp_rw [Algebra.smul_def, mul_one]
+  exact NoZeroSMulDivisors.algebraMap_injective K L
+
 theorem le_of_span_le_span [Nontrivial R] {s t u : Set M} (hl : LinearIndependent R ((↑) : u → M))
     (hsu : s ⊆ u) (htu : t ⊆ u) (hst : span R s ≤ span R t) : s ⊆ t := by
   have :=
