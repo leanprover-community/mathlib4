@@ -15,6 +15,8 @@ import Mathlib.Topology.UniformSpace.Matrix
 /-!
 # Analytic properties of the `star` operation on matrices
 
+This transports the operator norm on `EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 m`
+
 ## Main definitions
 
 * `Matrix.instNormedRingL2Op`: the (necessarily unique) normed ring structure on `Matrix n n 𝕜`
@@ -161,6 +163,11 @@ scoped[Matrix.L2OpNorm] attribute [instance] Matrix.instNormedAddCommGroupL2Op
 
 lemma op_norm_def (x : Matrix m n 𝕜) :
     ‖x‖ = ‖(toEuclideanLin (𝕜 := 𝕜) (m := m) (n := n)).trans toContinuousLinearMap x‖ := rfl
+
+-- note: with only a type ascription in the left-hand side, Lean picks the wrong norm.
+lemma norm_mulVec_le (A : Matrix m n 𝕜) (x : EuclideanSpace 𝕜 n) :
+    ‖(EuclideanSpace.equiv m 𝕜).symm <| A.mulVec x‖ ≤ ‖A‖ * ‖x‖ :=
+  toEuclideanLin (n := n) (m := m) (𝕜 := 𝕜) |>.trans toContinuousLinearMap A |>.le_op_norm x
 
 /-- The normed algebra structure on `Matrix n n 𝕜` arising from the operator norm given by the
 identification with (continuous) linear endmorphisms of `EuclideanSpace 𝕜 n`. -/
