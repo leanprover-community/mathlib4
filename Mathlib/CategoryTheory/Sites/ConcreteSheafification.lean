@@ -539,7 +539,7 @@ theorem isIso_toSheafify {P : Cᵒᵖ ⥤ D} (hP : Presheaf.IsSheaf J P) : IsIso
   infer_instance
 #align category_theory.grothendieck_topology.is_iso_to_sheafify CategoryTheory.GrothendieckTopology.isIso_toSheafify
 
-/-- If `P` is a sheaf, then `P` is isomorphic to `J.plusPlus P`. -/
+/-- If `P` is a sheaf, then `P` is isomorphic to `J.sheafify P`. -/
 noncomputable def isoSheafify {P : Cᵒᵖ ⥤ D} (hP : Presheaf.IsSheaf J P) : P ≅ J.sheafify P :=
   letI := isIso_toSheafify J hP
   asIso (J.toSheafify P)
@@ -551,8 +551,7 @@ theorem isoSheafify_hom {P : Cᵒᵖ ⥤ D} (hP : Presheaf.IsSheaf J P) :
   rfl
 #align category_theory.grothendieck_topology.iso_sheafify_hom CategoryTheory.GrothendieckTopology.isoSheafify_hom
 
-/-- Given a sheaf `Q` and a morphism `P ⟶ Q`, construct a morphism from
-`J.plusPlus P` to `Q`. -/
+/-- Given a sheaf `Q` and a morphism `P ⟶ Q`, construct a morphism from `J.sheafify P` to `Q`. -/
 noncomputable def sheafifyLift {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (hQ : Presheaf.IsSheaf J Q) :
     J.sheafify P ⟶ Q :=
   J.plusLift (J.plusLift η hQ) hQ
