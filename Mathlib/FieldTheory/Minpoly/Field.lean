@@ -261,3 +261,37 @@ theorem coeff_zero_ne_zero (hx : IsIntegral A x) (h : x ≠ 0) : coeff (minpoly 
 end IsDomain
 
 end minpoly
+
+section AlgHom
+
+variable {K L} [Field K] [CommRing L] [IsDomain L] [Algebra K L]
+
+/-- The minimal polynomial (over `K`) of `σ : Gal(L/K)` is `X ^ (orderOf σ) - 1`. -/
+lemma minpoly_algEquiv_toLinearMap (σ : L ≃ₐ[K] L) (hσ : IsOfFinOrder σ) :
+    minpoly K σ.toLinearMap = X ^ (orderOf σ) - C 1 := by
+  refine (minpoly.unique _ _ (monic_X_pow_sub_C _ hσ.orderOf_pos.ne.symm) ?_ ?_).symm
+  · rw [(aeval σ.toLinearMap).map_sub (X ^ orderOf σ) (C (1 : K))]
+    simp [← AlgEquiv.pow_toLinearMap, pow_orderOf_eq_one]
+  · intros q hq hs
+    rw [degree_eq_natDegree hq.ne_zero, degree_X_pow_sub_C hσ.orderOf_pos, Nat.cast_le, ← not_lt]
+    intro H
+    rw [aeval_eq_sum_range' H, ← Fin.sum_univ_eq_sum_range] at hs
+    simp_rw [← AlgEquiv.pow_toLinearMap] at hs
+    apply hq.ne_zero
+    simpa using Fintype.linearIndependent_iff.mp
+      (((linearIndependent_algHom_toLinearMap' K L).comp _ AlgEquiv.coe_algHom_injective).comp _
+        (Subtype.val_injective.comp ((finEquivPowers σ hσ).injective)))
+      (q.coeff ∘ (↑)) hs ⟨_, H⟩
+
+/-- The minimal polynomial (over `K`) of `σ : Gal(L/K)` is `X ^ (orderOf σ) - 1`. -/
+lemma minpoly_algHom_toLinearMap (σ : L →ₐ[K] L) (hσ : IsOfFinOrder σ) :
+    minpoly K σ.toLinearMap = X ^ (orderOf σ) - C 1 := by
+  have : orderOf σ = orderOf (AlgEquiv.algHomUnitsEquiv _ _ hσ.unit)
+  · erw [orderOf_injective (AlgEquiv.algHomUnitsEquiv K L)
+      (AlgEquiv.algHomUnitsEquiv K L).injective]
+    rw [← orderOf_units]
+    rfl
+  rw [this, ← minpoly_algEquiv_toLinearMap]; rfl
+  rwa [← orderOf_pos_iff, ← this, orderOf_pos_iff]
+
+end AlgHom

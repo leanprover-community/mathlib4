@@ -3,6 +3,7 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+import Mathlib.Algebra.Homology.HomologicalComplexBiprod
 import Mathlib.Algebra.Homology.Homotopy
 import Mathlib.Algebra.Homology.HomologicalComplexBiprod
 
@@ -453,7 +454,7 @@ variable (hc : ∀ j, ∃ i, c.Rel i j)
 
 namespace πCompι₀Homotopy
 
-/-- A null homotopic map `K.cylinder ⟶ K. cylinder` which identifies to
+/-- A null homotopic map `K.cylinder ⟶ K.cylinder` which identifies to
 `π K ≫ ι₀ K - 𝟙 _`, see `nullHomotopicMap_eq`. -/
 noncomputable def nullHomotopicMap : K.cylinder ⟶ K.cylinder :=
   Homotopy.nullHomotopicMap'
@@ -483,7 +484,7 @@ lemma inlX_nullHomotopy_f (i j : ι) (hij : c.Rel j i) :
       ← HomologicalComplex.comp_f_assoc, biprod.lift_snd, neg_f_apply, id_f, neg_comp,
       id_comp, inlX_π_assoc, zero_sub]
 
-lemma biprod_id_sub_id : biprod.lift (𝟙 K) (-𝟙 K) = biprod.inl - biprod.inr :=
+lemma biprod_lift_id_sub_id : biprod.lift (𝟙 K) (-𝟙 K) = biprod.inl - biprod.inr :=
   biprod.hom_ext _ _ (by simp) (by simp)
 
 lemma inrX_nullHomotopy_f (j : ι) :
@@ -502,7 +503,7 @@ lemma inrX_nullHomotopy_f (j : ι) :
     · simp [ι₀]
     · dsimp
       simp only [inr_biprodXIso_inv_assoc, biprod_inr_snd_f_assoc, comp_sub,
-        biprod_inr_desc_f_assoc, id_f, id_comp, ι₀, comp_f, biprod_id_sub_id,
+        biprod_inr_desc_f_assoc, id_f, id_comp, ι₀, comp_f, biprod_lift_id_sub_id,
         sub_f_apply, sub_comp, homotopyCofiber_X, homotopyCofiber.inr_f]
   · simp only [not_exists] at hj
     simp only [assoc, Homotopy.nullHomotopicMap'_f_of_not_rel_left hij hj, homotopyCofiber_X,
@@ -511,7 +512,7 @@ lemma inrX_nullHomotopy_f (j : ι) :
     rw [← cancel_epi (biprodXIso K K j).inv]
     ext
     · simp
-    · simp [biprod_id_sub_id]
+    · simp [biprod_lift_id_sub_id]
 
 lemma nullHomotopicMap_eq : nullHomotopicMap K = π K ≫ ι₀ K - 𝟙 _ := by
   ext i
@@ -550,6 +551,7 @@ end
 
 end cylinder
 
+/-- If a functor inverts homotopy equivalences, it sends homotopic maps to the same map. -/
 lemma _root_.Homotopy.map_eq_of_inverts_homotopyEquivalences
     {φ₀ φ₁ : F ⟶ G} (h : Homotopy φ₀ φ₁) (hc : ∀ j, ∃ i, c.Rel i j)
     [∀ i, HasBinaryBiproduct (F.X i) (F.X i)]

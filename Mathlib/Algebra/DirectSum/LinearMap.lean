@@ -17,8 +17,6 @@ domain and codomain.
 
 open Set BigOperators DirectSum
 
-attribute [local instance] Module.free_of_finite_type_torsion_free'
-
 variable {ι R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
   {N : ι → Submodule R M} [DecidableEq ι] (h : IsInternal N)
 
