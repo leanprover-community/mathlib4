@@ -333,6 +333,7 @@ protected theorem isClosed_preimage (hf : QuotientMap f) {s : Set β} :
 #align quotient_map.is_closed_preimage QuotientMap.isClosed_preimage
 
 end QuotientMap
+
 end QuotientMap
 
 section OpenMap
@@ -345,6 +346,7 @@ def IsOpenMap [TopologicalSpace α] [TopologicalSpace β] (f : α → β) :=
 variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ] {f : α → β}
 
 namespace IsOpenMap
+
 protected theorem id : IsOpenMap (@id α) := fun s hs => by rwa [image_id]
 #align is_open_map.id IsOpenMap.id
 
@@ -460,6 +462,7 @@ theorem isOpenMap_iff_interior : IsOpenMap f ↔ ∀ s, f '' interior s ⊆ inte
 protected theorem Inducing.isOpenMap (hi : Inducing f) (ho : IsOpen (range f)) : IsOpenMap f :=
   IsOpenMap.of_nhds_le fun _ => (hi.map_nhds_of_mem _ <| IsOpen.mem_nhds ho <| mem_range_self _).ge
 #align inducing.is_open_map Inducing.isOpenMap
+
 end OpenMap
 
 section IsClosedMap
@@ -560,6 +563,7 @@ theorem IsClosedMap.mapClusterPt_iff_lift'_closure
     MapClusterPt y F f ↔ ((F.lift' closure) ⊓ 𝓟 (f ⁻¹' {y})).NeBot := by
   rw [MapClusterPt, clusterPt_iff_lift'_closure', f_closed.lift'_closure_map_eq f_cont,
       ← comap_principal, ← map_neBot_iff f, Filter.push_pull, principal_singleton]
+
 end IsClosedMap
 
 section OpenEmbedding
@@ -647,26 +651,30 @@ theorem openEmbedding_id : OpenEmbedding (@id α) :=
   ⟨embedding_id, IsOpenMap.id.isOpen_range⟩
 #align open_embedding_id openEmbedding_id
 
-protected theorem OpenEmbedding.comp (hg : OpenEmbedding g)
+namespace OpenEmbedding
+
+protected theorem comp (hg : OpenEmbedding g)
     (hf : OpenEmbedding f) : OpenEmbedding (g ∘ f) :=
   ⟨hg.1.comp hf.1, (hg.isOpenMap.comp hf.isOpenMap).isOpen_range⟩
 #align open_embedding.comp OpenEmbedding.comp
 
-theorem OpenEmbedding.isOpenMap_iff (hg : OpenEmbedding g) :
+theorem isOpenMap_iff (hg : OpenEmbedding g) :
     IsOpenMap f ↔ IsOpenMap (g ∘ f) := by
   simp_rw [isOpenMap_iff_nhds_le, ← map_map, comp, ← hg.map_nhds_eq, Filter.map_le_map_iff hg.inj]
 #align open_embedding.is_open_map_iff OpenEmbedding.isOpenMap_iff
 
-theorem OpenEmbedding.of_comp_iff (f : α → β) (hg : OpenEmbedding g) :
+theorem of_comp_iff (f : α → β) (hg : OpenEmbedding g) :
     OpenEmbedding (g ∘ f) ↔ OpenEmbedding f := by
   simp only [openEmbedding_iff_continuous_injective_open, ← hg.isOpenMap_iff, ←
     hg.1.continuous_iff, hg.inj.of_comp_iff]
 #align open_embedding.of_comp_iff OpenEmbedding.of_comp_iff
 
-theorem OpenEmbedding.of_comp (f : α → β) (hg : OpenEmbedding g)
+theorem of_comp (f : α → β) (hg : OpenEmbedding g)
     (h : OpenEmbedding (g ∘ f)) : OpenEmbedding f :=
   (OpenEmbedding.of_comp_iff f hg).1 h
 #align open_embedding.of_comp OpenEmbedding.of_comp
+
+end OpenEmbedding
 
 end OpenEmbedding
 
@@ -684,37 +692,39 @@ structure ClosedEmbedding (f : α → β) extends Embedding f : Prop where
 
 variable {f : α → β} {g : β → γ}
 
-theorem ClosedEmbedding.tendsto_nhds_iff {ι : Type*} {g : ι → α} {a : Filter ι} {b : α}
+namespace ClosedEmbedding
+
+theorem tendsto_nhds_iff {ι : Type*} {g : ι → α} {a : Filter ι} {b : α}
     (hf : ClosedEmbedding f) : Tendsto g a (𝓝 b) ↔ Tendsto (f ∘ g) a (𝓝 (f b)) :=
   hf.toEmbedding.tendsto_nhds_iff
 #align closed_embedding.tendsto_nhds_iff ClosedEmbedding.tendsto_nhds_iff
 
-theorem ClosedEmbedding.continuous (hf : ClosedEmbedding f) : Continuous f :=
+theorem continuous (hf : ClosedEmbedding f) : Continuous f :=
   hf.toEmbedding.continuous
 #align closed_embedding.continuous ClosedEmbedding.continuous
 
-theorem ClosedEmbedding.isClosedMap (hf : ClosedEmbedding f) : IsClosedMap f :=
+theorem isClosedMap (hf : ClosedEmbedding f) : IsClosedMap f :=
   hf.toEmbedding.toInducing.isClosedMap hf.closed_range
 #align closed_embedding.is_closed_map ClosedEmbedding.isClosedMap
 
-theorem ClosedEmbedding.closed_iff_image_closed (hf : ClosedEmbedding f) {s : Set α} :
+theorem closed_iff_image_closed (hf : ClosedEmbedding f) {s : Set α} :
     IsClosed s ↔ IsClosed (f '' s) :=
   ⟨hf.isClosedMap s, fun h => by
     rw [← preimage_image_eq s hf.inj]
     exact h.preimage hf.continuous⟩
 #align closed_embedding.closed_iff_image_closed ClosedEmbedding.closed_iff_image_closed
 
-theorem ClosedEmbedding.closed_iff_preimage_closed (hf : ClosedEmbedding f) {s : Set β}
+theorem closed_iff_preimage_closed (hf : ClosedEmbedding f) {s : Set β}
     (hs : s ⊆ range f) : IsClosed s ↔ IsClosed (f ⁻¹' s) := by
   rw [hf.closed_iff_image_closed, image_preimage_eq_of_subset hs]
 #align closed_embedding.closed_iff_preimage_closed ClosedEmbedding.closed_iff_preimage_closed
 
-theorem closedEmbedding_of_embedding_closed (h₁ : Embedding f) (h₂ : IsClosedMap f) :
+theorem _root_.closedEmbedding_of_embedding_closed (h₁ : Embedding f) (h₂ : IsClosedMap f) :
     ClosedEmbedding f :=
   ⟨h₁, image_univ (f := f) ▸ h₂ univ isClosed_univ⟩
 #align closed_embedding_of_embedding_closed closedEmbedding_of_embedding_closed
 
-theorem closedEmbedding_of_continuous_injective_closed (h₁ : Continuous f) (h₂ : Injective f)
+theorem _root_.closedEmbedding_of_continuous_injective_closed (h₁ : Continuous f) (h₂ : Injective f)
     (h₃ : IsClosedMap f) : ClosedEmbedding f := by
   refine closedEmbedding_of_embedding_closed ⟨⟨?_⟩, h₂⟩ h₃
   refine h₁.le_induced.antisymm fun s hs => ?_
@@ -722,18 +732,20 @@ theorem closedEmbedding_of_continuous_injective_closed (h₁ : Continuous f) (h�
   rw [preimage_compl, preimage_image_eq _ h₂, compl_compl]
 #align closed_embedding_of_continuous_injective_closed closedEmbedding_of_continuous_injective_closed
 
-theorem closedEmbedding_id : ClosedEmbedding (@id α) :=
+theorem _root_.closedEmbedding_id : ClosedEmbedding (@id α) :=
   ⟨embedding_id, IsClosedMap.id.closed_range⟩
 #align closed_embedding_id closedEmbedding_id
 
-theorem ClosedEmbedding.comp (hg : ClosedEmbedding g) (hf : ClosedEmbedding f) :
+theorem comp (hg : ClosedEmbedding g) (hf : ClosedEmbedding f) :
     ClosedEmbedding (g ∘ f) :=
   ⟨hg.toEmbedding.comp hf.toEmbedding, (hg.isClosedMap.comp hf.isClosedMap).closed_range⟩
 #align closed_embedding.comp ClosedEmbedding.comp
 
-theorem ClosedEmbedding.closure_image_eq (hf : ClosedEmbedding f) (s : Set α) :
+theorem closure_image_eq (hf : ClosedEmbedding f) (s : Set α) :
     closure (f '' s) = f '' closure s :=
   hf.isClosedMap.closure_image_eq_of_continuous hf.continuous s
 #align closed_embedding.closure_image_eq ClosedEmbedding.closure_image_eq
+
+end ClosedEmbedding
 
 end ClosedEmbedding
