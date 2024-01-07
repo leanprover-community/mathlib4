@@ -387,6 +387,10 @@ instance toAlgebra {R : Type*} [Semiring R] [Algebra L R] : Algebra S R :=
   S.toSubalgebra.toAlgebra
 #align intermediate_field.to_algebra IntermediateField.toAlgebra
 
+@[simp] lemma algebraMap_apply (x : S) : algebraMap S L x = x := rfl
+
+@[simp] lemma coe_algebraMap_apply (x : K) : ↑(algebraMap K S x) = algebraMap K L x := rfl
+
 instance isScalarTower_bot {R : Type*} [Semiring R] [Algebra L R] : IsScalarTower S L R :=
   IsScalarTower.subalgebra _ _ _ S.toSubalgebra
 #align intermediate_field.is_scalar_tower_bot IntermediateField.isScalarTower_bot
@@ -400,6 +404,14 @@ instance isScalarTower_mid {R : Type*} [Semiring R] [Algebra L R] [Algebra K R]
 instance isScalarTower_mid' : IsScalarTower K S L :=
   S.isScalarTower_mid
 #align intermediate_field.is_scalar_tower_mid' IntermediateField.isScalarTower_mid'
+
+section shortcut_instances
+variable {E} [Field E] [Algebra L E] (T : IntermediateField S E) {S}
+instance : Algebra S T := T.algebra
+instance : Module S T := Algebra.toModule
+instance : SMul S T := Algebra.toSMul
+instance [Algebra K E] [IsScalarTower K L E] : IsScalarTower K S T := T.isScalarTower
+end shortcut_instances
 
 /-- Given `f : L →ₐ[K] L'`, `S.comap f` is the intermediate field between `K` and `L`
   such that `f x ∈ S ↔ x ∈ S.comap f`. -/

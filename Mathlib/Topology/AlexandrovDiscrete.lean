@@ -133,7 +133,7 @@ lemma mem_exterior : a ∈ exterior s ↔ ∀ U, IsOpen U → s ⊆ U → a ∈ 
 lemma subset_exterior_iff : s ⊆ exterior t ↔ ∀ U, IsOpen U → t ⊆ U → s ⊆ U := by
   simp [exterior_def]
 
-lemma subset_exterior : s ⊆ exterior s := subset_exterior_iff.2 $ fun _ _ ↦ id
+lemma subset_exterior : s ⊆ exterior s := subset_exterior_iff.2 fun _ _ ↦ id
 
 lemma exterior_minimal (h₁ : s ⊆ t) (h₂ : IsOpen t) : exterior s ⊆ t := by
   rw [exterior_def]; exact sInter_subset_of_mem ⟨h₂, h₁⟩
@@ -156,7 +156,7 @@ lemma IsOpen.exterior_subset_iff (ht : IsOpen t) : exterior s ⊆ t ↔ s ⊆ t 
 variable [AlexandrovDiscrete α] [AlexandrovDiscrete β]
 
 @[simp] lemma isOpen_exterior : IsOpen (exterior s) := by
-  rw [exterior_def]; exact isOpen_sInter $ fun _ ↦ And.left
+  rw [exterior_def]; exact isOpen_sInter fun _ ↦ And.left
 
 lemma exterior_mem_nhdsSet : exterior s ∈ 𝓝ˢ s := isOpen_exterior.mem_nhdsSet.2 subset_exterior
 
