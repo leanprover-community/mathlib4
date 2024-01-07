@@ -52,8 +52,9 @@ lemma tendsto_tsum_of_dominated {α β G : Type*} {𝓕 : Filter α}
   rw [Metric.tendsto_nhds]
   intro ε hε
   let ⟨S, hS⟩ := h_sum
-  rw [HasSum, Metric.tendsto_nhds] at hS
-  obtain ⟨T, hT⟩ := eventually_atTop.mp (hS (ε / 3) (by positivity))
+  obtain ⟨T, hT⟩ : ∃ (T : Finset β), dist (∑ b in T, bound b) S < ε / 3 := by
+    rw [HasSum, Metric.tendsto_nhds] at hS
+    exact (fun ⟨T, h⟩ ↦ ⟨T, h _ le_rfl⟩) <| eventually_atTop.mp (hS (ε / 3) (by positivity))
   have h1 : ∑' (k : (Tᶜ : Set β)), bound k < ε / 3 := by
     calc _ ≤ ‖∑' (k : (Tᶜ : Set β)), bound k‖ := Real.le_norm_self _
          _ = ‖S - ∑ b in T, bound b‖          := congrArg _ ?_
