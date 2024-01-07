@@ -173,7 +173,7 @@ theorem Finset.prod_attach_univ [Fintype α] [CommMonoid β] (f : { a : α // a 
 theorem Finset.prod_univ_pi [DecidableEq α] [Fintype α] [CommMonoid β] {δ : α → Type*}
     {t : ∀ a : α, Finset (δ a)} (f : (∀ a : α, a ∈ (univ : Finset α) → δ a) → β) :
     ∏ x in univ.pi t, f x = ∏ x in Fintype.piFinset t, f fun a _ => x a := by
-  apply prod_nbij' (fun x i ↦ x i $ mem_univ _) (fun x i _ ↦ x i) <;> simp
+  apply prod_nbij' (fun x i ↦ x i <| mem_univ _) (fun x i _ ↦ x i) <;> simp
 #align finset.prod_univ_pi Finset.prod_univ_pi
 #align finset.sum_univ_pi Finset.sum_univ_pi
 
@@ -230,8 +230,8 @@ nonrec theorem Fintype.prod_dite [Fintype α] {p : α → Prop} [DecidablePred p
     (∏ a : { a // p a }, f a a.2) * ∏ a : { a // ¬p a }, g a a.2 := by
   simp only [prod_dite, attach_eq_univ]
   congr 1
-  · exact (Equiv.subtypeEquivRight $ by simp).prod_comp fun x : { x // p x } => f x x.2
-  · exact (Equiv.subtypeEquivRight $ by simp).prod_comp fun x : { x // ¬p x } => g x x.2
+  · exact (Equiv.subtypeEquivRight <| by simp).prod_comp fun x : { x // p x } => f x x.2
+  · exact (Equiv.subtypeEquivRight <| by simp).prod_comp fun x : { x // ¬p x } => g x x.2
 #align fintype.prod_dite Fintype.prod_dite
 
 section
