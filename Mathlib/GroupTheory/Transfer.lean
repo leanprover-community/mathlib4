@@ -120,7 +120,7 @@ theorem transfer_eq_prod_quotient_orbitRel_zpowers_quot [FiniteIndex H] (g : G)
       ∏ q : Quotient (orbitRel (zpowers g) (G ⧸ H)),
         ϕ
           ⟨q.out'.out'⁻¹ * g ^ period g q.out' * q.out'.out',
-            QuotientGroup.out'_conj_pow_minimalPeriod_mem H g q.out'⟩ := by
+            QuotientGroup.out'_conj_pow_period_mem H g q.out'⟩ := by
   classical
     letI := H.fintypeQuotientOfFiniteIndex
     calc
@@ -151,7 +151,7 @@ theorem transfer_eq_pow_aux (g : G)
       (_root_.congr_arg (· ∈ H) (key k g₀ hk)).mp hk
     replace key : ∀ q : G ⧸ H, g ^ period g q ∈ H := fun q =>
       key (period g q) q.out'
-        (QuotientGroup.out'_conj_pow_minimalPeriod_mem H g q)
+        (QuotientGroup.out'_conj_pow_period_mem H g q)
     let f : Quotient (orbitRel (zpowers g) (G ⧸ H)) → zpowers g := fun q =>
       (⟨g, mem_zpowers g⟩ : zpowers g) ^ period g q.out'
     have hf : ∀ q, f q ∈ H.subgroupOf (zpowers g) := fun q => key q.out'

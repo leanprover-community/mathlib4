@@ -119,11 +119,15 @@ theorem Quotient.coe_smul_out' [QuotientAction β H] (b : β) (q : α ⧸ H) : �
 #align mul_action.quotient.coe_smul_out' MulAction.Quotient.coe_smul_out'
 #align add_action.quotient.coe_vadd_out' AddAction.Quotient.coe_vadd_out'
 
-theorem _root_.QuotientGroup.out'_conj_pow_minimalPeriod_mem (a : α) (q : α ⧸ H) :
+theorem _root_.QuotientGroup.out'_conj_pow_period_mem (a : α) (q : α ⧸ H) :
     q.out'⁻¹ * a ^ MulAction.period a q * q.out' ∈ H := by
   rw [mul_assoc, ← QuotientGroup.eq', QuotientGroup.out_eq', ← smul_eq_mul, Quotient.mk_smul_out',
     eq_comm, smul_pow_period_fixed]
-#align quotient_group.out'_conj_pow_minimal_period_mem QuotientGroup.out'_conj_pow_minimalPeriod_mem
+#align quotient_group.out'_conj_pow_minimal_period_mem QuotientGroup.out'_conj_pow_period_mem
+
+@[deprecated]
+alias _root_.QuotientGroup.out'_conj_pow_minimalPeriod_mem :=
+  _root_.QuotientGroup.out'_conj_pow_period_mem
 
 end QuotientAction
 
