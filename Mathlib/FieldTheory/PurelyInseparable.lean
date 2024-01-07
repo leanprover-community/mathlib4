@@ -90,8 +90,8 @@ separable degree, degree, separable closure, purely inseparable
   fields must be purely inseparable extensions. Need to use the fact that `Emb F E` is infintie
   when `E / F` is (purely) transcendental.
 
-- Prove that the (infinite) separable degree multiply by the (infinite) inseparable degree is equal
-  to the (infinite) field extension degree. Need to use the linearly disjoint argument.
+- Prove that the (infinite) separable degree and the (infinite) inseparable degree are
+  multiplicative. For the latter one, linearly disjoint argument is needed.
 
 -/
 
