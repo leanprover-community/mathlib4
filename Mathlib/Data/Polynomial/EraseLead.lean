@@ -128,10 +128,10 @@ theorem card_support_eraseLead : f.eraseLead.support.card = f.support.card - 1 :
   · rw [hf, eraseLead_zero, support_zero, card_empty]
   · rw [← card_support_eraseLead_add_one hf, add_tsub_cancel_right]
 
-theorem eraseLead_card_support' {c : ℕ} (fc : f.support.card = c + 1) :
+theorem card_support_eraseLead' {c : ℕ} (fc : f.support.card = c + 1) :
     f.eraseLead.support.card = c := by
   rw [card_support_eraseLead, fc, add_tsub_cancel_right]
-#align polynomial.erase_lead_card_support' Polynomial.eraseLead_card_support'
+#align polynomial.erase_lead_card_support' Polynomial.card_support_eraseLead'
 
 theorem card_support_eq_one_of_eraseLead_eq_zero (h₀ : f ≠ 0) (h₁ : f.eraseLead = 0) :
     f.support.card = 1 :=
@@ -299,7 +299,7 @@ theorem induction_with_natDegree_le (P : R[X] → Prop) (N : ℕ) (P_0 : P 0)
     cases c
     · convert P_C_mul_pow f.natDegree f.leadingCoeff ?_ df using 1
       · convert zero_add (C (leadingCoeff f) * X ^ f.natDegree)
-        rw [← card_support_eq_zero, eraseLead_card_support' f0]
+        rw [← card_support_eq_zero, card_support_eraseLead' f0]
       · rw [leadingCoeff_ne_zero, Ne.def, ← card_support_eq_zero, f0]
         exact zero_ne_one.symm
     refine' P_C_add f.eraseLead _ _ _ _ _
@@ -309,7 +309,7 @@ theorem induction_with_natDegree_le (P : R[X] → Prop) (N : ℕ) (P_0 : P 0)
         rintro rfl
         simp at f0
     · exact (natDegree_C_mul_X_pow_le f.leadingCoeff f.natDegree).trans df
-    · exact hc _ (eraseLead_natDegree_le_aux.trans df) (eraseLead_card_support' f0)
+    · exact hc _ (eraseLead_natDegree_le_aux.trans df) (card_support_eraseLead' f0)
     · refine' P_C_mul_pow _ _ _ df
       rw [Ne.def, leadingCoeff_eq_zero, ← card_support_eq_zero, f0]
       exact Nat.succ_ne_zero _
@@ -381,7 +381,7 @@ theorem card_support_eq {n : ℕ} :
   induction' n with n hn generalizing f
   · exact fun hf => ⟨0, 0, fun x => x.elim0, fun x => x.elim0, card_support_eq_zero.mp hf⟩
   · intro h
-    obtain ⟨k, x, hk, hx, hf⟩ := hn (eraseLead_card_support' h)
+    obtain ⟨k, x, hk, hx, hf⟩ := hn (card_support_eraseLead' h)
     have H : ¬∃ k : Fin n, Fin.castSucc k = Fin.last n := by
       rintro ⟨i, hi⟩
       exact i.castSucc_lt_last.ne hi

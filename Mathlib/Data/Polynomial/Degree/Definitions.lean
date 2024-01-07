@@ -570,7 +570,7 @@ def nextCoeff (p : R[X]) : R :=
   if p.natDegree = 0 then 0 else p.coeff (p.natDegree - 1)
 #align polynomial.next_coeff Polynomial.nextCoeff
 
-@[simp] lemma nextCoeff_eq_zero :
+lemma nextCoeff_eq_zero :
     p.nextCoeff = 0 ↔ p.natDegree = 0 ∨ 0 < p.natDegree ∧ p.coeff (p.natDegree - 1) = 0 := by
   simp [nextCoeff, or_iff_not_imp_left, pos_iff_ne_zero]; aesop
 
