@@ -3146,6 +3146,8 @@ theorem range_subset {n m} : range n ⊆ range m ↔ n ≤ m :=
 theorem range_mono : Monotone range := fun _ _ => range_subset.2
 #align finset.range_mono Finset.range_mono
 
+@[gcongr] alias ⟨_, range_subset_of_le⟩ := range_subset
+
 theorem mem_range_succ_iff {a b : ℕ} : a ∈ Finset.range b.succ ↔ a ≤ b :=
   Finset.mem_range.trans Nat.lt_succ_iff
 #align finset.mem_range_succ_iff Finset.mem_range_succ_iff
