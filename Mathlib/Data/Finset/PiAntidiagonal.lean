@@ -99,14 +99,9 @@ def finAntidiagonal₀ (d : ℕ) (n : μ) : Finset (Fin d →₀ μ) :=
       inj' := fun _ _ h => FunLike.coe_fn_eq.mpr h }
 
 lemma mem_finAntidiagonal₀' (d : ℕ) (n : μ) (f : Fin d →₀ μ) :
-    f ∈ finAntidiagonal₀ d n ↔ univ.sum f = n := by
-  simp only [finAntidiagonal₀, mem_map, Embedding.coeFn_mk, ← mem_finAntidiagonal]
-  constructor
-  · rintro ⟨g, h, rfl⟩
-    exact h
-  · intro h
-    use f, h
-    exact Finsupp.ext (congrFun rfl)
+    f ∈ finAntidiagonal₀ d n ↔ ∑ i, f i = n := by
+  simp only [finAntidiagonal₀, mem_map, Embedding.coeFn_mk, ← mem_finAntidiagonal,
+    ←FunLike.coe_injective.eq_iff, Finsupp.coe_mk, exists_eq_right]
 
 lemma mem_finAntidiagonal₀ (d : ℕ) (n : μ) (f : Fin d →₀ μ) :
     f ∈ finAntidiagonal₀ d n ↔ sum f (fun _ x => x) = n := by
