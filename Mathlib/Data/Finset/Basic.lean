@@ -2844,7 +2844,6 @@ theorem filter_congr {s : Finset α} (H : ∀ x ∈ s, p x ↔ q x) : filter p s
 
 variable (p q)
 
-@[simp]
 theorem filter_empty : filter p ∅ = ∅ :=
   subset_empty.1 <| filter_subset _ _
 #align finset.filter_empty Finset.filter_empty
