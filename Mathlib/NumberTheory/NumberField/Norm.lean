@@ -101,6 +101,7 @@ theorem norm_norm [IsSeparable K L] [Algebra F L] [IsSeparable F L] [FiniteDimen
 
 variable {F}
 
+set_option synthInstance.maxHeartbeats 60000 in
 theorem isUnit_norm [CharZero K] {x : 𝓞 F} : IsUnit (norm K x) ↔ IsUnit x := by
   letI : Algebra K (AlgebraicClosure K) := AlgebraicClosure.instAlgebra K
   let L := normalClosure K F (AlgebraicClosure F)
