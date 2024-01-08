@@ -38,7 +38,9 @@ variable [Module F K] [Module K A] [Module F A] [IsScalarTower F K A]
 variable [StrongRankCondition F] [StrongRankCondition K] [Module.Free F K] [Module.Free K A]
 
 /-- Tower law: if `A` is a `K`-module and `K` is an extension of `F` then
-$\operatorname{rank}_F(A) = \operatorname{rank}_F(K) * \operatorname{rank}_K(A)$. -/
+$\operatorname{rank}_F(A) = \operatorname{rank}_F(K) * \operatorname{rank}_K(A)$.
+
+The universe polymorphic version of `rank_mul_rank` below. -/
 theorem lift_rank_mul_lift_rank :
     Cardinal.lift.{w} (Module.rank F K) * Cardinal.lift.{v} (Module.rank K A) =
       Cardinal.lift.{v} (Module.rank F A) := by
