@@ -264,8 +264,7 @@ theorem Embedding.closure_eq_preimage_closure_image {e : X → Y} (he : Embeddin
 is the discrete topology on `X`.
 
 See also `DiscreteTopology.of_continuous_injective`. -/
-theorem Embedding.discreteTopology {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-    [DiscreteTopology Y] {f : X → Y} (hf : Embedding f) : DiscreteTopology X :=
+theorem Embedding.discreteTopology [DiscreteTopology Y] (hf : Embedding f) : DiscreteTopology X :=
   .of_continuous_injective hf.continuous hf.inj
 #align embedding.discrete_topology Embedding.discreteTopology
 
