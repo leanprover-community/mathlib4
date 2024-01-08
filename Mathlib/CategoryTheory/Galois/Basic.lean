@@ -105,7 +105,7 @@ instance (ι : Type*) [Finite ι] : HasColimitsOfShape (Discrete ι) C :=
 instance : HasInitial C := inferInstance
 
 instance (G : Type u₂) [Group G] [Finite G] : HasColimitsOfShape (SingleObj G) C :=
-  PreGaloisCategory.hasQuotientsByFiniteGroups G 
+  PreGaloisCategory.hasQuotientsByFiniteGroups G
 
 variable {C : Type u₁} [Category.{u₂, u₁} C] {F : C ⥤ FintypeCat.{w}} [PreGaloisCategory C]
   [FibreFunctor F]
