@@ -727,17 +727,14 @@ section Zero
 
 variable [Zero M]
 
-lemma embDomain_comapDomain {f : α ↪ β} {g : β →₀ M} (hg: ↑g.support ⊆ Set.range ⇑f) :
-    embDomain f (comapDomain (⇑f) g (f.injective.injOn _)) = g := by
+lemma embDomain_comapDomain {f : α ↪ β} {g : β →₀ M} (hg : ↑g.support ⊆ Set.range f) :
+    embDomain f (comapDomain f g (f.injective.injOn _)) = g := by
   ext b
   by_cases hb : b ∈ Set.range f
-  · rcases Set.mem_range.1 hb with ⟨a, rfl⟩
+  · obtain ⟨a, rfl⟩ := hb
     rw [embDomain_apply, comapDomain_apply]
-  · rw [embDomain_notin_range _ _ _ hb]
-    apply symm
-    rw [← not_mem_support_iff]
-    by_contra hb'
-    exact hb (hg hb')
+  · replace hg : g b = 0 := not_mem_support_iff.mp <| mt (hg ·) hb
+    rw [embDomain_notin_range _ _ _ hb, hg]
 
 lemma exists_mem_embDomain_eq {f : α ↪ β} {g : β →₀ M} :
     (∃ (v : α →₀ M), embDomain f v = g) ↔ (g.support : Set β) ⊆ (Set.range f) := by
