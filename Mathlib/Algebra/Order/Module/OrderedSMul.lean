@@ -5,7 +5,7 @@ Authors: Frédéric Dupuis
 -/
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Module.Prod
-import Mathlib.Algebra.Order.LatticeGroup
+import Mathlib.Algebra.Order.Group.Lattice
 import Mathlib.Algebra.Order.Module.Defs
 import Mathlib.Algebra.Order.Monoid.Prod
 import Mathlib.Algebra.Order.Pi
