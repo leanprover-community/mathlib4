@@ -298,7 +298,7 @@ lemma inf_inv [SemilatticeInf β] [OrderTop β] (s : Finset α) (f : α → β) 
   inf_image ..
 
 @[to_additive (attr := simp)]
-lemma inf'_inv [SemilatticeInf β] {s : Finset α} (hs : (s⁻¹).Nonempty) (f : α → β) :
+lemma inf'_inv [SemilatticeInf β] {s : Finset α} (hs : s⁻¹.Nonempty) (f : α → β) :
     inf' s⁻¹ hs f = inf' s hs.of_inv (f ·⁻¹) :=
   inf'_image ..
 
