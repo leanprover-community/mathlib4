@@ -5,8 +5,7 @@ Authors: Jujian Zhang
 -/
 
 import Mathlib.LinearAlgebra.PiTensorProduct
-import Mathlib.Algebra.Algebra.Hom
-import Mathlib.Algebra.Group.Pi
+import Mathlib.Algebra.Algebra.Bilinear
 
 /-!
 # Tensor product of `R`-algebras and rings
@@ -46,8 +45,7 @@ attribute [aesop safe] mul_add mul_smul_comm smul_mul_assoc add_mul in
 The multiplication in tensor product of rings is induced by `(xᵢ) * (yᵢ) = (xᵢ * yᵢ)`
 -/
 def lmul : (⨂[R] i, A i) →ₗ[R] (⨂[R] i, A i) →ₗ[R] (⨂[R] i, A i) :=
-  PiTensorProduct.map₂ <| tprod R fun i ↦ by
-    refine ⟨⟨fun x ↦ ⟨⟨fun y ↦ x * y, ?_⟩, ?_⟩, ?_⟩, ?_⟩ <;> aesop
+  PiTensorProduct.map₂ <| tprod R fun _ ↦ LinearMap.mul _ _
 
 @[simp] lemma lmul_tprod_tprod (x y : (i : ι) → A i) :
     lmul (tprod R x) (tprod R y) = tprod R (x * y) := by
