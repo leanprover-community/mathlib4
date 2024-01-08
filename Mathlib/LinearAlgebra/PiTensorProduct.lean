@@ -452,7 +452,7 @@ variable [∀ i, AddCommMonoid (t' i)] [∀ i, Module R (t' i)]
 
 variable (R s t) in
 def _root_.MultilinearMap.piLinearMapToPiTensorProduct :
-  MultilinearMap R (fun i ↦ s i →ₗ[R] t i) (MultilinearMap R s (⨂[R] (i : ι), t i)) :=
+    MultilinearMap R (fun i ↦ s i →ₗ[R] t i) (MultilinearMap R s (⨂[R] (i : ι), t i)) :=
 { toFun := fun f ↦
   { toFun := fun v ↦ tprod R fun j ↦ (f j) (v j)
     map_add' := fun v i a b ↦ by
