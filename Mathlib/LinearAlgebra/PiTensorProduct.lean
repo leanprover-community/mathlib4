@@ -458,7 +458,7 @@ let `sᵢ` and `tᵢ` be family of `R`-modules and `fᵢ : sᵢ → tᵢ` be a f
 `F(⨂ aᵢ) = ⨂ f(aᵢ)`.
 -/
 def mapAux (φ : ⨂[R] i, s i →ₗ[R] t i):
-  (⨂[R] i, s i) →ₗ[R] ⨂[R] i, t i :=
+    (⨂[R] i, s i) →ₗ[R] ⨂[R] i, t i :=
   lift <| lift
     (show MultilinearMap R (fun i ↦ s i →ₗ[R] t i) (MultilinearMap R s (⨂[R] (i : ι), t i)) from
       { toFun := fun f ↦
