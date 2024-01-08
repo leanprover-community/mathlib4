@@ -93,7 +93,7 @@ lemma eq_of_le_of_lt_succ (h₁ : n ≤ m) (h₂ : m < n + 1) : m = n :=
   Nat.le_antisymm (le_of_succ_le_succ h₂) h₁
 #align nat.eq_of_le_of_lt_succ Nat.eq_of_le_of_lt_succ
 
-lemma lt_iff_le_pred : ∀ n, 0 < n → (m < n ↔ m ≤ n - 1) | _ + 1, _ => lt_succ_iff
+lemma lt_iff_le_pred : ∀ {n}, 0 < n → (m < n ↔ m ≤ n - 1) | _ + 1, _ => lt_succ_iff
 #align nat.lt_iff_le_pred Nat.lt_iff_le_pred
 
 lemma le_of_pred_lt : ∀ {m}, pred m < n → m ≤ n
