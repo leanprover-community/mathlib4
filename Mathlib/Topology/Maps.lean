@@ -85,13 +85,13 @@ theorem inducing_of_inducing_compose
         exact induced_mono hg.le_induced)⟩
 #align inducing_of_inducing_compose inducing_of_inducing_compose
 
-theorem inducing_iff_nhds : Inducing f ↔ ∀ a, 𝓝 a = comap f (𝓝 (f a)) :=
+theorem inducing_iff_nhds : Inducing f ↔ ∀ x, 𝓝 x = comap f (𝓝 (f x)) :=
   (inducing_iff _).trans (induced_iff_nhds_eq f)
 #align inducing_iff_nhds inducing_iff_nhds
 
 namespace Inducing
 
-theorem nhds_eq_comap (hf : Inducing f) : ∀ a : X, 𝓝 a = comap f (𝓝 <| f a) :=
+theorem nhds_eq_comap (hf : Inducing f) : ∀ x : X, 𝓝 x = comap f (𝓝 <| f x) :=
   inducing_iff_nhds.1 hf
 #align inducing.nhds_eq_comap Inducing.nhds_eq_comap
 
@@ -100,24 +100,24 @@ theorem nhdsSet_eq_comap (hf : Inducing f) (s : Set X) :
   simp only [nhdsSet, sSup_image, comap_iSup, hf.nhds_eq_comap, iSup_image]
 #align inducing.nhds_set_eq_comap Inducing.nhdsSet_eq_comap
 
-theorem map_nhds_eq (hf : Inducing f) (a : X) : (𝓝 a).map f = 𝓝[range f] f a :=
-  hf.induced.symm ▸ map_nhds_induced_eq a
+theorem map_nhds_eq (hf : Inducing f) (x : X) : (𝓝 x).map f = 𝓝[range f] f x :=
+  hf.induced.symm ▸ map_nhds_induced_eq x
 #align inducing.map_nhds_eq Inducing.map_nhds_eq
 
-theorem map_nhds_of_mem (hf : Inducing f) (a : X) (h : range f ∈ 𝓝 (f a)) :
-    (𝓝 a).map f = 𝓝 (f a) :=
+theorem map_nhds_of_mem (hf : Inducing f) (x : X) (h : range f ∈ 𝓝 (f x)) :
+    (𝓝 x).map f = 𝓝 (f x) :=
   hf.induced.symm ▸ map_nhds_induced_of_mem h
 #align inducing.map_nhds_of_mem Inducing.map_nhds_of_mem
 
 -- porting note: new lemma
-theorem mapClusterPt_iff (hf : Inducing f) {a : X} {l : Filter X} :
-    MapClusterPt (f a) l f ↔ ClusterPt a l := by
+theorem mapClusterPt_iff (hf : Inducing f) {x : X} {l : Filter X} :
+    MapClusterPt (f x) l f ↔ ClusterPt x l := by
   delta MapClusterPt ClusterPt
   rw [← Filter.push_pull', ← hf.nhds_eq_comap, map_neBot_iff]
 
-theorem image_mem_nhdsWithin (hf : Inducing f) {a : X} {s : Set X} (hs : s ∈ 𝓝 a) :
-    f '' s ∈ 𝓝[range f] f a :=
-  hf.map_nhds_eq a ▸ image_mem_map hs
+theorem image_mem_nhdsWithin (hf : Inducing f) {x : X} {s : Set X} (hs : s ∈ 𝓝 x) :
+    f '' s ∈ 𝓝[range f] f x :=
+  hf.map_nhds_eq x ▸ image_mem_map hs
 #align inducing.image_mem_nhds_within Inducing.image_mem_nhdsWithin
 
 theorem tendsto_nhds_iff {f : ι → Y} {a : Filter ι} {b : Y} (hg : Inducing g) :
@@ -206,9 +206,9 @@ theorem Function.Injective.embedding_induced [t : TopologicalSpace Y] (hf : Inje
 
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
-theorem Embedding.mk' (f : X → Y) (inj : Injective f) (induced : ∀ a, comap f (𝓝 (f a)) = 𝓝 a) :
+theorem Embedding.mk' (f : X → Y) (inj : Injective f) (induced : ∀ x, comap f (𝓝 (f x)) = 𝓝 x) :
     Embedding f :=
-  ⟨inducing_iff_nhds.2 fun a => (induced a).symm, inj⟩
+  ⟨inducing_iff_nhds.2 fun x => (induced x).symm, inj⟩
 #align embedding.mk' Embedding.mk'
 
 theorem embedding_id : Embedding (@id X) :=
@@ -223,7 +223,7 @@ protected theorem Embedding.comp (hg : Embedding g) (hf : Embedding f) :
 theorem embedding_of_embedding_compose
     (hf : Continuous f) (hg : Continuous g) (hgf : Embedding (g ∘ f)) : Embedding f :=
   { induced := (inducing_of_inducing_compose hf hg hgf.toInducing).induced
-    inj := fun a₁ a₂ h => hgf.inj <| by simp [h, (· ∘ ·)] }
+    inj := fun x₁ x₂ h => hgf.inj <| by simp [h, (· ∘ ·)] }
 #align embedding_of_embedding_compose embedding_of_embedding_compose
 
 protected theorem Function.LeftInverse.embedding {f : X → Y} {g : Y → X} (h : LeftInverse f g)
@@ -231,14 +231,14 @@ protected theorem Function.LeftInverse.embedding {f : X → Y} {g : Y → X} (h 
   embedding_of_embedding_compose hg hf <| h.comp_eq_id.symm ▸ embedding_id
 #align function.left_inverse.embedding Function.LeftInverse.embedding
 
-theorem Embedding.map_nhds_eq (hf : Embedding f) (a : X) :
-    (𝓝 a).map f = 𝓝[range f] f a :=
-  hf.1.map_nhds_eq a
+theorem Embedding.map_nhds_eq (hf : Embedding f) (x : X) :
+    (𝓝 x).map f = 𝓝[range f] f x :=
+  hf.1.map_nhds_eq x
 #align embedding.map_nhds_eq Embedding.map_nhds_eq
 
-theorem Embedding.map_nhds_of_mem (hf : Embedding f) (a : X) (h : range f ∈ 𝓝 (f a)) :
-    (𝓝 a).map f = 𝓝 (f a) :=
-  hf.1.map_nhds_of_mem a h
+theorem Embedding.map_nhds_of_mem (hf : Embedding f) (x : X) (h : range f ∈ 𝓝 (f x)) :
+    (𝓝 x).map f = 𝓝 (f x) :=
+  hf.1.map_nhds_of_mem x h
 #align embedding.map_nhds_of_mem Embedding.map_nhds_of_mem
 
 theorem Embedding.tendsto_nhds_iff {f : ι → Y} {a : Filter ι} {b : Y}
@@ -293,7 +293,7 @@ theorem quotientMap_iff_closed :
 namespace QuotientMap
 
 protected theorem id : QuotientMap (@id X) :=
-  ⟨fun a => ⟨a, rfl⟩, coinduced_id.symm⟩
+  ⟨fun x => ⟨x, rfl⟩, coinduced_id.symm⟩
 #align quotient_map.id QuotientMap.id
 
 protected theorem comp (hg : QuotientMap g) (hf : QuotientMap f) : QuotientMap (g ∘ f) :=
@@ -381,11 +381,11 @@ theorem image_interior_subset (hf : IsOpenMap f) (s : Set X) :
   (hf.mapsTo_interior (mapsTo_image f s)).image_subset
 #align is_open_map.image_interior_subset IsOpenMap.image_interior_subset
 
-theorem nhds_le (hf : IsOpenMap f) (a : X) : 𝓝 (f a) ≤ (𝓝 a).map f :=
+theorem nhds_le (hf : IsOpenMap f) (x : X) : 𝓝 (f x) ≤ (𝓝 x).map f :=
   le_map fun _ => hf.image_mem_nhds
 #align is_open_map.nhds_le IsOpenMap.nhds_le
 
-theorem of_nhds_le (hf : ∀ a, 𝓝 (f a) ≤ map f (𝓝 a)) : IsOpenMap f := fun _s hs =>
+theorem of_nhds_le (hf : ∀ x, 𝓝 (f x) ≤ map f (𝓝 x)) : IsOpenMap f := fun _s hs =>
   isOpen_iff_mem_nhds.2 fun _b ⟨_a, has, hab⟩ => hab ▸ hf _ (image_mem_map <| hs.mem_nhds has)
 #align is_open_map.of_nhds_le IsOpenMap.of_nhds_le
 
@@ -448,7 +448,7 @@ theorem preimage_frontier_eq_frontier_preimage (hf : IsOpenMap f) (hfc : Continu
 
 end IsOpenMap
 
-theorem isOpenMap_iff_nhds_le : IsOpenMap f ↔ ∀ a : X, 𝓝 (f a) ≤ (𝓝 a).map f :=
+theorem isOpenMap_iff_nhds_le : IsOpenMap f ↔ ∀ x : X, 𝓝 (f x) ≤ (𝓝 x).map f :=
   ⟨fun hf => hf.nhds_le, IsOpenMap.of_nhds_le⟩
 #align is_open_map_iff_nhds_le isOpenMap_iff_nhds_le
 
@@ -581,8 +581,8 @@ theorem OpenEmbedding.isOpenMap (hf : OpenEmbedding f) : IsOpenMap f :=
   hf.toEmbedding.toInducing.isOpenMap hf.open_range
 #align open_embedding.is_open_map OpenEmbedding.isOpenMap
 
-theorem OpenEmbedding.map_nhds_eq (hf : OpenEmbedding f) (a : X) :
-    map f (𝓝 a) = 𝓝 (f a) :=
+theorem OpenEmbedding.map_nhds_eq (hf : OpenEmbedding f) (x : X) :
+    map f (𝓝 x) = 𝓝 (f x) :=
   hf.toEmbedding.map_nhds_of_mem _ <| hf.open_range.mem_nhds <| mem_range_self _
 #align open_embedding.map_nhds_eq OpenEmbedding.map_nhds_eq
 
@@ -598,8 +598,8 @@ theorem OpenEmbedding.tendsto_nhds_iff {f : ι → Y} {a : Filter ι} {b : Y} (h
   hg.toEmbedding.tendsto_nhds_iff
 #align open_embedding.tendsto_nhds_iff OpenEmbedding.tendsto_nhds_iff
 
-theorem OpenEmbedding.tendsto_nhds_iff' (hf : OpenEmbedding f) {l : Filter Z} {a : X} :
-    Tendsto (g ∘ f) (𝓝 a) l ↔ Tendsto g (𝓝 (f a)) l := by
+theorem OpenEmbedding.tendsto_nhds_iff' (hf : OpenEmbedding f) {l : Filter Z} {x : X} :
+    Tendsto (g ∘ f) (𝓝 x) l ↔ Tendsto g (𝓝 (f x)) l := by
   rw [Tendsto, ← map_map, hf.map_nhds_eq]; rfl
 
 theorem OpenEmbedding.continuousAt_iff (hf : OpenEmbedding f) {x : X} :
@@ -634,8 +634,8 @@ theorem openEmbedding_iff_embedding_open :
 theorem openEmbedding_of_continuous_injective_open
     (h₁ : Continuous f) (h₂ : Injective f) (h₃ : IsOpenMap f) : OpenEmbedding f := by
   simp only [openEmbedding_iff_embedding_open, embedding_iff, inducing_iff_nhds, *, and_true_iff]
-  exact fun a =>
-    le_antisymm (h₁.tendsto _).le_comap (@comap_map _ _ (𝓝 a) _ h₂ ▸ comap_mono (h₃.nhds_le _))
+  exact fun x =>
+    le_antisymm (h₁.tendsto _).le_comap (@comap_map _ _ (𝓝 x) _ h₂ ▸ comap_mono (h₃.nhds_le _))
 #align open_embedding_of_continuous_injective_open openEmbedding_of_continuous_injective_open
 
 theorem openEmbedding_iff_continuous_injective_open :
