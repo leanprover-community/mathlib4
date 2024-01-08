@@ -69,8 +69,8 @@ def IsIntegralCurveOn (γ : ℝ → M) (v : (x : M) → TangentSpace I x) (s : S
 /-- If `v` is a vector field on `M` and `t₀ : ℝ`, `IsIntegralCurveAt γ v t₀` means `γ : ℝ → M` is a
 local integral curve of `v` in a neighbourhood containing `t₀`. The value of `γ` outside of this
 interval is irrelevant and considered junk. -/
-def IsIntegralCurveAt (γ : ℝ → M) (v : (x : M) → TangentSpace I x) (t : ℝ) : Prop :=
-  ∃ s ∈ 𝓝 t, IsIntegralCurveOn γ v s
+def IsIntegralCurveAt (γ : ℝ → M) (v : (x : M) → TangentSpace I x) (t₀ : ℝ) : Prop :=
+  ∀ᶠ t in 𝓝 t₀, HasMFDerivAt 𝓘(ℝ, ℝ) I γ t ((1 : ℝ →L[ℝ] ℝ).smulRight <| v (γ t))
 
 /-- If `v : M → TM` is a vector field on `M`, `IsIntegralCurve γ v` means `γ : ℝ → M` is a global
 integral curve of `v`. That is, `γ t` is tangent to `v (γ t)` for all `t : ℝ`. -/
@@ -85,13 +85,27 @@ lemma IsIntegralCurve.isIntegralCurveOn (h : IsIntegralCurve γ v) (s : Set ℝ)
 lemma isIntegralCurve_iff_isIntegralCurveOn : IsIntegralCurve γ v ↔ IsIntegralCurveOn γ v univ :=
   ⟨fun h ↦ h.isIntegralCurveOn _, fun h t ↦ h t (mem_univ _)⟩
 
+lemma isIntegralCurveAt_iff :
+    IsIntegralCurveAt γ v t₀ ↔ ∃ s ∈ 𝓝 t₀, IsIntegralCurveOn γ v s := by
+  simp_rw [IsIntegralCurveOn, ← Filter.eventually_iff_exists_mem]
+  rfl
+
+/-- `γ` is an integral curve for `v` at `t₀` iff `γ` is an integral curve on some interval
+containing `t₀`. -/
+lemma isIntegralCurveAt_iff' :
+    IsIntegralCurveAt γ v t₀ ↔ ∃ ε > 0, IsIntegralCurveOn γ v (Metric.ball t₀ ε) := by
+  simp_rw [IsIntegralCurveOn, ← Metric.eventually_nhds_iff_ball]
+  rfl
+
 lemma IsIntegralCurve.isIntegralCurveAt (h : IsIntegralCurve γ v) (t : ℝ) :
-    IsIntegralCurveAt γ v t := ⟨univ, Filter.univ_mem, fun t _ ↦ h t⟩
+    IsIntegralCurveAt γ v t := by
+  rw [isIntegralCurveAt_iff]
+  exact ⟨univ, Filter.univ_mem, fun t _ ↦ h t⟩
 
 lemma isIntegralCurve_iff_isIntegralCurveAt :
     IsIntegralCurve γ v ↔ ∀ t : ℝ, IsIntegralCurveAt γ v t :=
   ⟨fun h ↦ h.isIntegralCurveAt, fun h t ↦ by
-    obtain ⟨s, hs, h⟩ := h t
+    obtain ⟨s, hs, h⟩ := isIntegralCurveAt_iff.mp (h t)
     exact h t (mem_of_mem_nhds hs)⟩
 
 lemma IsIntegralCurveOn.mono (h : IsIntegralCurveOn γ v s) (hs : s' ⊆ s) :
@@ -100,28 +114,19 @@ lemma IsIntegralCurveOn.mono (h : IsIntegralCurveOn γ v s) (hs : s' ⊆ s) :
 lemma IsIntegralCurveOn.of_union (h : IsIntegralCurveOn γ v s) (h' : IsIntegralCurveOn γ v s') :
     IsIntegralCurveOn γ v (s ∪ s') := fun _ ↦ fun | .inl ht => h _ ht | .inr ht => h' _ ht
 
-/-- `γ` is an integral curve for `v` at `t₀` iff `γ` is an integral curve on some interval
-containing `t₀`. -/
-lemma isIntegralCurveAt_iff :
-    IsIntegralCurveAt γ v t₀ ↔ ∃ ε > 0, IsIntegralCurveOn γ v (Metric.ball t₀ ε) := by
-  refine ⟨?_,  fun ⟨ε, hε, h⟩ ↦ ⟨Metric.ball t₀ ε, Metric.ball_mem_nhds _ hε, h⟩⟩
-  rintro ⟨s, hs, h⟩
-  obtain ⟨ε, hε, hsub⟩ := Metric.mem_nhds_iff.mp hs
-  exact ⟨ε, hε, h.mono hsub⟩
-
 lemma IsIntegralCurveAt.hasMFDerivAt (h : IsIntegralCurveAt γ v t₀) :
     HasMFDerivAt 𝓘(ℝ, ℝ) I γ t₀ ((1 : ℝ →L[ℝ] ℝ).smulRight (v (γ t₀))) :=
-  have ⟨_, hs, h⟩ := h
+  have ⟨_, hs, h⟩ := isIntegralCurveAt_iff.mp h
   h t₀ (mem_of_mem_nhds hs)
 
 lemma IsIntegralCurveOn.isIntegralCurveAt (h : IsIntegralCurveOn γ v s) (hs : s ∈ 𝓝 t₀) :
-    IsIntegralCurveAt γ v t₀ := ⟨s, hs, h⟩
+    IsIntegralCurveAt γ v t₀ := isIntegralCurveAt_iff.mpr ⟨s, hs, h⟩
 
 /-- If `γ` is an integral curve at each `t ∈ s`, it is an integral curve on `s`. -/
 lemma IsIntegralCurveAt.isIntegralCurveOn (h : ∀ t ∈ s, IsIntegralCurveAt γ v t) :
     IsIntegralCurveOn γ v s := by
   intros t ht
-  obtain ⟨s, hs, h⟩ := h t ht
+  obtain ⟨s, hs, h⟩ := isIntegralCurveAt_iff.mp (h t ht)
   exact h t (mem_of_mem_nhds hs)
 
 lemma isIntegralCurveOn_iff_isIntegralCurveAt (hs : IsOpen s) :
@@ -152,9 +157,9 @@ lemma isIntegralCurveOn_comp_add {dt : ℝ} :
 
 lemma IsIntegralCurveAt.comp_add (hγ : IsIntegralCurveAt γ v t₀) (dt : ℝ) :
     IsIntegralCurveAt (γ ∘ (· + dt)) v (t₀ - dt) := by
-  rw [isIntegralCurveAt_iff] at hγ
+  rw [isIntegralCurveAt_iff'] at *
   obtain ⟨ε, hε, h⟩ := hγ
-  refine ⟨Metric.ball (t₀ - dt) ε, Metric.isOpen_ball.mem_nhds (Metric.mem_ball_self hε), ?_⟩
+  refine ⟨ε, hε, ?_⟩
   convert h.comp_add dt
   ext t
   rw [mem_setOf_eq, Metric.mem_ball, Metric.mem_ball, dist_sub_eq_dist_add_right]
@@ -205,8 +210,8 @@ lemma isIntegralCurvOn_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
 
 lemma IsIntegralCurveAt.comp_mul_ne_zero (hγ : IsIntegralCurveAt γ v t₀) {a : ℝ} (ha : a ≠ 0) :
     IsIntegralCurveAt (γ ∘ (· * a)) (a • v) (t₀ / a) := by
-  obtain ⟨ε, hε, h⟩ := isIntegralCurveAt_iff.mp hγ
-  rw [isIntegralCurveAt_iff]
+  rw [isIntegralCurveAt_iff'] at *
+  obtain ⟨ε, hε, h⟩ := hγ
   refine ⟨ε / |a|, by positivity, ?_⟩
   convert h.comp_mul a
   ext t
@@ -260,7 +265,7 @@ theorem exists_isIntegralCurveAt_of_contMDiffAt
   obtain ⟨_, hv⟩ := hv
   -- use Picard-Lindelöf theorem to extract a solution to the ODE in the local chart
   obtain ⟨f, hf1, hf2⟩ := exists_forall_hasDerivAt_Ioo_eq_of_contDiffAt t₀
-    (hv.contDiffAt (range_mem_nhds_isInteriorPoint I hx)).snd
+    (hv.contDiffAt (range_mem_nhds_isInteriorPoint hx)).snd
   simp_rw [← Real.ball_eq_Ioo, ← Metric.eventually_nhds_iff_ball] at hf2
   -- use continuity of `f` so that `f t` remains inside `interior (extChartAt I x₀).target`
   have ⟨a, ha, hf2'⟩ := Metric.eventually_nhds_iff_ball.mp hf2
@@ -272,6 +277,7 @@ theorem exists_isIntegralCurveAt_of_contMDiffAt
   -- obtain a neighbourhood `s` so that the above conditions both hold in `s`
   obtain ⟨s, hs, haux⟩ := (hf2.and hnhds).exists_mem
   -- prove that `γ := (extChartAt I x₀).symm ∘ f` is a desired integral curve
+  simp_rw [isIntegralCurveAt_iff]
   refine ⟨(extChartAt I x₀).symm ∘ f,
     Eq.symm (by rw [Function.comp_apply, hf1, PartialEquiv.left_inv _ (mem_extChartAt_source ..)]),
     s, hs, ?_⟩
