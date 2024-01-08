@@ -302,7 +302,7 @@ theorem ascFactorial_lt_pow_add (n : ℕ) : ∀ {k : ℕ}, 2 ≤ k → n.ascFact
   | k + 2 => fun _ => by
     rw [ascFactorial_succ, pow_succ]
     rw [add_assoc n (k + 1) 1, mul_comm <| (n + (k + 2)) ^ (k + 1)]
-    exact mul_lt_mul_of_pos_left ((ascFactorial_le_pow_add n _).trans_lt $
+    exact mul_lt_mul_of_pos_left ((ascFactorial_le_pow_add n _).trans_lt <|
       Nat.pow_lt_pow_left (lt_add_one _) k.succ_ne_zero) (succ_pos _)
 #align nat.asc_factorial_lt_pow_add Nat.ascFactorial_lt_pow_add
 

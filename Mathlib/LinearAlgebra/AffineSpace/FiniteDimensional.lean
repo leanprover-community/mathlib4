@@ -142,7 +142,7 @@ theorem finrank_vectorSpan_image_finset_le [DecidableEq P] (p : ι → P) (s : F
     (hc : Finset.card s = n + 1) : finrank k (vectorSpan k (s.image p : Set P)) ≤ n := by
   classical
   have hn : (s.image p).Nonempty := by
-    rw [Finset.Nonempty.image_iff, ← Finset.card_pos, hc]
+    rw [Finset.image_nonempty, ← Finset.card_pos, hc]
     apply Nat.succ_pos
   rcases hn with ⟨p₁, hp₁⟩
   rw [vectorSpan_eq_span_vsub_finset_right_ne k hp₁]

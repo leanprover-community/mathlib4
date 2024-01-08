@@ -216,7 +216,7 @@ instance Rat.sampleableExt : SampleableExt Rat :=
     return Rat.divInt d n)
 
 instance Bool.sampleableExt : SampleableExt Bool :=
-  mkSelfContained $ chooseAny Bool
+  mkSelfContained <| chooseAny Bool
 
 /-- This can be specialized into customized `SampleableExt Char` instances.
 The resulting instance has `1 / length` chances of making an unrestricted choice of characters
@@ -227,7 +227,7 @@ def Char.sampleable (length : Nat) (chars : List Char) (pos : 0 < chars.length) 
     let x ← choose Nat 0 length (Nat.zero_le _)
     if x.val == 0 then
       let n ← interpSample Nat
-      pure $ Char.ofNat n
+      pure <| Char.ofNat n
     else
       elements chars pos
 
@@ -271,7 +271,7 @@ instance shrinkable : Shrinkable (NoShrink α) where
   shrink := λ _ => []
 
 instance sampleableExt [SampleableExt α] [Repr α] : SampleableExt (NoShrink α) :=
-  SampleableExt.mkSelfContained $ (NoShrink.mk ∘ SampleableExt.interp) <$> SampleableExt.sample
+  SampleableExt.mkSelfContained <| (NoShrink.mk ∘ SampleableExt.interp) <$> SampleableExt.sample
 
 end NoShrink
 
