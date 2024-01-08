@@ -450,40 +450,6 @@ variable {t t' : ι → Type*}
 variable [∀ i, AddCommMonoid (t i)] [∀ i, Module R (t i)]
 variable [∀ i, AddCommMonoid (t' i)] [∀ i, Module R (t' i)]
 
-variable (R s t) in
-
-/--
-Let `sᵢ` and `tᵢ` be family of `R`-modules, a map from `Π i, sᵢ → tᵢ` to multilinear maps
-`(Π i, sᵢ) → ⨂ tᵢ` by `(fᵢ) ↦ v ↦ ⨂ₜ fᵢ vᵢ`. This map is multilinear as well.
--/
-@[simps]
-def _root_.MultilinearMap.piLinearMapToPiTensorProduct :
-    MultilinearMap R (fun i ↦ s i →ₗ[R] t i) (MultilinearMap R s (⨂[R] (i : ι), t i)) :=
-{ toFun := (tprod R).compLinearMap
-  map_add' := fun v i x y ↦ MultilinearMap.ext <| fun a ↦ by
-    dsimp
-    have eq1 (j : ι) (z :  s i →ₗ[R] t i) : update v i z j (a j) =
-      update (fun i ↦ v i (a i)) i (z (a i)) j
-    · by_cases h : j = i
-      · subst h; simp only [update_same]
-      · rw [update_noteq h, update_noteq h]
-    simp_rw [eq1]
-    erw [MultilinearMap.map_add]
-  map_smul' := fun v i r x ↦ MultilinearMap.ext <| fun a ↦ by
-    dsimp
-    have eq1 (j : ι) (z :  s i →ₗ[R] t i) : update v i (r • z) j (a j) =
-      update (fun i ↦ v i (a i)) i (r • z (a i)) j
-    · by_cases h : j = i
-      · subst h; simp only [update_same, LinearMap.smul_apply]
-      · rw [update_noteq h, update_noteq h]
-    simp_rw [eq1]
-    erw [MultilinearMap.map_smul]
-    congr
-    ext j
-    by_cases h : j = i
-    · subst h; simp only [update_same]
-    · rw [update_noteq h, update_noteq h] }
-
 /--
 let `sᵢ` and `tᵢ` be family of `R`-modules and a family `fᵢ` of `R`-linear maps `sᵢ → tᵢ`, then
 there is an induced map `F : ⨂ᵢ sᵢ → ⨂ᵢ tᵢ` by `⨂ aᵢ ↦ ⨂ fᵢ aᵢ`.
@@ -509,7 +475,7 @@ Furthermore, the map `⨂ᵢ fᵢ ↦ F` is `R`-linear as well.
 This is `TensorProduct.homTensorHomMap` for an arbitrary family of modules.
 -/
 def piTensorHomMap : (⨂[R] i, s i →ₗ[R] t i) →ₗ[R] (⨂[R] i, s i) →ₗ[R] ⨂[R] i, t i where
-  toFun φ := lift <| lift (MultilinearMap.piLinearMapToPiTensorProduct R s t) φ
+  toFun φ := lift <| lift (MultilinearMap.piLinearMap <| tprod R) φ
   map_add' _ _ := by ext; simp
   map_smul' _ _ := by ext; simp
 
@@ -546,9 +512,9 @@ This is `TensorProduct.homTensorHomMap` for two arbitrary families of modules.
 def piTensorHomMap₂ : (⨂[R] i, s i →ₗ[R] t i →ₗ[R] t' i) →ₗ[R]
     (⨂[R] i, s i) →ₗ[R] (⨂[R] i, t i) →ₗ[R] (⨂[R] i, t' i) where
   toFun φ := lift <| LinearMap.compMultilinearMap piTensorHomMap <|
-    (lift <| MultilinearMap.piLinearMapToPiTensorProduct R s _) φ
-  map_add' _ _ := by ext; simp
-  map_smul' _ _ := by ext; simp
+    (lift <| MultilinearMap.piLinearMap <| tprod R) φ
+  map_add' x y := by dsimp; ext; simp
+  map_smul' r x := by dsimp; ext; simp
 
 @[simp] lemma piTensorHomMap₂_tprod_tprod_tprod
     (f : ∀ i, s i →ₗ[R] t i →ₗ[R] t' i) (a : ∀ i, s i) (b : ∀ i, t i) :

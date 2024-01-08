@@ -949,6 +949,38 @@ sending a multilinear map `g` to `g (f₁ ⬝ , ..., fₙ ⬝ )` is linear in `g
   map_add' := fun _ _ ↦ rfl
   map_smul' := fun _ _ ↦ rfl
 
+/--
+If `g` is a multilinear map from `(M₁')ᵢ` to `M₂`, then `g` can be reinterpreted as a multilinear
+map of multilinear map from `(M₁ ⟶ M₁')ᵢ` to `(M₁)ᵢ ⟶ M₂` by `(fᵢ) ↦ v ↦ ⨂ₜ fᵢ vᵢ`.
+-/
+@[simps]
+def piLinearMap (g : MultilinearMap R M₁' M₂) :
+  MultilinearMap R (fun i ↦ M₁ i →ₗ[R] M₁' i) (MultilinearMap R M₁ M₂) :=
+{ toFun := g.compLinearMap
+  map_add' := fun v i x y ↦ MultilinearMap.ext <| fun a ↦ by
+    dsimp
+    have eq1 (j : ι) (z :  M₁ i →ₗ[R] M₁' i) : update v i z j (a j) =
+      update (fun i ↦ v i (a i)) i (z (a i)) j
+    · by_cases h : j = i
+      · subst h; simp only [update_same]
+      · rw [update_noteq h, update_noteq h]
+    simp_rw [eq1]
+    erw [MultilinearMap.map_add]
+  map_smul' := fun v i r x ↦ MultilinearMap.ext <| fun a ↦ by
+    dsimp
+    have eq1 (j : ι) (z :  M₁ i →ₗ[R] M₁' i) : update v i (r • z) j (a j) =
+      update (fun i ↦ v i (a i)) i (r • z (a i)) j
+    · by_cases h : j = i
+      · subst h; simp only [update_same, LinearMap.smul_apply]
+      · rw [update_noteq h, update_noteq h]
+    simp_rw [eq1]
+    erw [MultilinearMap.map_smul]
+    congr
+    ext j
+    by_cases h : j = i
+    · subst h; simp only [update_same]
+    · rw [update_noteq h, update_noteq h] }
+
 /-- If `f` is a collection of linear maps, then the construction `MultilinearMap.compLinearMap`
 sending a multilinear map `g` to `g (f₁ ⬝ , ..., fₙ ⬝ )` is linear in `g` and multilinear in
 `f₁, ..., fₙ`. -/
