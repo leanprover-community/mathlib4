@@ -288,7 +288,7 @@ lemma sup_inv [SemilatticeSup β] [OrderBot β] (s : Finset α) (f : α → β) 
   sup_image ..
 
 @[to_additive (attr := simp)]
-lemma sup'_inv [SemilatticeSup β] {s : Finset α} (hs : (s⁻¹).Nonempty) (f : α → β) :
+lemma sup'_inv [SemilatticeSup β] {s : Finset α} (hs : s⁻¹.Nonempty) (f : α → β) :
     sup' s⁻¹ hs f = sup' s hs.of_inv (f ·⁻¹) :=
   sup'_image ..
 
