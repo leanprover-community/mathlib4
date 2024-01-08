@@ -1839,6 +1839,7 @@ theorem succAbove_ne_zero_eq_zero_iff' [NeZero n] {a : Fin (n + 1)} {b : Fin n} 
     a.succAbove b = 0 ↔ b = 0 := by rw [← succAbove_zero_of_ne_zero' ha, succAbove_inj]
 theorem succAbove_ne_zero_of_ne_zero_ne_zero' [NeZero n] {a : Fin (n + 1)} {b : Fin n}
     (ha : a ≠ 0) (hb : b ≠ 0) : a.succAbove b ≠ 0 := mt (succAbove_ne_zero_eq_zero_iff' ha).mp hb
+@[simp]
 theorem succAbove_succ_zero' {n : ℕ} [NeZero n] {i : Fin n} : succAbove i.succ 0 = 0 :=
   succAbove_zero_of_ne_zero' (succ_pos _).ne'
 #align fin.succ_succ_above_zero Fin.succAbove_succ_zero'

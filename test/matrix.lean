@@ -154,7 +154,7 @@ example {α : Type _} [CommRing α] {a b c d e f g h i : α} :
       tail_cons, head_fin_const, Fin.sum_univ_succ, Fin.val_zero, pow_zero, one_mul,
       Fin.succAbove_zero, Finset.univ_unique, Fin.val_succ, Fin.coe_fin_one, zero_add, pow_one,
       neg_mul, Finset.sum_neg_distrib, Finset.sum_singleton, ne_eq, one_ne_zero, not_false_eq_true,
-      Fin.succAbove_zero_of_ne_zero', cons_val_succ, Fin.succAbove_succ_one, even_add_self,
+      Fin.succAbove_succ_zero', cons_val_succ, Fin.succAbove_succ_one, even_add_self,
       Even.neg_pow, one_pow]
   ring
 
