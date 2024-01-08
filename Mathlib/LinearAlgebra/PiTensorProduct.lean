@@ -526,8 +526,7 @@ This is `TensorProduct.map` for two arbitrary families of modules.
 -/
 def map₂ (f : Π i, s i →ₗ[R] t i →ₗ[R] t' i) :
     (⨂[R] i, s i) →ₗ[R] (⨂[R] i, t i) →ₗ[R] ⨂[R] i, t' i:=
-  lift <| LinearMap.compMultilinearMap piTensorHomMap <|
-    MultilinearMap.piLinearMapToPiTensorProduct _ _ _ f
+  lift <| LinearMap.compMultilinearMap piTensorHomMap <| (tprod R).compLinearMap f
 
 lemma map₂_tprod_tprod (f : Π i, s i →ₗ[R] t i →ₗ[R] t' i) (x : ∀ i, s i) (y : ∀ i, t i) :
     map₂ f (tprod R x) (tprod R y) = tprod R fun i ↦ f i (x i) (y i) := by
