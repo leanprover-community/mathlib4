@@ -1909,8 +1909,8 @@ when it is injective, is a Domain -/
 theorem leftCancelMulZero_of_le_isLeftRegular
     (f : LocalizationWithZeroMap S N) [IsLeftCancelMulZero M]
     (h : ∀ ⦃x⦄, x ∈ S → IsLeftRegular x) : IsLeftCancelMulZero N := by
-  let fl:=f.toLocalizationMap
-  let g:=f.toMap
+  let fl := f.toLocalizationMap
+  let g := f.toMap
   --- We prove the property to be left cancellative.
   have mul_cancel (a z w : N): a ≠ 0 → a * z = a * w → z = w := by
       intro ha hazw
@@ -1927,8 +1927,8 @@ theorem leftCancelMulZero_of_le_isLeftRegular
       --- The hypothesis `a ≠ 0` in `P` is equivalent to this
       have b1ne0 : b.1 ≠ 0 := by
         by_contra hb1
-        have m0: (LocalizationMap.toMap fl) 0 = 0 := f.map_zero'
-        have a0: a * (LocalizationMap.toMap fl) b.2 = 0 ↔ a = 0 :=
+        have m0 : (LocalizationMap.toMap fl) 0 = 0 := f.map_zero'
+        have a0 : a * (LocalizationMap.toMap fl) b.2 = 0 ↔ a = 0 :=
           (f.toLocalizationMap.map_units' b.2).mul_left_eq_zero
         rw [hb1, m0, a0] at hb
         exact ha hb
@@ -1936,25 +1936,25 @@ theorem leftCancelMulZero_of_le_isLeftRegular
       have : g (b.1 * (y.1 * x.2)) = g (b.1 * (x.1 * y.2)) :=
       calc
         g (b.1 * (y.1 * x.2)) = g b.1 * g (y.1 * x.2) := map_mul g _ _
-        _ = g b.1 * (g y.1 * g x.2) :=by rw[map_mul g]
-        _ = a * g b.2 * (g y.1 * g x.2) :=by rw[hb]
-        _ = a * g b.2 * (w * g y.2 * g x.2) :=by rw[hy]
-        _ = a * w * g b.2 * (g y.2 * g x.2) :=by
+        _ = g b.1 * (g y.1 * g x.2) := by rw[map_mul g]
+        _ = a * g b.2 * (g y.1 * g x.2) := by rw[hb]
+        _ = a * g b.2 * (w * g y.2 * g x.2) := by rw[hy]
+        _ = a * w * g b.2 * (g y.2 * g x.2) := by
           rw[← mul_assoc _ _ _,← mul_assoc _ w _,mul_assoc a _ w,
             mul_comm _ w,mul_assoc,← mul_assoc a w _]
-        _ = a * z * g b.2 * (g y.2 * g x.2) :=by rw [hazw]
-        _ = a * g b.2 * (z * g x.2 *g y.2 ) :=by
+        _ = a * z * g b.2 * (g y.2 * g x.2) := by rw [hazw]
+        _ = a * g b.2 * (z * g x.2 *g y.2) := by
           rw [mul_comm (g y.2),mul_assoc a z,mul_comm z,
             ← mul_assoc a,mul_assoc _ z,mul_assoc z]
-        _ = a * g b.2 * (g x.1 * g y.2) :=by rw[hx]
-        _ = g b.1 * (g x.1 * g y.2) :=by rw[hb]
-        _ = g b.1 * g (x.1 * y.2) :=by rw[map_mul g]
+        _ = a * g b.2 * (g x.1 * g y.2) := by rw[hx]
+        _ = g b.1 * (g x.1 * g y.2) := by rw[hb]
+        _ = g b.1 * g (x.1 * y.2) := by rw[map_mul g]
         _ = g (b.1 * (x.1 * y.2)) := by rw[← map_mul g]
       --- The hypothesis `h` gives that `f` (so, `f`) is injective.
       have : b.1 * (y.1 * x.2) =  b.1 * (x.1 * y.2) :=
         (LocalizationMap.toMap_injective_iff fl).mpr h this
       --- The hypothesis to be left cancellative allows us to cancel `b.1`
-      have : (y.1 * x.2) =  (x.1 * y.2):=
+      have : (y.1 * x.2) =  (x.1 * y.2) :=
         IsLeftCancelMulZero.mul_left_cancel_of_ne_zero b1ne0 this
       rw [mul_comm,← this,mul_comm]
   exact { mul_left_cancel_of_ne_zero := @mul_cancel }
