@@ -43,17 +43,18 @@ section Zero
 
 variable [Zero R]
 
--- generalize to any locally finite linear order?
+-- generalize to any locally finite linear order? see #18604
 theorem supp_bdd_below_supp_Pwo (f : ℤ → R) (n : ℤ) (hn : ∀(m : ℤ), m < n → f m = 0) :
     (Function.support f).IsPwo := by
-  rw [← @Set.isWf_iff_isPwo]
-  refine Set.bddBelow_wellFoundedOn_lt <| bddBelow_def.mpr ?_
-  use n
-  simp only [Function.mem_support, ne_eq]
-  intro k hk
-  by_contra hnk
-  rw [@Int.not_le] at hnk
-  apply hk (hn k hnk)
+  rw [← Set.isWf_iff_isPwo, Set.isWf_iff_no_descending_seq]
+  rintro g hg hsupp
+  refine Set.infinite_range_of_injective (StrictAnti.injective hg) ?_
+  refine (Set.finite_Icc n <| g 0).subset <| Set.range_subset_iff.2 ?_
+  simp_all only [Function.mem_support, ne_eq, Set.mem_Icc]
+  intro k
+  constructor
+  exact Int.not_lt.mp (mt (hn (g k)) (hsupp k))
+  exact (StrictAnti.le_iff_le hg).mpr (Nat.zero_le k)
 
 /-- Construct a Laurent series from any function with support that is bounded below. -/
 def LaurentFromSuppBddBelow (f : ℤ → R) (n : ℤ) (hn : ∀(m : ℤ), m < n → f m = 0) :
