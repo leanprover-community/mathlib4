@@ -491,7 +491,7 @@ there is an induced map `F : ⨂ᵢ sᵢ → ⨂ᵢ tᵢ` by `⨂ aᵢ ↦ ⨂ f
 This is `TensorProduct.map` for an arbitrary family of modules.
 -/
 def map (f : Π i, s i →ₗ[R] t i) : (⨂[R] i, s i) →ₗ[R] ⨂[R] i, t i :=
-  lift <| MultilinearMap.piLinearMapToPiTensorProduct _ _ _ f
+  lift <| (tprod R).compLinearMap f
 
 @[simp] lemma map_tprod (f : Π i, s i →ₗ[R] t i) (x : ∀ i, s i) :
     map f (tprod R x) = tprod R fun i ↦ f i (x i) :=
