@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Logic.Embedding.Basic
-import Mathlib.Data.Set.Function
 import Mathlib.Data.Set.Image
 
 #align_import logic.embedding.set from "leanprover-community/mathlib"@"fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e"
@@ -148,15 +147,3 @@ theorem subtypeOrEquiv_symm_inr (p q : α → Prop) [DecidablePred p] (h : Disjo
 #align subtype_or_equiv_symm_inr subtypeOrEquiv_symm_inr
 
 end Subtype
-
-section InjOn
-
-variable {α β : Type*} {f : α → β}  {s : Set α} (hs : Set.InjOn f s)
-
-/-- The embedding associated with an map which is injective on a subset -/
-def Set.InjOn.embedding : s ↪ β := { inj' := hs.injective }
-
-@[simp]
-lemma Set.InjOn.embedding_apply {a : s} : hs.embedding a = f a := rfl
-
-end InjOn
