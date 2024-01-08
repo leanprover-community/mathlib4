@@ -77,9 +77,6 @@ theorem minFac_to_nat (n : PosNum) : (minFac n : ℕ) = Nat.minFac n := by
       (n : ℕ) + (n : ℕ) + 1 ≤ (n : ℕ) + (n : ℕ) + (n : ℕ) := by simp
       _ = (n : ℕ) * (1 + 1 + 1) := by simp only [mul_add, mul_one]
       _ < _ := by
-        -- The introduction of simprocs in leanprover/lean4#3124 causes a problem here.
-        -- Minmisation seems difficult: extracting this goal to a separate lemma,
-        -- `simp [mul_lt_mul]` works fine!
         set_option simprocs false in simp [mul_lt_mul]
   · rw [minFac, Nat.minFac_eq, if_pos]
     · rfl
