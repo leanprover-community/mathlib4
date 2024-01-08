@@ -451,6 +451,7 @@ variable [∀ i, AddCommMonoid (t i)] [∀ i, Module R (t i)]
 variable [∀ i, AddCommMonoid (t' i)] [∀ i, Module R (t' i)]
 
 variable (R s t) in
+@[simps]
 def _root_.MultilinearMap.piLinearMapToPiTensorProduct :
   MultilinearMap R (fun i ↦ s i →ₗ[R] t i) (MultilinearMap R s (⨂[R] (i : ι), t i)) :=
 { toFun := fun f ↦
@@ -499,28 +500,6 @@ def _root_.MultilinearMap.piLinearMapToPiTensorProduct :
     by_cases h : j = i
     · subst h; simp only [update_same]
     · rw [update_noteq h, update_noteq h] }
-/--
-Arbitrary tensor product of linear maps to linear maps between arbitrary tensor products:
-
-let `sᵢ` and `tᵢ` be family of `R`-modules and `fᵢ : sᵢ → tᵢ` be a family of `R`-linear map, then
-`⨂ᵢ fᵢ` induces an `R`-linear map `F` between `R`-tensors `⨂ᵢ sᵢ` and `⨂ᵢ tᵢ` by
-`F(⨂ aᵢ) = ⨂ f(aᵢ)`.
--/
-def mapAux (φ : ⨂[R] i, s i →ₗ[R] t i):
-    (⨂[R] i, s i) →ₗ[R] ⨂[R] i, t i :=
-  lift <| lift (MultilinearMap.piLinearMapToPiTensorProduct R s t) φ
-
-lemma mapAux_tprod_tprod (f : ∀ i, s i →ₗ[R] t i) (x : ∀ i, s i) :
-    mapAux (tprod R f) (tprod R x) = tprod R (fun i ↦ f i (x i)) := by
-  delta mapAux
-  rw [lift.tprod, lift.tprod]
-  rfl
-
-lemma mapAux_add (φ ψ : ⨂[R] i, s i →ₗ[R] t i) : mapAux (φ + ψ) = mapAux φ + mapAux ψ := by
-  ext; simp [mapAux]
-
-lemma mapAux_smul (r : R) (φ : ⨂[R] i, s i →ₗ[R] t i) : mapAux (r • φ) = r • mapAux φ := by
-  ext; simp [mapAux]
 
 /--
 Arbitrary tensor product of linear maps to linear maps between arbitrary tensor products:
@@ -531,13 +510,14 @@ let `sᵢ` and `tᵢ` be family of `R`-modules and `fᵢ : sᵢ → tᵢ` be a f
 
 Furthermore, the map `⨂ᵢ fᵢ ↦ F` is `R`-linear as well.
 -/
-def map : (⨂[R] i, s i →ₗ[R] t i) →ₗ[R] (⨂[R] i, s i) →ₗ[R] ⨂[R] i, t i where
-  toFun := mapAux
-  map_add' := mapAux_add
-  map_smul' := mapAux_smul
+def piTensorHomMap : (⨂[R] i, s i →ₗ[R] t i) →ₗ[R] (⨂[R] i, s i) →ₗ[R] ⨂[R] i, t i where
+  toFun φ := lift <| lift (MultilinearMap.piLinearMapToPiTensorProduct R s t) φ
+  map_add' _ _ := by ext; simp
+  map_smul' _ _ := by ext; simp
 
-@[simp] lemma map_tprod_tprod (f : ∀ i, s i →ₗ[R] t i) (x : ∀ i, s i) :
-    map (tprod R f) (tprod R x) = tprod R fun i ↦ f i (x i) := by simp [map, mapAux_tprod_tprod]
+@[simp] lemma piTensorHomMap_tprod_tprod (f : ∀ i, s i →ₗ[R] t i) (x : ∀ i, s i) :
+    piTensorHomMap (tprod R f) (tprod R x) = tprod R fun i ↦ f i (x i) := by
+  simp [piTensorHomMap]
 
 /--
 Arbitrary tensor product of linear maps to linear maps between arbitrary tensor products:
@@ -545,34 +525,20 @@ Arbitrary tensor product of linear maps to linear maps between arbitrary tensor 
 let `sᵢ` `tᵢ'` and `tᵢ` be family of `R`-modules and `fᵢ : sᵢ → tᵢ → tᵢ'` be a family of
 `R`-linear map, then `⨂ᵢ fᵢ` induces an `R`-linear map `F : ⨂ᵢ sᵢ → ⨂ᵢ tᵢ ⊗ᵢ tᵢ'` by
 `F(⨂ aᵢ, ⨂ bᵢ) = ⨂ f(aᵢ, bᵢ)`.
+
+Furthermore, the map `⨂ᵢ fᵢ ↦ F` is `R`-linear as well.
 -/
-def map₂Aux (φ : ⨂[R] i, s i →ₗ[R] t i →ₗ[R] t' i) :
-    (⨂[R] i, s i) →ₗ[R] (⨂[R] i, t i) →ₗ[R] (⨂[R] i, t' i) :=
-  lift <| LinearMap.compMultilinearMap map <|
-    (lift <| MultilinearMap.piLinearMapToPiTensorProduct R s _) φ
-
-lemma map₂Aux_tprod_tprod_tprod
-    (f : ∀ i, s i →ₗ[R] t i →ₗ[R] t' i) (a : ∀ i, s i) (b : ∀ i, t i) :
-    map₂Aux (tprod R f) (tprod R a) (tprod R b) = tprod R (fun i ↦ f i (a i) (b i)) := by
-  simp [map₂Aux, piLinearMapToPiTensorProduct]
-
-lemma map₂Aux_add (φ ψ : ⨂[R] i, s i →ₗ[R] t i →ₗ[R] t' i) :
-    map₂Aux (φ + ψ) = map₂Aux φ + map₂Aux ψ := by
-  ext; simp [map₂Aux]
-
-lemma map₂Aux_smul (r : R) (φ : ⨂[R] i, s i →ₗ[R] t i →ₗ[R] t' i) :
-    map₂Aux (r • φ) = r • map₂Aux φ:= by
-  ext; simp [map₂Aux]
-
-def map₂ : (⨂[R] i, s i →ₗ[R] t i →ₗ[R] t' i) →ₗ[R]
+def piTensorHomMap₂ : (⨂[R] i, s i →ₗ[R] t i →ₗ[R] t' i) →ₗ[R]
     (⨂[R] i, s i) →ₗ[R] (⨂[R] i, t i) →ₗ[R] (⨂[R] i, t' i) where
-  toFun := map₂Aux
-  map_add' := map₂Aux_add
-  map_smul' := map₂Aux_smul
+  toFun φ := lift <| LinearMap.compMultilinearMap piTensorHomMap <|
+    (lift <| MultilinearMap.piLinearMapToPiTensorProduct R s _) φ
+  map_add' _ _ := by ext; simp
+  map_smul' _ _ := by ext; simp
 
-@[simp] lemma map₂_tprod_tprod_tprod (f : ∀ i, s i →ₗ[R] t i →ₗ[R] t' i) (a : ∀ i, s i) (b : ∀ i, t i) :
-    map₂ (tprod R f) (tprod R a) (tprod R b) = tprod R (fun i ↦ f i (a i) (b i)) := by
-  simp only [map₂, LinearMap.coe_mk, AddHom.coe_mk, map₂Aux_tprod_tprod_tprod]
+@[simp] lemma piTensorHomMap₂_tprod_tprod_tprod
+    (f : ∀ i, s i →ₗ[R] t i →ₗ[R] t' i) (a : ∀ i, s i) (b : ∀ i, t i) :
+    piTensorHomMap₂ (tprod R f) (tprod R a) (tprod R b) = tprod R (fun i ↦ f i (a i) (b i)) := by
+  simp [piTensorHomMap₂]
 
 end map
 
