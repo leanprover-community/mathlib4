@@ -69,7 +69,8 @@ lemma stronglyMeasurable_poissonPmfReal (r : ℝ≥0) : StronglyMeasurable (pois
 
 /-- Measure defined by the Poisson distribution -/
 noncomputable
-def poissonMeasure (r : ℝ≥0) : Measure ℕ := if r > 0 then (poissonPmf r).toMeasure else Measure.dirac 0
+def poissonMeasure (r : ℝ≥0) : Measure ℕ :=
+  if r > 0 then (poissonPmf r).toMeasure else Measure.dirac 0
 
 lemma poissonMeasure_of_rate_ne_zero {r : ℝ≥0} (hr : r > 0) :
     poissonMeasure r = (poissonPmf r).toMeasure := if_pos hr
