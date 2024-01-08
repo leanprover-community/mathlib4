@@ -75,7 +75,7 @@ class ConnectedObject {C : Type u₁} [Category.{u₂, u₁} C] (X : C) : Prop w
   notInitial : IsInitial X → False
   noTrivialComponent (Y : C) (i : Y ⟶ X) [Mono i] : (IsInitial Y → False) → IsIso i
 
-/- A functor between categories is said to preserves connected objects if it sends
+/- A functor is said to preserve connected objects if it sends
 connected objects to connected objects. -/
 class PreservesConnectedObjects {C : Type u₁} [Category.{u₂, u₁} C] {D : Type v₁}
     [Category.{v₂, v₁} D] (F : C ⥤ D) : Prop where
