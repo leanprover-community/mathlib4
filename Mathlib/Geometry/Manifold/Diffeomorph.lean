@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Yury Kudryashov
 -/
 import Mathlib.Geometry.Manifold.ContMDiffMap
-import Mathlib.Geometry.Manifold.MFDeriv
+import Mathlib.Geometry.Manifold.MFDeriv.UniqueDifferential
 
 #align_import geometry.manifold.diffeomorph from "leanprover-community/mathlib"@"e354e865255654389cc46e6032160238df2e0f40"
 
