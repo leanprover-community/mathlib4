@@ -28,11 +28,11 @@ namespace Multiset
 variable {s t : Multiset α} {a : α}
 
 @[simp] lemma covby_cons (s : Multiset α) (a : α) : s ⋖ a ::ₘ s :=
-  ⟨lt_cons_self _ _, fun t hst hts ↦ (covby_succ _).2 (card_lt_card hst) $ by
+  ⟨lt_cons_self _ _, fun t hst hts ↦ (covby_succ _).2 (card_lt_card hst) <| by
     simpa using card_lt_card hts⟩
 
 lemma _root_.Covby.exists_multiset_cons (h : s ⋖ t) : ∃ a, a ::ₘ s = t :=
-  (lt_iff_cons_le.1 h.lt).imp fun _a ha ↦ ha.eq_of_not_lt $ h.2 $ lt_cons_self _ _
+  (lt_iff_cons_le.1 h.lt).imp fun _a ha ↦ ha.eq_of_not_lt <| h.2 <| lt_cons_self _ _
 
 lemma covby_iff : s ⋖ t ↔ ∃ a, a ::ₘ s = t :=
   ⟨Covby.exists_multiset_cons, by rintro ⟨a, rfl⟩; exact covby_cons _ _⟩
@@ -58,7 +58,7 @@ namespace Finset
 variable {s t : Finset α} {a : α}
 
 /-- Finsets form an order-connected suborder of multisets. -/
-lemma ordConnected_range_val : Set.OrdConnected (Set.range val : Set $ Multiset α) :=
+lemma ordConnected_range_val : Set.OrdConnected (Set.range val : Set <| Multiset α) :=
   ⟨by rintro _ _ _ ⟨s, rfl⟩ t ht; exact ⟨⟨t, Multiset.nodup_of_le ht.2 s.2⟩, rfl⟩⟩
 
 /-- Finsets form an order-connected suborder of sets. -/
@@ -86,7 +86,7 @@ alias ⟨_, _root_.Covby.finset_coe⟩ := coe_covby_coe
 
 lemma _root_.Covby.exists_finset_cons (h : s ⋖ t) : ∃ a, ∃ ha : a ∉ s, s.cons a ha = t :=
   let ⟨a, ha, hst⟩ := ssubset_iff_exists_cons_subset.1 h.lt
-  ⟨a, ha, (hst.eq_of_not_ssuperset $ h.2 $ ssubset_cons _).symm⟩
+  ⟨a, ha, (hst.eq_of_not_ssuperset <| h.2 <| ssubset_cons _).symm⟩
 
 lemma covby_iff_exists_cons : s ⋖ t ↔ ∃ a, ∃ ha : a ∉ s, s.cons a ha = t :=
   ⟨Covby.exists_finset_cons, by rintro ⟨a, ha, rfl⟩; exact covby_cons _⟩
@@ -100,7 +100,7 @@ variable [DecidableEq α]
 @[simp] lemma erase_wcovby (s : Finset α) (a : α) : s.erase a ⩿ s := by simp [← coe_wcovby_coe]
 
 lemma covby_insert (ha : a ∉ s) : s ⋖ insert a s :=
-  (wcovby_insert _ _).covby_of_lt $ ssubset_insert ha
+  (wcovby_insert _ _).covby_of_lt <| ssubset_insert ha
 
 @[simp] lemma erase_covby (ha : a ∈ s) : s.erase a ⋖ s := ⟨erase_ssubset ha, (erase_wcovby _ _).2⟩
 
@@ -120,7 +120,7 @@ lemma covby_iff_card_sdiff_eq_one : t ⋖ s ↔ t ⊆ s ∧ (s \ t).card = 1 := 
     simp [*]
   · simp_rw [card_eq_one]
     rintro ⟨hts, a, ha⟩
-    refine ⟨a, (mem_sdiff.1 $ superset_of_eq ha $ mem_singleton_self _).2, ?_⟩
+    refine ⟨a, (mem_sdiff.1 <| superset_of_eq ha <| mem_singleton_self _).2, ?_⟩
     rw [insert_eq, ← ha, sdiff_union_of_subset hts]
 
 lemma covby_iff_exists_erase : s ⋖ t ↔ ∃ a ∈ t, t.erase a = s := by

@@ -1363,7 +1363,7 @@ instance Red.decidableRel : DecidableRel (@Red α)
     if h : (x1, b1) = (x2, b2) then
       match Red.decidableRel tl1 tl2 with
       | isTrue H => isTrue <| h ▸ Red.cons_cons H
-      | isFalse H => isFalse fun H2 => H $ (Red.cons_cons_iff _).1 $ h.symm ▸ H2
+      | isFalse H => isFalse fun H2 => H <| (Red.cons_cons_iff _).1 <| h.symm ▸ H2
     else
       match Red.decidableRel tl1 ((x1, ! b1) :: (x2, b2) :: tl2) with
       | isTrue H => isTrue <| (Red.cons_cons H).tail Red.Step.cons_not

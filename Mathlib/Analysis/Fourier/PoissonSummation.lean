@@ -165,7 +165,7 @@ theorem isBigO_norm_Icc_restrict_atTop {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
   rw [max_lt_iff] at hx'
   rw [norm_norm,
     ContinuousMap.norm_le _
-      (mul_nonneg (mul_nonneg hc.le <| rpow_nonneg_of_nonneg one_half_pos.le _) (norm_nonneg _))]
+      (mul_nonneg (mul_nonneg hc.le <| rpow_nonneg one_half_pos.le _) (norm_nonneg _))]
   refine' fun y => (hd y.1 (by linarith [hx.1, y.2.1])).trans _
   have A : ∀ x : ℝ, 0 ≤ |x| ^ (-b) := fun x => by positivity
   rw [mul_assoc, mul_le_mul_left hc, norm_of_nonneg (A _), norm_of_nonneg (A _)]

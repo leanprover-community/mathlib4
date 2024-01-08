@@ -60,6 +60,9 @@ protected theorem isAlgebraic : Algebra.IsAlgebraic ℚ K :=
   Algebra.IsAlgebraic.of_finite _ _
 #align number_field.is_algebraic NumberField.isAlgebraic
 
+instance [NumberField L] [Algebra K L] : FiniteDimensional K L :=
+  Module.Finite.of_restrictScalars_finite ℚ K L
+
 /-- The ring of integers (or number ring) corresponding to a number field
 is the integral closure of ℤ in the number field. -/
 def ringOfIntegers :=
