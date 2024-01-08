@@ -16,67 +16,6 @@ section AdjoinRoot
 
 open Ideal Polynomial
 
-namespace AdjoinRoot
-
-variable {R : Type*} [CommRing R]
-
-
-#check AdjoinRoot.lift
-
-/- Just wait for this to not assume that the target `B` is commutative-/
-#check Ideal.Quotient.liftₐ
-
-variable (f : R[X])
-
-section Semiring
-
-variable {S : Type*} [Semiring S] [Algebra R S]
-/-- Given `s : S`, lift a ring homomorphism `i : R →+* S` whose image commutes
- with `s`
-  to `AdjoinRoot f →+* S`. -/
-def lift' (i : R →+* S) (x : S) (hc : ∀ r, Commute (i r) x) (h : f.eval₂ i x = 0)  : AdjoinRoot f →+* S := by
-  apply Ideal.Quotient.lift _ (eval₂RingHom' i x hc)
-  intro g H
-  rcases mem_span_singleton.1 H with ⟨y, hy⟩
-  rw [hy, RingHom.map_mul, eval₂RingHom'_apply, h, zero_mul]
-
-end Semiring
-
-variable {S : Type*} [CommSemiring S] [Algebra R S]
-
-/-- Lift a ring homomorphism `i : R →+* S` to `AdjoinRoot f →+* S`. -/
-def lift₂ (i : R →+* S) (x : S) (h : f.eval₂ i x = 0) : AdjoinRoot f →+* S :=
-  lift' f i x (fun r ↦ Commute.all (i r) x) h
-
-lemma _root_.AdjoinRoot.may_lift (x : S) (h : Polynomial.aeval x f = 0) (a : R[X]) (ha : a ∈ span {f}) :
-    Polynomial.aeval x a = 0 := by
-  rcases mem_span_singleton.1 ha with ⟨y, hy⟩
-  simp only [hy, AlgHom.toRingHom_eq_coe, RingHom.coe_coe, _root_.map_mul, h, zero_mul]
-
-/-- Lift a algebra map `R →+* S` to `AdjoinRoot f →+* S`. -/
-def _root_.AdjoinRoot.lift_aux (x : S) (h : Polynomial.aeval x f = 0) :
-    AdjoinRoot f →+* S :=
-  Ideal.Quotient.lift _ (Polynomial.aeval x).toRingHom (AdjoinRoot.may_lift f x h)
-
-/-- `AdjoinRoot.lift` as an `AlgHom` (soon obsolete) -/
-def _root_.AdjoinRoot.alift (x : S) (h : Polynomial.aeval x f = 0) :
-    AdjoinRoot f →ₐ[R] S := by
-  refine {
-    toRingHom := AdjoinRoot.lift_aux f x h
-    commutes' := fun r => by
-      simp [AdjoinRoot.algebraMap_eq]
-      simp [AdjoinRoot.lift_aux]
-      rw [AdjoinRoot.of]
-      simp only [RingHom.coe_comp, Function.comp_apply]
-      convert Ideal.Quotient.lift_mk (Ideal.span {f}) _ _
-      simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, aeval_C] }
-
-lemma _root_.AdjoinRoot.alift_apply (x : S) (h : Polynomial.aeval x f = 0) (a : R[X]) :
-    (AdjoinRoot.alift f x h) (AdjoinRoot.mk f a) = Polynomial.aeval x a := by
-  simp [AdjoinRoot.alift, AdjoinRoot.lift_aux]
-  convert Ideal.Quotient.lift_mk (Ideal.span {f}) _ _
-
-end AdjoinRoot
 open Set Function
 
 variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V]
@@ -162,7 +101,7 @@ lemma self_mul_aeval_eq_aeval_mul_self (f : V →ₗ[K] V) (P : K[X]) (v : V) :
   simp only [this]
   nth_rewrite 2 [← aeval_X (R := K) f]
   nth_rewrite 3 [← aeval_X (R := K) f]
-  simp only [← map_mul, mul_comm]
+  simp only [← _root_.map_mul, mul_comm]
 
 lemma aeval_ker_mem_invariantSubspace (f : V →ₗ[K] V) (P : K[X]) :
     LinearMap.ker (Polynomial.aeval f P) ∈ invariantSubspace f := by
@@ -260,7 +199,7 @@ theorem minpoly_squarefree_of_isSemisimple [Module.Finite K V]
       suffices : ∀ (x : V) (_ : x ∈ W.val) (_ : x ∈ W'.val), x = 0
       · apply this
         · simp only [W, LinearMap.mem_ker, LinearMap.aeval_restrict_apply]
-          rw [← LinearMap.mul_apply, ← map_mul, ← hr]
+          rw [← LinearMap.mul_apply, ← _root_.map_mul, ← hr]
           have := minpoly.aeval K f'
           simp only [f', LinearMap.ext_iff] at this
           specialize this ⟨w, hw⟩
@@ -283,9 +222,9 @@ theorem minpoly_squarefree_of_isSemisimple [Module.Finite K V]
     obtain ⟨w, hw, w', hw', rfl⟩ := hv_mem
     rw [map_add]
     apply congr_arg₂
-    · rw [mul_comm, map_mul, mul_apply]
+    · rw [mul_comm, _root_.map_mul, mul_apply]
       convert map_zero _
-    · simp only [map_mul, mul_apply]
+    · simp only [_root_.map_mul, mul_apply]
       convert map_zero _
       have := minpoly.aeval K f'
       simp only [f', LinearMap.ext_iff] at this
