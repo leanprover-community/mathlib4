@@ -983,7 +983,7 @@ map of multilinear map from `Π i, M₁ᵢ ⟶ M₁ᵢ'` to `M ⟶ M₂` by `(f�
 -/
 @[simps!]
 def piLinearMap :
-  MultilinearMap R M₁' M₂ →ₗ[R]
+    MultilinearMap R M₁' M₂ →ₗ[R]
     MultilinearMap R (fun i ↦ M₁ i →ₗ[R] M₁' i) (MultilinearMap R M₁ M₂) where
   toFun g := (LinearMap.applyₗ g).compMultilinearMap compLinearMapMultilinear
   map_add' := by aesop
