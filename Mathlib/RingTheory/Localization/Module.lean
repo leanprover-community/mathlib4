@@ -33,9 +33,7 @@ open nonZeroDivisors
 
 section Localization
 
-variable {R : Type*} (Rₛ : Type*) [CommSemiring R] [CommRing Rₛ] [Algebra R Rₛ]
-
-variable (S : Submonoid R) [hT : IsLocalization S Rₛ]
+variable {R : Type*} (Rₛ : Type*) [CommSemiring R] (S : Submonoid R)
 
 -- include hT
 
@@ -44,6 +42,8 @@ section IsLocalizedModule
 section AddCommMonoid
 
 open Submodule
+
+variable [CommSemiring Rₛ] [Algebra R Rₛ] [hT : IsLocalization S Rₛ]
 
 variable {M M' : Type*} [AddCommMonoid M] [Module R M] [Module Rₛ M] [IsScalarTower R Rₛ M]
   [AddCommMonoid M'] [Module R M'] [Module Rₛ M'] [IsScalarTower R Rₛ M'] (f : M →ₗ[R] M')
@@ -88,6 +88,8 @@ theorem LinearIndependent.localization {ι : Type*} {b : ι → M} (hli : Linear
 end AddCommMonoid
 
 section Basis
+
+variable [CommRing Rₛ] [Algebra R Rₛ] [hT : IsLocalization S Rₛ]
 
 open Submodule
 
