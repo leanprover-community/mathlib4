@@ -166,6 +166,13 @@ instance algebra : Algebra R (⨂[R] i, A i) where
     change _ = r • (1 * x)
     rw [one_mul]
 
+lemma algebraMap_apply (r : R) (i : ι) [DecidableEq ι] :
+    algebraMap R (⨂[R] i, A i) r = tprod R (Pi.mulSingle i (algebraMap R (A i) r)) := by
+  change r • tprod R 1 = _
+  rw [show Pi.mulSingle i (algebraMap R (A i) r) = update (fun i ↦ 1) i (r • 1) by
+    · rw [Algebra.algebraMap_eq_smul_one]; rfl, MultilinearMap.map_smul, update_eq_self]
+  congr
+
 /--
 the map `Aᵢ ⟶ ⨂ᵢ Aᵢ` given by `a ↦ 1 ⊗ ... ⊗ a ⊗ 1 ⊗ ...`
 -/
