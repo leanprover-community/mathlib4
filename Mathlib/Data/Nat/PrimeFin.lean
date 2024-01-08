@@ -54,7 +54,7 @@ lemma pos_of_mem_primeFactors (hp : p ∈ n.primeFactors) : 0 < p :=
   (prime_of_mem_primeFactors hp).pos
 
 lemma le_of_mem_primeFactors (h : p ∈ n.primeFactors) : p ≤ n :=
-  le_of_dvd (mem_primeFactors.1 h).2.2.bot_lt $ dvd_of_mem_primeFactors h
+  le_of_dvd (mem_primeFactors.1 h).2.2.bot_lt <| dvd_of_mem_primeFactors h
 
 @[simp] lemma primeFactors_zero : primeFactors 0 = ∅ := rfl
 @[simp] lemma primeFactors_one : primeFactors 1 = ∅ := rfl
@@ -64,7 +64,7 @@ lemma le_of_mem_primeFactors (h : p ∈ n.primeFactors) : p ≤ n :=
   · contrapose!
     rintro hn
     obtain ⟨p, hp, hpn⟩ := exists_prime_and_dvd hn.2
-    exact Nonempty.ne_empty $ ⟨_, mem_primeFactors.2 ⟨hp, hpn, hn.1⟩⟩
+    exact Nonempty.ne_empty <| ⟨_, mem_primeFactors.2 ⟨hp, hpn, hn.1⟩⟩
   · rintro (rfl | rfl) <;> simp
 
 @[simp]
@@ -96,7 +96,7 @@ lemma primeFactors_gcd (ha : a ≠ 0) (hb : b ≠ 0) :
 
 protected lemma Coprime.disjoint_primeFactors (hab : Coprime a b) :
     Disjoint a.primeFactors b.primeFactors :=
-  List.disjoint_toFinset_iff_disjoint.2 $ coprime_factors_disjoint hab
+  List.disjoint_toFinset_iff_disjoint.2 <| coprime_factors_disjoint hab
 
 lemma primeFactors_pow_succ (n k : ℕ) : (n ^ (k + 1)).primeFactors = n.primeFactors := by
   rcases eq_or_ne n 0 with (rfl | hn)

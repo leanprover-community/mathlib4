@@ -187,7 +187,7 @@ syntax (name := noalign) "#noalign " ident : command
 @[command_elab noalign] def elabNoAlign : CommandElab
   | `(#noalign $id3:ident) => do
     withRef id3 <| ensureUnused id3.getId
-    liftCoreM $ addNameAlignment id3.getId .anonymous
+    liftCoreM <| addNameAlignment id3.getId .anonymous
   | _ => throwUnsupportedSyntax
 
 /-- Show information about the alignment status of a lean 3 definition. -/
