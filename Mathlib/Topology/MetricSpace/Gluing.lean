@@ -659,7 +659,7 @@ theorem toInductiveLimit_commute (I : ∀ n, Isometry (f n)) (n : ℕ) :
   show inductiveLimitDist f ⟨n.succ, f n x⟩ ⟨n, x⟩ = 0
   rw [inductiveLimitDist_eq_dist I ⟨n.succ, f n x⟩ ⟨n, x⟩ n.succ, leRecOn_self,
     leRecOn_succ, leRecOn_self, dist_self]
-  exacts [le_rfl, le_succ _, le_rfl]
+  exact le_succ _
 #align metric.to_inductive_limit_commute Metric.toInductiveLimit_commute
 
 end InductiveLimit
