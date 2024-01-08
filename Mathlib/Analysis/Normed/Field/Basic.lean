@@ -792,7 +792,7 @@ protected lemma IsOfFinOrder.norm_eq_one (ha : IsOfFinOrder a) : ‖a‖ = 1 :=
 #align norm_one_of_pow_eq_one IsOfFinOrder.norm_eq_one
 
 example [Monoid β] (φ : β →* α) {x : β} {k : ℕ+} (h : x ^ (k : ℕ) = 1) :
-    ‖φ x‖ = 1 := (φ.isOfFinOrder $ isOfFinOrder_iff_pow_eq_one.2 ⟨_, k.2, h⟩).norm_eq_one
+    ‖φ x‖ = 1 := (φ.isOfFinOrder <| isOfFinOrder_iff_pow_eq_one.2 ⟨_, k.2, h⟩).norm_eq_one
 #noalign norm_map_one_of_pow_eq_one
 
 end NormedDivisionRing
