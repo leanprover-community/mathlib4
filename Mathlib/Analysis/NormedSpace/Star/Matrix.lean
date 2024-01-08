@@ -37,8 +37,7 @@ coincide with the existing topology and uniformity on matrices.
 
 
 open scoped BigOperators Matrix
-
-variable {𝕜 m n E : Type*}
+variable {𝕜 m n l E : Type*}
 
 section EntrywiseSupNorm
 
@@ -95,7 +94,8 @@ noncomputable section L2OpNorm
 namespace Matrix
 open LinearMap
 
-variable [Fintype n] [DecidableEq n] [Fintype m] [DecidableEq m] [IsROrC 𝕜]
+variable [IsROrC 𝕜]
+variable [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n] [Fintype l] [DecidableEq l]
 
 /-- The natural star algebra equivalence between matrices and continuous linear endomoporphisms
 of Euclidean space induced by the orthonormal basis `EuclideanSpace.basisFun`.
@@ -184,7 +184,7 @@ lemma l2_op_nnnorm_mulVec_le (A : Matrix m n 𝕜) (x : EuclideanSpace 𝕜 n) :
     ‖(EuclideanSpace.equiv m 𝕜).symm <| A.mulVec x‖₊ ≤ ‖A‖₊ * ‖x‖₊ :=
   A.l2_op_norm_mulVec x
 
-lemma l2_op_norm_mul {l : Type*} [Fintype l] [DecidableEq l] (A : Matrix m n 𝕜) (B : Matrix n l 𝕜) :
+lemma l2_op_norm_mul (A : Matrix m n 𝕜) (B : Matrix n l 𝕜) :
     ‖A * B‖ ≤ ‖A‖ * ‖B‖ := by
   simp only [l2_op_norm_def]
   have := (toEuclideanLin (n := n) (m := m) (𝕜 := 𝕜) ≪≫ₗ toContinuousLinearMap) A
