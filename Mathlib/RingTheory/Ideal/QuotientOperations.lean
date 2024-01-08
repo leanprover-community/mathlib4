@@ -286,9 +286,9 @@ section QuotientAlgebra
 
 variable (R₁ R₂ : Type*) {A B : Type*}
 
-variable [CommSemiring R₁] [CommSemiring R₂] [CommRing A] [CommRing B]
+variable [CommSemiring R₁] [CommSemiring R₂] [CommRing A]
 
-variable [Algebra R₁ A] [Algebra R₂ A] [Algebra R₁ B]
+variable [Algebra R₁ A] [Algebra R₂ A]
 
 /-- The `R₁`-algebra structure on `A/I` for an `R₁`-algebra `A` -/
 instance Quotient.algebra {I : Ideal A} : Algebra R₁ (A ⧸ I) :=
@@ -361,6 +361,10 @@ theorem Quotient.mkₐ_ker (I : Ideal A) : RingHom.ker (Quotient.mkₐ R₁ I : 
 #align ideal.quotient.mkₐ_ker Ideal.Quotient.mkₐ_ker
 
 variable {R₁}
+
+section
+
+variable [Semiring B] [Algebra R₁ B]
 
 /-- `Ideal.quotient.lift` as an `AlgHom`. -/
 def Quotient.liftₐ (I : Ideal A) (f : A →ₐ[R₁] B) (hI : ∀ a : A, a ∈ I → f a = 0) :
@@ -459,6 +463,8 @@ noncomputable def quotientKerAlgEquivOfSurjective {f : A →ₐ[R₁] B} (hf : F
     (A ⧸ (RingHom.ker f.toRingHom)) ≃ₐ[R₁] B :=
   quotientKerAlgEquivOfRightInverse (Classical.choose_spec hf.hasRightInverse)
 #align ideal.quotient_ker_alg_equiv_of_surjective Ideal.quotientKerAlgEquivOfSurjective
+
+end
 
 section CommRing_CommRing
 
@@ -564,6 +570,11 @@ theorem comp_quotientMap_eq_of_comp_eq {R' S' : Type*} [CommRing R'] [CommRing S
 
 end CommRing_CommRing
 
+
+section
+
+variable [CommRing B] [Algebra R₁ B]
+
 /-- The algebra hom `A/I →+* B/J` induced by an algebra hom `f : A →ₐ[R₁] B` with `I ≤ f⁻¹(J)`. -/
 def quotientMapₐ {I : Ideal A} (J : Ideal B) (f : A →ₐ[R₁] B) (hIJ : I ≤ J.comap f) :
     A ⧸ I →ₐ[R₁] B ⧸ J :=
@@ -594,6 +605,8 @@ def quotientEquivAlg (I : Ideal A) (J : Ideal B) (f : A ≃ₐ[R₁] B) (hIJ : J
       simp only [quotientEquiv_apply, RingHom.toFun_eq_coe, quotientMap_algebraMap,
       RingEquiv.coe_toRingHom, AlgEquiv.coe_ringEquiv, AlgEquiv.commutes, Quotient.mk_algebraMap]}
 #align ideal.quotient_equiv_alg Ideal.quotientEquivAlg
+
+end
 
 instance (priority := 100) quotientAlgebra {I : Ideal A} [Algebra R A] :
     Algebra (R ⧸ I.comap (algebraMap R A)) (A ⧸ I) :=
