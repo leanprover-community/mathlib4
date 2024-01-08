@@ -311,6 +311,7 @@ lemma ofComplex_exactAt_succ (n : ℕ) :
   dsimp [ofComplex, HomologicalComplex.sc', HomologicalComplex.shortComplexFunctor',
       ChainComplex.mk', ChainComplex.mk]
   simp only [ChainComplex.of_d]
+  -- TODO: this should just be apply exact_d_f so something is missing
   match n with
   | 0 =>
     apply exact_d_f ((ChainComplex.mkAux _ _ _ (d (Projective.π Z)) (d (d (Projective.π Z))) _ _
