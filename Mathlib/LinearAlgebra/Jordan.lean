@@ -11,6 +11,72 @@ import Mathlib.RingTheory.AdjoinRoot
 
 -/
 
+section AdjoinRoot
+
+
+open Ideal Polynomial
+
+namespace AdjoinRoot
+
+variable {R : Type*} [CommRing R]
+
+
+#check AdjoinRoot.lift
+
+/- Just wait for this to not assume that the target `B` is commutative-/
+#check Ideal.Quotient.liftₐ
+
+variable (f : R[X])
+
+section Semiring
+
+variable {S : Type*} [Semiring S] [Algebra R S]
+/-- Given `s : S`, lift a ring homomorphism `i : R →+* S` whose image commutes
+ with `s`
+  to `AdjoinRoot f →+* S`. -/
+def lift' (i : R →+* S) (x : S) (hc : ∀ r, Commute (i r) x) (h : f.eval₂ i x = 0)  : AdjoinRoot f →+* S := by
+  apply Ideal.Quotient.lift _ (eval₂RingHom' i x hc)
+  intro g H
+  rcases mem_span_singleton.1 H with ⟨y, hy⟩
+  rw [hy, RingHom.map_mul, eval₂RingHom'_apply, h, zero_mul]
+
+end Semiring
+
+variable {S : Type*} [CommSemiring S] [Algebra R S]
+
+/-- Lift a ring homomorphism `i : R →+* S` to `AdjoinRoot f →+* S`. -/
+def lift₂ (i : R →+* S) (x : S) (h : f.eval₂ i x = 0) : AdjoinRoot f →+* S :=
+  lift' f i x (fun r ↦ Commute.all (i r) x) h
+
+lemma _root_.AdjoinRoot.may_lift (x : S) (h : Polynomial.aeval x f = 0) (a : R[X]) (ha : a ∈ span {f}) :
+    Polynomial.aeval x a = 0 := by
+  rcases mem_span_singleton.1 ha with ⟨y, hy⟩
+  simp only [hy, AlgHom.toRingHom_eq_coe, RingHom.coe_coe, _root_.map_mul, h, zero_mul]
+
+/-- Lift a algebra map `R →+* S` to `AdjoinRoot f →+* S`. -/
+def _root_.AdjoinRoot.lift_aux (x : S) (h : Polynomial.aeval x f = 0) :
+    AdjoinRoot f →+* S :=
+  Ideal.Quotient.lift _ (Polynomial.aeval x).toRingHom (AdjoinRoot.may_lift f x h)
+
+/-- `AdjoinRoot.lift` as an `AlgHom` (soon obsolete) -/
+def _root_.AdjoinRoot.alift (x : S) (h : Polynomial.aeval x f = 0) :
+    AdjoinRoot f →ₐ[R] S := by
+  refine {
+    toRingHom := AdjoinRoot.lift_aux f x h
+    commutes' := fun r => by
+      simp [AdjoinRoot.algebraMap_eq]
+      simp [AdjoinRoot.lift_aux]
+      rw [AdjoinRoot.of]
+      simp only [RingHom.coe_comp, Function.comp_apply]
+      convert Ideal.Quotient.lift_mk (Ideal.span {f}) _ _
+      simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, aeval_C] }
+
+lemma _root_.AdjoinRoot.alift_apply (x : S) (h : Polynomial.aeval x f = 0) (a : R[X]) :
+    (AdjoinRoot.alift f x h) (AdjoinRoot.mk f a) = Polynomial.aeval x a := by
+  simp [AdjoinRoot.alift, AdjoinRoot.lift_aux]
+  convert Ideal.Quotient.lift_mk (Ideal.span {f}) _ _
+
+end AdjoinRoot
 open Set Function
 
 variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V]
@@ -238,47 +304,7 @@ example : Field (K[X] ⧸ (Ideal.span {p})) := AdjoinRoot.field
   refine Ideal.Quotient.field (Ideal.span {p}) -/
 
 
-section AdjoinRoot
 
-open Ideal
-variable {R : Type*} [CommRing R] {S : Type*} [Ring S] [Algebra R S]
-
-
-
-/- Just wait for this to not assume that the target `B` is commutative-/
-#check Ideal.Quotient.liftₐ
-
-variable (f : R[X])
-
-lemma _root_.AdjoinRoot.may_lift (x : S) (h : Polynomial.aeval x f = 0) (a : R[X]) (ha : a ∈ span {f}) :
-    Polynomial.aeval x a = 0 := by
-  rcases mem_span_singleton.1 ha with ⟨y, hy⟩
-  simp only [hy, AlgHom.toRingHom_eq_coe, RingHom.coe_coe, _root_.map_mul, h, zero_mul]
-
-/-- Lift a algebra map `R →+* S` to `AdjoinRoot f →+* S`. -/
-def _root_.AdjoinRoot.lift_aux (x : S) (h : Polynomial.aeval x f = 0) :
-    AdjoinRoot f →+* S :=
-  Ideal.Quotient.lift _ (Polynomial.aeval x).toRingHom (AdjoinRoot.may_lift f x h)
-
-/-- `AdjoinRoot.lift` as an `AlgHom` (soon obsolete) -/
-def _root_.AdjoinRoot.alift (x : S) (h : Polynomial.aeval x f = 0) :
-    AdjoinRoot f →ₐ[R] S := by
-  refine {
-    toRingHom := AdjoinRoot.lift_aux f x h
-    commutes' := fun r => by
-      simp [AdjoinRoot.algebraMap_eq]
-      simp [AdjoinRoot.lift_aux]
-      rw [AdjoinRoot.of]
-      simp only [RingHom.coe_comp, Function.comp_apply]
-      convert Ideal.Quotient.lift_mk (Ideal.span {f}) _ _
-      simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, aeval_C] }
-
-lemma _root_.AdjoinRoot.alift_apply (x : S) (h : Polynomial.aeval x f = 0) (a : R[X]) :
-    (AdjoinRoot.alift f x h) (AdjoinRoot.mk f a) = Polynomial.aeval x a := by
-  simp [AdjoinRoot.alift, AdjoinRoot.lift_aux]
-  convert Ideal.Quotient.lift_mk (Ideal.span {f}) _ _
-
-end AdjoinRoot
 
 noncomputable
 def Ideal.module_of_quotient {R : Type*} [CommRing R] (I : Ideal R)
