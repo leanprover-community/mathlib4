@@ -28,7 +28,7 @@ inequality since for an antichain `𝒜` and every `A ∈ 𝒜` we have
   some, or `⊤` if there are none.
 * `Finset.truncatedInf`: `s.truncatedInf a` is the infimum of all `b ≤ a` in `𝒜` if there are
   some, or `⊥` if there are none.
-* `AhlswedeZhang.infSum`: RHS of the Ahlswede-Zhang identity.
+* `AhlswedeZhang.infSum`: LHS of the Ahlswede-Zhang identity.
 * `AhlswedeZhang.le_infSum`: The sum of `1 / n.choose |A|` over an antichain is less than the RHS of
   the Ahlswede-Zhang identity.
 * `AhlswedeZhang.infSum_eq_one`: Ahlswede-Zhang identity.
