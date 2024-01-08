@@ -547,11 +547,15 @@ section IsLocalizedModule
 
 universe u v
 
-variable {R : Type*} [CommRing R] (S : Submonoid R)
+variable {R : Type*} [CommSemiring R] (S : Submonoid R)
 
 variable {M M' M'' : Type*} [AddCommMonoid M] [AddCommMonoid M'] [AddCommMonoid M'']
 
-variable [Module R M] [Module R M'] [Module R M''] (f : M →ₗ[R] M') (g : M →ₗ[R] M'')
+variable {A : Type*} [CommSemiring A] [Algebra R A] [Module A M'] [IsLocalization S A]
+
+variable [Module R M] [Module R M'] [Module R M''] [IsScalarTower R A M']
+
+variable (f : M →ₗ[R] M') (g : M →ₗ[R] M'')
 
 /-- The characteristic predicate for localized module.
 `IsLocalizedModule S f` describes that `f : M ⟶ M'` is the localization map identifying `M'` as
@@ -1045,6 +1049,14 @@ theorem mk_eq_mk' (s : S) (m : M) :
     LocalizedModule.mk_cancel, LocalizedModule.mkLinearMap_apply]
 #align is_localized_module.mk_eq_mk' IsLocalizedModule.mk_eq_mk'
 
+variable (A) in
+lemma mk'_smul_mk' (x : R) (m : M) (s t : S) :
+    IsLocalization.mk' A x s • mk' f m t = mk' f (x • m) (s * t) := by
+  apply smul_injective f (s * t)
+  conv_lhs => simp only [smul_assoc, mul_smul, smul_comm t]
+  simp only [mk'_cancel', map_smul, Submonoid.smul_def s]
+  rw [← smul_assoc, IsLocalization.smul_mk'_self, algebraMap_smul]
+
 variable (S)
 
 theorem eq_zero_iff {m : M} : f m = 0 ↔ ∃ s' : S, s' • m = 0 :=
@@ -1088,10 +1100,6 @@ theorem mkOfAlgebra {R S S' : Type*} [CommRing R] [CommRing S] [CommRing S'] [Al
 #align is_localized_module.mk_of_algebra IsLocalizedModule.mkOfAlgebra
 
 end Algebra
-
-variable {A : Type*}
-  [CommRing A] [Algebra R A] [Module A M'] [IsScalarTower R A M'] [IsLocalization S A]
-
 
 /-- If `(f : M →ₗ[R] M')` is a localization of modules, then the map
 `(localization S) × M → N, (s, m) ↦ s • f m` is the tensor product (insomuch as it is the universal
