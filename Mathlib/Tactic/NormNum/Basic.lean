@@ -440,6 +440,8 @@ such that `norm_num` successfully recognises `a`. -/
   let .app (.const ``Not _) (a : Q(Prop)) ← whnfR e | failure
   guard <|← withNewMCtxDepth <| isDefEq α q(Prop)
   let ⟨b, p⟩ ← deriveBool q($a)
+  haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q Prop := ⟨⟩
+  haveI' : $e =Q ¬ $a := ⟨⟩
   match b with
   | true => return .isFalse q(not_not_intro $p)
   | false => return .isTrue q($p)
