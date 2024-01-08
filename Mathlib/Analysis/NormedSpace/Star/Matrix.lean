@@ -221,7 +221,8 @@ scoped[Matrix.L2OpNorm] attribute [instance] Matrix.instL2OpNormedRing
 /-- This is the same as `Matrix.l2_op_norm_def`, but with a more bundled RHS for square matrices. -/
 lemma cstar_norm_def (A : Matrix n n 𝕜) : ‖A‖ = ‖toEuclideanClm (n := n) (𝕜 := 𝕜) A‖ := rfl
 
-/-- This is the same as `Matrix.l2_op_nnnorm_def`, but with a more bundled RHS for square matrices. -/
+/-- This is the same as `Matrix.l2_op_nnnorm_def`, but with a more bundled RHS for square
+matrices. -/
 lemma cstar_nnnorm_def (A : Matrix n n 𝕜) : ‖A‖₊ = ‖toEuclideanClm (n := n) (𝕜 := 𝕜) A‖₊ := rfl
 
 /-- The normed algebra structure on `Matrix n n 𝕜` arising from the operator norm given by the
