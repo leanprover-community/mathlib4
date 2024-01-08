@@ -15,7 +15,7 @@ import Mathlib.Algebra.Polynomial.BigOperators
 /-!
 # Theory of univariate polynomials
 
-This file starts looking like the ring theory of $ R[X] $
+This file starts looking like the ring theory of $R[X]$
 
 ## Main definitions
 

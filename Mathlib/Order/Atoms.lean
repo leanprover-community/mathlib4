@@ -95,7 +95,7 @@ theorem IsAtom.le_iff (h : IsAtom a) : x ≤ a ↔ x = ⊥ ∨ x = a := by rw [l
 #align is_atom.le_iff IsAtom.le_iff
 
 lemma IsAtom.le_iff_eq (ha : IsAtom a) (hb : b ≠ ⊥) : b ≤ a ↔ b = a :=
-  ha.le_iff.trans $ or_iff_right hb
+  ha.le_iff.trans <| or_iff_right hb
 
 theorem IsAtom.Iic_eq (h : IsAtom a) : Set.Iic a = {⊥, a} :=
   Set.ext fun _ => h.le_iff

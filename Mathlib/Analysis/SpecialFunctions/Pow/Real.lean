@@ -551,7 +551,7 @@ lemma rpow_lt_rpow_iff_of_neg (hx : 0 < x) (hy : 0 < y) (hz : z < 0) : x ^ z < y
     fun h ↦ rpow_lt_rpow_of_neg hy h hz⟩
 
 lemma rpow_le_rpow_iff_of_neg (hx : 0 < x) (hy : 0 < y) (hz : z < 0) : x ^ z ≤ y ^ z ↔ y ≤ x :=
-  le_iff_le_iff_lt_iff_lt.2 $ rpow_lt_rpow_iff_of_neg hy hx hz
+  le_iff_le_iff_lt_iff_lt.2 <| rpow_lt_rpow_iff_of_neg hy hx hz
 
 lemma le_rpow_inv_iff_of_pos (hx : 0 ≤ x) (hy : 0 ≤ y) (hz : 0 < z) : x ≤ y ^ z⁻¹ ↔ x ^ z ≤ y := by
   rw [← rpow_le_rpow_iff hx _ hz, rpow_inv_rpow] <;> positivity
@@ -560,10 +560,10 @@ lemma rpow_inv_le_iff_of_pos (hx : 0 ≤ x) (hy : 0 ≤ y) (hz : 0 < z) : x ^ z�
   rw [← rpow_le_rpow_iff _ hy hz, rpow_inv_rpow] <;> positivity
 
 lemma lt_rpow_inv_iff_of_pos (hx : 0 ≤ x) (hy : 0 ≤ y) (hz : 0 < z) : x < y ^ z⁻¹ ↔ x ^ z < y :=
-  lt_iff_lt_of_le_iff_le $ rpow_inv_le_iff_of_pos hy hx hz
+  lt_iff_lt_of_le_iff_le <| rpow_inv_le_iff_of_pos hy hx hz
 
 lemma rpow_inv_lt_iff_of_pos (hx : 0 ≤ x) (hy : 0 ≤ y) (hz : 0 < z) : x ^ z⁻¹ < y ↔ x < y ^ z :=
-  lt_iff_lt_of_le_iff_le $ le_rpow_inv_iff_of_pos hy hx hz
+  lt_iff_lt_of_le_iff_le <| le_rpow_inv_iff_of_pos hy hx hz
 
 theorem le_rpow_inv_iff_of_neg (hx : 0 < x) (hy : 0 < y) (hz : z < 0) :
     x ≤ y ^ z⁻¹ ↔ y ≤ x ^ z := by
