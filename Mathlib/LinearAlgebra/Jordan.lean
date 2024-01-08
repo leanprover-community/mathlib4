@@ -266,7 +266,7 @@ def Ideal.module_of_quotient {R : Type*} [CommRing R] (I : Ideal R)
       change smul_aux (r * s) v = smul_aux r (smul_aux s v)
       simp only [smul_aux_eq, ← mul_smul]
       apply h'
-      simp only [map_mul]
+      simp only [_root_.map_mul]
       simp only [(Ideal.Quotient.mk_surjective (_ : R ⧸ I)).choose_spec]
     smul_zero := fun r => by
       change smul_aux _ _ = 0
@@ -287,14 +287,10 @@ def Ideal.module_of_quotient {R : Type*} [CommRing R] (I : Ideal R)
       apply h'
       simp only [(Ideal.Quotient.mk_surjective (_ : R ⧸ I)).choose_spec, map_zero] }
 
-example (f : V →ₗ[K] V) : Module K[X] V where
-  smul p v := Polynomial.aeval f p v
-  one_smul := sorry
-  mul_smul := sorry
-  smul_zero := sorry
-  smul_add := sorry
-  add_smul := sorry
-  zero_smul := sorry
+example (f : V →ₗ[K] V) : K[X] →ₐ[K] V →ₗ[K] V := aeval f
+
+example (f : V →ₗ[K] V) : Module K[X] V :=
+  Module.compHom _ (aeval f).toRingHom
 
 example {R : Type*} [CommSemiring R] {S : Type*} [Semiring S] [Algebra R S]
   {V : Type*} [AddCommGroup V] [Module R V] [Module S V] [IsScalarTower R S V] :
@@ -305,14 +301,8 @@ example {R : Type*} [CommSemiring R] {S : Type*} [Semiring S] [Algebra R S]
   (h : S →ₐ[R] V →ₗ[R] V) : Module S V :=
   Module.compHom _ h.toRingHom
 
-
-example {R : Type*} [CommSemiring R]
-  {V : Type*} [AddCommGroup V] [Module R V] :
-  Module (V →ₗ[R] V) V := by
-  exact applyModule
-
-example (f : V →ₗ[K] V) : Module K[X] V :=
-  Module.compHom _ (aeval f).toRingHom
+example {R : Type*} [CommSemiring R] {V : Type*} [AddCommGroup V] [Module R V] :
+  Module (V →ₗ[R] V) V := applyModule
 
 theorem _root_.minpoly.dvd_iff {A : Type u_1} {B : Type u_2} [Field A] [Ring B]
     [Algebra A B] {x : B} {p : Polynomial A} :
@@ -320,11 +310,12 @@ theorem _root_.minpoly.dvd_iff {A : Type u_1} {B : Type u_2} [Field A] [Ring B]
   constructor
   · exact minpoly.dvd A x
   · rintro ⟨q, rfl⟩
-    rw [map_mul, minpoly.aeval, zero_mul]
+    rw [_root_.map_mul, minpoly.aeval, zero_mul]
 
+#check AdjoinRoot.liftHom
 example (f : V →ₗ[K] V) (p : K[X]) (hp : minpoly K f ∣ p) :
     Module (AdjoinRoot p) V :=
-  Module.compHom _ (AdjoinRoot.alift p f (minpoly.dvd_iff.mpr hp)).toRingHom
+  Module.compHom _ (AdjoinRoot.liftHom p f (minpoly.dvd_iff.mpr hp)).toRingHom
 
 
 end
