@@ -951,7 +951,7 @@ sending a multilinear map `g` to `g (f₁ ⬝ , ..., fₙ ⬝ )` is linear in `g
 
 /--
 If `g` is a multilinear map from `(M₁')ᵢ` to `M₂`, then `g` can be reinterpreted as a multilinear
-map of multilinear map from `(M₁ ⟶ M₁')ᵢ` to `(M₁)ᵢ ⟶ M₂` by `(fᵢ) ↦ v ↦ ⨂ₜ fᵢ vᵢ`.
+map of multilinear map from `(M₁ ⟶ M₁')ᵢ` to `(M₁)ᵢ ⟶ M₂` by `(fᵢ) ↦ v ↦ g (fᵢ vᵢ)`.
 -/
 @[simps]
 def piLinearMap (g : MultilinearMap R M₁' M₂) :
