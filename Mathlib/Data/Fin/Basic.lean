@@ -2081,6 +2081,28 @@ theorem succAbove_pred_of_gt {i j : Fin (n + 1)} (h : j < i)
   rw [succAbove_of_lt_succ (succ_pred _ _ ▸ h), succ_pred]
 #align fin.succ_above_pred Fin.succAbove_pred_of_gt
 
+theorem castPred_succAbove_of_castSucc_lt {i : Fin n} {j : Fin (n + 1)} (h : castSucc i < j)
+    (h' : (j.succAbove i) ≠ last n :=
+    (j.le_last.trans_lt' ((succAbove_lt_iff_castSucc_lt _ _).2 h)).ne) :
+    (j.succAbove i).castPred h' = i := by simp_rw [succAbove_of_castSucc_lt h, castPred_castSucc]
+
+theorem castPred_succAbove_of_succ_le {i : Fin n} {j : Fin (n + 1)} (h : succ i ≤ j)
+    (h' : (j.succAbove i) ≠ last n :=
+    (j.le_last.trans_lt' ((succAbove_lt_iff_castSucc_lt _ _).2 h)).ne) :
+    (j.succAbove i).castPred h' = i :=
+  castPred_succAbove_of_castSucc_lt (castSucc_lt_iff_succ_le.mpr h)
+
+theorem pred_succAbove_of_castSucc_le {i : Fin n} {j : Fin (n + 1)} (h : j ≤ castSucc i)
+    (h' : (j.succAbove i) ≠ 0 := (j.zero_le.trans_lt <|
+    (lt_succAbove_iff_le_castSucc _ _).2 h).ne') : (j.succAbove i).pred h' = i := by
+  simp_rw [succAbove_of_le_castSucc h, pred_succ]
+#align fin.pred_succ_above Fin.pred_succAbove_of_castSucc_le
+
+theorem pred_succAbove_of_succ_lt {i : Fin n} {j : Fin (n + 1)} (h : j < succ i)
+    (h' : (j.succAbove i) ≠ 0 := (j.zero_le.trans_lt <| (lt_succAbove_iff_lt_succ _ _).2 h).ne') :
+    (j.succAbove i).pred h' = i :=
+  pred_succAbove_of_castSucc_le (le_castSucc_iff.mpr h)
+
 theorem exists_succAbove_eq {p i: Fin (n + 1)} (h : i ≠ p) : ∃ z, p.succAbove z = i := by
   cases' h.lt_or_lt with hlt hlt
   exacts [⟨_, succAbove_castPred_of_lt hlt⟩, ⟨_, succAbove_pred_of_gt hlt⟩]
@@ -2128,27 +2150,6 @@ strictAnti_left_succAbove.le_iff_le
 theorem exists_unique_succAbove_eq {p i : Fin (n + 1)} (h : i ≠ p) : ∃! z, p.succAbove z = i :=
   exists_unique_of_exists_of_unique (exists_succAbove_eq h)
   (fun _ _ h₁ h₂ => succAbove_injective (x := p) (by rw [h₁, h₂]))
-
-theorem castLT_succAbove_of_castSucc_lt {x : Fin n} {y : Fin (n + 1)} (h : castSucc x < y)
-    (h' : (y.succAbove x).1 < n := y.le_last.trans_lt' ((succAbove_lt_iff_castSucc_lt _ _).2 h)) :
-    (y.succAbove x).castLT h' = x := by simp_rw [succAbove_of_castSucc_lt h, castLT_castSucc]
-#align fin.cast_lt_succ_above Fin.castLT_succAbove_of_castSucc_lt
-
-theorem castLT_succAbove_of_succ_le {x : Fin n} {y : Fin (n + 1)} (h : succ x ≤ y)
-    (h' : (y.succAbove x).1 < n := y.le_last.trans_lt' ((succAbove_lt_iff_succ_le _ _).2 h)) :
-    (y.succAbove x).castLT h' = x :=
-  castLT_succAbove_of_castSucc_lt (castSucc_lt_iff_succ_le.mpr h)
-
-theorem pred_succAbove_of_castSucc_le {x : Fin n} {y : Fin (n + 1)} (h : y ≤ castSucc x)
-    (h' : (y.succAbove x) ≠ 0 := (y.zero_le.trans_lt <|
-    (lt_succAbove_iff_le_castSucc _ _).2 h).ne') : (y.succAbove x).pred h' = x := by
-  simp_rw [succAbove_of_le_castSucc h, pred_succ]
-#align fin.pred_succ_above Fin.pred_succAbove_of_castSucc_le
-
-theorem pred_succAbove_of_succ_lt {x : Fin n} {y : Fin (n + 1)} (h : y < succ x)
-    (h' : (y.succAbove x) ≠ 0 := (y.zero_le.trans_lt <| (lt_succAbove_iff_lt_succ _ _).2 h).ne') :
-    (y.succAbove x).pred h' = x :=
-  pred_succAbove_of_castSucc_le (le_castSucc_iff.mpr h)
 
 end SuccAbove
 

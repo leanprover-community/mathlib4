@@ -768,8 +768,8 @@ theorem insertNth_apply_succAbove (i : Fin (n + 1)) (x : α i) (p : ∀ j, α (i
   simp only [insertNth, succAboveCases, dif_neg (succAbove_ne _ _), succAbove_lt_iff_castSucc_lt]
   split_ifs with hlt
   · generalize_proofs H₁ H₂; revert H₂
-    generalize hk : castLT ((succAbove i) j) H₁ = k
-    rw [castLT_succAbove_of_castSucc_lt hlt] at hk; cases hk
+    generalize hk : castPred ((succAbove i) j) H₁ = k
+    rw [castPred_succAbove_of_castSucc_lt hlt] at hk; cases hk
     intro; rfl
   · generalize_proofs H₁ H₂; revert H₂
     generalize hk : pred ((succAboveEmb i).toEmbedding j) H₁ = k
