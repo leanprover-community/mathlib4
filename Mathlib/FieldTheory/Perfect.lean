@@ -24,6 +24,9 @@ prime characteristic.
    sense of Serre.
  * `PerfectField.ofCharZero`: all fields of characteristic zero are perfect.
  * `PerfectField.ofFinite`: all finite fields are perfect.
+ * `Algebra.IsAlgebraic.isSeparable_of_perfectField`, `Algebra.IsAlgebraic.perfectField`:
+   if `L / K` is an algebraic extension, `K` is a perfect field, then `L / K` is separable,
+   and `L` is also a perfect field.
 
 -/
 
