@@ -976,13 +976,18 @@ sending a multilinear map `g` to `g (f₁ ⬝ , ..., fₙ ⬝ )` is linear in `g
     · exact Function.apply_update c f i f₀ j
 
 /--
-If `g` is a multilinear map from `(M₁')ᵢ` to `M₂`, then `g` can be reinterpreted as a multilinear
-map of multilinear map from `(M₁ ⟶ M₁')ᵢ` to `(M₁)ᵢ ⟶ M₂` by `(fᵢ) ↦ v ↦ g(fᵢ vᵢ)`.
+Let `M₁ᵢ` and `M₁ᵢ'` be two families of `R`-modules and `M₂` an `R`-module. Let us denote `M` and
+`M'` to be `Π i, M₁ᵢ` and `Π i, M₁ᵢ'` respectively.
+If `g` is a multilinear map `M' → M₂`, then `g` can be reinterpreted as a multilinear
+map of multilinear map from `Π i, M₁ᵢ ⟶ M₁ᵢ'` to `M ⟶ M₂` by `(fᵢ) ↦ v ↦ g(fᵢ vᵢ)`.
 -/
-@[simps]
+@[simps!]
 def piLinearMap (g : MultilinearMap R M₁' M₂) :
-  MultilinearMap R (fun i ↦ M₁ i →ₗ[R] M₁' i) (MultilinearMap R M₁ M₂) :=
-(LinearMap.applyₗ g).compMultilinearMap compLinearMapMultilinear
+  MultilinearMap R M₁' M₂ →ₗ[R]
+    MultilinearMap R (fun i ↦ M₁ i →ₗ[R] M₁' i) (MultilinearMap R M₁ M₂) where
+  toFun g := (LinearMap.applyₗ g).compMultilinearMap compLinearMapMultilinear
+  map_add' := by aesop
+  map_smul' := by aesop
 
 end
 
