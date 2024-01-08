@@ -93,6 +93,8 @@ variable [CovariantClass α α (· * ·) (· ≤ ·)]
 @[to_additive] lemma mabs_of_one_le (h : 1 ≤ a) : |a|ₘ = a :=
   sup_eq_left.2 <| (inv_le_one'.2 h).trans h
 #align abs_of_nonneg abs_of_nonneg
+#align lattice_ordered_comm_group.mabs_of_one_le mabs_of_one_le
+#align lattice_ordered_comm_group.abs_of_nonneg abs_of_nonneg
 
 @[to_additive] lemma mabs_of_one_lt (h : 1 < a) : |a|ₘ = a := mabs_of_one_le h.le
 #align abs_of_pos abs_of_pos
