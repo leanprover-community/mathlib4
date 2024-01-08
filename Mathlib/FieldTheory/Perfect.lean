@@ -224,11 +224,20 @@ theorem Algebra.IsAlgebraic.isSeparable_of_perfectField {K L : Type*} [Field K] 
     [Algebra K L] [PerfectField K] (halg : Algebra.IsAlgebraic K L) : IsSeparable K L :=
   ⟨fun x ↦ PerfectField.separable_of_irreducible <| minpoly.irreducible (halg x).isIntegral⟩
 
-/-- If `L / K` is an algebraic extension, `K` is a perfect field, then so is `L`. -/
-theorem Algebra.IsAlgebraic.perfectField {K L : Type*} [Field K] [Field L] [Algebra K L]
-    [PerfectField K] (halg : Algebra.IsAlgebraic K L) : PerfectField L := ⟨fun {f} hf ↦
+-- TODO: move to Mathlib.RingTheory.AdjoinRoot
+/-- If `L / K` is an integral extension, `K` is a domain, `L` is a field, then any irreducible
+polynomial over `L` divides some monic irreducible polynomial over `K`. -/
+theorem Irreducible.exists_dvd_monic_irreducible_of_isIntegral {K L : Type*}
+    [CommRing K] [IsDomain K] [Field L] [Algebra K L] (H : Algebra.IsIntegral K L) {f : L[X]}
+    (hf : Irreducible f) : ∃ g : K[X], g.Monic ∧ Irreducible g ∧ f ∣ g.map (algebraMap K L) := by
   haveI := Fact.mk hf
   have h := hf.ne_zero
-  have h2 := isIntegral_trans halg.isIntegral _ (AdjoinRoot.isIntegral_root h)
+  have h2 := isIntegral_trans H _ (AdjoinRoot.isIntegral_root h)
   have h3 := (AdjoinRoot.minpoly_root h) ▸ minpoly.dvd_map_of_isScalarTower K L (AdjoinRoot.root f)
-  (PerfectField.separable_of_irreducible (minpoly.irreducible h2)).map |>.of_dvd h3 |>.of_mul_left⟩
+  exact ⟨_, minpoly.monic h2, minpoly.irreducible h2, dvd_of_mul_right_dvd h3⟩
+
+/-- If `L / K` is an algebraic extension, `K` is a perfect field, then so is `L`. -/
+theorem Algebra.IsAlgebraic.perfectField {K L : Type*} [Field K] [Field L] [Algebra K L]
+    [PerfectField K] (halg : Algebra.IsAlgebraic K L) : PerfectField L := ⟨fun {f} hf ↦ by
+  obtain ⟨_, _, hi, h⟩ := hf.exists_dvd_monic_irreducible_of_isIntegral halg.isIntegral
+  exact (PerfectField.separable_of_irreducible hi).map |>.of_dvd h⟩
