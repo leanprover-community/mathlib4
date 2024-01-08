@@ -41,61 +41,18 @@ noncomputable section NonUnitalNonAssocSemiring
 variable [CommSemiring R] [∀ i, NonUnitalNonAssocSemiring (A i)]
 variable [∀ i, Module R (A i)] [∀ i, SMulCommClass R (A i) (A i)] [∀ i, IsScalarTower R (A i) (A i)]
 
+attribute [aesop safe] mul_add mul_smul_comm smul_mul_assoc add_mul in
 /--
 The multiplication in tensor product of rings is induced by `(xᵢ) * (yᵢ) = (xᵢ * yᵢ)`
 -/
 def lmul : (⨂[R] i, A i) →ₗ[R] (⨂[R] i, A i) →ₗ[R] (⨂[R] i, A i) :=
-lift
-{ toFun := fun x ↦ lift
-    { toFun := fun y ↦ tprod _ (x * y)
-      map_add' := fun z i a a' ↦ by
-        dsimp
-        rw [show x * update z i (a + a') = update (x * z) i (x i * (a + a')) by
-        · ext j
-          simp only [Pi.mul_apply, update]
-          aesop]
-        rw [mul_add, MultilinearMap.map_add]
-        congr <;> ext j <;> simp only [update, Pi.mul_apply] <;> aesop
-      map_smul' := fun z i r a ↦ by
-        dsimp
-        rw [show x * update z i (r • a) = update (x * z) i (r • (x i * a)) by
-        · ext j
-          simp only [Pi.mul_apply, update, mul_smul_comm]
-          split_ifs with h
-          · subst h; simp only; rw [mul_smul_comm]
-          · aesop]
-        rw [MultilinearMap.map_smul]
-        congr
-        ext j
-        simp only [update, Pi.mul_apply]
-        aesop }
-  map_add' := fun z i a a' ↦ by
-    ext z'
-    simp only [LinearMap.compMultilinearMap_apply, lift.tprod, MultilinearMap.coe_mk,
-      LinearMap.add_apply]
-    rw [show update z i (a + a') * z' = update (z * z') i ((a + a') * (z' i)) by
-    · ext j
-      simp only [Pi.mul_apply, update]
-      aesop]
-    rw [add_mul, MultilinearMap.map_add]
-    congr <;> ext j <;> simp only [update, Pi.mul_apply] <;> aesop
-  map_smul' := fun z i r a ↦ by
-    ext z'
-    simp only [LinearMap.compMultilinearMap_apply, lift.tprod, MultilinearMap.coe_mk,
-      LinearMap.smul_apply]
-    rw [show update z i (r • a) * z' = update (z * z') i ((r • a) * z' i) by
-    · ext j
-      simp only [Pi.mul_apply, update]
-      aesop]
-    rw [smul_mul_assoc, MultilinearMap.map_smul]
-    congr
-    ext j
-    simp only [update, Pi.mul_apply]
-    aesop }
+  PiTensorProduct.map₂ <| tprod R fun i ↦ by
+    refine ⟨⟨fun x ↦ ⟨⟨fun y ↦ x * y, ?_⟩, ?_⟩, ?_⟩, ?_⟩ <;> aesop
 
 @[simp] lemma lmul_tprod_tprod (x y : (i : ι) → A i) :
     lmul (tprod R x) (tprod R y) = tprod R (x * y) := by
-  simp only [lmul, lift.tprod, MultilinearMap.coe_mk]
+  simp only [lmul, map₂_tprod_tprod_tprod, LinearMap.coe_mk, AddHom.coe_mk]
+  rfl
 
 instance mul : Mul (⨂[R] i, A i) where
   mul x y := lmul x y

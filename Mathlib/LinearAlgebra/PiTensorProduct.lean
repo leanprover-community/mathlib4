@@ -351,6 +351,8 @@ open MultilinearMap
 
 variable {s}
 
+section lift
+
 /-- Auxiliary function to constructing a linear map `(⨂[R] i, s i) → E` given a
 `MultilinearMap R s E` with the property that its composition with the canonical
 `MultilinearMap R s (⨂[R] i, s i)` is the given multilinear map. -/
@@ -439,6 +441,183 @@ theorem lift_symm (φ' : (⨂[R] i, s i) →ₗ[R] E) : lift.symm φ' = φ'.comp
 theorem lift_tprod : lift (tprod R : MultilinearMap R s _) = LinearMap.id :=
   Eq.symm <| lift.unique' rfl
 #align pi_tensor_product.lift_tprod PiTensorProduct.lift_tprod
+
+end lift
+
+section map
+
+variable {t t' : ι → Type*}
+variable [∀ i, AddCommMonoid (t i)] [∀ i, Module R (t i)]
+variable [∀ i, AddCommMonoid (t' i)] [∀ i, Module R (t' i)]
+
+/--
+Arbitrary tensor product of linear maps to linear maps between arbitrary tensor products:
+
+let `sᵢ` and `tᵢ` be family of `R`-modules and `fᵢ : sᵢ → tᵢ` be a family of `R`-linear map, then
+`⨂ᵢ fᵢ` induces an `R`-linear map `F` between `R`-tensors `⨂ᵢ sᵢ` and `⨂ᵢ tᵢ` by
+`F(⨂ aᵢ) = ⨂ f(aᵢ)`.
+-/
+def mapAux (φ : ⨂[R] i, s i →ₗ[R] t i):
+  (⨂[R] i, s i) →ₗ[R] ⨂[R] i, t i :=
+  lift <| lift
+    (show MultilinearMap R (fun i ↦ s i →ₗ[R] t i) (MultilinearMap R s (⨂[R] (i : ι), t i)) from
+      { toFun := fun f ↦
+        { toFun := fun v ↦ tprod R fun j ↦ (f j) (v j)
+          map_add' := fun v i a b ↦ by
+            dsimp
+            simp_rw [show ∀ (j : ι) (x : s i), (f j) (update v i x j) =
+              update (fun k ↦ (f k) (v k)) i (f _ x) j by
+              · intro j x
+                by_cases h : j = i
+                · subst h; simp only [update_same]
+                · rw [update_noteq h, update_noteq h], map_add, MultilinearMap.map_add]
+          map_smul' := fun v i r x ↦ by
+            dsimp
+            simp_rw [show ∀ (j : ι) (x : s i), (f j) (update v i (r • x) j) =
+              update (fun k ↦ (f k) (v k)) i (f _ (r • x)) j by
+            · intro j x
+              by_cases h : j = i
+              · subst h; simp only [update_same]
+              · rw [update_noteq h, update_noteq h], map_smul, MultilinearMap.map_smul]
+            congr
+            ext j
+            by_cases h : j = i
+            · subst h; simp only [update_same]
+            · rw [update_noteq h, update_noteq h] }
+        map_add' := fun v i x y ↦ MultilinearMap.ext <| fun a ↦ by
+          dsimp
+          have eq1 (j : ι) (z :  s i →ₗ[R] t i) : update v i z j (a j) =
+            update (fun i ↦ v i (a i)) i (z (a i)) j
+          · by_cases h : j = i
+            · subst h; simp only [update_same]
+            · rw [update_noteq h, update_noteq h]
+          simp_rw [eq1]
+          erw [MultilinearMap.map_add]
+        map_smul' := fun v i r x ↦ MultilinearMap.ext <| fun a ↦ by
+          dsimp
+          have eq1 (j : ι) (z :  s i →ₗ[R] t i) : update v i (r • z) j (a j) =
+            update (fun i ↦ v i (a i)) i (r • z (a i)) j
+          · by_cases h : j = i
+            · subst h; simp only [update_same, LinearMap.smul_apply]
+            · rw [update_noteq h, update_noteq h]
+          simp_rw [eq1]
+          erw [MultilinearMap.map_smul]
+          congr
+          ext j
+          by_cases h : j = i
+          · subst h; simp only [update_same]
+          · rw [update_noteq h, update_noteq h] }) φ
+
+lemma mapAux_tprod_tprod (f : ∀ i, s i →ₗ[R] t i) (x : ∀ i, s i) :
+    mapAux (tprod R f) (tprod R x) = tprod R (fun i ↦ f i (x i)) := by
+  delta mapAux
+  rw [lift.tprod, lift.tprod]
+  rfl
+
+lemma mapAux_add (φ ψ : ⨂[R] i, s i →ₗ[R] t i) : mapAux (φ + ψ) = mapAux φ + mapAux ψ := by
+  ext; simp [mapAux]
+
+lemma mapAux_smul (r : R) (φ : ⨂[R] i, s i →ₗ[R] t i) : mapAux (r • φ) = r • mapAux φ := by
+  ext; simp [mapAux]
+
+/--
+Arbitrary tensor product of linear maps to linear maps between arbitrary tensor products:
+
+let `sᵢ` and `tᵢ` be family of `R`-modules and `fᵢ : sᵢ → tᵢ` be a family of `R`-linear map, then
+`⨂ᵢ fᵢ` induces an `R`-linear map `F` between `R`-tensors `⨂ᵢ sᵢ` and `⨂ᵢ tᵢ` by
+`F(⨂ aᵢ) = ⨂ f(aᵢ)`.
+
+Furthermore, the map `⨂ᵢ fᵢ ↦ F` is `R`-linear as well.
+-/
+def map : (⨂[R] i, s i →ₗ[R] t i) →ₗ[R] (⨂[R] i, s i) →ₗ[R] ⨂[R] i, t i where
+  toFun := mapAux
+  map_add' := mapAux_add
+  map_smul' := mapAux_smul
+
+@[simp] lemma map_tprod_tprod (f : ∀ i, s i →ₗ[R] t i) (x : ∀ i, s i) :
+    map (tprod R f) (tprod R x) = tprod R fun i ↦ f i (x i) := by simp [map, mapAux_tprod_tprod]
+
+/--
+Arbitrary tensor product of linear maps to linear maps between arbitrary tensor products:
+
+let `sᵢ` `tᵢ'` and `tᵢ` be family of `R`-modules and `fᵢ : sᵢ → tᵢ → tᵢ'` be a family of
+`R`-linear map, then `⨂ᵢ fᵢ` induces an `R`-linear map `F : ⨂ᵢ sᵢ → ⨂ᵢ tᵢ ⊗ᵢ tᵢ'` by
+`F(⨂ aᵢ, ⨂ bᵢ) = ⨂ f(aᵢ, bᵢ)`.
+-/
+def map₂Aux (φ : ⨂[R] i, s i →ₗ[R] t i →ₗ[R] t' i) :
+    (⨂[R] i, s i) →ₗ[R] (⨂[R] i, t i) →ₗ[R] (⨂[R] i, t' i) :=
+  lift <| lift
+  (show MultilinearMap R (fun i ↦ s i →ₗ[R] t i →ₗ[R] t' i)
+    (MultilinearMap R s ((⨂[R] (i : ι), t i) →ₗ[R] ⨂[R] (i : ι), t' i)) from
+    { toFun := fun v ↦
+      { toFun := fun x ↦ map <| tprod R fun i ↦ v i (x i)
+        map_add' := fun x i a b ↦ by
+          dsimp
+          have eq1 (j : ι) (a : s i) : v j (update x i a j) =
+            update (fun i ↦ v i (x i)) i (v i a) j
+          · by_cases h : j = i
+            · subst h; simp
+            · rw [update_noteq h, update_noteq h]
+          simp_rw [eq1, map_add, MultilinearMap.map_add, map_add]
+        map_smul' := fun x i r a ↦ by
+          dsimp
+          have eq1 (j : ι) : v j (update x i (r • a) j) =
+            update (fun i ↦ v i (x i)) i (r • v i a) j
+          · by_cases h : j = i
+            · subst h; simp
+            · rw [update_noteq h, update_noteq h]
+          simp_rw [eq1, MultilinearMap.map_smul, map_smul]
+          congr
+          ext j b
+          by_cases h : j = i
+          · subst h; simp
+          · rw [update_noteq h, update_noteq h] }
+      map_add' := fun v i a a' ↦ MultilinearMap.ext fun b ↦ by
+        dsimp
+        have eq1 (j : ι) (a : s i →ₗ[R] t i →ₗ[R] t' i) : (update v i a j) (b j) =
+          update (fun i ↦ v i (b i)) i (a (b i)) j
+        · by_cases h : j = i
+          · subst h; simp
+          · rw [update_noteq h, update_noteq h]
+        simp_rw [eq1, LinearMap.add_apply, MultilinearMap.map_add, map_add]
+      map_smul' := fun v i r a ↦ MultilinearMap.ext fun b ↦ by
+        dsimp
+        have eq1 (j : ι) (a : s i →ₗ[R] t i →ₗ[R] t' i) : (update v i (r • a) j) (b j) =
+          update (fun i ↦ v i (b i)) i (r • a (b i)) j
+        · by_cases h : j = i
+          · subst h; simp
+          · rw [update_noteq h, update_noteq h]
+        simp_rw [eq1, MultilinearMap.map_smul, map_smul]
+        congr
+        ext j
+        by_cases h : j = i
+        · subst h; simp
+        · rw [update_noteq h, update_noteq h] }) φ
+
+lemma map₂Aux_tprod_tprod_tprod
+    (f : ∀ i, s i →ₗ[R] t i →ₗ[R] t' i) (a : ∀ i, s i) (b : ∀ i, t i) :
+    map₂Aux (tprod R f) (tprod R a) (tprod R b) = tprod R (fun i ↦ f i (a i) (b i)) := by
+  simp [map₂Aux]
+
+lemma map₂Aux_add (φ ψ : ⨂[R] i, s i →ₗ[R] t i →ₗ[R] t' i) :
+    map₂Aux (φ + ψ) = map₂Aux φ + map₂Aux ψ := by
+  ext; simp [map₂Aux]
+
+lemma map₂Aux_smul (r : R) (φ : ⨂[R] i, s i →ₗ[R] t i →ₗ[R] t' i) :
+    map₂Aux (r • φ) = r • map₂Aux φ:= by
+  ext; simp [map₂Aux]
+
+def map₂ : (⨂[R] i, s i →ₗ[R] t i →ₗ[R] t' i) →ₗ[R]
+    (⨂[R] i, s i) →ₗ[R] (⨂[R] i, t i) →ₗ[R] (⨂[R] i, t' i) where
+  toFun := map₂Aux
+  map_add' := map₂Aux_add
+  map_smul' := map₂Aux_smul
+
+@[simp] lemma map₂_tprod_tprod_tprod (f : ∀ i, s i →ₗ[R] t i →ₗ[R] t' i) (a : ∀ i, s i) (b : ∀ i, t i) :
+    map₂ (tprod R f) (tprod R a) (tprod R b) = tprod R (fun i ↦ f i (a i) (b i)) := by
+  simp only [map₂, LinearMap.coe_mk, AddHom.coe_mk, map₂Aux_tprod_tprod_tprod]
+
+end map
 
 section
 
