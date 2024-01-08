@@ -36,10 +36,16 @@ The main definitions are in the `AdjoinRoot` namespace.
 
 * `root f : AdjoinRoot f`, the image of X in R[X]/(f).
 
-* `lift (i : R →+* S) (x : S) (h : f.eval₂ i x = 0) : (AdjoinRoot f) →+* S`, the ring
-  homomorphism from R[X]/(f) to S extending `i : R →+* S` and sending `X` to `x`.
+* `lift (i : R →+* S) (x : S) (h : f.eval₂ i x = 0) : (AdjoinRoot f) →+* S`,
+  the ring homomorphism from R[X]/(f) to S extending `i : R →+* S`
+  and sending `X` to `x` (when `S` is a commutative semiring).
 
-* `lift_hom (x : S) (hfx : aeval x f = 0) : AdjoinRoot f →ₐ[R] S`, the algebra
+* `lift' (i : R →+* S) (x : S) (hc : ∀ r, Commute (i r) x)
+    (h : f.eval₂ i x = 0) : (AdjoinRoot f) →+* S`,
+  the ring homomorphism from R[X]/(f) to S extending `i : R →+* S`
+  and sending `X` to `x` (when `S` is only a semiring)
+
+* `liftHom (x : S) (hfx : aeval x f = 0) : AdjoinRoot f →ₐ[R] S`, the algebra
   homomorphism from R[X]/(f) to S extending `algebraMap R S` and sending `X` to `x`
 
 * `equiv : (AdjoinRoot f →ₐ[F] E) ≃ {x // x ∈ f.aroots E}` a
