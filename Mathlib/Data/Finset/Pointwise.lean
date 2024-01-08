@@ -57,7 +57,7 @@ pointwise subtraction
 
 open Function MulOpposite
 
-open BigOperators Pointwise
+open scoped BigOperators Pointwise
 
 variable {F α β γ : Type*}
 
@@ -232,8 +232,7 @@ theorem inv_empty : (∅ : Finset α)⁻¹ = ∅ :=
 #align finset.neg_empty Finset.neg_empty
 
 @[to_additive (attr := simp)]
-theorem inv_nonempty_iff : s⁻¹.Nonempty ↔ s.Nonempty :=
-  Nonempty.image_iff _
+theorem inv_nonempty_iff : s⁻¹.Nonempty ↔ s.Nonempty := image_nonempty
 #align finset.inv_nonempty_iff Finset.inv_nonempty_iff
 #align finset.neg_nonempty_iff Finset.neg_nonempty_iff
 
@@ -328,8 +327,7 @@ theorem image_mul_product : ((s ×ˢ t).image fun x : α × α => x.fst * x.snd)
 #align finset.image_add_product Finset.image_add_product
 
 @[to_additive]
-theorem mem_mul {x : α} : x ∈ s * t ↔ ∃ y z, y ∈ s ∧ z ∈ t ∧ y * z = x :=
-  mem_image₂
+theorem mem_mul {x : α} : x ∈ s * t ↔ ∃ y ∈ s, ∃ z ∈ t, y * z = x := mem_image₂
 #align finset.mem_mul Finset.mem_mul
 #align finset.mem_add Finset.mem_add
 
@@ -556,7 +554,7 @@ theorem image_div_product : ((s ×ˢ t).image fun x : α × α => x.fst / x.snd)
 #align finset.add_image_prod Finset.image_sub_product
 
 @[to_additive]
-theorem mem_div : a ∈ s / t ↔ ∃ b c, b ∈ s ∧ c ∈ t ∧ b / c = a :=
+theorem mem_div : a ∈ s / t ↔ ∃ b ∈ s, ∃ c ∈ t, b / c = a :=
   mem_image₂
 #align finset.mem_div Finset.mem_div
 #align finset.mem_sub Finset.mem_sub
@@ -800,13 +798,13 @@ scoped[Pointwise] attribute [instance] Finset.semigroup Finset.addSemigroup Fins
 
 @[to_additive]
 theorem subset_mul_left (s : Finset α) {t : Finset α} (ht : (1 : α) ∈ t) : s ⊆ s * t := fun a ha =>
-  mem_mul.2 ⟨a, 1, ha, ht, mul_one _⟩
+  mem_mul.2 ⟨a, ha, 1, ht, mul_one _⟩
 #align finset.subset_mul_left Finset.subset_mul_left
 #align finset.subset_add_left Finset.subset_add_left
 
 @[to_additive]
 theorem subset_mul_right {s : Finset α} (t : Finset α) (hs : (1 : α) ∈ s) : t ⊆ s * t := fun a ha =>
-  mem_mul.2 ⟨1, a, hs, ha, one_mul _⟩
+  mem_mul.2 ⟨1, hs, a, ha, one_mul _⟩
 #align finset.subset_mul_right Finset.subset_mul_right
 #align finset.subset_add_right Finset.subset_add_right
 
@@ -940,13 +938,13 @@ theorem empty_pow (hn : n ≠ 0) : (∅ : Finset α) ^ n = ∅ := by
 
 @[to_additive]
 theorem mul_univ_of_one_mem [Fintype α] (hs : (1 : α) ∈ s) : s * univ = univ :=
-  eq_univ_iff_forall.2 fun _ => mem_mul.2 ⟨_, _, hs, mem_univ _, one_mul _⟩
+  eq_univ_iff_forall.2 fun _ => mem_mul.2 ⟨_, hs, _, mem_univ _, one_mul _⟩
 #align finset.mul_univ_of_one_mem Finset.mul_univ_of_one_mem
 #align finset.add_univ_of_zero_mem Finset.add_univ_of_zero_mem
 
 @[to_additive]
 theorem univ_mul_of_one_mem [Fintype α] (ht : (1 : α) ∈ t) : univ * t = univ :=
-  eq_univ_iff_forall.2 fun _ => mem_mul.2 ⟨_, _, mem_univ _, ht, mul_one _⟩
+  eq_univ_iff_forall.2 fun _ => mem_mul.2 ⟨_, mem_univ _, _, ht, mul_one _⟩
 #align finset.univ_mul_of_one_mem Finset.univ_mul_of_one_mem
 #align finset.univ_add_of_zero_mem Finset.univ_add_of_zero_mem
 
@@ -1136,7 +1134,7 @@ theorem not_one_mem_div_iff : (1 : α) ∉ s / t ↔ Disjoint s t :=
 @[to_additive]
 theorem Nonempty.one_mem_div (h : s.Nonempty) : (1 : α) ∈ s / s :=
   let ⟨a, ha⟩ := h
-  mem_div.2 ⟨a, a, ha, ha, div_self' _⟩
+  mem_div.2 ⟨a, ha, a, ha, div_self' _⟩
 #align finset.nonempty.one_mem_div Finset.Nonempty.one_mem_div
 #align finset.nonempty.zero_mem_sub Finset.Nonempty.zero_mem_sub
 
@@ -1287,7 +1285,7 @@ theorem image_smul_product : ((s ×ˢ t).image fun x : α × β => x.fst • x.s
 #align finset.image_vadd_product Finset.image_vadd_product
 
 @[to_additive]
-theorem mem_smul {x : β} : x ∈ s • t ↔ ∃ y z, y ∈ s ∧ z ∈ t ∧ y • z = x :=
+theorem mem_smul {x : β} : x ∈ s • t ↔ ∃ y ∈ s, ∃ z ∈ t, y • z = x :=
   mem_image₂
 #align finset.mem_smul Finset.mem_smul
 #align finset.mem_vadd Finset.mem_vadd
@@ -1461,7 +1459,7 @@ theorem image_vsub_product : image₂ (· -ᵥ ·) s t = s -ᵥ t :=
   rfl
 #align finset.image_vsub_product Finset.image_vsub_product
 
-theorem mem_vsub : a ∈ s -ᵥ t ↔ ∃ b c, b ∈ s ∧ c ∈ t ∧ b -ᵥ c = a :=
+theorem mem_vsub : a ∈ s -ᵥ t ↔ ∃ b ∈ s, ∃ c ∈ t, b -ᵥ c = a :=
   mem_image₂
 #align finset.mem_vsub Finset.mem_vsub
 
@@ -1640,7 +1638,7 @@ theorem smul_finset_eq_empty : a • s = ∅ ↔ s = ∅ :=
 
 @[to_additive (attr := simp)]
 theorem smul_finset_nonempty : (a • s).Nonempty ↔ s.Nonempty :=
-  Nonempty.image_iff _
+  image_nonempty
 #align finset.smul_finset_nonempty Finset.smul_finset_nonempty
 #align finset.vadd_finset_nonempty Finset.vadd_finset_nonempty
 
@@ -2084,7 +2082,31 @@ lemma inv_op_smul_finset_distrib (a : α) (s : Finset α) : (op a • s)⁻¹ = 
 
 end Group
 
+section SMulZeroClass
+
+variable [Zero β] [SMulZeroClass α β] [DecidableEq β] {s : Finset α} {t : Finset β} {a : α}
+
+theorem smul_zero_subset (s : Finset α) : s • (0 : Finset β) ⊆ 0 := by simp [subset_iff, mem_smul]
+#align finset.smul_zero_subset Finset.smul_zero_subset
+
+theorem Nonempty.smul_zero (hs : s.Nonempty) : s • (0 : Finset β) = 0 :=
+  s.smul_zero_subset.antisymm <| by simpa [mem_smul] using hs
+#align finset.nonempty.smul_zero Finset.Nonempty.smul_zero
+
+theorem zero_mem_smul_finset (h : (0 : β) ∈ t) : (0 : β) ∈ a • t :=
+  mem_smul_finset.2 ⟨0, h, smul_zero _⟩
+#align finset.zero_mem_smul_finset Finset.zero_mem_smul_finset
+
+variable [Zero α] [NoZeroSMulDivisors α β]
+
+theorem zero_mem_smul_finset_iff (ha : a ≠ 0) : (0 : β) ∈ a • t ↔ (0 : β) ∈ t := by
+  rw [← mem_coe, coe_smul_finset, Set.zero_mem_smul_set_iff ha, mem_coe]
+#align finset.zero_mem_smul_finset_iff Finset.zero_mem_smul_finset_iff
+
+end SMulZeroClass
+
 section SMulWithZero
+
 variable [Zero α] [Zero β] [SMulWithZero α β] [DecidableEq β] {s : Finset α} {t : Finset β}
 
 /-!
@@ -2092,32 +2114,21 @@ Note that we have neither `SMulWithZero α (Finset β)` nor `SMulWithZero (Finse
 because `0 * ∅ ≠ 0`.
 -/
 
-lemma smul_zero_subset (s : Finset α) : s • (0 : Finset β) ⊆ 0 := by simp [subset_iff, mem_smul]
-#align finset.smul_zero_subset Finset.smul_zero_subset
-
 lemma zero_smul_subset (t : Finset β) : (0 : Finset α) • t ⊆ 0 := by simp [subset_iff, mem_smul]
 #align finset.zero_smul_subset Finset.zero_smul_subset
 
-lemma Nonempty.smul_zero (hs : s.Nonempty) : s • (0 : Finset β) = 0 :=
-  s.smul_zero_subset.antisymm $ by simpa [mem_smul] using hs
-#align finset.nonempty.smul_zero Finset.Nonempty.smul_zero
-
 lemma Nonempty.zero_smul (ht : t.Nonempty) : (0 : Finset α) • t = 0 :=
-  t.zero_smul_subset.antisymm $ by simpa [mem_smul] using ht
+  t.zero_smul_subset.antisymm <| by simpa [mem_smul] using ht
 #align finset.nonempty.zero_smul Finset.Nonempty.zero_smul
 
 /-- A nonempty set is scaled by zero to the singleton set containing zero. -/
 @[simp] lemma zero_smul_finset {s : Finset β} (h : s.Nonempty) : (0 : α) • s = (0 : Finset β) :=
-  coe_injective $ by simpa using @Set.zero_smul_set α _ _ _ _ _ h
+  coe_injective <| by simpa using @Set.zero_smul_set α _ _ _ _ _ h
 #align finset.zero_smul_finset Finset.zero_smul_finset
 
 lemma zero_smul_finset_subset (s : Finset β) : (0 : α) • s ⊆ 0 :=
-  image_subset_iff.2 fun x _ ↦ mem_zero.2 $ zero_smul α x
+  image_subset_iff.2 fun x _ ↦ mem_zero.2 <| zero_smul α x
 #align finset.zero_smul_finset_subset Finset.zero_smul_finset_subset
-
-lemma zero_mem_smul_finset {t : Finset β} {a : α} (h : (0 : β) ∈ t) : (0 : β) ∈ a • t :=
-  mem_smul_finset.2 ⟨0, h, smul_zero _⟩
-#align finset.zero_mem_smul_finset Finset.zero_mem_smul_finset
 
 variable [NoZeroSMulDivisors α β] {a : α}
 
@@ -2125,10 +2136,6 @@ lemma zero_mem_smul_iff :
     (0 : β) ∈ s • t ↔ (0 : α) ∈ s ∧ t.Nonempty ∨ (0 : β) ∈ t ∧ s.Nonempty := by
   rw [← mem_coe, coe_smul, Set.zero_mem_smul_iff]; rfl
 #align finset.zero_mem_smul_iff Finset.zero_mem_smul_iff
-
-lemma zero_mem_smul_finset_iff (ha : a ≠ 0) : (0 : β) ∈ a • t ↔ (0 : β) ∈ t := by
-  rw [← mem_coe, coe_smul_finset, Set.zero_mem_smul_set_iff ha, mem_coe]
-#align finset.zero_mem_smul_finset_iff Finset.zero_mem_smul_finset_iff
 
 end SMulWithZero
 
@@ -2175,7 +2182,7 @@ theorem smul_finset_symmDiff₀ (ha : a ≠ 0) : a • s ∆ t = (a • s) ∆ (
 #align finset.smul_finset_symm_diff₀ Finset.smul_finset_symmDiff₀
 
 lemma smul_finset_univ₀ [Fintype β] (ha : a ≠ 0) : a • (univ : Finset β) = univ :=
-  coe_injective $ by push_cast; exact Set.smul_set_univ₀ ha
+  coe_injective <| by push_cast; exact Set.smul_set_univ₀ ha
 #align finset.smul_finset_univ₀ Finset.smul_finset_univ₀
 
 theorem smul_univ₀ [Fintype β] {s : Finset α} (hs : ¬s ⊆ 0) : s • (univ : Finset β) = univ :=
@@ -2186,7 +2193,7 @@ theorem smul_univ₀ [Fintype β] {s : Finset α} (hs : ¬s ⊆ 0) : s • (univ
 #align finset.smul_univ₀ Finset.smul_univ₀
 
 lemma smul_univ₀' [Fintype β] {s : Finset α} (hs : s.Nontrivial) : s • (univ : Finset β) = univ :=
-  coe_injective $ by push_cast; exact Set.smul_univ₀' hs
+  coe_injective <| by push_cast; exact Set.smul_univ₀' hs
 
 variable [DecidableEq α]
 
@@ -2245,10 +2252,10 @@ section CommMonoid
 variable [CommMonoid α] {ι : Type*} [DecidableEq ι]
 
 @[to_additive (attr := simp)] lemma prod_inv_index [InvolutiveInv ι] (s : Finset ι) (f : ι → α) :
-    ∏ i in s⁻¹, f i = ∏ i in s, f i⁻¹ := prod_image $ inv_injective.injOn _
+    ∏ i in s⁻¹, f i = ∏ i in s, f i⁻¹ := prod_image <| inv_injective.injOn _
 
 @[to_additive existing, simp] lemma prod_neg_index [InvolutiveNeg ι] (s : Finset ι) (f : ι → α) :
-    ∏ i in -s, f i = ∏ i in s, f (-i) := prod_image $ neg_injective.injOn _
+    ∏ i in -s, f i = ∏ i in s, f (-i) := prod_image <| neg_injective.injOn _
 
 end CommMonoid
 
@@ -2256,7 +2263,7 @@ section AddCommMonoid
 variable [AddCommMonoid α] {ι : Type*} [DecidableEq ι]
 
 @[to_additive existing, simp] lemma sum_inv_index [InvolutiveInv ι] (s : Finset ι) (f : ι → α) :
-    ∑ i in s⁻¹, f i = ∑ i in s, f i⁻¹ := sum_image $ inv_injective.injOn _
+    ∑ i in s⁻¹, f i = ∑ i in s, f i⁻¹ := sum_image <| inv_injective.injOn _
 
 end AddCommMonoid
 end BigOps
@@ -2438,5 +2445,5 @@ end Set
 
 instance Nat.decidablePred_mem_vadd_set {s : Set ℕ} [DecidablePred (· ∈ s)] (a : ℕ) :
     DecidablePred (· ∈ a +ᵥ s) :=
-  fun n ↦ decidable_of_iff' (a ≤ n ∧ n - a ∈ s) $ by
+  fun n ↦ decidable_of_iff' (a ≤ n ∧ n - a ∈ s) <| by
     simp only [Set.mem_vadd_set, vadd_eq_add]; aesop

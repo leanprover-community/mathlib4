@@ -91,7 +91,7 @@ theorem gameAdd_le_lex : GameAdd rα rβ ≤ Prod.Lex rα rβ := fun _ _ h =>
 theorem rprod_le_transGen_gameAdd : RProd rα rβ ≤ Relation.TransGen (GameAdd rα rβ)
   | _, _, h => h.rec (by
       intro _ _ _ _ hα hβ
-      exact Relation.TransGen.tail (Relation.TransGen.single $ GameAdd.fst hα) (GameAdd.snd hβ))
+      exact Relation.TransGen.tail (Relation.TransGen.single <| GameAdd.fst hα) (GameAdd.snd hβ))
 #align prod.rprod_le_trans_gen_game_add Prod.rprod_le_transGen_gameAdd
 
 end Prod

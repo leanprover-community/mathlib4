@@ -160,17 +160,17 @@ def suspiciousLean3Name (s : String) : Bool := Id.run do
         let note := "(add `set_option align.precheck false` to suppress this message)"
         let inner := match ← try some <$> resolveGlobalConstWithInfos id4 catch _ => pure none with
         | none => m!""
-        | some cs => m!" Did you mean:\n\n{
-            ("\n":MessageData).joinSep (cs.map fun c' => m!"  #align {id3} {c'}")
-          }\n\n#align inputs have to be fully qualified.{""
-          } (Double check the lean 3 name too, we can't check that!)"
+        | some cs => m!" Did you mean:\n\n\
+              {("\n":MessageData).joinSep (cs.map fun c' => m!"  #align {id3} {c'}")}\n\n\
+            #align inputs have to be fully qualified. \
+            (Double check the lean 3 name too, we can't check that!)"
         throwErrorAt id4 "Declaration {c} not found.{inner}\n{note}"
       if Linter.getLinterValue linter.uppercaseLean3 (← getOptions) then
         if id3.getId.anyS suspiciousLean3Name then
-          Linter.logLint linter.uppercaseLean3 id3 $
-            "Lean 3 names are usually lowercase. This might be a typo.\n" ++
-            "If the Lean 3 name is correct, then above this line, add:\n" ++
-            "set_option linter.uppercaseLean3 false in\n"
+          Linter.logLint linter.uppercaseLean3 id3
+            "Lean 3 names are usually lowercase. This might be a typo.\n\
+             If the Lean 3 name is correct, then above this line, add:\n\
+             set_option linter.uppercaseLean3 false in\n"
     withRef id3 <| ensureUnused id3.getId
     liftCoreM <| addNameAlignment id3.getId id4.getId
   | _ => throwUnsupportedSyntax
@@ -187,7 +187,7 @@ syntax (name := noalign) "#noalign " ident : command
 @[command_elab noalign] def elabNoAlign : CommandElab
   | `(#noalign $id3:ident) => do
     withRef id3 <| ensureUnused id3.getId
-    liftCoreM $ addNameAlignment id3.getId .anonymous
+    liftCoreM <| addNameAlignment id3.getId .anonymous
   | _ => throwUnsupportedSyntax
 
 /-- Show information about the alignment status of a lean 3 definition. -/

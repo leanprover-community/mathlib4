@@ -286,14 +286,16 @@ def _root_.MulActionSemiHomClass.toMulActionHom [MulActionSemiHomClass F φ X Y]
 instance [MulActionSemiHomClass F φ X Y] : CoeTC F (X →ₑ[φ] Y) :=
   ⟨MulActionSemiHomClass.toMulActionHom⟩
 
-protected theorem map_smulₑ [MulActionSemiHomClass F φ X Y] (f : F) (m : M) (x : X) :
-    f (m • x) = (φ m) • f x :=
-  map_smulₛₗ f m x
-#align mul_action_hom.map_smul MulActionHom.map_smulₑ
+variable (M' X Y F) in
+/-- If Y/X/M forms a scalar tower, any map X → Y preserving X-action also preserves M-action. -/
+def _root_.IsScalarTower.smulHomClass [MulOneClass X] [SMul X Y] [IsScalarTower M' X Y]
+    [SMulHomClass F X X Y] : SMulHomClass F M' X Y where
+  map_smul f m x := by
+    rw [← mul_one (m • x), ← smul_eq_mul, map_smul, smul_assoc, ← map_smul, smul_eq_mul, mul_one]
 
-protected lemma map_smul {F M X Y : Type*} [SMul M X] [SMul M Y] [MulActionHomClass F M X Y]
-    (f : F) (m : M) (x : X) :
-    f (m • x) = m • (f x) := map_smulₛₗ f m x
+protected theorem map_smul (f : X →[M'] Y) (m : M') (x : X) : f (m • x) = m • f x :=
+  map_smul f m x
+#align mul_action_hom.map_smul MulActionHom.map_smul
 
 @[ext]
 theorem ext [MulActionSemiHomClass F φ X Y] {f g : F} :

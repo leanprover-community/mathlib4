@@ -1215,7 +1215,7 @@ instance : Inf (UniformSpace α) :=
       refl := le_inf u₁.refl u₂.refl
       symm := u₁.symm.inf u₂.symm
       comp := (lift'_inf_le _ _ _).trans <| inf_le_inf u₁.comp u₂.comp }
-    (u₁.toTopologicalSpace ⊓ u₂.toTopologicalSpace) <| fun _ => by
+    (u₁.toTopologicalSpace ⊓ u₂.toTopologicalSpace) fun _ => by
       rw [@nhds_inf _ u₁.toTopologicalSpace u₂.toTopologicalSpace, @nhds_eq_comap_uniformity _ u₁,
         @nhds_eq_comap_uniformity _ u₂, comap_inf]; rfl⟩
 
