@@ -76,7 +76,7 @@ noncomputable def quotientEquivPiSpan (I : Ideal S) (b : Basis ι R S) (hI : I �
   · infer_instance
   classical
     let this :=
-      Submodule.quotientPi (show ∀ _, Submodule R R from fun i => span ({a i} : Set R))
+      Submodule.quotientPi (show _ → Submodule R R from fun i => span ({a i} : Set R))
     exact this
 #align ideal.quotient_equiv_pi_span Ideal.quotientEquivPiSpan
 

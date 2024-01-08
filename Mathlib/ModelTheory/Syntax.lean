@@ -73,7 +73,7 @@ open Structure Fin
 /-- A term on `α` is either a variable indexed by an element of `α`
   or a function symbol applied to simpler terms. -/
 inductive Term (α : Type u') : Type max u u'
-  | var : ∀ _a : α, Term α
+  | var : α → Term α
   | func : ∀ {l : ℕ} (_f : L.Functions l) (_ts : Fin l → Term α), Term α
 #align first_order.language.term FirstOrder.Language.Term
 export Term (var func)
