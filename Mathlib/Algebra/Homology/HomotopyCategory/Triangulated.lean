@@ -160,8 +160,8 @@ lemma mappingConeCompHomotopyEquiv_comm₂ :
 
 @[reassoc (attr := simp)]
 lemma mappingConeCompTriangleh_comm₁ :
-  (mappingConeCompTriangleh f g).mor₂ ≫
-    (HomotopyCategory.quotient _ _).map (mappingConeCompHomotopyEquiv f g).hom =
+    (mappingConeCompTriangleh f g).mor₂ ≫
+      (HomotopyCategory.quotient _ _).map (mappingConeCompHomotopyEquiv f g).hom =
     (HomotopyCategory.quotient _ _).map (mappingCone.inr _) := by
   rw [← cancel_mono (HomotopyCategory.isoOfHomotopyEquiv
       (mappingConeCompHomotopyEquiv f g)).inv, assoc]
@@ -176,8 +176,8 @@ end CochainComplex
 namespace HomotopyCategory
 
 lemma mappingConeCompTriangleh_distinguished :
-  (CochainComplex.mappingConeCompTriangleh f g) ∈
-    distTriang (HomotopyCategory C (ComplexShape.up ℤ)) := by
+    (CochainComplex.mappingConeCompTriangleh f g) ∈
+      distTriang (HomotopyCategory C (ComplexShape.up ℤ)) := by
   refine' ⟨_, _, (CochainComplex.mappingConeCompTriangle f g).mor₁, ⟨_⟩⟩
   refine' Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (isoOfHomotopyEquiv
     (CochainComplex.mappingConeCompHomotopyEquiv f g)) (by aesop_cat) (by simp) _
@@ -192,7 +192,7 @@ noncomputable instance : IsTriangulated (HomotopyCategory C (ComplexShape.up ℤ
     obtain ⟨u₁₂, rfl⟩ := (HomotopyCategory.quotient C (ComplexShape.up ℤ)).map_surjective u₁₂'
     obtain ⟨u₂₃, rfl⟩ := (HomotopyCategory.quotient C (ComplexShape.up ℤ)).map_surjective u₂₃'
     refine' ⟨_, _, _, _, _, _, _, _,
-      Iso.refl _, Iso.refl _, Iso.refl _, by dsimp ; simp, by dsimp ; simp,
+      Iso.refl _, Iso.refl _, Iso.refl _, by simp, by simp,
         _, _, mappingCone_triangleh_distinguished u₁₂,
         _, _, mappingCone_triangleh_distinguished u₂₃,
         _, _, mappingCone_triangleh_distinguished (u₁₂ ≫ u₂₃), ⟨_⟩⟩

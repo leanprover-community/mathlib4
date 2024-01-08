@@ -124,7 +124,7 @@ def ofIso {X₁' X₂' X₃' Z₁₂' Z₂₃' Z₁₃' : C} (u₁₂' : X₁' �
   let iso₁₂ := isoTriangleOfIso₁₂ _ _ h₁₂ h₁₂' e₁ e₂ comm₁₂
   let iso₂₃ := isoTriangleOfIso₁₂ _ _ h₂₃ h₂₃' e₂ e₃ comm₂₃
   let iso₁₃ := isoTriangleOfIso₁₂ _ _ h₁₃ h₁₃' e₁ e₃ (by
-    dsimp ; rw [← comm, assoc, ← reassoc_of% comm₁₂, comm₂₃])
+    dsimp; rw [← comm, assoc, ← reassoc_of% comm₁₂, comm₂₃])
   have eq₁₂ := iso₁₂.hom.comm₂
   have eq₁₂' := iso₁₂.hom.comm₃
   have eq₁₃ := iso₁₃.hom.comm₂
