@@ -148,7 +148,7 @@ variable [IsLocalization (Algebra.algebraMapSubmonoid B M) Bₘ]
 
 section trace
 
-/-- The restriction of the trace on `L/K` restricted onto `B/A` in an AKLB setup (see module docstring).
+/-- The restriction of the trace on `L/K` restricted onto `B/A` in an AKLB setup.
 See `Algebra.intTrace` instead. -/
 noncomputable
 def Algebra.intTraceAux [IsIntegrallyClosed A] :
