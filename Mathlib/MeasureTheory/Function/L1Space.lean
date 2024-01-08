@@ -388,7 +388,7 @@ theorem HasFiniteIntegral.max_zero {f : α → ℝ} (hf : HasFiniteIntegral f μ
 
 theorem HasFiniteIntegral.min_zero {f : α → ℝ} (hf : HasFiniteIntegral f μ) :
     HasFiniteIntegral (fun a => min (f a) 0) μ :=
-  hf.mono <| eventually_of_forall fun x => by simpa [abs_le] using neg_abs_le_self _
+  hf.mono <| eventually_of_forall fun x => by simpa [abs_le] using neg_abs_le _
 #align measure_theory.has_finite_integral.min_zero MeasureTheory.HasFiniteIntegral.min_zero
 
 end PosPart
