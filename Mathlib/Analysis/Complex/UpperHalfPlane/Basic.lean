@@ -148,14 +148,16 @@ open Lean Meta Qq
 /-- Extension for the `positivity` tactic: `UpperHalfPlane.im`. -/
 @[positivity UpperHalfPlane.im _]
 def evalUpperHalfPlaneIm : PositivityExt where eval {_ _} _zα _pα e := do
-  let (.app (f : Q(UpperHalfPlane → Real)) (a : Q(UpperHalfPlane))) ← whnfR e | throwError "not UpperHalfPlane.im"
+  let (.app (f : Q(UpperHalfPlane → Real)) (a : Q(UpperHalfPlane))) ← whnfR e
+    | throwError "not UpperHalfPlane.im"
   guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(UpperHalfPlane.im)
   pure (.positive (q(@UpperHalfPlane.im_pos $a) : Expr))
 
 /-- Extension for the `positivity` tactic: `UpperHalfPlane.coe`. -/
 @[positivity UpperHalfPlane.coe _]
 def evalUpperHalfPlaneCoe : PositivityExt where eval {_ _} _zα _pα e := do
-  let (.app (f : Q(UpperHalfPlane → Real)) (a : Q(UpperHalfPlane))) ← whnfR e | throwError "not UpperHalfPlane.coe"
+  let (.app (f : Q(UpperHalfPlane → Real)) (a : Q(UpperHalfPlane))) ← whnfR e
+    | throwError "not UpperHalfPlane.coe"
   guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(UpperHalfPlane.coe)
   pure (.nonzero (q(@UpperHalfPlane.ne_zero $a) : Expr))
 
