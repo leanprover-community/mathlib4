@@ -28,8 +28,14 @@ summands are uniformly bounded by a summable function.
 (This is the special case of the Lebesgue dominated convergence theorem for the counting measure
 on a discrete set. However, we prove it under somewhat weaker assumptions than the general
 measure-theoretic result, e.g. `G` is not assumed to be an `ℝ`-vector space or second countable,
-and the limit is along an arbitrary filter rather than `atTop ℕ`.) -/
-lemma tendsto_tsum_of_dominated {α β G : Type*} {𝓕 : Filter α}
+and the limit is along an arbitrary filter rather than `atTop ℕ`.)
+
+See also:
+* `MeasureTheory.tendsto_integral_of_dominated_convergence` (for general integrals, but
+  with more assumptions on `G`)
+* `continuous_tsum` (continuity of infinite sums in a parameter)
+-/
+lemma tendsto_tsum_of_dominated_convergence {α β G : Type*} {𝓕 : Filter α}
     [DecidableEq β] [NormedAddCommGroup G] [CompleteSpace G]
     {f : α → β → G} {g : β → G} {bound : β → ℝ} (h_sum : Summable bound)
     (hab : ∀ k : β, Tendsto (f · k) 𝓕 (𝓝 (g k)))
@@ -54,7 +60,7 @@ lemma tendsto_tsum_of_dominated {α β G : Type*} {𝓕 : Filter α}
   let ⟨S, hS⟩ := h_sum
   obtain ⟨T, hT⟩ : ∃ (T : Finset β), dist (∑ b in T, bound b) S < ε / 3 := by
     rw [HasSum, Metric.tendsto_nhds] at hS
-    exact (fun ⟨T, h⟩ ↦ ⟨T, h _ le_rfl⟩) <| eventually_atTop.mp (hS (ε / 3) (by positivity))
+    exact (fun ⟨T, h⟩ ↦ ⟨T, h _ le_rfl⟩) <| eventually_atTop.mp (hS _ (by positivity))
   have h1 : ∑' (k : (Tᶜ : Set β)), bound k < ε / 3 := by
     calc _ ≤ ‖∑' (k : (Tᶜ : Set β)), bound k‖ := Real.le_norm_self _
          _ = ‖S - ∑ b in T, bound b‖          := congrArg _ ?_
