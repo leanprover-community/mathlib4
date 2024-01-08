@@ -991,7 +991,7 @@ theorem tendsto_abs_atTop_atTop : Tendsto (abs : α → α) atTop atTop :=
 
 /-- $\lim_{x\to-\infty}|x|=+\infty$ -/
 theorem tendsto_abs_atBot_atTop : Tendsto (abs : α → α) atBot atTop :=
-  tendsto_atTop_mono neg_le_abs_self tendsto_neg_atBot_atTop
+  tendsto_atTop_mono neg_le_abs tendsto_neg_atBot_atTop
 #align filter.tendsto_abs_at_bot_at_top Filter.tendsto_abs_atBot_atTop
 
 @[simp]

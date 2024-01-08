@@ -849,7 +849,7 @@ lemma Integrable.measure_le_lt_top {f : α → ℝ} (hf : Integrable f μ) {c : 
   refine lt_of_le_of_lt (measure_mono ?_) (hf.measure_norm_ge_lt_top (show 0 < -c by linarith))
   intro x hx
   simp only [Real.norm_eq_abs, Set.mem_setOf_eq] at hx ⊢
-  exact (show -c ≤ - f x by linarith).trans (neg_le_abs_self _)
+  exact (show -c ≤ - f x by linarith).trans (neg_le_abs _)
 
 /-- If `f` is `ℝ`-valued and integrable, then for any `c > 0` the set `{x | f x > c}` has finite
 measure. -/

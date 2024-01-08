@@ -501,3 +501,6 @@ theorem max_zero_add_max_neg_zero_eq_abs_self (a : α) : max a 0 + max (-a) 0 = 
 #align max_zero_add_max_neg_zero_eq_abs_self max_zero_add_max_neg_zero_eq_abs_self
 
 end LinearOrderedAddCommGroup
+
+@[deprecated] alias neg_le_abs_self := neg_le_abs
+@[deprecated] alias neg_abs_le_self := neg_abs_le
