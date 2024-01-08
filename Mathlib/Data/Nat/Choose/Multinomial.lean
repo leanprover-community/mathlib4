@@ -108,7 +108,7 @@ theorem binomial_eq [DecidableEq α] (h : a ≠ b) :
 
 theorem binomial_eq_choose [DecidableEq α] (h : a ≠ b) :
     multinomial {a, b} f = (f a + f b).choose (f a) := by
-  simp [binomial_eq _ h, choose_eq_factorial_div_factorial (Nat.le_add_right _ _)]
+  simp [binomial_eq h, choose_eq_factorial_div_factorial (Nat.le_add_right _ _)]
 #align nat.binomial_eq_choose Nat.binomial_eq_choose
 
 theorem binomial_spec [DecidableEq α] (hab : a ≠ b) :
@@ -119,7 +119,7 @@ theorem binomial_spec [DecidableEq α] (hab : a ≠ b) :
 @[simp]
 theorem binomial_one [DecidableEq α] (h : a ≠ b) (h₁ : f a = 1) :
     multinomial {a, b} f = (f b).succ := by
-  simp [multinomial_insert_one {b} f (Finset.not_mem_singleton.mpr h) h₁]
+  simp [multinomial_insert_one (Finset.not_mem_singleton.mpr h) h₁]
 #align nat.binomial_one Nat.binomial_one
 
 theorem binomial_succ_succ [DecidableEq α] (h : a ≠ b) :
@@ -136,7 +136,7 @@ theorem binomial_succ_succ [DecidableEq α] (h : a ≠ b) :
 theorem succ_mul_binomial [DecidableEq α] (h : a ≠ b) :
     (f a + f b).succ * multinomial {a, b} f =
       (f a).succ * multinomial {a, b} (Function.update f a (f a).succ) := by
-  rw [binomial_eq_choose _ h, binomial_eq_choose _ h, mul_comm (f a).succ, Function.update_same,
+  rw [binomial_eq_choose h, binomial_eq_choose h, mul_comm (f a).succ, Function.update_same,
     Function.update_noteq (ne_comm.mp h)]
   rw [succ_mul_choose_eq (f a + f b) (f a), succ_add (f a) (f b)]
 #align nat.succ_mul_binomial Nat.succ_mul_binomial
@@ -184,8 +184,7 @@ theorem multinomial_update (a : α) (f : α →₀ ℕ) :
     · rw [← Finset.insert_erase h, Nat.multinomial_insert (Finset.not_mem_erase a _),
         Finset.add_sum_erase _ f h, support_update_zero]
       congr 1
-      exact
-        Nat.multinomial_congr _ fun _ h => (Function.update_noteq (Finset.mem_erase.1 h).1 0 f).symm
+      exact Nat.multinomial_congr fun _ h ↦ (Function.update_noteq (mem_erase.1 h).1 0 f).symm
     rw [not_mem_support_iff] at h
     rw [h, Nat.choose_zero_right, one_mul, ← h, update_self]
 #align finsupp.multinomial_update Finsupp.multinomial_update
