@@ -199,11 +199,11 @@ assert_not_exists Submonoid
 
 section MulActionHom
 
-variable {M : Type _} {N : Type _} {P : Type _}
+variable {M : Type*} {N : Type*} {P : Type*}
 variable (φ : M → N) (ψ : N → P) (χ : M → P)
-variable (X : Type _) [SMul M X]
-variable (Y : Type _) [SMul N Y]
-variable (Z : Type _) [SMul P Z]
+variable (X : Type*) [SMul M X]
+variable (Y : Type*) [SMul N Y]
+variable (Z : Type*) [SMul P Z]
 
 
 /-- Equivariant functions. -/
@@ -220,13 +220,13 @@ structure MulActionHom where
 @[inherit_doc]
 notation:25 (name := «MulActionHomLocal≺») X " →ₑ[" φ:25 "] " Y:0 => MulActionHom φ X Y
 
+@[inherit_doc]
+notation:25 (name := «MulActionHomIdLocal≺») X " →[" M:25 "] " Y:0 => MulActionHom (@id M) X Y
+
 /-
 /-- Equivariant functions -/
 abbrev MulActionHom (M : Type _) (X Y : Type _) [SMul M X] [SMul M Y] := MulActionHom (@id M) X Y
 -/
-
-@[inherit_doc]
-notation:25 (name := «MulActionHomIdLocal≺») X " →[" M:25 "] " Y:0 => MulActionHom (@id M) X Y
 
 /-- `MulActionSemiHomClass F φ X Y` states that `F` is a type of morphisms which are `φ`-equivariant
 
@@ -267,6 +267,7 @@ initialize_simps_projections MulActionHom (toFun → apply)
 
 namespace MulActionHom
 
+variable {M' : Type*} [SMul M' X] [SMul M' Y]
 variable {φ X Y}
 variable {F : Type*}
 
@@ -289,9 +290,9 @@ instance [MulActionSemiHomClass F φ X Y] : CoeTC F (X →ₑ[φ] Y) :=
 variable (M' X Y F) in
 /-- If Y/X/M forms a scalar tower, any map X → Y preserving X-action also preserves M-action. -/
 def _root_.IsScalarTower.smulHomClass [MulOneClass X] [SMul X Y] [IsScalarTower M' X Y]
-    [SMulHomClass F X X Y] : SMulHomClass F M' X Y where
-  map_smul f m x := by
-    rw [← mul_one (m • x), ← smul_eq_mul, map_smul, smul_assoc, ← map_smul, smul_eq_mul, mul_one]
+    [MulActionHomClass F X X Y] : MulActionHomClass F M' X Y where
+  map_smulₛₗ f m x := by
+    rw [← mul_one (m • x), ← smul_eq_mul, map_smul, smul_assoc, ← map_smul, smul_eq_mul, mul_one, id_eq]
 
 protected theorem map_smul (f : X →[M'] Y) (m : M') (x : X) : f (m • x) = m • f x :=
   map_smul f m x
