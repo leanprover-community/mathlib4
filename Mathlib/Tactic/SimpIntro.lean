@@ -66,7 +66,8 @@ elab "simp_intro" cfg:(config)? disch:(discharger)?
     ids:(ppSpace colGt binderIdent)* more:" .."? only:(&" only")? args:(simpArgs)? : tactic => do
   let args := args.map fun args ↦ ⟨args.raw[1].getArgs⟩
   let stx ← `(tactic| simp $(cfg)? $(disch)? $[only%$only]? $[[$args,*]]?)
-  let { ctx, simprocs, dischargeWrapper } ← withMainContext <| mkSimpContext stx (eraseLocal := false)
+  let { ctx, simprocs, dischargeWrapper } ←
+    withMainContext <| mkSimpContext stx (eraseLocal := false)
   dischargeWrapper.with fun discharge? ↦ do
     let g ← getMainGoal
     g.checkNotAssigned `simp_intro
