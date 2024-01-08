@@ -459,29 +459,7 @@ Let `sᵢ` and `tᵢ` be family of `R`-modules, a map from `Π i, sᵢ → tᵢ`
 @[simps]
 def _root_.MultilinearMap.piLinearMapToPiTensorProduct :
     MultilinearMap R (fun i ↦ s i →ₗ[R] t i) (MultilinearMap R s (⨂[R] (i : ι), t i)) :=
-{ toFun := fun f ↦
-  { toFun := fun v ↦ tprod R fun j ↦ (f j) (v j)
-    map_add' := fun v i a b ↦ by
-      dsimp
-      simp_rw [show ∀ (j : ι) (x : s i), (f j) (update v i x j) =
-        update (fun k ↦ (f k) (v k)) i (f _ x) j by
-        · intro j x
-          by_cases h : j = i
-          · subst h; simp only [update_same]
-          · rw [update_noteq h, update_noteq h], map_add, MultilinearMap.map_add]
-    map_smul' := fun v i r x ↦ by
-      dsimp
-      simp_rw [show ∀ (j : ι) (x : s i), (f j) (update v i (r • x) j) =
-        update (fun k ↦ (f k) (v k)) i (f _ (r • x)) j by
-      · intro j x
-        by_cases h : j = i
-        · subst h; simp only [update_same]
-        · rw [update_noteq h, update_noteq h], map_smul, MultilinearMap.map_smul]
-      congr
-      ext j
-      by_cases h : j = i
-      · subst h; simp only [update_same]
-      · rw [update_noteq h, update_noteq h] }
+{ toFun := (tprod R).compLinearMap
   map_add' := fun v i x y ↦ MultilinearMap.ext <| fun a ↦ by
     dsimp
     have eq1 (j : ι) (z :  s i →ₗ[R] t i) : update v i z j (a j) =
