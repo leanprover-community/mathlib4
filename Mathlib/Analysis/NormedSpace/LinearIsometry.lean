@@ -92,7 +92,7 @@ protected theorem continuous [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f :
   (SemilinearIsometryClass.isometry f).continuous
 #align semilinear_isometry_class.continuous SemilinearIsometryClass.continuous
 
-@[simp]
+-- Should be `@[simp]` but it doesn't fire due to `lean4#3107`.
 theorem nnnorm_map [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) (x : E) : ‖f x‖₊ = ‖x‖₊ :=
   NNReal.eq <| norm_map f x
 #align semilinear_isometry_class.nnnorm_map SemilinearIsometryClass.nnnorm_map
@@ -186,12 +186,12 @@ theorem ext {f g : E →ₛₗᵢ[σ₁₂] E₂} (h : ∀ x, f x = g x) : f = g
 
 variable [NDFunLike 𝓕 E E₂]
 
-protected theorem congr_arg [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] {f : 𝓕} :
+protected theorem congr_arg {f : 𝓕} :
     ∀ {x x' : E}, x = x' → f x = f x'
   | _, _, rfl => rfl
 #align linear_isometry.congr_arg LinearIsometry.congr_arg
 
-protected theorem congr_fun [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] {f g : 𝓕} (h : f = g) (x : E) :
+protected theorem congr_fun {f g : 𝓕} (h : f = g) (x : E) :
     f x = g x :=
   h ▸ rfl
 #align linear_isometry.congr_fun LinearIsometry.congr_fun
@@ -231,7 +231,7 @@ theorem norm_map (x : E) : ‖f x‖ = ‖x‖ :=
   SemilinearIsometryClass.norm_map f x
 #align linear_isometry.norm_map LinearIsometry.norm_map
 
--- @[simp] -- Porting note: simp can prove this
+@[simp] -- Should be replaced with `SemilinearIsometryClass.nnorm_map` when `lean4#3107` is fixed.
 theorem nnnorm_map (x : E) : ‖f x‖₊ = ‖x‖₊ :=
   NNReal.eq <| norm_map f x
 #align linear_isometry.nnnorm_map LinearIsometry.nnnorm_map
@@ -240,11 +240,16 @@ protected theorem isometry : Isometry f :=
   AddMonoidHomClass.isometry_of_norm f.toLinearMap (norm_map _)
 #align linear_isometry.isometry LinearIsometry.isometry
 
-@[simp]
+-- Should be `@[simp]` but it doesn't fire due to `lean4#3107`.
 theorem isComplete_image_iff [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) {s : Set E} :
     IsComplete (f '' s) ↔ IsComplete s :=
   _root_.isComplete_image_iff (SemilinearIsometryClass.isometry f).uniformInducing
 #align linear_isometry.is_complete_image_iff LinearIsometry.isComplete_image_iff
+
+@[simp] -- Should be replaced with `LinearIsometry.isComplete_image_iff` when `lean4#3107` is fixed.
+theorem isComplete_image_iff' (f : LinearIsometry σ₁₂ E E₂) {s : Set E} :
+    IsComplete (f '' s) ↔ IsComplete s :=
+  LinearIsometry.isComplete_image_iff _
 
 theorem isComplete_map_iff [RingHomSurjective σ₁₂] {p : Submodule R E} :
     IsComplete (p.map f.toLinearMap : Set E₂) ↔ IsComplete (p : Set E) :=
@@ -972,7 +977,7 @@ theorem map_smul [Module R E₂] {e : E ≃ₗᵢ[R] E₂} (c : R) (x : E) : e (
   e.1.map_smul c x
 #align linear_isometry_equiv.map_smul LinearIsometryEquiv.map_smul
 
--- @[simp] -- Porting note: simp can prove this
+@[simp] -- Should be replaced with `SemilinearIsometryClass.nnorm_map` when `lean4#3107` is fixed.
 theorem nnnorm_map (x : E) : ‖e x‖₊ = ‖x‖₊ :=
   SemilinearIsometryClass.nnnorm_map e x
 #align linear_isometry_equiv.nnnorm_map LinearIsometryEquiv.nnnorm_map

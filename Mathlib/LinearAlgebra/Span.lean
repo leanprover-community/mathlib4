@@ -570,11 +570,16 @@ theorem span_singleton_eq_span_singleton {R M : Type*} [Ring R] [AddCommGroup M]
     exact (span_singleton_group_smul_eq _ _ _).symm
 #align submodule.span_singleton_eq_span_singleton Submodule.span_singleton_eq_span_singleton
 
-@[simp]
+-- Should be `@[simp]` but doesn't fire due to `lean4#3701`.
 theorem span_image [RingHomSurjective σ₁₂] (f : F) :
     span R₂ (f '' s) = map f (span R s) :=
   (map_span f s).symm
 #align submodule.span_image Submodule.span_image
+
+@[simp] -- Should be replaced with `Submodule.span_image` when `lean4#3701` is fixed.
+theorem span_image' [RingHomSurjective σ₁₂] (f : M →ₛₗ[σ₁₂] M₂) :
+    span R₂ (f '' s) = map f (span R s) :=
+  span_image _
 
 theorem apply_mem_span_image_of_mem_span [RingHomSurjective σ₁₂] (f : F) {x : M}
     {s : Set M} (h : x ∈ Submodule.span R s) : f x ∈ Submodule.span R₂ (f '' s) := by

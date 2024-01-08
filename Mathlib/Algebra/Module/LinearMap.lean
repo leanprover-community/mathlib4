@@ -118,7 +118,7 @@ is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
 class SemilinearMapClass (F : Type*) {R S : outParam (Type*)} [Semiring R] [Semiring S]
   (σ : outParam (R →+* S)) (M M₂ : outParam Type*) [AddCommMonoid M] [AddCommMonoid M₂]
   [Module R M] [Module S M₂] [NDFunLike F M M₂]
-  extends AddHomClass F M M₂ where
+  extends AddHomClass F M M₂ : Prop where
   /-- A semilinear map preserves scalar multiplication up to some ring homomorphism `σ`.
   See also `_root_.map_smul` for the case where `σ` is the identity. -/
   map_smulₛₗ : ∀ (f : F) (r : R) (x : M), f (r • x) = σ r • f x
@@ -132,7 +132,8 @@ end
 
 export SemilinearMapClass (map_smulₛₗ)
 
-attribute [simp] map_smulₛₗ
+-- `map_smulₛₗ` should be `@[simp]` but doesn't fire due to `lean4#3701`.
+-- attribute [simp] map_smulₛₗ
 
 /-- `LinearMapClass F R M M₂` asserts `F` is a type of bundled `R`-linear maps `M → M₂`.
 
@@ -379,7 +380,7 @@ open Pointwise
 
 variable (M M₃ σ) {F : Type*} (h : F)
 
-@[simp]
+-- This should be `@[simp]` but doesn't fire reliably due to `lean4#3701`.
 theorem _root_.image_smul_setₛₗ [NDFunLike F M M₃] [SemilinearMapClass F σ M M₃]
     (c : R) (s : Set M) :
     h '' (c • s) = σ c • h '' s := by
@@ -389,6 +390,12 @@ theorem _root_.image_smul_setₛₗ [NDFunLike F M M₃] [SemilinearMapClass F �
   · rintro x ⟨y, ⟨z, hz, rfl⟩, rfl⟩
     exact (Set.mem_image _ _ _).2 ⟨c • z, Set.smul_mem_smul_set hz, map_smulₛₗ _ _ _⟩
 #align image_smul_setₛₗ image_smul_setₛₗ
+
+@[simp] -- This should be replaced with `image_smul_setₛₗ` when `lean4#3701` is fixed.
+theorem _root_.LinearMap.image_smul_setₛₗ' (h : M →ₛₗ[σ] M₃)
+    (c : R) (s : Set M) :
+    h '' (c • s) = σ c • h '' s :=
+  image_smul_setₛₗ _ _ _ _ _ _
 
 theorem _root_.preimage_smul_setₛₗ [NDFunLike F M M₃] [SemilinearMapClass F σ M M₃]
     {c : R} (hc : IsUnit c)
