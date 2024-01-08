@@ -331,4 +331,34 @@ lemma productTriangle.zero₃₁ [HasZeroMorphisms C]
 
 end
 
+
+namespace Triangle
+
+@[simps]
+def π₁ : Triangle C ⥤ C where
+  obj T := T.obj₁
+  map f := f.hom₁
+
+@[simps]
+def π₂ : Triangle C ⥤ C where
+  obj T := T.obj₂
+  map f := f.hom₂
+
+@[simps]
+def π₃ : Triangle C ⥤ C where
+  obj T := T.obj₃
+  map f := f.hom₃
+
+section
+
+variable {A B : Triangle C} (φ : A ⟶ B) [IsIso φ]
+
+instance : IsIso φ.hom₁ := (inferInstance : IsIso (π₁.map φ))
+instance : IsIso φ.hom₂ := (inferInstance : IsIso (π₂.map φ))
+instance : IsIso φ.hom₃ := (inferInstance : IsIso (π₃.map φ))
+
+end
+
+end Triangle
+
 end CategoryTheory.Pretriangulated
