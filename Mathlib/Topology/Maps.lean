@@ -53,13 +53,13 @@ variable {X : Type*} {Y : Type*} {Z : Type*} {ι : Type*} {f : X → Y} {g : Y �
 
 section Inducing
 
-/-- A function `f : α → β` between topological spaces is inducing if the topology on `α` is induced
-by the topology on `β` through `f`, meaning that a set `s : Set α` is open iff it is the preimage
-under `f` of some open set `t : Set β`. -/
+/-- A function `f : X → Y` between topological spaces is inducing if the topology on `X` is induced
+by the topology on `Y` through `f`, meaning that a set `s : Set X` is open iff it is the preimage
+under `f` of some open set `t : Set Y`. -/
 @[mk_iff inducing_iff]
-structure Inducing [tα : TopologicalSpace X] [tβ : TopologicalSpace Y] (f : X → Y) : Prop where
+structure Inducing [tX : TopologicalSpace X] [tY : TopologicalSpace Y] (f : X → Y) : Prop where
   /-- The topology on the domain is equal to the induced topology. -/
-  induced : tα = tβ.induced f
+  induced : tX = tY.induced f
 #align inducing Inducing
 #align inducing_iff inducing_iff
 
@@ -190,7 +190,7 @@ end Inducing
 section Embedding
 
 /-- A function between topological spaces is an embedding if it is injective,
-  and for all `s : Set α`, `s` is open iff it is the preimage of an open set. -/
+  and for all `s : Set X`, `s` is open iff it is the preimage of an open set. -/
 @[mk_iff embedding_iff]
 structure Embedding [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y) extends
   Inducing f : Prop where
@@ -273,10 +273,10 @@ end Embedding
 
 section QuotientMap
 /-- A function between topological spaces is a quotient map if it is surjective,
-  and for all `s : Set β`, `s` is open iff its preimage is an open set. -/
-def QuotientMap {α : Type*} {β : Type*} [tα : TopologicalSpace α] [tβ : TopologicalSpace β]
-    (f : α → β) : Prop :=
-  Surjective f ∧ tβ = tα.coinduced f
+  and for all `s : Set Y`, `s` is open iff its preimage is an open set. -/
+def QuotientMap {X : Type*} {Y : Type*} [tX : TopologicalSpace X] [tY : TopologicalSpace Y]
+    (f : X → Y) : Prop :=
+  Surjective f ∧ tY = tX.coinduced f
 #align quotient_map QuotientMap
 
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
@@ -340,8 +340,8 @@ end QuotientMap
 end QuotientMap
 
 section OpenMap
-/-- A map `f : α → β` is said to be an *open map*, if the image of any open `U : Set α`
-is open in `β`. -/
+/-- A map `f : X → Y` is said to be an *open map*, if the image of any open `U : Set X`
+is open in `Y`. -/
 def IsOpenMap [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y) :=
   ∀ U : Set X, IsOpen U → IsOpen (f '' U)
 #align is_open_map IsOpenMap
@@ -429,19 +429,19 @@ theorem preimage_closure_subset_closure_preimage (hf : IsOpenMap f) {s : Set Y} 
   simp only [← interior_compl, ← preimage_compl, hf.interior_preimage_subset_preimage_interior]
 #align is_open_map.preimage_closure_subset_closure_preimage IsOpenMap.preimage_closure_subset_closure_preimage
 
-theorem preimage_closure_eq_closure_preimage (hf : IsOpenMap f) (hfc : Continuous f) (s : Set β) :
+theorem preimage_closure_eq_closure_preimage (hf : IsOpenMap f) (hfc : Continuous f) (s : Set Y) :
     f ⁻¹' closure s = closure (f ⁻¹' s) :=
   hf.preimage_closure_subset_closure_preimage.antisymm (hfc.closure_preimage_subset s)
 #align is_open_map.preimage_closure_eq_closure_preimage IsOpenMap.preimage_closure_eq_closure_preimage
 
-theorem preimage_frontier_subset_frontier_preimage (hf : IsOpenMap f) {s : Set β} :
+theorem preimage_frontier_subset_frontier_preimage (hf : IsOpenMap f) {s : Set Y} :
     f ⁻¹' frontier s ⊆ frontier (f ⁻¹' s) := by
   simpa only [frontier_eq_closure_inter_closure, preimage_inter] using
     inter_subset_inter hf.preimage_closure_subset_closure_preimage
       hf.preimage_closure_subset_closure_preimage
 #align is_open_map.preimage_frontier_subset_frontier_preimage IsOpenMap.preimage_frontier_subset_frontier_preimage
 
-theorem preimage_frontier_eq_frontier_preimage (hf : IsOpenMap f) (hfc : Continuous f) (s : Set β) :
+theorem preimage_frontier_eq_frontier_preimage (hf : IsOpenMap f) (hfc : Continuous f) (s : Set Y) :
     f ⁻¹' frontier s = frontier (f ⁻¹' s) := by
   simp only [frontier_eq_closure_inter_closure, preimage_inter, preimage_compl,
     hf.preimage_closure_eq_closure_preimage hfc]
@@ -470,11 +470,11 @@ end OpenMap
 
 section IsClosedMap
 
-variable [TopologicalSpace X] [TopologicalSpace β] [TopologicalSpace γ]
+variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
-/-- A map `f : α → β` is said to be a *closed map*, if the image of any closed `U : Set α`
-is closed in `β`. -/
-def IsClosedMap (f : X → β) :=
+/-- A map `f : X → Y` is said to be a *closed map*, if the image of any closed `U : Set X`
+is closed in `Y`. -/
+def IsClosedMap (f : X → Y) :=
   ∀ U : Set X, IsClosed U → IsClosed (f '' U)
 #align is_closed_map IsClosedMap
 
@@ -495,7 +495,7 @@ theorem closure_image_subset (hf : IsClosedMap f) (s : Set X) :
   closure_minimal (image_subset _ subset_closure) (hf _ isClosed_closure)
 #align is_closed_map.closure_image_subset IsClosedMap.closure_image_subset
 
-theorem of_inverse {f' : β → X} (h : Continuous f') (l_inv : LeftInverse f f')
+theorem of_inverse {f' : Y → X} (h : Continuous f') (l_inv : LeftInverse f f')
     (r_inv : RightInverse f f') : IsClosedMap f := fun s hs => by
   rw [image_eq_preimage_of_inverse r_inv l_inv]
   exact hs.preimage h
@@ -553,13 +553,13 @@ theorem IsClosedMap.closure_image_eq_of_continuous
 theorem IsClosedMap.lift'_closure_map_eq
     (f_closed : IsClosedMap f) (f_cont : Continuous f) (F : Filter X) :
     (map f F).lift' closure = map f (F.lift' closure) := by
-  rw [map_lift'_eq2 (monotone_closure β), map_lift'_eq (monotone_closure X)]
+  rw [map_lift'_eq2 (monotone_closure Y), map_lift'_eq (monotone_closure X)]
   congr
   ext s : 1
   exact f_closed.closure_image_eq_of_continuous f_cont s
 
 theorem IsClosedMap.mapClusterPt_iff_lift'_closure
-    {F : Filter X} (f_closed : IsClosedMap f) (f_cont : Continuous f) {y : β} :
+    {F : Filter X} (f_closed : IsClosedMap f) (f_cont : Continuous f) {y : Y} :
     MapClusterPt y F f ↔ ((F.lift' closure) ⊓ 𝓟 (f ⁻¹' {y})).NeBot := by
   rw [MapClusterPt, clusterPt_iff_lift'_closure', f_closed.lift'_closure_map_eq f_cont,
       ← comap_principal, ← map_neBot_iff f, Filter.push_pull, principal_singleton]
@@ -568,11 +568,11 @@ end IsClosedMap
 
 section OpenEmbedding
 
-variable [TopologicalSpace X] [TopologicalSpace β] [TopologicalSpace γ]
+variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
 /-- An open embedding is an embedding with open image. -/
 @[mk_iff openEmbedding_iff]
-structure OpenEmbedding (f : X → β) extends Embedding f : Prop where
+structure OpenEmbedding (f : X → Y) extends Embedding f : Prop where
   /-- The range of an open embedding is an open set. -/
   open_range : IsOpen <| range f
 #align open_embedding OpenEmbedding
@@ -594,12 +594,12 @@ theorem OpenEmbedding.open_iff_image_open (hf : OpenEmbedding f) {s : Set X} :
     apply preimage_image_eq _ hf.inj⟩
 #align open_embedding.open_iff_image_open OpenEmbedding.open_iff_image_open
 
-theorem OpenEmbedding.tendsto_nhds_iff {f : ι → β} {a : Filter ι} {b : β} (hg : OpenEmbedding g) :
+theorem OpenEmbedding.tendsto_nhds_iff {f : ι → Y} {a : Filter ι} {b : Y} (hg : OpenEmbedding g) :
     Tendsto f a (𝓝 b) ↔ Tendsto (g ∘ f) a (𝓝 (g b)) :=
   hg.toEmbedding.tendsto_nhds_iff
 #align open_embedding.tendsto_nhds_iff OpenEmbedding.tendsto_nhds_iff
 
-theorem OpenEmbedding.tendsto_nhds_iff' (hf : OpenEmbedding f) {l : Filter γ} {a : X} :
+theorem OpenEmbedding.tendsto_nhds_iff' (hf : OpenEmbedding f) {l : Filter Z} {a : X} :
     Tendsto (g ∘ f) (𝓝 a) l ↔ Tendsto g (𝓝 (f a)) l := by
   rw [Tendsto, ← map_map, hf.map_nhds_eq]; rfl
 
@@ -612,7 +612,7 @@ theorem OpenEmbedding.continuous (hf : OpenEmbedding f) : Continuous f :=
   hf.toEmbedding.continuous
 #align open_embedding.continuous OpenEmbedding.continuous
 
-theorem OpenEmbedding.open_iff_preimage_open (hf : OpenEmbedding f) {s : Set β}
+theorem OpenEmbedding.open_iff_preimage_open (hf : OpenEmbedding f) {s : Set Y}
     (hs : s ⊆ range f) : IsOpen s ↔ IsOpen (f ⁻¹' s) := by
   rw [hf.open_iff_image_open, image_preimage_eq_inter_range, inter_eq_self_of_subset_left hs]
 #align open_embedding.open_iff_preimage_open OpenEmbedding.open_iff_preimage_open
@@ -661,13 +661,13 @@ theorem isOpenMap_iff (hg : OpenEmbedding g) :
   simp_rw [isOpenMap_iff_nhds_le, ← map_map, comp, ← hg.map_nhds_eq, Filter.map_le_map_iff hg.inj]
 #align open_embedding.is_open_map_iff OpenEmbedding.isOpenMap_iff
 
-theorem of_comp_iff (f : X → β) (hg : OpenEmbedding g) :
+theorem of_comp_iff (f : X → Y) (hg : OpenEmbedding g) :
     OpenEmbedding (g ∘ f) ↔ OpenEmbedding f := by
   simp only [openEmbedding_iff_continuous_injective_open, ← hg.isOpenMap_iff, ←
     hg.1.continuous_iff, hg.inj.of_comp_iff]
 #align open_embedding.of_comp_iff OpenEmbedding.of_comp_iff
 
-theorem of_comp (f : X → β) (hg : OpenEmbedding g)
+theorem of_comp (f : X → Y) (hg : OpenEmbedding g)
     (h : OpenEmbedding (g ∘ f)) : OpenEmbedding f :=
   (OpenEmbedding.of_comp_iff f hg).1 h
 #align open_embedding.of_comp OpenEmbedding.of_comp
@@ -678,11 +678,11 @@ end OpenEmbedding
 
 section ClosedEmbedding
 
-variable [TopologicalSpace X] [TopologicalSpace β] [TopologicalSpace γ]
+variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
 /-- A closed embedding is an embedding with closed image. -/
 @[mk_iff closedEmbedding_iff]
-structure ClosedEmbedding (f : X → β) extends Embedding f : Prop where
+structure ClosedEmbedding (f : X → Y) extends Embedding f : Prop where
   /-- The range of a closed embedding is a closed set. -/
   closed_range : IsClosed <| range f
 #align closed_embedding ClosedEmbedding
@@ -710,7 +710,7 @@ theorem closed_iff_image_closed (hf : ClosedEmbedding f) {s : Set X} :
     exact h.preimage hf.continuous⟩
 #align closed_embedding.closed_iff_image_closed ClosedEmbedding.closed_iff_image_closed
 
-theorem closed_iff_preimage_closed (hf : ClosedEmbedding f) {s : Set β}
+theorem closed_iff_preimage_closed (hf : ClosedEmbedding f) {s : Set Y}
     (hs : s ⊆ range f) : IsClosed s ↔ IsClosed (f ⁻¹' s) := by
   rw [hf.closed_iff_image_closed, image_preimage_eq_of_subset hs]
 #align closed_embedding.closed_iff_preimage_closed ClosedEmbedding.closed_iff_preimage_closed
