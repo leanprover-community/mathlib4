@@ -43,11 +43,11 @@ nonrec theorem symm : e.symm.MDifferentiable I' I := he.symm
 #align local_homeomorph.mdifferentiable.symm PartialHomeomorph.MDifferentiable.symm
 
 protected theorem mdifferentiableAt {x : M} (hx : x ∈ e.source) : MDifferentiableAt I I' e x :=
-  (he.1 x hx).mdifferentiableAt (IsOpen.mem_nhds e.open_source hx)
+  (he.1 x hx).mdifferentiableAt (e.open_source.mem_nhds hx)
 #align local_homeomorph.mdifferentiable.mdifferentiable_at PartialHomeomorph.MDifferentiable.mdifferentiableAt
 
 theorem mdifferentiableAt_symm {x : M'} (hx : x ∈ e.target) : MDifferentiableAt I' I e.symm x :=
-  (he.2 x hx).mdifferentiableAt (IsOpen.mem_nhds e.open_target hx)
+  (he.2 x hx).mdifferentiableAt (e.open_target.mem_nhds hx)
 #align local_homeomorph.mdifferentiable.mdifferentiable_at_symm PartialHomeomorph.MDifferentiable.mdifferentiableAt_symm
 
 variable [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners I' M']
@@ -62,7 +62,7 @@ theorem symm_comp_deriv {x : M} (hx : x ∈ e.source) :
   have : mfderiv I I (_root_.id : M → M) x = ContinuousLinearMap.id _ _ := mfderiv_id I
   rw [← this]
   apply Filter.EventuallyEq.mfderiv_eq
-  have : e.source ∈ 𝓝 x := IsOpen.mem_nhds e.open_source hx
+  have : e.source ∈ 𝓝 x := e.open_source.mem_nhds hx
   exact Filter.mem_of_superset this (by mfld_set_tac)
 #align local_homeomorph.mdifferentiable.symm_comp_deriv PartialHomeomorph.MDifferentiable.symm_comp_deriv
 

@@ -143,7 +143,7 @@ theorem differentiable_within_at_localInvariantProp :
       apply differentiableWithinAt_inter
       have : u ∈ 𝓝 (I.symm (I x)) := by
         rw [ModelWithCorners.left_inv]
-        exact IsOpen.mem_nhds u_open xu
+        exact u_open.mem_nhds xu
       apply I.continuous_symm.continuousAt this
     right_invariance' := by
       intro s x f e he hx h
@@ -373,7 +373,7 @@ theorem IsOpen.uniqueMDiffWithinAt (xs : x ∈ s) (hs : IsOpen s) : UniqueMDiffW
 #align is_open.unique_mdiff_within_at IsOpen.uniqueMDiffWithinAt
 
 theorem UniqueMDiffOn.inter (hs : UniqueMDiffOn I s) (ht : IsOpen t) : UniqueMDiffOn I (s ∩ t) :=
-  fun _x hx => UniqueMDiffWithinAt.inter (hs _ hx.1) (IsOpen.mem_nhds ht hx.2)
+  fun _x hx => UniqueMDiffWithinAt.inter (hs _ hx.1) (ht.mem_nhds hx.2)
 #align unique_mdiff_on.inter UniqueMDiffOn.inter
 
 theorem IsOpen.uniqueMDiffOn (hs : IsOpen s) : UniqueMDiffOn I s := fun _x hx =>
@@ -623,7 +623,7 @@ theorem mdifferentiableOn_of_locally_mdifferentiableOn
     MDifferentiableOn I I' f s := by
   intro x xs
   rcases h x xs with ⟨t, t_open, xt, ht⟩
-  exact (mdifferentiableWithinAt_inter (IsOpen.mem_nhds t_open xt)).1 (ht x ⟨xs, xt⟩)
+  exact (mdifferentiableWithinAt_inter (t_open.mem_nhds xt)).1 (ht x ⟨xs, xt⟩)
 #align mdifferentiable_on_of_locally_mdifferentiable_on mdifferentiableOn_of_locally_mdifferentiableOn
 
 @[simp, mfld_simps]
@@ -1815,7 +1815,7 @@ variable {e : PartialHomeomorph M H}
 
 theorem mdifferentiableAt_atlas (h : e ∈ atlas H M) {x : M} (hx : x ∈ e.source) :
     MDifferentiableAt I I e x := by
-  refine' ⟨(e.continuousOn x hx).continuousAt (IsOpen.mem_nhds e.open_source hx), _⟩
+  refine' ⟨(e.continuousOn x hx).continuousAt (e.open_source.mem_nhds hx), _⟩
   have mem :
     I ((chartAt H x : M → H) x) ∈ I.symm ⁻¹' ((chartAt H x).symm ≫ₕ e).source ∩ range I := by
     simp only [hx, mfld_simps]
@@ -1838,7 +1838,7 @@ theorem mdifferentiableOn_atlas (h : e ∈ atlas H M) : MDifferentiableOn I I e 
 
 theorem mdifferentiableAt_atlas_symm (h : e ∈ atlas H M) {x : H} (hx : x ∈ e.target) :
     MDifferentiableAt I I e.symm x := by
-  refine' ⟨(e.continuousOn_symm x hx).continuousAt (IsOpen.mem_nhds e.open_target hx), _⟩
+  refine' ⟨(e.continuousOn_symm x hx).continuousAt (e.open_target.mem_nhds hx), _⟩
   have mem : I x ∈ I.symm ⁻¹' (e.symm ≫ₕ chartAt H (e.symm x)).source ∩ range I := by
     simp only [hx, mfld_simps]
   have : e.symm.trans (chartAt H (e.symm x)) ∈ contDiffGroupoid ∞ I :=
