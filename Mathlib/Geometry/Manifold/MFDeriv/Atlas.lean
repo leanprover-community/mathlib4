@@ -6,15 +6,20 @@ Authors: Sébastien Gouëzel, Floris van Doorn
 import Mathlib.Geometry.Manifold.MFDeriv.Basic
 
 /-!
-# Differentiable partial homeomorphisms and extended charts
+# Differentiability of models with corners and (extended) charts
 
-This file shows that extended charts are differentiable and have bijective differential.
+In this file, we analyse the differentiability of charts, models with corners and extended charts.
+We show that
+* models with corners are differentiable
+* charts are differentiable on their source
+* `mdifferentiableOn_extChartAt`: `extChartAt` is differentiable on its source
 
 Suppose a partial homeomorphism `e` is differentiable. This file shows
 * `PartialHomeomorph.MDifferentiable.mfderiv`: its derivative is a continuous linear equivalence
 * `PartialHomeomorph.MDifferentiable.mfderiv_bijective`: its derivative is bijective;
   there are also spelling with trivial kernel and full range
-* `mdifferentiableOn_extChartAt`: `extChartAt` is differentiable on its source
+
+In particular, (extended) charts have bijective differential.
 
 ## Tags
 charts, differentiable, bijective
@@ -23,21 +28,153 @@ charts, differentiable, bijective
 noncomputable section
 
 open scoped Manifold
-open Topology Set
+open Bundle Set Topology
+
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
+  (I : ModelWithCorners 𝕜 E H) {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
+  (I' : ModelWithCorners 𝕜 E' H') {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
+  {E'' : Type*} [NormedAddCommGroup E''] [NormedSpace 𝕜 E''] {H'' : Type*} [TopologicalSpace H'']
+  (I'' : ModelWithCorners 𝕜 E'' H'') {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H'' M'']
+
+section ModelWithCorners
+namespace ModelWithCorners
+
+/-! #### Model with corners -/
+
+protected theorem hasMFDerivAt {x} : HasMFDerivAt I 𝓘(𝕜, E) I x (ContinuousLinearMap.id _ _) :=
+  ⟨I.continuousAt, (hasFDerivWithinAt_id _ _).congr' I.rightInvOn (mem_range_self _)⟩
+#align model_with_corners.has_mfderiv_at ModelWithCorners.hasMFDerivAt
+
+protected theorem hasMFDerivWithinAt {s x} :
+    HasMFDerivWithinAt I 𝓘(𝕜, E) I s x (ContinuousLinearMap.id _ _) :=
+  I.hasMFDerivAt.hasMFDerivWithinAt
+#align model_with_corners.has_mfderiv_within_at ModelWithCorners.hasMFDerivWithinAt
+
+protected theorem mdifferentiableWithinAt {s x} : MDifferentiableWithinAt I 𝓘(𝕜, E) I s x :=
+  I.hasMFDerivWithinAt.mdifferentiableWithinAt
+#align model_with_corners.mdifferentiable_within_at ModelWithCorners.mdifferentiableWithinAt
+
+protected theorem mdifferentiableAt {x} : MDifferentiableAt I 𝓘(𝕜, E) I x :=
+  I.hasMFDerivAt.mdifferentiableAt
+#align model_with_corners.mdifferentiable_at ModelWithCorners.mdifferentiableAt
+
+protected theorem mdifferentiableOn {s} : MDifferentiableOn I 𝓘(𝕜, E) I s := fun _ _ =>
+  I.mdifferentiableWithinAt
+#align model_with_corners.mdifferentiable_on ModelWithCorners.mdifferentiableOn
+
+protected theorem mdifferentiable : MDifferentiable I 𝓘(𝕜, E) I := fun _ => I.mdifferentiableAt
+#align model_with_corners.mdifferentiable ModelWithCorners.mdifferentiable
+
+theorem hasMFDerivWithinAt_symm {x} (hx : x ∈ range I) :
+    HasMFDerivWithinAt 𝓘(𝕜, E) I I.symm (range I) x (ContinuousLinearMap.id _ _) :=
+  ⟨I.continuousWithinAt_symm,
+    (hasFDerivWithinAt_id _ _).congr' (fun _y hy => I.rightInvOn hy.1) ⟨hx, mem_range_self _⟩⟩
+#align model_with_corners.has_mfderiv_within_at_symm ModelWithCorners.hasMFDerivWithinAt_symm
+
+theorem mdifferentiableOn_symm : MDifferentiableOn 𝓘(𝕜, E) I I.symm (range I) := fun _x hx =>
+  (I.hasMFDerivWithinAt_symm hx).mdifferentiableWithinAt
+#align model_with_corners.mdifferentiable_on_symm ModelWithCorners.mdifferentiableOn_symm
+
+end ModelWithCorners
+
+end ModelWithCorners
+
+section Charts
+
+variable [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners I' M']
+  [SmoothManifoldWithCorners I'' M''] {e : PartialHomeomorph M H}
+
+theorem mdifferentiableAt_atlas (h : e ∈ atlas H M) {x : M} (hx : x ∈ e.source) :
+    MDifferentiableAt I I e x := by
+  refine' ⟨(e.continuousOn x hx).continuousAt (e.open_source.mem_nhds hx), _⟩
+  have mem :
+    I ((chartAt H x : M → H) x) ∈ I.symm ⁻¹' ((chartAt H x).symm ≫ₕ e).source ∩ range I := by
+    simp only [hx, mfld_simps]
+  have : (chartAt H x).symm.trans e ∈ contDiffGroupoid ∞ I :=
+    HasGroupoid.compatible (chart_mem_atlas H x) h
+  have A :
+    ContDiffOn 𝕜 ∞ (I ∘ (chartAt H x).symm.trans e ∘ I.symm)
+      (I.symm ⁻¹' ((chartAt H x).symm.trans e).source ∩ range I) :=
+    this.1
+  have B := A.differentiableOn le_top (I ((chartAt H x : M → H) x)) mem
+  simp only [mfld_simps] at B
+  rw [inter_comm, differentiableWithinAt_inter] at B
+  · simpa only [mfld_simps]
+  · apply IsOpen.mem_nhds ((PartialHomeomorph.open_source _).preimage I.continuous_symm) mem.1
+#align mdifferentiable_at_atlas mdifferentiableAt_atlas
+
+theorem mdifferentiableOn_atlas (h : e ∈ atlas H M) : MDifferentiableOn I I e e.source :=
+  fun _x hx => (mdifferentiableAt_atlas I h hx).mdifferentiableWithinAt
+#align mdifferentiable_on_atlas mdifferentiableOn_atlas
+
+theorem mdifferentiableAt_atlas_symm (h : e ∈ atlas H M) {x : H} (hx : x ∈ e.target) :
+    MDifferentiableAt I I e.symm x := by
+  refine' ⟨(e.continuousOn_symm x hx).continuousAt (e.open_target.mem_nhds hx), _⟩
+  have mem : I x ∈ I.symm ⁻¹' (e.symm ≫ₕ chartAt H (e.symm x)).source ∩ range I := by
+    simp only [hx, mfld_simps]
+  have : e.symm.trans (chartAt H (e.symm x)) ∈ contDiffGroupoid ∞ I :=
+    HasGroupoid.compatible h (chart_mem_atlas H _)
+  have A :
+    ContDiffOn 𝕜 ∞ (I ∘ e.symm.trans (chartAt H (e.symm x)) ∘ I.symm)
+      (I.symm ⁻¹' (e.symm.trans (chartAt H (e.symm x))).source ∩ range I) :=
+    this.1
+  have B := A.differentiableOn le_top (I x) mem
+  simp only [mfld_simps] at B
+  rw [inter_comm, differentiableWithinAt_inter] at B
+  · simpa only [mfld_simps]
+  · apply IsOpen.mem_nhds ((PartialHomeomorph.open_source _).preimage I.continuous_symm) mem.1
+#align mdifferentiable_at_atlas_symm mdifferentiableAt_atlas_symm
+
+theorem mdifferentiableOn_atlas_symm (h : e ∈ atlas H M) : MDifferentiableOn I I e.symm e.target :=
+  fun _x hx => (mdifferentiableAt_atlas_symm I h hx).mdifferentiableWithinAt
+#align mdifferentiable_on_atlas_symm mdifferentiableOn_atlas_symm
+
+theorem mdifferentiable_of_mem_atlas (h : e ∈ atlas H M) : e.MDifferentiable I I :=
+  ⟨mdifferentiableOn_atlas I h, mdifferentiableOn_atlas_symm I h⟩
+#align mdifferentiable_of_mem_atlas mdifferentiable_of_mem_atlas
+
+theorem mdifferentiable_chart (x : M) : (chartAt H x).MDifferentiable I I :=
+  mdifferentiable_of_mem_atlas _ (chart_mem_atlas _ _)
+#align mdifferentiable_chart mdifferentiable_chart
+
+/-- The derivative of the chart at a base point is the chart of the tangent bundle, composed with
+the identification between the tangent bundle of the model space and the product space. -/
+theorem tangentMap_chart {p q : TangentBundle I M} (h : q.1 ∈ (chartAt H p.1).source) :
+    tangentMap I I (chartAt H p.1) q =
+      (TotalSpace.toProd _ _).symm
+        ((chartAt (ModelProd H E) p : TangentBundle I M → ModelProd H E) q) := by
+  dsimp [tangentMap]
+  rw [MDifferentiableAt.mfderiv]
+  · rfl
+  · exact mdifferentiableAt_atlas _ (chart_mem_atlas _ _) h
+#align tangent_map_chart tangentMap_chart
+
+/-- The derivative of the inverse of the chart at a base point is the inverse of the chart of the
+tangent bundle, composed with the identification between the tangent bundle of the model space and
+the product space. -/
+theorem tangentMap_chart_symm {p : TangentBundle I M} {q : TangentBundle I H}
+    (h : q.1 ∈ (chartAt H p.1).target) :
+    tangentMap I I (chartAt H p.1).symm q =
+      (chartAt (ModelProd H E) p).symm (TotalSpace.toProd H E q) := by
+  dsimp only [tangentMap]
+  rw [MDifferentiableAt.mfderiv (mdifferentiableAt_atlas_symm _ (chart_mem_atlas _ _) h)]
+  simp only [ContinuousLinearMap.coe_coe, TangentBundle.chartAt, h, tangentBundleCore,
+    mfld_simps, (· ∘ ·)]
+  -- `simp` fails to apply `PartialEquiv.prod_symm` with `ModelProd`
+  congr
+  exact ((chartAt H (TotalSpace.proj p)).right_inv h).symm
+#align tangent_map_chart_symm tangentMap_chart_symm
+
+end Charts
 
 
 /-! ### Differentiable partial homeomorphisms -/
 
 namespace PartialHomeomorph.MDifferentiable
-
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {M : Type*}
-  [TopologicalSpace M] [ChartedSpace H M] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
-  {H' : Type*} [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'} {M' : Type*}
-  [TopologicalSpace M'] [ChartedSpace H' M'] {E'' : Type*} [NormedAddCommGroup E'']
-  [NormedSpace 𝕜 E''] {H'' : Type*} [TopologicalSpace H''] {I'' : ModelWithCorners 𝕜 E'' H''}
-  {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H'' M''] {e : PartialHomeomorph M M'}
-  (he : e.MDifferentiable I I') {e' : PartialHomeomorph M' M''}
+variable {I I' I''}
+variable {e : PartialHomeomorph M M'} (he : e.MDifferentiable I I') {e' : PartialHomeomorph M' M''}
 
 nonrec theorem symm : e.symm.MDifferentiable I' I := he.symm
 #align local_homeomorph.mdifferentiable.symm PartialHomeomorph.MDifferentiable.symm
