@@ -617,6 +617,8 @@ noncomputable def plusPlusSheaf : (Cᵒᵖ ⥤ D) ⥤ Sheaf J D where
   map η := ⟨J.sheafifyMap η⟩
   map_id _ := Sheaf.Hom.ext _ _ <| J.sheafifyMap_id _
   map_comp _ _ := Sheaf.Hom.ext _ _ <| J.sheafifyMap_comp _ _
+set_option linter.uppercaseLean3 false in
+#align category_theory.presheaf_to_Sheaf CategoryTheory.plusPlusSheaf
 
 instance plusPlusSheaf_preservesZeroMorphisms [Preadditive D] :
     (plusPlusSheaf J D).PreservesZeroMorphisms where
@@ -624,6 +626,8 @@ instance plusPlusSheaf_preservesZeroMorphisms [Preadditive D] :
     ext : 3
     refine' colimit.hom_ext (fun j => _)
     erw [colimit.ι_map, comp_zero, J.plusMap_zero, J.diagramNatTrans_zero, zero_comp]
+set_option linter.uppercaseLean3 false in
+#align category_theory.presheaf_to_Sheaf_preserves_zero_morphisms CategoryTheory.plusPlusSheaf_preservesZeroMorphisms
 
 /-- The sheafification functor is left adjoint to the forgetful functor. -/
 @[simps! unit_app counit_app_val]
@@ -640,6 +644,7 @@ noncomputable def plusPlusAdjunction : plusPlusSheaf J D ⊣ sheafToPresheaf J D
       homEquiv_naturality_right := fun η γ => by
         dsimp
         rw [Category.assoc] }
+#align category_theory.sheafification_adjunction CategoryTheory.plusPlusAdjunction
 
 noncomputable instance sheafToPresheafIsRightAdjoint : IsRightAdjoint (sheafToPresheaf J D) :=
   ⟨_, plusPlusAdjunction J D⟩

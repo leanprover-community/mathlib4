@@ -67,8 +67,6 @@ theorem HasSheafify.mk' {F : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A} (adj : F ⊣ sheafTo
 /-- The sheafification functor, left adjoint to the inclusion. -/
 def presheafToSheaf [HasWeakSheafify J A] : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A :=
   leftAdjoint (sheafToPresheaf J A)
-set_option linter.uppercaseLean3 false in
-#align category_theory.presheaf_to_Sheaf CategoryTheory.presheafToSheaf
 
 instance [HasSheafify J A] : PreservesFiniteLimits (presheafToSheaf J A) :=
   HasSheafify.isLeftExact.some
@@ -76,7 +74,6 @@ instance [HasSheafify J A] : PreservesFiniteLimits (presheafToSheaf J A) :=
 /-- The sheafification-inclusion adjunction. -/
 def sheafificationAdjunction [HasWeakSheafify J A] :
     presheafToSheaf J A ⊣ sheafToPresheaf J A := IsRightAdjoint.adj
-#align category_theory.sheafification_adjunction CategoryTheory.sheafificationAdjunction
 
 instance [HasWeakSheafify J A] : IsLeftAdjoint <| presheafToSheaf J A where
   adj := sheafificationAdjunction J A
