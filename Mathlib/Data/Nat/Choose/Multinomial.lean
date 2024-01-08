@@ -66,7 +66,7 @@ lemma multinomial_cons (ha : a ∉ s) :
     Nat.add_choose_mul_factorial_mul_factorial, Finset.sum_cons]
   exact prod_pos fun i _ ↦ by positivity
 
-lemma multinomial_insert [DecidableEq α] (ha : a ∉ s) :
+lemma multinomial_insert [DecidableEq α] {s : Finset α} (ha : a ∉ s) (f : α → ℕ) :
     multinomial (insert a s) f = (f a + ∑ i in s, f i).choose (f a) * multinomial s f := by
   rw [← cons_eq_insert _ _ ha, multinomial_cons]
 #align nat.multinomial_insert Nat.multinomial_insert
@@ -179,7 +179,7 @@ theorem multinomial_update (a : α) (f : α →₀ ℕ) :
   simp only [multinomial_eq]
   classical
     by_cases h : a ∈ f.support
-    · rw [← Finset.insert_erase h, Nat.multinomial_insert _ f (Finset.not_mem_erase a _),
+    · rw [← Finset.insert_erase h, Nat.multinomial_insert (Finset.not_mem_erase a _),
         Finset.add_sum_erase _ f h, support_update_zero]
       congr 1
       exact
