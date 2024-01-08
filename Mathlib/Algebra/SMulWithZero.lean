@@ -77,9 +77,9 @@ lemma smul_eq_zero_of_left (h : a = 0) (b : M) : a • b = 0 := h.symm ▸ zero_
 #align smul_eq_zero_of_left smul_eq_zero_of_left
 lemma smul_eq_zero_of_right (a : R) (h : b = 0) : a • b = 0 := h.symm ▸ smul_zero a
 #align smul_eq_zero_of_right smul_eq_zero_of_right
-lemma left_ne_zero_of_smul : a • b ≠ 0 → a ≠ 0 := mt $ fun h ↦ smul_eq_zero_of_left h b
+lemma left_ne_zero_of_smul : a • b ≠ 0 → a ≠ 0 := mt fun h ↦ smul_eq_zero_of_left h b
 #align left_ne_zero_of_smul left_ne_zero_of_smul
-lemma right_ne_zero_of_smul : a • b ≠ 0 → b ≠ 0 := mt $ smul_eq_zero_of_right a
+lemma right_ne_zero_of_smul : a • b ≠ 0 → b ≠ 0 := mt <| smul_eq_zero_of_right a
 #align right_ne_zero_of_smul right_ne_zero_of_smul
 
 variable [Zero R'] [Zero M'] [SMul R M']
@@ -112,7 +112,7 @@ variable (M)
 
 /-- Compose a `SMulWithZero` with a `ZeroHom`, with action `f r' • m` -/
 def SMulWithZero.compHom (f : ZeroHom R' R) : SMulWithZero R' M where
-  smul := (· • ·) ∘ f
+  smul := (f · • ·)
   smul_zero m := smul_zero (f m)
   zero_smul m := by show (f 0) • m = 0; rw [map_zero, zero_smul]
 #align smul_with_zero.comp_hom SMulWithZero.compHom

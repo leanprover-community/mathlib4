@@ -283,9 +283,8 @@ theorem leftDistributor_ext_left {J : Type} [Fintype J] {X Y : C} {f : J → C} 
   apply (cancel_epi (leftDistributor X f).inv).mp
   ext
   simp? [leftDistributor_inv, Preadditive.comp_sum_assoc, biproduct.ι_π_assoc, dite_comp] says
-    simp only [leftDistributor_inv, Preadditive.comp_sum_assoc, ne_eq, biproduct.ι_π_assoc,
-      dite_comp, zero_comp, Finset.sum_dite_eq, Finset.mem_univ, eqToHom_refl, Category.id_comp,
-      ite_true]
+    simp only [leftDistributor_inv, Preadditive.comp_sum_assoc, biproduct.ι_π_assoc, dite_comp,
+      zero_comp, Finset.sum_dite_eq, Finset.mem_univ, eqToHom_refl, Category.id_comp, ite_true]
   apply w
 
 @[ext]
@@ -295,7 +294,7 @@ theorem leftDistributor_ext_right {J : Type} [Fintype J] {X Y : C} {f : J → C}
   ext
   simp? [leftDistributor_hom, Preadditive.sum_comp, Preadditive.comp_sum_assoc, biproduct.ι_π,
     comp_dite] says
-    simp only [leftDistributor_hom, Category.assoc, Preadditive.sum_comp, ne_eq, biproduct.ι_π,
+    simp only [leftDistributor_hom, Category.assoc, Preadditive.sum_comp, biproduct.ι_π,
       comp_dite, comp_zero, Finset.sum_dite_eq', Finset.mem_univ, eqToHom_refl, Category.comp_id,
       ite_true]
   apply w
@@ -327,7 +326,7 @@ theorem rightDistributor_ext_left {J : Type} [Fintype J]
   apply (cancel_epi (rightDistributor f X).inv).mp
   ext
   simp? [rightDistributor_inv, Preadditive.comp_sum_assoc, biproduct.ι_π_assoc, dite_comp] says
-    simp only [rightDistributor_inv, Preadditive.comp_sum_assoc, ne_eq, biproduct.ι_π_assoc,
+    simp only [rightDistributor_inv, Preadditive.comp_sum_assoc, biproduct.ι_π_assoc,
       dite_comp, zero_comp, Finset.sum_dite_eq, Finset.mem_univ, eqToHom_refl, Category.id_comp,
       ite_true]
   apply w
@@ -340,7 +339,7 @@ theorem rightDistributor_ext_right {J : Type} [Fintype J]
   ext
   simp? [rightDistributor_hom, Preadditive.sum_comp, Preadditive.comp_sum_assoc, biproduct.ι_π,
     comp_dite] says
-    simp only [rightDistributor_hom, Category.assoc, Preadditive.sum_comp, ne_eq, biproduct.ι_π,
+    simp only [rightDistributor_hom, Category.assoc, Preadditive.sum_comp, biproduct.ι_π,
       comp_dite, comp_zero, Finset.sum_dite_eq', Finset.mem_univ, eqToHom_refl, Category.comp_id,
       ite_true]
   apply w

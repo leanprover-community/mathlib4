@@ -41,7 +41,7 @@ structure MyType where
 ```
 
 How do we test a property about `MyType`? For instance, let us consider
-`Testable.check $ ∀ a b : MyType, a.y ≤ b.x → a.x ≤ b.y`. Writing this
+`Testable.check <| ∀ a b : MyType, a.y ≤ b.x → a.x ≤ b.y`. Writing this
 property as is will give us an error because we do not have an instance
 of `Shrinkable MyType` and `SampleableExt MyType`. We can define one as follows:
 
@@ -55,7 +55,7 @@ instance : SampleableExt MyType :=
   SampleableExt.mkSelfContained do
     let x ← SampleableExt.interpSample Nat
     let xyDiff ← SampleableExt.interpSample Nat
-    pure $ ⟨x, x + xyDiff, sorry⟩
+    pure <| ⟨x, x + xyDiff, sorry⟩
 ```
 
 Again, we take advantage of the fact that other types have useful
@@ -166,15 +166,15 @@ instance : ToString (TestResult p) := ⟨toString⟩
 
 /-- Applicative combinator proof carrying test results. -/
 def combine {p q : Prop} : PSum Unit (p → q) → PSum Unit p → PSum Unit q
-  | PSum.inr f, PSum.inr proof => PSum.inr $ f proof
+  | PSum.inr f, PSum.inr proof => PSum.inr <| f proof
   | _, _ => PSum.inl ()
 
 /-- Combine the test result for properties `p` and `q` to create a test for their conjunction. -/
 def and : TestResult p → TestResult q → TestResult (p ∧ q)
   | failure h xs n, _ => failure (λ h2 => h h2.left) xs n
   | _, failure h xs n => failure (λ h2 => h h2.right) xs n
-  | success h1, success h2 => success $ combine (combine (PSum.inr And.intro) h1) h2
-  | gaveUp n, gaveUp m => gaveUp $ n + m
+  | success h1, success h2 => success <| combine (combine (PSum.inr And.intro) h1) h2
+  | gaveUp n, gaveUp m => gaveUp <| n + m
   | gaveUp n, _ => gaveUp n
   | _, gaveUp n => gaveUp n
 
@@ -186,9 +186,9 @@ def or : TestResult p → TestResult q → TestResult (p ∨ q)
       | Or.inl h3 => h1 h3
       | Or.inr h3 => h2 h3
     failure h3 (xs ++ ys) (n + m)
-  | success h, _ => success $ combine (PSum.inr Or.inl) h
-  | _, success h => success $ combine (PSum.inr Or.inr) h
-  | gaveUp n, gaveUp m => gaveUp $ n + m
+  | success h, _ => success <| combine (PSum.inr Or.inl) h
+  | _, success h => success <| combine (PSum.inr Or.inr) h
+  | gaveUp n, gaveUp m => gaveUp <| n + m
   | gaveUp n, _ => gaveUp n
   | _, gaveUp n => gaveUp n
 
@@ -198,7 +198,7 @@ def imp (h : q → p) (r : TestResult p)
     (p : PSum Unit (p → q) := PSum.inl ()) : TestResult q :=
   match r with
   | failure h2 xs n => failure (mt h h2) xs n
-  | success h2 => success $ combine p h2
+  | success h2 => success <| combine p h2
   | gaveUp n => gaveUp n
 
 /-- Test `q` by testing `p` and proving the equivalence between the two. -/
@@ -250,7 +250,7 @@ instance andTestable [Testable p] [Testable q] : Testable (p ∧ q) where
   run := λ cfg min => do
     let xp ← runProp p cfg min
     let xq ← runProp q cfg min
-    pure $ and xp xq
+    pure <| and xp xq
 
 instance orTestable [Testable p] [Testable q] : Testable (p ∨ q) where
   run := λ cfg min => do
@@ -258,38 +258,38 @@ instance orTestable [Testable p] [Testable q] : Testable (p ∨ q) where
     -- As a little performance optimization we can just not run the second
     -- test if the first succeeds
     match xp with
-    | success (PSum.inl h) => pure $ success (PSum.inl h)
-    | success (PSum.inr h) => pure $ success (PSum.inr $ Or.inl h)
+    | success (PSum.inl h) => pure <| success (PSum.inl h)
+    | success (PSum.inr h) => pure <| success (PSum.inr <| Or.inl h)
     | _ =>
       let xq ← runProp q cfg min
-      pure $ or xp xq
+      pure <| or xp xq
 
 instance iffTestable [Testable ((p ∧ q) ∨ (¬ p ∧ ¬ q))] : Testable (p ↔ q) where
   run := λ cfg min => do
     let h ← runProp ((p ∧ q) ∨ (¬ p ∧ ¬ q)) cfg min
-    pure $ iff iff_iff_and_or_not_and_not h
+    pure <| iff iff_iff_and_or_not_and_not h
 
 variable {var : String}
 
 instance decGuardTestable [PrintableProp p] [Decidable p] {β : p → Prop} [∀ h, Testable (β h)] :
-    Testable (NamedBinder var $ ∀ h, β h) where
+    Testable (NamedBinder var <| ∀ h, β h) where
   run := λ cfg min => do
     if h : p then
       let res := (runProp (β h) cfg min)
       let s := printProp p
-      (λ r => addInfo s!"guard: {s}" (· $ h) r (PSum.inr $ λ q _ => q)) <$> res
+      (λ r => addInfo s!"guard: {s}" (· <| h) r (PSum.inr <| λ q _ => q)) <$> res
     else if cfg.traceDiscarded || cfg.traceSuccesses then
-      let res := (λ _ => pure $ gaveUp 1)
+      let res := (λ _ => pure <| gaveUp 1)
       let s := printProp p
       slimTrace s!"discard: Guard {s} does not hold"; res
     else
-      pure $ gaveUp 1
+      pure <| gaveUp 1
 
 instance forallTypesTestable {f : Type → Prop} [Testable (f Int)] :
-    Testable (NamedBinder var $ ∀ x, f x) where
+    Testable (NamedBinder var <| ∀ x, f x) where
   run := λ cfg min => do
     let r ← runProp (f Int) cfg min
-    pure $ addVarInfo var "ℤ" (· $ Int) r
+    pure <| addVarInfo var "ℤ" (· <| Int) r
 
 /--
 Format the counter-examples found in a test failure.
@@ -328,11 +328,11 @@ partial def minimizeAux [SampleableExt α] {β : α → Prop} [∀ x, Testable (
   for candidate in candidates do
     if cfg.traceShrinkCandidates then
       slimTrace s!"Trying {var} := {repr candidate}"
-    let res ← OptionT.lift $ Testable.runProp (β (SampleableExt.interp candidate)) cfg true
+    let res ← OptionT.lift <| Testable.runProp (β (SampleableExt.interp candidate)) cfg true
     if res.isFailure then
       if cfg.traceShrink then
         slimTrace s!"{var} shrunk to {repr candidate} from {repr x}"
-      let currentStep := OptionT.lift $ pure $ Sigma.mk candidate (addShrinks (n + 1) res)
+      let currentStep := OptionT.lift <| pure <| Sigma.mk candidate (addShrinks (n + 1) res)
       let nextStep := minimizeAux cfg var candidate (n + 1)
       return ← (nextStep <|> currentStep)
   if cfg.traceShrink then
@@ -342,23 +342,23 @@ partial def minimizeAux [SampleableExt α] {β : α → Prop} [∀ x, Testable (
 /-- Once a property fails to hold on an example, look for smaller counter-examples
 to show the user. -/
 def minimize [SampleableExt α] {β : α → Prop} [∀ x, Testable (β x)] (cfg : Configuration)
-    (var : String) (x : SampleableExt.proxy α) (r : TestResult (β $ SampleableExt.interp x)) :
-    Gen (Σ x, TestResult (β $ SampleableExt.interp x)) := do
+    (var : String) (x : SampleableExt.proxy α) (r : TestResult (β <| SampleableExt.interp x)) :
+    Gen (Σ x, TestResult (β <| SampleableExt.interp x)) := do
   if cfg.traceShrink then
      slimTrace "Shrink"
      slimTrace s!"Attempting to shrink {var} := {repr x}"
-  let res ← OptionT.run $ minimizeAux cfg var x 0
-  pure $ res.getD ⟨x, r⟩
+  let res ← OptionT.run <| minimizeAux cfg var x 0
+  pure <| res.getD ⟨x, r⟩
 
 /-- Test a universal property by creating a sample of the right type and instantiating the
 bound variable with it. -/
 instance varTestable [SampleableExt α] {β : α → Prop} [∀ x, Testable (β x)] :
-    Testable (NamedBinder var $ ∀ x : α, β x) where
+    Testable (NamedBinder var <| ∀ x : α, β x) where
   run := λ cfg min => do
     let x ← SampleableExt.sample
     if cfg.traceSuccesses || cfg.traceDiscarded then
       slimTrace s!"{var} := {repr x}"
-    let r ← Testable.runProp (β $ SampleableExt.interp x) cfg false
+    let r ← Testable.runProp (β <| SampleableExt.interp x) cfg false
     let ⟨finalX, finalR⟩ ←
       if isFailure r then
         if cfg.traceSuccesses then
@@ -366,36 +366,50 @@ instance varTestable [SampleableExt α] {β : α → Prop} [∀ x, Testable (β 
         if min then
           minimize cfg var x r
         else
-          pure $ ⟨x, r⟩
+          pure <| ⟨x, r⟩
       else
-        pure $ ⟨x, r⟩
-    pure $ addVarInfo var finalX (· $ SampleableExt.interp finalX) finalR
+        pure <| ⟨x, r⟩
+    pure <| addVarInfo var finalX (· <| SampleableExt.interp finalX) finalR
 
 /-- Test a universal property about propositions -/
 instance propVarTestable {β : Prop → Prop} [∀ b : Bool, Testable (β b)] :
-  Testable (NamedBinder var $ ∀ p : Prop, β p)
+  Testable (NamedBinder var <| ∀ p : Prop, β p)
 where
   run := λ cfg min =>
-    imp (λ h (b : Bool) => h b) <$> Testable.runProp (NamedBinder var $ ∀ b : Bool, β b) cfg min
+    imp (λ h (b : Bool) => h b) <$> Testable.runProp (NamedBinder var <| ∀ b : Bool, β b) cfg min
 
 instance (priority := high) unusedVarTestable [Nonempty α] [Testable β] :
-  Testable (NamedBinder var $ ∀ _x : α, β)
+  Testable (NamedBinder var (α → β))
 where
   run := λ cfg min => do
     if cfg.traceDiscarded || cfg.traceSuccesses then
       slimTrace s!"{var} is unused"
     let r ← Testable.runProp β cfg min
     let finalR := addInfo s!"{var} is irrelevant (unused)" id r
-    pure $ imp (· $ Classical.ofNonempty) finalR (PSum.inr $ λ x _ => x)
+    pure <| imp (· <| Classical.ofNonempty) finalR (PSum.inr <| λ x _ => x)
+
+instance (priority := 2000) subtypeVarTestable {p : α → Prop} {β : α → Prop}
+    [∀ x, PrintableProp (p x)]
+    [∀ x, Testable (β x)]
+    [SampleableExt (Subtype p)] {var'} :
+    Testable (NamedBinder var <| Π x : α, NamedBinder var' <| p x → β x) where
+  run cfg min :=
+    letI (x : Subtype p) : Testable (β x) :=
+      { run := fun cfg min => do
+          let r ← Testable.runProp (β x.val) cfg min
+          pure <| addInfo s!"guard: {printProp (p x)} (by construction)" id r (PSum.inr id) }
+    do
+      let r ← @Testable.run (∀ x : Subtype p, β x.val) (@varTestable var _ _ _ _) cfg min
+      pure <| iff Subtype.forall' r
 
 instance (priority := low) decidableTestable {p : Prop} [PrintableProp p] [Decidable p] :
     Testable p where
   run := λ _ _ =>
     if h : p then
-      pure $ success (PSum.inr h)
+      pure <| success (PSum.inr h)
     else
       let s := printProp p
-      pure $ failure h [s!"issue: {s} does not hold"] 0
+      pure <| failure h [s!"issue: {s} does not hold"] 0
 
 end Testable
 
@@ -444,19 +458,19 @@ open TestResult
 
 /-- Execute `cmd` and repeat every time the result is `gave_up` (at most `n` times). -/
 def retry (cmd : Rand (TestResult p)) : Nat → Rand (TestResult p)
-  | 0 => pure $ TestResult.gaveUp 1
+  | 0 => pure <| TestResult.gaveUp 1
   | n+1 => do
     let r ← cmd
     match r with
-    | success hp => pure $ success hp
-    | TestResult.failure h xs n => pure $ failure h xs n
+    | success hp => pure <| success hp
+    | TestResult.failure h xs n => pure <| failure h xs n
     | gaveUp _ => retry cmd n
 
 /-- Count the number of times the test procedure gave up. -/
 def giveUp (x : Nat) : TestResult p → TestResult p
   | success (PSum.inl ()) => gaveUp x
-  | success (PSum.inr p) => success $ (PSum.inr p)
-  | gaveUp n => gaveUp $ n + x
+  | success (PSum.inr p) => success <| (PSum.inr p)
+  | gaveUp n => gaveUp <| n + x
   | TestResult.failure h xs n => failure h xs n
 
 /-- Try `n` times to find a counter-example for `p`. -/
@@ -472,14 +486,15 @@ def Testable.runSuiteAux (p : Prop) [Testable p] (cfg : Configuration) :
   match x with
   | (success (PSum.inl ())) => runSuiteAux p cfg r n
   | (gaveUp g) => runSuiteAux p cfg (giveUp g r) n
-  | _ => pure $ x
+  | _ => pure <| x
 
 /-- Try to find a counter-example of `p`. -/
 def Testable.runSuite (p : Prop) [Testable p] (cfg : Configuration := {}) : Rand (TestResult p) :=
-  Testable.runSuiteAux p cfg (success $ PSum.inl ()) cfg.numInst
+  Testable.runSuiteAux p cfg (success <| PSum.inl ()) cfg.numInst
 
 /-- Run a test suite for `p` in `BaseIO` using the global RNG in `stdGenRef`. -/
 def Testable.checkIO (p : Prop) [Testable p] (cfg : Configuration := {}) : BaseIO (TestResult p) :=
+  letI : MonadLift Id BaseIO := ⟨fun f => pure <| Id.run f⟩
   match cfg.randomSeed with
   | none => IO.runRand (Testable.runSuite p cfg)
   | some seed => IO.runRandWith seed (Testable.runSuite p cfg)
@@ -492,16 +507,18 @@ open Lean
 
 /-- Traverse the syntax of a proposition to find universal quantifiers
 quantifiers and add `NamedBinder` annotations next to them. -/
-partial def addDecorations (e : Expr) : Expr :=
-  e.replace $ λ expr =>
-    match expr with
-    | Expr.forallE name type body data =>
+partial def addDecorations (e : Expr) : MetaM Expr :=
+  Meta.transform e fun expr => do
+    if not (← Meta.inferType e).isProp then
+      return .continue
+    else if let Expr.forallE name type body data := expr then
       let n := name.toString
-      let newType := addDecorations type
-      let newBody := addDecorations body
+      let newType ← addDecorations type
+      let newBody ← addDecorations body
       let rest := Expr.forallE name newType newBody data
-      some $ mkApp2 (mkConst `SlimCheck.NamedBinder) (mkStrLit n) rest
-    | _ => none
+      return .done <| (← Meta.mkAppM `SlimCheck.NamedBinder #[mkStrLit n, rest])
+    else
+      return .continue
 
 /-- `DecorationsOf p` is used as a hint to `mk_decorations` to specify
 that the goal should be satisfied with a proposition equivalent to `p`
@@ -526,7 +543,7 @@ scoped elab "mk_decorations" : tactic => do
   let goal ← getMainGoal
   let goalType ← goal.getType
   if let .app (.const ``Decorations.DecorationsOf _) body := goalType then
-    closeMainGoal (addDecorations body)
+    closeMainGoal (← addDecorations body)
 
 end Decorations
 
@@ -537,7 +554,7 @@ def Testable.check (p : Prop) (cfg : Configuration := {})
   match ← Testable.checkIO p' cfg with
   | TestResult.success _ => if !cfg.quiet then IO.println "Success"
   | TestResult.gaveUp n => if !cfg.quiet then IO.println s!"Gave up {n} times"
-  | TestResult.failure _ xs n => throw (IO.userError $ formatFailure "Found problems!" xs n)
+  | TestResult.failure _ xs n => throw (IO.userError <| formatFailure "Found problems!" xs n)
 
 -- #eval Testable.check (∀ (x y z a : Nat) (h1 : 3 < x) (h2 : 3 < y), x - y = y - x)
 --   Configuration.verbose

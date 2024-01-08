@@ -276,7 +276,7 @@ instance (priority := 100) isStrictTotalOrder_of_isStrictTotalOrder [IsStrictTot
   /-- The relation is `WellFounded`, as a proposition. -/
   wf : WellFounded r
 #align is_well_founded IsWellFounded
-#align is_well_founded_iff IsWellFounded_iff
+#align is_well_founded_iff isWellFounded_iff
 
 #align has_well_founded WellFoundedRelation
 set_option linter.uppercaseLean3 false in
@@ -793,6 +793,12 @@ theorem ssubset_or_eq_of_subset [IsAntisymm α (· ⊆ ·)] (h : a ⊆ b) : a �
   (eq_or_ssubset_of_subset h).symm
 #align ssubset_or_eq_of_subset ssubset_or_eq_of_subset
 
+lemma eq_of_subset_of_not_ssubset [IsAntisymm α (· ⊆ ·)] (hab : a ⊆ b) (hba : ¬ a ⊂ b) : a = b :=
+  (eq_or_ssubset_of_subset hab).resolve_right hba
+
+lemma eq_of_superset_of_not_ssuperset [IsAntisymm α (· ⊆ ·)] (hab : a ⊆ b) (hba : ¬ a ⊂ b) :
+    b = a := ((eq_or_ssubset_of_subset hab).resolve_right hba).symm
+
 alias HasSubset.Subset.trans_ssubset := ssubset_of_subset_of_ssubset
 #align has_subset.subset.trans_ssubset HasSubset.Subset.trans_ssubset
 
@@ -810,6 +816,9 @@ alias HasSubset.Subset.eq_or_ssubset := eq_or_ssubset_of_subset
 
 alias HasSubset.Subset.ssubset_or_eq := ssubset_or_eq_of_subset
 #align has_subset.subset.ssubset_or_eq HasSubset.Subset.ssubset_or_eq
+
+alias HasSubset.Subset.eq_of_not_ssubset := eq_of_subset_of_not_ssubset
+alias HasSubset.Subset.eq_of_not_ssuperset := eq_of_superset_of_not_ssuperset
 
 theorem ssubset_iff_subset_ne [IsAntisymm α (· ⊆ ·)] : a ⊂ b ↔ a ⊆ b ∧ a ≠ b :=
   ⟨fun h => ⟨h.subset, h.ne⟩, fun h => h.1.ssubset_of_ne h.2⟩

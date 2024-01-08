@@ -429,18 +429,38 @@ class CompatibleSMul (R S : Type*) [Semiring S] [SMul R M] [Module S M] [SMul R 
 
 variable {M M₂}
 
-instance (priority := 100) IsScalarTower.compatibleSMul {R S : Type*} [Semiring S] [SMul R S]
-    [SMul R M] [Module S M] [IsScalarTower R S M] [SMul R M₂] [Module S M₂] [IsScalarTower R S M₂] :
+section
+
+variable {R S : Type*} [Semiring S] [SMul R M] [Module S M] [SMul R M₂] [Module S M₂]
+
+instance (priority := 100) IsScalarTower.compatibleSMul [SMul R S]
+    [IsScalarTower R S M] [IsScalarTower R S M₂] :
     CompatibleSMul M M₂ R S :=
   ⟨fun fₗ c x ↦ by rw [← smul_one_smul S c x, ← smul_one_smul S c (fₗ x), map_smul]⟩
 #align linear_map.is_scalar_tower.compatible_smul LinearMap.IsScalarTower.compatibleSMul
 
+instance IsScalarTower.compatibleSMul' [SMul R S] [IsScalarTower R S M] :
+    CompatibleSMul S M R S where
+  __ := IsScalarTower.smulHomClass R S M (S →ₗ[S] M)
+
 @[simp]
-theorem map_smul_of_tower {R S : Type*} [Semiring S] [SMul R M] [Module S M] [SMul R M₂]
-    [Module S M₂] [CompatibleSMul M M₂ R S] (fₗ : M →ₗ[S] M₂) (c : R) (x : M) :
+theorem map_smul_of_tower [CompatibleSMul M M₂ R S] (fₗ : M →ₗ[S] M₂) (c : R) (x : M) :
     fₗ (c • x) = c • fₗ x :=
   CompatibleSMul.map_smul fₗ c x
 #align linear_map.map_smul_of_tower LinearMap.map_smul_of_tower
+
+variable (R R) in
+theorem isScalarTower_of_injective [SMul R S] [CompatibleSMul M M₂ R S] [IsScalarTower R S M₂]
+    (f : M →ₗ[S] M₂) (hf : Function.Injective f) : IsScalarTower R S M where
+  smul_assoc r s _ := hf <| by rw [f.map_smul_of_tower r, map_smul, map_smul, smul_assoc]
+
+end
+
+variable (R) in
+theorem isLinearMap_of_compatibleSMul [Module S M] [Module S M₂] [CompatibleSMul M M₂ R S]
+    (f : M →ₗ[S] M₂) : IsLinearMap R f where
+  map_add := map_add f
+  map_smul := map_smul_of_tower f
 
 /-- convert a linear map to an additive map -/
 def toAddMonoidHom : M →+ M₃ where
@@ -550,12 +570,11 @@ def comp : M₁ →ₛₗ[σ₁₃] M₃ where
   map_smul' r x := by simp only [Function.comp_apply, map_smulₛₗ, RingHomCompTriple.comp_apply]
 #align linear_map.comp LinearMap.comp
 
-set_option quotPrecheck false in -- Porting note: error message suggested to do this
 /-- `∘ₗ` is notation for composition of two linear (not semilinear!) maps into a linear map.
 This is useful when Lean is struggling to infer the `RingHomCompTriple` instance. -/
-infixr:80 " ∘ₗ " =>
+notation3:80 (name := compNotation) f:81 " ∘ₗ " g:80 =>
   @LinearMap.comp _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ (RingHom.id _) (RingHom.id _) (RingHom.id _)
-    RingHomCompTriple.ids
+    RingHomCompTriple.ids f g
 
 theorem comp_apply (x : M₁) : f.comp g x = f (g x) :=
   rfl
@@ -646,10 +665,10 @@ protected theorem map_sub (x y : M) : f (x - y) = f x - f y :=
 instance CompatibleSMul.intModule {S : Type*} [Semiring S] [Module S M] [Module S M₂] :
     CompatibleSMul M M₂ ℤ S :=
   ⟨fun fₗ c x ↦ by
-    induction c using Int.induction_on
-    case hz => simp
-    case hp n ih => simp [add_smul, ih]
-    case hn n ih => simp [sub_smul, ih]⟩
+    induction c using Int.induction_on with
+    | hz => simp
+    | hp n ih => simp [add_smul, ih]
+    | hn n ih => simp [sub_smul, ih]⟩
 #align linear_map.compatible_smul.int_module LinearMap.CompatibleSMul.intModule
 
 instance CompatibleSMul.units {R S : Type*} [Monoid R] [MulAction R M] [MulAction R M₂]
@@ -1375,6 +1394,22 @@ theorem coe_smulRight (f : M₁ →ₗ[R] S) (x : M) : (smulRight f x : M₁ →
 theorem smulRight_apply (f : M₁ →ₗ[R] S) (x : M) (c : M₁) : smulRight f x c = f c • x :=
   rfl
 #align linear_map.smul_right_apply LinearMap.smulRight_apply
+
+@[simp]
+lemma smulRight_zero (f : M₁ →ₗ[R] S) : f.smulRight (0 : M) = 0 := by ext; simp
+
+@[simp]
+lemma zero_smulRight (x : M) : (0 : M₁ →ₗ[R] S).smulRight x = 0 := by ext; simp
+
+@[simp]
+lemma smulRight_apply_eq_zero_iff {f : M₁ →ₗ[R] S} {x : M} [NoZeroSMulDivisors S M] :
+    f.smulRight x = 0 ↔ f = 0 ∨ x = 0 := by
+  rcases eq_or_ne x 0 with rfl | hx; simp
+  refine ⟨fun h ↦ Or.inl ?_, fun h ↦ by simp [h.resolve_right hx]⟩
+  ext v
+  replace h : f v • x = 0 := by simpa only [LinearMap.zero_apply] using LinearMap.congr_fun h v
+  rw [smul_eq_zero] at h
+  tauto
 
 end SMulRight
 

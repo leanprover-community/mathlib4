@@ -81,7 +81,7 @@ theorem eigenvectorMatrix_apply (i j : n) : hA.eigenvectorMatrix i j = hA.eigenv
 /-- The columns of `Matrix.IsHermitian.eigenVectorMatrix` form the basis-/
 theorem transpose_eigenvectorMatrix_apply (i : n) :
     hA.eigenvectorMatrixᵀ i = hA.eigenvectorBasis i :=
-  funext <| fun j => eigenvectorMatrix_apply hA j i
+  funext fun j => eigenvectorMatrix_apply hA j i
 
 theorem eigenvectorMatrixInv_apply (i j : n) :
     hA.eigenvectorMatrixInv i j = star (hA.eigenvectorBasis i j) := by
@@ -142,7 +142,7 @@ theorem det_eq_prod_eigenvalues : det A = ∏ i, (hA.eigenvalues i : 𝕜) := by
 
 /-- *spectral theorem* (Alternate form for convenience) A hermitian matrix can be can be
 replaced by a diagonal matrix sandwiched between the eigenvector matrices. This alternate form
-allows direct rewriting of A since: $ A = V D V⁻¹$ -/
+allows direct rewriting of A since: <| A = V D V⁻¹$ -/
 lemma spectral_theorem' :
     A = hA.eigenvectorMatrix * diagonal ((↑) ∘ hA.eigenvalues) * hA.eigenvectorMatrixInv := by
   simpa [ ← Matrix.mul_assoc, hA.eigenvectorMatrix_mul_inv, Matrix.one_mul] using
@@ -160,6 +160,28 @@ lemma rank_eq_rank_diagonal : A.rank = (Matrix.diagonal hA.eigenvalues).rank := 
 /-- rank of a hermitian matrix is the number of nonzero eigenvalues of the hermitian matrix -/
 lemma rank_eq_card_non_zero_eigs : A.rank = Fintype.card {i // hA.eigenvalues i ≠ 0} := by
   rw [rank_eq_rank_diagonal hA, Matrix.rank_diagonal]
+
+/-- The entries of `eigenvectorBasis` are eigenvectors. -/
+lemma mulVec_eigenvectorBasis (i : n) :
+    mulVec A (hA.eigenvectorBasis i) = hA.eigenvalues i • hA.eigenvectorBasis i := by
+  have := congr_arg (· * hA.eigenvectorMatrix) hA.spectral_theorem'
+  simp only [mul_assoc, mul_eq_one_comm.mp hA.eigenvectorMatrix_mul_inv, mul_one] at this
+  ext1 j
+  have := congr_fun (congr_fun this j) i
+  simp only [mul_diagonal, Function.comp_apply] at this
+  convert this using 1
+  rw [mul_comm, Pi.smul_apply, IsROrC.real_smul_eq_coe_mul, hA.eigenvectorMatrix_apply]
+
+/-- A nonzero Hermitian matrix has an eigenvector with nonzero eigenvalue. -/
+lemma exists_eigenvector_of_ne_zero (h_ne : A ≠ 0) :
+    ∃ (v : n → 𝕜) (t : ℝ), t ≠ 0 ∧ v ≠ 0 ∧ mulVec A v = t • v := by
+  have : hA.eigenvalues ≠ 0
+  · contrapose! h_ne
+    have := hA.spectral_theorem'
+    rwa [h_ne, Pi.comp_zero, IsROrC.ofReal_zero, (by rfl : Function.const n (0 : 𝕜) = fun _ ↦ 0),
+      diagonal_zero, mul_zero, zero_mul] at this
+  obtain ⟨i, hi⟩ := Function.ne_iff.mp this
+  exact ⟨_, _, hi, hA.eigenvectorBasis.orthonormal.ne_zero i, hA.mulVec_eigenvectorBasis i⟩
 
 end IsHermitian
 

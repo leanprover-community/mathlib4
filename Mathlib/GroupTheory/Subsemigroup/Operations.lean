@@ -113,7 +113,7 @@ theorem AddSubsemigroup.toSubsemigroup'_closure (S : Set (Additive M)) :
   le_antisymm
     (AddSubsemigroup.toSubsemigroup'.le_symm_apply.1 <|
       AddSubsemigroup.closure_le.2 (Subsemigroup.subset_closure (M := M)))
-    (Subsemigroup.closure_le.2 $ AddSubsemigroup.subset_closure (M := Additive M))
+    (Subsemigroup.closure_le.2 <| AddSubsemigroup.subset_closure (M := Additive M))
 #align add_subsemigroup.to_subsemigroup'_closure AddSubsemigroup.toSubsemigroup'_closure
 
 end
@@ -150,8 +150,8 @@ theorem AddSubsemigroup.toSubsemigroup_closure (S : Set A) :
       Subsemigroup.closure (Multiplicative.toAdd ⁻¹' S) :=
   le_antisymm
     (AddSubsemigroup.toSubsemigroup.to_galoisConnection.l_le <|
-      AddSubsemigroup.closure_le.2 $ Subsemigroup.subset_closure (M := Multiplicative A))
-    (Subsemigroup.closure_le.2 $ AddSubsemigroup.subset_closure (M := A))
+      AddSubsemigroup.closure_le.2 <| Subsemigroup.subset_closure (M := Multiplicative A))
+    (Subsemigroup.closure_le.2 <| AddSubsemigroup.subset_closure (M := A))
 #align add_subsemigroup.to_subsemigroup_closure AddSubsemigroup.toSubsemigroup_closure
 
 theorem Subsemigroup.toAddSubsemigroup'_closure (S : Set (Multiplicative A)) :
@@ -159,8 +159,8 @@ theorem Subsemigroup.toAddSubsemigroup'_closure (S : Set (Multiplicative A)) :
     AddSubsemigroup.closure (Additive.ofMul ⁻¹' S) :=
   le_antisymm
     (Subsemigroup.toAddSubsemigroup'.to_galoisConnection.l_le <|
-      Subsemigroup.closure_le.2 $ AddSubsemigroup.subset_closure (M := A))
-    (AddSubsemigroup.closure_le.2 $ Subsemigroup.subset_closure (M := Multiplicative A))
+      Subsemigroup.closure_le.2 <| AddSubsemigroup.subset_closure (M := A))
+    (AddSubsemigroup.closure_le.2 <| Subsemigroup.subset_closure (M := Multiplicative A))
 #align subsemigroup.to_add_subsemigroup'_closure Subsemigroup.toAddSubsemigroup'_closure
 
 end

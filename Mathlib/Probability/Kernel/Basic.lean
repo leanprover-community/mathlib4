@@ -215,7 +215,7 @@ lemma IsFiniteKernel.integrable (μ : Measure α) [IsFiniteMeasure μ]
     Integrable (fun x => (κ x s).toReal) μ := by
   refine' Integrable.mono' (integrable_const (IsFiniteKernel.bound κ).toReal)
     ((kernel.measurable_coe κ hs).ennreal_toReal.aestronglyMeasurable)
-    (ae_of_all μ <| fun x => _)
+    (ae_of_all μ fun x => _)
   rw [Real.norm_eq_abs, abs_of_nonneg ENNReal.toReal_nonneg,
     ENNReal.toReal_le_toReal (measure_ne_top _ _) (IsFiniteKernel.bound_ne_top _)]
   exact kernel.measure_le_bound _ _ _
@@ -454,10 +454,20 @@ theorem const_apply (μβ : Measure β) (a : α) : const α μβ a = μβ :=
 lemma const_zero : kernel.const α (0 : Measure β) = 0 := by
   ext x s _; simp [kernel.const_apply]
 
+lemma sum_const [Countable ι] (μ : ι → Measure β) :
+    kernel.sum (fun n ↦ const α (μ n)) = const α (Measure.sum μ) := by
+  ext x s hs
+  rw [const_apply, Measure.sum_apply _ hs, kernel.sum_apply' _ _ hs]
+  simp only [const_apply]
+
 instance isFiniteKernel_const {μβ : Measure β} [IsFiniteMeasure μβ] :
     IsFiniteKernel (const α μβ) :=
   ⟨⟨μβ Set.univ, measure_lt_top _ _, fun _ => le_rfl⟩⟩
 #align probability_theory.kernel.is_finite_kernel_const ProbabilityTheory.kernel.isFiniteKernel_const
+
+instance isSFiniteKernel_const {μβ : Measure β} [SFinite μβ] :
+    IsSFiniteKernel (const α μβ) :=
+  ⟨fun n ↦ const α (sFiniteSeq μβ n), fun n ↦ inferInstance, by rw [sum_const, sum_sFiniteSeq]⟩
 
 instance isMarkovKernel_const {μβ : Measure β} [hμβ : IsProbabilityMeasure μβ] :
     IsMarkovKernel (const α μβ) :=

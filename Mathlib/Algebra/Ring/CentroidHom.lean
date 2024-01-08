@@ -3,10 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Christopher Hoskin
 -/
-import Mathlib.Algebra.Group.Hom.Instances
-import Mathlib.Algebra.GroupPower.Lemmas
+import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Algebra.Module.Hom
+import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
+import Mathlib.RingTheory.Subsemiring.Basic
 
 #align_import algebra.hom.centroid from "leanprover-community/mathlib"@"6cb77a8eaff0ddd100e87b1591c6d3ad319514ff"
 
@@ -278,18 +279,18 @@ instance instSMul : SMul M (CentroidHom α) where
 #noalign centroid_hom.has_nsmul
 
 instance [SMul M N] [IsScalarTower M N α] : IsScalarTower M N (CentroidHom α) where
-  smul_assoc _ _ _ := ext <| fun _ => smul_assoc _ _ _
+  smul_assoc _ _ _ := ext fun _ => smul_assoc _ _ _
 
 instance [SMulCommClass M N α] : SMulCommClass M N (CentroidHom α) where
-  smul_comm _ _ _ := ext <| fun _ => smul_comm _ _ _
+  smul_comm _ _ _ := ext fun _ => smul_comm _ _ _
 
 instance [DistribMulAction Mᵐᵒᵖ α] [IsCentralScalar M α] : IsCentralScalar M (CentroidHom α) where
-  op_smul_eq_smul _ _ := ext <| fun _ => op_smul_eq_smul _ _
+  op_smul_eq_smul _ _ := ext fun _ => op_smul_eq_smul _ _
 
 instance isScalarTowerRight : IsScalarTower M (CentroidHom α) (CentroidHom α) where
   smul_assoc _ _ _ := rfl
 
-instance hasNpowNat : Pow (CentroidHom α) ℕ :=
+instance hasNPowNat : Pow (CentroidHom α) ℕ :=
   ⟨fun f n ↦
     { (f.toEnd ^ n : AddMonoid.End α) with
       map_mul_left' := fun a b ↦ by
@@ -304,7 +305,7 @@ instance hasNpowNat : Pow (CentroidHom α) ℕ :=
         · simp
           rw [pow_succ]
           exact (congr_arg f.toEnd ih).trans (f.map_mul_right' _ _) }⟩
-#align centroid_hom.has_npow_nat CentroidHom.hasNpowNat
+#align centroid_hom.has_npow_nat CentroidHom.hasNPowNat
 
 @[simp, norm_cast]
 theorem coe_zero : ⇑(0 : CentroidHom α) = 0 :=
@@ -433,8 +434,69 @@ instance : DistribMulAction M (CentroidHom α) :=
 instance : Module R (CentroidHom α) :=
   toEnd_injective.module R (toEndRingHom α).toAddMonoidHom toEnd_smul
 
+/-!
+The following instances show that `α` is a non-unital and non-associative algebra over
+`CentroidHom α`.
+-/
+
+/-- The tautological action by `CentroidHom α` on `α`.
+
+This generalizes `Function.End.applyMulAction`. -/
+instance applyModule : Module (CentroidHom α) α where
+  smul T a := T a
+  add_smul _ _ _ := rfl
+  zero_smul _ := rfl
+  one_smul _ := rfl
+  mul_smul _ _ _:= rfl
+  smul_zero := map_zero
+  smul_add := map_add
+
+@[simp]
+lemma smul_def (T : CentroidHom α) (a : α) : T • a = T a := rfl
+
+instance : SMulCommClass (CentroidHom α) α α where
+  smul_comm _ _ _ := map_mul_left _ _ _
+
+instance : SMulCommClass α (CentroidHom α) α := SMulCommClass.symm _ _ _
+
+instance : IsScalarTower (CentroidHom α) α α where
+  smul_assoc _ _ _ := (map_mul_right _ _ _).symm
+
+/-!
+Let `α` be an algebra over `R`, such that the canonical ring homomorphism of `R` into
+`CentroidHom α` lies in the center of `CentroidHom α`. Then `CentroidHom α` is an algebra over `R`
+-/
+
+variable {R : Type*}
+
+variable [CommSemiring R]
+variable [Module R α] [SMulCommClass R α α] [IsScalarTower R α α]
+
+/-- The natural ring homomorphism from `R` into `CentroidHom α`.
+
+This is a stronger version of `Module.toAddMonoidEnd`. -/
+@[simps! apply_toFun]
+def _root_.Module.toCentroidHom : R →+* CentroidHom α := RingHom.smulOneHom
+
+open Module in
+/-- `CentroidHom α` as an algebra over `R`. -/
+example (h : ∀ (r : R) (T : CentroidHom α), toCentroidHom r * T = T * toCentroidHom r) :
+    Algebra R (CentroidHom α) := toCentroidHom.toAlgebra' h
+
 local notation "L" => AddMonoid.End.mulLeft
 local notation "R" => AddMonoid.End.mulRight
+
+lemma centroid_eq_centralizer_mulLeftRight :
+    RingHom.rangeS (toEndRingHom α) = Subsemiring.centralizer (Set.range L ∪ Set.range R) := by
+  ext T
+  refine ⟨?_, fun h ↦ ?_⟩
+  · rintro ⟨f, rfl⟩ S (⟨a, rfl⟩ | ⟨b, rfl⟩)
+    · exact AddMonoidHom.ext fun b ↦ (map_mul_left f a b).symm
+    · exact AddMonoidHom.ext fun a ↦ (map_mul_right f a b).symm
+  · rw [Subsemiring.mem_centralizer_iff] at h
+    refine ⟨⟨T, fun a b ↦ ?_, fun a b ↦ ?_⟩, rfl⟩
+    · exact congr($(h (L a) (.inl ⟨a, rfl⟩)) b).symm
+    · exact congr($(h (R b) (.inr ⟨b, rfl⟩)) a).symm
 
 /-- The canonical homomorphism from the center into the centroid -/
 def centerToCentroid : NonUnitalSubsemiring.center α →ₙ+* CentroidHom α where

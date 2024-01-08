@@ -31,8 +31,9 @@ lemma ConvexOn.smul' (hf : ConvexOn 𝕜 s f) (hg : ConvexOn 𝕜 s g) (hf₀ : 
     (hg₀ : ∀ ⦃x⦄, x ∈ s → 0 ≤ g x) (hfg : MonovaryOn f g s) : ConvexOn 𝕜 s (f • g) := by
   refine ⟨hf.1, fun x hx y hy a b ha hb hab ↦ ?_⟩
   dsimp
-  refine (smul_le_smul (hf.2 hx hy ha hb hab) (hg.2 hx hy ha hb hab) (hg₀ $ hf.1 hx hy ha hb hab) $
-    add_nonneg (smul_nonneg ha $ hf₀ hx) $ smul_nonneg hb $ hf₀ hy).trans ?_
+  refine
+    (smul_le_smul (hf.2 hx hy ha hb hab) (hg.2 hx hy ha hb hab) (hf₀ <| hf.1 hx hy ha hb hab) <|
+      add_nonneg (smul_nonneg ha <| hg₀ hx) <| smul_nonneg hb <| hg₀ hy).trans ?_
   calc
       _ = (a * a) • (f x • g x) + (b * b) • (f y • g y) + (a * b) • (f x • g y + f y • g x) := ?_
     _ ≤ (a * a) • (f x • g x) + (b * b) • (f y • g y) + (a * b) • (f x • g x + f y • g y) := by
@@ -49,8 +50,9 @@ lemma ConcaveOn.smul' (hf : ConcaveOn 𝕜 s f) (hg : ConcaveOn 𝕜 s g) (hf₀
     (hg₀ : ∀ ⦃x⦄, x ∈ s → 0 ≤ g x) (hfg : AntivaryOn f g s) : ConcaveOn 𝕜 s (f • g) := by
   refine ⟨hf.1, fun x hx y hy a b ha hb hab ↦ ?_⟩
   dsimp
-  refine (smul_le_smul (hf.2 hx hy ha hb hab) (hg.2 hx hy ha hb hab) (add_nonneg
-    (smul_nonneg ha $ hg₀ hx) $ smul_nonneg hb $ hg₀ hy) $ hf₀ $ hf.1 hx hy ha hb hab).trans' ?_
+  refine (smul_le_smul (hf.2 hx hy ha hb hab) (hg.2 hx hy ha hb hab)
+    (add_nonneg (smul_nonneg ha <| hf₀ hx) <| smul_nonneg hb <| hf₀ hy)
+    (hg₀ <| hf.1 hx hy ha hb hab)).trans' ?_
   calc a • f x • g x + b • f y • g y
         = (a * (a + b)) • (f x • g x) + (b * (a + b)) • (f y • g y) := by simp_rw [hab, mul_one]
     _ = (a * a) • (f x • g x) + (b * b) • (f y • g y) + (a * b) • (f x • g x + f y • g y) := by
@@ -91,13 +93,13 @@ lemma ConvexOn.smul_concaveOn' (hf : ConvexOn 𝕜 s f) (hg : ConcaveOn 𝕜 s g
     (hf₀ : ∀ ⦃x⦄, x ∈ s → f x ≤ 0) (hg₀ : ∀ ⦃x⦄, x ∈ s → 0 ≤ g x) (hfg : MonovaryOn f g s) :
     ConvexOn 𝕜 s (f • g) := by
   rw [← neg_concaveOn_iff, ← smul_neg]
-  exact hf.smul'' hg.neg hf₀ (fun x hx ↦ neg_nonpos.2 $ hg₀ hx) hfg.neg_right
+  exact hf.smul'' hg.neg hf₀ (fun x hx ↦ neg_nonpos.2 <| hg₀ hx) hfg.neg_right
 
 lemma ConcaveOn.smul_convexOn' (hf : ConcaveOn 𝕜 s f) (hg : ConvexOn 𝕜 s g)
     (hf₀ : ∀ ⦃x⦄, x ∈ s → f x ≤ 0) (hg₀ : ∀ ⦃x⦄, x ∈ s → 0 ≤ g x) (hfg : AntivaryOn f g s) :
     ConcaveOn 𝕜 s (f • g) := by
   rw [← neg_convexOn_iff, ← smul_neg]
-  exact hf.smul'' hg.neg hf₀ (fun x hx ↦ neg_nonpos.2 $ hg₀ hx) hfg.neg_right
+  exact hf.smul'' hg.neg hf₀ (fun x hx ↦ neg_nonpos.2 <| hg₀ hx) hfg.neg_right
 
 variable [IsScalarTower 𝕜 E E] [SMulCommClass 𝕜 E E] {f g : 𝕜 → E}
 

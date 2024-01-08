@@ -348,7 +348,7 @@ theorem restrict_eq_self_of_ae_mem {_m0 : MeasurableSpace α} ⦃s : Set α⦄ �
 #align measure_theory.measure.restrict_eq_self_of_ae_mem MeasureTheory.Measure.restrict_eq_self_of_ae_mem
 
 theorem restrict_congr_meas (hs : MeasurableSet s) :
-    μ.restrict s = ν.restrict s ↔ ∀ (t) (_ : t ⊆ s), MeasurableSet t → μ t = ν t :=
+    μ.restrict s = ν.restrict s ↔ ∀ t ⊆ s, MeasurableSet t → μ t = ν t :=
   ⟨fun H t hts ht => by
     rw [← inter_eq_self_of_subset_left hts, ← restrict_apply ht, H, restrict_apply ht], fun H =>
     ext fun t ht => by
@@ -494,7 +494,7 @@ theorem ext_of_generateFrom_of_cover_subset {S T : Set (Set α)} (h_gen : ‹_�
     (h_inter : IsPiSystem S) (h_sub : T ⊆ S) (hc : T.Countable) (hU : ⋃₀ T = univ)
     (htop : ∀ s ∈ T, μ s ≠ ∞) (h_eq : ∀ s ∈ S, μ s = ν s) : μ = ν := by
   refine' ext_of_generateFrom_of_cover h_gen hc h_inter hU htop _ fun t ht => h_eq t (h_sub ht)
-  intro t ht s hs; cases' (s ∩ t).eq_empty_or_nonempty with H H
+  intro t ht s hs; rcases (s ∩ t).eq_empty_or_nonempty with H | H
   · simp only [H, measure_empty]
   · exact h_eq _ (h_inter _ hs _ (h_sub ht) H)
 #align measure_theory.measure.ext_of_generate_from_of_cover_subset MeasureTheory.Measure.ext_of_generateFrom_of_cover_subset
@@ -619,10 +619,14 @@ theorem ae_restrict_uIoc_iff [LinearOrder α] {a b : α} {P : α → Prop} :
   by rw [ae_restrict_uIoc_eq, eventually_sup]
 #align measure_theory.ae_restrict_uIoc_iff MeasureTheory.ae_restrict_uIoc_iff
 
-theorem ae_restrict_iff {p : α → Prop} (hp : MeasurableSet { x | p x }) :
+theorem ae_restrict_iff₀ {p : α → Prop} (hp : NullMeasurableSet { x | p x } (μ.restrict s)) :
     (∀ᵐ x ∂μ.restrict s, p x) ↔ ∀ᵐ x ∂μ, x ∈ s → p x := by
-  simp only [ae_iff, ← compl_setOf, Measure.restrict_apply hp.compl]
+  simp only [ae_iff, ← compl_setOf, Measure.restrict_apply₀ hp.compl]
   rw [iff_iff_eq]; congr with x; simp [and_comm]
+
+theorem ae_restrict_iff {p : α → Prop} (hp : MeasurableSet { x | p x }) :
+    (∀ᵐ x ∂μ.restrict s, p x) ↔ ∀ᵐ x ∂μ, x ∈ s → p x :=
+  ae_restrict_iff₀ hp.nullMeasurableSet
 #align measure_theory.ae_restrict_iff MeasureTheory.ae_restrict_iff
 
 theorem ae_imp_of_ae_restrict {s : Set α} {p : α → Prop} (h : ∀ᵐ x ∂μ.restrict s, p x) :
@@ -631,10 +635,15 @@ theorem ae_imp_of_ae_restrict {s : Set α} {p : α → Prop} (h : ∀ᵐ x ∂μ
   simpa [setOf_and, inter_comm] using measure_inter_eq_zero_of_restrict h
 #align measure_theory.ae_imp_of_ae_restrict MeasureTheory.ae_imp_of_ae_restrict
 
-theorem ae_restrict_iff' {p : α → Prop} (hs : MeasurableSet s) :
+theorem ae_restrict_iff'₀ {p : α → Prop} (hs : NullMeasurableSet s μ) :
     (∀ᵐ x ∂μ.restrict s, p x) ↔ ∀ᵐ x ∂μ, x ∈ s → p x := by
-  simp only [ae_iff, ← compl_setOf, restrict_apply_eq_zero' hs]
+  simp only [ae_iff, ← compl_setOf, restrict_apply₀' hs]
   rw [iff_iff_eq]; congr with x; simp [and_comm]
+#align measure_theory.ae_restrict_iff'₀ MeasureTheory.ae_restrict_iff'₀
+
+theorem ae_restrict_iff' {p : α → Prop} (hs : MeasurableSet s) :
+    (∀ᵐ x ∂μ.restrict s, p x) ↔ ∀ᵐ x ∂μ, x ∈ s → p x :=
+  ae_restrict_iff'₀ hs.nullMeasurableSet
 #align measure_theory.ae_restrict_iff' MeasureTheory.ae_restrict_iff'
 
 theorem _root_.Filter.EventuallyEq.restrict {f g : α → δ} {s : Set α} (hfg : f =ᵐ[μ] g) :
@@ -645,25 +654,17 @@ theorem _root_.Filter.EventuallyEq.restrict {f g : α → δ} {s : Set α} (hfg 
   exact Measure.absolutelyContinuous_of_le Measure.restrict_le_self
 #align filter.eventually_eq.restrict Filter.EventuallyEq.restrict
 
-theorem ae_restrict_mem (hs : MeasurableSet s) : ∀ᵐ x ∂μ.restrict s, x ∈ s :=
-  (ae_restrict_iff' hs).2 (Filter.eventually_of_forall fun _ => id)
-#align measure_theory.ae_restrict_mem MeasureTheory.ae_restrict_mem
-
-theorem ae_restrict_mem₀ (hs : NullMeasurableSet s μ) : ∀ᵐ x ∂μ.restrict s, x ∈ s := by
-  rcases hs.exists_measurable_subset_ae_eq with ⟨t, hts, htm, ht_eq⟩
-  rw [← restrict_congr_set ht_eq]
-  exact (ae_restrict_mem htm).mono hts
+theorem ae_restrict_mem₀ (hs : NullMeasurableSet s μ) : ∀ᵐ x ∂μ.restrict s, x ∈ s :=
+  (ae_restrict_iff'₀ hs).2 (Filter.eventually_of_forall fun _ => id)
 #align measure_theory.ae_restrict_mem₀ MeasureTheory.ae_restrict_mem₀
 
-theorem ae_restrict_of_ae {s : Set α} {p : α → Prop} (h : ∀ᵐ x ∂μ, p x) : ∀ᵐ x ∂μ.restrict s, p x :=
-  Eventually.filter_mono (ae_mono Measure.restrict_le_self) h
-#align measure_theory.ae_restrict_of_ae MeasureTheory.ae_restrict_of_ae
+theorem ae_restrict_mem (hs : MeasurableSet s) : ∀ᵐ x ∂μ.restrict s, x ∈ s :=
+  ae_restrict_mem₀ hs.nullMeasurableSet
+#align measure_theory.ae_restrict_mem MeasureTheory.ae_restrict_mem
 
-theorem ae_restrict_iff'₀ {p : α → Prop} (hs : NullMeasurableSet s μ) :
-    (∀ᵐ x ∂μ.restrict s, p x) ↔ ∀ᵐ x ∂μ, x ∈ s → p x := by
-  refine' ⟨fun h => ae_imp_of_ae_restrict h, fun h => _⟩
-  filter_upwards [ae_restrict_mem₀ hs, ae_restrict_of_ae h] with x hx h'x using h'x hx
-#align measure_theory.ae_restrict_iff'₀ MeasureTheory.ae_restrict_iff'₀
+theorem ae_restrict_of_ae {s : Set α} {p : α → Prop} (h : ∀ᵐ x ∂μ, p x) : ∀ᵐ x ∂μ.restrict s, p x :=
+  h.filter_mono (ae_mono Measure.restrict_le_self)
+#align measure_theory.ae_restrict_of_ae MeasureTheory.ae_restrict_of_ae
 
 theorem ae_restrict_of_ae_restrict_of_subset {s t : Set α} {p : α → Prop} (hst : s ⊆ t)
     (h : ∀ᵐ x ∂μ.restrict t, p x) : ∀ᵐ x ∂μ.restrict s, p x :=
@@ -680,7 +681,6 @@ theorem ae_of_ae_restrict_of_ae_restrict_compl (t : Set α) {p : α → Prop}
       _ ≤ μ.restrict t { x | ¬p x } + μ.restrict tᶜ { x | ¬p x } :=
         (add_le_add (le_restrict_apply _ _) (le_restrict_apply _ _))
       _ = 0 := by rw [ae_iff.1 ht, ae_iff.1 htc, zero_add]
-
 #align measure_theory.ae_of_ae_restrict_of_ae_restrict_compl MeasureTheory.ae_of_ae_restrict_of_ae_restrict_compl
 
 theorem mem_map_restrict_ae_iff {β} {s : Set α} {t : Set β} {f : α → β} (hs : MeasurableSet s) :
@@ -780,9 +780,7 @@ lemma NullMeasurable.measure_preimage_eq_measure_restrict_preimage_of_ae_compl_e
     {t : Set β} (t_mble : MeasurableSet t) (ht : b ∉ t) :
     μ (f ⁻¹' t) = μ.restrict s (f ⁻¹' t) := by
   rw [Measure.restrict_apply₀ (f_mble t_mble)]
-  simp only [EventuallyEq, Filter.Eventually, Pi.zero_apply, Measure.ae,
-             MeasurableSet.compl_iff, Filter.mem_mk, mem_setOf_eq] at hs
-  rw [Measure.restrict_apply₀] at hs
+  rw [EventuallyEq, ae_iff, Measure.restrict_apply₀] at hs
   · apply le_antisymm _ (measure_mono (inter_subset_left _ _))
     apply (measure_mono (Eq.symm (inter_union_compl (f ⁻¹' t) s)).le).trans
     apply (measure_union_le _ _).trans
