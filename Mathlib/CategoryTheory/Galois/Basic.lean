@@ -45,14 +45,14 @@ section Def
 /-- Definition of a Galois category. Lenstra, Def 3.1, (G1)-(G3) -/
 class PreGaloisCategory (C : Type u₁) [Category.{u₂, u₁} C] : Prop where
   /-- `C` has a terminal object (G1). -/
-  hasTerminal : HasTerminal C
+  hasTerminal : HasTerminal C := by infer_instance
   /-- `C` has pullbacks (G1). -/
-  hasPullbacks : HasPullbacks C
+  hasPullbacks : HasPullbacks C := by infer_instance
   /-- `C` has finite coproducts (G2). -/
-  hasFiniteCoproducts : HasFiniteCoproducts C
+  hasFiniteCoproducts : HasFiniteCoproducts C := by infer_instance
   /-- `C` has quotients by finite groups (G2). -/
   hasQuotientsByFiniteGroups (G : Type u₂) [Group G] [Finite G] :
-    HasColimitsOfShape (SingleObj G) C
+    HasColimitsOfShape (SingleObj G) C := by infer_instance
   /-- Every monomorphism in `C` induces an isomorphism on a direct summand (G3). -/
   monoInducesIsoOnDirectSummand {X Y : C} (i : X ⟶ Y) [Mono i] : ∃ (Z : C) (u : Z ⟶ Y),
     Nonempty (IsColimit (BinaryCofan.mk i u))
@@ -61,18 +61,19 @@ class PreGaloisCategory (C : Type u₁) [Category.{u₂, u₁} C] : Prop where
 class FibreFunctor {C : Type u₁} [Category.{u₂, u₁} C] [PreGaloisCategory C]
     (F : C ⥤ FintypeCat.{w}) where
   /-- `F` preserves terminal objects (G4). -/
-  preservesTerminalObjects : PreservesLimitsOfShape (CategoryTheory.Discrete PEmpty.{1}) F
+  preservesTerminalObjects : PreservesLimitsOfShape (CategoryTheory.Discrete PEmpty.{1}) F :=
+    by infer_instance
   /-- `F` preserves pullbacks (G4). -/
-  preservesPullbacks : PreservesLimitsOfShape WalkingCospan F
+  preservesPullbacks : PreservesLimitsOfShape WalkingCospan F := by infer_instance
   /-- `F` preserves finite coproducts (G5). -/
-  preservesFiniteCoproducts : PreservesFiniteCoproducts F
+  preservesFiniteCoproducts : PreservesFiniteCoproducts F := by infer_instance
   /-- `F` preserves epimorphisms (G5). -/
-  preservesEpis : Functor.PreservesEpimorphisms F
+  preservesEpis : Functor.PreservesEpimorphisms F := by infer_instance
   /-- `F` preserves quotients by finite groups (G5). -/
   preservesQuotientsByFiniteGroups (G : Type u₂) [Group G] [Finite G] :
-    PreservesColimitsOfShape (SingleObj G) F
+    PreservesColimitsOfShape (SingleObj G) F := by infer_instance
   /-- `F` reflects isomorphisms (G6). -/
-  reflectsIsos : ReflectsIsomorphisms F
+  reflectsIsos : ReflectsIsomorphisms F := by infer_instance
 
 /-- An object of a category `C` is connected if it is not initial
 and has no non-trivial subobjects. Lenstra, 3.12. -/
