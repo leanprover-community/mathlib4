@@ -22,17 +22,10 @@
   {"url": "https://github.com/leanprover-community/aesop",
    "type": "git",
    "subDir": null,
-<<<<<<< HEAD
    "rev": "093a93f6a6a2e26dee6fa2ce286b838aed1245c2",
    "name": "aesop",
    "manifestFile": "lake-manifest.json",
    "inputRev": "lean-pr-testing-3124",
-=======
-   "rev": "48375eac3aa5e3be2869d718e1f5c38b83787243",
-   "name": "aesop",
-   "manifestFile": "lake-manifest.json",
-   "inputRev": "bump/v4.6.0",
->>>>>>> origin/bump/v4.6.0
    "inherited": false,
    "configFile": "lakefile.lean"},
   {"url": "https://github.com/leanprover-community/ProofWidgets4",
