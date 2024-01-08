@@ -569,8 +569,8 @@ termination_by pincerRecursion Ha0 Hab H n m => n + m
 /-- Decreasing induction: if `P (k+1)` implies `P k` for all `m ≤ k < n`, then `P n` implies `P m`.
 Also works for functions to `Sort*`. Weakens the assumptions of `decreasing_induction`. -/
 @[elab_as_elim]
-def decreasingInduction' {P : ℕ → Sort*} (h : ∀ k < n, m ≤ k → P (k + 1) → P k) (mn : m ≤ n)
-    (hP : P n) : P m := by
+def decreasingInduction' {P : ℕ → Sort*} {m n : ℕ} (h : ∀ k < n, m ≤ k → P (k + 1) → P k)
+    (mn : m ≤ n) (hP : P n) : P m := by
   revert h hP
   refine' leRecOn' mn _ _
   · intro n mn ih h hP
