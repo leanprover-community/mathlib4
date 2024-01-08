@@ -538,8 +538,9 @@ theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : mk 
     smallCategory_comp, σ, mkHom, OrderHom.coe_mk]
   dsimp [δ]
   by_cases h' : x = Fin.succ i
-  · rw [h', succAbove_succ_predAbove_succ, hi]
-  · rw [succAbove_succ_predAbove h']
+  · rw [h', Fin.succAbove_succ_predAbove_succ]
+    exact hi.symm
+  · rw [Fin.succAbove_succ_predAbove h']
 #align simplex_category.eq_σ_comp_of_not_injective' SimplexCategory.eq_σ_comp_of_not_injective'
 
 theorem eq_σ_comp_of_not_injective {n : ℕ} {Δ' : SimplexCategory} (θ : mk (n + 1) ⟶ Δ')
@@ -564,7 +565,7 @@ theorem eq_σ_comp_of_not_injective {n : ℕ} {Δ' : SimplexCategory} (θ : mk (
     apply eq_σ_comp_of_not_injective'
     rw [Fin.castSucc_lt_iff_succ_le] at h₂
     apply le_antisymm
-    · exact θ.toOrderHom.monotone (le_of_lt (Fin.castSucc_lt_succ z))
+    · exact θ.toOrderHom.monotone (le_of_lt (Fin.castSucc_lt_succ x))
     · rw [h₁]
       exact θ.toOrderHom.monotone h₂
 #align simplex_category.eq_σ_comp_of_not_injective SimplexCategory.eq_σ_comp_of_not_injective
