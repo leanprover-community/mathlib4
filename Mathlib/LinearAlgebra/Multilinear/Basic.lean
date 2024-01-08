@@ -955,7 +955,7 @@ map of multilinear map from `(M₁ ⟶ M₁')ᵢ` to `(M₁)ᵢ ⟶ M₂` by `(f
 -/
 @[simps]
 def piLinearMap (g : MultilinearMap R M₁' M₂) :
-  MultilinearMap R (fun i ↦ M₁ i →ₗ[R] M₁' i) (MultilinearMap R M₁ M₂) :=
+    MultilinearMap R (fun i ↦ M₁ i →ₗ[R] M₁' i) (MultilinearMap R M₁ M₂) :=
 { toFun := g.compLinearMap
   map_add' := fun v i x y ↦ MultilinearMap.ext <| fun a ↦ by
     dsimp
