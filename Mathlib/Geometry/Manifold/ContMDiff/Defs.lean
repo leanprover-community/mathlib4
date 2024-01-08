@@ -902,6 +902,10 @@ theorem contMDiffOn_congr (h₁ : ∀ y ∈ s, f₁ y = f y) :
   (contDiffWithinAt_localInvariantProp I I' n).liftPropOn_congr_iff h₁
 #align cont_mdiff_on_congr contMDiffOn_congr
 
+theorem ContMDiffOn.congr_mono (hf : ContMDiffOn I I' n f s) (h₁ : ∀ y ∈ s₁, f₁ y = f y)
+    (hs : s₁ ⊆ s) : ContMDiffOn I I' n f₁ s₁ :=
+  (hf.mono hs).congr h₁
+
 /-! ### Locality -/
 
 

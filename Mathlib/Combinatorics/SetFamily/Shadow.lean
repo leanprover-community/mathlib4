@@ -115,7 +115,7 @@ lemma mem_shadow_iff_insert_mem : t ∈ ∂ 𝒜 ↔ ∃ a, a ∉ t ∧ insert a
 See also `Finset.mem_shadow_iff_exists_sdiff`. -/
 lemma mem_shadow_iff_exists_mem_card_add_one :
     t ∈ ∂ 𝒜 ↔ ∃ s ∈ 𝒜, t ⊆ s ∧ s.card = t.card + 1 := by
-  refine mem_shadow_iff_exists_sdiff.trans $ exists_congr fun t ↦ and_congr_right fun _ ↦
+  refine mem_shadow_iff_exists_sdiff.trans <| exists_congr fun t ↦ and_congr_right fun _ ↦
     and_congr_right fun hst ↦ ?_
   rw [card_sdiff hst, tsub_eq_iff_eq_add_of_le, add_comm]
   exact card_mono hst
@@ -145,7 +145,7 @@ lemma mem_shadow_iterate_iff_exists_sdiff : t ∈ ∂^[k] 𝒜 ↔ ∃ s ∈ �
 See also `Finset.mem_shadow_iterate_iff_exists_sdiff`. -/
 lemma mem_shadow_iterate_iff_exists_mem_card_add :
     t ∈ ∂^[k] 𝒜 ↔ ∃ s ∈ 𝒜, t ⊆ s ∧ s.card = t.card + k := by
-  refine mem_shadow_iterate_iff_exists_sdiff.trans $ exists_congr fun t ↦ and_congr_right fun _ ↦
+  refine mem_shadow_iterate_iff_exists_sdiff.trans <| exists_congr fun t ↦ and_congr_right fun _ ↦
     and_congr_right fun hst ↦ ?_
   rw [card_sdiff hst, tsub_eq_iff_eq_add_of_le, add_comm]
   exact card_mono hst
@@ -237,7 +237,7 @@ lemma mem_upShadow_iff_erase_mem : t ∈ ∂⁺ 𝒜 ↔ ∃ a, a ∈ t ∧ eras
 See also `Finset.mem_upShadow_iff_exists_sdiff`. -/
 lemma mem_upShadow_iff_exists_mem_card_add_one :
     t ∈ ∂⁺ 𝒜 ↔ ∃ s ∈ 𝒜, s ⊆ t ∧ t.card = s.card + 1 := by
-  refine mem_upShadow_iff_exists_sdiff.trans $ exists_congr fun t ↦ and_congr_right fun _ ↦
+  refine mem_upShadow_iff_exists_sdiff.trans <| exists_congr fun t ↦ and_congr_right fun _ ↦
     and_congr_right fun hst ↦ ?_
   rw [card_sdiff hst, tsub_eq_iff_eq_add_of_le, add_comm]
   exact card_mono hst
@@ -273,7 +273,7 @@ lemma mem_upShadow_iterate_iff_exists_sdiff :
 See also `Finset.mem_upShadow_iterate_iff_exists_sdiff`. -/
 lemma mem_upShadow_iterate_iff_exists_mem_card_add :
     t ∈ ∂⁺^[k] 𝒜 ↔ ∃ s ∈ 𝒜, s ⊆ t ∧ t.card = s.card + k := by
-  refine mem_upShadow_iterate_iff_exists_sdiff.trans $ exists_congr fun t ↦ and_congr_right fun _ ↦
+  refine mem_upShadow_iterate_iff_exists_sdiff.trans <| exists_congr fun t ↦ and_congr_right fun _ ↦
     and_congr_right fun hst ↦ ?_
   rw [card_sdiff hst, tsub_eq_iff_eq_add_of_le, add_comm]
   exact card_mono hst

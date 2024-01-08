@@ -69,7 +69,7 @@ when applicable:
 * Instances transferred elementwise to pi types, like `Pi.Monoid`.
   See `Mathlib.Algebra.Group.Pi` for more examples.
   ```
-  instance Pi.Z [∀ i, Z $ f i] : Z (Π i : I, f i) := ...
+  instance Pi.Z [∀ i, Z <| f i] : Z (Π i : I, f i) := ...
   ```
 * Instances transferred to `MulOpposite M`, like `MulOpposite.Monoid`.
   See `Mathlib.Algebra.Opposites` for more examples.

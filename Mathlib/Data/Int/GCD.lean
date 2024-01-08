@@ -311,11 +311,11 @@ theorem gcd_mul_right (i j k : ℤ) : gcd (i * j) (k * j) = gcd i k * natAbs j :
 #align int.gcd_mul_right Int.gcd_mul_right
 
 theorem gcd_pos_of_ne_zero_left {i : ℤ} (j : ℤ) (hi : i ≠ 0) : 0 < gcd i j :=
-  Nat.gcd_pos_of_pos_left _ $ natAbs_pos.2 hi
+  Nat.gcd_pos_of_pos_left _ <| natAbs_pos.2 hi
 #align int.gcd_pos_of_ne_zero_left Int.gcd_pos_of_ne_zero_left
 
 theorem gcd_pos_of_ne_zero_right (i : ℤ) {j : ℤ} (hj : j ≠ 0) : 0 < gcd i j :=
-  Nat.gcd_pos_of_pos_right _ $ natAbs_pos.2 hj
+  Nat.gcd_pos_of_pos_right _ <| natAbs_pos.2 hj
 #align int.gcd_pos_of_ne_zero_right Int.gcd_pos_of_ne_zero_right
 
 theorem gcd_eq_zero_iff {i j : ℤ} : gcd i j = 0 ↔ i = 0 ∧ j = 0 := by
@@ -524,38 +524,32 @@ variable {α : Type*}
 section GroupWithZero
 variable [GroupWithZero α] {a b : α} {m n : ℕ}
 
-protected lemma Commute.exists_eq_pow_of_pow_eq_pow_of_coprime (h : Commute a b) (hmn : m.Coprime n)
-    (hab : a ^ m = b ^ n) : ∃ c, a = c ^ n ∧ b = c ^ m := by
-  by_cases hn : n = 0; · aesop
-  by_cases hm : m = 0; · aesop
+protected lemma Commute.pow_eq_pow_iff_of_coprime (hab : Commute a b) (hmn : m.Coprime n) :
+    a ^ m = b ^ n ↔ ∃ c, a = c ^ n ∧ b = c ^ m := by
+  refine ⟨fun h ↦ ?_, by rintro ⟨c, rfl, rfl⟩; rw [← pow_mul, ← pow_mul']⟩
+  by_cases m = 0; · aesop
+  by_cases n = 0; · aesop
   by_cases hb : b = 0; exact ⟨0, by aesop⟩
-  by_cases ha : a = 0; exact ⟨0, by have := hab.symm; aesop⟩
-  use a ^ (Nat.gcdB m n) * b ^ (Nat.gcdA m n)
-  constructor
+  by_cases ha : a = 0; exact ⟨0, by have := h.symm; aesop⟩
+  refine ⟨a ^ Nat.gcdB m n * b ^ Nat.gcdA m n, ?_, ?_⟩
   all_goals
     refine (pow_one _).symm.trans ?_
     conv_lhs => rw [← zpow_ofNat, ← hmn, Nat.gcd_eq_gcd_ab]
-    simp only [zpow_add₀ ha, zpow_add₀ hb, ← zpow_ofNat, (h.zpow_zpow₀ _ _).mul_zpow, ← zpow_mul,
+    simp only [zpow_add₀ ha, zpow_add₀ hb, ← zpow_ofNat, (hab.zpow_zpow₀ _ _).mul_zpow, ← zpow_mul,
       mul_comm (Nat.gcdB m n), mul_comm (Nat.gcdA m n)]
-    simp only [zpow_mul, zpow_ofNat, hab]
-    refine ((Commute.pow_pow ?_ _ _).zpow_zpow₀ _ _).symm
-    aesop
+    simp only [zpow_mul, zpow_ofNat, h]
+    exact ((Commute.pow_pow (by aesop) _ _).zpow_zpow₀ _ _).symm
 
 end GroupWithZero
 
 section CommGroupWithZero
 variable [CommGroupWithZero α] {a b : α} {m n : ℕ}
 
-lemma exists_eq_pow_of_pow_eq_pow_of_coprime (hmn : m.Coprime n) (hab : a ^ m = b ^ n) :
-    ∃ c, a = c ^ n ∧ b = c ^ m := (Commute.all _ _).exists_eq_pow_of_pow_eq_pow_of_coprime hmn hab
+lemma pow_eq_pow_iff_of_coprime (hmn : m.Coprime n) : a ^ m = b ^ n ↔ ∃ c, a = c ^ n ∧ b = c ^ m :=
+  (Commute.all _ _).pow_eq_pow_iff_of_coprime hmn
 
 lemma pow_mem_range_pow_of_coprime (hmn : m.Coprime n) (a : α) :
     a ^ m ∈ Set.range (· ^ n : α → α) ↔ a ∈ Set.range (· ^ n : α → α) := by
-  constructor
-  · intro ⟨x, hx⟩
-    obtain ⟨c, rfl, rfl⟩ := exists_eq_pow_of_pow_eq_pow_of_coprime hmn.symm hx
-    exact ⟨c, rfl⟩
-  · rintro ⟨x, rfl⟩
-    exact ⟨x ^ m, by simp [← pow_mul, mul_comm m n]⟩
+  simp [pow_eq_pow_iff_of_coprime hmn.symm]; aesop
 
 end CommGroupWithZero

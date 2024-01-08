@@ -189,3 +189,4 @@ end
 -- Guard against import creep regression.
 assert_not_exists Int.bitwise_or
 assert_not_exists Set.range
+assert_not_exists Nat.gcdA

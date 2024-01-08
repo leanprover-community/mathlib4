@@ -272,7 +272,7 @@ theorem sum_div_pow_sq_le_div_sq (N : ℕ) {j : ℝ} (hj : 0 < j) {c : ℝ} (hc 
       exact inv_lt_one hc
     _ ≤ (c⁻¹ ^ 2) ^ (Real.log j / Real.log c - 1) / ((1 : ℝ) - c⁻¹ ^ 2) := by
       apply div_le_div _ _ _ le_rfl
-      · apply Real.rpow_nonneg_of_nonneg (sq_nonneg _)
+      · apply Real.rpow_nonneg (sq_nonneg _)
       · rw [← Real.rpow_nat_cast]
         apply Real.rpow_le_rpow_of_exponent_ge A
         · exact pow_le_one _ (inv_nonneg.2 (zero_le_one.trans hc.le)) (inv_le_one hc.le)

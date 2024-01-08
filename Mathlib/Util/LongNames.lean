@@ -19,7 +19,7 @@ open Lean Meta Elab
 def printNameHashMap (h : Std.HashMap Name (Array Name)) : IO Unit :=
   for (m, names) in h.toList do
     IO.println "----"
-    IO.println $ m.toString ++ ":"
+    IO.println <| m.toString ++ ":"
     for n in names do
       IO.println n
 

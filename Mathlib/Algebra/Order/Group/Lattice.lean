@@ -10,20 +10,19 @@ import Mathlib.Algebra.Order.Group.OrderIso
 /-!
 # Lattice ordered groups
 
-A lattice ordered group is a type `α` satisfying:
+Lattice ordered groups were introduced by [Birkhoff][birkhoff1942]. They form the algebraic
+underpinnings of vector lattices, Banach lattices, AL-space, AM-space etc.
 
+A lattice ordered group is a type `α` satisfying:
 * `Lattice α`
 * `CommGroup α`
-* `CovariantClass α α (*) (≤)`
+* `CovariantClass α α (· * ·) (· ≤ ·)`
 * `CovariantClass α α (swap (· * ·)) (· ≤ ·)`
 
-The remainder of the file establishes basic properties of lattice ordered groups. It is shown that
-when the group is commutative, the lattice is distributive. This also holds in the non-commutative
-case ([Birkhoff][birkhoff1942],[Fuchs][fuchs1963]) but we do not yet have the machinery to establish
-this in Mathlib.
-
-Lattice ordered groups were introduced by [Birkhoff][birkhoff1942].
-They form the algebraic underpinnings of vector lattices, Banach lattices, AL-space, AM-space etc.
+This file establishes basic properties of lattice ordered groups. It is shown that when the group is
+commutative, the lattice is distributive. This also holds in the non-commutative case
+([Birkhoff][birkhoff1942],[Fuchs][fuchs1963]) but we do not yet have the machinery to establish this
+in mathlib.
 
 ## References
 
@@ -120,7 +119,7 @@ lemma inf_mul_sup [CovariantClass α α (· * ·) (· ≤ ·)] (a b : α) : (a �
 /-- Every lattice ordered commutative group is a distributive lattice. -/
 -- Non-comm case needs cancellation law https://ncatlab.org/nlab/show/distributive+lattice
 @[to_additive "Every lattice ordered commutative additive group is a distributive lattice"]
-def CommGroup.toDistribLattice (α : Type*) [s : Lattice α] [CommGroup α]
+def CommGroup.toDistribLattice (α : Type*) [Lattice α] [CommGroup α]
     [CovariantClass α α (· * ·) (· ≤ ·)] : DistribLattice α where
   le_sup_inf x y z := by
     rw [← mul_le_mul_iff_left (x ⊓ (y ⊓ z)), inf_mul_sup x (y ⊓ z), ← inv_mul_le_iff_le_mul,

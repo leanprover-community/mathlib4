@@ -881,7 +881,7 @@ theorem open_target (he : e ∈ c.atlas) : IsOpen e.target := by
 /-- An element of the atlas in a charted space without topology becomes a partial homeomorphism
 for the topology constructed from this atlas. The `PartialHomeomorph` version is given in this
 definition. -/
-protected def localHomeomorph (e : PartialEquiv M H) (he : e ∈ c.atlas) :
+protected def partialHomeomorph (e : PartialEquiv M H) (he : e ∈ c.atlas) :
     @PartialHomeomorph M H c.toTopologicalSpace _ :=
   { c.toTopologicalSpace, e with
     open_source := by convert c.open_source' he
@@ -911,14 +911,14 @@ protected def localHomeomorph (e : PartialEquiv M H) (he : e ∈ c.atlas) :
         congr 1
         exact inter_comm _ _
       simpa [PartialEquiv.trans_source, preimage_inter, preimage_comp.symm, A] using this }
-#align charted_space_core.local_homeomorph ChartedSpaceCore.localHomeomorph
+#align charted_space_core.local_homeomorph ChartedSpaceCore.partialHomeomorph
 
 /-- Given a charted space without topology, endow it with a genuine charted space structure with
 respect to the topology constructed from the atlas. -/
 def toChartedSpace : @ChartedSpace H _ M c.toTopologicalSpace :=
   { c.toTopologicalSpace with
-    atlas := ⋃ (e : PartialEquiv M H) (he : e ∈ c.atlas), {c.localHomeomorph e he}
-    chartAt := fun x ↦ c.localHomeomorph (c.chartAt x) (c.chart_mem_atlas x)
+    atlas := ⋃ (e : PartialEquiv M H) (he : e ∈ c.atlas), {c.partialHomeomorph e he}
+    chartAt := fun x ↦ c.partialHomeomorph (c.chartAt x) (c.chart_mem_atlas x)
     mem_chart_source := fun x ↦ c.mem_chart_source x
     chart_mem_atlas := fun x ↦ by
       simp only [mem_iUnion, mem_singleton_iff]
