@@ -549,8 +549,8 @@ theorem isIntegralCurve_Ioo_eq_of_contMDiff_boundaryless [BoundarylessManifold I
   isIntegralCurve_eq_of_contMDiff
     (fun _ => BoundarylessManifold.isInteriorPoint I) hv hγ hγ' h
 
-/-- If a global integral curve is not injective, then it is periodic. -/
-lemma periodic_iff_isIntegralCurve_not_injective [BoundarylessManifold I M]
+/-- A global integral curve is not injective iff it is periodic. -/
+lemma IsIntegralCurve.periodic_iff_not_injective [BoundarylessManifold I M]
     (hγ : IsIntegralCurve γ v)
     (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M))) :
     (∃ T > 0, Periodic γ T) ↔ ¬Injective γ := by
@@ -570,3 +570,10 @@ lemma periodic_iff_isIntegralCurve_not_injective [BoundarylessManifold I M]
       · apply isIntegralCurve_Ioo_eq_of_contMDiff_boundaryless (t₀ := t₂) hv (hγ.comp_add _) hγ
         rw [not_lt] at hle
         simp only [abs_of_nonneg hle, comp_apply, add_sub_cancel'_right, heq]
+
+/-- A global integral curve is injective xor periodic. -/
+lemma IsIntegralCurve.periodic_xor_injective [BoundarylessManifold I M]
+    (hγ : IsIntegralCurve γ v)
+    (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M))) :
+    Xor' (∃ T > 0, Periodic γ T) (Injective γ) :=
+  xor_iff_iff_not.mpr (hγ.periodic_iff_not_injective hv)
