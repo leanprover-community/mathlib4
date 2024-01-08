@@ -75,13 +75,13 @@ theorem «exists» {p : PLift α → Prop} : (∃ x, p x) ↔ ∃ x : α, p (PLi
 #align plift.exists PLift.exists
 
 @[simp] lemma map_injective : Injective (PLift.map f) ↔ Injective f :=
-  (Injective.of_comp_iff' _ down_bijective).trans $ up_injective.of_comp_iff _
+  (Injective.of_comp_iff' _ down_bijective).trans <| up_injective.of_comp_iff _
 
 @[simp] lemma map_surjective : Surjective (PLift.map f) ↔ Surjective f :=
-  (down_surjective.of_comp_iff _).trans $ Surjective.of_comp_iff' up_bijective _
+  (down_surjective.of_comp_iff _).trans <| Surjective.of_comp_iff' up_bijective _
 
 @[simp] lemma map_bijective : Bijective (PLift.map f) ↔ Bijective f :=
-  (down_bijective.of_comp_iff _).trans $ Bijective.of_comp_iff' up_bijective _
+  (down_bijective.of_comp_iff _).trans <| Bijective.of_comp_iff' up_bijective _
 
 end PLift
 
@@ -140,14 +140,14 @@ theorem «exists» {p : ULift α → Prop} : (∃ x, p x) ↔ ∃ x : α, p (ULi
 #align ulift.exists ULift.exists
 
 @[simp] lemma map_injective : Injective (ULift.map f : ULift.{u'} α → ULift.{v'} β) ↔ Injective f :=
-  (Injective.of_comp_iff' _ down_bijective).trans $ up_injective.of_comp_iff _
+  (Injective.of_comp_iff' _ down_bijective).trans <| up_injective.of_comp_iff _
 
 @[simp] lemma map_surjective :
     Surjective (ULift.map f : ULift.{u'} α → ULift.{v'} β) ↔ Surjective f :=
-  (down_surjective.of_comp_iff _).trans $ Surjective.of_comp_iff' up_bijective _
+  (down_surjective.of_comp_iff _).trans <| Surjective.of_comp_iff' up_bijective _
 
 @[simp] lemma map_bijective : Bijective (ULift.map f : ULift.{u'} α → ULift.{v'} β) ↔ Bijective f :=
-  (down_bijective.of_comp_iff _).trans $ Bijective.of_comp_iff' up_bijective _
+  (down_bijective.of_comp_iff _).trans <| Bijective.of_comp_iff' up_bijective _
 
 @[ext]
 theorem ext (x y : ULift α) (h : x.down = y.down) : x = y :=

@@ -386,6 +386,71 @@ protected def linftyOpNormedAlgebra [NormedField R] [SeminormedRing α] [NormedA
   { Matrix.linftyOpNormedSpace, Matrix.instAlgebra with }
 #align matrix.linfty_op_normed_algebra Matrix.linftyOpNormedAlgebra
 
+
+section
+variable [NormedDivisionRing α] [NormedAlgebra ℝ α] [CompleteSpace α]
+
+/-- Auxiliary construction; an element of norm 1 such that `a * unitOf a = ‖a‖`. -/
+private def unitOf (a : α) : α := by classical exact if a = 0 then 1 else ‖a‖ • a⁻¹
+
+private theorem norm_unitOf (a : α) : ‖unitOf a‖₊ = 1 := by
+  rw [unitOf]
+  split_ifs with h
+  · simp
+  · rw [← nnnorm_eq_zero] at h
+    rw [nnnorm_smul, nnnorm_inv, nnnorm_norm, mul_inv_cancel h]
+
+private theorem mul_unitOf (a : α) : a * unitOf a = algebraMap _ _ (‖a‖₊ : ℝ)  := by
+  simp [unitOf]
+  split_ifs with h
+  · simp [h]
+  · rw [mul_smul_comm, mul_inv_cancel h, Algebra.algebraMap_eq_smul_one]
+
+end
+
+/-!
+For a matrix over a field, the norm defined in this section agrees with the operator norm on
+`ContinuousLinearMap`s between function types (which have the infinity norm).
+-/
+section
+variable [NontriviallyNormedField α] [NormedAlgebra ℝ α]
+
+lemma linfty_op_nnnorm_eq_op_nnnorm (A : Matrix m n α) :
+    ‖A‖₊ = ‖ContinuousLinearMap.mk (Matrix.mulVecLin A)‖₊ := by
+  rw [ContinuousLinearMap.op_nnnorm_eq_of_bounds _ (linfty_op_nnnorm_mulVec _) fun N hN => ?_]
+  rw [linfty_op_nnnorm_def]
+  refine Finset.sup_le fun i _ => ?_
+  cases isEmpty_or_nonempty n
+  · simp
+  classical
+  let x : n → α := fun j => unitOf (A i j)
+  have hxn : ‖x‖₊ = 1 := by
+    simp_rw [Pi.nnnorm_def, norm_unitOf, Finset.sup_const Finset.univ_nonempty]
+  specialize hN x
+  rw [hxn, mul_one, Pi.nnnorm_def, Finset.sup_le_iff] at hN
+  replace hN := hN i (Finset.mem_univ _)
+  dsimp [mulVec, dotProduct] at hN
+  simp_rw [mul_unitOf, ← map_sum, nnnorm_algebraMap, ← NNReal.coe_sum, NNReal.nnnorm_eq, nnnorm_one,
+    mul_one] at hN
+  exact hN
+
+lemma linfty_op_norm_eq_op_norm (A : Matrix m n α) :
+    ‖A‖ = ‖ContinuousLinearMap.mk (Matrix.mulVecLin A)‖ :=
+  congr_arg NNReal.toReal (linfty_op_nnnorm_eq_op_nnnorm A)
+
+variable [DecidableEq n]
+
+@[simp] lemma linfty_op_nnnorm_toMatrix (f : (n → α) →L[α] (m → α)) :
+    ‖LinearMap.toMatrix' (↑f : (n → α) →ₗ[α] (m → α))‖₊ = ‖f‖₊ := by
+  rw [linfty_op_nnnorm_eq_op_nnnorm]
+  simp only [← toLin'_apply', toLin'_toMatrix']
+
+@[simp] lemma linfty_op_norm_toMatrix (f : (n → α) →L[α] (m → α)) :
+    ‖LinearMap.toMatrix' (↑f : (n → α) →ₗ[α] (m → α))‖ = ‖f‖ :=
+  congr_arg NNReal.toReal (linfty_op_nnnorm_toMatrix f)
+
+end
+
 end LinftyOp
 
 /-! ### The Frobenius norm

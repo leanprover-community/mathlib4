@@ -418,7 +418,7 @@ theorem Zlattice.module_free : Module.Free ℤ L := by
   have : NoZeroSMulDivisors ℤ L := by
     change NoZeroSMulDivisors ℤ (AddSubgroup.toIntSubmodule L)
     exact noZeroSMulDivisors _
-  exact Module.free_of_finite_type_torsion_free'
+  infer_instance
 
 open FiniteDimensional
 

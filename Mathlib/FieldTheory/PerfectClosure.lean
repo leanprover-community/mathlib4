@@ -46,7 +46,7 @@ def mk (x : ℕ × K) : PerfectClosure K p :=
 #align perfect_closure.mk PerfectClosure.mk
 
 @[simp] theorem mk_succ_pow (m : ℕ) (x : K) : mk K p ⟨m + 1, x ^ p⟩ = mk K p ⟨m, x⟩ :=
-  Eq.symm $ Quot.sound (R.intro m x)
+  Eq.symm <| Quot.sound (R.intro m x)
 
 @[simp]
 theorem quot_mk_eq_mk (x : ℕ × K) : (Quot.mk (R K p) x : PerfectClosure K p) = mk K p x :=

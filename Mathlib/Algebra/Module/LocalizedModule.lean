@@ -547,11 +547,11 @@ section IsLocalizedModule
 
 universe u v
 
-variable {R : Type*} [CommRing R] (S : Submonoid R)
+variable {R : Type*} [CommSemiring R] (S : Submonoid R)
 
 variable {M M' M'' : Type*} [AddCommMonoid M] [AddCommMonoid M'] [AddCommMonoid M'']
 
-variable {A : Type*} [CommRing A] [Algebra R A] [Module A M'] [IsLocalization S A]
+variable {A : Type*} [CommSemiring A] [Algebra R A] [Module A M'] [IsLocalization S A]
 
 variable [Module R M] [Module R M'] [Module R M''] [IsScalarTower R A M']
 
