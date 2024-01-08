@@ -80,7 +80,9 @@ lemma le_succ_iff : m ≤ n.succ ↔ m ≤ n ∨ m = n.succ := by
   rintro (hmn | rfl)
   · exact le_succ_of_le hmn
   · rfl
-#align nat.of_le_succ Nat.le_succ_iff
+
+alias ⟨of_le_succ, _⟩ := le_succ_iff
+#align nat.of_le_succ Nat.of_le_succ
 
 lemma lt_succ_iff_lt_or_eq : m < n.succ ↔ m < n ∨ m = n := lt_succ_iff.trans Nat.le_iff_lt_or_eq
 #align nat.lt_succ_iff_lt_or_eq Nat.lt_succ_iff_lt_or_eq
