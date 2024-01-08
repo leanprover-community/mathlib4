@@ -94,7 +94,7 @@ protected theorem acc [RelHomClass F r s] (f : F) (a : α) : Acc s (f a) → Acc
   exact ⟨_, fun a' h => IH (f a') (map_rel f h) _ rfl⟩
 #align rel_hom_class.acc RelHomClass.acc
 
-protected theorem wellFounded [RelHomClass F r s] (f : F) : ∀ _ : WellFounded s, WellFounded r
+protected theorem wellFounded [RelHomClass F r s] (f : F) : WellFounded s → WellFounded r
   | ⟨H⟩ => ⟨fun _ => RelHomClass.acc f _ (H _)⟩
 #align rel_hom_class.well_founded RelHomClass.wellFounded
 
