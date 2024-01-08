@@ -35,8 +35,6 @@ noncomputable section
 abbrev integralFourier (f : E → F) :=
   (VectorFourier.fourierIntegral (E := F)) Real.fourierChar (volume : Measure E) (innerₛₗ ℝ) f
 
---set_option maxHeartbeats 200000
-
 /-- The Fréchet derivative of the Fourier transform of `f` is the Fourier transform of
     `fun v ↦ ((-2 * π * I) • f v) ⊗ (innerSL ℝ v)`. -/
 theorem hasFDerivAt_fourier {f : E → F} (hf_int : Integrable f)
@@ -66,7 +64,14 @@ theorem hasFDerivAt_fourier {f : E → F} (hf_int : Integrable f)
       apply Measurable.comp measurable_inv
       apply Continuous.measurable
       continuity
-    ·
+    · have : (-(2:ℂ) * π * I) ≠ 0 := by simp [pi_ne_zero, I_ne_zero]
+      have := (aestronglyMeasurable_const_smul_iff₀ this).mpr hf_int.aestronglyMeasurable
+      --have := hf_int.aestronglyMeasurable.smul_measure (-(2 : ℂ) * π * I)
+
+      -- have := (aestronglyMeasurable_const_smul_iff (c := -(2:ℂ) * π * I)).mpr
+      --   hf_int.aestronglyMeasurable
+
+#exit
       sorry
 --       have : AEStronglyMeasurable f volume := hf_int.aestronglyMeasurable
 --       refine (this.smul (𝕜 := ℂ) ?_).comp_measurable
@@ -80,8 +85,7 @@ theorem hasFDerivAt_fourier {f : E → F} (hf_int : Integrable f)
     · rw [ContinuousLinearMap.norm_toSpanSingleton]
       simp [norm_smul]
       left
-
-      sorry
+      exact (abs_of_pos Real.pi_pos).symm
     · simp
     · infer_instance
     · infer_instance
@@ -89,8 +93,7 @@ theorem hasFDerivAt_fourier {f : E → F} (hf_int : Integrable f)
     ext v
     simp only [Pi.smul_apply, smul_eq_mul]
     ring
-  · -- checking the derivative formula
-    filter_upwards [] with w
+  · filter_upwards [] with w
     intro u hu
     convert (((Complex.ofRealClm.hasFDerivAt.comp u (hasFDerivAt_inner ℝ w u)).const_mul
       (2 * π)).mul_const I).neg.cexp.smul_const (f w) using 1
