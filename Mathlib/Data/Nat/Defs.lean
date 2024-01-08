@@ -736,7 +736,7 @@ section FindGreatest
 
 /-- `find_greatest P n` is the largest `i ≤ bound` such that `P i` holds, or `0` if no such `i`
 exists -/
-protected def findGreatest (P : ℕ → Prop) [DecidablePred P] : ℕ → ℕ
+def findGreatest (P : ℕ → Prop) [DecidablePred P] : ℕ → ℕ
   | 0 => 0
   | n + 1 => if P (n + 1) then n + 1 else Nat.findGreatest P n
 #align nat.find_greatest Nat.findGreatest
@@ -756,7 +756,7 @@ lemma findGreatest_succ (n : ℕ) :
 #align nat.find_greatest_eq Nat.findGreatest_eq
 
 @[simp]
-lemma findGreatest_of_not (h : ¬ P (n + 1)) : Nat.findGreatest P (n + 1) = Nat.findGreatest P n := by
+lemma findGreatest_of_not (h : ¬ P (n + 1)) : findGreatest P (n + 1) = findGreatest P n := by
   simp [Nat.findGreatest, h]
 #align nat.find_greatest_of_not Nat.findGreatest_of_not
 
