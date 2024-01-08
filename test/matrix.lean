@@ -139,7 +139,7 @@ example {α : Type _} [CommRing α] {a b c d : α} :
     simp only [det_succ_row_zero, of_apply, cons_val', empty_val',
       cons_val_fin_one, cons_val_zero, det_unique, Fin.default_eq_zero, submatrix_apply,
       Fin.succ_zero_eq_one, cons_val_one, head_fin_const, Fin.sum_univ_succ, Fin.val_zero,
-      pow_zero, one_mul, Fin.zero_succAbove, Finset.univ_unique,
+      pow_zero, one_mul, Fin.zero_succAbove, head_cons, Finset.univ_unique,
       Fin.val_succ, Fin.coe_fin_one, zero_add, pow_one, cons_val_succ, neg_mul,
       Fin.succ_succAbove_zero, Finset.sum_const, Finset.card_singleton, smul_neg, one_smul]
   ring
