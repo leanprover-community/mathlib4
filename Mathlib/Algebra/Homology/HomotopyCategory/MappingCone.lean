@@ -11,10 +11,10 @@ import Mathlib.Algebra.Homology.HomotopyCofiber
 In this file, we study the homotopy cofiber `HomologicalComplex.homotopyCofiber`
 of a morphism `φ : F ⟶ G` of cochain complexes indexed by `ℤ`. In this case,
 we redefine it as `CochainComplex.mappingCone φ`. The API involves definitions
-`mappingCone.inl φ : Cochain F (mappingCone φ) (-1)`,
-`mappingCone.inr φ : G ⟶ mappingCone φ`,
-`mappingCone.fst φ : Cocycle (mappingCone φ) F 1` and
-`mappingCone.snd φ : Cochain (mappingCone φ) G 0`.
+- `mappingCone.inl φ : Cochain F (mappingCone φ) (-1)`,
+- `mappingCone.inr φ : G ⟶ mappingCone φ`,
+- `mappingCone.fst φ : Cocycle (mappingCone φ) F 1` and
+- `mappingCone.snd φ : Cochain (mappingCone φ) G 0`.
 
 -/
 
@@ -40,8 +40,6 @@ instance [∀ p, HasBinaryBiproduct (F.X (p + 1)) (G.X p)] :
 end
 
 variable {F G : CochainComplex C ℤ} (φ : F ⟶ G)
-
-instance : DecidableRel (ComplexShape.up ℤ).Rel := fun _ _ => by dsimp; infer_instance
 
 variable [HasHomotopyCofiber φ]
 
@@ -118,7 +116,7 @@ lemma inr_snd :
 it is often convenient to use an `ext` lemma, and use simp lemmas like `inl_v_f_fst_v`,
 but it is sometimes possible to get identities of cochains by using rewrites of
 identities of cochains like `inl_fst`. Then, similarly as in category theory,
-if we associate to right the compositions of cochains as much as possible,
+if we associate the compositions of cochains to the right as much as possible,
 it is also interesting to have `reassoc` variants of lemmas, like `inl_fst_assoc`. -/
 
 @[simp]

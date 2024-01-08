@@ -62,7 +62,7 @@ noncomputable instance WithBot.instInfSet {α : Type*} [Preorder α] [InfSet α]
 
 theorem WithTop.sSup_eq [Preorder α] [SupSet α] {s : Set (WithTop α)} (hs : ⊤ ∉ s)
     (hs' : BddAbove ((↑) ⁻¹' s : Set α)) : sSup s = ↑(sSup ((↑) ⁻¹' s) : α) :=
-  (if_neg hs).trans $ if_pos hs'
+  (if_neg hs).trans <| if_pos hs'
 #align with_top.Sup_eq WithTop.sSup_eq
 
 theorem WithTop.sInf_eq [InfSet α] {s : Set (WithTop α)} (hs : ¬s ⊆ {⊤}) :
@@ -72,7 +72,7 @@ theorem WithTop.sInf_eq [InfSet α] {s : Set (WithTop α)} (hs : ¬s ⊆ {⊤}) 
 
 theorem WithBot.sInf_eq [Preorder α] [InfSet α] {s : Set (WithBot α)} (hs : ⊥ ∉ s)
     (hs' : BddBelow ((↑) ⁻¹' s : Set α)) : sInf s = ↑(sInf ((↑) ⁻¹' s) : α) :=
-  (if_neg hs).trans $ if_pos hs'
+  (if_neg hs).trans <| if_pos hs'
 #align with_bot.Inf_eq WithBot.sInf_eq
 
 theorem WithBot.sSup_eq [SupSet α] {s : Set (WithBot α)} (hs : ¬s ⊆ {⊥}) :
@@ -975,7 +975,7 @@ lemma Set.Ici_ciSup [Nonempty ι] {f : ι → α} (hf : BddAbove (range f)) :
 
 end ConditionallyCompleteLattice
 
-instance Pi.conditionallyCompleteLattice {ι : Type*} {α : ∀ _i : ι, Type*}
+instance Pi.conditionallyCompleteLattice {ι : Type*} {α : ι → Type*}
     [∀ i, ConditionallyCompleteLattice (α i)] : ConditionallyCompleteLattice (∀ i, α i) :=
   { Pi.lattice, Pi.supSet, Pi.infSet with
     le_csSup := fun s f ⟨g, hg⟩ hf i =>
