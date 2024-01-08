@@ -94,60 +94,59 @@ theorem exists_approx_preimage_norm_le (surj : Surjective f) :
   simp only [mem_interior_iff_mem_nhds, Metric.mem_nhds_iff] at this
   rcases this with ⟨n, a, ε, ⟨εpos, H⟩⟩
   rcases NormedField.exists_one_lt_norm 𝕜 with ⟨c, hc⟩
-  refine' ⟨(ε / 2)⁻¹ * ‖c‖ * 2 * n, _, fun y => _⟩
-  · positivity
-  · by_cases hy : y = 0
-    · use 0
-      simp [hy]
-    · rcases rescale_to_shell hc (half_pos εpos) hy with ⟨d, hd, ydlt, -, dinv⟩
-      let δ := ‖d‖ * ‖y‖ / 4
-      have δpos : 0 < δ := div_pos (mul_pos (norm_pos_iff.2 hd) (norm_pos_iff.2 hy)) (by norm_num)
-      have : a + d • y ∈ ball a ε := by
-        simp [dist_eq_norm, lt_of_le_of_lt ydlt.le (half_lt_self εpos)]
-      rcases Metric.mem_closure_iff.1 (H this) _ δpos with ⟨z₁, z₁im, h₁⟩
-      rcases (mem_image _ _ _).1 z₁im with ⟨x₁, hx₁, xz₁⟩
-      rw [← xz₁] at h₁
-      rw [mem_ball, dist_eq_norm, sub_zero] at hx₁
-      have : a ∈ ball a ε := by
-        simp only [mem_ball, dist_self]
-        exact εpos
-      rcases Metric.mem_closure_iff.1 (H this) _ δpos with ⟨z₂, z₂im, h₂⟩
-      rcases (mem_image _ _ _).1 z₂im with ⟨x₂, hx₂, xz₂⟩
-      rw [← xz₂] at h₂
-      rw [mem_ball, dist_eq_norm, sub_zero] at hx₂
-      let x := x₁ - x₂
-      have I : ‖f x - d • y‖ ≤ 2 * δ :=
-        calc
-          ‖f x - d • y‖ = ‖f x₁ - (a + d • y) - (f x₂ - a)‖ := by
-            congr 1
-            simp only [f.map_sub]
-            abel
-          _ ≤ ‖f x₁ - (a + d • y)‖ + ‖f x₂ - a‖ := (norm_sub_le _ _)
-          _ ≤ δ + δ := by rw [dist_eq_norm'] at h₁ h₂; gcongr
-          _ = 2 * δ := (two_mul _).symm
-      have J : ‖f (d⁻¹ • x) - y‖ ≤ 1 / 2 * ‖y‖ :=
-        calc
-          ‖f (d⁻¹ • x) - y‖ = ‖d⁻¹ • f x - (d⁻¹ * d) • y‖ := by
-            rwa [f.map_smul _, inv_mul_cancel, one_smul]
-          _ = ‖d⁻¹ • (f x - d • y)‖ := by rw [mul_smul, smul_sub]
-          _ = ‖d‖⁻¹ * ‖f x - d • y‖ := by rw [norm_smul, norm_inv]
-          _ ≤ ‖d‖⁻¹ * (2 * δ) := by gcongr
-          _ = ‖d‖⁻¹ * ‖d‖ * ‖y‖ / 2 := by
-            simp only
-            ring
-          _ = ‖y‖ / 2 := by
-            rw [inv_mul_cancel, one_mul]
-            simp [norm_eq_zero, hd]
-          _ = 1 / 2 * ‖y‖ := by ring
-      rw [← dist_eq_norm] at J
-      have K : ‖d⁻¹ • x‖ ≤ (ε / 2)⁻¹ * ‖c‖ * 2 * ↑n * ‖y‖ :=
-        calc
-          ‖d⁻¹ • x‖ = ‖d‖⁻¹ * ‖x₁ - x₂‖ := by rw [norm_smul, norm_inv]
-          _ ≤ (ε / 2)⁻¹ * ‖c‖ * ‖y‖ * (n + n) := by
-            gcongr
-            exact le_trans (norm_sub_le _ _) (by gcongr)
-          _ = (ε / 2)⁻¹ * ‖c‖ * 2 * ↑n * ‖y‖ := by ring
-      exact ⟨d⁻¹ • x, J, K⟩
+  refine ⟨(ε / 2)⁻¹ * ‖c‖ * 2 * n, by positivity, fun y => ?_⟩
+  rcases eq_or_ne y 0 with rfl | hy
+  · use 0
+    simp
+  · rcases rescale_to_shell hc (half_pos εpos) hy with ⟨d, hd, ydlt, -, dinv⟩
+    let δ := ‖d‖ * ‖y‖ / 4
+    have δpos : 0 < δ := div_pos (mul_pos (norm_pos_iff.2 hd) (norm_pos_iff.2 hy)) (by norm_num)
+    have : a + d • y ∈ ball a ε := by
+      simp [dist_eq_norm, lt_of_le_of_lt ydlt.le (half_lt_self εpos)]
+    rcases Metric.mem_closure_iff.1 (H this) _ δpos with ⟨z₁, z₁im, h₁⟩
+    rcases (mem_image _ _ _).1 z₁im with ⟨x₁, hx₁, xz₁⟩
+    rw [← xz₁] at h₁
+    rw [mem_ball, dist_eq_norm, sub_zero] at hx₁
+    have : a ∈ ball a ε := by
+      simp only [mem_ball, dist_self]
+      exact εpos
+    rcases Metric.mem_closure_iff.1 (H this) _ δpos with ⟨z₂, z₂im, h₂⟩
+    rcases (mem_image _ _ _).1 z₂im with ⟨x₂, hx₂, xz₂⟩
+    rw [← xz₂] at h₂
+    rw [mem_ball, dist_eq_norm, sub_zero] at hx₂
+    let x := x₁ - x₂
+    have I : ‖f x - d • y‖ ≤ 2 * δ :=
+      calc
+        ‖f x - d • y‖ = ‖f x₁ - (a + d • y) - (f x₂ - a)‖ := by
+          congr 1
+          simp only [f.map_sub]
+          abel
+        _ ≤ ‖f x₁ - (a + d • y)‖ + ‖f x₂ - a‖ := (norm_sub_le _ _)
+        _ ≤ δ + δ := by rw [dist_eq_norm'] at h₁ h₂; gcongr
+        _ = 2 * δ := (two_mul _).symm
+    have J : ‖f (d⁻¹ • x) - y‖ ≤ 1 / 2 * ‖y‖ :=
+      calc
+        ‖f (d⁻¹ • x) - y‖ = ‖d⁻¹ • f x - (d⁻¹ * d) • y‖ := by
+          rwa [f.map_smul _, inv_mul_cancel, one_smul]
+        _ = ‖d⁻¹ • (f x - d • y)‖ := by rw [mul_smul, smul_sub]
+        _ = ‖d‖⁻¹ * ‖f x - d • y‖ := by rw [norm_smul, norm_inv]
+        _ ≤ ‖d‖⁻¹ * (2 * δ) := by gcongr
+        _ = ‖d‖⁻¹ * ‖d‖ * ‖y‖ / 2 := by
+          simp only
+          ring
+        _ = ‖y‖ / 2 := by
+          rw [inv_mul_cancel, one_mul]
+          simp [norm_eq_zero, hd]
+        _ = 1 / 2 * ‖y‖ := by ring
+    rw [← dist_eq_norm] at J
+    have K : ‖d⁻¹ • x‖ ≤ (ε / 2)⁻¹ * ‖c‖ * 2 * ↑n * ‖y‖ :=
+      calc
+        ‖d⁻¹ • x‖ = ‖d‖⁻¹ * ‖x₁ - x₂‖ := by rw [norm_smul, norm_inv]
+        _ ≤ (ε / 2)⁻¹ * ‖c‖ * ‖y‖ * (n + n) := by
+          gcongr
+          exact le_trans (norm_sub_le _ _) (by gcongr)
+        _ = (ε / 2)⁻¹ * ‖c‖ * 2 * ↑n * ‖y‖ := by ring
+    exact ⟨d⁻¹ • x, J, K⟩
 #align continuous_linear_map.exists_approx_preimage_norm_le ContinuousLinearMap.exists_approx_preimage_norm_le
 
 variable [CompleteSpace E]
