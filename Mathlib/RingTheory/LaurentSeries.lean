@@ -3,6 +3,8 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
+
+import Mathlib.Data.Int.Interval
 import Mathlib.RingTheory.HahnSeries
 import Mathlib.RingTheory.Localization.FractionRing
 
@@ -33,9 +35,39 @@ abbrev LaurentSeries (R : Type*) [Zero R] :=
   HahnSeries ℤ R
 #align laurent_series LaurentSeries
 
-variable {R : Type u}
+variable {R : Type*}
 
 namespace LaurentSeries
+
+section Zero
+
+variable [Zero R]
+
+-- generalize to any locally finite linear order?
+theorem supp_bdd_below_supp_Pwo (f : ℤ → R) (n : ℤ) (hn : ∀(m : ℤ), m < n → f m = 0) :
+    (Function.support f).IsPwo := by
+  rw [← @Set.isWf_iff_isPwo]
+  refine Set.bddBelow_wellFoundedOn_lt <| bddBelow_def.mpr ?_
+  use n
+  simp only [Function.mem_support, ne_eq]
+  intro k hk
+  by_contra hnk
+  rw [@Int.not_le] at hnk
+  apply hk (hn k hnk)
+
+/-- Construct a Laurent series from any function with support that is bounded below. -/
+def LaurentFromSuppBddBelow (f : ℤ → R) (n : ℤ) (hn : ∀(m : ℤ), m < n → f m = 0) :
+    LaurentSeries R :=
+  {
+    coeff := f
+    isPwo_support' := supp_bdd_below_supp_Pwo f n hn
+  }
+
+@[simp]
+theorem coeff_LaurentFromSuppBddBelow (f : ℤ → R) (m n : ℤ) (hn : ∀(m : ℤ), m < n → f m = 0) :
+    coeff (LaurentFromSuppBddBelow f n hn) m = f m := by exact rfl
+
+end Zero
 
 section Semiring
 
