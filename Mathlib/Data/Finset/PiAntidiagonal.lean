@@ -129,17 +129,7 @@ def piAntidiagonal (s : Finset ι) (n : μ) : Finset (ι →₀ μ) :=
         simp only [mem_map_equiv, equivCongrLeft_symm, Equiv.symm_symm, equivCongrLeft_apply,
           mem_finAntidiagonal₀, sum_equivMapDomain])
   x.map
-    -- This is a computable version of `embDomain (.subtype _)`.
-    -- See #9325 for an attempt at making an API for this operation.
-    { toFun := fun f =>
-      { support := f.support.map (.subtype _),
-        toFun := fun i => if h : i ∈ s then f ⟨_, h⟩ else 0
-        mem_support_toFun := fun i => by simp }
-      inj' := fun f g h => Finsupp.ext fun i => by
-          replace h := FunLike.congr_fun h i.val
-          dsimp at h
-          simp_rw [dif_pos i.prop] at h
-          exact h }
+    ⟨Finsupp.extendDomain, Function.LeftInverse.injective subtypeDomain_extendDomain⟩
 
 /-- A function belongs to `piAntidiagonal s n`
     iff its support is contained in `s` and the sum of its components is equal to `n` -/
@@ -153,21 +143,13 @@ lemma mem_piAntidiagonal {s : Finset ι} {n : μ} {f : ι →₀ μ} :
   · rintro ⟨f, rfl, rfl⟩
     dsimp [sum]
     constructor
-    · exact Finset.coe_subset.mpr (Finset.map_subtype_subset f.support)
+    · exact Finset.coe_subset.mpr (support_extendDomain_subset _)
     · simp
   · rintro ⟨hsupp, rfl⟩
-    refine (restrictSupportEquiv (s : Set ι) μ).surjective.exists.mpr ⟨⟨f, hsupp⟩, ?_, ?_⟩
-    · simp_rw [sum, restrictSupportEquiv]
-      rw [← sum_subtype_of_mem (p := (· ∈ s)) _ hsupp]
-      dsimp [subtypeDomain]
-      convert rfl
-    · ext i
-      replace hsupp := mt <| @hsupp i
-      rw [not_mem_support_iff] at hsupp
-      dsimp [restrictSupportEquiv]
-      split_ifs with h
-      · simp [subtypeDomain]
-      · exact (hsupp h).symm
+    refine (Function.RightInverse.surjective subtypeDomain_extendDomain).exists.mpr ⟨f, ?_⟩
+    constructor
+    · simp_rw [sum, support_subtypeDomain, subtypeDomain_apply, sum_subtype_of_mem _ hsupp]
+    · rw [extendDomain_subtypeDomain _ hsupp]
 
 end piAntidiagonal
 
