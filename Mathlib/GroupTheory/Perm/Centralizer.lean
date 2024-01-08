@@ -1278,11 +1278,11 @@ theorem hφ_range_card' :
 #align on_cycle_factors.hφ_range_card' Equiv.Perm.OnCycleFactors.hφ_range_card'
 -/
 
-open BigOperators
+open BigOperators Nat
 
 theorem hφ_range_card :
     Fintype.card (φ g).range =
-      ∏ n in g.cycleType.toFinset, (g.cycleType.count n).factorial := by
+      ∏ n in g.cycleType.toFinset, (g.cycleType.count n)! := by
   suffices : Fintype.card (φ g).range =
     Fintype.card { k : Equiv.Perm g.cycleFactorsFinset | fsc₀ ∘ k = fsc₀ }
   rw [this]
@@ -1300,13 +1300,13 @@ theorem hφ_range_card :
 /-
 theorem hφ_range_card :
     Fintype.card (φ g).range =
-      ∏ n in g.cycleType.toFinset, (g.cycleType.count n).factorial := by
+      ∏ n in g.cycleType.toFinset, (g.cycleType.count n)! := by
   -- I would like to avoid that detour through `hφ_range_card'`
   rw [← Nat.card_eq_fintype_card, hφ_range_card']
   simp_rw [Set.coe_setOf]
   rw [DomMulAct.stabilizer_card]
   simp_rw [hlc]
-  rw [← Finset.prod_range fun i => (g.cycleType.count i).factorial]
+  rw [← Finset.prod_range fun i => (g.cycleType.count i)!]
   apply symm
   apply Finset.prod_subset_one_on_sdiff _ _ (fun _ _ ↦ rfl)
   · intro i hi
@@ -1482,25 +1482,6 @@ def θFun (g : Equiv.Perm α)
   left_inv := θAux_inv k v
   right_inv := θAux_inv k⁻¹ v⁻¹ }
 
--- Maybe it would have been simpler to use `Finset.noncommProd`
--- but that requires a bit of API because the factors do not commute obviously
-example (k : Equiv.Perm (Function.fixedPoints g)) : Equiv.Perm α := by
-  have e : ↑(Function.fixedPoints ⇑g) ≃ { a // a ∈ Function.fixedPoints ⇑g }
-  apply Equiv.subtypeEquiv (Equiv.refl α)
-  intro a
-  rfl
-  exact Equiv.Perm.extendDomain k (p := fun a => a ∈ Function.fixedPoints g) e
-
-example (v : (c : g.cycleFactorsFinset) → Subgroup.zpowers (c : Equiv.Perm α)) :
-    Equiv.Perm α := by
-  apply Finset.noncommProd Finset.univ (fun c => ((v c) : Equiv.Perm α))
-  intro a _ b _ h
-  obtain ⟨m, hm⟩ := (v a).prop
-  obtain ⟨n, hn⟩ := (v b).prop
-  rw [← hm, ← hn]
-  apply Commute.zpow_zpow
-  exact g.cycleFactorsFinset_mem_commute a.mem b.mem (Subtype.coe_injective.ne h)
-
 /-- The description of the kernel of `Equiv.Perm.OnCycleFactors.φ g` -/
 def θ (g : Equiv.Perm α) : Equiv.Perm (Function.fixedPoints g) ×
     ((c : g.cycleFactorsFinset) → Subgroup.zpowers (c : Equiv.Perm α)) →* Equiv.Perm α := {
@@ -1514,7 +1495,6 @@ def θ (g : Equiv.Perm α) : Equiv.Perm (Function.fixedPoints g) ×
     simp only [θFun, Equiv.coe_fn_mk, Prod.fst_mul, Prod.snd_mul,
       Equiv.Perm.coe_mul, Equiv.coe_fn_mk, Function.comp_apply, θAux_mul] }
 #align on_cycle_factors.ψ Equiv.Perm.OnCycleFactors.θ
-
 
 theorem hθ_1 (uv) (x : α) (hx : x ∈ Function.fixedPoints g) :
     θ g uv x = uv.fst ⟨x, hx⟩ := by
@@ -1730,7 +1710,7 @@ theorem _root_.Fintype.card_pfun (p : Prop) [Decidable p] (β : p → Type _) [�
 
 theorem hψ_range_card (g : Equiv.Perm α) :
     Fintype.card (θ g).range =
-      (Fintype.card α - g.cycleType.sum).factorial * g.cycleType.prod := by
+      (Fintype.card α - g.cycleType.sum)! * g.cycleType.prod := by
   change Fintype.card ((θ g).range : Set (Equiv.Perm α)) = _
   simp only [MonoidHom.coe_range]
   rw [Set.card_range_of_injective (hθ_injective g)]
@@ -1855,14 +1835,14 @@ end OnCycleFactors
 
 section Centralizer
 
-open BigOperators OnCycleFactors
+open BigOperators Nat OnCycleFactors
 
 -- Should one parenthesize the product ?
 /-- Cardinality of a centralizer in `equiv.perm α` of a given `cycle_type` -/
 theorem conj_stabilizer_card :
     Fintype.card (MulAction.stabilizer (ConjAct (Equiv.Perm α)) g) =
-      (Fintype.card α - g.cycleType.sum).factorial * g.cycleType.prod *
-        (∏ n in g.cycleType.toFinset, (g.cycleType.count n).factorial) := by
+      (Fintype.card α - g.cycleType.sum)! * g.cycleType.prod *
+        (∏ n in g.cycleType.toFinset, (g.cycleType.count n)!) := by
   rw [Subgroup.card_eq_card_quotient_mul_card_subgroup (φ g).ker]
   rw [Fintype.card_congr (QuotientGroup.quotientKerEquivRange (φ g)).toEquiv]
   rw [hφ_range_card]
@@ -1885,10 +1865,10 @@ theorem _root_.Group.conj_class_eq_conj_orbit {G : Type _} [Group G] (g : G) :
 
 theorem _root_.Equiv.Perm.conj_class_card_mul_eq (g : Equiv.Perm α) :
     Fintype.card {h : Equiv.Perm α | IsConj g h} *
-      (Fintype.card α - g.cycleType.sum).factorial *
+      (Fintype.card α - g.cycleType.sum)! *
       g.cycleType.prod *
-      (∏ n in g.cycleType.toFinset, (g.cycleType.count n).factorial) =
-    (Fintype.card α).factorial := by
+      (∏ n in g.cycleType.toFinset, (g.cycleType.count n)!) =
+    (Fintype.card α)! := by
   classical
   simp_rw [Group.conj_class_eq_conj_orbit g]
   simp only [mul_assoc]
@@ -1913,10 +1893,10 @@ theorem _root_.Multiset.prod_pos {R : Type _} [StrictOrderedCommSemiring R] (m :
 /-- Cardinality of a conjugacy class in `Equiv.Perm α` of a given `cycleType` -/
 theorem conj_class_card (g : Equiv.Perm α) :
     Fintype.card {h : Equiv.Perm α | IsConj g h} =
-      (Fintype.card α).factorial /
-        ((Fintype.card α - g.cycleType.sum).factorial *
+      (Fintype.card α)! /
+        ((Fintype.card α - g.cycleType.sum)! *
           g.cycleType.prod *
-          (∏ n in g.cycleType.toFinset, (g.cycleType.count n).factorial)) := by
+          (∏ n in g.cycleType.toFinset, (g.cycleType.count n)!)) := by
   rw [← Equiv.Perm.conj_class_card_mul_eq g]
   rw [Nat.div_eq_of_eq_mul_left _]
   simp only [← mul_assoc]
@@ -1936,9 +1916,9 @@ theorem card_of_cycleType_eq_zero_iff {m : Multiset ℕ} :
 
 theorem card_of_cycleType_mul_eq (m : Multiset ℕ) :
     (Finset.univ.filter fun g : Equiv.Perm α => g.cycleType = m).card *
-        ((Fintype.card α - m.sum).factorial * m.prod *
-          (∏ n in m.toFinset, (m.count n).factorial)) =
-      if (m.sum ≤ Fintype.card α ∧ ∀ a ∈ m, 2 ≤ a) then (Fintype.card α).factorial else 0 := by
+        ((Fintype.card α - m.sum)! * m.prod *
+          (∏ n in m.toFinset, (m.count n)!)) =
+      if (m.sum ≤ Fintype.card α ∧ ∀ a ∈ m, 2 ≤ a) then (Fintype.card α)! else 0 := by
   split_ifs with hm
   · -- nonempty case
     obtain ⟨g, hg⟩ := (Equiv.Perm.exists_with_cycleType_iff α).mpr hm
@@ -1965,9 +1945,9 @@ theorem card_of_cycleType (m : Multiset ℕ) :
     (Finset.univ.filter
       fun g : Equiv.Perm α => g.cycleType = m).card =
       if m.sum ≤ Fintype.card α ∧ ∀ a ∈ m, 2 ≤ a then
-        (Fintype.card α).factorial /
-          ((Fintype.card α - m.sum).factorial * m.prod *
-            (∏ n in m.toFinset, (m.count n).factorial))
+        (Fintype.card α)! /
+          ((Fintype.card α - m.sum)! * m.prod *
+            (∏ n in m.toFinset, (m.count n)!))
       else 0 := by
   split_ifs with hm
   · -- nonempty case
@@ -1993,7 +1973,7 @@ section AlternatingGroup
 
 variable {α : Type*} [Fintype α] [DecidableEq α] (g : Equiv.Perm α)
 
-open BigOperators Equiv.Perm.OnCycleFactors
+open BigOperators Nat Equiv.Perm.OnCycleFactors
 
 namespace AlternatingGroup
 
@@ -2034,10 +2014,10 @@ theorem of_cycleType_eq (m : Multiset ℕ) :
 theorem card_of_cycleType_mul_eq (m : Multiset ℕ) :
     (Finset.univ.filter
       fun g : alternatingGroup α => (g : Equiv.Perm α).cycleType = m).card *
-        ((Fintype.card α - m.sum).factorial *
-          (m.prod * (∏ n in m.toFinset, (m.count n).factorial))) =
+        ((Fintype.card α - m.sum)! *
+          (m.prod * (∏ n in m.toFinset, (m.count n)!))) =
       if ((m.sum ≤ Fintype.card α ∧ ∀ a ∈ m, 2 ≤ a) ∧ Even (m.sum + Multiset.card m))
-        then (Fintype.card α).factorial
+        then (Fintype.card α)!
         else 0 := by
   split_ifs with hm
   · -- m is an even cycle_type
@@ -2070,9 +2050,9 @@ theorem card_of_cycleType_mul_eq (m : Multiset ℕ) :
 theorem card_of_cycleType (m : Multiset ℕ) :
     (Finset.univ.filter fun g : alternatingGroup α => (g : Equiv.Perm α).cycleType = m).card =
       if (m.sum ≤ Fintype.card α ∧ ∀ a ∈ m, 2 ≤ a) ∧ Even (m.sum + Multiset.card m) then
-        (Fintype.card α).factorial /
-          ((Fintype.card α - m.sum).factorial *
-            (m.prod * (∏ n in m.toFinset, (m.count n).factorial)))
+        (Fintype.card α)! /
+          ((Fintype.card α - m.sum)! *
+            (m.prod * (∏ n in m.toFinset, (m.count n)!)))
       else 0 := by
   split_ifs with hm
   · -- m is an even cycle_type
@@ -2098,22 +2078,6 @@ theorem card_of_cycleType (m : Multiset ℕ) :
     exact hm'
     rw [if_neg]; exact hm'
 #align on_cycle_factors.alternating_group.card_of_cycle_type AlternatingGroup.card_of_cycleType
-
-example :
-    MulAction.stabilizer (ConjAct (Equiv.Perm α)) g ≤
-      Subgroup.map ConjAct.toConjAct.toMonoidHom (alternatingGroup α) ↔
-    Subgroup.comap ConjAct.toConjAct.toMonoidHom
-      (MulAction.stabilizer (ConjAct (Equiv.Perm α)) g) ≤ alternatingGroup α := by
-  rw [Subgroup.comap_equiv_eq_map_symm]
-  rw [Subgroup.map_equiv_eq_comap_symm]
-  rw [← GaloisConnection.le_iff_le (Subgroup.gc_map_comap _)]
-
- example :
-    MulAction.stabilizer (ConjAct (Equiv.Perm α)) g ≤
-      Subgroup.comap ConjAct.toConjAct.symm.toMonoidHom (alternatingGroup α) ↔
-    Subgroup.map ConjAct.toConjAct.symm.toMonoidHom
-      (MulAction.stabilizer (ConjAct (Equiv.Perm α)) g) ≤ alternatingGroup α := by
-  rw [← GaloisConnection.le_iff_le (Subgroup.gc_map_comap _)]
 
 theorem card_le_of_mem_kerφ
     (h : Subgroup.comap ConjAct.toConjAct.toMonoidHom
@@ -2203,12 +2167,12 @@ theorem _root_.Equiv.Perm.OnCycleFactors.count_le_one_of_kerφ_le_alternating
       simp only [Commute, SemiconjBy] at this
       rw [← Equiv.Perm.mul_apply, this, Equiv.Perm.mul_apply, EmbeddingLike.apply_eq_iff_eq]
       induction' m with m hrec
-      · simp only [pow_zero, Equiv.Perm.coe_one, id.def]
-      · rw [pow_succ, Equiv.Perm.mul_apply]
+      · simp only [_root_.pow_zero, Equiv.Perm.coe_one, id.def]
+      · rw [_root_.pow_succ, Equiv.Perm.mul_apply]
         rw [hrec]
         rw [φ'_apply a ⟨τ, hτ⟩]
         rw [k_apply_base _ hτ]
-        rw [pow_succ]; rw [Equiv.Perm.coe_mul]
+        rw [_root_.pow_succ]; rw [Equiv.Perm.coe_mul]
         rfl
       apply Commute.pow_pow
       rw [Commute, SemiconjBy, ← mul_inv_eq_iff_eq_mul]

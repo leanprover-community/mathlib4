@@ -31,7 +31,8 @@ Let `α` and `ι` by types and let `f : α → ι`
   the cardinality of the type of permutations preserving `p` :
   `Fintype.card {g : Perm α // f ∘ g = f} = ∏ i, (Fintype.card {a // f a = i})!`.
 
-* Without `Fintype ι`, `DomMulAct.stabilizer_card' p` gives an equivalent formula, where the product is restricted to `Finset.univ.image f`.
+* Without `Fintype ι`, `DomMulAct.stabilizer_card' p` gives an equivalent
+  formula, where the product is restricted to `Finset.univ.image f`.
 -/
 
 variable {α ι : Type*} {f : α → ι}
