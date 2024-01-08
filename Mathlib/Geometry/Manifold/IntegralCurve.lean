@@ -580,10 +580,9 @@ lemma exists_isIntegralCurveOn_Ioo_eqOn [BoundarylessManifold I M]
     (hle : a' ≤ a) : EqOn (choose (h a')) (choose (h a)) (Ioo (-a') a') := by
   have ⟨h0', hγ'⟩ := choose_spec (h a')
   have ⟨h0, hγ⟩ := choose_spec (h a)
-  apply isIntegralCurveOn_Ioo_eqOn_of_contMDiff_boundaryless (t₀ := 0) _ hv hγ' (hγ.mono _)
-    (by rw [h0', h0])
-  · rw [mem_Ioo, ← abs_lt, abs_zero]
-    exact hpos
+  apply isIntegralCurveOn_Ioo_eqOn_of_contMDiff_boundaryless _ hv hγ' (hγ.mono _) (by rw [h0', h0])
+  · rw [mem_Ioo]
+    exact ⟨neg_lt_zero.mpr hpos, by positivity⟩
   · apply Ioo_subset_Ioo <;> linarith
 
 /-- Auxiliary lemma. Suppose for every `a : ℝ`, there exists an integral curve defined on
@@ -596,9 +595,7 @@ lemma integralCurve_of_exists_isIntegralCurveOn_Ioo_eqOn [BoundarylessManifold I
     EqOn (fun t' ↦ choose (h (|t'| + 1)) t') (choose (h a)) (Ioo (-a) a) := by
   intros t' ht'
   by_cases hlt : |t'| + 1 < a
-  · apply exists_isIntegralCurveOn_Ioo_eqOn hv h
-    · exact add_pos_of_nonneg_of_pos (abs_nonneg _) zero_lt_one
-    · exact le_of_lt hlt
+  · apply exists_isIntegralCurveOn_Ioo_eqOn hv h (by positivity) (le_of_lt hlt)
     · rw [mem_Ioo, ← abs_lt]
       exact lt_add_one _
   · apply (exists_isIntegralCurveOn_Ioo_eqOn hv h _ _ _).symm
@@ -621,21 +618,17 @@ lemma exists_integralCurve_of_exists_isIntegralCurveOn_Ioo [BoundarylessManifold
     rw [mem_Ioo, ← abs_lt]
     exact lt_add_one _
   · rw [Filter.eventuallyEq_iff_exists_mem]
-    refine ⟨Ioo (-(|t| + 1)) (|t| + 1), ?_, ?_⟩
+    refine ⟨Ioo (-(|t| + 1)) (|t| + 1), ?_, integralCurve_of_exists_isIntegralCurveOn_Ioo_eqOn hv h⟩
     · have := lt_add_of_pos_right |t| zero_lt_one
       rw [abs_lt] at this
       exact Ioo_mem_nhds this.1 this.2
-    · apply integralCurve_of_exists_isIntegralCurveOn_Ioo_eqOn hv
 
 lemma exists_isIntegralCurve_iff_exists_isIntegralCurveOn_Ioo [BoundarylessManifold I M] [T2Space M]
     (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M))) (x : M) :
     (∃ γ, γ 0 = x ∧ IsIntegralCurve γ v) ↔
-      ∀ a, ∃ γ, γ 0 = x ∧ IsIntegralCurveOn γ v (Ioo (-a) a) := by
-  constructor
-  · rintro ⟨γ, h1, h2⟩
-    intro a
-    exact ⟨γ, h1, h2.isIntegralCurveOn _⟩
-  · apply exists_integralCurve_of_exists_isIntegralCurveOn_Ioo hv
+      ∀ a, ∃ γ, γ 0 = x ∧ IsIntegralCurveOn γ v (Ioo (-a) a) :=
+  ⟨fun ⟨γ, h1, h2⟩ _ ↦ ⟨γ, h1, h2.isIntegralCurveOn _⟩,
+   exists_integralCurve_of_exists_isIntegralCurveOn_Ioo hv⟩
 
 lemma piecewise_eqOn_symm [BoundarylessManifold I M]
     (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M)))
@@ -724,7 +717,7 @@ lemma exists_isIntegralCurve_of_isIntegralCurveOn [BoundarylessManifold I M]
       apply (hγ1_aux.comp_add (asup - ε / 2)).mono
       intro t
       rw [mem_Ioo, mem_setOf, mem_Ioo]
-      rintro ⟨_, _⟩
+      intros
       constructor <;> linarith
     -- integral curve starting at `asup - ε / 2` with radius `ε`
     obtain ⟨γ2_aux, h2_aux, hγ2_aux⟩ := h (γ (asup - ε / 2))
