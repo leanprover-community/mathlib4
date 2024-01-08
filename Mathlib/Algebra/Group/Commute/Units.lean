@@ -13,10 +13,10 @@ import Mathlib.Algebra.Group.Semiconj.Units
 
 -/
 
-variable {α : Type*}
+variable {M : Type*}
 
 section Monoid
-variable [Monoid α] {n : ℕ} {a b : α} {u u₁ u₂ : αˣ}
+variable [Monoid M] {n : ℕ} {a b : M} {u u₁ u₂ : Mˣ}
 
 namespace Commute
 
@@ -45,19 +45,19 @@ theorem units_inv_left_iff : Commute (↑u⁻¹) a ↔ Commute (↑u) a :=
 #align add_commute.add_units_neg_left_iff AddCommute.addUnits_neg_left_iff
 
 @[to_additive]
-theorem units_val : Commute u₁ u₂ → Commute (u₁ : α) u₂ :=
+theorem units_val : Commute u₁ u₂ → Commute (u₁ : M) u₂ :=
   SemiconjBy.units_val
 #align commute.units_coe Commute.units_val
 #align add_commute.add_units_coe AddCommute.addUnits_val
 
 @[to_additive]
-theorem units_of_val : Commute (u₁ : α) u₂ → Commute u₁ u₂ :=
+theorem units_of_val : Commute (u₁ : M) u₂ → Commute u₁ u₂ :=
   SemiconjBy.units_of_val
 #align commute.units_of_coe Commute.units_of_val
 #align add_commute.add_units_of_coe AddCommute.addUnits_of_val
 
 @[to_additive (attr := simp)]
-theorem units_val_iff : Commute (u₁ : α) u₂ ↔ Commute u₁ u₂ :=
+theorem units_val_iff : Commute (u₁ : M) u₂ ↔ Commute u₁ u₂ :=
   SemiconjBy.units_val_iff
 #align commute.units_coe_iff Commute.units_val_iff
 #align add_commute.add_units_coe_iff AddCommute.addUnits_val_iff
@@ -67,7 +67,7 @@ end Commute
 /-- If the product of two commuting elements is a unit, then the left multiplier is a unit. -/
 @[to_additive "If the sum of two commuting elements is an additive unit, then the left summand is
 an additive unit."]
-def Units.leftOfMul (u : αˣ) (a b : α) (hu : a * b = u) (hc : Commute a b) : αˣ where
+def Units.leftOfMul (u : Mˣ) (a b : M) (hu : a * b = u) (hc : Commute a b) : Mˣ where
   val := a
   inv := b * ↑u⁻¹
   val_inv := by rw [← mul_assoc, hu, u.mul_inv]
@@ -80,7 +80,7 @@ def Units.leftOfMul (u : αˣ) (a b : α) (hu : a * b = u) (hc : Commute a b) : 
 /-- If the product of two commuting elements is a unit, then the right multiplier is a unit. -/
 @[to_additive "If the sum of two commuting elements is an additive unit, then the right summand
 is an additive unit."]
-def Units.rightOfMul (u : αˣ) (a b : α) (hu : a * b = u) (hc : Commute a b) : αˣ :=
+def Units.rightOfMul (u : Mˣ) (a b : M) (hu : a * b = u) (hc : Commute a b) : Mˣ :=
   u.leftOfMul b a (hc.eq ▸ hu) hc.symm
 #align units.right_of_mul Units.rightOfMul
 #align add_units.right_of_add AddUnits.rightOfAdd
@@ -112,7 +112,7 @@ lemma Commute.units_zpow_left (h : Commute ↑u a) (m : ℤ) : Commute ↑(u ^ m
 
 /-- If a natural power of `x` is a unit, then `x` is a unit. -/
 @[to_additive "If a natural multiple of `x` is an additive unit, then `x` is an additive unit."]
-def Units.ofPow (u : αˣ) (x : α) {n : ℕ} (hn : n ≠ 0) (hu : x ^ n = u) : αˣ :=
+def Units.ofPow (u : Mˣ) (x : M) {n : ℕ} (hn : n ≠ 0) (hu : x ^ n = u) : Mˣ :=
   u.leftOfMul x (x ^ (n - 1))
     (by rwa [← _root_.pow_succ, Nat.sub_add_cancel (Nat.succ_le_of_lt <| Nat.pos_of_ne_zero hn)])
     (Commute.self_pow _ _)
@@ -131,7 +131,7 @@ lemma isUnit_pow_succ_iff : IsUnit (a ^ (n + 1)) ↔ IsUnit a := isUnit_pow_iff 
 
 /-- If `a ^ n = 1`, `n ≠ 0`, then `a` is a unit. -/
 @[to_additive (attr := simps!) "If `n • x = 0`, `n ≠ 0`, then `x` is an additive unit."]
-def Units.ofPowEqOne (a : α) (n : ℕ) (ha : a ^ n = 1) (hn : n ≠ 0) : αˣ := Units.ofPow 1 a hn ha
+def Units.ofPowEqOne (a : M) (n : ℕ) (ha : a ^ n = 1) (hn : n ≠ 0) : Mˣ := Units.ofPow 1 a hn ha
 #align units.of_pow_eq_one Units.ofPowEqOne
 #align add_units.of_nsmul_eq_zero AddUnits.ofNSMulEqZero
 
@@ -150,7 +150,7 @@ lemma isUnit_ofPowEqOne (ha : a ^ n = 1) (hn : n ≠ 0) : IsUnit a :=
 end Monoid
 
 section DivisionMonoid
-variable [DivisionMonoid α] {a b c d : α}
+variable [DivisionMonoid M] {a b c d : M}
 
 @[to_additive]
 lemma Commute.div_eq_div_iff_of_isUnit (hbd : Commute b d) (hb : IsUnit b) (hd : IsUnit d) :
