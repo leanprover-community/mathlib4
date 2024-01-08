@@ -32,28 +32,6 @@ variable {α : Type*} {M : Type u} {N : Type v} {G : Type w} {H : Type x} {A : T
 ### (Additive) monoid
 -/
 
-section Monoid
-
-variable [Monoid M] [Monoid N] [AddMonoid A] [AddMonoid B]
-
-theorem smul_pow [MulAction M N] [IsScalarTower M N N] [SMulCommClass M N N] (k : M) (x : N)
-    (p : ℕ) : (k • x) ^ p = k ^ p • x ^ p := by
-  induction' p with p IH
-  · simp
-  · rw [pow_succ', IH, smul_mul_smul, ← pow_succ', ← pow_succ']
-#align smul_pow smul_pow
-
-@[simp]
-theorem smul_pow' [MulDistribMulAction M N] (x : M) (m : N) (n : ℕ) : x • m ^ n = (x • m) ^ n := by
-  induction' n with n ih
-  · rw [pow_zero, pow_zero]
-    exact smul_one x
-  · rw [pow_succ, pow_succ]
-    exact (smul_mul' x m (m ^ n)).trans (congr_arg _ ih)
-#align smul_pow' smul_pow'
-
-end Monoid
-
 section DivisionMonoid
 
 variable [DivisionMonoid α]
@@ -413,15 +391,6 @@ theorem abs_add_eq_add_abs_iff (a b : α) : |a + b| = |a| + |b| ↔ 0 ≤ a ∧ 
 #align abs_add_eq_add_abs_iff abs_add_eq_add_abs_iff
 
 end LinearOrderedAddCommGroup
-
-@[simp]
-theorem WithBot.coe_nsmul [AddMonoid A] (a : A) (n : ℕ) : ↑(n • a) = n • (a : WithBot A) :=
-  AddMonoidHom.map_nsmul
-    { toFun := fun a : A => (a : WithBot A),
-      map_zero' := WithBot.coe_zero,
-      map_add' := WithBot.coe_add }
-    a n
-#align with_bot.coe_nsmul WithBot.coe_nsmul
 
 section bit0_bit1
 

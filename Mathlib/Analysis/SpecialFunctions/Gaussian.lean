@@ -628,7 +628,7 @@ theorem isLittleO_exp_neg_mul_sq_cocompact {a : ℂ} (ha : 0 < a.re) (s : ℝ) :
           tendsto_rpow_abs_mul_exp_neg_mul_sq_cocompact ha (-s))
     refine' (eventually_cofinite_ne 0).mp (eventually_of_forall fun x _ => _)
     dsimp only
-    rw [norm_mul, norm_of_nonneg (rpow_nonneg_of_nonneg (abs_nonneg _) _), mul_comm,
+    rw [norm_mul, norm_of_nonneg (rpow_nonneg (abs_nonneg _) _), mul_comm,
       rpow_neg (abs_nonneg x), div_eq_mul_inv, norm_of_nonneg (exp_pos _).le]
 #align is_o_exp_neg_mul_sq_cocompact isLittleO_exp_neg_mul_sq_cocompact
 
