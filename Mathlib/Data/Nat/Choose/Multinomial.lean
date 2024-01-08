@@ -58,7 +58,9 @@ theorem multinomial_nil : multinomial ∅ f = 1 := by
   rfl
 #align nat.multinomial_nil Nat.multinomial_nil
 
-lemma multinomial_cons (ha : a ∉ s) :
+variable {s f}
+
+lemma multinomial_cons (ha : a ∉ s) (f : α → ℕ) :
     multinomial (s.cons a ha) f = (f a + ∑ i in s, f i).choose (f a) * multinomial s f := by
   rw [multinomial, Nat.div_eq_iff_eq_mul_left _ (prod_factorial_dvd_factorial_sum _ _), prod_cons,
     multinomial, mul_assoc, mul_left_comm _ (f a)!,
@@ -66,13 +68,13 @@ lemma multinomial_cons (ha : a ∉ s) :
     Nat.add_choose_mul_factorial_mul_factorial, Finset.sum_cons]
   exact prod_pos fun i _ ↦ by positivity
 
-lemma multinomial_insert [DecidableEq α] {s : Finset α} (ha : a ∉ s) (f : α → ℕ) :
+lemma multinomial_insert [DecidableEq α] (ha : a ∉ s) (f : α → ℕ) :
     multinomial (insert a s) f = (f a + ∑ i in s, f i).choose (f a) * multinomial s f := by
   rw [← cons_eq_insert _ _ ha, multinomial_cons]
 #align nat.multinomial_insert Nat.multinomial_insert
 
-@[simp]
-lemma multinomial_singleton : multinomial {a} f = 1 := by rw [← cons_empty, multinomial_cons]; simp
+@[simp] lemma multinomial_singleton (a : α) (f : α → ℕ) : multinomial {a} f = 1 := by
+  rw [← cons_empty, multinomial_cons]; simp
 #align nat.multinomial_singleton Nat.multinomial_singleton
 
 @[simp]
