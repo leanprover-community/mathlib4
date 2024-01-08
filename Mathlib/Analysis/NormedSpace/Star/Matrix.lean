@@ -180,7 +180,7 @@ lemma l2_op_norm_mulVec (A : Matrix m n 𝕜) (x : EuclideanSpace 𝕜 n) :
     ‖(EuclideanSpace.equiv m 𝕜).symm <| A.mulVec x‖ ≤ ‖A‖ * ‖x‖ :=
   toEuclideanLin (n := n) (m := m) (𝕜 := 𝕜) |>.trans toContinuousLinearMap A |>.le_op_norm x
 
-lemma l2_op_nnnorm_mulVec_le (A : Matrix m n 𝕜) (x : EuclideanSpace 𝕜 n) :
+lemma l2_op_nnnorm_mulVec (A : Matrix m n 𝕜) (x : EuclideanSpace 𝕜 n) :
     ‖(EuclideanSpace.equiv m 𝕜).symm <| A.mulVec x‖₊ ≤ ‖A‖₊ * ‖x‖₊ :=
   A.l2_op_norm_mulVec x
 
@@ -214,8 +214,10 @@ def instL2OpNormedRing : NormedRing (Matrix n n 𝕜) where
 
 scoped[Matrix.L2OpNorm] attribute [instance] Matrix.instL2OpNormedRing
 
+/-- This is the same as `Matrix.l2_op_norm_def`, but with a more bundled RHS for square matrices. -/
 lemma cstar_norm_def (A : Matrix n n 𝕜) : ‖A‖ = ‖toEuclideanClm (n := n) (𝕜 := 𝕜) A‖ := rfl
 
+/-- This is the same as `Matrix.l2_op_nnnorm_def`, but with a more bundled RHS for square matrices. -/
 lemma cstar_nnnorm_def (A : Matrix n n 𝕜) : ‖A‖₊ = ‖toEuclideanClm (n := n) (𝕜 := 𝕜) A‖₊ := rfl
 
 /-- The normed algebra structure on `Matrix n n 𝕜` arising from the operator norm given by the
