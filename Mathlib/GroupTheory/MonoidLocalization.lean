@@ -1928,7 +1928,7 @@ theorem leftCancelMulZero_of_le_isLeftRegular
       have b1ne0 : b.1 ≠ 0 := by
         by_contra hb1
         have m0: (LocalizationMap.toMap fl) 0 = 0 := f.map_zero'
-        have a0: a * (LocalizationMap.toMap fl) b.2 = 0 ↔ a = 0 := 
+        have a0: a * (LocalizationMap.toMap fl) b.2 = 0 ↔ a = 0 :=
           (f.toLocalizationMap.map_units' b.2).mul_left_eq_zero
         rw [hb1, m0, a0] at hb
         exact ha hb
