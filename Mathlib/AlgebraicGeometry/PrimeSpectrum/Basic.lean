@@ -53,8 +53,6 @@ universe u v
 
 variable (R : Type u) (S : Type v)
 
-
-
 /-- The prime spectrum of a commutative (semi)ring `R` is the type of all prime ideals of `R`.
 
 It is naturally endowed with a topology (the Zariski topology),
@@ -580,7 +578,6 @@ instance compactSpace : CompactSpace (PrimeSpectrum R) := by
   simp_rw [hI, ← zeroLocus_iSup, zeroLocus_empty_iff_eq_top, ← top_le_iff] at S_empty ⊢
   exact Ideal.isCompactElement_top.exists_finset_of_le_iSup _ _ S_empty
 
-
 section Comap
 
 variable {S' : Type*} [CommSemiring S']
@@ -735,8 +732,6 @@ theorem comap_singleton_isClosed_of_isIntegral (f : R →+* S) (hf : f.IsIntegra
       (isClosed_singleton_iff_isMaximal x).1 hx)
 #align prime_spectrum.comap_singleton_is_closed_of_is_integral PrimeSpectrum.comap_singleton_isClosed_of_isIntegral
 
-
-
 theorem image_comap_zeroLocus_eq_zeroLocus_comap (hf : Surjective f) (I : Ideal S) :
     comap f '' zeroLocus I = zeroLocus (I.comap f) := by
   simp only [Set.ext_iff, Set.mem_image, mem_zeroLocus, SetLike.coe_subset_coe]
@@ -779,13 +774,10 @@ end SpecOfSurjective
 
 section CommSemiRing
 
-
 variable [CommSemiring R] [CommSemiring S]
 variable {R S}
 
 section BasicOpen
-
-
 
 /-- `basicOpen r` is the open subset containing all prime ideals not containing `r`. -/
 def basicOpen (r : R) : TopologicalSpace.Opens (PrimeSpectrum R) where
@@ -1036,9 +1028,7 @@ end CommRing
 
 namespace LocalRing
 
-variable [CommSemiring R]
-
-variable [LocalRing R]
+variable [CommSemiring R] [LocalRing R]
 
 /-- The closed point in the prime spectrum of a local ring. -/
 def closedPoint : PrimeSpectrum R :=
