@@ -499,7 +499,7 @@ theorem mem_map {S : Subalgebra R A} {f : A →ₐ[R] B} {y : B} : y ∈ map f S
 #align subalgebra.mem_map Subalgebra.mem_map
 
 theorem map_toSubmodule {S : Subalgebra R A} {f : A →ₐ[R] B} :
-    (toSubmodule $ S.map f) = S.toSubmodule.map f.toLinearMap :=
+    (toSubmodule <| S.map f) = S.toSubmodule.map f.toLinearMap :=
   SetLike.coe_injective rfl
 #align subalgebra.map_to_submodule Subalgebra.map_toSubmodule
 

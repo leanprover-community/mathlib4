@@ -603,7 +603,7 @@ variable [AddGroup α] (a b : α)
 #align equiv.add_right_zero Equiv.addRight_zero
 
 @[simp] lemma addLeft_add : Equiv.addLeft (a + b) = Equiv.addLeft a * Equiv.addLeft b :=
-  ext $ add_assoc _ _
+  ext <| add_assoc _ _
 #align equiv.add_left_add Equiv.addLeft_add
 
 @[simp] lemma addRight_add : Equiv.addRight (a + b) = Equiv.addRight b * Equiv.addRight a :=
@@ -649,7 +649,7 @@ lemma mulRight_one : Equiv.mulRight (1 : α) = 1 := ext mul_one
 
 @[to_additive existing (attr := simp)]
 lemma mulLeft_mul : Equiv.mulLeft (a * b) = Equiv.mulLeft a * Equiv.mulLeft b :=
-  ext $ mul_assoc _ _
+  ext <| mul_assoc _ _
 #align equiv.mul_left_mul Equiv.mulLeft_mul
 
 @[to_additive existing (attr := simp)]
