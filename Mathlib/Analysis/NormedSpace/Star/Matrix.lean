@@ -180,7 +180,7 @@ lemma l2_op_norm_mulVec (A : Matrix m n 𝕜) (x : EuclideanSpace 𝕜 n) :
     ‖(EuclideanSpace.equiv m 𝕜).symm <| A.mulVec x‖ ≤ ‖A‖ * ‖x‖ :=
   toEuclideanLin (n := n) (m := m) (𝕜 := 𝕜) |>.trans toContinuousLinearMap A |>.le_op_norm x
 
-lemma l2_op_nnnorm_mulVec_le (A : Matrix m n 𝕜) (x : EuclideanSpace 𝕜 n) :
+lemma l2_op_nnnorm_mulVec (A : Matrix m n 𝕜) (x : EuclideanSpace 𝕜 n) :
     ‖(EuclideanSpace.equiv m 𝕜).symm <| A.mulVec x‖₊ ≤ ‖A‖₊ * ‖x‖₊ :=
   A.l2_op_norm_mulVec x
 
