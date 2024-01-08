@@ -418,28 +418,6 @@ proof_wanted IsPurelyInseparable.of_injective_comp_algebraMap (L : Type w) [Fiel
     (hn : Nonempty (E →+* L)) (h : Function.Injective fun f : E →+* L ↦ f.comp (algebraMap F E)) :
     IsPurelyInseparable F E
 
-variable {F E} in
-/-- If `E / F` is an algebraic extension, `F` is separably closed,
-then `E` is also separably closed. -/
-theorem Algebra.IsAlgebraic.isSepClosed (halg : Algebra.IsAlgebraic F E)
-    [IsSepClosed F] : IsSepClosed E := .of_exists_root E fun f hm hi hs ↦ by
-  haveI := Fact.mk hi
-  have hf := AdjoinRoot.minpoly_root hi.ne_zero
-  rw [hm, inv_one, map_one, mul_one] at hf
-  rw [← hf, ← isSeparable_adjoin_simple_iff_separable] at hs
-  haveI := halg.isPurelyInseparable_of_isSepClosed
-  have halg2 := IsSeparable.isAlgebraic E E⟮AdjoinRoot.root f⟯
-  haveI := halg.trans halg2 |>.isPurelyInseparable_of_isSepClosed
-  have hdeg := finSepDegree_mul_finSepDegree_of_isAlgebraic F _ _ halg2
-  simp_rw [IsPurelyInseparable.finSepDegree_eq_one F _,
-    finSepDegree_eq_finrank_of_isSeparable E _, one_mul,
-    finrank_eq_one_iff (F := E) (E := AdjoinRoot f)] at hdeg
-  obtain ⟨x, h⟩ := hdeg ▸ mem_adjoin_simple_self E (AdjoinRoot.root f)
-  replace h := congr(aeval $h (minpoly E (AdjoinRoot.root f)))
-  erw [minpoly.aeval, hf, aeval_algebraMap_apply,
-    ← map_zero (f := algebraMap E (AdjoinRoot f))] at h
-  exact ⟨x, (algebraMap E _).injective h⟩
-
 end IsPurelyInseparable
 
 namespace IntermediateField
@@ -528,6 +506,66 @@ instance isPurelyInseparable_iSup {ι : Type*} {t : ι → IntermediateField F E
   exact h x hi
 
 end IntermediateField
+
+variable {F E} in
+/-- If `E / F` is an algebraic extension, `F` is separably closed,
+then `E` is also separably closed. -/
+theorem Algebra.IsAlgebraic.isSepClosed (halg : Algebra.IsAlgebraic F E)
+    [IsSepClosed F] : IsSepClosed E := .of_exists_root E fun f hm hi hs ↦ by
+  haveI := Fact.mk hi
+  have hf := AdjoinRoot.minpoly_root hi.ne_zero
+  rw [hm, inv_one, map_one, mul_one] at hf
+  rw [← hf, ← isSeparable_adjoin_simple_iff_separable] at hs
+  haveI := halg.isPurelyInseparable_of_isSepClosed
+  have halg2 := IsSeparable.isAlgebraic E E⟮AdjoinRoot.root f⟯
+  haveI := halg.trans halg2 |>.isPurelyInseparable_of_isSepClosed
+  have hdeg := finSepDegree_mul_finSepDegree_of_isAlgebraic F _ _ halg2
+  simp_rw [IsPurelyInseparable.finSepDegree_eq_one F _,
+    finSepDegree_eq_finrank_of_isSeparable E _, one_mul,
+    finrank_eq_one_iff (F := E) (E := AdjoinRoot f)] at hdeg
+  obtain ⟨x, h⟩ := hdeg ▸ mem_adjoin_simple_self E (AdjoinRoot.root f)
+  replace h := congr(aeval $h (minpoly E (AdjoinRoot.root f)))
+  erw [minpoly.aeval, hf, aeval_algebraMap_apply,
+    ← map_zero (f := algebraMap E (AdjoinRoot f))] at h
+  exact ⟨x, (algebraMap E _).injective h⟩
+
+/-- If `E` is an algebraic closure of `F`, then `F` is separably closed if and only if `E / F` is
+purely inseparable. -/
+theorem isSepClosed_iff_isPurelyInseparable_algebraicClosure [IsAlgClosure F E] :
+    IsSepClosed F ↔ IsPurelyInseparable F E := by
+  refine ⟨fun _ ↦ Normal.isAlgebraic'.isPurelyInseparable_of_isSepClosed, fun H ↦ ?_⟩
+  haveI := IsAlgClosure.alg_closed F (K := E)
+  rwa [← separableClosure.eq_bot_iff F E Normal.isAlgebraic',
+    IsSepClosed.separableClosure_eq_bot_iff] at H
+
+/-- If `E / F` is a separable extension, `E` is perfect, then `F` is also prefect. -/
+theorem perfectField_of_isSeparable_of_perfectField_top [IsSeparable F E] [PerfectField E] :
+    PerfectField F := by
+  obtain ⟨p, hchar⟩ := CharP.exists F
+  by_cases hp : p = 0
+  · haveI := (CharP.charP_zero_iff_charZero F).1 (hp ▸ hchar)
+    exact PerfectField.ofCharZero F
+  haveI := NeZero.mk hp
+  haveI := CharP.char_is_prime_of_pos F p
+  haveI := charP_of_injective_algebraMap' F E p
+  haveI := PerfectField.toPerfectRing E p
+  haveI := PerfectRing.ofSurjective F p fun x ↦ by
+    haveI : ExpChar F p := ExpChar.prime Fact.out
+    obtain ⟨y, h⟩ := surjective_frobenius E p ((algebraMap F E) x)
+    haveI := (isPurelyInseparable_adjoin_simple_iff_mem_pow F p (x := y)).2
+      ⟨1, x, by rw [← h, pow_one, frobenius_def]⟩
+    haveI := isSeparable_tower_bot_of_isSeparable F F⟮y⟯ E
+    obtain ⟨z, h'⟩ := F⟮y⟯.eq_bot_of_isPurelyInseparable_of_isSeparable.le <|
+      mem_adjoin_simple_self F y
+    exact ⟨z, (algebraMap F E).injective (by rw [← h, ← h', frobenius_def, map_pow]; rfl)⟩
+  exact PerfectRing.toPerfectField F p
+
+/-- If `E` is an algebraic closure of `F`, then `F` is perfect if and only if `E / F` is
+separable. -/
+theorem perfectField_iff_isSeparable_algebraicClosure [IsAlgClosure F E] :
+    PerfectField F ↔ IsSeparable F E :=
+  ⟨fun _ ↦ IsSepClosure.separable, fun _ ↦ haveI : IsAlgClosed E := IsAlgClosure.alg_closed F;
+    perfectField_of_isSeparable_of_perfectField_top F E⟩
 
 namespace Field
 

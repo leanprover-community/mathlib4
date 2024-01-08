@@ -265,6 +265,15 @@ noncomputable instance (priority := 100) perfectRing (p : ℕ) [Fact p.Prime] [C
   PerfectRing.ofSurjective k p fun _ => IsAlgClosed.exists_pow_nat_eq _ <| NeZero.pos p
 #align is_alg_closed.perfect_ring IsAlgClosed.perfectRing
 
+noncomputable instance (priority := 100) perfectField [IsAlgClosed k] : PerfectField k := by
+  obtain ⟨p, hchar⟩ := CharP.exists k
+  by_cases hp : p = 0
+  · haveI := (CharP.charP_zero_iff_charZero k).1 (hp ▸ hchar)
+    exact PerfectField.ofCharZero k
+  haveI := NeZero.mk hp
+  haveI := CharP.char_is_prime_of_pos k p
+  exact PerfectRing.toPerfectField k p
+
 /-- Algebraically closed fields are infinite since `Xⁿ⁺¹ - 1` is separable when `#K = n` -/
 instance (priority := 500) {K : Type*} [Field K] [IsAlgClosed K] : Infinite K := by
   apply Infinite.of_not_fintype
