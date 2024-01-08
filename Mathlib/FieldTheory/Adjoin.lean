@@ -803,10 +803,10 @@ theorem exists_finset_of_mem_adjoin {S : Set E} {x : E} (hx : x ∈ adjoin F S) 
     ∃ T : Finset E, (T : Set E) ⊆ S ∧ x ∈ adjoin F (T : Set E) := by
   simp_rw [← biSup_adjoin_simple S, ← iSup_subtype''] at hx
   obtain ⟨s, hx'⟩ := exists_finset_of_mem_iSup hx
-  refine ⟨s.map ⟨Subtype.val, Subtype.val_injective⟩, by simp, SetLike.le_def.mp ?_ hx'⟩
-  simp_rw [Finset.coe_map, Function.Embedding.coeFn_mk, iSup_le_iff, adjoin_le_iff,
-    Set.le_eq_subset, Set.singleton_subset_iff, SetLike.mem_coe]
-  exact fun _ h ↦ subset_adjoin F _ <| Set.mem_image_of_mem Subtype.val h
+  refine ⟨s.image Subtype.val, by simp, SetLike.le_def.mp ?_ hx'⟩
+  simp_rw [Finset.coe_image, iSup_le_iff, adjoin_le_iff]
+  rintro _ h _ rfl
+  exact subset_adjoin F _ ⟨_, h, rfl⟩
 
 end AdjoinSimple
 
