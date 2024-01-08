@@ -509,6 +509,8 @@ def _root_.MultilinearMap.piLinearMapToPiTensorProduct :
 /--
 let `sᵢ` and `tᵢ` be family of `R`-modules and a family `fᵢ` of `R`-linear maps `sᵢ → tᵢ`, then
 there is an induced map `F : ⨂ᵢ sᵢ → ⨂ᵢ tᵢ` by `⨂ aᵢ ↦ ⨂ fᵢ aᵢ`.
+
+This is `TensorProduct.map` for an arbitrary family of modules.
 -/
 def map (f : Π i, s i →ₗ[R] t i) : (⨂[R] i, s i) →ₗ[R] ⨂[R] i, t i :=
   lift <| MultilinearMap.piLinearMapToPiTensorProduct _ _ _ f
@@ -525,6 +527,8 @@ let `sᵢ` and `tᵢ` be family of `R`-modules and `fᵢ : sᵢ → tᵢ` be a f
 `F(⨂ aᵢ) = ⨂ f(aᵢ)`.
 
 Furthermore, the map `⨂ᵢ fᵢ ↦ F` is `R`-linear as well.
+
+This is `TensorProduct.homTensorHomMap` for an arbitrary family of modules.
 -/
 def piTensorHomMap : (⨂[R] i, s i →ₗ[R] t i) →ₗ[R] (⨂[R] i, s i) →ₗ[R] ⨂[R] i, t i where
   toFun φ := lift <| lift (MultilinearMap.piLinearMapToPiTensorProduct R s t) φ
@@ -538,7 +542,9 @@ def piTensorHomMap : (⨂[R] i, s i →ₗ[R] t i) →ₗ[R] (⨂[R] i, s i) →
 /--
 let `sᵢ`, `tᵢ` and `tᵢ'` be family of `R`-modules and a family `fᵢ` of `R`-linear maps
 `sᵢ → tᵢ → tᵢ'`, then there is an induced map `F : ⨂ᵢ sᵢ → ⨂ᵢ tᵢ → ⨂ᵢ tᵢ'` by
-`⨂ aᵢ ↦⨂ bᵢ ↦ ⨂ fᵢ aᵢ bᵢ`.
+`⨂ aᵢ ↦ ⨂ bᵢ ↦ ⨂ fᵢ aᵢ bᵢ`.
+
+This is `TensorProduct.map` for two arbitrary families of modules.
 -/
 def map₂ (f : Π i, s i →ₗ[R] t i →ₗ[R] t' i) :
     (⨂[R] i, s i) →ₗ[R] (⨂[R] i, t i) →ₗ[R] ⨂[R] i, t' i:=
@@ -557,6 +563,8 @@ let `sᵢ` `tᵢ'` and `tᵢ` be family of `R`-modules and `fᵢ : sᵢ → tᵢ
 `F(⨂ aᵢ, ⨂ bᵢ) = ⨂ f(aᵢ, bᵢ)`.
 
 Furthermore, the map `⨂ᵢ fᵢ ↦ F` is `R`-linear as well.
+
+This is `TensorProduct.homTensorHomMap` for two arbitrary families of modules.
 -/
 def piTensorHomMap₂ : (⨂[R] i, s i →ₗ[R] t i →ₗ[R] t' i) →ₗ[R]
     (⨂[R] i, s i) →ₗ[R] (⨂[R] i, t i) →ₗ[R] (⨂[R] i, t' i) where
