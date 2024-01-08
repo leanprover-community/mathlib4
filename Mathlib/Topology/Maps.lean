@@ -689,8 +689,8 @@ structure ClosedEmbedding (f : X → Y) extends Embedding f : Prop where
 
 namespace ClosedEmbedding
 
-theorem tendsto_nhds_iff {g : ι → X} {a : Filter ι} {b : X} (hf : ClosedEmbedding f) :
-    Tendsto g a (𝓝 b) ↔ Tendsto (f ∘ g) a (𝓝 (f b)) :=
+theorem tendsto_nhds_iff {g : ι → X} {a : Filter ι} {x : X} (hf : ClosedEmbedding f) :
+    Tendsto g a (𝓝 x) ↔ Tendsto (f ∘ g) a (𝓝 (f x)) :=
   hf.toEmbedding.tendsto_nhds_iff
 #align closed_embedding.tendsto_nhds_iff ClosedEmbedding.tendsto_nhds_iff
 
