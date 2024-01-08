@@ -31,9 +31,10 @@ section PoissonPmf
 
 /-- The pmf of the Poisson distribution depending on its rate-/
 noncomputable
-def poissonPmfReal (r : ℝ) (x : ℕ) : ℝ := (exp (- r) * r ^ x / (Nat.factorial x))
+def poissonPmfReal (r : ℝ≥0) (x : ℕ) : ℝ := (exp (- r) * r ^ x / (Nat.factorial x))
 
-lemma poissonPmfRealSum (r : ℝ) : HasSum (fun x ↦ poissonPmfReal r x) 1 := by
+lemma poissonPmfRealSum (r : ℝ≥0) : HasSum (fun x ↦ poissonPmfReal r x) 1 := by
+  let r := r.toReal
   unfold poissonPmfReal
   apply (hasSum_mul_left_iff (exp_ne_zero (r))).mp
   simp only [mul_one]
@@ -45,29 +46,41 @@ lemma poissonPmfRealSum (r : ℝ) : HasSum (fun x ↦ poissonPmfReal r x) 1 := b
   exact NormedSpace.expSeries_div_hasSum_exp ℝ r
 
 /-- The Poisson pmf is positive for all natural numbers -/
-lemma poissonPmfReal_pos {r : ℝ} {x : ℕ} (hr : 0 < r) : 0 < poissonPmfReal r x := by
+lemma poissonPmfReal_pos {r : ℝ≥0} {x : ℕ} (hr : 0 < r) : 0 < poissonPmfReal r x := by
   rw [poissonPmfReal]
   positivity
 
-lemma poissonPdfReal_nonneg {r : ℝ} {x : ℕ} (hr : 0 < r) : 0 ≤ poissonPmfReal r x :=
-  le_of_lt (poissonPmfReal_pos hr)
+lemma poissonPmfReal_nonneg {r : ℝ≥0} {x : ℕ} : 0 ≤ poissonPmfReal r x := by
+  unfold poissonPmfReal
+  positivity
 
 noncomputable
-def poissonPmf {r : ℝ} (hr : 0 < r) : PMF ℕ := by
+def poissonPmf (r : ℝ≥0) : PMF ℕ := by
   refine ⟨fun x ↦ ENNReal.ofReal (poissonPmfReal r x), ?_⟩
   apply ENNReal.hasSum_coe.mpr
   rw [← toNNReal_one]
-  exact (poissonPmfRealSum r).toNNReal (fun n ↦ poissonPdfReal_nonneg hr)
+  exact (poissonPmfRealSum r).toNNReal (fun n ↦ poissonPmfReal_nonneg)
 
 /-- The Poisson pmf is measurable. -/
-lemma measurable_poissonPmfReal (r : ℝ) : Measurable (poissonPmfReal r) := by measurability
+lemma measurable_poissonPmfReal (r : ℝ≥0) : Measurable (poissonPmfReal r) := by measurability
 
-lemma stronglyMeasurable_poissonPmfReal (r : ℝ) : StronglyMeasurable (poissonPmfReal r) :=
+lemma stronglyMeasurable_poissonPmfReal (r : ℝ≥0) : StronglyMeasurable (poissonPmfReal r) :=
   stronglyMeasurable_iff_measurable.mpr (measurable_poissonPmfReal r)
 
 /-- Measure defined by the Poisson distribution -/
 noncomputable
-def poissonMeasure {r : ℝ} (hr : 0 < r) : Measure ℕ := (poissonPmf hr).toMeasure
+def poissonMeasure (r : ℝ≥0) : Measure ℕ := if r > 0 then (poissonPmf r).toMeasure else Measure.dirac 0
 
-lemma isProbabilityMeasurePoisson {r : ℝ} (hr : 0 < r) :
-    IsProbabilityMeasure (poissonMeasure hr) := PMF.toMeasure.isProbabilityMeasure (poissonPmf hr)
+lemma poissonMeasure_of_rate_ne_zero {r : ℝ≥0} (hr : r > 0) :
+    poissonMeasure r = (poissonPmf r).toMeasure := if_pos hr
+
+lemma poissonMeasure_of_rate_zero :
+    poissonMeasure 0 = Measure.dirac 0 := if_neg not_lt_zero'
+
+lemma isProbabilityMeasurePoisson (r : ℝ≥0) :
+    IsProbabilityMeasure (poissonMeasure r) := by
+  by_cases h : r > 0
+  · rw [poissonMeasure_of_rate_ne_zero h]
+    exact PMF.toMeasure.isProbabilityMeasure (poissonPmf r)
+  · rw [le_zero_iff.mp (not_lt.mp h), poissonMeasure_of_rate_zero]
+    exact Measure.dirac.isProbabilityMeasure
