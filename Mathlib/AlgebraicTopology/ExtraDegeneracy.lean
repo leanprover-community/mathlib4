@@ -216,9 +216,9 @@ protected noncomputable def extraDegeneracy (Δ : SimplexCategory) :
     dsimp [SimplicialObject.δ, SimplexCategory.δ, SSet.standardSimplex]
     by_cases h : j = 0
     · subst h
-      simp only [Fin.succ_succAbove_zero, shiftFun_0]
+      simp only [Fin.succAbove_succ_zero, shiftFun_0]
     · obtain ⟨_, rfl⟩ := Fin.eq_succ_of_ne_zero <| h
-      simp only [Fin.succ_succAbove_succ, shiftFun_succ, Function.comp_apply,
+      simp only [Fin.succAbove_succ_succ, shiftFun_succ, Function.comp_apply,
         Fin.succAboveEmb_apply]
   s_comp_σ n i := by
     ext1 φ
@@ -230,7 +230,7 @@ protected noncomputable def extraDegeneracy (Δ : SimplexCategory) :
       simp only [shiftFun_0]
       exact shiftFun_0 φ.toOrderHom
     · obtain ⟨_, rfl⟩ := Fin.eq_succ_of_ne_zero h
-      simp only [Fin.succ_predAbove_succ, shiftFun_succ, Function.comp_apply]
+      simp only [Fin.predAbove_succ_succ, shiftFun_succ, Function.comp_apply]
 set_option linter.uppercaseLean3 false in
 #align sSet.augmented.standard_simplex.extra_degeneracy SSet.Augmented.StandardSimplex.extraDegeneracy
 
@@ -328,12 +328,12 @@ noncomputable def extraDegeneracy : SimplicialObject.Augmented.ExtraDegeneracy f
     · simp only [assoc, WidePullback.lift_π]
       by_cases h : j = 0
       · subst h
-        erw [Fin.succ_succAbove_zero, ExtraDegeneracy.s_comp_π_0, ExtraDegeneracy.s_comp_π_0]
+        erw [Fin.succAbove_succ_zero, ExtraDegeneracy.s_comp_π_0, ExtraDegeneracy.s_comp_π_0]
         dsimp
         simp only [WidePullback.lift_base_assoc]
       · cases' Fin.eq_succ_of_ne_zero h with k hk
         subst hk
-        erw [Fin.succ_succAbove_succ, ExtraDegeneracy.s_comp_π_succ,
+        erw [Fin.succAbove_succ_succ, ExtraDegeneracy.s_comp_π_succ,
           ExtraDegeneracy.s_comp_π_succ]
         simp only [WidePullback.lift_π]
     · simp only [assoc, WidePullback.lift_base]
@@ -351,7 +351,7 @@ noncomputable def extraDegeneracy : SimplicialObject.Augmented.ExtraDegeneracy f
         simp only [WidePullback.lift_base_assoc]
       · cases' Fin.eq_succ_of_ne_zero h with k hk
         subst hk
-        erw [Fin.succ_predAbove_succ, ExtraDegeneracy.s_comp_π_succ,
+        erw [Fin.predAbove_succ_succ, ExtraDegeneracy.s_comp_π_succ,
           ExtraDegeneracy.s_comp_π_succ]
         simp only [WidePullback.lift_π]
     · simp only [assoc, WidePullback.lift_base]
