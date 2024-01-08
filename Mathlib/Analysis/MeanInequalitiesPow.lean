@@ -104,9 +104,9 @@ theorem arith_mean_le_rpow_mean (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 ≤ w i)
   rw [← rpow_le_rpow_iff _ _ this, ← rpow_mul, one_div_mul_cancel (ne_of_gt this), rpow_one]
   exact rpow_arith_mean_le_arith_mean_rpow s w z hw hw' hz hp
   all_goals
-    apply_rules [sum_nonneg, rpow_nonneg_of_nonneg]
+    apply_rules [sum_nonneg, rpow_nonneg]
     intro i hi
-    apply_rules [mul_nonneg, rpow_nonneg_of_nonneg, hw i hi, hz i hi]
+    apply_rules [mul_nonneg, rpow_nonneg, hw i hi, hz i hi]
 #align real.arith_mean_le_rpow_mean Real.arith_mean_le_rpow_mean
 
 end Real

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johannes Hölzl, Chris Hughes, Jens Wagemaker, Jon Eugster
 -/
 import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Logic.Unique
 import Mathlib.Tactic.Nontriviality
 import Mathlib.Tactic.Lift
@@ -97,7 +98,7 @@ theorem unique_one {α : Type*} [Unique α] [One α] : default = (1 : α) :=
 end HasElem
 
 namespace Units
-
+section Monoid
 variable [Monoid α]
 
 -- Porting note: unclear whether this should be a `CoeHead` or `CoeTail`
@@ -185,7 +186,7 @@ theorem copy_eq (u : αˣ) (val hv inv hi) : u.copy val hv inv hi = u :=
 
 /-- Units of a monoid form have a multiplication and multiplicative identity. -/
 @[to_additive "Additive units of an additive monoid have an addition and an additive identity."]
-instance : MulOneClass αˣ where
+instance instMulOneClass : MulOneClass αˣ where
   mul u₁ u₂ :=
     ⟨u₁.val * u₂.val, u₂.inv * u₁.inv,
       by rw [mul_assoc, ← mul_assoc u₂.val, val_inv, one_mul, val_inv],
@@ -193,23 +194,6 @@ instance : MulOneClass αˣ where
   one := ⟨1, 1, one_mul 1, one_mul 1⟩
   one_mul u := ext <| one_mul (u : α)
   mul_one u := ext <| mul_one (u : α)
-
-/-- Units of a monoid form a group. -/
-@[to_additive "Additive units of an additive monoid form an additive group."]
-instance : Group αˣ :=
-  { (inferInstance : MulOneClass αˣ) with
-    mul_assoc := fun _ _ _ => ext <| mul_assoc _ _ _,
-    inv := Inv.inv, mul_left_inv := fun u => ext u.inv_val }
-
-/-- Units of a commutative monoid form a commutative group. -/
-@[to_additive "Additive units of an additive commutative monoid form
-an additive commutative group."]
-instance instCommGroupUnits {α} [CommMonoid α] : CommGroup αˣ :=
-  -- note: the original ported file had `{ (inferInstance : Group αˣ) with ... }`
-  -- and this was removed because it was causing slowdowns: see lean4#2387
-  { mul_comm := fun _ _ => ext <| mul_comm _ _ }
-#align units.comm_group Units.instCommGroupUnits
-#align add_units.add_comm_group AddUnits.instAddCommGroupAddUnits
 
 /-- Units of a monoid are inhabited because `1` is a unit. -/
 @[to_additive "Additive units of an additive monoid are inhabited because `0` is an additive unit."]
@@ -269,6 +253,11 @@ theorem mul_inv : (a * ↑a⁻¹ : α) = 1 :=
   val_inv _
 #align units.mul_inv Units.mul_inv
 #align add_units.add_neg AddUnits.add_neg
+
+@[to_additive] lemma commute_coe_inv : Commute (a : α) ↑a⁻¹ := by
+  rw [Commute, SemiconjBy, inv_mul, mul_inv]
+
+@[to_additive] lemma commute_inv_coe : Commute ↑a⁻¹ (a : α) := a.commute_coe_inv.symm
 
 @[to_additive]
 theorem inv_mul_of_eq {a : α} (h : ↑u = a) : ↑u⁻¹ * a = 1 := by rw [← h, u.inv_mul]
@@ -374,6 +363,49 @@ protected theorem eq_inv_of_mul_eq_one_right {a : α} (h : a * u = 1) : a = ↑u
 #align units.eq_inv_of_mul_eq_one_right Units.eq_inv_of_mul_eq_one_right
 #align add_units.eq_neg_of_add_eq_zero_right AddUnits.eq_neg_of_add_eq_zero_right
 
+@[to_additive]
+instance instMonoid : Monoid αˣ :=
+  { (inferInstance : MulOneClass αˣ) with
+    mul_assoc := fun _ _ _ => ext <| mul_assoc _ _ _,
+    npow := fun n a ↦
+      { val := a ^ n
+        inv := a⁻¹ ^ n
+        val_inv := by rw [← a.commute_coe_inv.mul_pow]; simp
+        inv_val := by rw [← a.commute_inv_coe.mul_pow]; simp }
+    npow_zero := fun a ↦ by ext; simp
+    npow_succ := fun n a ↦ by ext; simp [pow_succ] }
+
+/-- Units of a monoid form a group. -/
+@[to_additive "Additive units of an additive monoid form an additive group."]
+instance instGroup : Group αˣ :=
+  { (inferInstance : Monoid αˣ) with
+    inv := Inv.inv
+    mul_left_inv := fun u => ext u.inv_val
+    div := fun a b ↦
+      { val := a * b⁻¹
+        inv := b * a⁻¹
+        val_inv := by rw [mul_assoc, inv_mul_cancel_left, mul_inv]
+        inv_val := by rw [mul_assoc, inv_mul_cancel_left, mul_inv] }
+    zpow := fun n a ↦ match n, a with
+      | Int.ofNat n, a => a ^ n
+      | Int.negSucc n, a => (a ^ n.succ)⁻¹
+    zpow_zero' := fun a ↦ by simp
+    zpow_succ' := fun n a ↦ by simp [pow_succ]
+    zpow_neg' := fun n a ↦ by simp }
+
+/-- Units of a commutative monoid form a commutative group. -/
+@[to_additive "Additive units of an additive commutative monoid form
+an additive commutative group."]
+instance instCommGroupUnits {α} [CommMonoid α] : CommGroup αˣ where
+  mul_comm := fun _ _ => ext <| mul_comm _ _
+#align units.comm_group Units.instCommGroupUnits
+#align add_units.add_comm_group AddUnits.instAddCommGroupAddUnits
+
+@[to_additive (attr := simp, norm_cast)]
+lemma val_pow_eq_pow_val (n : ℕ) : ↑(a ^ n) = (a ^ n : α) := rfl
+#align units.coe_pow Units.val_pow_eq_pow_val
+#align add_units.coe_nsmul AddUnits.val_nsmul_eq_nsmul_val
+
 @[to_additive (attr := simp)]
 theorem mul_inv_eq_one {a : α} : a * ↑u⁻¹ = 1 ↔ a = u :=
   ⟨inv_inv u ▸ Units.eq_inv_of_mul_eq_one_right, fun h => mul_inv_of_eq h.symm⟩
@@ -402,11 +434,21 @@ theorem inv_unique {u₁ u₂ : αˣ} (h : (↑u₁ : α) = ↑u₂) : (↑u₁�
 #align units.inv_unique Units.inv_unique
 #align add_units.neg_unique AddUnits.neg_unique
 
-@[to_additive (attr := simp)]
-theorem val_inv_eq_inv_val {M : Type*} [DivisionMonoid M] (u : Units M) : ↑u⁻¹ = (u⁻¹ : M) :=
+end Monoid
+
+section DivisionMonoid
+variable [DivisionMonoid α]
+
+@[to_additive (attr := simp, norm_cast)] lemma val_inv_eq_inv_val (u : αˣ) : ↑u⁻¹ = (u⁻¹ : α) :=
   Eq.symm <| inv_eq_of_mul_eq_one_right u.mul_inv
 #align units.coe_inv Units.val_inv_eq_inv_val
 
+@[to_additive (attr := simp, norm_cast)]
+lemma val_div_eq_div_val : ∀ u₁ u₂ : αˣ, ↑(u₁ / u₂) = (u₁ / u₂ : α) := by simp [div_eq_mul_inv]
+#align units.coe_div Units.val_div_eq_div_val
+#align add_units.coe_sub AddUnits.val_neg_eq_neg_val
+
+end DivisionMonoid
 end Units
 
 /-- For `a, b` in a `CommMonoid` such that `a * b = 1`, makes a unit out of `a`. -/
@@ -629,19 +671,34 @@ theorem isUnit_of_mul_eq_one [CommMonoid M] (a b : M) (h : a * b = 1) : IsUnit a
 #align is_unit_of_mul_eq_one isUnit_of_mul_eq_one
 #align is_add_unit_of_add_eq_zero isAddUnit_of_add_eq_zero
 
+section Monoid
+variable [Monoid M] {a b : M}
+
 @[to_additive IsAddUnit.exists_neg]
-theorem IsUnit.exists_right_inv [Monoid M] {a : M} (h : IsUnit a) : ∃ b, a * b = 1 := by
+lemma IsUnit.exists_right_inv (h : IsUnit a) : ∃ b, a * b = 1 := by
   rcases h with ⟨⟨a, b, hab, _⟩, rfl⟩
   exact ⟨b, hab⟩
 #align is_unit.exists_right_inv IsUnit.exists_right_inv
 #align is_add_unit.exists_neg IsAddUnit.exists_neg
 
 @[to_additive IsAddUnit.exists_neg']
-theorem IsUnit.exists_left_inv [Monoid M] {a : M} (h : IsUnit a) : ∃ b, b * a = 1 := by
+lemma IsUnit.exists_left_inv [Monoid M] {a : M} (h : IsUnit a) : ∃ b, b * a = 1 := by
   rcases h with ⟨⟨a, b, _, hba⟩, rfl⟩
   exact ⟨b, hba⟩
 #align is_unit.exists_left_inv IsUnit.exists_left_inv
 #align is_add_unit.exists_neg' IsAddUnit.exists_neg'
+
+@[to_additive] lemma IsUnit.mul : IsUnit a → IsUnit b → IsUnit (a * b) := by
+  rintro ⟨x, rfl⟩ ⟨y, rfl⟩; exact ⟨x * y, rfl⟩
+#align is_unit.mul IsUnit.mul
+#align is_add_unit.add IsAddUnit.add
+
+@[to_additive] lemma IsUnit.pow (n : ℕ) : IsUnit a → IsUnit (a ^ n) := by
+  rintro ⟨u, rfl⟩; exact ⟨u ^ n, rfl⟩
+#align is_unit.pow IsUnit.pow
+#align is_add_unit.nsmul IsAddUnit.nsmul
+
+end Monoid
 
 @[to_additive]
 theorem isUnit_iff_exists_inv [CommMonoid M] {a : M} : IsUnit a ↔ ∃ b, a * b = 1 :=
@@ -654,13 +711,6 @@ theorem isUnit_iff_exists_inv' [CommMonoid M] {a : M} : IsUnit a ↔ ∃ b, b * 
   simp [isUnit_iff_exists_inv, mul_comm]
 #align is_unit_iff_exists_inv' isUnit_iff_exists_inv'
 #align is_add_unit_iff_exists_neg' isAddUnit_iff_exists_neg'
-
-@[to_additive]
-theorem IsUnit.mul [Monoid M] {x y : M} : IsUnit x → IsUnit y → IsUnit (x * y) := by
-  rintro ⟨x, rfl⟩ ⟨y, rfl⟩
-  exact ⟨x * y, Units.val_mul _ _⟩
-#align is_unit.mul IsUnit.mul
-#align is_add_unit.add IsAddUnit.add
 
 /-- Multiplication by a `u : Mˣ` on the right doesn't affect `IsUnit`. -/
 @[to_additive (attr := simp)
