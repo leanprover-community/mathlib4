@@ -31,6 +31,7 @@ Let `α` and `ι` by types and let `f : α → ι`
   the cardinality of the type of permutations preserving `p` :
   `Fintype.card {g : Perm α // f ∘ g = f} = ∏ i, (Fintype.card {a // f a = i})!`.
 
+* Without `Fintype ι`, `DomMulAct.stabilizer_card' p` gives an equivalent formula, where the product is restricted to `Finset.univ.image f`.
 -/
 
 variable {α ι : Type*} {f : α → ι}
@@ -86,6 +87,7 @@ variable {f}
 lemma stabilizerMulEquiv_apply (g : (stabilizer (Perm α)ᵈᵐᵃ f)ᵐᵒᵖ) {a : α} {i : ι} (h : f a = i) :
     ((stabilizerMulEquiv f)) g i ⟨a, h⟩ = (mk.symm g.unop : Equiv.Perm α) a := rfl
 
+
 section Fintype
 
 variable [Fintype α] [DecidableEq α] [DecidableEq ι]
@@ -94,13 +96,8 @@ open BigOperators Nat
 
 variable (f)
 
-<<<<<<< HEAD
-section
-
-variable [Fintype ι]
-
 /-- The cardinality of the type of permutations preserving a function -/
-theorem stabilizer_card:
+theorem stabilizer_card [Fintype ι] :
     Fintype.card {g : Perm α // f ∘ g = f} = ∏ i, (Fintype.card {a // f a = i})! := by
   -- rewriting via Nat.card because Fintype instance is not found
   rw [← Nat.card_eq_fintype_card, Nat.card_congr (subtypeEquiv mk fun _ ↦ ?_),
@@ -109,13 +106,11 @@ theorem stabilizer_card:
   · exact Finset.prod_congr rfl fun i _ ↦ by rw [Nat.card_eq_fintype_card, Fintype.card_perm]
   · rfl
 
-end Fintype
-
 /-- The cardinality of the type of permutations preserving a function
   (without the finiteness assumption on target)-/
 theorem stabilizer_card':
     Fintype.card {g : Perm α // f ∘ g = f} =
-      ∏ i in Finset.univ.image f, (Fintype.card ({a // f a = i})).factorial := by
+      ∏ i in Finset.univ.image f, (Fintype.card ({a // f a = i}))! := by
   -- rewriting via Nat.card because Fintype instance is not found
   let φ : α → Finset.univ.image f := Set.codRestrict f (Finset.univ.image f) (fun a => by simp)
   suffices : Fintype.card { g : Perm α // f ∘ g = f } = Fintype.card { g : Perm α // φ ∘ g = φ }
@@ -143,5 +138,7 @@ theorem stabilizer_card':
     intro a
     rw [← Subtype.coe_inj]
     simp only [Function.comp_apply, refl_apply, Set.val_codRestrict_apply]
+
+end Fintype
 
 end DomMulAct
