@@ -17,10 +17,10 @@ We call this the AKLB setup.
 
 ## Main definition
 - `galRestrict`: The restriction `Aut(L/K) → Aut(B/A)` as an `MulEquiv` in an AKLB setup.
-- `Algebra.intTrace`: The trace map of a finite extension of integrally closed domain `B/A` is
-defined to be the restriction of the trace map `Frac(B)/Frac(A)`.
-- `Algebra.intNorm`: The norm map of a finite extension of integrally closed domain `B/A` is
-defined to be the restriction of the norm map `Frac(B)/Frac(A)`.
+- `Algebra.intTrace`: The trace map of a finite extension of integrally closed domains `B/A` is
+defined to be the restriction of the trace map of `Frac(B)/Frac(A)`.
+- `Algebra.intNorm`: The norm map of a finite extension of integrally closed domains `B/A` is
+defined to be the restriction of the norm map of `Frac(B)/Frac(A)`.
 
 -/
 open BigOperators nonZeroDivisors
@@ -148,7 +148,7 @@ variable [IsLocalization (Algebra.algebraMapSubmonoid B M) Bₘ]
 
 section trace
 
-/-- The restriction of the trace on `L/K` restricted onto `B/A` in an AKLB setup.
+/-- The restriction of the trace on `L/K` restricted onto `B/A` in an AKLB setup (see module docstring).
 See `Algebra.intTrace` instead. -/
 noncomputable
 def Algebra.intTraceAux [IsIntegrallyClosed A] :
@@ -307,7 +307,7 @@ variable [Module.Finite A B] [NoZeroSMulDivisors A B]
 variable [IsSeparable (FractionRing A) (FractionRing B)] -- TODO: remove this
 
 /-- The norm of a finite extension of integrally closed domains `B/A` is the restriction of
-the trace on `Frac(B)/Frac(A)` onto `B/A`. See `Algebra.algebraMap_intNorm`. -/
+the norm on `Frac(B)/Frac(A)` onto `B/A`. See `Algebra.algebraMap_intNorm`. -/
 noncomputable
 def Algebra.intNorm : B →* A :=
   haveI : IsIntegralClosure B A (FractionRing B) :=
