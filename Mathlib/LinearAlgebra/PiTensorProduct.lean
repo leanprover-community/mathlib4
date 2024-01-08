@@ -451,6 +451,11 @@ variable [∀ i, AddCommMonoid (t i)] [∀ i, Module R (t i)]
 variable [∀ i, AddCommMonoid (t' i)] [∀ i, Module R (t' i)]
 
 variable (R s t) in
+
+/--
+Let `sᵢ` and `tᵢ` be family of `R`-modules, a map from `Π i, sᵢ → tᵢ` to multilinear maps
+`(Π i, sᵢ) → ⨂ tᵢ` by `(fᵢ) ↦ v ↦ ⨂ₜ fᵢ vᵢ`. This map is multilinear as well.
+-/
 @[simps]
 def _root_.MultilinearMap.piLinearMapToPiTensorProduct :
     MultilinearMap R (fun i ↦ s i →ₗ[R] t i) (MultilinearMap R s (⨂[R] (i : ι), t i)) :=
@@ -501,6 +506,10 @@ def _root_.MultilinearMap.piLinearMapToPiTensorProduct :
     · subst h; simp only [update_same]
     · rw [update_noteq h, update_noteq h] }
 
+/--
+let `sᵢ` and `tᵢ` be family of `R`-modules and a family `fᵢ` of `R`-linear maps `sᵢ → tᵢ`, then
+there is an induced map `F : ⨂ᵢ sᵢ → ⨂ᵢ tᵢ` by `⨂ aᵢ ↦ ⨂ fᵢ aᵢ`.
+-/
 def map (f : Π i, s i →ₗ[R] t i) : (⨂[R] i, s i) →ₗ[R] ⨂[R] i, t i :=
   lift <| MultilinearMap.piLinearMapToPiTensorProduct _ _ _ f
 
@@ -526,6 +535,11 @@ def piTensorHomMap : (⨂[R] i, s i →ₗ[R] t i) →ₗ[R] (⨂[R] i, s i) →
     piTensorHomMap (tprod R f) (tprod R x) = tprod R fun i ↦ f i (x i) := by
   simp [piTensorHomMap]
 
+/--
+let `sᵢ`, `tᵢ` and `tᵢ'` be family of `R`-modules and a family `fᵢ` of `R`-linear maps
+`sᵢ → tᵢ → tᵢ'`, then there is an induced map `F : ⨂ᵢ sᵢ → ⨂ᵢ tᵢ → ⨂ᵢ tᵢ'` by
+`⨂ aᵢ ↦⨂ bᵢ ↦ ⨂ fᵢ aᵢ bᵢ`.
+-/
 def map₂ (f : Π i, s i →ₗ[R] t i →ₗ[R] t' i) :
     (⨂[R] i, s i) →ₗ[R] (⨂[R] i, t i) →ₗ[R] ⨂[R] i, t' i:=
   lift <| LinearMap.compMultilinearMap piTensorHomMap <|
