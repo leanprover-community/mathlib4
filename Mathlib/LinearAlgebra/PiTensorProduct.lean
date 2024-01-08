@@ -501,6 +501,13 @@ def _root_.MultilinearMap.piLinearMapToPiTensorProduct :
     · subst h; simp only [update_same]
     · rw [update_noteq h, update_noteq h] }
 
+def map (f : Π i, s i →ₗ[R] t i) : (⨂[R] i, s i) →ₗ[R] ⨂[R] i, t i :=
+  lift <| MultilinearMap.piLinearMapToPiTensorProduct _ _ _ f
+
+@[simp] lemma map_tprod (f : Π i, s i →ₗ[R] t i) (x : ∀ i, s i) :
+    map f (tprod R x) = tprod R fun i ↦ f i (x i) :=
+  lift.tprod _
+
 /--
 Arbitrary tensor product of linear maps to linear maps between arbitrary tensor products:
 
