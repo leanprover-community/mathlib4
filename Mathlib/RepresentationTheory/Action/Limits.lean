@@ -91,7 +91,7 @@ def preservesLimitsOfShapeOfPreserves (F : C ⥤ Action V G) {J : Type w₁}
 
 /-- `F : C ⥤ Action V G` preserves limits of some size
 if it does after postcomposing with the forgetful functor `Action V G ⥤ V`. -/
-def preservesLimitOfSizeOfPreserves (F : C ⥤ Action V G)
+def preservesLimitsOfSizeOfPreserves (F : C ⥤ Action V G)
     (h : PreservesLimitsOfSize.{w₂, w₁} (F ⋙ Action.forget V G)) :
     PreservesLimitsOfSize.{w₂, w₁} F := by
   constructor
@@ -133,7 +133,7 @@ def preservesColimitsOfShapeOfPreserves (F : C ⥤ Action V G) {J : Type w₁}
 
 /-- `F : C ⥤ Action V G` preserves colimits of some size
 if it does after postcomposing with the forgetful functor `Action V G ⥤ V`. -/
-def preservesColimitOfSizeOfPreserves (F : C ⥤ Action V G)
+def preservesColimitsOfSizeOfPreserves (F : C ⥤ Action V G)
     (h : PreservesColimitsOfSize.{w₂, w₁} (F ⋙ Action.forget V G)) :
     PreservesColimitsOfSize.{w₂, w₁} F := by
   constructor
