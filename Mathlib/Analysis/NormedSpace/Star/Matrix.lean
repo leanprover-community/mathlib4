@@ -15,7 +15,8 @@ import Mathlib.Topology.UniformSpace.Matrix
 /-!
 # Analytic properties of the `star` operation on matrices
 
-This transports the operator norm on `EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 m`
+This transports the operator norm on `EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 m` to
+`Matrix m n 𝕜`. See the file `Analysis.Matrix` for many other matrix norms.
 
 ## Main definitions
 
@@ -97,7 +98,10 @@ open LinearMap
 variable [Fintype n] [DecidableEq n] [Fintype m] [DecidableEq m] [IsROrC 𝕜]
 
 /-- The natural star algebra equivalence between matrices and continuous linear endomoporphisms
-of Euclidean space induced by the orthonormal basis `EuclideanSpace.basisFun`. -/
+of Euclidean space induced by the orthonormal basis `EuclideanSpace.basisFun`.
+
+This is a more-bundled version of `Matrix.toEuclideanLin`, for the special case of square matrices,
+followed by a more-bundled version of `LinearMap.toContinuousLinearMap`. -/
 def toEuclideanClm :
     Matrix n n 𝕜 ≃⋆ₐ[𝕜] (EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n) :=
   toMatrixOrthonormal (EuclideanSpace.basisFun n 𝕜) |>.symm.trans <|
@@ -105,16 +109,20 @@ def toEuclideanClm :
       map_mul' := fun _ _ ↦ rfl
       map_star' := adjoint_toContinuousLinearMap }
 
-@[simp]
-theorem toEuclideanClm_piLp_equiv_symm (A : Matrix n n 𝕜) (x : n → 𝕜) :
-    toEuclideanClm (n := n) (𝕜 := 𝕜) A ((WithLp.equiv _ _).symm x) =
-      (WithLp.equiv _ _).symm (toLin' A x) :=
+lemma coe_toEuclideanClm_eq_toEuclideanLin (A : Matrix n n 𝕜) :
+    (toEuclideanClm (n := n) (𝕜 := 𝕜) A : _ →ₗ[𝕜] _) = toEuclideanLin A :=
   rfl
 
 @[simp]
-theorem piLp_equiv_toEuclideanClm (A : Matrix n n 𝕜) (x : EuclideanSpace 𝕜 n) :
-    WithLp.equiv _ _ (toEuclideanClm (n := n) (𝕜 := 𝕜) A x) =
-      toLin' A (WithLp.equiv _ _ x) :=
+lemma toEuclideanClm_piLp_equiv_symm (A : Matrix n n 𝕜) (x : n → 𝕜) :
+    toEuclideanClm (n := n) (𝕜 := 𝕜) A ((EuclideanSpace.equiv _ _).symm x) =
+      (EuclideanSpace.equiv _ _).symm (toLin' A x) :=
+  rfl
+
+@[simp]
+lemma piLp_equiv_toEuclideanClm (A : Matrix n n 𝕜) (x : EuclideanSpace 𝕜 n) :
+    EuclideanSpace.equiv _ _ (toEuclideanClm (n := n) (𝕜 := 𝕜) A x) =
+      toLin' A (EuclideanSpace.equiv _ _ x) :=
   rfl
 
 /-- An auxiliary definition used only to construct the true `NormedAddCommGroup` (and `Metric`)
@@ -161,19 +169,39 @@ def instNormedAddCommGroupL2Op : NormedAddCommGroup (Matrix m n 𝕜) where
 
 scoped[Matrix.L2OpNorm] attribute [instance] Matrix.instNormedAddCommGroupL2Op
 
-lemma op_norm_def (x : Matrix m n 𝕜) :
-    ‖x‖ = ‖(toEuclideanLin (𝕜 := 𝕜) (m := m) (n := n)).trans toContinuousLinearMap x‖ := rfl
+lemma l2_op_norm_def (A : Matrix m n 𝕜) :
+    ‖A‖ = ‖(toEuclideanLin (𝕜 := 𝕜) (m := m) (n := n)).trans toContinuousLinearMap A‖ := rfl
+
+lemma l2_op_nnnorm_def (A : Matrix m n 𝕜) :
+    ‖A‖₊ = ‖(toEuclideanLin (𝕜 := 𝕜) (m := m) (n := n)).trans toContinuousLinearMap A‖₊ := rfl
 
 -- note: with only a type ascription in the left-hand side, Lean picks the wrong norm.
-lemma norm_mulVec_le (A : Matrix m n 𝕜) (x : EuclideanSpace 𝕜 n) :
+lemma l2_op_norm_mulVec (A : Matrix m n 𝕜) (x : EuclideanSpace 𝕜 n) :
     ‖(EuclideanSpace.equiv m 𝕜).symm <| A.mulVec x‖ ≤ ‖A‖ * ‖x‖ :=
   toEuclideanLin (n := n) (m := m) (𝕜 := 𝕜) |>.trans toContinuousLinearMap A |>.le_op_norm x
+
+lemma l2_op_nnnorm_mulVec_le (A : Matrix m n 𝕜) (x : EuclideanSpace 𝕜 n) :
+    ‖(EuclideanSpace.equiv m 𝕜).symm <| A.mulVec x‖₊ ≤ ‖A‖₊ * ‖x‖₊ :=
+  A.l2_op_norm_mulVec x
+
+lemma l2_op_norm_mul {l : Type*} [Fintype l] [DecidableEq l] (A : Matrix m n 𝕜) (B : Matrix n l 𝕜) :
+    ‖A * B‖ ≤ ‖A‖ * ‖B‖ := by
+  simp only [l2_op_norm_def]
+  have := (toEuclideanLin (n := n) (m := m) (𝕜 := 𝕜) ≪≫ₗ toContinuousLinearMap) A
+    |>.op_norm_comp_le <| (toEuclideanLin (n := l) (m := n) (𝕜 := 𝕜) ≪≫ₗ toContinuousLinearMap) B
+  convert this
+  ext1 x
+  exact congr($(Matrix.toLin'_mul A B) x)
+
+lemma l2_op_nnnorm_mul {l : Type*} [Fintype l] [DecidableEq l] (A : Matrix m n 𝕜)
+    (B : Matrix n l 𝕜) : ‖A * B‖₊ ≤ ‖A‖₊ * ‖B‖₊ :=
+  l2_op_norm_mul A B
 
 /-- The normed algebra structure on `Matrix n n 𝕜` arising from the operator norm given by the
 identification with (continuous) linear endmorphisms of `EuclideanSpace 𝕜 n`. -/
 def instNormedSpaceL2Op : NormedSpace 𝕜 (Matrix m n 𝕜) where
   norm_smul_le r x := by
-    rw [op_norm_def, LinearEquiv.map_smul]
+    rw [l2_op_norm_def, LinearEquiv.map_smul]
     exact norm_smul_le r ((toEuclideanLin (𝕜 := 𝕜) (m := m) (n := n)).trans toContinuousLinearMap x)
 
 scoped[Matrix.L2OpNorm] attribute [instance] Matrix.instNormedSpaceL2Op
@@ -186,7 +214,9 @@ def instNormedRingL2Op : NormedRing (Matrix n n 𝕜) where
 
 scoped[Matrix.L2OpNorm] attribute [instance] Matrix.instNormedRingL2Op
 
-lemma cstar_norm_def (x : Matrix n n 𝕜) : ‖x‖ = ‖toEuclideanClm (n := n) (𝕜 := 𝕜) x‖ := rfl
+lemma cstar_norm_def (A : Matrix n n 𝕜) : ‖A‖ = ‖toEuclideanClm (n := n) (𝕜 := 𝕜) A‖ := rfl
+
+lemma cstar_nnnorm_def (A : Matrix n n 𝕜) : ‖A‖₊ = ‖toEuclideanClm (n := n) (𝕜 := 𝕜) A‖₊ := rfl
 
 /-- The normed algebra structure on `Matrix n n 𝕜` arising from the operator norm given by the
 identification with (continuous) linear endmorphisms of `EuclideanSpace 𝕜 n`. -/
