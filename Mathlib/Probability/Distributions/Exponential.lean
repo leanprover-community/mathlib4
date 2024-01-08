@@ -66,7 +66,7 @@ lemma lintegral_exponentialPdf_of_nonpos {x r : ℝ} (hx : x ≤ 0) :
 lemma measurable_exponentialPdfReal (r : ℝ) : Measurable (exponentialPdfReal r) :=
   measurable_gammaPdfReal 1 r
 
--- The exponential Pdf is strongly measurable -/
+-- The exponential pdf is strongly measurable -/
 @[measurability]
  lemma stronglyMeasurable_exponentialPdfReal (r : ℝ) :
      StronglyMeasurable (exponentialPdfReal r) := stronglyMeasurable_gammaPdfReal 1 r
