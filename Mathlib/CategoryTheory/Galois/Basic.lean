@@ -45,7 +45,7 @@ section Def
 /-- Definition of a Galois category. Lenstra, Def 3.1, (G1)-(G3) -/
 class PreGaloisCategory (C : Type u₁) [Category.{u₂, u₁} C] : Prop where
   /-- `C` has a terminal object (G1). -/
-  hasTerminalObject : HasTerminal C
+  hasTerminal : HasTerminal C
   /-- `C` has pullbacks (G1). -/
   hasPullbacks : HasPullbacks C
   /-- `C` has finite coproducts (G2). -/
@@ -86,17 +86,18 @@ class ConnectedObject {C : Type u₁} [Category.{u₂, u₁} C] (X : C) : Prop w
 connected objects to connected objects. -/
 class PreservesConnectedObjects {C : Type u₁} [Category.{u₂, u₁} C] {D : Type v₁}
     [Category.{v₂, v₁} D] (F : C ⥤ D) : Prop where
+  /-- `F.obj X` is connected if `X` is connected. -/
   preserves : ∀ {X : C} [ConnectedObject X], ConnectedObject (F.obj X)
 
 end Def
 
 section Instances
 
+namespace PreGaloisCategory
+
 variable {C : Type u₁} [Category.{u₂, u₁} C] [PreGaloisCategory C]
 
-instance : HasTerminal C := PreGaloisCategory.hasTerminalObject
-
-instance : HasPullbacks C := PreGaloisCategory.hasPullbacks
+attribute [instance] hasTerminal hasPullbacks hasFiniteCoproducts hasQuotientsByFiniteGroups
 
 instance : HasFiniteLimits C := hasFiniteLimits_of_hasTerminal_and_pullbacks
 
@@ -104,45 +105,23 @@ instance : HasBinaryProducts C := hasBinaryProducts_of_hasTerminal_and_pullbacks
 
 instance : HasEqualizers C := hasEqualizers_of_hasPullbacks_and_binary_products
 
-instance : HasFiniteCoproducts C := PreGaloisCategory.hasFiniteCoproducts
+end PreGaloisCategory
 
-instance (ι : Type*) [Finite ι] : HasColimitsOfShape (Discrete ι) C :=
-  hasColimitsOfShape_discrete C ι
-
-instance : HasInitial C := inferInstance
-
-instance (G : Type u₂) [Group G] [Finite G] : HasColimitsOfShape (SingleObj G) C :=
-  PreGaloisCategory.hasQuotientsByFiniteGroups G
+namespace FibreFunctor
 
 variable {C : Type u₁} [Category.{u₂, u₁} C] {F : C ⥤ FintypeCat.{w}} [PreGaloisCategory C]
   [FibreFunctor F]
 
-instance : PreservesLimitsOfShape (CategoryTheory.Discrete PEmpty.{1}) F :=
-  FibreFunctor.preservesTerminalObjects
-
-instance : PreservesLimitsOfShape WalkingCospan F :=
-  FibreFunctor.preservesPullbacks
-
-instance : PreservesEpimorphisms F :=
-  FibreFunctor.preservesEpis
-
-instance : PreservesFiniteCoproducts F :=
-  FibreFunctor.preservesFiniteCoproducts
-
-instance : PreservesColimitsOfShape (Discrete PEmpty.{1}) F :=
-  FibreFunctor.preservesFiniteCoproducts.preserves PEmpty
-
-instance : ReflectsIsomorphisms F :=
-  FibreFunctor.reflectsIsos
+attribute [instance] preservesTerminalObjects preservesPullbacks preservesEpis preservesFiniteCoproducts
+  reflectsIsos preservesQuotientsByFiniteGroups
 
 noncomputable instance : ReflectsColimitsOfShape (Discrete PEmpty.{1}) F :=
   reflectsColimitsOfShapeOfReflectsIsomorphisms
 
-instance (G : Type u₂) [Group G] [Finite G] : PreservesColimitsOfShape (SingleObj G) F :=
-  FibreFunctor.preservesQuotientsByFiniteGroups G
-
 noncomputable instance : PreservesFiniteLimits F :=
   preservesFiniteLimitsOfPreservesTerminalAndPullbacks F
+
+end FibreFunctor
 
 end Instances
 
