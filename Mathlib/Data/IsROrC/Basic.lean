@@ -586,7 +586,7 @@ theorem conj_inv (x : K) : conj x⁻¹ = (conj x)⁻¹ :=
   star_inv' _
 #align is_R_or_C.conj_inv IsROrC.conj_inv
 
-@[simp] lemma conj_div (x y : K) : conj (x / y) = conj x / conj y := map_div' conj conj_inv _ _
+lemma conj_div (x y : K) : conj (x / y) = conj x / conj y := map_div' conj conj_inv _ _
 
 --TODO: Do we rather want the map as an explicit definition?
 lemma exists_norm_eq_mul_self (x : K) : ∃ c, ‖c‖ = 1 ∧ ↑‖x‖ = c * x := by
