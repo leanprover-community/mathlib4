@@ -512,8 +512,8 @@ theorem norm_mul₃_le (a b c : E) : ‖a * b * c‖ ≤ ‖a‖ + ‖b‖ + ‖
 #align norm_add₃_le norm_add₃_le
 
 @[to_additive]
-lemma norm_div_le_norm_div_add_norm_div (a b c : E) : ‖a / c‖ ≤ ‖a / b‖ + ‖b / c‖ :=
-  (norm_mul_le' _ _).trans_eq' $ by simp
+lemma norm_div_le_norm_div_add_norm_div (a b c : E) : ‖a / c‖ ≤ ‖a / b‖ + ‖b / c‖ := by
+  simpa only [dist_eq_norm_div] using dist_triangle a b c
 
 @[to_additive (attr := simp) norm_nonneg]
 theorem norm_nonneg' (a : E) : 0 ≤ ‖a‖ := by
