@@ -9,8 +9,7 @@ import Mathlib.Tactic.GCongr.Core
 /-! # Setup for the `gcongr` tactic
 
 The core implementation of the `gcongr` ("generalized congruence") tactic is in the file
-`Tactic.GCongr.Core`.  In this file we set it up for use across the library by tagging a minimal
-set of lemmas with the attribute `@[gcongr]` and by listing `positivity` as a first-pass
-discharger for side goals (`gcongr_discharger`). -/
+`Tactic.GCongr.Core`. In this file we set it up for use across the library by listing
+`positivity` as a first-pass discharger for side goals (`gcongr_discharger`). -/
 
 macro_rules | `(tactic| gcongr_discharger) => `(tactic| positivity)
