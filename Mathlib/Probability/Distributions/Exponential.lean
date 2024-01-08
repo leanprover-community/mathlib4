@@ -11,7 +11,7 @@ import Mathlib.Probability.Distributions.Gamma
 
 /-! # Exponential distributions over ℝ
 
-Define the Exponential measure over the reals
+Define the Exponential measure over the reals.
 
 ## Main definitions
 * `exponentialPdfReal`: the function `r x ↦ r * exp (-(r * x)` for `0 ≤ x`
@@ -62,8 +62,14 @@ lemma lintegral_exponentialPdf_of_nonpos {x r : ℝ} (hx : x ≤ 0) :
     ∫⁻ y in Iio x, exponentialPdf r y = 0 := lintegral_gammaPdf_of_nonpos hx
 
 /-- The exponential pdf is measurable. -/
-lemma measurable_exponentialPdfReal (r : ℝ) :
-    Measurable (exponentialPdfReal r) := measurable_gammaPdfReal 1 r
+@[measurability]
+lemma measurable_exponentialPdfReal (r : ℝ) : Measurable (exponentialPdfReal r) :=
+  measurable_gammaPdfReal 1 r
+
+-- The exponential Pdf is strongly measurable -/
+@[measurability]
+ lemma stronglyMeasurable_exponentialPdfReal (r : ℝ) :
+     StronglyMeasurable (exponentialPdfReal r) := stronglyMeasurable_gammaPdfReal 1 r
 
 /-- The exponential pdf is positive for all positive reals -/
 lemma exponentialPdfReal_pos {x r : ℝ} (hr : 0 < r) (hx : 0 < x) :
@@ -98,13 +104,13 @@ noncomputable
 def exponentialCdfReal (r : ℝ) : StieltjesFunction :=
   cdf (expMeasure r)
 
-lemma exponentialCdfReal_eq_integral {r : ℝ} (hr : 0 < r) (x : ℝ):
-    exponentialCdfReal r x = ∫ x in Iic x, exponentialPdfReal r x := by
-  apply gammaCdfReal_eq_integral zero_lt_one hr
+lemma exponentialCdfReal_eq_integral {r : ℝ} (hr : 0 < r) (x : ℝ) :
+    exponentialCdfReal r x = ∫ x in Iic x, exponentialPdfReal r x :=
+  gammaCdfReal_eq_integral zero_lt_one hr x
 
-lemma exponentialCdfReal_eq_lintegral {r : ℝ} (hr : 0 < r) (x : ℝ):
-    exponentialCdfReal r x = ENNReal.toReal (∫⁻ x in Iic x, exponentialPdf r x) := by
-  apply gammaCdfReal_eq_lintegral zero_lt_one hr
+lemma exponentialCdfReal_eq_lintegral {r : ℝ} (hr : 0 < r) (x : ℝ) :
+    exponentialCdfReal r x = ENNReal.toReal (∫⁻ x in Iic x, exponentialPdf r x) :=
+  gammaCdfReal_eq_lintegral zero_lt_one hr x
 
 open Topology
 
@@ -120,7 +126,7 @@ lemma exp_neg_integrableOn_Ioc {b x : ℝ} (hb : 0 < b) :
   simp only [neg_mul_eq_neg_mul]
   exact (exp_neg_integrableOn_Ioi _ hb).mono_set Ioc_subset_Ioi_self
 
-lemma lintegral_exponentialPdf_eq_antiDeriv {r : ℝ} (hr : 0 < r) (x : ℝ):
+lemma lintegral_exponentialPdf_eq_antiDeriv {r : ℝ} (hr : 0 < r) (x : ℝ) :
     ∫⁻ y in Iic x, exponentialPdf r y
     = ENNReal.ofReal (if 0 ≤ x then 1 - exp (-(r * x)) else 0) := by
   split_ifs with h
@@ -157,15 +163,14 @@ lemma lintegral_exponentialPdf_eq_antiDeriv {r : ℝ} (hr : 0 < r) (x : ℝ):
       rw [integrableOn_Icc_iff_integrableOn_Ioc]
       exact Integrable.const_mul (exp_neg_integrableOn_Ioc hr) _
 
-/-- The definition of the CDF equals the known formula ``1 - exp (-(r * x))``-/
+/-- The CDF of the exponential distribution equals ``1 - exp (-(r * x))``-/
 lemma exponentialCdfReal_eq {r : ℝ} (hr : 0 < r) (x : ℝ) :
     exponentialCdfReal r x = if 0 ≤ x then 1 - exp (-(r * x)) else 0 := by
-  rw [exponentialCdfReal_eq_lintegral hr]
-  rw [lintegral_exponentialPdf_eq_antiDeriv hr x]
-  rw [ENNReal.toReal_ofReal_eq_iff]
+  rw [exponentialCdfReal_eq_lintegral hr, lintegral_exponentialPdf_eq_antiDeriv hr x,
+    ENNReal.toReal_ofReal_eq_iff]
   split_ifs with h
   · simp only [sub_nonneg, exp_le_one_iff, Left.neg_nonpos_iff, gt_iff_lt, ge_iff_le]
-    exact mul_nonneg (le_of_lt hr) h
-  · exact le_refl _
+    exact mul_nonneg hr.le h
+  · exact le_rfl
 
 end ExponentialCdf

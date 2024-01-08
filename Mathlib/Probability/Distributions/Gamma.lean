@@ -11,7 +11,7 @@ import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
 
 /-! # Gamma distributions over ℝ
 
-Define the Gamma measure over the reals
+Define the Gamma measure over the reals.
 
 ## Main definitions
 * `gammaPdfReal`: the function `a r x ↦ r ^ a / (Gamma a) * x ^ (a-1) * exp (-(r * x))`
@@ -70,9 +70,16 @@ lemma lintegral_gammaPdf_of_nonpos {x a r : ℝ} (hx : x ≤ 0) :
     apply ae_of_all _ fun a (_ : a < _) ↦ by rw [if_neg (by linarith)]
 
 /-- The gamma pdf is measurable. -/
+@[measurability]
 lemma measurable_gammaPdfReal (a r : ℝ) : Measurable (gammaPdfReal a r) :=
   Measurable.ite measurableSet_Ici (((measurable_id'.pow_const _).const_mul _).mul
     (measurable_id'.const_mul _).neg.exp) measurable_const
+
+/-- The gamma Pdf is strongly measurable -/
+@[measurability]
+ lemma stronglyMeasurable_gammaPdfReal (a r : ℝ) :
+     StronglyMeasurable (gammaPdfReal a r) :=
+   (measurable_gammaPdfReal a r).stronglyMeasurable
 
 /-- The Gamma pdf is positive for all positive reals -/
 lemma gammaPdfReal_pos {x a r : ℝ} (ha : 0 < a) (hr : 0 < r) (hx : 0 < x) :
