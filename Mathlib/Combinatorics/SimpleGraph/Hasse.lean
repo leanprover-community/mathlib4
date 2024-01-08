@@ -255,10 +255,10 @@ def Walk.toPathGraphHom (G : SimpleGraph α) {u v : α} (w : G.Walk u v) :
     pathGraph (w.length + 1) →g G := (w.toPathGraphHomAux).1
 
 theorem Walk.toPathGraphHom_bot (G : SimpleGraph α) {u v : α} (w : G.Walk u v) :
-    (w.toPathGraphHom).toFun ⊥ = v := (w.toPathGraphHomAux).2.1
+    w.toPathGraphHom ⊥ = v := (w.toPathGraphHomAux).2.1
 
 theorem Walk.toPathGraphHom_top (G : SimpleGraph α) {u v : α} (w : G.Walk u v) :
-    (w.toPathGraphHom).toFun ⊤ = u := (w.toPathGraphHomAux).2.2
+    w.toPathGraphHom ⊤ = u := (w.toPathGraphHomAux).2.2
 
 @[simp]
 theorem Walk.length_ofPathGraphHom {G : SimpleGraph α} {n : ℕ} (hom : pathGraph (n + 1) →g G) :
@@ -266,5 +266,51 @@ theorem Walk.length_ofPathGraphHom {G : SimpleGraph α} {n : ℕ} (hom : pathGra
   induction n with
   | zero => rfl
   | succ n ih => exact Nat.succ_inj'.mpr (ih (hom.comp (Hom.pathGraph (n + 1).le_succ)))
+
+-- Probably this is not nessessary
+theorem hom_toFun (G : SimpleGraph α) (G' : SimpleGraph β) (hom : G →g G') (u : α) :
+    hom u = hom.toFun u := rfl
+
+theorem Walk.toPathGraphHom_rec (G : SimpleGraph α) {u v w : α} (h : Adj G u v) (p : Walk G v w)
+    (i : Fin (p.length + 1)) :
+    (cons' u v w h p).toPathGraphHom ⟨i.val, by simp [length_cons, Nat.lt_add_right]⟩ =
+      p.toPathGraphHom i := by
+  simp [toPathGraphHom, toPathGraphHomAux]
+  match toPathGraphHomAux α G p with
+  | ⟨hom', _, _⟩ =>
+    rw [hom_toFun]
+    simp
+
+theorem Walk.toPathGraphHom_rec' (G : SimpleGraph α) {u v w : α} (h : Adj G u v) (p : Walk G v w)
+    (i : Fin (p.length + 2)) (hi : i ≠ ⊤) :
+    (cons' u v w h p).toPathGraphHom i = p.toPathGraphHom ⟨i.val, Fin.val_lt_last hi⟩ := by
+  simp [toPathGraphHom, toPathGraphHomAux]
+  match toPathGraphHomAux α G p with
+  | ⟨hom', _, _⟩ =>
+    rw [hom_toFun]
+    simp [Fin.val_lt_last hi]
+
+theorem Walk.toPathGraphHom_val (G : SimpleGraph α) {u v : α} (w : G.Walk u v)
+    (i : Fin (w.length + 1)) : w.toPathGraphHom i = w.getVert (w.length - i.val) := by
+  induction w with
+  | nil =>
+    simp [toPathGraphHom, toPathGraphHomAux]
+    simp [hom_toFun]
+  | @cons u v w h p ih =>
+    have hi : i.val < p.length + 1 ∨ i.val = p.length + 1 :=
+      Nat.lt_or_eq_of_le (Nat.le_pred_of_lt i.is_lt)
+    match hi with
+    | Or.inl hi =>
+      rw [toPathGraphHom_rec' α G h p i (Fin.ne_of_lt hi), ih]
+      simp
+      rw [Nat.succ_sub (Nat.lt_succ.mp hi)]
+      simp [getVert]
+    | Or.inr hi =>
+      simp [hi, toPathGraphHom, toPathGraphHomAux]
+      match toPathGraphHomAux α G p with
+      | ⟨hom', _, _⟩ =>
+        simp
+        rw [hom_toFun]
+        simp [hi]
 
 end SimpleGraph
