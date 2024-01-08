@@ -199,8 +199,8 @@ structure Embedding [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y) exte
 #align embedding Embedding
 #align embedding_iff embedding_iff
 
-theorem Function.Injective.embedding_induced [t : TopologicalSpace Y] {f : X → Y}
-    (hf : Injective f) : @_root_.Embedding X Y (t.induced f) t f :=
+theorem Function.Injective.embedding_induced [t : TopologicalSpace Y] (hf : Injective f) :
+    @_root_.Embedding X Y (t.induced f) t f :=
   @_root_.Embedding.mk X Y (t.induced f) t _ (inducing_induced f) hf
 #align function.injective.embedding_induced Function.Injective.embedding_induced
 
@@ -255,9 +255,9 @@ theorem Embedding.continuous (hf : Embedding f) : Continuous f :=
   Inducing.continuous hf.1
 #align embedding.continuous Embedding.continuous
 
-theorem Embedding.closure_eq_preimage_closure_image {e : X → Y} (he : Embedding e) (s : Set X) :
-    closure s = e ⁻¹' closure (e '' s) :=
-  he.1.closure_eq_preimage_closure_image s
+theorem Embedding.closure_eq_preimage_closure_image (hf : Embedding f) (s : Set X) :
+    closure s = f ⁻¹' closure (f '' s) :=
+  hf.1.closure_eq_preimage_closure_image s
 #align embedding.closure_eq_preimage_closure_image Embedding.closure_eq_preimage_closure_image
 
 /-- The topology induced under an inclusion `f : X → Y` from a discrete topological space `Y`
