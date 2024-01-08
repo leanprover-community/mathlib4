@@ -9,7 +9,7 @@ import Mathlib.RingTheory.Localization.Module
 /-!
 # Localized Module
 
-Given a commutative ring `R`, a multiplicative subset `S ⊆ R` and an `R`-module `M`, we can
+Given a commutative semiring `R`, a multiplicative subset `S ⊆ R` and an `R`-module `M`, we can
 localize `M` by `S`. This gives us a `Localization S`-module.
 
 ## Main definition
@@ -17,7 +17,7 @@ localize `M` by `S`. This gives us a `Localization S`-module.
 * `isLocalizedModule_iff_isBaseChange` : A localization of modules corresponds to a base change.
 -/
 
-variable {R : Type*} [CommRing R] (S : Submonoid R)
+variable {R : Type*} [CommSemiring R] (S : Submonoid R)
   (A : Type*) [CommRing A] [Algebra R A] [IsLocalization S A]
   {M : Type*} [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M]
   {M' : Type*} [AddCommMonoid M'] [Module R M'] [Module A M'] [IsScalarTower R A M']

@@ -33,7 +33,7 @@ open nonZeroDivisors
 
 section Localization
 
-variable {R : Type*} [CommRing R] (Rₛ : Type*) [CommRing Rₛ] [Algebra R Rₛ]
+variable {R : Type*} (Rₛ : Type*) [CommSemiring R] [CommRing Rₛ] [Algebra R Rₛ]
 
 variable (S : Submonoid R) [hT : IsLocalization S Rₛ]
 
@@ -129,6 +129,10 @@ end IsLocalizedModule
 
 section LocalizationLocalization
 
+variable {R : Type*} (Rₛ : Type*) [CommSemiring R] [CommRing Rₛ] [Algebra R Rₛ]
+
+variable (S : Submonoid R) [hT : IsLocalization S Rₛ]
+
 variable {A : Type*} [CommRing A] [Algebra R A]
 
 variable (Aₛ : Type*) [CommRing Aₛ] [Algebra A Aₛ]
@@ -174,7 +178,6 @@ theorem Basis.localizationLocalization_span {ι : Type*} (b : Basis ι R A) :
 
 end LocalizationLocalization
 
-end Localization
 
 section FractionRing
 
@@ -192,8 +195,8 @@ end FractionRing
 
 section
 
-variable {R : Type*} [CommRing R] (S : Submonoid R)
-variable (A : Type*) [CommRing A] [Algebra R A] [IsLocalization S A]
+variable {R : Type*} [CommSemiring R] (S : Submonoid R)
+variable (A : Type*) [CommSemiring A] [Algebra R A] [IsLocalization S A]
 variable {M N : Type*}
   [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M]
   [AddCommMonoid N] [Module R N] [Module A N] [IsScalarTower R A N]

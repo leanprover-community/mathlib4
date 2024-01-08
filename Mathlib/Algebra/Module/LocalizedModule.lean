@@ -12,7 +12,7 @@ import Mathlib.RingTheory.Localization.Basic
 /-!
 # Localized Module
 
-Given a commutative ring `R`, a multiplicative subset `S ⊆ R` and an `R`-module `M`, we can
+Given a commutative semiring `R`, a multiplicative subset `S ⊆ R` and an `R`-module `M`, we can
 localize `M` by `S`. This gives us a `Localization S`-module.
 
 ## Main definitions
@@ -547,7 +547,7 @@ section IsLocalizedModule
 
 universe u v
 
-variable {R : Type*} [CommRing R] (S : Submonoid R)
+variable {R : Type*} [CommSemiring R] (S : Submonoid R)
 
 variable {M M' M'' : Type*} [AddCommMonoid M] [AddCommMonoid M'] [AddCommMonoid M'']
 
@@ -595,7 +595,7 @@ theorem IsLocalizedModule.of_linearEquiv (e : M' ≃ₗ[R] M'') [hf : IsLocalize
     exact hf.exists_of_eq h
 
 variable (M) in
-lemma isLocalizedModule_id (R') [CommRing R'] [Algebra R R'] [IsLocalization S R'] [Module R' M]
+lemma isLocalizedModule_id (R') [CommSemiring R'] [Algebra R R'] [IsLocalization S R'] [Module R' M]
     [IsScalarTower R R' M] : IsLocalizedModule S (.id : M →ₗ[R] M) where
   map_units s := (Module.End_isUnit_iff _).mpr <| by
     convert_to Function.Bijective (algebraMap R' (Module.End R' M) (algebraMap R R' s))
@@ -605,7 +605,7 @@ lemma isLocalizedModule_id (R') [CommRing R'] [Algebra R R'] [IsLocalization S R
   exists_of_eq h := ⟨1, congr_arg _ h⟩
 
 variable {S} in
-theorem isLocalizedModule_iff_isLocalization {A Aₛ} [CommRing A] [Algebra R A][CommRing Aₛ]
+theorem isLocalizedModule_iff_isLocalization {A Aₛ} [CommSemiring A] [Algebra R A][CommSemiring Aₛ]
     [Algebra A Aₛ] [Algebra R Aₛ] [IsScalarTower R A Aₛ] :
     IsLocalizedModule S (IsScalarTower.toAlgHom R A Aₛ).toLinearMap ↔
       IsLocalization (Algebra.algebraMapSubmonoid A S) Aₛ := by
@@ -633,12 +633,12 @@ theorem isLocalizedModule_iff_isLocalization {A Aₛ} [CommRing A] [Algebra R A]
     · rintro ⟨⟨_, s, hs, rfl⟩, h⟩
       exact ⟨⟨s, hs⟩, by rwa [← Algebra.smul_def, ← Algebra.smul_def] at h⟩
 
-instance {A Aₛ} [CommRing A] [Algebra R A][CommRing Aₛ] [Algebra A Aₛ] [Algebra R Aₛ]
+instance {A Aₛ} [CommSemiring A] [Algebra R A][CommSemiring Aₛ] [Algebra A Aₛ] [Algebra R Aₛ]
     [IsScalarTower R A Aₛ] [h : IsLocalization (Algebra.algebraMapSubmonoid A S) Aₛ] :
     IsLocalizedModule S (IsScalarTower.toAlgHom R A Aₛ).toLinearMap :=
   isLocalizedModule_iff_isLocalization.mpr h
 
-lemma isLocalizedModule_iff_isLocalization' (R') [CommRing R'] [Algebra R R'] :
+lemma isLocalizedModule_iff_isLocalization' (R') [CommSemiring R'] [Algebra R R'] :
     IsLocalizedModule S (Algebra.ofId R R').toLinearMap ↔ IsLocalization S R' := by
   convert isLocalizedModule_iff_isLocalization (S := S) (A := R) (Aₛ := R')
   exact (Submonoid.map_id S).symm
