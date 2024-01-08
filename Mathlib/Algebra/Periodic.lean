@@ -3,14 +3,11 @@ Copyright (c) 2021 Benjamin Davidson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Benjamin Davidson
 -/
-import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Algebra.Field.Opposite
-import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Order.Archimedean
-import Mathlib.Data.Int.Parity
 import Mathlib.GroupTheory.Coset
-import Mathlib.GroupTheory.Subgroup.ZPowers
 import Mathlib.GroupTheory.Submonoid.Membership
+import Mathlib.GroupTheory.Subgroup.ZPowers
 
 #align_import algebra.periodic from "leanprover-community/mathlib"@"30413fc89f202a090a54d78e540963ed3de0056e"
 
