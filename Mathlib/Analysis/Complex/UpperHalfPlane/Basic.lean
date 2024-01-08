@@ -139,6 +139,30 @@ theorem ne_zero (z : ℍ) : (z : ℂ) ≠ 0 :=
   mt (congr_arg Complex.im) z.im_ne_zero
 #align upper_half_plane.ne_zero UpperHalfPlane.ne_zero
 
+end UpperHalfPlane
+
+namespace Mathlib.Meta.Positivity
+
+open Lean Meta Qq
+
+/-- Extension for the `positivity` tactic: `UpperHalfPlane.im`. -/
+@[positivity UpperHalfPlane.im _]
+def evalUpperHalfPlaneIm : PositivityExt where eval {_ _} _zα _pα e := do
+  let (.app (f : Q(UpperHalfPlane → Real)) (a : Q(UpperHalfPlane))) ← whnfR e | throwError "not UpperHalfPlane.im"
+  guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(UpperHalfPlane.im)
+  pure (.positive (q(@UpperHalfPlane.im_pos $a) : Expr))
+
+/-- Extension for the `positivity` tactic: `UpperHalfPlane.coe`. -/
+@[positivity UpperHalfPlane.coe _]
+def evalUpperHalfPlaneCoe : PositivityExt where eval {_ _} _zα _pα e := do
+  let (.app (f : Q(UpperHalfPlane → Real)) (a : Q(UpperHalfPlane))) ← whnfR e | throwError "not UpperHalfPlane.coe"
+  guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(UpperHalfPlane.coe)
+  pure (.nonzero (q(@UpperHalfPlane.ne_zero $a) : Expr))
+
+end Mathlib.Meta.Positivity
+
+namespace UpperHalfPlane
+
 theorem normSq_pos (z : ℍ) : 0 < Complex.normSq (z : ℂ) := by
   rw [Complex.normSq_pos]; exact z.ne_zero
 #align upper_half_plane.norm_sq_pos UpperHalfPlane.normSq_pos

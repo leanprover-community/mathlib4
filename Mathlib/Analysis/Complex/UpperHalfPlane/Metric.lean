@@ -49,21 +49,18 @@ theorem sinh_half_dist (z w : ℍ) :
 
 theorem cosh_half_dist (z w : ℍ) :
     cosh (dist z w / 2) = dist (z : ℂ) (conj (w : ℂ)) / (2 * sqrt (z.im * w.im)) := by
-  have H₁ : (2 ^ 2 : ℝ) = 4 := by norm_num1
-  have H₂ : 0 < z.im * w.im := mul_pos z.im_pos w.im_pos
-  have H₃ : 0 < 2 * sqrt (z.im * w.im) := mul_pos two_pos (sqrt_pos.2 H₂)
-  rw [← sq_eq_sq (cosh_pos _).le (div_nonneg dist_nonneg H₃.le), cosh_sq', sinh_half_dist, div_pow,
-    div_pow, one_add_div (pow_ne_zero 2 H₃.ne'), mul_pow, sq_sqrt H₂.le, H₁]
-  congr 1
-  simp only [Complex.dist_eq, Complex.sq_abs, Complex.normSq_sub, Complex.normSq_conj,
-    Complex.conj_conj, Complex.mul_re, Complex.conj_re, Complex.conj_im, coe_im]
-  ring
+  rw [← sq_eq_sq, cosh_sq', sinh_half_dist, div_pow, div_pow, one_add_div, mul_pow, sq_sqrt]
+  · congr 1
+    simp only [Complex.dist_eq, Complex.sq_abs, Complex.normSq_sub, Complex.normSq_conj,
+      Complex.conj_conj, Complex.mul_re, Complex.conj_re, Complex.conj_im, coe_im]
+    ring
+  all_goals positivity
 #align upper_half_plane.cosh_half_dist UpperHalfPlane.cosh_half_dist
 
 theorem tanh_half_dist (z w : ℍ) :
     tanh (dist z w / 2) = dist (z : ℂ) w / dist (z : ℂ) (conj ↑w) := by
   rw [tanh_eq_sinh_div_cosh, sinh_half_dist, cosh_half_dist, div_div_div_comm, div_self, div_one]
-  exact (mul_pos (zero_lt_two' ℝ) (sqrt_pos.2 <| mul_pos z.im_pos w.im_pos)).ne'
+  positivity
 #align upper_half_plane.tanh_half_dist UpperHalfPlane.tanh_half_dist
 
 theorem exp_half_dist (z w : ℍ) :
@@ -73,8 +70,7 @@ theorem exp_half_dist (z w : ℍ) :
 
 theorem cosh_dist (z w : ℍ) : cosh (dist z w) = 1 + dist (z : ℂ) w ^ 2 / (2 * z.im * w.im) := by
   rw [dist_eq, cosh_two_mul, cosh_sq', add_assoc, ← two_mul, sinh_arsinh, div_pow, mul_pow,
-    sq_sqrt (mul_pos z.im_pos w.im_pos).le, sq (2 : ℝ), mul_assoc, ← mul_div_assoc, mul_assoc,
-    mul_div_mul_left _ _ (two_ne_zero' ℝ)]
+    sq_sqrt, sq (2 : ℝ), mul_assoc, ← mul_div_assoc, mul_assoc, mul_div_mul_left] <;> positivity
 #align upper_half_plane.cosh_dist UpperHalfPlane.cosh_dist
 
 theorem sinh_half_dist_add_dist (a b c : ℍ) : sinh ((dist a b + dist b c) / 2) =
@@ -106,23 +102,21 @@ theorem dist_eq_iff_eq_sq_sinh (hr : 0 ≤ r) :
     dist z w = r ↔ dist (z : ℂ) w ^ 2 / (4 * z.im * w.im) = sinh (r / 2) ^ 2 := by
   rw [dist_eq_iff_eq_sinh, ← sq_eq_sq, div_pow, mul_pow, sq_sqrt, mul_assoc]
   · norm_num
-  · exact (mul_pos z.im_pos w.im_pos).le
-  · exact div_nonneg dist_nonneg (mul_nonneg zero_le_two <| sqrt_nonneg _)
-  · exact sinh_nonneg_iff.2 (div_nonneg hr zero_le_two)
+  all_goals positivity
 #align upper_half_plane.dist_eq_iff_eq_sq_sinh UpperHalfPlane.dist_eq_iff_eq_sq_sinh
 
 protected theorem dist_triangle (a b c : ℍ) : dist a c ≤ dist a b + dist b c := by
   rw [dist_le_iff_le_sinh, sinh_half_dist_add_dist, div_mul_eq_div_div _ _ (dist _ _), le_div_iff,
     div_mul_eq_mul_div]
-  · exact div_le_div_of_le (mul_nonneg zero_le_two (sqrt_nonneg _))
-      (EuclideanGeometry.mul_dist_le_mul_dist_add_mul_dist (a : ℂ) b c (conj (b : ℂ)))
+  · gcongr
+    exact EuclideanGeometry.mul_dist_le_mul_dist_add_mul_dist (a : ℂ) b c (conj (b : ℂ))
   · rw [dist_comm, dist_pos, Ne.def, Complex.conj_eq_iff_im]
     exact b.im_ne_zero
 #align upper_half_plane.dist_triangle UpperHalfPlane.dist_triangle
 
 theorem dist_le_dist_coe_div_sqrt (z w : ℍ) : dist z w ≤ dist (z : ℂ) w / sqrt (z.im * w.im) := by
   rw [dist_le_iff_le_sinh, ← div_mul_eq_div_div_swap, self_le_sinh_iff]
-  exact div_nonneg dist_nonneg (mul_nonneg zero_le_two (sqrt_nonneg _))
+  positivity
 #align upper_half_plane.dist_le_dist_coe_div_sqrt UpperHalfPlane.dist_le_dist_coe_div_sqrt
 
 /-- An auxiliary `MetricSpace` instance on the upper half-plane. This instance has bad projection
