@@ -29,50 +29,74 @@ section PoissonPmf
 
 /-- The pmf of the geometric distribution depending on its success probability. -/
 noncomputable
-def geometricPmfReal (p : Ioc 0 1) (x : ℕ) : ℝ := (1-p) ^ x * p
+def geometricPmfReal (p : ℝ) (x : ℕ) : ℝ := (1-p) ^ x * p
 
-lemma geometricPmfRealSum (p : Ioc 0 1) : HasSum (fun x ↦ geometricPmfReal p x) 1 := by
+lemma p_Ioc_to_one_le_Ico {p : ℝ} (hp : p ∈ Ioc 0 1) : 1-p ∈ Ico 0 1 := by
+  have hl: 0 ≤ 1-p := by
+    rw [sub_nonneg]
+    exact hp.2
+  have hu: 1-p < 1 := by
+    simp only [sub_lt_self_iff]
+    exact hp.1
+  simp only [mem_Ico, sub_nonneg, sub_lt_self_iff]
+  exact ⟨sub_nonneg.mp hl, (sub_lt_self_iff 1).mp hu⟩
+
+lemma geometricPmfRealSum (p : ℝ) (hp : p ∈ Ioc 0 1) : HasSum (fun x ↦ geometricPmfReal p x) 1 := by
   unfold geometricPmfReal
-  sorry
+  rw [mem_Ioc] at hp
+  have hp_one := p_Ioc_to_one_le_Ico hp
+  simp only [mem_Ico] at hp_one
+  have := hasSum_geometric_of_lt_1 hp_one.1 hp_one.2
+  apply (hasSum_mul_right_iff (hp.1.ne')).mpr at this
+  simp only [sub_sub_cancel] at this
+  rw [inv_mul_eq_div, div_self hp.1.ne'] at this
+  exact this
 
-/-- The Poisson pmf is positive for all natural numbers -/
-lemma poissonPmfReal_pos {r : ℝ≥0} {x : ℕ} (hr : 0 < r) : 0 < poissonPmfReal r x := by
-  rw [poissonPmfReal]
+/-- The geometric pmf is positive for all natural numbers -/
+lemma geometricPmfReal_pos {p : ℝ} {x : ℕ} (hp : p ∈ Ioc 0 1) (hpn1 : p < 1) :
+    0 < geometricPmfReal p x := by
+  rw [geometricPmfReal]
+  have : 0 < 1-p := sub_pos.mpr hpn1
+  have : 0 < p := hp.1
   positivity
 
-lemma poissonPmfReal_nonneg {r : ℝ≥0} {x : ℕ} : 0 ≤ poissonPmfReal r x := by
-  unfold poissonPmfReal
+lemma geometricPmfReal_nonneg {p : ℝ} {x : ℕ}  (hp : p ∈ Ioc 0 1) : 0 ≤ geometricPmfReal p x := by
+  rw [geometricPmfReal]
+  have := (p_Ioc_to_one_le_Ico hp).1
+  have : 0 ≤ p := hp.1.le
   positivity
 
 /-- Geometric distribution with success probability `p`. -/
 noncomputable
-def poissonPmf (r : ℝ≥0) : PMF ℕ := by
-  refine ⟨fun x ↦ ENNReal.ofReal (poissonPmfReal r x), ?_⟩
+def geometricPmf {p : ℝ} (hp : p ∈ Ioc 0 1) : PMF ℕ := by
+  refine ⟨fun x ↦ ENNReal.ofReal (geometricPmfReal p x), ?_⟩
   apply ENNReal.hasSum_coe.mpr
   rw [← toNNReal_one]
-  exact (poissonPmfRealSum r).toNNReal (fun n ↦ poissonPmfReal_nonneg)
+  exact (geometricPmfRealSum p hp).toNNReal (fun n ↦ geometricPmfReal_nonneg hp)
 
-/-- The Poisson pmf is measurable. -/
-lemma measurable_poissonPmfReal (r : ℝ≥0) : Measurable (poissonPmfReal r) := by measurability
+/-- The geometric pmf is measurable. -/
+lemma measurable_geometricPmfReal {p : ℝ} (hp : p ∈ Ioc 0 1) : Measurable (geometricPmfReal p) := by
+  measurability
 
-lemma stronglyMeasurable_poissonPmfReal (r : ℝ≥0) : StronglyMeasurable (poissonPmfReal r) :=
-  stronglyMeasurable_iff_measurable.mpr (measurable_poissonPmfReal r)
+lemma stronglyMeasurable_geometricPmfReal {p : ℝ} (hp : p ∈ Ioc 0 1) :
+    StronglyMeasurable (geometricPmfReal p) :=
+  stronglyMeasurable_iff_measurable.mpr (measurable_geometricPmfReal hp)
 
-/-- Measure defined by the Poisson distribution -/
+/-- Measure defined by the geometric distribution -/
 noncomputable
-def poissonMeasure (r : ℝ≥0) : Measure ℕ :=
-  if r > 0 then (poissonPmf r).toMeasure else Measure.dirac 0
+def geometricMeasure {p : ℝ} (hp : p ∈ Ioc 0 1) : Measure ℕ :=
+  if p < 1 then (geometricPmf hp).toMeasure else Measure.dirac 0
 
-lemma poissonMeasure_of_rate_ne_zero {r : ℝ≥0} (hr : r > 0) :
-    poissonMeasure r = (poissonPmf r).toMeasure := if_pos hr
+lemma geometricMeasure_of_prob_le_one {p : ℝ} (hp : p ∈ Ioc 0 1) (hle_one : p < 1) :
+    geometricMeasure hp = (geometricPmf hp).toMeasure := if_pos hle_one
 
-lemma poissonMeasure_of_rate_zero :
-    poissonMeasure 0 = Measure.dirac 0 := if_neg not_lt_zero'
+lemma geometricMeasure_of_prob_one {p : ℝ} (hp : p ∈ Ioc 0 1) (h_one : p = 1):
+    geometricMeasure hp = Measure.dirac 0 := if_neg (Eq.not_gt (id h_one.symm))
 
-lemma isProbabilityMeasurePoisson (r : ℝ≥0) :
-    IsProbabilityMeasure (poissonMeasure r) := by
-  by_cases h : r > 0
-  · rw [poissonMeasure_of_rate_ne_zero h]
-    exact PMF.toMeasure.isProbabilityMeasure (poissonPmf r)
-  · rw [le_zero_iff.mp (not_lt.mp h), poissonMeasure_of_rate_zero]
+lemma isProbabilityMeasureGeometric {p : ℝ} (hp : p ∈ Ioc 0 1) :
+    IsProbabilityMeasure (geometricMeasure hp) := by
+  by_cases h : p < 1
+  · rw [geometricMeasure_of_prob_le_one hp h]
+    exact PMF.toMeasure.isProbabilityMeasure (geometricPmf hp )
+  · rw [geometricMeasure_of_prob_one hp ((LE.le.ge_iff_eq hp.2).mp (not_lt.mp h))]
     exact Measure.dirac.isProbabilityMeasure
