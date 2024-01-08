@@ -8,9 +8,9 @@ import Mathlib.Analysis.NormedSpace.Exponential
 import Mathlib.Analysis.SpecialFunctions.Exponential
 import Mathlib.Probability.Notation
 
-/-! # Poisson distributions over ℝ
+/-! # Poisson distributions over ℕ
 
-Define the Poisson measure over the reals
+Define the Poisson measure over the natural numbers
 
 ## Main definitions
 * `poissonPmfReal`: the function `λ x ↦ exp (- λ) * λ ^ x / x!`
@@ -18,7 +18,7 @@ Define the Poisson measure over the reals
   rate `λ > 0`.
 * `poissonPmf`: `ℝ≥0∞`-valued pdf,
   `poissonPmf λ = ENNReal.ofReal (poissonPmfReal λ)`.
-* `poissonMeasure`: a Poisson measure on `ℝ`, parametrized by its rate `λ`.
+* `poissonMeasure`: a Poisson measure on `ℕ`, parametrized by its rate `λ`.
 -/
 
 open scoped ENNReal NNReal
@@ -29,7 +29,7 @@ namespace ProbabilityTheory
 
 section PoissonPmf
 
-/-- The pmf of the Poisson distribution depending on its rate-/
+/-- The pmf of the Poisson distribution depending on its rate, as a function to ℝ -/
 noncomputable
 def poissonPmfReal (r : ℝ≥0) (x : ℕ) : ℝ := (exp (- r) * r ^ x / (Nat.factorial x))
 
@@ -54,6 +54,7 @@ lemma poissonPmfReal_nonneg {r : ℝ≥0} {x : ℕ} : 0 ≤ poissonPmfReal r x :
   unfold poissonPmfReal
   positivity
 
+/-- The pmf of the Poisson distribution depending on its rate, as a PMF. -/
 noncomputable
 def poissonPmf (r : ℝ≥0) : PMF ℕ := by
   refine ⟨fun x ↦ ENNReal.ofReal (poissonPmfReal r x), ?_⟩
