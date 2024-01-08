@@ -3,7 +3,6 @@ Copyright (c) 2022 Stuart Presnell. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stuart Presnell
 -/
-import Mathlib.Data.Nat.Basic
 import Mathlib.Init.Data.Nat.Bitwise
 
 #align_import data.nat.even_odd_rec from "leanprover-community/mathlib"@"18a5306c091183ac90884daa9373fa3b178e8607"
@@ -55,3 +54,9 @@ theorem evenOddRec_odd (n : ℕ) (P : ℕ → Sort*) (h0 : P 0) (h_even : ∀ i,
 #align nat.even_odd_rec_odd Nat.evenOddRec_odd
 
 end Nat
+
+
+
+
+
+#minimize_imports
