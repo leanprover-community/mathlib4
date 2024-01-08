@@ -577,7 +577,7 @@ def padicNormE {p : ℕ} [hp : Fact p.Prime] : AbsoluteValue ℚ_[p] ℚ where
   toFun := Quotient.lift PadicSeq.norm <| @PadicSeq.norm_equiv _ _
   map_mul' q r := Quotient.inductionOn₂ q r <| PadicSeq.norm_mul
   nonneg' q := Quotient.inductionOn q <| PadicSeq.norm_nonneg
-  eq_zero' q := Quotient.inductionOn q <| fun r ↦ by
+  eq_zero' q := Quotient.inductionOn q fun r ↦ by
     rw [Padic.zero_def, Quotient.eq]
     exact PadicSeq.norm_zero_iff r
   add_le' q r := by

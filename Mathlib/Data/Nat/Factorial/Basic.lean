@@ -302,7 +302,7 @@ theorem ascFactorial_lt_pow_add (n : ℕ) : ∀ {k : ℕ}, 2 ≤ k → n.ascFact
   | k + 2 => fun _ => by
     rw [ascFactorial_succ, pow_succ]
     rw [add_assoc n (k + 1) 1, mul_comm <| (n + (k + 2)) ^ (k + 1)]
-    exact mul_lt_mul_of_pos_left ((ascFactorial_le_pow_add n _).trans_lt $
+    exact mul_lt_mul_of_pos_left ((ascFactorial_le_pow_add n _).trans_lt <|
       Nat.pow_lt_pow_left (lt_add_one _) k.succ_ne_zero) (succ_pos _)
 #align nat.asc_factorial_lt_pow_add Nat.ascFactorial_lt_pow_add
 
@@ -448,5 +448,17 @@ theorem descFactorial_lt_pow {n : ℕ} (hn : 1 ≤ n) : ∀ {k : ℕ}, 2 ≤ k �
 #align nat.desc_factorial_lt_pow Nat.descFactorial_lt_pow
 
 end DescFactorial
+
+lemma factorial_two_mul_le (n : ℕ) : (2 * n)! ≤ (2 * n) ^ n * n ! := by
+  rw [two_mul, ← factorial_mul_ascFactorial, mul_comm]
+  exact mul_le_mul_right' (ascFactorial_le_pow_add _ _) _
+
+lemma two_pow_mul_factorial_le_factorial_two_mul (n : ℕ) : 2 ^ n * n ! ≤ (2 * n) ! := by
+  obtain _ | n := n
+  · simp
+  rw [mul_comm, two_mul]
+  calc
+    _ ≤ (n + 1)! * (n + 2) ^ (n + 1) := mul_le_mul_left' (pow_le_pow_of_le_left le_add_self _) _
+    _ ≤ _ := Nat.factorial_mul_pow_le_factorial
 
 end Nat

@@ -600,6 +600,23 @@ theorem support_update_ne_zero [DecidableEq α] (h : b ≠ 0) :
   congr; apply Subsingleton.elim
 #align finsupp.support_update_ne_zero Finsupp.support_update_ne_zero
 
+theorem support_update_subset [DecidableEq α] [DecidableEq M] :
+    support (f.update a b) ⊆ insert a f.support := by
+  rw [support_update]
+  split_ifs
+  · exact (erase_subset _ _).trans (subset_insert _ _)
+  · rfl
+
+theorem update_comm (f : α →₀ M) {a₁ a₂ : α} (h : a₁ ≠ a₂) (m₁ m₂ : M) :
+    update (update f a₁ m₁) a₂ m₂ = update (update f a₂ m₂) a₁ m₁ :=
+  letI := Classical.decEq α
+  FunLike.coe_injective <| Function.update_comm h _ _ _
+
+@[simp] theorem update_idem (f : α →₀ M) (a : α) (b c : M) :
+    update (update f a b) a c = update f a c :=
+  letI := Classical.decEq α
+  FunLike.coe_injective <| Function.update_idem _ _ _
+
 end Update
 
 /-! ### Declarations about `erase` -/
@@ -672,6 +689,28 @@ theorem erase_of_not_mem_support {f : α →₀ M} {a} (haf : a ∉ f.support) :
 theorem erase_zero (a : α) : erase a (0 : α →₀ M) = 0 := by
   classical rw [← support_eq_empty, support_erase, support_zero, erase_empty]
 #align finsupp.erase_zero Finsupp.erase_zero
+
+theorem erase_eq_update_zero (f : α →₀ M) (a : α) : f.erase a = update f a 0 :=
+  letI := Classical.decEq α
+  ext fun _ => (Function.update_apply _ _ _ _).symm
+
+-- The name matches `Finset.erase_insert_of_ne`
+theorem erase_update_of_ne (f : α →₀ M) {a a' : α} (ha : a ≠ a') (b : M) :
+    erase a (update f a' b) = update (erase a f) a' b := by
+  rw [erase_eq_update_zero, erase_eq_update_zero, update_comm _ ha]
+
+-- not `simp` as `erase_of_not_mem_support` can prove this
+theorem erase_idem (f : α →₀ M) (a : α) :
+    erase a (erase a f) = erase a f := by
+  rw [erase_eq_update_zero, erase_eq_update_zero, update_idem]
+
+@[simp] theorem update_erase_eq_update (f : α →₀ M) (a : α) (b : M) :
+    update (erase a f) a b = update f a b := by
+  rw [erase_eq_update_zero, update_idem]
+
+@[simp] theorem erase_update_eq_erase (f : α →₀ M) (a : α) (b : M) :
+    erase a (update f a b) = erase a f := by
+  rw [erase_eq_update_zero, erase_eq_update_zero, update_idem]
 
 end Erase
 
