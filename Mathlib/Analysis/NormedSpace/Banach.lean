@@ -95,8 +95,7 @@ theorem exists_approx_preimage_norm_le (surj : Surjective f) :
   rcases this with ⟨n, a, ε, ⟨εpos, H⟩⟩
   rcases NormedField.exists_one_lt_norm 𝕜 with ⟨c, hc⟩
   refine' ⟨(ε / 2)⁻¹ * ‖c‖ * 2 * n, _, fun y => _⟩
-  · refine' mul_nonneg (mul_nonneg (mul_nonneg _ (norm_nonneg _)) (by norm_num)) _
-    exacts [inv_nonneg.2 (div_nonneg (le_of_lt εpos) (by norm_num)), n.cast_nonneg]
+  · positivity
   · by_cases hy : y = 0
     · use 0
       simp [hy]
@@ -124,12 +123,7 @@ theorem exists_approx_preimage_norm_le (surj : Surjective f) :
             simp only [f.map_sub]
             abel
           _ ≤ ‖f x₁ - (a + d • y)‖ + ‖f x₂ - a‖ := (norm_sub_le _ _)
-          _ ≤ δ + δ := by
-            apply add_le_add
-            · rw [← dist_eq_norm, dist_comm]
-              exact le_of_lt h₁
-            · rw [← dist_eq_norm, dist_comm]
-              exact le_of_lt h₂
+          _ ≤ δ + δ := by rw [dist_eq_norm'] at h₁ h₂; gcongr
           _ = 2 * δ := (two_mul _).symm
       have J : ‖f (d⁻¹ • x) - y‖ ≤ 1 / 2 * ‖y‖ :=
         calc
@@ -137,10 +131,7 @@ theorem exists_approx_preimage_norm_le (surj : Surjective f) :
             rwa [f.map_smul _, inv_mul_cancel, one_smul]
           _ = ‖d⁻¹ • (f x - d • y)‖ := by rw [mul_smul, smul_sub]
           _ = ‖d‖⁻¹ * ‖f x - d • y‖ := by rw [norm_smul, norm_inv]
-          _ ≤ ‖d‖⁻¹ * (2 * δ) := by
-            apply mul_le_mul_of_nonneg_left I
-            rw [inv_nonneg]
-            exact norm_nonneg _
+          _ ≤ ‖d‖⁻¹ * (2 * δ) := by gcongr
           _ = ‖d‖⁻¹ * ‖d‖ * ‖y‖ / 2 := by
             simp only
             ring
@@ -153,12 +144,9 @@ theorem exists_approx_preimage_norm_le (surj : Surjective f) :
         calc
           ‖d⁻¹ • x‖ = ‖d‖⁻¹ * ‖x₁ - x₂‖ := by rw [norm_smul, norm_inv]
           _ ≤ (ε / 2)⁻¹ * ‖c‖ * ‖y‖ * (n + n) := by
-            refine' mul_le_mul dinv _ (norm_nonneg _) _
-            · exact le_trans (norm_sub_le _ _) (add_le_add (le_of_lt hx₁) (le_of_lt hx₂))
-            · apply mul_nonneg (mul_nonneg _ (norm_nonneg _)) (norm_nonneg _)
-              exact inv_nonneg.2 (le_of_lt (half_pos εpos))
+            gcongr
+            exact le_trans (norm_sub_le _ _) (by gcongr)
           _ = (ε / 2)⁻¹ * ‖c‖ * 2 * ↑n * ‖y‖ := by ring
-
       exact ⟨d⁻¹ • x, J, K⟩
 #align continuous_linear_map.exists_approx_preimage_norm_le ContinuousLinearMap.exists_approx_preimage_norm_le
 
@@ -189,12 +177,10 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
     · rw [iterate_succ']
       apply le_trans (hle _) _
       rw [pow_succ, mul_assoc]
-      apply mul_le_mul_of_nonneg_left IH
-      norm_num
+      gcongr
   let u n := g (h^[n] y)
-  have ule : ∀ n, ‖u n‖ ≤ (1 / 2) ^ n * (C * ‖y‖) := by
-    intro n
-    apply le_trans (hg _).2 _
+  have ule : ∀ n, ‖u n‖ ≤ (1 / 2) ^ n * (C * ‖y‖) := fun n ↦ by
+    apply le_trans (hg _).2
     calc
       C * ‖h^[n] y‖ ≤ C * ((1 / 2) ^ n * ‖y‖) := mul_le_mul_of_nonneg_left (hnle n) C0
       _ = (1 / 2) ^ n * (C * ‖y‖) := by ring
