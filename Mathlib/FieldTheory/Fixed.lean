@@ -144,7 +144,7 @@ theorem linearIndependent_smul_of_linearIndependent {s : Finset F} :
       (linearIndependent_iff'.1 (ih hs.1) s.attach (fun i => g • l i - l i) _ ⟨i, his⟩
           (mem_attach _ _) :
         _)
-  refine' (@sum_attach _ _ s _ fun i => (g • l i - l i) • MulAction.toFun G F i).trans _
+  refine' (sum_attach s fun i ↦ (g • l i - l i) • MulAction.toFun G F i).trans _
   ext g'; dsimp only
   conv_lhs =>
     rw [sum_apply]
@@ -314,7 +314,7 @@ theorem linearIndependent_toLinearMap (R : Type u) (A : Type v) (B : Type w) [Co
     LinearIndependent B (AlgHom.toLinearMap : (A →ₐ[R] B) → A →ₗ[R] B) :=
   have : LinearIndependent B (LinearMap.ltoFun R A B ∘ AlgHom.toLinearMap) :=
     ((linearIndependent_monoidHom A B).comp ((↑) : (A →ₐ[R] B) → A →* B) fun _ _ hfg =>
-        AlgHom.ext <| fun _ => FunLike.ext_iff.1 hfg _ :
+        AlgHom.ext fun _ => FunLike.ext_iff.1 hfg _ :
       _)
   this.of_comp _
 #align linear_independent_to_linear_map linearIndependent_toLinearMap

@@ -276,7 +276,7 @@ theorem id_f (C : HomologicalComplex V c) (i : ι) : Hom.f (𝟙 C) i = 𝟙 (C.
   rfl
 #align homological_complex.id_f HomologicalComplex.id_f
 
-@[simp]
+@[simp, reassoc]
 theorem comp_f {C₁ C₂ C₃ : HomologicalComplex V c} (f : C₁ ⟶ C₂) (g : C₂ ⟶ C₃) (i : ι) :
     (f ≫ g).f i = f.f i ≫ g.f i :=
   rfl
@@ -758,7 +758,7 @@ variable (X₀ X₁ X₂ : V) (d₀ : X₁ ⟶ X₀) (d₁ : X₂ ⟶ X₁) (s :
       Σ' (X₃ : V) (d₂ : X₃ ⟶ t.2.2.1), d₂ ≫ t.2.2.2.2.1 = 0)
 
 /-- Auxiliary definition for `mk`. -/
-def mkAux : ∀ _ : ℕ, MkStruct V
+def mkAux : ℕ → MkStruct V
   | 0 => ⟨X₀, X₁, X₂, d₀, d₁, s⟩
   | n + 1 =>
     let p := mkAux n
@@ -1030,7 +1030,7 @@ variable (X₀ X₁ X₂ : V) (d₀ : X₀ ⟶ X₁) (d₁ : X₁ ⟶ X₂) (s :
       Σ' (X₃ : V) (d₂ : t.2.2.1 ⟶ X₃), t.2.2.2.2.1 ≫ d₂ = 0)
 
 /-- Auxiliary definition for `mk`. -/
-def mkAux : ∀ _ : ℕ, MkStruct V
+def mkAux : ℕ → MkStruct V
   | 0 => ⟨X₀, X₁, X₂, d₀, d₁, s⟩
   | n + 1 =>
     let p := mkAux n

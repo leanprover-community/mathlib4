@@ -203,10 +203,10 @@ theorem measure_mono_top (h : s₁ ⊆ s₂) (h₁ : μ s₁ = ∞) : μ s₂ = 
 #align measure_theory.measure_mono_top MeasureTheory.measure_mono_top
 
 @[simp, mono]
-theorem measure_le_measure_union_left : μ s ≤ μ (s ∪ t) := μ.mono $ subset_union_left s t
+theorem measure_le_measure_union_left : μ s ≤ μ (s ∪ t) := μ.mono <| subset_union_left s t
 
 @[simp, mono]
-theorem measure_le_measure_union_right : μ t ≤ μ (s ∪ t) := μ.mono $ subset_union_right s t
+theorem measure_le_measure_union_right : μ t ≤ μ (s ∪ t) := μ.mono <| subset_union_right s t
 
 /-- For every set there exists a measurable superset of the same measure. -/
 theorem exists_measurable_superset (μ : Measure α) (s : Set α) :
@@ -363,13 +363,10 @@ theorem measure_inter_null_of_null_left {S : Set α} (T : Set α) (h : μ S = 0)
 
 /-! ### The almost everywhere filter -/
 
-
 /-- The “almost everywhere” filter of co-null sets. -/
-def Measure.ae {α} {m : MeasurableSpace α} (μ : Measure α) : Filter α where
-  sets := { s | μ sᶜ = 0 }
-  univ_sets := by simp
-  inter_sets hs ht := by simp only [compl_inter, mem_setOf_eq]; exact measure_union_null hs ht
-  sets_of_superset hs hst := measure_mono_null (Set.compl_subset_compl.2 hst) hs
+def Measure.ae {α : Type*} {_m : MeasurableSpace α} (μ : Measure α) : Filter α :=
+  ofCountableUnion (μ · = 0) (fun _S hSc ↦ (measure_sUnion_null_iff hSc).2) fun _t ht _s hs ↦
+    measure_mono_null hs ht
 #align measure_theory.measure.ae MeasureTheory.Measure.ae
 
 -- mathport name: «expr∀ᵐ ∂ , »
@@ -415,11 +412,8 @@ theorem ae_of_all {p : α → Prop} (μ : Measure α) : (∀ a, p a) → ∀ᵐ 
 -- ⟨fun s hs => let ⟨t, hst, htm, htμ⟩ := exists_measurable_superset_of_null hs;
 --   ⟨tᶜ, compl_mem_ae_iff.2 htμ, htm.compl, compl_subset_comm.1 hst⟩⟩
 
-instance instCountableInterFilter : CountableInterFilter μ.ae :=
-  ⟨by
-    intro S hSc hS
-    rw [mem_ae_iff, compl_sInter, sUnion_image]
-    exact (measure_biUnion_null_iff hSc).2 hS⟩
+instance instCountableInterFilter : CountableInterFilter μ.ae := by
+  unfold Measure.ae; infer_instance
 #align measure_theory.measure.ae.countable_Inter_filter MeasureTheory.instCountableInterFilter
 
 theorem ae_all_iff {ι : Sort*} [Countable ι] {p : α → ι → Prop} :
