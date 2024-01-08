@@ -11,21 +11,48 @@ import Mathlib.RingTheory.AdjoinRoot
 
 -/
 
-section AdjoinRoot
-
 
 open Ideal Polynomial
 
 open Set Function
 
-variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V]
+section
+/- # Attempt to define invariantSubspace using the R[X]-module structure on V -/
+
+variable {R V : Type*} [CommSemiring R] [AddCommGroup V] [Module R V]
+variable (f : V →ₗ[R] V)
+
+def LinearMap.toModule : Module R[X] V := Module.compHom _ (aeval f).toRingHom
+
+example : CompleteLattice (Submodule R V) := Submodule.completeLattice
+
+example : CompleteLattice (@Submodule R[X] V _ _ f.toModule) :=
+  @Submodule.completeLattice R[X] V _ _ f.toModule
+
+example : LatticeHom (@Submodule R[X] V _ _ f.toModule) (Submodule R V) :=
+  haveI : Module R[X] V := f.toModule
+  { toFun := fun W ↦ {
+      carrier := W.carrier
+      add_mem' := sorry
+      zero_mem' := sorry
+      smul_mem' := sorry }
+    map_inf' := sorry
+    map_sup' := sorry }
+
+end
+
+section InvariantSubspace
 
 namespace LinearMap
 
-variable (f : V →ₗ[K] V)
+-- variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V]
+-- variable (f : V →ₗ[K] V)
+
+variable {R V : Type*} [CommSemiring R] [AddCommGroup V] [Module R V]
+variable (f : V →ₗ[R] V)
 
 /-- The lattice of invariant subspaces of a linear endomorphism -/
-def invariantSubspace : Sublattice (Submodule K V) where
+def invariantSubspace : Sublattice (Submodule R V) where
   carrier := {p | MapsTo f p p}
   supClosed' := by
     intro p hp q hq x hx
@@ -36,7 +63,7 @@ def invariantSubspace : Sublattice (Submodule K V) where
 namespace invariantSubspace
 
 theorem injective_coeSubmodule :
-    Injective ((↑) : f.invariantSubspace → Submodule K V) := fun x y h ↦ by
+    Injective ((↑) : f.invariantSubspace → Submodule R V) := fun x y h ↦ by
   cases x; cases y; congr
 
 instance instTop : Top f.invariantSubspace := ⟨⊤, fun _ _ ↦ mem_univ _⟩
@@ -46,7 +73,7 @@ instance instBot : Bot f.invariantSubspace := ⟨⊥, fun x hx ↦ by
   simp [hx]⟩
 
 instance instSupSet : SupSet f.invariantSubspace where
-  sSup S := ⟨sSup {(p : Submodule K V) | p ∈ S}, by
+  sSup S := ⟨sSup {(p : Submodule R V) | p ∈ S}, by
     intro x hx
     simp only [Subtype.exists, exists_and_right, exists_eq_right, SetLike.mem_coe,
       Submodule.mem_sSup, mem_setOf_eq, forall_exists_index] at hx ⊢
@@ -55,32 +82,32 @@ instance instSupSet : SupSet f.invariantSubspace where
     exact le_trans hp <|Submodule.comap_mono <| hq p hp hp'⟩
 
 instance instInfSet : InfSet f.invariantSubspace where
-  sInf S := ⟨sInf {(p : Submodule K V) | p ∈ S}, by
+  sInf S := ⟨sInf {(p : Submodule R V) | p ∈ S}, by
     rintro x hx - ⟨p, rfl⟩
     simp only [Subtype.exists, exists_and_right, exists_eq_right, mem_setOf_eq, iInter_exists,
       mem_iInter, Submodule.sInf_coe] at hx ⊢
     exact fun hp hp' ↦ hp (hx p hp hp')⟩
 
-lemma coe_sup (p q : f.invariantSubspace) : (↑(p ⊔ q) : Submodule K V) = ↑p ⊔ ↑q := rfl
+lemma coe_sup (p q : f.invariantSubspace) : (↑(p ⊔ q) : Submodule R V) = ↑p ⊔ ↑q := rfl
 
-lemma coe_inf (p q : f.invariantSubspace) : (↑(p ⊓ q) : Submodule K V) = ↑p ⊓ ↑q := rfl
+lemma coe_inf (p q : f.invariantSubspace) : (↑(p ⊓ q) : Submodule R V) = ↑p ⊓ ↑q := rfl
 
 @[simp]
 theorem sSup_coe_toSubmodule (S : Set f.invariantSubspace) :
-    (↑(sSup S) : Submodule K V) = sSup {(s : Submodule K V) | s ∈ S} :=
+    (↑(sSup S) : Submodule R V) = sSup {(s : Submodule R V) | s ∈ S} :=
   rfl
 
 theorem sSup_coe_toSubmodule' (S : Set f.invariantSubspace) :
-    (↑(sSup S) : Submodule K V) = ⨆ p ∈ S, (p : Submodule K V) := by
+    (↑(sSup S) : Submodule R V) = ⨆ p ∈ S, (p : Submodule R V) := by
   rw [sSup_coe_toSubmodule, ← Set.image, sSup_image]
 
 @[simp]
 theorem sInf_coe_toSubmodule (S : Set f.invariantSubspace) :
-    (↑(sInf S) : Submodule K V) = sInf {(s : Submodule K V) | s ∈ S} :=
+    (↑(sInf S) : Submodule R V) = sInf {(s : Submodule R V) | s ∈ S} :=
   rfl
 
 theorem sInf_coe_toSubmodule' (S : Set f.invariantSubspace) :
-    (↑(sInf S) : Submodule K V) = ⨅ p ∈ S, (p : Submodule K V) := by
+    (↑(sInf S) : Submodule R V) = ⨅ p ∈ S, (p : Submodule R V) := by
   rw [sInf_coe_toSubmodule, ← Set.image, sInf_image]
 
 instance instCompleteLattice : CompleteLattice f.invariantSubspace :=
@@ -89,28 +116,41 @@ instance instCompleteLattice : CompleteLattice f.invariantSubspace :=
 
 end invariantSubspace
 
+/-- The lattice of invariant subspaces of a linear endomorphism -/
 protected abbrev IsSemisimple := ComplementedLattice f.invariantSubspace
+
+end LinearMap
+
+end InvariantSubspace
+
+
+section Restriction
+
+namespace LinearMap
 
 open Polynomial
 
-lemma self_mul_aeval_eq_aeval_mul_self (f : V →ₗ[K] V) (P : K[X]) (v : V) :
+variable {R V : Type*} [CommSemiring R] [AddCommGroup V] [Module R V]
+variable (f : V →ₗ[R] V)
+
+lemma self_mul_aeval_eq_aeval_mul_self (f : V →ₗ[R] V) (P : R[X]) (v : V) :
   aeval f P (f v) = f (aeval f P v) := by
   suffices : (aeval f P) * f = f * (aeval f P)
   have := LinearMap.congr_fun this v
   simp only [mul_apply] at this
   simp only [this]
-  nth_rewrite 2 [← aeval_X (R := K) f]
-  nth_rewrite 3 [← aeval_X (R := K) f]
+  nth_rewrite 2 [← aeval_X (R := R) f]
+  nth_rewrite 3 [← aeval_X (R := R) f]
   simp only [← _root_.map_mul, mul_comm]
 
-lemma aeval_ker_mem_invariantSubspace (f : V →ₗ[K] V) (P : K[X]) :
-    LinearMap.ker (Polynomial.aeval f P) ∈ invariantSubspace f := by
+lemma aeval_ker_mem_invariantSubspace (f : V →ₗ[R] V) (P : R[X]) :
+    ker (aeval f P) ∈ invariantSubspace f := by
   intro v
   simp only [SetLike.mem_coe, mem_ker, self_mul_aeval_eq_aeval_mul_self]
   intro hv
   rw [hv, map_zero]
 
-lemma aeval_image_mem_invariantSubspace (f : V →ₗ[K] V) (P : K[X]) :
+lemma aeval_image_mem_invariantSubspace (f : V →ₗ[R] V) (P : R[X]) :
     LinearMap.range (Polynomial.aeval f P) ∈ invariantSubspace f := by
   intro v
   simp only [SetLike.mem_coe, mem_range]
@@ -118,8 +158,8 @@ lemma aeval_image_mem_invariantSubspace (f : V →ₗ[K] V) (P : K[X]) :
   use f w
   rw [self_mul_aeval_eq_aeval_mul_self]
 
-lemma aeval_mapsTo (f : V →ₗ[K] V) (W : invariantSubspace f) (p : K[X]) :
-    MapsTo (Polynomial.aeval f p) W W := by
+lemma aeval_mapsTo (f : V →ₗ[R] V) (W : invariantSubspace f) (p : R[X]) :
+    MapsTo (aeval f p) W W := by
   induction p using Polynomial.induction_on' with
   | h_add p q hp hq =>
     exact fun w hw ↦ by
@@ -140,8 +180,8 @@ lemma aeval_mapsTo (f : V →ₗ[K] V) (W : invariantSubspace f) (p : K[X]) :
         simp only [aeval_monomial, mul_apply, Module.algebraMap_end_apply, SetLike.mem_coe] at hn
         exact W.prop hn
 
-lemma aeval_restrict_apply (f : V →ₗ[K] V) (W : invariantSubspace f) (p : K[X]) (w : ↑W) :
-    aeval (LinearMap.restrict f W.prop) p w = aeval f p w := by
+lemma aeval_restrict_apply (f : V →ₗ[R] V) (W : invariantSubspace f) (p : R[X]) (w : ↑W) :
+    aeval (restrict f W.prop) p w = aeval f p w := by
   induction p using Polynomial.induction_on' with
   | h_add p q hp hq =>
     simp only [map_add, add_apply, AddSubmonoid.coe_add, Submodule.coe_toAddSubmonoid, hp, hq]
@@ -155,11 +195,23 @@ lemma aeval_restrict_apply (f : V →ₗ[K] V) (W : invariantSubspace f) (p : K[
       simp only [pow_succ, mul_apply, restrict_coe_apply]
       rw [← map_smul, hn, map_smul]
 
-lemma aeval_restrict_eq (f : V →ₗ[K] V) (W : invariantSubspace f) (p : K[X]) :
+lemma aeval_restrict_eq (f : V →ₗ[R] V) (W : invariantSubspace f) (p : R[X]) :
     aeval (LinearMap.restrict f W.prop) p =
       LinearMap.restrict (aeval f p) (aeval_mapsTo f W p) := by
   ext w
   rw [aeval_restrict_apply, restrict_coe_apply]
+
+end LinearMap
+
+end Restriction
+
+section Semisimple
+
+namespace LinearMap
+
+open Polynomial
+
+variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V]
 
 /-- The minimal polynomial of a semisimple endomorphism is square free -/
 theorem minpoly_squarefree_of_isSemisimple [Module.Finite K V]
@@ -232,7 +284,18 @@ theorem minpoly_squarefree_of_isSemisimple [Module.Finite K V]
       rw [← Subtype.coe_inj, aeval_restrict_apply] at this
       exact this
 
+end LinearMap
+
+end Semisimple
+
+namespace LinearMap
+
+variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V]
+variable (f : V →ₗ[K] V)
+
 section
+
+open Polynomial
 
 variable (p : K[X]) (hirr : Fact (Irreducible p)) (hdvd : p ∣ minpoly K f)
 
@@ -312,10 +375,10 @@ theorem _root_.minpoly.dvd_iff {A : Type u_1} {B : Type u_2} [Field A] [Ring B]
   · rintro ⟨q, rfl⟩
     rw [_root_.map_mul, minpoly.aeval, zero_mul]
 
-#check AdjoinRoot.liftHom
 example (f : V →ₗ[K] V) (p : K[X]) (hp : minpoly K f ∣ p) :
     Module (AdjoinRoot p) V :=
   Module.compHom _ (AdjoinRoot.liftHom p f (minpoly.dvd_iff.mpr hp)).toRingHom
+
 
 
 end
