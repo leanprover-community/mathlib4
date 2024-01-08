@@ -56,7 +56,7 @@ integral curve, vector field, local existence, uniqueness
 
 open scoped Manifold
 
-open Set
+open Function Set
 
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
@@ -135,8 +135,7 @@ section Translation
 lemma IsIntegralCurveOn.comp_add (hγ : IsIntegralCurveOn γ v s) (dt : ℝ) :
     IsIntegralCurveOn (γ ∘ (· + dt)) v { t | t + dt ∈ s } := by
   intros t ht
-  rw [Function.comp_apply,
-    ← ContinuousLinearMap.comp_id (ContinuousLinearMap.smulRight 1 (v (γ (t + dt))))]
+  rw [comp_apply, ← ContinuousLinearMap.comp_id (ContinuousLinearMap.smulRight 1 (v (γ (t + dt))))]
   apply HasMFDerivAt.comp t (hγ (t + dt) ht)
   refine ⟨(continuous_add_right _).continuousAt, ?_⟩
   simp only [mfld_simps, hasFDerivWithinAt_univ]
@@ -149,7 +148,7 @@ lemma isIntegralCurveOn_comp_add {dt : ℝ} :
   simp only [mem_setOf_eq, neg_add_cancel_right, setOf_mem_eq] at this
   convert this
   ext
-  simp only [Function.comp_apply, neg_add_cancel_right]
+  simp only [comp_apply, neg_add_cancel_right]
 
 lemma IsIntegralCurveAt.comp_add (hγ : IsIntegralCurveAt γ v t₀) (dt : ℝ) :
     IsIntegralCurveAt (γ ∘ (· + dt)) v (t₀ - dt) := by
@@ -167,7 +166,7 @@ lemma isIntegralCurveAt_comp_add {dt : ℝ} :
   rw [sub_neg_eq_add, sub_add_cancel] at this
   convert this
   ext
-  simp only [Function.comp_apply, neg_add_cancel_right]
+  simp only [comp_apply, neg_add_cancel_right]
 
 lemma IsIntegralCurve.comp_add (hγ : IsIntegralCurve γ v) (dt : ℝ) :
     IsIntegralCurve (γ ∘ (· + dt)) v := by
@@ -179,7 +178,7 @@ lemma isIntegralCurve_comp_add {dt : ℝ} :
   refine ⟨fun hγ ↦ hγ.comp_add _, fun hγ ↦ ?_⟩
   convert hγ.comp_add (-dt)
   ext
-  simp only [Function.comp_apply, neg_add_cancel_right]
+  simp only [comp_apply, neg_add_cancel_right]
 
 end Translation
 
@@ -190,7 +189,7 @@ section Scaling
 lemma IsIntegralCurveOn.comp_mul (hγ : IsIntegralCurveOn γ v s) (a : ℝ) :
     IsIntegralCurveOn (γ ∘ (· * a)) (a • v) { t | t * a ∈ s } := by
   intros t ht
-  rw [Function.comp_apply, Pi.smul_apply, ← ContinuousLinearMap.smulRight_comp]
+  rw [comp_apply, Pi.smul_apply, ← ContinuousLinearMap.smulRight_comp]
   refine HasMFDerivAt.comp t (hγ (t * a) ht) ⟨(continuous_mul_right _).continuousAt, ?_⟩
   simp only [mfld_simps, hasFDerivWithinAt_univ]
   exact HasFDerivAt.mul_const' (hasFDerivAt_id _) _
@@ -203,7 +202,7 @@ lemma isIntegralCurvOn_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
     inv_mul_eq_div, div_self ha, mul_one, setOf_mem_eq] at this
   convert this
   ext t
-  rw [Function.comp_apply, Function.comp_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one]
+  rw [comp_apply, comp_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one]
 
 lemma IsIntegralCurveAt.comp_mul_ne_zero (hγ : IsIntegralCurveAt γ v t₀) {a : ℝ} (ha : a ≠ 0) :
     IsIntegralCurveAt (γ ∘ (· * a)) (a • v) (t₀ / a) := by
@@ -237,7 +236,7 @@ lemma isIntegralCurve_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
   rw [smul_smul, inv_mul_eq_div, div_self ha, one_smul] at this
   convert this
   ext t
-  rw [Function.comp_apply, Function.comp_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one]
+  rw [comp_apply, comp_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one]
 
 /-- If the vector field `v` vanishes at `x₀`, then the constant curve at `x₀`
   is a global integral curve of `v`. -/
@@ -293,7 +292,7 @@ theorem exists_isIntegralCurveAt_of_contMDiffAt
   obtain ⟨s, hs, haux⟩ := (hf2.and hnhds).exists_mem
   -- prove that `γ := (extChartAt I x₀).symm ∘ f` is a desired integral curve
   refine ⟨(extChartAt I x₀).symm ∘ f,
-    Eq.symm (by rw [Function.comp_apply, hf1, PartialEquiv.left_inv _ (mem_extChartAt_source ..)]),
+    Eq.symm (by rw [comp_apply, hf1, PartialEquiv.left_inv _ (mem_extChartAt_source ..)]),
     s, hs, ?_⟩
   intros t ht
   -- collect useful terms in convenient forms
@@ -434,7 +433,7 @@ theorem isIntegralCurveAt_eqOn_of_contMDiffAt (hγt₀ : I.IsInteriorPoint (γ t
       have := hmfd.hasDerivAt ht (hsrc t ht)
       apply this.congr_deriv
       have : γ t = (extChartAt I (γ t₀)).symm (((extChartAt I (γ t₀)) ∘ γ) t) := by
-        rw [Function.comp_apply, PartialEquiv.left_inv]
+        rw [comp_apply, PartialEquiv.left_inv]
         exact hsrc t ht
       rw [this]
     · intros t ht
@@ -442,16 +441,16 @@ theorem isIntegralCurveAt_eqOn_of_contMDiffAt (hγt₀ : I.IsInteriorPoint (γ t
       have := hmfd'.hasDerivAt ht (hsrc' t ht)
       apply this.congr_deriv
       have : γ' t = (extChartAt I (γ' t₀)).symm (((extChartAt I (γ' t₀)) ∘ γ') t) := by
-        rw [Function.comp_apply, PartialEquiv.left_inv]
+        rw [comp_apply, PartialEquiv.left_inv]
         exact hsrc' t ht
       rw [this]
 
   -- finally show `EqOn γ γ' _` by composing with the inverse of the local chart around `γ t₀`
   refine EqOn.trans ?_ (EqOn.trans (heqon.comp_left (g := (extChartAt I (γ t₀)).symm)) ?_)
   · intros t ht
-    rw [Function.comp_apply, Function.comp_apply, PartialEquiv.left_inv _ (hsrc _ ht)]
+    rw [comp_apply, comp_apply, PartialEquiv.left_inv _ (hsrc _ ht)]
   · intros t ht
-    rw [Function.comp_apply, Function.comp_apply, h, PartialEquiv.left_inv _ (hsrc' _ ht)]
+    rw [comp_apply, comp_apply, h, PartialEquiv.left_inv _ (hsrc' _ ht)]
 
 theorem isIntegralCurveAt_eqOn_of_contMDiffAt_boundaryless [BoundarylessManifold I M]
     (hv : ContMDiffAt I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M)) (γ t₀))
@@ -554,15 +553,15 @@ theorem isIntegralCurve_Ioo_eq_of_contMDiff_boundaryless [BoundarylessManifold I
 lemma periodic_iff_isIntegralCurve_not_injective [BoundarylessManifold I M]
     (hγ : IsIntegralCurve γ v)
     (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M))) :
-    (∃ T > 0, Function.Periodic γ T) ↔ ¬Function.Injective γ := by
+    (∃ T > 0, Periodic γ T) ↔ ¬Injective γ := by
   constructor
   · intro h
-    rw [Function.Injective]
+    rw [Injective]
     push_neg
     obtain ⟨T, h0, hT⟩ := h
     exact ⟨0, T, by rw [← hT 0, zero_add], ne_of_lt h0⟩
   · intro h
-    rw [Function.Injective] at h
+    rw [Injective] at h
     push_neg at h
     obtain ⟨t₁, t₂, heq, hne⟩ := h
     refine ⟨|t₁ - t₂|, ?_, ?_⟩
