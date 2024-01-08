@@ -102,7 +102,7 @@ functions :
 
 1. First go to the `L¹` space.
 
-   For example, if you see `ENNReal.toReal (∫⁻ a, ENNReal.ofReal $ ‖f a‖)`, that is the norm of
+   For example, if you see `ENNReal.toReal (∫⁻ a, ENNReal.ofReal <| ‖f a‖)`, that is the norm of
    `f` in `L¹` space. Rewrite using `L1.norm_of_fun_eq_lintegral_norm`.
 
 2. Show that the set `{f ∈ L¹ | ∫ f = ∫⁻ f⁺ - ∫⁻ f⁻}` is closed in `L¹` using `isClosed_eq`.

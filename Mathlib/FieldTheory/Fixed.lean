@@ -144,7 +144,7 @@ theorem linearIndependent_smul_of_linearIndependent {s : Finset F} :
       (linearIndependent_iff'.1 (ih hs.1) s.attach (fun i => g • l i - l i) _ ⟨i, his⟩
           (mem_attach _ _) :
         _)
-  refine' (@sum_attach _ _ s _ fun i => (g • l i - l i) • MulAction.toFun G F i).trans _
+  refine' (sum_attach s fun i ↦ (g • l i - l i) • MulAction.toFun G F i).trans _
   ext g'; dsimp only
   conv_lhs =>
     rw [sum_apply]
@@ -268,8 +268,7 @@ theorem rank_le_card : Module.rank (FixedPoints.subfield G F) F ≤ Fintype.card
   rank_le fun s hs => by
     simpa only [rank_fun', Cardinal.mk_coe_finset, Finset.coe_sort_coe, Cardinal.lift_natCast,
       Cardinal.natCast_le] using
-      cardinal_lift_le_rank_of_linearIndependent'
-        (linearIndependent_smul_of_linearIndependent G F hs)
+      (linearIndependent_smul_of_linearIndependent G F hs).cardinal_lift_le_rank
 #align fixed_points.rank_le_card FixedPoints.rank_le_card
 
 end Fintype
@@ -315,7 +314,7 @@ theorem linearIndependent_toLinearMap (R : Type u) (A : Type v) (B : Type w) [Co
     LinearIndependent B (AlgHom.toLinearMap : (A →ₐ[R] B) → A →ₗ[R] B) :=
   have : LinearIndependent B (LinearMap.ltoFun R A B ∘ AlgHom.toLinearMap) :=
     ((linearIndependent_monoidHom A B).comp ((↑) : (A →ₐ[R] B) → A →* B) fun _ _ hfg =>
-        AlgHom.ext <| fun _ => FunLike.ext_iff.1 hfg _ :
+        AlgHom.ext fun _ => FunLike.ext_iff.1 hfg _ :
       _)
   this.of_comp _
 #align linear_independent_to_linear_map linearIndependent_toLinearMap
@@ -323,7 +322,7 @@ theorem linearIndependent_toLinearMap (R : Type u) (A : Type v) (B : Type w) [Co
 theorem cardinal_mk_algHom (K : Type u) (V : Type v) (W : Type w) [Field K] [Field V] [Algebra K V]
     [FiniteDimensional K V] [Field W] [Algebra K W] [FiniteDimensional K W] :
     Cardinal.mk (V →ₐ[K] W) ≤ finrank W (V →ₗ[K] W) :=
-  cardinal_mk_le_finrank_of_linearIndependent <| linearIndependent_toLinearMap K V W
+  (linearIndependent_toLinearMap K V W).cardinal_mk_le_finrank
 #align cardinal_mk_alg_hom cardinal_mk_algHom
 
 noncomputable instance AlgEquiv.fintype (K : Type u) (V : Type v) [Field K] [Field V] [Algebra K V]
@@ -333,7 +332,7 @@ noncomputable instance AlgEquiv.fintype (K : Type u) (V : Type v) [Field K] [Fie
 
 theorem finrank_algHom (K : Type u) (V : Type v) [Field K] [Field V] [Algebra K V]
     [FiniteDimensional K V] : Fintype.card (V →ₐ[K] V) ≤ finrank V (V →ₗ[K] V) :=
-  fintype_card_le_finrank_of_linearIndependent <| linearIndependent_toLinearMap K V V
+  (linearIndependent_toLinearMap K V V).fintype_card_le_finrank
 #align finrank_alg_hom finrank_algHom
 
 namespace FixedPoints

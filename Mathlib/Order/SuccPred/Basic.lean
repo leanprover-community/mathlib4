@@ -256,7 +256,7 @@ theorem succ_le_iff_of_not_isMax (ha : ¬IsMax a) : succ a ≤ b ↔ a < b :=
 #align order.succ_le_iff_of_not_is_max Order.succ_le_iff_of_not_isMax
 
 lemma succ_lt_succ_of_not_isMax (h : a < b) (hb : ¬ IsMax b) : succ a < succ b :=
-  (lt_succ_iff_of_not_isMax hb).2 $ succ_le_of_lt h
+  (lt_succ_iff_of_not_isMax hb).2 <| succ_le_of_lt h
 
 theorem succ_lt_succ_iff_of_not_isMax (ha : ¬IsMax a) (hb : ¬IsMax b) :
     succ a < succ b ↔ a < b := by
@@ -296,7 +296,7 @@ theorem isMax_iterate_succ_of_eq_of_lt {n m : ℕ} (h_eq : succ^[n] a = succ^[m]
 
 theorem isMax_iterate_succ_of_eq_of_ne {n m : ℕ} (h_eq : succ^[n] a = succ^[m] a)
     (h_ne : n ≠ m) : IsMax (succ^[n] a) := by
-  cases' le_total n m with h h
+  rcases le_total n m with h | h
   · exact isMax_iterate_succ_of_eq_of_lt h_eq (lt_of_le_of_ne h h_ne)
   · rw [h_eq]
     exact isMax_iterate_succ_of_eq_of_lt h_eq.symm (lt_of_le_of_ne h h_ne.symm)
@@ -644,7 +644,7 @@ theorem le_pred_iff_of_not_isMin (ha : ¬IsMin a) : b ≤ pred a ↔ b < a :=
 #align order.le_pred_iff_of_not_is_min Order.le_pred_iff_of_not_isMin
 
 lemma pred_lt_pred_of_not_isMin (h : a < b) (ha : ¬ IsMin a) : pred a < pred b :=
-  (pred_lt_iff_of_not_isMin ha).2 $ le_pred_of_lt h
+  (pred_lt_iff_of_not_isMin ha).2 <| le_pred_of_lt h
 
 @[simp, mono]
 theorem pred_le_pred {a b : α} (h : a ≤ b) : pred a ≤ pred b :=
@@ -1477,7 +1477,7 @@ variable [Preorder α] [Nonempty α] [Preorder β] {f : α → β}
 lemma StrictMono.not_bddAbove_range [NoMaxOrder α] [SuccOrder β] [IsSuccArchimedean β]
     (hf : StrictMono f) : ¬ BddAbove (Set.range f) := by
   rintro ⟨m, hm⟩
-  have hm' : ∀ a, f a ≤ m := λ a ↦ hm $ Set.mem_range_self _
+  have hm' : ∀ a, f a ≤ m := λ a ↦ hm <| Set.mem_range_self _
   obtain ⟨a₀⟩ := ‹Nonempty α›
   suffices ∀ b, f a₀ ≤ b → ∃ a, b < f a by
     obtain ⟨a, ha⟩ : ∃ a, m < f a := this m (hm' a₀)
@@ -1512,7 +1512,7 @@ instance (priority := 100) IsWellOrder.toIsPredArchimedean [h : IsWellOrder α (
     replace hab := eq_or_lt_of_le hab
     rcases hab with (rfl | hab)
     · exact ⟨0, rfl⟩
-    cases' le_or_lt b (pred b) with hb hb
+    rcases le_or_lt b (pred b) with hb | hb
     · cases (min_of_le_pred hb).not_lt hab
     dsimp at ih
     obtain ⟨k, hk⟩ := ih (pred b) hb (le_pred_of_lt hab)

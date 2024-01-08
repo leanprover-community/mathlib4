@@ -188,7 +188,7 @@ theorem le_map_comap : m ≤ (m.comap g).map g :=
 end Functors
 
 @[simp] theorem map_const {m} (b : β) : MeasurableSpace.map (fun _a : α ↦ b) m = ⊤ :=
-  eq_top_iff.2 $ λ s _ ↦ by by_cases b ∈ s <;> simp [*, map_def] <;> rw [Set.preimage_id'] <;> simp
+  eq_top_iff.2 <| λ s _ ↦ by by_cases b ∈ s <;> simp [*, map_def] <;> rw [Set.preimage_id'] <;> simp
 #align measurable_space.map_const MeasurableSpace.map_const
 
 @[simp] theorem comap_const {m} (b : β) : MeasurableSpace.comap (fun _a : α => b) m = ⊥ :=
@@ -448,6 +448,22 @@ theorem measurable_to_countable' [MeasurableSpace α] [Countable α] [Measurable
 theorem measurable_unit [MeasurableSpace α] (f : Unit → α) : Measurable f :=
   measurable_from_top
 #align measurable_unit measurable_unit
+
+section ULift
+variable [MeasurableSpace α]
+
+instance _root_.ULift.instMeasurableSpace : MeasurableSpace (ULift α) :=
+  ‹MeasurableSpace α›.map ULift.up
+
+lemma measurable_down : Measurable (ULift.down : ULift α → α) := fun _ ↦ id
+lemma measurable_up : Measurable (ULift.up : α → ULift α) := fun _ ↦ id
+
+@[simp] lemma measurableSet_preimage_down {s : Set α} :
+    MeasurableSet (ULift.down ⁻¹' s) ↔ MeasurableSet s := Iff.rfl
+@[simp] lemma measurableSet_preimage_up {s : Set (ULift α)} :
+    MeasurableSet (ULift.up ⁻¹' s) ↔ MeasurableSet s := Iff.rfl
+
+end ULift
 
 section Nat
 
@@ -783,7 +799,7 @@ theorem measurableSet_prod_of_nonempty {s : Set α} {t : Set β} (h : (s ×ˢ t)
 
 theorem measurableSet_prod {s : Set α} {t : Set β} :
     MeasurableSet (s ×ˢ t) ↔ MeasurableSet s ∧ MeasurableSet t ∨ s = ∅ ∨ t = ∅ := by
-  cases' (s ×ˢ t).eq_empty_or_nonempty with h h
+  rcases (s ×ˢ t).eq_empty_or_nonempty with h | h
   · simp [h, prod_eq_empty_iff.mp h]
   · simp [← not_nonempty_iff_eq_empty, prod_nonempty_iff.mp h, measurableSet_prod_of_nonempty h]
 #align measurable_set_prod measurableSet_prod
@@ -985,7 +1001,7 @@ theorem measurableSet_pi_of_nonempty {s : Set δ} {t : ∀ i, Set (π i)} (hs : 
 
 theorem measurableSet_pi {s : Set δ} {t : ∀ i, Set (π i)} (hs : s.Countable) :
     MeasurableSet (pi s t) ↔ (∀ i ∈ s, MeasurableSet (t i)) ∨ pi s t = ∅ := by
-  cases' (pi s t).eq_empty_or_nonempty with h h
+  rcases (pi s t).eq_empty_or_nonempty with h | h
   · simp [h]
   · simp [measurableSet_pi_of_nonempty hs, h, ← not_nonempty_iff_eq_empty]
 #align measurable_set_pi measurableSet_pi
@@ -1199,15 +1215,15 @@ lemma measurable_set_mem (a : α) : Measurable fun s : Set α ↦ a ∈ s := mea
 
 @[aesop safe 100 apply (rule_sets [Measurable])]
 lemma measurable_set_not_mem (a : α) : Measurable fun s : Set α ↦ a ∉ s :=
-  (measurable_discrete Not).comp $ measurable_set_mem a
+  (measurable_discrete Not).comp <| measurable_set_mem a
 
 @[aesop safe 100 apply (rule_sets [Measurable])]
 lemma measurableSet_mem (a : α) : MeasurableSet {s : Set α | a ∈ s} :=
-  measurableSet_setOf.2 $ measurable_set_mem _
+  measurableSet_setOf.2 <| measurable_set_mem _
 
 @[aesop safe 100 apply (rule_sets [Measurable])]
 lemma measurableSet_not_mem (a : α) : MeasurableSet {s : Set α | a ∉ s} :=
-  measurableSet_setOf.2 $ measurable_set_not_mem _
+  measurableSet_setOf.2 <| measurable_set_not_mem _
 
 lemma measurable_compl : Measurable ((·ᶜ) : Set α → Set α) :=
   measurable_set_iff.2 fun _ ↦ measurable_set_not_mem _
@@ -1540,6 +1556,10 @@ protected def cast {α β} [i₁ : MeasurableSpace α] [i₂ : MeasurableSpace �
     subst hi
     exact measurable_id
 #align measurable_equiv.cast MeasurableEquiv.cast
+
+/-- Measurable equivalence between `ULift α` and `α`. -/
+def ulift.{u, v} {α : Type u} [MeasurableSpace α] : ULift.{v, u} α ≃ᵐ α :=
+  ⟨Equiv.ulift, measurable_down, measurable_up⟩
 
 protected theorem measurable_comp_iff {f : β → γ} (e : α ≃ᵐ β) :
     Measurable (f ∘ e) ↔ Measurable f :=

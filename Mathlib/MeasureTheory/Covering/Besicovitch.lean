@@ -128,7 +128,8 @@ structure Besicovitch.SatelliteConfig (α : Type*) [MetricSpace α] (N : ℕ) (�
   c : Fin N.succ → α
   r : Fin N.succ → ℝ
   rpos : ∀ i, 0 < r i
-  h : ∀ i j, i ≠ j → r i ≤ dist (c i) (c j) ∧ r j ≤ τ * r i ∨ r j ≤ dist (c j) (c i) ∧ r i ≤ τ * r j
+  h : Pairwise fun i j =>
+    r i ≤ dist (c i) (c j) ∧ r j ≤ τ * r i ∨ r j ≤ dist (c j) (c i) ∧ r i ≤ τ * r j
   hlast : ∀ i < last N, r i ≤ dist (c i) (c (last N)) ∧ r (last N) ≤ τ * r i
   inter : ∀ i < last N, dist (c i) (c (last N)) ≤ r i + r (last N)
 #align besicovitch.satellite_config Besicovitch.SatelliteConfig
@@ -327,12 +328,11 @@ theorem mem_iUnionUpTo_lastStep (x : β) : p.c x ∈ p.iUnionUpTo p.lastStep := 
   have B : p.τ⁻¹ * p.R p.lastStep < p.R p.lastStep := by
     conv_rhs => rw [← one_mul (p.R p.lastStep)]
     exact mul_lt_mul (inv_lt_one p.one_lt_tau) le_rfl Rpos zero_le_one
-  obtain ⟨y, hy1, hy2⟩ :
-      ∃ y : β, p.c y ∉ p.iUnionUpTo p.lastStep ∧ p.τ⁻¹ * p.R p.lastStep < p.r y := by
+  obtain ⟨y, hy1, hy2⟩ : ∃ y, p.c y ∉ p.iUnionUpTo p.lastStep ∧ p.τ⁻¹ * p.R p.lastStep < p.r y := by
     have := exists_lt_of_lt_csSup ?_ B
     · simpa only [exists_prop, mem_range, exists_exists_and_eq_and, Subtype.exists,
       Subtype.coe_mk]
-    rw [← image_univ, nonempty_image_iff]
+    rw [← image_univ, image_nonempty]
     exact ⟨⟨_, h⟩, mem_univ _⟩
   rcases A y with (Hy | Hy)
   · exact hy1 Hy
@@ -440,7 +440,7 @@ theorem color_lt {i : Ordinal.{u}} (hi : i < p.lastStep) {N : ℕ}
       h := by
         intro a b a_ne_b
         wlog G_le : G a ≤ G b generalizing a b
-        · exact (this b a a_ne_b.symm (le_of_not_le G_le)).symm
+        · exact (this a_ne_b.symm (le_of_not_le G_le)).symm
         have G_lt : G a < G b := by
           rcases G_le.lt_or_eq with (H | H); · exact H
           have A : (a : ℕ) ≠ b := Fin.val_injective.ne a_ne_b
@@ -547,10 +547,8 @@ there are no satellite configurations with `N+1` points.
 theorem exist_finset_disjoint_balls_large_measure (μ : Measure α) [IsFiniteMeasure μ] {N : ℕ}
     {τ : ℝ} (hτ : 1 < τ) (hN : IsEmpty (SatelliteConfig α N τ)) (s : Set α) (r : α → ℝ)
     (rpos : ∀ x ∈ s, 0 < r x) (rle : ∀ x ∈ s, r x ≤ 1) :
-    ∃ t : Finset α,
-      ↑t ⊆ s ∧
-        μ (s \ ⋃ x ∈ t, closedBall x (r x)) ≤ N / (N + 1) * μ s ∧
-          (t : Set α).PairwiseDisjoint fun x => closedBall x (r x) := by
+    ∃ t : Finset α, ↑t ⊆ s ∧ μ (s \ ⋃ x ∈ t, closedBall x (r x)) ≤ N / (N + 1) * μ s ∧
+      (t : Set α).PairwiseDisjoint fun x => closedBall x (r x) := by
   -- exclude the trivial case where `μ s = 0`.
   rcases le_or_lt (μ s) 0 with (hμs | hμs)
   · have : μ s = 0 := le_bot_iff.1 hμs
@@ -687,12 +685,9 @@ For a version giving the conclusion in a nicer form, see `exists_disjoint_closed
 theorem exists_disjoint_closedBall_covering_ae_of_finiteMeasure_aux (μ : Measure α)
     [IsFiniteMeasure μ] (f : α → Set ℝ) (s : Set α)
     (hf : ∀ x ∈ s, ∀ δ > 0, (f x ∩ Ioo 0 δ).Nonempty) :
-    ∃ t : Set (α × ℝ),
-      t.Countable ∧
-        (∀ p : α × ℝ, p ∈ t → p.1 ∈ s) ∧
-          (∀ p : α × ℝ, p ∈ t → p.2 ∈ f p.1) ∧
-            μ (s \ ⋃ (p : α × ℝ) (_ : p ∈ t), closedBall p.1 p.2) = 0 ∧
-              t.PairwiseDisjoint fun p => closedBall p.1 p.2 := by
+    ∃ t : Set (α × ℝ), t.Countable ∧ (∀ p ∈ t, p.1 ∈ s) ∧ (∀ p ∈ t, p.2 ∈ f p.1) ∧
+      μ (s \ ⋃ (p : α × ℝ) (_ : p ∈ t), closedBall p.1 p.2) = 0 ∧
+        t.PairwiseDisjoint fun p => closedBall p.1 p.2 := by
   rcases HasBesicovitchCovering.no_satelliteConfig (α := α) with ⟨N, τ, hτ, hN⟩
   /- Introduce a property `P` on finsets saying that we have a nice disjoint covering of a
       subset of `s` by admissible balls. -/
@@ -831,10 +826,9 @@ For a version giving the conclusion in a nicer form, see `exists_disjoint_closed
 -/
 theorem exists_disjoint_closedBall_covering_ae_aux (μ : Measure α) [SigmaFinite μ] (f : α → Set ℝ)
     (s : Set α) (hf : ∀ x ∈ s, ∀ δ > 0, (f x ∩ Ioo 0 δ).Nonempty) :
-    ∃ t : Set (α × ℝ), t.Countable ∧ (∀ p : α × ℝ, p ∈ t → p.1 ∈ s) ∧
-      (∀ p : α × ℝ, p ∈ t → p.2 ∈ f p.1) ∧
-        μ (s \ ⋃ (p : α × ℝ) (_ : p ∈ t), closedBall p.1 p.2) = 0 ∧
-          t.PairwiseDisjoint fun p => closedBall p.1 p.2 := by
+    ∃ t : Set (α × ℝ), t.Countable ∧ (∀ p ∈ t, p.1 ∈ s) ∧ (∀ p ∈ t, p.2 ∈ f p.1) ∧
+      μ (s \ ⋃ (p : α × ℝ) (_ : p ∈ t), closedBall p.1 p.2) = 0 ∧
+        t.PairwiseDisjoint fun p => closedBall p.1 p.2 := by
   /- This is deduced from the finite measure case, by using a finite measure with respect to which
     the initial sigma-finite measure is absolutely continuous. -/
   rcases exists_absolutelyContinuous_isFiniteMeasure μ with ⟨ν, hν, hμν⟩
@@ -1084,22 +1078,14 @@ theorem exists_closedBall_covering_tsum_measure_le (μ : Measure α) [SigmaFinit
 
 /-! ### Consequences on differentiation of measures -/
 
-
 /-- In a space with the Besicovitch covering property, the set of closed balls with positive radius
 forms a Vitali family. This is essentially a restatement of the measurable Besicovitch theorem. -/
 protected def vitaliFamily (μ : Measure α) [SigmaFinite μ] : VitaliFamily μ where
   setsAt x := (fun r : ℝ => closedBall x r) '' Ioi (0 : ℝ)
-  MeasurableSet' := by
-    intro x y hy
-    obtain ⟨r, _, rfl⟩ : ∃ r : ℝ, 0 < r ∧ closedBall x r = y := by
-      simpa only [mem_image, mem_Ioi] using hy
-    exact isClosed_ball.measurableSet
-  nonempty_interior := by
-    intro x y hy
-    obtain ⟨r, rpos, rfl⟩ : ∃ r : ℝ, 0 < r ∧ closedBall x r = y := by
-      simpa only [mem_image, mem_Ioi] using hy
-    simp only [Nonempty.mono ball_subset_interior_closedBall, rpos, nonempty_ball]
-  Nontrivial x ε εpos := ⟨closedBall x ε, mem_image_of_mem _ εpos, Subset.refl _⟩
+  MeasurableSet' _ := ball_image_iff.2 fun _ _ ↦ isClosed_ball.measurableSet
+  nonempty_interior _ := ball_image_iff.2 fun r rpos ↦
+    (nonempty_ball.2 rpos).mono ball_subset_interior_closedBall
+  Nontrivial x ε εpos := ⟨closedBall x ε, mem_image_of_mem _ εpos, Subset.rfl⟩
   covering := by
     intro s f fsubset ffine
     let g : α → Set ℝ := fun x => {r | 0 < r ∧ closedBall x r ∈ f x}

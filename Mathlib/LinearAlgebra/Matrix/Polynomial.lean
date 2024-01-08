@@ -92,7 +92,7 @@ theorem leadingCoeff_det_X_one_add_C (A : Matrix n n α) :
   · simp [eq_iff_true_of_subsingleton]
   rw [← @det_one n, ← coeff_det_X_add_C_card _ A, leadingCoeff]
   simp only [Matrix.map_one, C_eq_zero, RingHom.map_one]
-  cases' (natDegree_det_X_add_C_le 1 A).eq_or_lt with h h
+  rcases (natDegree_det_X_add_C_le 1 A).eq_or_lt with h | h
   · simp only [RingHom.map_one, Matrix.map_one, C_eq_zero] at h
     rw [h]
   · -- contradiction. we have a hypothesis that the degree is less than |n|

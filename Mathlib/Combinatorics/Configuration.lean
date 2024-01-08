@@ -35,7 +35,8 @@ Together, these four statements say that any two of the following properties imp
 -/
 
 
-open BigOperators
+open Finset
+open scoped BigOperators
 
 namespace Configuration
 
@@ -76,13 +77,13 @@ class Nondegenerate : Prop where
 
 /-- A nondegenerate configuration in which every pair of lines has an intersection point. -/
 class HasPoints extends Nondegenerate P L where
-  mkPoint : ∀ {l₁ l₂ : L} (_ : l₁ ≠ l₂), P
+  mkPoint : ∀ {l₁ l₂ : L}, l₁ ≠ l₂ → P
   mkPoint_ax : ∀ {l₁ l₂ : L} (h : l₁ ≠ l₂), mkPoint h ∈ l₁ ∧ mkPoint h ∈ l₂
 #align configuration.has_points Configuration.HasPoints
 
 /-- A nondegenerate configuration in which every pair of points has a line through them. -/
 class HasLines extends Nondegenerate P L where
-  mkLine : ∀ {p₁ p₂ : P} (_ : p₁ ≠ p₂), L
+  mkLine : ∀ {p₁ p₂ : P}, p₁ ≠ p₂ → L
   mkLine_ax : ∀ {p₁ p₂ : P} (h : p₁ ≠ p₂), p₁ ∈ mkLine h ∧ p₂ ∈ mkLine h
 #align configuration.has_lines Configuration.HasLines
 
@@ -234,17 +235,11 @@ theorem HasLines.card_le [HasLines P L] [Fintype P] [Fintype L] :
       ∑ p, lineCount L p = ∑ l, pointCount P l := sum_lineCount_eq_sum_pointCount P L
       _ ≤ ∑ l, lineCount L (f l) :=
         (Finset.sum_le_sum fun l _ => HasLines.pointCount_le_lineCount (hf₂ l))
-      _ = ∑ p in Finset.univ.image f, lineCount L p :=
-        (Finset.sum_bij (fun l _ => f l) (fun l hl => Finset.mem_image_of_mem f hl)
-          (fun l _ => rfl) (fun l₁ l₂ hl₁ hl₂ hl₃ => hf₁ hl₃) fun p => by
-          rw [Finset.mem_image]
-          exact fun ⟨a, ⟨h, h'⟩⟩ => ⟨a, ⟨h, h'.symm⟩⟩)
+      _ = ∑ p in univ.map ⟨f, hf₁⟩, lineCount L p := by rw [sum_map]; dsimp
       _ < ∑ p, lineCount L p := by
         obtain ⟨p, hp⟩ := not_forall.mp (mt (Fintype.card_le_of_surjective f) hc₂)
-        refine'
-          Finset.sum_lt_sum_of_subset (Finset.univ.image f).subset_univ (Finset.mem_univ p) _ _
-            fun p _ _ => zero_le (lineCount L p)
-        · simpa only [Finset.mem_image, exists_prop, Finset.mem_univ, true_and_iff]
+        refine sum_lt_sum_of_subset (subset_univ _) (mem_univ p) ?_ ?_ fun p _ _ ↦ zero_le _
+        · simpa only [Finset.mem_map, exists_prop, Finset.mem_univ, true_and_iff]
         · rw [lineCount, Nat.card_eq_fintype_card, Fintype.card_pos_iff]
           obtain ⟨l, _⟩ := @exists_line P L _ _ p
           exact
@@ -267,16 +262,8 @@ theorem HasLines.exists_bijective_of_card_eq [HasLines P L] [Fintype P] [Fintype
   classical
     obtain ⟨f, hf1, hf2⟩ := Nondegenerate.exists_injective_of_card_le (ge_of_eq h)
     have hf3 := (Fintype.bijective_iff_injective_and_card f).mpr ⟨hf1, h.symm⟩
-    refine'
-      ⟨f, hf3, fun l =>
-        (Finset.sum_eq_sum_iff_of_le fun l _ => HasLines.pointCount_le_lineCount (hf2 l)).mp
-          ((sum_lineCount_eq_sum_pointCount P L).symm.trans
-            (Finset.sum_bij (fun l _ => f l) (fun l _ => Finset.mem_univ (f l))
-                (fun l _ => refl (lineCount L (f l))) (fun l₁ l₂ hl₁ hl₂ hl => hf1 hl) fun p hp =>
-                _).symm)
-          l (Finset.mem_univ l)⟩
-    obtain ⟨l, rfl⟩ := hf3.2 p
-    exact ⟨l, Finset.mem_univ l, rfl⟩
+    exact ⟨f, hf3, fun l ↦ (sum_eq_sum_iff_of_le fun l _ ↦ pointCount_le_lineCount (hf2 l)).1
+          ((hf3.sum_comp _).trans (sum_lineCount_eq_sum_pointCount P L)).symm _ <| mem_univ _⟩
 #align configuration.has_lines.exists_bijective_of_card_eq Configuration.HasLines.exists_bijective_of_card_eq
 
 theorem HasLines.lineCount_eq_pointCount [HasLines P L] [Fintype P] [Fintype L]
@@ -290,15 +277,11 @@ theorem HasLines.lineCount_eq_pointCount [HasLines P L] [Fintype P] [Fintype L]
       simp_rw [Finset.sum_const, Finset.card_univ, hPL, sum_lineCount_eq_sum_pointCount]
     have step2 : ∑ i in s, lineCount L i.1 = ∑ i in s, pointCount P i.2 := by
       rw [s.sum_finset_product Finset.univ fun p => Set.toFinset { l | p ∈ l }]
-      rw [s.sum_finset_product_right Finset.univ fun l => Set.toFinset { p | p ∈ l }]
-      refine'
-        (Finset.sum_bij (fun l _ => f l) (fun l _ => Finset.mem_univ (f l)) (fun l hl => _)
-            (fun _ _ _ _ h => hf1.1 h) fun p _ => _).symm
-      · simp_rw [Finset.sum_const, Set.toFinset_card, ← Nat.card_eq_fintype_card]
-        change pointCount P l • pointCount P l = lineCount L (f l) • lineCount L (f l)
-        rw [hf2]
-      · obtain ⟨l, hl⟩ := hf1.2 p
-        exact ⟨l, Finset.mem_univ l, hl.symm⟩
+      rw [s.sum_finset_product_right Finset.univ fun l => Set.toFinset { p | p ∈ l }, eq_comm]
+      refine sum_bijective _ hf1 (by simp) fun l _ ↦ ?_
+      simp_rw [hf2, sum_const, Set.toFinset_card, ← Nat.card_eq_fintype_card]
+      change pointCount P l • _ = lineCount L (f l) • _
+      rw [hf2]
       all_goals simp_rw [Finset.mem_univ, true_and_iff, Set.mem_toFinset]; exact fun p => Iff.rfl
     have step3 : ∑ i in sᶜ, lineCount L i.1 = ∑ i in sᶜ, pointCount P i.2 := by
       rwa [← s.sum_add_sum_compl, ← s.sum_add_sum_compl, step2, add_left_cancel_iff] at step1

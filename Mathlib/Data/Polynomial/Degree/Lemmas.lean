@@ -51,7 +51,7 @@ theorem natDegree_comp_le : natDegree (p.comp q) ≤ natDegree p * natDegree q :
               _ ≤ natDegree (C (coeff p n)) + n • degree q :=
                 (add_le_add degree_le_natDegree (degree_pow_le _ _))
               _ ≤ natDegree (C (coeff p n)) + n • ↑(natDegree q) :=
-                (add_le_add_left (nsmul_le_nsmul_of_le_right (@degree_le_natDegree _ _ q) n) _)
+                (add_le_add_left (nsmul_le_nsmul_right (@degree_le_natDegree _ _ q) n) _)
               _ = (n * natDegree q : ℕ) := by
                 rw [natDegree_C, Nat.cast_zero, zero_add, nsmul_eq_mul];
                   simp
@@ -186,7 +186,7 @@ theorem coeff_pow_eq_ite_of_natDegree_le_of_le {o : ℕ}
     coeff (p ^ m) o = if o = m * n then (coeff p n) ^ m else 0 := by
   rcases eq_or_ne o (m * n) with rfl | h
   · simpa only [ite_true] using coeff_pow_of_natDegree_le pn
-  · simpa only [h, ite_false] using coeff_eq_zero_of_natDegree_lt $
+  · simpa only [h, ite_false] using coeff_eq_zero_of_natDegree_lt <|
       lt_of_le_of_lt (natDegree_pow_le_of_le m pn) (lt_of_le_of_ne mno h.symm)
 
 theorem coeff_add_eq_left_of_lt (qn : q.natDegree < n) : (p + q).coeff n = p.coeff n :=

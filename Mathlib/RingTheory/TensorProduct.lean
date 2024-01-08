@@ -451,7 +451,7 @@ theorem ext ⦃f g : (A ⊗[R] B) →ₐ[S] C⦄
   rwa [← f.map_mul, ← g.map_mul, tmul_mul_tmul, _root_.one_mul, _root_.mul_one] at this
 
 theorem ext' {g h : A ⊗[R] B →ₐ[S] C} (H : ∀ a b, g (a ⊗ₜ b) = h (a ⊗ₜ b)) : g = h :=
-  ext (AlgHom.ext <| fun _ => H _ _) (AlgHom.ext <| fun _ => H _ _)
+  ext (AlgHom.ext fun _ => H _ _) (AlgHom.ext fun _ => H _ _)
 #align algebra.tensor_product.ext Algebra.TensorProduct.ext
 
 end ext
@@ -710,7 +710,10 @@ theorem lift_comp_includeRight (f : A →ₐ[S] C) (g : B →ₐ[R] C) (hfg : �
 
 Pairs of algebra morphisms that commute are equivalent to algebra morphisms from the tensor product.
 
-This is `Algebra.TensorProduct.lift` as an equivalence. -/
+This is `Algebra.TensorProduct.lift` as an equivalence.
+
+See also `GradedTensorProduct.liftEquiv` for an alternative commutativity requirement for graded
+algebra. -/
 @[simps]
 def liftEquiv [IsScalarTower R S A] [IsScalarTower R S C] :
     {fg : (A →ₐ[S] C) × (B →ₐ[R] C) // ∀ x y, Commute (fg.1 x) (fg.2 y)}
