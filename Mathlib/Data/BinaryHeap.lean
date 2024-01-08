@@ -61,7 +61,7 @@ Given an array which is a max-heap, push item `i` up to restore the max-heap pro
 def heapifyUp (lt : α → α → Bool) (a : Array α) (i : Fin a.size) :
     {a' : Array α // a'.size = a.size} :=
 if i0 : i.1 = 0 then ⟨a, rfl⟩ else
-  have : (i.1 - 1) / 2 < i := Nat.lt_of_le_of_lt (Nat.div_le_self ..) $
+  have : (i.1 - 1) / 2 < i := Nat.lt_of_le_of_lt (Nat.div_le_self ..) <|
     Nat.sub_lt (Nat.pos_of_ne_zero i0) Nat.zero_lt_one
   let j := ⟨(i.1 - 1) / 2, Nat.lt_trans this i.2⟩
   if lt (a.get j) (a.get i) then

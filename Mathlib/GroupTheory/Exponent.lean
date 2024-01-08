@@ -449,7 +449,7 @@ theorem Monoid.exponent_pi_eq_zero {ι : Type*} {M : ι → Type*} [∀ i, Monoi
     (hj : exponent (M j) = 0) : exponent ((i : ι) → M i) = 0 := by
   rw [@exponent_eq_zero_iff, ExponentExists] at hj ⊢
   push_neg at hj ⊢
-  peel hj with _ n hn
+  peel hj with n hn _
   obtain ⟨m, hm⟩ := this
   refine ⟨Pi.mulSingle j m, fun h ↦ hm ?_⟩
   simpa using congr_fun h j

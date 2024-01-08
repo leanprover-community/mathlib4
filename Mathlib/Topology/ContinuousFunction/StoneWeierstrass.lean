@@ -111,7 +111,7 @@ theorem comp_attachBound_mem_closure (A : Subalgebra ℝ C(X, ℝ)) (f : A)
 #align continuous_map.comp_attach_bound_mem_closure ContinuousMap.comp_attachBound_mem_closure
 
 theorem abs_mem_subalgebra_closure (A : Subalgebra ℝ C(X, ℝ)) (f : A) :
-    (f : C(X, ℝ)).abs ∈ A.topologicalClosure := by
+    |(f : C(X, ℝ))| ∈ A.topologicalClosure := by
   let f' := attachBound (f : C(X, ℝ))
   let abs : C(Set.Icc (-‖f‖) ‖f‖, ℝ) := { toFun := fun x : Set.Icc (-‖f‖) ‖f‖ => |(x : ℝ)| }
   change abs.comp f' ∈ A.topologicalClosure
@@ -208,25 +208,25 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
   -- and still equal to `f x` at `x`.
   -- Since `X` is compact, for every `x` there is some finset `ys t`
   -- so the union of the `U x y` for `y ∈ ys x` still covers everything.
-  let ys : ∀ _, Finset X := fun x => (CompactSpace.elim_nhds_subcover (U x) (U_nhd_y x)).choose
+  let ys : X → Finset X := fun x => (CompactSpace.elim_nhds_subcover (U x) (U_nhd_y x)).choose
   let ys_w : ∀ x, ⋃ y ∈ ys x, U x y = ⊤ := fun x =>
     (CompactSpace.elim_nhds_subcover (U x) (U_nhd_y x)).choose_spec
   have ys_nonempty : ∀ x, (ys x).Nonempty := fun x =>
     Set.nonempty_of_union_eq_top_of_nonempty _ _ nX (ys_w x)
   -- Thus for each `x` we have the desired `h x : A` so `f z - ε < h x z` everywhere
   -- and `h x x = f x`.
-  let h : ∀ _, L := fun x =>
+  let h : X → L := fun x =>
     ⟨(ys x).sup' (ys_nonempty x) fun y => (g x y : C(X, ℝ)),
       Finset.sup'_mem _ sup_mem _ _ _ fun y _ => hg x y⟩
   have lt_h : ∀ x z, f z - ε < (h x : X → ℝ) z := by
     intro x z
     obtain ⟨y, ym, zm⟩ := Set.exists_set_mem_of_union_eq_top _ _ (ys_w x) z
     dsimp
-    simp only [Subtype.coe_mk, sup'_coe, Finset.sup'_apply, Finset.lt_sup'_iff]
+    simp only [Subtype.coe_mk, coe_sup', Finset.sup'_apply, Finset.lt_sup'_iff]
     exact ⟨y, ym, zm⟩
   have h_eq : ∀ x, (h x : X → ℝ) x = f x := by intro x; simp [w₁]
   -- For each `x`, we define `W x` to be `{z | h x z < f z + ε}`,
-  let W : ∀ _, Set X := fun x => {z | (h x : X → ℝ) z < f z + ε}
+  let W : X → Set X := fun x => {z | (h x : X → ℝ) z < f z + ε}
   -- This is still a neighbourhood of `x`.
   have W_nhd : ∀ x, W x ∈ 𝓝 x := by
     intro x

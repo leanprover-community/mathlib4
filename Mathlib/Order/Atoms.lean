@@ -95,7 +95,7 @@ theorem IsAtom.le_iff (h : IsAtom a) : x ≤ a ↔ x = ⊥ ∨ x = a := by rw [l
 #align is_atom.le_iff IsAtom.le_iff
 
 lemma IsAtom.le_iff_eq (ha : IsAtom a) (hb : b ≠ ⊥) : b ≤ a ↔ b = a :=
-  ha.le_iff.trans $ or_iff_right hb
+  ha.le_iff.trans <| or_iff_right hb
 
 theorem IsAtom.Iic_eq (h : IsAtom a) : Set.Iic a = {⊥, a} :=
   Set.ext fun _ => h.le_iff
@@ -265,7 +265,7 @@ class IsAtomic [OrderBot α] : Prop where
   /--Every element other than `⊥` has an atom below it. -/
   eq_bot_or_exists_atom_le : ∀ b : α, b = ⊥ ∨ ∃ a : α, IsAtom a ∧ a ≤ b
 #align is_atomic IsAtomic
-#align is_atomic_iff IsAtomic_iff
+#align is_atomic_iff isAtomic_iff
 
 /-- A lattice is coatomic iff every element other than `⊤` has a coatom above it. -/
 @[mk_iff]
@@ -273,7 +273,7 @@ class IsCoatomic [OrderTop α] : Prop where
   /--Every element other than `⊤` has an atom above it. -/
   eq_top_or_exists_le_coatom : ∀ b : α, b = ⊤ ∨ ∃ a : α, IsCoatom a ∧ b ≤ a
 #align is_coatomic IsCoatomic
-#align is_coatomic_iff IsCoatomic_iff
+#align is_coatomic_iff isCoatomic_iff
 
 export IsAtomic (eq_bot_or_exists_atom_le)
 
@@ -915,7 +915,7 @@ theorem isSimpleOrder [BoundedOrder α] [BoundedOrder β] [h : IsSimpleOrder β]
 
 protected theorem isAtomic_iff [OrderBot α] [OrderBot β] (f : α ≃o β) :
     IsAtomic α ↔ IsAtomic β := by
-  simp only [IsAtomic_iff, f.surjective.forall, f.surjective.exists, ← map_bot f, f.eq_iff_eq,
+  simp only [isAtomic_iff, f.surjective.forall, f.surjective.exists, ← map_bot f, f.eq_iff_eq,
     f.le_iff_le, f.isAtom_iff]
 #align order_iso.is_atomic_iff OrderIso.isAtomic_iff
 

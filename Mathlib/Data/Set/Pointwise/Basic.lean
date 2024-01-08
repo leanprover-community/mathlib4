@@ -7,6 +7,7 @@ import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.Units.Hom
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.GroupWithZero.Basic
+import Mathlib.Algebra.Opposites
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.Set.Lattice
 import Mathlib.Tactic.Common

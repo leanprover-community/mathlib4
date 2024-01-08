@@ -29,8 +29,7 @@ Let `α` and `ι` by types and let `f : α → ι`
 
 * Under `Fintype α` and `Fintype ι`, `DomMulAct.stabilizer_card p` computes
   the cardinality of the type of permutations preserving `p` :
-  `Fintype.card {g : Perm α // f ∘ g = f} =
-    ∏ i, (Fintype.card {a // f a = i}).factorial `
+  `Fintype.card {g : Perm α // f ∘ g = f} = ∏ i, (Fintype.card {a // f a = i})!`.
 
 -/
 
@@ -80,7 +79,7 @@ def stabilizerMulEquiv : (stabilizer (Perm α)ᵈᵐᵃ f)ᵐᵒᵖ ≃* (∀ i,
     apply comp_stabilizerEquiv_invFun⟩
   left_inv g := rfl
   right_inv g := by ext i a; apply stabilizerEquiv_invFun_eq
-  map_mul' g h := by rfl
+  map_mul' g h := rfl
 
 variable {f}
 
@@ -91,29 +90,26 @@ section Fintype
 
 variable [Fintype α] [DecidableEq α] [DecidableEq ι]
 
-open BigOperators
+open BigOperators Nat
 
 variable (f)
 
+<<<<<<< HEAD
 section
 
 variable [Fintype ι]
 
 /-- The cardinality of the type of permutations preserving a function -/
 theorem stabilizer_card:
-    Fintype.card {g : Perm α // f ∘ g = f} =
-      ∏ i , (Fintype.card ({a // f a = i})).factorial := by
+    Fintype.card {g : Perm α // f ∘ g = f} = ∏ i, (Fintype.card {a // f a = i})! := by
   -- rewriting via Nat.card because Fintype instance is not found
-  rw [← Nat.card_eq_fintype_card, Nat.card_congr (subtypeEquiv mk ?_),
+  rw [← Nat.card_eq_fintype_card, Nat.card_congr (subtypeEquiv mk fun _ ↦ ?_),
     Nat.card_congr MulOpposite.opEquiv,
     Nat.card_congr (DomMulAct.stabilizerMulEquiv f).toEquiv, Nat.card_pi]
-  apply Finset.prod_congr rfl
-  intro i _
-  rw [Nat.card_eq_fintype_card, Fintype.card_perm, Nat.card_eq_fintype_card.symm]
-  · intro g
-    rw [DomMulAct.mem_stabilizer_iff, symm_apply_apply]
+  · exact Finset.prod_congr rfl fun i _ ↦ by rw [Nat.card_eq_fintype_card, Fintype.card_perm]
+  · rfl
 
-end
+end Fintype
 
 /-- The cardinality of the type of permutations preserving a function
   (without the finiteness assumption on target)-/
@@ -147,7 +143,5 @@ theorem stabilizer_card':
     intro a
     rw [← Subtype.coe_inj]
     simp only [Function.comp_apply, refl_apply, Set.val_codRestrict_apply]
-
-end Fintype
 
 end DomMulAct
