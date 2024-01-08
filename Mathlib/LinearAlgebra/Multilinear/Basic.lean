@@ -982,7 +982,7 @@ If `g` is a multilinear map `M' → M₂`, then `g` can be reinterpreted as a mu
 map of multilinear map from `Π i, M₁ᵢ ⟶ M₁ᵢ'` to `M ⟶ M₂` by `(fᵢ) ↦ v ↦ g(fᵢ vᵢ)`.
 -/
 @[simps!]
-def piLinearMap (g : MultilinearMap R M₁' M₂) :
+def piLinearMap :
   MultilinearMap R M₁' M₂ →ₗ[R]
     MultilinearMap R (fun i ↦ M₁ i →ₗ[R] M₁' i) (MultilinearMap R M₁ M₂) where
   toFun g := (LinearMap.applyₗ g).compMultilinearMap compLinearMapMultilinear
