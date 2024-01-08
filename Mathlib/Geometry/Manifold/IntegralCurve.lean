@@ -555,11 +555,7 @@ lemma periodic_iff_isIntegralCurve_not_injective [BoundarylessManifold I M]
     (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M))) :
     (∃ T > 0, Periodic γ T) ↔ ¬Injective γ := by
   constructor
-  · intro h
-    rw [Injective]
-    push_neg
-    obtain ⟨T, h0, hT⟩ := h
-    exact ⟨0, T, by rw [← hT 0, zero_add], ne_of_lt h0⟩
+  · exact fun ⟨T, hT, hf⟩ ↦ hf.not_injective (ne_of_gt hT)
   · intro h
     rw [Injective] at h
     push_neg at h
@@ -573,4 +569,4 @@ lemma periodic_iff_isIntegralCurve_not_injective [BoundarylessManifold I M]
         simp [abs_of_neg hle, heq]
       · apply isIntegralCurve_Ioo_eq_of_contMDiff_boundaryless (t₀ := t₂) hv (hγ.comp_add _) hγ
         rw [not_lt] at hle
-        simp [abs_of_nonneg hle, heq]
+        simp only [abs_of_nonneg hle, comp_apply, add_sub_cancel'_right, heq]
