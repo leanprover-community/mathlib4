@@ -3,19 +3,18 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Opposites
+import Mathlib.Topology.Category.TopCat.Yoneda
 import Mathlib.Condensed.Explicit
 
 /-!
 
 # The functor from topological spaces to condensed sets
 
-This file develops some API for "topologically concrete" categories, defining universe polymorphic
-"Yoneda presheaves" on such categories. If the forgetful functor to `TopCat` has nice properties,
-like preserving pullbacks and finite coproducts, then this Yoneda presheaf satisfies the sheaf
-condition for the regular and extensive topologies respectively.
+This file builds on the API from the file `TopCat.Yoneda`. If the forgetful functor to `TopCat` has
+nice properties, like preserving pullbacks and finite coproducts, then this Yoneda presheaf
+satisfies the sheaf condition for the regular and extensive topologies respectively.
 
-We then apply this API to `CompHaus` and define the functor
+We apply this API to `CompHaus` and define the functor
 `topCatToCondensed : TopCat.{u+1} ⥤ CondensedSet.{u}`.
 
 ## Projects
@@ -28,58 +27,10 @@ We then apply this API to `CompHaus` and define the functor
 
 universe w w' v u
 
-open CategoryTheory Opposite Limits regularCoverage
+open CategoryTheory Opposite Limits regularCoverage ContinuousMap
 
-variable {C : Type u} [Category.{v} C] (F : C ⥤ TopCat.{w}) (Y : Type w') [TopologicalSpace Y]
--- `C` is meant to be `CompHaus`, `Profinite` or `Stonean`.
-
-namespace ContinuousMap
-
-/--
-A universe polymorphic "Yoneda presheaf" on `C` given by continuous maps into a topoological space
-`Y`.
--/
-@[simps]
-def yonedaPresheaf : Cᵒᵖ ⥤ Type (max w w') where
-  obj X := C(F.obj (unop X), Y)
-  map f g := ContinuousMap.comp g (F.map f.unop)
-
-/--
-A universe polymorphic Yoneda presheaf on `TopCat` given by continuous maps into a topoological
-space `Y`.
--/
-@[simps]
-def yonedaPresheaf' : TopCat.{w}ᵒᵖ ⥤ Type (max w w') where
-  obj X := C((unop X).1, Y)
-  map f g := ContinuousMap.comp g f.unop
-
-theorem piComparison_fac {α : Type} (X : α → TopCat) :
-    piComparison (yonedaPresheaf'.{w, w'} Y) (fun x ↦ op (X x)) =
-    (yonedaPresheaf' Y).map ((opCoproductIsoProduct X).inv ≫ (TopCat.sigmaIsoSigma X).inv.op) ≫
-    (equivEquivIso (sigmaEquiv Y (fun x ↦ (X x).1))).inv ≫ (Types.productIso _).inv := by
-  rw [← Category.assoc, Iso.eq_comp_inv]
-  ext
-  simp only [yonedaPresheaf', unop_op, piComparison, types_comp_apply,
-    Types.productIso_hom_comp_eval_apply, Types.pi_lift_π_apply, comp_apply, TopCat.coe_of,
-    unop_comp, Quiver.Hom.unop_op, sigmaEquiv, equivEquivIso_hom, Equiv.toIso_inv,
-    Equiv.coe_fn_symm_mk, comp_assoc, sigmaMk_apply, ← opCoproductIsoProduct_inv_comp_ι]
-  rfl
-
-/-- The universe polymorphic Yoneda presheaf on `TopCat` preserves finite products. -/
-noncomputable instance : PreservesFiniteProducts (yonedaPresheaf'.{w, w'} Y) where
-  preserves J _ := {
-    preservesLimit := fun {K} =>
-      have : ∀ {α : Type} (X : α → TopCat), PreservesLimit (Discrete.functor (fun x ↦ op (X x)))
-          (yonedaPresheaf'.{w, w'} Y) := fun X => @PreservesProduct.ofIsoComparison _ _ _ _
-          (yonedaPresheaf' Y) _ (fun x ↦ op (X x)) _ _ (by rw [piComparison_fac]; infer_instance)
-      let i : K ≅ Discrete.functor (fun i ↦ op (unop (K.obj ⟨i⟩))) := Discrete.natIsoFunctor
-      preservesLimitOfIsoDiagram _ i.symm }
-
-end ContinuousMap
-
-open ContinuousMap
-
-variable (G : C ⥤ TopCat.{v}) (X : (Type (max u v))) [TopologicalSpace X]
+variable {C : Type u} [Category.{v} C] (G : C ⥤ TopCat.{v})
+  (X : (Type (max u v))) [TopologicalSpace X]
 
 /--
 An auxiliary lemma to that allows us to use `QuotientMap.lift` in the proof of
@@ -140,27 +91,29 @@ noncomputable instance [PreservesFiniteCoproducts G] :
     PreservesFiniteProducts (yonedaPresheaf G X) := by
   change PreservesFiniteProducts (G.op ⋙ yonedaPresheaf' X)
   have h' : PreservesFiniteProducts (yonedaPresheaf' X) := inferInstance
-  have h : PreservesFiniteProducts G.op := {
-    preserves := fun J _ => by
-      apply (config := { allowSynthFailures := true }) preservesLimitsOfShapeOp
-      exact preservesColimitsOfShapeOfEquiv (Discrete.opposite J).symm _ }
+  have h : PreservesFiniteProducts G.op :=
+    { preserves := fun J _ => by
+        apply (config := { allowSynthFailures := true }) preservesLimitsOfShapeOp
+        exact preservesColimitsOfShapeOfEquiv (Discrete.opposite J).symm _ }
   constructor
   intro J _
-  have _ := h.1 J
-  have _ := h'.1 J
+  have := h.1 J
+  have := h'.1 J
   exact compPreservesLimitsOfShape _ _
 
 /--
 Associate to a `(u+1)`-small topological space the corresponding condensed set, given by
 `yonedaPresheaf`.
 -/
+-- @[simps!]
 noncomputable def TopCat.toCondensed (X : TopCat.{u+1}) : CondensedSet.{u} :=
   @CondensedSet.ofSheafCompHaus (yonedaPresheaf.{u, u+1, u, u+1} compHausToTop.{u} X) _ (by
     apply (config := { allowSynthFailures := true }) equalizerCondition_yonedaPresheaf
       compHausToTop.{u} X
     intro Z B π he
-    rw [CompHaus.effectiveEpi_iff_surjective] at he
+    rw [((CompHaus.effectiveEpi_tfae π).out 0 2 :)] at he
     apply QuotientMap.of_surjective_continuous he π.continuous )
+
 
 /--
 `TopCat.toCondensed` yields a functor from `TopCat.{u+1}` to `CondensedSet.{u}`.
