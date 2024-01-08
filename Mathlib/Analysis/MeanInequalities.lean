@@ -138,7 +138,7 @@ theorem geom_mean_le_arith_mean {ι : Type*} (s : Finset ι) (w : ι → ℝ) (z
     (hw : ∀ i ∈ s, 0 ≤ w i) (hw' : 0 < ∑ i in s, w i) (hz : ∀ i ∈ s, 0 ≤ z i) :
     (∏ i in s, z i ^ w i) ^ (∑ i in s, w i)⁻¹  ≤  (∑ i in s, w i * z i) / (∑ i in s, w i) := by
   convert geom_mean_le_arith_mean_weighted s (fun i => (w i) / ∑ i in s, w i) z ?_ ?_ hz using 2
-  · rw [← finset_prod_rpow _ _ (fun i hi => rpow_nonneg_of_nonneg (hz _ hi) _) _]
+  · rw [← finset_prod_rpow _ _ (fun i hi => rpow_nonneg (hz _ hi) _) _]
     refine Finset.prod_congr rfl (fun _ ih => ?_)
     rw [div_eq_mul_inv, rpow_mul (hz _ ih)]
   · simp_rw [div_eq_mul_inv, mul_assoc, mul_comm, ← mul_assoc, ← Finset.sum_mul, mul_comm]
@@ -264,7 +264,7 @@ theorem young_inequality_of_nonneg {a b p q : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b)
     (hpq : p.IsConjugateExponent q) : a * b ≤ a ^ p / p + b ^ q / q := by
   simpa [← rpow_mul, ha, hb, hpq.ne_zero, hpq.symm.ne_zero, _root_.div_eq_inv_mul] using
     geom_mean_le_arith_mean2_weighted hpq.one_div_nonneg hpq.symm.one_div_nonneg
-      (rpow_nonneg_of_nonneg ha p) (rpow_nonneg_of_nonneg hb q) hpq.inv_add_inv_conj
+      (rpow_nonneg ha p) (rpow_nonneg hb q) hpq.inv_add_inv_conj
 #align real.young_inequality_of_nonneg Real.young_inequality_of_nonneg
 
 /-- Young's inequality, a version for arbitrary real numbers. -/
@@ -594,7 +594,7 @@ theorem Lp_add_le (hp : 1 ≤ p) :
       (NNReal.Lp_add_le s (fun i => ⟨_, abs_nonneg (f i)⟩) (fun i => ⟨_, abs_nonneg (g i)⟩) hp)
   push_cast at this
   refine' le_trans (rpow_le_rpow _ (sum_le_sum fun i _ => _) _) this <;>
-    simp [sum_nonneg, rpow_nonneg_of_nonneg, abs_nonneg, le_trans zero_le_one hp, abs_add,
+    simp [sum_nonneg, rpow_nonneg, abs_nonneg, le_trans zero_le_one hp, abs_add,
       rpow_le_rpow]
 #align real.Lp_add_le Real.Lp_add_le
 
