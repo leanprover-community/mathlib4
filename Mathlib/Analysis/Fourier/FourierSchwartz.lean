@@ -7,6 +7,7 @@ Authors: Alex Kontorovich, Heather Macbeth
 import Mathlib.Analysis.Fourier.FourierTransform
 import Mathlib.Analysis.Calculus.ParametricIntegral
 import Mathlib.Analysis.SpecialFunctions.ExpDeriv
+import Mathlib.Analysis.InnerProductSpace.Calculus
 
 /-!
 # The Frechet Derivative of the Fourier transform
@@ -33,6 +34,8 @@ noncomputable section
 
 abbrev integralFourier (f : E → F) :=
   (VectorFourier.fourierIntegral (E := F)) Real.fourierChar (volume : Measure E) (innerₛₗ ℝ) f
+
+--set_option maxHeartbeats 200000
 
 /-- The Fréchet derivative of the Fourier transform of `f` is the Fourier transform of
     `fun v ↦ ((-2 * π * I) • f v) ⊗ (innerSL ℝ v)`. -/
@@ -63,7 +66,13 @@ theorem hasFDerivAt_fourier {f : E → F} (hf_int : Integrable f)
       apply Measurable.comp measurable_inv
       apply Continuous.measurable
       continuity
-    · sorry
+    ·
+      sorry
+--       have : AEStronglyMeasurable f volume := hf_int.aestronglyMeasurable
+--       refine (this.smul (𝕜 := ℂ) ?_).comp_measurable
+
+-- #exit
+      -- sorry
   · filter_upwards [] with w u hu
     simp only [Multiplicative.toAdd_symm_eq, neg_smul, norm_smul, norm_inv, norm_eq_of_mem_sphere,
       inv_one, one_mul, ge_iff_le]
@@ -71,11 +80,15 @@ theorem hasFDerivAt_fourier {f : E → F} (hf_int : Integrable f)
     · rw [ContinuousLinearMap.norm_toSpanSingleton]
       simp [norm_smul]
       left
+
       sorry
     · simp
     · infer_instance
     · infer_instance
-  · sorry -- Integrable
+  · convert hvf_int.smul (2 * π) using 1
+    ext v
+    simp only [Pi.smul_apply, smul_eq_mul]
+    ring
   · -- checking the derivative formula
     filter_upwards [] with w
     intro u hu
