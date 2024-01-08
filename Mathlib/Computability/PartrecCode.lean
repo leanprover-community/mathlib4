@@ -976,7 +976,7 @@ private def G (L : List (List (Option ℕ))) : Option (List (Option ℕ)) :=
               let x ← lup L (k, cf) (Nat.pair z m)
               x.casesOn (some m) fun _ => lup L (k', c) (Nat.pair z (m + 1)))
 
-count_heartbeats in
+set_option maxHeartbeats 25600000 in
 private theorem hG : Primrec G := by
   have a := (Primrec.ofNat (ℕ × Code)).comp (Primrec.list_length (α := List (Option ℕ)))
   have k := Primrec.fst.comp a
