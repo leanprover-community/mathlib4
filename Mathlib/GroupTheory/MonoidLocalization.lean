@@ -1610,7 +1610,7 @@ theorem of_mulEquivOfMulEquiv {k : LocalizationMap T Q} {j : M ≃* P} (H : S.ma
 #align add_submonoid.localization_map.of_add_equiv_of_add_equiv AddSubmonoid.LocalizationMap.of_addEquivOfAddEquiv
 
 @[to_additive]
-theorem injective_iff (f : LocalizationMap S N) :
+theorem toMap_injective_iff (f : LocalizationMap S N) :
     Injective (LocalizationMap.toMap f) ↔ ∀ ⦃x⦄, x ∈ S → IsLeftRegular x := by
   rw [Injective]
   constructor <;> intro h
@@ -1901,14 +1901,6 @@ noncomputable def lift (f : LocalizationWithZeroMap S N) (g : M →*₀ P)
       exact f.toMonoidWithZeroHom.map_zero.symm }
 #align submonoid.localization_with_zero_map.lift Submonoid.LocalizationWithZeroMap.lift
 
-/-- Given a localization map `f : M →*₀ N` for a submonoid `S ⊆ M`,
-`f 0 * (f y)⁻¹ = 0` for any `y : M` -/
-theorem eq_zero_of_fst_eq_zero (f : LocalizationWithZeroMap S N)
-    {z x} {y : S} (h : z * f.toFun y = f.toFun x)
-  (hx : x = 0) : z = 0 := by
-  rw [hx, f.map_zero'] at h
-  exact (IsUnit.mul_left_eq_zero (LocalizationMap.map_units' f.toLocalizationMap y)).1 h
-
 /-- Given a Localization map `f : M →*₀ N` for a Submonoid `S ⊆ M`,
 if `M` is left cancellative monoid with zero, and all elements of `S` are
 left regular, then N is a left cancellative monoid with zero. This result
@@ -1935,7 +1927,11 @@ theorem leftCancelMulZero_of_le_isLeftRegular
       --- The hypothesis `a ≠ 0` in `P` is equivalent to this
       have b1ne0 : b.1 ≠ 0 := by
         by_contra hb1
-        exact ha (LocalizationWithZeroMap.eq_zero_of_fst_eq_zero f hb hb1)
+        have m0: (LocalizationMap.toMap fl) 0 = 0 := f.map_zero'
+        have a0: a * (LocalizationMap.toMap fl) b.2 = 0 ↔ a = 0 := 
+          (f.toLocalizationMap.map_units' b.2).mul_left_eq_zero
+        rw [hb1, m0, a0] at hb
+        exact ha hb
       --- Main equality that is deduced from `a * z = a * w`
       have : g (b.1 * (y.1 * x.2)) = g (b.1 * (x.1 * y.2)) :=
       calc
@@ -1956,7 +1952,7 @@ theorem leftCancelMulZero_of_le_isLeftRegular
         _ = g (b.1 * (x.1 * y.2)) := by rw[← map_mul g]
       --- The hypothesis `h` gives that `f` (so, `f`) is injective.
       have : b.1 * (y.1 * x.2) =  b.1 * (x.1 * y.2) :=
-        (LocalizationMap.injective_iff fl).mpr h this
+        (LocalizationMap.toMap_injective_iff fl).mpr h this
       --- The hypothesis to be left cancellative allows us to cancel `b.1`
       have : (y.1 * x.2) =  (x.1 * y.2):=
         IsLeftCancelMulZero.mul_left_cancel_of_ne_zero b1ne0 this
