@@ -74,6 +74,7 @@ lemma IsLocalizedModule.rank_eq {N : Type v} [AddCommGroup N]
     [Module R N] [Module S N] [IsScalarTower R S N] (f : M →ₗ[R] N) [IsLocalizedModule p f] :
     Module.rank S N = Module.rank R M := by simpa using IsLocalizedModule.lift_rank_eq S p f hp
 
+/-- The **rank-nullity theorem** for commutative domains. -/
 theorem rank_quotient_add_rank_of_isDomain [IsDomain R] (M' : Submodule R M) :
     Module.rank R (M ⧸ M') + Module.rank R M' = Module.rank R M := by
   apply lift_injective.{max u v}

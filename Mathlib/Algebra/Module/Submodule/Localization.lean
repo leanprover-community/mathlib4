@@ -8,6 +8,8 @@ import Mathlib.Algebra.Module.LocalizedModule
 /-!
 # Localization of Submodules
 
+Results about localizations of submodules and quotient modules are provided in this file.
+
 ## Main result
 - `Submodule.localized`:
   The localization of an `R`-submodule of `M` at `p` viewed as an `Rₚ`-submodule of `Mₚ`.
@@ -31,14 +33,6 @@ variable [CommRing R] [CommRing S] [AddCommGroup M] [AddCommGroup N] [Module R M
 variable [Module R M] [Module R N] [Algebra R S] [Module S N] [IsScalarTower R S N]
 variable (p : Submonoid R) [IsLocalization p S] (f : M →ₗ[R] N) [IsLocalizedModule p f]
 variable (hp : p ≤ R⁰)
-
-variable {S} in
-lemma IsLocalizedModule.mk'_smul_mk' {x : R} {m : M} {s t : p} :
-    IsLocalization.mk' S x s • mk' f m t = mk' f (x • m) (s * t) := by
-  apply smul_injective f (s * t)
-  conv_lhs => simp only [smul_assoc, mul_smul, smul_comm t]
-  simp only [mk'_cancel', map_smul, Submonoid.smul_def s]
-  rw [← smul_assoc, IsLocalization.smul_mk'_self, algebraMap_smul]
 
 variable (M' : Submodule R M)
 

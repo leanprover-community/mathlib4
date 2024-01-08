@@ -469,7 +469,7 @@ theorem finrank_span_finset_le_card (s : Finset M) : (s : Set M).finrank R ≤ s
     _ = s.card := by simp
 #align finrank_span_finset_le_card finrank_span_finset_le_card
 
-theorem finrank_range_le_card {ι : Type*} [Fintype ι] {b : ι → M} :
+theorem finrank_range_le_card {ι : Type*} [Fintype ι] (b : ι → M) :
     (Set.range b).finrank R ≤ Fintype.card ι := by
   classical
   refine (finrank_span_le_card _).trans ?_
@@ -487,7 +487,7 @@ theorem finrank_span_eq_card [Nontrivial R] {ι : Type*} [Fintype ι] {b : ι �
         lift_eq_nat_iff] at this)
 #align finrank_span_eq_card finrank_span_eq_card
 
-theorem finrank_span_set_eq_card (s : Set M) [Fintype s] (hs : LinearIndependent R ((↑) : s → M)) :
+theorem finrank_span_set_eq_card {s : Set M} [Fintype s] (hs : LinearIndependent R ((↑) : s → M)) :
     finrank R (span R s) = s.toFinset.card :=
   finrank_eq_of_rank_eq
     (by
@@ -495,9 +495,9 @@ theorem finrank_span_set_eq_card (s : Set M) [Fintype s] (hs : LinearIndependent
       rwa [Cardinal.mk_fintype, ← Set.toFinset_card] at this)
 #align finrank_span_set_eq_card finrank_span_set_eq_card
 
-theorem finrank_span_finset_eq_card (s : Finset M) (hs : LinearIndependent R ((↑) : s → M)) :
+theorem finrank_span_finset_eq_card {s : Finset M} (hs : LinearIndependent R ((↑) : s → M)) :
     finrank R (span R (s : Set M)) = s.card := by
-  convert finrank_span_set_eq_card (s : Set M) hs
+  convert finrank_span_set_eq_card (s := (s : Set M)) hs
   ext
   simp
 #align finrank_span_finset_eq_card finrank_span_finset_eq_card

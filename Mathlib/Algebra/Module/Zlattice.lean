@@ -464,7 +464,7 @@ theorem Zlattice.rank : finrank ℤ L = finrank K E := by
         Finset.sdiff_eq_empty_iff_subset] at h
       replace h := Finset.card_le_card h
       rwa [not_lt, h_card, ← topEquiv.finrank_eq, ← h_spanE, ← ht_span,
-        finrank_span_set_eq_card _ ht_lin]
+        finrank_span_set_eq_card ht_lin]
     -- Assume that `e ∪ {v}` is not `ℤ`-linear independent then we get the contradiction
     suffices ¬ LinearIndependent ℤ (fun x : ↥(insert v (Set.range e)) => (x : E)) by
       contrapose! this
