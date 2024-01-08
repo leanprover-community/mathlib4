@@ -3,8 +3,9 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.GroupPower.Lemmas
-import Mathlib.Util.AssertExists
+import Mathlib.Algebra.GroupPower.Ring
+import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+import Mathlib.Data.Int.Order.Basic
 
 #align_import algebra.group_with_zero.power from "leanprover-community/mathlib"@"46a64b5b4268c594af770c44d9e502afc6a515cb"
 
@@ -187,3 +188,5 @@ end
 
 -- Guard against import creep regression.
 assert_not_exists Int.bitwise_or
+assert_not_exists Set.range
+assert_not_exists Nat.gcdA

@@ -1490,7 +1490,7 @@ def sigmaCurry [∀ i j, Zero (δ i j)] (f : Π₀ (i : Σ _, _), δ i.1 i.2) :
   toFun := fun i ↦
   { toFun := fun j ↦ f ⟨i, j⟩,
     support' := f.support'.map (fun ⟨m, hm⟩ ↦
-      ⟨m.filterMap (fun ⟨i', j'⟩ ↦ if h : i' = i then some $ h.rec j' else none),
+      ⟨m.filterMap (fun ⟨i', j'⟩ ↦ if h : i' = i then some <| h.rec j' else none),
         fun j ↦ (hm ⟨i, j⟩).imp_left (fun h ↦ (m.mem_filterMap _).mpr ⟨⟨i, j⟩, h, dif_pos rfl⟩)⟩) }
   support' := f.support'.map (fun ⟨m, hm⟩ ↦
     ⟨m.map Sigma.fst, fun i ↦ Decidable.or_iff_not_imp_left.mpr (fun h ↦ DFinsupp.ext

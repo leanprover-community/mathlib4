@@ -480,6 +480,9 @@ theorem card_sdiff (h : s ⊆ t) : card (t \ s) = t.card - s.card := by
   rw [card_disjoint_union sdiff_disjoint, add_tsub_cancel_right]
 #align finset.card_sdiff Finset.card_sdiff
 
+lemma cast_card_sdiff [AddGroupWithOne α] (h : s ⊆ t) : ((t \ s).card : α) = t.card - s.card := by
+  rw [card_sdiff h, Nat.cast_sub (card_mono h)]
+
 theorem card_sdiff_add_card_eq_card {s t : Finset α} (h : s ⊆ t) : card (t \ s) + card s = card t :=
   ((Nat.sub_eq_iff_eq_add (card_le_card h)).mp (card_sdiff h).symm).symm
 #align finset.card_sdiff_add_card_eq_card Finset.card_sdiff_add_card_eq_card
@@ -501,7 +504,8 @@ theorem card_sdiff_add_card : (s \ t).card + t.card = (s ∪ t).card := by
 #align finset.card_sdiff_add_card Finset.card_sdiff_add_card
 
 lemma card_sdiff_comm (h : s.card = t.card) : (s \ t).card = (t \ s).card :=
-  add_left_injective t.card $ by simp_rw [card_sdiff_add_card, ← h, card_sdiff_add_card, union_comm]
+  add_left_injective t.card <| by
+    simp_rw [card_sdiff_add_card, ← h, card_sdiff_add_card, union_comm]
 
 @[simp]
 lemma card_sdiff_add_card_inter (s t : Finset α) :
