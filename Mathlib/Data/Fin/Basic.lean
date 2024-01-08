@@ -1191,8 +1191,12 @@ section CastPred
 
 /-- TODO -/
 
-@[inline] def castPred (i : Fin (n + 1)) (h : i ≠ last _) : Fin n := i.castLT (val_lt_last h)
+@[inline] def castPred (i : Fin (n + 1)) (h : i ≠ last _) : Fin n := ⟨i, val_lt_last h⟩
 #align fin.cast_pred Fin.castPred
+
+@[simp]
+lemma castLT_eq_castPred (i : Fin (n + 1)) (h : i < last _) (h' := h.ne) :
+    castLT i h = castPred i h' := rfl
 
 @[simp]
 lemma coe_castPred (i : Fin (n + 1)) (h : i ≠ last _) : (castPred i h : ℕ) = i := rfl
@@ -1204,7 +1208,7 @@ theorem castPred_castSucc {i : Fin n} (h' := (castSucc_lt_last i).ne) :
 #align fin.cast_pred_cast_succ Fin.castPred_castSucc
 
 @[simp]
-theorem castSucc_castPred {i : Fin (n + 1)} (h : i ≠ last n) :
+theorem castSucc_castPred (i : Fin (n + 1)) (h : i ≠ last n) :
     castSucc (i.castPred h) = i := by
   rcases exists_castSucc_eq.mpr h with ⟨y, rfl⟩
   rw [castPred_castSucc]
@@ -1774,8 +1778,6 @@ theorem succAbove_castSucc_eq_succ_of_lt_succ_succ_le {p q : Fin (n + 1)} {r : F
     (p.succAbove r).castSucc = (q.succAbove r).succ :=
   succAbove_castSucc_eq_succAbove_succ_iff_succ.mpr ⟨hp, hq⟩
 
-
-
 theorem succAbove_strictMono (p : Fin (n + 1)) : StrictMono (succAbove p) :=
   strictMono_castSucc.ite strictMono_succ
   (fun _ _ hij hj => lt_trans ((castSucc_lt_castSucc_iff).mpr hij) hj)
@@ -2069,20 +2071,19 @@ theorem succAbove_one_one {n : ℕ} : (1 : Fin (n + 3)).succAbove 1 = 2 := rfl
 #align fin.one_succ_above_one Fin.succAbove_one_one
 
 @[simp]
-theorem succAbove_castLT_of_lt {x y : Fin (n + 1)} (h : x < y)
-    (hx : x < last _ := y.le_last.trans_lt' h) : y.succAbove (x.castLT hx) = x := by
-  rw [succAbove_of_castSucc_lt (castSucc_castLT _  _▸ h), castSucc_castLT]
-#align fin.succ_above_cast_lt Fin.succAbove_castLT_of_lt
+theorem succAbove_castPred_of_lt {i j : Fin (n + 1)} (h : i < j)
+    (hi : i ≠ last _ := (j.le_last.trans_lt' h).ne) : j.succAbove (castPred i hi) = i := by
+  rw [succAbove_of_castSucc_lt (castSucc_castPred _ _ ▸ h), castSucc_castPred]
 
 @[simp]
-theorem succAbove_pred_of_gt {x y : Fin (n + 1)} (h : x < y)
-    (hy : y ≠ 0 := (x.zero_le.trans_lt h).ne') : x.succAbove (y.pred hy) = y := by
-  rw [succAbove_of_lt_succ (succ_pred _  _▸ h), succ_pred]
+theorem succAbove_pred_of_gt {i j : Fin (n + 1)} (h : j < i)
+    (hi : i ≠ 0 := (j.zero_le.trans_lt h).ne') : j.succAbove (i.pred hi) = i := by
+  rw [succAbove_of_lt_succ (succ_pred _ _ ▸ h), succ_pred]
 #align fin.succ_above_pred Fin.succAbove_pred_of_gt
 
 theorem exists_succAbove_eq {p i: Fin (n + 1)} (h : i ≠ p) : ∃ z, p.succAbove z = i := by
   cases' h.lt_or_lt with hlt hlt
-  exacts [⟨_, succAbove_castLT_of_lt hlt⟩, ⟨_, succAbove_pred_of_gt hlt⟩]
+  exacts [⟨_, succAbove_castPred_of_lt hlt⟩, ⟨_, succAbove_pred_of_gt hlt⟩]
 #align fin.exists_succ_above_eq Fin.exists_succAbove_eq
 
 @[simp]
