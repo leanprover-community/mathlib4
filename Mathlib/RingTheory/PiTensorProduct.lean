@@ -45,11 +45,11 @@ attribute [aesop safe] mul_add mul_smul_comm smul_mul_assoc add_mul in
 The multiplication in tensor product of rings is induced by `(xᵢ) * (yᵢ) = (xᵢ * yᵢ)`
 -/
 def lmul : (⨂[R] i, A i) →ₗ[R] (⨂[R] i, A i) →ₗ[R] (⨂[R] i, A i) :=
-  PiTensorProduct.map₂ <| tprod R fun _ ↦ LinearMap.mul _ _
+  PiTensorProduct.piTensorHomMap₂ <| tprod R fun _ ↦ LinearMap.mul _ _
 
 @[simp] lemma lmul_tprod_tprod (x y : (i : ι) → A i) :
     lmul (tprod R x) (tprod R y) = tprod R (x * y) := by
-  simp only [lmul, map₂_tprod_tprod_tprod, LinearMap.coe_mk, AddHom.coe_mk]
+  simp only [lmul, piTensorHomMap₂_tprod_tprod_tprod, LinearMap.mul_apply']
   rfl
 
 instance mul : Mul (⨂[R] i, A i) where
