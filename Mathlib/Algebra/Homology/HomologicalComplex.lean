@@ -6,6 +6,7 @@ Authors: Johan Commelin, Scott Morrison
 import Mathlib.Algebra.Homology.ComplexShape
 import Mathlib.CategoryTheory.Subobject.Limits
 import Mathlib.CategoryTheory.GradedObject
+import Mathlib.Algebra.Homology.ShortComplex.Basic
 
 #align_import algebra.homology.homological_complex from "leanprover-community/mathlib"@"88bca0ce5d22ebfd9e73e682e51d60ea13b48347"
 
@@ -732,25 +733,13 @@ end OfHom
 
 section Mk
 
--- porting note: removed @[nolint has_nonempty_instance]
-/-- Auxiliary structure for setting up the recursion in `mk`.
-This is purely an implementation detail: for some reason just using the dependent 6-tuple directly
-results in `mk_aux` taking much longer (well over the `-T100000` limit) to elaborate.
--/
-structure MkStruct where
-  (X₀ X₁ X₂ : V)
-  d₀ : X₁ ⟶ X₀
-  d₁ : X₂ ⟶ X₁
-  s : d₁ ≫ d₀ = 0
-#align chain_complex.mk_struct ChainComplex.MkStruct
-
 variable {V}
 
 /-- Flatten to a tuple. -/
-def MkStruct.flat (t : MkStruct V) :
+def _root_.CategoryTheory.ShortComplex.flat (t : ShortComplex V) :
     Σ' (X₀ X₁ X₂ : V) (d₀ : X₁ ⟶ X₀) (d₁ : X₂ ⟶ X₁), d₁ ≫ d₀ = 0 :=
-  ⟨t.X₀, t.X₁, t.X₂, t.d₀, t.d₁, t.s⟩
-#align chain_complex.mk_struct.flat ChainComplex.MkStruct.flat
+  ⟨t.X₃, t.X₂, t.X₁, t.g, t.f, t.zero⟩
+#align chain_complex.mk_struct.flat CategoryTheory.ShortComplex.flat
 
 variable (X₀ X₁ X₂ : V) (d₀ : X₁ ⟶ X₀) (d₁ : X₂ ⟶ X₁) (s : d₁ ≫ d₀ = 0)
   (succ :
@@ -758,11 +747,11 @@ variable (X₀ X₁ X₂ : V) (d₀ : X₁ ⟶ X₀) (d₁ : X₂ ⟶ X₁) (s :
       Σ' (X₃ : V) (d₂ : X₃ ⟶ t.2.2.1), d₂ ≫ t.2.2.2.2.1 = 0)
 
 /-- Auxiliary definition for `mk`. -/
-def mkAux : ℕ → MkStruct V
-  | 0 => ⟨X₀, X₁, X₂, d₀, d₁, s⟩
+def mkAux : ℕ → ShortComplex V
+  | 0 => ⟨d₁, d₀, s⟩
   | n + 1 =>
     let p := mkAux n
-    ⟨p.X₁, p.X₂, (succ p.flat).1, p.d₁, (succ p.flat).2.1, (succ p.flat).2.2⟩
+    ⟨(succ p.flat).2.1, p.f, (succ p.flat).2.2⟩
 #align chain_complex.mk_aux ChainComplex.mkAux
 
 /-- An inductive constructor for `ℕ`-indexed chain complexes.
@@ -774,8 +763,8 @@ and returns the next object, its differential, and the fact it composes appropri
 See also `mk'`, which only sees the previous differential in the inductive step.
 -/
 def mk : ChainComplex V ℕ :=
-  of (fun n => (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).X₀) (fun n => (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).d₀)
-    fun n => (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).s
+  of (fun n => (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).X₃) (fun n => (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).g)
+    fun n => (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).zero
 #align chain_complex.mk ChainComplex.mk
 
 @[simp]
