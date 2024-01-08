@@ -112,8 +112,8 @@ namespace FibreFunctor
 variable {C : Type u₁} [Category.{u₂, u₁} C] {F : C ⥤ FintypeCat.{w}} [PreGaloisCategory C]
   [FibreFunctor F]
 
-attribute [instance] preservesTerminalObjects preservesPullbacks preservesEpis preservesFiniteCoproducts
-  reflectsIsos preservesQuotientsByFiniteGroups
+attribute [instance] preservesTerminalObjects preservesPullbacks preservesEpis
+  preservesFiniteCoproducts reflectsIsos preservesQuotientsByFiniteGroups
 
 noncomputable instance : ReflectsColimitsOfShape (Discrete PEmpty.{1}) F :=
   reflectsColimitsOfShapeOfReflectsIsomorphisms
