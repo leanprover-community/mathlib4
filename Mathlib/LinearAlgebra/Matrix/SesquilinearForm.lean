@@ -16,14 +16,14 @@ import Mathlib.LinearAlgebra.Matrix.ScalarMatrix
 /-!
 # Sesquilinear form
 
-This file defines the conversion between sesquilinear forms and matrices.
+This file defines the conversion between sesquilinear maps and matrices.
 
 ## Main definitions
 
- * `Matrix.toLinearMap₂` given a basis define a bilinear form
- * `Matrix.toLinearMap₂'` define the bilinear form on `n → R`
- * `LinearMap.toMatrix₂`: calculate the matrix coefficients of a bilinear form
- * `LinearMap.toMatrix₂'`: calculate the matrix coefficients of a bilinear form on `n → R`
+ * `Matrix.toLinearMap₂` given a basis define a bilinear map
+ * `Matrix.toLinearMap₂'` define the bilinear map on `n → R`
+ * `LinearMap.toMatrix₂`: calculate the matrix coefficients of a bilinear map
+ * `LinearMap.toMatrix₂'`: calculate the matrix coefficients of a bilinear map on `n → R`
 
 ## Todos
 
@@ -32,7 +32,7 @@ generalized to fully semibilinear forms.
 
 ## Tags
 
-sesquilinear_form, matrix, basis
+Sesquilinear form, Sesquilinear map, matrix, basis
 
 -/
 
@@ -53,7 +53,7 @@ variable [Fintype n] [Fintype m]
 
 variable (σ₁ : R₁ →+* R) (σ₂ : R₂ →+* R)
 
-/-- The map from `Matrix n n R` to bilinear forms on `n → R`.
+/-- The map from `Matrix n n R` to bilinear maps on `n → R`.
 
 This is an auxiliary definition for the equivalence `Matrix.toLinearMap₂'`. -/
 def Matrix.toLinearMap₂'Aux (f : Matrix n m N₂) : (n → R₁) →ₛₗ[σ₁] (m → R₂) →ₛₗ[σ₂] N₂ :=
@@ -94,7 +94,7 @@ variable [AddCommMonoid M₁] [Module R₁ M₁] [AddCommMonoid M₂] [Module R�
 
 variable {σ₁ : R₁ →+* R} {σ₂ : R₂ →+* R}
 
-/-- The linear map from sesquilinear forms to `Matrix n m R` given an `n`-indexed basis for `M₁`
+/-- The linear map from sesquilinear maps to `Matrix n m R` given an `n`-indexed basis for `M₁`
 and an `m`-indexed basis for `M₂`.
 
 This is an auxiliary definition for the equivalence `Matrix.toLinearMapₛₗ₂'`. -/
@@ -149,9 +149,9 @@ end AuxToMatrix
 
 section ToMatrix'
 
-/-! ### Bilinear forms over `n → R`
+/-! ### Bilinear maps over `n → R`
 
-This section deals with the conversion between matrices and sesquilinear forms on `n → R`.
+This section deals with the conversion between matrices and sesquilinear maps on `n → R`.
 -/
 
 
@@ -165,7 +165,7 @@ variable [DecidableEq n] [DecidableEq m]
 
 variable {σ₁ : R₁ →+* R} {σ₂ : R₂ →+* R}
 
-/-- The linear equivalence between sesquilinear forms and `n × m` matrices -/
+/-- The linear equivalence between sesquilinear maps and `n × m` matrices -/
 def LinearMap.toMatrixₛₗ₂' : ((n → R₁) →ₛₗ[σ₁] (m → R₂) →ₛₗ[σ₂] N₂) ≃ₗ[R] Matrix n m N₂ :=
   {
     LinearMap.toMatrix₂Aux (fun i => stdBasis R₁ (fun _ => R₁) i 1) fun j =>
@@ -177,19 +177,19 @@ def LinearMap.toMatrixₛₗ₂' : ((n → R₁) →ₛₗ[σ₁] (m → R₂) �
     right_inv := Matrix.toMatrix₂Aux_toLinearMap₂'Aux }
 #align linear_map.to_matrixₛₗ₂' LinearMap.toMatrixₛₗ₂'
 
-/-- The linear equivalence between bilinear forms and `n × m` matrices -/
+/-- The linear equivalence between bilinear maps and `n × m` matrices -/
 def LinearMap.toMatrix₂' : ((n → R) →ₗ[R] (m → R) →ₗ[R] N₂) ≃ₗ[R] Matrix n m N₂ :=
   LinearMap.toMatrixₛₗ₂'
 #align linear_map.to_matrix₂' LinearMap.toMatrix₂'
 
 variable (σ₁ σ₂)
 
-/-- The linear equivalence between `n × n` matrices and sesquilinear forms on `n → R` -/
+/-- The linear equivalence between `n × n` matrices and sesquilinear maps on `n → R` -/
 def Matrix.toLinearMapₛₗ₂' : Matrix n m N₂ ≃ₗ[R] (n → R₁) →ₛₗ[σ₁] (m → R₂) →ₛₗ[σ₂] N₂ :=
   LinearMap.toMatrixₛₗ₂'.symm
 #align matrix.to_linear_mapₛₗ₂' Matrix.toLinearMapₛₗ₂'
 
-/-- The linear equivalence between `n × n` matrices and bilinear forms on `n → R` -/
+/-- The linear equivalence between `n × n` matrices and bilinear maps on `n → R` -/
 def Matrix.toLinearMap₂' : Matrix n m N₂ ≃ₗ[R] (n → R) →ₗ[R] (m → R) →ₗ[R] N₂ :=
   LinearMap.toMatrix₂'.symm
 #align matrix.to_linear_map₂' Matrix.toLinearMap₂'
@@ -345,9 +345,9 @@ end ToMatrix'
 
 section ToMatrix
 
-/-! ### Bilinear forms over arbitrary vector spaces
+/-! ### Bilinear maps over arbitrary vector spaces
 
-This section deals with the conversion between matrices and bilinear forms on
+This section deals with the conversion between matrices and bilinear maps on
 a module with a fixed basis.
 -/
 
@@ -363,7 +363,7 @@ variable [DecidableEq m] [Fintype m]
 
 variable (b₁ : Basis n R M₁) (b₂ : Basis m R M₂)
 
-/-- `LinearMap.toMatrix₂ b₁ b₂` is the equivalence between `R`-bilinear forms on `M` and
+/-- `LinearMap.toMatrix₂ b₁ b₂` is the equivalence between `R`-bilinear maps on `M` and
 `n`-by-`m` matrices with entries in `R`, if `b₁` and `b₂` are `R`-bases for `M₁` and `M₂`,
 respectively. -/
 noncomputable def LinearMap.toMatrix₂ : (M₁ →ₗ[R] M₂ →ₗ[R] N₂) ≃ₗ[R] Matrix n m N₂ :=
@@ -371,7 +371,7 @@ noncomputable def LinearMap.toMatrix₂ : (M₁ →ₗ[R] M₂ →ₗ[R] N₂) �
     LinearMap.toMatrix₂'
 #align linear_map.to_matrix₂ LinearMap.toMatrix₂
 
-/-- `Matrix.toLinearMap₂ b₁ b₂` is the equivalence between `R`-bilinear forms on `M` and
+/-- `Matrix.toLinearMap₂ b₁ b₂` is the equivalence between `R`-bilinear maps on `M` and
 `n`-by-`m` matrices with entries in `R`, if `b₁` and `b₂` are `R`-bases for `M₁` and `M₂`,
 respectively; this is the reverse direction of `LinearMap.toMatrix₂ b₁ b₂`. -/
 noncomputable def Matrix.toLinearMap₂ : Matrix n m N₂ ≃ₗ[R] M₁ →ₗ[R] M₂ →ₗ[R] N₂ :=
