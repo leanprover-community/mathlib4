@@ -1691,26 +1691,91 @@ instance uniqueOfLeft [IsEmpty α] : Unique (α →₀ R) :=
 
 end
 
+section
+variable {M : Type*} [Zero M] {P : α → Prop} [DecidablePred P]
+
+/-- Combine finitely supported functions over `{a // P a}` and `{a // ¬P a}`, by case-splitting on
+`P a`. -/
+@[simps]
+def piecewise (f : Subtype P →₀ M) (g : {a // ¬ P a} →₀ M) : α →₀ M where
+  toFun a := if h : P a then f ⟨a, h⟩ else g ⟨a, h⟩
+  support := (f.support.map (.subtype _)).disjUnion (g.support.map (.subtype _)) <| by
+    simp_rw [Finset.disjoint_left, mem_map, forall_exists_index, Embedding.coe_subtype,
+      Subtype.forall, Subtype.exists]
+    rintro _ a ha ⟨-, rfl⟩ ⟨b, hb, -, rfl⟩
+    exact hb ha
+  mem_support_toFun a := by
+    by_cases ha : P a <;> simp [ha]
+
+@[simp]
+theorem subtypeDomain_piecewise (f : Subtype P →₀ M) (g : {a // ¬ P a} →₀ M) :
+    subtypeDomain P (f.piecewise g) = f :=
+  Finsupp.ext fun a => dif_pos a.prop
+
+@[simp]
+theorem subtypeDomain_not_piecewise (f : Subtype P →₀ M) (g : {a // ¬ P a} →₀ M) :
+    subtypeDomain (¬P ·) (f.piecewise g) = g :=
+  Finsupp.ext fun a => dif_neg a.prop
+
+/-- Extend the domain of a `Finsupp` by using `0` where `P x` does not hold. -/
+@[simps! support toFun]
+def extendDomain (f : Subtype P →₀ M) : α →₀ M := piecewise f 0
+
+theorem extendDomain_eq_embDomain_subtype (f : Subtype P →₀ M) :
+    extendDomain f = embDomain (.subtype _) f := by
+  ext a
+  by_cases h : P a
+  · refine Eq.trans ?_ (embDomain_apply (.subtype P) f (Subtype.mk a h)).symm
+    simp [h]
+  · rw [embDomain_notin_range, extendDomain_toFun, dif_neg h]
+    simp [h]
+
+theorem support_extendDomain_subset (f : Subtype P →₀ M) :
+    ↑(f.extendDomain).support ⊆ {x | P x} := by
+  intro x
+  rw [extendDomain_support, mem_coe, mem_map, Embedding.coe_subtype]
+  rintro ⟨x, -, rfl⟩
+  exact x.prop
+
+@[simp]
+theorem subtypeDomain_extendDomain (f : Subtype P →₀ M) :
+    subtypeDomain P f.extendDomain = f :=
+  subtypeDomain_piecewise _ _
+
+theorem extendDomain_subtypeDomain (f : α →₀ M) (hf : ∀ a ∈ f.support, P a) :
+    (subtypeDomain P f).extendDomain = f := by
+  ext a
+  by_cases h : P a
+  · exact dif_pos h
+  · dsimp
+    rw [if_neg h, eq_comm, ← not_mem_support_iff]
+    refine mt ?_ h
+    exact @hf _
+
+@[simp]
+theorem extendDomain_single (a : Subtype P) (m : M) :
+    (single a m).extendDomain = single a.val m := by
+  ext a'
+  dsimp only [extendDomain_toFun]
+  obtain rfl | ha := eq_or_ne a.val a'
+  · simp_rw [single_eq_same, dif_pos a.prop]
+  · simp_rw [single_eq_of_ne ha, dite_eq_right_iff]
+    intro h
+    rw [single_eq_of_ne]
+    simp [Subtype.ext_iff, ha]
+
+end
+
 /-- Given an `AddCommMonoid M` and `s : Set α`, `restrictSupportEquiv s M` is the `Equiv`
 between the subtype of finitely supported functions with support contained in `s` and
 the type of finitely supported functions from `s`. -/
 def restrictSupportEquiv (s : Set α) (M : Type*) [AddCommMonoid M] :
     { f : α →₀ M // ↑f.support ⊆ s } ≃ (s →₀ M) where
-  toFun f := subtypeDomain (fun x => x ∈ s) f.1
-  invFun f :=
-    ⟨f.embDomain <| Embedding.subtype _, by
-      rw [support_embDomain, Finset.coe_map, Set.image_subset_iff]
-      exact fun x _ => x.2⟩
-  left_inv := by
-    rintro ⟨f, hf⟩
-    ext a
-    by_cases h : a ∈ s
-    · lift a to s using h
-      exact embDomain_apply _ _ _
-    rw [embDomain_notin_range, eq_comm, ← Finsupp.not_mem_support_iff]
-    · exact fun hs => h <| hf hs
-    · simp [h]
-  right_inv f := ext <| embDomain_apply _ f
+  toFun f := subtypeDomain (· ∈ s) f.1
+  invFun f := letI := Classical.decPred (· ∈ s); ⟨f.extendDomain, support_extendDomain_subset _⟩
+  left_inv f :=
+    letI := Classical.decPred (· ∈ s); Subtype.ext <| extendDomain_subtypeDomain f.1 f.prop
+  right_inv _ := letI := Classical.decPred (· ∈ s); subtypeDomain_extendDomain _
 #align finsupp.restrict_support_equiv Finsupp.restrictSupportEquiv
 
 /-- Given `AddCommMonoid M` and `e : α ≃ β`, `domCongr e` is the corresponding `Equiv` between

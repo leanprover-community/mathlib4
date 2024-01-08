@@ -73,7 +73,7 @@ theorem mapEquiv_refl (α) : mapEquiv f (Equiv.refl α) = Equiv.refl (f α) := b
 
 @[simp]
 theorem mapEquiv_symm : (mapEquiv f e).symm = mapEquiv f e.symm :=
-  Equiv.ext $ mapEquiv_symm_apply f e
+  Equiv.ext <| mapEquiv_symm_apply f e
 #align equiv_functor.map_equiv_symm EquivFunctor.mapEquiv_symm
 
 /-- The composition of `mapEquiv`s is carried over the `EquivFunctor`.
