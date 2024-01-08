@@ -1959,9 +1959,8 @@ theorem leftCancelMulZero_of_le_isLeftRegular
       rw [mul_comm,← this,mul_comm]
   exact { mul_left_cancel_of_ne_zero := @mul_cancel }
 
-
 /-- Given a Localization map `f : M →*₀ N` for a Submonoid `S ⊆ M`,
-if `M` is cancellative monoid with zero, and all elements of `S` are
+if `M` is a cancellative monoid with zero, and all elements of `S` are
 regular, then N is a cancellative monoid with zero.  -/
 theorem isLeftRegular_of_le_IsCancelMulZero (f : LocalizationWithZeroMap S N)
     [IsCancelMulZero M] (h : ∀ ⦃x⦄, x ∈ S → IsRegular x): IsCancelMulZero N := by
