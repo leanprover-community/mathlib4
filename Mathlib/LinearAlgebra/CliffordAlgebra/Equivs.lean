@@ -357,8 +357,7 @@ theorem ofQuaternion_toQuaternion (c : CliffordAlgebra (Q c₁ c₂)) :
 @[simp]
 theorem toQuaternion_comp_ofQuaternion :
     toQuaternion.comp ofQuaternion = AlgHom.id R ℍ[R,c₁,c₂] := by
-  apply QuaternionAlgebra.lift.symm.injective
-  ext1 <;> dsimp [QuaternionAlgebra.Basis.lift] <;> simp
+  ext : 1 <;> simp
 #align clifford_algebra_quaternion.to_quaternion_comp_of_quaternion CliffordAlgebraQuaternion.toQuaternion_comp_ofQuaternion
 
 @[simp]
