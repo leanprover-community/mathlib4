@@ -41,7 +41,7 @@ theorem not_disjoint_segment_convexHull_triple {p q u v x y z : E} (hz : z ∈ s
     rw [zero_smul, zero_add, habv, one_smul]
     exact ⟨q, right_mem_segment _ _ _, subset_convexHull _ _ <| by simp⟩
   obtain ⟨au, bu, hau, hbu, habu, rfl⟩ := hu
-  have hab : 0 < az * av + bz * au :=
+  have hab : 0 < az * av + bz * au := by positivity
   refine ⟨(az * av / (az * av + bz * au)) • (au • x + bu • p) +
     (bz * au / (az * av + bz * au)) • (av • y + bv • q), ⟨_, _, ?_, ?_, ?_, rfl⟩, ?_⟩
   · positivity
