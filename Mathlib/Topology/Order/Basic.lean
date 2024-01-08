@@ -1043,7 +1043,7 @@ theorem StrictMono.embedding_of_ordConnected {α β : Type*} [LinearOrder α] [L
 order is the same as the restriction to the subset of the order topology. -/
 instance orderTopology_of_ordConnected {α : Type u} [TopologicalSpace α] [LinearOrder α]
     [OrderTopology α] {t : Set α} [ht : OrdConnected t] : OrderTopology t :=
-  ⟨(Subtype.strictMono_coe t).induced_topology_eq_preorder $ by
+  ⟨(Subtype.strictMono_coe t).induced_topology_eq_preorder <| by
     rwa [← @Subtype.range_val _ t] at ht⟩
 #align order_topology_of_ord_connected orderTopology_of_ordConnected
 
