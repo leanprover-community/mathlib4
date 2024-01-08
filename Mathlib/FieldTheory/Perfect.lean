@@ -35,7 +35,7 @@ NB: This is not related to the concept with the same name introduced by Bass (re
 covers of modules). -/
 class PerfectRing (R : Type*) (p : ℕ) [CommSemiring R] [Fact p.Prime] [CharP R p] : Prop where
   /-- A ring is perfect if the Frobenius map is bijective. -/
-  bijective_frobenius : Bijective $ frobenius R p
+  bijective_frobenius : Bijective <| frobenius R p
 
 section PerfectRing
 
@@ -44,13 +44,13 @@ variable (R : Type*) (p : ℕ) [CommSemiring R] [Fact p.Prime] [CharP R p]
 /-- For a reduced ring, surjectivity of the Frobenius map is a sufficient condition for perfection.
 -/
 lemma PerfectRing.ofSurjective (R : Type*) (p : ℕ) [CommRing R] [Fact p.Prime] [CharP R p]
-    [IsReduced R] (h : Surjective $ frobenius R p) : PerfectRing R p :=
+    [IsReduced R] (h : Surjective <| frobenius R p) : PerfectRing R p :=
   ⟨frobenius_inj R p, h⟩
 #align perfect_ring.of_surjective PerfectRing.ofSurjective
 
 instance PerfectRing.ofFiniteOfIsReduced (R : Type*) [CommRing R] [CharP R p]
     [Finite R] [IsReduced R] : PerfectRing R p :=
-  ofSurjective _ _ $ Finite.surjective_of_injective (frobenius_inj R p)
+  ofSurjective _ _ <| Finite.surjective_of_injective (frobenius_inj R p)
 
 variable [PerfectRing R p]
 
@@ -211,7 +211,7 @@ instance toPerfectRing (p : ℕ) [hp : Fact p.Prime] [CharP K p] : PerfectRing K
     obtain ⟨q, -, hq⟩ := (dvd_prime_pow (prime_X_sub_C a) p).mp hg_dvd
     rw [eq_of_monic_of_associated ((minpoly.monic ha).map ι) ((monic_X_sub_C a).pow q) hq,
       natDegree_pow, natDegree_X_sub_C, mul_one]
-  have hg_sep : (g.map ι).Separable := (separable_of_irreducible $ minpoly.irreducible ha).map
+  have hg_sep : (g.map ι).Separable := (separable_of_irreducible <| minpoly.irreducible ha).map
   rw [hg_pow] at hg_sep
   refine' (Separable.of_pow (not_isUnit_X_sub_C a) _ hg_sep).2
   rw [g.natDegree_map ι, ← Nat.pos_iff_ne_zero, natDegree_pos_iff_degree_pos]
