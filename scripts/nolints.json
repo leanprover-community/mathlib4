@@ -2296,13 +2296,4 @@
  ["docBlame", "Mathlib.Meta.NormNum.evalMul.core.intArm"],
  ["docBlame", "Mathlib.Meta.NormNum.evalMul.core.ratArm"],
  ["unusedArguments", "Combinator.K"],
- ["unusedArguments", "Decidable.not_or_iff_and_not"],
-
- ["simpNF", "CliffordAlgebra.even.lift.aux_one"],
- ["simpNF", "CliffordAlgebra.even.lift.aux_ι"],
- ["simpNF", "CliffordAlgebra.even.lift.aux_algebraMap"],
- ["simpNF", "CliffordAlgebra.even.lift.aux_mul"],
- ["simpNF", "Equiv.Perm.decomposeFin_symm_apply_zero"],
- ["simpNF", "Equiv.Perm.decomposeFin_symm_apply_one"],
- ["simpNF", "PowerSeries.coe_sub"],
- ["simpNF", "PowerSeries.coe_neg"]]
+ ["unusedArguments", "Decidable.not_or_iff_and_not"]]
