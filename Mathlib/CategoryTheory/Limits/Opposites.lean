@@ -468,8 +468,8 @@ theorem desc_op_comp_opCoproductIsoProduct_hom {X : C} (π : (a : α) → Z a �
     (Sigma.desc π).op ≫ (opCoproductIsoProduct Z).hom = Pi.lift (fun a ↦ (π a).op) := by
   convert desc_op_comp_opCoproductIsoProduct'_hom (coproductIsCoproduct Z)
     (productIsProduct (op <| Z ·)) (Cofan.mk _ π)
-  · ext; simp [Sigma.desc, colimit.desc, coproductIsCoproduct]
-  · ext; simp [Pi.lift, limit.lift, productIsProduct]
+  · ext; simp [Sigma.desc, coproductIsCoproduct]
+  · ext; simp [Pi.lift, productIsProduct]
 
 end OppositeCoproducts
 
