@@ -61,11 +61,12 @@ theorem rank_mul_rank (A : Type v) [AddCommGroup A]
 
 /-- Tower law: if `A` is a `K`-module and `K` is an extension of `F` then
 $\operatorname{rank}_F(A) = \operatorname{rank}_F(K) * \operatorname{rank}_K(A)$. -/
-theorem FiniteDimensional.finrank_mul_finrank' : finrank F K * finrank K A = finrank F A := by
+theorem FiniteDimensional.finrank_mul_finrank : finrank F K * finrank K A = finrank F A := by
   simp_rw [finrank]
   rw [← toNat_lift.{w} (Module.rank F K), ← toNat_lift.{v} (Module.rank K A), ← toNat_mul,
     lift_rank_mul_lift_rank, toNat_lift]
-#align finite_dimensional.finrank_mul_finrank' FiniteDimensional.finrank_mul_finrank'
+#align finite_dimensional.finrank_mul_finrank FiniteDimensional.finrank_mul_finrank
+#align finite_dimensional.finrank_mul_finrank' FiniteDimensional.finrank_mul_finrank
 
 end Tower
 
