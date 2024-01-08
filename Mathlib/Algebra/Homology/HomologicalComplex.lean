@@ -735,23 +735,14 @@ section Mk
 
 variable {V}
 
-/-- Flatten to a tuple. -/
-def _root_.CategoryTheory.ShortComplex.asTuple (t : ShortComplex V) :
-    Σ' (X₀ X₁ X₂ : V) (d₀ : X₁ ⟶ X₀) (d₁ : X₂ ⟶ X₁), d₁ ≫ d₀ = 0 :=
-  ⟨t.X₃, t.X₂, t.X₁, t.g, t.f, t.zero⟩
-#align chain_complex.mk_struct.flat CategoryTheory.ShortComplex.asTuple
 
 variable (X₀ X₁ X₂ : V) (d₀ : X₁ ⟶ X₀) (d₁ : X₂ ⟶ X₁) (s : d₁ ≫ d₀ = 0)
-  (succ :
-    ∀ t : Σ' (X₀ X₁ X₂ : V) (d₀ : X₁ ⟶ X₀) (d₁ : X₂ ⟶ X₁), d₁ ≫ d₀ = 0,
-      Σ' (X₃ : V) (d₂ : X₃ ⟶ t.2.2.1), d₂ ≫ t.2.2.2.2.1 = 0)
+  (succ : ∀ (S : ShortComplex V), Σ' (X₃ : V) (d₂ : X₃ ⟶ S.X₁), d₂ ≫ S.f = 0)
 
 /-- Auxiliary definition for `mk`. -/
 def mkAux : ℕ → ShortComplex V
-  | 0 => ⟨d₁, d₀, s⟩
-  | n + 1 =>
-    let p := mkAux n
-    ⟨(succ p.asTuple).2.1, p.f, (succ p.asTuple).2.2⟩
+  | 0 => ShortComplex.mk _ _ s
+  | n + 1 => ShortComplex.mk _ _ (succ (mkAux n)).2.2
 #align chain_complex.mk_aux ChainComplex.mkAux
 
 /-- An inductive constructor for `ℕ`-indexed chain complexes.
@@ -805,13 +796,12 @@ then a function which takes a differential,
 and returns the next object, its differential, and the fact it composes appropriately to zero.
 -/
 def mk' (X₀ X₁ : V) (d : X₁ ⟶ X₀)
-    (succ' : ∀ t : ΣX₀ X₁ : V, X₁ ⟶ X₀, Σ' (X₂ : V) (d : X₂ ⟶ t.2.1), d ≫ t.2.2 = 0) :
+    (succ' : ∀ {X₀ X₁ : V} (f : X₁ ⟶ X₀), Σ' (X₂ : V) (d : X₂ ⟶ X₁), d ≫ f = 0) :
     ChainComplex V ℕ :=
-  mk X₀ X₁ (succ' ⟨X₀, X₁, d⟩).1 d (succ' ⟨X₀, X₁, d⟩).2.1 (succ' ⟨X₀, X₁, d⟩).2.2 fun t =>
-    succ' ⟨t.2.1, t.2.2.1, t.2.2.2.2.1⟩
+  mk _ _ _ _ _ (succ' d).2.2 (fun S => succ' S.f)
 #align chain_complex.mk' ChainComplex.mk'
 
-variable (succ' : ∀ t : ΣX₀ X₁ : V, X₁ ⟶ X₀, Σ' (X₂ : V) (d : X₂ ⟶ t.2.1), d ≫ t.2.2 = 0)
+variable (succ' : ∀ {X₀ X₁ : V} (f : X₁ ⟶ X₀), Σ' (X₂ : V) (d : X₂ ⟶ X₁), d ≫ f = 0)
 
 @[simp]
 theorem mk'_X_0 : (mk' X₀ X₁ d₀ succ').X 0 = X₀ :=

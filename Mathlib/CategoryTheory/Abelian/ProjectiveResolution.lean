@@ -298,8 +298,7 @@ variable (Z : C)
 /-- Auxiliary definition for `ProjectiveResolution.of`. -/
 def ofComplex : ChainComplex C ℕ :=
   ChainComplex.mk' (Projective.over Z) (Projective.syzygies (Projective.π Z))
-    (Projective.d (Projective.π Z)) fun ⟨_, _, f⟩ =>
-    ⟨Projective.syzygies f, Projective.d f, by simp⟩
+    (Projective.d (Projective.π Z)) (fun f => ⟨_, Projective.d f, by simp⟩)
 #align category_theory.ProjectiveResolution.of_complex CategoryTheory.ProjectiveResolution.ofComplex
 
 lemma ofComplex_d_1_0 :
