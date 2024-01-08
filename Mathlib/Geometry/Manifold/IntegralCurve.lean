@@ -98,9 +98,7 @@ lemma isIntegralCurveAt_iff' :
   rfl
 
 lemma IsIntegralCurve.isIntegralCurveAt (h : IsIntegralCurve γ v) (t : ℝ) :
-    IsIntegralCurveAt γ v t := by
-  rw [isIntegralCurveAt_iff]
-  exact ⟨univ, Filter.univ_mem, fun t _ ↦ h t⟩
+    IsIntegralCurveAt γ v t := isIntegralCurveAt_iff.mpr ⟨univ, Filter.univ_mem, fun t _ ↦ h t⟩
 
 lemma isIntegralCurve_iff_isIntegralCurveAt :
     IsIntegralCurve γ v ↔ ∀ t : ℝ, IsIntegralCurveAt γ v t :=
@@ -277,10 +275,9 @@ theorem exists_isIntegralCurveAt_of_contMDiffAt
   -- obtain a neighbourhood `s` so that the above conditions both hold in `s`
   obtain ⟨s, hs, haux⟩ := (hf2.and hnhds).exists_mem
   -- prove that `γ := (extChartAt I x₀).symm ∘ f` is a desired integral curve
-  simp_rw [isIntegralCurveAt_iff]
   refine ⟨(extChartAt I x₀).symm ∘ f,
     Eq.symm (by rw [Function.comp_apply, hf1, PartialEquiv.left_inv _ (mem_extChartAt_source ..)]),
-    s, hs, ?_⟩
+    isIntegralCurveAt_iff.mpr ⟨s, hs, ?_⟩⟩
   intros t ht
   -- collect useful terms in convenient forms
   let xₜ : M := (extChartAt I x₀).symm (f t) -- `xₜ := γ t`
