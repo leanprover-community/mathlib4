@@ -736,10 +736,10 @@ section Mk
 variable {V}
 
 /-- Flatten to a tuple. -/
-def _root_.CategoryTheory.ShortComplex.flat (t : ShortComplex V) :
+def _root_.CategoryTheory.ShortComplex.asTuple (t : ShortComplex V) :
     Σ' (X₀ X₁ X₂ : V) (d₀ : X₁ ⟶ X₀) (d₁ : X₂ ⟶ X₁), d₁ ≫ d₀ = 0 :=
   ⟨t.X₃, t.X₂, t.X₁, t.g, t.f, t.zero⟩
-#align chain_complex.mk_struct.flat CategoryTheory.ShortComplex.flat
+#align chain_complex.mk_struct.flat CategoryTheory.ShortComplex.asTuple
 
 variable (X₀ X₁ X₂ : V) (d₀ : X₁ ⟶ X₀) (d₁ : X₂ ⟶ X₁) (s : d₁ ≫ d₀ = 0)
   (succ :
@@ -751,7 +751,7 @@ def mkAux : ℕ → ShortComplex V
   | 0 => ⟨d₁, d₀, s⟩
   | n + 1 =>
     let p := mkAux n
-    ⟨(succ p.flat).2.1, p.f, (succ p.flat).2.2⟩
+    ⟨(succ p.asTuple).2.1, p.f, (succ p.asTuple).2.2⟩
 #align chain_complex.mk_aux ChainComplex.mkAux
 
 /-- An inductive constructor for `ℕ`-indexed chain complexes.
