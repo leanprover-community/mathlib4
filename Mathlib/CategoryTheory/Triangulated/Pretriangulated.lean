@@ -627,6 +627,8 @@ lemma exists_iso_of_arrow_iso (T₁ T₂ : Triangle C) (hT₁ : T₁ ∈ distTri
     all_goals infer_instance
   exact ⟨asIso φ, by simp, by simp⟩
 
+/-- A choice of isomorphism `T₁ ≅ T₂` between two distinguished triangles
+when we are given two isomorphisms `e₁ : T₁.obj₁ ≅ T₂.obj₁` and `e₂ : T₁.obj₂ ≅ T₂.obj₂`. -/
 @[simps! hom_hom₁ hom_hom₂ inv_hom₁ inv_hom₂]
 def isoTriangleOfIso₁₂ (T₁ T₂ : Triangle C) (hT₁ : T₁ ∈ distTriang C)
     (hT₂ : T₂ ∈ distTriang C) (e₁ : T₁.obj₁ ≅ T₂.obj₁) (e₂ : T₁.obj₂ ≅ T₂.obj₂)

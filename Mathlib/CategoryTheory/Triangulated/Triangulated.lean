@@ -111,6 +111,7 @@ def triangleMorphism₂ : Triangle.mk u₁₃ v₁₃ w₁₃ ⟶ Triangle.mk u�
 
 variable (u₁₂ u₁₃ u₂₃ comm h₁₂ h₁₃ h₂₃)
 
+/-- When two diagrams are isomorphic, an octahedron for one gives an octahedron for the other. -/
 def ofIso {X₁' X₂' X₃' Z₁₂' Z₂₃' Z₁₃' : C} (u₁₂' : X₁' ⟶ X₂') (u₂₃' : X₂' ⟶ X₃')
     (e₁ : X₁ ≅ X₁') (e₂ : X₂ ≅ X₂')(e₃ : X₃ ≅ X₃')
     (comm₁₂ : u₁₂ ≫ e₂.hom = e₁.hom ≫ u₁₂') (comm₂₃ : u₂₃ ≫ e₃.hom = e₂.hom ≫ u₂₃')

@@ -334,16 +334,19 @@ end
 
 namespace Triangle
 
+/-- The first projection `Triangle C ⥤ C`. -/
 @[simps]
 def π₁ : Triangle C ⥤ C where
   obj T := T.obj₁
   map f := f.hom₁
 
+/-- The second projection `Triangle C ⥤ C`. -/
 @[simps]
 def π₂ : Triangle C ⥤ C where
   obj T := T.obj₂
   map f := f.hom₂
 
+/-- The third projection `Triangle C ⥤ C`. -/
 @[simps]
 def π₃ : Triangle C ⥤ C where
   obj T := T.obj₃
