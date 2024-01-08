@@ -160,6 +160,105 @@ theorem mem_carrier_iff (z : A⁰_ f) :
   Iff.rfl
 #align algebraic_geometry.Proj_iso_Spec_Top_component.to_Spec.mem_carrier_iff AlgebraicGeometry.ProjIsoSpecTopComponent.ToSpec.mem_carrier_iff
 
+lemma carrier_eq_span :
+  carrier x =
+  Ideal.span { z : HomogeneousLocalization.Away 𝒜 f |
+    ∃ (s F : A) (_ : s ∈ x.1.asHomogeneousIdeal) (n : ℕ)
+      (s_mem : s ∈ 𝒜 n) (F_mem1 : F ∈ 𝒜 n) (F_mem2 : F ∈ Submonoid.powers f),
+      z = Quotient.mk'' ⟨n, ⟨s, s_mem⟩, ⟨F, F_mem1⟩,F_mem2⟩ } := by
+  classical
+  refine le_antisymm ?_ <| Ideal.span_le.mpr ?_
+  · intro z hz
+    let k : ℕ :=
+      Submonoid.mem_powers_iff _ _ |>.mp (z.den_mem : z.den ∈ Submonoid.powers f) |>.choose
+    have hk : f^k = z.den :=
+      Submonoid.mem_powers_iff _ _ |>.mp (z.den_mem : z.den ∈ Submonoid.powers f) |>.choose_spec
+    erw [mem_carrier_iff, mem_span_set] at hz
+    obtain ⟨c, support_le, eq1⟩ := hz
+    erw [Finsupp.sum] at eq1
+
+    suffices mem1 : z.num ∈ x.1.asHomogeneousIdeal
+    · refine Ideal.subset_span ⟨_, _, mem1, _, z.num_mem_deg, z.den_mem_deg, z.den_mem, ?_⟩
+      rw [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.val_mk'',
+        HomogeneousLocalization.eq_num_div_den]
+
+    obtain ⟨⟨_, N, rfl⟩, hN⟩ := IsLocalization.exist_integer_multiples_of_finset
+      (Submonoid.powers f) (c.support.image (fun i ↦ c i * i))
+    choose acd hacd using hN
+    change ∀ _ _, Localization.mk (acd _ _) _ = _ at hacd
+    have prop1 : ∀ i, i ∈ c.support → c i * i ∈ (c.support.image (fun i ↦ c i * i))
+    · intros i hi; rw [Finset.mem_image]; exact ⟨_, hi, rfl⟩
+
+    have eq2 : (Localization.mk (z.num * f ^ N) 1 : Localization.Away f) =
+      Localization.mk
+        (∑ i in c.support.attach, f ^ k * acd (c i * i) (prop1 i.1 i.2)) 1
+    · rw [mk_sum]
+      rw [z.eq_num_div_den] at eq1
+      replace eq1 : ∑ i in c.support, c i • i =
+        (Localization.mk z.num ⟨f ^ k, ⟨k, rfl⟩⟩ : Localization.Away f)
+      · simp_rw [eq1, hk]
+      convert_to _ =
+        ∑ i in c.support.attach, (Localization.mk (f ^ k) 1 : Localization.Away f) *
+          (Localization.mk (acd (c i * i) (prop1 i.1 i.2)) 1 : Localization.Away f)
+      · refine Finset.sum_congr rfl ?_
+        rintro x _
+        rw [mk_mul, mul_one]
+      rw [← Finset.sum_attach] at eq1
+      simp_rw [← Finset.mul_sum, hacd, ← Finset.smul_sum]
+      erw [eq1, Localization.smul_mk, mk_mul, smul_eq_mul, one_mul, Localization.mk_eq_mk',
+        IsLocalization.eq]
+      refine ⟨1, by simp [mul_comm]⟩
+
+    rw [Localization.mk_eq_mk_iff, Localization.r_iff_exists] at eq2
+    obtain ⟨⟨_, ⟨l, rfl⟩⟩, (eq2 : f ^ l * (1 * (z.num * f ^ N)) = f ^ l * (1 * _))⟩ := eq2
+    rw [one_mul, one_mul] at eq2
+
+    suffices : f^l * ∑ i in c.support.attach, f^k * acd (c i * i) (prop1 i.1 i.2) ∈
+      x.1.asHomogeneousIdeal
+    · rw [← eq2] at this
+      refine x.1.isPrime.mem_or_mem ((x.1.isPrime.mem_or_mem this).resolve_left ?_)
+        |>.resolve_right ?_ <;>
+        intro r <;> apply (ProjectiveSpectrum.mem_basicOpen 𝒜 _ _).mp x.2 <;>
+        exact x.1.isPrime.mem_of_pow_mem _ r
+
+    refine Ideal.mul_mem_left _ _ (Ideal.sum_mem _ (fun ⟨j, hj⟩ _ ↦ Ideal.mul_mem_left _ _ ?_))
+    set g := (support_le hj).choose
+    dsimp
+    obtain ⟨(_ : g ∈ x.1.asHomogeneousIdeal), (hg : Localization.mk g 1 = j)⟩ :=
+      (support_le hj).choose_spec
+    obtain ⟨a, z, hz⟩ : ∃ (a : A) (z : ℕ), c j = (Localization.mk a ⟨f^z, ⟨z, rfl⟩⟩ : Away f)
+    · induction' (c j) using Localization.induction_on with data
+      rcases data with ⟨a, ⟨_, ⟨z, rfl⟩⟩⟩
+      exact ⟨a, z, rfl⟩
+    have eq3 : (Localization.mk (acd (c j * j) (prop1 _ hj)) 1 : Away f) =
+      (Localization.mk (a * g * f^N) ⟨f^z, ⟨z, rfl⟩⟩ : Away f)
+    · rw [(hacd (c j * j) (prop1 _ hj)), hz, Algebra.smul_def, ← mk_one_eq_algebraMap,
+        Subtype.coe_mk, ← hg, Localization.mk_mul, Localization.mk_mul, mul_one, one_mul]
+      congr 1
+      ring
+
+    rw [Localization.mk_eq_mk_iff, Localization.r_iff_exists] at eq3
+    obtain ⟨⟨_, ⟨v, rfl⟩⟩, eq3⟩ := eq3
+    simp only [OneMemClass.coe_one, SetLike.mem_coe, one_mul] at eq3
+
+    suffices mem : f ^ v * (f ^ z * acd (c j * j) (prop1 _ hj)) ∈ x.1.asHomogeneousIdeal
+    · refine x.1.isPrime.mem_or_mem (x.1.isPrime.mem_or_mem mem |>.resolve_left ?_)
+        |>.resolve_left ?_  <;>
+      intro r <;> apply (ProjectiveSpectrum.mem_basicOpen 𝒜 _ _).mp x.2 <;>
+      exact x.1.isPrime.mem_of_pow_mem _ r
+
+    rw [eq3]
+    refine Ideal.mul_mem_left _ _ <| Ideal.mul_mem_right _ _ <| Ideal.mul_mem_left _ _ ?_
+    generalize_proofs _ h
+    exact h.choose_spec |>.1
+
+  · rintro _ ⟨s, _, hs, n, s_mem, F_mem, ⟨l, rfl⟩, rfl⟩
+    erw [mem_carrier_iff, HomogeneousLocalization.val_mk'']
+    erw [show (Localization.mk s ⟨f ^ l, ⟨_, rfl⟩⟩ : Localization.Away f) =
+      (Localization.mk 1 ⟨f^l, ⟨_, rfl⟩⟩ : Localization.Away f) * Localization.mk s 1 by
+      · rw [Localization.mk_mul, mul_one, one_mul]]
+    exact Ideal.mul_mem_left _ _ <| Ideal.subset_span ⟨s, hs, rfl⟩
+
 theorem MemCarrier.clear_denominator' [DecidableEq (Away f)] {z : Localization.Away f}
     (hz : z ∈ span (algebraMap A (Away f) '' x.val.asHomogeneousIdeal)) :
     ∃ (c : algebraMap A (Away f) '' x.1.asHomogeneousIdeal →₀ Away f) (N : ℕ) (acd :
@@ -567,6 +666,19 @@ def toFun : (Spec.T A⁰_ f) → Proj.T| pbo f := fun q =>
 #align algebraic_geometry.Proj_iso_Spec_Top_component.from_Spec.to_fun AlgebraicGeometry.ProjIsoSpecTopComponent.FromSpec.toFun
 
 end FromSpec
+
+section toSpecFromSpec
+
+lemma toSpecFromSpec {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m) (x : Spec.T (A⁰_ f)) :
+    toSpec (FromSpec.toFun f_deg hm x) = x := show _ = (_ : PrimeSpectrum _) by
+  ext (z : A⁰_ f); fconstructor <;> intro hz
+  · change z ∈ (toSpec ⟨⟨⟨FromSpec.carrier.asIdeal f_deg hm x, _⟩, _, _⟩, _⟩).1 at hz
+    simp only [CommRingCat.coe_of, LocallyRingedSpace.restrict_carrier,
+      Spec.locallyRingedSpaceObj_toSheafedSpace, Spec.sheafedSpaceObj_carrier] at hz
+    sorry
+  · sorry
+
+end toSpecFromSpec
 
 end ProjIsoSpecTopComponent
 
