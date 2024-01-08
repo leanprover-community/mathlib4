@@ -817,8 +817,8 @@ theorem isLocalization_iff_of_algEquiv [Algebra R P] (h : S ≃ₐ[R] P) :
 #align is_localization.is_localization_iff_of_alg_equiv IsLocalization.isLocalization_iff_of_algEquiv
 
 theorem isLocalization_iff_of_ringEquiv (h : S ≃+* P) :
-    IsLocalization M S ↔ haveI := (h.toRingHom.comp <| algebraMap R S).toAlgebra;
-      IsLocalization M P :=
+    IsLocalization M S ↔
+      haveI := (h.toRingHom.comp <| algebraMap R S).toAlgebra; IsLocalization M P :=
   letI := (h.toRingHom.comp <| algebraMap R S).toAlgebra
   isLocalization_iff_of_algEquiv M { h with commutes' := fun _ => rfl }
 #align is_localization.is_localization_iff_of_ring_equiv IsLocalization.isLocalization_iff_of_ringEquiv
@@ -826,8 +826,8 @@ theorem isLocalization_iff_of_ringEquiv (h : S ≃+* P) :
 variable (S)
 
 theorem isLocalization_of_base_ringEquiv [IsLocalization M S] (h : R ≃+* P) :
-    haveI := ((algebraMap R S).comp h.symm.toRingHom).toAlgebra;
-      IsLocalization (M.map h.toMonoidHom) S := by
+    haveI := ((algebraMap R S).comp h.symm.toRingHom).toAlgebra
+    IsLocalization (M.map h.toMonoidHom) S := by
   letI : Algebra P S := ((algebraMap R S).comp h.symm.toRingHom).toAlgebra
   constructor
   · rintro ⟨_, ⟨y, hy, rfl⟩⟩
