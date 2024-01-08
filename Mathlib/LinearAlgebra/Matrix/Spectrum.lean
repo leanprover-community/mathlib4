@@ -142,7 +142,7 @@ theorem det_eq_prod_eigenvalues : det A = ∏ i, (hA.eigenvalues i : 𝕜) := by
 
 /-- *spectral theorem* (Alternate form for convenience) A hermitian matrix can be can be
 replaced by a diagonal matrix sandwiched between the eigenvector matrices. This alternate form
-allows direct rewriting of A since: $ A = V D V⁻¹$ -/
+allows direct rewriting of A since: <| A = V D V⁻¹$ -/
 lemma spectral_theorem' :
     A = hA.eigenvectorMatrix * diagonal ((↑) ∘ hA.eigenvalues) * hA.eigenvectorMatrixInv := by
   simpa [ ← Matrix.mul_assoc, hA.eigenvectorMatrix_mul_inv, Matrix.one_mul] using

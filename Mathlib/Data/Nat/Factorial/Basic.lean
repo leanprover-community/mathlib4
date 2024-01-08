@@ -207,6 +207,14 @@ theorem factorial_mul_pow_sub_le_factorial {n m : ℕ} (hnm : n ≤ m) : n ! * n
     _ ≤ _ := by simpa [hnm] using @Nat.factorial_mul_pow_le_factorial n (m - n)
 #align nat.factorial_mul_pow_sub_le_factorial Nat.factorial_mul_pow_sub_le_factorial
 
+lemma factorial_le_pow : ∀ n, n ! ≤ n ^ n
+  | 0 => le_rfl
+  | n + 1 =>
+    calc
+      _ ≤ (n + 1) * n ^ n := mul_le_mul_left' n.factorial_le_pow _
+      _ ≤ (n + 1) * (n + 1) ^ n := mul_le_mul_left' (Nat.pow_le_pow_left n.le_succ _) _
+      _ = _ := by rw [pow_succ']
+
 end Factorial
 
 /-! ### Ascending and descending factorials -/
@@ -302,7 +310,7 @@ theorem ascFactorial_lt_pow_add (n : ℕ) : ∀ {k : ℕ}, 2 ≤ k → n.ascFact
   | k + 2 => fun _ => by
     rw [ascFactorial_succ, pow_succ]
     rw [add_assoc n (k + 1) 1, mul_comm <| (n + (k + 2)) ^ (k + 1)]
-    exact mul_lt_mul_of_pos_left ((ascFactorial_le_pow_add n _).trans_lt $
+    exact mul_lt_mul_of_pos_left ((ascFactorial_le_pow_add n _).trans_lt <|
       Nat.pow_lt_pow_left (lt_add_one _) k.succ_ne_zero) (succ_pos _)
 #align nat.asc_factorial_lt_pow_add Nat.ascFactorial_lt_pow_add
 

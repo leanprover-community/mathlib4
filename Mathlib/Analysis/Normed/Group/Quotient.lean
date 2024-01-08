@@ -379,7 +379,7 @@ theorem IsQuotient.norm_lift {f : NormedAddGroupHom M N} (hquot : IsQuotient f) 
     (n : N) : ∃ m : M, f m = n ∧ ‖m‖ < ‖n‖ + ε := by
   obtain ⟨m, rfl⟩ := hquot.surjective n
   have nonemp : ((fun m' => ‖m + m'‖) '' f.ker).Nonempty := by
-    rw [Set.nonempty_image_iff]
+    rw [Set.image_nonempty]
     exact ⟨0, f.ker.zero_mem⟩
   rcases Real.lt_sInf_add_pos nonemp hε
     with ⟨_, ⟨⟨x, hx, rfl⟩, H : ‖m + x‖ < sInf ((fun m' : M => ‖m + m'‖) '' f.ker) + ε⟩⟩

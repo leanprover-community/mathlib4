@@ -297,7 +297,6 @@ def isoOfComponents (H : X.1 ≅ Y.1) (α : H.hom _* X.2 ≅ Y.2) : X ≅ Y wher
     dsimp
     rw [H.inv_hom_id]
     dsimp
-    rw [NatTrans.comp_app]
     simp only [Presheaf.pushforwardObj_obj, op_obj, Opens.map_comp_obj, comp_obj,
       comp_c_app, unop_op, Presheaf.toPushforwardOfIso_app, whiskerRight_app, eqToHom_app,
       assoc, id_c_app, map_id]
@@ -319,7 +318,7 @@ def sheafIsoOfIso (H : X ≅ Y) : Y.2 ≅ H.hom.base _* X.2 where
   inv_hom_id := by
     ext U
     dsimp
-    rw [NatTrans.comp_app, NatTrans.id_app]
+    rw [NatTrans.id_app]
     simp only [Presheaf.pushforwardObj_obj, op_obj, Presheaf.pushforwardToOfIso_app,
       Iso.symm_inv, mapIso_hom, forget_map, Iso.symm_hom, mapIso_inv,
       unop_op, eqToHom_map, assoc]
@@ -456,15 +455,13 @@ def restrictTopIso (X : PresheafedSpace C) : X.restrict (Opens.openEmbedding ⊤
   hom_inv_id := by
     ext
     · rfl
-    · dsimp
-      erw [comp_c, toRestrictTop_c, whiskerRight_id',
+    · erw [comp_c, toRestrictTop_c, whiskerRight_id',
         comp_id, ofRestrict_top_c, eqToHom_map, eqToHom_trans, eqToHom_refl]
       rfl
   inv_hom_id := by
     ext
     · rfl
-    · dsimp
-      erw [comp_c, ofRestrict_top_c, toRestrictTop_c, eqToHom_map, whiskerRight_id', comp_id,
+    · erw [comp_c, ofRestrict_top_c, toRestrictTop_c, eqToHom_map, whiskerRight_id', comp_id,
         eqToHom_trans, eqToHom_refl]
       rfl
 set_option linter.uppercaseLean3 false in
