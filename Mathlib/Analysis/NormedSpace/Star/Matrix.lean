@@ -33,6 +33,10 @@ This transports the operator norm on `EuclideanSpace 𝕜 n →L[𝕜] Euclidean
 We take care to ensure the topology and uniformity induced by `Matrix.instMetricSpaceL2Op`
 coincide with the existing topology and uniformity on matrices.
 
+## TODO
+
+* Show that `‖diagonal (v : n → 𝕜)‖ = ‖v‖`.
+
 -/
 
 
