@@ -1922,6 +1922,7 @@ theorem leftCancelMulZero_of_le_isLeftRegular
       rw [(LocalizationMap.eq_mk'_iff_mul_eq fl).mpr hx]
       rw [(LocalizationMap.eq_mk'_iff_mul_eq fl).mpr hy]
       rw [LocalizationMap.eq]
+      use 1 
       simp_rw [OneMemClass.coe_one, one_mul]
       --- The hypothesis `a ≠ 0` in `P` is equivalent to this
       have b1ne0 : b.1 ≠ 0 := by
@@ -1935,9 +1936,7 @@ theorem leftCancelMulZero_of_le_isLeftRegular
       have : g (b.1 * (y.1 * x.2)) = g (b.1 * (x.1 * y.2)) :=
       calc
         g (b.1 * (y.1 * x.2)) = g b.1 * g (y.1 * x.2) := map_mul g _ _
-        _ = g b.1 * (g y.1 * g x.2) := by rw[map_mul g]
-        _ = a * g b.2 * (g y.1 * g x.2) := by rw[hb]
-        _ = a * g b.2 * (w * g y.2 * g x.2) := by rw[hy]
+        _ = a * g b.2 * (w * g y.2 * g x.2) := by rw[map_mul g,hb,hy]
         _ = a * w * g b.2 * (g y.2 * g x.2) := by
           rw[← mul_assoc _ _ _,← mul_assoc _ w _,mul_assoc a _ w,
             mul_comm _ w,mul_assoc,← mul_assoc a w _]
@@ -1945,10 +1944,7 @@ theorem leftCancelMulZero_of_le_isLeftRegular
         _ = a * g b.2 * (z * g x.2 *g y.2) := by
           rw [mul_comm (g y.2),mul_assoc a z,mul_comm z,
             ← mul_assoc a,mul_assoc _ z,mul_assoc z]
-        _ = a * g b.2 * (g x.1 * g y.2) := by rw[hx]
-        _ = g b.1 * (g x.1 * g y.2) := by rw[hb]
-        _ = g b.1 * g (x.1 * y.2) := by rw[map_mul g]
-        _ = g (b.1 * (x.1 * y.2)) := by rw[← map_mul g]
+        _ = g (b.1 * (x.1 * y.2)) := by rw[hx,hb,map_mul g,← map_mul g]
       --- The hypothesis `h` gives that `f` (so, `g`) is injective.
       have : b.1 * (y.1 * x.2) =  b.1 * (x.1 * y.2) :=
         (LocalizationMap.toMap_injective_iff fl).mpr h this
