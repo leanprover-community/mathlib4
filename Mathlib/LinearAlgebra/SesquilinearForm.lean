@@ -373,7 +373,7 @@ theorem span_singleton_inf_orthogonal_eq_bot (B : V₁ →ₛₗ[J₁] V₁ →�
   rw [isOrtho_def, map_smulₛₗ] at h
   exact Or.elim (smul_eq_zero.mp h)
       (fun y ↦ by simpa using y)
-      (fun hfalse ↦ False.elim $ hx hfalse)
+      (fun hfalse ↦ False.elim <| hx hfalse)
 #align linear_map.span_singleton_inf_orthogonal_eq_bot LinearMap.span_singleton_inf_orthogonal_eq_bot
 
 -- ↓ This lemma only applies in fields since we use the `mul_eq_zero`

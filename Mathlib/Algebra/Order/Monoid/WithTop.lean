@@ -118,9 +118,7 @@ instance add : Add (WithTop α) :=
   ⟨Option.map₂ (· + ·)⟩
 #align with_top.has_add WithTop.add
 
-@[norm_cast]
-theorem coe_add : ((x + y : α) : WithTop α) = x + y :=
-  rfl
+@[norm_cast] lemma coe_add (a b : α) : ↑(a + b) = (a + b : WithTop α) := rfl
 #align with_top.coe_add WithTop.coe_add
 
 section deprecated
@@ -335,13 +333,35 @@ instance addZeroClass [AddZeroClass α] : AddZeroClass (WithTop α) :=
     zero_add := Option.map₂_left_identity zero_add
     add_zero := Option.map₂_right_identity add_zero }
 
-instance addMonoid [AddMonoid α] : AddMonoid (WithTop α) :=
+section AddMonoid
+variable [AddMonoid α]
+
+instance addMonoid : AddMonoid (WithTop α) :=
   { WithTop.addSemigroup, WithTop.addZeroClass with }
+
+/-- Coercion from `α` to `WithTop α` as an `AddMonoidHom`. -/
+def addHom : α →+ WithTop α where
+  toFun := WithTop.some
+  map_zero' := rfl
+  map_add' _ _ := rfl
+#align with_top.coe_add_hom WithTop.addHom
+
+@[simp, norm_cast] lemma coe_addHom : ⇑(addHom : α →+ WithTop α) = WithTop.some := rfl
+#align with_top.coe_coe_add_hom WithTop.coe_addHom
+
+@[simp, norm_cast]
+lemma coe_nsmul (a : α) (n : ℕ) : ↑(n • a) = n • (a : WithTop α) :=
+  (addHom : α →+ WithTop α).map_nsmul _ _
+
+end AddMonoid
 
 instance addCommMonoid [AddCommMonoid α] : AddCommMonoid (WithTop α) :=
   { WithTop.addMonoid, WithTop.addCommSemigroup with }
 
-instance addMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (WithTop α) :=
+section AddMonoidWithOne
+variable [AddMonoidWithOne α]
+
+instance addMonoidWithOne : AddMonoidWithOne (WithTop α) :=
   { WithTop.one, WithTop.addMonoid with
     natCast := fun n => ↑(n : α),
     natCast_zero := by
@@ -351,6 +371,17 @@ instance addMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (WithTop α) 
       simp only -- Porting note: Had to add this...?
       rw [Nat.cast_add_one, WithTop.coe_add, WithTop.coe_one]
   }
+
+@[simp, norm_cast] lemma coe_nat (n : ℕ) : ((n : α) : WithTop α) = n := rfl
+#align with_top.coe_nat WithTop.coe_nat
+
+@[simp] lemma nat_ne_top (n : ℕ) : (n : WithTop α) ≠ ⊤ := coe_ne_top
+#align with_top.nat_ne_top WithTop.nat_ne_top
+
+@[simp] lemma top_ne_nat (n : ℕ) : (⊤ : WithTop α) ≠ n := top_ne_coe
+#align with_top.top_ne_nat WithTop.top_ne_nat
+
+end AddMonoidWithOne
 
 instance charZero [AddMonoidWithOne α] [CharZero α] : CharZero (WithTop α) :=
   { cast_injective := Function.Injective.comp (f := Nat.cast (R := α))
@@ -396,36 +427,6 @@ instance canonicallyOrderedAddCommMonoid [CanonicallyOrderedAddCommMonoid α] :
 instance [CanonicallyLinearOrderedAddCommMonoid α] :
     CanonicallyLinearOrderedAddCommMonoid (WithTop α) :=
   { WithTop.canonicallyOrderedAddCommMonoid, WithTop.linearOrder with }
-
-@[simp, norm_cast]
-theorem coe_nat [AddMonoidWithOne α] (n : ℕ) : ((n : α) : WithTop α) = n :=
-  rfl
-#align with_top.coe_nat WithTop.coe_nat
-
-@[simp]
-theorem nat_ne_top [AddMonoidWithOne α] (n : ℕ) : (n : WithTop α) ≠ ⊤ :=
-  coe_ne_top
-#align with_top.nat_ne_top WithTop.nat_ne_top
-
-@[simp]
-theorem top_ne_nat [AddMonoidWithOne α] (n : ℕ) : (⊤ : WithTop α) ≠ n :=
-  top_ne_coe
-#align with_top.top_ne_nat WithTop.top_ne_nat
-
-/-- Coercion from `α` to `WithTop α` as an `AddMonoidHom`. -/
-def addHom [AddMonoid α] : α →+ WithTop α :=
-  -- Porting note: why does the old proof not work?
-  -- ⟨WithTop.some, rfl, fun _ _ => rfl⟩
-  { toFun := WithTop.some,
-    map_zero' := rfl,
-    map_add' := fun _ _ => rfl }
-#align with_top.coe_add_hom WithTop.addHom
-
--- Porting note: It seems like that kind of coe-lemmas is not needed anymore.
--- @[simp]
--- theorem coe_coe_add_hom [AddMonoid α] : (coeAddHom : α →+ WithTop α).toFun = WithTop.some :=
---   rfl
--- #align with_top.coe_coe_add_hom WithTop.coe_coe_add_hom
 
 @[simp]
 theorem zero_lt_top [OrderedAddCommMonoid α] : (0 : WithTop α) < ⊤ :=
@@ -487,14 +488,44 @@ instance addCommSemigroup [AddCommSemigroup α] : AddCommSemigroup (WithBot α) 
 instance addZeroClass [AddZeroClass α] : AddZeroClass (WithBot α) :=
   WithTop.addZeroClass
 
-instance addMonoid [AddMonoid α] : AddMonoid (WithBot α) :=
-  WithTop.addMonoid
+section AddMonoid
+variable [AddMonoid α]
+
+instance addMonoid : AddMonoid (WithBot α) := WithTop.addMonoid
+
+/-- Coercion from `α` to `WithBot α` as an `AddMonoidHom`. -/
+def addHom : α →+ WithBot α where
+  toFun := WithTop.some
+  map_zero' := rfl
+  map_add' _ _ := rfl
+
+@[simp, norm_cast] lemma coe_addHom : ⇑(addHom : α →+ WithBot α) = WithBot.some := rfl
+
+@[simp, norm_cast]
+lemma coe_nsmul (a : α) (n : ℕ) : ↑(n • a) = n • (a : WithBot α) :=
+  (addHom : α →+ WithBot α).map_nsmul _ _
+#align with_bot.coe_nsmul WithBot.coe_nsmul
+
+end AddMonoid
 
 instance addCommMonoid [AddCommMonoid α] : AddCommMonoid (WithBot α) :=
   WithTop.addCommMonoid
 
-instance addMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (WithBot α) :=
-  WithTop.addMonoidWithOne
+section AddMonoidWithOne
+variable [AddMonoidWithOne α]
+
+instance addMonoidWithOne : AddMonoidWithOne (WithBot α) := WithTop.addMonoidWithOne
+
+@[norm_cast] lemma coe_nat (n : ℕ) : ((n : α) : WithBot α) = n := rfl
+#align with_bot.coe_nat WithBot.coe_nat
+
+@[simp] lemma nat_ne_bot (n : ℕ) : (n : WithBot α) ≠ ⊥ := coe_ne_bot
+#align with_bot.nat_ne_bot WithBot.nat_ne_bot
+
+@[simp] lemma bot_ne_nat (n : ℕ) : (⊥ : WithBot α) ≠ n := bot_ne_coe
+#align with_bot.bot_ne_nat WithBot.bot_ne_nat
+
+end AddMonoidWithOne
 
 instance charZero [AddMonoidWithOne α] [CharZero α] : CharZero (WithBot α) :=
   WithTop.charZero
@@ -560,21 +591,6 @@ protected theorem map_one {β} [One α] (f : α → β) : (1 : WithBot α).map f
   rfl
 #align with_bot.map_one WithBot.map_one
 #align with_bot.map_zero WithBot.map_zero
-
-@[norm_cast]
-theorem coe_nat [AddMonoidWithOne α] (n : ℕ) : ((n : α) : WithBot α) = n :=
-  rfl
-#align with_bot.coe_nat WithBot.coe_nat
-
-@[simp]
-theorem nat_ne_bot [AddMonoidWithOne α] (n : ℕ) : (n : WithBot α) ≠ ⊥ :=
-  coe_ne_bot
-#align with_bot.nat_ne_bot WithBot.nat_ne_bot
-
-@[simp]
-theorem bot_ne_nat [AddMonoidWithOne α] (n : ℕ) : (⊥ : WithBot α) ≠ n :=
-  bot_ne_coe
-#align with_bot.bot_ne_nat WithBot.bot_ne_nat
 
 section Add
 
