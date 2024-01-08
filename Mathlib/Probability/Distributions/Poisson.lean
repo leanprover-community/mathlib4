@@ -14,7 +14,7 @@ Define the Poisson measure over the reals
 
 ## Main definitions
 * `poissonPmfReal`: the function `λ x ↦ exp (- λ) * λ ^ x / x!`
-  for `x ∈ ℕ` or `0` else, which is the probability density function of a Poisson distribution with
+  for `x ∈ ℕ`, which is the probability density function of a Poisson distribution with
   rate `λ > 0`.
 * `poissonPmf`: `ℝ≥0∞`-valued pdf,
   `poissonPmf λ = ENNReal.ofReal (poissonPmfReal λ)`.
