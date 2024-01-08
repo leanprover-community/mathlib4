@@ -708,6 +708,9 @@ theorem InjOn.comp (hg : InjOn g t) (hf : InjOn f s) (h : MapsTo f s t) : InjOn 
   fun _ hx _ hy heq => hf hx hy <| hg (h hx) (h hy) heq
 #align set.inj_on.comp Set.InjOn.comp
 
+lemma InjOn.image_of_comp (h : InjOn (g ∘ f) s) : InjOn g (f '' s) :=
+  ball_image_iff.2 fun _x hx ↦ ball_image_iff.2 fun _y hy heq ↦ congr_arg f <| h hx hy heq
+
 lemma InjOn.iterate {f : α → α} {s : Set α} (h : InjOn f s) (hf : MapsTo f s s) :
     ∀ n, InjOn f^[n] s
   | 0 => injOn_id _
@@ -789,8 +792,47 @@ theorem _root_.Disjoint.image {s t u : Set α} {f : α → β} (h : Disjoint s t
   rw [← hf.image_inter hs ht, h, image_empty]
 #align disjoint.image Disjoint.image
 
-/-! ### Surjectivity on a set -/
+/-- The graph of a function `f : α → β` on a set `s`. -/
+def graphOn (f : α → β) (s : Set α) : Set (α × β) := (fun x ↦ (x, f x)) '' s
 
+@[simp] lemma graphOn_empty (f : α → β) : graphOn f ∅ = ∅ := image_empty _
+
+@[simp]
+lemma graphOn_union (f : α → β) (s t : Set α) : graphOn f (s ∪ t) = graphOn f s ∪ graphOn f t :=
+  image_union ..
+
+@[simp]
+lemma graphOn_singleton (f : α → β) (x : α) : graphOn f {x} = {(x, f x)} :=
+  image_singleton ..
+
+@[simp]
+lemma graphOn_insert (f : α → β) (x : α) (s : Set α) :
+    graphOn f (insert x s) = insert (x, f x) (graphOn f s) :=
+  image_insert_eq ..
+
+@[simp]
+lemma image_fst_graphOn (f : α → β) (s : Set α) : Prod.fst '' graphOn f s = s := by
+  simp [graphOn, image_image]
+
+lemma exists_eq_graphOn_image_fst [Nonempty β] {s : Set (α × β)} :
+    (∃ f : α → β, s = graphOn f (Prod.fst '' s)) ↔ InjOn Prod.fst s := by
+  refine ⟨?_, fun h ↦ ?_⟩
+  · rintro ⟨f, hf⟩
+    rw [hf]
+    exact InjOn.image_of_comp <| injOn_id _
+  · have : ∀ x ∈ Prod.fst '' s, ∃ y, (x, y) ∈ s := ball_image_iff.2 fun (x, y) h ↦ ⟨y, h⟩
+    choose! f hf using this
+    rw [ball_image_iff] at hf
+    use f
+    rw [graphOn, image_image, EqOn.image_eq_self]
+    exact fun x hx ↦ h (hf x hx) hx rfl
+
+lemma exists_eq_graphOn [Nonempty β] {s : Set (α × β)} :
+    (∃ f t, s = graphOn f t) ↔ InjOn Prod.fst s :=
+  .trans ⟨fun ⟨f, t, hs⟩ ↦ ⟨f, by rw [hs, image_fst_graphOn]⟩, fun ⟨f, hf⟩ ↦ ⟨f, _, hf⟩⟩
+    exists_eq_graphOn_image_fst
+
+/-! ### Surjectivity on a set -/
 
 /-- `f` is surjective from `a` to `b` if `b` is contained in the image of `a`. -/
 def SurjOn (f : α → β) (s : Set α) (t : Set β) : Prop :=

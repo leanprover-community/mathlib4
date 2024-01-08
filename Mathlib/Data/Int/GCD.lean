@@ -3,10 +3,11 @@ Copyright (c) 2018 Guy Leroy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sangwoo Jo (aka Jason), Guy Leroy, Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Algebra.GroupPower.Lemmas
+import Mathlib.Algebra.GroupWithZero.Power
 import Mathlib.Algebra.Ring.Regular
 import Mathlib.Data.Int.Dvd.Basic
+import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Order.Bounds.Basic
 
 #align_import data.int.gcd from "leanprover-community/mathlib"@"47a1a73351de8dd6c8d3d32b569c8e434b03ca47"
@@ -517,3 +518,38 @@ theorem pow_gcd_eq_one {M : Type*} [Monoid M] (x : M) {m n : ℕ} (hm : x ^ m = 
   simp only [Nat.gcd_eq_gcd_ab, zpow_add, zpow_mul, hm, hn, one_zpow, one_mul]
 #align pow_gcd_eq_one pow_gcd_eq_one
 #align gcd_nsmul_eq_zero gcd_nsmul_eq_zero
+
+variable {α : Type*}
+
+section GroupWithZero
+variable [GroupWithZero α] {a b : α} {m n : ℕ}
+
+protected lemma Commute.pow_eq_pow_iff_of_coprime (hab : Commute a b) (hmn : m.Coprime n) :
+    a ^ m = b ^ n ↔ ∃ c, a = c ^ n ∧ b = c ^ m := by
+  refine ⟨fun h ↦ ?_, by rintro ⟨c, rfl, rfl⟩; rw [← pow_mul, ← pow_mul']⟩
+  by_cases m = 0; · aesop
+  by_cases n = 0; · aesop
+  by_cases hb : b = 0; exact ⟨0, by aesop⟩
+  by_cases ha : a = 0; exact ⟨0, by have := h.symm; aesop⟩
+  refine ⟨a ^ Nat.gcdB m n * b ^ Nat.gcdA m n, ?_, ?_⟩
+  all_goals
+    refine (pow_one _).symm.trans ?_
+    conv_lhs => rw [← zpow_ofNat, ← hmn, Nat.gcd_eq_gcd_ab]
+    simp only [zpow_add₀ ha, zpow_add₀ hb, ← zpow_ofNat, (hab.zpow_zpow₀ _ _).mul_zpow, ← zpow_mul,
+      mul_comm (Nat.gcdB m n), mul_comm (Nat.gcdA m n)]
+    simp only [zpow_mul, zpow_ofNat, h]
+    exact ((Commute.pow_pow (by aesop) _ _).zpow_zpow₀ _ _).symm
+
+end GroupWithZero
+
+section CommGroupWithZero
+variable [CommGroupWithZero α] {a b : α} {m n : ℕ}
+
+lemma pow_eq_pow_iff_of_coprime (hmn : m.Coprime n) : a ^ m = b ^ n ↔ ∃ c, a = c ^ n ∧ b = c ^ m :=
+  (Commute.all _ _).pow_eq_pow_iff_of_coprime hmn
+
+lemma pow_mem_range_pow_of_coprime (hmn : m.Coprime n) (a : α) :
+    a ^ m ∈ Set.range (· ^ n : α → α) ↔ a ∈ Set.range (· ^ n : α → α) := by
+  simp [pow_eq_pow_iff_of_coprime hmn.symm]; aesop
+
+end CommGroupWithZero
