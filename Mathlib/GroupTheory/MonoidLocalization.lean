@@ -1950,7 +1950,7 @@ theorem leftCancelMulZero_of_le_isLeftRegular
         _ = g b.1 * (g x.1 * g y.2) := by rw[hb]
         _ = g b.1 * g (x.1 * y.2) := by rw[map_mul g]
         _ = g (b.1 * (x.1 * y.2)) := by rw[← map_mul g]
-      --- The hypothesis `h` gives that `f` (so, `f`) is injective.
+      --- The hypothesis `h` gives that `f` (so, `g`) is injective.
       have : b.1 * (y.1 * x.2) =  b.1 * (x.1 * y.2) :=
         (LocalizationMap.toMap_injective_iff fl).mpr h this
       --- The hypothesis to be left cancellative allows us to cancel `b.1`
