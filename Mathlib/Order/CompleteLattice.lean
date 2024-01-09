@@ -123,7 +123,7 @@ def iSup_delab : Delab := whenPPOption Lean.getPPNotation do
   let ppTypes ← getPPOption getPPFunBinderTypes
   let stx ← SubExpr.withAppArg do
     let dom ← SubExpr.withBindingDomain delab
-    withBindingBodyUnusedName $ fun x => do
+    withBindingBodyUnusedName fun x => do
       let x : TSyntax `ident := .mk x
       let body ← delab
       if prop && !dep then
@@ -151,7 +151,7 @@ def iInf_delab : Delab := whenPPOption Lean.getPPNotation do
   let ppTypes ← getPPOption getPPFunBinderTypes
   let stx ← SubExpr.withAppArg do
     let dom ← SubExpr.withBindingDomain delab
-    withBindingBodyUnusedName $ fun x => do
+    withBindingBodyUnusedName fun x => do
       let x : TSyntax `ident := .mk x
       let body ← delab
       if prop && !dep then
@@ -699,7 +699,7 @@ theorem iSup_congr (h : ∀ i, f i = g i) : ⨆ i, f i = ⨆ i, g i :=
 
 theorem biSup_congr {p : ι → Prop} (h : ∀ i, p i → f i = g i) :
     ⨆ (i) (_ : p i), f i = ⨆ (i) (_ : p i), g i :=
-  iSup_congr <| fun i ↦ iSup_congr (h i)
+  iSup_congr fun i ↦ iSup_congr (h i)
 
 theorem Function.Surjective.iSup_comp {f : ι → ι'} (hf : Surjective f) (g : ι' → α) :
     ⨆ x, g (f x) = ⨆ y, g y := by
@@ -1992,12 +1992,12 @@ end Prod
 
 lemma sInf_prod [InfSet α] [InfSet β] {s : Set α} {t : Set β} (hs : s.Nonempty) (ht : t.Nonempty) :
     sInf (s ×ˢ t) = (sInf s, sInf t) :=
-congr_arg₂ Prod.mk (congr_arg sInf $ fst_image_prod _ ht) (congr_arg sInf $ snd_image_prod hs _)
+congr_arg₂ Prod.mk (congr_arg sInf <| fst_image_prod _ ht) (congr_arg sInf <| snd_image_prod hs _)
 #align Inf_prod sInf_prod
 
 lemma sSup_prod [SupSet α] [SupSet β] {s : Set α} {t : Set β} (hs : s.Nonempty) (ht : t.Nonempty) :
     sSup (s ×ˢ t) = (sSup s, sSup t) :=
-congr_arg₂ Prod.mk (congr_arg sSup $ fst_image_prod _ ht) (congr_arg sSup $ snd_image_prod hs _)
+congr_arg₂ Prod.mk (congr_arg sSup <| fst_image_prod _ ht) (congr_arg sSup <| snd_image_prod hs _)
 #align Sup_prod sSup_prod
 
 section CompleteLattice

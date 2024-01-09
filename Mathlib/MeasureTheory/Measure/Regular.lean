@@ -423,7 +423,7 @@ lemma of_restrict [OpensMeasurableSpace α] {μ : Measure α} {s : ℕ → Set �
   have : ∀ n, ∃ (U : _) (_ : U ⊇ A n), IsOpen U ∧ μ U < μ (A n) + δ n := by
     intro n
     have H₁ : ∀ t, μ.restrict (s n) t = μ (t ∩ s n) := fun t => restrict_apply' (hm n)
-    have Ht : μ.restrict (s n) (A n) ≠ ⊤ := by
+    have Ht : μ.restrict (s n) (A n) ≠ ∞ := by
       rw [H₁]
       exact ((measure_mono ((inter_subset_left _ _).trans (subset_iUnion A n))).trans_lt HA).ne
     rcases (A n).exists_isOpen_lt_add Ht (δ0 n).ne' with ⟨U, hAU, hUo, hU⟩
@@ -486,7 +486,7 @@ open Finset in
 sets. Then the measure is weakly regular. -/
 theorem weaklyRegular_of_finite [BorelSpace α] (μ : Measure α) [IsFiniteMeasure μ]
     (H : InnerRegularWRT μ IsClosed IsOpen) : WeaklyRegular μ := by
-  have hfin : ∀ {s}, μ s ≠ ⊤ := @(measure_ne_top μ)
+  have hfin : ∀ {s}, μ s ≠ ∞ := @(measure_ne_top μ)
   suffices ∀ s, MeasurableSet s → ∀ ε, ε ≠ 0 → ∃ F, F ⊆ s ∧ ∃ U, U ⊇ s ∧
       IsClosed F ∧ IsOpen U ∧ μ s ≤ μ F + ε ∧ μ U ≤ μ s + ε by
     refine'

@@ -1043,7 +1043,7 @@ theorem StrictMono.embedding_of_ordConnected {α β : Type*} [LinearOrder α] [L
 order is the same as the restriction to the subset of the order topology. -/
 instance orderTopology_of_ordConnected {α : Type u} [TopologicalSpace α] [LinearOrder α]
     [OrderTopology α] {t : Set α} [ht : OrdConnected t] : OrderTopology t :=
-  ⟨(Subtype.strictMono_coe t).induced_topology_eq_preorder $ by
+  ⟨(Subtype.strictMono_coe t).induced_topology_eq_preorder <| by
     rwa [← @Subtype.range_val _ t] at ht⟩
 #align order_topology_of_ord_connected orderTopology_of_ordConnected
 
@@ -2937,7 +2937,7 @@ theorem Monotone.tendsto_nhdsWithin_Iio {α β : Type*} [LinearOrder α] [Topolo
   refine' tendsto_order.2 ⟨fun l hl => _, fun m hm => _⟩
   · obtain ⟨z, zx, lz⟩ : ∃ a : α, a < x ∧ l < f a := by
       simpa only [mem_image, exists_prop, exists_exists_and_eq_and] using
-        exists_lt_of_lt_csSup (nonempty_image_iff.2 h) hl
+        exists_lt_of_lt_csSup (h.image _) hl
     exact mem_of_superset (Ioo_mem_nhdsWithin_Iio' zx) fun y hy => lz.trans_le (Mf hy.1.le)
   · refine mem_of_superset self_mem_nhdsWithin fun _ hy => lt_of_le_of_lt ?_ hm
     exact le_csSup (Mf.map_bddAbove bddAbove_Iio) (mem_image_of_mem _ hy)
