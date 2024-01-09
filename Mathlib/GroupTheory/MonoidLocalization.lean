@@ -1914,9 +1914,9 @@ theorem leftCancelMulZero_of_le_isLeftRegular
       intro ha hazw
       --- Using `LocalizationMap.surj` we find an equality in M that
       --- imply the goal.
-      cases' LocalizationMap.surj fl a with b hb
-      cases' LocalizationMap.surj fl z with x hx
-      cases' LocalizationMap.surj fl w with y hy
+      obtain ⟨b, hb ⟩ := LocalizationMap.surj fl a 
+      obtain ⟨x, hx ⟩ := LocalizationMap.surj fl z 
+      obtain ⟨y, hy ⟩ := LocalizationMap.surj fl w 
       rw [(LocalizationMap.eq_mk'_iff_mul_eq fl).mpr hx]
       rw [(LocalizationMap.eq_mk'_iff_mul_eq fl).mpr hy]
       rw [LocalizationMap.eq]
