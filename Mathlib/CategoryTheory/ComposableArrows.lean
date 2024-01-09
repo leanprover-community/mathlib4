@@ -53,6 +53,7 @@ namespace ComposableArrows
 variable {C} {n m : ℕ}
 variable (F G : ComposableArrows C n)
 
+/-- A basic tactic to try `assumption` befor `linarith`. -/
 macro "assump_lin" : tactic => `(tactic| first | assumption | linarith)
 
 suppress_compilation
