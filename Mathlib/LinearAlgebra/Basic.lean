@@ -739,7 +739,7 @@ def submoduleImage {M' : Type*} [AddCommMonoid M'] [Module R M'] {O : Submodule 
 @[simp]
 theorem mem_submoduleImage {M' : Type*} [AddCommMonoid M'] [Module R M'] {O : Submodule R M}
     {ϕ : O →ₗ[R] M'} {N : Submodule R M} {x : M'} :
-    x ∈ ϕ.submoduleImage N ↔ ∃ (y : _) (yO : y ∈ O) (_ : y ∈ N), ϕ ⟨y, yO⟩ = x := by
+    x ∈ ϕ.submoduleImage N ↔ ∃ (y : _) (yO : y ∈ O), y ∈ N ∧ ϕ ⟨y, yO⟩ = x := by
   refine' Submodule.mem_map.trans ⟨_, _⟩ <;> simp_rw [Submodule.mem_comap]
   · rintro ⟨⟨y, yO⟩, yN : y ∈ N, h⟩
     exact ⟨y, yO, yN, h⟩

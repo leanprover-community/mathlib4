@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Divisibility.Basic
-import Mathlib.Algebra.Group.Hom.Basic
+import Mathlib.Algebra.Group.Equiv.Basic
+import Mathlib.Algebra.Group.TypeTags
 import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Data.Nat.Basic
 
@@ -26,6 +27,8 @@ the natural numbers into an additive monoid with a one (`Nat.cast`).
 -- where `simp [map_zero]` should suffice. (Similarly for `map_one`.)
 -- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/simp.20regression.20with.20MonoidHomClass
 
+open Additive Multiplicative
+
 variable {α β : Type*}
 
 namespace Nat
@@ -43,29 +46,49 @@ theorem coe_castAddMonoidHom [AddMonoidWithOne α] : (castAddMonoidHom α : ℕ 
   rfl
 #align nat.coe_cast_add_monoid_hom Nat.coe_castAddMonoidHom
 
-@[simp, norm_cast]
-theorem cast_mul [NonAssocSemiring α] (m n : ℕ) : ((m * n : ℕ) : α) = m * n := by
+section NonAssocSemiring
+variable [NonAssocSemiring α]
+
+@[simp, norm_cast] lemma cast_mul (m n : ℕ) : ((m * n : ℕ) : α) = m * n := by
   induction n <;> simp [mul_succ, mul_add, *]
 #align nat.cast_mul Nat.cast_mul
 
+variable (α) in
 /-- `Nat.cast : ℕ → α` as a `RingHom` -/
-def castRingHom (α : Type*) [NonAssocSemiring α] : ℕ →+* α :=
+def castRingHom : ℕ →+* α :=
   { castAddMonoidHom α with toFun := Nat.cast, map_one' := cast_one, map_mul' := cast_mul }
 #align nat.cast_ring_hom Nat.castRingHom
 
-@[simp]
-theorem coe_castRingHom [NonAssocSemiring α] : (castRingHom α : ℕ → α) = Nat.cast :=
-  rfl
+@[simp, norm_cast] lemma coe_castRingHom : (castRingHom α : ℕ → α) = Nat.cast := rfl
 #align nat.coe_cast_ring_hom Nat.coe_castRingHom
 
+lemma _root_.nsmul_eq_mul' (a : α) (n : ℕ) : n • a = a * n := by
+  induction' n with n ih <;> [rw [zero_nsmul, Nat.cast_zero, mul_zero];
+    rw [succ_nsmul', ih, Nat.cast_succ, mul_add, mul_one]]
+#align nsmul_eq_mul' nsmul_eq_mul'
 
+@[simp] lemma _root_.nsmul_eq_mul (n : ℕ) (a : α) : n • a = n * a := by
+  induction' n with n ih <;> [rw [zero_nsmul, Nat.cast_zero, zero_mul];
+    rw [succ_nsmul', ih, Nat.cast_succ, add_mul, one_mul]]
+#align nsmul_eq_mul nsmul_eq_mul
 
-theorem coe_nat_dvd [Semiring α] {m n : ℕ} (h : m ∣ n) : (m : α) ∣ (n : α) :=
-  map_dvd (Nat.castRingHom α) h
+end NonAssocSemiring
+
+section Semiring
+variable [Semiring α] {m n : ℕ}
+
+@[simp, norm_cast]
+lemma cast_pow (m : ℕ) : ∀ n : ℕ, ↑(m ^ n) = (m ^ n : α)
+  | 0 => by simp
+  | n + 1 => by rw [_root_.pow_succ', _root_.pow_succ', cast_mul, cast_pow m n]
+#align nat.cast_pow Nat.cast_pow
+
+lemma coe_nat_dvd (h : m ∣ n) : (m : α) ∣ (n : α) := map_dvd (Nat.castRingHom α) h
 #align nat.coe_nat_dvd Nat.coe_nat_dvd
 
 alias _root_.Dvd.dvd.natCast := coe_nat_dvd
 
+end Semiring
 end Nat
 
 section AddMonoidHomClass
@@ -100,6 +123,14 @@ theorem map_natCast' {A} [AddMonoidWithOne A] [AddMonoidHomClass F A B] (f : F) 
   | n + 1 => by
     rw [Nat.cast_add, map_add, Nat.cast_add, map_natCast' f h n, Nat.cast_one, h, Nat.cast_one]
 #align map_nat_cast' map_natCast'
+
+@[simp] lemma nsmul_one {A} [AddMonoidWithOne A] : ∀ n : ℕ, n • (1 : A) = n := by
+  let f : ℕ →+ A :=
+  { toFun := fun n ↦ n • (1 : A)
+    map_zero' := zero_nsmul _
+    map_add' := add_nsmul _ }
+  exact eq_natCast' f $ by simp
+#align nsmul_one nsmul_one
 
 end AddMonoidHomClass
 
@@ -179,6 +210,92 @@ theorem Nat.castRingHom_nat : Nat.castRingHom ℕ = RingHom.id ℕ :=
 instance Nat.uniqueRingHom {R : Type*} [NonAssocSemiring R] : Unique (ℕ →+* R) where
   default := Nat.castRingHom R
   uniq := RingHom.eq_natCast'
+
+section Monoid
+variable (α) [Monoid α] [AddMonoid α]
+
+/-- Additive homomorphisms from `ℕ` are defined by the image of `1`. -/
+def multiplesHom : α ≃ (ℕ →+ α) where
+  toFun x :=
+  { toFun := fun n ↦ n • x
+    map_zero' := zero_nsmul x
+    map_add' := fun _ _ ↦ add_nsmul _ _ _ }
+  invFun f := f 1
+  left_inv := one_nsmul
+  right_inv f := AddMonoidHom.ext_nat <| one_nsmul (f 1)
+#align multiples_hom multiplesHom
+
+/-- Monoid homomorphisms from `Multiplicative ℕ` are defined by the image
+of `Multiplicative.ofAdd 1`. -/
+@[to_additive existing multiplesHom]
+def powersHom : α ≃ (Multiplicative ℕ →* α) :=
+  Additive.ofMul.trans <| (multiplesHom _).trans <| AddMonoidHom.toMultiplicative''
+
+variable {α}
+
+-- TODO: can `to_additive` generate the following lemmas automatically?
+
+lemma multiplesHom_apply (x : α) (n : ℕ) : multiplesHom α x n = n • x := rfl
+#align multiples_hom_apply multiplesHom_apply
+
+@[to_additive existing (attr := simp) multiplesHom_apply]
+lemma powersHom_apply (x : α) (n : Multiplicative ℕ) :
+    powersHom α x n = x ^ Multiplicative.toAdd n := rfl
+#align powers_hom_apply powersHom_apply
+
+lemma multiplesHom_symm_apply (f : ℕ →+ α) : (multiplesHom α).symm f = f 1 := rfl
+#align multiples_hom_symm_apply multiplesHom_symm_apply
+
+@[to_additive existing (attr := simp) multiplesHom_symm_apply]
+lemma powersHom_symm_apply (f : Multiplicative ℕ →* α) :
+    (powersHom α).symm f = f (Multiplicative.ofAdd 1) := rfl
+#align powers_hom_symm_apply powersHom_symm_apply
+
+lemma MonoidHom.apply_mnat (f : Multiplicative ℕ →* α) (n : Multiplicative ℕ) :
+    f n = f (Multiplicative.ofAdd 1) ^ (Multiplicative.toAdd n) := by
+  rw [← powersHom_symm_apply, ← powersHom_apply, Equiv.apply_symm_apply]
+#align monoid_hom.apply_mnat MonoidHom.apply_mnat
+
+@[ext]
+lemma MonoidHom.ext_mnat ⦃f g : Multiplicative ℕ →* α⦄
+    (h : f (Multiplicative.ofAdd 1) = g (Multiplicative.ofAdd 1)) : f = g :=
+  MonoidHom.ext fun n ↦ by rw [f.apply_mnat, g.apply_mnat, h]
+#align monoid_hom.ext_mnat MonoidHom.ext_mnat
+
+lemma AddMonoidHom.apply_nat (f : ℕ →+ α) (n : ℕ) : f n = n • f 1 := by
+  rw [← multiplesHom_symm_apply, ← multiplesHom_apply, Equiv.apply_symm_apply]
+#align add_monoid_hom.apply_nat AddMonoidHom.apply_nat
+
+end Monoid
+
+section CommMonoid
+variable (α) [CommMonoid α] [AddCommMonoid α]
+
+/-- If `α` is commutative, `multiplesHom` is an additive equivalence. -/
+def multiplesAddHom : α ≃+ (ℕ →+ α) :=
+  { multiplesHom α with map_add' := fun a b ↦ AddMonoidHom.ext fun n ↦ by simp [nsmul_add] }
+#align multiples_add_hom multiplesAddHom
+
+/-- If `α` is commutative, `powersHom` is a multiplicative equivalence. -/
+def powersMulHom : α ≃* (Multiplicative ℕ →* α) :=
+  { powersHom α with map_mul' := fun a b ↦ MonoidHom.ext fun n ↦ by simp [mul_pow] }
+#align powers_mul_hom powersMulHom
+
+@[simp] lemma multiplesAddHom_apply (x : α) (n : ℕ) : multiplesAddHom α x n = n • x := rfl
+#align multiples_add_hom_apply multiplesAddHom_apply
+
+@[simp]
+lemma powersMulHom_apply (x : α) (n : Multiplicative ℕ) : powersMulHom α x n = x ^ toAdd n := rfl
+#align powers_mul_hom_apply powersMulHom_apply
+
+@[simp] lemma multiplesAddHom_symm_apply (f : ℕ →+ α) : (multiplesAddHom α).symm f = f 1 := rfl
+#align multiples_add_hom_symm_apply multiplesAddHom_symm_apply
+
+@[simp] lemma powersMulHom_symm_apply (f : Multiplicative ℕ →* α) :
+    (powersMulHom α).symm f = f (ofAdd 1) := rfl
+#align powers_mul_hom_symm_apply powersMulHom_symm_apply
+
+end CommMonoid
 
 namespace Pi
 
