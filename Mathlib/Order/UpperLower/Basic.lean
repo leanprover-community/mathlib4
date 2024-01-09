@@ -208,23 +208,23 @@ lemma IsLowerSet.isUpperSet_preimage_coe (hs : IsLowerSet s) :
 
 lemma IsUpperSet.sdiff (hs : IsUpperSet s) (ht : ∀ b ∈ s, ∀ c ∈ t, b ≤ c → b ∈ t) :
     IsUpperSet (s \ t) :=
-  fun _b _c hbc hb ↦ ⟨hs hbc hb.1, fun hc ↦ hb.2 $ ht _ hb.1 _ hc hbc⟩
+  fun _b _c hbc hb ↦ ⟨hs hbc hb.1, fun hc ↦ hb.2 <| ht _ hb.1 _ hc hbc⟩
 
 lemma IsLowerSet.sdiff (hs : IsLowerSet s) (ht : ∀ b ∈ s, ∀ c ∈ t, c ≤ b → b ∈ t) :
     IsLowerSet (s \ t) :=
-  fun _b _c hcb hb ↦ ⟨hs hcb hb.1, fun hc ↦ hb.2 $ ht _ hb.1 _ hc hcb⟩
+  fun _b _c hcb hb ↦ ⟨hs hcb hb.1, fun hc ↦ hb.2 <| ht _ hb.1 _ hc hcb⟩
 
 lemma IsUpperSet.sdiff_of_isLowerSet (hs : IsUpperSet s) (ht : IsLowerSet t) : IsUpperSet (s \ t) :=
-  hs.sdiff $ by aesop
+  hs.sdiff <| by aesop
 
 lemma IsLowerSet.sdiff_of_isUpperSet (hs : IsLowerSet s) (ht : IsUpperSet t) : IsLowerSet (s \ t) :=
-  hs.sdiff $ by aesop
+  hs.sdiff <| by aesop
 
 lemma IsUpperSet.erase (hs : IsUpperSet s) (has : ∀ b ∈ s, b ≤ a → b = a) : IsUpperSet (s \ {a}) :=
-  hs.sdiff $ by simpa using has
+  hs.sdiff <| by simpa using has
 
 lemma IsLowerSet.erase (hs : IsLowerSet s) (has : ∀ b ∈ s, a ≤ b → b = a) : IsLowerSet (s \ {a}) :=
-  hs.sdiff $ by simpa using has
+  hs.sdiff <| by simpa using has
 
 end LE
 
@@ -305,6 +305,12 @@ theorem isUpperSet_setOf : IsUpperSet { a | p a } ↔ Monotone p :=
 theorem isLowerSet_setOf : IsLowerSet { a | p a } ↔ Antitone p :=
   forall_swap
 #align is_lower_set_set_of isLowerSet_setOf
+
+lemma IsUpperSet.upperBounds_subset (hs : IsUpperSet s) : s.Nonempty → upperBounds s ⊆ s :=
+  fun ⟨_a, ha⟩ _b hb ↦ hs (hb ha) ha
+
+lemma IsLowerSet.lowerBounds_subset (hs : IsLowerSet s) : s.Nonempty → lowerBounds s ⊆ s :=
+  fun ⟨_a, ha⟩ _b hb ↦ hs (hb ha) ha
 
 section OrderTop
 
@@ -416,7 +422,7 @@ section LinearOrder
 variable [LinearOrder α] {s t : Set α}
 
 theorem IsUpperSet.total (hs : IsUpperSet s) (ht : IsUpperSet t) : s ⊆ t ∨ t ⊆ s := by
-  by_contra' h
+  by_contra! h
   simp_rw [Set.not_subset] at h
   obtain ⟨⟨a, has, hat⟩, b, hbt, hbs⟩ := h
   obtain hab | hba := le_total a b
@@ -1209,7 +1215,7 @@ section PartialOrder
 variable [PartialOrder α] {a b : α}
 
 nonrec lemma Ici_injective : Injective (Ici : α → UpperSet α) := fun _a _b hab ↦
-  Ici_injective $ congr_arg ((↑) : _ → Set α) hab
+  Ici_injective <| congr_arg ((↑) : _ → Set α) hab
 
 @[simp] lemma Ici_inj : Ici a = Ici b ↔ a = b := Ici_injective.eq_iff
 
@@ -1318,7 +1324,7 @@ section PartialOrder
 variable [PartialOrder α] {a b : α}
 
 nonrec lemma Iic_injective : Injective (Iic : α → LowerSet α) := fun _a _b hab ↦
-  Iic_injective $ congr_arg ((↑) : _ → Set α) hab
+  Iic_injective <| congr_arg ((↑) : _ → Set α) hab
 
 @[simp] lemma Iic_inj : Iic a = Iic b ↔ a = b := Iic_injective.eq_iff
 
@@ -1460,11 +1466,11 @@ theorem LowerSet.iSup_Iic (s : Set α) : ⨆ a ∈ s, LowerSet.Iic a = lowerClos
 #align lower_set.supr_Iic LowerSet.iSup_Iic
 
 @[simp] lemma lowerClosure_le {t : LowerSet α} : lowerClosure s ≤ t ↔ s ⊆ t :=
-  ⟨fun h ↦ subset_lowerClosure.trans $ LowerSet.coe_subset_coe.2 h,
+  ⟨fun h ↦ subset_lowerClosure.trans <| LowerSet.coe_subset_coe.2 h,
     fun h ↦ lowerClosure_min h t.lower⟩
 
 @[simp] lemma le_upperClosure {s : UpperSet α} : s ≤ upperClosure t ↔ t ⊆ s :=
-  ⟨fun h ↦ subset_upperClosure.trans $ UpperSet.coe_subset_coe.2 h,
+  ⟨fun h ↦ subset_upperClosure.trans <| UpperSet.coe_subset_coe.2 h,
     fun h ↦ upperClosure_min h s.upper⟩
 
 theorem gc_upperClosure_coe :
@@ -1618,7 +1624,7 @@ protected alias ⟨BddBelow.of_upperClosure, BddBelow.upperClosure⟩ := bddBelo
     Disjoint ↑(upperClosure s) t ↔ Disjoint s t := by
   refine ⟨Disjoint.mono_left subset_upperClosure, ?_⟩
   simp only [disjoint_left, SetLike.mem_coe, mem_upperClosure, forall_exists_index, and_imp]
-  exact fun h a b hb hba ha ↦ h hb $ ht hba ha
+  exact fun h a b hb hba ha ↦ h hb <| ht hba ha
 
 @[simp] lemma IsLowerSet.disjoint_upperClosure_right (hs : IsLowerSet s) :
     Disjoint s (upperClosure t) ↔ Disjoint s t := by
@@ -1660,9 +1666,9 @@ lemma sdiff_le_left : s.sdiff t ≤ s := diff_subset _ _
 lemma erase_le : s.erase a ≤ s := diff_subset _ _
 
 @[simp] protected lemma sdiff_eq_left : s.sdiff t = s ↔ Disjoint ↑s t := by
-  simp [←SetLike.coe_set_eq]
+  simp [← SetLike.coe_set_eq]
 
-@[simp] lemma erase_eq : s.erase a = s ↔ a ∉ s := by rw [←sdiff_singleton]; simp [-sdiff_singleton]
+@[simp] lemma erase_eq : s.erase a = s ↔ a ∉ s := by rw [← sdiff_singleton]; simp [-sdiff_singleton]
 
 @[simp] lemma sdiff_lt_left : s.sdiff t < s ↔ ¬ Disjoint ↑s t :=
   sdiff_le_left.lt_iff_ne.trans LowerSet.sdiff_eq_left.not
@@ -1677,18 +1683,18 @@ lemma erase_le : s.erase a ≤ s := diff_subset _ _
 
 lemma sdiff_sup_lowerClosure (hts : t ⊆ s) (hst : ∀ b ∈ s, ∀ c ∈ t, c ≤ b → b ∈ t) :
     s.sdiff t ⊔ lowerClosure t = s := by
-  refine' le_antisymm (sup_le sdiff_le_left $ lowerClosure_le.2 hts) fun a ha ↦ _
+  refine' le_antisymm (sup_le sdiff_le_left <| lowerClosure_le.2 hts) fun a ha ↦ _
   obtain hat | hat := em (a ∈ t)
   · exact subset_union_right _ _ (subset_lowerClosure hat)
   · refine subset_union_left _ _ ⟨ha, ?_⟩
     rintro ⟨b, hb, hba⟩
-    exact hat $ hst _ ha _ hb hba
+    exact hat <| hst _ ha _ hb hba
 
 lemma lowerClosure_sup_sdiff (hts : t ⊆ s) (hst : ∀ b ∈ s, ∀ c ∈ t, c ≤ b → b ∈ t) :
     lowerClosure t ⊔ s.sdiff t = s := by rw [sup_comm, sdiff_sup_lowerClosure hts hst]
 
 lemma erase_sup_Iic (ha : a ∈ s) (has : ∀ b ∈ s, a ≤ b → b = a) : s.erase a ⊔ Iic a = s := by
-  rw [←lowerClosure_singleton, ←sdiff_singleton, sdiff_sup_lowerClosure] <;> simpa
+  rw [← lowerClosure_singleton, ← sdiff_singleton, sdiff_sup_lowerClosure] <;> simpa
 
 lemma Iic_sup_erase (ha : a ∈ s) (has : ∀ b ∈ s, a ≤ b → b = a) : Iic a ⊔ s.erase a = s := by
   rw [sup_comm, erase_sup_Iic ha has]
@@ -1721,9 +1727,9 @@ lemma le_sdiff_left : s ≤ s.sdiff t := diff_subset _ _
 lemma le_erase : s ≤ s.erase a := diff_subset _ _
 
 @[simp] protected lemma sdiff_eq_left : s.sdiff t = s ↔ Disjoint ↑s t := by
-  simp [←SetLike.coe_set_eq]
+  simp [← SetLike.coe_set_eq]
 
-@[simp] lemma erase_eq : s.erase a = s ↔ a ∉ s := by rw [←sdiff_singleton]; simp [-sdiff_singleton]
+@[simp] lemma erase_eq : s.erase a = s ↔ a ∉ s := by rw [← sdiff_singleton]; simp [-sdiff_singleton]
 
 @[simp] lemma lt_sdiff_left : s < s.sdiff t ↔ ¬ Disjoint ↑s t :=
   le_sdiff_left.gt_iff_ne.trans UpperSet.sdiff_eq_left.not
@@ -1738,18 +1744,18 @@ lemma le_erase : s ≤ s.erase a := diff_subset _ _
 
 lemma sdiff_inf_upperClosure (hts : t ⊆ s) (hst : ∀ b ∈ s, ∀ c ∈ t, b ≤ c → b ∈ t) :
     s.sdiff t ⊓ upperClosure t = s := by
-  refine' ge_antisymm (le_inf le_sdiff_left $ le_upperClosure.2 hts) fun a ha ↦ _
+  refine' ge_antisymm (le_inf le_sdiff_left <| le_upperClosure.2 hts) fun a ha ↦ _
   obtain hat | hat := em (a ∈ t)
   · exact subset_union_right _ _ (subset_upperClosure hat)
   · refine subset_union_left _ _ ⟨ha, ?_⟩
     rintro ⟨b, hb, hab⟩
-    exact hat $ hst _ ha _ hb hab
+    exact hat <| hst _ ha _ hb hab
 
 lemma upperClosure_inf_sdiff (hts : t ⊆ s) (hst : ∀ b ∈ s, ∀ c ∈ t, b ≤ c → b ∈ t) :
     upperClosure t ⊓ s.sdiff t = s := by rw [inf_comm, sdiff_inf_upperClosure hts hst]
 
 lemma erase_inf_Ici (ha : a ∈ s) (has : ∀ b ∈ s, b ≤ a → b = a) : s.erase a ⊓ Ici a = s := by
-  rw [←upperClosure_singleton, ←sdiff_singleton, sdiff_inf_upperClosure] <;> simpa
+  rw [← upperClosure_singleton, ← sdiff_singleton, sdiff_inf_upperClosure] <;> simpa
 
 lemma Ici_inf_erase (ha : a ∈ s) (has : ∀ b ∈ s, b ≤ a → b = a) : Ici a ⊓ s.erase a = s := by
   rw [inf_comm, erase_inf_Ici ha has]

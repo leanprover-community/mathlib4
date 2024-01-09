@@ -228,7 +228,7 @@ theorem mem_image_iff_bex {f : α → β} {s : Set α} {y : β} :
 #align set.mem_image_iff_bex Set.mem_image_iff_bex
 
 @[simp]
-theorem mem_image (f : α → β) (s : Set α) (y : β) : y ∈ f '' s ↔ ∃ x, x ∈ s ∧ f x = y :=
+theorem mem_image (f : α → β) (s : Set α) (y : β) : y ∈ f '' s ↔ ∃ x ∈ s, f x = y :=
   Iff.rfl
 #align set.mem_image Set.mem_image
 
@@ -290,10 +290,16 @@ theorem image_congr' {f g : α → β} {s : Set α} (h : ∀ x : α, f x = g x) 
   image_congr fun x _ => h x
 #align set.image_congr' Set.image_congr'
 
+@[gcongr]
+lemma image_mono (h : s ⊆ t) : f '' s ⊆ f '' t := by
+  rintro - ⟨a, ha, rfl⟩; exact mem_image_of_mem f (h ha)
+
 theorem image_comp (f : β → γ) (g : α → β) (a : Set α) : f ∘ g '' a = f '' (g '' a) :=
   Subset.antisymm (ball_image_of_ball fun _ ha => mem_image_of_mem _ <| mem_image_of_mem _ ha)
     (ball_image_of_ball <| ball_image_of_ball fun _ ha => mem_image_of_mem _ ha)
 #align set.image_comp Set.image_comp
+
+theorem image_comp_eq {g : β → γ} : image (g ∘ f) = image g ∘ image f := by ext; simp
 
 /-- A variant of `image_comp`, useful for rewriting -/
 theorem image_image (g : β → γ) (f : α → β) (s : Set α) : g '' (f '' s) = (fun x => g (f x)) '' s :=
@@ -391,6 +397,9 @@ theorem mem_compl_image [BooleanAlgebra α] (t : α) (S : Set α) :
   simp [← preimage_compl_eq_image_compl]
 #align set.mem_compl_image Set.mem_compl_image
 
+@[simp]
+theorem image_id_eq : image (id : α → α) = id := by ext; simp
+
 /-- A variant of `image_id` -/
 @[simp]
 theorem image_id' (s : Set α) : (fun x => x) '' s = s := by
@@ -400,6 +409,10 @@ theorem image_id' (s : Set α) : (fun x => x) '' s = s := by
 
 theorem image_id (s : Set α) : id '' s = s := by simp
 #align set.image_id Set.image_id
+
+lemma image_iterate_eq {f : α → α} {n : ℕ} : image (f^[n]) = (image f)^[n] := by
+  induction' n with n ih; · simp
+  rw [iterate_succ', iterate_succ',← ih, image_comp_eq]
 
 theorem compl_compl_image [BooleanAlgebra α] (S : Set α) :
     HasCompl.compl '' (HasCompl.compl '' S) = S := by
@@ -436,7 +449,7 @@ theorem mem_image_iff_of_inverse {f : α → β} {g : β → α} {b : β} {s : S
 #align set.mem_image_iff_of_inverse Set.mem_image_iff_of_inverse
 
 theorem image_compl_subset {f : α → β} {s : Set α} (H : Injective f) : f '' sᶜ ⊆ (f '' s)ᶜ :=
-  Disjoint.subset_compl_left <| by simp [disjoint_iff_inf_le, ←image_inter H]
+  Disjoint.subset_compl_left <| by simp [disjoint_iff_inf_le, ← image_inter H]
 #align set.image_compl_subset Set.image_compl_subset
 
 theorem subset_image_compl {f : α → β} {s : Set α} (H : Surjective f) : (f '' s)ᶜ ⊆ f '' sᶜ :=
@@ -478,9 +491,11 @@ theorem Nonempty.of_image {f : α → β} {s : Set α} : (f '' s).Nonempty → s
 #align set.nonempty.of_image Set.Nonempty.of_image
 
 @[simp]
-theorem nonempty_image_iff {f : α → β} {s : Set α} : (f '' s).Nonempty ↔ s.Nonempty :=
+theorem image_nonempty {f : α → β} {s : Set α} : (f '' s).Nonempty ↔ s.Nonempty :=
   ⟨Nonempty.of_image, fun h => h.image f⟩
-#align set.nonempty_image_iff Set.nonempty_image_iff
+#align set.nonempty_image_iff Set.image_nonempty
+
+@[deprecated] alias nonempty_image_iff := image_nonempty
 
 theorem Nonempty.preimage {s : Set β} (hs : s.Nonempty) {f : α → β} (hf : Surjective f) :
     (f ⁻¹' s).Nonempty :=
@@ -542,7 +557,7 @@ theorem image_preimage_inter (f : α → β) (s : Set α) (t : Set β) :
 @[simp]
 theorem image_inter_nonempty_iff {f : α → β} {s : Set α} {t : Set β} :
     (f '' s ∩ t).Nonempty ↔ (s ∩ f ⁻¹' t).Nonempty := by
-  rw [← image_inter_preimage, nonempty_image_iff]
+  rw [← image_inter_preimage, image_nonempty]
 #align set.image_inter_nonempty_iff Set.image_inter_nonempty_iff
 
 theorem image_diff_preimage {f : α → β} {s : Set α} {t : Set β} : f '' (s \ f ⁻¹' t) = f '' s \ t :=
@@ -1003,7 +1018,7 @@ theorem range_quotient_lift_on' {s : Setoid ι} (hf) :
 #align set.range_quotient_lift_on' Set.range_quotient_lift_on'
 
 instance canLift (c) (p) [CanLift α β c p] :
-    CanLift (Set α) (Set β) ((· '' ·) c) fun s => ∀ x ∈ s, p x where
+    CanLift (Set α) (Set β) (c '' ·) fun s => ∀ x ∈ s, p x where
   prf _ hs := subset_range_iff_exists_image_eq.mp fun x hx => CanLift.prf _ (hs x hx)
 #align set.can_lift Set.canLift
 
@@ -1324,7 +1339,7 @@ theorem Surjective.image_surjective (hf : Surjective f) : Surjective (image f) :
 
 @[simp]
 theorem Surjective.nonempty_preimage (hf : Surjective f) {s : Set β} :
-    (f ⁻¹' s).Nonempty ↔ s.Nonempty := by rw [← nonempty_image_iff, hf.image_preimage]
+    (f ⁻¹' s).Nonempty ↔ s.Nonempty := by rw [← image_nonempty, hf.image_preimage]
 #align function.surjective.nonempty_preimage Function.Surjective.nonempty_preimage
 
 theorem Injective.image_injective (hf : Injective f) : Injective (image f) := by
@@ -1481,7 +1496,7 @@ theorem forall_set_subtype {t : Set α} (p : Set α → Prop) :
 
 theorem preimage_coe_nonempty {s t : Set α} :
     (((↑) : s → α) ⁻¹' t).Nonempty ↔ (s ∩ t).Nonempty := by
-  rw [inter_comm, ← image_preimage_coe, nonempty_image_iff]
+  rw [inter_comm, ← image_preimage_coe, image_nonempty]
 #align subtype.preimage_coe_nonempty Subtype.preimage_coe_nonempty
 
 theorem preimage_coe_eq_empty {s t : Set α} : ((↑) : s → α) ⁻¹' t = ∅ ↔ s ∩ t = ∅ := by

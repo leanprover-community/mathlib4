@@ -3,11 +3,10 @@ Copyright (c) 2023 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-
-import Mathlib.Algebra.Algebra.NonUnitalSubalgebra
-import Mathlib.Algebra.Star.Subalgebra
 import Mathlib.Algebra.Algebra.Unitization
 import Mathlib.Algebra.Star.NonUnitalSubalgebra
+import Mathlib.Algebra.Star.Subalgebra
+import Mathlib.GroupTheory.GroupAction.Ring
 
 /-!
 # Relating unital and non-unital substructures
@@ -131,7 +130,7 @@ theorem _root_.AlgHomClass.unitization_injective' {F R S A : Type*} [CommRing R]
     (hf : ∀ x : s, f x = x) : Function.Injective f := by
   refine' (injective_iff_map_eq_zero _).mpr fun x hx => _
   induction' x using Unitization.ind with r a
-  simp_rw [map_add, hf, ←Unitization.algebraMap_eq_inl, AlgHomClass.commutes] at hx
+  simp_rw [map_add, hf, ← Unitization.algebraMap_eq_inl, AlgHomClass.commutes] at hx
   rw [add_eq_zero_iff_eq_neg] at hx ⊢
   by_cases hr : r = 0
   · ext <;> simp [hr] at hx ⊢

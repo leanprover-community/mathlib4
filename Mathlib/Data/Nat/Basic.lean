@@ -3,10 +3,10 @@ Copyright (c) 2014 Floris van Doorn (c) 2016 Microsoft Corporation. All rights r
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
+import Mathlib.Algebra.Group.TypeTags
+import Mathlib.Algebra.Ring.Defs
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Order.Basic
-import Mathlib.Algebra.GroupWithZero.Defs
-import Mathlib.Algebra.Ring.Defs
 import Mathlib.Tactic.PushNeg
 import Mathlib.Tactic.Use
 
@@ -120,6 +120,18 @@ attribute [simp]
   Nat.not_lt_zero Nat.succ_ne_zero Nat.succ_ne_self Nat.zero_ne_one Nat.one_ne_zero
   -- Nat.zero_ne_bit1 Nat.bit1_ne_zero Nat.bit0_ne_one Nat.one_ne_bit0 Nat.bit0_ne_bit1
   -- Nat.bit1_ne_bit0
+
+section Multiplicative
+
+open Multiplicative
+
+lemma toAdd_pow (a : Multiplicative ℕ) (b : ℕ) : toAdd (a ^ b) = toAdd a * b := mul_comm _ _
+#align nat.to_add_pow Nat.toAdd_pow
+
+@[simp] lemma ofAdd_mul (a b : ℕ) : ofAdd (a * b) = ofAdd a ^ b := (toAdd_pow _ _).symm
+#align nat.of_add_mul Nat.ofAdd_mul
+
+end Multiplicative
 
 variable {m n k : ℕ}
 
@@ -560,21 +572,18 @@ theorem decreasingInduction_succ_left {P : ℕ → Sort*} (h : ∀ n, P (n + 1) 
 strictly below `(a,b)` to `P a b`, then we have `P n m` for all `n m : ℕ`.
 Note that for non-`Prop` output it is preferable to use the equation compiler directly if possible,
 since this produces equation lemmas. -/
+@[elab_as_elim]
 def strongSubRecursion {P : ℕ → ℕ → Sort*} (H : ∀ a b, (∀ x y, x < a → y < b → P x y) → P a b) :
     ∀ n m : ℕ, P n m
   | n, m => H n m fun x y _ _ => strongSubRecursion H x y
 #align nat.strong_sub_recursion Nat.strongSubRecursion
-
--- Porting note:
--- we can't put this on the definition itself because of
--- https://github.com/leanprover/lean4/issues/1900
-attribute [elab_as_elim] strongSubRecursion
 
 /-- Given `P : ℕ → ℕ → Sort*`, if we have `P i 0` and `P 0 i` for all `i : ℕ`,
 and for any `x y : ℕ` we can extend `P` from `(x,y+1)` and `(x+1,y)` to `(x+1,y+1)`
 then we have `P n m` for all `n m : ℕ`.
 Note that for non-`Prop` output it is preferable to use the equation compiler directly if possible,
 since this produces equation lemmas. -/
+@[elab_as_elim]
 def pincerRecursion {P : ℕ → ℕ → Sort*} (Ha0 : ∀ a : ℕ, P a 0) (H0b : ∀ b : ℕ, P 0 b)
     (H : ∀ x y : ℕ, P x y.succ → P x.succ y → P x.succ y.succ) : ∀ n m : ℕ, P n m
   | a, 0 => Ha0 a
@@ -582,11 +591,6 @@ def pincerRecursion {P : ℕ → ℕ → Sort*} (Ha0 : ∀ a : ℕ, P a 0) (H0b 
   | Nat.succ a, Nat.succ b => H _ _ (pincerRecursion Ha0 H0b H _ _) (pincerRecursion Ha0 H0b H _ _)
 termination_by pincerRecursion Ha0 Hab H n m => n + m
 #align nat.pincer_recursion Nat.pincerRecursion
-
--- Porting note:
--- we can't put this on the definition itself because of
--- https://github.com/leanprover/lean4/issues/1900
-attribute [elab_as_elim] pincerRecursion
 
 /-- Recursion starting at a non-zero number: given a map `C k → C (k+1)` for each `k ≥ n`,
 there is a map from `C n` to each `C m`, `n ≤ m`. -/
@@ -716,7 +720,7 @@ theorem div_mul_div_comm {l : ℕ} (hmn : n ∣ m) (hkl : l ∣ k) :
   rcases l.eq_zero_or_pos with rfl | hl
   · simp
   rw [Nat.mul_div_cancel_left _ hn, Nat.mul_div_cancel_left _ hl, mul_assoc n, Nat.mul_left_comm x,
-    ←mul_assoc n, Nat.mul_div_cancel_left _ (Nat.mul_pos hn hl)]
+    ← mul_assoc n, Nat.mul_div_cancel_left _ (Nat.mul_pos hn hl)]
 #align nat.div_mul_div_comm Nat.div_mul_div_comm
 
 protected theorem div_pow {a b c : ℕ} (h : a ∣ b) : (b / a) ^ c = b ^ c / a ^ c := by
@@ -725,7 +729,7 @@ protected theorem div_pow {a b c : ℕ} (h : a ∣ b) : (b / a) ^ c = b ^ c / a 
   rcases a.eq_zero_or_pos with rfl | ha
   · simp [Nat.zero_pow hc]
   refine (Nat.div_eq_of_eq_mul_right (pos_pow_of_pos c ha) ?_).symm
-  rw [←Nat.mul_pow, Nat.mul_div_cancel_left' h]
+  rw [← Nat.mul_pow, Nat.mul_div_cancel_left' h]
 
 /-! ### `mod`, `dvd` -/
 
@@ -740,6 +744,10 @@ theorem mod_eq_iff_lt {a b : ℕ} (h : b ≠ 0) : a % b = a ↔ a < b := by
 theorem mod_succ_eq_iff_lt {a b : ℕ} : a % b.succ = a ↔ a < b.succ :=
   mod_eq_iff_lt (succ_ne_zero _)
 #align nat.mod_succ_eq_iff_lt Nat.mod_succ_eq_iff_lt
+
+@[simp]
+theorem mod_succ (n : ℕ) : n % n.succ = n :=
+  Nat.mod_eq_of_lt (Nat.lt_succ_self _)
 
 -- Porting note `Nat.div_add_mod` is now in core.
 
@@ -778,11 +786,11 @@ protected theorem mul_dvd_mul_iff_right {a b c : ℕ} (hc : 0 < c) : a * c ∣ b
   exists_congr fun d => by rw [Nat.mul_right_comm, mul_left_inj' hc.ne']
 #align nat.mul_dvd_mul_iff_right Nat.mul_dvd_mul_iff_right
 
+#align nat.dvd_one Nat.dvd_one
+
 @[simp]
 theorem mod_mod_of_dvd (n : Nat) {m k : Nat} (h : m ∣ k) : n % k % m = n % m := by
-  conv =>
-  rhs
-  rw [← mod_add_div n k]
+  conv_rhs => rw [← mod_add_div n k]
   rcases h with ⟨t, rfl⟩
   rw [mul_assoc, add_mul_mod_self_left]
 #align nat.mod_mod_of_dvd Nat.mod_mod_of_dvd
@@ -811,7 +819,7 @@ theorem mul_dvd_of_dvd_div {a b c : ℕ} (hab : c ∣ b) (h : a ∣ b / c) : c *
   let ⟨d, hd⟩ := h1
   have h3 : b = a * d * c := Nat.eq_mul_of_div_eq_left hab hd
   -- Porting note: was `cc`
-  show ∃ d, b = c * a * d from ⟨d, by rwa [mul_comm, ←mul_assoc] at h3⟩
+  show ∃ d, b = c * a * d from ⟨d, by rwa [mul_comm, ← mul_assoc] at h3⟩
 #align nat.mul_dvd_of_dvd_div Nat.mul_dvd_of_dvd_div
 
 theorem eq_of_dvd_of_div_eq_one {a b : ℕ} (w : a ∣ b) (h : b / a = 1) : a = b := by
@@ -838,11 +846,12 @@ theorem lt_mul_div_succ (m : ℕ) {n : ℕ} (n0 : 0 < n) : m < n * (m / n + 1) :
   exact lt_succ_self _
 #align nat.lt_mul_div_succ Nat.lt_mul_div_succ
 
-theorem mul_add_mod (a b c : ℕ) : (a * b + c) % b = c % b := by simp [Nat.add_mod]
-#align nat.mul_add_mod Nat.mul_add_mod
+-- TODO: Std4 claimed this name but flipped the order of multiplication
+theorem mul_add_mod' (a b c : ℕ) : (a * b + c) % b = c % b := by rw [mul_comm, Nat.mul_add_mod]
+#align nat.mul_add_mod Nat.mul_add_mod'
 
 theorem mul_add_mod_of_lt {a b c : ℕ} (h : c < b) : (a * b + c) % b = c := by
-  rw [Nat.mul_add_mod, Nat.mod_eq_of_lt h]
+  rw [Nat.mul_add_mod', Nat.mod_eq_of_lt h]
 #align nat.mul_add_mod_of_lt Nat.mul_add_mod_of_lt
 
 theorem pred_eq_self_iff {n : ℕ} : n.pred = n ↔ n = 0 := by

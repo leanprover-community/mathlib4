@@ -293,9 +293,8 @@ def pseudoEmetricAux : PseudoEMetricSpace (PiLp p β) where
       calc
         (∑ i, edist (f i) (h i) ^ p.toReal) ^ (1 / p.toReal) ≤
             (∑ i, (edist (f i) (g i) + edist (g i) (h i)) ^ p.toReal) ^ (1 / p.toReal) := by
-          apply ENNReal.rpow_le_rpow _ (one_div_nonneg.2 <| zero_le_one.trans hp)
-          refine' Finset.sum_le_sum fun i _ => _
-          exact ENNReal.rpow_le_rpow (edist_triangle _ _ _) (zero_le_one.trans hp)
+          gcongr
+          apply edist_triangle
         _ ≤
             (∑ i, edist (f i) (g i) ^ p.toReal) ^ (1 / p.toReal) +
               (∑ i, edist (g i) (h i) ^ p.toReal) ^ (1 / p.toReal) :=
@@ -377,7 +376,7 @@ theorem lipschitzWith_equiv_aux : LipschitzWith 1 (WithLp.equiv p (∀ i, β i))
       edist (x i) (y i) = (edist (x i) (y i) ^ p.toReal) ^ (1 / p.toReal) := by
         simp [← ENNReal.rpow_mul, cancel, -one_div]
       _ ≤ (∑ i, edist (x i) (y i) ^ p.toReal) ^ (1 / p.toReal) := by
-        apply ENNReal.rpow_le_rpow _ (one_div_nonneg.2 <| zero_le_one.trans h)
+        gcongr
         exact Finset.single_le_sum (fun i _ => (bot_le : (0 : ℝ≥0∞) ≤ _)) (Finset.mem_univ i)
 #align pi_Lp.lipschitz_with_equiv_aux PiLp.lipschitzWith_equiv_aux
 
@@ -397,9 +396,7 @@ theorem antilipschitzWith_equiv_aux :
     calc
       (∑ i, edist (x i) (y i) ^ p.toReal) ^ (1 / p.toReal) ≤
           (∑ _i, edist (WithLp.equiv p _ x) (WithLp.equiv p _ y) ^ p.toReal) ^ (1 / p.toReal) := by
-        refine ENNReal.rpow_le_rpow ?_ nonneg
-        refine Finset.sum_le_sum fun i _ => ?_
-        apply ENNReal.rpow_le_rpow _ (le_of_lt pos)
+        gcongr with i
         exact Finset.le_sup (f := fun i => edist (x i) (y i)) (Finset.mem_univ i)
       _ =
           ((Fintype.card ι : ℝ≥0) ^ (1 / p.toReal) : ℝ≥0) *
@@ -628,9 +625,9 @@ instance normedSpace [∀ i, SeminormedAddCommGroup (β i)] [∀ i, NormedSpace 
         have smul_apply : ∀ i : ι, (c • f) i = c • (f i) := fun i => rfl
         simp only [norm_eq_sum (zero_lt_one.trans_le hp), norm_smul, Real.mul_rpow, norm_nonneg, ←
           Finset.mul_sum, smul_apply]
-        rw [mul_rpow (rpow_nonneg_of_nonneg (norm_nonneg _) _), ← rpow_mul (norm_nonneg _), this,
+        rw [mul_rpow (rpow_nonneg (norm_nonneg _) _), ← rpow_mul (norm_nonneg _), this,
           Real.rpow_one]
-        exact Finset.sum_nonneg fun i _ => rpow_nonneg_of_nonneg (norm_nonneg _) _ }
+        exact Finset.sum_nonneg fun i _ => rpow_nonneg (norm_nonneg _) _ }
 #align pi_Lp.normed_space PiLp.normedSpace
 
 /- Register simplification lemmas for the applications of `PiLp` elements, as the usual lemmas

@@ -93,7 +93,7 @@ theorem exists_continuous_snorm_sub_le_of_closed [μ.OuterRegular] (hp : p ≠ �
   have hsv : s ⊆ v := subset_inter hsu sV
   have hμv : μ v < ∞ := (measure_mono (inter_subset_right _ _)).trans_lt h'V
   obtain ⟨g, hgv, hgs, hg_range⟩ :=
-    exists_continuous_zero_one_of_closed (u_open.inter V_open).isClosed_compl s_closed
+    exists_continuous_zero_one_of_isClosed (u_open.inter V_open).isClosed_compl s_closed
       (disjoint_compl_left_iff.2 hsv)
   -- Multiply this by `c` to get a continuous approximation to the function `f`; the key point is
   -- that this is pointwise bounded by the indicator of the set `v \ s`, which has small measure.
@@ -208,7 +208,7 @@ theorem Memℒp.exists_hasCompactSupport_integral_rpow_sub_le
   rwa [(hf.sub g_mem).snorm_eq_integral_rpow_norm B ENNReal.coe_ne_top,
     ENNReal.ofReal_le_ofReal_iff I.le, one_div, ENNReal.toReal_ofReal hp.le,
     Real.rpow_le_rpow_iff _ hε.le (inv_pos.2 hp)] at hg
-  exact integral_nonneg fun x => Real.rpow_nonneg_of_nonneg (norm_nonneg _) _
+  exact integral_nonneg fun x => Real.rpow_nonneg (norm_nonneg _) _
 #align measure_theory.mem_ℒp.exists_has_compact_support_integral_rpow_sub_le MeasureTheory.Memℒp.exists_hasCompactSupport_integral_rpow_sub_le
 
 /-- In a locally compact space, any integrable function can be approximated by compactly supported
@@ -301,7 +301,7 @@ theorem Memℒp.exists_boundedContinuous_integral_rpow_sub_le [μ.WeaklyRegular]
   rwa [(hf.sub g_mem).snorm_eq_integral_rpow_norm B ENNReal.coe_ne_top,
     ENNReal.ofReal_le_ofReal_iff I.le, one_div, ENNReal.toReal_ofReal hp.le,
     Real.rpow_le_rpow_iff _ hε.le (inv_pos.2 hp)] at hg
-  exact integral_nonneg fun x => Real.rpow_nonneg_of_nonneg (norm_nonneg _) _
+  exact integral_nonneg fun x => Real.rpow_nonneg (norm_nonneg _) _
 #align measure_theory.mem_ℒp.exists_bounded_continuous_integral_rpow_sub_le MeasureTheory.Memℒp.exists_boundedContinuous_integral_rpow_sub_le
 
 /-- Any integrable function can be approximated by bounded continuous functions,

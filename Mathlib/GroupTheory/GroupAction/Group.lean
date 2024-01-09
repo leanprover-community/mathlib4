@@ -141,19 +141,19 @@ theorem Commute.smul_left_iff [Mul β] [SMulCommClass α β β] [IsScalarTower �
 #align commute.smul_left_iff Commute.smul_left_iff
 
 @[to_additive]
-protected theorem MulAction.bijective (g : α) : Function.Bijective ((· • ·) g : β → β) :=
+protected theorem MulAction.bijective (g : α) : Function.Bijective (g • · : β → β) :=
   (MulAction.toPerm g).bijective
 #align mul_action.bijective MulAction.bijective
 #align add_action.bijective AddAction.bijective
 
 @[to_additive]
-protected theorem MulAction.injective (g : α) : Function.Injective ((· • ·) g : β → β) :=
+protected theorem MulAction.injective (g : α) : Function.Injective (g • · : β → β) :=
   (MulAction.bijective g).injective
 #align mul_action.injective MulAction.injective
 #align add_action.injective AddAction.injective
 
 @[to_additive]
-protected theorem MulAction.surjective (g : α) : Function.Surjective ((· • ·) g : β → β) :=
+protected theorem MulAction.surjective (g : α) : Function.Surjective (g • · : β → β) :=
   (MulAction.bijective g).surjective
 #align mul_action.surjective MulAction.surjective
 #align add_action.surjective AddAction.surjective
@@ -218,15 +218,22 @@ theorem Commute.smul_left_iff₀ [Mul β] [SMulCommClass α β β] [IsScalarTowe
   Commute.smul_left_iff (Units.mk0 c hc)
 #align commute.smul_left_iff₀ Commute.smul_left_iff₀
 
-protected theorem MulAction.bijective₀ (ha : a ≠ 0) : Function.Bijective ((· • ·) a : β → β) :=
+/-- Right scalar multiplication as an order isomorphism. -/
+@[simps] def Equiv.smulRight (ha : a ≠ 0) : β ≃ β where
+  toFun b := a • b
+  invFun b := a⁻¹ • b
+  left_inv := inv_smul_smul₀ ha
+  right_inv := smul_inv_smul₀ ha
+
+protected theorem MulAction.bijective₀ (ha : a ≠ 0) : Function.Bijective (a • · : β → β) :=
   MulAction.bijective <| Units.mk0 a ha
 #align mul_action.bijective₀ MulAction.bijective₀
 
-protected theorem MulAction.injective₀ (ha : a ≠ 0) : Function.Injective ((· • ·) a : β → β) :=
+protected theorem MulAction.injective₀ (ha : a ≠ 0) : Function.Injective (a • · : β → β) :=
   (MulAction.bijective₀ ha).injective
 #align mul_action.injective₀ MulAction.injective₀
 
-protected theorem MulAction.surjective₀ (ha : a ≠ 0) : Function.Surjective ((· • ·) a : β → β) :=
+protected theorem MulAction.surjective₀ (ha : a ≠ 0) : Function.Surjective (a • · : β → β) :=
   (MulAction.bijective₀ ha).surjective
 #align mul_action.surjective₀ MulAction.surjective₀
 
@@ -286,20 +293,6 @@ theorem smul_ne_zero_iff_ne (a : α) {x : β} : a • x ≠ 0 ↔ x ≠ 0 :=
 #align smul_ne_zero_iff_ne smul_ne_zero_iff_ne
 
 end Group
-
-section Gwz
-
-variable [GroupWithZero α] [AddMonoid β] [DistribMulAction α β]
-
-theorem smul_eq_zero_iff_eq' {a : α} (ha : a ≠ 0) {x : β} : a • x = 0 ↔ x = 0 :=
-  show Units.mk0 a ha • x = 0 ↔ x = 0 from smul_eq_zero_iff_eq _
-#align smul_eq_zero_iff_eq' smul_eq_zero_iff_eq'
-
-theorem smul_ne_zero_iff_ne' {a : α} (ha : a ≠ 0) {x : β} : a • x ≠ 0 ↔ x ≠ 0 :=
-  show Units.mk0 a ha • x ≠ 0 ↔ x ≠ 0 from smul_ne_zero_iff_ne _
-#align smul_ne_zero_iff_ne' smul_ne_zero_iff_ne'
-
-end Gwz
 
 end DistribMulAction
 

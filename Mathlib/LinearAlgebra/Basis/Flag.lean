@@ -85,20 +85,20 @@ section DivisionRing
 
 variable {K V : Type*} [DivisionRing K] [AddCommGroup V] [Module K V] {n : ℕ}
 
-theorem flag_covby (b : Basis (Fin n) K V) (i : Fin n) :
+theorem flag_covBy (b : Basis (Fin n) K V) (i : Fin n) :
     b.flag i.castSucc ⋖ b.flag i.succ := by
   rw [flag_succ]
-  apply covby_span_singleton_sup
+  apply covBy_span_singleton_sup
   simp
 
-theorem flag_wcovby (b : Basis (Fin n) K V) (i : Fin n) :
+theorem flag_wcovBy (b : Basis (Fin n) K V) (i : Fin n) :
     b.flag i.castSucc ⩿ b.flag i.succ :=
-  (b.flag_covby i).wcovby
+  (b.flag_covBy i).wcovBy
 
 /-- Range of `Basis.flag` as a `Flag`. -/
 @[simps!]
 def toFlag (b : Basis (Fin n) K V) : Flag (Submodule K V) :=
-  .rangeFin b.flag b.flag_zero b.flag_last b.flag_wcovby
+  .rangeFin b.flag b.flag_zero b.flag_last b.flag_wcovBy
 
 @[simp]
 theorem mem_toFlag (b : Basis (Fin n) K V) {p : Submodule K V} : p ∈ b.toFlag ↔ ∃ k, b.flag k = p :=

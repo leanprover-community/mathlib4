@@ -149,7 +149,7 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.expand_eq_C Polynomial.expand_eq_C
 
 theorem natDegree_expand (p : ℕ) (f : R[X]) : (expand R p f).natDegree = f.natDegree * p := by
-  cases' p.eq_zero_or_pos with hp hp
+  rcases p.eq_zero_or_pos with hp | hp
   · rw [hp, coe_expand, pow_zero, mul_zero, ← C_1, eval₂_hom, natDegree_C]
   by_cases hf : f = 0
   · rw [hf, AlgHom.map_zero, natDegree_zero, zero_mul]
@@ -170,9 +170,14 @@ theorem natDegree_expand (p : ℕ) (f : R[X]) : (expand R p f).natDegree = f.nat
     exact mt leadingCoeff_eq_zero.1 hf
 #align polynomial.nat_degree_expand Polynomial.natDegree_expand
 
-theorem Monic.expand {p : ℕ} {f : R[X]} (hp : 0 < p) (h : f.Monic) : (expand R p f).Monic := by
-  rw [Monic.def, Polynomial.leadingCoeff, natDegree_expand, coeff_expand hp]
-  simp [hp, h]
+theorem leadingCoeff_expand {p : ℕ} {f : R[X]} (hp : 0 < p) :
+    (expand R p f).leadingCoeff = f.leadingCoeff := by
+  simp_rw [leadingCoeff, natDegree_expand, coeff_expand_mul hp]
+
+theorem monic_expand_iff {p : ℕ} {f : R[X]} (hp : 0 < p) : (expand R p f).Monic ↔ f.Monic := by
+  simp only [Monic, leadingCoeff_expand hp]
+
+alias ⟨_, Monic.expand⟩ := monic_expand_iff
 #align polynomial.monic.expand Polynomial.Monic.expand
 
 theorem map_expand {p : ℕ} {f : R →+* S} {q : R[X]} :

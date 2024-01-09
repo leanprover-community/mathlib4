@@ -5,7 +5,6 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Data.Finite.Defs
-import Mathlib.Logic.Equiv.Defs
 import Mathlib.Logic.Nontrivial.Basic
 
 #align_import algebra.group.type_tags from "leanprover-community/mathlib"@"2e0975f6a25dd3fbfb9e41556a77f075f6269748"
@@ -142,13 +141,13 @@ instance [h : DecidableEq α] : DecidableEq (Multiplicative α) := h
 
 instance [h : DecidableEq α] : DecidableEq (Additive α) := h
 
-instance instNontrivialAdditive [Nontrivial α] : Nontrivial (Additive α) :=
+instance Additive.instNontrivial [Nontrivial α] : Nontrivial (Additive α) :=
   ofMul.injective.nontrivial
-#align additive.nontrivial instNontrivialAdditive
+#align additive.nontrivial Additive.instNontrivial
 
-instance instNontrivialMultiplicative [Nontrivial α] : Nontrivial (Multiplicative α) :=
+instance Multiplicative.instNontrivial [Nontrivial α] : Nontrivial (Multiplicative α) :=
   ofAdd.injective.nontrivial
-#align multiplicative.nontrivial instNontrivialMultiplicative
+#align multiplicative.nontrivial Multiplicative.instNontrivial
 
 instance Additive.add [Mul α] : Add (Additive α) where
   add x y := ofMul (toMul x * toMul y)

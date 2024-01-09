@@ -170,6 +170,24 @@ def lapply (a : α) : (α →₀ M) →ₗ[R] M :=
   { Finsupp.applyAddHom a with map_smul' := fun _ _ => rfl }
 #align finsupp.lapply Finsupp.lapply
 
+section CompatibleSMul
+
+variable (R S M N ι : Type*)
+variable [Semiring S] [AddCommMonoid M] [AddCommMonoid N] [Module S M] [Module S N]
+
+instance _root_.LinearMap.CompatibleSMul.finsupp_dom [SMulZeroClass R M] [DistribSMul R N]
+    [LinearMap.CompatibleSMul M N R S] : LinearMap.CompatibleSMul (ι →₀ M) N R S where
+  map_smul f r m := by
+    conv_rhs => rw [← sum_single m, map_finsupp_sum, smul_sum]
+    erw [← sum_single (r • m), sum_mapRange_index single_zero, map_finsupp_sum]
+    congr; ext i m; exact (f.comp <| lsingle i).map_smul_of_tower r m
+
+instance _root_.LinearMap.CompatibleSMul.finsupp_cod [SMul R M] [SMulZeroClass R N]
+    [LinearMap.CompatibleSMul M N R S] : LinearMap.CompatibleSMul M (ι →₀ N) R S where
+  map_smul f r m := by ext i; apply ((lapply i).comp f).map_smul_of_tower
+
+end CompatibleSMul
+
 /-- Forget that a function is finitely supported.
 
 This is the linear version of `Finsupp.toFun`. -/
@@ -212,6 +230,13 @@ theorem lsingle_apply (a : α) (b : M) : (lsingle a : M →ₗ[R] α →₀ M) b
 theorem lapply_apply (a : α) (f : α →₀ M) : (lapply a : (α →₀ M) →ₗ[R] M) f = f a :=
   rfl
 #align finsupp.lapply_apply Finsupp.lapply_apply
+
+@[simp]
+theorem lapply_comp_lsingle_same (a : α) : lapply a ∘ₗ lsingle a = (.id : M →ₗ[R] M) := by ext; simp
+
+@[simp]
+theorem lapply_comp_lsingle_of_ne (a a' : α) (h : a ≠ a') :
+    lapply a ∘ₗ lsingle a' = (0 : M →ₗ[R] M) := by ext; simp [h.symm]
 
 @[simp]
 theorem ker_lsingle (a : α) : ker (lsingle a : M →ₗ[R] α →₀ M) = ⊥ :=
@@ -288,7 +313,7 @@ theorem mem_supported {s : Set α} (p : α →₀ M) : p ∈ supported M R s ↔
 #align finsupp.mem_supported Finsupp.mem_supported
 
 theorem mem_supported' {s : Set α} (p : α →₀ M) :
-    p ∈ supported M R s ↔ ∀ (x) (_ : x ∉ s), p x = 0 := by
+    p ∈ supported M R s ↔ ∀ x ∉ s, p x = 0 := by
   haveI := Classical.decPred fun x : α => x ∈ s; simp [mem_supported, Set.subset_def, not_imp_comm]
 #align finsupp.mem_supported' Finsupp.mem_supported'
 
@@ -467,6 +492,9 @@ theorem lsum_single (f : α → M →ₗ[R] N) (i : α) (m : M) :
   Finsupp.sum_single_index (f i).map_zero
 #align finsupp.lsum_single Finsupp.lsum_single
 
+@[simp] theorem lsum_comp_lsingle (f : α → M →ₗ[R] N) (i : α) :
+    Finsupp.lsum S f ∘ₗ lsingle i = f i := by ext; simp
+
 theorem lsum_symm_apply (f : (α →₀ M) →ₗ[R] N) (x : α) : (lsum S).symm f x = f.comp (lsingle x) :=
   rfl
 #align finsupp.lsum_symm_apply Finsupp.lsum_symm_apply
@@ -580,7 +608,7 @@ theorem lmapDomain_supported (f : α → α') (s : Set α) :
 #align finsupp.lmap_domain_supported Finsupp.lmapDomain_supported
 
 theorem lmapDomain_disjoint_ker (f : α → α') {s : Set α}
-    (H : ∀ (a) (_ : a ∈ s) (b) (_ : b ∈ s), f a = f b → a = b) :
+    (H : ∀ a ∈ s, ∀ b ∈ s, f a = f b → a = b) :
     Disjoint (supported M R s) (ker (lmapDomain M R f)) := by
   rw [disjoint_iff_inf_le]
   rintro l ⟨h₁, h₂⟩
@@ -826,7 +854,7 @@ variable {α} {M} {v}
 
 theorem totalOn_range (s : Set α) : LinearMap.range (Finsupp.totalOn α M R v s) = ⊤ := by
   rw [Finsupp.totalOn, LinearMap.range_eq_map, LinearMap.map_codRestrict,
-    ←LinearMap.range_le_iff_comap, range_subtype, Submodule.map_top, LinearMap.range_comp,
+    ← LinearMap.range_le_iff_comap, range_subtype, Submodule.map_top, LinearMap.range_comp,
     range_subtype]
   exact (span_image_eq_map_total _ _).le
 #align finsupp.total_on_range Finsupp.totalOn_range

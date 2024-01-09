@@ -233,13 +233,13 @@ theorem hom_apply {K L M N : ModuleCat.{u} R} (f : K ⟶ L) (g : M ⟶ N) (k : K
 @[simp]
 theorem whiskerLeft_apply (L : ModuleCat.{u} R) {M N : ModuleCat.{u} R} (f : M ⟶ N)
     (l : L) (m : M) :
-      (L ◁ f) (l ⊗ₜ m) = l ⊗ₜ f m :=
+    (L ◁ f) (l ⊗ₜ m) = l ⊗ₜ f m :=
   rfl
 
 @[simp]
 theorem whiskerRight_apply {L M : ModuleCat.{u} R} (f : L ⟶ M) (N : ModuleCat.{u} R)
     (l : L) (n : N) :
-      (f ▷ N) (l ⊗ₜ n) = f l ⊗ₜ n :=
+    (f ▷ N) (l ⊗ₜ n) = f l ⊗ₜ n :=
   rfl
 
 @[simp]

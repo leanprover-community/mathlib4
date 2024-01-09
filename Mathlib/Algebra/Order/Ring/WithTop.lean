@@ -75,7 +75,7 @@ theorem mul_lt_top [LT α] {a b : WithTop α} (ha : a ≠ ⊤) (hb : b ≠ ⊤) 
 #align with_top.mul_lt_top WithTop.mul_lt_top
 
 instance noZeroDivisors [NoZeroDivisors α] : NoZeroDivisors (WithTop α) := by
-  refine ⟨fun h₁ => Decidable.by_contradiction <| fun h₂ => ?_⟩
+  refine ⟨fun h₁ => Decidable.by_contradiction fun h₂ => ?_⟩
   rw [mul_def, if_neg h₂] at h₁
   rcases Option.mem_map₂_iff.1 h₁ with ⟨a, b, (rfl : _ = _), (rfl : _ = _), hab⟩
   exact h₂ ((eq_zero_or_eq_zero_of_mul_eq_zero hab).imp (congr_arg some) (congr_arg some))
@@ -240,7 +240,6 @@ theorem bot_mul {a : WithBot α} (h : a ≠ 0) : ⊥ * a = ⊥ :=
   WithTop.top_mul h
 #align with_bot.bot_mul WithBot.bot_mul
 
-@[simp]
 theorem bot_mul_bot : (⊥ * ⊥ : WithBot α) = ⊥ :=
   WithTop.top_mul_top
 #align with_bot.bot_mul_bot WithBot.bot_mul_bot
@@ -392,7 +391,7 @@ instance [MulZeroClass α] [Preorder α] [MulPosReflectLT α] : MulPosReflectLT 
     norm_cast at x0
     exact lt_of_mul_lt_mul_right h x0 ⟩
 
-instance [MulZeroClass α] [Preorder α] [PosMulMonoRev α] : PosMulMonoRev (WithBot α) :=
+instance [MulZeroClass α] [Preorder α] [PosMulReflectLE α] : PosMulReflectLE (WithBot α) :=
   ⟨by
     intro ⟨x, x0⟩ a b h
     simp only [Subtype.coe_mk] at h
@@ -406,7 +405,7 @@ instance [MulZeroClass α] [Preorder α] [PosMulMonoRev α] : PosMulMonoRev (Wit
     norm_cast at x0
     exact le_of_mul_le_mul_left h x0 ⟩
 
-instance [MulZeroClass α] [Preorder α] [MulPosMonoRev α] : MulPosMonoRev (WithBot α) :=
+instance [MulZeroClass α] [Preorder α] [MulPosReflectLE α] : MulPosReflectLE (WithBot α) :=
   ⟨by
     intro ⟨x, x0⟩ a b h
     simp only [Subtype.coe_mk] at h

@@ -148,7 +148,7 @@ instance coequalizer_π_app_isLocalRingHom
   have := ι_comp_coequalizerComparison f.1 g.1 SheafedSpace.forgetToPresheafedSpace
   rw [← PreservesCoequalizer.iso_hom] at this
   erw [SheafedSpace.congr_app this.symm (op U)]
-  rw [PresheafedSpace.comp_c_app, ←PresheafedSpace.colimitPresheafObjIsoComponentwiseLimit_hom_π]
+  rw [PresheafedSpace.comp_c_app, ← PresheafedSpace.colimitPresheafObjIsoComponentwiseLimit_hom_π]
   -- Porting note : this instance has to be manually added
   haveI : IsIso (PreservesCoequalizer.iso SheafedSpace.forgetToPresheafedSpace f.val g.val).hom.c :=
     PresheafedSpace.c_isIso_of_iso _
@@ -215,7 +215,7 @@ theorem imageBasicOpen_image_preimage :
 
 theorem imageBasicOpen_image_open :
     IsOpen ((coequalizer.π f.1 g.1).base '' (imageBasicOpen f g U s).1) := by
-  rw [←(TopCat.homeoOfIso (PreservesCoequalizer.iso (SheafedSpace.forget _) f.1
+  rw [← (TopCat.homeoOfIso (PreservesCoequalizer.iso (SheafedSpace.forget _) f.1
     g.1)).isOpen_preimage, TopCat.coequalizer_isOpen_iff, ← Set.preimage_comp]
   erw [← coe_comp]
   rw [PreservesCoequalizer.iso_hom, ι_comp_coequalizerComparison]

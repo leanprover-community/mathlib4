@@ -3,7 +3,7 @@ Copyright (c) 2020 Alexander Bentkamp, Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Sébastien Gouëzel, Eric Wieser
 -/
-import Mathlib.Algebra.Order.SMul
+import Mathlib.Algebra.Order.Module.OrderedSMul
 import Mathlib.Data.Complex.Cardinality
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.FieldTheory.Tower
@@ -50,6 +50,8 @@ open ComplexConjugate
 
 variable {R : Type*} {S : Type*}
 
+attribute [local ext] Complex.ext
+
 -- Test that the `SMul ℚ ℂ` instance is correct.
 example : (Complex.instSMulRealComplex : SMul ℚ ℂ) = (Algebra.toSMul : SMul ℚ ℂ) := rfl
 
@@ -73,7 +75,7 @@ instance distribSMul [DistribSMul R ℝ] : DistribSMul R ℂ where
 instance [Semiring R] [DistribMulAction R ℝ] : DistribMulAction R ℂ :=
   { Complex.distribSMul, Complex.mulAction with }
 
-instance [Semiring R] [Module R ℝ] : Module R ℂ where
+instance instModule [Semiring R] [Module R ℝ] : Module R ℂ where
   add_smul r s x := by ext <;> simp [smul_re, smul_im, add_smul]
   zero_smul r := by ext <;> simp [smul_re, smul_im, zero_smul]
 
@@ -177,10 +179,20 @@ instance (priority := 900) Module.complexToReal (E : Type*) [AddCommGroup E] [Mo
   RestrictScalars.module ℝ ℂ E
 #align module.complex_to_real Module.complexToReal
 
-instance Module.real_complex_tower (E : Type*) [AddCommGroup E] [Module ℂ E] :
-    IsScalarTower ℝ ℂ E :=
-  RestrictScalars.isScalarTower ℝ ℂ E
-#align module.real_complex_tower Module.real_complex_tower
+/- Register as an instance (with low priority) the fact that a complex algebra is also a real
+algebra. -/
+instance (priority := 900) Algebra.complexToReal {A : Type*} [Semiring A] [Algebra ℂ A] :
+    Algebra ℝ A :=
+  RestrictScalars.algebra ℝ ℂ A
+
+-- try to make sure we're not introducing diamonds.
+example : Prod.algebra ℝ ℂ ℂ = (Prod.algebra ℂ ℂ ℂ).complexToReal := rfl
+example {ι : Type*} [Fintype ι] :
+    Pi.algebra (R := ℝ) ι (fun _ ↦ ℂ) = (Pi.algebra (R := ℂ) ι (fun _ ↦ ℂ)).complexToReal :=
+  rfl
+example {A : Type*} [Ring A] [inst : Algebra ℂ A] :
+    (inst.complexToReal).toModule = (inst.toModule).complexToReal :=
+  rfl
 
 @[simp, norm_cast]
 theorem Complex.coe_smul {E : Type*} [AddCommGroup E] [Module ℂ E] (x : ℝ) (y : E) :
@@ -194,6 +206,16 @@ instance (priority := 900) SMulCommClass.complexToReal {M E : Type*} [AddCommGro
     [SMul M E] [SMulCommClass ℂ M E] : SMulCommClass ℝ M E where
   smul_comm r _ _ := (smul_comm (r : ℂ) _ _ : _)
 #align smul_comm_class.complex_to_real SMulCommClass.complexToReal
+
+/-- The scalar action of `ℝ` on a `ℂ`-module `E` induced by `Module.complexToReal` associates with
+another scalar action of `M` on `E` whenever the action of `ℂ` associates with the action of `M`. -/
+instance IsScalarTower.complexToReal {M E : Type*} [AddCommGroup M] [Module ℂ M] [AddCommGroup E]
+    [Module ℂ E] [SMul M E] [IsScalarTower ℂ M E] : IsScalarTower ℝ M E where
+  smul_assoc r _ _ := (smul_assoc (r : ℂ) _ _ : _)
+#align module.real_complex_tower IsScalarTower.complexToReal
+
+-- check that the following instance is implied by the one above.
+example (E : Type*) [AddCommGroup E] [Module ℂ E] : IsScalarTower ℝ ℂ E := inferInstance
 
 instance (priority := 100) FiniteDimensional.complexToReal (E : Type*) [AddCommGroup E]
     [Module ℂ E] [FiniteDimensional ℂ E] : FiniteDimensional ℝ E :=
@@ -461,7 +483,7 @@ theorem imaginaryPart_I_smul (a : A) : ℑ (I • a) = ℜ a := by
   -- Porting note: was
   -- simp [smul_comm I, smul_smul I]
   rw [realPart_apply_coe, imaginaryPart_apply_coe, smul_comm]
-  simp [←smul_assoc]
+  simp [← smul_assoc]
 set_option linter.uppercaseLean3 false in
 #align imaginary_part_I_smul imaginaryPart_I_smul
 
@@ -527,7 +549,7 @@ open Submodule
 
 lemma span_selfAdjoint : span ℂ (selfAdjoint A : Set A) = ⊤ := by
   refine eq_top_iff'.mpr fun x ↦ ?_
-  rw [←realPart_add_I_smul_imaginaryPart x]
+  rw [← realPart_add_I_smul_imaginaryPart x]
   exact add_mem (subset_span (ℜ x).property) <|
     SMulMemClass.smul_mem _ <| subset_span (ℑ x).property
 
@@ -548,7 +570,7 @@ lemma Complex.coe_selfAdjointEquiv (z : selfAdjoint ℂ) :
 
 @[simp]
 lemma realPart_ofReal (r : ℝ) : (ℜ (r : ℂ) : ℂ) = r := by
-  rw [realPart_apply_coe, star_def, conj_ofReal, ←two_smul ℝ (r : ℂ)]
+  rw [realPart_apply_coe, star_def, conj_ofReal, ← two_smul ℝ (r : ℂ)]
   simp
 
 @[simp]
@@ -558,8 +580,8 @@ lemma imaginaryPart_ofReal (r : ℝ) : ℑ (r : ℂ) = 0 := by
 lemma Complex.coe_realPart (z : ℂ) : (ℜ z : ℂ) = z.re := calc
   (ℜ z : ℂ) = _    := by congrm (ℜ $((re_add_im z).symm))
   _          = z.re := by
-    rw [map_add, AddSubmonoid.coe_add, mul_comm, ←smul_eq_mul, realPart_I_smul]
-    simp [conj_ofReal, ←two_mul]
+    rw [map_add, AddSubmonoid.coe_add, mul_comm, ← smul_eq_mul, realPart_I_smul]
+    simp [conj_ofReal, ← two_mul]
 end RealImaginaryPart
 
 section Rational

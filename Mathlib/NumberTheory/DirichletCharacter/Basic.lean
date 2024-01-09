@@ -4,10 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ashvni Narayanan, Moritz Firsching, Michael Stoll
 -/
 import Mathlib.Algebra.Periodic
-import Mathlib.Data.ZMod.Algebra
-import Mathlib.NumberTheory.LegendreSymbol.MulCharacter
-import Mathlib.Data.ZMod.Algebra
 import Mathlib.Data.ZMod.Units
+import Mathlib.NumberTheory.LegendreSymbol.MulCharacter
 
 /-!
 # Dirichlet Characters
@@ -25,7 +23,6 @@ Main definitions:
 
 ## TODO
 
-- even, odd
 - add
   `lemma unitsMap_surjective {n m : ℕ} (h : n ∣ m) (hm : m ≠ 0) : Function.Surjective (unitsMap h)`
   and then
@@ -224,5 +221,58 @@ lemma primitiveCharacter_one (hn : n ≠ 0) :
   rw [eq_one_iff_conductor_eq_one <| (@conductor_one R _ _ hn) ▸ Nat.one_ne_zero,
       (isPrimitive_def _).1 (1 : DirichletCharacter R n).primitiveCharacter_isPrimitive,
       conductor_one hn]
+
+/-- Dirichlet character associated to multiplication of Dirichlet characters,
+after changing both levels to the same -/
+noncomputable def mul {m : ℕ} (χ₁ : DirichletCharacter R n) (χ₂ : DirichletCharacter R m) :
+    DirichletCharacter R
+      (Nat.lcm n m) :=
+  changeLevel (Nat.dvd_lcm_left n m) χ₁ * changeLevel (Nat.dvd_lcm_right n m) χ₂
+
+/-- Primitive character associated to multiplication of Dirichlet characters,
+after changing both levels to the same -/
+noncomputable def primitive_mul {m : ℕ} (χ₁ : DirichletCharacter R n)
+    (χ₂ : DirichletCharacter R m) : DirichletCharacter R (mul χ₁ χ₂).conductor :=
+  primitiveCharacter (mul χ₁ χ₂)
+
+lemma mul_def {n m : ℕ} {χ : DirichletCharacter R n} {ψ : DirichletCharacter R m} :
+    χ.primitive_mul ψ = primitiveCharacter _ :=
+  rfl
+
+namespace isPrimitive
+lemma primitive_mul {m : ℕ} (ψ : DirichletCharacter R m) : (primitive_mul χ ψ).isPrimitive :=
+  primitiveCharacter_isPrimitive _
+end isPrimitive
+
+variable {S : Type} [CommRing S] {m : ℕ} (ψ : DirichletCharacter S m)
+
+/-- A Dirichlet character is odd if its value at -1 is -1. -/
+def Odd : Prop := ψ (-1) = -1
+
+/-- A Dirichlet character is even if its value at -1 is 1. -/
+def Even : Prop := ψ (-1) = 1
+
+lemma even_or_odd [NoZeroDivisors S] : ψ.Even ∨ ψ.Odd := by
+  suffices : ψ (-1) ^ 2 = 1
+  · convert sq_eq_one_iff.mp this
+  · rw [← map_pow _, neg_one_sq, map_one]
+
+lemma Odd.toUnitHom_eval_neg_one (hψ : ψ.Odd) : ψ.toUnitHom (-1) = -1 := by
+  rw [← Units.eq_iff, MulChar.coe_toUnitHom]
+  exact hψ
+
+lemma Even.toUnitHom_eval_neg_one (hψ : ψ.Even) : ψ.toUnitHom (-1) = 1 := by
+  rw [← Units.eq_iff, MulChar.coe_toUnitHom]
+  exact hψ
+
+lemma Odd.eval_neg (x : ZMod m) (hψ : ψ.Odd) : ψ (- x) = - ψ x := by
+  rw [Odd] at hψ
+  rw [← neg_one_mul, map_mul]
+  simp [hψ]
+
+lemma Even.eval_neg (x : ZMod m) (hψ : ψ.Even) : ψ (- x) = ψ x := by
+  rw [Even] at hψ
+  rw [← neg_one_mul, map_mul]
+  simp [hψ]
 
 end DirichletCharacter
