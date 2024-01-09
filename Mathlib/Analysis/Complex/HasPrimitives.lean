@@ -44,12 +44,12 @@ open scoped Interval
 
 namespace Asymptotics
 
--- TO DO: move to `Mathlib.Topology.Basic` near `ContinuousAt.tendsto`
+-- TO DO: move to `Mathlib.Analysis.Asymptotics.Asymptotics` near `isLittleO_one_iff`
 /-- `f : α → E` is `ContinuousAt` `x` iff the map `y ↦ f y - f x` is littleO of 1 as `y → x`. -/
 theorem continuousAt_iff_isLittleO {α : Type*} {E : Type*} [NormedRing E] [NormOneClass E]
     [TopologicalSpace α] {f : α → E} {x : α} :
     (ContinuousAt f x) ↔ (fun (y : α) ↦ f y - f x) =o[𝓝 x] (fun (_ : α) ↦ (1 : E)) := by
-  convert (Asymptotics.isLittleO_one_iff (f' := fun (y : α) => f y - f x) (l := 𝓝 x) (F := E)).symm
+  convert (Asymptotics.isLittleO_one_iff (f' := fun (y : α) ↦ f y - f x) (l := 𝓝 x) (F := E)).symm
   exact tendsto_sub_nhds_zero_iff.symm
 
 end Asymptotics
@@ -57,7 +57,7 @@ end Asymptotics
 namespace Set
 
 -- TO DO: move to `Mathlib.Data.Intervals.UnorderedInterval`
-def uIoo {α : Type*} [LinearOrder α]  : α → α → Set α := fun a b => Ioo (a ⊓ b) (a ⊔ b)
+def uIoo {α : Type*} [LinearOrder α]  : α → α → Set α := fun a b ↦ Ioo (a ⊓ b) (a ⊔ b)
 
 -- TO DO: move to `Mathlib.Data.Intervals.UnorderedInterval`
 theorem uIoo_comm {α : Type*} [LinearOrder α] (a : α) (b : α) :
@@ -75,7 +75,7 @@ section Asymptotics
 
 /-- As `w → z`, `w.re - z.re` is big-O of `w - z`. -/
 lemma re_isBigO {z : ℂ} :
-  (fun (w : ℂ) => w.re - z.re) =O[𝓝 z] fun w => w - z := by
+  (fun (w : ℂ) ↦ w.re - z.re) =O[𝓝 z] fun w ↦ w - z := by
   rw [Asymptotics.isBigO_iff]
   use 1
   filter_upwards
@@ -86,7 +86,7 @@ lemma re_isBigO {z : ℂ} :
 
 /-- As `w → z`, `w.im - z.im` is big-O of `w - z`. -/
 lemma im_isBigO {z : ℂ} :
-  (fun (w : ℂ) => w.im - z.im) =O[𝓝 z] fun w => w - z := by
+  (fun (w : ℂ) ↦ w.im - z.im) =O[𝓝 z] fun w ↦ w - z := by
   rw [Asymptotics.isBigO_iff]
   use 1
   filter_upwards
@@ -123,6 +123,13 @@ lemma reProdIm_subset_iff' {s s₁ t t₁ : Set ℝ} :
   convert prod_subset_prod_iff
   exact reProdIm_subset_iff
 
+end reProdIm
+
+section Rectangle
+
+/-- A `Rectangle` is an axis-parallel rectangle with corners `z` and `w`. -/
+def Rectangle (z w : ℂ) : Set ℂ := [[z.re, w.re]] ×ℂ [[z.im, w.im]]
+
 /-- The axis-parallel complex rectangle with opposite corners `z` and `w` is complex product
   of two intervals, which is also the convex hull of the four corners. -/
 lemma segment_reProdIm_segment_eq_convexHull (z w : ℂ) :
@@ -131,13 +138,6 @@ lemma segment_reProdIm_segment_eq_convexHull (z w : ℂ) :
     ← preimage_equivRealProd_prod, insert_prod, singleton_prod, image_pair,
     insert_union, ← insert_eq, preimage_equiv_eq_image_symm, image_insert_eq, image_singleton,
     equivRealProd_symm_apply, re_add_im]
-
-end reProdIm
-
-section Rectangle
-
-/-- A `Rectangle` is an axis-parallel rectangle with corners `z` and `w`. -/
-def Rectangle (z w : ℂ) : Set ℂ := [[z.re, w.re]] ×ℂ [[z.im, w.im]]
 
 /-- If the four corners of a rectangle are contained in a convex set `U`, then the whole
   rectangle is. -/
@@ -167,7 +167,7 @@ section Segments
 
 /-- A real segment `[a₁, a₂]` translated by `b * I` is the complex line segment. -/
 lemma horizontalSegment_eq (a₁ a₂ b : ℝ) :
-    (fun x => ↑x + ↑b * I) '' [[a₁, a₂]] = [[a₁, a₂]] ×ℂ {b} := by
+    (fun (x : ℝ) ↦ x + b * I) '' [[a₁, a₂]] = [[a₁, a₂]] ×ℂ {b} := by
   rw [← preimage_equivRealProd_prod]
   ext x
   constructor
@@ -180,7 +180,7 @@ lemma horizontalSegment_eq (a₁ a₂ b : ℝ) :
 
 /-- A vertical segment `[b₁, b₂]` translated by `a` is the complex line segment. -/
 lemma verticalSegment_eq (a b₁ b₂ : ℝ) :
-    (fun y => ↑a + ↑y * I) '' [[b₁, b₂]] = {a} ×ℂ [[b₁, b₂]] := by
+    (fun (y : ℝ) ↦ a + y * I) '' [[b₁, b₂]] = {a} ×ℂ [[b₁, b₂]] := by
   rw [← preimage_equivRealProd_prod]
   ext x
   constructor
@@ -236,14 +236,14 @@ lemma mem_closedBall_aux {c : ℂ} {r : ℝ} {z : ℂ} (z_in_ball : z ∈ closed
   cases y_in_I <;> nlinarith
 
 lemma mem_ball_of_map_re_aux {c : ℂ} {r : ℝ} {a₁ a₂ b : ℝ} (ha₁ : a₁ + b * I ∈ ball c r)
-    (ha₂ : a₂ + b * I ∈ ball c r) : (fun (x : ℝ) => x + b * I) '' [[a₁, a₂]] ⊆ ball c r := by
+    (ha₂ : a₂ + b * I ∈ ball c r) : (fun (x : ℝ) ↦ x + b * I) '' [[a₁, a₂]] ⊆ ball c r := by
   convert rectangle_in_convex (convex_ball c r) ha₁ ha₂ ?_ ?_ using 1 <;>
     simp only [add_re, ofReal_re, mul_re, I_re, mul_zero, ofReal_im, I_im, mul_one, sub_self,
       add_zero, add_im, mul_im, zero_add, ha₁, ha₂, Rectangle]
   simp [horizontalSegment_eq a₁ a₂ b]
 
 lemma mem_ball_of_map_im_aux {c : ℂ} {r : ℝ} {a b₁ b₂ : ℝ} (hb₁ : a + b₁ * I ∈ ball c r)
-    (hb₂ : a + b₂ * I ∈ ball c r) : (fun (y : ℝ) => a + y * I) '' [[b₁, b₂]] ⊆ ball c r := by
+    (hb₂ : a + b₂ * I ∈ ball c r) : (fun (y : ℝ) ↦ a + y * I) '' [[b₁, b₂]] ⊆ ball c r := by
   convert rectangle_in_convex (convex_ball c r) hb₁ hb₂ ?_ ?_ using 1 <;>
   simp only [add_re, ofReal_re, mul_re, I_re, mul_zero, ofReal_im, I_im, mul_one, sub_self,
     add_zero, add_im, mul_im, zero_add, hb₁, hb₂, Rectangle]
@@ -265,37 +265,37 @@ end Complex
 section ContinuousOn_Aux
 /- Auxiliary lemmata about continuity of various occurring functions -/
 
-lemma ContinuousOn.re_aux_1 {c : ℂ} {r : ℝ} {f : ℂ → ℂ} (hf : ContinuousOn f (ball c r)) {z : ℂ}
-    (hz : z ∈ ball c r) : ContinuousOn (fun (x : ℝ) => f (x + z.im * I))
-                            (Ioo (z.re - (r - dist z c)) (z.re + (r - dist z c))) := by
+variable {c : ℂ} {r : ℝ} {f : ℂ → ℂ} (hf : ContinuousOn f (ball c r))
+
+lemma ContinuousOn.re_aux_1 {z : ℂ} (hz : z ∈ ball c r) :
+    ContinuousOn (fun (x : ℝ) ↦ f (x + z.im * I))
+      (Ioo (z.re - (r - dist z c)) (z.re + (r - dist z c))) := by
   apply (hf.comp ((continuous_add_right _).comp continuous_ofReal).continuousOn)
   intro x hx
   change x + z.im * I ∈ ball c r
   exact mem_ball_re_aux' hz hx
 
-lemma ContinuousOn.re_aux_2 {c : ℂ} {r : ℝ} {f : ℂ → ℂ}
-    (f_cont : ContinuousOn f (ball c r)) {a₁ a₂ b : ℝ} (ha₁ : a₁ + b * I ∈ ball c r)
-    (ha₂ : a₂ + b * I ∈ ball c r) : ContinuousOn (fun x => f (↑x + ↑b * I)) [[a₁, a₂]] := by
-  convert ContinuousOn.comp (g := f) (f := fun (x : ℝ) => (x : ℂ) + b * I) (s := uIcc a₁ a₂)
-    (t := (fun (x : ℝ) => (x : ℂ) + b * I) '' (uIcc a₁ a₂)) ?_ ?_ (mapsTo_image _ _)
-  · apply f_cont.mono (mem_ball_of_map_re_aux ha₁ ha₂)
+lemma ContinuousOn.re_aux_2 {a₁ a₂ b : ℝ} (ha₁ : a₁ + b * I ∈ ball c r)
+    (ha₂ : a₂ + b * I ∈ ball c r) : ContinuousOn (fun (x : ℝ) ↦ f (x + b * I)) [[a₁, a₂]] := by
+  convert ContinuousOn.comp (g := f) (f := fun (x : ℝ) ↦ (x : ℂ) + b * I) (s := uIcc a₁ a₂)
+    (t := (fun (x : ℝ) ↦ (x : ℂ) + b * I) '' (uIcc a₁ a₂)) ?_ ?_ (mapsTo_image _ _)
+  · apply hf.mono (mem_ball_of_map_re_aux ha₁ ha₂)
   · exact Continuous.continuousOn (Continuous.comp (continuous_add_right _) continuous_ofReal)
 
-lemma ContinuousOn.im_aux_1 {c : ℂ} {r : ℝ} {f : ℂ → ℂ} (hf : ContinuousOn f (ball c r)) {z : ℂ}
+lemma ContinuousOn.im_aux_1 {z : ℂ}
     (hz : z ∈ ball c r) {w : ℂ} (hw : w ∈ ball z (r - dist z c)) :
-    ContinuousOn (fun (y : ℝ) => f (w.re + y * I)) [[z.im, w.im]] := by
-  convert ContinuousOn.comp (g := f) (f := fun (y : ℝ) => (w.re : ℂ) + y * I) (s := uIcc z.im w.im)
-    (t := (fun (y : ℝ) => (w.re : ℂ) + y * I) '' (uIcc z.im w.im)) ?_ ?_ (mapsTo_image _ _)
+    ContinuousOn (fun (y : ℝ) ↦ f (w.re + y * I)) [[z.im, w.im]] := by
+  convert ContinuousOn.comp (g := f) (f := fun (y : ℝ) ↦ (w.re : ℂ) + y * I) (s := uIcc z.im w.im)
+    (t := (fun (y : ℝ) ↦ (w.re : ℂ) + y * I) '' (uIcc z.im w.im)) ?_ ?_ (mapsTo_image _ _)
   · apply hf.mono (mem_ball_of_map_im_aux' hz hw)
   · apply Continuous.continuousOn
     exact ((continuous_add_left _).comp (continuous_mul_right _)).comp continuous_ofReal
 
-lemma ContinuousOn.im_aux {c : ℂ} {r : ℝ} {f : ℂ → ℂ}
-    (f_cont : ContinuousOn f (ball c r)) {a b₁ b₂ : ℝ} (hb₁ : a + b₁ * I ∈ ball c r)
-    (hb₂ : a + b₂ * I ∈ ball c r) : ContinuousOn (fun (y : ℝ) => f (a + y * I)) [[b₁, b₂]] := by
-  convert ContinuousOn.comp (g := f) (f := fun (y : ℝ) => (a : ℂ) + y * I) (s := uIcc b₁ b₂)
-    (t := (fun (y : ℝ) => (a : ℂ) + y * I) '' (uIcc b₁ b₂)) ?_ ?_ (mapsTo_image _ _)
-  · apply f_cont.mono (mem_ball_of_map_im_aux hb₁ hb₂)
+lemma ContinuousOn.im_aux {a b₁ b₂ : ℝ} (hb₁ : a + b₁ * I ∈ ball c r)
+    (hb₂ : a + b₂ * I ∈ ball c r) : ContinuousOn (fun (y : ℝ) ↦ f (a + y * I)) [[b₁, b₂]] := by
+  convert ContinuousOn.comp (g := f) (f := fun (y : ℝ) ↦ (a : ℂ) + y * I) (s := uIcc b₁ b₂)
+    (t := (fun (y : ℝ) ↦ (a : ℂ) + y * I) '' (uIcc b₁ b₂)) ?_ ?_ (mapsTo_image _ _)
+  · apply hf.mono (mem_ball_of_map_im_aux hb₁ hb₂)
   · apply Continuous.continuousOn
     exact ((continuous_add_left _).comp (continuous_mul_right _)).comp continuous_ofReal
 
@@ -327,12 +327,15 @@ def VanishesOnRectanglesInDisc (c : ℂ) (r : ℝ) (f : ℂ → ℂ) : Prop :=
 
 end MainDefinitions
 
+section WedgeIntDeriv
+
+variable {c : ℂ} {r : ℝ} {f : ℂ → ℂ} (f_cont : ContinuousOn f (ball c r)) {z : ℂ}
+  (hz : z ∈ ball c r)
+
 /-- If a function `f` `VanishesOnRectanglesInDisc` of center `c`, then, for all `w` in a
   neighborhood of `z`, the wedge integral from `c` to `w` minus the wedge integral from `c` to `z`
   is equal to the wedge integral from `z` to `w`. -/
-lemma VanishesOnRectanglesInDisc.diff_of_wedges {c : ℂ} {r : ℝ} {z : ℂ}
-    (hz : z ∈ ball c r) {f : ℂ → ℂ} (f_cont : ContinuousOn f (ball c r))
-    (hf : VanishesOnRectanglesInDisc c r f) :
+lemma VanishesOnRectanglesInDisc.diff_of_wedges (hf : VanishesOnRectanglesInDisc c r f) :
     ∀ᶠ (w : ℂ) in 𝓝 z,
       WedgeInt c w f - WedgeInt c z f = WedgeInt z w f := by
   have hr : 0 < r := pos_of_mem_ball hz
@@ -352,11 +355,11 @@ lemma VanishesOnRectanglesInDisc.diff_of_wedges {c : ℂ} {r : ℝ} {z : ℂ}
   let intVII := ∫ x : ℝ in z.re..w.re, f (x + c.im * I)
   let intVIII := I • ∫ y : ℝ in c.im..z.im, f (w.re + y * I)
   have integrableHoriz : ∀ a₁ a₂ b : ℝ, a₁ + b * I ∈ ball c r → a₂ + b * I ∈ ball c r
-    → IntervalIntegrable (fun x => f (x + b * I)) MeasureTheory.volume a₁ a₂ :=
+    → IntervalIntegrable (fun x ↦ f (x + b * I)) MeasureTheory.volume a₁ a₂ :=
       fun a₁ a₂ b ha₁ ha₂ ↦
         ContinuousOn.intervalIntegrable (f_cont.re_aux_2 ha₁ ha₂)
   have integrableVert : ∀ a b₁ b₂ : ℝ, a + b₁ * I ∈ ball c r → a + b₂ * I ∈ ball c r
-    → IntervalIntegrable (fun y => f (a + y * I)) MeasureTheory.volume b₁ b₂
+    → IntervalIntegrable (fun y ↦ f (a + y * I)) MeasureTheory.volume b₁ b₂
   · intro a b₁ b₂ hb₁ hb₂
     apply ContinuousOn.intervalIntegrable (f_cont.im_aux hb₁ hb₂)
   have intIdecomp : intI = intIII + intVII
@@ -388,8 +391,7 @@ lemma VanishesOnRectanglesInDisc.diff_of_wedges {c : ℂ} {r : ℝ} {z : ℂ}
 
 /-- The integral of a continuous function `f` from `z` to `x + z.im * I` is equal to
   `(x - z.re) * f z` up to `o(x - z.re)`. -/
-lemma deriv_of_wedgeInt_re' {c : ℂ} {r : ℝ} {f : ℂ → ℂ} (hf : ContinuousOn f (ball c r))
-  {z : ℂ} (hz : z ∈ ball c r) :
+lemma deriv_of_wedgeInt_re' :
   (fun (x : ℝ) ↦ (∫ t in z.re..x, f (t + z.im * I)) - (x - z.re) * f z)
     =o[𝓝 z.re] (fun (x : ℝ)  ↦ x - z.re) := by
   let r₁ := r - dist z c
@@ -397,14 +399,14 @@ lemma deriv_of_wedgeInt_re' {c : ℂ} {r : ℝ} {f : ℂ → ℂ} (hf : Continuo
   let s : Set ℝ := Ioo (z.re - r₁) (z.re + r₁)
   have zRe_mem_s : z.re ∈ s := by simp [mem_ball.mp hz]
   have s_open : IsOpen s := isOpen_Ioo
-  have f_contOn : ContinuousOn (fun (x : ℝ) => f (x + z.im * I)) s := hf.re_aux_1 hz
-  have int1 : IntervalIntegrable (fun (x : ℝ) => f (x + z.im * I)) MeasureTheory.volume z.re z.re
+  have f_contOn : ContinuousOn (fun (x : ℝ) ↦ f (x + z.im * I)) s := f_cont.re_aux_1 hz
+  have int1 : IntervalIntegrable (fun (x : ℝ) ↦ f (x + z.im * I)) MeasureTheory.volume z.re z.re
   · apply ContinuousOn.intervalIntegrable
     apply f_contOn.mono
     simp [mem_ball.mp hz]
-  have int2 : StronglyMeasurableAtFilter (fun (x : ℝ) => f (x + z.im * I)) (𝓝 z.re) :=
+  have int2 : StronglyMeasurableAtFilter (fun (x : ℝ) ↦ f (x + z.im * I)) (𝓝 z.re) :=
     ContinuousOn.stronglyMeasurableAtFilter s_open f_contOn _ zRe_mem_s
-  have int3 : ContinuousAt (fun (x : ℝ) => f (x + z.im * I)) z.re :=
+  have int3 : ContinuousAt (fun (x : ℝ) ↦ f (x + z.im * I)) z.re :=
     s_open.continuousOn_iff.mp f_contOn zRe_mem_s
   have := @intervalIntegral.integral_hasDerivAt_right (f := fun (x : ℝ) ↦ f (x + z.im * I))
     (a := z.re) (b := z.re) _ _ _ int1 int2 int3
@@ -417,13 +419,12 @@ lemma deriv_of_wedgeInt_re' {c : ℂ} {r : ℝ} {f : ℂ → ℂ} (hf : Continuo
 
 /- The horizontal integral of `f` from `z` to `z.re + w.im * I` is equal to `(w - z).re * f z`
   up to `o(w - z)`, as `w` tends to `z`. -/
-lemma deriv_of_wedgeInt_re {c : ℂ} {r : ℝ} {f : ℂ → ℂ} (hf : ContinuousOn f (ball c r))
-  {z : ℂ} (hz : z ∈ ball c r) :
+lemma deriv_of_wedgeInt_re :
   (fun (w : ℂ) ↦ (∫ x in z.re..w.re, f (x + z.im * I)) - ((w - z).re) * f z)
     =o[𝓝 z] (fun w ↦ w - z) := by
   have zReTendsTo : Filter.Tendsto (fun (w : ℂ) ↦ w.re) (𝓝 z) (𝓝 z.re) :=
     by apply Continuous.tendsto Complex.continuous_re
-  have := (deriv_of_wedgeInt_re' hf hz).comp_tendsto zReTendsTo
+  have := (deriv_of_wedgeInt_re' f_cont hz).comp_tendsto zReTendsTo
   have := this.trans_isBigO re_isBigO
   convert this using 2
   congr
@@ -431,12 +432,12 @@ lemma deriv_of_wedgeInt_re {c : ℂ} {r : ℝ} {f : ℂ → ℂ} (hf : Continuou
 
 /-- If `f` is continuous on a ball containing `z`, then the integral from `z.im` to `w.im` of
   `f (w.re + y * I)` is equal to `(w - z).im * f z` up to `o(w - z)`, as `w` tends to `z`. -/
-lemma deriv_of_wedgeInt_im' {c : ℂ} {r : ℝ} {f : ℂ → ℂ} (hf : ContinuousOn f (ball c r))
-  {z : ℂ} (hz : z ∈ ball c r) :
+lemma deriv_of_wedgeInt_im' :
   (fun w ↦ ∫ y in z.im..w.im, f (w.re + y * I) - f z)
     =o[𝓝 z] fun w ↦ w - z := by
   have : (fun w ↦ f w - f z) =o[𝓝 z] fun (_ : ℂ) ↦ (1 : ℂ)
-  · refine (Asymptotics.continuousAt_iff_isLittleO (f := f) (x := z)).mp ((hf z hz).continuousAt ?_)
+  · refine (Asymptotics.continuousAt_iff_isLittleO (f := f) (x := z)).mp
+      ((f_cont z hz).continuousAt ?_)
     exact (IsOpen.mem_nhds_iff isOpen_ball).mpr hz
   rw [Asymptotics.IsLittleO] at this ⊢
   intro ε ε_pos
@@ -454,37 +455,34 @@ lemma deriv_of_wedgeInt_im' {c : ℂ} {r : ℝ} {f : ℂ → ℂ} (hf : Continuo
 
 /--   The vertical integral of `f` from `w.re + z.im * I` to `w` is equal to `(w - z).im * f z`
   up to `o(w - z)`, as `w` tends to `z`. -/
-lemma deriv_of_wedgeInt_im {c : ℂ} {r : ℝ} {f : ℂ → ℂ} (hf : ContinuousOn f (ball c r))
-  {z : ℂ} (hz : z ∈ ball c r) :
+lemma deriv_of_wedgeInt_im :
   (fun w ↦ (∫ y in z.im..w.im, f (w.re + y * I)) - (w - z).im * f z)
     =o[𝓝 z] fun w ↦ w - z := by
   calc
     _ = (fun w:ℂ ↦ (∫ y in z.im..w.im, f (w.re + y * I)) - (∫ _ in z.im..w.im, f z)) :=
       by congr! 2; simp
     _ =ᶠ[𝓝 z] (fun w ↦ ∫ y in z.im..w.im, f (w.re + y * I) - f z) := ?_
-    _ =o[𝓝 z] fun w => w - z := deriv_of_wedgeInt_im' hf hz
+    _ =o[𝓝 z] fun w ↦ w - z := deriv_of_wedgeInt_im' f_cont hz
   let r₁ := r - dist z c
   have : 0 < r₁ := by simp only [mem_ball, gt_iff_lt] at hz ⊢; linarith
   filter_upwards [ball_mem_nhds z this]
   intro w hw
   rw [intervalIntegral.integral_sub ?_ continuousOn_const.intervalIntegrable]
-  exact (hf.im_aux_1 hz hw).intervalIntegrable
+  exact (f_cont.im_aux_1 hz hw).intervalIntegrable
 
 /-- The `WedgeInt` has derivative at `z` equal to `f z`. -/
-theorem deriv_of_wedgeInt {c : ℂ} {r : ℝ} {f : ℂ → ℂ}
-    (f_cont : ContinuousOn f (ball c r)) (hf : VanishesOnRectanglesInDisc c r f)
-    {z : ℂ} (hz : z ∈ ball c r) :
-    HasDerivAt (fun w => WedgeInt c w f) (f z) z := by
+theorem deriv_of_wedgeInt (hf : VanishesOnRectanglesInDisc c r f) :
+    HasDerivAt (fun w ↦ WedgeInt c w f) (f z) z := by
   have : 0 < r := pos_of_mem_ball hz
   dsimp [HasDerivAt, HasDerivAtFilter]
   rw [hasFDerivAtFilter_iff_isLittleO]
   calc
     _ =ᶠ[𝓝 z] (fun w ↦ WedgeInt z w f - (w - z) * f z) := ?_
-    _ = (fun w ↦ (∫ x in z.re..w.re, f (↑x + ↑z.im * I)) - (w - z).re * f z)
+    _ = (fun w ↦ (∫ x in z.re..w.re, f (x + z.im * I)) - (w - z).re * f z)
         + I • (fun w ↦ (∫ y in z.im..w.im, f (w.re + y * I)) - (w - z).im * f z) := ?_
     _ =o[𝓝 z] fun w ↦ w - z :=
       (deriv_of_wedgeInt_re f_cont hz).add ((deriv_of_wedgeInt_im f_cont hz).const_smul_left I)
-  · filter_upwards [VanishesOnRectanglesInDisc.diff_of_wedges hz f_cont hf]
+  · filter_upwards [VanishesOnRectanglesInDisc.diff_of_wedges f_cont hz hf]
     exact fun _ ha ↦ by rw [ha]; congr
   ext1 w
   simp only [WedgeInt, smul_eq_mul, sub_re, ofReal_sub, sub_im, Pi.add_apply, Pi.smul_apply]
@@ -495,24 +493,24 @@ theorem deriv_of_wedgeInt {c : ℂ} {r : ℝ} {f : ℂ → ℂ}
     _ = intI + I * intII - ((w.re - z.re) + (w.im - z.im) * I) * f z := by simp
     _ = intI - (w.re - z.re) * f z + I * (intII - (w.im - z.im) * f z) := by ring
 
+end WedgeIntDeriv
+
 /-- *** Moreira's theorem *** A function which is continuous on a disc and whose integral on
   rectangles in the disc vanishes has a primitive on the disc. -/
-theorem moreiras_theorem {c : ℂ} {r : ℝ} {f : ℂ → ℂ}
-    (hf : ContinuousOn f (ball c r))
-    (hf₂ : VanishesOnRectanglesInDisc c r f) :
+theorem moreiras_theorem {c : ℂ} {r : ℝ} {f : ℂ → ℂ} (f_cont : ContinuousOn f (ball c r))
+    (hf : VanishesOnRectanglesInDisc c r f) :
     ∃ g : ℂ → ℂ, ∀ z ∈ (ball c r), HasDerivAt g (f z) z :=
-  ⟨fun z ↦ WedgeInt c z f, fun _ hz ↦ deriv_of_wedgeInt hf hf₂ hz⟩
+  ⟨fun z ↦ WedgeInt c z f, fun _ hz ↦ deriv_of_wedgeInt f_cont hz hf⟩
 
 /-- If `f` is `DifferentiableOn` a set `U`, then the rectangle integral of `f` vanishes, for any
   rectangle in `U`. -/
 theorem vanishesOnRectangles_of_holomorphic {f : ℂ → ℂ} {U : Set ℂ} {z w : ℂ}
-    (hf : DifferentiableOn ℂ f U)
-    (hU : Rectangle z w ⊆ U) :
+    (f_diff : DifferentiableOn ℂ f U) (hU : Rectangle z w ⊆ U) :
     RectangleIntegral f z w = 0 := by
   convert integral_boundary_rect_eq_zero_of_differentiable_on_off_countable f z w ∅ (by simp)
-    ((hf.mono hU).continuousOn) ?_ using 1
+    ((f_diff.mono hU).continuousOn) ?_ using 1
   intro x hx
-  apply hf.differentiableAt
+  apply f_diff.differentiableAt
   rw [_root_.mem_nhds_iff]
   refine ⟨Ioo (min z.re w.re) (max z.re w.re) ×ℂ Ioo (min z.im w.im) (max z.im w.im), ?_, ?_, ?_⟩
   · apply subset_trans ?_ hU
