@@ -3,10 +3,10 @@ Copyright (c) 2014 Floris van Doorn (c) 2016 Microsoft Corporation. All rights r
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
+import Mathlib.Algebra.Group.TypeTags
+import Mathlib.Algebra.Ring.Defs
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Order.Basic
-import Mathlib.Algebra.GroupWithZero.Defs
-import Mathlib.Algebra.Ring.Defs
 import Mathlib.Tactic.PushNeg
 import Mathlib.Tactic.Use
 import Mathlib.Tactic.GCongr.Core
@@ -121,6 +121,18 @@ instance cancelCommMonoidWithZero : CancelCommMonoidWithZero ℕ :=
     mul_left_cancel_of_ne_zero :=
       fun h1 h2 => Nat.eq_of_mul_eq_mul_left (Nat.pos_of_ne_zero h1) h2 }
 #align nat.cancel_comm_monoid_with_zero Nat.cancelCommMonoidWithZero
+
+section Multiplicative
+
+open Multiplicative
+
+lemma toAdd_pow (a : Multiplicative ℕ) (b : ℕ) : toAdd (a ^ b) = toAdd a * b := mul_comm _ _
+#align nat.to_add_pow Nat.toAdd_pow
+
+@[simp] lemma ofAdd_mul (a b : ℕ) : ofAdd (a * b) = ofAdd a ^ b := (toAdd_pow _ _).symm
+#align nat.of_add_mul Nat.ofAdd_mul
+
+end Multiplicative
 
 variable {m n k : ℕ}
 

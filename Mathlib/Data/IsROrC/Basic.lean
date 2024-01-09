@@ -452,7 +452,7 @@ abbrev conjToRingEquiv : K ≃+* Kᵐᵒᵖ :=
   starRingEquiv
 #align is_R_or_C.conj_to_ring_equiv IsROrC.conjToRingEquiv
 
-variable {K}
+variable {K} {z : K}
 
 /-- The norm squared function. -/
 def normSq : K →*₀ ℝ where
@@ -527,12 +527,16 @@ theorem im_sq_le_normSq (z : K) : im z * im z ≤ normSq z :=
   le_add_of_nonneg_left (mul_self_nonneg _)
 #align is_R_or_C.im_sq_le_norm_sq IsROrC.im_sq_le_normSq
 
-theorem mul_conj (z : K) : z * conj z = (normSq z : K) := by
-  apply ext <;> simp only [normSq_apply, isROrC_simps, map_add, mul_zero] <;> ring
+theorem mul_conj (z : K) : z * conj z = ‖z‖ ^ 2 := by
+  apply ext <;> simp [← ofReal_pow, norm_sq_eq_def, mul_comm]
+
 #align is_R_or_C.mul_conj IsROrC.mul_conj
 
-theorem conj_mul (x : K) : conj x * x = (normSq x : K) := by rw [mul_comm, mul_conj]
+theorem conj_mul (z : K) : conj z * z = ‖z‖ ^ 2 := by rw [mul_comm, mul_conj]
 #align is_R_or_C.conj_mul IsROrC.conj_mul
+
+lemma inv_eq_conj (hz : ‖z‖ = 1) : z⁻¹ = conj z :=
+  inv_eq_of_mul_eq_one_left $ by simp_rw [conj_mul, hz, algebraMap.coe_one, one_pow]
 
 theorem normSq_sub (z w : K) : normSq (z - w) = normSq z + normSq w - 2 * re (z * conj w) := by
   simp only [normSq_add, sub_eq_add_neg, map_neg, mul_neg, normSq_neg, map_neg]
@@ -553,8 +557,8 @@ theorem inv_def (z : K) : z⁻¹ = conj z * ((‖z‖ ^ 2)⁻¹ : ℝ) := by
   rcases eq_or_ne z 0 with (rfl | h₀)
   · simp
   · apply inv_eq_of_mul_eq_one_right
-    rw [← mul_assoc, mul_conj, ofReal_inv, ← normSq_eq_def', mul_inv_cancel]
-    rwa [ofReal_ne_zero, Ne.def, normSq_eq_zero]
+    rw [← mul_assoc, mul_conj, ofReal_inv, ofReal_pow, mul_inv_cancel]
+    simpa
 #align is_R_or_C.inv_def IsROrC.inv_def
 
 @[simp, isROrC_simps]
@@ -581,6 +585,19 @@ theorem div_im (z w : K) : im (z / w) = im z * re w / normSq w - re z * im w / n
 theorem conj_inv (x : K) : conj x⁻¹ = (conj x)⁻¹ :=
   star_inv' _
 #align is_R_or_C.conj_inv IsROrC.conj_inv
+
+lemma conj_div (x y : K) : conj (x / y) = conj x / conj y := map_div' conj conj_inv _ _
+
+--TODO: Do we rather want the map as an explicit definition?
+lemma exists_norm_eq_mul_self (x : K) : ∃ c, ‖c‖ = 1 ∧ ↑‖x‖ = c * x := by
+  obtain rfl | hx := eq_or_ne x 0
+  · exact ⟨1, by simp⟩
+  · exact ⟨‖x‖ / x, by simp [norm_ne_zero_iff.2, hx]⟩
+
+lemma exists_norm_mul_eq_self (x : K) : ∃ c, ‖c‖ = 1 ∧ c * ‖x‖ = x := by
+  obtain rfl | hx := eq_or_ne x 0
+  · exact ⟨1, by simp⟩
+  · exact ⟨x / ‖x‖, by simp [norm_ne_zero_iff.2, hx]⟩
 
 @[simp, norm_cast, isROrC_simps]
 theorem ofReal_div (r s : ℝ) : ((r / s : ℝ) : K) = r / s :=
@@ -775,7 +792,7 @@ set_option linter.uppercaseLean3 false in
 #align is_R_or_C.norm_I_of_ne_zero IsROrC.norm_I_of_ne_zero
 
 theorem re_eq_norm_of_mul_conj (x : K) : re (x * conj x) = ‖x * conj x‖ := by
-  rw [mul_conj, ofReal_re, norm_ofReal, abs_of_nonneg (normSq_nonneg _)]
+  rw [mul_conj, ← ofReal_pow]; simp [-ofReal_pow]
 #align is_R_or_C.re_eq_norm_of_mul_conj IsROrC.re_eq_norm_of_mul_conj
 
 theorem norm_sq_re_add_conj (x : K) : ‖x + conj x‖ ^ 2 = re (x + conj x) ^ 2 := by
@@ -845,8 +862,9 @@ namespace IsROrC
 section Order
 
 open scoped ComplexOrder
+variable {z w : K}
 
-theorem lt_iff_re_im {z w : K} : z < w ↔ re z < re w ∧ im z = im w := by
+theorem lt_iff_re_im : z < w ↔ re z < re w ∧ im z = im w := by
   simp_rw [lt_iff_le_and_ne, @IsROrC.le_iff_re_im K]
   constructor
   · rintro ⟨⟨hr, hi⟩, heq⟩
@@ -854,17 +872,29 @@ theorem lt_iff_re_im {z w : K} : z < w ↔ re z < re w ∧ im z = im w := by
   · rintro ⟨⟨hr, hrn⟩, hi⟩
     exact ⟨⟨hr, hi⟩, ne_of_apply_ne _ hrn⟩
 
-theorem nonneg_iff {z : K} : 0 ≤ z ↔ 0 ≤ re z ∧ im z = 0 := by
+theorem nonneg_iff : 0 ≤ z ↔ 0 ≤ re z ∧ im z = 0 := by
   simpa only [map_zero, eq_comm] using le_iff_re_im (z := 0) (w := z)
 
-theorem pos_iff {z : K} : 0 < z ↔ 0 < re z ∧ im z = 0 := by
+theorem pos_iff : 0 < z ↔ 0 < re z ∧ im z = 0 := by
   simpa only [map_zero, eq_comm] using lt_iff_re_im (z := 0) (w := z)
 
-theorem nonpos_iff {z : K} : z ≤ 0 ↔ re z ≤ 0 ∧ im z = 0 := by
+theorem nonpos_iff : z ≤ 0 ↔ re z ≤ 0 ∧ im z = 0 := by
   simpa only [map_zero] using le_iff_re_im (z := z) (w := 0)
 
-theorem neg_iff {z : K} : z < 0 ↔ re z < 0 ∧ im z = 0 := by
+theorem neg_iff : z < 0 ↔ re z < 0 ∧ im z = 0 := by
   simpa only [map_zero] using lt_iff_re_im (z := z) (w := 0)
+
+lemma nonneg_iff_exists_ofReal : 0 ≤ z ↔ ∃ x ≥ (0 : ℝ), x = z := by
+  simp_rw [nonneg_iff (K := K), ext_iff (K := K)]; aesop
+
+lemma pos_iff_exists_ofReal : 0 < z ↔ ∃ x > (0 : ℝ), x = z := by
+  simp_rw [pos_iff (K := K), ext_iff (K := K)]; aesop
+
+lemma nonpos_iff_exists_ofReal : z ≤ 0 ↔ ∃ x ≤ (0 : ℝ), x = z := by
+  simp_rw [nonpos_iff (K := K), ext_iff (K := K)]; aesop
+
+lemma neg_iff_exists_ofReal : z < 0 ↔ ∃ x < (0 : ℝ), x = z := by
+  simp_rw [neg_iff (K := K), ext_iff (K := K)]; aesop
 
 /-- With `z ≤ w` iff `w - z` is real and nonnegative, `ℝ` and `ℂ` are star ordered rings.
 (That is, a star ring in which the nonnegative elements are those of the form `star z * z`.)
@@ -876,16 +906,10 @@ def toStarOrderedRing : StarOrderedRing K :=
       rw [IsROrC.le_iff_re_im] at *
       simpa [map_add, add_le_add_iff_left, add_right_inj] using hxy)
     (h_nonneg_iff := fun x => by
-      rw [IsROrC.le_iff_re_im, map_zero, map_zero, IsROrC.star_def, eq_comm]
-      constructor
-      · rintro ⟨hr, hi⟩
-        refine ⟨Real.sqrt (IsROrC.re x), ?_⟩
-        have := (IsROrC.is_real_TFAE x).out 2 3
-        rw [IsROrC.conj_ofReal, ← IsROrC.ofReal_mul, Real.mul_self_sqrt hr, eq_comm, this, hi]
-      · rintro ⟨s, rfl⟩
-        simp only [IsROrC.star_def, IsROrC.conj_mul]
-        rw [IsROrC.ofReal_re, IsROrC.ofReal_im, eq_self, and_true]
-        apply IsROrC.normSq_nonneg)
+      rw [nonneg_iff]
+      refine ⟨fun h ↦ ⟨(re x).sqrt, by simp [ext_iff (K := K), h.1, h.2]⟩, ?_⟩
+      rintro ⟨s, rfl⟩
+      simp [mul_comm, mul_self_nonneg, add_nonneg])
 
 scoped[ComplexOrder] attribute [instance] IsROrC.toStarOrderedRing
 
@@ -932,7 +956,7 @@ theorem im_to_real {x : ℝ} : imR x = 0 :=
   rfl
 #align is_R_or_C.im_to_real IsROrC.im_to_real
 
-@[simp, isROrC_simps]
+@[isROrC_simps]
 theorem conj_to_real {x : ℝ} : conj x = x :=
   rfl
 #align is_R_or_C.conj_to_real IsROrC.conj_to_real

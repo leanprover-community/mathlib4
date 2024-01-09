@@ -385,7 +385,7 @@ variable [IsDomain R] [IsPrincipalIdealRing R]
 
 lemma killingForm_eq :
     killingForm R I = I.restrictBilinear (killingForm R L) :=
-  LieSubmodule.traceForm_eq_of_le_idealizer I I $ by simp
+  LieSubmodule.traceForm_eq_of_le_idealizer I I <| by simp
 
 lemma restrictBilinear_killingForm :
     I.restrictBilinear (killingForm R L) = LieModule.traceForm R I L :=

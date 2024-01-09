@@ -49,6 +49,10 @@ section LinearOrderedSemifield
 
 variable [LinearOrderedSemifield α]
 
+lemma cast_inv_le_one : ∀ n : ℕ, (n⁻¹ : α) ≤ 1
+  | 0 => by simp
+  | n + 1 => inv_le_one $ by simp [Nat.cast_nonneg]
+
 /-- Natural division is always less than division in the field. -/
 theorem cast_div_le {m n : ℕ} : ((m / n : ℕ) : α) ≤ m / n := by
   cases n
