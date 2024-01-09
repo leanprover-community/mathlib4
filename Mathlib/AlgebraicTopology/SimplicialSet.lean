@@ -231,7 +231,7 @@ def edge₃ (n : ℕ) (i a b : Fin (n+1)) (hab : a ≤ b) (H : 3 ≤ n) :
 
 /-- The edge of `Λ[n, i]` with endpoints `j` and `j+1`.
 
-This constuctor assumes `0 < i < n`,
+This constructor assumes `0 < i < n`,
 which is the type of horn that occurs in the horn-filling condition of quasicategories. -/
 @[simps!]
 def primitiveEdge {n : ℕ} {i : Fin (n+1)}
@@ -247,7 +247,7 @@ def primitiveEdge {n : ℕ} {i : Fin (n+1)}
 
 /-- The triangle in the standard simplex with vertices `k`, `k+1`, and `k+2`.
 
-This constuctor assumes `0 < i < n`,
+This constructor assumes `0 < i < n`,
 which is the type of horn that occurs in the horn-filling condition of quasicategories. -/
 @[simps]
 def primitiveTriangle {n : ℕ} (i : Fin (n+4))
