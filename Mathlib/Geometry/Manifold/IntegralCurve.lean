@@ -415,14 +415,12 @@ theorem isIntegralCurveAt_eqOn_of_contMDiffAt (hγt₀ : I.IsInteriorPoint (γ t
   have hcrv' : IsIntegralCurveOn _ _ _ := fun t ht ↦ (haux t ht).2.2.2.2.2
 
   -- `γ` and `γ'` when expressed in the local chart are continuous on this neighbourhood
-  have hcont := (continuousOn_extChartAt I (γ t₀)).comp
-    (IsIntegralCurveOn.continuousOn hcrv) hsrc
-  have hcont' := (continuousOn_extChartAt I (γ' t₀)).comp
-    (IsIntegralCurveOn.continuousOn hcrv') hsrc'
+  have hcont := (continuousOn_extChartAt I (γ t₀)).comp hcrv.continuousOn hsrc
+  have hcont' := (continuousOn_extChartAt I (γ' t₀)).comp hcrv'.continuousOn hsrc'
 
   simp_rw [Real.ball_eq_Ioo] at hmem hsrc hcrv hcont hmem' hsrc' hcrv' hcont'
 
-  -- `γ` and `γ'` are
+  -- `γ` and `γ'` are equal on `Ioo (t₀ - ε) (t₀ + ε)` when expressed in the local chart
   have heqon : EqOn ((extChartAt I (γ t₀)) ∘ γ) ((extChartAt I (γ' t₀)) ∘ γ')
     (Ioo (t₀ - ε) (t₀ + ε)) := by
     -- uniqueness of ODE solutions in an open interval
@@ -507,7 +505,6 @@ theorem isIntegralCurveOn_Ioo_eqOn_of_contMDiff (ht₀ : t₀ ∈ Ioo a b)
         (fun t ht ↦ @heqon t <| mem_of_mem_of_subset ht <| Ioo_subset_Ioo (by simp) (by simp))
         (Ioo_subset_Ioo (by simp) (by simp)),
       isOpen_Ioo, ?_⟩
-    rw [mem_Ioo]
     exact ⟨max_lt ht₁.2.1 (by simp [hε]), lt_min ht₁.2.2 (by simp [hε])⟩
 
 theorem isIntegralCurveOn_Ioo_eqOn_of_contMDiff_boundaryless [BoundarylessManifold I M]
@@ -520,14 +517,14 @@ theorem isIntegralCurveOn_Ioo_eqOn_of_contMDiff_boundaryless [BoundarylessManifo
 
 /-- Global integral curves are unique.
 
-  If a continuously differentiable vector field `v` admits two global integral curves
-  `γ γ' : ℝ → M`, and `γ t₀ = γ' t₀` for some `t₀`, then `γ` and `γ'` are equal. -/
+If a continuously differentiable vector field `v` admits two global integral curves
+`γ γ' : ℝ → M`, and `γ t₀ = γ' t₀` for some `t₀`, then `γ` and `γ'` are equal. -/
 theorem isIntegralCurve_eq_of_contMDiff (hγt : ∀ t, I.IsInteriorPoint (γ t))
     (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)))
     (hγ : IsIntegralCurve γ v) (hγ' : IsIntegralCurve γ' v) (h : γ t₀ = γ' t₀) : γ = γ' := by
   ext t
   obtain ⟨T, hT, ht⟩ : ∃ T > 0, t ∈ Ioo (t₀ - T) (t₀ + T) := by
-    refine ⟨2 * |t - t₀| + 1, add_pos_of_nonneg_of_pos (by simp) zero_lt_one, ?_⟩
+    refine ⟨2 * |t - t₀| + 1, by positivity, ?_⟩
     rw [mem_Ioo]
     by_cases ht : t - t₀ < 0
     · rw [abs_of_neg ht]
@@ -536,8 +533,8 @@ theorem isIntegralCurve_eq_of_contMDiff (hγt : ∀ t, I.IsInteriorPoint (γ t))
       constructor <;> linarith
   exact isIntegralCurveOn_Ioo_eqOn_of_contMDiff
     (Real.ball_eq_Ioo t₀ T ▸ Metric.mem_ball_self hT) (fun t _ ↦ hγt t) hv
-    (IsIntegralCurveOn.mono (hγ.isIntegralCurveOn _) (subset_univ _))
-    (IsIntegralCurveOn.mono (hγ'.isIntegralCurveOn _) (subset_univ _)) h ht
+    ((hγ.isIntegralCurveOn _).mono  (subset_univ _))
+    ((hγ'.isIntegralCurveOn _).mono (subset_univ _)) h ht
 
 theorem isIntegralCurve_Ioo_eq_of_contMDiff_boundaryless [BoundarylessManifold I M]
     (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)))
