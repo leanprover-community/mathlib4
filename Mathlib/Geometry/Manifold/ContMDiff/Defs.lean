@@ -124,7 +124,8 @@ theorem contDiffWithinAt_localInvariantProp (n : ℕ∞) :
     symm
     apply contDiffWithinAt_inter
     have : u ∈ 𝓝 (I.symm (I x)) := by
-      rw [ModelWithCorners.left_inv]; exact IsOpen.mem_nhds u_open xu
+      rw [ModelWithCorners.left_inv]
+      exact u_open.mem_nhds xu
     apply ContinuousAt.preimage_mem_nhds I.continuous_symm.continuousAt this
   right_invariance' := by
     intro s x f e he hx h
