@@ -1572,8 +1572,8 @@ import Mathlib.Data.Finsupp.Multiset
 import Mathlib.Data.Finsupp.NeLocus
 import Mathlib.Data.Finsupp.Notation
 import Mathlib.Data.Finsupp.Order
+import Mathlib.Data.Finsupp.PWO
 import Mathlib.Data.Finsupp.Pointwise
-import Mathlib.Data.Finsupp.Pwo
 import Mathlib.Data.Finsupp.ToDFinsupp
 import Mathlib.Data.Finsupp.WellFounded
 import Mathlib.Data.Fintype.Array
