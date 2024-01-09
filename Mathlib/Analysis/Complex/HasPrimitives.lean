@@ -74,8 +74,7 @@ namespace Complex
 section Asymptotics
 
 /-- As `w → z`, `w.re - z.re` is big-O of `w - z`. -/
-lemma re_isBigO {z : ℂ} :
-  (fun (w : ℂ) ↦ w.re - z.re) =O[𝓝 z] fun w ↦ w - z := by
+lemma re_isBigO {z : ℂ} : (fun (w : ℂ) ↦ w.re - z.re) =O[𝓝 z] fun w ↦ w - z := by
   rw [Asymptotics.isBigO_iff]
   use 1
   filter_upwards
@@ -85,8 +84,7 @@ lemma re_isBigO {z : ℂ} :
   exact Complex.abs_re_le_abs (w - z)
 
 /-- As `w → z`, `w.im - z.im` is big-O of `w - z`. -/
-lemma im_isBigO {z : ℂ} :
-  (fun (w : ℂ) ↦ w.im - z.im) =O[𝓝 z] fun w ↦ w - z := by
+lemma im_isBigO {z : ℂ} : (fun (w : ℂ) ↦ w.im - z.im) =O[𝓝 z] fun w ↦ w - z := by
   rw [Asymptotics.isBigO_iff]
   use 1
   filter_upwards
@@ -391,8 +389,7 @@ lemma VanishesOnRectanglesInDisc.diff_of_wedges (hf : VanishesOnRectanglesInDisc
 
 /-- The integral of a continuous function `f` from `z` to `x + z.im * I` is equal to
   `(x - z.re) * f z` up to `o(x - z.re)`. -/
-lemma deriv_of_wedgeInt_re' :
-  (fun (x : ℝ) ↦ (∫ t in z.re..x, f (t + z.im * I)) - (x - z.re) * f z)
+lemma deriv_of_wedgeInt_re' : (fun (x : ℝ) ↦ (∫ t in z.re..x, f (t + z.im * I)) - (x - z.re) * f z)
     =o[𝓝 z.re] (fun (x : ℝ)  ↦ x - z.re) := by
   let r₁ := r - dist z c
   have : 0 < r₁ := by simp only [mem_ball, gt_iff_lt] at hz ⊢; linarith
@@ -420,8 +417,8 @@ lemma deriv_of_wedgeInt_re' :
 /- The horizontal integral of `f` from `z` to `z.re + w.im * I` is equal to `(w - z).re * f z`
   up to `o(w - z)`, as `w` tends to `z`. -/
 lemma deriv_of_wedgeInt_re :
-  (fun (w : ℂ) ↦ (∫ x in z.re..w.re, f (x + z.im * I)) - ((w - z).re) * f z)
-    =o[𝓝 z] (fun w ↦ w - z) := by
+    (fun (w : ℂ) ↦ (∫ x in z.re..w.re, f (x + z.im * I)) - ((w - z).re) * f z)
+      =o[𝓝 z] (fun w ↦ w - z) := by
   have zReTendsTo : Filter.Tendsto (fun (w : ℂ) ↦ w.re) (𝓝 z) (𝓝 z.re) :=
     by apply Continuous.tendsto Complex.continuous_re
   have := (deriv_of_wedgeInt_re' f_cont hz).comp_tendsto zReTendsTo
@@ -432,8 +429,7 @@ lemma deriv_of_wedgeInt_re :
 
 /-- If `f` is continuous on a ball containing `z`, then the integral from `z.im` to `w.im` of
   `f (w.re + y * I)` is equal to `(w - z).im * f z` up to `o(w - z)`, as `w` tends to `z`. -/
-lemma deriv_of_wedgeInt_im' :
-  (fun w ↦ ∫ y in z.im..w.im, f (w.re + y * I) - f z)
+lemma deriv_of_wedgeInt_im' : (fun w ↦ ∫ y in z.im..w.im, f (w.re + y * I) - f z)
     =o[𝓝 z] fun w ↦ w - z := by
   have : (fun w ↦ f w - f z) =o[𝓝 z] fun (_ : ℂ) ↦ (1 : ℂ)
   · refine (Asymptotics.continuousAt_iff_isLittleO (f := f) (x := z)).mp
@@ -455,8 +451,7 @@ lemma deriv_of_wedgeInt_im' :
 
 /--   The vertical integral of `f` from `w.re + z.im * I` to `w` is equal to `(w - z).im * f z`
   up to `o(w - z)`, as `w` tends to `z`. -/
-lemma deriv_of_wedgeInt_im :
-  (fun w ↦ (∫ y in z.im..w.im, f (w.re + y * I)) - (w - z).im * f z)
+lemma deriv_of_wedgeInt_im : (fun w ↦ (∫ y in z.im..w.im, f (w.re + y * I)) - (w - z).im * f z)
     =o[𝓝 z] fun w ↦ w - z := by
   calc
     _ = (fun w:ℂ ↦ (∫ y in z.im..w.im, f (w.re + y * I)) - (∫ _ in z.im..w.im, f z)) :=

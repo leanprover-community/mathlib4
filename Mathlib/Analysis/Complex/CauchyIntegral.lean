@@ -265,7 +265,7 @@ theorem integral_boundary_rect_eq_zero_of_differentiable_on_off_countable (f : �
     (fun x hx => (Hd x hx).hasFDerivAt.restrictScalars ℝ) ?_).trans ?_ <;> simp [this]
 #align complex.integral_boundary_rect_eq_zero_of_differentiable_on_off_countable Complex.integral_boundary_rect_eq_zero_of_differentiable_on_off_countable
 
-abbrev HolomorphicOn (f : ℂ → ℂ) (U : Set ℂ) : Prop := DifferentiableOn ℂ f U
+abbrev HolomorphicOn (f : ℂ → E) (U : Set ℂ) : Prop := DifferentiableOn ℂ f U
 
 /-- **Cauchy-Goursat theorem for a rectangle**: the integral of a complex differentiable function
 over the boundary of a rectangle equals zero. More precisely, if `f` is continuous on a closed
