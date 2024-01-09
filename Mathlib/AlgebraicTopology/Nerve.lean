@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.AlgebraicTopology.SimplicialSet
 import Mathlib.CategoryTheory.ComposableArrows
+import Mathlib.Tactic.SuppressCompilation
 
 #align_import algebraic_topology.nerve from "leanprover-community/mathlib"@"841aef25c9d7a5a5d63a3dcf7bc43386b2c206d6"
 
@@ -21,6 +22,8 @@ which is the category `Fin (n + 1) ⥤ C`.
 * [Paul G. Goerss, John F. Jardine, *Simplical Homotopy Theory*][goerss-jardine-2009]
 
 -/
+
+suppress_compilation
 
 open CategoryTheory.Category Simplicial
 
