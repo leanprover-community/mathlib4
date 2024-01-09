@@ -54,9 +54,3 @@ theorem evenOddRec_odd (n : ℕ) (P : ℕ → Sort*) (h0 : P 0) (h_even : ∀ i,
 #align nat.even_odd_rec_odd Nat.evenOddRec_odd
 
 end Nat
-
-
-
-
-
-#minimize_imports
