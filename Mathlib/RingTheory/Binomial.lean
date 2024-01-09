@@ -30,7 +30,6 @@ Pochhammer polynomial `X(X+1)⋯(X+(k-1))` at any element is divisible by `k!`. 
 ## TODO
 
 * Replace `Nat.multichoose` with `Ring.multichoose`.
-* `Int.instBinomialRing`
 * `Ring.choose` for binomial rings.
 * Generalize to the power-associative case, when power-associativity is implemented.
 
@@ -81,6 +80,7 @@ instance Nat.instBinomialRing : BinomialRing ℕ where
     rw [Nat.multichoose_eq, smul_eq_mul, ← Nat.descFactorial_eq_factorial_mul_choose,
     ascPochhammer_nat_eq_descFactorial]
 
+/-- The multichoose function for integers. -/
 def Int.multichoose (n : ℤ) (k : ℕ) : ℤ := by
   cases n with
   | ofNat n => use ((Nat.choose (n + k - 1) k) : ℤ)
