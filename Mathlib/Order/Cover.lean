@@ -495,20 +495,20 @@ variable {s t : Set α} {a : α}
   · simp [ha]
 
 @[simp] lemma covby_insert (ha : a ∉ s) : s ⋖ insert a s :=
-  (wcovby_insert _ _).covby_of_lt $ ssubset_insert ha
+  (wcovby_insert _ _).covby_of_lt <| ssubset_insert ha
 #align set.covby_insert Set.covby_insert
 
 @[simp] lemma sdiff_singleton_covby (ha : a ∈ s) : s \ {a} ⋖ s :=
-  ⟨sdiff_lt (singleton_subset_iff.2 ha) $ singleton_ne_empty _, (sdiff_singleton_wcovby _ _).2⟩
+  ⟨sdiff_lt (singleton_subset_iff.2 ha) <| singleton_ne_empty _, (sdiff_singleton_wcovby _ _).2⟩
 
 lemma _root_.Covby.exists_set_insert (h : s ⋖ t) : ∃ a ∉ s, insert a s = t :=
   let ⟨a, ha, hst⟩ := ssubset_iff_insert.1 h.lt
-  ⟨a, ha, (hst.eq_of_not_ssuperset $ h.2 $ ssubset_insert ha).symm⟩
+  ⟨a, ha, (hst.eq_of_not_ssuperset <| h.2 <| ssubset_insert ha).symm⟩
 
 lemma _root_.Covby.exists_set_sdiff_singleton (h : s ⋖ t) : ∃ a ∈ t, t \ {a} =  s :=
   let ⟨a, ha, hst⟩ := ssubset_iff_sdiff_singleton.1 h.lt
-  ⟨a, ha, (hst.eq_of_not_ssubset fun h' ↦ h.2 h' $
-    sdiff_lt (singleton_subset_iff.2 ha) $ singleton_ne_empty _).symm⟩
+  ⟨a, ha, (hst.eq_of_not_ssubset fun h' ↦ h.2 h' <|
+    sdiff_lt (singleton_subset_iff.2 ha) <| singleton_ne_empty _).symm⟩
 
 lemma covby_iff_exists_insert : s ⋖ t ↔ ∃ a ∉ s, insert a s = t :=
   ⟨Covby.exists_set_insert, by rintro ⟨a, ha, rfl⟩; exact covby_insert ha⟩

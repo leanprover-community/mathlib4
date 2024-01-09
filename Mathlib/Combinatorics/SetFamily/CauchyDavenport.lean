@@ -144,7 +144,7 @@ lemma Finset.min_le_card_mul (hs : s.Nonempty) (ht : t.Nonempty) :
   -- as wanted.
   obtain hsg | hsg := eq_or_ne (op g • s) s
   · have hS : (zpowers g : Set α) ⊆ a⁻¹ • (s : Set α) := by
-      refine forall_mem_zpowers.2 $ @zpow_induction_right _ _ _ (· ∈ a⁻¹ • (s : Set α))
+      refine forall_mem_zpowers.2 <| @zpow_induction_right _ _ _ (· ∈ a⁻¹ • (s : Set α))
         ⟨_, ha, inv_mul_self _⟩ (fun c hc ↦ ?_) fun c hc ↦ ?_
       · rw [← hsg, coe_smul_finset, smul_comm]
         exact Set.smul_mem_smul_set hc
@@ -161,8 +161,8 @@ lemma Finset.min_le_card_mul (hs : s.Nonempty) (ht : t.Nonempty) :
   -- `(s'', t'')` is strictly smaller than `(s, t)` according to `DevosMulRel`.
   replace hsg : (s ∩ op g • s).card < s.card := card_lt_card ⟨inter_subset_left _ _, fun h ↦
     hsg <| eq_of_superset_of_card_ge (h.trans <| inter_subset_right _ _) (card_smul_finset _ _).le⟩
-  replace aux1 := card_mono $ mulETransformLeft.fst_mul_snd_subset g (s, t)
-  replace aux2 := card_mono $ mulETransformRight.fst_mul_snd_subset g (s, t)
+  replace aux1 := card_mono <| mulETransformLeft.fst_mul_snd_subset g (s, t)
+  replace aux2 := card_mono <| mulETransformRight.fst_mul_snd_subset g (s, t)
   -- If the left translate of `t` by `g⁻¹` is disjoint from `t`, then we're easily done.
   obtain hgt | hgt := disjoint_or_nonempty_inter t (g⁻¹ • t)
   · rw [← card_smul_finset g⁻¹ t]
