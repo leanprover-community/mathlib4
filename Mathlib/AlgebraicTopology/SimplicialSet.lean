@@ -7,6 +7,8 @@ import Mathlib.AlgebraicTopology.SimplicialObject
 import Mathlib.CategoryTheory.Limits.Presheaf
 import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.CategoryTheory.Yoneda
+import Mathlib.Data.Fin.VecNotation
+import Mathlib.Tactic.FinCases
 
 #align_import algebraic_topology.simplicial_set from "leanprover-community/mathlib"@"178a32653e369dce2da68dc6b2694e385d484ef1"
 
@@ -185,22 +187,13 @@ open SimplexCategory Finset Opposite
 @[simps]
 def const (n : ℕ) (i k : Fin (n+3)) (m : SimplexCategoryᵒᵖ) : Λ[n+2, i].obj m := by
   refine ⟨standardSimplex.const _ k _, ?_⟩
-  suffices ∃ x, ¬x = i ∧ ¬k = x by
-    simpa [← Set.univ_subset_iff, Set.subset_def, asOrderHom, not_or, Fin.forall_fin_one]
-  by_cases hi0 : i = 0
-  · by_cases hk1 : k = 1
-    · use Fin.last (n+2)
-      simp [hi0, hk1, Fin.ext_iff, @eq_comm _ (0:ℕ)]
-    · use 1
-      simp [hi0, hk1]
-  · by_cases hk0 : k = 0
-    · by_cases hi1 : i = 1
-      · use Fin.last (n+2)
-        simp [hi1, hk0, Fin.ext_iff, @eq_comm _ (0:ℕ)]
-      · use 1
-        simp [hi1, hk0, @eq_comm _ _ i]
-    · use 0
-      simp [hi0, hk0, @eq_comm _ _ i]
+  suffices ¬ Finset.univ ⊆ {i, k} by
+    simpa [← Set.univ_subset_iff, Set.subset_def, asOrderHom, not_or, Fin.forall_fin_one,
+      subset_iff, mem_univ, @eq_comm _ _ k]
+  intro h
+  have := (card_le_card h).trans card_le_two
+  rw [card_fin] at this
+  omega
 
 /-- The edge of `Λ[n, i]` with endpoints `a` and `b`.
 
