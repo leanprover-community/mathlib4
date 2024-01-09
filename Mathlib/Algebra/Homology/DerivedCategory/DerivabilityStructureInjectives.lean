@@ -262,7 +262,7 @@ instance (X : HomotopyCategory.Plus (Injectives C)) :
   dsimp only [rightDerivedFunctorPlus, rightDerivedFunctorPlusUnit]
   infer_instance
 
-noncomputable def rightDerived (n : ℕ) : C ⥤ D :=
+noncomputable def rightDerived' (n : ℕ) : C ⥤ D :=
   DerivedCategory.Plus.singleFunctor C 0 ⋙ F.rightDerivedFunctorPlus ⋙
     DerivedCategory.Plus.homologyFunctor D n
 
