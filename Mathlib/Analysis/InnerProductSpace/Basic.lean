@@ -317,8 +317,7 @@ theorem cauchy_schwarz_aux (x y : F) :
   rw [← @ofReal_inj 𝕜, ofReal_normSq_eq_inner_self]
   simp only [inner_sub_sub_self, inner_smul_left, inner_smul_right, conj_ofReal, mul_sub, ←
     ofReal_normSq_eq_inner_self x, ← ofReal_normSq_eq_inner_self y]
-  rw [← mul_assoc, mul_conj, IsROrC.conj_mul, normSq_eq_def', mul_left_comm, ← inner_conj_symm y,
-    mul_conj, normSq_eq_def']
+  rw [← mul_assoc, mul_conj, IsROrC.conj_mul, mul_left_comm, ← inner_conj_symm y, mul_conj]
   push_cast
   ring
 #align inner_product_space.core.cauchy_schwarz_aux InnerProductSpace.Core.cauchy_schwarz_aux
@@ -389,9 +388,10 @@ attribute [local instance] toNormedAddCommGroup
 def toNormedSpace : NormedSpace 𝕜 F where
   norm_smul_le r x := by
     rw [norm_eq_sqrt_inner, inner_smul_left, inner_smul_right, ← mul_assoc]
-    rw [IsROrC.conj_mul, ofReal_mul_re, sqrt_mul, ← ofReal_normSq_eq_inner_self, ofReal_re]
+    rw [IsROrC.conj_mul, ← ofReal_pow, ofReal_mul_re, sqrt_mul, ← ofReal_normSq_eq_inner_self,
+      ofReal_re]
     · simp [sqrt_normSq_eq_norm, IsROrC.sqrt_normSq_eq_norm]
-    · exact normSq_nonneg r
+    · positivity
 #align inner_product_space.core.to_normed_space InnerProductSpace.Core.toNormedSpace
 
 end InnerProductSpace.Core
@@ -1923,9 +1923,7 @@ end BesselsInequality
 /-- A field `𝕜` satisfying `IsROrC` is itself a `𝕜`-inner product space. -/
 instance IsROrC.innerProductSpace : InnerProductSpace 𝕜 𝕜 where
   inner x y := conj x * y
-  norm_sq_eq_inner x := by
-    simp only [inner]
-    rw [mul_comm, mul_conj, ofReal_re, normSq_eq_def']
+  norm_sq_eq_inner x := by simp only [inner, conj_mul, ← ofReal_pow, ofReal_re]
   conj_symm x y := by simp only [mul_comm, map_mul, starRingEnd_self_apply]
   add_left x y z := by simp only [add_mul, map_add]
   smul_left x y z := by simp only [mul_assoc, smul_eq_mul, map_mul]
@@ -2305,7 +2303,7 @@ theorem ContinuousLinearMap.reApplyInnerSelf_continuous (T : E →L[𝕜] E) :
 theorem ContinuousLinearMap.reApplyInnerSelf_smul (T : E →L[𝕜] E) (x : E) {c : 𝕜} :
     T.reApplyInnerSelf (c • x) = ‖c‖ ^ 2 * T.reApplyInnerSelf x := by
   simp only [ContinuousLinearMap.map_smul, ContinuousLinearMap.reApplyInnerSelf_apply,
-    inner_smul_left, inner_smul_right, ← mul_assoc, mul_conj, normSq_eq_def', ← smul_re,
+    inner_smul_left, inner_smul_right, ← mul_assoc, mul_conj, ← ofReal_pow, ← smul_re,
     Algebra.smul_def (‖c‖ ^ 2) ⟪T x, x⟫, algebraMap_eq_ofReal]
 #align continuous_linear_map.re_apply_inner_self_smul ContinuousLinearMap.reApplyInnerSelf_smul
 
