@@ -95,14 +95,8 @@ pulling back a grading along the identity function,
 and the identity functor. -/
 @[simps]
 def comapId : comap C (id : I → I) ≅ 𝟭 (∀ i, C i) where
-  hom :=
-  { app := fun X => 𝟙 X,
-    -- Prior to leanprover/lean4#3151 this was by `aesop`.
-    naturality := by intros; ext; simp (config := { instances := true }) }
-  inv :=
-  { app := fun X => 𝟙 X,
-    -- Prior to leanprover/lean4#3151 this was by `aesop`.
-    naturality := by intros; ext; simp (config := { instances := true }) }
+  hom := { app := fun X => 𝟙 X }
+  inv := { app := fun X => 𝟙 X }
 #align category_theory.pi.comap_id CategoryTheory.Pi.comapId
 
 example (g : J → I) : (j : J) → Category (C (g j)) := by infer_instance

@@ -280,7 +280,7 @@ def mapMatId : (𝟭 C).mapMat_ ≅ 𝟭 (Mat_ C) :=
   NatIso.ofComponents (fun M => eqToIso (by cases M; rfl)) fun {M N} f => by
     ext
     cases M; cases N
-    simp [comp_dite, dite_comp]
+    simp (config := { instances := true }) [comp_dite, dite_comp]
 set_option linter.uppercaseLean3 false in
 #align category_theory.functor.map_Mat_id CategoryTheory.Functor.mapMatId
 
@@ -292,7 +292,7 @@ def mapMatComp {E : Type*} [Category.{v₁} E] [Preadditive E] (F : C ⥤ D) [Fu
   NatIso.ofComponents (fun M => eqToIso (by cases M; rfl)) fun {M N} f => by
     ext
     cases M; cases N
-    simp [comp_dite, dite_comp]
+    simp (config := { instances := true }) [comp_dite, dite_comp]
 set_option linter.uppercaseLean3 false in
 #align category_theory.functor.map_Mat_comp CategoryTheory.Functor.mapMatComp
 
