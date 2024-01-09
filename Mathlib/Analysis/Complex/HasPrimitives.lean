@@ -355,7 +355,6 @@ lemma VanishesOnRectanglesInDisc.diff_of_wedges (hf : VanishesOnRectanglesInDisc
 lemma deriv_of_wedgeInt_re' : (fun (x : ℝ) ↦ (∫ t in z.re..x, f (t + z.im * I)) - (x - z.re) * f z)
     =o[𝓝 z.re] (fun (x : ℝ)  ↦ x - z.re) := by
   let r₁ := r - dist z c
-  have : 0 < r₁ := by simp only [mem_ball, gt_iff_lt] at hz ⊢; linarith
   let s : Set ℝ := Ioo (z.re - r₁) (z.re + r₁)
   have zRe_mem_s : z.re ∈ s := by simp [mem_ball.mp hz]
   have s_open : IsOpen s := isOpen_Ioo
@@ -431,7 +430,6 @@ lemma deriv_of_wedgeInt_im : (fun w ↦ (∫ y in z.im..w.im, f (w.re + y * I)) 
 /-- The `WedgeInt` has derivative at `z` equal to `f z`. -/
 theorem deriv_of_wedgeInt (hf : VanishesOnRectanglesInDisc c r f) :
     HasDerivAt (fun w ↦ WedgeInt c w f) (f z) z := by
-  have : 0 < r := pos_of_mem_ball hz
   dsimp [HasDerivAt, HasDerivAtFilter]
   rw [hasFDerivAtFilter_iff_isLittleO]
   calc
