@@ -343,7 +343,7 @@ theorem descPochhammer_mul (n m : ℕ) :
   · rw [descPochhammer_succ_right, Polynomial.mul_X_sub_int_cast_comp, ← mul_assoc, ih,
       Nat.succ_eq_add_one, ← add_assoc, descPochhammer_succ_right, Nat.cast_add, sub_add_eq_sub_sub]
 
-theorem ascPochhammer_eval_neg_eq_descPochhammer (r : R) : ∀(k : ℕ),
+theorem ascPochhammer_eval_neg_eq_descPochhammer (r : R) : ∀ (k : ℕ),
     (ascPochhammer R k).eval (-r) = (-1)^k * (descPochhammer R k).eval r
   | 0 => by
     rw [ascPochhammer_zero, descPochhammer_zero]
