@@ -159,11 +159,15 @@ def evalUpperHalfPlaneIm : PositivityExt where eval {u α} _zα _pα e := do
 
 /-- Extension for the `positivity` tactic: `UpperHalfPlane.coe`. -/
 @[positivity UpperHalfPlane.coe _]
-def evalUpperHalfPlaneCoe : PositivityExt where eval {_ _} _zα _pα e := do
-  let (.app (f : Q(UpperHalfPlane → Real)) (a : Q(UpperHalfPlane))) ← whnfR e
-    | throwError "not UpperHalfPlane.coe"
-  guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(UpperHalfPlane.coe)
-  pure (.nonzero (q(@UpperHalfPlane.ne_zero $a) : Expr))
+def evalUpperHalfPlaneCoe : PositivityExt where eval {u α} _zα _pα e := do
+  -- TODO: can't merge the `match`es without lean4#3060
+  match u with
+  | 0 => match α, e with
+    | ~q(ℂ), ~q(UpperHalfPlane.coe $a) =>
+      assertInstancesCommute
+      pure (.nonzero q(@UpperHalfPlane.ne_zero $a))
+    | _, _ => throwError "not UpperHalfPlane.coe"
+  | _ => throwError "not UpperHalfPlane.coe"
 
 end Mathlib.Meta.Positivity
 
