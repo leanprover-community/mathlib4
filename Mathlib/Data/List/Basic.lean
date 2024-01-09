@@ -392,6 +392,7 @@ theorem cons_eq_append_iff {a b c : List α} {x : α} :
 
 #align list.append_inj_left' List.append_inj_left'ₓ -- implicits order
 
+@[deprecated] alias append_left_cancel := append_cancel_left
 #align list.append_left_cancel List.append_cancel_left
 
 #align list.append_right_cancel List.append_cancel_right
