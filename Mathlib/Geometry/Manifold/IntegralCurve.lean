@@ -621,23 +621,16 @@ lemma piecewise_eqOn_symm [BoundarylessManifold I M]
     (ht₀ : t₀ ∈ Ioo a b ∩ Ioo a' b') (h : γ t₀ = γ' t₀) :
     EqOn (piecewise (Ioo a b) γ γ') γ' (Ioo a' b') := by
   intros t ht
-  by_cases hle : t ≤ a
-  · rw [piecewise, if_neg]
-    rw [mem_Ioo, not_and_or, not_lt]
-    exact Or.inl hle
-  · rw [not_le] at hle
-    by_cases hle' : b ≤ t
-    · rw [piecewise, if_neg]
-      rw [mem_Ioo, not_and_or, not_lt (b := b)]
-      exact Or.inr hle'
-    · rw [not_le] at hle'
-      rw [piecewise, if_pos ⟨hle, hle'⟩]
-      apply isIntegralCurveOn_Ioo_eqOn_of_contMDiff_boundaryless _ hv
-        (hγ.mono (Ioo_subset_Ioo (le_max_left ..) (min_le_left ..)))
-        (hγ'.mono (Ioo_subset_Ioo (le_max_right ..) (min_le_right ..))) h
-        ⟨max_lt hle ht.1, lt_min hle' ht.2⟩
-      rw [← sup_eq_max, ← inf_eq_min, ← Ioo_inter_Ioo]
-      exact ht₀
+  suffices H : EqOn γ γ' (Ioo (max a a') (min b b')) from by
+    by_cases hmem : t ∈ Ioo a b
+    · rw [piecewise, if_pos hmem]
+      apply H
+      simp [ht.1, ht.2, hmem.1, hmem.2]
+    · rw [piecewise, if_neg hmem]
+  apply isIntegralCurveOn_Ioo_eqOn_of_contMDiff_boundaryless _ hv
+    (hγ.mono (Ioo_subset_Ioo (le_max_left ..) (min_le_left ..)))
+    (hγ'.mono (Ioo_subset_Ioo (le_max_right ..) (min_le_right ..))) h
+  refine ⟨max_lt ht₀.1.1 ht₀.2.1, lt_min ht₀.1.2 ht₀.2.2⟩
 
 /-- The extension of an integral curve by another integral curve is an integral curve.
 
