@@ -281,7 +281,7 @@ theorem factorial_mul_ascFactorial' (n k : ℕ) (h : 0 < n) :
 theorem ascFactorial_eq_div (n k : ℕ) :  (n + 1).ascFactorial k = (n + k)! / n ! := by
   apply mul_left_cancel₀ n.factorial_ne_zero
   rw [factorial_mul_ascFactorial]
-  refine (Nat.mul_div_cancel_left' <| factorial_dvd_factorial <| le_add_right n k).symm
+  exact (Nat.mul_div_cancel_left' <| factorial_dvd_factorial <| le_add_right n k).symm
 
 /-- Avoid in favor of `Nat.factorial_mul_ascFactorial` if you can. -/
 theorem ascFactorial_eq_div' (n k : ℕ) (h : 0 < n) :
