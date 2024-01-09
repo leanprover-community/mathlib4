@@ -84,6 +84,10 @@ lemma X_sub_C_not_isUnit (i : σ) (c : R) [Nontrivial R] : ¬ IsUnit (X i - C c)
     map_one] at r
   exact (one_ne_zero' R r.symm)
 
+variable {σ} in
+lemma X_add_C_not_isUnit (i : σ) (c : R) [Nontrivial R] : ¬ IsUnit (X i + C c) := by
+  simpa only [map_neg, sub_neg_eq_add] using X_sub_C_not_isUnit i (- c)
+
 @[simp]
 theorem coeff_neg (m : σ →₀ ℕ) (p : MvPolynomial σ R) : coeff m (-p) = -coeff m p :=
   Finsupp.neg_apply _ _
