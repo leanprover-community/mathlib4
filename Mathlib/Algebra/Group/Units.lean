@@ -8,6 +8,7 @@ import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Logic.Unique
 import Mathlib.Tactic.Nontriviality
 import Mathlib.Tactic.Lift
+import Mathlib.Tactic.Nontriviality
 
 #align_import algebra.group.units from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
@@ -29,6 +30,9 @@ See also `Prime`, `Associated`, and `Irreducible` in `Mathlib.Algebra.Associated
 We provide `Mˣ` as notation for `Units M`,
 resembling the notation $R^{\times}$ for the units of a ring, which is common in mathematics.
 
+## TODO
+
+The results here should be used to golf the basic `Group` lemmas.
 -/
 
 
@@ -848,7 +852,8 @@ protected theorem mul_left_injective (h : IsUnit b) : Injective (· * b) :=
 
 end Monoid
 
-variable [DivisionMonoid M] {a : M}
+section DivisionMonoid
+variable [DivisionMonoid α] {a b c : α}
 
 @[to_additive (attr := simp)]
 protected theorem inv_mul_cancel : IsUnit a → a⁻¹ * a = 1 := by
@@ -864,7 +869,260 @@ protected theorem mul_inv_cancel : IsUnit a → a * a⁻¹ = 1 := by
 #align is_unit.mul_inv_cancel IsUnit.mul_inv_cancel
 #align is_add_unit.add_neg_cancel IsAddUnit.add_neg_cancel
 
+/-- The element of the group of units, corresponding to an element of a monoid which is a unit. As
+opposed to `IsUnit.unit`, the inverse is computable and comes from the inversion on `α`. This is
+useful to transfer properties of inversion in `Units α` to `α`. See also `toUnits`. -/
+@[to_additive (attr := simps val )
+"The element of the additive group of additive units, corresponding to an element of
+an additive monoid which is an additive unit. As opposed to `IsAddUnit.addUnit`, the negation is
+computable and comes from the negation on `α`. This is useful to transfer properties of negation
+in `AddUnits α` to `α`. See also `toAddUnits`."]
+def unit' (h : IsUnit a) : αˣ := ⟨a, a⁻¹, h.mul_inv_cancel, h.inv_mul_cancel⟩
+#align is_unit.unit' IsUnit.unit'
+#align is_add_unit.add_unit' IsAddUnit.addUnit'
+#align is_unit.coe_unit' IsUnit.val_unit'
+#align is_add_unit.coe_add_unit' IsAddUnit.val_addUnit'
+
+-- Porting note: TODO: `simps val_inv` fails
+@[to_additive] lemma val_inv_unit' (h : IsUnit a) : ↑(h.unit'⁻¹) = a⁻¹ := rfl
+#align is_unit.coe_inv_unit' IsUnit.val_inv_unit'
+#align is_add_unit.coe_neg_add_unit' IsAddUnit.val_neg_addUnit'
+
+@[to_additive (attr := simp)]
+protected lemma mul_inv_cancel_left (h : IsUnit a) : ∀ b, a * (a⁻¹ * b) = b :=
+  h.unit'.mul_inv_cancel_left
+#align is_unit.mul_inv_cancel_left IsUnit.mul_inv_cancel_left
+#align is_add_unit.add_neg_cancel_left IsAddUnit.add_neg_cancel_left
+
+@[to_additive (attr := simp)]
+protected lemma inv_mul_cancel_left (h : IsUnit a) : ∀ b, a⁻¹ * (a * b) = b :=
+  h.unit'.inv_mul_cancel_left
+#align is_unit.inv_mul_cancel_left IsUnit.inv_mul_cancel_left
+#align is_add_unit.neg_add_cancel_left IsAddUnit.neg_add_cancel_left
+
+@[to_additive (attr := simp)]
+protected lemma mul_inv_cancel_right (h : IsUnit b) (a : α) : a * b * b⁻¹ = a :=
+  h.unit'.mul_inv_cancel_right _
+#align is_unit.mul_inv_cancel_right IsUnit.mul_inv_cancel_right
+#align is_add_unit.add_neg_cancel_right IsAddUnit.add_neg_cancel_right
+
+@[to_additive (attr := simp)]
+protected lemma inv_mul_cancel_right (h : IsUnit b) (a : α) : a * b⁻¹ * b = a :=
+  h.unit'.inv_mul_cancel_right _
+#align is_unit.inv_mul_cancel_right IsUnit.inv_mul_cancel_right
+#align is_add_unit.neg_add_cancel_right IsAddUnit.neg_add_cancel_right
+
+@[to_additive]
+protected lemma div_self (h : IsUnit a) : a / a = 1 := by rw [div_eq_mul_inv, h.mul_inv_cancel]
+#align is_unit.div_self IsUnit.div_self
+#align is_add_unit.sub_self IsAddUnit.sub_self
+
+@[to_additive]
+protected lemma eq_mul_inv_iff_mul_eq (h : IsUnit c) : a = b * c⁻¹ ↔ a * c = b :=
+  h.unit'.eq_mul_inv_iff_mul_eq
+#align is_unit.eq_mul_inv_iff_mul_eq IsUnit.eq_mul_inv_iff_mul_eq
+#align is_add_unit.eq_add_neg_iff_add_eq IsAddUnit.eq_add_neg_iff_add_eq
+
+@[to_additive]
+protected lemma eq_inv_mul_iff_mul_eq (h : IsUnit b) : a = b⁻¹ * c ↔ b * a = c :=
+  h.unit'.eq_inv_mul_iff_mul_eq
+#align is_unit.eq_inv_mul_iff_mul_eq IsUnit.eq_inv_mul_iff_mul_eq
+#align is_add_unit.eq_neg_add_iff_add_eq IsAddUnit.eq_neg_add_iff_add_eq
+
+@[to_additive]
+protected lemma inv_mul_eq_iff_eq_mul (h : IsUnit a) : a⁻¹ * b = c ↔ b = a * c :=
+  h.unit'.inv_mul_eq_iff_eq_mul
+#align is_unit.inv_mul_eq_iff_eq_mul IsUnit.inv_mul_eq_iff_eq_mul
+#align is_add_unit.neg_add_eq_iff_eq_add IsAddUnit.neg_add_eq_iff_eq_add
+
+@[to_additive]
+protected lemma mul_inv_eq_iff_eq_mul (h : IsUnit b) : a * b⁻¹ = c ↔ a = c * b :=
+  h.unit'.mul_inv_eq_iff_eq_mul
+#align is_unit.mul_inv_eq_iff_eq_mul IsUnit.mul_inv_eq_iff_eq_mul
+#align is_add_unit.add_neg_eq_iff_eq_add IsAddUnit.add_neg_eq_iff_eq_add
+
+@[to_additive]
+protected lemma mul_inv_eq_one (h : IsUnit b) : a * b⁻¹ = 1 ↔ a = b :=
+  @Units.mul_inv_eq_one _ _ h.unit' _
+#align is_unit.mul_inv_eq_one IsUnit.mul_inv_eq_one
+#align is_add_unit.add_neg_eq_zero IsAddUnit.add_neg_eq_zero
+
+@[to_additive]
+protected lemma inv_mul_eq_one (h : IsUnit a) : a⁻¹ * b = 1 ↔ a = b :=
+  @Units.inv_mul_eq_one _ _ h.unit' _
+#align is_unit.inv_mul_eq_one IsUnit.inv_mul_eq_one
+#align is_add_unit.neg_add_eq_zero IsAddUnit.neg_add_eq_zero
+
+@[to_additive]
+protected lemma mul_eq_one_iff_eq_inv (h : IsUnit b) : a * b = 1 ↔ a = b⁻¹ :=
+  @Units.mul_eq_one_iff_eq_inv _ _ h.unit' _
+#align is_unit.mul_eq_one_iff_eq_inv IsUnit.mul_eq_one_iff_eq_inv
+#align is_add_unit.add_eq_zero_iff_eq_neg IsAddUnit.add_eq_zero_iff_eq_neg
+
+@[to_additive]
+protected lemma mul_eq_one_iff_inv_eq (h : IsUnit a) : a * b = 1 ↔ a⁻¹ = b :=
+  @Units.mul_eq_one_iff_inv_eq _ _ h.unit' _
+#align is_unit.mul_eq_one_iff_inv_eq IsUnit.mul_eq_one_iff_inv_eq
+#align is_add_unit.add_eq_zero_iff_neg_eq IsAddUnit.add_eq_zero_iff_neg_eq
+
+@[to_additive (attr := simp)]
+protected lemma div_mul_cancel (h : IsUnit b) (a : α) : a / b * b = a := by
+  rw [div_eq_mul_inv, h.inv_mul_cancel_right]
+#align is_unit.div_mul_cancel IsUnit.div_mul_cancel
+#align is_add_unit.sub_add_cancel IsAddUnit.sub_add_cancel
+
+@[to_additive (attr := simp)]
+protected lemma mul_div_cancel (h : IsUnit b) (a : α) : a * b / b = a := by
+  rw [div_eq_mul_inv, h.mul_inv_cancel_right]
+#align is_unit.mul_div_cancel IsUnit.mul_div_cancel
+#align is_add_unit.add_sub_cancel IsAddUnit.add_sub_cancel
+
+@[to_additive]
+protected lemma mul_one_div_cancel (h : IsUnit a) : a * (1 / a) = 1 := by simp [h]
+#align is_unit.mul_one_div_cancel IsUnit.mul_one_div_cancel
+#align is_add_unit.add_zero_sub_cancel IsAddUnit.add_zero_sub_cancel
+
+@[to_additive]
+protected lemma one_div_mul_cancel (h : IsUnit a) : 1 / a * a = 1 := by simp [h]
+#align is_unit.one_div_mul_cancel IsUnit.one_div_mul_cancel
+#align is_add_unit.zero_sub_add_cancel IsAddUnit.zero_sub_add_cancel
+
+@[to_additive]
+lemma inv (h : IsUnit a) : IsUnit a⁻¹ := by
+  obtain ⟨u, hu⟩ := h
+  rw [← hu, ← Units.val_inv_eq_inv_val]
+  exact Units.isUnit _
+#align is_unit.inv IsUnit.inv
+#align is_add_unit.neg IsAddUnit.neg
+
+@[to_additive] lemma div (ha : IsUnit a) (hb : IsUnit b) : IsUnit (a / b) := by
+  rw [div_eq_mul_inv]; exact ha.mul hb.inv
+#align is_unit.div IsUnit.div
+#align is_add_unit.sub IsAddUnit.sub
+
+@[to_additive]
+protected lemma div_left_inj (h : IsUnit c) : a / c = b / c ↔ a = b := by
+  simp only [div_eq_mul_inv]
+  exact Units.mul_left_inj h.inv.unit'
+#align is_unit.div_left_inj IsUnit.div_left_inj
+#align is_add_unit.sub_left_inj IsAddUnit.sub_left_inj
+
+@[to_additive]
+protected lemma div_eq_iff (h : IsUnit b) : a / b = c ↔ a = c * b := by
+  rw [div_eq_mul_inv, h.mul_inv_eq_iff_eq_mul]
+#align is_unit.div_eq_iff IsUnit.div_eq_iff
+#align is_add_unit.sub_eq_iff IsAddUnit.sub_eq_iff
+
+@[to_additive]
+protected lemma eq_div_iff (h : IsUnit c) : a = b / c ↔ a * c = b := by
+  rw [div_eq_mul_inv, h.eq_mul_inv_iff_mul_eq]
+#align is_unit.eq_div_iff IsUnit.eq_div_iff
+#align is_add_unit.eq_sub_iff IsAddUnit.eq_sub_iff
+
+@[to_additive]
+protected lemma div_eq_of_eq_mul (h : IsUnit b) : a = c * b → a / b = c :=
+  h.div_eq_iff.2
+#align is_unit.div_eq_of_eq_mul IsUnit.div_eq_of_eq_mul
+#align is_add_unit.sub_eq_of_eq_add IsAddUnit.sub_eq_of_eq_add
+
+@[to_additive]
+protected lemma eq_div_of_mul_eq (h : IsUnit c) : a * c = b → a = b / c :=
+  h.eq_div_iff.2
+#align is_unit.eq_div_of_mul_eq IsUnit.eq_div_of_mul_eq
+#align is_add_unit.eq_sub_of_add_eq IsAddUnit.eq_sub_of_add_eq
+
+@[to_additive]
+protected lemma div_eq_one_iff_eq (h : IsUnit b) : a / b = 1 ↔ a = b :=
+  ⟨eq_of_div_eq_one, fun hab => hab.symm ▸ h.div_self⟩
+#align is_unit.div_eq_one_iff_eq IsUnit.div_eq_one_iff_eq
+#align is_add_unit.sub_eq_zero_iff_eq IsAddUnit.sub_eq_zero_iff_eq
+
+/-- The `Group` version of this lemma is `div_mul_cancel'''` -/
+@[to_additive "The `AddGroup` version of this lemma is `sub_add_cancel''`"]
+protected lemma div_mul_left (h : IsUnit b) : b / (a * b) = 1 / a := by
+  rw [div_eq_mul_inv, mul_inv_rev, h.mul_inv_cancel_left, one_div]
+#align is_unit.div_mul_left IsUnit.div_mul_left
+#align is_add_unit.sub_add_left IsAddUnit.sub_add_left
+
+@[to_additive]
+protected lemma mul_div_mul_right (h : IsUnit c) (a b : α) : a * c / (b * c) = a / b := by
+  simp only [div_eq_mul_inv, mul_inv_rev, mul_assoc, h.mul_inv_cancel_left]
+#align is_unit.mul_div_mul_right IsUnit.mul_div_mul_right
+#align is_add_unit.add_sub_add_right IsAddUnit.add_sub_add_right
+
+@[to_additive]
+protected lemma mul_mul_div (a : α) (h : IsUnit b) : a * b * (1 / b) = a := by simp [h]
+#align is_unit.mul_mul_div IsUnit.mul_mul_div
+#align is_add_unit.add_add_sub IsAddUnit.add_add_sub
+
+end DivisionMonoid
+
+section DivisionCommMonoid
+variable [DivisionCommMonoid α] {a b c d : α}
+
+@[to_additive]
+protected lemma div_mul_right (h : IsUnit a) (b : α) : a / (a * b) = 1 / b := by
+  rw [mul_comm, h.div_mul_left]
+#align is_unit.div_mul_right IsUnit.div_mul_right
+#align is_add_unit.sub_add_right IsAddUnit.sub_add_right
+
+@[to_additive]
+protected lemma mul_div_cancel_left (h : IsUnit a) (b : α) : a * b / a = b := by
+  rw [mul_comm, h.mul_div_cancel]
+#align is_unit.mul_div_cancel_left IsUnit.mul_div_cancel_left
+#align is_add_unit.add_sub_cancel_left IsAddUnit.add_sub_cancel_left
+
+@[to_additive]
+protected lemma mul_div_cancel' (h : IsUnit a) (b : α) : a * (b / a) = b := by
+  rw [mul_comm, h.div_mul_cancel]
+#align is_unit.mul_div_cancel' IsUnit.mul_div_cancel'
+#align is_add_unit.add_sub_cancel' IsAddUnit.add_sub_cancel'
+
+@[to_additive]
+protected lemma mul_div_mul_left (h : IsUnit c) (a b : α) : c * a / (c * b) = a / b := by
+  rw [mul_comm c, mul_comm c, h.mul_div_mul_right]
+#align is_unit.mul_div_mul_left IsUnit.mul_div_mul_left
+#align is_add_unit.add_sub_add_left IsAddUnit.add_sub_add_left
+
+@[to_additive]
+protected lemma mul_eq_mul_of_div_eq_div (hb : IsUnit b) (hd : IsUnit d)
+    (a c : α) (h : a / b = c / d) : a * d = c * b := by
+  rw [← mul_one a, ← hb.div_self, ← mul_comm_div, h, div_mul_eq_mul_div, hd.div_mul_cancel]
+#align is_unit.mul_eq_mul_of_div_eq_div IsUnit.mul_eq_mul_of_div_eq_div
+#align is_add_unit.add_eq_add_of_sub_eq_sub IsAddUnit.add_eq_add_of_sub_eq_sub
+
+@[to_additive]
+protected lemma div_eq_div_iff (hb : IsUnit b) (hd : IsUnit d) :
+    a / b = c / d ↔ a * d = c * b := by
+  rw [← (hb.mul hd).mul_left_inj, ← mul_assoc, hb.div_mul_cancel, ← mul_assoc, mul_right_comm,
+    hd.div_mul_cancel]
+#align is_unit.div_eq_div_iff IsUnit.div_eq_div_iff
+#align is_add_unit.sub_eq_sub_iff IsAddUnit.sub_eq_sub_iff
+
+@[to_additive]
+protected lemma div_div_cancel (h : IsUnit a) : a / (a / b) = b := by
+  rw [div_div_eq_mul_div, h.mul_div_cancel_left]
+#align is_unit.div_div_cancel IsUnit.div_div_cancel
+#align is_add_unit.sub_sub_cancel IsAddUnit.sub_sub_cancel
+
+@[to_additive]
+protected lemma div_div_cancel_left (h : IsUnit a) : a / b / a = b⁻¹ := by
+  rw [div_eq_mul_inv, div_eq_mul_inv, mul_right_comm, h.mul_inv_cancel, one_mul]
+#align is_unit.div_div_cancel_left IsUnit.div_div_cancel_left
+#align is_add_unit.sub_sub_cancel_left IsAddUnit.sub_sub_cancel_left
+
+end DivisionCommMonoid
 end IsUnit
+
+@[field_simps]
+lemma divp_eq_div [DivisionMonoid α] (a : α) (u : αˣ) : a /ₚ u = a / u :=
+  by rw [div_eq_mul_inv, divp, u.val_inv_eq_inv_val]
+#align divp_eq_div divp_eq_div
+
+@[to_additive]
+lemma Group.isUnit [Group α] (a : α) : IsUnit a := ⟨⟨a, a⁻¹, mul_inv_self _, inv_mul_self _⟩, rfl⟩
+#align group.is_unit Group.isUnit
+#align add_group.is_add_unit AddGroup.isAddUnit
 
 -- namespace
 end IsUnit

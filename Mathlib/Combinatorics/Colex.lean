@@ -315,7 +315,7 @@ lemma toColex_image_lt_toColex_image (hf : StrictMono f) :
   lt_iff_lt_of_le_iff_le <| toColex_image_le_toColex_image hf
 
 lemma toColex_image_ofColex_strictMono (hf : StrictMono f) :
-    StrictMono fun s ↦ toColex $ image f $ ofColex s :=
+    StrictMono fun s ↦ toColex <| image f <| ofColex s :=
   fun _s _t ↦ (toColex_image_lt_toColex_image hf).2
 
 /-! ### Initial segments -/
@@ -402,7 +402,7 @@ lemma geomSum_ofColex_strictMono (hn : 2 ≤ n) : StrictMono fun s ↦ ∑ k in 
   rw [toColex_lt_toColex_iff_exists_forall_lt] at hst
   obtain ⟨a, hat, has, ha⟩ := hst
   rw [← sum_sdiff_lt_sum_sdiff]
-  exact (Nat.geomSum_lt hn $ by simpa).trans_le <| single_le_sum (fun _ _ ↦ by positivity) <|
+  exact (Nat.geomSum_lt hn <| by simpa).trans_le <| single_le_sum (fun _ _ ↦ by positivity) <|
     mem_sdiff.2 ⟨hat, has⟩
 
 /-- For finsets of naturals of naturals, the colexicographic order is equivalent to the order
