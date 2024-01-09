@@ -54,8 +54,7 @@ theorem IsLindelof.compl_mem_sets (hs : IsLindelof s) {f : Filter X} [CountableI
     (hf : ∀ x ∈ s, sᶜ ∈ 𝓝 x ⊓ f) : sᶜ ∈ f := by
   contrapose! hf
   simp only [not_mem_iff_inf_principal_compl, compl_compl, inf_assoc] at hf ⊢
-  apply @hs
-  apply inf_le_right
+  exact hs inf_le_right
 
 /-- The complement to a Lindelöf set belongs to a filter `f` with the countable intersection
   property if each `x ∈ s` has a neighborhood `t` within `s` such that `tᶜ` belongs to `f`. -/
@@ -72,13 +71,9 @@ theorem IsLindelof.compl_mem_sets_of_nhdsWithin (hs : IsLindelof s) {f : Filter 
 @[elab_as_elim]
 theorem IsLindelof.induction_on (hs : IsLindelof s) {p : Set X → Prop}
     (hmono : ∀ ⦃s t⦄, s ⊆ t → p t → p s)
-    (hcountable_union : ∀ (S : Set (Set X)), S.Countable → (∀ s ∈ S, p s) → p (⋃ s ∈ S, s))
+    (hcountable_union : ∀ (S : Set (Set X)), S.Countable → (∀ s ∈ S, p s) → p (⋃₀ S))
     (hnhds : ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, p t) : p s := by
-  let f : Filter X := by
-    apply ofCountableUnion p ?_ (fun t ht _ hsub ↦ hmono hsub ht)
-    intro S hSc hS
-    rw [Set.sUnion_eq_biUnion]
-    exact hcountable_union S hSc hS
+  let f : Filter X := ofCountableUnion p hcountable_union (fun t ht _ hsub ↦ hmono hsub ht)
   have : sᶜ ∈ f := hs.compl_mem_sets_of_nhdsWithin (by simpa using hnhds)
   rwa [← compl_compl s]
 
@@ -145,11 +140,11 @@ theorem IsLindelof.elim_countable_subcover {ι : Type v} (hs : IsLindelof s) (U 
     exact ⟨r,hrcountable,Subset.trans hst hsub⟩
   have hcountable_union : ∀ (S : Set (Set X)), S.Countable
       → (∀ s ∈ S, ∃ r : Set ι, r.Countable ∧ (s ⊆ ⋃ i ∈ r, U i))
-      → ∃ r : Set ι, r.Countable ∧ (⋃ s ∈ S, s ⊆ ⋃ i ∈ r, U i) := by
+      → ∃ r : Set ι, r.Countable ∧ (⋃₀ S ⊆ ⋃ i ∈ r, U i) := by
     intro S hS hsr
     choose! r hr using hsr
     refine ⟨⋃ s ∈ S, r s, hS.biUnion_iff.mpr (fun s hs ↦ (hr s hs).1), ?_⟩
-    refine iUnion₂_subset ?h.right.h
+    refine sUnion_subset ?h.right.h
     simp only [mem_iUnion, exists_prop, iUnion_exists, biUnion_and']
     exact fun i is x hx ↦ mem_biUnion is ((hr i is).2 hx)
   have h_nhds : ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, ∃ r : Set ι, r.Countable ∧ (t ⊆ ⋃ i ∈ r, U i) := by
@@ -622,6 +617,8 @@ theorem isLindelof_iff_isLindelof_univ : IsLindelof s ↔ IsLindelof (univ : Set
 theorem isLindelof_iff_LindelofSpace : IsLindelof s ↔ LindelofSpace s :=
   isLindelof_iff_isLindelof_univ.trans isLindelof_univ_iff
 
+lemma IsLindelof.of_coe [LindelofSpace s] : IsLindelof s := isLindelof_iff_LindelofSpace.mpr ‹_›
+
 theorem IsLindelof.countable (hs : IsLindelof s) (hs' : DiscreteTopology s) : s.Countable :=
   countable_coe_iff.mp
   (@countable_of_Lindelof_of_discrete _ _ (isLindelof_iff_LindelofSpace.mp hs) hs')
@@ -658,17 +655,40 @@ instance Quot.LindelofSpace {r : X → X → Prop} [LindelofSpace X] : LindelofS
 instance Quotient.LindelofSpace {s : Setoid X} [LindelofSpace X] : LindelofSpace (Quotient s) :=
   Quot.LindelofSpace
 
+/-- A continuous image of a Lindelöf set is a Lindelöf set within the codomain. -/
+theorem LindelofSpace.of_continuous_surjective {f : X → Y} [LindelofSpace X] (hf : Continuous f)
+    (hsur : Function.Surjective f) : LindelofSpace Y := by
+  refine { isLindelof_univ := ?isLindelof_univ }
+  rw [← Set.image_univ_of_surjective hsur]
+  exact IsLindelof.image (isLindelof_univ_iff.mpr ‹_›) hf
+
 /-- A set `s` is Hereditarily Lindelöf if every subset is a Lindelof set. We require this only
 for open sets in the definition, and then conclude that this holds for all sets by ADD. -/
 def IsHereditarilyLindelof (s : Set X) :=
-  ∀ t ⊆ s, IsOpen t → IsLindelof t
+  ∀ t ⊆ s, IsLindelof t
 
 /-- Type class for Hereditarily Lindelöf spaces.  -/
 class HereditarilyLindelofSpace (X : Type*) [TopologicalSpace X] : Prop where
   /-- In a Hereditarily Lindelöf space, `Set.univ` is a Hereditarily Lindelöf set. -/
   isHereditarilyLindelof_univ : IsHereditarilyLindelof (univ : Set X)
 
-instance SecondCountableTopology.to_HereditarilyLindelof [SecondCountableTopology X] :
+lemma IsHereditarilyLindelof.isLindelof_subset (hs : IsHereditarilyLindelof s) (ht : t ⊆ s) :
+    IsLindelof t := hs t ht
+
+lemma IsHereditarilyLindelof.isLindelof (hs : IsHereditarilyLindelof s) :
+    IsLindelof s := hs.isLindelof_subset Subset.rfl
+
+instance HereditarilyLindelof.to_Lindelof [HereditarilyLindelofSpace X] : LindelofSpace X := by
+  refine { isLindelof_univ := ?isLindelof_univ }
+  apply HereditarilyLindelofSpace.isHereditarilyLindelof_univ
+  exact univ_subset_iff.mpr rfl
+
+theorem HereditarilyLindelof_LindelofSets [HereditarilyLindelofSpace X] (s : Set X):
+    IsLindelof s := by
+  apply HereditarilyLindelofSpace.isHereditarilyLindelof_univ
+  exact subset_univ s
+
+instance (priority := 100) SecondCountableTopology.to_HereditarilyLindelof [SecondCountableTopology X] :
     HereditarilyLindelofSpace X := by
   refine { isHereditarilyLindelof_univ := ?isHereditarilyLindelof_univ }
   unfold IsHereditarilyLindelof
@@ -680,26 +700,8 @@ instance SecondCountableTopology.to_HereditarilyLindelof [SecondCountableTopolog
   use t, htc
   exact subset_of_subset_of_eq hcover (id htu.symm)
 
-instance HereditarilyLindelof.to_Lindelof [HereditarilyLindelofSpace X] : LindelofSpace X := by
-  refine { isLindelof_univ := ?isLindelof_univ }
-  apply HereditarilyLindelofSpace.isHereditarilyLindelof_univ <;> simp
-
 instance SecondCountableTopology.to_Lindelof [SecondCountableTopology X] : LindelofSpace X := by
   apply HereditarilyLindelof.to_Lindelof
-
-theorem HereditarilyLindelof_LindelofSets [HereditarilyLindelofSpace X] (s : Set X):
-    IsLindelof s := by
-  apply isLindelof_iff_countable_subcover.mpr
-  intro ι U hι hs
-  have hU : IsOpen (⋃ i, U i) := isOpen_iUnion hι
-  have : IsLindelof (⋃ i, U i) := by
-    apply HereditarilyLindelofSpace.isHereditarilyLindelof_univ
-    apply subset_univ (⋃ i, U i)
-    apply hU
-  have := isLindelof_iff_countable_subcover.mp this U hι (Eq.subset rfl)
-  rcases this with ⟨t,⟨htc, hts⟩⟩
-  use t, htc
-  exact Subset.trans hs hts
 
 lemma eq_open_union_countable [HereditarilyLindelofSpace X] {ι : Type u} (U : ι → Set X)
     (h : ∀ i, IsOpen (U i)) : ∃ t : Set ι, t.Countable ∧ ⋃ i∈t, U i = ⋃ i, U i := by
@@ -707,3 +709,8 @@ lemma eq_open_union_countable [HereditarilyLindelofSpace X] {ι : Type u} (U : �
   rcases isLindelof_iff_countable_subcover.mp this U h (Eq.subset rfl) with ⟨t,⟨htc, htu⟩⟩
   use t, htc
   apply eq_of_subset_of_subset (iUnion₂_subset_iUnion (fun i ↦ i ∈ t) fun i ↦ U i) htu
+
+instance HereditarilyLindelof.lindelofSpace_subtype [HereditarilyLindelofSpace X] (p : X → Prop) :
+    LindelofSpace {x // p x} := by
+  apply isLindelof_iff_LindelofSpace.mp
+  exact HereditarilyLindelof_LindelofSets fun x ↦ p x
