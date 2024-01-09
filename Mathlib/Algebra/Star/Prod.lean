@@ -56,6 +56,11 @@ instance [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S] [StarRing R
   { inferInstanceAs (StarAddMonoid (R × S)),
     inferInstanceAs (StarMul (R × S)) with }
 
+instance {α : Type w} [SMul α R] [SMul αᵐᵒᵖ R] [SMul α S] [SMul αᵐᵒᵖ S] [Star α] [Star R] [Star S]
+    [StarModule' α R] [StarModule' α S] : StarModule' α (R × S) where
+  star_smul' _ _ := Prod.ext (star_smul' _ _) (star_smul' _ _)
+  star_op_smul _ _ := Prod.ext (star_op_smul _ _) (star_op_smul _ _)
+
 instance {α : Type w} [SMul α R] [SMul α S] [Star α] [Star R] [Star S]
     [StarModule α R] [StarModule α S] : StarModule α (R × S) where
   star_smul _ _ := Prod.ext (star_smul _ _) (star_smul _ _)
