@@ -323,7 +323,7 @@ variable
 
 /-- Let `v` and `v'` be vector fields on `M` and `M'`, respectively, and let `f : M → M'` be a
   differentiable map. If `v` and `v'` are `f`-related, then `f` maps integral curves of `v` to
-  integral curves of `v'`. The converse is stated below. -/
+  integral curves of `v'`. -/
 lemma IsIntegralCurveAt.of_mdifferentiable_related (h : IsIntegralCurveAt γ v t₀)
     {f : M → M'} (hf : MDifferentiable I I' f) (hv : ∀ x : M, v' (f x) = mfderiv I I' f x (v x)) :
     IsIntegralCurveAt (f ∘ γ) v' t₀ := by
@@ -334,7 +334,7 @@ lemma IsIntegralCurveAt.of_mdifferentiable_related (h : IsIntegralCurveAt γ v t
 
 /-- Let `v` and `v'` be vector fields on `M` and `M'`, respectively, and let `f : M → M'` be a
   differentiable map. If `f` maps integral curves of `v` to integral curves of `v'`, then `v` and
-  `v'` are `f`-related. The converse is stated above. -/
+  `v'` are `f`-related. -/
 lemma mdifferentiable_related_of_isIntegralCurveAt [BoundarylessManifold I M]
     (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)))
     {f : M → M'} (hf : MDifferentiable I I' f)
@@ -346,7 +346,7 @@ lemma mdifferentiable_related_of_isIntegralCurveAt [BoundarylessManifold I M]
   have hγ := hγ.hasMFDerivAt
   rw [Function.comp_apply, h0] at hγ'
   rw [h0] at hγ
-  have := hasMFDerivAt_unique hγ' <| HasMFDerivAt.comp 0 (hf (γ 0)).hasMFDerivAt hγ
+  have := hasMFDerivAt_unique hγ' <| (hf (γ 0)).hasMFDerivAt.comp 0 hγ
   rw [ContinuousLinearMap.comp_smulRight, ContinuousLinearMap.smulRight_one_eq_iff, h0] at this
   exact this
 
