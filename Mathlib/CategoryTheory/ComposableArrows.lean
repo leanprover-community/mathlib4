@@ -7,7 +7,6 @@ import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.EqToHom
 import Mathlib.CategoryTheory.Functor.Const
 import Mathlib.Tactic.FinCases
-import Mathlib.Tactic.Linarith
 import Std.Tactic.Omega
 
 /-!
@@ -53,7 +52,8 @@ namespace ComposableArrows
 variable {C} {n m : ℕ}
 variable (F G : ComposableArrows C n)
 
-open Lean Elab Tactic
+open Lean Elab Tactic in
+/-- Remove type annotations from hypotheses and add copies to the context. -/
 elab "clean_up" : tactic =>
   withMainContext do
     let ctx ← Lean.MonadLCtx.getLCtx
@@ -75,7 +75,8 @@ are natural numbers such that `i ≤ j ≤ n`. -/
 abbrev map' (i j : ℕ) (hij : i ≤ j := by clean_up; omega) (hjn : j ≤ n := by clean_up; omega) :
   F.obj ⟨i, by clean_up; omega⟩ ⟶ F.obj ⟨j, by clean_up; omega⟩ := F.map (homOfLE (by
     simp only [Fin.mk_le_mk]
-    linarith))
+    clean_up
+    omega))
 
 lemma map'_self (i : ℕ) (hi : i ≤ n := by clean_up; omega) :
     F.map' i i = 𝟙 _ := F.map_id _
