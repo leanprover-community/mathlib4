@@ -24,6 +24,9 @@ prime characteristic.
    sense of Serre.
  * `PerfectField.ofCharZero`: all fields of characteristic zero are perfect.
  * `PerfectField.ofFinite`: all finite fields are perfect.
+ * `Algebra.IsAlgebraic.isSeparable_of_perfectField`, `Algebra.IsAlgebraic.perfectField`:
+   if `L / K` is an algebraic extension, `K` is a perfect field, then `L / K` is separable,
+   and `L` is also a perfect field.
 
 -/
 
@@ -218,3 +221,14 @@ instance toPerfectRing (p : ℕ) [hp : Fact p.Prime] [CharP K p] : PerfectRing K
   exact minpoly.degree_pos ha
 
 end PerfectField
+
+/-- If `L / K` is an algebraic extension, `K` is a perfect field, then `L / K` is separable. -/
+theorem Algebra.IsAlgebraic.isSeparable_of_perfectField {K L : Type*} [Field K] [Field L]
+    [Algebra K L] [PerfectField K] (halg : Algebra.IsAlgebraic K L) : IsSeparable K L :=
+  ⟨fun x ↦ PerfectField.separable_of_irreducible <| minpoly.irreducible (halg x).isIntegral⟩
+
+/-- If `L / K` is an algebraic extension, `K` is a perfect field, then so is `L`. -/
+theorem Algebra.IsAlgebraic.perfectField {K L : Type*} [Field K] [Field L] [Algebra K L]
+    [PerfectField K] (halg : Algebra.IsAlgebraic K L) : PerfectField L := ⟨fun {f} hf ↦ by
+  obtain ⟨_, _, hi, h⟩ := hf.exists_dvd_monic_irreducible_of_isIntegral halg.isIntegral
+  exact (PerfectField.separable_of_irreducible hi).map |>.of_dvd h⟩

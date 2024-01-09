@@ -3,6 +3,8 @@ Copyright (c) 2014 Floris van Doorn (c) 2016 Microsoft Corporation. All rights r
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
+import Mathlib.Algebra.Group.TypeTags
+import Mathlib.Algebra.Ring.Defs
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Data.Nat.Defs
@@ -11,32 +13,19 @@ import Mathlib.Order.Basic
 #align_import data.nat.basic from "leanprover-community/mathlib"@"bd835ef554f37ef9b804f0903089211f89cb370b"
 
 /-!
-# Basic operations on the natural numbers
+# Basic instances for the natural numbers
 
 This file contains:
-- instances on the natural numbers
-- some basic lemmas about natural numbers
-- extra recursors:
-  * `le_rec_on`, `le_induction`: recursion and induction principles starting at non-zero numbers
-  * `decreasing_induction`: recursion growing downwards
-  * `le_rec_on'`, `decreasing_induction'`: versions with slightly weaker assumptions
-  * `strong_rec'`: recursion based on strong inequalities
-- decidability instances on predicates about the natural numbers
-
-Many theorems that used to live in this file have been moved to `Data.Nat.Order`,
-so that this file requires fewer imports.
-For each section here there is a corresponding section in that file with additional results.
-It may be possible to move some of these results here, by tweaking their proofs.
-
-
+* Algebraic instances on the natural numbers
+* Basic lemmas about natural numbers that require more imports than available in
+  `Data.Nat.Defs`.
 -/
 
-
-universe u v
+open Multiplicative
 
 namespace Nat
 
-/-! ### instances -/
+/-! ### Instances -/
 
 instance commSemiring : CommSemiring ℕ where
   add := Nat.add
@@ -66,7 +55,6 @@ instance commSemiring : CommSemiring ℕ where
   npow_succ _ _ := Nat.pow_succ'
 
 /-! Extra instances to short-circuit type class resolution and ensure computability -/
-
 
 instance addCommMonoid : AddCommMonoid ℕ :=
   inferInstance
@@ -98,14 +86,24 @@ instance distrib : Distrib ℕ :=
 instance semiring : Semiring ℕ :=
   inferInstance
 
-protected theorem nsmul_eq_mul (m n : ℕ) : m • n = m * n :=
-  rfl
-#align nat.nsmul_eq_mul Nat.nsmul_eq_mul
-
 instance cancelCommMonoidWithZero : CancelCommMonoidWithZero ℕ :=
   { (inferInstance : CommMonoidWithZero ℕ) with
     mul_left_cancel_of_ne_zero :=
       fun h1 h2 => Nat.eq_of_mul_eq_mul_left (Nat.pos_of_ne_zero h1) h2 }
 #align nat.cancel_comm_monoid_with_zero Nat.cancelCommMonoidWithZero
 
+/-! ### Extra lemmas -/
+
+protected lemma nsmul_eq_mul (m n : ℕ) : m • n = m * n := rfl
+#align nat.nsmul_eq_mul Nat.nsmul_eq_mul
+
+section Multiplicative
+
+lemma toAdd_pow (a : Multiplicative ℕ) (b : ℕ) : toAdd (a ^ b) = toAdd a * b := mul_comm _ _
+#align nat.to_add_pow Nat.toAdd_pow
+
+@[simp] lemma ofAdd_mul (a b : ℕ) : ofAdd (a * b) = ofAdd a ^ b := (toAdd_pow _ _).symm
+#align nat.of_add_mul Nat.ofAdd_mul
+
+end Multiplicative
 end Nat

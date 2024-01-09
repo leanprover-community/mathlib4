@@ -16,13 +16,18 @@ import Mathlib.Tactic.Use
 # Basic operations on the natural numbers
 
 This file contains:
-- some basic lemmas about natural numbers
-- extra recursors:
+* some basic lemmas about natural numbers
+* extra recursors:
   * `leRecOn`, `le_induction`: recursion and induction principles starting at non-zero numbers
   * `decreasing_induction`: recursion growing downwards
   * `le_rec_on'`, `decreasing_induction'`: versions with slightly weaker assumptions
   * `strong_rec'`: recursion based on strong inequalities
-- decidability instances on predicates about the natural numbers
+* decidability instances on predicates about the natural numbers
+
+Many theorems that used to live in this file have been moved to `Data.Nat.Order`, so that
+this file requires fewer imports. For each section here there is a corresponding section in
+that file with additional results. It may be possible to move some of these results here,
+by tweaking their proofs.
 -/
 
 open Function

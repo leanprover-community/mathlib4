@@ -513,15 +513,13 @@ to prove that this map is linear. -/
 theorem Set.Finite.convexHull_eq_image {s : Set E} (hs : s.Finite) : convexHull R s =
     haveI := hs.fintype
     (⇑(∑ x : s, (@LinearMap.proj R s _ (fun _ => R) _ _ x).smulRight x.1)) '' stdSimplex R s := by
-  -- Porting note: Original proof didn't need to specify `hs.fintype`
-  rw [← @convexHull_basis_eq_stdSimplex _ _ _ hs.fintype, ← LinearMap.convexHull_image,
-    ← Set.range_comp]
-  simp_rw [Function.comp]
+  letI := hs.fintype
+  rw [← convexHull_basis_eq_stdSimplex, ← LinearMap.convexHull_image, ← Set.range_comp]
   apply congr_arg
+  simp_rw [Function.comp]
   convert Subtype.range_coe.symm
-  -- Porting note: Original proof didn't need to specify `hs.fintype` and `(1 : R)`
-  simp [LinearMap.sum_apply, ite_smul _ (1 : R), Finset.filter_eq,
-    @Finset.mem_univ _ hs.fintype _]
+  -- Porting note: Original proof didn't need to specify `(1 : R)`
+  simp [LinearMap.sum_apply, ite_smul _ _ (1 : R), Finset.filter_eq, Finset.mem_univ]
 #align set.finite.convex_hull_eq_image Set.Finite.convexHull_eq_image
 
 /-- All values of a function `f ∈ stdSimplex 𝕜 ι` belong to `[0, 1]`. -/

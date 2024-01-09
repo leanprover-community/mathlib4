@@ -799,6 +799,15 @@ theorem exists_finset_of_mem_supr'' {ι : Type*} {f : ι → IntermediateField F
     exact minpoly.ne_zero (isIntegral_iff.mp (h i ⟨x1, hx1⟩).isIntegral)
 #align intermediate_field.exists_finset_of_mem_supr'' IntermediateField.exists_finset_of_mem_supr''
 
+theorem exists_finset_of_mem_adjoin {S : Set E} {x : E} (hx : x ∈ adjoin F S) :
+    ∃ T : Finset E, (T : Set E) ⊆ S ∧ x ∈ adjoin F (T : Set E) := by
+  simp_rw [← biSup_adjoin_simple S, ← iSup_subtype''] at hx
+  obtain ⟨s, hx'⟩ := exists_finset_of_mem_iSup hx
+  refine ⟨s.image Subtype.val, by simp, SetLike.le_def.mp ?_ hx'⟩
+  simp_rw [Finset.coe_image, iSup_le_iff, adjoin_le_iff]
+  rintro _ h _ rfl
+  exact subset_adjoin F _ ⟨_, h, rfl⟩
+
 end AdjoinSimple
 
 end AdjoinDef
