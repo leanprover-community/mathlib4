@@ -137,6 +137,10 @@ theorem closure_Iic (a : α) : closure (Iic a) = Iic a :=
   isClosed_Iic.closure_eq
 #align closure_Iic closure_Iic
 
+theorem le_of_tendsto_of_frequently {f : β → α} {a b : α} {x : Filter β} (lim : Tendsto f x (𝓝 a))
+    (h : ∃ᶠ c in x, f c ≤ b) : a ≤ b :=
+  (isClosed_le' b).mem_of_frequently_of_tendsto h lim
+
 theorem le_of_tendsto {f : β → α} {a b : α} {x : Filter β} [NeBot x] (lim : Tendsto f x (𝓝 a))
     (h : ∀ᶠ c in x, f c ≤ b) : a ≤ b :=
   (isClosed_le' b).mem_of_tendsto lim h
@@ -164,6 +168,10 @@ theorem isClosed_Ici {a : α} : IsClosed (Ici a) :=
 theorem closure_Ici (a : α) : closure (Ici a) = Ici a :=
   isClosed_Ici.closure_eq
 #align closure_Ici closure_Ici
+
+lemma ge_of_tendsto_of_frequently {f : β → α} {a b : α} {x : Filter β} (lim : Tendsto f x (𝓝 a))
+    (h : ∃ᶠ c in x, b ≤ f c) : b ≤ a :=
+  (isClosed_ge' b).mem_of_frequently_of_tendsto h lim
 
 theorem ge_of_tendsto {f : β → α} {a b : α} {x : Filter β} [NeBot x] (lim : Tendsto f x (𝓝 a))
     (h : ∀ᶠ c in x, b ≤ f c) : b ≤ a :=
