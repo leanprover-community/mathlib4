@@ -349,7 +349,7 @@ When `R` is commutative, usually `algebraMap` should be preferred. -/
 structure on S such that S/S/R is a scalar tower. -/
 def ringHomEquivModuleIsScalarTower [Semiring R] [Semiring S] :
     (R →+* S) ≃ {_inst : Module R S // IsScalarTower R S S} where
-  toFun f := let m := Module.compHom S f; ⟨m, ⟨fun r ↦ mul_assoc (f r)⟩⟩
+  toFun f := ⟨Module.compHom S f, SMul.comp.isScalarTower _⟩
   invFun := fun ⟨_, _⟩ ↦ RingHom.smulOneHom
   left_inv f := RingHom.ext fun r ↦ mul_one (f r)
   right_inv := fun ⟨_, _⟩ ↦ Subtype.ext <| Module.ext _ _ <| funext₂ <| smul_one_smul S

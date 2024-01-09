@@ -721,7 +721,7 @@ multiplicative action of M on N that is compatible with the multiplication on N.
   specified by an additive action of M on N that is compatible with the addition on N."]
 def monoidHomEquivMulActionIsScalarTower (M N) [Monoid M] [Monoid N] :
     (M →* N) ≃ {_inst : MulAction M N // IsScalarTower M N N} where
-  toFun f := let a := MulAction.compHom N f; ⟨a, ⟨fun m ↦ mul_assoc (f m)⟩⟩
+  toFun f := ⟨MulAction.compHom N f, SMul.comp.isScalarTower _⟩
   invFun := fun ⟨_, _⟩ ↦ MonoidHom.smulOneHom
   left_inv f := MonoidHom.ext fun m ↦ mul_one (f m)
   right_inv := fun ⟨_, _⟩ ↦ Subtype.ext <| MulAction.ext _ _ <| funext₂ <| smul_one_smul N
