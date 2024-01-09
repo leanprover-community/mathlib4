@@ -395,6 +395,7 @@ theorem cons_eq_append_iff {a b c : List α} {x : α} :
 @[deprecated] alias append_left_cancel := append_cancel_left
 #align list.append_left_cancel List.append_cancel_left
 
+@[deprecated] alias append_right_cancel := append_cancel_right
 #align list.append_right_cancel List.append_cancel_right
 
 theorem append_right_injective (s : List α) : Injective fun t ↦ s ++ t :=
