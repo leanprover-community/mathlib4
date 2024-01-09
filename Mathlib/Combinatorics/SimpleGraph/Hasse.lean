@@ -313,4 +313,27 @@ theorem Walk.toPathGraphHom_val (G : SimpleGraph α) {u v : α} (w : G.Walk u v)
         rw [hom_toFun]
         simp [hi]
 
+theorem Walk.ofPathGraphHom_rec (G : SimpleGraph α) {n : ℕ} (hom : pathGraph (n + 2) →g G) (i : ℕ) :
+    (ofPathGraphHom α G (hom.comp (.pathGraph (n + 1).le_succ))).getVert i =
+      (ofPathGraphHom α G hom).getVert (i + 1) := rfl
+
+theorem Walk.ofPathGraphHom_val (G : SimpleGraph α) {n : ℕ} (hom : pathGraph (n + 1) →g G)
+    (i : Fin (n + 1)) : (ofPathGraphHom α G hom).getVert (n - i.val) = hom i := by
+  induction n with
+  | zero =>
+    simp [eq_top_of_bot_eq_top (by rfl) i]
+  | succ n ih =>
+    have hi : i.val < n + 1 ∨ i.val = n + 1 := Nat.lt_or_eq_of_le (Nat.le_pred_of_lt i.is_lt)
+    match hi with
+    | Or.inl hi =>
+      rw [Nat.succ_sub (Nat.lt_succ.mp hi)]
+      rw [← ofPathGraphHom_rec α G hom (n - i.val)]
+      rw [ih (hom.comp (.pathGraph (n + 1).le_succ)) ⟨i.val, hi⟩]
+      simp
+      exact congrArg hom rfl
+    | Or.inr hi =>
+      have hi' : i = ⊤ := Fin.ext hi
+      simp [hi]
+      simp [hi']
+
 end SimpleGraph
