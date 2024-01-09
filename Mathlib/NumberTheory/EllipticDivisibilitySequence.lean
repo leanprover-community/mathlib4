@@ -37,6 +37,18 @@ Some examples of elliptic divisibility sequences include
  * TODO: prove that `EllDivSequence` is an elliptic divisibility sequence.
  * TODO: prove that a general elliptic divisibility sequence can be given by `EllDivSequence`.
 
+## Implementation notes
+
+`EllDivSequence' b c d n` is defined in terms of the private definition `EllDivSequence'' b c d n`,
+which are equal when `n` is odd and differ by a factor of `b` when `n` is even. This coincides with
+the reference since both agree for `EllDivSequence' b c d 2` and for `EllDivSequence' b c d 4`, and
+the correct factors of `b` are removed in `EllDivSequence' b c d (2 * (m + 2) + 1)` and in
+`EllDivSequence' b c d (2 * (m + 3))`. This is done to avoid the necessity for ring division by `b`
+in the inductive definition of `EllDivSequence' b c d (2 * (m + 3))`. The idea is that, an easy
+lemma shows that `EllDivSequence' b c d (2 * (m + 3))` always contains a factor of `b`, so it is
+possible to remove a factor of `b` a posteriori, but stating this lemma requires first defining
+`EllDivSequence' b c d (2 * (m + 3))`, which requires having this factor of `b` a priori.
+
 ## References
 
 M Ward, *Memoir on Elliptic Divisibility Sequences*
