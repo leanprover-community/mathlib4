@@ -60,7 +60,7 @@ variable {C : Type t₁} [Category.{t₂} C]
 /-- `F : C ⥤ SingleObj G ⥤ V` preserves the limit of some `K : J ⥤ C` if it does
 evaluated at `SingleObj.star G`.-/
 private def SingleObj.preservesLimit (F : C ⥤ SingleObj G ⥤ V)
-    {J : Type w₁} [Category.{w₂, w₁} J] (K : J ⥤ C)
+    {J : Type w₁} [Category.{w₂} J] (K : J ⥤ C)
     (h : PreservesLimit K (F ⋙ (evaluation (SingleObj G) V).obj (SingleObj.star G))) :
     PreservesLimit K F := by
   apply preservesLimitOfEvaluation
@@ -70,7 +70,7 @@ private def SingleObj.preservesLimit (F : C ⥤ SingleObj G ⥤ V)
 /-- `F : C ⥤ Action V G` preserves the limit of some `K : J ⥤ C` if
 if it does after postcomposing with the forgetful functor `Action V G ⥤ V`. -/
 def preservesLimitOfPreserves (F : C ⥤ Action V G) {J : Type w₁}
-    [Category.{w₂, w₁} J] (K : J ⥤ C)
+    [Category.{w₂} J] (K : J ⥤ C)
     (h : PreservesLimit K (F ⋙ Action.forget V G)) : PreservesLimit K F := by
   let F' : C ⥤ SingleObj G ⥤ V := F ⋙ (Action.functorCategoryEquivalence V G).functor
   have : PreservesLimit K F' := SingleObj.preservesLimit _ _ h
@@ -79,7 +79,7 @@ def preservesLimitOfPreserves (F : C ⥤ Action V G) {J : Type w₁}
 /-- `F : C ⥤ Action V G` preserves limits of some shape `J`
 if it does after postcomposing with the forgetful functor `Action V G ⥤ V`. -/
 def preservesLimitsOfShapeOfPreserves (F : C ⥤ Action V G) {J : Type w₁}
-    [Category.{w₂, w₁} J] (h : PreservesLimitsOfShape J (F ⋙ Action.forget V G)) :
+    [Category.{w₂} J] (h : PreservesLimitsOfShape J (F ⋙ Action.forget V G)) :
     PreservesLimitsOfShape J F := by
   constructor
   intro K
@@ -99,7 +99,7 @@ def preservesLimitsOfSizeOfPreserves (F : C ⥤ Action V G)
 /-- `F : C ⥤ SingleObj G ⥤ V` preserves the colimit of some `K : J ⥤ C` if it does
 evaluated at `SingleObj.star G`.-/
 private def SingleObj.preservesColimit (F : C ⥤ SingleObj G ⥤ V)
-    {J : Type w₁} [Category.{w₂, w₁} J] (K : J ⥤ C)
+    {J : Type w₁} [Category.{w₂} J] (K : J ⥤ C)
     (h : PreservesColimit K (F ⋙ (evaluation (SingleObj G) V).obj (SingleObj.star G))) :
     PreservesColimit K F := by
   apply preservesColimitOfEvaluation
@@ -109,7 +109,7 @@ private def SingleObj.preservesColimit (F : C ⥤ SingleObj G ⥤ V)
 /-- `F : C ⥤ Action V G` preserves the colimit of some `K : J ⥤ C` if
 if it does after postcomposing with the forgetful functor `Action V G ⥤ V`. -/
 def preservesColimitOfPreserves (F : C ⥤ Action V G) {J : Type w₁}
-    [Category.{w₂, w₁} J] (K : J ⥤ C)
+    [Category.{w₂} J] (K : J ⥤ C)
     (h : PreservesColimit K (F ⋙ Action.forget V G)) : PreservesColimit K F := by
   let F' : C ⥤ SingleObj G ⥤ V := F ⋙ (Action.functorCategoryEquivalence V G).functor
   have : PreservesColimit K F' := SingleObj.preservesColimit _ _ h
@@ -118,7 +118,7 @@ def preservesColimitOfPreserves (F : C ⥤ Action V G) {J : Type w₁}
 /-- `F : C ⥤ Action V G` preserves colimits of some shape `J`
 if it does after postcomposing with the forgetful functor `Action V G ⥤ V`. -/
 def preservesColimitsOfShapeOfPreserves (F : C ⥤ Action V G) {J : Type w₁}
-    [Category.{w₂, w₁} J] (h : PreservesColimitsOfShape J (F ⋙ Action.forget V G)) :
+    [Category.{w₂} J] (h : PreservesColimitsOfShape J (F ⋙ Action.forget V G)) :
     PreservesColimitsOfShape J F := by
   constructor
   intro K
