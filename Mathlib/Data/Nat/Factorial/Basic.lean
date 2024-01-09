@@ -469,4 +469,3 @@ lemma two_pow_mul_factorial_le_factorial_two_mul (n : ℕ) : 2 ^ n * n ! ≤ (2 
     _ ≤ _ := Nat.factorial_mul_pow_le_factorial
 
 end Nat
-
