@@ -299,7 +299,7 @@ theorem cliqueFree_completeMultipartiteGraph {ι : Type*} [Fintype ι] (V : ι �
   exact absurd he hn
 
 /-- Clique-freeness is preserved by `replaceVertex`. -/
-protected theorem CliqueFree.replaceVertex [DecidableEq α] (h : G.CliqueFree n) (s t) :
+protected theorem CliqueFree.replaceVertex [DecidableEq α] (h : G.CliqueFree n) (s t : α) :
     (G.replaceVertex s t).CliqueFree n := by
   contrapose h
   obtain ⟨⟨f, hi⟩, ha⟩ := topEmbeddingOfNotCliqueFree h

@@ -121,7 +121,7 @@ abbrev addEdge : SimpleGraph V where
 @[simp]
 lemma addEdge_self : G.addEdge s s = G := by ext; simp
 
-lemma addEdge_adj (h : G.Adj s t) : G.addEdge s t = G := by
+lemma addEdge_of_adj (h : G.Adj s t) : G.addEdge s t = G := by
   ext
   simp only [ne_eq, G.ne_of_adj h, not_false_eq_true, true_and, or_iff_left_iff_imp]
   rintro (_ | _) <;> simp_all [adj_comm]
