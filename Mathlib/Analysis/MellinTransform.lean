@@ -99,8 +99,6 @@ theorem MellinConvergent.comp_rpow {f : ℝ → E} {s : ℂ} {a : ℝ} (ha : a �
     add_sub_assoc, sub_add_cancel]
 #align mellin_convergent.comp_rpow MellinConvergent.comp_rpow
 
-variable [CompleteSpace E]
-
 /-- The Mellin transform of a function `f` (for a complex exponent `s`), defined as the integral of
 `t ^ (s - 1) • f` over `Ioi 0`. -/
 def mellin (f : ℝ → E) (s : ℂ) : E :=
@@ -123,10 +121,14 @@ theorem mellin_div_const (f : ℝ → ℂ) (s a : ℂ) : mellin (fun t => f t / 
   simp_rw [mellin, smul_eq_mul, ← mul_div_assoc, integral_div]
 #align mellin_div_const mellin_div_const
 
-theorem mellin_comp_rpow (f : ℝ → E) (s : ℂ) {a : ℝ} (ha : a ≠ 0) :
+theorem mellin_comp_rpow (f : ℝ → E) (s : ℂ) (a : ℝ) :
     mellin (fun t => f (t ^ a)) s = |a|⁻¹ • mellin f (s / a) := by
-  -- note: this is also true for a = 0 (both sides are zero), but this is mathematically
-  -- uninteresting and rather time-consuming to check
+  /- This is true for `a = 0` as all sides are undefined but turn out to vanish thanks to our
+  convention. The interesting case is `a ≠ 0` -/
+  rcases eq_or_ne a 0 with rfl|ha
+  · by_cases hE : CompleteSpace E
+    · simp [integral_smul_const, mellin, setIntegral_Ioi_zero_cpow]
+    · simp [integral, mellin, hE]
   simp_rw [mellin]
   conv_rhs => rw [← integral_comp_rpow_Ioi _ ha, ← integral_smul]
   refine' set_integral_congr measurableSet_Ioi fun t ht => _
@@ -162,7 +164,7 @@ theorem mellin_comp_mul_right (f : ℝ → E) (s : ℂ) {a : ℝ} (ha : 0 < a) :
 #align mellin_comp_mul_right mellin_comp_mul_right
 
 theorem mellin_comp_inv (f : ℝ → E) (s : ℂ) : mellin (fun t => f t⁻¹) s = mellin f (-s) := by
-  simp_rw [← rpow_neg_one, mellin_comp_rpow _ _ (neg_ne_zero.mpr one_ne_zero), abs_neg, abs_one,
+  simp_rw [← rpow_neg_one, mellin_comp_rpow _ _ _, abs_neg, abs_one,
     inv_one, one_smul, ofReal_neg, ofReal_one, div_neg, div_one]
 #align mellin_comp_inv mellin_comp_inv
 
@@ -224,8 +226,8 @@ theorem mellin_convergent_top_of_isBigO {f : ℝ → ℝ}
         ‖t ^ (s - 1) * f t‖ ≤ t ^ (s - 1 + -a) * d := by
       refine' (ae_restrict_mem measurableSet_Ioi).mono fun t ht => _
       have ht' : 0 < t := he'.trans ht
-      rw [norm_mul, rpow_add ht', ← norm_of_nonneg (rpow_nonneg_of_nonneg ht'.le (-a)), mul_assoc,
-        mul_comm _ d, norm_of_nonneg (rpow_nonneg_of_nonneg ht'.le _)]
+      rw [norm_mul, rpow_add ht', ← norm_of_nonneg (rpow_nonneg ht'.le (-a)), mul_assoc,
+        mul_comm _ d, norm_of_nonneg (rpow_nonneg ht'.le _)]
       gcongr
       exact he t ((le_max_left e 1).trans_lt ht).le
     refine' (HasFiniteIntegral.mul_const _ _).mono' this
@@ -250,7 +252,7 @@ theorem mellin_convergent_zero_of_isBigO {b : ℝ} {f : ℝ → ℝ}
     · show HasFiniteIntegral (fun t => d * t ^ (s - b - 1)) _
       refine' (Integrable.hasFiniteIntegral _).const_mul _
       rw [← IntegrableOn, ← integrableOn_Ioc_iff_integrableOn_Ioo, ←
-        intervalIntegrable_iff_integrable_Ioc_of_le hε.le]
+        intervalIntegrable_iff_integrableOn_Ioc_of_le hε.le]
       exact intervalIntegral.intervalIntegrable_rpow' (by linarith)
     · refine' (ae_restrict_iff' measurableSet_Ioo).mpr (eventually_of_forall fun t ht => _)
       rw [mul_comm, norm_mul]
@@ -259,7 +261,7 @@ theorem mellin_convergent_zero_of_isBigO {b : ℝ} {f : ℝ → ℝ}
         exact ht.2
       · calc _ ≤ d * ‖t ^ (-b)‖ * ‖t ^ (s - 1)‖ := by gcongr
           _ = d * t ^ (s - b - 1) := ?_
-        simp_rw [norm_of_nonneg (rpow_nonneg_of_nonneg (le_of_lt ht.1) _), mul_assoc]
+        simp_rw [norm_of_nonneg (rpow_nonneg (le_of_lt ht.1) _), mul_assoc]
         rw [← rpow_add ht.1]
         congr 2
         abel
@@ -373,7 +375,7 @@ theorem mellin_hasDerivAt_of_isBigO_rpow [CompleteSpace E] [NormedSpace ℂ E] {
     rw [Complex.norm_eq_abs, abs_cpow_eq_rpow_re_of_pos ht]
     rcases le_or_lt 1 t with h | h
     · refine' le_add_of_le_of_nonneg (rpow_le_rpow_of_exponent_le h _)
-        (rpow_nonneg_of_nonneg (zero_le_one.trans h) _)
+        (rpow_nonneg (zero_le_one.trans h) _)
       rw [sub_re, one_re, sub_le_sub_iff_right]
       rw [mem_ball_iff_norm, Complex.norm_eq_abs] at hz
       have hz' := (re_le_abs _).trans hz.le
@@ -471,7 +473,7 @@ theorem hasMellin_one_Ioc {s : ℂ} (hs : 0 < re s) :
   simp_rw [HasMellin, mellin, MellinConvergent, ← indicator_smul, IntegrableOn,
     integrable_indicator_iff aux3, smul_eq_mul, integral_indicator aux3, mul_one, IntegrableOn,
     Measure.restrict_restrict_of_subset Ioc_subset_Ioi_self]
-  rw [← IntegrableOn, ← intervalIntegrable_iff_integrable_Ioc_of_le zero_le_one]
+  rw [← IntegrableOn, ← intervalIntegrable_iff_integrableOn_Ioc_of_le zero_le_one]
   refine' ⟨intervalIntegral.intervalIntegrable_cpow' aux1, _⟩
   rw [← intervalIntegral.integral_of_le zero_le_one, integral_cpow (Or.inl aux1), sub_add_cancel,
     ofReal_zero, ofReal_one, one_cpow, zero_cpow aux2, sub_zero]

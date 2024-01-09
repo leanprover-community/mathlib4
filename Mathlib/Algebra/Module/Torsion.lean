@@ -394,7 +394,7 @@ variable (hp : (S : Set ι).Pairwise fun i j => p i ⊔ p j = ⊤)
 -- Porting note: mem_iSup_finset_iff_exists_sum now requires DecidableEq ι
 theorem iSup_torsionBySet_ideal_eq_torsionBySet_iInf [DecidableEq ι] :
     ⨆ i ∈ S, torsionBySet R M (p i) = torsionBySet R M ↑(⨅ i ∈ S, p i) := by
-  cases' S.eq_empty_or_nonempty with h h
+  rcases S.eq_empty_or_nonempty with h | h
   · simp only [h]
     -- Porting note: converts were not cooperating
     convert iSup_emptyset (f := fun i => torsionBySet R M (p i)) <;> simp
@@ -719,6 +719,19 @@ theorem noZeroSMulDivisors_iff_torsion_eq_bot : NoZeroSMulDivisors R M ↔ torsi
             rw [← mem_bot R, ← h]
             exact ⟨⟨a, mem_nonZeroDivisors_of_ne_zero ha⟩, hax⟩ }
 #align submodule.no_zero_smul_divisors_iff_torsion_eq_bot Submodule.noZeroSMulDivisors_iff_torsion_eq_bot
+
+lemma torsion_int {G} [AddCommGroup G] :
+    (torsion ℤ G).toAddSubgroup = AddCommGroup.torsion G := by
+  ext x
+  refine ((isOfFinAddOrder_iff_zsmul_eq_zero (x := x)).trans ?_).symm
+  simp [mem_nonZeroDivisors_iff_ne_zero]
+
+lemma AddMonoid.IsTorsionFree_iff_noZeroSMulDivisors {G : Type*} [AddCommGroup G] :
+    AddMonoid.IsTorsionFree G ↔ NoZeroSMulDivisors ℤ G := by
+  rw [Submodule.noZeroSMulDivisors_iff_torsion_eq_bot,
+    AddMonoid.isTorsionFree_iff_torsion_eq_bot,
+    ← Submodule.toAddSubgroup_injective.eq_iff,
+    Submodule.torsion_int, Submodule.bot_toAddSubgroup]
 
 end Torsion
 

@@ -3,14 +3,7 @@ Copyright (c) 2018 Mario Carneiro, Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kevin Buzzard
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.Algebra.Algebra.Tower
-import Mathlib.Algebra.Ring.Idempotents
-import Mathlib.GroupTheory.Finiteness
-import Mathlib.LinearAlgebra.LinearIndependent
-import Mathlib.Order.CompactlyGenerated
 import Mathlib.Order.Filter.EventuallyConst
-import Mathlib.Order.OrderIsoNat
 import Mathlib.RingTheory.Finiteness
 import Mathlib.RingTheory.Nilpotent
 
@@ -392,28 +385,26 @@ lemma Submodule.finite_ne_bot_of_independent {ι : Type*} {N : ι → Submodule 
   CompleteLattice.WellFounded.finite_ne_bot_of_independent
     (isNoetherian_iff_wellFounded.mp inferInstance) h
 
-theorem finite_of_linearIndependent [Nontrivial R] {s : Set M}
-    (hs : LinearIndependent R ((↑) : s → M)) : s.Finite := by
-  refine'
-    by_contradiction fun hf =>
-      (RelEmbedding.wellFounded_iff_no_descending_seq.1 (wellFounded_submodule_gt R M)).elim' _
-  have f : ℕ ↪ s := Set.Infinite.natEmbedding s hf
-  have : ∀ n, (↑) ∘ f '' { m | m ≤ n } ⊆ s := by
-    rintro n x ⟨y, _, rfl⟩
-    exact (f y).2
-  let coe' : s → M := (↑)
-  have : ∀ a b : ℕ, a ≤ b ↔
-    span R (coe' ∘ f '' { m | m ≤ a }) ≤ span R ((↑) ∘ f '' { m | m ≤ b }) := by
-    intro a b
-    rw [span_le_span_iff hs (this a) (this b),
-      Set.image_subset_image_iff (Subtype.coe_injective.comp f.injective), Set.subset_def]
-    exact ⟨fun hab x (hxa : x ≤ a) => le_trans hxa hab, fun hx => hx a (le_refl a)⟩
-  exact
-    ⟨⟨fun n => span R (coe' ∘ f '' { m | m ≤ n }), fun x y => by
-        rw [le_antisymm_iff, (this x y).symm, (this y x).symm, ← le_antisymm_iff, imp_self]
-        trivial⟩,
-      by dsimp [GT.gt]; simp only [lt_iff_le_not_le, (this _ _).symm]; tauto⟩
-#align finite_of_linear_independent finite_of_linearIndependent
+/-- A linearly-independent family of vectors in a module over a non-trivial ring must be finite if
+the module is Noetherian. -/
+theorem LinearIndependent.finite_of_isNoetherian [Nontrivial R] {ι} {v : ι → M}
+    (hv : LinearIndependent R v) : Finite ι := by
+  have hwf := isNoetherian_iff_wellFounded.mp (by infer_instance : IsNoetherian R M)
+  refine' CompleteLattice.WellFounded.finite_of_independent hwf hv.independent_span_singleton
+    fun i contra => _
+  apply hv.ne_zero i
+  have : v i ∈ R ∙ v i := Submodule.mem_span_singleton_self (v i)
+  rwa [contra, Submodule.mem_bot] at this
+#align linear_independent.finite_of_is_noetherian LinearIndependent.finite_of_isNoetherian
+
+theorem LinearIndependent.set_finite_of_isNoetherian [Nontrivial R] {s : Set M}
+    (hi : LinearIndependent R ((↑) : s → M)) : s.Finite :=
+  @Set.toFinite _ _ hi.finite_of_isNoetherian
+#align linear_independent.set_finite_of_is_noetherian LinearIndependent.set_finite_of_isNoetherian
+
+@[deprecated]
+alias finite_of_linearIndependent := LinearIndependent.set_finite_of_isNoetherian
+#align finite_of_linear_independent LinearIndependent.set_finite_of_isNoetherian
 
 /-- If the first and final modules in a short exact sequence are Noetherian,
   then the middle module is also Noetherian. -/
@@ -449,7 +440,7 @@ lemma LinearMap.eventually_iSup_ker_pow_eq (f : M →ₗ[R] M) :
     monotone_stabilizes_iff_noetherian.mpr inferInstance f.iterateKer
   refine eventually_atTop.mpr ⟨n, fun m hm ↦ ?_⟩
   refine le_antisymm (iSup_le fun l ↦ ?_) (le_iSup (fun i ↦ LinearMap.ker (f ^ i)) m)
-  cases' le_or_lt m l with h h
+  rcases le_or_lt m l with h | h
   · rw [← hn _ (hm.trans h), hn _ hm]
   · exact f.iterateKer.monotone h.le
 
@@ -588,7 +579,7 @@ theorem isNoetherian_of_fg_of_noetherian {R M} [Ring R] [AddCommGroup M] [Module
     rcases hn with ⟨l, hl1, hl2⟩
     refine' ⟨fun x => l x, Subtype.ext _⟩
     change (∑ i in s.attach, l i • (i : M)) = n
-    rw [@Finset.sum_attach M M s _ fun i => l i • i, ← hl2,
+    rw [s.sum_attach fun i ↦ l i • i, ← hl2,
       Finsupp.total_apply, Finsupp.sum, eq_comm]
     refine' Finset.sum_subset hl1 fun x _ hx => _
     rw [Finsupp.not_mem_support_iff.1 hx, zero_smul]
@@ -598,7 +589,7 @@ instance isNoetherian_of_isNoetherianRing_of_finite (R M : Type*)
     [Ring R] [AddCommGroup M] [Module R M] [IsNoetherianRing R] [Module.Finite R M] :
     IsNoetherian R M :=
   have : IsNoetherian R (⊤ : Submodule R M) :=
-    isNoetherian_of_fg_of_noetherian _ $ Module.finite_def.mp inferInstance
+    isNoetherian_of_fg_of_noetherian _ <| Module.finite_def.mp inferInstance
   isNoetherian_of_linearEquiv (LinearEquiv.ofTop (⊤ : Submodule R M) rfl)
 #align is_noetherian_of_fg_of_noetherian' isNoetherian_of_isNoetherianRing_of_finite
 

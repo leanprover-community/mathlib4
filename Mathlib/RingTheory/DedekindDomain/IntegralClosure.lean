@@ -120,7 +120,7 @@ variable (A K)
 /-- Send a set of `x`s in a finite extension `L` of the fraction field of `R`
 to `(y : R) • x ∈ integralClosure R L`. -/
 theorem exists_integral_multiples (s : Finset L) :
-    ∃ (y : _) (_ : y ≠ (0 : A)), ∀ x ∈ s, IsIntegral A (y • x) := by
+    ∃ y ≠ (0 : A), ∀ x ∈ s, IsIntegral A (y • x) := by
   haveI := Classical.decEq L
   refine' s.induction _ _
   · use 1, one_ne_zero
@@ -201,10 +201,10 @@ theorem IsIntegralClosure.isNoetherianRing [IsIntegrallyClosed A] [IsNoetherianR
 and `L` has no zero smul divisors by `A`, the integral closure `C` of `A` in `L` is
 a free `A`-module. -/
 theorem IsIntegralClosure.module_free [NoZeroSMulDivisors A L] [IsPrincipalIdealRing A] :
-    Module.Free A C := by
+    Module.Free A C :=
   haveI : NoZeroSMulDivisors A C := IsIntegralClosure.noZeroSMulDivisors A L
   haveI : IsNoetherian A C := IsIntegralClosure.isNoetherian A K L _
-  exact Module.free_of_finite_type_torsion_free'
+  inferInstance
 #align is_integral_closure.module_free IsIntegralClosure.module_free
 
 /- If `L` is a finite separable extension of `K = Frac(A)`, where `A` is a principal ring

@@ -221,7 +221,7 @@ theorem measure_eq_iSup (H : InnerRegularWRT μ p q) (hU : q U) :
 
 theorem exists_subset_lt_add (H : InnerRegularWRT μ p q) (h0 : p ∅) (hU : q U) (hμU : μ U ≠ ∞)
     (hε : ε ≠ 0) : ∃ K, K ⊆ U ∧ p K ∧ μ U < μ K + ε := by
-  cases' eq_or_ne (μ U) 0 with h₀ h₀
+  rcases eq_or_ne (μ U) 0 with h₀ | h₀
   · refine' ⟨∅, empty_subset _, h0, _⟩
     rwa [measure_empty, h₀, zero_add, pos_iff_ne_zero]
   · rcases H hU _ (ENNReal.sub_lt_self hμU h₀ hε) with ⟨K, hKU, hKc, hrK⟩
@@ -423,7 +423,7 @@ lemma of_restrict [OpensMeasurableSpace α] {μ : Measure α} {s : ℕ → Set �
   have : ∀ n, ∃ (U : _) (_ : U ⊇ A n), IsOpen U ∧ μ U < μ (A n) + δ n := by
     intro n
     have H₁ : ∀ t, μ.restrict (s n) t = μ (t ∩ s n) := fun t => restrict_apply' (hm n)
-    have Ht : μ.restrict (s n) (A n) ≠ ⊤ := by
+    have Ht : μ.restrict (s n) (A n) ≠ ∞ := by
       rw [H₁]
       exact ((measure_mono ((inter_subset_left _ _).trans (subset_iUnion A n))).trans_lt HA).ne
     rcases (A n).exists_isOpen_lt_add Ht (δ0 n).ne' with ⟨U, hAU, hUo, hU⟩
@@ -486,7 +486,7 @@ open Finset in
 sets. Then the measure is weakly regular. -/
 theorem weaklyRegular_of_finite [BorelSpace α] (μ : Measure α) [IsFiniteMeasure μ]
     (H : InnerRegularWRT μ IsClosed IsOpen) : WeaklyRegular μ := by
-  have hfin : ∀ {s}, μ s ≠ ⊤ := @(measure_ne_top μ)
+  have hfin : ∀ {s}, μ s ≠ ∞ := @(measure_ne_top μ)
   suffices ∀ s, MeasurableSet s → ∀ ε, ε ≠ 0 → ∃ F, F ⊆ s ∧ ∃ U, U ⊇ s ∧
       IsClosed F ∧ IsOpen U ∧ μ s ≤ μ F + ε ∧ μ U ≤ μ s + ε by
     refine'

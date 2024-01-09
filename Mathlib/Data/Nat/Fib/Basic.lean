@@ -128,12 +128,12 @@ theorem fib_add_two_strictMono : StrictMono fun n => fib (n + 2) := by
 #align nat.fib_add_two_strict_mono Nat.fib_add_two_strictMono
 
 lemma fib_strictMonoOn : StrictMonoOn fib (Set.Ici 2)
-  | _m + 2, _, _n + 2, _, hmn => fib_add_two_strictMono $ lt_of_add_lt_add_right hmn
+  | _m + 2, _, _n + 2, _, hmn => fib_add_two_strictMono <| lt_of_add_lt_add_right hmn
 
 lemma fib_lt_fib {m : ℕ} (hm : 2 ≤ m) : ∀ {n}, fib m < fib n ↔ m < n
   | 0 => by simp [hm]
   | 1 => by simp [hm]
-  | n + 2 => fib_strictMonoOn.lt_iff_lt hm $ by simp
+  | n + 2 => fib_strictMonoOn.lt_iff_lt hm <| by simp
 
 theorem le_fib_self {n : ℕ} (five_le_n : 5 ≤ n) : n ≤ fib n := by
   induction' five_le_n with n five_le_n IH
@@ -152,7 +152,7 @@ lemma le_fib_add_one : ∀ n, n ≤ fib n + 1
   | 2 => le_rfl
   | 3 => le_rfl
   | 4 => le_rfl
-  | _n + 5 => (le_fib_self le_add_self).trans $ le_succ _
+  | _n + 5 => (le_fib_self le_add_self).trans <| le_succ _
 
 /-- Subsequent Fibonacci numbers are coprime,
   see https://proofwiki.org/wiki/Consecutive_Fibonacci_Numbers_are_Coprime -/
@@ -267,7 +267,7 @@ theorem fast_fib_eq (n : ℕ) : fastFib n = fib n := by rw [fastFib, fast_fib_au
 #align nat.fast_fib_eq Nat.fast_fib_eq
 
 theorem gcd_fib_add_self (m n : ℕ) : gcd (fib m) (fib (n + m)) = gcd (fib m) (fib n) := by
-  cases' Nat.eq_zero_or_pos n with h h
+  rcases Nat.eq_zero_or_pos n with h | h
   · rw [h]
     simp
   replace h := Nat.succ_pred_eq_of_pos h; rw [← h, succ_eq_add_one]

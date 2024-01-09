@@ -41,8 +41,8 @@ proves Noether's first and second isomorphism theorems.
 isomorphism theorems, quotient groups
 -/
 
-
 open Function
+open scoped Pointwise
 
 universe u v w x
 
@@ -196,6 +196,8 @@ theorem mk_prod {G ι : Type*} [CommGroup G] (N : Subgroup G) (s : Finset ι) {f
     ((Finset.prod s f : G) : G ⧸ N) = Finset.prod s (fun i => (f i : G ⧸ N)) :=
   map_prod (QuotientGroup.mk' N) _ _
 
+@[to_additive (attr := simp)] lemma map_mk'_self : N.map (mk' N) = ⊥ := by aesop
+
 /-- A group homomorphism `φ : G →* M` with `N ⊆ ker(φ)` descends (i.e. `lift`s) to a
 group homomorphism `G/N →* M`. -/
 @[to_additive "An `AddGroup` homomorphism `φ : G →+ M` with `N ⊆ ker(φ)` descends (i.e. `lift`s)
@@ -290,6 +292,30 @@ theorem map_comp_map {I : Type*} [Group I] (M : Subgroup H) (O : Subgroup I) [M.
   MonoidHom.ext (map_map N M O f g hf hg hgf)
 #align quotient_group.map_comp_map QuotientGroup.map_comp_map
 #align quotient_add_group.map_comp_map QuotientAddGroup.map_comp_map
+
+section Pointwise
+open Set
+
+@[to_additive (attr := simp)] lemma image_coe : ((↑) : G → Q) '' N = 1 :=
+  congr_arg ((↑) : Subgroup Q → Set Q) <| map_mk'_self N
+
+@[to_additive]
+lemma preimage_image_coe (s : Set G) : ((↑) : G → Q) ⁻¹' ((↑) '' s) = N * s := by
+  ext a
+  constructor
+  · rintro ⟨b, hb, h⟩
+    refine ⟨a / b, (QuotientGroup.eq_one_iff _).1 ?_, b, hb, div_mul_cancel' _ _⟩
+    simp only [h, QuotientGroup.mk_div, div_self']
+  · rintro ⟨a, ha, b, hb, rfl⟩
+    refine ⟨b, hb, ?_⟩
+    simpa only [QuotientGroup.mk_mul, self_eq_mul_left, QuotientGroup.eq_one_iff]
+
+@[to_additive]
+lemma image_coe_inj {s t : Set G} : ((↑) : G → Q) '' s = ((↑) : G → Q) '' t ↔ ↑N * s = N * t := by
+  simp_rw [← preimage_image_coe]
+  exact QuotientGroup.mk_surjective.preimage_injective.eq_iff.symm
+
+end Pointwise
 
 section congr
 
@@ -596,7 +622,7 @@ noncomputable def quotientInfEquivProdNormalQuotient (H N : Subgroup G) [N.Norma
       rintro ⟨y, hy : y ∈ (H ⊔ N)⟩;
       rw [← SetLike.mem_coe] at hy
       rw [mul_normal H N] at hy
-      rcases hy with ⟨h, n, hh, hn, rfl⟩
+      rcases hy with ⟨h, hh, n, hn, rfl⟩
       use ⟨h, hh⟩
       let _ : Setoid ↑(H ⊔ N) :=
         (@leftRel ↑(H ⊔ N) (H ⊔ N : Subgroup G).toGroup (N.subgroupOf (H ⊔ N)))

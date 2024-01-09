@@ -85,7 +85,7 @@ theorem integrableOn_rpow_mul_exp_neg_rpow {p s : ℝ} (hs : -1 < s) (hp : 1 ≤
     constructor
     · rw [← integrableOn_Icc_iff_integrableOn_Ioc]
       refine IntegrableOn.mul_continuousOn ?_ ?_ isCompact_Icc
-      · refine (intervalIntegrable_iff_integrable_Icc_of_le zero_le_one).mp ?_
+      · refine (intervalIntegrable_iff_integrableOn_Icc_of_le zero_le_one).mp ?_
         exact intervalIntegral.intervalIntegrable_rpow' hs
       · intro x _
         change ContinuousWithinAt ((fun x => exp (- x)) ∘ (fun x => x ^ p)) (Icc 0 1) x
@@ -628,7 +628,7 @@ theorem isLittleO_exp_neg_mul_sq_cocompact {a : ℂ} (ha : 0 < a.re) (s : ℝ) :
           tendsto_rpow_abs_mul_exp_neg_mul_sq_cocompact ha (-s))
     refine' (eventually_cofinite_ne 0).mp (eventually_of_forall fun x _ => _)
     dsimp only
-    rw [norm_mul, norm_of_nonneg (rpow_nonneg_of_nonneg (abs_nonneg _) _), mul_comm,
+    rw [norm_mul, norm_of_nonneg (rpow_nonneg (abs_nonneg _) _), mul_comm,
       rpow_neg (abs_nonneg x), div_eq_mul_inv, norm_of_nonneg (exp_pos _).le]
 #align is_o_exp_neg_mul_sq_cocompact isLittleO_exp_neg_mul_sq_cocompact
 

@@ -386,17 +386,16 @@ nonrec theorem quadrant_I (hd : DiffContOnCl ℂ f (Ioi 0 ×ℂ Ioi 0))
       have hc : ContinuousWithinAt f (Ioi 0 ×ℂ Ioi 0) 0 := by
         refine' (hd.continuousOn _ _).mono subset_closure
         simp [closure_reProdIm, mem_reProdIm]
-      refine'
-        ((hc.tendsto.comp <| tendsto_exp_comap_re_atBot.inf H.tendsto).isBigO_one ℝ).trans
-          (isBigO_of_le _ fun w => _)
+      refine ((hc.tendsto.comp <| tendsto_exp_comap_re_atBot.inf H.tendsto).isBigO_one ℝ).trans
+        (isBigO_of_le _ fun w => ?_)
       rw [norm_one, Real.norm_of_nonneg (Real.exp_pos _).le, Real.one_le_exp_iff]
-      exact mul_nonneg (le_max_right _ _) (Real.exp_pos _).le
+      positivity
     · -- For the estimate as `ζ.re → ∞`, we reuse the upper estimate on `f`
       simp only [eventually_inf_principal, eventually_comap, comp_apply, one_mul,
         Real.norm_of_nonneg (Real.exp_pos _).le, abs_exp, ← Real.exp_mul, Real.exp_le_exp]
       refine' (eventually_ge_atTop 0).mono fun x hx z hz _ => _
       rw [hz, _root_.abs_of_nonneg hx, mul_comm _ c]
-      exact mul_le_mul_of_nonneg_right (le_max_left _ _) (Real.exp_pos _).le
+      gcongr; apply le_max_left
   · -- If `ζ.im = 0`, then `Complex.exp ζ` is a positive real number
     intro ζ hζ; lift ζ to ℝ using hζ
     rw [comp_apply, ← ofReal_exp]
@@ -689,7 +688,7 @@ theorem right_half_plane_of_tendsto_zero_on_real (hd : DiffContOnCl ℂ f {z | 0
   have hle : ∀ C', (∀ x : ℝ, 0 ≤ x → ‖f x‖ ≤ C') →
       ∀ z : ℂ, 0 ≤ z.re → ‖f z‖ ≤ max C C' := fun C' hC' z hz ↦ by
     rcases hexp with ⟨c, hc, B, hO⟩
-    cases' le_total z.im 0 with h h
+    rcases le_total z.im 0 with h | h
     · refine quadrant_IV (hd.mono fun _ => And.left) ⟨c, hc, B, ?_⟩
           (fun x hx => (hC' x hx).trans <| le_max_right _ _)
           (fun x _ => (him x).trans (le_max_left _ _)) hz h
@@ -714,7 +713,7 @@ theorem right_half_plane_of_tendsto_zero_on_real (hd : DiffContOnCl ℂ f {z | 0
     rw [Real.cocompact_eq, inf_sup_right, (disjoint_atBot_principal_Ici (0 : ℝ)).eq_bot,
       bot_sup_eq]
     exact (hre.norm.eventually <| ge_mem_nhds hlt).filter_mono inf_le_left
-  cases' le_or_lt ‖f x₀‖ C with h h
+  rcases le_or_lt ‖f x₀‖ C with h | h
   ·-- If `‖f x₀‖ ≤ C`, then `hle` implies the required estimate
     simpa only [max_eq_left h] using hle _ hmax
   · -- Otherwise, `‖f z‖ ≤ ‖f x₀‖` for all `z` in the right half-plane due to `hle`.
