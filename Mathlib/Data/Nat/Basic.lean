@@ -5,6 +5,7 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Algebra.Group.TypeTags
 import Mathlib.Algebra.Ring.Defs
+import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Order.Basic
 import Mathlib.Tactic.PushNeg
 import Mathlib.Tactic.Use

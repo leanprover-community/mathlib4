@@ -386,17 +386,16 @@ nonrec theorem quadrant_I (hd : DiffContOnCl ℂ f (Ioi 0 ×ℂ Ioi 0))
       have hc : ContinuousWithinAt f (Ioi 0 ×ℂ Ioi 0) 0 := by
         refine' (hd.continuousOn _ _).mono subset_closure
         simp [closure_reProdIm, mem_reProdIm]
-      refine'
-        ((hc.tendsto.comp <| tendsto_exp_comap_re_atBot.inf H.tendsto).isBigO_one ℝ).trans
-          (isBigO_of_le _ fun w => _)
+      refine ((hc.tendsto.comp <| tendsto_exp_comap_re_atBot.inf H.tendsto).isBigO_one ℝ).trans
+        (isBigO_of_le _ fun w => ?_)
       rw [norm_one, Real.norm_of_nonneg (Real.exp_pos _).le, Real.one_le_exp_iff]
-      exact mul_nonneg (le_max_right _ _) (Real.exp_pos _).le
+      positivity
     · -- For the estimate as `ζ.re → ∞`, we reuse the upper estimate on `f`
       simp only [eventually_inf_principal, eventually_comap, comp_apply, one_mul,
         Real.norm_of_nonneg (Real.exp_pos _).le, abs_exp, ← Real.exp_mul, Real.exp_le_exp]
       refine' (eventually_ge_atTop 0).mono fun x hx z hz _ => _
       rw [hz, _root_.abs_of_nonneg hx, mul_comm _ c]
-      exact mul_le_mul_of_nonneg_right (le_max_left _ _) (Real.exp_pos _).le
+      gcongr; apply le_max_left
   · -- If `ζ.im = 0`, then `Complex.exp ζ` is a positive real number
     intro ζ hζ; lift ζ to ℝ using hζ
     rw [comp_apply, ← ofReal_exp]

@@ -86,7 +86,7 @@ def castRingHom : ℤ →+* α where
   map_mul' := cast_mul
 #align int.cast_ring_hom Int.castRingHom
 
-@[simp] lemma coe_castRingHom : ⇑(castRingHom α) = fun x : ℤ => (x : α) := rfl
+@[simp] lemma coe_castRingHom : ⇑(castRingHom α) = fun x : ℤ ↦ (x : α) := rfl
 #align int.coe_cast_ring_hom Int.coe_castRingHom
 
 lemma cast_commute : ∀ (n : ℤ) (a : α), Commute ↑n a

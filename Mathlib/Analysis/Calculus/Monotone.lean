@@ -168,15 +168,14 @@ theorem Monotone.ae_hasDerivAt {f : ℝ → ℝ} (hf : Monotone f) :
         norm_num; nlinarith
     -- apply the sandwiching argument, with the helper function and `g`
     apply tendsto_of_tendsto_of_tendsto_of_le_of_le' this hx.2
-    · filter_upwards [self_mem_nhdsWithin]
-      rintro y (hy : x < y)
-      have : ↑0 < (y - x) ^ 2 := sq_pos_of_pos (sub_pos.2 hy)
-      apply div_le_div_of_le (sub_pos.2 hy).le
-      exact (sub_le_sub_iff_right _).2 (hf.rightLim_le (by norm_num; linarith))
-    · filter_upwards [self_mem_nhdsWithin]
-      rintro y (hy : x < y)
-      apply div_le_div_of_le (sub_pos.2 hy).le
-      exact (sub_le_sub_iff_right _).2 (hf.le_rightLim (le_refl y))
+    · filter_upwards [self_mem_nhdsWithin] with y (hy : x < y)
+      rw [← sub_pos] at hy
+      gcongr
+      exact hf.rightLim_le (by nlinarith)
+    · filter_upwards [self_mem_nhdsWithin] with y (hy : x < y)
+      rw [← sub_pos] at hy
+      gcongr
+      exact hf.le_rightLim le_rfl
   -- prove differentiability on the left, by sandwiching with values of `g`
   have L2 : Tendsto (fun y => (f y - f x) / (y - x)) (𝓝[<] x)
       (𝓝 (rnDeriv hf.stieltjesFunction.measure volume x).toReal) := by

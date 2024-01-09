@@ -217,9 +217,9 @@ variable (α) [Monoid α] [AddMonoid α]
 /-- Additive homomorphisms from `ℕ` are defined by the image of `1`. -/
 def multiplesHom : α ≃ (ℕ →+ α) where
   toFun x :=
-  { toFun := fun n => n • x
+  { toFun := fun n ↦ n • x
     map_zero' := zero_nsmul x
-    map_add' := fun _ _ => add_nsmul _ _ _ }
+    map_add' := fun _ _ ↦ add_nsmul _ _ _ }
   invFun f := f 1
   left_inv := one_nsmul
   right_inv f := AddMonoidHom.ext_nat <| one_nsmul (f 1)
@@ -259,7 +259,7 @@ lemma MonoidHom.apply_mnat (f : Multiplicative ℕ →* α) (n : Multiplicative 
 @[ext]
 lemma MonoidHom.ext_mnat ⦃f g : Multiplicative ℕ →* α⦄
     (h : f (Multiplicative.ofAdd 1) = g (Multiplicative.ofAdd 1)) : f = g :=
-  MonoidHom.ext fun n => by rw [f.apply_mnat, g.apply_mnat, h]
+  MonoidHom.ext fun n ↦ by rw [f.apply_mnat, g.apply_mnat, h]
 #align monoid_hom.ext_mnat MonoidHom.ext_mnat
 
 lemma AddMonoidHom.apply_nat (f : ℕ →+ α) (n : ℕ) : f n = n • f 1 := by
@@ -273,12 +273,12 @@ variable (α) [CommMonoid α] [AddCommMonoid α]
 
 /-- If `α` is commutative, `multiplesHom` is an additive equivalence. -/
 def multiplesAddHom : α ≃+ (ℕ →+ α) :=
-  { multiplesHom α with map_add' := fun a b => AddMonoidHom.ext fun n => by simp [nsmul_add] }
+  { multiplesHom α with map_add' := fun a b ↦ AddMonoidHom.ext fun n ↦ by simp [nsmul_add] }
 #align multiples_add_hom multiplesAddHom
 
 /-- If `α` is commutative, `powersHom` is a multiplicative equivalence. -/
 def powersMulHom : α ≃* (Multiplicative ℕ →* α) :=
-  { powersHom α with map_mul' := fun a b => MonoidHom.ext fun n => by simp [mul_pow] }
+  { powersHom α with map_mul' := fun a b ↦ MonoidHom.ext fun n ↦ by simp [mul_pow] }
 #align powers_mul_hom powersMulHom
 
 @[simp] lemma multiplesAddHom_apply (x : α) (n : ℕ) : multiplesAddHom α x n = n • x := rfl
