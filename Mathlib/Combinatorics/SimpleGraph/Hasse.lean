@@ -338,8 +338,8 @@ theorem Walk.ofPathGraphHom_val (G : SimpleGraph α) {n : ℕ} (hom : pathGraph 
 theorem Walk.of_to_PathGraphHom (G : SimpleGraph α) {n : ℕ} (hom : pathGraph (n + 1) →g G) :
     ∀ (i : Fin (n + 1)),
       hom i =
-        (ofPathGraphHom α G hom).toPathGraphHom ⟨i.val, by rw [length_ofPathGraphHom]; exact i.prop⟩
-    := by
+        (ofPathGraphHom α G hom).toPathGraphHom
+          ⟨i.val, by rw [length_ofPathGraphHom]; exact i.prop⟩ := by
   simp [toPathGraphHom_val, ofPathGraphHom_val]
 
 theorem Walk.to_of_PathGraphHom (G : SimpleGraph α) {u v : α} (w : G.Walk u v) :
