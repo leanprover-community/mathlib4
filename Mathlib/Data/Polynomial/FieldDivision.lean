@@ -12,7 +12,7 @@ import Mathlib.RingTheory.EuclideanDomain
 /-!
 # Theory of univariate polynomials
 
-This file starts looking like the ring theory of $ R[X] $
+This file starts looking like the ring theory of $R[X]$
 
 -/
 
