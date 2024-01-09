@@ -40,8 +40,6 @@ this requires a definition of submanifolds
 
 open Set
 
-open scoped Manifold
-
 -- Let `M` be a manifold with corners over the pair `(E, H)`.
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
@@ -100,6 +98,7 @@ lemma boundary_eq_complement_interior : I.boundary M = (I.interior M)ᶜ := by
   apply (compl_unique ?_ I.interior_union_boundary_eq_univ).symm
   exact disjoint_iff_inter_eq_empty.mp (I.disjoint_interior_boundary)
 
+variable {I} in
 lemma _root_.range_mem_nhds_isInteriorPoint {x : M} (h : I.IsInteriorPoint x) :
     range I ∈ nhds (extChartAt I x x) := by
   rw [mem_nhds_iff]

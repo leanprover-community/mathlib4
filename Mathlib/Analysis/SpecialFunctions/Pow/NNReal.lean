@@ -30,7 +30,7 @@ namespace NNReal
 restriction of the real power function. For `x > 0`, it is equal to `exp (y log x)`. For `x = 0`,
 one sets `0 ^ 0 = 1` and `0 ^ y = 0` for `y ≠ 0`. -/
 noncomputable def rpow (x : ℝ≥0) (y : ℝ) : ℝ≥0 :=
-  ⟨(x : ℝ) ^ y, Real.rpow_nonneg_of_nonneg x.2 y⟩
+  ⟨(x : ℝ) ^ y, Real.rpow_nonneg x.2 y⟩
 #align nnreal.rpow NNReal.rpow
 
 noncomputable instance : Pow ℝ≥0 ℝ :=
