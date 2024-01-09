@@ -57,7 +57,7 @@ variable {X : Type u} [TopologicalSpace X] [T1Space X]
 
 /-- A space is completely regular if points can be separated from closed sets via
   continuous functions to the unit interval. -/
-@[mk_iff completelyRegularSpace_iff]
+@[mk_iff]
 class CompletelyRegularSpace (X : Type u) [TopologicalSpace X] : Prop where
   completely_regular : ∀ (x : X), ∀ K : Set X, IsClosed K → x ∉ K →
     ∃ f : X → I, Continuous f ∧ f x = 0 ∧ EqOn f 1 K
@@ -83,7 +83,7 @@ instance NormalSpace.instCompletelyRegularSpace [NormalSpace X] : CompletelyRegu
   exact ⟨g, cg, hgx, hgK⟩
 
 /-- A T₃.₅ space is a completely regular space that is also T1. -/
-@[mk_iff t35Space_iff]
+@[mk_iff]
 class T35Space (X : Type u) [TopologicalSpace X] extends T1Space X, CompletelyRegularSpace X : Prop
 
 instance T35Space.instT3space [T35Space X] : T3Space X := by

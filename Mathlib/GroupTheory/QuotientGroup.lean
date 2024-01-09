@@ -297,16 +297,16 @@ section Pointwise
 open Set
 
 @[to_additive (attr := simp)] lemma image_coe : ((↑) : G → Q) '' N = 1 :=
-  congr_arg ((↑) : Subgroup Q → Set Q) $ map_mk'_self N
+  congr_arg ((↑) : Subgroup Q → Set Q) <| map_mk'_self N
 
 @[to_additive]
 lemma preimage_image_coe (s : Set G) : ((↑) : G → Q) ⁻¹' ((↑) '' s) = N * s := by
   ext a
   constructor
   · rintro ⟨b, hb, h⟩
-    refine ⟨a / b, b, (QuotientGroup.eq_one_iff _).1 ?_, hb, div_mul_cancel' _ _⟩
+    refine ⟨a / b, (QuotientGroup.eq_one_iff _).1 ?_, b, hb, div_mul_cancel' _ _⟩
     simp only [h, QuotientGroup.mk_div, div_self']
-  · rintro ⟨a, b, ha, hb, rfl⟩
+  · rintro ⟨a, ha, b, hb, rfl⟩
     refine ⟨b, hb, ?_⟩
     simpa only [QuotientGroup.mk_mul, self_eq_mul_left, QuotientGroup.eq_one_iff]
 
@@ -622,7 +622,7 @@ noncomputable def quotientInfEquivProdNormalQuotient (H N : Subgroup G) [N.Norma
       rintro ⟨y, hy : y ∈ (H ⊔ N)⟩;
       rw [← SetLike.mem_coe] at hy
       rw [mul_normal H N] at hy
-      rcases hy with ⟨h, n, hh, hn, rfl⟩
+      rcases hy with ⟨h, hh, n, hn, rfl⟩
       use ⟨h, hh⟩
       let _ : Setoid ↑(H ⊔ N) :=
         (@leftRel ↑(H ⊔ N) (H ⊔ N : Subgroup G).toGroup (N.subgroupOf (H ⊔ N)))

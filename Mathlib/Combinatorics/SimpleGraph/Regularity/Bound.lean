@@ -50,11 +50,14 @@ theorem stepBound_mono : Monotone stepBound := fun a b h =>
 #align szemeredi_regularity.step_bound_mono SzemerediRegularity.stepBound_mono
 
 theorem stepBound_pos_iff {n : ℕ} : 0 < stepBound n ↔ 0 < n :=
-  zero_lt_mul_right <| by positivity
+  mul_pos_iff_of_pos_right <| by positivity
 #align szemeredi_regularity.step_bound_pos_iff SzemerediRegularity.stepBound_pos_iff
 
 alias ⟨_, stepBound_pos⟩ := stepBound_pos_iff
 #align szemeredi_regularity.step_bound_pos SzemerediRegularity.stepBound_pos
+
+@[norm_cast] lemma coe_stepBound {α : Type*} [Semiring α] (n : ℕ) :
+    (stepBound n : α) = n * 4 ^ n := by unfold stepBound; norm_cast
 
 end SzemerediRegularity
 
@@ -127,11 +130,10 @@ theorem eps_pos (hPε : 100 ≤ (4 : ℝ) ^ P.parts.card * ε ^ 5) : 0 < ε :=
 
 theorem hundred_div_ε_pow_five_le_m [Nonempty α] (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α)
     (hPε : 100 ≤ (4 : ℝ) ^ P.parts.card * ε ^ 5) : 100 / ε ^ 5 ≤ m :=
-  (div_le_of_nonneg_of_le_mul (eps_pow_five_pos hPε).le (by positivity) hPε).trans
-    (by
-      norm_cast
-      rwa [Nat.le_div_iff_mul_le' (stepBound_pos (P.parts_nonempty <|
-        univ_nonempty.ne_empty).card_pos), stepBound, mul_left_comm, ← mul_pow])
+  (div_le_of_nonneg_of_le_mul (eps_pow_five_pos hPε).le (by positivity) hPε).trans <| by
+    norm_cast
+    rwa [Nat.le_div_iff_mul_le' (stepBound_pos (P.parts_nonempty <|
+      univ_nonempty.ne_empty).card_pos), stepBound, mul_left_comm, ← mul_pow]
 #align szemeredi_regularity.hundred_div_ε_pow_five_le_m SzemerediRegularity.hundred_div_ε_pow_five_le_m
 
 theorem hundred_le_m [Nonempty α] (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α)
@@ -239,7 +241,7 @@ theorem add_div_le_sum_sq_div_card (hst : s ⊆ t) (f : ι → 𝕜) (d : 𝕜) 
     d + s.card / t.card * x ^ 2 ≤ (∑ i in t, f i ^ 2) / t.card := by
   obtain hscard | hscard := (s.card.cast_nonneg : (0 : 𝕜) ≤ s.card).eq_or_lt
   · simpa [← hscard] using ht.trans sum_div_card_sq_le_sum_sq_div_card
-  have htcard : (0 : 𝕜) < t.card := hscard.trans_le (Nat.cast_le.2 (card_le_of_subset hst))
+  have htcard : (0 : 𝕜) < t.card := hscard.trans_le (Nat.cast_le.2 (card_le_card hst))
   have h₁ : x ^ 2 ≤ ((∑ i in s, f i) / s.card - (∑ i in t, f i) / t.card) ^ 2 :=
     sq_le_sq.2 (by rwa [abs_of_nonneg hx])
   have h₂ : x ^ 2 ≤ ((∑ i in s, (f i - (∑ j in t, f j) / t.card)) / s.card) ^ 2 := by

@@ -89,7 +89,7 @@ theorem finite_classes_ker {α β : Type*} [Finite β] (f : α → β) : (Setoid
 theorem card_classes_ker_le {α β : Type*} [Fintype β] (f : α → β)
     [Fintype (Setoid.ker f).classes] : Fintype.card (Setoid.ker f).classes ≤ Fintype.card β := by
   classical exact
-      le_trans (Set.card_le_of_subset (classes_ker_subset_fiber_set f)) (Fintype.card_range_le _)
+      le_trans (Set.card_le_card (classes_ker_subset_fiber_set f)) (Fintype.card_range_le _)
 #align setoid.card_classes_ker_le Setoid.card_classes_ker_le
 
 /-- Two equivalence relations are equal iff all their equivalence classes are equal. -/
@@ -363,10 +363,10 @@ structure IndexedPartition {ι α : Type*} (s : ι → Set α) where
 
 /-- The non-constructive constructor for `IndexedPartition`. -/
 noncomputable def IndexedPartition.mk' {ι α : Type*} (s : ι → Set α)
-    (dis : ∀ i j, i ≠ j → Disjoint (s i) (s j)) (nonempty : ∀ i, (s i).Nonempty)
+    (dis : Pairwise fun i j => Disjoint (s i) (s j)) (nonempty : ∀ i, (s i).Nonempty)
     (ex : ∀ x, ∃ i, x ∈ s i) : IndexedPartition s
     where
-  eq_of_mem {_x _i _j} hxi hxj := by_contradiction fun h => (dis _ _ h).le_bot ⟨hxi, hxj⟩
+  eq_of_mem {_x _i _j} hxi hxj := by_contradiction fun h => (dis h).le_bot ⟨hxi, hxj⟩
   some i := (nonempty i).some
   some_mem i := (nonempty i).choose_spec
   index x := (ex x).choose
@@ -399,7 +399,7 @@ theorem iUnion : ⋃ i, s i = univ := by
   simp [hs.exists_mem x]
 #align indexed_partition.Union IndexedPartition.iUnion
 
-theorem disjoint : ∀ {i j}, i ≠ j → Disjoint (s i) (s j) := fun {_i _j} h =>
+theorem disjoint : Pairwise fun i j => Disjoint (s i) (s j) := fun {_i _j} h =>
   disjoint_left.mpr fun {_x} hxi hxj => h (hs.eq_of_mem hxi hxj)
 #align indexed_partition.disjoint IndexedPartition.disjoint
 

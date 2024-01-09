@@ -166,7 +166,7 @@ To avoid adding the same nonnegativity facts many times, it is a global preproce
 def natToInt : GlobalBranchingPreprocessor where
   name := "move nats to ints"
   transform g l := do
-    let l ← l.mapM $ fun h => do
+    let l ← l.mapM fun h => do
       let t ← whnfR (← instantiateMVars (← inferType h))
       if isNatProp t then
         let (some (h', t'), _) ← Term.TermElabM.run' (run_for g (zifyProof none h t))
@@ -299,7 +299,7 @@ def cancelDenoms : Preprocessor where
   name := "cancel denominators"
   transform := fun pf => (do
       let (_, lhs) ← parseCompAndExpr (← inferType pf)
-      guard $ lhs.containsConst (fun n => n = ``HDiv.hDiv || n = ``Div.div)
+      guard <| lhs.containsConst (fun n => n = ``HDiv.hDiv || n = ``Div.div)
       pure [← normalizeDenominatorsLHS pf lhs])
     <|> return [pf]
 end cancelDenoms
@@ -341,7 +341,7 @@ def nlinarithExtras : GlobalPreprocessor where
     let new_es ← s.foldM (fun new_es (⟨e, is_sq⟩ : Expr × Bool) =>
       ((do
         let p ← mkAppM (if is_sq then ``sq_nonneg else ``mul_self_nonneg) #[e]
-        pure $ p::new_es) <|> pure new_es)) ([] : List Expr)
+        pure <| p::new_es) <|> pure new_es)) ([] : List Expr)
     let new_es ← compWithZero.globalize.transform new_es
     trace[linarith] "nlinarith preprocessing found squares"
     trace[linarith] "{s.toList}"
@@ -352,7 +352,7 @@ def nlinarithExtras : GlobalPreprocessor where
         let ⟨ine, _⟩ ← parseCompAndExpr tp
         pure (ine, e)
       catch _ => pure (Ineq.lt, e))
-    let products ← with_comps.mapDiagM $ fun (⟨posa, a⟩ : Ineq × Expr) ⟨posb, b⟩ =>
+    let products ← with_comps.mapDiagM fun (⟨posa, a⟩ : Ineq × Expr) ⟨posb, b⟩ =>
       try
         (some <$> match posa, posb with
           | Ineq.eq, _ => mkAppM ``zero_mul_eq #[a, b]
@@ -386,7 +386,7 @@ partial def removeNe_aux : MVarId → List Expr → MetaM (List Branch) := fun g
   let do_goal : MVarId → MetaM (List Branch) := fun g => do
     let (f, h) ← g.intro1
     h.withContext do
-      let ls ← removeNe_aux h $ hs.removeAll [e]
+      let ls ← removeNe_aux h <| hs.removeAll [e]
       return ls.map (fun b : Branch => (b.1, (.fvar f)::b.2))
   return ((← do_goal ng1) ++ (← do_goal ng2))
 

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mantas Bakšys
 -/
 import Mathlib.Algebra.BigOperators.Basic
-import Mathlib.Algebra.Order.Module
+import Mathlib.Algebra.Order.Module.OrderedSMul
 import Mathlib.Data.Prod.Lex
 import Mathlib.GroupTheory.Perm.Support
 import Mathlib.Order.Monotone.Monovary
