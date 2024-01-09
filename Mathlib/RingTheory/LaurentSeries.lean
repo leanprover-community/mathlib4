@@ -43,7 +43,7 @@ section Zero
 
 variable [Zero R]
 
--- generalize to any locally finite linear order? see #18604
+-- generalize to any locally finite linear order? see mathlib3 PR #18604
 theorem supp_bdd_below_supp_Pwo (f : ℤ → R) (n : ℤ) (hn : ∀(m : ℤ), m < n → f m = 0) :
     (Function.support f).IsPwo := by
   rw [← Set.isWf_iff_isPwo, Set.isWf_iff_no_descending_seq]
@@ -58,11 +58,9 @@ theorem supp_bdd_below_supp_Pwo (f : ℤ → R) (n : ℤ) (hn : ∀(m : ℤ), m 
 
 /-- Construct a Laurent series from any function with support that is bounded below. -/
 def LaurentFromSuppBddBelow (f : ℤ → R) (n : ℤ) (hn : ∀(m : ℤ), m < n → f m = 0) :
-    LaurentSeries R :=
-  {
-    coeff := f
-    isPwo_support' := supp_bdd_below_supp_Pwo f n hn
-  }
+    LaurentSeries R where
+  coeff := f
+  isPwo_support' := supp_bdd_below_supp_Pwo f n hn
 
 @[simp]
 theorem coeff_LaurentFromSuppBddBelow (f : ℤ → R) (m n : ℤ) (hn : ∀(m : ℤ), m < n → f m = 0) :
