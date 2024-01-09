@@ -95,9 +95,9 @@ theorem isPWO_support (x : HahnSeries Γ R) : x.support.IsPWO :=
 #align hahn_series.is_pwo_support HahnSeries.isPWO_support
 
 @[simp]
-theorem isWf_support (x : HahnSeries Γ R) : x.support.IsWf :=
-  x.isPWO_support.isWf
-#align hahn_series.is_wf_support HahnSeries.isWf_support
+theorem isWF_support (x : HahnSeries Γ R) : x.support.IsWF :=
+  x.isPWO_support.isWF
+#align hahn_series.is_wf_support HahnSeries.isWF_support
 
 @[simp]
 theorem mem_support (x : HahnSeries Γ R) (a : Γ) : a ∈ x.support ↔ x.coeff a ≠ 0 :=
@@ -212,7 +212,7 @@ variable [Zero Γ]
 /-- The order of a nonzero Hahn series `x` is a minimal element of `Γ` where `x` has a
   nonzero coefficient, the order of 0 is 0. -/
 def order (x : HahnSeries Γ R) : Γ :=
-  if h : x = 0 then 0 else x.isWf_support.min (support_nonempty_iff.2 h)
+  if h : x = 0 then 0 else x.isWF_support.min (support_nonempty_iff.2 h)
 #align hahn_series.order HahnSeries.order
 
 @[simp]
@@ -221,26 +221,26 @@ theorem order_zero : order (0 : HahnSeries Γ R) = 0 :=
 #align hahn_series.order_zero HahnSeries.order_zero
 
 theorem order_of_ne {x : HahnSeries Γ R} (hx : x ≠ 0) :
-    order x = x.isWf_support.min (support_nonempty_iff.2 hx) :=
+    order x = x.isWF_support.min (support_nonempty_iff.2 hx) :=
   dif_neg hx
 #align hahn_series.order_of_ne HahnSeries.order_of_ne
 
 theorem coeff_order_ne_zero {x : HahnSeries Γ R} (hx : x ≠ 0) : x.coeff x.order ≠ 0 := by
   rw [order_of_ne hx]
-  exact x.isWf_support.min_mem (support_nonempty_iff.2 hx)
+  exact x.isWF_support.min_mem (support_nonempty_iff.2 hx)
 #align hahn_series.coeff_order_ne_zero HahnSeries.coeff_order_ne_zero
 
 theorem order_le_of_coeff_ne_zero {Γ} [LinearOrderedCancelAddCommMonoid Γ] {x : HahnSeries Γ R}
     {g : Γ} (h : x.coeff g ≠ 0) : x.order ≤ g :=
   le_trans (le_of_eq (order_of_ne (ne_zero_of_coeff_ne_zero h)))
-    (Set.IsWf.min_le _ _ ((mem_support _ _).2 h))
+    (Set.IsWF.min_le _ _ ((mem_support _ _).2 h))
 #align hahn_series.order_le_of_coeff_ne_zero HahnSeries.order_le_of_coeff_ne_zero
 
 @[simp]
 theorem order_single (h : r ≠ 0) : (single a r).order = a :=
   (order_of_ne (single_ne_zero h)).trans
     (support_single_subset
-      ((single a r).isWf_support.min_mem (support_nonempty_iff.2 (single_ne_zero h))))
+      ((single a r).isWF_support.min_mem (support_nonempty_iff.2 (single_ne_zero h))))
 #align hahn_series.order_single HahnSeries.order_single
 
 theorem coeff_eq_zero_of_lt_order {x : HahnSeries Γ R} {i : Γ} (hi : i < x.order) :
@@ -250,7 +250,7 @@ theorem coeff_eq_zero_of_lt_order {x : HahnSeries Γ R} {i : Γ} (hi : i < x.ord
   contrapose! hi
   rw [← mem_support] at hi
   rw [order_of_ne hx]
-  exact Set.IsWf.not_lt_min _ _ hi
+  exact Set.IsWF.not_lt_min _ _ hi
 #align hahn_series.coeff_eq_zero_of_lt_order HahnSeries.coeff_eq_zero_of_lt_order
 
 end Order
@@ -384,8 +384,8 @@ theorem min_order_le_order_add {Γ} [LinearOrderedCancelAddCommMonoid Γ] {x y :
   by_cases hx : x = 0; · simp [hx]
   by_cases hy : y = 0; · simp [hy]
   rw [order_of_ne hx, order_of_ne hy, order_of_ne hxy]
-  refine' le_of_eq_of_le _ (Set.IsWf.min_le_min_of_subset (support_add_subset (x := x) (y := y)))
-  exact (Set.IsWf.min_union _ _ _ _).symm
+  refine' le_of_eq_of_le _ (Set.IsWF.min_le_min_of_subset (support_add_subset (x := x) (y := y)))
+  exact (Set.IsWF.min_union _ _ _ _).symm
 #align hahn_series.min_order_le_order_add HahnSeries.min_order_le_order_add
 
 /-- `single` as an additive monoid/group homomorphism -/
@@ -868,8 +868,8 @@ theorem order_mul {Γ} [LinearOrderedCancelAddCommMonoid Γ] [NonUnitalNonAssocS
   · apply order_le_of_coeff_ne_zero
     rw [mul_coeff_order_add_order x y]
     exact mul_ne_zero (coeff_order_ne_zero hx) (coeff_order_ne_zero hy)
-  · rw [order_of_ne hx, order_of_ne hy, order_of_ne (mul_ne_zero hx hy), ← Set.IsWf.min_add]
-    exact Set.IsWf.min_le_min_of_subset support_mul_subset_add_support
+  · rw [order_of_ne hx, order_of_ne hy, order_of_ne (mul_ne_zero hx hy), ← Set.IsWF.min_add]
+    exact Set.IsWF.min_le_min_of_subset support_mul_subset_add_support
 #align hahn_series.order_mul HahnSeries.order_mul
 
 @[simp]
@@ -1082,7 +1082,7 @@ variable [Semiring R]
 @[simps]
 def toPowerSeries : HahnSeries ℕ R ≃+* PowerSeries R where
   toFun f := PowerSeries.mk f.coeff
-  invFun f := ⟨fun n => PowerSeries.coeff R n f, (Nat.lt_wfRel.wf.isWf _).isPWO⟩
+  invFun f := ⟨fun n => PowerSeries.coeff R n f, (Nat.lt_wfRel.wf.isWF _).isPWO⟩
   left_inv f := by
     ext
     simp
@@ -1298,7 +1298,7 @@ def addVal : AddValuation (HahnSeries Γ R) (WithTop Γ) :=
       · by_cases hy : y = 0 <;> · simp [hx, hy]
       · by_cases hy : y = 0
         · simp [hx, hy]
-        · simp only [hx, hy, support_nonempty_iff, if_neg, not_false_iff, isWf_support]
+        · simp only [hx, hy, support_nonempty_iff, if_neg, not_false_iff, isWF_support]
           by_cases hxy : x + y = 0
           · simp [hxy]
           rw [if_neg hxy, ← WithTop.coe_min, WithTop.coe_le_coe]
@@ -1335,7 +1335,7 @@ end Valuation
 
 theorem isPWO_iUnion_support_powers [LinearOrderedCancelAddCommMonoid Γ] [Ring R] [IsDomain R]
     {x : HahnSeries Γ R} (hx : 0 < addVal Γ R x) : (⋃ n : ℕ, (x ^ n).support).IsPWO := by
-  apply (x.isWf_support.isPWO.addSubmonoid_closure _).mono _
+  apply (x.isWF_support.isPWO.addSubmonoid_closure _).mono _
   · exact fun g hg => WithTop.coe_le_coe.1 (le_trans (le_of_lt hx) (addVal_le_of_coeff_ne_zero hg))
   refine' Set.iUnion_subset fun n => _
   induction' n with n ih <;> intro g hn
@@ -1713,7 +1713,7 @@ def powers (x : HahnSeries Γ R) (hx : 0 < addVal Γ R x) : SummableFamily Γ R 
     have hpwo := isPWO_iUnion_support_powers hx
     by_cases hg : g ∈ ⋃ n : ℕ, { g | (x ^ n).coeff g ≠ 0 }
     swap; · exact Set.finite_empty.subset fun n hn => hg (Set.mem_iUnion.2 ⟨n, hn⟩)
-    apply hpwo.isWf.induction hg
+    apply hpwo.isWF.induction hg
     intro y ys hy
     refine'
       ((((addAntidiagonal x.isPWO_support hpwo y).finite_toSet.biUnion fun ij hij =>

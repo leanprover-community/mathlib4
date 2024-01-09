@@ -31,20 +31,20 @@ theorem IsPWO.mul [OrderedCancelCommMonoid α] (hs : s.IsPWO) (ht : t.IsPWO) : I
 variable [LinearOrderedCancelCommMonoid α]
 
 @[to_additive]
-theorem IsWf.mul (hs : s.IsWf) (ht : t.IsWf) : IsWf (s * t) :=
-  (hs.isPWO.mul ht.isPWO).isWf
-#align set.is_wf.mul Set.IsWf.mul
-#align set.is_wf.add Set.IsWf.add
+theorem IsWF.mul (hs : s.IsWF) (ht : t.IsWF) : IsWF (s * t) :=
+  (hs.isPWO.mul ht.isPWO).isWF
+#align set.is_wf.mul Set.IsWF.mul
+#align set.is_wf.add Set.IsWF.add
 
 @[to_additive]
-theorem IsWf.min_mul (hs : s.IsWf) (ht : t.IsWf) (hsn : s.Nonempty) (htn : t.Nonempty) :
+theorem IsWF.min_mul (hs : s.IsWF) (ht : t.IsWF) (hsn : s.Nonempty) (htn : t.Nonempty) :
     (hs.mul ht).min (hsn.mul htn) = hs.min hsn * ht.min htn := by
-  refine' le_antisymm (IsWf.min_le _ _ (mem_mul.2 ⟨_, hs.min_mem _, _, ht.min_mem _, rfl⟩)) _
-  rw [IsWf.le_min_iff]
+  refine' le_antisymm (IsWF.min_le _ _ (mem_mul.2 ⟨_, hs.min_mem _, _, ht.min_mem _, rfl⟩)) _
+  rw [IsWF.le_min_iff]
   rintro _ ⟨x, hx, y, hy, rfl⟩
   exact mul_le_mul' (hs.min_le _ hx) (ht.min_le _ hy)
-#align set.is_wf.min_mul Set.IsWf.min_mul
-#align set.is_wf.min_add Set.IsWf.min_add
+#align set.is_wf.min_mul Set.IsWF.min_mul
+#align set.is_wf.min_add Set.IsWF.min_add
 
 end Set
 
@@ -113,7 +113,7 @@ theorem isPWO_support_mulAntidiagonal : { a | (mulAntidiagonal hs ht a).Nonempty
 
 @[to_additive]
 theorem mulAntidiagonal_min_mul_min {α} [LinearOrderedCancelCommMonoid α] {s t : Set α}
-    (hs : s.IsWf) (ht : t.IsWf) (hns : s.Nonempty) (hnt : t.Nonempty) :
+    (hs : s.IsWF) (ht : t.IsWF) (hns : s.Nonempty) (hnt : t.Nonempty) :
     mulAntidiagonal hs.isPWO ht.isPWO (hs.min hns * ht.min hnt) = {(hs.min hns, ht.min hnt)} := by
   ext ⟨a, b⟩
   simp only [mem_mulAntidiagonal, mem_singleton, Prod.ext_iff]

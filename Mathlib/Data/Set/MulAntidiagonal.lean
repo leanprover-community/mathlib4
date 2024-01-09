@@ -132,12 +132,12 @@ theorem finite_of_isPWO (hs : s.IsPWO) (ht : t.IsPWO) (a) : (mulAntidiagonal s t
 
 end OrderedCancelCommMonoid
 
-@[to_additive Set.AddAntidiagonal.finite_of_isWf]
-theorem finite_of_isWf [LinearOrderedCancelCommMonoid α] {s t : Set α} (hs : s.IsWf) (ht : t.IsWf)
+@[to_additive Set.AddAntidiagonal.finite_of_isWF]
+theorem finite_of_isWF [LinearOrderedCancelCommMonoid α] {s t : Set α} (hs : s.IsWF) (ht : t.IsWF)
     (a) : (mulAntidiagonal s t a).Finite :=
   finite_of_isPWO hs.isPWO ht.isPWO a
-#align set.mul_antidiagonal.finite_of_is_wf Set.MulAntidiagonal.finite_of_isWf
-#align set.add_antidiagonal.finite_of_is_wf Set.AddAntidiagonal.finite_of_isWf
+#align set.mul_antidiagonal.finite_of_is_wf Set.MulAntidiagonal.finite_of_isWF
+#align set.add_antidiagonal.finite_of_is_wf Set.AddAntidiagonal.finite_of_isWF
 
 end MulAntidiagonal
 
