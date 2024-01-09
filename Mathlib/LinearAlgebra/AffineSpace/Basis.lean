@@ -180,7 +180,7 @@ theorem coord_apply_ne (h : i ≠ j) : b.coord i (b j) = 0 := by
 #align affine_basis.coord_apply_ne AffineBasis.coord_apply_ne
 
 theorem coord_apply [DecidableEq ι] (i j : ι) : b.coord i (b j) = if i = j then 1 else 0 := by
-  cases' eq_or_ne i j with h h <;> simp [h]
+  rcases eq_or_ne i j with h | h <;> simp [h]
 #align affine_basis.coord_apply AffineBasis.coord_apply
 
 @[simp]
@@ -258,7 +258,6 @@ theorem surjective_coord [Nontrivial ι] (i : ι) : Function.Surjective <| b.coo
     obtain ⟨j, hij⟩ := exists_ne i
     let s : Finset ι := {i, j}
     have hi : i ∈ s := by simp
-    have _ : j ∈ s := by simp
     let w : ι → k := fun j' => if j' = i then x else 1 - x
     have hw : s.sum w = 1 := by simp [Finset.sum_ite, Finset.filter_insert, hij]
     use s.affineCombination k b w
@@ -310,7 +309,7 @@ theorem coord_apply_centroid [CharZero k] (b : AffineBasis ι k P) {s : Finset �
 #align affine_basis.coord_apply_centroid AffineBasis.coord_apply_centroid
 
 theorem exists_affine_subbasis {t : Set P} (ht : affineSpan k t = ⊤) :
-    ∃ (s : _) (_ : s ⊆ t) (b : AffineBasis (↥s) k P), ⇑b = ((↑) : s → P) := by
+    ∃ s ⊆ t, ∃ b : AffineBasis s k P, ⇑b = ((↑) : s → P) := by
   obtain ⟨s, hst, h_tot, h_ind⟩ := exists_affineIndependent k V t
   refine' ⟨s, hst, ⟨(↑), h_ind, _⟩, rfl⟩
   rw [Subtype.range_coe, h_tot, ht]

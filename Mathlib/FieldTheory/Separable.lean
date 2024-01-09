@@ -53,6 +53,9 @@ theorem not_separable_zero [Nontrivial R] : ¬Separable (0 : R[X]) := by
   simp only [derivative_zero, mul_zero, add_zero, zero_ne_one] at h
 #align polynomial.not_separable_zero Polynomial.not_separable_zero
 
+theorem Separable.ne_zero [Nontrivial R] {f : R[X]} (h : f.Separable) : f ≠ 0 :=
+  (not_separable_zero <| · ▸ h)
+
 theorem separable_one : (1 : R[X]).Separable :=
   isCoprime_one_left
 #align polynomial.separable_one Polynomial.separable_one
@@ -437,9 +440,31 @@ section Splits
 theorem card_rootSet_eq_natDegree [Algebra F K] {p : F[X]} (hsep : p.Separable)
     (hsplit : Splits (algebraMap F K) p) : Fintype.card (p.rootSet K) = p.natDegree := by
   simp_rw [rootSet_def, Finset.coe_sort_coe, Fintype.card_coe]
-  rw [Multiset.toFinset_card_of_nodup, ← natDegree_eq_card_roots hsplit]
-  exact nodup_roots hsep.map
+  rw [Multiset.toFinset_card_of_nodup (nodup_roots hsep.map), ← natDegree_eq_card_roots hsplit]
 #align polynomial.card_root_set_eq_nat_degree Polynomial.card_rootSet_eq_natDegree
+
+/-- If a non-zero polynomial splits, then it has no repeated roots on that field
+if and only if it is separable. -/
+theorem nodup_roots_iff_of_splits {f : F[X]} (hf : f ≠ 0) (h : f.Splits (RingHom.id F)) :
+    f.roots.Nodup ↔ f.Separable := by
+  refine ⟨(fun hnsep ↦ ?_).mtr, nodup_roots⟩
+  rw [Separable, ← gcd_isUnit_iff, isUnit_iff_degree_eq_zero] at hnsep
+  obtain ⟨x, hx⟩ := exists_root_of_splits _
+    (splits_of_splits_of_dvd _ hf h (gcd_dvd_left f _)) hnsep
+  simp_rw [Multiset.nodup_iff_count_le_one, not_forall, not_le]
+  exact ⟨x, ((one_lt_rootMultiplicity_iff_isRoot_gcd hf).2 hx).trans_eq f.count_roots.symm⟩
+
+/-- If a non-zero polynomial over `F` splits in `K`, then it has no repeated roots on `K`
+if and only if it is separable. -/
+theorem nodup_aroots_iff_of_splits [Algebra F K] {f : F[X]} (hf : f ≠ 0)
+    (h : f.Splits (algebraMap F K)) : (f.aroots K).Nodup ↔ f.Separable := by
+  rw [← (algebraMap F K).id_comp, ← splits_map_iff] at h
+  rw [nodup_roots_iff_of_splits (map_ne_zero hf) h, separable_map]
+
+theorem card_rootSet_eq_natDegree_iff_of_splits [Algebra F K] {f : F[X]} (hf : f ≠ 0)
+    (h : f.Splits (algebraMap F K)) : Fintype.card (f.rootSet K) = f.natDegree ↔ f.Separable := by
+  simp_rw [rootSet_def, Finset.coe_sort_coe, Fintype.card_coe, natDegree_eq_card_roots h,
+    Multiset.toFinset_card_eq_card_iff_nodup, nodup_aroots_iff_of_splits hf h]
 
 variable {i : F →+* K}
 
@@ -528,7 +553,7 @@ theorem Polynomial.Separable.isIntegral {x : K} (h : (minpoly F x).Separable) : 
   cases subsingleton_or_nontrivial F
   · haveI := Module.subsingleton F K
     exact ⟨1, monic_one, Subsingleton.elim _ _⟩
-  · exact of_not_not fun h' ↦ not_separable_zero (minpoly.eq_zero h' ▸ h)
+  · exact of_not_not (h.ne_zero <| minpoly.eq_zero ·)
 
 theorem IsSeparable.isIntegral [IsSeparable F K] :
     ∀ x : K, IsIntegral F x := fun x ↦ (IsSeparable.separable F x).isIntegral
@@ -571,11 +596,18 @@ instance (priority := 100) IsSeparable.of_finite (F K : Type*) [Field F] [Field 
 
 section IsSeparableTower
 
+/-- If `R / K / A` is an extension tower, `x : R` is separable over `A`, then it's also separable
+over `K`. -/
+theorem Polynomial.Separable.map_minpoly {A : Type*} [CommRing A]
+    (K : Type*) [Field K] [Algebra A K] {R : Type*} [CommRing R] [Algebra A R] [Algebra K R]
+    [IsScalarTower A K R] {x : R} (h : (minpoly A x).Separable) : (minpoly K x).Separable :=
+  h.map.of_dvd (minpoly.dvd_map_of_isScalarTower _ _ _)
+
 variable (F K E : Type*) [Field F] [Field K] [Field E] [Algebra F K] [Algebra F E] [Algebra K E]
   [IsScalarTower F K E]
 
 theorem isSeparable_tower_top_of_isSeparable [IsSeparable F E] : IsSeparable K E :=
-  ⟨fun x ↦ (IsSeparable.separable F x).map.of_dvd (minpoly.dvd_map_of_isScalarTower _ _ _)⟩
+  ⟨fun x ↦ (IsSeparable.separable F x).map_minpoly _⟩
 #align is_separable_tower_top_of_is_separable isSeparable_tower_top_of_isSeparable
 
 theorem isSeparable_tower_bot_of_isSeparable [h : IsSeparable F E] : IsSeparable F K :=
@@ -594,6 +626,19 @@ theorem IsSeparable.of_algHom (E' : Type*) [Field E'] [Algebra F E'] (f : E →�
   haveI : IsScalarTower F E E' := IsScalarTower.of_algebraMap_eq fun x => (f.commutes x).symm
   exact isSeparable_tower_bot_of_isSeparable F E E'
 #align is_separable.of_alg_hom IsSeparable.of_algHom
+
+lemma IsSeparable.of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [Field A₁] [Field B₁]
+    [Field A₂] [Field B₂] [Algebra A₁ B₁] [Algebra A₂ B₂] (e₁ : A₁ ≃+* A₂) (e₂ : B₁ ≃+* B₂)
+    (he : RingHom.comp (algebraMap A₂ B₂) ↑e₁ = RingHom.comp ↑e₂ (algebraMap A₁ B₁))
+    [IsSeparable A₁ B₁] : IsSeparable A₂ B₂ := by
+  letI := e₁.toRingHom.toAlgebra
+  letI := ((algebraMap A₁ B₁).comp e₁.symm.toRingHom).toAlgebra
+  haveI : IsScalarTower A₁ A₂ B₁ := IsScalarTower.of_algebraMap_eq
+    (fun x ↦ by simp [RingHom.algebraMap_toAlgebra])
+  let e : B₁ ≃ₐ[A₂] B₂ := { e₂ with commutes' := fun r ↦ by simpa [RingHom.algebraMap_toAlgebra]
+                                                  using FunLike.congr_fun he.symm (e₁.symm r) }
+  haveI := isSeparable_tower_top_of_isSeparable A₁ A₂ B₁
+  exact IsSeparable.of_algHom _ _ e.symm.toAlgHom
 
 end IsSeparableTower
 

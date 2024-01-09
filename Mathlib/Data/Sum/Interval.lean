@@ -155,11 +155,11 @@ lemma mem_sumLexLift :
       · rintro ⟨c, hc, rfl⟩
         exact Or.inr (Or.inl ⟨a, b, c, rfl, rfl, rfl, hc⟩)
       · rintro ⟨c, hc, rfl⟩
-        exact Or.inr (Or.inr $ Or.inl ⟨a, b, c, rfl, rfl, rfl, hc⟩)
+        exact Or.inr (Or.inr <| Or.inl ⟨a, b, c, rfl, rfl, rfl, hc⟩)
     · exact fun h ↦ (not_mem_empty _ h).elim
     · rw [sumLexLift, mem_map]
       rintro ⟨c, hc, rfl⟩
-      exact Or.inr (Or.inr $ Or.inr $ ⟨a, b, c, rfl, rfl, rfl, hc⟩)
+      exact Or.inr (Or.inr <| Or.inr <| ⟨a, b, c, rfl, rfl, rfl, hc⟩)
   · rintro (⟨a, b, c, rfl, rfl, rfl, hc⟩ | ⟨a, b, c, rfl, rfl, rfl, hc⟩ |
       ⟨a, b, c, rfl, rfl, rfl, hc⟩ | ⟨a, b, c, rfl, rfl, rfl, hc⟩)
     · exact mem_map_of_mem _ hc

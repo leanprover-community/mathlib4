@@ -169,7 +169,7 @@ theorem mk'_eq_div {r} (s : nonZeroDivisors A) : mk' K r s = algebraMap A K r / 
 #align is_fraction_ring.mk'_eq_div IsFractionRing.mk'_eq_div
 
 theorem div_surjective (z : K) :
-    ∃ (x y : A) (_ : y ∈ nonZeroDivisors A), algebraMap _ _ x / algebraMap _ _ y = z :=
+    ∃ x y : A, y ∈ nonZeroDivisors A ∧ algebraMap _ _ x / algebraMap _ _ y = z :=
   let ⟨x, ⟨y, hy⟩, h⟩ := mk'_surjective (nonZeroDivisors A) z
   ⟨x, y, hy, by rwa [mk'_eq_div] at h⟩
 #align is_fraction_ring.div_surjective IsFractionRing.div_surjective

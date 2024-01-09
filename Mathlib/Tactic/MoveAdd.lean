@@ -358,7 +358,7 @@ operation and a list of "instructions" `instr` that it passes to `permuteExpr`.
   `op`-analogues of `add_comm, add_assoc, add_left_comm`.
 -/
 def reorderAndSimp (mv : MVarId) (instr : List (Expr × Bool)) :
-    MetaM (List MVarId) := do
+    MetaM (List MVarId) := mv.withContext do
   let permExpr ← permuteExpr op (← mv.getType'') instr
   -- generate the implication `permutedMv → mv = permutedMv → mv`
   let eqmpr ← mkAppM ``Eq.mpr #[← mkFreshExprMVar (← mkEq (← mv.getType) permExpr)]
@@ -388,8 +388,9 @@ def unifyMovements (data : Array (Expr × Bool × Syntax)) (tgt : Expr) :
   let atoms := (ops.map Prod.fst).flatten.toList.filter (!isBVar ·)
   -- `instr` are the unified user-provided terms, `neverMatched` are non-unified ones
   let (instr, neverMatched) ← pairUp data.toList atoms
-  let dbgMsg := #[m!"Matching of input variables:\n* pre-match:  {
-    data.map (Prod.snd ∘ Prod.snd)}\n* post-match: {instr}",
+  let dbgMsg := #[m!"Matching of input variables:\n\
+    * pre-match:  {data.map (Prod.snd ∘ Prod.snd)}\n\
+    * post-match: {instr}",
     m!"\nMaximum number of iterations: {ops.size}"]
   -- if there are `neverMatched` terms, return the parsed terms and the syntax
   let errMsg := neverMatched.map fun (t, a, stx) => (if a then m!"← {t}" else m!"{t}", stx)

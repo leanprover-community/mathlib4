@@ -195,7 +195,7 @@ theorem dense_iInter_of_isOpen_nat {f : ℕ → Set α} (ho : ∀ n, IsOpen (f n
 /-- Baire theorem: a countable intersection of dense open sets is dense. Formulated here with ⋂₀. -/
 theorem dense_sInter_of_isOpen {S : Set (Set α)} (ho : ∀ s ∈ S, IsOpen s) (hS : S.Countable)
     (hd : ∀ s ∈ S, Dense s) : Dense (⋂₀ S) := by
-  cases' S.eq_empty_or_nonempty with h h
+  rcases S.eq_empty_or_nonempty with h | h
   · simp [h]
   · rcases hS.exists_eq_range h with ⟨f, hf⟩
     have F : ∀ n, f n ∈ S := fun n => by rw [hf]; exact mem_range_self _
@@ -226,7 +226,7 @@ theorem dense_iInter_of_isOpen [Encodable β] {f : β → Set α} (ho : ∀ s, I
 #align dense_Inter_of_open dense_iInter_of_isOpen
 
 /-- A set is residual (comeagre) if and only if it includes a dense `Gδ` set. -/
-theorem mem_residual {s : Set α} : s ∈ residual α ↔ ∃ (t : _) (_ : t ⊆ s), IsGδ t ∧ Dense t := by
+theorem mem_residual {s : Set α} : s ∈ residual α ↔ ∃ t ⊆ s, IsGδ t ∧ Dense t := by
   constructor
   · rw [mem_residual_iff]
     rintro ⟨S, hSo, hSd, Sct, Ss⟩
@@ -239,10 +239,8 @@ theorem mem_residual {s : Set α} : s ∈ residual α ↔ ∃ (t : _) (_ : t ⊆
 /-- A property holds on a residual (comeagre) set if and only if it holds on some dense `Gδ` set. -/
 theorem eventually_residual {p : α → Prop} :
     (∀ᶠ x in residual α, p x) ↔ ∃ t : Set α, IsGδ t ∧ Dense t ∧ ∀ x : α, x ∈ t → p x := by
-  -- this can probably be improved...
-  convert@mem_residual _ _ _ p
-  simp_rw [exists_prop, @and_comm ((_ : Set α) ⊆ p), and_assoc]
-  rfl
+  simp only [Filter.Eventually, mem_residual, subset_def, mem_setOf_eq]
+  tauto
 #align eventually_residual eventually_residual
 
 theorem dense_of_mem_residual {s : Set α} (hs : s ∈ residual α) : Dense s :=
