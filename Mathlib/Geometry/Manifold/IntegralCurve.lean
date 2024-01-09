@@ -472,6 +472,7 @@ theorem isIntegralCurveOn_Ioo_eqOn_of_contMDiff (ht₀ : t₀ ∈ Ioo a b)
   apply isPreconnected_Ioo.subset_of_closure_inter_subset (s := Ioo a b) (u := s) _
     ⟨t₀, ⟨ht₀, ⟨h, ht₀⟩⟩⟩
   · -- is this really the most convenient way to pass to subtype topology?
+    -- TODO: shorten this when better API around subtype topology exists
     rw [hs, ← Subtype.image_preimage_val, ← Subtype.image_preimage_val,
       image_subset_image_iff Subtype.val_injective, preimage_setOf_eq]
     intros t ht
@@ -521,8 +522,7 @@ theorem isIntegralCurve_eq_of_contMDiff (hγt : ∀ t, I.IsInteriorPoint (γ t))
     (hγ : IsIntegralCurve γ v) (hγ' : IsIntegralCurve γ' v) (h : γ t₀ = γ' t₀) : γ = γ' := by
   ext t
   obtain ⟨T, hT, ht⟩ : ∃ T > 0, t ∈ Ioo (t₀ - T) (t₀ + T) := by
-    refine ⟨2 * |t - t₀| + 1, by positivity, ?_⟩
-    rw [mem_Ioo]
+    refine ⟨|t - t₀| + 1, by positivity, ?_⟩
     by_cases ht : t - t₀ < 0
     · rw [abs_of_neg ht]
       constructor <;> linarith
