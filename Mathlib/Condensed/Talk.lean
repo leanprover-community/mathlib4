@@ -44,8 +44,8 @@ example : LightCondSet.{u} := (presheafToSheaf _ _).obj F
 -- variable (G : Profinite.{u}ᵒᵖ ⥤ Type u)
 -- example : SmallCondensedSet.{u} := (presheafToSheaf _ _).obj G
 
--- variable (G : Profinite.{u}ᵒᵖ ⥤ Type (u + 1))
--- example : CondensedSet'.{u} := (presheafToSheaf _ _).obj G
+variable (G : Profinite.{u}ᵒᵖ ⥤ Type (u + 1))
+example : CondensedSet'.{u} := (presheafToSheaf _ _).obj G
 
 end One
 
@@ -113,13 +113,13 @@ section Three
 
 #check Condensed.discrete
 
--- def CondensedIntegers : CondensedAb :=
---   (Condensed.discrete AddCommGroupCat).obj (AddCommGroupCat.of ℤ)
+def CondensedIntegers : CondensedAb :=
+  (Condensed.discrete AddCommGroupCat).obj (AddCommGroupCat.of (ULift ℤ))
 
 #check LightCondensed.discrete
 
--- def LightCondensedIntegers : LightCondAb :=
---   (LightCondensed.discrete AddCommGroupCat).obj (AddCommGroupCat.of ℤ)
+def LightCondensedIntegers : LightCondAb :=
+  (LightCondensed.discrete AddCommGroupCat).obj (AddCommGroupCat.of ℤ)
 
 
 
