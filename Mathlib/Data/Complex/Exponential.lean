@@ -1972,10 +1972,10 @@ theorem add_one_le_exp (x : ℝ) : x + 1 ≤ Real.exp x := by
 #align real.add_one_le_exp_of_nonneg Real.add_one_le_exp
 
 lemma one_sub_lt_exp_neg {x : ℝ} (hx : x ≠ 0) : 1 - x < exp (-x) :=
-  (sub_eq_neg_add _ _).trans_lt $ add_one_lt_exp $ neg_ne_zero.2 hx
+  (sub_eq_neg_add _ _).trans_lt <| add_one_lt_exp <| neg_ne_zero.2 hx
 
 lemma one_sub_le_exp_neg (x : ℝ) : 1 - x ≤ exp (-x) :=
-  (sub_eq_neg_add _ _).trans_le $ add_one_le_exp _
+  (sub_eq_neg_add _ _).trans_le <| add_one_le_exp _
 #align real.one_sub_le_exp_minus_of_pos Real.one_sub_le_exp_neg
 #align real.one_sub_le_exp_minus_of_nonneg Real.one_sub_le_exp_neg
 
