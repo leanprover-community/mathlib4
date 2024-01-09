@@ -128,7 +128,6 @@ lemma EllDivSequence'_three : EllDivSequence' b c d 3 = c := by
 lemma EllDivSequence'_four : EllDivSequence' b c d 4 = d * b := by
   rw [EllDivSequence', EllDivSequence'', if_pos <| by decide]
 
-@[simp]
 lemma EllDivSequence'_odd (m : ℕ) : EllDivSequence' b c d (2 * (m + 2) + 1) =
     EllDivSequence' b c d (m + 4) * EllDivSequence' b c d (m + 2) ^ 3 -
       EllDivSequence' b c d (m + 1) * EllDivSequence' b c d (m + 3) ^ 3 := by
@@ -149,7 +148,6 @@ lemma EllDivSequence'_odd (m : ℕ) : EllDivSequence' b c d (2 * (m + 2) + 1) =
     rw [if_neg hm, if_neg hm, if_neg hm4, if_neg hm2, if_pos hm1, if_pos hm3]
     ring1
 
-@[simp]
 lemma EllDivSequence'_even (m : ℕ) : EllDivSequence' b c d (2 * (m + 3)) * b =
     EllDivSequence' b c d (m + 2) ^ 2 * EllDivSequence' b c d (m + 3) *
         EllDivSequence' b c d (m + 5) -
