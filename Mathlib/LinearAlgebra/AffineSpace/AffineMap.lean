@@ -673,7 +673,7 @@ theorem image_uIcc {k : Type*} [LinearOrderedField k] (f : k →ᵃ[k] k) (a b :
 
 section
 
-variable {ι : Type*} {V : ∀ _ : ι, Type*} {P : ∀ _ : ι, Type*} [∀ i, AddCommGroup (V i)]
+variable {ι : Type*} {V : ι → Type*} {P : ι → Type*} [∀ i, AddCommGroup (V i)]
   [∀ i, Module k (V i)] [∀ i, AddTorsor (V i) (P i)]
 
 /-- Evaluation at a point as an affine map. -/

@@ -228,7 +228,7 @@ theorem comp_bijective (f : α → β) (e : F) : Function.Bijective (e ∘ f) �
 
 /-- This is not an instance to avoid slowing down every single `Subsingleton` typeclass search.-/
 lemma subsingleton_dom [Subsingleton β] : Subsingleton F :=
-  ⟨fun f g ↦ FunLike.ext f g fun _ ↦ (right_inv f).injective $ Subsingleton.elim _ _⟩
+  ⟨fun f g ↦ FunLike.ext f g fun _ ↦ (right_inv f).injective <| Subsingleton.elim _ _⟩
 #align equiv_like.subsingleton_dom EquivLike.subsingleton_dom
 
 end EquivLike

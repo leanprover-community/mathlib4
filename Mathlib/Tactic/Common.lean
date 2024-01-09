@@ -84,7 +84,6 @@ import Mathlib.Tactic.Simps.Basic
 -- `Gen` / `Testable` / `Sampleable` instances for types should be out in the library,
 -- rather than the theory for those types being imported into `SlimCheck`.
 -- import Mathlib.Tactic.SlimCheck
-import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.Substs

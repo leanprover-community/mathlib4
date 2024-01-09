@@ -388,8 +388,9 @@ def unifyMovements (data : Array (Expr × Bool × Syntax)) (tgt : Expr) :
   let atoms := (ops.map Prod.fst).flatten.toList.filter (!isBVar ·)
   -- `instr` are the unified user-provided terms, `neverMatched` are non-unified ones
   let (instr, neverMatched) ← pairUp data.toList atoms
-  let dbgMsg := #[m!"Matching of input variables:\n* pre-match:  {
-    data.map (Prod.snd ∘ Prod.snd)}\n* post-match: {instr}",
+  let dbgMsg := #[m!"Matching of input variables:\n\
+    * pre-match:  {data.map (Prod.snd ∘ Prod.snd)}\n\
+    * post-match: {instr}",
     m!"\nMaximum number of iterations: {ops.size}"]
   -- if there are `neverMatched` terms, return the parsed terms and the syntax
   let errMsg := neverMatched.map fun (t, a, stx) => (if a then m!"← {t}" else m!"{t}", stx)

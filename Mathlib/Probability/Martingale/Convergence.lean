@@ -207,7 +207,7 @@ theorem Submartingale.exists_ae_trim_tendsto_of_bdd [IsFiniteMeasure μ] (hf : S
   letI := (⨆ n, ℱ n)
   rw [ae_iff, trim_measurableSet_eq]
   · exact hf.exists_ae_tendsto_of_bdd hbdd
-  · exact MeasurableSet.compl $ measurableSet_exists_tendsto
+  · exact MeasurableSet.compl <| measurableSet_exists_tendsto
       fun n => (hf.stronglyMeasurable n).measurable.mono (le_sSup ⟨n, rfl⟩) le_rfl
 #align measure_theory.submartingale.exists_ae_trim_tendsto_of_bdd MeasureTheory.Submartingale.exists_ae_trim_tendsto_of_bdd
 

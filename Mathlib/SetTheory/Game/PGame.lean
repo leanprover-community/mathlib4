@@ -1066,7 +1066,7 @@ def mk' (L : y.LeftMoves ≃ x.LeftMoves) (R : y.RightMoves ≃ x.RightMoves)
 #align pgame.relabelling.mk' SetTheory.PGame.Relabelling.mk'
 
 /-- The equivalence between left moves of `x` and `y` given by the relabelling. -/
-def leftMovesEquiv : ∀ _ : x ≡r y, x.LeftMoves ≃ y.LeftMoves
+def leftMovesEquiv : x ≡r y → x.LeftMoves ≃ y.LeftMoves
   | ⟨L,_, _,_⟩ => L
 #align pgame.relabelling.left_moves_equiv SetTheory.PGame.Relabelling.leftMovesEquiv
 
@@ -1082,7 +1082,7 @@ theorem mk'_leftMovesEquiv {x y L R hL hR} :
 #align pgame.relabelling.mk'_left_moves_equiv SetTheory.PGame.Relabelling.mk'_leftMovesEquiv
 
 /-- The equivalence between right moves of `x` and `y` given by the relabelling. -/
-def rightMovesEquiv : ∀ _ : x ≡r y, x.RightMoves ≃ y.RightMoves
+def rightMovesEquiv : x ≡r y → x.RightMoves ≃ y.RightMoves
   | ⟨_, R, _, _⟩ => R
 #align pgame.relabelling.right_moves_equiv SetTheory.PGame.Relabelling.rightMovesEquiv
 
@@ -1256,7 +1256,7 @@ theorem neg_ofLists (L R : List PGame) :
 #align pgame.neg_of_lists SetTheory.PGame.neg_ofLists
 
 theorem isOption_neg {x y : PGame} : IsOption x (-y) ↔ IsOption (-x) y := by
-  rw [IsOption_iff, IsOption_iff, or_comm]
+  rw [isOption_iff, isOption_iff, or_comm]
   cases y;
   apply or_congr <;>
     · apply exists_congr

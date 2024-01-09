@@ -196,7 +196,7 @@ lemma induce_connected_adj_union {s t : Set V}
     simp [Set.insert_subset_iff, Set.singleton_subset_iff, hv, hw]
 
 lemma induce_connected_of_patches {s : Set V} (u : V) (hu : u ∈ s)
-    (patches : ∀ {v} (_ : v ∈ s), ∃ (s' : Set V) (_ : s' ⊆ s) (hu' : u ∈ s') (hv' : v ∈ s'),
+    (patches : ∀ {v}, v ∈ s → ∃ s' ⊆ s, ∃ (hu' : u ∈ s') (hv' : v ∈ s'),
                   (G.induce s').Reachable ⟨u, hu'⟩ ⟨v, hv'⟩) : (G.induce s).Connected := by
   rw [connected_iff_exists_forall_reachable]
   refine ⟨⟨u, hu⟩, ?_⟩

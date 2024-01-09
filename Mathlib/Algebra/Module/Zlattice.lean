@@ -418,7 +418,7 @@ theorem Zlattice.module_free : Module.Free ℤ L := by
   have : NoZeroSMulDivisors ℤ L := by
     change NoZeroSMulDivisors ℤ (AddSubgroup.toIntSubmodule L)
     exact noZeroSMulDivisors _
-  exact Module.free_of_finite_type_torsion_free'
+  infer_instance
 
 open FiniteDimensional
 
@@ -464,7 +464,7 @@ theorem Zlattice.rank : finrank ℤ L = finrank K E := by
         Finset.sdiff_eq_empty_iff_subset] at h
       replace h := Finset.card_le_card h
       rwa [not_lt, h_card, ← topEquiv.finrank_eq, ← h_spanE, ← ht_span,
-        finrank_span_set_eq_card _ ht_lin]
+        finrank_span_set_eq_card ht_lin]
     -- Assume that `e ∪ {v}` is not `ℤ`-linear independent then we get the contradiction
     suffices ¬ LinearIndependent ℤ (fun x : ↥(insert v (Set.range e)) => (x : E)) by
       contrapose! this
@@ -500,6 +500,6 @@ theorem Zlattice.rank : finrank ℤ L = finrank K E := by
   · -- To prove that `finrank K E ≤ finrank ℤ L`, we use the fact `b` generates `E` over `K`
     -- and thus `finrank K E ≤ card b = finrank ℤ L`
     rw [← topEquiv.finrank_eq, ← h_spanE]
-    convert finrank_span_le_card (K := K) (Set.range b)
+    convert finrank_span_le_card (R := K) (Set.range b)
 
 end Zlattice

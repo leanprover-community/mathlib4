@@ -3,9 +3,9 @@ Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis
 -/
-import Mathlib.Algebra.Divisibility.Basic
-import Mathlib.Algebra.Group.Commute.Units
-import Mathlib.Algebra.Group.TypeTags
+import Mathlib.Algebra.Group.Commute.Basic
+import Mathlib.Algebra.GroupWithZero.Defs
+import Mathlib.Tactic.Common
 
 #align_import algebra.group_power.basic from "leanprover-community/mathlib"@"9b2660e1b25419042c8da10bf411aa3c67f14383"
 
@@ -42,24 +42,6 @@ variable {α : Type*} {M : Type u} {N : Type v} {G : Type w} {H : Type x} {A : T
 First we prove some facts about `SemiconjBy` and `Commute`. They do not require any theory about
 `pow` and/or `nsmul` and will be useful later in this file.
 -/
-
-
-section Pow
-
-variable [Pow M ℕ]
-
-@[to_additive (attr := simp) ite_nsmul]
-theorem pow_ite (P : Prop) [Decidable P] (a : M) (b c : ℕ) :
-    (a ^ if P then b else c) = if P then a ^ b else a ^ c := by split_ifs <;> rfl
-#align pow_ite pow_ite
-
-@[to_additive (attr := simp) nsmul_ite]
-theorem ite_pow (P : Prop) [Decidable P] (a b : M) (c : ℕ) :
-    (if P then a else b) ^ c = if P then a ^ c else b ^ c := by split_ifs <;> rfl
-#align ite_pow ite_pow
-
-end Pow
-
 
 /-!
 ### Monoids
@@ -230,19 +212,6 @@ theorem pow_mul_pow_eq_one {a b : M} (n : ℕ) (h : a * b = 1) : a ^ n * b ^ n =
 #align pow_mul_pow_eq_one pow_mul_pow_eq_one
 #align nsmul_add_nsmul_eq_zero nsmul_add_nsmul_eq_zero
 
-theorem dvd_pow {x y : M} (hxy : x ∣ y) : ∀ {n : ℕ} (_ : n ≠ 0), x ∣ y ^ n
-  | 0,     hn => (hn rfl).elim
-  | n + 1, _  => by
-    rw [pow_succ]
-    exact hxy.mul_right _
-#align dvd_pow dvd_pow
-
-alias Dvd.dvd.pow := dvd_pow
-
-theorem dvd_pow_self (a : M) {n : ℕ} (hn : n ≠ 0) : a ∣ a ^ n :=
-  dvd_rfl.pow hn
-#align dvd_pow_self dvd_pow_self
-
 end Monoid
 
 lemma eq_zero_or_one_of_sq_eq_self [CancelMonoidWithZero M] {x : M} (hx : x ^ 2 = x) :
@@ -254,28 +223,13 @@ lemma eq_zero_or_one_of_sq_eq_self [CancelMonoidWithZero M] {x : M} (hx : x ^ 2 
 -/
 
 section CommMonoid
-
-variable [CommMonoid M] [AddCommMonoid A]
+variable [CommMonoid M]
 
 @[to_additive nsmul_add]
 theorem mul_pow (a b : M) (n : ℕ) : (a * b) ^ n = a ^ n * b ^ n :=
   (Commute.all a b).mul_pow n
 #align mul_pow mul_pow
 #align nsmul_add nsmul_add
-
-/-- The `n`th power map on a commutative monoid for a natural `n`, considered as a morphism of
-monoids. -/
-@[to_additive (attr := simps)
-      "Multiplication by a natural `n` on a commutative additive
-       monoid, considered as a morphism of additive monoids."]
-def powMonoidHom (n : ℕ) : M →* M where
-  toFun := (· ^ n)
-  map_one' := one_pow _
-  map_mul' a b := mul_pow a b n
-#align pow_monoid_hom powMonoidHom
-#align nsmul_add_monoid_hom nsmulAddMonoidHom
-#align pow_monoid_hom_apply powMonoidHom_apply
-#align nsmul_add_monoid_hom_apply nsmulAddMonoidHom_apply
 
 end CommMonoid
 
@@ -403,20 +357,6 @@ theorem div_zpow (a b : α) (n : ℤ) : (a / b) ^ n = a ^ n / b ^ n := by
 #align div_zpow div_zpow
 #align zsmul_sub zsmul_sub
 
-/-- The `n`-th power map (for an integer `n`) on a commutative group, considered as a group
-homomorphism. -/
-@[to_additive (attr := simps)
-      "Multiplication by an integer `n` on a commutative additive group, considered as an
-       additive group homomorphism."]
-def zpowGroupHom (n : ℤ) : α →* α where
-  toFun := (· ^ n)
-  map_one' := one_zpow n
-  map_mul' a b := mul_zpow a b n
-#align zpow_group_hom zpowGroupHom
-#align zsmul_add_group_hom zsmulAddGroupHom
-#align zpow_group_hom_apply zpowGroupHom_apply
-#align zsmul_add_group_hom_apply zsmulAddGroupHom_apply
-
 end DivisionCommMonoid
 
 section Group
@@ -442,10 +382,6 @@ theorem inv_pow_sub (a : G) {m n : ℕ} (h : n ≤ m) : a⁻¹ ^ (m - n) = (a ^ 
 #align sub_nsmul_neg sub_nsmul_neg
 
 end Group
-
-theorem pow_dvd_pow [Monoid R] (a : R) {m n : ℕ} (h : m ≤ n) : a ^ m ∣ a ^ n :=
-  ⟨a ^ (n - m), by rw [← pow_add, Nat.add_comm, Nat.sub_add_cancel h]⟩
-#align pow_dvd_pow pow_dvd_pow
 
 @[to_additive (attr := simp)]
 theorem SemiconjBy.zpow_right [Group G] {a x y : G} (h : SemiconjBy a x y) :
