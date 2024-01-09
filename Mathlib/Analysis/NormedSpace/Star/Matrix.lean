@@ -179,6 +179,16 @@ lemma l2_op_norm_def (A : Matrix m n 𝕜) :
 lemma l2_op_nnnorm_def (A : Matrix m n 𝕜) :
     ‖A‖₊ = ‖(toEuclideanLin (𝕜 := 𝕜) (m := m) (n := n)).trans toContinuousLinearMap A‖₊ := rfl
 
+open EuclideanSpace in
+lemma toLin_euclideanSpace_basisFun :
+    toLin (basisFun n 𝕜).toBasis (basisFun m 𝕜).toBasis = toEuclideanLin :=
+  rfl
+
+lemma l2_op_norm_conjTranspose (A : Matrix m n 𝕜) : ‖Aᴴ‖ = ‖A‖ := by
+  rw [l2_op_norm_def, ← toLin_euclideanSpace_basisFun, LinearEquiv.trans_apply, toLin_conjTranspose,
+    adjoint_toContinuousLinearMap]
+  exact ContinuousLinearMap.adjoint.norm_map _
+
 -- note: with only a type ascription in the left-hand side, Lean picks the wrong norm.
 lemma l2_op_norm_mulVec (A : Matrix m n 𝕜) (x : EuclideanSpace 𝕜 n) :
     ‖(EuclideanSpace.equiv m 𝕜).symm <| A.mulVec x‖ ≤ ‖A‖ * ‖x‖ :=
