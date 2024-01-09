@@ -23,7 +23,7 @@ A well-founded subset of an ordered type is one on which the relation `<` is wel
  * `Set.IsWf s` indicates that `<` is well-founded when restricted to `s`.
  * `Set.PartiallyWellOrderedOn s r` indicates that the relation `r` is
   partially well-ordered (also known as well quasi-ordered) when restricted to the set `s`.
- * `Set.IsPwo s` indicates that any infinite sequence of elements in `s` contains an infinite
+ * `Set.IsPWO s` indicates that any infinite sequence of elements in `s` contains an infinite
   monotone subsequence. Note that this is equivalent to containing only two comparable elements.
 
 ## Main Results
@@ -421,86 +421,86 @@ theorem PartiallyWellOrderedOn.wellFoundedOn [IsPreorder α r] (h : s.PartiallyW
 
 end PartiallyWellOrderedOn
 
-section IsPwo
+section IsPWO
 
 variable [Preorder α] [Preorder β] {s t : Set α}
 
 /-- A subset of a preorder is partially well-ordered when any infinite sequence contains
   a monotone subsequence of length 2 (or equivalently, an infinite monotone subsequence). -/
-def IsPwo (s : Set α) : Prop :=
+def IsPWO (s : Set α) : Prop :=
   PartiallyWellOrderedOn s (· ≤ ·)
-#align set.is_pwo Set.IsPwo
+#align set.is_pwo Set.IsPWO
 
-nonrec theorem IsPwo.mono (ht : t.IsPwo) : s ⊆ t → s.IsPwo := ht.mono
-#align set.is_pwo.mono Set.IsPwo.mono
+nonrec theorem IsPWO.mono (ht : t.IsPWO) : s ⊆ t → s.IsPWO := ht.mono
+#align set.is_pwo.mono Set.IsPWO.mono
 
-nonrec theorem IsPwo.exists_monotone_subseq (h : s.IsPwo) (f : ℕ → α) (hf : ∀ n, f n ∈ s) :
+nonrec theorem IsPWO.exists_monotone_subseq (h : s.IsPWO) (f : ℕ → α) (hf : ∀ n, f n ∈ s) :
     ∃ g : ℕ ↪o ℕ, Monotone (f ∘ g) :=
   h.exists_monotone_subseq f hf
-#align set.is_pwo.exists_monotone_subseq Set.IsPwo.exists_monotone_subseq
+#align set.is_pwo.exists_monotone_subseq Set.IsPWO.exists_monotone_subseq
 
-theorem isPwo_iff_exists_monotone_subseq :
-    s.IsPwo ↔ ∀ f : ℕ → α, (∀ n, f n ∈ s) → ∃ g : ℕ ↪o ℕ, Monotone (f ∘ g) :=
+theorem isPWO_iff_exists_monotone_subseq :
+    s.IsPWO ↔ ∀ f : ℕ → α, (∀ n, f n ∈ s) → ∃ g : ℕ ↪o ℕ, Monotone (f ∘ g) :=
   partiallyWellOrderedOn_iff_exists_monotone_subseq
-#align set.is_pwo_iff_exists_monotone_subseq Set.isPwo_iff_exists_monotone_subseq
+#align set.is_pwo_iff_exists_monotone_subseq Set.isPWO_iff_exists_monotone_subseq
 
-protected theorem IsPwo.isWf (h : s.IsPwo) : s.IsWf := by
+protected theorem IsPWO.isWf (h : s.IsPWO) : s.IsWf := by
   simpa only [← lt_iff_le_not_le] using h.wellFoundedOn
-#align set.is_pwo.is_wf Set.IsPwo.isWf
+#align set.is_pwo.is_wf Set.IsPWO.isWf
 
-nonrec theorem IsPwo.prod {t : Set β} (hs : s.IsPwo) (ht : t.IsPwo) : IsPwo (s ×ˢ t) :=
+nonrec theorem IsPWO.prod {t : Set β} (hs : s.IsPWO) (ht : t.IsPWO) : IsPWO (s ×ˢ t) :=
   hs.prod ht
-#align set.is_pwo.prod Set.IsPwo.prod
+#align set.is_pwo.prod Set.IsPWO.prod
 
-theorem IsPwo.image_of_monotoneOn (hs : s.IsPwo) {f : α → β} (hf : MonotoneOn f s) :
-    IsPwo (f '' s) :=
+theorem IsPWO.image_of_monotoneOn (hs : s.IsPWO) {f : α → β} (hf : MonotoneOn f s) :
+    IsPWO (f '' s) :=
   hs.image_of_monotone_on hf
-#align set.is_pwo.image_of_monotone_on Set.IsPwo.image_of_monotoneOn
+#align set.is_pwo.image_of_monotone_on Set.IsPWO.image_of_monotoneOn
 
-theorem IsPwo.image_of_monotone (hs : s.IsPwo) {f : α → β} (hf : Monotone f) : IsPwo (f '' s) :=
+theorem IsPWO.image_of_monotone (hs : s.IsPWO) {f : α → β} (hf : Monotone f) : IsPWO (f '' s) :=
   hs.image_of_monotone_on (hf.monotoneOn _)
-#align set.is_pwo.image_of_monotone Set.IsPwo.image_of_monotone
+#align set.is_pwo.image_of_monotone Set.IsPWO.image_of_monotone
 
-protected nonrec theorem IsPwo.union (hs : IsPwo s) (ht : IsPwo t) : IsPwo (s ∪ t) :=
+protected nonrec theorem IsPWO.union (hs : IsPWO s) (ht : IsPWO t) : IsPWO (s ∪ t) :=
   hs.union ht
-#align set.is_pwo.union Set.IsPwo.union
+#align set.is_pwo.union Set.IsPWO.union
 
 @[simp]
-theorem isPwo_union : IsPwo (s ∪ t) ↔ IsPwo s ∧ IsPwo t :=
+theorem isPWO_union : IsPWO (s ∪ t) ↔ IsPWO s ∧ IsPWO t :=
   partiallyWellOrderedOn_union
-#align set.is_pwo_union Set.isPwo_union
+#align set.is_pwo_union Set.isPWO_union
 
-protected theorem Finite.isPwo (hs : s.Finite) : IsPwo s := hs.partiallyWellOrderedOn
-#align set.finite.is_pwo Set.Finite.isPwo
+protected theorem Finite.isPWO (hs : s.Finite) : IsPWO s := hs.partiallyWellOrderedOn
+#align set.finite.is_pwo Set.Finite.isPWO
 
-@[simp] theorem isPwo_of_finite [Finite α] : s.IsPwo := s.toFinite.isPwo
-#align set.is_pwo_of_finite Set.isPwo_of_finite
+@[simp] theorem isPWO_of_finite [Finite α] : s.IsPWO := s.toFinite.isPWO
+#align set.is_pwo_of_finite Set.isPWO_of_finite
 
-@[simp] theorem isPwo_singleton (a : α) : IsPwo ({a} : Set α) := (finite_singleton a).isPwo
-#align set.is_pwo_singleton Set.isPwo_singleton
+@[simp] theorem isPWO_singleton (a : α) : IsPWO ({a} : Set α) := (finite_singleton a).isPWO
+#align set.is_pwo_singleton Set.isPWO_singleton
 
-@[simp] theorem isPwo_empty : IsPwo (∅ : Set α) := finite_empty.isPwo
-#align set.is_pwo_empty Set.isPwo_empty
+@[simp] theorem isPWO_empty : IsPWO (∅ : Set α) := finite_empty.isPWO
+#align set.is_pwo_empty Set.isPWO_empty
 
-protected theorem Subsingleton.isPwo (hs : s.Subsingleton) : IsPwo s := hs.finite.isPwo
-#align set.subsingleton.is_pwo Set.Subsingleton.isPwo
+protected theorem Subsingleton.isPWO (hs : s.Subsingleton) : IsPWO s := hs.finite.isPWO
+#align set.subsingleton.is_pwo Set.Subsingleton.isPWO
 
 @[simp]
-theorem isPwo_insert {a} : IsPwo (insert a s) ↔ IsPwo s := by
-  simp only [← singleton_union, isPwo_union, isPwo_singleton, true_and_iff]
-#align set.is_pwo_insert Set.isPwo_insert
+theorem isPWO_insert {a} : IsPWO (insert a s) ↔ IsPWO s := by
+  simp only [← singleton_union, isPWO_union, isPWO_singleton, true_and_iff]
+#align set.is_pwo_insert Set.isPWO_insert
 
-protected theorem IsPwo.insert (h : IsPwo s) (a : α) : IsPwo (insert a s) :=
-  isPwo_insert.2 h
-#align set.is_pwo.insert Set.IsPwo.insert
+protected theorem IsPWO.insert (h : IsPWO s) (a : α) : IsPWO (insert a s) :=
+  isPWO_insert.2 h
+#align set.is_pwo.insert Set.IsPWO.insert
 
-protected theorem Finite.isWf (hs : s.Finite) : IsWf s := hs.isPwo.isWf
+protected theorem Finite.isWf (hs : s.Finite) : IsWf s := hs.isPWO.isWf
 #align set.finite.is_wf Set.Finite.isWf
 
 @[simp] theorem isWf_singleton {a : α} : IsWf ({a} : Set α) := (finite_singleton a).isWf
 #align set.is_wf_singleton Set.isWf_singleton
 
-protected theorem Subsingleton.isWf (hs : s.Subsingleton) : IsWf s := hs.isPwo.isWf
+protected theorem Subsingleton.isWf (hs : s.Subsingleton) : IsWf s := hs.isPWO.isWf
 #align set.subsingleton.is_wf Set.Subsingleton.isWf
 
 @[simp]
@@ -512,7 +512,7 @@ protected theorem IsWf.insert (h : IsWf s) (a : α) : IsWf (insert a s) :=
   isWf_insert.2 h
 #align set.is_wf.insert Set.IsWf.insert
 
-end IsPwo
+end IsPWO
 
 section WellFoundedOn
 
@@ -548,18 +548,18 @@ section LinearOrder
 
 variable [LinearOrder α] {s : Set α}
 
-protected theorem IsWf.isPwo (hs : s.IsWf) : s.IsPwo := by
+protected theorem IsWf.isPWO (hs : s.IsWf) : s.IsPWO := by
   intro f hf
   lift f to ℕ → s using hf
   rcases hs.has_min (range f) (range_nonempty _) with ⟨_, ⟨m, rfl⟩, hm⟩
   simp only [forall_range_iff, not_lt] at hm
   exact ⟨m, m + 1, lt_add_one m, hm _⟩
-#align set.is_wf.is_pwo Set.IsWf.isPwo
+#align set.is_wf.is_pwo Set.IsWf.isPWO
 
-/-- In a linear order, the predicates `Set.IsWf` and `Set.IsPwo` are equivalent. -/
-theorem isWf_iff_isPwo : s.IsWf ↔ s.IsPwo :=
-  ⟨IsWf.isPwo, IsPwo.isWf⟩
-#align set.is_wf_iff_is_pwo Set.isWf_iff_isPwo
+/-- In a linear order, the predicates `Set.IsWf` and `Set.IsPWO` are equivalent. -/
+theorem isWf_iff_isPWO : s.IsWf ↔ s.IsPWO :=
+  ⟨IsWf.isPWO, IsPWO.isWf⟩
+#align set.is_wf_iff_is_pwo Set.isWf_iff_isPWO
 
 end LinearOrder
 
@@ -576,9 +576,9 @@ protected theorem partiallyWellOrderedOn [IsRefl α r] (s : Finset α) :
 #align finset.partially_well_ordered_on Finset.partiallyWellOrderedOn
 
 @[simp]
-protected theorem isPwo [Preorder α] (s : Finset α) : Set.IsPwo (↑s : Set α) :=
+protected theorem isPWO [Preorder α] (s : Finset α) : Set.IsPWO (↑s : Set α) :=
   s.partiallyWellOrderedOn
-#align finset.is_pwo Finset.isPwo
+#align finset.is_pwo Finset.isPWO
 
 @[simp]
 protected theorem isWf [Preorder α] (s : Finset α) : Set.IsWf (↑s : Set α) :=
@@ -607,10 +607,10 @@ theorem isWf_sup [Preorder α] (s : Finset ι) {f : ι → Set α} :
   s.wellFoundedOn_sup
 #align finset.is_wf_sup Finset.isWf_sup
 
-theorem isPwo_sup [Preorder α] (s : Finset ι) {f : ι → Set α} :
-    (s.sup f).IsPwo ↔ ∀ i ∈ s, (f i).IsPwo :=
+theorem isPWO_sup [Preorder α] (s : Finset ι) {f : ι → Set α} :
+    (s.sup f).IsPWO ↔ ∀ i ∈ s, (f i).IsPWO :=
   s.partiallyWellOrderedOn_sup
-#align finset.is_pwo_sup Finset.isPwo_sup
+#align finset.is_pwo_sup Finset.isPWO_sup
 
 @[simp]
 theorem wellFoundedOn_bUnion [IsStrictOrder α r] (s : Finset ι) {f : ι → Set α} :
@@ -631,10 +631,10 @@ theorem isWf_bUnion [Preorder α] (s : Finset ι) {f : ι → Set α} :
 #align finset.is_wf_bUnion Finset.isWf_bUnion
 
 @[simp]
-theorem isPwo_bUnion [Preorder α] (s : Finset ι) {f : ι → Set α} :
-    (⋃ i ∈ s, f i).IsPwo ↔ ∀ i ∈ s, (f i).IsPwo :=
+theorem isPWO_bUnion [Preorder α] (s : Finset ι) {f : ι → Set α} :
+    (⋃ i ∈ s, f i).IsPWO ↔ ∀ i ∈ s, (f i).IsPWO :=
   s.partiallyWellOrderedOn_bUnion
-#align finset.is_pwo_bUnion Finset.isPwo_bUnion
+#align finset.is_pwo_bUnion Finset.isPWO_bUnion
 
 end Finset
 
@@ -821,13 +821,13 @@ ordered, when `σ` is a `Fintype` and each `α s` is a linear well order.
 This includes the classical case of Dickson's lemma that `ℕ ^ n` is a well partial order.
 Some generalizations would be possible based on this proof, to include cases where the target is
 partially well ordered, and also to consider the case of `Set.PartiallyWellOrderedOn` instead of
-`Set.IsPwo`. -/
-theorem Pi.isPwo {α : ι → Type*} [∀ i, LinearOrder (α i)] [∀ i, IsWellOrder (α i) (· < ·)]
-    [Finite ι] (s : Set (∀ i, α i)) : s.IsPwo := by
+`Set.IsPWO`. -/
+theorem Pi.isPWO {α : ι → Type*} [∀ i, LinearOrder (α i)] [∀ i, IsWellOrder (α i) (· < ·)]
+    [Finite ι] (s : Set (∀ i, α i)) : s.IsPWO := by
   cases nonempty_fintype ι
   suffices ∀ (s : Finset ι) (f : ℕ → ∀ s, α s),
     ∃ g : ℕ ↪o ℕ, ∀ ⦃a b : ℕ⦄, a ≤ b → ∀ x, x ∈ s → (f ∘ g) a x ≤ (f ∘ g) b x by
-    refine isPwo_iff_exists_monotone_subseq.2 fun f _ => ?_
+    refine isPWO_iff_exists_monotone_subseq.2 fun f _ => ?_
     simpa only [Finset.mem_univ, true_imp_iff] using this Finset.univ f
   refine' Finset.cons_induction _ _
   · intro f
@@ -835,11 +835,11 @@ theorem Pi.isPwo {α : ι → Type*} [∀ i, LinearOrder (α i)] [∀ i, IsWellO
     simp only [IsEmpty.forall_iff, imp_true_iff, forall_const, Finset.not_mem_empty]
   · intro x s hx ih f
     obtain ⟨g, hg⟩ :=
-      (IsWellFounded.wf.isWf univ).isPwo.exists_monotone_subseq (fun n => f n x) mem_univ
+      (IsWellFounded.wf.isWf univ).isPWO.exists_monotone_subseq (fun n => f n x) mem_univ
     obtain ⟨g', hg'⟩ := ih (f ∘ g)
     refine' ⟨g'.trans g, fun a b hab => (Finset.forall_mem_cons _ _).2 _⟩
     exact ⟨hg (OrderHomClass.mono g' hab), hg' hab⟩
-#align pi.is_pwo Pi.isPwo
+#align pi.is_pwo Pi.isPWO
 
 section ProdLex
 variable {rα : α → α → Prop} {rβ : β → β → Prop} {f : γ → α} {g : γ → β} {s : Set γ}
