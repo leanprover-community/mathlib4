@@ -163,16 +163,19 @@ A suitable instance for `[Algebra A Aₛ]` is `localizationAlgebra`.
 -/
 noncomputable def Basis.localizationLocalization {ι : Type*} (b : Basis ι R A) : Basis ι Rₛ Aₛ :=
   b.ofIsLocalizedModule Rₛ S (IsScalarTower.toAlgHom R A Aₛ).toLinearMap
+#align basis.localization_localization Basis.localizationLocalization
 
 @[simp]
 theorem Basis.localizationLocalization_apply {ι : Type*} (b : Basis ι R A) (i) :
     b.localizationLocalization Rₛ S Aₛ i = algebraMap A Aₛ (b i) :=
   b.ofIsLocalizedModule_apply Rₛ S _ i
+#align basis.localization_localization_apply Basis.localizationLocalization_apply
 
 @[simp]
 theorem Basis.localizationLocalization_repr_algebraMap {ι : Type*} (b : Basis ι R A) (x i) :
     (b.localizationLocalization Rₛ S Aₛ).repr (algebraMap A Aₛ x) i =
       algebraMap R Rₛ (b.repr x i) := b.ofIsLocalizedModule_repr_apply Rₛ S _ _ i
+#align basis.localization_localization_repr_algebra_map Basis.localizationLocalization_repr_algebraMap
 
 theorem Basis.localizationLocalization_span {ι : Type*} (b : Basis ι R A) :
     Submodule.span R (Set.range (b.localizationLocalization Rₛ S Aₛ)) =
