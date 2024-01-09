@@ -456,7 +456,7 @@ instance (priority := 100) IsScalarTower.compatibleSMul [SMul R S]
 
 instance IsScalarTower.compatibleSMul' [SMul R S] [IsScalarTower R S M] :
     CompatibleSMul S M R S where
-  __ := IsScalarTower.smulHomClass R S M (S →ₗ[S] M)
+  map_smul := (IsScalarTower.smulHomClass R S M (S →ₗ[S] M)).map_smulₛₗ
 
 @[simp]
 theorem map_smul_of_tower [CompatibleSMul M M₂ R S] (fₗ : M →ₗ[S] M₂) (c : R) (x : M) :

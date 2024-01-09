@@ -91,6 +91,7 @@ section MonoidHomCompTriple
 
 namespace MonoidHomCompTriple
 
+variable {M' : Type*} [Monoid M']
 variable {M N P : Type*} [Monoid M] [Monoid N] [Monoid P]
 --  {φ : M →* N} {ψ  : N →* P}
 
@@ -199,12 +200,12 @@ assert_not_exists Submonoid
 
 section MulActionHom
 
+variable {M' : Type*}
 variable {M : Type*} {N : Type*} {P : Type*}
 variable (φ : M → N) (ψ : N → P) (χ : M → P)
-variable (X : Type*) [SMul M X]
-variable (Y : Type*) [SMul N Y]
+variable (X : Type*) [SMul M X] [SMul M' X]
+variable (Y : Type*) [SMul N Y] [SMul M' Y]
 variable (Z : Type*) [SMul P Z]
-
 
 /-- Equivariant functions. -/
 -- Porting note: This linter does not exist yet
@@ -268,7 +269,6 @@ initialize_simps_projections MulActionHom (toFun → apply)
 
 namespace MulActionHom
 
-variable {M' : Type*} [SMul M' X] [SMul M' Y]
 variable {φ X Y}
 variable {F : Type*}
 
