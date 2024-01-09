@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.ShortComplex.Exact
 import Mathlib.CategoryTheory.ComposableArrows
-import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # Exact sequences
@@ -25,8 +24,6 @@ This implementation is a refactor of `exact_seq` with appeared in the
 Liquid Tensor Experiement as a property of lists in `Arrow C`.
 
 -/
-
-suppress_compilation
 
 namespace CategoryTheory
 

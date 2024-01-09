@@ -5,7 +5,6 @@ Authors: Markus Himmel, Joël Riou
 -/
 import Mathlib.Algebra.Homology.ExactSequence
 import Mathlib.CategoryTheory.Abelian.Refinements
-import Mathlib.Tactic.SuppressCompilation
 
 #align_import category_theory.abelian.diagram_lemmas.four from "leanprover-community/mathlib"@"d34cbcf6c94953e965448c933cd9cc485115ebbd"
 
@@ -45,7 +44,6 @@ using duality, but this would require lengthy API developments for `ComposableAr
 four lemma, five lemma, diagram lemma, diagram chase
 -/
 
-suppress_compilation
 
 namespace CategoryTheory
 
@@ -108,7 +106,7 @@ theorem epi_of_epi_of_epi_of_mono'
       ← R₂.map'_comp 1 2 3, hR₂', comp_zero, comp_zero]
   obtain ⟨A₂, π₂, _, f₁, h₃⟩ := (hR₁.exact 0).exact_up_to_refinements _ h₂
   dsimp at f₁ h₃
-  have h₄ : (π₂ ≫ π₁ ≫ g₁ - f₁ ≫ app' φ 1 _) ≫ R₂.map' 1 2 = 0 := by
+  have h₄ : (π₂ ≫ π₁ ≫ g₁ - f₁ ≫ app' φ 1) ≫ R₂.map' 1 2 = 0 := by
     rw [sub_comp, assoc, assoc, assoc, ← NatTrans.naturality, ← reassoc_of% h₃, h₁, sub_self]
   obtain ⟨A₃, π₃, _, g₀, h₅⟩ := (hR₂.exact 0).exact_up_to_refinements _ h₄
   dsimp at g₀ h₅
