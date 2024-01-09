@@ -1162,7 +1162,8 @@ theorem incidence_other_neighbor_edge {v w : V} (h : w ∈ G.neighborSet v) :
 /-- There is an equivalence between the set of edges incident to a given
 vertex and the set of vertices adjacent to the vertex. -/
 @[simps]
-def incidenceSetEquivNeighborSet (v : V) : G.incidenceSet v ≃ G.neighborSet v where
+def incidenceSetEquivNeighborSet (v : V) : G.incidenceSet v ≃ G.neighborSet v
+    where
   toFun e := ⟨G.otherVertexOfIncident e.2, G.incidence_other_prop e.2⟩
   invFun w := ⟨s(v, w.1), G.mem_incidence_iff_neighbor.mpr w.2⟩
   left_inv x := by simp [otherVertexOfIncident]
@@ -1180,7 +1181,8 @@ end Incidence
 graph's edge set, if present.
 
 See also: `SimpleGraph.Subgraph.deleteEdges`. -/
-def deleteEdges (s : Set (Sym2 V)) : SimpleGraph V where
+def deleteEdges (s : Set (Sym2 V)) : SimpleGraph V
+    where
   Adj := G.Adj \ Sym2.ToRel s
   symm a b := by simp [adj_comm, Sym2.eq_swap]
   loopless a := by simp [SDiff.sdiff] -- porting note: used to be handled by `obviously`
@@ -1188,7 +1190,8 @@ def deleteEdges (s : Set (Sym2 V)) : SimpleGraph V where
 
 @[simp]
 theorem deleteEdges_adj (s : Set (Sym2 V)) (v w : V) :
-    (G.deleteEdges s).Adj v w ↔ G.Adj v w ∧ ¬s(v, w) ∈ s := Iff.rfl
+    (G.deleteEdges s).Adj v w ↔ G.Adj v w ∧ ¬s(v, w) ∈ s :=
+  Iff.rfl
 #align simple_graph.delete_edges_adj SimpleGraph.deleteEdges_adj
 
 theorem sdiff_eq_deleteEdges (G G' : SimpleGraph V) : G \ G' = G.deleteEdges G'.edgeSet := by
