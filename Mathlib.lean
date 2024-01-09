@@ -364,6 +364,7 @@ import Mathlib.Algebra.Order.Field.InjSurj
 import Mathlib.Algebra.Order.Field.Pi
 import Mathlib.Algebra.Order.Field.Power
 import Mathlib.Algebra.Order.Floor
+import Mathlib.Algebra.Order.Floor.Div
 import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.Order.Group.Bounds
 import Mathlib.Algebra.Order.Group.Defs
@@ -694,6 +695,7 @@ import Mathlib.Analysis.Convex.Caratheodory
 import Mathlib.Analysis.Convex.Combination
 import Mathlib.Analysis.Convex.Complex
 import Mathlib.Analysis.Convex.Cone.Basic
+import Mathlib.Analysis.Convex.Cone.Closure
 import Mathlib.Analysis.Convex.Cone.Dual
 import Mathlib.Analysis.Convex.Cone.Extension
 import Mathlib.Analysis.Convex.Cone.Pointed
@@ -1572,8 +1574,8 @@ import Mathlib.Data.Finsupp.Multiset
 import Mathlib.Data.Finsupp.NeLocus
 import Mathlib.Data.Finsupp.Notation
 import Mathlib.Data.Finsupp.Order
+import Mathlib.Data.Finsupp.PWO
 import Mathlib.Data.Finsupp.Pointwise
-import Mathlib.Data.Finsupp.Pwo
 import Mathlib.Data.Finsupp.ToDFinsupp
 import Mathlib.Data.Finsupp.WellFounded
 import Mathlib.Data.Fintype.Array
