@@ -55,7 +55,7 @@ Lee. May require submanifolds.
 
 ## Tags
 
-integral curve, vector field, local existence
+integral curve, vector field, local existence, uniqueness
 -/
 
 open scoped Manifold Topology
