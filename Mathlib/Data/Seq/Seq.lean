@@ -1062,4 +1062,3 @@ instance lawfulMonad : LawfulMonad Seq1 := LawfulMonad.mk'
 end Seq1
 
 end Stream'
-
