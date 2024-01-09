@@ -1355,6 +1355,7 @@ import Mathlib.Combinatorics.Quiver.SingleObj
 import Mathlib.Combinatorics.Quiver.Subquiver
 import Mathlib.Combinatorics.Quiver.Symmetric
 import Mathlib.Combinatorics.Schnirelmann
+import Mathlib.Combinatorics.SetFamily.AhlswedeZhang
 import Mathlib.Combinatorics.SetFamily.CauchyDavenport
 import Mathlib.Combinatorics.SetFamily.Compression.Down
 import Mathlib.Combinatorics.SetFamily.Compression.UV
@@ -1382,6 +1383,7 @@ import Mathlib.Combinatorics.SimpleGraph.Girth
 import Mathlib.Combinatorics.SimpleGraph.Hasse
 import Mathlib.Combinatorics.SimpleGraph.IncMatrix
 import Mathlib.Combinatorics.SimpleGraph.Init
+import Mathlib.Combinatorics.SimpleGraph.Maps
 import Mathlib.Combinatorics.SimpleGraph.Matching
 import Mathlib.Combinatorics.SimpleGraph.Metric
 import Mathlib.Combinatorics.SimpleGraph.Operations
@@ -2140,6 +2142,7 @@ import Mathlib.Geometry.Manifold.Diffeomorph
 import Mathlib.Geometry.Manifold.Instances.Real
 import Mathlib.Geometry.Manifold.Instances.Sphere
 import Mathlib.Geometry.Manifold.Instances.UnitsOfNormedAlgebra
+import Mathlib.Geometry.Manifold.IntegralCurve
 import Mathlib.Geometry.Manifold.InteriorBoundary
 import Mathlib.Geometry.Manifold.LocalDiffeomorph
 import Mathlib.Geometry.Manifold.LocalInvariantProperties
