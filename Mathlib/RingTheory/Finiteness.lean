@@ -676,7 +676,7 @@ variable {R}
 
 section Algebra
 
-theorem trans {R : Type*} (A M : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
+theorem trans {R : Type*} (A M : Type*) [Semiring R] [Semiring A] [Module R A]
     [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M] :
     ∀ [Finite R A] [Finite A M], Finite R M
   | ⟨⟨s, hs⟩⟩, ⟨⟨t, ht⟩⟩ =>
@@ -737,6 +737,13 @@ instance Module.Finite.tensorProduct [CommSemiring R] [AddCommMonoid M] [Module 
     Module.Finite R (TensorProduct R M N) where
   out := (TensorProduct.map₂_mk_top_top_eq_top R M N).subst (hM.out.map₂ _ hN.out)
 #align module.finite.tensor_product Module.Finite.tensorProduct
+
+/-- If a free module is finite, then any arbitrary basis is finite. -/
+lemma Module.Finite.finite_basis {R M} [Ring R] [Nontrivial R] [AddCommGroup M] [Module R M]
+    {ι} [Module.Finite R M] (b : Basis ι R M) :
+    _root_.Finite ι :=
+  let ⟨s, hs⟩ := ‹Module.Finite R M›
+  basis_finite_of_finite_spans (↑s) s.finite_toSet hs b
 
 end ModuleAndAlgebra
 

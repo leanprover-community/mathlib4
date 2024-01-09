@@ -1286,7 +1286,7 @@ theorem closure_iUnion {ι} (s : ι → Set G) : closure (⋃ i, s i) = ⨆ i, c
 #align add_subgroup.closure_Union AddSubgroup.closure_iUnion
 
 @[to_additive (attr := simp)]
-theorem closure_eq_bot_iff : closure k = ⊥ ↔ k ⊆ {1} := le_bot_iff.symm.trans $ closure_le _
+theorem closure_eq_bot_iff : closure k = ⊥ ↔ k ⊆ {1} := le_bot_iff.symm.trans <| closure_le _
 #align subgroup.closure_eq_bot_iff Subgroup.closure_eq_bot_iff
 #align add_subgroup.closure_eq_bot_iff AddSubgroup.closure_eq_bot_iff
 
@@ -1502,18 +1502,28 @@ theorem mem_map_iff_mem {f : G →* N} (hf : Function.Injective f) {K : Subgroup
 #align add_subgroup.mem_map_iff_mem AddSubgroup.mem_map_iff_mem
 
 @[to_additive]
-theorem map_equiv_eq_comap_symm (f : G ≃* N) (K : Subgroup G) :
+theorem map_equiv_eq_comap_symm' (f : G ≃* N) (K : Subgroup G) :
     K.map f.toMonoidHom = K.comap f.symm.toMonoidHom :=
   SetLike.coe_injective (f.toEquiv.image_eq_preimage K)
-#align subgroup.map_equiv_eq_comap_symm Subgroup.map_equiv_eq_comap_symm
-#align add_subgroup.map_equiv_eq_comap_symm AddSubgroup.map_equiv_eq_comap_symm
+#align subgroup.map_equiv_eq_comap_symm Subgroup.map_equiv_eq_comap_symm'
+#align add_subgroup.map_equiv_eq_comap_symm AddSubgroup.map_equiv_eq_comap_symm'
+
+@[to_additive]
+theorem map_equiv_eq_comap_symm (f : G ≃* N) (K : Subgroup G) :
+    K.map f = K.comap (G := N) f.symm :=
+  map_equiv_eq_comap_symm' _ _
 
 @[to_additive]
 theorem comap_equiv_eq_map_symm (f : N ≃* G) (K : Subgroup G) :
+    K.comap (G := N) f = K.map f.symm :=
+  (map_equiv_eq_comap_symm f.symm K).symm
+
+@[to_additive]
+theorem comap_equiv_eq_map_symm' (f : N ≃* G) (K : Subgroup G) :
     K.comap f.toMonoidHom = K.map f.symm.toMonoidHom :=
   (map_equiv_eq_comap_symm f.symm K).symm
-#align subgroup.comap_equiv_eq_map_symm Subgroup.comap_equiv_eq_map_symm
-#align add_subgroup.comap_equiv_eq_map_symm AddSubgroup.comap_equiv_eq_map_symm
+#align subgroup.comap_equiv_eq_map_symm Subgroup.comap_equiv_eq_map_symm'
+#align add_subgroup.comap_equiv_eq_map_symm AddSubgroup.comap_equiv_eq_map_symm'
 
 @[to_additive]
 theorem map_symm_eq_iff_map_eq {H : Subgroup N} {e : G ≃* N} :
@@ -2054,21 +2064,21 @@ theorem characteristic_iff_le_comap : H.Characteristic ↔ ∀ ϕ : G ≃* G, H 
 
 @[to_additive]
 theorem characteristic_iff_map_eq : H.Characteristic ↔ ∀ ϕ : G ≃* G, H.map ϕ.toMonoidHom = H := by
-  simp_rw [map_equiv_eq_comap_symm]
+  simp_rw [map_equiv_eq_comap_symm']
   exact characteristic_iff_comap_eq.trans ⟨fun h ϕ => h ϕ.symm, fun h ϕ => h ϕ.symm⟩
 #align subgroup.characteristic_iff_map_eq Subgroup.characteristic_iff_map_eq
 #align add_subgroup.characteristic_iff_map_eq AddSubgroup.characteristic_iff_map_eq
 
 @[to_additive]
 theorem characteristic_iff_map_le : H.Characteristic ↔ ∀ ϕ : G ≃* G, H.map ϕ.toMonoidHom ≤ H := by
-  simp_rw [map_equiv_eq_comap_symm]
+  simp_rw [map_equiv_eq_comap_symm']
   exact characteristic_iff_comap_le.trans ⟨fun h ϕ => h ϕ.symm, fun h ϕ => h ϕ.symm⟩
 #align subgroup.characteristic_iff_map_le Subgroup.characteristic_iff_map_le
 #align add_subgroup.characteristic_iff_map_le AddSubgroup.characteristic_iff_map_le
 
 @[to_additive]
 theorem characteristic_iff_le_map : H.Characteristic ↔ ∀ ϕ : G ≃* G, H ≤ H.map ϕ.toMonoidHom := by
-  simp_rw [map_equiv_eq_comap_symm]
+  simp_rw [map_equiv_eq_comap_symm']
   exact characteristic_iff_le_comap.trans ⟨fun h ϕ => h ϕ.symm, fun h ϕ => h ϕ.symm⟩
 #align subgroup.characteristic_iff_le_map Subgroup.characteristic_iff_le_map
 #align add_subgroup.characteristic_iff_le_map AddSubgroup.characteristic_iff_le_map
@@ -3203,7 +3213,7 @@ theorem map_le_map_iff_of_injective {f : G →* N} (hf : Function.Injective f) {
 @[to_additive (attr := simp)]
 theorem map_subtype_le_map_subtype {G' : Subgroup G} {H K : Subgroup G'} :
     H.map G'.subtype ≤ K.map G'.subtype ↔ H ≤ K :=
-  map_le_map_iff_of_injective $ by apply Subtype.coe_injective
+  map_le_map_iff_of_injective <| by apply Subtype.coe_injective
 #align subgroup.map_subtype_le_map_subtype Subgroup.map_subtype_le_map_subtype
 #align add_subgroup.map_subtype_le_map_subtype AddSubgroup.map_subtype_le_map_subtype
 
@@ -3506,6 +3516,19 @@ instance (priority := 100) Subgroup.normal_subgroupOf {H N : Subgroup G} [N.Norm
 #align subgroup.normal_subgroup_of Subgroup.normal_subgroupOf
 #align add_subgroup.normal_add_subgroup_of AddSubgroup.normal_addSubgroupOf
 
+theorem Subgroup.map_normalClosure (s : Set G) (f : G →* N) (hf : Surjective f) :
+    (normalClosure s).map f = normalClosure (f '' s) := by
+  have : Normal (map f (normalClosure s)) := Normal.map inferInstance f hf
+  apply le_antisymm
+  · simp [map_le_iff_le_comap, normalClosure_le_normal, coe_comap,
+      ← Set.image_subset_iff, subset_normalClosure]
+  · exact normalClosure_le_normal (Set.image_subset f subset_normalClosure)
+
+theorem Subgroup.comap_normalClosure (s : Set N) (f : G ≃* N) :
+    normalClosure (f ⁻¹' s) = (normalClosure s).comap f := by
+  have := Set.preimage_equiv_eq_image_symm s f.toEquiv
+  simp_all [comap_equiv_eq_map_symm, map_normalClosure s f.symm f.symm.surjective]
+
 namespace MonoidHom
 
 /-- The `MonoidHom` from the preimage of a subgroup to itself. -/
@@ -3674,7 +3697,7 @@ instance prod_normal (H : Subgroup G) (K : Subgroup N) [hH : H.Normal] [hK : K.N
 theorem inf_subgroupOf_inf_normal_of_right (A B' B : Subgroup G) (hB : B' ≤ B)
     [hN : (B'.subgroupOf B).Normal] : ((A ⊓ B').subgroupOf (A ⊓ B)).Normal :=
   { conj_mem := fun {n} hn g =>
-      ⟨mul_mem (mul_mem (mem_inf.1 g.2).1 (mem_inf.1 n.2).1) $
+      ⟨mul_mem (mul_mem (mem_inf.1 g.2).1 (mem_inf.1 n.2).1) <|
         show ↑g⁻¹ ∈ A from (inv_mem (mem_inf.1 g.2).1),
         (normal_subgroupOf_iff hB).mp hN n g hn.2 (mem_inf.mp g.2).2⟩ }
 #align subgroup.inf_subgroup_of_inf_normal_of_right Subgroup.inf_subgroupOf_inf_normal_of_right
@@ -3685,7 +3708,7 @@ theorem inf_subgroupOf_inf_normal_of_left {A' A : Subgroup G} (B : Subgroup G) (
     [hN : (A'.subgroupOf A).Normal] : ((A' ⊓ B).subgroupOf (A ⊓ B)).Normal :=
   { conj_mem := fun n hn g =>
       ⟨(normal_subgroupOf_iff hA).mp hN n g hn.1 (mem_inf.mp g.2).1,
-        mul_mem (mul_mem (mem_inf.1 g.2).2 (mem_inf.1 n.2).2) $
+        mul_mem (mul_mem (mem_inf.1 g.2).2 (mem_inf.1 n.2).2) <|
         show ↑g⁻¹ ∈ B from (inv_mem (mem_inf.1 g.2).2)⟩ }
 #align subgroup.inf_subgroup_of_inf_normal_of_left Subgroup.inf_subgroupOf_inf_normal_of_left
 #align add_subgroup.inf_add_subgroup_of_inf_normal_of_left AddSubgroup.inf_addSubgroupOf_inf_normal_of_left
