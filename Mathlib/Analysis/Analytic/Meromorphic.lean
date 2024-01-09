@@ -3,7 +3,6 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Analysis.Analytic.Constructions
 import Mathlib.Analysis.Analytic.IsolatedZeros
 
 /-!
@@ -112,6 +111,5 @@ lemma inv {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) : MeromorphicA
 lemma div {f g : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
     MeromorphicAt (f / g) x :=
   (div_eq_mul_inv f g).symm ▸ (hf.mul hg.inv)
-
 
 end MeromorphicAt
