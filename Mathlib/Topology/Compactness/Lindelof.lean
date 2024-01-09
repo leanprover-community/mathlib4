@@ -688,8 +688,8 @@ theorem HereditarilyLindelof_LindelofSets [HereditarilyLindelofSpace X] (s : Set
   apply HereditarilyLindelofSpace.isHereditarilyLindelof_univ
   exact subset_univ s
 
-instance (priority := 100) SecondCountableTopology.to_HereditarilyLindelof [SecondCountableTopology X] :
-    HereditarilyLindelofSpace X := by
+instance (priority := 100) SecondCountableTopology.to_HereditarilyLindelof
+    [SecondCountableTopology X] : HereditarilyLindelofSpace X := by
   refine { isHereditarilyLindelof_univ := ?isHereditarilyLindelof_univ }
   unfold IsHereditarilyLindelof
   intro t _ _
