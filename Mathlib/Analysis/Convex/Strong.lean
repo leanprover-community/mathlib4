@@ -55,12 +55,12 @@ protected alias ⟨_, ConvexOn.uniformConvexOn_zero⟩ := uniformConvexOn_zero
 protected alias ⟨_, ConcaveOn.uniformConcaveOn_zero⟩ := uniformConcaveOn_zero
 
 lemma UniformConvexOn.mono (hψφ : ψ ≤ φ) (hf : UniformConvexOn s φ f) : UniformConvexOn s ψ f :=
-  ⟨hf.1, fun x hx y hy a b ha hb hab ↦ (hf.2 hx hy ha hb hab).trans $
-    sub_le_sub_left (mul_le_mul_of_nonneg_left (hψφ _) $ by positivity) _⟩
+  ⟨hf.1, fun x hx y hy a b ha hb hab ↦ (hf.2 hx hy ha hb hab).trans <|
+    sub_le_sub_left (mul_le_mul_of_nonneg_left (hψφ _) <| by positivity) _⟩
 
 lemma UniformConcaveOn.mono (hψφ : ψ ≤ φ) (hf : UniformConcaveOn s φ f) : UniformConcaveOn s ψ f :=
-  ⟨hf.1, fun x hx y hy a b ha hb hab ↦ (hf.2 hx hy ha hb hab).trans' $
-    add_le_add_left (mul_le_mul_of_nonneg_left (hψφ _) $ by positivity) _⟩
+  ⟨hf.1, fun x hx y hy a b ha hb hab ↦ (hf.2 hx hy ha hb hab).trans' <|
+    add_le_add_left (mul_le_mul_of_nonneg_left (hψφ _) <| by positivity) _⟩
 
 lemma UniformConvexOn.convexOn (hf : UniformConvexOn s φ f) (hφ : 0 ≤ φ) : ConvexOn ℝ s f := by
   simpa using hf.mono hφ
@@ -70,7 +70,7 @@ lemma UniformConcaveOn.concaveOn (hf : UniformConcaveOn s φ f) (hφ : 0 ≤ φ)
 
 lemma UniformConvexOn.strictConvexOn (hf : UniformConvexOn s φ f) (hφ : ∀ r, r ≠ 0 → 0 < φ r) :
     StrictConvexOn ℝ s f := by
-  refine ⟨hf.1, fun x hx y hy hxy a b ha hb hab ↦ (hf.2 hx hy ha.le hb.le hab).trans_lt $
+  refine ⟨hf.1, fun x hx y hy hxy a b ha hb hab ↦ (hf.2 hx hy ha.le hb.le hab).trans_lt <|
     sub_lt_self _ ?_⟩
   rw [← sub_ne_zero, ← norm_pos_iff] at hxy
   have := hφ _ hxy.ne'
@@ -78,7 +78,7 @@ lemma UniformConvexOn.strictConvexOn (hf : UniformConvexOn s φ f) (hφ : ∀ r,
 
 lemma UniformConcaveOn.strictConcaveOn (hf : UniformConcaveOn s φ f) (hφ : ∀ r, r ≠ 0 → 0 < φ r) :
     StrictConcaveOn ℝ s f := by
-  refine ⟨hf.1, fun x hx y hy hxy a b ha hb hab ↦ (hf.2 hx hy ha.le hb.le hab).trans_lt' $
+  refine ⟨hf.1, fun x hx y hy hxy a b ha hb hab ↦ (hf.2 hx hy ha.le hb.le hab).trans_lt' <|
     lt_add_of_pos_right _ ?_⟩
   rw [← sub_ne_zero, ← norm_pos_iff] at hxy
   have := hφ _ hxy.ne'
@@ -127,11 +127,11 @@ def StrongConcaveOn (s : Set E) (m : ℝ) : (E → ℝ) → Prop :=
 variable {s : Set E} {f : E → ℝ} {m n : ℝ}
 
 nonrec lemma StrongConvexOn.mono (hmn : m ≤ n) (hf : StrongConvexOn s n f) : StrongConvexOn s m f :=
-  hf.mono fun r ↦ mul_le_mul_of_nonneg_right (div_le_div_of_le zero_le_two hmn) $ by positivity
+  hf.mono fun r ↦ mul_le_mul_of_nonneg_right (div_le_div_of_le zero_le_two hmn) <| by positivity
 
 nonrec lemma StrongConcaveOn.mono (hmn : m ≤ n) (hf : StrongConcaveOn s n f) :
     StrongConcaveOn s m f :=
-  hf.mono fun r ↦ mul_le_mul_of_nonneg_right (div_le_div_of_le zero_le_two hmn) $ by positivity
+  hf.mono fun r ↦ mul_le_mul_of_nonneg_right (div_le_div_of_le zero_le_two hmn) <| by positivity
 
 @[simp] lemma strongConvexOn_zero : StrongConvexOn s 0 f ↔ ConvexOn ℝ s f := by
   simp [StrongConvexOn, ← Pi.zero_def]

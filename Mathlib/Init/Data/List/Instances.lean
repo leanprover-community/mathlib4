@@ -78,9 +78,9 @@ instance decidableBex : ∀ (l : List α), Decidable (∃ x ∈ l, p x)
 
 instance decidableBall (l : List α) : Decidable (∀ x ∈ l, p x) :=
   match (inferInstance : Decidable <| ∃ x ∈ l, ¬ p x) with
-  | isFalse h => isTrue $ fun x hx => match ‹DecidablePred p› x with
+  | isFalse h => isTrue fun x hx => match ‹DecidablePred p› x with
     | isTrue h' => h'
-    | isFalse h' => False.elim $ h ⟨x, hx, h'⟩
+    | isFalse h' => False.elim <| h ⟨x, hx, h'⟩
   | isTrue h => isFalse <| let ⟨x, h, np⟩ := h; fun al => np (al x h)
 #align list.decidable_ball List.decidableBall
 

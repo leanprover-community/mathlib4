@@ -347,7 +347,6 @@ theorem lintegral_iSup {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurable (
     ∫⁻ a, ⨆ n, f n a ∂μ = ⨆ n, ∫⁻ a, f n a ∂μ := by
   set c : ℝ≥0 → ℝ≥0∞ := (↑)
   set F := fun a : α => ⨆ n, f n a
-  have _ : Measurable F := measurable_iSup hf
   refine' le_antisymm _ (iSup_lintegral_le _)
   rw [lintegral_eq_nnreal]
   refine' iSup_le fun s => iSup_le fun hsf => _
@@ -816,15 +815,15 @@ theorem set_lintegral_eq_const {f : α → ℝ≥0∞} (hf : Measurable f) (r : 
 #align measure_theory.set_lintegral_eq_const MeasureTheory.set_lintegral_eq_const
 
 theorem lintegral_indicator_one_le (s : Set α) : ∫⁻ a, s.indicator 1 a ∂μ ≤ μ s :=
-  (lintegral_indicator_const_le _ _).trans $ (one_mul _).le
+  (lintegral_indicator_const_le _ _).trans <| (one_mul _).le
 
 @[simp]
 theorem lintegral_indicator_one₀ (hs : NullMeasurableSet s μ) : ∫⁻ a, s.indicator 1 a ∂μ = μ s :=
-  (lintegral_indicator_const₀ hs _).trans $ one_mul _
+  (lintegral_indicator_const₀ hs _).trans <| one_mul _
 
 @[simp]
 theorem lintegral_indicator_one (hs : MeasurableSet s) : ∫⁻ a, s.indicator 1 a ∂μ = μ s :=
-  (lintegral_indicator_const hs _).trans $ one_mul _
+  (lintegral_indicator_const hs _).trans <| one_mul _
 #align measure_theory.lintegral_indicator_one MeasureTheory.lintegral_indicator_one
 
 /-- A version of **Markov's inequality** for two functions. It doesn't follow from the standard
@@ -884,8 +883,8 @@ theorem lintegral_eq_top_of_measure_eq_top_ne_zero {f : α → ℝ≥0∞} (hf :
 
 theorem setLintegral_eq_top_of_measure_eq_top_ne_zero (hf : AEMeasurable f (μ.restrict s))
     (hμf : μ ({x ∈ s | f x = ∞}) ≠ 0) : ∫⁻ x in s, f x ∂μ = ∞ :=
-  lintegral_eq_top_of_measure_eq_top_ne_zero hf $
-    mt (eq_bot_mono $ by rw [← setOf_inter_eq_sep]; exact Measure.le_restrict_apply _ _) hμf
+  lintegral_eq_top_of_measure_eq_top_ne_zero hf <|
+    mt (eq_bot_mono <| by rw [← setOf_inter_eq_sep]; exact Measure.le_restrict_apply _ _) hμf
 #align measure_theory.set_lintegral_eq_top_of_measure_eq_top_ne_zero MeasureTheory.setLintegral_eq_top_of_measure_eq_top_ne_zero
 
 theorem measure_eq_top_of_lintegral_ne_top (hf : AEMeasurable f μ) (hμf : ∫⁻ x, f x ∂μ ≠ ∞) :
@@ -895,7 +894,7 @@ theorem measure_eq_top_of_lintegral_ne_top (hf : AEMeasurable f μ) (hμf : ∫�
 
 theorem measure_eq_top_of_setLintegral_ne_top (hf : AEMeasurable f (μ.restrict s))
     (hμf : ∫⁻ x in s, f x ∂μ ≠ ∞) : μ ({x ∈ s | f x = ∞}) = 0 :=
-  of_not_not fun h => hμf $ setLintegral_eq_top_of_measure_eq_top_ne_zero hf h
+  of_not_not fun h => hμf <| setLintegral_eq_top_of_measure_eq_top_ne_zero hf h
 #align measure_theory.measure_eq_top_of_set_lintegral_ne_top MeasureTheory.measure_eq_top_of_setLintegral_ne_top
 
 /-- **Markov's inequality** also known as **Chebyshev's first inequality**. -/

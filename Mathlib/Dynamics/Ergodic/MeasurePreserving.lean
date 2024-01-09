@@ -155,7 +155,7 @@ lemma measure_symmDiff_preimage_iterate_le
   induction' n with n ih; simp
   simp only [add_smul, one_smul, ← n.add_one]
   refine' le_trans (measure_symmDiff_le s (f^[n] ⁻¹' s) (f^[n+1] ⁻¹' s)) (add_le_add ih _)
-  replace hs : MeasurableSet (s ∆ (f ⁻¹' s)) := hs.symmDiff $ hf.measurable hs
+  replace hs : MeasurableSet (s ∆ (f ⁻¹' s)) := hs.symmDiff <| hf.measurable hs
   rw [iterate_succ', preimage_comp, ← preimage_symmDiff, (hf.iterate n).measure_preimage hs]
 
 /-- If `μ univ < n * μ s` and `f` is a map preserving measure `μ`,

@@ -110,6 +110,12 @@ theorem smul_le {P : Submodule R M} : I • N ≤ P ↔ ∀ r ∈ I, ∀ n ∈ N
   map₂_le
 #align submodule.smul_le Submodule.smul_le
 
+@[simp, norm_cast]
+lemma coe_set_smul : (I : Set R) • N = I • N :=
+  Submodule.set_smul_eq_of_le _ _ _
+    (fun _ _ hr hx => smul_mem_smul hr hx)
+    (smul_le.mpr fun _ hr _ hx => mem_set_smul_of_mem_mem hr hx)
+
 @[elab_as_elim]
 theorem smul_induction_on {p : M → Prop} {x} (H : x ∈ I • N) (Hb : ∀ r ∈ I, ∀ n ∈ N, p (r • n))
     (H1 : ∀ x y, p x → p y → p (x + y)) : p x := by
@@ -809,6 +815,7 @@ theorem pow_right_mono {I J : Ideal R} (e : I ≤ J) (n : ℕ) : I ^ n ≤ J ^ n
     exact Ideal.mul_mono e hn
 #align ideal.pow_right_mono Ideal.pow_right_mono
 
+@[simp]
 theorem mul_eq_bot {R : Type*} [CommSemiring R] [NoZeroDivisors R] {I J : Ideal R} :
     I * J = ⊥ ↔ I = ⊥ ∨ J = ⊥ :=
   ⟨fun hij =>
@@ -823,9 +830,15 @@ instance {R : Type*} [CommSemiring R] [NoZeroDivisors R] : NoZeroDivisors (Ideal
   eq_zero_or_eq_zero_of_mul_eq_zero := mul_eq_bot.1
 
 /-- A product of ideals in an integral domain is zero if and only if one of the terms is zero. -/
+@[simp]
+lemma multiset_prod_eq_bot {R : Type*} [CommRing R] [IsDomain R] {s : Multiset (Ideal R)} :
+    s.prod = ⊥ ↔ ⊥ ∈ s :=
+  Multiset.prod_eq_zero_iff
+
+/-- A product of ideals in an integral domain is zero if and only if one of the terms is zero. -/
+@[deprecated multiset_prod_eq_bot] -- since 26 Dec 2023
 theorem prod_eq_bot {R : Type*} [CommRing R] [IsDomain R] {s : Multiset (Ideal R)} :
     s.prod = ⊥ ↔ ∃ I ∈ s, I = ⊥ := by
-  rw [bot_eq_zero, prod_zero_iff_exists_zero]
   simp
 #align ideal.prod_eq_bot Ideal.prod_eq_bot
 
@@ -2095,6 +2108,10 @@ lemma _root_.Pi.ker_ringHom {ι : Type*} {R : ι → Type*} [∀ i, Semiring (R 
   ext x
   simp [mem_ker, Ideal.mem_iInf, Function.funext_iff]
 
+@[simp]
+theorem ker_rangeSRestrict (f : R →+* S) : ker f.rangeSRestrict = ker f :=
+  Ideal.ext fun _ ↦ Subtype.ext_iff
+
 end Semiring
 
 section Ring
@@ -2281,6 +2298,11 @@ instance moduleSubmodule : Module (Ideal R) (Submodule R M) where
   zero_smul := bot_smul
   smul_zero := smul_bot
 #align submodule.module_submodule Submodule.moduleSubmodule
+
+lemma span_smul_eq
+    (s : Set R) (N : Submodule R M) :
+    Ideal.span s • N = s • N := by
+  rw [← coe_set_smul, coe_span_smul]
 
 end Submodule
 

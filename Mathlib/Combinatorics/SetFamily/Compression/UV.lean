@@ -205,14 +205,14 @@ theorem compress_mem_compression_of_mem_compression (ha : a ∈ 𝓒 u v s) :
 theorem compression_idem (u v : α) (s : Finset α) : 𝓒 u v (𝓒 u v s) = 𝓒 u v s := by
   have h : filter (compress u v · ∉ 𝓒 u v s) (𝓒 u v s) = ∅ :=
     filter_false_of_mem fun a ha h ↦ h <| compress_mem_compression_of_mem_compression ha
-  rw [compression, image_filter, h, image_empty, ← h]
+  rw [compression, filter_image, h, image_empty, ← h]
   exact filter_union_filter_neg_eq _ (compression u v s)
 #align uv.compression_idem UV.compression_idem
 
 /-- Compressing a family doesn't change its size. -/
 @[simp]
 theorem card_compression (u v : α) (s : Finset α) : (𝓒 u v s).card = s.card := by
-  rw [compression, card_disjoint_union compress_disjoint, image_filter,
+  rw [compression, card_disjoint_union compress_disjoint, filter_image,
     card_image_of_injOn compress_injOn, ← card_disjoint_union (disjoint_filter_filter_neg s _ _),
     filter_union_filter_neg_eq]
 #align uv.card_compression UV.card_compression
@@ -408,7 +408,7 @@ theorem shadow_compression_subset_compression_shadow (u v : Finset α)
       exact disjoint_sdiff
     convert this using 1
     rw [insert_union_comm, insert_erase ‹w ∈ u›,
-      sdiff_union_of_subset (hus.trans $ subset_union_left _ _),
+      sdiff_union_of_subset (hus.trans <| subset_union_left _ _),
       sdiff_erase (mem_union_right _ ‹z ∈ v›), union_sdiff_cancel_right hsv]
   -- If `w ∉ u`, we contradict `m` again
   rw [mem_sdiff, ← not_imp, Classical.not_not] at hwB
@@ -427,7 +427,7 @@ Kruskal-Katona. -/
 theorem card_shadow_compression_le (u v : Finset α)
     (huv : ∀ x ∈ u, ∃ y ∈ v, IsCompressed (u.erase x) (v.erase y) 𝒜) :
     (∂ (𝓒 u v 𝒜)).card ≤ (∂ 𝒜).card :=
-  (card_le_of_subset <| shadow_compression_subset_compression_shadow _ _ huv).trans
+  (card_le_card <| shadow_compression_subset_compression_shadow _ _ huv).trans
     (card_compression _ _ _).le
 #align uv.card_shadow_compression_le UV.card_shadow_compression_le
 

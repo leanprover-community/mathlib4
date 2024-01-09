@@ -102,7 +102,7 @@ def lift (f : ∀ i, G i →* K) (k : H →* K)
     (hf : ∀ i, (f i).comp (φ i) = k) :
     PushoutI φ →* K :=
   Con.lift _ (Coprod.lift (CoprodI.lift f) k) <| by
-    apply Con.conGen_le <| fun x y => ?_
+    apply Con.conGen_le fun x y => ?_
     rintro ⟨i, x', rfl, rfl⟩
     simp only [FunLike.ext_iff, MonoidHom.coe_comp, comp_apply] at hf
     simp [hf]

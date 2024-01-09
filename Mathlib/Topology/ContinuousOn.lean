@@ -1104,7 +1104,7 @@ theorem continuousOn_of_locally_continuousOn {f : α → β} {s : Set α}
 -- porting note: new lemma
 theorem continuousOn_to_generateFrom_iff {s : Set α} {T : Set (Set β)} {f : α → β} :
     @ContinuousOn α β _ (.generateFrom T) f s ↔ ∀ x ∈ s, ∀ t ∈ T, f x ∈ t → f ⁻¹' t ∈ 𝓝[s] x :=
-  forall₂_congr <| fun x _ => by
+  forall₂_congr fun x _ => by
     delta ContinuousWithinAt
     simp only [TopologicalSpace.nhds_generateFrom, tendsto_iInf, tendsto_principal, mem_setOf_eq,
       and_imp]

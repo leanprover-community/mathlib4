@@ -242,7 +242,7 @@ def MDifferentiable (f : M → M') :=
   ∀ x, MDifferentiableAt I I' f x
 #align mdifferentiable MDifferentiable
 
-/-- Prop registering if a local homeomorphism is a local diffeomorphism on its source -/
+/-- Prop registering if a partial homeomorphism is a local diffeomorphism on its source -/
 def PartialHomeomorph.MDifferentiable (f : PartialHomeomorph M M') :=
   MDifferentiableOn I I' f f.source ∧ MDifferentiableOn I' I f.symm f.target
 #align local_homeomorph.mdifferentiable PartialHomeomorph.MDifferentiable
@@ -1898,7 +1898,7 @@ end Charts
 
 end SpecificFunctions
 
-/-! ### Differentiable local homeomorphisms -/
+/-! ### Differentiable partial homeomorphisms -/
 
 namespace PartialHomeomorph.MDifferentiable
 
@@ -1944,7 +1944,7 @@ theorem comp_symm_deriv {x : M'} (hx : x ∈ e.target) :
   he.symm.symm_comp_deriv hx
 #align local_homeomorph.mdifferentiable.comp_symm_deriv PartialHomeomorph.MDifferentiable.comp_symm_deriv
 
-/-- The derivative of a differentiable local homeomorphism, as a continuous linear equivalence
+/-- The derivative of a differentiable partial homeomorphism, as a continuous linear equivalence
 between the tangent spaces at `x` and `e x`. -/
 protected def mfderiv {x : M} (hx : x ∈ e.source) : TangentSpace I x ≃L[𝕜] TangentSpace I' (e x) :=
   { mfderiv I I' e x with
@@ -2073,7 +2073,7 @@ theorem UniqueMDiffOn.image_denseRange (hs : UniqueMDiffOn I s) {f : M → M'}
     UniqueMDiffOn I' (f '' s) :=
   hs.image_denseRange' (fun x hx ↦ (hf x hx).hasMFDerivWithinAt) hd
 
-protected theorem UniqueMDiffWithinAt.preimage_localHomeomorph (hs : UniqueMDiffWithinAt I s x)
+protected theorem UniqueMDiffWithinAt.preimage_partialHomeomorph (hs : UniqueMDiffWithinAt I s x)
     {e : PartialHomeomorph M M'} (he : e.MDifferentiable I I') (hx : x ∈ e.source) :
     UniqueMDiffWithinAt I' (e.target ∩ e.symm ⁻¹' s) (e x) := by
   rw [← e.image_source_inter_eq', inter_comm]
@@ -2085,7 +2085,7 @@ protected theorem UniqueMDiffWithinAt.preimage_localHomeomorph (hs : UniqueMDiff
 diffeomorphism also has the unique differential property. -/
 theorem UniqueMDiffOn.uniqueMDiffOn_preimage (hs : UniqueMDiffOn I s) {e : PartialHomeomorph M M'}
     (he : e.MDifferentiable I I') : UniqueMDiffOn I' (e.target ∩ e.symm ⁻¹' s) := fun _x hx ↦
-  e.right_inv hx.1 ▸ (hs _ hx.2).preimage_localHomeomorph he (e.map_target hx.1)
+  e.right_inv hx.1 ▸ (hs _ hx.2).preimage_partialHomeomorph he (e.map_target hx.1)
 #align unique_mdiff_on.unique_mdiff_on_preimage UniqueMDiffOn.uniqueMDiffOn_preimage
 
 /-- If a set in a manifold has the unique derivative property, then its pullback by any extended
@@ -2135,7 +2135,7 @@ theorem UniqueMDiffWithinAt.smooth_bundle_preimage {p : TotalSpace F Z}
   · rw [← Prod.mk.eta (p := e p), FiberBundle.trivializationAt_proj_fst]
     exact hs.prod (uniqueMDiffWithinAt_univ _)
   rw [← e.left_inv hp]
-  refine (this.preimage_localHomeomorph e.mdifferentiable.symm (e.map_source hp)).mono ?_
+  refine (this.preimage_partialHomeomorph e.mdifferentiable.symm (e.map_source hp)).mono ?_
   rintro y ⟨hy, hys, -⟩
   rwa [PartialHomeomorph.symm_symm, e.coe_coe, e.coe_fst hy] at hys
 

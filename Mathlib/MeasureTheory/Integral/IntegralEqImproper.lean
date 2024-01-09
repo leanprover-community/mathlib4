@@ -341,7 +341,7 @@ theorem AECover.biUnion_Iic_aecover [Preorder ι] {φ : ι → Set α} (hφ : AE
 -- porting note: generalized from `[SemilatticeSup ι] [Nonempty ι]` to `[Preorder ι]`
 theorem AECover.biInter_Ici_aecover [Preorder ι] {φ : ι → Set α}
     (hφ : AECover μ atTop φ) : AECover μ atTop fun n : ι => ⋂ (k) (_h : k ∈ Ici n), φ k where
-  ae_eventually_mem := hφ.ae_eventually_mem.mono <| fun x h ↦ by
+  ae_eventually_mem := hφ.ae_eventually_mem.mono fun x h ↦ by
     simpa only [mem_iInter, mem_Ici, eventually_forall_ge_atTop]
   measurableSet i := .biInter (to_countable _) fun n _ => hφ.measurableSet n
 #align measure_theory.ae_cover.bInter_Ici_ae_cover MeasureTheory.AECover.biInter_Ici_aecover
@@ -932,7 +932,7 @@ theorem integral_comp_rpow_Ioi (g : ℝ → E) {p : ℝ} (hp : p ≠ 0) :
   rw [a3] at this; rw [this]
   refine' set_integral_congr measurableSet_Ioi _
   intro x hx; dsimp only
-  rw [abs_mul, abs_of_nonneg (rpow_nonneg_of_nonneg (le_of_lt hx) _)]
+  rw [abs_mul, abs_of_nonneg (rpow_nonneg (le_of_lt hx) _)]
 #align measure_theory.integral_comp_rpow_Ioi MeasureTheory.integral_comp_rpow_Ioi
 
 theorem integral_comp_rpow_Ioi_of_pos {g : ℝ → E} {p : ℝ} (hp : 0 < p) :
@@ -990,7 +990,7 @@ theorem integrableOn_Ioi_comp_rpow_iff [NormedSpace ℝ E] (f : ℝ → E) {p : 
   rw [a3] at this
   rw [this]
   refine' integrableOn_congr_fun (fun x hx => _) measurableSet_Ioi
-  simp_rw [abs_mul, abs_of_nonneg (rpow_nonneg_of_nonneg (le_of_lt hx) _)]
+  simp_rw [abs_mul, abs_of_nonneg (rpow_nonneg (le_of_lt hx) _)]
 #align measure_theory.integrable_on_Ioi_comp_rpow_iff MeasureTheory.integrableOn_Ioi_comp_rpow_iff
 
 /-- The substitution `y = x ^ p` in integrals over `Ioi 0` preserves integrability (version
