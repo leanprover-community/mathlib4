@@ -40,8 +40,6 @@ this requires a definition of submanifolds
 
 open Set
 
-open scoped Manifold
-
 -- Let `M` be a manifold with corners over the pair `(E, H)`.
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
