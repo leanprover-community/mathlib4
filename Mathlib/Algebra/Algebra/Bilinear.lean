@@ -201,7 +201,7 @@ theorem _root_.Algebra.lmul_injective : Function.Injective (Algebra.lmul R A) :=
 theorem _root_.Algebra.lmul_isUnit_iff {x : A} :
     IsUnit (Algebra.lmul R A x) ↔ IsUnit x := by
   rw [Module.End_isUnit_iff, Iff.comm]
-  exact isUnit_iff_mulLeft_bijective
+  exact IsUnit.isUnit_iff_mulLeft_bijective
 
 @[simp]
 theorem mulLeft_eq_zero_iff (a : A) : mulLeft R a = 0 ↔ a = 0 := by
