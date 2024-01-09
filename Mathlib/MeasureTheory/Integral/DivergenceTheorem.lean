@@ -425,7 +425,7 @@ theorem integral_eq_of_hasDerivWithinAt_off_countable (f f' : ℝ → E) {a b : 
   · simp only [uIcc_of_ge hab, min_eq_right hab, max_eq_left hab] at *
     rw [intervalIntegral.integral_symm, neg_eq_iff_eq_neg, neg_sub]
     exact integral_eq_of_hasDerivWithinAt_off_countable_of_le f f' hab hs Hc Hd Hi.symm
-#align measure_theory.integral_eq_of_has_deriv_within_at_off_countable MeasureTheory.integral_eq_of_has_deriv_within_at_off_countable
+#align measure_theory.integral_eq_of_has_deriv_within_at_off_countable MeasureTheory.integral_eq_of_hasDerivWithinAt_off_countable
 
 /-- **Divergence theorem** for functions on the plane along rectangles. It is formulated in terms of
 two functions `f g : ℝ × ℝ → E` and an integral over `Icc a b = [a.1, b.1] × [a.2, b.2]`, where
