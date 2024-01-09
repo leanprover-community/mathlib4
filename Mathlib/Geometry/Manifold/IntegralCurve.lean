@@ -569,11 +569,10 @@ lemma exists_isIntegralCurveOn_Ioo_eqOn [BoundarylessManifold I M]
     exact ⟨neg_lt_zero.mpr hpos, by positivity⟩
   · apply Ioo_subset_Ioo <;> linarith
 
-/-- Auxiliary lemma. Suppose for every `a : ℝ`, there exists an integral curve defined on
-  `Ioo (-a) a`. We choose one for every `a` and call it `γ a`. We define a global curve
-  `γ_ext := fun t ↦ γ (|t| + 1) t`. For every `a : ℝ`, `γ` agrees with `γ a` on `Ioo (-a) a`. This
-  will help us show that `γ` is a global integral curve. -/
-lemma integralCurve_of_exists_isIntegralCurveOn_Ioo_eqOn [BoundarylessManifold I M]
+/-- Suppose for every `a : ℝ`, there exists an integral curve `γ a` on `Ioo (-a) a`.
+Then, the global curve `γ_ext := fun t ↦ γ (|t| + 1) t` agrees with each `γ a` on `Ioo (-a) a`.
+This will help us show that `γ` is a global integral curve. -/
+lemma exists_integralCurve_of_exists_isIntegralCurveOn_Ioo_eqOn_aux [BoundarylessManifold I M]
     (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M))) {x : M}
     (h : ∀ a, ∃ γ, γ 0 = x ∧ IsIntegralCurveOn γ v (Ioo (-a) a)) {a : ℝ} :
     EqOn (fun t' ↦ choose (h (|t'| + 1)) t') (choose (h a)) (Ioo (-a) a) := by
@@ -602,7 +601,8 @@ lemma exists_integralCurve_of_exists_isIntegralCurveOn_Ioo [BoundarylessManifold
     rw [mem_Ioo, ← abs_lt]
     exact lt_add_one _
   · rw [Filter.eventuallyEq_iff_exists_mem]
-    refine ⟨Ioo (-(|t| + 1)) (|t| + 1), ?_, integralCurve_of_exists_isIntegralCurveOn_Ioo_eqOn hv h⟩
+    refine ⟨Ioo (-(|t| + 1)) (|t| + 1), ?_,
+      exists_integralCurve_of_exists_isIntegralCurveOn_Ioo_eqOn_aux hv h⟩
     · have := lt_add_of_pos_right |t| zero_lt_one
       rw [abs_lt] at this
       exact Ioo_mem_nhds this.1 this.2
