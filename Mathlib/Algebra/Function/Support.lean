@@ -70,7 +70,7 @@ theorem mulSupport_subset_iff {f : α → M} {s : Set α} : mulSupport f ⊆ s �
 
 @[to_additive]
 theorem mulSupport_subset_iff' {f : α → M} {s : Set α} :
-    mulSupport f ⊆ s ↔ ∀ (x) (_ : x ∉ s), f x = 1 :=
+    mulSupport f ⊆ s ↔ ∀ x ∉ s, f x = 1 :=
   forall_congr' fun _ => not_imp_comm
 #align function.mul_support_subset_iff' Function.mulSupport_subset_iff'
 #align function.support_subset_iff' Function.support_subset_iff'
@@ -138,7 +138,7 @@ theorem range_subset_insert_image_mulSupport (f : α → M) :
 @[to_additive]
 lemma range_eq_image_or_of_mulSupport_subset {f : α → M} {k : Set α} (h : mulSupport f ⊆ k) :
     range f = f '' k ∨ range f = insert 1 (f '' k) := by
-  apply (wcovby_insert _ _).eq_or_eq (image_subset_range _ _)
+  apply (wcovBy_insert _ _).eq_or_eq (image_subset_range _ _)
   exact (range_subset_insert_image_mulSupport f).trans (insert_subset_insert (image_subset f h))
 
 @[to_additive (attr := simp)]

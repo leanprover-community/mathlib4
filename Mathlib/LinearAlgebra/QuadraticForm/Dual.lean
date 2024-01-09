@@ -135,7 +135,7 @@ variable [CommRing R] [AddCommGroup M] [Module R M]
 
 variable {R M}
 
-/-- The isometry sending `(Q.prod $ -Q)` to `(QuadraticForm.dualProd R M)`.
+/-- The isometry sending `(Q.prod <| -Q)` to `(QuadraticForm.dualProd R M)`.
 
 This is `σ` from Proposition 4.8, page 84 of
 [*Hermitian K-Theory and Geometric Applications*][hyman1973]; though we swap the order of the pairs.

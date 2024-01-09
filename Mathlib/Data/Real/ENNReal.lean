@@ -260,11 +260,13 @@ theorem forall_ne_top {p : ℝ≥0∞ → Prop} : (∀ a, a ≠ ∞ → p a) ↔
   Option.ball_ne_none
 #align ennreal.forall_ne_top ENNReal.forall_ne_top
 
+@[deprecated]
 theorem exists_ne_top' {p : ℝ≥0∞ → Prop} : (∃ (a : ℝ≥0∞) (_ : a ≠ ∞), p a) ↔ ∃ r : ℝ≥0, p r :=
   Option.bex_ne_none
 #align ennreal.exists_ne_top ENNReal.exists_ne_top'
 
-theorem exists_ne_top {p : ℝ≥0∞ → Prop} : (∃ a : ℝ≥0∞, a ≠ ∞ ∧ p a) ↔ ∃ r : ℝ≥0, p r := by
+set_option linter.deprecated false in
+theorem exists_ne_top {p : ℝ≥0∞ → Prop} : (∃ a ≠ ∞, p a) ↔ ∃ r : ℝ≥0, p r := by
   simp only [exists_ne_top', ← exists_prop]
 
 theorem toNNReal_eq_zero_iff (x : ℝ≥0∞) : x.toNNReal = 0 ↔ x = 0 ∨ x = ∞ :=
@@ -385,7 +387,7 @@ theorem coe_strictMono : StrictMono ofNNReal := fun _ _ => coe_lt_coe.2
 theorem coe_ne_zero : (r : ℝ≥0∞) ≠ 0 ↔ r ≠ 0 := not_congr coe_eq_coe
 #align ennreal.coe_ne_zero ENNReal.coe_ne_zero
 
-@[simp, norm_cast] theorem coe_add : ↑(r + p) = (r : ℝ≥0∞) + p := WithTop.coe_add
+@[simp, norm_cast] theorem coe_add : ↑(r + p) = (r : ℝ≥0∞) + p := WithTop.coe_add _ _
 #align ennreal.coe_add ENNReal.coe_add
 
 @[simp, norm_cast]
@@ -1717,15 +1719,14 @@ theorem mul_le_iff_le_inv {a b r : ℝ≥0∞} (hr₀ : r ≠ 0) (hr₁ : r ≠ 
     one_mul]
 #align ennreal.mul_le_iff_le_inv ENNReal.mul_le_iff_le_inv
 
-/-- A variant of `le_inv_smul_iff` that holds for `ENNReal`. -/
-protected theorem le_inv_smul_iff {a b : ℝ≥0∞} {r : ℝ≥0} (hr₀ : r ≠ 0) : a ≤ r⁻¹ • b ↔ r • a ≤ b :=
-  by simpa [hr₀, ENNReal.smul_def] using (mul_le_iff_le_inv (coe_ne_zero.mpr hr₀) coe_ne_top).symm
-#align ennreal.le_inv_smul_iff ENNReal.le_inv_smul_iff
+instance : PosSMulStrictMono ℝ≥0 ℝ≥0∞ where
+  elim _r hr _a _b hab := ENNReal.mul_lt_mul_left' (coe_pos.2 hr).ne' coe_ne_top hab
 
-/-- A variant of `inv_smul_le_iff` that holds for `ENNReal`. -/
-protected theorem inv_smul_le_iff {a b : ℝ≥0∞} {r : ℝ≥0} (hr₀ : r ≠ 0) : r⁻¹ • a ≤ b ↔ a ≤ r • b :=
-  by simpa only [inv_inv] using (ENNReal.le_inv_smul_iff (inv_ne_zero hr₀)).symm
-#align ennreal.inv_smul_le_iff ENNReal.inv_smul_le_iff
+instance : SMulPosMono ℝ≥0 ℝ≥0∞ where
+  elim _r _ _a _b hab := mul_le_mul_right' (coe_le_coe.2 hab) _
+
+#align ennreal.le_inv_smul_iff_of_pos le_inv_smul_iff_of_pos
+#align ennreal.inv_smul_le_iff_of_pos inv_smul_le_iff_of_pos
 
 theorem le_of_forall_nnreal_lt {x y : ℝ≥0∞} (h : ∀ r : ℝ≥0, ↑r < x → ↑r ≤ y) : x ≤ y := by
   refine' le_of_forall_ge_of_dense fun r hr => _
@@ -2703,3 +2704,12 @@ def evalENNRealOfNNReal : PositivityExt where eval {_ _} _zα _pα e := do
   | _ => pure .none
 
 end Mathlib.Meta.Positivity
+
+/-!
+### Deprecated lemmas
+
+Those lemmas have been deprecated on the 2023/12/23.
+-/
+
+@[deprecated] protected alias ENNReal.le_inv_smul_iff_of_pos := le_inv_smul_iff_of_pos
+@[deprecated] protected alias ENNReal.inv_smul_le_iff_of_pos := inv_smul_le_iff_of_pos

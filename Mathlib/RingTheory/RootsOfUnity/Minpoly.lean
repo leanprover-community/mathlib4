@@ -225,7 +225,7 @@ theorem totient_le_degree_minpoly : Nat.totient n ≤ (minpoly ℤ μ).natDegree
   -- minimal polynomial of `μ` sent to `K[X]`
   calc
     n.totient = (primitiveRoots n K).card := h.card_primitiveRoots.symm
-    _ ≤ P_K.roots.toFinset.card := (Finset.card_le_of_subset (is_roots_of_minpoly h))
+    _ ≤ P_K.roots.toFinset.card := (Finset.card_le_card (is_roots_of_minpoly h))
     _ ≤ Multiset.card P_K.roots := (Multiset.toFinset_card_le _)
     _ ≤ P_K.natDegree := (card_roots' _)
     _ ≤ P.natDegree := natDegree_map_le _ _

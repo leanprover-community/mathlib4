@@ -209,12 +209,12 @@ protected theorem Surjective.forall (hf : Surjective f) {p : β → Prop} :
 
 protected theorem Surjective.forall₂ (hf : Surjective f) {p : β → β → Prop} :
     (∀ y₁ y₂, p y₁ y₂) ↔ ∀ x₁ x₂, p (f x₁) (f x₂) :=
-  hf.forall.trans $ forall_congr' fun _ ↦ hf.forall
+  hf.forall.trans <| forall_congr' fun _ ↦ hf.forall
 #align function.surjective.forall₂ Function.Surjective.forall₂
 
 protected theorem Surjective.forall₃ (hf : Surjective f) {p : β → β → β → Prop} :
     (∀ y₁ y₂ y₃, p y₁ y₂ y₃) ↔ ∀ x₁ x₂ x₃, p (f x₁) (f x₂) (f x₃) :=
-  hf.forall.trans $ forall_congr' fun _ ↦ hf.forall₂
+  hf.forall.trans <| forall_congr' fun _ ↦ hf.forall₂
 #align function.surjective.forall₃ Function.Surjective.forall₃
 
 protected theorem Surjective.exists (hf : Surjective f) {p : β → Prop} :
@@ -295,7 +295,7 @@ theorem cantor_surjective {α} (f : α → Set α) : ¬Surjective f
 to `α`. -/
 theorem cantor_injective {α : Type*} (f : Set α → α) : ¬Injective f
   | i => cantor_surjective (fun a ↦ {b | ∀ U, a = f U → U b}) <|
-         RightInverse.surjective (λ U => Set.ext <| fun _ ↦ ⟨fun h ↦ h U rfl, fun h _ e ↦ i e ▸ h⟩)
+         RightInverse.surjective (λ U => Set.ext fun _ ↦ ⟨fun h ↦ h U rfl, fun h _ e ↦ i e ▸ h⟩)
 #align function.cantor_injective Function.cantor_injective
 
 /-- There is no surjection from `α : Type u` into `Type (max u v)`. This theorem
@@ -781,7 +781,7 @@ theorem extend_injective (hf : Injective f) (e' : β → γ) : Injective fun g �
 
 lemma FactorsThrough.extend_comp {g : α → γ} (e' : β → γ) (hf : FactorsThrough g f) :
     extend f g e' ∘ f = g :=
-  funext $ fun a => hf.extend_apply e' a
+  funext fun a => hf.extend_apply e' a
 #align function.factors_through.extend_comp Function.FactorsThrough.extend_comp
 
 @[simp]

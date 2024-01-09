@@ -165,7 +165,7 @@ namespace FilterBasis
 /-- The filter associated to a filter basis. -/
 protected def filter (B : FilterBasis α) : Filter α where
   sets := { s | ∃ t ∈ B, t ⊆ s }
-  univ_sets := B.nonempty.imp <| fun s s_in => ⟨s_in, s.subset_univ⟩
+  univ_sets := B.nonempty.imp fun s s_in => ⟨s_in, s.subset_univ⟩
   sets_of_superset := fun ⟨s, s_in, h⟩ hxy => ⟨s, s_in, Set.Subset.trans h hxy⟩
   inter_sets := fun ⟨_s, s_in, hs⟩ ⟨_t, t_in, ht⟩ =>
     let ⟨u, u_in, u_sub⟩ := B.inter_sets s_in t_in
@@ -274,7 +274,7 @@ theorem hasBasis_iff : l.HasBasis p s ↔ ∀ t, t ∈ l ↔ ∃ i, p i ∧ s i 
 #align filter.has_basis_iff Filter.hasBasis_iffₓ
 
 theorem HasBasis.ex_mem (h : l.HasBasis p s) : ∃ i, p i :=
-  (h.mem_iff.mp univ_mem).imp <| fun _ => And.left
+  (h.mem_iff.mp univ_mem).imp fun _ => And.left
 #align filter.has_basis.ex_mem Filter.HasBasis.ex_mem
 
 protected theorem HasBasis.nonempty (h : l.HasBasis p s) : Nonempty ι :=
@@ -755,7 +755,7 @@ theorem inf_neBot_iff_frequently_right {f g : Filter α} :
 #align filter.inf_ne_bot_iff_frequently_right Filter.inf_neBot_iff_frequently_right
 
 theorem HasBasis.eq_biInf (h : l.HasBasis p s) : l = ⨅ (i) (_ : p i), 𝓟 (s i) :=
-  eq_biInf_of_mem_iff_exists_mem <| fun {_} => by simp only [h.mem_iff, mem_principal, exists_prop]
+  eq_biInf_of_mem_iff_exists_mem fun {_} => by simp only [h.mem_iff, mem_principal, exists_prop]
 #align filter.has_basis.eq_binfi Filter.HasBasis.eq_biInf
 
 theorem HasBasis.eq_iInf (h : l.HasBasis (fun _ => True) s) : l = ⨅ i, 𝓟 (s i) := by
@@ -829,7 +829,7 @@ protected theorem HasBasis.biInter_mem {f : Set α → Set β} (h : HasBasis l p
 #align filter.has_basis.bInter_mem Filter.HasBasis.biInter_mem
 
 protected theorem HasBasis.ker (h : HasBasis l p s) : l.ker = ⋂ (i) (_ : p i), s i :=
-  l.ker_def.trans $ h.biInter_mem monotone_id
+  l.ker_def.trans <| h.biInter_mem monotone_id
 #align filter.has_basis.sInter_sets Filter.HasBasis.ker
 
 variable {ι'' : Type*} [Preorder ι''] (l) (s'' : ι'' → Set α)
