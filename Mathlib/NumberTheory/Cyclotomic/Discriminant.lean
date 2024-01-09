@@ -165,20 +165,20 @@ theorem discr_prime_pow [hcycl : IsCyclotomicExtension {p ^ k} K L] [hp : Fact (
       replace hk := Nat.pow_right_injective rfl.le hk
       rw [add_left_eq_self] at hk
       subst hk
-      rw [←Nat.one_eq_succ_zero, pow_one] at hζ hcycl
+      rw [← Nat.one_eq_succ_zero, pow_one] at hζ hcycl
       have : natDegree (minpoly K ζ) = 1 := by
         rw [hζ.eq_neg_one_of_two_right, show (-1 : L) = algebraMap K L (-1) by simp,
           minpoly.eq_X_sub_C_of_algebraMap_inj _ (NoZeroSMulDivisors.algebraMap_injective K L)]
         exact natDegree_X_sub_C (-1)
       rcases Fin.equiv_iff_eq.2 this with ⟨e⟩
-      rw [←Algebra.discr_reindex K (hζ.powerBasis K).basis e, coe_basis, powerBasis_gen]; norm_num
+      rw [← Algebra.discr_reindex K (hζ.powerBasis K).basis e, coe_basis, powerBasis_gen]; norm_num
       simp_rw [hζ.eq_neg_one_of_two_right, show (-1 : L) = algebraMap K L (-1) by simp]
       convert_to (discr K fun i : Fin 1 ↦ (algebraMap K L) (-1) ^ ↑i) = _
       · congr
         ext i
         simp only [map_neg, map_one, Function.comp_apply, Fin.coe_fin_one, _root_.pow_zero]
         suffices (e.symm i : ℕ) = 0 by simp [this]
-        rw [←Nat.lt_one_iff]
+        rw [← Nat.lt_one_iff]
         convert (e.symm i).2
         rw [this]
       · simp only [discr, traceMatrix_apply, Matrix.det_unique, Fin.default_eq_zero, Fin.val_zero,
