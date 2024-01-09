@@ -5,9 +5,10 @@ Authors: Gabriel Ebner, Scott Morrison
 -/
 import Std.Util.Pickle
 import Std.Util.Cache
-import Mathlib.Tactic.SolveByElim
+import Std.Tactic.SolveByElim
 import Std.Data.MLList.Heartbeats
 import Mathlib.Lean.Name
+import Mathlib.Lean.Meta
 import Mathlib.Lean.Meta.DiscrTree
 
 /-!

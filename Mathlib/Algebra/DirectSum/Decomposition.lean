@@ -143,6 +143,15 @@ theorem decompose_of_mem_ne {x : M} {i j : ι} (hx : x ∈ ℳ i) (hij : i ≠ j
   rw [decompose_of_mem _ hx, DirectSum.of_eq_of_ne _ _ _ _ hij, ZeroMemClass.coe_zero]
 #align direct_sum.decompose_of_mem_ne DirectSum.decompose_of_mem_ne
 
+theorem degree_eq_of_mem_mem {x : M} {i j : ι} (hxi : x ∈ ℳ i) (hxj : x ∈ ℳ j) (hx : x ≠ 0) :
+    i = j := by
+  classical
+  have eq : (of (fun i : ι ↦ ℳ i) i (⟨x, hxi⟩ : ℳ i)).support =
+    (of (fun i : ι ↦ ℳ i) j (⟨x, hxj⟩ : ℳ j)).support
+  · rw [← decompose_coe, ← decompose_coe]
+  rwa [support_of, support_of, Finset.singleton_inj] at eq <;>
+  exact fun r ↦ hx <| Subtype.ext_iff_val.mp r
+
 /-- If `M` is graded by `ι` with degree `i` component `ℳ i`, then it is isomorphic as
 an additive monoid to a direct sum of components. -/
 -- Porting note: deleted [simps] and added the corresponding lemmas by hand

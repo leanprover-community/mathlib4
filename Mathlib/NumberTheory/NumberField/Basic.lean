@@ -3,7 +3,7 @@ Copyright (c) 2021 Ashvni Narayanan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ashvni Narayanan, Anne Baanen
 -/
-import Mathlib.Algebra.CharP.Algebra
+import Mathlib.Data.Int.Parity
 import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 
 #align_import number_theory.number_field.basic from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
@@ -59,6 +59,9 @@ attribute [instance] NumberField.to_charZero NumberField.to_finiteDimensional
 protected theorem isAlgebraic : Algebra.IsAlgebraic ℚ K :=
   Algebra.IsAlgebraic.of_finite _ _
 #align number_field.is_algebraic NumberField.isAlgebraic
+
+instance [NumberField L] [Algebra K L] : FiniteDimensional K L :=
+  Module.Finite.of_restrictScalars_finite ℚ K L
 
 /-- The ring of integers (or number ring) corresponding to a number field
 is the integral closure of ℤ in the number field. -/
