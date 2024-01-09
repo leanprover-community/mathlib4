@@ -143,15 +143,11 @@ lemma IsIntegralCurveOn.congr_of_eqOn (hs : IsOpen s) (h : IsIntegralCurveOn γ 
 
 lemma IsIntegralCurveAt.congr_of_eventuallyEq (h : IsIntegralCurveAt γ v t₀)
     (hγ : γ =ᶠ[nhds t₀] γ') : IsIntegralCurveAt γ' v t₀ := by
-  simp_rw [IsIntegralCurveAt, IsIntegralCurveOn, ← Filter.eventually_iff_exists_mem] at h --lemma?
-  obtain ⟨s, haux, hs1, hs2⟩ := eventually_nhds_iff.mp (h.and hγ)
-  refine ⟨s, hs1.mem_nhds hs2, ?_⟩
-  intros t ht
-  rw [← (haux t ht).2]
-  apply (haux t ht).1.congr_of_eventuallyEq
+  obtain ⟨s, hdrv, hs1, hs2⟩ := eventually_nhds_iff.mp (h.and hγ)
+  refine eventually_nhds_iff.mpr ⟨s, fun t ht ↦ ?_, hs1, hs2⟩
+  apply ((hdrv t ht).2 ▸ (hdrv t ht).1).congr_of_eventuallyEq
   rw [Filter.eventuallyEq_iff_exists_mem]
-  refine ⟨s, hs1.mem_nhds ht, ?_⟩
-  exact fun t' ht' => (haux t' ht').2.symm
+  exact ⟨s, hs1.mem_nhds ht, fun t' ht' ↦ (hdrv t' ht').2.symm⟩
 
 lemma IsIntegralCurve.congr (h : IsIntegralCurve γ v) (hγ : γ = γ') :
     IsIntegralCurve γ' v := by
