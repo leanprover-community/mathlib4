@@ -239,22 +239,26 @@ section
 
 variable [EnoughInjectives C]
 
-noncomputable def rightDerivedFunctorPlus : DerivedCategory.Plus C ⥤ DerivedCategory.Plus D :=
+noncomputable def rightDerivedFunctorPlus :
+    DerivedCategory.Plus C ⥤ DerivedCategory.Plus D :=
   (F.mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh).totalRightDerived DerivedCategory.Plus.Qh
     (HomotopyCategory.Plus.qis C)
 
-noncomputable def rightDerivedFunctorPlusUnit : F.mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh ⟶
-    DerivedCategory.Plus.Qh ⋙ F.rightDerivedFunctorPlus :=
+noncomputable def rightDerivedFunctorPlusUnit :
+    F.mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh ⟶
+      DerivedCategory.Plus.Qh ⋙ F.rightDerivedFunctorPlus :=
   (F.mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh).totalRightDerivedUnit DerivedCategory.Plus.Qh
     (HomotopyCategory.Plus.qis C)
 
-instance : F.rightDerivedFunctorPlus.IsRightDerivedFunctor F.rightDerivedFunctorPlusUnit
-    (HomotopyCategory.Plus.qis C) := by
+instance :
+    F.rightDerivedFunctorPlus.IsRightDerivedFunctor
+      F.rightDerivedFunctorPlusUnit (HomotopyCategory.Plus.qis C) := by
   dsimp only [rightDerivedFunctorPlus, rightDerivedFunctorPlusUnit]
   infer_instance
 
 instance (X : HomotopyCategory.Plus (Injectives C)) :
-    IsIso (F.rightDerivedFunctorPlusUnit.app ((Injectives.ι C).mapHomotopyCategoryPlus.obj X)) := by
+    IsIso (F.rightDerivedFunctorPlusUnit.app
+      ((Injectives.ι C).mapHomotopyCategoryPlus.obj X)) := by
   dsimp only [rightDerivedFunctorPlus, rightDerivedFunctorPlusUnit]
   infer_instance
 
