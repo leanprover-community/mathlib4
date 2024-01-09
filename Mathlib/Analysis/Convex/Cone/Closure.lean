@@ -57,7 +57,7 @@ variable {𝕜 : Type*} [OrderedSemiring 𝕜]
 variable {E : Type*} [AddCommMonoid E] [TopologicalSpace E] [ContinuousAdd E] [Module 𝕜 E]
   [ContinuousConstSMul 𝕜 E]
 
-lemma closure_aux (K : PointedCone 𝕜 E) : (K : ConvexCone 𝕜 E).closure.Pointed :=
+lemma toConvexCone_closure_pointed (K : PointedCone 𝕜 E) : (K : ConvexCone 𝕜 E).closure.Pointed :=
   subset_closure $ PointedCone.toConvexCone_pointed _
 
 /-- The closure of a pointed cone inside a topological space as a pointed cone. This
