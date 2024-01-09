@@ -36,11 +36,9 @@ as this is not needed for the proof of the fundamental theorem on Galois categor
 
 universe u₁ u₂ v₁ v₂ w
 
-open CategoryTheory Limits Functor
+namespace CategoryTheory
 
-namespace Galois
-
-section Def
+open Limits Functor
 
 /-- Definition of a Galois category. Lenstra, Def 3.1, (G1)-(G3) -/
 class PreGaloisCategory (C : Type u₁) [Category.{u₂, u₁} C] : Prop where
@@ -56,6 +54,8 @@ class PreGaloisCategory (C : Type u₁) [Category.{u₂, u₁} C] : Prop where
   /-- Every monomorphism in `C` induces an isomorphism on a direct summand (G3). -/
   monoInducesIsoOnDirectSummand {X Y : C} (i : X ⟶ Y) [Mono i] : ∃ (Z : C) (u : Z ⟶ Y),
     Nonempty (IsColimit (BinaryCofan.mk i u))
+
+namespace PreGaloisCategory
 
 /-- Definition of a fibre functor from a Galois category. Lenstra, Def 3.1, (G4)-(G6) -/
 class FibreFunctor {C : Type u₁} [Category.{u₂, u₁} C] [PreGaloisCategory C]
@@ -90,12 +90,6 @@ class PreservesConnectedObjects {C : Type u₁} [Category.{u₂, u₁} C] {D : T
   /-- `F.obj X` is connected if `X` is connected. -/
   preserves : ∀ {X : C} [ConnectedObject X], ConnectedObject (F.obj X)
 
-end Def
-
-section Instances
-
-namespace PreGaloisCategory
-
 variable {C : Type u₁} [Category.{u₂, u₁} C] [PreGaloisCategory C]
 
 attribute [instance] hasTerminal hasPullbacks hasFiniteCoproducts hasQuotientsByFiniteGroups
@@ -105,8 +99,6 @@ instance : HasFiniteLimits C := hasFiniteLimits_of_hasTerminal_and_pullbacks
 instance : HasBinaryProducts C := hasBinaryProducts_of_hasTerminal_and_pullbacks C
 
 instance : HasEqualizers C := hasEqualizers_of_hasPullbacks_and_binary_products
-
-end PreGaloisCategory
 
 namespace FibreFunctor
 
@@ -124,6 +116,6 @@ noncomputable instance : PreservesFiniteLimits F :=
 
 end FibreFunctor
 
-end Instances
+end PreGaloisCategory
 
-end Galois
+end CategoryTheory
