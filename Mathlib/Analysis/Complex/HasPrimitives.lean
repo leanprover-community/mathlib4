@@ -172,7 +172,7 @@ lemma mem_ball_re_aux {c : ℂ} {r : ℝ} {z : ℂ} :
   simp only [sub_self, ne_eq, not_false_eq_true, zero_pow', add_zero, Real.sqrt_sq_eq_abs, abs_lt]
   refine ⟨by linarith, by linarith⟩
 
-lemma mem_ball_re_aux' {c : ℂ} {r : ℝ} {z : ℂ} (_ : z ∈ ball c r) {x : ℝ}
+lemma mem_ball_re_aux' {c : ℂ} {r : ℝ} {z : ℂ} {x : ℝ}
     (hx : x ∈ Ioo (z.re - (r - dist z c)) (z.re + (r - dist z c))) :
     x + z.im * I ∈ ball c r := by
   set r₁ := r - dist z c
@@ -213,8 +213,7 @@ lemma mem_ball_of_map_im_aux {c : ℂ} {r : ℝ} {a b₁ b₂ : ℝ} (hb₁ : a 
   simp [verticalSegment_eq a b₁ b₂]
 -- NOTE: I don't know why these `simp`s can't be combined.
 
-lemma mem_ball_of_map_im_aux' {c : ℂ} {r : ℝ} {z : ℂ}
-    (_ : z ∈ ball c r) {w : ℂ} (hw : w ∈ ball z (r - dist z c)) :
+lemma mem_ball_of_map_im_aux' {c : ℂ} {r : ℝ} {z : ℂ} {w : ℂ} (hw : w ∈ ball z (r - dist z c)) :
     (fun (y : ℝ) ↦ w.re + y * I) '' [[z.im, w.im]] ⊆ ball c r := by
   apply mem_ball_of_map_im_aux <;>
   apply mem_of_subset_of_mem (ball_subset_ball' (by simp) : ball z (r - dist z c) ⊆ ball c r)
@@ -230,13 +229,13 @@ section ContinuousOn_Aux
 
 variable {c : ℂ} {r : ℝ} {f : ℂ → ℂ} (hf : ContinuousOn f (ball c r))
 
-lemma ContinuousOn.re_aux_1 {z : ℂ} (hz : z ∈ ball c r) :
+lemma ContinuousOn.re_aux_1 {z : ℂ} :
     ContinuousOn (fun (x : ℝ) ↦ f (x + z.im * I))
       (Ioo (z.re - (r - dist z c)) (z.re + (r - dist z c))) := by
   apply (hf.comp ((continuous_add_right _).comp continuous_ofReal).continuousOn)
   intro x hx
   change x + z.im * I ∈ ball c r
-  exact mem_ball_re_aux' hz hx
+  exact mem_ball_re_aux' hx
 
 lemma ContinuousOn.re_aux_2 {a₁ a₂ b : ℝ} (ha₁ : a₁ + b * I ∈ ball c r)
     (ha₂ : a₂ + b * I ∈ ball c r) : ContinuousOn (fun (x : ℝ) ↦ f (x + b * I)) [[a₁, a₂]] := by
@@ -245,12 +244,11 @@ lemma ContinuousOn.re_aux_2 {a₁ a₂ b : ℝ} (ha₁ : a₁ + b * I ∈ ball c
   · apply hf.mono (mem_ball_of_map_re_aux ha₁ ha₂)
   · exact Continuous.continuousOn (Continuous.comp (continuous_add_right _) continuous_ofReal)
 
-lemma ContinuousOn.im_aux_1 {z : ℂ}
-    (hz : z ∈ ball c r) {w : ℂ} (hw : w ∈ ball z (r - dist z c)) :
+lemma ContinuousOn.im_aux_1 {z : ℂ} {w : ℂ} (hw : w ∈ ball z (r - dist z c)) :
     ContinuousOn (fun (y : ℝ) ↦ f (w.re + y * I)) [[z.im, w.im]] := by
   convert ContinuousOn.comp (g := f) (f := fun (y : ℝ) ↦ (w.re : ℂ) + y * I) (s := uIcc z.im w.im)
     (t := (fun (y : ℝ) ↦ (w.re : ℂ) + y * I) '' (uIcc z.im w.im)) ?_ ?_ (mapsTo_image _ _)
-  · apply hf.mono (mem_ball_of_map_im_aux' hz hw)
+  · apply hf.mono (mem_ball_of_map_im_aux' hw)
   · apply Continuous.continuousOn
     exact ((continuous_add_left _).comp (continuous_mul_right _)).comp continuous_ofReal
 
@@ -361,7 +359,7 @@ lemma deriv_of_wedgeInt_re' : (fun (x : ℝ) ↦ (∫ t in z.re..x, f (t + z.im 
   let s : Set ℝ := Ioo (z.re - r₁) (z.re + r₁)
   have zRe_mem_s : z.re ∈ s := by simp [mem_ball.mp hz]
   have s_open : IsOpen s := isOpen_Ioo
-  have f_contOn : ContinuousOn (fun (x : ℝ) ↦ f (x + z.im * I)) s := f_cont.re_aux_1 hz
+  have f_contOn : ContinuousOn (fun (x : ℝ) ↦ f (x + z.im * I)) s := f_cont.re_aux_1
   have int1 : IntervalIntegrable (fun (x : ℝ) ↦ f (x + z.im * I)) MeasureTheory.volume z.re z.re
   · apply ContinuousOn.intervalIntegrable
     apply f_contOn.mono
@@ -428,7 +426,7 @@ lemma deriv_of_wedgeInt_im : (fun w ↦ (∫ y in z.im..w.im, f (w.re + y * I)) 
   filter_upwards [ball_mem_nhds z this]
   intro w hw
   rw [intervalIntegral.integral_sub ?_ continuousOn_const.intervalIntegrable]
-  exact (f_cont.im_aux_1 hz hw).intervalIntegrable
+  exact (f_cont.im_aux_1 hw).intervalIntegrable
 
 /-- The `WedgeInt` has derivative at `z` equal to `f z`. -/
 theorem deriv_of_wedgeInt (hf : VanishesOnRectanglesInDisc c r f) :
