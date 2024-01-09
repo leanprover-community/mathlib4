@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Defs
-import Mathlib.Tactic.SimpRw
 import Mathlib.Tactic.Cases
+import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.SplitIfs
 
 #align_import algebra.group.basic from "leanprover-community/mathlib"@"a07d750983b94c530ab69a726862c2ab6802b38c"
 
@@ -1055,3 +1056,27 @@ theorem multiplicative_of_isTotal (p : α → Prop) (hswap : ∀ {a b}, p a → 
   exacts [⟨pa, pb⟩, ⟨pb, pc⟩, ⟨pa, pc⟩]
 #align multiplicative_of_is_total multiplicative_of_isTotal
 #align additive_of_is_total additive_of_isTotal
+
+section ite
+variable {α β : Type*} [Pow α β]
+
+@[to_additive (attr := simp) dite_smul]
+lemma pow_dite (p : Prop) [Decidable p] (a : α) (b : p → β) (c : ¬ p → β) :
+    a ^ (if h : p then b h else c h) = if h : p then a ^ b h else a ^ c h := by split_ifs <;> rfl
+
+@[to_additive (attr := simp) smul_dite]
+lemma dite_pow (p : Prop) [Decidable p] (a : p → α) (b : ¬ p → α) (c : β) :
+    (if h : p then a h else b h) ^ c = if h : p then a h ^ c else b h ^ c := by split_ifs <;> rfl
+
+@[to_additive (attr := simp) ite_smul]
+lemma pow_ite (p : Prop) [Decidable p] (a : α) (b c : β) :
+    a ^ (if p then b else c) = if p then a ^ b else a ^ c := pow_dite _ _ _ _
+
+@[to_additive (attr := simp) smul_ite]
+lemma ite_pow (p : Prop) [Decidable p] (a b : α) (c : β) :
+    (if p then a else b) ^ c = if p then a ^ c else b ^ c := dite_pow _ _ _ _
+
+set_option linter.existingAttributeWarning false in
+attribute [to_additive (attr := simp)] dite_smul smul_dite ite_smul smul_ite
+
+end ite
