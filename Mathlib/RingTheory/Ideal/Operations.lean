@@ -2108,6 +2108,10 @@ lemma _root_.Pi.ker_ringHom {ι : Type*} {R : ι → Type*} [∀ i, Semiring (R 
   ext x
   simp [mem_ker, Ideal.mem_iInf, Function.funext_iff]
 
+@[simp]
+theorem ker_rangeSRestrict (f : R →+* S) : ker f.rangeSRestrict = ker f :=
+  Ideal.ext fun _ ↦ Subtype.ext_iff
+
 end Semiring
 
 section Ring

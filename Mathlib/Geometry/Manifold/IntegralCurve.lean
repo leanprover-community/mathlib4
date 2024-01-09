@@ -69,7 +69,7 @@ variable
 
 /-- If `γ : ℝ → M` is $C^1$ on `s : Set ℝ` and `v` is a vector field on `M`,
 `IsIntegralCurveOn γ v s` means `γ t` is tangent to `v (γ t)` for all `t ∈ s`. The value of `γ`
-outside of `s` is irrelevant and considered junk.  -/
+outside of `s` is irrelevant and considered junk. -/
 def IsIntegralCurveOn (γ : ℝ → M) (v : (x : M) → TangentSpace I x) (s : Set ℝ) : Prop :=
   ∀ t ∈ s, HasMFDerivAt 𝓘(ℝ, ℝ) I γ t ((1 : ℝ →L[ℝ] ℝ).smulRight <| v (γ t))
 
@@ -175,8 +175,7 @@ lemma isIntegralCurveOn_comp_add {dt : ℝ} :
   refine ⟨fun hγ ↦ hγ.comp_add _, fun hγ ↦ ?_⟩
   convert hγ.comp_add (-dt)
   ext
-  simp only [Function.comp_apply, neg_add_cancel_right]
-  aesop
+  simp [Function.comp_apply, neg_add_cancel_right]
 
 lemma IsIntegralCurveAt.comp_add (hγ : IsIntegralCurveAt γ v t₀) (dt : ℝ) :
     IsIntegralCurveAt (γ ∘ (· + dt)) v (t₀ - dt) := by
@@ -192,8 +191,7 @@ lemma isIntegralCurveAt_comp_add {dt : ℝ} :
   refine ⟨fun hγ ↦ hγ.comp_add _, fun hγ ↦ ?_⟩
   convert hγ.comp_add (-dt)
   ext
-  simp only [Function.comp_apply, neg_add_cancel_right]
-  aesop
+  simp only [Function.comp_apply, neg_add_cancel_right, sub_neg_eq_add, sub_add_cancel]
 
 lemma IsIntegralCurve.comp_add (hγ : IsIntegralCurve γ v) (dt : ℝ) :
     IsIntegralCurve (γ ∘ (· + dt)) v := by
