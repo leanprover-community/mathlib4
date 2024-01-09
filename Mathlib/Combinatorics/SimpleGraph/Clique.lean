@@ -311,7 +311,7 @@ protected theorem CliqueFree.replaceVertex [DecidableEq α] (h : G.CliqueFree n)
     · obtain ⟨y, _⟩ := ms
       have := @ha x y
       simp_all [not_cliqueFree_iff]
-    · use ⟨fun v ↦ if v = x then s else f v, ?_⟩ <;> intro a b
+    · use ⟨Function.update f x s, ?_⟩ <;> intro a b
       · simp only [Function.Embedding.coeFn_mk, top_adj, ne_eq]
         split_ifs with h1 h2 h2
         · simp_all
