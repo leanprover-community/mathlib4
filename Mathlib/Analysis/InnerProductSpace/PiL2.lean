@@ -1034,6 +1034,11 @@ theorem toEuclideanLin_eq_toLin :
   rfl
 #align matrix.to_euclidean_lin_eq_to_lin Matrix.toEuclideanLin_eq_toLin
 
+open EuclideanSpace in
+lemma toEuclideanLin_eq_toLin_orthonormal :
+    toEuclideanLin = toLin (basisFun n 𝕜).toBasis (basisFun m 𝕜).toBasis :=
+  rfl
+
 end Matrix
 
 local notation "⟪" x ", " y "⟫ₑ" =>
