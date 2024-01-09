@@ -3474,6 +3474,19 @@ theorem toFinset_nonempty_iff (l : List α) : l.toFinset.Nonempty ↔ l ≠ [] :
   simp [Finset.nonempty_iff_ne_empty]
 #align list.to_finset_nonempty_iff List.toFinset_nonempty_iff
 
+theorem toFinset_filter {l : List α} (f : α → Bool):
+    List.toFinset (List.filter f l) = Finset.filter (f .) (List.toFinset l) := by
+  match l with
+  | [] => simp
+  | x :: xs =>
+    rw [List.toFinset_cons]
+    unfold List.filter
+    rw [Finset.filter_insert]
+    cases (f x)
+    simp [toFinset_filter f]
+    simp
+    rw [toFinset_filter f]
+    
 end List
 
 namespace Finset
