@@ -16,7 +16,7 @@ the definitions in Lenstras notes (see below for a reference).
 ## Main definitions
 
 * `PreGaloisCategory` : defining properties of Galois categories not involving a fibre functor
-* `FibreFunctor`      : a fibre functor from any category to `FintypeCat`
+* `FibreFunctor`      : a fibre functor from a PreGaloisCategory to `FintypeCat`
 * `ConnectedObject`   : an object of a category that is not initial and has no non-trivial
                         subobjects
 
@@ -40,7 +40,16 @@ namespace CategoryTheory
 
 open Limits Functor
 
-/-- Definition of a Galois category. Lenstra, Def 3.1, (G1)-(G3) -/
+/-!
+A category `C` is a PreGalois category if it satisfies all properties
+of a Galois category in the sense of SGA1 that do not involve a fibre functor.
+A Galois category should furthermore admit a fibre functor.
+
+We do not provide a typeclass `GaloisCategory`; users should
+assume `[PreGaloisCategory C] (F : C ⥤ FintypeCat) [FibreFunctor F]` instead.
+-/
+
+/-- Definition of a (Pre)Galois category. Lenstra, Def 3.1, (G1)-(G3) -/
 class PreGaloisCategory (C : Type u₁) [Category.{u₂, u₁} C] : Prop where
   /-- `C` has a terminal object (G1). -/
   hasTerminal : HasTerminal C := by infer_instance
