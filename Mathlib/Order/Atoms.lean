@@ -790,7 +790,7 @@ variable [PartialOrder α] [PartialOrder β]
 theorem isAtom_of_map_bot_of_image [OrderBot α] [OrderBot β] (f : β ↪o α) (hbot : f ⊥ = ⊥) {b : β}
     (hb : IsAtom (f b)) : IsAtom b := by
   simp only [← bot_covBy_iff] at hb ⊢
-  exact covBy.of_image f (hbot.symm ▸ hb)
+  exact CovBy.of_image f (hbot.symm ▸ hb)
 #align order_embedding.is_atom_of_map_bot_of_image OrderEmbedding.isAtom_of_map_bot_of_image
 
 theorem isCoatom_of_map_top_of_image [OrderTop α] [OrderTop β] (f : β ↪o α) (htop : f ⊤ = ⊤)
