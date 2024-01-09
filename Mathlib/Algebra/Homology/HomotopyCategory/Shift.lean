@@ -288,9 +288,8 @@ noncomputable instance commShiftQuotient :
   Quotient.functor_commShift (homotopic C (ComplexShape.up ℤ)) ℤ
 
 instance (n : ℤ) : (shiftFunctor (HomotopyCategory C (ComplexShape.up ℤ)) n).Additive := by
-  have : ((quotient C (ComplexShape.up ℤ) ⋙ shiftFunctor _ n)).Additive := by
-    have e := (quotient C (ComplexShape.up ℤ)).commShiftIso n
-    exact Functor.additive_of_iso e
+  have : ((quotient C (ComplexShape.up ℤ) ⋙ shiftFunctor _ n)).Additive :=
+    Functor.additive_of_iso ((quotient C (ComplexShape.up ℤ)).commShiftIso n)
   apply Functor.additive_of_full_essSurj_comp (quotient _ _ )
 
 end HomotopyCategory
