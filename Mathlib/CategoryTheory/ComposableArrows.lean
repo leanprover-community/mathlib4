@@ -9,6 +9,7 @@ import Mathlib.CategoryTheory.Functor.Const
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.SuppressCompilation
+import Std.Tactic.Omega
 
 /-!
 # Composable arrows
@@ -53,10 +54,14 @@ namespace ComposableArrows
 variable {C} {n m : ℕ}
 variable (F G : ComposableArrows C n)
 
-/-- A basic tactic to try `assumption` befor `linarith`. -/
-macro "assump_lin" : tactic => `(tactic| first | assumption | linarith)
+/-- A basic tactic to try `assumption` before `linarith`. -/
+macro "assump_lin" : tactic =>
+  `(tactic| first | assumption | omega | linarith)
 
-suppress_compilation
+  -- `(tactic| first | assumption | exact le_rfl | exact le_trans (by assumption) (by assumption) |
+  --   exact lt_trans (by assumption) (by assumption) | linarith)
+
+-- suppress_compilation
 
 /-- The `i`th object (with `i : ℕ` such that `i ≤ n`) of `F : ComposableArrows C n`. -/
 @[simp]
@@ -706,6 +711,7 @@ lemma hom_ext₄ {f g : ComposableArrows C 4} {φ φ' : f ⟶ g}
     φ = φ' :=
   hom_ext_succ h₀ (hom_ext₃ h₁ h₂ h₃ h₄)
 
+set_option maxHeartbeats 300000 in
 /-- Constructor for isomorphisms in `ComposableArrows C 4`. -/
 @[simps]
 def isoMk₄ {f g : ComposableArrows C 4}
