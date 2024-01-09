@@ -147,11 +147,15 @@ open Lean Meta Qq
 
 /-- Extension for the `positivity` tactic: `UpperHalfPlane.im`. -/
 @[positivity UpperHalfPlane.im _]
-def evalUpperHalfPlaneIm : PositivityExt where eval {_ _} _zα _pα e := do
-  let (.app (f : Q(UpperHalfPlane → Real)) (a : Q(UpperHalfPlane))) ← whnfR e
-    | throwError "not UpperHalfPlane.im"
-  guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(UpperHalfPlane.im)
-  pure (.positive (q(@UpperHalfPlane.im_pos $a) : Expr))
+def evalUpperHalfPlaneIm : PositivityExt where eval {u α} _zα _pα e := do
+  -- TODO: can't merge the `match`es without lean4#3060
+  match u with
+  | 0 => match α, e with
+    | ~q(ℝ), ~q(UpperHalfPlane.im $a) =>
+      assertInstancesCommute
+      pure (.positive q(@UpperHalfPlane.im_pos $a))
+    | _, _ => throwError "not UpperHalfPlane.im"
+  | _ => throwError "not UpperHalfPlane.im"
 
 /-- Extension for the `positivity` tactic: `UpperHalfPlane.coe`. -/
 @[positivity UpperHalfPlane.coe _]
