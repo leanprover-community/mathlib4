@@ -161,7 +161,7 @@ theorem mem_carrier_iff (z : A⁰_ f) :
 #align algebraic_geometry.Proj_iso_Spec_Top_component.to_Spec.mem_carrier_iff AlgebraicGeometry.ProjIsoSpecTopComponent.ToSpec.mem_carrier_iff
 
 lemma carrier_eq_span :
-  carrier x =
+    carrier x =
   Ideal.span { z : HomogeneousLocalization.Away 𝒜 f |
     ∃ (s F : A) (_ : s ∈ x.1.asHomogeneousIdeal) (n : ℕ)
       (s_mem : s ∈ 𝒜 n) (F_mem1 : F ∈ 𝒜 n) (F_mem2 : F ∈ Submonoid.powers f),
