@@ -287,6 +287,8 @@ lemma IsIntegralCurve.continuous (hγ : IsIntegralCurve γ v) :
 
 end Scaling
 
+/-! ### Existence and uniqueness -/
+
 section ExistUnique
 
 variable (t₀) {x₀ : M}
