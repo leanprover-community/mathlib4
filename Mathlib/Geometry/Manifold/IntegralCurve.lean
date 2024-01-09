@@ -60,7 +60,7 @@ integral curve, vector field, local existence, uniqueness
 
 open scoped Manifold Topology
 
-open Set
+open Function Set
 
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
@@ -163,8 +163,7 @@ section Translation
 lemma IsIntegralCurveOn.comp_add (hγ : IsIntegralCurveOn γ v s) (dt : ℝ) :
     IsIntegralCurveOn (γ ∘ (· + dt)) v { t | t + dt ∈ s } := by
   intros t ht
-  rw [Function.comp_apply,
-    ← ContinuousLinearMap.comp_id (ContinuousLinearMap.smulRight 1 (v (γ (t + dt))))]
+  rw [comp_apply, ← ContinuousLinearMap.comp_id (ContinuousLinearMap.smulRight 1 (v (γ (t + dt))))]
   apply HasMFDerivAt.comp t (hγ (t + dt) ht)
   refine ⟨(continuous_add_right _).continuousAt, ?_⟩
   simp only [mfld_simps, hasFDerivWithinAt_univ]
@@ -216,7 +215,7 @@ section Scaling
 lemma IsIntegralCurveOn.comp_mul (hγ : IsIntegralCurveOn γ v s) (a : ℝ) :
     IsIntegralCurveOn (γ ∘ (· * a)) (a • v) { t | t * a ∈ s } := by
   intros t ht
-  rw [Function.comp_apply, Pi.smul_apply, ← ContinuousLinearMap.smulRight_comp]
+  rw [comp_apply, Pi.smul_apply, ← ContinuousLinearMap.smulRight_comp]
   refine HasMFDerivAt.comp t (hγ (t * a) ht) ⟨(continuous_mul_right _).continuousAt, ?_⟩
   simp only [mfld_simps, hasFDerivWithinAt_univ]
   exact HasFDerivAt.mul_const' (hasFDerivAt_id _) _
@@ -428,7 +427,7 @@ theorem isIntegralCurveAt_eqOn_of_contMDiffAt (hγt₀ : I.IsInteriorPoint (γ t
       have := hcrv.hasDerivAt ht (hsrc t ht)
       apply this.congr_deriv
       have : γ t = (extChartAt I (γ t₀)).symm (((extChartAt I (γ t₀)) ∘ γ) t) := by
-        rw [Function.comp_apply, PartialEquiv.left_inv]
+        rw [comp_apply, PartialEquiv.left_inv]
         exact hsrc t ht
       rw [this]
     · intros t ht
@@ -436,16 +435,16 @@ theorem isIntegralCurveAt_eqOn_of_contMDiffAt (hγt₀ : I.IsInteriorPoint (γ t
       have := hcrv'.hasDerivAt ht (hsrc' t ht)
       apply this.congr_deriv
       have : γ' t = (extChartAt I (γ' t₀)).symm (((extChartAt I (γ' t₀)) ∘ γ') t) := by
-        rw [Function.comp_apply, PartialEquiv.left_inv]
+        rw [comp_apply, PartialEquiv.left_inv]
         exact hsrc' t ht
       rw [this]
 
   -- finally show `EqOn γ γ' _` by composing with the inverse of the local chart around `γ t₀`
   refine EqOn.trans ?_ (EqOn.trans (heqon.comp_left (g := (extChartAt I (γ t₀)).symm)) ?_)
   · intros t ht
-    rw [Function.comp_apply, Function.comp_apply, PartialEquiv.left_inv _ (hsrc _ ht)]
+    rw [comp_apply, comp_apply, PartialEquiv.left_inv _ (hsrc _ ht)]
   · intros t ht
-    rw [Function.comp_apply, Function.comp_apply, h, PartialEquiv.left_inv _ (hsrc' _ ht)]
+    rw [comp_apply, comp_apply, h, PartialEquiv.left_inv _ (hsrc' _ ht)]
 
 theorem isIntegralCurveAt_eqOn_of_contMDiffAt_boundaryless [BoundarylessManifold I M]
     (hv : ContMDiffAt I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)) (γ t₀))
@@ -538,19 +537,15 @@ theorem isIntegralCurve_Ioo_eq_of_contMDiff_boundaryless [BoundarylessManifold I
     (hγ : IsIntegralCurve γ v) (hγ' : IsIntegralCurve γ' v) (h : γ t₀ = γ' t₀) : γ = γ' :=
   isIntegralCurve_eq_of_contMDiff (fun _ ↦ BoundarylessManifold.isInteriorPoint I) hv hγ hγ' h
 
-/-- If a global integral curve is not injective, then it is periodic. -/
-lemma periodic_iff_isIntegralCurve_not_injective [BoundarylessManifold I M]
+/-- A global integral curve is not injective iff it is periodic. -/
+lemma IsIntegralCurve.periodic_iff_not_injective [BoundarylessManifold I M]
     (hγ : IsIntegralCurve γ v)
     (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M))) :
-    (∃ T > 0, Function.Periodic γ T) ↔ ¬Function.Injective γ := by
+    (∃ T > 0, Periodic γ T) ↔ ¬Injective γ := by
   constructor
+  · exact fun ⟨T, hT, hf⟩ ↦ hf.not_injective (ne_of_gt hT)
   · intro h
-    rw [Function.Injective]
-    push_neg
-    obtain ⟨T, h0, hT⟩ := h
-    exact ⟨0, T, by rw [← hT 0, zero_add], ne_of_lt h0⟩
-  · intro h
-    rw [Function.Injective] at h
+    rw [Injective] at h
     push_neg at h
     obtain ⟨t₁, t₂, heq, hne⟩ := h
     refine ⟨|t₁ - t₂|, ?_, ?_⟩
@@ -563,5 +558,12 @@ lemma periodic_iff_isIntegralCurve_not_injective [BoundarylessManifold I M]
       · apply isIntegralCurve_Ioo_eq_of_contMDiff_boundaryless (t₀ := t₂) hv (hγ.comp_add _) hγ
         rw [not_lt] at hle
         simp [abs_of_nonneg hle, heq]
+
+/-- A global integral curve is injective xor periodic. -/
+lemma IsIntegralCurve.periodic_xor_injective [BoundarylessManifold I M]
+    (hγ : IsIntegralCurve γ v)
+    (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M))) :
+    Xor' (∃ T > 0, Periodic γ T) (Injective γ) :=
+  xor_iff_iff_not.mpr (hγ.periodic_iff_not_injective hv)
 
 end ExistUnique
