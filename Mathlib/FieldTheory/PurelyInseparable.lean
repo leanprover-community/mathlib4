@@ -390,7 +390,7 @@ theorem eq_separableClosure_iff (halg : Algebra.IsAlgebraic F E) (L : Intermedia
       (le_separableClosure F E L) (separableClosure_le F E L)⟩
 
 /-- If `E / F` is purely inseparable, then for any reduced ring `L`, the map `(E →+* L) → (F →+* L)`
-induced by `algebraMap F E` is injective. In other words, a purely inseparable field extension
+induced by `algebraMap F E` is injective. In particular, a purely inseparable field extension
 is an epimorphism in the category of fields. -/
 theorem IsPurelyInseparable.injective_comp_algebraMap [IsPurelyInseparable F E]
     (L : Type w) [CommRing L] [IsReduced L] :
