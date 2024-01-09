@@ -81,7 +81,7 @@ theorem intervalIntegrable_rpow' {r : ℝ} (h : -1 < r) :
       convert (Real.hasDerivAt_rpow_const (p := r + 1) (Or.inl hx.1.ne')).div_const (r + 1) using 1
       field_simp [(by linarith : r + 1 ≠ 0)]; ring
     apply integrableOn_deriv_of_nonneg _ hderiv
-    · intro x hx; apply rpow_nonneg_of_nonneg hx.1.le
+    · intro x hx; apply rpow_nonneg hx.1.le
     · refine' (continuousOn_id.rpow_const _).div_const _; intro x _; right; linarith
   intro c; rcases le_total 0 c with (hc | hc)
   · exact this c hc
@@ -610,8 +610,8 @@ theorem integral_mul_cpow_one_add_sq {t : ℂ} (ht : t ≠ -1) :
     · exact continuous_const.add (continuous_ofReal.pow 2)
     · exact continuous_const
     · intro a
-      rw [add_re, one_re, ← ofReal_pow, ofReal_re]
-      exact Or.inl (add_pos_of_pos_of_nonneg zero_lt_one (sq_nonneg a))
+      norm_cast
+      exact ofReal_mem_slitPlane.2 <| add_pos_of_pos_of_nonneg one_pos <| sq_nonneg a
 #align integral_mul_cpow_one_add_sq integral_mul_cpow_one_add_sq
 
 theorem integral_mul_rpow_one_add_sq {t : ℝ} (ht : t ≠ -1) :

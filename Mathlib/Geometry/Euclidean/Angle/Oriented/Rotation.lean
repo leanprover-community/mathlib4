@@ -128,7 +128,7 @@ theorem linearEquiv_det_rotation (θ : Real.Angle) :
     LinearEquiv.det (o.rotation θ).toLinearEquiv = 1 :=
   Units.ext <| by
     -- porting note: Lean can't see through `LinearEquiv.coe_det` and needed the rewrite
-    -- in mathlib3 this was just `units.ext $ o.det_rotation θ`
+    -- in mathlib3 this was just `units.ext <| o.det_rotation θ`
     simpa only [LinearEquiv.coe_det, Units.val_one] using o.det_rotation θ
 #align orientation.linear_equiv_det_rotation Orientation.linearEquiv_det_rotation
 

@@ -75,7 +75,7 @@ theorem mul_lt_top [LT α] {a b : WithTop α} (ha : a ≠ ⊤) (hb : b ≠ ⊤) 
 #align with_top.mul_lt_top WithTop.mul_lt_top
 
 instance noZeroDivisors [NoZeroDivisors α] : NoZeroDivisors (WithTop α) := by
-  refine ⟨fun h₁ => Decidable.by_contradiction <| fun h₂ => ?_⟩
+  refine ⟨fun h₁ => Decidable.by_contradiction fun h₂ => ?_⟩
   rw [mul_def, if_neg h₂] at h₁
   rcases Option.mem_map₂_iff.1 h₁ with ⟨a, b, (rfl : _ = _), (rfl : _ = _), hab⟩
   exact h₂ ((eq_zero_or_eq_zero_of_mul_eq_zero hab).imp (congr_arg some) (congr_arg some))
@@ -240,7 +240,6 @@ theorem bot_mul {a : WithBot α} (h : a ≠ 0) : ⊥ * a = ⊥ :=
   WithTop.top_mul h
 #align with_bot.bot_mul WithBot.bot_mul
 
-@[simp]
 theorem bot_mul_bot : (⊥ * ⊥ : WithBot α) = ⊥ :=
   WithTop.top_mul_top
 #align with_bot.bot_mul_bot WithBot.bot_mul_bot

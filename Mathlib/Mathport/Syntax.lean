@@ -82,7 +82,6 @@ import Mathlib.Tactic.Set
 import Mathlib.Tactic.SimpIntro
 import Mathlib.Tactic.SimpRw
 import Mathlib.Tactic.Simps.Basic
-import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.Substs
 import Mathlib.Tactic.SwapVar
@@ -212,9 +211,6 @@ syntax termList := " [" term,* "]"
 /- E -/ syntax (name := applyNormed) "apply_normed " term : tactic
 
 /- E -/ syntax (name := noncommRing) "noncomm_ring" : tactic
-
-
-/- S -/ syntax (name := omega) "omega" (&" manual")? (&" nat" <|> &" int")? : tactic
 
 /- B -/ syntax (name := acMono) "ac_mono" ("*" <|> ("^" num))?
   (config)? ((" : " term) <|> (" := " term))? : tactic

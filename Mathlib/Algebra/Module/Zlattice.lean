@@ -418,7 +418,7 @@ theorem Zlattice.module_free : Module.Free ℤ L := by
   have : NoZeroSMulDivisors ℤ L := by
     change NoZeroSMulDivisors ℤ (AddSubgroup.toIntSubmodule L)
     exact noZeroSMulDivisors _
-  exact Module.free_of_finite_type_torsion_free'
+  infer_instance
 
 open FiniteDimensional
 
@@ -462,9 +462,9 @@ theorem Zlattice.rank : finrank ℤ L = finrank K E := by
       contrapose h
       rw [Finset.not_nonempty_iff_eq_empty, Set.toFinset_diff,
         Finset.sdiff_eq_empty_iff_subset] at h
-      replace h := Finset.card_le_of_subset h
+      replace h := Finset.card_le_card h
       rwa [not_lt, h_card, ← topEquiv.finrank_eq, ← h_spanE, ← ht_span,
-        finrank_span_set_eq_card _ ht_lin]
+        finrank_span_set_eq_card ht_lin]
     -- Assume that `e ∪ {v}` is not `ℤ`-linear independent then we get the contradiction
     suffices ¬ LinearIndependent ℤ (fun x : ↥(insert v (Set.range e)) => (x : E)) by
       contrapose! this
@@ -480,7 +480,7 @@ theorem Zlattice.rank : finrank ℤ L = finrank K E := by
     -- takes value into the finite set `fundamentalDomain e ∩ L`
     have h_mapsto : Set.MapsTo (fun n : ℤ => Zspan.fract e (n • v)) Set.univ
         (Metric.closedBall 0 (∑ i, ‖e i‖) ∩ (L : Set E)) := by
-      rw [Set.mapsTo_inter, Set.maps_univ_to, Set.maps_univ_to]
+      rw [Set.mapsTo_inter, Set.mapsTo_univ_iff, Set.mapsTo_univ_iff]
       refine ⟨fun _ =>  mem_closedBall_zero_iff.mpr (Zspan.norm_fract_le e _), fun _ => ?_⟩
       · change _ ∈ AddSubgroup.toIntSubmodule L
         rw [← h_spanL]
@@ -500,6 +500,6 @@ theorem Zlattice.rank : finrank ℤ L = finrank K E := by
   · -- To prove that `finrank K E ≤ finrank ℤ L`, we use the fact `b` generates `E` over `K`
     -- and thus `finrank K E ≤ card b = finrank ℤ L`
     rw [← topEquiv.finrank_eq, ← h_spanE]
-    convert finrank_span_le_card (K := K) (Set.range b)
+    convert finrank_span_le_card (R := K) (Set.range b)
 
 end Zlattice
