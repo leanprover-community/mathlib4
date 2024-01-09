@@ -197,8 +197,7 @@ lemma l2_op_norm_mul (A : Matrix m n 𝕜) (B : Matrix n l 𝕜) :
   ext1 x
   exact congr($(Matrix.toLin'_mul A B) x)
 
-lemma l2_op_nnnorm_mul (A : Matrix m n 𝕜)
-    (B : Matrix n l 𝕜) : ‖A * B‖₊ ≤ ‖A‖₊ * ‖B‖₊ :=
+lemma l2_op_nnnorm_mul (A : Matrix m n 𝕜) (B : Matrix n l 𝕜) : ‖A * B‖₊ ≤ ‖A‖₊ * ‖B‖₊ :=
   l2_op_norm_mul A B
 
 /-- The normed algebra structure on `Matrix n n 𝕜` arising from the operator norm given by the
