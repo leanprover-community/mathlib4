@@ -184,10 +184,16 @@ lemma l2_op_norm_conjTranspose (A : Matrix m n 𝕜) : ‖Aᴴ‖ = ‖A‖ := b
     toLin_conjTranspose, adjoint_toContinuousLinearMap]
   exact ContinuousLinearMap.adjoint.norm_map _
 
+lemma l2_op_nnnorm_conjTranspose (A : Matrix m n 𝕜) : ‖Aᴴ‖₊ = ‖A‖₊ :=
+  Subtype.ext <| l2_op_norm_conjTranspose _
+
 lemma l2_op_norm_conjTranspose_mul_self (A : Matrix m n 𝕜) : ‖Aᴴ * A‖ = ‖A‖ * ‖A‖ := by
   rw [l2_op_norm_def, toEuclideanLin_eq_toLin_orthonormal, LinearEquiv.trans_apply,
     Matrix.toLin_mul (v₂ := (EuclideanSpace.basisFun m 𝕜).toBasis), toLin_conjTranspose]
   exact ContinuousLinearMap.norm_adjoint_comp_self _
+
+lemma l2_op_nnnorm_conjTranspose_mul_self (A : Matrix m n 𝕜) : ‖Aᴴ * A‖₊ = ‖A‖₊ * ‖A‖₊ :=
+  Subtype.ext <| l2_op_norm_conjTranspose_mul_self _
 
 -- note: with only a type ascription in the left-hand side, Lean picks the wrong norm.
 lemma l2_op_norm_mulVec (A : Matrix m n 𝕜) (x : EuclideanSpace 𝕜 n) :
