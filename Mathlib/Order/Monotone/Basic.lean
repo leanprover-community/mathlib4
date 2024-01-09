@@ -939,14 +939,14 @@ lemma not_monotone_not_antitone_iff_exists_le_le :
     { exact ⟨c, a, b, hcd.trans hda, hab, Or.inl ⟨hfcd.trans_le hfda, hfba⟩⟩ } }
   obtain hac | hca := le_total a c
   { obtain hfdb | hfbd := le_or_lt (f d) (f b)
-    { exact ⟨a, c, d, hac, hcd, Or.inr ⟨hfcd.trans $ hfdb.trans_lt hfba, hfcd⟩⟩ }
+    { exact ⟨a, c, d, hac, hcd, Or.inr ⟨hfcd.trans <| hfdb.trans_lt hfba, hfcd⟩⟩ }
     obtain hfca | hfac := lt_or_le (f c) (f a)
     { exact ⟨a, c, d, hac, hcd, Or.inr ⟨hfca, hfcd⟩⟩ }
     obtain hbd | hdb := le_total b d
     { exact ⟨a, b, d, hab, hbd, Or.inr ⟨hfba, hfbd⟩⟩ }
     { exact ⟨a, d, b, had, hdb, Or.inl ⟨hfac.trans_lt hfcd, hfbd⟩⟩ } }
   { obtain hfdb | hfbd := le_or_lt (f d) (f b)
-    { exact ⟨c, a, b, hca, hab, Or.inl ⟨hfcd.trans $ hfdb.trans_lt hfba, hfba⟩⟩ }
+    { exact ⟨c, a, b, hca, hab, Or.inl ⟨hfcd.trans <| hfdb.trans_lt hfba, hfba⟩⟩ }
     obtain hfca | hfac := lt_or_le (f c) (f a)
     { exact ⟨c, a, b, hca, hab, Or.inl ⟨hfca, hfba⟩⟩ }
     obtain hbd | hdb := le_total b d
@@ -960,8 +960,8 @@ lemma not_monotone_not_antitone_iff_exists_lt_lt :
     ¬ Monotone f ∧ ¬ Antitone f ↔ ∃ a b c, a < b ∧ b < c ∧
     (f a < f b ∧ f c < f b ∨ f b < f a ∧ f b < f c) := by
   simp_rw [not_monotone_not_antitone_iff_exists_le_le, ← and_assoc]
-  refine' exists₃_congr (fun a b c ↦ and_congr_left $
-    fun h ↦ (Ne.le_iff_lt _).and $ Ne.le_iff_lt _) <;>
+  refine' exists₃_congr (fun a b c ↦ and_congr_left <|
+    fun h ↦ (Ne.le_iff_lt _).and <| Ne.le_iff_lt _) <;>
   (rintro rfl; simp at h)
 #align not_monotone_not_antitone_iff_exists_lt_lt not_monotone_not_antitone_iff_exists_lt_lt
 

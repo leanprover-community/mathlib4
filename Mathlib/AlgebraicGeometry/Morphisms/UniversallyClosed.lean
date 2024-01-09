@@ -57,7 +57,7 @@ theorem universallyClosed_stableUnderBaseChange : StableUnderBaseChange @Univers
 theorem universallyClosed_stableUnderComposition : StableUnderComposition @UniversallyClosed := by
   rw [universallyClosed_eq]
   exact StableUnderComposition.universally (fun X Y Z f g hf hg =>
-    @IsClosedMap.comp _ _ _ _ _ _ g.1.base f.1.base hg hf)
+    IsClosedMap.comp (f := f.1.base) (g := g.1.base) hg hf)
 #align algebraic_geometry.universally_closed_stable_under_composition AlgebraicGeometry.universallyClosed_stableUnderComposition
 
 instance universallyClosedTypeComp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
@@ -84,7 +84,7 @@ theorem universallyClosed_is_local_at_target : PropertyIsLocalAtTarget @Universa
   rw [universallyClosed_eq]
   apply universallyIsLocalAtTargetOfMorphismRestrict
   · exact StableUnderComposition.respectsIso (fun X Y Z f g hf hg =>
-        @IsClosedMap.comp _ _ _ _ _ _ g.1.base f.1.base hg hf)
+        IsClosedMap.comp (f := f.1.base) (g := g.1.base) hg hf)
       (fun f => (TopCat.homeoOfIso (Scheme.forgetToTop.mapIso f)).isClosedMap)
   · intro X Y f ι U hU H
     simp_rw [topologically, morphismRestrict_base] at H

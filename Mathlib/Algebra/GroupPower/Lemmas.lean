@@ -10,6 +10,7 @@ import Mathlib.Algebra.Order.Monoid.WithTop
 import Mathlib.Data.Nat.Pow
 import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.Algebra.Group.Opposite
+import Mathlib.GroupTheory.GroupAction.Ring
 
 #align_import algebra.group_power.lemmas from "leanprover-community/mathlib"@"a07d750983b94c530ab69a726862c2ab6802b38c"
 
@@ -42,87 +43,6 @@ theorem nsmul_one [AddMonoidWithOne A] : ∀ n : ℕ, n • (1 : A) = n := by
   refine' eq_natCast' f _
   simp
 #align nsmul_one nsmul_one
-
-variable [Monoid M] [Monoid N] [AddMonoid A] [AddMonoid B]
-
-instance invertiblePow (m : M) [Invertible m] (n : ℕ) :
-    Invertible (m ^ n) where
-  invOf := ⅟ m ^ n
-  invOf_mul_self := by rw [← (commute_invOf m).symm.mul_pow, invOf_mul_self, one_pow]
-  mul_invOf_self := by rw [← (commute_invOf m).mul_pow, mul_invOf_self, one_pow]
-#align invertible_pow invertiblePow
-
-theorem invOf_pow (m : M) [Invertible m] (n : ℕ) [Invertible (m ^ n)] : ⅟ (m ^ n) = ⅟ m ^ n :=
-  @invertible_unique M _ (m ^ n) (m ^ n) _ (invertiblePow m n) rfl
-#align inv_of_pow invOf_pow
-
-@[to_additive]
-theorem IsUnit.pow {m : M} (n : ℕ) : IsUnit m → IsUnit (m ^ n) := fun ⟨u, hu⟩ =>
-  ⟨u ^ n, hu ▸ u.val_pow_eq_pow_val _⟩
-#align is_unit.pow IsUnit.pow
-#align is_add_unit.nsmul IsAddUnit.nsmul
-
-/-- If a natural power of `x` is a unit, then `x` is a unit. -/
-@[to_additive "If a natural multiple of `x` is an additive unit, then `x` is an additive unit."]
-def Units.ofPow (u : Mˣ) (x : M) {n : ℕ} (hn : n ≠ 0) (hu : x ^ n = u) : Mˣ :=
-  u.leftOfMul x (x ^ (n - 1))
-    (by rwa [← _root_.pow_succ, Nat.sub_add_cancel (Nat.succ_le_of_lt <| Nat.pos_of_ne_zero hn)])
-    (Commute.self_pow _ _)
-#align units.of_pow Units.ofPow
-#align add_units.of_nsmul AddUnits.ofNSMul
-
-@[to_additive (attr := simp)]
-theorem isUnit_pow_iff {a : M} {n : ℕ} (hn : n ≠ 0) : IsUnit (a ^ n) ↔ IsUnit a :=
-  ⟨fun ⟨u, hu⟩ => (u.ofPow a hn hu.symm).isUnit, fun h => h.pow n⟩
-#align is_unit_pow_iff isUnit_pow_iff
-#align is_add_unit_nsmul_iff isAddUnit_nsmul_iff
-
-@[to_additive]
-theorem isUnit_pow_succ_iff {m : M} {n : ℕ} : IsUnit (m ^ (n + 1)) ↔ IsUnit m :=
-  isUnit_pow_iff n.succ_ne_zero
-#align is_unit_pow_succ_iff isUnit_pow_succ_iff
-#align is_add_unit_nsmul_succ_iff isAddUnit_nsmul_succ_iff
-
-/-- If `x ^ n = 1`, `n ≠ 0`, then `x` is a unit. -/
-@[to_additive (attr := simps!) "If `n • x = 0`, `n ≠ 0`, then `x` is an additive unit."]
-def Units.ofPowEqOne (x : M) (n : ℕ) (hx : x ^ n = 1) (hn : n ≠ 0) : Mˣ :=
-  Units.ofPow 1 x hn hx
-#align units.of_pow_eq_one Units.ofPowEqOne
-#align add_units.of_nsmul_eq_zero AddUnits.ofNSMulEqZero
-
-@[to_additive (attr := simp)]
-theorem Units.pow_ofPowEqOne {x : M} {n : ℕ} (hx : x ^ n = 1) (hn : n ≠ 0) :
-    Units.ofPowEqOne x n hx hn ^ n = 1 :=
-  Units.ext <| by simp [hx]
-#align units.pow_of_pow_eq_one Units.pow_ofPowEqOne
-#align add_units.nsmul_of_nsmul_eq_zero AddUnits.nsmul_ofNSMulEqZero
-
-@[to_additive]
-theorem isUnit_ofPowEqOne {x : M} {n : ℕ} (hx : x ^ n = 1) (hn : n ≠ 0) : IsUnit x :=
-  (Units.ofPowEqOne x n hx hn).isUnit
-#align is_unit_of_pow_eq_one isUnit_ofPowEqOne
-#align is_add_unit_of_nsmul_eq_zero isAddUnit_ofNSMulEqZero
-
-/-- If `x ^ n = 1` then `x` has an inverse, `x^(n - 1)`. -/
-def invertibleOfPowEqOne (x : M) (n : ℕ) (hx : x ^ n = 1) (hn : n ≠ 0) : Invertible x :=
-  (Units.ofPowEqOne x n hx hn).invertible
-#align invertible_of_pow_eq_one invertibleOfPowEqOne
-
-theorem smul_pow [MulAction M N] [IsScalarTower M N N] [SMulCommClass M N N] (k : M) (x : N)
-    (p : ℕ) : (k • x) ^ p = k ^ p • x ^ p := by
-  induction' p with p IH
-  · simp
-  · rw [pow_succ', IH, smul_mul_smul, ← pow_succ', ← pow_succ']
-#align smul_pow smul_pow
-
-@[simp]
-theorem smul_pow' [MulDistribMulAction M N] (x : M) (m : N) (n : ℕ) : x • m ^ n = (x • m) ^ n := by
-  induction' n with n ih
-  · rw [pow_zero, pow_zero]
-    exact smul_one x
-  · rw [pow_succ, pow_succ]
-    exact (smul_mul' x m (m ^ n)).trans (congr_arg _ ih)
-#align smul_pow' smul_pow'
 
 end Monoid
 
@@ -490,15 +410,6 @@ theorem abs_add_eq_add_abs_iff (a b : α) : |a + b| = |a| + |b| ↔ 0 ≤ a ∧ 
 
 end LinearOrderedAddCommGroup
 
-@[simp]
-theorem WithBot.coe_nsmul [AddMonoid A] (a : A) (n : ℕ) : ↑(n • a) = n • (a : WithBot A) :=
-  AddMonoidHom.map_nsmul
-    { toFun := fun a : A => (a : WithBot A),
-      map_zero' := WithBot.coe_zero,
-      map_add' := WithBot.coe_add }
-    a n
-#align with_bot.coe_nsmul WithBot.coe_nsmul
-
 theorem nsmul_eq_mul' [NonAssocSemiring R] (a : R) (n : ℕ) : n • a = a * n := by
   induction' n with n ih <;> [rw [zero_nsmul, Nat.cast_zero, mul_zero];
     rw [succ_nsmul', ih, Nat.cast_succ, mul_add, mul_one]]
@@ -510,24 +421,6 @@ theorem nsmul_eq_mul [NonAssocSemiring R] (n : ℕ) (a : R) : n • a = n * a :=
   rw [nsmul_eq_mul', (n.cast_commute a).eq]
 #align nsmul_eq_mul nsmul_eq_mulₓ
 -- typeclasses do not match up exactly.
-
-/-- Note that `AddCommMonoid.nat_smulCommClass` requires stronger assumptions on `R`. -/
-instance NonUnitalNonAssocSemiring.nat_smulCommClass [NonUnitalNonAssocSemiring R] :
-    SMulCommClass ℕ R R :=
-  ⟨fun n x y => by
-    induction' n with n ih
-    · simp [zero_nsmul]
-    · simp_rw [succ_nsmul, smul_eq_mul, mul_add, ← smul_eq_mul, ih]⟩
-#align non_unital_non_assoc_semiring.nat_smul_comm_class NonUnitalNonAssocSemiring.nat_smulCommClass
-
-/-- Note that `AddCommMonoid.nat_isScalarTower` requires stronger assumptions on `R`. -/
-instance NonUnitalNonAssocSemiring.nat_isScalarTower [NonUnitalNonAssocSemiring R] :
-    IsScalarTower ℕ R R :=
-  ⟨fun n x y => by
-    induction' n with n ih
-    · simp [zero_nsmul]
-    · simp_rw [succ_nsmul, ← ih, smul_eq_mul, add_mul]⟩
-#align non_unital_non_assoc_semiring.nat_is_scalar_tower NonUnitalNonAssocSemiring.nat_isScalarTower
 
 @[simp, norm_cast]
 theorem Nat.cast_pow [Semiring R] (n m : ℕ) : (↑(n ^ m) : R) = (↑n : R) ^ m := by
@@ -596,24 +489,6 @@ theorem zsmul_eq_mul' [Ring R] (a : R) (n : ℤ) : n • a = a * n := by
   rw [zsmul_eq_mul, (n.cast_commute a).eq]
 #align zsmul_eq_mul' zsmul_eq_mul'
 
-/-- Note that `AddCommGroup.int_smulCommClass` requires stronger assumptions on `R`. -/
-instance NonUnitalNonAssocRing.int_smulCommClass [NonUnitalNonAssocRing R] :
-    SMulCommClass ℤ R R :=
-  ⟨fun n x y =>
-    match n with
-    | (n : ℕ) => by simp_rw [coe_nat_zsmul, smul_comm]
-    | -[n+1] => by simp_rw [negSucc_zsmul, smul_eq_mul, mul_neg, mul_smul_comm]⟩
-#align non_unital_non_assoc_ring.int_smul_comm_class NonUnitalNonAssocRing.int_smulCommClass
-
-/-- Note that `AddCommGroup.int_isScalarTower` requires stronger assumptions on `R`. -/
-instance NonUnitalNonAssocRing.int_isScalarTower [NonUnitalNonAssocRing R] :
-    IsScalarTower ℤ R R :=
-  ⟨fun n x y =>
-    match n with
-    | (n : ℕ) => by simp_rw [coe_nat_zsmul, smul_assoc]
-    | -[n+1] => by simp_rw [negSucc_zsmul, smul_eq_mul, neg_mul, smul_mul_assoc]⟩
-#align non_unital_non_assoc_ring.int_is_scalar_tower NonUnitalNonAssocRing.int_isScalarTower
-
 theorem zsmul_int_int (a b : ℤ) : a • b = a * b := by simp
 #align zsmul_int_int zsmul_int_int
 
@@ -635,29 +510,6 @@ theorem neg_one_pow_eq_pow_mod_two [Ring R] {n : ℕ} : (-1 : R) ^ n = (-1) ^ (n
 section OrderedSemiring
 
 variable [OrderedSemiring R] {a : R}
-
-/-- Bernoulli's inequality. This version works for semirings but requires
-additional hypotheses `0 ≤ a * a` and `0 ≤ (1 + a) * (1 + a)`. -/
-theorem one_add_mul_le_pow' (Hsq : 0 ≤ a * a) (Hsq' : 0 ≤ (1 + a) * (1 + a)) (H : 0 ≤ 2 + a) :
-    ∀ n : ℕ, 1 + (n : R) * a ≤ (1 + a) ^ n
-  | 0 => by simp
-  | 1 => by simp
-  | n + 2 =>
-    have : 0 ≤ (n : R) * (a * a * (2 + a)) + a * a :=
-      add_nonneg (mul_nonneg n.cast_nonneg (mul_nonneg Hsq H)) Hsq
-    calc
-      1 + (↑(n + 2) : R) * a ≤ 1 + ↑(n + 2) * a + (n * (a * a * (2 + a)) + a * a) :=
-        le_add_of_nonneg_right this
-      _ = (1 + a) * (1 + a) * (1 + n * a) := by {
-          simp only [Nat.cast_add, add_mul, mul_add, one_mul, mul_one, ← one_add_one_eq_two,
-            Nat.cast_one, add_assoc, add_right_inj]
-          simp only [← add_assoc, add_comm _ (↑n * a)]
-          simp only [add_assoc, (n.cast_commute (_ : R)).left_comm]
-          simp only [add_comm, add_left_comm] }
-      _ ≤ (1 + a) * (1 + a) * (1 + a) ^ n :=
-        mul_le_mul_of_nonneg_left (one_add_mul_le_pow' Hsq Hsq' H _) Hsq'
-      _ = (1 + a) ^ (n + 2) := by simp only [pow_succ, mul_assoc]
-#align one_add_mul_le_pow' one_add_mul_le_pow'
 
 theorem pow_le_pow_of_le_one_aux (h : 0 ≤ a) (ha : a ≤ 1) (i : ℕ) :
     ∀ k : ℕ, a ^ (i + k) ≤ a ^ i
@@ -752,19 +604,6 @@ theorem strictMono_pow_bit1 (n : ℕ) : StrictMono fun a : R => a ^ bit1 n := by
 #align strict_mono_pow_bit1 strictMono_pow_bit1
 
 end bit1
-
-/-- Bernoulli's inequality for `n : ℕ`, `-2 ≤ a`. -/
-theorem one_add_mul_le_pow (H : -2 ≤ a) (n : ℕ) : 1 + (n : R) * a ≤ (1 + a) ^ n :=
-  one_add_mul_le_pow' (mul_self_nonneg _) (mul_self_nonneg _) (neg_le_iff_add_nonneg'.1 H) _
-#align one_add_mul_le_pow one_add_mul_le_pow
-
-/-- Bernoulli's inequality reformulated to estimate `a^n`. -/
-theorem one_add_mul_sub_le_pow (H : -1 ≤ a) (n : ℕ) : 1 + (n : R) * (a - 1) ≤ a ^ n := by
-  have : -2 ≤ a - 1 := by
-    rwa [← one_add_one_eq_two, neg_add, ← sub_eq_add_neg, sub_le_sub_iff_right]
-  simpa only [add_sub_cancel'_right] using one_add_mul_le_pow this n
-#align one_add_mul_sub_le_pow one_add_mul_sub_le_pow
-
 end LinearOrderedRing
 
 namespace Int
@@ -1022,17 +861,7 @@ theorem cast_nat_mul_cast_nat_mul (h : SemiconjBy a x y) (m n : ℕ) :
 
 end
 
-variable [Monoid M] [Group G] [Ring R]
-
-@[to_additive (attr := simp)]
-theorem units_zpow_right {a : M} {x y : Mˣ} (h : SemiconjBy a x y) :
-    ∀ m : ℤ, SemiconjBy a ↑(x ^ m) ↑(y ^ m)
-  | (n : ℕ) => by simp only [zpow_ofNat, Units.val_pow_eq_pow_val, h, pow_right]
-  | -[n+1] => by simp only [zpow_negSucc, Units.val_pow_eq_pow_val, units_inv_right, h, pow_right]
-#align semiconj_by.units_zpow_right SemiconjBy.units_zpow_right
-#align add_semiconj_by.add_units_zsmul_right AddSemiconjBy.addUnits_zsmul_right
-
-variable {a b x y x' y' : R}
+variable [Ring R] {a b x y x' y' : R}
 
 @[simp]
 theorem cast_int_mul_right (h : SemiconjBy a x y) (m : ℤ) : SemiconjBy a ((m : ℤ) * x) (m * y) :=
@@ -1105,23 +934,7 @@ theorem self_cast_nat_mul_cast_nat_mul : Commute (m * a : R) (n * a : R) :=
 
 end
 
-variable [Monoid M] [Group G] [Ring R]
-
-@[to_additive (attr := simp)]
-theorem units_zpow_right {a : M} {u : Mˣ} (h : Commute a u)
-    (m : ℤ) : Commute a ↑(u ^ m) :=
-  SemiconjBy.units_zpow_right h m
-#align commute.units_zpow_right Commute.units_zpow_right
-#align add_commute.add_units_zsmul_right AddCommute.addUnits_zsmul_right
-
-@[to_additive (attr := simp)]
-theorem units_zpow_left {u : Mˣ} {a : M} (h : Commute (↑u) a)
-    (m : ℤ) : Commute (↑(u ^ m)) a :=
-  (h.symm.units_zpow_right m).symm
-#align commute.units_zpow_left Commute.units_zpow_left
-#align add_commute.add_units_zsmul_left AddCommute.addUnits_zsmul_left
-
-variable {a b : R}
+variable [Ring R] {a b : R}
 
 @[simp]
 theorem cast_int_mul_right (h : Commute a b) (m : ℤ) : Commute a (m * b : R) :=
@@ -1200,23 +1013,6 @@ theorem Int.ofAdd_mul (a b : ℤ) : ofAdd (a * b) = ofAdd a ^ b :=
 #align int.of_add_mul Int.ofAdd_mul
 
 end Multiplicative
-
-namespace Units
-
-variable [Monoid M]
-
-theorem conj_pow (u : Mˣ) (x : M) (n : ℕ) :
-    ((↑u : M) * x * (↑u⁻¹ : M)) ^ n = (u : M) * x ^ n * (↑u⁻¹ : M) :=
-  (divp_eq_iff_mul_eq.2
-  ((u.mk_semiconjBy x).pow_right n).eq.symm).symm
-#align units.conj_pow Units.conj_pow
-
-theorem conj_pow' (u : Mˣ) (x : M) (n : ℕ) :
-    ((↑u⁻¹ : M) * x * (u : M)) ^ n = (↑u⁻¹ : M) * x ^ n * (u : M) :=
-  u⁻¹.conj_pow x n
-#align units.conj_pow' Units.conj_pow'
-
-end Units
 
 -- Porting note: this was added in an ad hoc port for use in `Tactic/NormNum/Basic`
 
