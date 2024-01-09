@@ -306,10 +306,9 @@ theorem Walk.toPathGraphHom_val (G : SimpleGraph α) {u v : α} (w : G.Walk u v)
       rw [Nat.succ_sub (Nat.lt_succ.mp hi)]
       simp [getVert]
     | Or.inr hi =>
-      simp [hi, toPathGraphHom, toPathGraphHomAux]
+      simp [toPathGraphHom, toPathGraphHomAux]
       match toPathGraphHomAux α G p with
       | ⟨hom', _, _⟩ =>
-        simp
         rw [hom_toFun]
         simp [hi]
 
@@ -335,5 +334,21 @@ theorem Walk.ofPathGraphHom_val (G : SimpleGraph α) {n : ℕ} (hom : pathGraph 
       have hi' : i = ⊤ := Fin.ext hi
       simp [hi]
       simp [hi']
+
+theorem Walk.of_to_PathGraphHom (G : SimpleGraph α) {n : ℕ} (hom : pathGraph (n + 1) →g G) :
+    ∀ (i : Fin (n + 1)),
+      hom i =
+        (ofPathGraphHom α G hom).toPathGraphHom ⟨i.val, by rw [length_ofPathGraphHom]; exact i.prop⟩
+    := by
+  simp [toPathGraphHom_val, ofPathGraphHom_val]
+
+theorem Walk.to_of_PathGraphHom (G : SimpleGraph α) {u v : α} (w : G.Walk u v) :
+    ∀ (i : Fin (w.length + 1)),
+      w.getVert i.val = (Walk.ofPathGraphHom α G (w.toPathGraphHom)).getVert i.val := by
+  intro (i : Fin (w.length + 1))
+  let j : Fin (w.length + 1) := ⟨w.length - i.val, Nat.sub_lt_succ w.length i.val⟩
+  have hij : i.val = w.length - j.val := by simp [Nat.sub_sub_self i.is_le]
+  rw [hij, ofPathGraphHom_val α G (w.toPathGraphHom) j]
+  exact (toPathGraphHom_val α G w j).symm
 
 end SimpleGraph
