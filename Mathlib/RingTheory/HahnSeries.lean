@@ -7,7 +7,7 @@ import Mathlib.Order.WellFoundedSet
 import Mathlib.Algebra.BigOperators.Finprod
 import Mathlib.RingTheory.Valuation.Basic
 import Mathlib.RingTheory.PowerSeries.Basic
-import Mathlib.Data.Finsupp.Pwo
+import Mathlib.Data.Finsupp.PWO
 import Mathlib.Data.Finset.MulAntidiagonal
 import Mathlib.Algebra.Order.Group.WithTop
 
