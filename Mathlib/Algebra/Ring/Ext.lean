@@ -18,7 +18,7 @@ addition and multiplication defined by them are both the same.
 ## Implementation details
 
 We follow `Algebra/Group/Ext` in using the term `(letI := i; HMul.hMul : R → R → R)` to refer to the
-multiplcation specified by a typeclass instance `i` on a type `R` (and similarly for addition). We
+multiplication specified by a typeclass instance `i` on a type `R` (and similarly for addition). We
 abbreviate these using some local notations.
 
 Since `Algebra/Group/Ext` proved several injectivity lemmas, we do so as well — even if sometimes we
