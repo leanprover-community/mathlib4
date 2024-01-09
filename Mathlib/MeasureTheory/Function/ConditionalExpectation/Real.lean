@@ -130,7 +130,7 @@ theorem set_integral_abs_condexp_le {s : Set α} (hs : MeasurableSet[m] s) (f : 
     swap; · exact hnm _ hs
     refine' integral_congr_ae _
     have : (fun x => |(μ[s.indicator f|m]) x|) =ᵐ[μ] fun x => |s.indicator (μ[f|m]) x| :=
-      EventuallyEq.fun_comp (condexp_indicator hfint hs) _
+      (condexp_indicator hfint hs).fun_comp abs
     refine' EventuallyEq.trans (eventually_of_forall fun x => _) this.symm
     rw [← Real.norm_eq_abs, norm_indicator_eq_indicator_norm]
     rfl
