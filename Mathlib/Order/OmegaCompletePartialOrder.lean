@@ -568,8 +568,9 @@ theorem inf_continuous (f g : α →o β) (hf : Continuous f) (hg : Continuous g
   refine' fun c => eq_of_forall_ge_iff fun z => _
   simp only [inf_le_iff, hf c, hg c, ωSup_le_iff, ← forall_or_left, ← forall_or_right,
              Chain.map_coe, OrderHom.coe_inf, ge_iff_le, Pi.inf_apply, Function.comp]
-  exact ⟨λ h _ => h _ _, λ h i j => (h (max j i)).imp (le_trans $ f.mono $ c.mono $ le_max_left _ _)
-    (le_trans $ g.mono $ c.mono $ le_max_right _ _)⟩
+  exact ⟨fun h _ ↦ h _ _, fun h i j ↦
+    (h (max j i)).imp (le_trans <| f.mono <| c.mono <| le_max_left _ _)
+      (le_trans <| g.mono <| c.mono <| le_max_right _ _)⟩
 #align complete_lattice.inf_continuous CompleteLattice.inf_continuous
 
 theorem inf_continuous' {f g : α → β} (hf : Continuous' f) (hg : Continuous' g) :
@@ -822,7 +823,7 @@ theorem forall_forall_merge' (c₀ : Chain (α →𝒄 β)) (c₁ : Chain α) (z
 of the functions in the `ω`-chain. -/
 @[simps!]
 protected def ωSup (c : Chain (α →𝒄 β)) : α →𝒄 β :=
-  .mk (ωSup <| c.map toMono) <| fun c' ↦ by
+  .mk (ωSup <| c.map toMono) fun c' ↦ by
     apply eq_of_forall_ge_iff; intro z
     simp only [ωSup_le_iff, (c _).continuous, Chain.map_coe, OrderHom.apply_coe, toMono_coe,
       OrderHom.omegaCompletePartialOrder_ωSup_coe, forall_forall_merge, OrderHomClass.coe_coe,

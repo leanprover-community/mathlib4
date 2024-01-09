@@ -5,6 +5,7 @@ Authors: Frédéric Dupuis
 -/
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Module.Prod
+import Mathlib.Algebra.Order.Group.PosPart
 import Mathlib.Algebra.Order.Module.Defs
 import Mathlib.Algebra.Order.Monoid.Prod
 import Mathlib.Algebra.Order.Pi
@@ -44,6 +45,8 @@ This file is now mostly useless. We should try deleting `OrderedSMul`
 ordered module, ordered scalar, ordered smul, ordered action, ordered vector space
 -/
 
+open LatticeOrderedCommGroup
+
 /-- The ordered scalar product property is when an ordered additive commutative monoid
 with a partial order has a scalar multiplication which is compatible with the order.
 -/
@@ -65,7 +68,7 @@ instance OrderedSMul.toPosSMulStrictMono : PosSMulStrictMono R M where
   elim _a ha _b₁ _b₂ hb := OrderedSMul.smul_lt_smul_of_pos hb ha
 
 instance OrderedSMul.toPosSMulReflectLT : PosSMulReflectLT R M :=
-  PosSMulReflectLT.of_pos $ fun _a ha _b₁ _b₂ h ↦ OrderedSMul.lt_of_smul_lt_smul_of_pos h ha
+  PosSMulReflectLT.of_pos fun _a ha _b₁ _b₂ h ↦ OrderedSMul.lt_of_smul_lt_smul_of_pos h ha
 
 instance OrderDual.instOrderedSMul [OrderedSemiring R] [OrderedAddCommMonoid M] [SMulWithZero R M]
     [OrderedSMul R M] : OrderedSMul R Mᵒᵈ where
@@ -145,3 +148,33 @@ instance Pi.orderedSMul {M : ι → Type*} [∀ i, OrderedAddCommMonoid (M i)]
 #noalign pi.ordered_smul''
 
 end LinearOrderedSemifield
+
+section Invertible
+variable (α : Type*) {β : Type*}
+variable [Semiring α] [Invertible (2 : α)] [Lattice β] [AddCommGroup β] [Module α β]
+  [CovariantClass β β (· + ·) (· ≤ ·)]
+
+lemma inf_eq_half_smul_add_sub_abs_sub (x y : β) : x ⊓ y = (⅟2 : α) • (x + y - |y - x|) := by
+  rw [← two_nsmul_inf_eq_add_sub_abs_sub x y, two_smul, ← two_smul α,
+    smul_smul, invOf_mul_self, one_smul]
+
+lemma sup_eq_half_smul_add_add_abs_sub (x y : β) : x ⊔ y = (⅟2 : α) • (x + y + |y - x|) := by
+  rw [← two_nsmul_sup_eq_add_add_abs_sub x y, two_smul, ← two_smul α,
+    smul_smul, invOf_mul_self, one_smul]
+
+end Invertible
+
+section DivisionSemiring
+variable (α : Type*) {β : Type*}
+variable [DivisionSemiring α] [NeZero (2 : α)] [Lattice β] [AddCommGroup β] [Module α β]
+  [CovariantClass β β (· + ·) (· ≤ ·)]
+
+lemma inf_eq_half_smul_add_sub_abs_sub' (x y : β) : x ⊓ y = (2⁻¹ : α) • (x + y - |y - x|) := by
+  letI := invertibleOfNonzero (two_ne_zero' α)
+  exact inf_eq_half_smul_add_sub_abs_sub α x y
+
+lemma sup_eq_half_smul_add_add_abs_sub' (x y : β) : x ⊔ y = (2⁻¹ : α) • (x + y + |y - x|) := by
+  letI := invertibleOfNonzero (two_ne_zero' α)
+  exact sup_eq_half_smul_add_add_abs_sub α x y
+
+end DivisionSemiring

@@ -342,7 +342,7 @@ private theorem average_density_near_total_density [Nonempty α]
   suffices (G.edgeDensity (A.biUnion id) (B.biUnion id) : ℝ) -
       (∑ ab in A.product B, (G.edgeDensity ab.1 ab.2 : ℝ)) / (A.card * B.card) ≤ ε ^ 5 / 50 by
     apply this.trans
-    exact div_le_div_of_le_left (by sz_positivity) (by norm_num) (by norm_num)
+    gcongr <;> [sz_positivity; norm_num]
   rw [sub_le_iff_le_add, ← sub_le_iff_le_add']
   apply density_sub_eps_le_sum_density_div_card hPα hPε hA hB
 
@@ -396,7 +396,7 @@ private theorem eps_le_card_star_div [Nonempty α] (hPα : P.parts.card * 16 ^ P
   calc
     4 / 5 * ε = (1 - 1 / 10) * (1 - 9⁻¹) * ε := by norm_num
     _ ≤ (1 - ε / 10) * (1 - (↑m)⁻¹) * ((G.nonuniformWitness ε U V).card / U.card) :=
-      (mul_le_mul (mul_le_mul (sub_le_sub_left (div_le_div_of_le_of_nonneg hε₁ <| by norm_num) _)
+      (mul_le_mul (mul_le_mul (sub_le_sub_left (div_le_div_of_le (by norm_num) hε₁) _)
         (sub_le_sub_left (inv_le_inv_of_le (by norm_num) <|
           mod_cast (show 9 ≤ 100 by norm_num).trans
             (hundred_le_m hPα hPε hε₁)) _) (by norm_num) hε)
@@ -462,8 +462,8 @@ private theorem edgeDensity_star_not_uniform [Nonempty α]
     exact this
   have hε' : ε ^ 5 ≤ ε := by
     simpa using pow_le_pow_of_le_one (by sz_positivity) hε₁ (show 1 ≤ 5 by norm_num)
-  have hpr' : |p - r| ≤ ε / 49 := hpr.trans (div_le_div_of_le_of_nonneg hε' <| by norm_num)
-  have hqt' : |q - t| ≤ ε / 49 := hqt.trans (div_le_div_of_le_of_nonneg hε' <| by norm_num)
+  have hpr' : |p - r| ≤ ε / 49 := hpr.trans (div_le_div_of_le (by norm_num) hε')
+  have hqt' : |q - t| ≤ ε / 49 := hqt.trans (div_le_div_of_le (by norm_num) hε')
   rw [abs_sub_le_iff] at hrs hpr' hqt'
   rw [le_abs] at hst ⊢
   cases hst

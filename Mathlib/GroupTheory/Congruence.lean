@@ -793,7 +793,7 @@ theorem mem_coe {c : Con M} {x y} : (x, y) ∈ (↑c : Submonoid (M × M)) ↔ (
 
 @[to_additive]
 theorem to_submonoid_inj (c d : Con M) (H : (c : Submonoid (M × M)) = d) : c = d :=
-  ext <| fun x y => show (x, y) ∈ c.submonoid ↔ (x, y) ∈ d from H ▸ Iff.rfl
+  ext fun x y => show (x, y) ∈ c.submonoid ↔ (x, y) ∈ d from H ▸ Iff.rfl
 #align con.to_submonoid_inj Con.to_submonoid_inj
 #align add_con.to_add_submonoid_inj AddCon.to_addSubmonoid_inj
 

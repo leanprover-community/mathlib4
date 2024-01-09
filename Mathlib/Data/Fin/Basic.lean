@@ -55,7 +55,7 @@ This file expands on the development in the core library.
   provided that `n = m`, see also `Equiv.finCongr`;
 * `Fin.castAddEmb m` : `Fin.castAdd` as an `OrderEmbedding`, embed `Fin n` into `Fin (n+m)`;
 * `Fin.castSuccEmb` : `Fin.castSucc` as an `OrderEmbedding`, embed `Fin n` into `Fin (n+1)`;
-* `Fin.succAboveEmb p` : `Fin.auccAbove` as an `OrderEmbedding`, embed `Fin n` into `Fin (n + 1)`
+* `Fin.succAboveEmb p` : `Fin.succAbove` as an `OrderEmbedding`, embed `Fin n` into `Fin (n + 1)`
   with a hole around `p`;
 * `Fin.addNatEmb m i` : `Fin.addNat` as an `OrderEmbedding`, add `m` on `i` on the right,
   generalizes `Fin.succ`;
@@ -347,6 +347,8 @@ theorem pos_iff_ne_zero' [NeZero n] (a : Fin n) : 0 < a ↔ a ≠ 0 := by
 #align fin.eq_zero_or_eq_succ Fin.eq_zero_or_eq_succ
 #align fin.eq_succ_of_ne_zero Fin.eq_succ_of_ne_zero
 
+@[simp] lemma cast_eq_self (a : Fin n) : cast rfl a = a := rfl
+
 theorem rev_involutive : Involutive (rev : Fin n → Fin n) := fun i =>
   ext <| by
     dsimp only [rev]
@@ -402,6 +404,10 @@ def revOrderIso {n} : (Fin n)ᵒᵈ ≃o Fin n :=
 theorem revOrderIso_symm_apply (i : Fin n) : revOrderIso.symm i = OrderDual.toDual (rev i) :=
   rfl
 #align fin.rev_order_iso_symm_apply Fin.revOrderIso_symm_apply
+
+theorem cast_rev (i : Fin n) (h : n = m) :
+    cast h i.rev = (i.cast h).rev := by
+  subst h; simp
 
 #align fin.last Fin.last
 #align fin.coe_last Fin.val_last
@@ -763,7 +769,7 @@ This one instead uses a `NeZero n` typeclass hypothesis.
 -/
 @[simp]
 theorem le_zero_iff' {n : ℕ} [NeZero n] {k : Fin n} : k ≤ 0 ↔ k = 0 :=
-  ⟨fun h => Fin.eq_of_veq $ by rw [Nat.eq_zero_of_le_zero h]; rfl, by rintro rfl; exact le_refl _⟩
+  ⟨fun h => Fin.eq_of_veq <| by rw [Nat.eq_zero_of_le_zero h]; rfl, by rintro rfl; exact le_refl _⟩
 #align fin.le_zero_iff Fin.le_zero_iff'
 
 #align fin.succ_succ_ne_one Fin.succ_succ_ne_one
@@ -1322,6 +1328,49 @@ theorem last_sub (i : Fin (n + 1)) : last n - i = Fin.rev i :=
   ext <| by rw [coe_sub_iff_le.2 i.le_last, val_last, val_rev, Nat.succ_sub_succ_eq_sub]
 #align fin.last_sub Fin.last_sub
 
+theorem add_one_le_of_lt {n : ℕ} {a b : Fin (n + 1)} (h : a < b) : a + 1 ≤ b := by
+  cases' a with a ha
+  cases' b with b hb
+  cases n
+  · simp only [Nat.zero_eq, zero_add, Nat.lt_one_iff] at ha hb
+    simp [ha, hb]
+  simp only [le_iff_val_le_val, val_add, lt_iff_val_lt_val, val_mk, val_one] at h ⊢
+  rwa [Nat.mod_eq_of_lt, Nat.succ_le_iff]
+  rw [Nat.succ_lt_succ_iff]
+  exact h.trans_le (Nat.le_of_lt_succ hb)
+
+theorem exists_eq_add_of_le {n : ℕ} {a b : Fin n} (h : a ≤ b) : ∃ k ≤ b, b = a + k := by
+  obtain ⟨k, hk⟩ : ∃ k : ℕ, (b : ℕ) = a + k := Nat.exists_eq_add_of_le h
+  have hkb : k ≤ b := le_add_self.trans hk.ge
+  refine' ⟨⟨k, hkb.trans_lt b.is_lt⟩, hkb, _⟩
+  simp [Fin.ext_iff, Fin.val_add, ← hk, Nat.mod_eq_of_lt b.is_lt]
+
+theorem exists_eq_add_of_lt {n : ℕ} {a b : Fin (n + 1)} (h : a < b) :
+    ∃ k < b, k + 1 ≤ b ∧ b = a + k + 1 := by
+  cases n
+  · cases' a with a ha
+    cases' b with b hb
+    simp only [Nat.zero_eq, zero_add, Nat.lt_one_iff] at ha hb
+    simp [ha, hb] at h
+  obtain ⟨k, hk⟩ : ∃ k : ℕ, (b : ℕ) = a + k + 1 := Nat.exists_eq_add_of_lt h
+  have hkb : k < b := by
+    rw [hk, add_comm _ k, Nat.lt_succ_iff]
+    exact le_self_add
+  refine' ⟨⟨k, hkb.trans b.is_lt⟩, hkb, _, _⟩
+  · rw [Fin.le_iff_val_le_val, Fin.val_add_one]
+    split_ifs <;> simp [Nat.succ_le_iff, hkb]
+  simp [Fin.ext_iff, Fin.val_add, ← hk, Nat.mod_eq_of_lt b.is_lt]
+
+@[simp]
+theorem neg_last (n : ℕ) : -Fin.last n = 1 := by simp [neg_eq_iff_add_eq_zero]
+
+theorem neg_nat_cast_eq_one (n : ℕ) : -(n : Fin (n + 1)) = 1 := by
+  simp only [cast_nat_eq_last, neg_last]
+
+lemma pos_of_ne_zero {n : ℕ} {a : Fin (n + 1)} (h : a ≠ 0) :
+    0 < a :=
+  Nat.pos_of_ne_zero (val_ne_of_ne h)
+
 end AddGroup
 
 section SuccAbove
@@ -1336,7 +1385,7 @@ theorem strictMono_succAbove (p : Fin (n + 1)) : StrictMono (succAbove p) :=
     (castSucc_lt_succ i).le
 #align fin.succ_above_aux Fin.strictMono_succAbove
 
-/--  `Fin.auccAbove` as an `OrderEmbedding`, `succAboveEmb p i` embeds `Fin n` into `Fin (n + 1)`
+/--  `Fin.succAbove` as an `OrderEmbedding`, `succAboveEmb p i` embeds `Fin n` into `Fin (n + 1)`
 with a hole around `p`. -/
 @[simps! apply toEmbedding]
 def succAboveEmb (p : Fin (n + 1)) : Fin n ↪o Fin (n + 1) :=
@@ -1570,6 +1619,14 @@ theorem one_succAbove_one {n : ℕ} : (1 : Fin (n + 3)).succAbove 1 = 2 := by
   simp only [succ_zero_eq_one, val_zero, Nat.cast_zero, zero_succAbove, succ_one_eq_two] at this
   exact this
 #align fin.one_succ_above_one Fin.one_succAbove_one
+
+lemma rev_succAbove (p : Fin (n + 1)) (i : Fin n) :
+    rev (succAbove p i) = succAbove (rev p) (rev i) := by
+  cases' lt_or_le (castSucc i) p with h h
+  · rw [succAbove_below _ _ h, rev_castSucc, succAbove_above]
+    rwa [← rev_succ, rev_le_rev]
+  · rw [succAbove_above _ _ h, rev_succ, succAbove_below]
+    rwa [← rev_succ, rev_lt_rev, lt_def, val_succ, Nat.lt_succ_iff]
 
 end SuccAbove
 

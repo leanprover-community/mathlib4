@@ -188,7 +188,7 @@ def Basis.parallelepiped (b : Basis ι ℝ E) : PositiveCompacts E where
       rw [← pi_univ_Icc, interior_pi_set (@finite_univ ι _)]
       simp only [univ_pi_nonempty_iff, Pi.zero_apply, Pi.one_apply, interior_Icc, nonempty_Ioo,
         zero_lt_one, imp_true_iff]
-    rwa [← Homeomorph.image_interior, nonempty_image_iff]
+    rwa [← Homeomorph.image_interior, image_nonempty]
 #align basis.parallelepiped Basis.parallelepiped
 
 @[simp]

@@ -508,7 +508,7 @@ theorem mem_diagonal_iff {x : α × α} : x ∈ diagonal α ↔ x.1 = x.2 :=
 #align set.mem_diagonal_iff Set.mem_diagonal_iff
 
 lemma diagonal_nonempty [Nonempty α] : (diagonal α).Nonempty :=
-  Nonempty.elim ‹_› <| fun x => ⟨_, mem_diagonal x⟩
+  Nonempty.elim ‹_› fun x => ⟨_, mem_diagonal x⟩
 #align set.diagonal_nonempty Set.diagonal_nonempty
 
 instance decidableMemDiagonal [h : DecidableEq α] (x : α × α) : Decidable (x ∈ diagonal α) :=
@@ -946,7 +946,7 @@ theorem pi_update_of_mem [DecidableEq ι] (hi : i ∈ s) (f : ∀ j, α j) (a : 
         by rw [union_pi, singleton_pi', update_same, pi_update_of_not_mem]; simp
 #align set.pi_update_of_mem Set.pi_update_of_mem
 
-theorem univ_pi_update [DecidableEq ι] {β : ∀ _, Type*} (i : ι) (f : ∀ j, α j) (a : α i)
+theorem univ_pi_update [DecidableEq ι] {β : ι → Type*} (i : ι) (f : ∀ j, α j) (a : α i)
     (t : ∀ j, α j → Set (β j)) :
     (pi univ fun j => t j (update f i a j)) = { x | x i ∈ t i a } ∩ pi {i}ᶜ fun j => t j (f j) :=
   by rw [compl_eq_univ_diff, ← pi_update_of_mem (mem_univ _)]
