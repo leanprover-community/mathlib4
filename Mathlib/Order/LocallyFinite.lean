@@ -1075,7 +1075,8 @@ instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
     | ⊤, ⊤, x => mem_singleton.trans (le_antisymm_iff.trans and_comm)
     | ⊤, (b : α), x =>
       iff_of_false (not_mem_empty _) fun h => (h.1.trans h.2).not_lt <| coe_lt_top _
-    | (a : α), ⊤, ⊤ => by simp (config := { instances := true }) [WithTop.some, WithTop.top, insertNone]
+    | (a : α), ⊤, ⊤ => by
+      simp (config := { instances := true }) [WithTop.some, WithTop.top, insertNone]
     | (a : α), ⊤, (x : α) => by
         simp only [some, le_eq_subset, some_le_some, le_top, and_true]
         rw [some_mem_insertNone]
