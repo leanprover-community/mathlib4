@@ -514,7 +514,7 @@ variable {m n : Type*} [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n]
 variable [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F]
 variable (v₁ : OrthonormalBasis n 𝕜 E) (v₂ : OrthonormalBasis m 𝕜 F)
 
-/- the linear map associated to the conjugate transpose of a matrix corresponding to two
+/-- The linear map associated to the conjugate transpose of a matrix corresponding to two
 orthonormal bases is the adjoint of the linear map associated to the matrix. -/
 lemma Matrix.toLin_conjTranspose (A : Matrix m n 𝕜) :
     toLin v₂.toBasis v₁.toBasis Aᴴ = adjoint (toLin v₁.toBasis v₂.toBasis A) := by
