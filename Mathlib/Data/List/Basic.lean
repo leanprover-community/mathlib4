@@ -3510,6 +3510,34 @@ theorem filter_false (l : List α) :
     filter (fun _ => false) l = [] := by induction l <;> simp [*, filter]
 #align list.filter_false List.filter_false
 
+theorem filter_eval_true (l : List α)
+    (h : ∀ a ∈ l, p a = true) : List.filter p l = l := by
+  match l with
+  |[] => simp
+  |x :: xs =>
+    simp [filter]
+    rw [h]
+    simp
+    apply filter_eval_true
+    intro b hb
+    simp at h
+    tauto
+    simp
+
+theorem filter_eval_false (l : List α)
+    (h : ∀ a ∈ l, p a = false) : List.filter p l = []:= by
+  match l with
+  |[] => simp
+  |x :: xs =>
+    simp [filter]
+    rw [h]
+    simp
+    apply filter_eval_false
+    intro b hb
+    simp at h
+    tauto
+    simp
+    
 /- Porting note: need a helper theorem for span.loop. -/
 theorem span.loop_eq_take_drop :
     ∀ l₁ l₂ : List α, span.loop p l₁ l₂ = (l₂.reverse ++ takeWhile p l₁, dropWhile p l₁)
