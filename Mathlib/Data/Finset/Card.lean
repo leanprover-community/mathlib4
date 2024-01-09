@@ -40,7 +40,7 @@ namespace Finset
 variable {s t : Finset α} {a b : α}
 
 /-- `s.card` is the number of elements of `s`, aka its cardinality. -/
-def card (s : Finset α) : ℕ :=
+@[pp_dot] def card (s : Finset α) : ℕ :=
   Multiset.card s.1
 #align finset.card Finset.card
 
