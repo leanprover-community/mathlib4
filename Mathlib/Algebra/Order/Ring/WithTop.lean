@@ -240,7 +240,6 @@ theorem bot_mul {a : WithBot α} (h : a ≠ 0) : ⊥ * a = ⊥ :=
   WithTop.top_mul h
 #align with_bot.bot_mul WithBot.bot_mul
 
-@[simp]
 theorem bot_mul_bot : (⊥ * ⊥ : WithBot α) = ⊥ :=
   WithTop.top_mul_top
 #align with_bot.bot_mul_bot WithBot.bot_mul_bot

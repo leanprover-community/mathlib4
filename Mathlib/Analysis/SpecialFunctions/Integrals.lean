@@ -81,7 +81,7 @@ theorem intervalIntegrable_rpow' {r : ℝ} (h : -1 < r) :
       convert (Real.hasDerivAt_rpow_const (p := r + 1) (Or.inl hx.1.ne')).div_const (r + 1) using 1
       field_simp [(by linarith : r + 1 ≠ 0)]; ring
     apply integrableOn_deriv_of_nonneg _ hderiv
-    · intro x hx; apply rpow_nonneg_of_nonneg hx.1.le
+    · intro x hx; apply rpow_nonneg hx.1.le
     · refine' (continuousOn_id.rpow_const _).div_const _; intro x _; right; linarith
   intro c; rcases le_total 0 c with (hc | hc)
   · exact this c hc

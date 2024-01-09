@@ -339,7 +339,7 @@ theorem approx_Gamma_integral_tendsto_Gamma_integral {s : ℂ} (hs : 0 < re s) :
     rcases lt_or_le (n : ℝ) x with (hxn | hxn)
     · rw [indicator_of_not_mem (not_mem_Ioc_of_gt hxn), norm_zero,
         mul_nonneg_iff_right_nonneg_of_pos (exp_pos _)]
-      exact rpow_nonneg_of_nonneg (le_of_lt hx) _
+      exact rpow_nonneg (le_of_lt hx) _
     · rw [indicator_of_mem (mem_Ioc.mpr ⟨mem_Ioi.mp hx, hxn⟩), norm_mul, Complex.norm_eq_abs,
         Complex.abs_of_nonneg
           (pow_nonneg (sub_nonneg.mpr <| div_le_one_of_le hxn <| by positivity) _),
