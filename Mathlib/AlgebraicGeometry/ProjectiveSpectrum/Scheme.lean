@@ -162,10 +162,10 @@ theorem mem_carrier_iff (z : A⁰_ f) :
 
 lemma carrier_eq_span :
     carrier x =
-  Ideal.span { z : HomogeneousLocalization.Away 𝒜 f |
-    ∃ (s F : A) (_ : s ∈ x.1.asHomogeneousIdeal) (n : ℕ)
-      (s_mem : s ∈ 𝒜 n) (F_mem1 : F ∈ 𝒜 n) (F_mem2 : F ∈ Submonoid.powers f),
-      z = Quotient.mk'' ⟨n, ⟨s, s_mem⟩, ⟨F, F_mem1⟩,F_mem2⟩ } := by
+    Ideal.span { z : HomogeneousLocalization.Away 𝒜 f |
+      ∃ (s F : A) (_ : s ∈ x.1.asHomogeneousIdeal) (n : ℕ)
+        (s_mem : s ∈ 𝒜 n) (F_mem1 : F ∈ 𝒜 n) (F_mem2 : F ∈ Submonoid.powers f),
+        z = Quotient.mk'' ⟨n, ⟨s, s_mem⟩, ⟨F, F_mem1⟩,F_mem2⟩ } := by
   classical
   refine le_antisymm ?_ <| Ideal.span_le.mpr ?_
   · intro z hz
@@ -692,9 +692,9 @@ lemma toSpecFromSpec {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m) (x : 
       exact DirectSum.degree_eq_of_mem_mem 𝒜 F_mem (SetLike.pow_mem_graded k f_deg) ineq |>.symm
 
   · erw [ToSpec.mem_carrier_iff]
-    let k : ℕ := z.den_mem.choose
+    obtain ⟨k, (k_spec : f^k = z.den)⟩ := z.den_mem
     rw [show z.val = (Localization.mk z.num ⟨f^k, ⟨k, rfl⟩⟩ : Away f) by
-        · rw [z.eq_num_div_den]; congr; exact z.den_mem.choose_spec.symm,
+        · rw [z.eq_num_div_den]; congr; exact k_spec.symm,
       show (mk z.num ⟨f^k, ⟨k, rfl⟩⟩ : Away f) = mk z.num 1 * (mk 1 ⟨f^k, ⟨k, rfl⟩⟩ : Away f) by
         · rw [mk_mul, mul_one, one_mul]]
     refine Ideal.mul_mem_right _ _ <| Ideal.subset_span ⟨z.num, ?_, rfl⟩
@@ -711,13 +711,10 @@ lemma toSpecFromSpec {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m) (x : 
       · have := IsLocalization.uniqueOfZeroMem (M := Submonoid.powers f) (S := Localization.Away f)
           ⟨k, ineq⟩
         exact Subsingleton.elim _ _
-      · congr
-        rw [Subtype.coe_mk, Subtype.coe_mk, show z.den = f ^ k from z.den_mem.choose_spec.symm,
-          ← pow_mul]
-        congr
-        refine DirectSum.degree_eq_of_mem_mem 𝒜 ?_ (SetLike.pow_mem_graded k f_deg) ineq
-        rw [← show z.den = f ^ k from z.den_mem.choose_spec.symm]
-        exact z.den_mem_deg
+      · dsimp
+        congr 2
+        rw [← k_spec, ← pow_mul, show z.deg = k * m from
+          degree_eq_of_mem_mem 𝒜 (k_spec ▸ z.den_mem_deg) (SetLike.pow_mem_graded k f_deg) ineq]
     · simp only [CommRingCat.coe_of, GradedAlgebra.proj_apply, zero_pow hm,
         DirectSum.decompose_of_mem_ne 𝒜 z.num_mem_deg ineq]
       convert x.asIdeal.zero_mem
