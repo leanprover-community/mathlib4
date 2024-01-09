@@ -82,6 +82,18 @@ theorem cons_zero : cons x p 0 = x := rfl
 theorem cons_one {α : Fin (n + 2) → Type*} (x : α 0) (p : ∀ i : Fin n.succ, α i.succ) :
     cons x p 1 = p 0 := rfl
 
+@[simp]
+theorem cons_last_succ {α : Fin (n + 2) → Type*} (x : α 0) (p : ∀ i : Fin n.succ, α i.succ) :
+    cons x p (last (n + 1)) = p (last n) := rfl
+
+@[simp]
+theorem cons_last_zero {α : Fin 1 → Type*} (x : α 0) (p : ∀ i : Fin 0, α i.succ) :
+    cons x p (last 0) = x := rfl
+
+@[simp]
+theorem cons_castSucc_succ {α : Fin (n + 2) → Type*} (x : α 0) (p : ∀ i : Fin n.succ, α i.succ) :
+    cons x p (i.succ.castSucc) = p (i.castSucc) := rfl
+
 /-- Updating a tuple and adding an element at the beginning commute. -/
 @[simp]
 theorem cons_update : cons x (update p i y) = update (cons x p) i.succ y := by
@@ -472,6 +484,46 @@ theorem snoc_comp_castSucc {n : ℕ} {α : Sort _} {a : α} {f : Fin n → α} :
 @[simp]
 theorem snoc_last : snoc p x (last n) = x := lastCases_last
 #align fin.snoc_last Fin.snoc_last
+
+@[simp]
+theorem snoc_zero_of_fin_one {α : Fin 1 → Type*} (x : α (last 0))
+    (p : ∀ i : Fin 0, α i.castSucc) :
+    snoc p x 0 = x := snoc_last x p
+
+@[simp]
+theorem snoc_one_of_fin_two {α : Fin 2 → Type*} (x : α (last 1))
+    (p : ∀ i : Fin 1, α i.castSucc) :
+    snoc p x 1 = x := snoc_last x p
+
+@[simp]
+theorem snoc_two_of_fin_three {α : Fin 3 → Type*} (x : α (last 2))
+    (p : ∀ i : Fin 2, α i.castSucc) :
+    snoc p x 2 = x := snoc_last x p
+
+@[simp]
+theorem snoc_zero' [NeZero n] {α : Fin (n + 1) → Type*} (x : α (last n))
+    (p : ∀ i : Fin n, α i.castSucc) :
+    snoc p x 0 = p 0 := snoc_castSucc x p 0
+
+theorem snoc_zero {α : Fin (n + 2) → Type*} (x : α (last (n + 1)))
+    (p : ∀ i : Fin n.succ, α i.castSucc) :
+    snoc p x 0 = p 0 := snoc_zero' x p
+
+@[simp]
+theorem snoc_one {α : Fin (n + 3) → Type*} (x : α (last (n + 2)))
+    (p : ∀ i : Fin n.succ.succ, α i.castSucc) :
+    snoc p x 1 = p 1 := snoc_castSucc x p 1
+
+@[simp]
+theorem snoc_two {α : Fin (n + 4) → Type*} (x : α (last (n + 3)))
+    (p : ∀ i : Fin n.succ.succ.succ, α i.castSucc) :
+    snoc p x 2 = p 2 := snoc_castSucc x p 2
+
+@[simp]
+theorem snoc_succ_castSucc {α : Fin (n + 2) → Type*} (x : α (last _))
+    (p : ∀ i : Fin (n.succ), α i.castSucc) :
+    snoc p x (i.castSucc.succ) = p (i.succ) := by
+  simp_rw [succ_castSucc, snoc_castSucc]
 
 @[simp]
 theorem snoc_comp_nat_add {n m : ℕ} {α : Sort _} (f : Fin (m + n) → α) (a : α) :
