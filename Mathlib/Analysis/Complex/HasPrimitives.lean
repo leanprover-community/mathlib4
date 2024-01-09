@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ian Jauslin, Alex Kontorovich
 -/
 import Mathlib.Analysis.Complex.CauchyIntegral
+import Mathlib.Analysis.Complex.Convex
 
 /-!
 # Primitives of Holomorphic Functions
@@ -13,9 +14,9 @@ is to prove that holomorphic functions on simply connected domains have primitiv
 we prove that holomorphic functions on discs have primitives. The approach is based on Moreira's
 theorem, that a continuous function (on a disc) whose `RectangleIntegral` vanishes on all
 rectangles contained in the disc has a primitive. (Coupled with the fact that holomorphic functions
-have this propoerty.) To prove Moreira's theorem, we first define the `WedgeInt`, which is the
+satisfy this propoerty.) To prove Moreira's theorem, we first define the `WedgeInt`, which is the
 integral of a function over a "wedge" (a horizontal segment followed by a vertical segment in the
-disc).
+disc), and compute its derivative.
 
 ## Main results
 
@@ -26,14 +27,15 @@ disc).
 * `deriv_of_wedgeInt`: The derivative of the wedge integral is the function being integrated.
 
 * `moreiras_theorem`: A function which is continuous on a disc and whose integral on
-  rectangles in the disc vanishes has a primitive on the disc, defined by the wedge integral.
+  rectangles in the disc vanishes has a primitive on the disc (defined by the wedge integral).
 
 * `hasPrimitives_on_disc`: A holomorphic function on a disc has primitives.
 
 ## Tags
   Holomorphic functions, primitives
 
-TODO: Extend to holomorphic functions on simply connected domains.
+TODO: Extend to holomorphic functions on simply connected domains. (In particular, this allows one
+to define the complex logarithm of a nonvanishing function on a simply connected domain.)
 -/
 
 open Complex Topology Set Metric
@@ -41,33 +43,6 @@ open Complex Topology Set Metric
 set_option autoImplicit true
 
 open scoped Interval
-
-namespace Asymptotics
-
--- TO DO: move to `Mathlib.Analysis.Asymptotics.Asymptotics` near `isLittleO_one_iff`
-/-- `f : α → E` is `ContinuousAt` `x` iff the map `y ↦ f y - f x` is littleO of 1 as `y → x`. -/
-theorem continuousAt_iff_isLittleO {α : Type*} {E : Type*} [NormedRing E] [NormOneClass E]
-    [TopologicalSpace α] {f : α → E} {x : α} :
-    (ContinuousAt f x) ↔ (fun (y : α) ↦ f y - f x) =o[𝓝 x] (fun (_ : α) ↦ (1 : E)) := by
-  convert (Asymptotics.isLittleO_one_iff (f' := fun (y : α) ↦ f y - f x) (l := 𝓝 x) (F := E)).symm
-  exact tendsto_sub_nhds_zero_iff.symm
-
-end Asymptotics
-
-namespace Set
-
--- TO DO: move to `Mathlib.Data.Intervals.UnorderedInterval`
-def uIoo {α : Type*} [LinearOrder α]  : α → α → Set α := fun a b ↦ Ioo (a ⊓ b) (a ⊔ b)
-
--- TO DO: move to `Mathlib.Data.Intervals.UnorderedInterval`
-theorem uIoo_comm {α : Type*} [LinearOrder α] (a : α) (b : α) :
-    uIoo a b = uIoo b a := by simp [uIoo, inf_comm, sup_comm]
-
--- TO DO: move to `Mathlib.Data.Set.Intervals.UnorderedInterval`
-theorem uIoo_subset_uIcc {α : Type*} [LinearOrder α] (a : α) (b : α) :
-    uIoo a b ⊆ uIcc a b := by simp [uIoo, uIcc, Ioo_subset_Icc_self]
-
-end Set
 
 namespace Complex
 
@@ -96,16 +71,6 @@ lemma im_isBigO {z : ℂ} : (fun (w : ℂ) ↦ w.im - z.im) =O[𝓝 z] fun w ↦
 end Asymptotics
 
 section reProdIm
-
-/-- This lemma shows the equality between the convext hull of a complex product set and
-  the complex product of convex hulls. -/
-lemma convexHull_reProdIm (s t : Set ℝ) :
-    convexHull ℝ (s ×ℂ t) = convexHull ℝ s ×ℂ convexHull ℝ t :=
-  calc
-    convexHull ℝ (equivRealProdLm ⁻¹' (s ×ˢ t)) = equivRealProdLm ⁻¹' (convexHull ℝ (s ×ˢ t)) := by
-      simpa only [← LinearEquiv.image_symm_eq_preimage]
-        using equivRealProdLm.symm.toLinearMap.convexHull_image (s ×ˢ t)
-    _ = convexHull ℝ s ×ℂ convexHull ℝ t := by rw [convexHull_prod]; rfl
 
 /-- The preimage under `equivRealProd` of `s ×ˢ t` is `s ×ℂ t`. -/
 lemma preimage_equivRealProd_prod (s t : Set ℝ) : equivRealProd ⁻¹' (s ×ˢ t) = s ×ℂ t := rfl
@@ -499,7 +464,7 @@ theorem moreiras_theorem {c : ℂ} {r : ℝ} {f : ℂ → ℂ} (f_cont : Continu
 
 /-- If `f` is holomorphic a set `U`, then the rectangle integral of `f` vanishes, for any
   rectangle in `U`. -/
-theorem vanishesOnRectangles_of_holomorphic {f : ℂ → ℂ} {U : Set ℂ} {z w : ℂ}
+theorem HolomorphicOn.vanishesOnRectangle {f : ℂ → ℂ} {U : Set ℂ} {z w : ℂ}
     (f_holo : HolomorphicOn f U) (hU : Rectangle z w ⊆ U) :
     RectangleIntegral f z w = 0 := by
   convert integral_boundary_rect_eq_zero_of_differentiable_on_off_countable f z w ∅ (by simp)
@@ -520,7 +485,7 @@ theorem vanishesOnRectangles_of_holomorphic {f : ℂ → ℂ} {U : Set ℂ} {z w
 theorem vanishesOnRectanglesInDisc_of_holomorphic {c : ℂ} {r : ℝ} {f : ℂ → ℂ}
     (f_holo : HolomorphicOn f (ball c r)) :
     VanishesOnRectanglesInDisc c r f := fun _ _ hz hw hz' hw' ↦
-  vanishesOnRectangles_of_holomorphic f_holo (rectangle_in_convex (convex_ball c r) hz hw hz' hw')
+  f_holo.vanishesOnRectangle (rectangle_in_convex (convex_ball c r) hz hw hz' hw')
 
 /-- *** Holomorphic functions on discs have Primitives *** A holomorphic function on a disc has
   primitives. -/

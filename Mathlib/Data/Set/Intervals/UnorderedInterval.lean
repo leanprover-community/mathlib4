@@ -361,6 +361,56 @@ lemma uIoc_injective_left (a : α) : Injective (Ι a) := by
   simpa only [uIoc_comm] using uIoc_injective_right a
 #align set.uIoc_injective_left Set.uIoc_injective_left
 
+section uIoo
+
+
+/-- `uIoo a b` is the set of elements lying between `a` and `b`, with `a` and `b` not included.
+Note that we define it more generally in a lattice as `Set.Ioo (a ⊓ b) (a ⊔ b)`. In a product type,
+`uIoo` corresponds to the bounding box of the two elements. -/
+def uIoo (a b : α) : Set α := Ioo (a ⊓ b) (a ⊔ b)
+
+/-- `[(a, b)]` denotes the set of elements lying between `a` and `b`, not inclusive. -/
+scoped[Interval] notation "[(" a ", " b ")]" => Set.uIoo a b
+
+@[simp] lemma dual_uIoo (a b : α) : [(toDual a, toDual b)] = ofDual ⁻¹' [(a, b)] := dual_Ioo
+
+@[simp]
+lemma uIoo_of_le (h : a ≤ b) : [(a, b)] = Ioo a b := by rw [uIoo, inf_eq_left.2 h, sup_eq_right.2 h]
+
+@[simp]
+lemma uIoo_of_ge (h : b ≤ a) : [(a, b)] = Ioo b a := by rw [uIoo, inf_eq_right.2 h, sup_eq_left.2 h]
+
+lemma uIoo_comm (a b : α) : [(a, b)] = [(b, a)] := by simp_rw [uIoo, inf_comm, sup_comm]
+
+lemma uIoo_of_lt (h : a < b) : [(a, b)] = Ioo a b := uIoo_of_le h.le
+
+lemma uIoo_of_gt (h : b < a) : [(a, b)] = Ioo b a := uIoo_of_ge h.le
+
+lemma uIoo_self : [(a, a)] = ∅ := by simp [uIoo]
+
+lemma Ioo_subset_uIoo : Ioo a b ⊆ [(a, b)] := Ioo_subset_Ioo inf_le_left le_sup_right
+
+lemma Ioo_subset_uIoo' : Ioo b a ⊆ [(a, b)] := Ioo_subset_Ioo inf_le_right le_sup_left
+
+lemma mem_uIoo_of_le (ha : a < x) (hb : x < b) : x ∈ [(a, b)] := Ioo_subset_uIoo ⟨ha, hb⟩
+
+lemma mem_uIoo_of_ge (hb : b < x) (ha : x < a) : x ∈ [(a, b)] := Ioo_subset_uIoo' ⟨hb, ha⟩
+
+variable [LinearOrder β] {f : α → β} {s : Set α} {a a₁ a₂ b b₁ b₂ c d x : α}
+
+theorem Ioo_min_max : Ioo (min a b) (max a b) = [(a, b)] :=
+  rfl
+#align set.Ioo_min_max Set.Ioo_min_max
+
+lemma uIoo_of_not_le (h : ¬a ≤ b) : [(a, b)] = Ioo b a := uIoo_of_gt <| lt_of_not_ge h
+
+lemma uIoo_of_not_ge (h : ¬b ≤ a) : [(a, b)] = Ioo a b := uIoo_of_lt <| lt_of_not_ge h
+
+theorem uIoo_subset_uIcc {α : Type*} [LinearOrder α] (a : α) (b : α) :
+    uIoo a b ⊆ uIcc a b := by simp [uIoo, uIcc, Ioo_subset_Icc_self]
+
+end uIoo
+
 end LinearOrder
 
 end Set
