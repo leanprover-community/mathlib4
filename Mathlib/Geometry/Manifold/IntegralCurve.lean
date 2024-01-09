@@ -256,10 +256,9 @@ lemma IsIntegralCurveOn.continuousOn (hγ : IsIntegralCurveOn γ v s) :
     ContinuousOn γ s := fun t ht => (hγ t ht).1.continuousWithinAt
 
 lemma IsIntegralCurveAt.continuousAt (hγ : IsIntegralCurveAt γ v t₀) :
-    ContinuousAt γ t₀ := by
-  obtain ⟨ε, hε, hγ⟩ := hγ
-  apply hγ.continuousAt
-  exact mem_of_mem_nhds hε
+    ContinuousAt γ t₀ :=
+  have ⟨_, hs, hγ⟩ := isIntegralCurveAt_iff.mp hγ
+  hγ.continuousAt <| mem_of_mem_nhds hs
 
 lemma IsIntegralCurve.continuous (hγ : IsIntegralCurve γ v) :
     Continuous γ := continuous_iff_continuousAt.mpr
@@ -330,6 +329,8 @@ lemma exists_isIntegralCurveAt_of_contMDiffAt_boundaryless [BoundarylessManifold
     ∃ γ : ℝ → M, γ t₀ = x₀ ∧ IsIntegralCurveAt γ v t₀ :=
   exists_isIntegralCurveAt_of_contMDiffAt t₀ hv (BoundarylessManifold.isInteriorPoint I)
 
+variable {t₀}
+
 /-- If `γ` is an integral curve of a vector field `v`, then `γ t` is tangent to `v (γ t)` when
   expressed in the local chart around the initial point `γ t₀`. -/
 lemma IsIntegralCurveOn.hasDerivAt (hγ : IsIntegralCurveOn γ v s) {t : ℝ} (ht : t ∈ s)
@@ -366,7 +367,7 @@ theorem isIntegralCurveAt_eqOn_of_contMDiffAt (hγt₀ : I.IsInteriorPoint (γ t
   rw [contMDiffAt_iff] at hv
   obtain ⟨_, hv⟩ := hv
   obtain ⟨K, s, hs, hlip⟩ : ∃ K, ∃ s ∈ nhds _, LipschitzOnWith K v' s :=
-    ContDiffAt.exists_lipschitzOnWith (hv.contDiffAt (range_mem_nhds_isInteriorPoint I hγt₀)).snd
+    ContDiffAt.exists_lipschitzOnWith (hv.contDiffAt (range_mem_nhds_isInteriorPoint hγt₀)).snd
   have hlip : ∀ t : ℝ, LipschitzOnWith K ((fun _ => v') t) ((fun _ => s) t) := fun _ => hlip
 
   -- `γ t` when expressed in the local chart should remain inside `s`
@@ -380,9 +381,6 @@ theorem isIntegralCurveAt_eqOn_of_contMDiffAt (hγt₀ : I.IsInteriorPoint (γ t
   have hsrc := continuousAt_def.mp hγ.continuousAt _ <| extChartAt_source_mem_nhds I (γ t₀)
   rw [← eventually_mem_nhds] at hsrc
 
-  -- `γ` is tangent to `v` in some neighbourhood of `t₀`
-  simp_rw [IsIntegralCurveAt, IsIntegralCurveOn, ← Filter.eventually_iff_exists_mem] at hγ
-
   -- same as above but for `γ'`
   have hcont' : ContinuousAt ((extChartAt I (γ' t₀)) ∘ γ') t₀ :=
     ContinuousAt.comp (continuousAt_extChartAt ..) hγ'.continuousAt
@@ -392,8 +390,6 @@ theorem isIntegralCurveAt_eqOn_of_contMDiffAt (hγt₀ : I.IsInteriorPoint (γ t
 
   have hsrc' := continuousAt_def.mp hγ'.continuousAt _ <| extChartAt_source_mem_nhds I (γ' t₀)
   rw [← eventually_mem_nhds] at hsrc'
-
-  simp_rw [IsIntegralCurveAt, IsIntegralCurveOn, ← Filter.eventually_iff_exists_mem] at hγ'
 
   -- there exists a neighbourhood around `t₀` in which all of the above hold
   have haux := hnhds.and <| hsrc.and <| hγ.and <| hnhds'.and <| hsrc'.and hγ'
