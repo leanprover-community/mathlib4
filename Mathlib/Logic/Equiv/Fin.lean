@@ -410,20 +410,6 @@ theorem finRotate_last : finRotate (n + 1) (Fin.last _) = 0 :=
   finRotate_last'
 #align fin_rotate_last finRotate_last
 
-theorem Fin.snoc_eq_cons_rotate {α : Type*} (v : Fin n → α) (a : α) :
-    @Fin.snoc _ (fun _ => α) v a = fun i => @Fin.cons _ (fun _ => α) a v (finRotate _ i) := by
-  ext ⟨i, h⟩
-  by_cases h' : i < n
-  · rw [finRotate_of_lt h', Fin.snoc, Fin.cons, dif_pos h']
-    rfl
-  · have h'' : n = i := by
-      simp only [not_lt] at h'
-      exact (Nat.eq_of_le_of_lt_succ h' h).symm
-    subst h''
-    rw [finRotate_last', Fin.snoc, Fin.cons, dif_neg (lt_irrefl _)]
-    rfl
-#align fin.snoc_eq_cons_rotate Fin.snoc_eq_cons_rotate
-
 @[simp]
 theorem finRotate_one : finRotate 1 = Equiv.refl _ :=
   Subsingleton.elim _ _
@@ -438,6 +424,22 @@ theorem finRotate_one : finRotate 1 = Equiv.refl _ :=
     simp only [Fin.lt_iff_val_lt_val, Fin.val_last, Fin.val_mk] at h
     simp [finRotate_of_lt h, Fin.eq_iff_veq, Fin.add_def, Nat.mod_eq_of_lt (Nat.succ_lt_succ h)]
 #align fin_rotate_succ_apply finRotate_succ_apply
+
+theorem finRotate_apply_castSucc (i : Fin n):
+    finRotate (n + 1) i.castSucc = i.succ := by
+  simp_rw [finRotate_succ_apply, Fin.coeSucc_eq_succ]
+
+theorem finRotate_symm_apply_succ (i : Fin n):
+    (finRotate (n + 1)).symm i.succ = i.castSucc := by
+  rw [Equiv.symm_apply_eq, finRotate_apply_castSucc]
+
+theorem Fin.snoc_eq_cons_rotate {α : Type*} (v : Fin n → α) (a : α) :
+    @Fin.snoc _ (fun _ => α) v a = fun i => @Fin.cons _ (fun _ => α) a v (finRotate _ i) := by
+  ext i
+  cases' i using lastCases with i
+  · rw [snoc_last, finRotate_last, cons_zero]
+  · rw [snoc_castSucc, finRotate_apply_castSucc, cons_succ]
+#align fin.snoc_eq_cons_rotate Fin.snoc_eq_cons_rotate
 
 -- porting note: was a @[simp]
 theorem finRotate_apply_zero : finRotate n.succ 0 = 1 := by
