@@ -80,16 +80,17 @@ We compute this subgroup as follows.
 * `Equiv.Perm.card_of_cycleType_mul_eq m` and `Equiv.Perm.card_of_cycleType m`
   compute this cardinality.
 
-* `AlternatingGroup.of_cycleType_eq m`, `AlternatingGroup.of_cycleType_eq m`
-  and `AlternatingGroup.card_of_cycleType m` give the same result
-  in the subgroup `alternatingGroup α`
+* `AlternatingGroup.of_cycleType_eq m` and `AlternatingGroup.card_of_cycleType m`
+  give the analogous result in the subgroup `alternatingGroup α`
 
 * `Equiv.Perm.OnCycleFactors.sign_ψ` computes the signature of the permutation induced given by `ψ`.
 
-* We finally compute on which condition the centralizer of an even permutation
-  is contained in `alternatingGroup α` and deduce the formula
-  for the cardinality of the centralizers and conjugacy classes
-  in `alternatingGroup α`.
+* Finally, `Equiv.Perm.OnCycleFactors.kerφ_le_alternating_iff`
+  establishes on which iff-condition the centralizer of an even permutation
+  is contained in `alternatingGroup α`.
+
+  TODO : deduce the formula for the cardinality of the centralizers
+  and conjugacy classes in `alternatingGroup α`.
 
 -/
 
