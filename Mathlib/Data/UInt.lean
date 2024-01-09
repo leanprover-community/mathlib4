@@ -132,8 +132,3 @@ theorem toChar_aux (n : Nat) (h : n < size) : Nat.isValidChar (UInt32.ofNat n).1
 def toChar (n : UInt8) : Char := ⟨n.toUInt32, toChar_aux n.1 n.1.2⟩
 
 end UInt8
-
-
-
-
-#minimize_imports
