@@ -704,7 +704,7 @@ lemma exists_isIntegralCurve_of_isIntegralCurveOn [BoundarylessManifold I M]
       apply (hγ2_aux.comp_add (-(asup - ε / 2))).mono
       intro t
       rw [mem_Ioo, mem_setOf, mem_Ioo]
-      rintro ⟨_, _⟩
+      intros
       constructor <;> linarith
 
     -- extend `γ` on the left by `γ1` and on the right by `γ2`
