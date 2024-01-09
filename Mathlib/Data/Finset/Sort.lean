@@ -95,6 +95,32 @@ theorem filter_sort_commute [DecidableEq α](f : α → Prop) [DecidablePred f] 
   rw [List.toFinset_filter]
   simp
 
+theorem sort_monotone_map [DecidableEq α] [DecidableEq β]
+    (r' : β → β → Prop) [DecidableRel r'] [IsTrans β r'] [IsAntisymm β r'] [IsTotal β r']
+    (f : α ↪ β) (preserve_le : {x : α} → {y : α} → (h : r x y) → (r' (f x) (f y)))
+    (s : Finset α): Finset.sort r' (Finset.map f s) = List.map f (Finset.sort r s) := by
+  have LHS_sorted :
+  List.Sorted r' (Finset.sort r' (Finset.map f s)) :=  Finset.sort_sorted r' (Finset.map f s)
+  let lst := Finset.sort r s
+  have lst_sorted : List.Sorted r lst := Finset.sort_sorted r s
+  have RHS_sorted : List.Sorted r' (List.map f lst) := by
+    apply List.pairwise_map.mpr
+    unfold List.Sorted at lst_sorted
+    exact List.Pairwise.imp preserve_le lst_sorted
+  have LHS_nodup :
+  List.Nodup (Finset.sort r' (Finset.map f s)) := Finset.sort_nodup r' (Finset.map f s)
+  have RHS_nodup : List.Nodup (List.map f (Finset.sort r s)) := by
+    apply List.Nodup.map
+    exact Function.Embedding.injective f
+    exact Finset.sort_nodup r s
+  have h :
+  (Finset.sort r' (Finset.map f s)).toFinset = (List.map f (Finset.sort r s)).toFinset := by
+    rw [← list_map_toFinset]
+    rw [map_eq_image]
+    simp
+  rw [List.toFinset_eq_iff_perm_dedup,List.Nodup.dedup LHS_nodup,List.Nodup.dedup RHS_nodup] at h
+  exact List.eq_of_perm_of_sorted h LHS_sorted RHS_sorted
+
 end sort
 
 section SortLinearOrder
