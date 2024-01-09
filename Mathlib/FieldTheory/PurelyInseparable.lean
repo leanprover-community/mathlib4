@@ -26,7 +26,7 @@ This file contains basics about the purely inseparable extension of fields.
   (resp. bijective). In particular, if an intermediate field of `E / F` is both purely inseparable
   and separable, then it is equal to `F`.
 
-- `isPurelyInseparable_iff_mem_pow`: a field extension `E / F` of exponential characteristic `q` is
+- `isPurelyInseparable_iff_pow_mem`: a field extension `E / F` of exponential characteristic `q` is
   purely inseparable if and only if for every element `x` of `E`, there exists a natural number `n`
   such that `x ^ (q ^ n)` is contained in `F`.
 
@@ -66,7 +66,7 @@ This file contains basics about the purely inseparable extension of fields.
   reduced ring `L`, the map `(E →+* L) → (F →+* L)` induced by `algebraMap F E` is injective.
   In other words, a purely inseparable field extension is an epimorphism in the category of fields.
 
-- `IntermediateField.isPurelyInseparable_adjoin_iff_mem_pow`: if `F` is of exponential
+- `IntermediateField.isPurelyInseparable_adjoin_iff_pow_mem`: if `F` is of exponential
   characteristic `q`, then `F(S) / F` is a purely inseparable extension if and only if for any
   `x ∈ S`, `x ^ (q ^ n)` is contained in `F` for some `n : ℕ`.
 
@@ -194,14 +194,14 @@ variable {E}
 /-- A field extension `E / F` of exponential characteristic `q` is purely inseparable
 if and only if for every element `x` of `E`, there exists a natural number `n` such that
 `x ^ (q ^ n)` is contained in `F`. -/
-theorem isPurelyInseparable_iff_mem_pow (q : ℕ) [hF : ExpChar F q] :
+theorem isPurelyInseparable_iff_pow_mem (q : ℕ) [hF : ExpChar F q] :
     IsPurelyInseparable F E ↔ ∀ x : E, ∃ n : ℕ, x ^ q ^ n ∈ (algebraMap F E).range := by
   rw [isPurelyInseparable_iff]
   refine ⟨fun h x ↦ ?_, fun h x ↦ ?_⟩
   · obtain ⟨g, h1, n, h2⟩ := (minpoly.irreducible (h x).1).hasSeparableContraction q
     exact ⟨n, (h _).2 <| h1.of_dvd <| minpoly.dvd F _ <| by
       simpa only [expand_aeval, minpoly.aeval] using congr_arg (aeval x) h2⟩
-  have hdeg := (minpoly.natSepDegree_eq_one_iff_mem_pow q).2 (h x)
+  have hdeg := (minpoly.natSepDegree_eq_one_iff_pow_mem q).2 (h x)
   have halg : IsIntegral F x := by_contra fun h' ↦ by
     simp only [minpoly.eq_zero h', natSepDegree_zero, zero_ne_one] at hdeg
   refine ⟨halg, fun hsep ↦ ?_⟩
@@ -209,9 +209,9 @@ theorem isPurelyInseparable_iff_mem_pow (q : ℕ) [hF : ExpChar F q] :
     IntermediateField.finrank_eq_one_iff] at hdeg
   simpa only [hdeg] using mem_adjoin_simple_self F x
 
-theorem IsPurelyInseparable.mem_pow (q : ℕ) [ExpChar F q] [IsPurelyInseparable F E] (x : E) :
+theorem IsPurelyInseparable.pow_mem (q : ℕ) [ExpChar F q] [IsPurelyInseparable F E] (x : E) :
     ∃ n : ℕ, x ^ q ^ n ∈ (algebraMap F E).range :=
-  (isPurelyInseparable_iff_mem_pow F q).1 (by assumption) x
+  (isPurelyInseparable_iff_pow_mem F q).1 (by assumption) x
 
 variable (E)
 
@@ -232,7 +232,7 @@ theorem IsPurelyInseparable.tower_top [Algebra E K] [IsScalarTower F E K]
     [h : IsPurelyInseparable F K] : IsPurelyInseparable E K := by
   obtain ⟨q, _⟩ := ExpChar.exists F
   haveI := expChar_of_injective_algebraMap (algebraMap F E).injective q
-  rw [isPurelyInseparable_iff_mem_pow _ q] at h ⊢
+  rw [isPurelyInseparable_iff_pow_mem _ q] at h ⊢
   intro x
   obtain ⟨n, y, h⟩ := h x
   exact ⟨n, (algebraMap F E) y, h.symm ▸ (IsScalarTower.algebraMap_apply F E K y).symm⟩
@@ -243,7 +243,7 @@ theorem IsPurelyInseparable.trans [Algebra E K] [IsScalarTower F E K]
     [h1 : IsPurelyInseparable F E] [h2 : IsPurelyInseparable E K] : IsPurelyInseparable F K := by
   obtain ⟨q, _⟩ := ExpChar.exists F
   haveI := expChar_of_injective_algebraMap (algebraMap F E).injective q
-  rw [isPurelyInseparable_iff_mem_pow _ q] at h1 h2 ⊢
+  rw [isPurelyInseparable_iff_pow_mem _ q] at h1 h2 ⊢
   intro x
   obtain ⟨n, y, h2⟩ := h2 x
   obtain ⟨m, z, h1⟩ := h1 y
@@ -257,7 +257,7 @@ its minimal polynomial has separable degree one. -/
 theorem isPurelyInseparable_iff_natSepDegree_eq_one :
     IsPurelyInseparable F E ↔ ∀ x : E, (minpoly F x).natSepDegree = 1 := by
   obtain ⟨q, _⟩ := ExpChar.exists F
-  simp_rw [isPurelyInseparable_iff_mem_pow F q, minpoly.natSepDegree_eq_one_iff_mem_pow q]
+  simp_rw [isPurelyInseparable_iff_pow_mem F q, minpoly.natSepDegree_eq_one_iff_pow_mem q]
 
 theorem IsPurelyInseparable.natSepDegree_eq_one [IsPurelyInseparable F E] (x : E) :
     (minpoly F x).natSepDegree = 1 :=
@@ -397,7 +397,7 @@ theorem IsPurelyInseparable.injective_comp_algebraMap [IsPurelyInseparable F E]
     Function.Injective fun f : E →+* L ↦ f.comp (algebraMap F E) := fun f g heq ↦ by
   ext x
   obtain ⟨q, hF⟩ := ExpChar.exists F
-  obtain ⟨n, y, h⟩ := IsPurelyInseparable.mem_pow F q x
+  obtain ⟨n, y, h⟩ := IsPurelyInseparable.pow_mem F q x
   replace heq := congr($heq y)
   simp_rw [RingHom.comp_apply, h] at heq
   cases' hF with _ _ hprime _
@@ -440,17 +440,17 @@ theorem isPurelyInseparable_adjoin_simple_iff_natSepDegree_eq_one {x : E} :
 
 /-- If `F` is of exponential characteristic `q`, then `F⟮x⟯ / F` is a purely inseparable extension
 if and only if `x ^ (q ^ n)` is contained in `F` for some `n : ℕ`. -/
-theorem isPurelyInseparable_adjoin_simple_iff_mem_pow (q : ℕ) [hF : ExpChar F q] {x : E} :
+theorem isPurelyInseparable_adjoin_simple_iff_pow_mem (q : ℕ) [hF : ExpChar F q] {x : E} :
     IsPurelyInseparable F F⟮x⟯ ↔ ∃ n : ℕ, x ^ q ^ n ∈ (algebraMap F E).range := by
   simp_rw [isPurelyInseparable_adjoin_simple_iff_natSepDegree_eq_one,
-    minpoly.natSepDegree_eq_one_iff_mem_pow q]
+    minpoly.natSepDegree_eq_one_iff_pow_mem q]
 
 /-- If `F` is of exponential characteristic `q`, `S` is a finite subset of `E`, such that for any
 `x ∈ S`, `x ^ (q ^ n)` is contained in `F` for some `n : ℕ`, then `F(S) / F` is a purely
 inseparable extension. It is a special case of
-`IntermediateField.isPurelyInseparable_adjoin_iff_mem_pow`, and is an
+`IntermediateField.isPurelyInseparable_adjoin_iff_pow_mem`, and is an
 intermediate result used to prove it. -/
-lemma isPurelyInseparable_adjoin_finset_of_mem_pow (q : ℕ) [hF : ExpChar F q]
+lemma isPurelyInseparable_adjoin_finset_of_pow_mem (q : ℕ) [hF : ExpChar F q]
     (S : Finset E) (h : ∀ x ∈ S, ∃ n : ℕ, x ^ q ^ n ∈ (algebraMap F E).range) :
     IsPurelyInseparable F (adjoin F (S : Set E)) := by
   refine induction_on_adjoin_finset S (IsPurelyInseparable F ·) inferInstance fun L x hx hL ↦ ?_
@@ -458,21 +458,21 @@ lemma isPurelyInseparable_adjoin_finset_of_mem_pow (q : ℕ) [hF : ExpChar F q]
   change IsPurelyInseparable F L at hL
   obtain ⟨n, y, h⟩ := h x hx
   haveI := expChar_of_injective_algebraMap (algebraMap F L).injective q
-  replace h := (isPurelyInseparable_adjoin_simple_iff_mem_pow L E q).2 ⟨n, (algebraMap F L) y, h⟩
+  replace h := (isPurelyInseparable_adjoin_simple_iff_pow_mem L E q).2 ⟨n, (algebraMap F L) y, h⟩
   exact IsPurelyInseparable.trans F L L⟮x⟯
 
 /-- If `F` is of exponential characteristic `q`, then `F(S) / F` is a purely inseparable extension
 if and only if for any `x ∈ S`, `x ^ (q ^ n)` is contained in `F` for some `n : ℕ`. -/
-theorem isPurelyInseparable_adjoin_iff_mem_pow (q : ℕ) [hF : ExpChar F q] {S : Set E} :
+theorem isPurelyInseparable_adjoin_iff_pow_mem (q : ℕ) [hF : ExpChar F q] {S : Set E} :
     IsPurelyInseparable F (adjoin F S) ↔ ∀ x ∈ S, ∃ n : ℕ, x ^ q ^ n ∈ (algebraMap F E).range := by
-  rw [isPurelyInseparable_iff_mem_pow _ q]
+  rw [isPurelyInseparable_iff_pow_mem _ q]
   refine ⟨fun h x hx ↦ ?_, fun h x ↦ ?_⟩
   · obtain ⟨n, y, h⟩ := h ⟨x, adjoin.mono F _ _ (Set.singleton_subset_iff.2 hx)
       (mem_adjoin_simple_self F x)⟩
     exact ⟨n, y, congr_arg (algebraMap _ E) h⟩
   obtain ⟨T, h1, h2⟩ := exists_finset_of_mem_adjoin x.2
-  obtain ⟨n, y, hx⟩ := (isPurelyInseparable_iff_mem_pow F q).1
-    (isPurelyInseparable_adjoin_finset_of_mem_pow F E q T fun x hx ↦ h x (h1 hx)) ⟨x, h2⟩
+  obtain ⟨n, y, hx⟩ := (isPurelyInseparable_iff_pow_mem F q).1
+    (isPurelyInseparable_adjoin_finset_of_pow_mem F E q T fun x hx ↦ h x (h1 hx)) ⟨x, h2⟩
   refine ⟨n, y, ?_⟩
   apply_fun algebraMap _ E using (algebraMap _ E).injective
   exact show algebraMap F E y = x.1 ^ q ^ n from congr_arg (algebraMap _ E) hx
@@ -482,10 +482,10 @@ instance isPurelyInseparable_sup (L1 L2 : IntermediateField F E)
     [h1 : IsPurelyInseparable F L1] [h2 : IsPurelyInseparable F L2] :
     IsPurelyInseparable F (L1 ⊔ L2 : IntermediateField F E) := by
   obtain ⟨q, _⟩ := ExpChar.exists F
-  rw [← adjoin_self F L1, isPurelyInseparable_adjoin_iff_mem_pow F E q] at h1
-  rw [← adjoin_self F L2, isPurelyInseparable_adjoin_iff_mem_pow F E q] at h2
+  rw [← adjoin_self F L1, isPurelyInseparable_adjoin_iff_pow_mem F E q] at h1
+  rw [← adjoin_self F L2, isPurelyInseparable_adjoin_iff_pow_mem F E q] at h2
   rw [← adjoin_self F L1, ← adjoin_self F L2, ← gc.l_sup,
-    isPurelyInseparable_adjoin_iff_mem_pow F E q]
+    isPurelyInseparable_adjoin_iff_pow_mem F E q]
   intro x h
   simp only [Set.sup_eq_union, Set.mem_union] at h
   rcases h with (h | h)
@@ -497,12 +497,12 @@ instance isPurelyInseparable_iSup {ι : Type*} {t : ι → IntermediateField F E
     IsPurelyInseparable F (⨆ i, t i : IntermediateField F E) := by
   obtain ⟨q, _⟩ := ExpChar.exists F
   rw [show (⨆ i, t i : IntermediateField F E) = (⨆ i, adjoin F (t i)) by simp_rw [adjoin_self],
-    ← gc.l_iSup, isPurelyInseparable_adjoin_iff_mem_pow F E q]
+    ← gc.l_iSup, isPurelyInseparable_adjoin_iff_pow_mem F E q]
   intro x hx
   simp only [Set.iSup_eq_iUnion, Set.mem_iUnion] at hx
   obtain ⟨i, hi⟩ := hx
   replace h := h i
-  rw [← adjoin_self F (t i), isPurelyInseparable_adjoin_iff_mem_pow F E q] at h
+  rw [← adjoin_self F (t i), isPurelyInseparable_adjoin_iff_pow_mem F E q] at h
   exact h x hi
 
 end IntermediateField
@@ -552,7 +552,7 @@ theorem perfectField_of_isSeparable_of_perfectField_top [IsSeparable F E] [Perfe
   haveI := PerfectRing.ofSurjective F p fun x ↦ by
     haveI : ExpChar F p := ExpChar.prime Fact.out
     obtain ⟨y, h⟩ := surjective_frobenius E p ((algebraMap F E) x)
-    haveI := (isPurelyInseparable_adjoin_simple_iff_mem_pow F p (x := y)).2
+    haveI := (isPurelyInseparable_adjoin_simple_iff_pow_mem F p (x := y)).2
       ⟨1, x, by rw [← h, pow_one, frobenius_def]⟩
     haveI := isSeparable_tower_bot_of_isSeparable F F⟮y⟯ E
     obtain ⟨z, h'⟩ := F⟮y⟯.eq_bot_of_isPurelyInseparable_of_isSeparable.le <|
