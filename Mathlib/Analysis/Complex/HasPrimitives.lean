@@ -28,7 +28,7 @@ disc).
 * `moreiras_theorem`: A function which is continuous on a disc and whose integral on
   rectangles in the disc vanishes has a primitive on the disc, defined by the wedge integral.
 
-* `hasPrimitives_of_disc`: A holomorphic function on a disc has primitives.
+* `hasPrimitives_on_disc`: A holomorphic function on a disc has primitives.
 
 ## Tags
   Holomorphic functions, primitives
@@ -307,7 +307,7 @@ section MainDefinitions
 
 /-- A set `U` `HasPrimitives` if, every holomorphic function on `U` has a primitive -/
 def HasPrimitives (U : Set ℂ) : Prop :=
-  ∀ f : ℂ → ℂ, DifferentiableOn ℂ f U → ∃ g : ℂ → ℂ, ∀ z ∈ U, HasDerivAt g (f z) z
+  ∀ f : ℂ → ℂ, HolomorphicOn f U → ∃ g : ℂ → ℂ, ∀ z ∈ U, HasDerivAt g (f z) z
 
 /-- The wedge integral from `z` to `w` of a function `f` -/
 noncomputable def WedgeInt (z w : ℂ) (f : ℂ → ℂ) : ℂ :=
@@ -502,15 +502,15 @@ theorem moreiras_theorem {c : ℂ} {r : ℝ} {f : ℂ → ℂ} (f_cont : Continu
     ∃ g : ℂ → ℂ, ∀ z ∈ (ball c r), HasDerivAt g (f z) z :=
   ⟨fun z ↦ WedgeInt c z f, fun _ hz ↦ deriv_of_wedgeInt f_cont hz hf⟩
 
-/-- If `f` is `DifferentiableOn` a set `U`, then the rectangle integral of `f` vanishes, for any
+/-- If `f` is holomorphic a set `U`, then the rectangle integral of `f` vanishes, for any
   rectangle in `U`. -/
 theorem vanishesOnRectangles_of_holomorphic {f : ℂ → ℂ} {U : Set ℂ} {z w : ℂ}
-    (f_diff : DifferentiableOn ℂ f U) (hU : Rectangle z w ⊆ U) :
+    (f_holo : HolomorphicOn f U) (hU : Rectangle z w ⊆ U) :
     RectangleIntegral f z w = 0 := by
   convert integral_boundary_rect_eq_zero_of_differentiable_on_off_countable f z w ∅ (by simp)
-    ((f_diff.mono hU).continuousOn) ?_ using 1
+    ((f_holo.mono hU).continuousOn) ?_ using 1
   intro x hx
-  apply f_diff.differentiableAt
+  apply f_holo.differentiableAt
   rw [_root_.mem_nhds_iff]
   refine ⟨Ioo (min z.re w.re) (max z.re w.re) ×ℂ Ioo (min z.im w.im) (max z.im w.im), ?_, ?_, ?_⟩
   · apply subset_trans ?_ hU
@@ -521,15 +521,15 @@ theorem vanishesOnRectangles_of_holomorphic {f : ℂ → ℂ} {U : Set ℂ} {z w
   · exact IsOpen.reProdIm isOpen_Ioo isOpen_Ioo
   · convert hx using 1; simp
 
-/-- If `f` is `DifferentiableOn` a disc, then `f` vanishes on rectangles in the disc. -/
+/-- If `f` is holomorphic a disc, then `f` vanishes on rectangles in the disc. -/
 theorem vanishesOnRectanglesInDisc_of_holomorphic {c : ℂ} {r : ℝ} {f : ℂ → ℂ}
-    (hf : DifferentiableOn ℂ f (ball c r)) :
+    (f_holo : HolomorphicOn f (ball c r)) :
     VanishesOnRectanglesInDisc c r f := fun _ _ hz hw hz' hw' ↦
-  vanishesOnRectangles_of_holomorphic hf (rectangle_in_convex (convex_ball c r) hz hw hz' hw')
+  vanishesOnRectangles_of_holomorphic f_holo (rectangle_in_convex (convex_ball c r) hz hw hz' hw')
 
 /-- *** Holomorphic functions on discs have Primitives *** A holomorphic function on a disc has
   primitives. -/
-theorem hasPrimitives_of_disc (c : ℂ) {r : ℝ} : HasPrimitives (ball c r) :=
-  fun _ hf ↦ moreiras_theorem hf.continuousOn (vanishesOnRectanglesInDisc_of_holomorphic hf)
+theorem hasPrimitives_on_disc (c : ℂ) {r : ℝ} : HasPrimitives (ball c r) := fun _ f_holo ↦
+  moreiras_theorem f_holo.continuousOn (vanishesOnRectanglesInDisc_of_holomorphic f_holo)
 
 end Complex
