@@ -184,6 +184,11 @@ lemma l2_op_norm_conjTranspose (A : Matrix m n 𝕜) : ‖Aᴴ‖ = ‖A‖ := b
     toLin_conjTranspose, adjoint_toContinuousLinearMap]
   exact ContinuousLinearMap.adjoint.norm_map _
 
+lemma l2_op_norm_conjTranspose_mul_self (A : Matrix m n 𝕜) : ‖Aᴴ * A‖ = ‖A‖ * ‖A‖ := by
+  rw [l2_op_norm_def, toEuclideanLin_eq_toLin_orthonormal, LinearEquiv.trans_apply,
+    Matrix.toLin_mul (v₂ := (EuclideanSpace.basisFun m 𝕜).toBasis), toLin_conjTranspose]
+  exact ContinuousLinearMap.norm_adjoint_comp_self _
+
 -- note: with only a type ascription in the left-hand side, Lean picks the wrong norm.
 lemma l2_op_norm_mulVec (A : Matrix m n 𝕜) (x : EuclideanSpace 𝕜 n) :
     ‖(EuclideanSpace.equiv m 𝕜).symm <| A.mulVec x‖ ≤ ‖A‖ * ‖x‖ :=
@@ -239,9 +244,7 @@ scoped[Matrix.L2OpNorm] attribute [instance] Matrix.instL2OpNormedAlgebra
 /-- The operator norm on `Matrix n n 𝕜` given by the identification with (continuous) linear
 endmorphisms of `EuclideanSpace 𝕜 n` makes it into a `L2OpRing`. -/
 lemma instCstarRing : CstarRing (Matrix n n 𝕜) where
-  norm_star_mul_self {x} := by
-    simp only [cstar_norm_def, _root_.map_mul, map_star,
-      CstarRing.norm_star_mul_self (x := toEuclideanClm (n := n) (𝕜 := 𝕜) x)]
+  norm_star_mul_self := l2_op_norm_conjTranspose_mul_self _
 
 scoped[Matrix.L2OpNorm] attribute [instance] Matrix.instCstarRing
 
