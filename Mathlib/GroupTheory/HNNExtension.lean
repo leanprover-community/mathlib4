@@ -247,8 +247,8 @@ instance : Inhabited (NormalWord d) := ⟨empty⟩
 
 instance : MulAction G (NormalWord d) :=
   { smul := fun g w => { w with head := g * w.head }
-    one_smul := by simp [instHSMul]
-    mul_smul := by simp [instHSMul, mul_assoc] }
+    one_smul := by simp (config := { instances := true }) [instHSMul]
+    mul_smul := by simp (config := { instances := true }) [instHSMul, mul_assoc] }
 
 theorem group_smul_def (g : G) (w : NormalWord d) :
     g • w = { w with head := g * w.head } := rfl
@@ -473,8 +473,9 @@ theorem unitsSMul_one_group_smul (g : A) (w : NormalWord d) :
     dsimp
     congr 1
     conv_lhs => erw [IsComplement.equiv_mul_left]
-    simp? says
-      simp only [toSubgroup_one, SetLike.coe_sort_coe, map_mul, Submonoid.coe_mul, coe_toSubmonoid]
+    simp? (config := { instances := true }) says
+      simp (config := { instances := true }) only [toSubgroup_one, SetLike.coe_sort_coe, map_mul,
+        Submonoid.coe_mul, coe_toSubmonoid]
     conv_lhs => erw [IsComplement.equiv_mul_left]
 
 noncomputable instance : MulAction (HNNExtension G A B φ) (NormalWord d) :=
@@ -491,16 +492,17 @@ theorem prod_group_smul (g : G) (w : NormalWord d) :
 
 theorem of_smul_eq_smul (g : G) (w : NormalWord d) :
     (of g : HNNExtension G A B φ) • w = g • w := by
-  simp [instHSMul, SMul.smul, MulAction.toEndHom]
+  simp (config := { instances := true }) [instHSMul, SMul.smul, MulAction.toEndHom]
 
 theorem t_smul_eq_unitsSMul (w : NormalWord d) :
     (t : HNNExtension G A B φ) • w = unitsSMul φ 1 w := by
-  simp [instHSMul, SMul.smul, MulAction.toEndHom]
+  simp (config := { instances := true }) [instHSMul, SMul.smul, MulAction.toEndHom]
 
 theorem t_pow_smul_eq_unitsSMul (u : ℤˣ) (w : NormalWord d) :
     (t ^ (u : ℤ) : HNNExtension G A B φ) • w = unitsSMul φ u w := by
   rcases Int.units_eq_one_or u with (rfl | rfl) <;>
-    simp [instHSMul, SMul.smul, MulAction.toEndHom, Equiv.Perm.inv_def]
+    simp (config := { instances := true }) [instHSMul, SMul.smul, MulAction.toEndHom,
+      Equiv.Perm.inv_def]
 
 @[simp]
 theorem prod_cons (g : G) (u : ℤˣ) (w : NormalWord d) (h1 : w.head ∈ d.set u)

@@ -598,10 +598,10 @@ def starRing {R : Type uR} [Semiring R] [StarRing R] (r : R → R → Prop)
     simp [star'_quot]
   star_mul := by
     rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩
-    simp [star'_quot, mul_quot, star_mul]
+    simp (config := { instances := true }) [star'_quot, mul_quot, star_mul]
   star_add := by
     rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩
-    simp [star'_quot, add_quot, star_add]
+    simp (config := { instances := true }) [star'_quot, add_quot, star_add]
 #align ring_quot.star_ring RingQuot.starRing
 
 end StarRing

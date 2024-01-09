@@ -1234,7 +1234,7 @@ def mkOfPositiveCone {α : Type*} [AddCommGroup α] (C : PositiveCone α) : Orde
     le_trans := fun a b c nab nbc => by simpa [← sub_add_sub_cancel] using C.add_nonneg nbc nab,
     le_antisymm := fun a b nab nba =>
       eq_of_sub_eq_zero <| C.nonneg_antisymm nba (by rwa [neg_sub]),
-    add_le_add_left := fun a b nab c => by simpa using nab }
+    add_le_add_left := fun a b nab c => by simpa (config := { instances := true }) using nab }
 #align ordered_add_comm_group.mk_of_positive_cone OrderedAddCommGroup.mkOfPositiveCone
 
 end OrderedAddCommGroup

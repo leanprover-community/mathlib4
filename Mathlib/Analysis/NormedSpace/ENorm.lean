@@ -188,7 +188,7 @@ theorem max_map (e₁ e₂ : ENorm 𝕜 V) (x : V) : (e₁ ⊔ e₂) x = max (e�
 def emetricSpace : EMetricSpace V where
   edist x y := e (x - y)
   edist_self x := by simp
-  eq_of_edist_eq_zero {x y} := by simp [sub_eq_zero]
+  eq_of_edist_eq_zero {x y} := by simp (config := { instances := true }) [sub_eq_zero]
   edist_comm := e.map_sub_rev
   edist_triangle x y z :=
     calc

@@ -101,11 +101,15 @@ lemma eventually_mapsTo {f : C(X, Y)} {K U} (hK : IsCompact K) (hU : IsOpen U) (
 lemma tendsto_nhds_compactOpen {α : Type*} {l : Filter α} {f : α → C(Y, Z)} {g : C(Y, Z)} :
     Tendsto f l (𝓝 g) ↔
       ∀ K, IsCompact K → ∀ U, IsOpen U → MapsTo g K U → ∀ᶠ a in l, MapsTo (f a) K U := by
-  simp_rw [compactOpen_eq, tendsto_nhds_generateFrom_iff, forall_image2_iff, mapsTo']; rfl
+  simp_rw (config := { instances := true }) [compactOpen_eq, tendsto_nhds_generateFrom_iff,
+    forall_image2_iff, mapsTo']
+  rfl
 
 lemma continuous_compactOpen {f : X → C(Y, Z)} :
     Continuous f ↔ ∀ K, IsCompact K → ∀ U, IsOpen U → IsOpen {x | MapsTo (f x) K U} := by
-  simp_rw [compactOpen_eq, continuous_generateFrom_iff, forall_image2_iff, mapsTo']; rfl
+  simp_rw (config := { instances := true }) [compactOpen_eq, continuous_generateFrom_iff,
+    forall_image2_iff, mapsTo']
+  rfl
 
 section Functorial
 

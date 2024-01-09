@@ -114,6 +114,7 @@ set_option linter.uppercaseLean3 false in
 
 open CategoryTheory.MonoidalCategory
 
+set_option maxHeartbeats 400000 in
 /-- A morphism of monoid objects induces a "restriction" or "comap" functor
 between the categories of module objects.
 -/

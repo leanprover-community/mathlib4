@@ -124,7 +124,8 @@ lemma cauchy_comap_uniformSpace {u : UniformSpace β} {f : α → β} {l : Filte
 
 lemma cauchy_prod_iff [UniformSpace β] {F : Filter (α × β)} :
     Cauchy F ↔ Cauchy (map Prod.fst F) ∧ Cauchy (map Prod.snd F) := by
-  simp_rw [instUniformSpaceProd, ← cauchy_comap_uniformSpace, ← cauchy_inf_uniformSpace]
+  simp_rw (config := { instances := true }) [instUniformSpaceProd, ← cauchy_comap_uniformSpace,
+    ← cauchy_inf_uniformSpace]
 
 theorem Cauchy.prod [UniformSpace β] {f : Filter α} {g : Filter β} (hf : Cauchy f) (hg : Cauchy g) :
     Cauchy (f ×ˢ g) := by

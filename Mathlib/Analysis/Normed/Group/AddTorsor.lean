@@ -223,7 +223,7 @@ def metricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type*) [NormedAddCommGroup
   dist x y := ‖(x -ᵥ y : V)‖
   edist_dist _ _ := by simp only; rw [ENNReal.ofReal_eq_coe_nnreal]
   dist_self x := by simp
-  eq_of_dist_eq_zero h := by simpa using h
+  eq_of_dist_eq_zero h := by simpa (config := { instances := true }) using h
   dist_comm x y := by simp only [← neg_vsub_eq_vsub_rev y x, norm_neg]
   dist_triangle x y z := by
     change ‖x -ᵥ z‖ ≤ ‖x -ᵥ y‖ + ‖y -ᵥ z‖

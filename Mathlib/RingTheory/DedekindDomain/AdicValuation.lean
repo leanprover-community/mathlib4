@@ -464,7 +464,7 @@ instance : Algebra R (v.adicCompletionIntegers K) where
     dsimp
     --Porting note: added instance
     letI : Valued K ℤₘ₀ := adicValued v
-    simp only [Subring.coe_mul, Algebra.smul_def]
+    simp (config := { instances := true }) only [Subring.coe_mul, Algebra.smul_def]
     rfl
 
 @[simp]

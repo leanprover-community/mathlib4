@@ -1220,10 +1220,12 @@ https://leanprover.zulipchat.com/#narrow/stream/144837-PR-reviews/topic/.234773.
 -/
 protected def module : Module (A ⊗[R] B) M where
   smul x m := moduleAux x m
-  zero_smul m := by simp only [(· • ·), map_zero, LinearMap.zero_apply]
-  smul_zero x := by simp only [(· • ·), map_zero]
-  smul_add x m₁ m₂ := by simp only [(· • ·), map_add]
-  add_smul x y m := by simp only [(· • ·), map_add, LinearMap.add_apply]
+  zero_smul m := by
+    simp (config := { instances := true }) only [(· • ·), map_zero, LinearMap.zero_apply]
+  smul_zero x := by simp (config := { instances := true }) only [(· • ·), map_zero]
+  smul_add x m₁ m₂ := by simp(config := { instances := true })  only [(· • ·), map_add]
+  add_smul x y m := by
+    simp (config := { instances := true }) only [(· • ·), map_add, LinearMap.add_apply]
   one_smul m := by
     -- porting note: was one `simp only` not two in lean 3
     simp only [(· • ·), Algebra.TensorProduct.one_def]

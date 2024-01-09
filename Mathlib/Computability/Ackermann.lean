@@ -101,6 +101,7 @@ theorem ack_three (n : ℕ) : ack 3 n = 2 ^ (n + 3) - 3 := by
         Nat.mul_sub_left_distrib, ← Nat.sub_add_comm, two_mul 3, Nat.add_sub_add_right]
     have H : 2 * 3 ≤ 2 * 2 ^ 3 := by norm_num
     apply H.trans
+    set_option simprocs false in
     simp [pow_le_pow_right (show 1 ≤ 2 by norm_num)]
 #align ack_three ack_three
 

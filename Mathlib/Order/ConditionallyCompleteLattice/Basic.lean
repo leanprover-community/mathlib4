@@ -292,11 +292,14 @@ noncomputable def IsWellOrder.conditionallyCompleteLinearOrderBot (α : Type*)
       have h's : (upperBounds s).Nonempty := ⟨a, has⟩
       simp only [h's, dif_pos]
       simpa using h.wf.not_lt_min _ h's has
-    csSup_empty := by simpa using eq_bot_iff.2 (not_lt.1 <| h.wf.not_lt_min _ _ <| mem_univ ⊥)
+    csSup_empty := by
+      simpa (config := { instances := true }) using
+        eq_bot_iff.2 (not_lt.1 <| h.wf.not_lt_min _ _ <| mem_univ ⊥)
     csSup_of_not_bddAbove := by
       intro s H
       have B : ¬((upperBounds s).Nonempty) := H
-      simp only [B, dite_false, upperBounds_empty, univ_nonempty, dite_true]
+      simp (config := { instances := true }) only [B, dite_false, upperBounds_empty, univ_nonempty,
+        dite_true]
       exact le_antisymm bot_le (WellFounded.min_le _ (mem_univ _))
     csInf_of_not_bddBelow := fun s H ↦ (H (OrderBot.bddBelow s)).elim }
 #align is_well_order.conditionally_complete_linear_order_bot IsWellOrder.conditionallyCompleteLinearOrderBot

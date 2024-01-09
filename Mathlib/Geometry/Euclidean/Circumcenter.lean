@@ -681,7 +681,7 @@ theorem sum_reflectionCircumcenterWeightsWithCircumcenter {n : ℕ} {i₁ i₂ :
   simp_rw [sum_pointsWithCircumcenter, reflectionCircumcenterWeightsWithCircumcenter, sum_ite,
     sum_const, filter_or, filter_eq']
   rw [card_union_eq]
-  · simp
+  · set_option simprocs false in simp
   · simpa only [if_true, mem_univ, disjoint_singleton] using h
 #align affine.simplex.sum_reflection_circumcenter_weights_with_circumcenter Affine.Simplex.sum_reflectionCircumcenterWeightsWithCircumcenter
 

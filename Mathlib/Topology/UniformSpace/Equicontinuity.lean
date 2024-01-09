@@ -318,13 +318,15 @@ theorem uniformEquicontinuous_iff_uniformContinuous {F : ι → β → α} :
 theorem equicontinuousAt_iInf_rng {α' : Type*} {u : κ → UniformSpace α'} {F : ι → X → α'}
     {x₀ : X} :
     @EquicontinuousAt _ _ _ _ (⨅ k, u k) F x₀ ↔ ∀ k, @EquicontinuousAt _ _ _ _ (u k) F x₀ := by
-  simp only [@equicontinuousAt_iff_continuousAt _ _ _ _ _, topologicalSpace]
+  simp (config := { instances := true }) only [@equicontinuousAt_iff_continuousAt _ _ _ _ _,
+    topologicalSpace]
   unfold ContinuousAt
   rw [UniformFun.iInf_eq, toTopologicalSpace_iInf, nhds_iInf, tendsto_iInf]
 
 theorem equicontinuous_iInf_rng {α' : Type*} {u : κ → UniformSpace α'} {F : ι → X → α'} :
     @Equicontinuous _ _ _ _ (⨅ k, u k) F ↔ ∀ k, @Equicontinuous _ _ _ _ (u k) F := by
-  simp_rw [@equicontinuous_iff_continuous _ _ _ _ _, UniformFun.topologicalSpace]
+  simp_rw (config := { instances := true }) [@equicontinuous_iff_continuous _ _ _ _ _,
+    UniformFun.topologicalSpace]
   rw [UniformFun.iInf_eq, toTopologicalSpace_iInf, continuous_iInf_rng]
 
 theorem uniformEquicontinuous_iInf_rng {α' : Type*} {u : κ → UniformSpace α'} {F : ι → β → α'} :
