@@ -1903,9 +1903,7 @@ noncomputable def lift (f : LocalizationWithZeroMap S N) (g : M →*₀ P)
 
 /-- Given a Localization map `f : M →*₀ N` for a Submonoid `S ⊆ M`,
 if `M` is left cancellative monoid with zero, and all elements of `S` are
-left regular, then N is a left cancellative monoid with zero. This result
-can be used for CommSemirings to show that the localization of a Domain,
-when it is injective, is a Domain -/
+left regular, then N is a left cancellative monoid with zero. -/
 theorem leftCancelMulZero_of_le_isLeftRegular
     (f : LocalizationWithZeroMap S N) [IsLeftCancelMulZero M]
     (h : ∀ ⦃x⦄, x ∈ S → IsLeftRegular x) : IsLeftCancelMulZero N := by
