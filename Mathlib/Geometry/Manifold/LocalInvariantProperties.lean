@@ -386,7 +386,7 @@ theorem liftPropOn_of_locally_liftPropOn
   rcases h x hx with ⟨u, u_open, xu, hu⟩
   have := hu x ⟨hx, xu⟩
   rwa [hG.liftPropWithinAt_inter] at this
-  exact IsOpen.mem_nhds u_open xu
+  exact u_open.mem_nhds xu
 #align structure_groupoid.local_invariant_prop.lift_prop_on_of_locally_lift_prop_on StructureGroupoid.LocalInvariantProp.liftPropOn_of_locally_liftPropOn
 
 theorem liftProp_of_locally_liftPropOn (h : ∀ x, ∃ u, IsOpen u ∧ x ∈ u ∧ LiftPropOn P g u) :
@@ -484,7 +484,7 @@ theorem liftPropOn_of_mem_maximalAtlas [HasGroupoid M G] (hG : G.LocalInvariantP
     (hQ : ∀ y, Q id univ y) (he : e ∈ maximalAtlas M G) : LiftPropOn Q e e.source := by
   intro x hx
   apply hG.liftPropWithinAt_of_liftPropAt_of_mem_nhds (hG.liftPropAt_of_mem_maximalAtlas hQ he hx)
-  exact IsOpen.mem_nhds e.open_source hx
+  exact e.open_source.mem_nhds hx
 #align structure_groupoid.local_invariant_prop.lift_prop_on_of_mem_maximal_atlas StructureGroupoid.LocalInvariantProp.liftPropOn_of_mem_maximalAtlas
 
 theorem liftPropAt_symm_of_mem_maximalAtlas [HasGroupoid M G] {x : H}
@@ -503,7 +503,7 @@ theorem liftPropOn_symm_of_mem_maximalAtlas [HasGroupoid M G] (hG : G.LocalInvar
   intro x hx
   apply hG.liftPropWithinAt_of_liftPropAt_of_mem_nhds
     (hG.liftPropAt_symm_of_mem_maximalAtlas hQ he hx)
-  exact IsOpen.mem_nhds e.open_target hx
+  exact e.open_target.mem_nhds hx
 #align structure_groupoid.local_invariant_prop.lift_prop_on_symm_of_mem_maximal_atlas StructureGroupoid.LocalInvariantProp.liftPropOn_symm_of_mem_maximalAtlas
 
 theorem liftPropAt_chart [HasGroupoid M G] (hG : G.LocalInvariantProp G Q) (hQ : ∀ y, Q id univ y) :

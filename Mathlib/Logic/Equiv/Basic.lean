@@ -1476,27 +1476,6 @@ theorem subtypeEquivCodomain_symm_apply_ne
 
 end subtypeEquivCodomain
 
-/-- If `f` is a bijective function, then its domain is equivalent to its codomain. -/
-@[simps apply]
-noncomputable def ofBijective (f : α → β) (hf : Bijective f) : α ≃ β where
-  toFun := f
-  invFun := Function.surjInv hf.surjective
-  left_inv := Function.leftInverse_surjInv hf
-  right_inv := Function.rightInverse_surjInv _
-#align equiv.of_bijective Equiv.ofBijective
-#align equiv.of_bijective_apply Equiv.ofBijective_apply
-
-theorem ofBijective_apply_symm_apply (f : α → β) (hf : Bijective f) (x : β) :
-    f ((ofBijective f hf).symm x) = x :=
-  (ofBijective f hf).apply_symm_apply x
-#align equiv.of_bijective_apply_symm_apply Equiv.ofBijective_apply_symm_apply
-
-@[simp]
-theorem ofBijective_symm_apply_apply (f : α → β) (hf : Bijective f) (x : α) :
-    (ofBijective f hf).symm (f x) = x :=
-  (ofBijective f hf).symm_apply_apply x
-#align equiv.of_bijective_symm_apply_apply Equiv.ofBijective_symm_apply_apply
-
 instance : CanLift (α → β) (α ≃ β) (↑) Bijective where prf f hf := ⟨ofBijective f hf, rfl⟩
 
 section

@@ -408,7 +408,7 @@ Geometry:
     tangent bundle: 'TangentBundle'
     tangent map: 'tangentMap'
     Lie group: 'LieGroup'
-    sphere: 'smoothMfldWithCorners'
+    sphere: 'EuclideanSpace.instSmoothManifoldWithCornersSphere'
 
   Algebraic geometry:
     prime spectrum: 'PrimeSpectrum'

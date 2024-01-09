@@ -39,7 +39,7 @@ structures into a single projection.
 The only functional difference from `Lean.PrettyPrinter.Delaborator.delabProjectionApp` is
 the `walkUp` function. -/
 @[delab app]
-partial def delabProjectionApp' : Delab := whenPPOption getPPCollapseStructureProjections $ do
+partial def delabProjectionApp' : Delab := whenPPOption getPPCollapseStructureProjections <| do
   let e@(Expr.app fn _) ← getExpr | failure
   let .const c@(.str _ f) _ := fn.getAppFn | failure
   let env ← getEnv
