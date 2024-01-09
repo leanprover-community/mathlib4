@@ -3,6 +3,7 @@ Copyright (c) 2023 Yaël Dillies, Vladimir Ivanov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Vladimir Ivanov
 -/
+import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Data.Finset.Sups
@@ -93,13 +94,8 @@ private lemma Fintype.sum_div_mul_card_choose_card :
     · simp
     · exact cast_ne_zero.2 (choose_pos $ mem_range_succ_iff.1 hn).ne'
   simp only [sum_congr rfl this, mul_eq_mul_left_iff, cast_eq_zero]
-  left
-  exact sum_bij (fun n _ ↦ card α - n) (fun a ha ↦ mem_range_succ_iff.mpr tsub_le_self)
-    (fun a ha ↦ by rw [cast_sub (mem_range_succ_iff.mp ha)])
-    (fun a₁ a₂ ha₁ ha₂ ↦
-      (tsub_right_inj (mem_range_succ_iff.mp ha₁) (mem_range_succ_iff.mp ha₂)).1)
-    fun b hb ↦ ⟨card α - b, mem_range_succ_iff.mpr tsub_le_self,
-      (tsub_tsub_cancel_of_le (mem_range_succ_iff.mp hb)).symm⟩
+  convert Or.inl $ sum_range_reflect _ _ with a ha
+  rw [add_tsub_cancel_right, cast_sub (mem_range_succ_iff.mp ha)]
 
 end
 
