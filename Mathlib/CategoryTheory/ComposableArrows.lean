@@ -61,7 +61,7 @@ elab "clean_up" : tactic =>
       let declExpr := decl.toExpr
       let declType := decl.type.cleanupAnnotations
       liftMetaTactic fun mvarId => do
-        let mvarIdNew ← mvarId.assert (←mkFreshId) declType declExpr
+        let mvarIdNew ← mvarId.assert (← mkFreshId) declType declExpr
         let (_, mvarIdNew) ← mvarIdNew.intro1P
         return [mvarIdNew]
 
