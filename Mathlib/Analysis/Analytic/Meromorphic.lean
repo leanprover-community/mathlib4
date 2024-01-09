@@ -6,11 +6,11 @@ Authors: David Loeffler
 import Mathlib.Analysis.Analytic.Constructions
 import Mathlib.Analysis.Analytic.IsolatedZeros
 
-open scoped Topology
-
 /-!
 # Meromorphic functions
 -/
+
+open scoped Topology
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
