@@ -705,32 +705,6 @@ lemma IsUnit.exists_left_inv [Monoid M] {a : M} (h : IsUnit a) : ∃ b, b * a = 
 end Monoid
 
 @[to_additive]
-theorem isUnit_iff_mulLeft_bijective [Monoid M] {a : M} :
-    IsUnit a ↔ Function.Bijective (a * ·) := by
-  refine ⟨fun h ↦ ⟨fun _ _ h_eq ↦ ?_, fun y ↦ ?_⟩, fun h ↦ ?_⟩
-  · obtain ⟨b, hb⟩ := h.exists_left_inv
-    replace h_eq := congr_arg (b * ·) h_eq
-    simpa [← mul_assoc, hb] using h_eq
-  · obtain ⟨b, hb⟩ := h.exists_right_inv
-    exact ⟨b * y, by simp [← mul_assoc, hb]⟩
-  · refine ⟨⟨a, (h.2 1).choose, (h.2 1).choose_spec, ?_⟩, rfl⟩
-    apply h.1
-    simpa [← mul_assoc] using congr_arg (· * a) (h.2 1).choose_spec
-
-@[to_additive]
-theorem isUnit_iff_mulRight_bijective [Monoid M] {a : M} :
-    IsUnit a ↔ Function.Bijective (· * a) := by
-  refine ⟨fun h ↦ ⟨fun _ _ h_eq ↦ ?_, fun y ↦ ?_⟩, fun h ↦ ?_⟩
-  · obtain ⟨b, hb⟩ := h.exists_right_inv
-    replace h_eq := congr_arg (· * b) h_eq
-    simpa [mul_assoc, hb] using h_eq
-  · obtain ⟨b, hb⟩ := h.exists_left_inv
-    exact ⟨y * b, by simp [mul_assoc, hb]⟩
-  · refine ⟨⟨a, (h.2 1).choose, ?_, (h.2 1).choose_spec⟩, rfl⟩
-    apply h.1
-    simpa [mul_assoc] using congr_arg (a * ·) (h.2 1).choose_spec
-
-@[to_additive]
 theorem isUnit_iff_exists_inv [CommMonoid M] {a : M} : IsUnit a ↔ ∃ b, a * b = 1 :=
   ⟨fun h => h.exists_right_inv, fun ⟨b, hab⟩ => isUnit_of_mul_eq_one _ b hab⟩
 #align is_unit_iff_exists_inv isUnit_iff_exists_inv
@@ -875,6 +849,20 @@ protected theorem mul_left_injective (h : IsUnit b) : Injective (· * b) :=
   fun _ _ => h.mul_right_cancel
 #align is_unit.mul_left_injective IsUnit.mul_left_injective
 #align is_add_unit.add_left_injective IsAddUnit.add_left_injective
+
+@[to_additive]
+theorem isUnit_iff_mulLeft_bijective {a : M} :
+    IsUnit a ↔ Function.Bijective (a * ·) :=
+  ⟨fun h ↦ ⟨h.mul_right_injective, fun y ↦ ⟨h.unit⁻¹ * y, by simp [← mul_assoc]⟩⟩, fun h ↦
+    ⟨⟨a, _, (h.2 1).choose_spec, h.1
+      (by simpa [mul_assoc] using congr_arg (· * a) (h.2 1).choose_spec)⟩, rfl⟩⟩
+
+@[to_additive]
+theorem isUnit_iff_mulRight_bijective {a : M} :
+    IsUnit a ↔ Function.Bijective (· * a) :=
+  ⟨fun h ↦ ⟨h.mul_left_injective, fun y ↦ ⟨y * h.unit⁻¹, by simp [mul_assoc]⟩⟩,
+    fun h ↦ ⟨⟨a, _, h.1 (by simpa [mul_assoc] using congr_arg (a * ·) (h.2 1).choose_spec),
+      (h.2 1).choose_spec⟩, rfl⟩⟩
 
 end Monoid
 
