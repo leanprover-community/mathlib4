@@ -174,8 +174,9 @@ lemma isIntegralCurveOn_comp_add {dt : ℝ} :
     IsIntegralCurveOn γ v s ↔ IsIntegralCurveOn (γ ∘ (· + dt)) v { t | t + dt ∈ s } := by
   refine ⟨fun hγ ↦ hγ.comp_add _, fun hγ ↦ ?_⟩
   convert hγ.comp_add (-dt)
-  ext
-  simp [Function.comp_apply, neg_add_cancel_right]
+  ext t
+  · simp only [Function.comp_apply, neg_add_cancel_right]
+  · simp only [mem_setOf_eq, neg_add_cancel_right, setOf_mem_eq]
 
 lemma IsIntegralCurveAt.comp_add (hγ : IsIntegralCurveAt γ v t₀) (dt : ℝ) :
     IsIntegralCurveAt (γ ∘ (· + dt)) v (t₀ - dt) := by
@@ -190,8 +191,9 @@ lemma isIntegralCurveAt_comp_add {dt : ℝ} :
     IsIntegralCurveAt γ v t₀ ↔ IsIntegralCurveAt (γ ∘ (· + dt)) v (t₀ - dt) := by
   refine ⟨fun hγ ↦ hγ.comp_add _, fun hγ ↦ ?_⟩
   convert hγ.comp_add (-dt)
-  ext
-  simp only [Function.comp_apply, neg_add_cancel_right, sub_neg_eq_add, sub_add_cancel]
+  ext t
+  · simp only [Function.comp_apply, neg_add_cancel_right]
+  · simp only [sub_neg_eq_add, sub_add_cancel]
 
 lemma IsIntegralCurve.comp_add (hγ : IsIntegralCurve γ v) (dt : ℝ) :
     IsIntegralCurve (γ ∘ (· + dt)) v := by
@@ -202,7 +204,7 @@ lemma isIntegralCurve_comp_add {dt : ℝ} :
     IsIntegralCurve γ v ↔ IsIntegralCurve (γ ∘ (· + dt)) v := by
   refine ⟨fun hγ ↦ hγ.comp_add _, fun hγ ↦ ?_⟩
   convert hγ.comp_add (-dt)
-  ext
+  ext t
   simp only [Function.comp_apply, neg_add_cancel_right]
 
 end Translation
@@ -222,12 +224,11 @@ lemma IsIntegralCurveOn.comp_mul (hγ : IsIntegralCurveOn γ v s) (a : ℝ) :
 lemma isIntegralCurvOn_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
     IsIntegralCurveOn γ v s ↔ IsIntegralCurveOn (γ ∘ (· * a)) (a • v) { t | t * a ∈ s } := by
   refine ⟨fun hγ ↦ hγ.comp_mul a, fun hγ ↦ ?_⟩
-  have := hγ.comp_mul a⁻¹
-  simp_rw [smul_smul, inv_mul_eq_div, div_self ha, one_smul, mem_setOf_eq, mul_assoc,
-    inv_mul_eq_div, div_self ha, mul_one, setOf_mem_eq] at this
-  convert this
+  convert hγ.comp_mul a⁻¹
   ext t
-  rw [Function.comp_apply, Function.comp_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one]
+  · simp only [Function.comp_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one]
+  · simp only [smul_smul, inv_mul_eq_div, div_self ha, one_smul]
+  · simp only [mem_setOf_eq, mul_assoc, inv_mul_eq_div, div_self ha, mul_one, setOf_mem_eq]
 
 lemma IsIntegralCurveAt.comp_mul_ne_zero (hγ : IsIntegralCurveAt γ v t₀) {a : ℝ} (ha : a ≠ 0) :
     IsIntegralCurveAt (γ ∘ (· * a)) (a • v) (t₀ / a) := by
@@ -242,12 +243,11 @@ lemma IsIntegralCurveAt.comp_mul_ne_zero (hγ : IsIntegralCurveAt γ v t₀) {a 
 lemma isIntegralCurveAt_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
     IsIntegralCurveAt γ v t₀ ↔ IsIntegralCurveAt (γ ∘ (· * a)) (a • v) (t₀ / a) := by
   refine ⟨fun hγ ↦ hγ.comp_mul_ne_zero ha, fun hγ ↦ ?_⟩
-  have := hγ.comp_mul_ne_zero (inv_ne_zero ha)
-  rw [smul_smul, inv_mul_eq_div, div_self ha, one_smul, ← div_mul_eq_div_div_swap,
-    inv_mul_eq_div, div_self ha, div_one, Function.comp.assoc] at this
-  convert this
+  convert hγ.comp_mul_ne_zero (inv_ne_zero ha)
   ext t
-  simp [inv_mul_eq_div, div_self ha]
+  · simp only [Function.comp_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one]
+  · simp only [smul_smul, inv_mul_eq_div, div_self ha, one_smul]
+  · simp only [div_inv_eq_mul, div_mul_cancel _ ha]
 
 lemma IsIntegralCurve.comp_mul (hγ : IsIntegralCurve γ v) (a : ℝ) :
     IsIntegralCurve (γ ∘ (· * a)) (a • v) := by
@@ -257,11 +257,10 @@ lemma IsIntegralCurve.comp_mul (hγ : IsIntegralCurve γ v) (a : ℝ) :
 lemma isIntegralCurve_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
     IsIntegralCurve γ v ↔ IsIntegralCurve (γ ∘ (· * a)) (a • v) := by
   refine ⟨fun hγ ↦ hγ.comp_mul _, fun hγ ↦ ?_⟩
-  have := hγ.comp_mul a⁻¹
-  rw [smul_smul, inv_mul_eq_div, div_self ha, one_smul] at this
-  convert this
+  convert hγ.comp_mul a⁻¹
   ext t
-  rw [Function.comp_apply, Function.comp_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one]
+  · simp only [Function.comp_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one]
+  · simp only [smul_smul, inv_mul_eq_div, div_self ha, one_smul]
 
 /-- If the vector field `v` vanishes at `x₀`, then the constant curve at `x₀`
 is a global integral curve of `v`. -/
