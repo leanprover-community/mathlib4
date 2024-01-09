@@ -66,7 +66,7 @@ theorem sublists'_eq_sublists'Aux (l : List α) :
 
 theorem sublists'Aux_eq_map (a : α) (r₁ : List (List α)) : ∀ (r₂ : List (List α)),
     sublists'Aux a r₁ r₂ = r₂ ++ map (cons a) r₁ :=
-  List.reverseRecOn r₁ (fun _ => by simp [sublists'Aux]) <| fun r₁ l ih r₂ => by
+  List.reverseRecOn r₁ (fun _ => by simp [sublists'Aux]) fun r₁ l ih r₂ => by
     rw [map_append, map_singleton, ← append_assoc, ← ih, sublists'Aux, foldl_append, foldl]
     simp [sublists'Aux]
 
@@ -128,7 +128,7 @@ theorem sublistsAux_eq_array_foldl :
 
 theorem sublistsAux_eq_bind :
     sublistsAux = fun (a : α) (r : List (List α)) => r.bind fun l => [l, a :: l] :=
-  funext <| fun a => funext <| fun r =>
+  funext fun a => funext fun r =>
   List.reverseRecOn r
     (by simp [sublistsAux])
     (fun r l ih => by
@@ -157,11 +157,11 @@ theorem sublistsAux_eq_bind :
 theorem sublists_append (l₁ l₂ : List α) :
     sublists (l₁ ++ l₂) = (sublists l₂) >>= (fun x => (sublists l₁).map (· ++ x)) := by
   simp only [sublists, foldr_append]
-  induction l₁
-  · case nil => simp
-  · case cons a l₁ ih =>
-      rw [foldr_cons, ih]
-      simp [List.bind, join_join, Function.comp]
+  induction l₁ with
+  | nil => simp
+  | cons a l₁ ih =>
+    rw [foldr_cons, ih]
+    simp [List.bind, join_join, Function.comp]
 #align list.sublists_append List.sublists_append
 
 --Portin note: New theorem
@@ -273,6 +273,10 @@ theorem sublistsLen_succ_cons {α : Type*} (n) (a : α) (l) :
   rw [sublistsLen, sublistsLenAux, sublistsLenAux_eq, sublistsLenAux_eq, map_id,
       append_nil]; rfl
 #align list.sublists_len_succ_cons List.sublistsLen_succ_cons
+
+theorem sublistsLen_one {α : Type*} (l : List α) : sublistsLen 1 l = l.reverse.map ([·]) :=
+  l.rec (by rw [sublistsLen_succ_nil, reverse_nil, map_nil]) fun a s ih ↦ by
+    rw [sublistsLen_succ_cons, ih, reverse_cons, map_append, sublistsLen_zero]; rfl
 
 @[simp]
 theorem length_sublistsLen {α : Type*} :

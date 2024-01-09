@@ -90,7 +90,7 @@ theorem RelIso.cof_le_lift {α : Type u} {β : Type v} {r : α → α → Prop} 
     (f : r ≃r s) : Cardinal.lift.{max u v} (Order.cof r) ≤
     Cardinal.lift.{max u v} (Order.cof s) := by
   rw [Order.cof, Order.cof, lift_sInf, lift_sInf,
-    le_csInf_iff'' (nonempty_image_iff.2 (Order.cof_nonempty s))]
+    le_csInf_iff'' ((Order.cof_nonempty s).image _)]
   rintro - ⟨-, ⟨u, H, rfl⟩, rfl⟩
   apply csInf_le'
   refine'
@@ -923,8 +923,7 @@ theorem mk_bounded_subset {α : Type*} (h : ∀ x < #α, (2^x) < #α) {r : α �
 theorem mk_subset_mk_lt_cof {α : Type*} (h : ∀ x < #α, (2^x) < #α) :
     #{ s : Set α // #s < cof (#α).ord } = #α := by
   rcases eq_or_ne #α 0 with (ha | ha)
-  · rw [ha]
-    simp [fun s => (Cardinal.zero_le s).not_lt]
+  · simp [ha]
   have h' : IsStrongLimit #α := ⟨ha, h⟩
   rcases ord_eq α with ⟨r, wo, hr⟩
   haveI := wo

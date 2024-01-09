@@ -113,14 +113,14 @@ theorem powerset_insert [DecidableEq α] (s : Finset α) (a : α) :
 #align finset.powerset_insert Finset.powerset_insert
 
 /-- For predicate `p` decidable on subsets, it is decidable whether `p` holds for any subset. -/
-instance decidableExistsOfDecidableSubsets {s : Finset α} {p : ∀ (t) (_ : t ⊆ s), Prop}
+instance decidableExistsOfDecidableSubsets {s : Finset α} {p : ∀ t ⊆ s, Prop}
     [∀ (t) (h : t ⊆ s), Decidable (p t h)] : Decidable (∃ (t : _) (h : t ⊆ s), p t h) :=
   decidable_of_iff (∃ (t : _) (hs : t ∈ s.powerset), p t (mem_powerset.1 hs))
     ⟨fun ⟨t, _, hp⟩ => ⟨t, _, hp⟩, fun ⟨t, hs, hp⟩ => ⟨t, mem_powerset.2 hs, hp⟩⟩
 #align finset.decidable_exists_of_decidable_subsets Finset.decidableExistsOfDecidableSubsets
 
 /-- For predicate `p` decidable on subsets, it is decidable whether `p` holds for every subset. -/
-instance decidableForallOfDecidableSubsets {s : Finset α} {p : ∀ (t) (_ : t ⊆ s), Prop}
+instance decidableForallOfDecidableSubsets {s : Finset α} {p : ∀ t ⊆ s, Prop}
     [∀ (t) (h : t ⊆ s), Decidable (p t h)] : Decidable (∀ (t) (h : t ⊆ s), p t h) :=
   decidable_of_iff (∀ (t) (h : t ∈ s.powerset), p t (mem_powerset.1 h))
     ⟨fun h t hs => h t (mem_powerset.2 hs), fun h _ _ => h _ _⟩
@@ -129,14 +129,14 @@ instance decidableForallOfDecidableSubsets {s : Finset α} {p : ∀ (t) (_ : t �
 /-- A version of `Finset.decidableExistsOfDecidableSubsets` with a non-dependent `p`.
 Typeclass inference cannot find `hu` here, so this is not an instance. -/
 def decidableExistsOfDecidableSubsets' {s : Finset α} {p : Finset α → Prop}
-    (hu : ∀ (t) (_h : t ⊆ s), Decidable (p t)) : Decidable (∃ (t : _) (_h : t ⊆ s), p t) :=
+    (hu : ∀ t ⊆ s, Decidable (p t)) : Decidable (∃ (t : _) (_h : t ⊆ s), p t) :=
   @Finset.decidableExistsOfDecidableSubsets _ _ _ hu
 #align finset.decidable_exists_of_decidable_subsets' Finset.decidableExistsOfDecidableSubsets'
 
 /-- A version of `Finset.decidableForallOfDecidableSubsets` with a non-dependent `p`.
 Typeclass inference cannot find `hu` here, so this is not an instance. -/
 def decidableForallOfDecidableSubsets' {s : Finset α} {p : Finset α → Prop}
-    (hu : ∀ (t) (_h : t ⊆ s), Decidable (p t)) : Decidable (∀ (t) (_h : t ⊆ s), p t) :=
+    (hu : ∀ t ⊆ s, Decidable (p t)) : Decidable (∀ t ⊆ s, p t) :=
   @Finset.decidableForallOfDecidableSubsets _ _ _ hu
 #align finset.decidable_forall_of_decidable_subsets' Finset.decidableForallOfDecidableSubsets'
 
@@ -161,15 +161,15 @@ theorem empty_mem_ssubsets {s : Finset α} (h : s.Nonempty) : ∅ ∈ s.ssubsets
   exact ⟨empty_subset s, h.ne_empty.symm⟩
 #align finset.empty_mem_ssubsets Finset.empty_mem_ssubsets
 /-- For predicate `p` decidable on ssubsets, it is decidable whether `p` holds for any ssubset. -/
-instance decidableExistsOfDecidableSSubsets {s : Finset α} {p : ∀ (t) (_ : t ⊂ s), Prop}
-    [∀ (t) (h : t ⊂ s), Decidable (p t h)] : Decidable (∃ t h, p t h) :=
+instance decidableExistsOfDecidableSSubsets {s : Finset α} {p : ∀ t ⊂ s, Prop}
+    [∀ t h, Decidable (p t h)] : Decidable (∃ t h, p t h) :=
   decidable_of_iff (∃ (t : _) (hs : t ∈ s.ssubsets), p t (mem_ssubsets.1 hs))
     ⟨fun ⟨t, _, hp⟩ => ⟨t, _, hp⟩, fun ⟨t, hs, hp⟩ => ⟨t, mem_ssubsets.2 hs, hp⟩⟩
 #align finset.decidable_exists_of_decidable_ssubsets Finset.decidableExistsOfDecidableSSubsets
 
 /-- For predicate `p` decidable on ssubsets, it is decidable whether `p` holds for every ssubset. -/
-instance decidableForallOfDecidableSSubsets {s : Finset α} {p : ∀ (t) (_ : t ⊂ s), Prop}
-    [∀ (t) (h : t ⊂ s), Decidable (p t h)] : Decidable (∀ t h, p t h) :=
+instance decidableForallOfDecidableSSubsets {s : Finset α} {p : ∀ t ⊂ s, Prop}
+    [∀ t h, Decidable (p t h)] : Decidable (∀ t h, p t h) :=
   decidable_of_iff (∀ (t) (h : t ∈ s.ssubsets), p t (mem_ssubsets.1 h))
     ⟨fun h t hs => h t (mem_ssubsets.2 hs), fun h _ _ => h _ _⟩
 #align finset.decidable_forall_of_decidable_ssubsets Finset.decidableForallOfDecidableSSubsets
@@ -177,20 +177,21 @@ instance decidableForallOfDecidableSSubsets {s : Finset α} {p : ∀ (t) (_ : t 
 /-- A version of `Finset.decidableExistsOfDecidableSSubsets` with a non-dependent `p`.
 Typeclass inference cannot find `hu` here, so this is not an instance. -/
 def decidableExistsOfDecidableSSubsets' {s : Finset α} {p : Finset α → Prop}
-    (hu : ∀ (t) (_h : t ⊂ s), Decidable (p t)) : Decidable (∃ (t : _) (_h : t ⊂ s), p t) :=
+    (hu : ∀ t ⊂ s, Decidable (p t)) : Decidable (∃ (t : _) (_h : t ⊂ s), p t) :=
   @Finset.decidableExistsOfDecidableSSubsets _ _ _ _ hu
 #align finset.decidable_exists_of_decidable_ssubsets' Finset.decidableExistsOfDecidableSSubsets'
 
 /-- A version of `Finset.decidableForallOfDecidableSSubsets` with a non-dependent `p`.
 Typeclass inference cannot find `hu` here, so this is not an instance. -/
 def decidableForallOfDecidableSSubsets' {s : Finset α} {p : Finset α → Prop}
-    (hu : ∀ (t) (_h : t ⊂ s), Decidable (p t)) : Decidable (∀ (t) (_h : t ⊂ s), p t) :=
+    (hu : ∀ t ⊂ s, Decidable (p t)) : Decidable (∀ t ⊂ s, p t) :=
   @Finset.decidableForallOfDecidableSSubsets _ _ _ _ hu
 #align finset.decidable_forall_of_decidable_ssubsets' Finset.decidableForallOfDecidableSSubsets'
 
 end SSubsets
 
 section powersetCard
+variable {n} {s t : Finset α}
 
 /-- Given an integer `n` and a finset `s`, then `powersetCard n s` is the finset of subsets of `s`
 of cardinality `n`. -/
@@ -199,8 +200,7 @@ def powersetCard (n : ℕ) (s : Finset α) : Finset (Finset α) :=
     s.2.powersetCard.pmap fun _a _ha _b _hb => congr_arg Finset.val⟩
 #align finset.powerset_len Finset.powersetCard
 
-/-- **Formula for the Number of Combinations** -/
-theorem mem_powersetCard {n} {s t : Finset α} : s ∈ powersetCard n t ↔ s ⊆ t ∧ card s = n := by
+@[simp] lemma mem_powersetCard : s ∈ powersetCard n t ↔ s ⊆ t ∧ card s = n := by
   cases s; simp [powersetCard, val_le_iff.symm]
 #align finset.mem_powerset_len Finset.mem_powersetCard
 
@@ -218,7 +218,7 @@ theorem card_powersetCard (n : ℕ) (s : Finset α) :
 #align finset.card_powerset_len Finset.card_powersetCard
 
 @[simp]
-theorem powersetCard_zero (s : Finset α) : Finset.powersetCard 0 s = {∅} := by
+theorem powersetCard_zero (s : Finset α) : s.powersetCard 0 = {∅} := by
   ext; rw [mem_powersetCard, mem_singleton, card_eq_zero]
   refine'
     ⟨fun h => h.2, fun h => by
@@ -226,10 +226,30 @@ theorem powersetCard_zero (s : Finset α) : Finset.powersetCard 0 s = {∅} := b
       exact ⟨empty_subset s, rfl⟩⟩
 #align finset.powerset_len_zero Finset.powersetCard_zero
 
+lemma powersetCard_empty_subsingleton (n : ℕ) :
+    (powersetCard n (∅ : Finset α) : Set $ Finset α).Subsingleton := by
+  simp [Set.Subsingleton, subset_empty]
+
 @[simp]
-theorem powersetCard_empty (n : ℕ) {s : Finset α} (h : s.card < n) : powersetCard n s = ∅ :=
-  Finset.card_eq_zero.mp (by rw [card_powersetCard, Nat.choose_eq_zero_of_lt h])
-#align finset.powerset_len_empty Finset.powersetCard_empty
+theorem map_val_val_powersetCard (s : Finset α) (i : ℕ) :
+    (s.powersetCard i).val.map Finset.val = s.1.powersetCard i := by
+  simp [Finset.powersetCard, map_pmap, pmap_eq_map, map_id']
+#align finset.map_val_val_powerset_len Finset.map_val_val_powersetCard
+
+theorem powersetCard_one (s : Finset α) :
+    s.powersetCard 1 = s.map ⟨_, Finset.singleton_injective⟩ :=
+  eq_of_veq <| Multiset.map_injective val_injective <| by simp [Multiset.powersetCard_one]
+
+@[simp]
+lemma powersetCard_eq_empty : powersetCard n s = ∅ ↔ s.card < n := by
+  refine ⟨?_, fun h ↦ card_eq_zero.1 $ by rw [card_powersetCard, Nat.choose_eq_zero_of_lt h]⟩
+  contrapose!
+  exact fun h ↦ nonempty_iff_ne_empty.1 $ (exists_smaller_set _ _ h).imp $ by simp
+#align finset.powerset_len_empty Finset.powersetCard_eq_empty
+
+@[simp] lemma powersetCard_card_add (s : Finset α) (hn : 0 < n) :
+    s.powersetCard (s.card + n) = ∅ := by simpa
+#align finset.powerset_len_card_add Finset.powersetCard_card_add
 
 theorem powersetCard_eq_filter {n} {s : Finset α} :
     powersetCard n s = (powerset s).filter fun x => x.card = n := by
@@ -242,7 +262,7 @@ theorem powersetCard_succ_insert [DecidableEq α] {x : α} {s : Finset α} (h : 
     powersetCard n.succ s ∪ (powersetCard n s).image (insert x) := by
   rw [powersetCard_eq_filter, powerset_insert, filter_union, ← powersetCard_eq_filter]
   congr
-  rw [powersetCard_eq_filter, image_filter]
+  rw [powersetCard_eq_filter, filter_image]
   congr 1
   ext t
   simp only [mem_powerset, mem_filter, Function.comp_apply, and_congr_right_iff]
@@ -289,7 +309,7 @@ theorem powerset_card_disjiUnion (s : Finset α) :
   refine' ext fun a => ⟨fun ha => _, fun ha => _⟩
   · rw [mem_disjiUnion]
     exact
-      ⟨a.card, mem_range.mpr (Nat.lt_succ_of_le (card_le_of_subset (mem_powerset.mp ha))),
+      ⟨a.card, mem_range.mpr (Nat.lt_succ_of_le (card_le_card (mem_powerset.mp ha))),
         mem_powersetCard.mpr ⟨mem_powerset.mp ha, rfl⟩⟩
   · rcases mem_disjiUnion.mp ha with ⟨i, _hi, ha⟩
     exact mem_powerset.mpr (mem_powersetCard.mp ha).1
@@ -307,32 +327,18 @@ theorem powersetCard_sup [DecidableEq α] (u : Finset α) (n : ℕ) (hn : n < u.
     rintro x ⟨h, -⟩
     exact h
   · rw [sup_eq_biUnion, le_iff_subset, subset_iff]
-    cases' (Nat.succ_le_of_lt hn).eq_or_lt with h' h'
-    · simp [h']
-    · intro x hx
-      simp only [mem_biUnion, exists_prop, id.def]
-      obtain ⟨t, ht⟩ : ∃ t, t ∈ powersetCard n (u.erase x) := powersetCard_nonempty
-        (le_trans (Nat.le_sub_one_of_lt hn) pred_card_le_card_erase)
-      · refine' ⟨insert x t, _, mem_insert_self _ _⟩
-        rw [← insert_erase hx, powersetCard_succ_insert (not_mem_erase _ _)]
-        exact mem_union_right _ (mem_image_of_mem _ ht)
+    intro x hx
+    simp only [mem_biUnion, exists_prop, id.def]
+    obtain ⟨t, ht⟩ : ∃ t, t ∈ powersetCard n (u.erase x) := powersetCard_nonempty
+      (le_trans (Nat.le_sub_one_of_lt hn) pred_card_le_card_erase)
+    · refine' ⟨insert x t, _, mem_insert_self _ _⟩
+      rw [← insert_erase hx, powersetCard_succ_insert (not_mem_erase _ _)]
+      exact mem_union_right _ (mem_image_of_mem _ ht)
 #align finset.powerset_len_sup Finset.powersetCard_sup
-
-@[simp]
-theorem powersetCard_card_add (s : Finset α) {i : ℕ} (hi : 0 < i) :
-    s.powersetCard (s.card + i) = ∅ :=
-  Finset.powersetCard_empty _ (lt_add_of_pos_right (Finset.card s) hi)
-#align finset.powerset_len_card_add Finset.powersetCard_card_add
-
-@[simp]
-theorem map_val_val_powersetCard (s : Finset α) (i : ℕ) :
-    (s.powersetCard i).val.map Finset.val = s.1.powersetCard i := by
-  simp [Finset.powersetCard, map_pmap, pmap_eq_map, map_id']
-#align finset.map_val_val_powerset_len Finset.map_val_val_powersetCard
 
 theorem powersetCard_map {β : Type*} (f : α ↪ β) (n : ℕ) (s : Finset α) :
     powersetCard n (s.map f) = (powersetCard n s).map (mapEmbedding f).toEmbedding :=
-  ext <| fun t => by
+  ext fun t => by
     simp only [card_map, mem_powersetCard, le_eq_subset, gt_iff_lt, mem_map, mapEmbedding_apply]
     constructor
     · classical
