@@ -4,15 +4,15 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Scott Morrison, Adam Topaz
 -/
 import Mathlib.AlgebraicTopology.SimplicialObject
-import Mathlib.AlgebraicTopology.TopologicalSimplex
 import Mathlib.CategoryTheory.Limits.Presheaf
 import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.CategoryTheory.Yoneda
-import Mathlib.Topology.Category.TopCat.Limits.Basic
 
 #align_import algebraic_topology.simplicial_set from "leanprover-community/mathlib"@"178a32653e369dce2da68dc6b2694e385d484ef1"
 
 /-!
+# Simplicial sets
+
 A simplicial set is just a simplicial object in `Type`,
 i.e. a `Type`-valued presheaf on the simplex category.
 
@@ -218,29 +218,3 @@ set_option linter.uppercaseLean3 false in
 end Augmented
 
 end SSet
-
-/-- The functor associating the singular simplicial set to a topological space. -/
-noncomputable def TopCat.toSSet : TopCat ⥤ SSet :=
-  ColimitAdj.restrictedYoneda SimplexCategory.toTop
-set_option linter.uppercaseLean3 false in
-#align Top.to_sSet TopCat.toSSet
-
-/-- The geometric realization functor. -/
-noncomputable def SSet.toTop : SSet ⥤ TopCat :=
-  ColimitAdj.extendAlongYoneda SimplexCategory.toTop
-set_option linter.uppercaseLean3 false in
-#align sSet.to_Top SSet.toTop
-
-/-- Geometric realization is left adjoint to the singular simplicial set construction. -/
-noncomputable def sSetTopAdj : SSet.toTop ⊣ TopCat.toSSet :=
-  ColimitAdj.yonedaAdjunction _
-set_option linter.uppercaseLean3 false in
-#align sSet_Top_adj sSetTopAdj
-
-/-- The geometric realization of the representable simplicial sets agree
-  with the usual topological simplices. -/
-noncomputable def SSet.toTopSimplex :
-    (yoneda : SimplexCategory ⥤ _) ⋙ SSet.toTop ≅ SimplexCategory.toTop :=
-  ColimitAdj.isExtensionAlongYoneda _
-set_option linter.uppercaseLean3 false in
-#align sSet.to_Top_simplex SSet.toTopSimplex
