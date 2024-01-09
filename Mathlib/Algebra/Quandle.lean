@@ -442,7 +442,7 @@ instance Conj.quandle (G : Type*) [Group G] : Quandle (Conj G)
     simp [act', mul_assoc]
   right_inv x y := by
     simp [act', mul_assoc]
-  fix := by simp
+  fix := by simp (config := { instances := true })
 #align quandle.conj.quandle Quandle.Conj.quandle
 
 @[simp]
@@ -501,7 +501,7 @@ instance (n : ℕ) : Quandle (Dihedral n)
   right_inv x := (dihedralAct.inv n x).rightInverse
   fix := by
     intro x
-    simp only [dihedralAct]
+    simp (config := { instances := true }) only [dihedralAct]
     ring_nf
 
 end Quandle

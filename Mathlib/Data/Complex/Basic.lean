@@ -527,8 +527,8 @@ notation `conj` in the locale `ComplexConjugate`. -/
 instance : StarRing ℂ where
   star z := ⟨z.re, -z.im⟩
   star_involutive x := by simp only [eta, neg_neg]
-  star_mul a b := by ext <;> simp [add_comm] <;> ring
-  star_add a b := by ext <;> simp [add_comm]
+  star_mul a b := by ext <;> simp (config := { instances := true }) [add_comm] <;> ring
+  star_add a b := by ext <;> simp (config := { instances := true }) [add_comm]
 
 @[simp]
 theorem conj_re (z : ℂ) : (conj z).re = z.re :=

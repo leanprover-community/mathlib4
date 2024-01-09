@@ -563,7 +563,9 @@ def instAddCommGroup : AddCommGroup (RatFunc K) where
   add := (· + ·)
   add_assoc := by frac_tac
  -- porting note: `by frac_tac` didn't work:
-  add_comm := by repeat rintro (⟨⟩ : RatFunc _) <;> simp only [← ofFractionRing_add, add_comm]
+  add_comm := by
+    repeat rintro (⟨⟩ : RatFunc _) <;>
+    simp (config := { instances := true }) only [← ofFractionRing_add, add_comm]
   zero := 0
   zero_add := by frac_tac
   add_zero := by frac_tac

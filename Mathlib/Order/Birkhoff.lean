@@ -132,13 +132,13 @@ noncomputable def OrderIso.supIrredLowerSet : α ≃o {s : LowerSet α // SupIrr
       invFun := fun s ↦ ((s : LowerSet α) : Set α).toFinset.sup id
       left_inv := fun a ↦ by
         have : LocallyFiniteOrder α := Fintype.toLocallyFiniteOrder
-        simp
+        simp (config := { instances := true })
       right_inv := by
         classical
         have : LocallyFiniteOrder α := Fintype.toLocallyFiniteOrder
         rintro ⟨s, hs⟩
         obtain ⟨a, rfl⟩ := LowerSet.supIrred_iff_of_finite.1 hs
-        simp }
+        simp (config := { instances := true }) }
     (fun b c hbc d ↦ le_trans' hbc) fun s t hst ↦ Finset.sup_mono <| Set.toFinset_mono hst
 
 end Fintype

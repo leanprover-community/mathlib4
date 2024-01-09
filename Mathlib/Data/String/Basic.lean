@@ -32,7 +32,7 @@ instance LT' : LT String :=
 #align string.has_lt' String.LT'
 
 instance decidableLT : @DecidableRel String (· < ·) := by
-  simp only [LT']
+  simp (config := { instances := true }) only [LT']
   infer_instance -- short-circuit type class inference
 #align string.decidable_lt String.decidableLT
 
@@ -103,7 +103,7 @@ instance LE : LE String :=
 #align string.has_le String.LE
 
 instance decidableLE : @DecidableRel String (· ≤ ·) := by
-  simp only [LE]
+  simp (config := { instances := true }) only [LE]
   infer_instance -- short-circuit type class inference
 #align string.decidable_le String.decidableLE
 
@@ -162,8 +162,8 @@ instance : LinearOrder String where
     apply le_total
   decidableLE := String.decidableLE
   compare_eq_compareOfLessAndEq a b := by
-    simp only [compare, compareOfLessAndEq, instLTString, List.instLTList, lt_iff_toList_lt,
-      List.LT', toList]
+    simp (config := { instances := true }) only [compare, compareOfLessAndEq, instLTString,
+      List.instLTList, lt_iff_toList_lt, List.LT', toList]
     split_ifs <;>
     simp only [List.lt_iff_lex_lt] at * <;>
     contradiction

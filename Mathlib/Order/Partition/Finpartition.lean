@@ -241,10 +241,10 @@ instance : PartialOrder (Finpartition a) :=
         rwa [hbc.antisymm]
         rwa [Q.disjoint.eq_of_le hb hd (Q.ne_bot hb) (hbc.trans hcd)] }
 
-instance [Decidable (a = ⊥)] : OrderTop (Finpartition a)
-    where
+instance [Decidable (a = ⊥)] : OrderTop (Finpartition a) where
   top := if ha : a = ⊥ then (Finpartition.empty α).copy ha.symm else indiscrete ha
   le_top P := by
+    simp (config := { instances := true }) only
     split_ifs with h
     · intro x hx
       simpa [h, P.ne_bot hx] using P.le hx

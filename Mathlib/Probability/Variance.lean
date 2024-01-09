@@ -213,8 +213,9 @@ theorem variance_def' [@IsProbabilityMeasure Ω _ ℙ] {X : Ω → ℝ} (hX : Me
   · apply hX.integrable_sq.add
     convert @integrable_const Ω ℝ (_) ℙ _ _ (𝔼[X] ^ 2)
   · exact ((hX.integrable one_le_two).const_mul 2).mul_const' _
-  simp only [Pi.pow_apply, integral_const, measure_univ, ENNReal.one_toReal, smul_eq_mul, one_mul,
-    Pi.mul_apply, Pi.ofNat_apply, Nat.cast_ofNat, integral_mul_right, integral_mul_left]
+  simp (config := { instances := true }) only [Pi.pow_apply, integral_const, measure_univ,
+    ENNReal.one_toReal, smul_eq_mul, one_mul, Pi.mul_apply, Pi.ofNat_apply, Nat.cast_ofNat,
+    integral_mul_right, integral_mul_left]
   ring
 #align probability_theory.variance_def' ProbabilityTheory.variance_def'
 

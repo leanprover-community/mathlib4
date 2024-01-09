@@ -1075,7 +1075,7 @@ instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
     | ⊤, ⊤, x => mem_singleton.trans (le_antisymm_iff.trans and_comm)
     | ⊤, (b : α), x =>
       iff_of_false (not_mem_empty _) fun h => (h.1.trans h.2).not_lt <| coe_lt_top _
-    | (a : α), ⊤, ⊤ => by simp [WithTop.some, WithTop.top, insertNone]
+    | (a : α), ⊤, ⊤ => by simp (config := { instances := true }) [WithTop.some, WithTop.top, insertNone]
     | (a : α), ⊤, (x : α) => by
         simp only [some, le_eq_subset, some_le_some, le_top, and_true]
         rw [some_mem_insertNone]
@@ -1093,8 +1093,8 @@ instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
     | ⊤, b, x => iff_of_false (not_mem_empty _) fun h => not_top_lt <| h.1.trans_lt h.2
     | (a : α), ⊤, ⊤ => by simp [some, Embedding.some]
     | (a : α), ⊤, (x : α) => by
-        simp only [some, Embedding.some, mem_map, mem_Ici, Embedding.coeFn_mk, some_le_some, aux,
-          top, some_lt_none, and_true]
+        simp (config := { instances := true }) only [some, Embedding.some, mem_map, mem_Ici,
+          Embedding.coeFn_mk, some_le_some, aux, top, some_lt_none, and_true]
         -- This used to be in the above `simp` before leanprover/lean4#2644
         erw [aux]
     | (a : α), (b : α), ⊤ => by simp [some, Embedding.some]
@@ -1105,7 +1105,7 @@ instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
   finset_mem_Ioc a b x :=
     match a, b, x with
     | ⊤, b, x => iff_of_false (not_mem_empty _) fun h => not_top_lt <| h.1.trans_le h.2
-    | (a : α), ⊤, ⊤ => by simp [some, insertNone, top]
+    | (a : α), ⊤, ⊤ => by simp (config := { instances := true }) [some, insertNone, top]
     | (a : α), ⊤, (x : α) => by simp [some, Embedding.some, insertNone, aux]
                                 -- This used to be in the above `simp` before
                                 -- leanprover/lean4#2644
@@ -1119,7 +1119,8 @@ instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
     match a, b, x with
     | ⊤, b, x => iff_of_false (not_mem_empty _) fun h => not_top_lt <| h.1.trans h.2
     | (a : α), ⊤, ⊤ => by simp [some, Embedding.some, insertNone]
-    | (a : α), ⊤, (x : α) => by simp [some, Embedding.some, insertNone, aux, top]
+    | (a : α), ⊤, (x : α) => by simp (config := { instances := true }) [some, Embedding.some,
+                                  insertNone, aux, top]
                                 -- This used to be in the above `simp` before
                                 -- leanprover/lean4#2644
                                 erw [aux]

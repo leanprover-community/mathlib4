@@ -46,13 +46,19 @@ def Lattice.copy (c : Lattice α)
   · intros; simp [eq_le]
   · intro _ _ _ hab hbc; rw [eq_le] at hab hbc ⊢; exact le_trans hab hbc
   · intros; simp [eq_le]
-  · intro _ _ hab hba; simp_rw [eq_le] at hab hba; exact le_antisymm hab hba
-  · intros; simp [eq_le, eq_sup]
-  · intros; simp [eq_le, eq_sup]
-  · intro _ _ _ hac hbc; simp_rw [eq_le] at hac hbc ⊢; simp [eq_sup, hac, hbc]
-  · intros; simp [eq_le, eq_inf]
-  · intros; simp [eq_le, eq_inf]
-  · intro _ _ _ hac hbc; simp_rw [eq_le] at hac hbc ⊢; simp [eq_inf, hac, hbc]
+  · intro _ _ hab hba
+    simp_rw (config := { instances := true }) [eq_le] at hab hba
+    exact le_antisymm hab hba
+  · intros; simp (config := { instances := true }) [eq_le, eq_sup]
+  · intros; simp (config := { instances := true }) [eq_le, eq_sup]
+  · intro _ _ _ hac hbc
+    simp_rw (config := { instances := true }) [eq_le] at hac hbc ⊢
+    simp [eq_sup, hac, hbc]
+  · intros; simp (config := { instances := true }) [eq_le, eq_inf]
+  · intros; simp (config := { instances := true }) [eq_le, eq_inf]
+  · intro _ _ _ hac hbc
+    simp_rw (config := { instances := true }) [eq_le] at hac hbc ⊢
+    simp [eq_inf, hac, hbc]
 #align lattice.copy Lattice.copy
 
 --Porting note: original proof uses
@@ -67,14 +73,20 @@ def DistribLattice.copy (c : DistribLattice α)
   · intros; simp [eq_le]
   · intro _ _ _ hab hbc; rw [eq_le] at hab hbc ⊢; exact le_trans hab hbc
   · intros; simp [eq_le]
-  · intro _ _ hab hba; simp_rw [eq_le] at hab hba; exact le_antisymm hab hba
-  · intros; simp [eq_le, eq_sup]
-  · intros; simp [eq_le, eq_sup]
-  · intro _ _ _ hac hbc; simp_rw [eq_le] at hac hbc ⊢; simp [eq_sup, hac, hbc]
-  · intros; simp [eq_le, eq_inf]
-  · intros; simp [eq_le, eq_inf]
-  · intro _ _ _ hac hbc; simp_rw [eq_le] at hac hbc ⊢; simp [eq_inf, hac, hbc]
-  · intros; simp [eq_le, eq_inf, eq_sup, le_sup_inf]
+  · intro _ _ hab hba
+    simp_rw (config := { instances := true }) [eq_le] at hab hba
+    exact le_antisymm hab hba
+  · intros; simp (config := { instances := true }) [eq_le, eq_sup]
+  · intros; simp (config := { instances := true }) [eq_le, eq_sup]
+  · intro _ _ _ hac hbc
+    simp_rw (config := { instances := true }) [eq_le] at hac hbc ⊢
+    simp [eq_sup, hac, hbc]
+  · intros; simp (config := { instances := true }) [eq_le, eq_inf]
+  · intros; simp (config := { instances := true }) [eq_le, eq_inf]
+  · intro _ _ _ hac hbc
+    simp_rw (config := { instances := true }) [eq_le] at hac hbc ⊢
+    simp [eq_inf, hac, hbc]
+  · intros; simp (config := { instances := true }) [eq_le, eq_inf, eq_sup, le_sup_inf]
 #align distrib_lattice.copy DistribLattice.copy
 
 --Porting note: original proof uses
@@ -92,12 +104,12 @@ def CompleteLattice.copy (c : CompleteLattice α)
     CompleteLattice α := by
   refine' { Lattice.copy (@CompleteLattice.toLattice α c) le eq_le sup eq_sup inf eq_inf with
     le := le, top := top, bot := bot, sup := sup, inf := inf, sSup := sSup, sInf := sInf.. }
-  · intro _ _ h; simp [eq_le, eq_sSup, le_sSup _ _ h]
-  · intro _ _ h; simpa [eq_le, eq_sSup] using h
-  · intro _ _ h; simp [eq_le, eq_sInf, sInf_le _ _ h]
-  · intro _ _ h; simpa [eq_le, eq_sInf] using h
-  · intros; simp [eq_le, eq_top]
-  · intros; simp [eq_le, eq_bot]
+  · intro _ _ h; simp (config := { instances := true }) [eq_le, eq_sSup, le_sSup _ _ h]
+  · intro _ _ h; simpa (config := { instances := true }) [eq_le, eq_sSup] using h
+  · intro _ _ h; simp (config := { instances := true }) [eq_le, eq_sInf, sInf_le _ _ h]
+  · intro _ _ h; simpa (config := { instances := true }) [eq_le, eq_sInf] using h
+  · intros; simp (config := { instances := true }) [eq_le, eq_top]
+  · intros; simp (config := { instances := true }) [eq_le, eq_bot]
 #align complete_lattice.copy CompleteLattice.copy
 
 --Porting note: original proof uses
@@ -114,7 +126,8 @@ def Frame.copy (c : Frame α) (le : α → α → Prop) (eq_le : le = (by infer_
   { CompleteLattice.copy (@Frame.toCompleteLattice α c) le eq_le top eq_top bot eq_bot
       sup eq_sup inf eq_inf sSup eq_sSup sInf eq_sInf with
     inf_sSup_le_iSup_inf := fun a s => by
-      simp [eq_le, eq_sup, eq_inf, eq_sSup, @Order.Frame.inf_sSup_le_iSup_inf α _ a s] }
+      simp (config := { instances := true }) [eq_le, eq_sup, eq_inf, eq_sSup,
+        @Order.Frame.inf_sSup_le_iSup_inf α _ a s] }
 #align frame.copy Frame.copy
 
 --Porting note: original proof uses
@@ -131,7 +144,8 @@ def Coframe.copy (c : Coframe α) (le : α → α → Prop) (eq_le : le = (by in
   { CompleteLattice.copy (@Coframe.toCompleteLattice α c) le eq_le top eq_top bot eq_bot sup
         eq_sup inf eq_inf sSup eq_sSup sInf eq_sInf with
     iInf_sup_le_sup_sInf := fun a s => by
-      simp [eq_le, eq_sup, eq_inf, eq_sInf, @Order.Coframe.iInf_sup_le_sup_sInf α _ a s] }
+      simp (config := { instances := true }) [eq_le, eq_sup, eq_inf, eq_sInf,
+        @Order.Coframe.iInf_sup_le_sup_sInf α _ a s] }
 #align coframe.copy Coframe.copy
 
 /-- A function to create a provable equal copy of a complete distributive lattice
@@ -167,13 +181,19 @@ def ConditionallyCompleteLattice.copy (c : ConditionallyCompleteLattice α)
   · intros; simp [eq_le]
   · intro _ _ _ hab hbc; rw [eq_le] at hab hbc ⊢; exact le_trans hab hbc
   · intros; simp [eq_le]
-  · intro _ _ hab hba; simp_rw [eq_le] at hab hba; exact le_antisymm hab hba
-  · intros; simp [eq_le, eq_sup]
-  · intros; simp [eq_le, eq_sup]
-  · intro _ _ _ hac hbc; simp_rw [eq_le] at hac hbc ⊢; simp [eq_sup, hac, hbc]
-  · intros; simp [eq_le, eq_inf]
-  · intros; simp [eq_le, eq_inf]
-  · intro _ _ _ hac hbc; simp_rw [eq_le] at hac hbc ⊢; simp [eq_inf, hac, hbc]
+  · intro _ _ hab hba
+    simp_rw (config := { instances := true }) [eq_le] at hab hba
+    exact le_antisymm hab hba
+  · intros; simp (config := { instances := true }) [eq_le, eq_sup]
+  · intros; simp (config := { instances := true }) [eq_le, eq_sup]
+  · intro _ _ _ hac hbc
+    simp_rw (config := { instances := true }) [eq_le] at hac hbc ⊢
+    simp [eq_sup, hac, hbc]
+  · intros; simp (config := { instances := true }) [eq_le, eq_inf]
+  · intros; simp (config := { instances := true }) [eq_le, eq_inf]
+  · intro _ _ _ hac hbc
+    simp_rw (config := { instances := true }) [eq_le] at hac hbc ⊢
+    simp [eq_inf, hac, hbc]
   · intro _ _ hb h; subst_vars; exact le_csSup _ _ hb h
   · intro _ _ hb h; subst_vars; exact csSup_le _ _ hb h
   · intro _ _ hb h; subst_vars; exact csInf_le _ _ hb h

@@ -424,8 +424,8 @@ noncomputable instance summandAction (i : ι) : MulAction (G i) (NormalWord d) :
 
 instance baseAction : MulAction H (NormalWord d) :=
   { smul := fun h w => { w with head := h * w.head },
-    one_smul := by simp [instHSMul]
-    mul_smul := by simp [instHSMul, mul_assoc] }
+    one_smul := by simp (config := { instances := true }) [instHSMul]
+    mul_smul := by simp (config := { instances := true }) [instHSMul, mul_assoc] }
 
 theorem base_smul_def' (h : H) (w : NormalWord d) :
     h • w = { w with head := h * w.head } := rfl

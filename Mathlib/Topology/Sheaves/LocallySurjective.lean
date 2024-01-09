@@ -70,6 +70,7 @@ section SurjectiveOnStalks
 
 variable [Limits.HasColimits C] [Limits.PreservesFilteredColimits (forget C)]
 
+set_option maxHeartbeats 400000
 /-- An equivalent condition for a map of presheaves to be locally surjective
 is for all the induced maps on stalks to be surjective. -/
 theorem locally_surjective_iff_surjective_on_stalks (T : ℱ ⟶ 𝒢) :
