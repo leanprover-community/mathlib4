@@ -713,7 +713,12 @@ lemma hom_ext₄ {f g : ComposableArrows C 4} {φ φ' : f ⟶ g}
     φ = φ' :=
   hom_ext_succ h₀ (hom_ext₃ h₁ h₂ h₃ h₄)
 
-set_option maxHeartbeats 300000 in
+lemma map'_inv_eq_inv_map' {n m : ℕ} (h : n+1 ≤ m) {f g : ComposableArrows C m}
+    (app : f.obj' n ≅ g.obj' n) (app' : f.obj' (n+1) ≅ g.obj' (n+1))
+    (w : f.map' n (n+1) ≫ app'.hom = app.hom ≫ g.map' n (n+1)) :
+    map' g n (n+1) ≫ app'.inv = app.inv ≫ map' f n (n+1) := by
+  rw [← cancel_epi app.hom, ← reassoc_of% w, app'.hom_inv_id, comp_id, app.hom_inv_id_assoc]
+
 /-- Constructor for isomorphisms in `ComposableArrows C 4`. -/
 @[simps]
 def isoMk₄ {f g : ComposableArrows C 4}
@@ -726,14 +731,10 @@ def isoMk₄ {f g : ComposableArrows C 4}
     f ≅ g where
   hom := homMk₄ app₀.hom app₁.hom app₂.hom app₃.hom app₄.hom w₀ w₁ w₂ w₃
   inv := homMk₄ app₀.inv app₁.inv app₂.inv app₃.inv app₄.inv
-    (by rw [← cancel_epi app₀.hom, ← reassoc_of% w₀, app₁.hom_inv_id,
-      comp_id, app₀.hom_inv_id_assoc])
-    (by rw [← cancel_epi app₁.hom, ← reassoc_of% w₁, app₂.hom_inv_id,
-      comp_id, app₁.hom_inv_id_assoc])
-    (by rw [← cancel_epi app₂.hom, ← reassoc_of% w₂, app₃.hom_inv_id,
-      comp_id, app₂.hom_inv_id_assoc])
-    (by rw [← cancel_epi app₃.hom, ← reassoc_of% w₃, app₄.hom_inv_id,
-      comp_id, app₃.hom_inv_id_assoc])
+    (by rw [map'_inv_eq_inv_map' (by clean_up; omega) app₀ app₁ w₀])
+    (by rw [map'_inv_eq_inv_map' (by clean_up; omega) app₁ app₂ w₁])
+    (by rw [map'_inv_eq_inv_map' (by clean_up; omega) app₂ app₃ w₂])
+    (by rw [map'_inv_eq_inv_map' (by clean_up; omega) app₃ app₄ w₃])
 
 lemma ext₄ {f g : ComposableArrows C 4}
     (h₀ : f.obj' 0 = g.obj' 0) (h₁ : f.obj' 1 = g.obj' 1) (h₂ : f.obj' 2 = g.obj' 2)
@@ -797,13 +798,6 @@ lemma hom_ext₅ {f g : ComposableArrows C 5} {φ φ' : f ⟶ g}
     φ = φ' :=
   hom_ext_succ h₀ (hom_ext₄ h₁ h₂ h₃ h₄ h₅)
 
-lemma map'_inv_eq_inv_map' {n m : ℕ} (h : n+1 ≤ m) {f g : ComposableArrows C m}
-    (app : f.obj' n ≅ g.obj' n) (app' : f.obj' (n+1) ≅ g.obj' (n+1))
-    (w : f.map' n (n+1) ≫ app'.hom = app.hom ≫ g.map' n (n+1)) :
-    map' g n (n+1) ≫ app'.inv = app.inv ≫ map' f n (n+1) := by
-  rw [← cancel_epi app.hom, ← reassoc_of% w, app'.hom_inv_id, comp_id, app.hom_inv_id_assoc]
-
-set_option maxHeartbeats 300000 in
 /-- Constructor for isomorphisms in `ComposableArrows C 5`. -/
 @[simps]
 def isoMk₅ {f g : ComposableArrows C 5}
@@ -817,23 +811,11 @@ def isoMk₅ {f g : ComposableArrows C 5}
     f ≅ g where
   hom := homMk₅ app₀.hom app₁.hom app₂.hom app₃.hom app₄.hom app₅.hom w₀ w₁ w₂ w₃ w₄
   inv := homMk₅ app₀.inv app₁.inv app₂.inv app₃.inv app₄.inv app₅.inv
-    (by rw [map'_inv_eq_inv_map' (by clean_up; omega) app₀ app₁ w₀] <;> simp)
-    (by rw [map'_inv_eq_inv_map' (by clean_up; omega) app₁ app₂ w₁] <;> simp)
-    (by rw [map'_inv_eq_inv_map' (by clean_up; omega) app₂ app₃ w₂] <;> simp)
-    (by rw [map'_inv_eq_inv_map' (by clean_up; omega) app₃ app₄ w₃] <;> simp)
-    (by rw [map'_inv_eq_inv_map' (by clean_up; omega) app₄ app₅ w₄] <;> simp)
-    -- (by rw [← cancel_epi app₀.hom, ← reassoc_of% w₀, app₁.hom_inv_id,
-    --   comp_id, app₀.hom_inv_id_assoc])
-    -- (by rw [← cancel_epi app₁.hom, ← reassoc_of% w₁, app₂.hom_inv_id,
-    --   comp_id, app₁.hom_inv_id_assoc])
-    -- (by rw [← cancel_epi app₂.hom, ← reassoc_of% w₂, app₃.hom_inv_id,
-    --   comp_id, app₂.hom_inv_id_assoc])
-    -- (by rw [← cancel_epi app₃.hom, ← reassoc_of% w₃, app₄.hom_inv_id,
-    --   comp_id, app₃.hom_inv_id_assoc])
-    -- (by rw [← cancel_epi app₄.hom, ← reassoc_of% w₄, app₅.hom_inv_id,
-    --   comp_id, app₄.hom_inv_id_assoc])
-  -- hom_inv_id := sorry
-  -- inv_hom_id := by ext; simp -- sorry
+    (by rw [map'_inv_eq_inv_map' (by clean_up; omega) app₀ app₁ w₀])
+    (by rw [map'_inv_eq_inv_map' (by clean_up; omega) app₁ app₂ w₁])
+    (by rw [map'_inv_eq_inv_map' (by clean_up; omega) app₂ app₃ w₂])
+    (by rw [map'_inv_eq_inv_map' (by clean_up; omega) app₃ app₄ w₃])
+    (by rw [map'_inv_eq_inv_map' (by clean_up; omega) app₄ app₅ w₄])
 
 lemma ext₅ {f g : ComposableArrows C 5}
     (h₀ : f.obj' 0 = g.obj' 0) (h₁ : f.obj' 1 = g.obj' 1) (h₂ : f.obj' 2 = g.obj' 2)
