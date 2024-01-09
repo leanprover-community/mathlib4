@@ -1890,7 +1890,6 @@ theorem card_of_cycleType_mul_eq (m : Multiset ℕ) :
     cases' hm with hm hm; exact hm; exfalso; exact hm hm'
     exact hm'
     rw [if_neg]; exact MulZeroClass.zero_mul _; exact hm'
-  AlternatingGroup.card_of_cycleType_mul_eq
 
 theorem card_of_cycleType (m : Multiset ℕ) :
     (Finset.univ.filter fun g : alternatingGroup α => (g : Equiv.Perm α).cycleType = m).card =
