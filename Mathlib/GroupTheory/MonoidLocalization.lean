@@ -1924,7 +1924,7 @@ theorem leftCancelMulZero_of_le_isLeftRegular
       simp_rw [OneMemClass.coe_one, one_mul]
       --- The hypothesis `a ≠ 0` in `P` is equivalent to this
       have b1ne0 : b.1 ≠ 0 := by
-        by_contra hb1
+        intro hb1
         have m0 : (LocalizationMap.toMap fl) 0 = 0 := f.map_zero'
         have a0 : a * (LocalizationMap.toMap fl) b.2 = 0 ↔ a = 0 :=
           (f.toLocalizationMap.map_units' b.2).mul_left_eq_zero
