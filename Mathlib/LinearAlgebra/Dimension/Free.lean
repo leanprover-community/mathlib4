@@ -23,11 +23,56 @@ import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 
 noncomputable section
 
-universe u v v'
-
-variable {R : Type u} {M M₁ : Type v} {M' : Type v'}
+universe u v v' w
 
 open BigOperators Cardinal Basis Submodule Function Set DirectSum FiniteDimensional
+
+section Tower
+
+variable (F : Type u) (K : Type v) (A : Type w)
+
+variable [Ring F] [Ring K] [AddCommGroup A]
+
+variable [Module F K] [Module K A] [Module F A] [IsScalarTower F K A]
+
+variable [StrongRankCondition F] [StrongRankCondition K] [Module.Free F K] [Module.Free K A]
+
+/-- Tower law: if `A` is a `K`-module and `K` is an extension of `F` then
+$\operatorname{rank}_F(A) = \operatorname{rank}_F(K) * \operatorname{rank}_K(A)$.
+
+The universe polymorphic version of `rank_mul_rank` below. -/
+theorem lift_rank_mul_lift_rank :
+    Cardinal.lift.{w} (Module.rank F K) * Cardinal.lift.{v} (Module.rank K A) =
+      Cardinal.lift.{v} (Module.rank F A) := by
+  let b := Module.Free.chooseBasis F K
+  let c := Module.Free.chooseBasis K A
+  rw [← (Module.rank F K).lift_id, ← b.mk_eq_rank, ← (Module.rank K A).lift_id, ← c.mk_eq_rank,
+    ← lift_umax.{w, v}, ← (b.smul c).mk_eq_rank, mk_prod, lift_mul, lift_lift, lift_lift, lift_lift,
+    lift_lift, lift_umax.{v, w}]
+#align lift_rank_mul_lift_rank lift_rank_mul_lift_rank
+
+/-- Tower law: if `A` is a `K`-module and `K` is an extension of `F` then
+$\operatorname{rank}_F(A) = \operatorname{rank}_F(K) * \operatorname{rank}_K(A)$.
+
+This is a simpler version of `lift_rank_mul_lift_rank` with `K` and `A` in the same universe. -/
+theorem rank_mul_rank (A : Type v) [AddCommGroup A]
+    [Module K A] [Module F A] [IsScalarTower F K A] [Module.Free K A] :
+    Module.rank F K * Module.rank K A = Module.rank F A := by
+  convert lift_rank_mul_lift_rank F K A <;> rw [lift_id]
+#align rank_mul_rank rank_mul_rank
+
+/-- Tower law: if `A` is a `K`-module and `K` is an extension of `F` then
+$\operatorname{rank}_F(A) = \operatorname{rank}_F(K) * \operatorname{rank}_K(A)$. -/
+theorem FiniteDimensional.finrank_mul_finrank : finrank F K * finrank K A = finrank F A := by
+  simp_rw [finrank]
+  rw [← toNat_lift.{w} (Module.rank F K), ← toNat_lift.{v} (Module.rank K A), ← toNat_mul,
+    lift_rank_mul_lift_rank, toNat_lift]
+#align finite_dimensional.finrank_mul_finrank FiniteDimensional.finrank_mul_finrank
+#align finite_dimensional.finrank_mul_finrank' FiniteDimensional.finrank_mul_finrank
+
+end Tower
+
+variable {R : Type u} {M M₁ : Type v} {M' : Type v'}
 
 variable [Ring R] [StrongRankCondition R]
 
