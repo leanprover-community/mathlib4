@@ -55,7 +55,7 @@ end Limits
 
 section Preservation
 
-variable {C : Type t₁} [Category.{t₂, t₁} C]
+variable {C : Type t₁} [Category.{t₂} C]
 
 /-- `F : C ⥤ SingleObj G ⥤ V` preserves the limit of some `K : J ⥤ C` if it does
 evaluated at `SingleObj.star G`.-/
@@ -73,10 +73,7 @@ def preservesLimitOfPreserves (F : C ⥤ Action V G) {J : Type w₁}
     [Category.{w₂, w₁} J] (K : J ⥤ C)
     (h : PreservesLimit K (F ⋙ Action.forget V G)) : PreservesLimit K F := by
   let F' : C ⥤ SingleObj G ⥤ V := F ⋙ (Action.functorCategoryEquivalence V G).functor
-  let i : PreservesLimit K F' := by
-    apply SingleObj.preservesLimit
-    show PreservesLimit K (F ⋙ Action.forget V G)
-    assumption
+  have : PreservesLimit K F' := SingleObj.preservesLimit _ _ h
   apply preservesLimitOfReflectsOfPreserves F (Action.functorCategoryEquivalence V G).functor
 
 /-- `F : C ⥤ Action V G` preserves limits of some shape `J`
@@ -115,10 +112,7 @@ def preservesColimitOfPreserves (F : C ⥤ Action V G) {J : Type w₁}
     [Category.{w₂, w₁} J] (K : J ⥤ C)
     (h : PreservesColimit K (F ⋙ Action.forget V G)) : PreservesColimit K F := by
   let F' : C ⥤ SingleObj G ⥤ V := F ⋙ (Action.functorCategoryEquivalence V G).functor
-  let i : PreservesColimit K F' := by
-    apply SingleObj.preservesColimit
-    show PreservesColimit K (F ⋙ Action.forget V G)
-    assumption
+  have : PreservesColimit K F' := SingleObj.preservesColimit _ _ h
   apply preservesColimitOfReflectsOfPreserves F (Action.functorCategoryEquivalence V G).functor
 
 /-- `F : C ⥤ Action V G` preserves colimits of some shape `J`
