@@ -80,6 +80,21 @@ theorem sort_perm_toList (s : Finset α) : sort r s ~ s.toList := by
   simp only [coe_toList, sort_eq]
 #align finset.sort_perm_to_list Finset.sort_perm_toList
 
+theorem filter_sort_commute [DecidableEq α](f : α → Prop) [DecidablePred f] (s : Finset α) :
+    sort r (filter (f .) s) = List.filter f (sort r s) := by
+  have h₁: List.Sorted r (sort r (filter (f .) s)) := by simp
+  have h₂: List.Sorted r (List.filter f (sort r s)) := by
+    apply List.Sorted.filter
+    exact sort_sorted r s
+  apply List.eq_of_perm_of_sorted _ h₁ h₂
+  apply List.perm_of_nodup_nodup_toFinset_eq
+  exact sort_nodup r (Finset.filter f s)
+  apply List.Nodup.filter
+  exact sort_nodup r s
+  rw [sort_toFinset]
+  rw [List.toFinset_filter]
+  simp
+
 end sort
 
 section SortLinearOrder
