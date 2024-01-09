@@ -327,10 +327,9 @@ variable
 lemma IsIntegralCurveAt.of_mdifferentiable_related (h : IsIntegralCurveAt γ v t₀)
     {f : M → M'} (hf : MDifferentiable I I' f) (hv : ∀ x : M, v' (f x) = mfderiv I I' f x (v x)) :
     IsIntegralCurveAt (f ∘ γ) v' t₀ := by
-  obtain ⟨s, hs, h⟩ := h
-  refine ⟨s, hs, ?_⟩
+  apply h.mono
   intros t ht
-  apply (HasMFDerivAt.comp t (hf (γ t)).hasMFDerivAt (h t ht)).congr_mfderiv
+  apply (HasMFDerivAt.comp t (hf (γ t)).hasMFDerivAt ht).congr_mfderiv
   rw [Function.comp_apply, hv, ContinuousLinearMap.comp_smulRight]
 
 /-- Let `v` and `v'` be vector fields on `M` and `M'`, respectively, and let `f : M → M'` be a
