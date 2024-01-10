@@ -84,7 +84,7 @@ theorem rank_eq_of_surjective {f : M →ₗ[R] M₁} (h : Surjective f) :
 #align rank_eq_of_surjective rank_eq_of_surjective
 
 theorem exists_linearIndependent_of_lt_rank [StrongRankCondition R]
-    (s : Set M) (hs : LinearIndependent (ι := s) R Subtype.val) :
+    {s : Set M} (hs : LinearIndependent (ι := s) R Subtype.val) :
     ∃ t, s ⊆ t ∧ #t = Module.rank R M ∧ LinearIndependent (ι := t) R Subtype.val := by
   obtain ⟨t, ht, ht'⟩ := exists_set_linearIndependent R (M ⧸ Submodule.span R s)
   choose sec hsec using Submodule.Quotient.mk_surjective (Submodule.span R s)
@@ -108,7 +108,7 @@ the family by another vector while retaining linear independence. -/
 theorem exists_linearIndependent_cons_of_lt_rank [StrongRankCondition R] {n : ℕ} {v : Fin n → M}
     (hv : LinearIndependent R v) (h : n < Module.rank R M) :
     ∃ (x : M), LinearIndependent R (Fin.cons x v) := by
-  obtain ⟨t, h₁, h₂, h₃⟩ := exists_linearIndependent_of_lt_rank (Set.range v) hv.to_subtype_range
+  obtain ⟨t, h₁, h₂, h₃⟩ := exists_linearIndependent_of_lt_rank hv.to_subtype_range
   have : range v ≠ t
   · refine fun e ↦ h.ne ?_
     rw [← e, ← lift_injective.eq_iff, mk_range_eq_of_injective hv.injective] at h₂
