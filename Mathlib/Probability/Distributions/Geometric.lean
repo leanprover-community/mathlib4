@@ -75,28 +75,19 @@ def geometricPmf {p : ℝ} (hp : p ∈ Ioc 0 1) : PMF ℕ := by
   exact (geometricPmfRealSum p hp).toNNReal (fun n ↦ geometricPmfReal_nonneg hp)
 
 /-- The geometric pmf is measurable. -/
+@[measurability]
 lemma measurable_geometricPmfReal {p : ℝ} (hp : p ∈ Ioc 0 1) : Measurable (geometricPmfReal p) := by
   measurability
 
+@[measurability]
 lemma stronglyMeasurable_geometricPmfReal {p : ℝ} (hp : p ∈ Ioc 0 1) :
     StronglyMeasurable (geometricPmfReal p) :=
   stronglyMeasurable_iff_measurable.mpr (measurable_geometricPmfReal hp)
 
 /-- Measure defined by the geometric distribution -/
 noncomputable
-def geometricMeasure {p : ℝ} (hp : p ∈ Ioc 0 1) : Measure ℕ :=
-  if p < 1 then (geometricPmf hp).toMeasure else Measure.dirac 0
-
-lemma geometricMeasure_of_prob_le_one {p : ℝ} (hp : p ∈ Ioc 0 1) (hle_one : p < 1) :
-    geometricMeasure hp = (geometricPmf hp).toMeasure := if_pos hle_one
-
-lemma geometricMeasure_of_prob_one {p : ℝ} (hp : p ∈ Ioc 0 1) (h_one : p = 1):
-    geometricMeasure hp = Measure.dirac 0 := if_neg (Eq.not_gt (id h_one.symm))
+def geometricMeasure {p : ℝ} (hp : p ∈ Ioc 0 1) : Measure ℕ := (geometricPmf hp).toMeasure
 
 lemma isProbabilityMeasureGeometric {p : ℝ} (hp : p ∈ Ioc 0 1) :
-    IsProbabilityMeasure (geometricMeasure hp) := by
-  by_cases h : p < 1
-  · rw [geometricMeasure_of_prob_le_one hp h]
-    exact PMF.toMeasure.isProbabilityMeasure (geometricPmf hp )
-  · rw [geometricMeasure_of_prob_one hp ((LE.le.ge_iff_eq hp.2).mp (not_lt.mp h))]
-    exact Measure.dirac.isProbabilityMeasure
+    IsProbabilityMeasure (geometricMeasure hp) :=
+  exact PMF.toMeasure.isProbabilityMeasure (geometricPmf hp )
