@@ -179,8 +179,18 @@ theorem pairwise_iff_nthLe {R} {l : List α} : Pairwise R l ↔
 
 #align list.pairwise_replicate List.pairwise_replicate
 
-/-! ### Pairwise filtering -/
+theorem pairwise_concat {l : List α}{l' : List α}:
+    Pairwise R (l++l') ↔ (Pairwise R l) ∧ (Pairwise R l') ∧
+      (∀ x ∈ l, ∀ y ∈ l', R x y) := by
+  match l with
+  | [] => simp
+  | x :: xs =>
+    simp [Pairwise]
+    simp_rw [pairwise_concat]
+    aesop
 
+
+/-! ### Pairwise filtering -/
 
 variable [DecidableRel R]
 
