@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
 import Mathlib.Data.DList.Defs
-import Mathlib.Tactic.Basic
+import Mathlib.Tactic.TypeStar
 
 #align_import data.dlist.basic from "leanprover-community/mathlib"@"d6aae1bcbd04b8de2022b9b83a5b5b10e10c777d"
 

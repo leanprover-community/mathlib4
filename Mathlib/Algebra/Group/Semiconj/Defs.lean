@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 
 Some proofs and docs came from `algebra/commute` (c) Neil Strickland
 -/
+import Mathlib.Init.Logic
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Tactic.Cases
 
