@@ -155,47 +155,6 @@ theorem card_vector [Fintype α] (n : ℕ) : Fintype.card (Vector α n) = Fintyp
   rw [Fintype.ofEquiv_card]; simp
 #align card_vector card_vector
 
-@[to_additive (attr := simp)]
-theorem Finset.prod_attach_univ [Fintype α] [CommMonoid β] (f : { a : α // a ∈ @univ α _ } → β) :
-    ∏ x in univ.attach, f x = ∏ x, f ⟨x, mem_univ _⟩ :=
-  Fintype.prod_equiv (Equiv.subtypeUnivEquiv fun x => mem_univ _) _ _ fun x => by simp
-#align finset.prod_attach_univ Finset.prod_attach_univ
-#align finset.sum_attach_univ Finset.sum_attach_univ
-
-/-- Taking a product over `univ.pi t` is the same as taking the product over `Fintype.piFinset t`.
-  `univ.pi t` and `Fintype.piFinset t` are essentially the same `Finset`, but differ
-  in the type of their element, `univ.pi t` is a `Finset (Π a ∈ univ, t a)` and
-  `Fintype.piFinset t` is a `Finset (Π a, t a)`. -/
-@[to_additive "Taking a sum over `univ.pi t` is the same as taking the sum over
-  `Fintype.piFinset t`. `univ.pi t` and `Fintype.piFinset t` are essentially the same `Finset`,
-  but differ in the type of their element, `univ.pi t` is a `Finset (Π a ∈ univ, t a)` and
-  `Fintype.piFinset t` is a `Finset (Π a, t a)`."]
-theorem Finset.prod_univ_pi [DecidableEq α] [Fintype α] [CommMonoid β] {δ : α → Type*}
-    {t : ∀ a : α, Finset (δ a)} (f : (∀ a : α, a ∈ (univ : Finset α) → δ a) → β) :
-    ∏ x in univ.pi t, f x = ∏ x in Fintype.piFinset t, f fun a _ => x a := by
-  apply prod_nbij' (fun x i ↦ x i <| mem_univ _) (fun x i _ ↦ x i) <;> simp
-#align finset.prod_univ_pi Finset.prod_univ_pi
-#align finset.sum_univ_pi Finset.sum_univ_pi
-
-/-- The product over `univ` of a sum can be written as a sum over the product of sets,
-  `Fintype.piFinset`. `Finset.prod_sum` is an alternative statement when the product is not
-  over `univ` -/
-theorem Finset.prod_univ_sum [DecidableEq α] [Fintype α] [CommSemiring β] {δ : α → Type u_1}
-    [∀ a : α, DecidableEq (δ a)] {t : ∀ a : α, Finset (δ a)} {f : ∀ a : α, δ a → β} :
-    (∏ a, ∑ b in t a, f a b) = ∑ p in Fintype.piFinset t, ∏ x, f x (p x) := by
-  simp only [Finset.prod_attach_univ, prod_sum, Finset.sum_univ_pi]
-#align finset.prod_univ_sum Finset.prod_univ_sum
-
-/-- Summing `a^s.card * b^(n-s.card)` over all finite subsets `s` of a fintype of cardinality `n`
-gives `(a + b)^n`. The "good" proof involves expanding along all coordinates using the fact that
-`x^n` is multilinear, but multilinear maps are only available now over rings, so we give instead
-a proof reducing to the usual binomial theorem to have a result over semirings. -/
-theorem Fintype.sum_pow_mul_eq_add_pow (α : Type*) [Fintype α] {R : Type*} [CommSemiring R]
-    (a b : R) :
-    (∑ s : Finset α, a ^ s.card * b ^ (Fintype.card α - s.card)) = (a + b) ^ Fintype.card α :=
-  Finset.sum_pow_mul_eq_add_pow _ _ _
-#align fintype.sum_pow_mul_eq_add_pow Fintype.sum_pow_mul_eq_add_pow
-
 /-- It is equivalent to compute the product of a function over `Fin n` or `Finset.range n`. -/
 @[to_additive "It is equivalent to sum a function over `fin n` or `finset.range n`."]
 theorem Fin.prod_univ_eq_prod_range [CommMonoid α] (f : ℕ → α) (n : ℕ) :
