@@ -91,6 +91,7 @@ theorem empty' (m : OuterMeasure α) : m ∅ = 0 :=
   m.empty
 #align measure_theory.outer_measure.empty' MeasureTheory.OuterMeasure.empty'
 
+@[gcongr]
 theorem mono' (m : OuterMeasure α) {s₁ s₂} (h : s₁ ⊆ s₂) : m s₁ ≤ m s₂ :=
   m.mono h
 #align measure_theory.outer_measure.mono' MeasureTheory.OuterMeasure.mono'
@@ -188,8 +189,8 @@ theorem iUnion_of_tendsto_zero {ι} (m : OuterMeasure α) {s : ι → Set α} (l
 /-- If `s : ℕ → Set α` is a monotone sequence of sets such that `∑' k, m (s (k + 1) \ s k) ≠ ∞`,
 then `m (⋃ n, s n) = ⨆ n, m (s n)`. -/
 theorem iUnion_nat_of_monotone_of_tsum_ne_top (m : OuterMeasure α) {s : ℕ → Set α}
-    (h_mono : ∀ n, s n ⊆ s (n + 1)) (h0 : (∑' k, m (s (k + 1) \ s k)) ≠ ∞)
-    [∀ i:ℕ, DecidablePred (· ∈ s i)] : m (⋃ n, s n) = ⨆ n, m (s n) := by
+    (h_mono : ∀ n, s n ⊆ s (n + 1)) (h0 : (∑' k, m (s (k + 1) \ s k)) ≠ ∞) :
+    m (⋃ n, s n) = ⨆ n, m (s n) := by
   refine' m.iUnion_of_tendsto_zero atTop _
   refine' tendsto_nhds_bot_mono' (ENNReal.tendsto_sum_nat_add _ h0) fun n => _
   refine' (m.mono _).trans (m.iUnion _)
@@ -427,7 +428,7 @@ theorem smul_iSup [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] {�
 
 end Supremum
 
-@[mono]
+@[mono, gcongr]
 theorem mono'' {m₁ m₂ : OuterMeasure α} {s₁ s₂ : Set α} (hm : m₁ ≤ m₂) (hs : s₁ ⊆ s₂) :
     m₁ s₁ ≤ m₂ s₂ :=
   (hm s₁).trans (m₂.mono hs)
