@@ -25,8 +25,12 @@ and prove their various relations and basic properties.
 - If `f` is both an immersion and submersion, it is a local diffeomorphism.
 (This requires the inverse function theorem: an invertible differential at `x` implies
  being a local diffeomorphism at `x`. This may also require working in a complete space.)
+- If `f` is bijective, an immersion and submersion, it is a diffeomorphism.
+- A submersion has open range (by the inverse function theorem).
+- `f` is a diffeomorphism iff it is an immersion, submersion and proper
+
 - Define smooth embeddings; show smooth embeddings are injective immersions,
-  and diffeomorphisms are smooth embeddings.
+  surjective embeddings are diffeomorphisms (and vice versa).
 
 implementation notes: bundled
 omit differentiability for immersions, following sphere-eversion?
