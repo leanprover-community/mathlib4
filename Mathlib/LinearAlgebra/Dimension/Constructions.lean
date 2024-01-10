@@ -58,7 +58,7 @@ theorem LinearIndependent.sum_elim_of_quotient
   rw [linearIndependent_iff.mp hg _ this, Finsupp.sum_zero_index]
 
 theorem LinearIndependent.union_of_quotient
-  {M' : Submodule R M} {s : Set M} (hs : s ⊆ M') (hs' : LinearIndependent (ι := s) R Subtype.val)
+    {M' : Submodule R M} {s : Set M} (hs : s ⊆ M') (hs' : LinearIndependent (ι := s) R Subtype.val)
   {t : Set M} (ht : LinearIndependent (ι := t) R (Submodule.Quotient.mk (p := M') ∘ Subtype.val)) :
     LinearIndependent (ι := (s ∪ t : _)) R Subtype.val := by
   refine (LinearIndependent.sum_elim_of_quotient (f := Set.embeddingOfSubset s M' hs)
