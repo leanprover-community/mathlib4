@@ -357,7 +357,7 @@ protected theorem locallyCompactSpace [LocallyCompactSpace E] (I : ModelWithCorn
       fun s => I.symm '' (s ∩ range I) := fun x ↦ by
     rw [← I.symm_map_nhdsWithin_range]
     exact ((compact_basis_nhds (I x)).inf_principal _).map _
-  refine' locallyCompactSpace_of_hasBasis this _
+  refine' .of_hasBasis this _
   rintro x s ⟨-, hsc⟩
   exact (hsc.inter_right I.closed_range).image I.continuous_symm
 #align model_with_corners.locally_compact ModelWithCorners.locallyCompactSpace
@@ -765,7 +765,7 @@ theorem ofSet_mem_analyticGroupoid {s : Set H} (hs : IsOpen s) :
   apply And.intro
   · have : AnalyticOn 𝕜 (1 : E →L[𝕜] E) (univ : Set E) := (fun x _ => (1 : E →L[𝕜] E).analyticAt x)
     exact (this.mono (subset_univ (s.preimage (I.symm) ∩ interior (range I)))).congr
-      (IsOpen.inter (hs.preimage I.continuous_symm) isOpen_interior)
+      ((hs.preimage I.continuous_symm).inter isOpen_interior)
       fun z hz => (I.right_inv (interior_subset hz.right)).symm
   · intro x hx
     simp only [comp_apply, mem_image] at hx

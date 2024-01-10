@@ -2118,16 +2118,16 @@ lemma zero_smul_subset (t : Finset β) : (0 : Finset α) • t ⊆ 0 := by simp 
 #align finset.zero_smul_subset Finset.zero_smul_subset
 
 lemma Nonempty.zero_smul (ht : t.Nonempty) : (0 : Finset α) • t = 0 :=
-  t.zero_smul_subset.antisymm $ by simpa [mem_smul] using ht
+  t.zero_smul_subset.antisymm <| by simpa [mem_smul] using ht
 #align finset.nonempty.zero_smul Finset.Nonempty.zero_smul
 
 /-- A nonempty set is scaled by zero to the singleton set containing zero. -/
 @[simp] lemma zero_smul_finset {s : Finset β} (h : s.Nonempty) : (0 : α) • s = (0 : Finset β) :=
-  coe_injective $ by simpa using @Set.zero_smul_set α _ _ _ _ _ h
+  coe_injective <| by simpa using @Set.zero_smul_set α _ _ _ _ _ h
 #align finset.zero_smul_finset Finset.zero_smul_finset
 
 lemma zero_smul_finset_subset (s : Finset β) : (0 : α) • s ⊆ 0 :=
-  image_subset_iff.2 fun x _ ↦ mem_zero.2 $ zero_smul α x
+  image_subset_iff.2 fun x _ ↦ mem_zero.2 <| zero_smul α x
 #align finset.zero_smul_finset_subset Finset.zero_smul_finset_subset
 
 variable [NoZeroSMulDivisors α β] {a : α}
@@ -2182,7 +2182,7 @@ theorem smul_finset_symmDiff₀ (ha : a ≠ 0) : a • s ∆ t = (a • s) ∆ (
 #align finset.smul_finset_symm_diff₀ Finset.smul_finset_symmDiff₀
 
 lemma smul_finset_univ₀ [Fintype β] (ha : a ≠ 0) : a • (univ : Finset β) = univ :=
-  coe_injective $ by push_cast; exact Set.smul_set_univ₀ ha
+  coe_injective <| by push_cast; exact Set.smul_set_univ₀ ha
 #align finset.smul_finset_univ₀ Finset.smul_finset_univ₀
 
 theorem smul_univ₀ [Fintype β] {s : Finset α} (hs : ¬s ⊆ 0) : s • (univ : Finset β) = univ :=
@@ -2193,7 +2193,7 @@ theorem smul_univ₀ [Fintype β] {s : Finset α} (hs : ¬s ⊆ 0) : s • (univ
 #align finset.smul_univ₀ Finset.smul_univ₀
 
 lemma smul_univ₀' [Fintype β] {s : Finset α} (hs : s.Nontrivial) : s • (univ : Finset β) = univ :=
-  coe_injective $ by push_cast; exact Set.smul_univ₀' hs
+  coe_injective <| by push_cast; exact Set.smul_univ₀' hs
 
 variable [DecidableEq α]
 
@@ -2252,10 +2252,10 @@ section CommMonoid
 variable [CommMonoid α] {ι : Type*} [DecidableEq ι]
 
 @[to_additive (attr := simp)] lemma prod_inv_index [InvolutiveInv ι] (s : Finset ι) (f : ι → α) :
-    ∏ i in s⁻¹, f i = ∏ i in s, f i⁻¹ := prod_image $ inv_injective.injOn _
+    ∏ i in s⁻¹, f i = ∏ i in s, f i⁻¹ := prod_image <| inv_injective.injOn _
 
 @[to_additive existing, simp] lemma prod_neg_index [InvolutiveNeg ι] (s : Finset ι) (f : ι → α) :
-    ∏ i in -s, f i = ∏ i in s, f (-i) := prod_image $ neg_injective.injOn _
+    ∏ i in -s, f i = ∏ i in s, f (-i) := prod_image <| neg_injective.injOn _
 
 end CommMonoid
 
@@ -2263,7 +2263,7 @@ section AddCommMonoid
 variable [AddCommMonoid α] {ι : Type*} [DecidableEq ι]
 
 @[to_additive existing, simp] lemma sum_inv_index [InvolutiveInv ι] (s : Finset ι) (f : ι → α) :
-    ∑ i in s⁻¹, f i = ∑ i in s, f i⁻¹ := sum_image $ inv_injective.injOn _
+    ∑ i in s⁻¹, f i = ∑ i in s, f i⁻¹ := sum_image <| inv_injective.injOn _
 
 end AddCommMonoid
 end BigOps
@@ -2445,5 +2445,5 @@ end Set
 
 instance Nat.decidablePred_mem_vadd_set {s : Set ℕ} [DecidablePred (· ∈ s)] (a : ℕ) :
     DecidablePred (· ∈ a +ᵥ s) :=
-  fun n ↦ decidable_of_iff' (a ≤ n ∧ n - a ∈ s) $ by
+  fun n ↦ decidable_of_iff' (a ≤ n ∧ n - a ∈ s) <| by
     simp only [Set.mem_vadd_set, vadd_eq_add]; aesop

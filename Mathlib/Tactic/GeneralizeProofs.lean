@@ -39,7 +39,7 @@ structure State where
 
 /-- Monad used by the `generalizeProofs` tactic, carries an expr cache and state with
 names to use and previous generalizations -/
-abbrev M := MonadCacheT ExprStructEq Expr $ StateRefT State MetaM
+abbrev M := MonadCacheT ExprStructEq Expr <| StateRefT State MetaM
 
 /-- generalize the given e -/
 private def mkGen (e : Expr) : M Unit := do

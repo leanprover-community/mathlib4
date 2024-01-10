@@ -11,8 +11,11 @@ import Mathlib.CategoryTheory.Limits.Preserves.Finite
 
 # Sheafification
 
-Given a site `(C, J)` we define a typeclass `HasSheaf J A` saying that the inclusion functor from
-`A`-valued sheaves on `C` to presheaves admits a left adjoint (sheafification).
+Given a site `(C, J)` we define a typeclass `HasSheafify J A` saying that the inclusion functor from
+`A`-valued sheaves on `C` to presheaves admits a left exact left adjoint (sheafification).
+
+Note: to access the `HasSheafify` instance for suitable concrete categories, import the file
+`Mathlib.CategoryTheory.Sites.LeftExact`.
 -/
 
 universe v₁ v₂ u₁ u₂
@@ -32,6 +35,9 @@ abbrev HasWeakSheafify := Nonempty (IsRightAdjoint (sheafToPresheaf J A))
 /--
 `HasSheafify` means that the inclusion functor from sheaves to presheaves admits a left exact
 left adjiont (sheafification).
+
+Given a finite limit preserving functor `F : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A` and an adjunction
+`adj : F ⊣ sheafToPresheaf J A`, use `HasSheafify.mk'` to construct a `HasSheafify` instance.
 -/
 class HasSheafify : Prop where
   isRightAdjoint : HasWeakSheafify J A
@@ -61,8 +67,6 @@ theorem HasSheafify.mk' {F : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A} (adj : F ⊣ sheafTo
 /-- The sheafification functor, left adjoint to the inclusion. -/
 def presheafToSheaf [HasWeakSheafify J A] : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A :=
   leftAdjoint (sheafToPresheaf J A)
-set_option linter.uppercaseLean3 false in
-#align category_theory.presheaf_to_Sheaf CategoryTheory.presheafToSheaf
 
 instance [HasSheafify J A] : PreservesFiniteLimits (presheafToSheaf J A) :=
   HasSheafify.isLeftExact.some
@@ -70,7 +74,6 @@ instance [HasSheafify J A] : PreservesFiniteLimits (presheafToSheaf J A) :=
 /-- The sheafification-inclusion adjunction. -/
 def sheafificationAdjunction [HasWeakSheafify J A] :
     presheafToSheaf J A ⊣ sheafToPresheaf J A := IsRightAdjoint.adj
-#align category_theory.sheafification_adjunction CategoryTheory.sheafificationAdjunction
 
 instance [HasWeakSheafify J A] : IsLeftAdjoint <| presheafToSheaf J A where
   adj := sheafificationAdjunction J A
@@ -87,20 +90,22 @@ noncomputable abbrev sheafify (P : Cᵒᵖ ⥤ D) : Cᵒᵖ ⥤ D :=
 noncomputable abbrev toSheafify (P : Cᵒᵖ ⥤ D) : P ⟶ sheafify J P :=
   sheafificationAdjunction J D |>.unit.app P
 
+@[simp]
+theorem sheafificationAdjunction_unit_app (P : Cᵒᵖ ⥤ D) :
+    (sheafificationAdjunction J D).unit.app P = toSheafify J P := rfl
+
 /-- The canonical map on sheafifications induced by a morphism. -/
 noncomputable abbrev sheafifyMap {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) : sheafify J P ⟶ sheafify J Q :=
   presheafToSheaf J D |>.map η |>.val
 
 @[simp]
 theorem sheafifyMap_id (P : Cᵒᵖ ⥤ D) : sheafifyMap J (𝟙 P) = 𝟙 (sheafify J P) := by
-  dsimp [sheafifyMap, sheafify]
-  simp
+  simp [sheafifyMap, sheafify]
 
 @[simp]
 theorem sheafifyMap_comp {P Q R : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (γ : Q ⟶ R) :
     sheafifyMap J (η ≫ γ) = sheafifyMap J η ≫ sheafifyMap J γ := by
-  dsimp [sheafifyMap, sheafify]
-  simp
+  simp [sheafifyMap, sheafify]
 
 @[reassoc (attr := simp)]
 theorem toSheafify_naturality {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) :
@@ -124,7 +129,6 @@ theorem sheafification_map {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) :
 noncomputable abbrev toSheafification : 𝟭 _ ⟶ sheafification J D :=
   sheafificationAdjunction J D |>.unit
 
-@[simp]
 theorem toSheafification_app (P : Cᵒᵖ ⥤ D) : (toSheafification J D).app P = toSheafify J P :=
   rfl
 
@@ -153,6 +157,13 @@ theorem isoSheafify_hom {P : Cᵒᵖ ⥤ D} (hP : Presheaf.IsSheaf J P) :
 noncomputable def sheafifyLift {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (hQ : Presheaf.IsSheaf J Q) :
     sheafify J P ⟶ Q :=
   (sheafificationAdjunction J D).homEquiv P ⟨Q, hQ⟩ |>.symm η |>.val
+
+@[simp]
+theorem sheafificationAdjunction_counit_app_val (P : Sheaf J D) :
+    ((sheafificationAdjunction J D).counit.app P).val = sheafifyLift J (𝟙 P.val) P.cond := by
+  unfold sheafifyLift
+  rw [Adjunction.homEquiv_counit]
+  simp
 
 @[reassoc (attr := simp)]
 theorem toSheafify_sheafifyLift {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (hQ : Presheaf.IsSheaf J Q) :
@@ -193,20 +204,7 @@ theorem sheafifyMap_sheafifyLift {P Q R : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (γ : Q 
   apply sheafifyLift_unique
   rw [← Category.assoc, ← toSheafify_naturality, Category.assoc, toSheafify_sheafifyLift]
 
-variable (D)
-
-@[simp]
-theorem sheafificationAdjunction_unit_app {P : Cᵒᵖ ⥤ D} :
-    (sheafificationAdjunction J D).unit.app P = toSheafify J P := rfl
-
-@[simp]
-theorem sheafificationAdjunction_counit_app_val (P : Sheaf J D) :
-    ((sheafificationAdjunction J D).counit.app P).val = sheafifyLift J (𝟙 P.val) P.cond := by
-  unfold sheafifyLift
-  rw [Adjunction.homEquiv_counit]
-  simp
-
-variable {J D}
+variable {J}
 
 /-- A sheaf `P` is isomorphic to its own sheafification. -/
 @[simps]

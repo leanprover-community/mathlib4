@@ -369,8 +369,8 @@ instance addCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithOne �
 
 instance addCommGroupWithOne [AddCommGroupWithOne α] : AddCommGroupWithOne αᵃᵒᵖ :=
   { AddOpposite.addCommMonoidWithOne α, AddOpposite.addCommGroup α, AddOpposite.intCast α with
-    intCast_ofNat := λ _ ↦ congr_arg op $ Int.cast_ofNat _
-    intCast_negSucc := λ _ ↦ congr_arg op $ Int.cast_negSucc _ }
+    intCast_ofNat := λ _ ↦ congr_arg op <| Int.cast_ofNat _
+    intCast_negSucc := λ _ ↦ congr_arg op <| Int.cast_negSucc _ }
 
 variable {α}
 

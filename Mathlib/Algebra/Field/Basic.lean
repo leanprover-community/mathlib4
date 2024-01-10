@@ -118,6 +118,7 @@ theorem neg_div (a b : K) : -b / a = -(b / a) := by
 theorem neg_div' (a b : K) : -(b / a) = -b / a := by simp [neg_div]
 #align neg_div' neg_div'
 
+@[simp]
 theorem neg_div_neg_eq (a b : K) : -a / -b = a / b := by rw [div_neg_eq_neg_div, neg_div, neg_neg]
 #align neg_div_neg_eq neg_div_neg_eq
 

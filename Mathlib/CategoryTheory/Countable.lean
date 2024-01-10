@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.Data.Countable.Small
+import Mathlib.CategoryTheory.EssentiallySmall
 import Mathlib.CategoryTheory.FinCategory
 /-!
 # Countable categories
@@ -35,7 +36,7 @@ instance countablerCategoryDiscreteOfCountable (J : Type*) [Countable J] :
 
 namespace CountableCategory
 
-variable (α : Type*) [Countable α] [Category α] [CountableCategory α]
+variable (α : Type u) [Category.{v} α] [CountableCategory α]
 
 /-- A countable category `α` is equivalent to a category with objects in `Type`. -/
 abbrev ObjAsType : Type :=
@@ -51,6 +52,26 @@ instance : CountableCategory (ObjAsType α) where
 /-- The constructed category is indeed equivalent to `α`. -/
 noncomputable def objAsTypeEquiv : ObjAsType α ≌ α :=
   (inducedFunctor (equivShrink.{0} α).symm).asEquivalence
+
+/-- A countable category `α` is equivalent to a *small* category with objects in `Type`. -/
+def HomAsType := ShrinkHoms (ObjAsType α)
+
+instance : LocallySmall.{0} (ObjAsType α) where
+  hom_small _ _ := inferInstance
+
+instance : SmallCategory (HomAsType α) := ShrinkHoms.instCategoryShrinkHoms.{0} _
+
+instance : Countable (HomAsType α) := Countable.of_equiv α (equivShrink.{0} α)
+
+instance {i j : HomAsType α} : Countable (i ⟶ j) :=
+  Countable.of_equiv ((ShrinkHoms.equivalence _).inverse.obj i ⟶
+    (ShrinkHoms.equivalence _).inverse.obj j) (equivOfFullyFaithful _).symm
+
+instance : CountableCategory (HomAsType α) where
+
+/-- The constructed category is indeed equivalent to `α`. -/
+noncomputable def homAsTypeEquiv : HomAsType α ≌ α :=
+  (ShrinkHoms.equivalence _).symm.trans (objAsTypeEquiv _)
 
 end CountableCategory
 
