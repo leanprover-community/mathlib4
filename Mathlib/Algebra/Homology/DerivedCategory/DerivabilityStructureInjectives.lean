@@ -197,6 +197,9 @@ instance [EnoughInjectives C] (X : HomotopyCategory.Plus C) :
     exact Relation.ReflTransGen.single
       (Or.inl ⟨LocalizerMorphism.RightResolution.Hom.mk φ hφ' hφ⟩))
 
+/-- The inclusion functor from the homotopy category `K^+` of injective objects
+into the homotopy category `K^+` induces a right derivability structure, which allow
+to derive any functor from `K^+`. -/
 instance [EnoughInjectives C] : (localizerMorphism C).IsRightDerivabilityStructure :=
   LocalizerMorphism.IsRightDerivabilityStructure.mk' (localizerMorphism C) (𝟭 _)
     DerivedCategory.Plus.Qh ((ι C).mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh)
@@ -205,6 +208,8 @@ section
 
 variable [EnoughInjectives C] (F : HomotopyCategory.Plus C ⥤ H)
 
+/-- Any functor the homotopy category `K^+` has a right derived functor with respect
+to quasi-isomorphisms.  -/
 instance : F.HasPointwiseRightDerivedFunctor (HomotopyCategory.Plus.qis C) :=
   (localizerMorphism C).hasPointwiseRightDerivedFunctor F
     (MorphismProperty.isomorphisms_isInvertedBy _)
