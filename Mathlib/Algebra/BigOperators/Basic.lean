@@ -9,7 +9,7 @@ import Mathlib.Algebra.Ring.Opposite
 import Mathlib.Data.Finset.Powerset
 import Mathlib.Data.Finset.Sigma
 import Mathlib.Data.Finset.Sum
-import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Fintype.Pi
 import Mathlib.Data.Int.Cast.Lemmas
 
 #align_import algebra.big_operators.basic from "leanprover-community/mathlib"@"65a1391a0106c9204fe45bc73a039f056558cb83"
