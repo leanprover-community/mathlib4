@@ -736,11 +736,11 @@ lemma find_comp_succ (h₁ : ∃ n, p n) (h₂ : ∃ n, p (n + 1)) (h0 : ¬ p 0)
 
 end Find
 
-/-! ### `find_greatest` -/
+/-! ### `Nat.findGreatest` -/
 
 section FindGreatest
 
-/-- `find_greatest P n` is the largest `i ≤ bound` such that `P i` holds, or `0` if no such `i`
+/-- `Nat.findGreatest P n` is the largest `i ≤ bound` such that `P i` holds, or `0` if no such `i`
 exists -/
 def findGreatest (P : ℕ → Prop) [DecidablePred P] : ℕ → ℕ
   | 0 => 0
