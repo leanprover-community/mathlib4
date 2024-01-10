@@ -367,7 +367,7 @@ namespace FormalMultilinearSeries
 
 section
 
-/-! We study we happens when we change the origin of a finite formal multilinear series `p`. The
+/-! We study what happens when we change the origin of a finite formal multilinear series `p`. The
 main point is that the new series `p.changeOrigin x` is still finite, with the same bound.-/
 
 variable (p : FormalMultilinearSeries 𝕜 E F) {x y : E} {r R : ℝ≥0}
