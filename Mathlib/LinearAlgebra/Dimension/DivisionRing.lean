@@ -90,7 +90,7 @@ theorem rank_add_rank_split (db : V₂ →ₗ[K] V) (eb : V₃ →ₗ[K] V) (cd 
   have hf : Surjective (coprod db eb) := by rwa [← range_eq_top, range_coprod, eq_top_iff]
   conv =>
     rhs
-    rw [← rank_prod', rank_eq_of_surjective _ hf]
+    rw [← rank_prod', rank_eq_of_surjective hf]
   congr 1
   apply LinearEquiv.rank_eq
   let L : V₁ →ₗ[K] ker (coprod db eb) := by -- Porting note: this is needed to avoid a timeout

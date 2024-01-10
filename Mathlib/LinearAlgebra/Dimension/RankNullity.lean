@@ -73,12 +73,12 @@ theorem rank_range_add_rank_ker (f : M →ₗ[R] M₁) :
   rw [← f.quotKerEquivRange.rank_eq, rank_quotient_add_rank]
 #align rank_range_add_rank_ker rank_range_add_rank_ker
 
-theorem lift_rank_eq_of_surjective (f : M →ₗ[R] M') (h : Surjective f) :
+theorem lift_rank_eq_of_surjective {f : M →ₗ[R] M'} (h : Surjective f) :
     lift.{v} (Module.rank R M) =
       lift.{u} (Module.rank R M') + lift.{v} (Module.rank R (LinearMap.ker f)) := by
   rw [← lift_rank_range_add_rank_ker f, ← rank_range_of_surjective f h]
 
-theorem rank_eq_of_surjective (f : M →ₗ[R] M₁) (h : Surjective f) :
+theorem rank_eq_of_surjective {f : M →ₗ[R] M₁} (h : Surjective f) :
     Module.rank R M = Module.rank R M₁ + Module.rank R (LinearMap.ker f) := by
   rw [← rank_range_add_rank_ker f, ← rank_range_of_surjective f h]
 #align rank_eq_of_surjective rank_eq_of_surjective
