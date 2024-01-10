@@ -217,7 +217,9 @@ protected theorem HasFiniteFPowerSeriesOnBall.fderiv
   rw [← h.fderiv_eq, add_sub_cancel'_right]
   simpa only [edist_eq_coe_nnnorm_sub, EMetric.mem_ball] using hz
 
-/-- Variant of the previous result where the degree of `f` is `< n` and not `< n + 1`. -/
+/-- If a function has a finite power series on a ball, then so does its derivative.
+This is a variant of `HasFiniteFPowerSeriesOnBall.fderiv` where the degree of `f` is `< n`
+and not `< n + 1`. -/
 theorem HasFiniteFPowerSeriesOnBall.fderiv' (h : HasFiniteFPowerSeriesOnBall f p x n r) :
     HasFiniteFPowerSeriesOnBall (fderiv 𝕜 f)
       ((continuousMultilinearCurryFin1 𝕜 E F : (E[×1]→L[𝕜] F) →L[𝕜] E →L[𝕜] F)
