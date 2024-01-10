@@ -690,7 +690,7 @@ lemma piecewise_eqOn_symm [BoundarylessManifold I M]
     (ht₀ : t₀ ∈ Ioo a b ∩ Ioo a' b') (h : γ t₀ = γ' t₀) :
     EqOn (piecewise (Ioo a b) γ γ') γ' (Ioo a' b') := by
   intros t ht
-  suffices H : EqOn γ γ' (Ioo (max a a') (min b b')) from by
+  suffices H : EqOn γ γ' (Ioo (max a a') (min b b')) by
     by_cases hmem : t ∈ Ioo a b
     · rw [piecewise, if_pos hmem]
       apply H
@@ -699,7 +699,7 @@ lemma piecewise_eqOn_symm [BoundarylessManifold I M]
   apply isIntegralCurveOn_Ioo_eqOn_of_contMDiff_boundaryless _ hv
     (hγ.mono (Ioo_subset_Ioo (le_max_left ..) (min_le_left ..)))
     (hγ'.mono (Ioo_subset_Ioo (le_max_right ..) (min_le_right ..))) h
-  refine ⟨max_lt ht₀.1.1 ht₀.2.1, lt_min ht₀.1.2 ht₀.2.2⟩
+  exact ⟨max_lt ht₀.1.1 ht₀.2.1, lt_min ht₀.1.2 ht₀.2.2⟩
 
 /-- The extension of an integral curve by another integral curve is an integral curve.
 
