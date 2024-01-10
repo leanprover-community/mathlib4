@@ -46,6 +46,7 @@ class inductive ExpChar (R : Type u) [Semiring R] : ℕ → Prop
 #align exp_char ExpChar
 #align exp_char.prime ExpChar.prime
 
+variable {R} in
 /-- The exponential characteristic is unique. -/
 theorem ExpChar.eq {p q : ℕ} (hp : ExpChar R p) (hq : ExpChar R q) : p = q := by
   cases' hp with hp _ hp' hp
@@ -55,7 +56,6 @@ theorem ExpChar.eq {p q : ℕ} (hp : ExpChar R p) (hq : ExpChar R q) : p = q := 
     exacts [False.elim (Nat.not_prime_zero (CharP.eq R hp (CharP.ofCharZero R) ▸ hp')),
       CharP.eq R hp hq]
 
-variable {R} in
 theorem ExpChar.congr {p : ℕ} (q : ℕ) [hq : ExpChar R q] (h : q = p) : ExpChar R p := h ▸ hq
 
 /-- Noncomputable function that outputs the unique exponential characteristic of a semiring. -/
@@ -69,7 +69,7 @@ theorem ringExpChar.eq (q : ℕ) [h : ExpChar R q] : ringExpChar R = q := by
   exact Nat.max_eq_left h.one_lt.le
 
 @[simp]
-theorem ringExpChar.eq_one {R : Type*} [NonAssocSemiring R] [CharZero R] : ringExpChar R = 1 := by
+theorem ringExpChar.eq_one (R : Type*) [NonAssocSemiring R] [CharZero R] : ringExpChar R = 1 := by
   rw [ringExpChar, ringChar.eq_zero]; rfl
 
 /-- The exponential characteristic is one if the characteristic is zero. -/
@@ -155,7 +155,7 @@ theorem ExpChar.exists [Ring R] [IsDomain R] : ∃ q, ExpChar R q := by
 
 theorem ExpChar.exists_unique [Ring R] [IsDomain R] : ∃! q, ExpChar R q :=
   let ⟨q, H⟩ := ExpChar.exists R
-  ⟨q, H, fun _ H2 ↦ ExpChar.eq R H2 H⟩
+  ⟨q, H, fun _ H2 ↦ ExpChar.eq H2 H⟩
 
 instance ringExpChar.expChar [Ring R] [IsDomain R] : ExpChar R (ringExpChar R) := by
   obtain ⟨q, _⟩ := ExpChar.exists R
