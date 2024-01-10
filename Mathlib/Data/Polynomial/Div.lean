@@ -447,6 +447,37 @@ theorem mul_div_mod_by_monic_cancel_left (p : R[X]) {q : R[X]} (hmo : q.Monic) :
   exact Ne.bot_lt fun h => hmo.ne_zero (degree_eq_bot.1 h)
 #align polynomial.mul_div_mod_by_monic_cancel_left Polynomial.mul_div_mod_by_monic_cancel_left
 
+lemma coeff_divByMonic_X_sub_C_rec (p : R[X]) (a : R) (n : ℕ) :
+    (p /ₘ (X - C a)).coeff n = coeff p (n + 1) + a * (p /ₘ (X - C a)).coeff (n + 1) := by
+  nontriviality R
+  have := monic_X_sub_C a
+  set q := p /ₘ (X - C a)
+  rw [← p.modByMonic_add_div this]
+  have : degree (p %ₘ (X - C a)) < ↑(n + 1) := degree_X_sub_C a ▸ p.degree_modByMonic_lt this
+    |>.trans_le <| WithBot.coe_le_coe.mpr le_add_self
+  simp [sub_mul, add_sub, coeff_eq_zero_of_degree_lt this]
+
+theorem coeff_divByMonic_X_sub_C (p : R[X]) (a : R) (n : ℕ) :
+    (p /ₘ (X - C a)).coeff n = ∑ i in Icc (n + 1) p.natDegree, a ^ (i - (n + 1)) * p.coeff i := by
+  wlog h : p.natDegree ≤ n generalizing n
+  · refine Nat.decreasingInduction' (fun n hn _ ih ↦ ?_) (le_of_not_le h) ?_
+    · rw [coeff_divByMonic_X_sub_C_rec, ih, eq_comm, Icc_eq_cons_Ioc (Nat.succ_le.mpr hn),
+          sum_cons, Nat.sub_self, pow_zero, one_mul, mul_sum]
+      congr 1; refine sum_congr ?_ fun i hi ↦ ?_
+      · ext; simp [Nat.succ_le]
+      rw [← mul_assoc, ← pow_succ, eq_comm, i.sub_succ', Nat.sub_add_cancel]
+      apply Nat.le_sub_of_add_le
+      rw [add_comm]; exact (mem_Icc.mp hi).1
+    · exact this _ le_rfl
+  rw [Icc_eq_empty (Nat.lt_succ.mpr h).not_le, sum_empty]
+  nontriviality R
+  by_cases hp : p.natDegree = 0
+  · rw [(divByMonic_eq_zero_iff <| monic_X_sub_C a).mpr, coeff_zero]
+    apply degree_lt_degree; rw [hp, natDegree_X_sub_C]; norm_num
+  · apply coeff_eq_zero_of_natDegree_lt
+    rw [natDegree_divByMonic p (monic_X_sub_C a), natDegree_X_sub_C]
+    exact (Nat.pred_lt hp).trans_le h
+
 variable (R) in
 theorem not_isField : ¬IsField R[X] := by
   nontriviality R

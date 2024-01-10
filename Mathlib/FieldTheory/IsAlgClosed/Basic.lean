@@ -34,6 +34,13 @@ polynomial in `k` splits.
 
 algebraic closure, algebraically closed
 
+## TODO
+
+- Prove that if `K / k` is algebraic, and any monic irreducible polynomial over `k` has a root
+  in `K`, then `K` is algebraically closed (in fact an algebraic closure of `k`).
+
+  Reference: <https://kconrad.math.uconn.edu/blurbs/galoistheory/algclosure.pdf>, Theorem 2
+
 -/
 
 
@@ -97,7 +104,7 @@ theorem exists_eq_mul_self [IsAlgClosed k] (x : k) : ∃ z, x = z * z := by
 theorem roots_eq_zero_iff [IsAlgClosed k] {p : k[X]} :
     p.roots = 0 ↔ p = Polynomial.C (p.coeff 0) := by
   refine' ⟨fun h => _, fun hp => by rw [hp, roots_C]⟩
-  cases' le_or_lt (degree p) 0 with hd hd
+  rcases le_or_lt (degree p) 0 with hd | hd
   · exact eq_C_of_degree_le_zero hd
   · obtain ⟨z, hz⟩ := IsAlgClosed.exists_root p hd.ne'
     rw [← mem_roots (ne_zero_of_degree_gt hd), h] at hz
@@ -183,6 +190,15 @@ theorem algebraMap_surjective_of_isAlgebraic {k K : Type*} [Field k] [Ring K] [I
 #align is_alg_closed.algebra_map_surjective_of_is_algebraic IsAlgClosed.algebraMap_surjective_of_isAlgebraic
 
 end IsAlgClosed
+
+/-- If `k` is algebraically closed, `K / k` is a field extension, `L / k` is an intermediate field
+which is algebraic, then `L` is equal to `k`. A corollary of
+`IsAlgClosed.algebraMap_surjective_of_isAlgebraic`. -/
+theorem IntermediateField.eq_bot_of_isAlgClosed_of_isAlgebraic {k K : Type*} [Field k] [Field K]
+    [IsAlgClosed k] [Algebra k K] (L : IntermediateField k K) (hf : Algebra.IsAlgebraic k L) :
+    L = ⊥ := bot_unique fun x hx ↦ by
+  obtain ⟨y, hy⟩ := IsAlgClosed.algebraMap_surjective_of_isAlgebraic hf ⟨x, hx⟩
+  exact ⟨y, congr_arg (algebraMap L K) hy⟩
 
 /-- Typeclass for an extension being an algebraic closure. -/
 class IsAlgClosure (R : Type u) (K : Type v) [CommRing R] [Field K] [Algebra R K]

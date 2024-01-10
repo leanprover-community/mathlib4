@@ -368,7 +368,7 @@ theorem extend_mul [Mul γ] (f : α → β) (g₁ g₂ : α → γ) (e₁ e₂ :
   funext x
   simp only [not_exists, extend_def, Pi.mul_apply, apply_dite₂, dite_eq_ite, ite_self]
 -- Porting note: The Lean3 statement was
--- `funext $ λ _, by convert (apply_dite2 (*) _ _ _ _ _).symm`
+-- `funext <| λ _, by convert (apply_dite2 (*) _ _ _ _ _).symm`
 -- which converts to
 -- `funext fun _ => by convert (apply_dite₂ (· * ·) _ _ _ _ _).symm`
 -- However this does not work, and we're not sure why.
@@ -382,7 +382,7 @@ theorem extend_inv [Inv γ] (f : α → β) (g : α → γ) (e : β → γ) :
   funext x
   simp only [not_exists, extend_def, Pi.inv_apply, apply_dite Inv.inv]
 -- Porting note: The Lean3 statement was
--- `funext $ λ _, by convert (apply_dite has_inv.inv _ _ _).symm`
+-- `funext <| λ _, by convert (apply_dite has_inv.inv _ _ _).symm`
 -- which converts to
 -- `funext fun _ => by convert (apply_dite Inv.inv _ _ _).symm`
 -- However this does not work, and we're not sure why.
@@ -396,7 +396,7 @@ theorem extend_div [Div γ] (f : α → β) (g₁ g₂ : α → γ) (e₁ e₂ :
   funext x
   simp [Function.extend_def, apply_dite₂]
 -- Porting note: The Lean3 statement was
--- `funext $ λ _, by convert (apply_dite2 (/) _ _ _ _ _).symm`
+-- `funext <| λ _, by convert (apply_dite2 (/) _ _ _ _ _).symm`
 -- which converts to
 -- `funext fun _ => by convert (apply_dite₂ (· / ·) _ _ _ _ _).symm`
 -- However this does not work, and we're not sure why.

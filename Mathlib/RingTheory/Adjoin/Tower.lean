@@ -111,7 +111,7 @@ theorem exists_subalgebra_of_fg (hAC : (⊤ : Subalgebra A C).FG) (hBC : (⊤ : 
         span (Algebra.adjoin A (↑s : Set B)) (↑(insert 1 y : Finset C) : Set C) ≤
       span (Algebra.adjoin A (↑s : Set B)) (↑(insert 1 y : Finset C) : Set C) := by
     rw [span_mul_span, span_le, coe_insert]
-    rintro _ ⟨yi, yj, rfl | hyi, rfl | hyj, rfl⟩ <;> dsimp
+    rintro _ ⟨yi, rfl | hyi, yj, rfl | hyj, rfl⟩ <;> dsimp
     · rw [mul_one]
       exact subset_span (Set.mem_insert _ _)
     · rw [one_mul]

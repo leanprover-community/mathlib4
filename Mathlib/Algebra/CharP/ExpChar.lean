@@ -102,10 +102,19 @@ theorem char_prime_of_ne_zero {p : ℕ} [hp : CharP R p] (p_ne_zero : p ≠ 0) :
 
 /-- The exponential characteristic is a prime number or one. -/
 theorem expChar_is_prime_or_one (q : ℕ) [hq : ExpChar R q] : Nat.Prime q ∨ q = 1 := by
-  cases hq
-  case zero => exact .inr rfl
-  case prime hp _ => exact .inl hp
+  cases hq with
+  | zero => exact .inr rfl
+  | prime hp => exact .inl hp
 #align exp_char_is_prime_or_one expChar_is_prime_or_one
+
+/-- The exponential characteristic is positive. -/
+theorem expChar_pos (q : ℕ) [ExpChar R q] : 0 < q := by
+  rcases expChar_is_prime_or_one R q with h | rfl
+  exacts [Nat.Prime.pos h, Nat.one_pos]
+
+/-- Any power of the exponential characteristic is positive. -/
+theorem expChar_pow_pos (q : ℕ) [ExpChar R q] (n : ℕ) : 0 < q ^ n :=
+  Nat.pos_pow_of_pos n (expChar_pos R q)
 
 end NoZeroDivisors
 
