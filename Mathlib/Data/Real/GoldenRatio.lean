@@ -179,6 +179,20 @@ theorem fib_golden_conj_exp (n : ℕ) : Nat.fib (n + 1) - φ * Nat.fib n = ψ ^ 
   rw [← (mul_inv_cancel nz).symm, one_mul]
 #align fib_golden_conj_exp fib_golden_conj_exp
 
+theorem fib_golden_conj_exp' (n : ℕ) : φ * Nat.fib (n + 1) + Nat.fib n = φ ^ (n + 1) := by
+  induction n with
+  | zero => norm_num
+  | succ n ih =>
+    rw [Nat.succ_eq_add_one, Nat.fib_add_one, Nat.cast_add, mul_add, Nat.add_sub_cancel]
+    calc
+      φ * ↑(Nat.fib n) + φ * ↑(Nat.fib (n + 1)) + ↑(Nat.fib (n + 1)) = φ * ↑(Nat.fib n) + (φ + 1) * ↑(Nat.fib (n + 1)) := by rw [add_mul, one_mul, add_assoc];
+      _ = φ * ↑(Nat.fib n) + φ ^ 2 * ↑(Nat.fib (n + 1)) := by rw [gold_sq]
+      _ = φ * (↑(Nat.fib n) + φ * ↑(Nat.fib (n + 1))) := by rw [sq, mul_assoc, ← mul_add]
+      _ = φ * φ ^ (n + 1) := by rw [add_comm, ih]
+      _ = φ ^ (n + 2) := by rw [← pow_succ]
+    linarith
+#align fib_golden_conj_exp' fib_golden_conj_exp'
+
 section Fibrec
 
 variable {α : Type*} [CommSemiring α]
