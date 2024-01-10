@@ -213,9 +213,9 @@ end Put
 section Commit
 
 def isGitStatusClean : IO Bool :=
-  return (← IO.runCmd "git" #["status", "--porcelain"]).isEmpty
+  return (← IO.Process.runCmdWithInput "git" #["status", "--porcelain"]).isEmpty
 
-def getGitCommitHash : IO String := return (← IO.runCmd "git" #["rev-parse", "HEAD"]).trimRight
+def getGitCommitHash : IO String := return (← IO.Process.runCmdWithInput "git" #["rev-parse", "HEAD"]).trimRight
 
 /--
 Sends a commit file to the server, containing the hashes of the respective committed files.
