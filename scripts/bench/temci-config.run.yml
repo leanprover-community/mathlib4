@@ -3,7 +3,7 @@
   run_config:
     runner: perf_stat
     perf_stat:
-      properties: ['wall-clock', 'task-clock', 'instructions', 'branches', 'branch-misses']
+      properties: ['wall-clock', 'task-clock', 'instructions:u', 'branches', 'branch-misses']
     rusage_properties: ['maxrss']
     cmd: |
       bash -c 'set -eo pipefail; lake clean && LEAN_PATH=$(lean --print-libdir) lake build -v --lean ./scripts/bench/fake-root/bin/lean | ./scripts/bench/accumulate_profile.py | grep -v took'
@@ -14,7 +14,7 @@
   run_config:
     runner: perf_stat
     perf_stat:
-      properties: ['wall-clock', 'instructions']
+      properties: ['wall-clock', 'instructions:u']
     cmd: |
       make lint
     runs: 1
@@ -23,7 +23,7 @@
   run_config:
     runner: perf_stat
     perf_stat:
-      properties: ['wall-clock', 'task-clock', 'instructions']
+      properties: ['wall-clock', 'task-clock', 'instructions:u']
     rusage_properties: ['maxrss']
     cmd: |
       # run lake+lean like the file worker would
