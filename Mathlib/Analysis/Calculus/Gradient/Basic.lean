@@ -211,12 +211,12 @@ section GradientProperties
 theorem hasGradientAtFilter_iff_isLittleO :
     HasGradientAtFilter f f' x L ↔
     (fun x' : F => f x' - f x - ⟪f', x' - x⟫) =o[L] fun x' => x' - x :=
-  Iff.rfl
+  hasFDerivAtFilter_iff_isLittleO ..
 
 theorem hasGradientWithinAt_iff_isLittleO :
     HasGradientWithinAt f f' s x ↔
     (fun x' : F => f x' - f x - ⟪f', x' - x⟫) =o[𝓝[s] x] fun x' => x' - x :=
-  Iff.rfl
+  hasGradientAtFilter_iff_isLittleO
 
 theorem hasGradientWithinAt_iff_tendsto :
     HasGradientWithinAt f f' s x ↔
@@ -225,7 +225,7 @@ theorem hasGradientWithinAt_iff_tendsto :
 
 theorem hasGradientAt_iff_isLittleO : HasGradientAt f f' x ↔
     (fun x' : F => f x' - f x - ⟪f', x' - x⟫) =o[𝓝 x] fun x' => x' - x :=
-  Iff.rfl
+  hasGradientAtFilter_iff_isLittleO
 
 theorem hasGradientAt_iff_tendsto :
     HasGradientAt f f' x ↔
