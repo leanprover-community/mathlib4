@@ -540,5 +540,5 @@ def evalFactorial : PositivityExt where eval {_ _} _ _ (e : Q(ℕ)) := do
 /-- Extension for Nat.ascFactorial. -/
 @[positivity Nat.ascFactorial _ _]
 def evalAscFactorial : PositivityExt where eval {_ _} _ _ (e : Q(ℕ)) := do
-  let ~q(Nat.ascFactorial $n $k) := e | throwError "failed to match Nat.ascFactorial"
+  let ~q(Nat.ascFactorial ($n + 1) $k) := e | throwError "failed to match Nat.ascFactorial"
   pure (.positive (q(Nat.ascFactorial_pos $n $k) : Expr))
