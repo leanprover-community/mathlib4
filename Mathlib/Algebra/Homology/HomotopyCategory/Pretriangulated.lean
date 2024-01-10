@@ -154,10 +154,10 @@ noncomputable def triangleMap :
   comm₁ := comm
   comm₂ := by
     dsimp
-    rw [map_eq_mapOfHomotopy, triangleMapOfHomotopy_comm₂ (Homotopy.ofEq comm)]
+    rw [map_eq_mapOfHomotopy, triangleMapOfHomotopy_comm₂]
   comm₃ := by
     dsimp
-    rw [map_eq_mapOfHomotopy, triangleMapOfHomotopy_comm₃ (Homotopy.ofEq comm)]
+    rw [map_eq_mapOfHomotopy, triangleMapOfHomotopy_comm₃]
 
 end map
 
