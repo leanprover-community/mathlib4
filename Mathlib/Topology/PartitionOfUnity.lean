@@ -182,14 +182,14 @@ def finsupport {s : Set X} (ρ : PartitionOfUnity ι X s) (x₀ : X) : Finset ι
 
 @[simp]
 theorem coe_finsupport {s : Set X} (ρ : PartitionOfUnity ι X s) (x₀ : X) :
-    (ρ.finsupport x₀ : Set ι) = support fun i => ρ i x₀ := by
+    (ρ.finsupport x₀ : Set ι) = support fun i ↦ ρ i x₀ := by
   dsimp only [finsupport]
   rw [Finite.coe_toFinset]
   rfl
 
 @[simp]
 theorem mem_finsupport {s : Set X} (ρ : PartitionOfUnity ι X s) (x₀ : X) {i} :
-    i ∈ ρ.finsupport x₀ ↔ i ∈ support fun i => ρ i x₀ := by
+    i ∈ ρ.finsupport x₀ ↔ i ∈ support fun i ↦ ρ i x₀ := by
   simp only [finsupport, mem_support, Finite.mem_toFinset, mem_setOf_eq]
 
 theorem sum_finsupport {s : Set X} (ρ : PartitionOfUnity ι X s) {x₀ : X}
@@ -251,8 +251,7 @@ theorem exists_finset_nhd' {s : Set X} (ρ : PartitionOfUnity ι X s) (x₀ : X)
     ∃ I : Finset ι, (∀ᶠ x in 𝓝[s] x₀, ∑ i in I, ρ i x = 1) ∧
       ∀ᶠ x in 𝓝 x₀, support (ρ · x) ⊆ I := by
   rcases ρ.locallyFinite.exists_finset_support x₀ with ⟨I, hI⟩
-  refine' ⟨I, _, hI⟩
-  refine' eventually_nhdsWithin_iff.mpr (hI.mono fun x hx x_in => _)
+  refine ⟨I, eventually_nhdsWithin_iff.mpr (hI.mono fun x hx x_in ↦ ?_), hI⟩
   have : ∑ᶠ i : ι, ρ i x = ∑ i : ι in I, ρ i x := finsum_eq_sum_of_support_subset _ hx
   rwa [eq_comm, ρ.sum_eq_one x_in] at this
 
