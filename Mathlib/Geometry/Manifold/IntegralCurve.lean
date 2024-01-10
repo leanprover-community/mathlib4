@@ -724,53 +724,9 @@ lemma exists_isIntegralCurve_of_isIntegralCurveOn [BoundarylessManifold I M]
     (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M)))
     {ε : ℝ} (hε : 0 < ε) (h : ∀ x : M, ∃ γ : ℝ → M, γ 0 = x ∧ IsIntegralCurveOn γ v (Ioo (-ε) ε))
     (x : M) : ∃ γ : ℝ → M, γ 0 = x ∧ IsIntegralCurve γ v := by
-  have hnon : Set.Nonempty {a | ∃ γ, γ 0 = x ∧ IsIntegralCurveOn γ v (Ioo (-a) a)} := ⟨ε, h x⟩
-  by_cases hbdd : BddAbove {a | ∃ γ, γ 0 = x ∧ IsIntegralCurveOn γ v (Ioo (-a) a)}
-  · set asup := sSup {a | ∃ γ, γ 0 = x ∧ IsIntegralCurveOn γ v (Ioo (-a) a)} with hasup
-    -- we will obtain two integral curves, one centred at some `t₀ > 0` with
-    -- `0 ≤ asup - ε < t₀ < asup`; let `t₀ = asup - ε / 2`
-    -- another centred at 0 with domain up to `a ∈ S` with `t₀ < a < asup`
-    obtain ⟨a, ha, hlt⟩ := Real.add_neg_lt_sSup hnon (ε := - (ε / 2))
-      (by rw [neg_lt, neg_zero]; exact half_pos hε)
-    have hale : a ≤ asup := le_csSup hbdd ha
-    rw [mem_setOf] at ha
-    rw [← hasup, ← sub_eq_add_neg] at hlt
-
-    have hεle : ε ≤ asup := le_csSup hbdd (h x)
-
-    -- integral curve defined on `Ioo (-a) a`
-    obtain ⟨γ, h0, hγ⟩ := ha
-    -- integral curve starting at `-(asup - ε / 2)` with radius `ε`
-    obtain ⟨γ1_aux, h1_aux, hγ1⟩ := h (γ (-(asup - ε / 2)))
-    rw [isIntegralCurveOn_Ioo_comp_add (asup - ε / 2)] at hγ1
-    let γ1 := γ1_aux ∘ (· + (asup - ε / 2))
-    have heq1 : γ1 (-(asup - ε / 2)) = γ (-(asup - ε / 2)) := by simp [h1_aux]
-    -- integral curve starting at `asup - ε / 2` with radius `ε`
-    obtain ⟨γ2_aux, h2_aux, hγ2⟩ := h (γ (asup - ε / 2))
-    rw [isIntegralCurveOn_Ioo_comp_sub (asup - ε / 2)] at hγ2
-    let γ2 := γ2_aux ∘ (· - (asup - ε / 2))
-    have heq2 : γ2 (asup - ε / 2) = γ (asup - ε / 2) := by simp [h2_aux]
-
-    -- extend `γ` on the left by `γ1` and on the right by `γ2`
-    set γ_ext : ℝ → M := piecewise (Ioo (-(asup + ε / 2)) a)
-      (piecewise (Ioo (-a) a) γ γ1) γ2 with γ_ext_def
-    have hext : IsIntegralCurveOn γ_ext v (Ioo (-(asup + ε / 2)) (asup + ε / 2)) := by
-      apply (isIntegralCurveOn_piecewise (t₀ := asup - ε / 2) hv _ hγ2
-          (by refine ⟨⟨?_, ?_⟩, ⟨?_, ?_⟩⟩ <;> linarith) _).mono
-        (Ioo_subset_Ioo_union_Ioo le_rfl (by linarith) (by linarith))
-      apply (isIntegralCurveOn_piecewise (t₀ := -(asup - ε / 2)) hv hγ hγ1
-          (by refine ⟨⟨?_, ?_⟩, ⟨?_, ?_⟩⟩ <;> linarith) heq1.symm).mono
-        (union_comm _ _ ▸ Ioo_subset_Ioo_union_Ioo (by linarith) (by linarith) le_rfl)
-      rw [piecewise, if_pos ⟨by linarith, by linarith⟩, ← heq2]
-    have hmem : asup + ε / 2 ∈ {a | ∃ γ, γ 0 = x ∧ IsIntegralCurveOn γ v (Ioo (-a) a)} := by
-      refine ⟨γ_ext, ?_, hext⟩
-      rw [γ_ext_def, piecewise, if_pos ⟨by linarith, by linarith⟩, piecewise,
-        if_pos ⟨by linarith, by linarith⟩]
-      exact h0
-    absurd lt_add_of_pos_right asup (half_pos hε)
-    rw [not_lt]
-    exact le_csSup hbdd hmem
-  · rw [not_bddAbove_iff] at hbdd
+  let s := {a | ∃ γ, γ 0 = x ∧ IsIntegralCurveOn γ v (Ioo (-a) a)}
+  suffices hbdd : ¬BddAbove s by
+    rw [not_bddAbove_iff] at hbdd
     simp_rw [mem_setOf] at hbdd
     rw [exists_isIntegralCurve_iff_exists_isIntegralCurveOn_Ioo hv]
     intro a
@@ -778,5 +734,48 @@ lemma exists_isIntegralCurve_of_isIntegralCurveOn [BoundarylessManifold I M]
     refine ⟨γ, hγ1, hγ2.mono ?_⟩
     apply Ioo_subset_Ioo <;>
     simp [le_of_lt hlt]
+  intro hbdd
+  set asup := sSup s with hasup
+  -- we will obtain two integral curves, one centred at some `t₀ > 0` with
+  -- `0 ≤ asup - ε < t₀ < asup`; let `t₀ = asup - ε / 2`
+  -- another centred at 0 with domain up to `a ∈ S` with `t₀ < a < asup`
+  obtain ⟨a, ha, hlt⟩ := Real.add_neg_lt_sSup _ (ε := - (ε / 2))
+    (by rw [neg_lt, neg_zero]; exact half_pos hε)
+  have hale : a ≤ asup := le_csSup hbdd ha
+  rw [mem_setOf] at ha
+  rw [← hasup, ← sub_eq_add_neg] at hlt
+
+  have hεle : ε ≤ asup := le_csSup hbdd (h x)
+
+  -- integral curve defined on `Ioo (-a) a`
+  obtain ⟨γ, h0, hγ⟩ := ha
+  -- integral curve starting at `-(asup - ε / 2)` with radius `ε`
+  obtain ⟨γ1_aux, h1_aux, hγ1⟩ := h (γ (-(asup - ε / 2)))
+  rw [isIntegralCurveOn_Ioo_comp_add (asup - ε / 2)] at hγ1
+  let γ1 := γ1_aux ∘ (· + (asup - ε / 2))
+  have heq1 : γ1 (-(asup - ε / 2)) = γ (-(asup - ε / 2)) := by simp [h1_aux]
+  -- integral curve starting at `asup - ε / 2` with radius `ε`
+  obtain ⟨γ2_aux, h2_aux, hγ2⟩ := h (γ (asup - ε / 2))
+  rw [isIntegralCurveOn_Ioo_comp_sub (asup - ε / 2)] at hγ2
+  let γ2 := γ2_aux ∘ (· - (asup - ε / 2))
+  have heq2 : γ2 (asup - ε / 2) = γ (asup - ε / 2) := by simp [h2_aux]
+
+  -- extend `γ` on the left by `γ1` and on the right by `γ2`
+  set γ_ext : ℝ → M := piecewise (Ioo (-(asup + ε / 2)) a)
+    (piecewise (Ioo (-a) a) γ γ1) γ2 with γ_ext_def
+  have heq_ext : γ_ext 0 = x := by
+    rw [γ_ext_def, piecewise, if_pos ⟨by linarith, by linarith⟩, piecewise,
+      if_pos ⟨by linarith, by linarith⟩]
+    exact h0
+  -- `asup + ε / 2` is an element of `s` greater than `asup`, a contradiction
+  suffices hext : IsIntegralCurveOn γ_ext v (Ioo (-(asup + ε / 2)) (asup + ε / 2)) from
+    (not_lt.mpr <| le_csSup hbdd ⟨γ_ext, heq_ext, hext⟩) <| lt_add_of_pos_right asup (half_pos hε)
+  apply (isIntegralCurveOn_piecewise (t₀ := asup - ε / 2) hv _ hγ2
+      (by refine ⟨⟨?_, ?_⟩, ⟨?_, ?_⟩⟩ <;> linarith) _).mono
+    (Ioo_subset_Ioo_union_Ioo le_rfl (by linarith) (by linarith))
+  apply (isIntegralCurveOn_piecewise (t₀ := -(asup - ε / 2)) hv hγ hγ1
+      (by refine ⟨⟨?_, ?_⟩, ⟨?_, ?_⟩⟩ <;> linarith) heq1.symm).mono
+    (union_comm _ _ ▸ Ioo_subset_Ioo_union_Ioo (by linarith) (by linarith) le_rfl)
+  rw [piecewise, if_pos ⟨by linarith, by linarith⟩, ← heq2]
 
 end ExistUnique
