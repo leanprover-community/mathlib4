@@ -486,6 +486,6 @@ theorem vanishesOnRectanglesInDisc_of_holomorphic {c : ℂ} {r : ℝ} {f : ℂ �
 /-- *** Holomorphic functions on discs have Primitives *** A holomorphic function on a disc has
   primitives. -/
 theorem hasPrimitives_on_disc (c : ℂ) {r : ℝ} : HasPrimitives (ball c r) := fun _ f_holo ↦
-  moreiras_theorem f_holo.continuousOn (vanishesOnRectanglesInDisc_of_holomorphic f_holo)
+  (vanishesOnRectanglesInDisc_of_holomorphic f_holo).hasPrimitives f_holo.continuousOn
 
 end Complex
