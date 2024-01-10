@@ -935,6 +935,11 @@ theorem ClosedEmbedding.isCompact_preimage {f : X → Y} (hf : ClosedEmbedding f
   hf.toInducing.isCompact_preimage (hf.closed_range) hK
 #align closed_embedding.is_compact_preimage ClosedEmbedding.isCompact_preimage
 
+/-- The preimage of a compact set in the image of an open embedding is compact. -/
+lemma OpenEmbedding.isCompact_preimage {f : X → Y} (hf : OpenEmbedding f) {K : Set Y}
+    (hK: IsCompact K) (Kf : K ⊆ range f) : IsCompact (f ⁻¹' K) := by
+  rwa [hf.toInducing.isCompact_iff, image_preimage_eq_of_subset Kf]
+
 /-- A closed embedding is proper, ie, inverse images of compact sets are contained in compacts.
 Moreover, the preimage of a compact set is compact, see `ClosedEmbedding.isCompact_preimage`. -/
 theorem ClosedEmbedding.tendsto_cocompact {f : X → Y} (hf : ClosedEmbedding f) :
