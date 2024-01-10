@@ -315,7 +315,7 @@ theorem disjiUnion_map {s : Finset α} {t : α → Finset β} {f : β ↪ γ} {h
 #align finset.disj_Union_map Finset.disjiUnion_map
 
 theorem list_map_toFinset [DecidableEq α] [DecidableEq β] {l : List α} :
-  Finset.map f (List.toFinset l) = List.toFinset (List.map (↑f) l) := by
+    Finset.map f (List.toFinset l) = List.toFinset (List.map (↑f) l) := by
   match l with
   | [] => simp
   | x :: xs =>
