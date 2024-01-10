@@ -25,22 +25,12 @@ variable {R : Type*} [CommSemiring R] (S : Submonoid R)
 
 /-- The forward direction of `isLocalizedModule_iff_isBaseChange`. It is also used to prove the
 other direction. -/
-theorem IsLocalizedModule.isBaseChange [IsLocalizedModule S f] : IsBaseChange A f := by
-  refine IsBaseChange.of_lift_unique _ (fun Q _ _ _ _ g ↦ ?_)
-  have := IsLocalizedModule.is_universal S f g <| by
-    intro s
-    simp_rw [Module.End_isUnit_iff, Function.bijective_iff_existsUnique,
-      Module.algebraMap_end_apply]
-    intro q
-    refine ⟨(IsLocalization.mk' _ 1 s : A) • q, ?_, ?_⟩
-    · simp only [← smul_assoc, IsLocalization.smul_mk'_self, map_one, one_smul]
-    · rintro q rfl
-      simp only [smul_comm _ (s : R), ← smul_assoc, IsLocalization.smul_mk'_self, map_one,
-        one_smul]
-  rcases this with ⟨ℓ, rfl, h₂⟩
-  refine ⟨ℓ.extendScalarsOfIsLocalization S A, by simp, fun g'' h ↦ ?_⟩
-  ext x
-  simp [← h₂ (LinearMap.restrictScalars R g'') h]
+theorem IsLocalizedModule.isBaseChange [IsLocalizedModule S f] : IsBaseChange A f :=
+  .of_lift_unique _ fun Q _ _ _ _ g ↦ by
+    obtain ⟨ℓ, rfl, h₂⟩ := IsLocalizedModule.is_universal S f g fun s ↦ by
+      rw [← (Algebra.lsmul R (A := A) R Q).commutes]; exact (IsLocalization.map_units A s).map _
+    refine ⟨ℓ.extendScalarsOfIsLocalization S A, by simp, fun g'' h ↦ ?_⟩
+    cases h₂ (LinearMap.restrictScalars R g'') h; rfl
 
 /-- The map `(f : M →ₗ[R] M')` is a localization of modules iff the map
 `(localization S) × M → N, (s, m) ↦ s • f m` is the tensor product (insomuch as it is the universal

@@ -50,17 +50,13 @@ variable {M M' : Type*} [AddCommMonoid M] [Module R M] [Module Rₛ M] [IsScalar
   [IsLocalizedModule S f]
 
 theorem span_eq_top_of_isLocalizedModule {v : Set M} (hv : span R v = ⊤) :
-    span Rₛ (f '' v) = ⊤ := by
-  rw [eq_top_iff]
-  intro x _
+    span Rₛ (f '' v) = ⊤ := top_unique fun x _ ↦ by
   obtain ⟨⟨m, s⟩, h⟩ := IsLocalizedModule.surj S f x
-  rw [show x = IsLocalization.mk' Rₛ 1 s • f m by
-    rwa [← IsLocalizedModule.smul_inj f s, Submonoid.smul_def, Submonoid.smul_def,
-      ← smul_assoc, IsLocalization.smul_mk' (s:R) 1 s, IsLocalization.mk'_mul_cancel_left, map_one,
-      one_smul]]
-  refine smul_mem _ _  (span_subset_span R Rₛ _ ?_)
-  rw [← LinearMap.coe_restrictScalars R, ← LinearMap.map_span]
-  exact mem_map_of_mem (hv.symm ▸ mem_top)
+  rw [Submonoid.smul_def, ← algebraMap_smul Rₛ, ← Units.smul_isUnit (IsLocalization.map_units Rₛ s),
+    eq_comm, ← inv_smul_eq_iff] at h
+  refine h ▸ smul_mem _ _  (span_subset_span R Rₛ _ ?_)
+  rw [← LinearMap.coe_restrictScalars R, ← LinearMap.map_span, hv]
+  exact mem_map_of_mem mem_top
 
 theorem LinearIndependent.of_isLocalizedModule {ι : Type*} {v : ι → M}
     (hv : LinearIndependent R v) : LinearIndependent Rₛ (f ∘ v) := by

@@ -601,10 +601,8 @@ theorem IsLocalizedModule.of_linearEquiv (e : M' ≃ₗ[R] M'') [hf : IsLocalize
 variable (M) in
 lemma isLocalizedModule_id (R') [CommSemiring R'] [Algebra R R'] [IsLocalization S R'] [Module R' M]
     [IsScalarTower R R' M] : IsLocalizedModule S (.id : M →ₗ[R] M) where
-  map_units s := (Module.End_isUnit_iff _).mpr <| by
-    convert_to Function.Bijective (algebraMap R' (Module.End R' M) (algebraMap R R' s))
-    · ext; simp
-    exact (Module.End_isUnit_iff _).mp ((IsLocalization.map_units R' s).map _)
+  map_units s := by
+    rw [← (Algebra.lsmul R (A := R') R M).commutes]; exact (IsLocalization.map_units R' s).map _
   surj' m := ⟨(m, 1), one_smul _ _⟩
   exists_of_eq h := ⟨1, congr_arg _ h⟩
 
@@ -614,28 +612,13 @@ theorem isLocalizedModule_iff_isLocalization {A Aₛ} [CommSemiring A] [Algebra 
     IsLocalizedModule S (IsScalarTower.toAlgHom R A Aₛ).toLinearMap ↔
       IsLocalization (Algebra.algebraMapSubmonoid A S) Aₛ := by
   rw [isLocalizedModule_iff, isLocalization_iff]
-  refine and_congr ?_ (and_congr ?_ (forall₂_congr fun _ _ ↦ ?_))
-  · have : ∀ x, algebraMap R (Module.End R Aₛ) x = Algebra.lmul R Aₛ (algebraMap R Aₛ x) := by
-      intro _
-      rw [AlgHom.commutes]
-    simp_rw [this, Algebra.lmul_isUnit_iff, Subtype.forall]
-    refine ⟨?_, fun h s hs ↦ ?_⟩
-    · rintro h _ ⟨s, hs, rfl⟩
-      rw [← IsScalarTower.algebraMap_apply]
-      exact h s hs
-    · specialize h (algebraMap R A s) ⟨s, hs, rfl⟩
-      rwa [← IsScalarTower.algebraMap_apply] at h
-  · refine forall_congr' fun _ ↦ ⟨fun ⟨⟨x, s⟩, h⟩ ↦ ?_, fun ⟨⟨x, _, s, hs, rfl⟩, h⟩ ↦ ?_⟩
-    · refine ⟨⟨x, algebraMap R A s, Algebra.mem_algebraMapSubmonoid_of_mem s⟩, ?_⟩
-      rwa [← IsScalarTower.algebraMap_apply, mul_comm, ← Algebra.smul_def]
-    · refine ⟨⟨x, s, hs⟩, ?_⟩
-      rwa [← IsScalarTower.algebraMap_apply, mul_comm, ← Algebra.smul_def] at h
-  · congr!
-    refine ⟨fun ⟨s, hs⟩ ↦ ?_, ?_⟩
-    · refine ⟨⟨algebraMap R A s, Algebra.mem_algebraMapSubmonoid_of_mem s⟩, ?_⟩
-      rwa [← Algebra.smul_def, ← Algebra.smul_def]
-    · rintro ⟨⟨_, s, hs, rfl⟩, h⟩
-      exact ⟨⟨s, hs⟩, by rwa [← Algebra.smul_def, ← Algebra.smul_def] at h⟩
+  refine and_congr ?_ (and_congr (forall_congr' fun _ ↦ ?_) (forall₂_congr fun _ _ ↦ ?_))
+  · simp_rw [← (Algebra.lmul R Aₛ).commutes, Algebra.lmul_isUnit_iff, Subtype.forall,
+      Algebra.algebraMapSubmonoid, ← SetLike.mem_coe, Submonoid.coe_map,
+      Set.ball_image_iff, ← IsScalarTower.algebraMap_apply]
+  · simp_rw [Prod.exists, Subtype.exists, Algebra.algebraMapSubmonoid]
+    simp [← IsScalarTower.algebraMap_apply, Submonoid.mk_smul, Algebra.smul_def, mul_comm]
+  · congr!; simp_rw [Subtype.exists, Algebra.algebraMapSubmonoid]; simp [Algebra.smul_def]
 
 instance {A Aₛ} [CommSemiring A] [Algebra R A][CommSemiring Aₛ] [Algebra A Aₛ] [Algebra R Aₛ]
     [IsScalarTower R A Aₛ] [h : IsLocalization (Algebra.algebraMapSubmonoid A S) Aₛ] :
