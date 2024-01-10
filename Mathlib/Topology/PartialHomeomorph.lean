@@ -691,9 +691,10 @@ theorem image_isOpen_of_isOpen {s : Set α} (hs : IsOpen s) (h : s ⊆ e.source)
 #align local_homeomorph.image_open_of_open PartialHomeomorph.image_isOpen_of_isOpen
 
 /-- The image of the restriction of an open set to the source is open. -/
-theorem image_isOpen_of_isOpen' {s : Set α} (hs : IsOpen s) : IsOpen (e '' (e.source ∩ s)) :=
+theorem isOpen_image_source_inter_of_isOpen {s : Set α} (hs : IsOpen s) :
+    IsOpen (e '' (e.source ∩ s)) :=
   e.isOpen_image_of_subset_source (e.open_source.inter hs) (inter_subset_left _ _)
-#align local_homeomorph.image_open_of_open' PartialHomeomorph.image_isOpen_of_isOpen'
+#align local_homeomorph.image_open_of_open' PartialHomeomorph.isOpen_image_source_inter_of_isOpen
 
 /-- A `PartialEquiv` with continuous open forward map and open source is a `PartialHomeomorph`. -/
 def ofContinuousOpenRestrict (e : PartialEquiv α β) (hc : ContinuousOn e e.source)
