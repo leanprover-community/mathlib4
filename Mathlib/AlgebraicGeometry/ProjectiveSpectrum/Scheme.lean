@@ -726,7 +726,6 @@ end toSpecFromSpec
 section fromSpecToSpec
 
 set_option maxHeartbeats 400000 in
-open GradedAlgebra in
 lemma fromSpecToSpec {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m) (x : Proj.T| pbo f) :
     FromSpec.toFun f_deg hm (toSpec x) = x := by
   classical
