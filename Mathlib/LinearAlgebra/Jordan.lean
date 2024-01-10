@@ -1,3 +1,9 @@
+/-
+Copyright (c) 2024 Antoine Chambert-Loir, Oliver Nash. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Antoine Chambert-Loir, Oliver Nash
+-/
+
 import Mathlib.FieldTheory.Perfect
 import Mathlib.Order.Sublattice
 import Mathlib.LinearAlgebra.EigenSpace.Basic
@@ -17,27 +23,50 @@ open Ideal Polynomial
 open Set Function
 
 section
+
 /- # Attempt to define invariantSubspace using the R[X]-module structure on V -/
 
 variable {R V : Type*} [CommSemiring R] [AddCommGroup V] [Module R V]
+
+def LinearMap.polynomialModule (_ : V →ₗ[R] V) := V
+
 variable (f : V →ₗ[R] V)
 
-def LinearMap.toModule : Module R[X] V := Module.compHom _ (aeval f).toRingHom
+instance : AddCommGroup f.polynomialModule := inferInstanceAs (AddCommGroup V)
+
+instance : Module R[X] f.polynomialModule := Module.compHom V (aeval f).toRingHom
+
+instance : Module R f.polynomialModule := inferInstanceAs (Module R V)
+
+instance : IsScalarTower R R[X] f.polynomialModule := ⟨fun t p v ↦ by
+  change aeval f (t • p) v = t • aeval f p v
+  simp only [map_smul, LinearMap.smul_apply]⟩
 
 example : CompleteLattice (Submodule R V) := Submodule.completeLattice
 
-example : CompleteLattice (@Submodule R[X] V _ _ f.toModule) :=
-  @Submodule.completeLattice R[X] V _ _ f.toModule
+example : CompleteLattice (Submodule R[X] f.polynomialModule) := Submodule.completeLattice
 
-example : LatticeHom (@Submodule R[X] V _ _ f.toModule) (Submodule R V) :=
-  haveI : Module R[X] V := f.toModule
-  { toFun := fun W ↦ {
-      carrier := W.carrier
-      add_mem' := sorry
-      zero_mem' := sorry
-      smul_mem' := sorry }
-    map_inf' := sorry
-    map_sup' := sorry }
+example : CompleteLatticeHom (Submodule R[X] f.polynomialModule) (Submodule R V) where
+  toFun := fun W ↦ {
+    carrier := W.carrier
+    add_mem' := by
+      simp only [Submodule.mem_carrier, SetLike.mem_coe]
+      apply Submodule.add_mem
+    zero_mem' := by
+      simp only [Submodule.mem_carrier, SetLike.mem_coe]
+      exact Submodule.zero_mem W
+    smul_mem' := by
+      simp only [Submodule.mem_carrier, SetLike.mem_coe]
+      intro c r hx
+      refine Submodule.smul_of_tower_mem W c hx }
+  map_sInf' s := by
+    ext (v : f.polynomialModule)
+    simp only [Submodule.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk,
+      AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup, Submodule.mem_sInf, mem_image,
+      forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
+    convert Submodule.mem_sInf
+  map_sSup' s := by
+    sorry
 
 end
 
