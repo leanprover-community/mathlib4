@@ -11,8 +11,8 @@ import Mathlib.Probability.Notation
 Define the geometric measure over the natural numbers
 
 ## Main definitions
-* `geometricPmfReal`: the function `p x ↦ (1-p) ^ x * p`
-  for `x ∈ ℕ`, which is the probability density function of a geometric distribution with
+* `geometricPmfReal`: the function `p n ↦ (1-p) ^ n * p`
+  for `n ∈ ℕ`, which is the probability density function of a geometric distribution with
   success probability `p ∈ (0,1]`.
 * `geometricPmf`: `ℝ≥0∞`-valued pdf,
   `geometricPmf p = ENNReal.ofReal (geometricPmfReal p)`.
@@ -25,11 +25,11 @@ open MeasureTheory Real Set Filter Topology
 
 namespace ProbabilityTheory
 
-section PoissonPmf
+section GeometricPmf
 
 /-- The pmf of the geometric distribution depending on its success probability. -/
 noncomputable
-def geometricPmfReal (p : ℝ) (x : ℕ) : ℝ := (1-p) ^ x * p
+def geometricPmfReal (p : ℝ) (n : ℕ) : ℝ := (1-p) ^ n * p
 
 lemma p_Ioc_to_one_le_Ico {p : ℝ} (hp : p ∈ Ioc 0 1) : 1-p ∈ Ico 0 1 := by
   have hl: 0 ≤ 1-p := by
@@ -41,7 +41,7 @@ lemma p_Ioc_to_one_le_Ico {p : ℝ} (hp : p ∈ Ioc 0 1) : 1-p ∈ Ico 0 1 := by
   simp only [mem_Ico, sub_nonneg, sub_lt_self_iff]
   exact ⟨sub_nonneg.mp hl, (sub_lt_self_iff 1).mp hu⟩
 
-lemma geometricPmfRealSum (p : ℝ) (hp : p ∈ Ioc 0 1) : HasSum (fun x ↦ geometricPmfReal p x) 1 := by
+lemma geometricPmfRealSum (p : ℝ) (hp : p ∈ Ioc 0 1) : HasSum (fun n ↦ geometricPmfReal p n) 1 := by
   unfold geometricPmfReal
   rw [mem_Ioc] at hp
   have hp_one := p_Ioc_to_one_le_Ico hp
@@ -53,14 +53,14 @@ lemma geometricPmfRealSum (p : ℝ) (hp : p ∈ Ioc 0 1) : HasSum (fun x ↦ geo
   exact this
 
 /-- The geometric pmf is positive for all natural numbers -/
-lemma geometricPmfReal_pos {p : ℝ} {x : ℕ} (hp : p ∈ Ioc 0 1) (hpn1 : p < 1) :
-    0 < geometricPmfReal p x := by
+lemma geometricPmfReal_pos {p : ℝ} {n : ℕ} (hp : p ∈ Ioc 0 1) (hpn1 : p < 1) :
+    0 < geometricPmfReal p n := by
   rw [geometricPmfReal]
   have : 0 < 1-p := sub_pos.mpr hpn1
   have : 0 < p := hp.1
   positivity
 
-lemma geometricPmfReal_nonneg {p : ℝ} {x : ℕ}  (hp : p ∈ Ioc 0 1) : 0 ≤ geometricPmfReal p x := by
+lemma geometricPmfReal_nonneg {p : ℝ} {n : ℕ}  (hp : p ∈ Ioc 0 1) : 0 ≤ geometricPmfReal p n := by
   rw [geometricPmfReal]
   have := (p_Ioc_to_one_le_Ico hp).1
   have : 0 ≤ p := hp.1.le
@@ -69,7 +69,7 @@ lemma geometricPmfReal_nonneg {p : ℝ} {x : ℕ}  (hp : p ∈ Ioc 0 1) : 0 ≤ 
 /-- Geometric distribution with success probability `p`. -/
 noncomputable
 def geometricPmf {p : ℝ} (hp : p ∈ Ioc 0 1) : PMF ℕ := by
-  refine ⟨fun x ↦ ENNReal.ofReal (geometricPmfReal p x), ?_⟩
+  refine ⟨fun n ↦ ENNReal.ofReal (geometricPmfReal p n), ?_⟩
   apply ENNReal.hasSum_coe.mpr
   rw [← toNNReal_one]
   exact (geometricPmfRealSum p hp).toNNReal (fun n ↦ geometricPmfReal_nonneg hp)
@@ -84,6 +84,8 @@ lemma stronglyMeasurable_geometricPmfReal {p : ℝ} (hp : p ∈ Ioc 0 1) :
     StronglyMeasurable (geometricPmfReal p) :=
   stronglyMeasurable_iff_measurable.mpr (measurable_geometricPmfReal hp)
 
+end GeometricPmf
+
 /-- Measure defined by the geometric distribution -/
 noncomputable
 def geometricMeasure {p : ℝ} (hp : p ∈ Ioc 0 1) : Measure ℕ := (geometricPmf hp).toMeasure
@@ -91,3 +93,5 @@ def geometricMeasure {p : ℝ} (hp : p ∈ Ioc 0 1) : Measure ℕ := (geometricP
 lemma isProbabilityMeasureGeometric {p : ℝ} (hp : p ∈ Ioc 0 1) :
     IsProbabilityMeasure (geometricMeasure hp) :=
   PMF.toMeasure.isProbabilityMeasure (geometricPmf hp )
+
+end ProbabilityTheory
