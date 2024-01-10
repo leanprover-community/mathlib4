@@ -90,6 +90,10 @@ theorem gold_sub_goldConj : φ - ψ = Real.sqrt 5 := by
   ring
 #align gold_sub_gold_conj gold_sub_goldConj
 
+theorem gold_exp (n : ℕ) : φ ^ (n + 2) - φ ^ (n + 1) = φ ^ n := by
+  rw [goldenRatio]; ring_nf; norm_num; ring_nf
+#align gold_exp gold_exp
+
 @[simp 1200]
 theorem gold_sq : φ ^ 2 = φ + 1 := by
   rw [goldenRatio, ← sub_eq_zero]
