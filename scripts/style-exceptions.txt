@@ -72,7 +72,6 @@ Mathlib/GroupTheory/Perm/Cycle/Basic.lean : line 1 : ERR_NUM_LIN : 2100 file con
 Mathlib/GroupTheory/Subgroup/Basic.lean : line 1 : ERR_NUM_LIN : 4000 file contains 3878 lines, try to split it up
 Mathlib/GroupTheory/Submonoid/Operations.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1561 lines, try to split it up
 Mathlib/Init/Data/Int/Basic.lean : line 12 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Init/Data/Nat/Bits.lean : line 10 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Init/Data/Nat/Lemmas.lean : line 12 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Init/Logic.lean : line 18 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Init/Meta/WellFoundedTactics.lean : line 13 : ERR_MOD : Module docstring missing, or too late
