@@ -1019,6 +1019,7 @@ theorem eq_of_eqOnSource_univ {e e' : PartialHomeomorph α β} (h : e ≈ e') (s
     (t : e.target = univ) : e = e' :=
   toPartialEquiv_injective <| PartialEquiv.eq_of_eqOnSource_univ _ _ h s t
 #align local_homeomorph.eq_of_eq_on_source_univ PartialHomeomorph.eq_of_eqOnSource_univ
+
 end EqOnSource
 
 /- product of two partial homeomorphisms -/
@@ -1073,6 +1074,26 @@ theorem prod_eq_prod_of_nonempty' {e₁ e₁' : PartialHomeomorph α β} {e₂ e
 #align local_homeomorph.prod_eq_prod_of_nonempty' PartialHomeomorph.prod_eq_prod_of_nonempty'
 
 end Prod
+
+/- finite product of partial homeomorphisms -/
+section Pi
+
+variable {ι : Type*} [Fintype ι] {Xi Yi : ι → Type*} [∀ i, TopologicalSpace (Xi i)]
+  [∀ i, TopologicalSpace (Yi i)] (ei : ∀ i, PartialHomeomorph (Xi i) (Yi i))
+
+/-- The product of a finite family of `PartialHomeomorph`s. -/
+@[simps toPartialEquiv]
+def pi : PartialHomeomorph (∀ i, Xi i) (∀ i, Yi i) where
+  toPartialEquiv := PartialEquiv.pi fun i => (ei i).toPartialEquiv
+  open_source := isOpen_set_pi finite_univ fun i _ => (ei i).open_source
+  open_target := isOpen_set_pi finite_univ fun i _ => (ei i).open_target
+  continuousOn_toFun := continuousOn_pi.2 fun i =>
+    (ei i).continuousOn.comp (continuous_apply _).continuousOn fun _f hf => hf i trivial
+  continuousOn_invFun := continuousOn_pi.2 fun i =>
+    (ei i).continuousOn_symm.comp (continuous_apply _).continuousOn fun _f hf => hf i trivial
+#align local_homeomorph.pi PartialHomeomorph.pi
+
+end Pi
 
 /- combining two partial homeomorphisms using `Set.piecewise` -/
 section Piecewise
@@ -1130,26 +1151,6 @@ def disjointUnion (e e' : PartialHomeomorph α β) [∀ x, Decidable (x ∈ e.so
 #align local_homeomorph.disjoint_union PartialHomeomorph.disjointUnion
 
 end Piecewise
-
-/- finite product of partial homeomorphisms -/
-section Pi
-
-variable {ι : Type*} [Fintype ι] {Xi Yi : ι → Type*} [∀ i, TopologicalSpace (Xi i)]
-  [∀ i, TopologicalSpace (Yi i)] (ei : ∀ i, PartialHomeomorph (Xi i) (Yi i))
-
-/-- The product of a finite family of `PartialHomeomorph`s. -/
-@[simps toPartialEquiv]
-def pi : PartialHomeomorph (∀ i, Xi i) (∀ i, Yi i) where
-  toPartialEquiv := PartialEquiv.pi fun i => (ei i).toPartialEquiv
-  open_source := isOpen_set_pi finite_univ fun i _ => (ei i).open_source
-  open_target := isOpen_set_pi finite_univ fun i _ => (ei i).open_target
-  continuousOn_toFun := continuousOn_pi.2 fun i =>
-    (ei i).continuousOn.comp (continuous_apply _).continuousOn fun _f hf => hf i trivial
-  continuousOn_invFun := continuousOn_pi.2 fun i =>
-    (ei i).continuousOn_symm.comp (continuous_apply _).continuousOn fun _f hf => hf i trivial
-#align local_homeomorph.pi PartialHomeomorph.pi
-
-end Pi
 
 section Continuity
 
