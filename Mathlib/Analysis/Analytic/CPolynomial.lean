@@ -308,8 +308,6 @@ theorem HasFiniteFPowerSeriesAt.eventually_const_of_bound_one
   Filter.eventuallyEq_iff_exists_mem.mpr (let ⟨r, hf⟩ := hf; ⟨EMetric.ball x r,
     EMetric.ball_mem_nhds x hf.r_pos, fun y hy ↦ hf.eq_const_of_bound_one y hy⟩)
 
-section do_we_really_want_these_lemmas?
-
 /-- If a function admits a finite power series expansion on a disk, then it is continuous there. -/
 protected theorem HasFiniteFPowerSeriesOnBall.continuousOn
     (hf : HasFiniteFPowerSeriesOnBall f p x n r) :
@@ -324,8 +322,6 @@ protected theorem CPolynomialAt.continuousAt (hf : CPolynomialAt 𝕜 f x) : Con
 protected theorem CPolynomialOn.continuousOn {s : Set E} (hf : CPolynomialOn 𝕜 f s) :
     ContinuousOn f s :=
   hf.analyticOn.continuousOn
-
-end do_we_really_want_these_lemmas?
 
 /-- Continuously polynomial everywhere implies continuous -/
 theorem CPolynomialOn.continuous {f : E → F} (fa : CPolynomialOn 𝕜 f univ) : Continuous f := by
