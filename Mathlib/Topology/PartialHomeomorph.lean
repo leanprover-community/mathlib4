@@ -465,6 +465,19 @@ lemma isOpen_image_symm_of_subset_target {t : Set β} (ht : IsOpen t) (hte : t �
     IsOpen (e.symm '' t) :=
   isOpen_image_of_subset_source e.symm ht (e.symm_source ▸ hte)
 
+lemma isOpen_symm_image_iff_of_subset_target {t : Set β} (hs : t ⊆ e.target) :
+    IsOpen (e.symm '' t) ↔ IsOpen t := by
+  refine ⟨fun h ↦ ?_, fun h ↦ e.symm.isOpen_image_of_subset_source h hs⟩
+  have hs' : e.symm '' t ⊆ e.source := by
+    rw [e.symm_image_eq_source_inter_preimage hs]
+    apply Set.inter_subset_left
+  rw [← e.image_symm_image_of_subset_target hs]
+  exact e.isOpen_image_of_subset_source h hs'
+
+theorem isOpen_image_iff_of_subset_source {s : Set α} (hs : s ⊆ e.source) :
+    IsOpen s ↔ IsOpen (e '' s) := by
+  rw [← e.symm.isOpen_symm_image_iff_of_subset_target hs, e.symm_symm]
+
 /-!
 ### `PartialHomeomorph.IsImage` relation
 
@@ -673,14 +686,12 @@ theorem isOpen_inter_preimage_symm {s : Set α} (hs : IsOpen s) : IsOpen (e.targ
 /-- The image of an open set in the source is open. -/
 theorem image_isOpen_of_isOpen {s : Set α} (hs : IsOpen s) (h : s ⊆ e.source) :
     IsOpen (e '' s) := by
-  have : e '' s = e.target ∩ e.symm ⁻¹' s := e.toPartialEquiv.image_eq_target_inter_inv_preimage h
-  rw [this]
-  exact e.continuousOn_symm.isOpen_inter_preimage e.open_target hs
+  apply e.isOpen_image_of_subset_source hs h
 #align local_homeomorph.image_open_of_open PartialHomeomorph.image_isOpen_of_isOpen
 
 /-- The image of the restriction of an open set to the source is open. -/
 theorem image_isOpen_of_isOpen' {s : Set α} (hs : IsOpen s) : IsOpen (e '' (e.source ∩ s)) :=
-  image_isOpen_of_isOpen _ (IsOpen.inter e.open_source hs) (inter_subset_left _ _)
+  e.isOpen_image_of_subset_source (e.open_source.inter hs) (inter_subset_left _ _)
 #align local_homeomorph.image_open_of_open' PartialHomeomorph.image_isOpen_of_isOpen'
 
 /-- A `PartialEquiv` with continuous open forward map and open source is a `PartialHomeomorph`. -/
