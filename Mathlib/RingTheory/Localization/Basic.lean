@@ -1432,7 +1432,7 @@ variable (Rₘ Sₘ)
 /-- Injectivity of the underlying `algebraMap` descends to the algebra induced by localization. -/
 theorem localizationAlgebra_injective (hRS : Function.Injective (algebraMap R S)) :
     Function.Injective (@algebraMap Rₘ Sₘ _ _ (localizationAlgebra M S)) :=
-  IsLocalization.map_injective_of_injective (M := M) _ hRS (i:=i)
+  IsLocalization.map_injective_of_injective (M := M) _ hRS (i := i)
 #align localization_algebra_injective localizationAlgebra_injective
 
 end Algebra

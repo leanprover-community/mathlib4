@@ -1271,20 +1271,19 @@ theorem map_injective_of_injective (hg : Injective g)
   rw [(eq_mk'_iff_mul_eq f).mpr hx,
       (eq_mk'_iff_mul_eq f).mpr hy, LocalizationMap.eq]
   --- The following is equivalent to `hizw: i z = i w`
-  obtain ⟨d,hd ⟩: ∃(d: Submonoid.map g S), d* (g y.2 * g x.1) = d* (g x.2 * g y.1) :=
-  by
+  obtain ⟨d, hd⟩: ∃(d: Submonoid.map g S), d* (g y.2 * g x.1) = d* (g x.2 * g y.1) := by
     lift (g x.2) to (Submonoid.map g S) using
        (apply_coe_mem_map g S x.2) with gx2 hgx2
     lift (g y.2) to (Submonoid.map g S) using
        (apply_coe_mem_map g S y.2) with gy2 hgy2
     have eqz:= congrArg i hx
-    rw [map_mul,ifkg,ifkg,←hgx2] at eqz
+    rw [map_mul, ifkg, ifkg, ← hgx2] at eqz
     have eqw:= congrArg i hy
-    rw [map_mul,ifkg,ifkg,←hgy2] at eqw
+    rw [map_mul, ifkg, ifkg, ← hgy2] at eqw
     rw [(eq_mk'_iff_mul_eq k).mpr eqz,
         (eq_mk'_iff_mul_eq k).mpr eqw, LocalizationMap.eq] at hizw
     exact hizw
-  obtain ⟨c,hc ⟩:=
+  obtain ⟨c, hc⟩:=
     (Set.exists_image_iff g S _).mp (exists_apply_eq_apply' Subtype.val d)
   simp_rw [hc,← map_mul] at hd
   --- The last step is just applying hg, injectivity of g
