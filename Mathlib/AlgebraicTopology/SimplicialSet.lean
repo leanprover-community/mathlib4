@@ -71,10 +71,14 @@ instance hasColimits : HasColimits SSet := by
 lemma hom_ext {X Y : SSet} {f g : X ⟶ Y} (w : ∀ n, f.app n = g.app n) : f = g :=
   SimplicialObject.hom_ext _ _ w
 
+/-- The ulift functor `SSet.{u} ⥤ SSet.{max u v}` on simplicial sets. -/
+def uliftFunctor : SSet.{u} ⥤ SSet.{max u v} :=
+  (SimplicialObject.whiskering _ _).obj CategoryTheory.uliftFunctor.{v, u}
+
 /-- The `n`-th standard simplex `Δ[n]` associated with a nonempty finite linear order `n`
 is the Yoneda embedding of `n`. -/
-def standardSimplex : SimplexCategory ⥤ SSet :=
-  yoneda
+def standardSimplex : SimplexCategory ⥤ SSet.{u} :=
+  yoneda ⋙ uliftFunctor
 set_option linter.uppercaseLean3 false in
 #align sSet.standard_simplex SSet.standardSimplex
 
@@ -88,36 +92,44 @@ namespace standardSimplex
 
 open Finset Opposite SimplexCategory
 
+def objEquiv (n : SimplexCategory) (m : SimplexCategoryᵒᵖ) :
+    (standardSimplex.{u}.obj n).obj m ≃ (m.unop ⟶ n) :=
+  Equiv.ulift.{u, 0}
+
+abbrev objMk {n : ℕ} {m : SimplexCategoryᵒᵖ} (f : Fin (len m.unop + 1) →o Fin (n + 1)) :
+    Δ[n].obj m :=
+  (objEquiv _ _).symm (Hom.mk f)
+
 /-- The (degenerate) `m`-simplex in the standard simplex concentrated in vertex `k`. -/
 def const (n : ℕ) (k : Fin (n+1)) (m : SimplexCategoryᵒᵖ) : Δ[n].obj m :=
-  Hom.mk <| OrderHom.const _ k
+  objMk (OrderHom.const _ k )
 
 @[simp]
-lemma const_toOrderHom (n : ℕ) (k : Fin (n+1)) (m : SimplexCategoryᵒᵖ) :
-    (const n k m).toOrderHom = OrderHom.const _ k :=
+lemma const_down_toOrderHom (n : ℕ) (k : Fin (n+1)) (m : SimplexCategoryᵒᵖ) :
+    (const n k m).down.toOrderHom = OrderHom.const _ k :=
   rfl
 
 /-- The edge of the standard simplex with endpoints `a` and `b`. -/
 def edge (n : ℕ) (a b : Fin (n+1)) (hab : a ≤ b) : Δ[n] _[1] := by
-  refine Hom.mk ⟨![a, b], ?_⟩
+  refine objMk ⟨![a, b], ?_⟩
   rw [Fin.monotone_iff_le_succ]
   simp only [unop_op, len_mk, Fin.forall_fin_one]
   apply Fin.mk_le_mk.mpr hab
 
-lemma coe_edge_toOrderHom (n : ℕ) (a b : Fin (n+1)) (hab : a ≤ b) :
-    ↑(edge n a b hab).toOrderHom = ![a, b] :=
+lemma coe_edge_down_toOrderHom (n : ℕ) (a b : Fin (n+1)) (hab : a ≤ b) :
+    ↑(edge n a b hab).down.toOrderHom = ![a, b] :=
   rfl
 
 /-- The triangle in the standard simplex with vertices `a`, `b`, and `c`. -/
 def triangle {n : ℕ} (a b c : Fin (n+1)) (hab : a ≤ b) (hbc : b ≤ c) : Δ[n] _[2] := by
-  refine Hom.mk ⟨![a, b, c], ?_⟩
+  refine objMk ⟨![a, b, c], ?_⟩
   rw [Fin.monotone_iff_le_succ]
   simp only [unop_op, len_mk, Fin.forall_fin_two]
   dsimp
   simp only [*, Matrix.tail_cons, Matrix.head_cons, true_and]
 
-lemma coe_triangle_toOrderHom {n : ℕ} (a b c : Fin (n+1)) (hab : a ≤ b) (hbc : b ≤ c) :
-    ↑(triangle a b c hab hbc).toOrderHom = ![a, b, c] :=
+lemma coe_triangle_down_toOrderHom {n : ℕ} (a b c : Fin (n+1)) (hab : a ≤ b) (hbc : b ≤ c) :
+    ↑(triangle a b c hab hbc).down.toOrderHom = ![a, b, c] :=
   rfl
 
 end standardSimplex
@@ -127,7 +139,7 @@ section
 /-- The `m`-simplices of the `n`-th standard simplex are
 the monotone maps from `Fin (m+1)` to `Fin (n+1)`. -/
 def asOrderHom {n} {m} (α : Δ[n].obj m) : OrderHom (Fin (m.unop.len + 1)) (Fin (n + 1)) :=
-  α.toOrderHom
+  α.down.toOrderHom
 set_option linter.uppercaseLean3 false in
 #align sSet.as_order_hom SSet.asOrderHom
 
@@ -136,10 +148,10 @@ end
 /-- The boundary `∂Δ[n]` of the `n`-th standard simplex consists of
 all `m`-simplices of `standardSimplex n` that are not surjective
 (when viewed as monotone function `m → n`). -/
-def boundary (n : ℕ) : SSet where
+def boundary (n : ℕ) : SSet.{u} where
   obj m := { α : Δ[n].obj m // ¬Function.Surjective (asOrderHom α) }
   map {m₁ m₂} f α :=
-    ⟨f.unop ≫ (α : Δ[n].obj m₁), by
+    ⟨Δ[n].map f α.1, by
       intro h
       apply α.property
       exact Function.Surjective.of_comp h⟩
@@ -161,7 +173,7 @@ for which the union of `{i}` and the range of `α` is not all of `n`
 def horn (n : ℕ) (i : Fin (n + 1)) : SSet where
   obj m := { α : Δ[n].obj m // Set.range (asOrderHom α) ∪ {i} ≠ Set.univ }
   map {m₁ m₂} f α :=
-    ⟨f.unop ≫ (α : Δ[n].obj m₁), by
+    ⟨Δ[n].map f α.1, by
       intro h; apply α.property
       rw [Set.eq_univ_iff_forall] at h ⊢; intro j
       apply Or.imp _ id (h j)
@@ -253,7 +265,8 @@ def primitiveTriangle {n : ℕ} (i : Fin (n+4))
     OrderHom.const_coe_coe, Set.union_singleton, ne_eq, ← Set.univ_subset_iff, Set.subset_def,
     Set.mem_univ, Set.mem_insert_iff, Set.mem_range, Function.const_apply, exists_const,
     forall_true_left, not_forall, not_or, unop_op, not_exists,
-    standardSimplex.triangle, OrderHom.coe_mk, @eq_comm _ _ i]
+    standardSimplex.triangle, OrderHom.coe_mk, @eq_comm _ _ i,
+    standardSimplex.objMk, standardSimplex.objEquiv, Equiv.ulift]
   dsimp
   by_cases hk0 : k = 0
   · subst hk0
@@ -333,7 +346,7 @@ attribute [local simp] SSet.standardSimplex
 /-- The functor which sends `[n]` to the simplicial set `Δ[n]` equipped by
 the obvious augmentation towards the terminal object of the category of sets. -/
 @[simps]
-noncomputable def standardSimplex : SimplexCategory ⥤ SSet.Augmented where
+noncomputable def standardSimplex : SimplexCategory ⥤ SSet.Augmented.{u} where
   obj Δ :=
     { left := SSet.standardSimplex.obj Δ
       right := terminal _
@@ -341,6 +354,16 @@ noncomputable def standardSimplex : SimplexCategory ⥤ SSet.Augmented where
   map θ :=
     { left := SSet.standardSimplex.map θ
       right := terminal.from _ }
+  map_id n := by
+    ext1
+    · dsimp
+      erw [yoneda.map_id, uliftFunctor.map_id]
+      rfl
+    · aesop_cat
+  map_comp _ _ := by
+    ext1
+    · rfl
+    · aesop_cat
 set_option linter.uppercaseLean3 false in
 #align sSet.augmented.standard_simplex SSet.Augmented.standardSimplex
 
