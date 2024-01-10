@@ -239,8 +239,16 @@ end IsSepClosure
 
 namespace IsSepClosed
 
-variable {K : Type u} {L : Type v} {M : Type w} [Field K] [Field L] [Algebra K L] [Field M]
-  [Algebra K M] [IsSepClosed M] [IsSeparable K L]
+variable {K : Type u} (L : Type v) {M : Type w} [Field K] [Field L] [Algebra K L] [Field M]
+  [Algebra K M] [IsSepClosed M]
+
+theorem surjective_comp_algebraMap_of_isSeparable {E : Type*}
+    [Field E] [Algebra K E] [Algebra L E] [IsScalarTower K L E] [IsSeparable L E] :
+    Function.Surjective fun φ : E →ₐ[K] M ↦ φ.comp (IsScalarTower.toAlgHom K L E) :=
+  fun f ↦ IntermediateField.exists_algHom_of_splits' (E := E) f
+    fun s ↦ ⟨IsSeparable.isIntegral L s, IsSepClosed.splits_codomain _ <| IsSeparable.separable L s⟩
+
+variable [IsSeparable K L] {L}
 
 /-- A (random) homomorphism from a separable extension L of K into a separably
   closed extension M of K. -/
