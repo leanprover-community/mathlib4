@@ -9,8 +9,13 @@ import Mathlib.CategoryTheory.Triangulated.Functor
 
 /-! The pretriangulated structure on the homotopy category of complexes
 
+<<<<<<< HEAD
 In this file, we define the pretriangulated structure on the homotopy
 category `HomotopyCategory C (ComplexShape.up ℤ)` of an additive category `C`.
+=======
+In this file, we shall define the pretriangulated structure on the homotopy
+category `HomotopyCategory C (ComplexShape.up ℤ)` of an additive category `C` (TODO).
+>>>>>>> origin/homotopy-category-pretriangulated-3
 The distinguished triangles are the triangles that are isomorphic to the
 image in the homotopy category of the standard triangle
 `K ⟶ L ⟶ mappingCone φ ⟶ K⟦(1 : ℤ)⟧` for some morphism of
@@ -154,10 +159,10 @@ noncomputable def triangleMap :
   comm₁ := comm
   comm₂ := by
     dsimp
-    rw [map_eq_mapOfHomotopy, triangleMapOfHomotopy_comm₂ (Homotopy.ofEq comm)]
+    rw [map_eq_mapOfHomotopy, triangleMapOfHomotopy_comm₂]
   comm₃ := by
     dsimp
-    rw [map_eq_mapOfHomotopy, triangleMapOfHomotopy_comm₃ (Homotopy.ofEq comm)]
+    rw [map_eq_mapOfHomotopy, triangleMapOfHomotopy_comm₃]
 
 end map
 
