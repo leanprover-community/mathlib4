@@ -669,7 +669,7 @@ attribute [to_additive existing toNatSMul] Monoid.toNatPow
 
 section
 
-variable {M : Type*} [Monoid M] {n : ℕ}
+variable {M : Type*} [Monoid M]
 
 @[to_additive (attr := simp) nsmul_eq_smul]
 theorem npow_eq_pow (n : ℕ) (x : M) : Monoid.npow n x = x ^ n :=
