@@ -48,8 +48,9 @@ then it should use `e.source ∩ s` or `e.target ∩ t`, not `s ∩ e.source` or
 
 open Function Set Filter Topology
 
-variable {X : Type*} {Y : Type*} {Z : Type*} {Z' : Type*} [TopologicalSpace X]
-  [TopologicalSpace Y] [TopologicalSpace Z] [TopologicalSpace Z']
+variable {X : Type*} {Y : Type*} {Z : Type*} {Z' Z'' Z''' : Type*} [TopologicalSpace X]
+  [TopologicalSpace Y] [TopologicalSpace Z]
+  [TopologicalSpace Z'] [TopologicalSpace Z''] [TopologicalSpace Z''']
 
 /-- Partial homeomorphisms, defined on open subsets of the space -/
 -- porting note: commented @[nolint has_nonempty_instance]
@@ -1044,15 +1045,15 @@ theorem prod_symm (e : PartialHomeomorph X Y) (e' : PartialHomeomorph Z Z') :
 #align local_homeomorph.prod_symm PartialHomeomorph.prod_symm
 
 @[simp]
-theorem refl_prod_refl {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] :
+theorem refl_prod_refl :
     (PartialHomeomorph.refl X).prod (PartialHomeomorph.refl Y) = PartialHomeomorph.refl (X × Y) :=
   PartialHomeomorph.ext _ _ (fun _ => rfl) (fun _ => rfl) univ_prod_univ
 #align local_homeomorph.refl_prod_refl PartialHomeomorph.refl_prod_refl
 
 @[simp, mfld_simps]
-theorem prod_trans {η : Type*} {ε : Type*} [TopologicalSpace η] [TopologicalSpace ε]
-    (e : PartialHomeomorph X Y) (f : PartialHomeomorph Y Z) (e' : PartialHomeomorph Z' η)
-    (f' : PartialHomeomorph η ε) : (e.prod e').trans (f.prod f') = (e.trans f).prod (e'.trans f') :=
+theorem prod_trans (e : PartialHomeomorph X Y) (f : PartialHomeomorph Y Z)
+    (e' : PartialHomeomorph Z' Z'') (f' : PartialHomeomorph Z'' Z''') :
+    (e.prod e').trans (f.prod f') = (e.trans f).prod (e'.trans f') :=
   toPartialEquiv_injective <| e.1.prod_trans ..
 #align local_homeomorph.prod_trans PartialHomeomorph.prod_trans
 
