@@ -15,8 +15,6 @@ then `C ⥤ D` is also preadditive.
 
 -/
 
-set_option profiler true
-
 open BigOperators
 
 namespace CategoryTheory
