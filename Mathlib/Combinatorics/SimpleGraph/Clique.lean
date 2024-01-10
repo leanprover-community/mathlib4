@@ -302,30 +302,21 @@ theorem cliqueFree_completeMultipartiteGraph {ι : Type*} [Fintype ι] (V : ι �
 protected theorem CliqueFree.replaceVertex [DecidableEq α] (h : G.CliqueFree n) (s t : α) :
     (G.replaceVertex s t).CliqueFree n := by
   contrapose h
-  obtain ⟨⟨f, hi⟩, ha⟩ := topEmbeddingOfNotCliqueFree h
-  simp only [Function.Embedding.coeFn_mk, top_adj, ne_eq] at ha
+  obtain ⟨φ, hφ⟩ := topEmbeddingOfNotCliqueFree h
   rw [not_cliqueFree_iff]
-  by_cases mt : t ∈ Set.range f
+  by_cases mt : t ∈ Set.range φ
   · obtain ⟨x, _⟩ := mt
-    by_cases ms : s ∈ Set.range f
+    by_cases ms : s ∈ Set.range φ
     · obtain ⟨y, _⟩ := ms
-      have := @ha x y
+      have := @hφ x y
       simp_all [not_cliqueFree_iff]
-    · use ⟨Function.update f x s, ?_⟩ <;> intro a b
-      · simp only [Function.Embedding.coeFn_mk, top_adj, ne_eq]
-        split_ifs with h1 h2 h2
-        · simp_all
-        · have := (@ha b x).mpr h2
-          split_ifs at this; subst h1; tauto
-        · have := (@ha a x).mpr h1
-          split_ifs at this; subst h2; tauto
-        · rw [← @ha a b]
-          have := (@hi a x).mt h1
-          have := (@hi b x).mt h2
-          simp_all
-      · dsimp only; split_ifs
-        exacts [by simp_all, fun _ ↦ by simp_all, fun _ ↦ by simp_all, by apply hi]
-  · use ⟨f, hi⟩; simp_all
+    · use φ.setValue x s
+      intro a b
+      simp only [Embedding.coeFn_mk, Embedding.setValue, not_exists.mp ms a, not_exists.mp ms b,
+        ite_false]
+      rw [apply_ite (G.Adj · _), apply_ite (G.Adj _ ·), apply_ite (G.Adj _ ·)]
+      convert @hφ a b <;> aesop
+  · use φ; simp_all
 
 @[simp]
 theorem cliqueFree_two : G.CliqueFree 2 ↔ G = ⊥ := by
