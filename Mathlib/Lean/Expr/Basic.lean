@@ -93,7 +93,7 @@ def isBlackListed {m} [Monad m] [MonadEnv m] (declName : Name) : m Bool := do
   if declName matches .str _ "inj" then return true
   if declName matches .str _ "noConfusionType" then return true
   let env ← getEnv
-  pure $ declName.isInternalDetail
+  pure <| declName.isInternalDetail
    || isAuxRecursor env declName
    || isNoConfusion env declName
   <||> isRec declName <||> isMatcher declName
@@ -422,8 +422,8 @@ def reduceProjStruct? (e : Expr) : MetaM (Option Expr) := do
     if hs : sidx < sfields.size then
       return some (sfields[sidx]'hs)
     else
-      throwError m!"ill-formed expression, {cname} is the {pinfo.i + 1}-th projection function {
-          ""}but {sarg} does not have enough arguments"
+      throwError m!"ill-formed expression, {cname} is the {pinfo.i + 1}-th projection function \
+        but {sarg} does not have enough arguments"
   else
     return none
 

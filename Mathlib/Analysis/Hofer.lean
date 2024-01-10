@@ -66,8 +66,7 @@ theorem hofer {X : Type*} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) (
   have key : ∀ n, d (u n) (u (n + 1)) ≤ ε / 2 ^ n ∧ 2 * ϕ (u n) < ϕ (u (n + 1)) := by
     intro n
     induction' n using Nat.case_strong_induction_on with n IH
-    · specialize hu 0
-      simpa [mul_nonneg_iff, zero_le_one, ε_pos.le, le_refl] using hu
+    · simpa [ε_pos.le] using hu 0
     have A : d (u (n + 1)) x ≤ 2 * ε := by
       rw [dist_comm]
       let r := range (n + 1) -- range (n+1) = {0, ..., n}
@@ -98,9 +97,8 @@ theorem hofer {X : Type*} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) (
     let v n := (ϕ ∘ u) (n + 1)
     suffices Tendsto v atTop atTop by rwa [tendsto_add_atTop_iff_nat] at this
     have hv₀ : 0 < v 0 := by
-      have : 0 ≤ ϕ (u 0) := nonneg x
       calc
-        0 ≤ 2 * ϕ (u 0) := (mul_nonneg_iff_of_pos_left zero_lt_two).mpr this
+        0 ≤ 2 * ϕ (u 0) := by specialize nonneg x; positivity
         _ < ϕ (u (0 + 1)) := key₂ 0
     apply tendsto_atTop_of_geom_le hv₀ one_lt_two
     exact fun n => (key₂ (n + 1)).le

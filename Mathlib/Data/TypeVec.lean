@@ -116,7 +116,7 @@ theorem drop_append1 {α : TypeVec n} {β : Type*} {i : Fin2 n} : drop (append1 
 #align typevec.drop_append1 TypeVec.drop_append1
 
 theorem drop_append1' {α : TypeVec n} {β : Type*} : drop (append1 α β) = α :=
-  funext <| fun _ => drop_append1
+  funext fun _ => drop_append1
 #align typevec.drop_append1' TypeVec.drop_append1'
 
 theorem last_append1 {α : TypeVec n} {β : Type*} : last (append1 α β) = β :=

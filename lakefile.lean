@@ -29,7 +29,7 @@ require «doc-gen4» from git "https://github.com/leanprover/doc-gen4" @ "main"
 require std from git "https://github.com/leanprover/std4" @ "main"
 require Qq from git "https://github.com/leanprover-community/quote4" @ "master"
 require aesop from git "https://github.com/leanprover-community/aesop" @ "master"
-require proofwidgets from git "https://github.com/leanprover-community/ProofWidgets4" @ "v0.0.24"
+require proofwidgets from git "https://github.com/leanprover-community/ProofWidgets4" @ "v0.0.25"
 require Cli from git "https://github.com/leanprover/lean4-cli" @ "main"
 
 /-!

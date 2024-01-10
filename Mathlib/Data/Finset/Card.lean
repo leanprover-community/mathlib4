@@ -33,14 +33,14 @@ Should we add a noncomputable version?
 
 open Function Multiset Nat
 
-variable {α β : Type*}
+variable {α β R : Type*}
 
 namespace Finset
 
 variable {s t : Finset α} {a b : α}
 
 /-- `s.card` is the number of elements of `s`, aka its cardinality. -/
-def card (s : Finset α) : ℕ :=
+@[pp_dot] def card (s : Finset α) : ℕ :=
   Multiset.card s.1
 #align finset.card Finset.card
 
@@ -120,6 +120,26 @@ theorem card_insert_le (a : α) (s : Finset α) : card (insert a s) ≤ s.card +
   · rw [card_insert_of_not_mem h]
 #align finset.card_insert_le Finset.card_insert_le
 
+section
+
+variable {a b c d e f : α}
+
+theorem card_le_two : card {a, b} ≤ 2 := card_insert_le _ _
+
+theorem card_le_three : card {a, b, c} ≤ 3 :=
+  (card_insert_le _ _).trans (Nat.succ_le_succ card_le_two)
+
+theorem card_le_four : card {a, b, c, d} ≤ 4 :=
+  (card_insert_le _ _).trans (Nat.succ_le_succ card_le_three)
+
+theorem card_le_five : card {a, b, c, d, e} ≤ 5 :=
+  (card_insert_le _ _).trans (Nat.succ_le_succ card_le_four)
+
+theorem card_le_six : card {a, b, c, d, e, f} ≤ 6 :=
+  (card_insert_le _ _).trans (Nat.succ_le_succ card_le_five)
+
+end
+
 /-- If `a ∈ s` is known, see also `Finset.card_insert_of_mem` and `Finset.card_insert_of_not_mem`.
 -/
 theorem card_insert_eq_ite : card (insert a s) = if a ∈ s then s.card else s.card + 1 := by
@@ -129,9 +149,11 @@ theorem card_insert_eq_ite : card (insert a s) = if a ∈ s then s.card else s.c
 #align finset.card_insert_eq_ite Finset.card_insert_eq_ite
 
 @[simp]
-theorem card_doubleton (h : a ≠ b) : ({a, b} : Finset α).card = 2 := by
+theorem card_pair (h : a ≠ b) : ({a, b} : Finset α).card = 2 := by
   rw [card_insert_of_not_mem (not_mem_singleton.2 h), card_singleton]
-#align finset.card_doubleton Finset.card_doubleton
+#align finset.card_doubleton Finset.card_pair
+
+@[deprecated] alias card_doubleton := Finset.card_pair
 
 /-- $\#(s \setminus \{a\}) = \#s - 1$ if $a \in s$. -/
 @[simp]
@@ -458,6 +480,9 @@ theorem card_sdiff (h : s ⊆ t) : card (t \ s) = t.card - s.card := by
   rw [card_disjoint_union sdiff_disjoint, add_tsub_cancel_right]
 #align finset.card_sdiff Finset.card_sdiff
 
+lemma cast_card_sdiff [AddGroupWithOne R] (h : s ⊆ t) : ((t \ s).card : R) = t.card - s.card := by
+  rw [card_sdiff h, Nat.cast_sub (card_mono h)]
+
 theorem card_sdiff_add_card_eq_card {s t : Finset α} (h : s ⊆ t) : card (t \ s) + card s = card t :=
   ((Nat.sub_eq_iff_eq_add (card_le_card h)).mp (card_sdiff h).symm).symm
 #align finset.card_sdiff_add_card_eq_card Finset.card_sdiff_add_card_eq_card
@@ -479,7 +504,8 @@ theorem card_sdiff_add_card : (s \ t).card + t.card = (s ∪ t).card := by
 #align finset.card_sdiff_add_card Finset.card_sdiff_add_card
 
 lemma card_sdiff_comm (h : s.card = t.card) : (s \ t).card = (t \ s).card :=
-  add_left_injective t.card $ by simp_rw [card_sdiff_add_card, ← h, card_sdiff_add_card, union_comm]
+  add_left_injective t.card <| by
+    simp_rw [card_sdiff_add_card, ← h, card_sdiff_add_card, union_comm]
 
 @[simp]
 lemma card_sdiff_add_card_inter (s t : Finset α) :
@@ -674,7 +700,7 @@ theorem card_eq_two : s.card = 2 ↔ ∃ x y, x ≠ y ∧ s = {x, y} := by
     rintro ⟨a, _, hab, rfl, b, rfl⟩
     exact ⟨a, b, not_mem_singleton.1 hab, rfl⟩
   · rintro ⟨x, y, h, rfl⟩
-    exact card_doubleton h
+    exact card_pair h
 #align finset.card_eq_two Finset.card_eq_two
 
 theorem card_eq_three : s.card = 3 ↔ ∃ x y z, x ≠ y ∧ x ≠ z ∧ y ≠ z ∧ s = {x, y, z} := by

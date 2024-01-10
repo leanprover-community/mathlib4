@@ -243,11 +243,11 @@ def borelToRefl (e : Expr) (i : FVarId) : TacticM Unit := do
     liftMetaTactic fun m => return [← subst m i]
   catch _ =>
     let et ← synthInstance (← mkAppOptM ``TopologicalSpace #[e])
-    throwError
-      (m!"`‹TopologicalSpace {e}› := {et}" ++ MessageData.ofFormat Format.line ++
-        m!"depends on" ++ MessageData.ofFormat Format.line ++
-        m!"{Expr.fvar i} : MeasurableSpace {e}`" ++ MessageData.ofFormat Format.line ++
-        "so `borelize` isn't avaliable")
+    throwError m!"\
+      `‹TopologicalSpace {e}› := {et}\n\
+      depends on\n\
+      {Expr.fvar i} : MeasurableSpace {e}`\n\
+      so `borelize` isn't avaliable"
   evalTactic <| ← `(tactic|
     refine_lift
       letI : MeasurableSpace $te := borel $te

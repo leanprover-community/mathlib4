@@ -498,7 +498,7 @@ namely `n^p (1 + ∑_{u < n} g(u) / u^(p+1))`.  -/
 
 @[continuity]
 lemma continuous_sumCoeffsExp : Continuous (fun (p : ℝ) => ∑ i, a i * (b i) ^ p) := by
-  refine continuous_finset_sum Finset.univ <| fun i _ => Continuous.mul (by continuity) ?_
+  refine continuous_finset_sum Finset.univ fun i _ => Continuous.mul (by continuity) ?_
   exact Continuous.rpow continuous_const continuous_id (fun x => Or.inl (ne_of_gt (R.b_pos i)))
 
 lemma strictAnti_sumCoeffsExp : StrictAnti (fun (p : ℝ) => ∑ i, a i * (b i) ^ p) := by
@@ -591,7 +591,7 @@ lemma asympBound_pos (n : ℕ) (hn : 0 < n) : 0 < asympBound g a b n := by
                     simp only [asympBound_def']
                     gcongr n^p a b * (1 + ?_)
                     have := R.g_nonneg
-                    aesop (add safe Real.rpow_nonneg_of_nonneg,
+                    aesop (add safe Real.rpow_nonneg,
                                safe div_nonneg,
                                safe Finset.sum_nonneg)
 

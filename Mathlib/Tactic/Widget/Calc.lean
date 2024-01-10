@@ -86,11 +86,12 @@ def suggestSteps (pos : Array Lean.SubExpr.GoalsLocation) (goalType : Expr) (par
   let insertedCode := match isSelectedLeft, isSelectedRight with
   | true, true =>
     if params.isFirst then
-      s!"{lhsStr} {relStr} {newLhsStr} := by sorry\n{spc}_ {relStr} {newRhsStr} := by sorry\n" ++
-      s!"{spc}_ {relStr} {rhsStr} := by sorry"
+      s!"{lhsStr} {relStr} {newLhsStr} := by sorry\n{spc}_ {relStr} {newRhsStr} := by sorry\n\
+         {spc}_ {relStr} {rhsStr} := by sorry"
     else
-      s!"_ {relStr} {newLhsStr} := by sorry\n{spc}_ {relStr} {newRhsStr} := by sorry\n" ++
-      s!"{spc}_ {relStr} {rhsStr} := by sorry"
+      s!"_ {relStr} {newLhsStr} := by sorry\n{spc}\
+         _ {relStr} {newRhsStr} := by sorry\n{spc}\
+         _ {relStr} {rhsStr} := by sorry"
   | false, true =>
     if params.isFirst then
       s!"{lhsStr} {relStr} {newRhsStr} := by sorry\n{spc}_ {relStr} {rhsStr} := by sorry"

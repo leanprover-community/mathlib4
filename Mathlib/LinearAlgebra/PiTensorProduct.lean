@@ -470,7 +470,7 @@ def reindex (e : ι ≃ ι₂) : (⨂[R] _ : ι, M) ≃ₗ[R] ⨂[R] _ : ι₂, 
 end
 
 @[simp]
-theorem reindex_tprod (e : ι ≃ ι₂) (f : ∀ _, M) :
+theorem reindex_tprod (e : ι ≃ ι₂) (f : ι → M) :
     reindex R M e (tprod R f) = tprod R fun i ↦ f (e.symm i) := by
   dsimp [reindex]
   exact liftAux_tprod _ f
