@@ -90,4 +90,4 @@ def geometricMeasure {p : ℝ} (hp : p ∈ Ioc 0 1) : Measure ℕ := (geometricP
 
 lemma isProbabilityMeasureGeometric {p : ℝ} (hp : p ∈ Ioc 0 1) :
     IsProbabilityMeasure (geometricMeasure hp) :=
-  exact PMF.toMeasure.isProbabilityMeasure (geometricPmf hp )
+  PMF.toMeasure.isProbabilityMeasure (geometricPmf hp )
