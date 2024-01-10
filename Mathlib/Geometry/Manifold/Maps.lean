@@ -22,19 +22,21 @@ and prove their various relations and basic properties.
 * `Diffeomorph.toImmersion`: a `C^n` diffeomorphism (`n≥1`) is an immersion
 * `Diffeomorph.toSubmersion`: a `C^n` diffeomorphism (`n≥1`) is a submersion
 
+* `IsLocalDiffeomorph.of_immersion_submersion`: if `f` is both an immersion and submersion,
+  it is a local diffeomorphism.
+* `Diffeomorph.of_immersion_submersion_bijective`: if `f` is an immersion, submersion and bijective,
+  it is a diffeomorphism
+* `Diffeomorph.of_injImmersion_submersion_isProperMap`: a proper injective immersion and submersion
+  is a diffeomorphism
+
 ## TODO
-- If `f` is both an immersion and submersion, it is a local diffeomorphism.
-(This requires the inverse function theorem: an invertible differential at `x` implies
- being a local diffeomorphism at `x`. This may also require working in a complete space.)
-- If `f` is bijective, an immersion and submersion, it is a diffeomorphism.
 - A submersion has open range (by the inverse function theorem).
-- `f` is a diffeomorphism iff it is an immersion, submersion and proper
+- Define smooth embeddings; show smooth embeddings are injective immersions;
+  show surjective embeddings are diffeomorphisms (and vice versa).
 
-- Define smooth embeddings; show smooth embeddings are injective immersions,
-  surjective embeddings are diffeomorphisms (and vice versa).
-
-implementation notes: bundled
-omit differentiability for immersions, following sphere-eversion?
+## Implementation notes
+- design decision: bundled (vs unbundled, like sphere-eversion's Immersion)
+- omit differentiability for immersions, following sphere-eversion?
 
 ## Tags
 manifold, immersion, submersion, smooth embedding
@@ -92,7 +94,8 @@ section LocalDiffeo
 variable {f : M → M'} {n : ℕ∞}
 variable {I I'}
 
--- TODO: prove this, using the inverse function theorem
+-- TODO: prove this, using the inverse function theorem. this might require a complete space,
+-- (can apply the open mapping theorem, to circumvent type theory raisins)
 -- perhaps can weaken differentiability requirement
 lemma IsLocalDiffeomorphAt.of_bijective_differential {x : M} (hf : ContMDiff I I' n f)
     (h : Bijective (mfderiv I I' f x)) : IsLocalDiffeomorphAt I I' n f x := sorry
@@ -136,15 +139,15 @@ lemma Diffeomorph.toSubmersion (h : Diffeomorph I I' M M' n) (hn : 1 ≤ n) :
   diff_surjective x := (h.isLocalDiffeomorph x).mfderiv_surjective hn
 
 /-- If `f` is both an immersion and submersion, it is a local diffeomorphism. -/
-theorem Immersion.toLocalDiffeomorph_of_submersion (h : Immersion I I' f n)
+theorem IsLocalDiffeomorph.of_immersion_submersion (h : Immersion I I' f n)
     (hf : Submersion I I' f n) : IsLocalDiffeomorph I I' n f :=
   fun x ↦ IsLocalDiffeomorphAt.of_bijective_differential h.differentiable
     ⟨h.diff_injective x, hf.diff_surjective x⟩
 
 /-- If `f` is bijective, an immersion and a submersion, it is a diffeomorphism. -/
-def Immersion.toDiffeomorph_of_bijective_submersion (h : Immersion I I' f n)
+def Diffeomorph.of_immersion_submersion_bijective (h : Immersion I I' f n)
     (hf : Submersion I I' f n) (hbij : Bijective f) : Diffeomorph I I' M M' n :=
-  (h.toLocalDiffeomorph_of_submersion hf).diffeomorph_of_bijective hbij
+  (IsLocalDiffeomorph.of_immersion_submersion h hf).diffeomorph_of_bijective hbij
 
 -- xxx: necessary?
 lemma Diffeomorph.isProperMap (h : Diffeomorph I I' M M' n) : IsProperMap h.toFun :=
@@ -152,10 +155,10 @@ lemma Diffeomorph.isProperMap (h : Diffeomorph I I' M M' n) : IsProperMap h.toFu
 
 /-- If `M'` is non-empty connected, an injective proper immersion `f : M → M'` which is a submersion
  is a diffeomorphism. -/
-theorem InjImmersion.toDiffeomorph_of_proper_submersion (himm : InjImmersion I I' f n)
-    (hsub : Submersion I I' f n) (hprop : IsProperMap f) [Nonempty M]
-    (hconn : ConnectedSpace M') : Diffeomorph I I' M M' n :=
-  himm.toImmersion.toDiffeomorph_of_bijective_submersion hsub
+theorem Diffeomorph.of_injImmersion_submersion_isProperMap [Nonempty M] (hconn : ConnectedSpace M')
+    (himm : InjImmersion I I' f n) (hsub : Submersion I I' f n) (hprop : IsProperMap f) :
+    Diffeomorph I I' M M' n :=
+  Diffeomorph.of_immersion_submersion_bijective himm.toImmersion hsub
     ⟨himm.injective, hsub.surjective_of_proper hprop hconn⟩
 
 end LocalDiffeo
