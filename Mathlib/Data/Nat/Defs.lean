@@ -76,9 +76,6 @@ lemma not_succ_lt_self : ¬ succ n < n := not_lt_of_ge n.le_succ
 
 #align nat.lt_succ_iff Nat.lt_succ_iff
 
-lemma succ_le_iff : succ m ≤ n ↔ m < n := ⟨lt_of_succ_le, succ_le_of_lt⟩
-#align nat.succ_le_iff Nat.succ_le_iff
-
 lemma le_succ_iff : m ≤ n.succ ↔ m ≤ n ∨ m = n.succ := by
   refine ⟨fun hmn ↦ (lt_or_eq_of_le hmn).imp_left le_of_lt_succ, ?_⟩
   rintro (hmn | rfl)
@@ -685,88 +682,6 @@ lemma mul_add_mod' (a b c : ℕ) : (a * b + c) % b = c % b := by rw [Nat.mul_com
 lemma mul_add_mod_of_lt (h : c < b) : (a * b + c) % b = c := by
   rw [Nat.mul_add_mod', Nat.mod_eq_of_lt h]
 #align nat.mul_add_mod_of_lt Nat.mul_add_mod_of_lt
-
-/-! ### `find` -/
-
-section Find
-variable [DecidablePred p] [DecidablePred q]
-
-lemma find_eq_iff (h : ∃ n : ℕ, p n) : Nat.find h = m ↔ p m ∧ ∀ n < m, ¬ p n := by
-  constructor
-  · rintro rfl
-    exact ⟨Nat.find_spec h, fun _ ↦ Nat.find_min h⟩
-  · rintro ⟨hm, hlt⟩
-    exact le_antisymm (Nat.find_min' h hm) (not_lt.1 <| imp_not_comm.1 (hlt _) <| Nat.find_spec h)
-#align nat.find_eq_iff Nat.find_eq_iff
-
-@[simp] lemma find_lt_iff (h : ∃ n : ℕ, p n) (n : ℕ) : Nat.find h < n ↔ ∃ m < n, p m :=
-  ⟨fun h2 ↦ ⟨Nat.find h, h2, Nat.find_spec h⟩,
-    fun ⟨_, hmn, hm⟩ ↦ Nat.lt_of_le_of_lt (Nat.find_min' h hm) hmn⟩
-#align nat.find_lt_iff Nat.find_lt_iff
-
-@[simp] lemma find_le_iff (h : ∃ n : ℕ, p n) (n : ℕ) : Nat.find h ≤ n ↔ ∃ m ≤ n, p m := by
-  simp only [exists_prop, ← Nat.lt_succ_iff, find_lt_iff]
-#align nat.find_le_iff Nat.find_le_iff
-
-@[simp] lemma le_find_iff (h : ∃ n : ℕ, p n) (n : ℕ) : n ≤ Nat.find h ↔ ∀ m < n, ¬ p m := by
-  simp only [← not_lt, find_lt_iff, not_exists, not_and]
-#align nat.le_find_iff Nat.le_find_iff
-
-@[simp] lemma lt_find_iff (h : ∃ n : ℕ, p n) (n : ℕ) : n < Nat.find h ↔ ∀ m ≤ n, ¬ p m := by
-  simp only [← succ_le_iff, le_find_iff, succ_le_succ_iff]
-#align nat.lt_find_iff Nat.lt_find_iff
-
-@[simp] lemma find_eq_zero (h : ∃ n : ℕ, p n) : Nat.find h = 0 ↔ p 0 := by simp [find_eq_iff]
-#align nat.find_eq_zero Nat.find_eq_zero
-
-lemma find_mono (h : ∀ n, q n → p n) {hp : ∃ n, p n} {hq : ∃ n, q n} : Nat.find hp ≤ Nat.find hq :=
-  Nat.find_min' _ (h _ (Nat.find_spec hq))
-#align nat.find_mono Nat.find_mono
-
-lemma find_le {h : ∃ n, p n} (hn : p n) : Nat.find h ≤ n :=
-  (Nat.find_le_iff _ _).2 ⟨n, le_refl _, hn⟩
-#align nat.find_le Nat.find_le
-
-lemma find_comp_succ (h₁ : ∃ n, p n) (h₂ : ∃ n, p (n + 1)) (h0 : ¬ p 0) :
-    Nat.find h₁ = Nat.find h₂ + 1 := by
-  refine' (find_eq_iff _).2 ⟨Nat.find_spec h₂, fun n hn ↦ _⟩
-  cases n
-  exacts [h0, @Nat.find_min (fun n ↦ p (n + 1)) _ h₂ _ (succ_lt_succ_iff.1 hn)]
-#align nat.find_comp_succ Nat.find_comp_succ
-
-end Find
-
-/-! ### `Nat.findGreatest` -/
-
-section FindGreatest
-
-/-- `Nat.findGreatest P n` is the largest `i ≤ bound` such that `P i` holds, or `0` if no such `i`
-exists -/
-def findGreatest (P : ℕ → Prop) [DecidablePred P] : ℕ → ℕ
-  | 0 => 0
-  | n + 1 => if P (n + 1) then n + 1 else Nat.findGreatest P n
-#align nat.find_greatest Nat.findGreatest
-
-variable {P Q : ℕ → Prop} [DecidablePred P] {n : ℕ}
-
-@[simp] lemma findGreatest_zero : Nat.findGreatest P 0 = 0 := rfl
-#align nat.find_greatest_zero Nat.findGreatest_zero
-
-lemma findGreatest_succ (n : ℕ) :
-    Nat.findGreatest P (n + 1) = if P (n + 1) then n + 1 else Nat.findGreatest P n := rfl
-#align nat.find_greatest_succ Nat.findGreatest_succ
-
-@[simp] lemma findGreatest_eq : ∀ {n}, P n → Nat.findGreatest P n = n
-  | 0, _ => rfl
-  | n + 1, h => by simp [Nat.findGreatest, h]
-#align nat.find_greatest_eq Nat.findGreatest_eq
-
-@[simp]
-lemma findGreatest_of_not (h : ¬ P (n + 1)) : findGreatest P (n + 1) = findGreatest P n := by
-  simp [Nat.findGreatest, h]
-#align nat.find_greatest_of_not Nat.findGreatest_of_not
-
-end FindGreatest
 
 /-! ### Decidability of predicates -/
 

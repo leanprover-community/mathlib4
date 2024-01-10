@@ -5,6 +5,7 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Data.Nat.Basic
+import Mathlib.Data.Nat.Find
 import Mathlib.Init.Data.Nat.Bits
 import Mathlib.Init.Data.Nat.Bitwise
 
