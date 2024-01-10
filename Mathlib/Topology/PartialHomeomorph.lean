@@ -475,7 +475,7 @@ lemma isOpen_symm_image_iff_of_subset_target {t : Set β} (hs : t ⊆ e.target) 
   exact e.isOpen_image_of_subset_source h hs'
 
 theorem isOpen_image_iff_of_subset_source {s : Set α} (hs : s ⊆ e.source) :
-    IsOpen s ↔ IsOpen (e '' s) := by
+    IsOpen (e '' s) ↔ IsOpen s := by
   rw [← e.symm.isOpen_symm_image_iff_of_subset_target hs, e.symm_symm]
 
 /-!
@@ -684,9 +684,10 @@ theorem isOpen_inter_preimage_symm {s : Set α} (hs : IsOpen s) : IsOpen (e.targ
 #align local_homeomorph.preimage_open_of_open_symm PartialHomeomorph.isOpen_inter_preimage_symm
 
 /-- The image of an open set in the source is open. -/
+-- xxx: this is duplicate with isOpen_image_of_subset_source
 theorem image_isOpen_of_isOpen {s : Set α} (hs : IsOpen s) (h : s ⊆ e.source) :
-    IsOpen (e '' s) := by
-  apply e.isOpen_image_of_subset_source hs h
+    IsOpen (e '' s) :=
+  e.isOpen_image_of_subset_source hs h
 #align local_homeomorph.image_open_of_open PartialHomeomorph.image_isOpen_of_isOpen
 
 /-- The image of the restriction of an open set to the source is open. -/
