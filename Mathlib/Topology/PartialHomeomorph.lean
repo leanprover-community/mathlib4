@@ -454,11 +454,23 @@ theorem isOpen_inter_preimage {s : Set β} (hs : IsOpen s) : IsOpen (e.source �
   e.continuousOn.isOpen_inter_preimage e.open_source hs
 #align local_homeomorph.preimage_open_of_open PartialHomeomorph.isOpen_inter_preimage
 
-/-- A partial homeomorphism is an open map on its source. -/
+theorem isOpen_inter_preimage_symm {s : Set α} (hs : IsOpen s) : IsOpen (e.target ∩ e.symm ⁻¹' s) :=
+  e.symm.continuousOn.isOpen_inter_preimage e.open_target hs
+#align local_homeomorph.preimage_open_of_open_symm PartialHomeomorph.isOpen_inter_preimage_symm
+
+/-- A partial homeomorphism is an open map on its source:
+  the image of an open subset of the source is open. -/
 lemma isOpen_image_of_subset_source {s : Set α} (hs : IsOpen s) (hse : s ⊆ e.source) :
     IsOpen (e '' s) := by
   rw [(image_eq_target_inter_inv_preimage (e := e) hse)]
   exact e.continuousOn_invFun.isOpen_inter_preimage e.open_target hs
+#align local_homeomorph.image_open_of_open PartialHomeomorph.isOpen_image_of_subset_source
+
+/-- The image of the restriction of an open set to the source is open. -/
+theorem isOpen_image_source_inter_of_isOpen {s : Set α} (hs : IsOpen s) :
+    IsOpen (e '' (e.source ∩ s)) :=
+  e.isOpen_image_of_subset_source (e.open_source.inter hs) (inter_subset_left _ _)
+#align local_homeomorph.image_open_of_open' PartialHomeomorph.isOpen_image_source_inter_of_isOpen
 
 /-- The inverse of a partial homeomorphism `e` is an open map on `e.target`. -/
 lemma isOpen_image_symm_of_subset_target {t : Set β} (ht : IsOpen t) (hte : t ⊆ e.target) :
@@ -678,23 +690,6 @@ theorem preimage_frontier (s : Set β) :
     e.source ∩ e ⁻¹' frontier s = e.source ∩ frontier (e ⁻¹' s) :=
   (IsImage.of_preimage_eq rfl).frontier.preimage_eq
 #align local_homeomorph.preimage_frontier PartialHomeomorph.preimage_frontier
-
-theorem isOpen_inter_preimage_symm {s : Set α} (hs : IsOpen s) : IsOpen (e.target ∩ e.symm ⁻¹' s) :=
-  e.symm.continuousOn.isOpen_inter_preimage e.open_target hs
-#align local_homeomorph.preimage_open_of_open_symm PartialHomeomorph.isOpen_inter_preimage_symm
-
-/-- The image of an open set in the source is open. -/
--- xxx: this is duplicate with isOpen_image_of_subset_source
-theorem image_isOpen_of_isOpen {s : Set α} (hs : IsOpen s) (h : s ⊆ e.source) :
-    IsOpen (e '' s) :=
-  e.isOpen_image_of_subset_source hs h
-#align local_homeomorph.image_open_of_open PartialHomeomorph.image_isOpen_of_isOpen
-
-/-- The image of the restriction of an open set to the source is open. -/
-theorem isOpen_image_source_inter_of_isOpen {s : Set α} (hs : IsOpen s) :
-    IsOpen (e '' (e.source ∩ s)) :=
-  e.isOpen_image_of_subset_source (e.open_source.inter hs) (inter_subset_left _ _)
-#align local_homeomorph.image_open_of_open' PartialHomeomorph.isOpen_image_source_inter_of_isOpen
 
 /-- A `PartialEquiv` with continuous open forward map and open source is a `PartialHomeomorph`. -/
 def ofContinuousOpenRestrict (e : PartialEquiv α β) (hc : ContinuousOn e e.source)
@@ -1280,7 +1275,7 @@ theorem openEmbedding_restrict : OpenEmbedding (e.source.restrict e) := by
   refine openEmbedding_of_continuous_injective_open (e.continuousOn.comp_continuous
     continuous_subtype_val Subtype.prop) e.injOn.injective fun V hV ↦ ?_
   rw [Set.restrict_eq, Set.image_comp]
-  exact e.image_isOpen_of_isOpen (e.open_source.isOpenMap_subtype_val V hV)
+  exact e.isOpen_image_of_subset_source (e.open_source.isOpenMap_subtype_val V hV)
     fun _ ⟨x, _, h⟩ ↦ h ▸ x.2
 
 /-- A partial homeomorphism whose source is all of `α` defines an open embedding of `α` into `β`.
