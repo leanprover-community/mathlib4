@@ -21,7 +21,7 @@ over division rings.
 
 For vector spaces (i.e. modules over a field), we have
 
-* `rank_quotient_add_rank`: if `V₁` is a submodule of `V`, then
+* `rank_quotient_add_rank_of_divisionRing`: if `V₁` is a submodule of `V`, then
   `Module.rank (V/V₁) + Module.rank V₁ = Module.rank V`.
 * `rank_range_add_rank_ker`: the rank-nullity theorem.
 * `rank_dual_eq_card_dual_of_aleph0_le_rank`: The **Erdős-Kaplansky Theorem** which says that

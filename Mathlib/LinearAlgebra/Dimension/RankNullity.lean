@@ -36,18 +36,21 @@ A class of rings satisfying
 See `DivisionRing.hasRankNullity` and `IsDomain.hasRankNullity`.
 -/
 @[pp_with_univ]
-class HasRankNullity (R : Type v) [inst : Ring R] where
+class HasRankNullity (R : Type v) [inst : Ring R] : Prop where
   exists_set_linearIndependent : ∀ (M : Type u) [AddCommGroup M] [Module R M],
     ∃ s : Set M, #s = Module.rank R M ∧ LinearIndependent (ι := s) R Subtype.val
   rank_quotient_add_rank : ∀ {M : Type u} [AddCommGroup M] [Module R M] (N : Submodule R M),
     Module.rank R (M ⧸ N) + Module.rank R N = Module.rank R M
 
-alias rank_quotient_add_rank := HasRankNullity.rank_quotient_add_rank
-
 variable [HasRankNullity.{u} R]
 
-variable (R) in
-lemma exists_set_linearIndependent (M : Type u) [AddCommGroup M] [Module R M] :
+lemma rank_quotient_add_rank (N : Submodule R M) :
+    Module.rank R (M ⧸ N) + Module.rank R N = Module.rank R M :=
+  HasRankNullity.rank_quotient_add_rank N
+#align rank_quotient_add_rank rank_quotient_add_rank
+
+variable (R M) in
+lemma exists_set_linearIndependent :
     ∃ s : Set M, #s = Module.rank R M ∧ LinearIndependent (ι := s) R Subtype.val :=
   HasRankNullity.exists_set_linearIndependent M
 
