@@ -1346,15 +1346,6 @@ noncomputable def toPartialHomeomorph [Nonempty α] : PartialHomeomorph α β :=
     h.continuous.continuousOn h.isOpenMap isOpen_univ
 #align open_embedding.to_local_homeomorph OpenEmbedding.toPartialHomeomorph
 
-/-- An embedding defines a homeomorphism to its range. -/
-noncomputable def _root_.Embedding.homeomorph : Homeomorph α (range f) := by
-  by_cases hX : Nonempty α
-  · exact (Homeomorph.Set.univ α).symm.trans <|
-      (h.toPartialHomeomorph f).homeomorphOfImageSubsetSource Subset.rfl image_univ
-  · rw [not_nonempty_iff] at hX
-    have : IsEmpty (range f) := by rw [isEmpty_coe_sort, range_eq_empty f]
-    exact Homeomorph.empty
-
 variable [Nonempty α]
 
 lemma toPartialHomeomorph_left_inv {x : α} : (h.toPartialHomeomorph f).symm (f x) = x := by
