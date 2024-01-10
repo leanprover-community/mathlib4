@@ -733,7 +733,7 @@ lemma fromSpecToSpec {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m) (x : 
   refine Subtype.ext <| ProjectiveSpectrum.ext _ _ <| HomogeneousIdeal.ext <| Ideal.ext fun z ↦ ?_
   fconstructor <;> intro hz
   · rw [← DirectSum.sum_support_decompose 𝒜 z]
-    refine Ideal.sum_mem _ fun i hi ↦ ?_
+    refine Ideal.sum_mem _ fun i _ ↦ ?_
     specialize hz i
     erw [ToSpec.mem_carrier_iff, HomogeneousLocalization.val_mk'', mem_span_set] at hz
     obtain ⟨c, support_le, (eq1 : Finset.sum _ _ = _)⟩ := hz
@@ -791,7 +791,29 @@ lemma fromSpecToSpec {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m) (x : 
           |>.mp x.2 <| x.1.isPrime.mem_of_pow_mem _ r
     exact Ideal.mul_mem_right _ _ <| Ideal.mul_mem_left _ _ hg1
 
-  · sorry
+  · intro i
+    erw [ToSpec.mem_carrier_iff, HomogeneousLocalization.val_mk'']
+    dsimp only [proj_apply]
+    rw [show (mk (decompose 𝒜 z i ^ m) ⟨f^i, ⟨i, rfl⟩⟩: Away f) =
+      (decompose 𝒜 z i ^ m : A) • (mk 1 ⟨f^i, ⟨i, rfl⟩⟩ : Away f) by
+      · rw [smul_mk, smul_eq_mul, mul_one], Algebra.smul_def]
+    exact Ideal.mul_mem_right _ _ <|
+      Ideal.subset_span ⟨_, ⟨Ideal.pow_mem_of_mem _ (x.1.asHomogeneousIdeal.2 i hz) _ hm, rfl⟩⟩
+
+lemma toSpec_injective {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m):
+    Function.Injective (toSpec (𝒜 := 𝒜) (f := f)) := by
+  intro x₁ x₂ h
+  have := congr_arg (FromSpec.toFun f_deg hm) h
+  rwa [fromSpecToSpec, fromSpecToSpec] at this
+
+lemma toSpec_surjective {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m):
+    Function.Surjective (toSpec (𝒜 := 𝒜) (f := f)) :=
+  Function.surjective_iff_hasRightInverse |>.mpr
+    ⟨FromSpec.toFun f_deg hm, toSpecFromSpec 𝒜 hm f_deg⟩
+
+lemma toSpec_bijective {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m):
+    Function.Bijective (toSpec (𝒜 := 𝒜) (f := f)) :=
+  ⟨toSpec_injective 𝒜 hm f_deg, toSpec_surjective 𝒜 hm f_deg⟩
 
 end fromSpecToSpec
 
