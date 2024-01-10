@@ -16,7 +16,8 @@ valuation of `a`.
 For example the `2`-nd flooring and ceiling roots of `2^3 * 3^2 * 5` are `2 * 3` and `2^2 * 3 * 5`
 respectively. Note this is **not** the `n`-th root of `a` as a real number, rounded up or down.
 
-Those operations are respectively the right and left adjoints to the map `a ↦ a ^ n`.
+Those operations are respectively the right and left adjoints to the map `a ↦ a ^ n` where `ℕ` is
+ordered by divisibility.
 
 ## TODO
 
