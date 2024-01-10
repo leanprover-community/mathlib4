@@ -124,7 +124,7 @@ theorem sort_monotone_map [DecidableEq α] [DecidableEq β]
 theorem sort_insert_largest [DecidableEq α](s : Finset α)
     (x : α) (h : ∀ y ∈ s, r y x) (hx : x ∉ s) :
     sort r (insert x s) = sort r s ++ [x] := by
-  rw [←cons_eq_insert]
+  rw [← cons_eq_insert]
   swap; exact hx
   have LHS_sorted : List.Sorted r (sort r (cons x s hx)) := sort_sorted r (cons x s hx)
   have RHS_sorted : List.Sorted r (sort r s ++ [x]) := by

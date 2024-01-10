@@ -3537,7 +3537,7 @@ theorem filter_eval_false (l : List α)
     simp at h
     tauto
     simp
-    
+ 
 /- Porting note: need a helper theorem for span.loop. -/
 theorem span.loop_eq_take_drop :
     ∀ l₁ l₂ : List α, span.loop p l₁ l₂ = (l₂.reverse ++ takeWhile p l₁, dropWhile p l₁)

@@ -3502,7 +3502,7 @@ theorem toFinset_is_singleton_implies_replicate {l : List α} {a : α}
       simp at h
       rw [← h]
       exact Finset.subset_insert x xs.toFinset
-    have ih : xs = List.replicate xs.length a := 
+    have ih : xs = List.replicate xs.length a :=
       toFinset_is_singleton_implies_replicate h₂
     rw [h₁, ih]
     simp
