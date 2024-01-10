@@ -30,7 +30,6 @@ Pochhammer polynomial `X(X+1)⋯(X+(k-1))` at any element is divisible by `k!`. 
 ## TODO
 
 * Replace `Nat.multichoose` with `Ring.multichoose`.
-* `Int.instBinomialRing`
 * `Ring.choose` for binomial rings.
 * Generalize to the power-associative case, when power-associativity is implemented.
 
@@ -72,6 +71,8 @@ theorem factorial_nsmul_multichoose_eq_eval_ascPochhammer (r : R) (n : ℕ) :
     n.factorial • multichoose r n = Polynomial.eval r (ascPochhammer R n) :=
   BinomialRing.factorial_nsmul_multichoose r n
 
+end Ring
+
 instance Nat.instBinomialRing : BinomialRing ℕ where
   nsmul_right_injective n hn r s hrs := Nat.eq_of_mul_eq_mul_left (Nat.pos_of_ne_zero hn) hrs
   multichoose := Nat.multichoose
@@ -79,6 +80,25 @@ instance Nat.instBinomialRing : BinomialRing ℕ where
     rw [Nat.multichoose_eq, smul_eq_mul, ← Nat.descFactorial_eq_factorial_mul_choose,
     ascPochhammer_nat_eq_descFactorial]
 
-end Ring
+/-- The multichoose function for integers. -/
+def Int.multichoose (n : ℤ) (k : ℕ) : ℤ := by
+  cases n with
+  | ofNat n => use ((Nat.choose (n + k - 1) k) : ℤ)
+  | negSucc n => use (-1) ^ k * Nat.choose n.succ k
+
+instance Int.instBinomialRing : BinomialRing ℤ where
+  nsmul_right_injective n hn r s hrs := Int.eq_of_mul_eq_mul_left (Int.ofNat_ne_zero.mpr hn) hrs
+  multichoose := Int.multichoose
+  factorial_nsmul_multichoose r k := by
+    rw [Int.multichoose, nsmul_eq_mul]
+    cases r with
+    | ofNat n =>
+      simp only [Int.ofNat_eq_coe, Int.ofNat_mul_out]
+      rw [← Nat.descFactorial_eq_factorial_mul_choose, ← ascPochhammer_nat_eq_descFactorial,
+        ascPochhammer_eval_cast]
+    | negSucc n =>
+      rw [mul_comm, mul_assoc, ← Nat.cast_mul, mul_comm _ (k.factorial),
+        ← Nat.descFactorial_eq_factorial_mul_choose, ← descPochhammer_int_eq_descFactorial,
+        ← Int.neg_ofNat_succ, ascPochhammer_eval_neg_eq_descPochhammer]
 
 end Binomial
