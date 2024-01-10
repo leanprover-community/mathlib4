@@ -768,13 +768,12 @@ lemma exists_isIntegralCurve_of_isIntegralCurveOn [BoundarylessManifold I M]
       (piecewise (Ioo (-a) a) γ γ1) γ2 with γ_ext_def
     have hext : IsIntegralCurveOn γ_ext v (Ioo (-(asup + ε / 2)) (asup + ε / 2)) := by
       apply (isIntegralCurveOn_piecewise (t₀ := asup - ε / 2) hv _ hγ2
-        (by refine ⟨⟨?_, ?_⟩, ⟨?_, ?_⟩⟩ <;> linarith) _).mono
-          (Ioo_subset_Ioo_union_Ioo le_rfl (by linarith) (by linarith))
+          (by refine ⟨⟨?_, ?_⟩, ⟨?_, ?_⟩⟩ <;> linarith) _).mono
+        (Ioo_subset_Ioo_union_Ioo le_rfl (by linarith) (by linarith))
       apply (isIntegralCurveOn_piecewise (t₀ := -(asup - ε / 2)) hv hγ hγ1
-        (by refine ⟨⟨?_, ?_⟩, ⟨?_, ?_⟩⟩ <;> linarith) heq1.symm).mono
-      · rw [union_comm (Ioo (-a) a)]
-        apply Ioo_subset_Ioo_union_Ioo (by linarith) (by linarith) le_rfl
-      · rw [piecewise, if_pos ⟨by linarith, by linarith⟩, ← heq2]
+          (by refine ⟨⟨?_, ?_⟩, ⟨?_, ?_⟩⟩ <;> linarith) heq1.symm).mono
+        (union_comm _ _ ▸ Ioo_subset_Ioo_union_Ioo (by linarith) (by linarith) le_rfl)
+      rw [piecewise, if_pos ⟨by linarith, by linarith⟩, ← heq2]
     have hmem : asup + ε / 2 ∈ {a | ∃ γ, γ 0 = x ∧ IsIntegralCurveOn γ v (Ioo (-a) a)} := by
       refine ⟨γ_ext, ?_, hext⟩
       rw [γ_ext_def, piecewise, if_pos ⟨by linarith, by linarith⟩, piecewise,
