@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
 import Mathlib.Geometry.Manifold.LocalDiffeomorph
+import Mathlib.Topology.ProperMap
 
 /-! ## Smooth immersions, submersions and embeddings
 
@@ -91,6 +92,20 @@ section LocalDiffeo
 variable {f : M → M'} {n : ℕ∞}
 variable {I I'}
 
+-- TODO: prove this, using the inverse function theorem
+-- perhaps can weaken differentiability requirement
+lemma IsLocalDiffeomorphAt.of_bijective_differential {x : M} (hf : ContMDiff I I' n f)
+    (h : Bijective (mfderiv I I' f x)) : IsLocalDiffeomorphAt I I' n f x := sorry
+
+/-- A submersion has open range. -/
+lemma Submersion.open_range (h : Submersion I I' f n) : IsOpen (range f) := sorry
+
+/-- A proper submersion into a connected manifold is surjective. -/
+lemma Submersion.surjective_of_proper (h : Submersion I I' f n) (hprop : IsProperMap f)
+    [Nonempty M] (hconn : ConnectedSpace M') : Surjective f := by
+  have : IsClopen (range f) := ⟨h.open_range, hprop.isClosedMap.closed_range⟩
+  exact range_iff_surjective.mp (this.eq_univ (range_nonempty f))
+
 /-- A `C^n` local diffeomorphism (`n≥1`) is an immersion. -/
 lemma IsLocalDiffeomorph.toImmersion (hf : IsLocalDiffeomorph I I' n f) (hn : 1 ≤ n) :
     Immersion I I' f n where
@@ -120,4 +135,57 @@ lemma Diffeomorph.toSubmersion (h : Diffeomorph I I' M M' n) (hn : 1 ≤ n) :
   differentiable := h.contMDiff_toFun
   diff_surjective x := (h.isLocalDiffeomorph x).mfderiv_surjective hn
 
+/-- If `f` is both an immersion and submersion, it is a local diffeomorphism. -/
+theorem Immersion.toLocalDiffeomorph_of_submersion (h : Immersion I I' f n)
+    (hf : Submersion I I' f n) : IsLocalDiffeomorph I I' n f :=
+  fun x ↦ IsLocalDiffeomorphAt.of_bijective_differential h.differentiable
+    ⟨h.diff_injective x, hf.diff_surjective x⟩
+
+/-- If `f` is bijective, an immersion and a submersion, it is a diffeomorphism. -/
+def Immersion.toDiffeomorph_of_bijective_submersion (h : Immersion I I' f n)
+    (hf : Submersion I I' f n) (hbij : Bijective f) : Diffeomorph I I' M M' n :=
+  (h.toLocalDiffeomorph_of_submersion hf).diffeomorph_of_bijective hbij
+
+-- xxx: necessary?
+lemma Diffeomorph.isProperMap (h : Diffeomorph I I' M M' n) : IsProperMap h.toFun :=
+  h.toHomeomorph.isProperMap
+
+/-- If `M'` is non-empty connected, an injective proper immersion `f : M → M'` which is a submersion
+ is a diffeomorphism. -/
+theorem InjImmersion.toDiffeomorph_of_proper_submersion (himm : InjImmersion I I' f n)
+    (hsub : Submersion I I' f n) (hprop : IsProperMap f) [Nonempty M]
+    (hconn : ConnectedSpace M') : Diffeomorph I I' M M' n :=
+  himm.toImmersion.toDiffeomorph_of_bijective_submersion hsub
+    ⟨himm.injective, hsub.surjective_of_proper hprop hconn⟩
+
 end LocalDiffeo
+
+/-- A `C^n` embedding -/
+structure SmoothEmbedding (f : M → M') (n : ℕ∞) extends Embedding f : Prop :=
+  differentiable : ContMDiff I I' n f
+
+-- xxx: which structure to extend? not sure yet!
+-- sphere-eversion avoided extending anything, which is not ideal...
+structure OpenSmoothEmbedding (f : M → M') (n : ℕ∞) extends SmoothEmbedding I I' f n : Prop :=
+  open_range : IsOpen <| range f
+
+namespace SmoothEmbedding
+variable (f : M → M') (n : ℕ∞)
+
+-- xxx: do I need M to be T0?
+def toInjImmersion [T0Space M] (h : SmoothEmbedding I I' f n) : InjImmersion I I' f n := {
+  differentiable := h.differentiable
+  injective := h.toEmbedding.injective
+  diff_injective := sorry -- xxx: extra conditions needed?
+}
+
+-- an injective immersion need not be an embedding. standard example with bijective cont, not homeo
+
+end SmoothEmbedding
+
+def IsLocalDiffeomorph.toSmoothEmbedding {f : M → M'} {n : ℕ∞} (hf : IsLocalDiffeomorph I I' n f) :
+  SmoothEmbedding I I' f n := {
+    differentiable := sorry
+    induced := sorry
+    inj := sorry--diff_injective := sorry
+  }

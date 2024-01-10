@@ -94,7 +94,7 @@ add_decl_doc isProperMap_iff_clusterPt
 /-- By definition, a proper map is continuous. -/
 lemma IsProperMap.continuous (h : IsProperMap f) : Continuous f := h.toContinuous
 
-/-- An homeomorphism is proper. -/
+/-- A homeomorphism is proper. -/
 @[simp] lemma Homeomorph.isProperMap (e : X ≃ₜ Y) : IsProperMap e := by
   rw [isProperMap_iff_clusterPt]
   refine ⟨e.continuous, fun ℱ y ↦ ?_⟩
