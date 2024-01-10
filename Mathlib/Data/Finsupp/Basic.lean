@@ -736,17 +736,6 @@ lemma embDomain_comapDomain {f : α ↪ β} {g : β →₀ M} (hg : ↑g.support
   · replace hg : g b = 0 := not_mem_support_iff.mp <| mt (hg ·) hb
     rw [embDomain_notin_range _ _ _ hb, hg]
 
-lemma exists_mem_embDomain_eq {f : α ↪ β} {g : β →₀ M} :
-    (∃ (v : α →₀ M), embDomain f v = g) ↔ (g.support : Set β) ⊆ (Set.range f) := by
-  constructor
-  · rintro ⟨v, rfl⟩
-    simp only [Finsupp.support_embDomain, coe_map, Set.image_subset_iff,
-      Set.preimage_range, Set.subset_univ]
-  · intro hg
-    use Finsupp.comapDomain f g (f.injective.injOn _)
-    ext b
-    rw [embDomain_comapDomain hg]
-
 /-- Note the `hif` argument is needed for this to work in `rw`. -/
 @[simp]
 theorem comapDomain_zero (f : α → β)
