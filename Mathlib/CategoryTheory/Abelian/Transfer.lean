@@ -143,18 +143,13 @@ def coimageIsoImage {X Y : C} (f : X ⟶ Y) : Abelian.coimage f ≅ Abelian.imag
     _ ≅ Abelian.image f := Iso.refl _
 #align category_theory.abelian_of_adjunction.coimage_iso_image CategoryTheory.AbelianOfAdjunction.coimageIsoImage
 
+set_option profiler true in
 -- The account of this proof in the Stacks project omits this calculation.
 @[nolint unusedHavesSuffices]
 theorem coimageIsoImage_hom {X Y : C} (f : X ⟶ Y) :
     (coimageIsoImage F G i adj f).hom = Abelian.coimageImageComparison f := by
-  -- porting note: the next `have` have been added, otherwise some instance were not found
-  have : ∀ (X' Y' : C) (f' : X' ⟶ Y'), HasCokernel f' := inferInstance
-  have : ∀ (X' Y' : C) (f' : X' ⟶ Y'), HasKernel f' := inferInstance
-  have : ∀ (X' Y' : D) (f' : X' ⟶ Y'), HasCokernel f' := inferInstance
-  have : ∀ (X' Y' : D) (f' : X' ⟶ Y'), HasKernel f' := inferInstance
-  dsimp only [coimageIsoImage, Iso.instTransIso_trans, Iso.refl, Iso.trans, Iso.symm,
-    Functor.mapIso, cokernelEpiComp, cokernelIso, cokernelCompIsIso_inv,
-    asIso, coimageIsoImageAux, kernelCompMono]
+  dsimp [coimageIsoImage, cokernelIso, cokernelEpiComp, cokernelCompIsIso_inv,
+    coimageIsoImageAux, kernelCompMono]
   simpa only [← cancel_mono (Abelian.image.ι f), ← cancel_epi (Abelian.coimage.π f),
     Category.assoc, Category.id_comp, cokernel.π_desc_assoc,
     π_comp_cokernelIsoOfEq_inv_assoc, PreservesKernel.iso_hom,
