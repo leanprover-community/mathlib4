@@ -349,6 +349,32 @@ theorem σ_comp_σ {n} {i j : Fin (n + 1)} (H : i ≤ j) :
   all_goals cases k <;> simp at *; linarith
 #align simplex_category.σ_comp_σ SimplexCategory.σ_comp_σ
 
+/--
+If `f : [m] ⟶ [n+1]` is a morphism and `j` is not in the range of `f`,
+then `factor_δ f j` is a morphism `[m] ⟶ [n]` such that
+`factor_δ f j ≫ δ j = f` (as witnessed by `factor_δ_spec`).
+-/
+def factor_δ {m n : ℕ} (f : ([m] : SimplexCategory) ⟶ [n+1]) (j : Fin (n+2)) :
+    ([m] : SimplexCategory) ⟶ [n] :=
+  f ≫ σ (Fin.predAbove 0 j)
+
+open Fin in
+lemma factor_δ_spec {m n : ℕ} (f : ([m] : SimplexCategory) ⟶ [n+1]) (j : Fin (n+2))
+    (hj : ∀ (k : Fin (m+1)), f.toOrderHom k ≠ j) :
+    factor_δ f j ≫ δ j = f := by
+  apply Hom.ext
+  ext k : 2
+  specialize hj k
+  rw [Ne.def, ext_iff] at hj
+  dsimp [factor_δ, δ, σ, succAbove, predAbove]
+  split <;> rename_i h0j
+  all_goals
+  · split <;> rename_i hjk <;>
+    simp only [← val_fin_lt,
+      coe_castSucc, coe_pred, coe_castLT, succ_pred, castSucc_castLT] at h0j hjk ⊢
+    · rw [if_neg]; omega
+    · rw [if_pos]; omega
+
 end Generators
 
 section Skeleton
