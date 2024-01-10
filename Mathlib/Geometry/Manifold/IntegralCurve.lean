@@ -739,13 +739,11 @@ lemma exists_isIntegralCurve_of_isIntegralCurveOn [BoundarylessManifold I M]
   -- we will obtain two integral curves, one centred at some `t₀ > 0` with
   -- `0 ≤ asup - ε < t₀ < asup`; let `t₀ = asup - ε / 2`
   -- another centred at 0 with domain up to `a ∈ S` with `t₀ < a < asup`
-  obtain ⟨a, ha, hlt⟩ := Real.add_neg_lt_sSup _ (ε := - (ε / 2))
+  obtain ⟨a, ha, hlt⟩ := Real.add_neg_lt_sSup (⟨ε, h x⟩ : Set.Nonempty s) (ε := - (ε / 2))
     (by rw [neg_lt, neg_zero]; exact half_pos hε)
   have hale : a ≤ asup := le_csSup hbdd ha
   rw [mem_setOf] at ha
   rw [← hasup, ← sub_eq_add_neg] at hlt
-
-  have hεle : ε ≤ asup := le_csSup hbdd (h x)
 
   -- integral curve defined on `Ioo (-a) a`
   obtain ⟨γ, h0, hγ⟩ := ha
@@ -759,6 +757,9 @@ lemma exists_isIntegralCurve_of_isIntegralCurveOn [BoundarylessManifold I M]
   rw [isIntegralCurveOn_Ioo_comp_sub (asup - ε / 2)] at hγ2
   let γ2 := γ2_aux ∘ (· - (asup - ε / 2))
   have heq2 : γ2 (asup - ε / 2) = γ (asup - ε / 2) := by simp [h2_aux]
+
+  -- to help `linarith`
+  have hεle : ε ≤ asup := le_csSup hbdd (h x)
 
   -- extend `γ` on the left by `γ1` and on the right by `γ2`
   set γ_ext : ℝ → M := piecewise (Ioo (-(asup + ε / 2)) a)
