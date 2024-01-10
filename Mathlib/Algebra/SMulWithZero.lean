@@ -178,7 +178,6 @@ protected lemma MulActionWithZero.nontrivial
 variable {R M}
 variable [MulActionWithZero R M] [Zero M'] [SMul R M'] (p : Prop) [Decidable p]
 
-@[simp]
 lemma ite_zero_smul (a : R) (b : M) : (if p then a else 0 : R) • b = if p then a • b else 0 := by
   rw [ite_smul, zero_smul]
 

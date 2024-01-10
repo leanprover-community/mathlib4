@@ -85,7 +85,7 @@ theorem mk_len (n : SimplexCategory) : ([n.len] : SimplexCategory) = n :=
 #align simplex_category.mk_len SimplexCategory.mk_len
 
 /-- A recursor for `SimplexCategory`. Use it as `induction Δ using SimplexCategory.rec`. -/
-protected def rec {F : ∀ _ : SimplexCategory, Sort*} (h : ∀ n : ℕ, F [n]) : ∀ X, F X := fun n =>
+protected def rec {F : SimplexCategory → Sort*} (h : ∀ n : ℕ, F [n]) : ∀ X, F X := fun n =>
   h n.len
 #align simplex_category.rec SimplexCategory.rec
 

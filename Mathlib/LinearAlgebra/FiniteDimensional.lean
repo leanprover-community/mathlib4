@@ -1033,8 +1033,7 @@ theorem finrank_eq_one_iff (ι : Type*) [Unique ι] : finrank K V = 1 ↔ Nonemp
 
 /-- A module has dimension 1 iff there is some nonzero `v : V` so every vector is a multiple of `v`.
 -/
-theorem finrank_eq_one_iff' : finrank K V = 1 ↔ ∃ (v : V) (_n : v ≠ 0),
-    ∀ w : V, ∃ c : K, c • v = w := by
+theorem finrank_eq_one_iff' : finrank K V = 1 ↔ ∃ v ≠ 0, ∀ w : V, ∃ c : K, c • v = w := by
   -- porting note: was a messy `convert` proof
   rw [finrank_eq_one_iff PUnit.{u+1}, Basis.basis_singleton_iff PUnit]
 #align finrank_eq_one_iff' finrank_eq_one_iff'

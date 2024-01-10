@@ -271,7 +271,7 @@ protected theorem exists_coe {α : Type*} (s : Finset α) (p : s → Prop) :
   Subtype.exists
 #align finset.exists_coe Finset.exists_coe
 
-instance PiFinsetCoe.canLift (ι : Type*) (α : ∀ _i : ι, Type*) [_ne : ∀ i, Nonempty (α i)]
+instance PiFinsetCoe.canLift (ι : Type*) (α : ι → Type*) [_ne : ∀ i, Nonempty (α i)]
     (s : Finset ι) : CanLift (∀ i : s, α i) (∀ i, α i) (fun f i => f i) fun _ => True :=
   PiSubtype.canLift ι α (· ∈ s)
 #align finset.pi_finset_coe.can_lift Finset.PiFinsetCoe.canLift
@@ -2916,6 +2916,13 @@ theorem filter_disj_union (s : Finset α) (t : Finset α) (h : Disjoint s t) :
     filter p (disjUnion s t h) = (filter p s).disjUnion (filter p t) (disjoint_filter_filter h) :=
   eq_of_veq <| Multiset.filter_add _ _ _
 #align finset.filter_disj_union Finset.filter_disj_union
+
+lemma _root_.Set.pairwiseDisjoint_filter [DecidableEq β] (f : α → β) (s : Set β) (t : Finset α) :
+    s.PairwiseDisjoint fun x ↦ t.filter (f · = x) := by
+  rintro i - j - h u hi hj x hx
+  obtain ⟨-, rfl⟩ : x ∈ t ∧ f x = i := by simpa using hi hx
+  obtain ⟨-, rfl⟩ : x ∈ t ∧ f x = j := by simpa using hj hx
+  contradiction
 
 theorem filter_cons {a : α} (s : Finset α) (ha : a ∉ s) :
     filter p (cons a s ha) =

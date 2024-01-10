@@ -3,10 +3,10 @@ Copyright (c) 2014 Floris van Doorn (c) 2016 Microsoft Corporation. All rights r
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
+import Mathlib.Algebra.Group.TypeTags
+import Mathlib.Algebra.Ring.Defs
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Order.Basic
-import Mathlib.Algebra.GroupWithZero.Defs
-import Mathlib.Algebra.Ring.Defs
 import Mathlib.Tactic.PushNeg
 import Mathlib.Tactic.Use
 
@@ -120,6 +120,18 @@ attribute [simp]
   Nat.not_lt_zero Nat.succ_ne_zero Nat.succ_ne_self Nat.zero_ne_one Nat.one_ne_zero
   -- Nat.zero_ne_bit1 Nat.bit1_ne_zero Nat.bit0_ne_one Nat.one_ne_bit0 Nat.bit0_ne_bit1
   -- Nat.bit1_ne_bit0
+
+section Multiplicative
+
+open Multiplicative
+
+lemma toAdd_pow (a : Multiplicative ℕ) (b : ℕ) : toAdd (a ^ b) = toAdd a * b := mul_comm _ _
+#align nat.to_add_pow Nat.toAdd_pow
+
+@[simp] lemma ofAdd_mul (a b : ℕ) : ofAdd (a * b) = ofAdd a ^ b := (toAdd_pow _ _).symm
+#align nat.of_add_mul Nat.ofAdd_mul
+
+end Multiplicative
 
 variable {m n k : ℕ}
 

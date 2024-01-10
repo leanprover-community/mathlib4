@@ -341,7 +341,7 @@ theorem inject_dummies (f : β → γ) (g : γ → Option β) (inv : ∀ x, g (f
 
 variable (β)
 
-theorem reindex_dioph (f : α → β) : ∀ _ : Dioph S, Dioph {v | v ∘ f ∈ S}
+theorem reindex_dioph (f : α → β) : Dioph S → Dioph {v | v ∘ f ∈ S}
   | ⟨γ, p, pe⟩ => ⟨γ, p.map (inl ∘ f ⊗ inr), fun v =>
       (pe _).trans <|
         exists_congr fun t =>

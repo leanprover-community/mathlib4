@@ -979,7 +979,7 @@ end FiniteSpanningSetsIn
 theorem sigmaFinite_of_countable {S : Set (Set α)} (hc : S.Countable) (hμ : ∀ s ∈ S, μ s < ∞)
     (hU : ⋃₀ S = univ) : SigmaFinite μ := by
   obtain ⟨s, hμ, hs⟩ : ∃ s : ℕ → Set α, (∀ n, μ (s n) < ∞) ∧ ⋃ n, s n = univ
-  exact (@exists_seq_cover_iff_countable _ (fun x => μ x < ⊤) ⟨∅, by simp⟩).2 ⟨S, hc, hμ, hU⟩
+  exact (@exists_seq_cover_iff_countable _ (fun x => μ x < ∞) ⟨∅, by simp⟩).2 ⟨S, hc, hμ, hU⟩
   exact ⟨⟨⟨fun n => s n, fun _ => trivial, hμ, hs⟩⟩⟩
 #align measure_theory.measure.sigma_finite_of_countable MeasureTheory.Measure.sigmaFinite_of_countable
 

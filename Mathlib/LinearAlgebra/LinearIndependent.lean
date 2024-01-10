@@ -1396,7 +1396,7 @@ theorem linearIndependent_fin2 {f : Fin 2 → V} :
 #align linear_independent_fin2 linearIndependent_fin2
 
 theorem exists_linearIndependent_extension (hs : LinearIndependent K ((↑) : s → V)) (hst : s ⊆ t) :
-    ∃ (b : _) (_ : b ⊆ t), s ⊆ b ∧ t ⊆ span K b ∧ LinearIndependent K ((↑) : b → V) := by
+    ∃ b ⊆ t, s ⊆ b ∧ t ⊆ span K b ∧ LinearIndependent K ((↑) : b → V) := by
   -- Porting note: The placeholder should be solved before `rcases`.
   have := by
     refine zorn_subset_nonempty { b | b ⊆ t ∧ LinearIndependent K ((↑) : b → V) } ?_ _ ⟨hst, hs⟩
@@ -1416,7 +1416,7 @@ theorem exists_linearIndependent_extension (hs : LinearIndependent K ((↑) : s 
 variable (K t)
 
 theorem exists_linearIndependent :
-    ∃ (b : _) (_ : b ⊆ t), span K b = span K t ∧ LinearIndependent K ((↑) : b → V) := by
+    ∃ b ⊆ t, span K b = span K t ∧ LinearIndependent K ((↑) : b → V) := by
   obtain ⟨b, hb₁, -, hb₂, hb₃⟩ :=
     exists_linearIndependent_extension (linearIndependent_empty K V) (Set.empty_subset t)
   exact ⟨b, hb₁, (span_eq_of_le _ hb₂ (Submodule.span_mono hb₁)).symm, hb₃⟩
