@@ -786,7 +786,21 @@ noncomputable def atUnits (H : M ≤ IsUnit.submonoid R) : R ≃ₐ[R] S := by
 
 end at_units
 
+
 end IsLocalization
+
+
+section
+
+variable [IsLocalization M S] (M) (Q : Type*) [CommSemiring Q] {g : R →+* P} [Algebra P Q]
+
+theorem map_injective_of_injective (hg : Function.Injective g)
+    [i: IsLocalization (M.map g : Submonoid P) Q] :
+    Function.Injective (map Q g (Submonoid.le_comap_map M) : S → Q) :=
+  Submonoid.LocalizationMap.map_injective_of_injective (IsLocalization.toLocalizationMap M S) hg
+      (IsLocalization.toLocalizationMap (M.map g : Submonoid P) Q)
+
+end
 
 section
 
@@ -1247,25 +1261,9 @@ theorem sec_fst_ne_zero [Nontrivial R] [NoZeroDivisors S] (hM : M ≤ nonZeroDiv
   · exact IsLocalization.injective S hM
 #align is_localization.sec_fst_ne_zero IsLocalization.sec_fst_ne_zero
 
-variable (S M) (Q : Type*) [CommRing Q] {g : R →+* P} [Algebra P Q]
 
-/-- Injectivity of a map descends to the map induced on localizations. -/
-theorem map_injective_of_injective (hg : Function.Injective g)
-    [i : IsLocalization (M.map g : Submonoid P) Q] :
-    Function.Injective (map Q g (Submonoid.le_comap_map M) : S → Q) := by
-  rw [injective_iff_map_eq_zero]
-  intro z hz
-  obtain ⟨a, b, rfl⟩ := mk'_surjective M z
-  rw [map_mk', mk'_eq_zero_iff] at hz
-  obtain ⟨⟨m', hm'⟩, hm⟩ := hz
-  rw [Submonoid.mem_map] at hm'
-  obtain ⟨n, hn, hnm⟩ := hm'
-  rw [Subtype.coe_mk, ← hnm, ← map_mul, ← map_zero g] at hm
-  rw [mk'_eq_zero_iff]
-  exact ⟨⟨n, hn⟩, hg hm⟩
-#align is_localization.map_injective_of_injective IsLocalization.map_injective_of_injective
+variable {Q : Type*} [CommRing Q] {g : R →+* P} [Algebra P Q]
 
-variable {S Q M}
 
 variable (A : Type*) [CommRing A] [IsDomain A]
 
@@ -1434,7 +1432,7 @@ variable (Rₘ Sₘ)
 /-- Injectivity of the underlying `algebraMap` descends to the algebra induced by localization. -/
 theorem localizationAlgebra_injective (hRS : Function.Injective (algebraMap R S)) :
     Function.Injective (@algebraMap Rₘ Sₘ _ _ (localizationAlgebra M S)) :=
-  IsLocalization.map_injective_of_injective (M := M) _ hRS (i := i)
+  IsLocalization.map_injective_of_injective (M := M) _ hRS (i:=i)
 #align localization_algebra_injective localizationAlgebra_injective
 
 end Algebra
