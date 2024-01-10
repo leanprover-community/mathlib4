@@ -28,6 +28,20 @@ variable [Module R M] [Module R N] [Algebra R S] [Module S N] [IsScalarTower R S
 variable (p : Submonoid R) [IsLocalization p S] (f : M →ₗ[R] N) [IsLocalizedModule p f]
 variable (hp : p ≤ R⁰)
 
+variable {S} in
+lemma IsLocalizedModule.linearIndependent_lift {ι} {v : ι → N} (hf : LinearIndependent S v) :
+    ∃ w : ι → M, LinearIndependent R w := by
+  choose sec hsec using IsLocalizedModule.surj p f
+  use fun i ↦ (sec (v i)).1
+  rw [linearIndependent_iff'] at hf ⊢
+  intro t g hg i hit
+  apply hp (sec (v i)).2.prop
+  apply IsLocalization.injective S hp
+  rw [map_zero]
+  refine hf t (fun i ↦ algebraMap R S (g i * (sec (v i)).2)) ?_ _ hit
+  simp only [map_mul, mul_smul, algebraMap_smul, ← Submonoid.smul_def,
+    hsec, ← map_smul, ← map_sum, hg, map_zero]
+
 lemma IsLocalizedModule.lift_rank_eq :
     Cardinal.lift.{v} (Module.rank S N) = Cardinal.lift.{v'} (Module.rank R M) := by
   cases' subsingleton_or_nontrivial R
@@ -37,16 +51,7 @@ lemma IsLocalizedModule.lift_rank_eq :
   · rw [Module.rank_def, lift_iSup (bddAbove_range.{v', v'} _)]
     apply ciSup_le'
     intro ⟨s, hs⟩
-    choose sec hsec using IsLocalizedModule.surj p f
-    refine LinearIndependent.cardinal_lift_le_rank (ι := s) (v := fun i ↦ (sec i).1) ?_
-    rw [linearIndependent_iff'] at hs ⊢
-    intro t g hg i hit
-    apply hp (sec i).2.prop
-    apply IsLocalization.injective S hp
-    rw [map_zero]
-    refine hs t (fun i ↦ algebraMap R S (g i * (sec i).2)) ?_ _ hit
-    simp only [map_mul, mul_smul, algebraMap_smul, ← Submonoid.smul_def,
-      hsec, ← map_smul, ← map_sum, hg, map_zero]
+    exact (IsLocalizedModule.linearIndependent_lift p f hp hs).choose_spec.cardinal_lift_le_rank
   · rw [Module.rank_def, lift_iSup (bddAbove_range.{v, v} _)]
     apply ciSup_le'
     intro ⟨s, hs⟩
@@ -75,13 +80,29 @@ lemma IsLocalizedModule.rank_eq {N : Type v} [AddCommGroup N]
     [Module R N] [Module S N] [IsScalarTower R S N] (f : M →ₗ[R] N) [IsLocalizedModule p f] :
     Module.rank S N = Module.rank R M := by simpa using IsLocalizedModule.lift_rank_eq S p f hp
 
-/-- The **rank-nullity theorem** for commutative domains. -/
+variable (R M) in
+theorem exists_set_linearIndependent_of_isDomain [IsDomain R] :
+    ∃ s : Set M, #s = Module.rank R M ∧ LinearIndependent (ι := s) R Subtype.val := by
+  obtain ⟨w, hw⟩ :=
+    IsLocalizedModule.linearIndependent_lift R⁰ (LocalizedModule.mkLinearMap R⁰ M) le_rfl
+      (Module.Free.chooseBasis (FractionRing R) (LocalizedModule R⁰ M)).linearIndependent
+  refine ⟨Set.range w, ?_, (linearIndependent_subtype_range hw.injective).mpr hw⟩
+  apply Cardinal.lift_injective.{max u v}
+  rw [Cardinal.mk_range_eq_of_injective hw.injective, ← Module.Free.rank_eq_card_chooseBasisIndex,
+  IsLocalizedModule.lift_rank_eq (FractionRing R) R⁰ (LocalizedModule.mkLinearMap R⁰ M) le_rfl]
+
+/-- The **rank-nullity theorem** for commutative domains. Also see `rank_quotient_add_rank`. -/
 theorem rank_quotient_add_rank_of_isDomain [IsDomain R] (M' : Submodule R M) :
     Module.rank R (M ⧸ M') + Module.rank R M' = Module.rank R M := by
   apply lift_injective.{max u v}
   rw [lift_add, ← IsLocalizedModule.lift_rank_eq (FractionRing R) R⁰ (M'.toLocalized R⁰) le_rfl,
     ← IsLocalizedModule.lift_rank_eq (FractionRing R) R⁰ (LocalizedModule.mkLinearMap R⁰ M) le_rfl,
     ← IsLocalizedModule.lift_rank_eq (FractionRing R) R⁰ (M'.toLocalizedQuotient R⁰) le_rfl,
-    ← lift_add, rank_quotient_add_rank]
+    ← lift_add, rank_quotient_add_rank_of_divisionRing]
+
+universe w in
+instance IsDomain.hasRankNullity [IsDomain R] : HasRankNullity.{w} R where
+  rank_quotient_add_rank := rank_quotient_add_rank_of_isDomain
+  exists_set_linearIndependent M := exists_set_linearIndependent_of_isDomain R M
 
 end CommRing

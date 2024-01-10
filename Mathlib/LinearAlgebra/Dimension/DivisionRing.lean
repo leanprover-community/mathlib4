@@ -7,7 +7,7 @@ Scott Morrison, Chris Hughes, Anne Baanen, Junyan Xu
 import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.LinearAlgebra.Dimension.Finite
 import Mathlib.SetTheory.Cardinal.Subfield
-import Mathlib.LinearAlgebra.Dimension.Constructions
+import Mathlib.LinearAlgebra.Dimension.RankNullity
 
 #align_import linear_algebra.dimension from "leanprover-community/mathlib"@"47a5f8186becdbc826190ced4312f8199f9db6a5"
 
@@ -33,7 +33,7 @@ For vector spaces (i.e. modules over a field), we have
 
 noncomputable section
 
-universe u v v' v'' u₁' w w'
+universe u₀ u v v' v'' u₁' w w'
 
 variable {K R : Type u} {V V₁ V₂ V₃ : Type v} {V' V'₁ : Type v'} {V'' : Type v''}
 
@@ -59,60 +59,20 @@ theorem Basis.finite_ofVectorSpaceIndex_of_rank_lt_aleph0 (h : Module.rank K V <
   finite_def.2 <| (Basis.ofVectorSpace K V).nonempty_fintype_index_of_rank_lt_aleph0 h
 #align basis.finite_of_vector_space_index_of_rank_lt_aleph_0 Basis.finite_ofVectorSpaceIndex_of_rank_lt_aleph0
 
-theorem rank_quotient_add_rank (p : Submodule K V) :
+/-- Also see `rank_quotient_add_rank`. -/
+theorem rank_quotient_add_rank_of_divisionRing (p : Submodule K V) :
     Module.rank K (V ⧸ p) + Module.rank K p = Module.rank K V := by
   classical
     let ⟨f⟩ := quotient_prod_linearEquiv p
     exact rank_prod'.symm.trans f.rank_eq
-#align rank_quotient_add_rank rank_quotient_add_rank
 
-/-- The **rank-nullity theorem** -/
-theorem rank_range_add_rank_ker (f : V →ₗ[K] V₁) :
-    Module.rank K (LinearMap.range f) + Module.rank K (LinearMap.ker f) = Module.rank K V := by
-  haveI := fun p : Submodule K V => Classical.decEq (V ⧸ p)
-  rw [← f.quotKerEquivRange.rank_eq, rank_quotient_add_rank]
-#align rank_range_add_rank_ker rank_range_add_rank_ker
-
-theorem rank_eq_of_surjective (f : V →ₗ[K] V₁) (h : Surjective f) :
-    Module.rank K V = Module.rank K V₁ + Module.rank K (LinearMap.ker f) := by
-  rw [← rank_range_add_rank_ker f, ← rank_range_of_surjective f h]
-#align rank_eq_of_surjective rank_eq_of_surjective
-
-/-- Given a family of `n` linearly independent vectors in a space of dimension `> n`, one may extend
-the family by another vector while retaining linear independence. -/
-theorem exists_linearIndependent_cons_of_lt_rank {n : ℕ} {v : Fin n → V}
-    (hv : LinearIndependent K v) (h : n < Module.rank K V) :
-    ∃ (x : V), LinearIndependent K (Fin.cons x v) := by
-  have A : Submodule.span K (range v) ≠ ⊤ := by
-    intro H
-    rw [← rank_top, ← H] at h
-    have : Module.rank K (Submodule.span K (range v)) ≤ n := by
-      have := Cardinal.mk_range_le_lift (f := v)
-      simp only [Cardinal.lift_id'] at this
-      exact (rank_span_le _).trans (this.trans (by simp))
-    exact lt_irrefl _ (h.trans_le this)
-  obtain ⟨x, hx⟩ : ∃ x, x ∉ Submodule.span K (range v) := by
-    contrapose! A
-    exact Iff.mpr Submodule.eq_top_iff' A
-  exact ⟨x, linearIndependent_fin_cons.2 ⟨hv, hx⟩⟩
-
-/-- Given a family of `n` linearly independent vectors in a space of dimension `> n`, one may extend
-the family by another vector while retaining linear independence. -/
-theorem exists_linearIndependent_snoc_of_lt_rank {n : ℕ} {v : Fin n → V}
-    (hv : LinearIndependent K v) (h : n < Module.rank K V) :
-    ∃ (x : V), LinearIndependent K (Fin.snoc v x) := by
-  simpa [linearIndependent_fin_cons, ← linearIndependent_fin_snoc]
-    using exists_linearIndependent_cons_of_lt_rank hv h
-
-/-- Given a nonzero vector in a space of dimension `> 1`, one may find another vector linearly
-independent of the first one. -/
-theorem exists_linearIndependent_pair_of_one_lt_rank
-    (h : 1 < Module.rank K V) {x : V} (hx : x ≠ 0) :
-    ∃ y, LinearIndependent K ![x, y] := by
-  obtain ⟨y, hy⟩ := exists_linearIndependent_snoc_of_lt_rank (linearIndependent_unique ![x] hx) h
-  have : Fin.snoc ![x] y = ![x, y] := Iff.mp List.ofFn_inj rfl
-  rw [this] at hy
-  exact ⟨y, hy⟩
+instance DivisionRing.hasRankNullity : HasRankNullity.{u₀} K where
+  rank_quotient_add_rank := rank_quotient_add_rank_of_divisionRing
+  exists_set_linearIndependent V _ _ := by
+    let b := Module.Free.chooseBasis K V
+    refine ⟨range b, ?_, b.linearIndependent.to_subtype_range⟩
+    rw [← lift_injective.eq_iff, mk_range_eq_of_injective b.injective,
+      Module.Free.rank_eq_card_chooseBasisIndex]
 
 section
 
@@ -152,29 +112,6 @@ theorem rank_add_rank_split (db : V₂ →ₗ[K] V) (eb : V₃ →ₗ[K] V) (cd 
     refine' ⟨c, h₁, _⟩
     rw [h₂, _root_.neg_neg]
 #align rank_add_rank_split rank_add_rank_split
-
-theorem Submodule.rank_sup_add_rank_inf_eq (s t : Submodule K V) :
-    Module.rank K (s ⊔ t : Submodule K V) + Module.rank K (s ⊓ t : Submodule K V) =
-    Module.rank K s + Module.rank K t :=
-  rank_add_rank_split
-    (inclusion le_sup_left) (inclusion le_sup_right)
-    (inclusion inf_le_left) (inclusion inf_le_right)
-    (by
-      rw [← map_le_map_iff' (ker_subtype <| s ⊔ t), Submodule.map_sup, Submodule.map_top, ←
-        LinearMap.range_comp, ← LinearMap.range_comp, subtype_comp_inclusion,
-        subtype_comp_inclusion, range_subtype, range_subtype, range_subtype])
-    (ker_inclusion _ _ _) (by ext ⟨x, hx⟩; rfl)
-    (by
-      rintro ⟨b₁, hb₁⟩ ⟨b₂, hb₂⟩ eq
-      obtain rfl : b₁ = b₂ := congr_arg Subtype.val eq
-      exact ⟨⟨b₁, hb₁, hb₂⟩, rfl, rfl⟩)
-#align submodule.rank_sup_add_rank_inf_eq Submodule.rank_sup_add_rank_inf_eq
-
-theorem Submodule.rank_add_le_rank_add_rank (s t : Submodule K V) :
-    Module.rank K (s ⊔ t : Submodule K V) ≤ Module.rank K s + Module.rank K t := by
-  rw [← Submodule.rank_sup_add_rank_inf_eq]
-  exact self_le_add_right _ _
-#align submodule.rank_add_le_rank_add_rank Submodule.rank_add_le_rank_add_rank
 
 end
 
@@ -312,35 +249,6 @@ theorem Module.rank_le_one_iff_top_isPrincipal :
 #align module.rank_le_one_iff_top_is_principal Module.rank_le_one_iff_top_isPrincipal
 
 end Module
-
-section Span
-
-open Submodule FiniteDimensional
-
-variable [DivisionRing K] [AddCommGroup V] [Module K V]
-
-/-- Given a family of `n` linearly independent vectors in a finite-dimensional space of
-dimension `> n`, one may extend the family by another vector while retaining linear independence. -/
-theorem exists_linearIndependent_snoc_of_lt_finrank {n : ℕ} {v : Fin n → V}
-    (hv : LinearIndependent K v) (h : n < finrank K V) :
-    ∃ (x : V), LinearIndependent K (Fin.snoc v x) :=
-  exists_linearIndependent_snoc_of_lt_rank hv (lt_rank_of_lt_finrank h)
-
-/-- Given a family of `n` linearly independent vectors in a finite-dimensional space of
-dimension `> n`, one may extend the family by another vector while retaining linear independence. -/
-theorem exists_linearIndependent_cons_of_lt_finrank {n : ℕ} {v : Fin n → V}
-    (hv : LinearIndependent K v) (h : n < finrank K V) :
-    ∃ (x : V), LinearIndependent K (Fin.cons x v) :=
-  exists_linearIndependent_cons_of_lt_rank hv (lt_rank_of_lt_finrank h)
-
-/-- Given a nonzero vector in a finite-dimensional space of dimension `> 1`, one may find another
-vector linearly independent of the first one. -/
-theorem exists_linearIndependent_pair_of_one_lt_finrank
-    (h : 1 < finrank K V) {x : V} (hx : x ≠ 0) :
-    ∃ y, LinearIndependent K ![x, y] :=
-  exists_linearIndependent_pair_of_one_lt_rank (one_lt_rank_of_one_lt_finrank h) hx
-
-end Span
 
 section Basis
 
