@@ -48,8 +48,8 @@ then it should use `e.source ∩ s` or `e.target ∩ t`, not `s ∩ e.source` or
 
 open Function Set Filter Topology
 
-variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*} [TopologicalSpace α]
-  [TopologicalSpace β] [TopologicalSpace γ] [TopologicalSpace δ]
+variable {α : Type*} {β : Type*} {γ : Type*} {Z' : Type*} [TopologicalSpace α]
+  [TopologicalSpace β] [TopologicalSpace γ] [TopologicalSpace Z']
 
 /-- Partial homeomorphisms, defined on open subsets of the space -/
 -- porting note: commented @[nolint has_nonempty_instance]
@@ -889,7 +889,7 @@ theorem inv_image_trans_target : e'.symm '' (e.trans e').target = e'.source ∩ 
   image_trans_source e'.symm e.symm
 #align local_homeomorph.inv_image_trans_target PartialHomeomorph.inv_image_trans_target
 
-theorem trans_assoc (e'' : PartialHomeomorph γ δ) :
+theorem trans_assoc (e'' : PartialHomeomorph γ Z') :
     (e.trans e').trans e'' = e.trans (e'.trans e'') :=
   toPartialEquiv_injective <| e.1.trans_assoc _ _
 #align local_homeomorph.trans_assoc PartialHomeomorph.trans_assoc
@@ -1028,8 +1028,8 @@ section Prod
 /-- The product of two partial homeomorphisms, as a partial homeomorphism on the product space. -/
 @[simps! (config := mfld_cfg) toPartialEquiv apply,
   simps! (config := .lemmasOnly) source target symm_apply]
-def prod (e : PartialHomeomorph α β) (e' : PartialHomeomorph γ δ) :
-    PartialHomeomorph (α × γ) (β × δ) where
+def prod (e : PartialHomeomorph α β) (e' : PartialHomeomorph γ Z') :
+    PartialHomeomorph (α × γ) (β × Z') where
   open_source := e.open_source.prod e'.open_source
   open_target := e.open_target.prod e'.open_target
   continuousOn_toFun := e.continuousOn.prod_map e'.continuousOn
@@ -1038,7 +1038,7 @@ def prod (e : PartialHomeomorph α β) (e' : PartialHomeomorph γ δ) :
 #align local_homeomorph.prod PartialHomeomorph.prod
 
 @[simp, mfld_simps]
-theorem prod_symm (e : PartialHomeomorph α β) (e' : PartialHomeomorph γ δ) :
+theorem prod_symm (e : PartialHomeomorph α β) (e' : PartialHomeomorph γ Z') :
     (e.prod e').symm = e.symm.prod e'.symm :=
   rfl
 #align local_homeomorph.prod_symm PartialHomeomorph.prod_symm
@@ -1051,24 +1051,24 @@ theorem refl_prod_refl {α β : Type*} [TopologicalSpace α] [TopologicalSpace �
 
 @[simp, mfld_simps]
 theorem prod_trans {η : Type*} {ε : Type*} [TopologicalSpace η] [TopologicalSpace ε]
-    (e : PartialHomeomorph α β) (f : PartialHomeomorph β γ) (e' : PartialHomeomorph δ η)
+    (e : PartialHomeomorph α β) (f : PartialHomeomorph β γ) (e' : PartialHomeomorph Z' η)
     (f' : PartialHomeomorph η ε) : (e.prod e').trans (f.prod f') = (e.trans f).prod (e'.trans f') :=
   toPartialEquiv_injective <| e.1.prod_trans ..
 #align local_homeomorph.prod_trans PartialHomeomorph.prod_trans
 
-theorem prod_eq_prod_of_nonempty {e₁ e₁' : PartialHomeomorph α β} {e₂ e₂' : PartialHomeomorph γ δ}
+theorem prod_eq_prod_of_nonempty {e₁ e₁' : PartialHomeomorph α β} {e₂ e₂' : PartialHomeomorph γ Z'}
     (h : (e₁.prod e₂).source.Nonempty) : e₁.prod e₂ = e₁'.prod e₂' ↔ e₁ = e₁' ∧ e₂ = e₂' := by
   obtain ⟨⟨x, y⟩, -⟩ := id h
   haveI : Nonempty α := ⟨x⟩
   haveI : Nonempty β := ⟨e₁ x⟩
   haveI : Nonempty γ := ⟨y⟩
-  haveI : Nonempty δ := ⟨e₂ y⟩
+  haveI : Nonempty Z' := ⟨e₂ y⟩
   simp_rw [PartialHomeomorph.ext_iff, prod_apply, prod_symm_apply, prod_source, Prod.ext_iff,
     Set.prod_eq_prod_iff_of_nonempty h, forall_and, Prod.forall, forall_const,
     and_assoc, and_left_comm]
 #align local_homeomorph.prod_eq_prod_of_nonempty PartialHomeomorph.prod_eq_prod_of_nonempty
 
-theorem prod_eq_prod_of_nonempty' {e₁ e₁' : PartialHomeomorph α β} {e₂ e₂' : PartialHomeomorph γ δ}
+theorem prod_eq_prod_of_nonempty' {e₁ e₁' : PartialHomeomorph α β} {e₂ e₂' : PartialHomeomorph γ Z'}
     (h : (e₁'.prod e₂').source.Nonempty) : e₁.prod e₂ = e₁'.prod e₂' ↔ e₁ = e₁' ∧ e₂ = e₂' := by
   rw [eq_comm, prod_eq_prod_of_nonempty h, eq_comm, @eq_comm _ e₂']
 #align local_homeomorph.prod_eq_prod_of_nonempty' PartialHomeomorph.prod_eq_prod_of_nonempty'
@@ -1339,12 +1339,12 @@ theorem transPartialHomeomorph_eq_trans (e : α ≃ₜ β) (f' : PartialHomeomor
 
 @[simp, mfld_simps]
 theorem transPartialHomeomorph_trans (e : α ≃ₜ β) (f : PartialHomeomorph β γ)
-    (f' : PartialHomeomorph γ δ) :
+    (f' : PartialHomeomorph γ Z') :
     (e.transPartialHomeomorph f).trans f' = e.transPartialHomeomorph (f.trans f') := by
   simp only [transPartialHomeomorph_eq_trans, PartialHomeomorph.trans_assoc]
 
 @[simp, mfld_simps]
-theorem trans_transPartialHomeomorph (e : α ≃ₜ β) (e' : β ≃ₜ γ) (f'' : PartialHomeomorph γ δ) :
+theorem trans_transPartialHomeomorph (e : α ≃ₜ β) (e' : β ≃ₜ γ) (f'' : PartialHomeomorph γ Z') :
     (e.trans e').transPartialHomeomorph f'' =
       e.transPartialHomeomorph (e'.transPartialHomeomorph f'') := by
   simp only [transPartialHomeomorph_eq_trans, PartialHomeomorph.trans_assoc,
@@ -1433,13 +1433,13 @@ theorem transHomeomorph_eq_trans (e : PartialHomeomorph α β) (f' : β ≃ₜ �
 #align local_homeomorph.trans_equiv_eq_trans PartialHomeomorph.transHomeomorph_eq_trans
 
 @[simp, mfld_simps]
-theorem transHomeomorph_transHomeomorph (e : PartialHomeomorph α β) (f' : β ≃ₜ γ) (f'' : γ ≃ₜ δ) :
+theorem transHomeomorph_transHomeomorph (e : PartialHomeomorph α β) (f' : β ≃ₜ γ) (f'' : γ ≃ₜ Z') :
     (e.transHomeomorph f').transHomeomorph f'' = e.transHomeomorph (f'.trans f'') := by
   simp only [transHomeomorph_eq_trans, trans_assoc, Homeomorph.trans_toPartialHomeomorph]
 
 @[simp, mfld_simps]
 theorem trans_transHomeomorph (e : PartialHomeomorph α β) (e' : PartialHomeomorph β γ)
-    (f'' : γ ≃ₜ δ) :
+    (f'' : γ ≃ₜ Z') :
     (e.trans e').transHomeomorph f'' = e.trans (e'.transHomeomorph f'') := by
   simp only [transHomeomorph_eq_trans, trans_assoc, Homeomorph.trans_toPartialHomeomorph]
 end transHomeomorph
