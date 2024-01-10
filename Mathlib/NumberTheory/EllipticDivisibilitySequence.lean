@@ -38,6 +38,18 @@ Some examples of EDSs include
  * TODO: prove that `normEDS` is an `EllDivSequence`.
  * TODO: prove that a general normalised `EllDivSequence` can be given by `normEDS`.
 
+## Implementation notes
+
+`EllDivSequence' b c d n` is defined in terms of the private definition `EllDivSequence'' b c d n`,
+which are equal when `n` is odd and differ by a factor of `b` when `n` is even. This coincides with
+the reference since both agree for `EllDivSequence' b c d 2` and for `EllDivSequence' b c d 4`, and
+the correct factors of `b` are removed in `EllDivSequence' b c d (2 * (m + 2) + 1)` and in
+`EllDivSequence' b c d (2 * (m + 3))`. This is done to avoid the necessity for ring division by `b`
+in the inductive definition of `EllDivSequence' b c d (2 * (m + 3))`. The idea is that, an easy
+lemma shows that `EllDivSequence' b c d (2 * (m + 3))` always contains a factor of `b`, so it is
+possible to remove a factor of `b` a posteriori, but stating this lemma requires first defining
+`EllDivSequence' b c d (2 * (m + 3))`, which requires having this factor of `b` a priori.
+
 ## References
 
 M Ward, *Memoir on Elliptic Divisibility Sequences*
@@ -140,7 +152,6 @@ lemma normEDS'_three : normEDS' b c d 3 = c := by
 lemma normEDS'_four : normEDS' b c d 4 = d * b := by
   rw [normEDS', normEDS'', if_pos <| by decide]
 
-@[simp]
 lemma normEDS'_odd (m : ℕ) : normEDS' b c d (2 * (m + 2) + 1) =
     normEDS' b c d (m + 4) * normEDS' b c d (m + 2) ^ 3 -
       normEDS' b c d (m + 1) * normEDS' b c d (m + 3) ^ 3 := by
@@ -161,7 +172,6 @@ lemma normEDS'_odd (m : ℕ) : normEDS' b c d (2 * (m + 2) + 1) =
     rw [if_neg hm, if_neg hm, if_neg hm4, if_neg hm2, if_pos hm1, if_pos hm3]
     ring1
 
-@[simp]
 lemma normEDS'_even (m : ℕ) : normEDS' b c d (2 * (m + 3)) * b =
     normEDS' b c d (m + 2) ^ 2 * normEDS' b c d (m + 3) * normEDS' b c d (m + 5) -
       normEDS' b c d (m + 1) * normEDS' b c d (m + 3) * normEDS' b c d (m + 4) ^ 2 := by
