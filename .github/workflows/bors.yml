@@ -10,6 +10,7 @@ on:
   push:
     branches:
       - staging
+      - mergify/merge_queue/*
 
 name: continuous integration (staging)
 

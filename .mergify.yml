@@ -1,0 +1,60 @@
+shared:
+    # These can possibly be replaced with a regex match (=~)
+    mathlib_ci: &mathlib_ci
+        - check-success=Build
+        - check-success=Lint style
+        - check-success=Check all files imported
+    bad_labels: &no_bad_labels
+        - label!=not-ready-to-merge
+        - label!=WIP
+        - label!=blocked-by-other-PR
+        - label!=merge-conflict
+        - label!=awaiting-CI
+
+
+# Note that this is not the only way to add a PR to the queue; for when maintainers need to put one in urgently, they can use `@Mergifyio queue`.
+# If the `urgent` tag is on the PR, it will interrupt anything currently on the queue and run on its own (no batching).
+
+# Nicety: this will _not_ put something in the queue until CI has passed. Therefore, you can (equivalent of) `bors r+` before CI has run and said stuff is ok.
+pull_request_rules:
+  - name: add to queue on CI success + approval
+    conditions:
+        - and: *mathlib_ci # CI passes
+        - and: *no_bad_labels # we have none of the bad labels"
+        - base=master # Base branch is `master`
+        - approved-reviews-by=@leanprover-community/mathlib-maintainers # Approval from maintainers
+        - label=ready-to-merge # `ready-to-merge` label has been put on
+        # - "#changes-requested-reviews-by=0" - this was in the original file - I don't think this is relevant.
+        # it means that no reviews have requested changes, which in theory should rarely happen but it may still do, and I'm not sure if it should always block.
+
+        # I saw these three on a Mozilla configuration - do we want this? This basically says that all CI checks are passed, and are not pending etc.
+        # I have seen this be ignored before, though.
+        # - "#check-pending=0"
+        # - "#check-stale=0"
+        # - "#check-failure=0"
+    actions:
+        queue: # Add to the appropriate pull-request queue.
+            allow_merging_configuration_change: true # This doesn't need to be on on anything except `urgent`, imo, but I don't think this can be done in the `merge_rules` and I don't want to duplicate.
+
+queue_rules:
+    # Any PR with the `urgent` label will take priority over all others, even interrupting CI. This queue does not use batching.
+    - name: urgent
+      queue_conditions:
+        - label = urgent
+      merge_conditions:
+        - and: *mathlib_ci
+      merge_method: squash
+      allow_inplace_checks: false # We want the checks to be run on `mergify/*` branches.
+      commit_message_template: |-
+        {{ title }} (#{{ number }})
+        {{ body.split('---')[0] }}
+    - name: default
+      batch_size: 20
+      batch_max_wait_time: 5 min # Wait 5 minutes before starting the batch - if there's rapid fire approvals it's more efficient, although I'm not sure if necessary.
+      merge_conditions:
+        - and: *mathlib_ci
+      merge_method: squash
+      allow_inplace_checks: false
+      commit_message_template: |-
+        {{ title }} (#{{ number }})
+        {{ body.split('---')[0] }}

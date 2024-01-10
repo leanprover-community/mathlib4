@@ -9,6 +9,8 @@
 on:
   push:
     branches-ignore:
+      # ignore mergify branches
+      - 'mergify/merge_queue/*'
       # ignore tmp branches used by bors
       - 'staging.tmp*'
       - 'trying.tmp*'

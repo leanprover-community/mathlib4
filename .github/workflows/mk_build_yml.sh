@@ -28,6 +28,8 @@ on:
       - 'nolints'
       # ignore staging branch used by bors, this is handled by bors.yml
       - 'staging'
+      # ignore mergify branches
+      - 'mergify/merge_queue/*'
   merge_group:
 
 name: continuous integration
@@ -44,6 +46,7 @@ on:
   push:
     branches:
       - staging
+      - mergify/merge_queue/*
 
 name: continuous integration (staging)
 EOF
@@ -58,6 +61,8 @@ build_fork_yml() {
 on:
   push:
     branches-ignore:
+      # ignore mergify branches
+      - 'mergify/merge_queue/*'
       # ignore tmp branches used by bors
       - 'staging.tmp*'
       - 'trying.tmp*'
