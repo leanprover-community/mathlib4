@@ -157,20 +157,26 @@ theorem Sorted.rel_of_mem_take_of_mem_drop {l : List α} (h : List.Sorted r l) {
   exact h.rel_nthLe_of_lt _ _ (Nat.lt_add_right _ (lt_min_iff.mp hix).left)
 #align list.sorted.rel_of_mem_take_of_mem_drop List.Sorted.rel_of_mem_take_of_mem_drop
 
-theorem Sorted.filter {l : List α} (f : α → Bool) (h : List.Sorted r l) :
-    List.Sorted r (List.filter f l) := by
+theorem Sorted.filter {l : List α} (f : α → Bool) (h : Sorted r l) :
+    Sorted r (filter f l) := by
   match l with
   | [] => simp
   | x :: xs =>
-    unfold List.filter
+    unfold filter
     cases (f x)
-    simp [Sorted.filter f (List.Sorted.of_cons h)]
+    simp [Sorted.filter f (Sorted.of_cons h)]
     simp
     apply And.intro
     intro b hb
-    simp [List.Sorted] at h
-    exact (h.left) b (List.mem_of_mem_filter hb)
-    exact Sorted.filter f (List.Sorted.of_cons h)
+    simp [Sorted] at h
+    exact (h.left) b (mem_of_mem_filter hb)
+    exact Sorted.filter f (Sorted.of_cons h)
+
+theorem Sorted.append_largest {a : α} {l : List α} :
+    Sorted r (l ++ [a]) ↔ (∀ b ∈ l, r b a) ∧ Sorted r l := by
+  unfold Sorted
+  rw [List.pairwise_concat]
+  aesop
 
 end Sorted
 
