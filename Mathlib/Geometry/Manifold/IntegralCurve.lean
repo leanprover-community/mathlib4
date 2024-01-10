@@ -748,7 +748,7 @@ lemma exists_isIntegralCurve_of_isIntegralCurveOn [BoundarylessManifold I M]
     -- integral curve starting at `asup - ε / 2` with radius `ε`
     obtain ⟨γ2_aux, h2_aux, hγ2⟩ := h (γ (asup - ε / 2))
     rw [isIntegralCurveOn_Ioo_comp_sub (asup - ε / 2)] at hγ2
-    let γ2 := γ2_aux ∘ (· + -(asup - ε / 2))
+    let γ2 := γ2_aux ∘ (· - (asup - ε / 2))
     have heq2 : γ2 (asup - ε / 2) = γ (asup - ε / 2) := by simp [h2_aux]
 
     -- extend `γ` on the left by `γ1` and on the right by `γ2`
@@ -770,7 +770,6 @@ lemma exists_isIntegralCurve_of_isIntegralCurveOn [BoundarylessManifold I M]
           · apply mem_union_right
             exact ⟨by linarith, by linarith⟩
       · rw [piecewise, if_pos ⟨by linarith, by linarith⟩, ← heq2]
-        simp only [neg_sub, Function.comp_apply, sub_add_sub_cancel, sub_self]
     have hmem : asup + ε / 2 ∈ {a | ∃ γ, γ 0 = x ∧ IsIntegralCurveOn γ v (Ioo (-a) a)} := by
       refine ⟨γ_ext, ?_, hext⟩
       rw [γ_ext_def, piecewise, if_pos ⟨by linarith, by linarith⟩, piecewise,
