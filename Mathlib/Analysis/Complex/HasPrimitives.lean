@@ -479,7 +479,7 @@ theorem HolomorphicOn.vanishesOnRectangle {f : ℂ → ℂ} {U : Set ℂ} {z w :
   · convert hx using 1; simp
 
 /-- If `f` is holomorphic a disc, then `f` vanishes on rectangles in the disc. -/
-theorem vanishesOnRectanglesInDisc_of_holomorphic {c : ℂ} {r : ℝ} {f : ℂ → ℂ}
+theorem HolomorphicOn.vanishesOnRectanglesInDisc {c : ℂ} {r : ℝ} {f : ℂ → ℂ}
     (f_holo : HolomorphicOn f (ball c r)) :
     VanishesOnRectanglesInDisc c r f := fun _ _ hz hw hz' hw' ↦
   f_holo.vanishesOnRectangle (rectangle_in_convex (convex_ball c r) hz hw hz' hw')
@@ -487,6 +487,6 @@ theorem vanishesOnRectanglesInDisc_of_holomorphic {c : ℂ} {r : ℝ} {f : ℂ �
 /-- *** Holomorphic functions on discs have Primitives *** A holomorphic function on a disc has
   primitives. -/
 theorem hasPrimitives_on_disc (c : ℂ) {r : ℝ} : HasPrimitives (ball c r) := fun _ f_holo ↦
-  (vanishesOnRectanglesInDisc_of_holomorphic f_holo).hasPrimitives f_holo.continuousOn
+  f_holo.vanishesOnRectanglesInDisc.hasPrimitive f_holo.continuousOn
 
 end Complex
