@@ -144,7 +144,7 @@ noncomputable def sheafificationIsoImagePresheaf :
     J.sheafifyLift (toImagePresheafSheafify J _)
       ((isSheaf_iff_isSheaf_of_type J _).mpr <|
         Subpresheaf.sheafify_isSheaf _ <|
-          (isSheaf_iff_isSheaf_of_type J _).mp <| sheafify_isSheaf J _)
+          (isSheaf_iff_isSheaf_of_type J _).mp <| GrothendieckTopology.sheafify_isSheaf J _)
   inv := Subpresheaf.ι _
   hom_inv_id :=
     J.sheafify_hom_ext _ _ (J.sheafify_isSheaf _) (by simp [toImagePresheafSheafify])

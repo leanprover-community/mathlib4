@@ -33,14 +33,14 @@ Should we add a noncomputable version?
 
 open Function Multiset Nat
 
-variable {α β : Type*}
+variable {α β R : Type*}
 
 namespace Finset
 
 variable {s t : Finset α} {a b : α}
 
 /-- `s.card` is the number of elements of `s`, aka its cardinality. -/
-def card (s : Finset α) : ℕ :=
+@[pp_dot] def card (s : Finset α) : ℕ :=
   Multiset.card s.1
 #align finset.card Finset.card
 
@@ -480,7 +480,7 @@ theorem card_sdiff (h : s ⊆ t) : card (t \ s) = t.card - s.card := by
   rw [card_disjoint_union sdiff_disjoint, add_tsub_cancel_right]
 #align finset.card_sdiff Finset.card_sdiff
 
-lemma cast_card_sdiff [AddGroupWithOne α] (h : s ⊆ t) : ((t \ s).card : α) = t.card - s.card := by
+lemma cast_card_sdiff [AddGroupWithOne R] (h : s ⊆ t) : ((t \ s).card : R) = t.card - s.card := by
   rw [card_sdiff h, Nat.cast_sub (card_mono h)]
 
 theorem card_sdiff_add_card_eq_card {s t : Finset α} (h : s ⊆ t) : card (t \ s) + card s = card t :=

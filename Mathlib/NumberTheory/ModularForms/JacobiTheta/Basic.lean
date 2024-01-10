@@ -39,7 +39,7 @@ theorem norm_exp_mul_sq_le {z : ℂ} (hz : 0 < z.im) (n : ℤ) :
   · rw [Complex.norm_eq_abs, Complex.abs_exp]
     have : (π * I * n ^ 2 * z : ℂ).re = -π * z.im * (n : ℝ) ^ 2 := by
       rw [(by push_cast; ring : (π * I * n ^ 2 * z : ℂ) = (π * n ^ 2 : ℝ) * (z * I)),
-        ofReal_mul_re, mul_I_re]
+        re_ofReal_mul, mul_I_re]
       ring
     obtain ⟨m, hm⟩ := Int.eq_ofNat_of_zero_le (sq_nonneg n)
     rw [this, exp_mul, ← Int.cast_pow, rpow_int_cast, hm, zpow_ofNat]
