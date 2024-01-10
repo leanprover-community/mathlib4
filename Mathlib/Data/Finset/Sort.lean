@@ -95,8 +95,6 @@ theorem filter_sort_commute [DecidableEq α](f : α → Prop) [DecidablePred f] 
   rw [List.toFinset_filter]
   simp
 
-
-
 theorem sort_monotone_map [DecidableEq α] [DecidableEq β]
     (r' : β → β → Prop) [DecidableRel r'] [IsTrans β r'] [IsAntisymm β r'] [IsTotal β r']
     (f : α ↪ β) (preserve_le : {x : α} → {y : α} → (h : r x y) → (r' (f x) (f y)))
@@ -137,7 +135,21 @@ theorem sort_insert_largest [DecidableEq α](s : Finset α)
   apply (toList_cons hx).trans
   apply List.Perm.trans _ (List.perm_append_singleton _ _).symm
   rw [List.perm_cons]
-  apply (Finset.sort_perm_toList _ _).symm
+  apply (sort_perm_toList _ _).symm
+
+theorem sort_range {k : ℕ} :
+    (sort (. ≤ .) (range k)) = List.range k := by
+  induction k with
+  | zero => simp
+  | succ n ih =>
+  rw [@range_succ]
+  rw [List.range_succ]
+  rw [← ih]
+  rw [sort_insert_largest]
+  intro y
+  simpa using le_of_lt
+  simp
+
 end sort
 
 section SortLinearOrder
