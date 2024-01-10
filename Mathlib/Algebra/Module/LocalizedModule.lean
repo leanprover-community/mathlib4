@@ -607,7 +607,7 @@ lemma isLocalizedModule_id (R') [CommSemiring R'] [Algebra R R'] [IsLocalization
   exists_of_eq h := ⟨1, congr_arg _ h⟩
 
 variable {S} in
-theorem isLocalizedModule_iff_isLocalization {A Aₛ} [CommSemiring A] [Algebra R A][CommSemiring Aₛ]
+theorem isLocalizedModule_iff_isLocalization {A Aₛ} [CommSemiring A] [Algebra R A] [CommSemiring Aₛ]
     [Algebra A Aₛ] [Algebra R Aₛ] [IsScalarTower R A Aₛ] :
     IsLocalizedModule S (IsScalarTower.toAlgHom R A Aₛ).toLinearMap ↔
       IsLocalization (Algebra.algebraMapSubmonoid A S) Aₛ := by
