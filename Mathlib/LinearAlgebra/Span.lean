@@ -913,8 +913,8 @@ section DivisionRing
 
 variable [DivisionRing K] [AddCommGroup V] [Module K V]
 
-/-- There is no vector subspace between `p` and `(K ∙ x) ⊔ p`, `Wcovby` version. -/
-theorem wcovby_span_singleton_sup (x : V) (p : Submodule K V) : Wcovby p ((K ∙ x) ⊔ p) := by
+/-- There is no vector subspace between `p` and `(K ∙ x) ⊔ p`, `WCovBy` version. -/
+theorem wcovBy_span_singleton_sup (x : V) (p : Submodule K V) : WCovBy p ((K ∙ x) ⊔ p) := by
   refine ⟨le_sup_right, fun q hpq hqp ↦ hqp.not_le ?_⟩
   rcases SetLike.exists_of_lt hpq with ⟨y, hyq, hyp⟩
   obtain ⟨c, z, hz, rfl⟩ : ∃ c : K, ∃ z ∈ p, c • x + z = y := by
@@ -925,9 +925,9 @@ theorem wcovby_span_singleton_sup (x : V) (p : Submodule K V) : Wcovby p ((K ∙
     · rwa [q.add_mem_iff_left (hpq.le hz), q.smul_mem_iff hc] at hyq
     simp [hpq.le, this]
 
-/-- There is no vector subspace between `p` and `(K ∙ x) ⊔ p`, `Covby` version. -/
-theorem covby_span_singleton_sup {x : V} {p : Submodule K V} (h : x ∉ p) : Covby p ((K ∙ x) ⊔ p) :=
-  ⟨by simpa, (wcovby_span_singleton_sup _ _).2⟩
+/-- There is no vector subspace between `p` and `(K ∙ x) ⊔ p`, `CovBy` version. -/
+theorem covBy_span_singleton_sup {x : V} {p : Submodule K V} (h : x ∉ p) : CovBy p ((K ∙ x) ⊔ p) :=
+  ⟨by simpa, (wcovBy_span_singleton_sup _ _).2⟩
 
 end DivisionRing
 
@@ -1084,7 +1084,7 @@ def toSpanNonzeroSingleton : R ≃ₗ[R] R ∙ x :=
   LinearEquiv.trans
     (LinearEquiv.ofInjective (LinearMap.toSpanSingleton R M x)
       (ker_eq_bot.1 <| ker_toSpanSingleton R M h))
-    (LinearEquiv.ofEq (range $ toSpanSingleton R M x) (R ∙ x) (span_singleton_eq_range R M x).symm)
+    (LinearEquiv.ofEq (range <| toSpanSingleton R M x) (R ∙ x) (span_singleton_eq_range R M x).symm)
 #align linear_equiv.to_span_nonzero_singleton LinearEquiv.toSpanNonzeroSingleton
 
 theorem toSpanNonzeroSingleton_one :

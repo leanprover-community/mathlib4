@@ -39,7 +39,7 @@ theorem norm_exp_mul_sq_le {z : ℂ} (hz : 0 < z.im) (n : ℤ) :
   · rw [Complex.norm_eq_abs, Complex.abs_exp]
     have : (π * I * n ^ 2 * z : ℂ).re = -π * z.im * (n : ℝ) ^ 2 := by
       rw [(by push_cast; ring : (π * I * n ^ 2 * z : ℂ) = (π * n ^ 2 : ℝ) * (z * I)),
-        ofReal_mul_re, mul_I_re]
+        re_ofReal_mul, mul_I_re]
       ring
     obtain ⟨m, hm⟩ := Int.eq_ofNat_of_zero_le (sq_nonneg n)
     rw [this, exp_mul, ← Int.cast_pow, rpow_int_cast, hm, zpow_ofNat]
@@ -100,9 +100,11 @@ theorem jacobiTheta_S_smul (τ : ℍ) :
   rw [mul_comm ((1 : ℂ) / _) _, mul_one_div, eq_div_iff ha', mul_comm _ (_ ^ _), eq_comm] at this
   have expo1 : ∀ n : ℤ, -↑π / (-I * ↑τ) * (n : ℂ) ^ 2 = ↑π * I * (n : ℂ) ^ 2 * (-↑τ)⁻¹ := by
     intro n
-    field_simp [hτ, I_ne_zero]
+    simp only [neg_mul, neg_div_neg_eq, div_mul_eq_mul_div, inv_eq_one_div, mul_div_assoc', mul_one,
+      ne_eq, neg_eq_zero, hτ, not_false_eq_true, eq_div_iff, I_ne_zero,
+      mul_ne_zero, div_eq_iff]
     ring_nf
-    rw [I_sq, mul_neg, mul_one, neg_neg]
+    rw [I_sq, mul_neg, mul_one]
   simp_rw [expo1] at this
   have expo2 : ∀ n : ℤ, -↑π * (-I * ↑τ) * (n : ℂ) ^ 2 = ↑π * I * (n : ℂ) ^ 2 * ↑τ := by
     intro n

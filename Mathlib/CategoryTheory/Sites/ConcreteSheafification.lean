@@ -3,8 +3,8 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 import Mathlib.CategoryTheory.Sites.Plus
+import Mathlib.CategoryTheory.Sites.Sheafification
 import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 
@@ -525,7 +525,8 @@ noncomputable def toSheafification : 𝟭 _ ⟶ sheafification J D :=
 #align category_theory.grothendieck_topology.to_sheafification CategoryTheory.GrothendieckTopology.toSheafification
 
 @[simp]
-theorem toSheafification_app (P : Cᵒᵖ ⥤ D) : (J.toSheafification D).app P = J.toSheafify P :=
+theorem toSheafification_app (P : Cᵒᵖ ⥤ D) :
+    (J.toSheafification D).app P = J.toSheafify P :=
   rfl
 #align category_theory.grothendieck_topology.to_sheafification_app CategoryTheory.GrothendieckTopology.toSheafification_app
 
@@ -550,8 +551,7 @@ theorem isoSheafify_hom {P : Cᵒᵖ ⥤ D} (hP : Presheaf.IsSheaf J P) :
   rfl
 #align category_theory.grothendieck_topology.iso_sheafify_hom CategoryTheory.GrothendieckTopology.isoSheafify_hom
 
-/-- Given a sheaf `Q` and a morphism `P ⟶ Q`, construct a morphism from
-`J.sheafify P` to `Q`. -/
+/-- Given a sheaf `Q` and a morphism `P ⟶ Q`, construct a morphism from `J.sheafify P` to `Q`. -/
 noncomputable def sheafifyLift {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (hQ : Presheaf.IsSheaf J Q) :
     J.sheafify P ⟶ Q :=
   J.plusLift (J.plusLift η hQ) hQ
@@ -613,26 +613,26 @@ variable (D)
 
 /-- The sheafification functor, as a functor taking values in `Sheaf`. -/
 @[simps]
-noncomputable def presheafToSheaf : (Cᵒᵖ ⥤ D) ⥤ Sheaf J D where
+noncomputable def plusPlusSheaf : (Cᵒᵖ ⥤ D) ⥤ Sheaf J D where
   obj P := ⟨J.sheafify P, J.sheafify_isSheaf P⟩
   map η := ⟨J.sheafifyMap η⟩
   map_id _ := Sheaf.Hom.ext _ _ <| J.sheafifyMap_id _
   map_comp _ _ := Sheaf.Hom.ext _ _ <| J.sheafifyMap_comp _ _
 set_option linter.uppercaseLean3 false in
-#align category_theory.presheaf_to_Sheaf CategoryTheory.presheafToSheaf
+#align category_theory.presheaf_to_Sheaf CategoryTheory.plusPlusSheaf
 
-instance presheafToSheaf_preservesZeroMorphisms [Preadditive D] :
-    (presheafToSheaf J D).PreservesZeroMorphisms where
+instance plusPlusSheaf_preservesZeroMorphisms [Preadditive D] :
+    (plusPlusSheaf J D).PreservesZeroMorphisms where
   map_zero F G := by
     ext : 3
     refine' colimit.hom_ext (fun j => _)
     erw [colimit.ι_map, comp_zero, J.plusMap_zero, J.diagramNatTrans_zero, zero_comp]
 set_option linter.uppercaseLean3 false in
-#align category_theory.presheaf_to_Sheaf_preserves_zero_morphisms CategoryTheory.presheafToSheaf_preservesZeroMorphisms
+#align category_theory.presheaf_to_Sheaf_preserves_zero_morphisms CategoryTheory.plusPlusSheaf_preservesZeroMorphisms
 
 /-- The sheafification functor is left adjoint to the forgetful functor. -/
 @[simps! unit_app counit_app_val]
-noncomputable def sheafificationAdjunction : presheafToSheaf J D ⊣ sheafToPresheaf J D :=
+noncomputable def plusPlusAdjunction : plusPlusSheaf J D ⊣ sheafToPresheaf J D :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun P Q =>
         { toFun := fun e => J.toSheafify P ≫ e.val
@@ -645,10 +645,10 @@ noncomputable def sheafificationAdjunction : presheafToSheaf J D ⊣ sheafToPres
       homEquiv_naturality_right := fun η γ => by
         dsimp
         rw [Category.assoc] }
-#align category_theory.sheafification_adjunction CategoryTheory.sheafificationAdjunction
+#align category_theory.sheafification_adjunction CategoryTheory.plusPlusAdjunction
 
 noncomputable instance sheafToPresheafIsRightAdjoint : IsRightAdjoint (sheafToPresheaf J D) :=
-  ⟨_, sheafificationAdjunction J D⟩
+  ⟨_, plusPlusAdjunction J D⟩
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf_to_presheaf_is_right_adjoint CategoryTheory.sheafToPresheafIsRightAdjoint
 
@@ -666,31 +666,7 @@ set_option linter.uppercaseLean3 false in
 @[simps! hom_app inv_app]
 noncomputable
 def GrothendieckTopology.sheafificationIsoPresheafToSheafCompSheafToPreasheaf :
-    J.sheafification D ≅ presheafToSheaf J D ⋙ sheafToPresheaf J D :=
+    J.sheafification D ≅ plusPlusSheaf J D ⋙ sheafToPresheaf J D :=
   NatIso.ofComponents fun P => Iso.refl _
-
-variable {J D}
-
-/-- A sheaf `P` is isomorphic to its own sheafification. -/
-@[simps]
-noncomputable def sheafificationIso (P : Sheaf J D) : P ≅ (presheafToSheaf J D).obj P.val where
-  hom := ⟨(J.isoSheafify P.2).hom⟩
-  inv := ⟨(J.isoSheafify P.2).inv⟩
-  hom_inv_id := by
-    ext1
-    apply (J.isoSheafify P.2).hom_inv_id
-  inv_hom_id := by
-    ext1
-    apply (J.isoSheafify P.2).inv_hom_id
-#align category_theory.sheafification_iso CategoryTheory.sheafificationIso
-
-instance isIso_sheafificationAdjunction_counit (P : Sheaf J D) :
-    IsIso ((sheafificationAdjunction J D).counit.app P) :=
-  isIso_of_fully_faithful (sheafToPresheaf J D) _
-#align category_theory.is_iso_sheafification_adjunction_counit CategoryTheory.isIso_sheafificationAdjunction_counit
-
-instance sheafification_reflective : IsIso (sheafificationAdjunction J D).counit :=
-  NatIso.isIso_of_isIso_app _
-#align category_theory.sheafification_reflective CategoryTheory.sheafification_reflective
 
 end CategoryTheory

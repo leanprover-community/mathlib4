@@ -143,25 +143,25 @@ theorem adjoint_comp (A : F →L[𝕜] G) (B : E →L[𝕜] F) : (A ∘L B)† =
   simp only [adjoint_inner_right, ContinuousLinearMap.coe_comp', Function.comp_apply]
 #align continuous_linear_map.adjoint_comp ContinuousLinearMap.adjoint_comp
 
-theorem apply_norm_sq_eq_inner_adjoint_left (A : E →L[𝕜] E) (x : E) :
-    ‖A x‖ ^ 2 = re ⟪(A† * A) x, x⟫ := by
-  have h : ⟪(A† * A) x, x⟫ = ⟪A x, A x⟫ := by rw [← adjoint_inner_left]; rfl
+theorem apply_norm_sq_eq_inner_adjoint_left (A : E →L[𝕜] F) (x : E) :
+    ‖A x‖ ^ 2 = re ⟪(A† ∘L A) x, x⟫ := by
+  have h : ⟪(A† ∘L A) x, x⟫ = ⟪A x, A x⟫ := by rw [← adjoint_inner_left]; rfl
   rw [h, ← inner_self_eq_norm_sq (𝕜 := 𝕜) _]
 #align continuous_linear_map.apply_norm_sq_eq_inner_adjoint_left ContinuousLinearMap.apply_norm_sq_eq_inner_adjoint_left
 
-theorem apply_norm_eq_sqrt_inner_adjoint_left (A : E →L[𝕜] E) (x : E) :
-    ‖A x‖ = Real.sqrt (re ⟪(A† * A) x, x⟫) := by
+theorem apply_norm_eq_sqrt_inner_adjoint_left (A : E →L[𝕜] F) (x : E) :
+    ‖A x‖ = Real.sqrt (re ⟪(A† ∘L A) x, x⟫) := by
   rw [← apply_norm_sq_eq_inner_adjoint_left, Real.sqrt_sq (norm_nonneg _)]
 #align continuous_linear_map.apply_norm_eq_sqrt_inner_adjoint_left ContinuousLinearMap.apply_norm_eq_sqrt_inner_adjoint_left
 
-theorem apply_norm_sq_eq_inner_adjoint_right (A : E →L[𝕜] E) (x : E) :
-    ‖A x‖ ^ 2 = re ⟪x, (A† * A) x⟫ := by
-  have h : ⟪x, (A† * A) x⟫ = ⟪A x, A x⟫ := by rw [← adjoint_inner_right]; rfl
+theorem apply_norm_sq_eq_inner_adjoint_right (A : E →L[𝕜] F) (x : E) :
+    ‖A x‖ ^ 2 = re ⟪x, (A† ∘L A) x⟫ := by
+  have h : ⟪x, (A† ∘L A) x⟫ = ⟪A x, A x⟫ := by rw [← adjoint_inner_right]; rfl
   rw [h, ← inner_self_eq_norm_sq (𝕜 := 𝕜) _]
 #align continuous_linear_map.apply_norm_sq_eq_inner_adjoint_right ContinuousLinearMap.apply_norm_sq_eq_inner_adjoint_right
 
-theorem apply_norm_eq_sqrt_inner_adjoint_right (A : E →L[𝕜] E) (x : E) :
-    ‖A x‖ = Real.sqrt (re ⟪x, (A† * A) x⟫) := by
+theorem apply_norm_eq_sqrt_inner_adjoint_right (A : E →L[𝕜] F) (x : E) :
+    ‖A x‖ = Real.sqrt (re ⟪x, (A† ∘L A) x⟫) := by
   rw [← apply_norm_sq_eq_inner_adjoint_right, Real.sqrt_sq (norm_nonneg _)]
 #align continuous_linear_map.apply_norm_eq_sqrt_inner_adjoint_right ContinuousLinearMap.apply_norm_eq_sqrt_inner_adjoint_right
 
@@ -222,26 +222,27 @@ theorem isSelfAdjoint_iff' {A : E →L[𝕜] E} : IsSelfAdjoint A ↔ Continuous
   Iff.rfl
 #align continuous_linear_map.is_self_adjoint_iff' ContinuousLinearMap.isSelfAdjoint_iff'
 
-instance : CstarRing (E →L[𝕜] E) :=
-  ⟨by
-    intro A
-    rw [star_eq_adjoint]
-    refine' le_antisymm _ _
-    · calc
-        ‖A† * A‖ ≤ ‖A†‖ * ‖A‖ := op_norm_comp_le _ _
-        _ = ‖A‖ * ‖A‖ := by rw [LinearIsometryEquiv.norm_map]
-    · rw [← sq, ← Real.sqrt_le_sqrt_iff (norm_nonneg _), Real.sqrt_sq (norm_nonneg _)]
-      refine' op_norm_le_bound _ (Real.sqrt_nonneg _) fun x => _
-      have :=
-        calc
-          re ⟪(A† * A) x, x⟫ ≤ ‖(A† * A) x‖ * ‖x‖ := re_inner_le_norm _ _
-          _ ≤ ‖A† * A‖ * ‖x‖ * ‖x‖ := mul_le_mul_of_nonneg_right (le_op_norm _ _) (norm_nonneg _)
+theorem norm_adjoint_comp_self (A : E →L[𝕜] F) :
+    ‖ContinuousLinearMap.adjoint A ∘L A‖ = ‖A‖ * ‖A‖ := by
+  refine' le_antisymm _ _
+  · calc
+      ‖A† ∘L A‖ ≤ ‖A†‖ * ‖A‖ := op_norm_comp_le _ _
+      _ = ‖A‖ * ‖A‖ := by rw [LinearIsometryEquiv.norm_map]
+  · rw [← sq, ← Real.sqrt_le_sqrt_iff (norm_nonneg _), Real.sqrt_sq (norm_nonneg _)]
+    refine' op_norm_le_bound _ (Real.sqrt_nonneg _) fun x => _
+    have :=
       calc
-        ‖A x‖ = Real.sqrt (re ⟪(A† * A) x, x⟫) := by rw [apply_norm_eq_sqrt_inner_adjoint_left]
-        _ ≤ Real.sqrt (‖A† * A‖ * ‖x‖ * ‖x‖) := (Real.sqrt_le_sqrt this)
-        _ = Real.sqrt ‖A† * A‖ * ‖x‖ := by
-          simp_rw [mul_assoc, Real.sqrt_mul (norm_nonneg _) (‖x‖ * ‖x‖),
-            Real.sqrt_mul_self (norm_nonneg x)] ⟩
+        re ⟪(A† ∘L A) x, x⟫ ≤ ‖(A† ∘L A) x‖ * ‖x‖ := re_inner_le_norm _ _
+        _ ≤ ‖A† ∘L A‖ * ‖x‖ * ‖x‖ := mul_le_mul_of_nonneg_right (le_op_norm _ _) (norm_nonneg _)
+    calc
+      ‖A x‖ = Real.sqrt (re ⟪(A† ∘L A) x, x⟫) := by rw [apply_norm_eq_sqrt_inner_adjoint_left]
+      _ ≤ Real.sqrt (‖A† ∘L A‖ * ‖x‖ * ‖x‖) := (Real.sqrt_le_sqrt this)
+      _ = Real.sqrt ‖A† ∘L A‖ * ‖x‖ := by
+        simp_rw [mul_assoc, Real.sqrt_mul (norm_nonneg _) (‖x‖ * ‖x‖),
+          Real.sqrt_mul_self (norm_nonneg x)]
+
+instance : CstarRing (E →L[𝕜] E) where
+  norm_star_mul_self := norm_adjoint_comp_self _
 
 theorem isAdjointPair_inner (A : E →L[𝕜] F) :
     LinearMap.IsAdjointPair (sesqFormOfInner : E →ₗ[𝕜] E →ₗ⋆[𝕜] 𝕜)
@@ -513,7 +514,7 @@ variable {m n : Type*} [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n]
 variable [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F]
 variable (v₁ : OrthonormalBasis n 𝕜 E) (v₂ : OrthonormalBasis m 𝕜 F)
 
-/- the linear map associated to the conjugate transpose of a matrix corresponding to two
+/-- The linear map associated to the conjugate transpose of a matrix corresponding to two
 orthonormal bases is the adjoint of the linear map associated to the matrix. -/
 lemma Matrix.toLin_conjTranspose (A : Matrix m n 𝕜) :
     toLin v₂.toBasis v₁.toBasis Aᴴ = adjoint (toLin v₁.toBasis v₂.toBasis A) := by
