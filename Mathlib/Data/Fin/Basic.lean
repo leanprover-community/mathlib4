@@ -55,7 +55,7 @@ This file expands on the development in the core library.
   provided that `n = m`, see also `Equiv.finCongr`;
 * `Fin.castAddEmb m` : `Fin.castAdd` as an `OrderEmbedding`, embed `Fin n` into `Fin (n+m)`;
 * `Fin.castSuccEmb` : `Fin.castSucc` as an `OrderEmbedding`, embed `Fin n` into `Fin (n+1)`;
-* `Fin.succAboveEmb p` : `Fin.auccAbove` as an `OrderEmbedding`, embed `Fin n` into `Fin (n + 1)`
+* `Fin.succAboveEmb p` : `Fin.succAbove` as an `OrderEmbedding`, embed `Fin n` into `Fin (n + 1)`
   with a hole around `p`;
 * `Fin.addNatEmb m i` : `Fin.addNat` as an `OrderEmbedding`, add `m` on `i` on the right,
   generalizes `Fin.succ`;
@@ -769,7 +769,7 @@ This one instead uses a `NeZero n` typeclass hypothesis.
 -/
 @[simp]
 theorem le_zero_iff' {n : ℕ} [NeZero n] {k : Fin n} : k ≤ 0 ↔ k = 0 :=
-  ⟨fun h => Fin.eq_of_veq $ by rw [Nat.eq_zero_of_le_zero h]; rfl, by rintro rfl; exact le_refl _⟩
+  ⟨fun h => Fin.eq_of_veq <| by rw [Nat.eq_zero_of_le_zero h]; rfl, by rintro rfl; exact le_refl _⟩
 #align fin.le_zero_iff Fin.le_zero_iff'
 
 #align fin.succ_succ_ne_one Fin.succ_succ_ne_one
@@ -1328,6 +1328,49 @@ theorem last_sub (i : Fin (n + 1)) : last n - i = Fin.rev i :=
   ext <| by rw [coe_sub_iff_le.2 i.le_last, val_last, val_rev, Nat.succ_sub_succ_eq_sub]
 #align fin.last_sub Fin.last_sub
 
+theorem add_one_le_of_lt {n : ℕ} {a b : Fin (n + 1)} (h : a < b) : a + 1 ≤ b := by
+  cases' a with a ha
+  cases' b with b hb
+  cases n
+  · simp only [Nat.zero_eq, zero_add, Nat.lt_one_iff] at ha hb
+    simp [ha, hb]
+  simp only [le_iff_val_le_val, val_add, lt_iff_val_lt_val, val_mk, val_one] at h ⊢
+  rwa [Nat.mod_eq_of_lt, Nat.succ_le_iff]
+  rw [Nat.succ_lt_succ_iff]
+  exact h.trans_le (Nat.le_of_lt_succ hb)
+
+theorem exists_eq_add_of_le {n : ℕ} {a b : Fin n} (h : a ≤ b) : ∃ k ≤ b, b = a + k := by
+  obtain ⟨k, hk⟩ : ∃ k : ℕ, (b : ℕ) = a + k := Nat.exists_eq_add_of_le h
+  have hkb : k ≤ b := le_add_self.trans hk.ge
+  refine' ⟨⟨k, hkb.trans_lt b.is_lt⟩, hkb, _⟩
+  simp [Fin.ext_iff, Fin.val_add, ← hk, Nat.mod_eq_of_lt b.is_lt]
+
+theorem exists_eq_add_of_lt {n : ℕ} {a b : Fin (n + 1)} (h : a < b) :
+    ∃ k < b, k + 1 ≤ b ∧ b = a + k + 1 := by
+  cases n
+  · cases' a with a ha
+    cases' b with b hb
+    simp only [Nat.zero_eq, zero_add, Nat.lt_one_iff] at ha hb
+    simp [ha, hb] at h
+  obtain ⟨k, hk⟩ : ∃ k : ℕ, (b : ℕ) = a + k + 1 := Nat.exists_eq_add_of_lt h
+  have hkb : k < b := by
+    rw [hk, add_comm _ k, Nat.lt_succ_iff]
+    exact le_self_add
+  refine' ⟨⟨k, hkb.trans b.is_lt⟩, hkb, _, _⟩
+  · rw [Fin.le_iff_val_le_val, Fin.val_add_one]
+    split_ifs <;> simp [Nat.succ_le_iff, hkb]
+  simp [Fin.ext_iff, Fin.val_add, ← hk, Nat.mod_eq_of_lt b.is_lt]
+
+@[simp]
+theorem neg_last (n : ℕ) : -Fin.last n = 1 := by simp [neg_eq_iff_add_eq_zero]
+
+theorem neg_nat_cast_eq_one (n : ℕ) : -(n : Fin (n + 1)) = 1 := by
+  simp only [cast_nat_eq_last, neg_last]
+
+lemma pos_of_ne_zero {n : ℕ} {a : Fin (n + 1)} (h : a ≠ 0) :
+    0 < a :=
+  Nat.pos_of_ne_zero (val_ne_of_ne h)
+
 end AddGroup
 
 section SuccAbove
@@ -1342,7 +1385,7 @@ theorem strictMono_succAbove (p : Fin (n + 1)) : StrictMono (succAbove p) :=
     (castSucc_lt_succ i).le
 #align fin.succ_above_aux Fin.strictMono_succAbove
 
-/--  `Fin.auccAbove` as an `OrderEmbedding`, `succAboveEmb p i` embeds `Fin n` into `Fin (n + 1)`
+/--  `Fin.succAbove` as an `OrderEmbedding`, `succAboveEmb p i` embeds `Fin n` into `Fin (n + 1)`
 with a hole around `p`. -/
 @[simps! apply toEmbedding]
 def succAboveEmb (p : Fin (n + 1)) : Fin n ↪o Fin (n + 1) :=

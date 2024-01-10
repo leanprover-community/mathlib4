@@ -76,7 +76,7 @@ theorem hilbert90 (f : (L ≃ₐ[K] L) → Lˣ)
     ∃ β : Lˣ, ∀ g : (L ≃ₐ[K] L), f g * Units.map g β = β := by
 /- Let `z : L` be such that `∑ f(h) * h(z) ≠ 0`, for `h ∈ Aut_K(L)` -/
   obtain ⟨z, hz⟩ : ∃ z, aux K L f z ≠ 0 :=
-    not_forall.1 (fun H => aux_ne_zero K L f $ funext fun x => H x)
+    not_forall.1 (fun H => aux_ne_zero K L f <| funext fun x => H x)
   have : aux K L f z = ∑ h, f h * h z := by simp [aux, Finsupp.total, Finsupp.sum_fintype]
 /- Let `β = ∑ f(h) * h(z).` -/
   use Units.mk0 (aux K L f z) hz

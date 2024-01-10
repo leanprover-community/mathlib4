@@ -13,14 +13,12 @@ import Mathlib.Algebra.Group.Semiconj.Units
 
 -/
 
-
-variable {G : Type*}
-
-namespace Commute
+variable {M : Type*}
 
 section Monoid
+variable [Monoid M] {n : ℕ} {a b : M} {u u₁ u₂ : Mˣ}
 
-variable {M : Type*} [Monoid M] {a b : M} {u u₁ u₂ : Mˣ}
+namespace Commute
 
 @[to_additive]
 theorem units_inv_right : Commute a u → Commute a ↑u⁻¹ :=
@@ -64,10 +62,12 @@ theorem units_val_iff : Commute (u₁ : M) u₂ ↔ Commute u₁ u₂ :=
 #align commute.units_coe_iff Commute.units_val_iff
 #align add_commute.add_units_coe_iff AddCommute.addUnits_val_iff
 
+end Commute
+
 /-- If the product of two commuting elements is a unit, then the left multiplier is a unit. -/
 @[to_additive "If the sum of two commuting elements is an additive unit, then the left summand is
 an additive unit."]
-def _root_.Units.leftOfMul (u : Mˣ) (a b : M) (hu : a * b = u) (hc : Commute a b) : Mˣ where
+def Units.leftOfMul (u : Mˣ) (a b : M) (hu : a * b = u) (hc : Commute a b) : Mˣ where
   val := a
   inv := b * ↑u⁻¹
   val_inv := by rw [← mul_assoc, hu, u.mul_inv]
@@ -80,84 +80,82 @@ def _root_.Units.leftOfMul (u : Mˣ) (a b : M) (hu : a * b = u) (hc : Commute a 
 /-- If the product of two commuting elements is a unit, then the right multiplier is a unit. -/
 @[to_additive "If the sum of two commuting elements is an additive unit, then the right summand
 is an additive unit."]
-def _root_.Units.rightOfMul (u : Mˣ) (a b : M) (hu : a * b = u) (hc : Commute a b) : Mˣ :=
+def Units.rightOfMul (u : Mˣ) (a b : M) (hu : a * b = u) (hc : Commute a b) : Mˣ :=
   u.leftOfMul b a (hc.eq ▸ hu) hc.symm
 #align units.right_of_mul Units.rightOfMul
 #align add_units.right_of_add AddUnits.rightOfAdd
 
 @[to_additive]
-theorem isUnit_mul_iff (h : Commute a b) : IsUnit (a * b) ↔ IsUnit a ∧ IsUnit b :=
+theorem Commute.isUnit_mul_iff (h : Commute a b) : IsUnit (a * b) ↔ IsUnit a ∧ IsUnit b :=
   ⟨fun ⟨u, hu⟩ => ⟨(u.leftOfMul a b hu.symm h).isUnit, (u.rightOfMul a b hu.symm h).isUnit⟩,
   fun H => H.1.mul H.2⟩
 #align commute.is_unit_mul_iff Commute.isUnit_mul_iff
 #align add_commute.is_add_unit_add_iff AddCommute.isAddUnit_add_iff
 
 @[to_additive (attr := simp)]
-theorem _root_.isUnit_mul_self_iff : IsUnit (a * a) ↔ IsUnit a :=
+theorem isUnit_mul_self_iff : IsUnit (a * a) ↔ IsUnit a :=
   (Commute.refl a).isUnit_mul_iff.trans and_self_iff
 #align is_unit_mul_self_iff isUnit_mul_self_iff
 #align is_add_unit_add_self_iff isAddUnit_add_self_iff
 
+@[to_additive (attr := simp)]
+lemma Commute.units_zpow_right (h : Commute a u) (m : ℤ) : Commute a ↑(u ^ m) :=
+  SemiconjBy.units_zpow_right h m
+#align commute.units_zpow_right Commute.units_zpow_right
+#align add_commute.add_units_zsmul_right AddCommute.addUnits_zsmul_right
+
+@[to_additive (attr := simp)]
+lemma Commute.units_zpow_left (h : Commute ↑u a) (m : ℤ) : Commute ↑(u ^ m) a :=
+  (h.symm.units_zpow_right m).symm
+#align commute.units_zpow_left Commute.units_zpow_left
+#align add_commute.add_units_zsmul_left AddCommute.addUnits_zsmul_left
+
+/-- If a natural power of `x` is a unit, then `x` is a unit. -/
+@[to_additive "If a natural multiple of `x` is an additive unit, then `x` is an additive unit."]
+def Units.ofPow (u : Mˣ) (x : M) {n : ℕ} (hn : n ≠ 0) (hu : x ^ n = u) : Mˣ :=
+  u.leftOfMul x (x ^ (n - 1))
+    (by rwa [← _root_.pow_succ, Nat.sub_add_cancel (Nat.succ_le_of_lt <| Nat.pos_of_ne_zero hn)])
+    (Commute.self_pow _ _)
+#align units.of_pow Units.ofPow
+#align add_units.of_nsmul AddUnits.ofNSMul
+
+@[to_additive (attr := simp)] lemma isUnit_pow_iff (hn : n ≠ 0) : IsUnit (a ^ n) ↔ IsUnit a :=
+  ⟨fun ⟨u, hu⟩ ↦ (u.ofPow a hn hu.symm).isUnit, IsUnit.pow n⟩
+#align is_unit_pow_iff isUnit_pow_iff
+#align is_add_unit_nsmul_iff isAddUnit_nsmul_iff
+
+@[to_additive]
+lemma isUnit_pow_succ_iff : IsUnit (a ^ (n + 1)) ↔ IsUnit a := isUnit_pow_iff n.succ_ne_zero
+#align is_unit_pow_succ_iff isUnit_pow_succ_iff
+#align is_add_unit_nsmul_succ_iff isAddUnit_nsmul_succ_iff
+
+/-- If `a ^ n = 1`, `n ≠ 0`, then `a` is a unit. -/
+@[to_additive (attr := simps!) "If `n • x = 0`, `n ≠ 0`, then `x` is an additive unit."]
+def Units.ofPowEqOne (a : M) (n : ℕ) (ha : a ^ n = 1) (hn : n ≠ 0) : Mˣ := Units.ofPow 1 a hn ha
+#align units.of_pow_eq_one Units.ofPowEqOne
+#align add_units.of_nsmul_eq_zero AddUnits.ofNSMulEqZero
+
+@[to_additive (attr := simp)]
+lemma Units.pow_ofPowEqOne (ha : a ^ n = 1) (hn : n ≠ 0) :
+    Units.ofPowEqOne _ n ha hn ^ n = 1 := Units.ext <| by simp [ha]
+#align units.pow_of_pow_eq_one Units.pow_ofPowEqOne
+#align add_units.nsmul_of_nsmul_eq_zero AddUnits.nsmul_ofNSMulEqZero
+
+@[to_additive]
+lemma isUnit_ofPowEqOne (ha : a ^ n = 1) (hn : n ≠ 0) : IsUnit a :=
+  (Units.ofPowEqOne _ n ha hn).isUnit
+#align is_unit_of_pow_eq_one isUnit_ofPowEqOne
+#align is_add_unit_of_nsmul_eq_zero isAddUnit_ofNSMulEqZero
+
 end Monoid
 
-section Group
-
-variable [Group G] {a b : G}
-
-@[to_additive]
-theorem inv_right : Commute a b → Commute a b⁻¹ :=
-  SemiconjBy.inv_right
-#align commute.inv_right Commute.inv_right
-#align add_commute.neg_right AddCommute.neg_right
-
-@[to_additive (attr := simp)]
-theorem inv_right_iff : Commute a b⁻¹ ↔ Commute a b :=
-  SemiconjBy.inv_right_iff
-#align commute.inv_right_iff Commute.inv_right_iff
-#align add_commute.neg_right_iff AddCommute.neg_right_iff
+section DivisionMonoid
+variable [DivisionMonoid M] {a b c d : M}
 
 @[to_additive]
-theorem inv_left : Commute a b → Commute a⁻¹ b :=
-  SemiconjBy.inv_symm_left
-#align commute.inv_left Commute.inv_left
-#align add_commute.neg_left AddCommute.neg_left
+lemma Commute.div_eq_div_iff_of_isUnit (hbd : Commute b d) (hb : IsUnit b) (hd : IsUnit d) :
+    a / b = c / d ↔ a * d = c * b := by
+  rw [← (hb.mul hd).mul_left_inj, ← mul_assoc, hb.div_mul_cancel, ← mul_assoc, hbd.right_comm,
+    hd.div_mul_cancel]
 
-@[to_additive (attr := simp)]
-theorem inv_left_iff : Commute a⁻¹ b ↔ Commute a b :=
-  SemiconjBy.inv_symm_left_iff
-#align commute.inv_left_iff Commute.inv_left_iff
-#align add_commute.neg_left_iff AddCommute.neg_left_iff
-
-@[to_additive]
-protected theorem inv_mul_cancel (h : Commute a b) : a⁻¹ * b * a = b := by
-  rw [h.inv_left.eq, inv_mul_cancel_right]
-#align commute.inv_mul_cancel Commute.inv_mul_cancel
-#align add_commute.neg_add_cancel AddCommute.neg_add_cancel
-
-@[to_additive]
-theorem inv_mul_cancel_assoc (h : Commute a b) : a⁻¹ * (b * a) = b := by
-  rw [← mul_assoc, h.inv_mul_cancel]
-#align commute.inv_mul_cancel_assoc Commute.inv_mul_cancel_assoc
-#align add_commute.neg_add_cancel_assoc AddCommute.neg_add_cancel_assoc
-
-end Group
-
-end Commute
-
-section CommGroup
-
-variable [CommGroup G] (a b : G)
-
-@[to_additive (attr := simp)]
-theorem inv_mul_cancel_comm : a⁻¹ * b * a = b :=
-  (Commute.all a b).inv_mul_cancel
-#align inv_mul_cancel_comm inv_mul_cancel_comm
-#align neg_add_cancel_comm neg_add_cancel_comm
-
-@[to_additive (attr := simp)]
-theorem inv_mul_cancel_comm_assoc : a⁻¹ * (b * a) = b :=
-  (Commute.all a b).inv_mul_cancel_assoc
-#align inv_mul_cancel_comm_assoc inv_mul_cancel_comm_assoc
-#align neg_add_cancel_comm_assoc neg_add_cancel_comm_assoc
-
-end CommGroup
+end DivisionMonoid

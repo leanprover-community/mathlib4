@@ -53,8 +53,8 @@ def defaultfindArgs : findArgType := λ _ className args => do
   else if args.size == 1 then
     return mkArray arity args[0]!
   else
-    throwError "initialize_simps_projections cannot automatically find arguments for class {
-      className}"
+    throwError "initialize_simps_projections cannot automatically find arguments for class \
+      {className}"
 
 /-- Find arguments by duplicating the first argument. Used for `pow`. -/
 def copyFirst : findArgType := λ _ _ args => return (args.push <| args[0]?.getD default).map some

@@ -107,4 +107,9 @@ instance : NoetherianSpace (PrimeSpectrum R) := by
   rw [isNoetherianRing_iff, isNoetherian_iff_wellFounded] at H
   exact (closedsEmbedding R).dual.wellFounded H
 
+lemma _root_.minimalPrimes.finite_of_isNoetherianRing : (minimalPrimes R).Finite :=
+  minimalPrimes.equivIrreducibleComponents R
+    |>.set_finite_iff
+    |>.mpr NoetherianSpace.finite_irreducibleComponents
+
 end PrimeSpectrum

@@ -545,7 +545,7 @@ See also `rnDeriv_smul_right'`, which requires sigma-finite `ν` and `μ`. -/
 theorem rnDeriv_smul_right (ν μ : Measure α) [IsFiniteMeasure ν]
     [ν.HaveLebesgueDecomposition μ] {r : ℝ≥0} (hr : r ≠ 0) :
     ν.rnDeriv (r • μ) =ᵐ[μ] r⁻¹ • ν.rnDeriv μ := by
-  refine (absolutelyContinuous_smul $ ENNReal.coe_ne_zero.2 hr).ae_le
+  refine (absolutelyContinuous_smul <| ENNReal.coe_ne_zero.2 hr).ae_le
     (?_ : ν.rnDeriv (r • μ) =ᵐ[r • μ] r⁻¹ • ν.rnDeriv μ)
   rw [← withDensity_eq_iff]
   rotate_left
@@ -1015,7 +1015,7 @@ See also `rnDeriv_smul_right`, which has no hypothesis on `μ` but requires fini
 theorem rnDeriv_smul_right' (ν μ : Measure α) [SigmaFinite ν] [SigmaFinite μ]
     {r : ℝ≥0} (hr : r ≠ 0) :
     ν.rnDeriv (r • μ) =ᵐ[μ] r⁻¹ • ν.rnDeriv μ := by
-  refine (absolutelyContinuous_smul $ ENNReal.coe_ne_zero.2 hr).ae_le
+  refine (absolutelyContinuous_smul <| ENNReal.coe_ne_zero.2 hr).ae_le
     (?_ : ν.rnDeriv (r • μ) =ᵐ[r • μ] r⁻¹ • ν.rnDeriv μ)
   rw [← withDensity_eq_iff_of_sigmaFinite]
   · simp_rw [ENNReal.smul_def]

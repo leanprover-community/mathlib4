@@ -95,7 +95,7 @@ variable [Algebra R S] {P : Type*} [CommSemiring P]
 
 /-- The typeclass `IsLocalization (M : Submonoid R) S` where `S` is an `R`-algebra
 expresses that `S` is isomorphic to the localization of `R` at `M`. -/
-@[mk_iff isLocalization_iff] class IsLocalization : Prop where
+@[mk_iff] class IsLocalization : Prop where
   --Porting note: add ' to fields, and made new versions of these with either `S` or `M` explicit.
   /-- Everything in the image of `algebraMap` is a unit -/
   map_units' : ∀ y : M, IsUnit (algebraMap R S y)
@@ -203,6 +203,9 @@ theorem sec_spec' (z : S) :
 #align is_localization.sec_spec' IsLocalization.sec_spec'
 
 variable {M}
+
+/-- If `M` contains `0` then the localization at `M` is trivial. -/
+theorem subsingleton (h : 0 ∈ M) : Subsingleton S := (toLocalizationMap M S).subsingleton h
 
 theorem map_right_cancel {x y} {c : M} (h : algebraMap R S (c * x) = algebraMap R S (c * y)) :
     algebraMap R S x = algebraMap R S y :=
@@ -377,6 +380,9 @@ theorem mk'_eq_of_eq' {a₁ b₁ : R} {a₂ b₂ : M} (H : b₁ * ↑a₂ = a₁
     mk' S a₁ a₂ = mk' S b₁ b₂ :=
   (toLocalizationMap M S).mk'_eq_of_eq' H
 #align is_localization.mk'_eq_of_eq' IsLocalization.mk'_eq_of_eq'
+
+theorem mk'_cancel (a : R) (b c : M) :
+    mk' S (a * c) (b * c) = mk' S a b := (toLocalizationMap M S).mk'_cancel _ _ _
 
 variable (S)
 

@@ -655,8 +655,8 @@ theorem convexBodySumFun_eq_zero_iff (x : E K) :
       Finset.sum_eq_zero_iff_of_nonneg (fun _ _ => norm_nonneg _)] at h
     ext : 2
     · exact norm_eq_zero.mp (h.1 _ (Finset.mem_univ _))
-    · exact norm_eq_zero.mp ((smul_eq_zero_iff_eq' two_ne_zero (α := ℝ)).mp
-        (h.2 _ (Finset.mem_univ _)))
+    · exact norm_eq_zero.1 <| eq_zero_of_ne_zero_of_mul_left_eq_zero two_ne_zero <| h.2 _ <|
+        Finset.mem_univ _
   · simp only [convexBodySumFun, h, Prod.fst_zero, Pi.zero_apply, norm_zero, Finset.sum_const_zero,
       Prod.snd_zero, mul_zero, add_zero]
 
@@ -899,7 +899,7 @@ theorem exists_ne_zero_mem_ideal_of_norm_le {B : ℝ}
   · rw [ne_eq, AddSubgroup.mk_eq_zero_iff, map_eq_zero, ← ne_eq] at h_nzr
     exact Subtype.ne_of_val_ne h_nzr
   · rw [← rpow_nat_cast, ← rpow_le_rpow_iff (by simp only [Rat.cast_abs, abs_nonneg])
-      (rpow_nonneg_of_nonneg h2 _) h1, ← rpow_mul h2,  mul_inv_cancel (Nat.cast_ne_zero.mpr
+      (rpow_nonneg h2 _) h1, ← rpow_mul h2,  mul_inv_cancel (Nat.cast_ne_zero.mpr
       (ne_of_gt finrank_pos)), rpow_one, le_div_iff' (Nat.cast_pos.mpr finrank_pos)]
     refine le_trans ?_ ((convexBodySum_mem K B).mp h_mem)
     rw [← le_div_iff' (Nat.cast_pos.mpr finrank_pos), ← sum_mult_eq, Nat.cast_sum]

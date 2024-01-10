@@ -69,7 +69,7 @@ instance top_isPrincipal : (⊤ : Submodule R R).IsPrincipal :=
 variable (R)
 
 /-- A ring is a principal ideal ring if all (left) ideals are principal. -/
-@[mk_iff isPrincipalIdealRing_iff]
+@[mk_iff]
 class IsPrincipalIdealRing (R : Type u) [Ring R] : Prop where
   principal : ∀ S : Ideal R, S.IsPrincipal
 #align is_principal_ideal_ring IsPrincipalIdealRing
