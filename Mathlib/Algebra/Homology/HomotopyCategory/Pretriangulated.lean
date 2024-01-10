@@ -74,9 +74,8 @@ variable {K}
 
 section mapOfHomotopy
 
-variable {K₁ L₁ K₂ L₂ K₃ L₃ : CochainComplex C ℤ} {φ₁ : K₁ ⟶ L₁} {φ₂ : K₂ ⟶ L₂} (φ₃ : K₃ ⟶ L₃)
+variable {K₁ L₁ K₂ L₂ K₃ L₃ : CochainComplex C ℤ} {φ₁ : K₁ ⟶ L₁} {φ₂ : K₂ ⟶ L₂}
   {a : K₁ ⟶ K₂} {b : L₁ ⟶ L₂} (H : Homotopy (φ₁ ≫ b) (a ≫ φ₂))
-  (a' : K₂ ⟶ K₃) (b' : L₂ ⟶ L₃)
 
 /-- The morphism `mappingCone φ₁ ⟶ mappingCone φ₂` that is induced by a square that
 is commutative up to homotopy. -/
@@ -155,12 +154,13 @@ noncomputable def triangleMap :
   comm₁ := comm
   comm₂ := by
     dsimp
-    rw [← triangleMapOfHomotopy_comm₂ (Homotopy.ofEq comm), map_eq_mapOfHomotopy]
+    rw [map_eq_mapOfHomotopy, triangleMapOfHomotopy_comm₂ (Homotopy.ofEq comm)]
   comm₃ := by
     dsimp
-    rw [← triangleMapOfHomotopy_comm₃ (Homotopy.ofEq comm), map_eq_mapOfHomotopy]
+    rw [map_eq_mapOfHomotopy, triangleMapOfHomotopy_comm₃ (Homotopy.ofEq comm)]
 
 end map
+
 
 /-
 
