@@ -929,16 +929,22 @@ theorem Inducing.isCompact_preimage {f : X → Y} (hf : Inducing f) (hf' : IsClo
   replace hK := hK.inter_right hf'
   rwa [hf.isCompact_iff, image_preimage_eq_inter_range]
 
+/-- The preimage of a compact set in the image of an inducing map is compact. -/
+lemma Inducing.isCompact_preimage' {f : X → Y} (hf : Inducing f) {K : Set Y}
+    (hK: IsCompact K) (Kf : K ⊆ range f) : IsCompact (f ⁻¹' K) := by
+  rwa [hf.isCompact_iff, image_preimage_eq_of_subset Kf]
+
+lemma Inducing.isCompact_preimage_iff {f : X → Y} (hf : Inducing f) {K : Set Y}
+    (Kf : K ⊆ range f) : IsCompact (f ⁻¹' K) ↔ IsCompact K:= by
+  refine ⟨fun h ↦ ?_, fun hK ↦ isCompact_preimage' hf hK Kf⟩
+  rw [← image_preimage_eq_of_subset Kf]
+  exact h.image hf.continuous
+
 /-- The preimage of a compact set under a closed embedding is a compact set. -/
 theorem ClosedEmbedding.isCompact_preimage {f : X → Y} (hf : ClosedEmbedding f)
     {K : Set Y} (hK : IsCompact K) : IsCompact (f ⁻¹' K) :=
   hf.toInducing.isCompact_preimage (hf.closed_range) hK
 #align closed_embedding.is_compact_preimage ClosedEmbedding.isCompact_preimage
-
-/-- The preimage of a compact set in the image of an open embedding is compact. -/
-lemma OpenEmbedding.isCompact_preimage {f : X → Y} (hf : OpenEmbedding f) {K : Set Y}
-    (hK: IsCompact K) (Kf : K ⊆ range f) : IsCompact (f ⁻¹' K) := by
-  rwa [hf.toInducing.isCompact_iff, image_preimage_eq_of_subset Kf]
 
 /-- A closed embedding is proper, ie, inverse images of compact sets are contained in compacts.
 Moreover, the preimage of a compact set is compact, see `ClosedEmbedding.isCompact_preimage`. -/
