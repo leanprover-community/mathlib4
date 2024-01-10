@@ -228,7 +228,7 @@ def replaceEquiv (e : PartialHomeomorph α β) (e' : PartialEquiv α β) (h : e.
   continuousOn_invFun := h ▸ e.continuousOn_invFun
 #align local_homeomorph.replace_equiv PartialHomeomorph.replaceEquiv
 
-theorem replaceEquiv_eq_self (e : PartialHomeomorph α β) (e' : PartialEquiv α β)
+theorem replaceEquiv_eq_self (e' : PartialEquiv α β)
     (h : e.toPartialEquiv = e') : e.replaceEquiv e' h = e := by
   cases e
   subst e'
@@ -245,27 +245,27 @@ theorem eq_of_localEquiv_eq {e e' : PartialHomeomorph α β}
   toPartialEquiv_injective h
 #align local_homeomorph.eq_of_local_equiv_eq PartialHomeomorph.eq_of_localEquiv_eq
 
-theorem eventually_left_inverse (e : PartialHomeomorph α β) {x} (hx : x ∈ e.source) :
+theorem eventually_left_inverse {x} (hx : x ∈ e.source) :
     ∀ᶠ y in 𝓝 x, e.symm (e y) = y :=
   (e.open_source.eventually_mem hx).mono e.left_inv'
 #align local_homeomorph.eventually_left_inverse PartialHomeomorph.eventually_left_inverse
 
-theorem eventually_left_inverse' (e : PartialHomeomorph α β) {x} (hx : x ∈ e.target) :
+theorem eventually_left_inverse' {x} (hx : x ∈ e.target) :
     ∀ᶠ y in 𝓝 (e.symm x), e.symm (e y) = y :=
   e.eventually_left_inverse (e.map_target hx)
 #align local_homeomorph.eventually_left_inverse' PartialHomeomorph.eventually_left_inverse'
 
-theorem eventually_right_inverse (e : PartialHomeomorph α β) {x} (hx : x ∈ e.target) :
+theorem eventually_right_inverse {x} (hx : x ∈ e.target) :
     ∀ᶠ y in 𝓝 x, e (e.symm y) = y :=
   (e.open_target.eventually_mem hx).mono e.right_inv'
 #align local_homeomorph.eventually_right_inverse PartialHomeomorph.eventually_right_inverse
 
-theorem eventually_right_inverse' (e : PartialHomeomorph α β) {x} (hx : x ∈ e.source) :
+theorem eventually_right_inverse' {x} (hx : x ∈ e.source) :
     ∀ᶠ y in 𝓝 (e x), e (e.symm y) = y :=
   e.eventually_right_inverse (e.map_source hx)
 #align local_homeomorph.eventually_right_inverse' PartialHomeomorph.eventually_right_inverse'
 
-theorem eventually_ne_nhdsWithin (e : PartialHomeomorph α β) {x} (hx : x ∈ e.source) :
+theorem eventually_ne_nhdsWithin {x} (hx : x ∈ e.source) :
     ∀ᶠ x' in 𝓝[≠] x, e x' ≠ e x :=
   eventually_nhdsWithin_iff.2 <|
     (e.eventually_left_inverse hx).mono fun x' hx' =>
@@ -319,11 +319,11 @@ theorem source_inter_preimage_target_inter (s : Set β) :
   e.toPartialEquiv.source_inter_preimage_target_inter s
 #align local_homeomorph.source_inter_preimage_target_inter PartialHomeomorph.source_inter_preimage_target_inter
 
-theorem image_source_eq_target (e : PartialHomeomorph α β) : e '' e.source = e.target :=
+theorem image_source_eq_target : e '' e.source = e.target :=
   e.toPartialEquiv.image_source_eq_target
 #align local_homeomorph.image_source_eq_target PartialHomeomorph.image_source_eq_target
 
-theorem symm_image_target_eq_source (e : PartialHomeomorph α β) : e.symm '' e.target = e.source :=
+theorem symm_image_target_eq_source : e.symm '' e.target = e.source :=
   e.symm.image_source_eq_target
 #align local_homeomorph.symm_image_target_eq_source PartialHomeomorph.symm_image_target_eq_source
 
@@ -392,7 +392,7 @@ theorem image_mem_nhds {x} (hx : x ∈ e.source) {s : Set α} (hs : s ∈ 𝓝 x
   e.map_nhds_eq hx ▸ Filter.image_mem_map hs
 #align local_homeomorph.image_mem_nhds PartialHomeomorph.image_mem_nhds
 
-theorem map_nhdsWithin_eq (e : PartialHomeomorph α β) {x} (hx : x ∈ e.source) (s : Set α) :
+theorem map_nhdsWithin_eq {x} (hx : x ∈ e.source) (s : Set α) :
     map e (𝓝[s] x) = 𝓝[e '' (e.source ∩ s)] e x :=
   calc
     map e (𝓝[s] x) = map e (𝓝[e.source ∩ s] x) :=
@@ -403,31 +403,31 @@ theorem map_nhdsWithin_eq (e : PartialHomeomorph α β) {x} (hx : x ∈ e.source
         (e.continuousAt hx).continuousWithinAt
 #align local_homeomorph.map_nhds_within_eq PartialHomeomorph.map_nhdsWithin_eq
 
-theorem map_nhdsWithin_preimage_eq (e : PartialHomeomorph α β) {x} (hx : x ∈ e.source) (s : Set β) :
+theorem map_nhdsWithin_preimage_eq {x} (hx : x ∈ e.source) (s : Set β) :
     map e (𝓝[e ⁻¹' s] x) = 𝓝[s] e x := by
   rw [e.map_nhdsWithin_eq hx, e.image_source_inter_eq', e.target_inter_inv_preimage_preimage,
     e.nhdsWithin_target_inter (e.map_source hx)]
 #align local_homeomorph.map_nhds_within_preimage_eq PartialHomeomorph.map_nhdsWithin_preimage_eq
 
-theorem eventually_nhds (e : PartialHomeomorph α β) {x : α} (p : β → Prop) (hx : x ∈ e.source) :
+theorem eventually_nhds {x : α} (p : β → Prop) (hx : x ∈ e.source) :
     (∀ᶠ y in 𝓝 (e x), p y) ↔ ∀ᶠ x in 𝓝 x, p (e x) :=
   Iff.trans (by rw [e.map_nhds_eq hx]) eventually_map
 #align local_homeomorph.eventually_nhds PartialHomeomorph.eventually_nhds
 
-theorem eventually_nhds' (e : PartialHomeomorph α β) {x : α} (p : α → Prop) (hx : x ∈ e.source) :
+theorem eventually_nhds' {x : α} (p : α → Prop) (hx : x ∈ e.source) :
     (∀ᶠ y in 𝓝 (e x), p (e.symm y)) ↔ ∀ᶠ x in 𝓝 x, p x := by
   rw [e.eventually_nhds _ hx]
   refine' eventually_congr ((e.eventually_left_inverse hx).mono fun y hy => _)
   rw [hy]
 #align local_homeomorph.eventually_nhds' PartialHomeomorph.eventually_nhds'
 
-theorem eventually_nhdsWithin (e : PartialHomeomorph α β) {x : α} (p : β → Prop) {s : Set α}
+theorem eventually_nhdsWithin {x : α} (p : β → Prop) {s : Set α}
     (hx : x ∈ e.source) : (∀ᶠ y in 𝓝[e.symm ⁻¹' s] e x, p y) ↔ ∀ᶠ x in 𝓝[s] x, p (e x) := by
   refine' Iff.trans _ eventually_map
   rw [e.map_nhdsWithin_eq hx, e.image_source_inter_eq', e.nhdsWithin_target_inter (e.mapsTo hx)]
 #align local_homeomorph.eventually_nhds_within PartialHomeomorph.eventually_nhdsWithin
 
-theorem eventually_nhdsWithin' (e : PartialHomeomorph α β) {x : α} (p : α → Prop) {s : Set α}
+theorem eventually_nhdsWithin' {x : α} (p : α → Prop) {s : Set α}
     (hx : x ∈ e.source) : (∀ᶠ y in 𝓝[e.symm ⁻¹' s] e x, p (e.symm y)) ↔ ∀ᶠ x in 𝓝[s] x, p x := by
   rw [e.eventually_nhdsWithin _ hx]
   refine eventually_congr <|
@@ -1230,7 +1230,7 @@ def toHomeomorphSourceTarget : e.source ≃ₜ e.target :=
   e.homeomorphOfImageSubsetSource subset_rfl e.image_source_eq_target
 #align local_homeomorph.to_homeomorph_source_target PartialHomeomorph.toHomeomorphSourceTarget
 
-theorem secondCountableTopology_source [SecondCountableTopology β] (e : PartialHomeomorph α β) :
+theorem secondCountableTopology_source [SecondCountableTopology β] :
     SecondCountableTopology e.source :=
   e.toHomeomorphSourceTarget.secondCountableTopology
 #align local_homeomorph.second_countable_topology_source PartialHomeomorph.secondCountableTopology_source
