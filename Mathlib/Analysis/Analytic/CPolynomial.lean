@@ -29,7 +29,7 @@ We develop the basic properties of these notions, notably:
 * If a function is continuously polynomial, then it is analytic, see
   `HasFiniteFPowerSeriesOnBall.hasFPowerSeriesOnBall`, `HasFiniteFPowerSeriesAt.hasFPowerSeriesAt`,
   `CPolynomialAt.analyticAt` and `CPolynomialOn.analyticOn`.
-* The sum of finite a formal power series with positive radius is well defined on the whole space,
+* The sum of a finite formal power series with positive radius is well defined on the whole space,
   see `FormalMultilinearSeries.hasFiniteFPowerSeriesOnBall_of_finite`.
 * If a function admits a finite power series in a ball, then it is continuously polynimial at
   any point `y` of this ball, and the power series there can be expressed in terms of the initial
