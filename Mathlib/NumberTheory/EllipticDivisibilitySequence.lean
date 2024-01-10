@@ -27,28 +27,28 @@ Some examples of EDSs include
 
 ## Main definitions
 
- * `EllSequence`: a sequence indexed by integers is an elliptic sequence.
- * `DivSequence`: a sequence indexed by integers is a divisibility sequence.
- * `EllDivSequence`: a sequence indexed by integers is an EDS.
+ * `IsEllSequence`: a sequence indexed by integers is an elliptic sequence.
+ * `IsDivSequence`: a sequence indexed by integers is a divisibility sequence.
+ * `IsEllDivSequence`: a sequence indexed by integers is an EDS.
  * `normEDS'`: the canonical example of a normalised EDS indexed by `ℕ`.
  * `normEDS`: the canonical example of a normalised EDS indexed by `ℤ`.
 
 ## Main statements
 
- * TODO: prove that `normEDS` is an `EllDivSequence`.
- * TODO: prove that a general normalised `EllDivSequence` can be given by `normEDS`.
+ * TODO: prove that `normEDS` satisfies `IsEllDivSequence`.
+ * TODO: prove that a normalised sequence satisfying `IsEllDivSequence` can be given by `normEDS`.
 
 ## Implementation notes
 
-`EllDivSequence' b c d n` is defined in terms of the private definition `EllDivSequence'' b c d n`,
+`IsEllDivSequence' b c d n` is defined in terms of the private `IsEllDivSequence'' b c d n`,
 which are equal when `n` is odd and differ by a factor of `b` when `n` is even. This coincides with
-the reference since both agree for `EllDivSequence' b c d 2` and for `EllDivSequence' b c d 4`, and
-the correct factors of `b` are removed in `EllDivSequence' b c d (2 * (m + 2) + 1)` and in
-`EllDivSequence' b c d (2 * (m + 3))`. This is done to avoid the necessity for ring division by `b`
-in the inductive definition of `EllDivSequence' b c d (2 * (m + 3))`. The idea is that, an easy
-lemma shows that `EllDivSequence' b c d (2 * (m + 3))` always contains a factor of `b`, so it is
-possible to remove a factor of `b` a posteriori, but stating this lemma requires first defining
-`EllDivSequence' b c d (2 * (m + 3))`, which requires having this factor of `b` a priori.
+the reference since both agree for `IsEllDivSequence' b c d 2` and for `IsEllDivSequence' b c d 4`,
+and the correct factors of `b` are removed in `IsEllDivSequence' b c d (2 * (m + 2) + 1)` and in
+`IsEllDivSequence' b c d (2 * (m + 3))`. This is done to avoid the necessity for ring division by
+`b` in the inductive definition of `IsEllDivSequence' b c d (2 * (m + 3))`. The idea is that, an
+easy lemma shows that `IsEllDivSequence' b c d (2 * (m + 3))` always contains a factor of `b`, so it
+is possible to remove a factor of `b` a posteriori, but stating this lemma requires first defining
+`IsEllDivSequence' b c d (2 * (m + 3))`, which requires having this factor of `b` a priori.
 
 ## References
 
@@ -64,36 +64,38 @@ universe u v w
 variable {R : Type u} [CommRing R]
 
 /-- The proposition that a sequence indexed by integers is an elliptic sequence. -/
-def EllSequence (W : ℤ → R) : Prop :=
+def IsEllSequence (W : ℤ → R) : Prop :=
   ∀ m n r : ℤ, W (m + n) * W (m - n) * W r ^ 2 =
     W (m + r) * W (m - r) * W n ^ 2 - W (n + r) * W (n - r) * W m ^ 2
 
 /-- The proposition that a sequence indexed by integers is a divisibility sequence. -/
-def DivSequence (W : ℤ → R) : Prop :=
+def IsDivSequence (W : ℤ → R) : Prop :=
   ∀ m n : ℕ, m ∣ n → W m ∣ W n
 
 /-- The proposition that a sequence indexed by integers is an EDS. -/
-def EllDivSequence (W : ℤ → R) : Prop :=
-  EllSequence W ∧ DivSequence W
+def IsEllDivSequence (W : ℤ → R) : Prop :=
+  IsEllSequence W ∧ IsDivSequence W
 
-lemma ellSequence_id : EllSequence id :=
+lemma IsEllSequence_id : IsEllSequence id :=
   fun _ _ _ => by simp only [id_eq]; ring1
 
-lemma divSequence_id : DivSequence id :=
+lemma IsDivSequence_id : IsDivSequence id :=
   fun _ _ => Int.ofNat_dvd.mpr
 
 /-- The identity sequence is an EDS. -/
-theorem ellDivSequence_id : EllDivSequence id :=
-  ⟨ellSequence_id, divSequence_id⟩
+theorem IsEllDivSequence_id : IsEllDivSequence id :=
+  ⟨IsEllSequence_id, IsDivSequence_id⟩
 
-lemma ellSequence_mul (x : R) {W : ℤ → R} (h : EllSequence W) : EllSequence (x • W) := fun m n r =>
-  by linear_combination (norm := (simp only [Pi.smul_apply, smul_eq_mul]; ring1)) x ^ 4 * h m n r
+lemma IsEllSequence_mul (x : R) {W : ℤ → R} (h : IsEllSequence W) : IsEllSequence (x • W) :=
+  fun m n r => by
+    linear_combination (norm := (simp only [Pi.smul_apply, smul_eq_mul]; ring1)) x ^ 4 * h m n r
 
-lemma divSequence_mul (x : R) {W : ℤ → R} (h : DivSequence W) : DivSequence (x • W) :=
+lemma IsDivSequence_mul (x : R) {W : ℤ → R} (h : IsDivSequence W) : IsDivSequence (x • W) :=
   fun m n r => mul_dvd_mul_left x <| h m n r
 
-lemma ellDivSequence_mul (x : R) {W : ℤ → R} (h : EllDivSequence W) : EllDivSequence (x • W) :=
-  ⟨ellSequence_mul x h.left, divSequence_mul x h.right⟩
+lemma IsEllDivSequence_mul (x : R) {W : ℤ → R} (h : IsEllDivSequence W) :
+    IsEllDivSequence (x • W) :=
+  ⟨IsEllSequence_mul x h.left, IsDivSequence_mul x h.right⟩
 
 private def normEDS'' (b c d : R) : ℕ → R
   | 0 => 0
@@ -102,26 +104,18 @@ private def normEDS'' (b c d : R) : ℕ → R
   | 3 => c
   | 4 => d
   | (n + 5) => let m := n / 2
+    have h4 : m + 4 < n + 5 := Nat.lt_succ.mpr <| add_le_add_right (n.div_le_self 2) 4
+    have h3 : m + 3 < n + 5 := (lt_add_one _).trans h4
+    have h2 : m + 2 < n + 5 := (lt_add_one _).trans h3
+    have h1 : m + 1 < n + 5 := (lt_add_one _).trans h2
     if hn : Even n then
-      have h4 : m + 4 < n + 5 :=
-        by linarith only [show n = 2 * m by exact (Nat.two_mul_div_two_of_even hn).symm]
-      have h3 : m + 3 < n + 5 := (lt_add_one _).trans h4
-      have h2 : m + 2 < n + 5 := (lt_add_one _).trans h3
-      have h1 : m + 1 < n + 5 := (lt_add_one _).trans h2
       normEDS'' b c d (m + 4) * normEDS'' b c d (m + 2) ^ 3 * (if Even m then b ^ 4 else 1) -
         normEDS'' b c d (m + 1) * normEDS'' b c d (m + 3) ^ 3 * (if Even m then 1 else b ^ 4)
     else
-      have h5 : m + 5 < n + 5 := by
-        linarith only [show n = 2 * m + 1
-          by exact (Nat.two_mul_div_two_add_one_of_odd <| Nat.odd_iff_not_even.mpr hn).symm]
-      have h4 : m + 4 < n + 5 := (lt_add_one _).trans h5
-      have h3 : m + 3 < n + 5 := (lt_add_one _).trans h4
-      have h2 : m + 2 < n + 5 := (lt_add_one _).trans h3
-      have h1 : m + 1 < n + 5 := (lt_add_one _).trans h2
-      normEDS'' b c d (m + 2) ^ 2 * normEDS'' b c d (m + 3) *
-          normEDS'' b c d (m + 5) -
-        normEDS'' b c d (m + 1) * normEDS'' b c d (m + 3) *
-            normEDS'' b c d (m + 4) ^ 2
+      have h5 : m + 5 < n + 5 := add_lt_add_right
+        (Nat.div_lt_self (Nat.odd_iff_not_even.mpr hn).pos <| Nat.lt_succ_self 1) 5
+      normEDS'' b c d (m + 2) ^ 2 * normEDS'' b c d (m + 3) * normEDS'' b c d (m + 5) -
+        normEDS'' b c d (m + 1) * normEDS'' b c d (m + 3) * normEDS'' b c d (m + 4) ^ 2
 
 variable (b c d : R)
 
