@@ -207,36 +207,21 @@ lemma isIntegralCurveOn_comp_sub (dt : ℝ) :
   · simp only [mem_setOf_eq, add_sub_cancel, setOf_mem_eq]
 
 -- TODO: missing lemma(s) for `Ioo`
-lemma isIntegralCurveOn_Ioo_comp_add {ε : ℝ} (dt : ℝ) :
-    IsIntegralCurveOn γ v (Ioo (t₀ - ε) (t₀ + ε)) ↔
-      IsIntegralCurveOn (γ ∘ (· + dt)) v (Ioo (t₀ - dt - ε) (t₀ - dt + ε)) := by
-  have : {t | t + dt ∈ Ioo (t₀ - ε) (t₀ + ε)} = Ioo (t₀ - dt - ε) (t₀ - dt + ε) := by
+lemma isIntegralCurveOn_Ioo_comp_add {a b : ℝ} (dt : ℝ) :
+    IsIntegralCurveOn γ v (Ioo a b) ↔
+      IsIntegralCurveOn (γ ∘ (· + dt)) v (Ioo (a - dt) (b - dt)) := by
+  have : {t | t + dt ∈ Ioo a b} = Ioo (a - dt) (b - dt) := by
     ext t
-    rw [mem_setOf, mem_Ioo, mem_Ioo, sub_right_comm, sub_add_eq_add_sub,
-      sub_lt_iff_lt_add (c := dt), lt_sub_iff_add_lt (b := dt)]
+    rw [mem_setOf, mem_Ioo, mem_Ioo, sub_lt_iff_lt_add (c := dt), lt_sub_iff_add_lt (b := dt)]
   rw [isIntegralCurveOn_comp_add dt, this]
 
--- TODO: make more lemmas like this?
-lemma isIntegralCurveOn_Ioo_comp_add' {ε : ℝ} (dt : ℝ) :
-    IsIntegralCurveOn γ v (Ioo (-ε) ε) ↔
-      IsIntegralCurveOn (γ ∘ (· + dt)) v (Ioo (-dt - ε) (-dt + ε)) := by
-  have := isIntegralCurveOn_Ioo_comp_add (v := v) (γ := γ) (t₀ := 0) (ε := ε) dt
-  simpa
-
-lemma isIntegralCurveOn_Ioo_comp_sub {ε : ℝ} (dt : ℝ) :
-    IsIntegralCurveOn γ v (Ioo (t₀ - ε) (t₀ + ε)) ↔
-      IsIntegralCurveOn (γ ∘ (· - dt)) v (Ioo (t₀ + dt - ε) (t₀ + dt + ε)) := by
-  have : {t | t - dt ∈ Ioo (t₀ - ε) (t₀ + ε)} = Ioo (t₀ + dt - ε) (t₀ + dt + ε) := by
+lemma isIntegralCurveOn_Ioo_comp_sub {a b : ℝ} (dt : ℝ) :
+    IsIntegralCurveOn γ v (Ioo a b) ↔
+      IsIntegralCurveOn (γ ∘ (· - dt)) v (Ioo (a + dt) (b + dt)) := by
+  have : {t | t - dt ∈ Ioo a b} = Ioo (a + dt) (b + dt) := by
     ext t
-    rw [mem_setOf, mem_Ioo, mem_Ioo, lt_sub_iff_add_lt, sub_add_eq_add_sub,
-      sub_lt_iff_lt_add (c := dt), add_assoc, add_comm (a := ε) (b := dt), ← add_assoc]
+    rw [mem_setOf, mem_Ioo, mem_Ioo, sub_lt_iff_lt_add (c := dt), lt_sub_iff_add_lt (b := dt)]
   rw [isIntegralCurveOn_comp_sub dt, this]
-
-lemma isIntegralCurveOn_Ioo_comp_sub' {ε : ℝ} (dt : ℝ) :
-    IsIntegralCurveOn γ v (Ioo (-ε) ε) ↔
-      IsIntegralCurveOn (γ ∘ (· - dt)) v (Ioo (dt - ε) (dt + ε)) := by
-  have := isIntegralCurveOn_Ioo_comp_sub (v := v) (γ := γ) (t₀ := 0) (ε := ε) dt
-  simpa
 
 lemma IsIntegralCurveAt.comp_add (hγ : IsIntegralCurveAt γ v t₀) (dt : ℝ) :
     IsIntegralCurveAt (γ ∘ (· + dt)) v (t₀ - dt) := by
@@ -757,12 +742,12 @@ lemma exists_isIntegralCurve_of_isIntegralCurveOn [BoundarylessManifold I M]
     obtain ⟨γ, h0, hγ⟩ := ha
     -- integral curve starting at `-(asup - ε / 2)` with radius `ε`
     obtain ⟨γ1_aux, h1_aux, hγ1⟩ := h (γ (-(asup - ε / 2)))
-    rw [isIntegralCurveOn_Ioo_comp_add' (asup - ε / 2)] at hγ1
+    rw [isIntegralCurveOn_Ioo_comp_add (asup - ε / 2)] at hγ1
     let γ1 := γ1_aux ∘ (· + (asup - ε / 2))
     have heq1 : γ1 (-(asup - ε / 2)) = γ (-(asup - ε / 2)) := by simp [h1_aux]
     -- integral curve starting at `asup - ε / 2` with radius `ε`
     obtain ⟨γ2_aux, h2_aux, hγ2⟩ := h (γ (asup - ε / 2))
-    rw [isIntegralCurveOn_Ioo_comp_sub' (asup - ε / 2)] at hγ2
+    rw [isIntegralCurveOn_Ioo_comp_sub (asup - ε / 2)] at hγ2
     let γ2 := γ2_aux ∘ (· + -(asup - ε / 2))
     have heq2 : γ2 (asup - ε / 2) = γ (asup - ε / 2) := by simp [h2_aux]
 
@@ -784,7 +769,8 @@ lemma exists_isIntegralCurve_of_isIntegralCurveOn [BoundarylessManifold I M]
           · exact mem_union_left _ ⟨hlt, ht2⟩
           · apply mem_union_right
             exact ⟨by linarith, by linarith⟩
-      · rw [piecewise, if_pos ⟨by linarith, by linarith⟩, heq2]
+      · rw [piecewise, if_pos ⟨by linarith, by linarith⟩, ← heq2]
+        simp only [neg_sub, Function.comp_apply, sub_add_sub_cancel, sub_self]
     have hmem : asup + ε / 2 ∈ {a | ∃ γ, γ 0 = x ∧ IsIntegralCurveOn γ v (Ioo (-a) a)} := by
       refine ⟨γ_ext, ?_, hext⟩
       rw [γ_ext_def, piecewise, if_pos ⟨by linarith, by linarith⟩, piecewise,
