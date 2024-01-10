@@ -1574,6 +1574,10 @@ theorem Ioo_union_Icc_eq_Ioc (h₁ : a < b) (h₂ : b ≤ c) : Ioo a b ∪ Icc b
 
 /-! #### Two finite intervals, `I?c` and `Io?` -/
 
+theorem Ioo_subset_Ioo_union_Ioo (h₁ : a ≤ a₁) (h₂ : b < c) (h₃ : b₁ ≤ d) :
+    Ioo a₁ b₁ ⊆ Ioo a c ∪ Ioo b d := fun x hx =>
+  (lt_or_le x c).elim (fun hxc => Or.inl ⟨lt_of_le_of_lt h₁ hx.1, hxc⟩)
+    fun hxc => Or.inr ⟨lt_of_lt_of_le h₂ hxc, lt_of_lt_of_le hx.2 h₃⟩
 
 theorem Ioo_subset_Ioc_union_Ioo : Ioo a c ⊆ Ioc a b ∪ Ioo b c := fun x hx =>
   (le_or_lt x b).elim (fun hxb => Or.inl ⟨hx.1, hxb⟩) fun hxb => Or.inr ⟨hxb, hx.2⟩

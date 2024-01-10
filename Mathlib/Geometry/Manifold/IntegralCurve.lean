@@ -714,18 +714,6 @@ lemma isIntegralCurveOn_piecewise [BoundarylessManifold I M]
     rw [Filter.eventuallyEq_iff_exists_mem]
     refine ⟨Ioo a' b', isOpen_Ioo.mem_nhds hmem', piecewise_eqOn_symm hv hγ hγ' ht₀ h⟩
 
--- move this lemma elsewhere
-lemma Ioo_subset_Ioo_union_Ioo {a' b' a b c d : ℝ} (haa : a ≤ a') (hcb : c < b) (hbd : b' ≤ d) :
-    Ioo a' b' ⊆ Ioo a b ∪ Ioo c d := by
-  intro t
-  rw [mem_Ioo, mem_union, mem_Ioo, mem_Ioo]
-  rintro ⟨ha, hb⟩
-  by_cases hlt : t < b
-  · apply Or.inl
-    exact ⟨by linarith, hlt⟩
-  · apply Or.inr
-    exact ⟨by linarith, by linarith⟩
-
 /-- If there exists `ε > 0` such that the local integral curve at each point `x : M` is defined at
   least on an open interval `Ioo (-ε) ε`, then every point on `M` has a global integral
   curve passing through it.
