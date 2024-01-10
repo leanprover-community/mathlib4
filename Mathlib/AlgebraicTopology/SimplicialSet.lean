@@ -96,8 +96,9 @@ def objEquiv (n : SimplexCategory) (m : SimplexCategoryᵒᵖ) :
     (standardSimplex.{u}.obj n).obj m ≃ (m.unop ⟶ n) :=
   Equiv.ulift.{u, 0}
 
-abbrev objMk {n : ℕ} {m : SimplexCategoryᵒᵖ} (f : Fin (len m.unop + 1) →o Fin (n + 1)) :
-    Δ[n].obj m :=
+abbrev objMk {n : SimplexCategory} {m : SimplexCategoryᵒᵖ}
+    (f : Fin (len m.unop + 1) →o Fin (n.len + 1)) :
+    (standardSimplex.{u}.obj n).obj m :=
   (objEquiv _ _).symm (Hom.mk f)
 
 /-- The (degenerate) `m`-simplex in the standard simplex concentrated in vertex `k`. -/
