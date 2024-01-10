@@ -40,7 +40,8 @@ instance [HasFiniteLimits V] : HasFiniteLimits (Action V G) where
 instance [HasLimits V] : HasLimits (Action V G) :=
   Adjunction.has_limits_of_equivalence (Action.functorCategoryEquivalence _ _).functor
 
-instance {J : Type w₁} [Category.{w₂} J] [HasLimitsOfShape J V] :
+/-- If `V` has limits of shape `J`, so does `Action V G`.-/
+def hasLimitsOfShapeOfHasLimitsOfShape {J : Type w₁} [Category.{w₂} J] [HasLimitsOfShape J V] :
     HasLimitsOfShape J (Action V G) :=
   Adjunction.hasLimitsOfShape_of_equivalence (Action.functorCategoryEquivalence _ _).functor
 
@@ -55,8 +56,9 @@ instance [HasFiniteColimits V] : HasFiniteColimits (Action V G) where
 instance [HasColimits V] : HasColimits (Action V G) :=
   Adjunction.has_colimits_of_equivalence (Action.functorCategoryEquivalence _ _).functor
 
-instance {J : Type w₁} [Category.{w₂} J] [HasColimitsOfShape J V] :
-    HasColimitsOfShape J (Action V G) :=
+/-- If `V` has colimits of shape `J`, so does `Action V G`.-/
+def hasColimitsOfShapeOfHasColimitsOfShape {J : Type w₁} [Category.{w₂} J]
+    [HasColimitsOfShape J V] : HasColimitsOfShape J (Action V G) :=
   Adjunction.hasColimitsOfShape_of_equivalence (Action.functorCategoryEquivalence _ _).functor
 
 end Limits
