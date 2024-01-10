@@ -5,7 +5,6 @@ Authors: Aaron Anderson
 -/
 import Mathlib.Data.Int.Interval
 import Mathlib.Data.Int.LeastGreatest
-import Mathlib.Order.WellFoundedSet
 import Mathlib.RingTheory.Binomial
 import Mathlib.RingTheory.HahnSeries
 import Mathlib.RingTheory.Localization.FractionRing
@@ -60,25 +59,23 @@ section Zero
 
 variable [Zero R]
 
--- generalize to any locally finite linear order?
 theorem supp_bdd_below_supp_Pwo (f : ℤ → R) (n : ℤ) (hn : ∀(m : ℤ), m < n → f m = 0) :
     (Function.support f).IsPwo := by
-  rw [← @Set.isWf_iff_isPwo]
-  refine Set.bddBelow_wellFoundedOn_lt <| bddBelow_def.mpr ?_
-  use n
-  simp only [Function.mem_support, ne_eq]
-  intro k hk
-  by_contra hnk
-  rw [@Int.not_le] at hnk
-  apply hk (hn k hnk)
+  rw [← Set.isWf_iff_isPwo, Set.isWf_iff_no_descending_seq]
+  rintro g hg hsupp
+  refine Set.infinite_range_of_injective (StrictAnti.injective hg) ?_
+  refine (Set.finite_Icc n <| g 0).subset <| Set.range_subset_iff.2 ?_
+  simp_all only [Function.mem_support, ne_eq, Set.mem_Icc]
+  intro k
+  constructor
+  exact Int.not_lt.mp (mt (hn (g k)) (hsupp k))
+  exact (StrictAnti.le_iff_le hg).mpr (Nat.zero_le k)
 
 /-- Construct a Laurent series from any function with support that is bounded below. -/
 def LaurentFromSuppBddBelow (f : ℤ → R) (n : ℤ) (hn : ∀(m : ℤ), m < n → f m = 0) :
-    LaurentSeries R :=
-  {
-    coeff := f
-    isPwo_support' := supp_bdd_below_supp_Pwo f n hn
-  }
+    LaurentSeries R where
+  coeff := f
+  isPwo_support' := supp_bdd_below_supp_Pwo f n hn
 
 @[simp]
 theorem coeff_LaurentFromSuppBddBelow (f : ℤ → R) (m n : ℤ) (hn : ∀(m : ℤ), m < n → f m = 0) :
@@ -166,28 +163,28 @@ theorem hasseDeriv_single (k : ℕ) (n : ℤ) (x : V) :
     hasseDeriv k (single n x) = single (n - k) ((Ring.choose n k) • x) := by
   rw [← Int.sub_add_cancel n k, hasseDeriv_single', Int.sub_add_cancel n k]
 
-/-!
-
 theorem hasseDeriv_comp' (k l : ℕ) (f : LaurentSeries V) :
     hasseDeriv k (hasseDeriv l f) = (k + l).choose k • hasseDeriv (k + l) f := by
-  ext n : 2
+  rw [nsmul_eq_smul_cast R]
+  ext n
+  rw [smul_coeff]
   simp only [hasseDeriv_coeff]
-  rw [hasseDeriv]
+  rw [smul_smul, mul_comm, ← Ring.choose_mul' (n + k), add_assoc, Nat.choose_symm_add, Nat.cast_add,
+    smul_assoc, ← nsmul_eq_smul_cast]
 
 theorem hasseDeriv_comp (k l : ℕ) :
     (@hasseDeriv.linearMap R V _ _ _ k).comp (@hasseDeriv.linearMap R V _ _ _ l) =
     (k + l).choose k • (@hasseDeriv.linearMap R V _ _ _ (k + l)) := by
+  rw [nsmul_eq_smul_cast R]
   ext f n
   simp only [LinearMap.coe_comp, Function.comp_apply, hasseDeriv.linearMap_eq_hasseDeriv,
-    hasseDeriv_coeff]
-  simp only [nsmul_eq_mul, LinearMap.mul_apply, hasseDeriv.linearMap_eq_hasseDeriv,
-    Module.End.natCast_apply]
-  rw [@smul_coeff ℤ ℕ _ V _ _ _ ((k + l).choose k) (hasseDeriv (k + l) f) n] --fails
-  sorry
+    hasseDeriv_coeff, LinearMap.smul_apply, smul_coeff]
+  rw [smul_smul, mul_comm, ← Ring.choose_mul' (n + k), add_assoc, Nat.choose_symm_add, Nat.cast_add,
+    smul_assoc, ← nsmul_eq_smul_cast]
 
-* `factorial_smul_hasseDeriv`: the identity `k! • (D k f) = derivative^[k] f` (follows from comp)
-* `hasseDeriv_mul`: the "Leibniz rule" `D k (f * g) = ∑ ij in antidiagonal k, D ij.1 f * D ij.2 g`
--/
+-- `factorial_smul_hasseDeriv`: the identity `k! • (D k f) = derivative^[k] f` (follows from comp)
+-- `hasseDeriv_mul`: the "Leibniz rule" `D k (f * g) = ∑ ij in antidiagonal k, D ij.1 f * D ij.2 g`
+
 
 end HasseDeriv
 

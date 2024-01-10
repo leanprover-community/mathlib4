@@ -373,6 +373,22 @@ theorem choose_eq_Nat_choose [NatPowAssoc R] (n k : ℕ) : choose (n : R) k = Na
     | zero => rw [choose_zero_right, Nat.choose_zero_right, Nat.cast_one]
     | succ k => rw [Nat.cast_succ, choose_succ_succ, ih, ih, Nat.choose_succ_succ, Nat.cast_add]
 
+theorem choose_mul [NatPowAssoc R] (r : R) (n k : ℕ) (hkn : k ≤ n) :
+    (Nat.choose n k) • choose r n = choose r k * choose (r - k) (n - k) := by
+  refine nsmul_right_injective R (Nat.factorial n) (Nat.factorial_ne_zero n) ?_
+  simp only
+  rw [nsmul_left_comm, ← descPochhammer_eq_factorial_smul_choose,
+    ← Nat.choose_mul_factorial_mul_factorial hkn, ← smul_mul_smul,
+    ← descPochhammer_eq_factorial_smul_choose, mul_nsmul',
+    ← descPochhammer_eq_factorial_smul_choose, smul_mul_assoc]
+  nth_rw 2 [← Nat.sub_add_cancel hkn]
+  rw [add_comm, ← descPochhammer_mul, smeval_mul, smeval_comp, smeval_sub, smeval_X,
+    ← C_eq_nat_cast, smeval_C, npow_one, npow_zero, zsmul_one, Int.cast_ofNat, nsmul_eq_mul]
+
+theorem choose_mul' [NatPowAssoc R] (r : R) (n k : ℕ) :
+    (Nat.choose (n + k) k) • choose (r + k) (n + k) = choose (r + k) k * choose r n := by
+  rw [choose_mul (r + k) (n + k) k (Nat.le_add_left k n), Nat.add_sub_cancel, add_sub_cancel]
+
 end Ring
 
 end choose
