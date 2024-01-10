@@ -1078,12 +1078,12 @@ end Prod
 /- finite product of partial homeomorphisms -/
 section Pi
 
-variable {ι : Type*} [Fintype ι] {Xi Yi : ι → Type*} [∀ i, TopologicalSpace (Xi i)]
-  [∀ i, TopologicalSpace (Yi i)] (ei : ∀ i, PartialHomeomorph (Xi i) (Yi i))
+variable {ι : Type*} [Fintype ι] {X Y : ι → Type*} [∀ i, TopologicalSpace (X i)]
+  [∀ i, TopologicalSpace (Y i)] (ei : ∀ i, PartialHomeomorph (X i) (Y i))
 
 /-- The product of a finite family of `PartialHomeomorph`s. -/
 @[simps toPartialEquiv]
-def pi : PartialHomeomorph (∀ i, Xi i) (∀ i, Yi i) where
+def pi : PartialHomeomorph (∀ i, X i) (∀ i, Y i) where
   toPartialEquiv := PartialEquiv.pi fun i => (ei i).toPartialEquiv
   open_source := isOpen_set_pi finite_univ fun i _ => (ei i).open_source
   open_target := isOpen_set_pi finite_univ fun i _ => (ei i).open_target
