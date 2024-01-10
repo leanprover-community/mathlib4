@@ -48,8 +48,8 @@ then it should use `e.source ∩ s` or `e.target ∩ t`, not `s ∩ e.source` or
 
 open Function Set Filter Topology
 
-variable {α : Type*} {β : Type*} {γ : Type*} {Z' : Type*} [TopologicalSpace α]
-  [TopologicalSpace β] [TopologicalSpace γ] [TopologicalSpace Z']
+variable {α : Type*} {β : Type*} {Z : Type*} {Z' : Type*} [TopologicalSpace α]
+  [TopologicalSpace β] [TopologicalSpace Z] [TopologicalSpace Z']
 
 /-- Partial homeomorphisms, defined on open subsets of the space -/
 -- porting note: commented @[nolint has_nonempty_instance]
@@ -440,9 +440,9 @@ theorem eventually_nhdsWithin' {x : α} (p : α → Prop) {s : Set α}
 
 /-- This lemma is useful in the manifold library in the case that `e` is a chart. It states that
   locally around `e x` the set `e.symm ⁻¹' s` is the same as the set intersected with the target
-  of `e` and some other neighborhood of `f x` (which will be the source of a chart on `γ`).  -/
+  of `e` and some other neighborhood of `f x` (which will be the source of a chart on `Z`).  -/
 theorem preimage_eventuallyEq_target_inter_preimage_inter {e : PartialHomeomorph α β} {s : Set α}
-    {t : Set γ} {x : α} {f : α → γ} (hf : ContinuousWithinAt f s x) (hxe : x ∈ e.source)
+    {t : Set Z} {x : α} {f : α → Z} (hf : ContinuousWithinAt f s x) (hxe : x ∈ e.source)
     (ht : t ∈ 𝓝 (f x)) :
     e.symm ⁻¹' s =ᶠ[𝓝 (e x)] (e.target ∩ e.symm ⁻¹' (s ∩ f ⁻¹' t) : Set β) := by
   rw [eventuallyEq_set, e.eventually_nhds _ hxe]
@@ -812,11 +812,11 @@ end ofSet
 
 /- `trans`: composition of two partial homeomorphisms -/
 section trans
-variable (e' : PartialHomeomorph β γ)
+variable (e' : PartialHomeomorph β Z)
 /-- Composition of two partial homeomorphisms when the target of the first and the source of
 the second coincide. -/
 @[simps! apply symm_apply toPartialEquiv, simps! (config := .lemmasOnly) source target]
-protected def trans' (h : e.target = e'.source) : PartialHomeomorph α γ where
+protected def trans' (h : e.target = e'.source) : PartialHomeomorph α Z where
   toPartialEquiv := PartialEquiv.trans' e.toPartialEquiv e'.toPartialEquiv h
   open_source := e.open_source
   open_target := e'.open_target
@@ -827,7 +827,7 @@ protected def trans' (h : e.target = e'.source) : PartialHomeomorph α γ where
 /-- Composing two partial homeomorphisms, by restricting to the maximal domain where their
 composition is well defined. -/
 @[trans]
-protected def trans : PartialHomeomorph α γ :=
+protected def trans : PartialHomeomorph α Z :=
   PartialHomeomorph.trans' (e.symm.restrOpen e'.source e'.open_source).symm
     (e'.restrOpen e.target e.open_target) (by simp [inter_comm])
 #align local_homeomorph.trans PartialHomeomorph.trans
@@ -839,12 +839,12 @@ theorem trans_toPartialEquiv :
 #align local_homeomorph.trans_to_local_equiv PartialHomeomorph.trans_toPartialEquiv
 
 @[simp, mfld_simps]
-theorem coe_trans : (e.trans e' : α → γ) = e' ∘ e :=
+theorem coe_trans : (e.trans e' : α → Z) = e' ∘ e :=
   rfl
 #align local_homeomorph.coe_trans PartialHomeomorph.coe_trans
 
 @[simp, mfld_simps]
-theorem coe_trans_symm : ((e.trans e').symm : γ → α) = e.symm ∘ e'.symm :=
+theorem coe_trans_symm : ((e.trans e').symm : Z → α) = e.symm ∘ e'.symm :=
   rfl
 #align local_homeomorph.coe_trans_symm PartialHomeomorph.coe_trans_symm
 
@@ -889,7 +889,7 @@ theorem inv_image_trans_target : e'.symm '' (e.trans e').target = e'.source ∩ 
   image_trans_source e'.symm e.symm
 #align local_homeomorph.inv_image_trans_target PartialHomeomorph.inv_image_trans_target
 
-theorem trans_assoc (e'' : PartialHomeomorph γ Z') :
+theorem trans_assoc (e'' : PartialHomeomorph Z Z') :
     (e.trans e').trans e'' = e.trans (e'.trans e'') :=
   toPartialEquiv_injective <| e.1.trans_assoc _ _
 #align local_homeomorph.trans_assoc PartialHomeomorph.trans_assoc
@@ -983,7 +983,7 @@ theorem EqOnSource.symm_eqOn_target {e e' : PartialHomeomorph α β} (h : e ≈ 
 #align local_homeomorph.eq_on_source.symm_eq_on_target PartialHomeomorph.EqOnSource.symm_eqOn_target
 
 /-- Composition of partial homeomorphisms respects equivalence. -/
-theorem EqOnSource.trans' {e e' : PartialHomeomorph α β} {f f' : PartialHomeomorph β γ}
+theorem EqOnSource.trans' {e e' : PartialHomeomorph α β} {f f' : PartialHomeomorph β Z}
     (he : e ≈ e') (hf : f ≈ f') : e.trans f ≈ e'.trans f' :=
   PartialEquiv.EqOnSource.trans' he hf
 #align local_homeomorph.eq_on_source.trans' PartialHomeomorph.EqOnSource.trans'
@@ -1028,8 +1028,8 @@ section Prod
 /-- The product of two partial homeomorphisms, as a partial homeomorphism on the product space. -/
 @[simps! (config := mfld_cfg) toPartialEquiv apply,
   simps! (config := .lemmasOnly) source target symm_apply]
-def prod (e : PartialHomeomorph α β) (e' : PartialHomeomorph γ Z') :
-    PartialHomeomorph (α × γ) (β × Z') where
+def prod (e : PartialHomeomorph α β) (e' : PartialHomeomorph Z Z') :
+    PartialHomeomorph (α × Z) (β × Z') where
   open_source := e.open_source.prod e'.open_source
   open_target := e.open_target.prod e'.open_target
   continuousOn_toFun := e.continuousOn.prod_map e'.continuousOn
@@ -1038,7 +1038,7 @@ def prod (e : PartialHomeomorph α β) (e' : PartialHomeomorph γ Z') :
 #align local_homeomorph.prod PartialHomeomorph.prod
 
 @[simp, mfld_simps]
-theorem prod_symm (e : PartialHomeomorph α β) (e' : PartialHomeomorph γ Z') :
+theorem prod_symm (e : PartialHomeomorph α β) (e' : PartialHomeomorph Z Z') :
     (e.prod e').symm = e.symm.prod e'.symm :=
   rfl
 #align local_homeomorph.prod_symm PartialHomeomorph.prod_symm
@@ -1051,24 +1051,24 @@ theorem refl_prod_refl {α β : Type*} [TopologicalSpace α] [TopologicalSpace �
 
 @[simp, mfld_simps]
 theorem prod_trans {η : Type*} {ε : Type*} [TopologicalSpace η] [TopologicalSpace ε]
-    (e : PartialHomeomorph α β) (f : PartialHomeomorph β γ) (e' : PartialHomeomorph Z' η)
+    (e : PartialHomeomorph α β) (f : PartialHomeomorph β Z) (e' : PartialHomeomorph Z' η)
     (f' : PartialHomeomorph η ε) : (e.prod e').trans (f.prod f') = (e.trans f).prod (e'.trans f') :=
   toPartialEquiv_injective <| e.1.prod_trans ..
 #align local_homeomorph.prod_trans PartialHomeomorph.prod_trans
 
-theorem prod_eq_prod_of_nonempty {e₁ e₁' : PartialHomeomorph α β} {e₂ e₂' : PartialHomeomorph γ Z'}
+theorem prod_eq_prod_of_nonempty {e₁ e₁' : PartialHomeomorph α β} {e₂ e₂' : PartialHomeomorph Z Z'}
     (h : (e₁.prod e₂).source.Nonempty) : e₁.prod e₂ = e₁'.prod e₂' ↔ e₁ = e₁' ∧ e₂ = e₂' := by
   obtain ⟨⟨x, y⟩, -⟩ := id h
   haveI : Nonempty α := ⟨x⟩
   haveI : Nonempty β := ⟨e₁ x⟩
-  haveI : Nonempty γ := ⟨y⟩
+  haveI : Nonempty Z := ⟨y⟩
   haveI : Nonempty Z' := ⟨e₂ y⟩
   simp_rw [PartialHomeomorph.ext_iff, prod_apply, prod_symm_apply, prod_source, Prod.ext_iff,
     Set.prod_eq_prod_iff_of_nonempty h, forall_and, Prod.forall, forall_const,
     and_assoc, and_left_comm]
 #align local_homeomorph.prod_eq_prod_of_nonempty PartialHomeomorph.prod_eq_prod_of_nonempty
 
-theorem prod_eq_prod_of_nonempty' {e₁ e₁' : PartialHomeomorph α β} {e₂ e₂' : PartialHomeomorph γ Z'}
+theorem prod_eq_prod_of_nonempty' {e₁ e₁' : PartialHomeomorph α β} {e₂ e₂' : PartialHomeomorph Z Z'}
     (h : (e₁'.prod e₂').source.Nonempty) : e₁.prod e₂ = e₁'.prod e₂' ↔ e₁ = e₁' ∧ e₂ = e₂' := by
   rw [eq_comm, prod_eq_prod_of_nonempty h, eq_comm, @eq_comm _ e₂']
 #align local_homeomorph.prod_eq_prod_of_nonempty' PartialHomeomorph.prod_eq_prod_of_nonempty'
@@ -1156,7 +1156,7 @@ section Continuity
 
 /-- Continuity within a set at a point can be read under right composition with a local
 homeomorphism, if the point is in its target -/
-theorem continuousWithinAt_iff_continuousWithinAt_comp_right {f : β → γ} {s : Set β} {x : β}
+theorem continuousWithinAt_iff_continuousWithinAt_comp_right {f : β → Z} {s : Set β} {x : β}
     (h : x ∈ e.target) :
     ContinuousWithinAt f s x ↔ ContinuousWithinAt (f ∘ e) (e ⁻¹' s) (e.symm x) := by
   simp_rw [ContinuousWithinAt, ← @tendsto_map'_iff _ _ _ _ e,
@@ -1165,7 +1165,7 @@ theorem continuousWithinAt_iff_continuousWithinAt_comp_right {f : β → γ} {s 
 
 /-- Continuity at a point can be read under right composition with a partial homeomorphism, if the
 point is in its target -/
-theorem continuousAt_iff_continuousAt_comp_right {f : β → γ} {x : β} (h : x ∈ e.target) :
+theorem continuousAt_iff_continuousAt_comp_right {f : β → Z} {x : β} (h : x ∈ e.target) :
     ContinuousAt f x ↔ ContinuousAt (f ∘ e) (e.symm x) := by
   rw [← continuousWithinAt_univ, e.continuousWithinAt_iff_continuousWithinAt_comp_right h,
     preimage_univ, continuousWithinAt_univ]
@@ -1173,7 +1173,7 @@ theorem continuousAt_iff_continuousAt_comp_right {f : β → γ} {x : β} (h : x
 
 /-- A function is continuous on a set if and only if its composition with a partial homeomorphism
 on the right is continuous on the corresponding set. -/
-theorem continuousOn_iff_continuousOn_comp_right {f : β → γ} {s : Set β} (h : s ⊆ e.target) :
+theorem continuousOn_iff_continuousOn_comp_right {f : β → Z} {s : Set β} (h : s ⊆ e.target) :
     ContinuousOn f s ↔ ContinuousOn (f ∘ e) (e.source ∩ e ⁻¹' s) := by
   simp only [← e.symm_image_eq_source_inter_preimage h, ContinuousOn, ball_image_iff]
   refine' forall₂_congr fun x hx => _
@@ -1185,7 +1185,7 @@ theorem continuousOn_iff_continuousOn_comp_right {f : β → γ} {s : Set β} (h
 /-- Continuity within a set at a point can be read under left composition with a local
 homeomorphism if a neighborhood of the initial point is sent to the source of the local
 homeomorphism-/
-theorem continuousWithinAt_iff_continuousWithinAt_comp_left {f : γ → α} {s : Set γ} {x : γ}
+theorem continuousWithinAt_iff_continuousWithinAt_comp_left {f : Z → α} {s : Set Z} {x : Z}
     (hx : f x ∈ e.source) (h : f ⁻¹' e.source ∈ 𝓝[s] x) :
     ContinuousWithinAt f s x ↔ ContinuousWithinAt (e ∘ f) s x := by
   refine' ⟨(e.continuousAt hx).comp_continuousWithinAt, fun fe_cont => _⟩
@@ -1199,7 +1199,7 @@ theorem continuousWithinAt_iff_continuousWithinAt_comp_left {f : γ → α} {s :
 
 /-- Continuity at a point can be read under left composition with a partial homeomorphism if a
 neighborhood of the initial point is sent to the source of the partial homeomorphism-/
-theorem continuousAt_iff_continuousAt_comp_left {f : γ → α} {x : γ} (h : f ⁻¹' e.source ∈ 𝓝 x) :
+theorem continuousAt_iff_continuousAt_comp_left {f : Z → α} {x : Z} (h : f ⁻¹' e.source ∈ 𝓝 x) :
     ContinuousAt f x ↔ ContinuousAt (e ∘ f) x := by
   have hx : f x ∈ e.source := (mem_of_mem_nhds h : _)
   have h' : f ⁻¹' e.source ∈ 𝓝[univ] x := by rwa [nhdsWithin_univ]
@@ -1209,7 +1209,7 @@ theorem continuousAt_iff_continuousAt_comp_left {f : γ → α} {x : γ} (h : f 
 
 /-- A function is continuous on a set if and only if its composition with a partial homeomorphism
 on the left is continuous on the corresponding set. -/
-theorem continuousOn_iff_continuousOn_comp_left {f : γ → α} {s : Set γ} (h : s ⊆ f ⁻¹' e.source) :
+theorem continuousOn_iff_continuousOn_comp_left {f : Z → α} {s : Set Z} (h : s ⊆ f ⁻¹' e.source) :
     ContinuousOn f s ↔ ContinuousOn (e ∘ f) s :=
   forall₂_congr fun _x hx =>
     e.continuousWithinAt_iff_continuousWithinAt_comp_left (h hx)
@@ -1218,7 +1218,7 @@ theorem continuousOn_iff_continuousOn_comp_left {f : γ → α} {s : Set γ} (h 
 
 /-- A function is continuous if and only if its composition with a partial homeomorphism
 on the left is continuous and its image is contained in the source. -/
-theorem continuous_iff_continuous_comp_left {f : γ → α} (h : f ⁻¹' e.source = univ) :
+theorem continuous_iff_continuous_comp_left {f : Z → α} (h : f ⁻¹' e.source = univ) :
     Continuous f ↔ Continuous (e ∘ f) := by
   simp only [continuous_iff_continuousOn_univ]
   exact e.continuousOn_iff_continuousOn_comp_left (Eq.symm h).subset
@@ -1300,7 +1300,7 @@ end PartialHomeomorph
 
 namespace Homeomorph
 
-variable (e : α ≃ₜ β) (e' : β ≃ₜ γ)
+variable (e : α ≃ₜ β) (e' : β ≃ₜ Z)
 
 /- Register as simp lemmas that the fields of a partial homeomorphism built from a homeomorphism
 correspond to the fields of the original homeomorphism. -/
@@ -1324,7 +1324,7 @@ theorem trans_toPartialHomeomorph :
 /-- Precompose a partial homeomorphism with a homeomorphism.
 We modify the source and target to have better definitional behavior. -/
 @[simps! (config := .asFn)]
-def transPartialHomeomorph (e : α ≃ₜ β) (f' : PartialHomeomorph β γ) : PartialHomeomorph α γ where
+def transPartialHomeomorph (e : α ≃ₜ β) (f' : PartialHomeomorph β Z) : PartialHomeomorph α Z where
   toPartialEquiv := e.toEquiv.transPartialEquiv f'.toPartialEquiv
   open_source := f'.open_source.preimage e.continuous
   open_target := f'.open_target
@@ -1332,19 +1332,19 @@ def transPartialHomeomorph (e : α ≃ₜ β) (f' : PartialHomeomorph β γ) : P
   continuousOn_invFun := e.symm.continuous.comp_continuousOn f'.symm.continuousOn
 #align homeomorph.trans_local_homeomorph Homeomorph.transPartialHomeomorph
 
-theorem transPartialHomeomorph_eq_trans (e : α ≃ₜ β) (f' : PartialHomeomorph β γ) :
+theorem transPartialHomeomorph_eq_trans (e : α ≃ₜ β) (f' : PartialHomeomorph β Z) :
     e.transPartialHomeomorph f' = e.toPartialHomeomorph.trans f' :=
   PartialHomeomorph.toPartialEquiv_injective <| Equiv.transPartialEquiv_eq_trans _ _
 #align homeomorph.trans_local_homeomorph_eq_trans Homeomorph.transPartialHomeomorph_eq_trans
 
 @[simp, mfld_simps]
-theorem transPartialHomeomorph_trans (e : α ≃ₜ β) (f : PartialHomeomorph β γ)
-    (f' : PartialHomeomorph γ Z') :
+theorem transPartialHomeomorph_trans (e : α ≃ₜ β) (f : PartialHomeomorph β Z)
+    (f' : PartialHomeomorph Z Z') :
     (e.transPartialHomeomorph f).trans f' = e.transPartialHomeomorph (f.trans f') := by
   simp only [transPartialHomeomorph_eq_trans, PartialHomeomorph.trans_assoc]
 
 @[simp, mfld_simps]
-theorem trans_transPartialHomeomorph (e : α ≃ₜ β) (e' : β ≃ₜ γ) (f'' : PartialHomeomorph γ Z') :
+theorem trans_transPartialHomeomorph (e : α ≃ₜ β) (e' : β ≃ₜ Z) (f'' : PartialHomeomorph Z Z') :
     (e.trans e').transPartialHomeomorph f'' =
       e.transPartialHomeomorph (e'.transPartialHomeomorph f'') := by
   simp only [transPartialHomeomorph_eq_trans, PartialHomeomorph.trans_assoc,
@@ -1419,7 +1419,7 @@ section transHomeomorph
 /-- Postcompose a partial homeomorphism with a homeomorphism.
 We modify the source and target to have better definitional behavior. -/
 @[simps! (config := .asFn)]
-def transHomeomorph (e : PartialHomeomorph α β) (f' : β ≃ₜ γ) : PartialHomeomorph α γ where
+def transHomeomorph (e : PartialHomeomorph α β) (f' : β ≃ₜ Z) : PartialHomeomorph α Z where
   toPartialEquiv := e.toPartialEquiv.transEquiv f'.toEquiv
   open_source := e.open_source
   open_target := e.open_target.preimage f'.symm.continuous
@@ -1427,19 +1427,19 @@ def transHomeomorph (e : PartialHomeomorph α β) (f' : β ≃ₜ γ) : PartialH
   continuousOn_invFun := e.symm.continuousOn.comp f'.symm.continuous.continuousOn fun _ => id
 #align local_homeomorph.trans_homeomorph PartialHomeomorph.transHomeomorph
 
-theorem transHomeomorph_eq_trans (e : PartialHomeomorph α β) (f' : β ≃ₜ γ) :
+theorem transHomeomorph_eq_trans (e : PartialHomeomorph α β) (f' : β ≃ₜ Z) :
     e.transHomeomorph f' = e.trans f'.toPartialHomeomorph :=
   toPartialEquiv_injective <| PartialEquiv.transEquiv_eq_trans _ _
 #align local_homeomorph.trans_equiv_eq_trans PartialHomeomorph.transHomeomorph_eq_trans
 
 @[simp, mfld_simps]
-theorem transHomeomorph_transHomeomorph (e : PartialHomeomorph α β) (f' : β ≃ₜ γ) (f'' : γ ≃ₜ Z') :
+theorem transHomeomorph_transHomeomorph (e : PartialHomeomorph α β) (f' : β ≃ₜ Z) (f'' : Z ≃ₜ Z') :
     (e.transHomeomorph f').transHomeomorph f'' = e.transHomeomorph (f'.trans f'') := by
   simp only [transHomeomorph_eq_trans, trans_assoc, Homeomorph.trans_toPartialHomeomorph]
 
 @[simp, mfld_simps]
-theorem trans_transHomeomorph (e : PartialHomeomorph α β) (e' : PartialHomeomorph β γ)
-    (f'' : γ ≃ₜ Z') :
+theorem trans_transHomeomorph (e : PartialHomeomorph α β) (e' : PartialHomeomorph β Z)
+    (f'' : Z ≃ₜ Z') :
     (e.trans e').transHomeomorph f'' = e.trans (e'.transHomeomorph f'') := by
   simp only [transHomeomorph_eq_trans, trans_assoc, Homeomorph.trans_toPartialHomeomorph]
 end transHomeomorph
