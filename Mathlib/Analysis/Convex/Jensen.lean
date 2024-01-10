@@ -249,7 +249,7 @@ section MaximumPrinciple
 
 variable [LinearOrderedField 𝕜] [AddCommGroup E] [LinearOrderedAddCommGroup β] [Module 𝕜 E]
   [Module 𝕜 β] [OrderedSMul 𝕜 β] {s : Set E} {f : E → β} {t : Finset ι} {w : ι → 𝕜} {p : ι → E}
-  {x : E}
+  {x y z : E}
 
 theorem le_sup_of_mem_convexHull {s : Finset E} (hf : ConvexOn 𝕜 (convexHull 𝕜 (s : Set E)) f)
     (hx : x ∈ convexHull 𝕜 (s : Set E)) :
@@ -289,8 +289,8 @@ theorem ConcaveOn.exists_le_of_centerMass (h : ConcaveOn 𝕜 s f) (hw₀ : ∀ 
   ConvexOn.exists_ge_of_centerMass (β := βᵒᵈ) h hw₀ hw₁ hp
 #align concave_on.exists_le_of_center_mass ConcaveOn.exists_le_of_centerMass
 
-/-- Maximum principle for convex functions. If a function `f` is convex on the convex hull of `s`,
-then the eventual maximum of `f` on `convexHull 𝕜 s` lies in `s`. -/
+/-- **Maximum principle** for convex functions. If a function `f` is convex on the convex hull of
+`s`, then the eventual maximum of `f` on `convexHull 𝕜 s` lies in `s`. -/
 theorem ConvexOn.exists_ge_of_mem_convexHull (hf : ConvexOn 𝕜 (convexHull 𝕜 s) f) {x}
     (hx : x ∈ convexHull 𝕜 s) : ∃ y ∈ s, f x ≤ f y := by
   rw [_root_.convexHull_eq] at hx
@@ -301,11 +301,35 @@ theorem ConvexOn.exists_ge_of_mem_convexHull (hf : ConvexOn 𝕜 (convexHull �
   exact ⟨p i, hp i hit, Hi⟩
 #align convex_on.exists_ge_of_mem_convex_hull ConvexOn.exists_ge_of_mem_convexHull
 
-/-- Minimum principle for concave functions. If a function `f` is concave on the convex hull of `s`,
-then the eventual minimum of `f` on `convexHull 𝕜 s` lies in `s`. -/
+/-- **Minimum principle** for concave functions. If a function `f` is concave on the convex hull of
+`s`, then the eventual minimum of `f` on `convexHull 𝕜 s` lies in `s`. -/
 theorem ConcaveOn.exists_le_of_mem_convexHull (hf : ConcaveOn 𝕜 (convexHull 𝕜 s) f) {x}
     (hx : x ∈ convexHull 𝕜 s) : ∃ y ∈ s, f y ≤ f x :=
   ConvexOn.exists_ge_of_mem_convexHull (β := βᵒᵈ) hf hx
 #align concave_on.exists_le_of_mem_convex_hull ConcaveOn.exists_le_of_mem_convexHull
+
+/-- **Maximum principle** for convex functions on a segment. If a function `f` is convex on the
+segment `[x, y]`, then the eventual maximum of `f` on `[x, y]` is at `x` or `y`. -/
+lemma ConvexOn.le_max_of_mem_segment (hf : ConvexOn 𝕜 [x -[𝕜] y] f) (hz : z ∈ [x -[𝕜] y]) :
+    f z ≤ max (f x) (f y) := by
+  rw [← convexHull_pair] at hf hz; simpa using hf.exists_ge_of_mem_convexHull hz
+
+/-- **Minimum principle** for concave functions on a segment. If a function `f` is concave on the
+segment `[x, y]`, then the eventual minimum of `f` on `[x, y]` is at `x` or `y`. -/
+lemma ConcaveOn.min_le_of_mem_segment (hf : ConcaveOn 𝕜 [x -[𝕜] y] f) (hz : z ∈ [x -[𝕜] y]) :
+    min (f x) (f y) ≤ f z := by
+  rw [← convexHull_pair] at hf hz; simpa using hf.exists_le_of_mem_convexHull hz
+
+/-- **Maximum principle** for convex functions on an interval. If a function `f` is convex on the
+interval `[x, y]`, then the eventual maximum of `f` on `[x, y]` is at `x` or `y`. -/
+lemma ConvexOn.le_max_of_mem_Icc {f : 𝕜 → β} {x y z : 𝕜} (hf : ConvexOn 𝕜 (Icc x y) f)
+    (hz : z ∈ Icc x y) : f z ≤ max (f x) (f y) := by
+  rw [← segment_eq_Icc (hz.1.trans hz.2)] at hf hz; exact hf.le_max_of_mem_segment hz
+
+/-- **Minimum principle** for concave functions on an interval. If a function `f` is concave on the
+interval `[x, y]`, then the eventual minimum of `f` on `[x, y]` is at `x` or `y`. -/
+lemma ConcaveOn.min_le_of_mem_Icc {f : 𝕜 → β} {x y z : 𝕜} (hf : ConcaveOn 𝕜 (Icc x y) f)
+    (hz : z ∈ Icc x y) : min (f x) (f y) ≤ f z := by
+  rw [← segment_eq_Icc (hz.1.trans hz.2)] at hf hz; exact hf.min_le_of_mem_segment hz
 
 end MaximumPrinciple
