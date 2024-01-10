@@ -1,5 +1,8 @@
 ## Create comments and labels on a Lean 4 PR after CI has finished on a `lean-pr-testing-NNNN` branch.
+##
+## See https://leanprover-community.github.io/contribute/tags_and_branches.html
 set -e
+
 
 # TODO: The whole script ought to be rewritten in javascript, to avoid having to use curl for API calls.
 #
@@ -94,12 +97,14 @@ if [[ "$branch_name" =~ ^lean-pr-testing-([0-9]+)$ ]]; then
   # Append new result to the existing comment or post a new comment
   if [ -z "$existing_comment_id" ]; then
     # Post new comment with a bullet point
+    # Keep message in sync with https://github.com/leanprover/lean4/blob/master/.github/workflows/pr-release.yml
+    intro="Mathlib CI status ([docs](https://leanprover-community.github.io/contribute/tags_and_branches.html)):"
     echo "Posting as new comment at leanprover/lean4/issues/$pr_number/comments"
     curl -L -s \
       -X POST \
       -H "Authorization: token $TOKEN" \
       -H "Accept: application/vnd.github.v3+json" \
-      -d "$(jq --null-input --arg val "$message" '{"body": $val}')" \
+      -d "$(jq --null-input --arg intro "$intro" --arg val "$message" '{"body": "$intro + "\n" + $val}')" \
       "https://api.github.com/repos/leanprover/lean4/issues/$pr_number/comments"
   else
     # Append new result to the existing comment

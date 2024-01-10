@@ -19,7 +19,7 @@ We show:
 * When `V` is preadditive, linear, or abelian so is `Action V G`.
 -/
 
-universe u v
+universe u v w₁ w₂ t₁ t₂
 
 open CategoryTheory Limits
 
@@ -52,6 +52,90 @@ instance [HasColimits V] : HasColimits (Action V G) :=
   Adjunction.has_colimits_of_equivalence (Action.functorCategoryEquivalence _ _).functor
 
 end Limits
+
+section Preservation
+
+variable {C : Type t₁} [Category.{t₂} C]
+
+/-- `F : C ⥤ SingleObj G ⥤ V` preserves the limit of some `K : J ⥤ C` if it does
+evaluated at `SingleObj.star G`.-/
+private def SingleObj.preservesLimit (F : C ⥤ SingleObj G ⥤ V)
+    {J : Type w₁} [Category.{w₂} J] (K : J ⥤ C)
+    (h : PreservesLimit K (F ⋙ (evaluation (SingleObj G) V).obj (SingleObj.star G))) :
+    PreservesLimit K F := by
+  apply preservesLimitOfEvaluation
+  intro _
+  exact h
+
+/-- `F : C ⥤ Action V G` preserves the limit of some `K : J ⥤ C` if
+if it does after postcomposing with the forgetful functor `Action V G ⥤ V`. -/
+def preservesLimitOfPreserves (F : C ⥤ Action V G) {J : Type w₁}
+    [Category.{w₂} J] (K : J ⥤ C)
+    (h : PreservesLimit K (F ⋙ Action.forget V G)) : PreservesLimit K F := by
+  let F' : C ⥤ SingleObj G ⥤ V := F ⋙ (Action.functorCategoryEquivalence V G).functor
+  have : PreservesLimit K F' := SingleObj.preservesLimit _ _ h
+  apply preservesLimitOfReflectsOfPreserves F (Action.functorCategoryEquivalence V G).functor
+
+/-- `F : C ⥤ Action V G` preserves limits of some shape `J`
+if it does after postcomposing with the forgetful functor `Action V G ⥤ V`. -/
+def preservesLimitsOfShapeOfPreserves (F : C ⥤ Action V G) {J : Type w₁}
+    [Category.{w₂} J] (h : PreservesLimitsOfShape J (F ⋙ Action.forget V G)) :
+    PreservesLimitsOfShape J F := by
+  constructor
+  intro K
+  apply Action.preservesLimitOfPreserves
+  exact PreservesLimitsOfShape.preservesLimit
+
+/-- `F : C ⥤ Action V G` preserves limits of some size
+if it does after postcomposing with the forgetful functor `Action V G ⥤ V`. -/
+def preservesLimitsOfSizeOfPreserves (F : C ⥤ Action V G)
+    (h : PreservesLimitsOfSize.{w₂, w₁} (F ⋙ Action.forget V G)) :
+    PreservesLimitsOfSize.{w₂, w₁} F := by
+  constructor
+  intro J _
+  apply Action.preservesLimitsOfShapeOfPreserves
+  exact PreservesLimitsOfSize.preservesLimitsOfShape
+
+/-- `F : C ⥤ SingleObj G ⥤ V` preserves the colimit of some `K : J ⥤ C` if it does
+evaluated at `SingleObj.star G`.-/
+private def SingleObj.preservesColimit (F : C ⥤ SingleObj G ⥤ V)
+    {J : Type w₁} [Category.{w₂} J] (K : J ⥤ C)
+    (h : PreservesColimit K (F ⋙ (evaluation (SingleObj G) V).obj (SingleObj.star G))) :
+    PreservesColimit K F := by
+  apply preservesColimitOfEvaluation
+  intro _
+  exact h
+
+/-- `F : C ⥤ Action V G` preserves the colimit of some `K : J ⥤ C` if
+if it does after postcomposing with the forgetful functor `Action V G ⥤ V`. -/
+def preservesColimitOfPreserves (F : C ⥤ Action V G) {J : Type w₁}
+    [Category.{w₂} J] (K : J ⥤ C)
+    (h : PreservesColimit K (F ⋙ Action.forget V G)) : PreservesColimit K F := by
+  let F' : C ⥤ SingleObj G ⥤ V := F ⋙ (Action.functorCategoryEquivalence V G).functor
+  have : PreservesColimit K F' := SingleObj.preservesColimit _ _ h
+  apply preservesColimitOfReflectsOfPreserves F (Action.functorCategoryEquivalence V G).functor
+
+/-- `F : C ⥤ Action V G` preserves colimits of some shape `J`
+if it does after postcomposing with the forgetful functor `Action V G ⥤ V`. -/
+def preservesColimitsOfShapeOfPreserves (F : C ⥤ Action V G) {J : Type w₁}
+    [Category.{w₂} J] (h : PreservesColimitsOfShape J (F ⋙ Action.forget V G)) :
+    PreservesColimitsOfShape J F := by
+  constructor
+  intro K
+  apply Action.preservesColimitOfPreserves
+  exact PreservesColimitsOfShape.preservesColimit
+
+/-- `F : C ⥤ Action V G` preserves colimits of some size
+if it does after postcomposing with the forgetful functor `Action V G ⥤ V`. -/
+def preservesColimitsOfSizeOfPreserves (F : C ⥤ Action V G)
+    (h : PreservesColimitsOfSize.{w₂, w₁} (F ⋙ Action.forget V G)) :
+    PreservesColimitsOfSize.{w₂, w₁} F := by
+  constructor
+  intro J _
+  apply Action.preservesColimitsOfShapeOfPreserves
+  exact PreservesColimitsOfSize.preservesColimitsOfShape
+
+end Preservation
 
 section HasZeroMorphisms
 
