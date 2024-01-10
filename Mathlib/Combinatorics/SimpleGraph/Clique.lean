@@ -305,17 +305,16 @@ protected theorem CliqueFree.replaceVertex [DecidableEq α] (h : G.CliqueFree n)
   obtain ⟨φ, hφ⟩ := topEmbeddingOfNotCliqueFree h
   rw [not_cliqueFree_iff]
   by_cases mt : t ∈ Set.range φ
-  · obtain ⟨x, _⟩ := mt
+  · obtain ⟨x, hx⟩ := mt
     by_cases ms : s ∈ Set.range φ
     · obtain ⟨y, _⟩ := ms
       have := @hφ x y
       simp_all [not_cliqueFree_iff]
     · use φ.setValue x s
       intro a b
-      simp only [Embedding.coeFn_mk, Embedding.setValue, not_exists.mp ms a, not_exists.mp ms b,
-        ite_false]
+      simp only [Embedding.coeFn_mk, Embedding.setValue, not_exists.mp ms, ite_false]
       rw [apply_ite (G.Adj · _), apply_ite (G.Adj _ ·), apply_ite (G.Adj _ ·)]
-      convert @hφ a b <;> aesop
+      convert @hφ a b <;> simp only [← φ.apply_eq_iff_eq, SimpleGraph.irrefl, hx]
   · use φ; simp_all
 
 @[simp]
