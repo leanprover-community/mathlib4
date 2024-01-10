@@ -161,6 +161,202 @@ noncomputable def triangleMap :
 
 end map
 
+
+/-
+
+As the number of simp lemmas that are required in the proofs below is huge,
+we use the `simp? ... says` syntax: it is meant to ease the maintenance
+of this code as it gives a minimal list of lemmas with which `simp`
+is able to finish the proof.
+
+The `set_option maxHeartbeats` are necessary only when this code is compiled
+with `set_option says.verify true` (e.g. during CI).
+
+-/
+
+section Rotate
+
+set_option maxHeartbeats 400000 in
+/-- Given `φ : K ⟶ L`, `K⟦(1 : ℤ)⟧` is homotopy equivalence to
+the mapping cone of `inr φ : L ⟶ mappingCone φ` is homotopy equivalent. -/
+noncomputable def rotateHomotopyEquiv :
+    HomotopyEquiv (K⟦(1 : ℤ)⟧) (mappingCone (inr φ)) where
+  hom := lift (inr φ) (-(Cocycle.ofHom φ).leftShift 1 1 (zero_add 1))
+    (-(inl φ).leftShift 1 0 (neg_add_self 1)) (by
+      simp? [Cochain.δ_leftShift _ 1 0 1 (neg_add_self 1) 0 (zero_add 1)] says
+        simp only [δ_neg, Cochain.δ_leftShift _ 1 0 1 (neg_add_self 1) 0 (zero_add 1),
+          Int.negOnePow_one, δ_inl, Cochain.ofHom_comp, Cochain.leftShift_comp_zero_cochain,
+          Units.neg_smul, one_smul, neg_neg, Cocycle.coe_neg, Cocycle.leftShift_coe,
+          Cocycle.ofHom_coe, Cochain.neg_comp, add_right_neg])
+  inv := desc (inr φ) 0 (triangle φ).mor₃
+    (by simp only [δ_zero, inr_triangleδ, Cochain.ofHom_zero])
+  homotopyHomInvId := Homotopy.ofEq (by
+    ext n
+    simp? [lift_desc_f _ _ _ _ _ _ _ _ _ rfl,
+      (inl φ).leftShift_v 1 0 _ _ n _ (n + 1) (by simp only [add_neg_cancel_right])] says
+      simp only [shiftFunctor_obj_X', HomologicalComplex.comp_f,
+        lift_desc_f _ _ _ _ _ _ _ _ _ rfl, Cocycle.coe_neg, Cocycle.leftShift_coe,
+        Cocycle.ofHom_coe, Cochain.neg_v, Cochain.zero_v,
+        comp_zero, (inl φ).leftShift_v 1 0 _ _ n _ (n + 1) (by simp only [add_neg_cancel_right]),
+        shiftFunctor_obj_X, mul_zero, sub_self, Int.zero_ediv, add_zero, Int.negOnePow_zero,
+        shiftFunctorObjXIso, HomologicalComplex.XIsoOfEq_rfl, Iso.refl_hom, id_comp, one_smul,
+        Preadditive.neg_comp, inl_v_triangle_mor₃_f, Iso.refl_inv, neg_neg, zero_add,
+        HomologicalComplex.id_f])
+  homotopyInvHomId := (Cochain.equivHomotopy _ _).symm
+    ⟨-(snd (inr φ)).comp ((snd φ).comp (inl (inr φ)) (zero_add (-1))) (zero_add (-1)), by
+      ext n
+      simp? [ext_to_iff _ _ (n + 1) rfl, ext_from_iff _ (n + 1) _ rfl,
+        δ_zero_cochain_comp _ _ _ (neg_add_self 1),
+        (inl φ).leftShift_v 1 0 (neg_add_self 1) n n (add_zero n) (n + 1) (by linarith),
+        (Cochain.ofHom φ).leftShift_v 1 1 (zero_add 1) n (n + 1) rfl (n + 1) (by linarith),
+        Cochain.comp_v _ _ (add_neg_self 1) n (n + 1) n rfl (by linarith)] says
+        simp only [Cochain.ofHom_comp, ofHom_desc, ofHom_lift, Cocycle.coe_neg,
+          Cocycle.leftShift_coe, Cocycle.ofHom_coe, Cochain.comp_zero_cochain_v,
+          shiftFunctor_obj_X', δ_neg, δ_zero_cochain_comp _ _ _ (neg_add_self 1), δ_inl,
+          Int.negOnePow_neg, Int.negOnePow_one, δ_snd, Cochain.neg_comp,
+          Cochain.comp_assoc_of_second_is_zero_cochain, smul_neg, Units.neg_smul, one_smul,
+          neg_neg, Cochain.comp_add, inr_snd_assoc, neg_add_rev, Cochain.add_v, Cochain.neg_v,
+          Cochain.comp_v _ _ (add_neg_self 1) n (n + 1) n rfl (by linarith),
+          Cochain.zero_cochain_comp_v, Cochain.ofHom_v, HomologicalComplex.id_f,
+          ext_to_iff _ _ (n + 1) rfl, assoc, liftCochain_v_fst_v,
+          (Cochain.ofHom φ).leftShift_v 1 1 (zero_add 1) n (n + 1) rfl (n + 1) (by linarith),
+          shiftFunctor_obj_X, mul_one, sub_self, mul_zero, Int.zero_ediv, add_zero,
+          shiftFunctorObjXIso, HomologicalComplex.XIsoOfEq_rfl, Iso.refl_hom, id_comp,
+          Preadditive.add_comp, Preadditive.neg_comp, inl_v_fst_v, comp_id, inr_f_fst_v, comp_zero,
+          neg_zero, neg_add_cancel_comm, ext_from_iff _ (n + 1) _ rfl, inl_v_descCochain_v_assoc,
+          Cochain.zero_v, zero_comp, Preadditive.comp_neg, inl_v_snd_v_assoc,
+          inr_f_descCochain_v_assoc, inr_f_snd_v_assoc, inl_v_triangle_mor₃_f_assoc, triangle_obj₁,
+          Iso.refl_inv, inl_v_fst_v_assoc, inr_f_triangle_mor₃_f_assoc, inr_f_fst_v_assoc, and_self,
+          liftCochain_v_snd_v,
+          (inl φ).leftShift_v 1 0 (neg_add_self 1) n n (add_zero n) (n + 1) (by linarith),
+          Int.negOnePow_zero, inl_v_snd_v, inr_f_snd_v, zero_add, inl_v_descCochain_v,
+          inr_f_descCochain_v, inl_v_triangle_mor₃_f, inr_f_triangle_mor₃_f, add_left_neg]⟩
+
+/-- Auxiliary definition for `rotateTrianglehIso`. -/
+noncomputable def rotateHomotopyEquivComm₂Homotopy :
+  Homotopy ((triangle φ).mor₃ ≫ (rotateHomotopyEquiv φ).hom)
+    (inr (CochainComplex.mappingCone.inr φ)) := (Cochain.equivHomotopy _ _).symm
+      ⟨-(snd φ).comp (inl (inr φ)) (zero_add (-1)), by
+        ext p
+        dsimp [rotateHomotopyEquiv]
+        simp [ext_from_iff _ _ _ rfl, ext_to_iff _ _ _ rfl,
+          (inl φ).leftShift_v 1 0 (neg_add_self 1) p p (add_zero p) (p + 1) (by linarith),
+          δ_zero_cochain_comp _ _ _ (neg_add_self 1),
+          Cochain.comp_v _ _ (add_neg_self 1) p (p + 1) p rfl (by linarith),
+          (Cochain.ofHom φ).leftShift_v 1 1 (zero_add 1) p (p + 1) rfl (p + 1) (by linarith)]⟩
+
+@[reassoc (attr := simp)]
+lemma rotateHomotopyEquiv_comm₂ :
+    (HomotopyCategory.quotient _ _ ).map (triangle φ).mor₃ ≫
+      (HomotopyCategory.quotient _ _ ).map (rotateHomotopyEquiv φ).hom =
+      (HomotopyCategory.quotient _ _ ).map (inr (inr φ)) := by
+  simpa only [Functor.map_comp]
+    using HomotopyCategory.eq_of_homotopy _ _  (rotateHomotopyEquivComm₂Homotopy φ)
+
+@[reassoc (attr := simp)]
+lemma rotateHomotopyEquiv_comm₃ :
+    (rotateHomotopyEquiv φ).hom ≫ (triangle (inr φ)).mor₃ = -φ⟦1⟧' := by
+  ext p
+  dsimp [rotateHomotopyEquiv]
+  simp [lift_f _ _ _ _ _ (p + 1) rfl,
+    (Cochain.ofHom φ).leftShift_v 1 1 (zero_add 1) p (p + 1) rfl (p + 1) (by linarith)]
+
+/-- The canonical isomorphism of triangles `(triangleh φ).rotate ≅ (triangleh (inr φ))`. -/
+noncomputable def rotateTrianglehIso :
+    (triangleh φ).rotate ≅ (triangleh (inr φ)) :=
+  Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _)
+    (((HomotopyCategory.quotient C (ComplexShape.up ℤ)).commShiftIso (1 : ℤ)).symm.app K ≪≫
+      HomotopyCategory.isoOfHomotopyEquiv (rotateHomotopyEquiv φ)) (by aesop_cat) (by aesop_cat) (by
+        dsimp
+        rw [CategoryTheory.Functor.map_id, comp_id, assoc, ← Functor.map_comp_assoc,
+          rotateHomotopyEquiv_comm₃, Functor.map_neg, Preadditive.neg_comp,
+          Functor.commShiftIso_hom_naturality, Preadditive.comp_neg,
+          Iso.inv_hom_id_app_assoc])
+
+end Rotate
+
+section Shift
+
+set_option maxHeartbeats 800000 in
+/-- The canonical isomorphism `(mappingCone φ)⟦n⟧ ≅ mappingCone (φ⟦n⟧')`. -/
+noncomputable def shiftIso (n : ℤ) : (mappingCone φ)⟦n⟧ ≅ mappingCone (φ⟦n⟧') where
+  hom := lift _ (n.negOnePow • (fst φ).shift n) ((snd φ).shift n) (by
+    ext p q hpq
+    dsimp
+    simp? [Cochain.shift_v'] says
+      simp only [Cochain.δ_shift, δ_snd, Cochain.shift_neg, smul_neg, Cochain.neg_v,
+        shiftFunctor_obj_X', Cochain.units_smul_v, Cochain.shift_v', Cochain.comp_zero_cochain_v,
+        Cochain.ofHom_v, Cochain.units_smul_comp, shiftFunctor_map_f', add_left_neg])
+  inv := desc _ (n.negOnePow • (inl φ).shift n) ((inr φ)⟦n⟧') (by
+    ext p
+    dsimp
+    simp? [Cochain.shift_v', smul_smul] says
+      simp only [δ_units_smul, Cochain.δ_shift, δ_inl, Cochain.ofHom_comp, smul_smul,
+        Int.units_mul_self, one_smul, Cochain.shift_v', Cochain.comp_zero_cochain_v,
+        Cochain.ofHom_v, shiftFunctor_obj_X', shiftFunctor_map_f'])
+  hom_inv_id := by
+    ext p
+    dsimp
+    simp? [lift_desc_f _ _ _ _ _ _ _ _ (p + 1) rfl, id_X, smul_smul, Cochain.shift_v'] says
+      simp only [lift_desc_f _ _ _ _ _ _ _ _ (p + 1) rfl, shiftFunctor_obj_X',
+        Cocycle.coe_units_smul, Cocycle.shift_coe, Cochain.units_smul_v, Cochain.shift_v',
+        Linear.comp_units_smul, Linear.units_smul_comp, smul_smul, Int.units_mul_self, one_smul,
+        shiftFunctor_map_f', id_X]
+  inv_hom_id := by
+    ext p
+    dsimp
+    simp? [ext_from_iff _ (p + 1) _ rfl, ext_to_iff _ _ (p + 1) rfl,
+        Cochain.shift_v', smul_smul] says
+      simp only [ext_to_iff _ _ (p + 1) rfl, shiftFunctor_obj_X', assoc, lift_f_fst_v,
+        Cocycle.coe_units_smul, Cocycle.shift_coe, Cochain.units_smul_v, Cochain.shift_v',
+        Linear.comp_units_smul, id_comp, ext_from_iff _ (p + 1) _ rfl, inl_v_desc_f_assoc,
+        Linear.units_smul_comp, inl_v_fst_v, smul_smul, Int.units_mul_self, one_smul,
+        inr_f_desc_f_assoc, shiftFunctor_map_f', inr_f_fst_v, smul_zero, and_self, lift_f_snd_v,
+        inl_v_snd_v, inr_f_snd_v]
+
+set_option maxHeartbeats 800000 in
+/-- The canonical isomorphism `(triangle φ)⟦n⟧ ≅ triangle (φ⟦n⟧')`. -/
+noncomputable def shiftTriangleIso (n : ℤ) :
+    (Triangle.shiftFunctor _ n).obj (triangle φ) ≅ triangle (φ⟦n⟧') := by
+  refine Triangle.isoMk _ _ (Iso.refl _) (n.negOnePow • Iso.refl _) (shiftIso φ n) ?_ ?_ ?_
+  · simp? [Units.smul_def, smul_smul] says
+      simp only [Triangle.shiftFunctor_obj, triangle_obj₁, triangle_obj₂, triangle_obj₃,
+        triangle_mor₁, Units.smul_def, triangle_mor₂, Functor.comp_obj, Triangle.mk_obj₁,
+        Triangle.mk_obj₂, Triangle.mk_mor₁, Preadditive.smul_iso_hom, Iso.refl_hom,
+        Linear.comp_smul, comp_id, smul_smul, Int.units_coe_mul_self, one_smul, id_comp]
+  · ext p
+    dsimp
+    simp? [shiftIso, Units.smul_def, ext_to_iff _ _ (p + 1) rfl, Cochain.shift_v'] says
+      simp only [Units.smul_def, HomologicalComplex.zsmul_f_apply, shiftFunctor_obj_X',
+        shiftFunctor_map_f', shiftIso, Linear.smul_comp, id_comp, ext_to_iff _ _ (p + 1) rfl, assoc,
+        lift_f_fst_v, Cocycle.coe_smul, Cocycle.shift_coe, Cochain.smul_v, Cochain.shift_v',
+        Linear.comp_smul, inr_f_fst_v, smul_zero, lift_f_snd_v, inr_f_snd_v, and_true]
+    rw [smul_zero]
+  · ext p
+    dsimp
+    simp? [shiftIso, Units.smul_def, shiftFunctorComm_hom_app_f, triangle, Cochain.shift_v',
+      (fst (φ⟦n⟧')).1.rightShift_v 1 0 (zero_add 1) p p (add_zero p) (p + 1) rfl,
+      (fst φ).1.rightShift_v 1 0 (zero_add 1) (p + n) (p + n)
+        (add_zero (p + n)) (p + 1 + n) (by linarith)] says
+      simp only [triangle, Triangle.mk_mor₃, Units.smul_def, HomologicalComplex.zsmul_f_apply,
+        shiftFunctor_obj_X', HomologicalComplex.comp_f, shiftFunctor_map_f', Cocycle.homOf_f,
+        Cocycle.rightShift_coe, Cocycle.coe_neg, Cochain.rightShift_neg, Cochain.neg_v,
+        (fst φ).1.rightShift_v 1 0 (zero_add 1) (p + n) (p + n) (add_zero (p + n)) (p + 1 + n)
+          (by linarith),
+        shiftFunctor_obj_X, shiftFunctorObjXIso, shiftFunctorComm_hom_app_f, Preadditive.neg_comp,
+        assoc, Iso.inv_hom_id, comp_id, smul_neg, shiftIso,
+        (fst (φ⟦n⟧')).1.rightShift_v 1 0 (zero_add 1) p p (add_zero p) (p + 1) rfl,
+        HomologicalComplex.XIsoOfEq_rfl, Iso.refl_inv, Preadditive.comp_neg, lift_f_fst_v,
+        Cocycle.coe_smul, Cocycle.shift_coe, Cochain.smul_v, Cochain.shift_v']
+
+/-- The canonical isomorphism `(triangleh φ)⟦n⟧ ≅ triangleh (φ⟦n⟧')`. -/
+noncomputable def shiftTrianglehIso (n : ℤ) :
+    (Triangle.shiftFunctor _ n).obj (triangleh φ) ≅ triangleh (φ⟦n⟧') :=
+  ((HomotopyCategory.quotient _ _).mapTriangle.commShiftIso n).symm.app _ ≪≫
+    (HomotopyCategory.quotient _ _).mapTriangle.mapIso (shiftTriangleIso φ n)
+
+end Shift
+
 end mappingCone
 
 end CochainComplex
