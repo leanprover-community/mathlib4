@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Anatole Dedecker, Alexey Soloyev, Junyan Xu
+Authors: Anatole Dedecker, Alexey Soloyev, Junyan Xu, Kamila Szewczyk
 -/
 import Mathlib.Data.Real.Irrational
 import Mathlib.Data.Nat.Fib.Basic
@@ -116,6 +116,14 @@ theorem one_lt_gold : 1 < φ := by
   refine' lt_of_mul_lt_mul_left _ (le_of_lt gold_pos)
   simp [← sq, gold_pos, zero_lt_one, - div_pow] -- Porting note: Added `- div_pow`
 #align one_lt_gold one_lt_gold
+
+theorem two_gt_gold : 2 > φ := by
+  rw [goldenRatio]
+  have h₀ : 3 ^ 2 = (9 : ℝ) := by norm_num
+  have h₁ : 3 = Real.sqrt 9 := by rw [← h₀, sqrt_sq]; linarith
+  have h₂ : Real.sqrt 5 < Real.sqrt 9 := by rw [sqrt_lt_sqrt_iff_of_pos]; repeat linarith
+  linarith
+#align two_gt_gold two_gt_gold
 
 theorem goldConj_neg : ψ < 0 := by
   linarith [one_sub_goldConj, one_lt_gold]
