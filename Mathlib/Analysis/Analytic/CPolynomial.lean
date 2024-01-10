@@ -14,7 +14,7 @@ polynomials on a normed `𝕜`-algebra and continuous multilinear maps.
 
 ## Main definitions
 
-Let `p` be a formavl multilinear series from `E` to `F`, i.e., `p n` is a multilinear map on `E^n`
+Let `p` be a formal multilinear series from `E` to `F`, i.e., `p n` is a multilinear map on `E^n`
 for `n : ℕ`, and let `f` be a function from `E` to `F`.
 
 * `HasFiniteFPowerSeriesOnBall f p x n r`: on the ball of center `x` with radius `r`,
