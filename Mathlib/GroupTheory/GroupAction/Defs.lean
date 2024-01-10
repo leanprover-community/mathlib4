@@ -707,6 +707,17 @@ def MonoidHom.smulOneHom {M N} [Monoid M] [MulOneClass N] [MulAction M N] [IsSca
 #align smul_one_hom_apply MonoidHom.smulOneHom_apply
 #align vadd_zero_hom_apply AddMonoidHom.vaddZeroHom_apply
 
+/-- A monoid homomorphism between two monoids M and N can be equivalently specified by a
+multiplicative action of M on N that is compatible with the multiplication on N. -/
+@[to_additive "A monoid homomorphism between two additive monoids M and N can be equivalently
+  specified by an additive action of M on N that is compatible with the addition on N."]
+def monoidHomEquivMulActionIsScalarTower (M N) [Monoid M] [Monoid N] :
+    (M →* N) ≃ {_inst : MulAction M N // IsScalarTower M N N} where
+  toFun f := ⟨MulAction.compHom N f, SMul.comp.isScalarTower _⟩
+  invFun := fun ⟨_, _⟩ ↦ MonoidHom.smulOneHom
+  left_inv f := MonoidHom.ext fun m ↦ mul_one (f m)
+  right_inv := fun ⟨_, _⟩ ↦ Subtype.ext <| MulAction.ext _ _ <| funext₂ <| smul_one_smul N
+
 end CompatibleScalar
 
 /-- Typeclass for scalar multiplication that preserves `0` on the right. -/

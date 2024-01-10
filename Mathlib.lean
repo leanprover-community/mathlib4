@@ -1297,6 +1297,7 @@ import Mathlib.CategoryTheory.Sites.RegularExtensive
 import Mathlib.CategoryTheory.Sites.Sheaf
 import Mathlib.CategoryTheory.Sites.SheafHom
 import Mathlib.CategoryTheory.Sites.SheafOfTypes
+import Mathlib.CategoryTheory.Sites.Sheafification
 import Mathlib.CategoryTheory.Sites.Sieves
 import Mathlib.CategoryTheory.Sites.Spaces
 import Mathlib.CategoryTheory.Sites.Subsheaf
