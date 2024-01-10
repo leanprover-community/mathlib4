@@ -5,6 +5,7 @@ Authors: Yaël Dillies, Bhavik Mehta, Doga Can Sertbas
 -/
 import Mathlib.Data.Nat.Interval
 import Mathlib.Data.Nat.Parity
+import Mathlib.Data.Nat.Prime
 import Mathlib.Data.Real.Archimedean
 
 /-!
