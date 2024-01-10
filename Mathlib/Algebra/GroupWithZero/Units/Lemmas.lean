@@ -3,6 +3,7 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
+import Mathlib.Algebra.Group.Commute.Units
 import Mathlib.Algebra.Group.Hom.Basic
 import Mathlib.Algebra.Group.Units.Hom
 import Mathlib.Algebra.GroupWithZero.Commute
@@ -23,7 +24,7 @@ variable [MonoidWithZero M₀]
 
 section GroupWithZero
 
-variable [GroupWithZero G₀] {a b c : G₀}
+variable [GroupWithZero G₀] {a b c d : G₀}
 
 @[simp]
 theorem div_self (h : a ≠ 0) : a / a = 1 :=
@@ -147,6 +148,12 @@ theorem divp_mk0 (a : G₀) {b : G₀} (hb : b ≠ 0) : a /ₚ Units.mk0 b hb = 
   divp_eq_div _ _
 #align divp_mk0 divp_mk0
 
+namespace Commute
+
+protected lemma div_eq_div_iff (hbd : Commute b d) (hb : b ≠ 0) (hd : d ≠ 0) :
+    a / b = c / d ↔ a * d = c * b := hbd.div_eq_div_iff_of_isUnit hb.isUnit hd.isUnit
+
+end Commute
 end GroupWithZero
 
 section CommGroupWithZero

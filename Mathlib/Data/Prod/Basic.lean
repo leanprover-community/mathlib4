@@ -303,7 +303,7 @@ instance IsTrichotomous [IsTrichotomous α r] [IsTrichotomous β s] :
   obtain hij | rfl | hji := trichotomous_of r i j
   { exact Or.inl (Lex.left _ _ hij) }
   { exact (trichotomous_of (s) a b).imp3 (Lex.right _) (congr_arg _) (Lex.right _) }
-  { exact Or.inr (Or.inr $ Lex.left _ _ hji) }⟩
+  { exact Or.inr (Or.inr <| Lex.left _ _ hji) }⟩
 
 end Prod
 

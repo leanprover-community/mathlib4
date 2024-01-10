@@ -237,7 +237,7 @@ theorem inseparable_eq_eq [T0Space X] : Inseparable = @Eq X :=
 theorem TopologicalSpace.IsTopologicalBasis.inseparable_iff {b : Set (Set X)}
     (hb : IsTopologicalBasis b) {x y : X} : Inseparable x y ↔ ∀ s ∈ b, (x ∈ s ↔ y ∈ s) :=
   ⟨fun h s hs ↦ inseparable_iff_forall_open.1 h _ (hb.isOpen hs),
-    fun h ↦ hb.nhds_hasBasis.eq_of_same_basis $ by
+    fun h ↦ hb.nhds_hasBasis.eq_of_same_basis <| by
       convert hb.nhds_hasBasis using 2
       exact and_congr_right (h _)⟩
 

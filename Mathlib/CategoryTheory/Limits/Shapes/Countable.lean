@@ -47,9 +47,10 @@ instance (priority := 100) hasCountableLimits_of_hasLimits [HasLimits C] :
     HasCountableLimits C where
   out := inferInstance
 
-instance [Category J] [CountableCategory J] [HasCountableLimits C] : HasLimitsOfShape J C :=
-  have : HasLimitsOfShape (ObjAsType J) C := HasCountableLimits.out _
-  hasLimitsOfShape_of_equivalence (objAsTypeEquiv J)
+universe v in
+instance [Category.{v} J] [CountableCategory J] [HasCountableLimits C] : HasLimitsOfShape J C :=
+  have : HasLimitsOfShape (HomAsType J) C := HasCountableLimits.out (HomAsType J)
+  hasLimitsOfShape_of_equivalence (homAsTypeEquiv J)
 
 /--
 A category has all countable colimits if every functor `J ⥤ C` with a `CountableCategory J`
@@ -68,9 +69,10 @@ instance (priority := 100) hasCountableColimits_of_hasColimits [HasColimits C] :
     HasCountableColimits C where
   out := inferInstance
 
-instance [Category J] [CountableCategory J] [HasCountableColimits C] : HasColimitsOfShape J C :=
-  have : HasColimitsOfShape (ObjAsType J) C := HasCountableColimits.out _
-  hasColimitsOfShape_of_equivalence (objAsTypeEquiv J)
+universe v in
+instance [Category.{v} J] [CountableCategory J] [HasCountableColimits C] : HasColimitsOfShape J C :=
+  have : HasColimitsOfShape (HomAsType J) C := HasCountableColimits.out (HomAsType J)
+  hasColimitsOfShape_of_equivalence (homAsTypeEquiv J)
 
 section Preorder
 

@@ -51,7 +51,7 @@ def ElimApp.evalNames (elimInfo : ElimInfo) (alts : Array ElimApp.Alt) (withArg 
     let (fvars, g) ← g.introN numFields <| altVarNames.map (getNameOfIdent' ·[0])
     let some (g, subst) ← Cases.unifyEqs? numEqs g {} | pure ()
     let (_, g) ← g.introNP numGeneralized
-    let g ← liftM $ toClear.foldlM (·.tryClear) g
+    let g ← liftM <| toClear.foldlM (·.tryClear) g
     for fvar in fvars, stx in altVarNames do
       g.withContext <| (subst.apply <| .fvar fvar).addLocalVarInfoForBinderIdent ⟨stx⟩
     subgoals := subgoals.push g
