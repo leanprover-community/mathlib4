@@ -163,12 +163,12 @@ theorem coe_zero : ⇑(0 : LeftInvariantDerivation I G) = 0 :=
   rfl
 #align left_invariant_derivation.coe_zero LeftInvariantDerivation.coe_zero
 
-@[simp]
+@[simp, nolint simpNF] -- timeouts when `import Mathlib`.
 theorem coe_neg : ⇑(-X) = -X :=
   rfl
 #align left_invariant_derivation.coe_neg LeftInvariantDerivation.coe_neg
 
-@[simp]
+@[simp, nolint simpNF] -- timeouts when `import Mathlib`.
 theorem coe_sub : ⇑(X - Y) = X - Y :=
   rfl
 #align left_invariant_derivation.coe_sub LeftInvariantDerivation.coe_sub
