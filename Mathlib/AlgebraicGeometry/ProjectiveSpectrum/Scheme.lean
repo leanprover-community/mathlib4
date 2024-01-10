@@ -723,6 +723,78 @@ lemma toSpecFromSpec {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m) (x : 
 
 end toSpecFromSpec
 
+section fromSpecToSpec
+
+set_option maxHeartbeats 400000 in
+open GradedAlgebra in
+lemma fromSpecToSpec {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m) (x : Proj.T| pbo f) :
+    FromSpec.toFun f_deg hm (toSpec x) = x := by
+  classical
+  refine Subtype.ext <| ProjectiveSpectrum.ext _ _ <| HomogeneousIdeal.ext <| Ideal.ext fun z ↦ ?_
+  fconstructor <;> intro hz
+  · rw [← DirectSum.sum_support_decompose 𝒜 z]
+    refine Ideal.sum_mem _ fun i hi ↦ ?_
+    specialize hz i
+    erw [ToSpec.mem_carrier_iff, HomogeneousLocalization.val_mk'', mem_span_set] at hz
+    obtain ⟨c, support_le, (eq1 : Finset.sum _ _ = _)⟩ := hz
+    simp only [smul_eq_mul, GradedAlgebra.proj_apply] at eq1
+    obtain ⟨N, hN⟩ := Localization.Away.den_one_smul_large_power (c.support.image fun i ↦ c i * i)
+    choose acd hacd using hN
+    have prop1 : ∀ i ∈ c.support, c i * i ∈ c.support.image fun i ↦ c i * i := by aesop
+
+    have eq2 := calc
+      f^(i+N) • (mk ((decompose 𝒜 z i) ^ m) ⟨f^i, ⟨_, rfl⟩⟩ : Away f)
+      = f^(i+N) • ∑ i in c.support, c i * i := by rw [eq1]
+      _ = f^i • f^N • ∑ i in c.support, c i * i := by rw [← mul_smul, pow_add]
+      _ = f^i • ∑ i in c.support, f^N • (c i * i) := by rw [Finset.smul_sum]
+      _ = f^i • ∑ i in c.support.attach, f^N • (c i.1 * i.1) := by
+        congr 1; exact Finset.sum_attach _ _ |>.symm
+      _ = f^i • ∑ i in c.support.attach, algebraMap A (Away f) (acd _ (prop1 _ i.2)) := by
+        congr 1; exact Finset.sum_congr rfl fun i _ ↦ by rw [hacd _ (prop1 _ i.2)]
+      _ = f^i • algebraMap A (Away f) (∑ i in c.support.attach, acd _ (prop1 _ i.2)) := by
+        congr 1; rw [map_sum]
+      _ = algebraMap A (Away f) (f^i * ∑ i in c.support.attach, acd _ (prop1 _ i.2)) := by
+        rw [map_mul, Algebra.smul_def]
+
+    have eq3 : f^(i+N) • (mk ((decompose 𝒜 z i) ^ m) ⟨f^i, ⟨_, rfl⟩⟩ : Away f) =
+      f^N • (mk ((decompose 𝒜 z i) ^ m) 1 : Away f)
+    · rw [smul_mk, smul_mk, smul_eq_mul, Localization.mk_eq_mk_iff, Localization.r_iff_exists]
+      refine ⟨1, ?_⟩
+      simp only [OneMemClass.coe_one, one_mul, smul_eq_mul]
+      ring
+    conv_rhs at eq3 => rw [mk_one_eq_algebraMap, Algebra.smul_def, ← map_mul]
+    rw [eq2, ← mk_one_eq_algebraMap, ← mk_one_eq_algebraMap, Localization.mk_eq_mk_iff,
+      Localization.r_iff_exists] at eq3
+    obtain ⟨⟨_, ⟨k, rfl⟩⟩, eq3⟩ := eq3
+    simp only [OneMemClass.coe_one, one_mul, ← mul_assoc, ← pow_add] at eq3
+
+    suffices m : f^(k + i) * ∑ i in c.support.attach, acd _ (prop1 _ i.2) ∈ x.1.asHomogeneousIdeal
+    · exact x.1.isPrime.mem_of_pow_mem _ <| x.1.isPrime.mem_or_mem (eq3 ▸ m)
+        |>.resolve_left fun r ↦ ProjectiveSpectrum.mem_basicOpen 𝒜 _ _
+        |>.mp x.2 <| x.1.isPrime.mem_of_pow_mem _ r
+
+    refine Ideal.mul_mem_left _ _ <| Ideal.sum_mem _ fun j _ ↦ ?_
+    obtain ⟨k, z, eq4⟩ : ∃ (k : ℕ) (z : A), c j.1 = (mk z ⟨f^k, ⟨_, rfl⟩⟩ : Away f)
+    · induction' (c j) using Localization.induction_on with d
+      rcases d with ⟨z, ⟨_, ⟨k, rfl⟩⟩⟩
+      exact ⟨_, _, rfl⟩
+    obtain ⟨g, hg1, hg2⟩ := support_le j.2
+    specialize hacd _ (prop1 _ j.2)
+    conv_rhs at hacd => rw [mul_comm (c j.1) j.1, eq4, ← hg2, ← Algebra.smul_def, smul_mk,
+      smul_mk, smul_eq_mul, smul_eq_mul]
+    rw [← mk_one_eq_algebraMap, Localization.mk_eq_mk_iff, Localization.r_iff_exists] at hacd
+    obtain ⟨⟨_, ⟨l, rfl⟩⟩, eq5⟩ := hacd
+    simp only [OneMemClass.coe_one, one_mul, ← mul_assoc, ← pow_add] at eq5
+    suffices m : f^(l + N) * g * z ∈ x.1.asHomogeneousIdeal
+    · exact x.1.isPrime.mem_or_mem (eq5.symm ▸ m)
+          |>.resolve_left fun r ↦ ProjectiveSpectrum.mem_basicOpen 𝒜 _ _
+          |>.mp x.2 <| x.1.isPrime.mem_of_pow_mem _ r
+    exact Ideal.mul_mem_right _ _ <| Ideal.mul_mem_left _ _ hg1
+
+  · sorry
+
+end fromSpecToSpec
+
 end ProjIsoSpecTopComponent
 
 end AlgebraicGeometry
