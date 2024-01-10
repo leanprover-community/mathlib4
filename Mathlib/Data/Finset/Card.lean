@@ -733,10 +733,11 @@ theorem case_strong_induction_on [DecidableEq α] {p : Finset α → Prop} (s : 
 
 /-- Suppose that, given objects defined on all nonempty strict subsets of any nontrivial finset `s`,
 one knows how to define an object on `s`. Then one can inductively define an object on all finsets,
-starting from singletons and iterating. This can be used either to define data, or to prove
-properties.
+starting from singletons and iterating.
 
-TODO: Actually let `p` be `Sort`-valued. -/
+TODO: Currently this can only be used to prove properties.
+Replace `Finset.Nonempty.exists_eq_singleton_or_nontrivial` with computational content
+in order to let `p` be `Sort`-valued. -/
 @[elab_as_elim]
 protected lemma Nonempty.strong_induction {p : ∀ s, s.Nonempty → Prop}
     (h₀ : ∀ a, p {a} (singleton_nonempty _))
