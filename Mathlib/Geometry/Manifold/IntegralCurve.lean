@@ -757,18 +757,18 @@ lemma exists_isIntegralCurve_of_isIntegralCurveOn [BoundarylessManifold I M]
     have hext : IsIntegralCurveOn γ_ext v (Ioo (-(asup + ε / 2)) (asup + ε / 2)) := by
       apply (isIntegralCurveOn_piecewise (t₀ := asup - ε / 2) hv _ hγ2
         (by refine ⟨⟨?_, ?_⟩, ⟨?_, ?_⟩⟩ <;> linarith) _).mono
-      · rintro t ⟨ht1, ht2⟩
+      · rintro t ⟨ht1, ht2⟩ -- TODO: missing lemmas about Ioo?
         by_cases hlt : t < a
         · exact mem_union_left _ ⟨ht1, hlt⟩
         · apply mem_union_right
           exact ⟨by linarith, by linarith⟩
       · apply (isIntegralCurveOn_piecewise (t₀ := -(asup - ε / 2)) hv hγ hγ1
           (by refine ⟨⟨?_, ?_⟩, ⟨?_, ?_⟩⟩ <;> linarith) heq1.symm).mono
-        · rintro t ⟨ht1, ht2⟩
-          by_cases hlt : -a < t
-          · exact mem_union_left _ ⟨hlt, ht2⟩
-          · apply mem_union_right
-            exact ⟨by linarith, by linarith⟩
+        rintro t ⟨ht1, ht2⟩
+        by_cases hlt : -a < t
+        · exact mem_union_left _ ⟨hlt, ht2⟩
+        · apply mem_union_right
+          exact ⟨by linarith, by linarith⟩
       · rw [piecewise, if_pos ⟨by linarith, by linarith⟩, ← heq2]
     have hmem : asup + ε / 2 ∈ {a | ∃ γ, γ 0 = x ∧ IsIntegralCurveOn γ v (Ioo (-a) a)} := by
       refine ⟨γ_ext, ?_, hext⟩
