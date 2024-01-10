@@ -215,57 +215,10 @@ theorem map_prod [CommMonoid β] [CommMonoid γ] {G : Type*} [MonoidHomClass G �
 #align map_prod map_prod
 #align map_sum map_sum
 
-section Deprecated
-
 #align monoid_hom.map_prod map_prodₓ
 #align add_monoid_hom.map_sum map_sumₓ
 #align mul_equiv.map_prod map_prodₓ
 #align add_equiv.map_sum map_sumₓ
-
-@[deprecated _root_.map_list_prod]
-protected theorem RingHom.map_list_prod [Semiring β] [Semiring γ] (f : β →+* γ) (l : List β) :
-    f l.prod = (l.map f).prod :=
-  map_list_prod f l
-#align ring_hom.map_list_prod RingHom.map_list_prod
-
-@[deprecated _root_.map_list_sum]
-protected theorem RingHom.map_list_sum [NonAssocSemiring β] [NonAssocSemiring γ] (f : β →+* γ)
-    (l : List β) : f l.sum = (l.map f).sum :=
-  map_list_sum f l
-#align ring_hom.map_list_sum RingHom.map_list_sum
-
-/-- A morphism into the opposite ring acts on the product by acting on the reversed elements. -/
-@[deprecated _root_.unop_map_list_prod]
-protected theorem RingHom.unop_map_list_prod [Semiring β] [Semiring γ] (f : β →+* γᵐᵒᵖ)
-    (l : List β) : MulOpposite.unop (f l.prod) = (l.map (MulOpposite.unop ∘ f)).reverse.prod :=
-  unop_map_list_prod f l
-#align ring_hom.unop_map_list_prod RingHom.unop_map_list_prod
-
-@[deprecated _root_.map_multiset_prod]
-protected theorem RingHom.map_multiset_prod [CommSemiring β] [CommSemiring γ] (f : β →+* γ)
-    (s : Multiset β) : f s.prod = (s.map f).prod :=
-  map_multiset_prod f s
-#align ring_hom.map_multiset_prod RingHom.map_multiset_prod
-
-@[deprecated _root_.map_multiset_sum]
-protected theorem RingHom.map_multiset_sum [NonAssocSemiring β] [NonAssocSemiring γ] (f : β →+* γ)
-    (s : Multiset β) : f s.sum = (s.map f).sum :=
-  map_multiset_sum f s
-#align ring_hom.map_multiset_sum RingHom.map_multiset_sum
-
-@[deprecated _root_.map_prod]
-protected theorem RingHom.map_prod [CommSemiring β] [CommSemiring γ] (g : β →+* γ) (f : α → β)
-    (s : Finset α) : g (∏ x in s, f x) = ∏ x in s, g (f x) :=
-  map_prod g f s
-#align ring_hom.map_prod RingHom.map_prod
-
-@[deprecated _root_.map_sum]
-protected theorem RingHom.map_sum [NonAssocSemiring β] [NonAssocSemiring γ] (g : β →+* γ)
-    (f : α → β) (s : Finset α) : g (∑ x in s, f x) = ∑ x in s, g (f x) :=
-  map_sum g f s
-#align ring_hom.map_sum RingHom.map_sum
-
-end Deprecated
 
 @[to_additive]
 theorem MonoidHom.coe_finset_prod [MulOneClass β] [CommMonoid γ] (f : α → β →* γ) (s : Finset α) :
@@ -2490,7 +2443,7 @@ theorem cast_sum [AddCommGroupWithOne β] (s : Finset α) (f : α → ℤ) :
 @[simp, norm_cast]
 theorem cast_prod {R : Type*} [CommRing R] (f : α → ℤ) (s : Finset α) :
     (↑(∏ i in s, f i) : R) = ∏ i in s, (f i : R) :=
-  (Int.castRingHom R).map_prod _ _
+  map_prod (Int.castRingHom R) _ _
 #align int.cast_prod Int.cast_prod
 
 end Int
