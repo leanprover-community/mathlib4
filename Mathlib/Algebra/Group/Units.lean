@@ -850,6 +850,20 @@ protected theorem mul_left_injective (h : IsUnit b) : Injective (· * b) :=
 #align is_unit.mul_left_injective IsUnit.mul_left_injective
 #align is_add_unit.add_left_injective IsAddUnit.add_left_injective
 
+@[to_additive]
+theorem isUnit_iff_mulLeft_bijective {a : M} :
+    IsUnit a ↔ Function.Bijective (a * ·) :=
+  ⟨fun h ↦ ⟨h.mul_right_injective, fun y ↦ ⟨h.unit⁻¹ * y, by simp [← mul_assoc]⟩⟩, fun h ↦
+    ⟨⟨a, _, (h.2 1).choose_spec, h.1
+      (by simpa [mul_assoc] using congr_arg (· * a) (h.2 1).choose_spec)⟩, rfl⟩⟩
+
+@[to_additive]
+theorem isUnit_iff_mulRight_bijective {a : M} :
+    IsUnit a ↔ Function.Bijective (· * a) :=
+  ⟨fun h ↦ ⟨h.mul_left_injective, fun y ↦ ⟨y * h.unit⁻¹, by simp [mul_assoc]⟩⟩,
+    fun h ↦ ⟨⟨a, _, h.1 (by simpa [mul_assoc] using congr_arg (a * ·) (h.2 1).choose_spec),
+      (h.2 1).choose_spec⟩, rfl⟩⟩
+
 end Monoid
 
 section DivisionMonoid
