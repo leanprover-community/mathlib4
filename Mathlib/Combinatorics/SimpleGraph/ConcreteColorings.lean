@@ -79,4 +79,22 @@ theorem pathGraph_Hom_coloring' {α} (G : SimpleGraph α) (c : G.Coloring Prop) 
   have hcc' : ∀ (a : α), c a ↔ ¬c' a := fun a ↦ iff_not_comm.mp Iff.rfl
   simpa [hcc'] using (pathGraph_Hom_coloring G c' hom hc0 u).not
 
+theorem walk_coloring_rev {α} (G : SimpleGraph α) (c : G.Coloring Prop) {u v : α} (w : G.Walk u v)
+    (hcv : c v) (i : Fin (w.length + 1)) : c (w.getVert (w.length - i.val)) ↔ Even i.val := by
+  let hom : pathGraph (w.length + 1) →g G := w.toPathGraphHom
+  let j : Fin (w.length + 1) := ⟨w.length - i.val, Nat.sub_lt_succ w.length i.val⟩
+  have hc0 : c (hom ⊥) := by
+    rw [Walk.toPathGraphHom_bot]
+    exact hcv
+  rw [Walk.to_of_PathGraphHom α G w j]
+  rw [Walk.ofPathGraphHom_val α G w.toPathGraphHom i]
+  exact pathGraph_Hom_coloring G c hom hc0 i
+
+theorem walk_coloring  {α} (G : SimpleGraph α) (c : G.Coloring Prop) {u v : α} (w : G.Walk u v)
+    (hcu : c u) (i : Fin (w.length + 1)) : c (w.getVert i.val) ↔ Even i.val := by
+  let w' : G.Walk v u := w.reverse
+  let i' : Fin (w'.length + 1) := ⟨i.val, by simp [Walk.length_reverse]⟩
+  rw [← walk_coloring_rev G c w' hcu i']
+  simp [Walk.reverse_getVert, Nat.sub_sub_self i.is_le]
+
 end SimpleGraph
