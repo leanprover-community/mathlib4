@@ -549,13 +549,13 @@ theorem isIrreducible_iff_vanishingIdeal_isPrime {s : Set (PrimeSpectrum R)} :
     isIrreducible_zeroLocus_iff_of_radical _ (isRadical_vanishingIdeal s)]
 #align prime_spectrum.is_irreducible_iff_vanishing_ideal_is_prime PrimeSpectrum.isIrreducible_iff_vanishingIdeal_isPrime
 
-lemma vanishingIdeal_isIrreducible {R} [CommRing R] :
+lemma vanishingIdeal_isIrreducible :
     vanishingIdeal (R := R) '' {s | IsIrreducible s} = {P | P.IsPrime} :=
   Set.ext fun I ↦ ⟨fun ⟨_, hs, e⟩ ↦ e ▸ isIrreducible_iff_vanishingIdeal_isPrime.mp hs,
     fun h ↦ ⟨zeroLocus I, (isIrreducible_zeroLocus_iff_of_radical _ h.isRadical).mpr h,
       (vanishingIdeal_zeroLocus_eq_radical I).trans h.radical⟩⟩
 
-lemma vanishingIdeal_isClosed_isIrreducible {R} [CommRing R] :
+lemma vanishingIdeal_isClosed_isIrreducible :
     vanishingIdeal (R := R) '' {s | IsClosed s ∧ IsIrreducible s} = {P | P.IsPrime} := by
   refine (subset_antisymm ?_ ?_).trans vanishingIdeal_isIrreducible
   · exact Set.image_subset _ fun _ ↦ And.right
