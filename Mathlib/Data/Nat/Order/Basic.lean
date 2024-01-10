@@ -5,7 +5,7 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Data.Nat.Basic
-import Mathlib.Data.Nat.Bits
+import Mathlib.Init.Data.Nat.Bitwise
 
 #align_import data.nat.order.basic from "leanprover-community/mathlib"@"3ed3f98a1e836241990d3d308f1577e434977130"
 
@@ -16,7 +16,9 @@ import Mathlib.Data.Nat.Bits
 We also have a variety of lemmas which have been deferred from `Data.Nat.Basic` because it is
 easier to prove them with this ordered semiring instance available.
 
-You may find that some theorems can be moved back to `Data.Nat.Basic` by modifying their proofs.
+### TODO
+
+Move most of the theorems to `Data.Nat.Defs` by modifying their proofs.
 -/
 
 
@@ -79,21 +81,6 @@ instance canonicallyLinearOrderedAddCommMonoid : CanonicallyLinearOrderedAddComm
 variable {m n k l : ℕ}
 
 /-! ### Equalities and inequalities involving zero and one -/
-
-theorem one_le_iff_ne_zero : 1 ≤ n ↔ n ≠ 0 :=
-  Nat.add_one_le_iff.trans pos_iff_ne_zero
-#align nat.one_le_iff_ne_zero Nat.one_le_iff_ne_zero
-
-theorem one_lt_iff_ne_zero_and_ne_one : ∀ {n : ℕ}, 1 < n ↔ n ≠ 0 ∧ n ≠ 1
-  | 0 => by decide
-  | 1 => by decide
-  | n + 2 => by simp
-#align nat.one_lt_iff_ne_zero_and_ne_one Nat.one_lt_iff_ne_zero_and_ne_one
-
-theorem le_one_iff_eq_zero_or_eq_one : ∀ {n : ℕ}, n ≤ 1 ↔ n = 0 ∨ n = 1
-  | 0 => by decide
-  | 1 => by decide
-  | n + 2 => by simp
 
 #align nat.mul_ne_zero Nat.mul_ne_zero
 
