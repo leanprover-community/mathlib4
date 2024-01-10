@@ -321,6 +321,9 @@ theorem int_cast_modEq_int_cast {a b z : ℤ} : a ≡ b [PMOD (z : α)] ↔ a �
   norm_cast
 #align add_comm_group.int_cast_modeq_int_cast AddCommGroup.int_cast_modEq_int_cast
 
+@[simp, norm_cast] lemma intCast_modEq_intCast' : a ≡ b [PMOD (n : α)] ↔ a ≡ b [PMOD (n : ℤ)] := by
+  simpa using int_cast_modEq_int_cast (α := α) (z := n)
+
 @[simp, norm_cast]
 theorem nat_cast_modEq_nat_cast {a b n : ℕ} : a ≡ b [PMOD (n : α)] ↔ a ≡ b [MOD n] := by
   simp_rw [← Int.coe_nat_modEq_iff, ← modEq_iff_int_modEq, ← @int_cast_modEq_int_cast α,
@@ -337,4 +340,11 @@ alias ⟨_root_.Nat.ModEq.of_nat_cast, ModEq.nat_cast⟩ := nat_cast_modEq_nat_c
 
 end AddCommGroupWithOne
 
+section DivisionRing
+variable [DivisionRing α] {a b c p : α}
+
+@[simp] lemma div_modEq_div (hc : c ≠ 0) : a / c ≡ b / c [PMOD p] ↔ a ≡ b [PMOD (p * c)] := by
+  simp [ModEq, ←sub_div, div_eq_iff hc, mul_assoc]
+
+end DivisionRing
 end AddCommGroup
