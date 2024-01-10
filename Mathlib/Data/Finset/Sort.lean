@@ -115,8 +115,8 @@ theorem sort_monotone_map [DecidableEq α] [DecidableEq β]
     exact sort_nodup r s
   have h :
       (sort r' (map f s)).toFinset = (List.map f (sort r s)).toFinset := by
+    simp
     rw [← list_map_toFinset]
-    rw [map_eq_image]
     simp
   rw [List.toFinset_eq_iff_perm_dedup,List.Nodup.dedup LHS_nodup,List.Nodup.dedup RHS_nodup] at h
   exact List.eq_of_perm_of_sorted h LHS_sorted RHS_sorted
