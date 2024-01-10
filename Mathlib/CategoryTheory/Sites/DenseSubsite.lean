@@ -545,14 +545,7 @@ noncomputable def sheafEquivOfCoverPreservingCoverLifting : Sheaf J A ≌ Sheaf 
 set_option linter.uppercaseLean3 false in
 #align category_theory.cover_dense.Sheaf_equiv_of_cover_preserving_cover_lifting CategoryTheory.Functor.IsCoverDense.sheafEquivOfCoverPreservingCoverLifting
 
-variable
-  [ConcreteCategory.{max v u} A]
-  [Limits.PreservesLimits (forget A)]
-  [ReflectsIsomorphisms (forget A)]
-  [∀ (X : C), Limits.PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget A)]
-  [∀ (X : C), Limits.HasColimitsOfShape (J.Cover X)ᵒᵖ A]
-  [∀ (X : D), Limits.PreservesColimitsOfShape (K.Cover X)ᵒᵖ (forget A)]
-  [∀ (X : D), Limits.HasColimitsOfShape (K.Cover X)ᵒᵖ A]
+variable [HasWeakSheafify J A] [HasWeakSheafify K A]
 
 /-- The natural isomorphism exhibiting the compatibility of
 `sheafEquivOfCoverPreservingCoverLifting` with sheafification. -/
