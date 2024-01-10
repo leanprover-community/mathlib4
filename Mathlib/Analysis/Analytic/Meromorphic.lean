@@ -61,6 +61,11 @@ lemma neg {f : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) : MeromorphicAt (
   ext1 z
   simp only [Pi.neg_apply, Pi.smul_apply', neg_smul, one_smul]
 
+@[simp]
+lemma neg_iff {f : 𝕜 → E} {x : 𝕜} :
+    MeromorphicAt f x ↔ MeromorphicAt (-f) x :=
+  ⟨MeromorphicAt.neg, fun h ↦ by simpa only [neg_neg] using h.neg⟩
+
 lemma sub {f g : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
     MeromorphicAt (f - g) x := by
   convert hf.add hg.neg using 1
@@ -107,6 +112,11 @@ lemma inv {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) : MeromorphicA
       field_simp [sub_ne_zero.mpr hz_ne]
       rw [pow_succ, mul_assoc, hfg]
       ring
+
+@[simp]
+lemma inv_iff {f : 𝕜 → 𝕜} {x : 𝕜} :
+    MeromorphicAt f x ↔ MeromorphicAt f⁻¹ x :=
+  ⟨MeromorphicAt.inv, fun h ↦ by simpa only [inv_inv] using h.inv⟩
 
 lemma div {f g : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
     MeromorphicAt (f / g) x :=
