@@ -22,6 +22,27 @@ namespace Finset
 
 namespace Nat
 
+section Binders
+open Mathlib.FlexibleBinders Lean Macro
+
+/-- For the `finset` domain, `a + b = n` for sums over the antidiagonal.
+Example: `∑ i + j = 10, i * j`.
+
+To avoid generating a `match` expression, it generates a name based on the two
+variables and substitutes projections.
+The example expands as `∑ ij ∈ Nat.antidiagonal 10, ij.1 * ij.2`. -/
+macro_rules
+  | `(binder%(finset%, $a:ident + $b:ident = $n)) => withFreshMacroScope do
+    let .str .anonymous a' := a.getId.eraseMacroScopes
+      | Macro.throwErrorAt a s!"invalid binder name '{a.getId}', it must be atomic"
+    let .str .anonymous b' := b.getId.eraseMacroScopes
+      | Macro.throwErrorAt b s!"invalid binder name '{b.getId}', it must be atomic"
+    let p := mkIdent <| ← Macro.addMacroScope <| .mkStr1 (a' ++ b')
+    `(binder%(finset%, $p ∈ antidiagonal $n)
+      binderLetI%($a, $(p).1) binderLetI%($b, $(p).2))
+
+end Binders
+
 theorem prod_antidiagonal_succ {n : ℕ} {f : ℕ × ℕ → M} :
     (∏ p in antidiagonal (n + 1), f p)
       = f (0, n + 1) * ∏ p in antidiagonal n, f (p.1 + 1, p.2) := by
@@ -70,7 +91,7 @@ using `rw ← `. -/
 @[to_additive "This lemma matches more generally than
 `Finset.Nat.sum_antidiagonal_eq_sum_range_succ_mk` when using `rw ← `."]
 theorem prod_antidiagonal_eq_prod_range_succ {M : Type*} [CommMonoid M] (f : ℕ → ℕ → M) (n : ℕ) :
-    ∏ ij in antidiagonal n, f ij.1 ij.2 = ∏ k in range n.succ, f k (n - k) :=
+    ∏ i + j = n, f i j = ∏ k in range n.succ, f k (n - k) :=
   prod_antidiagonal_eq_prod_range_succ_mk _ _
 #align finset.nat.prod_antidiagonal_eq_prod_range_succ Finset.Nat.prod_antidiagonal_eq_prod_range_succ
 #align finset.nat.sum_antidiagonal_eq_sum_range_succ Finset.Nat.sum_antidiagonal_eq_sum_range_succ

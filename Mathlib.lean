@@ -3794,6 +3794,8 @@ import Mathlib.Util.CountHeartbeats
 import Mathlib.Util.Delaborators
 import Mathlib.Util.DischargerAsTactic
 import Mathlib.Util.Export
+import Mathlib.Util.FlexibleBinders
+import Mathlib.Util.FlexibleBindersFinset
 import Mathlib.Util.Imports
 import Mathlib.Util.IncludeStr
 import Mathlib.Util.LongNames
@@ -3802,6 +3804,7 @@ import Mathlib.Util.Qq
 import Mathlib.Util.SleepHeartbeats
 import Mathlib.Util.Superscript
 import Mathlib.Util.Syntax
+import Mathlib.Util.SyntaxFun
 import Mathlib.Util.SynthesizeUsing
 import Mathlib.Util.Tactic
 import Mathlib.Util.TermBeta

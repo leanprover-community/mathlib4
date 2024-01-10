@@ -7,19 +7,18 @@ import Mathlib.Lean.Elab.Term
 import Mathlib.Lean.Expr
 import Mathlib.Lean.PrettyPrinter.Delaborator
 import Mathlib.Tactic.ScopedNS
+import Mathlib.Util.FlexibleBinders
 import Mathlib.Util.Syntax
+import Mathlib.Util.SyntaxFun
 import Std.Data.Option.Basic
 
 /-!
 # The notation3 macro, simulating Lean 3's notation.
 -/
 
--- To fix upstream:
--- * bracketedExplicitBinders doesn't support optional types
-
 namespace Mathlib.Notation3
 open Lean Parser Meta Elab Command PrettyPrinter.Delaborator SubExpr
-open Std.ExtendedBinder
+open Mathlib.FlexibleBinders Mathlib.SyntaxFun
 
 initialize registerTraceClass `notation3
 
@@ -30,32 +29,46 @@ set_option autoImplicit true
 /--
 Expands binders into nested combinators.
 For example, the familiar exists is given by:
-`expand_binders% (p => Exists p) x y : Nat, x < y`
+`expand_binders% type (p => Exists p, prop := p r => p ∧ r) (x y : Nat) (z < x), z < y`
 which expands to the same expression as
-`∃ x y : Nat, x < y`
+`∃ (x y : Nat) (z < y), x < y`
+namely
+`Exists fun (x : Nat) ↦ Exists fun (y : Nat) ↦ Exists fun z ↦ z < x ∧ z < y`
 -/
-syntax "expand_binders% " "(" ident " => " term ")" extBinders ", " term : term
+syntax "expand_binders% " flexibleBindersDom " ("
+    -- Unrestricted binder (ex: `f => iSup f`). Arity 1.
+    syntaxFun₁
+    -- Non-dependent prop binder (ex: `p x => p ∧ x`). Arity 2.
+    (atomic(", " &"prop") " := " syntaxFun₂)?
+    -- Binder with domain (ex: `s f => Finset.sum s f`). Arity 2.
+    (atomic(", " &"bounded") " := " syntaxFun₂)? ")"
+  flexibleBinders ", " term : term
 
 macro_rules
-  | `(expand_binders% ($x => $term) $y:extBinder, $res) =>
-    `(expand_binders% ($x => $term) ($y:extBinder), $res)
-  | `(expand_binders% ($_ => $_), $res) => pure res
-macro_rules
-  | `(expand_binders% ($x => $term) ($y:ident $[: $ty]?) $binders*, $res) => do
-    let ty := ty.getD (← `(_))
-    term.replaceM fun x' ↦ do
-      unless x == x' do return none
-      `(fun $y:ident : $ty ↦ expand_binders% ($x => $term) $[$binders]*, $res)
-  | `(expand_binders% ($x => $term) (_%$ph $[: $ty]?) $binders*, $res) => do
-    let ty := ty.getD (← `(_))
-    term.replaceM fun x' ↦ do
-      unless x == x' do return none
-      `(fun _%$ph : $ty ↦ expand_binders% ($x => $term) $[$binders]*, $res)
-  | `(expand_binders% ($x => $term) ($y:ident $pred:binderPred) $binders*, $res) =>
-    term.replaceM fun x' ↦ do
-      unless x == x' do return none
-      `(fun $y:ident ↦ expand_binders% ($x => $term) (h : satisfies_binder_pred% $y $pred)
-        $[$binders]*, $res)
+  | `(expand_binders% $domType ($univStx $[, prop := $propStx?]? $[, bounded := $domStx?]?)
+        $bs:flexibleBinders, $body) => show MacroM Term from do
+    let expandUniv ← (expandSyntaxFun₁ univStx).getDM Macro.throwUnsupported
+    let expandProp? ← propStx?.mapM fun s =>
+                        (expandSyntaxFun₂ s).getDM Macro.throwUnsupported
+    let expandDom? ← domStx?.mapM fun s =>
+                        (expandSyntaxFun₂ s).getDM Macro.throwUnsupported
+    let res ← expandFlexibleBinders domType bs
+    res.foldrM (init := body) fun
+      | .std ty bind none, body => return expandUniv.eval₁ (← `(fun ($bind : $ty) ↦ $body))
+      | .std ty bind (some dom), body => do
+        if let some expandDom := expandDom? then
+          return expandDom.eval₂ dom (← `(fun ($bind : $ty) ↦ $body))
+        else
+          withRef ty <| withRef dom <| withRef bind <|
+            Macro.throwError "Notation is missing implementation for bounded quantifiers"
+      | .prop p, body => do
+        if let some expandProp := expandProp? then
+          return expandProp.eval₂ p body
+        else
+          -- This will likely fail to elaborate if the quantifier wants a Type.
+          return expandUniv.eval₁ (← `(fun (_ : $p) ↦ $body))
+      | .match discr patt, body => `(match $discr:term with | $patt => $body)
+      | .letI name val, body => `(letI $name := $val; $body)
 
 macro (name := expandFoldl) "expand_foldl% "
   "(" x:ident ppSpace y:ident " => " term:term ") " init:term:max " [" args:term,* "]" : term =>
@@ -70,14 +83,23 @@ macro (name := expandFoldr) "expand_foldr% "
 
 /-- Keywording indicating whether to use a left- or right-fold. -/
 syntax foldKind := &"foldl" <|> &"foldr"
-/-- `notation3` argument matching `extBinders`. -/
+/-- `notation3` argument matching `flexibleBinders`. -/
 syntax bindersItem := atomic("(" "..." ")")
 /-- `notation3` argument simulating a Lean 3 fold notation. -/
 syntax foldAction := "(" ident ppSpace strLit "*" (precedence)? " => " foldKind
   " (" ident ppSpace ident " => " term ") " term ")"
 /-- `notation3` argument binding a name. -/
 syntax identOptScoped :=
-  ident (notFollowedBy(":" "(" "scoped") precedence)? (":" "(" "scoped " ident " => " term ")")?
+  ident (notFollowedBy(":" "(" "scoped") precedence)?
+  (":" "(" "scoped " (flexibleBindersDom ppSpace)?
+      -- Unrestricted binder (ex: `x => Sup x`). Arity 1.
+      -- Pretty printable using `(_ : _)`
+      syntaxFun₁
+      -- Non-dependent prop binder (ex: `p x => p ∧ x`). Arity 2.
+      (atomic(", " &"prop") " := " syntaxFun₂)?
+      -- Binder with domain (ex: `s f => Finset.sum s f`). Arity 2.
+      -- Pretty printable using `(_ ∈ _)`
+      (atomic(", " &"bounded") " := " syntaxFun₂)? ")")?
 /-- `notation3` argument. -/
 -- Note: there is deliberately no ppSpace between items
 -- so that the space in the literals themselves stands out
@@ -101,7 +123,7 @@ structure MatchState where
   scoping constructs. -/
   vars : HashMap Name (SubExpr × LocalContext × LocalInstances)
   /-- The binders accumulated while matching a `scoped` expression. -/
-  scopeState : Option (Array (TSyntax ``extBinderParenthesized))
+  scopeState : Option (Array Term)
   /-- The arrays of delaborated `Term`s accumulated while matching
   `foldl` and `foldr` expressions. For `foldl`, the arrays are stored in reverse order. -/
   foldState : HashMap Name (Array Term)
@@ -144,7 +166,7 @@ def MatchState.getFoldArray (s : MatchState) (name : Name) : Array Term :=
 
 /-- Get the accumulated array of delaborated terms for a given foldr/foldl.
 Returns `#[]` if nothing has been pushed yet. -/
-def MatchState.getBinders (s : MatchState) : Array (TSyntax ``extBinderParenthesized) :=
+def MatchState.getBinders (s : MatchState) : Array Term :=
   s.scopeState.getD #[]
 
 /-- Push a delaborated term onto a foldr/foldl array. -/
@@ -302,12 +324,14 @@ against is in the `lit` variable.
 
 Runs `smatcher`, extracts the resulting `scopeId` variable, processes this value
 (which must be a lambda) to produce a binder, and loops. -/
-partial def matchScoped (lit scopeId : Name) (smatcher : Matcher) : Matcher := go #[] where
+partial def matchScoped (lit scopeId : Name) (smatcher : Matcher)
+    (boundDom? boundId? : Option Name) (bmatcher? : Option Matcher) : Matcher := go #[] where
   /-- Variant of `matchScoped` after some number of `binders` have already been captured. -/
-  go (binders : Array (TSyntax ``extBinderParenthesized)) : Matcher := fun s => do
+  go (binders : Array Term) : Matcher := fun s => do
     -- `lit` is bound to the SubExpr that the `scoped` syntax produced
     s.withVar lit do
     try
+      -- (1) Try using smatcher for quantification over the whole type
       -- Run `smatcher` at `lit`, clearing the `scopeId` variable so that it can get a fresh value
       let s ← smatcher {s with vars := s.vars.erase scopeId}
       s.withVar scopeId do
@@ -322,33 +346,70 @@ partial def matchScoped (lit scopeId : Name) (smatcher : Matcher) : Matcher := g
             if prop && !isDep then
               -- this underscore is used to support binder predicates, since it indicates
               -- the variable is unused and this binder is safe to merge into another
-              `(extBinderParenthesized|(_ : $dom))
+              `((_ : $dom))
             else if prop || ppTypes then
-              `(extBinderParenthesized|($x:ident : $dom))
+              `(($x:ident : $dom))
             else
-              `(extBinderParenthesized|($x:ident))
+              `(($x:ident))
           -- Now use the body of the lambda for `lit` for the next iteration
           let s ← s.captureSubexpr lit
-          -- TODO merge binders as an inverse to `satisfies_binder_pred%`
-          let binders := binders.push binder
-          go binders s
+          -- Do a little bit of binder merging. If there is no matcher for bounded domains,
+          -- then check if we have `(x : α) (_ : x ∈ dom)` and replace it with `(x ∈ dom)`.
+          if bmatcher?.isNone then
+            if let some lastBinder := binders.back? then
+              if let `(($x:ident : $_)) := lastBinder then
+                if let `((_ : $cond)) := binder then
+                  match cond with
+                  | `($x':ident ∈ $_) => if x == x' then return ← go (binders.pop.push cond) s
+                  | _ => pure ()
+          go (binders.push binder) s
     catch _ =>
-      guard <| !binders.isEmpty
-      if let some binders₂ := s.scopeState then
-        guard <| binders == binders₂ -- TODO: this might be a bit too strict, but it seems to work
-        return s
-      else
-        return {s with scopeState := binders}
+      try
+        -- (2) Try using bmatcher for bounded quantification
+        let (some boundDom, some boundId, some bmatcher) := (boundDom?, boundId?, bmatcher?)
+          | failure
+        let s ← bmatcher {s with vars := s.vars |>.erase boundDom |>.erase boundId}
+        let dom ← s.withVar boundDom delab
+        s.withVar boundId do
+          guard (← getExpr).isLambda
+          withBindingBodyUnusedName <| fun x => do
+            let x : Ident := ⟨x⟩
+            let binder ← `($x:ident ∈ $dom)
+            -- Now use the body of the lambda for `lit` for the next iteration
+            let s ← s.captureSubexpr lit
+            let binders := binders.push binder
+            go binders s
+      catch _ =>
+        guard <| !binders.isEmpty
+        if let some binders₂ := s.scopeState then
+          guard <| binders == binders₂ -- TODO: this might be a bit too strict, but it seems to work
+          return s
+        else
+          return {s with scopeState := binders}
 
-/- Create a `Term` that represents a matcher for `scoped` notation.
+/-- Create a `Term` that represents a matcher for `scoped` notation.
 Fails in the `OptionT` sense if a matcher couldn't be constructed.
 Also returns a delaborator key like in `mkExprMatcher`.
-Reminder: `$lit:ident : (scoped $scopedId:ident => $scopedTerm:Term)` -/
-partial def mkScopedMatcher (lit scopeId : Name) (scopedTerm : Term) (boundNames : Array Name) :
+Reminder:
+```
+$lit:ident : (scoped (domType)? $scopedId:ident => $scopedTerm:Term,
+                $propDom:ident $propBody:ident => $propScopedTerm:Term)
+``` -/
+partial def mkScopedMatcher (lit : Name)
+    (scopedFn : SyntaxFun 1) (boundedFn? : Option (SyntaxFun 2)) (boundNames : Array Name) :
     OptionT TermElabM (List Name × Term) := do
   -- Build the matcher for `scopedTerm` with `scopeId` as an additional variable
-  let (keys, smatcher) ← mkExprMatcher scopedTerm (boundNames.push scopeId)
-  return (keys, ← ``(matchScoped $(quote lit) $(quote scopeId) $smatcher))
+  let (keys, smatcher) ← mkExprMatcher scopedFn.body (boundNames.push scopedFn.params[0]!.getId)
+  if let some boundedFn := boundedFn? then
+    let (keys', bmatcher) ← mkExprMatcher boundedFn.body
+                    (boundNames ++ (boundedFn.params.map (·.getId)))
+    let keys := keys.union keys'
+    return (keys, ←
+      ``(matchScoped $(quote lit) $(quote scopedFn.params[0]!.getId) $smatcher
+          $(quote boundedFn.params[0]!.getId) $(quote boundedFn.params[1]!.getId) $bmatcher))
+  else
+    return (keys, ←
+      ``(matchScoped $(quote lit) $(quote scopedFn.params[0]!.getId) $smatcher none none none))
 
 /-- Matcher for expressions produced by `foldl`. -/
 partial def matchFoldl (lit x y : Name) (smatcher : Matcher) (sinit : Matcher) :
@@ -483,12 +544,13 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
       if hasBindersItem then
         throwErrorAt item "Cannot have more than one `(...)` item."
       hasBindersItem := true
-      -- HACK: Lean 3 traditionally puts a space after the main binder atom, resulting in
-      -- notation3 "∑ "(...)", "r:(scoped f => sum f) => r
-      -- but extBinders already has a space before it so we strip the trailing space of "∑ "
-      if let `(stx| $lit:str) := syntaxArgs.back then
-        syntaxArgs := syntaxArgs.pop.push (← `(stx| $(quote lit.getString.trimRight):str))
-      (syntaxArgs, pattArgs) ← pushMacro syntaxArgs pattArgs (← `(macroArg| binders:extBinders))
+      -- -- HACK: Lean 3 traditionally puts a space after the main binder atom, resulting in
+      -- -- notation3 "∑ "(...)", "r:(scoped f => sum f) => r
+      -- -- but extBinders already has a space before it so we strip the trailing space of "∑ "
+      -- if let `(stx| $lit:str) := syntaxArgs.back then
+      --   syntaxArgs := syntaxArgs.pop.push (← `(stx| $(quote lit.getString.trimRight):str))
+      (syntaxArgs, pattArgs) ← pushMacro syntaxArgs pattArgs
+                                (← `(macroArg| binders:flexibleBinders))
     | `(notation3Item| ($id:ident $sep:str* $(prec?)? => $kind ($x $y => $scopedTerm) $init)) =>
       (syntaxArgs, pattArgs) ← pushMacro syntaxArgs pattArgs <| ←
         `(macroArg| $id:ident:sepBy(term $(prec?)?, $sep:str))
@@ -512,16 +574,32 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
           matchers := matchers.push <|
             mkFoldrMatcher id.getId x.getId y.getId scopedTerm init boundNames
         | _ => throwUnsupportedSyntax
-    | `(notation3Item| $lit:ident $(prec?)? : (scoped $scopedId:ident => $scopedTerm)) =>
+    | `(notation3Item| $lit:ident $(prec?)? :
+          (scoped $[$domType?:flexibleBindersDom]?
+            $scopedStx
+            $[, prop := $propStx?]?
+            $[, bounded := $boundedStx?]?)) =>
       hasScoped := true
-      (syntaxArgs, pattArgs) ← pushMacro syntaxArgs pattArgs <|←
+      let domType ← domType?.getDM `(flexibleBindersDom| type%)
+      let scopedFn ← (expandSyntaxFun₁ scopedStx).getDM throwUnsupportedSyntax
+      let propFn? ← propStx?.mapM fun s =>
+                      (expandSyntaxFun₂ s).getDM throwUnsupportedSyntax
+      let boundedFn? ← boundedStx?.mapM fun s =>
+                      (expandSyntaxFun₂ s).getDM throwUnsupportedSyntax
+      (syntaxArgs, pattArgs) ← pushMacro syntaxArgs pattArgs <| ←
         `(macroArg| $lit:ident:term $(prec?)?)
       matchers := matchers.push <|
-        mkScopedMatcher lit.getId scopedId.getId scopedTerm boundNames
-      let scopedTerm' ← scopedTerm.replaceM fun s => pure (boundValues.find? s.getId)
+        mkScopedMatcher lit.getId scopedFn boundedFn? boundNames
+      let scopedFn' ← scopedFn.updateBody fun s => pure (boundValues.find? s.getId)
+      let propFn'? ← propFn?.mapM (·.updateBody fun s => pure (boundValues.find? s.getId))
+      let boundedFn'? ← boundedFn?.mapM (·.updateBody fun s => pure (boundValues.find? s.getId))
       boundIdents := boundIdents.insert lit.getId lit
       boundValues := boundValues.insert lit.getId <| ←
-        `(expand_binders% ($scopedId => $scopedTerm') $$binders:extBinders,
+        `(expand_binders% $domType
+            ($(quote scopedFn')
+             $[, prop := $(propFn'?.map quote)]?
+             $[, bounded := $(boundedFn'?.map quote)]?)
+            $$binders,
           $(⟨lit.1.mkAntiquotNode `term⟩):term)
       boundNames := boundNames.push lit.getId
     | `(notation3Item| $lit:ident $(prec?)?) =>
@@ -578,7 +656,7 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
         | .foldr => result ←
           `(let $id := MatchState.getFoldArray s $(quote name); $result)
       if hasBindersItem then
-        result ← `(`(extBinders| $$(MatchState.getBinders s)*) >>= fun binders => $result)
+        result ← `(encodeBinders (MatchState.getBinders s) >>= fun binders => $result)
       elabCommand <| ← `(command|
         /-- Pretty printer defined by `notation3` command. -/
         def $(Lean.mkIdent delabName) : Delab := whenPPOption getPPNotation <|

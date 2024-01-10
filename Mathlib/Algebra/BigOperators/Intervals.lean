@@ -259,8 +259,8 @@ variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] (f : ℕ → R) (g
 
 open Finset
 
--- The partial sum of `g`, starting from zero
-local notation "G " n:80 => ∑ i in range n, g i
+/-- The partial sum of `g`, starting from zero -/
+local notation3 "G " n:80 => ∑ i ∈ range n, g i
 
 /-- **Summation by parts**, also known as **Abel's lemma** or an **Abel transformation** -/
 theorem sum_Ico_by_parts (hmn : m < n) :
