@@ -330,7 +330,7 @@ def RingHom.toModule [Semiring R] [Semiring S] (f : R →+* S) : Module R S :=
 #align ring_hom.to_module RingHom.toModule
 
 /-- If the module action of `R` on `S` is compatible with multiplication on `S`, then
-`fun x => x • 1` is a ring homomorphism from `R` to `S`.
+`fun x ↦ x • 1` is a ring homomorphism from `R` to `S`.
 
 This is the `RingHom` version of `MonoidHom.smulOneHom`.
 
@@ -340,6 +340,15 @@ When `R` is commutative, usually `algebraMap` should be preferred. -/
   __ := MonoidHom.smulOneHom
   map_zero' := zero_smul R 1
   map_add' := (add_smul · · 1)
+
+/-- A homomorphism between semirings R and S can be equivalently specified by a R-module
+structure on S such that S/S/R is a scalar tower. -/
+def ringHomEquivModuleIsScalarTower [Semiring R] [Semiring S] :
+    (R →+* S) ≃ {_inst : Module R S // IsScalarTower R S S} where
+  toFun f := ⟨Module.compHom S f, SMul.comp.isScalarTower _⟩
+  invFun := fun ⟨_, _⟩ ↦ RingHom.smulOneHom
+  left_inv f := RingHom.ext fun r ↦ mul_one (f r)
+  right_inv := fun ⟨_, _⟩ ↦ Subtype.ext <| Module.ext _ _ <| funext₂ <| smul_one_smul S
 
 section AddCommMonoid
 
