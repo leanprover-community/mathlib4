@@ -28,7 +28,7 @@ at every `x ∈ s`, and a **local diffeomorphism** iff it is a local diffeomorph
 * `IsLocalDiffeomorph.isLocalHomeomorph`: a local diffeomorphisms is a local homeomorphism,
   similarly for local diffeomorphism on `s`
 * `IsLocalDiffeomorph.isOpen_range`: the image of a local diffeomorphism is open
-* `IslocalDiffeomorph.diffeomorph_of_bijective`:
+* `IsLocalDiffeomorph.diffeomorph_of_bijective`:
   a bijective local diffeomorphism is a diffeomorphism
 
 ## TODO
@@ -240,7 +240,7 @@ lemma IsLocalDiffeomorph.image_coe (hf : IsLocalDiffeomorph I J n f) : hf.image.
 -- This argument implies a `LocalDiffeomorphOn f s` for `s` open is a `PartialDiffeomorph`
 
 /-- A bijective local diffeomorphism is a diffeomorphism. -/
-noncomputable def IslocalDiffeomorph.diffeomorph_of_bijective
+noncomputable def IsLocalDiffeomorph.diffeomorph_of_bijective
     (hf : IsLocalDiffeomorph I J n f) (hf' : Function.Bijective f) : Diffeomorph I J M N n := by
   -- Choose a right inverse `g` of `f`.
   choose g hgInverse using (Function.bijective_iff_has_inverse).mp hf'
@@ -278,7 +278,7 @@ variable {I J n} {f : M → N} {x : M} (hn : 1 ≤ n)
 
 /-- A local diffeomorphism `f` at `x` has injective differential `mfderiv I J n f x`. -/
 lemma IsLocalDiffeomorphAt.mfderiv_injective (hf : IsLocalDiffeomorphAt I J n f x) (hn : 1 ≤ n) :
-    LinearMap.ker (mfderiv I J f x) = ⊥ := by
+    Injective (mfderiv I J f x) := by
   choose Φ hyp using hf
   rcases hyp with ⟨hxU, heq⟩
   let A := mfderiv I J f x
@@ -301,11 +301,11 @@ lemma IsLocalDiffeomorphAt.mfderiv_injective (hf : IsLocalDiffeomorphAt I J n f 
     _ = mfderiv I I id x := mfderivWithin_of_isOpen Φ.open_source hxU
     _ = ContinuousLinearMap.id 𝕜 (TangentSpace I x) := mfderiv_id I
   have : LeftInverse B A := ContinuousLinearMap.congr_fun this
-  exact (LinearMapClass.ker_eq_bot _).mpr this.injective
+  exact this.injective
 
 /-- A local diffeomorphism `f` at `x` has surjective differential `mfderiv I J n f x`. -/
 lemma IsLocalDiffeomorphAt.mfderiv_surjective (hf : IsLocalDiffeomorphAt I J n f x) (hn : 1 ≤ n) :
-    LinearMap.range (mfderiv I J f x) = ⊤ := by
+    Surjective (mfderiv I J f x) := by
   choose Φ hyp using hf
   rcases hyp with ⟨hxU, heq⟩
   let A := mfderiv I J f x
@@ -334,5 +334,5 @@ lemma IsLocalDiffeomorphAt.mfderiv_surjective (hf : IsLocalDiffeomorphAt I J n f
     _ = mfderiv J J id (Φ x) := mfderivWithin_of_isOpen Φ.open_target (Φ.map_source hxU)
     _ = ContinuousLinearMap.id 𝕜 (TangentSpace J (Φ x)) := mfderiv_id J
   have : RightInverse B A := ContinuousLinearMap.congr_fun this
-  exact LinearMap.range_eq_top.mpr this.surjective
+  exact this.surjective
 end Differential
