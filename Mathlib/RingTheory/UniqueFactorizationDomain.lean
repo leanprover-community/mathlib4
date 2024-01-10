@@ -1902,7 +1902,7 @@ theorem eq_pow_of_mul_eq_pow [Nontrivial α] {a b c : Associates α} (ha : a ≠
       rw [h]
       apply dvd_count_pow _ hp
       rintro rfl
-      rw [zero_pow' _ hk0] at h
+      rw [zero_pow hk0] at h
       cases mul_eq_zero.mp h <;> contradiction
 #align associates.eq_pow_of_mul_eq_pow Associates.eq_pow_of_mul_eq_pow
 

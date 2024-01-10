@@ -5,6 +5,7 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Logic.Nontrivial.Defs
+import Mathlib.Tactic.SplitIfs
 
 #align_import algebra.group_with_zero.defs from "leanprover-community/mathlib"@"2f3994e1b117b1e1da49bcfb67334f33460c3ce4"
 
