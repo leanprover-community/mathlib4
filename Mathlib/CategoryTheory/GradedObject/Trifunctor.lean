@@ -23,6 +23,8 @@ an additive monoid structure on `I` (TODO @joelriou).
 
 -/
 
+set_option profiler true
+
 namespace CategoryTheory
 
 open Category Limits
@@ -199,13 +201,13 @@ noncomputable def mapTrifunctorMapFunctorObj (X₁ : GradedObject I₁ C₁)
         simp only [ι_mapTrifunctorMapMap_assoc, categoryOfGradedObjects_id, Functor.map_id,
           NatTrans.id_app, ι_mapTrifunctorMapMap, id_comp, NatTrans.naturality_assoc] }
   map_id X₂ := by
-    ext X₃ j i₁ i₂ i₃ h
     dsimp
+    ext X₃ j i₁ i₂ i₃ h
     simp only [ι_mapTrifunctorMapMap, categoryOfGradedObjects_id, Functor.map_id,
       NatTrans.id_app, id_comp, comp_id]
   map_comp {X₂ Y₂ Z₂} φ ψ := by
-    ext X₃ j i₁ i₂ i₃
     dsimp
+    ext X₃ j i₁ i₂ i₃
     simp only [ι_mapTrifunctorMapMap, categoryOfGradedObjects_id, Functor.map_id,
       NatTrans.id_app, categoryOfGradedObjects_comp, Functor.map_comp, NatTrans.comp_app,
       id_comp, assoc, ι_mapTrifunctorMapMap_assoc]
