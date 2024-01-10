@@ -149,36 +149,20 @@ def yellow := [0, 1, 47, 3, 4, 50, 6, 7, 53, 9, 10, 11, 12, 13, 2, 17, 26, 35, 1
   5, 16, 25, 34, 27, 28, 29, 30, 31, 8, 15, 24, 33, 36, 37, 14, 39, 40, 23, 42, 43, 32, 45, 46, 38,
   48, 49, 41, 51, 52, 44]
 
--- We need a term elaborator for `Perm` that constructs the proofs by inspection.
-def Purple : Perm 54 where
-  map := ⟨purple.map fun i => ⟨i, sorry⟩, by decide⟩
-  inv := ⟨(List.range 54).map fun i => ⟨purple.findIdx (· == i), sorry⟩, sorry⟩
-  map_inv := sorry
+def liftFin (x : List Nat) (w : ∀ i ∈ x, i < n) : List (Fin n) :=
+  x.attach.map fun p => ⟨p.1, w _ p.2⟩
 
-def White : Perm 54 where
-  map := ⟨white.map fun i => ⟨i, sorry⟩, by decide⟩
-  inv := ⟨(List.range 54).map fun i => ⟨white.findIdx (· == i), sorry⟩, sorry⟩
-  map_inv := sorry
+macro "Perm.elab " n:term:max U:term : term =>
+  `(({ map := ⟨liftFin $U (by decide), by decide⟩
+       inv := ⟨liftFin ((List.range $n).map fun i => List.findIdx (· == i) $U) (by decide), by decide⟩
+       map_inv := by decide } : Perm $n))
 
-def Green : Perm 54 where
-  map := ⟨green.map fun i => ⟨i, sorry⟩, by decide⟩
-  inv := ⟨(List.range 54).map fun i => ⟨green.findIdx (· == i), sorry⟩, sorry⟩
-  map_inv := sorry
-
-def Blue : Perm 54 where
-  map := ⟨blue.map fun i => ⟨i, sorry⟩, by decide⟩
-  inv := ⟨(List.range 54).map fun i => ⟨blue.findIdx (· == i), sorry⟩, sorry⟩
-  map_inv := sorry
-
-def Red : Perm 54 where
-  map := ⟨red.map fun i => ⟨i, sorry⟩, by decide⟩
-  inv := ⟨(List.range 54).map fun i => ⟨red.findIdx (· == i), sorry⟩, sorry⟩
-  map_inv := sorry
-
-def Yellow : Perm 54 where
-  map := ⟨yellow.map fun i => ⟨i, sorry⟩, by decide⟩
-  inv := ⟨(List.range 54).map fun i => ⟨yellow.findIdx (· == i), sorry⟩, sorry⟩
-  map_inv := sorry
+def Purple := Perm.elab 54 purple
+def White := Perm.elab 54 white
+def Green := Perm.elab 54 green
+def Blue := Perm.elab 54 blue
+def Red := Perm.elab 54 red
+def Yellow := Perm.elab 54 yellow
 
 def rubiks0 := SchreierSimsData.mk 54
 def rubiks1 := rubiks0 |>.insertSaturating Purple
