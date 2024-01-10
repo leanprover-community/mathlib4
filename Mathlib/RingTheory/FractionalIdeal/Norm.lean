@@ -76,12 +76,13 @@ noncomputable def absNorm : FractionalIdeal R⁰ K →*₀ ℚ where
       ← abs_mul, Int.cast_mul]
 
 theorem absNorm_eq (I : FractionalIdeal R⁰ K) :
-  absNorm I = (Ideal.absNorm I.num : ℚ) / |Algebra.norm ℤ (I.den : R)| := rfl
+    absNorm I = (Ideal.absNorm I.num : ℚ) / |Algebra.norm ℤ (I.den : R)| := rfl
 
 theorem absNorm_eq' {I : FractionalIdeal R⁰ K} (a : R⁰) (I₀ : Ideal R)
     (h : a • (I : Submodule R K) = Submodule.map (Algebra.linearMap R K) I₀) :
     absNorm I = (Ideal.absNorm I₀ : ℚ) / |Algebra.norm ℤ (a:R)| := by
-  rw [absNorm, ← absNorm_div_norm_eq_absNorm_div_norm a I₀ h, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
+  rw [absNorm, ← absNorm_div_norm_eq_absNorm_div_norm a I₀ h, MonoidWithZeroHom.coe_mk,
+    ZeroHom.coe_mk]
 
 theorem coeIdeal_absNorm (I₀ : Ideal R) :
     absNorm (I₀ : FractionalIdeal R⁰ K) = Ideal.absNorm I₀ := by
