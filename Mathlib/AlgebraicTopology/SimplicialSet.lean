@@ -92,10 +92,12 @@ namespace standardSimplex
 
 open Finset Opposite SimplexCategory
 
+/-- Simplices of the standard simplex identify to morphisms in `SimplexCategory`. -/
 def objEquiv (n : SimplexCategory) (m : SimplexCategoryᵒᵖ) :
     (standardSimplex.{u}.obj n).obj m ≃ (m.unop ⟶ n) :=
   Equiv.ulift.{u, 0}
 
+/-- Constructor for simplices of the standard simplex which takes a `OrderHom` as an input. -/
 abbrev objMk {n : SimplexCategory} {m : SimplexCategoryᵒᵖ}
     (f : Fin (len m.unop + 1) →o Fin (n.len + 1)) :
     (standardSimplex.{u}.obj n).obj m :=
