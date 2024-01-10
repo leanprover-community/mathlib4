@@ -817,6 +817,67 @@ lemma toSpec_bijective {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m):
 
 end fromSpecToSpec
 
+variable {𝒜} in
+def fromSpec {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m) :
+    (Spec.T (A⁰_ f)) ⟶ (Proj.T| (pbo f)) where
+  toFun := FromSpec.toFun f_deg hm
+  continuous_toFun :=
+    (IsTopologicalBasis.continuous_iff <|
+      IsTopologicalBasis.inducing (α := Proj.T| (pbo f)) (β := Proj) (f := Subtype.val)
+        (hf := ⟨rfl⟩) (h := ProjectiveSpectrum.isTopologicalBasis_basic_opens 𝒜)).mpr fun s hs ↦ by
+    erw [Set.mem_preimage] at hs
+    obtain ⟨_, ⟨a, rfl⟩, rfl⟩ := hs
+    dsimp only [Spec.locallyRingedSpaceObj_toSheafedSpace, Spec.sheafedSpaceObj_carrier,
+      LocallyRingedSpace.restrict_carrier]
+
+    suffices o1 : IsOpen <| toSpec '' (Subtype.val ⁻¹' (pbo a).1 : Set (Proj.T| (pbo f)))
+    · convert o1
+      ext s x
+      simp only [Set.mem_preimage, LocallyRingedSpace.restrict_carrier,
+        Spec.locallyRingedSpaceObj_toSheafedSpace, Spec.sheafedSpaceObj_carrier, Set.mem_image]
+      constructor
+      · intro h; exact ⟨_, h, toSpecFromSpec 𝒜 hm f_deg _⟩
+      · rintro ⟨x, hx', rfl⟩; erw [fromSpecToSpec 𝒜 hm f_deg x]; exact hx'
+
+    rw [calc
+      Subtype.val ⁻¹' (pbo a).1
+      = {x  : Proj.T| (pbo f) | x.1 ∈ (pbo f) ⊓ pbo a} := by
+        ext ⟨x, (hx : x ∈ ProjectiveSpectrum.basicOpen _ _)⟩
+        show _ ↔ _ ∧ _
+        simp only [ProjectiveSpectrum.mem_basicOpen] at hx
+        simp [hx]
+    _ = {x | x.1 ∈ (pbo f) ⊓ (⨆ i : ℕ, pbo (decompose 𝒜 a i))} := by
+        simp_rw [ProjectiveSpectrum.basicOpen_eq_union_of_projection 𝒜 a]
+        rfl
+    _ = {x | x.1 ∈ ⨆ i : ℕ, (pbo f) ⊓ pbo (decompose 𝒜 a i)} := by rw [inf_iSup_eq]
+    _ = ⋃ i : ℕ, {x | x.1 ∈ (pbo f) ⊓ pbo (decompose 𝒜 a i)} := by
+      ext x
+      simp only [Opens.iSup_mk, Opens.carrier_eq_coe, Opens.coe_inf, Opens.mem_mk, Set.mem_iUnion,
+        Set.mem_inter_iff, Set.mem_compl_iff, SetLike.mem_coe]
+      rfl, Set.image_iUnion]
+    refine isOpen_iUnion fun i ↦ ?_
+
+    suffices : toSpec (f := f) '' {x | x.1 ∈ (pbo f) ⊓ pbo (decompose 𝒜 a i)} =
+      (PrimeSpectrum.basicOpen (R := A⁰_ f) <|
+        Quotient.mk'' ⟨m * i, ⟨decompose 𝒜 a i ^ m, SetLike.pow_mem_graded _ (Submodule.coe_mem _)⟩,
+          ⟨f^i, by rw [mul_comm]; exact SetLike.pow_mem_graded _ f_deg⟩, ⟨i, rfl⟩⟩).1
+    · erw [this]; exact (PrimeSpectrum.basicOpen _).2
+
+    apply_fun _ using Set.preimage_injective.mpr (toSpec_surjective 𝒜 hm f_deg)
+    erw [Set.preimage_image_eq _ (toSpec_injective 𝒜 hm f_deg), ToSpec.preimage_eq,
+      ProjectiveSpectrum.basicOpen_pow 𝒜 _ m hm]
+    rfl
+
 end ProjIsoSpecTopComponent
+
+variable {𝒜} in
+def projIsoSpecTopComponent {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m) :
+    (Proj.T| (pbo f)) ≅ (Spec.T (A⁰_ f))  where
+  hom := ProjIsoSpecTopComponent.toSpec
+  inv := ProjIsoSpecTopComponent.fromSpec hm f_deg
+  hom_inv_id := ConcreteCategory.hom_ext _ _ fun x ↦
+    ProjIsoSpecTopComponent.fromSpecToSpec 𝒜 hm f_deg x
+  inv_hom_id := ConcreteCategory.hom_ext _ _ fun x ↦
+    ProjIsoSpecTopComponent.toSpecFromSpec 𝒜 hm f_deg x
 
 end AlgebraicGeometry
