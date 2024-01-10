@@ -63,26 +63,17 @@ def poissonPmf (r : ℝ≥0) : PMF ℕ := by
   exact (poissonPmfRealSum r).toNNReal (fun n ↦ poissonPmfReal_nonneg)
 
 /-- The Poisson pmf is measurable. -/
+@[measurability]
 lemma measurable_poissonPmfReal (r : ℝ≥0) : Measurable (poissonPmfReal r) := by measurability
 
+@[measurability]
 lemma stronglyMeasurable_poissonPmfReal (r : ℝ≥0) : StronglyMeasurable (poissonPmfReal r) :=
   stronglyMeasurable_iff_measurable.mpr (measurable_poissonPmfReal r)
 
 /-- Measure defined by the Poisson distribution -/
 noncomputable
-def poissonMeasure (r : ℝ≥0) : Measure ℕ :=
-  if r > 0 then (poissonPmf r).toMeasure else Measure.dirac 0
+def poissonMeasure (r : ℝ≥0) : Measure ℕ := (poissonPmf r).toMeasure
 
-lemma poissonMeasure_of_rate_ne_zero {r : ℝ≥0} (hr : r > 0) :
-    poissonMeasure r = (poissonPmf r).toMeasure := if_pos hr
-
-lemma poissonMeasure_of_rate_zero :
-    poissonMeasure 0 = Measure.dirac 0 := if_neg not_lt_zero'
-
-lemma isProbabilityMeasurePoisson (r : ℝ≥0) :
+instance isProbabilityMeasurePoisson (r : ℝ≥0) :
     IsProbabilityMeasure (poissonMeasure r) := by
-  by_cases h : r > 0
-  · rw [poissonMeasure_of_rate_ne_zero h]
-    exact PMF.toMeasure.isProbabilityMeasure (poissonPmf r)
-  · rw [le_zero_iff.mp (not_lt.mp h), poissonMeasure_of_rate_zero]
-    exact Measure.dirac.isProbabilityMeasure
+  exact PMF.toMeasure.isProbabilityMeasure (poissonPmf r)
