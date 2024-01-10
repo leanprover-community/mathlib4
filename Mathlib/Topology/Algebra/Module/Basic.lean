@@ -464,6 +464,13 @@ theorem coeFn_injective : @Function.Injective (M₁ →SL[σ₁₂] M₂) (M₁ 
   FunLike.coe_injective
 #align continuous_linear_map.coe_fn_injective ContinuousLinearMap.coeFn_injective
 
+protected theorem congr_arg {f : M₁ →SL[σ₁₂] M₂} {x x' : M₁} : x = x' → f x = f x' :=
+  FunLike.congr_arg f
+
+/-- If two continuous linear maps are equal, they are equal at each point. -/
+protected theorem congr_fun {f g : M₁ →SL[σ₁₂] M₂} (h : f = g) (x : M₁) : f x = g x :=
+  FunLike.congr_fun h x
+
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
   because it is a composition of multiple projections. -/
 def Simps.apply (h : M₁ →SL[σ₁₂] M₂) : M₁ → M₂ :=

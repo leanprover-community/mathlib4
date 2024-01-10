@@ -55,7 +55,7 @@ local diffeomorphism, manifold
 
 -/
 
-open Manifold Set TopologicalSpace
+open Function Manifold Set TopologicalSpace
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
@@ -269,3 +269,70 @@ noncomputable def IslocalDiffeomorph.diffeomorph_of_bijective
       exact this ▸ (Φ x).map_source hx }
 
 end Basic
+
+/-! ## The differential of a local diffeomorphism is an isomorphism -/
+section Differential
+variable {I J n} {f : M → N} {x : M} (hn : 1 ≤ n)
+  [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners J N]
+  [hE: CompleteSpace E] [hF: CompleteSpace F]
+
+/-- A local diffeomorphism `f` at `x` has injective differential `mfderiv I J n f x`. -/
+lemma IsLocalDiffeomorphAt.mfderiv_injective (hf : IsLocalDiffeomorphAt I J n f x) (hn : 1 ≤ n) :
+    LinearMap.ker (mfderiv I J f x) = ⊥ := by
+  choose Φ hyp using hf
+  rcases hyp with ⟨hxU, heq⟩
+  let A := mfderiv I J f x
+  have hA : A = mfderiv I J Φ x := calc A
+    _ = mfderivWithin I J f Φ.source x := (mfderivWithin_of_isOpen Φ.open_source hxU).symm
+    _ = mfderivWithin I J Φ Φ.source x :=
+      mfderivWithin_congr (Φ.open_source.uniqueMDiffWithinAt hxU) heq (heq hxU)
+    _ = mfderiv I J Φ x := mfderivWithin_of_isOpen Φ.open_source hxU
+  let B := mfderiv J I Φ.invFun (Φ x)
+  have : B.comp A = ContinuousLinearMap.id 𝕜 (TangentSpace I x) := calc B.comp A
+    _ = B.comp (mfderiv I J Φ x) := by rw [hA]
+    _ = mfderiv I I (Φ.invFun ∘ Φ) x :=
+      (mfderiv_comp x (Φ.symm.mdifferentiableAt hn (Φ.map_source hxU))
+        (Φ.mdifferentiableAt hn hxU)).symm
+    _ = mfderivWithin I I (Φ.invFun ∘ Φ) Φ.source x :=
+      (mfderivWithin_of_isOpen Φ.open_source hxU).symm
+    _ = mfderivWithin I I id Φ.source x := by
+      have : EqOn (Φ.invFun ∘ Φ) id Φ.source := fun _ hx ↦ Φ.left_inv' hx
+      apply mfderivWithin_congr (Φ.open_source.uniqueMDiffWithinAt hxU) this (this hxU)
+    _ = mfderiv I I id x := mfderivWithin_of_isOpen Φ.open_source hxU
+    _ = ContinuousLinearMap.id 𝕜 (TangentSpace I x) := mfderiv_id I
+  have : LeftInverse B A := ContinuousLinearMap.congr_fun this
+  exact (LinearMapClass.ker_eq_bot _).mpr this.injective
+
+/-- A local diffeomorphism `f` at `x` has surjective differential `mfderiv I J n f x`. -/
+lemma IsLocalDiffeomorphAt.mfderiv_surjective (hf : IsLocalDiffeomorphAt I J n f x) (hn : 1 ≤ n) :
+    LinearMap.range (mfderiv I J f x) = ⊤ := by
+  choose Φ hyp using hf
+  rcases hyp with ⟨hxU, heq⟩
+  let A := mfderiv I J f x
+  have hA : A = mfderiv I J Φ x := calc A
+    _ = mfderivWithin I J f Φ.source x := (mfderivWithin_of_isOpen Φ.open_source hxU).symm
+    _ = mfderivWithin I J Φ Φ.source x :=
+      mfderivWithin_congr (Φ.open_source.uniqueMDiffWithinAt hxU) heq (heq hxU)
+    _ = mfderiv I J Φ x := mfderivWithin_of_isOpen Φ.open_source hxU
+  let B := mfderiv J I Φ.invFun (Φ x)
+  have : A.comp B = ContinuousLinearMap.id 𝕜 (TangentSpace J (Φ x)) := calc A.comp B
+    _ = (mfderiv I J Φ x).comp B := by rw [hA]
+    _ = mfderiv J J (Φ ∘ Φ.invFun) (Φ x) := by
+        -- Use the chain rule: need to rewrite both the base point Φ (Φ.invFun x)
+        -- and the map Φ.invFun ∘ Φ.
+        have hΦ : MDifferentiableAt I J Φ x := Φ.mdifferentiableAt hn hxU
+        rw [← (Φ.left_inv hxU)] at hΦ
+        let r := mfderiv_comp (Φ x) hΦ (Φ.symm.mdifferentiableAt hn (Φ.map_source hxU))
+        rw [(Φ.left_inv hxU)] at r
+        exact r.symm
+    _ = mfderivWithin J J (Φ ∘ Φ.invFun) Φ.target (Φ x) :=
+      (mfderivWithin_of_isOpen Φ.open_target (Φ.map_source hxU)).symm
+    _ = mfderivWithin J J id Φ.target (Φ x) := by
+      have : EqOn (Φ ∘ Φ.invFun) id Φ.target := fun _ hx ↦ Φ.right_inv' hx
+      apply mfderivWithin_congr ?_ this (this (Φ.map_source hxU))
+      exact (Φ.open_target.uniqueMDiffWithinAt (Φ.map_source hxU))
+    _ = mfderiv J J id (Φ x) := mfderivWithin_of_isOpen Φ.open_target (Φ.map_source hxU)
+    _ = ContinuousLinearMap.id 𝕜 (TangentSpace J (Φ x)) := mfderiv_id J
+  have : RightInverse B A := ContinuousLinearMap.congr_fun this
+  exact LinearMap.range_eq_top.mpr this.surjective
+end Differential
