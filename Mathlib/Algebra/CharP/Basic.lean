@@ -540,7 +540,7 @@ theorem char_is_prime_or_zero (p : ℕ) [hc : CharP R p] : Nat.Prime p ∨ p = 0
   | m + 2, hc => Or.inl (@char_is_prime_of_two_le R _ _ (m + 2) hc (Nat.le_add_left 2 m))
 #align char_p.char_is_prime_or_zero CharP.char_is_prime_or_zero
 
-theorem exists' (R : Type*) [NonAssocRing R] [NoZeroDivisors R] [Nontrivial R] :
+theorem exists' (R : Type*) [NonAssocRing R] [IsDomain R] :
     CharZero R ∨ ∃ p : ℕ, Fact p.Prime ∧ CharP R p := by
   obtain ⟨p, hchar⟩ := CharP.exists R
   rcases char_is_prime_or_zero R p with h | rfl

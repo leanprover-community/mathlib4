@@ -59,7 +59,7 @@ variable {R} in
 theorem ExpChar.congr {p : ℕ} (q : ℕ) [hq : ExpChar R q] (h : q = p) : ExpChar R p := h ▸ hq
 
 /-- Noncomputable function that outputs the unique exponential characteristic of a semiring. -/
-noncomputable abbrev ringExpChar (R : Type*) [NonAssocSemiring R] : ℕ := max (ringChar R) 1
+noncomputable def ringExpChar (R : Type*) [NonAssocSemiring R] : ℕ := max (ringChar R) 1
 
 theorem ringExpChar.eq (q : ℕ) [h : ExpChar R q] : ringExpChar R = q := by
   cases' h with _ _ h _
@@ -150,9 +150,8 @@ end Nontrivial
 end Semiring
 
 theorem ExpChar.exists [Ring R] [IsDomain R] : ∃ q, ExpChar R q := by
-  obtain ⟨p, _⟩ := CharP.exists R
-  rcases CharP.char_is_prime_or_zero R p with hp | rfl
-  exacts [⟨p, .prime hp⟩, ⟨1, haveI := CharP.charP_to_charZero R; .zero⟩]
+  obtain _ | ⟨p, ⟨hp⟩, _⟩ := CharP.exists' R
+  exacts [⟨1, .zero⟩, ⟨p, .prime hp⟩]
 
 theorem ExpChar.exists_unique [Ring R] [IsDomain R] : ∃! q, ExpChar R q :=
   let ⟨q, H⟩ := ExpChar.exists R
