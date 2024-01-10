@@ -63,8 +63,8 @@ lemma neg {f : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) : MeromorphicAt (
 
 @[simp]
 lemma neg_iff {f : 𝕜 → E} {x : 𝕜} :
-    MeromorphicAt f x ↔ MeromorphicAt (-f) x :=
-  ⟨MeromorphicAt.neg, fun h ↦ by simpa only [neg_neg] using h.neg⟩
+    MeromorphicAt (-f) x ↔ MeromorphicAt f x :=
+  ⟨fun h ↦ by simpa only [neg_neg] using h.neg, MeromorphicAt.neg⟩
 
 lemma sub {f g : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
     MeromorphicAt (f - g) x := by
@@ -115,8 +115,8 @@ lemma inv {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) : MeromorphicA
 
 @[simp]
 lemma inv_iff {f : 𝕜 → 𝕜} {x : 𝕜} :
-    MeromorphicAt f x ↔ MeromorphicAt f⁻¹ x :=
-  ⟨MeromorphicAt.inv, fun h ↦ by simpa only [inv_inv] using h.inv⟩
+    MeromorphicAt f⁻¹ x ↔ MeromorphicAt f x :=
+  ⟨fun h ↦ by simpa only [inv_inv] using h.inv, MeromorphicAt.inv⟩
 
 lemma div {f g : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
     MeromorphicAt (f / g) x :=
