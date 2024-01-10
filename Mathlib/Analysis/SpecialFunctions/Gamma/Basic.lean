@@ -524,7 +524,7 @@ theorem Gamma_eq_integral {s : ℝ} (hs : 0 < s) :
 
 theorem Gamma_add_one {s : ℝ} (hs : s ≠ 0) : Gamma (s + 1) = s * Gamma s := by
   simp_rw [Gamma]
-  rw [Complex.ofReal_add, Complex.ofReal_one, Complex.Gamma_add_one, Complex.ofReal_mul_re]
+  rw [Complex.ofReal_add, Complex.ofReal_one, Complex.Gamma_add_one, Complex.re_ofReal_mul]
   rwa [Complex.ofReal_ne_zero]
 #align real.Gamma_add_one Real.Gamma_add_one
 
