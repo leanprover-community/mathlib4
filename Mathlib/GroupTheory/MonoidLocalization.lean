@@ -1909,48 +1909,43 @@ theorem leftCancelMulZero_of_le_isLeftRegular
     (h : ∀ ⦃x⦄, x ∈ S → IsLeftRegular x) : IsLeftCancelMulZero N := by
   let fl := f.toLocalizationMap
   let g := f.toMap
-  --- We prove the property to be left cancellative.
-  have mul_cancel (a z w : N): a ≠ 0 → a * z = a * w → z = w := by
-      intro ha hazw
-      --- Using `LocalizationMap.surj` we find an equality in M that
-      --- imply the goal.
-      obtain ⟨b, hb ⟩ := LocalizationMap.surj fl a
-      obtain ⟨x, hx ⟩ := LocalizationMap.surj fl z
-      obtain ⟨y, hy ⟩ := LocalizationMap.surj fl w
-      rw [(LocalizationMap.eq_mk'_iff_mul_eq fl).mpr hx]
-      rw [(LocalizationMap.eq_mk'_iff_mul_eq fl).mpr hy]
-      rw [LocalizationMap.eq]
-      use 1
-      simp_rw [OneMemClass.coe_one, one_mul]
-      --- The hypothesis `a ≠ 0` in `P` is equivalent to this
-      have b1ne0 : b.1 ≠ 0 := by
-        intro hb1
-        have m0 : (LocalizationMap.toMap fl) 0 = 0 := f.map_zero'
-        have a0 : a * (LocalizationMap.toMap fl) b.2 = 0 ↔ a = 0 :=
-          (f.toLocalizationMap.map_units' b.2).mul_left_eq_zero
-        rw [hb1, m0, a0] at hb
-        exact ha hb
-      --- Main equality that is deduced from `a * z = a * w`
-      have : g (b.1 * (y.1 * x.2)) = g (b.1 * (x.1 * y.2)) :=
-      calc
-        g (b.1 * (y.1 * x.2)) = g b.1 * g (y.1 * x.2) := map_mul g _ _
-        _ = a * g b.2 * (w * g y.2 * g x.2) := by rw[map_mul g,hb,hy]
-        _ = a * w * g b.2 * (g y.2 * g x.2) := by
-          rw[← mul_assoc _ _ _,← mul_assoc _ w _,mul_assoc a _ w,
-            mul_comm _ w,mul_assoc,← mul_assoc a w _]
-        _ = a * z * g b.2 * (g y.2 * g x.2) := by rw [hazw]
-        _ = a * g b.2 * (z * g x.2 *g y.2) := by
-          rw [mul_comm (g y.2),mul_assoc a z,mul_comm z,
-            ← mul_assoc a,mul_assoc _ z,mul_assoc z]
-        _ = g (b.1 * (x.1 * y.2)) := by rw[hx,hb,map_mul g,← map_mul g]
-      --- The hypothesis `h` gives that `f` (so, `g`) is injective.
-      have : b.1 * (y.1 * x.2) =  b.1 * (x.1 * y.2) :=
-        (LocalizationMap.toMap_injective_iff fl).mpr h this
-      --- The hypothesis to be left cancellative allows us to cancel `b.1`
-      have : (y.1 * x.2) =  (x.1 * y.2) :=
-        IsLeftCancelMulZero.mul_left_cancel_of_ne_zero b1ne0 this
-      rw [mul_comm,← this,mul_comm]
-  exact { mul_left_cancel_of_ne_zero := @mul_cancel }
+  constructor
+  intro a z w ha hazw
+  obtain ⟨b, hb⟩ := LocalizationMap.surj fl a
+  obtain ⟨x, hx⟩ := LocalizationMap.surj fl z
+  obtain ⟨y, hy⟩ := LocalizationMap.surj fl w
+  rw [(LocalizationMap.eq_mk'_iff_mul_eq fl).mpr hx,
+    (LocalizationMap.eq_mk'_iff_mul_eq fl).mpr hy, LocalizationMap.eq]
+  use 1
+  rw [OneMemClass.coe_one, one_mul, one_mul]
+  -- The hypothesis `a ≠ 0` in `P` is equivalent to this
+  have b1ne0 : b.1 ≠ 0 := by
+    intro hb1
+    have m0 : (LocalizationMap.toMap fl) 0 = 0 := f.map_zero'
+    have a0 : a * (LocalizationMap.toMap fl) b.2 = 0 ↔ a = 0 :=
+      (f.toLocalizationMap.map_units' b.2).mul_left_eq_zero
+    rw [hb1, m0, a0] at hb
+    exact ha hb
+  -- Main equality that is deduced from `a * z = a * w`
+  have : g (b.1 * (y.1 * x.2)) = g (b.1 * (x.1 * y.2)) :=
+    calc
+      g (b.1 * (y.1 * x.2)) = g b.1 * g (y.1 * x.2) := map_mul g _ _
+      _ = a * g b.2 * (w * g y.2 * g x.2) := by rw[map_mul g,hb,hy]
+      _ = a * w * g b.2 * (g y.2 * g x.2) := by
+        rw[← mul_assoc _ _ _,← mul_assoc _ w _,mul_assoc a _ w,
+          mul_comm _ w,mul_assoc,← mul_assoc a w _]
+      _ = a * z * g b.2 * (g y.2 * g x.2) := by rw [hazw]
+      _ = a * g b.2 * (z * g x.2 *g y.2) := by
+        rw [mul_comm (g y.2), mul_assoc a z, mul_comm z,
+          ← mul_assoc a, mul_assoc _ z, mul_assoc z]
+      _ = g (b.1 * (x.1 * y.2)) := by rw [hx, hb, map_mul g, ← map_mul g]
+    -- The hypothesis `h` gives that `f` (so, `g`) is injective.
+  have : b.1 * (y.1 * x.2) =  b.1 * (x.1 * y.2) :=
+      (LocalizationMap.toMap_injective_iff fl).mpr h this
+  -- The hypothesis to be left cancellative allows us to cancel `b.1`
+  have : (y.1 * x.2) = (x.1 * y.2) :=
+    IsLeftCancelMulZero.mul_left_cancel_of_ne_zero b1ne0 this
+  rw [mul_comm, ← this, mul_comm]
 
 /-- Given a Localization map `f : M →*₀ N` for a Submonoid `S ⊆ M`,
 if `M` is a cancellative monoid with zero, and all elements of `S` are
