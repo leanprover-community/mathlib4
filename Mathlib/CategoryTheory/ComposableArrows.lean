@@ -52,37 +52,23 @@ namespace ComposableArrows
 variable {C} {n m : ℕ}
 variable (F G : ComposableArrows C n)
 
-open Lean Elab Tactic in
-/-- Remove type annotations from hypotheses and add copies to the context. -/
-elab "clean_up" : tactic =>
-  withMainContext do
-    let ctx ← Lean.MonadLCtx.getLCtx
-    ctx.forM fun decl: Lean.LocalDecl => do
-      let declExpr := decl.toExpr
-      let declType := decl.type.cleanupAnnotations
-      liftMetaTactic fun mvarId => do
-        let mvarIdNew ← mvarId.assert (← mkFreshId) declType declExpr
-        let (_, mvarIdNew) ← mvarIdNew.intro1P
-        return [mvarIdNew]
-
 /-- The `i`th object (with `i : ℕ` such that `i ≤ n`) of `F : ComposableArrows C n`. -/
 @[simp]
-abbrev obj' (i : ℕ) (hi : i ≤ n := by clean_up; omega) : C := F.obj ⟨i, by clean_up; omega⟩
+abbrev obj' (i : ℕ) (hi : i ≤ n := by omega) : C := F.obj ⟨i, by omega⟩
 
 /-- The map `F.obj' i ⟶ F.obj' j` when `F : ComposableArrows C n`, and `i` and `j`
 are natural numbers such that `i ≤ j ≤ n`. -/
 @[simp]
-abbrev map' (i j : ℕ) (hij : i ≤ j := by clean_up; omega) (hjn : j ≤ n := by clean_up; omega) :
-  F.obj ⟨i, by clean_up; omega⟩ ⟶ F.obj ⟨j, by clean_up; omega⟩ := F.map (homOfLE (by
+abbrev map' (i j : ℕ) (hij : i ≤ j := by omega) (hjn : j ≤ n := by omega) :
+  F.obj ⟨i, by omega⟩ ⟶ F.obj ⟨j, by omega⟩ := F.map (homOfLE (by
     simp only [Fin.mk_le_mk]
-    clean_up
     omega))
 
-lemma map'_self (i : ℕ) (hi : i ≤ n := by clean_up; omega) :
+lemma map'_self (i : ℕ) (hi : i ≤ n := by omega) :
     F.map' i i = 𝟙 _ := F.map_id _
 
-lemma map'_comp (i j k : ℕ) (hij : i ≤ j := by clean_up; omega)
-    (hjk : j ≤ k := by clean_up; omega) (hk : k ≤ n := by clean_up; omega) :
+lemma map'_comp (i j k : ℕ) (hij : i ≤ j := by omega)
+    (hjk : j ≤ k := by omega) (hk : k ≤ n := by omega) :
     F.map' i k = F.map' i j ≫ F.map' j k :=
   F.map_comp _ _
 
@@ -100,12 +86,12 @@ variable {F G}
 /-- The map `F.obj' i ⟶ G.obj' i` induced on `i`th objects by a morphism `F ⟶ G`
 in `ComposableArrows C n` when `i` is a natural number such that `i ≤ n`. -/
 @[simp]
-abbrev app' (φ : F ⟶ G) (i : ℕ) (hi : i ≤ n := by clean_up; omega) :
+abbrev app' (φ : F ⟶ G) (i : ℕ) (hi : i ≤ n := by omega) :
     F.obj' i ⟶ G.obj' i := φ.app _
 
 @[reassoc]
-lemma naturality' (φ : F ⟶ G) (i j : ℕ) (hij : i ≤ j := by clean_up; omega)
-    (hj : j ≤ n := by clean_up; omega) :
+lemma naturality' (φ : F ⟶ G) (i j : ℕ) (hij : i ≤ j := by omega)
+    (hj : j ≤ n := by omega) :
     F.map' i j ≫ app' φ j = app' φ i ≫ G.map' i j :=
   φ.naturality _
 
@@ -176,7 +162,7 @@ def homMk {F G : ComposableArrows C n} (app : ∀ i, F.obj i ⟶ G.obj i)
       have hij' := leOfHom hij
       simp only [Fin.mk_le_mk] at hij'
       obtain ⟨k, hk⟩ := Nat.le.dest hij'
-      exact this k i j hk (by clean_up; omega)
+      exact this k i j hk (by omega)
     intro k
     induction' k with k hk
     · intro i j hj hj'
@@ -187,7 +173,7 @@ def homMk {F G : ComposableArrows C n} (app : ∀ i, F.obj i ⟶ G.obj i)
       rw [Nat.succ_eq_add_one, ← add_assoc] at hj
       subst hj
       rw [F.map'_comp i (i + k) (i + k + 1), G.map'_comp i (i + k) (i + k + 1), assoc,
-        w (i + k) (by clean_up; omega), reassoc_of% (hk i (i + k) rfl (by clean_up; omega))]
+        w (i + k) (by omega), reassoc_of% (hk i (i + k) rfl (by omega))]
 
 /-- Constructor for isomorphisms `F ≅ G` in `ComposableArrows C n` which takes as inputs
 a family of isomorphisms `F.obj i ≅ G.obj i` and the naturality condition only for the
@@ -509,7 +495,7 @@ lemma hom_ext_succ {F G : ComposableArrows C (n + 1)} {f g : F ⟶ G}
   obtain _ | i := i
   · exact h₀
   · rw [Nat.succ_eq_add_one] at hi
-    exact congr_app h₁ ⟨i, by clean_up; omega⟩
+    exact congr_app h₁ ⟨i, by omega⟩
 
 /-- Inductive construction of isomorphisms in `ComposableArrows C (n + 1)`: in order to
 construct an isomorphism `F ≅ G`, it suffices to provide `α : F.obj' 0 ≅ G.obj' 0` and
@@ -541,7 +527,7 @@ lemma ext_succ {F G : ComposableArrows C (n + 1)} (h₀ : F.obj' 0 = G.obj' 0)
     cases' i with i
     · exact h₀
     · rw [Nat.succ_eq_add_one] at hi
-      exact Functor.congr_obj h ⟨i, by clean_up; omega⟩
+      exact Functor.congr_obj h ⟨i, by omega⟩
   exact Functor.ext_of_iso (isoMkSucc (eqToIso h₀) (eqToIso h) (by
       rw [w]
       dsimp [app']
@@ -576,7 +562,7 @@ lemma homMk₂_app_zero : (homMk₂ app₀ app₁ app₂ w₀ w₁).app 0 = app�
 lemma homMk₂_app_one : (homMk₂ app₀ app₁ app₂ w₀ w₁).app 1 = app₁ := rfl
 
 @[simp]
-lemma homMk₂_app_two : (homMk₂ app₀ app₁ app₂ w₀ w₁).app ⟨2, by clean_up; omega⟩ = app₂ := rfl
+lemma homMk₂_app_two : (homMk₂ app₀ app₁ app₂ w₀ w₁).app ⟨2, by omega⟩ = app₂ := rfl
 
 end
 
@@ -629,11 +615,11 @@ lemma homMk₃_app_zero : (homMk₃ app₀ app₁ app₂ app₃ w₀ w₁ w₂).
 lemma homMk₃_app_one : (homMk₃ app₀ app₁ app₂ app₃ w₀ w₁ w₂).app 1 = app₁ := rfl
 
 @[simp]
-lemma homMk₃_app_two : (homMk₃ app₀ app₁ app₂ app₃ w₀ w₁ w₂).app ⟨2, by clean_up; omega⟩ = app₂ :=
+lemma homMk₃_app_two : (homMk₃ app₀ app₁ app₂ app₃ w₀ w₁ w₂).app ⟨2, by omega⟩ = app₂ :=
   rfl
 
 @[simp]
-lemma homMk₃_app_three : (homMk₃ app₀ app₁ app₂ app₃ w₀ w₁ w₂).app ⟨3, by clean_up; omega⟩ = app₃ :=
+lemma homMk₃_app_three : (homMk₃ app₀ app₁ app₂ app₃ w₀ w₁ w₂).app ⟨3, by omega⟩ = app₃ :=
   rfl
 
 end
@@ -697,15 +683,15 @@ lemma homMk₄_app_one : (homMk₄ app₀ app₁ app₂ app₃ app₄ w₀ w₁ 
 
 @[simp]
 lemma homMk₄_app_two :
-    (homMk₄ app₀ app₁ app₂ app₃ app₄ w₀ w₁ w₂ w₃).app ⟨2, by clean_up; omega⟩ = app₂ := rfl
+    (homMk₄ app₀ app₁ app₂ app₃ app₄ w₀ w₁ w₂ w₃).app ⟨2, by omega⟩ = app₂ := rfl
 
 @[simp]
 lemma homMk₄_app_three :
-    (homMk₄ app₀ app₁ app₂ app₃ app₄ w₀ w₁ w₂ w₃).app ⟨3, by clean_up; omega⟩ = app₃ := rfl
+    (homMk₄ app₀ app₁ app₂ app₃ app₄ w₀ w₁ w₂ w₃).app ⟨3, by omega⟩ = app₃ := rfl
 
 @[simp]
 lemma homMk₄_app_four :
-    (homMk₄ app₀ app₁ app₂ app₃ app₄ w₀ w₁ w₂ w₃).app ⟨4, by clean_up; omega⟩ = app₄ := rfl
+    (homMk₄ app₀ app₁ app₂ app₃ app₄ w₀ w₁ w₂ w₃).app ⟨4, by omega⟩ = app₄ := rfl
 
 end
 
@@ -734,10 +720,10 @@ def isoMk₄ {f g : ComposableArrows C 4}
     f ≅ g where
   hom := homMk₄ app₀.hom app₁.hom app₂.hom app₃.hom app₄.hom w₀ w₁ w₂ w₃
   inv := homMk₄ app₀.inv app₁.inv app₂.inv app₃.inv app₄.inv
-    (by rw [map'_inv_eq_inv_map' (by clean_up; omega) app₀ app₁ w₀])
-    (by rw [map'_inv_eq_inv_map' (by clean_up; omega) app₁ app₂ w₁])
-    (by rw [map'_inv_eq_inv_map' (by clean_up; omega) app₂ app₃ w₂])
-    (by rw [map'_inv_eq_inv_map' (by clean_up; omega) app₃ app₄ w₃])
+    (by rw [map'_inv_eq_inv_map' (by omega) app₀ app₁ w₀])
+    (by rw [map'_inv_eq_inv_map' (by omega) app₁ app₂ w₁])
+    (by rw [map'_inv_eq_inv_map' (by omega) app₂ app₃ w₂])
+    (by rw [map'_inv_eq_inv_map' (by omega) app₃ app₄ w₃])
 
 lemma ext₄ {f g : ComposableArrows C 4}
     (h₀ : f.obj' 0 = g.obj' 0) (h₁ : f.obj' 1 = g.obj' 1) (h₂ : f.obj' 2 = g.obj' 2)
@@ -778,19 +764,19 @@ lemma homMk₅_app_one : (homMk₅ app₀ app₁ app₂ app₃ app₄ app₅ w�
 
 @[simp]
 lemma homMk₅_app_two :
-    (homMk₅ app₀ app₁ app₂ app₃ app₄ app₅ w₀ w₁ w₂ w₃ w₄).app ⟨2, by clean_up; omega⟩ = app₂ := rfl
+    (homMk₅ app₀ app₁ app₂ app₃ app₄ app₅ w₀ w₁ w₂ w₃ w₄).app ⟨2, by omega⟩ = app₂ := rfl
 
 @[simp]
 lemma homMk₅_app_three :
-    (homMk₅ app₀ app₁ app₂ app₃ app₄ app₅ w₀ w₁ w₂ w₃ w₄).app ⟨3, by clean_up; omega⟩ = app₃ := rfl
+    (homMk₅ app₀ app₁ app₂ app₃ app₄ app₅ w₀ w₁ w₂ w₃ w₄).app ⟨3, by omega⟩ = app₃ := rfl
 
 @[simp]
 lemma homMk₅_app_four :
-    (homMk₅ app₀ app₁ app₂ app₃ app₄ app₅ w₀ w₁ w₂ w₃ w₄).app ⟨4, by clean_up; omega⟩ = app₄ := rfl
+    (homMk₅ app₀ app₁ app₂ app₃ app₄ app₅ w₀ w₁ w₂ w₃ w₄).app ⟨4, by omega⟩ = app₄ := rfl
 
 @[simp]
 lemma homMk₅_app_five :
-    (homMk₅ app₀ app₁ app₂ app₃ app₄ app₅ w₀ w₁ w₂ w₃ w₄).app ⟨5, by clean_up; omega⟩ = app₅ := rfl
+    (homMk₅ app₀ app₁ app₂ app₃ app₄ app₅ w₀ w₁ w₂ w₃ w₄).app ⟨5, by omega⟩ = app₅ := rfl
 
 end
 
@@ -814,11 +800,11 @@ def isoMk₅ {f g : ComposableArrows C 5}
     f ≅ g where
   hom := homMk₅ app₀.hom app₁.hom app₂.hom app₃.hom app₄.hom app₅.hom w₀ w₁ w₂ w₃ w₄
   inv := homMk₅ app₀.inv app₁.inv app₂.inv app₃.inv app₄.inv app₅.inv
-    (by rw [map'_inv_eq_inv_map' (by clean_up; omega) app₀ app₁ w₀])
-    (by rw [map'_inv_eq_inv_map' (by clean_up; omega) app₁ app₂ w₁])
-    (by rw [map'_inv_eq_inv_map' (by clean_up; omega) app₂ app₃ w₂])
-    (by rw [map'_inv_eq_inv_map' (by clean_up; omega) app₃ app₄ w₃])
-    (by rw [map'_inv_eq_inv_map' (by clean_up; omega) app₄ app₅ w₄])
+    (by rw [map'_inv_eq_inv_map' (by omega) app₀ app₁ w₀])
+    (by rw [map'_inv_eq_inv_map' (by omega) app₁ app₂ w₁])
+    (by rw [map'_inv_eq_inv_map' (by omega) app₂ app₃ w₂])
+    (by rw [map'_inv_eq_inv_map' (by omega) app₃ app₄ w₃])
+    (by rw [map'_inv_eq_inv_map' (by omega) app₄ app₅ w₄])
 
 lemma ext₅ {f g : ComposableArrows C 5}
     (h₀ : f.obj' 0 = g.obj' 0) (h₁ : f.obj' 1 = g.obj' 1) (h₂ : f.obj' 2 = g.obj' 2)
@@ -838,7 +824,7 @@ lemma mk₅_surjective (X : ComposableArrows C 5) :
     ext₅ rfl rfl rfl rfl rfl rfl (by simp) (by simp) (by simp) (by simp) (by simp)⟩
 
 /-- The `i`th arrow of `F : ComposableArrows C n`. -/
-def arrow (i : ℕ) (hi : i < n := by clean_up; omega) :
+def arrow (i : ℕ) (hi : i < n := by omega) :
     ComposableArrows C 1 := mk₁ (F.map' i (i + 1))
 
 section mkOfObjOfMapSucc
@@ -862,7 +848,7 @@ lemma mkOfObjOfMapSucc_exists : ∃ (F : ComposableArrows C n) (e : ∀ i, F.obj
     · dsimp
       rw [assoc, Iso.inv_hom_id, comp_id]
       erw [id_comp]
-    · exact h i (by clean_up; omega)
+    · exact h i (by omega)
 
 /-- Given `obj : Fin (n + 1) → C` and `mapSucc i : obj i.castSucc ⟶ obj i.succ`
 for all `i : Fin n`, this is `F : ComposableArrows C n` such that `F.obj i` is
@@ -875,11 +861,11 @@ noncomputable def mkOfObjOfMapSucc : ComposableArrows C n :=
 lemma mkOfObjOfMapSucc_obj (i : Fin (n + 1)) :
     (mkOfObjOfMapSucc obj mapSucc).obj i = obj i := rfl
 
-lemma mkOfObjOfMapSucc_map_succ (i : ℕ) (hi : i < n := by clean_up; omega) :
+lemma mkOfObjOfMapSucc_map_succ (i : ℕ) (hi : i < n := by omega) :
     (mkOfObjOfMapSucc obj mapSucc).map' i (i + 1) = mapSucc ⟨i, hi⟩ :=
   ((mkOfObjOfMapSucc_exists obj mapSucc).choose_spec.choose_spec i hi).symm
 
-lemma mkOfObjOfMapSucc_arrow (i : ℕ) (hi : i < n := by clean_up; omega) :
+lemma mkOfObjOfMapSucc_arrow (i : ℕ) (hi : i < n := by omega) :
     (mkOfObjOfMapSucc obj mapSucc).arrow i = mk₁ (mapSucc ⟨i, hi⟩) :=
   ext₁ rfl rfl (by simpa using mkOfObjOfMapSucc_map_succ obj mapSucc i hi)
 
