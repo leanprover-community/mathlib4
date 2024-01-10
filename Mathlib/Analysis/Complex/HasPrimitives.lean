@@ -26,8 +26,9 @@ disc), and compute its derivative.
 
 * `deriv_of_wedgeInt`: The derivative of the wedge integral is the function being integrated.
 
-* `moreiras_theorem`: A function which is continuous on a disc and whose integral on
-  rectangles in the disc vanishes has a primitive on the disc (defined by the wedge integral).
+* `VanishesOnRectanglesInDisc.hasPrimitive`: **Moreira's Theorem**: A function which is 
+  continuous on a disc and whose integral on rectangles in the disc vanishes has a primitive
+  on the disc (defined by the wedge integral).
 
 * `hasPrimitives_on_disc`: A holomorphic function on a disc has primitives.
 
