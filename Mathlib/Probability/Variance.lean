@@ -365,7 +365,7 @@ theorem IndepFun.variance_sum [@IsProbabilityMeasure Ω _ ℙ] {ι : Type*} {X :
           Memℒp.integrable one_le_two (hs _ (mem_insert_of_mem hi)),
         mul_sum, mul_sum, ← sum_sub_distrib]
       apply Finset.sum_eq_zero fun i hi => ?_
-      have : ∀ (a : Ω), @OfNat.ofNat (Ω → ℝ) 2 instOfNat a = (2 : ℝ) := fun a => rfl
+      have : ∀ (a : Ω), @OfNat.ofNat (Ω → ℝ) 2 instOfNatAtLeastTwo a = (2 : ℝ) := fun a => rfl
       conv_lhs => enter [1, 2, a]; rw [this]
       rw [integral_mul_left, IndepFun.integral_mul', sub_self]
       · apply h (mem_insert_self _ _) (mem_insert_of_mem hi)

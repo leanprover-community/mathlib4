@@ -61,7 +61,7 @@ partial def discharge (prop : Expr) : SimpM (Option Expr) :=
     if let some pf := pf? then return some pf
 
     -- Discharge strategy 4: Use the simplifier
-    let ctx ← read
+    let ctx ← readThe Simp.Context
     let usedTheorems := (← get).usedTheorems
 
     -- Port note: mathlib3's analogous field_simp discharger `field_simp.ne_zero`
@@ -71,7 +71,8 @@ partial def discharge (prop : Expr) : SimpM (Option Expr) :=
     --   2) mathlib3 norm_num1 is able to handle any needed discharging, or
     --   3) some other reason?
     let ⟨simpResult, usedTheorems'⟩ ←
-      simp prop { ctx with dischargeDepth := ctx.dischargeDepth + 1} discharge usedTheorems
+      simp prop { ctx with dischargeDepth := ctx.dischargeDepth + 1 } (← Simp.getSimprocs) discharge
+        usedTheorems
     set {(← get) with usedTheorems := usedTheorems'}
     if simpResult.expr.isConstOf ``True then
       try
@@ -175,7 +176,7 @@ elab_rules : tactic
      congrTheorems := (← getSimpCongrTheorems)
      config := cfg
   }
-  let mut r ← elabSimpArgs (sa.getD ⟨.missing⟩) ctx (eraseLocal := false) .simp
+  let mut r ← elabSimpArgs (sa.getD ⟨.missing⟩) ctx (simprocs := {}) (eraseLocal := false) .simp
   if r.starArg then
     r ← do
       let ctx := r.ctx
@@ -185,6 +186,6 @@ elab_rules : tactic
         unless simpTheorems.isErased (.fvar h) do
           simpTheorems ← simpTheorems.addTheorem (.fvar h) (← h.getDecl).toExpr
       let ctx := { ctx with simpTheorems }
-      pure { ctx }
+      pure { ctx, simprocs := {} }
 
-  _ ← simpLocation r.ctx dis loc
+  _ ← simpLocation r.ctx {} dis loc

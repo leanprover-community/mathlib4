@@ -200,7 +200,7 @@ instance Nat.sampleableExt : SampleableExt Nat :=
 
 instance Fin.sampleableExt {n : Nat} : SampleableExt (Fin (n.succ)) :=
   mkSelfContained (do choose (Fin n.succ) (Fin.ofNat 0) (Fin.ofNat (← getSize)) (by
-    simp only [LE.le, Fin.ofNat, Nat.zero_mod, Fin.zero_eta, Fin.val_zero]
+    simp only [Fin.ofNat, Fin.val_zero]
     exact Nat.zero_le _))
 
 instance Int.sampleableExt : SampleableExt Int :=
