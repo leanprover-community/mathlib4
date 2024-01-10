@@ -8,6 +8,12 @@ import Std
 import Mathlib.Tactic.PPWithUniv
 import Mathlib.Tactic.ExtendDoc
 
+/-!
+# Support for `Sort*` and `Type*`.
+
+These elaborate as `Sort u` and `Type u` with a fresh implicit universe variable `u`.
+-/
+
 open Lean
 
 /-- The syntax `variable (X Y ... Z : Sort*)` creates a new distinct implicit universe variable
