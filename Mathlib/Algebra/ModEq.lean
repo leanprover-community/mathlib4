@@ -344,7 +344,7 @@ section DivisionRing
 variable [DivisionRing α] {a b c p : α}
 
 @[simp] lemma div_modEq_div (hc : c ≠ 0) : a / c ≡ b / c [PMOD p] ↔ a ≡ b [PMOD (p * c)] := by
-  simp [ModEq, ←sub_div, div_eq_iff hc, mul_assoc]
+  simp [ModEq, ← sub_div, div_eq_iff hc, mul_assoc]
 
 end DivisionRing
 end AddCommGroup
