@@ -459,7 +459,6 @@ theorem isPrimitiveClassified_aux (hc : x.gcd y = 1) (hzpos : 0 < z) {m n : ℤ}
   norm_cast
 #align pythagorean_triple.is_primitive_classified_aux PythagoreanTriple.isPrimitiveClassified_aux
 
-set_option maxHeartbeats 400000 in
 theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (hyo : y % 2 = 1)
     (hzpos : 0 < z) : h.IsPrimitiveClassified := by
   by_cases h0 : x = 0
