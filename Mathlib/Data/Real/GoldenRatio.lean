@@ -171,6 +171,13 @@ theorem goldConj_irrational : Irrational ψ := by
 ## Links with Fibonacci sequence
 -/
 
+theorem fib_golden_conj_exp (n : ℕ) : Nat.fib (n + 1) - φ * Nat.fib n = ψ ^ n := by
+  repeat rw [coe_fib_eq]
+  rw [mul_div, div_sub_div_same, mul_sub, ← pow_succ]
+  ring_nf
+  have nz : sqrt 5 ≠ 0 := by norm_num
+  rw [← (mul_inv_cancel nz).symm, one_mul]
+#align fib_golden_conj_exp fib_golden_conj_exp
 
 section Fibrec
 
