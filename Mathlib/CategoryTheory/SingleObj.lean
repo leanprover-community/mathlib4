@@ -156,6 +156,25 @@ def differenceFunctor {C G} [Category C] [Group G] (f : C → G) : C ⥤ SingleO
     rw [SingleObj.comp_as_mul, ← mul_assoc, mul_left_inj, mul_assoc, inv_mul_self, mul_one]
 #align category_theory.single_obj.difference_functor CategoryTheory.SingleObj.differenceFunctor
 
+/-- A monoid homomorphism `f: α → End X` into the endomorphisms of an object `X` of a category `C`
+induces a functor `SingleObj α ⥤ C`. -/
+@[simps]
+def functor {α : Type u} [Monoid α] {C : Type w} [Category.{v} C] {X : C} (f : α →* End X) :
+    SingleObj α ⥤ C where
+  obj _ := X
+  map a := f a
+  map_id _ := MonoidHom.map_one f
+  map_comp a b := MonoidHom.map_mul f b a
+
+/-- Construct a natural transformation between functors `SingleObj α ⥤ C` by
+giving a compatible morphism `SingleObj.star α`. -/
+@[simps]
+def natTrans {α : Type w} {C : Type w} [Category.{v} C] [Monoid α] {F G : SingleObj α ⥤ C}
+    (u : F.obj (SingleObj.star α) ⟶ G.obj (SingleObj.star α))
+    (h : ∀ a : α, F.map a ≫ u = u ≫ G.map a) : F ⟶ G where
+  app _ := u
+  naturality _ _ a := h a
+
 end SingleObj
 
 end CategoryTheory
