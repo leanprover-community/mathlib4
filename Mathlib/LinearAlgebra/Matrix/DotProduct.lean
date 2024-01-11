@@ -74,10 +74,10 @@ section OrderedSemiring
 
 variable [OrderedSemiring R] [Fintype n]
 
-lemma dotProduct_nonneg {v w : n → R} (hv : 0 ≤ v) (hw : 0 ≤ w) : 0 ≤ dotProduct v w :=
+lemma dotProduct_nonneg_of_nonneg {v w : n → R} (hv : 0 ≤ v) (hw : 0 ≤ w) : 0 ≤ dotProduct v w :=
   Finset.sum_nonneg (fun i _ => mul_nonneg (hv i) (hw i))
 
-lemma dotProduct_le_of_le {u v w : n → R} (huv : u ≤ v) (hw : 0 ≤ w) :
+lemma dotProduct_le_dotProduct_of_nonneg_right {u v w : n → R} (huv : u ≤ v) (hw : 0 ≤ w) :
     dotProduct u w ≤ dotProduct v w :=
   Finset.sum_le_sum (fun i _ => mul_le_mul_of_nonneg_right (huv i) (hw i))
 
