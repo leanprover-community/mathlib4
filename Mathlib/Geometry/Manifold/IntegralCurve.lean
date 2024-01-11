@@ -738,7 +738,6 @@ lemma exists_isIntegralCurve_of_isIntegralCurveOn [BoundarylessManifold I M]
   -- another centred at 0 with domain up to `a ∈ S` with `t₀ < a < asup`
   obtain ⟨a, ha, hlt⟩ := Real.add_neg_lt_sSup (⟨ε, h x⟩ : Set.Nonempty s) (ε := - (ε / 2))
     (by rw [neg_lt, neg_zero]; exact half_pos hε)
-  have hale : a ≤ asup := le_csSup hbdd ha
   rw [mem_setOf] at ha
   rw [← hasup, ← sub_eq_add_neg] at hlt
 
@@ -763,17 +762,16 @@ lemma exists_isIntegralCurve_of_isIntegralCurveOn [BoundarylessManifold I M]
     (piecewise (Ioo (-a) a) γ γ1) γ2 with γ_ext_def
   have heq_ext : γ_ext 0 = x := by
     rw [γ_ext_def, piecewise, if_pos ⟨by linarith, by linarith⟩, piecewise,
-      if_pos ⟨by linarith, by linarith⟩]
-    exact h0
+      if_pos ⟨by linarith, by linarith⟩, h0]
   -- `asup + ε / 2` is an element of `s` greater than `asup`, a contradiction
   suffices hext : IsIntegralCurveOn γ_ext v (Ioo (-(asup + ε / 2)) (asup + ε / 2)) from
     (not_lt.mpr <| le_csSup hbdd ⟨γ_ext, heq_ext, hext⟩) <| lt_add_of_pos_right asup (half_pos hε)
   apply (isIntegralCurveOn_piecewise (t₀ := asup - ε / 2) hv _ hγ2
-      (by refine ⟨⟨?_, ?_⟩, ⟨?_, ?_⟩⟩ <;> linarith) _).mono
+      ⟨⟨by linarith, hlt⟩, ⟨by linarith, by linarith⟩⟩ _).mono
     (Ioo_subset_Ioo_union_Ioo le_rfl (by linarith) (by linarith))
   apply (isIntegralCurveOn_piecewise (t₀ := -(asup - ε / 2)) hv hγ hγ1
-      (by refine ⟨⟨?_, ?_⟩, ⟨?_, ?_⟩⟩ <;> linarith) heq1.symm).mono
+      ⟨⟨neg_lt_neg hlt, by linarith⟩, ⟨by linarith, by linarith⟩⟩ heq1.symm).mono
     (union_comm _ _ ▸ Ioo_subset_Ioo_union_Ioo (by linarith) (by linarith) le_rfl)
-  rw [piecewise, if_pos ⟨by linarith, by linarith⟩, ← heq2]
+  rw [piecewise, if_pos ⟨by linarith, hlt⟩, ← heq2]
 
 end ExistUnique
