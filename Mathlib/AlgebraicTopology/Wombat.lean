@@ -21,12 +21,12 @@ namespace SSet
 @[simps]
 def horn.δ {n : ℕ} (i j : Fin (n+2)) (h : j ≠ i) : Λ[n+1, i] _[n] := by
   refine ⟨SimplexCategory.δ j, ?_⟩
-  simpa only [unop_op, SimplexCategory.len_mk, asOrderHom, SimplexCategory.δ, SimplexCategory.mkHom,
-    SimplexCategory.Hom.toOrderHom_mk, OrderEmbedding.toOrderHom_coe, Set.union_singleton, ne_eq,
-    ← Set.univ_subset_iff, Set.subset_def, Set.mem_univ, Set.mem_insert_iff, Set.mem_range,
-    Fin.succAboveEmb_apply, Fin.exists_succAbove_eq_iff, forall_true_left, not_forall, not_or,
-    not_not, exists_eq_right]
-
+  simpa? [asOrderHom, SimplexCategory.δ, ← Set.univ_subset_iff, Set.subset_def, not_or] says
+    simpa only [unop_op, SimplexCategory.len_mk, asOrderHom, SimplexCategory.δ,
+      SimplexCategory.mkHom, SimplexCategory.Hom.toOrderHom_mk, OrderEmbedding.toOrderHom_coe,
+      Set.union_singleton, ne_eq, ← Set.univ_subset_iff, Set.subset_def, Set.mem_univ,
+      Set.mem_insert_iff, Set.mem_range, Fin.succAboveEmb_apply, Fin.exists_succAbove_eq_iff,
+      forall_true_left, not_forall, not_or, not_not, exists_eq_right]
 
 section nerve
 
@@ -73,15 +73,12 @@ lemma nerve.δ_mk (n : ℕ)
   dsimp [SimplicialObject.δ, mk, nerve, unop_op, Monotone.functor]
   simp only [Category.comp_id, Category.id_comp]
   intro i hi
-  symm
-  rw [← ComposableArrows.map'_def _ i (i+1) (by omega) (by omega),
-      mkOfObjOfMapSucc_map_succ (hi := hi)]
-  dsimp only [δ_mk_mor]
-  have aux₀ := (mkOfObjOfMapSucc obj mor).map'_def i (i+1) (by omega) (by omega)
-  rw [mkOfObjOfMapSucc_map_succ obj mor i (by omega)] at aux₀
-  have aux₁ := (mkOfObjOfMapSucc obj mor).map'_def (i+1) (i+2) (by omega) (by omega)
-  rw [mkOfObjOfMapSucc_map_succ obj mor (i+1) (by omega)] at aux₁
   have hmap := (mkOfObjOfMapSucc obj mor).map_eqToHom
+  have aux₀ := (mkOfObjOfMapSucc obj mor).map'_def i (i+1) (by omega) (by omega)
+  have aux₁ := (mkOfObjOfMapSucc obj mor).map'_def (i+1) (i+2) (by omega) (by omega)
+  rw [← ComposableArrows.map'_def _ i (i+1) (by omega) (by omega)]
+  rw [mkOfObjOfMapSucc_map_succ _ _ _ (by omega)] at aux₀ aux₁ ⊢
+  dsimp only [δ_mk_mor]
   split <;> rename_i hij
   · simp only [Fin.castSucc_mk, Fin.succ_mk]
     rw [← hmap, ← hmap, aux₀, ← Functor.map_comp, ← Functor.map_comp]
@@ -111,12 +108,10 @@ open SimplexCategory in
 lemma nerve.horn_app_obj (n : ℕ) (i : Fin (n+3)) (σ : Λ[n+2, i] ⟶ nerve C)
     (m : SimplexCategoryᵒᵖ) (f : Λ[n+2, i].obj m) (k : Fin (m.unop.len + 1)) :
     (σ.app m f).obj k = (σ.app (op [0]) (horn.const _ i (f.1.toOrderHom k) _)).obj 0 := by
-  let φ : ([0] : SimplexCategory) ⟶ m.unop :=
-    Hom.mk ⟨Function.const _ k, fun _ _ _ ↦ le_rfl⟩
+  let φ : ([0] : SimplexCategory) ⟶ m.unop := Hom.mk ⟨Function.const _ k, fun _ _ _ ↦ le_rfl⟩
   have := σ.naturality φ.op
   rw [Function.funext_iff] at this
-  specialize this f
-  exact (congrArg (fun F ↦ F.obj 0) this).symm
+  exact (congrArg (·.obj 0) <| this f).symm
 
 
 def horn.edge'' {n m : ℕ} {i : Fin (n+4)}
