@@ -68,7 +68,7 @@ section Homomorphism
 
 theorem mapRange_eq_map {R S : Type*} [CommSemiring R] [CommSemiring S] (p : MvPolynomial σ R)
     (f : R →+* S) : Finsupp.mapRange f f.map_zero p = map f p := by
-  rw [p.as_sum, Finsupp.mapRange_finset_sum, (map f).map_sum]
+  rw [p.as_sum, Finsupp.mapRange_finset_sum, map_sum (map f)]
   refine' Finset.sum_congr rfl fun n _ => _
   rw [map_monomial, ← single_eq_monomial, Finsupp.mapRange_single, single_eq_monomial]
 #align mv_polynomial.map_range_eq_map MvPolynomial.mapRange_eq_map

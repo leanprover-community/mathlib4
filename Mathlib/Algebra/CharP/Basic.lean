@@ -430,16 +430,16 @@ open BigOperators
 variable {R}
 
 theorem list_sum_pow_char (l : List R) : l.sum ^ p = (l.map (· ^ p : R → R)).sum :=
-  (frobenius R p).map_list_sum _
+  map_list_sum (frobenius R p) _
 #align list_sum_pow_char list_sum_pow_char
 
 theorem multiset_sum_pow_char (s : Multiset R) : s.sum ^ p = (s.map (· ^ p : R → R)).sum :=
-  (frobenius R p).map_multiset_sum _
+  map_multiset_sum (frobenius R p) _
 #align multiset_sum_pow_char multiset_sum_pow_char
 
 theorem sum_pow_char {ι : Type*} (s : Finset ι) (f : ι → R) :
     (∑ i in s, f i) ^ p = ∑ i in s, f i ^ p :=
-  (frobenius R p).map_sum _ _
+  map_sum (frobenius R p) _ _
 #align sum_pow_char sum_pow_char
 
 end CommSemiring

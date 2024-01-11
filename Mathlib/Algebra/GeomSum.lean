@@ -402,13 +402,14 @@ theorem geom_sum_inv [DivisionRing α] {x : α} (hx1 : x ≠ 1) (hx0 : x ≠ 0) 
 
 variable {β : Type*}
 
+-- TODO: for consistency, the next two lemmas should be moved to the root namespace
 theorem RingHom.map_geom_sum [Semiring α] [Semiring β] (x : α) (n : ℕ) (f : α →+* β) :
-    f (∑ i in range n, x ^ i) = ∑ i in range n, f x ^ i := by simp [f.map_sum]
+    f (∑ i in range n, x ^ i) = ∑ i in range n, f x ^ i := by simp [map_sum f]
 #align ring_hom.map_geom_sum RingHom.map_geom_sum
 
 theorem RingHom.map_geom_sum₂ [Semiring α] [Semiring β] (x y : α) (n : ℕ) (f : α →+* β) :
     f (∑ i in range n, x ^ i * y ^ (n - 1 - i)) = ∑ i in range n, f x ^ i * f y ^ (n - 1 - i) := by
-  simp [f.map_sum]
+  simp [map_sum f]
 #align ring_hom.map_geom_sum₂ RingHom.map_geom_sum₂
 
 /-! ### Geometric sum with `ℕ`-division -/

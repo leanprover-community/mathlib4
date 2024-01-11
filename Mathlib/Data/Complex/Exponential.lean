@@ -554,7 +554,7 @@ theorem exp_conj : exp (conj x) = conj (exp x) := by
   rw [← lim_conj]
   refine' congr_arg CauSeq.lim (CauSeq.ext fun _ => _)
   dsimp [exp', Function.comp_def, isCauSeq_conj, cauSeqConj]
-  rw [(starRingEnd _).map_sum]
+  rw [map_sum (starRingEnd _)]
   refine' sum_congr rfl fun n _ => _
   rw [map_div₀, map_pow, ← ofReal_nat_cast, conj_ofReal]
 #align complex.exp_conj Complex.exp_conj

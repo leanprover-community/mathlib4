@@ -318,7 +318,7 @@ theorem coe_zpow (r : ℝ≥0) (n : ℤ) : ((r ^ n : ℝ≥0) : ℝ) = (r : ℝ)
 
 @[norm_cast]
 theorem coe_list_sum (l : List ℝ≥0) : ((l.sum : ℝ≥0) : ℝ) = (l.map (↑)).sum :=
-  toRealHom.map_list_sum l
+  map_list_sum toRealHom l
 #align nnreal.coe_list_sum NNReal.coe_list_sum
 
 @[norm_cast]
@@ -328,7 +328,7 @@ theorem coe_list_prod (l : List ℝ≥0) : ((l.prod : ℝ≥0) : ℝ) = (l.map (
 
 @[norm_cast]
 theorem coe_multiset_sum (s : Multiset ℝ≥0) : ((s.sum : ℝ≥0) : ℝ) = (s.map (↑)).sum :=
-  toRealHom.map_multiset_sum s
+  map_multiset_sum toRealHom s
 #align nnreal.coe_multiset_sum NNReal.coe_multiset_sum
 
 @[norm_cast]
@@ -338,7 +338,7 @@ theorem coe_multiset_prod (s : Multiset ℝ≥0) : ((s.prod : ℝ≥0) : ℝ) = 
 
 @[norm_cast]
 theorem coe_sum {α} {s : Finset α} {f : α → ℝ≥0} : ↑(∑ a in s, f a) = ∑ a in s, (f a : ℝ) :=
-  toRealHom.map_sum _ _
+  map_sum toRealHom _ _
 #align nnreal.coe_sum NNReal.coe_sum
 
 theorem _root_.Real.toNNReal_sum_of_nonneg {α} {s : Finset α} {f : α → ℝ}
@@ -350,7 +350,7 @@ theorem _root_.Real.toNNReal_sum_of_nonneg {α} {s : Finset α} {f : α → ℝ}
 
 @[norm_cast]
 theorem coe_prod {α} {s : Finset α} {f : α → ℝ≥0} : ↑(∏ a in s, f a) = ∏ a in s, (f a : ℝ) :=
-  toRealHom.map_prod _ _
+  map_prod toRealHom _ _
 #align nnreal.coe_prod NNReal.coe_prod
 
 theorem _root_.Real.toNNReal_prod_of_nonneg {α} {s : Finset α} {f : α → ℝ}

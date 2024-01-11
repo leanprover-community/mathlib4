@@ -676,12 +676,12 @@ theorem pow_lt_top : a < ∞ → ∀ n : ℕ, a ^ n < ∞ := by
 
 @[simp, norm_cast]
 theorem coe_finset_sum {s : Finset α} {f : α → ℝ≥0} : ↑(∑ a in s, f a) = ∑ a in s, (f a : ℝ≥0∞) :=
-  ofNNRealHom.map_sum f s
+  map_sum ofNNRealHom f s
 #align ennreal.coe_finset_sum ENNReal.coe_finset_sum
 
 @[simp, norm_cast]
 theorem coe_finset_prod {s : Finset α} {f : α → ℝ≥0} : ↑(∏ a in s, f a) = ∏ a in s, (f a : ℝ≥0∞) :=
-  ofNNRealHom.map_prod f s
+  map_prod ofNNRealHom f s
 #align ennreal.coe_finset_prod ENNReal.coe_finset_prod
 
 section Order
