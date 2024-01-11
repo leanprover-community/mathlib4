@@ -527,9 +527,18 @@ theorem ball_mem_comm {α β} [Membership α β] {s : β} {p : α → α → Pro
   ball_cond_comm
 #align ball_mem_comm ball_mem_comm
 
+#align ne_of_apply_ne ne_of_apply_ne
+
 theorem eq_equivalence : Equivalence (@Eq α) :=
   ⟨Eq.refl, @Eq.symm _, @Eq.trans _⟩
 #align eq_equivalence eq_equivalence
+
+-- These were migrated to Std but the `@[simp]` attributes were (mysteriously?) removed.
+attribute [simp] eq_mp_eq_cast eq_mpr_eq_cast
+
+#align eq_mp_eq_cast eq_mp_eq_cast
+#align eq_mpr_eq_cast eq_mpr_eq_cast
+#align cast_cast cast_cast
 
 -- @[simp] -- FIXME simp ignores proof rewrites
 theorem congr_refl_left (f : α → β) {a b : α} (h : a = b) :
@@ -554,6 +563,9 @@ theorem congr_fun_congr_arg (f : α → β → γ) {a a' : α} (p : a = a') (b :
     congr_fun (congr_arg f p) b = congr_arg (fun a ↦ f a b) p := rfl
 #align congr_fun_congr_arg congr_fun_congr_arg
 
+#align heq_of_cast_eq heq_of_cast_eq
+#align cast_eq_iff_heq cast_eq_iff_heq
+
 theorem Eq.rec_eq_cast {α : Sort _} {P : α → Sort _} {x y : α} (h : x = y) (z : P x) :
     h ▸ z = cast (congr_arg P h) z := by induction h; rfl
 
@@ -575,7 +587,17 @@ theorem heq_rec_iff_heq {C : α → Sort*} {x : β} {y : C a} {e : a = b} :
     HEq x (e ▸ y) ↔ HEq x y := by subst e; rfl
 #align heq_rec_iff_heq heq_rec_iff_heq
 
+#align eq.congr Eq.congr
+#align eq.congr_left Eq.congr_left
+#align eq.congr_right Eq.congr_right
+#align congr_arg2 congr_arg₂
+
 variable {β : α → Sort*} {γ : ∀ a, β a → Sort*} {δ : ∀ a b, γ a b → Sort*}
+
+#align congr_fun₂ congr_fun₂
+#align congr_fun₃ congr_fun₃
+#align funext₂ funext₂
+#align funext₃ funext₃
 
 end Equality
 

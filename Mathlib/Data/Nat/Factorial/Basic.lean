@@ -439,7 +439,7 @@ theorem pow_sub_le_descFactorial (n : ℕ) : ∀ k : ℕ, (n + 1 - k) ^ k ≤ n.
     rw [descFactorial_succ, pow_succ, succ_sub_succ, mul_comm]
     apply Nat.mul_le_mul_left
     exact (le_trans (Nat.pow_le_pow_left (tsub_le_tsub_right (le_succ _) _) k)
-          (pow_sub_le_descFactorial n k))
+      (pow_sub_le_descFactorial n k))
 #align nat.pow_sub_le_desc_factorial Nat.pow_sub_le_descFactorial
 
 theorem pow_sub_lt_descFactorial' {n : ℕ} :

@@ -275,6 +275,12 @@ theorem le_mul_self : ∀ n : ℕ, n ≤ n * n
   | n + 1 => by simp
 #align nat.le_mul_self Nat.le_mul_self
 
+-- Moved to Std
+#align nat.le_mul_of_pos_left Nat.le_mul_of_pos_left
+
+-- Moved to Std
+#align nat.le_mul_of_pos_right Nat.le_mul_of_pos_right
+
 theorem mul_self_inj : m * m = n * n ↔ m = n :=
   le_antisymm_iff.trans
     (le_antisymm_iff.trans (and_congr mul_self_le_mul_self_iff mul_self_le_mul_self_iff)).symm
