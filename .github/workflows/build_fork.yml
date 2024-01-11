@@ -266,7 +266,7 @@ jobs:
           # Tests use parts of ProofWidgets not imported by Mathlib.
           # Ensure everything has been built.
           lake build ProofWidgets
-          make -j 8 test
+          make -k -j 8 test
 
       - name: lint mathlib
         id: lint
