@@ -28,19 +28,19 @@ open scoped Real BigOperators
 The sum is only convergent for `0 < im τ`; we are implictly extending it by 0 for other values of
 `τ`. -/
 noncomputable def jacobiTheta₂ (z τ : ℂ) : ℂ :=
-  ∑' n : ℤ, cexp (2 * π * I * ↑n * z +  π * I * ↑n ^ 2 * τ)
+  ∑' n : ℤ, cexp (2 * π * I * ↑n * z +  π * I * n ^ 2 * τ)
 
 /-- A uniform bound for the summands in the Jacobi theta function on compact subsets. -/
-lemma jacobiTheta₂_term_bound {S T : ℝ} (hT : 0 < T) {z τ : ℂ} (hz : |im z| ≤ S) (hτ : T ≤ im τ) (n : ℤ) :
-    ‖cexp (2 * π * I * ↑n * z +  π * I * ↑n ^ 2 * τ)‖ ≤
-    Real.exp (-π * (T * n ^ 2 - 2 * S * |n|)) := by
-  rw [Complex.norm_eq_abs, Complex.abs_exp, (by push_cast; ring : 2 * ↑π * I * ↑n * z
-    + ↑π * I * ↑n ^ 2 * τ = ↑(π * (2 * ↑n) : ℝ) * z * I + ↑(π * ↑n ^ 2 : ℝ) * τ * I),
+lemma jacobiTheta₂_term_bound {S T : ℝ} (hT : 0 < T) {z τ : ℂ}
+    (hz : |im z| ≤ S) (hτ : T ≤ im τ) (n : ℤ) :
+    ‖cexp (2 * π * I * n * z + π * I * n ^ 2 * τ)‖ ≤ Real.exp (-π * (T * n ^ 2 - 2 * S * |n|)) := by
+  rw [Complex.norm_eq_abs, Complex.abs_exp, (by push_cast; ring :
+    2 * π * I * n * z + π * I * n ^ 2 * τ = (π * (2 * n) : ℝ) * z * I + (π * n ^ 2 : ℝ) * τ * I),
     add_re, mul_I_re, im_ofReal_mul, mul_I_re, im_ofReal_mul, Real.exp_le_exp, neg_mul, ← neg_add,
     neg_le_neg_iff, mul_assoc π, mul_assoc π, ← mul_add, mul_le_mul_left pi_pos, add_comm,
     mul_comm T]
   refine add_le_add (mul_le_mul le_rfl hτ hT.le (sq_nonneg _)) ?_
-  rw [← mul_neg, mul_assoc, mul_assoc, mul_le_mul_left two_pos, mul_comm, neg_mul, ←mul_neg]
+  rw [← mul_neg, mul_assoc, mul_assoc, mul_le_mul_left two_pos, mul_comm, neg_mul, ← mul_neg]
   refine le_trans ?_ (neg_abs_le_self _)
   rw [mul_neg, neg_le_neg_iff, abs_mul, Int.cast_abs]
   exact mul_le_mul_of_nonneg_left hz (abs_nonneg _)
