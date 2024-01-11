@@ -81,7 +81,7 @@ open scoped DirectSum BigOperators Pointwise BigOperators
 
 open DirectSum SetLike.GradedMonoid Localization
 
-open Finset hiding mk_zero
+open Finset hiding mk_zero mk
 
 variable {R A : Type*}
 
@@ -159,6 +159,22 @@ theorem mem_carrier_iff (z : A⁰_ f) :
     z ∈ carrier x ↔ z.val ∈ Ideal.span (algebraMap A (Away f) '' x.1.asHomogeneousIdeal) :=
   Iff.rfl
 #align algebraic_geometry.Proj_iso_Spec_Top_component.to_Spec.mem_carrier_iff AlgebraicGeometry.ProjIsoSpecTopComponent.ToSpec.mem_carrier_iff
+
+lemma num_not_mem_of_not_mem_carrier (z : A⁰_ f) (h : z ∉ carrier x) :
+    z.num ∉ x.1.asHomogeneousIdeal := by
+  contrapose! h
+  rw [mem_carrier_iff, z.eq_num_div_den, show Localization.mk z.num _ = mk z.num 1 * mk 1 _ by
+    rw [mk_mul, one_mul, mul_one]]
+  exact Ideal.mul_mem_right _ _ <| Ideal.subset_span ⟨_, h, rfl⟩
+
+lemma pow_mul_num_not_mem_of_not_mem_carrier (z : A⁰_ f) (h : z ∉ carrier x) (n : ℕ) :
+    f^n * z.num ∉ x.1.asHomogeneousIdeal :=
+  fun r ↦ x.1.isPrime.mem_or_mem r |>.elim
+    (fun r ↦ x.2 <| x.1.isPrime.pow_mem_iff_mem _ (by
+      by_contra h
+      simp only [not_lt, nonpos_iff_eq_zero] at h
+      erw [h, pow_zero, ← Ideal.eq_top_iff_one] at r
+      exact x.1.isPrime.1 r) |>.mp r) (num_not_mem_of_not_mem_carrier x z h)
 
 theorem MemCarrier.clear_denominator' [DecidableEq (Away f)] {z : Localization.Away f}
     (hz : z ∈ span (algebraMap A (Away f) '' x.val.asHomogeneousIdeal)) :
@@ -774,5 +790,178 @@ def projIsoSpecTopComponent {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m
     ProjIsoSpecTopComponent.fromSpecToSpec 𝒜 hm f_deg x
   inv_hom_id := ConcreteCategory.hom_ext _ _ fun x ↦
     ProjIsoSpecTopComponent.toSpecFromSpec 𝒜 hm f_deg x
+
+namespace ProjIsoSpecSheafComponent
+
+namespace FromSpec
+
+local notation "φ" => (projIsoSpecTopComponent hm.out f_deg.out).hom
+
+-- We use `φ` denote the homeomorphism `Proj | D(f) ≅ Spec A⁰_f`constructed above.
+-- Let `V` be an open set in `Spec A⁰_f`, `s ∈ (Spec A⁰_f)(V)` be a section on `V` of prime spectrum
+-- of `A⁰_f` and `y ∈ (φ⁻¹ V)` be a point in `Proj | D(f)`.
+variable {𝒜}
+variable {m : ℕ} {f : A} [hm : Fact <| 0 < m] [f_deg : Fact <| f ∈ 𝒜 m]
+variable {V : (Opens <| Spec (A⁰_ f))ᵒᵖ}
+variable (s : (Spec (A⁰_ f)).presheaf.obj V)
+variable (y : ((@Opens.openEmbedding Proj.T (pbo f)).isOpenMap.functor.op.obj <|
+  Opens.map φ |>.op.obj V).unop)
+
+private lemma _mem_pbo : (y : Proj.T) ∈ pbo f := by
+  obtain ⟨⟨z, h1⟩, _, h2⟩ := y.2; rwa [← h2]
+
+private lemma _mem_V : φ ⟨y, _mem_pbo y⟩ ∈ V.unop := by
+  obtain ⟨y, ⟨_, h1, rfl⟩⟩ := y; exact h1
+
+/--
+Evaluating a section `s` of `(Spec A⁰_f)(V)` on `φ y` where `y ∈ φ⁻¹(V)`
+-/
+def eval : AlgebraicGeometry.StructureSheaf.Localizations (A⁰_ f) (φ ⟨y, _mem_pbo y⟩) :=
+  s.1 ⟨φ ⟨y, _mem_pbo y⟩, _mem_V y⟩
+
+abbrev eval_num : A⁰_ f := eval s y |>.exists_rep.choose.1
+
+abbrev eval_den : A⁰_ f := eval s y |>.exists_rep.choose.2.1
+
+lemma eval_den_not_mem : eval_den s y ∉ (φ ⟨y, _mem_pbo y⟩).asIdeal :=
+  eval s y |>.exists_rep.choose.2.2
+
+lemma eval_den_num_not_mem : (eval_den s y).num ∉ y.1.asHomogeneousIdeal := by
+  intro r
+  refine eval_den_not_mem s y ?_
+  erw [ProjIsoSpecTopComponent.ToSpec.mem_carrier_iff, (eval_den s y).eq_num_div_den,
+    show Localization.mk (eval_den s y).num _ = mk (eval_den s y).num 1 * Localization.mk 1 _ by
+      rw [mk_mul, one_mul, mul_one]]
+  exact Ideal.mul_mem_right _ _ <| Ideal.subset_span ⟨_, r, rfl⟩
+
+lemma eval_num_den_not_mem : (eval_num s y).den ∉ y.1.asHomogeneousIdeal := by
+  let k := (eval_num s y).den_mem.choose
+  have hk : (eval_num s y).den = f^k := (eval_num s y).den_mem.choose_spec.symm
+  obtain ⟨⟨a, (h1 : f ∉ _)⟩, _, (h2 : a = y.1)⟩ := y.2
+  rw [hk, ← h2]
+  intro r
+  refine h1 <| a.isPrime.pow_mem_iff_mem _ ?_ |>.mp r
+  by_contra! r'
+  replace r' : k = 0
+  · simpa using r'
+  erw [r', pow_zero, ← Ideal.eq_top_iff_one] at r
+  exact a.isPrime.ne_top r
+
+lemma eval_eq_num_div_den :
+    eval s y =
+    Localization.mk (eval_num s y)
+      ⟨eval_den s y,
+        show eval_den s y ∈ (φ ⟨y, _⟩).asIdeal.primeCompl from eval_den_not_mem s y⟩ :=
+  eval s y |>.exists_rep.choose_spec.symm
+
+abbrev α : HomogeneousLocalization.AtPrime 𝒜 y.1.asHomogeneousIdeal.toIdeal :=
+  Quotient.mk''
+  { deg := (eval_num s y).deg + (eval_den s y).deg
+    num := Subtype.mk ((eval_num s y).num * (eval_den s y).den) <|
+      SetLike.mul_mem_graded (eval_num s y).num_mem_deg (eval_den s y).den_mem_deg
+    den := Subtype.mk ((eval_den s y).num * (eval_num s y).den) <| add_comm (eval_num s y).deg _ ▸
+      SetLike.mul_mem_graded (eval_den s y).num_mem_deg (eval_num s y).den_mem_deg
+    den_mem := fun r ↦ y.1.isPrime.mem_or_mem r |>.elim (eval_den_num_not_mem s y)
+      (eval_num_den_not_mem s y) }
+
+lemma val_α :
+    (α s y).val =
+    Localization.mk ((eval_num s y).num * (eval_den s y).den)
+      ⟨(eval_den s y).num * (eval_num s y).den, by
+        exact fun r ↦ y.1.isPrime.mem_or_mem r |>.elim
+          (eval_den_num_not_mem s y) (eval_num_den_not_mem s y)⟩ :=
+  HomogeneousLocalization.val_mk'' _
+
+lemma α_one : α (m := m) (V := V) 1 = 1 := by
+  ext1 y
+  rw [Pi.one_apply, HomogeneousLocalization.ext_iff_val, val_α, HomogeneousLocalization.one_val,
+    show (1 : Localization.AtPrime y.1.asHomogeneousIdeal.toIdeal) = Localization.mk 1 1 from
+    Localization.mk_self 1 |>.symm, mk_eq_mk_iff, r_iff_exists]
+  have eq1 : _ = 1 := eval_eq_num_div_den 1 y |>.symm
+  rw [show (1 : Localization.AtPrime (φ ⟨y, _⟩).asIdeal) = Localization.mk 1 1 from
+    Localization.mk_self 1 |>.symm, mk_eq_mk_iff, r_iff_exists] at eq1
+  obtain ⟨⟨C, (hC : C ∉ ProjIsoSpecTopComponent.ToSpec.carrier _)⟩, eq1⟩ := eq1
+  simp only [one_mul, mul_one, Submonoid.coe_one] at eq1 ⊢
+  rw [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.mul_val,
+    HomogeneousLocalization.mul_val, C.eq_num_div_den, (eval_num 1 y).eq_num_div_den,
+    (eval_den 1 y).eq_num_div_den, mk_mul, mk_mul, mk_eq_mk_iff, r_iff_exists] at eq1
+  obtain ⟨⟨_, ⟨n, rfl⟩⟩, eq1⟩ := eq1
+  dsimp at eq1
+  rw [show ∀ a b c d e: A, a * (b * c * (d * e)) = (a * b * d) * (e * c) by intros; ring,
+    show ∀ a b c d e: A, a * (b * c * (d * e)) = (a * b * d) * (e * c) by intros; ring,
+    show C.den = f^_ from C.den_mem.choose_spec.symm, ← pow_add] at eq1
+  exact ⟨⟨_, ProjIsoSpecTopComponent.ToSpec.pow_mul_num_not_mem_of_not_mem_carrier _ _ hC _⟩, eq1⟩
+
+lemma α_zero : α (m := m) (V := V) 0 = 0 := by
+  ext1 y
+  rw [Pi.zero_apply, HomogeneousLocalization.ext_iff_val, val_α, HomogeneousLocalization.zero_val,
+    show (0 : Localization.AtPrime y.1.asHomogeneousIdeal.toIdeal) = Localization.mk 0 1 from
+    Localization.mk_zero 1 |>.symm, mk_eq_mk_iff, r_iff_exists]
+  have eq1 : _ = 0 := eval_eq_num_div_den 0 y |>.symm
+  rw [show (0 : Localization.AtPrime (φ ⟨y, _⟩).asIdeal) = Localization.mk 0 1 from
+    Localization.mk_zero 1 |>.symm, mk_eq_mk_iff, r_iff_exists] at eq1
+  simp only [one_mul, mul_one, Submonoid.coe_one, mul_zero] at eq1 ⊢
+  obtain ⟨⟨C, hC⟩, eq1⟩ := eq1
+  dsimp at eq1
+  rw [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.zero_val,
+    HomogeneousLocalization.mul_val, C.eq_num_div_den, (eval_num 0 y).eq_num_div_den, mk_mul,
+    show (0 : Localization.Away f) = Localization.mk 0 1 from Localization.mk_zero 1 |>.symm,
+    mk_eq_mk_iff, r_iff_exists] at eq1
+  obtain ⟨⟨_, ⟨n, rfl⟩⟩, eq1⟩ := eq1
+  simp only [OneMemClass.coe_one, one_mul, Submonoid.mk_mul_mk, mul_zero] at eq1
+  rw [← mul_assoc] at eq1
+  exact ⟨⟨f^n * C.num,
+    ProjIsoSpecTopComponent.ToSpec.pow_mul_num_not_mem_of_not_mem_carrier _ _ hC _⟩,
+    by erw [← mul_assoc, eq1, zero_mul]⟩
+
+lemma α_add (x y : (Spec (A⁰_ f)).presheaf.obj V) : α (m := m) (V := V) (x + y) = α x + α y := by
+  ext1 z
+  rw [Pi.add_apply, HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.add_val, val_α,
+    val_α, val_α, add_mk, mk_eq_mk_iff, r_iff_exists]
+  have eq1 := eval_eq_num_div_den (m := m) (V := V) (x + y) z
+  rw [show eval (m := m) (V := V) (x + y) z = eval x z + eval y z from rfl,
+    eval_eq_num_div_den, eval_eq_num_div_den, add_mk, mk_eq_mk_iff, r_iff_exists] at eq1
+  obtain ⟨⟨C, hC⟩, eq1⟩ := eq1
+  dsimp only [Submonoid.coe_mul] at eq1 ⊢
+  simp only [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.mul_val,
+    HomogeneousLocalization.add_val] at eq1
+  simp only [HomogeneousLocalization.eq_num_div_den, mk_mul, add_mk, Submonoid.mk_mul_mk] at eq1
+  rw [mk_eq_mk_iff, r_iff_exists] at eq1
+  obtain ⟨⟨_, ⟨n, rfl⟩⟩, eq1⟩ := eq1
+  dsimp only at eq1
+  refine ⟨⟨(f^n * C.den * (eval_den x z).den * (eval_den y z).den * C.num), ?_⟩, ?_⟩
+  · rw [show C.den = f^_ from C.den_mem.choose_spec.symm,
+      show (eval_den x z).den = f^_ from (eval_den x z).den_mem.choose_spec.symm,
+      show (eval_den y z).den = f^_ from (eval_den y z).den_mem.choose_spec.symm,
+      ← pow_add, ← pow_add, ← pow_add]
+    exact ProjIsoSpecTopComponent.ToSpec.pow_mul_num_not_mem_of_not_mem_carrier _ _ hC _
+  · dsimp only
+    ring_nf at eq1 ⊢
+    exact eq1.symm
+
+lemma α_mul (x y : (Spec (A⁰_ f)).presheaf.obj V) : α (m := m) (V := V) (x * y) = α x * α y := by
+  ext1 z
+  rw [Pi.mul_apply, HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.mul_val, val_α,
+    val_α, val_α, mk_mul, mk_eq_mk_iff, r_iff_exists]
+  have eq1 := eval_eq_num_div_den (m := m) (V := V) (x * y) z
+  rw [show eval (m := m) (V := V) (x * y) z = eval x z * eval y z from rfl,
+    eval_eq_num_div_den, eval_eq_num_div_den, mk_mul, mk_eq_mk_iff, r_iff_exists] at eq1
+  obtain ⟨⟨C, hC⟩, eq1⟩ := eq1
+  dsimp only [Submonoid.coe_mul] at eq1 ⊢
+  simp only [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.mul_val] at eq1
+  simp only [HomogeneousLocalization.eq_num_div_den, mk_mul, Submonoid.mk_mul_mk] at eq1
+  rw [mk_eq_mk_iff, r_iff_exists] at eq1
+  obtain ⟨⟨_, ⟨n, rfl⟩⟩, eq1⟩ := eq1
+  dsimp only at eq1
+  refine ⟨⟨f^n * C.den * C.num, ?_⟩, ?_⟩
+  · rw [show C.den = f^_ from C.den_mem.choose_spec.symm, ← pow_add]
+    exact ProjIsoSpecTopComponent.ToSpec.pow_mul_num_not_mem_of_not_mem_carrier _ _ hC _
+  · dsimp only
+    ring_nf at eq1 ⊢
+    exact eq1.symm
+
+end FromSpec
+
+end ProjIsoSpecSheafComponent
 
 end AlgebraicGeometry
