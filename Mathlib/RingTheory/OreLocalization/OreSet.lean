@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer, Kevin Klinge
 -/
 import Mathlib.Algebra.Ring.Regular
-import Mathlib.GroupTheory.Submonoid.Basic
+import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 
 #align_import ring_theory.ore_localization.ore_set from "leanprover-community/mathlib"@"422e70f7ce183d2900c586a8cda8381e788a0c62"
 
@@ -118,5 +118,23 @@ def oreSetOfNoZeroDivisors {R : Type*} [Ring R] [NoZeroDivisors R] {S : Submonoi
   letI : CancelMonoidWithZero R := NoZeroDivisors.toCancelMonoidWithZero
   oreSetOfCancelMonoidWithZero oreNum oreDenom ore_eq
 #align ore_localization.ore_set_of_no_zero_divisors OreLocalization.oreSetOfNoZeroDivisors
+
+lemma nonempty_oreSet_iff {R : Type*} [Ring R] {S : Submonoid R} :
+    Nonempty (OreSet S) ↔ (∀ (r₁ r₂ : R) (s : S), ↑s * r₁ = s * r₂ → ∃ s' : S, r₁ * s' = r₂ * s') ∧
+      (∀ (r : R) (s : S), ∃ (r' : R) (s' : S), r * s' = s * r') := by
+  constructor
+  · exact fun ⟨_⟩ ↦ ⟨ore_left_cancel, fun r s ↦ ⟨oreNum r s, oreDenom r s, ore_eq r s⟩⟩
+  · intro ⟨H, H'⟩
+    choose r' s' h using H'
+    exact ⟨H, r', s', h⟩
+
+lemma nonempty_oreSet_iff_of_noZeroDivisors {R : Type*} [Ring R] [NoZeroDivisors R]
+    {S : Submonoid R} :
+    Nonempty (OreSet S) ↔ ∀ (r : R) (s : S), ∃ (r' : R) (s' : S), r * s' = s * r' := by
+  constructor
+  · exact fun ⟨_⟩ ↦ fun r s ↦ ⟨oreNum r s, oreDenom r s, ore_eq r s⟩
+  · intro H
+    choose r' s' h using H
+    exact ⟨oreSetOfNoZeroDivisors r' s' h⟩
 
 end OreLocalization

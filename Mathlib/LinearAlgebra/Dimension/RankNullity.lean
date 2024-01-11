@@ -19,6 +19,7 @@ The following instances are provided in mathlib:
 2. `IsDomain.hasRankNullity` for commutative domains in `LinearAlgebra/Dimension/Localization.lean`.
 
 TODO: prove the rank-nullity theorem for `[Ring R] [IsDomain R] [StrongRankCondition R]`.
+See `nonempty_oreSet_of_strongRankCondition` for a start.
 -/
 universe u v
 
