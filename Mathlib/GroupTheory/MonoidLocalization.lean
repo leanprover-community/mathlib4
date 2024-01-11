@@ -1256,12 +1256,12 @@ theorem map_map {A : Type*} [CommMonoid A] {U : Submonoid A} {R} [CommMonoid R]
 the induced Monoid homomorphism from the Localization of `M` at `S` to the
 Localization of `P` at `g S`, is injective.
 -/
-@[to_additive  " Given an injective `AddCommMonoid` homomorphism `g : M →+ P`, and a
+@[to_additive "Given an injective `AddCommMonoid` homomorphism `g : M →+ P`, and a
 Submonoid `S ⊆ M`, the induced AddMonoid homomorphism from the Localization of `M` at `S`
 to the Localization of `P` at `g S`, is injective. "]
 theorem map_injective_of_injective (hg : Injective g)
-    (k : LocalizationMap (Submonoid.map g S) Q) : Injective
-    (map f (apply_coe_mem_map g S) k : N→* Q):= by
+    (k : LocalizationMap (Submonoid.map g S) Q) :
+    Injective (map f (apply_coe_mem_map g S) k : N →* Q) := by
   rw [Injective]
   intro z w hizw
   let i := (map f (apply_coe_mem_map g S) k : N→* Q)
@@ -1986,8 +1986,8 @@ theorem leftCancelMulZero_of_le_isLeftRegular
 if `M` is a cancellative monoid with zero, and all elements of `S` are
 regular, then N is a cancellative monoid with zero.  -/
 theorem isLeftRegular_of_le_IsCancelMulZero (f : LocalizationWithZeroMap S N)
-    [IsCancelMulZero M] (h : ∀ ⦃x⦄, x ∈ S → IsRegular x): IsCancelMulZero N := by
-  have : IsLeftCancelMulZero N:=
+    [IsCancelMulZero M] (h : ∀ ⦃x⦄, x ∈ S → IsRegular x) : IsCancelMulZero N := by
+  have : IsLeftCancelMulZero N :=
     leftCancelMulZero_of_le_isLeftRegular f (fun x h' => (h h').left)
   exact IsLeftCancelMulZero.to_isCancelMulZero
 

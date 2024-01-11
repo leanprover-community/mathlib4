@@ -100,7 +100,6 @@ theorem Ideal.sInf_minimalPrimes : sInf I.minimalPrimes = I.radical := by
     exact hI.1.symm
 #align ideal.Inf_minimal_primes Ideal.sInf_minimalPrimes
 
-
 theorem Ideal.exists_comap_eq_of_mem_minimalPrimes_of_injective {f : R →+* S}
     (hf : Function.Injective f) (p) (H : p ∈ minimalPrimes R) :
     ∃ p' : Ideal S, p'.IsPrime ∧ p'.comap f = p := by
@@ -130,7 +129,6 @@ end
 section
 
 variable {R S : Type*} [CommRing R] [CommRing S] {I J : Ideal R}
-
 
 theorem Ideal.exists_comap_eq_of_mem_minimalPrimes {I : Ideal S} (f : R →+* S) (p)
     (H : p ∈ (I.comap f).minimalPrimes) : ∃ p' : Ideal S, p'.IsPrime ∧ I ≤ p' ∧ p'.comap f = p := by
