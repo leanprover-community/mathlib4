@@ -103,6 +103,38 @@ abbrev objMk {n : SimplexCategory} {m : SimplexCategoryᵒᵖ}
     (standardSimplex.{u}.obj n).obj m :=
   (objEquiv _ _).symm (Hom.mk f)
 
+lemma map_apply {m₁ m₂ : SimplexCategoryᵒᵖ} (f : m₁ ⟶ m₂) {n : SimplexCategory}
+    (x : (standardSimplex.{u}.obj n).obj m₁) :
+    (standardSimplex.{u}.obj n).map f x = (objEquiv _ _).symm (f.unop ≫ (objEquiv _ _) x) := by
+  rfl
+
+-- TODO: define more general bijection similar to `CategoryTheory.yonedaEquiv`, but
+-- for `yoneda ⋙ uliftFunctor`
+/-- The canonical bijection `(standardSimplex.obj n ⟶ X) ≃ X.obj (op n)`. -/
+def _root_.SSet.yonedaEquiv (X : SSet.{u}) (n : SimplexCategory) :
+    (standardSimplex.obj n ⟶ X) ≃ X.obj (op n) where
+  toFun f := f.app (op n) (objMk (OrderHom.id))
+  invFun x :=
+    { app := fun m g => X.map g.down.op x
+      naturality := fun m₁ m₂ h => by
+        ext y
+        dsimp
+        erw [congr_fun (X.map_comp y.down.op h) x, types_comp_apply] }
+  left_inv f := by
+    ext m x
+    obtain ⟨y, rfl⟩ := (objEquiv _ _).symm.surjective x
+    refine' (congr_fun (f.naturality y.op) (objMk (OrderHom.id))).symm.trans _
+    dsimp
+    apply congr_arg
+    simp only [map_apply, unop_op, Quiver.Hom.unop_op, objMk, smallCategory_comp, Hom.comp,
+      EmbeddingLike.apply_eq_iff_eq]
+    ext
+    rfl
+  right_inv x := by
+    dsimp
+    erw [X.map_id]
+    rfl
+
 /-- The (degenerate) `m`-simplex in the standard simplex concentrated in vertex `k`. -/
 def const (n : ℕ) (k : Fin (n+1)) (m : SimplexCategoryᵒᵖ) : Δ[n].obj m :=
   objMk (OrderHom.const _ k )
@@ -284,9 +316,10 @@ def primitiveTriangle {n : ℕ} (i : Fin (n+4))
 
 /-- The `j`th subface of the `i`-th horn. -/
 @[simps]
-def face {n : ℕ} (i j : Fin (n+2)) (h : j ≠ i) : Λ[n+1, i] _[n] := by
-  refine ⟨SimplexCategory.δ j, ?_⟩
-  simpa [← Set.univ_subset_iff, Set.subset_def, asOrderHom, SimplexCategory.δ, not_or]
+def face {n : ℕ} (i j : Fin (n+2)) (h : j ≠ i) : Λ[n+1, i] _[n] :=
+  ⟨(standardSimplex.objEquiv _ _).symm (SimplexCategory.δ j), by
+    simpa [← Set.univ_subset_iff, Set.subset_def, asOrderHom, SimplexCategory.δ, not_or,
+      standardSimplex.objEquiv, asOrderHom, Equiv.ulift]⟩
 
 /-- Two morphisms from a horn are equal if they are equal on all suitable faces. -/
 protected
@@ -295,13 +328,18 @@ lemma hom_ext {n : ℕ} {i : Fin (n+2)} {S : SSet} (σ₁ σ₂ : Λ[n+1, i] ⟶
     σ₁ = σ₂ := by
   apply NatTrans.ext; apply funext; apply Opposite.rec; apply SimplexCategory.rec
   intro m; ext f
-  obtain ⟨j, hji, hfj⟩ : ∃ j, ¬j = i ∧ ∀ k, f.1.toOrderHom k ≠ j := by
-    simpa [← Set.univ_subset_iff, Set.subset_def, asOrderHom, not_or] using f.2
-  have H : f = (Λ[n+1, i].map (factor_δ f.1 j).op) (face i j hji) := by
+  obtain ⟨f', hf⟩ := (standardSimplex.objEquiv _ _).symm.surjective f.1
+  obtain ⟨j, hji, hfj⟩ : ∃ j, ¬j = i ∧ ∀ k, f'.toOrderHom k ≠ j := by
+    obtain ⟨f, hf'⟩ := f
+    subst hf
+    simpa [← Set.univ_subset_iff, Set.subset_def, asOrderHom, not_or] using hf'
+  have H : f = (Λ[n+1, i].map (factor_δ f' j).op) (face i j hji) := by
     apply Subtype.ext
-    exact (factor_δ_spec f.1 j hfj).symm
-  have H₁ := congrFun (σ₁.naturality (factor_δ f.1 j).op) (face i j hji)
-  have H₂ := congrFun (σ₂.naturality (factor_δ f.1 j).op) (face i j hji)
+    apply (standardSimplex.objEquiv _ _).injective
+    rw [← hf]
+    exact (factor_δ_spec f' j hfj).symm
+  have H₁ := congrFun (σ₁.naturality (factor_δ f' j).op) (face i j hji)
+  have H₂ := congrFun (σ₂.naturality (factor_δ f' j).op) (face i j hji)
   dsimp at H₁ H₂
   erw [H, H₁, H₂, h _ hji]
 
