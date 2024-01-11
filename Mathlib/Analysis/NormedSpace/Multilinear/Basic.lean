@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.NormedSpace.OperatorNorm
 import Mathlib.Topology.Algebra.Module.Multilinear.Basic
+import Mathlib.Algebra.Order.Group.DenselyOrdered
 
 #align_import analysis.normed_space.multilinear from "leanprover-community/mathlib"@"f40476639bac089693a489c9e354ebd75dc0f886"
 
@@ -78,10 +79,10 @@ universe u v v' wE wE₁ wE' wEi wG wG'
 
 variable {𝕜 : Type u} {ι : Type v} {ι' : Type v'} {n : ℕ} {E : ι → Type wE} {E₁ : ι → Type wE₁}
   {E' : ι' → Type wE'} {Ei : Fin n.succ → Type wEi} {G : Type wG} {G' : Type wG'} [Fintype ι]
-  [Fintype ι'] [NontriviallyNormedField 𝕜] [∀ i, NormedAddCommGroup (E i)]
-  [∀ i, NormedSpace 𝕜 (E i)] [∀ i, NormedAddCommGroup (E₁ i)] [∀ i, NormedSpace 𝕜 (E₁ i)]
-  [∀ i, NormedAddCommGroup (E' i)] [∀ i, NormedSpace 𝕜 (E' i)] [∀ i, NormedAddCommGroup (Ei i)]
-  [∀ i, NormedSpace 𝕜 (Ei i)] [NormedAddCommGroup G] [NormedSpace 𝕜 G] [NormedAddCommGroup G']
+  [Fintype ι'] [NontriviallyNormedField 𝕜] [∀ i, SeminormedAddCommGroup (E i)]
+  [∀ i, NormedSpace 𝕜 (E i)] [∀ i, SeminormedAddCommGroup (E₁ i)] [∀ i, NormedSpace 𝕜 (E₁ i)]
+  [∀ i, SeminormedAddCommGroup (E' i)] [∀ i, NormedSpace 𝕜 (E' i)] [∀ i, SeminormedAddCommGroup (Ei i)]
+  [∀ i, NormedSpace 𝕜 (Ei i)] [SeminormedAddCommGroup G] [NormedSpace 𝕜 G] [SeminormedAddCommGroup G']
   [NormedSpace 𝕜 G']
 
 /-!
@@ -96,16 +97,59 @@ namespace MultilinearMap
 
 variable (f : MultilinearMap 𝕜 E G)
 
+example [DecidableEq ι] (hf : Continuous f) (m : (i : ι) → E i) {i : ι} (hi : ‖m i‖ = 0) :
+    ‖f m‖ = 0 := by
+  letI : Nonempty ι := Nonempty.intro i
+  refine le_antisymm ?_ (norm_nonneg _)
+  rw [le_iff_forall_pos_lt_add]
+  intro δ hδ
+  rw [zero_add]
+  obtain ⟨ε : ℝ, ε0 : 0 < ε, hε : ∀ m : ∀ i, E i, ‖m - 0‖ < ε → ‖f m - f 0‖ < δ⟩ :=
+    NormedAddCommGroup.tendsto_nhds_nhds.1 (hf.tendsto 0) δ hδ
+  simp only [sub_zero, f.map_zero] at hε
+  rcases NormedField.exists_lt_norm 𝕜 (‖m‖ / ε) with ⟨a, ha⟩
+  have hapos : 0 < ‖a‖ := by
+    refine lt_of_le_of_lt ?_ ha
+    rw [le_div_iff ε0, zero_mul]
+    exact norm_nonneg _
+  have hane : a ≠ 0 := fun habs ↦ by rw [habs, norm_zero] at hapos; exact lt_irrefl 0 hapos
+  set c : (i : ι) → 𝕜 := fun j ↦ if j = i then a^(Fintype.card ι - 1) else a⁻¹
+  have heq : f m = f (fun j ↦ c j • m j) := by
+     rw [MultilinearMap.map_smul_univ]
+     conv_lhs => rw[← one_smul 𝕜 (f m)]
+     congr
+     rw [← Finset.prod_erase_mul Finset.univ _ (Finset.mem_univ i),
+       Finset.prod_congr (s₂ := Finset.univ.erase i) rfl (f := c) (g := fun _ ↦ a⁻¹)
+       (fun j hj ↦ by rw [Finset.mem_erase] at hj; simp only [hj.1, ite_false]),
+       Finset.prod_const, Finset.card_erase_of_mem (Finset.mem_univ i), Finset.card_univ]
+     simp only [ite_true]
+     rw [← mul_pow]
+     conv_lhs => rw [← one_pow (Fintype.card ι - 1), ← inv_mul_cancel hane]
+  have h : ‖fun j ↦ c j • m j‖ < ε := by
+    rw [pi_norm_lt_iff ε0]
+    intro j
+    rw [norm_smul]
+    by_cases h : j = i
+    · rw [h, hi, mul_zero]
+      exact ε0
+    · simp only [h, ite_false]
+      refine lt_of_le_of_lt (mul_le_mul_of_nonneg_left (norm_le_pi_norm m j) (norm_nonneg _)) ?_
+      rw [norm_inv, inv_mul_lt_iff hapos, ← div_lt_iff ε0]
+      exact ha
+  rw [heq]
+  exact hε _ h
+
+
 /-- If a multilinear map in finitely many variables on normed spaces satisfies the inequality
 `‖f m‖ ≤ C * ∏ i, ‖m i‖` on a shell `ε i / ‖c i‖ < ‖m i‖ < ε i` for some positive numbers `ε i`
 and elements `c i : 𝕜`, `1 < ‖c i‖`, then it satisfies this inequality for all `m`. -/
 theorem bound_of_shell {ε : ι → ℝ} {C : ℝ} (hε : ∀ i, 0 < ε i) {c : ι → 𝕜} (hc : ∀ i, 1 < ‖c i‖)
     (hf : ∀ m : ∀ i, E i, (∀ i, ε i / ‖c i‖ ≤ ‖m i‖) → (∀ i, ‖m i‖ < ε i) → ‖f m‖ ≤ C * ∏ i, ‖m i‖)
     (m : ∀ i, E i) : ‖f m‖ ≤ C * ∏ i, ‖m i‖ := by
-  rcases em (∃ i, m i = 0) with (⟨i, hi⟩ | hm)
-  · simp [f.map_coord_zero i hi, prod_eq_zero (mem_univ i), hi]
+  rcases em (∃ i, ‖m i‖ = 0) with (⟨i, hi⟩ | hm)
+  · sorry --simp [f.map_coord_zero i hi, prod_eq_zero (mem_univ i), hi]
   push_neg at hm
-  choose δ hδ0 hδm_lt hle_δm _ using fun i => rescale_to_shell (hc i) (hε i) (hm i)
+  choose δ hδ0 hδm_lt hle_δm _ using fun i => rescale_to_shell_semi_normed (hc i) (hε i) (hm i)
   have hδ0 : 0 < ∏ i, ‖δ i‖ := prod_pos fun i _ => norm_pos_iff.2 (hδ0 i)
   simpa [map_smul_univ, norm_smul, prod_mul_distrib, mul_left_comm C, mul_le_mul_left hδ0] using
     hf (fun i => δ i • m i) hle_δm hδm_lt
