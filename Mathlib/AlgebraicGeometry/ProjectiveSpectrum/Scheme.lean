@@ -667,7 +667,6 @@ end toSpecFromSpec
 section fromSpecToSpec
 
 set_option maxHeartbeats 400000 in
-open GradedAlgebra in
 lemma fromSpecToSpec {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m) (x : Proj.T| pbo f) :
     FromSpec.toFun f_deg hm (toSpec x) = x := by
   classical
@@ -734,7 +733,7 @@ lemma fromSpecToSpec {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m) (x : 
 
   · intro i
     erw [ToSpec.mem_carrier_iff, HomogeneousLocalization.val_mk'']
-    dsimp only [proj_apply]
+    dsimp only [GradedAlgebra.proj_apply]
     rw [show (mk (decompose 𝒜 z i ^ m) ⟨f^i, ⟨i, rfl⟩⟩: Away f) =
       (decompose 𝒜 z i ^ m : A) • (mk 1 ⟨f^i, ⟨i, rfl⟩⟩ : Away f) by
       · rw [smul_mk, smul_eq_mul, mul_one], Algebra.smul_def]
