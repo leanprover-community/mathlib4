@@ -337,7 +337,7 @@ theorem smul_set_eq_empty : a • s = ∅ ↔ s = ∅ :=
 
 @[to_additive (attr := simp)]
 theorem smul_set_nonempty : (a • s).Nonempty ↔ s.Nonempty :=
-  nonempty_image_iff
+  image_nonempty
 #align set.smul_set_nonempty Set.smul_set_nonempty
 #align set.vadd_set_nonempty Set.vadd_set_nonempty
 

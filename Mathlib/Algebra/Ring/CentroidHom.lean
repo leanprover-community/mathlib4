@@ -5,6 +5,7 @@ Authors: Yaël Dillies, Christopher Hoskin
 -/
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Algebra.Module.Hom
+import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 import Mathlib.RingTheory.Subsemiring.Basic
 

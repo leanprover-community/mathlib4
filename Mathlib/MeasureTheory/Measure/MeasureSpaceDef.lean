@@ -203,10 +203,10 @@ theorem measure_mono_top (h : s₁ ⊆ s₂) (h₁ : μ s₁ = ∞) : μ s₂ = 
 #align measure_theory.measure_mono_top MeasureTheory.measure_mono_top
 
 @[simp, mono]
-theorem measure_le_measure_union_left : μ s ≤ μ (s ∪ t) := μ.mono $ subset_union_left s t
+theorem measure_le_measure_union_left : μ s ≤ μ (s ∪ t) := μ.mono <| subset_union_left s t
 
 @[simp, mono]
-theorem measure_le_measure_union_right : μ t ≤ μ (s ∪ t) := μ.mono $ subset_union_right s t
+theorem measure_le_measure_union_right : μ t ≤ μ (s ∪ t) := μ.mono <| subset_union_right s t
 
 /-- For every set there exists a measurable superset of the same measure. -/
 theorem exists_measurable_superset (μ : Measure α) (s : Set α) :

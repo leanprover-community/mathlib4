@@ -131,11 +131,10 @@ theorem eps_pos (hPε : 100 ≤ (4 : ℝ) ^ P.parts.card * ε ^ 5) : 0 < ε :=
 
 theorem hundred_div_ε_pow_five_le_m [Nonempty α] (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α)
     (hPε : 100 ≤ (4 : ℝ) ^ P.parts.card * ε ^ 5) : 100 / ε ^ 5 ≤ m :=
-  (div_le_of_nonneg_of_le_mul (eps_pow_five_pos hPε).le (by positivity) hPε).trans
-    (by
-      norm_cast
-      rwa [Nat.le_div_iff_mul_le' (stepBound_pos (P.parts_nonempty <|
-        univ_nonempty.ne_empty).card_pos), stepBound, mul_left_comm, ← mul_pow])
+  (div_le_of_nonneg_of_le_mul (eps_pow_five_pos hPε).le (by positivity) hPε).trans <| by
+    norm_cast
+    rwa [Nat.le_div_iff_mul_le' (stepBound_pos (P.parts_nonempty <|
+      univ_nonempty.ne_empty).card_pos), stepBound, mul_left_comm, ← mul_pow]
 #align szemeredi_regularity.hundred_div_ε_pow_five_le_m SzemerediRegularity.hundred_div_ε_pow_five_le_m
 
 theorem hundred_le_m [Nonempty α] (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α)

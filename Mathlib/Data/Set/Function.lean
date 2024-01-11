@@ -471,7 +471,7 @@ theorem MapsTo.iterate_restrict {f : α → α} {s : Set α} (h : MapsTo f s s) 
 
 lemma mapsTo_of_subsingleton' [Subsingleton β] (f : α → β) (h : s.Nonempty → t.Nonempty) :
     MapsTo f s t :=
-  fun a ha ↦ Subsingleton.mem_iff_nonempty.2 $ h ⟨a, ha⟩
+  fun a ha ↦ Subsingleton.mem_iff_nonempty.2 <| h ⟨a, ha⟩
 #align set.maps_to_of_subsingleton' Set.mapsTo_of_subsingleton'
 
 lemma mapsTo_of_subsingleton [Subsingleton α] (f : α → α) (s : Set α) : MapsTo f s s :=
@@ -683,8 +683,7 @@ theorem injOn_union (h : Disjoint s₁ s₂) :
 
 theorem injOn_insert {f : α → β} {s : Set α} {a : α} (has : a ∉ s) :
     Set.InjOn f (insert a s) ↔ Set.InjOn f s ∧ f a ∉ f '' s := by
-  have : Disjoint s {a} := disjoint_iff_inf_le.mpr fun x ⟨hxs, (hxa : x = a)⟩ => has (hxa ▸ hxs)
-  rw [← union_singleton, injOn_union this]
+  rw [← union_singleton, injOn_union (disjoint_singleton_right.2 has)]
   simp
 #align set.inj_on_insert Set.injOn_insert
 
@@ -708,6 +707,9 @@ lemma injOn_id (s : Set α) : InjOn id s := injective_id.injOn _
 theorem InjOn.comp (hg : InjOn g t) (hf : InjOn f s) (h : MapsTo f s t) : InjOn (g ∘ f) s :=
   fun _ hx _ hy heq => hf hx hy <| hg (h hx) (h hy) heq
 #align set.inj_on.comp Set.InjOn.comp
+
+lemma InjOn.image_of_comp (h : InjOn (g ∘ f) s) : InjOn g (f '' s) :=
+  ball_image_iff.2 fun _x hx ↦ ball_image_iff.2 fun _y hy heq ↦ congr_arg f <| h hx hy heq
 
 lemma InjOn.iterate {f : α → α} {s : Set α} (h : InjOn f s) (hf : MapsTo f s s) :
     ∀ n, InjOn f^[n] s
@@ -790,8 +792,47 @@ theorem _root_.Disjoint.image {s t u : Set α} {f : α → β} (h : Disjoint s t
   rw [← hf.image_inter hs ht, h, image_empty]
 #align disjoint.image Disjoint.image
 
-/-! ### Surjectivity on a set -/
+/-- The graph of a function `f : α → β` on a set `s`. -/
+def graphOn (f : α → β) (s : Set α) : Set (α × β) := (fun x ↦ (x, f x)) '' s
 
+@[simp] lemma graphOn_empty (f : α → β) : graphOn f ∅ = ∅ := image_empty _
+
+@[simp]
+lemma graphOn_union (f : α → β) (s t : Set α) : graphOn f (s ∪ t) = graphOn f s ∪ graphOn f t :=
+  image_union ..
+
+@[simp]
+lemma graphOn_singleton (f : α → β) (x : α) : graphOn f {x} = {(x, f x)} :=
+  image_singleton ..
+
+@[simp]
+lemma graphOn_insert (f : α → β) (x : α) (s : Set α) :
+    graphOn f (insert x s) = insert (x, f x) (graphOn f s) :=
+  image_insert_eq ..
+
+@[simp]
+lemma image_fst_graphOn (f : α → β) (s : Set α) : Prod.fst '' graphOn f s = s := by
+  simp [graphOn, image_image]
+
+lemma exists_eq_graphOn_image_fst [Nonempty β] {s : Set (α × β)} :
+    (∃ f : α → β, s = graphOn f (Prod.fst '' s)) ↔ InjOn Prod.fst s := by
+  refine ⟨?_, fun h ↦ ?_⟩
+  · rintro ⟨f, hf⟩
+    rw [hf]
+    exact InjOn.image_of_comp <| injOn_id _
+  · have : ∀ x ∈ Prod.fst '' s, ∃ y, (x, y) ∈ s := ball_image_iff.2 fun (x, y) h ↦ ⟨y, h⟩
+    choose! f hf using this
+    rw [ball_image_iff] at hf
+    use f
+    rw [graphOn, image_image, EqOn.image_eq_self]
+    exact fun x hx ↦ h (hf x hx) hx rfl
+
+lemma exists_eq_graphOn [Nonempty β] {s : Set (α × β)} :
+    (∃ f t, s = graphOn f t) ↔ InjOn Prod.fst s :=
+  .trans ⟨fun ⟨f, t, hs⟩ ↦ ⟨f, by rw [hs, image_fst_graphOn]⟩, fun ⟨f, hf⟩ ↦ ⟨f, _, hf⟩⟩
+    exists_eq_graphOn_image_fst
+
+/-! ### Surjectivity on a set -/
 
 /-- `f` is surjective from `a` to `b` if `b` is contained in the image of `a`. -/
 def SurjOn (f : α → β) (s : Set α) (t : Set β) : Prop :=
@@ -886,7 +927,7 @@ lemma SurjOn.comp_right {s : Set β} {t : Set γ} (hf : Surjective f) (hg : Surj
 
 lemma surjOn_of_subsingleton' [Subsingleton β] (f : α → β) (h : t.Nonempty → s.Nonempty) :
     SurjOn f s t :=
-  fun _ ha ↦ Subsingleton.mem_iff_nonempty.2 $ (h ⟨_, ha⟩).image _
+  fun _ ha ↦ Subsingleton.mem_iff_nonempty.2 <| (h ⟨_, ha⟩).image _
 #align set.surj_on_of_subsingleton' Set.surjOn_of_subsingleton'
 
 lemma surjOn_of_subsingleton [Subsingleton α] (f : α → α) (s : Set α) : SurjOn f s s :=
@@ -1773,15 +1814,15 @@ theorem injOn_preimage (h : Semiconj f fa fb) {s : Set β} (hb : InjOn fb s)
 
 end Semiconj
 
-theorem update_comp_eq_of_not_mem_range' {α β : Sort _} {γ : β → Sort*} [DecidableEq β]
+theorem update_comp_eq_of_not_mem_range' {α : Sort*} {β : Type*} {γ : β → Sort*} [DecidableEq β]
     (g : ∀ b, γ b) {f : α → β} {i : β} (a : γ i) (h : i ∉ Set.range f) :
-    (fun j => (Function.update g i a) (f j)) = fun j => g (f j) :=
+    (fun j => update g i a (f j)) = fun j => g (f j) :=
   (update_comp_eq_of_forall_ne' _ _) fun x hx => h ⟨x, hx⟩
 #align function.update_comp_eq_of_not_mem_range' Function.update_comp_eq_of_not_mem_range'
 
 /-- Non-dependent version of `Function.update_comp_eq_of_not_mem_range'` -/
-theorem update_comp_eq_of_not_mem_range {α β γ : Sort _} [DecidableEq β] (g : β → γ) {f : α → β}
-    {i : β} (a : γ) (h : i ∉ Set.range f) : Function.update g i a ∘ f = g ∘ f :=
+theorem update_comp_eq_of_not_mem_range {α : Sort*} {β : Type*} {γ : Sort*} [DecidableEq β]
+    (g : β → γ) {f : α → β} {i : β} (a : γ) (h : i ∉ Set.range f) : update g i a ∘ f = g ∘ f :=
   update_comp_eq_of_not_mem_range' g a h
 #align function.update_comp_eq_of_not_mem_range Function.update_comp_eq_of_not_mem_range
 
@@ -1789,7 +1830,7 @@ theorem insert_injOn (s : Set α) : sᶜ.InjOn fun a => insert a s := fun _a ha 
   (insert_inj ha).1
 #align function.insert_inj_on Function.insert_injOn
 
-theorem monotoneOn_of_rightInvOn_of_mapsTo {α β : Sort _} [PartialOrder α] [LinearOrder β]
+theorem monotoneOn_of_rightInvOn_of_mapsTo {α β : Type*} [PartialOrder α] [LinearOrder β]
     {φ : β → α} {ψ : α → β} {t : Set β} {s : Set α} (hφ : MonotoneOn φ t)
     (φψs : Set.RightInvOn ψ φ s) (ψts : Set.MapsTo ψ s t) : MonotoneOn ψ s := by
   rintro x xs y ys l
@@ -1801,7 +1842,7 @@ theorem monotoneOn_of_rightInvOn_of_mapsTo {α β : Sort _} [PartialOrder α] [L
     exact le_refl _
 #align function.monotone_on_of_right_inv_on_of_maps_to Function.monotoneOn_of_rightInvOn_of_mapsTo
 
-theorem antitoneOn_of_rightInvOn_of_mapsTo {α β : Sort _} [PartialOrder α] [LinearOrder β]
+theorem antitoneOn_of_rightInvOn_of_mapsTo [PartialOrder α] [LinearOrder β]
     {φ : β → α} {ψ : α → β} {t : Set β} {s : Set α} (hφ : AntitoneOn φ t)
     (φψs : Set.RightInvOn ψ φ s) (ψts : Set.MapsTo ψ s t) : AntitoneOn ψ s :=
   (monotoneOn_of_rightInvOn_of_mapsTo hφ.dual_left φψs ψts).dual_right
@@ -1856,7 +1897,7 @@ lemma bijOn' (h₁ : MapsTo e s t) (h₂ : MapsTo e.symm t s) : BijOn e s t :=
 #align equiv.bij_on' Equiv.bijOn'
 
 protected lemma bijOn (h : ∀ a, e a ∈ t ↔ a ∈ s) : BijOn e s t :=
-  e.bijOn' (fun a ↦ (h _).2) fun b hb ↦ (h _).1 $ by rwa [apply_symm_apply]
+  e.bijOn' (fun a ↦ (h _).2) fun b hb ↦ (h _).1 <| by rwa [apply_symm_apply]
 #align equiv.bij_on Equiv.bijOn
 
 lemma invOn : InvOn e e.symm t s :=

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
 import Mathlib.Algebra.Order.Group.Abs
+import Mathlib.Algebra.Order.Group.Lattice
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Order.Closure
 
@@ -71,53 +72,6 @@ section Group
 
 variable [Lattice α] [Group α]
 
--- Special case of Bourbaki A.VI.9 (1)
--- c + (a ⊔ b) = (c + a) ⊔ (c + b)
-@[to_additive]
-theorem mul_sup [CovariantClass α α (· * ·) (· ≤ ·)] (a b c : α) : c * (a ⊔ b) = c * a ⊔ c * b :=
-  (OrderIso.mulLeft _).map_sup _ _
-#align mul_sup mul_sup
-#align add_sup add_sup
-
-@[to_additive]
-theorem sup_mul [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (a b c : α) :
-    (a ⊔ b) * c = a * c ⊔ b * c :=
-  (OrderIso.mulRight _).map_sup _ _
-#align sup_mul sup_mul
-#align sup_add sup_add
-
-@[to_additive]
-theorem mul_inf [CovariantClass α α (· * ·) (· ≤ ·)] (a b c : α) : c * (a ⊓ b) = c * a ⊓ c * b :=
-  (OrderIso.mulLeft _).map_inf _ _
-#align mul_inf mul_inf
-#align add_inf add_inf
-
-@[to_additive]
-theorem inf_mul [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (a b c : α) :
-    (a ⊓ b) * c = a * c ⊓ b * c :=
-  (OrderIso.mulRight _).map_inf _ _
-#align inf_mul inf_mul
-#align inf_add inf_add
-
--- Special case of Bourbaki A.VI.9 (2)
--- -(a ⊔ b)=(-a) ⊓ (-b)
-@[to_additive]
-theorem inv_sup_eq_inv_inf_inv
-    [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (a b : α) :
-    (a ⊔ b)⁻¹ = a⁻¹ ⊓ b⁻¹ :=
-  (OrderIso.inv α).map_sup _ _
-#align inv_sup_eq_inv_inf_inv inv_sup_eq_inv_inf_inv
-#align neg_sup_eq_neg_inf_neg neg_sup_eq_neg_inf_neg
-
--- -(a ⊓ b) = -a ⊔ -b
-@[to_additive]
-theorem inv_inf_eq_sup_inv
-    [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (a b : α) :
-    (a ⊓ b)⁻¹ = a⁻¹ ⊔ b⁻¹ :=
-  (OrderIso.inv α).map_inf _ _
-#align inv_inf_eq_sup_inv inv_inf_eq_sup_inv
-#align neg_inf_eq_sup_neg neg_inf_eq_sup_neg
-
 namespace LatticeOrderedGroup
 
 -- see Note [lower instance priority]
@@ -174,7 +128,7 @@ theorem neg_one : (1 : α)⁻ = 1 := by rw [m_neg_part_def, inv_one, sup_idem]
 theorem neg_eq_inv_inf_one
     [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (a : α) :
     a⁻ = (a ⊓ 1)⁻¹ := by
-  rw [m_neg_part_def, ← inv_inj, inv_sup_eq_inv_inf_inv, inv_inv, inv_inv, inv_one]
+  rw [m_neg_part_def, ← inv_inj, inv_sup, inv_inv, inv_inv, inv_one]
 #align lattice_ordered_comm_group.neg_eq_inv_inf_one LatticeOrderedGroup.neg_eq_inv_inf_one
 #align lattice_ordered_comm_group.neg_eq_neg_inf_zero LatticeOrderedGroup.neg_eq_neg_inf_zero
 
@@ -268,20 +222,6 @@ theorem neg_eq_pos_inv (a : α) : a⁻ = a⁻¹⁺ :=
 theorem pos_eq_neg_inv (a : α) : a⁺ = a⁻¹⁻ := by rw [neg_eq_pos_inv, inv_inv]
 #align lattice_ordered_comm_group.pos_eq_neg_inv LatticeOrderedGroup.pos_eq_neg_inv
 #align lattice_ordered_comm_group.pos_eq_neg_neg LatticeOrderedGroup.pos_eq_neg_neg
-
--- We use this in Bourbaki A.VI.12 Prop 9 a)
--- c + (a ⊓ b) = (c + a) ⊓ (c + b)
-@[to_additive]
-theorem mul_inf_eq_mul_inf_mul [CovariantClass α α (· * ·) (· ≤ ·)] (a b c : α) :
-    c * (a ⊓ b) = c * a ⊓ c * b := by
-  refine' le_antisymm _ _
-  rw [le_inf_iff, mul_le_mul_iff_left, mul_le_mul_iff_left]
-  simp only [inf_le_left, inf_le_right, and_self]
-  rw [← mul_le_mul_iff_left c⁻¹, ← mul_assoc, inv_mul_self, one_mul, le_inf_iff,
-    inv_mul_le_iff_le_mul, inv_mul_le_iff_le_mul]
-  simp
-#align lattice_ordered_comm_group.mul_inf_eq_mul_inf_mul LatticeOrderedGroup.mul_inf_eq_mul_inf_mul
-#align lattice_ordered_comm_group.add_inf_eq_add_inf_add LatticeOrderedGroup.add_inf_eq_add_inf_add
 
 -- Bourbaki A.VI.12 Prop 9 a)
 -- a = a⁺ - a⁻
@@ -422,7 +362,7 @@ theorem sup_div_inf_eq_abs_div
     [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (a b : α) :
     (a ⊔ b) / (a ⊓ b) = |b / a| :=
 calc
-  (a ⊔ b) / (a ⊓ b) = (a ⊔ b) * (a⁻¹ ⊔ b⁻¹) := by rw [div_eq_mul_inv, ← inv_inf_eq_sup_inv]
+  (a ⊔ b) / (a ⊓ b) = (a ⊔ b) * (a⁻¹ ⊔ b⁻¹) := by rw [div_eq_mul_inv, ← inv_inf]
   _ = (a * a⁻¹ ⊔ b * a⁻¹) ⊔ (a * b⁻¹ ⊔ b * b⁻¹) := by rw [mul_sup, sup_mul, sup_mul]
   _ = (1 ⊔ b / a) ⊔ (a / b ⊔ 1) := by
     rw [mul_right_inv, mul_right_inv, ← div_eq_mul_inv, ← div_eq_mul_inv]
@@ -460,22 +400,8 @@ end LatticeOrderedGroup
 
 end Group
 
-variable [Lattice α] [CommGroup α]
-
--- Fuchs p67
--- Bourbaki A.VI.10 Prop 7
--- a ⊓ b + (a ⊔ b) = a + b
-@[to_additive]
-theorem inf_mul_sup [CovariantClass α α (· * ·) (· ≤ ·)] (a b : α) : (a ⊓ b) * (a ⊔ b) = a * b :=
-  calc
-    (a ⊓ b) * (a ⊔ b) = (a ⊓ b) * (a * b * (b⁻¹ ⊔ a⁻¹)) := by
-      rw [mul_sup b⁻¹ a⁻¹ (a * b), mul_inv_cancel_right, mul_inv_cancel_comm]
-    _ = (a ⊓ b) * (a * b * (a ⊓ b)⁻¹) := by rw [inv_inf_eq_sup_inv, sup_comm]
-    _ = a * b := by rw [mul_comm, inv_mul_cancel_right]
-#align inf_mul_sup inf_mul_sup
-#align inf_add_sup inf_add_sup
-
 namespace LatticeOrderedCommGroup
+variable [Lattice α] [CommGroup α]
 
 open LatticeOrderedGroup
 
@@ -504,7 +430,7 @@ theorem inf_eq_div_pos_div [CovariantClass α α (· * ·) (· ≤ ·)] (a b : �
       nth_rw 1 [← inv_inv b]
       rw [← mul_inv, mul_comm b⁻¹, ← div_eq_mul_inv]
     _ = a * ((a / b)⁻¹ ⊓ 1⁻¹) := by rw [inv_one]
-    _ = a / (a / b ⊔ 1) := by rw [← inv_sup_eq_inv_inf_inv, ← div_eq_mul_inv]
+    _ = a / (a / b ⊔ 1) := by rw [← inv_sup, ← div_eq_mul_inv]
 #align lattice_ordered_comm_group.inf_eq_div_pos_div LatticeOrderedCommGroup.inf_eq_div_pos_div
 #align lattice_ordered_comm_group.inf_eq_sub_pos_sub LatticeOrderedCommGroup.inf_eq_sub_pos_sub
 
@@ -523,47 +449,22 @@ theorem m_le_iff_pos_le_neg_ge [CovariantClass α α (· * ·) (· ≤ ·)] (a b
 #align lattice_ordered_comm_group.le_iff_pos_le_neg_ge LatticeOrderedCommGroup.le_iff_pos_le_neg_ge
 
 -- 2•(a ⊔ b) = a + b + |b - a|
-@[to_additive two_sup_eq_add_add_abs_sub]
+@[to_additive two_nsmul_sup_eq_add_add_abs_sub]
 theorem sup_sq_eq_mul_mul_abs_div [CovariantClass α α (· * ·) (· ≤ ·)] (a b : α) :
     (a ⊔ b) ^ 2 = a * b * |b / a| := by
   rw [← inf_mul_sup a b, ← sup_div_inf_eq_abs_div, div_eq_mul_inv, ← mul_assoc, mul_comm, mul_assoc,
     ← pow_two, inv_mul_cancel_left]
 #align lattice_ordered_comm_group.sup_sq_eq_mul_mul_abs_div LatticeOrderedCommGroup.sup_sq_eq_mul_mul_abs_div
-#align lattice_ordered_comm_group.two_sup_eq_add_add_abs_sub LatticeOrderedCommGroup.two_sup_eq_add_add_abs_sub
+#align lattice_ordered_comm_group.two_sup_eq_add_add_abs_sub LatticeOrderedCommGroup.two_nsmul_sup_eq_add_add_abs_sub
 
 -- 2•(a ⊓ b) = a + b - |b - a|
-@[to_additive two_inf_eq_add_sub_abs_sub]
+@[to_additive two_nsmul_inf_eq_add_sub_abs_sub]
 theorem inf_sq_eq_mul_div_abs_div [CovariantClass α α (· * ·) (· ≤ ·)] (a b : α) :
     (a ⊓ b) ^ 2 = a * b / |b / a| := by
   rw [← inf_mul_sup a b, ← sup_div_inf_eq_abs_div, div_eq_mul_inv, div_eq_mul_inv, mul_inv_rev,
     inv_inv, mul_assoc, mul_inv_cancel_comm_assoc, ← pow_two]
 #align lattice_ordered_comm_group.inf_sq_eq_mul_div_abs_div LatticeOrderedCommGroup.inf_sq_eq_mul_div_abs_div
-#align lattice_ordered_comm_group.two_inf_eq_add_sub_abs_sub LatticeOrderedCommGroup.two_inf_eq_add_sub_abs_sub
-
-/-- Every lattice ordered commutative group is a distributive lattice
--/
--- Non-comm case needs cancellation law https://ncatlab.org/nlab/show/distributive+lattice
-@[to_additive "Every lattice ordered commutative additive group is a distributive lattice"]
-def latticeOrderedCommGroupToDistribLattice (α : Type u) [s : Lattice α] [CommGroup α]
-    [CovariantClass α α (· * ·) (· ≤ ·)] : DistribLattice α :=
-  { s with
-    le_sup_inf := by
-      intros x y z
-      rw [← mul_le_mul_iff_left (x ⊓ (y ⊓ z)), inf_mul_sup x (y ⊓ z), ← inv_mul_le_iff_le_mul,
-        le_inf_iff]
-      constructor
-      · rw [inv_mul_le_iff_le_mul, ← inf_mul_sup x y]
-        apply mul_le_mul'
-        · apply inf_le_inf_left
-          apply inf_le_left
-        · apply inf_le_left
-      · rw [inv_mul_le_iff_le_mul, ← inf_mul_sup x z]
-        apply mul_le_mul'
-        · apply inf_le_inf_left
-          apply inf_le_right
-        · apply inf_le_right }
-#align lattice_ordered_comm_group.lattice_ordered_comm_group_to_distrib_lattice LatticeOrderedCommGroup.latticeOrderedCommGroupToDistribLattice
-#align lattice_ordered_comm_group.lattice_ordered_add_comm_group_to_distrib_lattice LatticeOrderedCommGroup.latticeOrderedAddCommGroupToDistribLattice
+#align lattice_ordered_comm_group.two_inf_eq_add_sub_abs_sub LatticeOrderedCommGroup.two_nsmul_inf_eq_add_sub_abs_sub
 
 -- See, e.g. Zaanen, Lectures on Riesz Spaces
 -- 3rd lecture
@@ -571,7 +472,7 @@ def latticeOrderedCommGroupToDistribLattice (α : Type u) [s : Lattice α] [Comm
 @[to_additive]
 theorem abs_div_sup_mul_abs_div_inf [CovariantClass α α (· * ·) (· ≤ ·)] (a b c : α) :
     |(a ⊔ c) / (b ⊔ c)| * |(a ⊓ c) / (b ⊓ c)| = |a / b| := by
-  letI : DistribLattice α := LatticeOrderedCommGroup.latticeOrderedCommGroupToDistribLattice α
+  letI : DistribLattice α := CommGroup.toDistribLattice α
   calc
     |(a ⊔ c) / (b ⊔ c)| * |(a ⊓ c) / (b ⊓ c)| =
         (b ⊔ c ⊔ (a ⊔ c)) / ((b ⊔ c) ⊓ (a ⊔ c)) * |(a ⊓ c) / (b ⊓ c)| :=
@@ -648,40 +549,6 @@ theorem abs_abs_div_abs_le [CovariantClass α α (· * ·) (· ≤ ·)] (a b : �
 #align lattice_ordered_comm_group.abs_abs_sub_abs_le LatticeOrderedCommGroup.abs_abs_sub_abs_le
 
 end LatticeOrderedCommGroup
-
-section invertible
-
-variable (α)
-variable [Semiring α] [Invertible (2 : α)] [Lattice β] [AddCommGroup β] [Module α β]
-  [CovariantClass β β (· + ·) (· ≤ ·)]
-
-lemma inf_eq_half_smul_add_sub_abs_sub (x y : β) :
-    x ⊓ y = (⅟2 : α) • (x + y - |y - x|) := by
-  rw [← LatticeOrderedCommGroup.two_inf_eq_add_sub_abs_sub x y, two_smul, ← two_smul α,
-    smul_smul, invOf_mul_self, one_smul]
-
-lemma sup_eq_half_smul_add_add_abs_sub (x y : β) :
-    x ⊔ y = (⅟2 : α) • (x + y + |y - x|) := by
-  rw [← LatticeOrderedCommGroup.two_sup_eq_add_add_abs_sub x y, two_smul, ← two_smul α,
-    smul_smul, invOf_mul_self, one_smul]
-
-end invertible
-
-section DivisionSemiring
-
-variable (α)
-variable [DivisionSemiring α] [NeZero (2 : α)] [Lattice β] [AddCommGroup β] [Module α β]
-  [CovariantClass β β (· + ·) (· ≤ ·)]
-
-lemma inf_eq_half_smul_add_sub_abs_sub' (x y : β) : x ⊓ y = (2⁻¹ : α) • (x + y - |y - x|) := by
-  letI := invertibleOfNonzero (two_ne_zero' α)
-  exact inf_eq_half_smul_add_sub_abs_sub α x y
-
-lemma sup_eq_half_smul_add_add_abs_sub' (x y : β) : x ⊔ y = (2⁻¹ : α) • (x + y + |y - x|) := by
-  letI := invertibleOfNonzero (two_ne_zero' α)
-  exact sup_eq_half_smul_add_add_abs_sub α x y
-
-end DivisionSemiring
 
 namespace LatticeOrderedAddCommGroup
 
