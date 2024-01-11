@@ -1326,7 +1326,7 @@ def piEquivSubtypeSigma (ι) (π : ι → Type*) :
   left_inv := fun f => funext fun i => rfl
   right_inv := fun ⟨f, hf⟩ =>
     Subtype.eq <| funext fun i =>
-      Sigma.eq (hf i).symm <| eq_of_heq <| rec_heq_of_heq _ <| by simp
+      Sigma.eq (hf i).symm <| eq_of_heq <| rec_heq_of_heq _ <| by simp [eq_mpr_eq_cast]
 #align equiv.pi_equiv_subtype_sigma Equiv.piEquivSubtypeSigma
 
 /-- The type of functions `f : ∀ a, β a` such that for all `a` we have `p a (f a)` is equivalent
