@@ -7,7 +7,6 @@ import Mathlib.Init.Logic
 import Mathlib.Init.Function
 import Mathlib.Init.Algebra.Classes
 import Mathlib.Tactic.Basic
-import Mathlib.Tactic.TypeStar
 import Std.Util.LibraryNote
 import Std.Tactic.Lint.Basic
 
