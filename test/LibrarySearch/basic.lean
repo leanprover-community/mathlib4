@@ -30,7 +30,7 @@ noncomputable section
 #guard_msgs in
 example (x : Nat) : x ≠ x.succ := ne_of_lt (by apply?)
 
-/-- info: Try this: exact Nat.succ_pos 1 -/
+/-- info: Try this: exact Nat.succ_pos' -/
 #guard_msgs in
 example : 0 ≠ 1 + 1 := ne_of_lt (by apply?)
 
@@ -42,7 +42,7 @@ example (x y : Nat) : x + y = y + x := by apply?
 #guard_msgs in
 example (n m k : Nat) : n ≤ m → n + k ≤ m + k := by apply?
 
-/-- info: Try this: exact Nat.mul_dvd_mul_left a w -/
+/-- info: Try this: exact (Nat.mul_dvd_mul_iff_left ha).mpr w -/
 #guard_msgs in
 example (ha : a > 0) (w : b ∣ c) : a * b ∣ a * c := by apply?
 
@@ -92,11 +92,19 @@ by apply?
 #guard_msgs in
 example {α : Type} (x y : α) : x = y ↔ y = x := by apply?
 
-/-- info: Try this: exact Nat.add_pos_left ha b -/
+/--
+info: Try this: exact Nat.add_pos_right a _hb
+---
+warning: unused variable `ha` [linter.unusedVariables]
+-/
 #guard_msgs in
 example (a b : ℕ) (ha : 0 < a) (_hb : 0 < b) : 0 < a + b := by apply?
 
-/-- info: Try this: exact Nat.add_pos_left ha b -/
+/--
+info: Try this: exact Nat.add_pos_right a _hb
+---
+warning: unused variable `ha` [linter.unusedVariables]
+-/
 #guard_msgs in
 -- Verify that if maxHeartbeats is 0 we don't stop immediately.
 set_option maxHeartbeats 0 in
@@ -104,7 +112,11 @@ example (a b : ℕ) (ha : 0 < a) (_hb : 0 < b) : 0 < a + b := by apply?
 
 section synonym
 
-/-- info: Try this: exact Nat.add_pos_left ha b -/
+/--
+info: Try this: exact Nat.add_pos_right a _hb
+---
+warning: unused variable `ha` [linter.unusedVariables]
+-/
 #guard_msgs in
 example (a b : ℕ) (ha : a > 0) (_hb : 0 < b) : 0 < a + b := by apply?
 
@@ -158,7 +170,7 @@ end synonym
 example : ∀ P : Prop, ¬(P ↔ ¬P) := by apply?
 
 -- We even find `iff` results:
-/-- info: Try this: exact (Nat.dvd_add_left h₁).mp h₂ -/
+/-- info: Try this: exact (Nat.dvd_add_iff_left h₁).mpr h₂ -/
 #guard_msgs in
 example {a b c : ℕ} (h₁ : a ∣ c) (h₂ : a ∣ b + c) : a ∣ b := by apply?
 
