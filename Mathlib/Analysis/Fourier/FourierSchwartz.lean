@@ -32,6 +32,7 @@ variable (E F : Type*) [NormedAddCommGroup E] [InnerProductSpace ℝ E] [Measura
 
 noncomputable section
 
+
 abbrev integralFourier (f : E → F) :=
   (VectorFourier.fourierIntegral (E := F)) Real.fourierChar (volume : Measure E) (innerₛₗ ℝ) f
 
