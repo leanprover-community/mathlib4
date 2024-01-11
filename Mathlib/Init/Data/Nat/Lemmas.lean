@@ -780,7 +780,7 @@ lemma to_digits_core_length (b : Nat) (h : 2 <= b) (f n e : Nat)
           simp only [hdiv_ten]; exact Nat.le.step h_pred_pos
         else
           simp only [hdiv_ten,
-            to_digits_core_lens_eq b f (n / b) (Nat.digitChar $ n % b), if_false]
+            to_digits_core_lens_eq b f (n / b) (Nat.digitChar <| n % b), if_false]
           exact Nat.succ_le_succ ih
       else
         obtain rfl : e = 0 := Nat.eq_zero_of_not_pos h_pred_pos

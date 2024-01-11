@@ -306,7 +306,7 @@ section Pointwise
 open Set
 
 @[to_additive (attr := simp)] lemma image_coe : ((↑) : G → Q) '' N = 1 :=
-  congr_arg ((↑) : Subgroup Q → Set Q) $ map_mk'_self N
+  congr_arg ((↑) : Subgroup Q → Set Q) <| map_mk'_self N
 
 @[to_additive]
 lemma preimage_image_coe (s : Set G) : ((↑) : G → Q) ⁻¹' ((↑) '' s) = N * s := by

@@ -81,7 +81,7 @@ theorem range_subset_insert_image_mulTSupport (f : X → α) :
 @[to_additive]
 theorem range_eq_image_mulTSupport_or (f : X → α) :
     range f = f '' mulTSupport f ∨ range f = insert 1 (f '' mulTSupport f) :=
-  (wcovby_insert _ _).eq_or_eq (image_subset_range _ _) (range_subset_insert_image_mulTSupport f)
+  (wcovBy_insert _ _).eq_or_eq (image_subset_range _ _) (range_subset_insert_image_mulTSupport f)
 #align range_eq_image_mul_tsupport_or range_eq_image_mulTSupport_or
 #align range_eq_image_tsupport_or range_eq_image_tsupport_or
 

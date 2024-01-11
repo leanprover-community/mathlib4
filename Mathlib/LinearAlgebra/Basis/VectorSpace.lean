@@ -180,7 +180,7 @@ theorem nonzero_span_atom (v : V) (hv : v ≠ 0) : IsAtom (span K {v} : Submodul
 /-- The atoms of the lattice of submodules of a module over a division ring are the
 submodules equal to the span of a nonzero element of the module. -/
 theorem atom_iff_nonzero_span (W : Submodule K V) :
-    IsAtom W ↔ ∃ (v : V) (_ : v ≠ 0), W = span K {v} := by
+    IsAtom W ↔ ∃ v ≠ 0, W = span K {v} := by
   refine' ⟨fun h => _, fun h => _⟩
   · cases' h with hbot h
     rcases (Submodule.ne_bot_iff W).1 hbot with ⟨v, ⟨hW, hv⟩⟩
