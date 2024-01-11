@@ -63,6 +63,7 @@ def nerve.δ_mk_mor (n : ℕ)
     · have : ¬ k.val + 1 < j.val := by omega
       ext; simp [Fin.succAbove, this]
 
+open ComposableArrows in
 lemma nerve.δ_mk (n : ℕ)
     (obj : Fin (n+2) → C) (mor : ∀ (i : Fin (n+1)), obj i.castSucc ⟶ obj i.succ)
     (j : Fin (n+2)) :
@@ -74,13 +75,13 @@ lemma nerve.δ_mk (n : ℕ)
   intro i hi
   symm
   rw [← ComposableArrows.map'_def _ i (i+1) (by omega) (by omega),
-      ComposableArrows.mkOfObjOfMapSucc_map_succ (hi := hi)]
+      mkOfObjOfMapSucc_map_succ (hi := hi)]
   dsimp only [δ_mk_mor]
   by_cases hij : i + 1 < j
   · simp only [hij, unop_op, SimplexCategory.len_mk, Fin.castSucc_mk, Fin.succ_mk, dite_true]
-    have aux := (ComposableArrows.mkOfObjOfMapSucc obj mor).map'_def i (i+1) (by omega) (by omega)
-    rw [ComposableArrows.mkOfObjOfMapSucc_map_succ obj mor i (by omega)] at aux
-    have := (ComposableArrows.mkOfObjOfMapSucc obj mor).map_eqToHom
+    have aux := (mkOfObjOfMapSucc obj mor).map'_def i (i+1) (by omega) (by omega)
+    rw [mkOfObjOfMapSucc_map_succ obj mor i (by omega)] at aux
+    have := (mkOfObjOfMapSucc obj mor).map_eqToHom
     rw [← this, ← this, aux, ← Functor.map_comp, ← Functor.map_comp]
     rfl
     · have : i < j.val := by linarith only [hij]
@@ -89,20 +90,20 @@ lemma nerve.δ_mk (n : ℕ)
   rw [dif_neg hij]
   by_cases hij' : i + 1 = j
   · simp only [hij', unop_op, SimplexCategory.len_mk, Fin.castSucc_mk, Fin.succ_mk, dite_true]
-    have aux1 := (ComposableArrows.mkOfObjOfMapSucc obj mor).map'_def i (i+1) (by omega) (by omega)
-    rw [ComposableArrows.mkOfObjOfMapSucc_map_succ obj mor i (by omega)] at aux1
-    have aux2 := (ComposableArrows.mkOfObjOfMapSucc obj mor).map'_def (i+1) (i+2) (by omega) (by omega)
-    rw [ComposableArrows.mkOfObjOfMapSucc_map_succ obj mor (i+1) (by omega)] at aux2
-    have := (ComposableArrows.mkOfObjOfMapSucc obj mor).map_eqToHom
+    have aux1 := (mkOfObjOfMapSucc obj mor).map'_def i (i+1) (by omega) (by omega)
+    rw [mkOfObjOfMapSucc_map_succ obj mor i (by omega)] at aux1
+    have aux2 := (mkOfObjOfMapSucc obj mor).map'_def (i+1) (i+2) (by omega) (by omega)
+    rw [mkOfObjOfMapSucc_map_succ obj mor (i+1) (by omega)] at aux2
+    have := (mkOfObjOfMapSucc obj mor).map_eqToHom
     rw [← this, ← this, aux1, aux2, ← Functor.map_comp, ← Functor.map_comp, ← Functor.map_comp]
     rfl
     · simp [Fin.succAbove, hij'.symm]
     · simp [Fin.succAbove, hij'.symm]
   rw [dif_neg hij']
   · simp only [unop_op, SimplexCategory.len_mk, Fin.castSucc_mk, Fin.succ_mk, dite_true]
-    have aux := (ComposableArrows.mkOfObjOfMapSucc obj mor).map'_def (i+1) (i+2) (by omega) (by omega)
-    rw [ComposableArrows.mkOfObjOfMapSucc_map_succ obj mor (i+1) (by omega)] at aux
-    have := (ComposableArrows.mkOfObjOfMapSucc obj mor).map_eqToHom
+    have aux := (mkOfObjOfMapSucc obj mor).map'_def (i+1) (i+2) (by omega) (by omega)
+    rw [mkOfObjOfMapSucc_map_succ obj mor (i+1) (by omega)] at aux
+    have := (mkOfObjOfMapSucc obj mor).map_eqToHom
     rw [← this, ← this, aux, ← Functor.map_comp, ← Functor.map_comp]
     rfl
     · have : ¬ i < j.val := by omega
