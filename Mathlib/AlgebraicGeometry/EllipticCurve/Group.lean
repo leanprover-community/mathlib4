@@ -276,7 +276,7 @@ lemma XYIdeal_mul_XYIdeal {x₁ x₂ y₁ y₂ : F} (h₁ : W.equation x₁ y₁
   rw [span_singleton_mul_span_singleton, ← span_insert,
     ← span_pair_add_mul_right <| -(XClass W <| W.addX x₁ x₂ <| W.slope x₁ x₂ y₁ y₂), mul_neg,
     ← sub_eq_add_neg, ← sub_mul, ← map_sub <| mk W, sub_sub_sub_cancel_right, span_insert,
-    ← span_singleton_mul_span_singleton, ← sup_rw, ← Idealsup_mul, ← Idealsup_mul]
+    ← span_singleton_mul_span_singleton, ← sup_rw, ← Ideal.sup_mul, ← Ideal.sup_mul]
   apply congr_arg (_ ∘ _)
   convert top_mul (_ : Ideal W.CoordinateRing)
   simp_rw [XClass, ← @Set.image_singleton _ _ <| mk W, ← map_span, ← Ideal.map_sup, eq_top_iff_one,
