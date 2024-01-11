@@ -30,17 +30,23 @@ section ReplaceVertex
 
 /-- The graph formed by forgetting `t`'s neighbours and instead giving it those of `s`. The `s-t`
 edge is removed if present. -/
-abbrev replaceVertex : SimpleGraph V where
+def replaceVertex : SimpleGraph V where
   Adj v w := if v = t then if w = t then False else G.Adj s w
                       else if w = t then G.Adj v s else G.Adj v w
   symm v w := by dsimp only; split_ifs <;> simp [adj_comm]
 
+@[simp]
+lemma adj_replaceVertex_iff {v w : V} : (G.replaceVertex s t).Adj v w ↔
+    if v = t then if w = t then False else G.Adj s w
+             else if w = t then G.Adj v s else G.Adj v w := by rfl
+
 /-- There is never an `s-t` edge in `G.replaceVertex s t`. -/
-theorem not_adj_replaceVertex_same : ¬(G.replaceVertex s t).Adj s t := by simp
+lemma not_adj_replaceVertex_same : ¬(G.replaceVertex s t).Adj s t := by simp
 
 @[simp]
-theorem replaceVertex_self : G.replaceVertex s s = G := by
-  ext; dsimp only; split_ifs <;> simp_all [adj_comm]
+lemma replaceVertex_self : G.replaceVertex s s = G := by ext; aesop
+
+variable {t}
 
 /-- Except possibly for `t`, the neighbours of `s` in `G.replaceVertex s t` are its neighbours in
 `G`. -/
@@ -56,28 +62,38 @@ lemma adj_replaceVertex_iff_of_ne_right {w : V} (hw : w ≠ t) :
 lemma adj_replaceVertex_iff_of_ne {v w : V} (hv : v ≠ t) (hw : w ≠ t) :
     (G.replaceVertex s t).Adj v w ↔ G.Adj v w := by simp [hv, hw]
 
-variable [Fintype V] {s t} [DecidableRel G.Adj]
+variable {s}
 
-theorem edgeFinset_replaceVertex_of_not_adj (hn : ¬G.Adj s t) :
-    (G.replaceVertex s t).edgeFinset = G.edgeFinset \ G.incidenceFinset t ∪
-      (G.neighborFinset s).image fun v ↦ s(v, t) := by
-  ext e
-  refine' e.inductionOn _
-  simp only [Set.mem_toFinset, mem_edgeSet, mem_union, mem_sdiff, mem_incidenceFinset,
-    mk'_mem_incidenceSet_iff]
+theorem edgeSet_replaceVertex_of_not_adj (hn : ¬G.Adj s t) : (G.replaceVertex s t).edgeSet =
+    G.edgeSet \ G.incidenceSet t ∪ (s(·, t)) '' (G.neighborSet s) := by
+  ext e; refine' e.inductionOn _
+  simp only [replaceVertex, mem_edgeSet, Set.mem_union, Set.mem_diff, mk'_mem_incidenceSet_iff]
   intros; split_ifs; exacts [by simp_all, by aesop, by rw [adj_comm]; aesop, by aesop]
 
-theorem edgeFinset_replaceVertex_of_adj (ha : G.Adj s t) :
-    (G.replaceVertex s t).edgeFinset = (G.edgeFinset \ G.incidenceFinset t ∪
-      (G.neighborFinset s).image fun v ↦ s(v, t)) \ {s(t, t)} := by
-  ext e
-  refine' e.inductionOn _
-  simp only [Set.mem_toFinset, mem_edgeSet, mem_union, mem_sdiff, mem_incidenceFinset,
-    mk'_mem_incidenceSet_iff]
+theorem edgeSet_replaceVertex_of_adj (ha : G.Adj s t) : (G.replaceVertex s t).edgeSet =
+    (G.edgeSet \ G.incidenceSet t ∪ (s(·, t)) '' (G.neighborSet s)) \ {s(t, t)} := by
+  ext e; refine' e.inductionOn _
+  simp only [replaceVertex, mem_edgeSet, Set.mem_union, Set.mem_diff, mk'_mem_incidenceSet_iff]
   intros; split_ifs; exacts [by simp_all, by aesop, by rw [adj_comm]; aesop, by aesop]
 
-lemma disjoint_sdiff_neighborFinset_image : Disjoint (G.edgeFinset \ G.incidenceFinset t)
-    ((G.neighborFinset s).image fun v ↦ s(v, t)) := by
+variable [Fintype V] [DecidableRel G.Adj]
+
+instance : DecidableRel (G.replaceVertex s t).Adj := by unfold replaceVertex; infer_instance
+
+theorem edgeFinset_replaceVertex_of_not_adj (hn : ¬G.Adj s t) : (G.replaceVertex s t).edgeFinset =
+    G.edgeFinset \ G.incidenceFinset t ∪ (G.neighborFinset s).image (s(·, t)) := by
+  simp only [incidenceFinset, neighborFinset, ← Set.toFinset_diff, ← Set.toFinset_image,
+    ← Set.toFinset_union]
+  exact Set.toFinset_congr (G.edgeSet_replaceVertex_of_not_adj hn)
+
+theorem edgeFinset_replaceVertex_of_adj (ha : G.Adj s t) : (G.replaceVertex s t).edgeFinset =
+    (G.edgeFinset \ G.incidenceFinset t ∪ (G.neighborFinset s).image (s(·, t))) \ {s(t, t)} := by
+  simp only [incidenceFinset, neighborFinset, ← Set.toFinset_diff, ← Set.toFinset_image,
+    ← Set.toFinset_union, ← Set.toFinset_singleton]
+  exact Set.toFinset_congr (G.edgeSet_replaceVertex_of_adj ha)
+
+lemma disjoint_sdiff_neighborFinset_image :
+    Disjoint (G.edgeFinset \ G.incidenceFinset t) ((G.neighborFinset s).image (s(·, t))) := by
   rw [disjoint_iff_ne]
   intro e he
   have : t ∉ e := by
@@ -114,25 +130,31 @@ end ReplaceVertex
 section AddEdge
 
 /-- Given a vertex pair, add the corresponding edge to the graph's edge set if not present. -/
-abbrev addEdge : SimpleGraph V where
+def addEdge : SimpleGraph V where
   Adj v w := G.Adj v w ∨ s ≠ t ∧ (s = v ∧ t = w ∨ s = w ∧ t = v)
   symm v w := by simp_rw [adj_comm]; (conv_lhs => arg 2; arg 2; rw [or_comm]); exact id
 
 @[simp]
+lemma adj_addEdge_iff {v w : V} : (G.addEdge s t).Adj v w ↔
+    G.Adj v w ∨ s ≠ t ∧ (s = v ∧ t = w ∨ s = w ∧ t = v) := by rfl
+
+@[simp]
 lemma addEdge_self : G.addEdge s s = G := by ext; simp
+
+variable {s t}
 
 lemma addEdge_of_adj (h : G.Adj s t) : G.addEdge s t = G := by
   ext
-  simp only [ne_eq, G.ne_of_adj h, not_false_eq_true, true_and, or_iff_left_iff_imp]
+  simp only [addEdge, ne_eq, G.ne_of_adj h, not_false_eq_true, true_and, or_iff_left_iff_imp]
   rintro (_ | _) <;> simp_all [adj_comm]
 
-variable [Fintype V] {s t} [DecidableRel G.Adj]
+variable [Fintype V] [DecidableRel G.Adj]
+
+instance : DecidableRel (G.addEdge s t).Adj := by unfold addEdge; infer_instance
 
 theorem edgeFinset_addEdge (hn : ¬G.Adj s t) (h : s ≠ t) :
     (G.addEdge s t).edgeFinset = G.edgeFinset.cons s(s, t) (by simp_all) := by
-  ext e
-  refine' e.inductionOn _
-  aesop
+  ext e; refine' e.inductionOn _; aesop
 
 theorem card_edgeFinset_addEdge (hn : ¬G.Adj s t) (h : s ≠ t) :
     (G.addEdge s t).edgeFinset.card = G.edgeFinset.card + 1 := by
