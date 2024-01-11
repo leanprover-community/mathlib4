@@ -9,7 +9,7 @@ import Mathlib.Init.Algebra.Classes
 /-!
 # Instances for operations in algebraic structures.
 
-As the unbundle algebraic structures typeclasses are of somewhat dubious use at present,
+As the unbundled algebraic structures typeclasses are of somewhat dubious use at present,
 we separate out the file providing instances from the main `Mathlib.Algebra.Group.Defs` file.
 -/
 

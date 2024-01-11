@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Group.Defs
-import Mathlib.Logic.Nontrivial.Defs
 import Mathlib.Logic.Function.Basic
+import Mathlib.Logic.Nontrivial.Defs
 
 #align_import algebra.group_with_zero.defs from "leanprover-community/mathlib"@"2f3994e1b117b1e1da49bcfb67334f33460c3ce4"
 
