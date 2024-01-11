@@ -31,7 +31,8 @@ section GeometricPmf
 noncomputable
 def geometricPmfReal (p : ℝ) (n : ℕ) : ℝ := (1-p) ^ n * p
 
-lemma geometricPmfRealSum {p : ℝ} (hp_pos : 0 < p) (hp_le_one : p <= 1) : HasSum (fun n ↦ geometricPmfReal p n) 1 := by
+lemma geometricPmfRealSum {p : ℝ} (hp_pos : 0 < p) (hp_le_one : p <= 1) :
+    HasSum (fun n ↦ geometricPmfReal p n) 1 := by
   unfold geometricPmfReal
   have := hasSum_geometric_of_lt_1 (sub_nonneg.mpr hp_le_one) (sub_lt_self 1 hp_pos)
   apply (hasSum_mul_right_iff (hp_pos.ne')).mpr at this
