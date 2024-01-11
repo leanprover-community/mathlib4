@@ -35,9 +35,9 @@ This file contains basics about the separable degree of a field extension.
   definitions coincide. If `E / F` is infinite and algebraic, we have
   `#(Field.Emb F E) = 2 ^ Field.sepDegree F E` instead.
   (See `Field.cardinal_emb_of_aleph0_le_sepDegree` in another file.) For example, if
-  $ F = \mathbb{Q} $ and $ E = \mathbb{Q}( \mu_{p^\infty} ) $, then $ \operatorname{Emb}_F (E) $
+  $F = \mathbb{Q}$ and $E = \mathbb{Q}( \mu_{p^\infty} )$, then $\operatorname{Emb}_F (E)$
   is in bijection with $\operatorname{Gal}(E/F)$, which is isomorphic to
-  $ \mathbb{Z}_p^\times $, which is uncountable, while $ [E:F] $ is countable.
+  $\mathbb{Z}_p^\times$, which is uncountable, while $ [E:F] $ is countable.
 
 - `Polynomial.natSepDegree`: the separable degree of a polynomial is a natural number,
   defined to be the number of distinct roots of it over its splitting field.
@@ -316,8 +316,13 @@ theorem natSepDegree_eq_natDegree_iff (hf : f ≠ 0) :
 
 /-- If a polynomial is separable, then its separable degree is equal to its degree. -/
 theorem natSepDegree_eq_natDegree_of_separable (h : f.Separable) :
-    f.natSepDegree = f.natDegree :=
-  (natSepDegree_eq_natDegree_iff f h.ne_zero).2 h
+    f.natSepDegree = f.natDegree := (natSepDegree_eq_natDegree_iff f h.ne_zero).2 h
+
+variable {f} in
+/-- Same as `Polynomial.natSepDegree_eq_natDegree_of_separable`, but enables the use of
+dot notation. -/
+theorem Separable.natSepDegree_eq_natDegree (h : f.Separable) :
+    f.natSepDegree = f.natDegree := natSepDegree_eq_natDegree_of_separable f h
 
 /-- If a polynomial splits over `E`, then its separable degree is equal to
 the number of distinct roots of it over `E`. -/
@@ -397,7 +402,7 @@ the degree of `g`. -/
 theorem IsSeparableContraction.natSepDegree_eq {g : Polynomial F} {q : ℕ} [ExpChar F q]
     (h : IsSeparableContraction q f g) : f.natSepDegree = g.natDegree := by
   obtain ⟨h1, m, h2⟩ := h
-  rw [← h2, natSepDegree_expand, natSepDegree_eq_natDegree_of_separable g h1]
+  rw [← h2, natSepDegree_expand, h1.natSepDegree_eq_natDegree]
 
 variable {f} in
 /-- If a polynomial has separable contraction, then its separable degree is equal to the degree of
@@ -431,7 +436,7 @@ theorem natSepDegree_eq_one_iff_of_monic' (q : ℕ) [ExpChar F q] (hm : f.Monic)
   refine ⟨fun h ↦ ?_, fun ⟨n, y, h⟩ ↦ ?_⟩
   · obtain ⟨g, h1, n, rfl⟩ := hi.hasSeparableContraction q
     have h2 : g.natDegree = 1 := by
-      rwa [natSepDegree_expand _ q, natSepDegree_eq_natDegree_of_separable g h1] at h
+      rwa [natSepDegree_expand _ q, h1.natSepDegree_eq_natDegree] at h
     rw [((monic_expand_iff <| expChar_pow_pos F q n).mp hm).eq_X_add_C h2]
     exact ⟨n, -(g.coeff 0), by rw [map_neg, sub_neg_eq_add]⟩
   rw [h, natSepDegree_expand _ q, natSepDegree_X_sub_C]

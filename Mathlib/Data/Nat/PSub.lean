@@ -107,9 +107,9 @@ theorem psub_eq_sub {m n} (h : n ≤ m) : psub m n = some (m - n) :=
 -- Porting note: we only have the simp lemma `Option.bind_some` which uses `Option.bind` not `>>=`
 theorem psub_add (m n k) :
     psub m (n + k) = (do psub (← psub m n) k) := by
-    induction k
-    simp only [zero_eq, add_zero, psub_zero, Option.bind_eq_bind, Option.bind_some]
-    simp [*, Nat.add_succ]
+    induction k with
+    | zero => simp only [zero_eq, add_zero, psub_zero, Option.bind_eq_bind, Option.bind_some]
+    | succ n ih => simp only [ih, add_succ, psub_succ, bind_assoc]
 #align nat.psub_add Nat.psub_add
 
 /-- Same as `psub`, but with a more efficient implementation. -/

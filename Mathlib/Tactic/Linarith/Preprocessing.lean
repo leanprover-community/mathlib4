@@ -299,7 +299,7 @@ def cancelDenoms : Preprocessor where
   name := "cancel denominators"
   transform := fun pf => (do
       let (_, lhs) ← parseCompAndExpr (← inferType pf)
-      guard $ lhs.containsConst (fun n => n = ``HDiv.hDiv || n = ``Div.div)
+      guard <| lhs.containsConst (fun n => n = ``HDiv.hDiv || n = ``Div.div)
       pure [← normalizeDenominatorsLHS pf lhs])
     <|> return [pf]
 end cancelDenoms
@@ -341,7 +341,7 @@ def nlinarithExtras : GlobalPreprocessor where
     let new_es ← s.foldM (fun new_es (⟨e, is_sq⟩ : Expr × Bool) =>
       ((do
         let p ← mkAppM (if is_sq then ``sq_nonneg else ``mul_self_nonneg) #[e]
-        pure $ p::new_es) <|> pure new_es)) ([] : List Expr)
+        pure <| p::new_es) <|> pure new_es)) ([] : List Expr)
     let new_es ← compWithZero.globalize.transform new_es
     trace[linarith] "nlinarith preprocessing found squares"
     trace[linarith] "{s.toList}"
@@ -386,7 +386,7 @@ partial def removeNe_aux : MVarId → List Expr → MetaM (List Branch) := fun g
   let do_goal : MVarId → MetaM (List Branch) := fun g => do
     let (f, h) ← g.intro1
     h.withContext do
-      let ls ← removeNe_aux h $ hs.removeAll [e]
+      let ls ← removeNe_aux h <| hs.removeAll [e]
       return ls.map (fun b : Branch => (b.1, (.fvar f)::b.2))
   return ((← do_goal ng1) ++ (← do_goal ng2))
 

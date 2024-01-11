@@ -13,7 +13,6 @@ import Mathlib.Tactic.Relation.Symm
 import Mathlib.Mathport.Attributes
 import Mathlib.Mathport.Rename
 import Mathlib.Tactic.Relation.Trans
-import Mathlib.Util.Imports
 import Mathlib.Tactic.ProjectionNotation
 
 set_option autoImplicit true
@@ -268,7 +267,7 @@ theorem ExistsUnique.unique {α : Sort u} {p : α → Prop}
 
 -- @[congr]
 theorem exists_unique_congr {p q : α → Prop} (h : ∀ a, p a ↔ q a) : (∃! a, p a) ↔ ∃! a, q a :=
-  exists_congr fun _ ↦ and_congr (h _) $ forall_congr' fun _ ↦ imp_congr_left (h _)
+  exists_congr fun _ ↦ and_congr (h _) <| forall_congr' fun _ ↦ imp_congr_left (h _)
 
 /- decidable -/
 

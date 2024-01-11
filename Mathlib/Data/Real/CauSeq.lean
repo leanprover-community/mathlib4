@@ -9,6 +9,7 @@ import Mathlib.Algebra.Order.Group.MinMax
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Ring.Pi
 import Mathlib.GroupTheory.GroupAction.Pi
+import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.Init.Align
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.Ring

@@ -117,6 +117,13 @@ def _root_.SMulHomClass.toMulActionHom [SMul M X] [SMul M Y] [SMulHomClass F M X
 instance [SMul M X] [SMul M Y] [SMulHomClass F M X Y] : CoeTC F (X →[M] Y) :=
   ⟨SMulHomClass.toMulActionHom⟩
 
+variable (M' X Y F) in
+/-- If Y/X/M forms a scalar tower, any map X → Y preserving X-action also preserves M-action. -/
+def _root_.IsScalarTower.smulHomClass [MulOneClass X] [SMul X Y] [IsScalarTower M' X Y]
+    [SMulHomClass F X X Y] : SMulHomClass F M' X Y where
+  map_smul f m x := by
+    rw [← mul_one (m • x), ← smul_eq_mul, map_smul, smul_assoc, ← map_smul, smul_eq_mul, mul_one]
+
 protected theorem map_smul (f : X →[M'] Y) (m : M') (x : X) : f (m • x) = m • f x :=
   map_smul f m x
 #align mul_action_hom.map_smul MulActionHom.map_smul

@@ -829,7 +829,7 @@ protected theorem HasBasis.biInter_mem {f : Set α → Set β} (h : HasBasis l p
 #align filter.has_basis.bInter_mem Filter.HasBasis.biInter_mem
 
 protected theorem HasBasis.ker (h : HasBasis l p s) : l.ker = ⋂ (i) (_ : p i), s i :=
-  l.ker_def.trans $ h.biInter_mem monotone_id
+  l.ker_def.trans <| h.biInter_mem monotone_id
 #align filter.has_basis.sInter_sets Filter.HasBasis.ker
 
 variable {ι'' : Type*} [Preorder ι''] (l) (s'' : ι'' → Set α)
