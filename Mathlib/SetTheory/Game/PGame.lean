@@ -1627,7 +1627,7 @@ def Relabelling.addCongr : ∀ {w x y z : PGame.{u}}, w ≡r x → y ≡r z → 
     · exact Hwx.addCongr (hL₂ j)
     · exact (hR₁ i).addCongr Hyz
     · exact Hwx.addCongr (hR₂ j)
-termination_by w x y z _ _ => (x, z)
+termination_by w x y z => (x, z)
 #align pgame.relabelling.add_congr SetTheory.PGame.Relabelling.addCongr
 
 instance : Sub PGame :=

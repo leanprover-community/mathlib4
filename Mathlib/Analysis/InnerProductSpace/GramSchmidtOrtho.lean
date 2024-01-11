@@ -152,7 +152,7 @@ theorem gramSchmidt_mem_span (f : ι → E) :
   let hkj : k < j := (Finset.mem_Iio.1 hk).trans_le hij
   exact smul_mem _ _
     (span_mono (image_subset f <| Iic_subset_Iic.2 hkj.le) <| gramSchmidt_mem_span _ le_rfl)
-termination_by j _ _ => j
+termination_by j => j
 decreasing_by exact hkj
 #align gram_schmidt_mem_span gramSchmidt_mem_span
 

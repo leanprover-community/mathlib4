@@ -775,7 +775,7 @@ protected lemma Nonempty.strong_induction {p : ∀ s, s.Nonempty → Prop}
     · refine h₁ hs fun t ht hts ↦ ?_
       have := card_lt_card hts
       exact ht.strong_induction h₀ h₁
-termination_by Nonempty.strong_induction _ => Finset.card ‹_›
+termination_by Finset.card ‹_›
 
 /-- Suppose that, given that `p t` can be defined on all supersets of `s` of cardinality less than
 `n`, one knows how to define `p s`. Then one can inductively define `p s` for all finsets `s` of

@@ -89,7 +89,7 @@ theorem Relabelling.birthday_congr : ∀ {x y : PGame.{u}}, x ≡r y → birthda
     · exact ⟨_, (r.moveLeftSymm j).birthday_congr⟩
     · exact ⟨_, (r.moveRight j).birthday_congr.symm⟩
     · exact ⟨_, (r.moveRightSymm j).birthday_congr⟩
-termination_by x y _ => (x, y)
+termination_by x y => (x, y)
 #align pgame.relabelling.birthday_congr SetTheory.PGame.Relabelling.birthday_congr
 
 @[simp]

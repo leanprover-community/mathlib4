@@ -105,7 +105,7 @@ instance impartial_add : ∀ (G H : PGame) [G.Impartial] [H.Impartial], (G + H).
       all_goals
         intro i; simp only [add_moveRight_inl, add_moveRight_inr]
         apply impartial_add
-termination_by G H _ _ => (G, H)
+termination_by G H => (G, H)
 decreasing_by all_goals pgame_wf_tac
 #align pgame.impartial.impartial_add SetTheory.PGame.Impartial.impartial_add
 
@@ -119,7 +119,7 @@ instance impartial_neg : ∀ (G : PGame) [G.Impartial], (-G).Impartial
       apply impartial_neg
     · rw [moveRight_neg']
       apply impartial_neg
-termination_by G _ => G
+termination_by G => G
 decreasing_by all_goals pgame_wf_tac
 #align pgame.impartial.impartial_neg SetTheory.PGame.Impartial.impartial_neg
 

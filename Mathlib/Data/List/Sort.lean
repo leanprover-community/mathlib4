@@ -452,7 +452,7 @@ theorem Sorted.merge : ∀ {l l' : List α}, Sorted r l → Sorted r l' → Sort
         assumption
       · exact _root_.trans ba (rel_of_sorted_cons h₁ _ bl)
       · exact rel_of_sorted_cons h₂ _ bl'
-  termination_by l₁ l₂ _ _ => length l₁ + length l₂
+  termination_by l₁ l₂ => length l₁ + length l₂
 #align list.sorted.merge List.Sorted.merge
 
 variable (r)

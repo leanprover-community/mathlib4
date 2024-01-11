@@ -305,7 +305,7 @@ theorem equiv_nim_grundyValue : ∀ (G : PGame.{u}) [G.Impartial], G ≈ nim (gr
       rw [add_moveLeft_inl, moveLeft_mk]
       apply Equiv.trans (add_congr_left (equiv_nim_grundyValue (G.moveLeft i)))
       simpa only [hi] using Impartial.add_self (nim (grundyValue (G.moveLeft i)))
-termination_by G _ => G
+termination_by G => G
 decreasing_by all_goals pgame_wf_tac
 #align pgame.equiv_nim_grundy_value SetTheory.PGame.equiv_nim_grundyValue
 

@@ -252,7 +252,7 @@ instance shortAdd : ∀ (x y : PGame.{u}) [Short x] [Short y], Short (x + y)
       · apply shortAdd
       · change Short (mk xl xr xL xR + _); apply shortAdd
 -- Porting note: In Lean 3 `using_well_founded` didn't need this to be explicit.
-termination_by x y _ _ => (x, y)
+termination_by x y => (x, y)
 -- Porting note: `decreasing_by pgame_wf_tac` is no longer needed.
 #align pgame.short_add SetTheory.PGame.shortAdd
 
@@ -296,7 +296,7 @@ def leLFDecidable : ∀ (x y : PGame.{u}) [Short x] [Short y], Decidable (x ≤ 
         intro i
         apply (leLFDecidable _ _).1
 -- Porting note: In Lean 3 `using_well_founded` didn't need this to be explicit.
-termination_by x y _ _ => (x, y)
+termination_by x y => (x, y)
 -- Porting note: `decreasing_by pgame_wf_tac` is no longer needed.
 #align pgame.le_lf_decidable SetTheory.PGame.leLFDecidable
 
