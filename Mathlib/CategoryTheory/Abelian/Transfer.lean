@@ -83,8 +83,6 @@ def cokernelIso {X Y : C} (f : X ⟶ Y) : G.obj (cokernel (F.map f)) ≅ cokerne
   -- We have to write an explicit `PreservesColimits` type here,
   -- as `leftAdjointPreservesColimits` has universe variables.
   have : PreservesColimits G := adj.leftAdjointPreservesColimits
-  -- porting note: the next `have` has been added, otherwise some instance were not found
-  have : ∀ (X' Y' : C) (f' : X' ⟶ Y'), HasCokernel f' := inferInstance
   calc
     G.obj (cokernel (F.map f)) ≅ cokernel (G.map (F.map f)) :=
       (asIso (cokernelComparison _ G)).symm
@@ -99,8 +97,6 @@ variable [Limits.HasKernels C] [PreservesFiniteLimits G]
 def coimageIsoImageAux {X Y : C} (f : X ⟶ Y) :
     kernel (G.map (cokernel.π (F.map f))) ≅ kernel (cokernel.π f) := by
   have : PreservesColimits G := adj.leftAdjointPreservesColimits
-  -- porting note: the next `have` has been added, otherwise some instance were not found
-  have : ∀ (X' Y' : C) (f' : X' ⟶ Y'), HasCokernel f' := inferInstance
   calc
     kernel (G.map (cokernel.π (F.map f))) ≅
         kernel (cokernel.π (G.map (F.map f)) ≫ cokernelComparison (F.map f) G) :=
@@ -127,8 +123,6 @@ We still need to check that this agrees with the canonical morphism.
 -/
 def coimageIsoImage {X Y : C} (f : X ⟶ Y) : Abelian.coimage f ≅ Abelian.image f := by
   have : PreservesLimits F := adj.rightAdjointPreservesLimits
-  -- porting note: the next `have` has been added, otherwise some instance were not found
-  haveI : ∀ (X' Y' : D) (f' : X' ⟶ Y'), HasCokernel f' := inferInstance
   calc
     Abelian.coimage f ≅ cokernel (kernel.ι f) := Iso.refl _
     _ ≅ G.obj (cokernel (F.map (kernel.ι f))) := (cokernelIso _ _ i adj _).symm
