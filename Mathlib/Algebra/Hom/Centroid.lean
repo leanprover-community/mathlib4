@@ -395,7 +395,7 @@ instance : Semiring (CentroidHom α) :=
     toEnd_nat_cast
 
 theorem comp_mul_comm (T S : CentroidHom α) (a b : α) : (T ∘ S) (a * b) = (S ∘ T) (a * b) := by
-  simp
+  simp only [Function.comp_apply]
   rw [map_mul_right, map_mul_left, ← map_mul_right, ← map_mul_left]
 #align centroid_hom.comp_mul_comm CentroidHom.comp_mul_comm
 

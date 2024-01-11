@@ -35,7 +35,7 @@ Given an `A`-algebra `B` and `b`, an `ι`-indexed family of elements of `B`, we 
   field `E` corresponding to `j : ι` via a bijection `e : ι ≃ (L →ₐ[K] E)`.
 * `Algebra.discr_powerBasis_eq_prod` : the discriminant of a power basis.
 * `Algebra.discr_isIntegral` : if `K` and `L` are fields and `IsScalarTower R K L`, if
-  `b : ι → L` satisfies ` ∀ i, IsIntegral R (b i)`, then `IsIntegral R (discr K b)`.
+  `b : ι → L` satisfies `∀ i, IsIntegral R (b i)`, then `IsIntegral R (discr K b)`.
 * `Algebra.discr_mul_isIntegral_mem_adjoin` : let `K` be the fraction field of an integrally
   closed domain `R` and let `L` be a finite separable extension of `K`. Let `B : PowerBasis K L`
   be such that `IsIntegral R B.gen`. Then for all, `z : L` we have

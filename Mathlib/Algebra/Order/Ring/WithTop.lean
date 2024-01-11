@@ -190,7 +190,7 @@ private theorem distrib' (a b c : WithTop α) : (a + b) * c = a * c + b * c := b
     repeat' first | rfl |exact congr_arg some (add_mul _ _ _)
 
 /-- This instance requires `CanonicallyOrderedCommSemiring` as it is the smallest class
-that derives from both `NonAssocNonUnitalSemiring` and `CanonicallyOrderedAddMonoid`, both
+that derives from both `NonAssocNonUnitalSemiring` and `CanonicallyOrderedAddCommMonoid`, both
 of which are required for distributivity. -/
 instance commSemiring [Nontrivial α] : CommSemiring (WithTop α) :=
   { WithTop.addCommMonoidWithOne, WithTop.commMonoidWithZero with
@@ -199,7 +199,7 @@ instance commSemiring [Nontrivial α] : CommSemiring (WithTop α) :=
       rw [mul_comm, distrib', mul_comm b, mul_comm c] }
 
 instance [Nontrivial α] : CanonicallyOrderedCommSemiring (WithTop α) :=
-  { WithTop.commSemiring, WithTop.canonicallyOrderedAddMonoid with
+  { WithTop.commSemiring, WithTop.canonicallyOrderedAddCommMonoid with
   eq_zero_or_eq_zero_of_mul_eq_zero := eq_zero_or_eq_zero_of_mul_eq_zero}
 
 /-- A version of `WithTop.map` for `RingHom`s. -/

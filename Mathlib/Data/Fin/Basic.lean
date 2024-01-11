@@ -1657,7 +1657,7 @@ theorem succAbove_predAbove {p : Fin n} {i : Fin (n + 1)} (h : i ≠ castSucc p)
     rw [if_pos]
     rfl
     exact H
-    simp
+    simp only [castSucc_mk, mk_lt_mk, not_lt]
     apply le_of_lt H
   · rw [dif_pos]
     rw [if_neg]

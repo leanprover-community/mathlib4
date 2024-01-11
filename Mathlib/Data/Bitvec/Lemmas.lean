@@ -43,7 +43,7 @@ theorem toNat_append {m : ℕ} (xs : Bitvec m) (b : Bool) :
   conv in addLsb x b =>
     rw [← h]
   clear h
-  simp
+  simp only [List.foldl_append, List.foldl_cons, List.foldl_nil]
   induction' xs with x xs xs_ih generalizing x
   · simp
     unfold addLsb

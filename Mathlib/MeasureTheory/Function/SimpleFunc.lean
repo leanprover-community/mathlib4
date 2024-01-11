@@ -171,28 +171,12 @@ theorem range_const_subset (α) [MeasurableSpace α] (b : β) : (const α b).ran
 theorem simpleFunc_bot {α} (f : @SimpleFunc α ⊥ β) [Nonempty β] : ∃ c, ∀ x, f x = c := by
   have hf_meas := @SimpleFunc.measurableSet_fiber α _ ⊥ f
   simp_rw [MeasurableSpace.measurableSet_bot_iff] at hf_meas
-  cases' isEmpty_or_nonempty α with h h
-  · simp only [IsEmpty.forall_iff, exists_const]
-  · specialize hf_meas (f h.some)
-    cases' hf_meas with hf_meas hf_meas
-    · exfalso
-      refine' Set.not_mem_empty h.some _
-      rw [← hf_meas, Set.mem_preimage]
-      exact Set.mem_singleton _
-    · refine' ⟨f h.some, fun x => _⟩
-      have : x ∈ f ⁻¹' {f h.some} := by
-        rw [hf_meas]
-        exact Set.mem_univ x
-      rwa [Set.mem_preimage, Set.mem_singleton_iff] at this
+  exact (exists_eq_const_of_preimage_singleton hf_meas).imp fun c hc ↦ congr_fun hc
 #align measure_theory.simple_func.simple_func_bot MeasureTheory.SimpleFunc.simpleFunc_bot
 
 theorem simpleFunc_bot' {α} [Nonempty β] (f : @SimpleFunc α ⊥ β) :
-    ∃ c, f = @SimpleFunc.const α _ ⊥ c := by
-  letI : MeasurableSpace α := ⊥
-  obtain ⟨c, h_eq⟩ := simpleFunc_bot f
-  refine' ⟨c, _⟩
-  ext1 x
-  rw [h_eq x, SimpleFunc.coe_const, Function.const]
+    ∃ c, f = @SimpleFunc.const α _ ⊥ c :=
+  letI : MeasurableSpace α := ⊥; (simpleFunc_bot f).imp fun _ ↦ ext
 #align measure_theory.simple_func.simple_func_bot' MeasureTheory.SimpleFunc.simpleFunc_bot'
 
 theorem measurableSet_cut (r : α → β → Prop) (f : α →ₛ β) (h : ∀ b, MeasurableSet { a | r a b }) :
@@ -1126,7 +1110,6 @@ theorem lintegral_mono {f g : α →ₛ ℝ≥0∞} (hfg : f ≤ g) (hμν : μ 
     _ = g.lintegral μ := by rw [sup_of_le_right hfg]
     _ ≤ g.lintegral ν :=
       Finset.sum_le_sum fun y _ => ENNReal.mul_left_mono <| hμν _ (g.measurableSet_preimage _)
-
 #align measure_theory.simple_func.lintegral_mono MeasureTheory.SimpleFunc.lintegral_mono
 
 /-- `SimpleFunc.lintegral` depends only on the measures of `f ⁻¹' {y}`. -/

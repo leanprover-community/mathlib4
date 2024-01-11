@@ -211,9 +211,9 @@ end mapIdxM
 #align list.lookmap List.lookmap
 #align list.countp List.countP
 #align list.count List.count
-#align list.is_prefix List.isPrefix
-#align list.is_suffix List.isSuffix
-#align list.is_infix List.isInfix
+#align list.is_prefix List.IsPrefix
+#align list.is_suffix List.IsSuffix
+#align list.is_infix List.IsInfix
 #align list.inits List.inits
 #align list.tails List.tails
 #align list.sublists' List.sublists'

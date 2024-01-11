@@ -225,7 +225,7 @@ protected theorem insert [MeasurableSingletonClass (NullMeasurableSpace α μ)]
 #align measure_theory.null_measurable_set.insert MeasureTheory.NullMeasurableSet.insert
 
 theorem exists_measurable_superset_ae_eq (h : NullMeasurableSet s μ) :
-    ∃ (t : _) (_ : t ⊇ s), MeasurableSet t ∧ t =ᵐ[μ] s := by
+    ∃ t, t ⊇ s ∧ MeasurableSet t ∧ t =ᵐ[μ] s := by
   rcases h with ⟨t, htm, hst⟩
   refine' ⟨t ∪ toMeasurable μ (s \ t), _, htm.union (measurableSet_toMeasurable _ _), _⟩
   · exact diff_subset_iff.1 (subset_toMeasurable _ _)
@@ -235,7 +235,7 @@ theorem exists_measurable_superset_ae_eq (h : NullMeasurableSet s μ) :
 
 theorem toMeasurable_ae_eq (h : NullMeasurableSet s μ) : toMeasurable μ s =ᵐ[μ] s := by
   rw [toMeasurable_def, dif_pos]
-  exact (exists_measurable_superset_ae_eq h).choose_spec.snd.2
+  exact (exists_measurable_superset_ae_eq h).choose_spec.2.2
 #align measure_theory.null_measurable_set.to_measurable_ae_eq MeasureTheory.NullMeasurableSet.toMeasurable_ae_eq
 
 theorem compl_toMeasurable_compl_ae_eq (h : NullMeasurableSet s μ) : (toMeasurable μ sᶜ)ᶜ =ᵐ[μ] s :=
@@ -243,7 +243,7 @@ theorem compl_toMeasurable_compl_ae_eq (h : NullMeasurableSet s μ) : (toMeasura
 #align measure_theory.null_measurable_set.compl_to_measurable_compl_ae_eq MeasureTheory.NullMeasurableSet.compl_toMeasurable_compl_ae_eq
 
 theorem exists_measurable_subset_ae_eq (h : NullMeasurableSet s μ) :
-    ∃ (t : _) (_ : t ⊆ s), MeasurableSet t ∧ t =ᵐ[μ] s :=
+    ∃ t, t ⊆ s ∧ MeasurableSet t ∧ t =ᵐ[μ] s :=
   ⟨(toMeasurable μ sᶜ)ᶜ, compl_subset_comm.2 <| subset_toMeasurable _ _,
     (measurableSet_toMeasurable _ _).compl, compl_toMeasurable_compl_ae_eq h⟩
 #align measure_theory.null_measurable_set.exists_measurable_subset_ae_eq MeasureTheory.NullMeasurableSet.exists_measurable_subset_ae_eq

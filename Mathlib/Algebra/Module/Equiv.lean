@@ -95,7 +95,7 @@ class SemilinearEquivClass (F : Type*) {R S : outParam (Type*)} [Semiring R] [Se
   (σ : outParam <| R →+* S) {σ' : outParam <| S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
   (M M₂ : outParam (Type*)) [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂] extends
   AddEquivClass F M M₂ where
-  /-- Applying a semilinear equivalence `f` over `σ` to `r • x ` equals `σ r • f x`. -/
+  /-- Applying a semilinear equivalence `f` over `σ` to `r • x` equals `σ r • f x`. -/
   map_smulₛₗ : ∀ (f : F) (r : R) (x : M), f (r • x) = σ r • f x
 #align semilinear_equiv_class SemilinearEquivClass
 

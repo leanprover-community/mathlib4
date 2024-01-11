@@ -277,7 +277,7 @@ theorem cramer_eq_adjugate_mulVec (A : Matrix n n α) (b : n → α) :
   conv_lhs =>
     rw [this]
   ext k
-  simp [mulVec, dotProduct, mul_comm, map_sum]
+  simp [mulVec, dotProduct, mul_comm]
 #align matrix.cramer_eq_adjugate_mul_vec Matrix.cramer_eq_adjugate_mulVec
 
 theorem mul_adjugate_apply (A : Matrix n n α) (i j k) :

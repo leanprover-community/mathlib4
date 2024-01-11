@@ -269,7 +269,7 @@ theorem hasSum_geometric_two' (a : ℝ) : HasSum (fun n : ℕ => a / 2 / 2 ^ n) 
   convert HasSum.mul_left (a / 2)
       (hasSum_geometric_of_lt_1 (le_of_lt one_half_pos) one_half_lt_one) using 1
   · funext n
-    simp
+    simp only [one_div, inv_pow]
     rfl
   · norm_num
 #align has_sum_geometric_two' hasSum_geometric_two'

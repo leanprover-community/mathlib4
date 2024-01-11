@@ -623,15 +623,15 @@ If `s` is a null measurable set, then
 we also have `t =ᵐ[μ] s`, see `NullMeasurableSet.toMeasurable_ae_eq`.
 This notion is sometimes called a "measurable hull" in the literature. -/
 irreducible_def toMeasurable (μ : Measure α) (s : Set α) : Set α :=
-  if h : ∃ (t : _) (_ : t ⊇ s), MeasurableSet t ∧ t =ᵐ[μ] s then h.choose else
-    if h' : ∃ (t : _) (_ : t ⊇ s),
-      MeasurableSet t ∧ ∀ u, MeasurableSet u → μ (t ∩ u) = μ (s ∩ u) then h'.choose
+  if h : ∃ t, t ⊇ s ∧ MeasurableSet t ∧ t =ᵐ[μ] s then h.choose else
+    if h' : ∃ t, t ⊇ s ∧ MeasurableSet t ∧
+      ∀ u, MeasurableSet u → μ (t ∩ u) = μ (s ∩ u) then h'.choose
     else (exists_measurable_superset μ s).choose
 #align measure_theory.to_measurable MeasureTheory.toMeasurable
 
 theorem subset_toMeasurable (μ : Measure α) (s : Set α) : s ⊆ toMeasurable μ s := by
   rw [toMeasurable_def]; split_ifs with hs h's
-  exacts [hs.choose_spec.fst, h's.choose_spec.fst, (exists_measurable_superset μ s).choose_spec.1]
+  exacts [hs.choose_spec.1, h's.choose_spec.1, (exists_measurable_superset μ s).choose_spec.1]
 #align measure_theory.subset_to_measurable MeasureTheory.subset_toMeasurable
 
 theorem ae_le_toMeasurable : s ≤ᵐ[μ] toMeasurable μ s :=
@@ -644,15 +644,15 @@ theorem ae_le_toMeasurable : s ≤ᵐ[μ] toMeasurable μ s :=
 theorem measurableSet_toMeasurable (μ : Measure α) (s : Set α) :
     MeasurableSet (toMeasurable μ s) := by
   rw [toMeasurable_def]; split_ifs with hs h's
-  exacts [hs.choose_spec.snd.1, h's.choose_spec.snd.1,
+  exacts [hs.choose_spec.2.1, h's.choose_spec.2.1,
           (exists_measurable_superset μ s).choose_spec.2.1]
 #align measure_theory.measurable_set_to_measurable MeasureTheory.measurableSet_toMeasurable
 
 @[simp]
 theorem measure_toMeasurable (s : Set α) : μ (toMeasurable μ s) = μ s := by
   rw [toMeasurable_def]; split_ifs with hs h's
-  · exact measure_congr hs.choose_spec.snd.2
-  · simpa only [inter_univ] using h's.choose_spec.snd.2 univ MeasurableSet.univ
+  · exact measure_congr hs.choose_spec.2.2
+  · simpa only [inter_univ] using h's.choose_spec.2.2 univ MeasurableSet.univ
   · exact (exists_measurable_superset μ s).choose_spec.2.2
 #align measure_theory.measure_to_measurable MeasureTheory.measure_toMeasurable
 

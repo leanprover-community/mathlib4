@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Num.Bitwise
 import Mathlib.Data.Int.CharZero
+import Mathlib.Data.Nat.Bitwise
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.Nat.PSub
 import Mathlib.Data.Nat.Size
@@ -922,7 +923,7 @@ theorem bitwise'_to_nat {f : Num → Num → Num} {g : Bool → Bool → Bool} (
     any_goals assumption
     any_goals rw [Nat.bitwise'_zero, p11]; cases g true true <;> rfl
     any_goals rw [Nat.bitwise'_zero_left, this, ← bit_to_nat, p1b]
-    any_goals rw [Nat.bitwise'_zero_right _ gff, this, ← bit_to_nat, pb1]
+    any_goals rw [Nat.bitwise'_zero_right, this, ← bit_to_nat, pb1]
     all_goals
       rw [← show ∀ n : PosNum, ↑(p m n) = Nat.bitwise' g ↑m ↑n from IH]
       rw [← bit_to_nat, pbb]

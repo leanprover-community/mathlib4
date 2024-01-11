@@ -12,6 +12,7 @@ import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
 # The symmetric monoidal structure on `Module R`.
 -/
 
+suppress_compilation
 
 universe v w x u
 

@@ -119,6 +119,9 @@ theorem congr_fun₂ {f g : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P} (h : 
   LinearMap.congr_fun (LinearMap.congr_fun h x) y
 #align linear_map.congr_fun₂ LinearMap.congr_fun₂
 
+theorem ext_iff₂ {f g : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P} : f = g ↔ ∀ m n, f m n = g m n :=
+  ⟨congr_fun₂, ext₂⟩
+
 section
 
 attribute [local instance] SMulCommClass.symm

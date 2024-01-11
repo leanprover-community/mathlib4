@@ -5,7 +5,7 @@ Authors: Frédéric Dupuis, Yaël Dillies
 -/
 import Mathlib.Algebra.Order.SMul
 
-#align_import algebra.order.module from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
+#align_import algebra.order.module from "leanprover-community/mathlib"@"3ba15165bd6927679be7c22d6091a87337e3cd0c"
 
 /-!
 # Ordered module
@@ -216,6 +216,19 @@ theorem BddAbove.smul_of_nonpos (hc : c ≤ 0) (hs : BddAbove s) : BddBelow (c �
 #align bdd_above.smul_of_nonpos BddAbove.smul_of_nonpos
 
 end OrderedRing
+
+section LinearOrderedRing
+variable [LinearOrderedRing k] [LinearOrderedAddCommGroup M] [Module k M] [OrderedSMul k M] {a : k}
+
+theorem smul_max_of_nonpos (ha : a ≤ 0) (b₁ b₂ : M) : a • max b₁ b₂ = min (a • b₁) (a • b₂) :=
+  (antitone_smul_left ha : Antitone (_ : M → M)).map_max
+#align smul_max_of_nonpos smul_max_of_nonpos
+
+theorem smul_min_of_nonpos (ha : a ≤ 0) (b₁ b₂ : M) : a • min b₁ b₂ = max (a • b₁) (a • b₂) :=
+  (antitone_smul_left ha : Antitone (_ : M → M)).map_min
+#align smul_min_of_nonpos smul_min_of_nonpos
+
+end LinearOrderedRing
 
 section LinearOrderedField
 

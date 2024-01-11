@@ -1925,7 +1925,7 @@ namespace Finset
 
 variable {f : Perm α} {s : Finset α}
 
-theorem _root_.Finset.product_self_eq_disj_Union_perm_aux (hf : f.IsCycleOn s) :
+theorem _root_.Finset.product_self_eq_disjiUnion_perm_aux (hf : f.IsCycleOn s) :
     (range s.card : Set ℕ).PairwiseDisjoint fun k =>
       s.map ⟨fun i => (i, (f ^ k) i), fun i j => congr_arg Prod.fst⟩ := by
   obtain hs | _ := (s : Set α).subsingleton_or_nontrivial
@@ -1940,7 +1940,7 @@ theorem _root_.Finset.product_self_eq_disj_Union_perm_aux (hf : f.IsCycleOn s) :
     rw [hf.pow_apply_eq_pow_apply ha] at h
     rw [mem_coe, mem_range] at hm hn
     exact hmn.symm (h.eq_of_lt_of_lt hn hm)
-#align finset.product_self_eq_disj_Union_perm_aux Finset.product_self_eq_disj_Union_perm_aux
+#align finset.product_self_eq_disj_Union_perm_aux Finset.product_self_eq_disjiUnion_perm_aux
 
 /-- We can partition the square `s ×ˢ s` into shifted diagonals as such:
 ```
@@ -1953,11 +1953,11 @@ theorem _root_.Finset.product_self_eq_disj_Union_perm_aux (hf : f.IsCycleOn s) :
 
 The diagonals are given by the cycle `f`.
 -/
-theorem _root_.Finset.product_self_eq_disjUnion_perm (hf : f.IsCycleOn s) :
+theorem _root_.Finset.product_self_eq_disjiUnion_perm (hf : f.IsCycleOn s) :
     s ×ˢ s =
       (range s.card).disjiUnion
         (fun k => s.map ⟨fun i => (i, (f ^ k) i), fun i j => congr_arg Prod.fst⟩)
-        (product_self_eq_disj_Union_perm_aux hf) := by
+        (product_self_eq_disjiUnion_perm_aux hf) := by
   ext ⟨a, b⟩
   simp only [mem_product, Equiv.Perm.coe_pow, mem_disjiUnion, mem_range, mem_map,
     Function.Embedding.coeFn_mk, Prod.mk.inj_iff, exists_prop]
@@ -1966,7 +1966,7 @@ theorem _root_.Finset.product_self_eq_disjUnion_perm (hf : f.IsCycleOn s) :
     exact ⟨n, hn, a, hx.1, rfl, by rw [f.iterate_eq_pow]⟩
   · rintro ⟨n, -, a, ha, rfl, rfl⟩
     exact ⟨ha, (hf.1.iterate _).mapsTo ha⟩
-#align finset.product_self_eq_disj_Union_perm Finset.product_self_eq_disjUnionₓ_perm
+#align finset.product_self_eq_disj_Union_perm Finset.product_self_eq_disjiUnion_permₓ
 
 end Finset
 
@@ -1976,7 +1976,7 @@ variable [Semiring α] [AddCommMonoid β] [Module α β] {s : Finset ι} {σ : P
 
 theorem _root_.Finset.sum_smul_sum_eq_sum_perm (hσ : σ.IsCycleOn s) (f : ι → α) (g : ι → β) :
     ((∑ i in s, f i) • ∑ i in s, g i) = ∑ k in range s.card, ∑ i in s, f i • g ((σ ^ k) i) := by
-  simp_rw [sum_smul_sum, product_self_eq_disjUnion_perm hσ, sum_disjiUnion, sum_map]
+  simp_rw [sum_smul_sum, product_self_eq_disjiUnion_perm hσ, sum_disjiUnion, sum_map]
   rfl
 #align finset.sum_smul_sum_eq_sum_perm Finset.sum_smul_sum_eq_sum_perm
 

@@ -289,7 +289,7 @@ theorem changeForm.neg_proof : (-B).toQuadraticForm = Q - Q' :=
 #align clifford_algebra.change_form.neg_proof CliffordAlgebra.changeForm.neg_proof
 
 theorem changeForm.associated_neg_proof [Invertible (2 : R)] :
-    (QuadraticForm.associated (R₁ := R) (M := M) (-Q)).toQuadraticForm = 0 - Q := by
+    (QuadraticForm.associated (R := R) (M := M) (-Q)).toQuadraticForm = 0 - Q := by
   simp [QuadraticForm.toQuadraticForm_associated]
 #align clifford_algebra.change_form.associated_neg_proof CliffordAlgebra.changeForm.associated_neg_proof
 

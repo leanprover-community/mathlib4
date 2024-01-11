@@ -20,6 +20,8 @@ These results are separate from the definition of `QuadraticForm.tmul` as that f
 * `QuadraticForm.tensorLId`: `TensorProduct.lid` as a `QuadraticForm.IsometryEquiv`
 -/
 
+suppress_compilation
+
 universe uR uM₁ uM₂ uM₃ uM₄
 variable {R : Type uR} {M₁ : Type uM₁} {M₂ : Type uM₂} {M₃ : Type uM₃} {M₄ : Type uM₄}
 

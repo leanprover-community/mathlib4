@@ -21,6 +21,7 @@ import Mathlib.LinearAlgebra.TensorProduct.Tower
 
 -/
 
+suppress_compilation
 
 universe u v w uι uR uA uM₁ uM₂
 

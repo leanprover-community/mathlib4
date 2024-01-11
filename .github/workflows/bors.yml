@@ -98,6 +98,25 @@ jobs:
       - name: check that all files are imported
         run: git diff --exit-code
 
+  check_workflows:
+    if: github.repository == 'leanprover-community/mathlib4'
+    name: check workflows
+    runs-on: ubuntu-latest
+    steps:
+      - name: cleanup
+        run: |
+          find . -name . -o -prune -exec rm -rf -- {} +
+
+      - uses: actions/checkout@v3
+
+      - name: update workflows
+        run: |
+          cd .github/workflows/
+          ./mk_build_yml.sh
+
+      - name: check that workflows were consistent
+        run: git diff --exit-code
+
   build:
     if: github.repository == 'leanprover-community/mathlib4'
     name: Build
@@ -142,7 +161,8 @@ jobs:
           lake exe cache clean
           # We've been seeing many failures at this step recently because of network errors.
           # As a band-aid, we try twice.
-          lake exe cache get || lake exe cache get
+          # The 'sleep 1' is small pause to let the network recover.
+          lake exe cache get || (sleep 1; lake exe cache get)
 
       - name: build mathlib
         id: build
@@ -165,7 +185,8 @@ jobs:
           # run this in CI if it gets an incorrect lake hash for existing cache files somehow
           # lake exe cache pack! || true
           lake exe cache commit || true
-          lake exe cache put || true
+          # try twice in case of network errors
+          lake exe cache put || (sleep 1; lake exe cache put) || true
         env:
           MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
 
@@ -174,7 +195,7 @@ jobs:
           # Because the `lean-pr-testing-NNNN` branches use toolchains that are "updated in place"
           # the cache mechanism is unreliable, so we don't test it if we are on such a branch.
           if [[ ! `cat lean-toolchain` =~ ^leanprover/lean4-pr-releases:pr-release-[0-9]+$ ]]; then
-            lake exe cache get
+            lake exe cache get || (sleep 1; lake exe cache get)
             # We pipe the output of `lake build` to a file,
             # and if we find " Building Mathlib" in that file we kill `lake build`, and error.
             lake build > tmp & tail --pid=$! -n +1 -F tmp | (! (grep -m 1 " Building Mathlib" && kill $! ))
@@ -189,17 +210,18 @@ jobs:
           # it should be possible to determine whether they need to be built without actually
           # storing and transferring oleans over the network.
           # Hopefully a future re-implementation of `cache` will obviate the present need for this hack.
-          lake exe cache get Archive.lean
+          # We retry twice in case of network errors.
+          lake exe cache get Archive.lean || (sleep 1; lake exe cache get Archive.lean)
           lake build Archive
-          lake exe cache put Archive.lean
+          lake exe cache put Archive.lean || (sleep 1; lake exe cache put Archive.lean)
         env:
           MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
 
       - name: build counterexamples
         run: |
-          lake exe cache get Counterexamples.lean
+          lake exe cache get Counterexamples.lean || (sleep 1; lake exe cache get Counterexamples.lean)
           lake build Counterexamples
-          lake exe cache put Counterexamples.lean
+          lake exe cache put Counterexamples.lean || (sleep 1; lake exe cache put Counterexamples.lean)
         env:
           MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
 
@@ -229,7 +251,11 @@ jobs:
         run: |
           git clone https://github.com/leanprover/lean4checker
           cd lean4checker
-          lake build
+          # Because `Lean4Checker/Tests/ReduceBool.lean` is non-deterministic (compiles only 1/4 of the time),
+          # we just keep rebuilding until it works!
+          # I'll try to come up with something better.
+          until lake build > /dev/null 2>&1; do :; done
+          ./test.sh
           cd ..
           lake env lean4checker/build/bin/lean4checker
 

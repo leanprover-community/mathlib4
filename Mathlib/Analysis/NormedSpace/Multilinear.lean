@@ -215,7 +215,7 @@ theorem norm_image_sub_le_of_bound {C : ℝ} (hC : 0 ≤ C) (H : ∀ m, ‖f m�
         · intro j _
           by_cases h : j = i
           · rw [h]
-            simp
+            simp only [ite_true, Function.update_same]
             exact norm_le_pi_norm (m₁ - m₂) i
           · simp [h, -le_max_iff, -max_le_iff, max_le_max, norm_le_pi_norm (_ : ∀ i, E i)]
       _ = ‖m₁ - m₂‖ * max ‖m₁‖ ‖m₂‖ ^ (Fintype.card ι - 1) := by

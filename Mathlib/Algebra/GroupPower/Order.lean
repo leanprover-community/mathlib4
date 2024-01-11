@@ -9,6 +9,7 @@ import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Data.Set.Intervals.Basic
 import Mathlib.Data.Nat.Basic
 import Mathlib.Init.Data.Nat.Basic
+import Mathlib.Data.Nat.Order.Basic
 
 #align_import algebra.group_power.order from "leanprover-community/mathlib"@"00f91228655eecdcd3ac97a7fd8dbcb139fe990a"
 
@@ -500,6 +501,9 @@ theorem self_lt_pow (h : 1 < a) (h2 : 1 < m) : a < a ^ m := by
   calc
     a = a ^ 1 := (pow_one _).symm
     _ < a ^ m := pow_lt_pow h h2
+
+theorem self_le_pow (h : 1 ≤ a) (h2 : 1 ≤ m) : a ≤ a ^ m :=
+  le_self_pow h <| Nat.one_le_iff_ne_zero.mp h2
 
 theorem strictAnti_pow (h₀ : 0 < a) (h₁ : a < 1) : StrictAnti fun n : ℕ => a ^ n :=
   strictAnti_nat_of_succ_lt fun n => by

@@ -80,7 +80,7 @@ theorem toMultiset_map (f : α →₀ ℕ) (g : α → β) :
     rfl
 #align finsupp.to_multiset_map Finsupp.toMultiset_map
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem prod_toMultiset [CommMonoid α] (f : α →₀ ℕ) :
     f.toMultiset.prod = f.prod fun a n => a ^ n := by
   refine' f.induction _ _

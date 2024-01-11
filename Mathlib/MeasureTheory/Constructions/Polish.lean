@@ -17,7 +17,7 @@ structure on Polish spaces.
 
 ## Main definitions and results
 
-First, we define standard Borel apaces.
+First, we define standard Borel spaces.
 
 * A `StandardBorelSpace α` is a typeclass for measurable spaces which arise as the Borel sets
   of some Polish topology.

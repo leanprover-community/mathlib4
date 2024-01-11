@@ -26,7 +26,7 @@ forms an additively-graded monoid. The typeclasses are:
 * `GradedMonoid.GMonoid A`
 * `GradedMonoid.GCommMonoid A`
 
-With the `SigmaGraded` locale open, these respectively imbue:
+These respectively imbue:
 
 * `One (GradedMonoid A)`
 * `Mul (GradedMonoid A)`
@@ -108,6 +108,35 @@ instance {A : ι → Type*} [Inhabited ι] [Inhabited (A default)] : Inhabited (
 def mk {A : ι → Type*} : ∀ i, A i → GradedMonoid A :=
   Sigma.mk
 #align graded_monoid.mk GradedMonoid.mk
+
+/-! ### Actions -/
+
+section actions
+
+/-- If `R` acts on each `A i`, then it acts on `GradedMonoid A` via the `.2` projection. -/
+instance {α} {A : ι → Type*} [∀ i, SMul α (A i)] : SMul α (GradedMonoid A) where
+  smul r g := GradedMonoid.mk g.1 (r • g.2)
+
+theorem smul_mk {α} {A : ι → Type*} [∀ i, SMul α (A i)] {i} (c : α) (a : A i) :
+    c • mk i a = mk i (c • a) :=
+  rfl
+
+instance {α β} {A : ι → Type*} [∀ i, SMul α (A i)] [∀ i, SMul β (A i)]
+    [∀ i, SMulCommClass α β (A i)] :
+    SMulCommClass α β (GradedMonoid A) where
+  smul_comm a b g := Sigma.ext rfl <| heq_of_eq <| smul_comm a b g.2
+
+instance {α β} {A : ι → Type*} [SMul α β] [∀ i, SMul α (A i)] [∀ i, SMul β (A i)]
+    [∀ i, IsScalarTower α β (A i)] :
+    IsScalarTower α β (GradedMonoid A) where
+  smul_assoc a b g := Sigma.ext rfl <| heq_of_eq <| smul_assoc a b g.2
+
+instance {α} {A : ι → Type*} [Monoid α] [∀ i, MulAction α (A i)] :
+    MulAction α (GradedMonoid A) where
+  one_smul g := Sigma.ext rfl <| heq_of_eq <| one_smul _ g.2
+  mul_smul r₁ r₂ g := Sigma.ext rfl <| heq_of_eq <| mul_smul r₁ r₂ g.2
+
+end actions
 
 /-! ### Typeclasses -/
 

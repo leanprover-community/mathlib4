@@ -1276,7 +1276,7 @@ variable (R M M₂)
 
 /-- The space of multilinear maps on `∀ (i : Fin (n+1)), M i` is canonically isomorphic to
 the space of linear maps from `M 0` to the space of multilinear maps on
-`∀ (i : Fin n), M i.succ `, by separating the first variable. We register this isomorphism as a
+`∀ (i : Fin n), M i.succ`, by separating the first variable. We register this isomorphism as a
 linear isomorphism in `multilinearCurryLeftEquiv R M M₂`.
 
 The direct and inverse maps are given by `f.uncurryLeft` and `f.curryLeft`. Use these

@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Markus Himmel
+Authors: Markus Himmel, Alex Keizer
 -/
 import Lean.Elab.Tactic
 import Mathlib.Data.List.Basic
@@ -9,6 +9,7 @@ import Mathlib.Data.Nat.Bits
 import Mathlib.Data.Nat.Size
 import Mathlib.Data.Nat.Order.Lemmas
 import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Ring
 
 #align_import data.nat.bitwise from "leanprover-community/mathlib"@"6afc9b06856ad973f6a2619e3e8a0a8d537a58f2"
 
@@ -43,6 +44,104 @@ open Function
 namespace Nat
 
 set_option linter.deprecated false
+
+section
+variable {f : Bool → Bool → Bool}
+
+lemma bitwise'_bit' {f : Bool → Bool → Bool} (a : Bool) (m : Nat) (b : Bool) (n : Nat)
+    (ham : m = 0 → a = true) (hbn : n = 0 → b = true) :
+    bitwise' f (bit a m) (bit b n) = bit (f a b) (bitwise' f m n) := by
+  rw [bitwise', binaryRec_eq', binaryRec_eq']
+  · apply Or.inr hbn
+  · apply Or.inr ham
+
+@[simp]
+lemma bitwise_zero_left (m : Nat) : bitwise f 0 m = if f false true then m else 0 :=
+  rfl
+
+@[simp]
+lemma bitwise_zero_right (n : Nat) : bitwise f n 0 = if f true false then n else 0 := by
+  unfold bitwise
+  simp only [ite_self, decide_False, Nat.zero_div, ite_true, ite_eq_right_iff]
+  rintro ⟨⟩
+  split_ifs <;> rfl
+
+@[simp]
+theorem bitwise'_zero_right (m : Nat) :
+    bitwise' f m 0 = bif f true false then m else 0 := by
+  unfold bitwise' binaryRec
+  simp only [Bool.cond_eq_ite, eq_mpr_eq_cast, cast_eq, dite_eq_ite]
+  split_ifs with hx <;> simp only [bit_decomp, binaryRec_zero, hx]
+
+lemma bitwise_zero : bitwise f 0 0 = 0 := by
+  simp only [bitwise_zero_right, ite_self]
+
+@[simp]
+lemma bitwise_of_ne_zero {n m : Nat} (hn : n ≠ 0) (hm : m ≠ 0) :
+    bitwise f n m = bit (f (bodd n) (bodd m)) (bitwise f (n / 2) (m / 2)) := by
+  conv_lhs => { unfold bitwise }
+  have mod_two_iff_bod x : (x % 2 = 1 : Bool) = bodd x := by
+    simp [mod_two_of_bodd, cond]; cases bodd x <;> rfl
+  simp only [hn, hm, mod_two_iff_bod, ite_false, bit, bit1, bit0, Bool.cond_eq_ite]
+  split_ifs <;> rfl
+
+@[simp]
+lemma bitwise'_of_ne_zero {n m : Nat} (hn : n ≠ 0) (hm : m ≠ 0) :
+    bitwise' f n m = bit (f (bodd n) (bodd m)) (bitwise' f (n / 2) (m / 2)) := by
+  conv_lhs => { rw [←bit_decomp n, ←bit_decomp m] }
+  rw [bitwise'_bit', bit, div2_val, div2_val]
+  case ham =>
+    obtain ⟨⟩ | n := n
+    · contradiction
+    · simp only [div2_succ, cond, bodd_succ, Bool.not_not]
+      cases bodd n <;> simp
+  case hbn =>
+    obtain ⟨⟩ | m := m
+    · contradiction
+    · simp only [div2_succ, cond, bodd_succ, Bool.not_not]
+      cases bodd m <;> simp
+
+lemma bitwise'_eq_bitwise (f) : bitwise' f = bitwise f := by
+  funext x y
+  induction' x using Nat.strongInductionOn with x ih generalizing y
+  cases' x with x <;> cases' y with y
+  · simp only [bitwise_zero, bitwise'_zero]
+  · simp only [bitwise_zero_left, bitwise'_zero_left, Bool.cond_eq_ite]
+  · simp only [bitwise_zero_right, bitwise'_zero_right, Bool.cond_eq_ite]
+  · specialize ih ((x+1) / 2) (div_lt_self' ..)
+    simp only [ne_eq, succ_ne_zero, not_false_eq_true, bitwise'_of_ne_zero, ih, bitwise_of_ne_zero]
+
+theorem lor'_eq_lor : lor' = lor :=
+  bitwise'_eq_bitwise _
+
+theorem land'_eq_land : land' = land :=
+  bitwise'_eq_bitwise _
+
+theorem xor'_eq_xor : lxor' = xor := by
+  unfold lxor' xor
+  have : _root_.xor = bne := by
+    funext x y; cases x <;> cases y <;> rfl
+  rw [this]
+  exact bitwise'_eq_bitwise _
+
+@[simp]
+lemma bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false := by rfl) (a m b n) :
+    bitwise f (bit a m) (bit b n) = bit (f a b) (bitwise f m n) := by
+  simp only [←bitwise'_eq_bitwise, bitwise'_bit h]
+
+@[simp]
+theorem lor_bit : ∀ a m b n, lor (bit a m) (bit b n) = bit (a || b) (lor m n) :=
+  bitwise_bit
+
+@[simp]
+theorem land_bit : ∀ a m b n, land (bit a m) (bit b n) = bit (a && b) (land m n) :=
+  bitwise_bit
+
+@[simp]
+theorem lxor_bit : ∀ a m b n, xor (bit a m) (bit b n) = bit (bne a b) (xor m n) :=
+  bitwise_bit
+
+end
 
 @[simp]
 theorem bit_false : bit false = bit0 :=
@@ -118,7 +217,7 @@ theorem lt_of_testBit {n m : ℕ} (i : ℕ) (hn : testBit n i = false) (hm : tes
     rw [le_zero_iff] at hm
     simp [hm]
   induction' m using Nat.binaryRec with b' m hm' generalizing i
-  · exact False.elim (Bool.ff_ne_tt ((zero_testBit i).symm.trans hm))
+  · exact False.elim (Bool.false_ne_true ((zero_testBit i).symm.trans hm))
   by_cases hi : i = 0
   · subst hi
     simp only [testBit_zero] at hn hm
@@ -160,6 +259,17 @@ theorem testBit_two_pow (n m : ℕ) : testBit (2 ^ n) m = (n = m) := by
   · rw [testBit_two_pow_of_ne h]
     simp [h]
 #align nat.test_bit_two_pow Nat.testBit_two_pow
+
+theorem bitwise'_swap {f : Bool → Bool → Bool} (h : f false false = false) :
+    bitwise' (Function.swap f) = Function.swap (bitwise' f) := by
+  funext m n; revert n
+  dsimp [Function.swap]
+  apply binaryRec _ _ m <;> intro n
+  · rw [bitwise'_zero_left, bitwise'_zero_right, Bool.cond_eq_ite]
+  · intros a ih m'
+    apply bitCasesOn m'; intro b n'
+    rw [bitwise'_bit, bitwise'_bit, ih] <;> exact h
+#align nat.bitwise_swap Nat.bitwise'_swap
 
 /-- If `f` is a commutative operation on bools such that `f false false = false`, then `bitwise f`
     is also commutative. -/

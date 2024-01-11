@@ -21,7 +21,7 @@ variable {ι R M M₁ M₂ M₃ M₄ : Type*}
 
 namespace QuadraticForm
 
-variable [Semiring R]
+variable [CommSemiring R]
 variable [AddCommMonoid M]
 variable [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃] [AddCommMonoid M₄]
 variable [Module R M] [Module R M₁] [Module R M₂] [Module R M₃] [Module R M₄]

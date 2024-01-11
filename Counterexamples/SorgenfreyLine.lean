@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Topology.Instances.Irrational
 import Mathlib.Topology.Algebra.Order.Archimedean
-import Mathlib.Topology.Paracompact
+import Mathlib.Topology.Compactness.Paracompact
 import Mathlib.Topology.MetricSpace.Metrizable
 import Mathlib.Topology.EMetricSpace.Paracompact
 import Mathlib.Data.Set.Intervals.Monotone

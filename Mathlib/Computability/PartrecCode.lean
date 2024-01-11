@@ -1125,7 +1125,7 @@ theorem evaln_prim : Primrec fun a : (ℕ × Code) × ℕ => evaln a.1.1 a.1.2 a
         rw [hg (Nat.pair_lt_pair_right _ lf)]
         cases n.unpair.2
         · rfl
-        simp
+        simp only [decode_eq_ofNat, Option.some.injEq]
         rw [hg (Nat.pair_lt_pair_left _ k'.lt_succ_self)]
         cases evaln k' _ _
         · rfl
@@ -1134,7 +1134,7 @@ theorem evaln_prim : Primrec fun a : (ℕ × Code) × ℕ => evaln a.1.1 a.1.2 a
         rw [hg (Nat.pair_lt_pair_right _ lf)]
         cases' evaln k cf n with x
         · rfl
-        simp
+        simp only [decode_eq_ofNat, Option.some.injEq, Option.some_bind]
         cases x <;> simp [Nat.succ_ne_zero]
         rw [hg (Nat.pair_lt_pair_left _ k'.lt_succ_self)]
   (Primrec.option_bind

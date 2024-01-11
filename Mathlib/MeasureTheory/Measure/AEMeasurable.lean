@@ -91,11 +91,8 @@ theorem sum_measure [Countable ι] {μ : ι → Measure α} (h : ∀ i, AEMeasur
     exact measurable_const
   · rw [restrict_piecewise_compl, compl_iInter]
     intro t ht
-    refine'
-      ⟨⋃ i, (h i).mk f ⁻¹' t ∩ (s i)ᶜ,
-        MeasurableSet.iUnion fun i =>
-          (measurable_mk _ ht).inter (measurableSet_toMeasurable _ _).compl,
-        _⟩
+    refine ⟨⋃ i, (h i).mk f ⁻¹' t ∩ (s i)ᶜ, MeasurableSet.iUnion fun i ↦
+      (measurable_mk _ ht).inter (measurableSet_toMeasurable _ _).compl, ?_⟩
     ext ⟨x, hx⟩
     simp only [mem_preimage, mem_iUnion, Subtype.coe_mk, Set.restrict, mem_inter_iff,
       mem_compl_iff] at hx ⊢

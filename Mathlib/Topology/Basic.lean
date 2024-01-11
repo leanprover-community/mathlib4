@@ -66,6 +66,7 @@ universe u v w
 
 
 /-- A topology on `α`. -/
+@[to_additive existing TopologicalSpace]
 class TopologicalSpace (α : Type u) where
   /-- A predicate saying that a set is an open set. Use `IsOpen` in the root namespace instead. -/
   protected IsOpen : Set α → Prop
@@ -413,15 +414,15 @@ theorem interior_iInter_subset (s : ι → Set α) : interior (⋂ i, s i) ⊆ �
   subset_iInter fun _ => interior_mono <| iInter_subset _ _
 #align interior_Inter_subset interior_iInter_subset
 
-theorem interior_Inter₂_subset (p : ι → Sort*) (s : ∀ i, p i → Set α) :
+theorem interior_iInter₂_subset (p : ι → Sort*) (s : ∀ i, p i → Set α) :
     interior (⋂ (i) (j), s i j) ⊆ ⋂ (i) (j), interior (s i j) :=
   (interior_iInter_subset _).trans <| iInter_mono fun _ => interior_iInter_subset _
-#align interior_Inter₂_subset interior_Inter₂_subset
+#align interior_Inter₂_subset interior_iInter₂_subset
 
 theorem interior_sInter_subset (S : Set (Set α)) : interior (⋂₀ S) ⊆ ⋂ s ∈ S, interior s :=
   calc
     interior (⋂₀ S) = interior (⋂ s ∈ S, s) := by rw [sInter_eq_biInter]
-    _ ⊆ ⋂ s ∈ S, interior s := interior_Inter₂_subset _ _
+    _ ⊆ ⋂ s ∈ S, interior s := interior_iInter₂_subset _ _
 #align interior_sInter_subset interior_sInter_subset
 
 /-!
@@ -559,11 +560,11 @@ theorem Finset.closure_biUnion {ι : Type*} (s : Finset ι) (f : ι → Set α) 
 #align finset.closure_bUnion Finset.closure_biUnion
 
 @[simp]
-theorem closure_Union_of_finite {ι : Type*} [Finite ι] (f : ι → Set α) :
+theorem closure_iUnion_of_finite {ι : Type*} [Finite ι] (f : ι → Set α) :
     closure (⋃ i, f i) = ⋃ i, closure (f i) := by
   cases nonempty_fintype ι
   convert Finset.univ.closure_biUnion f <;> simp
-#align closure_Union closure_Union_of_finite
+#align closure_Union closure_iUnion_of_finite
 
 theorem interior_subset_closure {s : Set α} : interior s ⊆ closure s :=
   Subset.trans interior_subset subset_closure

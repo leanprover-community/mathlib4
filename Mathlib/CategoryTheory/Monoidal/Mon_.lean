@@ -380,7 +380,7 @@ variable {C}
 theorem one_associator {M N P : Mon_ C} :
     ((λ_ (𝟙_ C)).inv ≫ ((λ_ (𝟙_ C)).inv ≫ (M.one ⊗ N.one) ⊗ P.one)) ≫ (α_ M.X N.X P.X).hom =
       (λ_ (𝟙_ C)).inv ≫ (M.one ⊗ (λ_ (𝟙_ C)).inv ≫ (N.one ⊗ P.one)) := by
-  simp
+  simp only [Category.assoc, Iso.cancel_iso_inv_left]
   slice_lhs 1 3 => rw [← Category.id_comp P.one, tensor_comp]
   slice_lhs 2 3 => rw [associator_naturality]
   slice_rhs 1 2 => rw [← Category.id_comp M.one, tensor_comp]
@@ -449,7 +449,7 @@ theorem mul_associator {M N P : Mon_ C} :
       ((α_ M.X N.X P.X).hom ⊗ (α_ M.X N.X P.X).hom) ≫
         tensor_μ C (M.X, N.X ⊗ P.X) (M.X, N.X ⊗ P.X) ≫
           (M.mul ⊗ tensor_μ C (N.X, P.X) (N.X, P.X) ≫ (N.mul ⊗ P.mul)) := by
-  simp
+  simp only [tensor_obj, prodMonoidal_tensorObj, Category.assoc]
   slice_lhs 2 3 => rw [← Category.id_comp P.mul, tensor_comp]
   slice_lhs 3 4 => rw [associator_naturality]
   slice_rhs 3 4 => rw [← Category.id_comp M.mul, tensor_comp]

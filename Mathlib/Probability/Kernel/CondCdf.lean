@@ -66,7 +66,7 @@ theorem sequence_le (a : α) : f (hf.sequence f (Encodable.encode a + 1)) ≤ f 
 
 end Directed
 
--- todo: move to data/set/lattice next to prod_Union or prod_sInter
+-- todo: move to data/set/lattice next to prod_sUnion or prod_sInter
 theorem prod_iInter {s : Set α} {t : ι → Set β} [hι : Nonempty ι] :
     (s ×ˢ ⋂ i, t i) = ⋂ i, s ×ˢ t i := by
   ext x

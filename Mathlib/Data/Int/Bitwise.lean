@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
 import Mathlib.Data.Int.Basic
+import Mathlib.Data.Nat.Bitwise
 import Mathlib.Data.Nat.Pow
 import Mathlib.Data.Nat.Size
 import Mathlib.Init.Data.Int.Bitwise
@@ -205,9 +206,9 @@ theorem testBit_zero (b) : ∀ n, testBit (bit b n) 0 = b
 theorem testBit_succ (m b) : ∀ n, testBit (bit b n) (Nat.succ m) = testBit n m
   | (n : ℕ) => by rw [bit_coe_nat]; apply Nat.testBit_succ
   | -[n+1] => by
-    dsimp [testBit]
+    dsimp only [testBit]
     simp only [bit_negSucc]
-    cases b <;> simp [Nat.testBit_succ]
+    cases b <;> simp only [Bool.not_false, Bool.not_true, Nat.testBit_succ]
 #align int.test_bit_succ Int.testBit_succ
 
 -- Porting note: TODO

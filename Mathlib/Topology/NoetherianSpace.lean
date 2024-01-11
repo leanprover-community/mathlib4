@@ -33,9 +33,9 @@ of a noetherian scheme (e.g., the spectrum of a noetherian ring) is noetherian.
   is noetherian.
 - `TopologicalSpace.NoetherianSpace.iUnion`: The finite union of noetherian spaces is noetherian.
 - `TopologicalSpace.NoetherianSpace.discrete`: A noetherian and Hausdorff space is discrete.
-- `TopologicalSpace.NoetherianSpace.exists_finset_irreducible` : Every closed subset of a noetherian
+- `TopologicalSpace.NoetherianSpace.exists_finset_irreducible`: Every closed subset of a noetherian
   space is a finite union of irreducible closed subsets.
-- `TopologicalSpace.NoetherianSpace.finite_irreducibleComponents `: The number of irreducible
+- `TopologicalSpace.NoetherianSpace.finite_irreducibleComponents`: The number of irreducible
   components of a noetherian space is finite.
 
 -/

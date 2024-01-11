@@ -9,7 +9,7 @@ import Mathlib.Order.Monotone.Basic
 import Mathlib.Order.ULift
 import Mathlib.Tactic.GCongr.Core
 
-#align_import order.lattice from "leanprover-community/mathlib"@"e4bc74cbaf429d706cb9140902f7ca6c431e75a4"
+#align_import order.lattice from "leanprover-community/mathlib"@"3ba15165bd6927679be7c22d6091a87337e3cd0c"
 
 /-!
 # (Semi-)lattices
@@ -1161,6 +1161,16 @@ protected theorem min [Preorder α] [LinearOrder β] {f g : α → β} {s : Set 
   hf.inf hg
 #align monotone_on.min MonotoneOn.min
 
+theorem of_map_inf [SemilatticeInf α] [SemilatticeInf β]
+    (h : ∀ x ∈ s, ∀ y ∈ s, f (x ⊓ y) = f x ⊓ f y) : MonotoneOn f s := fun x hx y hy hxy =>
+  inf_eq_left.1 <| by rw [← h _ hx _ hy, inf_eq_left.2 hxy]
+#align monotone_on.of_map_inf MonotoneOn.of_map_inf
+
+theorem of_map_sup [SemilatticeSup α] [SemilatticeSup β]
+    (h : ∀ x ∈ s, ∀ y ∈ s, f (x ⊔ y) = f x ⊔ f y) : MonotoneOn f s :=
+  (@of_map_inf αᵒᵈ βᵒᵈ _ _ _ _ h).dual
+#align monotone_on.of_map_sup MonotoneOn.of_map_sup
+
 variable [LinearOrder α]
 
 theorem map_sup [SemilatticeSup β] (hf : MonotoneOn f s) (hx : x ∈ s) (hy : y ∈ s) :
@@ -1169,10 +1179,12 @@ theorem map_sup [SemilatticeSup β] (hf : MonotoneOn f s) (hx : x ∈ s) (hy : y
     first
     | assumption
     | simp only [*, sup_of_le_left, sup_of_le_right]
+#align monotone_on.map_sup MonotoneOn.map_sup
 
 theorem map_inf [SemilatticeInf β] (hf : MonotoneOn f s) (hx : x ∈ s) (hy : y ∈ s) :
     f (x ⊓ y) = f x ⊓ f y :=
   hf.dual.map_sup hx hy
+#align monotone_on.map_inf MonotoneOn.map_inf
 
 end MonotoneOn
 
@@ -1254,6 +1266,16 @@ protected theorem min [Preorder α] [LinearOrder β] {f g : α → β} {s : Set 
     (hg : AntitoneOn g s) : AntitoneOn (fun x => min (f x) (g x)) s :=
   hf.inf hg
 #align antitone_on.min AntitoneOn.min
+
+theorem of_map_inf [SemilatticeInf α] [SemilatticeSup β]
+    (h : ∀ x ∈ s, ∀ y ∈ s, f (x ⊓ y) = f x ⊔ f y) : AntitoneOn f s := fun x hx y hy hxy =>
+  sup_eq_left.1 <| by rw [← h _ hx _ hy, inf_eq_left.2 hxy]
+#align antitone_on.of_map_inf AntitoneOn.of_map_inf
+
+theorem of_map_sup [SemilatticeSup α] [SemilatticeInf β]
+    (h : ∀ x ∈ s, ∀ y ∈ s, f (x ⊔ y) = f x ⊓ f y) : AntitoneOn f s :=
+  (@of_map_inf αᵒᵈ βᵒᵈ _ _ _ _ h).dual
+#align antitone_on.of_map_sup AntitoneOn.of_map_sup
 
 variable [LinearOrder α]
 

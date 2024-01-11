@@ -1315,6 +1315,9 @@ theorem symm_mk (e : α ≃ β) (h1 : Measurable e) (h2 : Measurable e.symm) :
 attribute [simps! apply toEquiv] trans refl
 
 @[simp]
+theorem symm_symm (e : α ≃ᵐ β) : e.symm.symm = e := rfl
+
+@[simp]
 theorem symm_refl (α : Type*) [MeasurableSpace α] : (refl α).symm = refl α :=
   rfl
 #align measurable_equiv.symm_refl MeasurableEquiv.symm_refl
@@ -1369,6 +1372,23 @@ theorem symm_preimage_preimage (e : α ≃ᵐ β) (s : Set β) : e.symm ⁻¹' (
 theorem image_eq_preimage (e : α ≃ᵐ β) (s : Set α) : e '' s = e.symm ⁻¹' s :=
   e.toEquiv.image_eq_preimage s
 #align measurable_equiv.image_eq_preimage MeasurableEquiv.image_eq_preimage
+
+lemma preimage_symm (e : α ≃ᵐ β) (s : Set α) : e.symm ⁻¹' s = e '' s := (image_eq_preimage _ _).symm
+
+lemma image_symm (e : α ≃ᵐ β) (s : Set β) : e.symm '' s = e ⁻¹' s := by
+  rw [← symm_symm e, preimage_symm, symm_symm]
+
+lemma eq_image_iff_symm_image_eq (e : α ≃ᵐ β) (s : Set β) (t : Set α) :
+    s = e '' t ↔ e.symm '' s = t := by
+  rw [← coe_toEquiv, Equiv.eq_image_iff_symm_image_eq, coe_toEquiv_symm]
+
+@[simp]
+lemma image_preimage (e : α ≃ᵐ β) (s : Set β) : e '' (e ⁻¹' s) = s := by
+  rw [← coe_toEquiv, Equiv.image_preimage]
+
+@[simp]
+lemma preimage_image (e : α ≃ᵐ β) (s : Set α) : e ⁻¹' (e '' s) = s := by
+  rw [← coe_toEquiv, Equiv.preimage_image]
 
 @[simp]
 theorem measurableSet_preimage (e : α ≃ᵐ β) {s : Set β} :

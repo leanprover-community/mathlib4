@@ -276,7 +276,7 @@ theorem mul_inf_eq_mul_inf_mul [CovariantClass α α (· * ·) (· ≤ ·)] (a b
     c * (a ⊓ b) = c * a ⊓ c * b := by
   refine' le_antisymm _ _
   rw [le_inf_iff, mul_le_mul_iff_left, mul_le_mul_iff_left]
-  simp
+  simp only [inf_le_left, inf_le_right, and_self]
   rw [← mul_le_mul_iff_left c⁻¹, ← mul_assoc, inv_mul_self, one_mul, le_inf_iff,
     inv_mul_le_iff_le_mul, inv_mul_le_iff_le_mul]
   simp

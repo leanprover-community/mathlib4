@@ -154,6 +154,16 @@ instance Units.continuousSMul : ContinuousSMul Mˣ X where
 #align units.has_continuous_smul Units.continuousSMul
 #align add_units.has_continuous_vadd AddUnits.continuousVAdd
 
+/-- If an action is continuous, then composing this action with a continuous homomorphism gives
+again a continuous action. -/
+@[to_additive]
+theorem MulAction.continuousSMul_compHom
+    {N : Type*} [TopologicalSpace N] [Monoid N] {f : N →* M} (hf : Continuous f) :
+    letI : MulAction N X := MulAction.compHom _ f
+    ContinuousSMul N X := by
+  let _ : MulAction N X := MulAction.compHom _ f
+  exact ⟨(hf.comp continuous_fst).smul continuous_snd⟩
+
 end Monoid
 
 section Group

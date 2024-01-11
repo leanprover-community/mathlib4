@@ -370,14 +370,14 @@ Probability Theory:
     conditional probability: 'ProbabilityTheory.cond'
     conditional expectation: 'MeasureTheory.condexp'
   Random variables and their laws:
-    discrete law: 'Pmf'
+    discrete law: 'PMF'
     probability density function: 'MeasureTheory.HasPDF'
     variance of a real-valued random variable: 'ProbabilityTheory.variance'
     independence of random variables: 'ProbabilityTheory.iIndepFun'
     Kolmogorov's $0$-$1$ law: 'ProbabilityTheory.measure_zero_or_one_of_measurableSet_limsup_atTop'
     mean of product of independent random variables: 'ProbabilityTheory.IndepFun.integral_mul_of_integrable'
     moment of a random variable: 'ProbabilityTheory.moment'
-    Bernoulli law: 'Pmf.bernoulli'
+    Bernoulli law: 'PMF.bernoulli'
   Convergence of a sequence of random variables:
     convergence in probability: 'MeasureTheory.TendstoInMeasure'
     $\mathrm{L}^p$ convergence: 'MeasureTheory.Lp'
