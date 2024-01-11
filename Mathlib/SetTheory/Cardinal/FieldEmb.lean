@@ -3,22 +3,20 @@ Copyright (c) 2024 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
+import Mathlib.Data.Set.Intervals.WithBotTop
 import Mathlib.FieldTheory.MvPolynomial
 import Mathlib.FieldTheory.SeparableClosure
-import Mathlib.Data.Set.Intervals.WithBotTop
 
 /-!
+# Number of embeddings of an infinite algebraic field extension into the algebraic closure
 
-# Number of field embeddings of an infinite extension into the algebraic closure
+We show that if `E/F` is an infinite-dimensional algebraic extension, then
+`#(Field.Emb F E) = 2 ^ Field.sepDegree F E`. If `E/F` is moreover separable, then
+`#(Field.Emb F E) = 2 ^ Module.rank F E`. This is in contrast to the finite-dimensional case, where
+`#(Field.Emb F E) = Module.rank F E`.
 
-We show that if `E/F` is an infinite-dimensional separable algebraic extension, then
-`#(Field.Emb F E) = 2 ^ Module.rank F E`.
-
-This is in contrast to the finite-dimensional case, where `#Field.Emb F E = Module.rank F E`
-without the power of two (see `Field.finSepDegree_eq_finrank_of_isSeparable`.)
-
-We use a transfinite recursive construction that is fairly standard in set theory, but I have
-not seen similar arguments elsewhere in mathlib, and some parts proved tricky to formalize.
+We use a transfinite recursive construction that is fairly standard in set theory, but the author
+has not seen similar arguments elsewhere in mathlib, and some parts proved tricky to formalize.
 
 The extension `E/F` can be filtered by intermediate fields indexed by a well-order:
 simply put a well-order on a basis of `E/F`, and at each step, take the smallest basis element
@@ -33,22 +31,21 @@ formalize and was done the earliest.
 
 Once we have the filtration `F⟮<i⟯` for `i : ι`, we may build an embedding `E →ₐ[F] Ē` step by
 step. To extend an embedding `F⟮<i⟯ →ₐ[F] Ē` to the successor `F⟮<i⁺⟯`, the number of choices
-is equal to the (finite) separable degree of `F⟮<i⁺⟯ / F⟮<i⟯`, which is equal to its rank because
+is equal to the (finite) separable degree of `F⟮<i⁺⟯ / F⟮<i⟯`, which is equal to its rank if
 `E/F` is separable. Since each extension is nontrivial, the degree is at least two (`two_le_deg`)
 but always finite. Intuitively, these choices multiply together to give the cardinality of
 `Field.Emb F E := (E →ₐ[F] Ē)`, and since the total times of choices to be made is the length of
 the filtration `#ι`, we conclude that `2 ^ #ι ≤ #(Field.Emb F E) ≤ ℵ₀ ^ #ι`, but for infinite `#ι`
-both sides are the same, so we get an equality `#(Field.Emb F E) = 2 ^ #ι = 2 ^ Module.rank F E`.
+both sides are equal, so we get an equality `#(Field.Emb F E) = 2 ^ #ι = 2 ^ Module.rank F E`.
 
 To rigorize the argument we formalize the choice at step `i` as a type `X i` of cardinality
 equal to `Field.Emb F⟮<i⟯ F⟮<i⁺⟯` (the separable degree of `F⟮<i⁺⟯ / F⟮<i⟯`) together with a
 bijection `F i⁺ ≃ F i × X i`, where `F i := (F⟮<i⟯ →ₐ[F] Ē)` (sorry for the confusing notation),
 and we formalize the combination of choices as the Pi type `∀ i : ι, X i`. We use transfinite
 recursion (`SuccOrder.limitRecOn`) to build a bijection `Field.Emb F E ≃ ∀ i, X i` with the
-Pi type by successively extending (`piEquivSucc`) bijections `F i ≃ ∀ j : Iio i, X i` using
+Pi type by successively extending (`piEquivSucc`) bijections `F i ≃ ∀ j : Iio i, X j` using
 the bijections `F i⁺ ≃ F i × X i` with product types. More details are found in the
 `InverseLimit` section below.
-
 -/
 
 open Cardinal Module.Free Set Order IntermediateField
@@ -61,8 +58,8 @@ theorem Cardinal.noMaxOrder {c} [Fact (ℵ₀ ≤ c)] : NoMaxOrder c.ord.out.α 
   Ordinal.out_no_max_of_succ_lt (ord_isLimit Fact.out).2
 
 open scoped Classical in
-/-- A well-order is a SuccOrder. -/
-def SuccOrder.ofWellOrder {ι} [LinearOrder ι] [WellFoundedLT ι] : SuccOrder ι :=
+/-- A well-order is a `SuccOrder`. -/
+abbrev SuccOrder.ofWellOrder {ι} [LinearOrder ι] [WellFoundedLT ι] : SuccOrder ι :=
   SuccOrder.ofCore (fun i ↦ if h : (Ioi i).Nonempty then wellFounded_lt.min _ h else i)
     (fun hi _ ↦ by
       rw [not_isMax_iff] at hi
@@ -73,7 +70,7 @@ def SuccOrder.ofWellOrder {ι} [LinearOrder ι] [WellFoundedLT ι] : SuccOrder �
 local notation i"⁺" => succ i -- Note: conflicts with `PosPart` notation
 
 open scoped Classical in
-/-- Recursion principle on a well-founded partial SuccOrder. -/
+/-- Recursion principle on a well-founded partial `SuccOrder`. -/
 @[elab_as_elim]
 def SuccOrder.limitRecOn {ι} [PartialOrder ι] [WellFoundedLT ι] [SuccOrder ι]
     {C : ι → Sort*} (i : ι)
