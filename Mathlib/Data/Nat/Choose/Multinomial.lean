@@ -23,7 +23,7 @@ This file defines the multinomial coefficient and several small lemma's for mani
 
 ## Main results
 
-- `Finest.sum_pow`: The expansion of `(s.sum x) ^ n` using multinomial coefficients
+- `Finset.sum_pow`: The expansion of `(s.sum x) ^ n` using multinomial coefficients
 
 -/
 
@@ -126,7 +126,7 @@ theorem binomial_succ_succ [DecidableEq α] (h : a ≠ b) :
       multinomial {a, b} (Function.update f a (f a).succ) +
       multinomial {a, b} (Function.update f b (f b).succ) := by
   simp only [binomial_eq_choose, Function.update_apply,
-    h, Ne.def, ite_true, ite_false]
+    h, Ne.def, ite_true, ite_false, not_false_eq_true]
   rw [if_neg h.symm]
   rw [add_succ, choose_succ_succ, succ_add_eq_succ_add]
   ring

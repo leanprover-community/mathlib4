@@ -610,7 +610,7 @@ If desired, we could add a class stating that `default = 0`.
 
 /-- This relies on `default ℕ = 0`. -/
 theorem headI_add_tail_sum (L : List ℕ) : L.headI + L.tail.sum = L.sum := by
-  cases L <;> simp
+  cases L <;> simp; rfl
 #align list.head_add_tail_sum List.headI_add_tail_sum
 
 /-- This relies on `default ℕ = 0`. -/

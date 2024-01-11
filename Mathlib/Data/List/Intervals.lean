@@ -45,17 +45,17 @@ theorem zero_bot (n : ℕ) : Ico 0 n = range n := by rw [Ico, tsub_zero, range_e
 @[simp]
 theorem length (n m : ℕ) : length (Ico n m) = m - n := by
   dsimp [Ico]
-  simp only [length_range']
+  simp [length_range', autoParam]
 #align list.Ico.length List.Ico.length
 
 theorem pairwise_lt (n m : ℕ) : Pairwise (· < ·) (Ico n m) := by
   dsimp [Ico]
-  simp only [pairwise_lt_range']
+  simp [pairwise_lt_range', autoParam]
 #align list.Ico.pairwise_lt List.Ico.pairwise_lt
 
 theorem nodup (n m : ℕ) : Nodup (Ico n m) := by
   dsimp [Ico]
-  simp only [nodup_range']
+  simp [nodup_range', autoParam]
 #align list.Ico.nodup List.Ico.nodup
 
 @[simp]

@@ -433,7 +433,7 @@ theorem IsCycle.zpowersEquivSupport_symm_apply {σ : Perm α} (hσ : IsCycle σ)
 #align equiv.perm.is_cycle.zpowers_equiv_support_symm_apply Equiv.Perm.IsCycle.zpowersEquivSupport_symm_apply
 
 protected theorem IsCycle.orderOf (hf : IsCycle f) : orderOf f = f.support.card := by
-  rw [orderOf_eq_card_zpowers, ← Fintype.card_coe]
+  rw [←Fintype.card_zpowers, ← Fintype.card_coe]
   convert Fintype.card_congr (IsCycle.zpowersEquivSupport hf)
 #align equiv.perm.is_cycle.order_of Equiv.Perm.IsCycle.orderOf
 
@@ -533,7 +533,6 @@ theorem IsCycle.sign {f : Perm α} (hf : IsCycle f) : sign f = -(-1) ^ f.support
         have h : swap x (f x) * f = 1 := by
           simp only [mul_def, one_def]
           rw [hf.eq_swap_of_apply_apply_eq_self hx.1 h1, swap_apply_left, swap_swap]
-        dsimp only
         rw [sign_mul, sign_swap hx.1.symm, h, sign_one,
           hf.eq_swap_of_apply_apply_eq_self hx.1 h1, card_support_swap hx.1.symm]
         rfl
@@ -543,7 +542,6 @@ theorem IsCycle.sign {f : Perm α} (hf : IsCycle f) : sign f = -(-1) ^ f.support
             card_insert_of_not_mem (not_mem_erase _ _), sdiff_singleton_eq_erase]
         have : card (support (swap x (f x) * f)) < card (support f) :=
           card_support_swap_mul hx.1
-        dsimp only
         rw [sign_mul, sign_swap hx.1.symm, (hf.swap_mul hx.1 h1).sign, ← h]
         simp only [mul_neg, neg_mul, one_mul, neg_neg, pow_add, pow_one, mul_one]
 termination_by _ => f.support.card

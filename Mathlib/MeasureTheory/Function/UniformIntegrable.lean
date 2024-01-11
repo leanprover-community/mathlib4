@@ -451,12 +451,12 @@ theorem unifIntegrable_finite [Finite ι] (hp_one : 1 ≤ p) (hp_top : p ≠ ∞
     (hf : ∀ i, Memℒp (f i) p μ) : UnifIntegrable f p μ := by
   obtain ⟨n, hn⟩ := Finite.exists_equiv_fin ι
   intro ε hε
-  set g : Fin n → α → β := f ∘ hn.some.symm with hgeq
+  let g : Fin n → α → β := f ∘ hn.some.symm
   have hg : ∀ i, Memℒp (g i) p μ := fun _ => hf _
   obtain ⟨δ, hδpos, hδ⟩ := unifIntegrable_fin μ hp_one hp_top hg hε
   refine' ⟨δ, hδpos, fun i s hs hμs => _⟩
   specialize hδ (hn.some i) s hs hμs
-  simp_rw [hgeq, Function.comp_apply, Equiv.symm_apply_apply] at hδ
+  simp_rw [Function.comp_apply, Equiv.symm_apply_apply] at hδ
   assumption
 #align measure_theory.unif_integrable_finite MeasureTheory.unifIntegrable_finite
 
@@ -876,13 +876,13 @@ theorem UniformIntegrable.spec' (hp : p ≠ 0) (hp' : p ≠ ∞) (hf : ∀ i, St
             (eventually_of_forall fun x hx => _)
           rwa [nnnorm_indicator_eq_indicator_nnnorm, Set.indicator_of_mem hx]
         _ ≤ snorm (f (ℐ C)) p μ := snorm_indicator_le _
-    specialize this (2 * max M 1 * HPow.hPow δ⁻¹ (1 / p.toReal))
+    specialize this (2 * max M 1 * δ⁻¹ ^ (1 / p.toReal))
     rw [ENNReal.coe_rpow_of_nonneg _ (one_div_nonneg.2 ENNReal.toReal_nonneg), ← ENNReal.coe_smul,
       smul_eq_mul, mul_assoc, NNReal.inv_rpow,
       inv_mul_cancel (NNReal.rpow_pos (NNReal.coe_pos.1 hδpos)).ne.symm, mul_one, ENNReal.coe_mul,
       ← NNReal.inv_rpow] at this
     refine' (lt_of_le_of_lt (le_trans
-      (hM <| ℐ <| 2 * max M 1 * HPow.hPow δ⁻¹ (1 / p.toReal)) (le_max_left (M : ℝ≥0∞) 1))
+      (hM <| ℐ <| 2 * max M 1 * δ⁻¹ ^ (1 / p.toReal)) (le_max_left (M : ℝ≥0∞) 1))
         (lt_of_lt_of_le _ this)).ne rfl
     rw [← ENNReal.coe_one, ← ENNReal.coe_max, ← ENNReal.coe_mul, ENNReal.coe_lt_coe]
     exact lt_two_mul_self (lt_max_of_lt_right one_pos)
@@ -950,11 +950,9 @@ theorem uniformIntegrable_average
     refine' le_trans _ (_ : ↑(↑n : ℝ≥0)⁻¹ * (n • C : ℝ≥0∞) ≤ C)
     · refine' (ENNReal.mul_le_mul_left hn ENNReal.coe_ne_top).2 _
       conv_rhs => rw [← Finset.card_range n]
-      -- Porting note: Originally `exact Finset.sum_le_card_nsmul _ _ _ fun i hi => hC i`
-      convert Finset.sum_le_card_nsmul _ _ _ fun i _ => hC i
-      rw [ENNReal.coe_smul]
+      exact Finset.sum_le_card_nsmul _ _ _ fun i _ => hC i
     · simp only [ENNReal.coe_eq_zero, inv_eq_zero, Nat.cast_eq_zero] at hn
-      rw [ENNReal.coe_smul, nsmul_eq_mul, ← mul_assoc, ENNReal.coe_inv, ENNReal.coe_nat,
+      rw [nsmul_eq_mul, ← mul_assoc, ENNReal.coe_inv, ENNReal.coe_nat,
         ENNReal.inv_mul_cancel _ (ENNReal.nat_ne_top _), one_mul]
       all_goals simpa only [Ne.def, Nat.cast_eq_zero]
 

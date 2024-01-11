@@ -914,7 +914,7 @@ def toFiberPrebundle (a : VectorPrebundle R F E) : FiberPrebundle F E :=
       rw [e.target_inter_preimage_symm_source_eq e', inter_comm]
       refine' (continuousOn_fst.prod this).congr _
       rintro ⟨b, f⟩ ⟨hb, -⟩
-      dsimp only [Function.comp, Prod.map]
+      dsimp only [Function.comp_def, Prod.map]
       rw [a.mk_coordChange _ _ hb, e'.mk_symm hb.1] }
 #align vector_prebundle.to_fiber_prebundle VectorPrebundle.toFiberPrebundle
 

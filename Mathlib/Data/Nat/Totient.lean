@@ -131,7 +131,7 @@ theorem totient_even {n : ℕ} (hn : 2 < n) : Even n.totient := by
   haveI : NeZero n := NeZero.of_gt hn
   suffices 2 = orderOf (-1 : (ZMod n)ˣ) by
     rw [← ZMod.card_units_eq_totient, even_iff_two_dvd, this]
-    exact orderOf_dvd_card_univ
+    exact orderOf_dvd_card
   rw [← orderOf_units, Units.coe_neg_one, orderOf_neg_one, ringChar.eq (ZMod n) n, if_neg hn.ne']
 #align nat.totient_even Nat.totient_even
 

@@ -209,7 +209,7 @@ theorem equivOfEq_rfl (S : IntermediateField F E) : equivOfEq (rfl : S = S) = Al
 
 @[simp]
 theorem equivOfEq_trans {S T U : IntermediateField F E} (hST : S = T) (hTU : T = U) :
-    (equivOfEq hST).trans (equivOfEq hTU) = equivOfEq (_root_.trans hST hTU) :=
+    (equivOfEq hST).trans (equivOfEq hTU) = equivOfEq (hST.trans hTU) :=
   rfl
 #align intermediate_field.equiv_of_eq_trans IntermediateField.equivOfEq_trans
 
@@ -274,28 +274,37 @@ theorem restrictScalars_top {K : Type*} [Field K] [Algebra K E] [Algebra K F]
   rfl
 #align intermediate_field.restrict_scalars_top IntermediateField.restrictScalars_top
 
+variable {K : Type*} [Field K] [Algebra F K]
+
 @[simp]
-theorem map_bot {K : Type*} [Field K] [Algebra F K] (f : E →ₐ[F] K) :
+theorem map_bot (f : E →ₐ[F] K) :
     IntermediateField.map f ⊥ = ⊥ :=
   toSubalgebra_injective <| Algebra.map_bot _
 
-theorem _root_.AlgHom.fieldRange_eq_map {K : Type*} [Field K] [Algebra F K] (f : E →ₐ[F] K) :
+theorem map_sup (s t : IntermediateField F E) (f : E →ₐ[F] K) : (s ⊔ t).map f = s.map f ⊔ t.map f :=
+  (gc_map_comap f).l_sup
+
+theorem map_iSup {ι : Sort*} (f : E →ₐ[F] K) (s : ι → IntermediateField F E) :
+    (iSup s).map f = ⨆ i, (s i).map f :=
+  (gc_map_comap f).l_iSup
+
+theorem _root_.AlgHom.fieldRange_eq_map (f : E →ₐ[F] K) :
     f.fieldRange = IntermediateField.map f ⊤ :=
   SetLike.ext' Set.image_univ.symm
 #align alg_hom.field_range_eq_map AlgHom.fieldRange_eq_map
 
-theorem _root_.AlgHom.map_fieldRange {K L : Type*} [Field K] [Field L] [Algebra F K] [Algebra F L]
+theorem _root_.AlgHom.map_fieldRange {L : Type*} [Field L] [Algebra F L]
     (f : E →ₐ[F] K) (g : K →ₐ[F] L) : f.fieldRange.map g = (g.comp f).fieldRange :=
   SetLike.ext' (Set.range_comp g f).symm
 #align alg_hom.map_field_range AlgHom.map_fieldRange
 
-theorem _root_.AlgHom.fieldRange_eq_top {K : Type*} [Field K] [Algebra F K] {f : E →ₐ[F] K} :
+theorem _root_.AlgHom.fieldRange_eq_top {f : E →ₐ[F] K} :
     f.fieldRange = ⊤ ↔ Function.Surjective f :=
   SetLike.ext'_iff.trans Set.range_iff_surjective
 #align alg_hom.field_range_eq_top AlgHom.fieldRange_eq_top
 
 @[simp]
-theorem _root_.AlgEquiv.fieldRange_eq_top {K : Type*} [Field K] [Algebra F K] (f : E ≃ₐ[F] K) :
+theorem _root_.AlgEquiv.fieldRange_eq_top (f : E ≃ₐ[F] K) :
     (f : E →ₐ[F] K).fieldRange = ⊤ :=
   AlgHom.fieldRange_eq_top.mpr f.surjective
 #align alg_equiv.field_range_eq_top AlgEquiv.fieldRange_eq_top
@@ -371,8 +380,8 @@ theorem adjoin_le_subfield {K : Subfield E} (HF : Set.range (algebraMap F E) ⊆
 theorem adjoin_subset_adjoin_iff {F' : Type*} [Field F'] [Algebra F' E] {S S' : Set E} :
     (adjoin F S : Set E) ⊆ adjoin F' S' ↔
       Set.range (algebraMap F E) ⊆ adjoin F' S' ∧ S ⊆ adjoin F' S' :=
-  ⟨fun h => ⟨_root_.trans (adjoin.range_algebraMap_subset _ _) h, _root_.trans
-    (subset_adjoin _ _) h⟩, fun ⟨hF, hS⟩ =>
+  ⟨fun h => ⟨(adjoin.range_algebraMap_subset _ _).trans h,
+    (subset_adjoin _ _).trans h⟩, fun ⟨hF, hS⟩ =>
       (Subfield.closure_le (t := (adjoin F' S').toSubfield)).mpr (Set.union_subset hF hS)⟩
 #align intermediate_field.adjoin_subset_adjoin_iff IntermediateField.adjoin_subset_adjoin_iff
 
@@ -581,19 +590,27 @@ theorem adjoin_simple_toSubalgebra_of_integral (hα : IsIntegral F α) :
   rwa [isAlgebraic_iff_isIntegral]
 #align intermediate_field.adjoin_simple_to_subalgebra_of_integral IntermediateField.adjoin_simple_toSubalgebra_of_integral
 
+/-- Characterize `IsSplittingField` with `IntermediateField.adjoin` instead of `Algebra.adjoin`. -/
+theorem _root_.isSplittingField_iff_intermediateField {p : F[X]} :
+    p.IsSplittingField F E ↔ p.Splits (algebraMap F E) ∧ adjoin F (p.rootSet E) = ⊤ := by
+  rw [← toSubalgebra_injective.eq_iff,
+      adjoin_algebraic_toSubalgebra fun _ ↦ isAlgebraic_of_mem_rootSet]
+  exact ⟨fun ⟨spl, adj⟩ ↦ ⟨spl, adj⟩, fun ⟨spl, adj⟩ ↦ ⟨spl, adj⟩⟩
+
+-- Note: p.Splits (algebraMap F E) also works
 theorem isSplittingField_iff {p : F[X]} {K : IntermediateField F E} :
     p.IsSplittingField F K ↔ p.Splits (algebraMap F K) ∧ K = adjoin F (p.rootSet E) := by
   suffices _ → (Algebra.adjoin F (p.rootSet K) = ⊤ ↔ K = adjoin F (p.rootSet E)) by
-    exact ⟨fun h => ⟨h.1, (this h.1).mp h.2⟩, fun h => ⟨h.1, (this h.1).mpr h.2⟩⟩
-  simp_rw [SetLike.ext_iff, ← mem_toSubalgebra, ← SetLike.ext_iff]
-  rw [adjoin_algebraic_toSubalgebra fun x => isAlgebraic_of_mem_rootSet]
-  refine' fun hp => (adjoin_rootSet_eq_range hp K.val).symm.trans _
+    exact ⟨fun h ↦ ⟨h.1, (this h.1).mp h.2⟩, fun h ↦ ⟨h.1, (this h.1).mpr h.2⟩⟩
+  rw [← toSubalgebra_injective.eq_iff,
+      adjoin_algebraic_toSubalgebra fun x ↦ isAlgebraic_of_mem_rootSet]
+  refine fun hp ↦ (adjoin_rootSet_eq_range hp K.val).symm.trans ?_
   rw [← K.range_val, eq_comm]
 #align intermediate_field.is_splitting_field_iff IntermediateField.isSplittingField_iff
 
 theorem adjoin_rootSet_isSplittingField {p : F[X]} (hp : p.Splits (algebraMap F E)) :
     p.IsSplittingField F (adjoin F (p.rootSet E)) :=
-  isSplittingField_iff.mpr ⟨splits_of_splits hp fun _ hx => subset_adjoin F (p.rootSet E) hx, rfl⟩
+  isSplittingField_iff.mpr ⟨splits_of_splits hp fun _ hx ↦ subset_adjoin F (p.rootSet E) hx, rfl⟩
 #align intermediate_field.adjoin_root_set_is_splitting_field IntermediateField.adjoin_rootSet_isSplittingField
 
 open scoped BigOperators
@@ -624,7 +641,8 @@ theorem sup_toSubalgebra [h1 : FiniteDimensional K E1] [h2 : FiniteDimensional K
       exact (congr_arg (· ∈ S1 ⊔ S2) <| eq_inv_of_mul_eq_one_right <| Subtype.ext_iff.mp h).mp y.2
   exact
     isField_of_isIntegral_of_isField'
-      (isIntegral_sup.mpr ⟨Algebra.isIntegral_of_finite K E1, Algebra.isIntegral_of_finite K E2⟩)
+      (Algebra.isIntegral_sup.mpr
+        ⟨Algebra.IsIntegral.of_finite K E1, Algebra.IsIntegral.of_finite K E2⟩)
       (Field.toIsField K)
 #align intermediate_field.sup_to_subalgebra IntermediateField.sup_toSubalgebra
 
@@ -713,9 +731,8 @@ has been improved. -/
 theorem adjoin_simple_le_iff {K : IntermediateField F E} : F⟮α⟯ ≤ K ↔ α ∈ K := by simp
 #align intermediate_field.adjoin_simple_le_iff IntermediateField.adjoin_simple_le_iff
 
-theorem biSup_adjoin_simple : ⨆ x ∈ S, F⟮x⟯ = adjoin F S :=
-  le_antisymm (iSup_le fun _ ↦ iSup_le fun hx ↦ adjoin_simple_le_iff.mpr <| subset_adjoin F S hx) <|
-    adjoin_le_iff.mpr fun x hx ↦ adjoin_simple_le_iff.mp (le_iSup_of_le x (le_iSup_of_le hx le_rfl))
+theorem biSup_adjoin_simple : ⨆ x ∈ S, F⟮x⟯ = adjoin F S := by
+  rw [← iSup_subtype'', ← gc.l_iSup, iSup_subtype'']; congr; exact S.biUnion_of_singleton
 
 /-- Adjoining a single element is compact in the lattice of intermediate fields. -/
 theorem adjoin_simple_isCompactElement (x : E) : IsCompactElement F⟮x⟯ := by
@@ -750,8 +767,7 @@ instance : IsCompactlyGenerated (IntermediateField F E) :=
 
 theorem exists_finset_of_mem_iSup {ι : Type*} {f : ι → IntermediateField F E} {x : E}
     (hx : x ∈ ⨆ i, f i) : ∃ s : Finset ι, x ∈ ⨆ i ∈ s, f i := by
-  have := (adjoin_simple_isCompactElement x : IsCompactElement F⟮x⟯).exists_finset_of_le_iSup
-    (IntermediateField F E) f
+  have := (adjoin_simple_isCompactElement x).exists_finset_of_le_iSup (IntermediateField F E) f
   simp only [adjoin_simple_le_iff] at this
   exact this hx
 #align intermediate_field.exists_finset_of_mem_supr IntermediateField.exists_finset_of_mem_iSup
@@ -773,7 +789,7 @@ theorem exists_finset_of_mem_supr'' {ι : Type*} {f : ι → IntermediateField F
     (subset_adjoin F (rootSet (minpoly F x1) E) _)
   · rw [IntermediateField.minpoly_eq, Subtype.coe_mk]
   · rw [mem_rootSet_of_ne, minpoly.aeval]
-    exact minpoly.ne_zero (isIntegral_iff.mp (isAlgebraic_iff_isIntegral.mp (h i ⟨x1, hx1⟩)))
+    exact minpoly.ne_zero (isIntegral_iff.mp (h i ⟨x1, hx1⟩).isIntegral)
 #align intermediate_field.exists_finset_of_mem_supr'' IntermediateField.exists_finset_of_mem_supr''
 
 end AdjoinSimple
@@ -977,7 +993,7 @@ theorem adjoin.finiteDimensional {x : L} (hx : IsIntegral K x) : FiniteDimension
 #align intermediate_field.adjoin.finite_dimensional IntermediateField.adjoin.finiteDimensional
 
 theorem isAlgebraic_adjoin_simple {x : L} (hx : IsIntegral K x) : Algebra.IsAlgebraic K K⟮x⟯ :=
-  have := adjoin.finiteDimensional hx; Algebra.isAlgebraic_of_finite K K⟮x⟯
+  have := adjoin.finiteDimensional hx; Algebra.IsAlgebraic.of_finite K K⟮x⟯
 
 theorem adjoin.finrank {x : L} (hx : IsIntegral K x) :
     FiniteDimensional.finrank K K⟮x⟯ = (minpoly K x).natDegree := by
@@ -1006,31 +1022,24 @@ theorem adjoin_minpoly_coeff_of_exists_primitive_element
     rintro ⟨n, -, rfl⟩
     rw [coeff_map]
     apply Subtype.mem
-  have g_lifts : g ∈ lifts (algebraMap K' E) := by
-    refine g.lifts_iff_coeff_lifts.mpr fun n ↦ ?_
-    erw [Subtype.range_val]
-    by_cases hn : n ∈ g.support
-    · exact subset_adjoin F _ (mem_frange_iff.mpr ⟨n, hn, rfl⟩)
-    · exact not_mem_support_iff.mp hn ▸ zero_mem K'
-  obtain ⟨p, hp⟩ := g.lifts_and_natDegree_eq_and_monic
-    g_lifts ((minpoly.monic <| isIntegral_of_finite K α).map _)
-  have dvd_p : minpoly K' α ∣ p
+  have dvd_g : minpoly K' α ∣ g.toSubring K'.toSubring (subset_adjoin F _)
   · apply minpoly.dvd
-    rw [aeval_def, eval₂_eq_eval_map, hp.1, ← eval₂_eq_eval_map, ← aeval_def]
+    erw [aeval_def, eval₂_eq_eval_map, g.map_toSubring K'.toSubring, eval_map, ← aeval_def]
     exact minpoly.aeval K α
   have finrank_eq : ∀ K : IntermediateField F E, finrank K E = natDegree (minpoly K α)
   · intro K
-    have := adjoin.finrank (isIntegral_of_finite K α)
+    have := adjoin.finrank (.of_finite K α)
     erw [adjoin_eq_top_of_adjoin_eq_top F hprim, finrank_top K E] at this
     exact this
   refine eq_of_le_of_finrank_le' hsub ?_
   simp_rw [finrank_eq]
-  convert natDegree_le_of_dvd dvd_p hp.2.2.ne_zero using 1
-  rw [hp.2.1, natDegree_map]
+  convert natDegree_le_of_dvd dvd_g
+    ((g.monic_toSubring _ _).mpr <| (minpoly.monic <| .of_finite K α).map _).ne_zero using 1
+  rw [natDegree_toSubring, natDegree_map]
 
 theorem _root_.minpoly.natDegree_le (x : L) [FiniteDimensional K L] :
     (minpoly K x).natDegree ≤ finrank K L :=
-  le_of_eq_of_le (IntermediateField.adjoin.finrank (isIntegral_of_finite _ _)).symm
+  le_of_eq_of_le (IntermediateField.adjoin.finrank (.of_finite _ _)).symm
     K⟮x⟯.toSubmodule.finrank_le
 #align minpoly.nat_degree_le minpoly.natDegree_le
 
@@ -1047,8 +1056,8 @@ theorem isAlgebraic_iSup {ι : Type*} {t : ι → IntermediateField K L}
   obtain ⟨s, hx⟩ := exists_finset_of_mem_supr' hx
   rw [isAlgebraic_iff, Subtype.coe_mk, ← Subtype.coe_mk (p := (· ∈ _)) x hx, ← isAlgebraic_iff]
   haveI : ∀ i : Σ i, t i, FiniteDimensional K K⟮(i.2 : L)⟯ := fun ⟨i, x⟩ ↦
-    adjoin.finiteDimensional (isIntegral_iff.1 (isAlgebraic_iff_isIntegral.1 (h i x)))
-  apply Algebra.isAlgebraic_of_finite
+    adjoin.finiteDimensional (isIntegral_iff.1 (h i x).isIntegral)
+  apply Algebra.IsAlgebraic.of_finite
 #align intermediate_field.is_algebraic_supr IntermediateField.isAlgebraic_iSup
 
 theorem isAlgebraic_adjoin {S : Set L} (hS : ∀ x ∈ S, IsIntegral K x) :
@@ -1211,7 +1220,7 @@ theorem Lifts.exists_upper_bound (c : Set (Lifts F E K)) (hc : IsChain (· ≤ �
   whose carrier contains `s`. -/
 theorem Lifts.exists_lift_of_splits (x : Lifts F E K) {s : E} (h1 : IsIntegral F s)
     (h2 : (minpoly F s).Splits (algebraMap F K)) : ∃ y, x ≤ y ∧ s ∈ y.carrier :=
-  have I1 : IsIntegral x.carrier s := isIntegral_of_isScalarTower h1
+  have I1 : IsIntegral x.carrier s := h1.tower_top
   have I2 := (minpoly.degree_pos I1).ne'
   have key : (minpoly x.carrier s).Splits x.emb.toRingHom :=
     splits_of_splits_of_dvd _ (map_ne_zero (minpoly.ne_zero h1))

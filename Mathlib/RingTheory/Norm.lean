@@ -222,7 +222,7 @@ theorem _root_.IntermediateField.AdjoinSimple.norm_gen_eq_one {x : L} (hx : ¬Is
   rw [norm_eq_one_of_not_exists_basis]
   contrapose! hx
   obtain ⟨s, ⟨b⟩⟩ := hx
-  refine isIntegral_of_mem_of_FG K⟮x⟯.toSubalgebra ?_ x ?_
+  refine .of_mem_of_fg K⟮x⟯.toSubalgebra ?_ x ?_
   · exact (Submodule.fg_iff_finiteDimensional _).mpr (of_fintype_basis b)
   · exact IntermediateField.subset_adjoin K _ (Set.mem_singleton x)
 #align intermediate_field.adjoin_simple.norm_gen_eq_one IntermediateField.AdjoinSimple.norm_gen_eq_one
@@ -321,7 +321,7 @@ theorem norm_eq_prod_automorphisms [FiniteDimensional K L] [IsGalois K L] (x : L
 
 theorem isIntegral_norm [Algebra R L] [Algebra R K] [IsScalarTower R K L] [IsSeparable K L]
     [FiniteDimensional K L] {x : L} (hx : IsIntegral R x) : IsIntegral R (norm K x) := by
-  have hx' : IsIntegral K x := isIntegral_of_isScalarTower hx
+  have hx' : IsIntegral K x := hx.tower_top
   rw [← isIntegral_algebraMap_iff (algebraMap K (AlgebraicClosure L)).injective, norm_eq_prod_roots]
   · refine' (IsIntegral.multiset_prod fun y hy => _).pow _
     rw [mem_roots_map (minpoly.ne_zero hx')] at hy

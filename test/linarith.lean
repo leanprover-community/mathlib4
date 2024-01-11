@@ -538,3 +538,9 @@ example {α : Type} [LinearOrderedCommRing α]
 example (x : ℚ) (h : x * (2⁻¹ + 2 / 3) = 1) : x = 6 / 7 := by linarith
 
 example {α} [LinearOrderedCommSemiring α] (x : α) (_ : 0 ≤ x) : 0 ≤ 1 := by linarith
+
+example (k : ℤ) (h : k < 1) (h₁ : -1 < k) : k = 0 := by
+  -- Make h₁'s type be a metavariable. At one point this caused the strengthenStrictInt
+  -- linarith preprocessor to fail.
+  change _ at h₁
+  linarith

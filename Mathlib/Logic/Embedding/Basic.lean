@@ -192,7 +192,7 @@ def setValue {α β} (f : α ↪ β) (a : α) (b : β) [∀ a', Decidable (a' = 
     -- split_ifs at h <;> (try subst b) <;> (try simp only [f.injective.eq_iff] at *) <;> cc
     split_ifs at h with h₁ h₂ _ _ h₅ h₆ <;>
         (try subst b) <;>
-        (try simp only [f.injective.eq_iff] at *)
+        (try simp only [f.injective.eq_iff, not_true_eq_false] at *)
     · rw[h₁,h₂]
     · rw[h₁,h]
     · rw[h₅,←h]

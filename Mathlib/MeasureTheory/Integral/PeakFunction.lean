@@ -30,9 +30,6 @@ Note that there are related results about convolution with respect to peak funct
 `Analysis.Convolution`, such as `convolution_tendsto_right` there.
 -/
 
-
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open Set Filter MeasureTheory MeasureTheory.Measure TopologicalSpace Metric
 
 open scoped Topology ENNReal

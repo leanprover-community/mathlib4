@@ -38,12 +38,12 @@ theorem monotone_vecCons : Monotone (vecCons a f) ↔ a ≤ f 0 ∧ Monotone f :
 
 --Porting note: new lemma, in Lean3 would be proven by `Subsingleton.monotone`
 @[simp]
-theorem monotone_vecEmpty : Monotone (vecCons a vecEmpty)
+theorem monotone_vecEmpty : Monotone ![a]
   | ⟨0, _⟩, ⟨0, _⟩, _ => le_refl _
 
 --Porting note: new lemma, in Lean3 would be proven by `Subsingleton.strictMono`
 @[simp]
-theorem strictMono_vecEmpty : StrictMono (vecCons a vecEmpty)
+theorem strictMono_vecEmpty : StrictMono ![a]
   | ⟨0, _⟩, ⟨0, _⟩, h => (irrefl _ h).elim
 
 @[simp]
@@ -82,4 +82,5 @@ theorem Antitone.vecCons (hf : Antitone f) (ha : f 0 ≤ a) : Antitone (vecCons 
   antitone_vecCons.2 ⟨ha, hf⟩
 #align antitone.vec_cons Antitone.vecCons
 
-example : Monotone ![1, 2, 2, 3] := by simp
+-- NOTE: was "by simp", but simp lemmas were not being used
+example : Monotone ![1, 2, 2, 3] := by decide

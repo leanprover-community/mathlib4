@@ -44,8 +44,6 @@ In particular, this number is bounded by `5 ^ dim` by a straightforward measure 
 
 universe u
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open Metric Set FiniteDimensional MeasureTheory Filter Fin
 
 open scoped ENNReal Topology

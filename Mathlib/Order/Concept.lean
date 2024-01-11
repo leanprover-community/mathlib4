@@ -113,19 +113,11 @@ theorem extentClosure_iUnion (f : ι → Set β) :
   intentClosure_iUnion _ _
 #align extent_closure_Union extentClosure_iUnion
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
--- Porting note: Can be proved by simp. so not marked as @[simp]
--- @[simp]
 theorem intentClosure_iUnion₂ (f : ∀ i, κ i → Set α) :
     intentClosure r (⋃ (i) (j), f i j) = ⋂ (i) (j), intentClosure r (f i j) :=
   (gc_intentClosure_extentClosure r).l_iSup₂
 #align intent_closure_Union₂ intentClosure_iUnion₂
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
--- Porting note: Can be proved by simp. so not marked as @[simp]
--- @[simp]
 theorem extentClosure_iUnion₂ (f : ∀ i, κ i → Set β) :
     extentClosure r (⋃ (i) (j), f i j) = ⋂ (i) (j), extentClosure r (f i j) :=
   intentClosure_iUnion₂ _ _

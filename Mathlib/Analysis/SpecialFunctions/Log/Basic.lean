@@ -348,7 +348,8 @@ theorem tendsto_log_nhdsWithin_zero : Tendsto log (𝓝[≠] 0) atBot := by
 #align real.tendsto_log_nhds_within_zero Real.tendsto_log_nhdsWithin_zero
 
 theorem continuousOn_log : ContinuousOn log {0}ᶜ := by
-  simp only [continuousOn_iff_continuous_restrict, restrict]
+  simp (config := { unfoldPartialApp := true }) only [continuousOn_iff_continuous_restrict,
+    restrict]
   conv in log _ => rw [log_of_ne_zero (show (x : ℝ) ≠ 0 from x.2)]
   exact expOrderIso.symm.continuous.comp (continuous_subtype_val.norm.subtype_mk _)
 #align real.continuous_on_log Real.continuousOn_log

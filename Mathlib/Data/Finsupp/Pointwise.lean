@@ -49,6 +49,10 @@ theorem mul_apply {g₁ g₂ : α →₀ β} {a : α} : (g₁ * g₂) a = g₁ a
   rfl
 #align finsupp.mul_apply Finsupp.mul_apply
 
+@[simp]
+theorem single_mul (a : α) (b₁ b₂ : β) : single a (b₁ * b₂) = single a b₁ * single a b₂ :=
+  (zipWith_single_single _ _ _ _ _).symm
+
 theorem support_mul [DecidableEq α] {g₁ g₂ : α →₀ β} :
     (g₁ * g₂).support ⊆ g₁.support ∩ g₂.support := by
   intro a h
@@ -104,7 +108,7 @@ instance pointwiseScalar [Semiring β] : SMul (α → β) (α →₀ β) where
 #align finsupp.pointwise_scalar Finsupp.pointwiseScalar
 
 @[simp]
-theorem coe_pointwise_smul [Semiring β] (f : α → β) (g : α →₀ β) : FunLike.coe (f • g) = f • g :=
+theorem coe_pointwise_smul [Semiring β] (f : α → β) (g : α →₀ β) : ⇑(f • g) = f • ⇑g :=
   rfl
 #align finsupp.coe_pointwise_smul Finsupp.coe_pointwise_smul
 

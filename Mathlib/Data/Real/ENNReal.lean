@@ -343,6 +343,8 @@ theorem toReal_ofReal_eq_iff {a : ℝ} : (ENNReal.ofReal a).toReal = a ↔ 0 ≤
 @[simp] theorem top_ne_one : ∞ ≠ 1 := top_ne_coe
 #align ennreal.top_ne_one ENNReal.top_ne_one
 
+@[simp] theorem zero_lt_top : 0 < ∞ := coe_lt_top
+
 @[simp, norm_cast] theorem coe_eq_coe : (↑r : ℝ≥0∞) = ↑q ↔ r = q := WithTop.coe_eq_coe
 #align ennreal.coe_eq_coe ENNReal.coe_eq_coe
 
@@ -429,8 +431,10 @@ nonrec theorem one_lt_two : (1 : ℝ≥0∞) < 2 :=
   coe_one ▸ coe_two ▸ by exact_mod_cast (one_lt_two : 1 < 2)
 #align ennreal.one_lt_two ENNReal.one_lt_two
 
-theorem two_ne_top : (2 : ℝ≥0∞) ≠ ∞ := coe_ne_top
+@[simp] theorem two_ne_top : (2 : ℝ≥0∞) ≠ ∞ := coe_ne_top
 #align ennreal.two_ne_top ENNReal.two_ne_top
+
+@[simp] theorem two_lt_top : (2 : ℝ≥0∞) < ∞ := coe_lt_top
 
 /-- `(1 : ℝ≥0∞) ≤ 1`, recorded as a `Fact` for use with `Lp` spaces. -/
 instance _root_.fact_one_le_one_ennreal : Fact ((1 : ℝ≥0∞) ≤ 1) :=
@@ -636,7 +640,7 @@ theorem mul_lt_top_iff {a b : ℝ≥0∞} : a * b < ∞ ↔ a < ∞ ∧ b < ∞ 
 theorem mul_self_lt_top_iff {a : ℝ≥0∞} : a * a < ⊤ ↔ a < ⊤ := by
   rw [ENNReal.mul_lt_top_iff, and_self, or_self, or_iff_left_iff_imp]
   rintro rfl
-  norm_num
+  decide
 #align ennreal.mul_self_lt_top_iff ENNReal.mul_self_lt_top_iff
 
 theorem mul_pos_iff : 0 < a * b ↔ 0 < a ∧ 0 < b :=
@@ -652,7 +656,7 @@ theorem mul_pos (ha : a ≠ 0) (hb : b ≠ 0) : 0 < a * b :=
   rcases n.eq_zero_or_pos with rfl | (hn : 0 < n)
   · simp
   · induction a using recTopCoe
-    · simp only [Ne.def, hn.ne', top_pow hn]
+    · simp only [Ne.def, hn.ne', top_pow hn, not_false_eq_true, and_self]
     · simp only [← coe_pow, coe_ne_top, false_and]
 #align ennreal.pow_eq_top_iff ENNReal.pow_eq_top_iff
 
@@ -1796,7 +1800,8 @@ theorem add_thirds (a : ℝ≥0∞) : a / 3 + a / 3 + a / 3 = a := by
 @[simp] theorem div_pos_iff : 0 < a / b ↔ a ≠ 0 ∧ b ≠ ∞ := by simp [pos_iff_ne_zero, not_or]
 #align ennreal.div_pos_iff ENNReal.div_pos_iff
 
-protected theorem half_pos (h : a ≠ 0) : 0 < a / 2 := by simp [h]
+protected theorem half_pos (h : a ≠ 0) : 0 < a / 2 := by
+  simp only [div_pos_iff, ne_eq, h, not_false_eq_true]; decide
 #align ennreal.half_pos ENNReal.half_pos
 
 protected theorem one_half_lt_one : (2⁻¹ : ℝ≥0∞) < 1 :=
@@ -1917,7 +1922,8 @@ theorem coe_zpow (hr : r ≠ 0) (n : ℤ) : (↑(r ^ n) : ℝ≥0∞) = (r : ℝ
 theorem zpow_pos (ha : a ≠ 0) (h'a : a ≠ ∞) (n : ℤ) : 0 < a ^ n := by
   cases n
   · exact ENNReal.pow_pos ha.bot_lt _
-  · simp only [h'a, pow_eq_top_iff, zpow_negSucc, Ne.def, not_false, ENNReal.inv_pos, false_and]
+  · simp only [h'a, pow_eq_top_iff, zpow_negSucc, Ne.def, not_false, ENNReal.inv_pos, false_and,
+      not_false_eq_true]
 #align ennreal.zpow_pos ENNReal.zpow_pos
 
 theorem zpow_lt_top (ha : a ≠ 0) (h'a : a ≠ ∞) (n : ℤ) : a ^ n < ∞ := by

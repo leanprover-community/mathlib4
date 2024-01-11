@@ -53,8 +53,6 @@ For consequences in infinite dimension (Hilbert bases, etc.), see the file
 
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 set_option linter.uppercaseLean3 false
 
 open Real Set Filter IsROrC Submodule Function BigOperators Uniformity Topology NNReal ENNReal
@@ -809,9 +807,8 @@ theorem Orthonormal.exists_orthonormalBasis_extension (hv : Orthonormal 𝕜 ((�
   rw [maximal_orthonormal_iff_orthogonalComplement_eq_bot hu₀] at hu₀_max
   have hu₀_finite : u₀.Finite := hu₀.linearIndependent.finite
   let u : Finset E := hu₀_finite.toFinset
-  let fu : ↥u ≃ ↥u₀ := Equiv.cast (congr_arg (↥) hu₀_finite.coe_toFinset)
-  have hfu : ((↑) : u → E) = ((↑) : u₀ → E) ∘ fu := by ext; simp
-  have hu : Orthonormal 𝕜 ((↑) : u → E) := by simpa [hfu] using hu₀.comp _ fu.injective
+  let fu : ↥u ≃ ↥u₀ := hu₀_finite.subtypeEquivToFinset.symm
+  have hu : Orthonormal 𝕜 ((↑) : u → E) := by simpa using hu₀.comp _ fu.injective
   refine' ⟨u, OrthonormalBasis.mkOfOrthogonalEqBot hu _, _, _⟩
   · simpa using hu₀_max
   · simpa using hu₀s

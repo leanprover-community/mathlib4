@@ -3,7 +3,7 @@ Copyright (c) 2022 Michael Blyth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Blyth
 -/
-import Mathlib.LinearAlgebra.ProjectiveSpace.Basic
+import Mathlib.LinearAlgebra.Projectivization.Basic
 
 #align_import linear_algebra.projective_space.subspace from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
@@ -35,6 +35,8 @@ also in the subset.
 variable (K V : Type*) [Field K] [AddCommGroup V] [Module K V]
 
 namespace Projectivization
+
+open scoped LinearAlgebra.Projectivization
 
 /-- A subspace of a projective space is a structure consisting of a set of points such that:
 If two nonzero vectors determine points which are in the set, and the sum of the two vectors is

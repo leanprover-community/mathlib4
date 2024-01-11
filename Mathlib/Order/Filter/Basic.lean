@@ -380,8 +380,8 @@ theorem mem_generate_iff {s : Set <| Set α} {U : Set α} :
 #align filter.mem_generate_iff Filter.mem_generate_iff
 
 @[simp] lemma generate_singleton (s : Set α) : generate {s} = 𝓟 s :=
-le_antisymm (λ _t ht ↦ mem_of_superset (mem_generate_of_mem $ mem_singleton _) ht) $
-  le_generate_iff.2 $ singleton_subset_iff.2 Subset.rfl
+  le_antisymm (λ _t ht ↦ mem_of_superset (mem_generate_of_mem $ mem_singleton _) ht) <|
+    le_generate_iff.2 $ singleton_subset_iff.2 Subset.rfl
 
 /-- `mk_of_closure s hs` constructs a filter on `α` whose elements set is exactly
 `s : Set (Set α)`, provided one gives the assumption `hs : (generate s).sets = s`. -/
@@ -1948,8 +1948,8 @@ theorem mem_comap'' : s ∈ comap f l ↔ kernImage f s ∈ l :=
 
 /-- RHS form is used, e.g., in the definition of `UniformSpace`. -/
 lemma mem_comap_prod_mk {x : α} {s : Set β} {F : Filter (α × β)} :
-    s ∈ comap (Prod.mk x) F ↔ {p : α × β | p.fst = x → p.snd ∈ s} ∈ F :=
-by simp_rw [mem_comap', Prod.ext_iff, and_imp, @forall_swap β (_ = _), forall_eq, eq_comm]
+    s ∈ comap (Prod.mk x) F ↔ {p : α × β | p.fst = x → p.snd ∈ s} ∈ F := by
+  simp_rw [mem_comap', Prod.ext_iff, and_imp, @forall_swap β (_ = _), forall_eq, eq_comm]
 #align filter.mem_comap_prod_mk Filter.mem_comap_prod_mk
 
 @[simp]

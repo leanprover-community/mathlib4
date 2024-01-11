@@ -4,6 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.IndicatorFunction
 import Mathlib.Algebra.Order.Field.Canonical.Basic
 import Mathlib.Algebra.Order.Nonneg.Field
 import Mathlib.Algebra.Order.Nonneg.Floor

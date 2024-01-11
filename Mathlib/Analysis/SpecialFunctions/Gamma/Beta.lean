@@ -40,8 +40,6 @@ refined properties of the Gamma function using these relations.
 
 noncomputable section
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 set_option linter.uppercaseLean3 false
 
 open Filter intervalIntegral Set Real MeasureTheory
@@ -288,13 +286,13 @@ theorem GammaSeq_eq_approx_Gamma_integral {s : ℂ} (hs : 0 < re s) {n : ℕ} (h
 /-- The main techical lemma for `GammaSeq_tendsto_Gamma`, expressing the integral defining the
 Gamma function for `0 < re s` as the limit of a sequence of integrals over finite intervals. -/
 theorem approx_Gamma_integral_tendsto_Gamma_integral {s : ℂ} (hs : 0 < re s) :
-    Tendsto (fun n : ℕ => ∫ x : ℝ in (0)..n, ↑((1 - x / n) ^ n) * (x : ℂ) ^ (s - 1)) atTop
+    Tendsto (fun n : ℕ => ∫ x : ℝ in (0)..n, ((1 - x / n) ^ n : ℝ) * (x : ℂ) ^ (s - 1)) atTop
       (𝓝 <| Gamma s) := by
   rw [Gamma_eq_integral hs]
   -- We apply dominated convergence to the following function, which we will show is uniformly
   -- bounded above by the Gamma integrand `exp (-x) * x ^ (re s - 1)`.
   let f : ℕ → ℝ → ℂ := fun n =>
-    indicator (Ioc 0 (n : ℝ)) fun x : ℝ => ↑((1 - x / n) ^ n) * (x : ℂ) ^ (s - 1)
+    indicator (Ioc 0 (n : ℝ)) fun x : ℝ => ((1 - x / n) ^ n : ℝ) * (x : ℂ) ^ (s - 1)
   -- integrability of f
   have f_ible : ∀ n : ℕ, Integrable (f n) (volume.restrict (Ioi 0)) := by
     intro n
@@ -322,7 +320,7 @@ theorem approx_Gamma_integral_tendsto_Gamma_integral {s : ℂ} (hs : 0 < re s) :
       refine' (Tendsto.comp (continuous_ofReal.tendsto _) _).const_mul _
       convert tendsto_one_plus_div_pow_exp (-x) using 1
       ext1 n
-      rw [neg_div, ← sub_eq_add_neg]; norm_cast
+      rw [neg_div, ← sub_eq_add_neg]
   -- let `convert` identify the remaining goals
   convert tendsto_integral_of_dominated_convergence _ (fun n => (f_ible n).1)
     (Real.GammaIntegral_convergent hs) _
@@ -403,7 +401,7 @@ theorem GammaSeq_mul (z : ℂ) {n : ℕ} (hn : n ≠ 0) :
   rw [this, Finset.prod_range_succ', Finset.prod_range_succ, aux, ← Finset.prod_mul_distrib,
     Nat.cast_zero, add_zero, add_comm (1 - z) n, ← add_sub_assoc]
   have : ∀ j : ℕ, (z + ↑(j + 1)) * (↑1 - z + ↑j) =
-      ↑((j + 1) ^ 2) * (↑1 - z ^ 2 / ((j : ℂ) + 1) ^ 2) := by
+      ((j + 1) ^ 2 :) * (↑1 - z ^ 2 / ((j : ℂ) + 1) ^ 2) := by
     intro j
     push_cast
     have : (j : ℂ) + 1 ≠ 0 := by rw [← Nat.cast_succ, Nat.cast_ne_zero]; exact Nat.succ_ne_zero j

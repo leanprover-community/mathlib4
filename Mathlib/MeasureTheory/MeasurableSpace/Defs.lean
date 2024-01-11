@@ -68,7 +68,7 @@ def MeasurableSet [MeasurableSpace α] (s : Set α) : Prop :=
 -- porting note: todo: `scoped[MeasureTheory]` doesn't work for unknown reason
 namespace MeasureTheory
 set_option quotPrecheck false in
-/-- Notation for `MeasurableSet` with respect to a non-standanrd σ-algebra. -/
+/-- Notation for `MeasurableSet` with respect to a non-standard σ-algebra. -/
 scoped notation "MeasurableSet[" m "]" => @MeasurableSet _ m
 
 end MeasureTheory

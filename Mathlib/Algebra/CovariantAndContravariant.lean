@@ -43,7 +43,7 @@ A formal remark is that normally `CovariantClass` uses the `(≤)`-relation, whi
 `ContravariantClass` uses the `(<)`-relation. This need not be the case in general, but seems to be
 the most common usage. In the opposite direction, the implication
 ```lean
-[Semigroup α] [PartialOrder α] [ContravariantClass α α (*) (≤)] ↦ LeftCancelSemigroup α
+[Semigroup α] [PartialOrder α] [ContravariantClass α α (*) (≤)] → LeftCancelSemigroup α
 ```
 holds -- note the `Co*ntra*` assumption on the `(≤)`-relation.
 

@@ -665,7 +665,7 @@ instance isHaarMeasure_haarMeasure (K₀ : PositiveCompacts G) : IsHaarMeasure (
     isHaarMeasure_of_isCompact_nonempty_interior (haarMeasure K₀) K₀ K₀.isCompact
       K₀.interior_nonempty
   · simp only [haarMeasure_self]; exact one_ne_zero
-  · simp only [haarMeasure_self]
+  · simp only [haarMeasure_self, ne_eq, ENNReal.one_ne_top, not_false_eq_true]
 #align measure_theory.measure.is_haar_measure_haar_measure MeasureTheory.Measure.isHaarMeasure_haarMeasure
 #align measure_theory.measure.is_add_haar_measure_add_haar_measure MeasureTheory.Measure.isAddHaarMeasure_addHaarMeasure
 

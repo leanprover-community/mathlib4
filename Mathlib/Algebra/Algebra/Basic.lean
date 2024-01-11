@@ -3,14 +3,8 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Data.Rat.Order
-import Mathlib.Algebra.Module.Basic
-import Mathlib.Algebra.Module.ULift
-import Mathlib.Algebra.NeZero
-import Mathlib.Algebra.PUnitInstances
-import Mathlib.Algebra.Ring.Aut
-import Mathlib.Algebra.Ring.ULift
 import Mathlib.Algebra.CharZero.Lemmas
+import Mathlib.Algebra.Module.ULift
 import Mathlib.LinearAlgebra.Basic
 import Mathlib.RingTheory.Subring.Basic
 
@@ -374,8 +368,9 @@ theorem left_comm (x : A) (r : R) (y : A) :
 #align algebra.left_comm Algebra.left_comm
 
 /-- `mul_right_comm` for `Algebra`s when one element is from the base ring. -/
-theorem right_comm (x : A) (r : R) (y : A) : x * algebraMap R A r * y = x * y * algebraMap R A r :=
-  by rw [mul_assoc, commutes, ← mul_assoc]
+theorem right_comm (x : A) (r : R) (y : A) :
+    x * algebraMap R A r * y = x * y * algebraMap R A r := by
+  rw [mul_assoc, commutes, ← mul_assoc]
 #align algebra.right_comm Algebra.right_comm
 
 instance _root_.IsScalarTower.right : IsScalarTower R A A :=

@@ -781,7 +781,7 @@ end
 variable (F : C ⥤ D)
 
 /-- A fully faithful functor reflects limits. -/
-def fullyFaithfulReflectsLimits [Full F] [Faithful F] : ReflectsLimitsOfSize.{w, w'} F where
+instance fullyFaithfulReflectsLimits [Full F] [Faithful F] : ReflectsLimitsOfSize.{w, w'} F where
   reflectsLimitsOfShape {J} 𝒥₁ :=
     { reflectsLimit := fun {K} =>
         { reflects := fun {c} t =>
@@ -794,7 +794,8 @@ def fullyFaithfulReflectsLimits [Full F] [Faithful F] : ReflectsLimitsOfSize.{w,
 #align category_theory.limits.fully_faithful_reflects_limits CategoryTheory.Limits.fullyFaithfulReflectsLimits
 
 /-- A fully faithful functor reflects colimits. -/
-def fullyFaithfulReflectsColimits [Full F] [Faithful F] : ReflectsColimitsOfSize.{w, w'} F where
+instance fullyFaithfulReflectsColimits [Full F] [Faithful F] :
+    ReflectsColimitsOfSize.{w, w'} F where
   reflectsColimitsOfShape {J} 𝒥₁ :=
     { reflectsColimit := fun {K} =>
         { reflects := fun {c} t =>

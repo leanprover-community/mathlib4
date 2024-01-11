@@ -547,7 +547,7 @@ def comp : QPF (Functor.Comp F₂ F₁) where
     cases' h' : repr (f x) with b g
     dsimp; rw [← h', abs_repr]
   abs_map {α β} f := by
-    dsimp [Functor.Comp, PFunctor.comp]
+    dsimp (config := { unfoldPartialApp := true }) [Functor.Comp, PFunctor.comp]
     intro p
     cases' p with a g; dsimp
     cases' a with b h; dsimp
@@ -557,7 +557,7 @@ def comp : QPF (Functor.Comp F₂ F₁) where
     apply abs_map
     congr
     rw [PFunctor.map_eq]
-    dsimp [Function.comp]
+    dsimp [Function.comp_def]
     congr
     ext x
     rw [← abs_map]

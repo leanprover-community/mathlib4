@@ -1043,8 +1043,8 @@ theorem OrderIso.map_iInf [CompleteLattice β] (f : α ≃o β) (x : ι → α) 
 #align order_iso.map_infi OrderIso.map_iInf
 
 theorem OrderIso.map_sSup [CompleteLattice β] (f : α ≃o β) (s : Set α) :
-    f (sSup s) = ⨆ a ∈ s, f a :=
-  by simp only [sSup_eq_iSup, OrderIso.map_iSup]
+    f (sSup s) = ⨆ a ∈ s, f a := by
+  simp only [sSup_eq_iSup, OrderIso.map_iSup]
 #align order_iso.map_Sup OrderIso.map_sSup
 
 theorem OrderIso.map_sInf [CompleteLattice β] (f : α ≃o β) (s : Set α) :
@@ -1357,12 +1357,10 @@ theorem inf_biInf {p : ι → Prop} {f : ∀ i, p i → α} {a : α} (h : ∃ i,
 /-! ### `iSup` and `iInf` under `Prop` -/
 
 
-theorem iSup_false {s : False → α} : iSup s = ⊥ :=
-  by simp
+theorem iSup_false {s : False → α} : iSup s = ⊥ := by simp
 #align supr_false iSup_false
 
-theorem iInf_false {s : False → α} : iInf s = ⊤ :=
-  by simp
+theorem iInf_false {s : False → α} : iInf s = ⊤ := by simp
 #align infi_false iInf_false
 
 theorem iSup_true {s : True → α} : iSup s = s trivial :=
@@ -1480,8 +1478,9 @@ theorem iSup_univ {f : β → α} : ⨆ x ∈ (univ : Set β), f x = ⨆ x, f x 
 theorem iInf_univ {f : β → α} : ⨅ x ∈ (univ : Set β), f x = ⨅ x, f x := by simp
 #align infi_univ iInf_univ
 
-theorem iSup_union {f : β → α} {s t : Set β} : ⨆ x ∈ s ∪ t, f x = (⨆ x ∈ s, f x) ⊔ ⨆ x ∈ t, f x :=
-  by simp_rw [mem_union, iSup_or, iSup_sup_eq]
+theorem iSup_union {f : β → α} {s t : Set β} :
+    ⨆ x ∈ s ∪ t, f x = (⨆ x ∈ s, f x) ⊔ ⨆ x ∈ t, f x := by
+  simp_rw [mem_union, iSup_or, iSup_sup_eq]
 #align supr_union iSup_union
 
 theorem iInf_union {f : β → α} {s t : Set β} : ⨅ x ∈ s ∪ t, f x = (⨅ x ∈ s, f x) ⊓ ⨅ x ∈ t, f x :=
@@ -1675,6 +1674,7 @@ theorem iInf_option_elim (a : α) (f : β → α) : ⨅ o : Option β, o.elim a 
 
 /-- When taking the supremum of `f : ι → α`, the elements of `ι` on which `f` gives `⊥` can be
 dropped, without changing the result. -/
+@[simp]
 theorem iSup_ne_bot_subtype (f : ι → α) : ⨆ i : { i // f i ≠ ⊥ }, f i = ⨆ i, f i := by
   by_cases htriv : ∀ i, f i = ⊥
   · simp only [iSup_bot, (funext htriv : f = _)]

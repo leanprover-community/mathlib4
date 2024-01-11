@@ -72,3 +72,59 @@ example [AddCommGroup α] (x y z : α) : y = x + z - (x - y + z) := by
 
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/abel.20bug.3F/near/368707560
 example [AddCommGroup α] (a b s : α) : -b + (s - a) = s - b - a := by abel_nf
+
+/--
+error: abel_nf made no progress
+-/
+#guard_msgs in
+example : False := by abel_nf
+
+/--
+error: abel_nf made no progress
+-/
+#guard_msgs in
+example [AddCommGroup α] (x y z : α) (w : x = y + z) : False := by
+  abel_nf at w
+
+example [AddCommGroup α] (x y z : α) (h : False) (w : x - x = y + z) : False := by
+  abel_nf at w
+  guard_hyp w : 0 = y + z
+  assumption
+
+/--
+error: abel_nf made no progress
+-/
+#guard_msgs in
+example [AddCommGroup α] (x y z : α) (_w : x = y + z) : False := by
+  abel_nf at *
+
+/--
+error: no goals to be solved
+-/
+-- This error message is confusing: it is saying that it closed the main goal,
+-- and so then had nothing to do on the hypotheses.
+-- The user has to guess that they should remove the `at *`.
+#guard_msgs in
+example [AddCommGroup α] (x y z : α) (_w : x = y + z) : x - x = 0 := by
+  abel_nf at *
+
+/--
+error: abel_nf made no progress
+-/
+-- Ideally this would specify that it made no progress at `w`.
+#guard_msgs in
+example [AddCommGroup α] (x y z : α) (w : x = y + z) : x - x = 0 := by
+  abel_nf at w ⊢
+
+/--
+error: abel_nf made no progress
+-/
+-- Ideally this would specify that it made no progress at `⊢`.
+#guard_msgs in
+example [AddCommGroup α] (x y z : α) (w : x - x = y + z) : x = 0 := by
+  abel_nf at w ⊢
+
+example [AddCommGroup α] (x y z : α) (h : False) (w : x - x = y + z) : False := by
+  abel_nf at *
+  guard_hyp w : 0 = y + z
+  assumption

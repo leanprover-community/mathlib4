@@ -302,10 +302,10 @@ theorem type_preimage {α β : Type u} (r : α → α → Prop) [IsWellOrder α 
   (RelIso.preimage f r).ordinal_type_eq
 #align ordinal.type_preimage Ordinal.type_preimage
 
-@[simp]
+@[simp, nolint simpNF] -- `simpNF` incorrectly complains the LHS doesn't simplify.
 theorem type_preimage_aux {α β : Type u} (r : α → α → Prop) [IsWellOrder α r] (f : β ≃ α) :
     @type _ (fun x y => r (f x) (f y)) (inferInstanceAs (IsWellOrder β (↑f ⁻¹'o r))) = type r := by
-    convert (RelIso.preimage f r).ordinal_type_eq
+  convert (RelIso.preimage f r).ordinal_type_eq
 
 @[elab_as_elim]
 theorem inductionOn {C : Ordinal → Prop} (o : Ordinal)
@@ -648,7 +648,7 @@ def lift (o : Ordinal.{v}) : Ordinal.{max v u} :=
 -- @[simp] -- Porting note: Not in simpnf, added aux lemma below
 theorem type_uLift (r : α → α → Prop) [IsWellOrder α r] :
     type (ULift.down.{v,u} ⁻¹'o r) = lift.{v} (type r) := by
-  simp
+  simp (config := { unfoldPartialApp := true })
   rfl
 #align ordinal.type_ulift Ordinal.type_uLift
 
@@ -921,7 +921,6 @@ instance add_covariantClass_le : CovariantClass Ordinal.{u} Ordinal.{u} (· + ·
     refine inductionOn b (fun α₂ r₂ _ ↦ ?_)
     rintro c ⟨⟨⟨f, fo⟩, fi⟩⟩
     refine inductionOn c (fun β s _ ↦ ?_)
-    have := (Embedding.refl β).sumMap f
     refine ⟨⟨⟨(Embedding.refl.{u+1} _).sumMap f, ?_⟩, ?_⟩⟩
     · intros a b
       match a, b with
