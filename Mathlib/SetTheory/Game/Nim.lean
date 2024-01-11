@@ -51,7 +51,7 @@ noncomputable def nim : Ordinal.{u} → PGame.{u}
       have _ : Ordinal.typein o₁.out.r o₂ < o₁ := Ordinal.typein_lt_self o₂
       nim (Ordinal.typein o₁.out.r o₂)
     ⟨o₁.out.α, o₁.out.α, f, f⟩
-termination_by nim o => o
+termination_by o => o
 #align pgame.nim SetTheory.PGame.nim
 
 open Ordinal
@@ -260,7 +260,7 @@ theorem nim_equiv_iff_eq {o₁ o₂ : Ordinal} : (nim o₁ ≈ nim o₂) ↔ o�
  game is equivalent to -/
 noncomputable def grundyValue : PGame.{u} → Ordinal.{u}
   | G => Ordinal.mex.{u, u} fun i => grundyValue (G.moveLeft i)
-termination_by grundyValue G => G
+termination_by G => G
 decreasing_by pgame_wf_tac
 #align pgame.grundy_value SetTheory.PGame.grundyValue
 
@@ -305,8 +305,8 @@ theorem equiv_nim_grundyValue : ∀ (G : PGame.{u}) [G.Impartial], G ≈ nim (gr
       rw [add_moveLeft_inl, moveLeft_mk]
       apply Equiv.trans (add_congr_left (equiv_nim_grundyValue (G.moveLeft i)))
       simpa only [hi] using Impartial.add_self (nim (grundyValue (G.moveLeft i)))
-termination_by equiv_nim_grundyValue G _ => G
-decreasing_by pgame_wf_tac
+termination_by G _ => G
+decreasing_by all_goals pgame_wf_tac
 #align pgame.equiv_nim_grundy_value SetTheory.PGame.equiv_nim_grundyValue
 
 theorem grundyValue_eq_iff_equiv_nim {G : PGame} [G.Impartial] {o : Ordinal} :

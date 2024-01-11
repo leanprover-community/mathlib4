@@ -726,7 +726,7 @@ def strongInduction {p : Finset α → Sort*} (H : ∀ s, (∀ t ⊂ s, p t) →
     H s fun t h =>
       have : t.card < s.card := card_lt_card h
       strongInduction H t
-  termination_by strongInduction s => Finset.card s
+  termination_by s => Finset.card s
 #align finset.strong_induction Finset.strongInduction
 
 @[nolint unusedHavesSuffices] --Porting note: false positive
@@ -788,7 +788,7 @@ def strongDownwardInduction {p : Finset α → Sort*} {n : ℕ}
     H s fun {t} ht h =>
       have : n - t.card < n - s.card := (tsub_lt_tsub_iff_left_of_le ht).2 (Finset.card_lt_card h)
       strongDownwardInduction H t ht
-  termination_by strongDownwardInduction s => n - s.card
+  termination_by s => n - s.card
 #align finset.strong_downward_induction Finset.strongDownwardInduction
 
 @[nolint unusedHavesSuffices] --Porting note: false positive

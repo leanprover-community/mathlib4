@@ -53,7 +53,7 @@ local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 and outputs a set of orthogonal vectors which have the same span. -/
 noncomputable def gramSchmidt [IsWellOrder ι (· < ·)] (f : ι → E) (n : ι) : E :=
   f n - ∑ i : Iio n, orthogonalProjection (𝕜 ∙ gramSchmidt f i) (f n)
-termination_by _ n => n
+termination_by n
 decreasing_by exact mem_Iio.1 i.2
 #align gram_schmidt gramSchmidt
 
@@ -152,7 +152,7 @@ theorem gramSchmidt_mem_span (f : ι → E) :
   let hkj : k < j := (Finset.mem_Iio.1 hk).trans_le hij
   exact smul_mem _ _
     (span_mono (image_subset f <| Iic_subset_Iic.2 hkj.le) <| gramSchmidt_mem_span _ le_rfl)
-termination_by _ => j
+termination_by j _ _ => j
 decreasing_by exact hkj
 #align gram_schmidt_mem_span gramSchmidt_mem_span
 

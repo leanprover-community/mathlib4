@@ -255,7 +255,7 @@ def minFacAux (n : ℕ) : ℕ → ℕ
       else
         have := minFac_lemma n k h
         minFacAux n (k + 2)
-termination_by _ n k => sqrt n + 2 - k
+termination_by k => sqrt n + 2 - k
 #align nat.min_fac_aux Nat.minFacAux
 
 /-- Returns the smallest prime factor of `n ≠ 1`. -/
@@ -306,7 +306,7 @@ theorem minFacAux_has_prop {n : ℕ} (n2 : 2 ≤ n) :
       have := a _ le_rfl (dvd_of_mul_right_dvd d')
       rw [e] at this
       exact absurd this (by contradiction)
-  termination_by _ n _ k => sqrt n + 2 - k
+  termination_by k => sqrt n + 2 - k
 #align nat.min_fac_aux_has_prop Nat.minFacAux_has_prop
 
 theorem minFac_has_prop {n : ℕ} (n1 : n ≠ 1) : minFacProp n (minFac n) := by

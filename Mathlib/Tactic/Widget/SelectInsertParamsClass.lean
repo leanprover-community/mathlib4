@@ -17,12 +17,6 @@ open Lean Meta Server
 
 /-- Structures providing parameters for a Select and insert widget. -/
 class SelectInsertParamsClass (α : Type) where
-  /-- Cursor position in the file at which the widget is being displayed. -/
-  pos : α → Lsp.Position
-  /-- The current tactic-mode goals. -/
-  goals : α → Array Widget.InteractiveGoal
-  /-- Locations currently selected in the goal state. -/
-  selectedLocations : α → Array SubExpr.GoalsLocation
   /-- The range in the source document where the command will be inserted. -/
   replaceRange : α → Lsp.Range
 
@@ -31,8 +25,7 @@ open Command Meta Parser Term
 
 private def mkSelectInsertParamsInstance (declName : Name) : TermElabM Syntax.Command :=
   `(command|instance : SelectInsertParamsClass (@$(mkCIdent declName)) :=
-    ⟨fun prop => prop.pos, fun prop => prop.goals,
-     fun prop => prop.selectedLocations, fun prop => prop.replaceRange⟩)
+    ⟨fun prop => prop.replaceRange⟩)
 
 /-- Handler deriving a `SelectInsertParamsClass` instance. -/
 def mkSelectInsertParamsInstanceHandler (declNames : Array Name) : CommandElabM Bool := do
