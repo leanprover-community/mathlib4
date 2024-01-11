@@ -109,14 +109,14 @@ theorem of_toList : ∀ l : Lists' α true, ofList (toList l) = l :=
     induction l with
     | atom => cases h
     -- Porting note: case nil was not covered.
-    | nil => simp
+    | nil => simp [eq_mpr_eq_cast]
     | cons' b a _ IH =>
       intro l'
       -- Porting note: Previous code was:
       -- change l' with cons' a l
       --
       -- This can be removed.
-      simpa [cons] using IH rfl
+      simpa [cons, eq_mpr_eq_cast] using IH rfl
 #align lists'.of_to_list Lists'.of_toList
 
 end Lists'
