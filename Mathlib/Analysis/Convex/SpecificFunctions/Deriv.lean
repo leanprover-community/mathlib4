@@ -147,7 +147,9 @@ theorem deriv2_sqrt_mul_log (x : ℝ) :
     convert (((hasDerivAt_log hx.ne').const_add 2).div ((hasDerivAt_sqrt hx.ne').const_mul 2) <|
       mul_ne_zero two_ne_zero h₀).deriv using 1
     nth_rw 3 [← mul_self_sqrt hx.le]
-    field_simp; ring
+    generalize sqrt x = sqx at h₀ -- else field_simp rewrites sqrt x * sqrt x back to x
+    field_simp
+    ring
 #align deriv2_sqrt_mul_log deriv2_sqrt_mul_log
 
 theorem strictConcaveOn_sqrt_mul_log_Ioi :

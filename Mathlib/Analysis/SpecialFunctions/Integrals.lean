@@ -452,7 +452,7 @@ theorem integral_one_div_of_neg (ha : a < 0) (hb : b < 0) :
 @[simp]
 theorem integral_exp : ∫ x in a..b, exp x = exp b - exp a := by
   rw [integral_deriv_eq_sub']
-  · norm_num
+  · simp
   · exact fun _ _ => differentiableAt_exp
   · exact continuousOn_exp
 #align integral_exp integral_exp
@@ -679,7 +679,7 @@ theorem integral_sin_pow_even :
 theorem integral_sin_pow_pos : 0 < ∫ x in (0)..π, sin x ^ n := by
   rcases even_or_odd' n with ⟨k, rfl | rfl⟩ <;>
   simp only [integral_sin_pow_even, integral_sin_pow_odd] <;>
-  refine' mul_pos (by norm_num <;> exact pi_pos) (prod_pos fun n _ => div_pos _ _) <;>
+  refine' mul_pos (by norm_num [pi_pos]) (prod_pos fun n _ => div_pos _ _) <;>
   norm_cast <;>
   linarith
 #align integral_sin_pow_pos integral_sin_pow_pos

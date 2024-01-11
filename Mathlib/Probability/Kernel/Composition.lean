@@ -163,8 +163,7 @@ theorem measurable_compProdFun_of_finite (κ : kernel α β) [IsFiniteKernel κ]
       (Function.uncurry fun a b => η (a, b) {c : γ | (b, c) ∈ s}) = fun p =>
         η p {c : γ | (p.2, c) ∈ s} := by
       ext1 p
-      have hp_eq_mk : p = (p.fst, p.snd) := Prod.mk.eta.symm
-      rw [hp_eq_mk, Function.uncurry_apply_pair]
+      rw [Function.uncurry_apply_pair]
     rw [this]
     exact measurable_kernel_prod_mk_left (measurable_fst.snd.prod_mk measurable_snd hs)
   exact h_meas.lintegral_kernel_prod_right
@@ -180,8 +179,7 @@ theorem measurable_compProdFun (κ : kernel α β) [IsSFiniteKernel κ] (η : ke
       (Function.uncurry fun a b => seq η n (a, b) {c : γ | (b, c) ∈ s}) = fun p =>
         seq η n p {c : γ | (p.2, c) ∈ s} := by
       ext1 p
-      have hp_eq_mk : p = (p.fst, p.snd) := Prod.mk.eta.symm
-      rw [hp_eq_mk, Function.uncurry_apply_pair]
+      rw [Function.uncurry_apply_pair]
     rw [this]
     exact measurable_kernel_prod_mk_left (measurable_fst.snd.prod_mk measurable_snd hs)
   exact h_meas.lintegral_kernel_prod_right
@@ -356,7 +354,7 @@ theorem lintegral_compProd' (κ : kernel α β) [IsSFiniteKernel κ] (η : kerne
   have h : ∀ a, ⨆ n, F n a = Function.uncurry f a :=
     SimpleFunc.iSup_eapprox_apply (Function.uncurry f) hf
   simp only [Prod.forall, Function.uncurry_apply_pair] at h
-  simp_rw [← h, Prod.mk.eta]
+  simp_rw [← h]
   have h_mono : Monotone F := fun i j hij b =>
     SimpleFunc.monotone_eapprox (Function.uncurry f) hij _
   rw [lintegral_iSup (fun n => (F n).measurable) h_mono]

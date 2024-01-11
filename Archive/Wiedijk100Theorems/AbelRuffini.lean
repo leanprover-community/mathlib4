@@ -107,19 +107,16 @@ theorem real_roots_Phi_le : Fintype.card ((Φ ℚ a b).rootSet ℝ) ≤ 3 := by
   rw [← map_Phi a b (algebraMap ℤ ℚ), Φ, ← one_mul (X ^ 5), ← C_1]
   refine' (card_rootSet_le_derivative _).trans
     (Nat.succ_le_succ ((card_rootSet_le_derivative _).trans (Nat.succ_le_succ _)))
-  simp only [algebraMap_int_eq, map_one, one_mul, map_natCast, Polynomial.map_add,
-    Polynomial.map_sub, Polynomial.map_pow, map_X, Polynomial.map_mul, Polynomial.map_nat_cast,
-    map_add, map_sub, derivative_X_pow, Nat.cast_ofNat, ge_iff_le, Nat.succ_sub_succ_eq_sub,
-    tsub_zero, derivative_mul, derivative_nat_cast, zero_mul, derivative_X, mul_one, zero_add,
-    add_zero, derivative_C, sub_zero, map_C, eq_ratCast, ne_eq, Rat.cast_eq_zero, not_false_eq_true,
-    roots_C_mul, roots_pow, roots_X, Fintype.card_le_one_iff_subsingleton]
-  rw [← mul_assoc, ← _root_.map_mul, rootSet_C_mul_X_pow] <;>
+  suffices : (Polynomial.rootSet (C (20 : ℚ) * X ^ 3) ℝ).Subsingleton
+  · norm_num [Fintype.card_le_one_iff_subsingleton, ← mul_assoc] at *
+    exact this
+  rw [rootSet_C_mul_X_pow] <;>
   norm_num
 #align abel_ruffini.real_roots_Phi_le AbelRuffini.real_roots_Phi_le
 
 theorem real_roots_Phi_ge_aux (hab : b < a) :
     ∃ x y : ℝ, x ≠ y ∧ aeval x (Φ ℚ a b) = 0 ∧ aeval y (Φ ℚ a b) = 0 := by
-  let f := fun x : ℝ => aeval x (Φ ℚ a b)
+  let f : ℝ → ℝ := fun x : ℝ => aeval x (Φ ℚ a b)
   have hf : f = fun x : ℝ => x ^ 5 - a * x + b := by simp [Φ]
   have hc : ∀ s : Set ℝ, ContinuousOn f s := fun s => (Φ ℚ a b).continuousOn_aeval
   have ha : (1 : ℝ) ≤ a := Nat.one_le_cast.mpr (Nat.one_le_of_lt hab)
@@ -139,9 +136,7 @@ theorem real_roots_Phi_ge_aux (hab : b < a) :
     have hfa :=
       calc
         f (-a) = (a : ℝ) ^ 2 - (a : ℝ) ^ 5 + b := by
-            -- Porting note: was `norm_num [hf, ← sq]`
-            simp only [hf, mul_neg, ← sq, sub_neg_eq_add, Nat.cast_pow, add_left_inj]
-            rw [Odd.neg_pow (by norm_num), neg_add_eq_sub]
+          norm_num [hf, ← sq, sub_eq_add_neg, add_comm, Odd.neg_pow]
         _ ≤ (a : ℝ) ^ 2 - (a : ℝ) ^ 3 + (a - 1) := by
           refine' add_le_add (sub_le_sub_left (pow_le_pow ha _) _) _ <;> linarith
         _ = -((a : ℝ) - 1) ^ 2 * (a + 1) := by ring
@@ -168,7 +163,7 @@ theorem complex_roots_Phi (h : (Φ ℚ a b).Separable) : Fintype.card ((Φ ℚ a
 theorem gal_Phi (hab : b < a) (h_irred : Irreducible (Φ ℚ a b)) :
     Bijective (galActionHom (Φ ℚ a b) ℂ) := by
   apply galActionHom_bijective_of_prime_degree' h_irred
-  · rw [natDegree_Phi]; norm_num
+  · norm_num [natDegree_Phi]
   · rw [complex_roots_Phi a b h_irred.separable, Nat.succ_le_succ_iff]
     exact (real_roots_Phi_le a b).trans (Nat.le_succ 3)
   · simp_rw [complex_roots_Phi a b h_irred.separable, Nat.succ_le_succ_iff]

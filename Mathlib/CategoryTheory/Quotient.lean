@@ -218,6 +218,57 @@ theorem lift_map_functor_map {X Y : C} (f : X ⟶ Y) :
   simp
 #align category_theory.quotient.lift_map_functor_map CategoryTheory.Quotient.lift_map_functor_map
 
+variable {r}
+
+lemma natTrans_ext {F G : Quotient r ⥤ D} (τ₁ τ₂ : F ⟶ G)
+    (h : whiskerLeft (Quotient.functor r) τ₁ = whiskerLeft (Quotient.functor r) τ₂) : τ₁ = τ₂ :=
+  NatTrans.ext _ _ (by ext1 ⟨X⟩; exact NatTrans.congr_app h X)
+
+variable (r)
+
+/-- In order to define a natural transformation `F ⟶ G` with `F G : Quotient r ⥤ D`, it suffices
+to do so after precomposing with `Quotient.functor r`. -/
+def natTransLift {F G : Quotient r ⥤ D} (τ : Quotient.functor r ⋙ F ⟶ Quotient.functor r ⋙ G) :
+    F ⟶ G where
+  app := fun ⟨X⟩ => τ.app X
+  naturality := fun ⟨X⟩ ⟨Y⟩ => by
+    rintro ⟨f⟩
+    exact τ.naturality f
+
+@[simp]
+lemma natTransLift_app (F G : Quotient r ⥤ D)
+    (τ : Quotient.functor r ⋙ F ⟶ Quotient.functor r ⋙ G) (X : C) :
+  (natTransLift r τ).app ((Quotient.functor r).obj X) = τ.app X := rfl
+
+@[reassoc]
+lemma comp_natTransLift {F G H : Quotient r ⥤ D}
+    (τ : Quotient.functor r ⋙ F ⟶ Quotient.functor r ⋙ G)
+    (τ' : Quotient.functor r ⋙ G ⟶ Quotient.functor r ⋙ H) :
+    natTransLift r τ ≫ natTransLift r τ' =  natTransLift r (τ ≫ τ') := by aesop_cat
+
+@[simp]
+lemma natTransLift_id (F : Quotient r ⥤ D) :
+    natTransLift r (𝟙 (Quotient.functor r ⋙ F)) = 𝟙 _ := by aesop_cat
+
+/-- In order to define a natural isomorphism `F ≅ G` with `F G : Quotient r ⥤ D`, it suffices
+to do so after precomposing with `Quotient.functor r`. -/
+@[simps]
+def natIsoLift {F G : Quotient r ⥤ D} (τ : Quotient.functor r ⋙ F ≅ Quotient.functor r ⋙ G) :
+    F ≅ G where
+  hom := natTransLift _ τ.hom
+  inv := natTransLift _ τ.inv
+  hom_inv_id := by rw [comp_natTransLift, τ.hom_inv_id, natTransLift_id]
+  inv_hom_id := by rw [comp_natTransLift, τ.inv_hom_id, natTransLift_id]
+
+variable (D)
+
+instance full_whiskeringLeft_functor :
+    Full ((whiskeringLeft C _ D).obj (functor r)) where
+  preimage := natTransLift r
+
+instance faithful_whiskeringLeft_functor :
+    Faithful ((whiskeringLeft C _ D).obj (functor r)) := ⟨by apply natTrans_ext⟩
+
 end Quotient
 
 end CategoryTheory

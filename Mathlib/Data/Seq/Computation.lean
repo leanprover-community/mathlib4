@@ -1220,7 +1220,7 @@ theorem liftRel_congr {R : α → β → Prop} {ca ca' : Computation α} {cb cb'
   and_congr
     (forall_congr' fun _ => imp_congr (ha _) <| exists_congr fun _ => and_congr (hb _) Iff.rfl)
     (forall_congr' fun _ => imp_congr (hb _) <| exists_congr fun _ => and_congr (ha _) Iff.rfl)
-#align computation.lift_gcongr Computation.liftRel_congr
+#align computation.lift_rel_congr Computation.liftRel_congr
 
 theorem liftRel_map {δ} (R : α → β → Prop) (S : γ → δ → Prop) {s1 : Computation α}
     {s2 : Computation β} {f1 : α → γ} {f2 : β → δ} (h1 : LiftRel R s1 s2)

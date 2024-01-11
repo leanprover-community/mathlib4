@@ -5,7 +5,7 @@ Authors: Yury G. Kudryashov
 -/
 import Mathlib.SetTheory.Ordinal.Basic
 import Mathlib.Tactic.GCongr
-import Mathlib.Topology.MetricSpace.EMetricSpace
+import Mathlib.Topology.EMetricSpace.Basic
 import Mathlib.Topology.Paracompact
 
 #align_import topology.metric_space.emetric_paracompact from "leanprover-community/mathlib"@"57ac39bd365c2f80589a700f9fbb664d3a1a30c2"
@@ -162,7 +162,7 @@ instance (priority := 100) [PseudoEMetricSpace α] : ParacompactSpace α := by
         (Hle i hi).finite.biUnion' fun _ _ => finite_singleton _
     refine' this.subset fun I hI => _
     simp only [mem_iUnion]
-    refine' ⟨I.1, _, I.2, hI, Prod.mk.eta.symm⟩
+    refine' ⟨I.1, _, I.2, hI, rfl⟩
     exact not_lt.1 fun hlt => (Hgt I.1 hlt I.2).le_bot hI.choose_spec
 
 -- see Note [lower instance priority]

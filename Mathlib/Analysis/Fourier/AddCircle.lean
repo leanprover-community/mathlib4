@@ -8,7 +8,7 @@ import Mathlib.Analysis.SpecialFunctions.Complex.Circle
 import Mathlib.Analysis.InnerProductSpace.l2Space
 import Mathlib.MeasureTheory.Function.ContinuousMapDense
 import Mathlib.MeasureTheory.Function.L2Space
-import Mathlib.MeasureTheory.Group.Integration
+import Mathlib.MeasureTheory.Group.Integral
 import Mathlib.MeasureTheory.Integral.Periodic
 import Mathlib.Topology.ContinuousFunction.StoneWeierstrass
 import Mathlib.MeasureTheory.Integral.FundThmCalculus
@@ -109,7 +109,7 @@ theorem injective_toCircle (hT : T ≠ 0) : Function.Injective (@toCircle T) := 
   obtain ⟨m, hm⟩ := expMapCircle_eq_expMapCircle.mp h.symm
   rw [QuotientAddGroup.eq]; simp_rw [AddSubgroup.mem_zmultiples_iff, zsmul_eq_mul]
   use m
-  field_simp [Real.two_pi_pos.ne'] at hm
+  field_simp at hm
   rw [← mul_right_inj' Real.two_pi_pos.ne']
   linarith
 #align add_circle.injective_to_circle AddCircle.injective_toCircle

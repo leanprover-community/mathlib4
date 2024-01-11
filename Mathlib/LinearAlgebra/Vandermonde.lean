@@ -154,6 +154,17 @@ theorem det_vandermonde_ne_zero_iff [IsDomain R] {n : ℕ} {v : Fin n → R} :
   simp only [det_vandermonde_eq_zero_iff, Ne.def, not_exists, not_and, Classical.not_not]
 #align matrix.det_vandermonde_ne_zero_iff Matrix.det_vandermonde_ne_zero_iff
 
+@[simp]
+theorem det_vandermonde_add {n : ℕ} (v : Fin n → R) (a : R) :
+    (Matrix.vandermonde fun i ↦ v i + a).det = (Matrix.vandermonde v).det := by
+  simp [Matrix.det_vandermonde]
+
+@[simp]
+theorem det_vandermonde_sub {n : ℕ} (v : Fin n → R) (a : R) :
+    (Matrix.vandermonde fun i ↦ v i - a).det = (Matrix.vandermonde v).det := by
+  rw [← det_vandermonde_add v (- a)]
+  simp only [← sub_eq_add_neg]
+
 theorem eq_zero_of_forall_index_sum_pow_mul_eq_zero {R : Type*} [CommRing R] [IsDomain R] {n : ℕ}
     {f v : Fin n → R} (hf : Function.Injective f)
     (hfv : ∀ j, (∑ i : Fin n, f j ^ (i : ℕ) * v i) = 0) : v = 0 :=

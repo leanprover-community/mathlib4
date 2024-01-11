@@ -113,23 +113,21 @@ theorem bernoulli'_one : bernoulli' 1 = 1 / 2 := by
 
 @[simp]
 theorem bernoulli'_two : bernoulli' 2 = 1 / 6 := by
-  rw [bernoulli'_def, sum_range_succ, sum_range_succ, sum_range_zero]
-  norm_num
+  rw [bernoulli'_def]
+  norm_num [sum_range_succ, sum_range_succ, sum_range_zero]
 #align bernoulli'_two bernoulli'_two
 
 @[simp]
 theorem bernoulli'_three : bernoulli' 3 = 0 := by
-  rw [bernoulli'_def, sum_range_succ, sum_range_succ, sum_range_succ, sum_range_zero]
-  norm_num
+  rw [bernoulli'_def]
+  norm_num [sum_range_succ, sum_range_succ, sum_range_zero]
 #align bernoulli'_three bernoulli'_three
 
 @[simp]
 theorem bernoulli'_four : bernoulli' 4 = -1 / 30 := by
-  have : Nat.choose 4 2 = 6 := by decide
-  -- shrug
-  rw [bernoulli'_def, sum_range_succ, sum_range_succ, sum_range_succ,
-    sum_range_succ, sum_range_zero, this]
-  norm_num
+  have : Nat.choose 4 2 = 6 := by norm_num -- shrug
+  rw [bernoulli'_def]
+  norm_num [sum_range_succ, sum_range_succ, sum_range_zero, this]
 #align bernoulli'_four bernoulli'_four
 
 end Examples
@@ -175,7 +173,7 @@ theorem bernoulli'PowerSeries_mul_exp_sub_one :
   have := factorial_mul_factorial_dvd_factorial_add i j
   field_simp [mul_comm _ (bernoulli' i), mul_assoc, add_choose]
   norm_cast
-  rw [mul_comm (j + 1), mul_div_assoc, ← mul_assoc]
+  simp [mul_comm (j + 1)]
 #align bernoulli'_power_series_mul_exp_sub_one bernoulli'PowerSeries_mul_exp_sub_one
 
 /-- Odd Bernoulli numbers (greater than 1) are zero. -/
@@ -211,7 +209,7 @@ theorem bernoulli_zero : bernoulli 0 = 1 := by simp [bernoulli]
 #align bernoulli_zero bernoulli_zero
 
 @[simp]
-theorem bernoulli_one : bernoulli 1 = -1 / 2 := by norm_num; simp [bernoulli]
+theorem bernoulli_one : bernoulli 1 = -1 / 2 := by norm_num [bernoulli]
 #align bernoulli_one bernoulli_one
 
 theorem bernoulli_eq_bernoulli'_of_ne_one {n : ℕ} (hn : n ≠ 1) : bernoulli n = bernoulli' n := by
@@ -292,11 +290,10 @@ theorem bernoulliPowerSeries_mul_exp_sub_one : bernoulliPowerSeries A * (exp A -
   rw [← map_zero (algebraMap ℚ A), ← zero_div (n.succ ! : ℚ), ← hite2, ← bernoulli_spec', sum_div]
   refine' congr_arg (algebraMap ℚ A) (sum_congr rfl fun x h => eq_div_of_mul_eq (hfact n.succ) _)
   rw [mem_antidiagonal] at h
-  have hj : (x.2 + 1 : ℚ) ≠ 0 := by norm_cast; exact succ_ne_zero _
   rw [← h, add_choose, cast_div_charZero (factorial_mul_factorial_dvd_factorial_add _ _)]
-  field_simp [mul_ne_zero hj (hfact x.2), hfact x.1, mul_comm _ (bernoulli x.1), mul_assoc,
-    Nat.factorial_ne_zero, hj]
+  field_simp [hfact x.1, mul_comm _ (bernoulli x.1), mul_assoc]
   -- porting note: was `cc`, which was not yet ported
+  left
   left
   ring
 #align bernoulli_power_series_mul_exp_sub_one bernoulliPowerSeries_mul_exp_sub_one
@@ -371,7 +368,7 @@ theorem sum_range_pow (n p : ℕ) :
   -- massage `hps` into our goal
   rw [hps, sum_mul]
   refine' sum_congr rfl fun x _ => _
-  field_simp [mul_right_comm _ ↑p !, ← mul_assoc _ _ ↑p !, cast_add_one_ne_zero, hne]
+  field_simp [mul_right_comm _ ↑p !, ← mul_assoc _ _ ↑p !]
   ring
 #align sum_range_pow sum_range_pow
 

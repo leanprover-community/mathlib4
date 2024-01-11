@@ -159,12 +159,12 @@ instance forget₂RingPreservesLimits : PreservesLimits (forget₂ (AlgebraCat R
 /-- The forgetful functor from R-algebras to R-modules preserves all limits.
 -/
 instance forget₂ModulePreservesLimitsOfSize : PreservesLimitsOfSize.{v, v}
-    (forget₂ (AlgebraCatMax.{v, w} R) (ModuleCat.ModuleCatMax.{v, w} R)) where
+    (forget₂ (AlgebraCatMax.{v, w} R) (ModuleCatMax.{v, w} R)) where
   preservesLimitsOfShape :=
     { preservesLimit :=
         preservesLimitOfPreservesLimitCone (limitConeIsLimit _)
           (ModuleCat.HasLimits.limitConeIsLimit
-            (_ ⋙ forget₂ (AlgebraCatMax.{v, w} R) (ModuleCat.ModuleCatMax.{v, w} R))) }
+            (_ ⋙ forget₂ (AlgebraCatMax.{v, w} R) (ModuleCatMax.{v, w} R))) }
 #align Algebra.forget₂_Module_preserves_limits_of_size AlgebraCat.forget₂ModulePreservesLimitsOfSize
 
 instance forget₂ModulePreservesLimits :

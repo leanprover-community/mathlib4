@@ -29,8 +29,9 @@ coefficients.
 * `Nat.Prime.multiplicity_factorial_mul`: The multiplicity of `p` in `(p * n)!` is `n` more than
   that of `n!`.
 * `Nat.Prime.multiplicity_choose`: Kummer's Theorem. The multiplicity of `p` in `n.choose k` is the
-   number of carries  when `k` and `n - k` are added in base `p`. See `padicValNat_choose` for the
-   same result but stated in the language of `p`-adic valuations.
+   number of carries when `k` and `n - k` are added in base `p`. See `padicValNat_choose` for the
+   same result but stated in the language of `p`-adic valuations and
+   `sub_one_mul_padicValNat_choose_eq_sub_sum_digits` for a related result.
 
 ## Other declarations
 
@@ -185,25 +186,37 @@ theorem multiplicity_choose_aux {p n b k : ℕ} (hp : p.Prime) (hkn : k ≤ n) :
     _ = _ := by simp [sum_add_distrib, sum_boole]
 #align nat.prime.multiplicity_choose_aux Nat.Prime.multiplicity_choose_aux
 
+/-- The multiplicity of `p` in `choose (n + k) k` is the number of carries when `k` and `n`
+  are added in base `p`. The set is expressed by filtering `Ico 1 b` where `b`
+  is any bound greater than `log p (n + k)`. -/
+theorem multiplicity_choose' {p n k b : ℕ} (hp : p.Prime) (hnb : log p (n + k) < b) :
+    multiplicity p (choose (n + k) k) =
+      ((Ico 1 b).filter fun i => p ^ i ≤ k % p ^ i + n % p ^ i).card := by
+  have h₁ :
+      multiplicity p (choose (n + k) k) + multiplicity p (k ! * n !) =
+        ((Finset.Ico 1 b).filter fun i => p ^ i ≤ k % p ^ i + n % p ^ i).card +
+          multiplicity p (k ! * n !) := by
+    rw [← hp.multiplicity_mul, ← mul_assoc]
+    have := (add_tsub_cancel_right n k) ▸ choose_mul_factorial_mul_factorial (le_add_left k n)
+    rw [this, hp.multiplicity_factorial hnb, hp.multiplicity_mul,
+      hp.multiplicity_factorial ((log_mono_right (le_add_left k n)).trans_lt hnb),
+      hp.multiplicity_factorial ((log_mono_right (le_add_left n k)).trans_lt
+      (add_comm n k ▸ hnb)), multiplicity_choose_aux hp (le_add_left k n)]
+    simp [add_comm]
+  refine (PartENat.add_right_cancel_iff ?_).1 h₁
+  apply PartENat.ne_top_iff_dom.2
+  exact finite_nat_iff.2 ⟨hp.ne_one, mul_pos (factorial_pos k) (factorial_pos n)⟩
+
 /-- The multiplicity of `p` in `choose n k` is the number of carries when `k` and `n - k`
   are added in base `p`. The set is expressed by filtering `Ico 1 b` where `b`
   is any bound greater than `log p n`. -/
 theorem multiplicity_choose {p n k b : ℕ} (hp : p.Prime) (hkn : k ≤ n) (hnb : log p n < b) :
     multiplicity p (choose n k) =
       ((Ico 1 b).filter fun i => p ^ i ≤ k % p ^ i + (n - k) % p ^ i).card := by
-  have h₁ :
-    multiplicity p (choose n k) + multiplicity p (k ! * (n - k)!) =
-      ((Finset.Ico 1 b).filter fun i => p ^ i ≤ k % p ^ i + (n - k) % p ^ i).card +
-        multiplicity p (k ! * (n - k)!) := by
-    rw [← hp.multiplicity_mul, ← mul_assoc, choose_mul_factorial_mul_factorial hkn,
-      hp.multiplicity_factorial hnb, hp.multiplicity_mul,
-      hp.multiplicity_factorial ((log_mono_right hkn).trans_lt hnb),
-      hp.multiplicity_factorial (lt_of_le_of_lt (log_mono_right tsub_le_self) hnb),
-      multiplicity_choose_aux hp hkn]
-    simp [add_comm]
-  refine (PartENat.add_right_cancel_iff ?_).1 h₁
-  apply PartENat.ne_top_iff_dom.2
-  exact finite_nat_iff.2 ⟨hp.ne_one, mul_pos (factorial_pos k) (factorial_pos (n - k))⟩
+  have := Nat.sub_add_cancel hkn
+  convert @multiplicity_choose' p (n - k) k b hp _
+  · rw [this]
+  exact this.symm ▸ hnb
 #align nat.prime.multiplicity_choose Nat.Prime.multiplicity_choose
 
 /-- A lower bound on the multiplicity of `p` in `choose n k`. -/

@@ -3,11 +3,10 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 -/
-
 import Mathlib.Init.ZeroOne
 import Mathlib.Init.Data.Int.Basic
 import Mathlib.Logic.Function.Basic
-import Mathlib.Tactic.Common
+import Mathlib.Tactic.Basic
 
 #align_import algebra.group.defs from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 
@@ -241,7 +240,7 @@ end Mul
 @[ext]
 class Semigroup (G : Type u) extends Mul G where
   /-- Multiplication is associative -/
-  mul_assoc : ∀ a b c : G, a * b * c = a * (b * c)
+  protected mul_assoc : ∀ a b c : G, a * b * c = a * (b * c)
 #align semigroup Semigroup
 #align semigroup.ext Semigroup.ext
 #align semigroup.ext_iff Semigroup.ext_iff
@@ -250,7 +249,7 @@ class Semigroup (G : Type u) extends Mul G where
 @[ext]
 class AddSemigroup (G : Type u) extends Add G where
   /-- Addition is associative -/
-  add_assoc : ∀ a b c : G, a + b + c = a + (b + c)
+  protected add_assoc : ∀ a b c : G, a + b + c = a + (b + c)
 #align add_semigroup AddSemigroup
 #align add_semigroup.ext AddSemigroup.ext
 #align add_semigroup.ext_iff AddSemigroup.ext_iff
@@ -279,7 +278,7 @@ end Semigroup
 @[ext]
 class CommSemigroup (G : Type u) extends Semigroup G where
   /-- Multiplication is commutative in a commutative semigroup. -/
-  mul_comm : ∀ a b : G, a * b = b * a
+  protected mul_comm : ∀ a b : G, a * b = b * a
 #align comm_semigroup CommSemigroup
 #align comm_semigroup.ext_iff CommSemigroup.ext_iff
 #align comm_semigroup.ext CommSemigroup.ext
@@ -288,7 +287,7 @@ class CommSemigroup (G : Type u) extends Semigroup G where
 @[ext]
 class AddCommSemigroup (G : Type u) extends AddSemigroup G where
   /-- Addition is commutative in an additive commutative semigroup. -/
-  add_comm : ∀ a b : G, a + b = b + a
+  protected add_comm : ∀ a b : G, a + b = b + a
 #align add_comm_semigroup AddCommSemigroup
 #align add_comm_semigroup.ext AddCommSemigroup.ext
 #align add_comm_semigroup.ext_iff AddCommSemigroup.ext_iff
@@ -360,7 +359,7 @@ end CommSemigroup
 /-- A `LeftCancelSemigroup` is a semigroup such that `a * b = a * c` implies `b = c`. -/
 @[ext]
 class LeftCancelSemigroup (G : Type u) extends Semigroup G where
-  mul_left_cancel : ∀ a b c : G, a * b = a * c → b = c
+  protected mul_left_cancel : ∀ a b c : G, a * b = a * c → b = c
 #align left_cancel_semigroup LeftCancelSemigroup
 #align left_cancel_semigroup.ext_iff LeftCancelSemigroup.ext_iff
 #align left_cancel_semigroup.ext LeftCancelSemigroup.ext
@@ -377,7 +376,7 @@ attribute [instance 75] LeftCancelSemigroup.toSemigroup -- See note [lower cance
 `a + b = a + c` implies `b = c`. -/
 @[ext]
 class AddLeftCancelSemigroup (G : Type u) extends AddSemigroup G where
-  add_left_cancel : ∀ a b c : G, a + b = a + c → b = c
+  protected add_left_cancel : ∀ a b c : G, a + b = a + c → b = c
 #align add_left_cancel_semigroup AddLeftCancelSemigroup
 #align add_left_cancel_semigroup.ext AddLeftCancelSemigroup.ext
 #align add_left_cancel_semigroup.ext_iff AddLeftCancelSemigroup.ext_iff
@@ -398,7 +397,7 @@ instance (priority := 100) LeftCancelSemigroup.toIsLeftCancelMul (G : Type u)
 /-- A `RightCancelSemigroup` is a semigroup such that `a * b = c * b` implies `a = c`. -/
 @[ext]
 class RightCancelSemigroup (G : Type u) extends Semigroup G where
-  mul_right_cancel : ∀ a b c : G, a * b = c * b → a = c
+  protected mul_right_cancel : ∀ a b c : G, a * b = c * b → a = c
 #align right_cancel_semigroup RightCancelSemigroup
 #align right_cancel_semigroup.ext_iff RightCancelSemigroup.ext_iff
 #align right_cancel_semigroup.ext RightCancelSemigroup.ext
@@ -409,7 +408,7 @@ attribute [instance 75] RightCancelSemigroup.toSemigroup -- See note [lower canc
 `a + b = c + b` implies `a = c`. -/
 @[ext]
 class AddRightCancelSemigroup (G : Type u) extends AddSemigroup G where
-  add_right_cancel : ∀ a b c : G, a + b = c + b → a = c
+  protected add_right_cancel : ∀ a b c : G, a + b = c + b → a = c
 #align add_right_cancel_semigroup AddRightCancelSemigroup
 #align add_right_cancel_semigroup.ext_iff AddRightCancelSemigroup.ext_iff
 #align add_right_cancel_semigroup.ext AddRightCancelSemigroup.ext
@@ -431,18 +430,18 @@ instance (priority := 100) RightCancelSemigroup.toIsRightCancelMul (G : Type u)
 `1 * a = a` and `a * 1 = a` for all `a : M`. -/
 class MulOneClass (M : Type u) extends One M, Mul M where
   /-- One is a left neutral element for multiplication -/
-  one_mul : ∀ a : M, 1 * a = a
+  protected one_mul : ∀ a : M, 1 * a = a
   /-- One is a right neutral element for multiplication -/
-  mul_one : ∀ a : M, a * 1 = a
+  protected mul_one : ∀ a : M, a * 1 = a
 #align mul_one_class MulOneClass
 
 /-- Typeclass for expressing that a type `M` with addition and a zero satisfies
 `0 + a = a` and `a + 0 = a` for all `a : M`. -/
 class AddZeroClass (M : Type u) extends Zero M, Add M where
   /-- Zero is a left neutral element for addition -/
-  zero_add : ∀ a : M, 0 + a = a
+  protected zero_add : ∀ a : M, 0 + a = a
   /-- Zero is a right neutral element for addition -/
-  add_zero : ∀ a : M, a + 0 = a
+  protected add_zero : ∀ a : M, a + 0 = a
 #align add_zero_class AddZeroClass
 
 attribute [to_additive] MulOneClass
@@ -585,11 +584,11 @@ need right away.
 /-- An `AddMonoid` is an `AddSemigroup` with an element `0` such that `0 + a = a + 0 = a`. -/
 class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M where
   /-- Multiplication by a natural number. -/
-  nsmul : ℕ → M → M := nsmulRec
+  protected nsmul : ℕ → M → M := nsmulRec
   /-- Multiplication by `(0 : ℕ)` gives `0`. -/
-  nsmul_zero : ∀ x, nsmul 0 x = 0 := by intros; rfl
+  protected nsmul_zero : ∀ x, nsmul 0 x = 0 := by intros; rfl
   /-- Multiplication by `(n + 1 : ℕ)` behaves as expected. -/
-  nsmul_succ : ∀ (n : ℕ) (x), nsmul (n + 1) x = x + nsmul n x := by intros; rfl
+  protected nsmul_succ : ∀ (n : ℕ) (x), nsmul (n + 1) x = x + nsmul n x := by intros; rfl
 #align add_monoid AddMonoid
 
 attribute [instance 150] AddSemigroup.toAdd
@@ -602,11 +601,11 @@ attribute [instance 50] AddZeroClass.toAdd
 @[to_additive]
 class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
   /-- Raising to the power of a natural number. -/
-  npow : ℕ → M → M := npowRec
+  protected npow : ℕ → M → M := npowRec
   /-- Raising to the power `(0 : ℕ)` gives `1`. -/
-  npow_zero : ∀ x, npow 0 x = 1 := by intros; rfl
+  protected npow_zero : ∀ x, npow 0 x = 1 := by intros; rfl
   /-- Raising to the power `(n + 1 : ℕ)` behaves as expected. -/
-  npow_succ : ∀ (n : ℕ) (x), npow (n + 1) x = x * npow n x := by intros; rfl
+  protected npow_succ : ∀ (n : ℕ) (x), npow (n + 1) x = x * npow n x := by intros; rfl
 #align monoid Monoid
 
 #align monoid.npow_zero' Monoid.npow_zero
@@ -784,14 +783,14 @@ section InvolutiveInv
 
 /-- Auxiliary typeclass for types with an involutive `Neg`. -/
 class InvolutiveNeg (A : Type*) extends Neg A where
-  neg_neg : ∀ x : A, - -x = x
+  protected neg_neg : ∀ x : A, - -x = x
 
 #align has_involutive_neg InvolutiveNeg
 
 /-- Auxiliary typeclass for types with an involutive `Inv`. -/
 @[to_additive]
 class InvolutiveInv (G : Type*) extends Inv G where
-  inv_inv : ∀ x : G, x⁻¹⁻¹ = x
+  protected inv_inv : ∀ x : G, x⁻¹⁻¹ = x
 
 #align has_involutive_inv InvolutiveInv
 
@@ -865,18 +864,18 @@ in diamonds. See the definition of `Monoid` and Note [forgetful inheritance] for
 explanations on this.
 -/
 class DivInvMonoid (G : Type u) extends Monoid G, Inv G, Div G where
-  div := DivInvMonoid.div'
+  protected div := DivInvMonoid.div'
   /-- `a / b := a * b⁻¹` -/
-  div_eq_mul_inv : ∀ a b : G, a / b = a * b⁻¹ := by intros; rfl
+  protected div_eq_mul_inv : ∀ a b : G, a / b = a * b⁻¹ := by intros; rfl
   /-- The power operation: `a ^ n = a * ··· * a`; `a ^ (-n) = a⁻¹ * ··· a⁻¹` (`n` times) -/
-  zpow : ℤ → G → G := zpowRec
+  protected zpow : ℤ → G → G := zpowRec
   /-- `a ^ 0 = 1` -/
-  zpow_zero' : ∀ a : G, zpow 0 a = 1 := by intros; rfl
+  protected zpow_zero' : ∀ a : G, zpow 0 a = 1 := by intros; rfl
   /-- `a ^ (n + 1) = a * a ^ n` -/
-  zpow_succ' (n : ℕ) (a : G) : zpow (Int.ofNat n.succ) a = a * zpow (Int.ofNat n) a := by
+  protected zpow_succ' (n : ℕ) (a : G) : zpow (Int.ofNat n.succ) a = a * zpow (Int.ofNat n) a := by
     intros; rfl
   /-- `a ^ -(n + 1) = (a ^ (n + 1))⁻¹` -/
-  zpow_neg' (n : ℕ) (a : G) : zpow (Int.negSucc n) a = (zpow n.succ a)⁻¹ := by intros; rfl
+  protected zpow_neg' (n : ℕ) (a : G) : zpow (Int.negSucc n) a = (zpow n.succ a)⁻¹ := by intros; rfl
 #align div_inv_monoid DivInvMonoid
 
 /-- In a class equipped with instances of both `AddMonoid` and `Neg`, this definition records what
@@ -908,13 +907,14 @@ in diamonds. See the definition of `AddMonoid` and Note [forgetful inheritance] 
 explanations on this.
 -/
 class SubNegMonoid (G : Type u) extends AddMonoid G, Neg G, Sub G where
-  sub := SubNegMonoid.sub'
-  sub_eq_add_neg : ∀ a b : G, a - b = a + -b := by intros; rfl
-  zsmul : ℤ → G → G := zsmulRec
-  zsmul_zero' : ∀ a : G, zsmul 0 a = 0 := by intros; rfl
-  zsmul_succ' (n : ℕ) (a : G) : zsmul (Int.ofNat n.succ) a = a + zsmul (Int.ofNat n) a := by
+  protected sub := SubNegMonoid.sub'
+  protected sub_eq_add_neg : ∀ a b : G, a - b = a + -b := by intros; rfl
+  protected zsmul : ℤ → G → G := zsmulRec
+  protected zsmul_zero' : ∀ a : G, zsmul 0 a = 0 := by intros; rfl
+  protected zsmul_succ' (n : ℕ) (a : G) :
+      zsmul (Int.ofNat n.succ) a = a + zsmul (Int.ofNat n) a := by
     intros; rfl
-  zsmul_neg' (n : ℕ) (a : G) : zsmul (Int.negSucc n) a = -zsmul n.succ a := by intros; rfl
+  protected zsmul_neg' (n : ℕ) (a : G) : zsmul (Int.negSucc n) a = -zsmul n.succ a := by intros; rfl
 #align sub_neg_monoid SubNegMonoid
 
 attribute [to_additive SubNegMonoid] DivInvMonoid
@@ -988,7 +988,7 @@ section InvOneClass
 
 /-- Typeclass for expressing that `-0 = 0`. -/
 class NegZeroClass (G : Type*) extends Zero G, Neg G where
-  neg_zero : -(0 : G) = 0
+  protected neg_zero : -(0 : G) = 0
 #align neg_zero_class NegZeroClass
 
 /-- A `SubNegMonoid` where `-0 = 0`. -/
@@ -998,7 +998,7 @@ class SubNegZeroMonoid (G : Type*) extends SubNegMonoid G, NegZeroClass G
 /-- Typeclass for expressing that `1⁻¹ = 1`. -/
 @[to_additive]
 class InvOneClass (G : Type*) extends One G, Inv G where
-  inv_one : (1 : G)⁻¹ = 1
+  protected inv_one : (1 : G)⁻¹ = 1
 #align inv_one_class InvOneClass
 
 /-- A `DivInvMonoid` where `1⁻¹ = 1`. -/
@@ -1022,10 +1022,10 @@ end InvOneClass
 /-- A `SubtractionMonoid` is a `SubNegMonoid` with involutive negation and such that
 `-(a + b) = -b + -a` and `a + b = 0 → -a = b`. -/
 class SubtractionMonoid (G : Type u) extends SubNegMonoid G, InvolutiveNeg G where
-  neg_add_rev (a b : G) : -(a + b) = -b + -a
+  protected neg_add_rev (a b : G) : -(a + b) = -b + -a
   /- Despite the asymmetry of `neg_eq_of_add`, the symmetric version is true thanks to the
   involutivity of negation. -/
-  neg_eq_of_add (a b : G) : a + b = 0 → -a = b
+  protected neg_eq_of_add (a b : G) : a + b = 0 → -a = b
 #align subtraction_monoid SubtractionMonoid
 
 /-- A `DivisionMonoid` is a `DivInvMonoid` with involutive inversion and such that
@@ -1034,10 +1034,10 @@ class SubtractionMonoid (G : Type u) extends SubNegMonoid G, InvolutiveNeg G whe
 This is the immediate common ancestor of `Group` and `GroupWithZero`. -/
 @[to_additive SubtractionMonoid]
 class DivisionMonoid (G : Type u) extends DivInvMonoid G, InvolutiveInv G where
-  mul_inv_rev (a b : G) : (a * b)⁻¹ = b⁻¹ * a⁻¹
+  protected mul_inv_rev (a b : G) : (a * b)⁻¹ = b⁻¹ * a⁻¹
   /- Despite the asymmetry of `inv_eq_of_mul`, the symmetric version is true thanks to the
   involutivity of inversion. -/
-  inv_eq_of_mul (a b : G) : a * b = 1 → a⁻¹ = b
+  protected inv_eq_of_mul (a b : G) : a * b = 1 → a⁻¹ = b
 #align division_monoid DivisionMonoid
 
 attribute [to_additive existing] DivisionMonoid.toInvolutiveInv
@@ -1057,6 +1057,18 @@ theorem inv_eq_of_mul_eq_one_right : a * b = 1 → a⁻¹ = b :=
   DivisionMonoid.inv_eq_of_mul _ _
 #align inv_eq_of_mul_eq_one_right inv_eq_of_mul_eq_one_right
 #align neg_eq_of_add_eq_zero_right neg_eq_of_add_eq_zero_right
+
+@[to_additive]
+theorem inv_eq_of_mul_eq_one_left (h : a * b = 1) : b⁻¹ = a :=
+  by rw [← inv_eq_of_mul_eq_one_right h, inv_inv]
+#align inv_eq_of_mul_eq_one_left inv_eq_of_mul_eq_one_left
+#align neg_eq_of_add_eq_zero_left neg_eq_of_add_eq_zero_left
+
+@[to_additive]
+theorem eq_inv_of_mul_eq_one_left (h : a * b = 1) : a = b⁻¹ :=
+  (inv_eq_of_mul_eq_one_left h).symm
+#align eq_inv_of_mul_eq_one_left eq_inv_of_mul_eq_one_left
+#align eq_neg_of_add_eq_zero_left eq_neg_of_add_eq_zero_left
 
 end DivisionMonoid
 
@@ -1082,7 +1094,7 @@ Use `Group.ofLeftAxioms` or `Group.ofRightAxioms` to define a group structure
 on a type with the minumum proof obligations.
 -/
 class Group (G : Type u) extends DivInvMonoid G where
-  mul_left_inv : ∀ a : G, a⁻¹ * a = 1
+  protected mul_left_inv : ∀ a : G, a⁻¹ * a = 1
 #align group Group
 
 /-- An `AddGroup` is an `AddMonoid` with a unary `-` satisfying `-a + a = 0`.
@@ -1094,7 +1106,7 @@ Use `AddGroup.ofLeftAxioms` or `AddGroup.ofRightAxioms` to define an
 additive group structure on a type with the minumum proof obligations.
 -/
 class AddGroup (A : Type u) extends SubNegMonoid A where
-  add_left_neg : ∀ a : A, -a + a = 0
+  protected add_left_neg : ∀ a : A, -a + a = 0
 #align add_group AddGroup
 
 attribute [to_additive] Group

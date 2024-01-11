@@ -370,7 +370,6 @@ theorem degree_derivative_eq [NoZeroSMulDivisors ℕ R] (p : R[X]) (hp : 0 < nat
   · rw [derivative_apply]
     apply le_trans (degree_sum_le _ _) (Finset.sup_le _)
     intro n hn
-    simp only [Nat.cast_withBot]
     apply le_trans (degree_C_mul_X_pow_le _ _) (WithBot.coe_le_coe.2 (tsub_le_tsub_right _ _))
     apply le_natDegree_of_mem_supp _ hn
   · refine' le_sup _

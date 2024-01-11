@@ -49,11 +49,11 @@ def localHomeomorph (φ : B → F ≃L[𝕜] F) (hU : IsOpen U)
   continuous_toFun :=
     have : ContinuousOn (fun p : B × F => ((φ p.1 : F →L[𝕜] F), p.2)) (U ×ˢ univ) :=
       hφ.prod_map continuousOn_id
-    continuousOn_fst.prod (isBoundedBilinearMapApply.continuous.comp_continuousOn this)
+    continuousOn_fst.prod (isBoundedBilinearMap_apply.continuous.comp_continuousOn this)
   continuous_invFun :=
     haveI : ContinuousOn (fun p : B × F => (((φ p.1).symm : F →L[𝕜] F), p.2)) (U ×ˢ univ) :=
       h2φ.prod_map continuousOn_id
-    continuousOn_fst.prod (isBoundedBilinearMapApply.continuous.comp_continuousOn this)
+    continuousOn_fst.prod (isBoundedBilinearMap_apply.continuous.comp_continuousOn this)
 #align fiberwise_linear.local_homeomorph FiberwiseLinear.localHomeomorph
 
 /-- Compute the composition of two local homeomorphisms induced by fiberwise linear
@@ -216,8 +216,7 @@ theorem SmoothFiberwiseLinear.locality_aux₂ (e : LocalHomeomorph (B × F) (B �
   refine' ⟨Φ, U, hU', hΦ, h2Φ, hU, fun p hp => _⟩
   rw [hU] at hp
   rw [heuφ ⟨p.fst, hp.1⟩ ⟨hux _, hp.2⟩]
-  -- porting note: replaced `congrm` with manual `congr_arg`
-  refine congr_arg (Prod.mk _) ?_
+  congrm (_, ?_)
   rw [hΦφ]
   apply hux
 #align smooth_fiberwise_linear.locality_aux₂ SmoothFiberwiseLinear.locality_aux₂

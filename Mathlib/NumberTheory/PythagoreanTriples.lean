@@ -29,7 +29,7 @@ the bulk of the proof below.
 
 theorem sq_ne_two_fin_zmod_four (z : ZMod 4) : z * z ≠ 2 := by
   change Fin 4 at z
-  fin_cases z <;> norm_num [Fin.ext_iff, Fin.val_bit0, Fin.val_bit1]
+  fin_cases z <;> norm_num [Fin.ext_iff]
 #align sq_ne_two_fin_zmod_four sq_ne_two_fin_zmod_four
 
 theorem Int.sq_ne_two_mod_four (z : ℤ) : z * z % 4 ≠ 2 := by
@@ -155,7 +155,7 @@ theorem even_odd_of_coprime (hc : Int.gcd x y = 1) :
     rw [show z * z = 4 * (x0 * x0 + x0 + y0 * y0 + y0) + 2 by
         rw [← h.eq]
         ring]
-    field_simp [Int.add_emod] -- Porting note: norm_num is not enough to close this
+    norm_num [Int.add_emod]
 #align pythagorean_triple.even_odd_of_coprime PythagoreanTriple.even_odd_of_coprime
 
 theorem gcd_dvd : (Int.gcd x y : ℤ) ∣ z := by
@@ -460,13 +460,11 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
   · exact h.isPrimitiveClassified_of_coprime_of_zero_left hc h0
   let v := (x : ℚ) / z
   let w := (y : ℚ) / z
-  have hz : z ≠ 0
-  apply ne_of_gt hzpos
   have hq : v ^ 2 + w ^ 2 = 1 := by
-    field_simp [hz, sq]
+    field_simp [sq]
     norm_cast
   have hvz : v ≠ 0 := by
-    field_simp [hz]
+    field_simp
     exact h0
   have hw1 : w ≠ -1 := by
     contrapose! hvz with hw1

@@ -77,6 +77,13 @@ def IsTerminal.ofUnique (Y : C) [h : ∀ X : C, Unique (X ⟶ Y)] : IsTerminal Y
   fac := fun _ ⟨j⟩ => j.elim
 #align category_theory.limits.is_terminal.of_unique CategoryTheory.Limits.IsTerminal.ofUnique
 
+/-- An object `Y` is terminal if for every `X` there is a unique morphism `X ⟶ Y`
+    (as explicit arguments). -/
+def IsTerminal.ofUniqueHom {Y : C} (h : ∀ X : C, X ⟶ Y) (uniq : ∀ (X : C) (m : X ⟶ Y), m = h X) :
+    IsTerminal Y :=
+  have : ∀ X : C, Unique (X ⟶ Y) := fun X ↦ ⟨⟨h X⟩, uniq X⟩
+  IsTerminal.ofUnique Y
+
 /-- If `α` is a preorder with top, then `⊤` is a terminal object. -/
 def isTerminalTop {α : Type*} [Preorder α] [OrderTop α] : IsTerminal (⊤ : α) :=
   IsTerminal.ofUnique _
@@ -110,6 +117,13 @@ def IsInitial.ofUnique (X : C) [h : ∀ Y : C, Unique (X ⟶ Y)] : IsInitial X w
   desc s := (h s.pt).default
   fac := fun _ ⟨j⟩ => j.elim
 #align category_theory.limits.is_initial.of_unique CategoryTheory.Limits.IsInitial.ofUnique
+
+/-- An object `X` is initial if for every `Y` there is a unique morphism `X ⟶ Y`
+    (as explicit arguments). -/
+def IsInitial.ofUniqueHom {X : C} (h : ∀ Y : C, X ⟶ Y) (uniq : ∀ (Y : C) (m : X ⟶ Y), m = h Y) :
+    IsInitial X :=
+  have : ∀ Y : C, Unique (X ⟶ Y) := fun Y ↦ ⟨⟨h Y⟩, uniq Y⟩
+  IsInitial.ofUnique X
 
 /-- If `α` is a preorder with bot, then `⊥` is an initial object. -/
 def isInitialBot {α : Type*} [Preorder α] [OrderBot α] : IsInitial (⊥ : α) :=

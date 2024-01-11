@@ -59,7 +59,7 @@ variable {L : Language.{u, v}} {L' : Language}
 
 variable {M : Type w} {N P : Type*} [L.Structure M] [L.Structure N] [L.Structure P]
 
-variable {α : Type u'} {β : Type v'}
+variable {α : Type u'} {β : Type v'} {γ : Type*}
 
 open FirstOrder Cardinal
 
@@ -394,6 +394,7 @@ theorem realize_mapTermRel_add_castLe [L'.Structure M] {k : ℕ}
   · simp [mapTermRel, Realize, ih, hv]
 #align first_order.language.bounded_formula.realize_map_term_rel_add_cast_le FirstOrder.Language.BoundedFormula.realize_mapTermRel_add_castLe
 
+@[simp]
 theorem realize_relabel {m n : ℕ} {φ : L.BoundedFormula α n} {g : α → Sum β (Fin m)} {v : β → M}
     {xs : Fin (m + n) → M} :
     (φ.relabel g).Realize v xs ↔
@@ -907,6 +908,59 @@ theorem realize_exs {φ : L.BoundedFormula α n} {v : α → M} :
 #align first_order.language.bounded_formula.realize_exs FirstOrder.Language.BoundedFormula.realize_exs
 
 @[simp]
+theorem _root_.FirstOrder.Language.Formula.realize_iAlls
+    [Finite γ] {f : α → β ⊕ γ}
+    {φ : L.Formula α} {v : β → M} : (φ.iAlls f).Realize v ↔
+      ∀ (i : γ → M), φ.Realize (fun a => Sum.elim v i (f a)) := by
+  let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin γ))
+  rw [Formula.iAlls]
+  simp only [Nat.add_zero, realize_alls, realize_relabel, Function.comp,
+    castAdd_zero, castIso_refl, OrderIso.refl_apply, Sum.elim_map, id_eq]
+  refine Equiv.forall_congr ?_ ?_
+  · exact ⟨fun v => v ∘ e, fun v => v ∘ e.symm,
+      fun _ => by simp [Function.comp],
+      fun _ => by simp [Function.comp]⟩
+  · intro x
+    rw [Formula.Realize, iff_iff_eq]
+    congr
+    · funext i
+      exact i.elim0
+
+@[simp]
+theorem realize_iAlls [Finite γ] {f : α → β ⊕ γ}
+    {φ : L.Formula α} {v : β → M} {v' : Fin 0 → M} :
+    BoundedFormula.Realize (φ.iAlls f) v v' ↔
+      ∀ (i : γ → M), φ.Realize (fun a => Sum.elim v i (f a)) := by
+  rw [← Formula.realize_iAlls, iff_iff_eq]; congr; simp
+
+@[simp]
+theorem _root_.FirstOrder.Language.Formula.realize_iExs
+    [Finite γ] {f : α → β ⊕ γ}
+    {φ : L.Formula α} {v : β → M} : (φ.iExs f).Realize v ↔
+      ∃ (i : γ → M), φ.Realize (fun a => Sum.elim v i (f a)) := by
+  let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin γ))
+  rw [Formula.iExs]
+  simp only [Nat.add_zero, realize_exs, realize_relabel, Function.comp,
+    castAdd_zero, castIso_refl, OrderIso.refl_apply, Sum.elim_map, id_eq]
+  rw [← not_iff_not, not_exists, not_exists]
+  refine Equiv.forall_congr ?_ ?_
+  · exact ⟨fun v => v ∘ e, fun v => v ∘ e.symm,
+      fun _ => by simp [Function.comp],
+      fun _ => by simp [Function.comp]⟩
+  · intro x
+    rw [Formula.Realize, iff_iff_eq]
+    congr
+    · funext i
+      exact i.elim0
+
+@[simp]
+theorem realize_iExs [Finite γ] {f : α → β ⊕ γ}
+    {φ : L.Formula α} {v : β → M} {v' : Fin 0 → M} :
+    BoundedFormula.Realize (φ.iExs f) v v' ↔
+      ∃ (i : γ → M), φ.Realize (fun a => Sum.elim v i (f a)) := by
+  rw [← Formula.realize_iExs, iff_iff_eq]; congr; simp
+
+@[simp]
 theorem realize_toFormula (φ : L.BoundedFormula α n) (v : Sum α (Fin n) → M) :
     φ.toFormula.Realize v ↔ φ.Realize (v ∘ Sum.inl) (v ∘ Sum.inr) := by
   induction' φ with _ _ _ _ _ _ _ _ _ _ _ ih1 ih2 _ _ ih3 a8 a9 a0
@@ -934,6 +988,20 @@ theorem realize_toFormula (φ : L.BoundedFormula α n) (v : Sum α (Fin n) → M
           simp
     · exact Fin.elim0 x
 #align first_order.language.bounded_formula.realize_to_formula FirstOrder.Language.BoundedFormula.realize_toFormula
+
+@[simp]
+theorem realize_iSup (s : Finset β) (f : β → L.BoundedFormula α n)
+    (v : α → M) (v' : Fin n → M) :
+    (iSup s f).Realize v v' ↔ ∃ b ∈ s, (f b).Realize v v' := by
+  simp only [iSup, realize_foldr_sup, List.mem_map, Finset.mem_toList,
+    exists_exists_and_eq_and]
+
+@[simp]
+theorem realize_iInf (s : Finset β) (f : β → L.BoundedFormula α n)
+    (v : α → M) (v' : Fin n → M) :
+    (iInf s f).Realize v v' ↔ ∀ b ∈ s, (f b).Realize v v' := by
+  simp only [iInf, realize_foldr_inf, List.mem_map, Finset.mem_toList,
+    forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
 
 end BoundedFormula
 

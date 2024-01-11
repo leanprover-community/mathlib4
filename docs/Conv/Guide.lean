@@ -7,7 +7,7 @@ Authors: Kyle Miller
 /-! # Guide: Conversion mode tactic
 
 This is a curated guide to point you toward how `conv` mode works and what tactics are available.
-It is not meant to be comprehesive, but rather a "cheat sheet." See also the
+It is not meant to be comprehensive, but rather a "cheat sheet." See also the
 [`conv` introduction](https://leanprover-community.github.io/mathlib4_docs/docs/Conv/Introduction.html).
 
 ## Syntax

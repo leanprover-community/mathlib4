@@ -1545,6 +1545,14 @@ theorem iInf_sigma {p : β → Type*} {f : Sigma p → α} : ⨅ x, f x = ⨅ (i
   @iSup_sigma αᵒᵈ _ _ _ _
 #align infi_sigma iInf_sigma
 
+lemma iSup_sigma' {κ : β → Type*} (f : ∀ i, κ i → α) :
+  (⨆ i, ⨆ j, f i j) = ⨆ x : Σ i, κ i, f x.1 x.2 :=
+(iSup_sigma (f := λ x ↦ f x.1 x.2)).symm
+
+lemma iInf_sigma' {κ : β → Type*} (f : ∀ i, κ i → α) :
+  (⨅ i, ⨅ j, f i j) = ⨅ x : Σ i, κ i, f x.1 x.2 :=
+(iInf_sigma (f := λ x ↦ f x.1 x.2)).symm
+
 theorem iSup_prod {f : β × γ → α} : ⨆ x, f x = ⨆ (i) (j), f (i, j) :=
   eq_of_forall_ge_iff fun c => by simp only [iSup_le_iff, Prod.forall]
 #align supr_prod iSup_prod
@@ -1552,6 +1560,12 @@ theorem iSup_prod {f : β × γ → α} : ⨆ x, f x = ⨆ (i) (j), f (i, j) :=
 theorem iInf_prod {f : β × γ → α} : ⨅ x, f x = ⨅ (i) (j), f (i, j) :=
   @iSup_prod αᵒᵈ _ _ _ _
 #align infi_prod iInf_prod
+
+lemma iSup_prod' (f : β → γ → α) : (⨆ i, ⨆ j, f i j) = ⨆ x : β × γ, f x.1 x.2 :=
+(iSup_prod (f := λ x ↦ f x.1 x.2)).symm
+
+lemma iInf_prod' (f : β → γ → α) : (⨅ i, ⨅ j, f i j) = ⨅ x : β × γ, f x.1 x.2 :=
+(iInf_prod (f := λ x ↦ f x.1 x.2)).symm
 
 theorem biSup_prod {f : β × γ → α} {s : Set β} {t : Set γ} :
     ⨆ x ∈ s ×ˢ t, f x = ⨆ (a ∈ s) (b ∈ t), f (a, b) := by

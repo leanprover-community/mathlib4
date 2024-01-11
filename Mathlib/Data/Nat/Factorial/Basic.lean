@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Chris Hughes, Floris van Doorn, Yaël Dillies
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Nat.Pow
 import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.Common
 
 #align_import data.nat.factorial.basic from "leanprover-community/mathlib"@"d012cd09a9b256d870751284dd6a29882b0be105"
 
@@ -44,7 +45,6 @@ theorem factorial_zero : 0! = 1 :=
   rfl
 #align nat.factorial_zero Nat.factorial_zero
 
-@[simp]
 theorem factorial_succ (n : ℕ) : n.succ ! = (n + 1) * n ! :=
   rfl
 #align nat.factorial_succ Nat.factorial_succ
@@ -282,7 +282,7 @@ theorem ascFactorial_of_sub {n k : ℕ} (h : k < n) :
     (n - k) * (n - k).ascFactorial k = (n - (k + 1)).ascFactorial (k + 1) := by
   let t := n - k.succ
   let ht : t = n - k.succ := rfl
-  suffices h' : n - k = t.succ; · rw [← ht, h', succ_ascFactorial, ascFactorial_succ]
+  suffices h' : n - k = t.succ by rw [← ht, h', succ_ascFactorial, ascFactorial_succ]
   rw [ht, succ_eq_add_one, ← tsub_tsub_assoc (succ_le_of_lt h) (succ_pos _), succ_sub_one]
 #align nat.asc_factorial_of_sub Nat.ascFactorial_of_sub
 

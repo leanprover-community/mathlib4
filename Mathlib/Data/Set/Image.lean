@@ -1651,11 +1651,9 @@ section Sigma
 variable {α : Type*} {β : α → Type*} {i j : α} {s : Set (β i)}
 
 lemma sigma_mk_preimage_image' (h : i ≠ j) : Sigma.mk j ⁻¹' (Sigma.mk i '' s) = ∅ := by
-  change Sigma.mk j ⁻¹' {⟨i, u⟩ | u ∈ s} = ∅
-  simp [h]
+  simp [image, h]
 
 lemma sigma_mk_preimage_image_eq_self : Sigma.mk i ⁻¹' (Sigma.mk i '' s) = s := by
-  change Sigma.mk i ⁻¹' {⟨i, u⟩ | u ∈ s} = s
-  simp
+  simp [image]
 
 end Sigma

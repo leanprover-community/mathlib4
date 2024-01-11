@@ -7,6 +7,7 @@ Yuyang Zhao
 import Mathlib.Algebra.CovariantAndContravariant
 import Mathlib.Init.Data.Ordering.Basic
 import Mathlib.Order.MinMax
+import Mathlib.Tactic.Contrapose
 
 #align_import algebra.order.monoid.lemmas from "leanprover-community/mathlib"@"2ed7e4aec72395b6a7c3ac4ac7873a7a43ead17c"
 

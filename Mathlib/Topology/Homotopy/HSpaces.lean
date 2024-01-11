@@ -26,20 +26,20 @@ Some notable properties of `H-spaces` are
 ## Main Results
 
 * Every topological group `G` is an `H-space` using its operation `* : G → G → G` (this is already
-true if `G` has an instance of a `mul_one_class` and `continuous_mul`);
+true if `G` has an instance of a `MulOneClass` and `ContinuousMul`);
 * Given two `H-spaces` `X` and `Y`, their product is again an `H`-space. We show in an example that
 starting with two topological groups `G, G'`, the `H`-space structure on `G × G'` is definitionally
 equal to the product of `H-space` structures on `G` and `G'`.
 * The loop space based at every `x : X` carries a structure of an `H-spaces`.
 
 ## To Do
-* Prove that for every `normed_add_torsor Z` and every `z : Z`, the operation
+* Prove that for every `NormedAddTorsor Z` and every `z : Z`, the operation
 `λ x y, midpoint x y` defines an `H-space` structure with `z` as a "neutral element".
 * Prove that `S^0`, `S^1`, `S^3` and `S^7` are the unique spheres that are `H-spaces`, where the
 first three inherit the structure because they are topological groups (they are Lie groups,
 actually), isomorphic to the invertible elements in `ℤ`, in `ℂ` and in the quaternion; and the
 fourth from the fact that `S^7` coincides with the octonions of norm 1 (it is not a group, in
-particular, only has an instance of `mul_one_class`).
+particular, only has an instance of `MulOneClass`).
 
 ## References
 
@@ -69,7 +69,6 @@ class HSpace (X : Type u) [TopologicalSpace X] where
     (hmul.comp <| (ContinuousMap.id X).prodMk <| const X e).HomotopyRel (ContinuousMap.id X) {e}
 #align H_space HSpace
 
--- mathport name: H_space.Hmul
 -- We use the notation `⋀`, typeset as \And, to denote the binary operation `hmul` on an H-space
 scoped[HSpaces] notation x "⋀" y => HSpace.hmul (x, y)
 
@@ -131,15 +130,15 @@ instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [Topological
 
 namespace TopologicalGroup
 
-/-- The definition `to_H_space` is not an instance because its `@additive` version would
-lead to a diamond since a topological field would inherit two `H_space` structures, one from the
-`mul_one_class` and one from the `add_zero_class`. In the case of a group, we make
-`topological_group.H_space` an instance."-/
+/-- The definition `toHSpace` is not an instance because its additive version would
+lead to a diamond since a topological field would inherit two `HSpace` structures, one from the
+`MulOneClass` and one from the `AddZeroClass`. In the case of a group, we make
+`TopologicalGroup.hSpace` an instance."-/
 @[to_additive
-      "The definition `to_H_space` is not an instance because it comes together with a
+      "The definition `toHSpace` is not an instance because it comes together with a
       multiplicative version which would lead to a diamond since a topological field would inherit
-      two `H_space` structures, one from the `mul_one_class` and one from the `add_zero_class`.
-      In the case of an additive group, we make `topological_group.H_space` an instance."]
+      two `HSpace` structures, one from the `MulOneClass` and one from the `AddZeroClass`.
+      In the case of an additive group, we make `TopologicalAddGroup.hSpace` an instance."]
 def toHSpace (M : Type u) [MulOneClass M] [TopologicalSpace M] [ContinuousMul M] : HSpace M where
   hmul := ⟨Function.uncurry Mul.mul, continuous_mul⟩
   e := 1
@@ -161,8 +160,8 @@ theorem one_eq_hSpace_e {G : Type u} [TopologicalSpace G] [Group G] [Topological
   rfl
 #align topological_group.one_eq_H_space_e TopologicalGroup.one_eq_hSpace_e
 
-/- In the following example we see that the `H-space` structure on the product of two topological
-groups is definitionally equally to the product `H-space`-structure of the two groups.-/
+/- In the following example we see that the H-space structure on the product of two topological
+groups is definitionally equally to the product H-space-structure of the two groups.-/
 example {G G' : Type u} [TopologicalSpace G] [Group G] [TopologicalGroup G] [TopologicalSpace G']
     [Group G'] [TopologicalGroup G'] : TopologicalGroup.hSpace (G × G') = HSpace.prod G G' := by
   simp only [HSpace.prod]
@@ -281,7 +280,7 @@ theorem delayReflLeft_one (γ : Path x y) : delayReflLeft 1 γ = γ := by
   simp only [delayReflLeft, delayReflRight_one, Path.symm_symm]
 #align path.delay_refl_left_one Path.delayReflLeft_one
 
-/-- The loop space at x carries a structure of an `H-space`. Note that the field `eHmul`
+/-- The loop space at x carries a structure of an H-space. Note that the field `eHmul`
 (resp. `hmulE`) neither implies nor is implied by `Path.Homotopy.reflTrans`
 (resp. `Path.Homotopy.transRefl`).
 -/

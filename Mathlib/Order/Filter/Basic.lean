@@ -351,6 +351,9 @@ def generate (g : Set (Set α)) : Filter α where
   inter_sets := GenerateSets.inter
 #align filter.generate Filter.generate
 
+lemma mem_generate_of_mem {s : Set <| Set α} {U : Set α} (h : U ∈ s) :
+    U ∈ generate s := GenerateSets.basic h
+
 theorem le_generate_iff {s : Set (Set α)} {f : Filter α} : f ≤ generate s ↔ s ⊆ f.sets :=
   Iff.intro (fun h _ hu => h <| GenerateSets.basic <| hu) fun h _ hu =>
     hu.recOn (fun h' => h h') univ_mem (fun _ hxy hx => mem_of_superset hx hxy) fun _ _ hx hy =>
@@ -732,8 +735,8 @@ theorem inf_eq_bot_iff {f g : Filter α} : f ⊓ g = ⊥ ↔ ∃ U ∈ f, ∃ V 
 theorem _root_.Pairwise.exists_mem_filter_of_disjoint {ι : Type*} [Finite ι] {l : ι → Filter α}
     (hd : Pairwise (Disjoint on l)) :
     ∃ s : ι → Set α, (∀ i, s i ∈ l i) ∧ Pairwise (Disjoint on s) := by
-  have : ∀ i j, i ≠ j → ∃ (s : {s // s ∈ l i}) (t : {t // t ∈ l j}), Disjoint s.1 t.1
-  · simpa only [Pairwise, Function.onFun, Filter.disjoint_iff, exists_prop, Subtype.exists] using hd
+  have : ∀ i j, i ≠ j → ∃ (s : {s // s ∈ l i}) (t : {t // t ∈ l j}), Disjoint s.1 t.1 := by
+    simpa only [Pairwise, Function.onFun, Filter.disjoint_iff, exists_prop, Subtype.exists] using hd
   choose! s t hst using this
   refine' ⟨fun i => ⋂ j, s i j ∩ t j i, fun i => _, fun i j hij => _⟩
   exacts [iInter_mem.2 fun j => inter_mem (@s i j).2 (@t j i).2,
@@ -2884,6 +2887,43 @@ theorem mem_traverse_iff (fs : List β') (t : Set (List α')) :
 #align filter.mem_traverse_iff Filter.mem_traverse_iff
 
 end ListTraverse
+
+section ker
+variable {ι : Sort*} {α β : Type*} {f g : Filter α} {s : Set α} {a : α}
+open Function Set
+
+/-- The *kernel* of a filter is the intersection of all its sets. -/
+def ker (f : Filter α) : Set α := ⋂ s ∈ f, s
+
+@[simp] lemma mem_ker : a ∈ f.ker ↔ ∀ s ∈ f, a ∈ s := mem_iInter₂
+@[simp] lemma subset_ker : s ⊆ f.ker ↔ ∀ t ∈ f, s ⊆ t := subset_iInter₂_iff
+
+/-- `Filter.principal` forms a Galois coinsertion with `Filter.ker`. -/
+def gi_principal_ker : GaloisCoinsertion (𝓟 : Set α → Filter α) ker :=
+GaloisConnection.toGaloisCoinsertion (λ s f ↦ by simp [principal_le_iff]) $ by
+  simp only [le_iff_subset, subset_def, mem_ker, mem_principal]; aesop
+
+lemma ker_mono : Monotone (ker : Filter α → Set α) := gi_principal_ker.gc.monotone_u
+lemma ker_surjective : Surjective (ker : Filter α → Set α) := gi_principal_ker.u_surjective
+
+@[simp] lemma ker_bot : ker (⊥ : Filter α) = ∅ := iInter₂_eq_empty_iff.2 λ _ ↦ ⟨∅, trivial, id⟩
+@[simp] lemma ker_top : ker (⊤ : Filter α) = univ := gi_principal_ker.gc.u_top
+@[simp] lemma ker_eq_univ : ker f = univ ↔ f = ⊤ := gi_principal_ker.gc.u_eq_top.trans $ by simp
+@[simp] lemma ker_inf (f g : Filter α) : ker (f ⊓ g) = ker f ∩ ker g := gi_principal_ker.gc.u_inf
+@[simp] lemma ker_iInf (f : ι → Filter α) : ker (⨅ i, f i) = ⨅ i, ker (f i) :=
+gi_principal_ker.gc.u_iInf
+@[simp] lemma ker_sInf (S : Set (Filter α)) : ker (sInf S) = ⨅ f ∈ S, ker f :=
+gi_principal_ker.gc.u_sInf
+@[simp] lemma ker_principal (s : Set α) : ker (𝓟 s) = s := gi_principal_ker.u_l_eq _
+
+@[simp] lemma ker_pure (a : α) : ker (pure a) = {a} := by rw [←principal_singleton, ker_principal]
+
+@[simp] lemma ker_comap (m : α → β) (f : Filter β) : ker (comap m f) = m ⁻¹' ker f := by
+  ext a
+  simp only [mem_ker, mem_comap, forall_exists_index, and_imp, @forall_swap (Set α), mem_preimage]
+  exact forall₂_congr λ s _ ↦ ⟨λ h ↦ h _ Subset.rfl, λ ha t ht ↦ ht ha⟩
+
+end ker
 
 /-! ### Limits -/
 

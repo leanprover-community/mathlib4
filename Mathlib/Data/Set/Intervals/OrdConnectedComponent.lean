@@ -221,8 +221,8 @@ theorem disjoint_ordT5Nhd : Disjoint (ordT5Nhd s t) (ordT5Nhd t s) := by
     have h' : x ∈ ordSeparatingSet s t := ⟨mem_iUnion₂.2 ⟨a, has, ha⟩, mem_iUnion₂.2 ⟨b, hbt, hb⟩⟩
     -- porting note: lift not implemented yet
     -- lift x to ordSeparatingSet s t using this
-    suffices : ordConnectedComponent (ordSeparatingSet s t) x ⊆ [[a, b]]
-    exact hsub (this <| ordConnectedProj_mem_ordConnectedComponent _ ⟨x, h'⟩) (mem_range_self _)
+    suffices ordConnectedComponent (ordSeparatingSet s t) x ⊆ [[a, b]] from
+      hsub (this <| ordConnectedProj_mem_ordConnectedComponent _ ⟨x, h'⟩) (mem_range_self _)
     rintro y (hy : [[x, y]] ⊆ ordSeparatingSet s t)
     rw [uIcc_of_le hab, mem_Icc, ← not_lt, ← not_lt]
     have sol1 := fun (hya : y < a) =>

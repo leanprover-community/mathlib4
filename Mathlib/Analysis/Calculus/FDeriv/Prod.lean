@@ -357,7 +357,7 @@ section Pi
 /-!
 ### Derivatives of functions `f : E → Π i, F' i`
 
-In this section we formulate `has_*fderiv*_pi` theorems as `iff`s, and provide two versions of each
+In this section we formulate `has*FDeriv*_pi` theorems as `iff`s, and provide two versions of each
 theorem:
 
 * the version without `'` deals with `φ : Π i, E → F' i` and `φ' : Π i, E →L[𝕜] F' i`

@@ -55,7 +55,6 @@ section Field
 
 variable {F : Type*} [Field F] [Algebra F[X] S] [Finite ι]
 
-set_option maxHeartbeats 210000 in
 instance (b : Basis ι F[X] S) {I : Ideal S} (hI : I ≠ ⊥) (i : ι) :
     FiniteDimensional F (F[X] ⧸ span ({I.smithCoeffs b hI i} : Set F[X])) := by
   -- Porting note: we need to do this proof in two stages otherwise it times out

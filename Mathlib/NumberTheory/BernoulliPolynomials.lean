@@ -90,8 +90,7 @@ theorem bernoulli_eval_one (n : ℕ) : (bernoulli n).eval 1 = bernoulli' n := by
   simp only [← succ_eq_add_one, sum_range_succ, mul_one, cast_one, choose_self,
     (_root_.bernoulli _).mul_comm, sum_bernoulli, one_pow, mul_one, eval_C, eval_monomial, one_mul]
   by_cases h : n = 1
-  · simp [h]
-    norm_num
+  · norm_num [h]
   · simp [h]
     exact bernoulli_eq_bernoulli'_of_ne_one h
 #align polynomial.bernoulli_eval_one Polynomial.bernoulli_eval_one

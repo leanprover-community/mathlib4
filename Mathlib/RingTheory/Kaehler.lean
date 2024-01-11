@@ -414,7 +414,7 @@ def KaehlerDifferential.endEquivAuxEquiv :
 
 
 set_option maxHeartbeats 1200000 in
-set_option synthInstance.maxHeartbeats 1000000 in
+set_option synthInstance.maxHeartbeats 900000 in
 /--
 The endomorphisms of `Ω[S⁄R]` corresponds to sections of the surjection `S ⊗[R] S ⧸ J ^ 2 →ₐ[R] S`,
 with `J` being the kernel of the multiplication map `S ⊗[R] S →ₐ[R] S`.
@@ -531,7 +531,6 @@ theorem KaehlerDifferential.total_surjective :
   rw [← LinearMap.range_eq_top, Finsupp.range_total, KaehlerDifferential.span_range_derivation]
 #align kaehler_differential.total_surjective KaehlerDifferential.total_surjective
 
-set_option maxHeartbeats 400000 in
 /-- `Ω[S⁄R]` is isomorphic to `S` copies of `S` with kernel `KaehlerDifferential.kerTotal`. -/
 @[simps!]
 noncomputable def KaehlerDifferential.quotKerTotalEquiv :
@@ -570,7 +569,7 @@ local macro "finsupp_map" : term =>
   `((Finsupp.mapRange.linearMap (Algebra.linearMap A B)).comp
     (Finsupp.lmapDomain A A (algebraMap A B)))
 
-set_option maxHeartbeats 400000 in
+set_option maxHeartbeats 300000 in
 theorem KaehlerDifferential.kerTotal_map (h : Function.Surjective (algebraMap A B)) :
     (KaehlerDifferential.kerTotal R A).map finsupp_map ⊔
         Submodule.span A (Set.range fun x : S => single (algebraMap S B x) (1 : B)) =

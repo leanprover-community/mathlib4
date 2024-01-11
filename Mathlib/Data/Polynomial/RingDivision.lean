@@ -133,9 +133,8 @@ instance : NoZeroDivisors R[X] where
     rw [← leadingCoeff_zero, ← leadingCoeff_mul, h]
 
 theorem natDegree_mul (hp : p ≠ 0) (hq : q ≠ 0) : (p*q).natDegree = p.natDegree + q.natDegree := by
-  rw [← WithBot.coe_eq_coe, ← Nat.cast_withBot, ←degree_eq_natDegree (mul_ne_zero hp hq),
-    WithBot.coe_add, ← Nat.cast_withBot, ←degree_eq_natDegree hp, ← Nat.cast_withBot,
-    ← degree_eq_natDegree hq, degree_mul]
+  rw [← Nat.cast_inj (R := WithBot ℕ), ←degree_eq_natDegree (mul_ne_zero hp hq),
+    Nat.cast_add,  ←degree_eq_natDegree hp, ← degree_eq_natDegree hq, degree_mul]
 #align polynomial.nat_degree_mul Polynomial.natDegree_mul
 
 theorem trailingDegree_mul : (p * q).trailingDegree = p.trailingDegree + q.trailingDegree := by
@@ -525,8 +524,8 @@ theorem exists_multiset_roots [DecidableEq R] :
 termination_by _ p _ => natDegree p
 decreasing_by {
   simp_wf
-  apply WithBot.coe_lt_coe.mp
-  simp only [degree_eq_natDegree hp, degree_eq_natDegree hd0, ←Nat.cast_withBot] at wf;
+  apply (Nat.cast_lt (α := WithBot ℕ)).mp
+  simp only [degree_eq_natDegree hp, degree_eq_natDegree hd0] at wf;
   assumption}
 #align polynomial.exists_multiset_roots Polynomial.exists_multiset_roots
 
@@ -821,8 +820,7 @@ theorem card_nthRoots (n : ℕ) (a : R) : Multiset.card (nthRoots n a) ≤ n := 
             rw [hn, pow_zero, ← C_1, ← RingHom.map_sub]
             exact degree_C_le))
   else by
-    rw [← WithBot.coe_le_coe]
-    simp only [← Nat.cast_withBot]
+    rw [← Nat.cast_le (α := WithBot ℕ)]
     rw [← degree_X_pow_sub_C (Nat.pos_of_ne_zero hn) a]
     exact card_roots (X_pow_sub_C_ne_zero (Nat.pos_of_ne_zero hn) a))
 #align polynomial.card_nth_roots Polynomial.card_nthRoots

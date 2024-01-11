@@ -243,8 +243,7 @@ def trans {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Homotopy f₁
         (F.continuous.comp (by continuity)).continuousOn
         (G.continuous.comp (by continuity)).continuousOn _
     rintro x hx
-    rw [hx]
-    norm_num
+    norm_num [hx]
   map_zero_left x := by norm_num
   map_one_left x := by norm_num
 #align continuous_map.homotopy.trans ContinuousMap.Homotopy.trans
@@ -268,8 +267,7 @@ theorem symm_trans {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Homo
   simp only [coe_symm_eq, symm_apply]
   split_ifs with h₁ h₂ h₂
   · have ht : (t : ℝ) = 1 / 2 := by linarith
-    simp only [ht]
-    norm_num
+    norm_num [ht]
   · congr 2
     apply Subtype.ext
     simp only [coe_symm_eq]

@@ -338,31 +338,15 @@ theorem trans_symm (γ : Path x y) (γ' : Path y z) : (γ.trans γ').symm = γ'.
   ext t
   simp only [trans_apply, ← one_div, symm_apply, not_le, Function.comp_apply]
   split_ifs with h h₁ h₂ <;> rw [coe_symm_eq] at h
-  · have ht : (t : ℝ) = 1 / 2 := by
-      refine le_antisymm h₁ ?_
-      rw [sub_le_comm] at h
-      norm_num at h
-      exact h
-    -- porting note: was `linarith [unitInterval.nonneg t, unitInterval.le_one t]` but `linarith`
-    -- doesn't know about `ℚ` yet. https://github.com/leanprover-community/mathlib4/issues/2714
-    -- porting note: although `linarith` now knows about `ℚ`, it still fails here as it doesn't
-    -- find `LinearOrder X`.
-    simp_rw [unitInterval.symm, ht]
-    norm_num
+  · have ht : (t : ℝ) = 1 / 2 := by linarith
+    norm_num [ht]
   · refine' congr_arg _ (Subtype.ext _)
-    norm_num [unitInterval.symm, sub_sub_eq_add_sub, mul_sub]
-    ring
+    norm_num [sub_sub_eq_add_sub, mul_sub]
   · refine' congr_arg _ (Subtype.ext _)
     norm_num [mul_sub, h]
-    ring
-  · -- porting note: was `linarith [unitInterval.nonneg t, unitInterval.le_one t]` but `linarith`
-    -- doesn't know about `ℚ` yet. https://github.com/leanprover-community/mathlib4/issues/2714
-    -- porting note: although `linarith` now knows about `ℚ`, it still fails here as it doesn't
-    -- find `LinearOrder X`.
-    exfalso
-    rw [sub_le_comm] at h
-    norm_num at h h₂
-    exact (h.trans h₂).ne rfl
+    ring -- TODO norm_num should really do this
+  · exfalso
+    linarith
 #align path.trans_symm Path.trans_symm
 
 @[simp]

@@ -89,7 +89,7 @@ alias ⟨_, LipschitzOnWith.holderOnWith⟩ := holderOnWith_one
 
 @[simp]
 theorem holderWith_one {C : ℝ≥0} {f : X → Y} : HolderWith C 1 f ↔ LipschitzWith C f :=
-  holderOnWith_univ.symm.trans <| holderOnWith_one.trans lipschitz_on_univ
+  holderOnWith_univ.symm.trans <| holderOnWith_one.trans lipschitzOn_univ
 #align holder_with_one holderWith_one
 
 alias ⟨_, LipschitzWith.holderWith⟩ := holderWith_one

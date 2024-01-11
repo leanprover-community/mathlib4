@@ -48,7 +48,8 @@ theorem one_eq : (1 : PUnit) = unit :=
 #align punit.one_eq PUnit.one_eq
 #align punit.zero_eq PUnit.zero_eq
 
-@[to_additive (attr := simp)]
+-- note simp can prove this when the Boolean ring structure is introduced
+@[to_additive]
 theorem mul_eq : x * y = unit :=
   rfl
 #align punit.mul_eq PUnit.mul_eq

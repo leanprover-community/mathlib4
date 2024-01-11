@@ -8,6 +8,7 @@ import Lean.Elab.Tactic.Basic
 import Lean.Meta.Tactic.Simp.Main
 import Std.Lean.Parser
 import Mathlib.Algebra.Group.Units
+import Mathlib.Tactic.Positivity.Core
 import Mathlib.Tactic.NormNum.Core
 import Qq
 
@@ -34,9 +35,11 @@ private def dischargerTraceMessage (prop: Expr) : Except ε (Option Expr) → Si
 /-- Discharge strategy for the `field_simp` tactic. -/
 partial def discharge (prop : Expr) : SimpM (Option Expr) :=
   withTraceNode `Tactic.field_simp (dischargerTraceMessage prop) do
+    -- Discharge strategy 1: Use assumptions
     if let some r ← Simp.dischargeUsingAssumption? prop then
       return some r
 
+    -- Discharge strategy 2: Normalize inequalities using NormNum
     let prop : Q(Prop) ← (do pure prop)
     let pf? ← match prop with
     | ~q(($e : $α) ≠ $b) =>
@@ -50,6 +53,13 @@ partial def discharge (prop : Expr) : SimpM (Option Expr) :=
     | _ => pure none
     if let some pf := pf? then return some pf
 
+    -- Discharge strategy 3: Use positivity
+    let pf? ←
+      try some <$> Mathlib.Meta.Positivity.solve prop
+      catch _ => pure none
+    if let some pf := pf? then return some pf
+
+    -- Discharge strategy 4: Use the simplifier
     let ctx ← read
     let usedTheorems := (← get).usedTheorems
 

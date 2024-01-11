@@ -4,9 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Util.Imports
+import Mathlib.Lean.CoreM
 import Mathlib.Lean.Data.NameMap
 import Mathlib.Lean.IO.Process
 import Mathlib.Lean.Name
+import Std.Lean.Util.Path
 import Cli
 
 /-!
@@ -30,35 +32,16 @@ def asDotGraph (graph : NameMap (Array Name)) (header := "import_graph") : Strin
 
 open Lean Core System
 
--- Next two declarations borrowed from `runLinter.lean`.
-
-instance : ToExpr FilePath where
-  toTypeExpr := mkConst ``FilePath
-  toExpr path := mkApp (mkConst ``FilePath.mk) (toExpr path.1)
-
-elab "compileTimeSearchPath" : term =>
-  return toExpr (← searchPathRef.get)
-
-/-- A custom command-line argument parser that allows either relative paths to Lean files,
-(e.g. `Mathlib/Topology/Basic.lean`) or the module name (e.g. `Mathlib.Topology.Basic`). -/
-instance : ParseableType Name where
-  name     := "Name"
-  parse? s :=
-    if s.endsWith ".lean" then
-      some <| (s : FilePath).withExtension "" |>.components.foldl Name.mkStr Name.anonymous
-    else
-      String.toName s
-
 open IO.FS IO.Process Name in
 /-- Implementation of the import graph command line program. -/
 def importGraphCLI (args : Cli.Parsed) : IO UInt32 := do
   let to := match args.flag? "to" with
-  | some to => to.as! Name
+  | some to => to.as! ModuleName
   | none => `Mathlib -- autodetect the main module from the `lakefile.lean`?
   let from? := match args.flag? "from" with
-  | some fr => some <| fr.as! Name
+  | some fr => some <| fr.as! ModuleName
   | none => none
-  searchPathRef.set compileTimeSearchPath
+  searchPathRef.set compile_time_search_path%
   let dotFile ← unsafe withImportModules [{module := to}] {} (trustLevel := 1024) fun env => do
     let mut graph := env.importGraph
     if let .some f := from? then
@@ -103,11 +86,11 @@ def graph : Cmd := `[Cli|
   "Generate representations of a Lean import graph."
 
   FLAGS:
-    reduce;         "Remove transitively redundant edges."
-    to : Name;      "Only show the upstream imports of the specified module."
-    "from" : Name;  "Only show the downstream dependencies of the specified module."
-    "exclude-meta"; "Exclude any files starting with `Mathlib.[Tactic|Lean|Util]`."
-    "include-deps"; "Include used files from other projects (e.g. lake packages)"
+    reduce;               "Remove transitively redundant edges."
+    to : ModuleName;      "Only show the upstream imports of the specified module."
+    "from" : ModuleName;  "Only show the downstream dependencies of the specified module."
+    "exclude-meta";       "Exclude any files starting with `Mathlib.[Tactic|Lean|Util]`."
+    "include-deps";       "Include used files from other projects (e.g. lake packages)"
 
   ARGS:
     ...outputs : String;  "Filename(s) for the output. " ++

@@ -470,7 +470,7 @@ private theorem edgeDensity_star_not_uniform [Nonempty α]
   left; linarith
   right; linarith
 
-set_option maxHeartbeats 350000 in
+set_option maxHeartbeats 300000 in
 /-- Lower bound on the edge densities between non-uniform parts of `SzemerediRegularity.increment`.
 -/
 theorem edgeDensity_chunk_not_uniform [Nonempty α] (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α)

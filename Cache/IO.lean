@@ -99,6 +99,8 @@ def mathlibDepPath : FilePath :=
 def getPackageDirs : IO PackageDirs := return .ofList [
   ("Mathlib", if ← isMathlibRoot then "." else mathlibDepPath),
   ("MathlibExtras", if ← isMathlibRoot then "." else mathlibDepPath),
+  ("Archive", if ← isMathlibRoot then "." else mathlibDepPath),
+  ("Counterexamples", if ← isMathlibRoot then "." else mathlibDepPath),
   ("Aesop", LAKEPACKAGESDIR / "aesop"),
   ("Std", LAKEPACKAGESDIR / "std"),
   ("Cli", LAKEPACKAGESDIR / "Cli"),

@@ -1,8 +1,7 @@
 import Mathlib.Tactic.CancelDenoms
 import Mathlib.Tactic.Ring
 
-set_option autoImplicit true
-
+universe u
 section
 variable {α : Type u} [LinearOrderedField α] (a b c d : α)
 
@@ -81,7 +80,7 @@ example (h : a + b = c) : a/5 + d*(b/4) = c - 4*a/5 + b*2*d/8 - b := by
   rw [← h]
   ring
 
-example (h : 40 * (4 * a + d * (5 * b)) ≠ 20 * (40 * c - 4 * (8 * a) + b * 2 * (5 * d) - 40 * b)) : a/5 + d*(b/4) ≠ c - 4*a/5 + b*2*d/8 - b := by
+example (h : 2 * (4 * a + d * 5 * b) ≠ (40 * c - 32 * a + b * 2 * 5 * d - 40 * b)) : a/5 + d*(b/4) ≠ c - 4*a/5 + b*2*d/8 - b := by
   cancel_denoms
   assumption
 

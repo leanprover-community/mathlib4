@@ -261,7 +261,7 @@ open ZMod
 
 -- Porting note: This proof is _really_ slow, maybe it should be broken into several lemmas
 -- See https://github.com/leanprover-community/mathlib4/issues/5028
-set_option maxHeartbeats 800000 in
+set_option maxHeartbeats 500000 in
 /-- For every finite field `F` of odd characteristic, we have `2^(#F/2) = χ₈#F` in `F`. -/
 theorem FiniteField.two_pow_card {F : Type*} [Fintype F] [Field F] (hF : ringChar F ≠ 2) :
     (2 : F) ^ (Fintype.card F / 2) = χ₈ (Fintype.card F) := by

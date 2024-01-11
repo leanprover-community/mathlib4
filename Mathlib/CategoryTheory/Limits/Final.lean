@@ -759,8 +759,7 @@ theorem final_comp [hF : Final F] [hG : Final G] : Final (F ⋙ G) := by
   infer_instance
 
 theorem initial_comp [Initial F] [Initial G] : Initial (F ⋙ G) := by
-  suffices : Final (F ⋙ G).op
-  · exact initial_of_final_op _
+  suffices Final (F ⋙ G).op from initial_of_final_op _
   exact final_comp F.op G.op
 
 theorem final_of_final_comp [hF : Final F] [hFG : Final (F ⋙ G)] : Final G := by
@@ -780,8 +779,7 @@ theorem final_of_final_comp [hF : Final F] [hFG : Final (F ⋙ G)] : Final G := 
   exact fun H => IsIso.of_isIso_comp_left (colimit.pre _ (s₁.inverse ⋙ F ⋙ s₂.functor)) _
 
 theorem initial_of_initial_comp [Initial F] [Initial (F ⋙ G)] : Initial G := by
-  suffices : Final G.op
-  · exact initial_of_final_op _
+  suffices Final G.op from initial_of_final_op _
   have : Final (F.op ⋙ G.op) := show Final (F ⋙ G).op from inferInstance
   exact final_of_final_comp F.op G.op
 

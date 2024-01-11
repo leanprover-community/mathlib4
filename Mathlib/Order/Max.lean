@@ -75,6 +75,9 @@ instance nonempty_lt [LT α] [NoMinOrder α] (a : α) : Nonempty { x // x < a } 
 instance nonempty_gt [LT α] [NoMaxOrder α] (a : α) : Nonempty { x // a < x } :=
   nonempty_subtype.2 (exists_gt a)
 
+instance IsEmpty.toNoMaxOrder [LT α] [IsEmpty α] : NoMaxOrder α := ⟨isEmptyElim⟩
+instance IsEmpty.toNoMinOrder [LT α] [IsEmpty α] : NoMinOrder α := ⟨isEmptyElim⟩
+
 instance OrderDual.noBotOrder [LE α] [NoTopOrder α] : NoBotOrder αᵒᵈ :=
   ⟨fun a => @exists_not_le α _ _ a⟩
 #align order_dual.no_bot_order OrderDual.noBotOrder

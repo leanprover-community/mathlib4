@@ -103,7 +103,7 @@ Check if a goal is "independent" of a list of other goals.
 We say a goal is independent of other goals if assigning a value to it
 can not change the solvability of the other goals.
 
-This function only calculates an approximation of this condition
+This function only calculates a conservative approximation of this condition.
 -/
 def independent? (L : List MVarId) (g : MVarId) : MetaM Bool := do
   let t ← instantiateMVars (← g.getType)
@@ -120,8 +120,8 @@ def independent? (L : List MVarId) (g : MVarId) : MetaM Bool := do
     return true
   -- Finally, we check if the goal `g` appears in the type of any of the goals `L`.
   L.allM fun g' => do
-    let t' ← instantiateMVars (← g'.getType)
-    pure <| !(← exprDependsOn' t' (.mvar g))
+    let mvars ← Meta.getMVars (← g'.getType)
+    pure <| !(mvars.contains g)
 
 end Lean.MVarId
 

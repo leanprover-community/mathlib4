@@ -23,7 +23,7 @@ object and one morphism.
 -/
 
 
-universe v u
+universe w v u
 
 noncomputable section
 
@@ -60,7 +60,7 @@ attribute [local instance] uniqueHomsetOfZero
 /-- A cartesian closed category with a zero object is equivalent to the category with one object and
 one morphism.
 -/
-def equivPUnit [HasZeroObject C] : C ≌ Discrete PUnit :=
+def equivPUnit [HasZeroObject C] : C ≌ Discrete PUnit.{w + 1} :=
   Equivalence.mk (Functor.star C) (Functor.fromPUnit 0)
     (NatIso.ofComponents
       (fun X =>

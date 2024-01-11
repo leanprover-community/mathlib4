@@ -97,9 +97,9 @@ theorem imo2019_q4 {k n : ℕ} (hk : k > 0) (hn : n > 0) :
   · left; congr; norm_num at h; rw [factorial_eq_one] at h; apply antisymm h
     apply succ_le_of_lt hk
   -- n = 2
-  · right; congr; rw [prod_range_succ] at h; norm_num at h; norm_cast at h; rw [← factorial_inj]
+  · right; congr; norm_num [prod_range_succ] at h; norm_cast at h; rw [← factorial_inj]
     exact h; rw [h]; norm_num
-  all_goals exfalso; (repeat rw [prod_range_succ] at h); norm_num at h; norm_cast at h
+  all_goals exfalso; norm_num [prod_range_succ] at h; norm_cast at h
   -- n = 3
   · refine' monotone_factorial.ne_of_lt_of_lt_nat 5 _ _ _ h <;> norm_num
   -- n = 4
