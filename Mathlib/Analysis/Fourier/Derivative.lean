@@ -31,6 +31,8 @@ variable (E F : Type*) [NormedAddCommGroup E] [InnerProductSpace ℝ E] [Measura
 
 noncomputable section
 
+/-- The `integralFourier` of `f : E → F` is the specialization of `VectorFourier.fourierIntegral`
+  to the character `Real.fourierChar`, the `volume` form, and the ambient inner product on `E`. -/
 abbrev integralFourier (f : E → F) :=
   (VectorFourier.fourierIntegral (E := F)) Real.fourierChar (volume : Measure E) (innerₛₗ ℝ) f
 
