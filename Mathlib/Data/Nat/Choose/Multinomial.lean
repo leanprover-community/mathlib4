@@ -27,10 +27,8 @@ This file defines the multinomial coefficient and several small lemma's for mani
 
 -/
 
-
-open BigOperators Nat
-
-open BigOperators
+open Finset
+open scoped BigOperators Nat
 
 namespace Nat
 
@@ -60,9 +58,23 @@ theorem multinomial_nil : multinomial ∅ f = 1 := by
   rfl
 #align nat.multinomial_nil Nat.multinomial_nil
 
-@[simp]
-theorem multinomial_singleton : multinomial {a} f = 1 := by
-  simp [multinomial, Nat.div_self (factorial_pos (f a))]
+variable {s f}
+
+lemma multinomial_cons (ha : a ∉ s) (f : α → ℕ) :
+    multinomial (s.cons a ha) f = (f a + ∑ i in s, f i).choose (f a) * multinomial s f := by
+  rw [multinomial, Nat.div_eq_iff_eq_mul_left _ (prod_factorial_dvd_factorial_sum _ _), prod_cons,
+    multinomial, mul_assoc, mul_left_comm _ (f a)!,
+    Nat.div_mul_cancel (prod_factorial_dvd_factorial_sum _ _), ← mul_assoc, Nat.choose_symm_add,
+    Nat.add_choose_mul_factorial_mul_factorial, Finset.sum_cons]
+  exact prod_pos fun i _ ↦ by positivity
+
+lemma multinomial_insert [DecidableEq α] (ha : a ∉ s) (f : α → ℕ) :
+    multinomial (insert a s) f = (f a + ∑ i in s, f i).choose (f a) * multinomial s f := by
+  rw [← cons_eq_insert _ _ ha, multinomial_cons]
+#align nat.multinomial_insert Nat.multinomial_insert
+
+@[simp] lemma multinomial_singleton (a : α) (f : α → ℕ) : multinomial {a} f = 1 := by
+  rw [← cons_empty, multinomial_cons]; simp
 #align nat.multinomial_singleton Nat.multinomial_singleton
 
 @[simp]
@@ -73,17 +85,6 @@ theorem multinomial_insert_one [DecidableEq α] (h : a ∉ s) (h₁ : f a = 1) :
   simp only [factorial_one, one_mul, Function.comp_apply, factorial, mul_one, ← one_eq_succ_zero]
   rw [Nat.mul_div_assoc _ (prod_factorial_dvd_factorial_sum _ _)]
 #align nat.multinomial_insert_one Nat.multinomial_insert_one
-
-theorem multinomial_insert [DecidableEq α] (h : a ∉ s) :
-    multinomial (insert a s) f = (f a + s.sum f).choose (f a) * multinomial s f := by
-  rw [choose_eq_factorial_div_factorial (le.intro rfl)]
-  simp only [multinomial, Nat.add_sub_cancel_left, Finset.sum_insert h, Finset.prod_insert h,
-    Function.comp_apply]
-  rw [div_mul_div_comm ((f a).factorial_mul_factorial_dvd_factorial_add (s.sum f))
-      (prod_factorial_dvd_factorial_sum _ _),
-    mul_comm (f a)! (s.sum f)!, mul_assoc, mul_comm _ (s.sum f)!,
-    Nat.mul_div_mul_left _ _ (factorial_pos _)]
-#align nat.multinomial_insert Nat.multinomial_insert
 
 theorem multinomial_congr {f g : α → ℕ} (h : ∀ a ∈ s, f a = g a) :
     multinomial s f = multinomial s g := by
@@ -107,7 +108,7 @@ theorem binomial_eq [DecidableEq α] (h : a ≠ b) :
 
 theorem binomial_eq_choose [DecidableEq α] (h : a ≠ b) :
     multinomial {a, b} f = (f a + f b).choose (f a) := by
-  simp [binomial_eq _ h, choose_eq_factorial_div_factorial (Nat.le_add_right _ _)]
+  simp [binomial_eq h, choose_eq_factorial_div_factorial (Nat.le_add_right _ _)]
 #align nat.binomial_eq_choose Nat.binomial_eq_choose
 
 theorem binomial_spec [DecidableEq α] (hab : a ≠ b) :
@@ -118,7 +119,7 @@ theorem binomial_spec [DecidableEq α] (hab : a ≠ b) :
 @[simp]
 theorem binomial_one [DecidableEq α] (h : a ≠ b) (h₁ : f a = 1) :
     multinomial {a, b} f = (f b).succ := by
-  simp [multinomial_insert_one {b} f (Finset.not_mem_singleton.mpr h) h₁]
+  simp [multinomial_insert_one (Finset.not_mem_singleton.mpr h) h₁]
 #align nat.binomial_one Nat.binomial_one
 
 theorem binomial_succ_succ [DecidableEq α] (h : a ≠ b) :
@@ -135,7 +136,7 @@ theorem binomial_succ_succ [DecidableEq α] (h : a ≠ b) :
 theorem succ_mul_binomial [DecidableEq α] (h : a ≠ b) :
     (f a + f b).succ * multinomial {a, b} f =
       (f a).succ * multinomial {a, b} (Function.update f a (f a).succ) := by
-  rw [binomial_eq_choose _ h, binomial_eq_choose _ h, mul_comm (f a).succ, Function.update_same,
+  rw [binomial_eq_choose h, binomial_eq_choose h, mul_comm (f a).succ, Function.update_same,
     Function.update_noteq (ne_comm.mp h)]
   rw [succ_mul_choose_eq (f a + f b) (f a), succ_add (f a) (f b)]
 #align nat.succ_mul_binomial Nat.succ_mul_binomial
@@ -180,11 +181,10 @@ theorem multinomial_update (a : α) (f : α →₀ ℕ) :
   simp only [multinomial_eq]
   classical
     by_cases h : a ∈ f.support
-    · rw [← Finset.insert_erase h, Nat.multinomial_insert _ f (Finset.not_mem_erase a _),
+    · rw [← Finset.insert_erase h, Nat.multinomial_insert (Finset.not_mem_erase a _),
         Finset.add_sum_erase _ f h, support_update_zero]
       congr 1
-      exact
-        Nat.multinomial_congr _ fun _ h => (Function.update_noteq (Finset.mem_erase.1 h).1 0 f).symm
+      exact Nat.multinomial_congr fun _ h ↦ (Function.update_noteq (mem_erase.1 h).1 0 f).symm
     rw [not_mem_support_iff] at h
     rw [h, Nat.choose_zero_right, one_mul, ← h, update_self]
 #align finsupp.multinomial_update Finsupp.multinomial_update
@@ -249,7 +249,7 @@ theorem sum_pow_of_commute [Semiring R] (x : α → R)
       convert @Nat.cast_one R _
     · rw [_root_.pow_succ, zero_mul]
       -- Porting note : Lean cannot infer this instance by itself
-      haveI : IsEmpty (Finset.sym (∅ : Finset α) (succ n)) := Finset.instIsEmpty
+      haveI : IsEmpty (Finset.sym (∅ : Finset α) n.succ) := Finset.instIsEmpty
       apply (Fintype.sum_empty _).symm
   intro n; specialize ih (hc.mono <| s.subset_insert a)
   rw [sum_insert ha, (Commute.sum_right s _ _ _).add_pow, sum_range]; swap

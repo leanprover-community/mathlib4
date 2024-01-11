@@ -14,6 +14,12 @@ example {α : Type _} (R : α → α → Prop) (a : α) (al : List α) :
 #guard_msgs in
 #check test.chain_iff
 
+attribute [mk_eq] List.Chain
+
+/-- info: List.chain_eq.{u_1} : @List.Chain = fun {α} R a a_1 => a_1 = [] ∨ ∃ b l, R a b ∧ List.Chain R b l ∧ a_1 = b :: l -/
+#guard_msgs in
+#check List.chain_eq
+
 mk_iff_of_inductive_prop False    test.false_iff
 example : False ↔ False := test.false_iff
 
@@ -79,4 +85,4 @@ inductive ReflTransGen {α : Type _} (r : α → α → Prop) (a : α) : α → 
 
 example {α : Type} (r: α → α → Prop) (a c : α) :
     ReflTransGen r a c ↔ c = a ∨ ∃ b : α, ReflTransGen r a b ∧ r b c :=
- ReflTransGen_iff r a c
+ reflTransGen_iff r a c

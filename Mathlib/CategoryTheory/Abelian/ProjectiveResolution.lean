@@ -5,6 +5,7 @@ Authors: Markus Himmel, Scott Morrison, Jakob von Raumer, Joël Riou
 -/
 import Mathlib.CategoryTheory.Preadditive.ProjectiveResolution
 import Mathlib.Algebra.Homology.HomotopyCategory
+import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # Abelian categories with enough projectives have projective resolutions
@@ -26,6 +27,7 @@ When the underlying category is abelian:
   is projective, we can apply `Projective.d` repeatedly to obtain a projective resolution of `X`.
 -/
 
+suppress_compilation
 
 noncomputable section
 
@@ -296,8 +298,7 @@ variable (Z : C)
 /-- Auxiliary definition for `ProjectiveResolution.of`. -/
 def ofComplex : ChainComplex C ℕ :=
   ChainComplex.mk' (Projective.over Z) (Projective.syzygies (Projective.π Z))
-    (Projective.d (Projective.π Z)) fun ⟨_, _, f⟩ =>
-    ⟨Projective.syzygies f, Projective.d f, by simp⟩
+    (Projective.d (Projective.π Z)) (fun f => ⟨_, Projective.d f, by simp⟩)
 #align category_theory.ProjectiveResolution.of_complex CategoryTheory.ProjectiveResolution.ofComplex
 
 lemma ofComplex_d_1_0 :
@@ -307,12 +308,17 @@ lemma ofComplex_d_1_0 :
 lemma ofComplex_exactAt_succ (n : ℕ) :
     (ofComplex Z).ExactAt (n + 1) := by
   rw [HomologicalComplex.exactAt_iff' _ (n + 1 + 1) (n + 1) n (by simp) (by simp)]
-  cases n
-  all_goals
-    dsimp [ofComplex, HomologicalComplex.sc', HomologicalComplex.shortComplexFunctor',
-      ChainComplex.mk, ChainComplex.mk']
-    simp
-    apply exact_d_f
+  dsimp [ofComplex, HomologicalComplex.sc', HomologicalComplex.shortComplexFunctor',
+      ChainComplex.mk', ChainComplex.mk]
+  simp only [ChainComplex.of_d]
+  -- TODO: this should just be apply exact_d_f so something is missing
+  match n with
+  | 0 =>
+    apply exact_d_f ((ChainComplex.mkAux _ _ _ (d (Projective.π Z)) (d (d (Projective.π Z))) _ _
+      0).g)
+  | n+1 =>
+    apply exact_d_f ((ChainComplex.mkAux _ _ _ (d (Projective.π Z)) (d (d (Projective.π Z))) _ _
+      (n+1)).g)
 
 instance (n : ℕ) : Projective ((ofComplex Z).X n) := by
   obtain (_ | _ | _ | n) := n <;> apply Projective.projective_over

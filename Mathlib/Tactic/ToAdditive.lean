@@ -115,14 +115,14 @@ register_option linter.toAdditiveReorder : Bool := {
 certain attributes -/
 register_option linter.existingAttributeWarning : Bool := {
   defValue := true
-  descr := "Linter, mostly used by `@[to_additive]`, that checks that the source declaration " ++
-    "doesn't have certain attributes" }
+  descr := "Linter, mostly used by `@[to_additive]`, that checks that the source declaration \
+    doesn't have certain attributes" }
 
 /-- Linter to check that the `to_additive` attribute is not given manually -/
 register_option linter.toAdditiveGenerateName : Bool := {
   defValue := true
-  descr := "Linter used by `@[to_additive]` that checks if `@[to_additive]` automatically " ++
-    "generates the user-given name" }
+  descr := "Linter used by `@[to_additive]` that checks if `@[to_additive]` automatically \
+    generates the user-given name" }
 
 /-- Linter to check whether the user correctly specified that the additive declaration already
 exists -/
@@ -154,20 +154,20 @@ An attribute that stores all the declarations that needs their arguments reorder
 applying `@[to_additive]`. It is applied automatically by the `(reorder := ...)` syntax of
 `to_additive`, and should not usually be added manually.
 -/
-initialize reorderAttr : NameMapExtension (List $ List Nat) ←
+initialize reorderAttr : NameMapExtension (List <| List Nat) ←
   registerNameMapAttribute {
     name := `to_additive_reorder
-    descr :=
-      "Auxiliary attribute for `to_additive` that stores arguments that need to be reordered.
-        This should not appear in any file.
-        We keep it as an attribute for now so that mathport can still use it, and it can generate a
-        warning."
+    descr := "\
+      Auxiliary attribute for `to_additive` that stores arguments that need to be reordered. \
+      This should not appear in any file. \
+      We keep it as an attribute for now so that mathport can still use it, and it can generate a \
+      warning."
     add := fun
     | _, stx@`(attr| to_additive_reorder $[$[$reorders:num]*],*) => do
-      Linter.logLintIf linter.toAdditiveReorder stx
-        m!"Using this attribute is deprecated. Use `@[to_additive (reorder := <num>)]` {""
-        }instead.\nThat will also generate the additive version with the arguments swapped, {""
-        }so you are probably able to remove the manually written additive declaration."
+      Linter.logLintIf linter.toAdditiveReorder stx m!"\
+        Using this attribute is deprecated. Use `@[to_additive (reorder := <num>)]` instead.\n\n\
+        That will also generate the additive version with the arguments swapped, \
+        so you are probably able to remove the manually written additive declaration."
       pure <| reorders.toList.map (·.toList.map (·.raw.isNatLit?.get! - 1))
     | _, _ => throwUnsupportedSyntax }
 
@@ -194,8 +194,8 @@ Warning: interactions between this and the `(reorder := ...)` argument are not w
 initialize relevantArgAttr : NameMapExtension Nat ←
   registerNameMapAttribute {
     name := `to_additive_relevant_arg
-    descr := "Auxiliary attribute for `to_additive` stating" ++
-      " which arguments are the types with a multiplicative structure."
+    descr := "Auxiliary attribute for `to_additive` stating \
+      which arguments are the types with a multiplicative structure."
     add := fun
     | _, `(attr| to_additive_relevant_arg $id) => pure <| id.1.isNatLit?.get!.pred
     | _, _ => throwUnsupportedSyntax }
@@ -390,8 +390,8 @@ where /-- Implementation of `applyReplacementFun`. -/
               if let some fxd := additiveTest findTranslation? ignore gAllArgs[relevantArgId]! then
                 Id.run <| do
                   if trace then
-                    dbg_trace s!"The application of {nm} contains the fixed type {fxd
-                      }, so it is not changed"
+                    dbg_trace s!"The application of {nm} contains the fixed type \
+                      {fxd}, so it is not changed"
                   gf
               else
                 r gf
@@ -409,8 +409,8 @@ where /-- Implementation of `applyReplacementFun`. -/
           if let some changedArgNrs := changeNumeral? nm then
             if additiveTest findTranslation? ignore firstArg |>.isNone then
               if trace then
-                dbg_trace s!"applyReplacementFun: We change the numerals in this expression. {
-                  ""}However, we will still recurse into all the non-numeral arguments."
+                dbg_trace s!"applyReplacementFun: We change the numerals in this expression. \
+                  However, we will still recurse into all the non-numeral arguments."
               -- In this case, we still update all arguments of `g` that are not numerals,
               -- since all other arguments can contain subexpressions like
               -- `(fun x ↦ ℕ) (1 : G)`, and we have to update the `(1 : G)` to `(0 : G)`
@@ -426,8 +426,8 @@ where /-- Implementation of `applyReplacementFun`. -/
     | .proj n₀ idx e => do
       let n₁ := n₀.mapPrefix findTranslation?
       if trace then
-        dbg_trace s!"applyReplacementFun: in projection {e}.{idx} of type {n₀}, {""
-          }replace type with {n₁}"
+        dbg_trace s!"applyReplacementFun: in projection {e}.{idx} of type {n₀}, \
+          replace type with {n₁}"
       return some <| .proj n₁ idx <| ← r e
     | _ => return none
 
@@ -545,9 +545,9 @@ partial def transformDeclAux
   -- if this declaration is not `pre` and not an internal declaration, we return an error,
   -- since we should have already translated this declaration.
   if src != pre && !src.isInternalDetail then
-    throwError "The declaration {pre} depends on the declaration {src} which is in the namespace {
-      pre}, but does not have the `@[to_additive]` attribute. This is not supported.\n{""
-      }Workaround: move {src} to a different namespace."
+    throwError "The declaration {pre} depends on the declaration {src} which is in the namespace \
+      {pre}, but does not have the `@[to_additive]` attribute. This is not supported.\n\
+      Workaround: move {src} to a different namespace."
   -- we find the additive name of `src`
   let tgt ← findTargetName env src pre tgt_pre
   -- we skip if we already transformed this declaration before.
@@ -584,14 +584,14 @@ partial def transformDeclAux
     -- and emit a more helpful error message if it fails
     discard <| MetaM.run' <| inferType value
   catch
-    | Exception.error _ msg => throwError "@[to_additive] failed.
-      Type mismatch in additive declaration. For help, see the docstring
-      of `to_additive.attr`, section `Troubleshooting`.
+    | Exception.error _ msg => throwError "@[to_additive] failed. \
+      Type mismatch in additive declaration. For help, see the docstring \
+      of `to_additive.attr`, section `Troubleshooting`. \
       Failed to add declaration\n{tgt}:\n{msg}"
     | _ => panic! "unreachable"
   if isNoncomputable env src then
     addDecl trgDecl.toDeclaration!
-    setEnv $ addNoncomputable (← getEnv) tgt
+    setEnv <| addNoncomputable (← getEnv) tgt
   else
     addAndCompile trgDecl.toDeclaration!
   -- now add declaration ranges so jump-to-definition works
@@ -601,7 +601,7 @@ partial def transformDeclAux
     range := ← getDeclarationRange (← getRef)
     selectionRange := ← getDeclarationRange cfg.ref }
   if isProtected (← getEnv) src then
-    setEnv $ addProtected (← getEnv) tgt
+    setEnv <| addProtected (← getEnv) tgt
 
 /-- Copy the instance attribute in a `to_additive`
 
@@ -618,13 +618,14 @@ def warnExt [Inhabited σ] (stx : Syntax) (ext : PersistentEnvExtension α β σ
     (thisAttr attrName src tgt : Name) : CoreM Unit := do
   if f (ext.getState (← getEnv)) src then
     Linter.logLintIf linter.existingAttributeWarning stx <|
-      m!"The source declaration {src} was given attribute {attrName} before calling @[{thisAttr}]. {
-      ""}The preferred method is to use `@[{thisAttr} (attr := {attrName})]` to apply the {
-      ""}attribute to both {src} and the target declaration {tgt}." ++
+      m!"The source declaration {src} was given attribute {attrName} before calling @[{thisAttr}]. \
+         The preferred method is to use `@[{thisAttr} (attr := {attrName})]` to apply the \
+         attribute to both {src} and the target declaration {tgt}." ++
       if thisAttr == `to_additive then
-      m!"\nSpecial case: If this declaration was generated by @[to_additive] {
-      ""}itself, you can use @[to_additive (attr := to_additive, {attrName})] on the original {
-      ""}declaration." else ""
+        m!"\nSpecial case: If this declaration was generated by @[to_additive] \
+          itself, you can use @[to_additive (attr := to_additive, {attrName})] on the original \
+          declaration."
+      else ""
 
 /-- Warn the user when the multiplicative declaration has a simple scoped attribute. -/
 def warnAttr [Inhabited β] (stx : Syntax) (attr : SimpleScopedEnvExtension α β)
@@ -842,9 +843,9 @@ def targetName (cfg : Config) (src : Name) : CoreM Name := do
   let pre := pre.mapPrefix <| findTranslation? (← getEnv)
   let (pre1, pre2) := pre.splitAt (depth - 1)
   if cfg.tgt == pre2.str tgt_auto && !cfg.allowAutoName && cfg.tgt != src then
-    Linter.logLintIf linter.toAdditiveGenerateName cfg.ref
-      m!"to_additive correctly autogenerated target name for {src}. {"\n"
-      }You may remove the explicit argument {cfg.tgt}."
+    Linter.logLintIf linter.toAdditiveGenerateName cfg.ref m!"\
+      to_additive correctly autogenerated target name for {src}.\n\
+      You may remove the explicit argument {cfg.tgt}."
   let res := if cfg.tgt == .anonymous then pre.str tgt_auto else pre1 ++ cfg.tgt
   -- we allow translating to itself if `tgt == src`, which is occasionally useful for `additiveTest`
   if res == src && cfg.tgt != src then
@@ -916,11 +917,11 @@ partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr s
   if linter.existingAttributeWarning.get (← getOptions) then
     let appliedAttrs ← getAllSimpAttrs src
     if appliedAttrs.size > 0 then
-      Linter.logLintIf linter.existingAttributeWarning stx <|
-        m!"The source declaration {src} was given the simp-attribute(s) {appliedAttrs} before {
-        ""}calling @[{thisAttr}]. The preferred method is to use {
-        ""}`@[{thisAttr} (attr := {appliedAttrs})]` to apply the attribute to both {
-        src} and the target declaration {tgt}."
+      Linter.logLintIf linter.existingAttributeWarning stx m!"\
+        The source declaration {src} was given the simp-attribute(s) {appliedAttrs} before \
+        calling @[{thisAttr}]. The preferred method is to use \
+        `@[{thisAttr} (attr := {appliedAttrs})]` to apply the attribute to both \
+        {src} and the target declaration {tgt}."
     warnAttr stx Std.Tactic.Ext.extExtension
       (fun b n => (b.tree.values.any fun t => t.declName = n)) thisAttr `ext src tgt
     warnAttr stx Std.Tactic.reflExt (·.values.contains ·) thisAttr `refl src tgt
@@ -1016,8 +1017,8 @@ partial def addToAdditiveAttr (src : Name) (cfg : Config) (kind := AttributeKind
   if cfg.existing == some !alreadyExists && !(← isInductive src) then
     Linter.logLintIf linter.toAdditiveExisting cfg.ref <|
       if alreadyExists then
-        m!"The additive declaration already exists. Please specify this explicitly using {
-          ""}`@[to_additive existing]`."
+        m!"The additive declaration already exists. Please specify this explicitly using \
+           `@[to_additive existing]`."
       else
         "The additive declaration doesn't exist. Please remove the option `existing`."
   if cfg.reorder != [] then

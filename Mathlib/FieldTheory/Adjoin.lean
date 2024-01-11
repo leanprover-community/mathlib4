@@ -102,6 +102,10 @@ instance : CompleteLattice (IntermediateField F E) where
 instance : Inhabited (IntermediateField F E) :=
   ⟨⊤⟩
 
+instance : Unique (IntermediateField F F) :=
+  { inferInstanceAs (Inhabited (IntermediateField F F)) with
+    uniq := fun _ ↦ toSubalgebra_injective <| Subsingleton.elim _ _ }
+
 theorem coe_bot : ↑(⊥ : IntermediateField F E) = Set.range (algebraMap F E) := rfl
 #align intermediate_field.coe_bot IntermediateField.coe_bot
 
@@ -554,6 +558,9 @@ def AdjoinSimple.gen : F⟮α⟯ :=
 #align intermediate_field.adjoin_simple.gen IntermediateField.AdjoinSimple.gen
 
 @[simp]
+theorem AdjoinSimple.coe_gen : (AdjoinSimple.gen F α : E) = α :=
+  rfl
+
 theorem AdjoinSimple.algebraMap_gen : algebraMap F⟮α⟯ E (AdjoinSimple.gen F α) = α :=
   rfl
 #align intermediate_field.adjoin_simple.algebra_map_gen IntermediateField.AdjoinSimple.algebraMap_gen
@@ -792,6 +799,15 @@ theorem exists_finset_of_mem_supr'' {ι : Type*} {f : ι → IntermediateField F
     exact minpoly.ne_zero (isIntegral_iff.mp (h i ⟨x1, hx1⟩).isIntegral)
 #align intermediate_field.exists_finset_of_mem_supr'' IntermediateField.exists_finset_of_mem_supr''
 
+theorem exists_finset_of_mem_adjoin {S : Set E} {x : E} (hx : x ∈ adjoin F S) :
+    ∃ T : Finset E, (T : Set E) ⊆ S ∧ x ∈ adjoin F (T : Set E) := by
+  simp_rw [← biSup_adjoin_simple S, ← iSup_subtype''] at hx
+  obtain ⟨s, hx'⟩ := exists_finset_of_mem_iSup hx
+  refine ⟨s.image Subtype.val, by simp, SetLike.le_def.mp ?_ hx'⟩
+  simp_rw [Finset.coe_image, iSup_le_iff, adjoin_le_iff]
+  rintro _ h _ rfl
+  exact subset_adjoin F _ ⟨_, h, rfl⟩
+
 end AdjoinSimple
 
 end AdjoinDef
@@ -862,6 +878,12 @@ theorem finrank_bot : finrank F (⊥ : IntermediateField F E) = 1 := by rw [finr
 @[simp] protected theorem finrank_top : finrank (⊤ : IntermediateField F E) E = 1 :=
   rank_eq_one_iff_finrank_eq_one.mp IntermediateField.rank_top
 
+@[simp] theorem rank_top' : Module.rank F (⊤ : IntermediateField F E) = Module.rank F E :=
+  rank_top F E
+
+@[simp] theorem finrank_top' : finrank F (⊤ : IntermediateField F E) = finrank F E :=
+  finrank_top F E
+
 theorem rank_adjoin_eq_one_iff : Module.rank F (adjoin F S) = 1 ↔ S ⊆ (⊥ : IntermediateField F E) :=
   Iff.trans rank_eq_one_iff adjoin_eq_bot_iff
 #align intermediate_field.rank_adjoin_eq_one_iff IntermediateField.rank_adjoin_eq_one_iff
@@ -922,9 +944,11 @@ end AdjoinIntermediateFieldLattice
 
 section AdjoinIntegralElement
 
+universe u
+
 variable (F : Type*) [Field F] {E : Type*} [Field E] [Algebra F E] {α : E}
 
-variable {K : Type*} [Field K] [Algebra F K]
+variable {K : Type u} [Field K] [Algebra F K]
 
 theorem minpoly_gen (α : E) :
     minpoly F (AdjoinSimple.gen F α) = minpoly F α := by
@@ -969,6 +993,9 @@ theorem adjoinRootEquivAdjoin_apply_root (h : IsIntegral F α) :
     adjoinRootEquivAdjoin F h (AdjoinRoot.root (minpoly F α)) = AdjoinSimple.gen F α :=
   AdjoinRoot.lift_root (aeval_gen_minpoly F α)
 #align intermediate_field.adjoin_root_equiv_adjoin_apply_root IntermediateField.adjoinRootEquivAdjoin_apply_root
+
+theorem adjoin_root_eq_top (p : K[X]) [Fact (Irreducible p)] : K⟮AdjoinRoot.root p⟯ = ⊤ :=
+  (eq_adjoin_of_eq_algebra_adjoin K _ ⊤ (AdjoinRoot.adjoinRoot_eq_top (f := p)).symm).symm
 
 section PowerBasis
 
@@ -1129,6 +1156,56 @@ theorem card_algHom_adjoin_integral (h : IsIntegral F α) (h_sep : (minpoly F α
     simp only [adjoin.powerBasis_dim, adjoin.powerBasis_gen, minpoly_gen, h_sep, h_splits]
 #align intermediate_field.card_alg_hom_adjoin_integral IntermediateField.card_algHom_adjoin_integral
 
+open FiniteDimensional AdjoinRoot in
+/-- Let `f, g` be monic polynomials over `K`. If `f` is irreducible, and `g(x) - α` is irreducible
+in `K⟮α⟯` with `α` a root of `f`, then `f(g(x))` is irreducible. -/
+theorem _root_.Polynomial.irreducible_comp {f g : K[X]} (hfm : f.Monic) (hgm : g.Monic)
+    (hf : Irreducible f)
+    (hg : ∀ (E : Type u) [Field E] [Algebra K E] (x : E) (hx : minpoly K x = f),
+      Irreducible (g.map (algebraMap _ _) - C (AdjoinSimple.gen K x))) :
+    Irreducible (f.comp g) := by
+  have hf' : natDegree f ≠ 0 :=
+    fun e ↦ not_irreducible_C (f.coeff 0) (eq_C_of_natDegree_eq_zero e ▸ hf)
+  have hg' : natDegree g ≠ 0
+  · have := Fact.mk hf
+    intro e
+    apply not_irreducible_C ((g.map (algebraMap _ _)).coeff 0 - AdjoinSimple.gen K (root f))
+    rw [map_sub, coeff_map, ← map_C, ← eq_C_of_natDegree_eq_zero e]
+    apply hg (AdjoinRoot f)
+    rw [AdjoinRoot.minpoly_root hf.ne_zero, hfm, inv_one, map_one, mul_one]
+  have H₁ : f.comp g ≠ 0 := fun h ↦ by simpa [hf', hg', natDegree_comp] using congr_arg natDegree h
+  have H₂ : ¬ IsUnit (f.comp g) := fun h ↦
+    by simpa [hf', hg', natDegree_comp] using natDegree_eq_zero_of_isUnit h
+  have ⟨p, hp₁, hp₂⟩ := WfDvdMonoid.exists_irreducible_factor H₂ H₁
+  suffices natDegree p = natDegree f * natDegree g from (associated_of_dvd_of_natDegree_le hp₂ H₁
+    (this.trans natDegree_comp.symm).ge).irreducible hp₁
+  have := Fact.mk hp₁
+  let Kx := AdjoinRoot p
+  letI := (AdjoinRoot.powerBasis hp₁.ne_zero).finiteDimensional
+  have key₁ : f = minpoly K (aeval (root p) g)
+  · refine minpoly.eq_of_irreducible_of_monic hf ?_ hfm
+    rw [← aeval_comp]
+    exact aeval_eq_zero_of_dvd_aeval_eq_zero hp₂ (AdjoinRoot.eval₂_root p)
+  have key₁' : finrank K K⟮aeval (root p) g⟯ = natDegree f
+  · rw [adjoin.finrank, ← key₁]
+    exact IsIntegral.of_finite _ _
+  have key₂ : g.map (algebraMap _ _) - C (AdjoinSimple.gen K (aeval (root p) g)) =
+      minpoly K⟮aeval (root p) g⟯ (root p)
+  · exact minpoly.eq_of_irreducible_of_monic (hg _ _ key₁.symm) (by simp [AdjoinSimple.gen])
+      (Monic.sub_of_left (hgm.map _) (degree_lt_degree (by simpa [Nat.pos_iff_ne_zero] using hg')))
+  have key₂' : finrank K⟮aeval (root p) g⟯ Kx = natDegree g
+  · trans natDegree (minpoly K⟮aeval (root p) g⟯ (root p))
+    · have : K⟮aeval (root p) g⟯⟮root p⟯ = ⊤
+      · apply restrictScalars_injective K
+        rw [restrictScalars_top, adjoin_adjoin_left, Set.union_comm, ← adjoin_adjoin_left,
+          adjoin_root_eq_top p, restrictScalars_adjoin]
+        simp
+      rw [← finrank_top', ← this, adjoin.finrank]
+      exact IsIntegral.of_finite _ _
+    · simp [← key₂]
+  have := FiniteDimensional.finrank_mul_finrank K K⟮aeval (root p) g⟯ Kx
+  rwa [key₁', key₂', (AdjoinRoot.powerBasis hp₁.ne_zero).finrank, powerBasis_dim, eq_comm] at this
+
 end AdjoinIntegralElement
 
 section Induction
@@ -1242,27 +1319,75 @@ theorem Lifts.exists_upper_bound (c : Set (Lifts F E K)) (hc : IsChain (· ≤ �
     exact Subalgebra.iSupLift_inclusion (K := t') (i := ⟨L, hL⟩) x (le_iSup t' ⟨L, hL⟩)
 #align intermediate_field.lifts.exists_upper_bound IntermediateField.Lifts.exists_upper_bound
 
-/-- Given an element `s : E` whose conjugates are all in `K`, any lift can be extended to one
-  whose carrier contains `s`. -/
-theorem Lifts.exists_lift_of_splits (x : Lifts F E K) {s : E} (h1 : IsIntegral F s)
-    (h2 : (minpoly F s).Splits (algebraMap F K)) : ∃ y, x ≤ y ∧ s ∈ y.carrier :=
-  have I1 : IsIntegral x.carrier s := h1.tower_top
-  have I2 := (minpoly.degree_pos I1).ne'
-  have key : (minpoly x.carrier s).Splits x.emb.toRingHom :=
-    splits_of_splits_of_dvd _ (map_ne_zero (minpoly.ne_zero h1))
-      ((splits_map_iff _ _).2 (x.emb.comp_algebraMap ▸ h2)) (minpoly.dvd_map_of_isScalarTower _ _ _)
+/-- Given a lift `x` and an integral element `s : E` over `x.carrier` whose conjugates over
+`x.carrier` are all in `K`, we can extend the lift to a lift whose carrier contains `s`. -/
+theorem Lifts.exists_lift_of_splits' (x : Lifts F E K) {s : E} (h1 : IsIntegral x.carrier s)
+    (h2 : (minpoly x.carrier s).Splits x.emb.toRingHom) : ∃ y, x ≤ y ∧ s ∈ y.carrier :=
+  have I2 := (minpoly.degree_pos h1).ne'
   letI : Algebra x.carrier K := x.emb.toRingHom.toAlgebra
   let carrier := x.carrier⟮s⟯.restrictScalars F
   letI : Algebra x.carrier carrier := x.carrier⟮s⟯.toSubalgebra.algebra
-  let φ : carrier →ₐ[x.carrier] K := ((algHomAdjoinIntegralEquiv x.carrier I1).symm
-    ⟨rootOfSplits x.emb.toRingHom key I2, by
-      rw [mem_aroots, and_iff_right (minpoly.ne_zero I1)]
-      exact map_rootOfSplits x.emb.toRingHom key I2⟩)
+  let φ : carrier →ₐ[x.carrier] K := ((algHomAdjoinIntegralEquiv x.carrier h1).symm
+    ⟨rootOfSplits x.emb.toRingHom h2 I2, by
+      rw [mem_aroots, and_iff_right (minpoly.ne_zero h1)]
+      exact map_rootOfSplits x.emb.toRingHom h2 I2⟩)
   ⟨⟨carrier, (@algHomEquivSigma F x.carrier carrier K _ _ _ _ _ _ _ _
       (IsScalarTower.of_algebraMap_eq fun _ ↦ rfl)).symm ⟨x.emb, φ⟩⟩,
     ⟨fun z hz ↦ algebraMap_mem x.carrier⟮s⟯ ⟨z, hz⟩, φ.commutes⟩,
     mem_adjoin_simple_self x.carrier s⟩
+
+/-- Given an integral element `s : E` over `F` whose `F`-conjugates are all in `K`,
+any lift can be extended to one whose carrier contains `s`. -/
+theorem Lifts.exists_lift_of_splits (x : Lifts F E K) {s : E} (h1 : IsIntegral F s)
+    (h2 : (minpoly F s).Splits (algebraMap F K)) : ∃ y, x ≤ y ∧ s ∈ y.carrier :=
+  Lifts.exists_lift_of_splits' x h1.tower_top <| h1.minpoly_splits_tower_top' <| by
+    rwa [← x.emb.comp_algebraMap] at h2
 #align intermediate_field.lifts.exists_lift_of_splits IntermediateField.Lifts.exists_lift_of_splits
+
+section
+
+private theorem exists_algHom_adjoin_of_splits'' {L : IntermediateField F E}
+     (f : L →ₐ[F] K) (hK : ∀ s ∈ S, IsIntegral L s ∧ (minpoly L s).Splits f.toRingHom) :
+    ∃ φ : adjoin L S →ₐ[F] K, φ.comp (IsScalarTower.toAlgHom F L _) = f := by
+  obtain ⟨φ, hfφ, hφ⟩ := zorn_nonempty_Ici₀ _
+    (fun c _ hc _ _ ↦ Lifts.exists_upper_bound c hc) ⟨L, f⟩ le_rfl
+  refine ⟨φ.emb.comp (inclusion <| (le_extendScalars_iff hfφ.1 <| adjoin L S).mp <|
+    adjoin_le_iff.mpr fun s h ↦ ?_), AlgHom.ext hfφ.2⟩
+  letI := (inclusion hfφ.1).toAlgebra
+  letI : SMul L φ.carrier := Algebra.toSMul
+  have : IsScalarTower L φ.carrier E := ⟨(smul_assoc · (· : E))⟩
+  have := φ.exists_lift_of_splits' (hK s h).1.tower_top ((hK s h).1.minpoly_splits_tower_top' ?_)
+  · obtain ⟨y, h1, h2⟩ := this; exact (hφ y h1).1 h2
+  · convert (hK s h).2; ext; apply hfφ.2
+
+variable {L : Type*} [Field L] [Algebra F L] [Algebra L E] [IsScalarTower F L E]
+  (f : L →ₐ[F] K) (hK : ∀ s ∈ S, IsIntegral L s ∧ (minpoly L s).Splits f.toRingHom)
+
+theorem exists_algHom_adjoin_of_splits' :
+    ∃ φ : adjoin L S →ₐ[F] K, φ.comp (IsScalarTower.toAlgHom F L _) = f := by
+  let L' := (IsScalarTower.toAlgHom F L E).fieldRange
+  let f' : L' →ₐ[F] K := f.comp (AlgEquiv.ofInjectiveField _).symm.toAlgHom
+  have := exists_algHom_adjoin_of_splits'' f' (S := S) fun s hs ↦ ?_
+  · obtain ⟨φ, hφ⟩ := this; refine ⟨φ.comp <|
+      inclusion (?_ : (adjoin L S).restrictScalars F ≤ (adjoin L' S).restrictScalars F), ?_⟩
+    · simp_rw [← SetLike.coe_subset_coe, coe_restrictScalars, adjoin_subset_adjoin_iff]
+      refine ⟨subset_adjoin_of_subset_left S (F := L'.toSubfield) le_rfl, subset_adjoin _ _⟩
+    · ext x; exact congr($hφ _).trans (congr_arg f <| AlgEquiv.symm_apply_apply _ _)
+  letI : Algebra L L' := (AlgEquiv.ofInjectiveField _).toRingEquiv.toRingHom.toAlgebra
+  have : IsScalarTower L L' E := IsScalarTower.of_algebraMap_eq' rfl
+  refine ⟨(hK s hs).1.tower_top, (hK s hs).1.minpoly_splits_tower_top' ?_⟩
+  convert (hK s hs).2; ext; exact congr_arg f (AlgEquiv.symm_apply_apply _ _)
+
+theorem exists_algHom_of_adjoin_splits' (hS : adjoin L S = ⊤) :
+    ∃ φ : E →ₐ[F] K, φ.comp (IsScalarTower.toAlgHom F L E) = f :=
+  have ⟨φ, hφ⟩ := exists_algHom_adjoin_of_splits' f hK
+  ⟨φ.comp (((equivOfEq hS).trans topEquiv).symm.toAlgHom.restrictScalars F), hφ⟩
+
+theorem exists_algHom_of_splits' (hK : ∀ s : E, IsIntegral L s ∧ (minpoly L s).Splits f.toRingHom) :
+    ∃ φ : E →ₐ[F] K, φ.comp (IsScalarTower.toAlgHom F L E) = f :=
+  exists_algHom_of_adjoin_splits' f (fun x _ ↦ hK x) (adjoin_univ L E)
+
+end
 
 variable (hK : ∀ s ∈ S, IsIntegral F s ∧ (minpoly F s).Splits (algebraMap F K))
         (hK' : ∀ s : E, IsIntegral F s ∧ (minpoly F s).Splits (algebraMap F K))

@@ -802,7 +802,7 @@ variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
 lemma map_eq_zero_of_norm_zero (q : Seminorm 𝕜 F)
     (hq : Continuous q) {x : F} (hx : ‖x‖ = 0) : q x = 0 :=
   (map_zero q) ▸
-    ((specializes_iff_mem_closure.mpr $ mem_closure_zero_iff_norm.mpr hx).map hq).eq.symm
+    ((specializes_iff_mem_closure.mpr <| mem_closure_zero_iff_norm.mpr hx).map hq).eq.symm
 
 /-- Let `F` be a semi-`NormedSpace` over a `NontriviallyNormedField`, and let `q` be a
 seminorm on `F`. If `q` is continuous, then it is uniformly controlled by the norm, that is there
@@ -813,7 +813,7 @@ controlled image by `q`. The control of `q` at the original element follows by r
 lemma bound_of_continuous_normedSpace (q : Seminorm 𝕜 F)
     (hq : Continuous q) : ∃ C, 0 < C ∧ (∀ x : F, q x ≤ C * ‖x‖) := by
   have hq' : Tendsto q (𝓝 0) (𝓝 0) := map_zero q ▸ hq.tendsto 0
-  rcases NormedAddCommGroup.nhds_zero_basis_norm_lt.mem_iff.mp (hq' $ Iio_mem_nhds one_pos)
+  rcases NormedAddCommGroup.nhds_zero_basis_norm_lt.mem_iff.mp (hq' <| Iio_mem_nhds one_pos)
     with ⟨ε, ε_pos, hε⟩
   rcases NormedField.exists_one_lt_norm 𝕜 with ⟨c, hc⟩
   have : 0 < ‖c‖ / ε := by positivity

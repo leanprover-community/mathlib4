@@ -1180,7 +1180,7 @@ instance [PseudoEMetricSpace X] : EMetricSpace (UniformSpace.SeparationQuotient 
       edist_comm := fun x y => Quotient.inductionOn₂' x y edist_comm,
       edist_triangle := fun x y z => Quotient.inductionOn₃' x y z edist_triangle,
       toUniformSpace := inferInstance,
-      uniformity_edist := (uniformity_basis_edist.map _).eq_biInf.trans $ iInf_congr fun ε =>
+      uniformity_edist := (uniformity_basis_edist.map _).eq_biInf.trans <| iInf_congr fun ε =>
         iInf_congr fun _ => congr_arg 𝓟 <| by
           ext ⟨⟨x⟩, ⟨y⟩⟩
           refine ⟨?_, fun h => ⟨(x, y), h, rfl⟩⟩

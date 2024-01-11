@@ -17,16 +17,6 @@ open Lean Meta
 
 namespace Lean.MVarId
 
-/-- Solve a goal by synthesizing an instance. -/
--- FIXME: probably can just be `g.inferInstance` once lean4#2054 is fixed
-def synthInstance (g : MVarId) : MetaM Unit := do
-  g.assign (← Lean.Meta.synthInstance (← g.getType))
-
-/-- Add the hypothesis `h : t`, given `v : t`, and return the new `FVarId`. -/
-def note (g : MVarId) (h : Name) (v : Expr) (t : Option Expr := .none) :
-    MetaM (FVarId × MVarId) := do
-  (← g.assert h (← t.getDM (inferType v)) v).intro1P
-
 /-- Add the hypothesis `h : t`, given `v : t`, and return the new `FVarId`. -/
 def «let» (g : MVarId) (h : Name) (v : Expr) (t : Option Expr := .none) :
     MetaM (FVarId × MVarId) := do
@@ -36,7 +26,7 @@ def «let» (g : MVarId) (h : Name) (v : Expr) (t : Option Expr := .none) :
 -/
 def existsi (mvar : MVarId) (es : List Expr) : MetaM MVarId := do
   es.foldlM (λ mv e => do
-      let (subgoals,_) ← Elab.Term.TermElabM.run $ Elab.Tactic.run mv do
+      let (subgoals,_) ← Elab.Term.TermElabM.run <| Elab.Tactic.run mv do
         Elab.Tactic.evalTactic (← `(tactic| refine ⟨?_,?_⟩))
       let [sg1, sg2] := subgoals | throwError "expected two subgoals"
       sg1.assign e
@@ -121,6 +111,29 @@ def subsingletonElim (mvarId : MVarId) : MetaM Bool :=
       mvarId.assign pf
       return true
     return res.getD false
+
+/--
+Apply functional extensionality once, using name `name` for the variable.
+If `name = none`, then use a fresh name instead.
+-/
+def funext1 (mvarId : MVarId) (name : Option Name) : MetaM (FVarId × MVarId) := do
+  let [mvarId'] ← mvarId.apply (← mkConstWithFreshMVarLevels `funext)
+    | throwError "Expected one goal"
+  mvarId'.intro <| name.getD (← mkFreshUserName `a)
+
+/--
+Apply functional extensionality `Array.size names` times, getting names from `names`.
+
+If some entries in `names` are `none`, then use fresh names instead.
+-/
+def funextArray (mvarId : MVarId) (names : Array (Option Name)) : MetaM (Array FVarId × MVarId) :=
+  names.foldlM (fun ⟨fvarIds, mvarId⟩ name ↦ do
+    let ⟨fvarId, mvarId⟩ ← funext1 mvarId name
+    pure (fvarIds.push fvarId, mvarId)) (.mkEmpty names.size, mvarId)
+
+/-- Apply functional extensionality `n` times using fresh names for new variables. -/
+def funextN (mvarId : MVarId) (n : Nat) : MetaM (Array FVarId × MVarId) :=
+  funextArray mvarId (.mkArray n none)
 
 end Lean.MVarId
 

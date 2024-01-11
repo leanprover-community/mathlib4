@@ -1592,7 +1592,7 @@ theorem sum_div_factorial_le {α : Type*} [LinearOrderedField α] (n j : ℕ) (h
       · rw [← Nat.cast_pow, ← Nat.cast_mul, Nat.cast_le, add_comm]
         exact Nat.factorial_mul_pow_le_factorial
     _ = (n.factorial : α)⁻¹ * ∑ m in range (j - n), (n.succ : α)⁻¹ ^ m := by
-      simp [mul_inv, mul_sum.symm, sum_mul.symm, mul_comm, inv_pow]
+      simp [mul_inv, ← mul_sum, ← sum_mul, mul_comm, inv_pow]
     _ = ((n.succ : α) - n.succ * (n.succ : α)⁻¹ ^ (j - n)) / (n.factorial * n) := by
       have h₁ : (n.succ : α) ≠ 1 :=
         @Nat.cast_one α _ ▸ mt Nat.cast_inj.1 (mt Nat.succ.inj (pos_iff_ne_zero.1 hn))
@@ -1631,7 +1631,7 @@ theorem exp_bound {x : ℂ} (hx : abs x ≤ 1) {n : ℕ} (hn : 0 < n) :
       · rw [abv_pow abs]
         exact pow_le_one _ (abs.nonneg _) hx
     _ = abs x ^ n * ∑ m in (range j).filter fun k => n ≤ k, (1 / m.factorial : ℝ) := by
-      simp [abs_mul, abv_pow abs, abs_div, mul_sum.symm]
+      simp [abs_mul, abv_pow abs, abs_div, ← mul_sum]
     _ ≤ abs x ^ n * (n.succ * (n.factorial * n : ℝ)⁻¹) := by
       gcongr
       exact sum_div_factorial_le _ _ hn
@@ -1972,10 +1972,10 @@ theorem add_one_le_exp (x : ℝ) : x + 1 ≤ Real.exp x := by
 #align real.add_one_le_exp_of_nonneg Real.add_one_le_exp
 
 lemma one_sub_lt_exp_neg {x : ℝ} (hx : x ≠ 0) : 1 - x < exp (-x) :=
-  (sub_eq_neg_add _ _).trans_lt $ add_one_lt_exp $ neg_ne_zero.2 hx
+  (sub_eq_neg_add _ _).trans_lt <| add_one_lt_exp <| neg_ne_zero.2 hx
 
 lemma one_sub_le_exp_neg (x : ℝ) : 1 - x ≤ exp (-x) :=
-  (sub_eq_neg_add _ _).trans_le $ add_one_le_exp _
+  (sub_eq_neg_add _ _).trans_le <| add_one_le_exp _
 #align real.one_sub_le_exp_minus_of_pos Real.one_sub_le_exp_neg
 #align real.one_sub_le_exp_minus_of_nonneg Real.one_sub_le_exp_neg
 

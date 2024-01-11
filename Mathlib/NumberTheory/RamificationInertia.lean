@@ -3,7 +3,6 @@ Copyright (c) 2022 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.LinearAlgebra.FreeModule.Finite.Rank
 import Mathlib.RingTheory.DedekindDomain.Ideal
 
 #align_import number_theory.ramification_inertia from "leanprover-community/mathlib"@"039a089d2a4b93c761b234f3e5f5aeb752bac60f"
