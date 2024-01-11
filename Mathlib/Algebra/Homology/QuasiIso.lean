@@ -497,6 +497,8 @@ instance : QuasiIso e.hom where
 
 instance : QuasiIso e.inv := (inferInstance : QuasiIso e.symm.hom)
 
+variable (C c)
+
 lemma homotopyEquivalences_subset_qis [CategoryWithHomology C] :
     homotopyEquivalences C c ⊆ qis C c := by
   rintro K L _ ⟨e, rfl⟩
