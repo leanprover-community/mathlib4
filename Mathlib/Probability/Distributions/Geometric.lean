@@ -31,67 +31,55 @@ section GeometricPmf
 noncomputable
 def geometricPmfReal (p : ℝ) (n : ℕ) : ℝ := (1-p) ^ n * p
 
-lemma p_Ioc_to_one_le_Ico {p : ℝ} (hp : p ∈ Ioc 0 1) : 1-p ∈ Ico 0 1 := by
-  have hl: 0 ≤ 1-p := by
-    rw [sub_nonneg]
-    exact hp.2
-  have hu: 1-p < 1 := by
-    simp only [sub_lt_self_iff]
-    exact hp.1
-  simp only [mem_Ico, sub_nonneg, sub_lt_self_iff]
-  exact ⟨sub_nonneg.mp hl, (sub_lt_self_iff 1).mp hu⟩
-
-lemma geometricPmfRealSum (p : ℝ) (hp : p ∈ Ioc 0 1) : HasSum (fun n ↦ geometricPmfReal p n) 1 := by
+lemma geometricPmfRealSum {p : ℝ} (hp_pos : 0 < p) (hp_le_one : p <= 1) : HasSum (fun n ↦ geometricPmfReal p n) 1 := by
   unfold geometricPmfReal
-  rw [mem_Ioc] at hp
-  have hp_one := p_Ioc_to_one_le_Ico hp
-  simp only [mem_Ico] at hp_one
-  have := hasSum_geometric_of_lt_1 hp_one.1 hp_one.2
-  apply (hasSum_mul_right_iff (hp.1.ne')).mpr at this
+  have := hasSum_geometric_of_lt_1 (sub_nonneg.mpr hp_le_one) (sub_lt_self 1 hp_pos)
+  apply (hasSum_mul_right_iff (hp_pos.ne')).mpr at this
   simp only [sub_sub_cancel] at this
-  rw [inv_mul_eq_div, div_self hp.1.ne'] at this
+  rw [inv_mul_eq_div, div_self hp_pos.ne'] at this
   exact this
 
 /-- The geometric pmf is positive for all natural numbers -/
-lemma geometricPmfReal_pos {p : ℝ} {n : ℕ} (hp : p ∈ Ioc 0 1) (hpn1 : p < 1) :
+lemma geometricPmfReal_pos {p : ℝ} {n : ℕ} (hp_pos : 0 < p) (hp_lt_one : p < 1) :
     0 < geometricPmfReal p n := by
   rw [geometricPmfReal]
-  have : 0 < 1-p := sub_pos.mpr hpn1
-  have : 0 < p := hp.1
+  have : 0 < 1-p := sub_pos.mpr hp_lt_one
   positivity
 
-lemma geometricPmfReal_nonneg {p : ℝ} {n : ℕ}  (hp : p ∈ Ioc 0 1) : 0 ≤ geometricPmfReal p n := by
+lemma geometricPmfReal_nonneg {p : ℝ} {n : ℕ}  (hp_pos : 0 < p) (hp_le_one : p <= 1) :
+    0 ≤ geometricPmfReal p n := by
   rw [geometricPmfReal]
-  have := (p_Ioc_to_one_le_Ico hp).1
-  have : 0 ≤ p := hp.1.le
+  have : 0 ≤ 1-p := sub_nonneg.mpr hp_le_one
   positivity
 
 /-- Geometric distribution with success probability `p`. -/
 noncomputable
-def geometricPmf {p : ℝ} (hp : p ∈ Ioc 0 1) : PMF ℕ := by
+def geometricPmf {p : ℝ} (hp_pos : 0 < p) (hp_le_one : p <= 1) : PMF ℕ := by
   refine ⟨fun n ↦ ENNReal.ofReal (geometricPmfReal p n), ?_⟩
   apply ENNReal.hasSum_coe.mpr
   rw [← toNNReal_one]
-  exact (geometricPmfRealSum p hp).toNNReal (fun n ↦ geometricPmfReal_nonneg hp)
+  exact (geometricPmfRealSum hp_pos hp_le_one).toNNReal
+    (fun n ↦ geometricPmfReal_nonneg hp_pos hp_le_one)
 
 /-- The geometric pmf is measurable. -/
 @[measurability]
-lemma measurable_geometricPmfReal {p : ℝ} (hp : p ∈ Ioc 0 1) : Measurable (geometricPmfReal p) := by
+lemma measurable_geometricPmfReal {p : ℝ} : Measurable (geometricPmfReal p) := by
   measurability
 
 @[measurability]
-lemma stronglyMeasurable_geometricPmfReal {p : ℝ} (hp : p ∈ Ioc 0 1) :
+lemma stronglyMeasurable_geometricPmfReal {p : ℝ} :
     StronglyMeasurable (geometricPmfReal p) :=
-  stronglyMeasurable_iff_measurable.mpr (measurable_geometricPmfReal hp)
+  stronglyMeasurable_iff_measurable.mpr measurable_geometricPmfReal
 
 end GeometricPmf
 
 /-- Measure defined by the geometric distribution -/
 noncomputable
-def geometricMeasure {p : ℝ} (hp : p ∈ Ioc 0 1) : Measure ℕ := (geometricPmf hp).toMeasure
+def geometricMeasure {p : ℝ} (hp_pos : 0 < p) (hp_le_one : p <= 1) : Measure ℕ :=
+    (geometricPmf hp_pos hp_le_one).toMeasure
 
-lemma isProbabilityMeasureGeometric {p : ℝ} (hp : p ∈ Ioc 0 1) :
-    IsProbabilityMeasure (geometricMeasure hp) :=
-  PMF.toMeasure.isProbabilityMeasure (geometricPmf hp )
+lemma isProbabilityMeasureGeometric {p : ℝ} (hp_pos : 0 < p) (hp_le_one : p <= 1) :
+    IsProbabilityMeasure (geometricMeasure hp_pos hp_le_one) :=
+  PMF.toMeasure.isProbabilityMeasure (geometricPmf hp_pos hp_le_one)
 
 end ProbabilityTheory
