@@ -1259,9 +1259,7 @@ theorem sec_fst_ne_zero [Nontrivial R] [NoZeroDivisors S] (hM : M ≤ nonZeroDiv
   · exact IsLocalization.injective S hM
 #align is_localization.sec_fst_ne_zero IsLocalization.sec_fst_ne_zero
 
-
 variable {Q : Type*} [CommRing Q] {g : R →+* P} [Algebra P Q]
-
 
 variable (A : Type*) [CommRing A] [IsDomain A]
 
