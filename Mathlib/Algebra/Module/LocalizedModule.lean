@@ -3,15 +3,16 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Jujian Zhang
 -/
-import Mathlib.RingTheory.IsTensorProduct
-import Mathlib.RingTheory.Localization.Module
+import Mathlib.Algebra.Algebra.Bilinear
+import Mathlib.Algebra.Algebra.RestrictScalars
+import Mathlib.RingTheory.Localization.Basic
 
 #align_import algebra.module.localized_module from "leanprover-community/mathlib"@"831c494092374cfe9f50591ed0ac81a25efc5b86"
 
 /-!
 # Localized Module
 
-Given a commutative ring `R`, a multiplicative subset `S ⊆ R` and an `R`-module `M`, we can
+Given a commutative semiring `R`, a multiplicative subset `S ⊆ R` and an `R`-module `M`, we can
 localize `M` by `S`. This gives us a `Localization S`-module.
 
 ## Main definitions
@@ -30,7 +31,6 @@ localize `M` by `S`. This gives us a `Localization S`-module.
   we have `mk r s • mk m t = mk (r • m) (s * t)` where `mk r s : Localization S` is localized ring
   by `S`.
 * `LocalizedModule.isModule` : `LocalizedModule M S` is a `Localization S`-module.
-* `IsLocalizedModule.IsBaseChange` : A localization of modules is a base change.
 
 ## Future work
 
@@ -561,7 +561,7 @@ variable (f : M →ₗ[R] M') (g : M →ₗ[R] M'')
 `IsLocalizedModule S f` describes that `f : M ⟶ M'` is the localization map identifying `M'` as
 `LocalizedModule S M`.
 -/
-class IsLocalizedModule : Prop where
+@[mk_iff] class IsLocalizedModule : Prop where
   map_units : ∀ x : S, IsUnit (algebraMap R (Module.End R M') x)
   surj' : ∀ y : M', ∃ x : M × S, x.2 • y = f x.1
   exists_of_eq : ∀ {x₁ x₂}, f x₁ = f x₂ → ∃ c : S, c • x₁ = c • x₂
@@ -581,6 +581,55 @@ lemma IsLocalizedModule.eq_iff_exists [IsLocalizedModule S f] {x₁ x₂} :
     apply_fun f at h
     simp_rw [f.map_smul_of_tower, Submonoid.smul_def, ← Module.algebraMap_end_apply R R] at h
     exact ((Module.End_isUnit_iff _).mp <| map_units f c).1 h
+
+theorem IsLocalizedModule.of_linearEquiv (e : M' ≃ₗ[R] M'') [hf : IsLocalizedModule S f] :
+    IsLocalizedModule S (e ∘ₗ f : M →ₗ[R] M'') where
+  map_units s := by
+    rw [show algebraMap R (Module.End R M'') s = e ∘ₗ (algebraMap R (Module.End R M') s) ∘ₗ e.symm
+      by ext; simp, Module.End_isUnit_iff, LinearMap.coe_comp, LinearMap.coe_comp,
+      LinearEquiv.coe_coe, LinearEquiv.coe_coe, EquivLike.comp_bijective, EquivLike.bijective_comp]
+    exact (Module.End_isUnit_iff _).mp <| hf.map_units s
+  surj' x := by
+    obtain ⟨p, h⟩ := hf.surj' (e.symm x)
+    exact ⟨p, by rw [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, ← e.congr_arg h,
+      Submonoid.smul_def, Submonoid.smul_def, LinearEquiv.map_smul, LinearEquiv.apply_symm_apply]⟩
+  exists_of_eq h := by
+    simp_rw [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
+      EmbeddingLike.apply_eq_iff_eq] at h
+    exact hf.exists_of_eq h
+
+variable (M) in
+lemma isLocalizedModule_id (R') [CommSemiring R'] [Algebra R R'] [IsLocalization S R'] [Module R' M]
+    [IsScalarTower R R' M] : IsLocalizedModule S (.id : M →ₗ[R] M) where
+  map_units s := by
+    rw [← (Algebra.lsmul R (A := R') R M).commutes]; exact (IsLocalization.map_units R' s).map _
+  surj' m := ⟨(m, 1), one_smul _ _⟩
+  exists_of_eq h := ⟨1, congr_arg _ h⟩
+
+variable {S} in
+theorem isLocalizedModule_iff_isLocalization {A Aₛ} [CommSemiring A] [Algebra R A] [CommSemiring Aₛ]
+    [Algebra A Aₛ] [Algebra R Aₛ] [IsScalarTower R A Aₛ] :
+    IsLocalizedModule S (IsScalarTower.toAlgHom R A Aₛ).toLinearMap ↔
+      IsLocalization (Algebra.algebraMapSubmonoid A S) Aₛ := by
+  rw [isLocalizedModule_iff, isLocalization_iff]
+  refine and_congr ?_ (and_congr (forall_congr' fun _ ↦ ?_) (forall₂_congr fun _ _ ↦ ?_))
+  · simp_rw [← (Algebra.lmul R Aₛ).commutes, Algebra.lmul_isUnit_iff, Subtype.forall,
+      Algebra.algebraMapSubmonoid, ← SetLike.mem_coe, Submonoid.coe_map,
+      Set.ball_image_iff, ← IsScalarTower.algebraMap_apply]
+  · simp_rw [Prod.exists, Subtype.exists, Algebra.algebraMapSubmonoid]
+    simp [← IsScalarTower.algebraMap_apply, Submonoid.mk_smul, Algebra.smul_def, mul_comm]
+  · congr!; simp_rw [Subtype.exists, Algebra.algebraMapSubmonoid]; simp [Algebra.smul_def]
+
+instance {A Aₛ} [CommSemiring A] [Algebra R A][CommSemiring Aₛ] [Algebra A Aₛ] [Algebra R Aₛ]
+    [IsScalarTower R A Aₛ] [h : IsLocalization (Algebra.algebraMapSubmonoid A S) Aₛ] :
+    IsLocalizedModule S (IsScalarTower.toAlgHom R A Aₛ).toLinearMap :=
+  isLocalizedModule_iff_isLocalization.mpr h
+
+lemma isLocalizedModule_iff_isLocalization' (R') [CommSemiring R'] [Algebra R R'] :
+    IsLocalizedModule S (Algebra.ofId R R').toLinearMap ↔ IsLocalization S R' := by
+  convert isLocalizedModule_iff_isLocalization (S := S) (A := R) (Aₛ := R')
+  exact (Submonoid.map_id S).symm
+
 namespace LocalizedModule
 
 /--
@@ -1100,29 +1149,5 @@ theorem mkOfAlgebra {R S S' : Type*} [CommRing R] [CommRing S] [CommRing S'] [Al
 #align is_localized_module.mk_of_algebra IsLocalizedModule.mkOfAlgebra
 
 end Algebra
-
-/-- If `(f : M →ₗ[R] M')` is a localization of modules, then the map
-`(localization S) × M → N, (s, m) ↦ s • f m` is the tensor product (insomuch as it is the universal
-bilinear map).
-In particular, there is an isomorphism between `LocalizedModule S M` and `(Localization S) ⊗[R] M`
-given by `m/s ↦ (1/s) ⊗ₜ m`.
--/
-theorem isBaseChange : IsBaseChange A f := by
-  refine' IsBaseChange.of_lift_unique _ (fun Q _ _ _ _ g ↦ _)
-  have := IsLocalizedModule.is_universal S f g <| by
-    intro s
-    simp_rw [Module.End_isUnit_iff, Function.bijective_iff_existsUnique,
-      Module.algebraMap_end_apply]
-    intro q
-    refine' ⟨(IsLocalization.mk' _ 1 s : A) • q, _, _⟩
-    · simp only [← smul_assoc, IsLocalization.smul_mk'_self, map_one, one_smul]
-    · rintro q rfl
-      simp only [smul_comm _ (s : R), ← smul_assoc, IsLocalization.smul_mk'_self, map_one, one_smul]
-  rcases this with ⟨ℓ, rfl, h₂⟩
-  refine' ⟨ℓ.extendScalarsOfIsLocalization S A, by simp, fun g'' h ↦ _⟩
-  ext x
-  simp [← h₂ (LinearMap.restrictScalars R g'') h]
-
-end IsLocalizedModule
 
 end IsLocalizedModule

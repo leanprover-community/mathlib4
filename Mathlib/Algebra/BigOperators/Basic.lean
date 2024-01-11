@@ -12,7 +12,7 @@ import Mathlib.Algebra.Ring.Opposite
 import Mathlib.Data.Finset.Powerset
 import Mathlib.Data.Finset.Sigma
 import Mathlib.Data.Finset.Sum
-import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Fintype.Pi
 import Mathlib.Data.Multiset.Powerset
 import Mathlib.Data.Set.Pairwise.Basic
 
@@ -328,6 +328,12 @@ theorem prod_map (s : Finset α) (e : α ↪ γ) (f : γ → β) :
 #align finset.prod_map Finset.prod_map
 #align finset.sum_map Finset.sum_map
 
+@[to_additive]
+lemma prod_attach (s : Finset α) (f : α → β) : ∏ x in s.attach, f x = ∏ x in s, f x := by
+  classical rw [← prod_image $ Subtype.coe_injective.injOn _, attach_image_val]
+#align finset.prod_attach Finset.prod_attach
+#align finset.sum_attach Finset.sum_attach
+
 @[to_additive (attr := congr)]
 theorem prod_congr (h : s₁ = s₂) : (∀ x ∈ s₂, f x = g x) → s₁.prod f = s₂.prod g := by
   rw [h]; exact fold_congr
@@ -409,6 +415,40 @@ theorem _root_.Equiv.Perm.prod_comp' (σ : Equiv.Perm α) (s : Finset α) (f : �
   rw [Equiv.symm_apply_apply]
 #align equiv.perm.prod_comp' Equiv.Perm.prod_comp'
 #align equiv.perm.sum_comp' Equiv.Perm.sum_comp'
+
+/-- A product over all subsets of `s ∪ {x}` is obtained by multiplying the product over all subsets
+of `s`, and over all subsets of `s` to which one adds `x`. -/
+@[to_additive "A sum over all subsets of `s ∪ {x}` is obtained by summing the sum over all subsets
+of `s`, and over all subsets of `s` to which one adds `x`."]
+lemma prod_powerset_insert [DecidableEq α] (ha : a ∉ s) (f : Finset α → β) :
+    ∏ t in (insert a s).powerset, f t =
+      (∏ t in s.powerset, f t) * ∏ t in s.powerset, f (insert a t) := by
+  rw [powerset_insert, prod_union, prod_image]
+  · exact insert_erase_invOn.2.injOn.mono fun t ht ↦ not_mem_mono (mem_powerset.1 ht) ha
+  · aesop (add simp [disjoint_left, insert_subset_iff])
+#align finset.prod_powerset_insert Finset.prod_powerset_insert
+#align finset.sum_powerset_insert Finset.sum_powerset_insert
+
+/-- A product over all subsets of `s ∪ {x}` is obtained by multiplying the product over all subsets
+of `s`, and over all subsets of `s` to which one adds `x`. -/
+@[to_additive "A sum over all subsets of `s ∪ {x}` is obtained by summing the sum over all subsets
+of `s`, and over all subsets of `s` to which one adds `x`."]
+lemma prod_powerset_cons (ha : a ∉ s) (f : Finset α → β) :
+    ∏ t in (s.cons a ha).powerset, f t = (∏ t in s.powerset, f t) *
+      ∏ t in s.powerset.attach, f (cons a t $ not_mem_mono (mem_powerset.1 t.2) ha) := by
+  classical
+  simp_rw [cons_eq_insert]
+  rw [prod_powerset_insert ha, prod_attach _ fun t ↦ f (insert a t)]
+
+/-- A product over `powerset s` is equal to the double product over sets of subsets of `s` with
+`card s = k`, for `k = 1, ..., card s`. -/
+@[to_additive "A sum over `powerset s` is equal to the double sum over sets of subsets of `s` with
+  `card s = k`, for `k = 1, ..., card s`"]
+lemma prod_powerset (s : Finset α) (f : Finset α → β) :
+    ∏ t in powerset s, f t = ∏ j in range (card s + 1), ∏ t in powersetCard j s, f t := by
+  rw [powerset_card_disjiUnion, prod_disjiUnion]
+#align finset.prod_powerset Finset.prod_powerset
+#align finset.sum_powerset Finset.sum_powerset
 
 end CommMonoid
 
@@ -670,6 +710,21 @@ lemma prod_fiberwise' (s : Finset ι) (g : ι → κ) (f : κ → α) :
 
 end bij
 
+/-- Taking a product over `univ.pi t` is the same as taking the product over `Fintype.piFinset t`.
+`univ.pi t` and `Fintype.piFinset t` are essentially the same `Finset`, but differ
+in the type of their element, `univ.pi t` is a `Finset (Π a ∈ univ, t a)` and
+`Fintype.piFinset t` is a `Finset (Π a, t a)`. -/
+@[to_additive "Taking a sum over `univ.pi t` is the same as taking the sum over
+`Fintype.piFinset t`. `univ.pi t` and `Fintype.piFinset t` are essentially the same `Finset`,
+but differ in the type of their element, `univ.pi t` is a `Finset (Π a ∈ univ, t a)` and
+`Fintype.piFinset t` is a `Finset (Π a, t a)`."]
+lemma prod_univ_pi [DecidableEq ι] [Fintype ι] {κ : ι → Type*} (t : ∀ i, Finset (κ i))
+    (f : (∀ i ∈ (univ : Finset ι), κ i) → β) :
+    ∏ x in univ.pi t, f x = ∏ x in Fintype.piFinset t, f fun a _ ↦ x a := by
+  apply prod_nbij' (fun x i ↦ x i $ mem_univ _) (fun x i _ ↦ x i) <;> simp
+#align finset.prod_univ_pi Finset.prod_univ_pi
+#align finset.sum_univ_pi Finset.sum_univ_pi
+
 @[to_additive (attr := simp)]
 lemma prod_diag [DecidableEq α] (s : Finset α) (f : α × α → β) :
     ∏ i in s.diag, f i = ∏ i in s, f (i, i) := by
@@ -906,16 +961,6 @@ theorem prod_eq_mul {s : Finset α} {f : α → β} (a b : α) (hn : a ≠ b)
         prod_const_one
 #align finset.prod_eq_mul Finset.prod_eq_mul
 #align finset.sum_eq_add Finset.sum_eq_add
-
-@[to_additive]
-theorem prod_attach (s : Finset α) (f : α → β) : ∏ x in s.attach, f x = ∏ x in s, f x :=
-  haveI := Classical.decEq α
-  calc
-    ∏ x in s.attach, f x.val = ∏ x in s.attach.image Subtype.val, f x := by
-      { rw [prod_image]; exact fun x _ y _ => Subtype.eq }
-    _ = _ := by rw [attach_image_val]
-#align finset.prod_attach Finset.prod_attach
-#align finset.sum_attach Finset.sum_attach
 
 -- Porting note: simpNF linter complains that LHS doesn't simplify, but it does
 /-- A product over `s.subtype p` equals one over `s.filter p`. -/
@@ -1603,6 +1648,12 @@ theorem prod_pow (s : Finset α) (n : ℕ) (f : α → β) : ∏ x in s, f x ^ n
 #align finset.prod_pow Finset.prod_pow
 #align finset.sum_nsmul Finset.sum_nsmul
 
+@[to_additive sum_nsmul_assoc]
+lemma prod_pow_eq_pow_sum  (s : Finset ι) (f : ι → ℕ) (a : β) :
+    ∏ i in s, a ^ f i = a ^ ∑ i in s, f i :=
+  cons_induction (by simp) (fun _ _ _ _ ↦ by simp [prod_cons, sum_cons, pow_add, *]) s
+#align finset.prod_pow_eq_pow_sum Finset.prod_pow_eq_pow_sum
+
 /-- A product over `Finset.powersetCard` which only depends on the size of the sets is constant. -/
 @[to_additive
 "A sum over `Finset.powersetCard` which only depends on the size of the sets is constant."]
@@ -2225,6 +2276,18 @@ theorem prod_subtype_mul_prod_subtype {α β : Type*} [Fintype α] [CommMonoid �
 #align fintype.sum_subtype_add_sum_subtype Fintype.sum_subtype_add_sum_subtype
 
 end Fintype
+
+namespace Finset
+variable [Fintype ι] [CommMonoid α]
+
+@[to_additive (attr := simp)]
+lemma prod_attach_univ (f : {i // i ∈ @univ ι _} → α) :
+    ∏ i in univ.attach, f i = ∏ i, f ⟨i, mem_univ _⟩ :=
+  Fintype.prod_equiv (Equiv.subtypeUnivEquiv mem_univ) _ _ $ by simp
+#align finset.prod_attach_univ Finset.prod_attach_univ
+#align finset.sum_attach_univ Finset.sum_attach_univ
+
+end Finset
 
 namespace List
 
