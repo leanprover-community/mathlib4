@@ -179,25 +179,25 @@ noncomputable instance [HasFiniteColimits V] : PreservesFiniteColimits (Action.f
     infer_instance
   apply compPreservesFiniteColimits
 
-instance : ReflectsLimits (Action.forget V G) := by
-  constructor
-  intro _ _
-  constructor
-  intro _
-  constructor
-  intro _ h
-  apply isLimitOfReflects ((Action.functorCategoryEquivalence V G).functor)
-  exact evaluationJointlyReflectsLimits _ (fun _ => h)
+instance {J : Type w₁} [Category.{w₂} J] (F : J ⥤ Action V G) :
+    ReflectsLimit F (Action.forget V G) where
+  reflects h := by
+    apply isLimitOfReflects ((Action.functorCategoryEquivalence V G).functor)
+    exact evaluationJointlyReflectsLimits _ (fun _ => h)
 
-instance : ReflectsColimits (Action.forget V G) := by
-  constructor
-  intro _ _
-  constructor
-  intro _
-  constructor
-  intro _ h
-  apply isColimitOfReflects ((Action.functorCategoryEquivalence V G).functor)
-  exact evaluationJointlyReflectsColimits _ (fun _ => h)
+instance {J : Type w₁} [Category.{w₂} J] : ReflectsLimitsOfShape J (Action.forget V G) where
+
+instance : ReflectsLimits (Action.forget V G) where
+
+instance {J : Type w₁} [Category.{w₂} J] (F : J ⥤ Action V G) :
+    ReflectsColimit F (Action.forget V G) where
+  reflects h := by
+    apply isColimitOfReflects ((Action.functorCategoryEquivalence V G).functor)
+    exact evaluationJointlyReflectsColimits _ (fun _ => h)
+
+instance {J : Type w₁} [Category.{w₂} J] : ReflectsColimitsOfShape J (Action.forget V G) where
+
+instance : ReflectsColimits (Action.forget V G) where
 
 end Forget
 
