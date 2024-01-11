@@ -290,9 +290,10 @@ def toInductive (mvar : MVarId) (cs : List Name)
           let _ ← isDefEq t mt -- infer values for those mvars we just made
           mvar'.assign e
 
-/-- Implementation for both `mk_iff` and `mk_iff_of_inductive_prop`.
+/-- Implementation for `mk_eq`, `mk_iff`, and `mk_iff_of_inductive_prop`.
 -/
-def mkIffOfInductivePropImpl (ind : Name) (rel : Name) (relStx : Syntax) : MetaM Unit := do
+def mkEqIffOfInductivePropImpl (ind : Name) (rel : Name) (relStx : Syntax) (isEq : Bool) :
+    MetaM Unit := do
   let .inductInfo inductVal ← getConstInfo ind |
     throwError "mk_iff only applies to inductive declarations"
   let constrs := inductVal.ctors
@@ -306,59 +307,23 @@ def mkIffOfInductivePropImpl (ind : Name) (rel : Name) (relStx : Syntax) : MetaM
 
   let (thmTy, shape) ← Meta.forallTelescope type fun fvars ty ↦ do
     if !ty.isProp then throwError "mk_iff only applies to prop-valued declarations"
-    let lhs := mkAppN (mkConst ind univs) fvars
     let fvars' := fvars.toList
     let shape_rhss ← constrs.mapM (constrToProp univs (fvars'.take params) (fvars'.drop params))
     let (shape, rhss) := shape_rhss.unzip
-    pure (← mkForallFVars fvars (mkApp2 (mkConst `Iff) lhs (mkOrList rhss)), shape)
-
-  let mvar ← mkFreshExprMVar (some thmTy)
-  let mvarId := mvar.mvarId!
-  let (fvars, mvarId') ← mvarId.intros
-  let [mp, mpr] ← mvarId'.apply (mkConst `Iff.intro) | throwError "failed to split goal"
-
-  toCases mp shape
-
-  let ⟨mprFvar, mpr'⟩ ← mpr.intro1
-  toInductive mpr' constrs ((fvars.toList.take params).map .fvar) shape mprFvar
-
-  addDecl <| .thmDecl {
-    name := rel
-    levelParams := univNames
-    type := thmTy
-    value := ← instantiateMVars mvar
-  }
-  addDeclarationRanges rel {
-    range := ← getDeclarationRange (← getRef)
-    selectionRange := ← getDeclarationRange relStx
-  }
-  addConstInfo relStx rel
-
-/-- Implementation for `mk_eq`. -/
-def mkEqImpl (ind : Name) (rel : Name) (relStx : Syntax) : MetaM Unit := do
-  let .inductInfo inductVal ← getConstInfo ind |
-    throwError "mk_eq only applies to inductive declarations"
-  let constrs := inductVal.ctors
-  let params := inductVal.numParams
-  let type := inductVal.type
-
-  let univNames := inductVal.levelParams
-  let univs := univNames.map mkLevelParam
-  /- we use these names for our universe parameters, maybe we should construct a copy of them
-  using `uniq_name` -/
-
-  let (thmTy, shape) ← Meta.forallTelescope type fun fvars ty ↦ do
-    if !ty.isProp then throwError "mk_iff only applies to prop-valued declarations"
-    let fvars' := fvars.toList
-    let shape_rhss ← constrs.mapM (constrToProp univs (fvars'.take params) (fvars'.drop params))
-    let (shape, rhss) := shape_rhss.unzip
-    pure (mkApp2 (← mkConstWithFreshMVarLevels `Eq) (mkConst ind univs)
-      (← mkForallFVars fvars <| mkOrList rhss), shape)
+    if isEq then
+      pure (← mkEq (mkConst ind univs) (← mkLambdaFVars fvars (mkOrList rhss)), shape)
+    else
+      let lhs := mkAppN (mkConst ind univs) fvars
+      pure (← mkForallFVars fvars (mkApp2 (mkConst `Iff) lhs (mkOrList rhss)), shape)
 
   let mvar ← mkFreshExprMVar (some thmTy)
   let mvarId := mvar.mvarId!
   let (fvars, mvarId') ← do
-    mvarId.intros
+    if isEq then
+      let (fvars, mvarId') ← mvarId.funextN (params + inductVal.numIndices)
+      let mvarId' ← mvarId'.propext
+      pure (fvars, mvarId')
+    else mvarId.intros
   let [mp, mpr] ← mvarId'.apply (mkConst `Iff.intro) | throwError "failed to split goal"
 
   toCases mp shape
@@ -377,27 +342,6 @@ def mkEqImpl (ind : Name) (rel : Name) (relStx : Syntax) : MetaM Unit := do
     selectionRange := ← getDeclarationRange relStx
   }
   addConstInfo relStx rel
-
-def mkEqRHS (n : Name) : MetaM Expr := do
-  let .inductInfo inductVal ← getConstInfo n |
-    throwError "mk_iff only applies to inductive declarations"
-  let constrs := inductVal.ctors
-  let params := inductVal.numParams
-  let type := inductVal.type
-
-  let univNames := inductVal.levelParams
-  let univs := univNames.map mkLevelParam
-  /- we use these names for our universe parameters, maybe we should construct a copy of them
-  using `uniq_name` -/
-
-  let thmTy ← Meta.forallTelescope type fun fvars ty ↦ do
-    if !ty.isProp then throwError "mk_iff only applies to prop-valued declarations"
-    -- let lhs := mkAppN (mkConst n univs) fvars
-    let fvars' := fvars.toList
-    let shape_rhss ← constrs.mapM (constrToProp univs (fvars'.take params) (fvars'.drop params))
-    let (_, rhss) := shape_rhss.unzip
-    pure <| mkApp2 (mkConst `Eq) (mkConst n) (← mkForallFVars fvars <| mkOrList rhss) -- (← mkForallFVars fvars (mkApp2 (mkConst `Iff) lhs (mkOrList rhss)))
-  pure thmTy
 
 /--
 Applying the `mk_iff` attribute to an inductively-defined proposition `mk_iff` makes an `iff` rule
@@ -440,6 +384,8 @@ See also the user command `mk_iff_of_inductive_prop`.
 -/
 syntax (name := mkIff) "mk_iff" (ppSpace ident)? : attr
 
+syntax (name := mkEq) "mk_eq" (ppSpace ident)? : attr
+
 /--
 `mk_iff_of_inductive_prop i r` makes an `iff` rule for the inductively-defined proposition `i`.
 The new rule `r` has the shape `∀ps is, i as ↔ ⋁_j, ∃cs, is = cs`, where `ps` are the type
@@ -464,7 +410,7 @@ syntax (name := mkIffOfInductiveProp) "mk_iff_of_inductive_prop " ident ppSpace 
 elab_rules : command
 | `(command| mk_iff_of_inductive_prop $i:ident $r:ident) =>
     Command.liftCoreM <| MetaM.run' do
-      mkIffOfInductivePropImpl i.getId r.getId r
+      mkEqIffOfInductivePropImpl i.getId r.getId r false
 
 initialize Lean.registerBuiltinAttribute {
   name := `mkIff
@@ -475,5 +421,17 @@ initialize Lean.registerBuiltinAttribute {
         pure ((← mkDeclName (← getCurrNamespace) {} tgt.getId).1, tgt.raw)
       | `(attr| mk_iff) => pure (decl.decapitalize.appendAfter "_iff", stx)
       | _ => throwError "unrecognized syntax"
-    mkIffOfInductivePropImpl decl tgt idStx
+    mkEqIffOfInductivePropImpl decl tgt idStx false
+}
+
+initialize Lean.registerBuiltinAttribute {
+  name := `mkEq
+  descr := "Generate an equality lemma for an inductive `Prop`."
+  add := fun decl stx _ => Lean.Meta.MetaM.run' do
+    let (tgt, idStx) ← match stx with
+      | `(attr| mk_eq $tgt:ident) =>
+        pure ((← mkDeclName (← getCurrNamespace) {} tgt.getId).1, tgt.raw)
+      | `(attr| mk_eq) => pure (decl.decapitalize.appendAfter "_eq", stx)
+      | _ => throwError "unrecognized syntax"
+    mkEqIffOfInductivePropImpl decl tgt idStx true
 }

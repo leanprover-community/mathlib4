@@ -112,16 +112,26 @@ def subsingletonElim (mvarId : MVarId) : MetaM Bool :=
       return true
     return res.getD false
 
-def funext1 (mvarId : MVarId) (n : Option Name) : MetaM (FVarId × MVarId) := do
+/--
+Apply functional extensionality once, using name `name` for the variable.
+If `name = none`, then use a fresh name instead.
+-/
+def funext1 (mvarId : MVarId) (name : Option Name) : MetaM (FVarId × MVarId) := do
   let [mvarId'] ← mvarId.apply (← mkConstWithFreshMVarLevels `funext)
     | throwError "Expected one goal"
-  mvarId'.intro <| n.getD (← mkFreshUserName `a)
+  mvarId'.intro <| name.getD (← mkFreshUserName `a)
 
+/--
+Apply functional extensionality `Array.size names` times, getting names from `names`.
+
+If some entries in `names` are `none`, then use fresh names instead.
+-/
 def funextArray (mvarId : MVarId) (names : Array (Option Name)) : MetaM (Array FVarId × MVarId) :=
   names.foldlM (fun ⟨fvarIds, mvarId⟩ name ↦ do
     let ⟨fvarId, mvarId⟩ ← funext1 mvarId name
     pure (fvarIds.push fvarId, mvarId)) (.mkEmpty names.size, mvarId)
 
+/-- Apply functional extensionality `n` times using fresh names for new variables. -/
 def funextN (mvarId : MVarId) (n : Nat) : MetaM (Array FVarId × MVarId) :=
   funextArray mvarId (.mkArray n none)
 
