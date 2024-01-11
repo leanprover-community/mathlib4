@@ -195,6 +195,7 @@ theorem coe_refl : ⇑(Diffeomorph.refl I M n) = id :=
 end
 
 /-- Composition of two diffeomorphisms. -/
+@[trans]
 protected def trans (h₁ : M ≃ₘ^n⟮I, I'⟯ M') (h₂ : M' ≃ₘ^n⟮I', J⟯ N) : M ≃ₘ^n⟮I, J⟯ N where
   contMDiff_toFun := h₂.contMDiff.comp h₁.contMDiff
   contMDiff_invFun := h₁.contMDiff_invFun.comp h₂.contMDiff_invFun
@@ -217,7 +218,7 @@ theorem coe_trans (h₁ : M ≃ₘ^n⟮I, I'⟯ M') (h₂ : M' ≃ₘ^n⟮I', J�
 #align diffeomorph.coe_trans Diffeomorph.coe_trans
 
 /-- Inverse of a diffeomorphism. -/
-@[pp_dot]
+@[symm]
 protected def symm (h : M ≃ₘ^n⟮I, J⟯ N) : N ≃ₘ^n⟮J, I⟯ M where
   contMDiff_toFun := h.contMDiff_invFun
   contMDiff_invFun := h.contMDiff_toFun
@@ -374,10 +375,10 @@ theorem contMDiff_diffeomorph_comp_iff {m} (h : M ≃ₘ^n⟮I, J⟯ N) {f : M' 
   forall_congr' fun _ => h.contMDiffWithinAt_diffeomorph_comp_iff hm
 #align diffeomorph.cont_mdiff_diffeomorph_comp_iff Diffeomorph.contMDiff_diffeomorph_comp_iff
 
-theorem toLocalHomeomorph_mdifferentiable (h : M ≃ₘ^n⟮I, J⟯ N) (hn : 1 ≤ n) :
-    h.toHomeomorph.toLocalHomeomorph.MDifferentiable I J :=
+theorem toPartialHomeomorph_mdifferentiable (h : M ≃ₘ^n⟮I, J⟯ N) (hn : 1 ≤ n) :
+    h.toHomeomorph.toPartialHomeomorph.MDifferentiable I J :=
   ⟨h.mdifferentiableOn _ hn, h.symm.mdifferentiableOn _ hn⟩
-#align diffeomorph.to_local_homeomorph_mdifferentiable Diffeomorph.toLocalHomeomorph_mdifferentiable
+#align diffeomorph.to_local_homeomorph_mdifferentiable Diffeomorph.toPartialHomeomorph_mdifferentiable
 
 section Constructions
 
@@ -442,7 +443,7 @@ variable [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners J N]
 
 theorem uniqueMDiffOn_image_aux (h : M ≃ₘ^n⟮I, J⟯ N) (hn : 1 ≤ n) {s : Set M}
     (hs : UniqueMDiffOn I s) : UniqueMDiffOn J (h '' s) := by
-  convert hs.uniqueMDiffOn_preimage (h.toLocalHomeomorph_mdifferentiable hn)
+  convert hs.uniqueMDiffOn_preimage (h.toPartialHomeomorph_mdifferentiable hn)
   simp [h.image_eq_preimage]
 #align diffeomorph.unique_mdiff_on_image_aux Diffeomorph.uniqueMDiffOn_image_aux
 
@@ -509,7 +510,7 @@ variable (I) (e : E ≃ₘ[𝕜] E')
 
 /-- Apply a diffeomorphism (e.g., a continuous linear equivalence) to the model vector space. -/
 def transDiffeomorph (I : ModelWithCorners 𝕜 E H) (e : E ≃ₘ[𝕜] E') : ModelWithCorners 𝕜 E' H where
-  toLocalEquiv := I.toLocalEquiv.trans e.toEquiv.toLocalEquiv
+  toPartialEquiv := I.toPartialEquiv.trans e.toEquiv.toPartialEquiv
   source_eq := by simp
   unique_diff' := by simp [range_comp e, I.unique_diff]
   continuous_toFun := e.continuous.comp I.continuous

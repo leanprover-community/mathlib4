@@ -169,7 +169,7 @@ theorem get_tail (x : Vector α n) (i) :
   cases' i with i ih; dsimp
   rcases x with ⟨_ | _, h⟩ <;> try rfl
   rw [List.length] at h
-  rw [←h] at ih
+  rw [← h] at ih
   contradiction
 #align vector.nth_tail Vector.get_tail
 
@@ -799,10 +799,10 @@ variable (ys : Vector β n)
 theorem get_map₂ (v₁ : Vector α n) (v₂ : Vector β n) (f : α → β → γ) (i : Fin n) :
     get (map₂ f v₁ v₂) i = f (get v₁ i) (get v₂ i) := by
   clear * - v₁ v₂
-  induction v₁, v₂ using inductionOn₂
-  case nil =>
+  induction v₁, v₂ using inductionOn₂ with
+  | nil =>
     exact Fin.elim0 i
-  case cons x xs y ys ih =>
+  | cons ih =>
     rw [map₂_cons]
     cases i using Fin.cases
     · simp only [get_zero, head_cons]

@@ -234,14 +234,14 @@ def OddCommuteEquiv (hn : Odd n) : { p : DihedralGroup n × DihedralGroup n // C
         simpa [sub_eq_add_neg, eq_neg_iff_add_eq_zero, hu, eq_comm (a := j) (b := 0)] using h.eq
       | ⟨⟨sr i, sr j⟩, h⟩ => by
         replace h := r.inj h
-        rw [←neg_sub, neg_eq_iff_add_eq_zero, hu, sub_eq_zero] at h
-        rw [Subtype.ext_iff, Prod.ext_iff, sr.injEq, sr.injEq, h, and_self, ←two_mul]
+        rw [← neg_sub, neg_eq_iff_add_eq_zero, hu, sub_eq_zero] at h
+        rw [Subtype.ext_iff, Prod.ext_iff, sr.injEq, sr.injEq, h, and_self, ← two_mul]
         exact u.inv_mul_cancel_left j
     right_inv := fun
       | .inl i => rfl
       | .inr (.inl j) => rfl
       | .inr (.inr (.inl k)) =>
-        congrArg (Sum.inr ∘ Sum.inr ∘ Sum.inl) $ two_mul (u⁻¹ * k) ▸ u.mul_inv_cancel_left k
+        congrArg (Sum.inr ∘ Sum.inr ∘ Sum.inl) <| two_mul (u⁻¹ * k) ▸ u.mul_inv_cancel_left k
       | .inr (.inr (.inr ⟨i, j⟩)) => rfl }
 
 /-- If n is odd, then the Dihedral group of order $2n$ has $n(n+3)$ pairs of commuting elements. -/
@@ -253,7 +253,7 @@ lemma card_commute_odd (hn : Odd n) :
 
 lemma card_conjClasses_odd (hn : Odd n) :
     Nat.card (ConjClasses (DihedralGroup n)) = (n + 3) / 2 := by
-  rw [←Nat.mul_div_mul_left _ 2 hn.pos, ← card_commute_odd hn, mul_comm,
+  rw [← Nat.mul_div_mul_left _ 2 hn.pos, ← card_commute_odd hn, mul_comm,
     card_comm_eq_card_conjClasses_mul_card, nat_card, Nat.mul_div_left _ (mul_pos two_pos hn.pos)]
 
 

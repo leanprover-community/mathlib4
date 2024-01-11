@@ -5,7 +5,7 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Data.Nat.Basic
-import Mathlib.Data.Nat.Bits
+import Mathlib.Init.Data.Nat.Bitwise
 
 #align_import data.nat.order.basic from "leanprover-community/mathlib"@"3ed3f98a1e836241990d3d308f1577e434977130"
 
@@ -16,7 +16,9 @@ import Mathlib.Data.Nat.Bits
 We also have a variety of lemmas which have been deferred from `Data.Nat.Basic` because it is
 easier to prove them with this ordered semiring instance available.
 
-You may find that some theorems can be moved back to `Data.Nat.Basic` by modifying their proofs.
+### TODO
+
+Move most of the theorems to `Data.Nat.Defs` by modifying their proofs.
 -/
 
 
@@ -80,21 +82,6 @@ variable {m n k l : ℕ}
 
 /-! ### Equalities and inequalities involving zero and one -/
 
-theorem one_le_iff_ne_zero : 1 ≤ n ↔ n ≠ 0 :=
-  Nat.add_one_le_iff.trans pos_iff_ne_zero
-#align nat.one_le_iff_ne_zero Nat.one_le_iff_ne_zero
-
-theorem one_lt_iff_ne_zero_and_ne_one : ∀ {n : ℕ}, 1 < n ↔ n ≠ 0 ∧ n ≠ 1
-  | 0 => by decide
-  | 1 => by decide
-  | n + 2 => by simp
-#align nat.one_lt_iff_ne_zero_and_ne_one Nat.one_lt_iff_ne_zero_and_ne_one
-
-theorem le_one_iff_eq_zero_or_eq_one : ∀ {n : ℕ}, n ≤ 1 ↔ n = 0 ∨ n = 1
-  | 0 => by decide
-  | 1 => by decide
-  | n + 2 => by simp
-
 #align nat.mul_ne_zero Nat.mul_ne_zero
 
 -- Porting note: already in Std
@@ -124,12 +111,12 @@ theorem max_eq_zero_iff : max m n = 0 ↔ m = 0 ∧ n = 0 := max_eq_bot
 
 theorem add_eq_max_iff : m + n = max m n ↔ m = 0 ∨ n = 0 := by
   rw [← min_eq_zero_iff]
-  cases' le_total m n with H H <;> simp [H]
+  rcases le_total m n with H | H <;> simp [H]
 #align nat.add_eq_max_iff Nat.add_eq_max_iff
 
 theorem add_eq_min_iff : m + n = min m n ↔ m = 0 ∧ n = 0 := by
   rw [← max_eq_zero_iff]
-  cases' le_total m n with H H <;> simp [H]
+  rcases le_total m n with H | H <;> simp [H]
 #align nat.add_eq_min_iff Nat.add_eq_min_iff
 
 theorem one_le_of_lt (h : n < m) : 1 ≤ m :=
@@ -173,8 +160,8 @@ theorem add_pos_iff_pos_or_pos (m n : ℕ) : 0 < m + n ↔ 0 < m ∨ 0 < n :=
       exact Or.inl (succ_pos _))
     (by
       intro h; cases' h with mpos npos
-      · apply add_pos_left mpos
-      apply add_pos_right _ npos)
+      · apply Nat.add_pos_left mpos
+      apply Nat.add_pos_right _ npos)
 #align nat.add_pos_iff_pos_or_pos Nat.add_pos_iff_pos_or_pos
 
 theorem add_eq_one_iff : m + n = 1 ↔ m = 0 ∧ n = 1 ∨ m = 1 ∧ n = 0 := by
@@ -244,11 +231,11 @@ theorem lt_of_lt_pred (h : m < n - 1) : m < n :=
 #align nat.lt_of_lt_pred Nat.lt_of_lt_pred
 
 theorem le_or_le_of_add_eq_add_pred (h : k + l = m + n - 1) : m ≤ k ∨ n ≤ l := by
-  cases' le_or_lt m k with h' h' <;> [left; right]
+  rcases le_or_lt m k with h' | h' <;> [left; right]
   · exact h'
   · replace h' := add_lt_add_right h' l
     rw [h] at h'
-    cases' n.eq_zero_or_pos with hn hn
+    rcases n.eq_zero_or_pos with hn | hn
     · rw [hn]
       exact zero_le l
     rw [n.add_sub_assoc (Nat.succ_le_of_lt hn), add_lt_add_iff_left] at h'
@@ -322,7 +309,7 @@ theorem add_sub_one_le_mul (hm : m ≠ 0) (hn : n ≠ 0) : m + n - 1 ≤ m * n :
   cases m
   · cases hm rfl
   · rw [succ_add, Nat.add_one_sub_one, succ_mul]
-    exact add_le_add_right (le_mul_of_one_le_right' $ succ_le_iff.2 $ pos_iff_ne_zero.2 hn) _
+    exact add_le_add_right (le_mul_of_one_le_right' <| succ_le_iff.2 <| pos_iff_ne_zero.2 hn) _
 #align nat.add_sub_one_le_mul Nat.add_sub_one_le_mul
 
 /-!
@@ -489,6 +476,9 @@ theorem sub_mod_eq_zero_of_mod_eq (h : m % k = n % k) : (m - n) % k = 0 := by
 theorem one_mod (n : ℕ) : 1 % (n + 2) = 1 :=
   Nat.mod_eq_of_lt (add_lt_add_right n.succ_pos 1)
 #align nat.one_mod Nat.one_mod
+
+theorem one_mod_of_ne_one : ∀ {n : ℕ}, n ≠ 1 → 1 % n = 1
+  | 0, _ | (n + 2), _ => by simp
 
 theorem dvd_sub_mod (k : ℕ) : n ∣ k - k % n :=
   ⟨k / n, tsub_eq_of_eq_add_rev (Nat.mod_add_div k n).symm⟩

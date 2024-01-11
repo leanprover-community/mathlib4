@@ -3,12 +3,11 @@ Copyright (c) 2015 Nathaniel Thomas. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.SMulWithZero
 import Mathlib.Algebra.Field.Defs
-import Mathlib.Data.Int.Units
-import Mathlib.Data.Rat.Defs
-import Mathlib.Data.Rat.Basic
+import Mathlib.Algebra.Function.Indicator
+import Mathlib.Algebra.SMulWithZero
 import Mathlib.GroupTheory.GroupAction.Group
+import Mathlib.GroupTheory.GroupAction.Pi
 import Mathlib.Tactic.Abel
 
 #align_import algebra.module.basic from "leanprover-community/mathlib"@"30413fc89f202a090a54d78e540963ed3de0056e"
@@ -40,8 +39,7 @@ to use a canonical `Module` typeclass throughout.
 semimodule, module, vector space
 -/
 
-
-open Function
+open Function Set
 
 universe u v
 
@@ -225,33 +223,7 @@ theorem AddMonoid.End.int_cast_def (z : ℤ) :
   rfl
 #align add_monoid.End.int_cast_def AddMonoid.End.int_cast_def
 
-/-- A structure containing most informations as in a module, except the fields `zero_smul`
-and `smul_zero`. As these fields can be deduced from the other ones when `M` is an `AddCommGroup`,
-this provides a way to construct a module structure by checking less properties, in
-`Module.ofCore`. -/
--- Porting note: removed @[nolint has_nonempty_instance]
-structure Module.Core extends SMul R M where
-  /-- Scalar multiplication distributes over addition from the left. -/
-  smul_add : ∀ (r : R) (x y : M), r • (x + y) = r • x + r • y
-  /-- Scalar multiplication distributes over addition from the right. -/
-  add_smul : ∀ (r s : R) (x : M), (r + s) • x = r • x + s • x
-  /-- Scalar multiplication distributes over multiplication from the right. -/
-  mul_smul : ∀ (r s : R) (x : M), (r * s) • x = r • s • x
-  /-- Scalar multiplication by one is the identity. -/
-  one_smul : ∀ x : M, (1 : R) • x = x
-#align module.core Module.Core
-
 variable {R M}
-
-/-- Define `Module` without proving `zero_smul` and `smul_zero` by using an auxiliary
-structure `Module.Core`, when the underlying space is an `AddCommGroup`. -/
-def Module.ofCore (H : Module.Core R M) : Module R M :=
-  letI := H.toSMul
-  { H with
-    zero_smul := fun x =>
-      (AddMonoidHom.mk' (fun r : R => r • x) fun r s => H.add_smul r s x).map_zero
-    smul_zero := fun r => (AddMonoidHom.mk' ((· • ·) r) (H.smul_add r)).map_zero }
-#align module.of_core Module.ofCore
 
 theorem Convex.combo_eq_smul_sub_add [Module R M] {x y : M} {a b : R} (h : a + b = 1) :
     a • x + b • y = b • (y - x) + x :=
@@ -319,7 +291,7 @@ def Module.addCommMonoidToAddCommGroup [Ring R] [AddCommMonoid M] [Module R M] :
     zsmul := fun z a => (z : R) • a
     zsmul_zero' := fun a => by simpa only [Int.cast_zero] using zero_smul R a
     zsmul_succ' := fun z a => by simp [add_comm, add_smul]
-    zsmul_neg' := fun z a => by simp [←smul_assoc, neg_one_smul] }
+    zsmul_neg' := fun z a => by simp [← smul_assoc, neg_one_smul] }
 #align module.add_comm_monoid_to_add_comm_group Module.addCommMonoidToAddCommGroup
 
 variable {R}
@@ -357,6 +329,27 @@ instance (priority := 910) Semiring.toOppositeModule [Semiring R] : Module Rᵐ�
 def RingHom.toModule [Semiring R] [Semiring S] (f : R →+* S) : Module R S :=
   Module.compHom S f
 #align ring_hom.to_module RingHom.toModule
+
+/-- If the module action of `R` on `S` is compatible with multiplication on `S`, then
+`fun x ↦ x • 1` is a ring homomorphism from `R` to `S`.
+
+This is the `RingHom` version of `MonoidHom.smulOneHom`.
+
+When `R` is commutative, usually `algebraMap` should be preferred. -/
+@[simps!] def RingHom.smulOneHom
+    [Semiring R] [NonAssocSemiring S] [Module R S] [IsScalarTower R S S] : R →+* S where
+  __ := MonoidHom.smulOneHom
+  map_zero' := zero_smul R 1
+  map_add' := (add_smul · · 1)
+
+/-- A homomorphism between semirings R and S can be equivalently specified by a R-module
+structure on S such that S/S/R is a scalar tower. -/
+def ringHomEquivModuleIsScalarTower [Semiring R] [Semiring S] :
+    (R →+* S) ≃ {_inst : Module R S // IsScalarTower R S S} where
+  toFun f := ⟨Module.compHom S f, SMul.comp.isScalarTower _⟩
+  invFun := fun ⟨_, _⟩ ↦ RingHom.smulOneHom
+  left_inv f := RingHom.ext fun r ↦ mul_one (f r)
+  right_inv := fun ⟨_, _⟩ ↦ Subtype.ext <| Module.ext _ _ <| funext₂ <| smul_one_smul S
 
 section AddCommMonoid
 
@@ -599,6 +592,13 @@ theorem smul_eq_zero : c • x = 0 ↔ c = 0 ∨ x = 0 :=
 theorem smul_ne_zero_iff : c • x ≠ 0 ↔ c ≠ 0 ∧ x ≠ 0 := by rw [Ne.def, smul_eq_zero, not_or]
 #align smul_ne_zero_iff smul_ne_zero_iff
 
+lemma smul_eq_zero_iff_left (hx : x ≠ 0) : c • x = 0 ↔ c = 0 := by simp [hx]
+lemma smul_eq_zero_iff_right (hc : c ≠ 0) : c • x = 0 ↔ x = 0 := by simp [hc]
+#align smul_eq_zero_iff_eq' smul_eq_zero_iff_right
+lemma smul_ne_zero_iff_left (hx : x ≠ 0) : c • x ≠ 0 ↔ c ≠ 0 := by simp [hx]
+lemma smul_ne_zero_iff_right (hc : c ≠ 0) : c • x ≠ 0 ↔ x ≠ 0 := by simp [hc]
+#align smul_ne_zero_iff_ne' smul_ne_zero_iff_right
+
 end SMulWithZero
 
 section Module
@@ -649,7 +649,7 @@ section SMulInjective
 variable (M)
 
 theorem smul_right_injective [NoZeroSMulDivisors R M] {c : R} (hc : c ≠ 0) :
-    Function.Injective ((· • ·) c : M → M) :=
+    Function.Injective (c • · : M → M) :=
   (injective_iff_map_eq_zero (smulAddHom R M c)).2 fun _ ha => (smul_eq_zero.mp ha).resolve_left hc
 #align smul_right_injective smul_right_injective
 
@@ -708,6 +708,22 @@ theorem smul_left_injective {x : M} (hx : x ≠ 0) : Function.Injective fun c : 
 
 end SMulInjective
 
+instance [NoZeroSMulDivisors ℤ M] : NoZeroSMulDivisors ℕ M :=
+  ⟨fun {c x} hcx ↦ by rwa [nsmul_eq_smul_cast ℤ c x, smul_eq_zero, Nat.cast_eq_zero] at hcx⟩
+
+variable (R M)
+
+theorem NoZeroSMulDivisors.int_of_charZero [CharZero R] : NoZeroSMulDivisors ℤ M :=
+  ⟨fun {z x} h ↦ by simpa [← smul_one_smul R z x] using h⟩
+
+/-- Only a ring of characteristic zero can can have a non-trivial module without additive or
+scalar torsion. -/
+theorem CharZero.of_noZeroSMulDivisors [Nontrivial M] [NoZeroSMulDivisors ℤ M] : CharZero R := by
+  refine ⟨fun {n m h} ↦ ?_⟩
+  obtain ⟨x, hx⟩ := exists_ne (0 : M)
+  replace h : (n : ℤ) • x = (m : ℤ) • x := by simp [zsmul_eq_smul_cast R, h]
+  simpa using smul_left_injective ℤ hx h
+
 end Module
 
 section GroupWithZero
@@ -717,7 +733,7 @@ variable [GroupWithZero R] [AddMonoid M] [DistribMulAction R M]
 -- see note [lower instance priority]
 /-- This instance applies to `DivisionSemiring`s, in particular `NNReal` and `NNRat`. -/
 instance (priority := 100) GroupWithZero.toNoZeroSMulDivisors : NoZeroSMulDivisors R M :=
-  ⟨fun {_ _} h => or_iff_not_imp_left.2 fun hc => (smul_eq_zero_iff_eq' hc).1 h⟩
+  ⟨fun {a _} h ↦ or_iff_not_imp_left.2 fun ha ↦ (smul_eq_zero_iff_eq <| Units.mk0 a ha).1 h⟩
 #align group_with_zero.to_no_zero_smul_divisors GroupWithZero.toNoZeroSMulDivisors
 
 end GroupWithZero
@@ -744,5 +760,79 @@ theorem Nat.smul_one_eq_coe {R : Type*} [Semiring R] (m : ℕ) : m • (1 : R) =
 theorem Int.smul_one_eq_coe {R : Type*} [Ring R] (m : ℤ) : m • (1 : R) = ↑m := by
   rw [zsmul_eq_mul, mul_one]
 #align int.smul_one_eq_coe Int.smul_one_eq_coe
+
+namespace Function
+
+lemma support_smul_subset_left [Zero R] [Zero M] [SMulWithZero R M] (f : α → R) (g : α → M) :
+    support (f • g) ⊆ support f := fun x hfg hf ↦ hfg <| by rw [Pi.smul_apply', hf, zero_smul]
+#align function.support_smul_subset_left Function.support_smul_subset_left
+
+lemma support_const_smul_of_ne_zero [Zero R] [Zero M] [SMulWithZero R M] [NoZeroSMulDivisors R M]
+    (c : R) (g : α → M) (hc : c ≠ 0) : support (c • g) = support g :=
+  ext fun x ↦ by simp only [hc, mem_support, Pi.smul_apply, Ne.def, smul_eq_zero, false_or_iff]
+#align function.support_const_smul_of_ne_zero Function.support_const_smul_of_ne_zero
+
+lemma support_smul [Zero R] [Zero M] [SMulWithZero R M] [NoZeroSMulDivisors R M] (f : α → R)
+    (g : α → M) : support (f • g) = support f ∩ support g :=
+  ext fun _ => smul_ne_zero_iff
+#align function.support_smul Function.support_smul
+
+lemma support_smul_subset_right [Zero M] [SMulZeroClass R M] (a : R) (f : α → M) :
+    support (a • f) ⊆ support f := fun x hbf hf =>
+  hbf <| by rw [Pi.smul_apply, hf, smul_zero]
+#align function.support_smul_subset_right Function.support_smul_subset_right
+
+end Function
+
+namespace Set
+section SMulZeroClass
+variable [Zero R] [Zero M] [SMulZeroClass R M]
+
+lemma indicator_smul_apply (s : Set α) (r : α → R) (f : α → M) (a : α) :
+    indicator s (fun a ↦ r a • f a) a = r a • indicator s f a := by
+  dsimp only [indicator]
+  split_ifs
+  exacts [rfl, (smul_zero (r a)).symm]
+#align set.indicator_smul_apply Set.indicator_smul_apply
+
+lemma indicator_smul (s : Set α) (r : α → R) (f : α → M) :
+    indicator s (fun a ↦ r a • f a) = fun a ↦ r a • indicator s f a :=
+  funext <| indicator_smul_apply s r f
+#align set.indicator_smul Set.indicator_smul
+
+lemma indicator_const_smul_apply (s : Set α) (r : R) (f : α → M) (a : α) :
+    indicator s (r • f ·) a = r • indicator s f a :=
+  indicator_smul_apply s (fun _ ↦ r) f a
+#align set.indicator_const_smul_apply Set.indicator_const_smul_apply
+
+lemma indicator_const_smul (s : Set α) (r : R) (f : α → M) :
+    indicator s (r • f ·) = (r • indicator s f ·) :=
+  funext <| indicator_const_smul_apply s r f
+#align set.indicator_const_smul Set.indicator_const_smul
+
+end SMulZeroClass
+
+section SMulWithZero
+variable [Zero R] [Zero M] [SMulWithZero R M]
+
+lemma indicator_smul_apply_left (s : Set α) (r : α → R) (f : α → M) (a : α) :
+    indicator s (fun a ↦ r a • f a) a = indicator s r a • f a := by
+  dsimp only [indicator]
+  split_ifs
+  exacts [rfl, (zero_smul _ (f a)).symm]
+
+lemma indicator_smul_left (s : Set α) (r : α → R) (f : α → M) :
+    indicator s (fun a ↦ r a • f a) = fun a ↦ indicator s r a • f a :=
+  funext <| indicator_smul_apply_left _ _ _
+
+lemma indicator_smul_const_apply (s : Set α) (r : α → R) (m : M) (a : α) :
+    indicator s (r · • m) a = indicator s r a • m := indicator_smul_apply_left _ _ _ _
+
+lemma indicator_smul_const (s : Set α) (r : α → R) (m : M) :
+    indicator s (r · • m) = (indicator s r · • m) :=
+  funext <| indicator_smul_const_apply _ _ _
+
+end SMulWithZero
+end Set
 
 assert_not_exists Multiset

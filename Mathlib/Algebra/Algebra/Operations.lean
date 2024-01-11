@@ -14,6 +14,7 @@ import Mathlib.Data.Finset.Pointwise
 import Mathlib.Data.Set.Semiring
 import Mathlib.Data.Set.Pointwise.BigOperators
 import Mathlib.GroupTheory.GroupAction.SubMulAction.Pointwise
+import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 
 #align_import algebra.algebra.operations from "leanprover-community/mathlib"@"27b54c47c3137250a521aa64e9f1db90be5f6a26"
 
@@ -185,8 +186,8 @@ protected theorem mul_induction_on {C : A → Prop} {r : A} (hr : r ∈ M * N)
 /-- A dependent version of `mul_induction_on`. -/
 @[elab_as_elim]
 protected theorem mul_induction_on' {C : ∀ r, r ∈ M * N → Prop}
-    (hm : ∀ m (_ : m ∈ M), ∀ n (_ : n ∈ N), C (m * n) (mul_mem_mul ‹_› ‹_›))
-    (ha : ∀ x hx y hy, C x hx → C y hy → C (x + y) (add_mem ‹_› ‹_›)) {r : A} (hr : r ∈ M * N) :
+    (hm : ∀ m (hm : m ∈ M) n (hn : n ∈ N), C (m * n) (mul_mem_mul hm hn))
+    (ha : ∀ x hx y hy, C x hx → C y hy → C (x + y) (add_mem hx hy)) {r : A} (hr : r ∈ M * N) :
     C r hr := by
   refine' Exists.elim _ fun (hr : r ∈ M * N) (hc : C r hr) => hc
   exact
@@ -389,6 +390,20 @@ theorem mem_mul_span_singleton {x y : A} : x ∈ P * span R {y} ↔ ∃ z ∈ P,
   simp_rw [(· * ·), Mul.mul, map₂_span_singleton_eq_map_flip]
   rfl
 #align submodule.mem_mul_span_singleton Submodule.mem_mul_span_singleton
+
+lemma span_singleton_mul {x : A} {p : Submodule R A} :
+    Submodule.span R {x} * p = x • p := ext fun _ ↦ mem_span_singleton_mul
+
+lemma mem_smul_iff_inv_mul_mem {S} [Field S] [Algebra R S] {x : S} {p : Submodule R S} {y : S}
+    (hx : x ≠ 0) : y ∈ x • p ↔ x⁻¹ * y ∈ p := by
+  constructor
+  · rintro ⟨a, ha : a ∈ p, rfl⟩; simpa [inv_mul_cancel_left₀ hx]
+  · exact fun h ↦ ⟨_, h, by simp [mul_inv_cancel_left₀ hx]⟩
+
+lemma mul_mem_smul_iff {S} [CommRing S] [Algebra R S] {x : S} {p : Submodule R S} {y : S}
+    (hx : x ∈ nonZeroDivisors S) :
+    x * y ∈ x • p ↔ y ∈ p :=
+  show Exists _ ↔ _ by simp [mul_cancel_left_mem_nonZeroDivisors hx]
 
 /-- Sub-R-modules of an R-algebra form an idempotent semiring. -/
 instance idemSemiring : IdemSemiring (Submodule R A) :=
@@ -636,7 +651,7 @@ instance moduleSet : Module (SetSemiring A) (Submodule R A) where
   mul_smul s t P := by
     simp_rw [HSMul.hSMul, SetSemiring.down_mul, ← mul_assoc, span_mul_span]
   one_smul P := by
-    simp_rw [HSMul.hSMul, SetSemiring.down_one, ←one_eq_span_one_set, one_mul]
+    simp_rw [HSMul.hSMul, SetSemiring.down_one, ← one_eq_span_one_set, one_mul]
   zero_smul P := by
     simp_rw [HSMul.hSMul, SetSemiring.down_zero, span_empty, bot_mul, bot_eq_zero]
   smul_zero _ := mul_bot _
@@ -655,19 +670,12 @@ theorem smul_le_smul {s t : SetSemiring A} {M N : Submodule R A}
   mul_le_mul (span_mono h₁) h₂
 #align submodule.smul_le_smul Submodule.smul_le_smul
 
-theorem smul_singleton (a : A) (M : Submodule R A) :
+theorem singleton_smul (a : A) (M : Submodule R A) :
     Set.up ({a} : Set A) • M = M.map (LinearMap.mulLeft R a) := by
   conv_lhs => rw [← span_eq M]
-  change span _ _ * span _ _ = _
-  rw [span_mul_span]
-  apply le_antisymm
-  · rw [span_le]
-    rintro _ ⟨b, m, hb, hm, rfl⟩
-    rw [SetLike.mem_coe, mem_map, Set.mem_singleton_iff.mp hb]
-    exact ⟨m, hm, rfl⟩
-  · rintro _ ⟨m, hm, rfl⟩
-    exact subset_span ⟨a, m, Set.mem_singleton a, hm, rfl⟩
-#align submodule.smul_singleton Submodule.smul_singleton
+  rw [smul_def, SetSemiring.down_up, span_mul_span, singleton_mul]
+  exact (map (LinearMap.mulLeft R a) M).span_eq
+#align submodule.smul_singleton Submodule.singleton_smul
 
 section Quotient
 

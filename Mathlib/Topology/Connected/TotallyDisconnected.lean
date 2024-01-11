@@ -95,7 +95,7 @@ theorem isTotallyDisconnected_of_isClopen_set {X : Type*} [TopologicalSpace X]
     IsTotallyDisconnected (Set.univ : Set X) := by
   rintro S - hS
   unfold Set.Subsingleton
-  by_contra' h_contra
+  by_contra! h_contra
   rcases h_contra with ⟨x, hx, y, hy, hxy⟩
   obtain ⟨U, hU, hxU, hyU⟩ := hX hxy
   specialize
@@ -170,7 +170,7 @@ lemma Embedding.isTotallyDisconnected_image [TopologicalSpace β] {f : α → β
 
 lemma Embedding.isTotallyDisconnected_range [TopologicalSpace β] {f : α → β} (hf : Embedding f) :
     IsTotallyDisconnected (range f) ↔ TotallyDisconnectedSpace α := by
-  rw [TotallyDisconnectedSpace_iff, ← image_univ, hf.isTotallyDisconnected_image]
+  rw [totallyDisconnectedSpace_iff, ← image_univ, hf.isTotallyDisconnected_image]
 
 lemma totallyDisconnectedSpace_subtype_iff {s : Set α} :
     TotallyDisconnectedSpace s ↔ IsTotallyDisconnected s := by

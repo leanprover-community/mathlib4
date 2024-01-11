@@ -51,8 +51,9 @@ theorem exp_neg_mul_rpow_isLittleO_exp_neg {p b : ℝ} (hb : 0 < b) (hp : 1 < p)
   suffices Tendsto (fun x => x * (b * x ^ (p - 1) + -1)) atTop atTop by
     refine Tendsto.congr' ?_ this
     refine eventuallyEq_of_mem (Ioi_mem_atTop (0 : ℝ)) (fun x hx => ?_)
-    rw [rpow_sub_one (ne_of_gt hx)]
-    field_simp [(by exact ne_of_gt hx : x ≠ 0)]
+    rw [mem_Ioi] at hx
+    rw [rpow_sub_one hx.ne']
+    field_simp [hx.ne']
     ring
   apply Tendsto.atTop_mul_atTop tendsto_id
   refine tendsto_atTop_add_const_right atTop (-1 : ℝ) ?_
@@ -79,13 +80,12 @@ theorem rpow_mul_exp_neg_mul_sq_isLittleO_exp_neg {b : ℝ} (hb : 0 < b) (s : �
 theorem integrableOn_rpow_mul_exp_neg_rpow {p s : ℝ} (hs : -1 < s) (hp : 1 ≤ p) :
     IntegrableOn (fun x : ℝ => x ^ s * exp (- x ^ p)) (Ioi 0) := by
   obtain hp | hp := le_iff_lt_or_eq.mp hp
-  · have h_exp : ∀ x, ContinuousAt (fun x => exp (- x)) x :=
-        fun x => (by exact continuousAt_neg : ContinuousAt (fun x => -x) x).exp
-    rw [← Ioc_union_Ioi_eq_Ioi (zero_le_one : (0 : ℝ) ≤ 1), integrableOn_union]
+  · have h_exp : ∀ x, ContinuousAt (fun x => exp (- x)) x := fun x => continuousAt_neg.exp
+    rw [← Ioc_union_Ioi_eq_Ioi zero_le_one, integrableOn_union]
     constructor
     · rw [← integrableOn_Icc_iff_integrableOn_Ioc]
       refine IntegrableOn.mul_continuousOn ?_ ?_ isCompact_Icc
-      · refine (intervalIntegrable_iff_integrable_Icc_of_le zero_le_one).mp ?_
+      · refine (intervalIntegrable_iff_integrableOn_Icc_of_le zero_le_one).mp ?_
         exact intervalIntegral.intervalIntegrable_rpow' hs
       · intro x _
         change ContinuousWithinAt ((fun x => exp (- x)) ∘ (fun x => x ^ p)) (Icc 0 1) x
@@ -151,7 +151,7 @@ theorem integrable_exp_neg_mul_sq {b : ℝ} (hb : 0 < b) : Integrable fun x : �
 theorem integrableOn_Ioi_exp_neg_mul_sq_iff {b : ℝ} :
     IntegrableOn (fun x : ℝ => exp (-b * x ^ 2)) (Ioi 0) ↔ 0 < b := by
   refine' ⟨fun h => _, fun h => (integrable_exp_neg_mul_sq h).integrableOn⟩
-  by_contra' hb
+  by_contra! hb
   have : ∫⁻ _ : ℝ in Ioi 0, 1 ≤ ∫⁻ x : ℝ in Ioi 0, ‖exp (-b * x ^ 2)‖₊ := by
     apply lintegral_mono (fun x ↦ _)
     simp only [neg_mul, ENNReal.one_le_coe_iff, ← toNNReal_one, toNNReal_le_iff_le_coe,
@@ -172,7 +172,7 @@ theorem integrable_mul_exp_neg_mul_sq {b : ℝ} (hb : 0 < b) :
 
 theorem norm_cexp_neg_mul_sq (b : ℂ) (x : ℝ) :
     ‖Complex.exp (-b * (x : ℂ) ^ 2)‖ = exp (-b.re * x ^ 2) := by
-  rw [Complex.norm_eq_abs, Complex.abs_exp, ←ofReal_pow, mul_comm (-b) _, ofReal_mul_re, neg_re,
+  rw [Complex.norm_eq_abs, Complex.abs_exp, ← ofReal_pow, mul_comm (-b) _, re_ofReal_mul, neg_re,
     mul_comm]
 #align norm_cexp_neg_mul_sq norm_cexp_neg_mul_sq
 
@@ -580,7 +580,7 @@ theorem _root_.fourier_transform_gaussian_pi (hb : 0 < b.re) :
       (1 : ℂ) / b ^ (1 / 2 : ℂ) * cexp (-π / b * (t : ℂ) ^ 2) := by
   ext1 t
   simp_rw [fourierIntegral_eq_integral_exp_smul, smul_eq_mul]
-  have h1 : 0 < re (π * b) := by rw [ofReal_mul_re]; exact mul_pos pi_pos hb
+  have h1 : 0 < re (π * b) := by rw [re_ofReal_mul]; exact mul_pos pi_pos hb
   have h2 : b ≠ 0 := by contrapose! hb; rw [hb, zero_re]
   convert _root_.fourier_transform_gaussian h1 (-2 * π * t) using 1
   · congr 1 with x : 1
@@ -628,7 +628,7 @@ theorem isLittleO_exp_neg_mul_sq_cocompact {a : ℂ} (ha : 0 < a.re) (s : ℝ) :
           tendsto_rpow_abs_mul_exp_neg_mul_sq_cocompact ha (-s))
     refine' (eventually_cofinite_ne 0).mp (eventually_of_forall fun x _ => _)
     dsimp only
-    rw [norm_mul, norm_of_nonneg (rpow_nonneg_of_nonneg (abs_nonneg _) _), mul_comm,
+    rw [norm_mul, norm_of_nonneg (rpow_nonneg (abs_nonneg _) _), mul_comm,
       rpow_neg (abs_nonneg x), div_eq_mul_inv, norm_of_nonneg (exp_pos _).le]
 #align is_o_exp_neg_mul_sq_cocompact isLittleO_exp_neg_mul_sq_cocompact
 
@@ -637,10 +637,10 @@ theorem Complex.tsum_exp_neg_mul_int_sq {a : ℂ} (ha : 0 < a.re) :
       (1 : ℂ) / a ^ (1 / 2 : ℂ) * ∑' n : ℤ, cexp (-π / a * (n : ℂ) ^ 2) := by
   let f := fun x : ℝ => cexp (-π * a * (x : ℂ) ^ 2)
   have h1 : 0 < (↑π * a).re := by
-    rw [ofReal_mul_re]
+    rw [re_ofReal_mul]
     exact mul_pos pi_pos ha
   have h2 : 0 < (↑π / a).re := by
-    rw [div_eq_mul_inv, ofReal_mul_re, inv_re]
+    rw [div_eq_mul_inv, re_ofReal_mul, inv_re]
     refine' mul_pos pi_pos (div_pos ha <| normSq_pos.mpr _)
     contrapose! ha
     rw [ha, zero_re]

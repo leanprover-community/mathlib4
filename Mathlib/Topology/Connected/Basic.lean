@@ -99,12 +99,12 @@ theorem isPreconnected_of_forall {s : Set α} (x : α)
     rcases H y ys with ⟨t, ts, xt, -, -⟩
     exact ts xt
   -- porting note: todo: use `wlog xu : x ∈ u := hs xs using u v y z, v u z y`
-  cases hs xs
-  case inl xu =>
+  cases hs xs with
+  | inl xu =>
     rcases H y ys with ⟨t, ts, xt, yt, ht⟩
     have := ht u v hu hv (ts.trans hs) ⟨x, xt, xu⟩ ⟨y, yt, yv⟩
     exact this.imp fun z hz => ⟨ts hz.1, hz.2⟩
-  case inr xv =>
+  | inr xv =>
     rcases H z zs with ⟨t, ts, xt, zt, ht⟩
     have := ht v u hv hu (ts.trans <| by rwa [union_comm]) ⟨x, xt, xv⟩ ⟨z, zt, zu⟩
     exact this.imp fun _ h => ⟨ts h.1, h.2.2, h.2.1⟩
@@ -172,12 +172,12 @@ theorem IsPreconnected.biUnion_of_reflTransGen {ι : Type*} {t : Set ι} {s : ι
   let R := fun i j : ι => (s i ∩ s j).Nonempty ∧ i ∈ t
   have P : ∀ i, i ∈ t → ∀ j, j ∈ t → ReflTransGen R i j →
       ∃ p, p ⊆ t ∧ i ∈ p ∧ j ∈ p ∧ IsPreconnected (⋃ j ∈ p, s j) := fun i hi j hj h => by
-    induction h
-    case refl =>
+    induction h with
+    | refl =>
       refine ⟨{i}, singleton_subset_iff.mpr hi, mem_singleton i, mem_singleton i, ?_⟩
       rw [biUnion_singleton]
       exact H i hi
-    case tail j k _ hjk ih =>
+    | @tail j k _ hjk ih =>
       obtain ⟨p, hpt, hip, hjp, hp⟩ := ih hjk.2
       refine ⟨insert k p, insert_subset_iff.mpr ⟨hj, hpt⟩, mem_insert_of_mem k hip,
         mem_insert k p, ?_⟩
@@ -331,7 +331,7 @@ protected theorem IsPreconnected.image [TopologicalSpace β] {s : Set α} (H : I
 /-- The image of a connected set is connected as well. -/
 protected theorem IsConnected.image [TopologicalSpace β] {s : Set α} (H : IsConnected s) (f : α → β)
     (hf : ContinuousOn f s) : IsConnected (f '' s) :=
-  ⟨nonempty_image_iff.mpr H.nonempty, H.isPreconnected.image f hf⟩
+  ⟨image_nonempty.mpr H.nonempty, H.isPreconnected.image f hf⟩
 #align is_connected.image IsConnected.image
 
 theorem isPreconnected_closed_iff {s : Set α} :
@@ -1043,9 +1043,9 @@ theorem isConnected_iff_sUnion_disjoint_open {s : Set α} :
         (∀ u ∈ U, IsOpen u) → (s ⊆ ⋃₀ ↑U) → ∃ u ∈ U, s ⊆ u := by
   rw [IsConnected, isPreconnected_iff_subset_of_disjoint]
   refine ⟨fun ⟨hne, h⟩ U hU hUo hsU => ?_, fun h => ⟨?_, fun u v hu hv hs hsuv => ?_⟩⟩
-  · induction U using Finset.induction_on
-    case empty => exact absurd (by simpa using hsU) hne.not_subset_empty
-    case insert u U uU IH =>
+  · induction U using Finset.induction_on with
+    | empty => exact absurd (by simpa using hsU) hne.not_subset_empty
+    | @insert u U uU IH =>
       simp only [← ball_cond_comm, Finset.forall_mem_insert, Finset.exists_mem_insert,
         Finset.coe_insert, sUnion_insert, implies_true, true_and] at *
       refine (h _ hUo.1 (⋃₀ ↑U) (isOpen_sUnion hUo.2) hsU ?_).imp_right ?_
@@ -1311,7 +1311,7 @@ continuous on a set `s`, is constant on s, then s is preconnected -/
 theorem isPreconnected_of_forall_constant {s : Set α}
     (hs : ∀ f : α → Bool, ContinuousOn f s → ∀ x ∈ s, ∀ y ∈ s, f x = f y) : IsPreconnected s := by
   unfold IsPreconnected
-  by_contra'
+  by_contra!
   rcases this with ⟨u, v, u_op, v_op, hsuv, ⟨x, x_in_s, x_in_u⟩, ⟨y, y_in_s, y_in_v⟩, H⟩
   have hy : y ∉ u := fun y_in_u => eq_empty_iff_forall_not_mem.mp H y ⟨y_in_s, ⟨y_in_u, y_in_v⟩⟩
   have : ContinuousOn u.boolIndicator s := by

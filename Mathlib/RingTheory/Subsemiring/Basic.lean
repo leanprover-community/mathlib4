@@ -46,7 +46,7 @@ theorem natCast_mem [AddSubmonoidWithOneClass S R] (n : ℕ) : (n : R) ∈ s := 
 @[aesop safe apply (rule_sets [SetLike])]
 lemma ofNat_mem [AddSubmonoidWithOneClass S R] (s : S) (n : ℕ) [n.AtLeastTwo] :
     no_index (OfNat.ofNat n) ∈ s := by
-  rw [←Nat.cast_eq_ofNat]; exact natCast_mem s n
+  rw [← Nat.cast_eq_ofNat]; exact natCast_mem s n
 
 instance (priority := 74) AddSubmonoidWithOneClass.toAddMonoidWithOne
     [AddSubmonoidWithOneClass S R] : AddMonoidWithOne s :=

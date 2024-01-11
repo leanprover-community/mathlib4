@@ -141,7 +141,7 @@ lemma of_retract [f : Flat R M] (i : N →ₗ[R] M) (r : M →ₗ[R] N) (h : r.c
     rw [← LinearMap.comp_apply, ← lTensor_comp, h]
     simp
   rw [← Function.Injective.of_comp_iff h₁ (rTensor N I.subtype), ← LinearMap.coe_comp]
-  rw [LinearMap.lTensor_comp_rTensor, ←LinearMap.rTensor_comp_lTensor]
+  rw [LinearMap.lTensor_comp_rTensor, ← LinearMap.rTensor_comp_lTensor]
   rw [LinearMap.coe_comp, Function.Injective.of_comp_iff (f hI)]
   apply Function.RightInverse.injective (g := lTensor _ r)
   intro x
