@@ -219,13 +219,15 @@ instance instCompleteSpace [CompleteSpace 𝕜] [CompleteSpace A] :
 algebra homomorphism `Unitization.splitMul 𝕜 A`, but replace the bornology and the uniformity so
 that they coincide with `𝕜 × A`. -/
 noncomputable instance instMetricSpace : MetricSpace (Unitization 𝕜 A) :=
-  (normedRingAux.toMetricSpace.replaceUniformity uniformity_eq_aux).replaceBornology
-    fun s => Filter.ext_iff.1 cobounded_eq_aux (sᶜ)
+  letI : NormedRing (Unitization 𝕜 A) := normedRingAux
+  (inferInstanceAs <| MetricSpace (Unitization 𝕜 A))
+    |>.replaceUniformity (uniformity_eq_aux (𝕜 := 𝕜) (A := A))
+    |>.replaceBornology fun s => Filter.ext_iff.1 cobounded_eq_aux (sᶜ)
 
 /-- Pull back the normed ring structure from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A` using the
 algebra homomorphism `Unitization.splitMul 𝕜 A`. -/
-noncomputable instance instNormedRing : NormedRing (Unitization 𝕜 A)
-    where
+noncomputable instance instNormedRing : NormedRing (Unitization 𝕜 A) where
+  __ : MetricSpace _ := inferInstance
   dist_eq := normedRingAux.dist_eq
   norm_mul := normedRingAux.norm_mul
   norm := normedRingAux.norm
@@ -257,8 +259,9 @@ lemma nndist_inr (a b : A) : nndist (a : Unitization 𝕜 A) (b : Unitization �
 
 /- These examples verify that the bornology and uniformity (hence also the topology) are the
 correct ones. -/
-example : (instNormedRing (𝕜 := 𝕜) (A := A)).toMetricSpace = instMetricSpace := rfl
+example : @NormedAddGroup.toMetricSpace (Unitization 𝕜 A) _ = instMetricSpace := rfl
 example : (instMetricSpace (𝕜 := 𝕜) (A := A)).toBornology = instBornology := rfl
 example : (instMetricSpace (𝕜 := 𝕜) (A := A)).toUniformSpace = instUniformSpace := rfl
+
 
 end Unitization

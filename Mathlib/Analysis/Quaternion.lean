@@ -91,6 +91,8 @@ theorem nnnorm_star (a : ℍ) : ‖star a‖₊ = ‖a‖₊ :=
 #align quaternion.nnnorm_star Quaternion.nnnorm_star
 
 noncomputable instance : NormedDivisionRing ℍ where
+  toDivisionRing := inferInstance
+  __ : NormedAddCommGroup _ := inferInstance
   dist_eq _ _ := rfl
   norm_mul' a b := by
     simp only [norm_eq_sqrt_real_inner, inner_self, normSq.map_mul]
