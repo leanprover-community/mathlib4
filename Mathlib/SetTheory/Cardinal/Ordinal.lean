@@ -1104,23 +1104,30 @@ theorem mk_equiv_of_lift_eq (h : lift.{v} #α = lift.{u} #β') : #(α ≃ β') =
 theorem mk_equiv_of_eq (h : #α = #β) : #(α ≃ β) = 2 ^ #α := by
   rw [mk_equiv_of_lift_eq (lift_inj.mpr h), lift_id]
 
-theorem mk_embedding_eq_arrow_of_lift_le (h : lift.{u} #β' ≤ lift.{v} #α) :
-    #(β' ↪ α) = #(β' → α) := (mk_embedding_le_arrow _ _).antisymm <| by
-  conv_rhs => rw [← (Equiv.embeddingCongr (.refl _)
-    (Cardinal.eq.mp <| mul_eq_self <| aleph0_le_mk α).some).cardinal_eq]
-  obtain ⟨e⟩ := lift_mk_le'.mp h
-  exact ⟨⟨fun f ↦ ⟨fun b ↦ ⟨e b, f b⟩, fun _ _ h ↦ e.injective congr(Prod.fst $h)⟩,
-    fun f g h ↦ funext fun b ↦ congr(Prod.snd <| $h b)⟩⟩
+variable (lle : lift.{u} #β' ≤ lift.{v} #α) (le : #β ≤ #α)
 
-theorem mk_embedding_eq_arrow_of_le (h : #β ≤ #α) : #(β ↪ α) = #(β → α) :=
-  mk_embedding_eq_arrow_of_lift_le (lift_le.mpr h)
+theorem mk_embedding_eq_arrow_of_lift_le : #(β' ↪ α) = #(β' → α) :=
+  (mk_embedding_le_arrow _ _).antisymm <| by
+    conv_rhs => rw [← (Equiv.embeddingCongr (.refl _)
+      (Cardinal.eq.mp <| mul_eq_self <| aleph0_le_mk α).some).cardinal_eq]
+    obtain ⟨e⟩ := lift_mk_le'.mp lle
+    exact ⟨⟨fun f ↦ ⟨fun b ↦ ⟨e b, f b⟩, fun _ _ h ↦ e.injective congr(Prod.fst $h)⟩,
+      fun f g h ↦ funext fun b ↦ congr(Prod.snd <| $h b)⟩⟩
 
-theorem mk_embedding_of_lift_le (h : lift.{u} #β' ≤ lift.{v} #α) :
-    #(β' ↪ α) = lift.{v} #α ^ lift.{u} #β' := by
-  rw [mk_embedding_eq_arrow_of_lift_le h, mk_arrow]
+theorem mk_embedding_eq_arrow_of_le : #(β ↪ α) = #(β → α) :=
+  mk_embedding_eq_arrow_of_lift_le (lift_le.mpr le)
 
-theorem mk_embedding_of_le (h : #β ≤ #α) : #(β ↪ α) = #α ^ #β := by
-  rw [mk_embedding_eq_arrow_of_le h, power_def]
+theorem mk_surjective_eq_arrow_of_lift_le : #{f : α → β' | Surjective f} = #(α → β') :=
+  (mk_set_le _).antisymm <|
+    have ⟨e⟩ : Nonempty (α ≃ α ⊕ β') := by
+      simp_rw [← lift_mk_eq', mk_sum, lift_add, lift_lift]; rw [lift_umax.{u,v}, eq_comm]
+      exact add_eq_left (aleph0_le_lift.mpr <| aleph0_le_mk α) lle
+    ⟨⟨fun f ↦ ⟨fun a ↦ (e a).elim f id, fun b ↦ ⟨e.symm (.inr b), congr_arg _ (e.right_inv _)⟩⟩,
+      fun f g h ↦ funext fun a ↦ by
+        simpa only [e.apply_symm_apply] using congr_fun (Subtype.ext_iff.mp h) (e.symm <| .inl a)⟩⟩
+
+theorem mk_surjective_eq_arrow_of_le : #{f : α → β | Surjective f} = #(α → β) :=
+  mk_surjective_eq_arrow_of_lift_le (lift_le.mpr le)
 
 end Function
 
