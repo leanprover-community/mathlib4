@@ -3,7 +3,7 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Thomas Browning, Patrick Lutz
 -/
-import Mathlib.FieldTheory.Adjoin
+import Mathlib.FieldTheory.Extension
 import Mathlib.FieldTheory.SplittingField.Construction
 import Mathlib.GroupTheory.Solvable
 
