@@ -274,16 +274,16 @@ theorem linfty_op_norm_col (v : m → α) : ‖col v‖ = ‖v‖ :=
   congr_arg ((↑) : ℝ≥0 → ℝ) <| linfty_op_nnnorm_col v
 #align matrix.linfty_op_norm_col Matrix.linfty_op_norm_col
 
-@[simp]
+@[simp, nolint simpNF]
 theorem linfty_op_nnnorm_row (v : n → α) : ‖row v‖₊ = ∑ i, ‖v i‖₊ := by simp [linfty_op_nnnorm_def]
 #align matrix.linfty_op_nnnorm_row Matrix.linfty_op_nnnorm_row
 
-@[simp]
+@[simp, nolint simpNF]
 theorem linfty_op_norm_row (v : n → α) : ‖row v‖ = ∑ i, ‖v i‖ :=
   (congr_arg ((↑) : ℝ≥0 → ℝ) <| linfty_op_nnnorm_row v).trans <| by simp [NNReal.coe_sum]
 #align matrix.linfty_op_norm_row Matrix.linfty_op_norm_row
 
-@[simp]
+@[simp, nolint simpNF]
 theorem linfty_op_nnnorm_diagonal [DecidableEq m] (v : m → α) : ‖diagonal v‖₊ = ‖v‖₊ := by
   rw [linfty_op_nnnorm_def, Pi.nnnorm_def]
   congr 1 with i : 1
