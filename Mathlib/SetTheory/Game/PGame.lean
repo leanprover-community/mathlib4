@@ -1124,7 +1124,7 @@ def moveRightSymm :
 @[refl]
 def refl (x : PGame) : x ≡r x :=
   ⟨Equiv.refl _, Equiv.refl _, fun i => refl _, fun j => refl _⟩
-termination_by _ => x
+termination_by x
 #align pgame.relabelling.refl SetTheory.PGame.Relabelling.refl
 
 instance (x : PGame) : Inhabited (x ≡r x) :=
@@ -1140,7 +1140,7 @@ theorem le {x y : PGame} (r : x ≡r y) : x ≤ y :=
   le_def.2
     ⟨fun i => Or.inl ⟨_, (r.moveLeft i).le⟩, fun j =>
       Or.inr ⟨_, (r.moveRightSymm j).le⟩⟩
-termination_by _ => x
+termination_by x
 #align pgame.relabelling.le SetTheory.PGame.Relabelling.le
 
 theorem ge {x y : PGame} (r : x ≡r y) : y ≤ x :=
@@ -1347,7 +1347,7 @@ private theorem neg_le_lf_neg_iff : ∀ {x y : PGame.{u}}, (-y ≤ -x ↔ x ≤ 
       apply and_congr <;> exact forall_congr' fun _ => neg_le_lf_neg_iff.2
     · rw [or_comm]
       apply or_congr <;> exact exists_congr fun _ => neg_le_lf_neg_iff.1
-termination_by _ x y => (x, y)
+termination_by x y => (x, y)
 
 @[simp]
 theorem neg_le_neg_iff {x y : PGame} : -y ≤ -x ↔ x ≤ y :=
@@ -1485,7 +1485,7 @@ def addZeroRelabelling : ∀ x : PGame.{u}, x + 0 ≡r x
   | ⟨xl, xr, xL, xR⟩ => by
     refine' ⟨Equiv.sumEmpty xl PEmpty, Equiv.sumEmpty xr PEmpty, _, _⟩ <;> rintro (⟨i⟩ | ⟨⟨⟩⟩) <;>
       apply addZeroRelabelling
-termination_by _ x => x
+termination_by x => x
 #align pgame.add_zero_relabelling SetTheory.PGame.addZeroRelabelling
 
 /-- `x + 0` is equivalent to `x`. -/
@@ -1627,7 +1627,7 @@ def Relabelling.addCongr : ∀ {w x y z : PGame.{u}}, w ≡r x → y ≡r z → 
     · exact Hwx.addCongr (hL₂ j)
     · exact (hR₁ i).addCongr Hyz
     · exact Hwx.addCongr (hR₂ j)
-termination_by _ w x y z _ _ => (x, z)
+termination_by w x y z => (x, z)
 #align pgame.relabelling.add_congr SetTheory.PGame.Relabelling.addCongr
 
 instance : Sub PGame :=
@@ -1652,7 +1652,7 @@ def negAddRelabelling : ∀ x y : PGame, -(x + y) ≡r -x + -y
       exact fun j =>
         Sum.casesOn j (fun j => negAddRelabelling _ _) fun j =>
           negAddRelabelling ⟨xl, xr, xL, xR⟩ _
-termination_by _ x y => (x, y)
+termination_by x y => (x, y)
 #align pgame.neg_add_relabelling SetTheory.PGame.negAddRelabelling
 
 theorem neg_add_le {x y : PGame} : -(x + y) ≤ -x + -y :=
@@ -1665,7 +1665,7 @@ def addCommRelabelling : ∀ x y : PGame.{u}, x + y ≡r y + x
     refine' ⟨Equiv.sumComm _ _, Equiv.sumComm _ _, _, _⟩ <;> rintro (_ | _) <;>
       · dsimp [leftMoves_add, rightMoves_add]
         apply addCommRelabelling
-termination_by _ x y => (x, y)
+termination_by x y => (x, y)
 #align pgame.add_comm_relabelling SetTheory.PGame.addCommRelabelling
 
 theorem add_comm_le {x y : PGame} : x + y ≤ y + x :=
@@ -1688,7 +1688,7 @@ def addAssocRelabelling : ∀ x y z : PGame.{u}, x + y + z ≡r x + (y + z)
       · apply addAssocRelabelling
       · apply addAssocRelabelling ⟨xl, xr, xL, xR⟩ (yR i)
       · apply addAssocRelabelling ⟨xl, xr, xL, xR⟩ ⟨yl, yr, yL, yR⟩ (zR i)
-termination_by _ x y z => (x, y, z)
+termination_by x y z => (x, y, z)
 #align pgame.add_assoc_relabelling SetTheory.PGame.addAssocRelabelling
 
 theorem add_assoc_equiv {x y z : PGame} : x + y + z ≈ x + (y + z) :=
@@ -1754,7 +1754,7 @@ private theorem add_le_add_right' : ∀ {x y z : PGame}, x ≤ y → x + z ≤ y
       · exact Or.inr ⟨toRightMovesAdd (Sum.inl j'), add_le_add_right' jh⟩
     · exact
         Or.inr ⟨@toRightMovesAdd _ ⟨_, _, _, _⟩ (Sum.inr i), add_le_add_right' h⟩
-termination_by _ x y z => (x, y, z)
+termination_by x y z => (x, y, z)
 
 instance covariantClass_swap_add_le : CovariantClass PGame PGame (swap (· + ·)) (· ≤ ·) :=
   ⟨fun _ _ _ => add_le_add_right'⟩
