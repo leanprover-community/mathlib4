@@ -196,7 +196,7 @@ lemma _root_.Fintype.sum_pow_mul_eq_add_pow (ι : Type*) [Fintype ι] (a b : α)
 
 @[norm_cast]
 theorem prod_natCast (s : Finset ι) (f : ι → ℕ) : ↑(∏ i in s, f i : ℕ) = ∏ i in s, (f i : α) :=
-  (Nat.castRingHom α).map_prod f s
+  map_prod (Nat.castRingHom α) f s
 #align finset.prod_nat_cast Finset.prod_natCast
 
 end CommSemiring
