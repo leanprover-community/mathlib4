@@ -747,11 +747,7 @@ example [Monoid β] (φ : β →* α) {x : β} {k : ℕ+} (h : x ^ (k : ℕ) = 1
 end NormedDivisionRing
 
 /-- A normed field is a field with a norm satisfying ‖x y‖ = ‖x‖ ‖y‖. -/
-class NormedField (α : Type*) extends Norm α, Field α, MetricSpace α where
-  /-- The distance is induced by the norm. -/
-  dist_eq : ∀ x y, dist x y = norm (x - y)
-  /-- The norm is multiplicative. -/
-  norm_mul' : ∀ a b, norm (a * b) = norm a * norm b
+class NormedField (α : Type*) extends Field α, NormedDivisionRing α
 #align normed_field NormedField
 
 /-- A nontrivially normed field is a normed field in which there is an element of norm different
@@ -784,8 +780,7 @@ instance (priority := 100) DenselyNormedField.toNontriviallyNormedField [Densely
 variable [NormedField α]
 
 -- see Note [lower instance priority]
-instance (priority := 100) NormedField.toNormedDivisionRing : NormedDivisionRing α :=
-  { ‹NormedField α› with }
+attribute [instance 100] NormedField.toNormedDivisionRing
 #align normed_field.to_normed_division_ring NormedField.toNormedDivisionRing
 
 -- see Note [lower instance priority]
