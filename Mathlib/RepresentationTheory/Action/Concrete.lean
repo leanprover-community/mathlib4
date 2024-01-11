@@ -104,7 +104,7 @@ instance (X : Action V G) : MulAction G ((CategoryTheory.forget _).obj X) where
   mul_smul g h x := by
     show (CategoryTheory.forget V).map (X.ρ (g * h)) x =
       ((CategoryTheory.forget V).map (X.ρ h) ≫ (CategoryTheory.forget V).map (X.ρ g)) x
-    rw [←Functor.map_comp, map_mul]
+    rw [← Functor.map_comp, map_mul]
     rfl
 
 end ToMulAction
