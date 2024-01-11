@@ -6,7 +6,6 @@ Authors: Mario Carneiro
 import Mathlib.Data.Fin.Fin2
 import Mathlib.Init.Align
 import Mathlib.Mathport.Notation
-import Mathlib.Tactic.TypeStar
 
 #align_import data.vector3 from "leanprover-community/mathlib"@"3d7987cda72abc473c7cdbbb075170e9ac620042"
 

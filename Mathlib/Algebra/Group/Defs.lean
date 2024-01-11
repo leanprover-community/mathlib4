@@ -1259,3 +1259,5 @@ initialize_simps_projections Group
 initialize_simps_projections AddGroup
 initialize_simps_projections CommGroup
 initialize_simps_projections AddCommGroup
+
+assert_not_exists Function.Injective

@@ -9,7 +9,6 @@ import Std.Tactic.Relation.Rfl
 import Std.Logic
 import Std.WF
 import Mathlib.Tactic.Basic
-import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.Relation.Symm
 import Mathlib.Mathport.Attributes
 import Mathlib.Mathport.Rename
