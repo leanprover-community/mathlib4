@@ -1666,7 +1666,7 @@ theorem gcd_to_nat_aux :
   | 0, pos a, pos b, _ab, h => (not_lt_of_le h).elim <| PosNum.natSize_pos _
   | Nat.succ n, 0, b, _ab, _h => (Nat.gcd_zero_left _).symm
   | Nat.succ n, pos a, b, ab, h => by
-    simp [gcdAux]
+    simp only [gcdAux, cast_pos]
     rw [Nat.gcd_rec, gcd_to_nat_aux, mod_to_nat]
     · rfl
     · rw [← le_to_nat, mod_to_nat]
@@ -1688,7 +1688,7 @@ theorem gcd_to_nat_aux :
 theorem gcd_to_nat : ∀ a b, (gcd a b : ℕ) = Nat.gcd a b := by
   have : ∀ a b : Num, (a * b).natSize ≤ a.natSize + b.natSize := by
     intros
-    simp [natSize_to_nat]
+    simp only [natSize_to_nat, cast_mul]
     rw [Nat.size_le, pow_add]
     exact mul_lt_mul'' (Nat.lt_size_self _) (Nat.lt_size_self _) (Nat.zero_le _) (Nat.zero_le _)
   intros

@@ -250,9 +250,7 @@ theorem FG_adjoin_of_finite {s : Set A} (hfs : s.Finite) (his : ∀ x ∈ s, IsI
     (fun _ =>
       ⟨{1},
         Submodule.ext fun x => by
-          erw [Algebra.adjoin_empty, Finset.coe_singleton, ← one_eq_span, one_eq_range,
-            LinearMap.mem_range, Algebra.mem_bot]
-          rfl⟩)
+          rw [Algebra.adjoin_empty, Finset.coe_singleton, ← one_eq_span, Algebra.toSubmodule_bot]⟩)
     (fun {a s} _ _ ih his => by
       rw [← Set.union_singleton, Algebra.adjoin_union_coe_submodule]
       exact
@@ -348,7 +346,7 @@ theorem isIntegral_of_mem_of_FG (S : Subalgebra R A) (HS : S.toSubmodule.FG) (x 
       rw [Algebra.algebraMap_eq_smul_one]
       exact smul_mem (span S₀ (insert (1 : A) (y : Set A))) y' (subset_span (Or.inl rfl))
   have foo : ∀ z, z ∈ S₁ ↔ z ∈ Algebra.adjoin (↥S₀) (y : Set A)
-  simp [this]
+  simp only [this, Finset.univ_eq_attach, Subalgebra.mem_toSubring, forall_const]
   haveI : IsNoetherianRing S₀ := is_noetherian_subring_closure _ (Finset.finite_toSet _)
   refine'
     isIntegral_of_submodule_noetherian (Algebra.adjoin S₀ ↑y)

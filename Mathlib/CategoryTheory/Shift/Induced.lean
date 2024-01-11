@@ -118,7 +118,7 @@ noncomputable def induced : HasShift D A :=
       add_zero_hom_app := fun n => by
         have := hF.2
         suffices (Induced.add F s i hF n 0).hom =
-            eqToHom (by rw [add_zero]; rfl) ≫ whiskerLeft (s n) (Induced.zero F s i hF).inv  by
+            eqToHom (by rw [add_zero]; rfl) ≫ whiskerLeft (s n) (Induced.zero F s i hF).inv by
           intro X
           simpa using NatTrans.congr_app this X
         apply ((whiskeringLeft C D D).obj F).map_injective

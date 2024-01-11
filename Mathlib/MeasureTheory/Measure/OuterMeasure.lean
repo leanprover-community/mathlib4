@@ -1111,7 +1111,7 @@ theorem le_sum_caratheodory {ι} (m : ι → OuterMeasure α) :
 
 theorem le_smul_caratheodory (a : ℝ≥0∞) (m : OuterMeasure α) :
     m.caratheodory ≤ (a • m).caratheodory := fun s h t => by
-      simp [smul_apply]
+      simp only [smul_apply, smul_eq_mul]
       rw [(isCaratheodory_iff m).mp h t]
       simp [mul_add]
 #align measure_theory.outer_measure.le_smul_caratheodory MeasureTheory.OuterMeasure.le_smul_caratheodory

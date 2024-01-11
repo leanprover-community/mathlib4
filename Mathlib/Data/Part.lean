@@ -472,7 +472,7 @@ theorem mem_assert_iff {p : Prop} {f : p → Part α} {a} : a ∈ assert p f ↔
 theorem assert_pos {p : Prop} {f : p → Part α} (h : p) : assert p f = f h := by
   dsimp [assert]
   cases h' : f h
-  simp [h', mk.injEq, h, exists_prop_of_true, true_and]
+  simp only [h', mk.injEq, h, exists_prop_of_true, true_and]
   apply Function.hfunext
   · simp only [h, h', exists_prop_of_true]
   · aesop

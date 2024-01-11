@@ -524,7 +524,7 @@ def adjunctionOfEquivLeft : leftAdjointOfEquiv e he ⊣ G :=
       homEquiv_naturality_left_symm := fun {X'} {X} {Y} f g => by
         have := @he' C _ D _ G F_obj e he
         erw [← this, ← Equiv.apply_eq_iff_eq (e X' Y)]
-        simp [(he X' (F_obj X) Y (e X Y |>.symm g) (leftAdjointOfEquiv e he |>.map f)).symm]
+        simp only [leftAdjointOfEquiv_obj, Equiv.apply_symm_apply, assoc]
         congr
         rw [← he]
         simp

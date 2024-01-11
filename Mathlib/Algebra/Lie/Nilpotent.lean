@@ -506,6 +506,9 @@ theorem isNilpotent_iff_exists_self_le_ucs :
   simp_rw [LieModule.isNilpotent_iff_exists_ucs_eq_top, ← ucs_comap_incl, comap_incl_eq_top]
 #align lie_submodule.is_nilpotent_iff_exists_self_le_ucs LieSubmodule.isNilpotent_iff_exists_self_le_ucs
 
+theorem ucs_bot_one : (⊥ : LieSubmodule R L M).ucs 1 = LieModule.maxTrivSubmodule R L M := by
+  simp [LieSubmodule.normalizer_bot_eq_maxTrivSubmodule]
+
 end LieSubmodule
 
 section Morphisms

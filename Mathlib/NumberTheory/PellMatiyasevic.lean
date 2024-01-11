@@ -260,7 +260,7 @@ instance dnsq : Zsqrtd.Nonsquare (d a1) :=
 theorem xn_ge_a_pow : ∀ n : ℕ, a ^ n ≤ xn a1 n
   | 0 => le_refl 1
   | n + 1 => by
-    simp [_root_.pow_succ']
+    simp only [_root_.pow_succ', xn_succ]
     exact le_trans (Nat.mul_le_mul_right _ (xn_ge_a_pow n)) (Nat.le_add_right _ _)
 #align pell.xn_ge_a_pow Pell.xn_ge_a_pow
 
@@ -271,7 +271,7 @@ theorem n_lt_a_pow : ∀ n : ℕ, n < a ^ n
     have : a ^ n + a ^ n ≤ a ^ n * a := by
       rw [← mul_two]
       exact Nat.mul_le_mul_left _ a1
-    simp [_root_.pow_succ']
+    simp only [_root_.pow_succ', gt_iff_lt]
     refine' lt_of_lt_of_le _ this
     exact add_lt_add_of_lt_of_le IH (lt_of_le_of_lt (Nat.zero_le _) IH)
 #align pell.n_lt_a_pow Pell.n_lt_a_pow

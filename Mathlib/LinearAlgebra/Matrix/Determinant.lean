@@ -793,7 +793,9 @@ theorem det_fin_one_of (a : R) : det !![a] = a :=
 
 /-- Determinant of 2x2 matrix -/
 theorem det_fin_two (A : Matrix (Fin 2) (Fin 2) R) : det A = A 0 0 * A 1 1 - A 0 1 * A 1 0 := by
-  simp [Matrix.det_succ_row_zero, Fin.sum_univ_succ]
+  simp only [det_succ_row_zero, det_unique, Fin.default_eq_zero, submatrix_apply,
+    Fin.succ_zero_eq_one, Fin.sum_univ_succ, Fin.val_zero, Fin.zero_succAbove, univ_unique,
+    Fin.val_succ, Fin.coe_fin_one, Fin.succ_succAbove_zero, sum_singleton]
   ring
 #align matrix.det_fin_two Matrix.det_fin_two
 
@@ -805,11 +807,13 @@ theorem det_fin_two_of (a b c d : R) : Matrix.det !![a, b; c, d] = a * d - b * c
 /-- Determinant of 3x3 matrix -/
 theorem det_fin_three (A : Matrix (Fin 3) (Fin 3) R) :
     det A =
-      A 0 0 * A 1 1 * A 2 2 - A 0 0 * A 1 2 * A 2 1 - A 0 1 * A 1 0 * A 2 2 +
-            A 0 1 * A 1 2 * A 2 0 +
-          A 0 2 * A 1 0 * A 2 1 -
-        A 0 2 * A 1 1 * A 2 0 := by
-  simp [Matrix.det_succ_row_zero, Fin.sum_univ_succ]
+      A 0 0 * A 1 1 * A 2 2 - A 0 0 * A 1 2 * A 2 1
+      - A 0 1 * A 1 0 * A 2 2 + A 0 1 * A 1 2 * A 2 0
+      + A 0 2 * A 1 0 * A 2 1 - A 0 2 * A 1 1 * A 2 0 := by
+  simp only [det_succ_row_zero, Nat.odd_iff_not_even, submatrix_apply, Fin.succ_zero_eq_one,
+    submatrix_submatrix, det_unique, Fin.default_eq_zero, comp_apply, Fin.succ_one_eq_two,
+    Fin.sum_univ_succ, Fin.val_zero, Fin.zero_succAbove, univ_unique, Fin.val_succ,
+    Fin.coe_fin_one, Fin.succ_succAbove_zero, sum_singleton, Fin.succ_succAbove_one, even_add_self]
   ring
 #align matrix.det_fin_three Matrix.det_fin_three
 

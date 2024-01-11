@@ -263,7 +263,7 @@ theorem log_le_of_logEmbedding_le {r : ℝ} {x : (𝓞 K)ˣ} (hr : 0 ≤ r) (h :
     refine (le_trans ?_ hyp).trans ?_
     · rw [← hw]
       exact tool _ (abs_nonneg _)
-    · refine (sum_le_card_nsmul univ _  _
+    · refine (sum_le_card_nsmul univ _ _
         (fun w _ => logEmbedding_component_le hr h w)).trans ?_
       rw [nsmul_eq_mul]
       refine mul_le_mul ?_ le_rfl hr (Fintype.card (InfinitePlace K)).cast_nonneg
@@ -400,9 +400,9 @@ theorem seq_norm_le (n : ℕ) :
       exact (seq_next K w₁ hB (seq K w₁ hB n).prop).choose_spec.2.2
 
 /-- Construct a unit associated to the place `w₁`. The family, for `w₁ ≠ w₀`, formed by the
-image by the `logEmbedding` of these units  is `ℝ`-linearly independent, see
+image by the `logEmbedding` of these units is `ℝ`-linearly independent, see
 `unitLattice_span_eq_top`. -/
-theorem exists_unit (w₁ : InfinitePlace K ) :
+theorem exists_unit (w₁ : InfinitePlace K) :
     ∃ u : (𝓞 K)ˣ, ∀ w : InfinitePlace K, w ≠ w₁ → Real.log (w u) < 0 := by
   obtain ⟨B, hB⟩ : ∃ B : ℕ, minkowskiBound K < (convexBodyLtFactor K) * B := by
     simp_rw [mul_comm]
@@ -427,7 +427,7 @@ theorem exists_unit (w₁ : InfinitePlace K ) :
     (fun n => ?_) ?_
   · rw [Set.mem_setOf_eq, Ideal.absNorm_span_singleton]
     refine ⟨?_, seq_norm_le K w₁ hB n⟩
-    exact  Nat.one_le_iff_ne_zero.mpr (Int.natAbs_ne_zero.mpr (seq_norm_ne_zero K w₁ hB n))
+    exact Nat.one_le_iff_ne_zero.mpr (Int.natAbs_ne_zero.mpr (seq_norm_ne_zero K w₁ hB n))
   · rw [show { I : Ideal (𝓞 K) | 1 ≤ Ideal.absNorm I ∧ Ideal.absNorm I ≤ B } =
           (⋃ n ∈ Set.Icc 1 B, { I : Ideal (𝓞 K) | Ideal.absNorm I = n }) by ext; simp]
     exact Set.Finite.biUnion (Set.finite_Icc _ _) (fun n hn => Ideal.finite_setOf_absNorm_eq hn.1)

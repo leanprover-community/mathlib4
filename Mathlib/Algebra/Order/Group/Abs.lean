@@ -368,4 +368,32 @@ theorem eq_of_abs_sub_nonpos (h : |a - b| ≤ 0) : a = b :=
   eq_of_abs_sub_eq_zero (le_antisymm h (abs_nonneg (a - b)))
 #align eq_of_abs_sub_nonpos eq_of_abs_sub_nonpos
 
+@[simp]
+theorem abs_eq_self : |a| = a ↔ 0 ≤ a := by
+  rw [abs_eq_max_neg, max_eq_left_iff, neg_le_self_iff]
+#align abs_eq_self abs_eq_self
+
+@[simp]
+theorem abs_eq_neg_self : |a| = -a ↔ a ≤ 0 := by
+  rw [abs_eq_max_neg, max_eq_right_iff, le_neg_self_iff]
+#align abs_eq_neg_self abs_eq_neg_self
+
+/-- For an element `a` of a linear ordered ring, either `abs a = a` and `0 ≤ a`,
+    or `abs a = -a` and `a < 0`.
+    Use cases on this lemma to automate linarith in inequalities -/
+theorem abs_cases (a : α) : |a| = a ∧ 0 ≤ a ∨ |a| = -a ∧ a < 0 := by
+  by_cases h : 0 ≤ a
+  · left
+    exact ⟨abs_eq_self.mpr h, h⟩
+  · right
+    push_neg at h
+    exact ⟨abs_eq_neg_self.mpr (le_of_lt h), h⟩
+#align abs_cases abs_cases
+
+@[simp]
+theorem max_zero_add_max_neg_zero_eq_abs_self (a : α) : max a 0 + max (-a) 0 = |a| := by
+  symm
+  rcases le_total 0 a with (ha | ha) <;> simp [ha]
+#align max_zero_add_max_neg_zero_eq_abs_self max_zero_add_max_neg_zero_eq_abs_self
+
 end LinearOrderedAddCommGroup

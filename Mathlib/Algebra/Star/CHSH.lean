@@ -107,12 +107,9 @@ theorem CHSH_id [CommRing R] {A₀ A₁ B₀ B₁ : R} (A₀_inv : A₀ ^ 2 = 1)
   -- If we had a Gröbner basis algorithm, this would be trivial.
   -- Without one, it is somewhat tedious!
   rw [← sub_eq_zero]
-  repeat'
-    ring_nf
-    simp only [A₁_inv, B₁_inv, sub_eq_add_neg, add_mul, mul_add, sub_mul, mul_sub, add_assoc,
-      neg_add, neg_sub, sub_add, sub_sub, neg_mul, ← sq, A₀_inv, B₀_inv, ← sq, ← mul_assoc, one_mul,
-      mul_one, add_right_neg, add_zero, sub_eq_add_neg, A₀_inv, mul_one, add_right_neg,
-      zero_mul]
+  ring_nf
+  simp_all
+  ring_nf
 set_option linter.uppercaseLean3 false in
 #align CHSH_id CHSH_id
 

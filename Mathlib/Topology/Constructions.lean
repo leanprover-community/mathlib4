@@ -491,6 +491,10 @@ theorem continuous_swap : Continuous (Prod.swap : α × β → β × α) :=
   continuous_snd.prod_mk continuous_fst
 #align continuous_swap continuous_swap
 
+lemma isClosedMap_swap : IsClosedMap (Prod.swap : α × β → β × α) := fun s hs ↦ by
+  rw [image_swap_eq_preimage_swap]
+  exact hs.preimage continuous_swap
+
 theorem continuous_uncurry_left {f : α → β → γ} (a : α) (h : Continuous (uncurry f)) :
     Continuous (f a) :=
   h.comp (Continuous.Prod.mk _)

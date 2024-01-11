@@ -963,7 +963,7 @@ theorem perm_insert_swap (x y : α) (l : List α) :
     List.insert x (List.insert y l) ~ List.insert y (List.insert x l) := by
   by_cases xl : x ∈ l <;> by_cases yl : y ∈ l <;> simp [xl, yl]
   by_cases xy : x = y; · simp [xy]
-  simp [List.insert, xl, yl, xy, Ne.symm xy]
+  simp only [List.insert, Bool.not_eq_true, mem_cons, xy, xl, or_self, ite_false, Ne.symm xy, yl]
   constructor
 #align list.perm_insert_swap List.perm_insert_swap
 
@@ -1272,7 +1272,7 @@ theorem perm_permutations'Aux_comm (a b : α) (l : List α) :
       (permutations'Aux b l).bind (permutations'Aux a) := by
   induction' l with c l ih
   · simp [swap]
-  simp [permutations'Aux]
+  simp only [permutations'Aux, cons_bind, map_cons, map_map, cons_append]
   apply Perm.swap'
   have :
     ∀ a b,

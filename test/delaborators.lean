@@ -1,5 +1,5 @@
 import Std.Tactic.GuardMsgs
-import Mathlib.Util.PiNotation
+import Mathlib.Util.Delaborators
 import Mathlib.Data.Set.Lattice
 
 section PiNotation
@@ -44,6 +44,48 @@ variable (P : Nat → Prop) (α : Nat → Type) (s : Set ℕ)
 /-- info: ∀ x ∈ s, P x : Prop -/
 #guard_msgs in
 #check ∀ x, x ∈ s → P x
+
+/-- info: ∀ x ∉ s, P x : Prop -/
+#guard_msgs in
+#check ∀ x ∉ s,P x
+
+/-- info: ∀ x ∉ s, P x : Prop -/
+#guard_msgs in
+#check ∀ x, x ∉ s → P x
+
+variable (Q : Set ℕ → Prop)
+
+/-- info: ∀ t ⊆ s, Q t : Prop -/
+#guard_msgs in
+#check ∀ t ⊆ s, Q t
+
+/-- info: ∀ t ⊆ s, Q t : Prop -/
+#guard_msgs in
+#check ∀ t, t ⊆ s → Q t
+
+/-- info: ∀ t ⊂ s, Q t : Prop -/
+#guard_msgs in
+#check ∀ t ⊂ s, Q t
+
+/-- info: ∀ t ⊂ s, Q t : Prop -/
+#guard_msgs in
+#check ∀ t, t ⊂ s → Q t
+
+/-- info: ∀ t ⊇ s, Q t : Prop -/
+#guard_msgs in
+#check ∀ t ⊇ s, Q t
+
+/-- info: ∀ t ⊇ s, Q t : Prop -/
+#guard_msgs in
+#check ∀ t, t ⊇ s → Q t
+
+/-- info: ∀ t ⊃ s, Q t : Prop -/
+#guard_msgs in
+#check ∀ t ⊃ s, Q t
+
+/-- info: ∀ t ⊃ s, Q t : Prop -/
+#guard_msgs in
+#check ∀ t, t ⊃ s → Q t
 
 /-- info: (x : ℕ) → α x : Type -/
 #guard_msgs in
@@ -102,6 +144,58 @@ section existential
 /-- info: ∃ i < 3, i = i : Prop -/
 #guard_msgs in
 #check ∃ (i : Nat), i < 3 ∧ i = i
+
+variable (s : Set ℕ) (P : ℕ → Prop) (Q : Set ℕ → Prop)
+
+/-- info: ∃ x ∉ s, P x : Prop -/
+#guard_msgs in
+#check ∃ x ∉ s, P x
+
+/-- info: ∃ x ∉ s, P x : Prop -/
+#guard_msgs in
+#check ∃ x, x ∉ s ∧ P x
+
+variable (Q : Set ℕ → Prop)
+
+/-- info: ∃ t ⊆ s, Q t : Prop -/
+#guard_msgs in
+#check ∃ t ⊆ s, Q t
+
+/-- info: ∃ t ⊆ s, Q t : Prop -/
+#guard_msgs in
+#check ∃ t, t ⊆ s ∧ Q t
+
+/-- info: ∃ t ⊂ s, Q t : Prop -/
+#guard_msgs in
+#check ∃ t ⊂ s, Q t
+
+/-- info: ∃ t ⊂ s, Q t : Prop -/
+#guard_msgs in
+#check ∃ t, t ⊂ s ∧ Q t
+
+/-- info: ∃ t ⊇ s, Q t : Prop -/
+#guard_msgs in
+#check ∃ t ⊇ s, Q t
+
+/-- info: ∃ t ⊇ s, Q t : Prop -/
+#guard_msgs in
+#check ∃ t, t ⊇ s ∧ Q t
+
+/-- info: ∃ t ⊃ s, Q t : Prop -/
+#guard_msgs in
+#check ∃ t ⊃ s, Q t
+
+/-- info: ∃ t ⊃ s, Q t : Prop -/
+#guard_msgs in
+#check ∃ t, t ⊃ s ∧ Q t
+
+/-- info: ∃ n k, n = k : Prop -/
+#guard_msgs in
+#check ∃ n k, n = k
+
+/-- info: ∃ n k, n = k : Prop -/
+#guard_msgs in
+#check ∃ n, ∃ k, n = k
 
 end existential
 

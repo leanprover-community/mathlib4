@@ -185,7 +185,7 @@ instance : MonoidalCategory (F C) where
   tensor_comp := @fun X₁ Y₁ Z₁ X₂ Y₂ Z₂ => by
     rintro ⟨f₁⟩ ⟨f₂⟩ ⟨g₁⟩ ⟨g₂⟩
     exact Quotient.sound (tensor_comp _ _ _ _)
-  tensorUnit' := FreeMonoidalCategory.Unit
+  tensorUnit := FreeMonoidalCategory.Unit
   associator X Y Z :=
     ⟨⟦Hom.α_hom X Y Z⟧, ⟦Hom.α_inv X Y Z⟧, Quotient.sound α_hom_inv, Quotient.sound α_inv_hom⟩
   associator_naturality := @fun X₁ X₂ X₃ Y₁ Y₂ Y₃ => by

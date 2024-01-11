@@ -184,6 +184,8 @@ theorem coe_bot : ((⊥ : Opens α) : Set α) = ∅ :=
   rfl
 #align topological_space.opens.coe_bot TopologicalSpace.Opens.coe_bot
 
+@[simp] theorem mk_empty : (⟨∅, isOpen_empty⟩ : Opens α) = ⊥ := rfl
+
 -- porting note: new lemma
 @[simp, norm_cast]
 theorem coe_eq_empty {U : Opens α} : (U : Set α) = ∅ ↔ U = ⊥ :=
@@ -193,6 +195,8 @@ theorem coe_eq_empty {U : Opens α} : (U : Set α) = ∅ ↔ U = ⊥ :=
 theorem coe_top : ((⊤ : Opens α) : Set α) = Set.univ :=
   rfl
 #align topological_space.opens.coe_top TopologicalSpace.Opens.coe_top
+
+@[simp] theorem mk_univ : (⟨univ, isOpen_univ⟩ : Opens α) = ⊤ := rfl
 
 -- porting note: new lemma
 @[simp, norm_cast]

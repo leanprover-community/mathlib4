@@ -58,6 +58,7 @@ theorem mem_span : x ∈ span R s ↔ ∀ p : Submodule R M, s ⊆ p → x ∈ p
   mem_iInter₂
 #align submodule.mem_span Submodule.mem_span
 
+@[aesop safe 20 apply (rule_sets [SetLike])]
 theorem subset_span : s ⊆ span R s := fun _ h => mem_span.2 fun _ hp => hp h
 #align submodule.subset_span Submodule.subset_span
 

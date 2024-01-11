@@ -291,6 +291,13 @@ theorem center_le_radical : center R L ≤ radical R L :=
   le_sSup h
 #align lie_algebra.center_le_radical LieAlgebra.center_le_radical
 
+instance [IsSolvable R L] : IsSolvable R (⊤ : LieSubalgebra R L) := by
+  rwa [solvable_iff_equiv_solvable LieSubalgebra.topEquiv]
+
+@[simp] lemma radical_eq_top_of_isSolvable [IsSolvable R L] :
+    radical R L = ⊤ := by
+  rw [eq_top_iff]; exact le_sSup <| inferInstanceAs (IsSolvable R (⊤ : LieIdeal R L))
+
 /-- Given a solvable Lie ideal `I` with derived series `I = D₀ ≥ D₁ ≥ ⋯ ≥ Dₖ = ⊥`, this is the
 natural number `k` (the number of inclusions).
 

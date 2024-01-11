@@ -1296,10 +1296,10 @@ value of `p` on the rescaling element that shows up in applications. -/
 lemma rescale_to_shell_zpow (p : Seminorm 𝕜 E) {c : 𝕜} (hc : 1 < ‖c‖) {ε : ℝ}
     (εpos : 0 < ε) {x : E} (hx : p x ≠ 0) : ∃ n : ℤ, c^n ≠ 0 ∧
     p (c^n • x) < ε ∧ (ε / ‖c‖ ≤ p (c^n • x)) ∧ (‖c^n‖⁻¹ ≤ ε⁻¹ * ‖c‖ * p x) := by
-  have xεpos : 0 < (p x)/ε := div_pos ((Ne.symm hx).le_iff_lt.1 (map_nonneg p x)) εpos
+  have xεpos : 0 < (p x)/ε := by positivity
   rcases exists_mem_Ico_zpow xεpos hc with ⟨n, hn⟩
-  have cpos : 0 < ‖c‖ := lt_trans (zero_lt_one : (0 :ℝ) < 1) hc
-  have cnpos : 0 < ‖c^(n+1)‖ := by rw [norm_zpow]; exact lt_trans xεpos hn.2
+  have cpos : 0 < ‖c‖ := by positivity
+  have cnpos : 0 < ‖c^(n+1)‖ := by rw [norm_zpow]; exact xεpos.trans hn.2
   refine ⟨-(n+1), ?_, ?_, ?_, ?_⟩
   · show c ^ (-(n + 1)) ≠ 0; exact zpow_ne_zero _ (norm_pos_iff.1 cpos)
   · show p ((c ^ (-(n + 1))) • x) < ε

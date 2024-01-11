@@ -73,10 +73,7 @@ theorem bodd_succ (n : ℕ) : bodd (succ n) = not (bodd n) := by
 
 @[simp]
 theorem bodd_add (m n : ℕ) : bodd (m + n) = bxor (bodd m) (bodd n) := by
-  induction' n with n IH
-  · simp
-  · simp [add_succ, IH]
-    cases bodd m <;> cases bodd n <;> rfl
+  induction n <;> simp_all [add_succ]
 #align nat.bodd_add Nat.bodd_add
 
 @[simp]
@@ -208,21 +205,6 @@ theorem shiftLeft_zero (m) : m <<< 0 = m := rfl
 theorem shiftLeft_succ (m n) : m <<< (n + 1) = 2 * (m <<< n) := by
   simp only [shiftLeft_eq, Nat.pow_add, Nat.pow_one, ← Nat.mul_assoc, Nat.mul_comm]
 
-@[simp]
-theorem shiftRight_zero : n >>> 0 = n := rfl
-
-@[simp]
-theorem shiftRight_succ (m n) : m >>> (n + 1) = (m >>> n) / 2 := rfl
-
-@[simp]
-theorem zero_shiftRight : ∀ n, 0 >>> n = 0 := by
-  intro n
-  induction' n with n IH
-  case zero =>
-    simp [shiftRight]
-  case succ =>
-    simp [shiftRight, IH]
-
 /-- `testBit m n` returns whether the `(n+1)ˢᵗ` least significant bit is `1` or `0`-/
 def testBit (m n : ℕ) : Bool :=
   bodd (m >>> n)
@@ -242,7 +224,7 @@ lemma binaryRec_decreasing (h : n ≠ 0) : div2 n < n := by
 def binaryRec {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) : ∀ n, C n :=
   fun n =>
     if n0 : n = 0 then by
-      simp [n0]
+      simp only [n0]
       exact z
     else by
       let n' := div2 n
@@ -307,10 +289,6 @@ theorem shiftLeft'_add (b m n) : ∀ k, shiftLeft' b m (n + k) = shiftLeft' b (s
 theorem shiftLeft_add (m n : Nat) : ∀ k, m <<< (n + k) = (m <<< n) <<< k := by
   intro k; simp only [← shiftLeft'_false, shiftLeft'_add]
 
-theorem shiftRight_add (m n : Nat) : ∀ k, m >>> (n + k) = (m >>> n) >>> k
-  | 0 => rfl
-  | k + 1 => by simp [add_succ, shiftRight_add]
-
 theorem shiftLeft'_sub (b m) : ∀ {n k}, k ≤ n → shiftLeft' b m (n - k) = (shiftLeft' b m n) >>> k
   | n, 0, _ => rfl
   | n + 1, k + 1, h => by
@@ -341,7 +319,7 @@ theorem binaryRec_eq {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bit
   by_cases h : bit b n = 0
   -- Note: this renames the original `h : f false 0 z = z` to `h'` and leaves `h : bit b n = 0`
   case pos h' =>
-    simp [dif_pos h]
+    simp only [dif_pos h]
     generalize binaryRec z f (bit b n) = e
     revert e
     have bf := bodd_bit b n
@@ -354,7 +332,7 @@ theorem binaryRec_eq {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bit
     rw [h']
     rfl
   case neg h' =>
-    simp [dif_neg h]
+    simp only [dif_neg h]
     generalize @id (C (bit b n) = C (bit (bodd (bit b n)) (div2 (bit b n))))
       (Eq.symm (bit_decomp (bit b n)) ▸ Eq.refl (C (bit b n))) = e
     revert e

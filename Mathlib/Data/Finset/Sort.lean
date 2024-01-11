@@ -89,6 +89,9 @@ theorem sort_sorted_lt (s : Finset α) : List.Sorted (· < ·) (sort (· ≤ ·)
   (sort_sorted _ _).lt_of_le (sort_nodup _ _)
 #align finset.sort_sorted_lt Finset.sort_sorted_lt
 
+theorem sort_sorted_gt (s : Finset α) : List.Sorted (· > ·) (sort (· ≥ ·) s) :=
+  (sort_sorted _ _).gt_of_ge (sort_nodup _ _)
+
 theorem sorted_zero_eq_min'_aux (s : Finset α) (h : 0 < (s.sort (· ≤ ·)).length) (H : s.Nonempty) :
     (s.sort (· ≤ ·)).nthLe 0 h = s.min' H := by
   let l := s.sort (· ≤ ·)

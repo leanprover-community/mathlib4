@@ -651,7 +651,7 @@ theorem finprod_mem_mul_distrib' (hf : (s ∩ mulSupport f).Finite) (hg : (s ∩
 #align finsum_mem_add_distrib' finsum_mem_add_distrib'
 
 /-- The product of the constant function `1` over any set equals `1`. -/
-@[to_additive "The product of the constant function `0` over any set equals `0`."]
+@[to_additive "The sum of the constant function `0` over any set equals `0`."]
 theorem finprod_mem_one (s : Set α) : (∏ᶠ i ∈ s, (1 : M)) = 1 := by simp
 #align finprod_mem_one finprod_mem_one
 #align finsum_mem_zero finsum_mem_zero

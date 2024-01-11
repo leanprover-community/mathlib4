@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import Mathlib.CategoryTheory.Sites.Canonical
+import Mathlib.CategoryTheory.Sites.EqualizerSheafCondition
 
 #align_import category_theory.sites.types from "leanprover-community/mathlib"@"9f9015c645d85695581237cc761981036be8bd37"
 

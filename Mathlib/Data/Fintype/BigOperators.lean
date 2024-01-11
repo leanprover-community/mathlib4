@@ -7,6 +7,7 @@ import Mathlib.Data.Fintype.Option
 import Mathlib.Data.Fintype.Powerset
 import Mathlib.Data.Fintype.Sigma
 import Mathlib.Data.Fintype.Sum
+import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Vector
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.BigOperators.Option
@@ -294,5 +295,27 @@ theorem Fintype.prod_sum_type (f : Sum α₁ α₂ → M) :
   prod_disj_sum _ _ _
 #align fintype.prod_sum_type Fintype.prod_sum_type
 #align fintype.sum_sum_type Fintype.sum_sum_type
+
+@[to_additive (attr := simp) Fintype.sum_prod_type]
+theorem Fintype.prod_prod_type [CommMonoid γ] {f : α₁ × α₂ → γ} :
+    ∏ x, f x = ∏ x, ∏ y, f (x, y) :=
+  Finset.prod_product
+
+/-- An uncurried version of `Finset.prod_prod_type`. -/
+@[to_additive Fintype.sum_prod_type' "An uncurried version of `Finset.sum_prod_type`"]
+theorem Fintype.prod_prod_type' [CommMonoid γ] {f : α₁ → α₂ → γ} :
+    ∏ x : α₁ × α₂, f x.1 x.2 = ∏ x, ∏ y, f x y :=
+  Finset.prod_product'
+
+@[to_additive Fintype.sum_prod_type_right]
+theorem Fintype.prod_prod_type_right [CommMonoid γ] {f : α₁ × α₂ → γ} :
+    ∏ x, f x = ∏ y, ∏ x, f (x, y) :=
+  Finset.prod_product_right
+
+/-- An uncurried version of `Finset.prod_prod_type_right`. -/
+@[to_additive Fintype.sum_prod_type_right' "An uncurried version of `Finset.sum_prod_type_right`"]
+theorem Fintype.prod_prod_type_right' [CommMonoid γ] {f : α₁ → α₂ → γ} :
+    ∏ x : α₁ × α₂, f x.1 x.2 = ∏ y, ∏ x, f x y :=
+  Finset.prod_product_right'
 
 end

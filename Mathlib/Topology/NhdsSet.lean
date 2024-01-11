@@ -71,6 +71,17 @@ theorem mem_nhdsSet_iff_exists : s ∈ 𝓝ˢ t ↔ ∃ U : Set α, IsOpen U ∧
   rw [← subset_interior_iff_mem_nhdsSet, subset_interior_iff]
 #align mem_nhds_set_iff_exists mem_nhdsSet_iff_exists
 
+/-- A proposition is true on a set neighborhood of `s` iff it is true on a larger open set -/
+theorem eventually_nhdsSet_iff_exists {p : α → Prop} :
+    (∀ᶠ x in 𝓝ˢ s, p x) ↔ ∃ t, IsOpen t ∧ s ⊆ t ∧ ∀ x, x ∈ t → p x :=
+  mem_nhdsSet_iff_exists
+
+/-- A proposition is true on a set neighborhood of `s`
+iff it is eventually true near each point in the set. -/
+theorem eventually_nhdsSet_iff_forall {p : α → Prop} :
+    (∀ᶠ x in 𝓝ˢ s, p x) ↔ ∀ x, x ∈ s → ∀ᶠ y in 𝓝 x, p y :=
+  mem_nhdsSet_iff_forall
+
 theorem hasBasis_nhdsSet (s : Set α) : (𝓝ˢ s).HasBasis (fun U => IsOpen U ∧ s ⊆ U) fun U => U :=
   ⟨fun t => by simp [mem_nhdsSet_iff_exists, and_assoc]⟩
 #align has_basis_nhds_set hasBasis_nhdsSet
@@ -78,6 +89,9 @@ theorem hasBasis_nhdsSet (s : Set α) : (𝓝ˢ s).HasBasis (fun U => IsOpen U �
 theorem IsOpen.mem_nhdsSet (hU : IsOpen s) : s ∈ 𝓝ˢ t ↔ t ⊆ s := by
   rw [← subset_interior_iff_mem_nhdsSet, hU.interior_eq]
 #align is_open.mem_nhds_set IsOpen.mem_nhdsSet
+
+/-- An open set belongs to its own set neighborhoods filter. -/
+theorem IsOpen.mem_nhdsSet_self (ho : IsOpen s) : s ∈ 𝓝ˢ s := ho.mem_nhdsSet.mpr Subset.rfl
 
 theorem principal_le_nhdsSet : 𝓟 s ≤ 𝓝ˢ s := fun _s hs =>
   (subset_interior_iff_mem_nhdsSet.mpr hs).trans interior_subset

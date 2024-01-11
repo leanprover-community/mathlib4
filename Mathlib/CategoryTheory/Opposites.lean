@@ -460,6 +460,20 @@ theorem unop_op {X Y : Cᵒᵖ} (f : X ≅ Y) : f.unop.op = f := by (ext; rfl)
 theorem op_unop {X Y : C} (f : X ≅ Y) : f.op.unop = f := by (ext; rfl)
 #align category_theory.iso.op_unop CategoryTheory.Iso.op_unop
 
+section
+
+variable {D : Type*} [Category D] {F G : C ⥤ Dᵒᵖ} (e : F ≅ G) (X : C)
+
+@[reassoc (attr := simp)]
+lemma unop_hom_inv_id_app : (e.hom.app X).unop ≫ (e.inv.app X).unop = 𝟙 _ := by
+  rw [← unop_comp, inv_hom_id_app, unop_id]
+
+@[reassoc (attr := simp)]
+lemma unop_inv_hom_id_app : (e.inv.app X).unop ≫ (e.hom.app X).unop = 𝟙 _ := by
+  rw [← unop_comp, hom_inv_id_app, unop_id]
+
+end
+
 end Iso
 
 namespace NatIso

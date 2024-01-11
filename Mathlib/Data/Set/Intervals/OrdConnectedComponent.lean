@@ -142,7 +142,8 @@ theorem dual_ordConnectedSection (s : Set α) :
     ordConnectedSection (ofDual ⁻¹' s) = ofDual ⁻¹' ordConnectedSection s := by
   simp_rw [ordConnectedSection, ordConnectedProj]
   ext x
-  simp [dual_ordConnectedComponent]
+  simp only [mem_range, Subtype.exists, mem_preimage, OrderDual.exists, dual_ordConnectedComponent,
+    ofDual_toDual]
   tauto
 #align set.dual_ord_connected_section Set.dual_ordConnectedSection
 

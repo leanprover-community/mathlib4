@@ -829,7 +829,7 @@ instance orderedCommMonoid [OrderedCommMonoid β] : OrderedCommMonoid (Germ l β
         inductionOn h fun _h => H.mono fun _x H => mul_le_mul_left' H _ }
 
 @[to_additive]
-instance orderedCancelCommMonoid [OrderedCancelCommMonoid β]  :
+instance orderedCancelCommMonoid [OrderedCancelCommMonoid β] :
     OrderedCancelCommMonoid (Germ l β) :=
   { Germ.orderedCommMonoid with
     le_of_mul_le_mul_left := fun f g h =>

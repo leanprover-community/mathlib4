@@ -515,7 +515,7 @@ theorem indep_iSup_of_antitone [SemilatticeInf ι] {Ω} {m : ι → MeasurableSp
     (h_indep : ∀ i, Indep (m i) m' κ μ) (h_le : ∀ i, m i ≤ m0) (h_le' : m' ≤ m0)
     (hm : Antitone m) :
     Indep (⨆ i, m i) m' κ μ :=
-  indep_iSup_of_directed_le h_indep h_le h_le' (directed_of_inf hm)
+  indep_iSup_of_directed_le h_indep h_le h_le' hm.directed_le
 
 theorem iIndepSets.piiUnionInter_of_not_mem {π : ι → Set (Set Ω)} {a : ι} {S : Finset ι}
     (hp_ind : iIndepSets π κ μ) (haS : a ∉ S) :

@@ -310,7 +310,7 @@ theorem descPochhammer_succ_right (n : ℕ) :
     rw [Nat.succ_eq_one_add, Nat.cast_add, Nat.cast_one, sub_add_eq_sub_sub]
 
 @[simp]
-theorem descPochhammer_natDegree (n : ℕ) [NoZeroDivisors R] [Nontrivial R]:
+theorem descPochhammer_natDegree (n : ℕ) [NoZeroDivisors R] [Nontrivial R] :
     (descPochhammer R n).natDegree = n := by
   induction' n with n hn
   · simp

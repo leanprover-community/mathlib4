@@ -30,7 +30,7 @@ def addHaveSuggestion (ref : Syntax) (t? : Option Expr) (e : Expr)
       `(tactic| have := $estx)
     else
       `(tactic| let this := $estx)
-  addSuggestion ref tac none origSpan?
+  addSuggestion ref tac origSpan?
 
 open Lean.Parser.Tactic
 open Lean.Syntax
@@ -58,5 +58,5 @@ def addRewriteSuggestion (ref : Syntax) (rules : List (Expr × Bool))
   if let some type := type? then
     tacMsg := tacMsg ++ m!"\n-- {type}"
     extraMsg := extraMsg ++ s!"\n-- {← PrettyPrinter.ppExpr type}"
-  addSuggestion ref tac (suggestionForMessage? := tacMsg)
-    (extraMsg := extraMsg) (origSpan? := origSpan?)
+  addSuggestion ref origSpan?
+    (s := { suggestion := tac, postInfo? := extraMsg, messageData? := tacMsg })

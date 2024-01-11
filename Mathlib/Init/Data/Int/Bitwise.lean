@@ -94,7 +94,7 @@ def ldiff : ℤ → ℤ → ℤ
 
 -- Porting note: I don't know why `Nat.xor'` got the prime, but I'm matching this change here
 /--`xor` computes the bitwise `xor` of two natural numbers-/
-def xor : ℤ → ℤ → ℤ
+protected def xor : ℤ → ℤ → ℤ
   | (m : ℕ), (n : ℕ) => (m ^^^ n)
   | (m : ℕ), -[n +1] => -[(m ^^^ n) +1]
   | -[m +1], (n : ℕ) => -[(m ^^^ n) +1]

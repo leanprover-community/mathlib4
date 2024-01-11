@@ -39,20 +39,21 @@ Rather than duplicating the API of `TrivSqZeroExt`, this file reuses the functio
 
 variable {R : Type*}
 
-/-- The type of dual numbers, numbers of the form $a + bε$ where $ε^2 = 0$.-/
+/-- The type of dual numbers, numbers of the form $a + bε$ where $ε^2 = 0$.
+`R[ε]` is notation for `DualNumber R`. -/
 abbrev DualNumber (R : Type*) : Type _ :=
   TrivSqZeroExt R R
 #align dual_number DualNumber
 
-/-- The unit element $ε$ that squares to zero. -/
+/-- The unit element $ε$ that squares to zero, with notation `ε`. -/
 def DualNumber.eps [Zero R] [One R] : DualNumber R :=
   TrivSqZeroExt.inr 1
 #align dual_number.eps DualNumber.eps
 
--- mathport name: dual_number.eps
+@[inherit_doc]
 scoped[DualNumber] notation "ε" => DualNumber.eps
 
--- mathport name: dual_number
+@[inherit_doc]
 scoped[DualNumber] postfix:1024 "[ε]" => DualNumber
 
 open DualNumber
@@ -86,6 +87,13 @@ theorem eps_mul_eps [Semiring R] : (ε * ε : R[ε]) = 0 :=
 theorem inr_eq_smul_eps [MulZeroOneClass R] (r : R) : inr r = (r • ε : R[ε]) :=
   ext (mul_zero r).symm (mul_one r).symm
 #align dual_number.inr_eq_smul_eps DualNumber.inr_eq_smul_eps
+
+/-- `ε` commutes with every element of the algebra. -/
+theorem commute_eps_left [Semiring R] (x : DualNumber R) : Commute ε x := by
+  ext <;> simp
+
+/-- `ε` commutes with every element of the algebra. -/
+theorem commute_eps_right [Semiring R] (x : DualNumber R) : Commute x ε := (commute_eps_left x).symm
 
 /-- For two algebra morphisms out of `R[ε]` to agree, it suffices for them to agree on `ε`. -/
 @[ext]

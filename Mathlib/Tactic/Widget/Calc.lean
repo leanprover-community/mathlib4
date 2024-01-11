@@ -91,7 +91,7 @@ def suggestSteps (pos : Array Lean.SubExpr.GoalsLocation) (goalType : Expr) (par
     else
       s!"_ {relStr} {newLhsStr} := by sorry\n{spc}_ {relStr} {newRhsStr} := by sorry\n" ++
       s!"{spc}_ {relStr} {rhsStr} := by sorry"
-  | false, true  =>
+  | false, true =>
     if params.isFirst then
       s!"{lhsStr} {relStr} {newRhsStr} := by sorry\n{spc}_ {relStr} {rhsStr} := by sorry"
     else
@@ -134,7 +134,7 @@ elab_rules : tactic
   for step in ← Lean.Elab.Term.getCalcSteps steps do
     let some replaceRange := (← getFileMap).rangeOfStx? step | unreachable!
     let `(calcStep| $(_) := $proofTerm) := step | unreachable!
-    let json := open scoped ProofWidgets.Json in json% {"replaceRange": $(replaceRange),
+    let json := open scoped Std.Json in json% {"replaceRange": $(replaceRange),
                                                         "isFirst": $(isFirst),
                                                         "indent": $(indent)}
     ProofWidgets.savePanelWidgetInfo proofTerm `CalcPanel (pure json)
