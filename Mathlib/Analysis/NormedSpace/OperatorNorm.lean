@@ -994,7 +994,6 @@ def prodMapL : (M₁ →L[𝕜] M₂) × (M₃ →L[𝕜] M₄) →L[𝕜] M₁ 
       -- ```
       -- Here neither `dsimp` or `simp` seem to make progress.
       -- We have to use `rw` to access `.default` reducibility. `simp` cannot
-      -- separate `rw`'s are faster than a single block
       rw [add_apply, add_apply, comp_apply, comp_apply, comp_apply, comp_apply,
         flip_apply, flip_apply, compL_apply, compL_apply, compL_apply, compL_apply,
         comp_apply, comp_apply, comp_apply, comp_apply]
