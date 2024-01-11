@@ -267,10 +267,10 @@ theorem algebraMap_not_injective : ¬Function.Injective (algebraMap K <| Cliffor
 /-- Bonus counterexample: `Q` is a quadratic form that has no bilinear form. -/
 theorem Q_not_in_range_toQuadraticForm : Q ∉ Set.range BilinForm.toQuadraticForm := by
   rintro ⟨B, hB⟩
-  rw [←sub_zero Q] at hB
+  rw [← sub_zero Q] at hB
   apply algebraMap_not_injective
   eta_expand
-  simp_rw [←changeForm_algebraMap hB, ←changeFormEquiv_apply]
+  simp_rw [← changeForm_algebraMap hB, ← changeFormEquiv_apply]
   refine (LinearEquiv.injective _).comp ?_
   exact (ExteriorAlgebra.algebraMap_leftInverse _).injective
 
