@@ -73,6 +73,26 @@ instance Module.Free.addMonoidHom : Module.Free ℤ (M →+ N) :=
 
 end Integer
 
+section StrongRankCondition
+
+variable (S) [Ring R] [StrongRankCondition R] [Ring S]
+  [AddCommGroup M] [Module R M] [Module.Free R M]
+  [AddCommGroup N] [Module R N] [Module S N] [SMulCommClass R S N] [Module.Free S N]
+
+open Cardinal
+
+-- LinearMap.ringLmapEquivSelf
+-- Finsupp.lsum
+-- rank_fun
+theorem FiniteDimensional.lift_rank_linearMap [Module.Finite R M] :
+    Module.rank S (M →ₗ[R] N) = lift.{w} (Module.rank R M) * lift.{v} (Module.rank S N) := by
+  let b := Module.Free.chooseBasis R M
+  have h := (b.repr.congrLeft S N).lift_rank_eq
+  sorry
+
+
+end StrongRankCondition
+
 section CommRing
 
 variable [CommRing R] [StrongRankCondition R]
