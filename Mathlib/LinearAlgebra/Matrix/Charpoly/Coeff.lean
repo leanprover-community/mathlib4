@@ -199,7 +199,7 @@ end Matrix
 
 variable {p : ℕ} [Fact p.Prime]
 
-theorem matPolyEquiv_eq_x_pow_sub_c {K : Type _} (k : ℕ) [Field K] (M : Matrix n n K) :
+theorem matPolyEquiv_eq_x_pow_sub_c {K : Type*} (k : ℕ) [Field K] (M : Matrix n n K) :
     matPolyEquiv ((expand K k : K[X] →+* K[X]).mapMatrix (charmatrix (M ^ k))) =
       X ^ k - C (M ^ k) := by
   -- porting note: `i` and `j` are used later on, but were not mentioned in mathlib3

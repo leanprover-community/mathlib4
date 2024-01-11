@@ -17,7 +17,7 @@ and `M` has some monoid structure compatible with its topology.
 -/
 
 
-variable {X M R 𝕜 : Type _} [TopologicalSpace X]
+variable {X M R 𝕜 : Type*} [TopologicalSpace X]
 
 namespace ContinuousMap
 

@@ -51,7 +51,7 @@ open ComplexConjugate
 /--
 This typeclass captures properties shared by ℝ and ℂ, with an API that closely matches that of ℂ.
 -/
-class IsROrC (K : semiOutParam (Type _)) extends DenselyNormedField K, StarRing K,
+class IsROrC (K : semiOutParam (Type*)) extends DenselyNormedField K, StarRing K,
     NormedAlgebra ℝ K, CompleteSpace K where
   re : K →+ ℝ
   im : K →+ ℝ
@@ -69,11 +69,16 @@ class IsROrC (K : semiOutParam (Type _)) extends DenselyNormedField K, StarRing 
   conj_I_ax : conj I = -I
   norm_sq_eq_def_ax : ∀ z : K, ‖z‖ ^ 2 = re z * re z + im z * im z
   mul_im_I_ax : ∀ z : K, im z * im I = im z
+  /-- only an instance in the `ComplexOrder` locale -/
+  [toPartialOrder : PartialOrder K]
+  le_iff_re_im : z ≤ w ↔ re z ≤ re w ∧ im z = im w
 #align is_R_or_C IsROrC
+
+scoped[ComplexOrder] attribute [instance 100] IsROrC.toPartialOrder
 
 end
 
-variable {K E : Type _} [IsROrC K]
+variable {K E : Type*} [IsROrC K]
 
 namespace IsROrC
 
@@ -228,13 +233,13 @@ theorem ofReal_sub (r s : ℝ) : ((r - s : ℝ) : K) = r - s :=
 #align is_R_or_C.of_real_sub IsROrC.ofReal_sub
 
 @[simp, isROrC_simps, norm_cast]
-theorem ofReal_sum {α : Type _} (s : Finset α) (f : α → ℝ) :
+theorem ofReal_sum {α : Type*} (s : Finset α) (f : α → ℝ) :
     ((∑ i in s, f i : ℝ) : K) = ∑ i in s, (f i : K) :=
   map_sum (algebraMap ℝ K) _ _
 #align is_R_or_C.of_real_sum IsROrC.ofReal_sum
 
 @[simp, isROrC_simps, norm_cast]
-theorem ofReal_finsupp_sum {α M : Type _} [Zero M] (f : α →₀ M) (g : α → M → ℝ) :
+theorem ofReal_finsupp_sum {α M : Type*} [Zero M] (f : α →₀ M) (g : α → M → ℝ) :
     ((f.sum fun a b => g a b : ℝ) : K) = f.sum fun a b => (g a b : K) :=
   map_finsupp_sum (algebraMap ℝ K) f g
 #align is_R_or_C.of_real_finsupp_sum IsROrC.ofReal_finsupp_sum
@@ -250,13 +255,13 @@ theorem ofReal_pow (r : ℝ) (n : ℕ) : ((r ^ n : ℝ) : K) = (r : K) ^ n :=
 #align is_R_or_C.of_real_pow IsROrC.ofReal_pow
 
 @[simp, isROrC_simps, norm_cast]
-theorem ofReal_prod {α : Type _} (s : Finset α) (f : α → ℝ) :
+theorem ofReal_prod {α : Type*} (s : Finset α) (f : α → ℝ) :
     ((∏ i in s, f i : ℝ) : K) = ∏ i in s, (f i : K) :=
   map_prod (algebraMap ℝ K) _ _
 #align is_R_or_C.of_real_prod IsROrC.ofReal_prod
 
 @[simp, isROrC_simps, norm_cast]
-theorem ofReal_finsupp_prod {α M : Type _} [Zero M] (f : α →₀ M) (g : α → M → ℝ) :
+theorem ofReal_finsupp_prod {α M : Type*} [Zero M] (f : α →₀ M) (g : α → M → ℝ) :
     ((f.prod fun a b => g a b : ℝ) : K) = f.prod fun a b => (g a b : K) :=
   map_finsupp_prod _ f g
 #align is_R_or_C.of_real_finsupp_prod IsROrC.ofReal_finsupp_prod
@@ -822,11 +827,83 @@ noncomputable instance Real.isROrC : IsROrC ℝ where
   norm_sq_eq_def_ax z := by simp only [sq, Real.norm_eq_abs, ← abs_mul, abs_mul_self z, add_zero,
     mul_zero, AddMonoidHom.zero_apply, AddMonoidHom.id_apply]
   mul_im_I_ax z := by simp only [MulZeroClass.mul_zero, AddMonoidHom.zero_apply]
+  le_iff_re_im := (and_iff_left rfl).symm
 #align real.is_R_or_C Real.isROrC
 
 end Instances
 
 namespace IsROrC
+
+section Order
+
+open scoped ComplexOrder
+
+theorem lt_iff_re_im {z w : K} : z < w ↔ re z < re w ∧ im z = im w := by
+  simp_rw [lt_iff_le_and_ne, @IsROrC.le_iff_re_im K]
+  constructor
+  · rintro ⟨⟨hr, hi⟩, heq⟩
+    exact ⟨⟨hr, mt (fun hreq => ext hreq hi) heq⟩, hi⟩
+  · rintro ⟨⟨hr, hrn⟩, hi⟩
+    exact ⟨⟨hr, hi⟩, ne_of_apply_ne _ hrn⟩
+
+theorem nonneg_iff {z : K} : 0 ≤ z ↔ 0 ≤ re z ∧ im z = 0 := by
+  simpa only [map_zero, eq_comm] using le_iff_re_im (z := 0) (w := z)
+
+theorem pos_iff {z : K} : 0 < z ↔ 0 < re z ∧ im z = 0 := by
+  simpa only [map_zero, eq_comm] using lt_iff_re_im (z := 0) (w := z)
+
+theorem nonpos_iff {z : K} : z ≤ 0 ↔ re z ≤ 0 ∧ im z = 0 := by
+  simpa only [map_zero] using le_iff_re_im (z := z) (w := 0)
+
+theorem neg_iff {z : K} : z < 0 ↔ re z < 0 ∧ im z = 0 := by
+  simpa only [map_zero] using lt_iff_re_im (z := z) (w := 0)
+
+/-- With `z ≤ w` iff `w - z` is real and nonnegative, `ℝ` and `ℂ` are star ordered rings.
+(That is, a star ring in which the nonnegative elements are those of the form `star z * z`.)
+
+Note this is only an instance with `open scoped ComplexOrder`. -/
+def toStarOrderedRing : StarOrderedRing K :=
+  StarOrderedRing.ofNonnegIff'
+    (h_add := fun {x y} hxy z => by
+      rw [IsROrC.le_iff_re_im] at *
+      simpa [map_add, add_le_add_iff_left, add_right_inj] using hxy)
+    (h_nonneg_iff := fun x => by
+      rw [IsROrC.le_iff_re_im, map_zero, map_zero, IsROrC.star_def, eq_comm]
+      constructor
+      · rintro ⟨hr, hi⟩
+        refine ⟨Real.sqrt (IsROrC.re x), ?_⟩
+        have := (IsROrC.is_real_TFAE x).out 2 3
+        rw [IsROrC.conj_ofReal, ← IsROrC.ofReal_mul, Real.mul_self_sqrt hr, eq_comm, this, hi]
+      · rintro ⟨s, rfl⟩
+        simp only [IsROrC.star_def, IsROrC.conj_mul]
+        rw [IsROrC.ofReal_re, IsROrC.ofReal_im, eq_self, and_true]
+        apply IsROrC.normSq_nonneg)
+
+scoped[ComplexOrder] attribute [instance] IsROrC.toStarOrderedRing
+
+/-- With `z ≤ w` iff `w - z` is real and nonnegative, `ℝ` and `ℂ` are strictly ordered rings.
+
+Note this is only an instance with `open scoped ComplexOrder`. -/
+def toStrictOrderedCommRing : StrictOrderedCommRing K where
+  zero_le_one := by simp [@IsROrC.le_iff_re_im K]
+  add_le_add_left _ _ := add_le_add_left
+  mul_pos z w hz hw := by
+    rw [lt_iff_re_im, map_zero] at hz hw ⊢
+    simp [mul_re, mul_im, ← hz.2, ← hw.2, mul_pos hz.1 hw.1]
+  mul_comm := by intros; apply ext <;> ring_nf
+
+scoped[ComplexOrder] attribute [instance] IsROrC.toStrictOrderedCommRing
+
+theorem toOrderedSMul : OrderedSMul ℝ K :=
+  OrderedSMul.mk' fun a b r hab hr => by
+    replace hab := hab.le
+    rw [IsROrC.le_iff_re_im] at hab
+    rw [IsROrC.le_iff_re_im, smul_re, smul_re, smul_im, smul_im]
+    exact hab.imp (fun h => mul_le_mul_of_nonneg_left h hr.le) (congr_arg _)
+
+scoped[ComplexOrder] attribute [instance] IsROrC.toOrderedSMul
+
+end Order
 
 open ComplexConjugate
 

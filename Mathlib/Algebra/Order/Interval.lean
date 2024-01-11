@@ -27,7 +27,7 @@ open scoped BigOperators Pointwise
 
 universe u
 
-variable {ι α : Type _}
+variable {ι α : Type*}
 
 /-! ### One/zero -/
 

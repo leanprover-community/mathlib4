@@ -40,7 +40,6 @@ attribute [-instance] Matrix.SpecialLinearGroup.instCoeFun
 attribute [-instance] Matrix.GeneralLinearGroup.instCoeFun
 
 local notation "GL(" n ", " R ")" "⁺" => Matrix.GLPos (Fin n) R
--- TODO: these don't seem to work yet
 local notation:1024 "↑ₘ" A:1024 =>
   (((A : GL(2, ℝ)⁺) : GL (Fin 2) ℝ) : Matrix (Fin 2) (Fin 2) _)
 local notation:1024 "↑ₘ[" R "]" A:1024 =>
@@ -88,7 +87,7 @@ def re (z : ℍ) :=
 theorem ext' {a b : ℍ} (hre : a.re = b.re) (him : a.im = b.im) : a = b :=
   ext <| Complex.ext hre him
 
-/-- Constructor for `upper_half_plane`. It is useful if `⟨z, h⟩` makes Lean use a wrong
+/-- Constructor for `UpperHalfPlane`. It is useful if `⟨z, h⟩` makes Lean use a wrong
 typeclass instance. -/
 def mk (z : ℂ) (h : 0 < z.im) : ℍ :=
   ⟨z, h⟩
@@ -259,7 +258,7 @@ section ModularScalarTowers
 
 variable (Γ : Subgroup (SpecialLinearGroup (Fin 2) ℤ))
 
-instance SLAction {R : Type _} [CommRing R] [Algebra R ℝ] : MulAction SL(2, R) ℍ :=
+instance SLAction {R : Type*} [CommRing R] [Algebra R ℝ] : MulAction SL(2, R) ℍ :=
   MulAction.compHom ℍ <| SpecialLinearGroup.toGLPos.comp <| map (algebraMap R ℝ)
 #align upper_half_plane.SL_action UpperHalfPlane.SLAction
 
@@ -293,12 +292,12 @@ theorem subgroup_on_glpos_smul_apply (s : Γ) (g : GL(2, ℝ)⁺) (z : ℍ) :
   rfl
 #align upper_half_plane.subgroup_on_GL_pos_smul_apply UpperHalfPlane.subgroup_on_glpos_smul_apply
 
-instance subgroup_on_gLPos : IsScalarTower Γ GL(2, ℝ)⁺ ℍ where
+instance subgroup_on_glpos : IsScalarTower Γ GL(2, ℝ)⁺ ℍ where
   smul_assoc := by
     intro s g z
     simp only [subgroup_on_glpos_smul_apply]
     apply mul_smul'
-#align upper_half_plane.subgroup_on_GL_pos UpperHalfPlane.subgroup_on_gLPos
+#align upper_half_plane.subgroup_on_GL_pos UpperHalfPlane.subgroup_on_glpos
 
 instance subgroupSL : SMul Γ SL(2, ℤ) :=
   ⟨fun s g => s * g⟩
@@ -319,7 +318,7 @@ end ModularScalarTowers
 
 -- Porting note: in the statement, we used to have coercions `↑· : ℝ`
 -- rather than `algebraMap R ℝ ·`.
-theorem specialLinearGroup_apply {R : Type _} [CommRing R] [Algebra R ℝ] (g : SL(2, R)) (z : ℍ) :
+theorem specialLinearGroup_apply {R : Type*} [CommRing R] [Algebra R ℝ] (g : SL(2, R)) (z : ℍ) :
     g • z =
       mk
         (((algebraMap R ℝ (↑ₘ[R] g 0 0) : ℂ) * z + (algebraMap R ℝ (↑ₘ[R] g 0 1) : ℂ)) /

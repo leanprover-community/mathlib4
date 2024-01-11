@@ -24,7 +24,7 @@ open Polynomial
 
 section DenomsClearable
 
-variable {R K : Type _} [Semiring R] [CommSemiring K] {i : R →+* K}
+variable {R K : Type*} [Semiring R] [CommSemiring K] {i : R →+* K}
 
 variable {a b : R} {bi : K}
 
@@ -88,7 +88,7 @@ denominators, yields a number greater than or equal to one.  The target can be a
 `LinearOrderedField K`.
 The assumption on `K` could be weakened to `LinearOrderedCommRing` assuming that the
 image of the denominator is invertible in `K`. -/
-theorem one_le_pow_mul_abs_eval_div {K : Type _} [LinearOrderedField K] {f : ℤ[X]} {a b : ℤ}
+theorem one_le_pow_mul_abs_eval_div {K : Type*} [LinearOrderedField K] {f : ℤ[X]} {a b : ℤ}
     (b0 : 0 < b) (fab : eval ((a : K) / b) (f.map (algebraMap ℤ K)) ≠ 0) :
     (1 : K) ≤ (b : K) ^ f.natDegree * |eval ((a : K) / b) (f.map (algebraMap ℤ K))| := by
   obtain ⟨ev, bi, bu, hF⟩ :=

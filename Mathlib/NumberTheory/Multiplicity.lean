@@ -33,7 +33,7 @@ open Ideal Ideal.Quotient Finset
 
 open BigOperators
 
-variable {R : Type _} {n : ℕ}
+variable {R : Type*} {n : ℕ}
 
 section CommRing
 

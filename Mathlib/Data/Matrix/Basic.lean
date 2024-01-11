@@ -3,6 +3,7 @@ Copyright (c) 2018 Ellen Arlt. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu-Ming Zhang
 -/
+import Mathlib.Algebra.Algebra.Opposite
 import Mathlib.Algebra.Algebra.Pi
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.BigOperators.Ring
@@ -58,9 +59,9 @@ def Matrix (m : Type u) (n : Type u') (α : Type v) : Type max u u' v :=
   m → n → α
 #align matrix Matrix
 
-variable {l m n o : Type _} {m' : o → Type _} {n' : o → Type _}
+variable {l m n o : Type*} {m' : o → Type*} {n' : o → Type*}
 
-variable {R : Type _} {S : Type _} {α : Type v} {β : Type w} {γ : Type _}
+variable {R : Type*} {S : Type*} {α : Type v} {β : Type w} {γ : Type*}
 
 namespace Matrix
 
@@ -154,7 +155,7 @@ theorem map_id (M : Matrix m n α) : M.map id = M := by
 #align matrix.map_id Matrix.map_id
 
 @[simp]
-theorem map_map {M : Matrix m n α} {β γ : Type _} {f : α → β} {g : β → γ} :
+theorem map_map {M : Matrix m n α} {β γ : Type*} {f : α → β} {g : β → γ} :
     (M.map f).map g = M.map (g ∘ f) := by
   ext
   rfl
@@ -946,7 +947,7 @@ theorem sum_apply [AddCommMonoid α] (i : m) (j : n) (s : Finset β) (g : β →
   (congr_fun (s.sum_apply i g) j).trans (s.sum_apply j _)
 #align matrix.sum_apply Matrix.sum_apply
 
-theorem two_mul_expl {R : Type _} [CommRing R] (A B : Matrix (Fin 2) (Fin 2) R) :
+theorem two_mul_expl {R : Type*} [CommRing R] (A B : Matrix (Fin 2) (Fin 2) R) :
     (A * B) 0 0 = A 0 0 * B 0 0 + A 0 1 * B 1 0 ∧
     (A * B) 0 1 = A 0 0 * B 0 1 + A 0 1 * B 1 1 ∧
     (A * B) 1 0 = A 1 0 * B 0 0 + A 1 1 * B 1 0 ∧
@@ -2005,7 +2006,7 @@ theorem transpose_mul [AddCommMonoid α] [CommSemigroup α] [Fintype n] (M : Mat
 #align matrix.transpose_mul Matrix.transpose_mul
 
 @[simp]
-theorem transpose_smul {R : Type _} [SMul R α] (c : R) (M : Matrix m n α) : (c • M)ᵀ = c • Mᵀ := by
+theorem transpose_smul {R : Type*} [SMul R α] (c : R) (M : Matrix m n α) : (c • M)ᵀ = c • Mᵀ := by
   ext
   rfl
 #align matrix.transpose_smul Matrix.transpose_smul
@@ -2050,7 +2051,7 @@ theorem transpose_multiset_sum [AddCommMonoid α] (s : Multiset (Matrix m n α))
   (transposeAddEquiv m n α).toAddMonoidHom.map_multiset_sum s
 #align matrix.transpose_multiset_sum Matrix.transpose_multiset_sum
 
-theorem transpose_sum [AddCommMonoid α] {ι : Type _} (s : Finset ι) (M : ι → Matrix m n α) :
+theorem transpose_sum [AddCommMonoid α] {ι : Type*} (s : Finset ι) (M : ι → Matrix m n α) :
     (∑ i in s, M i)ᵀ = ∑ i in s, (M i)ᵀ :=
   (transposeAddEquiv m n α).toAddMonoidHom.map_sum _ s
 #align matrix.transpose_sum Matrix.transpose_sum
@@ -2253,6 +2254,12 @@ theorem conjTranspose_map [Star α] [Star β] {A : Matrix m n α} (f : α → β
   Matrix.ext fun _ _ => hf _
 #align matrix.conj_transpose_map Matrix.conjTranspose_map
 
+/-- When `star x = x` on the coefficients (such as the real numbers) `conjTranspose` and `transpose`
+are the same operation. -/
+@[simp]
+theorem conjTranspose_eq_transpose_of_trivial [Star α] [TrivialStar α] (A : Matrix m n α) :
+    Aᴴ = Aᵀ := Matrix.ext fun _ _ => star_trivial _
+
 variable (m n α)
 
 /-- `Matrix.conjTranspose` as an `AddEquiv` -/
@@ -2283,7 +2290,7 @@ theorem conjTranspose_multiset_sum [AddCommMonoid α] [StarAddMonoid α]
   (conjTransposeAddEquiv m n α).toAddMonoidHom.map_multiset_sum s
 #align matrix.conj_transpose_multiset_sum Matrix.conjTranspose_multiset_sum
 
-theorem conjTranspose_sum [AddCommMonoid α] [StarAddMonoid α] {ι : Type _} (s : Finset ι)
+theorem conjTranspose_sum [AddCommMonoid α] [StarAddMonoid α] {ι : Type*} (s : Finset ι)
     (M : ι → Matrix m n α) : (∑ i in s, M i)ᴴ = ∑ i in s, (M i)ᴴ :=
   (conjTransposeAddEquiv m n α).toAddMonoidHom.map_sum _ s
 #align matrix.conj_transpose_sum Matrix.conjTranspose_sum
@@ -2392,7 +2399,7 @@ theorem submatrix_id_id (A : Matrix m n α) : A.submatrix id id = A :=
 #align matrix.submatrix_id_id Matrix.submatrix_id_id
 
 @[simp]
-theorem submatrix_submatrix {l₂ o₂ : Type _} (A : Matrix m n α) (r₁ : l → m) (c₁ : o → n)
+theorem submatrix_submatrix {l₂ o₂ : Type*} (A : Matrix m n α) (r₁ : l → m) (c₁ : o → n)
     (r₂ : l₂ → l) (c₂ : o₂ → o) :
     (A.submatrix r₁ c₁).submatrix r₂ c₂ = A.submatrix (r₁ ∘ r₂) (c₁ ∘ c₂) :=
   ext fun _ _ => rfl
@@ -2431,7 +2438,7 @@ theorem submatrix_zero [Zero α] :
   rfl
 #align matrix.submatrix_zero Matrix.submatrix_zero
 
-theorem submatrix_smul {R : Type _} [SMul R α] (r : R) (A : Matrix m n α) :
+theorem submatrix_smul {R : Type*} [SMul R α] (r : R) (A : Matrix m n α) :
     ((r • A : Matrix m n α).submatrix : (l → m) → (o → n) → Matrix l o α) = r • A.submatrix :=
   rfl
 #align matrix.submatrix_smul Matrix.submatrix_smul
@@ -2458,7 +2465,7 @@ theorem submatrix_one [Zero α] [One α] [DecidableEq m] [DecidableEq l] (e : l 
   submatrix_diagonal _ e he
 #align matrix.submatrix_one Matrix.submatrix_one
 
-theorem submatrix_mul [Fintype n] [Fintype o] [Mul α] [AddCommMonoid α] {p q : Type _}
+theorem submatrix_mul [Fintype n] [Fintype o] [Mul α] [AddCommMonoid α] {p q : Type*}
     (M : Matrix m n α) (N : Matrix n p α) (e₁ : l → m) (e₂ : o → n) (e₃ : q → p)
     (he₂ : Function.Bijective e₂) :
     (M ⬝ N).submatrix e₁ e₃ = M.submatrix e₁ e₂ ⬝ N.submatrix e₂ e₃ :=
@@ -2498,7 +2505,7 @@ theorem submatrix_one_equiv [Zero α] [One α] [DecidableEq m] [DecidableEq l] (
 #align matrix.submatrix_one_equiv Matrix.submatrix_one_equiv
 
 @[simp]
-theorem submatrix_mul_equiv [Fintype n] [Fintype o] [AddCommMonoid α] [Mul α] {p q : Type _}
+theorem submatrix_mul_equiv [Fintype n] [Fintype o] [AddCommMonoid α] [Mul α] {p q : Type*}
     (M : Matrix m n α) (N : Matrix n p α) (e₁ : l → m) (e₂ : o ≃ n) (e₃ : q → p) :
     M.submatrix e₁ e₂ ⬝ N.submatrix e₂ e₃ = (M ⬝ N).submatrix e₁ e₃ :=
   (submatrix_mul M N e₁ e₂ e₃ e₂.bijective).symm
@@ -2567,7 +2574,7 @@ theorem reindex_symm (eₘ : m ≃ l) (eₙ : n ≃ o) :
 #align matrix.reindex_symm Matrix.reindex_symm
 
 @[simp]
-theorem reindex_trans {l₂ o₂ : Type _} (eₘ : m ≃ l) (eₙ : n ≃ o) (eₘ₂ : l ≃ l₂) (eₙ₂ : o ≃ o₂) :
+theorem reindex_trans {l₂ o₂ : Type*} (eₘ : m ≃ l) (eₙ : n ≃ o) (eₘ₂ : l ≃ l₂) (eₙ₂ : o ≃ o₂) :
     (reindex eₘ eₙ).trans (reindex eₘ₂ eₙ₂) =
       (reindex (eₘ.trans eₘ₂) (eₙ.trans eₙ₂) : Matrix m n α ≃ _) :=
   Equiv.ext fun A => (A.submatrix_submatrix eₘ.symm eₙ.symm eₘ₂.symm eₙ₂.symm : _)

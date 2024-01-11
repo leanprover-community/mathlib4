@@ -77,7 +77,7 @@ section Induction
 
     This can be used as `induction v using Vector.revInductionOn`. -/
 @[elab_as_elim]
-def revInductionOn {C : ∀ {n : ℕ}, Vector α n → Sort _} {n : ℕ} (v : Vector α n)
+def revInductionOn {C : ∀ {n : ℕ}, Vector α n → Sort*} {n : ℕ} (v : Vector α n)
     (nil : C nil)
     (snoc : ∀ {n : ℕ} (xs : Vector α n) (x : α), C xs → C (xs.snoc x)) :
     C v :=
@@ -90,7 +90,7 @@ def revInductionOn {C : ∀ {n : ℕ}, Vector α n → Sort _} {n : ℕ} (v : Ve
 /-- Define `C v w` by *reverse* induction on a pair of vectors `v : Vector α n` and
     `w : Vector β n`. -/
 @[elab_as_elim]
-def revInductionOn₂ {C : ∀ {n : ℕ}, Vector α n → Vector β n → Sort _} {n : ℕ}
+def revInductionOn₂ {C : ∀ {n : ℕ}, Vector α n → Vector β n → Sort*} {n : ℕ}
     (v : Vector α n) (w : Vector β n)
     (nil : C nil nil)
     (snoc : ∀ {n : ℕ} (xs : Vector α n) (ys : Vector β n) (x : α) (y : β),
@@ -107,7 +107,7 @@ def revInductionOn₂ {C : ∀ {n : ℕ}, Vector α n → Vector β n → Sort _
 /-- Define `C v` by *reverse* case analysis, i.e. by handling the cases `nil` and `xs.snoc x`
     separately -/
 @[elab_as_elim]
-def revCasesOn {C : ∀ {n : ℕ}, Vector α n → Sort _} {n : ℕ} (v : Vector α n)
+def revCasesOn {C : ∀ {n : ℕ}, Vector α n → Sort*} {n : ℕ} (v : Vector α n)
     (nil : C nil)
     (snoc : ∀ {n : ℕ} (xs : Vector α n) (x : α), C (xs.snoc x)) :
     C v :=

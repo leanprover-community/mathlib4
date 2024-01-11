@@ -36,7 +36,7 @@ universe v₁ v₂ u₁ u₂
 namespace CategoryTheory
 
 /-- A functor `F` is additive provided `F.map` is an additive homomorphism. -/
-class Functor.Additive {C D : Type _} [Category C] [Category D] [Preadditive C] [Preadditive D]
+class Functor.Additive {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D]
   (F : C ⥤ D) : Prop where
   /-- the addition of two morphisms is mapped to the sum of their images -/
   map_add : ∀ {X Y : C} {f g : X ⟶ Y}, F.map (f + g) = F.map f + F.map g := by aesop_cat
@@ -48,7 +48,7 @@ namespace Functor
 
 section
 
-variable {C D : Type _} [Category C] [Category D] [Preadditive C] [Preadditive D] (F : C ⥤ D)
+variable {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D] (F : C ⥤ D)
   [Functor.Additive F]
 
 @[simp]
@@ -73,7 +73,7 @@ instance (priority := 100) preservesZeroMorphisms_of_additive : PreservesZeroMor
 
 instance : Additive (𝟭 C) where
 
-instance {E : Type _} [Category E] [Preadditive E] (G : D ⥤ E) [Functor.Additive G] :
+instance {E : Type*} [Category E] [Preadditive E] (G : D ⥤ E) [Functor.Additive G] :
     Additive (F ⋙ G) where
 
 @[simp]
@@ -98,7 +98,7 @@ theorem map_zsmul {X Y : C} {f : X ⟶ Y} {r : ℤ} : F.map (r • f) = r • F.
 open BigOperators
 
 @[simp]
-theorem map_sum {X Y : C} {α : Type _} (f : α → (X ⟶ Y)) (s : Finset α) :
+theorem map_sum {X Y : C} {α : Type*} (f : α → (X ⟶ Y)) (s : Finset α) :
     F.map (∑ a in s, f a) = ∑ a in s, F.map (f a) :=
   (F.mapAddHom : (X ⟶ Y) →+ _).map_sum f s
 #align category_theory.functor.map_sum CategoryTheory.Functor.map_sum
@@ -107,14 +107,14 @@ end
 
 section InducedCategory
 
-variable {C : Type _} {D : Type _} [Category D] [Preadditive D] (F : C → D)
+variable {C : Type*} {D : Type*} [Category D] [Preadditive D] (F : C → D)
 
 instance inducedFunctor_additive : Functor.Additive (inducedFunctor F) where
 #align category_theory.functor.induced_functor_additive CategoryTheory.Functor.inducedFunctor_additive
 
 end InducedCategory
 
-instance fullSubcategoryInclusion_additive {C : Type _} [Category C] [Preadditive C]
+instance fullSubcategoryInclusion_additive {C : Type*} [Category C] [Preadditive C]
     (Z : C → Prop) : (fullSubcategoryInclusion Z).Additive where
 #align category_theory.functor.full_subcategory_inclusion_additive CategoryTheory.Functor.fullSubcategoryInclusion_additive
 
@@ -156,7 +156,7 @@ end Functor
 
 namespace Equivalence
 
-variable {C D : Type _} [Category C] [Category D] [Preadditive C] [Preadditive D]
+variable {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D]
 
 instance inverse_additive (e : C ≌ D) [e.functor.Additive] : e.inverse.Additive where
   map_add {f g} := e.functor.map_injective (by simp)
@@ -166,7 +166,7 @@ end Equivalence
 
 section
 
-variable (C D : Type _) [Category C] [Category D] [Preadditive C] [Preadditive D]
+variable (C D : Type*) [Category C] [Category D] [Preadditive C] [Preadditive D]
 
 -- porting note: removed @[nolint has_nonempty_instance]
 /-- Bundled additive functors. -/

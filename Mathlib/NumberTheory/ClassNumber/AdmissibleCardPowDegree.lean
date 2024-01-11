@@ -29,7 +29,7 @@ open Polynomial
 
 open AbsoluteValue Real
 
-variable {Fq : Type _} [Fintype Fq]
+variable {Fq : Type*} [Fintype Fq]
 
 /-- If `A` is a family of enough low-degree polynomials over a finite semiring, there is a
 pair of equal elements in `A`. -/

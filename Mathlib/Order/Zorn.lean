@@ -65,7 +65,7 @@ Fleuriot, Tobias Nipkow, Christian Sternagel.
 
 open Classical Set
 
-variable {α β : Type _} {r : α → α → Prop} {c : Set α}
+variable {α β : Type*} {r : α → α → Prop} {c : Set α}
 
 /-- Local notation for the relation being considered. -/
 local infixl:50 " ≺ " => r

@@ -31,7 +31,7 @@ are.
 -/
 
 
-variable {ι : Type _} {α : ι → Type _}
+variable {ι : Type*} {α : ι → Type*}
 
 namespace PSigma
 

@@ -31,7 +31,7 @@ open Set Filter
 
 open Classical Topology Filter
 
-variable {α : Type _} {β : Type _} {γ : Type _} {δ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 
 /-- `i : α → β` is "dense inducing" if it has dense range and the topology on `α`
   is the one induced by `i` from the topology on `β`. -/
@@ -271,7 +271,7 @@ protected theorem prod {e₁ : α → β} {e₂ : γ → δ} (de₁ : DenseEmbed
 
 /-- The dense embedding of a subtype inside its closure. -/
 @[simps]
-def subtypeEmb {α : Type _} (p : α → Prop) (e : α → β) (x : { x // p x }) :
+def subtypeEmb {α : Type*} (p : α → Prop) (e : α → β) (x : { x // p x }) :
     { x // x ∈ closure (e '' { x | p x }) } :=
   ⟨e x, subset_closure <| mem_image_of_mem e x.prop⟩
 #align dense_embedding.subtype_emb DenseEmbedding.subtypeEmb
@@ -295,7 +295,7 @@ theorem dense_image {s : Set α} : Dense (e '' s) ↔ Dense s :=
 
 end DenseEmbedding
 
-theorem denseEmbedding_id {α : Type _} [TopologicalSpace α] : DenseEmbedding (id : α → α) :=
+theorem denseEmbedding_id {α : Type*} [TopologicalSpace α] : DenseEmbedding (id : α → α) :=
   { embedding_id with dense := denseRange_id }
 #align dense_embedding_id denseEmbedding_id
 
@@ -365,7 +365,7 @@ end
 
 -- Bourbaki GT III §3 no.4 Proposition 7 (generalised to any dense-inducing map to a T₃ space)
 theorem Filter.HasBasis.hasBasis_of_denseInducing [TopologicalSpace α] [TopologicalSpace β]
-    [T3Space β] {ι : Type _} {s : ι → Set α} {p : ι → Prop} {x : α} (h : (𝓝 x).HasBasis p s)
+    [T3Space β] {ι : Type*} {s : ι → Set α} {p : ι → Prop} {x : α} (h : (𝓝 x).HasBasis p s)
     {f : α → β} (hf : DenseInducing f) : (𝓝 (f x)).HasBasis p fun i => closure <| f '' s i := by
   rw [Filter.hasBasis_iff] at h ⊢
   intro T

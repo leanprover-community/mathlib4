@@ -49,7 +49,7 @@ open scoped NNReal ENNReal MeasureTheory Topology ProbabilityTheory
 
 section AuxLemmasToBeMoved
 
-variable {α β ι : Type _}
+variable {α β ι : Type*}
 
 namespace Directed
 
@@ -88,7 +88,7 @@ theorem Real.iInter_Iic_rat : ⋂ r : ℚ, Iic (r : ℝ) = ∅ := by
 #align real.Inter_Iic_rat Real.iInter_Iic_rat
 
 -- todo after the port: move to order/filter/at_top_bot
-theorem atBot_le_nhds_bot {α : Type _} [TopologicalSpace α] [LinearOrder α] [OrderBot α]
+theorem atBot_le_nhds_bot {α : Type*} [TopologicalSpace α] [LinearOrder α] [OrderBot α]
     [OrderTopology α] : (atBot : Filter α) ≤ 𝓝 ⊥ := by
   cases subsingleton_or_nontrivial α
   · simp only [nhds_discrete, le_pure_iff, mem_atBot_sets, mem_singleton_iff,
@@ -103,13 +103,13 @@ theorem atBot_le_nhds_bot {α : Type _} [TopologicalSpace α] [LinearOrder α] [
 #align at_bot_le_nhds_bot atBot_le_nhds_bot
 
 -- todo after the port: move to order/filter/at_top_bot
-theorem atTop_le_nhds_top {α : Type _} [TopologicalSpace α] [LinearOrder α] [OrderTop α]
+theorem atTop_le_nhds_top {α : Type*} [TopologicalSpace α] [LinearOrder α] [OrderTop α]
     [OrderTopology α] : (atTop : Filter α) ≤ 𝓝 ⊤ :=
   @atBot_le_nhds_bot αᵒᵈ _ _ _ _
 #align at_top_le_nhds_top atTop_le_nhds_top
 
 -- todo: move to topology/algebra/order/monotone_convergence
-theorem tendsto_of_antitone {ι α : Type _} [Preorder ι] [TopologicalSpace α]
+theorem tendsto_of_antitone {ι α : Type*} [Preorder ι] [TopologicalSpace α]
     [ConditionallyCompleteLinearOrder α] [OrderTopology α] {f : ι → α} (h_mono : Antitone f) :
     Tendsto f atTop atBot ∨ ∃ l, Tendsto f atTop (𝓝 l) :=
   @tendsto_of_monotone ι αᵒᵈ _ _ _ _ _ h_mono
@@ -183,7 +183,7 @@ end AuxLemmasToBeMoved
 
 namespace MeasureTheory.Measure
 
-variable {α β : Type _} {mα : MeasurableSpace α} (ρ : Measure (α × ℝ))
+variable {α β : Type*} {mα : MeasurableSpace α} (ρ : Measure (α × ℝ))
 
 /-- Measure on `α` such that for a measurable set `s`, `ρ.Iic_snd r s = ρ (s ×ˢ Iic r)`. -/
 noncomputable def IicSnd (r : ℝ) : Measure α :=
@@ -282,7 +282,7 @@ open MeasureTheory
 
 namespace ProbabilityTheory
 
-variable {α β ι : Type _} {mα : MeasurableSpace α}
+variable {α β ι : Type*} {mα : MeasurableSpace α}
 
 attribute [local instance] MeasureTheory.Measure.IsFiniteMeasure.IicSnd
 

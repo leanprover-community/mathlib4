@@ -38,7 +38,7 @@ open Polynomial Finset
 
 open scoped Polynomial
 
-instance FiniteField.isSplittingField_sub (K F : Type _) [Field K] [Fintype K]
+instance FiniteField.isSplittingField_sub (K F : Type*) [Field K] [Fintype K]
     [Field F] [Algebra F K] : IsSplittingField F K (X ^ Fintype.card K - X) where
   splits' := by
     have h : (X ^ Fintype.card K - X : K[X]).natDegree = Fintype.card K :=
@@ -52,7 +52,7 @@ instance FiniteField.isSplittingField_sub (K F : Type _) [Field K] [Fintype K]
     · rw [FiniteField.roots_X_pow_card_sub_X, val_toFinset, coe_univ, Algebra.adjoin_univ]
 #align finite_field.has_sub.sub.polynomial.is_splitting_field FiniteField.isSplittingField_sub
 
-theorem galois_poly_separable {K : Type _} [Field K] (p q : ℕ) [CharP K p] (h : p ∣ q) :
+theorem galois_poly_separable {K : Type*} [Field K] (p q : ℕ) [CharP K p] (h : p ∣ q) :
     Separable (X ^ q - X : K[X]) := by
   use 1, X ^ q - X - 1
   rw [← CharP.cast_eq_zero_iff K[X] p] at h
@@ -167,7 +167,7 @@ def equivZmodP : GaloisField p 1 ≃ₐ[ZMod p] ZMod p :=
   (@IsSplittingField.algEquiv _ (ZMod p) _ _ _ (X ^ p ^ 1 - X : (ZMod p)[X]) inst).symm
 #align galois_field.equiv_zmod_p GaloisField.equivZmodP
 
-variable {K : Type _} [Field K] [Fintype K] [Algebra (ZMod p) K]
+variable {K : Type*} [Field K] [Fintype K] [Algebra (ZMod p) K]
 
 theorem splits_X_pow_card_sub_X : Splits (algebraMap (ZMod p) K) (X ^ Fintype.card K - X) :=
   (FiniteField.isSplittingField_sub K (ZMod p)).splits
@@ -179,7 +179,7 @@ theorem isSplittingField_of_card_eq (h : Fintype.card K = p ^ n) :
   h ▸ FiniteField.isSplittingField_sub K (ZMod p)
 #align galois_field.is_splitting_field_of_card_eq GaloisField.isSplittingField_of_card_eq
 
-instance (priority := 100) {K K' : Type _} [Field K] [Field K'] [Finite K'] [Algebra K K'] :
+instance (priority := 100) {K K' : Type*} [Field K] [Field K'] [Finite K'] [Algebra K K'] :
     IsGalois K K' := by
   cases nonempty_fintype K'
   obtain ⟨p, hp⟩ := CharP.exists K
@@ -200,7 +200,7 @@ end GaloisField
 
 namespace FiniteField
 
-variable {K : Type _} [Field K] [Fintype K] {K' : Type _} [Field K'] [Fintype K']
+variable {K : Type*} [Field K] [Fintype K] {K' : Type*} [Field K'] [Fintype K']
 
 /-- Uniqueness of finite fields:
   Any two finite fields of the same cardinality are (possibly non canonically) isomorphic-/

@@ -44,7 +44,7 @@ class MulSemiringAction (M : Type u) (R : Type v) [Monoid M] [Semiring R] extend
 
 section Semiring
 
-variable (M N G : Type _) [Monoid M] [Monoid N] [Group G]
+variable (M N G : Type*) [Monoid M] [Monoid N] [Group G]
 
 variable (A R S F : Type v) [AddMonoid A] [Semiring R] [CommSemiring S] [DivisionRing F]
 

@@ -782,7 +782,7 @@ theorem coe_nat_inj (p q : Nat.Primes) : (p : ℕ) = (q : ℕ) ↔ p = q :=
 
 end Primes
 
-instance monoid.primePow {α : Type _} [Monoid α] : Pow α Primes :=
+instance monoid.primePow {α : Type*} [Monoid α] : Pow α Primes :=
   ⟨fun x p => x ^ (p : ℕ)⟩
 #align nat.monoid.prime_pow Nat.monoid.primePow
 

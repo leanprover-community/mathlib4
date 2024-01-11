@@ -25,7 +25,7 @@ This file defines the symplectic group and proves elementary properties.
 
 open Matrix
 
-variable {l R : Type _}
+variable {l R : Type*}
 
 namespace Matrix
 

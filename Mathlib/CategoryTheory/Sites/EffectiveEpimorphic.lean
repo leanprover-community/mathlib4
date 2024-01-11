@@ -36,7 +36,7 @@ namespace CategoryTheory
 
 open Limits
 
-variable {C : Type _} [Category C]
+variable {C : Type*} [Category C]
 
 /-- A sieve is effective epimorphic if the associated cocone is a colimit cocone. -/
 def Sieve.EffectiveEpimorphic {X : C} (S : Sieve X) : Prop :=
@@ -219,14 +219,14 @@ The sieve of morphisms which factor through a morphism in a given family.
 This is equal to `Sieve.generate (Presieve.ofArrows X π)`, but has
 more convenient definitional properties.
 -/
-def Sieve.generateFamily {B : C} {α : Type _} (X : α → C) (π : (a : α) → (X a ⟶ B)) :
+def Sieve.generateFamily {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) :
     Sieve B where
   arrows Y := { f | ∃ (a : α) (g : Y ⟶ X a), g ≫ π a = f }
   downward_closed := by
     rintro Y₁ Y₂ g₁ ⟨a,q,rfl⟩ e
     refine ⟨a, e ≫ q, by simp⟩
 
-lemma Sieve.generateFamily_eq {B : C} {α : Type _} (X : α → C) (π : (a : α) → (X a ⟶ B)) :
+lemma Sieve.generateFamily_eq {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) :
     Sieve.generate (Presieve.ofArrows X π) = Sieve.generateFamily X π := by
   ext Y g
   constructor
@@ -238,7 +238,7 @@ lemma Sieve.generateFamily_eq {B : C} {α : Type _} (X : α → C) (π : (a : α
 /--
 This structure encodes the data required for a family of morphisms to be effective epimorphic.
 -/
-structure EffectiveEpiFamilyStruct {B : C} {α : Type _}
+structure EffectiveEpiFamilyStruct {B : C} {α : Type*}
     (X : α → C) (π : (a : α) → (X a ⟶ B)) where
   desc : ∀ {W} (e : (a : α) → (X a ⟶ W)),
           (∀ {Z : C} (a₁ a₂ : α) (g₁ : Z ⟶ X a₁) (g₂ : Z ⟶ X a₂),
@@ -262,27 +262,27 @@ A family of morphisms `f a : X a ⟶ B` indexed by `α` is effective epimorphic
 provided that the `f a` exhibit `B` as a colimit of the diagram of all "relations"
 `R → X a₁`, `R ⟶ X a₂` for all `a₁ a₂ : α`.
 -/
-class EffectiveEpiFamily {B : C} {α : Type _} (X : α → C) (π : (a : α) → (X a ⟶ B)) : Prop where
+class EffectiveEpiFamily {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) : Prop where
   effectiveEpiFamily : Nonempty (EffectiveEpiFamilyStruct X π)
 
 attribute [nolint docBlame] EffectiveEpiFamily.effectiveEpiFamily
 
 /-- Some chosen `EffectiveEpiFamilyStruct` associated to an effective epi family. -/
 noncomputable
-def EffectiveEpiFamily.getStruct {B : C} {α : Type _} (X : α → C) (π : (a : α) → (X a ⟶ B))
+def EffectiveEpiFamily.getStruct {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B))
     [EffectiveEpiFamily X π] : EffectiveEpiFamilyStruct X π :=
   EffectiveEpiFamily.effectiveEpiFamily.some
 
 /-- Descend along an effective epi family. -/
 noncomputable
-def EffectiveEpiFamily.desc {B W : C} {α : Type _} (X : α → C) (π : (a : α) → (X a ⟶ B))
+def EffectiveEpiFamily.desc {B W : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B))
     [EffectiveEpiFamily X π] (e : (a : α) → (X a ⟶ W))
     (h : ∀ {Z : C} (a₁ a₂ : α) (g₁ : Z ⟶ X a₁) (g₂ : Z ⟶ X a₂),
       g₁ ≫ π _ = g₂ ≫ π _ → g₁ ≫ e _ = g₂ ≫ e _) : B ⟶ W :=
   (EffectiveEpiFamily.getStruct X π).desc e h
 
 @[reassoc (attr := simp)]
-lemma EffectiveEpiFamily.fac {B W : C} {α : Type _} (X : α → C) (π : (a : α) → (X a ⟶ B))
+lemma EffectiveEpiFamily.fac {B W : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B))
     [EffectiveEpiFamily X π] (e : (a : α) → (X a ⟶ W))
     (h : ∀ {Z : C} (a₁ a₂ : α) (g₁ : Z ⟶ X a₁) (g₂ : Z ⟶ X a₂),
       g₁ ≫ π _ = g₂ ≫ π _ → g₁ ≫ e _ = g₂ ≫ e _) (a : α) :
@@ -307,14 +307,14 @@ def effectiveEpiFamilyStructId : EffectiveEpiFamilyStruct (α : Unit → C) (fun
 instance : EffectiveEpiFamily (fun _ => X : Unit → C) (fun _ => 𝟙 X) :=
   ⟨⟨effectiveEpiFamilyStructId⟩⟩
 
-example {B W : C} {α : Type _} (X : α → C) (π : (a : α) → (X a ⟶ B))
+example {B W : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B))
     [EffectiveEpiFamily X π] (e : (a : α) → (X a ⟶ W))
     (h : ∀ {Z : C} (a₁ a₂ : α) (g₁ : Z ⟶ X a₁) (g₂ : Z ⟶ X a₂),
       g₁ ≫ π _ = g₂ ≫ π _ → g₁ ≫ e _ = g₂ ≫ e _) (a : α) :
     π a ≫ EffectiveEpiFamily.desc X π e h = e a :=
   by simp
 
-example {B W Q : C} {α : Type _} (X : α → C) (π : (a : α) → (X a ⟶ B))
+example {B W Q : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B))
     [EffectiveEpiFamily X π] (e : (a : α) → (X a ⟶ W))
     (h : ∀ {Z : C} (a₁ a₂ : α) (g₁ : Z ⟶ X a₁) (g₂ : Z ⟶ X a₂),
       g₁ ≫ π _ = g₂ ≫ π _ → g₁ ≫ e _ = g₂ ≫ e _) (a : α)
@@ -322,7 +322,7 @@ example {B W Q : C} {α : Type _} (X : α → C) (π : (a : α) → (X a ⟶ B))
     π a ≫ EffectiveEpiFamily.desc X π e h ≫ q = e a ≫ q :=
   by simp
 
-lemma EffectiveEpiFamily.uniq {B W : C} {α : Type _} (X : α → C) (π : (a : α) → (X a ⟶ B))
+lemma EffectiveEpiFamily.uniq {B W : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B))
     [EffectiveEpiFamily X π] (e : (a : α) → (X a ⟶ W))
     (h : ∀ {Z : C} (a₁ a₂ : α) (g₁ : Z ⟶ X a₁) (g₂ : Z ⟶ X a₂),
       g₁ ≫ π _ = g₂ ≫ π _ → g₁ ≫ e _ = g₂ ≫ e _)
@@ -331,7 +331,7 @@ lemma EffectiveEpiFamily.uniq {B W : C} {α : Type _} (X : α → C) (π : (a : 
   (EffectiveEpiFamily.getStruct X π).uniq e h m hm
 
 -- TODO: Once we have "jointly epimorphic families", we could rephrase this as such a property.
-lemma EffectiveEpiFamily.hom_ext {B W : C} {α : Type _} (X : α → C) (π : (a : α) → (X a ⟶ B))
+lemma EffectiveEpiFamily.hom_ext {B W : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B))
     [EffectiveEpiFamily X π] (m₁ m₂ : B ⟶ W) (h : ∀ a, π a ≫ m₁ = π a ≫ m₂) :
     m₁ = m₂ := by
   have : m₂ = EffectiveEpiFamily.desc X π (fun a => π a ≫ m₂)
@@ -340,7 +340,7 @@ lemma EffectiveEpiFamily.hom_ext {B W : C} {α : Type _} (X : α → C) (π : (a
   rw [this]
   exact EffectiveEpiFamily.uniq _ _ _ _ _ h
 
-instance epiCoproductDescOfEffectiveEpiFamily {B : C} {α : Type _}
+instance epiCoproductDescOfEffectiveEpiFamily {B : C} {α : Type*}
     (X : α → C) (π : (a : α) → (X a ⟶ B)) [EffectiveEpiFamily X π] [HasCoproduct X] :
     Epi (Sigma.desc π) := by
   constructor
@@ -356,7 +356,7 @@ Implementation: This is a construction which will be used in the proof that
 the sieve generated by a family of arrows is effective epimorphic if and only if
 the family is an effective epi.
 -/
-def isColimitOfEffectiveEpiFamilyStruct {B : C} {α : Type _}
+def isColimitOfEffectiveEpiFamilyStruct {B : C} {α : Type*}
     (X : α → C) (π : (a : α) → (X a ⟶ B)) (H : EffectiveEpiFamilyStruct X π) :
     IsColimit (Sieve.generateFamily X π : Presieve B).cocone :=
   letI D := FullSubcategory fun T : Over B => Sieve.generateFamily X π T.hom
@@ -393,7 +393,7 @@ the sieve generated by a family of arrows is effective epimorphic if and only if
 the family is an effective epi.
 -/
 noncomputable
-def effectiveEpiFamilyStructOfIsColimit {B : C} {α : Type _}
+def effectiveEpiFamilyStructOfIsColimit {B : C} {α : Type*}
     (X : α → C) (π : (a : α) → (X a ⟶ B))
     (H : IsColimit (Sieve.generateFamily X π : Presieve B).cocone) :
     EffectiveEpiFamilyStruct X π :=
@@ -430,7 +430,7 @@ def effectiveEpiFamilyStructOfIsColimit {B : C} {α : Type _}
       generalize_proofs h1 h2
       rwa [h2.choose_spec] }
 
-theorem Sieve.effectiveEpimorphic_family {B : C} {α : Type _}
+theorem Sieve.effectiveEpimorphic_family {B : C} {α : Type*}
     (X : α → C) (π : (a : α) → (X a ⟶ B)) :
     (Presieve.ofArrows X π).EffectiveEpimorphic ↔ EffectiveEpiFamily X π := by
   constructor

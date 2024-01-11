@@ -81,7 +81,7 @@ theorem nthLe_ofFn' {n} (f : Fin n → α) {i : ℕ} (h : i < (ofFn f).length) :
 #align list.nth_le_of_fn' List.nthLe_ofFn'
 
 @[simp]
-theorem map_ofFn {β : Type _} {n : ℕ} (f : Fin n → α) (g : α → β) :
+theorem map_ofFn {β : Type*} {n : ℕ} (f : Fin n → α) (g : α → β) :
     map g (ofFn f) = ofFn (g ∘ f) :=
   ext_get (by simp) fun i h h' => by simp
 #align list.map_of_fn List.map_ofFn
@@ -148,7 +148,7 @@ theorem ofFn_add {m n} (f : Fin (m + n) → α) :
     List.ofFn f =
       (List.ofFn fun i => f (Fin.castAdd n i)) ++ List.ofFn fun j => f (Fin.natAdd m j) := by
   induction' n with n IH
-  · rw [ofFn_zero, append_nil, Fin.castAdd_zero, Fin.castIso_refl]
+  · rw [ofFn_zero, append_nil, Fin.castAdd_zero]
     rfl
   · rw [ofFn_succ', ofFn_succ', IH, append_concat]
     rfl
@@ -244,13 +244,13 @@ def equivSigmaTuple : List α ≃ Σn, Fin n → α where
 
 This can be used with `induction l using List.ofFnRec`. -/
 @[elab_as_elim]
-def ofFnRec {C : List α → Sort _} (h : ∀ (n) (f : Fin n → α), C (List.ofFn f)) (l : List α) : C l :=
+def ofFnRec {C : List α → Sort*} (h : ∀ (n) (f : Fin n → α), C (List.ofFn f)) (l : List α) : C l :=
   cast (congr_arg C l.ofFn_get) <|
     h l.length l.get
 #align list.of_fn_rec List.ofFnRec
 
 @[simp]
-theorem ofFnRec_ofFn {C : List α → Sort _} (h : ∀ (n) (f : Fin n → α), C (List.ofFn f)) {n : ℕ}
+theorem ofFnRec_ofFn {C : List α → Sort*} (h : ∀ (n) (f : Fin n → α), C (List.ofFn f)) {n : ℕ}
     (f : Fin n → α) : @ofFnRec _ C h (List.ofFn f) = h _ f := by
   --Porting note: Old proof was
   -- equivSigmaTuple.rightInverse_symm.cast_eq (fun s => h s.1 s.2) ⟨n, f⟩

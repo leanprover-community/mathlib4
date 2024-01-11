@@ -37,7 +37,7 @@ namespace BoxIntegral
 
 namespace Box
 
-variable {ι : Type _} {I J : Box ι}
+variable {ι : Type*} {I J : Box ι}
 
 /-- For a box `I`, the hyperplanes passing through its center split `I` into `2 ^ card ι` boxes.
 `BoxIntegral.Box.splitCenterBox I s` is one of these boxes. See also

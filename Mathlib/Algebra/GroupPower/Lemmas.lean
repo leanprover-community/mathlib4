@@ -23,7 +23,7 @@ open Int
 
 universe u v w x y z u₁ u₂
 
-variable {α : Type _} {M : Type u} {N : Type v} {G : Type w} {H : Type x} {A : Type y} {B : Type z}
+variable {α : Type*} {M : Type u} {N : Type v} {G : Type w} {H : Type x} {A : Type y} {B : Type z}
   {R : Type u₁} {S : Type u₂}
 
 /-!
@@ -125,6 +125,7 @@ theorem smul_pow' [MulDistribMulAction M N] (x : M) (m : N) (n : ℕ) : x • m 
 
 end Monoid
 
+@[simp]
 theorem zsmul_one [AddGroupWithOne A] (n : ℤ) : n • (1 : A) = n := by cases n <;> simp
 #align zsmul_one zsmul_one
 
@@ -630,9 +631,9 @@ theorem neg_one_pow_eq_pow_mod_two [Ring R] {n : ℕ} : (-1 : R) ^ n = (-1) ^ (n
   rw [← Nat.mod_add_div n 2, pow_add, pow_mul]; simp [sq]
 #align neg_one_pow_eq_pow_mod_two neg_one_pow_eq_pow_mod_two
 
-section StrictOrderedSemiring
+section OrderedSemiring
 
-variable [StrictOrderedSemiring R] {a : R}
+variable [OrderedSemiring R] {a : R}
 
 /-- Bernoulli's inequality. This version works for semirings but requires
 additional hypotheses `0 ≤ a * a` and `0 ≤ (1 + a) * (1 + a)`. -/
@@ -645,13 +646,13 @@ theorem one_add_mul_le_pow' (Hsq : 0 ≤ a * a) (Hsq' : 0 ≤ (1 + a) * (1 + a))
       add_nonneg (mul_nonneg n.cast_nonneg (mul_nonneg Hsq H)) Hsq
     calc
       1 + (↑(n + 2) : R) * a ≤ 1 + ↑(n + 2) * a + (n * (a * a * (2 + a)) + a * a) :=
-        (le_add_iff_nonneg_right _).2 this
+        le_add_of_nonneg_right this
       _ = (1 + a) * (1 + a) * (1 + n * a) := by {
           simp only [Nat.cast_add, add_mul, mul_add, one_mul, mul_one, ← one_add_one_eq_two,
             Nat.cast_one, add_assoc, add_right_inj]
           simp only [← add_assoc, add_comm _ (↑n * a)]
-          simp only [add_assoc, add_right_inj, (n.cast_commute (_ : R)).left_comm]
-          ac_rfl }
+          simp only [add_assoc, (n.cast_commute (_ : R)).left_comm]
+          simp only [add_comm, add_left_comm] }
       _ ≤ (1 + a) * (1 + a) * (1 + a) ^ n :=
         mul_le_mul_of_nonneg_left (one_add_mul_le_pow' Hsq Hsq' H _) Hsq'
       _ = (1 + a) ^ (n + 2) := by simp only [pow_succ, mul_assoc]
@@ -678,7 +679,7 @@ theorem sq_le (h₀ : 0 ≤ a) (h₁ : a ≤ 1) : a ^ 2 ≤ a :=
   pow_le_of_le_one h₀ h₁ two_ne_zero
 #align sq_le sq_le
 
-end StrictOrderedSemiring
+end OrderedSemiring
 
 section LinearOrderedSemiring
 

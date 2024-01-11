@@ -16,7 +16,7 @@ This file contains lemmas about prime elements of commutative rings.
 
 section CancelCommMonoidWithZero
 
-variable {R : Type _} [CancelCommMonoidWithZero R]
+variable {R : Type*} [CancelCommMonoidWithZero R]
 
 open Finset
 
@@ -25,7 +25,7 @@ open BigOperators
 /-- If `x * y = a * ∏ i in s, p i` where `p i` is always prime, then
   `x` and `y` can both be written as a divisor of `a` multiplied by
   a product over a subset of `s`  -/
-theorem mul_eq_mul_prime_prod {α : Type _} [DecidableEq α] {x y a : R} {s : Finset α} {p : α → R}
+theorem mul_eq_mul_prime_prod {α : Type*} [DecidableEq α] {x y a : R} {s : Finset α} {p : α → R}
     (hp : ∀ i ∈ s, Prime (p i)) (hx : x * y = a * ∏ i in s, p i) :
     ∃ (t u : Finset α) (b c : R),
       t ∪ u = s ∧ Disjoint t u ∧ a = b * c ∧ (x = b * ∏ i in t, p i) ∧ y = c * ∏ i in u, p i := by
@@ -61,7 +61,7 @@ end CancelCommMonoidWithZero
 
 section CommRing
 
-variable {α : Type _} [CommRing α]
+variable {α : Type*} [CommRing α]
 
 theorem Prime.neg {p : α} (hp : Prime p) : Prime (-p) := by
   obtain ⟨h1, h2, h3⟩ := hp

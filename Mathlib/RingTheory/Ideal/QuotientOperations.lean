@@ -153,7 +153,7 @@ theorem mem_quotient_iff_mem {I J : Ideal R} (hIJ : I ≤ J) {x : R} :
 
 section QuotientAlgebra
 
-variable (R₁ R₂ : Type _) {A B : Type _}
+variable (R₁ R₂ : Type*) {A B : Type*}
 
 variable [CommSemiring R₁] [CommSemiring R₂] [CommRing A] [CommRing B]
 
@@ -161,12 +161,7 @@ variable [Algebra R₁ A] [Algebra R₂ A] [Algebra R₁ B]
 
 /-- The `R₁`-algebra structure on `A/I` for an `R₁`-algebra `A` -/
 instance Quotient.algebra {I : Ideal A} : Algebra R₁ (A ⧸ I) :=
-  {
-    RingHom.comp (Ideal.Quotient.mk I)
-      (algebraMap R₁
-        A) with
-    toFun := fun x => Ideal.Quotient.mk I (algebraMap R₁ A x)
-    smul := (· • ·)
+  { toRingHom :=  RingHom.comp (Ideal.Quotient.mk I) (algebraMap R₁ A)
     smul_def' := fun _ x =>
       Quotient.inductionOn' x fun _ =>
         ((Quotient.mk I).congr_arg <| Algebra.smul_def _ _).trans (RingHom.map_mul _ _ _)
@@ -175,6 +170,7 @@ instance Quotient.algebra {I : Ideal A} : Algebra R₁ (A ⧸ I) :=
 
 -- Lean can struggle to find this instance later if we don't provide this shortcut
 -- Porting note: this can probably now be deleted
+-- update: maybe not - removal causes timeouts
 instance Quotient.isScalarTower [SMul R₁ R₂] [IsScalarTower R₁ R₂ A] (I : Ideal A) :
     IsScalarTower R₁ R₂ (A ⧸ I) := by infer_instance
 #align ideal.quotient.is_scalar_tower Ideal.Quotient.isScalarTower
@@ -416,7 +412,7 @@ theorem quotientMap_surjective {J : Ideal R} {I : Ideal S} {f : R →+* S} {H : 
 #align ideal.quotient_map_surjective Ideal.quotientMap_surjective
 
 /-- Commutativity of a square is preserved when taking quotients by an ideal. -/
-theorem comp_quotientMap_eq_of_comp_eq {R' S' : Type _} [CommRing R'] [CommRing S'] {f : R →+* S}
+theorem comp_quotientMap_eq_of_comp_eq {R' S' : Type*} [CommRing R'] [CommRing S'] {f : R →+* S}
     {f' : R' →+* S'} {g : R →+* R'} {g' : S →+* S'} (hfg : f'.comp g = g'.comp f) (I : Ideal S') :
     -- Porting note: was losing track of I
     let leq := le_of_eq (_root_.trans (comap_comap (I := I) f g') (hfg ▸ comap_comap (I := I) g f'))
@@ -451,12 +447,13 @@ theorem quotient_map_comp_mkₐ {I : Ideal A} (J : Ideal B) (f : A →ₐ[R₁] 
 where`J = f(I)`. -/
 def quotientEquivAlg (I : Ideal A) (J : Ideal B) (f : A ≃ₐ[R₁] B) (hIJ : J = I.map (f : A →+* B)) :
     (A ⧸ I) ≃ₐ[R₁] B ⧸ J :=
-  { quotientEquiv I J (f : A ≃+* B) hIJ with commutes' := fun r => by
-  { -- Porting note: Needed to add the below lemma because Equivs coerce weird
-    have : ∀ (e : RingEquiv (A ⧸ I) (B ⧸ J)), Equiv.toFun e.toEquiv = FunLike.coe e := fun _ ↦ rfl
-    rw [this]
-    simp only [quotientEquiv_apply, RingHom.toFun_eq_coe, quotientMap_algebraMap,
-  RingEquiv.coe_toRingHom, AlgEquiv.coe_ringEquiv, AlgEquiv.commutes, Quotient.mk_algebraMap]}}
+  { quotientEquiv I J (f : A ≃+* B) hIJ with
+    commutes' := fun r => by
+      -- Porting note: Needed to add the below lemma because Equivs coerce weird
+      have : ∀ (e : RingEquiv (A ⧸ I) (B ⧸ J)), Equiv.toFun e.toEquiv = FunLike.coe e := fun _ ↦ rfl
+      rw [this]
+      simp only [quotientEquiv_apply, RingHom.toFun_eq_coe, quotientMap_algebraMap,
+      RingEquiv.coe_toRingHom, AlgEquiv.coe_ringEquiv, AlgEquiv.commutes, Quotient.mk_algebraMap]}
 #align ideal.quotient_equiv_alg Ideal.quotientEquivAlg
 
 instance (priority := 100) quotientAlgebra {I : Ideal A} [Algebra R A] :
@@ -468,9 +465,6 @@ theorem algebraMap_quotient_injective {I : Ideal A} [Algebra R A] :
     Function.Injective (algebraMap (R ⧸ I.comap (algebraMap R A)) (A ⧸ I)) := by
   rintro ⟨a⟩ ⟨b⟩ hab
   replace hab := Quotient.eq.mp hab
-  -- Porting note: Needed to add these two lines b/c we removed deinstanced this earlier
-  letI : NonAssocRing R := Ring.toNonAssocRing
-  letI : NonAssocRing A := Ring.toNonAssocRing
   rw [← RingHom.map_sub] at hab
   exact Quotient.eq.mpr hab
 #align ideal.algebra_map_quotient_injective Ideal.algebraMap_quotient_injective
@@ -669,7 +663,7 @@ end Algebra
 
 section AlgebraQuotient
 
-variable (R) {A : Type _} [CommSemiring R] [CommRing A] [Algebra R A] (I J : Ideal A)
+variable (R) {A : Type*} [CommSemiring R] [CommRing A] [Algebra R A] (I J : Ideal A)
 
 /-- The natural algebra homomorphism `A / I → A / (I ⊔ J)`. -/
 def quotLeftToQuotSupₐ : A ⧸ I →ₐ[R] A ⧸ I ⊔ J :=

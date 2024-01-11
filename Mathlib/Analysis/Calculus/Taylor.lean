@@ -47,7 +47,7 @@ open scoped BigOperators Interval Topology Nat
 
 open Set
 
-variable {𝕜 E F : Type _}
+variable {𝕜 E F : Type*}
 
 variable [NormedAddCommGroup E] [NormedSpace ℝ E]
 

@@ -20,6 +20,8 @@ The main lemma in this file is `HigherFacesVanish.induction`. It is based
 on two technical lemmas `HigherFacesVanish.comp_Hσ_eq` and
 `HigherFacesVanish.comp_Hσ_eq_zero`.
 
+(See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
+
 -/
 
 
@@ -30,7 +32,7 @@ namespace AlgebraicTopology
 
 namespace DoldKan
 
-variable {C : Type _} [Category C] [Preadditive C]
+variable {C : Type*} [Category C] [Preadditive C]
 
 variable {X : SimplicialObject C}
 

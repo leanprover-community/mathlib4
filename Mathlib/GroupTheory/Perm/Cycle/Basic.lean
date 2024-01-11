@@ -58,7 +58,7 @@ open Equiv Function Finset
 
 open BigOperators
 
-variable {ι α β : Type _}
+variable {ι α β : Type*}
 
 namespace Equiv.Perm
 
@@ -440,7 +440,7 @@ protected theorem IsCycle.orderOf (hf : IsCycle f) : orderOf f = f.support.card 
   convert Fintype.card_congr (IsCycle.zpowersEquivSupport hf)
 #align equiv.perm.is_cycle.order_of Equiv.Perm.IsCycle.orderOf
 
-theorem isCycle_swap_mul_aux₁ {α : Type _} [DecidableEq α] :
+theorem isCycle_swap_mul_aux₁ {α : Type*} [DecidableEq α] :
     ∀ (n : ℕ) {b x : α} {f : Perm α} (_ : (swap x (f x) * f) b ≠ b) (_ : (f ^ n) (f x) = b),
       ∃ i : ℤ, ((swap x (f x) * f) ^ i) (f x) = b := by
   intro n
@@ -461,7 +461,7 @@ theorem isCycle_swap_mul_aux₁ {α : Type _} [DecidableEq α] :
             swap_apply_of_ne_of_ne (ne_and_ne_of_swap_mul_apply_ne_self hb).2 (Ne.symm hfbx)]⟩
 #align equiv.perm.is_cycle_swap_mul_aux₁ Equiv.Perm.isCycle_swap_mul_aux₁
 
-theorem isCycle_swap_mul_aux₂ {α : Type _} [DecidableEq α] :
+theorem isCycle_swap_mul_aux₂ {α : Type*} [DecidableEq α] :
     ∀ (n : ℤ) {b x : α} {f : Perm α} (_ : (swap x (f x) * f) b ≠ b) (_ : (f ^ n) (f x) = b),
       ∃ i : ℤ, ((swap x (f x) * f) ^ i) (f x) = b := by
   intro n
@@ -492,7 +492,7 @@ theorem isCycle_swap_mul_aux₂ {α : Type _} [DecidableEq α] :
             swap_apply_of_ne_of_ne this.2 (Ne.symm hfbx')]⟩
 #align equiv.perm.is_cycle_swap_mul_aux₂ Equiv.Perm.isCycle_swap_mul_aux₂
 
-theorem IsCycle.eq_swap_of_apply_apply_eq_self {α : Type _} [DecidableEq α] {f : Perm α}
+theorem IsCycle.eq_swap_of_apply_apply_eq_self {α : Type*} [DecidableEq α] {f : Perm α}
     (hf : IsCycle f) {x : α} (hfx : f x ≠ x) (hffx : f (f x) = x) : f = swap x (f x) :=
   Equiv.ext fun y =>
     let ⟨z, hz⟩ := hf
@@ -512,7 +512,7 @@ theorem IsCycle.eq_swap_of_apply_apply_eq_self {α : Type _} [DecidableEq α] {f
           tauto
 #align equiv.perm.is_cycle.eq_swap_of_apply_apply_eq_self Equiv.Perm.IsCycle.eq_swap_of_apply_apply_eq_self
 
-theorem IsCycle.swap_mul {α : Type _} [DecidableEq α] {f : Perm α} (hf : IsCycle f) {x : α}
+theorem IsCycle.swap_mul {α : Type*} [DecidableEq α] {f : Perm α} (hf : IsCycle f) {x : α}
     (hx : f x ≠ x) (hffx : f (f x) ≠ x) : IsCycle (swap x (f x) * f) :=
   ⟨f x, by simp [swap_apply_def, mul_apply, if_neg hffx, f.injective.eq_iff, if_neg hx, hx],
     fun y hy =>
@@ -1277,7 +1277,7 @@ def cycleFactorsAux [Fintype α] :
             hm₃⟩⟩
 #align equiv.perm.cycle_factors_aux Equiv.Perm.cycleFactorsAux
 
-theorem mem_list_cycles_iff {α : Type _} [Finite α] {l : List (Perm α)}
+theorem mem_list_cycles_iff {α : Type*} [Finite α] {l : List (Perm α)}
     (h1 : ∀ σ : Perm α, σ ∈ l → σ.IsCycle) (h2 : l.Pairwise Disjoint) {σ : Perm α} :
     σ ∈ l ↔ σ.IsCycle ∧ ∀ (a : α) (_ : σ a ≠ a), σ a = l.prod a := by
   suffices σ.IsCycle → (σ ∈ l ↔ ∀ (a : α) (_ : σ a ≠ a), σ a = l.prod a) by
@@ -1305,7 +1305,7 @@ theorem mem_list_cycles_iff {α : Type _} [Finite α] {l : List (Perm α)}
       exact key a (mem_inter_of_mem ha hτa)
 #align equiv.perm.mem_list_cycles_iff Equiv.Perm.mem_list_cycles_iff
 
-theorem list_cycles_perm_list_cycles {α : Type _} [Finite α] {l₁ l₂ : List (Perm α)}
+theorem list_cycles_perm_list_cycles {α : Type*} [Finite α] {l₁ l₂ : List (Perm α)}
     (h₀ : l₁.prod = l₂.prod) (h₁l₁ : ∀ σ : Perm α, σ ∈ l₁ → σ.IsCycle)
     (h₁l₂ : ∀ σ : Perm α, σ ∈ l₂ → σ.IsCycle) (h₂l₁ : l₁.Pairwise Disjoint)
     (h₂l₂ : l₂.Pairwise Disjoint) : l₁ ~ l₂ := by
@@ -1762,7 +1762,7 @@ theorem card_support_conj : (σ * τ * σ⁻¹).support.card = τ.support.card :
 
 end
 
-theorem Disjoint.isConj_mul {α : Type _} [Finite α] {σ τ π ρ : Perm α} (hc1 : IsConj σ π)
+theorem Disjoint.isConj_mul {α : Type*} [Finite α] {σ τ π ρ : Perm α} (hc1 : IsConj σ π)
     (hc2 : IsConj τ ρ) (hd1 : Disjoint σ τ) (hd2 : Disjoint π ρ) : IsConj (σ * τ) (π * ρ) := by
   classical
     cases nonempty_fintype α

@@ -26,13 +26,13 @@ noncomputable section
 
 open BigOperators
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 namespace Nat
 
 /-- `Nat.card α` is the cardinality of `α` as a natural number.
   If `α` is infinite, `Nat.card α = 0`. -/
-protected def card (α : Type _) : ℕ :=
+protected def card (α : Type*) : ℕ :=
   toNat (mk α)
 #align nat.card Nat.card
 
@@ -58,13 +58,13 @@ theorem card_eq_of_bijective (f : α → β) (hf : Function.Bijective f) : Nat.c
   card_congr (Equiv.ofBijective f hf)
 #align nat.card_eq_of_bijective Nat.card_eq_of_bijective
 
-theorem card_eq_of_equiv_fin {α : Type _} {n : ℕ} (f : α ≃ Fin n) : Nat.card α = n := by
+theorem card_eq_of_equiv_fin {α : Type*} {n : ℕ} (f : α ≃ Fin n) : Nat.card α = n := by
   simpa only [card_eq_fintype_card, Fintype.card_fin] using card_congr f
 #align nat.card_eq_of_equiv_fin Nat.card_eq_of_equiv_fin
 
 /-- If the cardinality is positive, that means it is a finite type, so there is
 an equivalence between `α` and `Fin (Nat.card α)`. See also `Finite.equivFin`. -/
-def equivFinOfCardPos {α : Type _} (h : Nat.card α ≠ 0) : α ≃ Fin (Nat.card α) := by
+def equivFinOfCardPos {α : Type*} (h : Nat.card α ≠ 0) : α ≃ Fin (Nat.card α) := by
   cases fintypeOrInfinite α
   · simpa only [card_eq_fintype_card] using Fintype.equivFin α
   · simp only [card_eq_zero_of_infinite, ne_eq] at h
@@ -85,32 +85,38 @@ theorem card_eq_one_iff_unique : Nat.card α = 1 ↔ Subsingleton α ∧ Nonempt
 #align nat.card_eq_one_iff_unique Nat.card_eq_one_iff_unique
 
 theorem card_eq_two_iff : Nat.card α = 2 ↔ ∃ x y : α, x ≠ y ∧ {x, y} = @Set.univ α :=
-  (toNat_eq_iff two_ne_zero).trans <| Iff.trans (by rw [Nat.cast_two]) mk_eq_two_iff
+  toNat_eq_ofNat.trans mk_eq_two_iff
 #align nat.card_eq_two_iff Nat.card_eq_two_iff
 
 theorem card_eq_two_iff' (x : α) : Nat.card α = 2 ↔ ∃! y, y ≠ x :=
-  (toNat_eq_iff two_ne_zero).trans <| Iff.trans (by rw [Nat.cast_two]) (mk_eq_two_iff' x)
+  toNat_eq_ofNat.trans (mk_eq_two_iff' x)
 #align nat.card_eq_two_iff' Nat.card_eq_two_iff'
 
 theorem card_of_isEmpty [IsEmpty α] : Nat.card α = 0 := by simp
 #align nat.card_of_is_empty Nat.card_of_isEmpty
 
 @[simp]
-theorem card_prod (α β : Type _) : Nat.card (α × β) = Nat.card α * Nat.card β := by
+theorem card_sum [Finite α] [Finite β] : Nat.card (α ⊕ β) = Nat.card α + Nat.card β := by
+  have := Fintype.ofFinite α
+  have := Fintype.ofFinite β
+  simp_rw [Nat.card_eq_fintype_card, Fintype.card_sum]
+
+@[simp]
+theorem card_prod (α β : Type*) : Nat.card (α × β) = Nat.card α * Nat.card β := by
   simp only [Nat.card, mk_prod, toNat_mul, toNat_lift]
 #align nat.card_prod Nat.card_prod
 
 @[simp]
-theorem card_ulift (α : Type _) : Nat.card (ULift α) = Nat.card α :=
+theorem card_ulift (α : Type*) : Nat.card (ULift α) = Nat.card α :=
   card_congr Equiv.ulift
 #align nat.card_ulift Nat.card_ulift
 
 @[simp]
-theorem card_plift (α : Type _) : Nat.card (PLift α) = Nat.card α :=
+theorem card_plift (α : Type*) : Nat.card (PLift α) = Nat.card α :=
   card_congr Equiv.plift
 #align nat.card_plift Nat.card_plift
 
-theorem card_pi {β : α → Type _} [Fintype α] : Nat.card (∀ a, β a) = ∏ a, Nat.card (β a) := by
+theorem card_pi {β : α → Type*} [Fintype α] : Nat.card (∀ a, β a) = ∏ a, Nat.card (β a) := by
   simp_rw [Nat.card, mk_pi, prod_eq_of_fintype, toNat_lift, toNat_finset_prod]
 #align nat.card_pi Nat.card_pi
 
@@ -132,7 +138,7 @@ namespace PartENat
 
 /-- `PartENat.card α` is the cardinality of `α` as an extended natural number.
   If `α` is infinite, `PartENat.card α = ⊤`. -/
-def card (α : Type _) : PartENat :=
+def card (α : Type*) : PartENat :=
   toPartENat (mk α)
 #align part_enat.card PartENat.card
 
@@ -146,16 +152,21 @@ theorem card_eq_top_of_infinite [Infinite α] : card α = ⊤ :=
   mk_toPartENat_of_infinite
 #align part_enat.card_eq_top_of_infinite PartENat.card_eq_top_of_infinite
 
-theorem card_congr {α : Type _} {β : Type _} (f : α ≃ β) : PartENat.card α = PartENat.card β :=
+@[simp]
+theorem card_sum (α β : Type*) :
+    PartENat.card (α ⊕ β) = PartENat.card α + PartENat.card β := by
+  simp only [PartENat.card, Cardinal.mk_sum, map_add, Cardinal.toPartENat_lift]
+
+theorem card_congr {α : Type*} {β : Type*} (f : α ≃ β) : PartENat.card α = PartENat.card β :=
   Cardinal.toPartENat_congr f
 #align part_enat.card_congr PartENat.card_congr
 
-theorem card_uLift (α : Type _) : card (ULift α) = card α :=
+theorem card_uLift (α : Type*) : card (ULift α) = card α :=
   card_congr Equiv.ulift
 #align part_enat.card_ulift PartENat.card_uLift
 
 @[simp]
-theorem card_pLift (α : Type _) : card (PLift α) = card α :=
+theorem card_pLift (α : Type*) : card (PLift α) = card α :=
   card_congr Equiv.plift
 #align part_enat.card_plift PartENat.card_pLift
 
@@ -207,21 +218,21 @@ theorem _root_.Cardinal.toPartENat_lt_natCast_iff {n : ℕ} {c : Cardinal} :
 by simp only [← not_le, Cardinal.natCast_le_toPartENat_iff]
 #align lt_coe_nat_iff_lt Cardinal.toPartENat_lt_natCast_iff
 
-theorem card_eq_zero_iff_empty (α : Type _) : card α = 0 ↔ IsEmpty α := by
+theorem card_eq_zero_iff_empty (α : Type*) : card α = 0 ↔ IsEmpty α := by
   rw [← Cardinal.mk_eq_zero_iff]
   conv_rhs => rw [← Nat.cast_zero]
   simp only [← Cardinal.toPartENat_eq_natCast_iff]
   simp only [PartENat.card, Nat.cast_zero]
 #align part_enat.card_eq_zero_iff_empty PartENat.card_eq_zero_iff_empty
 
-theorem card_le_one_iff_subsingleton (α : Type _) : card α ≤ 1 ↔ Subsingleton α := by
+theorem card_le_one_iff_subsingleton (α : Type*) : card α ≤ 1 ↔ Subsingleton α := by
   rw [← le_one_iff_subsingleton]
   conv_rhs => rw [← Nat.cast_one]
   rw [← Cardinal.toPartENat_le_natCast_iff]
   simp only [PartENat.card, Nat.cast_one]
 #align part_enat.card_le_one_iff_subsingleton PartENat.card_le_one_iff_subsingleton
 
-theorem one_lt_card_iff_nontrivial (α : Type _) : 1 < card α ↔ Nontrivial α := by
+theorem one_lt_card_iff_nontrivial (α : Type*) : 1 < card α ↔ Nontrivial α := by
   rw [← Cardinal.one_lt_iff_nontrivial]
   conv_rhs => rw [← Nat.cast_one]
   rw [← natCast_lt_toPartENat_iff]

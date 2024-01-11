@@ -22,7 +22,7 @@ Further lemmas about ordered semirings and rings can be found in `Algebra.GroupP
 
 -/
 
-variable {R S M : Type _}
+variable {R S M : Type*}
 
 section MonoidWithZero
 

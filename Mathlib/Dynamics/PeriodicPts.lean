@@ -46,7 +46,7 @@ open Set
 
 namespace Function
 
-variable {α : Type _} {β : Type _} {f fa : α → α} {fb : β → β} {x y : α} {m n : ℕ}
+variable {α : Type*} {β : Type*} {f fa : α → α} {fb : β → β} {x y : α} {m n : ℕ}
 
 /-- A point `x` is a periodic point of `f : α → α` of period `n` if `f^[n] x = x`.
 Note that we do not require `0 < n` in this definition. Many theorems about periodic points
@@ -589,7 +589,7 @@ end Function
 
 namespace Function
 
-variable {α β : Type _} {f : α → α} {g : β → β} {x : α × β} {a : α} {b : β} {m n : ℕ}
+variable {α β : Type*} {f : α → α} {g : β → β} {x : α × β} {a : α} {b : β} {m n : ℕ}
 
 @[simp]
 theorem iterate_prod_map (f : α → α) (g : β → β) (n : ℕ) :
@@ -627,7 +627,7 @@ namespace MulAction
 
 open Function
 
-variable {α β : Type _} [Group α] [MulAction α β] {a : α} {b : β}
+variable {α β : Type*} [Group α] [MulAction α β] {a : α} {b : β}
 
 @[to_additive]
 theorem pow_smul_eq_iff_minimalPeriod_dvd {n : ℕ} :

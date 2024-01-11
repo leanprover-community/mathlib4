@@ -63,7 +63,7 @@ open Classical Cardinal InitialSeg
 
 universe u v w
 
-variable {α : Type _} {β : Type _} {γ : Type _} {r : α → α → Prop} {s : β → β → Prop}
+variable {α : Type _} {β : Type*} {γ : Type*} {r : α → α → Prop} {s : β → β → Prop}
   {t : γ → γ → Prop}
 
 /-! ### Well order on an arbitrary type -/
@@ -615,8 +615,7 @@ theorem card_le_card {o₁ o₂ : Ordinal} : o₁ ≤ o₂ → card o₁ ≤ car
 #align ordinal.card_le_card Ordinal.card_le_card
 
 @[simp]
-theorem card_zero : card 0 = 0 :=
-  rfl
+theorem card_zero : card 0 = 0 := mk_eq_zero _
 #align ordinal.card_zero Ordinal.card_zero
 
 @[simp]
@@ -628,8 +627,7 @@ theorem card_eq_zero {o} : card o = 0 ↔ o = 0 :=
 #align ordinal.card_eq_zero Ordinal.card_eq_zero
 
 @[simp]
-theorem card_one : card 1 = 1 :=
-  rfl
+theorem card_one : card 1 = 1 := mk_eq_one _
 #align ordinal.card_one Ordinal.card_one
 
 /-! ### Lifting ordinals to a higher universe -/
@@ -912,7 +910,7 @@ theorem type_sum_lex {α β : Type u} (r : α → α → Prop) (s : β → β �
 
 @[simp]
 theorem card_nat (n : ℕ) : card.{u} n = n := by
-  induction n <;> [rfl; simp only [card_add, card_one, Nat.cast_succ, *]]
+  induction n <;> [simp; simp only [card_add, card_one, Nat.cast_succ, *]]
 #align ordinal.card_nat Ordinal.card_nat
 
 -- Porting note: Rewritten proof of elim, previous version was difficult to debug

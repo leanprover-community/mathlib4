@@ -40,9 +40,9 @@ modulo the additional relations making the inclusion of `M` into an `R`-linear m
 -/
 
 
-variable (R : Type _) [CommSemiring R]
+variable (R : Type*) [CommSemiring R]
 
-variable (M : Type _) [AddCommMonoid M] [Module R M]
+variable (M : Type*) [AddCommMonoid M] [Module R M]
 
 namespace TensorAlgebra
 
@@ -67,12 +67,38 @@ def TensorAlgebra :=
 -- Porting note: Expanded `deriving Inhabited, Semiring, Algebra`
 instance : Inhabited (TensorAlgebra R M) := RingQuot.instInhabitedRingQuot _
 instance : Semiring (TensorAlgebra R M) := RingQuot.instSemiring _
-instance : Algebra R (TensorAlgebra R M) := RingQuot.instAlgebraRingQuotInstSemiring _
+
+-- `IsScalarTower` is not needed, but the instance isn't really canonical without it.
+@[nolint unusedArguments]
+instance instAlgebra {R A M} [CommSemiring R] [AddCommMonoid M] [CommSemiring A]
+    [Algebra R A] [Module R M] [Module A M]
+    [IsScalarTower R A M] :
+    Algebra R (TensorAlgebra A M) :=
+  RingQuot.instAlgebraRingQuot _
+
+-- verify there is no diamond
+example : (algebraNat : Algebra ℕ (TensorAlgebra R M)) = instAlgebra := rfl
+
+instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommMonoid M] [CommSemiring A]
+    [Algebra R A] [Algebra S A] [Module R M] [Module S M] [Module A M]
+    [IsScalarTower R A M] [IsScalarTower S A M] [SMulCommClass R S A] :
+    SMulCommClass R S (TensorAlgebra A M) :=
+  RingQuot.instSMulCommClassRingQuot _
+
+instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommMonoid M] [CommSemiring A]
+    [SMul R S] [Algebra R A] [Algebra S A] [Module R M] [Module S M] [Module A M]
+    [IsScalarTower R A M] [IsScalarTower S A M] [IsScalarTower R S A] :
+    IsScalarTower R S (TensorAlgebra A M) :=
+  RingQuot.instIsScalarTowerRingQuot _
 
 namespace TensorAlgebra
 
-instance {S : Type _} [CommRing S] [Module S M] : Ring (TensorAlgebra S M) :=
+instance {S : Type*} [CommRing S] [Module S M] : Ring (TensorAlgebra S M) :=
   RingQuot.instRing (Rel S M)
+
+-- verify there is no diamond
+variable (S M : Type) [CommRing S] [AddCommGroup M] [Module S M] in
+example : (algebraInt _ : Algebra ℤ (TensorAlgebra S M)) = instAlgebra := rfl
 
 variable {M}
 
@@ -99,7 +125,7 @@ theorem ringQuot_mkAlgHom_freeAlgebra_ι_eq_ι (m : M) :
 of `f` to a morphism of `R`-algebras `TensorAlgebra R M → A`.
 -/
 @[simps symm_apply]
-def lift {A : Type _} [Semiring A] [Algebra R A] : (M →ₗ[R] A) ≃ (TensorAlgebra R M →ₐ[R] A) :=
+def lift {A : Type*} [Semiring A] [Algebra R A] : (M →ₗ[R] A) ≃ (TensorAlgebra R M →ₐ[R] A) :=
   { toFun :=
       RingQuot.liftAlgHom R ∘ fun f =>
         ⟨FreeAlgebra.lift R (⇑f), fun x y (h : Rel R M x y) => by
@@ -123,19 +149,19 @@ def lift {A : Type _} [Semiring A] [Algebra R A] : (M →ₗ[R] A) ≃ (TensorAl
 variable {R}
 
 @[simp]
-theorem ι_comp_lift {A : Type _} [Semiring A] [Algebra R A] (f : M →ₗ[R] A) :
+theorem ι_comp_lift {A : Type*} [Semiring A] [Algebra R A] (f : M →ₗ[R] A) :
     (lift R f).toLinearMap.comp (ι R) = f := by
   convert (lift R).symm_apply_apply f
 #align tensor_algebra.ι_comp_lift TensorAlgebra.ι_comp_lift
 
 @[simp]
-theorem lift_ι_apply {A : Type _} [Semiring A] [Algebra R A] (f : M →ₗ[R] A) (x) :
+theorem lift_ι_apply {A : Type*} [Semiring A] [Algebra R A] (f : M →ₗ[R] A) (x) :
     lift R f (ι R x) = f x := by
   conv_rhs => rw [← ι_comp_lift f]
 #align tensor_algebra.lift_ι_apply TensorAlgebra.lift_ι_apply
 
 @[simp]
-theorem lift_unique {A : Type _} [Semiring A] [Algebra R A] (f : M →ₗ[R] A)
+theorem lift_unique {A : Type*} [Semiring A] [Algebra R A] (f : M →ₗ[R] A)
     (g : TensorAlgebra R M →ₐ[R] A) : g.toLinearMap.comp (ι R) = f ↔ g = lift R f := by
   rw [← (lift R).symm_apply_eq]
   simp only [lift, Equiv.coe_fn_symm_mk]
@@ -145,7 +171,7 @@ theorem lift_unique {A : Type _} [Semiring A] [Algebra R A] (f : M →ₗ[R] A)
 -- https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/algebra.2Esemiring_to_ring.20breaks.20semimodule.20typeclass.20lookup/near/212580241
 -- For now, we avoid this by not marking it irreducible.
 @[simp]
-theorem lift_comp_ι {A : Type _} [Semiring A] [Algebra R A] (g : TensorAlgebra R M →ₐ[R] A) :
+theorem lift_comp_ι {A : Type*} [Semiring A] [Algebra R A] (g : TensorAlgebra R M →ₐ[R] A) :
     lift R (g.toLinearMap.comp (ι R)) = g := by
   rw [← lift_symm_apply]
   exact (lift R).apply_symm_apply g
@@ -153,7 +179,7 @@ theorem lift_comp_ι {A : Type _} [Semiring A] [Algebra R A] (g : TensorAlgebra 
 
 /-- See note [partially-applied ext lemmas]. -/
 @[ext]
-theorem hom_ext {A : Type _} [Semiring A] [Algebra R A] {f g : TensorAlgebra R M →ₐ[R] A}
+theorem hom_ext {A : Type*} [Semiring A] [Algebra R A] {f g : TensorAlgebra R M →ₐ[R] A}
     (w : f.toLinearMap.comp (ι R) = g.toLinearMap.comp (ι R)) : f = g := by
   rw [← lift_symm_apply, ← lift_symm_apply] at w
   exact (lift R).symm.injective w

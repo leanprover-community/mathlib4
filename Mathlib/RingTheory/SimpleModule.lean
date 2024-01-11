@@ -29,7 +29,7 @@ import Mathlib.Order.JordanHolder
 -/
 
 
-variable (R : Type _) [Ring R] (M : Type _) [AddCommGroup M] [Module R M]
+variable (R : Type*) [Ring R] (M : Type*) [AddCommGroup M] [Module R M]
 
 /-- A module is simple when it has only two submodules, `⊥` and `⊤`. -/
 abbrev IsSimpleModule :=
@@ -52,7 +52,7 @@ theorem IsSimpleModule.nontrivial [IsSimpleModule R M] : Nontrivial M :=
 #align is_simple_module.nontrivial IsSimpleModule.nontrivial
 
 variable {R} {M} -- Porting note: had break line or all hell breaks loose
-variable {m : Submodule R M} {N : Type _} [AddCommGroup N] [Module R N]
+variable {m : Submodule R M} {N : Type*} [AddCommGroup N] [Module R N]
 
 theorem IsSimpleModule.congr (l : M ≃ₗ[R] N) [IsSimpleModule R N] : IsSimpleModule R M :=
   (Submodule.orderIsoMapComap l).isSimpleOrder

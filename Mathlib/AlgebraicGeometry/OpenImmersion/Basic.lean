@@ -64,7 +64,7 @@ namespace AlgebraicGeometry
 
 universe v v₁ v₂ u
 
-variable {C : Type _} [Category C]
+variable {C : Type*} [Category C]
 
 /-- An open immersion of PresheafedSpaces is an open embedding `f : X ⟶ U ⊆ Y` of the underlying
 spaces, such that the sheaf map `Y(V) ⟶ f _* X(V)` is an iso for each `V ⊆ U`.
@@ -300,7 +300,7 @@ instance ofRestrict {X : TopCat} (Y : PresheafedSpace C) {f : X ⟶ Y.carrier}
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.of_restrict AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.ofRestrict
 
 @[elementwise, simp]
-theorem ofRestrict_invApp {C : Type _} [Category C] (X : PresheafedSpace C) {Y : TopCat}
+theorem ofRestrict_invApp {C : Type*} [Category C] (X : PresheafedSpace C) {Y : TopCat}
     {f : Y ⟶ TopCat.of X.carrier} (h : OpenEmbedding f) (U : Opens (X.restrict h).carrier) :
     (PresheafedSpace.IsOpenImmersion.ofRestrict X h).invApp U = 𝟙 _ := by
   delta invApp

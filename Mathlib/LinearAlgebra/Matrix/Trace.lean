@@ -26,7 +26,7 @@ open BigOperators Matrix
 
 namespace Matrix
 
-variable {ι m n p : Type _} {α R S : Type _}
+variable {ι m n p : Type*} {α R S : Type*}
 
 variable [Fintype m] [Fintype n] [Fintype p]
 
@@ -107,6 +107,10 @@ theorem trace_sum (s : Finset ι) (f : ι → Matrix n n R) :
     trace (∑ i in s, f i) = ∑ i in s, trace (f i) :=
   map_sum (traceAddMonoidHom n R) f s
 #align matrix.trace_sum Matrix.trace_sum
+
+theorem _root_.AddMonoidHom.map_trace [AddCommMonoid S] (f : R →+ S) (A : Matrix n n R) :
+    f (trace A)  = trace (f.mapMatrix A) :=
+  map_sum f (fun i => diag A i) Finset.univ
 
 end AddCommMonoid
 

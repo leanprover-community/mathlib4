@@ -69,7 +69,7 @@ Note that this duplicates `MvPolynomial`.
 
 section Polynomials
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 /-- A predicate asserting that a function is a multivariate integer polynomial.
   (We are being a bit lazy here by allowing many representations for multiplication,
@@ -192,7 +192,7 @@ theorem sub_apply (f g : Poly α) (x : α → ℕ) : (f - g) x = f x - g x := rf
 theorem mul_apply (f g : Poly α) (x : α → ℕ) : (f * g) x = f x * g x := rfl
 #align poly.mul_apply Poly.mul_apply
 
-instance (α : Type _) : Inhabited (Poly α) := ⟨0⟩
+instance (α : Type*) : Inhabited (Poly α) := ⟨0⟩
 
 instance : AddCommGroup (Poly α) := by
   refine' { add := ((· + ·) : Poly α → Poly α → Poly α)

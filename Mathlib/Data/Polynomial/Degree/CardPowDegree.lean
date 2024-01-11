@@ -29,7 +29,7 @@ to `q ^ degree p` (where `q ^ degree 0 = 0`) is an absolute value.
 
 namespace Polynomial
 
-variable {Fq : Type _} [Field Fq] [Fintype Fq]
+variable {Fq : Type*} [Field Fq] [Fintype Fq]
 
 open AbsoluteValue
 
@@ -78,9 +78,8 @@ theorem cardPowDegree_apply (p : Fq[X]) :
   rfl
 #align polynomial.card_pow_degree_apply Polynomial.cardPowDegree_apply
 
--- @[simp] -- Porting note: simp can prove this
-theorem cardPowDegree_zero : cardPowDegree (0 : Fq[X]) = 0 :=
-  if_pos rfl
+@[simp, nolint simpNF]
+theorem cardPowDegree_zero : cardPowDegree (0 : Fq[X]) = 0 := rfl
 #align polynomial.card_pow_degree_zero Polynomial.cardPowDegree_zero
 
 @[simp]

@@ -41,7 +41,7 @@ open Classical
 
 open Function
 
-variable {α M₀ G₀ M₀' G₀' F F' : Type _}
+variable {α M₀ G₀ M₀' G₀' F F' : Type*}
 
 section
 

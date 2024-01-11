@@ -43,14 +43,14 @@ attribute [simp] cast_eq cast_heq
 /-- An identity function with its main argument implicit. This will be printed as `hidden` even
 if it is applied to a large term, so it can be used for elision,
 as done in the `elide` and `unelide` tactics. -/
-@[reducible] def hidden {α : Sort _} {a : α} := a
+@[reducible] def hidden {α : Sort*} {a : α} := a
 #align hidden hidden
 
 instance (priority := 10) decidableEq_of_subsingleton [Subsingleton α] : DecidableEq α :=
   fun a b ↦ isTrue (Subsingleton.elim a b)
 #align decidable_eq_of_subsingleton decidableEq_of_subsingleton
 
-instance (α : Sort _) [Subsingleton α] (p : α → Prop) : Subsingleton (Subtype p) :=
+instance (α : Sort*) [Subsingleton α] (p : α → Prop) : Subsingleton (Subtype p) :=
   ⟨fun ⟨x, _⟩ ⟨y, _⟩ ↦ by cases Subsingleton.elim x y; rfl⟩
 
 #align pempty PEmpty
@@ -60,7 +60,7 @@ theorem congr_heq {α β γ : Sort _} {f : α → γ} {g : β → γ} {x : α} {
   cases h₂; cases h₁; rfl
 #align congr_heq congr_heq
 
-theorem congr_arg_heq {α} {β : α → Sort _} (f : ∀ a, β a) :
+theorem congr_arg_heq {α} {β : α → Sort*} (f : ∀ a, β a) :
     ∀ {a₁ a₂ : α}, a₁ = a₂ → HEq (f a₁) (f a₂)
   | _, _, rfl => HEq.rfl
 #align congr_arg_heq congr_arg_heq
@@ -73,11 +73,11 @@ theorem ULift.down_injective {α : Sort _} : Function.Injective (@ULift.down α)
   ⟨fun h ↦ ULift.down_injective h, fun h ↦ by rw [h]⟩
 #align ulift.down_inj ULift.down_inj
 
-theorem PLift.down_injective {α : Sort _} : Function.Injective (@PLift.down α)
+theorem PLift.down_injective {α : Sort*} : Function.Injective (@PLift.down α)
   | ⟨a⟩, ⟨b⟩, _ => by congr
 #align plift.down_injective PLift.down_injective
 
-@[simp] theorem PLift.down_inj {α : Sort _} {a b : PLift α} : a.down = b.down ↔ a = b :=
+@[simp] theorem PLift.down_inj {α : Sort*} {a b : PLift α} : a.down = b.down ↔ a = b :=
   ⟨fun h ↦ PLift.down_injective h, fun h ↦ by rw [h]⟩
 #align plift.down_inj PLift.down_inj
 
@@ -89,7 +89,7 @@ theorem PLift.down_injective {α : Sort _} : Function.Injective (@PLift.down α)
   ⟨fun h ↦ by rw [h], fun h a ↦ by rw [h]⟩
 #align eq_iff_eq_cancel_right eq_iff_eq_cancel_right
 
-lemma ne_and_eq_iff_right {α : Sort _} {a b c : α} (h : b ≠ c) : a ≠ b ∧ a = c ↔ a = c :=
+lemma ne_and_eq_iff_right {α : Sort*} {a b c : α} (h : b ≠ c) : a ≠ b ∧ a = c ↔ a = c :=
   and_iff_right_of_imp (fun h2 => h2.symm ▸ h.symm)
 #align ne_and_eq_iff_right ne_and_eq_iff_right
 
@@ -128,8 +128,8 @@ theorem fact_iff {p : Prop} : Fact p ↔ p := ⟨fun h ↦ h.1, fun h ↦ ⟨h�
 #align fact.elim Fact.elim
 
 /-- Swaps two pairs of arguments to a function. -/
-@[reducible] def Function.swap₂ {κ₁ : ι₁ → Sort _} {κ₂ : ι₂ → Sort _}
-    {φ : ∀ i₁, κ₁ i₁ → ∀ i₂, κ₂ i₂ → Sort _} (f : ∀ i₁ j₁ i₂ j₂, φ i₁ j₁ i₂ j₂)
+@[reducible] def Function.swap₂ {κ₁ : ι₁ → Sort*} {κ₂ : ι₂ → Sort*}
+    {φ : ∀ i₁, κ₁ i₁ → ∀ i₂, κ₂ i₂ → Sort*} (f : ∀ i₁ j₁ i₂ j₂, φ i₁ j₁ i₂ j₂)
     (i₂ j₂ i₁ j₁) : φ i₁ j₁ i₂ j₂ := f i₁ j₁ i₂ j₂
 #align function.swap₂ Function.swap₂
 
@@ -137,12 +137,12 @@ theorem fact_iff {p : Prop} : Fact p ↔ p := ⟨fun h ↦ h.1, fun h ↦ ⟨h�
 -- /-- If `x : α . tac_name` then `x.out : α`. These are definitionally equal, but this can
 -- nevertheless be useful for various reasons, e.g. to apply further projection notation or in an
 -- argument to `simp`. -/
--- def autoParam'.out {α : Sort _} {n : Name} (x : autoParam' α n) : α := x
+-- def autoParam'.out {α : Sort*} {n : Name} (x : autoParam' α n) : α := x
 
 -- /-- If `x : α := d` then `x.out : α`. These are definitionally equal, but this can
 -- nevertheless be useful for various reasons, e.g. to apply further projection notation or in an
 -- argument to `simp`. -/
--- def optParam.out {α : Sort _} {d : α} (x : α := d) : α := x
+-- def optParam.out {α : Sort*} {d : α} (x : α := d) : α := x
 
 end Miscellany
 
@@ -511,7 +511,7 @@ theorem ball_mem_comm {α β} [Membership α β] {s : β} {p : α → α → Pro
   ball_cond_comm
 #align ball_mem_comm ball_mem_comm
 
-theorem ne_of_apply_ne {α β : Sort _} (f : α → β) {x y : α} (h : f x ≠ f y) : x ≠ y :=
+theorem ne_of_apply_ne {α β : Sort*} (f : α → β) {x y : α} (h : f x ≠ f y) : x ≠ y :=
   fun w : x = y ↦ h (congr_arg f w)
 #align ne_of_apply_ne ne_of_apply_ne
 
@@ -567,15 +567,15 @@ theorem eqRec_heq' {α : Sort u_1} {a' : α} {motive : (a : α) → a' = a → S
     HEq (@Eq.rec α a' motive p a t) p :=
   by subst t; rfl
 
-theorem rec_heq_of_heq {C : α → Sort _} {x : C a} {y : β} (e : a = b) (h : HEq x y) :
+theorem rec_heq_of_heq {C : α → Sort*} {x : C a} {y : β} (e : a = b) (h : HEq x y) :
     HEq (e ▸ x) y := by subst e; exact h
 #align rec_heq_of_heq rec_heq_of_heq
 
-theorem rec_heq_iff_heq {C : α → Sort _} {x : C a} {y : β} {e : a = b} :
+theorem rec_heq_iff_heq {C : α → Sort*} {x : C a} {y : β} {e : a = b} :
     HEq (e ▸ x) y ↔ HEq x y := by subst e; rfl
 #align rec_heq_iff_heq rec_heq_iff_heq
 
-theorem heq_rec_iff_heq {C : α → Sort _} {x : β} {y : C a} {e : a = b} :
+theorem heq_rec_iff_heq {C : α → Sort*} {x : β} {y : C a} {e : a = b} :
     HEq x (e ▸ y) ↔ HEq x y := by subst e; rfl
 #align heq_rec_iff_heq heq_rec_iff_heq
 
@@ -592,7 +592,7 @@ theorem Eq.congr_right {x y z : α} (h : x = y) : z = x ↔ z = y := by rw [h]
 alias congrArg₂ ← congr_arg₂
 #align congr_arg2 congr_arg₂
 
-variable {β : α → Sort _} {γ : ∀ a, β a → Sort _} {δ : ∀ a b, γ a b → Sort _}
+variable {β : α → Sort*} {γ : ∀ a, β a → Sort*} {δ : ∀ a b, γ a b → Sort*}
 
 theorem congr_fun₂ {f g : ∀ a b, γ a b} (h : f = g) (a : α) (b : β a) : f a b = g a b :=
   congr_fun (congr_fun h _) _
@@ -619,8 +619,8 @@ end Equality
 section Quantifiers
 section Dependent
 
-variable {β : α → Sort _} {γ : ∀ a, β a → Sort _} {δ : ∀ a b, γ a b → Sort _}
-  {ε : ∀ a b c, δ a b c → Sort _}
+variable {β : α → Sort*} {γ : ∀ a, β a → Sort*} {δ : ∀ a b, γ a b → Sort*}
+  {ε : ∀ a b c, δ a b c → Sort*}
 
 theorem pi_congr {β' : α → Sort _} (h : ∀ a, β a = β' a) : (∀ a, β a) = ∀ a, β' a :=
   (funext h : β = β') ▸ rfl
@@ -651,20 +651,20 @@ theorem Exists₃.imp {p q : ∀ a b, γ a b → Prop} (h : ∀ a b c, p a b c �
 
 end Dependent
 
-variable {κ : ι → Sort _} {p q : α → Prop}
+variable {κ : ι → Sort*} {p q : α → Prop}
 
 #align exists_imp_exists' Exists.imp'
 
 theorem forall_swap {p : α → β → Prop} : (∀ x y, p x y) ↔ ∀ y x, p x y := ⟨swap, swap⟩
 #align forall_swap forall_swap
 
-theorem forall₂_swap {κ₁ : ι₁ → Sort _} {κ₂ : ι₂ → Sort _} {p : ∀ i₁, κ₁ i₁ → ∀ i₂, κ₂ i₂ → Prop} :
+theorem forall₂_swap {κ₁ : ι₁ → Sort*} {κ₂ : ι₂ → Sort*} {p : ∀ i₁, κ₁ i₁ → ∀ i₂, κ₂ i₂ → Prop} :
     (∀ i₁ j₁ i₂ j₂, p i₁ j₁ i₂ j₂) ↔ ∀ i₂ j₂ i₁ j₁, p i₁ j₁ i₂ j₂ := ⟨swap₂, swap₂⟩
 #align forall₂_swap forall₂_swap
 
 /-- We intentionally restrict the type of `α` in this lemma so that this is a safer to use in simp
 than `forall_swap`. -/
-theorem imp_forall_iff {α : Type _} {p : Prop} {q : α → Prop} : (p → ∀ x, q x) ↔ ∀ x, p → q x :=
+theorem imp_forall_iff {α : Type*} {p : Prop} {q : α → Prop} : (p → ∀ x, q x) ↔ ∀ x, p → q x :=
   forall_swap
 #align imp_forall_iff imp_forall_iff
 
@@ -726,11 +726,11 @@ theorem forall_true_iff' (h : ∀ a, p a ↔ True) : (∀ a, p a) ↔ True :=
 #align forall_true_iff' forall_true_iff'
 
 -- This is not marked `@[simp]` because `implies_true : (α → True) = True` works
-theorem forall₂_true_iff {β : α → Sort _} : (∀ a, β a → True) ↔ True := by simp
+theorem forall₂_true_iff {β : α → Sort*} : (∀ a, β a → True) ↔ True := by simp
 #align forall_2_true_iff forall₂_true_iff
 
 -- This is not marked `@[simp]` because `implies_true : (α → True) = True` works
-theorem forall₃_true_iff {β : α → Sort _} {γ : ∀ a, β a → Sort _} :
+theorem forall₃_true_iff {β : α → Sort*} {γ : ∀ a, β a → Sort*} :
     (∀ (a) (b : β a), γ a b → True) ↔ True := by simp
 #align forall_3_true_iff forall₃_true_iff
 
@@ -831,7 +831,7 @@ theorem forall_eq_apply_imp_iff {f : α → β} {p : β → Prop} :
 
 #align exists_comm exists_comm
 
-theorem exists₂_comm {κ₁ : ι₁ → Sort _} {κ₂ : ι₂ → Sort _} {p : ∀ i₁, κ₁ i₁ → ∀ i₂, κ₂ i₂ → Prop} :
+theorem exists₂_comm {κ₁ : ι₁ → Sort*} {κ₂ : ι₂ → Sort*} {p : ∀ i₁, κ₁ i₁ → ∀ i₂, κ₂ i₂ → Prop} :
     (∃ i₁ j₁ i₂ j₂, p i₁ j₁ i₂ j₂) ↔ ∃ i₂ j₂ i₁ j₁, p i₁ j₁ i₂ j₂ := by
   simp only [@exists_comm (κ₁ _), @exists_comm ι₁]
 #align exists₂_comm exists₂_comm
@@ -940,7 +940,7 @@ theorem forall_prop_congr' {p p' : Prop} {q q' : p → Prop} (hq : ∀ h, q h �
   forall_prop_of_true _
 #align forall_true_left forall_true_left
 
-theorem ExistsUnique.elim₂ {α : Sort _} {p : α → Sort _} [∀ x, Subsingleton (p x)]
+theorem ExistsUnique.elim₂ {α : Sort*} {p : α → Sort*} [∀ x, Subsingleton (p x)]
     {q : ∀ (x) (_ : p x), Prop} {b : Prop} (h₂ : ∃! (x : _) (h : p x), q x h)
     (h₁ : ∀ (x) (h : p x), q x h → (∀ (y) (hy : p y), q y hy → y = x) → b) : b := by
   simp only [exists_unique_iff_exists] at h₂
@@ -948,19 +948,19 @@ theorem ExistsUnique.elim₂ {α : Sort _} {p : α → Sort _} [∀ x, Subsingle
   exact fun x ⟨hxp, hxq⟩ H ↦ h₁ x hxp hxq fun y hyp hyq ↦ H y ⟨hyp, hyq⟩
 #align exists_unique.elim2 ExistsUnique.elim₂
 
-theorem ExistsUnique.intro₂ {α : Sort _} {p : α → Sort _} [∀ x, Subsingleton (p x)]
+theorem ExistsUnique.intro₂ {α : Sort*} {p : α → Sort*} [∀ x, Subsingleton (p x)]
     {q : ∀ (x : α) (_ : p x), Prop} (w : α) (hp : p w) (hq : q w hp)
     (H : ∀ (y) (hy : p y), q y hy → y = w) : ∃! (x : _) (hx : p x), q x hx := by
   simp only [exists_unique_iff_exists]
   exact ExistsUnique.intro w ⟨hp, hq⟩ fun y ⟨hyp, hyq⟩ ↦ H y hyp hyq
 #align exists_unique.intro2 ExistsUnique.intro₂
 
-theorem ExistsUnique.exists₂ {α : Sort _} {p : α → Sort _} {q : ∀ (x : α) (_ : p x), Prop}
+theorem ExistsUnique.exists₂ {α : Sort*} {p : α → Sort*} {q : ∀ (x : α) (_ : p x), Prop}
     (h : ∃! (x : _) (hx : p x), q x hx) : ∃ (x : _) (hx : p x), q x hx :=
   h.exists.imp fun _ hx ↦ hx.exists
 #align exists_unique.exists2 ExistsUnique.exists₂
 
-theorem ExistsUnique.unique₂ {α : Sort _} {p : α → Sort _} [∀ x, Subsingleton (p x)]
+theorem ExistsUnique.unique₂ {α : Sort*} {p : α → Sort*} [∀ x, Subsingleton (p x)]
     {q : ∀ (x : α) (_ : p x), Prop} (h : ∃! (x : _) (hx : p x), q x hx) {y₁ y₂ : α}
     (hpy₁ : p y₁) (hqy₁ : q y₁ hpy₁) (hpy₂ : p y₂) (hqy₂ : q y₂ hpy₂) : y₁ = y₂ := by
   simp only [exists_unique_iff_exists] at h
@@ -998,22 +998,22 @@ noncomputable def existsCases (H0 : C) (H : ∀ a, p a → C) : C :=
   if h : ∃ a, p a then H (Classical.choose h) (Classical.choose_spec h) else H0
 #align classical.exists_cases Classical.existsCases
 
-theorem some_spec₂ {α : Sort _} {p : α → Prop} {h : ∃ a, p a} (q : α → Prop)
+theorem some_spec₂ {α : Sort*} {p : α → Prop} {h : ∃ a, p a} (q : α → Prop)
     (hpq : ∀ a, p a → q a) : q (choose h) := hpq _ <| choose_spec _
 #align classical.some_spec2 Classical.some_spec₂
 
 /-- A version of `Classical.indefiniteDescription` which is definitionally equal to a pair -/
-noncomputable def subtype_of_exists {α : Type _} {P : α → Prop} (h : ∃ x, P x) : { x // P x } :=
+noncomputable def subtype_of_exists {α : Type*} {P : α → Prop} (h : ∃ x, P x) : { x // P x } :=
   ⟨Classical.choose h, Classical.choose_spec h⟩
 #align classical.subtype_of_exists Classical.subtype_of_exists
 
 /-- A version of `byContradiction` that uses types instead of propositions. -/
-protected noncomputable def byContradiction' {α : Sort _} (H : ¬(α → False)) : α :=
+protected noncomputable def byContradiction' {α : Sort*} (H : ¬(α → False)) : α :=
   Classical.choice <| (peirce _ False) fun h ↦ (H fun a ↦ h ⟨a⟩).elim
 #align classical.by_contradiction' Classical.byContradiction'
 
 /-- `classical.byContradiction'` is equivalent to lean's axiom `classical.choice`. -/
-def choice_of_byContradiction' {α : Sort _} (contra : ¬(α → False) → α) : Nonempty α → α :=
+def choice_of_byContradiction' {α : Sort*} (contra : ¬(α → False) → α) : Nonempty α → α :=
   fun H ↦ contra H.elim
 #align classical.choice_of_by_contradiction' Classical.choice_of_byContradiction'
 
@@ -1134,7 +1134,7 @@ end BoundedQuantifiers
 
 section ite
 
-variable {σ : α → Sort _} (f : α → β) {P Q : Prop} [Decidable P] [Decidable Q]
+variable {σ : α → Sort*} (f : α → β) {P Q : Prop} [Decidable P] [Decidable Q]
   {a b c : α} {A : P → α} {B : ¬P → α}
 
 theorem dite_eq_iff : dite P A B = c ↔ (∃ h, A h = c) ∨ ∃ h, B h = c := by

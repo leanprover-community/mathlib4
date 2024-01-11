@@ -20,10 +20,10 @@ open Polynomial Matrix
 
 open scoped Polynomial
 
-variable {n : Type _} [DecidableEq n] [Fintype n]
+variable {n : Type*} [DecidableEq n] [Fintype n]
 
 @[simp]
-theorem FiniteField.Matrix.charpoly_pow_card {K : Type _} [Field K] [Fintype K] (M : Matrix n n K) :
+theorem FiniteField.Matrix.charpoly_pow_card {K : Type*} [Field K] [Fintype K] (M : Matrix n n K) :
     (M ^ Fintype.card K).charpoly = M.charpoly := by
   cases (isEmpty_or_nonempty n).symm
   · cases' CharP.exists K with p hp; letI := hp
@@ -50,7 +50,7 @@ theorem ZMod.charpoly_pow_card {p : ℕ} [Fact p.Prime] (M : Matrix n n (ZMod p)
   rwa [ZMod.card] at h
 #align zmod.charpoly_pow_card ZMod.charpoly_pow_card
 
-theorem FiniteField.trace_pow_card {K : Type _} [Field K] [Fintype K] (M : Matrix n n K) :
+theorem FiniteField.trace_pow_card {K : Type*} [Field K] [Fintype K] (M : Matrix n n K) :
     trace (M ^ Fintype.card K) = trace M ^ Fintype.card K := by
   cases isEmpty_or_nonempty n
   · simp [Matrix.trace]; rw [zero_pow Fintype.card_pos]

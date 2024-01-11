@@ -35,7 +35,7 @@ open Set MeasureTheory
 
 open scoped ENNReal MeasureTheory
 
-variable {Ω : Type _} {mΩ : MeasurableSpace Ω} {μ : Measure Ω} {f g : Ω → ℝ≥0∞} {X Y : Ω → ℝ}
+variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {μ : Measure Ω} {f g : Ω → ℝ≥0∞} {X Y : Ω → ℝ}
 
 namespace ProbabilityTheory
 
@@ -57,6 +57,7 @@ theorem lintegral_mul_indicator_eq_lintegral_mul_lintegral_indicator {Mf mΩ : M
       lintegral_indicator _ (hMf _ h_meas_s'), lintegral_indicator _ h_meas_T]
     simp only [measurable_const, lintegral_const, univ_inter, lintegral_const_mul,
       MeasurableSet.univ, Measure.restrict_apply]
+    rw [IndepSets_iff] at h_ind
     rw [mul_mul_mul_comm, h_ind s' T h_meas_s' (Set.mem_singleton _)]
   · intro f' g _ h_meas_f' _ h_ind_f' h_ind_g
     have h_measM_f' : Measurable f' := h_meas_f'.mono hMf le_rfl
@@ -134,7 +135,7 @@ theorem lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun'' (h_meas_f : AEMea
 #align probability_theory.lintegral_mul_eq_lintegral_mul_lintegral_of_indep_fun'' ProbabilityTheory.lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun''
 
 /-- The product of two independent, integrable, real-valued random variables is integrable. -/
-theorem IndepFun.integrable_mul {β : Type _} [MeasurableSpace β] {X Y : Ω → β}
+theorem IndepFun.integrable_mul {β : Type*} [MeasurableSpace β] {X Y : Ω → β}
     [NormedDivisionRing β] [BorelSpace β] (hXY : IndepFun X Y μ) (hX : Integrable X μ)
     (hY : Integrable Y μ) : Integrable (X * Y) μ := by
   let nX : Ω → ENNReal := fun a => ‖X a‖₊
@@ -154,7 +155,7 @@ theorem IndepFun.integrable_mul {β : Type _} [MeasurableSpace β] {X Y : Ω →
 
 /-- If the product of two independent real-valued random variables is integrable and
 the second one is not almost everywhere zero, then the first one is integrable. -/
-theorem IndepFun.integrable_left_of_integrable_mul {β : Type _} [MeasurableSpace β] {X Y : Ω → β}
+theorem IndepFun.integrable_left_of_integrable_mul {β : Type*} [MeasurableSpace β] {X Y : Ω → β}
     [NormedDivisionRing β] [BorelSpace β] (hXY : IndepFun X Y μ) (h'XY : Integrable (X * Y) μ)
     (hX : AEStronglyMeasurable X μ) (hY : AEStronglyMeasurable Y μ) (h'Y : ¬Y =ᵐ[μ] 0) :
     Integrable X μ := by
@@ -176,7 +177,7 @@ theorem IndepFun.integrable_left_of_integrable_mul {β : Type _} [MeasurableSpac
 
 /-- If the product of two independent real-valued random variables is integrable and the
 first one is not almost everywhere zero, then the second one is integrable. -/
-theorem IndepFun.integrable_right_of_integrable_mul {β : Type _} [MeasurableSpace β] {X Y : Ω → β}
+theorem IndepFun.integrable_right_of_integrable_mul {β : Type*} [MeasurableSpace β] {X Y : Ω → β}
     [NormedDivisionRing β] [BorelSpace β] (hXY : IndepFun X Y μ) (h'XY : Integrable (X * Y) μ)
     (hX : AEStronglyMeasurable X μ) (hY : AEStronglyMeasurable Y μ) (h'X : ¬X =ᵐ[μ] 0) :
     Integrable Y μ := by
@@ -301,12 +302,13 @@ theorem IndepFun.integral_mul' (hXY : IndepFun X Y μ) (hX : AEStronglyMeasurabl
 /-- Independence of functions `f` and `g` into arbitrary types is characterized by the relation
   `E[(φ ∘ f) * (ψ ∘ g)] = E[φ ∘ f] * E[ψ ∘ g]` for all measurable `φ` and `ψ` with values in `ℝ`
   satisfying appropriate integrability conditions. -/
-theorem indepFun_iff_integral_comp_mul [IsFiniteMeasure μ] {β β' : Type _} {mβ : MeasurableSpace β}
+theorem indepFun_iff_integral_comp_mul [IsFiniteMeasure μ] {β β' : Type*} {mβ : MeasurableSpace β}
     {mβ' : MeasurableSpace β'} {f : Ω → β} {g : Ω → β'} {hfm : Measurable f} {hgm : Measurable g} :
     IndepFun f g μ ↔ ∀ {φ : β → ℝ} {ψ : β' → ℝ}, Measurable φ → Measurable ψ →
       Integrable (φ ∘ f) μ → Integrable (ψ ∘ g) μ →
         integral μ (φ ∘ f * ψ ∘ g) = integral μ (φ ∘ f) * integral μ (ψ ∘ g) := by
   refine' ⟨fun hfg _ _ hφ hψ => IndepFun.integral_mul_of_integrable (hfg.comp hφ hψ), _⟩
+  rw [IndepFun_iff]
   rintro h _ _ ⟨A, hA, rfl⟩ ⟨B, hB, rfl⟩
   specialize
     h (measurable_one.indicator hA) (measurable_one.indicator hB)

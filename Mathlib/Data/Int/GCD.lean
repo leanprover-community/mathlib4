@@ -500,7 +500,7 @@ theorem lcm_dvd {i j k : ℤ} : i ∣ k → j ∣ k → (lcm i j : ℤ) ∣ k :=
 end Int
 
 @[to_additive gcd_nsmul_eq_zero]
-theorem pow_gcd_eq_one {M : Type _} [Monoid M] (x : M) {m n : ℕ} (hm : x ^ m = 1) (hn : x ^ n = 1) :
+theorem pow_gcd_eq_one {M : Type*} [Monoid M] (x : M) {m n : ℕ} (hm : x ^ m = 1) (hn : x ^ n = 1) :
     x ^ m.gcd n = 1 := by
   rcases m with (rfl | m); · simp [hn]
   obtain ⟨y, rfl⟩ := isUnit_ofPowEqOne hm m.succ_ne_zero

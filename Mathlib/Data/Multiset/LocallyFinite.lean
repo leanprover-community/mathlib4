@@ -17,7 +17,7 @@ Note that intervals of multisets themselves (`Multiset.LocallyFiniteOrder`) are 
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 namespace Multiset
 

@@ -20,7 +20,7 @@ open Fintype
 
 namespace Fin
 
-variable {α β : Type _} {n : ℕ}
+variable {α β : Type*} {n : ℕ}
 
 theorem map_valEmbedding_univ : (Finset.univ : Finset (Fin n)).map Fin.valEmbedding = Iio n := by
   ext

@@ -34,7 +34,7 @@ open Function
 
 /-- The symmetrized algebra has the same underlying space as the original algebra.
 -/
-def SymAlg (α : Type _) : Type _ :=
+def SymAlg (α : Type*) : Type _ :=
   α
 #align sym_alg SymAlg
 
@@ -43,7 +43,7 @@ postfix:max "ˢʸᵐ" => SymAlg
 
 namespace SymAlg
 
-variable {α : Type _}
+variable {α : Type*}
 
 /-- The element of `SymAlg α` that represents `a : α`. -/
 @[match_pattern]
@@ -153,7 +153,7 @@ instance [Add α] [Mul α] [One α] [OfNat α 2] [Invertible (2 : α)] : Mul α�
 @[to_additive existing]
 instance [Inv α] : Inv αˢʸᵐ where inv a := sym <| (unsym a)⁻¹
 
-instance (R : Type _) [SMul R α] : SMul R αˢʸᵐ where smul r a := sym (r • unsym a)
+instance (R : Type*) [SMul R α] : SMul R αˢʸᵐ where smul r a := sym (r • unsym a)
 
 @[to_additive (attr := simp)]
 theorem sym_one [One α] : sym (1 : α) = 1 :=
@@ -223,12 +223,12 @@ theorem unsym_inv [Inv α] (a : αˢʸᵐ) : unsym a⁻¹ = (unsym a)⁻¹ :=
 #align sym_alg.unsym_inv SymAlg.unsym_inv
 
 @[simp]
-theorem sym_smul {R : Type _} [SMul R α] (c : R) (a : α) : sym (c • a) = c • sym a :=
+theorem sym_smul {R : Type*} [SMul R α] (c : R) (a : α) : sym (c • a) = c • sym a :=
   rfl
 #align sym_alg.sym_smul SymAlg.sym_smul
 
 @[simp]
-theorem unsym_smul {R : Type _} [SMul R α] (c : R) (a : αˢʸᵐ) : unsym (c • a) = c • unsym a :=
+theorem unsym_smul {R : Type*} [SMul R α] (c : R) (a : αˢʸᵐ) : unsym (c • a) = c • unsym a :=
   rfl
 #align sym_alg.unsym_smul SymAlg.unsym_smul
 
@@ -272,7 +272,7 @@ instance addCommMonoid [AddCommMonoid α] : AddCommMonoid αˢʸᵐ :=
 instance addCommGroup [AddCommGroup α] : AddCommGroup αˢʸᵐ :=
   { SymAlg.addCommMonoid, SymAlg.addGroup with }
 
-instance {R : Type _} [Semiring R] [AddCommMonoid α] [Module R α] : Module R αˢʸᵐ :=
+instance {R : Type*} [Semiring R] [AddCommMonoid α] [Module R α] : Module R αˢʸᵐ :=
   Function.Injective.module R ⟨⟨unsym, unsym_zero⟩, unsym_add⟩ unsym_injective unsym_smul
 
 instance [Mul α] [AddMonoidWithOne α] [Invertible (2 : α)] (a : α) [Invertible a] :

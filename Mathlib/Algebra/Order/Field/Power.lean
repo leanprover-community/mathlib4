@@ -15,7 +15,7 @@ import Mathlib.Algebra.Order.Field.Basic
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 open Function Int
 

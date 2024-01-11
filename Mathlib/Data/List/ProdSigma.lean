@@ -16,7 +16,7 @@ living in `Prod` and `Sigma` types respectively. Their definitions can be found 
 -/
 
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 namespace List
 
@@ -58,7 +58,7 @@ theorem length_product (l₁ : List α) (l₂ : List β) :
 /-! ### sigma -/
 
 
-variable {σ : α → Type _}
+variable {σ : α → Type*}
 
 @[simp]
 theorem nil_sigma (l : ∀ a, List (σ a)) : (@nil α).sigma l = [] :=

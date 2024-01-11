@@ -26,7 +26,7 @@ variable {R : Type u} {M : Type v} [CommRing R] [Nontrivial R]
 
 variable [AddCommGroup M] [Module R M] [Module.Free R M] [Module.Finite R M] (f : M →ₗ[R] M)
 
-open Classical Matrix
+open Matrix
 
 noncomputable section
 
@@ -36,9 +36,10 @@ namespace LinearMap
 
 section Basic
 
+set_option maxHeartbeats 250000 in
 /-- `charpoly f` is the characteristic polynomial of the matrix of `f` in any basis. -/
 @[simp]
-theorem charpoly_toMatrix {ι : Type w} [Fintype ι] (b : Basis ι R M) :
+theorem charpoly_toMatrix {ι : Type w} [DecidableEq ι] [Fintype ι] (b : Basis ι R M) :
     (toMatrix b b f).charpoly = f.charpoly := by
   let A := toMatrix b b f
   let b' := chooseBasis R M

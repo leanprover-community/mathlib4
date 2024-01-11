@@ -26,7 +26,7 @@ open MvFunctor
 
 /-- Multivariate functors, i.e. functor between the category of type vectors
 and the category of Type -/
-class MvFunctor {n : ℕ} (F : TypeVec n → Type _) where
+class MvFunctor {n : ℕ} (F : TypeVec n → Type*) where
   /-- Multivariate map, if `f : α ⟹ β` and `x : F α` then `f <$$> x : F β`. -/
   map : ∀ {α β : TypeVec n}, α ⟹ β → F α → F β
 #align mvfunctor MvFunctor
@@ -67,7 +67,7 @@ end MvFunctor
 
 
 /-- laws for `MvFunctor` -/
-class LawfulMvFunctor {n : ℕ} (F : TypeVec n → Type _) [MvFunctor F] : Prop where
+class LawfulMvFunctor {n : ℕ} (F : TypeVec n → Type*) [MvFunctor F] : Prop where
   /-- `map` preserved identities, i.e., maps identity on `α` to identity on `F α` -/
   id_map : ∀ {α : TypeVec n} (x : F α), TypeVec.id <$$> x = x
   /-- `map` preserves compositions -/
@@ -160,7 +160,7 @@ open TypeVec
 
 section LiftPLastPredIff
 
-variable {F : TypeVec.{u} (n + 1) → Type _} [MvFunctor F] [LawfulMvFunctor F] {α : TypeVec.{u} n}
+variable {F : TypeVec.{u} (n + 1) → Type*} [MvFunctor F] [LawfulMvFunctor F] {α : TypeVec.{u} n}
 
 open MvFunctor
 

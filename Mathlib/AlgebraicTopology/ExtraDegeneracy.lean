@@ -51,7 +51,7 @@ namespace SimplicialObject
 
 namespace Augmented
 
-variable {C : Type _} [Category C]
+variable {C : Type*} [Category C]
 
 -- porting note: in the formulation of the axioms `s_comp_δ₀`, etc, `drop.obj X` has been
 -- replaced by `X.left` in order to have lemmas with LHS/RHS in normal form
@@ -79,7 +79,7 @@ attribute [reassoc (attr := simp)] s'_comp_ε s_comp_δ₀
 /-- If `ed` is an extra degeneracy for `X : SimplicialObject.Augmented C` and
 `F : C ⥤ D` is a functor, then `ed.map F` is an extra degeneracy for the
 augmented simplical object in `D` obtained by applying `F` to `X`. -/
-def map {D : Type _} [Category D] {X : SimplicialObject.Augmented C} (ed : ExtraDegeneracy X)
+def map {D : Type*} [Category D] {X : SimplicialObject.Augmented C} (ed : ExtraDegeneracy X)
     (F : C ⥤ D) : ExtraDegeneracy (((whiskering _ _).obj F).obj X) where
   s' := F.map ed.s'
   s n := F.map (ed.s n)
@@ -145,19 +145,19 @@ namespace StandardSimplex
 
 /-- When `[HasZero X]`, the shift of a map `f : Fin n → X`
 is a map `Fin (n+1) → X` which sends `0` to `0` and `i.succ` to `f i`. -/
-def shiftFun {n : ℕ} {X : Type _} [Zero X] (f : Fin n → X) (i : Fin (n + 1)) : X :=
-  dite (i = 0) (fun _ => 0) fun h => f (i.pred <| Fin.vne_of_ne h)
+def shiftFun {n : ℕ} {X : Type*} [Zero X] (f : Fin n → X) (i : Fin (n + 1)) : X :=
+  dite (i = 0) (fun _ => 0) fun h => f (i.pred h)
 set_option linter.uppercaseLean3 false in
 #align sSet.augmented.standard_simplex.shift_fun SSet.Augmented.StandardSimplex.shiftFun
 
 @[simp]
-theorem shiftFun_0 {n : ℕ} {X : Type _} [Zero X] (f : Fin n → X) : shiftFun f 0 = 0 :=
+theorem shiftFun_0 {n : ℕ} {X : Type*} [Zero X] (f : Fin n → X) : shiftFun f 0 = 0 :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align sSet.augmented.standard_simplex.shift_fun_0 SSet.Augmented.StandardSimplex.shiftFun_0
 
 @[simp]
-theorem shiftFun_succ {n : ℕ} {X : Type _} [Zero X] (f : Fin n → X) (i : Fin n) :
+theorem shiftFun_succ {n : ℕ} {X : Type*} [Zero X] (f : Fin n → X) (i : Fin n) :
     shiftFun f i.succ = f i := by
   dsimp [shiftFun]
   split_ifs with h
@@ -254,7 +254,7 @@ namespace Arrow
 
 namespace AugmentedCechNerve
 
-variable {C : Type _} [Category C] (f : Arrow C)
+variable {C : Type*} [Category C] (f : Arrow C)
   [∀ n : ℕ, HasWidePullback f.right (fun _ : Fin (n + 1) => f.left) fun _ => f.hom]
   (S : SplitEpi f.hom)
 
@@ -267,7 +267,7 @@ noncomputable def ExtraDegeneracy.s (n : ℕ) :
     (fun i =>
       dite (i = 0)
         (fun _ => WidePullback.base _ ≫ S.section_)
-        (fun h => WidePullback.π _ (i.pred <| Fin.vne_of_ne h)))
+        (fun h => WidePullback.π _ (i.pred h)))
     fun i => by
       dsimp
       split_ifs with h
@@ -379,7 +379,7 @@ open AlgebraicTopology CategoryTheory Limits
 /-- If `C` is a preadditive category and `X` is an augmented simplicial object
 in `C` that has an extra degeneracy, then the augmentation on the alternating
 face map complex of `X` is a homotopy equivalence. -/
-noncomputable def homotopyEquiv {C : Type _} [Category C] [Preadditive C] [HasZeroObject C]
+noncomputable def homotopyEquiv {C : Type*} [Category C] [Preadditive C] [HasZeroObject C]
     {X : SimplicialObject.Augmented C} (ed : ExtraDegeneracy X) :
     HomotopyEquiv (AlgebraicTopology.AlternatingFaceMapComplex.obj (drop.obj X))
       ((ChainComplex.single₀ C).obj (point.obj X)) where

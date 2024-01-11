@@ -51,7 +51,7 @@ compression, UV-compression, shadow
 
 open Finset
 
-variable {α : Type _}
+variable {α : Type*}
 
 /-- UV-compression is injective on the elements it moves. See `UV.compress`. -/
 theorem sup_sdiff_injOn [GeneralizedBooleanAlgebra α] (u v : α) :

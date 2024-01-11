@@ -33,7 +33,7 @@ open RealInnerProductSpace
 
 namespace EuclideanGeometry
 
-variable {V : Type _} (P : Type _)
+variable {V : Type*} (P : Type*)
 
 open FiniteDimensional
 

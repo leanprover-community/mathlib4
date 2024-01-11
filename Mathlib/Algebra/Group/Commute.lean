@@ -27,11 +27,11 @@ Most of the proofs come from the properties of `SemiconjBy`.
 -/
 
 
-variable {G : Type _}
+variable {G : Type*}
 
 /-- Two elements commute if `a * b = b * a`. -/
 @[to_additive AddCommute "Two elements additively commute if `a + b = b + a`"]
-def Commute {S : Type _} [Mul S] (a b : S) : Prop :=
+def Commute {S : Type*} [Mul S] (a b : S) : Prop :=
   SemiconjBy a b b
 #align commute Commute
 #align add_commute AddCommute
@@ -40,10 +40,10 @@ namespace Commute
 
 section Mul
 
-variable {S : Type _} [Mul S]
+variable {S : Type*} [Mul S]
 
 /-- Equality behind `Commute a b`; useful for rewriting. -/
-@[to_additive "Equality behind `add_commute a b`; useful for rewriting."]
+@[to_additive "Equality behind `AddCommute a b`; useful for rewriting."]
 protected theorem eq {a b : S} (h : Commute a b) : a * b = b * a :=
   h
 #align commute.eq Commute.eq
@@ -79,7 +79,7 @@ protected theorem symm_iff {a b : S} : Commute a b ↔ Commute b a :=
 instance : IsRefl S Commute :=
   ⟨Commute.refl⟩
 
--- This instance is useful for `Finset.noncomm_prod`
+-- This instance is useful for `Finset.noncommProd`
 @[to_additive]
 instance on_isRefl {f : G → S} : IsRefl G fun a b => Commute (f a) (f b) :=
   ⟨fun _ => Commute.refl _⟩
@@ -90,7 +90,7 @@ end Mul
 
 section Semigroup
 
-variable {S : Type _} [Semigroup S] {a b c : S}
+variable {S : Type*} [Semigroup S] {a b c : S}
 
 /-- If `a` commutes with both `b` and `c`, then it commutes with their product. -/
 @[to_additive (attr := simp)
@@ -133,7 +133,7 @@ protected theorem mul_mul_mul_comm (hbc : Commute b c) (a d : S) :
 end Semigroup
 
 @[to_additive]
-protected theorem all {S : Type _} [CommSemigroup S] (a b : S) : Commute a b :=
+protected theorem all {S : Type*} [CommSemigroup S] (a b : S) : Commute a b :=
   mul_comm a b
 #align commute.all Commute.allₓ
 #align add_commute.all AddCommute.allₓ
@@ -141,7 +141,7 @@ protected theorem all {S : Type _} [CommSemigroup S] (a b : S) : Commute a b :=
 
 section MulOneClass
 
-variable {M : Type _} [MulOneClass M]
+variable {M : Type*} [MulOneClass M]
 
 @[to_additive (attr := simp)]
 theorem one_right (a : M) : Commute a 1 :=
@@ -161,7 +161,7 @@ end MulOneClass
 
 section Monoid
 
-variable {M : Type _} [Monoid M] {a b : M} {u u₁ u₂ : Mˣ}
+variable {M : Type*} [Monoid M] {a b : M} {u u₁ u₂ : Mˣ}
 
 @[to_additive (attr := simp)]
 theorem pow_right (h : Commute a b) (n : ℕ) : Commute a (b ^ n) :=

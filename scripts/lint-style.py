@@ -49,6 +49,8 @@ ERR_UNF = 10 # unfreeze_local_instances
 ERR_IBY = 11 # isolated by
 ERR_DOT = 12 # isolated or low focusing dot
 ERR_SEM = 13 # the substring " ;"
+ERR_WIN = 14 # Windows line endings "\r\n"
+ERR_TWS = 15 # Trailing whitespace
 
 exceptions = []
 
@@ -145,6 +147,16 @@ def set_option_check(lines, path):
             # forbidden options: pp, profiler, trace
             if next_two_chars == 'pp' or next_two_chars == 'pr' or next_two_chars == 'tr':
                 errors += [(ERR_OPT, line_nr, path)]
+    return errors
+
+def line_endings_check(lines, path):
+    errors = []
+    for line_nr, line in enumerate(lines, 1):
+        if "\r\n" in line:
+            errors += [(ERR_WIN, line_nr, path)]
+        line = line.rstrip("\r\n")
+        if line.endswith(" "):
+            errors += [(ERR_TWS, line_nr, path)]
     return errors
 
 def long_lines_check(lines, path):
@@ -295,10 +307,18 @@ def format_errors(errors):
             output_message(path, line_nr, "ERR_DOT", "Line is an isolated focusing dot or uses . instead of ·")
         if errno == ERR_SEM:
             output_message(path, line_nr, "ERR_SEM", "Line contains a space before a semicolon")
+        if errno == ERR_WIN:
+            output_message(path, line_nr, "ERR_WIN", "Windows line endings (\\r\\n) detected")
+        if errno == ERR_TWS:
+            output_message(path, line_nr, "ERR_TWS", "Trailing whitespece detected on line")
 
 def lint(path):
-    with path.open(encoding="utf-8") as f:
+    with path.open(encoding="utf-8", newline="") as f:
         lines = f.readlines()
+        errs = line_endings_check(lines, path)
+        format_errors(errs)
+        lines = [line.rstrip() + "\n" for line in lines]
+
         errs = long_lines_check(lines, path)
         format_errors(errs)
         errs = isolated_by_dot_semicolon_check(lines, path)

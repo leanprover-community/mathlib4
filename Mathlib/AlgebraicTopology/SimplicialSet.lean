@@ -6,7 +6,7 @@ Authors: Johan Commelin, Scott Morrison, Adam Topaz
 import Mathlib.AlgebraicTopology.SimplicialObject
 import Mathlib.AlgebraicTopology.TopologicalSimplex
 import Mathlib.CategoryTheory.Limits.Presheaf
-import Mathlib.CategoryTheory.Limits.Types
+import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.CategoryTheory.Yoneda
 import Mathlib.Topology.Category.TopCat.Limits.Basic
 

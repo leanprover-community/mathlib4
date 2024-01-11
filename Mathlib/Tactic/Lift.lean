@@ -20,7 +20,7 @@ lift, tactic
 
 /-- A class specifying that you can lift elements from `α` to `β` assuming `cond` is true.
   Used by the tactic `lift`. -/
-class CanLift (α β : Sort _) (coe : outParam <| β → α) (cond : outParam <| α → Prop) where
+class CanLift (α β : Sort*) (coe : outParam <| β → α) (cond : outParam <| α → Prop) : Prop where
   /-- An element of `α` that satisfies `cond` belongs to the range of `coe`. -/
   prf : ∀ x : α, cond x → ∃ y : β, coe y = x
 #align can_lift CanLift
@@ -29,14 +29,14 @@ instance : CanLift ℤ ℕ (fun n : ℕ ↦ n) (0 ≤ ·) :=
   ⟨fun n hn ↦ ⟨n.natAbs, Int.natAbs_of_nonneg hn⟩⟩
 
 /-- Enable automatic handling of pi types in `CanLift`. -/
-instance Pi.canLift (ι : Sort _) (α β : ι → Sort _) (coe : ∀ i, β i → α i) (P : ∀ i, α i → Prop)
+instance Pi.canLift (ι : Sort*) (α β : ι → Sort*) (coe : ∀ i, β i → α i) (P : ∀ i, α i → Prop)
     [∀ i, CanLift (α i) (β i) (coe i) (P i)] :
     CanLift (∀ i, α i) (∀ i, β i) (fun f i ↦ coe i (f i)) fun f ↦ ∀ i, P i (f i) where
   prf f hf := ⟨fun i => Classical.choose (CanLift.prf (f i) (hf i)),
     funext fun i => Classical.choose_spec (CanLift.prf (f i) (hf i))⟩
 #align pi.can_lift Pi.canLift
 
-theorem Subtype.exists_pi_extension {ι : Sort _} {α : ι → Sort _} [ne : ∀ i, Nonempty (α i)]
+theorem Subtype.exists_pi_extension {ι : Sort*} {α : ι → Sort*} [ne : ∀ i, Nonempty (α i)]
     {p : ι → Prop} (f : ∀ i : Subtype p, α i) :
     ∃ g : ∀ i : ι, α i, (fun i : Subtype p => g i) = f := by
   haveI : DecidablePred p := fun i ↦ Classical.propDecidable (p i)
@@ -44,18 +44,18 @@ theorem Subtype.exists_pi_extension {ι : Sort _} {α : ι → Sort _} [ne : ∀
     funext fun i ↦ dif_pos i.2⟩
 #align subtype.exists_pi_extension Subtype.exists_pi_extension
 
-instance PiSubtype.canLift (ι : Sort _) (α : ι → Sort _) [∀ i, Nonempty (α i)] (p : ι → Prop) :
+instance PiSubtype.canLift (ι : Sort*) (α : ι → Sort*) [∀ i, Nonempty (α i)] (p : ι → Prop) :
     CanLift (∀ i : Subtype p, α i) (∀ i, α i) (fun f i => f i) fun _ => True where
   prf f _ := Subtype.exists_pi_extension f
 #align pi_subtype.can_lift PiSubtype.canLift
 
 -- TODO: test if we need this instance in Lean 4
-instance PiSubtype.canLift' (ι : Sort _) (α : Sort _) [Nonempty α] (p : ι → Prop) :
+instance PiSubtype.canLift' (ι : Sort*) (α : Sort*) [Nonempty α] (p : ι → Prop) :
     CanLift (Subtype p → α) (ι → α) (fun f i => f i) fun _ => True :=
   PiSubtype.canLift ι (fun _ => α) p
 #align pi_subtype.can_lift' PiSubtype.canLift'
 
-instance Subtype.canLift {α : Sort _} (p : α → Prop) :
+instance Subtype.canLift {α : Sort*} (p : α → Prop) :
     CanLift α { x // p x } Subtype.val p where prf a ha :=
   ⟨⟨a, ha⟩, rfl⟩
 #align subtype.can_lift Subtype.canLift
@@ -94,7 +94,7 @@ open Lean Parser Tactic Elab Tactic Meta
 * More generally, this can lift an expression from `α` to `β` assuming that there is an instance
   of `CanLift α β`. In this case the proof obligation is specified by `CanLift.prf`.
 * Given an instance `CanLift β γ`, it can also lift `α → β` to `α → γ`; more generally, given
-  `β : Π a : α, Type _`, `γ : Π a : α, Type _`, and `[Π a : α, CanLift (β a) (γ a)]`, it
+  `β : Π a : α, Type*`, `γ : Π a : α, Type*`, and `[Π a : α, CanLift (β a) (γ a)]`, it
   automatically generates an instance `CanLift (Π a, β a) (Π a, γ a)`.
 
 `lift` is in some sense dual to the `zify` tactic. `lift (z : ℤ) to ℕ` will change the type of an

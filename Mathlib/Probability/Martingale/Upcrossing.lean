@@ -62,7 +62,7 @@ open scoped NNReal ENNReal MeasureTheory ProbabilityTheory BigOperators Topology
 
 namespace MeasureTheory
 
-variable {Ω ι : Type _} {m0 : MeasurableSpace Ω} {μ : Measure Ω}
+variable {Ω ι : Type*} {m0 : MeasurableSpace Ω} {μ : Measure Ω}
 
 /-!
 
@@ -675,12 +675,12 @@ theorem crossing_pos_eq (hab : a < b) :
     intro i ω
     refine' ⟨fun h => _, fun h => _⟩
     · rwa [← sub_le_sub_iff_right a, ←
-        LatticeOrderedCommGroup.pos_eq_self_of_pos_pos (lt_of_lt_of_le hab' h)]
+        LatticeOrderedGroup.pos_eq_self_of_pos_pos (lt_of_lt_of_le hab' h)]
     · rw [← sub_le_sub_iff_right a] at h
-      rwa [LatticeOrderedCommGroup.pos_of_nonneg _ (le_trans hab'.le h)]
+      rwa [LatticeOrderedGroup.pos_of_nonneg _ (le_trans hab'.le h)]
   have hf' : ∀ ω i, (f i ω - a)⁺ ≤ 0 ↔ f i ω ≤ a := by
     intro ω i
-    rw [LatticeOrderedCommGroup.pos_nonpos_iff, sub_nonpos]
+    rw [LatticeOrderedGroup.pos_nonpos_iff, sub_nonpos]
   induction' n with k ih
   · refine' ⟨rfl, _⟩
     simp only [lowerCrossingTime_zero, hitting, Set.mem_Icc, Set.mem_Iic, Nat.zero_eq]
@@ -725,8 +725,8 @@ theorem mul_integral_upcrossingsBefore_le_integral_pos_part_aux [IsFiniteMeasure
     (b - a) * μ[upcrossingsBefore a b f N] ≤ μ[fun ω => (f N ω - a)⁺] := by
   refine' le_trans (le_of_eq _)
     (integral_mul_upcrossingsBefore_le_integral (hf.sub_martingale (martingale_const _ _ _)).pos
-      (fun ω => LatticeOrderedCommGroup.pos_nonneg _)
-      (fun ω => LatticeOrderedCommGroup.pos_nonneg _) (sub_pos.2 hab))
+      (fun ω => LatticeOrderedGroup.pos_nonneg _)
+      (fun ω => LatticeOrderedGroup.pos_nonneg _) (sub_pos.2 hab))
   simp_rw [sub_zero, ← upcrossingsBefore_pos_eq hab]
   rfl
 #align measure_theory.mul_integral_upcrossings_before_le_integral_pos_part_aux MeasureTheory.mul_integral_upcrossingsBefore_le_integral_pos_part_aux
@@ -742,7 +742,7 @@ theorem Submartingale.mul_integral_upcrossingsBefore_le_integral_pos_part [IsFin
   · exact mul_integral_upcrossingsBefore_le_integral_pos_part_aux hf hab
   · rw [not_lt, ← sub_nonpos] at hab
     exact le_trans (mul_nonpos_of_nonpos_of_nonneg hab (integral_nonneg fun ω => Nat.cast_nonneg _))
-      (integral_nonneg fun ω => LatticeOrderedCommGroup.pos_nonneg _)
+      (integral_nonneg fun ω => LatticeOrderedGroup.pos_nonneg _)
 #align measure_theory.submartingale.mul_integral_upcrossings_before_le_integral_pos_part MeasureTheory.Submartingale.mul_integral_upcrossingsBefore_le_integral_pos_part
 
 /-!
@@ -858,7 +858,7 @@ theorem Submartingale.mul_lintegral_upcrossings_le_lintegral_pos_part [IsFiniteM
       intro N
       rw [ofReal_integral_eq_lintegral_ofReal]
       · exact (hf.sub_martingale (martingale_const _ _ _)).pos.integrable _
-      · exact eventually_of_forall fun ω => LatticeOrderedCommGroup.pos_nonneg _
+      · exact eventually_of_forall fun ω => LatticeOrderedGroup.pos_nonneg _
     rw [lintegral_iSup']
     · simp_rw [this, ENNReal.mul_iSup, iSup_le_iff]
       intro N

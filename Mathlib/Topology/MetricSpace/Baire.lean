@@ -32,7 +32,7 @@ open Classical Topology Filter ENNReal
 
 open Filter Encodable Set TopologicalSpace
 
-variable {α : Type _} {β : Type _} {γ : Type _} {ι : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*} {ι : Type*}
 
 section BaireTheorem
 
@@ -42,7 +42,7 @@ open EMetric ENNReal
 any countable intersection of open dense subsets is dense.
 Formulated here when the source space is ℕ (and subsumed below by `dense_iInter_of_open` working
 with any encodable source space). -/
-class BaireSpace (α : Type _) [TopologicalSpace α] : Prop where
+class BaireSpace (α : Type*) [TopologicalSpace α] : Prop where
   baire_property : ∀ f : ℕ → Set α, (∀ n, IsOpen (f n)) → (∀ n, Dense (f n)) → Dense (⋂ n, f n)
 #align baire_space BaireSpace
 

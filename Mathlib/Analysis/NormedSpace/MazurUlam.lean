@@ -29,7 +29,7 @@ isometry, affine map, linear map
 -/
 
 
-variable {E PE F PF : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [MetricSpace PE]
+variable {E PE F PF : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MetricSpace PE]
   [NormedAddTorsor E PE] [NormedAddCommGroup F] [NormedSpace ℝ F] [MetricSpace PF]
   [NormedAddTorsor F PF]
 
@@ -148,7 +148,7 @@ def toRealAffineIsometryEquiv (f : PE ≃ᵢ PF) : PE ≃ᵃⁱ[ℝ] PF :=
   AffineIsometryEquiv.mk' f
     ((vaddConst (Classical.arbitrary PE)).trans <|
         f.trans (vaddConst (f <| Classical.arbitrary PE)).symm).toRealLinearIsometryEquiv
-    (Classical.arbitrary PE) fun p => by simp; rw [vsub_vadd]
+    (Classical.arbitrary PE) fun p => by simp
 #align isometry_equiv.to_real_affine_isometry_equiv IsometryEquiv.toRealAffineIsometryEquiv
 
 @[simp]

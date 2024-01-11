@@ -16,7 +16,7 @@ import Mathlib.Algebra.Order.Group.TypeTags
 
 section Group
 
-variable {α : Type _} {ι : Sort _} {ι' : Sort _} [Nonempty ι] [Nonempty ι']
+variable {α : Type*} {ι : Sort*} {ι' : Sort*} [Nonempty ι] [Nonempty ι']
   [ConditionallyCompleteLattice α] [Group α]
 
 @[to_additive]

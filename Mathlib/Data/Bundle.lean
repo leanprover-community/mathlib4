@@ -12,7 +12,7 @@ import Mathlib.Algebra.Module.Basic
 Basic data structure to implement fiber bundles, vector bundles (maybe fibrations?), etc. This file
 should contain all possible results that do not involve any topology.
 
-We represent a bundle `E` over a base space `B` as a dependent type `E : B → Type _`.
+We represent a bundle `E` over a base space `B` as a dependent type `E : B → Type*`.
 
 We define `Bundle.TotalSpace F E` to be the type of pairs `⟨b, x⟩`, where `b : B` and `x : E b`.
 This type is isomorphic to `Σ x, E x` and uses an extra argument `F` for reasons explained below. In
@@ -43,13 +43,13 @@ open Function Set
 
 namespace Bundle
 
-variable {B F : Type _} (E : B → Type _)
+variable {B F : Type*} (E : B → Type*)
 
 /-- `Bundle.TotalSpace F E` is the total space of the bundle. It consists of pairs
 `(proj : B, snd : E proj)`.
 -/
 @[ext]
-structure TotalSpace (F : Type _) (E : B → Type _) where
+structure TotalSpace (F : Type*) (E : B → Type*) where
   /-- `Bundle.TotalSpace.proj` is the canonical projection `Bundle.TotalSpace F E → B` from the
   total space to the base space. -/
   proj : B
@@ -64,7 +64,7 @@ variable {E}
 @[inherit_doc]
 scoped notation:max "π" F':max E':max => Bundle.TotalSpace.proj (F := F') (E := E')
 
-abbrev TotalSpace.mk' (F : Type _) (x : B) (y : E x) : TotalSpace F E := ⟨x, y⟩
+abbrev TotalSpace.mk' (F : Type*) (x : B) (y : E x) : TotalSpace F E := ⟨x, y⟩
 
 theorem TotalSpace.mk_cast {x x' : B} (h : x = x') (b : E x) :
     .mk' F x' (cast (congr_arg E h) b) = TotalSpace.mk x b := by subst h; rfl
@@ -104,17 +104,17 @@ notation:100 E₁ " ×ᵇ " E₂ => fun x => E₁ x × E₂ x
 
 /-- `Bundle.Trivial B F` is the trivial bundle over `B` of fiber `F`. -/
 @[reducible, nolint unusedArguments]
-def Trivial (B : Type _) (F : Type _) : B → Type _ := fun _ => F
+def Trivial (B : Type*) (F : Type*) : B → Type _ := fun _ => F
 #align bundle.trivial Bundle.Trivial
 
 /-- The trivial bundle, unlike other bundles, has a canonical projection on the fiber. -/
-def TotalSpace.trivialSnd (B : Type _) (F : Type _) : TotalSpace F (Bundle.Trivial B F) → F :=
+def TotalSpace.trivialSnd (B : Type*) (F : Type*) : TotalSpace F (Bundle.Trivial B F) → F :=
   TotalSpace.snd
 #align bundle.total_space.trivial_snd Bundle.TotalSpace.trivialSnd
 
 /-- A trivial bundle is equivalent to the product `B × F`. -/
 @[simps (config := { attrs := [`simp, `mfld_simps] })]
-def TotalSpace.toProd (B F : Type _) : (TotalSpace F fun _ : B => F) ≃ B × F where
+def TotalSpace.toProd (B F : Type*) : (TotalSpace F fun _ : B => F) ≃ B × F where
   toFun x := (x.1, x.2)
   invFun x := ⟨x.1, x.2⟩
   left_inv := fun ⟨_, _⟩ => rfl
@@ -123,11 +123,11 @@ def TotalSpace.toProd (B F : Type _) : (TotalSpace F fun _ : B => F) ≃ B × F 
 
 section Pullback
 
-variable {B' : Type _}
+variable {B' : Type*}
 
 /-- The pullback of a bundle `E` over a base `B` under a map `f : B' → B`, denoted by
 `Bundle.Pullback f E` or `f *ᵖ E`, is the bundle over `B'` whose fiber over `b'` is `E (f b')`. -/
-def Pullback (f : B' → B) (E : B → Type _) : B' → Type _ := fun x => E (f x)
+def Pullback (f : B' → B) (E : B → Type*) : B' → Type _ := fun x => E (f x)
 #align bundle.pullback Bundle.Pullback
 
 @[inherit_doc]

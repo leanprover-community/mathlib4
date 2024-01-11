@@ -26,7 +26,7 @@ open BigOperators
 
 open Fintype MulAction
 
-variable (p : ℕ) (G : Type _) [Group G]
+variable (p : ℕ) (G : Type*) [Group G]
 
 /-- A p-group is a group in which every element has prime power order -/
 def IsPGroup : Prop :=
@@ -71,7 +71,7 @@ section GIsPGroup
 
 variable (hG : IsPGroup p G)
 
-theorem of_injective {H : Type _} [Group H] (ϕ : H →* G) (hϕ : Function.Injective ϕ) :
+theorem of_injective {H : Type*} [Group H] (ϕ : H →* G) (hϕ : Function.Injective ϕ) :
     IsPGroup p H := by
   simp_rw [IsPGroup, ← hϕ.eq_iff, ϕ.map_pow, ϕ.map_one]
   exact fun h => hG (ϕ h)
@@ -81,7 +81,7 @@ theorem to_subgroup (H : Subgroup G) : IsPGroup p H :=
   hG.of_injective H.subtype Subtype.coe_injective
 #align is_p_group.to_subgroup IsPGroup.to_subgroup
 
-theorem of_surjective {H : Type _} [Group H] (ϕ : G →* H) (hϕ : Function.Surjective ϕ) :
+theorem of_surjective {H : Type*} [Group H] (ϕ : G →* H) (hϕ : Function.Surjective ϕ) :
     IsPGroup p H := by
   refine' fun h => Exists.elim (hϕ h) fun g hg => Exists.imp (fun k hk => _) (hG g)
   rw [← hg, ← ϕ.map_pow, hk, ϕ.map_one]
@@ -91,7 +91,7 @@ theorem to_quotient (H : Subgroup G) [H.Normal] : IsPGroup p (G ⧸ H) :=
   hG.of_surjective (QuotientGroup.mk' H) Quotient.surjective_Quotient_mk''
 #align is_p_group.to_quotient IsPGroup.to_quotient
 
-theorem of_equiv {H : Type _} [Group H] (ϕ : G ≃* H) : IsPGroup p H :=
+theorem of_equiv {H : Type*} [Group H] (ϕ : G ≃* H) : IsPGroup p H :=
   hG.of_surjective ϕ.toMonoidHom ϕ.surjective
 #align is_p_group.of_equiv IsPGroup.of_equiv
 
@@ -165,7 +165,7 @@ theorem nontrivial_iff_card [Fintype G] : Nontrivial G ↔ ∃ n > 0, card G = p
       hk.symm ▸ one_lt_pow (Fact.out (p := p.Prime)).one_lt (ne_of_gt hk0)⟩
 #align is_p_group.nontrivial_iff_card IsPGroup.nontrivial_iff_card
 
-variable {α : Type _} [MulAction G α]
+variable {α : Type*} [MulAction G α]
 
 theorem card_orbit (a : α) [Fintype (orbit G a)] : ∃ n : ℕ, card (orbit G a) = p ^ n := by
   let ϕ := orbitEquivQuotientStabilizer G a
@@ -278,13 +278,13 @@ theorem to_inf_right {H K : Subgroup G} (hK : IsPGroup p K) : IsPGroup p (H ⊓ 
   hK.to_le inf_le_right
 #align is_p_group.to_inf_right IsPGroup.to_inf_right
 
-theorem map {H : Subgroup G} (hH : IsPGroup p H) {K : Type _} [Group K] (ϕ : G →* K) :
+theorem map {H : Subgroup G} (hH : IsPGroup p H) {K : Type*} [Group K] (ϕ : G →* K) :
     IsPGroup p (H.map ϕ) := by
   rw [← H.subtype_range, MonoidHom.map_range]
   exact hH.of_surjective (ϕ.restrict H).rangeRestrict (ϕ.restrict H).rangeRestrict_surjective
 #align is_p_group.map IsPGroup.map
 
-theorem comap_of_ker_isPGroup {H : Subgroup G} (hH : IsPGroup p H) {K : Type _} [Group K]
+theorem comap_of_ker_isPGroup {H : Subgroup G} (hH : IsPGroup p H) {K : Type*} [Group K]
     (ϕ : K →* G) (hϕ : IsPGroup p ϕ.ker) : IsPGroup p (H.comap ϕ) := by
   intro g
   obtain ⟨j, hj⟩ := hH ⟨ϕ g.1, g.2⟩
@@ -294,12 +294,12 @@ theorem comap_of_ker_isPGroup {H : Subgroup G} (hH : IsPGroup p H) {K : Type _} 
   exact ⟨j + k, by rwa [Subtype.ext_iff, (H.comap ϕ).coe_pow]⟩
 #align is_p_group.comap_of_ker_is_p_group IsPGroup.comap_of_ker_isPGroup
 
-theorem ker_isPGroup_of_injective {K : Type _} [Group K] {ϕ : K →* G} (hϕ : Function.Injective ϕ) :
+theorem ker_isPGroup_of_injective {K : Type*} [Group K] {ϕ : K →* G} (hϕ : Function.Injective ϕ) :
     IsPGroup p ϕ.ker :=
   (congr_arg (fun Q : Subgroup K => IsPGroup p Q) (ϕ.ker_eq_bot_iff.mpr hϕ)).mpr IsPGroup.of_bot
 #align is_p_group.ker_is_p_group_of_injective IsPGroup.ker_isPGroup_of_injective
 
-theorem comap_of_injective {H : Subgroup G} (hH : IsPGroup p H) {K : Type _} [Group K] (ϕ : K →* G)
+theorem comap_of_injective {H : Subgroup G} (hH : IsPGroup p H) {K : Type*} [Group K] (ϕ : K →* G)
     (hϕ : Function.Injective ϕ) : IsPGroup p (H.comap ϕ) :=
   hH.comap_of_ker_isPGroup ϕ (ker_isPGroup_of_injective hϕ)
 #align is_p_group.comap_of_injective IsPGroup.comap_of_injective
@@ -338,7 +338,7 @@ theorem to_sup_of_normal_left' {H K : Subgroup G} (hH : IsPGroup p H) (hK : IsPG
 #align is_p_group.to_sup_of_normal_left' IsPGroup.to_sup_of_normal_left'
 
 /-- finite p-groups with different p have coprime orders -/
-theorem coprime_card_of_ne {G₂ : Type _} [Group G₂] (p₁ p₂ : ℕ) [hp₁ : Fact p₁.Prime]
+theorem coprime_card_of_ne {G₂ : Type*} [Group G₂] (p₁ p₂ : ℕ) [hp₁ : Fact p₁.Prime]
     [hp₂ : Fact p₂.Prime] (hne : p₁ ≠ p₂) (H₁ : Subgroup G) (H₂ : Subgroup G₂) [Fintype H₁]
     [Fintype H₂] (hH₁ : IsPGroup p₁ H₁) (hH₂ : IsPGroup p₂ H₂) :
     Nat.coprime (Fintype.card H₁) (Fintype.card H₂) := by

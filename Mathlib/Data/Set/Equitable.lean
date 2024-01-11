@@ -25,7 +25,7 @@ latter yet.
 
 open BigOperators
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 namespace Set
 

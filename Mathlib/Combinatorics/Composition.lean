@@ -641,7 +641,7 @@ join operation.
 
 namespace List
 
-variable {α : Type _}
+variable {α : Type*}
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
@@ -859,8 +859,7 @@ def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)
         rwa [h₂]
     · intro h
       apply Or.inr
-      use i
-      exact ⟨h, rfl⟩
+      use i, h
 #align composition_as_set_equiv compositionAsSetEquiv
 
 instance compositionAsSetFintype (n : ℕ) : Fintype (CompositionAsSet n) :=

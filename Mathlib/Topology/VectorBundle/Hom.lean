@@ -14,7 +14,7 @@ import Mathlib.Analysis.NormedSpace.OperatorNorm
 We define the (topological) vector bundle of continuous (semi)linear maps between two vector bundles
 over the same base.
 
-Given bundles `E₁ E₂ : B → Type _`, normed spaces `F₁` and `F₂`, and a ring-homomorphism `σ` between
+Given bundles `E₁ E₂ : B → Type*`, normed spaces `F₁` and `F₂`, and a ring-homomorphism `σ` between
 their respective scalar fields, we define `Bundle.ContinuousLinearMap σ F₁ E₁ F₂ E₂ x` to be a
 type synonym for `fun x ↦ E₁ x →SL[σ] E₂ x`. If the `E₁` and `E₂` are vector bundles with model
 fibers `F₁` and `F₂`, then this will be a vector bundle with fiber `F₁ →SL[σ] F₂`.
@@ -43,15 +43,15 @@ open scoped Bundle
 
 open Bundle Set ContinuousLinearMap
 
-variable {𝕜₁ : Type _} [NontriviallyNormedField 𝕜₁] {𝕜₂ : Type _} [NontriviallyNormedField 𝕜₂]
+variable {𝕜₁ : Type*} [NontriviallyNormedField 𝕜₁] {𝕜₂ : Type*} [NontriviallyNormedField 𝕜₂]
   (σ : 𝕜₁ →+* 𝕜₂) [iσ : RingHomIsometric σ]
 
-variable {B : Type _}
+variable {B : Type*}
 
-variable {F₁ : Type _} [NormedAddCommGroup F₁] [NormedSpace 𝕜₁ F₁] (E₁ : B → Type _)
+variable {F₁ : Type*} [NormedAddCommGroup F₁] [NormedSpace 𝕜₁ F₁] (E₁ : B → Type*)
   [∀ x, AddCommGroup (E₁ x)] [∀ x, Module 𝕜₁ (E₁ x)] [TopologicalSpace (TotalSpace F₁ E₁)]
 
-variable {F₂ : Type _} [NormedAddCommGroup F₂] [NormedSpace 𝕜₂ F₂] (E₂ : B → Type _)
+variable {F₂ : Type*} [NormedAddCommGroup F₂] [NormedSpace 𝕜₂ F₂] (E₂ : B → Type*)
   [∀ x, AddCommGroup (E₂ x)] [∀ x, Module 𝕜₂ (E₂ x)] [TopologicalSpace (TotalSpace F₂ E₂)]
 
 /-- A reducible type synonym for the bundle of continuous (semi)linear maps. For some reason, it
@@ -255,20 +255,20 @@ def Bundle.ContinuousLinearMap.vectorPrebundle :
     rfl
 #align bundle.continuous_linear_map.vector_prebundle Bundle.ContinuousLinearMap.vectorPrebundle
 
-/-- Topology on the total space of the continuous `σ`-semilinear_maps between two "normable" vector
+/-- Topology on the total space of the continuous `σ`-semilinear maps between two "normable" vector
 bundles over the same base. -/
 instance Bundle.ContinuousLinearMap.topologicalSpaceTotalSpace :
     TopologicalSpace (TotalSpace (F₁ →SL[σ] F₂) (Bundle.ContinuousLinearMap σ E₁ E₂)) :=
   (Bundle.ContinuousLinearMap.vectorPrebundle σ F₁ E₁ F₂ E₂).totalSpaceTopology
 #align bundle.continuous_linear_map.topological_space_total_space Bundle.ContinuousLinearMap.topologicalSpaceTotalSpace
 
-/-- The continuous `σ`-semilinear_maps between two vector bundles form a fiber bundle. -/
+/-- The continuous `σ`-semilinear maps between two vector bundles form a fiber bundle. -/
 instance Bundle.ContinuousLinearMap.fiberBundle :
     FiberBundle (F₁ →SL[σ] F₂) fun x => E₁ x →SL[σ] E₂ x :=
   (Bundle.ContinuousLinearMap.vectorPrebundle σ F₁ E₁ F₂ E₂).toFiberBundle
 #align bundle.continuous_linear_map.fiber_bundle Bundle.ContinuousLinearMap.fiberBundle
 
-/-- The continuous `σ`-semilinear_maps between two vector bundles form a vector bundle. -/
+/-- The continuous `σ`-semilinear maps between two vector bundles form a vector bundle. -/
 instance Bundle.ContinuousLinearMap.vectorBundle :
     VectorBundle 𝕜₂ (F₁ →SL[σ] F₂) (Bundle.ContinuousLinearMap σ E₁ E₂) :=
   (Bundle.ContinuousLinearMap.vectorPrebundle σ F₁ E₁ F₂ E₂).toVectorBundle

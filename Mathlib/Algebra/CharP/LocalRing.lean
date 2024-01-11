@@ -22,7 +22,7 @@ import Mathlib.Data.Nat.Factorization.Basic
 
 
 /-- In a local ring the characteristics is either zero or a prime power. -/
-theorem charP_zero_or_prime_power (R : Type _) [CommRing R] [LocalRing R] (q : ℕ)
+theorem charP_zero_or_prime_power (R : Type*) [CommRing R] [LocalRing R] (q : ℕ)
     [char_R_q : CharP R q] : q = 0 ∨ IsPrimePow q := by
   -- Assume `q := char(R)` is not zero.
   apply or_iff_not_imp_left.2

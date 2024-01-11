@@ -45,36 +45,18 @@ open CategoryTheory.Limits
 section
 
 /-- A category with a terminal object and binary products has a natural monoidal structure. -/
-def monoidalOfHasFiniteProducts [HasTerminal C] [HasBinaryProducts C] : MonoidalCategory C where
-  tensorUnit' := ⊤_ C
-  tensorObj X Y := X ⨯ Y
-  tensorHom f g := Limits.prod.map f g
-  associator := prod.associator
-  leftUnitor P := prod.leftUnitor P
-  rightUnitor P := prod.rightUnitor P
-  pentagon := prod.pentagon
-  triangle := prod.triangle
-  associator_naturality := @prod.associator_naturality _ _ _
+def monoidalOfHasFiniteProducts [HasTerminal C] [HasBinaryProducts C] : MonoidalCategory C :=
+  .ofTensorHom
+    (tensorUnit' := ⊤_ C)
+    (tensorObj := fun X Y ↦ X ⨯ Y)
+    (tensorHom := fun f g ↦ Limits.prod.map f g)
+    (associator := prod.associator)
+    (leftUnitor := fun P ↦ prod.leftUnitor P)
+    (rightUnitor := fun P ↦ prod.rightUnitor P)
+    (pentagon := prod.pentagon)
+    (triangle := prod.triangle)
+    (associator_naturality := @prod.associator_naturality _ _ _)
 #align category_theory.monoidal_of_has_finite_products CategoryTheory.monoidalOfHasFiniteProducts
-
-end
-
-section
-
-attribute [local instance] monoidalOfHasFiniteProducts
-
-open MonoidalCategory
-
-/-- The monoidal structure coming from finite products is symmetric.
--/
-@[simps]
-def symmetricOfHasFiniteProducts [HasTerminal C] [HasBinaryProducts C] : SymmetricCategory C where
-  braiding X Y := Limits.prod.braiding X Y
-  braiding_naturality f g := by dsimp [tensorHom]; simp
-  hexagon_forward X Y Z := by dsimp [monoidalOfHasFiniteProducts]; simp
-  hexagon_reverse X Y Z := by dsimp [monoidalOfHasFiniteProducts]; simp
-  symmetry X Y := by dsimp; simp; rfl
-#align category_theory.symmetric_of_has_finite_products CategoryTheory.symmetricOfHasFiniteProducts
 
 end
 
@@ -126,42 +108,47 @@ theorem associator_hom (X Y Z : C) :
   rfl
 #align category_theory.monoidal_of_has_finite_products.associator_hom CategoryTheory.monoidalOfHasFiniteProducts.associator_hom
 
+theorem associator_inv (X Y Z : C) :
+    (α_ X Y Z).inv =
+      prod.lift (prod.lift prod.fst (prod.snd ≫ prod.fst)) (prod.snd ≫ prod.snd) :=
+  rfl
+
 end monoidalOfHasFiniteProducts
 
 section
 
-/-- A category with an initial object and binary coproducts has a natural monoidal structure. -/
-def monoidalOfHasFiniteCoproducts [HasInitial C] [HasBinaryCoproducts C] : MonoidalCategory C where
-  tensorUnit' := ⊥_ C
-  tensorObj X Y := X ⨿ Y
-  tensorHom f g := Limits.coprod.map f g
-  associator := coprod.associator
-  leftUnitor := coprod.leftUnitor
-  rightUnitor := coprod.rightUnitor
-  pentagon := coprod.pentagon
-  triangle := coprod.triangle
-  associator_naturality := @coprod.associator_naturality _ _ _
-#align category_theory.monoidal_of_has_finite_coproducts CategoryTheory.monoidalOfHasFiniteCoproducts
+attribute [local instance] monoidalOfHasFiniteProducts
+
+open MonoidalCategory
+
+/-- The monoidal structure coming from finite products is symmetric.
+-/
+@[simps]
+def symmetricOfHasFiniteProducts [HasTerminal C] [HasBinaryProducts C] : SymmetricCategory C where
+  braiding X Y := Limits.prod.braiding X Y
+  braiding_naturality f g := by dsimp [tensorHom]; simp
+  hexagon_forward X Y Z := by dsimp [monoidalOfHasFiniteProducts.associator_hom]; simp
+  hexagon_reverse X Y Z := by dsimp [monoidalOfHasFiniteProducts.associator_inv]; simp
+  symmetry X Y := by dsimp; simp
+#align category_theory.symmetric_of_has_finite_products CategoryTheory.symmetricOfHasFiniteProducts
 
 end
 
 section
 
-attribute [local instance] monoidalOfHasFiniteCoproducts
-
-open MonoidalCategory
-
-/-- The monoidal structure coming from finite coproducts is symmetric.
--/
-@[simps]
-def symmetricOfHasFiniteCoproducts [HasInitial C] [HasBinaryCoproducts C] :
-    SymmetricCategory C where
-  braiding := Limits.coprod.braiding
-  braiding_naturality f g := by dsimp [tensorHom]; simp
-  hexagon_forward X Y Z := by dsimp [monoidalOfHasFiniteCoproducts]; simp
-  hexagon_reverse X Y Z := by dsimp [monoidalOfHasFiniteCoproducts]; simp
-  symmetry X Y := by dsimp; simp; rfl
-#align category_theory.symmetric_of_has_finite_coproducts CategoryTheory.symmetricOfHasFiniteCoproducts
+/-- A category with an initial object and binary coproducts has a natural monoidal structure. -/
+def monoidalOfHasFiniteCoproducts [HasInitial C] [HasBinaryCoproducts C] : MonoidalCategory C :=
+  .ofTensorHom
+    (tensorUnit' := ⊥_ C)
+    (tensorObj := fun X Y ↦ X ⨿ Y)
+    (tensorHom := fun f g ↦ Limits.coprod.map f g)
+    (associator := coprod.associator)
+    (leftUnitor := coprod.leftUnitor)
+    (rightUnitor := coprod.rightUnitor)
+    (pentagon := coprod.pentagon)
+    (triangle := coprod.triangle)
+    (associator_naturality := @coprod.associator_naturality _ _ _)
+#align category_theory.monoidal_of_has_finite_coproducts CategoryTheory.monoidalOfHasFiniteCoproducts
 
 end
 
@@ -212,6 +199,31 @@ theorem associator_hom (X Y Z : C) :
   rfl
 #align category_theory.monoidal_of_has_finite_coproducts.associator_hom CategoryTheory.monoidalOfHasFiniteCoproducts.associator_hom
 
+theorem associator_inv (X Y Z : C) :
+    (α_ X Y Z).inv =
+      coprod.desc (coprod.inl ≫ coprod.inl) (coprod.desc (coprod.inr ≫ coprod.inl) coprod.inr) :=
+  rfl
+
 end monoidalOfHasFiniteCoproducts
+
+section
+
+attribute [local instance] monoidalOfHasFiniteCoproducts
+
+open MonoidalCategory
+
+/-- The monoidal structure coming from finite coproducts is symmetric.
+-/
+@[simps]
+def symmetricOfHasFiniteCoproducts [HasInitial C] [HasBinaryCoproducts C] :
+    SymmetricCategory C where
+  braiding := Limits.coprod.braiding
+  braiding_naturality f g := by dsimp [tensorHom]; simp
+  hexagon_forward X Y Z := by dsimp [monoidalOfHasFiniteCoproducts.associator_hom]; simp
+  hexagon_reverse X Y Z := by dsimp [monoidalOfHasFiniteCoproducts.associator_inv]; simp
+  symmetry X Y := by dsimp; simp
+#align category_theory.symmetric_of_has_finite_coproducts CategoryTheory.symmetricOfHasFiniteCoproducts
+
+end
 
 end CategoryTheory

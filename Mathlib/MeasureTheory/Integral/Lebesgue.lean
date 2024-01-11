@@ -45,7 +45,7 @@ namespace MeasureTheory
 -- mathport name: «expr →ₛ »
 local infixr:25 " →ₛ " => SimpleFunc
 
-variable {α β γ δ : Type _}
+variable {α β γ δ : Type*}
 
 section Lintegral
 
@@ -225,25 +225,25 @@ theorem exists_simpleFunc_forall_lintegral_sub_lt_of_pos {f : α → ℝ≥0∞}
   rfl
 #align measure_theory.exists_simple_func_forall_lintegral_sub_lt_of_pos MeasureTheory.exists_simpleFunc_forall_lintegral_sub_lt_of_pos
 
-theorem iSup_lintegral_le {ι : Sort _} (f : ι → α → ℝ≥0∞) :
+theorem iSup_lintegral_le {ι : Sort*} (f : ι → α → ℝ≥0∞) :
     ⨆ i, ∫⁻ a, f i a ∂μ ≤ ∫⁻ a, ⨆ i, f i a ∂μ := by
   simp only [← iSup_apply]
   exact (monotone_lintegral μ).le_map_iSup
 #align measure_theory.supr_lintegral_le MeasureTheory.iSup_lintegral_le
 
-theorem iSup₂_lintegral_le {ι : Sort _} {ι' : ι → Sort _} (f : ∀ i, ι' i → α → ℝ≥0∞) :
+theorem iSup₂_lintegral_le {ι : Sort*} {ι' : ι → Sort*} (f : ∀ i, ι' i → α → ℝ≥0∞) :
     ⨆ (i) (j), ∫⁻ a, f i j a ∂μ ≤ ∫⁻ a, ⨆ (i) (j), f i j a ∂μ := by
   convert (monotone_lintegral μ).le_map_iSup₂ f with a
   simp only [iSup_apply]
 #align measure_theory.supr₂_lintegral_le MeasureTheory.iSup₂_lintegral_le
 
-theorem le_iInf_lintegral {ι : Sort _} (f : ι → α → ℝ≥0∞) :
+theorem le_iInf_lintegral {ι : Sort*} (f : ι → α → ℝ≥0∞) :
     ∫⁻ a, ⨅ i, f i a ∂μ ≤ ⨅ i, ∫⁻ a, f i a ∂μ := by
   simp only [← iInf_apply]
   exact (monotone_lintegral μ).map_iInf_le
 #align measure_theory.le_infi_lintegral MeasureTheory.le_iInf_lintegral
 
-theorem le_iInf₂_lintegral {ι : Sort _} {ι' : ι → Sort _} (f : ∀ i, ι' i → α → ℝ≥0∞) :
+theorem le_iInf₂_lintegral {ι : Sort*} {ι' : ι → Sort*} (f : ∀ i, ι' i → α → ℝ≥0∞) :
     ∫⁻ a, ⨅ (i) (h : ι' i), f i h a ∂μ ≤ ⨅ (i) (h : ι' i), ∫⁻ a, f i h a ∂μ := by
   convert(monotone_lintegral μ).map_iInf₂_le f with a
   simp only [iInf_apply]
@@ -753,9 +753,13 @@ theorem lintegral_indicator₀ (f : α → ℝ≥0∞) {s : Set α} (hs : NullMe
     Measure.restrict_congr_set hs.toMeasurable_ae_eq]
 #align measure_theory.lintegral_indicator₀ MeasureTheory.lintegral_indicator₀
 
-theorem lintegral_indicator_const {s : Set α} (hs : MeasurableSet s) (c : ℝ≥0∞) :
+theorem lintegral_indicator_const₀ {s : Set α} (hs : NullMeasurableSet s μ) (c : ℝ≥0∞) :
     ∫⁻ a, s.indicator (fun _ => c) a ∂μ = c * μ s := by
-  rw [lintegral_indicator _ hs, set_lintegral_const]
+  rw [lintegral_indicator₀ _ hs, set_lintegral_const]
+
+theorem lintegral_indicator_const {s : Set α} (hs : MeasurableSet s) (c : ℝ≥0∞) :
+    ∫⁻ a, s.indicator (fun _ => c) a ∂μ = c * μ s :=
+  lintegral_indicator_const₀ hs.nullMeasurableSet c
 #align measure_theory.lintegral_indicator_const MeasureTheory.lintegral_indicator_const
 
 theorem set_lintegral_eq_const {f : α → ℝ≥0∞} (hf : Measurable f) (r : ℝ≥0∞) :
@@ -1350,7 +1354,7 @@ theorem MeasurePreserving.set_lintegral_comp_emb {mb : MeasurableSpace β} {ν :
 
 section DiracAndCount
 
-instance (priority := 10) _root_.MeasurableSpace.Top.measurableSingletonClass {α : Type _} :
+instance (priority := 10) _root_.MeasurableSpace.Top.measurableSingletonClass {α : Type*} :
     @MeasurableSingletonClass α (⊤ : MeasurableSpace α) :=
   @MeasurableSingletonClass.mk α (⊤ : MeasurableSpace α) <|
     fun _ => MeasurableSpace.measurableSet_top
@@ -1520,7 +1524,7 @@ theorem set_lintegral_lt_top_of_isCompact [TopologicalSpace α] [OpensMeasurable
   set_lintegral_lt_top_of_bddAbove hs hf.measurable (hsc.image hf).bddAbove
 #align measure_theory.set_lintegral_lt_top_of_is_compact MeasureTheory.set_lintegral_lt_top_of_isCompact
 
-theorem _root_.IsFiniteMeasure.lintegral_lt_top_of_bounded_to_eNNReal {α : Type _}
+theorem _root_.IsFiniteMeasure.lintegral_lt_top_of_bounded_to_eNNReal {α : Type*}
     [MeasurableSpace α] (μ : Measure α) [μ_fin : IsFiniteMeasure μ] {f : α → ℝ≥0∞}
     (f_bdd : ∃ c : ℝ≥0, ∀ x, f x ≤ c) : ∫⁻ x, f x ∂μ < ∞ := by
   cases' f_bdd with c hc
@@ -1568,7 +1572,7 @@ theorem withDensity_add_measure {m : MeasurableSpace α} (μ ν : Measure α) (f
   simp only [withDensity_apply f hs, restrict_add, lintegral_add_measure, Measure.add_apply]
 #align measure_theory.with_density_add_measure MeasureTheory.withDensity_add_measure
 
-theorem withDensity_sum {ι : Type _} {m : MeasurableSpace α} (μ : ι → Measure α) (f : α → ℝ≥0∞) :
+theorem withDensity_sum {ι : Type*} {m : MeasurableSpace α} (μ : ι → Measure α) (f : α → ℝ≥0∞) :
     (sum μ).withDensity f = sum fun n => (μ n).withDensity f := by
   ext1 s hs
   simp_rw [sum_apply _ hs, withDensity_apply f hs, restrict_sum μ hs, lintegral_sum_measure]
@@ -1938,7 +1942,7 @@ theorem lintegral_trim_ae {μ : Measure α} (hm : m ≤ m0) {f : α → ℝ≥0�
 
 section SigmaFinite
 
-variable {E : Type _} [NormedAddCommGroup E] [MeasurableSpace E] [OpensMeasurableSpace E]
+variable {E : Type*} [NormedAddCommGroup E] [MeasurableSpace E] [OpensMeasurableSpace E]
 
 theorem univ_le_of_forall_fin_meas_le {μ : Measure α} (hm : m ≤ m0) [SigmaFinite (μ.trim hm)]
     (C : ℝ≥0∞) {f : Set α → ℝ≥0∞} (hf : ∀ s, MeasurableSet[m] s → μ s ≠ ∞ → f s ≤ C)

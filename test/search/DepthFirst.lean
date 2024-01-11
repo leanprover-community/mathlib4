@@ -1,4 +1,4 @@
-import Mathlib.Data.ListM.DepthFirst
+import Mathlib.Data.MLList.DepthFirst
 
 -- We perform a depth first search of the "proper divisors in descending order" tree.
 #eval show Lean.MetaM Unit from do

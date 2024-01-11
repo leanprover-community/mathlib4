@@ -35,7 +35,7 @@ group.
 
 open Pointwise
 
-variable {M N : Type _} [Monoid M] [AddMonoid N]
+variable {M N : Type*} [Monoid M] [AddMonoid N]
 
 section Submonoid
 
@@ -140,7 +140,7 @@ instance (priority := 100) Monoid.fg_of_finite [Finite M] : Monoid.FG M := by
 end Monoid
 
 @[to_additive]
-theorem Submonoid.FG.map {M' : Type _} [Monoid M'] {P : Submonoid M} (h : P.FG) (e : M →* M') :
+theorem Submonoid.FG.map {M' : Type*} [Monoid M'] {P : Submonoid M} (h : P.FG) (e : M →* M') :
     (P.map e).FG := by
   classical
     obtain ⟨s, rfl⟩ := h
@@ -149,7 +149,7 @@ theorem Submonoid.FG.map {M' : Type _} [Monoid M'] {P : Submonoid M} (h : P.FG) 
 #align add_submonoid.fg.map AddSubmonoid.FG.map
 
 @[to_additive]
-theorem Submonoid.FG.map_injective {M' : Type _} [Monoid M'] {P : Submonoid M} (e : M →* M')
+theorem Submonoid.FG.map_injective {M' : Type*} [Monoid M'] {P : Submonoid M} (e : M →* M')
     (he : Function.Injective e) (h : (P.map e).FG) : P.FG := by
   obtain ⟨s, hs⟩ := h
   use s.preimage e (he.injOn _)
@@ -170,7 +170,7 @@ theorem Monoid.fg_iff_submonoid_fg (N : Submonoid M) : Monoid.FG N ↔ N.FG := b
 #align add_monoid.fg_iff_add_submonoid_fg AddMonoid.fg_iff_addSubmonoid_fg
 
 @[to_additive]
-theorem Monoid.fg_of_surjective {M' : Type _} [Monoid M'] [Monoid.FG M] (f : M →* M')
+theorem Monoid.fg_of_surjective {M' : Type*} [Monoid M'] [Monoid.FG M] (f : M →* M')
     (hf : Function.Surjective f) : Monoid.FG M' := by
   classical
     obtain ⟨s, hs⟩ := Monoid.fg_def.mp ‹_›
@@ -181,7 +181,7 @@ theorem Monoid.fg_of_surjective {M' : Type _} [Monoid M'] [Monoid.FG M] (f : M �
 #align add_monoid.fg_of_surjective AddMonoid.fg_of_surjective
 
 @[to_additive]
-instance Monoid.fg_range {M' : Type _} [Monoid M'] [Monoid.FG M] (f : M →* M') :
+instance Monoid.fg_range {M' : Type*} [Monoid M'] [Monoid.FG M] (f : M →* M') :
     Monoid.FG (MonoidHom.mrange f) :=
   Monoid.fg_of_surjective f.mrangeRestrict f.mrangeRestrict_surjective
 #align monoid.fg_range Monoid.fg_range
@@ -216,7 +216,7 @@ instance Monoid.closure_finite_fg (s : Set M) [Finite s] : Monoid.FG (Submonoid.
 /-! ### Groups and subgroups -/
 
 
-variable {G H : Type _} [Group G] [AddGroup H]
+variable {G H : Type*} [Group G] [AddGroup H]
 
 section Subgroup
 
@@ -347,7 +347,7 @@ instance (priority := 100) Group.fg_of_finite [Finite G] : Group.FG G := by
 #align add_group.fg_of_finite AddGroup.fg_of_finite
 
 @[to_additive]
-theorem Group.fg_of_surjective {G' : Type _} [Group G'] [hG : Group.FG G] {f : G →* G'}
+theorem Group.fg_of_surjective {G' : Type*} [Group G'] [hG : Group.FG G] {f : G →* G'}
     (hf : Function.Surjective f) : Group.FG G' :=
   Group.fg_iff_monoid_fg.mpr <|
     @Monoid.fg_of_surjective G _ G' _ (Group.fg_iff_monoid_fg.mp hG) f hf
@@ -355,7 +355,7 @@ theorem Group.fg_of_surjective {G' : Type _} [Group G'] [hG : Group.FG G] {f : G
 #align add_group.fg_of_surjective AddGroup.fg_of_surjective
 
 @[to_additive]
-instance Group.fg_range {G' : Type _} [Group G'] [Group.FG G] (f : G →* G') : Group.FG f.range :=
+instance Group.fg_range {G' : Type*} [Group G'] [Group.FG G] (f : G →* G') : Group.FG f.range :=
   Group.fg_of_surjective f.rangeRestrict_surjective
 #align group.fg_range Group.fg_range
 #align add_group.fg_range AddGroup.fg_range
@@ -397,7 +397,7 @@ theorem Group.rank_le [h : Group.FG G] {S : Finset G} (hS : Subgroup.closure (S 
 #align group.rank_le Group.rank_le
 #align add_group.rank_le AddGroup.rank_le
 
-variable {G} {G' : Type _} [Group G']
+variable {G} {G' : Type*} [Group G']
 
 @[to_additive]
 theorem Group.rank_le_of_surjective [Group.FG G] [Group.FG G'] (f : G →* G')

@@ -31,14 +31,14 @@ open derangements Equiv Fintype
 
 open BigOperators
 
-variable {α : Type _} [DecidableEq α] [Fintype α]
+variable {α : Type*} [DecidableEq α] [Fintype α]
 
 instance : DecidablePred (derangements α) := fun _ => Fintype.decidableForallFintype
 
 -- porting note: used to use the tactic delta_instance
 instance : Fintype (derangements α) := Subtype.fintype (fun (_ : Perm α) => ∀ (x_1 : α), ¬_ = x_1)
 
-theorem card_derangements_invariant {α β : Type _} [Fintype α] [DecidableEq α] [Fintype β]
+theorem card_derangements_invariant {α β : Type*} [Fintype α] [DecidableEq α] [Fintype β]
     [DecidableEq β] (h : card α = card β) : card (derangements α) = card (derangements β) :=
   Fintype.card_congr (Equiv.derangementsCongr <| equivOfCardEq h)
 #align card_derangements_invariant card_derangements_invariant
@@ -107,7 +107,7 @@ theorem card_derangements_fin_eq_numDerangements {n : ℕ} :
     hyp _ (Nat.lt_add_of_pos_right zero_lt_two), hyp _ (lt_add_one _)]
 #align card_derangements_fin_eq_num_derangements card_derangements_fin_eq_numDerangements
 
-theorem card_derangements_eq_numDerangements (α : Type _) [Fintype α] [DecidableEq α] :
+theorem card_derangements_eq_numDerangements (α : Type*) [Fintype α] [DecidableEq α] :
     card (derangements α) = numDerangements (card α) := by
   rw [← card_derangements_invariant (card_fin _)]
   exact card_derangements_fin_eq_numDerangements

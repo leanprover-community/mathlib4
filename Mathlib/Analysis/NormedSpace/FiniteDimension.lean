@@ -56,11 +56,11 @@ namespace LinearIsometry
 
 open LinearMap
 
-variable {R : Type _} [Semiring R]
+variable {R : Type*} [Semiring R]
 
-variable {F E₁ : Type _} [SeminormedAddCommGroup F] [NormedAddCommGroup E₁] [Module R E₁]
+variable {F E₁ : Type*} [SeminormedAddCommGroup F] [NormedAddCommGroup E₁] [Module R E₁]
 
-variable {R₁ : Type _} [Field R₁] [Module R₁ E₁] [Module R₁ F] [FiniteDimensional R₁ E₁]
+variable {R₁ : Type*} [Field R₁] [Module R₁ E₁] [Module R₁ F] [FiniteDimensional R₁ E₁]
   [FiniteDimensional R₁ F]
 
 /-- A linear isometry between finite dimensional spaces of equal dimension can be upgraded
@@ -89,7 +89,7 @@ namespace AffineIsometry
 
 open AffineMap
 
-variable {𝕜 : Type _} {V₁ V₂ : Type _} {P₁ P₂ : Type _} [NormedField 𝕜] [NormedAddCommGroup V₁]
+variable {𝕜 : Type*} {V₁ V₂ : Type*} {P₁ P₂ : Type*} [NormedField 𝕜] [NormedAddCommGroup V₁]
   [SeminormedAddCommGroup V₂] [NormedSpace 𝕜 V₁] [NormedSpace 𝕜 V₂] [MetricSpace P₁]
   [PseudoMetricSpace P₂] [NormedAddTorsor V₁ P₁] [NormedAddTorsor V₂ P₂]
 
@@ -126,7 +126,7 @@ variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type v} [NormedAddC
 
 section Affine
 
-variable {PE PF : Type _} [MetricSpace PE] [NormedAddTorsor E PE] [MetricSpace PF]
+variable {PE PF : Type*} [MetricSpace PE] [NormedAddTorsor E PE] [MetricSpace PF]
   [NormedAddTorsor F PF] [FiniteDimensional 𝕜 E]
 
 theorem AffineMap.continuous_of_finiteDimensional (f : PE →ᵃ[𝕜] PF) : Continuous f :=
@@ -180,13 +180,13 @@ theorem ContinuousLinearMap.continuous_det : Continuous fun f : E →L[𝕜] E =
 vector space `E'` can be extended to a Lipschitz map on the whole space `α`, with a slightly worse
 constant `C * K` where `C` only depends on `E'`. We record a working value for this constant `C`
 as `lipschitzExtensionConstant E'`. -/
-irreducible_def lipschitzExtensionConstant (E' : Type _) [NormedAddCommGroup E'] [NormedSpace ℝ E']
+irreducible_def lipschitzExtensionConstant (E' : Type*) [NormedAddCommGroup E'] [NormedSpace ℝ E']
   [FiniteDimensional ℝ E'] : ℝ≥0 :=
   let A := (Basis.ofVectorSpace ℝ E').equivFun.toContinuousLinearEquiv
   max (‖A.symm.toContinuousLinearMap‖₊ * ‖A.toContinuousLinearMap‖₊) 1
 #align lipschitz_extension_constant lipschitzExtensionConstant
 
-theorem lipschitzExtensionConstant_pos (E' : Type _) [NormedAddCommGroup E'] [NormedSpace ℝ E']
+theorem lipschitzExtensionConstant_pos (E' : Type*) [NormedAddCommGroup E'] [NormedSpace ℝ E']
     [FiniteDimensional ℝ E'] : 0 < lipschitzExtensionConstant E' := by
   rw [lipschitzExtensionConstant]
   exact zero_lt_one.trans_le (le_max_right _ _)
@@ -195,7 +195,7 @@ theorem lipschitzExtensionConstant_pos (E' : Type _) [NormedAddCommGroup E'] [No
 /-- Any `K`-Lipschitz map from a subset `s` of a metric space `α` to a finite-dimensional real
 vector space `E'` can be extended to a Lipschitz map on the whole space `α`, with a slightly worse
 constant `lipschitzExtensionConstant E' * K`. -/
-theorem LipschitzOnWith.extend_finite_dimension {α : Type _} [PseudoMetricSpace α] {E' : Type _}
+theorem LipschitzOnWith.extend_finite_dimension {α : Type*} [PseudoMetricSpace α] {E' : Type*}
     [NormedAddCommGroup E'] [NormedSpace ℝ E'] [FiniteDimensional ℝ E'] {s : Set α} {f : α → E'}
     {K : ℝ≥0} (hf : LipschitzOnWith K f s) :
     ∃ g : α → E', LipschitzWith (lipschitzExtensionConstant E' * K) g ∧ EqOn f g s := by
@@ -254,7 +254,7 @@ protected theorem LinearIndependent.eventually {ι} [Finite ι] {f : ι → E}
   exact norm_le_pi_norm (v - u) i
 #align linear_independent.eventually LinearIndependent.eventually
 
-theorem isOpen_setOf_linearIndependent {ι : Type _} [Finite ι] :
+theorem isOpen_setOf_linearIndependent {ι : Type*} [Finite ι] :
     IsOpen { f : ι → E | LinearIndependent 𝕜 f } :=
   isOpen_iff_mem_nhds.2 fun _ => LinearIndependent.eventually
 #align is_open_set_of_linear_independent isOpen_setOf_linearIndependent
@@ -268,7 +268,7 @@ theorem isOpen_setOf_nat_le_rank (n : ℕ) :
   exact isOpen_setOf_linearIndependent.preimage this
 #align is_open_set_of_nat_le_rank isOpen_setOf_nat_le_rank
 
-theorem Basis.op_nnnorm_le {ι : Type _} [Fintype ι] (v : Basis ι 𝕜 E) {u : E →L[𝕜] F} (M : ℝ≥0)
+theorem Basis.op_nnnorm_le {ι : Type*} [Fintype ι] (v : Basis ι 𝕜 E) {u : E →L[𝕜] F} (M : ℝ≥0)
     (hu : ∀ i, ‖u (v i)‖₊ ≤ M) : ‖u‖₊ ≤ Fintype.card ι • ‖v.equivFunL.toContinuousLinearMap‖₊ * M :=
   u.op_nnnorm_le_bound _ fun e => by
     set φ := v.equivFunL.toContinuousLinearMap
@@ -287,14 +287,14 @@ theorem Basis.op_nnnorm_le {ι : Type _} [Fintype ι] (v : Basis ι 𝕜 E) {u :
       _ = Fintype.card ι • ‖φ‖₊ * M * ‖e‖₊ := by simp only [smul_mul_assoc, mul_right_comm]
 #align basis.op_nnnorm_le Basis.op_nnnorm_le
 
-theorem Basis.op_norm_le {ι : Type _} [Fintype ι] (v : Basis ι 𝕜 E) {u : E →L[𝕜] F} {M : ℝ}
+theorem Basis.op_norm_le {ι : Type*} [Fintype ι] (v : Basis ι 𝕜 E) {u : E →L[𝕜] F} {M : ℝ}
     (hM : 0 ≤ M) (hu : ∀ i, ‖u (v i)‖ ≤ M) :
     ‖u‖ ≤ Fintype.card ι • ‖v.equivFunL.toContinuousLinearMap‖ * M := by
   simpa using NNReal.coe_le_coe.mpr (v.op_nnnorm_le ⟨M, hM⟩ hu)
 #align basis.op_norm_le Basis.op_norm_le
 
 /-- A weaker version of `Basis.op_nnnorm_le` that abstracts away the value of `C`. -/
-theorem Basis.exists_op_nnnorm_le {ι : Type _} [Finite ι] (v : Basis ι 𝕜 E) :
+theorem Basis.exists_op_nnnorm_le {ι : Type*} [Finite ι] (v : Basis ι 𝕜 E) :
     ∃ C > (0 : ℝ≥0), ∀ {u : E →L[𝕜] F} (M : ℝ≥0), (∀ i, ‖u (v i)‖₊ ≤ M) → ‖u‖₊ ≤ C * M := by
   cases nonempty_fintype ι
   exact
@@ -304,7 +304,7 @@ theorem Basis.exists_op_nnnorm_le {ι : Type _} [Finite ι] (v : Basis ι 𝕜 E
 #align basis.exists_op_nnnorm_le Basis.exists_op_nnnorm_le
 
 /-- A weaker version of `Basis.op_norm_le` that abstracts away the value of `C`. -/
-theorem Basis.exists_op_norm_le {ι : Type _} [Finite ι] (v : Basis ι 𝕜 E) :
+theorem Basis.exists_op_norm_le {ι : Type*} [Finite ι] (v : Basis ι 𝕜 E) :
     ∃ C > (0 : ℝ), ∀ {u : E →L[𝕜] F} {M : ℝ}, 0 ≤ M → (∀ i, ‖u (v i)‖ ≤ M) → ‖u‖ ≤ C * M := by
   obtain ⟨C, hC, h⟩ := v.exists_op_nnnorm_le (F := F)
   -- Porting note: used `Subtype.forall'` below
@@ -381,7 +381,7 @@ theorem Submodule.closed_of_finiteDimensional (s : Submodule 𝕜 E) [FiniteDime
   s.complete_of_finiteDimensional.isClosed
 #align submodule.closed_of_finite_dimensional Submodule.closed_of_finiteDimensional
 
-theorem AffineSubspace.closed_of_finiteDimensional {P : Type _} [MetricSpace P]
+theorem AffineSubspace.closed_of_finiteDimensional {P : Type*} [MetricSpace P]
     [NormedAddTorsor E P] (s : AffineSubspace 𝕜 P) [FiniteDimensional 𝕜 s.direction] :
     IsClosed (s : Set P) :=
   s.isClosed_direction_iff.mp s.direction.closed_of_finiteDimensional
@@ -489,7 +489,7 @@ space is finite-dimensional. -/
 @[to_additive
       "If a function has compact support, then either the function is trivial or the space is
       finite-dimensional."]
-theorem HasCompactMulSupport.eq_one_or_finiteDimensional {X : Type _} [TopologicalSpace X] [One X]
+theorem HasCompactMulSupport.eq_one_or_finiteDimensional {X : Type*} [TopologicalSpace X] [One X]
     [T2Space X] {f : E → X} (hf : HasCompactMulSupport f) (h'f : Continuous f) :
     f = 1 ∨ FiniteDimensional 𝕜 E := by
   by_cases h : ∀ x, f x = 1
@@ -545,7 +545,7 @@ open ContinuousLinearMap
 /-- Continuous linear equivalence between continuous linear functions `𝕜ⁿ → E` and `Eⁿ`.
 The spaces `𝕜ⁿ` and `Eⁿ` are represented as `ι → 𝕜` and `ι → E`, respectively,
 where `ι` is a finite type. -/
-def ContinuousLinearEquiv.piRing (ι : Type _) [Fintype ι] [DecidableEq ι] :
+def ContinuousLinearEquiv.piRing (ι : Type*) [Fintype ι] [DecidableEq ι] :
     ((ι → 𝕜) →L[𝕜] E) ≃L[𝕜] ι → E :=
   { LinearMap.toContinuousLinearMap.symm.trans (LinearEquiv.piRing 𝕜 E ι 𝕜) with
     continuous_toFun := by
@@ -570,7 +570,7 @@ def ContinuousLinearEquiv.piRing (ι : Type _) [Fintype ι] [DecidableEq ι] :
 #align continuous_linear_equiv.pi_ring ContinuousLinearEquiv.piRing
 
 /-- A family of continuous linear maps is continuous on `s` if all its applications are. -/
-theorem continuousOn_clm_apply {X : Type _} [TopologicalSpace X] [FiniteDimensional 𝕜 E]
+theorem continuousOn_clm_apply {X : Type*} [TopologicalSpace X] [FiniteDimensional 𝕜 E]
     {f : X → E →L[𝕜] F} {s : Set X} : ContinuousOn f s ↔ ∀ y, ContinuousOn (fun x => f x y) s := by
   refine' ⟨fun h y => (ContinuousLinearMap.apply 𝕜 F y).continuous.comp_continuousOn h, fun h => _⟩
   let d := finrank 𝕜 E
@@ -582,7 +582,7 @@ theorem continuousOn_clm_apply {X : Type _} [TopologicalSpace X] [FiniteDimensio
   exact e₂.symm.continuous.comp_continuousOn (continuousOn_pi.mpr fun i => h _)
 #align continuous_on_clm_apply continuousOn_clm_apply
 
-theorem continuous_clm_apply {X : Type _} [TopologicalSpace X] [FiniteDimensional 𝕜 E]
+theorem continuous_clm_apply {X : Type*} [TopologicalSpace X] [FiniteDimensional 𝕜 E]
     {f : X → E →L[𝕜] F} : Continuous f ↔ ∀ y, Continuous fun x => f x y := by
   simp_rw [continuous_iff_continuousOn_univ, continuousOn_clm_apply]
 #align continuous_clm_apply continuous_clm_apply
@@ -616,7 +616,7 @@ instance (priority := 900) FiniteDimensional.proper_real (E : Type u) [NormedAdd
 `x` that is not equal to the whole space, then there exists a point `y ∈ frontier s` at distance
 `Metric.infDist x sᶜ` from `x`. See also
 `IsCompact.exists_mem_frontier_infDist_compl_eq_dist`. -/
-theorem exists_mem_frontier_infDist_compl_eq_dist {E : Type _} [NormedAddCommGroup E]
+theorem exists_mem_frontier_infDist_compl_eq_dist {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] [FiniteDimensional ℝ E] {x : E} {s : Set E} (hx : x ∈ s) (hs : s ≠ univ) :
     ∃ y ∈ frontier s, Metric.infDist x sᶜ = dist x y := by
   rcases Metric.exists_mem_closure_infDist_eq_dist (nonempty_compl.2 hs) x with ⟨y, hys, hyd⟩
@@ -632,7 +632,7 @@ theorem exists_mem_frontier_infDist_compl_eq_dist {E : Type _} [NormedAddCommGro
 /-- If `K` is a compact set in a nontrivial real normed space and `x ∈ K`, then there exists a point
 `y` of the boundary of `K` at distance `Metric.infDist x Kᶜ` from `x`. See also
 `exists_mem_frontier_infDist_compl_eq_dist`. -/
-nonrec theorem IsCompact.exists_mem_frontier_infDist_compl_eq_dist {E : Type _}
+nonrec theorem IsCompact.exists_mem_frontier_infDist_compl_eq_dist {E : Type*}
     [NormedAddCommGroup E] [NormedSpace ℝ E] [Nontrivial E] {x : E} {K : Set E} (hK : IsCompact K)
     (hx : x ∈ K) :
     ∃ y ∈ frontier K, Metric.infDist x Kᶜ = dist x y := by
@@ -653,7 +653,7 @@ nonrec theorem IsCompact.exists_mem_frontier_infDist_compl_eq_dist {E : Type _}
 /-- In a finite dimensional vector space over `ℝ`, the series `∑ x, ‖f x‖` is unconditionally
 summable if and only if the series `∑ x, f x` is unconditionally summable. One implication holds in
 any complete normed space, while the other holds only in finite dimensional spaces. -/
-theorem summable_norm_iff {α E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E]
+theorem summable_norm_iff {α E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [FiniteDimensional ℝ E] {f : α → E} : (Summable fun x => ‖f x‖) ↔ Summable f := by
   refine' ⟨summable_of_summable_norm, fun hf => _⟩
   -- First we use a finite basis to reduce the problem to the case `E = Fin N → ℝ`
@@ -677,39 +677,39 @@ theorem summable_norm_iff {α E : Type _} [NormedAddCommGroup E] [NormedSpace �
   · exact Finset.sum_nonneg fun _ _ => norm_nonneg _
 #align summable_norm_iff summable_norm_iff
 
-theorem summable_of_isBigO' {ι E F : Type _} [NormedAddCommGroup E] [CompleteSpace E]
+theorem summable_of_isBigO' {ι E F : Type*} [NormedAddCommGroup E] [CompleteSpace E]
     [NormedAddCommGroup F] [NormedSpace ℝ F] [FiniteDimensional ℝ F] {f : ι → E} {g : ι → F}
     (hg : Summable g) (h : f =O[cofinite] g) : Summable f :=
   summable_of_isBigO (summable_norm_iff.mpr hg) h.norm_right
 set_option linter.uppercaseLean3 false in
 #align summable_of_is_O' summable_of_isBigO'
 
-theorem summable_of_isBigO_nat' {E F : Type _} [NormedAddCommGroup E] [CompleteSpace E]
+theorem summable_of_isBigO_nat' {E F : Type*} [NormedAddCommGroup E] [CompleteSpace E]
     [NormedAddCommGroup F] [NormedSpace ℝ F] [FiniteDimensional ℝ F] {f : ℕ → E} {g : ℕ → F}
     (hg : Summable g) (h : f =O[atTop] g) : Summable f :=
   summable_of_isBigO_nat (summable_norm_iff.mpr hg) h.norm_right
 set_option linter.uppercaseLean3 false in
 #align summable_of_is_O_nat' summable_of_isBigO_nat'
 
-theorem summable_of_isEquivalent {ι E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E]
+theorem summable_of_isEquivalent {ι E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [FiniteDimensional ℝ E] {f : ι → E} {g : ι → E} (hg : Summable g) (h : f ~[cofinite] g) :
     Summable f :=
   hg.trans_sub (summable_of_isBigO' hg h.isLittleO.isBigO)
 #align summable_of_is_equivalent summable_of_isEquivalent
 
-theorem summable_of_isEquivalent_nat {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E]
+theorem summable_of_isEquivalent_nat {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [FiniteDimensional ℝ E] {f : ℕ → E} {g : ℕ → E} (hg : Summable g) (h : f ~[atTop] g) :
     Summable f :=
   hg.trans_sub (summable_of_isBigO_nat' hg h.isLittleO.isBigO)
 #align summable_of_is_equivalent_nat summable_of_isEquivalent_nat
 
-theorem IsEquivalent.summable_iff {ι E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E]
+theorem IsEquivalent.summable_iff {ι E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [FiniteDimensional ℝ E] {f : ι → E} {g : ι → E} (h : f ~[cofinite] g) :
     Summable f ↔ Summable g :=
   ⟨fun hf => summable_of_isEquivalent hf h.symm, fun hg => summable_of_isEquivalent hg h⟩
 #align is_equivalent.summable_iff IsEquivalent.summable_iff
 
-theorem IsEquivalent.summable_iff_nat {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E]
+theorem IsEquivalent.summable_iff_nat {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [FiniteDimensional ℝ E] {f : ℕ → E} {g : ℕ → E} (h : f ~[atTop] g) : Summable f ↔ Summable g :=
   ⟨fun hf => summable_of_isEquivalent_nat hf h.symm, fun hg => summable_of_isEquivalent_nat hg h⟩
 #align is_equivalent.summable_iff_nat IsEquivalent.summable_iff_nat

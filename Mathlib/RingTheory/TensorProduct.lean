@@ -4,228 +4,40 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Johan Commelin
 -/
 import Mathlib.LinearAlgebra.FiniteDimensional
+import Mathlib.LinearAlgebra.TensorProduct.Tower
 import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.LinearAlgebra.DirectSum.Finsupp
 
-#align_import ring_theory.tensor_product from "leanprover-community/mathlib"@"69b2e97a276619372b19cf80fc1e91b05ae2baa4"
+#align_import ring_theory.tensor_product from "leanprover-community/mathlib"@"88fcdc3da43943f5b01925deddaa5bf0c0e85e4e"
 
 /-!
 # The tensor product of R-algebras
 
-Let `R` be a (semi)ring and `A` an `R`-algebra.
-In this file we:
+This file provides results about the multiplicative structure on `A ⊗[R] B` when `R` is a
+commutative (semi)ring and `A` and `B` are both `R`-algebras. On these tensor products,
+multiplication is characterized by `(a₁ ⊗ₜ b₁) * (a₂ ⊗ₜ b₂) = (a₁ * a₂) ⊗ₜ (b₁ * b₂)`.
 
-- Define the `A`-module structure on `A ⊗ M`, for an `R`-module `M`.
-- Define the `R`-algebra structure on `A ⊗ B`, for another `R`-algebra `B`.
-  and provide the structure isomorphisms
-  * `R ⊗[R] A ≃ₐ[R] A`
-  * `A ⊗[R] R ≃ₐ[R] A`
-  * `A ⊗[R] B ≃ₐ[R] B ⊗[R] A`
-  * `((A ⊗[R] B) ⊗[R] C) ≃ₐ[R] (A ⊗[R] (B ⊗[R] C))`
-
-## Main declaration
+## Main declarations
 
 - `LinearMap.baseChange A f` is the `A`-linear map `A ⊗ f`, for an `R`-linear map `f`.
+- `Algebra.TensorProduct.semiring`: the ring structure on `A ⊗[R] B` for two `R`-algebras `A`, `B`.
+- `Algebra.TensorProduct.leftAlgebra`: the `S`-algebra structure on `A ⊗[R] B`, for when `A` is
+  additionally an `S` algebra.
+- the structure isomorphisms
+  * `Algebra.TensorProduct.lid : R ⊗[R] A ≃ₐ[R] A`
+  * `Algebra.TensorProduct.rid : A ⊗[R] R ≃ₐ[S] A` (usually used with `S = R` or `S = A`)
+  * `Algebra.TensorProduct.comm : A ⊗[R] B ≃ₐ[R] B ⊗[R] A`
+  * `Algebra.TensorProduct.assoc : ((A ⊗[R] B) ⊗[R] C) ≃ₐ[R] (A ⊗[R] (B ⊗[R] C))`
 
-## Implementation notes
-
-The heterobasic definitions below such as:
- * `TensorProduct.AlgebraTensorModule.curry`
- * `TensorProduct.AlgebraTensorModule.uncurry`
- * `TensorProduct.AlgebraTensorModule.lcurry`
- * `TensorProduct.AlgebraTensorModule.lift`
- * `TensorProduct.AlgebraTensorModule.lift.equiv`
- * `TensorProduct.AlgebraTensorModule.mk`
- * `TensorProduct.AlgebraTensorModule.assoc`
-
-are just more general versions of the definitions already in `LinearAlgebra/TensorProduct`. We
-could thus consider replacing the less general definitions with these ones. If we do this, we
-probably should still implement the less general ones as abbreviations to the more general ones with
-fewer type arguments.
 -/
 
 
-universe u v₁ v₂ v₃ v₄
+universe u uS v₁ v₂ v₃ v₄
 
 open scoped TensorProduct
 
 open TensorProduct
 
-namespace TensorProduct
-
-variable {R A M N P : Type _}
-
-/-!
-### The `A`-module structure on `A ⊗[R] M`
--/
-
-
-open LinearMap
-
-open Algebra (lsmul)
-
-namespace AlgebraTensorModule
-
-section Semiring
-
-variable [CommSemiring R] [Semiring A] [Algebra R A]
-
-variable [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M]
-
-variable [AddCommMonoid N] [Module R N]
-
-variable [AddCommMonoid P] [Module R P] [Module A P] [IsScalarTower R A P]
-
-theorem smul_eq_lsmul_rTensor (a : A) (x : M ⊗[R] N) : a • x = (lsmul R M a).rTensor N x :=
-  rfl
-#align tensor_product.algebra_tensor_module.smul_eq_lsmul_rtensor TensorProduct.AlgebraTensorModule.smul_eq_lsmul_rTensor
-
-/-- Heterobasic version of `TensorProduct.curry`:
-
-Given a linear map `M ⊗[R] N →[A] P`, compose it with the canonical
-bilinear map `M →[A] N →[R] M ⊗[R] N` to form a bilinear map `M →[A] N →[R] P`. -/
-@[simps]
-nonrec def curry (f : M ⊗[R] N →ₗ[A] P) : M →ₗ[A] N →ₗ[R] P :=
-  { curry (f.restrictScalars R) with
-    toFun := curry (f.restrictScalars R)
-    map_smul' := fun c x => LinearMap.ext fun y => f.map_smul c (x ⊗ₜ y) }
-#align tensor_product.algebra_tensor_module.curry TensorProduct.AlgebraTensorModule.curry
-#align tensor_product.algebra_tensor_module.curry_apply TensorProduct.AlgebraTensorModule.curry_apply
-
-theorem restrictScalars_curry (f : M ⊗[R] N →ₗ[A] P) :
-    restrictScalars R (curry f) = TensorProduct.curry (f.restrictScalars R) :=
-  rfl
-#align tensor_product.algebra_tensor_module.restrict_scalars_curry TensorProduct.AlgebraTensorModule.restrictScalars_curry
-
-/-- Just as `TensorProduct.ext` is marked `ext` instead of `TensorProduct.ext'`, this is
-a better `ext` lemma than `TensorProduct.AlgebraTensorModule.ext` below.
-
-See note [partially-applied ext lemmas]. -/
-@[ext high]
-nonrec theorem curry_injective : Function.Injective (curry : (M ⊗ N →ₗ[A] P) → M →ₗ[A] N →ₗ[R] P) :=
-  fun _ _ h =>
-  LinearMap.restrictScalars_injective R <|
-    curry_injective <| (congr_arg (LinearMap.restrictScalars R) h : _)
-#align tensor_product.algebra_tensor_module.curry_injective TensorProduct.AlgebraTensorModule.curry_injective
-
-theorem ext {g h : M ⊗[R] N →ₗ[A] P} (H : ∀ x y, g (x ⊗ₜ y) = h (x ⊗ₜ y)) : g = h :=
-  curry_injective <| LinearMap.ext₂ H
-#align tensor_product.algebra_tensor_module.ext TensorProduct.AlgebraTensorModule.ext
-
-end Semiring
-
-section CommSemiring
-
-variable [CommSemiring R] [CommSemiring A] [Algebra R A]
-
-variable [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M]
-
-variable [AddCommMonoid N] [Module R N]
-
-variable [AddCommMonoid P] [Module R P] [Module A P] [IsScalarTower R A P]
-
-/-- Heterobasic version of `TensorProduct.lift`:
-
-Constructing a linear map `M ⊗[R] N →[A] P` given a bilinear map `M →[A] N →[R] P` with the
-property that its composition with the canonical bilinear map `M →[A] N →[R] M ⊗[R] N` is
-the given bilinear map `M →[A] N →[R] P`. -/
-nonrec def lift (f : M →ₗ[A] N →ₗ[R] P) : M ⊗[R] N →ₗ[A] P :=
-  { lift (f.restrictScalars R) with
-    map_smul' := fun c =>
-      show
-        ∀ x : M ⊗[R] N,
-          (lift (f.restrictScalars R)).comp (lsmul R _ c) x =
-            (lsmul R _ c).comp (lift (f.restrictScalars R)) x
-        from
-        ext_iff.1 <|
-          TensorProduct.ext' fun x y => by
-            simp only [comp_apply, Algebra.lsmul_coe, smul_tmul', lift.tmul,
-              coe_restrictScalars, f.map_smul, smul_apply] }
-#align tensor_product.algebra_tensor_module.lift TensorProduct.AlgebraTensorModule.lift
-
--- Porting note: autogenerated lemma unfolded to `liftAux`
-@[simp]
-theorem lift_apply (f : M →ₗ[A] N →ₗ[R] P) (a : M ⊗[R] N) :
-    AlgebraTensorModule.lift f a = TensorProduct.lift (LinearMap.restrictScalars R f) a :=
-  rfl
-
-@[simp]
-theorem lift_tmul (f : M →ₗ[A] N →ₗ[R] P) (x : M) (y : N) : lift f (x ⊗ₜ y) = f x y :=
-  rfl
-#align tensor_product.algebra_tensor_module.lift_tmul TensorProduct.AlgebraTensorModule.lift_tmul
-
-variable (R A M N P)
-
-/-- Heterobasic version of `TensorProduct.uncurry`:
-
-Linearly constructing a linear map `M ⊗[R] N →[A] P` given a bilinear map `M →[A] N →[R] P`
-with the property that its composition with the canonical bilinear map `M →[A] N →[R] M ⊗[R] N` is
-the given bilinear map `M →[A] N →[R] P`. -/
-@[simps]
-def uncurry : (M →ₗ[A] N →ₗ[R] P) →ₗ[A] M ⊗[R] N →ₗ[A] P where
-  toFun := lift
-  map_add' _ _ := ext fun x y => by simp only [lift_tmul, add_apply]
-  map_smul' _ _ := ext fun x y => by simp only [lift_tmul, smul_apply, RingHom.id_apply]
-#align tensor_product.algebra_tensor_module.uncurry TensorProduct.AlgebraTensorModule.uncurry
-
-/-- Heterobasic version of `TensorProduct.lcurry`:
-
-Given a linear map `M ⊗[R] N →[A] P`, compose it with the canonical
-bilinear map `M →[A] N →[R] M ⊗[R] N` to form a bilinear map `M →[A] N →[R] P`. -/
-@[simps]
-def lcurry : (M ⊗[R] N →ₗ[A] P) →ₗ[A] M →ₗ[A] N →ₗ[R] P where
-  toFun := curry
-  map_add' _ _ := rfl
-  map_smul' _ _ := rfl
-#align tensor_product.algebra_tensor_module.lcurry TensorProduct.AlgebraTensorModule.lcurry
-
-/-- Heterobasic version of `TensorProduct.lift.equiv`:
-
-A linear equivalence constructing a linear map `M ⊗[R] N →[A] P` given a
-bilinear map `M →[A] N →[R] P` with the property that its composition with the
-canonical bilinear map `M →[A] N →[R] M ⊗[R] N` is the given bilinear map `M →[A] N →[R] P`. -/
-def lift.equiv : (M →ₗ[A] N →ₗ[R] P) ≃ₗ[A] M ⊗[R] N →ₗ[A] P :=
-  LinearEquiv.ofLinear (uncurry R A M N P) (lcurry R A M N P)
-    (LinearMap.ext fun _ => ext fun x y => lift_tmul _ x y)
-    (LinearMap.ext fun f => LinearMap.ext fun x => LinearMap.ext fun y => lift_tmul f x y)
-#align tensor_product.algebra_tensor_module.lift.equiv TensorProduct.AlgebraTensorModule.lift.equiv
-
-/-- Heterobasic version of `TensorProduct.mk`:
-
-The canonical bilinear map `M →[A] N →[R] M ⊗[R] N`. -/
-@[simps! apply]
-nonrec def mk : M →ₗ[A] N →ₗ[R] M ⊗[R] N :=
-  { mk R M N with map_smul' := fun _ _ => rfl }
-#align tensor_product.algebra_tensor_module.mk TensorProduct.AlgebraTensorModule.mk
-#align tensor_product.algebra_tensor_module.mk_apply TensorProduct.AlgebraTensorModule.mk_apply
-
-attribute [local ext high] TensorProduct.ext
-
-/-- Heterobasic version of `TensorProduct.assoc`:
-
-Linear equivalence between `(M ⊗[A] N) ⊗[R] P` and `M ⊗[A] (N ⊗[R] P)`. -/
-def assoc : (M ⊗[A] P) ⊗[R] N ≃ₗ[A] M ⊗[A] P ⊗[R] N :=
-  LinearEquiv.ofLinear
-    (lift <|
-      TensorProduct.uncurry A _ _ _ <| comp (lcurry R A _ _ _) <| TensorProduct.mk A M (P ⊗[R] N))
-    (TensorProduct.uncurry A _ _ _ <|
-      comp (uncurry R A _ _ _) <| by
-        apply TensorProduct.curry
-        exact mk R A _ _)
-    (by
-      ext
-      rfl)
-    (by
-      ext
-      -- porting note: was `simp only [...]`
-      rfl)
-#align tensor_product.algebra_tensor_module.assoc TensorProduct.AlgebraTensorModule.assoc
-
-end CommSemiring
-
-end AlgebraTensorModule
-
-end TensorProduct
 
 namespace LinearMap
 
@@ -238,7 +50,7 @@ open TensorProduct
 
 section Semiring
 
-variable {R A B M N : Type _} [CommSemiring R]
+variable {R A B M N : Type*} [CommSemiring R]
 
 variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 
@@ -249,15 +61,8 @@ variable (r : R) (f g : M →ₗ[R] N)
 variable (A)
 
 /-- `base_change A f` for `f : M →ₗ[R] N` is the `A`-linear map `A ⊗[R] M →ₗ[A] A ⊗[R] N`. -/
-def baseChange (f : M →ₗ[R] N) : A ⊗[R] M →ₗ[A] A ⊗[R] N where
-  toFun := f.lTensor A
-  map_add' := (f.lTensor A).map_add
-  map_smul' a x :=
-    show
-      (f.lTensor A) (rTensor M (LinearMap.mul R A a) x) =
-        (rTensor N ((LinearMap.mul R A) a)) ((lTensor A f) x) by
-      rw [← comp_apply, ← comp_apply]
-      simp only [lTensor_comp_rTensor, rTensor_comp_lTensor]
+def baseChange (f : M →ₗ[R] N) : A ⊗[R] M →ₗ[A] A ⊗[R] N :=
+  AlgebraTensorModule.map (LinearMap.id : A →ₗ[A] A) f
 #align linear_map.base_change LinearMap.baseChange
 
 variable {A}
@@ -304,7 +109,7 @@ end Semiring
 
 section Ring
 
-variable {R A B M N : Type _} [CommRing R]
+variable {R A B M N : Type*} [CommRing R]
 
 variable [Ring A] [Algebra R A] [Ring B] [Algebra R B]
 
@@ -390,55 +195,49 @@ theorem mul_apply (a₁ a₂ : A) (b₁ b₂ : B) :
   rfl
 #align algebra.tensor_product.mul_apply Algebra.TensorProduct.mul_apply
 
-theorem mul_assoc' (mul : A ⊗[R] B →ₗ[R] A ⊗[R] B →ₗ[R] A ⊗[R] B)
-    (h :
-      ∀ (a₁ a₂ a₃ : A) (b₁ b₂ b₃ : B),
-        mul (mul (a₁ ⊗ₜ[R] b₁) (a₂ ⊗ₜ[R] b₂)) (a₃ ⊗ₜ[R] b₃) =
-          mul (a₁ ⊗ₜ[R] b₁) (mul (a₂ ⊗ₜ[R] b₂) (a₃ ⊗ₜ[R] b₃))) :
-    ∀ x y z : A ⊗[R] B, mul (mul x y) z = mul x (mul y z) := by
-  intros x y z
-  refine TensorProduct.induction_on x ?_ ?_ ?_
-  · simp only [LinearMap.map_zero, LinearMap.zero_apply]
-  refine TensorProduct.induction_on y ?_ ?_ ?_
-  · simp only [LinearMap.map_zero, forall_const, LinearMap.zero_apply]
-  refine TensorProduct.induction_on z ?_ ?_ ?_
-  · simp only [LinearMap.map_zero, forall_const]
-  · intros
-    simp only [h]
-  · intros
-    simp only [LinearMap.map_add, *]
-  · intros
-    simp only [LinearMap.map_add, *, LinearMap.add_apply]
-  · intros
-    simp only [LinearMap.map_add, *, LinearMap.add_apply]
-#align algebra.tensor_product.mul_assoc' Algebra.TensorProduct.mul_assoc'
+#noalign algebra.tensor_product.mul_assoc'
 
-nonrec theorem mul_assoc (x y z : A ⊗[R] B) : mul (mul x y) z = mul x (mul y z) :=
-  mul_assoc' mul
-    (by
-      intros
-      simp only [mul_apply, mul_assoc])
-    x y z
+protected theorem mul_assoc (x y z : A ⊗[R] B) : mul (mul x y) z = mul x (mul y z) := by
+  -- restate as an equality of morphisms so that we can use `ext`
+  suffices LinearMap.llcomp R _ _ _ mul ∘ₗ mul =
+      (LinearMap.llcomp R _ _ _ LinearMap.lflip <| LinearMap.llcomp R _ _ _ mul.flip ∘ₗ mul).flip by
+    exact FunLike.congr_fun (FunLike.congr_fun (FunLike.congr_fun this x) y) z
+  ext xa xb ya yb za zb
+  exact congr_arg₂ (· ⊗ₜ ·) (mul_assoc xa ya za) (mul_assoc xb yb zb)
 #align algebra.tensor_product.mul_assoc Algebra.TensorProduct.mul_assoc
 
-theorem one_mul (x : A ⊗[R] B) : mul (1 ⊗ₜ 1) x = x := by
+protected theorem one_mul (x : A ⊗[R] B) : mul (1 ⊗ₜ 1) x = x := by
   refine TensorProduct.induction_on x ?_ ?_ ?_ <;> simp (config := { contextual := true })
 #align algebra.tensor_product.one_mul Algebra.TensorProduct.one_mul
 
-theorem mul_one (x : A ⊗[R] B) : mul x (1 ⊗ₜ 1) = x := by
+protected theorem mul_one (x : A ⊗[R] B) : mul x (1 ⊗ₜ 1) = x := by
   refine TensorProduct.induction_on x ?_ ?_ ?_ <;> simp (config := { contextual := true })
 #align algebra.tensor_product.mul_one Algebra.TensorProduct.mul_one
 
 instance : One (A ⊗[R] B) where one := 1 ⊗ₜ 1
 
-instance : AddMonoidWithOne (A ⊗[R] B) :=
-  AddMonoidWithOne.unary
+theorem one_def : (1 : A ⊗[R] B) = (1 : A) ⊗ₜ (1 : B) :=
+  rfl
+#align algebra.tensor_product.one_def Algebra.TensorProduct.one_def
+
+instance : AddMonoidWithOne (A ⊗[R] B) where
+  natCast n := n ⊗ₜ 1
+  natCast_zero := by simp
+  natCast_succ n := by simp [add_tmul, one_def]
+
+theorem natCast_def (n : ℕ) : (n : A ⊗[R] B) = (n : A) ⊗ₜ (1 : B) := rfl
 
 instance : AddCommMonoid (A ⊗[R] B) := by infer_instance
 
 -- providing this instance separately makes some downstream code substantially faster
 instance instMul : Mul (A ⊗[R] B) where
   mul a b := mul a b
+
+@[simp]
+theorem tmul_mul_tmul (a₁ a₂ : A) (b₁ b₂ : B) :
+    a₁ ⊗ₜ[R] b₁ * a₂ ⊗ₜ[R] b₂ = (a₁ * a₂) ⊗ₜ[R] (b₁ * b₂) :=
+  rfl
+#align algebra.tensor_product.tmul_mul_tmul Algebra.TensorProduct.tmul_mul_tmul
 
 -- note: we deliberately do not provide any fields that overlap with `AddMonoidWithOne` as this
 -- appears to help performance.
@@ -447,19 +246,11 @@ instance instSemiring : Semiring (A ⊗[R] B) where
   right_distrib a b c := by simp [HMul.hMul, Mul.mul]
   zero_mul a := by simp [HMul.hMul, Mul.mul]
   mul_zero a := by simp [HMul.hMul, Mul.mul]
-  mul_assoc := mul_assoc
-  one_mul := one_mul
-  mul_one := mul_one
-
-theorem one_def : (1 : A ⊗[R] B) = (1 : A) ⊗ₜ (1 : B) :=
-  rfl
-#align algebra.tensor_product.one_def Algebra.TensorProduct.one_def
-
-@[simp]
-theorem tmul_mul_tmul (a₁ a₂ : A) (b₁ b₂ : B) :
-    a₁ ⊗ₜ[R] b₁ * a₂ ⊗ₜ[R] b₂ = (a₁ * a₂) ⊗ₜ[R] (b₁ * b₂) :=
-  rfl
-#align algebra.tensor_product.tmul_mul_tmul Algebra.TensorProduct.tmul_mul_tmul
+  mul_assoc := Algebra.TensorProduct.mul_assoc
+  one_mul := Algebra.TensorProduct.one_mul
+  mul_one := Algebra.TensorProduct.mul_one
+  natCast_zero := AddMonoidWithOne.natCast_zero
+  natCast_succ := AddMonoidWithOne.natCast_succ
 
 @[simp]
 theorem tmul_pow (a : A) (b : B) (k : ℕ) : a ⊗ₜ[R] b ^ k = (a ^ k) ⊗ₜ[R] (b ^ k) := by
@@ -478,32 +269,54 @@ def includeLeftRingHom : A →+* A ⊗[R] B where
   map_mul' := by simp
 #align algebra.tensor_product.include_left_ring_hom Algebra.TensorProduct.includeLeftRingHom
 
-variable {S : Type _} [CommSemiring S] [Algebra S A]
+variable {S : Type*}
+
+-- we want `isScalarTower_right` to take priority since it's better for unification elsewhere
+instance (priority := 100) isScalarTower_right [Monoid S] [DistribMulAction S A]
+    [IsScalarTower S A A] [SMulCommClass R S A] : IsScalarTower S (A ⊗[R] B) (A ⊗[R] B) where
+  smul_assoc r x y := by
+    change r • x * y = r • (x * y)
+    induction y using TensorProduct.induction_on with
+    | zero => simp [smul_zero]
+    | tmul a b => induction x using TensorProduct.induction_on with
+      | zero => simp [smul_zero]
+      | tmul a' b' =>
+        dsimp
+        rw [TensorProduct.smul_tmul', TensorProduct.smul_tmul', tmul_mul_tmul, smul_mul_assoc]
+      | add x y hx hy => simp [smul_add, add_mul _, *]
+    | add x y hx hy => simp [smul_add, mul_add _, *]
+#align algebra.tensor_product.is_scalar_tower_right Algebra.TensorProduct.isScalarTower_right
+
+-- we want `Algebra.to_smulCommClass` to take priority since it's better for unification elsewhere
+instance (priority := 100) sMulCommClass_right [Monoid S] [DistribMulAction S A]
+    [SMulCommClass S A A] [SMulCommClass R S A] : SMulCommClass S (A ⊗[R] B) (A ⊗[R] B) where
+  smul_comm r x y := by
+    change r • (x * y) = x * r • y
+    induction y using TensorProduct.induction_on with
+    | zero => simp [smul_zero]
+    | tmul a b => induction x using TensorProduct.induction_on with
+      | zero => simp [smul_zero]
+      | tmul a' b' =>
+        dsimp
+        rw [TensorProduct.smul_tmul', TensorProduct.smul_tmul', tmul_mul_tmul, mul_smul_comm]
+      | add x y hx hy => simp [smul_add, add_mul _, *]
+    | add x y hx hy => simp [smul_add, mul_add _, *]
+#align algebra.tensor_product.smul_comm_class_right Algebra.TensorProduct.sMulCommClass_right
+
+variable [CommSemiring S] [Algebra S A]
 
 instance leftAlgebra [SMulCommClass R S A] : Algebra S (A ⊗[R] B) :=
-  { TensorProduct.includeLeftRingHom.comp (algebraMap S A),
-    (by infer_instance : Module S (A ⊗[R] B)) with
-    commutes' := fun r x => by
-      refine TensorProduct.induction_on x ?_ ?_ ?_
-      · simp
-      · intro a b
-        dsimp
-        rw [Algebra.commutes, _root_.mul_one, _root_.one_mul]
-      · intro y y' h h'
-        dsimp at h h' ⊢
-        rw [mul_add, add_mul,h, h'] -- porting note: was `simp [mul_add...]` but this
-        -- no longer works for some reason
+  { commutes' := fun r x => by
+      dsimp only [RingHom.toFun_eq_coe, RingHom.comp_apply, includeLeftRingHom_apply]
+      rw [algebraMap_eq_smul_one, ← smul_tmul', ← one_def, mul_smul_comm, smul_mul_assoc, mul_one,
+        one_mul]
     smul_def' := fun r x => by
-      refine TensorProduct.induction_on x ?_ ?_ ?_
-      · simp [smul_zero]
-      · intro a b
-        dsimp
-        rw [TensorProduct.smul_tmul', Algebra.smul_def r a, _root_.one_mul]
-      · intros
-        dsimp
-        rw [smul_add, mul_add] -- porting note: these were in the `simp` call in lean 3
-        simp [*] }
+      dsimp only [RingHom.toFun_eq_coe, RingHom.comp_apply, includeLeftRingHom_apply]
+      rw [algebraMap_eq_smul_one, ← smul_tmul', smul_mul_assoc, ← one_def, one_mul]
+    toRingHom := TensorProduct.includeLeftRingHom.comp (algebraMap S A) }
 #align algebra.tensor_product.left_algebra Algebra.TensorProduct.leftAlgebra
+
+example : (algebraNat : Algebra ℕ (ℕ ⊗[ℕ] B)) = leftAlgebra := rfl
 
 -- This is for the `undergrad.yaml` list.
 /-- The tensor product of two `R`-algebras is an `R`-algebra. -/
@@ -518,21 +331,14 @@ theorem algebraMap_apply [SMulCommClass R S A] (r : S) :
 
 variable {C : Type v₃} [Semiring C] [Algebra R C]
 
-@[ext high]
-theorem ext {g h : A ⊗[R] B →ₐ[R] C} (H : ∀ a b, g (a ⊗ₜ b) = h (a ⊗ₜ b)) : g = h := by
-  apply @AlgHom.toLinearMap_injective R (A ⊗[R] B) C _ _ _ _ _ _ _ _
-  ext
-  simp [H]
-#align algebra.tensor_product.ext Algebra.TensorProduct.ext
-
--- TODO: with `SMulCommClass R S A` we can have this as an `S`-algebra morphism
 /-- The `R`-algebra morphism `A →ₐ[R] A ⊗[R] B` sending `a` to `a ⊗ₜ 1`. -/
-def includeLeft : A →ₐ[R] A ⊗[R] B :=
+def includeLeft [SMulCommClass R S A] : A →ₐ[S] A ⊗[R] B :=
   { includeLeftRingHom with commutes' := by simp }
 #align algebra.tensor_product.include_left Algebra.TensorProduct.includeLeft
 
 @[simp]
-theorem includeLeft_apply (a : A) : (includeLeft : A →ₐ[R] A ⊗[R] B) a = a ⊗ₜ 1 :=
+theorem includeLeft_apply [SMulCommClass R S A] (a : A) :
+    (includeLeft : A →ₐ[S] A ⊗[R] B) a = a ⊗ₜ 1 :=
   rfl
 #align algebra.tensor_product.include_left_apply Algebra.TensorProduct.includeLeft_apply
 
@@ -556,13 +362,40 @@ theorem includeRight_apply (b : B) : (includeRight : B →ₐ[R] A ⊗[R] B) b =
   rfl
 #align algebra.tensor_product.include_right_apply Algebra.TensorProduct.includeRight_apply
 
-theorem includeLeft_comp_algebraMap {R S T : Type _} [CommRing R] [CommRing S] [CommRing T]
+theorem includeLeftRingHom_comp_algebraMap {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
     [Algebra R S] [Algebra R T] :
-    (includeLeft.toRingHom.comp (algebraMap R S) : R →+* S ⊗[R] T) =
+    (includeLeftRingHom.comp (algebraMap R S) : R →+* S ⊗[R] T) =
       includeRight.toRingHom.comp (algebraMap R T) := by
   ext
   simp
-#align algebra.tensor_product.include_left_comp_algebra_map Algebra.TensorProduct.includeLeft_comp_algebraMap
+#align algebra.tensor_product.include_left_comp_algebra_map Algebra.TensorProduct.includeLeftRingHom_comp_algebraMapₓ
+
+section ext
+variable [Algebra R S] [Algebra S C] [IsScalarTower R S A] [IsScalarTower R S C]
+
+/-- A version of `TensorProduct.ext` for `AlgHom`.
+
+Using this as the `@[ext]` lemma instead of `Algebra.TensorProduct.ext'` allows `ext` to apply
+lemmas specific to `A →ₐ[S] _` and `B →ₐ[R] _`; notably this allows recursion into nested tensor
+products of algebras.
+
+See note [partially-applied ext lemmas]. -/
+@[ext high]
+theorem ext ⦃f g : (A ⊗[R] B) →ₐ[S] C⦄
+  (ha : f.comp includeLeft = g.comp includeLeft)
+  (hb : (f.restrictScalars R).comp includeRight = (g.restrictScalars R).comp includeRight) :
+    f = g := by
+  apply AlgHom.toLinearMap_injective
+  ext a b
+  have := congr_arg₂ HMul.hMul (AlgHom.congr_fun ha a) (AlgHom.congr_fun hb b)
+  dsimp at *
+  rwa [←f.map_mul, ←g.map_mul, tmul_mul_tmul, _root_.one_mul, _root_.mul_one] at this
+
+theorem ext' {g h : A ⊗[R] B →ₐ[S] C} (H : ∀ a b, g (a ⊗ₜ b) = h (a ⊗ₜ b)) : g = h :=
+  ext (AlgHom.ext <| fun _ => H _ _) (AlgHom.ext <| fun _ => H _ _)
+#align algebra.tensor_product.ext Algebra.TensorProduct.ext
+
+end ext
 
 end Semiring
 
@@ -574,9 +407,21 @@ variable {A : Type v₁} [Ring A] [Algebra R A]
 
 variable {B : Type v₂} [Ring B] [Algebra R B]
 
-instance instRing : Ring (A ⊗[R] B) :=
-  { toSemiring := inferInstance
-    add_left_neg := add_left_neg }
+instance instRing : Ring (A ⊗[R] B) where
+  zsmul := SubNegMonoid.zsmul
+  zsmul_zero' := SubNegMonoid.zsmul_zero'
+  zsmul_succ' := SubNegMonoid.zsmul_succ'
+  zsmul_neg' := SubNegMonoid.zsmul_neg'
+  intCast z := z ⊗ₜ (1 : B)
+  intCast_ofNat n := by simp [natCast_def]
+  intCast_negSucc n := by simp [natCast_def, add_tmul, neg_tmul, one_def]
+  add_left_neg := add_left_neg
+
+theorem intCast_def (z : ℤ) : (z : A ⊗[R] B) = (z : A) ⊗ₜ (1 : B) := rfl
+
+-- verify there are no diamonds
+example : (instRing : Ring (A ⊗[R] B)).toAddCommGroup = addCommGroup := rfl
+example : (algebraInt _ : Algebra ℤ (ℤ ⊗[ℤ] B)) = leftAlgebra := rfl
 
 end Ring
 
@@ -644,24 +489,24 @@ section Monoidal
 
 section
 
-variable {R : Type u} [CommSemiring R]
+variable {R : Type u} {S : Type uS} [CommSemiring R] [CommSemiring S] [Algebra R S]
 
-variable {A : Type v₁} [Semiring A] [Algebra R A]
+variable {A : Type v₁} [Semiring A] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
 
 variable {B : Type v₂} [Semiring B] [Algebra R B]
 
-variable {C : Type v₃} [Semiring C] [Algebra R C]
+variable {C : Type v₃} [Semiring C] [Algebra R C] [Algebra S C]
 
 variable {D : Type v₄} [Semiring D] [Algebra R D]
 
 /-- Build an algebra morphism from a linear map out of a tensor product,
 and evidence of multiplicativity on pure tensors.
 -/
-def algHomOfLinearMapTensorProduct (f : A ⊗[R] B →ₗ[R] C)
+def algHomOfLinearMapTensorProduct (f : A ⊗[R] B →ₗ[S] C)
     (w₁ : ∀ (a₁ a₂ : A) (b₁ b₂ : B), f ((a₁ * a₂) ⊗ₜ (b₁ * b₂)) = f (a₁ ⊗ₜ b₁) * f (a₂ ⊗ₜ b₂))
-    (w₂ : ∀ r, f ((algebraMap R A) r ⊗ₜ[R] 1) = (algebraMap R C) r) : A ⊗[R] B →ₐ[R] C :=
+    (w₂ : ∀ r, f (algebraMap S A r ⊗ₜ[R] 1) = algebraMap S C r) : A ⊗[R] B →ₐ[S] C :=
   { f with
-    map_one' := by rw [← (algebraMap R C).map_one, ← w₂, (algebraMap R A).map_one]; rfl
+    map_one' := by rw [← (algebraMap S C).map_one, ← w₂, (algebraMap S A).map_one]; rfl
     map_zero' := by simp only; rw [LinearMap.toFun_eq_coe, map_zero]
     map_mul' := fun x y => by
       simp only
@@ -682,22 +527,22 @@ def algHomOfLinearMapTensorProduct (f : A ⊗[R] B →ₗ[R] C)
 
 @[simp]
 theorem algHomOfLinearMapTensorProduct_apply (f w₁ w₂ x) :
-    (algHomOfLinearMapTensorProduct f w₁ w₂ : A ⊗[R] B →ₐ[R] C) x = f x :=
+    (algHomOfLinearMapTensorProduct f w₁ w₂ : A ⊗[R] B →ₐ[S] C) x = f x :=
   rfl
 #align algebra.tensor_product.alg_hom_of_linear_map_tensor_product_apply Algebra.TensorProduct.algHomOfLinearMapTensorProduct_apply
 
 /-- Build an algebra equivalence from a linear equivalence out of a tensor product,
 and evidence of multiplicativity on pure tensors.
 -/
-def algEquivOfLinearEquivTensorProduct (f : A ⊗[R] B ≃ₗ[R] C)
+def algEquivOfLinearEquivTensorProduct (f : A ⊗[R] B ≃ₗ[S] C)
     (w₁ : ∀ (a₁ a₂ : A) (b₁ b₂ : B), f ((a₁ * a₂) ⊗ₜ (b₁ * b₂)) = f (a₁ ⊗ₜ b₁) * f (a₂ ⊗ₜ b₂))
-    (w₂ : ∀ r, f ((algebraMap R A) r ⊗ₜ[R] 1) = (algebraMap R C) r) : A ⊗[R] B ≃ₐ[R] C :=
-  { algHomOfLinearMapTensorProduct (f : A ⊗[R] B →ₗ[R] C) w₁ w₂, f with }
+    (w₂ : ∀ r, f ((algebraMap S A) r ⊗ₜ[R] 1) = (algebraMap S C) r) : A ⊗[R] B ≃ₐ[S] C :=
+  { algHomOfLinearMapTensorProduct (f : A ⊗[R] B →ₗ[S] C) w₁ w₂, f with }
 #align algebra.tensor_product.alg_equiv_of_linear_equiv_tensor_product Algebra.TensorProduct.algEquivOfLinearEquivTensorProduct
 
 @[simp]
 theorem algEquivOfLinearEquivTensorProduct_apply (f w₁ w₂ x) :
-    (algEquivOfLinearEquivTensorProduct f w₁ w₂ : A ⊗[R] B ≃ₐ[R] C) x = f x :=
+    (algEquivOfLinearEquivTensorProduct f w₁ w₂ : A ⊗[R] B ≃ₐ[S] C) x = f x :=
   rfl
 #align algebra.tensor_product.alg_equiv_of_linear_equiv_tensor_product_apply Algebra.TensorProduct.algEquivOfLinearEquivTensorProduct_apply
 
@@ -737,11 +582,11 @@ theorem algEquivOfLinearEquivTripleTensorProduct_apply (f w₁ w₂ x) :
 
 end
 
-variable {R : Type u} [CommSemiring R]
+variable {R : Type u} {S : Type uS} [CommSemiring R] [CommSemiring S] [Algebra R S]
 
-variable {A : Type v₁} [Semiring A] [Algebra R A]
+variable {A : Type v₁} [Semiring A] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
 
-variable {B : Type v₂} [Semiring B] [Algebra R B]
+variable {B : Type v₂} [Semiring B] [Algebra R B] [Algebra S B] [IsScalarTower R S B]
 
 variable {C : Type v₃} [Semiring C] [Algebra R C]
 
@@ -766,20 +611,23 @@ theorem lid_tmul (r : R) (a : A) : (TensorProduct.lid R A : R ⊗ A → A) (r �
   simp [TensorProduct.lid]
 #align algebra.tensor_product.lid_tmul Algebra.TensorProduct.lid_tmul
 
+variable (S)
+
 /-- The base ring is a right identity for the tensor product of algebra, up to algebra isomorphism.
+
+Note that if `A` is commutative this can be instantiated with `S = A`.
 -/
-protected nonrec def rid : A ⊗[R] R ≃ₐ[R] A :=
-  algEquivOfLinearEquivTensorProduct (TensorProduct.rid R A) (by
-    simp [mul_smul]
-    simp_rw [← mul_smul, mul_comm]
-    simp)
-    (by simp [Algebra.smul_def])
+protected nonrec def rid : A ⊗[R] R ≃ₐ[S] A :=
+  algEquivOfLinearEquivTensorProduct (AlgebraTensorModule.rid R S A)
+    (fun _a₁ _a₂ _r₁ _r₂ => smul_mul_smul _ _ _ _ |>.symm)
+    (fun _s => one_smul _ _)
 #align algebra.tensor_product.rid Algebra.TensorProduct.rid
 
+variable {R A} in
 @[simp]
-theorem rid_tmul (r : R) (a : A) : (TensorProduct.rid R A : A ⊗ R → A) (a ⊗ₜ r) = r • a := by
-  simp [TensorProduct.rid]
+theorem rid_tmul (r : R) (a : A) : TensorProduct.rid R S A (a ⊗ₜ r) = r • a := rfl
 #align algebra.tensor_product.rid_tmul Algebra.TensorProduct.rid_tmul
+
 
 section
 
@@ -847,29 +695,35 @@ theorem assoc_tmul (a : A) (b : B) (c : C) :
 
 end
 
-variable {R A}
+variable {R S A}
 
 /-- The tensor product of a pair of algebra morphisms. -/
-def map (f : A →ₐ[R] B) (g : C →ₐ[R] D) : A ⊗[R] C →ₐ[R] B ⊗[R] D :=
-  algHomOfLinearMapTensorProduct (_root_.TensorProduct.map f.toLinearMap g.toLinearMap) (by simp)
+def map (f : A →ₐ[S] B) (g : C →ₐ[R] D) : A ⊗[R] C →ₐ[S] B ⊗[R] D :=
+  algHomOfLinearMapTensorProduct (AlgebraTensorModule.map f.toLinearMap g.toLinearMap) (by simp)
     (by simp [AlgHom.commutes])
 #align algebra.tensor_product.map Algebra.TensorProduct.map
 
 @[simp]
-theorem map_tmul (f : A →ₐ[R] B) (g : C →ₐ[R] D) (a : A) (c : C) : map f g (a ⊗ₜ c) = f a ⊗ₜ g c :=
+theorem map_tmul (f : A →ₐ[S] B) (g : C →ₐ[R] D) (a : A) (c : C) : map f g (a ⊗ₜ c) = f a ⊗ₜ g c :=
   rfl
 #align algebra.tensor_product.map_tmul Algebra.TensorProduct.map_tmul
 
 @[simp]
-theorem map_comp_includeLeft (f : A →ₐ[R] B) (g : C →ₐ[R] D) :
+theorem map_comp_includeLeft (f : A →ₐ[S] B) (g : C →ₐ[R] D) :
     (map f g).comp includeLeft = includeLeft.comp f :=
   AlgHom.ext <| by simp
 #align algebra.tensor_product.map_comp_include_left Algebra.TensorProduct.map_comp_includeLeft
 
 @[simp]
+theorem map_restrictScalars_comp_includeRight (f : A →ₐ[S] B) (g : C →ₐ[R] D) :
+    ((map f g).restrictScalars R).comp includeRight = includeRight.comp g :=
+  AlgHom.ext <| by simp
+
+@[simp]
 theorem map_comp_includeRight (f : A →ₐ[R] B) (g : C →ₐ[R] D) :
     (map f g).comp includeRight = includeRight.comp g :=
-  AlgHom.ext <| by simp
+  map_restrictScalars_comp_includeRight f g
+
 #align algebra.tensor_product.map_comp_include_right Algebra.TensorProduct.map_comp_includeRight
 
 theorem map_range (f : A →ₐ[R] B) (g : C →ₐ[R] D) :
@@ -883,22 +737,23 @@ theorem map_range (f : A →ₐ[R] B) (g : C →ₐ[R] D) :
     exact sup_le (AlgHom.range_comp_le_range _ _) (AlgHom.range_comp_le_range _ _)
 #align algebra.tensor_product.map_range Algebra.TensorProduct.map_range
 
-/-- Construct an isomorphism between tensor products of R-algebras
-from isomorphisms between the tensor factors.
+/-- Construct an isomorphism between tensor products of an S-algebra with an R-algebra
+from S- and R- isomorphisms between the tensor factors.
 -/
-def congr (f : A ≃ₐ[R] B) (g : C ≃ₐ[R] D) : A ⊗[R] C ≃ₐ[R] B ⊗[R] D :=
-  AlgEquiv.ofAlgHom (map f g) (map f.symm g.symm) (ext fun b d => by simp) (ext fun a c => by simp)
+def congr (f : A ≃ₐ[S] B) (g : C ≃ₐ[R] D) : A ⊗[R] C ≃ₐ[S] B ⊗[R] D :=
+  AlgEquiv.ofAlgHom (map f g) (map f.symm g.symm)
+    (ext' fun b d => by simp) (ext' fun a c => by simp)
 #align algebra.tensor_product.congr Algebra.TensorProduct.congr
 
 @[simp]
-theorem congr_apply (f : A ≃ₐ[R] B) (g : C ≃ₐ[R] D) (x) :
-    congr f g x = (map (f : A →ₐ[R] B) (g : C →ₐ[R] D)) x :=
+theorem congr_apply (f : A ≃ₐ[S] B) (g : C ≃ₐ[R] D) (x) :
+    congr f g x = (map (f : A →ₐ[S] B) (g : C →ₐ[R] D)) x :=
   rfl
 #align algebra.tensor_product.congr_apply Algebra.TensorProduct.congr_apply
 
 @[simp]
-theorem congr_symm_apply (f : A ≃ₐ[R] B) (g : C ≃ₐ[R] D) (x) :
-    (congr f g).symm x = (map (f.symm : B →ₐ[R] A) (g.symm : D →ₐ[R] C)) x :=
+theorem congr_symm_apply (f : A ≃ₐ[S] B) (g : C ≃ₐ[R] D) (x) :
+    (congr f g).symm x = (map (f.symm : B →ₐ[S] A) (g.symm : D →ₐ[R] C)) x :=
   rfl
 #align algebra.tensor_product.congr_symm_apply Algebra.TensorProduct.congr_symm_apply
 
@@ -908,7 +763,7 @@ end Monoidal
 
 section
 
-variable {R A B S : Type _} [CommSemiring R] [Semiring A] [Semiring B] [CommSemiring S]
+variable {R A B S : Type*} [CommSemiring R] [Semiring A] [Semiring B] [CommSemiring S]
 
 variable [Algebra R A] [Algebra R B] [Algebra R S]
 
@@ -952,12 +807,11 @@ def productMap : A ⊗[R] B →ₐ[R] S :=
 #align algebra.tensor_product.product_map Algebra.TensorProduct.productMap
 
 @[simp]
-theorem productMap_apply_tmul (a : A) (b : B) : productMap f g (a ⊗ₜ b) = f a * g b := by
-  unfold productMap lmul'
-  simp
+theorem productMap_apply_tmul (a : A) (b : B) : productMap f g (a ⊗ₜ b) = f a * g b := rfl
+
 #align algebra.tensor_product.product_map_apply_tmul Algebra.TensorProduct.productMap_apply_tmul
 
-theorem productMap_left_apply (a : A) : productMap f g ((includeLeft : A →ₐ[R] A ⊗ B) a) = f a := by
+theorem productMap_left_apply (a : A) : productMap f g (a ⊗ₜ 1) = f a := by
   simp
 #align algebra.tensor_product.product_map_left_apply Algebra.TensorProduct.productMap_left_apply
 
@@ -967,7 +821,7 @@ theorem productMap_left : (productMap f g).comp includeLeft = f :=
 #align algebra.tensor_product.product_map_left Algebra.TensorProduct.productMap_left
 
 theorem productMap_right_apply (b : B) :
-    productMap f g (includeRight (R := R) (A := A) (B := B) b) = g b := by simp
+    productMap f g (1 ⊗ₜ b) = g b := by simp
 #align algebra.tensor_product.product_map_right_apply Algebra.TensorProduct.productMap_right_apply
 
 @[simp]
@@ -985,7 +839,7 @@ end
 
 section
 
-variable {R A A' B S : Type _}
+variable {R A A' B S : Type*}
 
 variable [CommSemiring R] [CommSemiring A] [Semiring A'] [Semiring B] [CommSemiring S]
 
@@ -1069,33 +923,35 @@ end Algebra
 
 namespace Module
 
-variable {R M N : Type _} [CommSemiring R]
+variable {R S A M N : Type*} [CommSemiring R] [CommSemiring S] [Semiring A]
 
 variable [AddCommMonoid M] [AddCommMonoid N]
 
-variable [Module R M] [Module R N]
+variable [Algebra R S] [Algebra S A] [Algebra R A]
+variable [Module R M] [Module S M] [Module A M] [Module R N]
+variable [IsScalarTower R A M] [IsScalarTower S A M] [IsScalarTower R S M]
 
 /-- The algebra homomorphism from `End M ⊗ End N` to `End (M ⊗ N)` sending `f ⊗ₜ g` to
-the `TensorProduct.map f g`, the tensor product of the two maps. -/
-def endTensorEndAlgHom : End R M ⊗[R] End R N →ₐ[R] End R (M ⊗[R] N) := by
-  refine' Algebra.TensorProduct.algHomOfLinearMapTensorProduct (homTensorHomMap R M N M N) _ _
-  · intro f₁ f₂ g₁ g₂
-    simp only [homTensorHomMap_apply, TensorProduct.map_mul]
-  · intro r
-    simp only [homTensorHomMap_apply]
-    ext m n
-    simp [smul_tmul]
+the `TensorProduct.map f g`, the tensor product of the two maps.
+
+This is an `AlgHom` version of `TensorProduct.AlgebraTensorModule.homTensorHomMap`. Like that
+definition, this is generalized across many different rings; namely a tower of algebras `A/S/R`. -/
+def endTensorEndAlgHom : End A M ⊗[R] End R N →ₐ[S] End A (M ⊗[R] N) :=
+  Algebra.TensorProduct.algHomOfLinearMapTensorProduct
+    (AlgebraTensorModule.homTensorHomMap R A S M N M N)
+    (fun _f₁ _f₂ _g₁ _g₂ => AlgebraTensorModule.ext fun _m _n => rfl)
+    (fun _r => AlgebraTensorModule.ext fun _m _n => rfl)
 #align module.End_tensor_End_alg_hom Module.endTensorEndAlgHom
 
-theorem endTensorEndAlgHom_apply (f : End R M) (g : End R N) :
-    endTensorEndAlgHom (R := R) (M := M) (N := N) (f ⊗ₜ[R] g) = TensorProduct.map f g := by
-  simp only [endTensorEndAlgHom, Algebra.TensorProduct.algHomOfLinearMapTensorProduct_apply,
-    homTensorHomMap_apply]
+theorem endTensorEndAlgHom_apply (f : End A M) (g : End R N) :
+    endTensorEndAlgHom (R := R) (S := S) (A := A) (M := M) (N := N) (f ⊗ₜ[R] g)
+      = AlgebraTensorModule.map f g :=
+  rfl
 #align module.End_tensor_End_alg_hom_apply Module.endTensorEndAlgHom_apply
 
 end Module
 
-theorem Subalgebra.finiteDimensional_sup {K L : Type _} [Field K] [CommRing L] [Algebra K L]
+theorem Subalgebra.finiteDimensional_sup {K L : Type*} [Field K] [CommRing L] [Algebra K L]
     (E1 E2 : Subalgebra K L) [FiniteDimensional K E1] [FiniteDimensional K E2] :
     FiniteDimensional K (E1 ⊔ E2 : Subalgebra K L) := by
   rw [← E1.range_val, ← E2.range_val, ← Algebra.TensorProduct.productMap_range]
@@ -1104,7 +960,7 @@ theorem Subalgebra.finiteDimensional_sup {K L : Type _} [Field K] [CommRing L] [
 
 namespace TensorProduct.Algebra
 
-variable {R A B M : Type _}
+variable {R A B M : Type*}
 
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
@@ -1118,7 +974,7 @@ variable [IsScalarTower R A M] [IsScalarTower R B M]
 `TensorProduct.Algebra.module` below. -/
 def moduleAux : A ⊗[R] B →ₗ[R] M →ₗ[R] M :=
   TensorProduct.lift
-    { toFun := fun a => a • (Algebra.lsmul R M : B →ₐ[R] Module.End R M).toLinearMap
+    { toFun := fun a => a • (Algebra.lsmul R R M : B →ₐ[R] Module.End R M).toLinearMap
       map_add' := fun r t => by
         ext
         simp only [add_smul, LinearMap.add_apply]

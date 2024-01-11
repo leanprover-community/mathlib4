@@ -118,14 +118,14 @@ theorem moveRight_nim {o : Ordinal} (i) : (nim o).moveRight (toRightMovesNim i) 
 
 /-- A recursion principle for left moves of a nim game. -/
 @[elab_as_elim]
-def leftMovesNimRecOn {o : Ordinal} {P : (nim o).LeftMoves → Sort _} (i : (nim o).LeftMoves)
+def leftMovesNimRecOn {o : Ordinal} {P : (nim o).LeftMoves → Sort*} (i : (nim o).LeftMoves)
     (H : ∀ a (H : a < o), P <| toLeftMovesNim ⟨a, H⟩) : P i := by
   rw [← toLeftMovesNim.apply_symm_apply i]; apply H
 #align pgame.left_moves_nim_rec_on PGame.leftMovesNimRecOn
 
 /-- A recursion principle for right moves of a nim game. -/
 @[elab_as_elim]
-def rightMovesNimRecOn {o : Ordinal} {P : (nim o).RightMoves → Sort _} (i : (nim o).RightMoves)
+def rightMovesNimRecOn {o : Ordinal} {P : (nim o).RightMoves → Sort*} (i : (nim o).RightMoves)
     (H : ∀ a (H : a < o), P <| toRightMovesNim ⟨a, H⟩) : P i := by
   rw [← toRightMovesNim.apply_symm_apply i]; apply H
 #align pgame.right_moves_nim_rec_on PGame.rightMovesNimRecOn

@@ -307,7 +307,7 @@ theorem nat_lt_one_iff (m : ℕ) : padicNorm p m < 1 ↔ p ∣ m := by
 
 open BigOperators
 
-theorem sum_lt {α : Type _} {F : α → ℚ} {t : ℚ} {s : Finset α} :
+theorem sum_lt {α : Type*} {F : α → ℚ} {t : ℚ} {s : Finset α} :
     s.Nonempty → (∀ i ∈ s, padicNorm p (F i) < t) → padicNorm p (∑ i in s, F i) < t := by
   classical
     refine' s.induction_on (by rintro ⟨-, ⟨⟩⟩) _
@@ -321,7 +321,7 @@ theorem sum_lt {α : Type _} {F : α → ℚ} {t : ℚ} {s : Finset α} :
     · simp_all
 #align padic_norm.sum_lt padicNorm.sum_lt
 
-theorem sum_le {α : Type _} {F : α → ℚ} {t : ℚ} {s : Finset α} :
+theorem sum_le {α : Type*} {F : α → ℚ} {t : ℚ} {s : Finset α} :
     s.Nonempty → (∀ i ∈ s, padicNorm p (F i) ≤ t) → padicNorm p (∑ i in s, F i) ≤ t := by
   classical
     refine' s.induction_on (by rintro ⟨-, ⟨⟩⟩) _
@@ -335,14 +335,14 @@ theorem sum_le {α : Type _} {F : α → ℚ} {t : ℚ} {s : Finset α} :
     · simp_all
 #align padic_norm.sum_le padicNorm.sum_le
 
-theorem sum_lt' {α : Type _} {F : α → ℚ} {t : ℚ} {s : Finset α}
+theorem sum_lt' {α : Type*} {F : α → ℚ} {t : ℚ} {s : Finset α}
     (hF : ∀ i ∈ s, padicNorm p (F i) < t) (ht : 0 < t) : padicNorm p (∑ i in s, F i) < t := by
   obtain rfl | hs := Finset.eq_empty_or_nonempty s
   · simp [ht]
   · exact sum_lt hs hF
 #align padic_norm.sum_lt' padicNorm.sum_lt'
 
-theorem sum_le' {α : Type _} {F : α → ℚ} {t : ℚ} {s : Finset α}
+theorem sum_le' {α : Type*} {F : α → ℚ} {t : ℚ} {s : Finset α}
     (hF : ∀ i ∈ s, padicNorm p (F i) ≤ t) (ht : 0 ≤ t) : padicNorm p (∑ i in s, F i) ≤ t := by
   obtain rfl | hs := Finset.eq_empty_or_nonempty s
   · simp [ht]

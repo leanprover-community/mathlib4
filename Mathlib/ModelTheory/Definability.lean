@@ -38,7 +38,7 @@ variable {M : Type w} (A : Set M) (L : FirstOrder.Language.{u, v}) [L.Structure 
 
 open FirstOrder FirstOrder.Language FirstOrder.Language.Structure
 
-variable {α : Type u₁} {β : Type _}
+variable {α : Type u₁} {β : Type*}
 
 /-- A subset of a finite Cartesian product of a structure is definable over a set `A` when
   membership in the set is given by a first-order formula with parameters from `A`. -/
@@ -106,7 +106,7 @@ theorem Definable.union {f g : Set (α → M)} (hf : A.Definable L f) (hg : A.De
   rw [hφ, hθ, mem_setOf_eq, Formula.realize_sup, mem_union, mem_setOf_eq, mem_setOf_eq]
 #align set.definable.union Set.Definable.union
 
-theorem definable_finset_inf {ι : Type _} {f : ∀ _ : ι, Set (α → M)} (hf : ∀ i, A.Definable L (f i))
+theorem definable_finset_inf {ι : Type*} {f : ∀ _ : ι, Set (α → M)} (hf : ∀ i, A.Definable L (f i))
     (s : Finset ι) : A.Definable L (s.inf f) := by
   classical
     refine' Finset.induction definable_univ (fun i s _ h => _) s
@@ -114,7 +114,7 @@ theorem definable_finset_inf {ι : Type _} {f : ∀ _ : ι, Set (α → M)} (hf 
     exact (hf i).inter h
 #align set.definable_finset_inf Set.definable_finset_inf
 
-theorem definable_finset_sup {ι : Type _} {f : ∀ _ : ι, Set (α → M)} (hf : ∀ i, A.Definable L (f i))
+theorem definable_finset_sup {ι : Type*} {f : ∀ _ : ι, Set (α → M)} (hf : ∀ i, A.Definable L (f i))
     (s : Finset ι) : A.Definable L (s.sup f) := by
   classical
     refine' Finset.induction definable_empty (fun i s _ h => _) s
@@ -122,13 +122,13 @@ theorem definable_finset_sup {ι : Type _} {f : ∀ _ : ι, Set (α → M)} (hf 
     exact (hf i).union h
 #align set.definable_finset_sup Set.definable_finset_sup
 
-theorem definable_finset_biInter {ι : Type _} {f : ∀ _ : ι, Set (α → M)}
+theorem definable_finset_biInter {ι : Type*} {f : ∀ _ : ι, Set (α → M)}
     (hf : ∀ i, A.Definable L (f i)) (s : Finset ι) : A.Definable L (⋂ i ∈ s, f i) := by
   rw [← Finset.inf_set_eq_iInter]
   exact definable_finset_inf hf s
 #align set.definable_finset_bInter Set.definable_finset_biInter
 
-theorem definable_finset_biUnion {ι : Type _} {f : ∀ _ : ι, Set (α → M)}
+theorem definable_finset_biUnion {ι : Type*} {f : ∀ _ : ι, Set (α → M)}
     (hf : ∀ i, A.Definable L (f i)) (s : Finset ι) : A.Definable L (⋃ i ∈ s, f i) := by
   rw [← Finset.sup_set_eq_biUnion]
   exact definable_finset_sup hf s

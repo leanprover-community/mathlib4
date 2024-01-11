@@ -44,7 +44,8 @@ scalar action of `R` on `M`.
 Note that only `R` is marked as an `outParam` here, since `M` is supplied by the `SetLike`
 class instead.
 -/
-class SMulMemClass (S : Type _) (R : outParam <| Type _) (M : Type _) [SMul R M] [SetLike S M] where
+class SMulMemClass (S : Type*) (R : outParam <| Type*) (M : Type*) [SMul R M] [SetLike S M] :
+    Prop where
   /-- Multiplication by a scalar on an element of the set remains in the set. -/
   smul_mem : ∀ {s : S} (r : R) {m : M}, m ∈ s → r • m ∈ s
 #align smul_mem_class SMulMemClass
@@ -54,12 +55,23 @@ additive action of `R` on `M`.
 
 Note that only `R` is marked as an `outParam` here, since `M` is supplied by the `SetLike`
 class instead. -/
-class VAddMemClass (S : Type _) (R : outParam <| Type _) (M : Type _) [VAdd R M] [SetLike S M] where
+class VAddMemClass (S : Type*) (R : outParam <| Type*) (M : Type*) [VAdd R M] [SetLike S M] :
+    Prop where
   /-- Addition by a scalar with an element of the set remains in the set. -/
   vadd_mem : ∀ {s : S} (r : R) {m : M}, m ∈ s → r +ᵥ m ∈ s
 #align vadd_mem_class VAddMemClass
 
 attribute [to_additive] SMulMemClass
+
+/-- Not registered as an instance because `R` is an `outParam` in `SMulMemClass S R M`. -/
+lemma AddSubmonoidClass.nsmulMemClass {S M : Type*} [AddMonoid M] [SetLike S M]
+    [AddSubmonoidClass S M] : SMulMemClass S ℕ M where
+  smul_mem n _x hx := nsmul_mem hx n
+
+/-- Not registered as an instance because `R` is an `outParam` in `SMulMemClass S R M`. -/
+lemma AddSubgroupClass.zsmulMemClass {S M : Type*} [SubNegMonoid M] [SetLike S M]
+    [AddSubgroupClass S M] : SMulMemClass S ℤ M where
+  smul_mem n _x hx := zsmul_mem hx n
 
 namespace SetLike
 
@@ -77,10 +89,18 @@ instance (priority := 900) smul : SMul R s :=
 
 /-- This can't be an instance because Lean wouldn't know how to find `N`, but we can still use
 this to manually derive `SMulMemClass` on specific types. -/
-def _root_.SMulMemClass.ofIsScalarTower (S M N α : Type _) [SetLike S α] [SMul M N]
+theorem _root_.SMulMemClass.ofIsScalarTower (S M N α : Type*) [SetLike S α] [SMul M N]
   [SMul M α] [Monoid N] [MulAction N α] [SMulMemClass S N α] [IsScalarTower M N α] :
   SMulMemClass S M α :=
 { smul_mem := fun m a ha => smul_one_smul N m a ▸ SMulMemClass.smul_mem _ ha }
+
+instance instIsScalarTower [Mul M] [MulMemClass S M] [IsScalarTower R M M]
+    (s : S) : IsScalarTower R s s where
+  smul_assoc r x y := Subtype.ext <| smul_assoc r (x : M) (y : M)
+
+instance instSMulCommClass [Mul M] [MulMemClass S M] [SMulCommClass R M M]
+    (s : S) : SMulCommClass R s s where
+  smul_comm r x y := Subtype.ext <| smul_comm r (x : M) (y : M)
 
 -- Porting note: TODO lower priority not actually there
 -- lower priority so later simp lemmas are used first; to appease simp_nf
@@ -105,7 +125,7 @@ theorem smul_def (r : R) (x : s) : r • x = ⟨r • x, smul_mem r x.2⟩ :=
 #align set_like.vadd_def SetLike.vadd_def
 
 @[simp]
-theorem forall_smul_mem_iff {R M S : Type _} [Monoid R] [MulAction R M] [SetLike S M]
+theorem forall_smul_mem_iff {R M S : Type*} [Monoid R] [MulAction R M] [SetLike S M]
     [SMulMemClass S R M] {N : S} {x : M} : (∀ a : R, a • x ∈ N) ↔ x ∈ N :=
   ⟨fun h => by simpa using h 1, fun h a => SMulMemClass.smul_mem a h⟩
 #align set_like.forall_smul_mem_iff SetLike.forall_smul_mem_iff
@@ -211,7 +231,7 @@ end SMul
 
 namespace SMulMemClass
 
-variable [Monoid R] [MulAction R M] {A : Type _} [SetLike A M]
+variable [Monoid R] [MulAction R M] {A : Type*} [SetLike A M]
 
 variable [hA : SMulMemClass A R M] (S' : A)
 
@@ -255,7 +275,7 @@ instance isScalarTower : IsScalarTower S R p where
   smul_assoc s r x := Subtype.ext <| smul_assoc s r (x : M)
 #align sub_mul_action.is_scalar_tower SubMulAction.isScalarTower
 
-instance isScalarTower' {S' : Type _} [SMul S' R] [SMul S' S] [SMul S' M] [IsScalarTower S' R M]
+instance isScalarTower' {S' : Type*} [SMul S' R] [SMul S' S] [SMul S' M] [IsScalarTower S' R M]
     [IsScalarTower S' S M] : IsScalarTower S' S p
     where smul_assoc s r x := Subtype.ext <| smul_assoc s r (x : M)
 #align sub_mul_action.is_scalar_tower' SubMulAction.isScalarTower'

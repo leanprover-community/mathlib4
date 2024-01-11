@@ -27,19 +27,19 @@ def Locale :=
 
 namespace Locale
 
-instance : CoeSort Locale (Type _) :=
+instance : CoeSort Locale (Type*) :=
   ⟨fun X => X.unop⟩
 
 instance (X : Locale) : Frame X :=
   X.unop.str
 
 /-- Construct a bundled `Locale` from a `Frame`. -/
-def of (α : Type _) [Frame α] : Locale :=
+def of (α : Type*) [Frame α] : Locale :=
   op <| FrmCat.of α
 #align Locale.of Locale.of
 
 @[simp]
-theorem coe_of (α : Type _) [Frame α] : ↥(of α) = α :=
+theorem coe_of (α : Type*) [Frame α] : ↥(of α) = α :=
   rfl
 #align Locale.coe_of Locale.coe_of
 

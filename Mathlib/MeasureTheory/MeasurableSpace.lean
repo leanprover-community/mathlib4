@@ -67,7 +67,7 @@ open Set Encodable Function Equiv Filter MeasureTheory
 
 universe uι
 
-variable {α β γ δ δ' : Type _} {ι : Sort uι} {s t u : Set α}
+variable {α β γ δ δ' : Type*} {ι : Sort uι} {s t u : Set α}
 
 namespace MeasurableSpace
 
@@ -271,7 +271,7 @@ for functions between empty types. -/
 theorem measurable_const' {f : β → α} (hf : ∀ x y, f x = f y) : Measurable f := by
   nontriviality β
   inhabit β
-  convert @measurable_const α β ‹_› ‹_› (f default) using 2
+  convert @measurable_const α β _ _ (f default) using 2
   apply hf
 #align measurable_const' measurable_const'
 
@@ -827,7 +827,7 @@ end Prod
 
 section Pi
 
-variable {π : δ → Type _} [MeasurableSpace α]
+variable {π : δ → Type*} [MeasurableSpace α]
 
 instance MeasurableSpace.pi [m : ∀ a, MeasurableSpace (π a)] : MeasurableSpace (∀ a, π a) :=
   ⨆ a, (m a).comap fun b => b a
@@ -930,7 +930,7 @@ theorem measurable_piEquivPiSubtypeProd (p : δ → Prop) [DecidablePred p] :
 
 end Pi
 
-instance TProd.instMeasurableSpace (π : δ → Type _) [∀ x, MeasurableSpace (π x)] :
+instance TProd.instMeasurableSpace (π : δ → Type*) [∀ x, MeasurableSpace (π x)] :
     ∀ l : List δ, MeasurableSpace (List.TProd π l)
   | [] => PUnit.instMeasurableSpace
   | _::is => @Prod.instMeasurableSpace _ _ _ (TProd.instMeasurableSpace π is)
@@ -940,7 +940,7 @@ section TProd
 
 open List
 
-variable {π : δ → Type _} [∀ x, MeasurableSpace (π x)]
+variable {π : δ → Type*} [∀ x, MeasurableSpace (π x)]
 
 theorem measurable_tProd_mk (l : List δ) : Measurable (@TProd.mk δ π l) := by
   induction' l with i l ih
@@ -1044,7 +1044,7 @@ theorem measurableSet_range_inr [MeasurableSpace α] :
 
 end Sum
 
-instance Sigma.instMeasurableSpace {α} {β : α → Type _} [m : ∀ a, MeasurableSpace (β a)] :
+instance Sigma.instMeasurableSpace {α} {β : α → Type*} [m : ∀ a, MeasurableSpace (β a)] :
     MeasurableSpace (Sigma β) :=
   ⨅ a, (m a).map (Sigma.mk a)
 #align sigma.measurable_space Sigma.instMeasurableSpace
@@ -1062,7 +1062,7 @@ range and the range is a measurable set. One implication is formalized as
 `MeasurableEmbedding.equivRange`; the other one follows from
 `MeasurableEquiv.measurableEmbedding`, `MeasurableEmbedding.subtype_coe`, and
 `MeasurableEmbedding.comp`. -/
-structure MeasurableEmbedding {α β : Type _} [MeasurableSpace α] [MeasurableSpace β]
+structure MeasurableEmbedding {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
     (f : α → β) : Prop where
   /-- A measurable embedding is injective. -/
   protected injective : Injective f
@@ -1150,7 +1150,7 @@ theorem MeasurableSet.exists_measurable_proj {_ : MeasurableSpace α} {s : Set �
 
 /-- Equivalences between measurable spaces. Main application is the simplification of measurability
 statements along measurable equivalences. -/
-structure MeasurableEquiv (α β : Type _) [MeasurableSpace α] [MeasurableSpace β] extends α ≃ β where
+structure MeasurableEquiv (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] extends α ≃ β where
   /-- The forward function of a measurable equivalence is measurable. -/
   measurable_toFun : Measurable toEquiv
   /-- The inverse function of a measurable equivalence is measurable. -/
@@ -1193,7 +1193,7 @@ theorem coe_mk (e : α ≃ β) (h1 : Measurable e) (h2 : Measurable e.symm) :
 #align measurable_equiv.coe_mk MeasurableEquiv.coe_mk
 
 /-- Any measurable space is equivalent to itself. -/
-def refl (α : Type _) [MeasurableSpace α] : α ≃ᵐ α where
+def refl (α : Type*) [MeasurableSpace α] : α ≃ᵐ α where
   toEquiv := Equiv.refl α
   measurable_toFun := measurable_id
   measurable_invFun := measurable_id
@@ -1243,7 +1243,7 @@ theorem symm_mk (e : α ≃ β) (h1 : Measurable e) (h2 : Measurable e.symm) :
 attribute [simps! apply toEquiv] trans refl
 
 @[simp]
-theorem symm_refl (α : Type _) [MeasurableSpace α] : (refl α).symm = refl α :=
+theorem symm_refl (α : Type*) [MeasurableSpace α] : (refl α).symm = refl α :=
   rfl
 #align measurable_equiv.symm_refl MeasurableEquiv.symm_refl
 
@@ -1341,7 +1341,7 @@ protected theorem measurable_comp_iff {f : β → γ} (e : α ≃ᵐ β) :
 #align measurable_equiv.measurable_comp_iff MeasurableEquiv.measurable_comp_iff
 
 /-- Any two types with unique elements are measurably equivalent. -/
-def ofUniqueOfUnique (α β : Type _) [MeasurableSpace α] [MeasurableSpace β] [Unique α] [Unique β] :
+def ofUniqueOfUnique (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] [Unique α] [Unique β] :
     α ≃ᵐ β where
   toEquiv := equivOfUnique α β
   measurable_toFun := Subsingleton.measurable
@@ -1390,7 +1390,7 @@ def Set.prod (s : Set α) (t : Set β) : ↥(s ×ˢ t) ≃ᵐ s × t where
 #align measurable_equiv.set.prod MeasurableEquiv.Set.prod
 
 /-- `univ α ≃ α` as measurable spaces. -/
-def Set.univ (α : Type _) [MeasurableSpace α] : (univ : Set α) ≃ᵐ α where
+def Set.univ (α : Type*) [MeasurableSpace α] : (univ : Set α) ≃ᵐ α where
   toEquiv := Equiv.Set.univ α
   measurable_toFun := measurable_id.subtype_val
   measurable_invFun := measurable_id.subtype_mk
@@ -1456,7 +1456,7 @@ def sumProdSum (α β γ δ) [MeasurableSpace α] [MeasurableSpace β] [Measurab
   (sumProdDistrib _ _ _).trans <| sumCongr (prodSumDistrib _ _ _) (prodSumDistrib _ _ _)
 #align measurable_equiv.sum_prod_sum MeasurableEquiv.sumProdSum
 
-variable {π π' : δ' → Type _} [∀ x, MeasurableSpace (π x)] [∀ x, MeasurableSpace (π' x)]
+variable {π π' : δ' → Type*} [∀ x, MeasurableSpace (π x)] [∀ x, MeasurableSpace (π' x)]
 
 /-- A family of measurable equivalences `Π a, β₁ a ≃ᵐ β₂ a` generates a measurable equivalence
   between `Π a, β₁ a` and `Π a, β₂ a`. -/
@@ -1479,7 +1479,7 @@ def piMeasurableEquivTProd [DecidableEq δ'] {l : List δ'} (hnd : l.Nodup) (h :
 
 /-- If `α` has a unique term, then the type of function `α → β` is measurably equivalent to `β`. -/
 @[simps! (config := { fullyApplied := false })]
-def funUnique (α β : Type _) [Unique α] [MeasurableSpace β] : (α → β) ≃ᵐ β where
+def funUnique (α β : Type*) [Unique α] [MeasurableSpace β] : (α → β) ≃ᵐ β where
   toEquiv := Equiv.funUnique α β
   measurable_toFun := measurable_pi_apply _
   measurable_invFun := measurable_pi_iff.2 fun _ => measurable_id
@@ -1487,7 +1487,7 @@ def funUnique (α β : Type _) [Unique α] [MeasurableSpace β] : (α → β) �
 
 /-- The space `Π i : Fin 2, α i` is measurably equivalent to `α 0 × α 1`. -/
 @[simps! (config := { fullyApplied := false })]
-def piFinTwo (α : Fin 2 → Type _) [∀ i, MeasurableSpace (α i)] : (∀ i, α i) ≃ᵐ α 0 × α 1 where
+def piFinTwo (α : Fin 2 → Type*) [∀ i, MeasurableSpace (α i)] : (∀ i, α i) ≃ᵐ α 0 × α 1 where
   toEquiv := piFinTwoEquiv α
   measurable_toFun := Measurable.prod (measurable_pi_apply _) (measurable_pi_apply _)
   measurable_invFun := measurable_pi_iff.2 <| Fin.forall_fin_two.2 ⟨measurable_fst, measurable_snd⟩
@@ -1502,7 +1502,7 @@ def finTwoArrow : (Fin 2 → α) ≃ᵐ α × α :=
 /-- Measurable equivalence between `Π j : Fin (n + 1), α j` and
 `α i × Π j : Fin n, α (Fin.succAbove i j)`. -/
 @[simps! (config := { fullyApplied := false })]
-def piFinSuccAboveEquiv {n : ℕ} (α : Fin (n + 1) → Type _) [∀ i, MeasurableSpace (α i)]
+def piFinSuccAboveEquiv {n : ℕ} (α : Fin (n + 1) → Type*) [∀ i, MeasurableSpace (α i)]
     (i : Fin (n + 1)) : (∀ j, α j) ≃ᵐ α i × ∀ j, α (i.succAbove j) where
   toEquiv := .piFinSuccAboveEquiv α i
   measurable_toFun := (measurable_pi_apply i).prod_mk <| measurable_pi_iff.2 fun j =>

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Util.Pickle
-import Mathlib.Data.ListM.Heartbeats
+import Mathlib.Data.MLList.Heartbeats
 import Mathlib.Lean.Meta.DiscrTree
 import Mathlib.Tactic.Cache
 import Mathlib.Tactic.SolveByElim
@@ -134,7 +134,7 @@ This core function returns a monadic list, to allow the caller to decide how lon
 See also `rewrites` for a more convenient interface.
 -/
 def rewritesCore (lemmas : DiscrTree (Name × Bool × Nat) s × DiscrTree (Name × Bool × Nat) s)
-    (goal : MVarId) (target : Expr) : ListM MetaM RewriteResult := ListM.squash do
+    (goal : MVarId) (target : Expr) : MLList MetaM RewriteResult := MLList.squash fun _ => do
 
   -- Get all lemmas which could match some subexpression
   let candidates := (← lemmas.1.getSubexpressionMatches target)
@@ -148,7 +148,7 @@ def rewritesCore (lemmas : DiscrTree (Name × Bool × Nat) s × DiscrTree (Name 
   trace[Tactic.rewrites.lemmas] m!"Candidate rewrite lemmas:\n{candidates}"
 
   -- Lift to a monadic list, so the caller can decide how much of the computation to run.
-  let candidates := ListM.ofList candidates.toList
+  let candidates := MLList.ofList candidates.toList
   pure <| candidates.filterMapM fun ⟨lem, symm, weight⟩ => do
     trace[Tactic.rewrites] "considering {if symm then "←" else ""}{lem}"
     let some result ← try? do goal.rewrite target (← mkConstWithFreshMVarLevels lem) symm
@@ -209,7 +209,7 @@ elab_rules : tactic |
         throwError "Could not find any lemmas which can rewrite the hypothesis {
           ← f.getUserName}"
       for r in results do
-        addRewriteSuggestion tk (← mkConstWithFreshMVarLevels r.name) r.symm
+        addRewriteSuggestion tk [(← mkConstWithFreshMVarLevels r.name, r.symm)]
           r.result.eNew (loc? := .some (.fvar f)) (origSpan? := ← getRef)
       if lucky.isSome then
         match results[0]? with
@@ -226,7 +226,7 @@ elab_rules : tactic |
         throwError "Could not find any lemmas which can rewrite the goal"
       for r in results do
         let newGoal := if r.rfl? = some true then Expr.lit (.strVal "no goals") else r.result.eNew
-        addRewriteSuggestion tk (← mkConstWithFreshMVarLevels r.name) r.symm
+        addRewriteSuggestion tk [(← mkConstWithFreshMVarLevels r.name, r.symm)]
           newGoal (origSpan? := ← getRef)
       if lucky.isSome then
         match results[0]? with
@@ -238,4 +238,6 @@ elab_rules : tactic |
     (λ _ => throwError "Failed to find a rewrite for some location")
 
 @[inherit_doc rewrites'] macro "rw?!" h:(ppSpace location)? : tactic =>
+  `(tactic| rw? ! $[$h]?)
+@[inherit_doc rewrites'] macro "rw!?" h:(ppSpace location)? : tactic =>
   `(tactic| rw? ! $[$h]?)

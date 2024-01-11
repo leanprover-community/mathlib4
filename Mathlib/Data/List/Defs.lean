@@ -33,11 +33,12 @@ open Function Nat
 
 universe u v w x
 
-variable {α β γ δ ε ζ : Type _}
+variable {α β γ δ ε ζ : Type*}
 
 instance [DecidableEq α] : SDiff (List α) :=
   ⟨List.diff⟩
 
+#align list.replicate List.replicate
 #align list.split_at List.splitAt
 #align list.split_on_p List.splitOnP
 #align list.split_on List.splitOn
@@ -89,14 +90,14 @@ def sum [Add α] [Zero α] : List α → α :=
 #align list.sum List.sum
 
 /-- The alternating sum of a list. -/
-def alternatingSum {G : Type _} [Zero G] [Add G] [Neg G] : List G → G
+def alternatingSum {G : Type*} [Zero G] [Add G] [Neg G] : List G → G
   | [] => 0
   | g :: [] => g
   | g :: h :: t => g + -h + alternatingSum t
 #align list.alternating_sum List.alternatingSum
 
 /-- The alternating product of a list. -/
-def alternatingProd {G : Type _} [One G] [Mul G] [Inv G] : List G → G
+def alternatingProd {G : Type*} [One G] [Mul G] [Inv G] : List G → G
   | [] => 1
   | g :: [] => g
   | g :: h :: t => g * h⁻¹ * alternatingProd t
@@ -586,6 +587,5 @@ def replaceIf : List α → List Bool → List α → List α
 #align list.map_with_prefix_suffix_aux List.mapWithPrefixSuffixAux
 #align list.map_with_prefix_suffix List.mapWithPrefixSuffix
 #align list.map_with_complement List.mapWithComplement
-
 
 end List

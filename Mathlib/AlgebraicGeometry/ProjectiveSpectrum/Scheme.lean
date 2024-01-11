@@ -83,7 +83,7 @@ open DirectSum SetLike.GradedMonoid Localization
 
 open Finset hiding mk_zero
 
-variable {R A : Type _}
+variable {R A : Type*}
 
 variable [CommRing R] [CommRing A] [Algebra R A]
 
@@ -412,21 +412,23 @@ theorem carrier.add_mem (q : Spec.T A⁰_ f) {a b : A} (ha : a ∈ carrier f_deg
   let g : ℕ → A⁰_ f := fun j => (m + m).choose j •
       if h2 : m + m < j then (0 : A⁰_ f)
       else
+        -- Porting note: inlining `l`, `r` causes a "can't synth HMul A⁰_ f A⁰_ f ?" error
         if h1 : j ≤ m then
-          -- Porting note : cannot use * notation since can't synth HMul A⁰_ f A⁰_ f ?
-          Mul.mul (Quotient.mk''
-              ⟨m * i, ⟨proj 𝒜 i a ^ j * proj 𝒜 i b ^ (m - j), ?_⟩,
-                ⟨_, by rw [mul_comm]; mem_tac⟩, ⟨i, rfl⟩⟩ : A⁰_ f)
-            (Quotient.mk''
-              ⟨m * i, ⟨proj 𝒜 i b ^ m, by mem_tac⟩,
-                ⟨_, by rw [mul_comm]; mem_tac⟩, ⟨i, rfl⟩⟩ : A⁰_ f)
+          letI l : A⁰_ f := Quotient.mk''
+            ⟨m * i, ⟨proj 𝒜 i a ^ j * proj 𝒜 i b ^ (m - j), ?_⟩,
+              ⟨_, by rw [mul_comm]; mem_tac⟩, ⟨i, rfl⟩⟩
+          letI r : A⁰_ f := Quotient.mk''
+            ⟨m * i, ⟨proj 𝒜 i b ^ m, by mem_tac⟩,
+              ⟨_, by rw [mul_comm]; mem_tac⟩, ⟨i, rfl⟩⟩
+          l * r
         else
-          Mul.mul (Quotient.mk''
-              ⟨m * i, ⟨proj 𝒜 i a ^ m, by mem_tac⟩,
-                ⟨_, by rw [mul_comm]; mem_tac⟩, ⟨i, rfl⟩⟩ : A⁰_ f)
-            (Quotient.mk''
-              ⟨m * i, ⟨proj 𝒜 i a ^ (j - m) * proj 𝒜 i b ^ (m + m - j), ?_⟩,
-                ⟨_, by rw [mul_comm]; mem_tac⟩, ⟨i, rfl⟩⟩ : A⁰_ f)
+          letI l : A⁰_ f := Quotient.mk''
+            ⟨m * i, ⟨proj 𝒜 i a ^ m, by mem_tac⟩,
+              ⟨_, by rw [mul_comm]; mem_tac⟩, ⟨i, rfl⟩⟩
+          letI r : A⁰_ f := Quotient.mk''
+            ⟨m * i, ⟨proj 𝒜 i a ^ (j - m) * proj 𝒜 i b ^ (m + m - j), ?_⟩,
+              ⟨_, by rw [mul_comm]; mem_tac⟩, ⟨i, rfl⟩⟩
+          l * r
   rotate_left
   · rw [(_ : m * i = _)]
     -- Porting note: it seems unification with mul_mem is more fiddly reducing value of mem_tac

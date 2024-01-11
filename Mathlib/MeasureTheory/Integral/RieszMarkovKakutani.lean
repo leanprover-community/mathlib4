@@ -31,7 +31,7 @@ open BoundedContinuousFunction NNReal ENNReal
 
 open Set Function TopologicalSpace
 
-variable {X : Type _} [TopologicalSpace X]
+variable {X : Type*} [TopologicalSpace X]
 
 variable (Λ : (X →ᵇ ℝ≥0) →ₗ[ℝ≥0] ℝ≥0)
 
@@ -49,19 +49,19 @@ section RieszMonotone
 
 /-- For any compact subset `K ⊆ X`, there exist some bounded continuous nonnegative
 functions f on X such that `f ≥ 1` on K. -/
-theorem riesz_content_aux_image_nonempty (K : Compacts X) :
+theorem rieszContentAux_image_nonempty (K : Compacts X) :
     (Λ '' { f : X →ᵇ ℝ≥0 | ∀ x ∈ K, (1 : ℝ≥0) ≤ f x }).Nonempty := by
   rw [nonempty_image_iff]
   use (1 : X →ᵇ ℝ≥0)
   intro x _
   simp only [BoundedContinuousFunction.coe_one, Pi.one_apply]; rfl
-#align riesz_content_aux_image_nonempty riesz_content_aux_image_nonempty
+#align riesz_content_aux_image_nonempty rieszContentAux_image_nonempty
 
 /-- Riesz content λ (associated with a positive linear functional Λ) is
 monotone: if `K₁ ⊆ K₂` are compact subsets in X, then `λ(K₁) ≤ λ(K₂)`. -/
 theorem rieszContentAux_mono {K₁ K₂ : Compacts X} (h : K₁ ≤ K₂) :
     rieszContentAux Λ K₁ ≤ rieszContentAux Λ K₂ :=
-  csInf_le_csInf (OrderBot.bddBelow _) (riesz_content_aux_image_nonempty Λ K₂)
+  csInf_le_csInf (OrderBot.bddBelow _) (rieszContentAux_image_nonempty Λ K₂)
     (image_subset Λ (setOf_subset_setOf.mpr fun _ f_hyp x x_in_K₁ => f_hyp x (h x_in_K₁)))
 #align riesz_content_aux_mono rieszContentAux_mono
 
@@ -83,7 +83,7 @@ theorem exists_lt_rieszContentAux_add_pos (K : Compacts X) {ε : ℝ≥0} (εpos
     ∃ f : X →ᵇ ℝ≥0, (∀ x ∈ K, (1 : ℝ≥0) ≤ f x) ∧ Λ f < rieszContentAux Λ K + ε := by
   --choose a test function `f` s.t. `Λf = α < λ(K) + ε`
   obtain ⟨α, ⟨⟨f, f_hyp⟩, α_hyp⟩⟩ :=
-    exists_lt_of_csInf_lt (riesz_content_aux_image_nonempty Λ K)
+    exists_lt_of_csInf_lt (rieszContentAux_image_nonempty Λ K)
       (lt_add_of_pos_right (rieszContentAux Λ K) εpos)
   refine' ⟨f, f_hyp.left, _⟩
   rw [f_hyp.right]

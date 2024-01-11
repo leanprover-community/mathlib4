@@ -31,7 +31,7 @@ nontrivial permutation that is noncyclic.
 
 namespace List
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 section FormPerm
 
@@ -302,7 +302,7 @@ theorem formPerm_reverse (l : List α) (h : Nodup l) : formPerm l.reverse = (for
   -- We only have to check for `x ∈ l` that `formPerm l (formPerm l.reverse x)`
   rw [mul_apply, one_apply]
   cases' Classical.em (x ∈ l) with hx hx
-  · obtain ⟨k, hk, rfl⟩ := nthLe_of_mem ((mem_reverse _ _).mpr hx)
+  · obtain ⟨k, hk, rfl⟩ := nthLe_of_mem (mem_reverse.mpr hx)
     have h1 : l.length - 1 - k < l.length := by
       rw [Nat.sub_sub, add_comm]
       exact Nat.sub_lt_self (Nat.succ_pos _) (Nat.succ_le_of_lt (by simpa using hk))

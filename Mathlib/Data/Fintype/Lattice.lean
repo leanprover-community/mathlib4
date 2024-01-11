@@ -19,7 +19,7 @@ open Nat
 
 universe u v
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 namespace Finset
 

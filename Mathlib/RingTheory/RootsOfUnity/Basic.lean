@@ -72,7 +72,7 @@ open Polynomial
 
 open Finset
 
-variable {M N G R S F : Type _}
+variable {M N G R S F : Type*}
 
 variable [CommMonoid M] [CommMonoid N] [DivisionCommMonoid G]
 
@@ -81,7 +81,7 @@ section rootsOfUnity
 variable {k l : ℕ+}
 
 /-- `rootsOfUnity k M` is the subgroup of elements `m : Mˣ` that satisfy `m ^ k = 1`. -/
-def rootsOfUnity (k : ℕ+) (M : Type _) [CommMonoid M] : Subgroup Mˣ where
+def rootsOfUnity (k : ℕ+) (M : Type*) [CommMonoid M] : Subgroup Mˣ where
   carrier := {ζ | ζ ^ (k : ℕ) = 1}
   one_mem' := one_pow _
   mul_mem' _ _ := by simp_all only [Set.mem_setOf_eq, mul_pow, one_mul]
@@ -265,7 +265,7 @@ section Reduced
 
 variable (R) [CommRing R] [IsReduced R]
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 -- @[simp] -- Porting note: simp normal form is `mem_rootsOfUnity_prime_pow_mul_iff'`
 theorem mem_rootsOfUnity_prime_pow_mul_iff (p k : ℕ) (m : ℕ+) [hp : Fact p.Prime] [CharP R p]
@@ -305,7 +305,7 @@ variable {k : ℕ}
 
 /-- `primitiveRoots k R` is the finset of primitive `k`-th roots of unity
 in the integral domain `R`. -/
-def primitiveRoots (k : ℕ) (R : Type _) [CommRing R] [IsDomain R] : Finset R :=
+def primitiveRoots (k : ℕ) (R : Type*) [CommRing R] [IsDomain R] : Finset R :=
   (nthRoots k (1 : R)).toFinset.filter fun ζ => IsPrimitiveRoot ζ k
 #align primitive_roots primitiveRoots
 
@@ -400,7 +400,7 @@ theorem one_right_iff : IsPrimitiveRoot ζ 1 ↔ ζ = 1 := by
 #align is_primitive_root.one_right_iff IsPrimitiveRoot.one_right_iff
 
 @[simp]
-theorem coe_submonoidClass_iff {M B : Type _} [CommMonoid M] [SetLike B M] [SubmonoidClass B M]
+theorem coe_submonoidClass_iff {M B : Type*} [CommMonoid M] [SetLike B M] [SubmonoidClass B M]
     {N : B} {ζ : N} : IsPrimitiveRoot (ζ : M) k ↔ IsPrimitiveRoot ζ k := by
   simp_rw [iff_def]
   norm_cast
@@ -534,7 +534,7 @@ end CommMonoid
 
 section CommMonoidWithZero
 
-variable {M₀ : Type _} [CommMonoidWithZero M₀]
+variable {M₀ : Type*} [CommMonoidWithZero M₀]
 
 theorem zero [Nontrivial M₀] : IsPrimitiveRoot (0 : M₀) 0 :=
   ⟨pow_zero 0, fun l hl => by

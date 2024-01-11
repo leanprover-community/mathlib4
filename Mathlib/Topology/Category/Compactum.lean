@@ -16,8 +16,8 @@ import Mathlib.Data.Set.Constructions
 
 # Compacta and Compact Hausdorff Spaces
 
-Recall that, given a monad `M` on `Type _`, an *algebra* for `M` consists of the following data:
-- A type `X : Type _`
+Recall that, given a monad `M` on `Type*`, an *algebra* for `M` consists of the following data:
+- A type `X : Type*`
 - A "structure" map `M X → X`.
 This data must also satisfy a distributivity and unit axiom, and algebras for `M` form a category
 in an evident way.
@@ -41,7 +41,7 @@ map `Ultrafilter X → X` for an algebra `X` of the ultrafilter monad should be 
 sending an ultrafilter to its limit in `X`. The topology on `X` is then defined by mimicking the
 characterization of open sets in terms of ultrafilters.
 
-Any `X : Compactum` is endowed with a coercion to `Type _`, as well as the following instances:
+Any `X : Compactum` is endowed with a coercion to `Type*`, as well as the following instances:
 - `TopologicalSpace X`.
 - `CompactSpace X`.
 - `T2Space X`.
@@ -55,9 +55,9 @@ topological space which satisfies `CompactSpace` and `T2Space`.
 We also add wrappers around structures which already exist. Here are the main ones, all in the
 `Compactum` namespace:
 
-- `forget : Compactum ⥤ Type _` is the forgetful functor, which induces a `ConcreteCategory`
+- `forget : Compactum ⥤ Type*` is the forgetful functor, which induces a `ConcreteCategory`
   instance for `Compactum`.
-- `free : Type _ ⥤ Compactum` is the left adjoint to `forget`, and the adjunction is in `adj`.
+- `free : Type* ⥤ Compactum` is the left adjoint to `forget`, and the adjunction is in `adj`.
 - `str : Ultrafilter X → X` is the structure map for `X : Compactum`.
   The notation `X.str` is preferred.
 - `join : Ultrafilter (Ultrafilter X) → Ultrafilter X` is the monadic join for `X : Compactum`.
@@ -88,8 +88,8 @@ def Compactum :=
 
 namespace Compactum
 
-/-- The forgetful functor to Type _ -/
-def forget : Compactum ⥤ Type _ :=
+/-- The forgetful functor to Type* -/
+def forget : Compactum ⥤ Type* :=
   Monad.forget _ --deriving CreatesLimits, Faithful
   -- Porting note: deriving fails, adding manually. Note `CreatesLimits` now noncomputable
 #align Compactum.forget Compactum.forget
@@ -101,7 +101,7 @@ noncomputable instance : CreatesLimits forget :=
   show CreatesLimits <| Monad.forget _ from inferInstance
 
 /-- The "free" Compactum functor. -/
-def free : Type _ ⥤ Compactum :=
+def free : Type* ⥤ Compactum :=
   Monad.free _
 #align Compactum.free Compactum.free
 
@@ -114,7 +114,7 @@ def adj : free ⊣ forget :=
 instance : ConcreteCategory Compactum where forget := forget
 
 -- Porting note: changed from forget to X.A
-instance : CoeSort Compactum (Type _) :=
+instance : CoeSort Compactum (Type*) :=
   ⟨fun X => X.A⟩
 
 instance {X Y : Compactum} : CoeFun (X ⟶ Y) fun _ => X → Y :=
@@ -386,7 +386,7 @@ theorem continuous_of_hom {X Y : Compactum} (f : X ⟶ Y) : Continuous f := by
 #align Compactum.continuous_of_hom Compactum.continuous_of_hom
 
 /-- Given any compact Hausdorff space, we construct a Compactum. -/
-noncomputable def ofTopologicalSpace (X : Type _) [TopologicalSpace X] [CompactSpace X]
+noncomputable def ofTopologicalSpace (X : Type*) [TopologicalSpace X] [CompactSpace X]
     [T2Space X] : Compactum where
   A := X
   a := Ultrafilter.lim

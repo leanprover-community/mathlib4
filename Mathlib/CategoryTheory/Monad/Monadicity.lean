@@ -276,7 +276,7 @@ local notation3 "adj" => Adjunction.ofRightAdjoint G
 -- Porting note: added these to replace parametric instances lean4#2311
 -- When this is fixed the proofs below that struggle with instances should be reviewed.
 -- [∀ ⦃A B⦄ (f g : A ⟶ B) [G.IsSplitPair f g], HasCoequalizer f g]
-class HasCoequalizerOfIsSplitPair (G : D ⥤ C) where
+class HasCoequalizerOfIsSplitPair (G : D ⥤ C) : Prop where
   out : ∀ {A B} (f g : A ⟶ B) [G.IsSplitPair f g], HasCoequalizer f g
 
 -- Porting note: cannot find synth order

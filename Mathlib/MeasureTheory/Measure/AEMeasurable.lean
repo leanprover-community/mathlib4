@@ -20,7 +20,7 @@ open MeasureTheory MeasureTheory.Measure Filter Set Function
 
 open MeasureTheory Filter Classical ENNReal Interval
 
-variable {ι α β γ δ R : Type _} {m0 : MeasurableSpace α} [MeasurableSpace β] [MeasurableSpace γ]
+variable {ι α β γ δ R : Type*} {m0 : MeasurableSpace α} [MeasurableSpace β] [MeasurableSpace γ]
   [MeasurableSpace δ] {f g : α → β} {μ ν : Measure α}
 
 section
@@ -344,11 +344,21 @@ theorem aemeasurable_indicator_iff {s} (hs : MeasurableSet s) :
     exact ae_of_ae_restrict_of_ae_restrict_compl _ A B
 #align ae_measurable_indicator_iff aemeasurable_indicator_iff
 
+theorem aemeasurable_indicator_iff₀ {s} (hs : NullMeasurableSet s μ) :
+    AEMeasurable (indicator s f) μ ↔ AEMeasurable f (μ.restrict s) := by
+  rcases hs with ⟨t, ht, hst⟩
+  rw [← aemeasurable_congr (indicator_ae_eq_of_ae_eq_set hst.symm), aemeasurable_indicator_iff ht,
+      restrict_congr_set hst]
+
 @[measurability]
 theorem AEMeasurable.indicator (hfm : AEMeasurable f μ) {s} (hs : MeasurableSet s) :
     AEMeasurable (s.indicator f) μ :=
   (aemeasurable_indicator_iff hs).mpr hfm.restrict
 #align ae_measurable.indicator AEMeasurable.indicator
+
+theorem AEMeasurable.indicator₀ (hfm : AEMeasurable f μ) {s} (hs : NullMeasurableSet s μ) :
+    AEMeasurable (s.indicator f) μ :=
+  (aemeasurable_indicator_iff₀ hs).mpr hfm.restrict
 
 theorem MeasureTheory.Measure.restrict_map_of_aemeasurable {f : α → δ} (hf : AEMeasurable f μ)
     {s : Set δ} (hs : MeasurableSet s) : (μ.map f).restrict s = (μ.restrict <| f ⁻¹' s).map f :=

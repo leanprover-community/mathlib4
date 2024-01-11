@@ -26,7 +26,7 @@ and from the equivalence of norms in finite dimensions.
 The last part of the file should be generalized to `PiLp`.
 -/
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See Lean 4 issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 noncomputable section
 
@@ -36,7 +36,7 @@ open scoped BigOperators Classical Topology
 
 section DerivInner
 
-variable {𝕜 E F : Type _} [IsROrC 𝕜]
+variable {𝕜 E F : Type*} [IsROrC 𝕜]
 
 variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
@@ -71,7 +71,7 @@ theorem differentiable_inner : Differentiable ℝ fun p : E × E => ⟪p.1, p.2�
 #align differentiable_inner differentiable_inner
 
 variable (𝕜)
-variable {G : Type _} [NormedAddCommGroup G] [NormedSpace ℝ G] {f g : G → E} {f' g' : G →L[ℝ] E}
+variable {G : Type*} [NormedAddCommGroup G] [NormedSpace ℝ G] {f g : G → E} {f' g' : G →L[ℝ] E}
   {s : Set G} {x : G} {n : ℕ∞}
 
 theorem ContDiffWithinAt.inner (hf : ContDiffWithinAt ℝ n f s x) (hg : ContDiffWithinAt ℝ n g s x) :
@@ -299,7 +299,7 @@ section PiLike
 
 open ContinuousLinearMap
 
-variable {𝕜 ι H : Type _} [IsROrC 𝕜] [NormedAddCommGroup H] [NormedSpace 𝕜 H] [Fintype ι]
+variable {𝕜 ι H : Type*} [IsROrC 𝕜] [NormedAddCommGroup H] [NormedSpace 𝕜 H] [Fintype ι]
   {f : H → EuclideanSpace 𝕜 ι} {f' : H →L[𝕜] EuclideanSpace 𝕜 ι} {t : Set H} {y : H}
 
 theorem differentiableWithinAt_euclidean :
@@ -368,7 +368,7 @@ section DiffeomorphUnitBall
 
 open Metric hiding mem_nhds_iff
 
-variable {n : ℕ∞} {E : Type _} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+variable {n : ℕ∞} {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 
 theorem LocalHomeomorph.contDiff_univUnitBall : ContDiff ℝ n (univUnitBall : E → E) := by
   suffices ContDiff ℝ n fun x : E => ((1 : ℝ) + ‖x‖ ^ 2).sqrt⁻¹ from this.smul contDiff_id

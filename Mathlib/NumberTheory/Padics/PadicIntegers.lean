@@ -32,7 +32,7 @@ We introduce the notation `ℤ_[p]` for the `p`-adic integers.
 ## Implementation notes
 
 Much, but not all, of this file assumes that `p` is prime. This assumption is inferred automatically
-by taking `[Fact p.prime]` as a type class argument.
+by taking `[Fact p.Prime]` as a type class argument.
 
 Coercions into `ℤ_[p]` are set up to work with the `norm_cast` tactic.
 
@@ -150,7 +150,7 @@ theorem coe_ne_zero (z : ℤ_[p]) : (z : ℚ_[p]) ≠ 0 ↔ z ≠ 0 := z.coe_eq_
 
 instance : AddCommGroup ℤ_[p] := (by infer_instance : AddCommGroup (subring p))
 
-instance : CommRing ℤ_[p] := (by infer_instance : CommRing (subring p))
+instance instCommRing : CommRing ℤ_[p] := (by infer_instance : CommRing (subring p))
 
 @[simp, norm_cast]
 theorem coe_nat_cast (n : ℕ) : ((n : ℤ_[p]) : ℚ_[p]) = n := rfl
@@ -178,12 +178,8 @@ def inv : ℤ_[p] → ℤ_[p]
   | ⟨k, _⟩ => if h : ‖k‖ = 1 then ⟨k⁻¹, by simp [h]⟩ else 0
 #align padic_int.inv PadicInt.inv
 
-instance : CharZero ℤ_[p]
-    where cast_injective m n h :=
-    Nat.cast_injective (
-      show (m : ℚ_[p]) = n by
-        rw [Subtype.ext_iff] at h
-        norm_cast at h)
+instance : CharZero ℤ_[p] where
+  cast_injective m n h := Nat.cast_injective (by rw [Subtype.ext_iff] at h; norm_cast at h)
 
 @[norm_cast] -- @[simp] -- Porting note: not in simpNF
 theorem coe_int_eq (z1 z2 : ℤ) : (z1 : ℤ_[p]) = z2 ↔ z1 = z2 := by
@@ -233,7 +229,7 @@ theorem norm_def {z : ℤ_[p]} : ‖z‖ = ‖(z : ℚ_[p])‖ := rfl
 variable (p)
 
 instance : NormedCommRing ℤ_[p] :=
-  { PadicInt.instCommRingPadicInt with
+  { PadicInt.instCommRing with
     dist_eq := fun ⟨_, _⟩ ⟨_, _⟩ => rfl
     norm_mul := by simp [norm_def]
     norm := norm }
@@ -313,17 +309,17 @@ theorem norm_p : ‖(p : ℤ_[p])‖ = (p : ℝ)⁻¹ := padicNormE.norm_p
 theorem norm_p_pow (n : ℕ) : ‖(p : ℤ_[p]) ^ n‖ = (p : ℝ) ^ (-n : ℤ) := padicNormE.norm_p_pow n
 #align padic_int.norm_p_pow PadicInt.norm_p_pow
 
-private def cau_seq_to_rat_cau_seq (f : CauSeq ℤ_[p] norm) : CauSeq ℚ_[p] fun a => ‖a‖ :=
+private def cauSeq_to_rat_cauSeq (f : CauSeq ℤ_[p] norm) : CauSeq ℚ_[p] fun a => ‖a‖ :=
   ⟨fun n => f n, fun _ hε => by simpa [norm, norm_def] using f.cauchy hε⟩
 
 variable (p)
 
 instance complete : CauSeq.IsComplete ℤ_[p] norm :=
   ⟨fun f =>
-    have hqn : ‖CauSeq.lim (cau_seq_to_rat_cau_seq f)‖ ≤ 1 :=
+    have hqn : ‖CauSeq.lim (cauSeq_to_rat_cauSeq f)‖ ≤ 1 :=
       padicNormE_lim_le zero_lt_one fun _ => norm_le_one _
     ⟨⟨_, hqn⟩, fun ε => by
-      simpa [norm, norm_def] using CauSeq.equiv_lim (cau_seq_to_rat_cau_seq f) ε⟩⟩
+      simpa [norm, norm_def] using CauSeq.equiv_lim (cauSeq_to_rat_cauSeq f) ε⟩⟩
 #align padic_int.complete PadicInt.complete
 
 end PadicInt
@@ -556,13 +552,13 @@ theorem norm_le_pow_iff_mem_span_pow (x : ℤ_[p]) (n : ℕ) :
 #align padic_int.norm_le_pow_iff_mem_span_pow PadicInt.norm_le_pow_iff_mem_span_pow
 
 theorem norm_le_pow_iff_norm_lt_pow_add_one (x : ℤ_[p]) (n : ℤ) :
-    ‖x‖ ≤ (p : ℝ) ^ n ↔ ‖x‖ < (p : ℝ) ^ (n + 1) :=
-  by rw [norm_def]; exact Padic.norm_le_pow_iff_norm_lt_pow_add_one _ _
+    ‖x‖ ≤ (p : ℝ) ^ n ↔ ‖x‖ < (p : ℝ) ^ (n + 1) := by
+  rw [norm_def]; exact Padic.norm_le_pow_iff_norm_lt_pow_add_one _ _
 #align padic_int.norm_le_pow_iff_norm_lt_pow_add_one PadicInt.norm_le_pow_iff_norm_lt_pow_add_one
 
 theorem norm_lt_pow_iff_norm_le_pow_sub_one (x : ℤ_[p]) (n : ℤ) :
-    ‖x‖ < (p : ℝ) ^ n ↔ ‖x‖ ≤ (p : ℝ) ^ (n - 1) :=
-  by rw [norm_le_pow_iff_norm_lt_pow_add_one, sub_add_cancel]
+    ‖x‖ < (p : ℝ) ^ n ↔ ‖x‖ ≤ (p : ℝ) ^ (n - 1) := by
+  rw [norm_le_pow_iff_norm_lt_pow_add_one, sub_add_cancel]
 #align padic_int.norm_lt_pow_iff_norm_le_pow_sub_one PadicInt.norm_lt_pow_iff_norm_le_pow_sub_one
 
 theorem norm_lt_one_iff_dvd (x : ℤ_[p]) : ‖x‖ < 1 ↔ ↑p ∣ x := by
@@ -591,7 +587,6 @@ instance : LocalRing ℤ_[p] :=
 theorem p_nonnunit : (p : ℤ_[p]) ∈ nonunits ℤ_[p] := by
   have : (p : ℝ)⁻¹ < 1 := inv_lt_one <| by exact_mod_cast hp.1.one_lt
   rwa [← norm_p, ← mem_nonunits] at this
-
 #align padic_int.p_nonnunit PadicInt.p_nonnunit
 
 theorem maximalIdeal_eq_span_p : maximalIdeal ℤ_[p] = Ideal.span {(p : ℤ_[p])} := by
@@ -624,8 +619,8 @@ theorem ideal_eq_span_pow_p {s : Ideal ℤ_[p]} (hs : s ≠ ⊥) :
 
 open CauSeq
 
-instance : IsAdicComplete (maximalIdeal ℤ_[p]) ℤ_[p]
-    where prec' x hx := by (
+instance : IsAdicComplete (maximalIdeal ℤ_[p]) ℤ_[p] where
+  prec' x hx := by
     simp only [← Ideal.one_eq_top, smul_eq_mul, mul_one, SModEq.sub_mem, maximalIdeal_eq_span_p,
       Ideal.span_singleton_pow, ← norm_le_pow_iff_mem_span_pow] at hx ⊢
     let x' : CauSeq ℤ_[p] norm := ⟨x, ?_⟩; swap
@@ -646,7 +641,7 @@ instance : IsAdicComplete (maximalIdeal ℤ_[p]) ℤ_[p]
         specialize hx hin.le
         have := nonarchimedean (x n - x i : ℤ_[p]) (x i - x'.lim)
         rw [sub_add_sub_cancel] at this
-        refine' this.trans (max_le_iff.mpr ⟨hx, hi.le⟩))
+        refine' this.trans (max_le_iff.mpr ⟨hx, hi.le⟩)
 
 end Dvr
 

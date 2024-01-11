@@ -90,7 +90,7 @@ theorem card_roots_le_derivative (p : ℝ[X]) :
 
 /-- The number of real roots of a polynomial is at most the number of roots of its derivative plus
 one. -/
-theorem card_rootSet_le_derivative {F : Type _} [CommRing F] [Algebra F ℝ] (p : F[X]) :
+theorem card_rootSet_le_derivative {F : Type*} [CommRing F] [Algebra F ℝ] (p : F[X]) :
     Fintype.card (p.rootSet ℝ) ≤ Fintype.card (p.derivative.rootSet ℝ) + 1 := by
   simpa only [rootSet_def, Finset.coe_sort_coe, Fintype.card_coe, derivative_map] using
     card_roots_toFinset_le_derivative (p.map (algebraMap F ℝ))

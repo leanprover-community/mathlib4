@@ -21,8 +21,8 @@ open Function Metric Set Filter Finset Classical Topology BigOperators NNReal
 
 open LinearMap (range ker)
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {F : Type _} [NormedAddCommGroup F] [NormedSpace 𝕜 F] (f : E →L[𝕜] F)
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
+  [NormedSpace 𝕜 E] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] (f : E →L[𝕜] F)
 
 namespace ContinuousLinearMap
 
@@ -263,7 +263,7 @@ protected theorem quotientMap (surj : Surjective f) : QuotientMap f :=
   (f.isOpenMap surj).to_quotientMap f.continuous surj
 #align continuous_linear_map.quotient_map ContinuousLinearMap.quotientMap
 
-theorem _root_.AffineMap.isOpenMap {P Q : Type _} [MetricSpace P] [NormedAddTorsor E P]
+theorem _root_.AffineMap.isOpenMap {P Q : Type*} [MetricSpace P] [NormedAddTorsor E P]
     [MetricSpace Q] [NormedAddTorsor F Q] (f : P →ᵃ[𝕜] Q) (hf : Continuous f)
     (surj : Surjective f) : IsOpenMap f :=
   AffineMap.isOpenMap_linear_iff.mp <|

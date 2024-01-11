@@ -37,7 +37,7 @@ open Function Set IsDedekindDomain IsDedekindDomain.HeightOneSpectrum
 
 namespace DedekindDomain
 
-variable (R K : Type _) [CommRing R] [IsDomain R] [IsDedekindDomain R] [Field K] [Algebra R K]
+variable (R K : Type*) [CommRing R] [IsDomain R] [IsDedekindDomain R] [Field K] [Algebra R K]
   [IsFractionRing R K] (v : HeightOneSpectrum R)
 
 /-- The product of all `adicCompletionIntegers`, where `v` runs over the maximal ideals of `R`. -/

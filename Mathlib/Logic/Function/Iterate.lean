@@ -187,14 +187,14 @@ theorem comp_iterate_pred_of_pos {n : ℕ} (hn : 0 < n) : f ∘ f^[n.pred] = f^[
 #align function.comp_iterate_pred_of_pos Function.comp_iterate_pred_of_pos
 
 /-- A recursor for the iterate of a function. -/
-def Iterate.rec (p : α → Sort _) {f : α → α} (h : ∀ a, p a → p (f a)) {a : α} (ha : p a) (n : ℕ) :
+def Iterate.rec (p : α → Sort*) {f : α → α} (h : ∀ a, p a → p (f a)) {a : α} (ha : p a) (n : ℕ) :
     p (f^[n] a) :=
   match n with
   | 0 => ha
   | m+1 => Iterate.rec p h (h _ ha) m
 #align function.iterate.rec Function.Iterate.rec
 
-theorem Iterate.rec_zero (p : α → Sort _) {f : α → α} (h : ∀ a, p a → p (f a)) {a : α} (ha : p a) :
+theorem Iterate.rec_zero (p : α → Sort*) {f : α → α} (h : ∀ a, p a → p (f a)) {a : α} (ha : p a) :
     Iterate.rec p h ha 0 = ha :=
   rfl
 #align function.iterate.rec_zero Function.Iterate.rec_zero

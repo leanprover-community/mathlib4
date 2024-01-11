@@ -39,26 +39,31 @@ open Topology TopologicalSpace Set Filter Function Classical
 
 universe u v
 
-variable {α : Type u} {β : Type v} {γ δ ε ζ : Type _}
+variable {α : Type u} {β : Type v} {γ δ ε ζ : Type*}
 
 section Constructions
 
-instance {p : α → Prop} [t : TopologicalSpace α] : TopologicalSpace (Subtype p) :=
+instance instTopologicalSpaceSubtype {p : α → Prop} [t : TopologicalSpace α] :
+    TopologicalSpace (Subtype p) :=
   induced (↑) t
 
 instance {r : α → α → Prop} [t : TopologicalSpace α] : TopologicalSpace (Quot r) :=
   coinduced (Quot.mk r) t
 
-instance {s : Setoid α} [t : TopologicalSpace α] : TopologicalSpace (Quotient s) :=
+instance instTopologicalSpaceQuotient {s : Setoid α} [t : TopologicalSpace α] :
+    TopologicalSpace (Quotient s) :=
   coinduced Quotient.mk' t
 
-instance [t₁ : TopologicalSpace α] [t₂ : TopologicalSpace β] : TopologicalSpace (α × β) :=
+instance instTopologicalSpaceProd [t₁ : TopologicalSpace α] [t₂ : TopologicalSpace β] :
+    TopologicalSpace (α × β) :=
   induced Prod.fst t₁ ⊓ induced Prod.snd t₂
 
-instance [t₁ : TopologicalSpace α] [t₂ : TopologicalSpace β] : TopologicalSpace (α ⊕ β) :=
+instance instTopologicalSpaceSum [t₁ : TopologicalSpace α] [t₂ : TopologicalSpace β] :
+    TopologicalSpace (α ⊕ β) :=
   coinduced Sum.inl t₁ ⊔ coinduced Sum.inr t₂
 
-instance {β : α → Type v} [t₂ : ∀ a, TopologicalSpace (β a)] : TopologicalSpace (Sigma β) :=
+instance instTopologicalSpaceSigma {β : α → Type v} [t₂ : ∀ a, TopologicalSpace (β a)] :
+    TopologicalSpace (Sigma β) :=
   ⨆ a, coinduced (Sigma.mk a) (t₂ a)
 
 instance Pi.topologicalSpace {β : α → Type v} [t₂ : (a : α) → TopologicalSpace (β a)] :
@@ -251,7 +256,7 @@ end Topα
 
 /-- A type synonym equipped with the topology whose open sets are the empty set and the sets with
 finite complements. -/
-def CofiniteTopology (α : Type _) :=
+def CofiniteTopology (α : Type*) :=
   α
 #align cofinite_topology CofiniteTopology
 
@@ -533,7 +538,7 @@ theorem mem_nhds_prod_iff {a : α} {b : β} {s : Set (α × β)} :
 #align mem_nhds_prod_iff mem_nhds_prod_iff
 
 -- porting note: moved up
-theorem Filter.HasBasis.prod_nhds {ιa ιb : Type _} {pa : ιa → Prop} {pb : ιb → Prop}
+theorem Filter.HasBasis.prod_nhds {ιa ιb : Type*} {pa : ιa → Prop} {pb : ιb → Prop}
     {sa : ιa → Set α} {sb : ιb → Set β} {a : α} {b : β} (ha : (𝓝 a).HasBasis pa sa)
     (hb : (𝓝 b).HasBasis pb sb) :
     (𝓝 (a, b)).HasBasis (fun i : ιa × ιb => pa i.1 ∧ pb i.2) fun i => sa i.1 ×ˢ sb i.2 := by
@@ -542,7 +547,7 @@ theorem Filter.HasBasis.prod_nhds {ιa ιb : Type _} {pa : ιa → Prop} {pb : �
 #align filter.has_basis.prod_nhds Filter.HasBasis.prod_nhds
 
 -- porting note: moved up
-theorem Filter.HasBasis.prod_nhds' {ιa ιb : Type _} {pa : ιa → Prop} {pb : ιb → Prop}
+theorem Filter.HasBasis.prod_nhds' {ιa ιb : Type*} {pa : ιa → Prop} {pb : ιb → Prop}
     {sa : ιa → Set α} {sb : ιb → Set β} {ab : α × β} (ha : (𝓝 ab.1).HasBasis pa sa)
     (hb : (𝓝 ab.2).HasBasis pb sb) :
     (𝓝 ab).HasBasis (fun i : ιa × ιb => pa i.1 ∧ pb i.2) fun i => sa i.1 ×ˢ sb i.2 :=
@@ -612,7 +617,7 @@ theorem ContinuousAt.prod_map' {f : α → γ} {g : β → δ} {x : α} {y : β}
 
 -- todo: reformulate using `Set.image2`
 -- todo: prove a version of `generateFrom_union` with `image2 (∩) s t` in the LHS and use it here
-theorem prod_generateFrom_generateFrom_eq {α β : Type _} {s : Set (Set α)} {t : Set (Set β)}
+theorem prod_generateFrom_generateFrom_eq {α β : Type*} {s : Set (Set α)} {t : Set (Set β)}
     (hs : ⋃₀ s = univ) (ht : ⋃₀ t = univ) :
     @instTopologicalSpaceProd α β (generateFrom s) (generateFrom t) =
       generateFrom { g | ∃ u ∈ s, ∃ v ∈ t, g = u ×ˢ v } :=
@@ -793,7 +798,7 @@ theorem Dense.prod {s : Set α} {t : Set β} (hs : Dense s) (ht : Dense t) : Den
 #align dense.prod Dense.prod
 
 /-- If `f` and `g` are maps with dense range, then `Prod.map f g` has dense range. -/
-theorem DenseRange.prod_map {ι : Type _} {κ : Type _} {f : ι → β} {g : κ → γ} (hf : DenseRange f)
+theorem DenseRange.prod_map {ι : Type*} {κ : Type*} {f : ι → β} {g : κ → γ} (hf : DenseRange f)
     (hg : DenseRange g) : DenseRange (Prod.map f g) := by
   simpa only [DenseRange, prod_range_range_eq] using hf.prod hg
 #align dense_range.prod_map DenseRange.prod_map
@@ -1101,7 +1106,7 @@ theorem nhds_subtype_eq_comap {a : α} {h : p a} : 𝓝 (⟨a, h⟩ : Subtype p)
   nhds_induced _ _
 #align nhds_subtype_eq_comap nhds_subtype_eq_comap
 
-theorem tendsto_subtype_rng {β : Type _} {p : α → Prop} {b : Filter β} {f : β → Subtype p} :
+theorem tendsto_subtype_rng {β : Type*} {p : α → Prop} {b : Filter β} {f : β → Subtype p} :
     ∀ {a : Subtype p}, Tendsto f b (𝓝 a) ↔ Tendsto (fun x => (f x : α)) b (𝓝 (a : α))
   | ⟨a, ha⟩ => by rw [nhds_subtype_eq_comap, tendsto_comap_iff]; rfl
 #align tendsto_subtype_rng tendsto_subtype_rng
@@ -1151,7 +1156,7 @@ theorem embedding_inclusion {s t : Set α} (h : s ⊆ t) : Embedding (Set.inclus
 
 /-- Let `s, t ⊆ X` be two subsets of a topological space `X`.  If `t ⊆ s` and the topology induced
 by `X`on `s` is discrete, then also the topology induces on `t` is discrete.  -/
-theorem DiscreteTopology.of_subset {X : Type _} [TopologicalSpace X] {s t : Set X}
+theorem DiscreteTopology.of_subset {X : Type*} [TopologicalSpace X] {s t : Set X}
     (_ : DiscreteTopology s) (ts : t ⊆ s) : DiscreteTopology t :=
   (embedding_inclusion ts).discreteTopology
 #align discrete_topology.of_subset DiscreteTopology.of_subset
@@ -1207,7 +1212,7 @@ end Quotient
 
 section Pi
 
-variable {ι : Type _} {π : ι → Type _} {κ : Type _} [TopologicalSpace α]
+variable {ι : Type*} {π : ι → Type*} {κ : Type*} [TopologicalSpace α]
   [∀ i, TopologicalSpace (π i)] {f : α → ∀ i : ι, π i}
 
 theorem continuous_pi_iff : Continuous f ↔ ∀ i, Continuous fun a => f a i := by
@@ -1225,7 +1230,7 @@ theorem continuous_apply (i : ι) : Continuous fun p : ∀ i, π i => p i :=
 #align continuous_apply continuous_apply
 
 @[continuity]
-theorem continuous_apply_apply {ρ : κ → ι → Type _} [∀ j i, TopologicalSpace (ρ j i)] (j : κ)
+theorem continuous_apply_apply {ρ : κ → ι → Type*} [∀ j i, TopologicalSpace (ρ j i)] (j : κ)
     (i : ι) : Continuous fun p : ∀ j, ∀ i, ρ j i => p j i :=
   (continuous_apply i).comp (continuous_apply j)
 #align continuous_apply_apply continuous_apply_apply
@@ -1285,21 +1290,21 @@ theorem continuous_mulSingle [∀ i, One (π i)] [DecidableEq ι] (i : ι) :
 #align continuous_mul_single continuous_mulSingle
 #align continuous_single continuous_single
 
-theorem Filter.Tendsto.fin_insertNth {n} {π : Fin (n + 1) → Type _} [∀ i, TopologicalSpace (π i)]
+theorem Filter.Tendsto.fin_insertNth {n} {π : Fin (n + 1) → Type*} [∀ i, TopologicalSpace (π i)]
     (i : Fin (n + 1)) {f : β → π i} {l : Filter β} {x : π i} (hf : Tendsto f l (𝓝 x))
     {g : β → ∀ j : Fin n, π (i.succAbove j)} {y : ∀ j, π (i.succAbove j)} (hg : Tendsto g l (𝓝 y)) :
     Tendsto (fun a => i.insertNth (f a) (g a)) l (𝓝 <| i.insertNth x y) :=
   tendsto_pi_nhds.2 fun j => Fin.succAboveCases i (by simpa) (by simpa using tendsto_pi_nhds.1 hg) j
 #align filter.tendsto.fin_insert_nth Filter.Tendsto.fin_insertNth
 
-theorem ContinuousAt.fin_insertNth {n} {π : Fin (n + 1) → Type _} [∀ i, TopologicalSpace (π i)]
+theorem ContinuousAt.fin_insertNth {n} {π : Fin (n + 1) → Type*} [∀ i, TopologicalSpace (π i)]
     (i : Fin (n + 1)) {f : α → π i} {a : α} (hf : ContinuousAt f a)
     {g : α → ∀ j : Fin n, π (i.succAbove j)} (hg : ContinuousAt g a) :
     ContinuousAt (fun a => i.insertNth (f a) (g a)) a :=
   hf.tendsto.fin_insertNth i hg
 #align continuous_at.fin_insert_nth ContinuousAt.fin_insertNth
 
-theorem Continuous.fin_insertNth {n} {π : Fin (n + 1) → Type _} [∀ i, TopologicalSpace (π i)]
+theorem Continuous.fin_insertNth {n} {π : Fin (n + 1) → Type*} [∀ i, TopologicalSpace (π i)]
     (i : Fin (n + 1)) {f : α → π i} (hf : Continuous f) {g : α → ∀ j : Fin n, π (i.succAbove j)}
     (hg : Continuous g) : Continuous fun a => i.insertNth (f a) (g a) :=
   continuous_iff_continuousAt.2 fun _ => hf.continuousAt.fin_insertNth i hg.continuousAt
@@ -1390,7 +1395,7 @@ theorem exists_finset_piecewise_mem_of_mem_nhds [DecidableEq ι] {s : Set (∀ a
   simpa [Finset.mem_coe.1 hi] using mem_of_mem_nhds (htx i)
 #align exists_finset_piecewise_mem_of_mem_nhds exists_finset_piecewise_mem_of_mem_nhds
 
-theorem pi_generateFrom_eq {π : ι → Type _} {g : ∀ a, Set (Set (π a))} :
+theorem pi_generateFrom_eq {π : ι → Type*} {g : ∀ a, Set (Set (π a))} :
     (@Pi.topologicalSpace ι π fun a => generateFrom (g a)) =
       generateFrom
         { t | ∃ (s : ∀ a, Set (π a)) (i : Finset ι), (∀ a ∈ i, s a ∈ g a) ∧ t = pi (↑i) s } := by
@@ -1414,7 +1419,7 @@ theorem pi_eq_generateFrom :
   _ = _ := pi_generateFrom_eq
 #align pi_eq_generate_from pi_eq_generateFrom
 
-theorem pi_generateFrom_eq_finite {π : ι → Type _} {g : ∀ a, Set (Set (π a))} [Finite ι]
+theorem pi_generateFrom_eq_finite {π : ι → Type*} {g : ∀ a, Set (Set (π a))} [Finite ι]
     (hg : ∀ a, ⋃₀ g a = univ) :
     (@Pi.topologicalSpace ι π fun a => generateFrom (g a)) =
       generateFrom { t | ∃ s : ∀ a, Set (π a), (∀ a, s a ∈ g a) ∧ t = pi univ s } := by
@@ -1433,7 +1438,7 @@ theorem pi_generateFrom_eq_finite {π : ι → Type _} {g : ∀ a, Set (Set (π 
 #align pi_generate_from_eq_finite pi_generateFrom_eq_finite
 
 -- porting note: new lemma
-theorem induced_to_pi {X : Type _} (f : X → ∀ i, π i) :
+theorem induced_to_pi {X : Type*} (f : X → ∀ i, π i) :
     induced f Pi.topologicalSpace = ⨅ i, induced (f · i) inferInstance := by
   erw [induced_iInf]
   simp only [induced_compose]
@@ -1444,7 +1449,7 @@ endowed with a family of maps `f i : X → π i` for every `i : ι`, hence induc
 map `g : X → Π i, π i`. This lemma shows that infimum of the topologies on `X` induced by
 the `f i` as `i : ι` varies is simply the topology on `X` induced by `g : X → Π i, π i`
 where `Π i, π i` is endowed with the usual product topology. -/
-theorem inducing_iInf_to_pi {X : Type _} (f : ∀ i, X → π i) :
+theorem inducing_iInf_to_pi {X : Type*} (f : ∀ i, X → π i) :
     @Inducing X (∀ i, π i) (⨅ i, induced (f i) inferInstance) _ fun x i => f i x :=
   letI := ⨅ i, induced (f i) inferInstance; ⟨(induced_to_pi _).symm⟩
 #align inducing_infi_to_pi inducing_iInf_to_pi
@@ -1462,7 +1467,7 @@ end Pi
 
 section Sigma
 
-variable {ι κ : Type _} {σ : ι → Type _} {τ : κ → Type _} [∀ i, TopologicalSpace (σ i)]
+variable {ι κ : Type*} {σ : ι → Type*} {τ : κ → Type*} [∀ i, TopologicalSpace (σ i)]
   [∀ k, TopologicalSpace (τ k)] [TopologicalSpace α]
 
 @[continuity]
@@ -1640,3 +1645,21 @@ instance [TopologicalSpace α] [DiscreteTopology α] : DiscreteTopology (ULift �
   embedding_uLift_down.discreteTopology
 
 end ULift
+
+section Monad
+
+variable [TopologicalSpace α] {β : Set α} {γ : Set β}
+
+theorem IsOpen.trans (hγ : IsOpen γ) (hβ : IsOpen β) : IsOpen (γ : Set α) := by
+  rcases isOpen_induced_iff.mp hγ with ⟨δ, hδ, rfl⟩
+  convert IsOpen.inter hβ hδ
+  ext
+  exact ⟨fun h => ⟨coe_subset h, mem_of_mem_coe h⟩, fun ⟨hβ, hδ⟩ => mem_coe_of_mem hβ hδ⟩
+
+theorem IsClosed.trans (hγ : IsClosed γ) (hβ : IsClosed β) : IsClosed (γ : Set α) := by
+  rcases isClosed_induced_iff.mp hγ with ⟨δ, hδ, rfl⟩
+  convert IsClosed.inter hβ hδ
+  ext
+  exact ⟨fun h => ⟨coe_subset h, mem_of_mem_coe h⟩, fun ⟨hβ, hδ⟩ => mem_coe_of_mem hβ hδ⟩
+
+end Monad

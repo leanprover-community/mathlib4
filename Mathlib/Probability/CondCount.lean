@@ -44,7 +44,7 @@ open MeasureTheory MeasurableSpace
 
 namespace ProbabilityTheory
 
-variable {Ω : Type _} [MeasurableSpace Ω]
+variable {Ω : Type*} [MeasurableSpace Ω]
 
 /-- Given a set `s`, `condCount s` is the counting measure conditioned on `s`. In particular,
 `condCount s t` is the proportion of `s` that is contained in `t`.

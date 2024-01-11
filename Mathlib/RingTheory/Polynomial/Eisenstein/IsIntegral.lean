@@ -216,7 +216,7 @@ theorem dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_isEisensteinAt {B : Pow
     simp
 #align dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_is_eiseinstein_at dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_isEisensteinAt
 
-theorem mem_adjoin_of_dvd_coeff_of_dvd_aeval {A B : Type _} [CommSemiring A] [CommRing B]
+theorem mem_adjoin_of_dvd_coeff_of_dvd_aeval {A B : Type*} [CommSemiring A] [CommRing B]
     [Algebra A B] [NoZeroSMulDivisors A B] {Q : A[X]} {p : A} {x z : B} (hp : p ≠ 0)
     (hQ : ∀ i ∈ range (Q.natDegree + 1), p ∣ Q.coeff i) (hz : aeval x Q = p • z) :
     z ∈ adjoin A ({x} : Set B) := by

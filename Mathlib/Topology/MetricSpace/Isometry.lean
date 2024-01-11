@@ -24,7 +24,7 @@ noncomputable section
 
 universe u v w
 
-variable {ι : Type _} {α : Type u} {β : Type v} {γ : Type w}
+variable {ι : Type*} {α : Type u} {β : Type v} {γ : Type w}
 
 open Function Set
 
@@ -101,7 +101,7 @@ theorem prod_map {δ} [PseudoEMetricSpace δ] {f : α → β} {g : γ → δ} (h
   simp only [Prod.edist_eq, hf.edist_eq, hg.edist_eq, Prod_map]
 #align isometry.prod_map Isometry.prod_map
 
-theorem _root_.isometry_dcomp {ι} [Fintype ι] {α β : ι → Type _} [∀ i, PseudoEMetricSpace (α i)]
+theorem _root_.isometry_dcomp {ι} [Fintype ι] {α β : ι → Type*} [∀ i, PseudoEMetricSpace (α i)]
     [∀ i, PseudoEMetricSpace (β i)] (f : ∀ i, α i → β i) (hf : ∀ i, Isometry (f i)) :
     Isometry (fun g : (i : ι) → α i => fun i => f i (g i)) := fun x y => by
   simp only [edist_pi_def, (hf _).edist_eq]
@@ -122,7 +122,7 @@ protected theorem uniformInducing (hf : Isometry f) : UniformInducing f :=
   hf.antilipschitz.uniformInducing hf.uniformContinuous
 #align isometry.uniform_inducing Isometry.uniformInducing
 
-theorem tendsto_nhds_iff {ι : Type _} {f : α → β} {g : ι → α} {a : Filter ι} {b : α}
+theorem tendsto_nhds_iff {ι : Type*} {f : α → β} {g : ι → α} {a : Filter ι} {b : α}
     (hf : Isometry f) : Filter.Tendsto g a (𝓝 b) ↔ Filter.Tendsto (f ∘ g) a (𝓝 (f b)) :=
   hf.uniformInducing.inducing.tendsto_nhds_iff
 #align isometry.tendsto_nhds_iff Isometry.tendsto_nhds_iff
@@ -347,12 +347,12 @@ protected theorem edist_eq (h : α ≃ᵢ β) (x y : α) : edist (h x) (h y) = e
   h.isometry.edist_eq x y
 #align isometry_equiv.edist_eq IsometryEquiv.edist_eq
 
-protected theorem dist_eq {α β : Type _} [PseudoMetricSpace α] [PseudoMetricSpace β] (h : α ≃ᵢ β)
+protected theorem dist_eq {α β : Type*} [PseudoMetricSpace α] [PseudoMetricSpace β] (h : α ≃ᵢ β)
     (x y : α) : dist (h x) (h y) = dist x y :=
   h.isometry.dist_eq x y
 #align isometry_equiv.dist_eq IsometryEquiv.dist_eq
 
-protected theorem nndist_eq {α β : Type _} [PseudoMetricSpace α] [PseudoMetricSpace β] (h : α ≃ᵢ β)
+protected theorem nndist_eq {α β : Type*} [PseudoMetricSpace α] [PseudoMetricSpace β] (h : α ≃ᵢ β)
     (x y : α) : nndist (h x) (h y) = nndist x y :=
   h.isometry.nndist_eq x y
 #align isometry_equiv.nndist_eq IsometryEquiv.nndist_eq
@@ -383,7 +383,7 @@ def mk' {α : Type u} [EMetricSpace α] (f : α → β) (g : β → α) (hfg : �
 #align isometry_equiv.mk' IsometryEquiv.mk'
 
 /-- The identity isometry of a space. -/
-protected def refl (α : Type _) [PseudoEMetricSpace α] : α ≃ᵢ α :=
+protected def refl (α : Type*) [PseudoEMetricSpace α] : α ≃ᵢ α :=
   { Equiv.refl α with isometry_toFun := isometry_id }
 #align isometry_equiv.refl IsometryEquiv.refl
 
@@ -578,7 +578,7 @@ def funUnique [Unique ι] [Fintype ι] : (ι → α) ≃ᵢ α where
 
 /-- `piFinTwoEquiv` as an `IsometryEquiv`. -/
 @[simps!]
-def piFinTwo (α : Fin 2 → Type _) [∀ i, PseudoEMetricSpace (α i)] : (∀ i, α i) ≃ᵢ α 0 × α 1 where
+def piFinTwo (α : Fin 2 → Type*) [∀ i, PseudoEMetricSpace (α i)] : (∀ i, α i) ≃ᵢ α 0 × α 1 where
   toEquiv := piFinTwoEquiv α
   isometry_toFun x hx := by simp [edist_pi_def, Fin.univ_succ, Prod.edist_eq]
 #align isometry_equiv.pi_fin_two IsometryEquiv.piFinTwo

@@ -229,7 +229,7 @@ theorem clear_denominators {a b k : ℕ} (ha : 0 < a) (hb : 0 < b) :
     (b - 1 : ℚ) / (2 * b) ≤ k / a ↔ ((b : ℕ) - 1) * a ≤ k * (2 * b) := by
   rw [div_le_div_iff]
   -- porting note: proof used to finish with `<;> norm_cast <;> simp [ha, hb]`
-  · convert @Nat.cast_le ℚ _ _ _ _
+  · convert Nat.cast_le (α := ℚ)
     · aesop
     · norm_cast
   all_goals simp [ha, hb]

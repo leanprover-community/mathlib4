@@ -1,12 +1,14 @@
 /-
 Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin, Eric Wieer
+Authors: Johan Commelin, Eric Wieser
 -/
 import Mathlib.LinearAlgebra.FreeModule.Finite.Rank
 import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.Matrix.DotProduct
+import Mathlib.LinearAlgebra.Determinant
+import Mathlib.LinearAlgebra.Matrix.Diagonal
 import Mathlib.Data.Complex.Module
 
 #align_import data.matrix.rank from "leanprover-community/mathlib"@"17219820a8aa8abe85adf5dfde19af1dd1bd8ae7"
@@ -36,7 +38,7 @@ namespace Matrix
 
 open FiniteDimensional
 
-variable {l m n o R : Type _} [m_fin : Fintype m] [Fintype n] [Fintype o]
+variable {l m n o R : Type*} [m_fin : Fintype m] [Fintype n] [Fintype o]
 
 section CommRing
 
@@ -101,6 +103,26 @@ theorem rank_of_isUnit [StrongRankCondition R] [DecidableEq n] (A : Matrix n n R
   exact rank_unit A
 #align matrix.rank_of_is_unit Matrix.rank_of_isUnit
 
+/-- Right multiplying by an invertible matrix does not change the rank -/
+lemma rank_mul_eq_left_of_isUnit_det [DecidableEq n]
+    (A : Matrix n n R) (B : Matrix m n R) (hA : IsUnit A.det) :
+    (B ⬝ A).rank = B.rank := by
+  suffices : Function.Surjective A.mulVecLin
+  · rw [rank, mulVecLin_mul, LinearMap.range_comp_of_range_eq_top _
+    (LinearMap.range_eq_top.mpr this), ← rank]
+  intro v
+  exact ⟨(A⁻¹).mulVecLin v, by simp [mul_nonsing_inv _ hA]⟩
+
+/-- Left multiplying by an invertible matrix does not change the rank -/
+lemma rank_mul_eq_right_of_isUnit_det [DecidableEq m]
+    (A : Matrix m m R) (B : Matrix m n R) (hA : IsUnit A.det) :
+    (A ⬝ B).rank = B.rank := by
+  let b : Basis m R (m → R) := Pi.basisFun R m
+  replace hA : IsUnit (LinearMap.toMatrix b b A.mulVecLin).det := by
+    convert hA; rw [← LinearEquiv.eq_symm_apply]; rfl
+  have hAB : mulVecLin (A ⬝ B) = (LinearEquiv.ofIsUnitDet hA).comp (mulVecLin B) := by ext; simp
+  rw [rank, rank, hAB, LinearMap.range_comp, LinearEquiv.finrank_map_eq]
+
 /-- Taking a subset of the rows and permuting the columns reduces the rank. -/
 theorem rank_submatrix_le [StrongRankCondition R] [Fintype m] (f : n → m) (e : n ≃ m)
     (A : Matrix m m R) : rank (A.submatrix f e) ≤ rank A := by
@@ -122,7 +144,7 @@ theorem rank_submatrix [Fintype m] (A : Matrix m m R) (e₁ e₂ : n ≃ m) :
   simpa only [reindex_apply] using rank_reindex e₁.symm e₂.symm A
 #align matrix.rank_submatrix Matrix.rank_submatrix
 
-theorem rank_eq_finrank_range_toLin [DecidableEq n] {M₁ M₂ : Type _} [AddCommGroup M₁]
+theorem rank_eq_finrank_range_toLin [DecidableEq n] {M₁ M₂ : Type*} [AddCommGroup M₁]
     [AddCommGroup M₂] [Module R M₁] [Module R M₂] (A : Matrix m n R) (v₁ : Basis m R M₁)
     (v₂ : Basis n R M₂) : A.rank = finrank R (LinearMap.range (toLin v₂ v₁ A)) := by
   let e₁ := (Pi.basisFun R m).equiv v₁ (Equiv.refl _)
@@ -163,6 +185,18 @@ theorem rank_eq_finrank_span_cols (A : Matrix m n R) :
 
 end CommRing
 
+section Field
+
+variable [Field R]
+
+/-- The rank of a diagnonal matrix is the count of non-zero elements on its main diagonal -/
+theorem rank_diagonal [DecidableEq m] [DecidableEq R] (w : m → R) :
+    (diagonal w).rank = Fintype.card {i // (w i) ≠ 0} := by
+  rw [Matrix.rank, ← Matrix.toLin'_apply', FiniteDimensional.finrank, ← LinearMap.rank,
+    LinearMap.rank_diagonal, Cardinal.toNat_cast]
+
+end Field
+
 /-! ### Lemmas about transpose and conjugate transpose
 
 This section contains lemmas about the rank of `Matrix.transpose` and `Matrix.conjTranspose`.
@@ -176,7 +210,6 @@ proof that is a simple consequence of `Matrix.rank_transpose_mul_self` and
 `Matrix.rank_conjTranspose_mul_self`. This proof pulls in unnecessary assumptions on `R`, and should
 be replaced with a proof that uses Gaussian reduction or argues via linear combinations.
 -/
-
 
 section StarOrderedField
 

@@ -23,7 +23,7 @@ namespace Polynomial.Chebyshev
 
 open Polynomial
 
-variable {R A : Type _} [CommRing R] [CommRing A] [Algebra R A]
+variable {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
 
 @[simp]
 theorem aeval_T (x : A) (n : ℕ) : aeval x (T R n) = (T A n).eval x := by

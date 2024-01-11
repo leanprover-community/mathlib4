@@ -41,13 +41,13 @@ stalks, such as the Weierstrass preparation theorem.
 open scoped Manifold Topology Filter
 open Function Set Filter Complex
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℂ E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
 
-variable {F : Type _} [NormedAddCommGroup F] [NormedSpace ℂ F]
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F]
 
-variable {H : Type _} [TopologicalSpace H] {I : ModelWithCorners ℂ E H} [I.Boundaryless]
+variable {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℂ E H} [I.Boundaryless]
 
-variable {M : Type _} [TopologicalSpace M] [CompactSpace M] [ChartedSpace H M]
+variable {M : Type*} [TopologicalSpace M] [CompactSpace M] [ChartedSpace H M]
   [SmoothManifoldWithCorners I M]
 
 /-- **Maximum modulus principle**: if `f : M → F` is complex differentiable in a neighborhood of `c`

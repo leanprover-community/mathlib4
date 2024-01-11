@@ -92,7 +92,7 @@ It is stated in more general form than needed: in the intended application, `Z =
 root of `f`, `ε` is small, `M` is a bound on the Lipschitz constant of `f` near `α`, `n` is
 the degree of the polynomial `f`.
 -/
-theorem exists_one_le_pow_mul_dist {Z N R : Type _} [PseudoMetricSpace R] {d : N → ℝ}
+theorem exists_one_le_pow_mul_dist {Z N R : Type*} [PseudoMetricSpace R] {d : N → ℝ}
     {j : Z → N → R} {f : R → R} {α : R} {ε M : ℝ}
     -- denominators are positive
     (d0 : ∀ a : N, 1 ≤ d a)

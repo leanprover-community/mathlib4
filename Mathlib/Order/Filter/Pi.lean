@@ -28,7 +28,7 @@ open Classical Filter
 
 namespace Filter
 
-variable {ι : Type _} {α : ι → Type _} {f f₁ f₂ : (i : ι) → Filter (α i)} {s : (i : ι) → Set (α i)}
+variable {ι : Type*} {α : ι → Type*} {f f₁ f₂ : (i : ι) → Filter (α i)} {s : (i : ι) → Set (α i)}
 
 section Pi
 
@@ -46,7 +46,7 @@ theorem tendsto_eval_pi (f : ∀ i, Filter (α i)) (i : ι) : Tendsto (eval i) (
   tendsto_iInf' i tendsto_comap
 #align filter.tendsto_eval_pi Filter.tendsto_eval_pi
 
-theorem tendsto_pi {β : Type _} {m : β → ∀ i, α i} {l : Filter β} :
+theorem tendsto_pi {β : Type*} {m : β → ∀ i, α i} {l : Filter β} :
     Tendsto m l (pi f) ↔ ∀ i, Tendsto (fun x => m x i) l (f i) := by
   simp only [pi, tendsto_iInf, tendsto_comap_iff]; rfl
 #align filter.tendsto_pi Filter.tendsto_pi
@@ -251,7 +251,7 @@ theorem coprodᵢ_mono (hf : ∀ i, f₁ i ≤ f₂ i) : Filter.coprodᵢ f₁ �
   iSup_mono fun i => comap_mono (hf i)
 #align filter.Coprod_mono Filter.coprodᵢ_mono
 
-variable {β : ι → Type _} {m : ∀ i, α i → β i}
+variable {β : ι → Type*} {m : ∀ i, α i → β i}
 
 theorem map_pi_map_coprodᵢ_le :
     map (fun k : ∀ i, α i => fun i => m i (k i)) (Filter.coprodᵢ f) ≤

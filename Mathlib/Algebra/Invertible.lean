@@ -41,7 +41,7 @@ users can choose which instances to use at the point of use.
 
 For example, here's how you can use an `Invertible 1` instance:
 ```lean
-variables {α : Type _} [Monoid α]
+variables {α : Type*} [Monoid α]
 
 def something_that_needs_inverses (x : α) [Invertible x] := sorry
 
@@ -347,7 +347,7 @@ theorem Commute.invOf_left [Monoid α] {a b : α} [Invertible b] (h : Commute b 
     _ = a * ⅟ b := by simp [mul_assoc]
 #align commute.inv_of_left Commute.invOf_left
 
-theorem commute_invOf {M : Type _} [One M] [Mul M] (m : M) [Invertible m] : Commute m (⅟ m) :=
+theorem commute_invOf {M : Type*} [One M] [Mul M] (m : M) [Invertible m] : Commute m (⅟ m) :=
   calc
     m * ⅟ m = 1 := mul_invOf_self m
     _ = ⅟ m * m := (invOf_mul_self m).symm
@@ -487,7 +487,7 @@ def invertibleInv {a : α} [Invertible a] : Invertible a⁻¹ :=
 end GroupWithZero
 
 /-- Monoid homs preserve invertibility. -/
-def Invertible.map {R : Type _} {S : Type _} {F : Type _} [MulOneClass R] [MulOneClass S]
+def Invertible.map {R : Type*} {S : Type*} {F : Type*} [MulOneClass R] [MulOneClass S]
     [MonoidHomClass F R S] (f : F) (r : R) [Invertible r] :
     Invertible (f r) where
   invOf := f (⅟ r)
@@ -497,7 +497,7 @@ def Invertible.map {R : Type _} {S : Type _} {F : Type _} [MulOneClass R] [MulOn
 
 /-- Note that the `Invertible (f r)` argument can be satisfied by using `letI := Invertible.map f r`
 before applying this lemma. -/
-theorem map_invOf {R : Type _} {S : Type _} {F : Type _} [MulOneClass R] [Monoid S]
+theorem map_invOf {R : Type*} {S : Type*} {F : Type*} [MulOneClass R] [Monoid S]
     [MonoidHomClass F R S] (f : F) (r : R) [Invertible r] [ifr : Invertible (f r)] :
     f (⅟ r) = ⅟ (f r) :=
   have h : ifr = Invertible.map f r := Subsingleton.elim _ _
@@ -509,7 +509,7 @@ theorem map_invOf {R : Type _} {S : Type _} {F : Type _} [MulOneClass R] [Monoid
 
 The inverse is computed as `g (⅟(f r))` -/
 @[simps! (config := .lemmasOnly)]
-def Invertible.ofLeftInverse {R : Type _} {S : Type _} {G : Type _} [MulOneClass R] [MulOneClass S]
+def Invertible.ofLeftInverse {R : Type*} {S : Type*} {G : Type*} [MulOneClass R] [MulOneClass S]
     [MonoidHomClass G S R] (f : R → S) (g : G) (r : R) (h : Function.LeftInverse g f)
     [Invertible (f r)] : Invertible r :=
   (Invertible.map g (f r)).copy _ (h r).symm
@@ -518,7 +518,7 @@ def Invertible.ofLeftInverse {R : Type _} {S : Type _} {G : Type _} [MulOneClass
 
 /-- Invertibility on either side of a monoid hom with a left-inverse is equivalent. -/
 @[simps]
-def invertibleEquivOfLeftInverse {R : Type _} {S : Type _} {F G : Type _} [Monoid R] [Monoid S]
+def invertibleEquivOfLeftInverse {R : Type*} {S : Type*} {F G : Type*} [Monoid R] [Monoid S]
     [MonoidHomClass F R S] [MonoidHomClass G S R] (f : F) (g : G) (r : R)
     (h : Function.LeftInverse g f) :
     Invertible (f r) ≃

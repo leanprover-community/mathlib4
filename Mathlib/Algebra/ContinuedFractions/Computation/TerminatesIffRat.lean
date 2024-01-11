@@ -36,7 +36,7 @@ namespace GeneralizedContinuedFraction
 /- ./././Mathport/Syntax/Translate/Command.lean:230:11: unsupported: unusual advanced open style -/
 open GeneralizedContinuedFraction (of)
 
-variable {K : Type _} [LinearOrderedField K] [FloorRing K]
+variable {K : Type*} [LinearOrderedField K] [FloorRing K]
 
 /-
 We will have to constantly coerce along our structures in the following proofs using their provided
@@ -133,8 +133,7 @@ theorem exists_rat_eq_of_terminates (terminates : (of v).Terminates) : ∃ q : �
   obtain ⟨q, conv_eq_q⟩ : ∃ q : ℚ, (of v).convergents n = (↑q : K)
   exact exists_rat_eq_nth_convergent v n
   have : v = (↑q : K) := Eq.trans v_eq_conv conv_eq_q
-  -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5072): was `use`
-  exact ⟨q, this⟩
+  use q, this
 #align generalized_continued_fraction.exists_rat_eq_of_terminates GeneralizedContinuedFraction.exists_rat_eq_of_terminates
 
 end RatOfTerminates
@@ -317,7 +316,7 @@ theorem stream_nth_fr_num_le_fr_num_sub_n_rat :
 theorem exists_nth_stream_eq_none_of_rat (q : ℚ) : ∃ n : ℕ, IntFractPair.stream q n = none := by
   let fract_q_num := (Int.fract q).num; let n := fract_q_num.natAbs + 1
   cases' stream_nth_eq : IntFractPair.stream q n with ifp
-  · use n; exact stream_nth_eq
+  · use n, stream_nth_eq
   · -- arrive at a contradiction since the numerator decreased num + 1 times but every fractional
     -- value is nonnegative.
     have ifp_fr_num_le_q_fr_num_sub_n : ifp.fr.num ≤ fract_q_num - n :=

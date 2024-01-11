@@ -35,7 +35,7 @@ Odd elements are not unified with a multiplicative notion.
 
 open MulOpposite
 
-variable {F α β R : Type _}
+variable {F α β R : Type*}
 
 section Mul
 
@@ -318,7 +318,7 @@ set_option linter.deprecated false in
 #align odd_bit1 odd_bit1
 
 @[simp]
-theorem range_two_mul_add_one (α : Type _) [Semiring α] :
+theorem range_two_mul_add_one (α : Type*) [Semiring α] :
     (Set.range fun x : α => 2 * x + 1) = { a | Odd a } := by
   ext x
   simp [Odd, eq_comm]

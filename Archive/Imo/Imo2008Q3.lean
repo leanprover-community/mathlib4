@@ -31,7 +31,7 @@ Then `p = 2n + k ≥ 2n + √(p - 4) = 2n + √(2n + k - 4) > √(2n)` and we ar
 
 open Real
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 namespace Imo2008Q3
 

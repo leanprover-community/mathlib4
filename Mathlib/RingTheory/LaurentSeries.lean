@@ -29,7 +29,7 @@ noncomputable section
 universe u
 
 /-- A `LaurentSeries` is implemented as a `HahnSeries` with value group `ℤ`. -/
-abbrev LaurentSeries (R : Type _) [Zero R] :=
+abbrev LaurentSeries (R : Type*) [Zero R] :=
   HahnSeries ℤ R
 #align laurent_series LaurentSeries
 
@@ -179,7 +179,7 @@ namespace PowerSeries
 
 open LaurentSeries
 
-variable {R' : Type _} [Semiring R] [Ring R'] (f g : PowerSeries R) (f' g' : PowerSeries R')
+variable {R' : Type*} [Semiring R] [Ring R'] (f g : PowerSeries R) (f' g' : PowerSeries R')
 
 @[norm_cast] -- Porting note: simp can prove this
 theorem coe_zero : ((0 : PowerSeries R) : LaurentSeries R) = 0 :=
@@ -236,7 +236,7 @@ set_option linter.uppercaseLean3 false in
 #align power_series.coe_X PowerSeries.coe_X
 
 @[simp, norm_cast]
-theorem coe_smul {S : Type _} [Semiring S] [Module R S] (r : R) (x : PowerSeries S) :
+theorem coe_smul {S : Type*} [Semiring S] [Module R S] (r : R) (x : PowerSeries S) :
     ((r • x : PowerSeries S) : LaurentSeries S) = r • (ofPowerSeries ℤ S x) := by
   ext
   simp [coeff_coe, coeff_smul, smul_ite]

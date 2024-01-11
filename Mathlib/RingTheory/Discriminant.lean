@@ -3,9 +3,9 @@ Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
+import Mathlib.NumberTheory.NumberField.Basic
 import Mathlib.RingTheory.Trace
 import Mathlib.RingTheory.Norm
-import Mathlib.NumberTheory.NumberField.Basic
 
 #align_import ring_theory.discriminant from "leanprover-community/mathlib"@"3e068ece210655b7b9a9477c3aff38a492400aa1"
 
@@ -78,7 +78,7 @@ theorem discr_def [Fintype ι] (b : ι → B) : discr A b = (traceMatrix A b).de
 
 #align algebra.discr_def Algebra.discr_def
 
-variable {ι' : Type _} [Fintype ι'] [Fintype ι] [DecidableEq ι']
+variable {ι' : Type*} [Fintype ι'] [Fintype ι] [DecidableEq ι']
 
 section Basic
 
@@ -375,6 +375,21 @@ theorem discr_mul_isIntegral_mem_adjoin [IsDomain R] [IsSeparable K L] [IsIntegr
 end Integral
 
 end Field
+
+section Int
+
+/-- Two (finite) ℤ-bases have the same discriminant. -/
+theorem discr_eq_discr [Fintype ι] (b : Basis ι ℤ A) (b' : Basis ι ℤ A) :
+    Algebra.discr ℤ b = Algebra.discr ℤ b' := by
+  convert Algebra.discr_of_matrix_vecMul b' (b'.toMatrix b)
+  · rw [Basis.toMatrix_map_vecMul]
+  · suffices IsUnit (b'.toMatrix b).det by
+      rw [Int.isUnit_iff, ← sq_eq_one_iff] at this
+      rw [this, one_mul]
+    rw [← LinearMap.toMatrix_id_eq_basis_toMatrix b b']
+    exact LinearEquiv.isUnit_det (LinearEquiv.refl ℤ A) b b'
+
+end Int
 
 end Discr
 

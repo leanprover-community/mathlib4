@@ -15,7 +15,7 @@ import Mathlib.Algebra.CharP.Basic
 
 open Matrix
 
-variable {n : Type _} [Fintype n] {R : Type _} [Ring R]
+variable {n : Type*} [Fintype n] {R : Type*} [Ring R]
 
 instance Matrix.charP [DecidableEq n] [Nonempty n] (p : ℕ) [CharP R p] : CharP (Matrix n n R) p :=
   ⟨by

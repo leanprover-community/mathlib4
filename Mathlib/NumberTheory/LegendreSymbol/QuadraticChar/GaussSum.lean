@@ -29,7 +29,7 @@ section SpecialValues
 
 open ZMod MulChar
 
-variable {F : Type _} [Field F] [Fintype F]
+variable {F : Type*} [Field F] [Fintype F]
 
 /-- The value of the quadratic character at `2` -/
 theorem quadraticChar_two [DecidableEq F] (hF : ringChar F ≠ 2) :
@@ -94,7 +94,7 @@ theorem FiniteField.isSquare_neg_two_iff :
 /-- The relation between the values of the quadratic character of one field `F` at the
 cardinality of another field `F'` and of the quadratic character of `F'` at the cardinality
 of `F`. -/
-theorem quadraticChar_card_card [DecidableEq F] (hF : ringChar F ≠ 2) {F' : Type _} [Field F']
+theorem quadraticChar_card_card [DecidableEq F] (hF : ringChar F ≠ 2) {F' : Type*} [Field F']
     [Fintype F'] [DecidableEq F'] (hF' : ringChar F' ≠ 2) (h : ringChar F' ≠ ringChar F) :
     quadraticChar F (Fintype.card F') =
     quadraticChar F' (quadraticChar F (-1) * Fintype.card F) := by

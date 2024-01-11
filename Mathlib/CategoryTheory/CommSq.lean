@@ -27,7 +27,7 @@ Refactor `LiftStruct` from `Arrow.lean` and lifting properties using `CommSq.lea
 
 namespace CategoryTheory
 
-variable {C : Type _} [Category C]
+variable {C : Type*} [Category C]
 
 /-- The proposition that a square
 ```
@@ -75,7 +75,7 @@ end CommSq
 
 namespace Functor
 
-variable {D : Type _} [Category D]
+variable {D : Type*} [Category D]
 
 variable (F : C ⥤ D) {W X Y Z : C} {f : W ⟶ X} {g : W ⟶ Y} {h : X ⟶ Z} {i : Y ⟶ Z}
 

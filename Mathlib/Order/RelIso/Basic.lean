@@ -38,12 +38,12 @@ open Function
 
 universe u v w
 
-variable {α β γ δ : Type _} {r : α → α → Prop} {s : β → β → Prop}
+variable {α β γ δ : Type*} {r : α → α → Prop} {s : β → β → Prop}
   {t : γ → γ → Prop} {u : δ → δ → Prop}
 
 /-- A relation homomorphism with respect to a given pair of relations `r` and `s`
 is a function `f : α → β` such that `r a b → s (f a) (f b)`. -/
-structure RelHom {α β : Type _} (r : α → α → Prop) (s : β → β → Prop) where
+structure RelHom {α β : Type*} (r : α → α → Prop) (s : β → β → Prop) where
   /-- The underlying function of a `RelHom` -/
   toFun : α → β
   /-- A `RelHom` sends related elements to related elements -/
@@ -62,7 +62,7 @@ satisfy `r a b → s (f a) (f b)`.
 The relations `r` and `s` are `outParam`s since figuring them out from a goal is a higher-order
 matching problem that Lean usually can't do unaided.
 -/
-class RelHomClass (F : Type _) {α β : outParam <| Type _} (r : outParam <| α → α → Prop)
+class RelHomClass (F : Type*) {α β : outParam <| Type*} (r : outParam <| α → α → Prop)
   (s : outParam <| β → β → Prop) extends FunLike F α fun _ => β where
   /-- A `RelHomClass` sends related elements to related elements -/
   map_rel : ∀ (f : F) {a b}, r a b → s (f a) (f b)
@@ -74,7 +74,7 @@ end
 
 namespace RelHomClass
 
-variable {F : Type _}
+variable {F : Type*}
 
 protected theorem isIrrefl [RelHomClass F r s] (f : F) : ∀ [IsIrrefl β s], IsIrrefl α r
   | ⟨H⟩ => ⟨fun _ h => H _ (map_rel f h)⟩
@@ -198,7 +198,7 @@ theorem Surjective.wellFounded_iff {f : α → β} (hf : Surjective f)
 
 /-- A relation embedding with respect to a given pair of relations `r` and `s`
 is an embedding `f : α ↪ β` such that `r a b ↔ s (f a) (f b)`. -/
-structure RelEmbedding {α β : Type _} (r : α → α → Prop) (s : β → β → Prop) extends α ↪ β where
+structure RelEmbedding {α β : Type*} (r : α → α → Prop) (s : β → β → Prop) extends α ↪ β where
   /-- Elements are related iff they are related after apply a `RelEmbedding` -/
   map_rel_iff' : ∀ {a b}, s (toEmbedding a) (toEmbedding b) ↔ r a b
 #align rel_embedding RelEmbedding
@@ -208,7 +208,7 @@ is an embedding `f : α ↪ β` such that `r a b ↔ s (f a) (f b)`. -/
 infixl:25 " ↪r " => RelEmbedding
 
 /-- The induced relation on a subtype is an embedding under the natural inclusion. -/
-def Subtype.relEmbedding {X : Type _} (r : X → X → Prop) (p : X → Prop) :
+def Subtype.relEmbedding {X : Type*} (r : X → X → Prop) (p : X → Prop) :
     (Subtype.val : Subtype p → X) ⁻¹'o r ↪r r :=
   ⟨Embedding.subtype p, Iff.rfl⟩
 #align subtype.rel_embedding Subtype.relEmbedding
@@ -616,7 +616,7 @@ def prodLexMap (f : r ↪r s) (g : t ↪r u) : Prod.Lex r t ↪r Prod.Lex s u wh
 end RelEmbedding
 
 /-- A relation isomorphism is an equivalence that is also a relation embedding. -/
-structure RelIso {α β : Type _} (r : α → α → Prop) (s : β → β → Prop) extends α ≃ β where
+structure RelIso {α β : Type*} (r : α → α → Prop) (s : β → β → Prop) extends α ≃ β where
   /-- Elements are related iff they are related after apply a `RelIso` -/
   map_rel_iff' : ∀ {a b}, s (toEquiv a) (toEquiv b) ↔ r a b
 #align rel_iso RelIso

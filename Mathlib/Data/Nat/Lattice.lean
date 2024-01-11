@@ -62,7 +62,7 @@ theorem sInf_empty : sInf ∅ = 0 := by
 #align nat.Inf_empty Nat.sInf_empty
 
 @[simp]
-theorem iInf_of_empty {ι : Sort _} [IsEmpty ι] (f : ι → ℕ) : iInf f = 0 := by
+theorem iInf_of_empty {ι : Sort*} [IsEmpty ι] (f : ι → ℕ) : iInf f = 0 := by
   rw [iInf_of_empty', sInf_empty]
 #align nat.infi_of_empty Nat.iInf_of_empty
 
@@ -172,7 +172,7 @@ theorem sInf_add' {n : ℕ} {p : ℕ → Prop} (h : 0 < sInf { m | p m }) :
 
 section
 
-variable {α : Type _} [CompleteLattice α]
+variable {α : Type*} [CompleteLattice α]
 
 theorem iSup_lt_succ (u : ℕ → α) (n : ℕ) : ⨆ k < n + 1, u k = (⨆ k < n, u k) ⊔ u n := by
   simp [Nat.lt_succ_iff_lt_or_eq, iSup_or, iSup_sup_eq]
@@ -197,7 +197,7 @@ end Nat
 
 namespace Set
 
-variable {α : Type _}
+variable {α : Type*}
 
 theorem biUnion_lt_succ (u : ℕ → Set α) (n : ℕ) : ⋃ k < n + 1, u k = (⋃ k < n, u k) ∪ u n :=
   Nat.iSup_lt_succ u n

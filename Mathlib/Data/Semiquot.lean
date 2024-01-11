@@ -25,7 +25,7 @@ predicate `S`) but are not completely determined.
   is hidden by a quotient construction, allowing for the representation
   of nondeterministic functions. -/
   -- porting notes: removed universe parameter
-structure Semiquot (α : Type _) where mk' ::
+structure Semiquot (α : Type*) where mk' ::
   /-- Set containing some element of `α`-/
   s : Set α
   /-- Assertion of non-emptiness via `Trunc`-/
@@ -34,7 +34,7 @@ structure Semiquot (α : Type _) where mk' ::
 
 namespace Semiquot
 
-variable {α : Type _} {β : Type _}
+variable {α : Type*} {β : Type*}
 
 instance : Membership α (Semiquot α) :=
   ⟨fun a q => a ∈ q.s⟩

@@ -31,7 +31,7 @@ Given a list `l`,
 
 namespace List
 
-variable {α : Type _}
+variable {α : Type*}
 
 namespace Nodup
 

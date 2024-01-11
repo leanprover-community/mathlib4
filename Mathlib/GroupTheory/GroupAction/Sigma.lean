@@ -20,7 +20,7 @@ This file defines instances for arbitrary sum of additive and multiplicative act
 -/
 
 
-variable {ι : Type _} {M N : Type _} {α : ι → Type _}
+variable {ι : Type*} {M N : Type*} {α : ι → Type*}
 
 namespace Sigma
 

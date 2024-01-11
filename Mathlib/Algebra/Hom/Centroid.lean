@@ -43,10 +43,10 @@ centroid
 
 open Function
 
-variable {F α : Type _}
+variable {F α : Type*}
 
 /-- The type of centroid homomorphisms from `α` to `α`. -/
-structure CentroidHom (α : Type _) [NonUnitalNonAssocSemiring α] extends α →+ α where
+structure CentroidHom (α : Type*) [NonUnitalNonAssocSemiring α] extends α →+ α where
   /-- Commutativity of centroid homomorphims with left multiplication. -/
   map_mul_left' (a b : α) : toFun (a * b) = a * toFun b
   /-- Commutativity of centroid homomorphims with right multiplication. -/
@@ -58,7 +58,7 @@ attribute [nolint docBlame] CentroidHom.toAddMonoidHom
 /-- `CentroidHomClass F α` states that `F` is a type of centroid homomorphisms.
 
 You should extend this class when you extend `CentroidHom`. -/
-class CentroidHomClass (F : Type _) (α : outParam <| Type _) [NonUnitalNonAssocSemiring α] extends
+class CentroidHomClass (F : Type*) (α : outParam <| Type*) [NonUnitalNonAssocSemiring α] extends
   AddMonoidHomClass F α α where
   /-- Commutativity of centroid homomorphims with left multiplication. -/
   map_mul_left (f : F) (a b : α) : f (a * b) = a * f b

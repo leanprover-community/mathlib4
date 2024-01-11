@@ -41,7 +41,7 @@ variable {T : ℝ} [hT : Fact (0 < T)]
 rational angles with denominators tending to infinity, then it must be almost empty or almost full.
 -/
 theorem ae_empty_or_univ_of_forall_vadd_ae_eq_self {s : Set <| AddCircle T}
-    (hs : NullMeasurableSet s volume) {ι : Type _} {l : Filter ι} [l.NeBot] {u : ι → AddCircle T}
+    (hs : NullMeasurableSet s volume) {ι : Type*} {l : Filter ι} [l.NeBot] {u : ι → AddCircle T}
     (hu₁ : ∀ i, (u i +ᵥ s : Set _) =ᵐ[volume] s) (hu₂ : Tendsto (addOrderOf ∘ u) l atTop) :
     s =ᵐ[volume] (∅ : Set <| AddCircle T) ∨ s =ᵐ[volume] univ := by
   /- Sketch of proof:

@@ -25,7 +25,7 @@ namespace CategoryTheory
 
 open Category
 
-variable {C : Type _} [Category C] [Preadditive C] {ι : Type _} {c : ComplexShape ι}
+variable {C : Type*} [Category C] [Preadditive C] {ι : Type*} {c : ComplexShape ι}
 
 namespace Idempotents
 
@@ -198,7 +198,7 @@ def karoubiHomologicalComplexEquivalence :
   counitIso := KaroubiHomologicalComplexEquivalence.counitIso
 #align category_theory.idempotents.karoubi_homological_complex_equivalence CategoryTheory.Idempotents.karoubiHomologicalComplexEquivalence
 
-variable (α : Type _) [AddRightCancelSemigroup α] [One α]
+variable (α : Type*) [AddRightCancelSemigroup α] [One α]
 
 /-- The equivalence `Karoubi (ChainComplex C α) ≌ ChainComplex (Karoubi C) α`. -/
 @[simps!]
@@ -215,7 +215,7 @@ def karoubiCochainComplexEquivalence :
 
 instance [IsIdempotentComplete C] : IsIdempotentComplete (HomologicalComplex C c) := by
   rw [isIdempotentComplete_iff_of_equivalence
-      ((toKaroubi_equivalence C).mapHomologicalComplex c),
+      ((toKaroubiEquivalence C).mapHomologicalComplex c),
     ← isIdempotentComplete_iff_of_equivalence (karoubiHomologicalComplexEquivalence C c)]
   infer_instance
 

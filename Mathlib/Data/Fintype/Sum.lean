@@ -18,7 +18,7 @@ We provide the `Fintype` instance for the sum of two fintypes.
 
 universe u v
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 open Finset
 
@@ -27,7 +27,7 @@ instance (α : Type u) (β : Type v) [Fintype α] [Fintype β] : Fintype (Sum α
   complete := by rintro (_ | _) <;> simp
 
 @[simp]
-theorem Finset.univ_disjSum_univ {α β : Type _} [Fintype α] [Fintype β] :
+theorem Finset.univ_disjSum_univ {α β : Type*} [Fintype α] [Fintype β] :
     univ.disjSum univ = (univ : Finset (Sum α β)) :=
   rfl
 #align finset.univ_disj_sum_univ Finset.univ_disjSum_univ

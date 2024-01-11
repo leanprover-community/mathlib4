@@ -30,7 +30,7 @@ open Set Filter Metric MeasureTheory TopologicalSpace
 
 open scoped NNReal ENNReal Topology
 
-variable {α : Type _} [MetricSpace α] [SecondCountableTopology α] [MeasurableSpace α] [BorelSpace α]
+variable {α : Type*} [MetricSpace α] [SecondCountableTopology α] [MeasurableSpace α] [BorelSpace α]
 
 variable (μ : Measure α) [IsLocallyFiniteMeasure μ] [IsUnifLocDoublingMeasure μ]
 

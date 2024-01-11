@@ -42,7 +42,7 @@ open FiniteDimensional Polynomial
 
 open BigOperators Polynomial
 
-variable (K L L' : Type _) [Field K] [Field L] [Field L'] [Algebra K L] [Algebra K L']
+variable (K L L' : Type*) [Field K] [Field L] [Field L'] [Algebra K L] [Algebra K L']
 
 /-- `S : IntermediateField K L` is a subset of `L` such that there is a field
 tower `L / S / K`. -/
@@ -221,14 +221,14 @@ protected theorem multiset_sum_mem (m : Multiset L) : (∀ a ∈ m, a ∈ S) →
 
 /-- Product of elements of an intermediate field indexed by a `Finset` is in the intermediate_field.
 -/
-protected theorem prod_mem {ι : Type _} {t : Finset ι} {f : ι → L} (h : ∀ c ∈ t, f c ∈ S) :
+protected theorem prod_mem {ι : Type*} {t : Finset ι} {f : ι → L} (h : ∀ c ∈ t, f c ∈ S) :
     (∏ i in t, f i) ∈ S :=
   prod_mem h
 #align intermediate_field.prod_mem IntermediateField.prod_mem
 
 /-- Sum of elements in an `IntermediateField` indexed by a `Finset` is in the `IntermediateField`.
 -/
-protected theorem sum_mem {ι : Type _} {t : Finset ι} {f : ι → L} (h : ∀ c ∈ t, f c ∈ S) :
+protected theorem sum_mem {ι : Type*} {t : Finset ι} {f : ι → L} (h : ∀ c ∈ t, f c ∈ S) :
     (∑ i in t, f i) ∈ S :=
   sum_mem h
 #align intermediate_field.sum_mem IntermediateField.sum_mem
@@ -344,7 +344,7 @@ instance toField : Field S :=
 #align intermediate_field.to_field IntermediateField.toField
 
 @[simp, norm_cast]
-theorem coe_sum {ι : Type _} [Fintype ι] (f : ι → S) : (↑(∑ i, f i) : L) = ∑ i, (f i : L) := by
+theorem coe_sum {ι : Type*} [Fintype ι] (f : ι → S) : (↑(∑ i, f i) : L) = ∑ i, (f i : L) := by
   classical
     induction' (Finset.univ : Finset ι) using Finset.induction_on with i s hi H
     · simp
@@ -352,7 +352,7 @@ theorem coe_sum {ι : Type _} [Fintype ι] (f : ι → S) : (↑(∑ i, f i) : L
 #align intermediate_field.coe_sum IntermediateField.coe_sum
 
 @[norm_cast] --Porting note: `simp` can prove it
-theorem coe_prod {ι : Type _} [Fintype ι] (f : ι → S) : (↑(∏ i, f i) : L) = ∏ i, (f i : L) := by
+theorem coe_prod {ι : Type*} [Fintype ι] (f : ι → S) : (↑(∏ i, f i) : L) = ∏ i, (f i : L) := by
   classical
     induction' (Finset.univ : Finset ι) using Finset.induction_on with i s hi H
     · simp
@@ -390,15 +390,15 @@ instance algebra : Algebra K S :=
   inferInstanceAs (Algebra K S.toSubsemiring)
 #align intermediate_field.algebra IntermediateField.algebra
 
-instance toAlgebra {R : Type _} [Semiring R] [Algebra L R] : Algebra S R :=
+instance toAlgebra {R : Type*} [Semiring R] [Algebra L R] : Algebra S R :=
   S.toSubalgebra.toAlgebra
 #align intermediate_field.to_algebra IntermediateField.toAlgebra
 
-instance isScalarTower_bot {R : Type _} [Semiring R] [Algebra L R] : IsScalarTower S L R :=
+instance isScalarTower_bot {R : Type*} [Semiring R] [Algebra L R] : IsScalarTower S L R :=
   IsScalarTower.subalgebra _ _ _ S.toSubalgebra
 #align intermediate_field.is_scalar_tower_bot IntermediateField.isScalarTower_bot
 
-instance isScalarTower_mid {R : Type _} [Semiring R] [Algebra L R] [Algebra K R]
+instance isScalarTower_mid {R : Type*} [Semiring R] [Algebra L R] [Algebra K R]
     [IsScalarTower K L R] : IsScalarTower K S R :=
   IsScalarTower.subalgebra' _ _ _ S.toSubalgebra
 #align intermediate_field.is_scalar_tower_mid IntermediateField.isScalarTower_mid
@@ -425,7 +425,7 @@ theorem coe_map (f : L →ₐ[K] L') : (S.map f : Set L') = f '' S :=
   rfl
 #align intermediate_field.coe_map IntermediateField.coe_map
 
-theorem map_map {K L₁ L₂ L₃ : Type _} [Field K] [Field L₁] [Algebra K L₁] [Field L₂] [Algebra K L₂]
+theorem map_map {K L₁ L₂ L₃ : Type*} [Field K] [Field L₁] [Algebra K L₁] [Field L₂] [Algebra K L₂]
     [Field L₃] [Algebra K L₃] (E : IntermediateField K L₁) (f : L₁ →ₐ[K] L₂) (g : L₂ →ₐ[K] L₃) :
     (E.map f).map g = E.map (g.comp f) :=
   SetLike.coe_injective <| Set.image_image _ _ _
@@ -514,7 +514,7 @@ instance AlgHom.inhabited : Inhabited (S →ₐ[K] L) :=
   ⟨S.val⟩
 #align intermediate_field.alg_hom.inhabited IntermediateField.AlgHom.inhabited
 
-theorem aeval_coe {R : Type _} [CommRing R] [Algebra R K] [Algebra R L] [IsScalarTower R K L]
+theorem aeval_coe {R : Type*} [CommRing R] [Algebra R K] [Algebra R L] [IsScalarTower R K L]
     (x : S) (P : R[X]) : aeval (x : L) P = aeval x P := by
   refine' Polynomial.induction_on' P (fun f g hf hg => _) fun n r => _
   · rw [aeval_add, aeval_add, AddMemClass.coe_add, hf, hg]
@@ -523,7 +523,7 @@ theorem aeval_coe {R : Type _} [CommRing R] [Algebra R K] [Algebra R L] [IsScala
     rfl
 #align intermediate_field.aeval_coe IntermediateField.aeval_coe
 
-theorem coe_isIntegral_iff {R : Type _} [CommRing R] [Algebra R K] [Algebra R L]
+theorem coe_isIntegral_iff {R : Type*} [CommRing R] [Algebra R K] [Algebra R L]
     [IsScalarTower R K L] {x : S} : IsIntegral R (x : L) ↔ IsIntegral R x := by
   refine' ⟨fun h => _, fun h => _⟩
   · obtain ⟨P, hPmo, hProot⟩ := h

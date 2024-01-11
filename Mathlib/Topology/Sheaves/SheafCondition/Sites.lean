@@ -132,7 +132,7 @@ end TopCat.Presheaf
 
 namespace TopCat.Opens
 
-variable {X : TopCat} {ι : Type _}
+variable {X : TopCat} {ι : Type*}
 
 theorem coverDense_iff_isBasis [Category ι] (B : ι ⥤ Opens X) :
     CoverDense (Opens.grothendieckTopology X) B ↔ Opens.IsBasis (Set.range B.obj) := by
@@ -189,7 +189,7 @@ open TopCat Opposite
 
 variable {C : Type u} [Category.{v} C]
 
-variable {X : TopCat.{w}} {ι : Type _} {B : ι → Opens X}
+variable {X : TopCat.{w}} {ι : Type*} {B : ι → Opens X}
 
 variable (F : X.Presheaf C) (F' : Sheaf C X) (h : Opens.IsBasis (Set.range B))
 

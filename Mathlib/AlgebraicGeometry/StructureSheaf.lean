@@ -730,7 +730,7 @@ A local representation of a section `s` as fractions `a i / h i` on finitely man
 `basic_open (h i)` can be "normalized" in such a way that `a i * h j = h i * a j` for all `i, j`
 -/
 theorem normalize_finite_fraction_representation (U : Opens (PrimeSpectrum.Top R))
-    (s : (structureSheaf R).1.obj (op U)) {ι : Type _} (t : Finset ι) (a h : ι → R)
+    (s : (structureSheaf R).1.obj (op U)) {ι : Type*} (t : Finset ι) (a h : ι → R)
     (iDh : ∀ i : ι, PrimeSpectrum.basicOpen (h i) ⟶ U)
     (h_cover : U ≤ ⨆ i ∈ t, PrimeSpectrum.basicOpen (h i))
     (hs :
@@ -1019,13 +1019,13 @@ theorem globalSectionsIso_hom (R : CommRingCat) : (globalSectionsIso R).hom = to
 #align algebraic_geometry.structure_sheaf.global_sections_iso_hom AlgebraicGeometry.StructureSheaf.globalSectionsIso_hom
 
 @[simp, reassoc, elementwise]
-theorem toStalk_stalkSpecializes {R : Type _} [CommRing R] {x y : PrimeSpectrum R} (h : x ⤳ y) :
+theorem toStalk_stalkSpecializes {R : Type*} [CommRing R] {x y : PrimeSpectrum R} (h : x ⤳ y) :
     toStalk R y ≫ (structureSheaf R).presheaf.stalkSpecializes h = toStalk R x := by
   dsimp [toStalk]; simp [-toOpen_germ]
 #align algebraic_geometry.structure_sheaf.to_stalk_stalk_specializes AlgebraicGeometry.StructureSheaf.toStalk_stalkSpecializes
 
 @[simp, reassoc, elementwise]
-theorem localizationToStalk_stalkSpecializes {R : Type _} [CommRing R] {x y : PrimeSpectrum R}
+theorem localizationToStalk_stalkSpecializes {R : Type*} [CommRing R] {x y : PrimeSpectrum R}
     (h : x ⤳ y) :
     StructureSheaf.localizationToStalk R y ≫ (structureSheaf R).presheaf.stalkSpecializes h =
       CommRingCat.ofHom (PrimeSpectrum.localizationMapOfSpecializes h) ≫
@@ -1040,7 +1040,7 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.structure_sheaf.localizationToStalk_stalk_specializes AlgebraicGeometry.StructureSheaf.localizationToStalk_stalkSpecializes
 
 @[simp, reassoc, elementwise]
-theorem stalkSpecializes_stalk_to_fiber {R : Type _} [CommRing R] {x y : PrimeSpectrum R}
+theorem stalkSpecializes_stalk_to_fiber {R : Type*} [CommRing R] {x y : PrimeSpectrum R}
     (h : x ⤳ y) :
     (structureSheaf R).presheaf.stalkSpecializes h ≫ StructureSheaf.stalkToFiberRingHom R x =
       StructureSheaf.stalkToFiberRingHom R y ≫

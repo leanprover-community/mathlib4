@@ -25,7 +25,7 @@ interval arithmetic.
 
 open Function OrderDual Set
 
-variable {α β γ δ : Type _} {ι : Sort _} {κ : ι → Sort _}
+variable {α β γ δ : Type*} {ι : Sort*} {κ : ι → Sort*}
 
 /-- The nonempty closed intervals in an order.
 
@@ -36,7 +36,7 @@ elements between these endpoints, use the coercion `NonemptyInterval α → Set 
 -- `(x.toProd.fst = y.toProd.fst) → (x.toProd.snd = y.toProd.snd) → x = y`.
 -- this is because in `Std.Tactic.Ext.withExtHyps`, the for-loop goes over
 -- `getStructureFieldsFlattened` instead of `getStructureFields`.
-structure NonemptyInterval (α : Type _) [LE α] extends Prod α α where
+structure NonemptyInterval (α : Type*) [LE α] extends Prod α α where
   /-- The starting point of an interval is smaller than the endpoint. -/
   fst_le_snd : fst ≤ snd
 #align nonempty_interval NonemptyInterval
@@ -256,11 +256,8 @@ theorem coe_ssubset_coe : (s : Set α) ⊂ t ↔ s < t :=
   (@coeHom α _).lt_iff_lt
 #align nonempty_interval.coe_ssubset_coe NonemptyInterval.coe_ssubset_coe
 
--- Porting note: Did I port this correctly?
--- lean3 statement was `(coe_hom : nonempty_interval α → set α) = coe`
--- is it even needed?
 @[simp]
-theorem coe_coeHom : (coeHom : NonemptyInterval α → Set α) = setLike.coe :=
+theorem coe_coeHom : (coeHom : NonemptyInterval α → Set α) = ((↑) : NonemptyInterval α → Set α) :=
   rfl
 #align nonempty_interval.coe_coe_hom NonemptyInterval.coe_coeHom
 
@@ -320,7 +317,7 @@ We represent intervals either as `⊥` or a nonempty interval given by its endpo
 To convert intervals to the set of elements between these endpoints, use the coercion
 `Interval α → Set α`. -/
 @[reducible] -- Porting note: added reducible, it seems to help with coercions
-def Interval (α : Type _) [LE α] :=
+def Interval (α : Type*) [LE α] :=
   WithBot (NonemptyInterval α) -- deriving Inhabited, LE, OrderBot
 #align interval Interval
 
@@ -362,7 +359,7 @@ theorem «exists» {p : Interval α → Prop} : (∃ s, p s) ↔ p ⊥ ∨ ∃ s
 #align interval.exists Interval.exists
 
 instance [IsEmpty α] : Unique (Interval α) :=
-  Option.instUniqueOption
+  inferInstanceAs <| Unique (Option _)
 
 /-- Turn an interval into an interval in the dual order. -/
 def dual : Interval α ≃ Interval αᵒᵈ :=
@@ -435,7 +432,7 @@ theorem dual_map (f : α →o β) (s : Interval α) : dual (s.map f) = s.dual.ma
 variable [BoundedOrder α]
 
 instance boundedOrder : BoundedOrder (Interval α) :=
-  WithBot.instBoundedOrderWithBotLe
+  WithBot.instBoundedOrder
 
 @[simp]
 theorem dual_top : dual (⊤ : Interval α) = ⊤ :=
@@ -534,8 +531,7 @@ section Decidable
 variable [@DecidableRel α (· ≤ ·)]
 
 instance lattice : Lattice (Interval α) :=
-  {
-    Interval.semilatticeSup with
+  { Interval.semilatticeSup with
     inf := fun s t =>
       match s, t with
       | ⊥, _ => ⊥
@@ -759,7 +755,7 @@ theorem coe_sInf [@DecidableRel α (· ≤ ·)] (S : Set (Interval α)) :
   classical -- Porting note: added
   -- Porting note: this `change` was
   -- change ↑ (dite _ _ _) = _
-  change setLike.coe (dite _ _ _) = ⋂ (s : Interval α) (_ : s ∈ S), (s : Set α)
+  change ((dite _ _ _ : Interval α) : Set α) = ⋂ (s : Interval α) (_ : s ∈ S), (s : Set α)
   split_ifs with h
   · ext
     simp [WithBot.some_eq_coe, Interval.forall, h.1, ← forall_and, ← NonemptyInterval.mem_def]
@@ -778,7 +774,8 @@ theorem coe_iInf [@DecidableRel α (· ≤ ·)] (f : ι → Interval α) :
     ↑(⨅ i, f i) = ⋂ i, (f i : Set α) := by simp [iInf]
 #align interval.coe_infi Interval.coe_iInf
 
--- @[simp, norm_cast] -- Porting note: not in simpNF
+-- @[simp] -- Porting note: not in simpNF
+@[norm_cast]
 theorem coe_iInf₂ [@DecidableRel α (· ≤ ·)] (f : ∀ i, κ i → Interval α) :
     ↑(⨅ (i) (j), f i j) = ⋂ (i) (j), (f i j : Set α) := by simp_rw [coe_iInf]
 #align interval.coe_infi₂ Interval.coe_iInf₂

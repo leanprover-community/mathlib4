@@ -20,7 +20,7 @@ open Function
 
 universe u
 
-variable {α β G : Type _}
+variable {α β G : Type*}
 
 section Semigroup
 

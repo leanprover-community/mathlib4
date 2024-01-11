@@ -11,7 +11,7 @@ import Mathlib.Logic.Equiv.List
 In this file we provide instances for `Encodable (Π₀ i, α i)` and `Countable (Π₀ i, α i)`.
 -/
 
-variable {ι : Type _} {α : ι → Type _} [∀ i, Zero (α i)]
+variable {ι : Type*} {α : ι → Type*} [∀ i, Zero (α i)]
 
 instance [Encodable ι] [∀ i, Encodable (α i)] [∀ i (x : α i), Decidable (x ≠ 0)] :
     Encodable (Π₀ i, α i) :=

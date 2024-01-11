@@ -136,7 +136,7 @@ theorem nat_cast_self' (n : ℕ) : (n + 1 : ZMod (n + 1)) = 0 := by
 
 section UniversalProperty
 
-variable {n : ℕ} {R : Type _}
+variable {n : ℕ} {R : Type*}
 
 section
 
@@ -168,7 +168,7 @@ theorem cast_eq_val [NeZero n] (a : ZMod n) : (a : R) = a.val := by
   rfl
 #align zmod.cast_eq_val ZMod.cast_eq_val
 
-variable {S : Type _} [AddGroupWithOne S]
+variable {S : Type*} [AddGroupWithOne S]
 
 @[simp]
 theorem _root_.Prod.fst_zmod_cast (a : ZMod n) : (a : R × S).fst = a := by
@@ -321,7 +321,7 @@ theorem cast_mul (h : m ∣ n) (a b : ZMod n) : ((a * b : ZMod n) : R) = a * b :
 
 See also `ZMod.lift` (in `Data.ZMod.Quotient`) for a generalized version working in `AddGroup`s.
 -/
-def castHom (h : m ∣ n) (R : Type _) [Ring R] [CharP R m] : ZMod n →+* R where
+def castHom (h : m ∣ n) (R : Type*) [Ring R] [CharP R m] : ZMod n →+* R where
   toFun := (↑)
   map_zero' := cast_zero
   map_one' := cast_one h
@@ -505,13 +505,13 @@ theorem val_neg_one (n : ℕ) : (-1 : ZMod n.succ).val = n := by
 #align zmod.val_neg_one ZMod.val_neg_one
 
 /-- `-1 : ZMod n` lifts to `n - 1 : R`. This avoids the characteristic assumption in `cast_neg`. -/
-theorem cast_neg_one {R : Type _} [Ring R] (n : ℕ) : ↑(-1 : ZMod n) = (n - 1 : R) := by
+theorem cast_neg_one {R : Type*} [Ring R] (n : ℕ) : ↑(-1 : ZMod n) = (n - 1 : R) := by
   cases' n with n
   · dsimp [ZMod, ZMod.cast]; simp
   · rw [← nat_cast_val, val_neg_one, Nat.cast_succ, add_sub_cancel]
 #align zmod.cast_neg_one ZMod.cast_neg_one
 
-theorem cast_sub_one {R : Type _} [Ring R] {n : ℕ} (k : ZMod n) :
+theorem cast_sub_one {R : Type*} [Ring R] {n : ℕ} (k : ZMod n) :
     ((k - 1 : ZMod n) : R) = (if k = 0 then (n : R) else k) - 1 := by
   split_ifs with hk
   · rw [hk, zero_sub, ZMod.cast_neg_one]
@@ -788,35 +788,14 @@ instance subsingleton_units : Subsingleton (ZMod 2)ˣ :=
   ⟨by decide⟩
 #align zmod.subsingleton_units ZMod.subsingleton_units
 
-theorem le_div_two_iff_lt_neg (n : ℕ) [hn : Fact ((n : ℕ) % 2 = 1)] {x : ZMod n} (hx0 : x ≠ 0) :
-    x.val ≤ (n / 2 : ℕ) ↔ (n / 2 : ℕ) < (-x).val := by
-  haveI npos : NeZero n :=
-    ⟨by
-      rintro rfl
-      simp [fact_iff] at hn⟩
-  have _hn2 : (n : ℕ) / 2 < n :=
-    Nat.div_lt_of_lt_mul ((lt_mul_iff_one_lt_left <| NeZero.pos n).2 (by decide))
-  have hn2' : (n : ℕ) - n / 2 = n / 2 + 1 := by
-    conv =>
-      lhs
-      congr
-      rw [← Nat.succ_sub_one n, Nat.succ_sub <| NeZero.pos n]
-    rw [← Nat.two_mul_odd_div_two hn.1, two_mul, ← Nat.succ_add, add_tsub_cancel_right]
-  have hxn : (n : ℕ) - x.val < n := by
-    rw [tsub_lt_iff_tsub_lt x.val_le le_rfl, tsub_self]
-    rw [← ZMod.nat_cast_zmod_val x] at hx0
-    exact Nat.pos_of_ne_zero fun h => by simp [h] at hx0
-  · conv =>
-      rhs
-      rw [← Nat.succ_le_iff, Nat.succ_eq_add_one, ← hn2', ← zero_add (-x), ← ZMod.nat_cast_self, ←
-        sub_eq_add_neg, ← ZMod.nat_cast_zmod_val x, ← Nat.cast_sub x.val_le, ZMod.val_nat_cast,
-        Nat.mod_eq_of_lt hxn, tsub_le_tsub_iff_left x.val_le]
-#align zmod.le_div_two_iff_lt_neg ZMod.le_div_two_iff_lt_neg
+@[simp]
+theorem add_self_eq_zero_iff_eq_zero {n : ℕ} (hn : Odd n) {a : ZMod n} :
+    a + a = 0 ↔ a = 0 := by
+  rw [Nat.odd_iff, ← Nat.two_dvd_ne_zero, ← Nat.prime_two.coprime_iff_not_dvd] at hn
+  rw [←mul_two, ←@Nat.cast_two (ZMod n), ←ZMod.coe_unitOfCoprime 2 hn, Units.mul_left_eq_zero]
 
-theorem ne_neg_self (n : ℕ) [hn : Fact ((n : ℕ) % 2 = 1)] {a : ZMod n} (ha : a ≠ 0) : a ≠ -a :=
-  fun h => by
-  have : a.val ≤ n / 2 ↔ (n : ℕ) / 2 < (-a).val := le_div_two_iff_lt_neg n ha
-  rwa [← h, ← not_lt, ← not_iff, iff_self, not_true] at this
+theorem ne_neg_self {n : ℕ} (hn : Odd n) {a : ZMod n} (ha : a ≠ 0) : a ≠ -a := by
+  rwa [Ne, eq_neg_iff_add_eq_zero, add_self_eq_zero_iff_eq_zero hn]
 #align zmod.ne_neg_self ZMod.ne_neg_self
 
 theorem neg_one_ne_one {n : ℕ} [Fact (2 < n)] : (-1 : ZMod n) ≠ 1 :=
@@ -1135,7 +1114,7 @@ instance (p : ℕ) [hp : Fact p.Prime] : IsDomain (ZMod p) := by
 
 end ZMod
 
-theorem RingHom.ext_zmod {n : ℕ} {R : Type _} [Semiring R] (f g : ZMod n →+* R) : f = g := by
+theorem RingHom.ext_zmod {n : ℕ} {R : Type*} [Semiring R] (f g : ZMod n →+* R) : f = g := by
   ext a
   obtain ⟨k, rfl⟩ := ZMod.int_cast_surjective a
   let φ : ℤ →+* R := f.comp (Int.castRingHom (ZMod n))
@@ -1146,7 +1125,7 @@ theorem RingHom.ext_zmod {n : ℕ} {R : Type _} [Semiring R] (f g : ZMod n →+*
 
 namespace ZMod
 
-variable {n : ℕ} {R : Type _}
+variable {n : ℕ} {R : Type*}
 
 instance subsingleton_ringHom [Semiring R] : Subsingleton (ZMod n →+* R) :=
   ⟨RingHom.ext_zmod⟩
@@ -1184,7 +1163,7 @@ theorem ringHom_eq_of_ker_eq [CommRing R] (f g : R →+* ZMod n)
 
 section lift
 
-variable (n) {A : Type _} [AddGroup A]
+variable (n) {A : Type*} [AddGroup A]
 
 /-- The map from `ZMod n` induced by `f : ℤ →+ A` that maps `n` to `0`. -/
 --@[simps] --Porting note: removed, simplified LHS of `lift_coe` to something worse.

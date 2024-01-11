@@ -36,7 +36,7 @@ open Finset
 
 universe u v w
 
-variable {R : Type u} {S : Type _}
+variable {R : Type u} {S : Type*}
 
 namespace Polynomial
 
@@ -254,13 +254,6 @@ theorem monic_geom_sum_X {n : ℕ} (hn : n ≠ 0) : (∑ i in range n, (X : R[X]
 set_option linter.uppercaseLean3 false in
 #align polynomial.monic_geom_sum_X Polynomial.monic_geom_sum_X
 
-theorem IsNilpotent.C_mul_X_pow_isNilpotent {r : R} (n : ℕ) (hnil : IsNilpotent r) :
-    IsNilpotent ((C r) * X ^ n) := by
-  refine' Commute.isNilpotent_mul_left (commute_X_pow _ _).symm _
-  obtain ⟨m, hm⟩ := hnil
-  refine' ⟨m, _⟩
-  rw [← C_pow, hm, C_0]
-
 end Semiring
 
 section Ring
@@ -465,58 +458,6 @@ theorem ker_modByMonicHom (hq : q.Monic) :
 
 end ModByMonic
 
-/-- Let `P` be a polynomial over `R`. If its constant term is a unit and its other coefficients are
-nilpotent, then `P` is a unit. -/
-theorem isUnit_of_coeff_isUnit_isNilpotent {P : Polynomial R} (hunit : IsUnit (P.coeff 0))
-    (hnil : ∀ i, i ≠ 0 → IsNilpotent (P.coeff i)) : IsUnit P := by
-  induction' h : P.natDegree using Nat.strong_induction_on with k hind generalizing P
-  by_cases hdeg : P.natDegree = 0
-  { rw [eq_C_of_natDegree_eq_zero hdeg]
-    exact hunit.map C }
-  set P₁ := P.eraseLead with hP₁
-  suffices IsUnit P₁ by
-    rw [← eraseLead_add_monomial_natDegree_leadingCoeff P, ← C_mul_X_pow_eq_monomial]
-    obtain ⟨Q, hQ⟩ := this
-    rw [← hP₁, ← hQ]
-    refine' Commute.IsNilpotent.add_isUnit (IsNilpotent.C_mul_X_pow_isNilpotent _ (hnil _ hdeg))
-      ((Commute.all _ _).mul_left (Commute.all _ _))
-  have hdeg₂ := lt_of_le_of_lt P.eraseLead_natDegree_le (Nat.sub_lt
-    (Nat.pos_of_ne_zero hdeg) zero_lt_one)
-  refine' hind P₁.natDegree _ _ (fun i hi => _) rfl
-  · simp_rw [← h, hdeg₂]
-  · simp_rw [eraseLead_coeff_of_ne _ (Ne.symm hdeg), hunit]
-  · by_cases H : i ≤ P₁.natDegree
-    simp_rw [eraseLead_coeff_of_ne _ (ne_of_lt (lt_of_le_of_lt H hdeg₂)), hnil i hi]
-    simp_rw [coeff_eq_zero_of_natDegree_lt (lt_of_not_ge H), IsNilpotent.zero]
-
-/-- Let `P` be a polynomial over `R`. If `P` is a unit, then all its coefficients are nilpotent,
-except its constant term which is a unit. -/
-theorem coeff_isUnit_isNilpotent_of_isUnit {P : Polynomial R} (hunit : IsUnit P) :
-    IsUnit (P.coeff 0) ∧ (∀ i, i ≠ 0 → IsNilpotent (P.coeff i)) := by
-  obtain ⟨Q, hQ⟩ := IsUnit.exists_right_inv hunit
-  constructor
-  · refine' isUnit_of_mul_eq_one _ (Q.coeff 0) _
-    have h := (mul_coeff_zero P Q).symm
-    rwa [hQ, coeff_one_zero] at h
-  · intros n hn
-    rw [nilpotent_iff_mem_prime]
-    intros I hI
-    let f := mapRingHom (Ideal.Quotient.mk I)
-    have hPQ : degree (f P) = 0 ∧ degree (f Q) = 0 := by
-      rw [← Nat.WithBot.add_eq_zero_iff, ← degree_mul, ← _root_.map_mul, hQ, map_one, degree_one]
-    have hcoeff : (f P).coeff n = 0 := by
-      refine' coeff_eq_zero_of_degree_lt _
-      rw [hPQ.1]
-      exact (@WithBot.coe_pos _ _ _ n).2 (Ne.bot_lt hn)
-    rw [coe_mapRingHom, coeff_map, ← RingHom.mem_ker, Ideal.mk_ker] at hcoeff
-    exact hcoeff
-
-/-- Let `P` be a polynomial over `R`. `P` is a unit if and only if all its coefficients are
-nilpotent, except its constant term which is a unit. -/
-theorem isUnit_iff_coeff_isUnit_isNilpotent (P : Polynomial R) :
-    IsUnit P ↔ IsUnit (P.coeff 0) ∧ (∀ i, i ≠ 0 → IsNilpotent (P.coeff i)) :=
-  ⟨coeff_isUnit_isNilpotent_of_isUnit, fun H => isUnit_of_coeff_isUnit_isNilpotent H.1 H.2⟩
-
 end CommRing
 
 end Polynomial
@@ -672,7 +613,7 @@ theorem mem_leadingCoeff (x) : x ∈ I.leadingCoeff ↔ ∃ p ∈ I, Polynomial.
 /-- If `I` is an ideal, and `pᵢ` is a finite family of polynomials each satisfying
 `∀ k, (pᵢ)ₖ ∈ Iⁿⁱ⁻ᵏ` for some `nᵢ`, then `p = ∏ pᵢ` also satisfies `∀ k, pₖ ∈ Iⁿ⁻ᵏ` with `n = ∑ nᵢ`.
 -/
-theorem _root_.Polynomial.coeff_prod_mem_ideal_pow_tsub {ι : Type _} (s : Finset ι) (f : ι → R[X])
+theorem _root_.Polynomial.coeff_prod_mem_ideal_pow_tsub {ι : Type*} (s : Finset ι) (f : ι → R[X])
     (I : Ideal R) (n : ι → ℕ) (h : ∀ i ∈ s, ∀ (k), (f i).coeff k ∈ I ^ (n i - k)) (k : ℕ) :
     (s.prod f).coeff k ∈ I ^ (s.sum n - k) := by
   classical
@@ -871,9 +812,6 @@ set_option linter.uppercaseLean3 false in
 
 variable {σ}
 
-/- Porting note: this suffers from serious time out issues without removing
-this instance -/
-attribute [-instance] MvPolynomial.instCommRingMvPolynomialToCommSemiring in
 theorem prime_rename_iff (s : Set σ) {p : MvPolynomial s R} :
     Prime (rename ((↑) : s → σ) p) ↔ Prime (p : MvPolynomial s R) := by
   classical
@@ -890,7 +828,7 @@ theorem prime_rename_iff (s : Set σ) {p : MvPolynomial s R} :
         dsimp
         erw [iterToSum_C_X, rename_X, rename_X]
         rfl
-    rw [← @prime_C_iff (MvPolynomial s R) (↥sᶜ) instCommRingMvPolynomialToCommSemiring p]
+    rw [← @prime_C_iff (MvPolynomial s R) (↥sᶜ) instCommRingMvPolynomial p]
     rw [@MulEquiv.prime_iff (MvPolynomial ↑sᶜ (MvPolynomial ↑s R)) (MvPolynomial σ R) (_) (_)]
     rotate_left
     exact eqv.toMulEquiv
@@ -904,7 +842,7 @@ end Prime
 
 namespace Polynomial
 
-instance (priority := 100) {R : Type _} [CommRing R] [IsDomain R] [WfDvdMonoid R] : WfDvdMonoid R[X]
+instance (priority := 100) {R : Type*} [CommRing R] [IsDomain R] [WfDvdMonoid R] : WfDvdMonoid R[X]
     where
   wellFounded_dvdNotUnit := by
     classical
@@ -1192,7 +1130,7 @@ instance {R : Type u} {σ : Type v} [CommRing R] [IsDomain R] :
 -- instance {R : Type u} {σ : Type v} [CommRing R] [IsDomain R] :
 --     IsDomain (MvPolynomial σ R)[X] := inferInstance
 
-theorem map_mvPolynomial_eq_eval₂ {S : Type _} [CommRing S] [Finite σ] (ϕ : MvPolynomial σ R →+* S)
+theorem map_mvPolynomial_eq_eval₂ {S : Type*} [CommRing S] [Finite σ] (ϕ : MvPolynomial σ R →+* S)
     (p : MvPolynomial σ R) :
     ϕ p = MvPolynomial.eval₂ (ϕ.comp MvPolynomial.C) (fun s => ϕ (MvPolynomial.X s)) p := by
   cases nonempty_fintype σ

@@ -17,7 +17,7 @@ space.
 -/
 
 
-variable {V P : Type _} [NormedAddCommGroup V] [NormedSpace ℝ V] [PseudoMetricSpace P]
+variable {V P : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V] [PseudoMetricSpace P]
 
 variable [NormedAddTorsor V P] [StrictConvexSpace ℝ V]
 

@@ -57,7 +57,7 @@ namespace Language
 
 variable {L : Language.{u, v}} {L' : Language}
 
-variable {M : Type w} {N P : Type _} [L.Structure M] [L.Structure N] [L.Structure P]
+variable {M : Type w} {N P : Type*} [L.Structure M] [L.Structure N] [L.Structure P]
 
 variable {α : Type u'} {β : Type v'}
 
@@ -145,7 +145,7 @@ theorem realize_restrictVar [DecidableEq α] {t : L.Term α} {s : Set α} (h : �
 #align first_order.language.term.realize_restrict_var FirstOrder.Language.Term.realize_restrictVar
 
 @[simp]
-theorem realize_restrictVarLeft [DecidableEq α] {γ : Type _} {t : L.Term (Sum α γ)} {s : Set α}
+theorem realize_restrictVarLeft [DecidableEq α] {γ : Type*} {t : L.Term (Sum α γ)} {s : Set α}
     (h : ↑t.varFinsetLeft ⊆ s) {v : α → M} {xs : γ → M} :
     (t.restrictVarLeft (Set.inclusion h)).realize (Sum.elim (v ∘ (↑)) xs) =
       t.realize (Sum.elim v xs) := by
@@ -352,11 +352,11 @@ theorem realize_iff : (φ.iff ψ).Realize v xs ↔ (φ.Realize v xs ↔ ψ.Reali
   simp only [BoundedFormula.iff, realize_inf, realize_imp, and_imp, ← iff_def]
 #align first_order.language.bounded_formula.realize_iff FirstOrder.Language.BoundedFormula.realize_iff
 
-theorem realize_castLe_of_eq {m n : ℕ} (h : m = n) {h' : m ≤ n} {φ : L.BoundedFormula α m}
+theorem realize_castLE_of_eq {m n : ℕ} (h : m = n) {h' : m ≤ n} {φ : L.BoundedFormula α m}
     {v : α → M} {xs : Fin n → M} : (φ.castLE h').Realize v xs ↔ φ.Realize v (xs ∘ castIso h) := by
   subst h
   simp only [castLE_rfl, castIso_refl, OrderIso.coe_refl, Function.comp.right_id]
-#align first_order.language.bounded_formula.realize_cast_le_of_eq FirstOrder.Language.BoundedFormula.realize_castLe_of_eq
+#align first_order.language.bounded_formula.realize_cast_le_of_eq FirstOrder.Language.BoundedFormula.realize_castLE_of_eq
 
 theorem realize_mapTermRel_id [L'.Structure M]
     {ft : ∀ n, L.Term (Sum α (Fin n)) → L'.Term (Sum β (Fin n))}
@@ -412,10 +412,10 @@ theorem realize_liftAt {n n' m : ℕ} {φ : L.BoundedFormula α n} {v : α → M
   · simp [mapTermRel, Realize, realize_rel, realize_liftAt, Sum.elim_comp_map]
   · simp only [mapTermRel, Realize, ih1 hmn, ih2 hmn]
   · have h : k + 1 + n' = k + n' + 1 := by rw [add_assoc, add_comm 1 n', ← add_assoc]
-    simp only [mapTermRel, Realize, realize_castLe_of_eq h, ih3 (hmn.trans k.succ.le_succ)]
+    simp only [mapTermRel, Realize, realize_castLE_of_eq h, ih3 (hmn.trans k.succ.le_succ)]
     refine' forall_congr' fun x => iff_eq_eq.mpr (congr rfl (funext (Fin.lastCases _ fun i => _)))
     · simp only [Function.comp_apply, val_last, snoc_last]
-      by_cases k < m
+      by_cases h : k < m
       · rw [if_pos h]
         refine' (congr rfl (ext _)).trans (snoc_last _ _)
         simp only [coe_orderIso_apply, coe_castAdd, val_last, self_eq_add_right]
@@ -676,7 +676,7 @@ theorem realize_relabel {φ : L.Formula α} {g : α → β} {v : β → M} :
 theorem realize_relabel_sum_inr (φ : L.Formula (Fin n)) {v : Empty → M} {x : Fin n → M} :
     (BoundedFormula.relabel Sum.inr φ).Realize v x ↔ φ.Realize x := by
   rw [BoundedFormula.realize_relabel, Formula.Realize, Sum.elim_comp_inr, Fin.castAdd_zero,
-    castIso_refl, OrderIso.coe_refl, Function.comp.right_id,
+    cast_refl, Function.comp.right_id,
     Subsingleton.elim (x ∘ (natAdd n : Fin 0 → Fin n)) default]
 #align first_order.language.formula.realize_relabel_sum_inr FirstOrder.Language.Formula.realize_relabel_sum_inr
 
@@ -716,10 +716,9 @@ nonrec def Sentence.Realize (φ : L.Sentence) : Prop :=
   φ.Realize (default : _ → M)
 #align first_order.language.sentence.realize FirstOrder.Language.Sentence.Realize
 
+-- input using \|= or \vDash, but not using \models
 @[inherit_doc Sentence.Realize]
-infixl:51
-  " ⊨ " =>-- input using \|= or \vDash, but not using \models
-  Sentence.Realize
+infixl:51 " ⊨ " => Sentence.Realize
 
 @[simp]
 theorem Sentence.realize_not {φ : L.Sentence} : M ⊨ φ.not ↔ ¬M ⊨ φ :=
@@ -801,10 +800,9 @@ class Theory.Model (T : L.Theory) : Prop where
 set_option linter.uppercaseLean3 false in
 #align first_order.language.Theory.model FirstOrder.Language.Theory.Model
 
+-- input using \|= or \vDash, but not using \models
 @[inherit_doc Theory.Model]
-infixl:51
-  " ⊨ " =>-- input using \|= or \vDash, but not using \models
-  Theory.Model
+infixl:51 " ⊨ " => Theory.Model
 
 variable {M} (T : L.Theory)
 

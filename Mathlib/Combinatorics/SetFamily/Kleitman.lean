@@ -30,7 +30,7 @@ open Finset
 
 open Fintype (card)
 
-variable {ι α : Type _} [Fintype α] [DecidableEq α] [Nonempty α]
+variable {ι α : Type*} [Fintype α] [DecidableEq α] [Nonempty α]
 
 /-- **Kleitman's theorem**. An intersecting family on `n` elements contains at most `2ⁿ⁻¹` sets, and
 each further intersecting family takes at most half of the sets that are in no previous family. -/

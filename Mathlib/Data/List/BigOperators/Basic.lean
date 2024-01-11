@@ -17,7 +17,7 @@ counterparts. These are defined in [`Data.List.Defs`](./defs).
 -/
 
 
-variable {ι α M N P M₀ G R : Type _}
+variable {ι α M N P M₀ G R : Type*}
 
 namespace List
 
@@ -96,7 +96,7 @@ theorem prod_hom_rel (l : List ι) {r : M → N → Prop} {f : ι → M} {g : ι
 #align list.sum_hom_rel List.sum_hom_rel
 
 @[to_additive]
-theorem prod_hom (l : List M) {F : Type _} [MonoidHomClass F M N] (f : F) :
+theorem prod_hom (l : List M) {F : Type*} [MonoidHomClass F M N] (f : F) :
     (l.map f).prod = f l.prod := by
   simp only [prod, foldl_map, ← map_one f]
   exact l.foldl_hom f (· * ·) (· * f ·) 1 (fun x y => (map_mul f x y).symm)
@@ -119,7 +119,7 @@ theorem prod_hom₂ (l : List ι) (f : M → N → P) (hf : ∀ a b c d, f (a * 
 #align list.sum_hom₂ List.sum_hom₂
 
 @[to_additive (attr := simp)]
-theorem prod_map_mul {α : Type _} [CommMonoid α] {l : List ι} {f g : ι → α} :
+theorem prod_map_mul {α : Type*} [CommMonoid α] {l : List ι} {f g : ι → α} :
     (l.map fun i => f i * g i).prod = (l.map f).prod * (l.map g).prod :=
   l.prod_hom₂ (· * ·) mul_mul_mul_comm (mul_one _) _ _
 #align list.prod_map_mul List.prod_map_mul
@@ -133,7 +133,7 @@ theorem prod_map_neg {α} [CommMonoid α] [HasDistribNeg α] (l : List α) :
 #align list.prod_map_neg List.prod_map_neg
 
 @[to_additive]
-theorem prod_map_hom (L : List ι) (f : ι → M) {G : Type _} [MonoidHomClass G M N] (g : G) :
+theorem prod_map_hom (L : List ι) (f : ι → M) {G : Type*} [MonoidHomClass G M N] (g : G) :
     (L.map (g ∘ f)).prod = g (L.map f).prod := by rw [← prod_hom, map_map]
 #align list.prod_map_hom List.prod_map_hom
 #align list.sum_map_hom List.sum_map_hom
@@ -148,7 +148,7 @@ theorem prod_isUnit : ∀ {L : List M} (_ : ∀ m ∈ L, IsUnit m), IsUnit L.pro
 #align list.sum_is_add_unit List.sum_isAddUnit
 
 @[to_additive]
-theorem prod_isUnit_iff {α : Type _} [CommMonoid α] {L : List α} :
+theorem prod_isUnit_iff {α : Type*} [CommMonoid α] {L : List α} :
     IsUnit L.prod ↔ ∀ m ∈ L, IsUnit m := by
   refine' ⟨fun h => _, prod_isUnit⟩
   induction' L with m L ih
@@ -582,7 +582,7 @@ theorem prod_pos [StrictOrderedSemiring R] (l : List R) (h : ∀ a ∈ l, (0 : R
 
 /-- A variant of `List.prod_pos` for `CanonicallyOrderedCommSemiring`. -/
 @[simp] lemma _root_.CanonicallyOrderedCommSemiring.list_prod_pos
-    {α : Type _} [CanonicallyOrderedCommSemiring α] [Nontrivial α] :
+    {α : Type*} [CanonicallyOrderedCommSemiring α] [Nontrivial α] :
     ∀ {l : List α}, 0 < l.prod ↔ (∀ x ∈ l, (0 : α) < x)
   | [] => by simp
   | (x :: xs) => by simp_rw [prod_cons, forall_mem_cons, CanonicallyOrderedCommSemiring.mul_pos,
@@ -687,7 +687,7 @@ section MonoidHom
 variable [Monoid M] [Monoid N]
 
 @[to_additive]
-theorem map_list_prod {F : Type _} [MonoidHomClass F M N] (f : F) (l : List M) :
+theorem map_list_prod {F : Type*} [MonoidHomClass F M N] (f : F) (l : List M) :
     f l.prod = (l.map f).prod :=
   (l.prod_hom f).symm
 #align map_list_prod map_list_prod

@@ -33,7 +33,7 @@ it is a member of the support of a member of the collection:
 -/
 
 
-variable {ι M : Type _} [DecidableEq ι]
+variable {ι M : Type*} [DecidableEq ι]
 
 theorem List.support_sum_subset [AddMonoid M] (l : List (ι →₀ M)) :
     l.sum.support ⊆ l.foldr ((· ⊔ ·) ∘ Finsupp.support) ∅ := by

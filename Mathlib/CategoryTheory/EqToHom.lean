@@ -69,8 +69,35 @@ theorem eqToHom_comp_iff {X X' Y : C} (p : X = X') (f : X ⟶ Y) (g : X' ⟶ Y) 
     mpr := fun h => h ▸ by simp [whisker_eq _ h] }
 #align category_theory.eq_to_hom_comp_iff CategoryTheory.eqToHom_comp_iff
 
+/-- We can push `eqToHom` to the left through families of morphisms. -/
+-- The simpNF linter incorrectly claims that this will never apply.
+-- https://github.com/leanprover-community/mathlib4/issues/5049
+@[reassoc (attr := simp, nolint simpNF)]
+theorem eqToHom_naturality {f g : β → C} (z : ∀ b, f b ⟶ g b) {j j' : β} (w : j = j') :
+    z j ≫ eqToHom (by simp [w]) = eqToHom (by simp [w]) ≫ z j' := by
+  cases w
+  simp
+
+/-- A variant on `eqToHom_naturality` that helps Lean identify the families `f` and `g`. -/
+-- The simpNF linter incorrectly claims that this will never apply.
+-- https://github.com/leanprover-community/mathlib4/issues/5049
+@[reassoc (attr := simp, nolint simpNF)]
+theorem eqToHom_iso_hom_naturality {f g : β → C} (z : ∀ b, f b ≅ g b) {j j' : β} (w : j = j') :
+    (z j).hom ≫ eqToHom (by simp [w]) = eqToHom (by simp [w]) ≫ (z j').hom := by
+  cases w
+  simp
+
+/-- A variant on `eqToHom_naturality` that helps Lean identify the families `f` and `g`. -/
+-- The simpNF linter incorrectly claims that this will never apply.
+-- https://github.com/leanprover-community/mathlib4/issues/5049
+@[reassoc (attr := simp, nolint simpNF)]
+theorem eqToHom_iso_inv_naturality {f g : β → C} (z : ∀ b, f b ≅ g b) {j j' : β} (w : j = j') :
+    (z j).inv ≫ eqToHom (by simp [w]) = eqToHom (by simp [w]) ≫ (z j').inv := by
+  cases w
+  simp
+
 /- Porting note: simpNF complains about this not reducing but it is clearly used
-in `congrArg_mrp_hom_left`. It has been no-linted. -/
+in `congrArg_mpr_hom_left`. It has been no-linted. -/
 /-- Reducible form of congrArg_mpr_hom_left -/
 @[simp, nolint simpNF]
 theorem congrArg_cast_hom_left {X Y Z : C} (p : X = Y) (q : Y ⟶ Z) :
@@ -292,7 +319,7 @@ theorem eq_conj_eqToHom {X Y : C} (f : X ⟶ Y) : f = eqToHom rfl ≫ f ≫ eqTo
   simp only [Category.id_comp, eqToHom_refl, Category.comp_id]
 #align category_theory.eq_conj_eq_to_hom CategoryTheory.eq_conj_eqToHom
 
-theorem dcongr_arg {ι : Type _} {F G : ι → C} (α : ∀ i, F i ⟶ G i) {i j : ι} (h : i = j) :
+theorem dcongr_arg {ι : Type*} {F G : ι → C} (α : ∀ i, F i ⟶ G i) {i j : ι} (h : i = j) :
     α i = eqToHom (congr_arg F h) ≫ α j ≫ eqToHom (congr_arg G h.symm) := by
   subst h
   simp

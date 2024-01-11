@@ -39,16 +39,16 @@ open Function
 
 universe u u' v w x y z
 
-variable {R : Type _} {R₁ : Type _} {R₂ : Type _} {R₃ : Type _}
-variable {k : Type _} {S : Type _} {M : Type _} {M₁ : Type _} {M₂ : Type _} {M₃ : Type _}
-variable {N₁ : Type _} {N₂ : Type _} {N₃ : Type _} {N₄ : Type _} {ι : Type _}
+variable {R : Type*} {R₁ : Type*} {R₂ : Type*} {R₃ : Type*}
+variable {k : Type*} {S : Type*} {M : Type*} {M₁ : Type*} {M₂ : Type*} {M₃ : Type*}
+variable {N₁ : Type*} {N₂ : Type*} {N₃ : Type*} {N₄ : Type*} {ι : Type*}
 
 section
 
 /-- A linear equivalence is an invertible linear map. -/
 --Porting note: TODO @[nolint has_nonempty_instance]
-structure LinearEquiv {R : Type _} {S : Type _} [Semiring R] [Semiring S] (σ : R →+* S)
-  {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M : Type _) (M₂ : Type _)
+structure LinearEquiv {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
+  {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M : Type*) (M₂ : Type*)
   [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂] extends LinearMap σ M M₂, M ≃+ M₂
 #align linear_equiv LinearEquiv
 
@@ -91,9 +91,9 @@ See also `LinearEquivClass F R M M₂` for the case where `σ` is the identity m
 A map `f` between an `R`-module and an `S`-module over a ring homomorphism `σ : R →+* S`
 is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
 `f (c • x) = (σ c) • f x`. -/
-class SemilinearEquivClass (F : Type _) {R S : outParam (Type _)} [Semiring R] [Semiring S]
+class SemilinearEquivClass (F : Type*) {R S : outParam (Type*)} [Semiring R] [Semiring S]
   (σ : outParam <| R →+* S) {σ' : outParam <| S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
-  (M M₂ : outParam (Type _)) [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂] extends
+  (M M₂ : outParam (Type*)) [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂] extends
   AddEquivClass F M M₂ where
   /-- Applying a semilinear equivalence `f` over `σ` to `r • x ` equals `σ r • f x`. -/
   map_smulₛₗ : ∀ (f : F) (r : R) (x : M), f (r • x) = σ r • f x
@@ -104,7 +104,7 @@ class SemilinearEquivClass (F : Type _) {R S : outParam (Type _)} [Semiring R] [
 /-- `LinearEquivClass F R M M₂` asserts `F` is a type of bundled `R`-linear equivs `M → M₂`.
 This is an abbreviation for `SemilinearEquivClass F (RingHom.id R) M M₂`.
 -/
-abbrev LinearEquivClass (F : Type _) (R M M₂ : outParam (Type _)) [Semiring R] [AddCommMonoid M]
+abbrev LinearEquivClass (F : Type*) (R M M₂ : outParam (Type*)) [Semiring R] [AddCommMonoid M]
     [AddCommMonoid M₂] [Module R M] [Module R M₂] :=
   SemilinearEquivClass F (RingHom.id R) M M₂
 #align linear_equiv_class LinearEquivClass
@@ -113,7 +113,7 @@ end
 
 namespace SemilinearEquivClass
 
-variable (F : Type _) [Semiring R] [Semiring S]
+variable (F : Type*) [Semiring R] [Semiring S]
 
 variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂]
 
@@ -131,7 +131,7 @@ namespace LinearEquiv
 
 section AddCommMonoid
 
-variable {M₄ : Type _}
+variable {M₄ : Type*}
 
 variable [Semiring R] [Semiring S]
 
@@ -278,17 +278,17 @@ def symm (e : M ≃ₛₗ[σ] M₂) : M₂ ≃ₛₗ[σ'] M :=
 
 -- Porting note: this is new
 /-- See Note [custom simps projection] -/
-def Simps.apply {R : Type _} {S : Type _} [Semiring R] [Semiring S]
+def Simps.apply {R : Type*} {S : Type*} [Semiring R] [Semiring S]
     {σ : R →+* S} {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
-    {M : Type _} {M₂ : Type _} [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂]
+    {M : Type*} {M₂ : Type*} [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂]
     (e : M ≃ₛₗ[σ] M₂) : M → M₂ :=
   e
 #align linear_equiv.simps.apply LinearEquiv.Simps.apply
 
 /-- See Note [custom simps projection] -/
-def Simps.symm_apply {R : Type _} {S : Type _} [Semiring R] [Semiring S]
+def Simps.symm_apply {R : Type*} {S : Type*} [Semiring R] [Semiring S]
     {σ : R →+* S} {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
-    {M : Type _} {M₂ : Type _} [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂]
+    {M : Type*} {M₂ : Type*} [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂]
     (e : M ≃ₛₗ[σ] M₂) : M₂ → M :=
   e.symm
 #align linear_equiv.simps.symm_apply LinearEquiv.Simps.symm_apply
@@ -408,19 +408,19 @@ theorem eq_symm_apply {x y} : y = e.symm x ↔ e y = x :=
   e.toEquiv.eq_symm_apply
 #align linear_equiv.eq_symm_apply LinearEquiv.eq_symm_apply
 
-theorem eq_comp_symm {α : Type _} (f : M₂ → α) (g : M₁ → α) : f = g ∘ e₁₂.symm ↔ f ∘ e₁₂ = g :=
+theorem eq_comp_symm {α : Type*} (f : M₂ → α) (g : M₁ → α) : f = g ∘ e₁₂.symm ↔ f ∘ e₁₂ = g :=
   e₁₂.toEquiv.eq_comp_symm f g
 #align linear_equiv.eq_comp_symm LinearEquiv.eq_comp_symm
 
-theorem comp_symm_eq {α : Type _} (f : M₂ → α) (g : M₁ → α) : g ∘ e₁₂.symm = f ↔ g = f ∘ e₁₂ :=
+theorem comp_symm_eq {α : Type*} (f : M₂ → α) (g : M₁ → α) : g ∘ e₁₂.symm = f ↔ g = f ∘ e₁₂ :=
   e₁₂.toEquiv.comp_symm_eq f g
 #align linear_equiv.comp_symm_eq LinearEquiv.comp_symm_eq
 
-theorem eq_symm_comp {α : Type _} (f : α → M₁) (g : α → M₂) : f = e₁₂.symm ∘ g ↔ e₁₂ ∘ f = g :=
+theorem eq_symm_comp {α : Type*} (f : α → M₁) (g : α → M₂) : f = e₁₂.symm ∘ g ↔ e₁₂ ∘ f = g :=
   e₁₂.toEquiv.eq_symm_comp f g
 #align linear_equiv.eq_symm_comp LinearEquiv.eq_symm_comp
 
-theorem symm_comp_eq {α : Type _} (f : α → M₁) (g : α → M₂) : e₁₂.symm ∘ g = f ↔ g = e₁₂ ∘ f :=
+theorem symm_comp_eq {α : Type*} (f : α → M₁) (g : α → M₂) : e₁₂.symm ∘ g = f ↔ g = e₁₂ ∘ f :=
   e₁₂.toEquiv.symm_comp_eq f g
 #align linear_equiv.symm_comp_eq LinearEquiv.symm_comp_eq
 
@@ -635,6 +635,18 @@ theorem restrictScalars_inj (f g : M ≃ₗ[S] M₂) :
 
 end RestrictScalars
 
+theorem _root_.Module.End_isUnit_iff [Module R M] (f : Module.End R M) :
+    IsUnit f ↔ Function.Bijective f :=
+  ⟨fun h =>
+    Function.bijective_iff_has_inverse.mpr <|
+      ⟨h.unit.inv,
+        ⟨Module.End_isUnit_inv_apply_apply_of_isUnit h,
+        Module.End_isUnit_apply_inv_apply_of_isUnit h⟩⟩,
+    fun H =>
+    let e : M ≃ₗ[R] M := { f, Equiv.ofBijective f H with }
+    ⟨⟨_, e.symm, LinearMap.ext e.right_inv, LinearMap.ext e.left_inv⟩, rfl⟩⟩
+#align module.End_is_unit_iff Module.End_isUnit_iff
+
 section Automorphisms
 
 variable [Module R M]
@@ -722,7 +734,7 @@ namespace Module
 
 /-- `g : R ≃+* S` is `R`-linear when the module structure on `S` is `Module.compHom S g` . -/
 @[simps]
-def compHom.toLinearEquiv {R S : Type _} [Semiring R] [Semiring S] (g : R ≃+* S) :
+def compHom.toLinearEquiv {R S : Type*} [Semiring R] [Semiring S] (g : R ≃+* S) :
     haveI := compHom S (↑g : R →+* S)
     R ≃ₗ[R] S :=
   letI := compHom S (↑g : R →+* S)

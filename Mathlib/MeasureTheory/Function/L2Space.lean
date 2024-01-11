@@ -25,7 +25,7 @@ is also an inner product space, with inner product defined as `inner f g = ∫ a
 -/
 
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 set_option linter.uppercaseLean3 false
 
@@ -39,7 +39,7 @@ namespace MeasureTheory
 
 section
 
-variable {α F : Type _} {m : MeasurableSpace α} {μ : Measure α} [NormedAddCommGroup F]
+variable {α F : Type*} {m : MeasurableSpace α} {μ : Measure α} [NormedAddCommGroup F]
 
 theorem Memℒp.integrable_sq {f : α → ℝ} (h : Memℒp f 2 μ) : Integrable (fun x => f x ^ 2) μ := by
   simpa [← memℒp_one_iff_integrable] using h.norm_rpow two_ne_zero ENNReal.two_ne_top
@@ -63,9 +63,9 @@ end
 
 section InnerProductSpace
 
-variable {α : Type _} {m : MeasurableSpace α} {p : ℝ≥0∞} {μ : Measure α}
+variable {α : Type*} {m : MeasurableSpace α} {p : ℝ≥0∞} {μ : Measure α}
 
-variable {E 𝕜 : Type _} [IsROrC 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable {E 𝕜 : Type*} [IsROrC 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 -- mathport name: «expr⟪ , ⟫»
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 E _ x y
@@ -113,7 +113,7 @@ end InnerProductSpace
 
 namespace L2
 
-variable {α E F 𝕜 : Type _} [IsROrC 𝕜] [MeasurableSpace α] {μ : Measure α} [NormedAddCommGroup E]
+variable {α E F 𝕜 : Type*} [IsROrC 𝕜] [MeasurableSpace α] {μ : Measure α} [NormedAddCommGroup E]
   [InnerProductSpace 𝕜 E] [NormedAddCommGroup F]
 
 -- mathport name: «expr⟪ , ⟫»
@@ -282,7 +282,7 @@ end L2
 
 section InnerContinuous
 
-variable {α : Type _} [TopologicalSpace α] [MeasureSpace α] [BorelSpace α] {𝕜 : Type _} [IsROrC 𝕜]
+variable {α : Type*} [TopologicalSpace α] [MeasureSpace α] [BorelSpace α] {𝕜 : Type*} [IsROrC 𝕜]
 
 variable (μ : Measure α) [IsFiniteMeasure μ]
 

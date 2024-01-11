@@ -23,7 +23,7 @@ open Classical Polynomial Set Function minpoly
 
 namespace minpoly
 
-variable {A B : Type _}
+variable {A B : Type*}
 
 variable (A) [Field A]
 
@@ -80,14 +80,14 @@ theorem dvd {p : A[X]} (hp : Polynomial.aeval x p = 0) : minpoly A x ∣ p := by
   exact degree_modByMonic_lt _ (monic hx)
 #align minpoly.dvd minpoly.dvd
 
-theorem dvd_map_of_isScalarTower (A K : Type _) {R : Type _} [CommRing A] [Field K] [CommRing R]
+theorem dvd_map_of_isScalarTower (A K : Type*) {R : Type*} [CommRing A] [Field K] [CommRing R]
     [Algebra A K] [Algebra A R] [Algebra K R] [IsScalarTower A K R] (x : R) :
     minpoly K x ∣ (minpoly A x).map (algebraMap A K) := by
   refine' minpoly.dvd K x _
   rw [aeval_map_algebraMap, minpoly.aeval]
 #align minpoly.dvd_map_of_is_scalar_tower minpoly.dvd_map_of_isScalarTower
 
-theorem dvd_map_of_isScalarTower' (R : Type _) {S : Type _} (K L : Type _) [CommRing R]
+theorem dvd_map_of_isScalarTower' (R : Type*) {S : Type*} (K L : Type*) [CommRing R]
     [CommRing S] [Field K] [CommRing L] [Algebra R S] [Algebra R K] [Algebra S L] [Algebra K L]
     [Algebra R L] [IsScalarTower R K L] [IsScalarTower R S L] (s : S) :
     minpoly K (algebraMap S L s) ∣ map (algebraMap R K) (minpoly R s) := by
@@ -97,7 +97,7 @@ theorem dvd_map_of_isScalarTower' (R : Type _) {S : Type _} (K L : Type _) [Comm
 #align minpoly.dvd_map_of_is_scalar_tower' minpoly.dvd_map_of_isScalarTower'
 
 /-- If `y` is a conjugate of `x` over a field `K`, then it is a conjugate over a subring `R`. -/
-theorem aeval_of_isScalarTower (R : Type _) {K T U : Type _} [CommRing R] [Field K] [CommRing T]
+theorem aeval_of_isScalarTower (R : Type*) {K T U : Type*} [CommRing R] [Field K] [CommRing T]
     [Algebra R K] [Algebra K T] [Algebra R T] [IsScalarTower R K T] [CommSemiring U] [Algebra K U]
     [Algebra R U] [IsScalarTower R K U] (x : T) (y : U)
     (hy : Polynomial.aeval y (minpoly K x) = 0) : Polynomial.aeval y (minpoly R x) = 0 :=
@@ -131,7 +131,7 @@ theorem eq_of_irreducible [Nontrivial B] {p : A[X]} (hp1 : Irreducible p)
 We take `h : y = algebraMap L T x` as an argument because `rw h` typically fails
 since `IsIntegral R y` depends on y.
 -/
-theorem eq_of_algebraMap_eq {K S T : Type _} [Field K] [CommRing S] [CommRing T] [Algebra K S]
+theorem eq_of_algebraMap_eq {K S T : Type*} [Field K] [CommRing S] [CommRing T] [Algebra K S]
     [Algebra K T] [Algebra S T] [IsScalarTower K S T] (hST : Function.Injective (algebraMap S T))
     {x : S} {y : T} (hx : IsIntegral K x) (h : y = algebraMap S T x) : minpoly K x = minpoly K y :=
   minpoly.unique _ _ (minpoly.monic hx)
@@ -141,7 +141,7 @@ theorem eq_of_algebraMap_eq {K S T : Type _} [Field K] [CommRing S] [CommRing T]
         (h ▸ root_q : Polynomial.aeval (algebraMap S T x) q = 0))
 #align minpoly.eq_of_algebra_map_eq minpoly.eq_of_algebraMap_eq
 
-theorem add_algebraMap {B : Type _} [CommRing B] [Algebra A B] {x : B} (hx : IsIntegral A x)
+theorem add_algebraMap {B : Type*} [CommRing B] [Algebra A B] {x : B} (hx : IsIntegral A x)
     (a : A) : minpoly A (x + algebraMap A B a) = (minpoly A x).comp (X - C a) := by
   refine' (minpoly.unique _ _ ((minpoly.monic hx).comp_X_sub_C _) _ fun q qmo hq => _).symm
   · simp [aeval_comp]
@@ -155,7 +155,7 @@ theorem add_algebraMap {B : Type _} [CommRing B] [Algebra A B] {x : B} (hx : IsI
       natDegree_X_add_C, mul_one] at H
 #align minpoly.add_algebra_map minpoly.add_algebraMap
 
-theorem sub_algebraMap {B : Type _} [CommRing B] [Algebra A B] {x : B} (hx : IsIntegral A x)
+theorem sub_algebraMap {B : Type*} [CommRing B] [Algebra A B] {x : B} (hx : IsIntegral A x)
     (a : A) : minpoly A (x - algebraMap A B a) = (minpoly A x).comp (X + C a) := by
   simpa [sub_eq_add_neg] using add_algebraMap hx (-a)
 #align minpoly.sub_algebra_map minpoly.sub_algebraMap
@@ -163,12 +163,12 @@ theorem sub_algebraMap {B : Type _} [CommRing B] [Algebra A B] {x : B} (hx : IsI
 section AlgHomFintype
 
 /-- A technical finiteness result. -/
-noncomputable def Fintype.subtypeProd {E : Type _} {X : Set E} (hX : X.Finite) {L : Type _}
+noncomputable def Fintype.subtypeProd {E : Type*} {X : Set E} (hX : X.Finite) {L : Type*}
     (F : E → Multiset L) : Fintype (∀ x : X, { l : L // l ∈ F x }) :=
   @Pi.fintype _ _ _ (Finite.fintype hX) _
 #align minpoly.fintype.subtype_prod minpoly.Fintype.subtypeProd
 
-variable (F E K : Type _) [Field F] [Ring E] [CommRing K] [IsDomain K] [Algebra F E] [Algebra F K]
+variable (F E K : Type*) [Field F] [Ring E] [CommRing K] [IsDomain K] [Algebra F E] [Algebra F K]
   [FiniteDimensional F E]
 
 -- Porting note: removed `noncomputable!` since it seems not to be slow in lean 4,

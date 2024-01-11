@@ -22,7 +22,7 @@ to `↑a - 1`, the other factor is `0` anyway.
 
 open Nat
 
-variable (S : Type _)
+variable (S : Type*)
 
 namespace Nat
 

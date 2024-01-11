@@ -31,19 +31,19 @@ def DistLatCat :=
 
 namespace DistLatCat
 
-instance : CoeSort DistLatCat (Type _) :=
+instance : CoeSort DistLatCat (Type*) :=
   Bundled.coeSort
 
 instance (X : DistLatCat) : DistribLattice X :=
   X.str
 
 /-- Construct a bundled `DistLatCat` from a `DistribLattice` underlying type and typeclass. -/
-def of (α : Type _) [DistribLattice α] : DistLatCat :=
+def of (α : Type*) [DistribLattice α] : DistLatCat :=
   Bundled.of α
 #align DistLat.of DistLatCat.of
 
 @[simp]
-theorem coe_of (α : Type _) [DistribLattice α] : ↥(of α) = α :=
+theorem coe_of (α : Type*) [DistribLattice α] : ↥(of α) = α :=
   rfl
 #align DistLat.coe_of DistLatCat.coe_of
 

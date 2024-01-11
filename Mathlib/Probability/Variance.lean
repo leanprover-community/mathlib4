@@ -43,7 +43,7 @@ open scoped BigOperators MeasureTheory ProbabilityTheory ENNReal NNReal
 
 namespace ProbabilityTheory
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 -- Porting note: this lemma replaces `ENNReal.toReal_bit0`, which does not exist in Lean 4
 private lemma coe_two : ENNReal.toReal 2 = (2 : ℝ) := rfl
@@ -52,17 +52,17 @@ private lemma coe_two : ENNReal.toReal 2 = (2 : ℝ) := rfl
 -- consider `eVariationOn` in `Mathlib.Analysis.BoundedVariation`.
 /-- The `ℝ≥0∞`-valued variance of a real-valued random variable defined as the Lebesgue integral of
 `(X - 𝔼[X])^2`. -/
-def evariance {Ω : Type _} {_ : MeasurableSpace Ω} (X : Ω → ℝ) (μ : Measure Ω) : ℝ≥0∞ :=
+def evariance {Ω : Type*} {_ : MeasurableSpace Ω} (X : Ω → ℝ) (μ : Measure Ω) : ℝ≥0∞ :=
   ∫⁻ ω, (‖X ω - μ[X]‖₊ : ℝ≥0∞) ^ 2 ∂μ
 #align probability_theory.evariance ProbabilityTheory.evariance
 
 /-- The `ℝ`-valued variance of a real-valued random variable defined by applying `ENNReal.toReal`
 to `evariance`. -/
-def variance {Ω : Type _} {_ : MeasurableSpace Ω} (X : Ω → ℝ) (μ : Measure Ω) : ℝ :=
+def variance {Ω : Type*} {_ : MeasurableSpace Ω} (X : Ω → ℝ) (μ : Measure Ω) : ℝ :=
   (evariance X μ).toReal
 #align probability_theory.variance ProbabilityTheory.variance
 
-variable {Ω : Type _} {m : MeasurableSpace Ω} {X : Ω → ℝ} {μ : Measure Ω}
+variable {Ω : Type*} {m : MeasurableSpace Ω} {X : Ω → ℝ} {μ : Measure Ω}
 
 theorem _root_.MeasureTheory.Memℒp.evariance_lt_top [IsFiniteMeasure μ] (hX : Memℒp X 2 μ) :
     evariance X μ < ∞ := by
@@ -84,7 +84,9 @@ theorem evariance_eq_top [IsFiniteMeasure μ] (hXm : AEStronglyMeasurable X μ) 
     simp only [coe_two, ENNReal.one_toReal, ENNReal.rpow_two, Ne.def]
     exact ENNReal.rpow_lt_top_of_nonneg (by linarith) h.ne
   refine' hX _
-  convert this.add (memℒp_const <| μ[X])
+  -- Porting note: `μ[X]` without whitespace is ambiguous as it could be GetElem,
+  -- and `convert` cannot disambiguate based on typeclass inference failure.
+  convert this.add (memℒp_const <| μ [X])
   ext ω
   rw [Pi.add_apply, sub_add_cancel]
 #align probability_theory.evariance_eq_top ProbabilityTheory.evariance_eq_top
@@ -132,7 +134,9 @@ theorem _root_.MeasureTheory.Memℒp.variance_eq [IsFiniteMeasure μ] (hX : Mem�
     ENNReal.toReal_ofReal]
   · rfl
   · exact integral_nonneg fun ω => pow_two_nonneg _
-  · convert (hX.sub <| memℒp_const (μ[X])).integrable_norm_rpow two_ne_zero ENNReal.two_ne_top
+  · -- Porting note: `μ[X]` without whitespace is ambiguous as it could be GetElem,
+    -- and `convert` cannot disambiguate based on typeclass inference failure.
+    convert (hX.sub <| memℒp_const (μ [X])).integrable_norm_rpow two_ne_zero ENNReal.two_ne_top
       with ω
     simp only [Pi.sub_apply, Real.norm_eq_abs, coe_two, ENNReal.one_toReal,
       Real.rpow_two, sq_abs, abs_pow]
@@ -192,7 +196,7 @@ theorem variance_smul (c : ℝ) (X : Ω → ℝ) (μ : Measure Ω) :
   variance_mul c X μ
 #align probability_theory.variance_smul ProbabilityTheory.variance_smul
 
-theorem variance_smul' {A : Type _} [CommSemiring A] [Algebra A ℝ] (c : A) (X : Ω → ℝ)
+theorem variance_smul' {A : Type*} [CommSemiring A] [Algebra A ℝ] (c : A) (X : Ω → ℝ)
     (μ : Measure Ω) : variance (c • X) μ = c ^ 2 • variance X μ := by
   convert variance_smul (algebraMap A ℝ c) X μ using 1
   · congr; simp only [algebraMap_smul]
@@ -313,7 +317,7 @@ theorem IndepFun.variance_add [@IsProbabilityMeasure Ω _ ℙ] {X Y : Ω → ℝ
 -- Porting note: supplied `MeasurableSpace Ω` argument of `hs`, `h` by unification
 /-- The variance of a finite sum of pairwise independent random variables is the sum of the
 variances. -/
-theorem IndepFun.variance_sum [@IsProbabilityMeasure Ω _ ℙ] {ι : Type _} {X : ι → Ω → ℝ}
+theorem IndepFun.variance_sum [@IsProbabilityMeasure Ω _ ℙ] {ι : Type*} {X : ι → Ω → ℝ}
     {s : Finset ι} (hs : ∀ i ∈ s, @Memℒp _ _ _ (_) (X i) 2 ℙ)
     (h : Set.Pairwise ↑s fun i j => @IndepFun _ _ _ (_) _ _ (X i) (X j) ℙ) :
     Var[∑ i in s, X i] = ∑ i in s, Var[X i] := by

@@ -36,7 +36,7 @@ namespace Function
 
 namespace Injective
 
-variable {M₁ : Type _} {M₂ : Type _} [Mul M₁]
+variable {M₁ : Type*} {M₂ : Type*} [Mul M₁]
 
 /-- A type endowed with `*` is a semigroup, if it admits an injective map that preserves `*` to
 a semigroup. See note [reducible non-instances]. -/
@@ -206,7 +206,7 @@ which has an involutive inversion. See note [reducible non-instances] -/
 @[to_additive (attr := reducible)
 "A type has an involutive negation if it admits a surjective map that
 preserves `-` to a type which has an involutive negation."]
-protected def involutiveInv {M₁ : Type _} [Inv M₁] [InvolutiveInv M₂] (f : M₁ → M₂)
+protected def involutiveInv {M₁ : Type*} [Inv M₁] [InvolutiveInv M₂] (f : M₁ → M₂)
     (hf : Injective f) (inv : ∀ x, f x⁻¹ = (f x)⁻¹) : InvolutiveInv M₁ where
   inv := Inv.inv
   inv_inv x := hf <| by rw [inv, inv, inv_inv]
@@ -362,7 +362,7 @@ end Injective
 
 namespace Surjective
 
-variable {M₁ : Type _} {M₂ : Type _} [Mul M₂]
+variable {M₁ : Type*} {M₂ : Type*} [Mul M₂]
 
 /-- A type endowed with `*` is a semigroup, if it admits a surjective map that preserves `*` from a
 semigroup. See note [reducible non-instances]. -/
@@ -462,7 +462,7 @@ which has an involutive inversion. See note [reducible non-instances] -/
 @[to_additive (attr := reducible)
 "A type has an involutive negation if it admits a surjective map that
 preserves `-` to a type which has an involutive negation."]
-protected def involutiveInv {M₂ : Type _} [Inv M₂] [InvolutiveInv M₁] (f : M₁ → M₂)
+protected def involutiveInv {M₂ : Type*} [Inv M₂] [InvolutiveInv M₁] (f : M₁ → M₂)
     (hf : Surjective f) (inv : ∀ x, f x⁻¹ = (f x)⁻¹) : InvolutiveInv M₂ where
   inv := Inv.inv
   inv_inv := hf.forall.2 fun x => by erw [← inv, ← inv, inv_inv]

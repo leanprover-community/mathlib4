@@ -24,7 +24,7 @@ In this file we define the filters
 Then we prove many lemmas like “if `f → +∞`, then `f ± c → +∞`”.
 -/
 
-variable {ι ι' α β γ : Type _}
+variable {ι ι' α β γ : Type*}
 
 open Set
 
@@ -250,12 +250,12 @@ theorem eventually_forall_le_atBot [Preorder α] {p : α → Prop} :
     (∀ᶠ x in atBot, ∀ y, y ≤ x → p y) ↔ ∀ᶠ x in atBot, p x :=
   eventually_forall_ge_atTop (α := αᵒᵈ)
 
-theorem Tendsto.eventually_forall_ge_atTop {α β : Type _} [Preorder β] {l : Filter α}
+theorem Tendsto.eventually_forall_ge_atTop {α β : Type*} [Preorder β] {l : Filter α}
     {p : β → Prop} {f : α → β} (hf : Tendsto f l atTop) (h_evtl : ∀ᶠ x in atTop, p x) :
     ∀ᶠ x in l, ∀ y, f x ≤ y → p y := by
   rw [←Filter.eventually_forall_ge_atTop] at h_evtl; exact (h_evtl.comap f).filter_mono hf.le_comap
 
-theorem Tendsto.eventually_forall_le_atBot {α β : Type _} [Preorder β] {l : Filter α}
+theorem Tendsto.eventually_forall_le_atBot {α β : Type*} [Preorder β] {l : Filter α}
     {p : β → Prop} {f : α → β} (hf : Tendsto f l atBot) (h_evtl : ∀ᶠ x in atBot, p x) :
     ∀ᶠ x in l, ∀ y, y ≤ f x → p y := by
   rw [←Filter.eventually_forall_le_atBot] at h_evtl; exact (h_evtl.comap f).filter_mono hf.le_comap
@@ -326,6 +326,18 @@ theorem Eventually.exists_forall_of_atBot [SemilatticeInf α] [Nonempty α] {p :
     (h : ∀ᶠ x in atBot, p x) : ∃ a, ∀ b ≤ a, p b :=
   eventually_atBot.mp h
 #align filter.eventually.exists_forall_of_at_bot Filter.Eventually.exists_forall_of_atBot
+
+lemma exists_eventually_atTop [SemilatticeSup α] [Nonempty α] {r : α → β → Prop} :
+    (∃ b, ∀ᶠ a in atTop, r a b) ↔ ∀ᶠ a₀ in atTop, ∃ b, ∀ a ≥ a₀, r a b := by
+  simp_rw [eventually_atTop, ← exists_swap (α := α)]
+  exact exists_congr fun a ↦ .symm <| forall_ge_iff <| Monotone.exists fun _ _ _ hb H n hn ↦
+    H n (hb.trans hn)
+
+lemma exists_eventually_atBot [SemilatticeInf α] [Nonempty α] {r : α → β → Prop} :
+    (∃ b, ∀ᶠ a in atBot, r a b) ↔ ∀ᶠ a₀ in atBot, ∃ b, ∀ a ≤ a₀, r a b := by
+  simp_rw [eventually_atBot, ← exists_swap (α := α)]
+  exact exists_congr fun a ↦ .symm <| forall_le_iff <| Antitone.exists fun _ _ _ hb H n hn ↦
+    H n (hn.trans hb)
 
 theorem frequently_atTop [SemilatticeSup α] [Nonempty α] {p : α → Prop} :
     (∃ᶠ x in atTop, p x) ↔ ∀ a, ∃ b ≥ a, p b :=
@@ -594,7 +606,7 @@ theorem frequently_low_scores [LinearOrder β] [NoMinOrder β] {u : ℕ → β}
   @frequently_high_scores βᵒᵈ _ _ _ hu
 #align filter.frequently_low_scores Filter.frequently_low_scores
 
-theorem strictMono_subseq_of_tendsto_atTop {β : Type _} [LinearOrder β] [NoMaxOrder β] {u : ℕ → β}
+theorem strictMono_subseq_of_tendsto_atTop {β : Type*} [LinearOrder β] [NoMaxOrder β] {u : ℕ → β}
     (hu : Tendsto u atTop atTop) : ∃ φ : ℕ → ℕ, StrictMono φ ∧ StrictMono (u ∘ φ) :=
   let ⟨φ, h, h'⟩ := extraction_of_frequently_atTop (frequently_high_scores hu)
   ⟨φ, h, fun _ m hnm => h' m _ (h hnm)⟩
@@ -1417,13 +1429,13 @@ theorem prod_atBot_atBot_eq [Preorder β₁] [Preorder β₂] :
 #align filter.prod_at_bot_at_bot_eq Filter.prod_atBot_atBot_eq
 
 -- porting note: generalized from `SemilatticeSup` to `Preorder`
-theorem prod_map_atTop_eq {α₁ α₂ β₁ β₂ : Type _} [Preorder β₁] [Preorder β₂]
+theorem prod_map_atTop_eq {α₁ α₂ β₁ β₂ : Type*} [Preorder β₁] [Preorder β₂]
     (u₁ : β₁ → α₁) (u₂ : β₂ → α₂) : map u₁ atTop ×ˢ map u₂ atTop = map (Prod.map u₁ u₂) atTop := by
   rw [prod_map_map_eq, prod_atTop_atTop_eq, Prod.map_def]
 #align filter.prod_map_at_top_eq Filter.prod_map_atTop_eq
 
 -- porting note: generalized from `SemilatticeSup` to `Preorder`
-theorem prod_map_atBot_eq {α₁ α₂ β₁ β₂ : Type _} [Preorder β₁] [Preorder β₂]
+theorem prod_map_atBot_eq {α₁ α₂ β₁ β₂ : Type*} [Preorder β₁] [Preorder β₂]
     (u₁ : β₁ → α₁) (u₂ : β₂ → α₂) : map u₁ atBot ×ˢ map u₂ atBot = map (Prod.map u₁ u₂) atBot :=
   @prod_map_atTop_eq _ _ β₁ᵒᵈ β₂ᵒᵈ _ _ _ _
 #align filter.prod_map_at_bot_eq Filter.prod_map_atBot_eq
@@ -1850,7 +1862,7 @@ theorem not_tendsto_iff_exists_frequently_nmem {x : ι → α} {f : Filter α} {
   simp only [tendsto_iff_forall_eventually_mem, not_forall, exists_prop, Filter.Frequently, not_not]
 #align filter.not_tendsto_iff_exists_frequently_nmem Filter.not_tendsto_iff_exists_frequently_nmem
 
-theorem frequently_iff_seq_frequently {ι : Type _} {l : Filter ι} {p : ι → Prop}
+theorem frequently_iff_seq_frequently {ι : Type*} {l : Filter ι} {p : ι → Prop}
     [hl : l.IsCountablyGenerated] :
     (∃ᶠ n in l, p n) ↔ ∃ x : ℕ → ι, Tendsto x atTop l ∧ ∃ᶠ n : ℕ in atTop, p (x n) := by
   refine' ⟨fun h_freq => _, fun h_exists_freq => _⟩
@@ -1868,7 +1880,7 @@ theorem frequently_iff_seq_frequently {ι : Type _} {l : Filter ι} {p : ι → 
     exact mt (@hx_tendsto _) hx_freq
 #align filter.frequently_iff_seq_frequently Filter.frequently_iff_seq_frequently
 
-theorem eventually_iff_seq_eventually {ι : Type _} {l : Filter ι} {p : ι → Prop}
+theorem eventually_iff_seq_eventually {ι : Type*} {l : Filter ι} {p : ι → Prop}
     [hl : l.IsCountablyGenerated] :
     (∀ᶠ n in l, p n) ↔ ∀ x : ℕ → ι, Tendsto x atTop l → ∀ᶠ n : ℕ in atTop, p (x n) := by
   have : (∀ᶠ n in l, p n) ↔ ¬∃ᶠ n in l, ¬p n := by
@@ -1879,7 +1891,7 @@ theorem eventually_iff_seq_eventually {ι : Type _} {l : Filter ι} {p : ι → 
   simp_rw [not_frequently, not_not]
 #align filter.eventually_iff_seq_eventually Filter.eventually_iff_seq_eventually
 
-theorem subseq_forall_of_frequently {ι : Type _} {x : ℕ → ι} {p : ι → Prop} {l : Filter ι}
+theorem subseq_forall_of_frequently {ι : Type*} {x : ℕ → ι} {p : ι → Prop} {l : Filter ι}
     (h_tendsto : Tendsto x atTop l) (h : ∃ᶠ n in atTop, p (x n)) :
     ∃ ns : ℕ → ℕ, Tendsto (fun n => x (ns n)) atTop l ∧ ∀ n, p (x (ns n)) := by
   rw [tendsto_iff_seq_tendsto] at h_tendsto
@@ -1887,7 +1899,7 @@ theorem subseq_forall_of_frequently {ι : Type _} {x : ℕ → ι} {p : ι → P
   exact ⟨ns, h_tendsto ns (tendsto_atTop_mono hge tendsto_id), hns⟩
 #align filter.subseq_forall_of_frequently Filter.subseq_forall_of_frequently
 
-theorem exists_seq_forall_of_frequently {ι : Type _} {l : Filter ι} {p : ι → Prop}
+theorem exists_seq_forall_of_frequently {ι : Type*} {l : Filter ι} {p : ι → Prop}
     [hl : l.IsCountablyGenerated] (h : ∃ᶠ n in l, p n) :
     ∃ ns : ℕ → ι, Tendsto ns atTop l ∧ ∀ n, p (ns n) := by
   rw [frequently_iff_seq_frequently] at h
@@ -1897,7 +1909,7 @@ theorem exists_seq_forall_of_frequently {ι : Type _} {l : Filter ι} {p : ι �
 #align filter.exists_seq_forall_of_frequently Filter.exists_seq_forall_of_frequently
 
 /-- A sequence converges if every subsequence has a convergent subsequence. -/
-theorem tendsto_of_subseq_tendsto {α ι : Type _} {x : ι → α} {f : Filter α} {l : Filter ι}
+theorem tendsto_of_subseq_tendsto {α ι : Type*} {x : ι → α} {f : Filter α} {l : Filter ι}
     [l.IsCountablyGenerated]
     (hxy :
       ∀ ns : ℕ → ι, Tendsto ns atTop l → ∃ ms : ℕ → ℕ, Tendsto (fun n => x (ns <| ms n)) atTop f) :
@@ -1939,7 +1951,7 @@ open Filter Finset
 
 section
 
-variable {R : Type _} [LinearOrderedSemiring R]
+variable {R : Type*} [LinearOrderedSemiring R]
 
 theorem exists_lt_mul_self (a : R) : ∃ x ≥ 0, a < x * x :=
   let ⟨x, hxa, hx0⟩ :=
@@ -1954,7 +1966,7 @@ theorem exists_le_mul_self (a : R) : ∃ x ≥ 0, a ≤ x * x :=
 
 end
 
-theorem Monotone.piecewise_eventually_eq_iUnion {β : α → Type _} [Preorder ι] {s : ι → Set α}
+theorem Monotone.piecewise_eventually_eq_iUnion {β : α → Type*} [Preorder ι] {s : ι → Set α}
     [∀ i, DecidablePred (· ∈ s i)] [DecidablePred (· ∈ ⋃ i, s i)]
     (hs : Monotone s) (f g : (a : α) → β a) (a : α) :
     ∀ᶠ i in atTop, (s i).piecewise f g a = (⋃ i, s i).piecewise f g a := by
@@ -1964,7 +1976,7 @@ theorem Monotone.piecewise_eventually_eq_iUnion {β : α → Type _} [Preorder �
   · refine eventually_of_forall fun i ↦ ?_
     simp only [Set.piecewise_eq_of_not_mem, not_exists.1 ha i, mt mem_iUnion.1 ha]
 
-theorem Antitone.piecewise_eventually_eq_iInter {β : α → Type _} [Preorder ι] {s : ι → Set α}
+theorem Antitone.piecewise_eventually_eq_iInter {β : α → Type*} [Preorder ι] {s : ι → Set α}
     [∀ i, DecidablePred (· ∈ s i)] [DecidablePred (· ∈ ⋂ i, s i)]
     (hs : Antitone s) (f g : (a : α) → β a) (a : α) :
     ∀ᶠ i in atTop, (s i).piecewise f g a = (⋂ i, s i).piecewise f g a := by

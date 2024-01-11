@@ -345,7 +345,7 @@ theorem aleph0_lt_aleph_one : ℵ₀ < aleph 1 := by
   apply lt_succ
 #align cardinal.aleph_0_lt_aleph_one Cardinal.aleph0_lt_aleph_one
 
-theorem countable_iff_lt_aleph_one {α : Type _} (s : Set α) : s.Countable ↔ #s < aleph 1 := by
+theorem countable_iff_lt_aleph_one {α : Type*} (s : Set α) : s.Countable ↔ #s < aleph 1 := by
   rw [← succ_aleph0, lt_succ_iff, le_aleph0_iff_set_countable]
 #align cardinal.countable_iff_lt_aleph_one Cardinal.countable_iff_lt_aleph_one
 
@@ -573,12 +573,12 @@ theorem mul_aleph0_eq {a : Cardinal} (ha : ℵ₀ ≤ a) : a * ℵ₀ = a :=
 #align cardinal.mul_aleph_0_eq Cardinal.mul_aleph0_eq
 
 --Porting note: removed `simp`, `simp` can prove it
-theorem aleph0_mul_mk_eq {α : Type _} [Infinite α] : ℵ₀ * #α = #α :=
+theorem aleph0_mul_mk_eq {α : Type*} [Infinite α] : ℵ₀ * #α = #α :=
   aleph0_mul_eq (aleph0_le_mk α)
 #align cardinal.aleph_0_mul_mk_eq Cardinal.aleph0_mul_mk_eq
 
 --Porting note: removed `simp`, `simp` can prove it
-theorem mk_mul_aleph0_eq {α : Type _} [Infinite α] : #α * ℵ₀ = #α :=
+theorem mk_mul_aleph0_eq {α : Type*} [Infinite α] : #α * ℵ₀ = #α :=
   mul_aleph0_eq (aleph0_le_mk α)
 #align cardinal.mk_mul_aleph_0_eq Cardinal.mk_mul_aleph0_eq
 
@@ -813,7 +813,7 @@ theorem add_one_eq {a : Cardinal} (ha : ℵ₀ ≤ a) : a + 1 = a :=
 #align cardinal.add_one_eq Cardinal.add_one_eq
 
 --Porting note: removed `simp`, `simp` can prove it
-theorem mk_add_one_eq {α : Type _} [Infinite α] : #α + 1 = #α :=
+theorem mk_add_one_eq {α : Type*} [Infinite α] : #α + 1 = #α :=
   add_one_eq (aleph0_le_mk α)
 #align cardinal.mk_add_one_eq Cardinal.mk_add_one_eq
 
@@ -1090,7 +1090,8 @@ theorem mk_bounded_set_le_of_infinite (α : Type u) [Infinite α] (c : Cardinal)
     refine' le_trans (mk_preimage_of_injective _ _ fun x y => Sum.inl.inj) _
     apply mk_range_le
   rintro ⟨s, ⟨g⟩⟩
-  use fun y => if h : ∃ x : s, g x = y then Sum.inl (Classical.choose h).val else Sum.inr ⟨⟩
+  use fun y => if h : ∃ x : s, g x = y then Sum.inl (Classical.choose h).val
+               else Sum.inr (ULift.up 0)
   apply Subtype.eq; ext x
   constructor
   · rintro ⟨y, h⟩
@@ -1141,19 +1142,19 @@ theorem mk_bounded_subset_le {α : Type u} (s : Set α) (c : Cardinal.{u}) :
 /-! ### Properties of `compl` -/
 
 
-theorem mk_compl_of_infinite {α : Type _} [Infinite α] (s : Set α) (h2 : #s < #α) :
+theorem mk_compl_of_infinite {α : Type*} [Infinite α] (s : Set α) (h2 : #s < #α) :
     #(sᶜ : Set α) = #α := by
   refine' eq_of_add_eq_of_aleph0_le _ h2 (aleph0_le_mk α)
   exact mk_sum_compl s
 #align cardinal.mk_compl_of_infinite Cardinal.mk_compl_of_infinite
 
-theorem mk_compl_finset_of_infinite {α : Type _} [Infinite α] (s : Finset α) :
+theorem mk_compl_finset_of_infinite {α : Type*} [Infinite α] (s : Finset α) :
     #((↑s)ᶜ : Set α) = #α := by
   apply mk_compl_of_infinite
   exact (finset_card_lt_aleph0 s).trans_le (aleph0_le_mk α)
 #align cardinal.mk_compl_finset_of_infinite Cardinal.mk_compl_finset_of_infinite
 
-theorem mk_compl_eq_mk_compl_infinite {α : Type _} [Infinite α] {s t : Set α} (hs : #s < #α)
+theorem mk_compl_eq_mk_compl_infinite {α : Type*} [Infinite α] {s t : Set α} (hs : #s < #α)
     (ht : #t < #α) : #(sᶜ : Set α) = #(tᶜ : Set α) := by
   rw [mk_compl_of_infinite s hs, mk_compl_of_infinite t ht]
 #align cardinal.mk_compl_eq_mk_compl_infinite Cardinal.mk_compl_eq_mk_compl_infinite
@@ -1188,7 +1189,7 @@ theorem mk_compl_eq_mk_compl_finite_same {α : Type u} [Finite α] {s t : Set α
 /-! ### Extending an injection to an equiv -/
 
 
-theorem extend_function {α β : Type _} {s : Set α} (f : s ↪ β)
+theorem extend_function {α β : Type*} {s : Set α} (f : s ↪ β)
     (h : Nonempty ((sᶜ : Set α) ≃ ((range f)ᶜ : Set β))) : ∃ g : α ≃ β, ∀ x : s, g x = f x := by
   intros; have := h; cases' this with g
   let h : α ≃ β :=
@@ -1206,7 +1207,7 @@ theorem extend_function_finite {α : Type u} {β : Type v} [Finite α] {s : Set 
   rw [mk_range_eq_lift.{u, v, max u v}]; exact f.2
 #align cardinal.extend_function_finite Cardinal.extend_function_finite
 
-theorem extend_function_of_lt {α β : Type _} {s : Set α} (f : s ↪ β) (hs : #s < #α)
+theorem extend_function_of_lt {α β : Type*} {s : Set α} (f : s ↪ β) (hs : #s < #α)
     (h : Nonempty (α ≃ β)) : ∃ g : α ≃ β, ∀ x : s, g x = f x := by
   cases fintypeOrInfinite α
   · exact extend_function_finite f h

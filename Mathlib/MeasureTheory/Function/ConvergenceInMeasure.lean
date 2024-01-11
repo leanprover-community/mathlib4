@@ -45,7 +45,7 @@ open scoped NNReal ENNReal MeasureTheory Topology
 
 namespace MeasureTheory
 
-variable {α ι E : Type _} {m : MeasurableSpace α} {μ : Measure α}
+variable {α ι E : Type*} {m : MeasurableSpace α} {μ : Measure α}
 
 /-- A sequence of functions `f` is said to converge in measure to some function `g` if for all
 `ε > 0`, the measure of the set `{x | ε ≤ dist (f i x) (g x)}` tends to 0 as `i` converges along
@@ -139,8 +139,7 @@ theorem tendstoInMeasure_of_tendsto_ae [IsFiniteMeasure μ] (hf : ∀ n, AEStron
   exact hxfg
 #align measure_theory.tendsto_in_measure_of_tendsto_ae MeasureTheory.tendstoInMeasure_of_tendsto_ae
 
--- Porting note: See issue #2220
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 namespace ExistsSeqTendstoAe
 

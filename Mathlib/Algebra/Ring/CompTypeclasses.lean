@@ -11,6 +11,7 @@ import Mathlib.Algebra.Ring.Equiv
 # Propositional typeclasses on several ring homs
 
 This file contains three typeclasses used in the definition of (semi)linear maps:
+* `RingHomId σ`, which expresses the fact that `σ₂₃ = id`
 * `RingHomCompTriple σ₁₂ σ₂₃ σ₁₃`, which expresses the fact that `σ₂₃.comp σ₁₂ = σ₁₃`
 * `RingHomInvPair σ₁₂ σ₂₁`, which states that `σ₁₂` and `σ₂₁` are inverses of each other
 * `RingHomSurjective σ`, which states that `σ` is surjective
@@ -41,9 +42,20 @@ Instances of these typeclasses mostly involving `RingHom.id` are also provided:
 -/
 
 
-variable {R₁ : Type _} {R₂ : Type _} {R₃ : Type _}
+variable {R₁ : Type*} {R₂ : Type*} {R₃ : Type*}
 
 variable [Semiring R₁] [Semiring R₂] [Semiring R₃]
+
+/-- Class that expresses that a ring homomorphism is in fact the identity. -/
+-- This at first seems not very useful. However we need this when considering
+-- modules over some diagram in the category of rings,
+-- e.g. when defining presheaves over a presheaf of rings.
+-- See `Mathlib.Algebra.Category.ModuleCat.Presheaf`.
+class RingHomId {R : Type _} [Semiring R] (σ : R →+* R) : Prop where
+  eq_id : σ = RingHom.id R
+
+instance {R : Type _} [Semiring R] : RingHomId (RingHom.id R) where
+  eq_id := rfl
 
 /-- Class that expresses the fact that three ring homomorphisms form a composition triple. This is
 used to handle composition of semilinear maps. -/

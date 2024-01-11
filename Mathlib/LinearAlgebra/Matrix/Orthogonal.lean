@@ -27,7 +27,7 @@ orthogonal
 
 namespace Matrix
 
-variable {α n m : Type _}
+variable {α n m : Type*}
 
 variable [Mul α] [AddCommMonoid α]
 

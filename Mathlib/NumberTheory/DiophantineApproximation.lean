@@ -149,7 +149,9 @@ theorem exists_nat_abs_mul_sub_round_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
 
 /-- *Dirichlet's approximation theorem:*
 For any real number `ξ` and positive natural `n`, there is a fraction `q`
-such that `q.den ≤ n` and `|ξ - q| ≤ 1/((n+1)*q.den)`. -/
+such that `q.den ≤ n` and `|ξ - q| ≤ 1/((n+1)*q.den)`.
+
+See also `AddCircle.exists_norm_nsmul_le`. -/
 theorem exists_rat_abs_sub_le_and_den_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
     ∃ q : ℚ, |ξ - q| ≤ 1 / ((n + 1) * q.den) ∧ q.den ≤ n := by
   obtain ⟨j, k, hk₀, hk₁, h⟩ := exists_int_int_abs_mul_sub_le ξ n_pos

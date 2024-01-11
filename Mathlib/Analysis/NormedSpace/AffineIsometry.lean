@@ -38,7 +38,7 @@ algebra-homomorphisms.)
 
 open Function Set
 
-variable (𝕜 : Type _) {V V₁ V₂ V₃ V₄ : Type _} {P₁ : Type _} (P P₂ : Type _) {P₃ P₄ : Type _}
+variable (𝕜 : Type*) {V V₁ V₂ V₃ V₄ : Type*} {P₁ : Type*} (P P₂ : Type*) {P₃ P₄ : Type*}
   [NormedField 𝕜] [SeminormedAddCommGroup V] [SeminormedAddCommGroup V₁] [SeminormedAddCommGroup V₂]
   [SeminormedAddCommGroup V₃] [SeminormedAddCommGroup V₄] [NormedSpace 𝕜 V] [NormedSpace 𝕜 V₁]
   [NormedSpace 𝕜 V₂] [NormedSpace 𝕜 V₃] [NormedSpace 𝕜 V₄] [PseudoMetricSpace P] [MetricSpace P₁]
@@ -200,7 +200,7 @@ theorem diam_range : Metric.diam (range f) = Metric.diam (univ : Set P) :=
 #align affine_isometry.diam_range AffineIsometry.diam_range
 
 @[simp]
-theorem comp_continuous_iff {α : Type _} [TopologicalSpace α] {g : α → P} :
+theorem comp_continuous_iff {α : Type*} [TopologicalSpace α] {g : α → P} :
     Continuous (f ∘ g) ↔ Continuous g :=
   f.isometry.comp_continuous_iff
 #align affine_isometry.comp_continuous_iff AffineIsometry.comp_continuous_iff
@@ -671,7 +671,7 @@ theorem diam_image (s : Set P) : Metric.diam (e '' s) = Metric.diam s :=
   e.isometry.diam_image s
 #align affine_isometry_equiv.diam_image AffineIsometryEquiv.diam_image
 
-variable {α : Type _} [TopologicalSpace α]
+variable {α : Type*} [TopologicalSpace α]
 
 @[simp]
 theorem comp_continuousOn_iff {f : α → P} {s : Set α} : ContinuousOn (e ∘ f) s ↔ ContinuousOn f s :=

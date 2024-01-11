@@ -16,7 +16,7 @@ import Mathlib.Data.Set.Finite
 
 open Set
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 section ConditionallyCompleteLattice
 

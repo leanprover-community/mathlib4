@@ -126,7 +126,7 @@ theorem Real.tsum_eq_tsum_fourierIntegral {f : C(ℝ, ℂ)}
 
 section RpowDecay
 
-variable {E : Type _} [NormedAddCommGroup E]
+variable {E : Type*} [NormedAddCommGroup E]
 
 /-- If `f` is `O(x ^ (-b))` at infinity, then so is the function
 `λ x, ‖f.restrict (Icc (x + R) (x + S))‖` for any fixed `R` and `S`. -/

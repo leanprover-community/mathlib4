@@ -38,7 +38,7 @@ The following properties are covered:
 
 -/
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 open scoped Pointwise Classical BigOperators
 
@@ -346,7 +346,7 @@ theorem surjective_ofLocalizationSpan :
   letI := f.toAlgebra
   intro x
   apply Submodule.mem_of_span_eq_top_of_smul_pow_mem
-    (LinearMap.range (Algebra.ofId R S).toLinearMap) s e
+    (LinearMap.range (Algebra.linearMap R S)) s e
   intro r
   obtain ⟨a, e'⟩ := H r (algebraMap _ _ x)
   obtain ⟨b, ⟨_, n, rfl⟩, rfl⟩ := IsLocalization.mk'_surjective (Submonoid.powers (r : R)) a

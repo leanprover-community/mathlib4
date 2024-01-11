@@ -89,14 +89,14 @@ Change of variables in integrals
 -/
 
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 open MeasureTheory MeasureTheory.Measure Metric Filter Set FiniteDimensional Asymptotics
   TopologicalSpace
 
 open scoped NNReal ENNReal Topology Pointwise
 
-variable {E F : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
   [NormedAddCommGroup F] [NormedSpace ℝ F] {s : Set E} {f : E → E} {f' : E → E →L[ℝ] E}
 
 /-!
@@ -1219,7 +1219,7 @@ theorem integral_image_eq_integral_abs_det_fderiv_smul [CompleteSpace F] (hs : M
 #align measure_theory.integral_image_eq_integral_abs_det_fderiv_smul MeasureTheory.integral_image_eq_integral_abs_det_fderiv_smul
 
 -- Porting note: move this to `Topology.Algebra.Module.Basic` when port is over
-theorem det_one_smulRight {𝕜 : Type _} [NormedField 𝕜] (v : 𝕜) :
+theorem det_one_smulRight {𝕜 : Type*} [NormedField 𝕜] (v : 𝕜) :
     ((1 : 𝕜 →L[𝕜] 𝕜).smulRight v).det = v := by
   have : (1 : 𝕜 →L[𝕜] 𝕜).smulRight v = v • (1 : 𝕜 →L[𝕜] 𝕜) := by
     ext1

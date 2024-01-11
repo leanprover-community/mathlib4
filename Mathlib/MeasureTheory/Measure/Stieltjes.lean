@@ -58,14 +58,14 @@ theorem iInf_Ioi_eq_iInf_rat_gt {f : ℝ → ℝ} (x : ℝ) (hf : BddBelow (f ''
 #align infi_Ioi_eq_infi_rat_gt iInf_Ioi_eq_iInf_rat_gt
 
 -- todo after the port: move to topology/algebra/order/left_right_lim
-theorem rightLim_eq_of_tendsto {α β : Type _} [LinearOrder α] [TopologicalSpace β]
+theorem rightLim_eq_of_tendsto {α β : Type*} [LinearOrder α] [TopologicalSpace β]
     [TopologicalSpace α] [OrderTopology α] [T2Space β] {f : α → β} {a : α} {y : β}
     (h : 𝓝[>] a ≠ ⊥) (h' : Tendsto f (𝓝[>] a) (𝓝 y)) : Function.rightLim f a = y :=
   @leftLim_eq_of_tendsto αᵒᵈ _ _ _ _ _ _ f a y h h'
 #align right_lim_eq_of_tendsto rightLim_eq_of_tendsto
 
 -- todo after the port: move to topology/algebra/order/left_right_lim
-theorem rightLim_eq_sInf {α β : Type _} [LinearOrder α] [TopologicalSpace β]
+theorem rightLim_eq_sInf {α β : Type*} [LinearOrder α] [TopologicalSpace β]
     [ConditionallyCompleteLinearOrder β] [OrderTopology β] {f : α → β} (hf : Monotone f) {x : α}
     [TopologicalSpace α] [OrderTopology α] (h : 𝓝[>] x ≠ ⊥) :
     Function.rightLim f x = sInf (f '' Ioi x) :=
@@ -73,7 +73,7 @@ theorem rightLim_eq_sInf {α β : Type _} [LinearOrder α] [TopologicalSpace β]
 #align right_lim_eq_Inf rightLim_eq_sInf
 
 -- todo after the port: move to order/filter/at_top_bot
-theorem exists_seq_monotone_tendsto_atTop_atTop (α : Type _) [SemilatticeSup α] [Nonempty α]
+theorem exists_seq_monotone_tendsto_atTop_atTop (α : Type*) [SemilatticeSup α] [Nonempty α]
     [(atTop : Filter α).IsCountablyGenerated] :
     ∃ xs : ℕ → α, Monotone xs ∧ Tendsto xs atTop atTop := by
   haveI h_ne_bot : (atTop : Filter α).NeBot := atTop_neBot
@@ -100,14 +100,14 @@ theorem exists_seq_monotone_tendsto_atTop_atTop (α : Type _) [SemilatticeSup α
     rw [Finset.mem_range_succ_iff]
 #align exists_seq_monotone_tendsto_at_top_at_top exists_seq_monotone_tendsto_atTop_atTop
 
-theorem exists_seq_antitone_tendsto_atTop_atBot (α : Type _) [SemilatticeInf α] [Nonempty α]
+theorem exists_seq_antitone_tendsto_atTop_atBot (α : Type*) [SemilatticeInf α] [Nonempty α]
     [h2 : (atBot : Filter α).IsCountablyGenerated] :
     ∃ xs : ℕ → α, Antitone xs ∧ Tendsto xs atTop atBot :=
   @exists_seq_monotone_tendsto_atTop_atTop αᵒᵈ _ _ h2
 #align exists_seq_antitone_tendsto_at_top_at_bot exists_seq_antitone_tendsto_atTop_atBot
 
 -- todo after the port: move to topology/algebra/order/monotone_convergence
-theorem iSup_eq_iSup_subseq_of_antitone {ι₁ ι₂ α : Type _} [Preorder ι₂] [CompleteLattice α]
+theorem iSup_eq_iSup_subseq_of_antitone {ι₁ ι₂ α : Type*} [Preorder ι₂] [CompleteLattice α]
     {l : Filter ι₁} [l.NeBot] {f : ι₂ → α} {φ : ι₁ → ι₂} (hf : Antitone f)
     (hφ : Tendsto φ l atBot) : ⨆ i, f i = ⨆ i, f (φ i) :=
   le_antisymm
@@ -119,7 +119,7 @@ theorem iSup_eq_iSup_subseq_of_antitone {ι₁ ι₂ α : Type _} [Preorder ι�
 namespace MeasureTheory
 
 -- todo after the port: move these lemmas to measure_theory/measure/measure_space?
-variable {α : Type _} {mα : MeasurableSpace α}
+variable {α : Type*} {mα : MeasurableSpace α}
 
 theorem tendsto_measure_Ico_atTop [SemilatticeSup α] [NoMaxOrder α]
     [(atTop : Filter α).IsCountablyGenerated] (μ : Measure α) (a : α) :
@@ -216,6 +216,9 @@ instance instCoeFun : CoeFun StieltjesFunction fun _ => ℝ → ℝ :=
 #align stieltjes_function.has_coe_to_fun StieltjesFunction.instCoeFun
 
 initialize_simps_projections StieltjesFunction (toFun → apply)
+
+@[ext] lemma ext {f g : StieltjesFunction} (h : ∀ x, f x = g x) : f = g := by
+  exact (StieltjesFunction.mk.injEq ..).mpr (funext (by exact h))
 
 variable (f : StieltjesFunction)
 
@@ -609,5 +612,39 @@ theorem measure_univ {l u : ℝ} (hfl : Tendsto f atBot (𝓝 l)) (hfu : Tendsto
 instance instIsLocallyFiniteMeasure : IsLocallyFiniteMeasure f.measure :=
   ⟨fun x => ⟨Ioo (x - 1) (x + 1), Ioo_mem_nhds (by linarith) (by linarith), by simp⟩⟩
 #align stieltjes_function.measure.measure_theory.is_locally_finite_measure StieltjesFunction.instIsLocallyFiniteMeasure
+
+lemma eq_of_measure_of_tendsto_atBot (g : StieltjesFunction) {l : ℝ}
+    (hfg : f.measure = g.measure) (hfl : Tendsto f atBot (𝓝 l)) (hgl : Tendsto g atBot (𝓝 l)) :
+    f = g := by
+  ext x
+  have hf := measure_Iic f hfl x
+  rw [hfg, measure_Iic g hgl x, ENNReal.ofReal_eq_ofReal_iff, eq_comm] at hf
+  · simpa using hf
+  · rw [sub_nonneg]
+    exact Monotone.le_of_tendsto g.mono hgl x
+  · rw [sub_nonneg]
+    exact Monotone.le_of_tendsto f.mono hfl x
+
+lemma eq_of_measure_of_eq (g : StieltjesFunction) {y : ℝ}
+    (hfg : f.measure = g.measure) (hy : f y = g y) :
+    f = g := by
+  ext x
+  cases le_total x y with
+  | inl hxy =>
+    have hf := measure_Ioc f x y
+    rw [hfg, measure_Ioc g x y, ENNReal.ofReal_eq_ofReal_iff, eq_comm, hy] at hf
+    · simpa using hf
+    · rw [sub_nonneg]
+      exact g.mono hxy
+    · rw [sub_nonneg]
+      exact f.mono hxy
+  | inr hxy =>
+    have hf := measure_Ioc f y x
+    rw [hfg, measure_Ioc g y x, ENNReal.ofReal_eq_ofReal_iff, eq_comm, hy] at hf
+    · simpa using hf
+    · rw [sub_nonneg]
+      exact g.mono hxy
+    · rw [sub_nonneg]
+      exact f.mono hxy
 
 end StieltjesFunction

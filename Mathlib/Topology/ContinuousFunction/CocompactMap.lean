@@ -41,7 +41,7 @@ section
 /-- `CocompactMapClass F α β` states that `F` is a type of cocompact continuous maps.
 
 You should also extend this typeclass when you extend `CocompactMap`. -/
-class CocompactMapClass (F : Type _) (α β : outParam <| Type _) [TopologicalSpace α]
+class CocompactMapClass (F : Type*) (α β : outParam <| Type*) [TopologicalSpace α]
   [TopologicalSpace β] extends ContinuousMapClass F α β where
   /-- The cocompact filter on `α` tends to the cocompact filter on `β` under the function -/
   cocompact_tendsto (f : F) : Tendsto f (cocompact α) (cocompact β)
@@ -51,7 +51,7 @@ end
 
 namespace CocompactMapClass
 
-variable {F α β : Type _} [TopologicalSpace α] [TopologicalSpace β] [CocompactMapClass F α β]
+variable {F α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [CocompactMapClass F α β]
 
 instance : CoeTC F (CocompactMap α β) :=
   ⟨fun f => ⟨f, cocompact_tendsto f⟩⟩
@@ -64,7 +64,7 @@ namespace CocompactMap
 
 section Basics
 
-variable {α β γ δ : Type _} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
+variable {α β γ δ : Type*} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
   [TopologicalSpace δ]
 
 instance : CocompactMapClass (CocompactMap α β) α β where
@@ -197,7 +197,7 @@ end CocompactMap
 
 /-- A homeomorphism is a cocompact map. -/
 @[simps]
-def Homeomorph.toCocompactMap {α β : Type _} [TopologicalSpace α] [TopologicalSpace β]
+def Homeomorph.toCocompactMap {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
     (f : α ≃ₜ β) : CocompactMap α β where
   toFun := f
   continuous_toFun := f.continuous

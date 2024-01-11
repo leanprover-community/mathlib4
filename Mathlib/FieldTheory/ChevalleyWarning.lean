@@ -48,7 +48,7 @@ open Function hiding eval
 
 open Finset FiniteField
 
-variable {K σ ι : Type _} [Fintype K] [Field K] [Fintype σ] [DecidableEq σ]
+variable {K σ ι : Type*} [Fintype K] [Field K] [Fintype σ] [DecidableEq σ]
 
 local notation "q" => Fintype.card K
 

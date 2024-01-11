@@ -24,7 +24,7 @@ universe v u
 
 open CategoryTheory CategoryTheory.Limits
 
-variable {ι : Type _}
+variable {ι : Type*}
 
 variable {V : Type u} [Category.{v} V] [HasZeroMorphisms V]
 
@@ -323,7 +323,7 @@ theorem homology.map_id : homology.map w w (𝟙 _) (𝟙 _) rfl = 𝟙 _ := by
 #align homology.map_id homology.map_id
 
 /-- Auxiliary lemma for homology computations. -/
-theorem homology.comp_right_eq_comp_left {V : Type _} [Category V] {A₁ B₁ C₁ A₂ B₂ C₂ A₃ B₃ C₃ : V}
+theorem homology.comp_right_eq_comp_left {V : Type*} [Category V] {A₁ B₁ C₁ A₂ B₂ C₂ A₃ B₃ C₃ : V}
     {f₁ : A₁ ⟶ B₁} {g₁ : B₁ ⟶ C₁} {f₂ : A₂ ⟶ B₂} {g₂ : B₂ ⟶ C₂} {f₃ : A₃ ⟶ B₃} {g₃ : B₃ ⟶ C₃}
     {α₁ : Arrow.mk f₁ ⟶ Arrow.mk f₂} {β₁ : Arrow.mk g₁ ⟶ Arrow.mk g₂}
     {α₂ : Arrow.mk f₂ ⟶ Arrow.mk f₃} {β₂ : Arrow.mk g₂ ⟶ Arrow.mk g₃} (p₁ : α₁.right = β₁.left)

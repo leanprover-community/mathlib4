@@ -124,15 +124,15 @@ noncomputable section
 
 section
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
-variable {F : Type _} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
-variable {G : Type _} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
-variable {G' : Type _} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
+variable {G' : Type*} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
 
 /-- A function `f` has the continuous linear map `f'` as derivative along the filter `L` if
 `f x' = f x + f' (x' - x) + o (x' - x)` when `x'` converges along the filter `L`. This definition
@@ -234,7 +234,7 @@ i.e., `n (f (x + (1/n) v) - f x)` converges to `f' v`. More generally, if `c n` 
 and `c n * d n` tends to `v`, then `c n * (f (x + d n) - f x)` tends to `f' v`. This lemma expresses
 this fact, for functions having a derivative within a set. Its specific formulation is useful for
 tangent cone related discussions. -/
-theorem HasFDerivWithinAt.lim (h : HasFDerivWithinAt f f' s x) {α : Type _} (l : Filter α)
+theorem HasFDerivWithinAt.lim (h : HasFDerivWithinAt f f' s x) {α : Type*} (l : Filter α)
     {c : α → 𝕜} {d : α → E} {v : E} (dtop : ∀ᶠ n in l, x + d n ∈ s)
     (clim : Tendsto (fun n => ‖c n‖) l atTop) (cdlim : Tendsto (fun n => c n • d n) l (𝓝 v)) :
     Tendsto (fun n => c n • (f (x + d n) - f x)) l (𝓝 (f' v)) := by
@@ -455,7 +455,7 @@ theorem HasStrictFDerivAt.exists_lipschitzOnWith (hf : HasStrictFDerivAt f f' x)
 #align has_strict_fderiv_at.exists_lipschitz_on_with HasStrictFDerivAt.exists_lipschitzOnWith
 
 /-- Directional derivative agrees with `HasFDeriv`. -/
-theorem HasFDerivAt.lim (hf : HasFDerivAt f f' x) (v : E) {α : Type _} {c : α → 𝕜} {l : Filter α}
+theorem HasFDerivAt.lim (hf : HasFDerivAt f f' x) (v : E) {α : Type*} {c : α → 𝕜} {l : Filter α}
     (hc : Tendsto (fun n => ‖c n‖) l atTop) :
     Tendsto (fun n => c n • (f (x + (c n)⁻¹ • v) - f x)) l (𝓝 (f' v)) := by
   refine' (hasFDerivWithinAt_univ.2 hf).lim _ univ_mem hc _
@@ -1151,17 +1151,32 @@ end
 
 /-! ### Support of derivatives -/
 
-
 section Support
 
 open Function
 
-variable (𝕜 : Type _) {E F : Type _} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F] {f : E → F}
+variable (𝕜 : Type*) {E F : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
+  [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F] {f : E → F} {x : E}
+
+theorem HasStrictFDerivAt.of_not_mem_tsupport (h : x ∉ tsupport f) :
+    HasStrictFDerivAt f (0 : E →L[𝕜] F) x := by
+  rw [not_mem_tsupport_iff_eventuallyEq] at h
+  exact (hasStrictFDerivAt_const (0 : F) x).congr_of_eventuallyEq h.symm
+
+theorem HasFDerivAt.of_not_mem_tsupport (h : x ∉ tsupport f) :
+    HasFDerivAt f (0 : E →L[𝕜] F) x :=
+  (HasStrictFDerivAt.of_not_mem_tsupport 𝕜 h).hasFDerivAt
+
+theorem HasFDerivWithinAt.of_not_mem_tsupport (h : x ∉ tsupport f) :
+    HasFDerivWithinAt f (0 : E →L[𝕜] F) s x :=
+  (HasFDerivAt.of_not_mem_tsupport 𝕜 h).hasFDerivWithinAt
+
+theorem fderiv_of_not_mem_tsupport (h : x ∉ tsupport f) : fderiv 𝕜 f x = 0 :=
+  (HasFDerivAt.of_not_mem_tsupport 𝕜 h).fderiv
 
 theorem support_fderiv_subset : support (fderiv 𝕜 f) ⊆ tsupport f := fun x ↦ by
-  rw [← not_imp_not, not_mem_tsupport_iff_eventuallyEq, nmem_support]
-  exact fun hx => hx.fderiv_eq.trans <| fderiv_const_apply 0
+  rw [← not_imp_not, nmem_support]
+  exact fderiv_of_not_mem_tsupport _
 #align support_fderiv_subset support_fderiv_subset
 
 theorem tsupport_fderiv_subset : tsupport (fderiv 𝕜 f) ⊆ tsupport f :=

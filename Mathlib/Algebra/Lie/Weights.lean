@@ -9,7 +9,7 @@ import Mathlib.Algebra.Lie.Character
 import Mathlib.Algebra.Lie.Engel
 import Mathlib.Algebra.Lie.CartanSubalgebra
 import Mathlib.LinearAlgebra.Eigenspace.Basic
-import Mathlib.RingTheory.TensorProduct
+import Mathlib.LinearAlgebra.TensorProduct.Tower
 
 #align_import algebra.lie.weights from "leanprover-community/mathlib"@"6b0169218d01f2837d79ea2784882009a0da1aa1"
 

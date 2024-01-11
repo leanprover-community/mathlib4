@@ -23,9 +23,9 @@ namespace Asymptotics
 
 set_option linter.uppercaseLean3 false -- is_Theta
 
-variable {α : Type _} {β : Type _} {E : Type _} {F : Type _} {G : Type _} {E' : Type _}
-  {F' : Type _} {G' : Type _} {E'' : Type _} {F'' : Type _} {G'' : Type _} {R : Type _}
-  {R' : Type _} {𝕜 : Type _} {𝕜' : Type _}
+variable {α : Type*} {β : Type*} {E : Type*} {F : Type*} {G : Type*} {E' : Type*}
+  {F' : Type*} {G' : Type*} {E'' : Type*} {F'' : Type*} {G'' : Type*} {R : Type*}
+  {R' : Type*} {𝕜 : Type*} {𝕜' : Type*}
 
 variable [Norm E] [Norm F] [Norm G]
 

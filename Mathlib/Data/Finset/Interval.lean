@@ -21,7 +21,7 @@ and
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 namespace Finset
 

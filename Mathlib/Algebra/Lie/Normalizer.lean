@@ -35,7 +35,7 @@ lie algebra, normalizer
 -/
 
 
-variable {R L M M' : Type _}
+variable {R L M M' : Type*}
 
 variable [CommRing R] [LieRing L] [LieAlgebra R L]
 

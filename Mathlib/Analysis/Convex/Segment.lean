@@ -32,7 +32,7 @@ define `clopenSegment`/`convex.Ico`/`convex.Ioc`?
 -/
 
 
-variable {𝕜 E F G ι : Type _} {π : ι → Type _}
+variable {𝕜 E F G ι : Type*} {π : ι → Type*}
 
 open Function Set
 

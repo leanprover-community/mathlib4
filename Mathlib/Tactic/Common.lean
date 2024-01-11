@@ -42,6 +42,7 @@ import Mathlib.Tactic.Convert
 import Mathlib.Tactic.DeriveToExpr
 import Mathlib.Tactic.Eqns
 import Mathlib.Tactic.Existsi
+import Mathlib.Tactic.ExtractGoal
 import Mathlib.Tactic.ExtractLets
 import Mathlib.Tactic.FailIfNoProgress
 import Mathlib.Tactic.Find
@@ -58,12 +59,14 @@ import Mathlib.Tactic.LabelAttr
 import Mathlib.Tactic.LeftRight
 import Mathlib.Tactic.LibrarySearch
 import Mathlib.Tactic.Lift
+import Mathlib.Tactic.Lint
 import Mathlib.Tactic.MkIffOfInductiveProp
 -- NormCast imports `Mathlib.Algebra.Group.Defs`
 -- import Mathlib.Tactic.NormCast
 -- NormNum imports `Mathlib.Algebra.GroupPower.Lemmas` and `Mathlib.Algebra.Order.Invertible`
 -- import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Tactic.NthRewrite
+import Mathlib.Tactic.Observe
 import Mathlib.Tactic.PermuteGoals
 import Mathlib.Tactic.PrintPrefix
 import Mathlib.Tactic.ProjectionNotation
@@ -79,6 +82,7 @@ import Mathlib.Tactic.Replace
 import Mathlib.Tactic.Rewrites
 import Mathlib.Tactic.RSuffices
 import Mathlib.Tactic.RunCmd
+import Mathlib.Tactic.Says
 import Mathlib.Tactic.ScopedNS
 import Mathlib.Tactic.Set
 import Mathlib.Tactic.SimpIntro

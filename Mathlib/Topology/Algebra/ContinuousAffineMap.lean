@@ -32,7 +32,7 @@ to the notation `E →L[R] F` for `ContinuousLinearMap R E F`.
 
 
 /-- A continuous map of affine spaces. -/
-structure ContinuousAffineMap (R : Type _) {V W : Type _} (P Q : Type _) [Ring R] [AddCommGroup V]
+structure ContinuousAffineMap (R : Type*) {V W : Type*} (P Q : Type*) [Ring R] [AddCommGroup V]
   [Module R V] [TopologicalSpace P] [AddTorsor V P] [AddCommGroup W] [Module R W]
   [TopologicalSpace Q] [AddTorsor W Q] extends P →ᵃ[R] Q where
   cont : Continuous toFun
@@ -43,7 +43,7 @@ notation:25 P " →A[" R "] " Q => ContinuousAffineMap R P Q
 
 namespace ContinuousAffineMap
 
-variable {R V W P Q : Type _} [Ring R]
+variable {R V W P Q : Type*} [Ring R]
 
 variable [AddCommGroup V] [Module R V] [TopologicalSpace P] [AddTorsor V P]
 
@@ -154,7 +154,7 @@ theorem coe_const (q : Q) : (const R P q : P → Q) = Function.const P q := rfl
 noncomputable instance : Inhabited (P →A[R] Q) :=
   ⟨const R P <| Nonempty.some (by infer_instance : Nonempty Q)⟩
 
-variable {R P} {W₂ Q₂ : Type _}
+variable {R P} {W₂ Q₂ : Type*}
 
 variable [AddCommGroup W₂] [Module R W₂] [TopologicalSpace Q₂] [AddTorsor W₂ Q₂]
 
@@ -173,7 +173,7 @@ theorem comp_apply (f : Q →A[R] Q₂) (g : P →A[R] Q) (x : P) : f.comp g x =
 
 section ModuleValuedMaps
 
-variable {S : Type _}
+variable {S : Type*}
 
 variable [TopologicalSpace W]
 
@@ -262,7 +262,7 @@ end ContinuousAffineMap
 
 namespace ContinuousLinearMap
 
-variable {R V W : Type _} [Ring R]
+variable {R V W : Type*} [Ring R]
 
 variable [AddCommGroup V] [Module R V] [TopologicalSpace V]
 

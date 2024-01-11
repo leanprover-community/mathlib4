@@ -31,7 +31,7 @@ open Set Filter TopologicalSpace Function Topology Filter
 
 section TopologicalSemiring
 
-variable (α : Type _)
+variable (α : Type*)
 
 /-- a topological semiring is a semiring `R` where addition and multiplication are continuous.
 We allow for non-unital and non-associative semirings as well.
@@ -135,7 +135,7 @@ end
 
 section
 
-variable {β : Type _} [TopologicalSpace α] [TopologicalSpace β]
+variable {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 
 /-- The product topology on the cartesian product of two topological semirings
   makes the product into a topological semiring. -/
@@ -149,12 +149,12 @@ instance [NonUnitalNonAssocRing α] [NonUnitalNonAssocRing β] [TopologicalRing 
 
 end
 
-instance Pi.instTopologicalSemiring {β : Type _} {C : β → Type _} [∀ b, TopologicalSpace (C b)]
+instance Pi.instTopologicalSemiring {β : Type*} {C : β → Type*} [∀ b, TopologicalSpace (C b)]
     [∀ b, NonUnitalNonAssocSemiring (C b)] [∀ b, TopologicalSemiring (C b)] :
     TopologicalSemiring (∀ b, C b) where
 #align pi.topological_semiring Pi.instTopologicalSemiring
 
-instance Pi.instTopologicalRing {β : Type _} {C : β → Type _} [∀ b, TopologicalSpace (C b)]
+instance Pi.instTopologicalRing {β : Type*} {C : β → Type*} [∀ b, TopologicalSpace (C b)]
     [∀ b, NonUnitalNonAssocRing (C b)] [∀ b, TopologicalRing (C b)] :
     TopologicalRing (∀ b, C b) := ⟨⟩
 #align pi.topological_ring Pi.instTopologicalRing
@@ -196,7 +196,7 @@ end AddOpposite
 
 section
 
-variable {R : Type _} [NonUnitalNonAssocRing R] [TopologicalSpace R]
+variable {R : Type*} [NonUnitalNonAssocRing R] [TopologicalSpace R]
 
 theorem TopologicalRing.of_addGroup_of_nhds_zero [TopologicalAddGroup R]
     (hmul : Tendsto (uncurry ((· * ·) : R → R → R)) (𝓝 0 ×ˢ 𝓝 0) <| 𝓝 0)
@@ -291,7 +291,7 @@ structure RingTopology (α : Type u) [Ring α] extends TopologicalSpace α, Topo
 
 namespace RingTopology
 
-variable {α : Type _} [Ring α]
+variable {α : Type*} [Ring α]
 
 instance inhabited {α : Type u} [Ring α] : Inhabited (RingTopology α) :=
   ⟨let _ : TopologicalSpace α := ⊤;
@@ -341,11 +341,11 @@ instance : CompleteLattice (RingTopology α) :=
 
 /-- Given `f : α → β` and a topology on `α`, the coinduced ring topology on `β` is the finest
 topology such that `f` is continuous and `β` is a topological ring. -/
-def coinduced {α β : Type _} [t : TopologicalSpace α] [Ring β] (f : α → β) : RingTopology β :=
+def coinduced {α β : Type*} [t : TopologicalSpace α] [Ring β] (f : α → β) : RingTopology β :=
   sInf { b : RingTopology β | t.coinduced f ≤ b.toTopologicalSpace }
 #align ring_topology.coinduced RingTopology.coinduced
 
-theorem coinduced_continuous {α β : Type _} [t : TopologicalSpace α] [Ring β] (f : α → β) :
+theorem coinduced_continuous {α β : Type*} [t : TopologicalSpace α] [Ring β] (f : α → β) :
     Continuous[t, (coinduced f).toTopologicalSpace] f :=
   continuous_sInf_rng.2 <| ball_image_iff.2 fun _ => continuous_iff_coinduced_le.2
 #align ring_topology.coinduced_continuous RingTopology.coinduced_continuous
@@ -368,7 +368,7 @@ section AbsoluteValue
 
 /-- Construct an absolute value on a semiring `T` from an absolute value on a semiring `R`
 and an injective ring homomorphism `f : T →+* R` -/
-def AbsoluteValue.comp {R S T : Type _} [Semiring T] [Semiring R] [OrderedSemiring S]
+def AbsoluteValue.comp {R S T : Type*} [Semiring T] [Semiring R] [OrderedSemiring S]
     (v : AbsoluteValue R S) {f : T →+* R} (hf : Function.Injective f) : AbsoluteValue T S where
   toMulHom := v.1.comp f
   nonneg' _ := v.nonneg _

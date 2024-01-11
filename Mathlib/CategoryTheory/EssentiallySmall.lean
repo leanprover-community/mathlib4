@@ -13,7 +13,8 @@ import Mathlib.CategoryTheory.Skeletal
 # Essentially small categories.
 
 A category given by `(C : Type u) [Category.{v} C]` is `w`-essentially small
-if there exists a `SmallModel C : Type w` equipped with `[SmallCategory (SmallModel C)]`.
+if there exists a `SmallModel C : Type w` equipped with `[SmallCategory (SmallModel C)]` and an
+equivalence `C ≌ SmallModel C`.
 
 A category is `w`-locally small if every hom type is `w`-small.
 
@@ -134,16 +135,16 @@ namespace ShrinkHoms
 
 section
 
-variable {C' : Type _}
+variable {C' : Type*}
 
 -- a fresh variable with no category instance attached
 /-- Help the typechecker by explicitly translating from `C` to `ShrinkHoms C`. -/
-def toShrinkHoms {C' : Type _} (X : C') : ShrinkHoms C' :=
+def toShrinkHoms {C' : Type*} (X : C') : ShrinkHoms C' :=
   X
 #align category_theory.shrink_homs.to_shrink_homs CategoryTheory.ShrinkHoms.toShrinkHoms
 
 /-- Help the typechecker by explicitly translating from `ShrinkHoms C` to `C`. -/
-def fromShrinkHoms {C' : Type _} (X : ShrinkHoms C') : C' :=
+def fromShrinkHoms {C' : Type*} (X : ShrinkHoms C') : C' :=
   X
 #align category_theory.shrink_homs.from_shrink_homs CategoryTheory.ShrinkHoms.fromShrinkHoms
 

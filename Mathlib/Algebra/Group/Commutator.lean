@@ -13,11 +13,11 @@ import Mathlib.Data.Bracket
 -/
 
 /-- The commutator of two elements `g₁` and `g₂`. -/
-instance commutatorElement {G : Type _} [Group G] : Bracket G G :=
+instance commutatorElement {G : Type*} [Group G] : Bracket G G :=
   ⟨fun g₁ g₂ ↦ g₁ * g₂ * g₁⁻¹ * g₂⁻¹⟩
 #align commutator_element commutatorElement
 
-theorem commutatorElement_def {G : Type _} [Group G] (g₁ g₂ : G) :
+theorem commutatorElement_def {G : Type*} [Group G] (g₁ g₂ : G) :
   ⁅g₁, g₂⁆ = g₁ * g₂ * g₁⁻¹ * g₂⁻¹ :=
   rfl
 #align commutator_element_def commutatorElement_def

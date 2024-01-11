@@ -17,7 +17,7 @@ closed balls in a semi normed group.
 
 open Metric Set
 
-variable {E : Type _} [i : SeminormedAddCommGroup E] {r : ℝ}
+variable {E : Type*} [i : SeminormedAddCommGroup E] {r : ℝ}
 
 /-- We equip the sphere, in a seminormed group, with a formal operation of negation, namely the
 antipodal map. -/

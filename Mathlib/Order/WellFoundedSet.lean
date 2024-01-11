@@ -47,7 +47,7 @@ Prove that `s` is partial well ordered iff it has no infinite descending chain o
 -/
 
 
-variable {ι α β γ : Type _} {π : ι → Type _}
+variable {ι α β γ : Type*} {π : ι → Type*}
 
 namespace Set
 
@@ -823,7 +823,7 @@ This includes the classical case of Dickson's lemma that `ℕ ^ n` is a well par
 Some generalizations would be possible based on this proof, to include cases where the target is
 partially well ordered, and also to consider the case of `Set.PartiallyWellOrderedOn` instead of
 `Set.IsPwo`. -/
-theorem Pi.isPwo {α : ι → Type _} [∀ i, LinearOrder (α i)] [∀ i, IsWellOrder (α i) (· < ·)]
+theorem Pi.isPwo {α : ι → Type*} [∀ i, LinearOrder (α i)] [∀ i, IsWellOrder (α i) (· < ·)]
     [Finite ι] (s : Set (∀ i, α i)) : s.IsPwo := by
   cases nonempty_fintype ι
   suffices ∀ (s : Finset ι) (f : ℕ → ∀ s, α s),

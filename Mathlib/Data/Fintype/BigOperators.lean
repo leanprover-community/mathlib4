@@ -29,7 +29,7 @@ and should be moved at some point.
 
 universe u v
 
-variable {α : Type _} {β : Type _} {γ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*}
 
 open BigOperators
 
@@ -48,7 +48,7 @@ section
 
 open Finset
 
-variable {ι : Type _} [DecidableEq ι] [Fintype ι]
+variable {ι : Type*} [DecidableEq ι] [Fintype ι]
 
 @[to_additive]
 theorem prod_extend_by_one [CommMonoid α] (s : Finset ι) (f : ι → α) :
@@ -61,7 +61,7 @@ end
 
 section
 
-variable {M : Type _} [Fintype α] [CommMonoid M]
+variable {M : Type*} [Fintype α] [CommMonoid M]
 
 @[to_additive]
 theorem prod_eq_one (f : α → M) (h : ∀ a, f a = 1) : ∏ a, f a = 1 :=
@@ -93,7 +93,7 @@ theorem prod_eq_mul {f : α → M} (a b : α) (h₁ : a ≠ b) (h₂ : ∀ x, x 
 value, so do the terms in that product. -/
 @[to_additive "If a sum of a `Finset` of a subsingleton type has a given
   value, so do the terms in that sum."]
-theorem eq_of_subsingleton_of_prod_eq {ι : Type _} [Subsingleton ι] {s : Finset ι} {f : ι → M}
+theorem eq_of_subsingleton_of_prod_eq {ι : Type*} [Subsingleton ι] {s : Finset ι} {f : ι → M}
     {b : M} (h : ∏ i in s, f i = b) : ∀ i ∈ s, f i = b :=
   Finset.eq_of_card_le_one_of_prod_eq (Finset.card_le_one_of_subsingleton s) h
 #align fintype.eq_of_subsingleton_of_prod_eq Fintype.eq_of_subsingleton_of_prod_eq
@@ -107,7 +107,7 @@ open Finset
 
 section
 
-variable {M : Type _} [Fintype α] [CommMonoid M]
+variable {M : Type*} [Fintype α] [CommMonoid M]
 
 @[to_additive (attr := simp)]
 theorem Fintype.prod_option (f : Option α → M) : ∏ i, f i = f none * ∏ i, f (some i) :=
@@ -120,24 +120,24 @@ end
 open Finset
 
 @[simp]
-nonrec theorem Fintype.card_sigma {α : Type _} (β : α → Type _) [Fintype α] [∀ a, Fintype (β a)] :
+nonrec theorem Fintype.card_sigma {α : Type*} (β : α → Type*) [Fintype α] [∀ a, Fintype (β a)] :
     Fintype.card (Sigma β) = ∑ a, Fintype.card (β a) :=
   card_sigma _ _
 #align fintype.card_sigma Fintype.card_sigma
 
 @[simp]
-theorem Finset.card_pi [DecidableEq α] {δ : α → Type _} (s : Finset α) (t : ∀ a, Finset (δ a)) :
+theorem Finset.card_pi [DecidableEq α] {δ : α → Type*} (s : Finset α) (t : ∀ a, Finset (δ a)) :
     (s.pi t).card = ∏ a in s, card (t a) :=
   Multiset.card_pi _ _
 #align finset.card_pi Finset.card_pi
 
 @[simp]
-theorem Fintype.card_piFinset [DecidableEq α] [Fintype α] {δ : α → Type _} (t : ∀ a, Finset (δ a)) :
+theorem Fintype.card_piFinset [DecidableEq α] [Fintype α] {δ : α → Type*} (t : ∀ a, Finset (δ a)) :
     (Fintype.piFinset t).card = ∏ a, Finset.card (t a) := by simp [Fintype.piFinset, card_map]
 #align fintype.card_pi_finset Fintype.card_piFinset
 
 @[simp]
-theorem Fintype.card_pi {β : α → Type _} [DecidableEq α] [Fintype α] [∀ a, Fintype (β a)] :
+theorem Fintype.card_pi {β : α → Type*} [DecidableEq α] [Fintype α] [∀ a, Fintype (β a)] :
     Fintype.card (∀ a, β a) = ∏ a, Fintype.card (β a) :=
   Fintype.card_piFinset _
 #align fintype.card_pi Fintype.card_pi
@@ -169,7 +169,7 @@ theorem Finset.prod_attach_univ [Fintype α] [CommMonoid β] (f : { a : α // a 
   `Fintype.piFinset t`. `univ.pi t` and `Fintype.piFinset t` are essentially the same `Finset`,
   but differ in the type of their element, `univ.pi t` is a `Finset (Π a ∈ univ, t a)` and
   `Fintype.piFinset t` is a `Finset (Π a, t a)`."]
-theorem Finset.prod_univ_pi [DecidableEq α] [Fintype α] [CommMonoid β] {δ : α → Type _}
+theorem Finset.prod_univ_pi [DecidableEq α] [Fintype α] [CommMonoid β] {δ : α → Type*}
     {t : ∀ a : α, Finset (δ a)} (f : (∀ a : α, a ∈ (univ : Finset α) → δ a) → β) :
     ∏ x in univ.pi t, f x = ∏ x in Fintype.piFinset t, f fun a _ => x a := by
   refine prod_bij (fun x _ a => x a (mem_univ _)) ?_ (by simp)
@@ -195,7 +195,7 @@ theorem Finset.prod_univ_sum [DecidableEq α] [Fintype α] [CommSemiring β] {δ
 gives `(a + b)^n`. The "good" proof involves expanding along all coordinates using the fact that
 `x^n` is multilinear, but multilinear maps are only available now over rings, so we give instead
 a proof reducing to the usual binomial theorem to have a result over semirings. -/
-theorem Fintype.sum_pow_mul_eq_add_pow (α : Type _) [Fintype α] {R : Type _} [CommSemiring R]
+theorem Fintype.sum_pow_mul_eq_add_pow (α : Type*) [Fintype α] {R : Type*} [CommSemiring R]
     (a b : R) :
     (∑ s : Finset α, a ^ s.card * b ^ (Fintype.card α - s.card)) = (a + b) ^ Fintype.card α :=
   Finset.sum_pow_mul_eq_add_pow _ _ _
@@ -243,7 +243,7 @@ theorem Finset.prod_fin_eq_prod_range [CommMonoid β] {n : ℕ} (c : Fin n → �
 #align finset.sum_fin_eq_sum_range Finset.sum_fin_eq_sum_range
 
 @[to_additive]
-theorem Finset.prod_toFinset_eq_subtype {M : Type _} [CommMonoid M] [Fintype α] (p : α → Prop)
+theorem Finset.prod_toFinset_eq_subtype {M : Type*} [CommMonoid M] [Fintype α] (p : α → Prop)
     [DecidablePred p] (f : α → M) : ∏ a in { x | p x }.toFinset, f a = ∏ a : Subtype p, f a := by
   rw [← Finset.prod_subtype]
   simp_rw [Set.mem_toFinset]; intro; rfl
@@ -279,7 +279,7 @@ section
 
 open Finset
 
-variable {α₁ : Type _} {α₂ : Type _} {M : Type _} [Fintype α₁] [Fintype α₂] [CommMonoid M]
+variable {α₁ : Type*} {α₂ : Type*} {M : Type*} [Fintype α₁] [Fintype α₂] [CommMonoid M]
 
 @[to_additive]
 theorem Fintype.prod_sum_elim (f : α₁ → M) (g : α₂ → M) :

@@ -87,11 +87,11 @@ open Finset Function
 
 open BigOperators
 
-variable {α β γ ι M M' N P G H R S : Type _}
+variable {α β γ ι M M' N P G H R S : Type*}
 
 /-- `Finsupp α M`, denoted `α →₀ M`, is the type of functions `f : α → M` such that
   `f x = 0` for all but finitely many `x`. -/
-structure Finsupp (α : Type _) (M : Type _) [Zero M] where
+structure Finsupp (α : Type*) (M : Type*) [Zero M] where
   /-- The support of a finitely supported function (aka `Finsupp`). -/
   support : Finset α
   /-- The underlying function of a bundled finitely supported function (aka `Finsupp`). -/
@@ -260,7 +260,7 @@ theorem equivFunOnFinite_symm_coe {α} [Finite α] (f : α →₀ M) : equivFunO
 If `α` has a unique term, the type of finitely supported functions `α →₀ β` is equivalent to `β`.
 -/
 @[simps!]
-noncomputable def _root_.Equiv.finsuppUnique {ι : Type _} [Unique ι] : (ι →₀ M) ≃ M :=
+noncomputable def _root_.Equiv.finsuppUnique {ι : Type*} [Unique ι] : (ι →₀ M) ≃ M :=
   Finsupp.equivFunOnFinite.trans (Equiv.funUnique ι M)
 #align equiv.finsupp_unique Equiv.finsuppUnique
 #align equiv.finsupp_unique_symm_apply_support_val Equiv.finsuppUnique_symm_apply_support_val

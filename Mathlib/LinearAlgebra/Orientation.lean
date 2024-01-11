@@ -40,13 +40,13 @@ open BigOperators
 
 section OrderedCommSemiring
 
-variable (R : Type _) [StrictOrderedCommSemiring R]
+variable (R : Type*) [StrictOrderedCommSemiring R]
 
-variable (M : Type _) [AddCommMonoid M] [Module R M]
+variable (M : Type*) [AddCommMonoid M] [Module R M]
 
-variable {N : Type _} [AddCommMonoid N] [Module R N]
+variable {N : Type*} [AddCommMonoid N] [Module R N]
 
-variable (ι : Type _)
+variable (ι : Type*)
 
 /-- An orientation of a module, intended to be used when `ι` is a `Fintype` with the same
 cardinality as a basis. -/
@@ -113,19 +113,19 @@ end OrderedCommSemiring
 
 section OrderedCommRing
 
-variable {R : Type _} [StrictOrderedCommRing R]
+variable {R : Type*} [StrictOrderedCommRing R]
 
-variable {M N : Type _} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
+variable {M N : Type*} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
 
 @[simp]
-protected theorem Orientation.map_neg {ι : Type _} (f : M ≃ₗ[R] N) (x : Orientation R M ι) :
+protected theorem Orientation.map_neg {ι : Type*} (f : M ≃ₗ[R] N) (x : Orientation R M ι) :
     Orientation.map ι f (-x) = -Orientation.map ι f x :=
   Module.Ray.map_neg _ x
 #align orientation.map_neg Orientation.map_neg
 
 namespace Basis
 
-variable {ι : Type _}
+variable {ι : Type*}
 
 /-- The value of `Orientation.map` when the index type has the cardinality of a basis, in terms
 of `f.det`. -/
@@ -179,11 +179,11 @@ end OrderedCommRing
 
 section LinearOrderedCommRing
 
-variable {R : Type _} [LinearOrderedCommRing R]
+variable {R : Type*} [LinearOrderedCommRing R]
 
-variable {M : Type _} [AddCommGroup M] [Module R M]
+variable {M : Type*} [AddCommGroup M] [Module R M]
 
-variable {ι : Type _}
+variable {ι : Type*}
 
 namespace Orientation
 
@@ -321,11 +321,11 @@ end LinearOrderedCommRing
 
 section LinearOrderedField
 
-variable {R : Type _} [LinearOrderedField R]
+variable {R : Type*} [LinearOrderedField R]
 
-variable {M : Type _} [AddCommGroup M] [Module R M]
+variable {M : Type*} [AddCommGroup M] [Module R M]
 
-variable {ι : Type _}
+variable {ι : Type*}
 
 namespace Orientation
 

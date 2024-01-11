@@ -140,7 +140,7 @@ theorem neg_one_geom_sum [Ring α] {n : ℕ} :
     · rw [(Nat.odd_iff_not_even.2 h).neg_one_pow, neg_add_self]
 #align neg_one_geom_sum neg_one_geom_sum
 
-theorem geom_sum₂_self {α : Type _} [CommRing α] (x : α) (n : ℕ) :
+theorem geom_sum₂_self {α : Type*} [CommRing α] (x : α) (n : ℕ) :
     ∑ i in range n, x ^ i * x ^ (n - 1 - i) = n * x ^ (n - 1) :=
   calc
     ∑ i in Finset.range n, x ^ i * x ^ (n - 1 - i) =
@@ -388,7 +388,7 @@ theorem geom_sum_inv [DivisionRing α] {x : α} (hx1 : x ≠ 1) (hx0 : x ≠ 0) 
   rw [add_comm _ (-x), add_assoc, add_assoc _ _ 1]
 #align geom_sum_inv geom_sum_inv
 
-variable {β : Type _}
+variable {β : Type*}
 
 theorem RingHom.map_geom_sum [Semiring α] [Semiring β] (x : α) (n : ℕ) (f : α →+* β) :
     f (∑ i in range n, x ^ i) = ∑ i in range n, f x ^ i := by simp [f.map_sum]

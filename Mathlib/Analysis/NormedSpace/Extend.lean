@@ -37,7 +37,7 @@ open IsROrC
 
 open ComplexConjugate
 
-variable {𝕜 : Type _} [IsROrC 𝕜] {F : Type _} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {𝕜 : Type*} [IsROrC 𝕜] {F : Type*} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 namespace LinearMap
 

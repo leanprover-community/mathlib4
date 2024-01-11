@@ -34,7 +34,7 @@ order of an element
 
 open Function Nat Pointwise
 
-variable {G H A α β : Type _}
+variable {G H A α β : Type*}
 
 section MonoidAddMonoid
 
@@ -104,7 +104,7 @@ theorem MonoidHom.isOfFinOrder [Monoid H] (f : G →* H) {x : G} (h : IsOfFinOrd
 
 /-- If a direct product has finite order then so does each component. -/
 @[to_additive "If a direct product has finite additive order then so does each component."]
-theorem IsOfFinOrder.apply {η : Type _} {Gs : η → Type _} [∀ i, Monoid (Gs i)] {x : ∀ i, Gs i}
+theorem IsOfFinOrder.apply {η : Type*} {Gs : η → Type*} [∀ i, Monoid (Gs i)] {x : ∀ i, Gs i}
     (h : IsOfFinOrder x) : ∀ i, IsOfFinOrder (x i) := by
   rcases(isOfFinOrder_iff_pow_eq_one _).mp h with ⟨n, npos, hn⟩
   exact fun _ => (isOfFinOrder_iff_pow_eq_one _).mpr ⟨n, npos, (congr_fun hn.symm _).symm⟩
@@ -276,7 +276,7 @@ theorem pow_eq_one_iff_modEq : x ^ n = 1 ↔ n ≡ 0 [MOD orderOf x] := by
 #align nsmul_eq_zero_iff_modeq nsmul_eq_zero_iff_modEq
 
 @[to_additive]
-theorem orderOf_map_dvd {H : Type _} [Monoid H] (ψ : G →* H) (x : G) :
+theorem orderOf_map_dvd {H : Type*} [Monoid H] (ψ : G →* H) (x : G) :
     orderOf (ψ x) ∣ orderOf x := by
   apply orderOf_dvd_of_pow_eq_one
   rw [← map_pow, pow_orderOf_eq_one]
@@ -322,14 +322,14 @@ theorem orderOf_eq_of_pow_and_pow_div_prime (hn : 0 < n) (hx : x ^ n = 1)
 #align add_order_of_eq_of_nsmul_and_div_prime_nsmul addOrderOf_eq_of_nsmul_and_div_prime_nsmul
 
 @[to_additive]
-theorem orderOf_eq_orderOf_iff {H : Type _} [Monoid H] {y : H} :
+theorem orderOf_eq_orderOf_iff {H : Type*} [Monoid H] {y : H} :
     orderOf x = orderOf y ↔ ∀ n : ℕ, x ^ n = 1 ↔ y ^ n = 1 := by
   simp_rw [← isPeriodicPt_mul_iff_pow_eq_one, ← minimalPeriod_eq_minimalPeriod_iff, orderOf]
 #align order_of_eq_order_of_iff orderOf_eq_orderOf_iff
 #align add_order_of_eq_add_order_of_iff addOrderOf_eq_addOrderOf_iff
 
 @[to_additive]
-theorem orderOf_injective {H : Type _} [Monoid H] (f : G →* H) (hf : Function.Injective f) (x : G) :
+theorem orderOf_injective {H : Type*} [Monoid H] (f : G →* H) (hf : Function.Injective f) (x : G) :
     orderOf (f x) = orderOf x := by
   simp_rw [orderOf_eq_orderOf_iff, ← f.map_pow, ← f.map_one, hf.eq_iff, forall_const]
 #align order_of_injective orderOf_injective
@@ -608,7 +608,7 @@ theorem orderOf_dvd_of_mem_zpowers (h : y ∈ Subgroup.zpowers x) : orderOf y �
 #align order_of_dvd_of_mem_zpowers orderOf_dvd_of_mem_zpowers
 #align add_order_of_dvd_of_mem_zmultiples addOrderOf_dvd_of_mem_zmultiples
 
-theorem smul_eq_self_of_mem_zpowers {α : Type _} [MulAction G α] (hx : x ∈ Subgroup.zpowers y)
+theorem smul_eq_self_of_mem_zpowers {α : Type*} [MulAction G α] (hx : x ∈ Subgroup.zpowers y)
     {a : α} (hs : y • a = a) : x • a = a := by
   obtain ⟨k, rfl⟩ := Subgroup.mem_zpowers_iff.mp hx
   rw [← MulAction.toPerm_apply, ← MulAction.toPermHom_apply, MonoidHom.map_zpow _ y k,
@@ -616,7 +616,7 @@ theorem smul_eq_self_of_mem_zpowers {α : Type _} [MulAction G α] (hx : x ∈ S
   exact Function.IsFixedPt.perm_zpow (by exact hs) k -- Porting note: help elab'n with `by exact`
 #align smul_eq_self_of_mem_zpowers smul_eq_self_of_mem_zpowers
 
-theorem vadd_eq_self_of_mem_zmultiples {α G : Type _} [AddGroup G] [AddAction G α] {x y : G}
+theorem vadd_eq_self_of_mem_zmultiples {α G : Type*} [AddGroup G] [AddAction G α] {x y : G}
     (hx : x ∈ AddSubgroup.zmultiples y) {a : α} (hs : y +ᵥ a = a) : x +ᵥ a = a :=
   @smul_eq_self_of_mem_zpowers (Multiplicative G) _ _ _ α _ hx a hs
 #align vadd_eq_self_of_mem_zmultiples vadd_eq_self_of_mem_zmultiples
@@ -945,7 +945,7 @@ theorem orderOf_dvd_card_univ : orderOf x ∣ Fintype.card G := by
 #align add_order_of_dvd_card_univ addOrderOf_dvd_card_univ
 
 @[to_additive]
-theorem orderOf_dvd_nat_card {G : Type _} [Group G] {x : G} : orderOf x ∣ Nat.card G := by
+theorem orderOf_dvd_nat_card {G : Type*} [Group G] {x : G} : orderOf x ∣ Nat.card G := by
   cases' fintypeOrInfinite G with h h
   · simp only [Nat.card_eq_fintype_card, orderOf_dvd_card_univ]
   · simp only [card_eq_zero_of_infinite, dvd_zero]
@@ -953,7 +953,7 @@ theorem orderOf_dvd_nat_card {G : Type _} [Group G] {x : G} : orderOf x ∣ Nat.
 #align add_order_of_dvd_nat_card addOrderOf_dvd_nat_card
 
 @[to_additive (attr := simp) card_nsmul_eq_zero']
-theorem pow_card_eq_one' {G : Type _} [Group G] {x : G} : x ^ Nat.card G = 1 :=
+theorem pow_card_eq_one' {G : Type*} [Group G] {x : G} : x ^ Nat.card G = 1 :=
   orderOf_dvd_iff_pow_eq_one.mp orderOf_dvd_nat_card
 #align pow_card_eq_one' pow_card_eq_one'
 #align card_nsmul_eq_zero' card_nsmul_eq_zero'
@@ -965,7 +965,7 @@ theorem pow_card_eq_one : x ^ Fintype.card G = 1 := by
 #align card_nsmul_eq_zero card_nsmul_eq_zero
 
 @[to_additive]
-theorem Subgroup.pow_index_mem {G : Type _} [Group G] (H : Subgroup G) [Normal H] (g : G) :
+theorem Subgroup.pow_index_mem {G : Type*} [Group G] (H : Subgroup G) [Normal H] (g : G) :
     g ^ index H ∈ H := by rw [← eq_one_iff, QuotientGroup.mk_pow H, index, pow_card_eq_one']
 #align subgroup.pow_index_mem Subgroup.pow_index_mem
 #align add_subgroup.nsmul_index_mem AddSubgroup.nsmul_index_mem
@@ -985,7 +985,7 @@ theorem zpow_eq_mod_card (n : ℤ) : x ^ n = x ^ (n % Fintype.card G : ℤ) := b
 
 /-- If `gcd(|G|,n)=1` then the `n`th power map is a bijection -/
 @[to_additive (attr := simps) "If `gcd(|G|,n)=1` then the smul by `n` is a bijection"]
-noncomputable def powCoprime {G : Type _} [Group G] (h : (Nat.card G).coprime n) : G ≃ G
+noncomputable def powCoprime {G : Type*} [Group G] (h : (Nat.card G).coprime n) : G ≃ G
     where
   toFun g := g ^ n
   invFun g := g ^ (Nat.card G).gcdB n
@@ -1003,20 +1003,20 @@ noncomputable def powCoprime {G : Type _} [Group G] (h : (Nat.card G).coprime n)
 #align nsmul_coprime nsmulCoprime
 
 @[to_additive] -- Porting note: simp can prove this (so removed simp)
-theorem powCoprime_one {G : Type _} [Group G] (h : (Nat.card G).coprime n) : powCoprime h 1 = 1 :=
+theorem powCoprime_one {G : Type*} [Group G] (h : (Nat.card G).coprime n) : powCoprime h 1 = 1 :=
   one_pow n
 #align pow_coprime_one powCoprime_one
 #align nsmul_coprime_zero nsmulCoprime_zero
 
 @[to_additive] -- Porting note: simp can prove this (so removed simp)
-theorem powCoprime_inv {G : Type _} [Group G] (h : (Nat.card G).coprime n) {g : G} :
+theorem powCoprime_inv {G : Type*} [Group G] (h : (Nat.card G).coprime n) {g : G} :
     powCoprime h g⁻¹ = (powCoprime h g)⁻¹ :=
   inv_pow g n
 #align pow_coprime_inv powCoprime_inv
 #align nsmul_coprime_neg nsmulCoprime_neg
 
 @[to_additive add_inf_eq_bot_of_coprime]
-theorem inf_eq_bot_of_coprime {G : Type _} [Group G] {H K : Subgroup G} [Fintype H] [Fintype K]
+theorem inf_eq_bot_of_coprime {G : Type*} [Group G] {H K : Subgroup G} [Fintype H] [Fintype K]
     (h : Nat.coprime (Fintype.card H) (Fintype.card K)) : H ⊓ K = ⊥ := by
   refine' (H ⊓ K).eq_bot_iff_forall.mpr fun x hx => _
   rw [← orderOf_eq_one_iff, ← Nat.dvd_one, ← h.gcd_eq_one, Nat.dvd_gcd_iff]
@@ -1050,7 +1050,7 @@ section PowIsSubgroup
 
 /-- A nonempty idempotent subset of a finite cancellative monoid is a submonoid -/
 @[to_additive "A nonempty idempotent subset of a finite cancellative add monoid is a submonoid"]
-def submonoidOfIdempotent {M : Type _} [LeftCancelMonoid M] [Fintype M] (S : Set M)
+def submonoidOfIdempotent {M : Type*} [LeftCancelMonoid M] [Fintype M] (S : Set M)
     (hS1 : S.Nonempty) (hS2 : S * S = S) : Submonoid M :=
   have pow_mem : ∀ a : M, a ∈ S → ∀ n : ℕ, a ^ (n + 1) ∈ S := fun a ha =>
     Nat.rec (by rwa [Nat.zero_eq, zero_add, pow_one]) fun n ih =>
@@ -1066,7 +1066,7 @@ def submonoidOfIdempotent {M : Type _} [LeftCancelMonoid M] [Fintype M] (S : Set
 
 /-- A nonempty idempotent subset of a finite group is a subgroup -/
 @[to_additive "A nonempty idempotent subset of a finite add group is a subgroup"]
-def subgroupOfIdempotent {G : Type _} [Group G] [Fintype G] (S : Set G) (hS1 : S.Nonempty)
+def subgroupOfIdempotent {G : Type*} [Group G] [Fintype G] (S : Set G) (hS1 : S.Nonempty)
     (hS2 : S * S = S) : Subgroup G :=
   { submonoidOfIdempotent S hS1 hS2 with
     carrier := S
@@ -1079,7 +1079,7 @@ def subgroupOfIdempotent {G : Type _} [Group G] [Fintype G] (S : Set G) (hS1 : S
 /-- If `S` is a nonempty subset of a finite group `G`, then `S ^ |G|` is a subgroup -/
 @[to_additive (attr := simps!) smulCardAddSubgroup
   "If `S` is a nonempty subset of a finite add group `G`, then `|G| • S` is a subgroup"]
-def powCardSubgroup {G : Type _} [Group G] [Fintype G] (S : Set G) (hS : S.Nonempty) : Subgroup G :=
+def powCardSubgroup {G : Type*} [Group G] [Fintype G] (S : Set G) (hS : S.Nonempty) : Subgroup G :=
   have one_mem : (1 : G) ∈ S ^ Fintype.card G := by
     obtain ⟨a, ha⟩ := hS
     rw [← pow_card_eq_one]

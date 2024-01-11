@@ -16,13 +16,15 @@ be the polynomial with root `r * s` for each root `r` of `p` and proves some bas
 -/
 
 
-variable {A K R S : Type _} [CommRing A] [IsDomain A] [Field K] [CommRing R] [CommRing S]
-
-variable {M : Submonoid A}
+variable {R S A K : Type*}
 
 namespace Polynomial
 
 open BigOperators Polynomial
+
+section Semiring
+
+variable [Semiring R] [Semiring S]
 
 /-- `scaleRoots p s` is a polynomial with root `r * s` for each root `r` of `p`. -/
 noncomputable def scaleRoots (p : R[X]) (s : R) : R[X] :=
@@ -91,6 +93,18 @@ theorem monic_scaleRoots_iff {p : R[X]} (s : R) : Monic (scaleRoots p s) ↔ Mon
   simp only [Monic, leadingCoeff, natDegree_scaleRoots, coeff_scaleRoots_natDegree]
 #align polynomial.monic_scale_roots_iff Polynomial.monic_scaleRoots_iff
 
+theorem map_scaleRoots (p : R[X]) (x : R) (f : R →+* S) (h : f p.leadingCoeff ≠ 0) :
+    (p.scaleRoots x).map f = (p.map f).scaleRoots (f x) := by
+  ext
+  simp [Polynomial.natDegree_map_of_leadingCoeff_ne_zero _ h]
+#align polynomial.map_scale_roots Polynomial.map_scaleRoots
+
+end Semiring
+
+section CommSemiring
+
+variable [Semiring S] [CommSemiring R] [CommSemiring A] [Field K]
+
 theorem scaleRoots_eval₂_mul {p : S[X]} (f : S →+* R) (r : R) (s : S) :
     eval₂ f (f s * r) (scaleRoots p s) = f s ^ p.natDegree * eval₂ f r p :=
   calc
@@ -117,30 +131,27 @@ theorem scaleRoots_eval₂_eq_zero {p : S[X]} (f : S →+* R) {r : R} {s : S} (h
     eval₂ f (f s * r) (scaleRoots p s) = 0 := by rw [scaleRoots_eval₂_mul, hr, mul_zero]
 #align polynomial.scale_roots_eval₂_eq_zero Polynomial.scaleRoots_eval₂_eq_zero
 
-theorem scaleRoots_aeval_eq_zero [Algebra S R] {p : S[X]} {r : R} {s : S} (hr : aeval r p = 0) :
-    aeval (algebraMap S R s * r) (scaleRoots p s) = 0 :=
-  scaleRoots_eval₂_eq_zero (algebraMap S R) hr
+theorem scaleRoots_aeval_eq_zero [Algebra R A] {p : R[X]} {a : A} {r : R} (ha : aeval a p = 0) :
+    aeval (algebraMap R A r * a) (scaleRoots p r) = 0 :=
+  scaleRoots_eval₂_eq_zero (algebraMap R A) ha
 #align polynomial.scale_roots_aeval_eq_zero Polynomial.scaleRoots_aeval_eq_zero
 
-theorem scaleRoots_eval₂_eq_zero_of_eval₂_div_eq_zero {p : A[X]} {f : A →+* K}
-    (hf : Function.Injective f) {r s : A} (hr : eval₂ f (f r / f s) p = 0)
-    (hs : s ∈ nonZeroDivisors A) : eval₂ f (f r) (scaleRoots p s) = 0 := by
+theorem scaleRoots_eval₂_eq_zero_of_eval₂_div_eq_zero {p : S[X]} {f : S →+* K}
+    (hf : Function.Injective f) {r s : S} (hr : eval₂ f (f r / f s) p = 0)
+    (hs : s ∈ nonZeroDivisors S) : eval₂ f (f r) (scaleRoots p s) = 0 := by
+  nontriviality S using Subsingleton.eq_zero
   convert @scaleRoots_eval₂_eq_zero _ _ _ _ p f _ s hr
   rw [← mul_div_assoc, mul_comm, mul_div_cancel]
   exact map_ne_zero_of_mem_nonZeroDivisors _ hf hs
 #align polynomial.scale_roots_eval₂_eq_zero_of_eval₂_div_eq_zero Polynomial.scaleRoots_eval₂_eq_zero_of_eval₂_div_eq_zero
 
-theorem scaleRoots_aeval_eq_zero_of_aeval_div_eq_zero [Algebra A K]
-    (inj : Function.Injective (algebraMap A K)) {p : A[X]} {r s : A}
-    (hr : aeval (algebraMap A K r / algebraMap A K s) p = 0) (hs : s ∈ nonZeroDivisors A) :
-    aeval (algebraMap A K r) (scaleRoots p s) = 0 :=
+theorem scaleRoots_aeval_eq_zero_of_aeval_div_eq_zero [Algebra R K]
+    (inj : Function.Injective (algebraMap R K)) {p : R[X]} {r s : R}
+    (hr : aeval (algebraMap R K r / algebraMap R K s) p = 0) (hs : s ∈ nonZeroDivisors R) :
+    aeval (algebraMap R K r) (scaleRoots p s) = 0 :=
   scaleRoots_eval₂_eq_zero_of_eval₂_div_eq_zero inj hr hs
 #align polynomial.scale_roots_aeval_eq_zero_of_aeval_div_eq_zero Polynomial.scaleRoots_aeval_eq_zero_of_aeval_div_eq_zero
 
-theorem map_scaleRoots (p : R[X]) (x : R) (f : R →+* S) (h : f p.leadingCoeff ≠ 0) :
-    (p.scaleRoots x).map f = (p.map f).scaleRoots (f x) := by
-  ext
-  simp [Polynomial.natDegree_map_of_leadingCoeff_ne_zero _ h]
-#align polynomial.map_scale_roots Polynomial.map_scaleRoots
+end CommSemiring
 
 end Polynomial

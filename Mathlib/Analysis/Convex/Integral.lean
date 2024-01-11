@@ -41,7 +41,7 @@ open MeasureTheory MeasureTheory.Measure Metric Set Filter TopologicalSpace Func
 
 open scoped Topology BigOperators ENNReal Convex
 
-variable {α E F : Type _} {m0 : MeasurableSpace α} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {α E F : Type*} {m0 : MeasurableSpace α} [NormedAddCommGroup E] [NormedSpace ℝ E]
   [CompleteSpace E] [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F] {μ : Measure α}
   {s : Set E} {t : Set α} {f : α → E} {g : E → ℝ} {C : ℝ}
 

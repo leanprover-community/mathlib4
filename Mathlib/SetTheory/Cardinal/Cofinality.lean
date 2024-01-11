@@ -53,7 +53,7 @@ open Classical Cardinal Ordinal
 
 universe u v w
 
-variable {α : Type _} {r : α → α → Prop}
+variable {α : Type*} {r : α → α → Prop}
 
 /-! ### Cofinality of orders -/
 
@@ -475,8 +475,10 @@ theorem bsup_lt_ord {o : Ordinal} {f : ∀ a < o, Ordinal} {c : Ordinal} (ho : o
 
 
 @[simp]
-theorem cof_zero : cof 0 = 0 :=
-  (cof_le_card 0).antisymm (Cardinal.zero_le _)
+theorem cof_zero : cof 0 = 0 := by
+  refine LE.le.antisymm  ?_ (Cardinal.zero_le _)
+  rw [← card_zero]
+  exact cof_le_card 0
 #align ordinal.cof_zero Ordinal.cof_zero
 
 @[simp]
@@ -891,7 +893,7 @@ theorem isStrongLimit_beth {o : Ordinal} (H : IsSuccLimit o) : IsStrongLimit (be
     exact this.trans_lt (beth_lt.2 (H.succ_lt hi))
 #align cardinal.is_strong_limit_beth Cardinal.isStrongLimit_beth
 
-theorem mk_bounded_subset {α : Type _} (h : ∀ x < #α, (2^x) < #α) {r : α → α → Prop}
+theorem mk_bounded_subset {α : Type*} (h : ∀ x < #α, (2^x) < #α) {r : α → α → Prop}
     [IsWellOrder α r] (hr : (#α).ord = type r) : #{ s : Set α // Bounded r s } = #α := by
   rcases eq_or_ne #α 0 with (ha | ha)
   · rw [ha]
@@ -922,7 +924,7 @@ theorem mk_bounded_subset {α : Type _} (h : ∀ x < #α, (2^x) < #α) {r : α �
       simpa [singleton_eq_singleton_iff] using hab
 #align cardinal.mk_bounded_subset Cardinal.mk_bounded_subset
 
-theorem mk_subset_mk_lt_cof {α : Type _} (h : ∀ x < #α, (2^x) < #α) :
+theorem mk_subset_mk_lt_cof {α : Type*} (h : ∀ x < #α, (2^x) < #α) :
     #{ s : Set α // #s < cof (#α).ord } = #α := by
   rcases eq_or_ne #α 0 with (ha | ha)
   · rw [ha]
@@ -961,7 +963,7 @@ theorem IsRegular.pos {c : Cardinal} (H : c.IsRegular) : 0 < c :=
 #align cardinal.is_regular.pos Cardinal.IsRegular.pos
 
 theorem IsRegular.ord_pos {c : Cardinal} (H : c.IsRegular) : 0 < c.ord := by
-  rw [Cardinal.lt_ord]
+  rw [Cardinal.lt_ord, card_zero]
   exact H.pos
 #align cardinal.is_regular.ord_pos Cardinal.IsRegular.ord_pos
 
@@ -1035,7 +1037,7 @@ theorem exists_infinite_fiber {β α : Type _} (f : β → α) (w : #α < #β) (
 then the cardinality of the collection of those finite sets
 must be at least the cardinality of `β`.
 -/
-theorem le_range_of_union_finset_eq_top {α β : Type _} [Infinite β] (f : α → Finset β)
+theorem le_range_of_union_finset_eq_top {α β : Type*} [Infinite β] (f : α → Finset β)
     (w : ⋃ a, (f a : Set β) = ⊤) : #β ≤ #(range f) := by
   have k : _root_.Infinite (range f) := by
     rw [infinite_coe_iff]

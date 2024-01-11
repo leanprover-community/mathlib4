@@ -37,7 +37,7 @@ open scoped MeasureTheory ENNReal NNReal BigOperators
 
 namespace ProbabilityTheory.kernel
 
-variable {α β ι : Type _} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
+variable {α β ι : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
 
 variable {κ : kernel α β} {f : α → β → ℝ≥0∞}
 
@@ -80,7 +80,7 @@ theorem lintegral_withDensity (κ : kernel α β) [IsSFiniteKernel κ]
   simp_rw [Pi.mul_apply]
 #align probability_theory.kernel.lintegral_with_density ProbabilityTheory.kernel.lintegral_withDensity
 
-theorem integral_withDensity {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+theorem integral_withDensity {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
     {f : β → E} [IsSFiniteKernel κ] {a : α} {g : α → β → ℝ≥0}
     (hg : Measurable (Function.uncurry g)) :
     ∫ b, f b ∂withDensity κ (fun a b => g a b) a = ∫ b, g a b • f b ∂κ a := by

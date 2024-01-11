@@ -31,7 +31,7 @@ namespace CategoryTheory
 
 open Limits
 
-variable (C : Type _) [Category C]
+variable (C : Type*) [Category C]
 
 /--
 The condition `Precoherent C` is essentially the minimal condition required to define the
@@ -86,7 +86,7 @@ lemma isSheaf_coherent [Precoherent C] (P : Cᵒᵖ ⥤ Type w) :
 
 namespace coherentTopology
 
-variable {C : Type _} [Category C] [Precoherent C]
+variable {C : Type*} [Category C] [Precoherent C]
 
 variable {X : C}
 /--
@@ -132,7 +132,7 @@ theorem isSubcanonical : Sheaf.Subcanonical (coherentTopology C) :=
 
 end coherentTopology
 
-variable {C : Type _} [Category C] [Precoherent C]
+variable {C : Type*} [Category C] [Precoherent C]
 
 variable {X : C}
 
@@ -165,8 +165,6 @@ theorem EffectiveEpiFamily.transitive_of_finite {α : Type} [Fintype α] {Y : α
   apply Coverage.saturate.transitive X (Sieve.generate (Presieve.ofArrows Y π))
   · apply Coverage.saturate.of
     use α, inferInstance, Y, π
-    simp only [true_and]
-    exact Iff.mp (Sieve.effectiveEpimorphic_family Y π) h'
   · intro V f ⟨Y₁, h, g, ⟨hY, hf⟩⟩
     rw [← hf, Sieve.pullback_comp]
     apply (coherentTopology C).pullback_stable'

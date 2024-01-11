@@ -20,7 +20,7 @@ and an induction principle `WellFounded.induction_bot`.
 -/
 
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 namespace WellFounded
 
@@ -43,7 +43,7 @@ theorem mono (hr : WellFounded r) (h : ∀ a b, r' a b → r a b) : WellFounded 
   Subrelation.wf (h _ _) hr
 #align well_founded.mono WellFounded.mono
 
-theorem onFun {α β : Sort _} {r : β → β → Prop} {f : α → β} :
+theorem onFun {α β : Sort*} {r : β → β → Prop} {f : α → β} :
     WellFounded r → WellFounded (r on f) :=
   InvImage.wf _
 #align well_founded.on_fun WellFounded.onFun

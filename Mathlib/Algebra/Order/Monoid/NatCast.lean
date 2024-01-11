@@ -13,7 +13,7 @@ import Mathlib.Data.Nat.Cast.Defs
 # Order of numerals in an `AddMonoidWithOne`.
 -/
 
-variable {α : Type _}
+variable {α : Type*}
 
 open Function
 

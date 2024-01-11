@@ -28,7 +28,7 @@ multiset, gcd
 
 namespace Multiset
 
-variable {α : Type _} [CancelCommMonoidWithZero α] [NormalizedGCDMonoid α]
+variable {α : Type*} [CancelCommMonoidWithZero α] [NormalizedGCDMonoid α]
 
 /-! ### LCM -/
 

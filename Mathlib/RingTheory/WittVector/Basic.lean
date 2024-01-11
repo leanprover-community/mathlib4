@@ -53,9 +53,9 @@ open MvPolynomial Function
 
 open scoped BigOperators
 
-variable {p : ℕ} {R S T : Type _} [hp : Fact p.Prime] [CommRing R] [CommRing S] [CommRing T]
+variable {p : ℕ} {R S T : Type*} [hp : Fact p.Prime] [CommRing R] [CommRing S] [CommRing T]
 
-variable {α : Type _} {β : Type _}
+variable {α : Type*} {β : Type*}
 
 -- mathport name: expr𝕎
 local notation "𝕎" => WittVector p

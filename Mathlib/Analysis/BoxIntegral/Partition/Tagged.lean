@@ -33,7 +33,7 @@ open Set Function
 
 namespace BoxIntegral
 
-variable {ι : Type _}
+variable {ι : Type*}
 
 /-- A tagged prepartition is a prepartition enriched with a tagged point for each box of the
 prepartition. For simplicity we require that `tag` is defined for all boxes in `ι → ℝ` but

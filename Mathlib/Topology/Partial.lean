@@ -20,7 +20,7 @@ open Filter
 
 open Topology
 
-variable {α β : Type _} [TopologicalSpace α]
+variable {α β : Type*} [TopologicalSpace α]
 
 theorem rtendsto_nhds {r : Rel β α} {l : Filter β} {a : α} :
     RTendsto r l (𝓝 a) ↔ ∀ s, IsOpen s → a ∈ s → r.core s ∈ l :=

@@ -18,7 +18,7 @@ introduce the analogous "additive" companion, `UniqueSums` and link the two so t
 converts `UniqueProds` into `UniqueSums`.
 
 Here you can see several examples of Types that have `UniqueSums/Prods`
-(`infer_instance` uses `covariants.to_uniqueProds` and `covariants.to_uniqueSums`).
+(`infer_instance` uses `Covariants.to_uniqueProds` and `Covariants.to_uniqueSums`).
 ```lean
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.PNat.Basic
@@ -48,7 +48,7 @@ def UniqueMul {G} [Mul G] (A B : Finset G) (a0 b0 : G) : Prop :=
 
 namespace UniqueMul
 
-variable {G H : Type _} [Mul G] [Mul H] {A B : Finset G} {a0 b0 : G}
+variable {G H : Type*} [Mul G] [Mul H] {A B : Finset G} {a0 b0 : G}
 
 theorem mt {G} [Mul G] {A B : Finset G} {a0 b0 : G} (h : UniqueMul A B a0 b0) :
     ∀ ⦃a b⦄, a ∈ A → b ∈ B → a ≠ a0 ∨ b ≠ b0 → a * b ≠ a0 * b0 := fun _ _ ha hb k ↦ by
@@ -202,19 +202,6 @@ instance {M} [Mul M] [UniqueProds M] : UniqueSums (Additive M) where
     exact ⟨ofMul a0, hA0, ofMul b0, hB0, fun a b aA bB H ↦ J aA bB H⟩
 
 end Additive
-
-@[to_additive]
-theorem eq_and_eq_of_le_of_le_of_mul_le {A} [Mul A] [LinearOrder A]
-    [CovariantClass A A (· * ·) (· ≤ ·)] [CovariantClass A A (Function.swap (· * ·)) (· < ·)]
-    [ContravariantClass A A (· * ·) (· ≤ ·)] {a b a0 b0 : A} (ha : a0 ≤ a) (hb : b0 ≤ b)
-    (ab : a * b ≤ a0 * b0) : a = a0 ∧ b = b0 := by
-  haveI := Mul.to_covariantClass_right A
-  have ha' : ¬a0 * b0 < a * b → ¬a0 < a := mt fun h ↦ mul_lt_mul_of_lt_of_le h hb
-  have hb' : ¬a0 * b0 < a * b → ¬b0 < b := mt fun h ↦ mul_lt_mul_of_le_of_lt ha h
-  push_neg at ha' hb'
-  exact ⟨ha.antisymm' (ha' ab), hb.antisymm' (hb' ab)⟩
-#align eq_and_eq_of_le_of_le_of_mul_le eq_and_eq_of_le_of_le_of_mul_le
-#align eq_and_eq_of_le_of_le_of_add_le eq_and_eq_of_le_of_le_of_add_le
 
 -- see Note [lower instance priority]
 /-- This instance asserts that if `A` has a multiplication, a linear order, and multiplication

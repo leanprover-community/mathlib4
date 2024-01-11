@@ -28,7 +28,7 @@ p-series, Cauchy condensation test
 -/
 
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 open Filter
 
@@ -46,7 +46,7 @@ terms of the partial sums of the other series.
 
 namespace Finset
 
-variable {M : Type _} [OrderedAddCommMonoid M] {f : ℕ → M}
+variable {M : Type*} [OrderedAddCommMonoid M] {f : ℕ → M}
 
 theorem le_sum_condensed' (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) (n : ℕ) :
     (∑ k in Ico 1 (2 ^ n), f k) ≤ ∑ k in range n, 2 ^ k • f (2 ^ k) := by
@@ -291,7 +291,7 @@ section
 
 open Finset
 
-variable {α : Type _} [LinearOrderedField α]
+variable {α : Type*} [LinearOrderedField α]
 
 theorem sum_Ioc_inv_sq_le_sub {k n : ℕ} (hk : k ≠ 0) (h : k ≤ n) :
     (∑ i in Ioc k n, ((i : α) ^ 2)⁻¹) ≤ (k : α)⁻¹ - (n : α)⁻¹ := by

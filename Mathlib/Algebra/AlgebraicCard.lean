@@ -27,12 +27,12 @@ open Cardinal Polynomial
 
 namespace Algebraic
 
-theorem infinite_of_charZero (R A : Type _) [CommRing R] [IsDomain R] [Ring A] [Algebra R A]
+theorem infinite_of_charZero (R A : Type*) [CommRing R] [IsDomain R] [Ring A] [Algebra R A]
     [CharZero A] : { x : A | IsAlgebraic R x }.Infinite :=
   infinite_of_injective_forall_mem Nat.cast_injective isAlgebraic_nat
 #align algebraic.infinite_of_char_zero Algebraic.infinite_of_charZero
 
-theorem aleph0_le_cardinal_mk_of_charZero (R A : Type _) [CommRing R] [IsDomain R] [Ring A]
+theorem aleph0_le_cardinal_mk_of_charZero (R A : Type*) [CommRing R] [IsDomain R] [Ring A]
     [Algebra R A] [CharZero A] : ℵ₀ ≤ #{ x : A // IsAlgebraic R x } :=
   infinite_iff.1 (Set.infinite_coe_iff.2 <| infinite_of_charZero R A)
 #align algebraic.aleph_0_le_cardinal_mk_of_char_zero Algebraic.aleph0_le_cardinal_mk_of_charZero

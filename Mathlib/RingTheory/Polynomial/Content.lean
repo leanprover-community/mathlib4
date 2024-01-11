@@ -36,7 +36,7 @@ open Polynomial
 
 section Primitive
 
-variable {R : Type _} [CommSemiring R]
+variable {R : Type*} [CommSemiring R]
 
 /-- A polynomial is primitive when the only constant polynomials dividing it are units -/
 def IsPrimitive (p : R[X]) : Prop :=
@@ -69,7 +69,7 @@ theorem isPrimitive_of_dvd {p q : R[X]} (hp : IsPrimitive p) (hq : q ∣ p) : Is
 
 end Primitive
 
-variable {R : Type _} [CommRing R] [IsDomain R]
+variable {R : Type*} [CommRing R] [IsDomain R]
 
 section NormalizedGCDMonoid
 
@@ -118,7 +118,6 @@ theorem content_X_mul {p : R[X]} : content (X * p) = content p := by
     constructor
     · intro h
       use a
-      simp [h]
     · rintro ⟨b, ⟨h1, h2⟩⟩
       rw [← Nat.succ_injective h2]
       apply h1
@@ -310,7 +309,7 @@ theorem primPart_dvd (p : R[X]) : p.primPart ∣ p :=
   Dvd.intro_left (C p.content) p.eq_C_content_mul_primPart.symm
 #align polynomial.prim_part_dvd Polynomial.primPart_dvd
 
-theorem aeval_primPart_eq_zero {S : Type _} [Ring S] [IsDomain S] [Algebra R S]
+theorem aeval_primPart_eq_zero {S : Type*} [Ring S] [IsDomain S] [Algebra R S]
     [NoZeroSMulDivisors R S] {p : R[X]} {s : S} (hpzero : p ≠ 0) (hp : aeval s p = 0) :
     aeval s p.primPart = 0 := by
   rw [eq_C_content_mul_primPart p, map_mul, aeval_C] at hp
@@ -320,7 +319,7 @@ theorem aeval_primPart_eq_zero {S : Type _} [Ring S] [IsDomain S] [Algebra R S]
   exact eq_zero_of_ne_zero_of_mul_left_eq_zero hcont hp
 #align polynomial.aeval_prim_part_eq_zero Polynomial.aeval_primPart_eq_zero
 
-theorem eval₂_primPart_eq_zero {S : Type _} [CommRing S] [IsDomain S] {f : R →+* S}
+theorem eval₂_primPart_eq_zero {S : Type*} [CommRing S] [IsDomain S] {f : R →+* S}
     (hinj : Function.Injective f) {p : R[X]} {s : S} (hpzero : p ≠ 0) (hp : eval₂ f s p = 0) :
     eval₂ f s p.primPart = 0 := by
   rw [eq_C_content_mul_primPart p, eval₂_mul, eval₂_C] at hp

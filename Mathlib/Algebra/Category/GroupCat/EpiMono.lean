@@ -120,7 +120,7 @@ instance : SMul B X' where
     match x with
     | fromCoset y => fromCoset ⟨b *l y, by
           rw [← y.2.choose_spec, leftCoset_assoc]
-          -- Porting: should we make `Bundled.α` reducible?
+          -- Porting note: should we make `Bundled.α` reducible?
           let b' : B := y.2.choose
           use b * b'⟩
     | ∞ => ∞

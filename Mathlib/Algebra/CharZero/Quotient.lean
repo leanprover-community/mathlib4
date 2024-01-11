@@ -12,7 +12,7 @@ import Mathlib.GroupTheory.QuotientGroup
 -/
 
 
-variable {R : Type _} [DivisionRing R] [CharZero R] {p : R}
+variable {R : Type*} [DivisionRing R] [CharZero R] {p : R}
 
 namespace AddSubgroup
 

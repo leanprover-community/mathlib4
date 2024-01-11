@@ -36,7 +36,7 @@ structure FinPartOrd where
 
 namespace FinPartOrd
 
-instance : CoeSort FinPartOrd (Type _) :=
+instance : CoeSort FinPartOrd (Type*) :=
   ⟨fun X => X.toPartOrdCat⟩
 
 instance (X : FinPartOrd) : PartialOrder X :=
@@ -48,12 +48,12 @@ attribute [instance] FinPartOrd.isFintype
 #noalign FinPartOrd.coe_to_PartOrd
 
 /-- Construct a bundled `FinPartOrd` from `PartialOrder` + `Fintype`. -/
-def of (α : Type _) [PartialOrder α] [Fintype α] : FinPartOrd :=
+def of (α : Type*) [PartialOrder α] [Fintype α] : FinPartOrd :=
   ⟨⟨α, inferInstance⟩⟩
 #align FinPartOrd.of FinPartOrd.of
 
 @[simp]
-theorem coe_of (α : Type _) [PartialOrder α] [Fintype α] : ↥(of α) = α := rfl
+theorem coe_of (α : Type*) [PartialOrder α] [Fintype α] : ↥(of α) = α := rfl
 #align FinPartOrd.coe_of FinPartOrd.coe_of
 
 instance : Inhabited FinPartOrd :=

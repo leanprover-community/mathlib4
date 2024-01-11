@@ -174,7 +174,7 @@ TODO also introduce complete multi-partite graphs, where the vertex type is a si
 indexed family of vertex types
 -/
 @[simps]
-def completeBipartiteGraph (V W : Type _) : SimpleGraph (Sum V W)
+def completeBipartiteGraph (V W : Type*) : SimpleGraph (Sum V W)
     where
   Adj v w := v.isLeft ∧ w.isRight ∨ v.isRight ∧ w.isLeft
   symm := by
@@ -187,7 +187,7 @@ def completeBipartiteGraph (V W : Type _) : SimpleGraph (Sum V W)
 
 namespace SimpleGraph
 
-variable {ι : Sort _} {𝕜 : Type _} {V : Type u} {W : Type v} {X : Type w} (G : SimpleGraph V)
+variable {ι : Sort*} {𝕜 : Type*} {V : Type u} {W : Type v} {X : Type w} (G : SimpleGraph V)
   (G' : SimpleGraph W) {a b c u v w : V} {e : Sym2 V}
 
 @[simp]
@@ -472,7 +472,7 @@ The way `edgeSet` is defined is such that `mem_edgeSet` is proved by `refl`.
 (That is, `⟦(v, w)⟧ ∈ G.edgeSet` is definitionally equal to `G.Adj v w`.)
 -/
 -- porting note: We need a separate definition so that dot notation works.
-def edgeSetEmbedding (V : Type _) : SimpleGraph V ↪o Set (Sym2 V) :=
+def edgeSetEmbedding (V : Type*) : SimpleGraph V ↪o Set (Sym2 V) :=
   OrderEmbedding.ofMapLEIff (fun G => Sym2.fromRel G.symm) fun _ _ =>
     ⟨fun h a b => @h ⟦(a, b)⟧, fun h e => Sym2.ind @h e⟩
 
@@ -1849,7 +1849,7 @@ protected def spanningCoe {s : Set V} (G : SimpleGraph s) : G ↪g G.spanningCoe
 #align simple_graph.embedding.spanning_coe SimpleGraph.Embedding.spanningCoe
 
 /-- Embeddings of types induce embeddings of complete graphs on those types. -/
-protected def completeGraph {α β : Type _} (f : α ↪ β) :
+protected def completeGraph {α β : Type*} (f : α ↪ β) :
     (⊤ : SimpleGraph α) ↪g (⊤ : SimpleGraph β) :=
   { f with map_rel_iff' := by simp }
 #align simple_graph.embedding.complete_graph SimpleGraph.Embedding.completeGraph
@@ -2005,12 +2005,12 @@ lemma map_symm_apply (f : V ≃ W) (G : SimpleGraph V) (w : W) :
 #align simple_graph.iso.map_symm_apply SimpleGraph.Iso.map_symm_apply
 
 /-- Equivalences of types induce isomorphisms of complete graphs on those types. -/
-protected def completeGraph {α β : Type _} (f : α ≃ β) :
+protected def completeGraph {α β : Type*} (f : α ≃ β) :
     (⊤ : SimpleGraph α) ≃g (⊤ : SimpleGraph β) :=
   { f with map_rel_iff' := by simp }
 #align simple_graph.iso.complete_graph SimpleGraph.Iso.completeGraph
 
-theorem toEmbedding_completeGraph {α β : Type _} (f : α ≃ β) :
+theorem toEmbedding_completeGraph {α β : Type*} (f : α ≃ β) :
     (Iso.completeGraph f).toEmbedding = Embedding.completeGraph f.toEmbedding :=
   rfl
 #align simple_graph.iso.to_embedding_complete_graph SimpleGraph.Iso.toEmbedding_completeGraph

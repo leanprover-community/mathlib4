@@ -40,6 +40,7 @@ adjoint
 
 -/
 
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 noncomputable section
 
@@ -47,7 +48,7 @@ open IsROrC
 
 open scoped ComplexConjugate
 
-variable {𝕜 E F G : Type _} [IsROrC 𝕜]
+variable {𝕜 E F G : Type*} [IsROrC 𝕜]
 
 variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G]
 
@@ -142,9 +143,8 @@ theorem adjoint_comp (A : F →L[𝕜] G) (B : E →L[𝕜] F) : (A ∘L B)† =
   simp only [adjoint_inner_right, ContinuousLinearMap.coe_comp', Function.comp_apply]
 #align continuous_linear_map.adjoint_comp ContinuousLinearMap.adjoint_comp
 
--- Porting note: Originally `‖A x‖ ^ 2`. But this didn't work because the exponent was `2 : ℝ`.
 theorem apply_norm_sq_eq_inner_adjoint_left (A : E →L[𝕜] E) (x : E) :
-    HPow.hPow ‖A x‖ 2 = re ⟪(A† * A) x, x⟫ := by
+    ‖A x‖ ^ 2 = re ⟪(A† * A) x, x⟫ := by
   have h : ⟪(A† * A) x, x⟫ = ⟪A x, A x⟫ := by rw [← adjoint_inner_left]; rfl
   rw [h, ← inner_self_eq_norm_sq (𝕜 := 𝕜) _]
 #align continuous_linear_map.apply_norm_sq_eq_inner_adjoint_left ContinuousLinearMap.apply_norm_sq_eq_inner_adjoint_left
@@ -154,9 +154,8 @@ theorem apply_norm_eq_sqrt_inner_adjoint_left (A : E →L[𝕜] E) (x : E) :
   rw [← apply_norm_sq_eq_inner_adjoint_left, Real.sqrt_sq (norm_nonneg _)]
 #align continuous_linear_map.apply_norm_eq_sqrt_inner_adjoint_left ContinuousLinearMap.apply_norm_eq_sqrt_inner_adjoint_left
 
--- Porting note: Originally `‖A x‖ ^ 2`. But this didn't work because the exponent was `2 : ℝ`.
 theorem apply_norm_sq_eq_inner_adjoint_right (A : E →L[𝕜] E) (x : E) :
-    HPow.hPow ‖A x‖ 2 = re ⟪x, (A† * A) x⟫ := by
+    ‖A x‖ ^ 2 = re ⟪x, (A† * A) x⟫ := by
   have h : ⟪x, (A† * A) x⟫ = ⟪A x, A x⟫ := by rw [← adjoint_inner_right]; rfl
   rw [h, ← inner_self_eq_norm_sq (𝕜 := 𝕜) _]
 #align continuous_linear_map.apply_norm_sq_eq_inner_adjoint_right ContinuousLinearMap.apply_norm_sq_eq_inner_adjoint_right
@@ -247,7 +246,7 @@ instance : CstarRing (E →L[𝕜] E) :=
 
 section Real
 
-variable {E' : Type _} {F' : Type _}
+variable {E' : Type*} {F' : Type*}
 
 variable [NormedAddCommGroup E'] [NormedAddCommGroup F']
 
@@ -428,7 +427,7 @@ theorem eq_adjoint_iff (A : E →ₗ[𝕜] F) (B : F →ₗ[𝕜] E) :
 
 /-- The adjoint is unique: a map `A` is the adjoint of `B` iff it satisfies `⟪A x, y⟫ = ⟪x, B y⟫`
 for all basis vectors `x` and `y`. -/
-theorem eq_adjoint_iff_basis {ι₁ : Type _} {ι₂ : Type _} (b₁ : Basis ι₁ 𝕜 E) (b₂ : Basis ι₂ 𝕜 F)
+theorem eq_adjoint_iff_basis {ι₁ : Type*} {ι₂ : Type*} (b₁ : Basis ι₁ 𝕜 E) (b₂ : Basis ι₂ 𝕜 F)
     (A : E →ₗ[𝕜] F) (B : F →ₗ[𝕜] E) :
     A = LinearMap.adjoint B ↔ ∀ (i₁ : ι₁) (i₂ : ι₂), ⟪A (b₁ i₁), b₂ i₂⟫ = ⟪b₁ i₁, B (b₂ i₂)⟫ := by
   refine' ⟨fun h x y => by rw [h, adjoint_inner_left], fun h => _⟩
@@ -436,13 +435,13 @@ theorem eq_adjoint_iff_basis {ι₁ : Type _} {ι₂ : Type _} (b₁ : Basis ι�
   exact ext_inner_right_basis b₂ fun i₂ => by simp only [adjoint_inner_left, h i₁ i₂]
 #align linear_map.eq_adjoint_iff_basis LinearMap.eq_adjoint_iff_basis
 
-theorem eq_adjoint_iff_basis_left {ι : Type _} (b : Basis ι 𝕜 E) (A : E →ₗ[𝕜] F) (B : F →ₗ[𝕜] E) :
+theorem eq_adjoint_iff_basis_left {ι : Type*} (b : Basis ι 𝕜 E) (A : E →ₗ[𝕜] F) (B : F →ₗ[𝕜] E) :
     A = LinearMap.adjoint B ↔ ∀ i y, ⟪A (b i), y⟫ = ⟪b i, B y⟫ := by
   refine' ⟨fun h x y => by rw [h, adjoint_inner_left], fun h => Basis.ext b fun i => _⟩
   exact ext_inner_right 𝕜 fun y => by simp only [h i, adjoint_inner_left]
 #align linear_map.eq_adjoint_iff_basis_left LinearMap.eq_adjoint_iff_basis_left
 
-theorem eq_adjoint_iff_basis_right {ι : Type _} (b : Basis ι 𝕜 F) (A : E →ₗ[𝕜] F) (B : F →ₗ[𝕜] E) :
+theorem eq_adjoint_iff_basis_right {ι : Type*} (b : Basis ι 𝕜 F) (A : E →ₗ[𝕜] F) (B : F →ₗ[𝕜] E) :
     A = LinearMap.adjoint B ↔ ∀ i x, ⟪A x, b i⟫ = ⟪x, B (b i)⟫ := by
   refine' ⟨fun h x y => by rw [h, adjoint_inner_left], fun h => _⟩
   ext x
@@ -481,7 +480,7 @@ theorem isSymmetric_iff_isSelfAdjoint (A : E →ₗ[𝕜] E) : IsSymmetric A ↔
 
 section Real
 
-variable {E' : Type _} {F' : Type _}
+variable {E' : Type*} {F' : Type*}
 
 variable [NormedAddCommGroup E'] [NormedAddCommGroup F']
 
@@ -524,7 +523,7 @@ end LinearMap
 
 namespace Matrix
 
-variable {m n : Type _} [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n]
+variable {m n : Type*} [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n]
 
 open scoped ComplexConjugate
 

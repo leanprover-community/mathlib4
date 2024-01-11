@@ -116,7 +116,7 @@ def haltList (tm : FinTM2) (s : List (tm.Γ tm.k₁)) : tm.Cfg where
 
 /-- A "proof" of the fact that f eventually reaches b when repeatedly evaluated on a,
 remembering the number of steps it takes. -/
-structure EvalsTo {σ : Type _} (f : σ → Option σ) (a : σ) (b : Option σ) where
+structure EvalsTo {σ : Type*} (f : σ → Option σ) (a : σ) (b : Option σ) where
   steps : ℕ
   evals_in_steps : (flip bind f)^[steps] a = b
 #align turing.evals_to Turing.EvalsTo
@@ -126,33 +126,33 @@ structure EvalsTo {σ : Type _} (f : σ → Option σ) (a : σ) (b : Option σ) 
 -- natural, so there is a trade-off that needs to be made here. A notation can get around this.
 /-- A "proof" of the fact that `f` eventually reaches `b` in at most `m` steps when repeatedly
 evaluated on `a`, remembering the number of steps it takes. -/
-structure EvalsToInTime {σ : Type _} (f : σ → Option σ) (a : σ) (b : Option σ) (m : ℕ) extends
+structure EvalsToInTime {σ : Type*} (f : σ → Option σ) (a : σ) (b : Option σ) (m : ℕ) extends
   EvalsTo f a b where
   steps_le_m : steps ≤ m
 #align turing.evals_to_in_time Turing.EvalsToInTime
 
 /-- Reflexivity of `EvalsTo` in 0 steps. -/
 -- @[refl] -- Porting note: `@[refl]` attribute only applies to lemmas proving `x ∼ x` in Lean4.
-def EvalsTo.refl {σ : Type _} (f : σ → Option σ) (a : σ) : EvalsTo f a a :=
+def EvalsTo.refl {σ : Type*} (f : σ → Option σ) (a : σ) : EvalsTo f a a :=
   ⟨0, rfl⟩
 #align turing.evals_to.refl Turing.EvalsTo.refl
 
 /-- Transitivity of `EvalsTo` in the sum of the numbers of steps. -/
 @[trans]
-def EvalsTo.trans {σ : Type _} (f : σ → Option σ) (a : σ) (b : σ) (c : Option σ)
+def EvalsTo.trans {σ : Type*} (f : σ → Option σ) (a : σ) (b : σ) (c : Option σ)
     (h₁ : EvalsTo f a b) (h₂ : EvalsTo f b c) : EvalsTo f a c :=
   ⟨h₂.steps + h₁.steps, by rw [Function.iterate_add_apply, h₁.evals_in_steps, h₂.evals_in_steps]⟩
 #align turing.evals_to.trans Turing.EvalsTo.trans
 
 /-- Reflexivity of `EvalsToInTime` in 0 steps. -/
 -- @[refl] -- Porting note: `@[refl]` attribute only applies to lemmas proving `x ∼ x` in Lean4.
-def EvalsToInTime.refl {σ : Type _} (f : σ → Option σ) (a : σ) : EvalsToInTime f a a 0 :=
+def EvalsToInTime.refl {σ : Type*} (f : σ → Option σ) (a : σ) : EvalsToInTime f a a 0 :=
   ⟨EvalsTo.refl f a, le_refl 0⟩
 #align turing.evals_to_in_time.refl Turing.EvalsToInTime.refl
 
 /-- Transitivity of `EvalsToInTime` in the sum of the numbers of steps. -/
 @[trans]
-def EvalsToInTime.trans {σ : Type _} (f : σ → Option σ) (m₁ : ℕ) (m₂ : ℕ) (a : σ) (b : σ)
+def EvalsToInTime.trans {σ : Type*} (f : σ → Option σ) (m₁ : ℕ) (m₂ : ℕ) (a : σ) (b : σ)
     (c : Option σ) (h₁ : EvalsToInTime f a b m₁) (h₂ : EvalsToInTime f b c m₂) :
     EvalsToInTime f a c (m₂ + m₁) :=
   ⟨EvalsTo.trans f a b c h₁.toEvalsTo h₂.toEvalsTo, add_le_add h₂.steps_le_m h₁.steps_le_m⟩

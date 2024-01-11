@@ -82,7 +82,7 @@ end Complex
 
 section ComplexContinuousExpComp
 
-variable {α : Type _}
+variable {α : Type*}
 
 open Complex
 
@@ -129,7 +129,7 @@ end Real
 
 section RealContinuousExpComp
 
-variable {α : Type _}
+variable {α : Type*}
 
 open Real
 
@@ -163,7 +163,7 @@ end RealContinuousExpComp
 
 namespace Real
 
-variable {α : Type _} {x y z : ℝ} {l : Filter α}
+variable {α : Type*} {x y z : ℝ} {l : Filter α}
 
 theorem exp_half (x : ℝ) : exp (x / 2) = sqrt (exp x) := by
   rw [eq_comm, sqrt_eq_iff_sq_eq, sq, ← exp_add, add_halves] <;> exact (exp_pos _).le
@@ -207,7 +207,7 @@ theorem isBoundedUnder_ge_exp_comp (l : Filter α) (f : α → ℝ) :
 @[simp]
 theorem isBoundedUnder_le_exp_comp {f : α → ℝ} :
     (IsBoundedUnder (· ≤ ·) l fun x => exp (f x)) ↔ IsBoundedUnder (· ≤ ·) l f :=
-  exp_monotone.isBoundedUnder_le_comp tendsto_exp_atTop
+  exp_monotone.isBoundedUnder_le_comp_iff tendsto_exp_atTop
 #align real.is_bounded_under_le_exp_comp Real.isBoundedUnder_le_exp_comp
 
 /-- The function `exp(x)/x^n` tends to `+∞` at `+∞`, for any natural number `n` -/
@@ -441,7 +441,7 @@ theorem comap_exp_nhdsWithin_zero : comap exp (𝓝[≠] 0) = comap re atBot := 
   simp [nhdsWithin, comap_exp_nhds_zero, this]
 #align complex.comap_exp_nhds_within_zero Complex.comap_exp_nhdsWithin_zero
 
-theorem tendsto_exp_nhds_zero_iff {α : Type _} {l : Filter α} {f : α → ℂ} :
+theorem tendsto_exp_nhds_zero_iff {α : Type*} {l : Filter α} {f : α → ℂ} :
     Tendsto (fun x => exp (f x)) l (𝓝 0) ↔ Tendsto (fun x => re (f x)) l atBot := by
   simp_rw [←comp_apply (f := exp), ← tendsto_comap_iff, comap_exp_nhds_zero, tendsto_comap_iff]
   rfl

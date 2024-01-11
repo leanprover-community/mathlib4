@@ -19,7 +19,7 @@ set.
 
 open Set
 
-variable {α β : Type _} [LinearOrder α] [Preorder β] {a : α} {f : α → β}
+variable {α β : Type*} [LinearOrder α] [Preorder β] {a : α} {f : α → β}
 
 /-- If `f` is strictly monotone both on `s` and `t`, with `s` to the left of `t` and the center
 point belonging to both `s` and `t`, then `f` is strictly monotone on `s ∪ t` -/

@@ -339,7 +339,7 @@ set_option linter.uppercaseLean3 false in
 #align Top.presheaf.germ_stalk_specializes' TopCat.Presheaf.germ_stalk_specializes'
 
 @[simp]
-theorem stalkSpecializes_refl {C : Type _} [Category C] [Limits.HasColimits C] {X : TopCat}
+theorem stalkSpecializes_refl {C : Type*} [Category C] [Limits.HasColimits C] {X : TopCat}
     (F : X.Presheaf C) (x : X) : F.stalkSpecializes (specializes_refl x) = 𝟙 _ := by
   ext
   simp
@@ -347,7 +347,7 @@ set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_specializes_refl TopCat.Presheaf.stalkSpecializes_refl
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
-theorem stalkSpecializes_comp {C : Type _} [Category C] [Limits.HasColimits C] {X : TopCat}
+theorem stalkSpecializes_comp {C : Type*} [Category C] [Limits.HasColimits C] {X : TopCat}
     (F : X.Presheaf C) {x y z : X} (h : x ⤳ y) (h' : y ⤳ z) :
     F.stalkSpecializes h' ≫ F.stalkSpecializes h = F.stalkSpecializes (h.trans h') := by
   ext
@@ -378,7 +378,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- The stalks are isomorphic on inseparable points -/
 @[simps]
-def stalkCongr {X : TopCat} {C : Type _} [Category C] [HasColimits C] (F : X.Presheaf C) {x y : X}
+def stalkCongr {X : TopCat} {C : Type*} [Category C] [HasColimits C] (F : X.Presheaf C) {x y : X}
     (e : Inseparable x y) : F.stalk x ≅ F.stalk y :=
   ⟨F.stalkSpecializes e.ge, F.stalkSpecializes e.le, by simp, by simp⟩
 set_option linter.uppercaseLean3 false in

@@ -229,11 +229,11 @@ open scoped nonZeroDivisors
 
 variable [Algebra R S]
 
-variable {K : Type _} [Field K] [Algebra R K] [hRK : IsFractionRing R K]
+variable {K : Type*} [Field K] [Algebra R K] [hRK : IsFractionRing R K]
 
-variable {L : Type _} [Field L] [Algebra S L] [IsFractionRing S L]
+variable {L : Type*} [Field L] [Algebra S L] [IsFractionRing S L]
 
-variable {V V' V'' : Type _}
+variable {V V' V'' : Type*}
 
 variable [AddCommGroup V] [Module R V] [Module K V] [IsScalarTower R K V]
 
@@ -253,7 +253,7 @@ The statement we prove is actually slightly more general:
 -/
 theorem FinrankQuotientMap.linearIndependent_of_nontrivial [IsDomain R] [IsDedekindDomain R]
     (hRS : RingHom.ker (algebraMap R S) ≠ ⊤) (f : V'' →ₗ[R] V) (hf : Function.Injective f)
-    (f' : V'' →ₗ[R] V') {ι : Type _} {b : ι → V''} (hb' : LinearIndependent S (f' ∘ b)) :
+    (f' : V'' →ₗ[R] V') {ι : Type*} {b : ι → V''} (hb' : LinearIndependent S (f' ∘ b)) :
     LinearIndependent K (f ∘ b) := by
   contrapose! hb' with hb
   -- Informally, if we have a nontrivial linear dependence with coefficients `g` in `K`,
@@ -621,7 +621,7 @@ theorem rank_pow_quot_aux [IsDomain S] [IsDedekindDomain S] [p.IsMaximal] [P.IsP
       Module.rank (R ⧸ p) (S ⧸ P) +
         Module.rank (R ⧸ p) (Ideal.map (Ideal.Quotient.mk (P ^ e)) (P ^ (i + 1))) := by
   letI : Field (R ⧸ p) := Ideal.Quotient.field _
-  rw [rank_eq_of_injective _ (powQuotSuccInclusion_injective f p P i),
+  rw [← rank_range_of_injective _ (powQuotSuccInclusion_injective f p P i),
     (quotientRangePowQuotSuccInclusionEquiv f p P hP0 hi).symm.rank_eq]
   exact (rank_quotient_add_rank (LinearMap.range (powQuotSuccInclusion f p P i))).symm
 #align ideal.rank_pow_quot_aux Ideal.rank_pow_quot_aux
@@ -810,7 +810,7 @@ for `P` ranging over the primes lying over `p`, `∑ P, e P * f P = [Frac(S) : F
 here `S` is a finite `R`-module (and thus `Frac(S) : Frac(R)` is a finite extension) and `p`
 is maximal.
 -/
-theorem sum_ramification_inertia (K L : Type _) [Field K] [Field L] [IsDomain R]
+theorem sum_ramification_inertia (K L : Type*) [Field K] [Field L] [IsDomain R]
     [IsDedekindDomain R] [Algebra R K] [IsFractionRing R K] [Algebra S L] [IsFractionRing S L]
     [Algebra K L] [Algebra R L] [IsScalarTower R S L] [IsScalarTower R K L] [IsNoetherian R S]
     [IsIntegralClosure S R L] [p.IsMaximal] (hp0 : p ≠ ⊥) :

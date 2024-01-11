@@ -31,7 +31,7 @@ They can't be instances themselves since they can cause loops.
 -- porting notes: `Type` is a reserved word, switched to `Type'`
 section Type'
 
-variable (F G : Type _) {α γ : Type _} {β : α → Type _} [FunLike F α β] [FunLike G α fun _ => γ]
+variable (F G : Type*) {α γ : Type*} {β : α → Type*} [FunLike F α β] [FunLike G α fun _ => γ]
 
 /-- All `FunLike`s are finite if their domain and codomain are.
 
@@ -57,7 +57,7 @@ end Type'
 -- porting notes: `Sort` is a reserved word, switched to `Sort'`
 section Sort'
 
-variable (F G : Sort _) {α γ : Sort _} {β : α → Sort _} [FunLike F α β] [FunLike G α fun _ => γ]
+variable (F G : Sort*) {α γ : Sort*} {β : α → Sort*} [FunLike F α β] [FunLike G α fun _ => γ]
 
 /-- All `FunLike`s are finite if their domain and codomain are.
 

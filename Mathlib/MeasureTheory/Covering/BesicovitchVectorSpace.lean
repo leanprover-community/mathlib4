@@ -44,7 +44,7 @@ In particular, this number is bounded by `5 ^ dim` by a straightforward measure 
 
 universe u
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 open Metric Set FiniteDimensional MeasureTheory Filter Fin
 
@@ -54,7 +54,7 @@ noncomputable section
 
 namespace Besicovitch
 
-variable {E : Type _} [NormedAddCommGroup E]
+variable {E : Type*} [NormedAddCommGroup E]
 
 namespace SatelliteConfig
 
@@ -128,7 +128,7 @@ end SatelliteConfig
 
 /-- The maximum cardinality of a `1`-separated set in the ball of radius `2`. This is also the
 optimal number of families in the Besicovitch covering theorem. -/
-def multiplicity (E : Type _) [NormedAddCommGroup E] :=
+def multiplicity (E : Type*) [NormedAddCommGroup E] :=
   sSup {N | ∃ s : Finset E, s.card = N ∧ (∀ c ∈ s, ‖c‖ ≤ 2) ∧ ∀ c ∈ s, ∀ d ∈ s, c ≠ d → 1 ≤ ‖c - d‖}
 #align besicovitch.multiplicity Besicovitch.multiplicity
 

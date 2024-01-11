@@ -221,15 +221,15 @@ theorem affineLocally_iff_affineOpens_le (hP : RingHom.RespectsIso @P) {X Y : Sc
     rw [← hP.cancel_right_isIso _ (X.presheaf.map (eqToHom _)), Category.assoc, ←
       X.presheaf.map_comp]
     convert this using 1
+    · -- Porting note: makes instance metavariable like in Lean 3
+      apply
+        (@isAffineOpen_iff_of_isOpenImmersion _ _ (@Scheme.ofRestrict _ X U'.inclusion _) ?_ _).mp
+      -- Porting note: was convert V.2
+      erw [e']
+      apply V.2
+      infer_instance
     · dsimp only [Functor.op, unop_op]; rw [Opens.openEmbedding_obj_top]
-      · congr 1; apply e'.symm
-      · -- Porting note: makes instance metavariable like in Lean 3
-        apply
-          (@isAffineOpen_iff_of_isOpenImmersion _ _ (@Scheme.ofRestrict _ X U'.inclusion _) ?_ _).mp
-        -- Porting note: was convert V.2
-        erw [e']
-        apply V.2
-        infer_instance
+      congr 1; apply e'.symm
   · intro H V
     specialize H ⟨_, V.2.imageIsOpenImmersion (X.ofRestrict _)⟩ (Subtype.coe_image_subset _ _)
     erw [← X.presheaf.map_comp]
@@ -501,8 +501,6 @@ theorem source_affine_openCover_iff {X Y : Scheme.{u}} (f : X ⟶ Y) [IsAffine Y
   · have h := (hP.affine_openCover_TFAE f).out 1 0
     apply h.mp
     use 𝒰
-    use inferInstance
-    exact H
 #align ring_hom.property_is_local.source_affine_open_cover_iff RingHom.PropertyIsLocal.source_affine_openCover_iff
 
 theorem isLocal_sourceAffineLocally : (sourceAffineLocally @P).IsLocal :=

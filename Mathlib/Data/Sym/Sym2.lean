@@ -54,7 +54,7 @@ open Finset Function Sym
 
 universe u
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 namespace Sym2
 
@@ -615,7 +615,7 @@ def sym2EquivSym' : Equiv (Sym2 α) (Sym' α 2)
 
 /-- The symmetric square is equivalent to the second symmetric power.
 -/
-def equivSym (α : Type _) : Sym2 α ≃ Sym α 2 :=
+def equivSym (α : Type*) : Sym2 α ≃ Sym α 2 :=
   Equiv.trans sym2EquivSym' symEquivSym'.symm
 #align sym2.equiv_sym Sym2.equivSym
 
@@ -623,7 +623,7 @@ def equivSym (α : Type _) : Sym2 α ≃ Sym α 2 :=
 two. (This is currently a synonym for `equivSym`, but it's provided
 in case the definition for `Sym` changes.)
 -/
-def equivMultiset (α : Type _) : Sym2 α ≃ { s : Multiset α // Multiset.card s = 2 } :=
+def equivMultiset (α : Type*) : Sym2 α ≃ { s : Multiset α // Multiset.card s = 2 } :=
   equivSym α
 #align sym2.equiv_multiset Sym2.equivMultiset
 
@@ -646,10 +646,10 @@ theorem relBool_spec [DecidableEq α] (x y : α × α) : ↥(relBool x y) ↔ Re
 
 /-- Given `[DecidableEq α]` and `[Fintype α]`, the following instance gives `Fintype (Sym2 α)`.
 -/
-instance instRelDecidable (α : Type _) [DecidableEq α] : DecidableRel (Sym2.Rel α) := fun x y =>
+instance instRelDecidable (α : Type*) [DecidableEq α] : DecidableRel (Sym2.Rel α) := fun x y =>
   decidable_of_bool (relBool x y) (relBool_spec x y)
 -- Porting note: add this other version needed for Data.Finset.Sym
-instance instRelDecidable' (α : Type _) [DecidableEq α] :
+instance instRelDecidable' (α : Type*) [DecidableEq α] :
   DecidableRel (· ≈ · : α × α → α × α → Prop) := instRelDecidable _
 
 -- porting note: extra definitions and lemmas for proving decidable equality in `Sym2`

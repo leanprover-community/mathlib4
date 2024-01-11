@@ -72,6 +72,10 @@ instance : IsSuccArchimedean ℕ :=
 instance : IsPredArchimedean ℕ :=
   ⟨fun {a} {b} h => ⟨b - a, by rw [pred_eq_pred, pred_iterate, tsub_tsub_cancel_of_le h]⟩⟩
 
+lemma forall_ne_zero_iff (P : ℕ → Prop) :
+    (∀ i, i ≠ 0 → P i) ↔ (∀ i, P (i + 1)) :=
+  SuccOrder.forall_ne_bot_iff P
+
 /-! ### Covering relation -/
 
 

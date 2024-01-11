@@ -41,7 +41,7 @@ balanced
 
 open Set Pointwise Topology Filter
 
-variable {𝕜 E ι : Type _}
+variable {𝕜 E ι : Type*}
 
 section balancedHull
 

@@ -13,7 +13,7 @@ import Mathlib.Algebra.Group.TypeTags
 -/
 
 
-variable {G H : Type _}
+variable {G H : Type*}
 
 /-- Reinterpret `G ≃+ H` as `Multiplicative G ≃* Multiplicative H`. -/
 def AddEquiv.toMultiplicative [AddZeroClass G] [AddZeroClass H] :

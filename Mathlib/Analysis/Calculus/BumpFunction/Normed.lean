@@ -5,6 +5,7 @@ Authors: Floris van Doorn
 -/
 import Mathlib.Analysis.Calculus.BumpFunction.Basic
 import Mathlib.MeasureTheory.Integral.SetIntegral
+import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 
 #align_import analysis.calculus.bump_function_inner from "leanprover-community/mathlib"@"3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe"
 
@@ -17,12 +18,12 @@ In this file we define `ContDiffBump.normed f μ` to be the bump function `f` no
 
 noncomputable section
 
-open Function Filter Set Metric MeasureTheory
+open Function Filter Set Metric MeasureTheory FiniteDimensional Measure
 open scoped Topology
 
 namespace ContDiffBump
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [HasContDiffBump E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [HasContDiffBump E]
   [MeasurableSpace E] {c : E} (f : ContDiffBump c) {x : E} {n : ℕ∞} {μ : Measure E}
 
 /-- A bump function normed so that `∫ x, f.normed μ x ∂μ = 1`. -/
@@ -106,5 +107,59 @@ theorem integral_normed_smul {X} [NormedAddCommGroup X] [NormedSpace ℝ X]
     [CompleteSpace X] (z : X) : ∫ x, f.normed μ x • z ∂μ = z := by
   simp_rw [integral_smul_const, f.integral_normed (μ := μ), one_smul]
 #align cont_diff_bump.integral_normed_smul ContDiffBump.integral_normed_smul
+
+theorem measure_closedBall_le_integral : (μ (closedBall c f.rIn)).toReal ≤ ∫ x, f x ∂μ := by calc
+  (μ (closedBall c f.rIn)).toReal = ∫ x in closedBall c f.rIn, 1 ∂μ := by simp
+  _ = ∫ x in closedBall c f.rIn, f x ∂μ := set_integral_congr (measurableSet_closedBall)
+        (fun x hx ↦ (one_of_mem_closedBall f hx).symm)
+  _ ≤ ∫ x, f x ∂μ := set_integral_le_integral f.integrable (eventually_of_forall (fun x ↦ f.nonneg))
+
+theorem normed_le_div_measure_closedBall_rIn (x : E) :
+    f.normed μ x ≤ 1 / (μ (closedBall c f.rIn)).toReal := by
+  rw [normed_def]
+  gcongr
+  · exact ENNReal.toReal_pos (measure_closedBall_pos _ _ f.rIn_pos).ne' measure_closedBall_lt_top.ne
+  · exact f.le_one
+  · exact f.measure_closedBall_le_integral μ
+
+theorem integral_le_measure_closedBall : ∫ x, f x ∂μ ≤ (μ (closedBall c f.rOut)).toReal := by calc
+  ∫ x, f x ∂μ = ∫ x in closedBall c f.rOut, f x ∂μ := by
+    apply (set_integral_eq_integral_of_forall_compl_eq_zero (fun x hx ↦ ?_)).symm
+    apply f.zero_of_le_dist (le_of_lt _)
+    simpa using hx
+  _ ≤ ∫ x in closedBall c f.rOut, 1 ∂μ := by
+    apply set_integral_mono f.integrable.integrableOn _ (fun x ↦ f.le_one)
+    simp [measure_closedBall_lt_top]
+  _ = (μ (closedBall c f.rOut)).toReal := by simp
+
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
+
+theorem measure_closedBall_div_le_integral [IsAddHaarMeasure μ] (K : ℝ) (h : f.rOut ≤ K * f.rIn) :
+    (μ (closedBall c f.rOut)).toReal / K ^ finrank ℝ E ≤ ∫ x, f x ∂μ := by
+  have K_pos : 0 < K := by
+    simpa [f.rIn_pos, not_lt.2 f.rIn_pos.le] using mul_pos_iff.1 (f.rOut_pos.trans_le h)
+  apply le_trans _ (f.measure_closedBall_le_integral μ)
+  rw [div_le_iff (pow_pos K_pos _), addHaar_closedBall' _ _ f.rIn_pos.le,
+    addHaar_closedBall' _ _ f.rOut_pos.le, ENNReal.toReal_mul, ENNReal.toReal_mul,
+    ENNReal.toReal_ofReal (pow_nonneg f.rOut_pos.le _),
+    ENNReal.toReal_ofReal (pow_nonneg f.rIn_pos.le _), mul_assoc, mul_comm _ (K ^ _), ← mul_assoc,
+    ← mul_pow, mul_comm _ K]
+  gcongr
+  exact f.rOut_pos.le
+
+theorem normed_le_div_measure_closedBall_rOut [IsAddHaarMeasure μ] (K : ℝ) (h : f.rOut ≤ K * f.rIn)
+    (x : E) :
+    f.normed μ x ≤ K ^ finrank ℝ E / (μ (closedBall c f.rOut)).toReal := by
+  have K_pos : 0 < K := by
+    simpa [f.rIn_pos, not_lt.2 f.rIn_pos.le] using mul_pos_iff.1 (f.rOut_pos.trans_le h)
+  have : f x / ∫ y, f y ∂μ ≤ 1 / ∫ y, f y ∂μ := by
+    gcongr
+    · exact f.integral_pos.le
+    · exact f.le_one
+  apply this.trans
+  rw [div_le_div_iff f.integral_pos, one_mul, ← div_le_iff' (pow_pos K_pos _)]
+  · exact f.measure_closedBall_div_le_integral μ K h
+  · exact ENNReal.toReal_pos (measure_closedBall_pos _ _ f.rOut_pos).ne'
+      measure_closedBall_lt_top.ne
 
 end ContDiffBump

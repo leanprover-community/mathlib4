@@ -68,8 +68,7 @@ noncomputable section
 ## Definition of the Riemann zeta function and related functions
 -/
 
--- Porting note: see https://github.com/leanprover/lean4/issues/2220
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 /-- Function whose Mellin transform is `π ^ (-s) * Γ(s) * zeta (2 * s)`, for `1 / 2 < Re s`. -/
 def zetaKernel₁ (t : ℝ) : ℂ :=

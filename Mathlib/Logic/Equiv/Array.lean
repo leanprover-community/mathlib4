@@ -32,22 +32,22 @@ namespace Equiv
 
 -- /-- The natural equivalence between length-`n` heterogeneous arrays
 -- and dependent functions from `fin n`. -/
--- def darrayEquivFin {n : ℕ} (α : Fin n → Type _) : DArray n α ≃ ∀ i, α i :=
+-- def darrayEquivFin {n : ℕ} (α : Fin n → Type*) : DArray n α ≃ ∀ i, α i :=
 --   ⟨DArray.read, DArray.mk, fun ⟨f⟩ => rfl, fun f => rfl⟩
 #noalign equiv.d_array_equiv_fin
 
 -- /-- The natural equivalence between length-`n` arrays and functions from `fin n`. -/
--- def array'EquivFin (n : ℕ) (α : Type _) : Array' n α ≃ (Fin n → α) :=
+-- def array'EquivFin (n : ℕ) (α : Type*) : Array' n α ≃ (Fin n → α) :=
 --   darrayEquivFin _
 #noalign equiv.array_equiv_fin
 
 -- /-- The natural equivalence between length-`n` vectors and length-`n` arrays. -/
--- def vectorEquivArray' (α : Type _) (n : ℕ) : Vector α n ≃ Array' n α :=
+-- def vectorEquivArray' (α : Type*) (n : ℕ) : Vector α n ≃ Array' n α :=
 --   (vectorEquivFin _ _).trans (array'EquivFin _ _).symm
 #noalign equiv.vector_equiv_array
 
 /-- The natural equivalence between arrays and lists. -/
-def arrayEquivList (α : Type _) : Array α ≃ List α :=
+def arrayEquivList (α : Type*) : Array α ≃ List α :=
   ⟨Array.data, Array.mk, fun _ => rfl, fun _ => rfl⟩
 
 end Equiv

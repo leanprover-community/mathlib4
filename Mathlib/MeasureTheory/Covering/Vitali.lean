@@ -36,7 +36,7 @@ This version is given in `Vitali.vitaliFamily`.
 -/
 
 
-variable {α ι : Type _}
+variable {α ι : Type*}
 
 open Set Metric MeasureTheory TopologicalSpace Filter
 

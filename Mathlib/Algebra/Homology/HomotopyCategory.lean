@@ -24,7 +24,7 @@ noncomputable section
 
 open CategoryTheory CategoryTheory.Limits HomologicalComplex
 
-variable {ι : Type _}
+variable {ι : Type*}
 
 variable (V : Type u) [Category.{v} V] [Preadditive V]
 
@@ -175,7 +175,7 @@ end HomotopyCategory
 
 namespace CategoryTheory
 
-variable {V} {W : Type _} [Category W] [Preadditive W]
+variable {V} {W : Type*} [Category W] [Preadditive W]
 
 -- porting note: given a simpler definition of this functor
 /-- An additive functor induces a functor between homotopy categories. -/

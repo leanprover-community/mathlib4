@@ -19,7 +19,7 @@ defines the limit value of an eventually-constant sequence.
 
 ## Main declarations
 
-* `natLt`/`natGt`: Make an order embedding `Nat ↪ α` from
+* `natLT`/`natGT`: Make an order embedding `Nat ↪ α` from
    an increasing/decreasing function `Nat → α`.
 * `monotonicSequenceLimit`: The limit of an eventually-constant monotone sequence `Nat →o α`.
 * `monotonicSequenceLimitIndex`: The index of the first occurrence of `monotonicSequenceLimit`
@@ -27,32 +27,32 @@ defines the limit value of an eventually-constant sequence.
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 namespace RelEmbedding
 
 variable {r : α → α → Prop} [IsStrictOrder α r]
 
 /-- If `f` is a strictly `r`-increasing sequence, then this returns `f` as an order embedding. -/
-def natLt (f : ℕ → α) (H : ∀ n : ℕ, r (f n) (f (n + 1))) : ((· < ·) : ℕ → ℕ → Prop) ↪r r :=
+def natLT (f : ℕ → α) (H : ∀ n : ℕ, r (f n) (f (n + 1))) : ((· < ·) : ℕ → ℕ → Prop) ↪r r :=
   ofMonotone f <| Nat.rel_of_forall_rel_succ_of_lt r H
-#align rel_embedding.nat_lt RelEmbedding.natLt
+#align rel_embedding.nat_lt RelEmbedding.natLT
 
 @[simp]
-theorem coe_natLt {f : ℕ → α} {H : ∀ n : ℕ, r (f n) (f (n + 1))} : ⇑(natLt f H) = f :=
+theorem coe_natLT {f : ℕ → α} {H : ∀ n : ℕ, r (f n) (f (n + 1))} : ⇑(natLT f H) = f :=
   rfl
-#align rel_embedding.coe_nat_lt RelEmbedding.coe_natLt
+#align rel_embedding.coe_nat_lt RelEmbedding.coe_natLT
 
 /-- If `f` is a strictly `r`-decreasing sequence, then this returns `f` as an order embedding. -/
-def natGt (f : ℕ → α) (H : ∀ n : ℕ, r (f (n + 1)) (f n)) : ((· > ·) : ℕ → ℕ → Prop) ↪r r :=
+def natGT (f : ℕ → α) (H : ∀ n : ℕ, r (f (n + 1)) (f n)) : ((· > ·) : ℕ → ℕ → Prop) ↪r r :=
   haveI := IsStrictOrder.swap r
-  RelEmbedding.swap (natLt f H)
-#align rel_embedding.nat_gt RelEmbedding.natGt
+  RelEmbedding.swap (natLT f H)
+#align rel_embedding.nat_gt RelEmbedding.natGT
 
 @[simp]
-theorem coe_natGt {f : ℕ → α} {H : ∀ n : ℕ, r (f (n + 1)) (f n)} : ⇑(natGt f H) = f :=
+theorem coe_natGT {f : ℕ → α} {H : ∀ n : ℕ, r (f (n + 1)) (f n)} : ⇑(natGT f H) = f :=
   rfl
-#align rel_embedding.coe_nat_gt RelEmbedding.coe_natGt
+#align rel_embedding.coe_nat_gt RelEmbedding.coe_natGT
 
 theorem exists_not_acc_lt_of_not_acc {a : α} {r} (h : ¬Acc r a) : ∃ b, ¬Acc r b ∧ r b a := by
   contrapose! h
@@ -75,7 +75,7 @@ theorem acc_iff_no_decreasing_seq {x} :
       | intro w h => exact ⟨⟨w, h.1⟩, h.2⟩
     obtain ⟨f, h⟩ := Classical.axiom_of_choice this
     refine' fun E =>
-      by_contradiction fun hx => E.elim' ⟨natGt (fun n => (f^[n] ⟨x, hx⟩).1) fun n => _, 0, rfl⟩
+      by_contradiction fun hx => E.elim' ⟨natGT (fun n => (f^[n] ⟨x, hx⟩).1) fun n => _, 0, rfl⟩
     simp only [Function.iterate_succ']
     apply h
 #align rel_embedding.acc_iff_no_decreasing_seq RelEmbedding.acc_iff_no_decreasing_seq
@@ -109,7 +109,7 @@ variable (s : Set ℕ) [Infinite s]
 /-- An order embedding from `ℕ` to itself with a specified range -/
 def orderEmbeddingOfSet [DecidablePred (· ∈ s)] : ℕ ↪o ℕ :=
   (RelEmbedding.orderEmbeddingOfLTEmbedding
-    (RelEmbedding.natLt (Nat.Subtype.ofNat s) fun _ => Nat.Subtype.lt_succ_self _)).trans
+    (RelEmbedding.natLT (Nat.Subtype.ofNat s) fun _ => Nat.Subtype.lt_succ_self _)).trans
     (OrderEmbedding.subtype s)
 #align nat.order_embedding_of_set Nat.orderEmbeddingOfSet
 
@@ -120,7 +120,7 @@ noncomputable def Subtype.orderIsoOfNat : ℕ ≃o s := by
   exact
     RelIso.ofSurjective
       (RelEmbedding.orderEmbeddingOfLTEmbedding
-        (RelEmbedding.natLt (Nat.Subtype.ofNat s) fun n => Nat.Subtype.lt_succ_self _))
+        (RelEmbedding.natLT (Nat.Subtype.ofNat s) fun n => Nat.Subtype.lt_succ_self _))
       Nat.Subtype.ofNat_surjective
 #align nat.subtype.order_iso_of_nat Nat.Subtype.orderIsoOfNat
 
@@ -193,7 +193,7 @@ theorem exists_increasing_or_nonincreasing_subseq' (r : α → α → Prop) (f :
         exact hn2
       let g' : ℕ → ℕ := @Nat.rec (fun _ => ℕ) m fun n gn => Nat.find (h gn)
       exact
-        ⟨(RelEmbedding.natLt (fun n => g' n + m) fun n =>
+        ⟨(RelEmbedding.natLT (fun n => g' n + m) fun n =>
               Nat.add_lt_add_right (Nat.find_spec (h (g' n))).1 m).orderEmbeddingOfLTEmbedding,
           Or.intro_left _ fun n => (Nat.find_spec (h (g' n))).2⟩
 #align exists_increasing_or_nonincreasing_subseq' exists_increasing_or_nonincreasing_subseq'

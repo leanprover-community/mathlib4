@@ -32,7 +32,7 @@ open Topology
 /-- A `Ctop α σ` is a realization of a topology (basis) on `α`,
   represented by a type `σ` together with operations for the top element and
   the intersection operation. -/
-structure Ctop (α σ : Type _) where
+structure Ctop (α σ : Type*) where
   f : σ → Set α
   top : α → σ
   top_mem : ∀ x : α, x ∈ f (top x)
@@ -41,7 +41,7 @@ structure Ctop (α σ : Type _) where
   inter_sub : ∀ a b x h, f (inter a b x h) ⊆ f a ∩ f b
 #align ctop Ctop
 
-variable {α : Type _} {β : Type _} {σ : Type _} {τ : Type _}
+variable {α : Type*} {β : Type*} {σ : Type*} {τ : Type*}
 
 instance : Inhabited (Ctop α (Set α)) :=
   ⟨{  f := id
@@ -107,7 +107,7 @@ end Ctop
 /-- A `Ctop` realizer for the topological space `T` is a `Ctop`
   which generates `T`. -/
 structure Ctop.Realizer (α) [T : TopologicalSpace α] where
-  σ : Type _
+  σ : Type*
   F : Ctop α σ
   eq : F.toTopsp = T
 #align ctop.realizer Ctop.Realizer
@@ -158,14 +158,14 @@ protected theorem isOpen [TopologicalSpace α] (F : Realizer α) (s : F.σ) : Is
   isOpen_iff_nhds.2 fun a m ↦ by simpa using F.mem_nhds.2 ⟨s, m, Subset.refl _⟩
 #align ctop.realizer.is_open Ctop.Realizer.isOpen
 
-theorem ext' [T : TopologicalSpace α] {σ : Type _} {F : Ctop α σ}
+theorem ext' [T : TopologicalSpace α] {σ : Type*} {F : Ctop α σ}
     (H : ∀ a s, s ∈ 𝓝 a ↔ ∃ b, a ∈ F b ∧ F b ⊆ s) : F.toTopsp = T := by
   refine' eq_of_nhds_eq_nhds fun x ↦ _
   ext s
   rw [mem_nhds_toTopsp, H]
 #align ctop.realizer.ext' Ctop.Realizer.ext'
 
-theorem ext [T : TopologicalSpace α] {σ : Type _} {F : Ctop α σ} (H₁ : ∀ a, IsOpen (F a))
+theorem ext [T : TopologicalSpace α] {σ : Type*} {F : Ctop α σ} (H₁ : ∀ a, IsOpen (F a))
     (H₂ : ∀ a s, s ∈ 𝓝 a → ∃ b, a ∈ F b ∧ F b ⊆ s) : F.toTopsp = T :=
   ext' fun a s ↦ ⟨H₂ a s, fun ⟨_b, h₁, h₂⟩ ↦ mem_nhds_iff.2 ⟨_, h₂, H₁ _, h₁⟩⟩
 #align ctop.realizer.ext Ctop.Realizer.ext

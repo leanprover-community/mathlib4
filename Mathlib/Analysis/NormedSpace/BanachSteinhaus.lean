@@ -25,14 +25,14 @@ convex spaces), but these are not yet in `mathlib`.
 
 open Set
 
-variable {E F 𝕜 𝕜₂ : Type _} [SeminormedAddCommGroup E] [SeminormedAddCommGroup F]
+variable {E F 𝕜 𝕜₂ : Type*} [SeminormedAddCommGroup E] [SeminormedAddCommGroup F]
   [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F]
   {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
 
 /-- This is the standard Banach-Steinhaus theorem, or Uniform Boundedness Principle.
 If a family of continuous linear maps from a Banach space into a normed space is pointwise
 bounded, then the norms of these linear maps are uniformly bounded. -/
-theorem banach_steinhaus {ι : Type _} [CompleteSpace E] {g : ι → E →SL[σ₁₂] F}
+theorem banach_steinhaus {ι : Type*} [CompleteSpace E] {g : ι → E →SL[σ₁₂] F}
     (h : ∀ x, ∃ C, ∀ i, ‖g i x‖ ≤ C) : ∃ C', ∀ i, ‖g i‖ ≤ C' := by
   -- sequence of subsets consisting of those `x : E` with norms `‖g i x‖` bounded by `n`
   let e : ℕ → Set E := fun n => ⋂ i : ι, { x : E | ‖g i x‖ ≤ n }
@@ -75,9 +75,9 @@ open ENNReal
 
 open ENNReal
 
-/-- This version of Banach-Steinhaus is stated in terms of suprema of `↑‖⬝‖₊ : ℝ≥0∞`
+/-- This version of Banach-Steinhaus is stated in terms of suprema of `↑‖·‖₊ : ℝ≥0∞`
 for convenience. -/
-theorem banach_steinhaus_iSup_nnnorm {ι : Type _} [CompleteSpace E] {g : ι → E →SL[σ₁₂] F}
+theorem banach_steinhaus_iSup_nnnorm {ι : Type*} [CompleteSpace E] {g : ι → E →SL[σ₁₂] F}
     (h : ∀ x, ⨆ i, ↑‖g i x‖₊ < ∞) : ⨆ i, ↑‖g i‖₊ < ∞ := by
   have h' : ∀ x : E, ∃ C : ℝ, ∀ i : ι, ‖g i x‖ ≤ C := by
     intro x

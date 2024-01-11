@@ -56,7 +56,7 @@ theorem KaehlerDifferential.one_smul_sub_smul_one_mem_ideal (a : S) :
 
 variable {R}
 
-variable {M : Type _} [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower R S M]
+variable {M : Type*} [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower R S M]
 
 /-- For a `R`-derivation `S → M`, this is the map `S ⊗[R] S →ₗ[S] M` sending `s ⊗ₜ t ↦ s • D t`. -/
 def Derivation.tensorProductTo (D : Derivation R S M) : S ⊗[R] S →ₗ[S] M :=
@@ -157,7 +157,7 @@ notation:100 "Ω[" S "⁄" R "]" => KaehlerDifferential R S
 
 instance : Nonempty (Ω[S⁄R]) := ⟨0⟩
 
-instance KaehlerDifferential.module' {R' : Type _} [CommRing R'] [Algebra R' S]
+instance KaehlerDifferential.module' {R' : Type*} [CommRing R'] [Algebra R' S]
   [SMulCommClass R R' S] :
     Module R' (Ω[S⁄R]) :=
   Submodule.Quotient.module' _
@@ -166,7 +166,7 @@ instance KaehlerDifferential.module' {R' : Type _} [CommRing R'] [Algebra R' S]
 instance : IsScalarTower S (S ⊗[R] S) (Ω[S⁄R]) :=
   Ideal.Cotangent.isScalarTower _
 
-instance KaehlerDifferential.isScalarTower_of_tower {R₁ R₂ : Type _} [CommRing R₁] [CommRing R₂]
+instance KaehlerDifferential.isScalarTower_of_tower {R₁ R₂ : Type*} [CommRing R₁] [CommRing R₂]
     [Algebra R₁ S] [Algebra R₂ S] [SMul R₁ R₂]
     [SMulCommClass R R₁ S] [SMulCommClass R R₂ S] [IsScalarTower R₁ R₂ S] :
     IsScalarTower R₁ R₂ (Ω[S⁄R]) :=
@@ -388,12 +388,12 @@ theorem KaehlerDifferential.End_equiv_aux (f : S →ₐ[R] S ⊗ S ⧸ KaehlerDi
     exact e₁.symm.trans (e.trans e₂)
 #align kaehler_differential.End_equiv_aux KaehlerDifferential.End_equiv_aux
 
-set_option maxHeartbeats 4400000 in
+set_option maxHeartbeats 700000 in
 -- Porting note: extra heartbeats are needed to infer the instance
 -- Module S { x // x ∈ Ideal.cotangentIdeal (ideal R S) }
-set_option synthInstance.maxHeartbeats 1500000 in
+set_option synthInstance.maxHeartbeats 200000 in
 -- This has type
--- `Derivation R S Ω[S⁄R] ≃ₗ[R] Derivation R S (KaehlerDifferential.ideal R S).cotangentIdeal`
+-- `Derivation R S (Ω[S⁄R]) ≃ₗ[R] Derivation R S (KaehlerDifferential.ideal R S).cotangentIdeal`
 -- But lean times-out if this is given explicitly.
 /-- Derivations into `Ω[S⁄R]` is equivalent to derivations
 into `(KaehlerDifferential.ideal R S).cotangentIdeal`. -/
@@ -412,8 +412,9 @@ def KaehlerDifferential.endEquivAuxEquiv :
   (Equiv.refl _).subtypeEquiv (KaehlerDifferential.End_equiv_aux R S)
 #align kaehler_differential.End_equiv_aux_equiv KaehlerDifferential.endEquivAuxEquiv
 
-set_option maxHeartbeats 4000000 in
-set_option synthInstance.maxHeartbeats 4000000 in
+
+set_option maxHeartbeats 1200000 in
+set_option synthInstance.maxHeartbeats 1000000 in
 /--
 The endomorphisms of `Ω[S⁄R]` corresponds to sections of the surjection `S ⊗[R] S ⧸ J ^ 2 →ₐ[R] S`,
 with `J` being the kernel of the multiplication map `S ⊗[R] S →ₐ[R] S`.
@@ -560,7 +561,7 @@ theorem KaehlerDifferential.quotKerTotalEquiv_symm_comp_D :
 set_option linter.uppercaseLean3 false in
 #align kaehler_differential.quot_ker_total_equiv_symm_comp_D KaehlerDifferential.quotKerTotalEquiv_symm_comp_D
 
-variable (A B : Type _) [CommRing A] [CommRing B] [Algebra R A] [Algebra S B] [Algebra R B]
+variable (A B : Type*) [CommRing A] [CommRing B] [Algebra R A] [Algebra S B] [Algebra R B]
 
 variable [Algebra A B] [IsScalarTower R S B] [IsScalarTower R A B]
 
@@ -602,7 +603,7 @@ A --→ B
 ↑     ↑
 |     |
 R --→ S -/
-variable (A B : Type _) [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
+variable (A B : Type*) [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
 
 variable [Algebra A B] [Algebra S B] [IsScalarTower R A B] [IsScalarTower R S B]
 

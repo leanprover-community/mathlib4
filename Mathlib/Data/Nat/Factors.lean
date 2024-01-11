@@ -21,8 +21,6 @@ This file deals with the factors of natural numbers.
 
 -/
 
-set_option autoImplicit false
-
 open Bool Subtype
 
 open Nat
@@ -273,7 +271,7 @@ theorem mem_factors_mul_of_coprime {a b : ℕ} (hab : coprime a b) (p : ℕ) :
   · simp [(coprime_zero_left _).mp hab]
   rcases b.eq_zero_or_pos with (rfl | hb)
   · simp [(coprime_zero_right _).mp hab]
-  rw [mem_factors_mul ha.ne' hb.ne', List.mem_union]
+  rw [mem_factors_mul ha.ne' hb.ne', List.mem_union_iff]
 #align nat.mem_factors_mul_of_coprime Nat.mem_factors_mul_of_coprime
 
 open List

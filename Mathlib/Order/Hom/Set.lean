@@ -16,7 +16,7 @@ import Mathlib.Data.Set.Image
 
 open OrderDual
 
-variable {F α β γ δ : Type _}
+variable {F α β γ δ : Type*}
 
 namespace OrderIso
 

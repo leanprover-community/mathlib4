@@ -39,7 +39,7 @@ open Function
 
 open OrderDual (toDual ofDual)
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 namespace Set
 

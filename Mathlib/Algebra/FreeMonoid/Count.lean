@@ -18,7 +18,7 @@ additive homomorphisms from `FreeMonoid` and `FreeAddMonoid`.
 We do not use `to_additive` because it can't map `Multiplicative ℕ` to `ℕ`.
 -/
 
-variable {α : Type _} (p : α → Prop) [DecidablePred p]
+variable {α : Type*} (p : α → Prop) [DecidablePred p]
 
 namespace FreeAddMonoid
 

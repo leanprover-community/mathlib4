@@ -3,8 +3,9 @@ Copyright (c) 2020 Thomas Browning, Patrick Lutz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Patrick Lutz
 -/
-import Mathlib.FieldTheory.PrimitiveElement
 import Mathlib.FieldTheory.Fixed
+import Mathlib.FieldTheory.NormalClosure
+import Mathlib.FieldTheory.PrimitiveElement
 import Mathlib.GroupTheory.GroupAction.FixingSubgroup
 
 #align_import field_theory.galois from "leanprover-community/mathlib"@"9fb8964792b4237dac6200193a0d533f1b3f7423"
@@ -40,7 +41,7 @@ open FiniteDimensional AlgEquiv
 
 section
 
-variable (F : Type _) [Field F] (E : Type _) [Field E] [Algebra F E]
+variable (F : Type*) [Field F] (E : Type*) [Field E] [Algebra F E]
 
 /-- A field extension E/F is Galois if it is both separable and normal. Note that in mathlib
 a separable extension of fields is by definition algebraic. -/
@@ -84,7 +85,7 @@ theorem splits [IsGalois F E] (x : E) : (minpoly F x).Splits (algebraMap F E) :=
 
 variable (E)
 
-instance of_fixed_field (G : Type _) [Group G] [Finite G] [MulSemiringAction G E] :
+instance of_fixed_field (G : Type*) [Group G] [Finite G] [MulSemiringAction G E] :
     IsGalois (FixedPoints.subfield G E) E :=
   ⟨⟩
 #align is_galois.of_fixed_field IsGalois.of_fixed_field
@@ -130,7 +131,7 @@ end
 
 section IsGaloisTower
 
-variable (F K E : Type _) [Field F] [Field K] [Field E] {E' : Type _} [Field E'] [Algebra F E']
+variable (F K E : Type*) [Field F] [Field K] [Field E] {E' : Type*} [Field E'] [Algebra F E']
 
 variable [Algebra F K] [Algebra F E] [Algebra K E] [IsScalarTower F K E]
 
@@ -175,13 +176,13 @@ end IsGaloisTower
 
 section GaloisCorrespondence
 
-variable {F : Type _} [Field F] {E : Type _} [Field E] [Algebra F E]
+variable {F : Type*} [Field F] {E : Type*} [Field E] [Algebra F E]
 
 variable (H : Subgroup (E ≃ₐ[F] E)) (K : IntermediateField F E)
 
 /-- The intermediate field of fixed points fixed by a monoid action that commutes with the
 `F`-action on `E`. -/
-def FixedPoints.intermediateField (M : Type _) [Monoid M] [MulSemiringAction M E]
+def FixedPoints.intermediateField (M : Type*) [Monoid M] [MulSemiringAction M E]
     [SMulCommClass M F E] : IntermediateField F E :=
   { FixedPoints.subfield M E with
     carrier := MulAction.fixedPoints M E
@@ -316,7 +317,7 @@ end GaloisCorrespondence
 
 section GaloisEquivalentDefinitions
 
-variable (F : Type _) [Field F] (E : Type _) [Field E] [Algebra F E]
+variable (F : Type*) [Field F] (E : Type*) [Field E] [Algebra F E]
 
 namespace IsGalois
 
@@ -357,7 +358,7 @@ variable {F} {E}
 variable {p : F[X]}
 
 theorem of_separable_splitting_field_aux [hFE : FiniteDimensional F E] [sp : p.IsSplittingField F E]
-    (hp : p.Separable) (K : Type _) [Field K] [Algebra F K] [Algebra K E] [IsScalarTower F K E]
+    (hp : p.Separable) (K : Type*) [Field K] [Algebra F K] [Algebra K E] [IsScalarTower F K E]
     {x : E} (hx : x ∈ (p.map (algebraMap F E)).roots)
     -- these are both implied by `hFE`, but as they carry data this makes the lemma more general
     [Fintype (K →ₐ[F] E)]
@@ -453,7 +454,7 @@ end GaloisEquivalentDefinitions
 
 section normalClosure
 
-variable (k K F : Type _) [Field k] [Field K] [Field F] [Algebra k K] [Algebra k F] [Algebra K F]
+variable (k K F : Type*) [Field k] [Field K] [Field F] [Algebra k K] [Algebra k F] [Algebra K F]
   [IsScalarTower k K F] [IsGalois k F]
 
 instance IsGalois.normalClosure : IsGalois k (normalClosure k K F)
@@ -464,7 +465,7 @@ end normalClosure
 
 section IsAlgClosure
 
-instance (priority := 100) IsAlgClosure.isGalois (k K : Type _) [Field k] [Field K] [Algebra k K]
+instance (priority := 100) IsAlgClosure.isGalois (k K : Type*) [Field k] [Field K] [Algebra k K]
     [IsAlgClosure k K] [CharZero k] : IsGalois k K where
 #align is_alg_closure.is_galois IsAlgClosure.isGalois
 

@@ -27,6 +27,8 @@ role in the proof that the functor
 `N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ))`
 reflects isomorphisms.
 
+(See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
+
 -/
 
 
@@ -39,7 +41,7 @@ namespace AlgebraicTopology
 
 namespace DoldKan
 
-variable {C : Type _} [Category C] [Preadditive C] {X X' : SimplicialObject C}
+variable {C : Type*} [Category C] [Preadditive C] {X X' : SimplicialObject C}
 
 /-- In each positive degree, this lemma decomposes the idempotent endomorphism
 `Q q` as a sum of morphisms which are postcompositions with suitable degeneracies.

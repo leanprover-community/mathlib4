@@ -42,11 +42,11 @@ open Matrix
 
 section BasisToMatrix
 
-variable {ι ι' κ κ' : Type _}
+variable {ι ι' κ κ' : Type*}
 
-variable {R M : Type _} [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
 
-variable {R₂ M₂ : Type _} [CommRing R₂] [AddCommGroup M₂] [Module R₂ M₂]
+variable {R₂ M₂ : Type*} [CommRing R₂] [AddCommGroup M₂] [Module R₂ M₂]
 
 open Function Matrix
 
@@ -118,7 +118,7 @@ theorem sum_toMatrix_smul_self [Fintype ι] : ∑ i : ι, e.toMatrix v i j • e
   simp_rw [e.toMatrix_apply, e.sum_repr]
 #align basis.sum_to_matrix_smul_self Basis.sum_toMatrix_smul_self
 
-theorem toMatrix_map_vecMul {S : Type _} [Ring S] [Algebra R S] [Fintype ι] (b : Basis ι R S)
+theorem toMatrix_map_vecMul {S : Type*} [Ring S] [Algebra R S] [Fintype ι] (b : Basis ι R S)
     (v : ι' → S) : ((b.toMatrix v).map <| algebraMap R S).vecMul b = v := by
   ext i
   simp_rw [vecMul, dotProduct, Matrix.map_apply, ← Algebra.commutes, ← Algebra.smul_def,
@@ -162,7 +162,7 @@ end Basis
 
 section MulLinearMapToMatrix
 
-variable {N : Type _} [AddCommMonoid N] [Module R N]
+variable {N : Type*} [AddCommMonoid N] [Module R N]
 
 variable (b : Basis ι R M) (b' : Basis ι' R M) (c : Basis κ R N) (c' : Basis κ' R N)
 
@@ -240,7 +240,7 @@ end Fintype
 
 /-- A generalization of `Basis.toMatrix_self`, in the opposite direction. -/
 @[simp]
-theorem Basis.toMatrix_mul_toMatrix {ι'' : Type _} [Fintype ι'] (b'' : ι'' → M) :
+theorem Basis.toMatrix_mul_toMatrix {ι'' : Type*} [Fintype ι'] (b'' : ι'' → M) :
     b.toMatrix b' ⬝ b'.toMatrix b'' = b.toMatrix b'' := by
   haveI := Classical.decEq ι
   haveI := Classical.decEq ι'

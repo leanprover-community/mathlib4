@@ -20,7 +20,7 @@ To match `Submodule.idemSemiring`, we do not put these in the `Pointwise` locale
 
 open Pointwise
 
-variable {R M : Type _}
+variable {R M : Type*}
 
 namespace SubMulAction
 

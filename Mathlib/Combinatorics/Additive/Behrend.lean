@@ -53,7 +53,7 @@ open scoped BigOperators Pointwise
 
 namespace Behrend
 
-variable {α β : Type _} {n d k N : ℕ} {x : Fin n → ℕ}
+variable {α β : Type*} {n d k N : ℕ} {x : Fin n → ℕ}
 
 /-!
 ### Turning the sphere into a Salem-Spencer set

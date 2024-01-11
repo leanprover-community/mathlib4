@@ -48,7 +48,7 @@ open SheafedSpace
 variable (X : RingedSpace)
 
 -- Porting note : this was not necessary in mathlib3
-instance : CoeSort RingedSpace (Type _) where
+instance : CoeSort RingedSpace (Type*) where
   coe X := X.carrier
 
 /--

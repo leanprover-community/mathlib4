@@ -94,12 +94,12 @@ theorem Separable.of_dvd {f g : R[X]} (hf : f.Separable) (hfg : g ∣ f) : g.Sep
   exact Separable.of_mul_left hf
 #align polynomial.separable.of_dvd Polynomial.Separable.of_dvd
 
-theorem separable_gcd_left {F : Type _} [Field F] {f : F[X]} (hf : f.Separable) (g : F[X]) :
+theorem separable_gcd_left {F : Type*} [Field F] {f : F[X]} (hf : f.Separable) (g : F[X]) :
     (EuclideanDomain.gcd f g).Separable :=
   Separable.of_dvd hf (EuclideanDomain.gcd_dvd_left f g)
 #align polynomial.separable_gcd_left Polynomial.separable_gcd_left
 
-theorem separable_gcd_right {F : Type _} [Field F] {g : F[X]} (f : F[X]) (hg : g.Separable) :
+theorem separable_gcd_right {F : Type*} [Field F] {g : F[X]} (f : F[X]) (hg : g.Separable) :
     (EuclideanDomain.gcd f g).Separable :=
   Separable.of_dvd hg (EuclideanDomain.gcd_dvd_right f g)
 #align polynomial.separable_gcd_right Polynomial.separable_gcd_right
@@ -479,7 +479,7 @@ open Polynomial
 
 section CommRing
 
-variable (F K : Type _) [CommRing F] [Ring K] [Algebra F K]
+variable (F K : Type*) [CommRing F] [Ring K] [Algebra F K]
 
 -- TODO: refactor to allow transcendental extensions?
 -- See: https://en.wikipedia.org/wiki/Separable_extension#Separability_of_transcendental_extensions
@@ -497,7 +497,7 @@ class IsSeparable : Prop where
   separable' (x : K) : (minpoly F x).Separable
 #align is_separable IsSeparable
 
-variable (F : Type _) {K : Type _} [CommRing F] [Ring K] [Algebra F K]
+variable (F : Type*) {K : Type*} [CommRing F] [Ring K] [Algebra F K]
 
 theorem IsSeparable.isIntegral [IsSeparable F K] : ∀ x : K, IsIntegral F x :=
   IsSeparable.isIntegral'
@@ -507,7 +507,7 @@ theorem IsSeparable.separable [IsSeparable F K] : ∀ x : K, (minpoly F x).Separ
   IsSeparable.separable'
 #align is_separable.separable IsSeparable.separable
 
-variable {F K : Type _} [CommRing F] [Ring K] [Algebra F K]
+variable {F K : Type*} [CommRing F] [Ring K] [Algebra F K]
 
 theorem isSeparable_iff : IsSeparable F K ↔ ∀ x : K, IsIntegral F x ∧ (minpoly F x).Separable :=
   ⟨fun _ x => ⟨IsSeparable.isIntegral F x, IsSeparable.separable F x⟩, fun h =>
@@ -516,7 +516,7 @@ theorem isSeparable_iff : IsSeparable F K ↔ ∀ x : K, IsIntegral F x ∧ (min
 
 end CommRing
 
-instance isSeparable_self (F : Type _) [Field F] : IsSeparable F F :=
+instance isSeparable_self (F : Type*) [Field F] : IsSeparable F F :=
   ⟨fun x => isIntegral_algebraMap,
    fun x => by
     rw [minpoly.eq_X_sub_C']
@@ -525,7 +525,7 @@ instance isSeparable_self (F : Type _) [Field F] : IsSeparable F F :=
 
 -- See note [lower instance priority]
 /-- A finite field extension in characteristic 0 is separable. -/
-instance (priority := 100) IsSeparable.of_finite (F K : Type _) [Field F] [Field K] [Algebra F K]
+instance (priority := 100) IsSeparable.of_finite (F K : Type*) [Field F] [Field K] [Algebra F K]
     [FiniteDimensional F K] [CharZero F] : IsSeparable F K :=
   have : ∀ x : K, IsIntegral F x := fun _x => Algebra.isIntegral_of_finite _ _ _
   ⟨this, fun x => (minpoly.irreducible (this x)).separable⟩
@@ -533,7 +533,7 @@ instance (priority := 100) IsSeparable.of_finite (F K : Type _) [Field F] [Field
 
 section IsSeparableTower
 
-variable (F K E : Type _) [Field F] [Field K] [Field E] [Algebra F K] [Algebra F E] [Algebra K E]
+variable (F K E : Type*) [Field F] [Field K] [Field E] [Algebra F K] [Algebra F E] [Algebra K E]
   [IsScalarTower F K E]
 
 theorem isSeparable_tower_top_of_isSeparable [IsSeparable F E] : IsSeparable K E :=
@@ -555,7 +555,7 @@ theorem isSeparable_tower_bot_of_isSeparable [h : IsSeparable F E] : IsSeparable
 
 variable {E}
 
-theorem IsSeparable.of_algHom (E' : Type _) [Field E'] [Algebra F E'] (f : E →ₐ[F] E')
+theorem IsSeparable.of_algHom (E' : Type*) [Field E'] [Algebra F E'] (f : E →ₐ[F] E')
     [IsSeparable F E'] : IsSeparable F E := by
   letI : Algebra E E' := RingHom.toAlgebra f.toRingHom
   haveI : IsScalarTower F E E' := IsScalarTower.of_algebraMap_eq fun x => (f.commutes x).symm
@@ -566,9 +566,9 @@ end IsSeparableTower
 
 section CardAlgHom
 
-variable {R S T : Type _} [CommRing S]
+variable {R S T : Type*} [CommRing S]
 
-variable {K L F : Type _} [Field K] [Field L] [Field F]
+variable {K L F : Type*} [Field K] [Field L] [Field F]
 
 variable [Algebra K S] [Algebra K L]
 

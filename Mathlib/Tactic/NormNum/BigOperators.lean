@@ -169,7 +169,7 @@ def Multiset.ProveZeroOrConsResult.eq_trans {α : Q(Type u)} {s t : Q(Multiset $
   | .zero pf => .zero q(Eq.trans $eq $pf)
   | .cons a s' pf => .cons a s' q(Eq.trans $eq $pf)
 
-lemma Multiset.insert_eq_cons {α : Type _} [DecidableEq α] (a : α) (s : Multiset α) :
+lemma Multiset.insert_eq_cons {α : Type*} [DecidableEq α] (a : α) (s : Multiset α) :
     insert a s = Multiset.cons a s := by
   ext; simp
 
@@ -238,7 +238,7 @@ def Finset.ProveEmptyOrConsResult.eq_trans {α : Q(Type u)} {s t : Q(Finset $α)
   | .empty pf => .empty q(Eq.trans $eq $pf)
   | .cons a s' h pf => .cons a s' h q(Eq.trans $eq $pf)
 
-lemma Finset.insert_eq_cons {α : Type _} [DecidableEq α] (a : α) (s : Finset α) (h : a ∉ s) :
+lemma Finset.insert_eq_cons {α : Type*} [DecidableEq α] (a : α) (s : Finset α) (h : a ∉ s) :
     insert a s = Finset.cons a s h := by
   ext; simp
 
@@ -249,7 +249,7 @@ lemma Finset.range_succ' {n nn n' : ℕ} (pn : NormNum.IsNat n nn) (pn' : nn = N
     Finset.range n = Finset.cons n' (Finset.range n') Finset.not_mem_range_self := by
   rw [pn.out, Nat.cast_id, pn', Finset.range_succ, Finset.insert_eq_cons]
 
-lemma Finset.univ_eq_elems {α : Type _} [Fintype α] (elems : Finset α)
+lemma Finset.univ_eq_elems {α : Type*} [Fintype α] (elems : Finset α)
     (complete : ∀ x : α, x ∈ elems) :
     Finset.univ = elems := by
   ext x; simpa using complete x
@@ -317,11 +317,11 @@ def Result.eq_trans {α : Q(Type u)} {a b : Q($α)} (eq : Q($a = $b)) : Result b
   | .isNegNat inst lit proof => Result.isNegNat inst lit q($eq ▸ $proof)
   | .isRat inst q n d proof => Result.isRat inst q n d q($eq ▸ $proof)
 
-protected lemma Finset.sum_empty {β α : Type _} [CommSemiring β] (f : α → β) :
+protected lemma Finset.sum_empty {β α : Type*} [CommSemiring β] (f : α → β) :
     IsNat (Finset.sum ∅ f) 0 :=
   ⟨by simp⟩
 
-protected lemma Finset.prod_empty {β α : Type _} [CommSemiring β] (f : α → β) :
+protected lemma Finset.prod_empty {β α : Type*} [CommSemiring β] (f : α → β) :
     IsNat (Finset.prod ∅ f) 1 :=
   ⟨by simp⟩
 

@@ -35,7 +35,7 @@ Compare with `Matrix.invertibleOfFromBlocks₁₁Invertible`.
 -/
 
 
-variable {l m n α : Type _}
+variable {l m n α : Type*}
 
 namespace Matrix
 
@@ -463,7 +463,7 @@ section IsROrC
 
 open scoped Matrix
 
-variable {𝕜 : Type _} [IsROrC 𝕜]
+variable {𝕜 : Type*} [IsROrC 𝕜]
 
 scoped infixl:65 " ⊕ᵥ " => Sum.elim
 

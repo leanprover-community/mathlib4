@@ -28,7 +28,7 @@ All lemmas and definitions are in the `Set` namespace to give access to dot nota
 !-/
 
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 namespace Set
 
@@ -133,7 +133,7 @@ theorem einfsep_singleton : ({x} : Set α).einfsep = ∞ :=
   subsingleton_singleton.einfsep
 #align set.einfsep_singleton Set.einfsep_singleton
 
-theorem einfsep_iUnion_mem_option {ι : Type _} (o : Option ι) (s : ι → Set α) :
+theorem einfsep_iUnion_mem_option {ι : Type*} (o : Option ι) (s : ι → Set α) :
     (⋃ i ∈ o, s i).einfsep = ⨅ i ∈ o, (s i).einfsep := by cases o <;> simp
 #align set.einfsep_Union_mem_option Set.einfsep_iUnion_mem_option
 
@@ -234,7 +234,7 @@ theorem einfsep_triple (hxy : x ≠ y) (hyz : y ≠ z) (hxz : x ≠ z) :
     ciInf_pos hxy, ciInf_pos hyz, ciInf_pos hxz]
 #align set.einfsep_triple Set.einfsep_triple
 
-theorem le_einfsep_pi_of_le {π : β → Type _} [Fintype β] [∀ b, PseudoEMetricSpace (π b)]
+theorem le_einfsep_pi_of_le {π : β → Type*} [Fintype β] [∀ b, PseudoEMetricSpace (π b)]
     {s : ∀ b : β, Set (π b)} {c : ℝ≥0∞} (h : ∀ b, c ≤ einfsep (s b)) :
     c ≤ einfsep (Set.pi univ s) := by
   refine' le_einfsep fun x hx y hy hxy => _

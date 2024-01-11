@@ -21,7 +21,7 @@ finite set, image, partial function
 -/
 
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 namespace Part
 

@@ -45,7 +45,7 @@ shadow, set family
 
 open Finset Nat
 
-variable {α : Type _}
+variable {α : Type*}
 
 namespace Finset
 
@@ -60,7 +60,6 @@ def shadow (𝒜 : Finset (Finset α)) : Finset (Finset α) :=
   𝒜.sup fun s => s.image (erase s)
 #align finset.shadow Finset.shadow
 
--- mathport name: finset.shadow
 -- Porting note: added `inherit_doc` to calm linter
 @[inherit_doc] scoped[FinsetFamily] notation:max "∂ " => Finset.shadow
 -- Porting note: had to open FinsetFamily
@@ -130,8 +129,8 @@ theorem mem_shadow_iff_exists_mem_card_add_one :
     obtain ⟨a, ha⟩ : ∃ a, t \ s = {a} :=
       card_eq_one.1 (by rw [card_sdiff hst, h, add_tsub_cancel_left])
     exact
-      ⟨a, fun hat => not_mem_sdiff_of_mem_right hat ((ha.ge : _ ⊆ _) <| mem_singleton_self a), by
-        rwa [insert_eq a s, ← ha, sdiff_union_of_subset hst]⟩
+      ⟨a, fun hat => not_mem_sdiff_of_mem_right hat (ha.superset <| mem_singleton_self a),
+       by rwa [insert_eq a s, ← ha, sdiff_union_of_subset hst]⟩
 #align finset.mem_shadow_iff_exists_mem_card_add_one Finset.mem_shadow_iff_exists_mem_card_add_one
 
 /-- Being in the shadow of `𝒜` means we have a superset in `𝒜`. -/
@@ -178,13 +177,12 @@ section UpShadow
 variable [DecidableEq α] [Fintype α] {𝒜 : Finset (Finset α)} {s t : Finset α} {a : α} {k r : ℕ}
 
 /-- The upper shadow of a set family `𝒜` is all sets we can get by adding one element to any set in
-`𝒜`, and the (`k` times) iterated upper shadow (`up_shadow^[k]`) is all sets we can get by adding
+`𝒜`, and the (`k` times) iterated upper shadow (`upShadow^[k]`) is all sets we can get by adding
 `k` elements from any set in `𝒜`. -/
 def upShadow (𝒜 : Finset (Finset α)) : Finset (Finset α) :=
   𝒜.sup fun s => sᶜ.image fun a => insert a s
 #align finset.up_shadow Finset.upShadow
 
--- mathport name: finset.up_shadow
 -- Porting note: added `inherit_doc` to calm linter
 @[inherit_doc] scoped[FinsetFamily] notation:max "∂⁺ " => Finset.upShadow
 

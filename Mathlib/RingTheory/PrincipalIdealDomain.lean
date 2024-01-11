@@ -228,7 +228,7 @@ instance (priority := 100) EuclideanDomain.to_principal_ideal_domain : IsPrincip
 
 end
 
-theorem IsField.isPrincipalIdealRing {R : Type _} [CommRing R] (h : IsField R) :
+theorem IsField.isPrincipalIdealRing {R : Type*} [CommRing R] (h : IsField R) :
     IsPrincipalIdealRing R :=
   @EuclideanDomain.to_principal_ideal_domain R (@Field.toEuclideanDomain R h.toField)
 #align is_field.is_principal_ideal_ring IsField.isPrincipalIdealRing
@@ -297,7 +297,7 @@ theorem mem_submonoid_of_factors_subset_of_units_subset (s : Submonoid R) {a : R
 
 /-- If a `RingHom` maps all units and all factors of an element `a` into a submonoid `s`, then it
 also maps `a` into that submonoid. -/
-theorem ringHom_mem_submonoid_of_factors_subset_of_units_subset {R S : Type _} [CommRing R]
+theorem ringHom_mem_submonoid_of_factors_subset_of_units_subset {R S : Type*} [CommRing R]
     [IsDomain R] [IsPrincipalIdealRing R] [Semiring S] (f : R →+* S) (s : Submonoid S) (a : R)
     (ha : a ≠ 0) (h : ∀ b ∈ factors a, f b ∈ s) (hf : ∀ c : Rˣ, f c ∈ s) : f a ∈ s :=
   mem_submonoid_of_factors_subset_of_units_subset (s.comap f.toMonoidHom) ha h hf
@@ -318,7 +318,7 @@ section Surjective
 
 open Submodule
 
-variable {S N : Type _} [Ring R] [AddCommGroup M] [AddCommGroup N] [Ring S]
+variable {S N : Type*} [Ring R] [AddCommGroup M] [AddCommGroup N] [Ring S]
 
 variable [Module R M] [Module R N]
 

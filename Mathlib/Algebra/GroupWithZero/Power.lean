@@ -18,7 +18,7 @@ This generalises the integer power function on a division ring.
 
 section GroupWithZero
 
-variable {G₀ : Type _} [GroupWithZero G₀] {a : G₀} {m n : ℕ}
+variable {G₀ : Type*} [GroupWithZero G₀] {a : G₀} {m n : ℕ}
 
 section NatPow
 
@@ -54,7 +54,7 @@ section ZPow
 
 open Int
 
-variable {G₀ : Type _} [GroupWithZero G₀]
+variable {G₀ : Type*} [GroupWithZero G₀]
 
 -- Porting note: removed `attribute [local ematch] le_of_lt`
 
@@ -187,7 +187,7 @@ end ZPow
 
 section
 
-variable {G₀ : Type _} [CommGroupWithZero G₀]
+variable {G₀ : Type*} [CommGroupWithZero G₀]
 
 theorem div_sq_cancel (a b : G₀) : a ^ 2 * b / a = a * b := by
   by_cases ha : a = 0
@@ -200,7 +200,7 @@ end
 /-- If a monoid homomorphism `f` between two `GroupWithZero`s maps `0` to `0`, then it maps `x^n`,
 `n : ℤ`, to `(f x)^n`. -/
 @[simp]
-theorem map_zpow₀ {F G₀ G₀' : Type _} [GroupWithZero G₀] [GroupWithZero G₀']
+theorem map_zpow₀ {F G₀ G₀' : Type*} [GroupWithZero G₀] [GroupWithZero G₀']
     [MonoidWithZeroHomClass F G₀ G₀'] (f : F) (x : G₀) (n : ℤ) : f (x ^ n) = f x ^ n :=
   map_zpow' f (map_inv₀ f) x n
 #align map_zpow₀ map_zpow₀

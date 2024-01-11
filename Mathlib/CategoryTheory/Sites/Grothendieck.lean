@@ -253,7 +253,7 @@ theorem trivial_covering : S ∈ trivial C X ↔ S = ⊤ :=
 #align category_theory.grothendieck_topology.trivial_covering CategoryTheory.GrothendieckTopology.trivial_covering
 
 /-- See <https://stacks.math.columbia.edu/tag/00Z6> -/
-instance : LE (GrothendieckTopology C)
+instance instLEGrothendieckTopology : LE (GrothendieckTopology C)
     where le J₁ J₂ := (J₁ : ∀ X : C, Set (Sieve X)) ≤ (J₂ : ∀ X : C, Set (Sieve X))
 
 theorem le_def {J₁ J₂ : GrothendieckTopology C} : J₁ ≤ J₂ ↔ (J₁ : ∀ X : C, Set (Sieve X)) ≤ J₂ :=

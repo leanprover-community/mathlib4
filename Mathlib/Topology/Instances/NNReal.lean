@@ -76,7 +76,7 @@ instance : CompleteSpace ℝ≥0 :=
 
 section coe
 
-variable {α : Type _}
+variable {α : Type*}
 
 open Filter Finset
 
@@ -95,7 +95,7 @@ def _root_.ContinuousMap.coeNNRealReal : C(ℝ≥0, ℝ) :=
 #align continuous_map.coe_nnreal_real ContinuousMap.coeNNRealReal
 #align continuous_map.coe_nnreal_real_apply ContinuousMap.coeNNRealReal_apply
 
-instance ContinuousMap.canLift {X : Type _} [TopologicalSpace X] :
+instance ContinuousMap.canLift {X : Type*} [TopologicalSpace X] :
     CanLift C(X, ℝ) C(X, ℝ≥0) ContinuousMap.coeNNRealReal.comp fun f => ∀ x, 0 ≤ f x where
   prf f hf := ⟨⟨fun x => ⟨f x, hf x⟩, f.2.subtype_mk _⟩, FunLike.ext' rfl⟩
 #align nnreal.continuous_map.can_lift NNReal.ContinuousMap.canLift
@@ -199,7 +199,7 @@ nonrec theorem tsum_mul_right (f : α → ℝ≥0) (a : ℝ≥0) : ∑' x, f x *
   NNReal.eq <| by simp only [coe_tsum, NNReal.coe_mul, tsum_mul_right]
 #align nnreal.tsum_mul_right NNReal.tsum_mul_right
 
-theorem summable_comp_injective {β : Type _} {f : α → ℝ≥0} (hf : Summable f) {i : β → α}
+theorem summable_comp_injective {β : Type*} {f : α → ℝ≥0} (hf : Summable f) {i : β → α}
     (hi : Function.Injective i) : Summable (f ∘ i) := by
   rw [← summable_coe] at hf ⊢
   exact hf.comp_injective hi
@@ -245,7 +245,7 @@ theorem tendsto_atTop_zero_of_summable {f : ℕ → ℝ≥0} (hf : Summable f) :
 
 /-- The sum over the complement of a finset tends to `0` when the finset grows to cover the whole
 space. This does not need a summability assumption, as otherwise all sums are zero. -/
-nonrec theorem tendsto_tsum_compl_atTop_zero {α : Type _} (f : α → ℝ≥0) :
+nonrec theorem tendsto_tsum_compl_atTop_zero {α : Type*} (f : α → ℝ≥0) :
     Tendsto (fun s : Finset α => ∑' b : { x // x ∉ s }, f b) atTop (𝓝 0) := by
   simp_rw [← tendsto_coe, coe_tsum, NNReal.coe_zero]
   exact tendsto_tsum_compl_atTop_zero fun a : α => (f a : ℝ)

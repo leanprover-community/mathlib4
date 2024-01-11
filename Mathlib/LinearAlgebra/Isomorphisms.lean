@@ -18,7 +18,7 @@ import Mathlib.LinearAlgebra.Quotient
 
 universe u v
 
-variable {R M M₂ M₃ : Type _}
+variable {R M M₂ M₃ : Type*}
 
 variable [Ring R] [AddCommGroup M] [AddCommGroup M₂] [AddCommGroup M₃]
 

@@ -51,7 +51,7 @@ open Classical Manifold Topology
 
 open Set Filter TopologicalSpace
 
-variable {H M H' M' X : Type _}
+variable {H M H' M' X : Type*}
 
 variable [TopologicalSpace H] [TopologicalSpace M] [ChartedSpace H M]
 
@@ -668,7 +668,7 @@ theorem _root_.LocalHomeomorph.isLocalStructomorphWithinAt_source_iff {G : Struc
   f.isLocalStructomorphWithinAt_iff' Subset.rfl this
 #align local_homeomorph.is_local_structomorph_within_at_source_iff LocalHomeomorph.isLocalStructomorphWithinAt_source_iff
 
-variable {H₁ : Type _} [TopologicalSpace H₁] {H₂ : Type _} [TopologicalSpace H₂] {H₃ : Type _}
+variable {H₁ : Type*} [TopologicalSpace H₁] {H₂ : Type*} [TopologicalSpace H₂] {H₃ : Type*}
   [TopologicalSpace H₃] [ChartedSpace H₁ H₂] [ChartedSpace H₂ H₃] {G₁ : StructureGroupoid H₁}
   [HasGroupoid H₂ G₁] [ClosedUnderRestriction G₁] (G₂ : StructureGroupoid H₂) [HasGroupoid H₃ G₂]
 

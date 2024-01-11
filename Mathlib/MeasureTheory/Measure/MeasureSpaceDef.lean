@@ -64,14 +64,14 @@ open Function MeasurableSpace
 
 open Classical Topology BigOperators Filter ENNReal NNReal
 
-variable {α β γ δ ι : Type _}
+variable {α β γ δ ι : Type*}
 
 namespace MeasureTheory
 
 /-- A measure is defined to be an outer measure that is countably additive on
 measurable sets, with the additional assumption that the outer measure is the canonical
 extension of the restricted measure. -/
-structure Measure (α : Type _) [MeasurableSpace α] extends OuterMeasure α where
+structure Measure (α : Type*) [MeasurableSpace α] extends OuterMeasure α where
   m_iUnion ⦃f : ℕ → Set α⦄ :
     (∀ i, MeasurableSet (f i)) →
       Pairwise (Disjoint on f) → measureOf (⋃ i, f i) = ∑' i, measureOf (f i)
@@ -201,6 +201,12 @@ theorem measure_mono_top (h : s₁ ⊆ s₂) (h₁ : μ s₁ = ∞) : μ s₂ = 
   top_unique <| h₁ ▸ measure_mono h
 #align measure_theory.measure_mono_top MeasureTheory.measure_mono_top
 
+@[simp, mono]
+theorem measure_le_measure_union_left : μ s ≤ μ (s ∪ t) := μ.mono $ subset_union_left s t
+
+@[simp, mono]
+theorem measure_le_measure_union_right : μ t ≤ μ (s ∪ t) := μ.mono $ subset_union_right s t
+
 /-- For every set there exists a measurable superset of the same measure. -/
 theorem exists_measurable_superset (μ : Measure α) (s : Set α) :
     ∃ t, s ⊆ t ∧ MeasurableSet t ∧ μ t = μ s := by
@@ -329,12 +335,15 @@ theorem exists_measure_pos_of_not_measure_iUnion_null [Countable β] {s : β →
   exact measure_iUnion_null fun n => nonpos_iff_eq_zero.1 (hs n)
 #align measure_theory.exists_measure_pos_of_not_measure_Union_null MeasureTheory.exists_measure_pos_of_not_measure_iUnion_null
 
+theorem measure_lt_top_of_subset (hst : t ⊆ s) (hs : μ s ≠ ∞) : μ t < ∞ :=
+  lt_of_le_of_lt (μ.mono hst) hs.lt_top
+
 theorem measure_inter_lt_top_of_left_ne_top (hs_finite : μ s ≠ ∞) : μ (s ∩ t) < ∞ :=
-  (measure_mono (Set.inter_subset_left s t)).trans_lt hs_finite.lt_top
+  measure_lt_top_of_subset (inter_subset_left s t) hs_finite
 #align measure_theory.measure_inter_lt_top_of_left_ne_top MeasureTheory.measure_inter_lt_top_of_left_ne_top
 
 theorem measure_inter_lt_top_of_right_ne_top (ht_finite : μ t ≠ ∞) : μ (s ∩ t) < ∞ :=
-  inter_comm t s ▸ measure_inter_lt_top_of_left_ne_top ht_finite
+  measure_lt_top_of_subset (inter_subset_right s t) ht_finite
 #align measure_theory.measure_inter_lt_top_of_right_ne_top MeasureTheory.measure_inter_lt_top_of_right_ne_top
 
 theorem measure_inter_null_of_null_right (S : Set α) {T : Set α} (h : μ T = 0) : μ (S ∩ T) = 0 :=
@@ -406,7 +415,7 @@ instance instCountableInterFilter : CountableInterFilter μ.ae :=
     exact (measure_biUnion_null_iff hSc).2 hS⟩
 #align measure_theory.measure.ae.countable_Inter_filter MeasureTheory.instCountableInterFilter
 
-theorem ae_all_iff {ι : Sort _} [Countable ι] {p : α → ι → Prop} :
+theorem ae_all_iff {ι : Sort*} [Countable ι] {p : α → ι → Prop} :
     (∀ᵐ a ∂μ, ∀ i, p a i) ↔ ∀ i, ∀ᵐ a ∂μ, p a i :=
   eventually_countable_forall
 #align measure_theory.ae_all_iff MeasureTheory.ae_all_iff
@@ -548,7 +557,7 @@ theorem inter_ae_eq_empty_of_ae_eq_empty_right (h : t =ᵐ[μ] (∅ : Set α)) :
 #align measure_theory.inter_ae_eq_empty_of_ae_eq_empty_right MeasureTheory.inter_ae_eq_empty_of_ae_eq_empty_right
 
 @[to_additive]
-theorem _root_.Set.mulIndicator_ae_eq_one {M : Type _} [One M] {f : α → M} {s : Set α} :
+theorem _root_.Set.mulIndicator_ae_eq_one {M : Type*} [One M] {f : α → M} {s : Set α} :
     s.mulIndicator f =ᵐ[μ] 1 ↔ μ (s ∩ f.mulSupport) = 0 := by
   simp [EventuallyEq, eventually_iff, Measure.ae, compl_setOf]; rfl
 #align set.mul_indicator_ae_eq_one Set.mulIndicator_ae_eq_one
@@ -622,7 +631,7 @@ theorem measure_toMeasurable (s : Set α) : μ (toMeasurable μ s) = μ s := by
 
 /-- A measure space is a measurable space equipped with a
   measure, referred to as `volume`. -/
-class MeasureSpace (α : Type _) extends MeasurableSpace α where
+class MeasureSpace (α : Type*) extends MeasurableSpace α where
   volume : Measure α
 #align measure_theory.measure_space MeasureTheory.MeasureSpace
 

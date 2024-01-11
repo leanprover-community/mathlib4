@@ -6,7 +6,7 @@ Authors: Thomas Browning
 import Mathlib.GroupTheory.Complement
 import Mathlib.GroupTheory.Sylow
 
-#align_import group_theory.transfer from "leanprover-community/mathlib"@"56489b558d42c30f6aac5947cafc9a594f60813b"
+#align_import group_theory.transfer from "leanprover-community/mathlib"@"4be589053caf347b899a494da75410deb55fb3ef"
 
 /-!
 # The Transfer Homomorphism
@@ -29,7 +29,7 @@ In this file we construct the transfer homomorphism.
 
 open scoped BigOperators
 
-variable {G : Type _} [Group G] {H : Subgroup G} {A : Type _} [CommGroup A] (ϕ : H →* A)
+variable {G : Type*} [Group G] {H : Subgroup G} {A : Type*} [CommGroup A] (ϕ : H →* A)
 
 namespace Subgroup
 
@@ -209,7 +209,7 @@ theorem transferCenterPow_apply [FiniteIndex (center G)] (g : G) :
 
 section BurnsideTransfer
 
-variable {p : ℕ} (P : Sylow p G) (hP : (P : Subgroup G).normalizer ≤ (P : Subgroup G).centralizer)
+variable {p : ℕ} (P : Sylow p G) (hP : (P : Subgroup G).normalizer ≤ centralizer (P : Set G))
 
 /-- The homomorphism `G →* P` in Burnside's transfer theorem. -/
 noncomputable def transferSylow [FiniteIndex (P : Subgroup G)] : G →* (P : Subgroup G) :=

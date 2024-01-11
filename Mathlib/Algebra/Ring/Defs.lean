@@ -45,7 +45,7 @@ open Function
 
 /-- A typeclass stating that multiplication is left and right distributive
 over addition. -/
-class Distrib (R : Type _) extends Mul R, Add R where
+class Distrib (R : Type*) extends Mul R, Add R where
   /-- Multiplication is left distributive over addition -/
   protected left_distrib : ∀ a b c : R, a * (b + c) = a * b + a * c
   /-- Multiplication is right distributive over addition -/
@@ -53,24 +53,24 @@ class Distrib (R : Type _) extends Mul R, Add R where
 #align distrib Distrib
 
 /-- A typeclass stating that multiplication is left distributive over addition. -/
-class LeftDistribClass (R : Type _) [Mul R] [Add R] where
+class LeftDistribClass (R : Type*) [Mul R] [Add R] : Prop where
   /-- Multiplication is left distributive over addition -/
   protected left_distrib : ∀ a b c : R, a * (b + c) = a * b + a * c
 #align left_distrib_class LeftDistribClass
 
 /-- A typeclass stating that multiplication is right distributive over addition. -/
-class RightDistribClass (R : Type _) [Mul R] [Add R] where
+class RightDistribClass (R : Type*) [Mul R] [Add R] : Prop where
   /-- Multiplication is right distributive over addition -/
   protected right_distrib : ∀ a b c : R, (a + b) * c = a * c + b * c
 #align right_distrib_class RightDistribClass
 
 -- see Note [lower instance priority]
-instance (priority := 100) Distrib.leftDistribClass (R : Type _) [Distrib R] : LeftDistribClass R :=
+instance (priority := 100) Distrib.leftDistribClass (R : Type*) [Distrib R] : LeftDistribClass R :=
   ⟨Distrib.left_distrib⟩
 #align distrib.left_distrib_class Distrib.leftDistribClass
 
 -- see Note [lower instance priority]
-instance (priority := 100) Distrib.rightDistribClass (R : Type _) [Distrib R] :
+instance (priority := 100) Distrib.rightDistribClass (R : Type*) [Distrib R] :
     RightDistribClass R :=
   ⟨Distrib.right_distrib⟩
 #align distrib.right_distrib_class Distrib.rightDistribClass
@@ -129,11 +129,11 @@ class NonUnitalNonAssocRing (α : Type u) extends AddCommGroup α, NonUnitalNonA
 -- We defer the instance `NonUnitalNonAssocRing.toHasDistribNeg` to `Algebra.Ring.Basic`
 -- as it relies on the lemma `eq_neg_of_add_eq_zero_left`.
 /-- An associative but not-necessarily unital ring. -/
-class NonUnitalRing (α : Type _) extends NonUnitalNonAssocRing α, NonUnitalSemiring α
+class NonUnitalRing (α : Type*) extends NonUnitalNonAssocRing α, NonUnitalSemiring α
 #align non_unital_ring NonUnitalRing
 
 /-- A unital but not-necessarily-associative ring. -/
-class NonAssocRing (α : Type _) extends NonUnitalNonAssocRing α, NonAssocSemiring α,
+class NonAssocRing (α : Type*) extends NonUnitalNonAssocRing α, NonAssocSemiring α,
     AddCommGroupWithOne α
 #align non_assoc_ring NonAssocRing
 
@@ -223,15 +223,15 @@ theorem boole_mul {α} [MulZeroOneClass α] (P : Prop) [Decidable P] (a : α) :
     (if P then 1 else 0) * a = if P then a else 0 := by simp
 #align boole_mul boole_mul
 
-theorem ite_mul_zero_left {α : Type _} [MulZeroClass α] (P : Prop) [Decidable P] (a b : α) :
+theorem ite_mul_zero_left {α : Type*} [MulZeroClass α] (P : Prop) [Decidable P] (a b : α) :
     ite P (a * b) 0 = ite P a 0 * b := by by_cases h : P <;> simp [h]
 #align ite_mul_zero_left ite_mul_zero_left
 
-theorem ite_mul_zero_right {α : Type _} [MulZeroClass α] (P : Prop) [Decidable P] (a b : α) :
+theorem ite_mul_zero_right {α : Type*} [MulZeroClass α] (P : Prop) [Decidable P] (a b : α) :
     ite P (a * b) 0 = a * ite P b 0 := by by_cases h : P <;> simp [h]
 #align ite_mul_zero_right ite_mul_zero_right
 
-theorem ite_and_mul_zero {α : Type _} [MulZeroClass α] (P Q : Prop) [Decidable P] [Decidable Q]
+theorem ite_and_mul_zero {α : Type*} [MulZeroClass α] (P Q : Prop) [Decidable P] [Decidable Q]
     (a b : α) : ite (P ∧ Q) (a * b) 0 = ite P a 0 * ite Q b 0 := by
   simp only [← ite_and, ite_mul, mul_ite, mul_zero, zero_mul, and_comm]
 #align ite_and_mul_zero ite_and_mul_zero
@@ -274,7 +274,7 @@ section HasDistribNeg
 
 This is useful for dealing with submonoids of a ring that contain `-1` without having to duplicate
 lemmas. -/
-class HasDistribNeg (α : Type _) [Mul α] extends InvolutiveNeg α where
+class HasDistribNeg (α : Type*) [Mul α] extends InvolutiveNeg α where
   /-- Negation is left distributive over multiplication -/
   neg_mul : ∀ x y : α, -x * y = -(x * y)
   /-- Negation is right distributive over multiplication -/

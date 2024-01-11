@@ -23,7 +23,7 @@ principal.
 -/
 
 
-variable {R : Type _} [CommRing R]
+variable {R : Type*} [CommRing R]
 
 open Ideal
 
@@ -78,7 +78,7 @@ theorem Ideal.eq_span_singleton_of_mem_of_not_mem_sq_of_not_mem_prime_ne {P : Id
 #align ideal.eq_span_singleton_of_mem_of_not_mem_sq_of_not_mem_prime_ne Ideal.eq_span_singleton_of_mem_of_not_mem_sq_of_not_mem_prime_ne
 
 -- Porting note: replaced three implicit coercions of `I` with explicit `(I : Submodule R A)`
-theorem FractionalIdeal.isPrincipal_of_unit_of_comap_mul_span_singleton_eq_top {R A : Type _}
+theorem FractionalIdeal.isPrincipal_of_unit_of_comap_mul_span_singleton_eq_top {R A : Type*}
     [CommRing R] [CommRing A] [Algebra R A] {S : Submonoid R} [IsLocalization S A]
     (I : (FractionalIdeal S A)ˣ) {v : A} (hv : v ∈ (↑I⁻¹ : FractionalIdeal S A))
     (h : Submodule.comap (Algebra.linearMap R A) ((I : Submodule R A) * Submodule.span R {v}) = ⊤) :
@@ -109,7 +109,7 @@ theorem FractionalIdeal.isPrincipal_of_unit_of_comap_mul_span_singleton_eq_top {
 An invertible fractional ideal of a commutative ring with finitely many maximal ideals is principal.
 
 https://math.stackexchange.com/a/95857 -/
-theorem FractionalIdeal.isPrincipal.of_finite_maximals_of_inv {A : Type _} [CommRing A]
+theorem FractionalIdeal.isPrincipal.of_finite_maximals_of_inv {A : Type*} [CommRing A]
     [Algebra R A] {S : Submonoid R} [IsLocalization S A] (hS : S ≤ R⁰)
     (hf : {I : Ideal R | I.IsMaximal}.Finite) (I I' : FractionalIdeal S A) (hinv : I * I' = 1) :
     Submodule.IsPrincipal (I : Submodule R A) := by
@@ -192,13 +192,13 @@ theorem IsPrincipalIdealRing.of_finite_primes [IsDomain R] [IsDedekindDomain R]
 
 variable [IsDomain R] [IsDedekindDomain R]
 
-variable (S : Type _) [CommRing S] [IsDomain S]
+variable (S : Type*) [CommRing S] [IsDomain S]
 
 variable [Algebra R S] [Module.Free R S] [Module.Finite R S]
 
 variable (p : Ideal R) (hp0 : p ≠ ⊥) [IsPrime p]
 
-variable {Sₚ : Type _} [CommRing Sₚ] [Algebra S Sₚ]
+variable {Sₚ : Type*} [CommRing Sₚ] [Algebra S Sₚ]
 
 variable [IsLocalization (Algebra.algebraMapSubmonoid S p.primeCompl) Sₚ]
 

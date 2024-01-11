@@ -42,7 +42,7 @@ protected def Nat.unaryCast {R : Type u} [One R] [Zero R] [Add R] : ℕ → R
 class Nat.AtLeastTwo (n : ℕ) : Prop where
   prop : n ≥ 2
 
-instance : Nat.AtLeastTwo (n + 2) where
+instance instNatAtLeastTwo : Nat.AtLeastTwo (n + 2) where
   prop := Nat.succ_le_succ $ Nat.succ_le_succ $ Nat.zero_le _
 
 /-- Recognize numeric literals which are at least `2` as terms of `R` via `Nat.cast`. This
@@ -50,7 +50,7 @@ instance is what makes things like `37 : R` type check.  Note that `0` and `1` a
 because they are recognized as terms of `R` (at least when `R` is an `AddMonoidWithOne`) through
 `Zero` and `One`, respectively. -/
 @[nolint unusedArguments]
-instance [NatCast R] [Nat.AtLeastTwo n] : OfNat R n where
+instance instOfNat [NatCast R] [Nat.AtLeastTwo n] : OfNat R n where
   ofNat := n.cast
 
 @[simp, norm_cast] theorem Nat.cast_ofNat [NatCast R] [Nat.AtLeastTwo n] :
@@ -76,7 +76,7 @@ class AddMonoidWithOne (R : Type u) extends NatCast R, AddMonoid R, One R where
 #align add_monoid_with_one.nat_cast_succ AddMonoidWithOne.natCast_succ
 
 /-- An `AddCommMonoidWithOne` is an `AddMonoidWithOne` satisfying `a + b = b + a`.  -/
-class AddCommMonoidWithOne (R : Type _) extends AddMonoidWithOne R, AddCommMonoid R
+class AddCommMonoidWithOne (R : Type*) extends AddMonoidWithOne R, AddCommMonoid R
 #align add_comm_monoid_with_one AddCommMonoidWithOne
 #align add_comm_monoid_with_one.to_add_monoid_with_one AddCommMonoidWithOne.toAddMonoidWithOne
 #align add_comm_monoid_with_one.to_add_comm_monoid AddCommMonoidWithOne.toAddCommMonoid
@@ -189,13 +189,13 @@ end Nat
 
 /-- `AddMonoidWithOne` implementation using unary recursion. -/
 @[reducible]
-protected def AddMonoidWithOne.unary {R : Type _} [AddMonoid R] [One R] : AddMonoidWithOne R :=
+protected def AddMonoidWithOne.unary {R : Type*} [AddMonoid R] [One R] : AddMonoidWithOne R :=
   { ‹One R›, ‹AddMonoid R› with }
 #align add_monoid_with_one.unary AddMonoidWithOne.unary
 
 /-- `AddMonoidWithOne` implementation using binary recursion. -/
 @[reducible]
-protected def AddMonoidWithOne.binary {R : Type _} [AddMonoid R] [One R] : AddMonoidWithOne R :=
+protected def AddMonoidWithOne.binary {R : Type*} [AddMonoid R] [One R] : AddMonoidWithOne R :=
   { ‹One R›, ‹AddMonoid R› with
     natCast := Nat.binCast,
     natCast_zero := by simp only [Nat.binCast, Nat.cast],

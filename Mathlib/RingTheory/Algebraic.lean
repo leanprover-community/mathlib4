@@ -5,7 +5,7 @@ Authors: Johan Commelin
 -/
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.RingTheory.IntegralClosure
-import Mathlib.Data.Polynomial.IntegralNormalization
+import Mathlib.RingTheory.Polynomial.IntegralNormalization
 
 #align_import ring_theory.algebraic from "leanprover-community/mathlib"@"2196ab363eb097c008d4497125e0dde23fb36db2"
 
@@ -86,7 +86,7 @@ end
 
 section zero_ne_one
 
-variable (R : Type u) {S : Type _} {A : Type v} [CommRing R]
+variable (R : Type u) {S : Type*} {A : Type v} [CommRing R]
 
 variable [CommRing S] [Ring A] [Algebra R A] [Algebra R S] [Algebra S A]
 
@@ -201,7 +201,7 @@ end Field
 
 section
 
-variable {K : Type _} {L : Type _} {R : Type _} {S : Type _} {A : Type _}
+variable {K : Type*} {L : Type*} {R : Type*} {S : Type*} {A : Type*}
 
 section Ring
 
@@ -331,7 +331,7 @@ end Field
 
 end
 
-variable {R S : Type _} [CommRing R] [IsDomain R] [CommRing S]
+variable {R S : Type*} [CommRing R] [IsDomain R] [CommRing S]
 
 theorem exists_integral_multiple [Algebra R S] {z : S} (hz : IsAlgebraic R z)
     (inj : ∀ x, algebraMap R S x = 0 → x = 0) :
@@ -347,7 +347,7 @@ theorem exists_integral_multiple [Algebra R S] {z : S} (hz : IsAlgebraic R z)
 
 /-- A fraction `(a : S) / (b : S)` can be reduced to `(c : S) / (d : R)`,
 if `S` is the integral closure of `R` in an algebraic extension `L` of `R`. -/
-theorem IsIntegralClosure.exists_smul_eq_mul {L : Type _} [Field L] [Algebra R S] [Algebra S L]
+theorem IsIntegralClosure.exists_smul_eq_mul {L : Type*} [Field L] [Algebra R S] [Algebra S L]
     [Algebra R L] [IsScalarTower R S L] [IsIntegralClosure S R L] (h : Algebra.IsAlgebraic R L)
     (inj : Function.Injective (algebraMap R L)) (a : S) {b : S} (hb : b ≠ 0) :
     ∃ (c : S) (d : _) (_ : d ≠ (0 : R)), d • a = b * c := by
@@ -364,7 +364,7 @@ theorem IsIntegralClosure.exists_smul_eq_mul {L : Type _} [Field L] [Algebra R S
 
 section Field
 
-variable {K L : Type _} [Field K] [Field L] [Algebra K L] (A : Subalgebra K L)
+variable {K L : Type*} [Field K] [Field L] [Algebra K L] (A : Subalgebra K L)
 
 theorem inv_eq_of_aeval_divX_ne_zero {x : L} {p : K[X]} (aeval_ne : aeval x (divX p) ≠ 0) :
     x⁻¹ = aeval x (divX p) / (aeval x p - algebraMap _ _ (p.coeff 0)) := by

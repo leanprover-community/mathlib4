@@ -49,7 +49,7 @@ open FiniteDimensional
 
 namespace Polynomial
 
-variable {F : Type _} [Field F] (p q : F[X]) (E : Type _) [Field E] [Algebra F E]
+variable {F : Type*} [Field F] (p q : F[X]) (E : Type*) [Field E] [Algebra F E]
 
 /-- The Galois group of a polynomial. -/
 def Gal :=

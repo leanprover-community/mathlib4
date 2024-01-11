@@ -26,7 +26,7 @@ self-adjoint matrix, hermitian matrix
 
 namespace Matrix
 
-variable {α β : Type _} {m n : Type _} {A : Matrix n n α}
+variable {α β : Type*} {m n : Type*} {A : Matrix n n α}
 
 open scoped Matrix
 

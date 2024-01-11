@@ -40,7 +40,7 @@ open NormedField Set
 
 open BigOperators NNReal Pointwise Topology
 
-variable {𝕜 E F G ι : Type _}
+variable {𝕜 E F G ι : Type*}
 
 section NontriviallyNormedField
 

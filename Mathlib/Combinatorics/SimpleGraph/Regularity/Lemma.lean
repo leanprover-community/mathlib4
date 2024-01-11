@@ -68,9 +68,9 @@ open Finpartition Finset Fintype Function SzemerediRegularity
 
 open scoped Classical
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
-variable {α : Type _} [Fintype α] (G : SimpleGraph α) {ε : ℝ} {l : ℕ}
+variable {α : Type*} [Fintype α] (G : SimpleGraph α) {ε : ℝ} {l : ℕ}
 
 /-- Effective **Szemerédi Regularity Lemma**: For any sufficiently large graph, there is an
 `ε`-uniform equipartition of bounded size (where the bound does not depend on the graph). -/

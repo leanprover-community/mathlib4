@@ -45,7 +45,7 @@ namespace GeneralizedContinuedFraction
 open GeneralizedContinuedFraction (of)
 
 -- Fix a discrete linear ordered floor field and a value `v`.
-variable {K : Type _} [LinearOrderedField K] [FloorRing K] {v : K}
+variable {K : Type*} [LinearOrderedField K] [FloorRing K] {v : K}
 
 namespace IntFractPair
 

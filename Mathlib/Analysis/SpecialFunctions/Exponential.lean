@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Eric Wieser
 -/
 import Mathlib.Analysis.NormedSpace.Exponential
-import Mathlib.Analysis.Calculus.FDerivAnalytic
+import Mathlib.Analysis.Calculus.FDeriv.Analytic
 import Mathlib.Topology.MetricSpace.CauSeqFilter
 
 #align_import analysis.special_functions.exponential from "leanprover-community/mathlib"@"e1a18cad9cd462973d760af7de36b05776b8811c"
@@ -59,7 +59,7 @@ open scoped Nat Topology BigOperators ENNReal
 
 section AnyFieldAnyAlgebra
 
-variable {𝕂 𝔸 : Type _} [NontriviallyNormedField 𝕂] [NormedRing 𝔸] [NormedAlgebra 𝕂 𝔸]
+variable {𝕂 𝔸 : Type*} [NontriviallyNormedField 𝕂] [NormedRing 𝔸] [NormedAlgebra 𝕂 𝔸]
   [CompleteSpace 𝔸]
 
 /-- The exponential in a Banach algebra `𝔸` over a normed field `𝕂` has strict Fréchet derivative
@@ -83,7 +83,7 @@ end AnyFieldAnyAlgebra
 
 section AnyFieldCommAlgebra
 
-variable {𝕂 𝔸 : Type _} [NontriviallyNormedField 𝕂] [NormedCommRing 𝔸] [NormedAlgebra 𝕂 𝔸]
+variable {𝕂 𝔸 : Type*} [NontriviallyNormedField 𝕂] [NormedCommRing 𝔸] [NormedAlgebra 𝕂 𝔸]
   [CompleteSpace 𝔸]
 
 /-- The exponential map in a commutative Banach algebra `𝔸` over a normed field `𝕂` of
@@ -121,7 +121,7 @@ end AnyFieldCommAlgebra
 
 section deriv
 
-variable {𝕂 : Type _} [NontriviallyNormedField 𝕂] [CompleteSpace 𝕂]
+variable {𝕂 : Type*} [NontriviallyNormedField 𝕂] [CompleteSpace 𝕂]
 
 /-- The exponential map in a complete normed field `𝕂` of characteristic zero has strict derivative
 `exp 𝕂 x` at any point `x` in the disk of convergence. -/
@@ -155,7 +155,7 @@ end deriv
 
 section IsROrCAnyAlgebra
 
-variable {𝕂 𝔸 : Type _} [IsROrC 𝕂] [NormedRing 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
+variable {𝕂 𝔸 : Type*} [IsROrC 𝕂] [NormedRing 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
 
 /-- The exponential in a Banach algebra `𝔸` over `𝕂 = ℝ` or `𝕂 = ℂ` has strict Fréchet derivative
 `1 : 𝔸 →L[𝕂] 𝔸` at zero. -/
@@ -173,7 +173,7 @@ end IsROrCAnyAlgebra
 
 section IsROrCCommAlgebra
 
-variable {𝕂 𝔸 : Type _} [IsROrC 𝕂] [NormedCommRing 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
+variable {𝕂 𝔸 : Type*} [IsROrC 𝕂] [NormedCommRing 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
 
 /-- The exponential map in a commutative Banach algebra `𝔸` over `𝕂 = ℝ` or `𝕂 = ℂ` has strict
 Fréchet derivative `exp 𝕂 x • 1 : 𝔸 →L[𝕂] 𝔸` at any point `x`. -/
@@ -191,7 +191,7 @@ end IsROrCCommAlgebra
 
 section DerivROrC
 
-variable {𝕂 : Type _} [IsROrC 𝕂]
+variable {𝕂 : Type*} [IsROrC 𝕂]
 
 /-- The exponential map in `𝕂 = ℝ` or `𝕂 = ℂ` has strict derivative `exp 𝕂 x` at any point
 `x`. -/
@@ -251,7 +251,7 @@ TODO: prove this result too!
 
 section exp_smul
 
-variable {𝕂 𝕊 𝔸 : Type _}
+variable {𝕂 𝕊 𝔸 : Type*}
 
 variable (𝕂)
 

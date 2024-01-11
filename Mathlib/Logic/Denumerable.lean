@@ -24,10 +24,10 @@ typeclass.
 -/
 
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 /-- A denumerable type is (constructively) bijective with `ℕ`. Typeclass equivalent of `α ≃ ℕ`. -/
-class Denumerable (α : Type _) extends Encodable α where
+class Denumerable (α : Type*) extends Encodable α where
   /-- `decode` and `encode` are inverses. -/
   decode_inv : ∀ n, ∃ a ∈ decode n, encode a = n
 #align denumerable Denumerable
@@ -149,7 +149,7 @@ instance sum : Denumerable (Sum α β) :=
 
 section Sigma
 
-variable {γ : α → Type _} [∀ a, Denumerable (γ a)]
+variable {γ : α → Type*} [∀ a, Denumerable (γ a)]
 
 /-- A denumerable collection of denumerable types is denumerable. -/
 instance sigma : Denumerable (Sigma γ) :=
@@ -364,7 +364,7 @@ namespace Denumerable
 open Encodable
 
 /-- An infinite encodable type is denumerable. -/
-def ofEncodableOfInfinite (α : Type _) [Encodable α] [Infinite α] : Denumerable α := by
+def ofEncodableOfInfinite (α : Type*) [Encodable α] [Infinite α] : Denumerable α := by
   letI := @decidableRangeEncode α _
   letI : Infinite (Set.range (@encode α _)) :=
     Infinite.of_injective _ (Equiv.ofInjective _ encode_injective).injective
@@ -375,11 +375,11 @@ def ofEncodableOfInfinite (α : Type _) [Encodable α] [Infinite α] : Denumerab
 end Denumerable
 
 /-- See also `nonempty_encodable`, `nonempty_fintype`. -/
-theorem nonempty_denumerable (α : Type _) [Countable α] [Infinite α] : Nonempty (Denumerable α) :=
+theorem nonempty_denumerable (α : Type*) [Countable α] [Infinite α] : Nonempty (Denumerable α) :=
   (nonempty_encodable α).map fun h => @Denumerable.ofEncodableOfInfinite _ h _
 #align nonempty_denumerable nonempty_denumerable
 
-theorem nonempty_denumerable_iff {α : Type _} :
+theorem nonempty_denumerable_iff {α : Type*} :
     Nonempty (Denumerable α) ↔ Countable α ∧ Infinite α :=
   ⟨fun ⟨_⟩ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ ↦ nonempty_denumerable _⟩
 

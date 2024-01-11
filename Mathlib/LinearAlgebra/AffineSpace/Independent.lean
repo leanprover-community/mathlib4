@@ -8,7 +8,7 @@ import Mathlib.Data.Fin.VecNotation
 import Mathlib.Data.Sign
 import Mathlib.LinearAlgebra.AffineSpace.Combination
 import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
-import Mathlib.LinearAlgebra.Basis
+import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 #align_import linear_algebra.affine_space.independent from "leanprover-community/mathlib"@"2de9c37fa71dde2f1c6feff19876dd6a7b1519f0"
 
@@ -43,9 +43,9 @@ open Function
 
 section AffineIndependent
 
-variable (k : Type _) {V : Type _} {P : Type _} [Ring k] [AddCommGroup V] [Module k V]
+variable (k : Type*) {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
 
-variable [AffineSpace V P] {ι : Type _}
+variable [AffineSpace V P] {ι : Type*}
 
 /-- An indexed family is said to be affinely independent if no
 nontrivial weighted subtractions (where the sum of weights is 0) are
@@ -285,7 +285,7 @@ protected theorem AffineIndependent.injective [Nontrivial k] {p : ι → P}
 /-- If a family is affinely independent, so is any subfamily given by
 composition of an embedding into index type with the original
 family. -/
-theorem AffineIndependent.comp_embedding {ι2 : Type _} (f : ι2 ↪ ι) {p : ι → P}
+theorem AffineIndependent.comp_embedding {ι2 : Type*} (f : ι2 ↪ ι) {p : ι → P}
     (ha : AffineIndependent k p) : AffineIndependent k (p ∘ f) := by
   classical
     intro fs w hw hs i0 hi0
@@ -325,7 +325,7 @@ protected theorem AffineIndependent.range {p : ι → P} (ha : AffineIndependent
   simp [hf]
 #align affine_independent.range AffineIndependent.range
 
-theorem affineIndependent_equiv {ι' : Type _} (e : ι ≃ ι') {p : ι' → P} :
+theorem affineIndependent_equiv {ι' : Type*} (e : ι ≃ ι') {p : ι' → P} :
     AffineIndependent k (p ∘ e) ↔ AffineIndependent k p := by
   refine' ⟨_, AffineIndependent.comp_embedding e.toEmbedding⟩
   intro h
@@ -355,7 +355,7 @@ theorem AffineIndependent.of_set_of_injective {p : ι → P}
 
 section Composition
 
-variable {V₂ P₂ : Type _} [AddCommGroup V₂] [Module k V₂] [AffineSpace V₂ P₂]
+variable {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂] [AffineSpace V₂ P₂]
 
 /-- If the image of a family of points in affine space under an affine transformation is affine-
 independent, then the original family of points is also affine-independent. -/
@@ -540,9 +540,9 @@ end AffineIndependent
 
 section DivisionRing
 
-variable {k : Type _} {V : Type _} {P : Type _} [DivisionRing k] [AddCommGroup V] [Module k V]
+variable {k : Type*} {V : Type*} {P : Type*} [DivisionRing k] [AddCommGroup V] [Module k V]
 
-variable [AffineSpace V P] {ι : Type _}
+variable [AffineSpace V P] {ι : Type*}
 
 /-- An affinely independent set of points can be extended to such a
 set that spans the whole space. -/
@@ -716,9 +716,9 @@ end DivisionRing
 
 section Ordered
 
-variable {k : Type _} {V : Type _} {P : Type _} [LinearOrderedRing k] [AddCommGroup V]
+variable {k : Type*} {V : Type*} {P : Type*} [LinearOrderedRing k] [AddCommGroup V]
 
-variable [Module k V] [AffineSpace V P] {ι : Type _}
+variable [Module k V] [AffineSpace V P] {ι : Type*}
 
 attribute [local instance] LinearOrderedRing.decidableLT
 
@@ -769,7 +769,7 @@ end Ordered
 
 namespace Affine
 
-variable (k : Type _) {V : Type _} (P : Type _) [Ring k] [AddCommGroup V] [Module k V]
+variable (k : Type*) {V : Type*} (P : Type*) [Ring k] [AddCommGroup V] [Module k V]
 
 variable [AffineSpace V P]
 
@@ -909,7 +909,7 @@ namespace Affine
 
 namespace Simplex
 
-variable {k : Type _} {V : Type _} {P : Type _} [DivisionRing k] [AddCommGroup V] [Module k V]
+variable {k : Type*} {V : Type*} {P : Type*} [DivisionRing k] [AddCommGroup V] [Module k V]
   [AffineSpace V P]
 
 /-- The centroid of a face of a simplex as the centroid of a subset of

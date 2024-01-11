@@ -14,7 +14,7 @@ import Mathlib.Algebra.Ring.Defs
 -/
 
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 section DistribSemigroup
 

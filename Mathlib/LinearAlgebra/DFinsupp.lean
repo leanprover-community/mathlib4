@@ -34,7 +34,7 @@ much more developed, but many lemmas in that file should be eligible to copy ove
 function with finite support, module, linear algebra
 -/
 
-variable {ι : Type _} {R : Type _} {S : Type _} {M : ι → Type _} {N : Type _}
+variable {ι : Type*} {R : Type*} {S : Type*} {M : ι → Type*} {N : Type*}
 
 variable [dec_ι : DecidableEq ι]
 
@@ -119,8 +119,8 @@ instance moduleOfLinearMap [Semiring S] [Module S N] [SMulCommClass R S N] :
 variable (S)
 
 
-instance {R : Type _} {S : Type _} [Semiring R] [Semiring S] (σ : R →+* S)
-    {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M : Type _) (M₂ : Type _)
+instance {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
+    {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M : Type*) (M₂ : Type*)
     [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂] :
     EquivLike (LinearEquiv σ M M₂) M M₂ :=
   inferInstance
@@ -180,7 +180,7 @@ The names should match the equivalent bundled `Finsupp.mapRange` definitions.
 
 section mapRange
 
-variable {β β₁ β₂ : ι → Type _}
+variable {β β₁ β₂ : ι → Type*}
 
 variable [∀ i, AddCommMonoid (β i)] [∀ i, AddCommMonoid (β₁ i)] [∀ i, AddCommMonoid (β₂ i)]
 
@@ -285,7 +285,7 @@ section Basis
 /-- The direct sum of free modules is free.
 
 Note that while this is stated for `DFinsupp` not `DirectSum`, the types are defeq. -/
-noncomputable def basis {η : ι → Type _} (b : ∀ i, Basis (η i) R (M i)) :
+noncomputable def basis {η : ι → Type*} (b : ∀ i, Basis (η i) R (M i)) :
     Basis (Σi, η i) R (Π₀ i, M i) :=
   .ofRepr
     ((mapRange.linearEquiv fun i => (b i).repr).trans (sigmaFinsuppLequivDFinsupp R).symm)
@@ -301,13 +301,13 @@ variable [Semiring R] [AddCommMonoid N] [Module R N]
 
 open DFinsupp
 
-theorem dfinsupp_sum_mem {β : ι → Type _} [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
+theorem dfinsupp_sum_mem {β : ι → Type*} [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
     (S : Submodule R N) (f : Π₀ i, β i) (g : ∀ i, β i → N) (h : ∀ c, f c ≠ 0 → g c (f c) ∈ S) :
     f.sum g ∈ S :=
   _root_.dfinsupp_sum_mem S f g h
 #align submodule.dfinsupp_sum_mem Submodule.dfinsupp_sum_mem
 
-theorem dfinsupp_sumAddHom_mem {β : ι → Type _} [∀ i, AddZeroClass (β i)] (S : Submodule R N)
+theorem dfinsupp_sumAddHom_mem {β : ι → Type*} [∀ i, AddZeroClass (β i)] (S : Submodule R N)
     (f : Π₀ i, β i) (g : ∀ i, β i →+ N) (h : ∀ c, f c ≠ 0 → g c (f c) ∈ S) :
     DFinsupp.sumAddHom g f ∈ S :=
   _root_.dfinsupp_sumAddHom_mem S f g h

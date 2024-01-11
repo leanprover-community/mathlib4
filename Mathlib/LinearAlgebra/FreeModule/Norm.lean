@@ -17,12 +17,12 @@ open Ideal Polynomial
 
 open scoped BigOperators Polynomial
 
-variable {R S ι : Type _} [CommRing R] [IsDomain R] [IsPrincipalIdealRing R] [CommRing S]
+variable {R S ι : Type*} [CommRing R] [IsDomain R] [IsPrincipalIdealRing R] [CommRing S]
   [IsDomain S] [Algebra R S]
 
 section CommRing
 
-variable (F : Type _) [CommRing F] [Algebra F R] [Algebra F S] [IsScalarTower F R S]
+variable (F : Type*) [CommRing F] [Algebra F R] [Algebra F S] [IsScalarTower F R S]
 
 /-- For a nonzero element `f` in an algebra `S` over a principal ideal domain `R` that is finite and
 free as an `R`-module, the norm of `f` relative to `R` is associated to the product of the Smith
@@ -53,7 +53,7 @@ end CommRing
 
 section Field
 
-variable {F : Type _} [Field F] [Algebra F[X] S] [Finite ι]
+variable {F : Type*} [Field F] [Algebra F[X] S] [Finite ι]
 
 set_option maxHeartbeats 210000 in
 instance (b : Basis ι F[X] S) {I : Ideal S} (hI : I ≠ ⊥) (i : ι) :

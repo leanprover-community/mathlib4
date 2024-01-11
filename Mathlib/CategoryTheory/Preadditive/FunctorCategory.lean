@@ -22,7 +22,7 @@ namespace CategoryTheory
 
 open CategoryTheory.Limits Preadditive
 
-variable {C D : Type _} [Category C] [Category D] [Preadditive D]
+variable {C D : Type*} [Category C] [Category D] [Preadditive D]
 
 instance functorCategoryPreadditive : Preadditive (C ⥤ D)
     where
@@ -110,7 +110,7 @@ theorem app_zsmul (X : C) (α : F ⟶ G) (n : ℤ) : (n • α).app X = n • α
 #align category_theory.nat_trans.app_zsmul CategoryTheory.NatTrans.app_zsmul
 
 @[simp]
-theorem app_sum {ι : Type _} (s : Finset ι) (X : C) (α : ι → (F ⟶ G)) :
+theorem app_sum {ι : Type*} (s : Finset ι) (X : C) (α : ι → (F ⟶ G)) :
     (∑ i in s, α i).app X = ∑ i in s, (α i).app X := by
   simp only [← appHom_apply, map_sum]
 #align category_theory.nat_trans.app_sum CategoryTheory.NatTrans.app_sum

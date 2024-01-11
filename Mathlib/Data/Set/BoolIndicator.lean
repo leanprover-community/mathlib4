@@ -17,7 +17,7 @@ open Bool
 
 namespace Set
 
-variable {α : Type _} (s : Set α)
+variable {α : Type*} (s : Set α)
 
 /-- `boolIndicator` maps `x` to `true` if `x ∈ s`, else to `false` -/
 noncomputable def boolIndicator (x : α) :=

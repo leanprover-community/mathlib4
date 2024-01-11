@@ -78,7 +78,7 @@ def IsTerminal.ofUnique (Y : C) [h : ∀ X : C, Unique (X ⟶ Y)] : IsTerminal Y
 #align category_theory.limits.is_terminal.of_unique CategoryTheory.Limits.IsTerminal.ofUnique
 
 /-- If `α` is a preorder with top, then `⊤` is a terminal object. -/
-def isTerminalTop {α : Type _} [Preorder α] [OrderTop α] : IsTerminal (⊤ : α) :=
+def isTerminalTop {α : Type*} [Preorder α] [OrderTop α] : IsTerminal (⊤ : α) :=
   IsTerminal.ofUnique _
 #align category_theory.limits.is_terminal_top CategoryTheory.Limits.isTerminalTop
 
@@ -112,7 +112,7 @@ def IsInitial.ofUnique (X : C) [h : ∀ Y : C, Unique (X ⟶ Y)] : IsInitial X w
 #align category_theory.limits.is_initial.of_unique CategoryTheory.Limits.IsInitial.ofUnique
 
 /-- If `α` is a preorder with bot, then `⊥` is an initial object. -/
-def isInitialBot {α : Type _} [Preorder α] [OrderBot α] : IsInitial (⊥ : α) :=
+def isInitialBot {α : Type*} [Preorder α] [OrderBot α] : IsInitial (⊥ : α) :=
   IsInitial.ofUnique _
 #align category_theory.limits.is_initial_bot CategoryTheory.Limits.isInitialBot
 
@@ -436,7 +436,7 @@ theorem hasInitial_of_hasTerminal_op [HasTerminal Cᵒᵖ] : HasInitial C :=
   (initialUnopOfTerminal terminalIsTerminal).hasInitial
 #align category_theory.limits.has_initial_of_has_terminal_op CategoryTheory.Limits.hasInitial_of_hasTerminal_op
 
-instance {J : Type _} [Category J] {C : Type _} [Category C] [HasTerminal C] :
+instance {J : Type*} [Category J] {C : Type*} [Category C] [HasTerminal C] :
     HasLimit ((CategoryTheory.Functor.const J).obj (⊤_ C)) :=
   HasLimit.mk
     { cone :=
@@ -446,7 +446,7 @@ instance {J : Type _} [Category J] {C : Type _} [Category C] [HasTerminal C] :
 
 /-- The limit of the constant `⊤_ C` functor is `⊤_ C`. -/
 @[simps hom]
-def limitConstTerminal {J : Type _} [Category J] {C : Type _} [Category C] [HasTerminal C] :
+def limitConstTerminal {J : Type*} [Category J] {C : Type*} [Category C] [HasTerminal C] :
     limit ((CategoryTheory.Functor.const J).obj (⊤_ C)) ≅ ⊤_ C where
   hom := terminal.from _
   inv :=
@@ -456,13 +456,13 @@ def limitConstTerminal {J : Type _} [Category J] {C : Type _} [Category C] [HasT
 #align category_theory.limits.limit_const_terminal CategoryTheory.Limits.limitConstTerminal
 
 @[reassoc (attr := simp)]
-theorem limitConstTerminal_inv_π {J : Type _} [Category J] {C : Type _} [Category C] [HasTerminal C]
+theorem limitConstTerminal_inv_π {J : Type*} [Category J] {C : Type*} [Category C] [HasTerminal C]
     {j : J} :
     limitConstTerminal.inv ≫ limit.π ((CategoryTheory.Functor.const J).obj (⊤_ C)) j =
       terminal.from _ := by aesop_cat
 #align category_theory.limits.limit_const_terminal_inv_π CategoryTheory.Limits.limitConstTerminal_inv_π
 
-instance {J : Type _} [Category J] {C : Type _} [Category C] [HasInitial C] :
+instance {J : Type*} [Category J] {C : Type*} [Category C] [HasInitial C] :
     HasColimit ((CategoryTheory.Functor.const J).obj (⊥_ C)) :=
   HasColimit.mk
     { cocone :=
@@ -472,7 +472,7 @@ instance {J : Type _} [Category J] {C : Type _} [Category C] [HasInitial C] :
 
 /-- The colimit of the constant `⊥_ C` functor is `⊥_ C`. -/
 @[simps inv]
-def colimitConstInitial {J : Type _} [Category J] {C : Type _} [Category C] [HasInitial C] :
+def colimitConstInitial {J : Type*} [Category J] {C : Type*} [Category C] [HasInitial C] :
     colimit ((CategoryTheory.Functor.const J).obj (⊥_ C)) ≅ ⊥_ C where
   hom :=
     colimit.desc ((CategoryTheory.Functor.const J).obj (⊥_ C))
@@ -482,7 +482,7 @@ def colimitConstInitial {J : Type _} [Category J] {C : Type _} [Category C] [Has
 #align category_theory.limits.colimit_const_initial CategoryTheory.Limits.colimitConstInitial
 
 @[reassoc (attr := simp)]
-theorem ι_colimitConstInitial_hom {J : Type _} [Category J] {C : Type _} [Category C] [HasInitial C]
+theorem ι_colimitConstInitial_hom {J : Type*} [Category J] {C : Type*} [Category C] [HasInitial C]
     {j : J} :
     colimit.ι ((CategoryTheory.Functor.const J).obj (⊥_ C)) j ≫ colimitConstInitial.hom =
       initial.to _ := by aesop_cat

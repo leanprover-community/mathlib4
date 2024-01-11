@@ -93,21 +93,21 @@ theorem prod_range_mul_prod_Ico (f : ℕ → β) {m n : ℕ} (h : m ≤ n) :
 #align finset.sum_range_add_sum_Ico Finset.sum_range_add_sum_Ico
 
 @[to_additive]
-theorem prod_Ico_eq_mul_inv {δ : Type _} [CommGroup δ] (f : ℕ → δ) {m n : ℕ} (h : m ≤ n) :
+theorem prod_Ico_eq_mul_inv {δ : Type*} [CommGroup δ] (f : ℕ → δ) {m n : ℕ} (h : m ≤ n) :
     ∏ k in Ico m n, f k = (∏ k in range n, f k) * (∏ k in range m, f k)⁻¹ :=
   eq_mul_inv_iff_mul_eq.2 <| by (rw [mul_comm]; exact prod_range_mul_prod_Ico f h)
 #align finset.prod_Ico_eq_mul_inv Finset.prod_Ico_eq_mul_inv
 #align finset.sum_Ico_eq_add_neg Finset.sum_Ico_eq_add_neg
 
 @[to_additive]
-theorem prod_Ico_eq_div {δ : Type _} [CommGroup δ] (f : ℕ → δ) {m n : ℕ} (h : m ≤ n) :
+theorem prod_Ico_eq_div {δ : Type*} [CommGroup δ] (f : ℕ → δ) {m n : ℕ} (h : m ≤ n) :
     ∏ k in Ico m n, f k = (∏ k in range n, f k) / ∏ k in range m, f k := by
   simpa only [div_eq_mul_inv] using prod_Ico_eq_mul_inv f h
 #align finset.prod_Ico_eq_div Finset.prod_Ico_eq_div
 #align finset.sum_Ico_eq_sub Finset.sum_Ico_eq_sub
 
 @[to_additive]
-theorem prod_range_div_prod_range {α : Type _} [CommGroup α] {f : ℕ → α} {n m : ℕ} (hnm : n ≤ m) :
+theorem prod_range_div_prod_range {α : Type*} [CommGroup α] {f : ℕ → α} {n m : ℕ} (hnm : n ≤ m) :
     ((∏ k in range m, f k) / ∏ k in range n, f k) =
     ∏ k in (range m).filter fun k => n ≤ k, f k := by
   rw [← prod_Ico_eq_div f hnm]
@@ -119,7 +119,7 @@ theorem prod_range_div_prod_range {α : Type _} [CommGroup α] {f : ℕ → α} 
 #align finset.sum_range_sub_sum_range Finset.sum_range_sub_sum_range
 
 /-- The two ways of summing over `(i,j)` in the range `a<=i<=j<b` are equal. -/
-theorem sum_Ico_Ico_comm {M : Type _} [AddCommMonoid M] (a b : ℕ) (f : ℕ → ℕ → M) :
+theorem sum_Ico_Ico_comm {M : Type*} [AddCommMonoid M] (a b : ℕ) (f : ℕ → ℕ → M) :
     (∑ i in Finset.Ico a b, ∑ j in Finset.Ico i b, f i j) =
       ∑ j in Finset.Ico a b, ∑ i in Finset.Ico a (j + 1), f i j := by
   rw [Finset.sum_sigma', Finset.sum_sigma']
@@ -161,7 +161,7 @@ theorem prod_Ico_reflect (f : ℕ → β) (k : ℕ) {m n : ℕ} (h : m ≤ n + 1
       this]
 #align finset.prod_Ico_reflect Finset.prod_Ico_reflect
 
-theorem sum_Ico_reflect {δ : Type _} [AddCommMonoid δ] (f : ℕ → δ) (k : ℕ) {m n : ℕ}
+theorem sum_Ico_reflect {δ : Type*} [AddCommMonoid δ] (f : ℕ → δ) (k : ℕ) {m n : ℕ}
     (h : m ≤ n + 1) : (∑ j in Ico k m, f (n - j)) = ∑ j in Ico (n + 1 - m) (n + 1 - k), f j :=
   @prod_Ico_reflect (Multiplicative δ) _ f k m n h
 #align finset.sum_Ico_reflect Finset.sum_Ico_reflect
@@ -175,7 +175,7 @@ theorem prod_range_reflect (f : ℕ → β) (n : ℕ) :
     simp
 #align finset.prod_range_reflect Finset.prod_range_reflect
 
-theorem sum_range_reflect {δ : Type _} [AddCommMonoid δ] (f : ℕ → δ) (n : ℕ) :
+theorem sum_range_reflect {δ : Type*} [AddCommMonoid δ] (f : ℕ → δ) (n : ℕ) :
     (∑ j in range n, f (n - 1 - j)) = ∑ j in range n, f j :=
   @prod_range_reflect (Multiplicative δ) _ f n
 #align finset.sum_range_reflect Finset.sum_range_reflect
@@ -218,7 +218,7 @@ end Generic
 
 section Nat
 
-variable {β : Type _}
+variable {β : Type*}
 
 variable (f g : ℕ → β) {m n : ℕ}
 
@@ -257,7 +257,7 @@ end Nat
 
 section Module
 
-variable {R M : Type _} [Ring R] [AddCommGroup M] [Module R M] (f : ℕ → R) (g : ℕ → M) {m n : ℕ}
+variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] (f : ℕ → R) (g : ℕ → M) {m n : ℕ}
 
 open Finset
 

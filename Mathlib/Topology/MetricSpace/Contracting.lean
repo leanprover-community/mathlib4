@@ -32,7 +32,7 @@ contracting map, fixed point, Banach fixed point theorem
 
 open NNReal Topology Classical ENNReal Filter Function
 
-variable {α : Type _}
+variable {α : Type*}
 
 /-- A map is said to be `ContractingWith K`, if `K < 1` and `f` is `LipschitzWith K`. -/
 def ContractingWith [EMetricSpace α] (K : ℝ≥0) (f : α → α) :=

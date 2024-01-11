@@ -52,7 +52,7 @@ dedekind domain, dedekind ring
 -/
 
 
-variable (R A K : Type _) [CommRing R] [CommRing A] [Field K]
+variable (R A K : Type*) [CommRing R] [CommRing A] [Field K]
 
 open scoped nonZeroDivisors Polynomial
 
@@ -62,7 +62,7 @@ section Inverse
 
 namespace FractionalIdeal
 
-variable {R₁ : Type _} [CommRing R₁] [IsDomain R₁] [Algebra R₁ K] [IsFractionRing R₁ K]
+variable {R₁ : Type*} [CommRing R₁] [IsDomain R₁] [Algebra R₁ K] [IsFractionRing R₁ K]
 
 variable {I J : FractionalIdeal R₁⁰ K}
 
@@ -136,7 +136,7 @@ theorem mul_inv_cancel_iff_isUnit {I : FractionalIdeal R₁⁰ K} : I * I⁻¹ =
   (mul_inv_cancel_iff K).trans isUnit_iff_exists_inv.symm
 #align fractional_ideal.mul_inv_cancel_iff_is_unit FractionalIdeal.mul_inv_cancel_iff_isUnit
 
-variable {K' : Type _} [Field K'] [Algebra R₁ K'] [IsFractionRing R₁ K']
+variable {K' : Type*} [Field K'] [Algebra R₁ K'] [IsFractionRing R₁ K']
 
 @[simp]
 theorem map_inv (I : FractionalIdeal R₁⁰ K) (h : K ≃ₐ[R₁] K') :
@@ -191,7 +191,7 @@ theorem coe_ideal_span_singleton_inv_mul {x : R₁} (hx : x ≠ 0) :
   rw [mul_comm, coe_ideal_span_singleton_mul_inv K hx]
 #align fractional_ideal.coe_ideal_span_singleton_inv_mul FractionalIdeal.coe_ideal_span_singleton_inv_mul
 
-theorem mul_generator_self_inv {R₁ : Type _} [CommRing R₁] [Algebra R₁ K] [IsLocalization R₁⁰ K]
+theorem mul_generator_self_inv {R₁ : Type*} [CommRing R₁] [Algebra R₁ K] [IsLocalization R₁⁰ K]
     (I : FractionalIdeal R₁⁰ K) [Submodule.IsPrincipal (I : Submodule R₁ K)] (h : I ≠ 0) :
     I * spanSingleton _ (generator (I : Submodule R₁ K))⁻¹ = 1 := by
   -- Rewrite only the `I` that appears alone.
@@ -346,7 +346,7 @@ theorem dimensionLEOne : DimensionLEOne A := ⟨by
 /-- Showing one side of the equivalence between the definitions
 `IsDedekindDomainInv` and `IsDedekindDomain` of Dedekind domains. -/
 theorem isDedekindDomain : IsDedekindDomain A :=
-  ⟨h.isNoetherianRing, h.dimensionLEOne, h.integrallyClosed⟩
+  { h.isNoetherianRing, h.dimensionLEOne, h.integrallyClosed with }
 #align is_dedekind_domain_inv.is_dedekind_domain IsDedekindDomainInv.isDedekindDomain
 
 end IsDedekindDomainInv
@@ -668,7 +668,7 @@ theorem Ideal.dvdNotUnit_iff_lt {I J : Ideal A} : DvdNotUnit I J ↔ J < I :=
 instance : WfDvdMonoid (Ideal A) where
   wellFounded_dvdNotUnit := by
     have : WellFounded ((· > ·) : Ideal A → Ideal A → Prop) :=
-      isNoetherian_iff_wellFounded.mp (isNoetherianRing_iff.mp IsDedekindDomain.isNoetherianRing)
+      isNoetherian_iff_wellFounded.mp (isNoetherianRing_iff.mp IsDedekindDomain.toIsNoetherian)
     convert this
     ext
     rw [Ideal.dvdNotUnit_iff_lt]
@@ -783,7 +783,7 @@ variable {K}
 Let `J ≠ ⊤` be an ideal in a Dedekind domain `A`, and `f ≠ 0` a finite collection
 of elements of `K = Frac(A)`, then we can multiply the elements of `f` by some `a : K`
 to find a collection of elements of `A` that is not completely contained in `J`. -/
-theorem Ideal.exist_integer_multiples_not_mem {J : Ideal A} (hJ : J ≠ ⊤) {ι : Type _} (s : Finset ι)
+theorem Ideal.exist_integer_multiples_not_mem {J : Ideal A} (hJ : J ≠ ⊤) {ι : Type*} (s : Finset ι)
     (f : ι → K) {j} (hjs : j ∈ s) (hjf : f j ≠ 0) :
     ∃ a : K,
       (∀ i ∈ s, IsLocalization.IsInteger A (a * f i)) ∧
@@ -888,7 +888,7 @@ end IsDedekindDomain
 
 section IsDedekindDomain
 
-variable {T : Type _} [CommRing T] [IsDomain T] [IsDedekindDomain T] {I J : Ideal T}
+variable {T : Type*} [CommRing T] [IsDomain T] [IsDedekindDomain T] {I J : Ideal T}
 
 open scoped Classical
 
@@ -1046,9 +1046,9 @@ variable [IsDedekindDomain A] {I : Ideal R} {J : Ideal A}
 
 /-- The map from ideals of `R` dividing `I` to the ideals of `A` dividing `J` induced by
   a homomorphism `f : R/I →+* A/J` -/
-@[simps]
+@[simps] -- Porting note: use `Subtype` instead of `Set` to make linter happy
 def idealFactorsFunOfQuotHom {f : R ⧸ I →+* A ⧸ J} (hf : Function.Surjective f) :
-    { p : Ideal R | p ∣ I } →o { p : Ideal A | p ∣ J } where
+    {p : Ideal R // p ∣ I} →o {p : Ideal A // p ∣ J} where
   toFun X := ⟨comap (Ideal.Quotient.mk J) (map f (map (Ideal.Quotient.mk I) X)), by
     have : RingHom.ker (Ideal.Quotient.mk J) ≤
         comap (Ideal.Quotient.mk J) (map f (map (Ideal.Quotient.mk I) X)) :=
@@ -1066,27 +1066,28 @@ def idealFactorsFunOfQuotHom {f : R ⧸ I →+* A ⧸ J} (hf : Function.Surjecti
     rwa [map_le_iff_le_comap, comap_map_of_surjective (Ideal.Quotient.mk I)
       Quotient.mk_surjective, ← RingHom.ker_eq_comap_bot, mk_ker, sup_eq_left.mpr <| le_of_dvd hY]
 #align ideal_factors_fun_of_quot_hom idealFactorsFunOfQuotHom
+#align ideal_factors_fun_of_quot_hom_coe_coe idealFactorsFunOfQuotHom_coe_coe
 
 @[simp]
 theorem idealFactorsFunOfQuotHom_id :
     idealFactorsFunOfQuotHom (RingHom.id (A ⧸ J)).surjective = OrderHom.id :=
   OrderHom.ext _ _
     (funext fun X => by
-      simp only [idealFactorsFunOfQuotHom, map_id, OrderHom.coe_fun_mk, OrderHom.id_coe, id.def,
+      simp only [idealFactorsFunOfQuotHom, map_id, OrderHom.coe_mk, OrderHom.id_coe, id.def,
         comap_map_of_surjective (Ideal.Quotient.mk J) Quotient.mk_surjective, ←
         RingHom.ker_eq_comap_bot (Ideal.Quotient.mk J), mk_ker,
         sup_eq_left.mpr (dvd_iff_le.mp X.prop), Subtype.coe_eta])
 #align ideal_factors_fun_of_quot_hom_id idealFactorsFunOfQuotHom_id
 
-variable {B : Type _} [CommRing B] [IsDomain B] [IsDedekindDomain B] {L : Ideal B}
+variable {B : Type*} [CommRing B] [IsDomain B] [IsDedekindDomain B] {L : Ideal B}
 
 theorem idealFactorsFunOfQuotHom_comp {f : R ⧸ I →+* A ⧸ J} {g : A ⧸ J →+* B ⧸ L}
     (hf : Function.Surjective f) (hg : Function.Surjective g) :
     (idealFactorsFunOfQuotHom hg).comp (idealFactorsFunOfQuotHom hf) =
       idealFactorsFunOfQuotHom (show Function.Surjective (g.comp f) from hg.comp hf) := by
   refine OrderHom.ext _ _ (funext fun x => ?_)
-  rw [idealFactorsFunOfQuotHom, idealFactorsFunOfQuotHom, OrderHom.comp_coe, OrderHom.coe_fun_mk,
-    OrderHom.coe_fun_mk, Function.comp_apply, idealFactorsFunOfQuotHom, OrderHom.coe_fun_mk,
+  rw [idealFactorsFunOfQuotHom, idealFactorsFunOfQuotHom, OrderHom.comp_coe, OrderHom.coe_mk,
+    OrderHom.coe_mk, Function.comp_apply, idealFactorsFunOfQuotHom, OrderHom.coe_mk,
     Subtype.mk_eq_mk, Subtype.coe_mk, map_comap_of_surjective (Ideal.Quotient.mk J)
     Quotient.mk_surjective, map_map]
 #align ideal_factors_fun_of_quot_hom_comp idealFactorsFunOfQuotHom_comp
@@ -1258,7 +1259,7 @@ theorem Ideal.pow_le_prime_iff {I P : Ideal R} [_hP : P.IsPrime] {n : ℕ} (hn :
   ⟨Ideal.le_of_pow_le_prime, fun h => _root_.trans (Ideal.pow_le_self hn) h⟩
 #align ideal.pow_le_prime_iff Ideal.pow_le_prime_iff
 
-theorem Ideal.prod_le_prime {ι : Type _} {s : Finset ι} {f : ι → Ideal R} {P : Ideal R}
+theorem Ideal.prod_le_prime {ι : Type*} {s : Finset ι} {f : ι → Ideal R} {P : Ideal R}
     [hP : P.IsPrime] : ∏ i in s, f i ≤ P ↔ ∃ i ∈ s, f i ≤ P := by
   by_cases hP0 : P = ⊥
   · simp only [hP0, le_bot_iff]
@@ -1269,7 +1270,7 @@ theorem Ideal.prod_le_prime {ι : Type _} {s : Finset ι} {f : ι → Ideal R} {
 
 /-- The intersection of distinct prime powers in a Dedekind domain is the product of these
 prime powers. -/
-theorem IsDedekindDomain.inf_prime_pow_eq_prod {ι : Type _} (s : Finset ι) (f : ι → Ideal R)
+theorem IsDedekindDomain.inf_prime_pow_eq_prod {ι : Type*} (s : Finset ι) (f : ι → Ideal R)
     (e : ι → ℕ) (prime : ∀ i ∈ s, Prime (f i))
     (coprime : ∀ (i) (_ : i ∈ s) (j) (_ : j ∈ s), i ≠ j → f i ≠ f j) :
     (s.inf fun i => f i ^ e i) = ∏ i in s, f i ^ e i := by
@@ -1300,7 +1301,7 @@ theorem IsDedekindDomain.inf_prime_pow_eq_prod {ι : Type _} (s : Finset ι) (f 
 
 /-- **Chinese remainder theorem** for a Dedekind domain: if the ideal `I` factors as
 `∏ i, P i ^ e i`, then `R ⧸ I` factors as `Π i, R ⧸ (P i ^ e i)`. -/
-noncomputable def IsDedekindDomain.quotientEquivPiOfProdEq {ι : Type _} [Fintype ι] (I : Ideal R)
+noncomputable def IsDedekindDomain.quotientEquivPiOfProdEq {ι : Type*} [Fintype ι] (I : Ideal R)
     (P : ι → Ideal R) (e : ι → ℕ) (prime : ∀ i, Prime (P i)) (coprime : ∀ i j, i ≠ j → P i ≠ P j)
     (prod_eq : ∏ i, P i ^ e i = I) : R ⧸ I ≃+* ∀ i, R ⧸ P i ^ e i :=
   (Ideal.quotEquivOfEq
@@ -1360,7 +1361,7 @@ noncomputable def Ideal.quotientMulEquivQuotientProd (I J : Ideal R) (coprime : 
 This is a version of `IsDedekindDomain.quotientEquivPiOfProdEq` where we restrict
 the product to a finite subset `s` of a potentially infinite indexing type `ι`.
 -/
-noncomputable def IsDedekindDomain.quotientEquivPiOfFinsetProdEq {ι : Type _} {s : Finset ι}
+noncomputable def IsDedekindDomain.quotientEquivPiOfFinsetProdEq {ι : Type*} {s : Finset ι}
     (I : Ideal R) (P : ι → Ideal R) (e : ι → ℕ) (prime : ∀ i ∈ s, Prime (P i))
     (coprime : ∀ (i) (_ : i ∈ s) (j) (_ : j ∈ s), i ≠ j → P i ≠ P j)
     (prod_eq : ∏ i in s, P i ^ e i = I) : R ⧸ I ≃+* ∀ i : s, R ⧸ P i ^ e i :=
@@ -1371,7 +1372,7 @@ noncomputable def IsDedekindDomain.quotientEquivPiOfFinsetProdEq {ι : Type _} {
 
 /-- Corollary of the Chinese remainder theorem: given elements `x i : R / P i ^ e i`,
 we can choose a representative `y : R` such that `y ≡ x i (mod P i ^ e i)`.-/
-theorem IsDedekindDomain.exists_representative_mod_finset {ι : Type _} {s : Finset ι}
+theorem IsDedekindDomain.exists_representative_mod_finset {ι : Type*} {s : Finset ι}
     (P : ι → Ideal R) (e : ι → ℕ) (prime : ∀ i ∈ s, Prime (P i))
     (coprime : ∀ (i) (_ : i ∈ s) (j) (_ : j ∈ s), i ≠ j → P i ≠ P j) (x : ∀ i : s, R ⧸ P i ^ e i) :
     ∃ y, ∀ (i) (hi : i ∈ s), Ideal.Quotient.mk (P i ^ e i) y = x ⟨i, hi⟩ := by
@@ -1383,7 +1384,7 @@ theorem IsDedekindDomain.exists_representative_mod_finset {ι : Type _} {s : Fin
 
 /-- Corollary of the Chinese remainder theorem: given elements `x i : R`,
 we can choose a representative `y : R` such that `y - x i ∈ P i ^ e i`.-/
-theorem IsDedekindDomain.exists_forall_sub_mem_ideal {ι : Type _} {s : Finset ι} (P : ι → Ideal R)
+theorem IsDedekindDomain.exists_forall_sub_mem_ideal {ι : Type*} {s : Finset ι} (P : ι → Ideal R)
     (e : ι → ℕ) (prime : ∀ i ∈ s, Prime (P i))
     (coprime : ∀ (i) (_ : i ∈ s) (j) (_ : j ∈ s), i ≠ j → P i ≠ P j) (x : s → R) :
     ∃ y, ∀ (i) (hi : i ∈ s), y - x ⟨i, hi⟩ ∈ P i ^ e i := by

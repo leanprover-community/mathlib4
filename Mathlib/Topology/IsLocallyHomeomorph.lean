@@ -25,7 +25,7 @@ This file defines local homeomorphisms.
 
 open Topology
 
-variable {X Y Z : Type _} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] (g : Y → Z)
+variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] (g : Y → Z)
   (f : X → Y) (s : Set X) (t : Set Y)
 
 /-- A function `f : X → Y` satisfies `IsLocallyHomeomorphOn f s` if each `x ∈ s` is contained in

@@ -173,13 +173,13 @@ theorem derivative_sum {s : Finset ι} {f : ι → R[X]} :
 #align polynomial.derivative_sum Polynomial.derivative_sum
 
 --Porting note: removed `simp`: `simp` can prove it.
-theorem derivative_smul {S : Type _} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] (s : S)
+theorem derivative_smul {S : Type*} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] (s : S)
     (p : R[X]) : derivative (s • p) = s • derivative p :=
   derivative.map_smul_of_tower s p
 #align polynomial.derivative_smul Polynomial.derivative_smul
 
 @[simp]
-theorem iterate_derivative_smul {S : Type _} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R]
+theorem iterate_derivative_smul {S : Type*} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R]
     (s : S) (p : R[X]) (k : ℕ) : derivative^[k] (s • p) = s • derivative^[k] p := by
   induction' k with k ih generalizing p
   · simp

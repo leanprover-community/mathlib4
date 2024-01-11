@@ -48,7 +48,7 @@ open OrderDual
 
 universe u v
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 namespace Set
 
@@ -244,7 +244,7 @@ theorem chainHeight_dual : (ofDual ⁻¹' s).chainHeight = s.chainHeight := by
   apply le_antisymm <;>
   · rw [chainHeight_le_chainHeight_iff]
     rintro l ⟨h₁, h₂⟩
-    exact ⟨l.reverse, ⟨chain'_reverse.mpr h₁, fun i h ↦ h₂ i ((mem_reverse i l).mp h)⟩,
+    exact ⟨l.reverse, ⟨chain'_reverse.mpr h₁, fun i h ↦ h₂ i (mem_reverse.mp h)⟩,
       (length_reverse _).symm⟩
 #align set.chain_height_dual Set.chainHeight_dual
 

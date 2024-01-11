@@ -74,7 +74,7 @@ theorem ι_sq_zero (m : M) : ι R m * ι R m = 0 :=
   (CliffordAlgebra.ι_sq_scalar _ m).trans <| map_zero _
 #align exterior_algebra.ι_sq_zero ExteriorAlgebra.ι_sq_zero
 
-variable {A : Type _} [Semiring A] [Algebra R A]
+variable {A : Type*} [Semiring A] [Algebra R A]
 
 -- @[simp] -- Porting note: simp can prove this
 theorem comp_ι_sq_zero (g : ExteriorAlgebra R M →ₐ[R] A) (m : M) : g (ι R m) * g (ι R m) = 0 := by
@@ -266,7 +266,7 @@ theorem ι_mul_prod_list {n : ℕ} (f : Fin n → M) (i : Fin n) :
     · rw [h, ι_sq_zero, MulZeroClass.zero_mul]
     · replace hn :=
         congr_arg
-          ((· * ·) <| ι R <| f 0) (hn (fun i => f <| Fin.succ i) (i.pred <| Fin.vne_of_ne h))
+          ((· * ·) <| ι R <| f 0) (hn (fun i => f <| Fin.succ i) (i.pred h))
       simp only at hn
       rw [Fin.succ_pred, ← mul_assoc, MulZeroClass.mul_zero] at hn
       refine' (eq_zero_iff_eq_zero_of_add_eq_zero _).mp hn
@@ -294,14 +294,14 @@ def ιMulti (n : ℕ) : AlternatingMap R M (ExteriorAlgebra R M) (Fin n) :=
         by_cases hx : x = 0
         -- one of the repeated terms is on the left
         · rw [hx] at hfxy h
-          rw [hfxy, ← Fin.succ_pred y (Fin.vne_of_ne <| (ne_of_lt h).symm)]
+          rw [hfxy, ← Fin.succ_pred y (ne_of_lt h).symm]
           exact ι_mul_prod_list (f ∘ Fin.succ) _
         -- ignore the left-most term and induct on the remaining ones, decrementing indices
         · convert MulZeroClass.mul_zero (ι R (f 0))
           refine'
             hn
-              (fun i => f <| Fin.succ i) (x.pred <| Fin.vne_of_ne hx)
-              (y.pred (Fin.vne_of_ne <| ne_of_lt <| lt_of_le_of_lt x.zero_le h).symm) _
+              (fun i => f <| Fin.succ i) (x.pred hx)
+              (y.pred (ne_of_lt <| lt_of_le_of_lt x.zero_le h).symm) _
               (Fin.pred_lt_pred_iff.mpr h)
           simp only [Fin.succ_pred]
           exact hfxy

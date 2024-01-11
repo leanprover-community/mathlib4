@@ -29,7 +29,7 @@ namespace IsPrimitiveRoot
 
 section CommRing
 
-variable {n : ℕ} {K : Type _} [CommRing K] {μ : K} (h : IsPrimitiveRoot μ n)
+variable {n : ℕ} {K : Type*} [CommRing K] {μ : K} (h : IsPrimitiveRoot μ n)
 
 /-- `μ` is integral over `ℤ`. -/
 -- Porting note: `hpos` was in the `variable` line, with an `omit` in mathlib3 just after this

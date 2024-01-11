@@ -56,7 +56,7 @@ namespace AlternatingFaceMapComplex
 -/
 
 
-variable {C : Type _} [Category C] [Preadditive C]
+variable {C : Type*} [Category C] [Preadditive C]
 
 variable (X : SimplicialObject C)
 
@@ -108,7 +108,7 @@ theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
     rintro ⟨i', j'⟩ hij'
     simp only [Finset.mem_univ, forall_true_left, Prod.forall, ge_iff_le, Finset.compl_filter,
       not_le, Finset.mem_filter, true_and] at hij'
-    refine' ⟨(j'.pred <| Fin.vne_of_ne (j := 0) _, Fin.castSucc i'), _, _⟩
+    refine' ⟨(j'.pred <| _, Fin.castSucc i'), _, _⟩
     · rintro rfl
       simp only [Fin.val_zero, not_lt_zero'] at hij'
     · simpa only [Finset.mem_univ, forall_true_left, Prod.forall, ge_iff_le, Finset.mem_filter,
@@ -159,7 +159,7 @@ theorem map_f (f : X ⟶ Y) (n : ℕ) : (map f).f n = f.app (op [n]) :=
 
 end AlternatingFaceMapComplex
 
-variable (C : Type _) [Category C] [Preadditive C]
+variable (C : Type*) [Category C] [Preadditive C]
 
 /-- The alternating face map complex, as a functor -/
 def alternatingFaceMapComplex : SimplicialObject C ⥤ ChainComplex C ℕ where
@@ -189,7 +189,7 @@ theorem alternatingFaceMapComplex_map_f {X Y : SimplicialObject C} (f : X ⟶ Y)
   rfl
 #align algebraic_topology.alternating_face_map_complex_map_f AlgebraicTopology.alternatingFaceMapComplex_map_f
 
-theorem map_alternatingFaceMapComplex {D : Type _} [Category D] [Preadditive D] (F : C ⥤ D)
+theorem map_alternatingFaceMapComplex {D : Type*} [Category D] [Preadditive D] (F : C ⥤ D)
     [F.Additive] :
     alternatingFaceMapComplex C ⋙ F.mapHomologicalComplex _ =
       (SimplicialObject.whiskering C D).obj F ⋙ alternatingFaceMapComplex D := by
@@ -245,7 +245,7 @@ end AlternatingFaceMapComplex
 ## Construction of the natural inclusion of the normalized Moore complex
 -/
 
-variable {A : Type _} [Category A] [Abelian A]
+variable {A : Type*} [Category A] [Abelian A]
 
 /-- The inclusion map of the Moore complex in the alternating face map complex -/
 def inclusionOfMooreComplexMap (X : SimplicialObject A) :

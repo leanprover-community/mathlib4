@@ -20,12 +20,12 @@ open Filter Set
 
 open Topology
 
-variable {α : Type _}
+variable {α : Type*}
 
 /-- A `NormedOrderedAddGroup` is an additive group that is both a `NormedAddCommGroup` and an
 `OrderedAddCommGroup`. This class is necessary to avoid diamonds caused by both classes
 carrying their own group structure. -/
-class NormedOrderedAddGroup (α : Type _) extends OrderedAddCommGroup α, Norm α, MetricSpace α where
+class NormedOrderedAddGroup (α : Type*) extends OrderedAddCommGroup α, Norm α, MetricSpace α where
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x - y‖ := by aesop
 #align normed_ordered_add_group NormedOrderedAddGroup
@@ -34,7 +34,7 @@ class NormedOrderedAddGroup (α : Type _) extends OrderedAddCommGroup α, Norm �
 `OrderedCommGroup`. This class is necessary to avoid diamonds caused by both classes
 carrying their own group structure. -/
 @[to_additive]
-class NormedOrderedGroup (α : Type _) extends OrderedCommGroup α, Norm α, MetricSpace α where
+class NormedOrderedGroup (α : Type*) extends OrderedCommGroup α, Norm α, MetricSpace α where
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x / y‖ := by aesop
 #align normed_ordered_group NormedOrderedGroup
@@ -42,7 +42,7 @@ class NormedOrderedGroup (α : Type _) extends OrderedCommGroup α, Norm α, Met
 /-- A `NormedLinearOrderedAddGroup` is an additive group that is both a `NormedAddCommGroup`
 and a `LinearOrderedAddCommGroup`. This class is necessary to avoid diamonds caused by both
 classes carrying their own group structure. -/
-class NormedLinearOrderedAddGroup (α : Type _) extends LinearOrderedAddCommGroup α, Norm α,
+class NormedLinearOrderedAddGroup (α : Type*) extends LinearOrderedAddCommGroup α, Norm α,
   MetricSpace α where
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x - y‖ := by aesop
@@ -52,7 +52,7 @@ class NormedLinearOrderedAddGroup (α : Type _) extends LinearOrderedAddCommGrou
 `LinearOrderedCommGroup`. This class is necessary to avoid diamonds caused by both classes
 carrying their own group structure. -/
 @[to_additive]
-class NormedLinearOrderedGroup (α : Type _) extends LinearOrderedCommGroup α, Norm α,
+class NormedLinearOrderedGroup (α : Type*) extends LinearOrderedCommGroup α, Norm α,
   MetricSpace α where
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x / y‖ := by aesop
@@ -60,7 +60,7 @@ class NormedLinearOrderedGroup (α : Type _) extends LinearOrderedCommGroup α, 
 
 /-- A `NormedLinearOrderedField` is a field that is both a `NormedField` and a
     `LinearOrderedField`. This class is necessary to avoid diamonds. -/
-class NormedLinearOrderedField (α : Type _) extends LinearOrderedField α, Norm α,
+class NormedLinearOrderedField (α : Type*) extends LinearOrderedField α, Norm α,
   MetricSpace α where
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x - y‖ := by aesop
@@ -82,7 +82,7 @@ instance (priority := 100) NormedLinearOrderedGroup.toNormedOrderedGroup
 #align normed_linear_ordered_group.to_normed_ordered_group NormedLinearOrderedGroup.toNormedOrderedGroup
 #align normed_linear_ordered_add_group.to_normed_ordered_add_group NormedLinearOrderedAddGroup.toNormedOrderedAddGroup
 
-instance (priority := 100) NormedLinearOrderedField.toNormedField (α : Type _)
+instance (priority := 100) NormedLinearOrderedField.toNormedField (α : Type*)
     [NormedLinearOrderedField α] : NormedField α where
   dist_eq := NormedLinearOrderedField.dist_eq
   norm_mul' := NormedLinearOrderedField.norm_mul'
@@ -101,7 +101,7 @@ instance OrderDual.normedOrderedGroup [NormedOrderedGroup α] : NormedOrderedGro
 @[to_additive]
 instance OrderDual.normedLinearOrderedGroup [NormedLinearOrderedGroup α] :
     NormedLinearOrderedGroup αᵒᵈ :=
-  { OrderDual.normedOrderedGroup, OrderDual.linearOrder _ with }
+  { OrderDual.normedOrderedGroup, OrderDual.instLinearOrder _ with }
 
 instance Additive.normedOrderedAddGroup [NormedOrderedGroup α] :
     NormedOrderedAddGroup (Additive α) :=
