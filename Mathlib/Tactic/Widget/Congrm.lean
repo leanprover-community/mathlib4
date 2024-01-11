@@ -43,7 +43,7 @@ def CongrmSelectionPanel.rpc := mkSelectionPanelRPC makeCongrmString
 
 /-- The congrm widget. -/
 @[widget_module]
-def CongrmSelectionPanel : PanelWidget SelectInsertParams :=
+def CongrmSelectionPanel : Component SelectInsertParams :=
   mk_rpc_widget% CongrmSelectionPanel.rpc
 
 open scoped Json in

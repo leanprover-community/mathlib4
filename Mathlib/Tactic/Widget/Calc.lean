@@ -54,7 +54,7 @@ structure CalcParams extends SelectInsertParams where
   isFirst : Bool
   /-- indentation level of the calc block. -/
   indent : Nat
-  deriving SelectInsertParamsClass, ToJson, FromJson
+  deriving SelectInsertParamsClass, RpcEncodable
 
 open Lean Meta
 
@@ -119,7 +119,7 @@ def CalcPanel.rpc := mkSelectionPanelRPC suggestSteps
 
 /-- The calc widget. -/
 @[widget_module]
-def CalcPanel : PanelWidget CalcParams :=
+def CalcPanel : Component CalcParams :=
   mk_rpc_widget% CalcPanel.rpc
 
 namespace Lean.Elab.Tactic
@@ -135,6 +135,9 @@ elab_rules : tactic
   for step in ← Lean.Elab.Term.getCalcSteps steps do
     let some replaceRange := (← getFileMap).rangeOfStx? step | unreachable!
     let `(calcStep| $(_) := $proofTerm) := step | unreachable!
-    savePanelWidgetInfo' CalcPanel { replaceRange, isFirst, indent } proofTerm
+    let json := open scoped Std.Json in json% {"replaceRange": $(replaceRange),
+                                                        "isFirst": $(isFirst),
+                                                        "indent": $(indent)}
+    Widget.savePanelWidgetInfo CalcPanel.javascriptHash (pure json) proofTerm
     isFirst := false
   evalCalc (← `(tactic|calc%$calcstx $stx))
