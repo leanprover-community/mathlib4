@@ -30,7 +30,7 @@ C⋆algebras `F : Cpct → CommCStarAlg := X ↦ C(X, ℂ)` and
 
 Then `η₁ : id → F ∘ G := gelfandStarTransform` and
 `η₂ : id → G ∘ F := WeakDual.CharacterSpace.homeoEval` are the natural isomorphisms implementing
-**Gelfand Duality**, i.e., the (contravariant) equivalnce of these categories.
+**Gelfand Duality**, i.e., the (contravariant) equivalence of these categories.
 
 ## Main definitions
 
@@ -313,7 +313,7 @@ V                     V
 Y  --- η Y ---> characterSpace ℂ C(Y, ℂ)
 ```
 -/
-def WeakDual.CharacterSpace.homeoEval_naturality {X Y 𝕜 : Type*} [IsROrC 𝕜] [TopologicalSpace X]
+lemma WeakDual.CharacterSpace.homeoEval_naturality {X Y 𝕜 : Type*} [IsROrC 𝕜] [TopologicalSpace X]
     [CompactSpace X] [T2Space X] [TopologicalSpace Y] [CompactSpace Y] [T2Space Y] (f : C(X, Y)) :
     (homeoEval Y 𝕜 : C(_, _)).comp f =
       (f.compStarAlgHom' 𝕜 𝕜 |> compContinuousMap).comp (homeoEval X 𝕜 : C(_, _)) :=
