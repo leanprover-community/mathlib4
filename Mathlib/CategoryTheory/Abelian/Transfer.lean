@@ -144,7 +144,6 @@ def coimageIsoImage {X Y : C} (f : X ⟶ Y) : Abelian.coimage f ≅ Abelian.imag
 #align category_theory.abelian_of_adjunction.coimage_iso_image CategoryTheory.AbelianOfAdjunction.coimageIsoImage
 
 -- The account of this proof in the Stacks project omits this calculation.
-@[nolint unusedHavesSuffices]
 theorem coimageIsoImage_hom {X Y : C} (f : X ⟶ Y) :
     (coimageIsoImage F G i adj f).hom = Abelian.coimageImageComparison f := by
   dsimp [coimageIsoImage, cokernelIso, cokernelEpiComp, cokernelCompIsIso_inv,
