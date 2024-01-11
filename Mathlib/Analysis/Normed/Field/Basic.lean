@@ -6,6 +6,7 @@ Authors: Patrick Massot, Johannes Hölzl
 import Mathlib.Algebra.Algebra.NonUnitalSubalgebra
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Analysis.Normed.Group.Basic
+import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.Topology.Instances.ENNReal
 import Mathlib.Topology.MetricSpace.DilationEquiv
 
@@ -680,7 +681,7 @@ instance (priority := 100) semi_normed_top_ring [NonUnitalSeminormedRing α] : T
 
 section NormedDivisionRing
 
-variable [NormedDivisionRing α]
+variable [NormedDivisionRing α] {a : α}
 
 @[simp]
 theorem norm_mul (a b : α) : ‖a * b‖ = ‖a‖ * ‖b‖ :=
@@ -887,15 +888,13 @@ instance (priority := 100) NormedDivisionRing.to_topologicalDivisionRing : Topol
     where
 #align normed_division_ring.to_topological_division_ring NormedDivisionRing.to_topologicalDivisionRing
 
-theorem norm_map_one_of_pow_eq_one [Monoid β] (φ : β →* α) {x : β} {k : ℕ+} (h : x ^ (k : ℕ) = 1) :
-    ‖φ x‖ = 1 := by
-  rw [← pow_left_inj, ← norm_pow, ← map_pow, h, map_one, norm_one, one_pow]
-  exacts [norm_nonneg _, zero_le_one, k.pos]
-#align norm_map_one_of_pow_eq_one norm_map_one_of_pow_eq_one
+protected lemma IsOfFinOrder.norm_eq_one (ha : IsOfFinOrder a) : ‖a‖ = 1 :=
+  ((normHom : α →*₀ ℝ).toMonoidHom.isOfFinOrder ha).eq_one $ norm_nonneg _
+#align norm_one_of_pow_eq_one IsOfFinOrder.norm_eq_one
 
-theorem norm_one_of_pow_eq_one {x : α} {k : ℕ+} (h : x ^ (k : ℕ) = 1) : ‖x‖ = 1 :=
-  norm_map_one_of_pow_eq_one (MonoidHom.id α) h
-#align norm_one_of_pow_eq_one norm_one_of_pow_eq_one
+example [Monoid β] (φ : β →* α) {x : β} {k : ℕ+} (h : x ^ (k : ℕ) = 1) :
+    ‖φ x‖ = 1 := (φ.isOfFinOrder <| isOfFinOrder_iff_pow_eq_one.2 ⟨_, k.2, h⟩).norm_eq_one
+#noalign norm_map_one_of_pow_eq_one
 
 end NormedDivisionRing
 

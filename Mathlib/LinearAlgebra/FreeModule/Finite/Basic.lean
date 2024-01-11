@@ -3,9 +3,8 @@ Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.LinearAlgebra.Dimension
-import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.RingTheory.Finiteness
+import Mathlib.LinearAlgebra.FreeModule.Basic
 
 #align_import linear_algebra.free_module.finite.basic from "leanprover-community/mathlib"@"59628387770d82eb6f6dd7b7107308aa2509ec95"
 
@@ -39,8 +38,7 @@ noncomputable instance ChooseBasisIndex.fintype [Module.Finite R M] :
   · have := Module.subsingleton R M
     rw [ChooseBasisIndex]
     infer_instance
-  · obtain ⟨s, hs⟩ := id ‹Module.Finite R M›
-    exact basis_finite_of_finite_spans (↑s) s.finite_toSet hs (chooseBasis _ _)
+  · exact Module.Finite.finite_basis (chooseBasis _ _)
 #align module.free.choose_basis_index.fintype Module.Free.ChooseBasisIndex.fintype
 
 end Ring
@@ -54,7 +52,7 @@ variable [AddCommGroup N] [Module R N] [Module.Free R N]
 variable {R}
 
 /-- A free module with a basis indexed by a `Fintype` is finite. -/
-theorem _root_.Module.Finite.of_basis {R M ι : Type*} [CommRing R] [AddCommGroup M] [Module R M]
+theorem _root_.Module.Finite.of_basis {R M ι : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
     [_root_.Finite ι] (b : Basis ι R M) : Module.Finite R M := by
   cases nonempty_fintype ι
   classical

@@ -163,7 +163,7 @@ theorem isBigO_cocompact_rpow [ProperSpace E] (s : ℝ) :
     from this.comp_tendsto tendsto_norm_cocompact_atTop
   simp_rw [Asymptotics.IsBigO, Asymptotics.IsBigOWith]
   refine' ⟨1, (Filter.eventually_ge_atTop 1).mono fun x hx => _⟩
-  rw [one_mul, Real.norm_of_nonneg (Real.rpow_nonneg_of_nonneg (zero_le_one.trans hx) _),
+  rw [one_mul, Real.norm_of_nonneg (Real.rpow_nonneg (zero_le_one.trans hx) _),
     Real.norm_of_nonneg (zpow_nonneg (zero_le_one.trans hx) _), ← Real.rpow_int_cast, Int.cast_neg,
     Int.cast_ofNat]
   exact Real.rpow_le_rpow_of_exponent_le hx hk
@@ -616,8 +616,7 @@ def _root_.Function.HasTemperateGrowth (f : E → F) : Prop :=
 
 theorem _root_.Function.HasTemperateGrowth.norm_iteratedFDeriv_le_uniform_aux {f : E → F}
     (hf_temperate : f.HasTemperateGrowth) (n : ℕ) :
-    ∃ (k : ℕ) (C : ℝ) (_ : 0 ≤ C), ∀ (N : ℕ) (_ : N ≤ n) (x : E),
-      ‖iteratedFDeriv ℝ N f x‖ ≤ C * (1 + ‖x‖) ^ k := by
+    ∃ (k : ℕ) (C : ℝ), 0 ≤ C ∧ ∀ N ≤ n, ∀ x : E, ‖iteratedFDeriv ℝ N f x‖ ≤ C * (1 + ‖x‖) ^ k := by
   choose k C f using hf_temperate.2
   use (Finset.range (n + 1)).sup k
   let C' := max (0 : ℝ) ((Finset.range (n + 1)).sup' (by simp) C)
@@ -629,7 +628,7 @@ theorem _root_.Function.HasTemperateGrowth.norm_iteratedFDeriv_le_uniform_aux {f
   · simp only [Finset.le_sup'_iff, le_max_iff]
     right
     exact ⟨N, hN, rfl.le⟩
-  refine' pow_le_pow (by simp only [le_add_iff_nonneg_right, norm_nonneg]) _
+  refine' pow_le_pow_right (by simp only [le_add_iff_nonneg_right, norm_nonneg]) _
   exact Finset.le_sup hN
 #align function.has_temperate_growth.norm_iterated_fderiv_le_uniform_aux Function.HasTemperateGrowth.norm_iteratedFDeriv_le_uniform_aux
 
@@ -777,7 +776,7 @@ def bilinLeftCLM (B : E →L[ℝ] F →L[ℝ] G) {g : D → F} (hg : g.HasTemper
       refine' mul_le_mul_of_nonneg_right _ (norm_nonneg _)
       rw [pow_add]
       refine' mul_le_mul_of_nonneg_left _ (by positivity)
-      refine' pow_le_pow_of_le_left (norm_nonneg _) _ _
+      refine' pow_le_pow_left (norm_nonneg _) _ _
       simp only [zero_le_one, le_add_iff_nonneg_left])
 #align schwartz_map.bilin_left_clm SchwartzMap.bilinLeftCLM
 
@@ -819,7 +818,7 @@ def compCLM {g : D → E} (hg : g.HasTemperateGrowth)
       let seminorm_f := ((Finset.Iic (k', n)).sup (schwartzSeminormFamily 𝕜 _ _)) f
       have hg_upper'' : (1 + ‖x‖) ^ (k + l * n) ≤ (1 + Cg) ^ (k + l * n) * (1 + ‖g x‖) ^ k' := by
         rw [pow_mul, ← mul_pow]
-        refine' pow_le_pow_of_le_left (by positivity) _ _
+        refine' pow_le_pow_left (by positivity) _ _
         rw [add_mul]
         refine' add_le_add _ (hg_upper' x)
         nth_rw 1 [← one_mul (1 : ℝ)]
@@ -844,7 +843,7 @@ def compCLM {g : D → E} (hg : g.HasTemperateGrowth)
           simp only [le_add_iff_nonneg_right, norm_nonneg]
       have := norm_iteratedFDeriv_comp_le f.smooth' hg.1 le_top x hbound hgrowth'
       have hxk : ‖x‖ ^ k ≤ (1 + ‖x‖) ^ k :=
-        pow_le_pow_of_le_left (norm_nonneg _) (by simp only [zero_le_one, le_add_iff_nonneg_left]) _
+        pow_le_pow_left (norm_nonneg _) (by simp only [zero_le_one, le_add_iff_nonneg_left]) _
       refine' le_trans (mul_le_mul hxk this (by positivity) (by positivity)) _
       have rearrange :
         (1 + ‖x‖) ^ k *

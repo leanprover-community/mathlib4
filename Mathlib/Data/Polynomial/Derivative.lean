@@ -206,7 +206,7 @@ theorem degree_derivative_le {p : R[X]} : p.derivative.degree ≤ p.degree :=
 
 theorem natDegree_derivative_lt {p : R[X]} (hp : p.natDegree ≠ 0) :
     p.derivative.natDegree < p.natDegree := by
-  cases' eq_or_ne (derivative p) 0 with hp' hp'
+  rcases eq_or_ne (derivative p) 0 with hp' | hp'
   · rw [hp', Polynomial.natDegree_zero]
     exact hp.bot_lt
   · rw [natDegree_lt_natDegree_iff hp']

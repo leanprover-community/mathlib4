@@ -90,9 +90,9 @@ structure Fmla.subsumes (f f' : Fmla) : Prop where
 
 theorem Fmla.subsumes_self (f : Fmla) : f.subsumes f := ⟨fun _ h ↦ h⟩
 theorem Fmla.subsumes_left (f f₁ f₂ : Fmla) (H : f.subsumes (f₁.and f₂)) : f.subsumes f₁ :=
-  ⟨fun _ h ↦ H.1 _ $ List.mem_append.2 $ Or.inl h⟩
+  ⟨fun _ h ↦ H.1 _ <| List.mem_append.2 <| Or.inl h⟩
 theorem Fmla.subsumes_right (f f₁ f₂ : Fmla) (H : f.subsumes (f₁.and f₂)) : f.subsumes f₂ :=
-  ⟨fun _ h ↦ H.1 _ $ List.mem_append.2 $ Or.inr h⟩
+  ⟨fun _ h ↦ H.1 _ <| List.mem_append.2 <| Or.inr h⟩
 
 /-- A valuation is an assignment of values to all the propositional variables. -/
 def Valuation := Nat → Prop
@@ -121,7 +121,7 @@ def Fmla.proof (f : Fmla) (c : Clause) : Prop :=
 
 /-- If `f` subsumes `c` (i.e. `c ∈ f`), then `f.proof c`. -/
 theorem Fmla.proof_of_subsumes (H : Fmla.subsumes f (Fmla.one c)) : f.proof c :=
-  fun _ h ↦ h.1 _ $ H.1 _ $ List.Mem.head ..
+  fun _ h ↦ h.1 _ <| H.1 _ <| List.Mem.head ..
 
 /-- The core unit-propagation step.
 
@@ -181,8 +181,8 @@ theorem Fmla.reify_or (h₁ : Fmla.reify v f₁ a) (h₂ : Fmla.reify v f₂ b) 
     Fmla.reify v (f₁.and f₂) (a ∨ b) := by
   refine ⟨fun H ↦ by_contra fun hn ↦ H ⟨fun c h ↦ by_contra fun hn' ↦ ?_⟩⟩
   rcases List.mem_append.1 h with h | h
-  · exact hn $ Or.inl $ h₁.1 fun Hc ↦ hn' $ Hc.1 _ h
-  · exact hn $ Or.inr $ h₂.1 fun Hc ↦ hn' $ Hc.1 _ h
+  · exact hn <| Or.inl <| h₁.1 fun Hc ↦ hn' <| Hc.1 _ h
+  · exact hn <| Or.inr <| h₂.1 fun Hc ↦ hn' <| Hc.1 _ h
 
 /-- Asserts that `¬⟦c⟧_v` implies `p`. -/
 structure Clause.reify (v : Valuation) (c : Clause) (p : Prop) : Prop where
@@ -236,7 +236,7 @@ structure Clause where
 def buildClause (arr : Array Int) : Expr :=
   let nil  := mkConst ``Sat.Clause.nil
   let cons := mkConst ``Sat.Clause.cons
-  arr.foldr (fun i e ↦ mkApp2 cons (toExpr $ Sat.Literal.ofInt i) e) nil
+  arr.foldr (fun i e ↦ mkApp2 cons (toExpr <| Sat.Literal.ofInt i) e) nil
 
 /-- Constructs the formula expression from the input CNF, as a balanced tree of `Fmla.and` nodes. -/
 partial def buildConj (arr : Array (Array Int)) (start stop : Nat) : Expr :=
@@ -360,8 +360,8 @@ partial def buildProofStep (db : HashMap Nat Clause)
     for i in cl.lits do
       pr := mkApp pr <| mkBVar (match lctx.find? i with | some k => depth - k | _ => 0)
     let some u := unit | return Except.ok <| f pr
-    let lit := toExpr $ Sat.Literal.ofInt u
-    let nlit := toExpr $ Sat.Literal.ofInt (-u)
+    let lit := toExpr <| Sat.Literal.ofInt u
+    let nlit := toExpr <| Sat.Literal.ofInt (-u)
     let d1 := depth-1
     let app := mkApp3 (mkConst ``Sat.Valuation.by_cases) (v d1) nlit <|
       mkLambda `h default (mkApp2 (mkConst ``Sat.Valuation.neg) (v d1) lit) pr
@@ -496,7 +496,7 @@ def parseNat : Parsec Nat := Json.Parser.natMaybeZero
 
 /-- Parse an integer -/
 def parseInt : Parsec Int := do
-  if (← peek!) = '-' then skip; pure $ -(← parseNat) else parseNat
+  if (← peek!) = '-' then skip; pure <| -(← parseNat) else parseNat
 
 /-- Parse a list of integers terminated by 0 -/
 partial def parseInts (arr : Array Int := #[]) : Parsec (Array Int) := do
@@ -524,8 +524,8 @@ def parseDimacs : Parsec (Nat × Array (Array Int)) := do
 /-- Parse an LRAT file into a list of steps. -/
 def parseLRAT : Parsec (Array LRATStep) := many do
   let step ← parseNat <* ws
-  if (← peek!) = 'd' then skip <* ws; pure $ LRATStep.del (← parseNats)
-  else ws; pure $ LRATStep.add step (← parseInts) (← parseInts)
+  if (← peek!) = 'd' then skip <* ws; pure <| LRATStep.del (← parseNats)
+  else ws; pure <| LRATStep.add step (← parseInts) (← parseInts)
 
 end Parser
 
@@ -543,7 +543,7 @@ def fromLRATAux (cnf lrat : String) (name : Name) : MetaM (Nat × Expr × Expr �
   if arr.isEmpty then throwError "empty CNF"
   let ctx' := buildConj arr 0 arr.size
   let ctxName ← mkAuxName (name ++ `ctx) 1
-  addDecl $ Declaration.defnDecl {
+  addDecl <| Declaration.defnDecl {
     name := ctxName
     levelParams := []
     type        := mkConst ``Sat.Fmla
@@ -556,7 +556,7 @@ def fromLRATAux (cnf lrat : String) (name : Name) : MetaM (Nat × Expr × Expr �
     | throwError "parse LRAT failed"
   let proof ← buildProof arr ctx ctx' steps
   let declName ← mkAuxName (name ++ `proof) 1
-  addDecl $ Declaration.thmDecl {
+  addDecl <| Declaration.thmDecl {
     name := declName
     levelParams := []
     type        := mkApp2 (mkConst ``Sat.Fmla.proof) ctx (buildClause #[])
@@ -573,7 +573,7 @@ and `name.proof_1` (for the LRAT proof), with `name` itself containing the reifi
 def fromLRAT (cnf lrat : String) (name : Name) : MetaM Unit := do
   let (nvars, ctx, ctx', proof) ← fromLRATAux cnf lrat name
   let (type, value) := buildReify ctx ctx' proof nvars
-  addDecl $ Declaration.thmDecl { name, levelParams := [], type, value }
+  addDecl <| Declaration.thmDecl { name, levelParams := [], type, value }
 
 open Elab Term
 

@@ -7,6 +7,7 @@ import Mathlib.Algebra.Parity
 import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.GroupWithZero.Power
 import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Ring.Pow
 import Mathlib.Data.Int.Bitwise
 
 #align_import algebra.order.field.power from "leanprover-community/mathlib"@"acb3d204d4ee883eb686f45d486a2a6811a01329"
@@ -219,8 +220,7 @@ theorem zpow_bit0_abs (a : α) (p : ℤ) : |a| ^ bit0 p = a ^ bit0 p :=
   (even_bit0 _).zpow_abs _
 #align zpow_bit0_abs zpow_bit0_abs
 
-/-! ### Miscellaneous lemmmas -/
-
+/-! ### Bernoulli's inequality -/
 
 /-- Bernoulli's inequality reformulated to estimate `(n : α)`. -/
 theorem Nat.cast_le_pow_sub_div_sub (H : 1 < a) (n : ℕ) : (n : α) ≤ (a ^ n - 1) / (a - 1) :=
