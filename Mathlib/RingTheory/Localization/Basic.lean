@@ -786,9 +786,7 @@ noncomputable def atUnits (H : M ≤ IsUnit.submonoid R) : R ≃ₐ[R] S := by
 
 end at_units
 
-
 end IsLocalization
-
 
 section
 
