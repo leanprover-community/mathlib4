@@ -165,7 +165,7 @@ theorem isVonNBounded_of_smul_tendsto_zero {ε : ι → 𝕝} {l : Filter ι} [l
   by_contra' H'
   rcases H' with ⟨V, ⟨hV, hVb⟩, hVS⟩
   have : ∀ᶠ n in l, ∃ x : S, ε n • (x : E) ∉ V := by
-    filter_upwards [hε]with n hn
+    filter_upwards [hε] with n hn
     rw [Absorbs] at hVS
     push_neg at hVS
     rcases hVS _ (norm_pos_iff.mpr <| inv_ne_zero hn) with ⟨a, haε, haS⟩

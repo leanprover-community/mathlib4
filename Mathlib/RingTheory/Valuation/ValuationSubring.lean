@@ -400,6 +400,12 @@ def primeSpectrumOrderEquiv : (PrimeSpectrum A)ᵒᵈ ≃o {S | A ≤ S} :=
       fun h => by apply ofPrime_le_of_le; exact h⟩ }
 #align valuation_subring.prime_spectrum_order_equiv ValuationSubring.primeSpectrumOrderEquiv
 
+-- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] ValuationSubring.primeSpectrumEquiv_symm_apply_asIdeal
+  ValuationSubring.primeSpectrumEquiv_apply_coe
+  ValuationSubring.primeSpectrumOrderEquiv_apply
+  ValuationSubring.primeSpectrumOrderEquiv_symm_apply
+
 instance linearOrderOverring : LinearOrder {S | A ≤ S} :=
   { (inferInstance : PartialOrder _) with
     le_total :=
@@ -712,13 +718,15 @@ def principalUnitGroupEquiv :
   map_mul' x y := rfl
 #align valuation_subring.principal_unit_group_equiv ValuationSubring.principalUnitGroupEquiv
 
-@[simp]
+-- This was always a bad simp lemma, but the linter only noticed after lean4#2644
+@[simp, nolint simpNF]
 theorem principalUnitGroupEquiv_apply (a : A.principalUnitGroup) :
     (((principalUnitGroupEquiv A a : Aˣ) : A) : K) = (a : Kˣ) :=
   rfl
 #align valuation_subring.principal_unit_group_equiv_apply ValuationSubring.principalUnitGroupEquiv_apply
 
-@[simp]
+-- This was always a bad simp lemma, but the linter only noticed after lean4#2644
+@[simp, nolint simpNF]
 theorem principalUnitGroup_symm_apply (a : (Units.map (LocalRing.residue A).toMonoidHom).ker) :
     ((A.principalUnitGroupEquiv.symm a : Kˣ) : K) = ((a : Aˣ) : A) :=
   rfl
@@ -772,7 +780,8 @@ theorem unitsModPrincipalUnitsEquivResidueFieldUnits_comp_quotientGroup_mk :
       A.unitGroupToResidueFieldUnits := rfl
 #align valuation_subring.units_mod_principal_units_equiv_residue_field_units_comp_quotient_group_mk ValuationSubring.unitsModPrincipalUnitsEquivResidueFieldUnits_comp_quotientGroup_mk
 
-@[simp]
+-- This was always a bad simp lemma, but the linter only noticed after lean4#2644
+@[simp, nolint simpNF]
 theorem unitsModPrincipalUnitsEquivResidueFieldUnits_comp_quotientGroup_mk_apply
     (x : A.unitGroup) :
     A.unitsModPrincipalUnitsEquivResidueFieldUnits.toMonoidHom (QuotientGroup.mk x) =

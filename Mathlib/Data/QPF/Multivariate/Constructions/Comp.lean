@@ -40,15 +40,15 @@ variable {F G} {α β : TypeVec.{u} m} (f : α ⟹ β)
 instance [I : Inhabited (F fun i : Fin2 n ↦ G i α)] : Inhabited (Comp F G α) := I
 
 /-- Constructor for functor composition -/
-protected def mk (x : F fun i ↦ G i α) : (Comp F G) α := x
+protected def mk (x : F fun i ↦ G i α) : Comp F G α := x
 #align mvqpf.comp.mk MvQPF.Comp.mk
 
 /-- Destructor for functor composition -/
-protected def get (x : (Comp F G) α) : F fun i ↦ G i α := x
+protected def get (x : Comp F G α) : F fun i ↦ G i α := x
 #align mvqpf.comp.get MvQPF.Comp.get
 
 @[simp]
-protected theorem mk_get (x : (Comp F G) α) : Comp.mk (Comp.get x) = x := rfl
+protected theorem mk_get (x : Comp F G α) : Comp.mk (Comp.get x) = x := rfl
 #align mvqpf.comp.mk_get MvQPF.Comp.mk_get
 
 @[simp]

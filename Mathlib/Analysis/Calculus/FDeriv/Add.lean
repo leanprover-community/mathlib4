@@ -541,6 +541,12 @@ nonrec theorem HasFDerivAt.sub_const (hf : HasFDerivAt f f' x) (c : F) :
   hf.sub_const c
 #align has_fderiv_at.sub_const HasFDerivAt.sub_const
 
+theorem hasStrictFDerivAt_sub_const {x : F} (c : F) : HasStrictFDerivAt (· - c) (id 𝕜 F) x :=
+  (hasStrictFDerivAt_id x).sub_const c
+
+theorem hasFDerivAt_sub_const {x : F} (c : F) : HasFDerivAt (· - c) (id 𝕜 F) x :=
+  (hasFDerivAt_id x).sub_const c
+
 theorem DifferentiableWithinAt.sub_const (hf : DifferentiableWithinAt 𝕜 f s x) (c : F) :
     DifferentiableWithinAt 𝕜 (fun y => f y - c) s x :=
   (hf.hasFDerivWithinAt.sub_const c).differentiableWithinAt
@@ -663,4 +669,3 @@ theorem fderiv_const_sub (c : F) : fderiv 𝕜 (fun y => c - f y) x = -fderiv �
 end Sub
 
 end
-

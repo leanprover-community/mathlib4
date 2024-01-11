@@ -501,7 +501,7 @@ end NormalizeFiniteMeasure -- section
 
 section map
 
-variable {Ω Ω' : Type _} [MeasurableSpace Ω] [MeasurableSpace Ω']
+variable {Ω Ω' : Type*} [MeasurableSpace Ω] [MeasurableSpace Ω']
 
 namespace ProbabilityMeasure
 

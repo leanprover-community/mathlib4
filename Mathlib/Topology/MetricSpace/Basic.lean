@@ -2825,7 +2825,7 @@ theorem _root_.IsComplete.nonempty_iInter_of_nonempty_biInter {s : ℕ → Set �
     cauchySeq_tendsto_of_isComplete h0 (fun n => I 0 n (zero_le _)) this
   refine' ⟨x, mem_iInter.2 fun n => _⟩
   apply (hs n).mem_of_tendsto xlim
-  filter_upwards [Ici_mem_atTop n]with p hp
+  filter_upwards [Ici_mem_atTop n] with p hp
   exact I n p hp
 #align is_complete.nonempty_Inter_of_nonempty_bInter IsComplete.nonempty_iInter_of_nonempty_biInter
 

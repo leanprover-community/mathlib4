@@ -260,9 +260,11 @@ theorem exists_finset_rename₂ (p₁ p₂ : MvPolynomial σ R) :
     use rename (Set.inclusion <| s₁.subset_union_left s₂) q₁
     use rename (Set.inclusion <| s₁.subset_union_right s₂) q₂
     constructor -- porting note: was `<;> simp <;> rfl` but Lean couldn't infer the arguments
-    · rw [rename_rename (Set.inclusion <| s₁.subset_union_left s₂)]
+    · -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+      erw [rename_rename (Set.inclusion <| s₁.subset_union_left s₂)]
       rfl
-    · rw [rename_rename (Set.inclusion <| s₁.subset_union_right s₂)]
+    · -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+      erw [rename_rename (Set.inclusion <| s₁.subset_union_right s₂)]
       rfl
 #align mv_polynomial.exists_finset_rename₂ MvPolynomial.exists_finset_rename₂
 

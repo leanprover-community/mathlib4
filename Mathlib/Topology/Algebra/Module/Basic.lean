@@ -2087,6 +2087,19 @@ theorem prod_symm [Module R₁ M₂] [Module R₁ M₃] [Module R₁ M₄] (e : 
   rfl
 #align continuous_linear_equiv.prod_symm ContinuousLinearEquiv.prod_symm
 
+variable (R₁ M₁ M₂)
+
+/-- Product of modules is commutative up to continuous linear isomorphism. -/
+@[simps! apply toLinearEquiv]
+def prodComm [Module R₁ M₂] : (M₁ × M₂) ≃L[R₁] M₂ × M₁ :=
+  { LinearEquiv.prodComm R₁ M₁ M₂ with
+    continuous_toFun := continuous_swap
+    continuous_invFun := continuous_swap }
+
+@[simp] lemma prodComm_symm [Module R₁ M₂] : (prodComm R₁ M₁ M₂).symm = prodComm R₁ M₂ M₁ := rfl
+
+variable {R₁ M₁ M₂}
+
 protected theorem bijective (e : M₁ ≃SL[σ₁₂] M₂) : Function.Bijective e :=
   e.toLinearEquiv.toEquiv.bijective
 #align continuous_linear_equiv.bijective ContinuousLinearEquiv.bijective

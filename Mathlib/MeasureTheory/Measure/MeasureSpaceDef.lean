@@ -138,10 +138,11 @@ theorem ext (h : ∀ s, MeasurableSet s → μ₁ s = μ₂ s) : μ₁ = μ₂ :
 #align measure_theory.measure.ext MeasureTheory.Measure.ext
 
 theorem ext_iff : μ₁ = μ₂ ↔ ∀ s, MeasurableSet s → μ₁ s = μ₂ s :=
-  ⟨by
-    rintro rfl s _hs
-    rfl, Measure.ext⟩
+  ⟨by rintro rfl s _hs; rfl, Measure.ext⟩
 #align measure_theory.measure.ext_iff MeasureTheory.Measure.ext_iff
+
+theorem ext_iff' : μ₁ = μ₂ ↔ ∀ s, μ₁ s = μ₂ s :=
+  ⟨by rintro rfl s; rfl, fun h ↦ Measure.ext (fun s _ ↦ h s)⟩
 
 end Measure
 
@@ -260,7 +261,7 @@ theorem measure_iUnion_fintype_le [Fintype β] (f : β → Set α) : μ (⋃ b, 
 
 theorem measure_biUnion_lt_top {s : Set β} {f : β → Set α} (hs : s.Finite)
     (hfin : ∀ i ∈ s, μ (f i) ≠ ∞) : μ (⋃ i ∈ s, f i) < ∞ := by
-  convert(measure_biUnion_finset_le hs.toFinset f).trans_lt _ using 3
+  convert (measure_biUnion_finset_le hs.toFinset f).trans_lt _ using 3
   · ext
     rw [Finite.mem_toFinset]
   apply ENNReal.sum_lt_top; simpa only [Finite.mem_toFinset]

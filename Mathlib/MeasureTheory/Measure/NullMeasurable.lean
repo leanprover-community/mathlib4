@@ -508,6 +508,9 @@ theorem completion_apply {_ : MeasurableSpace α} (μ : Measure α) (s : Set α)
   rfl
 #align measure_theory.measure.completion_apply MeasureTheory.Measure.completion_apply
 
+@[simp]
+theorem ae_completion {_ : MeasurableSpace α} (μ : Measure α) : μ.completion.ae = μ.ae := rfl
+
 end Measure
 
 end IsComplete

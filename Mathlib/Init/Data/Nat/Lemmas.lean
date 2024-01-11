@@ -5,9 +5,7 @@ Authors: Leonardo de Moura, Jeremy Avigad
 -/
 import Std.Data.Nat.Lemmas
 import Mathlib.Init.Data.Nat.Basic
-import Mathlib.Init.Data.Nat.Div
 import Mathlib.Init.Order.LinearOrder
-import Mathlib.Tactic.Cases
 
 #align_import init.data.nat.lemmas from "leanprover-community/lean"@"38b59111b2b4e6c572582b27e8937e92fc70ac02"
 
@@ -104,9 +102,7 @@ theorem eq_zero_of_mul_eq_zero : ∀ {n m : ℕ}, n * m = 0 → n = 0 ∨ m = 0
 
 #align nat.le_total Nat.le_total
 
-protected theorem lt_of_le_and_ne {m n : ℕ} (h1 : m ≤ n) : m ≠ n → m < n :=
-  Or.resolve_right (Or.symm (Nat.eq_or_lt_of_le h1))
-#align nat.lt_of_le_and_ne Nat.lt_of_le_and_ne
+#align nat.lt_of_le_and_ne Nat.lt_of_le_of_ne
 
 #align nat.lt_iff_le_not_le Nat.lt_iff_le_not_le
 
@@ -371,9 +367,9 @@ end bit
 #align nat.exists_eq_succ_of_ne_zero Nat.exists_eq_succ_of_ne_zero
 
 def discriminate {B : Sort u} {n : ℕ} (H1 : n = 0 → B) (H2 : ∀ m, n = succ m → B) : B := by
-  induction' h : n
-  · exact H1 h
-  · exact H2 _ h
+  induction n with
+  | zero => exact H1 rfl
+  | succ n _ => apply H2 _ rfl
 #align nat.discriminate Nat.discriminate
 
 theorem one_eq_succ_zero : 1 = succ 0 :=
@@ -414,9 +410,7 @@ Many lemmas are proven more generally in mathlib `algebra/order/sub` -/
 
 #align nat.sub_self_add Nat.sub_self_add
 
-protected theorem le_sub_iff_right {x y k : ℕ} (h : k ≤ y) : x ≤ y - k ↔ x + k ≤ y := by
-  rw [← Nat.add_sub_cancel x k, Nat.sub_le_sub_iff_right h, Nat.add_sub_cancel]
-#align nat.le_sub_iff_right Nat.le_sub_iff_right
+#align nat.le_sub_iff_right Nat.le_sub_iff_add_le
 
 #align nat.sub_lt_of_pos_le Nat.sub_lt_of_pos_le
 
@@ -446,9 +440,7 @@ protected theorem le_sub_iff_right {x y k : ℕ} (h : k ≤ y) : x ≤ y - k ↔
 
 #align nat.succ_sub_sub_succ Nat.succ_sub_sub_succ
 
-protected theorem sub.right_comm (m n k : ℕ) : m - n - k = m - k - n := by
-  rw [Nat.sub_sub, Nat.sub_sub, Nat.add_comm]
-#align nat.sub.right_comm Nat.sub.right_comm
+#align nat.sub.right_comm Nat.sub_right_comm
 
 #align nat.succ_sub Nat.succ_sub
 
@@ -621,9 +613,7 @@ theorem cond_decide_mod_two (x : ℕ) [d : Decidable (x % 2 = 1)] :
 
 #align nat.div_div_eq_div_mul Nat.div_div_eq_div_mul
 
-protected theorem mul_div_mul {m : ℕ} (n k : ℕ) (H : 0 < m) : m * n / (m * k) = n / k := by
-  rw [← Nat.div_div_eq_div_mul, Nat.mul_div_cancel_left _ H]
-#align nat.mul_div_mul Nat.mul_div_mul
+#align nat.mul_div_mul Nat.mul_div_mul_left
 
 #align nat.div_lt_self Nat.div_lt_self
 
@@ -660,9 +650,7 @@ protected theorem mul_div_mul {m : ℕ} (n k : ℕ) (H : 0 < m) : m * n / (m * k
 
 #align nat.dvd_iff_mod_eq_zero Nat.dvd_iff_mod_eq_zero
 
-instance decidableDvd : @DecidableRel ℕ (· ∣ ·) := fun _m _n =>
-  decidable_of_decidable_of_iff (Nat.dvd_iff_mod_eq_zero _ _).symm
-#align nat.decidable_dvd Nat.decidableDvd
+#align nat.decidable_dvd Nat.decidable_dvd
 
 #align nat.mul_div_cancel' Nat.mul_div_cancel'ₓ
 
@@ -714,7 +702,7 @@ protected def findX : { n // p n ∧ ∀ m < n, ¬p m } :=
 /-- If `p` is a (decidable) predicate on `ℕ` and `hp : ∃ (n : ℕ), p n` is a proof that
 there exists some natural number satisfying `p`, then `Nat.find hp` is the
 smallest natural number satisfying `p`. Note that `Nat.find` is protected,
-meaning that you can't just write `find`, even if the `nat` namespace is open.
+meaning that you can't just write `find`, even if the `Nat` namespace is open.
 
 The API for `Nat.find` is:
 
@@ -737,6 +725,8 @@ protected theorem find_min : ∀ {m : ℕ}, m < Nat.find H → ¬p m :=
 protected theorem find_min' {m : ℕ} (h : p m) : Nat.find H ≤ m :=
   le_of_not_lt fun l => Nat.find_min H l h
 #align nat.find_min' Nat.find_min'
+
+end Find
 
 lemma to_digits_core_lens_eq_aux (b f : Nat) :
     ∀ (n : Nat) (l1 l2 : List Char), l1.length = l2.length →
@@ -811,7 +801,5 @@ lemma repr_length (n e : Nat) : 0 < e → n < 10 ^ e → (Nat.repr n).length <= 
     by_cases hterm : n.succ / 10 = 0
     case pos => simp only [hterm, Nat.toDigitsCore]; assumption
     case neg => exact to_digits_core_length 10 (by decide) (Nat.succ n + 1) (Nat.succ n) e he e0
-
-end Find
 
 end Nat

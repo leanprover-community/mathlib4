@@ -20,7 +20,7 @@ noncomputable section
 
 open Finset
 
-open BigOperators Classical Polynomial
+open BigOperators Polynomial
 
 namespace Polynomial
 
@@ -110,6 +110,7 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.monic_X_add_C Polynomial.monic_X_add_C
 
 theorem Monic.mul (hp : Monic p) (hq : Monic q) : Monic (p * q) :=
+  letI := Classical.decEq R
   if h0 : (0 : R) = 1 then
     haveI := subsingleton_of_zero_eq_one h0
     Subsingleton.elim _ _
@@ -325,6 +326,7 @@ open Function
 variable [Semiring S] {f : R →+* S} (hf : Injective f)
 
 theorem degree_map_eq_of_injective (p : R[X]) : degree (p.map f) = degree p :=
+  letI := Classical.decEq R
   if h : p = 0 then by simp [h]
   else
     degree_map_eq_of_leadingCoeff_ne_zero _

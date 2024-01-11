@@ -7,6 +7,7 @@ import Mathlib.Algebra.Hom.Ring.Defs
 import Mathlib.Algebra.Order.Kleene
 import Mathlib.Data.List.Join
 import Mathlib.Data.Set.Lattice
+import Mathlib.Tactic.DeriveFintype
 
 #align_import computability.language from "leanprover-community/mathlib"@"a239cd3e7ac2c7cde36c913808f9d40c411344f6"
 
@@ -297,3 +298,14 @@ instance : KleeneAlgebra (Language α) :=
       exact le_trans (le_mul_congr h le_rfl) ih }
 
 end Language
+
+/-- Symbols for use by all kinds of grammars. -/
+inductive Symbol (T N : Type*)
+  /-- Terminal symbols (of the same type as the language) -/
+  | terminal    (t : T) : Symbol T N
+  /-- Nonterminal symbols (must not be present at the end of word being generated) -/
+  | nonterminal (n : N) : Symbol T N
+deriving
+  DecidableEq, Repr, Fintype
+
+attribute [nolint docBlame] Symbol.proxyType Symbol.proxyTypeEquiv

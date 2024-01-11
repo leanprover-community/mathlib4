@@ -5,11 +5,11 @@ Authors: Scott Morrison
 -/
 import Std.Util.Pickle
 import Std.Data.MLList.Heartbeats
+import Std.Tactic.Relation.Rfl
 import Mathlib.Data.MLList.Dedup
 import Mathlib.Lean.Meta.DiscrTree
 import Mathlib.Tactic.Cache
 import Mathlib.Lean.Meta
-import Mathlib.Tactic.Relation.Rfl
 import Mathlib.Tactic.TryThis
 import Mathlib.Control.Basic
 
@@ -151,7 +151,7 @@ def RewriteResult.computeRfl (r : RewriteResult) : MetaM RewriteResult := do
   try
     withoutModifyingState <| withMCtx r.mctx do
       -- We use `withReducible` here to follow the behaviour of `rw`.
-      withReducible (← mkFreshExprMVar r.result.eNew).mvarId!.rfl
+      withReducible (← mkFreshExprMVar r.result.eNew).mvarId!.applyRfl
       -- We do not need to record the updated `MetavarContext` here.
       pure { r with rfl? := some true }
   catch _ =>

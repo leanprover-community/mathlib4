@@ -62,6 +62,11 @@ protected theorem aemeasurable {f : α → β} (hf : MeasurePreserving f μa μb
   hf.1.aemeasurable
 #align measure_theory.measure_preserving.ae_measurable MeasureTheory.MeasurePreserving.aemeasurable
 
+@[nontriviality]
+theorem of_isEmpty [IsEmpty β] (f : α → β) (μa : Measure α) (μb : Measure β) :
+    MeasurePreserving f μa μb :=
+  ⟨measurable_of_subsingleton_codomain _, Subsingleton.elim _ _⟩
+
 theorem symm (e : α ≃ᵐ β) {μa : Measure α} {μb : Measure β} (h : MeasurePreserving e μa μb) :
     MeasurePreserving e.symm μb μa :=
   ⟨e.symm.measurable, by

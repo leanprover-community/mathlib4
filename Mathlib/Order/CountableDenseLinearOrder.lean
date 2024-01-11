@@ -210,8 +210,8 @@ theorem embedding_from_countable_to_dense [Encodable α] [DenselyOrdered β] [No
   refine
     ⟨RelEmbedding.trans (OrderEmbedding.ofStrictMono (fun a ↦ (F a).val) fun a₁ a₂ ↦ ?_)
         (OrderEmbedding.subtype _)⟩
-  rcases(F a₁).prop with ⟨f, hf, ha₁⟩
-  rcases(F a₂).prop with ⟨g, hg, ha₂⟩
+  rcases (F a₁).prop with ⟨f, hf, ha₁⟩
+  rcases (F a₂).prop with ⟨g, hg, ha₂⟩
   rcases our_ideal.directed _ hf _ hg with ⟨m, _hm, fm, gm⟩
   exact (lt_iff_lt_of_cmp_eq_cmp <| m.prop (a₁, _) (fm ha₁) (a₂, _) (gm ha₂)).mp
 #align order.embedding_from_countable_to_dense Order.embedding_from_countable_to_dense
@@ -226,8 +226,8 @@ theorem iso_of_countable_dense [Encodable α] [DenselyOrdered α] [NoMinOrder α
   let F a := funOfIdeal a our_ideal (cofinal_meets_idealOfCofinals _ to_cofinal (Sum.inl a))
   let G b := invOfIdeal b our_ideal (cofinal_meets_idealOfCofinals _ to_cofinal (Sum.inr b))
   ⟨OrderIso.ofCmpEqCmp (fun a ↦ (F a).val) (fun b ↦ (G b).val) fun a b ↦ by
-      rcases(F a).prop with ⟨f, hf, ha⟩
-      rcases(G b).prop with ⟨g, hg, hb⟩
+      rcases (F a).prop with ⟨f, hf, ha⟩
+      rcases (G b).prop with ⟨g, hg, hb⟩
       rcases our_ideal.directed _ hf _ hg with ⟨m, _, fm, gm⟩
       exact m.prop (a, _) (fm ha) (_, b) (gm hb)⟩
 #align order.iso_of_countable_dense Order.iso_of_countable_dense

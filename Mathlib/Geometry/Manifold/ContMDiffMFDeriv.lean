@@ -328,6 +328,7 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin_aux {f : H → H'} {s : Set H}
     refine C.congr fun p hp => ?_
     simp only [mfld_simps] at hp
     simp only [mfderivWithin, hf.mdifferentiableOn one_le_n _ hp.2, hp.1, if_pos, mfld_simps]
+    rfl
   have D :
     ContDiffOn 𝕜 m (fun x => fderivWithin 𝕜 (I' ∘ f ∘ I.symm) (I.symm ⁻¹' s ∩ range I) x)
       (range I ∩ I.symm ⁻¹' s) := by

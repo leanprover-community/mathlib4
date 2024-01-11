@@ -723,7 +723,7 @@ protected theorem traverse_eq_map_id {α β} (f : α → β) :
 
 variable (η : ApplicativeTransformation F G)
 
-protected theorem naturality {α β : Type _} (f : α → F β) (x : Vector α n) :
+protected theorem naturality {α β : Type u} (f : α → F β) (x : Vector α n) :
     η (x.traverse f) = x.traverse (@η _ ∘ f) := by
   induction' x using Vector.inductionOn with n x xs ih
   · simp! [functor_norm, cast, η.preserves_pure]

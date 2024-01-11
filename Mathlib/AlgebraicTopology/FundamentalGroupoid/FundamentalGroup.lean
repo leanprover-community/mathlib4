@@ -5,7 +5,7 @@ Authors: Mark Lavrentyev
 -/
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.Topology.Category.TopCat.Basic
-import Mathlib.Topology.PathConnected
+import Mathlib.Topology.Connected.PathConnected
 import Mathlib.Topology.Homotopy.Path
 import Mathlib.AlgebraicTopology.FundamentalGroupoid.Basic
 

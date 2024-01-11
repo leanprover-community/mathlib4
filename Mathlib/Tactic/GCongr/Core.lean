@@ -356,7 +356,7 @@ open Elab Tactic
   eval h goal := do
     let m ← mkFreshExprMVar none
     goal.assignIfDefeq (← mkAppOptM ``Eq.subst #[h, m])
-    goal.rfl
+    goal.applyRfl
 
 /-- See if the term is `a < b` and the goal is `a ≤ b`. -/
 @[gcongr_forward] def exactLeOfLt : ForwardExt where
@@ -364,7 +364,7 @@ open Elab Tactic
 
 /-- See if the term is `a ∼ b` with `∼` symmetric and the goal is `b ∼ a`. -/
 @[gcongr_forward] def symmExact : ForwardExt where
-  eval h goal := do (← goal.symm).assignIfDefeq h
+  eval h goal := do (← goal.applySymm).assignIfDefeq h
 
 @[gcongr_forward] def exact : ForwardExt where
   eval e m := m.assignIfDefeq e

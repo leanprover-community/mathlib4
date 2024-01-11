@@ -509,7 +509,7 @@ end NormedField
 
 section UniformAddGroup
 
-variable (𝕜 E : Type _) [NontriviallyNormedField 𝕜]
+variable (𝕜 E : Type*) [NontriviallyNormedField 𝕜]
   [CompleteSpace 𝕜] [AddCommGroup E] [UniformSpace E] [T2Space E] [UniformAddGroup E]
   [Module 𝕜 E] [ContinuousSMul 𝕜 E] [FiniteDimensional 𝕜 E]
 
@@ -530,7 +530,7 @@ theorem Submodule.complete_of_finiteDimensional (s : Submodule 𝕜 E) [FiniteDi
 
 end UniformAddGroup
 
-variable {𝕜 E F : Type _} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
+variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
    [AddCommGroup E] [TopologicalSpace E] [T2Space E] [TopologicalAddGroup E] [Module 𝕜 E]
    [ContinuousSMul 𝕜 E]
    [AddCommGroup F] [TopologicalSpace F] [T2Space F] [TopologicalAddGroup F] [Module 𝕜 F]

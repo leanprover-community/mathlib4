@@ -363,9 +363,11 @@ theorem equiv_fst_eq_iff_leftCosetEquivalence {g₁ g₂ : G} :
     exact Subtype.property _
   · intro h
     apply (mem_leftTransversals_iff_existsUnique_inv_mul_mem.1 hSK g₁).unique
-    · simp [equiv_fst_eq_mul_inv]
+    · -- This used to be `simp [...]` before leanprover/lean4#2644
+      rw [equiv_fst_eq_mul_inv]; simp
     · rw [SetLike.mem_coe, ← mul_mem_cancel_right h]
-      simp [equiv_fst_eq_mul_inv, ← mul_assoc]
+      -- This used to be `simp [...]` before leanprover/lean4#2644
+      rw [equiv_fst_eq_mul_inv]; simp [equiv_fst_eq_mul_inv, ← mul_assoc]
 
 theorem equiv_snd_eq_iff_rightCosetEquivalence {g₁ g₂ : G} :
     (hHT.equiv g₁).snd = (hHT.equiv g₂).snd ↔ RightCosetEquivalence H g₁ g₂ := by
@@ -377,17 +379,21 @@ theorem equiv_snd_eq_iff_rightCosetEquivalence {g₁ g₂ : G} :
     exact Subtype.property _
   · intro h
     apply (mem_rightTransversals_iff_existsUnique_mul_inv_mem.1 hHT g₁).unique
-    · simp [equiv_snd_eq_inv_mul]
+    · -- This used to be `simp [...]` before leanprover/lean4#2644
+      rw [equiv_snd_eq_inv_mul]; simp
     · rw [SetLike.mem_coe, ← mul_mem_cancel_left h]
-      simp [equiv_snd_eq_inv_mul, mul_assoc]
+      -- This used to be `simp [...]` before leanprover/lean4#2644
+      rw [equiv_snd_eq_inv_mul, mul_assoc]; simp
 
 theorem leftCosetEquivalence_equiv_fst (g : G) :
     LeftCosetEquivalence K g ((hSK.equiv g).fst : G) := by
-  simp [LeftCosetEquivalence, leftCoset_eq_iff, equiv_fst_eq_mul_inv]
+  -- This used to be `simp [...]` before leanprover/lean4#2644
+  rw [equiv_fst_eq_mul_inv]; simp [LeftCosetEquivalence, leftCoset_eq_iff]
 
 theorem rightCosetEquivalence_equiv_snd (g : G) :
     RightCosetEquivalence H g ((hHT.equiv g).snd : G) := by
-  simp [RightCosetEquivalence, rightCoset_eq_iff, equiv_snd_eq_inv_mul]
+  -- This used to be `simp [...]` before leanprover/lean4#2644
+  rw [RightCosetEquivalence, rightCoset_eq_iff, equiv_snd_eq_inv_mul]; simp
 
 theorem equiv_fst_eq_self_of_mem_of_one_mem {g : G} (h1 : 1 ∈ T) (hg : g ∈ S) :
     (hST.equiv g).fst = ⟨g, hg⟩ := by
@@ -411,7 +417,8 @@ theorem equiv_fst_eq_one_of_mem_of_one_mem {g : G} (h1 : 1 ∈ S) (hg : g ∈ T)
   ext
   rw [equiv_fst_eq_mul_inv, equiv_snd_eq_self_of_mem_of_one_mem _ h1 hg, mul_inv_self]
 
-@[simp]
+-- This lemma has always been bad, but the linter only noticed after lean4#2644.
+@[simp, nolint simpNF]
 theorem equiv_mul_right (g : G) (k : K) :
     hSK.equiv (g * k) = ((hSK.equiv g).fst, (hSK.equiv g).snd * k) := by
   have : (hSK.equiv (g * k)).fst = (hSK.equiv g).fst :=
@@ -425,7 +432,8 @@ theorem equiv_mul_right_of_mem {g k : G} (h : k ∈ K) :
     hSK.equiv (g * k) = ((hSK.equiv g).fst, (hSK.equiv g).snd * ⟨k, h⟩) :=
   equiv_mul_right _ g ⟨k, h⟩
 
-@[simp]
+-- This lemma has always been bad, but the linter only noticed after lean4#2644.
+@[simp, nolint simpNF]
 theorem equiv_mul_left (h : H) (g : G) :
     hHT.equiv (h * g) = (h * (hHT.equiv g).fst, (hHT.equiv g).snd) := by
   have : (hHT.equiv (h * g)).snd = (hHT.equiv g).snd :=

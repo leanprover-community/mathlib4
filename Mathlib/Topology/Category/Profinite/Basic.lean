@@ -4,10 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Calle Sönne
 -/
 import Mathlib.Topology.Category.CompHaus.Basic
-import Mathlib.Topology.Connected
 import Mathlib.Topology.LocallyConstant.Basic
-import Mathlib.CategoryTheory.Adjunction.Reflective
-import Mathlib.CategoryTheory.Monad.Limits
 import Mathlib.CategoryTheory.FintypeCat
 
 #align_import topology.category.Profinite.basic from "leanprover-community/mathlib"@"bcfa726826abd57587355b4b5b7e78ad6527b7e4"
@@ -383,30 +380,35 @@ theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Funct
         ext x
         apply ULift.ext
         dsimp [LocallyConstant.ofClopen]
-        rw [comp_apply, ContinuousMap.coe_mk, comp_apply, ContinuousMap.coe_mk,
+        -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+        erw [comp_apply, ContinuousMap.coe_mk, comp_apply, ContinuousMap.coe_mk,
           Function.comp_apply, if_neg]
         refine' mt (fun α => hVU α) _
         simp only [Set.mem_range_self, not_true, not_false_iff, Set.mem_compl_iff]
       apply_fun fun e => (e y).down at H
       dsimp [LocallyConstant.ofClopen] at H
-      rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, Function.comp_apply, if_pos hyV] at H
+      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+      erw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, Function.comp_apply, if_pos hyV] at H
       exact top_ne_bot H
   · rw [← CategoryTheory.epi_iff_surjective]
     apply (forget Profinite).epi_of_epi_map
 #align Profinite.epi_iff_surjective Profinite.epi_iff_surjective
 
 instance {X Y : Profinite} (f : X ⟶ Y) [Epi f] : @Epi CompHaus _ _ _ f := by
-  rwa [CompHaus.epi_iff_surjective, ← epi_iff_surjective]
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  erw [CompHaus.epi_iff_surjective, ← epi_iff_surjective]; assumption
 
 instance {X Y : Profinite} (f : X ⟶ Y) [@Epi CompHaus _ _ _ f] : Epi f := by
-  rwa [epi_iff_surjective, ← CompHaus.epi_iff_surjective]
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  erw [epi_iff_surjective, ← CompHaus.epi_iff_surjective]; assumption
 
 theorem mono_iff_injective {X Y : Profinite.{u}} (f : X ⟶ Y) : Mono f ↔ Function.Injective f := by
   constructor
   · intro h
     haveI : Limits.PreservesLimits profiniteToCompHaus := inferInstance
     haveI : Mono (profiniteToCompHaus.map f) := inferInstance
-    rw [← CompHaus.mono_iff_injective]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [← CompHaus.mono_iff_injective]
     assumption
   · rw [← CategoryTheory.mono_iff_injective]
     apply (forget Profinite).mono_of_mono_map

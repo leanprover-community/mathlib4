@@ -558,7 +558,7 @@ theorem Tendsto.isCompact_insert_range_of_cocompact {f : α → β} {b}
   rcases hb with ⟨s, hsb, t, htl, hd⟩
   rcases mem_cocompact.1 (hf hsb) with ⟨K, hKc, hKs⟩
   have : f '' K ∈ l := by
-    filter_upwards [htl, le_principal_iff.1 hle]with y hyt hyf
+    filter_upwards [htl, le_principal_iff.1 hle] with y hyt hyf
     rcases hyf with (rfl | ⟨x, rfl⟩)
     exacts [(hd.le_bot ⟨mem_of_mem_nhds hsb, hyt⟩).elim,
       mem_image_of_mem _ (not_not.1 fun hxK => hd.le_bot ⟨hKs hxK, hyt⟩)]
@@ -841,29 +841,27 @@ theorem exists_subset_nhds_of_compactSpace [CompactSpace α] {ι : Type*} [Nonem
   exists_subset_nhds_of_isCompact' hV (fun i => (hV_closed i).isCompact) hV_closed hU
 #align exists_subset_nhds_of_compact_space exists_subset_nhds_of_compactSpace
 
-/-- If `f : α → β` is an `Inducing` map,
-the image `f '' s` of a set `s` is compact if and only if `s` is compact. -/
+/-- If `f : α → β` is an `Inducing` map, the image `f '' s` of a set `s` is compact
+  if and only if `s` is compact. -/
 theorem Inducing.isCompact_iff {f : α → β} (hf : Inducing f) {s : Set α} :
-    IsCompact (f '' s) ↔ IsCompact s := by
-  refine ⟨fun hs F F_ne_bot F_le => ?_, fun hs => hs.image hf.continuous⟩
+    IsCompact s ↔ IsCompact (f '' s) := by
+  refine ⟨fun hs => hs.image hf.continuous, fun hs F F_ne_bot F_le => ?_⟩
   obtain ⟨_, ⟨x, x_in : x ∈ s, rfl⟩, hx : ClusterPt (f x) (map f F)⟩ :=
     hs ((map_mono F_le).trans_eq map_principal)
   exact ⟨x, x_in, hf.mapClusterPt_iff.1 hx⟩
 #align inducing.is_compact_iff Inducing.isCompact_iff
 
-/-- If `f : α → β` is an `Embedding` (or more generally, an `Inducing` map, see
-`Inducing.isCompact_iff`), the image `f '' s` of a set `s` is compact if and only if the set
-`s` is compact. -/
-theorem Embedding.isCompact_iff_isCompact_image {f : α → β} (hf : Embedding f) :
-    IsCompact s ↔ IsCompact (f '' s) :=
-  hf.toInducing.isCompact_iff.symm
-#align embedding.is_compact_iff_is_compact_image Embedding.isCompact_iff_isCompact_image
+/-- If `f : α → β` is an `Embedding`, the image `f '' s` of a set `s` is compact
+  if and only if `s` is compact. -/
+theorem Embedding.isCompact_iff {f : α → β} (hf : Embedding f) :
+    IsCompact s ↔ IsCompact (f '' s) := hf.toInducing.isCompact_iff
+#align embedding.is_compact_iff_is_compact_image Embedding.isCompact_iff
 
 /-- The preimage of a compact set under an inducing map is a compact set. -/
 theorem Inducing.isCompact_preimage {f : α → β} (hf : Inducing f) (hf' : IsClosed (range f))
     {K : Set β} (hK : IsCompact K) : IsCompact (f ⁻¹' K) := by
   replace hK := hK.inter_right hf'
-  rwa [← hf.isCompact_iff, image_preimage_eq_inter_range]
+  rwa [hf.isCompact_iff, image_preimage_eq_inter_range]
 
 /-- The preimage of a compact set under a closed embedding is a compact set. -/
 theorem ClosedEmbedding.isCompact_preimage {f : α → β} (hf : ClosedEmbedding f)
@@ -879,13 +877,14 @@ theorem ClosedEmbedding.tendsto_cocompact {f : α → β} (hf : ClosedEmbedding 
     (hf.isCompact_preimage hK).compl_mem_cocompact
 #align closed_embedding.tendsto_cocompact ClosedEmbedding.tendsto_cocompact
 
-theorem isCompact_iff_isCompact_in_subtype {p : α → Prop} {s : Set { a // p a }} :
-    IsCompact s ↔ IsCompact (((↑) : _ → α) '' s) :=
-  embedding_subtype_val.isCompact_iff_isCompact_image
-#align is_compact_iff_is_compact_in_subtype isCompact_iff_isCompact_in_subtype
+/-- Sets of subtype are compact iff the image under a coercion is. -/
+theorem Subtype.isCompact_iff {p : α → Prop} {s : Set { a // p a }} :
+    IsCompact s ↔ IsCompact ((↑) '' s : Set α) :=
+  embedding_subtype_val.isCompact_iff
+#align is_compact_iff_is_compact_in_subtype Subtype.isCompact_iff
 
 theorem isCompact_iff_isCompact_univ {s : Set α} : IsCompact s ↔ IsCompact (univ : Set s) := by
-  rw [isCompact_iff_isCompact_in_subtype, image_univ, Subtype.range_coe]
+  rw [Subtype.isCompact_iff, image_univ, Subtype.range_coe]
 #align is_compact_iff_is_compact_univ isCompact_iff_isCompact_univ
 
 theorem isCompact_iff_compactSpace {s : Set α} : IsCompact s ↔ CompactSpace s :=
@@ -910,7 +909,7 @@ protected theorem ClosedEmbedding.noncompactSpace [NoncompactSpace α] {f : α �
 
 protected theorem ClosedEmbedding.compactSpace [h : CompactSpace β] {f : α → β}
     (hf : ClosedEmbedding f) : CompactSpace α :=
-  ⟨by rw [← hf.toInducing.isCompact_iff, image_univ]; exact hf.closed_range.isCompact⟩
+  ⟨by rw [hf.toInducing.isCompact_iff, image_univ]; exact hf.closed_range.isCompact⟩
 #align closed_embedding.compact_space ClosedEmbedding.compactSpace
 
 theorem IsCompact.prod {s : Set α} {t : Set β} (hs : IsCompact s) (ht : IsCompact t) :

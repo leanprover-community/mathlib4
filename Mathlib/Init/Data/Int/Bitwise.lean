@@ -47,7 +47,7 @@ def testBit : ℤ → ℕ → Bool
 
 /-- `Int.natBitwise` is an auxiliary definition for `Int.bitwise`. -/
 def natBitwise (f : Bool → Bool → Bool) (m n : ℕ) : ℤ :=
-  cond (f false false) -[ Nat.bitwise' (fun x y => not (f x y)) m n +1] (Nat.bitwise' f m n)
+  cond (f false false) -[ Nat.bitwise (fun x y => not (f x y)) m n +1] (Nat.bitwise f m n)
 #align int.nat_bitwise Int.natBitwise
 
 /-- `Int.bitwise` applies the function `f` to pairs of bits in the same position in
@@ -67,39 +67,39 @@ def lnot : ℤ → ℤ
 
 /--`lor` takes two integers and returns their bitwise `or`-/
 def lor : ℤ → ℤ → ℤ
-  | (m : ℕ), (n : ℕ) => Nat.lor' m n
-  | (m : ℕ), -[n +1] => -[Nat.ldiff' n m +1]
-  | -[m +1], (n : ℕ) => -[Nat.ldiff' m n +1]
-  | -[m +1], -[n +1] => -[Nat.land' m n +1]
+  | (m : ℕ), (n : ℕ) => m ||| n
+  | (m : ℕ), -[n +1] => -[Nat.ldiff n m +1]
+  | -[m +1], (n : ℕ) => -[Nat.ldiff m n +1]
+  | -[m +1], -[n +1] => -[m &&& n +1]
 #align int.lor Int.lor
 
 /--`land` takes two integers and returns their bitwise `and`-/
 def land : ℤ → ℤ → ℤ
-  | (m : ℕ), (n : ℕ) => Nat.land' m n
-  | (m : ℕ), -[n +1] => Nat.ldiff' m n
-  | -[m +1], (n : ℕ) => Nat.ldiff' n m
-  | -[m +1], -[n +1] => -[Nat.lor' m n +1]
+  | (m : ℕ), (n : ℕ) => m &&& n
+  | (m : ℕ), -[n +1] => Nat.ldiff m n
+  | -[m +1], (n : ℕ) => Nat.ldiff n m
+  | -[m +1], -[n +1] => -[m ||| n +1]
 #align int.land Int.land
 
--- Porting note: I don't know why `Nat.ldiff'` got the prime, but I'm matching this change here
-/--`ldiff' a b` performs bitwise set difference. For each corresponding
+-- Porting note: I don't know why `Nat.ldiff` got the prime, but I'm matching this change here
+/--`ldiff a b` performs bitwise set difference. For each corresponding
   pair of bits taken as booleans, say `aᵢ` and `bᵢ`, it applies the
   boolean operation `aᵢ ∧ bᵢ` to obtain the `iᵗʰ` bit of the result.-/
-def ldiff' : ℤ → ℤ → ℤ
-  | (m : ℕ), (n : ℕ) => Nat.ldiff' m n
-  | (m : ℕ), -[n +1] => Nat.land' m n
-  | -[m +1], (n : ℕ) => -[Nat.lor' m n +1]
-  | -[m +1], -[n +1] => Nat.ldiff' n m
-#align int.ldiff Int.ldiff'
+def ldiff : ℤ → ℤ → ℤ
+  | (m : ℕ), (n : ℕ) => Nat.ldiff m n
+  | (m : ℕ), -[n +1] => m &&& n
+  | -[m +1], (n : ℕ) => -[m ||| n +1]
+  | -[m +1], -[n +1] => Nat.ldiff n m
+#align int.ldiff Int.ldiff
 
 -- Porting note: I don't know why `Nat.xor'` got the prime, but I'm matching this change here
-/--`lxor'` computes the bitwise `xor` of two natural numbers-/
-def lxor' : ℤ → ℤ → ℤ
-  | (m : ℕ), (n : ℕ) => Nat.lxor' m n
-  | (m : ℕ), -[n +1] => -[Nat.lxor' m n +1]
-  | -[m +1], (n : ℕ) => -[Nat.lxor' m n +1]
-  | -[m +1], -[n +1] => Nat.lxor' m n
-#align int.lxor Int.lxor'
+/--`xor` computes the bitwise `xor` of two natural numbers-/
+def xor : ℤ → ℤ → ℤ
+  | (m : ℕ), (n : ℕ) => (m ^^^ n)
+  | (m : ℕ), -[n +1] => -[(m ^^^ n) +1]
+  | -[m +1], (n : ℕ) => -[(m ^^^ n) +1]
+  | -[m +1], -[n +1] => (m ^^^ n)
+#align int.lxor Int.xor
 
 /-- `m <<< n` produces an integer whose binary representation
   is obtained by left-shifting the binary representation of `m` by `n` places -/

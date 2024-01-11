@@ -131,6 +131,10 @@ def inclusion {X : TopCat.{u}} (U : Opens X) : (toTopCat X).obj U ⟶ X where
   continuous_toFun := continuous_subtype_val
 #align topological_space.opens.inclusion TopologicalSpace.Opens.inclusion
 
+@[simp]
+theorem coe_inclusion {X : TopCat} {U : Opens X} :
+    (inclusion U : U → X) = Subtype.val := rfl
+
 theorem openEmbedding {X : TopCat.{u}} (U : Opens X) : OpenEmbedding (inclusion U) :=
   IsOpen.openEmbedding_subtype_val U.2
 #align topological_space.opens.open_embedding TopologicalSpace.Opens.openEmbedding
@@ -149,6 +153,7 @@ def map (f : X ⟶ Y) : Opens Y ⥤ Opens X where
   map i := ⟨⟨fun x h => i.le h⟩⟩
 #align topological_space.opens.map TopologicalSpace.Opens.map
 
+@[simp]
 theorem map_coe (f : X ⟶ Y) (U : Opens Y) : ((map f).obj U : Set X) = f ⁻¹' (U : Set Y) :=
   rfl
 #align topological_space.opens.map_coe TopologicalSpace.Opens.map_coe
@@ -218,7 +223,7 @@ theorem op_map_comp_obj (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
 theorem map_iSup (f : X ⟶ Y) {ι : Type*} (U : ι → Opens Y) :
     (map f).obj (iSup U) = iSup ((map f).obj ∘ U) := by
   ext1; rw [iSup_def, iSup_def, map_obj]
-  dsimp; rw [Set.preimage_iUnion]; rfl
+  dsimp; rw [Set.preimage_iUnion]
 #align topological_space.opens.map_supr TopologicalSpace.Opens.map_iSup
 
 section

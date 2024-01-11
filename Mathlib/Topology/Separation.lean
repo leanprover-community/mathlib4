@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Topology.Compactness.SigmaCompact
-import Mathlib.Topology.Connected
-import Mathlib.Topology.NhdsSet
+import Mathlib.Topology.Connected.LocallyConnected
+import Mathlib.Topology.Connected.TotallyDisconnected
 import Mathlib.Topology.Inseparable
 
 #align_import topology.separation from "leanprover-community/mathlib"@"d91e7f7a7f1c7e9f0e18fdb6bde4f652004c735d"
@@ -1530,7 +1530,7 @@ theorem regularSpace_TFAE (X : Type u) [ TopologicalSpace X ] :
   tfae_have 6 → 4
   · intro H a s hs
     rw [← H] at hs
-    rcases(𝓝 a).basis_sets.lift'_closure.mem_iff.mp hs with ⟨U, hU, hUs⟩
+    rcases (𝓝 a).basis_sets.lift'_closure.mem_iff.mp hs with ⟨U, hU, hUs⟩
     exact ⟨closure U, mem_of_superset hU subset_closure, isClosed_closure, hUs⟩
   tfae_have 4 → 2
   · intro H s a ha

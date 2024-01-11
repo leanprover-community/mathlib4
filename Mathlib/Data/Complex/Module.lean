@@ -458,12 +458,12 @@ set_option linter.uppercaseLean3 false in
 #align imaginary_part_I_smul imaginaryPart_I_smul
 
 theorem realPart_smul (z : ℂ) (a : A) : ℜ (z • a) = z.re • ℜ a - z.im • ℑ a := by
-  have := by congrm(ℜ ($((re_add_im z).symm) • a))
+  have := by congrm (ℜ ($((re_add_im z).symm) • a))
   simpa [-re_add_im, add_smul, ← smul_smul, sub_eq_add_neg]
 #align real_part_smul realPart_smul
 
 theorem imaginaryPart_smul (z : ℂ) (a : A) : ℑ (z • a) = z.re • ℑ a + z.im • ℜ a := by
-  have := by congrm(ℑ ($((re_add_im z).symm) • a))
+  have := by congrm (ℑ ($((re_add_im z).symm) • a))
   simpa [-re_add_im, add_smul, ← smul_smul]
 #align imaginary_part_smul imaginaryPart_smul
 
@@ -548,7 +548,7 @@ lemma imaginaryPart_ofReal (r : ℝ) : ℑ (r : ℂ) = 0 := by
   ext1; simp [imaginaryPart_apply_coe, conj_ofReal]
 
 lemma Complex.coe_realPart (z : ℂ) : (ℜ z : ℂ) = z.re := calc
-  (ℜ z : ℂ) = _    := by congrm(ℜ $((re_add_im z).symm))
+  (ℜ z : ℂ) = _    := by congrm (ℜ $((re_add_im z).symm))
   _          = z.re := by
     rw [map_add, AddSubmonoid.coe_add, mul_comm, ←smul_eq_mul, realPart_I_smul]
     simp [conj_ofReal, ←two_mul]

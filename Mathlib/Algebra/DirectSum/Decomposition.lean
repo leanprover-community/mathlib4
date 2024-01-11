@@ -234,16 +234,37 @@ variable [Decomposition ℳ]
 
 /-- If `M` is graded by `ι` with degree `i` component `ℳ i`, then it is isomorphic as
 a module to a direct sum of components. -/
-@[simps! (config := { fullyApplied := false })]
 def decomposeLinearEquiv : M ≃ₗ[R] ⨁ i, ℳ i :=
   LinearEquiv.symm
     { (decomposeAddEquiv ℳ).symm with map_smul' := map_smul (DirectSum.coeLinearMap ℳ) }
 #align direct_sum.decompose_linear_equiv DirectSum.decomposeLinearEquiv
 
+@[simp] theorem decomposeLinearEquiv_apply (m : M) :
+    decomposeLinearEquiv ℳ m = decompose ℳ m := rfl
+
+@[simp] theorem decomposeLinearEquiv_symm_apply (m : ⨁ i, ℳ i) :
+    (decomposeLinearEquiv ℳ).symm m = (decompose ℳ).symm m := rfl
+
 @[simp]
 theorem decompose_smul (r : R) (x : M) : decompose ℳ (r • x) = r • decompose ℳ x :=
   map_smul (decomposeLinearEquiv ℳ) r x
 #align direct_sum.decompose_smul DirectSum.decompose_smul
+
+@[simp] theorem decomposeLinearEquiv_symm_comp_lof (i : ι) :
+    (decomposeLinearEquiv ℳ).symm ∘ₗ lof R ι (ℳ ·) i = (ℳ i).subtype :=
+  LinearMap.ext <| decompose_symm_of _
+
+/-- Two linear maps from a module with a decomposition agree if they agree on every piece.
+
+Note this cannot be `@[ext]` as `ℳ` cannot be inferred. -/
+theorem decompose_lhom_ext {N} [AddCommMonoid N] [Module R N] ⦃f g : M →ₗ[R] N⦄
+    (h : ∀ i, f ∘ₗ (ℳ i).subtype = g ∘ₗ (ℳ i).subtype) : f = g :=
+  LinearMap.ext <| (decomposeLinearEquiv ℳ).symm.surjective.forall.mpr <|
+    suffices f ∘ₗ (decomposeLinearEquiv ℳ).symm
+           = (g ∘ₗ (decomposeLinearEquiv ℳ).symm : (⨁ i, ℳ i) →ₗ[R] N) from
+      FunLike.congr_fun this
+    linearMap_ext _ fun i => by
+      simp_rw [LinearMap.comp_assoc, decomposeLinearEquiv_symm_comp_lof ℳ i, h]
 
 end Module
 

@@ -151,11 +151,11 @@ theorem Filter.Tendsto.cesaro_smul {E : Type*} [NormedAddCommGroup E] [NormedSpa
   rw [← tendsto_sub_nhds_zero_iff, ← isLittleO_one_iff ℝ]
   have := Asymptotics.isLittleO_sum_range_of_tendsto_zero (tendsto_sub_nhds_zero_iff.2 h)
   apply ((isBigO_refl (fun n : ℕ => (n : ℝ)⁻¹) atTop).smul_isLittleO this).congr' _ _
-  · filter_upwards [Ici_mem_atTop 1]with n npos
+  · filter_upwards [Ici_mem_atTop 1] with n npos
     have nposℝ : (0 : ℝ) < n := Nat.cast_pos.2 npos
     simp only [smul_sub, sum_sub_distrib, sum_const, card_range, sub_right_inj]
     rw [nsmul_eq_smul_cast ℝ, smul_smul, inv_mul_cancel nposℝ.ne', one_smul]
-  · filter_upwards [Ici_mem_atTop 1]with n npos
+  · filter_upwards [Ici_mem_atTop 1] with n npos
     have nposℝ : (0 : ℝ) < n := Nat.cast_pos.2 npos
     rw [Algebra.id.smul_eq_mul, inv_mul_cancel nposℝ.ne']
 #align filter.tendsto.cesaro_smul Filter.Tendsto.cesaro_smul

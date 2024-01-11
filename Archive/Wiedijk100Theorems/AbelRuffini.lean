@@ -39,7 +39,7 @@ open scoped Polynomial
 
 attribute [local instance] splits_ℚ_ℂ
 
-variable (R : Type _) [CommRing R] (a b : ℕ)
+variable (R : Type*) [CommRing R] (a b : ℕ)
 
 /-- A quintic polynomial that we will show is irreducible -/
 noncomputable def Φ : R[X] :=
@@ -49,7 +49,7 @@ noncomputable def Φ : R[X] :=
 variable {R}
 
 @[simp]
-theorem map_Phi {S : Type _} [CommRing S] (f : R →+* S) : (Φ R a b).map f = Φ S a b := by simp [Φ]
+theorem map_Phi {S : Type*} [CommRing S] (f : R →+* S) : (Φ R a b).map f = Φ S a b := by simp [Φ]
 #align abel_ruffini.map_Phi AbelRuffini.map_Phi
 
 @[simp]

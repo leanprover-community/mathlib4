@@ -79,7 +79,11 @@ def lieModuleOf [DecidableEq ι] (j : ι) : M j →ₗ⁅R,L⁆ ⨁ i, M i :=
       refine' DFinsupp.ext fun i => _ -- Porting note: Originally `ext i`
       by_cases h : j = i
       · rw [← h]; simp
-      · simp [lof, lsingle, h] }
+      · -- This used to be the end of the proof before leanprover/lean4#2644
+        -- old proof `simp [lof, lsingle, h]`
+        simp only [lof, lsingle, AddHom.toFun_eq_coe, lie_module_bracket_apply]
+        erw [AddHom.coe_mk]
+        simp [h] }
 #align direct_sum.lie_module_of DirectSum.lieModuleOf
 
 /-- The projection map onto one component, as a morphism of Lie modules. -/
@@ -139,8 +143,21 @@ def lieAlgebraOf [DecidableEq ι] (j : ι) : L j →ₗ⁅R⁆ ⨁ i, L i :=
     map_lie' := fun {x y} => by
       refine' DFinsupp.ext fun i => _ -- Porting note: Originally `ext i`
       by_cases h : j = i
-      · rw [← h]; simp [of, singleAddHom]
-      · simp [of, singleAddHom, h] }
+      · rw [← h]
+        -- This used to be the end of the proof before leanprover/lean4#2644
+        -- with `simp [of, singleAddHom]`
+        simp only [of, singleAddHom, bracket_apply]
+        erw [AddHom.coe_mk, single_apply, single_apply]
+        simp [h]
+        intros
+        erw [single_add]
+      · -- This used to be the end of the proof before leanprover/lean4#2644
+        -- with `simp [of, singleAddHom]`
+        simp only [of, singleAddHom, bracket_apply]
+        erw [AddHom.coe_mk, single_apply, single_apply]
+        simp only [h, dite_false, single_apply, lie_self]
+        intros
+        erw [single_add] }
 #align direct_sum.lie_algebra_of DirectSum.lieAlgebraOf
 
 /-- The projection map onto one component, as a morphism of Lie algebras. -/
@@ -163,6 +180,11 @@ theorem lie_of_of_ne [DecidableEq ι] {i j : ι} (hij : j ≠ i) (x : L i) (y : 
   rw [LieHom.map_lie]
   simp only [of, singleAddHom, AddMonoidHom.coe_mk, ZeroHom.coe_mk, lieAlgebraComponent_apply,
     component, lapply, LinearMap.coe_mk, AddHom.coe_mk, single_apply, LieHom.map_zero]
+  -- The next four lines were not needed before leanprover/lean4#2644
+  erw [AddMonoidHom.coe_mk, AddHom.coe_mk, ZeroHom.coe_mk]
+  rotate_left
+  intros; erw [single_add]
+  erw [single_apply, single_apply]
   by_cases hik : i = k
   · simp only [dif_neg, not_false_iff, lie_zero, hik.symm, hij]
   · simp only [dif_neg, not_false_iff, zero_lie, hik]

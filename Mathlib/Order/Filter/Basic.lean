@@ -2767,7 +2767,7 @@ theorem prod_map_seq_comm (f : Filter α) (g : Filter β) :
     exact seq_mem_seq (image_mem_map ht) hu
 #align filter.prod_map_seq_comm Filter.prod_map_seq_comm
 
-theorem seq_eq_filter_seq {α β : Type _} (f : Filter (α → β)) (g : Filter α) :
+theorem seq_eq_filter_seq {α β : Type u} (f : Filter (α → β)) (g : Filter α) :
     f <*> g = seq f g :=
   rfl
 #align filter.seq_eq_filter_seq Filter.seq_eq_filter_seq

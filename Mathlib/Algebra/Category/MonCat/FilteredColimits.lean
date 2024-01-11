@@ -312,7 +312,8 @@ def colimitDesc (t : Cocone F) : colimit.{v, u} F ⟶ t.pt where
     rw [colimit_mul_mk_eq F ⟨i, x⟩ ⟨j, y⟩ (max' i j) (IsFiltered.leftToMax i j)
       (IsFiltered.rightToMax i j)]
     dsimp [Types.colimitCoconeIsColimit]
-    rw [MonoidHom.map_mul]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [MonoidHom.map_mul]
     -- Porting note : `rw` can't see through coercion is actually forgetful functor,
     -- so can't rewrite `t.w_apply`
     congr 1 <;>

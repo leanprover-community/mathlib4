@@ -1014,7 +1014,7 @@ variable (M₁ : Type u₁) [SeminormedAddCommGroup M₁] [NormedSpace 𝕜 M₁
 
 variable {Eₗ} (𝕜)
 
-set_option maxHeartbeats 500000 in
+set_option maxHeartbeats 400000 in
 /-- `ContinuousLinearMap.prodMap` as a continuous linear map. -/
 def prodMapL : (M₁ →L[𝕜] M₂) × (M₃ →L[𝕜] M₄) →L[𝕜] M₁ × M₃ →L[𝕜] M₂ × M₄ :=
   ContinuousLinearMap.copy
@@ -1179,7 +1179,7 @@ class _root_.RegularNormedAlgebra : Prop :=
   isometry_mul' : Isometry (mul 𝕜 𝕜')
 
 /-- Every (unital) normed algebra such that `‖1‖ = 1` is a `RegularNormedAlgebra`. -/
-instance _root_.NormedAlgebra.instRegularNormedAlgebra {𝕜 𝕜' : Type _} [NontriviallyNormedField 𝕜]
+instance _root_.NormedAlgebra.instRegularNormedAlgebra {𝕜 𝕜' : Type*} [NontriviallyNormedField 𝕜]
     [SeminormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜'] [NormOneClass 𝕜'] : RegularNormedAlgebra 𝕜 𝕜'  where
   isometry_mul' := AddMonoidHomClass.isometry_of_norm (mul 𝕜 𝕜') <|
     fun x => le_antisymm (op_norm_mul_apply_le _ _ _) <| by
@@ -1832,7 +1832,7 @@ theorem op_norm_comp_linearIsometryEquiv (f : F →SL[σ₂₃] G) (g : F' ≃�
   refine' le_antisymm _ _
   · convert f.op_norm_comp_le g.toLinearIsometry.toContinuousLinearMap
     simp [g.toLinearIsometry.norm_toContinuousLinearMap]
-  · convert(f.comp g.toLinearIsometry.toContinuousLinearMap).op_norm_comp_le
+  · convert (f.comp g.toLinearIsometry.toContinuousLinearMap).op_norm_comp_le
         g.symm.toLinearIsometry.toContinuousLinearMap
     · ext
       simp
@@ -1969,7 +1969,7 @@ protected theorem antilipschitz (e : E ≃SL[σ₁₂] F) :
 theorem one_le_norm_mul_norm_symm [RingHomIsometric σ₁₂] [Nontrivial E] (e : E ≃SL[σ₁₂] F) :
     1 ≤ ‖(e : E →SL[σ₁₂] F)‖ * ‖(e.symm : F →SL[σ₂₁] E)‖ := by
   rw [mul_comm]
-  convert(e.symm : F →SL[σ₂₁] E).op_norm_comp_le (e : E →SL[σ₁₂] F)
+  convert (e.symm : F →SL[σ₂₁] E).op_norm_comp_le (e : E →SL[σ₁₂] F)
   rw [e.coe_symm_comp_coe, ContinuousLinearMap.norm_id]
 #align continuous_linear_equiv.one_le_norm_mul_norm_symm ContinuousLinearEquiv.one_le_norm_mul_norm_symm
 

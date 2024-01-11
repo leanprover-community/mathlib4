@@ -446,6 +446,13 @@ theorem sum_right {α} (t : Finset α) (w : M) (g : α → M) :
   map_sum (BilinForm.toLin' B w) _ _
 #align bilin_form.sum_right BilinForm.sum_right
 
+@[simp]
+theorem sum_apply {α} (t : Finset α) (B : α → BilinForm R M) (v w : M) :
+    (∑ i in t, B i) v w = ∑ i in t, B i v w := by
+  show coeFnAddMonoidHom (∑ i in t, B i) v w = _
+  rw [map_sum, Finset.sum_apply, Finset.sum_apply]
+  rfl
+
 variable (R₂)
 
 /-- The linear map obtained from a `BilinForm` by fixing the right co-ordinate and evaluating in

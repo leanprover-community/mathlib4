@@ -136,8 +136,6 @@ theorem associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃ : ModuleCat R} (f�
   by convert associator_naturality_aux f₁ f₂ f₃ using 1
 #align Module.monoidal_category.associator_naturality ModuleCat.MonoidalCategory.associator_naturality
 
--- Porting note: very slow!
-set_option maxHeartbeats 1200000 in
 theorem pentagon (W X Y Z : ModuleCat R) :
     tensorHom (associator W X Y).hom (𝟙 Z) ≫
         (associator W (tensorObj X Y) Z).hom ≫ tensorHom (𝟙 W) (associator X Y Z).hom =
@@ -277,23 +275,31 @@ instance : MonoidalPreadditive (ModuleCat.{u} R) := by
   · dsimp only [autoParam]; intros
     refine' TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => _)
     simp only [LinearMap.compr₂_apply, TensorProduct.mk_apply]
-    rw [LinearMap.zero_apply, MonoidalCategory.hom_apply, LinearMap.zero_apply,
-      TensorProduct.tmul_zero]
+    rw [LinearMap.zero_apply]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [MonoidalCategory.hom_apply]
+    rw [LinearMap.zero_apply, TensorProduct.tmul_zero]
   · dsimp only [autoParam]; intros
     refine' TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => _)
     simp only [LinearMap.compr₂_apply, TensorProduct.mk_apply]
-    rw [LinearMap.zero_apply, MonoidalCategory.hom_apply, LinearMap.zero_apply,
-      TensorProduct.zero_tmul]
+    rw [LinearMap.zero_apply]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [MonoidalCategory.hom_apply]
+    rw [LinearMap.zero_apply, TensorProduct.zero_tmul]
   · dsimp only [autoParam]; intros
     refine' TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => _)
     simp only [LinearMap.compr₂_apply, TensorProduct.mk_apply]
-    rw [LinearMap.add_apply, MonoidalCategory.hom_apply, MonoidalCategory.hom_apply]
+    rw [LinearMap.add_apply]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [MonoidalCategory.hom_apply, MonoidalCategory.hom_apply]
     erw [MonoidalCategory.hom_apply]
     rw [LinearMap.add_apply, TensorProduct.tmul_add]
   · dsimp only [autoParam]; intros
     refine' TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => _)
     simp only [LinearMap.compr₂_apply, TensorProduct.mk_apply]
-    rw [LinearMap.add_apply, MonoidalCategory.hom_apply, MonoidalCategory.hom_apply]
+    rw [LinearMap.add_apply]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [MonoidalCategory.hom_apply, MonoidalCategory.hom_apply]
     erw [MonoidalCategory.hom_apply]
     rw [LinearMap.add_apply, TensorProduct.add_tmul]
 
@@ -303,12 +309,16 @@ instance : MonoidalLinear R (ModuleCat.{u} R) := by
   · dsimp only [autoParam]; intros
     refine' TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => _)
     simp only [LinearMap.compr₂_apply, TensorProduct.mk_apply]
-    rw [LinearMap.smul_apply, MonoidalCategory.hom_apply, MonoidalCategory.hom_apply,
-      LinearMap.smul_apply, TensorProduct.tmul_smul]
+    rw [LinearMap.smul_apply]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [MonoidalCategory.hom_apply, MonoidalCategory.hom_apply]
+    rw [LinearMap.smul_apply, TensorProduct.tmul_smul]
   · dsimp only [autoParam]; intros
     refine' TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => _)
     simp only [LinearMap.compr₂_apply, TensorProduct.mk_apply]
-    rw [LinearMap.smul_apply, MonoidalCategory.hom_apply, MonoidalCategory.hom_apply,
-      LinearMap.smul_apply, TensorProduct.smul_tmul, TensorProduct.tmul_smul]
+    rw [LinearMap.smul_apply]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [MonoidalCategory.hom_apply, MonoidalCategory.hom_apply]
+    rw [LinearMap.smul_apply, TensorProduct.smul_tmul, TensorProduct.tmul_smul]
 
 end ModuleCat

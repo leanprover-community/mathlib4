@@ -579,6 +579,22 @@ theorem map_toAddSubmonoid' (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M)
 #align submodule.map_to_add_submonoid' Submodule.map_toAddSubmonoid'
 
 @[simp]
+theorem _root_.AddMonoidHom.coe_toIntLinearMap_map {A A₂ : Type*} [AddCommGroup A] [AddCommGroup A₂]
+    (f : A →+ A₂) (s : AddSubgroup A) :
+    (AddSubgroup.toIntSubmodule s).map f.toIntLinearMap =
+      AddSubgroup.toIntSubmodule (s.map f) := rfl
+
+@[simp]
+theorem _root_.MonoidHom.coe_toAdditive_map {G G₂ : Type*} [Group G] [Group G₂] (f : G →* G₂)
+    (s : Subgroup G) :
+    s.toAddSubgroup.map (MonoidHom.toAdditive f) = Subgroup.toAddSubgroup (s.map f) := rfl
+
+@[simp]
+theorem _root_.AddMonoidHom.coe_toMultiplicative_map {G G₂ : Type*} [AddGroup G] [AddGroup G₂]
+    (f : G →+ G₂) (s : AddSubgroup G) :
+    s.toSubgroup.map (AddMonoidHom.toMultiplicative f) = AddSubgroup.toSubgroup (s.map f) := rfl
+
+@[simp]
 theorem mem_map {f : F} {p : Submodule R M} {x : M₂} : x ∈ map f p ↔ ∃ y, y ∈ p ∧ f y = x :=
   Iff.rfl
 #align submodule.mem_map Submodule.mem_map
@@ -668,6 +684,12 @@ def comap (f : F) (p : Submodule R₂ M₂) : Submodule R M :=
 theorem comap_coe (f : F) (p : Submodule R₂ M₂) : (comap f p : Set M) = f ⁻¹' p :=
   rfl
 #align submodule.comap_coe Submodule.comap_coe
+
+@[simp]
+theorem AddMonoidHom.coe_toIntLinearMap_comap {A A₂ : Type*} [AddCommGroup A] [AddCommGroup A₂]
+    (f : A →+ A₂) (s : AddSubgroup A₂) :
+    (AddSubgroup.toIntSubmodule s).comap f.toIntLinearMap =
+      AddSubgroup.toIntSubmodule (s.comap f) := rfl
 
 @[simp]
 theorem mem_comap {f : F} {p : Submodule R₂ M₂} : x ∈ comap f p ↔ f x ∈ p :=
@@ -1122,6 +1144,11 @@ lemma range_domRestrict_le_range [RingHomSurjective τ₁₂] (f : M →ₛₗ[�
   rintro x ⟨⟨y, hy⟩, rfl⟩
   exact LinearMap.mem_range_self f y
 
+@[simp]
+theorem _root_.AddMonoidHom.coe_toIntLinearMap_range {M M₂ : Type*} [AddCommGroup M]
+    [AddCommGroup M₂] (f : M →+ M₂) :
+    LinearMap.range f.toIntLinearMap = AddSubgroup.toIntSubmodule f.range := rfl
+
 /-- A linear map version of `AddMonoidHom.eqLocusM` -/
 def eqLocus (f g : F) : Submodule R M :=
   { (f : M →+ M₂).eqLocusM g with
@@ -1287,6 +1314,10 @@ theorem range_zero [RingHomSurjective τ₁₂] : range (0 : M →ₛₗ[τ₁�
 theorem ker_eq_top {f : M →ₛₗ[τ₁₂] M₂} : ker f = ⊤ ↔ f = 0 :=
   ⟨fun h => ext fun _ => mem_ker.1 <| h.symm ▸ trivial, fun h => h.symm ▸ ker_zero⟩
 #align linear_map.ker_eq_top LinearMap.ker_eq_top
+
+@[simp]
+theorem _root_.AddMonoidHom.coe_toIntLinearMap_ker {M M₂ : Type*} [AddCommGroup M] [AddCommGroup M₂]
+    (f : M →+ M₂) : LinearMap.ker f.toIntLinearMap = AddSubgroup.toIntSubmodule f.ker := rfl
 
 section
 

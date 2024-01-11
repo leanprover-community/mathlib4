@@ -262,7 +262,7 @@ protected theorem secondCountableTopology [TopologicalSpace.SecondCountableTopol
 /-- If `h : X → Y` is a homeomorphism, `h(s)` is compact iff `s` is. -/
 @[simp]
 theorem isCompact_image {s : Set X} (h : X ≃ₜ Y) : IsCompact (h '' s) ↔ IsCompact s :=
-  h.embedding.isCompact_iff_isCompact_image.symm
+  h.embedding.isCompact_iff.symm
 #align homeomorph.is_compact_image Homeomorph.isCompact_image
 
 /-- If `h : X → Y` is a homeomorphism, `h⁻¹(s)` is compact iff `s` is. -/
@@ -270,6 +270,18 @@ theorem isCompact_image {s : Set X} (h : X ≃ₜ Y) : IsCompact (h '' s) ↔ Is
 theorem isCompact_preimage {s : Set Y} (h : X ≃ₜ Y) : IsCompact (h ⁻¹' s) ↔ IsCompact s := by
   rw [← image_symm]; exact h.symm.isCompact_image
 #align homeomorph.is_compact_preimage Homeomorph.isCompact_preimage
+
+/-- If `h : X → Y` is a homeomorphism, `s` is σ-compact iff `h(s)` is. -/
+@[simp]
+theorem isSigmaCompact_image {s : Set X} (h : X ≃ₜ Y) :
+    IsSigmaCompact (h '' s) ↔ IsSigmaCompact s :=
+  h.embedding.isSigmaCompact_iff.symm
+
+/-- If `h : X → Y` is a homeomorphism, `h⁻¹(s)` is σ-compact iff `s` is. -/
+@[simp]
+theorem isSigmaCompact_preimage {s : Set Y} (h : X ≃ₜ Y) :
+    IsSigmaCompact (h ⁻¹' s) ↔ IsSigmaCompact s := by
+  rw [← image_symm]; exact h.symm.isSigmaCompact_image
 
 @[simp]
 theorem isPreconnected_image {s : Set X} (h : X ≃ₜ Y) :

@@ -742,7 +742,7 @@ theorem contDiffOn_succ_iff_hasFDerivWithinAt {n : ℕ} :
         (∀ x ∈ u, HasFDerivWithinAt f (f' x) u x) ∧ ContDiffOn 𝕜 n f' u := by
   constructor
   · intro h x hx
-    rcases(h x hx) n.succ le_rfl with ⟨u, hu, p, Hp⟩
+    rcases (h x hx) n.succ le_rfl with ⟨u, hu, p, Hp⟩
     refine'
       ⟨u, hu, fun y => (continuousMultilinearCurryFin1 𝕜 E F) (p y 1), fun y hy =>
         Hp.hasFDerivWithinAt (WithTop.coe_le_coe.2 (Nat.le_add_left 1 n)) hy, _⟩
@@ -1019,7 +1019,7 @@ protected theorem ContDiffOn.ftaylorSeriesWithin (h : ContDiffOn 𝕜 n f s) (hs
     simp only [ftaylorSeriesWithin, ContinuousMultilinearMap.uncurry0_apply,
       iteratedFDerivWithin_zero_apply]
   · intro m hm x hx
-    rcases(h x hx) m.succ (ENat.add_one_le_of_lt hm) with ⟨u, hu, p, Hp⟩
+    rcases (h x hx) m.succ (ENat.add_one_le_of_lt hm) with ⟨u, hu, p, Hp⟩
     rw [insert_eq_of_mem hx] at hu
     rcases mem_nhdsWithin.1 hu with ⟨o, o_open, xo, ho⟩
     rw [inter_comm] at ho

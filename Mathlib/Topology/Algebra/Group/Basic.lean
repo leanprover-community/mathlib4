@@ -1017,7 +1017,7 @@ which `(u (n + 1)) ^ 2 ⊆ u n`. The existence of such a neighborhood basis is a
   The existence of such a neighborhood basis is a key tool for `QuotientAddGroup.completeSpace`"]
 theorem TopologicalGroup.exists_antitone_basis_nhds_one :
     ∃ u : ℕ → Set G, (𝓝 1).HasAntitoneBasis u ∧ ∀ n, u (n + 1) * u (n + 1) ⊆ u n := by
-  rcases(𝓝 (1 : G)).exists_antitone_basis with ⟨u, hu, u_anti⟩
+  rcases (𝓝 (1 : G)).exists_antitone_basis with ⟨u, hu, u_anti⟩
   have :=
     ((hu.prod_nhds hu).tendsto_iff hu).mp
       (by simpa only [mul_one] using continuous_mul.tendsto ((1, 1) : G × G))

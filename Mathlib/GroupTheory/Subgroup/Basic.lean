@@ -1373,6 +1373,15 @@ theorem coe_comap (K : Subgroup N) (f : G →* N) : (K.comap f : Set G) = f ⁻�
 #align subgroup.coe_comap Subgroup.coe_comap
 #align add_subgroup.coe_comap AddSubgroup.coe_comap
 
+@[simp]
+theorem toAddSubgroup_comap {G₂ : Type*} [Group G₂] (f : G →* G₂) (s : Subgroup G₂) :
+    s.toAddSubgroup.comap (MonoidHom.toAdditive f) = Subgroup.toAddSubgroup (s.comap f) := rfl
+
+@[simp]
+theorem _root_.AddSubgroup.toSubgroup_comap {A A₂ : Type*} [AddGroup A] [AddGroup A₂]
+    (f : A →+ A₂)  (s : AddSubgroup A₂) :
+    s.toSubgroup.comap (AddMonoidHom.toMultiplicative f) = AddSubgroup.toSubgroup (s.comap f) := rfl
+
 @[to_additive (attr := simp)]
 theorem mem_comap {K : Subgroup N} {f : G →* N} {x : G} : x ∈ K.comap f ↔ f x ∈ K :=
   Iff.rfl
@@ -2729,6 +2738,14 @@ theorem subgroupOf_range_eq_of_le {G₁ G₂ : Type*} [Group G₁] [Group G₂] 
 #align monoid_hom.subgroup_of_range_eq_of_le MonoidHom.subgroupOf_range_eq_of_le
 #align add_monoid_hom.add_subgroup_of_range_eq_of_le AddMonoidHom.addSubgroupOf_range_eq_of_le
 
+@[simp]
+theorem coe_toAdditive_range (f : G →* G') :
+    (MonoidHom.toAdditive f).range = Subgroup.toAddSubgroup f.range := rfl
+
+@[simp]
+theorem coe_toMultiplicative_range {A A' : Type*} [AddGroup A] [AddGroup A'] (f : A →+ A') :
+    (AddMonoidHom.toMultiplicative f).range = AddSubgroup.toSubgroup f.range := rfl
+
 /-- Computable alternative to `MonoidHom.ofInjective`. -/
 @[to_additive "Computable alternative to `AddMonoidHom.ofInjective`."]
 def ofLeftInverse {f : G →* N} {g : N →* G} (h : Function.LeftInverse g f) : G ≃* f.range :=
@@ -2929,6 +2946,14 @@ lemma ker_fst : ker (fst G G') = .prod ⊥ ⊤ := SetLike.ext fun _ => (and_true
 
 @[to_additive (attr := simp)]
 lemma ker_snd : ker (snd G G') = .prod ⊤ ⊥ := SetLike.ext fun _ => (true_and_iff _).symm
+
+@[simp]
+theorem coe_toAdditive_ker (f : G →* G') :
+    (MonoidHom.toAdditive f).ker = Subgroup.toAddSubgroup f.ker := rfl
+
+@[simp]
+theorem coe_toMultiplicative_ker {A A' : Type*} [AddGroup A] [AddGroup A'] (f : A →+ A') :
+    (AddMonoidHom.toMultiplicative f).ker = AddSubgroup.toSubgroup f.ker := rfl
 
 end Ker
 
@@ -3762,13 +3787,13 @@ end IsConj
 namespace ConjClasses
 
 /-- The conjugacy classes that are not trivial. -/
-def noncenter (G : Type _) [Monoid G] : Set (ConjClasses G) :=
+def noncenter (G : Type*) [Monoid G] : Set (ConjClasses G) :=
   {x | x.carrier.Nontrivial}
 
 @[simp] lemma mem_noncenter [Monoid G] (g : ConjClasses G) :
   g ∈ noncenter G ↔ g.carrier.Nontrivial := Iff.rfl
 
-theorem mk_bijOn (G : Type _) [Group G] :
+theorem mk_bijOn (G : Type*) [Group G] :
     Set.BijOn ConjClasses.mk (↑(Subgroup.center G)) (noncenter G)ᶜ := by
   refine ⟨fun g hg ↦ ?_, fun x hx y _ H ↦ ?_, ?_⟩
   · simp only [mem_noncenter, Set.compl_def, Set.mem_setOf, Set.not_nontrivial_iff]

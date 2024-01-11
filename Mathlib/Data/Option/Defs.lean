@@ -31,7 +31,8 @@ inductive rel (r : α → β → Prop) : Option α → Option β → Prop
 #align option.rel Option.rel
 
 /-- Traverse an object of `Option α` with a function `f : α → F β` for an applicative `F`. -/
-protected def traverse.{u, v} {F : Type u → Type v} [Applicative F] {α β : Type _} (f : α → F β) :
+protected def traverse.{u, v}
+    {F : Type u → Type v} [Applicative F] {α : Type*} {β : Type u} (f : α → F β) :
     Option α → F (Option β)
   | none => pure none
   | some x => some <$> f x

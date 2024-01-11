@@ -593,7 +593,7 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
   · rintro x y ⟨j, t, hj, hyt, iht⟩
     rw [smul_eq_mul]
     rcases exists_finset_support x with ⟨s, hxs⟩
-    rcases(s.image Sigma.fst).exists_le with ⟨i, hi⟩
+    rcases (s.image Sigma.fst).exists_le with ⟨i, hi⟩
     obtain ⟨k, hik, hjk⟩ := exists_ge_ge i j
     have : ∀ z : Σi, G i, z ∈ ↑s ∪ t → z.1 ≤ k := by
       rintro z (hz | hz)

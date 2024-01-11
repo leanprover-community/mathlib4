@@ -18,7 +18,7 @@ The counterexample we use is $B (x, y) (x', y') ↦ xy' + x'y$ where `x y x' y' 
 -/
 
 
-variable (F : Type _) [Nontrivial F] [CommRing F] [CharP F 2]
+variable (F : Type*) [Nontrivial F] [CommRing F] [CharP F 2]
 
 open BilinForm
 

@@ -227,7 +227,7 @@ theorem FG_adjoin_singleton_of_integral (x : A) (hx : IsIntegral R x) :
     exact (Algebra.adjoin R {x}).pow_mem (Algebra.subset_adjoin (Set.mem_singleton _)) k
   intro r hr; change r ∈ Algebra.adjoin R ({x} : Set A) at hr
   rw [Algebra.adjoin_singleton_eq_range_aeval] at hr
-  rcases(aeval x).mem_range.mp hr with ⟨p, rfl⟩
+  rcases (aeval x).mem_range.mp hr with ⟨p, rfl⟩
   rw [← modByMonic_add_div p hfm]
   rw [← aeval_def] at hfx
   rw [AlgHom.map_add, AlgHom.map_mul, hfx, zero_mul, add_zero]

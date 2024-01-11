@@ -158,7 +158,7 @@ def librarySearchSymm (goal : MVarId)
     Nondet MetaM (List MVarId) :=
   (librarySearchCore goal required solveByElimDepth) <|>
   .squash fun _ => do
-    if let some symm ← observing? goal.symm then
+    if let some symm ← observing? goal.applySymm then
       return librarySearchCore symm required solveByElimDepth
     else
       return .nil

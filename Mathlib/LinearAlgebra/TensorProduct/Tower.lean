@@ -305,6 +305,9 @@ protected def rid : M ⊗[R] R ≃ₗ[A] M :=
     (LinearMap.ext <| one_smul _)
     (ext <| fun _ _ => smul_tmul _ _ _ |>.trans <| congr_arg _ <| mul_one _)
 
+theorem rid_eq_rid : AlgebraTensorModule.rid R R M = TensorProduct.rid R M :=
+  LinearEquiv.toLinearMap_injective <| TensorProduct.ext' fun _ _ => rfl
+
 variable {R M}
 
 @[simp]

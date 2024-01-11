@@ -26,7 +26,7 @@ noncomputable section
 
 open Function Polynomial Finsupp Finset
 
-open BigOperators Classical Polynomial
+open BigOperators Polynomial
 
 namespace Polynomial
 
@@ -71,8 +71,8 @@ theorem TrailingMonic.def : TrailingMonic p ↔ trailingCoeff p = 1 :=
   Iff.rfl
 #align polynomial.trailing_monic.def Polynomial.TrailingMonic.def
 
--- Porting note: Removed unused argument `[DecidableEq R]`?
-instance TrailingMonic.decidable: Decidable (TrailingMonic p) := inferInstance
+instance TrailingMonic.decidable [DecidableEq R] : Decidable (TrailingMonic p) :=
+  inferInstanceAs <| Decidable (trailingCoeff p = (1 : R))
 #align polynomial.trailing_monic.decidable Polynomial.TrailingMonic.decidable
 
 @[simp]
@@ -207,10 +207,12 @@ theorem natTrailingDegree_monomial (ha : a ≠ 0) : natTrailingDegree (monomial 
 #align polynomial.nat_trailing_degree_monomial Polynomial.natTrailingDegree_monomial
 
 theorem natTrailingDegree_monomial_le : natTrailingDegree (monomial n a) ≤ n :=
+  letI := Classical.decEq R
   if ha : a = 0 then by simp [ha] else (natTrailingDegree_monomial ha).le
 #align polynomial.nat_trailing_degree_monomial_le Polynomial.natTrailingDegree_monomial_le
 
 theorem le_trailingDegree_monomial : ↑n ≤ trailingDegree (monomial n a) :=
+  letI := Classical.decEq R
   if ha : a = 0 then by simp [ha] else (trailingDegree_monomial ha).ge
 #align polynomial.le_trailing_degree_monomial Polynomial.le_trailingDegree_monomial
 

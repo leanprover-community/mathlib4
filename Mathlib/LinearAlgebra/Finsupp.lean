@@ -1182,6 +1182,17 @@ theorem Submodule.mem_iSup_iff_exists_finset {ι : Sort _} {p : ι → Submodule
     iSup_mono (fun i => (iSup_const_le : _ ≤ p i)) hs⟩
 #align submodule.mem_supr_iff_exists_finset Submodule.mem_iSup_iff_exists_finset
 
+theorem Submodule.mem_sSup_iff_exists_finset {S : Set (Submodule R M)} {m : M} :
+    m ∈ sSup S ↔ ∃ s : Finset (Submodule R M), ↑s ⊆ S ∧ m ∈ ⨆ i ∈ s, i := by
+  rw [sSup_eq_iSup, iSup_subtype', Submodule.mem_iSup_iff_exists_finset]
+  refine ⟨fun ⟨s, hs⟩ ↦ ⟨s.map (Function.Embedding.subtype S), ?_, ?_⟩,
+          fun ⟨s, hsS, hs⟩ ↦ ⟨s.preimage (↑) (Subtype.coe_injective.injOn _), ?_⟩⟩
+  · simpa using fun x _ ↦ x.property
+  · suffices m ∈ ⨆ (i) (hi : i ∈ S) (_ : ⟨i, hi⟩ ∈ s), i by simpa
+    rwa [iSup_subtype']
+  · have : ⨆ (i) (_ : i ∈ S ∧ i ∈ s), i = ⨆ (i) (_ : i ∈ s), i := by convert rfl; aesop
+    simpa only [Finset.mem_preimage, iSup_subtype, iSup_and', this]
+
 theorem mem_span_finset {s : Finset M} {x : M} :
     x ∈ span R (↑s : Set M) ↔ ∃ f : M → R, ∑ i in s, f i • i = x :=
   ⟨fun hx =>

@@ -237,8 +237,8 @@ theorem mk_neg {M : Type*} [AddCommGroup M] [Module R M] {m : M} {s : S} : mk (-
   rfl
 #align localized_module.mk_neg LocalizedModule.mk_neg
 
-set_option maxHeartbeats 400000 in
-instance {A : Type _} [Semiring A] [Algebra R A] {S : Submonoid R} :
+set_option maxHeartbeats 500000 in
+instance {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R} :
     Semiring (LocalizedModule S A) :=
   { show (AddCommMonoid (LocalizedModule S A)) by infer_instance with
     mul := fun m₁ m₂ =>
@@ -292,12 +292,12 @@ instance {A : Type*} [CommSemiring A] [Algebra R A] {S : Submonoid R} :
       rintro ⟨a₁, s₁⟩ ⟨a₂, s₂⟩
       exact mk_eq.mpr ⟨1, by simp only [one_smul, mul_comm]⟩ }
 
-instance {A : Type} [Ring A] [Algebra R A] {S : Submonoid R} :
+instance {A : Type*} [Ring A] [Algebra R A] {S : Submonoid R} :
     Ring (LocalizedModule S A) :=
   { inferInstanceAs (AddCommGroup (LocalizedModule S A)),
     inferInstanceAs (Semiring (LocalizedModule S A)) with }
 
-instance {A : Type _} [CommRing A] [Algebra R A] {S : Submonoid R} :
+instance {A : Type*} [CommRing A] [Algebra R A] {S : Submonoid R} :
     CommRing (LocalizedModule S A) :=
   { show (Ring (LocalizedModule S A)) by infer_instance with
     mul_comm := by

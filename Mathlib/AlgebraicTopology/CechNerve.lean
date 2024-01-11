@@ -180,7 +180,14 @@ abbrev cechNerveAdjunction : (Augmented.toArrow : _ ⥤ Arrow C) ⊣ augmentedCe
   Adjunction.mkOfHomEquiv
     { homEquiv := cechNerveEquiv
       homEquiv_naturality_left_symm := by dsimp [cechNerveEquiv]; aesop_cat
-      homEquiv_naturality_right := by dsimp [cechNerveEquiv]; aesop_cat }
+      homEquiv_naturality_right := by
+        dsimp [cechNerveEquiv]
+        -- The next three lines were not needed before leanprover/lean4#2644
+        intro X Y Y' f g
+        change equivalenceLeftToRight X Y' (f ≫ g) =
+          equivalenceLeftToRight X Y f ≫ augmentedCechNerve.map g
+        aesop_cat
+    }
 #align category_theory.simplicial_object.cech_nerve_adjunction CategoryTheory.SimplicialObject.cechNerveAdjunction
 
 end SimplicialObject

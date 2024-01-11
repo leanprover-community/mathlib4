@@ -40,7 +40,7 @@ theorem hom_coe_pow {F : Type*} [Monoid F] (c : F → M → M) (h1 : c 1 = id)
 #align hom_coe_pow hom_coe_pow
 
 @[to_additive (attr := simp)]
-theorem iterate_map_mul {M F : Type _} [MulOneClass M]
+theorem iterate_map_mul {M F : Type*} [MulOneClass M]
     (f : F) (n : ℕ) (x y : M) [MulHomClass F M M] :
     f^[n] (x * y) = f^[n] x * f^[n] y :=
   Function.Semiconj₂.iterate (map_mul f) n x y
