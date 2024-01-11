@@ -1029,7 +1029,7 @@ lemma α_isLocallyFraction : isLocallyFraction 𝒜 |>.pred (α (m := m) s) := b
   rw [mk_eq_mk_iff, r_iff_exists] at eq1
   obtain ⟨⟨_, ⟨M, rfl⟩⟩, eq1⟩ := eq1
   dsimp only at eq1
-  rw [← hla, ←hlb] at eq1
+  rw [← hla, ← hlb] at eq1
   refine ⟨⟨f^M * C.den * C.num, ?_⟩, ?_⟩
   · rw [show C.den = f^_ from C.den_mem.choose_spec.symm, ← pow_add]
     exact ProjIsoSpecTopComponent.ToSpec.pow_mul_num_not_mem_of_not_mem_carrier _ _ hC _
