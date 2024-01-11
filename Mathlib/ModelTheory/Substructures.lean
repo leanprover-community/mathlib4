@@ -1015,6 +1015,63 @@ theorem range_subtype (S : L.Substructure M) : S.subtype.toHom.range = S := by
 
 end Substructure
 
+variable (L) (M) (N)
+
+/-- An equivalence between substructures -/
+structure SubEquivalence  where
+  sub_dom : L.Substructure M
+  sub_codom : L.Substructure N
+  equiv : sub_dom ≃[L] sub_codom
+
+@[inherit_doc]
+scoped[FirstOrder] notation:25 M " ≃ₚ[" L "] " N => FirstOrder.Language.SubEquivalence L M N
+
+namespace Substructure
+
+namespace SubEquivalence
+
+variable {L} {M} {N}
+
+instance : LE (M ≃ₚ[L] N) := ⟨fun f g ↦ ∃h : f.sub_dom ≤ g.sub_dom,
+  subtype _ ∘ g.equiv ∘ (Substructure.inclusion h) = subtype _ ∘ f.equiv⟩
+
+theorem le_implies_le_image {f g : M ≃ₚ[L] N} : f ≤ g → f.sub_codom ≤ g.sub_codom := by
+  rintro ⟨h_le_dom, eq_fun⟩ n hn
+  let m := f.equiv.symm ⟨n, hn⟩
+  have  : (subtype _ ∘ f.equiv) m = n := by simp only [coeSubtype, Function.comp_apply,
+    Equiv.apply_symm_apply]
+  rw [←this, ←eq_fun]
+  simp only [coeSubtype, coe_inclusion, Function.comp_apply, SetLike.coe_mem]
+
+theorem le_trans (f g h : M ≃ₚ[L] N) : f ≤ g → g ≤ h → f ≤ h := by
+  rintro ⟨le_fg, eq_fg⟩ ⟨le_gh, eq_gh⟩
+  refine ⟨le_fg.trans le_gh, ?_⟩
+  rw [←eq_fg, ←Function.comp.assoc (g := g.equiv), ←eq_gh, Function.comp.assoc, Function.comp.assoc]
+  simp only [coeSubtype, coe_inclusion, Set.inclusion_comp_inclusion]
+
+nonrec theorem le_refl (f : M ≃ₚ[L] N) : f ≤ f :=
+  ⟨le_refl _, by rw [coe_inclusion, Set.inclusion_eq_id, Function.comp.right_id]⟩
+
+nonrec theorem le_antisymm (f g : M ≃ₚ[L] N) : f ≤ g → g ≤ f → f = g := by
+  rintro ⟨le_dom_fg, eq_fg⟩ ⟨le_dom_gf, eq_gf⟩
+  rcases f with ⟨dom_f, codom_f, equiv_f⟩
+  cases le_antisymm le_dom_fg le_dom_gf
+  cases le_antisymm (le_implies_le_image ⟨le_dom_fg, eq_fg⟩) (le_implies_le_image ⟨le_dom_gf, eq_gf⟩)
+  simp [Set.inclusion_eq_id] at eq_fg
+  cases FunLike.coe_injective' ((subtype g.sub_codom).inj'.comp_left eq_fg).symm
+  rfl
+
+instance : PartialOrder (M ≃ₚ[L] N) := {
+  le_refl := le_refl
+  le_trans := le_trans
+  le_antisymm := le_antisymm
+}
+
+
+end SubEquivalence
+
+end Substructure
+
 end Language
 
 end FirstOrder

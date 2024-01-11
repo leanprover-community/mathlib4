@@ -1,5 +1,4 @@
-import Mathlib.ModelTheory.FinitelyGenerated
-
+import Mathlib.ModelTheory.Basic
 
 /-!
 # Partial Isomorphisms and Partial Embeddings
@@ -19,7 +18,7 @@ namespace FirstOrder
 
 namespace Language
 
-open Structure Substructure
+open Structure
 
 variable (L : Language.{u, v})
 
