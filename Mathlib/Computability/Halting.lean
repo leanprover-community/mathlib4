@@ -194,6 +194,7 @@ theorem to_re {p : α → Prop} (hp : ComputablePred p) : RePred p := by
   cases a; cases f n <;> simp
 #align computable_pred.to_re ComputablePred.to_re
 
+/-- **Rice's Theorem** -/
 theorem rice (C : Set (ℕ →. ℕ)) (h : ComputablePred fun c => eval c ∈ C) {f g} (hf : Nat.Partrec f)
     (hg : Nat.Partrec g) (fC : f ∈ C) : g ∈ C := by
   cases' h with _ h; skip

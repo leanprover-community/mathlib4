@@ -110,7 +110,7 @@ theorem thickenedIndicatorAux_mono {δ₁ δ₂ : ℝ} (hle : δ₁ ≤ δ₂) (
 theorem indicator_le_thickenedIndicatorAux (δ : ℝ) (E : Set α) :
     (E.indicator fun _ => (1 : ℝ≥0∞)) ≤ thickenedIndicatorAux δ E := by
   intro a
-  by_cases a ∈ E
+  by_cases h : a ∈ E
   · simp only [h, indicator_of_mem, thickenedIndicatorAux_one δ E h, le_refl]
   · simp only [h, indicator_of_not_mem, not_false_iff, zero_le]
 #align indicator_le_thickened_indicator_aux indicator_le_thickenedIndicatorAux
@@ -209,7 +209,7 @@ theorem thickenedIndicator_zero {δ : ℝ} (δ_pos : 0 < δ) (E : Set α) {x : �
 theorem indicator_le_thickenedIndicator {δ : ℝ} (δ_pos : 0 < δ) (E : Set α) :
     (E.indicator fun _ => (1 : ℝ≥0)) ≤ thickenedIndicator δ_pos E := by
   intro a
-  by_cases a ∈ E
+  by_cases h : a ∈ E
   · simp only [h, indicator_of_mem, thickenedIndicator_one δ_pos E h, le_refl]
   · simp only [h, indicator_of_not_mem, not_false_iff, zero_le]
 #align indicator_le_thickened_indicator indicator_le_thickenedIndicator

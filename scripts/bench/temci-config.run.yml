@@ -23,10 +23,12 @@
   run_config:
     runner: perf_stat
     perf_stat:
-      properties: ['wall-clock', 'instructions']
+      properties: ['wall-clock', 'task-clock', 'instructions']
     rusage_properties: ['maxrss']
     cmd: |
       LEAN_PATH=$(lake print-paths --no-build Mathlib | jq -r '.oleanPath | join(":")') lean Mathlib.lean
+    discarded_runs: 1
+    min_runs: 5
 - attributes:
     description: size
   run_config:

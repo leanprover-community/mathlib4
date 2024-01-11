@@ -117,6 +117,9 @@ theorem symm_symm (F : Homotopy p₀ p₁) : F.symm.symm = F :=
   ContinuousMap.HomotopyRel.symm_symm F
 #align path.homotopy.symm_symm Path.Homotopy.symm_symm
 
+theorem symm_bijective : Function.Bijective (Homotopy.symm : Homotopy p₀ p₁ → Homotopy p₁ p₀) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
+
 /--
 Given `Homotopy p₀ p₁` and `Homotopy p₁ p₂`, we can define a `Homotopy p₀ p₂` by putting the first
 homotopy on `[0, 1/2]` and the second on `[1/2, 1]`.

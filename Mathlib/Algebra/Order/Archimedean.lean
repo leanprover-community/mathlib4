@@ -359,7 +359,7 @@ theorem archimedean_iff_int_lt : Archimedean α ↔ ∀ x : α, ∃ n : ℤ, x <
     intro h x
     obtain ⟨n, h⟩ := h x
     refine' ⟨n.toNat, h.trans_le _⟩
-    exact_mod_cast Int.self_le_toNat _⟩
+    exact mod_cast Int.self_le_toNat _⟩
 #align archimedean_iff_int_lt archimedean_iff_int_lt
 
 theorem archimedean_iff_int_le : Archimedean α ↔ ∀ x : α, ∃ n : ℤ, x ≤ n :=

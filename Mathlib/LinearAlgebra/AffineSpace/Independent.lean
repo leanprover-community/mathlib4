@@ -551,7 +551,7 @@ theorem exists_subset_affineIndependent_affineSpan_eq_top {s : Set P}
     (h : AffineIndependent k (fun p => p : s → P)) :
     ∃ t : Set P, s ⊆ t ∧ AffineIndependent k (fun p => p : t → P) ∧ affineSpan k t = ⊤ := by
   rcases s.eq_empty_or_nonempty with (rfl | ⟨p₁, hp₁⟩)
-  · have p₁ : P := AddTorsor.Nonempty.some
+  · have p₁ : P := AddTorsor.nonempty.some
     let hsv := Basis.ofVectorSpace k V
     have hsvi := hsv.linearIndependent
     have hsvt := hsv.span_eq
@@ -805,7 +805,7 @@ instance [Inhabited P] : Inhabited (Simplex k P 0) :=
   ⟨mkOfPoint k default⟩
 
 instance nonempty : Nonempty (Simplex k P 0) :=
-  ⟨mkOfPoint k <| AddTorsor.Nonempty.some⟩
+  ⟨mkOfPoint k <| AddTorsor.nonempty.some⟩
 #align affine.simplex.nonempty Affine.Simplex.nonempty
 
 variable {k}

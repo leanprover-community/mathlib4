@@ -386,7 +386,7 @@ theorem unit_mul_pow_congr_unit {ϖ : R} (hirr : Irreducible ϖ) (u v : Rˣ) (m 
   rw [← sub_mul, mul_eq_zero] at h
   cases' h with h h
   · rw [sub_eq_zero] at h
-    exact_mod_cast h
+    exact mod_cast h
   · apply (hirr.ne_zero (pow_eq_zero h)).elim
 #align discrete_valuation_ring.unit_mul_pow_congr_unit DiscreteValuationRing.unit_mul_pow_congr_unit
 

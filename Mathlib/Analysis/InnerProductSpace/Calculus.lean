@@ -262,7 +262,7 @@ theorem not_differentiableAt_abs_zero : ¬ DifferentiableAt ℝ (abs : ℝ → �
   rw [Filter.HasBasis.frequently_iff Metric.nhds_basis_ball]
   intro δ hδ
   obtain ⟨x, hx⟩ : ∃ x ∈ Metric.ball 0 δ, x ≠ 0 ∧ f x ≤ 0 := by
-    by_cases f (δ / 2) ≤ 0
+    by_cases h : f (δ / 2) ≤ 0
     · use (δ / 2)
       simp [h, abs_of_nonneg hδ.le, hδ, hδ.ne']
     · use -(δ / 2)

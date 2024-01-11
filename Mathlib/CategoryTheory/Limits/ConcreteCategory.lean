@@ -3,12 +3,9 @@ Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Adam Topaz
 -/
+import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.Limits.Types
-import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
-import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
-import Mathlib.CategoryTheory.ConcreteCategory.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 import Mathlib.Tactic.ApplyFun
 
 #align_import category_theory.limits.concrete_category from "leanprover-community/mathlib"@"c3019c79074b0619edb4b27553a91b2e82242395"
@@ -57,111 +54,9 @@ theorem Concrete.limit_ext [HasLimit F] (x y : ↑(limit F)) :
   Concrete.isLimit_ext F (limit.isLimit _) _ _
 #align category_theory.limits.concrete.limit_ext CategoryTheory.Limits.Concrete.limit_ext
 
-section WidePullback
-
-open WidePullback
-
-open WidePullbackShape
-
-theorem Concrete.widePullback_ext {B : C} {ι : Type w} {X : ι → C} (f : ∀ j : ι, X j ⟶ B)
-    [HasWidePullback B X f] [PreservesLimit (wideCospan B X f) (forget C)]
-    (x y : ↑(widePullback B X f)) (h₀ : base f x = base f y) (h : ∀ j, π f j x = π f j y) :
-    x = y := by
-  apply Concrete.limit_ext
-  rintro (_ | j)
-  · exact h₀
-  · apply h
-#align category_theory.limits.concrete.wide_pullback_ext CategoryTheory.Limits.Concrete.widePullback_ext
-
-theorem Concrete.widePullback_ext' {B : C} {ι : Type w} [Nonempty ι] {X : ι → C}
-    (f : ∀ j : ι, X j ⟶ B) [HasWidePullback.{w} B X f]
-    [PreservesLimit (wideCospan B X f) (forget C)] (x y : ↑(widePullback B X f))
-    (h : ∀ j, π f j x = π f j y) : x = y := by
-  apply Concrete.widePullback_ext _ _ _ _ h
-  inhabit ι
-  simp only [← π_arrow f default, comp_apply, h]
-#align category_theory.limits.concrete.wide_pullback_ext' CategoryTheory.Limits.Concrete.widePullback_ext'
-
-end WidePullback
-
-section Multiequalizer
-
-theorem Concrete.multiequalizer_ext {I : MulticospanIndex.{w} C} [HasMultiequalizer I]
-    [PreservesLimit I.multicospan (forget C)] (x y : ↑(multiequalizer I))
-    (h : ∀ t : I.L, Multiequalizer.ι I t x = Multiequalizer.ι I t y) : x = y := by
-  apply Concrete.limit_ext
-  rintro (a | b)
-  · apply h
-  · rw [← limit.w I.multicospan (WalkingMulticospan.Hom.fst b), comp_apply, comp_apply]
-    simp [h]
-#align category_theory.limits.concrete.multiequalizer_ext CategoryTheory.Limits.Concrete.multiequalizer_ext
-
-/-- An auxiliary equivalence to be used in `multiequalizerEquiv` below.-/
-def Concrete.multiequalizerEquivAux (I : MulticospanIndex C) :
-    (I.multicospan ⋙ forget C).sections ≃
-    { x : ∀ i : I.L, I.left i // ∀ i : I.R, I.fst i (x _) = I.snd i (x _) } where
-  toFun x :=
-    ⟨fun i => x.1 (WalkingMulticospan.left _), fun i => by
-      have a := x.2 (WalkingMulticospan.Hom.fst i)
-      have b := x.2 (WalkingMulticospan.Hom.snd i)
-      rw [← b] at a
-      exact a⟩
-  invFun x :=
-    { val := fun j =>
-        match j with
-        | WalkingMulticospan.left a => x.1 _
-        | WalkingMulticospan.right b => I.fst b (x.1 _)
-      property := by
-        rintro (a | b) (a' | b') (f | f | f)
-        · simp
-        · rfl
-        · dsimp
-          exact (x.2 b').symm
-        · simp }
-  left_inv := by
-    intro x; ext (a | b)
-    · rfl
-    · rw [← x.2 (WalkingMulticospan.Hom.fst b)]
-      rfl
-  right_inv := by
-    intro x
-    ext i
-    rfl
-#align category_theory.limits.concrete.multiequalizer_equiv_aux CategoryTheory.Limits.Concrete.multiequalizerEquivAux
-
-/-- The equivalence between the noncomputable multiequalizer and
-the concrete multiequalizer. -/
-noncomputable def Concrete.multiequalizerEquiv (I : MulticospanIndex.{w} C) [HasMultiequalizer I]
-    [PreservesLimit I.multicospan (forget C)] :
-    (multiequalizer I : C) ≃
-      { x : ∀ i : I.L, I.left i // ∀ i : I.R, I.fst i (x _) = I.snd i (x _) } := by
-  let h1 := limit.isLimit I.multicospan
-  let h2 := isLimitOfPreserves (forget C) h1
-  let E := h2.conePointUniqueUpToIso (Types.limitConeIsLimit.{w, v} _)
-  exact Equiv.trans E.toEquiv (Concrete.multiequalizerEquivAux.{w, v} I)
-#align category_theory.limits.concrete.multiequalizer_equiv CategoryTheory.Limits.Concrete.multiequalizerEquiv
-
-@[simp]
-theorem Concrete.multiequalizerEquiv_apply (I : MulticospanIndex.{w} C) [HasMultiequalizer I]
-    [PreservesLimit I.multicospan (forget C)] (x : ↑(multiequalizer I)) (i : I.L) :
-    ((Concrete.multiequalizerEquiv I) x : ∀ i : I.L, I.left i) i = Multiequalizer.ι I i x :=
-  rfl
-#align category_theory.limits.concrete.multiequalizer_equiv_apply CategoryTheory.Limits.Concrete.multiequalizerEquiv_apply
-
-end Multiequalizer
-
--- TODO: Add analogous lemmas about products and equalizers.
 end Limits
 
 section Colimits
-
--- We don't mark this as an `@[ext]` lemma as we don't always want to work elementwise.
-theorem cokernel_funext {C : Type*} [Category C] [HasZeroMorphisms C] [ConcreteCategory C]
-    {M N K : C} {f : M ⟶ N} [HasCokernel f] {g h : cokernel f ⟶ K}
-    (w : ∀ n : N, g (cokernel.π f n) = h (cokernel.π f n)) : g = h := by
-  ext x
-  simpa using w x
-#align category_theory.limits.cokernel_funext CategoryTheory.Limits.cokernel_funext
 
 variable {C : Type u} [Category.{v} C] [ConcreteCategory.{v} C] {J : Type v} [SmallCategory J]
   (F : J ⥤ C) [PreservesColimit F (forget C)]
@@ -293,37 +188,6 @@ theorem Concrete.colimit_rep_eq_iff_exists [HasColimit F] {i j : J} (x : F.obj i
 
 end FilteredColimits
 
-section WidePushout
-
-open WidePushout
-
-open WidePushoutShape
-
-theorem Concrete.widePushout_exists_rep {B : C} {α : Type _} {X : α → C} (f : ∀ j : α, B ⟶ X j)
-    [HasWidePushout.{v} B X f] [PreservesColimit (wideSpan B X f) (forget C)]
-    (x : ↑(widePushout B X f)) : (∃ y : B, head f y = x) ∨ ∃ (i : α) (y : X i), ι f i y = x := by
-  obtain ⟨_ | j, y, rfl⟩ := Concrete.colimit_exists_rep _ x
-  · left
-    use y
-    rfl
-  · right
-    use j, y
-    rfl
-#align category_theory.limits.concrete.wide_pushout_exists_rep CategoryTheory.Limits.Concrete.widePushout_exists_rep
-
-theorem Concrete.widePushout_exists_rep' {B : C} {α : Type _} [Nonempty α] {X : α → C}
-    (f : ∀ j : α, B ⟶ X j) [HasWidePushout.{v} B X f] [PreservesColimit (wideSpan B X f) (forget C)]
-    (x : ↑(widePushout B X f)) : ∃ (i : α) (y : X i), ι f i y = x := by
-  rcases Concrete.widePushout_exists_rep f x with (⟨y, rfl⟩ | ⟨i, y, rfl⟩)
-  · inhabit α
-    use default, f _ y
-    simp only [← arrow_ι _ default, comp_apply]
-  · use i, y
-#align category_theory.limits.concrete.wide_pushout_exists_rep' CategoryTheory.Limits.Concrete.widePushout_exists_rep'
-
-end WidePushout
-
--- TODO: Add analogous lemmas about coproducts and coequalizers.
 end Colimits
 
 end CategoryTheory.Limits

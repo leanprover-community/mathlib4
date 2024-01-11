@@ -83,7 +83,7 @@ theorem ext_iff {f g : E →ₗ.[R] F} :
     EQ ▸
       ⟨rfl, fun x y h => by
         congr
-        exact_mod_cast h⟩,
+        exact mod_cast h⟩,
     fun ⟨deq, feq⟩ => ext deq feq⟩
 #align linear_pmap.ext_iff LinearPMap.ext_iff
 

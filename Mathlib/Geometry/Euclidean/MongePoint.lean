@@ -111,8 +111,8 @@ theorem mongePoint_eq_of_range_eq {n : ℕ} {s₁ s₂ : Simplex ℝ P n}
 /-- The weights for the Monge point of an (n+2)-simplex, in terms of
 `pointsWithCircumcenter`. -/
 def mongePointWeightsWithCircumcenter (n : ℕ) : PointsWithCircumcenterIndex (n + 2) → ℝ
-  | point_index _ => ((n + 1 : ℕ) : ℝ)⁻¹
-  | circumcenter_index => -2 / ((n + 1 : ℕ) : ℝ)
+  | pointIndex _ => ((n + 1 : ℕ) : ℝ)⁻¹
+  | circumcenterIndex => -2 / ((n + 1 : ℕ) : ℝ)
 #align affine.simplex.monge_point_weights_with_circumcenter Affine.Simplex.mongePointWeightsWithCircumcenter
 
 /-- `mongePointWeightsWithCircumcenter` sums to 1. -/
@@ -122,7 +122,7 @@ theorem sum_mongePointWeightsWithCircumcenter (n : ℕ) :
   simp_rw [sum_pointsWithCircumcenter, mongePointWeightsWithCircumcenter, sum_const, card_fin,
     nsmul_eq_mul]
   -- Porting note: replaced
-  -- have hn1 : (n + 1 : ℝ) ≠ 0 := by exact_mod_cast Nat.succ_ne_zero _
+  -- have hn1 : (n + 1 : ℝ) ≠ 0 := mod_cast Nat.succ_ne_zero _
   field_simp [n.cast_add_one_ne_zero]
   ring
 #align affine.simplex.sum_monge_point_weights_with_circumcenter Affine.Simplex.sum_mongePointWeightsWithCircumcenter
@@ -141,7 +141,7 @@ theorem mongePoint_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ}
   congr with i
   rw [Pi.add_apply, Pi.smul_apply, smul_eq_mul, Pi.sub_apply]
   -- Porting note: replaced
-  -- have hn1 : (n + 1 : ℝ) ≠ 0 := by exact_mod_cast Nat.succ_ne_zero _
+  -- have hn1 : (n + 1 : ℝ) ≠ 0 := mod_cast Nat.succ_ne_zero _
   have hn1 : (n + 1 : ℝ) ≠ 0 := n.cast_add_one_ne_zero
   cases i <;>
       simp_rw [centroidWeightsWithCircumcenter, circumcenterWeightsWithCircumcenter,
@@ -149,7 +149,7 @@ theorem mongePoint_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ}
     rw [add_tsub_assoc_of_le (by decide : 1 ≤ 2), (by decide : 2 - 1 = 1)]
   · rw [if_pos (mem_univ _), sub_zero, add_zero, card_fin]
     -- Porting note: replaced
-    -- have hn3 : (n + 2 + 1 : ℝ) ≠ 0 := by exact_mod_cast Nat.succ_ne_zero _
+    -- have hn3 : (n + 2 + 1 : ℝ) ≠ 0 := mod_cast Nat.succ_ne_zero _
     have hn3 : (n + 2 + 1 : ℝ) ≠ 0 := by exact_mod_cast (n + 2).cast_add_one_ne_zero
     field_simp [hn1, hn3, mul_comm]
   · field_simp [hn1]
@@ -161,8 +161,8 @@ centroid of an n-dimensional face, in terms of
 `pointsWithCircumcenter`.  This definition is only valid when `i₁ ≠ i₂`. -/
 def mongePointVSubFaceCentroidWeightsWithCircumcenter {n : ℕ} (i₁ i₂ : Fin (n + 3)) :
     PointsWithCircumcenterIndex (n + 2) → ℝ
-  | point_index i => if i = i₁ ∨ i = i₂ then ((n + 1 : ℕ) : ℝ)⁻¹ else 0
-  | circumcenter_index => -2 / ((n + 1 : ℕ) : ℝ)
+  | pointIndex i => if i = i₁ ∨ i = i₂ then ((n + 1 : ℕ) : ℝ)⁻¹ else 0
+  | circumcenterIndex => -2 / ((n + 1 : ℕ) : ℝ)
 #align affine.simplex.monge_point_vsub_face_centroid_weights_with_circumcenter Affine.Simplex.mongePointVSubFaceCentroidWeightsWithCircumcenter
 
 /-- `mongePointVSubFaceCentroidWeightsWithCircumcenter` is the

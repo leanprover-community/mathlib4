@@ -101,14 +101,14 @@ theorem Complex.sin_eq_tsum (z : ℂ) :
 
 /-- The power series expansion of `Real.cos`. -/
 theorem Real.hasSum_cos (r : ℝ) :
-    HasSum (fun n : ℕ => (-1) ^ n * r ^ (2 * n) / ↑(2 * n)!) (Real.cos r) := by
-  exact_mod_cast Complex.hasSum_cos r
+    HasSum (fun n : ℕ => (-1) ^ n * r ^ (2 * n) / ↑(2 * n)!) (Real.cos r) :=
+  mod_cast Complex.hasSum_cos r
 #align real.has_sum_cos Real.hasSum_cos
 
 /-- The power series expansion of `Real.sin`. -/
 theorem Real.hasSum_sin (r : ℝ) :
-    HasSum (fun n : ℕ => (-1) ^ n * r ^ (2 * n + 1) / ↑(2 * n + 1)!) (Real.sin r) := by
-  exact_mod_cast Complex.hasSum_sin r
+    HasSum (fun n : ℕ => (-1) ^ n * r ^ (2 * n + 1) / ↑(2 * n + 1)!) (Real.sin r) :=
+  mod_cast Complex.hasSum_sin r
 #align real.has_sum_sin Real.hasSum_sin
 
 theorem Real.cos_eq_tsum (r : ℝ) : Real.cos r = ∑' n : ℕ, (-1) ^ n * r ^ (2 * n) / ↑(2 * n)! :=

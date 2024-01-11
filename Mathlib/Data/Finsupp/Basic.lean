@@ -664,7 +664,7 @@ theorem mapDomain_injOn (S : Set α) {f : α → β} (hf : Set.InjOn f S) :
     by_cases h : a ∈ v₁.support ∪ v₂.support
     · rw [← mapDomain_apply' S _ hv₁ hf _, ← mapDomain_apply' S _ hv₂ hf _, eq] <;>
         · apply Set.union_subset hv₁ hv₂
-          exact_mod_cast h
+          exact mod_cast h
     · simp only [not_or, mem_union, not_not, mem_support_iff] at h
       simp [h]
 #align finsupp.map_domain_inj_on Finsupp.mapDomain_injOn

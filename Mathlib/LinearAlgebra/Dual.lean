@@ -563,6 +563,28 @@ theorem forall_dual_apply_eq_zero_iff (v : V) : (∀ φ : Module.Dual K V, φ v 
   rfl
 #align module.forall_dual_apply_eq_zero_iff Module.forall_dual_apply_eq_zero_iff
 
+@[simp]
+theorem subsingleton_dual_iff :
+    Subsingleton (Dual K V) ↔ Subsingleton V := by
+  refine ⟨fun h ↦ ⟨fun v w ↦ ?_⟩, fun h ↦ ⟨fun f g ↦ ?_⟩⟩
+  · rw [← sub_eq_zero, ← forall_dual_apply_eq_zero_iff K (v - w)]
+    intros f
+    simp [Subsingleton.elim f 0]
+  · ext v
+    simp [Subsingleton.elim v 0]
+
+instance instSubsingletonDual [Subsingleton V] : Subsingleton (Dual K V) :=
+  (subsingleton_dual_iff K).mp inferInstance
+
+@[simp]
+theorem nontrivial_dual_iff :
+    Nontrivial (Dual K V) ↔ Nontrivial V := by
+  rw [← not_iff_not, not_nontrivial_iff_subsingleton, not_nontrivial_iff_subsingleton,
+    subsingleton_dual_iff]
+
+instance instNontrivialDual [Nontrivial V] : Nontrivial (Dual K V) :=
+  (nontrivial_dual_iff K).mpr inferInstance
+
 end
 
 theorem dual_rank_eq [Module.Finite K V] :
@@ -670,6 +692,27 @@ instance _root_.ULift.instModuleIsReflexive.{w} : IsReflexive R (ULift.{w} M) :=
 end IsReflexive
 
 end Module
+
+namespace Submodule
+
+open Module
+
+variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] {p : Submodule R M}
+
+theorem exists_dual_map_eq_bot_of_nmem {x : M} (hx : x ∉ p) (hp' : Free R (M ⧸ p)) :
+    ∃ f : Dual R M, f x ≠ 0 ∧ p.map f = ⊥ := by
+  suffices ∃ f : Dual R (M ⧸ p), f (p.mkQ x) ≠ 0 by
+    obtain ⟨f, hf⟩ := this; exact ⟨f.comp p.mkQ, hf, by simp [Submodule.map_comp]⟩
+  rwa [← Submodule.Quotient.mk_eq_zero, ← Submodule.mkQ_apply,
+    ← forall_dual_apply_eq_zero_iff (K := R), not_forall] at hx
+
+theorem exists_dual_map_eq_bot_of_lt_top (hp : p < ⊤) (hp' : Free R (M ⧸ p)) :
+    ∃ f : Dual R M, f ≠ 0 ∧ p.map f = ⊥ := by
+  obtain ⟨x, hx⟩ : ∃ x : M, x ∉ p := by rw [lt_top_iff_ne_top] at hp; contrapose! hp; ext; simp [hp]
+  obtain ⟨f, hf, hf'⟩ := p.exists_dual_map_eq_bot_of_nmem hx hp'
+  exact ⟨f, by aesop, hf'⟩
+
+end Submodule
 
 section DualBases
 

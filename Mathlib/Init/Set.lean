@@ -36,9 +36,16 @@ This file is a port of the core Lean 3 file `lib/lean/library/init/data/set.lean
 
 set_option autoImplicit true
 
+/-- A set is a collection of elements of some type `α`.
+
+Although `Set` is defined as `α → Prop`, this is an implementation detail which should not be
+relied on. Instead, `setOf` and membership of a set (`∈`) should be used to convert between sets
+and predicates.
+-/
 def Set (α : Type u) := α → Prop
 #align set Set
 
+/-- Turn a predicate `p : α → Prop` into a set, also written as `{x | p x}` -/
 def setOf {α : Type u} (p : α → Prop) : Set α :=
   p
 #align set_of setOf

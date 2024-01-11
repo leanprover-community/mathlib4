@@ -214,7 +214,7 @@ protected noncomputable def extraDegeneracy (Δ : SimplexCategory) :
     apply SimplexCategory.Hom.ext
     ext j : 2
     dsimp [SimplicialObject.δ, SimplexCategory.δ, SSet.standardSimplex]
-    by_cases j = 0
+    by_cases h : j = 0
     · subst h
       simp only [Fin.succ_succAbove_zero, shiftFun_0]
     · obtain ⟨_, rfl⟩ := Fin.eq_succ_of_ne_zero <| h
@@ -225,7 +225,7 @@ protected noncomputable def extraDegeneracy (Δ : SimplexCategory) :
     apply SimplexCategory.Hom.ext
     ext j : 2
     dsimp [SimplicialObject.σ, SimplexCategory.σ, SSet.standardSimplex]
-    by_cases j = 0
+    by_cases h : j = 0
     · subst h
       simp only [shiftFun_0]
       exact shiftFun_0 φ.toOrderHom
@@ -326,7 +326,7 @@ noncomputable def extraDegeneracy : SimplicialObject.Augmented.ExtraDegeneracy f
     dsimp [cechNerve, SimplicialObject.δ, SimplexCategory.δ]
     ext j
     · simp only [assoc, WidePullback.lift_π]
-      by_cases j = 0
+      by_cases h : j = 0
       · subst h
         erw [Fin.succ_succAbove_zero, ExtraDegeneracy.s_comp_π_0, ExtraDegeneracy.s_comp_π_0]
         dsimp
@@ -344,7 +344,7 @@ noncomputable def extraDegeneracy : SimplicialObject.Augmented.ExtraDegeneracy f
     dsimp [cechNerve, SimplicialObject.σ, SimplexCategory.σ]
     ext j
     · simp only [assoc, WidePullback.lift_π]
-      by_cases j = 0
+      by_cases h : j = 0
       · subst h
         erw [ExtraDegeneracy.s_comp_π_0, ExtraDegeneracy.s_comp_π_0]
         dsimp

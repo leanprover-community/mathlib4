@@ -494,7 +494,27 @@ instance isFiniteMeasure_sFiniteSeq [h : SFinite μ] (n : ℕ) : IsFiniteMeasure
 lemma sum_sFiniteSeq (μ : Measure α) [h : SFinite μ] : sum (sFiniteSeq μ) = μ :=
   h.1.choose_spec.2.symm
 
+/-- A countable sum of finite measures is s-finite.
+This lemma is superseeded by the instance below. -/
+lemma sfinite_sum_of_countable {ι : Type*} [Countable ι]
+    (m : ι → Measure α) [∀ n, IsFiniteMeasure (m n)] : SFinite (Measure.sum m) := by
+  classical
+  obtain ⟨f, hf⟩ : ∃ f : ι → ℕ, Function.Injective f := Countable.exists_injective_nat ι
+  refine ⟨_, fun n ↦ ?_, (sum_extend_zero hf m).symm⟩
+  rcases em (n ∈ range f) with ⟨i, rfl⟩ | hn
+  · rw [hf.extend_apply]
+    infer_instance
+  · rw [Function.extend_apply' _ _ _ hn, Pi.zero_apply]
+    infer_instance
+
+instance {ι : Type*} [Countable ι] (m : ι → Measure α) [∀ n, SFinite (m n)] :
+    SFinite (Measure.sum m) := by
+  change SFinite (Measure.sum (fun i ↦ m i))
+  simp_rw [← sum_sFiniteSeq (m _), Measure.sum_sum]
+  apply sfinite_sum_of_countable
+
 end SFinite
+
 /-- A measure `μ` is called σ-finite if there is a countable collection of sets
  `{ A i | i ∈ ℕ }` such that `μ (A i) < ∞` and `⋃ i, A i = s`. -/
 class SigmaFinite {m0 : MeasurableSpace α} (μ : Measure α) : Prop where
@@ -1093,7 +1113,7 @@ instance isLocallyFiniteMeasureSMulNNReal [TopologicalSpace α] (μ : Measure α
 protected theorem Measure.isTopologicalBasis_isOpen_lt_top [TopologicalSpace α]
     (μ : Measure α) [IsLocallyFiniteMeasure μ] :
     TopologicalSpace.IsTopologicalBasis { s | IsOpen s ∧ μ s < ∞ } := by
-  refine' TopologicalSpace.isTopologicalBasis_of_open_of_nhds (fun s hs => hs.1) _
+  refine' TopologicalSpace.isTopologicalBasis_of_isOpen_of_nhds (fun s hs => hs.1) _
   intro x s xs hs
   rcases μ.exists_isOpen_measure_lt_top x with ⟨v, xv, hv, μv⟩
   refine' ⟨v ∩ s, ⟨hv.inter hs, lt_of_le_of_lt _ μv⟩, ⟨xv, xs⟩, inter_subset_right _ _⟩

@@ -308,7 +308,7 @@ theorem le_sqrt_log (hN : 4096 ≤ N) : log (2 / (1 - 2 / exp 1)) * (69 / 50) �
   have : ((12 : ℕ) : ℝ) * log 2 ≤ log N := by
     rw [← log_rpow zero_lt_two, log_le_log, rpow_nat_cast]
     · norm_num1
-      exact_mod_cast hN
+      exact mod_cast hN
     · exact rpow_pos_of_pos zero_lt_two _
     rw [cast_pos]
     exact hN.trans_lt' (by norm_num1)
@@ -418,7 +418,7 @@ theorem dValue_pos (hN₃ : 8 ≤ N) : 0 < dValue N := by
     · apply log_two_mul_two_le_sqrt_log_eight.trans
       apply Real.sqrt_le_sqrt
       rw [log_le_log _ hN₀]
-      · exact_mod_cast hN₃
+      · exact mod_cast hN₃
       · norm_num
     exact hN₃.trans_lt' (by norm_num)
   · exact cast_pos.2 (nValue_pos <| hN₃.trans' <| by norm_num)
@@ -430,7 +430,7 @@ theorem le_N (hN : 2 ≤ N) : (2 * dValue N - 1) ^ nValue N ≤ N := by
   have : (2 * dValue N - 1) ^ nValue N ≤ (2 * dValue N) ^ nValue N :=
     Nat.pow_le_pow_of_le_left (Nat.sub_le _ _) _
   apply this.trans
-  suffices ((2 * dValue N) ^ nValue N : ℝ) ≤ N by exact_mod_cast this
+  suffices ((2 * dValue N) ^ nValue N : ℝ) ≤ N from mod_cast this
   suffices i : (2 * dValue N : ℝ) ≤ (N : ℝ) ^ (1 / nValue N : ℝ)
   · rw [← rpow_nat_cast]
     apply (rpow_le_rpow (mul_nonneg zero_le_two (cast_nonneg _)) i (cast_nonneg _)).trans
@@ -461,7 +461,7 @@ theorem bound (hN : 4096 ≤ N) : (N : ℝ) ^ (1 / nValue N : ℝ) / exp 1 < dVa
     have : ((12 : ℕ) : ℝ) * log 2 ≤ log N := by
       rw [← log_rpow zero_lt_two, log_le_log, rpow_nat_cast]
       · norm_num1
-        exact_mod_cast hN
+        exact mod_cast hN
       · exact rpow_pos_of_pos zero_lt_two _
       rw [cast_pos]
       exact hN.trans_lt' (by norm_num1)
@@ -535,7 +535,7 @@ theorem lower_bound_le_one' (hN : 2 ≤ N) (hN' : N ≤ 4096) :
     sqrt_le_left zero_le_four, log_le_iff_le_exp (cast_pos.2 (zero_lt_two.trans_le hN))]
   norm_num1
   apply le_trans _ four_zero_nine_six_lt_exp_sixteen.le
-  exact_mod_cast hN'
+  exact mod_cast hN'
 #align behrend.lower_bound_le_one' Behrend.lower_bound_le_one'
 
 theorem lower_bound_le_one (hN : 1 ≤ N) (hN' : N ≤ 4096) :

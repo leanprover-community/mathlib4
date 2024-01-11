@@ -353,7 +353,7 @@ theorem g_injective : Injective (g m) := by
 
 theorem f_image_g (w : V m.succ) (hv : ∃ v, g m v = w) : f m.succ w = √ (m + 1) • w := by
   rcases hv with ⟨v, rfl⟩
-  have : √ (m + 1) * √ (m + 1) = m + 1 := Real.mul_self_sqrt (by exact_mod_cast zero_le _)
+  have : √ (m + 1) * √ (m + 1) = m + 1 := Real.mul_self_sqrt (mod_cast zero_le _)
   rw [f_succ_apply, g_apply]
   simp [this, f_squared, smul_add, add_smul, smul_smul, V]
   abel
@@ -400,7 +400,7 @@ theorem exists_eigenvalue (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
   let W := Span (e '' H)
   let img := range (g m)
   suffices 0 < dim (W ⊓ img) by
-    exact_mod_cast exists_mem_ne_zero_of_rank_pos this
+    exact mod_cast exists_mem_ne_zero_of_rank_pos this
   have dim_le : dim (W ⊔ img) ≤ 2 ^ (m + 1 : Cardinal) := by
     convert ← rank_submodule_le (W ⊔ img)
     rw [← Nat.cast_succ]

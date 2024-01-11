@@ -57,7 +57,6 @@ import Mathlib.Tactic.MkIffOfInductiveProp
 -- import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Tactic.NthRewrite
 import Mathlib.Tactic.Observe
-import Mathlib.Tactic.PermuteGoals
 import Mathlib.Tactic.ProjectionNotation
 import Mathlib.Tactic.Propose
 import Mathlib.Tactic.PushNeg
@@ -123,8 +122,8 @@ section Hint
 register_hint split
 register_hint intro
 register_hint aesop
-register_hint decide
 register_hint simp_all?
 register_hint exact?
+register_hint decide
 
 end Hint

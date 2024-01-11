@@ -758,7 +758,7 @@ theorem zpowers_eq {k : ℕ+} {ζ : Rˣ} (h : IsPrimitiveRoot ζ k) :
 theorem eq_pow_of_mem_rootsOfUnity {k : ℕ+} {ζ ξ : Rˣ} (h : IsPrimitiveRoot ζ k)
     (hξ : ξ ∈ rootsOfUnity k R) : ∃ (i : ℕ), i < k ∧ ζ ^ i = ξ := by
   obtain ⟨n, rfl⟩ : ∃ n : ℤ, ζ ^ n = ξ := by rwa [← h.zpowers_eq] at hξ
-  have hk0 : (0 : ℤ) < k := by exact_mod_cast k.pos
+  have hk0 : (0 : ℤ) < k := mod_cast k.pos
   let i := n % k
   have hi0 : 0 ≤ i := Int.emod_nonneg _ (ne_of_gt hk0)
   lift i to ℕ using hi0 with i₀ hi₀

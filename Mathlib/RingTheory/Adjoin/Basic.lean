@@ -439,6 +439,11 @@ theorem map_adjoin (φ : A →ₐ[R] B) (s : Set A) : (adjoin R s).map φ = adjo
   (adjoin_image _ _ _).symm
 #align alg_hom.map_adjoin AlgHom.map_adjoin
 
+@[simp]
+theorem map_adjoin_singleton (e : A →ₐ[R] B) (x : A) :
+    (adjoin R {x}).map e = adjoin R {e x} := by
+  rw [map_adjoin, Set.image_singleton]
+
 theorem adjoin_le_equalizer (φ₁ φ₂ : A →ₐ[R] B) {s : Set A} (h : s.EqOn φ₁ φ₂) :
     adjoin R s ≤ φ₁.equalizer φ₂ :=
   adjoin_le h

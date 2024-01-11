@@ -80,24 +80,24 @@ attribute [instance] PreservesPullbacksOfInclusions.preservesPullbackInl
 and binary coproducts are universal. -/
 class FinitaryPreExtensive (C : Type u) [Category.{v} C] : Prop where
   [hasFiniteCoproducts : HasFiniteCoproducts C]
-  [HasPullbacksOfInclusions : HasPullbacksOfInclusions C]
+  [hasPullbacksOfInclusions : HasPullbacksOfInclusions C]
   /-- In a finitary extensive category, all coproducts are van Kampen-/
   universal' : ∀ {X Y : C} (c : BinaryCofan X Y), IsColimit c → IsUniversalColimit c
 
 attribute [instance] FinitaryPreExtensive.hasFiniteCoproducts
-attribute [instance] FinitaryPreExtensive.HasPullbacksOfInclusions
+attribute [instance] FinitaryPreExtensive.hasPullbacksOfInclusions
 
 /-- A category is (finitary) extensive if it has finite coproducts,
 and binary coproducts are van Kampen. -/
 class FinitaryExtensive (C : Type u) [Category.{v} C] : Prop where
   [hasFiniteCoproducts : HasFiniteCoproducts C]
-  [HasPullbacksOfInclusions : HasPullbacksOfInclusions C]
+  [hasPullbacksOfInclusions : HasPullbacksOfInclusions C]
   /-- In a finitary extensive category, all coproducts are van Kampen-/
   van_kampen' : ∀ {X Y : C} (c : BinaryCofan X Y), IsColimit c → IsVanKampenColimit c
 #align category_theory.finitary_extensive CategoryTheory.FinitaryExtensive
 
 attribute [instance] FinitaryExtensive.hasFiniteCoproducts
-attribute [instance] FinitaryExtensive.HasPullbacksOfInclusions
+attribute [instance] FinitaryExtensive.hasPullbacksOfInclusions
 
 theorem FinitaryExtensive.vanKampen [FinitaryExtensive C] {F : Discrete WalkingPair ⥤ C}
     (c : Cocone F) (hc : IsColimit c) : IsVanKampenColimit c := by
@@ -310,7 +310,7 @@ noncomputable def finitaryExtensiveTopCatAux (Z : TopCat.{u})
       (fun h => s.inl <| eX.symm ⟨x, h⟩) fun h => s.inr <| eY.symm ⟨x, (this x).resolve_left h⟩, _⟩
     rw [continuous_iff_continuousAt]
     intro x
-    by_cases f x = Sum.inl PUnit.unit
+    by_cases h : f x = Sum.inl PUnit.unit
     · revert h x
       apply (IsOpen.continuousOn_iff _).mp
       · rw [continuousOn_iff_continuous_restrict]

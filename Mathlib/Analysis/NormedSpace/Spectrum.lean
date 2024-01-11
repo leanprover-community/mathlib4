@@ -141,13 +141,13 @@ protected theorem isCompact [ProperSpace 𝕜] (a : A) : IsCompact (σ a) :=
 
 theorem spectralRadius_le_nnnorm [NormOneClass A] (a : A) : spectralRadius 𝕜 a ≤ ‖a‖₊ := by
   refine' iSup₂_le fun k hk => _
-  exact_mod_cast norm_le_norm_of_mem hk
+  exact mod_cast norm_le_norm_of_mem hk
 #align spectrum.spectral_radius_le_nnnorm spectrum.spectralRadius_le_nnnorm
 
 theorem exists_nnnorm_eq_spectralRadius_of_nonempty [ProperSpace 𝕜] {a : A} (ha : (σ a).Nonempty) :
     ∃ k ∈ σ a, (‖k‖₊ : ℝ≥0∞) = spectralRadius 𝕜 a := by
   obtain ⟨k, hk, h⟩ := (spectrum.isCompact a).exists_forall_ge ha continuous_nnnorm.continuousOn
-  exact ⟨k, hk, le_antisymm (le_iSup₂ (α := ℝ≥0∞) k hk) (iSup₂_le <| by exact_mod_cast h)⟩
+  exact ⟨k, hk, le_antisymm (le_iSup₂ (α := ℝ≥0∞) k hk) (iSup₂_le <| mod_cast h)⟩
 #align spectrum.exists_nnnorm_eq_spectral_radius_of_nonempty spectrum.exists_nnnorm_eq_spectralRadius_of_nonempty
 
 theorem spectralRadius_lt_of_forall_lt_of_nonempty [ProperSpace 𝕜] {a : A} (ha : (σ a).Nonempty)
@@ -155,7 +155,7 @@ theorem spectralRadius_lt_of_forall_lt_of_nonempty [ProperSpace 𝕜] {a : A} (h
   sSup_image.symm.trans_lt <|
     ((spectrum.isCompact a).sSup_lt_iff_of_continuous ha
           (ENNReal.continuous_coe.comp continuous_nnnorm).continuousOn (r : ℝ≥0∞)).mpr
-      (by dsimp only [(· ∘ ·)]; exact_mod_cast hr)
+      (by dsimp only [(· ∘ ·)]; exact mod_cast hr)
 #align spectrum.spectral_radius_lt_of_forall_lt_of_nonempty spectrum.spectralRadius_lt_of_forall_lt_of_nonempty
 
 open ENNReal Polynomial
@@ -175,7 +175,7 @@ theorem spectralRadius_le_pow_nnnorm_pow_one_div (a : A) (n : ℕ) :
     simpa only [Real.toNNReal_mul (norm_nonneg _), norm_toNNReal, nnnorm_pow k (n + 1),
       ENNReal.coe_mul] using coe_mono (Real.toNNReal_mono (norm_le_norm_mul_of_mem pow_mem))
   -- take (n + 1)ᵗʰ roots and clean up the left-hand side
-  have hn : 0 < ((n + 1 : ℕ) : ℝ) := by exact_mod_cast Nat.succ_pos'
+  have hn : 0 < ((n + 1 : ℕ) : ℝ) := mod_cast Nat.succ_pos'
   convert monotone_rpow_of_nonneg (one_div_pos.mpr hn).le nnnorm_pow_le using 1
   all_goals dsimp
   erw [coe_pow, ← rpow_nat_cast, ← rpow_mul, mul_one_div_cancel hn.ne', rpow_one]
@@ -185,7 +185,7 @@ theorem spectralRadius_le_pow_nnnorm_pow_one_div (a : A) (n : ℕ) :
 theorem spectralRadius_le_liminf_pow_nnnorm_pow_one_div (a : A) :
     spectralRadius 𝕜 a ≤ atTop.liminf fun n : ℕ => (‖a ^ n‖₊ : ℝ≥0∞) ^ (1 / n : ℝ) := by
   refine' ENNReal.le_of_forall_lt_one_mul_le fun ε hε => _
-  by_cases ε = 0
+  by_cases h : ε = 0
   · simp only [h, zero_mul, zero_le']
   have hε' : ε⁻¹ ≠ ∞ := fun h' =>
     h (by simpa only [inv_inv, inv_top] using congr_arg (fun x : ℝ≥0∞ => x⁻¹) h')
@@ -273,7 +273,7 @@ theorem hasFPowerSeriesOnBall_inverse_one_sub_smul [CompleteSpace A] (a : A) :
       · refine'
           le_trans (le_trans (mul_le_mul_right' (nnnorm_pow_le' a n.succ_pos) (r ^ n.succ)) _)
             (le_max_left _ _)
-        · by_cases ‖a‖₊ = 0
+        · by_cases h : ‖a‖₊ = 0
           · simp only [h, zero_mul, zero_le', pow_succ]
           · rw [← coe_inv h, coe_lt_coe, NNReal.lt_inv_iff_mul_lt h] at hr
             simpa only [← mul_pow, mul_comm] using pow_le_one' hr.le n.succ
@@ -367,7 +367,7 @@ theorem pow_norm_pow_one_div_tendsto_nhds_spectralRadius (a : A) :
   convert pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius a using 1
   ext1
   rw [← ofReal_rpow_of_nonneg (norm_nonneg _) _, ← coe_nnnorm, coe_nnreal_eq]
-  exact one_div_nonneg.mpr (by exact_mod_cast zero_le _)
+  exact one_div_nonneg.mpr (mod_cast zero_le _)
 #align spectrum.pow_norm_pow_one_div_tendsto_nhds_spectral_radius spectrum.pow_norm_pow_one_div_tendsto_nhds_spectralRadius
 
 end GelfandFormula
@@ -472,7 +472,7 @@ theorem exp_mem_exp [IsROrC 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [Complet
     filter_upwards [Filter.eventually_cofinite_ne 0] with n hn
     rw [norm_smul, mul_comm, norm_inv, IsROrC.norm_natCast, ← div_eq_mul_inv]
     exact div_le_div (pow_nonneg (norm_nonneg _) n) (norm_pow_le' (a - ↑ₐ z) (zero_lt_iff.mpr hn))
-      (by exact_mod_cast Nat.factorial_pos n) (by exact_mod_cast Nat.factorial_le (lt_add_one n).le)
+      (mod_cast Nat.factorial_pos n) (mod_cast Nat.factorial_le (lt_add_one n).le)
   have h₀ : (∑' n : ℕ, ((n + 1).factorial⁻¹ : 𝕜) • (a - ↑ₐ z) ^ (n + 1)) = (a - ↑ₐ z) * b := by
     simpa only [mul_smul_comm, pow_succ] using hb.tsum_mul_left (a - ↑ₐ z)
   have h₁ : (∑' n : ℕ, ((n + 1).factorial⁻¹ : 𝕜) • (a - ↑ₐ z) ^ (n + 1)) = b * (a - ↑ₐ z) := by

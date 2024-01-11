@@ -54,7 +54,7 @@ theorem wilsons_lemma : ((p - 1)! : ZMod p) = -1 := by
   symm
   refine' prod_bij (fun a _ => (a : ZMod p).val) _ _ _ _
   · intro a ha
-    rw [mem_Ico, ← Nat.succ_sub hp, Nat.succ_sub_one]
+    rw [mem_Ico, ← Nat.succ_sub hp, Nat.add_one_sub_one]
     constructor
     · apply Nat.pos_of_ne_zero; rw [← @val_zero p]
       intro h; apply Units.ne_zero a (val_injective p h)
@@ -62,7 +62,7 @@ theorem wilsons_lemma : ((p - 1)! : ZMod p) = -1 := by
   · rintro a -; simp only [cast_id, nat_cast_val]
   · intro _ _ _ _ h; rw [Units.ext_iff]; exact val_injective p h
   · intro b hb
-    rw [mem_Ico, Nat.succ_le_iff, ← succ_sub hp, succ_sub_one, pos_iff_ne_zero] at hb
+    rw [mem_Ico, Nat.succ_le_iff, ← succ_sub hp, Nat.add_one_sub_one, pos_iff_ne_zero] at hb
     refine' ⟨Units.mk0 b _, Finset.mem_univ _, _⟩
     · intro h; apply hb.1; apply_fun val at h
       simpa only [val_cast_of_lt hb.right, val_zero] using h
@@ -75,7 +75,7 @@ theorem prod_Ico_one_prime : ∏ x in Ico 1 p, (x : ZMod p) = -1 := by
   conv =>
     congr
     congr
-    rw [← succ_sub_one p, succ_sub (Fact.out (p := p.Prime)).pos]
+    rw [← Nat.add_one_sub_one p, succ_sub (Fact.out (p := p.Prime)).pos]
   rw [← prod_natCast, Finset.prod_Ico_id_eq_factorial, wilsons_lemma]
 #align zmod.prod_Ico_one_prime ZMod.prod_Ico_one_prime
 

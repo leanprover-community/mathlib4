@@ -1157,7 +1157,15 @@ end CompleteBooleanAlgebra
 
 section SetLattice
 
-variable {p : ι → Prop} {s : ι → Set α}
+variable {p : ι → Prop} {s : ι → Set α} {𝓕 : Filter ι} {a : α}
+
+lemma mem_liminf_iff_eventually_mem : (a ∈ liminf s 𝓕) ↔ (∀ᶠ i in 𝓕, a ∈ s i) := by
+  simpa only [liminf_eq_iSup_iInf, iSup_eq_iUnion, iInf_eq_iInter, mem_iUnion, mem_iInter]
+    using ⟨fun ⟨S, hS, hS'⟩ ↦ mem_of_superset hS (by tauto), fun h ↦ ⟨{i | a ∈ s i}, h, by tauto⟩⟩
+
+lemma mem_limsup_iff_frequently_mem : (a ∈ limsup s 𝓕) ↔ (∃ᶠ i in 𝓕, a ∈ s i) := by
+  simp only [Filter.Frequently, iff_not_comm, ←mem_compl_iff, limsup_compl, comp_apply,
+    mem_liminf_iff_eventually_mem]
 
 theorem cofinite.blimsup_set_eq :
     blimsup s cofinite p = { x | { n | p n ∧ x ∈ s n }.Infinite } := by

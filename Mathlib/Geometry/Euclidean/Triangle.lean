@@ -238,14 +238,9 @@ theorem angle_add_angle_sub_add_angle_sub_eq_pi {x y : V} (hx : x ≠ 0) (hy : y
     replace h3lt := lt_of_mul_lt_mul_right h3lt (le_of_lt Real.pi_pos)
     norm_cast at h3lt
   interval_cases n
-  · rw [hn] at hcos
-    simp at hcos
-    norm_num at hcos
-  · rw [hn]
-    norm_num
-  · rw [hn] at hcos
-    simp at hcos
-    norm_num at hcos
+  · simp [hn] at hcos
+  · norm_num [hn]
+  · simp [hn] at hcos
 #align inner_product_geometry.angle_add_angle_sub_add_angle_sub_eq_pi InnerProductGeometry.angle_add_angle_sub_add_angle_sub_eq_pi
 
 end InnerProductGeometry

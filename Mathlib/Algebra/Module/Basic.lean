@@ -358,27 +358,6 @@ def RingHom.toModule [Semiring R] [Semiring S] (f : R →+* S) : Module R S :=
   Module.compHom S f
 #align ring_hom.to_module RingHom.toModule
 
-/-- The tautological action by `R →+* R` on `R`.
-
-This generalizes `Function.End.applyMulAction`. -/
-instance RingHom.applyDistribMulAction [Semiring R] : DistribMulAction (R →+* R) R where
-  smul := (· <| ·)
-  smul_zero := RingHom.map_zero
-  smul_add := RingHom.map_add
-  one_smul _ := rfl
-  mul_smul _ _ _ := rfl
-#align ring_hom.apply_distrib_mul_action RingHom.applyDistribMulAction
-
-@[simp]
-protected theorem RingHom.smul_def [Semiring R] (f : R →+* R) (a : R) : f • a = f a :=
-  rfl
-#align ring_hom.smul_def RingHom.smul_def
-
-/-- `RingHom.applyDistribMulAction` is faithful. -/
-instance RingHom.applyFaithfulSMul [Semiring R] : FaithfulSMul (R →+* R) R :=
-  ⟨fun {_ _} h => RingHom.ext h⟩
-#align ring_hom.apply_has_faithful_smul RingHom.applyFaithfulSMul
-
 section AddCommMonoid
 
 variable [Semiring R] [AddCommMonoid M] [Module R M]

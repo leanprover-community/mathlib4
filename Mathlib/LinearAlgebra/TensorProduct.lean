@@ -88,11 +88,6 @@ namespace TensorProduct
 
 section Module
 
--- porting note: This is added as a local instance for `SMul.aux`.
--- For some reason type-class inference in Lean 3 unfolded this definition.
-def addMonoid : AddMonoid (M ⊗[R] N) :=
-  { (addConGen (TensorProduct.Eqv R M N)).addMonoid with }
-
 protected instance add : Add (M ⊗[R] N) :=
   (addConGen (TensorProduct.Eqv R M N)).hasAdd
 
@@ -143,6 +138,42 @@ protected theorem induction_on {motive : M ⊗[R] N → Prop} (z : M ⊗[R] N)
       exact add _ _ (tmul ..) ih
 #align tensor_product.induction_on TensorProduct.induction_on
 
+/-- Lift an `R`-balanced map to the tensor product.
+
+A map `f : M →+ N →+ P` additive in both components is `R`-balanced, or middle linear with respect
+to `R`, if scalar multiplication in either argument is equivalent, `f (r • m) n = f m (r • n)`.
+
+Note that strictly the first action should be a right-action by `R`, but for now `R` is commutative
+so it doesn't matter. -/
+-- TODO: use this to implement `lift` and `SMul.aux`. For now we do not do this as it causes
+-- performance issues elsewhere.
+def liftAddHom (f : M →+ N →+ P)
+    (hf : ∀ (r : R) (m : M) (n : N), f (r • m) n = f m (r • n)) :
+    M ⊗[R] N →+ P :=
+  (addConGen (TensorProduct.Eqv R M N)).lift (FreeAddMonoid.lift (fun mn : M × N => f mn.1 mn.2)) <|
+    AddCon.addConGen_le fun x y hxy =>
+      match x, y, hxy with
+      | _, _, .of_zero_left n =>
+        (AddCon.ker_rel _).2 <| by simp_rw [map_zero, FreeAddMonoid.lift_eval_of, map_zero,
+          AddMonoidHom.zero_apply]
+      | _, _, .of_zero_right m =>
+        (AddCon.ker_rel _).2 <| by simp_rw [map_zero, FreeAddMonoid.lift_eval_of, map_zero]
+      | _, _, .of_add_left m₁ m₂ n =>
+        (AddCon.ker_rel _).2 <| by simp_rw [map_add, FreeAddMonoid.lift_eval_of, map_add,
+          AddMonoidHom.add_apply]
+      | _, _, .of_add_right m n₁ n₂ =>
+        (AddCon.ker_rel _).2 <| by simp_rw [map_add, FreeAddMonoid.lift_eval_of, map_add]
+      | _, _, .of_smul s m n =>
+        (AddCon.ker_rel _).2 <| by rw [FreeAddMonoid.lift_eval_of, FreeAddMonoid.lift_eval_of, hf]
+      | _, _, .add_comm x y =>
+        (AddCon.ker_rel _).2 <| by simp_rw [map_add, add_comm]
+
+@[simp]
+theorem liftAddHom_tmul (f : M →+ N →+ P)
+    (hf : ∀ (r : R) (m : M) (n : N), f (r • m) n = f m (r • n)) (m : M) (n : N) :
+    liftAddHom f hf (m ⊗ₜ n) = f m n :=
+  rfl
+
 variable (M)
 
 @[simp]
@@ -168,6 +199,16 @@ variable {N}
 theorem tmul_add (m : M) (n₁ n₂ : N) : m ⊗ₜ (n₁ + n₂) = m ⊗ₜ n₁ + m ⊗ₜ[R] n₂ :=
   Eq.symm <| Quotient.sound' <| AddConGen.Rel.of _ _ <| Eqv.of_add_right _ _ _
 #align tensor_product.tmul_add TensorProduct.tmul_add
+
+instance uniqueLeft [Subsingleton M] : Unique (M ⊗[R] N) where
+  default := 0
+  uniq z := z.induction_on rfl (fun x y ↦ by rw [Subsingleton.elim x 0, zero_tmul]; rfl) <| by
+    rintro _ _ rfl rfl; apply add_zero
+
+instance uniqueRight [Subsingleton N] : Unique (M ⊗[R] N) where
+  default := 0
+  uniq z := z.induction_on rfl (fun x y ↦ by rw [Subsingleton.elim y 0, tmul_zero]; rfl) <| by
+    rintro _ _ rfl rfl; apply add_zero
 
 section
 
@@ -206,12 +247,16 @@ theorem smul_tmul [DistribMulAction R' N] [CompatibleSMul R R' M N] (r : R') (m 
   CompatibleSMul.smul_tmul _ _ _
 #align tensor_product.smul_tmul TensorProduct.smul_tmul
 
-attribute [local instance] addMonoid
+-- porting note: This is added as a local instance for `SMul.aux`.
+-- For some reason type-class inference in Lean 3 unfolded this definition.
+private def addMonoidWithWrongNSMul : AddMonoid (M ⊗[R] N) :=
+  { (addConGen (TensorProduct.Eqv R M N)).addMonoid with }
+
+attribute [local instance] addMonoidWithWrongNSMul in
 /-- Auxiliary function to defining scalar multiplication on tensor product. -/
 def SMul.aux {R' : Type*} [SMul R' M] (r : R') : FreeAddMonoid (M × N) →+ M ⊗[R] N :=
   FreeAddMonoid.lift fun p : M × N => (r • p.1) ⊗ₜ p.2
 #align tensor_product.smul.aux TensorProduct.SMul.aux
-attribute [-instance] addMonoid
 
 theorem SMul.aux_of {R' : Type*} [SMul R' M] (r : R') (m : M) (n : N) :
     SMul.aux r (.of (m, n)) = (r • m) ⊗ₜ[R] n :=

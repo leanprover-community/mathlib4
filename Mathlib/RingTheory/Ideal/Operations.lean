@@ -1701,6 +1701,41 @@ theorem comap_bot_of_injective : Ideal.comap f ⊥ = ⊥ :=
 
 end Injective
 
+/-- If `f : R ≃+* S` is a ring isomorphism and `I : Ideal R`, then `map f.symm (map f I) = I`. -/
+@[simp]
+theorem map_of_equiv (I : Ideal R) (f : R ≃+* S) :
+    (I.map (f : R →+* S)).map (f.symm : S →+* R) = I := by
+  rw [← RingEquiv.toRingHom_eq_coe, ← RingEquiv.toRingHom_eq_coe, map_map,
+    RingEquiv.toRingHom_eq_coe, RingEquiv.toRingHom_eq_coe, RingEquiv.symm_comp, map_id]
+#align ideal.map_of_equiv Ideal.map_of_equiv
+
+/-- If `f : R ≃+* S` is a ring isomorphism and `I : Ideal R`,
+  then `comap f (comap f.symm I) = I`. -/
+@[simp]
+theorem comap_of_equiv (I : Ideal R) (f : R ≃+* S) :
+    (I.comap (f.symm : S →+* R)).comap (f : R →+* S) = I := by
+  rw [← RingEquiv.toRingHom_eq_coe, ← RingEquiv.toRingHom_eq_coe, comap_comap,
+    RingEquiv.toRingHom_eq_coe, RingEquiv.toRingHom_eq_coe, RingEquiv.symm_comp, comap_id]
+#align ideal.comap_of_equiv Ideal.comap_of_equiv
+
+/-- If `f : R ≃+* S` is a ring isomorphism and `I : Ideal R`, then `map f I = comap f.symm I`. -/
+theorem map_comap_of_equiv (I : Ideal R) (f : R ≃+* S) : I.map (f : R →+* S) = I.comap f.symm :=
+  le_antisymm (Ideal.map_le_comap_of_inverse _ _ _ (Equiv.left_inv' _))
+      (Ideal.comap_le_map_of_inverse _ _ _ (Equiv.right_inv' _))
+#align ideal.map_comap_of_equiv Ideal.map_comap_of_equiv
+
+/-- If `f : R ≃+* S` is a ring isomorphism and `I : Ideal R`, then `comap f.symm I = map f I`. -/
+@[simp]
+theorem comap_symm (I : Ideal R) (f : R ≃+* S) : I.comap f.symm = I.map f :=
+  (map_comap_of_equiv I f).symm
+
+/-- If `f : R ≃+* S` is a ring isomorphism and `I : Ideal R`, then `map f.symm I = comap f I`. -/
+@[simp]
+theorem map_symm (I : Ideal S) (f : R ≃+* S) : I.map f.symm = I.comap f :=
+  map_comap_of_equiv I (RingEquiv.symm f)
+
+
+
 end Semiring
 
 section Ring
@@ -1774,27 +1809,6 @@ theorem comap_le_comap_iff_of_surjective (I J : Ideal S) : comap f I ≤ comap f
 
 end Surjective
 
-/-- If `f : R ≃+* S` is a ring isomorphism and `I : Ideal R`, then `map f (map f.symm) = I`. -/
-@[simp]
-theorem map_of_equiv (I : Ideal R) (f : R ≃+* S) :
-    (I.map (f : R →+* S)).map (f.symm : S →+* R) = I := by
-  rw [← RingEquiv.toRingHom_eq_coe, ← RingEquiv.toRingHom_eq_coe, map_map,
-    RingEquiv.toRingHom_eq_coe, RingEquiv.toRingHom_eq_coe, RingEquiv.symm_comp, map_id]
-#align ideal.map_of_equiv Ideal.map_of_equiv
-
-/-- If `f : R ≃+* S` is a ring isomorphism and `I : Ideal R`, then `comap f.symm (comap f) = I`. -/
-@[simp]
-theorem comap_of_equiv (I : Ideal R) (f : R ≃+* S) :
-    (I.comap (f.symm : S →+* R)).comap (f : R →+* S) = I := by
-  rw [← RingEquiv.toRingHom_eq_coe, ← RingEquiv.toRingHom_eq_coe, comap_comap,
-    RingEquiv.toRingHom_eq_coe, RingEquiv.toRingHom_eq_coe, RingEquiv.symm_comp, comap_id]
-#align ideal.comap_of_equiv Ideal.comap_of_equiv
-
-/-- If `f : R ≃+* S` is a ring isomorphism and `I : Ideal R`, then `map f I = comap f.symm I`. -/
-theorem map_comap_of_equiv (I : Ideal R) (f : R ≃+* S) : I.map (f : R →+* S) = I.comap f.symm :=
-  le_antisymm (le_comap_of_map_le (map_of_equiv I f).le)
-    (le_map_of_comap_le_of_surjective _ f.surjective (comap_of_equiv I f).le)
-#align ideal.map_comap_of_equiv Ideal.map_comap_of_equiv
 
 section Bijective
 
@@ -2198,6 +2212,14 @@ theorem ker_le_comap {K : Ideal S} (f : F) : RingHom.ker f ≤ comap f K := fun 
   mem_comap.2 (((RingHom.mem_ker f).1 hx).symm ▸ K.zero_mem)
 #align ideal.ker_le_comap Ideal.ker_le_comap
 
+theorem map_isPrime_of_equiv {F' : Type*} [RingEquivClass F' R S] (f : F') {I : Ideal R}
+    [IsPrime I] : IsPrime (map f I) := by
+  have h : I.map f = I.map ((f : R ≃+* S) : R →+* S) := rfl
+  rw [h, map_comap_of_equiv I (f : R ≃+* S)]
+  exact Ideal.IsPrime.comap (RingEquiv.symm (f : R ≃+* S))
+#align ideal.map_is_prime_of_equiv Ideal.map_isPrime_of_equiv
+
+
 end Semiring
 
 section Ring
@@ -2247,10 +2269,6 @@ theorem map_eq_bot_iff_of_injective {I : Ideal R} {f : F} (hf : Function.Injecti
   rw [map_eq_bot_iff_le_ker, (RingHom.injective_iff_ker_eq_bot f).mp hf, le_bot_iff]
 #align ideal.map_eq_bot_iff_of_injective Ideal.map_eq_bot_iff_of_injective
 
-theorem map_isPrime_of_equiv {F' : Type*} [RingEquivClass F' R S] (f : F') {I : Ideal R}
-    [IsPrime I] : IsPrime (map f I) :=
-  map_isPrime_of_surjective (EquivLike.surjective f) <| by simp only [RingHom.ker_equiv, bot_le]
-#align ideal.map_is_prime_of_equiv Ideal.map_isPrime_of_equiv
 
 end Ring
 

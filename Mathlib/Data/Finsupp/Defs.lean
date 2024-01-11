@@ -211,8 +211,8 @@ theorem ext_iff' {f g : α →₀ M} : f = g ↔ f.support = g.support ∧ ∀ x
 #align finsupp.ext_iff' Finsupp.ext_iff'
 
 @[simp]
-theorem support_eq_empty {f : α →₀ M} : f.support = ∅ ↔ f = 0 := by
-  exact_mod_cast @Function.support_eq_empty_iff _ _ _ f
+theorem support_eq_empty {f : α →₀ M} : f.support = ∅ ↔ f = 0 :=
+  mod_cast @Function.support_eq_empty_iff _ _ _ f
 #align finsupp.support_eq_empty Finsupp.support_eq_empty
 
 theorem support_nonempty_iff {f : α →₀ M} : f.support.Nonempty ↔ f ≠ 0 := by

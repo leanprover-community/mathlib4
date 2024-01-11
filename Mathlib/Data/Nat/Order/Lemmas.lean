@@ -83,6 +83,12 @@ protected theorem div_eq_zero_iff {a b : ℕ} (hb : 0 < b) : a / b = 0 ↔ a < b
       mul_zero, add_zero]⟩
 #align nat.div_eq_zero_iff Nat.div_eq_zero_iff
 
+protected lemma div_ne_zero_iff (hb : b ≠ 0) : a / b ≠ 0 ↔ b ≤ a := by
+  rw [ne_eq, Nat.div_eq_zero_iff hb.bot_lt, not_lt]
+
+protected lemma div_pos_iff (hb : b ≠ 0) : 0 < a / b ↔ b ≤ a := by
+  rw [pos_iff_ne_zero, Nat.div_ne_zero_iff hb]
+
 #align nat.div_eq_zero Nat.div_eq_of_lt
 
 /-! ### `mod`, `dvd` -/
@@ -217,11 +223,6 @@ theorem le_of_lt_add_of_dvd (h : a < b + n) : n ∣ a → n ∣ b → a ≤ b :=
   exact mul_le_mul_left' (lt_succ_iff.1 <| lt_of_mul_lt_mul_left h bot_le) _
 #align nat.le_of_lt_add_of_dvd Nat.le_of_lt_add_of_dvd
 
-@[simp]
-theorem mod_div_self (m n : ℕ) : m % n / n = 0 := by
-  cases n
-  · exact (m % 0).div_zero
-  · case succ n => exact Nat.div_eq_of_lt (m.mod_lt n.succ_pos)
 #align nat.mod_div_self Nat.mod_div_self
 
 /-- `n` is not divisible by `a` iff it is between `a * k` and `a * (k + 1)` for some `k`. -/

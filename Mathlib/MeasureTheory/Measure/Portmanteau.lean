@@ -550,7 +550,7 @@ implies
 
 -/
 
-variable {Ω : Type} [MeasurableSpace Ω] [TopologicalSpace Ω] [OpensMeasurableSpace Ω]
+variable {Ω : Type*} [MeasurableSpace Ω] [TopologicalSpace Ω] [OpensMeasurableSpace Ω]
 
 lemma lintegral_le_liminf_lintegral_of_forall_isOpen_measure_le_liminf_measure
     {μ : Measure Ω} {μs : ℕ → Measure Ω} {f : Ω → ℝ} (f_cont : Continuous f) (f_nn : 0 ≤ f)

@@ -1052,7 +1052,7 @@ theorem extend_symm_continuousWithinAt_comp_right_iff {X} [TopologicalSpace X] {
 
 theorem isOpen_extend_preimage' {s : Set E} (hs : IsOpen s) :
     IsOpen ((f.extend I).source ∩ f.extend I ⁻¹' s) :=
-  (continuousOn_extend f I).preimage_open_of_open (isOpen_extend_source _ _) hs
+  (continuousOn_extend f I).isOpen_inter_preimage (isOpen_extend_source _ _) hs
 #align local_homeomorph.is_open_extend_preimage' LocalHomeomorph.isOpen_extend_preimage'
 
 theorem isOpen_extend_preimage {s : Set E} (hs : IsOpen s) : IsOpen (f.source ∩ f.extend I ⁻¹' s) :=

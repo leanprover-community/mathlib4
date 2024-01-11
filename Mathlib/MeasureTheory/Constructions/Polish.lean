@@ -72,18 +72,18 @@ This is useful in situations where a space has no natural topology or
 the natural topology in a space is non-Polish.
 
 To endow a standard Borel space `α` with a compatible Polish topology, use
-`letI := upgradePolishSpace α`. One can then use `eq_borel_upgradeStandardBorel α` to
+`letI := upgradeStandardBorel α`. One can then use `eq_borel_upgradeStandardBorel α` to
 rewrite the `MeasurableSpace α` instance to `borel α t`, where `t` is the new topology.-/
 class StandardBorelSpace [MeasurableSpace α] : Prop where
   /-- There exists a compatible Polish topology. -/
   polish : ∃ _ : TopologicalSpace α, BorelSpace α ∧ PolishSpace α
 
 /-- A convenience class similar to `UpgradedPolishSpace`. No instance should be registered.
-Instead one should use `letI := upgradePolishSpace α`. -/
+Instead one should use `letI := upgradeStandardBorel α`. -/
 class UpgradedStandardBorel extends MeasurableSpace α, TopologicalSpace α,
   BorelSpace α, PolishSpace α
 
-/-- Use as `letI := upgradePolishSpace α` to endow a standard Borel space `α` with
+/-- Use as `letI := upgradeStandardBorel α` to endow a standard Borel space `α` with
 a compatible Polish topology.
 
 Warning: following this with `borelize α` will cause an error. Instead, one can

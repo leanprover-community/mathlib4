@@ -95,6 +95,10 @@ instance inhabitedMultiset : Inhabited (Multiset α) :=
   ⟨0⟩
 #align multiset.inhabited_multiset Multiset.inhabitedMultiset
 
+instance [IsEmpty α] : Unique (Multiset α) where
+  default := 0
+  uniq := by rintro ⟨_ | ⟨a, l⟩⟩; exacts [rfl, isEmptyElim a]
+
 @[simp]
 theorem coe_nil : (@nil α : Multiset α) = 0 :=
   rfl

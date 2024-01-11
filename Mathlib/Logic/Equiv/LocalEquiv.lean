@@ -333,6 +333,9 @@ theorem symm_symm : e.symm.symm = e := by
   rfl
 #align local_equiv.symm_symm LocalEquiv.symm_symm
 
+theorem symm_bijective : Function.Bijective (LocalEquiv.symm : LocalEquiv α β → LocalEquiv β α) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
+
 theorem image_source_eq_target : e '' e.source = e.target :=
   e.bijOn.image_eq
 #align local_equiv.image_source_eq_target LocalEquiv.image_source_eq_target

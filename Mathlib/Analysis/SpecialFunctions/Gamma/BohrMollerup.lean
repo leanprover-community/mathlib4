@@ -167,12 +167,11 @@ theorem convexOn_log_Gamma : ConvexOn ℝ (Ioi 0) (log ∘ Gamma) := by
   have : b = 1 - a := by linarith
   subst this
   simp_rw [Function.comp_apply, smul_eq_mul]
-  rw [← log_rpow (Gamma_pos_of_pos hy), ← log_rpow (Gamma_pos_of_pos hx), ←
-    log_mul (rpow_pos_of_pos (Gamma_pos_of_pos hx) _).ne'
-      (rpow_pos_of_pos (Gamma_pos_of_pos hy) _).ne',
-    log_le_log (Gamma_pos_of_pos (add_pos (mul_pos ha hx) (mul_pos hb hy)))
-      (mul_pos (rpow_pos_of_pos (Gamma_pos_of_pos hx) _) (rpow_pos_of_pos (Gamma_pos_of_pos hy) _))]
-  exact Gamma_mul_add_mul_le_rpow_Gamma_mul_rpow_Gamma hx hy ha hb hab
+  simp only [mem_Ioi] at hx hy
+  rw [← log_rpow, ← log_rpow, ← log_mul]
+  · gcongr
+    exact Gamma_mul_add_mul_le_rpow_Gamma_mul_rpow_Gamma hx hy ha hb hab
+  all_goals positivity
 #align real.convex_on_log_Gamma Real.convexOn_log_Gamma
 
 theorem convexOn_Gamma : ConvexOn ℝ (Ioi 0) Gamma := by
@@ -261,8 +260,7 @@ theorem logGammaSeq_add_one (x : ℝ) (n : ℕ) :
   have :
     ∑ m : ℕ in Finset.range (n + 1), log (x + 1 + ↑m) =
       ∑ k : ℕ in Finset.range (n + 1), log (x + ↑(k + 1)) := by
-    refine' Finset.sum_congr (by rfl) fun m _ => _
-    congr 1
+    congr! 2 with m
     push_cast
     abel
   rw [← this, Nat.cast_add_one n]

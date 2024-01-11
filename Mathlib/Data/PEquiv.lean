@@ -135,8 +135,11 @@ theorem symm_refl : (PEquiv.refl α).symm = PEquiv.refl α :=
 theorem symm_symm (f : α ≃. β) : f.symm.symm = f := by cases f; rfl
 #align pequiv.symm_symm PEquiv.symm_symm
 
+theorem symm_bijective : Function.Bijective (PEquiv.symm : (α ≃. β) → β ≃. α) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
+
 theorem symm_injective : Function.Injective (@PEquiv.symm α β) :=
-  LeftInverse.injective symm_symm
+  symm_bijective.injective
 #align pequiv.symm_injective PEquiv.symm_injective
 
 theorem trans_assoc (f : α ≃. β) (g : β ≃. γ) (h : γ ≃. δ) :

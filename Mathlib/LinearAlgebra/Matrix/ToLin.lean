@@ -410,7 +410,7 @@ theorem LinearMap.toMatrix'_mul [Fintype m] [DecidableEq m] (f g : (m → R) →
 @[simp]
 theorem LinearMap.toMatrix'_algebraMap (x : R) :
     LinearMap.toMatrix' (algebraMap R (Module.End R (n → R)) x) = scalar n x := by
-  simp [Module.algebraMap_end_eq_smul_id]
+  simp [Module.algebraMap_end_eq_smul_id, smul_eq_diagonal_mul]
 #align linear_map.to_matrix'_algebra_map LinearMap.toMatrix'_algebraMap
 
 theorem Matrix.ker_toLin'_eq_bot_iff {M : Matrix n n R} :
@@ -661,7 +661,7 @@ lemma LinearMap.toMatrix_pow (f : M₁ →ₗ[R] M₁) (k : ℕ) :
 @[simp]
 theorem LinearMap.toMatrix_algebraMap (x : R) :
     LinearMap.toMatrix v₁ v₁ (algebraMap R (Module.End R M₁) x) = scalar n x := by
-  simp [Module.algebraMap_end_eq_smul_id, LinearMap.toMatrix_id]
+  simp [Module.algebraMap_end_eq_smul_id, LinearMap.toMatrix_id, smul_eq_diagonal_mul]
 #align linear_map.to_matrix_algebra_map LinearMap.toMatrix_algebraMap
 
 theorem LinearMap.toMatrix_mulVec_repr (f : M₁ →ₗ[R] M₂) (x : M₁) :

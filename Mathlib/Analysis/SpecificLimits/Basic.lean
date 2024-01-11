@@ -564,8 +564,8 @@ theorem tendsto_factorial_div_pow_self_atTop :
   tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds
     (tendsto_const_div_atTop_nhds_0_nat 1)
     (eventually_of_forall fun n =>
-      div_nonneg (by exact_mod_cast n.factorial_pos.le)
-        (pow_nonneg (by exact_mod_cast n.zero_le) _))
+      div_nonneg (mod_cast n.factorial_pos.le)
+        (pow_nonneg (mod_cast n.zero_le) _))
     (by
       refine' (eventually_gt_atTop 0).mono fun n hn => _
       rcases Nat.exists_eq_succ_of_ne_zero hn.ne.symm with ⟨k, rfl⟩
@@ -574,11 +574,11 @@ theorem tendsto_factorial_div_pow_self_atTop :
         Finset.prod_range_succ']
       simp only [prod_range_succ', one_mul, Nat.cast_add, zero_add, Nat.cast_one]
       refine'
-            mul_le_of_le_one_left (inv_nonneg.mpr <| by exact_mod_cast hn.le) (prod_le_one _ _) <;>
+            mul_le_of_le_one_left (inv_nonneg.mpr <| mod_cast hn.le) (prod_le_one _ _) <;>
           intro x hx <;>
         rw [Finset.mem_range] at hx
       · refine' mul_nonneg _ (inv_nonneg.mpr _) <;> norm_cast <;> linarith
-      · refine' (div_le_one <| by exact_mod_cast hn).mpr _
+      · refine' (div_le_one <| mod_cast hn).mpr _
         norm_cast
         linarith)
 #align tendsto_factorial_div_pow_self_at_top tendsto_factorial_div_pow_self_atTop
@@ -594,6 +594,11 @@ theorem tendsto_nat_floor_atTop {α : Type*} [LinearOrderedSemiring α] [FloorSe
     Tendsto (fun x : α => ⌊x⌋₊) atTop atTop :=
   Nat.floor_mono.tendsto_atTop_atTop fun x => ⟨max 0 (x + 1), by simp [Nat.le_floor_iff]⟩
 #align tendsto_nat_floor_at_top tendsto_nat_floor_atTop
+
+lemma tendsto_nat_floor_mul_atTop {α : Type _} [LinearOrderedSemifield α] [FloorSemiring α]
+    [Archimedean α] (a : α) (ha : 0 < a) : Tendsto (fun (x:ℕ) => ⌊a * x⌋₊) atTop atTop :=
+  Tendsto.comp tendsto_nat_floor_atTop
+    <| Tendsto.const_mul_atTop ha tendsto_nat_cast_atTop_atTop
 
 variable {R : Type*} [TopologicalSpace R] [LinearOrderedField R] [OrderTopology R] [FloorRing R]
 

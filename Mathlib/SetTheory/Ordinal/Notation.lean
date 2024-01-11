@@ -970,12 +970,12 @@ theorem repr_opow (o₁ o₂) [NF o₁] [NF o₂] : repr (o₁ ^ o₂) = repr o�
   cases' nf_repr_split e₁ with N₁ r₁
   cases' a with a0 n a'
   · cases' m with m
-    · by_cases o₂ = 0 <;> simp [opow_def, opowAux2, opow, e₁, h, r₁]
+    · by_cases h : o₂ = 0 <;> simp [opow_def, opowAux2, opow, e₁, h, r₁]
       have := mt repr_inj.1 h
       rw [zero_opow this]
     · cases' e₂ : split' o₂ with b' k
       cases' nf_repr_split' e₂ with _ r₂
-      by_cases m = 0
+      by_cases h : m = 0
       · simp [opow_def, opow, e₁, h, r₁, e₂, r₂, -Nat.cast_succ, ← Nat.one_eq_succ_zero]
       simp only [opow_def, opowAux2, opow, e₁, h, r₁, e₂, r₂, repr,
           opow_zero, Nat.succPNat_coe, Nat.cast_succ, Nat.cast_zero, _root_.zero_add, mul_one,

@@ -343,8 +343,8 @@ theorem symm_symm (f : M ≃* N) : f.symm.symm = f := rfl
 #align add_equiv.symm_symm AddEquiv.symm_symm
 
 @[to_additive]
-theorem symm_bijective : Function.Bijective (symm : M ≃* N → N ≃* M) :=
-  Equiv.bijective ⟨symm, symm, symm_symm, symm_symm⟩
+theorem symm_bijective : Function.Bijective (symm : (M ≃* N) → N ≃* M) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 #align mul_equiv.symm_bijective MulEquiv.symm_bijective
 #align add_equiv.symm_bijective AddEquiv.symm_bijective
 

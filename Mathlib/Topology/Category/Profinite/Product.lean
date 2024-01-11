@@ -94,13 +94,13 @@ def indexCone : Cone (indexFunctor hC) where
   π := { app := fun J ↦ π_app C (· ∈ unop J) }
 
 instance isIso_indexCone_lift :
-    IsIso ((limitConeIsLimit (indexFunctor hC)).lift (indexCone hC)) :=
+    IsIso ((limitConeIsLimit.{u, u} (indexFunctor hC)).lift (indexCone hC)) :=
   haveI : CompactSpace C := by rwa [← isCompact_iff_compactSpace]
   isIso_of_bijective _
     (by
       refine ⟨fun a b h ↦ ?_, fun a ↦ ?_⟩
       · refine eq_of_forall_π_app_eq a b (fun J ↦ ?_)
-        apply_fun fun f : (limitCone (indexFunctor hC)).pt => f.val (op J) at h
+        apply_fun fun f : (limitCone.{u, u} (indexFunctor hC)).pt => f.val (op J) at h
         exact h
       · suffices : ∃ (x : C), ∀ (J : Finset ι), π_app C (· ∈ J) x = a.val (op J)
         · obtain ⟨b, hb⟩ := this
@@ -133,12 +133,12 @@ instance isIso_indexCone_lift :
 noncomputable
 def isoindexConeLift :
     @Profinite.of C _ (by rwa [← isCompact_iff_compactSpace]) _ _ ≅
-    (Profinite.limitCone (indexFunctor hC)).pt :=
-  asIso <| (Profinite.limitConeIsLimit _).lift (indexCone hC)
+    (Profinite.limitCone.{u, u} (indexFunctor hC)).pt :=
+  asIso <| (Profinite.limitConeIsLimit.{u, u} _).lift (indexCone hC)
 
 /-- The isomorphism of cones induced by `isoindexConeLift`. -/
 noncomputable
-def asLimitindexConeIso : indexCone hC ≅ Profinite.limitCone _ :=
+def asLimitindexConeIso : indexCone hC ≅ Profinite.limitCone.{u, u} _ :=
   Limits.Cones.ext (isoindexConeLift hC) fun _ => rfl
 
 /-- `indexCone` is a limit cone. -/

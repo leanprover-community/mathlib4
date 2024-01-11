@@ -18,6 +18,10 @@ Borel-Cantelli lemmas. With this generalization, one can easily deduce the Borel
 by choosing appropriate filtrations. This file also contains the one sided martingale bound which
 is required to prove the generalized Borel-Cantelli.
 
+**Note**: the usual Borel-Cantelli lemmas are not in this file. See
+`MeasureTheory.measure_limsup_eq_zero` for the first (which does not depend on the results here),
+and `ProbabilityTheory.measure_limsup_eq_one` for the second (which does).
+
 ## Main results
 
 - `MeasureTheory.Submartingale.bddAbove_iff_exists_tendsto`: the one sided martingale bound: given

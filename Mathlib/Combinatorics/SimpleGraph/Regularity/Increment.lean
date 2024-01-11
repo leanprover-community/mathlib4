@@ -179,7 +179,7 @@ theorem uniform_add_nonuniform_eq_offDiag_pairs [Nonempty α] (hε₁ : ε ≤ 1
   rw [Nat.cast_sub (P.parts_nonempty <| univ_nonempty.ne_empty).card_pos, mul_sub_right_distrib,
     Nat.cast_one, one_mul, le_sub_comm, ← mul_sub_left_distrib, ←
     div_le_iff (show (0 : ℝ) < 1 / 3 - 1 / 25 - 1 / 4 by norm_num)]
-  exact le_trans (show _ ≤ (7 : ℝ) by norm_num) (by exact_mod_cast hP₇)
+  exact le_trans (show _ ≤ (7 : ℝ) by norm_num) (mod_cast hP₇)
 #align szemeredi_regularity.uniform_add_nonuniform_eq_off_diag_pairs SzemerediRegularity.uniform_add_nonuniform_eq_offDiag_pairs
 
 /-- The increment partition has energy greater than the original one by a known fixed amount. -/
@@ -190,7 +190,7 @@ theorem energy_increment [Nonempty α] (hP : P.IsEquipartition) (hP₇ : 7 ≤ P
   rw [coe_energy]
   have h := uniform_add_nonuniform_eq_offDiag_pairs (hP := hP) hε₁ hP₇ hPα hε.le hPG
   rw [add_div, mul_div_cancel_left] at h
-  exact h.trans (by exact_mod_cast offDiag_pairs_le_increment_energy)
+  exact h.trans (mod_cast offDiag_pairs_le_increment_energy)
   positivity
 #align szemeredi_regularity.energy_increment SzemerediRegularity.energy_increment
 

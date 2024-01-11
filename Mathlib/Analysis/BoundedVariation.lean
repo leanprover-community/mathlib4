@@ -530,7 +530,7 @@ theorem comp_le_of_antitoneOn (f : α → E) {s : Set α} {t : Set β} (φ : β 
   rintro ⟨n, u, hu, ut⟩
   rw [← Finset.sum_range_reflect]
   refine' (Finset.sum_congr rfl fun x hx => _).trans_le <| le_iSup_of_le
-    ⟨n, fun i => φ (u <| n - i), fun x y xy => hφ (ut _) (ut _) (hu <| Nat.sub_le_sub_left n xy),
+    ⟨n, fun i => φ (u <| n - i), fun x y xy => hφ (ut _) (ut _) (hu <| Nat.sub_le_sub_left xy n),
       fun i => φst (ut _)⟩
     le_rfl
   dsimp only [Subtype.coe_mk]

@@ -49,7 +49,7 @@ open scoped ENNReal MeasureTheory ProbabilityTheory
 
 namespace ProbabilityTheory
 
-variable {α β Ω F : Type*} [TopologicalSpace Ω] [MeasurableSpace Ω] [PolishSpace Ω] [BorelSpace Ω]
+variable {α β Ω F : Type*} [MeasurableSpace Ω] [StandardBorelSpace Ω]
   [Nonempty Ω] [NormedAddCommGroup F] {mα : MeasurableSpace α} {μ : Measure α} [IsFiniteMeasure μ]
   {X : α → β} {Y : α → Ω}
 

@@ -40,8 +40,29 @@ jobs:
         toolchain=$(<lean-toolchain)
         if [[ $toolchain =~ leanprover/lean4:nightly-([a-zA-Z0-9_-]+) ]]; then
           version=${BASH_REMATCH[1]}
+          echo "NIGHTLY=$version" >> $GITHUB_ENV
           git push origin refs/heads/nightly-testing:refs/heads/nightly-testing-$version
         else
           echo "Error: The file lean-toolchain does not contain the expected pattern."
           exit 1
         fi
+
+    # Next, we'll update the `nightly-with-mathlib` branch at Lean.
+    - name: Cleanup workspace
+      run: |
+        sudo rm -rf *
+    # Checkout the Lean repository on 'nightly-with-mathlib'
+    - name: Checkout Lean repository
+      uses: actions/checkout@v3
+      with:
+        repository: leanprover/lean4
+        token: ${{ secrets.LEAN_PR_TESTING }}
+        ref: nightly-with-mathlib
+    # Merge the relevant nightly.
+    - name: Fetch tags from 'lean4-nightly', and merge relevant nightly into 'nightly-with-mathlib'
+      run: |
+        git remote add nightly https://github.com/leanprover/lean4-nightly.git
+        git fetch nightly --tags
+        # Note: old jobs may run out of order, but it is safe to merge an older `nightly-YYYY-MM-DD`.
+        git merge nightly-${NIGHTLY} --strategy-option ours --allow-unrelated-histories || true
+        git push origin

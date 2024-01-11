@@ -5,6 +5,7 @@ Authors: Patrick Massot, Scott Morrison, Mario Carneiro, Andrew Yang
 -/
 import Mathlib.Topology.Category.TopCat.EpiMono
 import Mathlib.Topology.Category.TopCat.Limits.Basic
+import Mathlib.CategoryTheory.Limits.Shapes.Products
 
 #align_import topology.category.Top.limits.products from "leanprover-community/mathlib"@"178a32653e369dce2da68dc6b2694e385d484ef1"
 
@@ -340,7 +341,7 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
             else g ((Equiv.ofInjective _ h₂.inj).symm ⟨x, (this x).resolve_left h⟩)
         rw [continuous_iff_continuousAt]
         intro x
-        by_cases x ∈ Set.range c.inl
+        by_cases h : x ∈ Set.range c.inl
         · revert h x
           apply (IsOpen.continuousOn_iff _).mp
           · rw [continuousOn_iff_continuous_restrict]

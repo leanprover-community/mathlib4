@@ -1264,7 +1264,7 @@ theorem tendsto_sum_nat_add (f : ℕ → ℝ≥0∞) (hf : ∑' i, f i ≠ ∞) 
   lift f to ℕ → ℝ≥0 using ENNReal.ne_top_of_tsum_ne_top hf
   replace hf : Summable f := tsum_coe_ne_top_iff_summable.1 hf
   simp only [← ENNReal.coe_tsum, NNReal.summable_nat_add _ hf, ← ENNReal.coe_zero]
-  exact_mod_cast NNReal.tendsto_sum_nat_add f
+  exact mod_cast NNReal.tendsto_sum_nat_add f
 #align ennreal.tendsto_sum_nat_add ENNReal.tendsto_sum_nat_add
 
 theorem tsum_le_of_sum_range_le {f : ℕ → ℝ≥0∞} {c : ℝ≥0∞}
@@ -1338,7 +1338,7 @@ theorem ENNReal.ofReal_tsum_of_nonneg {f : α → ℝ} (hf_nonneg : ∀ n, 0 ≤
 theorem not_summable_iff_tendsto_nat_atTop_of_nonneg {f : ℕ → ℝ} (hf : ∀ n, 0 ≤ f n) :
     ¬Summable f ↔ Tendsto (fun n : ℕ => ∑ i in Finset.range n, f i) atTop atTop := by
   lift f to ℕ → ℝ≥0 using hf
-  exact_mod_cast NNReal.not_summable_iff_tendsto_nat_atTop
+  exact mod_cast NNReal.not_summable_iff_tendsto_nat_atTop
 #align not_summable_iff_tendsto_nat_at_top_of_nonneg not_summable_iff_tendsto_nat_atTop_of_nonneg
 
 theorem summable_iff_not_tendsto_nat_atTop_of_nonneg {f : ℕ → ℝ} (hf : ∀ n, 0 ≤ f n) :
@@ -1349,7 +1349,7 @@ theorem summable_iff_not_tendsto_nat_atTop_of_nonneg {f : ℕ → ℝ} (hf : ∀
 theorem summable_sigma_of_nonneg {β : α → Type*} {f : (Σ x, β x) → ℝ} (hf : ∀ x, 0 ≤ f x) :
     Summable f ↔ (∀ x, Summable fun y => f ⟨x, y⟩) ∧ Summable fun x => ∑' y, f ⟨x, y⟩ := by
   lift f to (Σx, β x) → ℝ≥0 using hf
-  exact_mod_cast NNReal.summable_sigma
+  exact mod_cast NNReal.summable_sigma
 #align summable_sigma_of_nonneg summable_sigma_of_nonneg
 
 theorem summable_prod_of_nonneg {f : (α × β) → ℝ} (hf : 0 ≤ f) :

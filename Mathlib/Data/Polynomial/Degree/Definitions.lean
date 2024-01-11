@@ -749,6 +749,26 @@ theorem degree_add_eq_of_leadingCoeff_add_ne_zero (h : leadingCoeff p + leadingC
       rw [degree_add_eq_left_of_degree_lt hlt, max_eq_left_of_lt hlt]
 #align polynomial.degree_add_eq_of_leading_coeff_add_ne_zero Polynomial.degree_add_eq_of_leadingCoeff_add_ne_zero
 
+lemma natDegree_eq_of_natDegree_add_lt_left (p q : R[X])
+    (H : natDegree (p + q) < natDegree p) : natDegree p = natDegree q := by
+  by_contra h
+  cases Nat.lt_or_lt_of_ne h with
+  | inl h => exact lt_asymm h (by rwa [natDegree_add_eq_right_of_natDegree_lt h] at H)
+  | inr h =>
+    rw [natDegree_add_eq_left_of_natDegree_lt h] at H
+    exact LT.lt.false H
+
+lemma natDegree_eq_of_natDegree_add_lt_right (p q : R[X])
+    (H : natDegree (p + q) < natDegree q) : natDegree p = natDegree q :=
+  (natDegree_eq_of_natDegree_add_lt_left q p (add_comm p q ▸ H)).symm
+
+lemma natDegree_eq_of_natDegree_add_eq_zero (p q : R[X])
+    (H : natDegree (p + q) = 0) : natDegree p = natDegree q := by
+  by_cases h₁ : natDegree p = 0; by_cases h₂ : natDegree q = 0
+  · exact h₁.trans h₂.symm
+  · apply natDegree_eq_of_natDegree_add_lt_right; rwa [H, Nat.pos_iff_ne_zero]
+  · apply natDegree_eq_of_natDegree_add_lt_left; rwa [H, Nat.pos_iff_ne_zero]
+
 theorem degree_erase_le (p : R[X]) (n : ℕ) : degree (p.erase n) ≤ degree p := by
   rcases p with ⟨p⟩
   simp only [erase_def, degree, coeff, support]

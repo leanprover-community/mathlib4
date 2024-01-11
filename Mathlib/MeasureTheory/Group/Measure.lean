@@ -202,30 +202,26 @@ theorem forall_measure_preimage_mul_right_iff (μ : Measure G) :
 #align measure_theory.forall_measure_preimage_add_right_iff MeasureTheory.forall_measure_preimage_add_right_iff
 
 @[to_additive]
-instance Measure.prod.instIsMulLeftInvariant [IsMulLeftInvariant μ] [SigmaFinite μ] {H : Type*}
+instance Measure.prod.instIsMulLeftInvariant [IsMulLeftInvariant μ] [SFinite μ] {H : Type*}
     [Mul H] {mH : MeasurableSpace H} {ν : Measure H} [MeasurableMul H] [IsMulLeftInvariant ν]
-    [SigmaFinite ν] : IsMulLeftInvariant (μ.prod ν) := by
+    [SFinite ν] : IsMulLeftInvariant (μ.prod ν) := by
   constructor
   rintro ⟨g, h⟩
   change map (Prod.map (g * ·) (h * ·)) (μ.prod ν) = μ.prod ν
   rw [← map_prod_map _ _ (measurable_const_mul g) (measurable_const_mul h),
     map_mul_left_eq_self μ g, map_mul_left_eq_self ν h]
-  · rw [map_mul_left_eq_self μ g]; infer_instance
-  · rw [map_mul_left_eq_self ν h]; infer_instance
 #align measure_theory.measure.prod.measure.is_mul_left_invariant MeasureTheory.Measure.prod.instIsMulLeftInvariant
 #align measure_theory.measure.prod.measure.is_add_left_invariant MeasureTheory.Measure.prod.instIsAddLeftInvariant
 
 @[to_additive]
-instance Measure.prod.instIsMulRightInvariant [IsMulRightInvariant μ] [SigmaFinite μ] {H : Type*}
+instance Measure.prod.instIsMulRightInvariant [IsMulRightInvariant μ] [SFinite μ] {H : Type*}
     [Mul H] {mH : MeasurableSpace H} {ν : Measure H} [MeasurableMul H] [IsMulRightInvariant ν]
-    [SigmaFinite ν] : IsMulRightInvariant (μ.prod ν) := by
+    [SFinite ν] : IsMulRightInvariant (μ.prod ν) := by
   constructor
   rintro ⟨g, h⟩
   change map (Prod.map (· * g) (· * h)) (μ.prod ν) = μ.prod ν
   rw [← map_prod_map _ _ (measurable_mul_const g) (measurable_mul_const h),
     map_mul_right_eq_self μ g, map_mul_right_eq_self ν h]
-  · rw [map_mul_right_eq_self μ g]; infer_instance
-  · rw [map_mul_right_eq_self ν h]; infer_instance
 #align measure_theory.measure.prod.measure.is_mul_right_invariant MeasureTheory.Measure.prod.instIsMulRightInvariant
 #align measure_theory.measure.prod.measure.is_add_right_invariant MeasureTheory.Measure.prod.instIsMulRightInvariant
 
@@ -435,6 +431,10 @@ theorem measurePreserving_inv (μ : Measure G) [IsInvInvariant μ] : MeasurePres
 #align measure_theory.measure.measure_preserving_inv MeasureTheory.Measure.measurePreserving_inv
 #align measure_theory.measure.measure_preserving_neg MeasureTheory.Measure.measurePreserving_neg
 
+@[to_additive]
+instance inv.instSFinite (μ : Measure G) [SFinite μ] : SFinite μ.inv := by
+  rw [Measure.inv]; infer_instance
+
 end Inv
 
 section InvolutiveInv
@@ -549,6 +549,16 @@ section TopologicalGroup
 variable [TopologicalSpace G] [BorelSpace G] {μ : Measure G} [Group G]
 
 @[to_additive]
+instance Measure.IsFiniteMeasureOnCompacts.inv [ContinuousInv G] [IsFiniteMeasureOnCompacts μ] :
+    IsFiniteMeasureOnCompacts μ.inv :=
+  IsFiniteMeasureOnCompacts.map μ (Homeomorph.inv G)
+
+@[to_additive]
+instance Measure.IsOpenPosMeasure.inv [ContinuousInv G] [IsOpenPosMeasure μ] :
+    IsOpenPosMeasure μ.inv :=
+  (Homeomorph.inv G).continuous.isOpenPosMeasure_map (Homeomorph.inv G).surjective
+
+@[to_additive]
 instance Measure.Regular.inv [ContinuousInv G] [Regular μ] : Regular μ.inv :=
   Regular.map (Homeomorph.inv G)
 #align measure_theory.measure.regular.inv MeasureTheory.Measure.Regular.inv
@@ -561,10 +571,8 @@ instance Measure.InnerRegular.inv [ContinuousInv G] [InnerRegular μ] : InnerReg
 variable [TopologicalGroup G]
 
 @[to_additive]
-theorem regular_inv_iff : μ.inv.Regular ↔ μ.Regular := by
-  constructor
-  · intro h; rw [← μ.inv_inv]; exact Measure.Regular.inv
-  · intro h; exact Measure.Regular.inv
+theorem regular_inv_iff : μ.inv.Regular ↔ μ.Regular :=
+  Regular.map_iff (Homeomorph.inv G)
 #align measure_theory.regular_inv_iff MeasureTheory.regular_inv_iff
 #align measure_theory.regular_neg_iff MeasureTheory.regular_neg_iff
 
@@ -946,7 +954,7 @@ instance (priority := 100) IsHaarMeasure.sigmaFinite [SigmaCompactSpace G] : Sig
 @[to_additive]
 instance prod.instIsHaarMeasure {G : Type*} [Group G] [TopologicalSpace G] {_ : MeasurableSpace G}
     {H : Type*} [Group H] [TopologicalSpace H] {_ : MeasurableSpace H} (μ : Measure G)
-    (ν : Measure H) [IsHaarMeasure μ] [IsHaarMeasure ν] [SigmaFinite μ] [SigmaFinite ν]
+    (ν : Measure H) [IsHaarMeasure μ] [IsHaarMeasure ν] [SFinite μ] [SFinite ν]
     [MeasurableMul G] [MeasurableMul H] : IsHaarMeasure (μ.prod ν) where
 #align measure_theory.measure.prod.is_haar_measure MeasureTheory.Measure.prod.instIsHaarMeasure
 #align measure_theory.measure.prod.is_add_haar_measure MeasureTheory.Measure.prod.instIsAddHaarMeasure

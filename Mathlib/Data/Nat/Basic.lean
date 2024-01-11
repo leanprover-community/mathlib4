@@ -288,11 +288,11 @@ theorem exists_eq_add_of_lt (h : m < n) : ∃ k : ℕ, n = m + k + 1 :=
 /-! ### `pred` -/
 
 @[simp]
-theorem add_succ_sub_one (n m : ℕ) : n + succ m - 1 = n + m := by rw [add_succ, succ_sub_one]
+theorem add_succ_sub_one (n m : ℕ) : n + succ m - 1 = n + m := by rw [add_succ, Nat.add_one_sub_one]
 #align nat.add_succ_sub_one Nat.add_succ_sub_one
 
 @[simp]
-theorem succ_add_sub_one (n m : ℕ) : succ n + m - 1 = n + m := by rw [succ_add, succ_sub_one]
+theorem succ_add_sub_one (n m : ℕ) : succ n + m - 1 = n + m := by rw [succ_add, Nat.add_one_sub_one]
 #align nat.succ_add_sub_one Nat.succ_add_sub_one
 
 theorem pred_eq_sub_one (n : ℕ) : pred n = n - 1 :=
@@ -838,11 +838,12 @@ theorem lt_mul_div_succ (m : ℕ) {n : ℕ} (n0 : 0 < n) : m < n * (m / n + 1) :
   exact lt_succ_self _
 #align nat.lt_mul_div_succ Nat.lt_mul_div_succ
 
-theorem mul_add_mod (a b c : ℕ) : (a * b + c) % b = c % b := by simp [Nat.add_mod]
-#align nat.mul_add_mod Nat.mul_add_mod
+-- TODO: Std4 claimed this name but flipped the order of multiplication
+theorem mul_add_mod' (a b c : ℕ) : (a * b + c) % b = c % b := by rw [mul_comm, Nat.mul_add_mod]
+#align nat.mul_add_mod Nat.mul_add_mod'
 
 theorem mul_add_mod_of_lt {a b c : ℕ} (h : c < b) : (a * b + c) % b = c := by
-  rw [Nat.mul_add_mod, Nat.mod_eq_of_lt h]
+  rw [Nat.mul_add_mod', Nat.mod_eq_of_lt h]
 #align nat.mul_add_mod_of_lt Nat.mul_add_mod_of_lt
 
 theorem pred_eq_self_iff {n : ℕ} : n.pred = n ↔ n = 0 := by

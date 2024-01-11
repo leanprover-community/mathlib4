@@ -113,8 +113,6 @@ theorem mem_of_formPerm_apply_mem (x : α) (l : List α) (h : l.formPerm x ∈ l
         List.mem_cons, swap_apply_def, ite_eq_left_iff] at h
       simp only [List.mem_cons]
       rcases h with h | h | h <;> split_ifs at h with h1 <;> try { aesop }
-      · simp [h1, imp_false] at h
-        simp [h]
 #align list.mem_of_form_perm_apply_mem List.mem_of_formPerm_apply_mem
 
 theorem formPerm_mem_iff_mem : l.formPerm x ∈ l ↔ x ∈ l :=

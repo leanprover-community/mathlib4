@@ -189,7 +189,7 @@ theorem mul_den_eq_num {q : ℚ} : q * q.den = q.num := by
   suffices (q.num /. ↑q.den) * (↑q.den /. 1) = q.num /. 1 by
     conv => pattern (occs := 1) q; (rw [← @num_den q])
     simp only [coe_int_eq_divInt, coe_nat_eq_divInt, num_den] at this ⊢; assumption
-  have : (q.den : ℤ) ≠ 0 := ne_of_gt (by exact_mod_cast q.pos)
+  have : (q.den : ℤ) ≠ 0 := ne_of_gt (mod_cast q.pos)
   rw [Rat.mul_def' this one_ne_zero, mul_comm (q.den : ℤ) 1, divInt_mul_right this]
 #align rat.mul_denom_eq_num Rat.mul_den_eq_num
 
@@ -263,7 +263,7 @@ theorem inv_coe_int_num_of_pos {a : ℤ} (ha0 : 0 < a) : (a : ℚ)⁻¹.num = 1 
 #align rat.inv_coe_int_num_of_pos Rat.inv_coe_int_num_of_pos
 
 theorem inv_coe_nat_num_of_pos {a : ℕ} (ha0 : 0 < a) : (a : ℚ)⁻¹.num = 1 :=
-  inv_coe_int_num_of_pos (by exact_mod_cast ha0 : 0 < (a : ℤ))
+  inv_coe_int_num_of_pos (mod_cast ha0 : 0 < (a : ℤ))
 #align rat.inv_coe_nat_num_of_pos Rat.inv_coe_nat_num_of_pos
 
 theorem inv_coe_int_den_of_pos {a : ℤ} (ha0 : 0 < a) : ((a : ℚ)⁻¹.den : ℤ) = a := by

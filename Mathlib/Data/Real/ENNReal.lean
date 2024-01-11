@@ -428,7 +428,7 @@ theorem toReal_eq_toReal_iff' {x y : ℝ≥0∞} (hx : x ≠ ⊤) (hy : y ≠ �
 
 @[simp]
 nonrec theorem one_lt_two : (1 : ℝ≥0∞) < 2 :=
-  coe_one ▸ coe_two ▸ by exact_mod_cast (one_lt_two : 1 < 2)
+  coe_one ▸ coe_two ▸ mod_cast (one_lt_two : 1 < 2)
 #align ennreal.one_lt_two ENNReal.one_lt_two
 
 @[simp] theorem two_ne_top : (2 : ℝ≥0∞) ≠ ∞ := coe_ne_top
@@ -2195,11 +2195,11 @@ alias ⟨_, ofReal_of_nonpos⟩ := ofReal_eq_zero
 
 @[simp]
 lemma ofReal_lt_nat_cast {p : ℝ} {n : ℕ} (hn : n ≠ 0) : ENNReal.ofReal p < n ↔ p < n := by
-  exact_mod_cast ofReal_lt_ofReal_iff (Nat.cast_pos.2 hn.bot_lt)
+  exact mod_cast ofReal_lt_ofReal_iff (Nat.cast_pos.2 hn.bot_lt)
 
 @[simp]
 lemma ofReal_lt_one {p : ℝ} : ENNReal.ofReal p < 1 ↔ p < 1 := by
-  exact_mod_cast ofReal_lt_nat_cast one_ne_zero
+  exact mod_cast ofReal_lt_nat_cast one_ne_zero
 
 @[simp]
 lemma ofReal_lt_ofNat {p : ℝ} {n : ℕ} [h : n.AtLeastTwo] :
@@ -2212,7 +2212,7 @@ lemma nat_cast_le_ofReal {n : ℕ} {p : ℝ} (hn : n ≠ 0) : n ≤ ENNReal.ofRe
 
 @[simp]
 lemma one_le_ofReal {p : ℝ} : 1 ≤ ENNReal.ofReal p ↔ 1 ≤ p := by
-  exact_mod_cast nat_cast_le_ofReal one_ne_zero
+  exact mod_cast nat_cast_le_ofReal one_ne_zero
 
 @[simp]
 lemma ofNat_le_ofReal {n : ℕ} [h : n.AtLeastTwo] {p : ℝ} :

@@ -8,6 +8,7 @@ import Lean.Data.HashMap
 import Lean.Data.RBMap
 import Lean.Data.RBTree
 import Lean.Data.Json.Printer
+import Lean.Data.Json.Parser
 
 set_option autoImplicit true
 
@@ -69,7 +70,7 @@ def CURLBIN :=
 
 /-- leantar version at https://github.com/digama0/leangz -/
 def LEANTARVERSION :=
-  "0.1.7"
+  "0.1.9"
 
 def EXE := if System.Platform.isWindows then ".exe" else ""
 
@@ -92,21 +93,44 @@ abbrev PackageDirs := Lean.RBMap String FilePath compare
 def isMathlibRoot : IO Bool :=
   FilePath.mk "Mathlib" |>.pathExists
 
-def mathlibDepPath : FilePath :=
-  LAKEPACKAGESDIR / "mathlib"
+def parseMathlibDepPath (json : Lean.Json) : Except String (Option FilePath) := do
+  let deps ← (← json.getObjVal? "packages").getArr?
+  for d in deps do
+    let n := ← (← d.getObjVal? "name").getStr?
+    if n != "mathlib" then
+      continue
+    let t := ← (← d.getObjVal? "type").getStr?
+    if t == "path" then
+      return some ⟨← (← d.getObjVal? "dir").getStr?⟩
+    else
+      return LAKEPACKAGESDIR / "mathlib"
+  return none
+
+def mathlibDepPath : IO FilePath := do
+  let raw ← IO.FS.readFile "lake-manifest.json"
+  match (Lean.Json.parse raw >>= parseMathlibDepPath) with
+  | .ok (some p) => return p
+  | .ok none =>
+      if ← isMathlibRoot then
+        return ⟨"."⟩
+      else
+        throw $ IO.userError s!"Mathlib not found in dependencies"
+  | .error e => throw $ IO.userError s!"Cannot parse lake-manifest.json: {e}"
 
 -- TODO this should be generated automatically from the information in `lakefile.lean`.
-def getPackageDirs : IO PackageDirs := return .ofList [
-  ("Mathlib", if ← isMathlibRoot then "." else mathlibDepPath),
-  ("MathlibExtras", if ← isMathlibRoot then "." else mathlibDepPath),
-  ("Archive", if ← isMathlibRoot then "." else mathlibDepPath),
-  ("Counterexamples", if ← isMathlibRoot then "." else mathlibDepPath),
-  ("Aesop", LAKEPACKAGESDIR / "aesop"),
-  ("Std", LAKEPACKAGESDIR / "std"),
-  ("Cli", LAKEPACKAGESDIR / "Cli"),
-  ("ProofWidgets", LAKEPACKAGESDIR / "proofwidgets"),
-  ("Qq", LAKEPACKAGESDIR / "Qq")
-]
+def getPackageDirs : IO PackageDirs := do
+  let root ← mathlibDepPath
+  return .ofList [
+    ("Mathlib", root),
+    ("MathlibExtras", root),
+    ("Archive", root),
+    ("Counterexamples", root),
+    ("Aesop", LAKEPACKAGESDIR / "aesop"),
+    ("Std", LAKEPACKAGESDIR / "std"),
+    ("Cli", LAKEPACKAGESDIR / "Cli"),
+    ("ProofWidgets", LAKEPACKAGESDIR / "proofwidgets"),
+    ("Qq", LAKEPACKAGESDIR / "Qq")
+  ]
 
 initialize pkgDirs : PackageDirs ← getPackageDirs
 
@@ -197,7 +221,7 @@ def validateLeanTar : IO Unit := do
     pure <|
       if System.Platform.getIsOSX () then s!"{arch}-apple-darwin"
       else s!"{arch}-unknown-linux-musl"
-  IO.println s!"leantar is too old; downloading more recent version"
+  IO.println s!"installing leantar {LEANTARVERSION}"
   IO.FS.createDirAll IO.CACHEDIR
   let ext := if win then "zip" else "tar.gz"
   let _ ← runCmd "curl" #[
@@ -310,12 +334,13 @@ def unpackCache (hashMap : HashMap) (force : Bool) : IO Unit := do
     let args := (if force then #["-f"] else #[]) ++ #["-x", "-j", "-"]
     let child ← IO.Process.spawn { cmd := ← getLeanTar, args, stdin := .piped }
     let (stdin, child) ← child.takeStdin
+    let mathlibDepPath := (← mathlibDepPath).toString
     let config : Array Lean.Json := hashMap.fold (init := #[]) fun config path hash =>
       let pathStr := s!"{CACHEDIR / hash.asLTar}"
       if isMathlibRoot || !isPathFromMathlib path then
         config.push <| .str pathStr
       else -- only mathlib files, when not in the mathlib4 repo, need to be redirected
-        config.push <| .mkObj [("file", pathStr), ("base", mathlibDepPath.toString)]
+        config.push <| .mkObj [("file", pathStr), ("base", mathlibDepPath)]
     stdin.putStr <| Lean.Json.compress <| .arr config
     let exitCode ← child.wait
     if exitCode != 0 then throw $ IO.userError s!"leantar failed with error code {exitCode}"

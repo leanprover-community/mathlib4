@@ -942,9 +942,9 @@ instance applySMulCommClass' : SMulCommClass (M₁ →L[R₁] M₁) R₁ M₁ wh
   smul_comm := ContinuousLinearMap.map_smul
 #align continuous_linear_map.apply_smul_comm_class' ContinuousLinearMap.applySMulCommClass'
 
-instance continuousConstSMul : ContinuousConstSMul (M₁ →L[R₁] M₁) M₁ :=
+instance continuousConstSMul_apply : ContinuousConstSMul (M₁ →L[R₁] M₁) M₁ :=
   ⟨ContinuousLinearMap.continuous⟩
-#align continuous_linear_map.has_continuous_const_smul ContinuousLinearMap.continuousConstSMul
+#align continuous_linear_map.has_continuous_const_smul ContinuousLinearMap.continuousConstSMul_apply
 
 end ApplyAction
 
@@ -2604,7 +2604,7 @@ theorem inverse_equiv (e : M ≃L[R] M₂) : inverse (e : M →L[R] M₂) = e.sy
   have h : ∃ e' : M ≃L[R] M₂, (e' : M →L[R] M₂) = ↑e := ⟨e, rfl⟩
   simp only [inverse, dif_pos h]
   congr
-  exact_mod_cast Classical.choose_spec h
+  exact mod_cast Classical.choose_spec h
 #align continuous_linear_map.inverse_equiv ContinuousLinearMap.inverse_equiv
 
 /-- By definition, if `f` is not invertible then `inverse f = 0`. -/

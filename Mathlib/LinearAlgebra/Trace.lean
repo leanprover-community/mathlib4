@@ -316,6 +316,27 @@ lemma isNilpotent_trace_of_isNilpotent {f : M →ₗ[R] M} (hf : IsNilpotent f) 
   apply Matrix.isNilpotent_trace_of_isNilpotent
   simpa
 
+lemma trace_comp_eq_mul_of_commute_of_isNilpotent [IsReduced R] {f g : Module.End R M}
+    (μ : R) (h_comm : Commute f g) (hg : IsNilpotent (g - algebraMap R _ μ)) :
+    trace R M (f ∘ₗ g) = μ * trace R M f := by
+  set n := g - algebraMap R _ μ
+  replace hg : trace R M (f ∘ₗ n) = 0 := by
+    rw [← isNilpotent_iff_eq_zero, ← mul_eq_comp]
+    refine isNilpotent_trace_of_isNilpotent (Commute.isNilpotent_mul_right ?_ hg)
+    exact h_comm.sub_right (Algebra.commute_algebraMap_right μ f)
+  have hμ : g = algebraMap R _ μ + n := eq_add_of_sub_eq' rfl
+  have : f ∘ₗ algebraMap R _ μ = μ • f := by ext; simp -- TODO Surely exists?
+  rw [hμ, comp_add, map_add, hg, add_zero, this, LinearMap.map_smul, smul_eq_mul]
+
+@[simp]
+lemma trace_baseChange [Module.Free R M] [Module.Finite R M]
+    (f : M →ₗ[R] M) (A : Type*) [CommRing A] [Algebra R A] :
+    trace A _ (f.baseChange A) = algebraMap R A (trace R _ f) := by
+  let b := Module.Free.chooseBasis R M
+  let b' := Algebra.TensorProduct.basis A b
+  change _ = (algebraMap R A : R →+ A) _
+  simp [trace_eq_matrix_trace R b, trace_eq_matrix_trace A b', AddMonoidHom.map_trace]
+
 end
 
 end LinearMap

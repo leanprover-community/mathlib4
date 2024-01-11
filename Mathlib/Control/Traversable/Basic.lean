@@ -277,10 +277,10 @@ section
 variable {F : Type u → Type v} [Applicative F]
 
 instance : Traversable Option :=
-  ⟨@Option.traverse⟩
+  ⟨Option.traverse⟩
 
 instance : Traversable List :=
-  ⟨@List.traverse⟩
+  ⟨List.traverse⟩
 
 end
 

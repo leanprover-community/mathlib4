@@ -173,11 +173,9 @@ theorem Real.summable_nat_rpow_inv {p : ℝ} :
         abs_of_pos (rpow_pos_of_pos zero_lt_two _), rpow_lt_one_iff zero_lt_two.le]
       norm_num
     · intro n
-      exact inv_nonneg.2 (rpow_nonneg_of_nonneg n.cast_nonneg _)
+      positivity
     · intro m n hm hmn
-      exact
-        inv_le_inv_of_le (rpow_pos_of_pos (Nat.cast_pos.2 hm) _)
-          (rpow_le_rpow m.cast_nonneg (Nat.cast_le.2 hmn) hp)
+      gcongr
   -- If `p < 0`, then `1 / n ^ p` tends to infinity, thus the series diverges.
   · suffices ¬Summable (fun n => ((n : ℝ) ^ p)⁻¹ : ℕ → ℝ) by
       have : ¬1 < p := fun hp₁ => hp.not_le (zero_le_one.trans hp₁.le)
@@ -268,7 +266,7 @@ theorem Real.tendsto_sum_range_one_div_nat_succ_atTop :
     Tendsto (fun n => ∑ i in Finset.range n, (1 / (i + 1) : ℝ)) atTop atTop := by
   rw [← not_summable_iff_tendsto_nat_atTop_of_nonneg]
   · exact_mod_cast mt (_root_.summable_nat_add_iff 1).1 Real.not_summable_one_div_nat_cast
-  · exact fun i => div_nonneg zero_le_one i.cast_add_one_pos.le
+  · exact fun i => by positivity
 #align real.tendsto_sum_range_one_div_nat_succ_at_top Real.tendsto_sum_range_one_div_nat_succ_atTop
 
 @[simp]
@@ -333,8 +331,7 @@ theorem sum_Ioo_inv_sq_le (k n : ℕ) : (∑ i in Ioo k n, (i ^ 2 : α)⁻¹) �
     _ ≤ 1 / (k + 1) + 1 / (k + 1) := by
       have A : (1 : α) ≤ k + 1 := by simp only [le_add_iff_nonneg_left, Nat.cast_nonneg]
       simp_rw [← one_div]
-      apply add_le_add_right
-      refine' div_le_div zero_le_one le_rfl (zero_lt_one.trans_le A) _
+      gcongr
       simpa using pow_le_pow A one_le_two
     _ = 2 / (k + 1) := by ring
 
