@@ -97,8 +97,8 @@ namespace MultilinearMap
 
 variable (f : MultilinearMap 𝕜 E G)
 
-example [DecidableEq ι] (hf : Continuous f) (m : (i : ι) → E i) {i : ι} (hi : ‖m i‖ = 0) :
-    ‖f m‖ = 0 := by
+lemma zero_of_continuous_of_one_entry_norm_zero [DecidableEq ι] (hf : Continuous f)
+    (m : (i : ι) → E i) {i : ι} (hi : ‖m i‖ = 0) : ‖f m‖ = 0 := by
   letI : Nonempty ι := Nonempty.intro i
   refine le_antisymm ?_ (norm_nonneg _)
   rw [le_iff_forall_pos_lt_add]
@@ -143,22 +143,23 @@ example [DecidableEq ι] (hf : Continuous f) (m : (i : ι) → E i) {i : ι} (hi
 /-- If a multilinear map in finitely many variables on normed spaces satisfies the inequality
 `‖f m‖ ≤ C * ∏ i, ‖m i‖` on a shell `ε i / ‖c i‖ < ‖m i‖ < ε i` for some positive numbers `ε i`
 and elements `c i : 𝕜`, `1 < ‖c i‖`, then it satisfies this inequality for all `m`. -/
-theorem bound_of_shell {ε : ι → ℝ} {C : ℝ} (hε : ∀ i, 0 < ε i) {c : ι → 𝕜} (hc : ∀ i, 1 < ‖c i‖)
+theorem bound_of_shell_of_continuous [DecidableEq ι] (hfc : Continuous f)
+    {ε : ι → ℝ} {C : ℝ} (hε : ∀ i, 0 < ε i) {c : ι → 𝕜} (hc : ∀ i, 1 < ‖c i‖)
     (hf : ∀ m : ∀ i, E i, (∀ i, ε i / ‖c i‖ ≤ ‖m i‖) → (∀ i, ‖m i‖ < ε i) → ‖f m‖ ≤ C * ∏ i, ‖m i‖)
     (m : ∀ i, E i) : ‖f m‖ ≤ C * ∏ i, ‖m i‖ := by
   rcases em (∃ i, ‖m i‖ = 0) with (⟨i, hi⟩ | hm)
-  · sorry --simp [f.map_coord_zero i hi, prod_eq_zero (mem_univ i), hi]
+  · rw [f.zero_of_continuous_of_one_entry_norm_zero hfc m hi, prod_eq_zero (mem_univ i) hi,
+      mul_zero]
   push_neg at hm
   choose δ hδ0 hδm_lt hle_δm _ using fun i => rescale_to_shell_semi_normed (hc i) (hε i) (hm i)
   have hδ0 : 0 < ∏ i, ‖δ i‖ := prod_pos fun i _ => norm_pos_iff.2 (hδ0 i)
   simpa [map_smul_univ, norm_smul, prod_mul_distrib, mul_left_comm C, mul_le_mul_left hδ0] using
     hf (fun i => δ i • m i) hle_δm hδm_lt
-#align multilinear_map.bound_of_shell MultilinearMap.bound_of_shell
 
 /-- If a multilinear map in finitely many variables on normed spaces is continuous, then it
 satisfies the inequality `‖f m‖ ≤ C * ∏ i, ‖m i‖`, for some `C` which can be chosen to be
 positive. -/
-theorem exists_bound_of_continuous (hf : Continuous f) :
+theorem exists_bound_of_continuous [DecidableEq ι] (hf : Continuous f) :
     ∃ C : ℝ, 0 < C ∧ ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖ := by
   cases isEmpty_or_nonempty ι
   · refine' ⟨‖f 0‖ + 1, add_pos_of_nonneg_of_pos (norm_nonneg _) zero_lt_one, fun m => _⟩
@@ -171,7 +172,7 @@ theorem exists_bound_of_continuous (hf : Continuous f) :
   rcases NormedField.exists_one_lt_norm 𝕜 with ⟨c, hc⟩
   have : 0 < (‖c‖ / ε) ^ Fintype.card ι := pow_pos (div_pos (zero_lt_one.trans hc) ε0) _
   refine' ⟨_, this, _⟩
-  refine' f.bound_of_shell (fun _ => ε0) (fun _ => hc) fun m hcm hm => _
+  refine' f.bound_of_shell_of_continuous hf (fun _ => ε0) (fun _ => hc) fun m hcm hm => _
   refine' (hε m ((pi_norm_lt_iff ε0).2 hm)).le.trans _
   rw [← div_le_iff' this, one_div, ← inv_pow, inv_div, Fintype.card, ← prod_const]
   exact prod_le_prod (fun _ _ => div_nonneg ε0.le (norm_nonneg _)) fun i _ => hcm i
@@ -327,7 +328,7 @@ namespace ContinuousMultilinearMap
 
 variable (c : 𝕜) (f g : ContinuousMultilinearMap 𝕜 E G) (m : ∀ i, E i)
 
-theorem bound : ∃ C : ℝ, 0 < C ∧ ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖ :=
+theorem bound [DecidableEq ι]: ∃ C : ℝ, 0 < C ∧ ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖ :=
   f.toMultilinearMap.exists_bound_of_continuous f.2
 #align continuous_multilinear_map.bound ContinuousMultilinearMap.bound
 
@@ -354,7 +355,7 @@ theorem norm_def : ‖f‖ = sInf { c | 0 ≤ (c : ℝ) ∧ ∀ m, ‖f m‖ ≤
 
 -- So that invocations of `le_csInf` make sense: we show that the set of
 -- bounds is nonempty and bounded below.
-theorem bounds_nonempty {f : ContinuousMultilinearMap 𝕜 E G} :
+theorem bounds_nonempty [DecidableEq ι] {f : ContinuousMultilinearMap 𝕜 E G} :
     ∃ c, c ∈ { c | 0 ≤ c ∧ ∀ m, ‖f m‖ ≤ c * ∏ i, ‖m i‖ } :=
   let ⟨M, hMp, hMb⟩ := f.bound
   ⟨M, le_of_lt hMp, hMb⟩
@@ -365,7 +366,8 @@ theorem bounds_bddBelow {f : ContinuousMultilinearMap 𝕜 E G} :
   ⟨0, fun _ ⟨hn, _⟩ => hn⟩
 #align continuous_multilinear_map.bounds_bdd_below ContinuousMultilinearMap.bounds_bddBelow
 
-theorem isLeast_op_norm : IsLeast {c : ℝ | 0 ≤ c ∧ ∀ m, ‖f m‖ ≤ c * ∏ i, ‖m i‖} ‖f‖ := by
+theorem isLeast_op_norm [DecidableEq ι]:
+    IsLeast {c : ℝ | 0 ≤ c ∧ ∀ m, ‖f m‖ ≤ c * ∏ i, ‖m i‖} ‖f‖ := by
   refine IsClosed.isLeast_csInf ?_ bounds_nonempty bounds_bddBelow
   simp only [Set.setOf_and, Set.setOf_forall]
   exact isClosed_Ici.inter (isClosed_iInter fun m ↦
@@ -377,23 +379,24 @@ theorem op_norm_nonneg : 0 ≤ ‖f‖ :=
 
 /-- The fundamental property of the operator norm of a continuous multilinear map:
 `‖f m‖` is bounded by `‖f‖` times the product of the `‖m i‖`. -/
-theorem le_op_norm : ‖f m‖ ≤ ‖f‖ * ∏ i, ‖m i‖ := f.isLeast_op_norm.1.2 m
+theorem le_op_norm [DecidableEq ι] : ‖f m‖ ≤ ‖f‖ * ∏ i, ‖m i‖ := f.isLeast_op_norm.1.2 m
 #align continuous_multilinear_map.le_op_norm ContinuousMultilinearMap.le_op_norm
 
 variable {f m}
 
-theorem le_mul_prod_of_le_op_norm_of_le {C : ℝ} {b : ι → ℝ} (hC : ‖f‖ ≤ C) (hm : ∀ i, ‖m i‖ ≤ b i) :
-    ‖f m‖ ≤ C * ∏ i, b i :=
+theorem le_mul_prod_of_le_op_norm_of_le [DecidableEq ι] {C : ℝ} {b : ι → ℝ} (hC : ‖f‖ ≤ C)
+    (hm : ∀ i, ‖m i‖ ≤ b i) : ‖f m‖ ≤ C * ∏ i, b i :=
   (f.le_op_norm m).trans <| mul_le_mul hC (prod_le_prod (fun _ _ ↦ norm_nonneg _) fun _ _ ↦ hm _)
     (prod_nonneg fun _ _ ↦ norm_nonneg _) ((op_norm_nonneg _).trans hC)
 
 variable (f)
 
-theorem le_op_norm_mul_prod_of_le {b : ι → ℝ} (hm : ∀ i, ‖m i‖ ≤ b i) : ‖f m‖ ≤ ‖f‖ * ∏ i, b i :=
+theorem le_op_norm_mul_prod_of_le [DecidableEq ι] {b : ι → ℝ} (hm : ∀ i, ‖m i‖ ≤ b i) :
+    ‖f m‖ ≤ ‖f‖ * ∏ i, b i :=
   le_mul_prod_of_le_op_norm_of_le le_rfl hm
 #align continuous_multilinear_map.le_op_norm_mul_prod_of_le ContinuousMultilinearMap.le_op_norm_mul_prod_of_le
 
-theorem le_op_norm_mul_pow_card_of_le {b : ℝ} (hm : ‖m‖ ≤ b) :
+theorem le_op_norm_mul_pow_card_of_le [DecidableEq ι] {b : ℝ} (hm : ‖m‖ ≤ b) :
     ‖f m‖ ≤ ‖f‖ * b ^ Fintype.card ι := by
   simpa only [prod_const] using f.le_op_norm_mul_prod_of_le fun i => (norm_le_pi_norm m i).trans hm
 #align continuous_multilinear_map.le_op_norm_mul_pow_card_of_le ContinuousMultilinearMap.le_op_norm_mul_pow_card_of_le
@@ -406,19 +409,19 @@ theorem le_op_norm_mul_pow_of_le {Ei : Fin n → Type*} [∀ i, NormedAddCommGro
 
 variable {f} (m)
 
-theorem le_of_op_norm_le {C : ℝ} (h : ‖f‖ ≤ C) : ‖f m‖ ≤ C * ∏ i, ‖m i‖ :=
+theorem le_of_op_norm_le [DecidableEq ι] {C : ℝ} (h : ‖f‖ ≤ C) : ‖f m‖ ≤ C * ∏ i, ‖m i‖ :=
   le_mul_prod_of_le_op_norm_of_le h fun _ ↦ le_rfl
 #align continuous_multilinear_map.le_of_op_norm_le ContinuousMultilinearMap.le_of_op_norm_le
 
 variable (f)
 
-theorem ratio_le_op_norm : (‖f m‖ / ∏ i, ‖m i‖) ≤ ‖f‖ :=
+theorem ratio_le_op_norm [DecidableEq ι] : (‖f m‖ / ∏ i, ‖m i‖) ≤ ‖f‖ :=
   div_le_of_nonneg_of_le_mul (prod_nonneg fun _ _ => norm_nonneg _) (op_norm_nonneg _)
     (f.le_op_norm m)
 #align continuous_multilinear_map.ratio_le_op_norm ContinuousMultilinearMap.ratio_le_op_norm
 
 /-- The image of the unit ball under a continuous multilinear map is bounded. -/
-theorem unit_le_op_norm (h : ‖m‖ ≤ 1) : ‖f m‖ ≤ ‖f‖ :=
+theorem unit_le_op_norm [DecidableEq ι] (h : ‖m‖ ≤ 1) : ‖f m‖ ≤ ‖f‖ :=
   (le_op_norm_mul_pow_card_of_le f h).trans <| by simp
 #align continuous_multilinear_map.unit_le_op_norm ContinuousMultilinearMap.unit_le_op_norm
 
@@ -427,11 +430,12 @@ theorem op_norm_le_bound {M : ℝ} (hMp : 0 ≤ M) (hM : ∀ m, ‖f m‖ ≤ M 
   csInf_le bounds_bddBelow ⟨hMp, hM⟩
 #align continuous_multilinear_map.op_norm_le_bound ContinuousMultilinearMap.op_norm_le_bound
 
-theorem op_norm_le_iff {C : ℝ} (hC : 0 ≤ C) : ‖f‖ ≤ C ↔ ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖ :=
+theorem op_norm_le_iff [DecidableEq ι] {C : ℝ} (hC : 0 ≤ C) :
+    ‖f‖ ≤ C ↔ ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖ :=
   ⟨fun h _ ↦ le_of_op_norm_le _ h, op_norm_le_bound _ hC⟩
 
 /-- The operator norm satisfies the triangle inequality. -/
-theorem op_norm_add_le : ‖f + g‖ ≤ ‖f‖ + ‖g‖ :=
+theorem op_norm_add_le [DecidableEq ι] : ‖f + g‖ ≤ ‖f‖ + ‖g‖ :=
   op_norm_le_bound _ (add_nonneg (op_norm_nonneg _) (op_norm_nonneg _)) fun x => by
     rw [add_mul]
     exact norm_add_le_of_le (le_op_norm _ _) (le_op_norm _ _)
@@ -441,16 +445,18 @@ theorem op_norm_zero : ‖(0 : ContinuousMultilinearMap 𝕜 E G)‖ = 0 :=
   (op_norm_nonneg _).antisymm' <| op_norm_le_bound 0 le_rfl fun m => by simp
 #align continuous_multilinear_map.op_norm_zero ContinuousMultilinearMap.op_norm_zero
 
-/-- A continuous linear map is zero iff its norm vanishes. -/
-theorem op_norm_zero_iff : ‖f‖ = 0 ↔ f = 0 := by
+-- Only true if G is normed !
+/-
+/-- A continuous multilinear map is zero iff its norm vanishes. -/
+theorem op_norm_zero_iff [DecidableEq ι] : ‖f‖ = 0 ↔ f = 0 := by
   simp [← (op_norm_nonneg f).le_iff_eq, op_norm_le_iff f le_rfl, ext_iff]
-#align continuous_multilinear_map.op_norm_zero_iff ContinuousMultilinearMap.op_norm_zero_iff
+#align continuous_multilinear_map.op_norm_zero_iff ContinuousMultilinearMap.op_norm_zero_iff-/
 
 section
 
 variable {𝕜' : Type*} [NormedField 𝕜'] [NormedSpace 𝕜' G] [SMulCommClass 𝕜 𝕜' G]
 
-theorem op_norm_smul_le (c : 𝕜') : ‖c • f‖ ≤ ‖c‖ * ‖f‖ :=
+theorem op_norm_smul_le [DecidableEq ι] (c : 𝕜') : ‖c • f‖ ≤ ‖c‖ * ‖f‖ :=
   (c • f).op_norm_le_bound (mul_nonneg (norm_nonneg _) (op_norm_nonneg _)) fun m ↦ by
     rw [smul_apply, norm_smul, mul_assoc]
     exact mul_le_mul_of_nonneg_left (le_op_norm _ _) (norm_nonneg _)
@@ -462,6 +468,8 @@ theorem op_norm_neg : ‖-f‖ = ‖f‖ := by
   ext
   simp
 #align continuous_multilinear_map.op_norm_neg ContinuousMultilinearMap.op_norm_neg
+
+
 
 /-- Continuous multilinear maps themselves form a normed space with respect to
     the operator norm. -/
