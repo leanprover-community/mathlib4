@@ -859,7 +859,7 @@ theorem finite_empty : (∅ : Set α).Finite :=
 #align set.finite_empty Set.finite_empty
 
 protected theorem Infinite.nonempty {s : Set α} (h : s.Infinite) : s.Nonempty :=
-  nonempty_iff_ne_empty.2 $ by
+  nonempty_iff_ne_empty.2 <| by
     rintro rfl
     exact h finite_empty
 #align set.infinite.nonempty Set.Infinite.nonempty
@@ -926,10 +926,10 @@ theorem Finite.preimage (I : Set.InjOn f (f ⁻¹' s)) (h : s.Finite) : (f ⁻¹
 #align set.finite.preimage Set.Finite.preimage
 
 protected lemma Infinite.preimage (hs : s.Infinite) (hf : s ⊆ range f) : (f ⁻¹' s).Infinite :=
-  fun h ↦ hs $ finite_of_finite_preimage h hf
+  fun h ↦ hs <| finite_of_finite_preimage h hf
 
 lemma Infinite.preimage' (hs : (s ∩ range f).Infinite) : (f ⁻¹' s).Infinite :=
-  (hs.preimage $ inter_subset_right _ _).mono $ preimage_mono $ inter_subset_left _ _
+  (hs.preimage <| inter_subset_right _ _).mono <| preimage_mono <| inter_subset_left _ _
 
 theorem Finite.preimage_embedding {s : Set β} (f : α ↪ β) (h : s.Finite) : (f ⁻¹' s).Finite :=
   h.preimage fun _ _ _ _ h' => f.injective h'
@@ -992,7 +992,7 @@ protected theorem infinite_prod :
   refine' ⟨fun h => _, _⟩
   · simp_rw [Set.Infinite, @and_comm ¬_, ← not_imp]
     by_contra!
-    exact h ((this.1 h.nonempty.snd).prod $ this.2 h.nonempty.fst)
+    exact h ((this.1 h.nonempty.snd).prod <| this.2 h.nonempty.fst)
   · rintro (h | h)
     · exact h.1.prod_left h.2
     · exact h.1.prod_right h.2
@@ -1347,7 +1347,7 @@ alias ⟨_, Infinite.to_subtype⟩ := infinite_coe_iff
 #align set.infinite.to_subtype Set.Infinite.to_subtype
 
 lemma Infinite.exists_not_mem_finite (hs : s.Infinite) (ht : t.Finite) : ∃ a, a ∈ s ∧ a ∉ t := by
-  by_contra! h; exact hs $ ht.subset h
+  by_contra! h; exact hs <| ht.subset h
 
 lemma Infinite.exists_not_mem_finset (hs : s.Infinite) (t : Finset α) : ∃ a ∈ s, a ∉ t :=
   hs.exists_not_mem_finite t.finite_toSet
@@ -1755,7 +1755,7 @@ lemma Finite.of_forall_not_lt_lt (h : ∀ ⦃x y z : α⦄, x < y → y < z → 
 /-- If a set `s` does not contain any triple of elements `x < y < z`, then `s` is finite. -/
 lemma Set.finite_of_forall_not_lt_lt (h : ∀ x ∈ s, ∀ y ∈ s, ∀ z ∈ s, x < y → y < z → False) :
     Set.Finite s :=
-  @Set.toFinite _ s <| Finite.of_forall_not_lt_lt $ by simpa only [SetCoe.forall'] using h
+  @Set.toFinite _ s <| Finite.of_forall_not_lt_lt <| by simpa only [SetCoe.forall'] using h
 #align set.finite_of_forall_not_lt_lt Set.finite_of_forall_not_lt_lt
 
 lemma Set.finite_diff_iUnion_Ioo (s : Set α) : (s \ ⋃ (x ∈ s) (y ∈ s), Ioo x y).Finite :=

@@ -434,7 +434,7 @@ theorem finitaryExtensive_of_reflective
       · rintro ⟨⟨⟩⟩ ⟨j⟩ ⟨⟨rfl : _ = j⟩⟩ <;> simp
     rw [this]
     rintro Z ⟨_|_⟩ f <;> dsimp <;> infer_instance
-  refine ((FinitaryExtensive.vanKampen _ (colimit.isColimit $ pair X Y ⋙ _)).map_reflective
+  refine ((FinitaryExtensive.vanKampen _ (colimit.isColimit <| pair X Y ⋙ _)).map_reflective
     adj).of_iso (IsColimit.uniqueUpToIso ?_ ?_)
   · exact isColimitOfPreserves Gl (colimit.isColimit _)
   · exact (IsColimit.precomposeHomEquiv _ _).symm hc

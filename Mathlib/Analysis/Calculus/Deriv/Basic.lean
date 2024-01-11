@@ -537,7 +537,7 @@ theorem derivWithin_of_isOpen (hs : IsOpen s) (hx : x ∈ s) : derivWithin f s x
 
 lemma deriv_eqOn {f' : 𝕜 → F} (hs : IsOpen s) (hf' : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x) :
     s.EqOn (deriv f) f' := fun x hx ↦ by
-  rw [← derivWithin_of_isOpen hs hx, (hf' _ hx).derivWithin $ hs.uniqueDiffWithinAt hx]
+  rw [← derivWithin_of_isOpen hs hx, (hf' _ hx).derivWithin <| hs.uniqueDiffWithinAt hx]
 
 theorem deriv_mem_iff {f : 𝕜 → F} {s : Set F} {x : 𝕜} :
     deriv f x ∈ s ↔
