@@ -41,6 +41,8 @@ actions and register the following instances:
 
 -/
 
+set_option autoImplicit true
+
 open Function
 
 /--
@@ -977,7 +979,7 @@ theorem div_eq_mul_inv (a b : G) : a / b = a * b⁻¹ :=
 #align div_eq_mul_inv div_eq_mul_inv
 #align sub_eq_add_neg sub_eq_add_neg
 
-alias div_eq_mul_inv ← division_def
+alias division_def := div_eq_mul_inv
 #align division_def division_def
 
 end DivInvMonoid

@@ -24,6 +24,8 @@ on compact sets.
   integrable on `s`.
 -/
 
+set_option autoImplicit true
+
 
 open MeasureTheory MeasureTheory.Measure Set Function TopologicalSpace
 

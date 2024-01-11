@@ -448,7 +448,7 @@ theorem tendsto_implicitFunction (hf : HasStrictFDerivAt f f' a) (hf' : range f'
   exact h₁.prod_mk_nhds h₂
 #align has_strict_fderiv_at.tendsto_implicit_function HasStrictFDerivAt.tendsto_implicitFunction
 
-alias tendsto_implicitFunction ← _root_.Filter.Tendsto.implicitFunction
+alias _root_.Filter.Tendsto.implicitFunction := tendsto_implicitFunction
 #align filter.tendsto.implicit_function Filter.Tendsto.implicitFunction
 
 /-- `HasStrictFDerivAt.implicitFunction` sends `(z, y)` to a point in `f ⁻¹' z`. -/

@@ -145,9 +145,7 @@ theorem prime_pow_succ_dvd_mul {α : Type*} [CancelCommMonoidWithZero α] {p x y
   rw [or_iff_not_imp_right]
   intro hy
   induction' i with i ih generalizing x
-  · simp only [zero_add, pow_one] at *
-    rw [pow_one]
-    rw [pow_one] at hxy
+  · rw [pow_one] at hxy ⊢
     exact (h.dvd_or_dvd hxy).resolve_right hy
   rw [pow_succ] at hxy ⊢
   obtain ⟨x', rfl⟩ := (h.dvd_or_dvd (dvd_of_mul_right_dvd hxy)).resolve_right hy

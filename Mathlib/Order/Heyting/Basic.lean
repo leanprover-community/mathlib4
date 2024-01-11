@@ -559,10 +559,10 @@ theorem sup_sdiff_self (a b : α) : a ⊔ b \ a = a ⊔ b :=
 theorem sdiff_sup_self (a b : α) : b \ a ⊔ a = b ⊔ a := by rw [sup_comm, sup_sdiff_self, sup_comm]
 #align sdiff_sup_self sdiff_sup_self
 
-alias sdiff_sup_self ← sup_sdiff_self_left
+alias sup_sdiff_self_left := sdiff_sup_self
 #align sup_sdiff_self_left sup_sdiff_self_left
 
-alias sup_sdiff_self ← sup_sdiff_self_right
+alias sup_sdiff_self_right := sup_sdiff_self
 #align sup_sdiff_self_right sup_sdiff_self_right
 
 theorem sup_sdiff_eq_sup (h : c ≤ a) : a ⊔ b \ c = a ⊔ b :=
@@ -825,16 +825,16 @@ theorem le_compl_comm : a ≤ bᶜ ↔ b ≤ aᶜ := by
   rw [le_compl_iff_disjoint_right, le_compl_iff_disjoint_left]
 #align le_compl_comm le_compl_comm
 
-alias le_compl_iff_disjoint_right ↔ _ Disjoint.le_compl_right
+alias ⟨_, Disjoint.le_compl_right⟩ := le_compl_iff_disjoint_right
 #align disjoint.le_compl_right Disjoint.le_compl_right
 
-alias le_compl_iff_disjoint_left ↔ _ Disjoint.le_compl_left
+alias ⟨_, Disjoint.le_compl_left⟩ := le_compl_iff_disjoint_left
 #align disjoint.le_compl_left Disjoint.le_compl_left
 
-alias le_compl_comm ← le_compl_iff_le_compl
+alias le_compl_iff_le_compl := le_compl_comm
 #align le_compl_iff_le_compl le_compl_iff_le_compl
 
-alias le_compl_comm ↔ le_compl_of_le_compl _
+alias ⟨le_compl_of_le_compl, _⟩ := le_compl_comm
 #align le_compl_of_le_compl le_compl_of_le_compl
 
 theorem disjoint_compl_left : Disjoint aᶜ a :=
@@ -1039,10 +1039,10 @@ theorem hnot_le_comm : ￢a ≤ b ↔ ￢b ≤ a := by
   rw [hnot_le_iff_codisjoint_right, hnot_le_iff_codisjoint_left]
 #align hnot_le_comm hnot_le_comm
 
-alias hnot_le_iff_codisjoint_right ↔ _ Codisjoint.hnot_le_right
+alias ⟨_, Codisjoint.hnot_le_right⟩ := hnot_le_iff_codisjoint_right
 #align codisjoint.hnot_le_right Codisjoint.hnot_le_right
 
-alias hnot_le_iff_codisjoint_left ↔ _ Codisjoint.hnot_le_left
+alias ⟨_, Codisjoint.hnot_le_left⟩ := hnot_le_iff_codisjoint_left
 #align codisjoint.hnot_le_left Codisjoint.hnot_le_left
 
 theorem codisjoint_hnot_right : Codisjoint a (￢a) :=

@@ -51,6 +51,8 @@ Topology in mathlib heavily uses filters (even more than in Bourbaki). See expla
 topological space, interior, closure, frontier, neighborhood, continuity, continuous function
 -/
 
+set_option autoImplicit true
+
 
 noncomputable section
 
@@ -108,9 +110,10 @@ lemma isOpen_mk {p h₁ h₂ h₃} {s : Set α} : IsOpen[⟨p, h₁, h₂, h₃�
 #align is_open_mk isOpen_mk
 
 @[ext]
-theorem topologicalSpace_eq : ∀ {f g : TopologicalSpace α}, IsOpen[f] = IsOpen[g] → f = g
+protected theorem TopologicalSpace.ext :
+    ∀ {f g : TopologicalSpace α}, IsOpen[f] = IsOpen[g] → f = g
   | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩, rfl => rfl
-#align topological_space_eq topologicalSpace_eq
+#align topological_space_eq TopologicalSpace.ext
 
 section
 
@@ -129,10 +132,10 @@ theorem isOpen_sUnion {s : Set (Set α)} (h : ∀ t ∈ s, IsOpen t) : IsOpen (�
 
 end
 
-theorem topologicalSpace_eq_iff {t t' : TopologicalSpace α} :
+protected theorem TopologicalSpace.ext_iff {t t' : TopologicalSpace α} :
     t = t' ↔ ∀ s, IsOpen[t] s ↔ IsOpen[t'] s :=
   ⟨fun h s => h ▸ Iff.rfl, fun h => by ext; exact h _⟩
-#align topological_space_eq_iff topologicalSpace_eq_iff
+#align topological_space_eq_iff TopologicalSpace.ext_iff
 
 theorem isOpen_fold {s : Set α} {t : TopologicalSpace α} : t.IsOpen s = IsOpen[t] s :=
   rfl
@@ -242,7 +245,7 @@ theorem isClosed_compl_iff {s : Set α} : IsClosed sᶜ ↔ IsOpen s := by
   rw [← isOpen_compl_iff, compl_compl]
 #align is_closed_compl_iff isClosed_compl_iff
 
-alias isClosed_compl_iff ↔ _ IsOpen.isClosed_compl
+alias ⟨_, IsOpen.isClosed_compl⟩ := isClosed_compl_iff
 #align is_open.is_closed_compl IsOpen.isClosed_compl
 
 theorem IsOpen.sdiff {s t : Set α} (h₁ : IsOpen s) (h₂ : IsClosed t) : IsOpen (s \ t) :=
@@ -513,7 +516,7 @@ theorem closure_nonempty_iff {s : Set α} : (closure s).Nonempty ↔ s.Nonempty 
   simp only [nonempty_iff_ne_empty, Ne.def, closure_empty_iff]
 #align closure_nonempty_iff closure_nonempty_iff
 
-alias closure_nonempty_iff ↔ Set.Nonempty.of_closure Set.Nonempty.closure
+alias ⟨Set.Nonempty.of_closure, Set.Nonempty.closure⟩ := closure_nonempty_iff
 #align set.nonempty.of_closure Set.Nonempty.of_closure
 #align set.nonempty.closure Set.Nonempty.closure
 
@@ -618,7 +621,7 @@ theorem dense_iff_closure_eq {s : Set α} : Dense s ↔ closure s = univ :=
   eq_univ_iff_forall.symm
 #align dense_iff_closure_eq dense_iff_closure_eq
 
-alias dense_iff_closure_eq ↔ Dense.closure_eq _
+alias ⟨Dense.closure_eq, _⟩ := dense_iff_closure_eq
 #align dense.closure_eq Dense.closure_eq
 
 theorem interior_eq_empty_iff_dense_compl {s : Set α} : interior s = ∅ ↔ Dense sᶜ := by
@@ -635,11 +638,8 @@ theorem dense_closure {s : Set α} : Dense (closure s) ↔ Dense s := by
   rw [Dense, Dense, closure_closure]
 #align dense_closure dense_closure
 
--- porting note: todo: use `alias` + `@[protected]`
-protected lemma Dense.closure {s : Set α} (h : Dense s) : Dense (closure s) :=
-  dense_closure.2 h
-
-alias dense_closure ↔ Dense.of_closure _
+protected alias ⟨_, Dense.closure⟩ := dense_closure
+alias ⟨Dense.of_closure, _⟩ := dense_closure
 #align dense.of_closure Dense.of_closure
 #align dense.closure Dense.closure
 
@@ -659,7 +659,7 @@ theorem dense_iff_inter_open {s : Set α} :
     exact h U U_op ⟨_, x_in⟩
 #align dense_iff_inter_open dense_iff_inter_open
 
-alias dense_iff_inter_open ↔ Dense.inter_open_nonempty _
+alias ⟨Dense.inter_open_nonempty, _⟩ := dense_iff_inter_open
 #align dense.inter_open_nonempty Dense.inter_open_nonempty
 
 theorem Dense.exists_mem_open {s : Set α} (hs : Dense s) {U : Set α} (ho : IsOpen U)
@@ -1285,7 +1285,7 @@ theorem mem_closure_iff_frequently {s : Set α} {a : α} : a ∈ closure s ↔ �
       closure_eq_compl_interior_compl]; rfl
 #align mem_closure_iff_frequently mem_closure_iff_frequently
 
-alias mem_closure_iff_frequently ↔ _ Filter.Frequently.mem_closure
+alias ⟨_, Filter.Frequently.mem_closure⟩ := mem_closure_iff_frequently
 #align filter.frequently.mem_closure Filter.Frequently.mem_closure
 
 /-- A set `s` is closed iff for every point `x`, if there is a point `y` close to `x` that belongs

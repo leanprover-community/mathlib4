@@ -13,6 +13,7 @@ import Mathlib.Algebra.Group.Units
 # Units in ordered monoids
 -/
 
+set_option autoImplicit true
 
 namespace Units
 

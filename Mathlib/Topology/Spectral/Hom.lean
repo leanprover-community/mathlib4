@@ -191,7 +191,7 @@ theorem coe_comp_continuousMap (f : SpectralMap β γ) (g : SpectralMap α β) :
 -- porting note: removed `simp` from this and added lemma above to address `simpNF` lint
 theorem coe_comp_continuousMap' (f : SpectralMap β γ) (g : SpectralMap α β) :
     (f.comp g : ContinuousMap α γ) = (f : ContinuousMap β γ).comp g := by
-    simp only [@coe_comp]; rfl
+  rfl
 #align spectral_map.coe_comp_continuous_map SpectralMap.coe_comp_continuousMap'
 
 @[simp]

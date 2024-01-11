@@ -6,6 +6,7 @@ example (a : Nat) : a = a := by rfl
 
 open Setoid
 
+universe u
 variable {α : Sort u} [Setoid α]
 
 @[refl] def iseqv_refl (a : α) : a ≈ a :=

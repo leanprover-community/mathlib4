@@ -5,6 +5,8 @@ Authors: Daniel Selsam
 -/
 import Lean
 
+set_option autoImplicit true
+
 namespace Mathlib.Prelude.Rename
 
 open Lean

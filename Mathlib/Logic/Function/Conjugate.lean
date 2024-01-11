@@ -81,9 +81,11 @@ Two maps `f g : α → α` commute if `f (g x) = g (f x)` for all `x : α`.
 Given `h : Function.commute f g` and `a : α`, we have `h a : f (g a) = g (f a)` and
 `h.comp_eq : f ∘ g = g ∘ f`.
 -/
-def Commute (f g : α → α) : Prop :=
+protected def Commute (f g : α → α) : Prop :=
   Semiconj f g g
 #align function.commute Function.Commute
+
+open Function (Commute)
 
 /-- Reinterpret `Function.Semiconj f g g` as `Function.Commute f g`. These two predicates are
 definitionally equal but have different dot-notation lemmas. -/

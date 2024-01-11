@@ -314,11 +314,7 @@ theorem exists_tendsto_compactOpen_iff_forall [LocallyCompactSpace α] [T2Space 
       exact tendsto_nhds_unique h₁ h₂
     -- So glue the `f s hs` together and prove that this glued function `f₀` is a limit on each
     -- compact set `s`
-    have hs : ∀ x : α, ∃ (s : _), IsCompact s ∧ s ∈ 𝓝 x := by
-      intro x
-      obtain ⟨s, hs, hs'⟩ := exists_compact_mem_nhds x
-      exact ⟨s, hs, hs'⟩
-    refine ⟨liftCover' _ _ h hs, ?_⟩
+    refine ⟨liftCover' _ _ h exists_compact_mem_nhds, ?_⟩
     rw [tendsto_compactOpen_iff_forall]
     intro s hs
     rw [liftCover_restrict']

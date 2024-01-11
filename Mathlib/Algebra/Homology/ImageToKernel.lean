@@ -19,6 +19,8 @@ we have `image_le_kernel f g w : imageSubobject f ≤ kernelSubobject g`
 We define `homology f g w` of such a pair as the cokernel of `imageToKernel f g w`.
 -/
 
+set_option autoImplicit true
+
 
 universe v u
 

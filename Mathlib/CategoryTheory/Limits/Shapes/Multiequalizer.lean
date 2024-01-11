@@ -638,10 +638,10 @@ noncomputable def ofSigmaCofork (c : Cofork I.fstSigmaMap I.sndSigmaMap) : Multi
         | WalkingMultispan.left a => (Sigma.ι I.left a : _) ≫ I.fstSigmaMap ≫ c.π
         | WalkingMultispan.right b => (Sigma.ι I.right b : _) ≫ c.π
       naturality := by
-        rintro (_ | _) (_ | _) (_ | _ | _) <;> dsimp
+        rintro (_ | _) (_ | _) (_ | _ | _)
         · simp
         · simp
-        · dsimp; rw [c.condition]; simp
+        · simp [c.condition]
         · simp }
 #align category_theory.limits.multicofork.of_sigma_cofork CategoryTheory.Limits.Multicofork.ofSigmaCofork
 

@@ -16,6 +16,8 @@ mathlib 3.
 
 -/
 
+set_option autoImplicit true
+
 -- We align Lean 3 lemmas with lemmas in `Init.SimpLemmas` in Lean 4.
 #align band_self Bool.and_self
 #align band_tt Bool.and_true

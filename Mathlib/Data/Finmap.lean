@@ -47,7 +47,7 @@ theorem coe_nodupKeys {l : List (Sigma β)} : @NodupKeys α β l ↔ l.NodupKeys
 lemma nodup_keys {m : Multiset (Σ a, β a)} : m.keys.Nodup ↔ m.NodupKeys := by
   rcases m with ⟨l⟩; rfl
 
-alias nodup_keys ↔ _ NodupKeys.nodup_keys
+alias ⟨_, NodupKeys.nodup_keys⟩ := nodup_keys
 
 protected lemma NodupKeys.nodup {m : Multiset (Σ a, β a)} (h : m.NodupKeys) : m.Nodup :=
   h.nodup_keys.of_map _

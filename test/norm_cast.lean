@@ -11,6 +11,7 @@ import Mathlib.Data.Rat.Cast
 
 -- set_option trace.Tactic.norm_cast true
 -- set_option trace.Meta.Tactic.simp true
+set_option autoImplicit true
 
 variable (an bn cn dn : ℕ) (az bz cz dz : ℤ)
 variable (aq bq cq dq : ℚ)

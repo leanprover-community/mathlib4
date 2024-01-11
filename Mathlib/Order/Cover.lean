@@ -63,7 +63,7 @@ theorem wcovby_of_le_of_le (h1 : a ≤ b) (h2 : b ≤ a) : a ⩿ b :=
   ⟨h1, fun _ hac hcb => (hac.trans hcb).not_le h2⟩
 #align wcovby_of_le_of_le wcovby_of_le_of_le
 
-alias wcovby_of_le_of_le ← LE.le.wcovby_of_le
+alias LE.le.wcovby_of_le := wcovby_of_le_of_le
 
 theorem AntisymmRel.wcovby (h : AntisymmRel (· ≤ ·) a b) : a ⩿ b :=
   wcovby_of_le_of_le h.1 h.2
@@ -110,6 +110,12 @@ theorem wcovby_iff_Ioo_eq : a ⩿ b ↔ a ≤ b ∧ Ioo a b = ∅ :=
   and_congr_right' <| by simp [eq_empty_iff_forall_not_mem]
 #align wcovby_iff_Ioo_eq wcovby_iff_Ioo_eq
 
+lemma Wcovby.of_le_of_le (hac : a ⩿ c) (hab : a ≤ b) (hbc : b ≤ c) : b ⩿ c :=
+  ⟨hbc, fun _x hbx hxc ↦ hac.2 (hab.trans_lt hbx) hxc⟩
+
+lemma Wcovby.of_le_of_le' (hac : a ⩿ c) (hab : a ≤ b) (hbc : b ≤ c) : a ⩿ b :=
+  ⟨hab, fun _x hax hxb ↦ hac.2 hax <| hxb.trans_le hbc⟩
+
 theorem Wcovby.of_image (f : α ↪o β) (h : f a ⩿ f b) : a ⩿ b :=
   ⟨f.le_iff_le.mp h.le, fun _ hac hcb => h.2 (f.lt_iff_lt.mpr hac) (f.lt_iff_lt.mpr hcb)⟩
 #align wcovby.of_image Wcovby.of_image
@@ -141,10 +147,10 @@ theorem ofDual_wcovby_ofDual_iff {a b : αᵒᵈ} : ofDual a ⩿ ofDual b ↔ b 
   and_congr_right' <| forall_congr' fun _ => forall_swap
 #align of_dual_wcovby_of_dual_iff ofDual_wcovby_ofDual_iff
 
-alias toDual_wcovby_toDual_iff ↔ _ Wcovby.toDual
+alias ⟨_, Wcovby.toDual⟩ := toDual_wcovby_toDual_iff
 #align wcovby.to_dual Wcovby.toDual
 
-alias ofDual_wcovby_ofDual_iff ↔ _ Wcovby.ofDual
+alias ⟨_, Wcovby.ofDual⟩ := ofDual_wcovby_ofDual_iff
 #align wcovby.of_dual Wcovby.ofDual
 
 end Preorder
@@ -228,10 +234,10 @@ theorem not_covby_iff (h : a < b) : ¬a ⋖ b ↔ ∃ c, a < c ∧ c < b := by
   simp_rw [Covby, h, true_and_iff, not_forall, exists_prop, not_not]
 #align not_covby_iff not_covby_iff
 
-alias not_covby_iff ↔ exists_lt_lt_of_not_covby _
+alias ⟨exists_lt_lt_of_not_covby, _⟩ := not_covby_iff
 #align exists_lt_lt_of_not_covby exists_lt_lt_of_not_covby
 
-alias exists_lt_lt_of_not_covby ← LT.lt.exists_lt_lt
+alias LT.lt.exists_lt_lt := exists_lt_lt_of_not_covby
 
 /-- In a dense order, nothing covers anything. -/
 theorem not_covby [DenselyOrdered α] : ¬a ⋖ b := fun h =>
@@ -254,10 +260,10 @@ theorem ofDual_covby_ofDual_iff {a b : αᵒᵈ} : ofDual a ⋖ ofDual b ↔ b �
   and_congr_right' <| forall_congr' fun _ => forall_swap
 #align of_dual_covby_of_dual_iff ofDual_covby_ofDual_iff
 
-alias toDual_covby_toDual_iff ↔ _ Covby.toDual
+alias ⟨_, Covby.toDual⟩ := toDual_covby_toDual_iff
 #align covby.to_dual Covby.toDual
 
-alias ofDual_covby_ofDual_iff ↔ _ Covby.ofDual
+alias ⟨_, Covby.ofDual⟩ := ofDual_covby_ofDual_iff
 #align covby.of_dual Covby.ofDual
 
 end LT
@@ -289,6 +295,12 @@ theorem Wcovby.covby_of_not_le (h : a ⩿ b) (h2 : ¬b ≤ a) : a ⋖ b :=
 theorem Wcovby.covby_of_lt (h : a ⩿ b) (h2 : a < b) : a ⋖ b :=
   ⟨h2, h.2⟩
 #align wcovby.covby_of_lt Wcovby.covby_of_lt
+
+lemma Covby.of_le_of_lt (hac : a ⋖ c) (hab : a ≤ b) (hbc : b < c) : b ⋖ c :=
+  ⟨hbc, fun _x hbx hxc ↦ hac.2 (hab.trans_lt hbx) hxc⟩
+
+lemma Covby.of_lt_of_le (hac : a ⋖ c) (hab : a < b) (hbc : b ≤ c) : a ⋖ b :=
+  ⟨hab, fun _x hax hxb ↦ hac.2 hax <| hxb.trans_le hbc⟩
 
 theorem not_covby_of_lt_of_lt (h₁ : a < b) (h₂ : b < c) : ¬a ⋖ c :=
   (not_covby_iff (h₁.trans h₂)).2 ⟨b, h₁, h₂⟩
@@ -383,10 +395,10 @@ theorem wcovby_iff_eq_or_covby : a ⩿ b ↔ a = b ∨ a ⋖ b :=
   wcovby_iff_covby_or_eq.trans or_comm
 #align wcovby_iff_eq_or_covby wcovby_iff_eq_or_covby
 
-alias wcovby_iff_covby_or_eq ↔ Wcovby.covby_or_eq _
+alias ⟨Wcovby.covby_or_eq, _⟩ := wcovby_iff_covby_or_eq
 #align wcovby.covby_or_eq Wcovby.covby_or_eq
 
-alias wcovby_iff_eq_or_covby ↔ Wcovby.eq_or_covby _
+alias ⟨Wcovby.eq_or_covby, _⟩ := wcovby_iff_eq_or_covby
 #align wcovby.eq_or_covby Wcovby.eq_or_covby
 
 theorem Covby.eq_or_eq (h : a ⋖ b) (h2 : a ≤ c) (h3 : c ≤ b) : c = a ∨ c = b :=
@@ -480,6 +492,23 @@ theorem covby_insert {x : α} {s : Set α} (hx : x ∉ s) : s ⋖ insert x s :=
 #align set.covby_insert Set.covby_insert
 
 end Set
+
+section Relation
+
+open Relation
+
+lemma wcovby_eq_reflGen_covby [PartialOrder α] : ((· : α) ⩿ ·) = ReflGen (· ⋖ ·) := by
+  ext x y; simp_rw [wcovby_iff_eq_or_covby, @eq_comm _ x, reflGen_iff]
+
+lemma transGen_wcovby_eq_reflTransGen_covby [PartialOrder α] :
+    TransGen ((· : α) ⩿ ·) = ReflTransGen (· ⋖ ·) := by
+  rw [wcovby_eq_reflGen_covby, transGen_reflGen]
+
+lemma reflTransGen_wcovby_eq_reflTransGen_covby [PartialOrder α] :
+    ReflTransGen ((· : α) ⩿ ·) = ReflTransGen (· ⋖ ·) := by
+  rw [wcovby_eq_reflGen_covby, reflTransGen_reflGen]
+
+end Relation
 
 namespace Prod
 

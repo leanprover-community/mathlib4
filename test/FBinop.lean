@@ -4,6 +4,7 @@ import Mathlib.Data.Finset.Prod
 import Mathlib.Data.SetLike.Basic
 
 universe u v w
+set_option autoImplicit true
 
 namespace FBinopTests
 

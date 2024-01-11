@@ -48,12 +48,12 @@ section Pow
 
 variable [Pow M ℕ]
 
-@[simp]
+@[to_additive (attr := simp) ite_nsmul]
 theorem pow_ite (P : Prop) [Decidable P] (a : M) (b c : ℕ) :
     (a ^ if P then b else c) = if P then a ^ b else a ^ c := by split_ifs <;> rfl
 #align pow_ite pow_ite
 
-@[simp]
+@[to_additive (attr := simp) nsmul_ite]
 theorem ite_pow (P : Prop) [Decidable P] (a b : M) (c : ℕ) :
     (if P then a else b) ^ c = if P then a ^ c else b ^ c := by split_ifs <;> rfl
 #align ite_pow ite_pow
@@ -103,12 +103,14 @@ theorem pow_two (a : M) : a ^ 2 = a * a := by rw [pow_succ, pow_one]
 #align pow_two pow_two
 #align two_nsmul two_nsmul
 
-alias pow_two ← sq
+alias sq := pow_two
 #align sq sq
 
+@[to_additive three'_nsmul]
 theorem pow_three' (a : M) : a ^ 3 = a * a * a := by rw [pow_succ', pow_two]
 #align pow_three' pow_three'
 
+@[to_additive three_nsmul]
 theorem pow_three (a : M) : a ^ 3 = a * (a * a) := by rw [pow_succ, pow_two]
 #align pow_three pow_three
 
@@ -148,6 +150,7 @@ theorem pow_mul_comm' (a : M) (n : ℕ) : a ^ n * a = a * a ^ n :=
 #align pow_mul_comm' pow_mul_comm'
 #align nsmul_add_comm' nsmul_add_comm'
 
+@[to_additive boole_nsmul]
 theorem pow_boole (P : Prop) [Decidable P] (a : M) :
     (a ^ if P then 1 else 0) = if P then a else 1 := by simp
 #align pow_boole pow_boole
@@ -176,7 +179,6 @@ theorem pow_eq_pow_mod {M : Type*} [Monoid M] {x : M} (m : ℕ) {n : ℕ} (h : x
     x ^ m = x ^ (m % n) := by
   have t : x ^ m = x ^ (n * (m / n) + m % n) :=
     congr_arg (fun a => x ^ a) ((Nat.add_comm _ _).trans (Nat.mod_add_div _ _)).symm
-  dsimp at t
   rw [t, pow_add, pow_mul, h, one_pow, one_mul]
 #align pow_eq_pow_mod pow_eq_pow_mod
 #align nsmul_eq_mod_nsmul nsmul_eq_mod_nsmul
@@ -235,7 +237,7 @@ theorem dvd_pow {x y : M} (hxy : x ∣ y) : ∀ {n : ℕ} (_ : n ≠ 0), x ∣ y
     exact hxy.mul_right _
 #align dvd_pow dvd_pow
 
-alias dvd_pow ← Dvd.dvd.pow
+alias Dvd.dvd.pow := dvd_pow
 
 theorem dvd_pow_self (a : M) {n : ℕ} (hn : n ≠ 0) : a ∣ a ^ n :=
   dvd_rfl.pow hn

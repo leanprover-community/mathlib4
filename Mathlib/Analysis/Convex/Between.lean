@@ -70,8 +70,10 @@ theorem right_mem_affineSegment (x y : P) : y ∈ affineSegment R x y :=
 theorem affineSegment_same (x : P) : affineSegment R x x = {x} := by
   -- porting note: added as this doesn't do anything in `simp_rw` any more
   rw [affineSegment]
+  -- Note: when adding "simp made no progress" in lean4#2336,
+  -- had to change `lineMap_same` to `lineMap_same _`. Not sure why?
   -- porting note: added `_ _` and `Function.const`
-  simp_rw [lineMap_same, AffineMap.coe_const _ _, Function.const,
+  simp_rw [lineMap_same _, AffineMap.coe_const _ _, Function.const,
     (Set.nonempty_Icc.mpr zero_le_one).image_const]
 #align affine_segment_same affineSegment_same
 
@@ -272,14 +274,14 @@ theorem wbtw_comm {x y z : P} : Wbtw R x y z ↔ Wbtw R z y x := by
   rw [Wbtw, Wbtw, affineSegment_comm]
 #align wbtw_comm wbtw_comm
 
-alias wbtw_comm ↔ Wbtw.symm _
+alias ⟨Wbtw.symm, _⟩ := wbtw_comm
 #align wbtw.symm Wbtw.symm
 
 theorem sbtw_comm {x y z : P} : Sbtw R x y z ↔ Sbtw R z y x := by
   rw [Sbtw, Sbtw, wbtw_comm, ← and_assoc, ← and_assoc, and_right_comm]
 #align sbtw_comm sbtw_comm
 
-alias sbtw_comm ↔ Sbtw.symm _
+alias ⟨Sbtw.symm, _⟩ := sbtw_comm
 #align sbtw.symm Sbtw.symm
 
 variable (R)
@@ -530,7 +532,6 @@ theorem Sbtw.affineCombination_of_mem_affineSpan_pair [NoZeroDivisors R] [NoZero
       (s.affineCombination R p w₂) := by
   rw [affineCombination_mem_affineSpan_pair ha hw hw₁ hw₂] at h
   rcases h with ⟨r, hr⟩
-  dsimp only at hr
   rw [hr i his, sbtw_mul_sub_add_iff] at hs
   change ∀ i ∈ s, w i = (r • (w₂ - w₁) + w₁) i at hr
   rw [s.affineCombination_congr hr fun _ _ => rfl]
@@ -630,7 +631,6 @@ theorem sbtw_of_sbtw_of_sbtw_of_mem_affineSpan_pair [NoZeroSMulDivisors R V]
   have h₂s :=
     sign_eq_of_affineCombination_mem_affineSpan_single_lineMap t.Independent hw (Finset.mem_univ _)
       (Finset.mem_univ _) (Finset.mem_univ _) h₁₂.symm h₂₃ h₁₃ hr₂0 hr₂1 h₂'
-  dsimp only at h₁s h₂s
   rw [← Finset.univ.affineCombination_affineCombinationSingleWeights R t.points
       (Finset.mem_univ i₁),
     ← Finset.univ.affineCombination_affineCombinationLineMapWeights t.points (Finset.mem_univ _)

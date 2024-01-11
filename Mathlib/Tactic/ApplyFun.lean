@@ -5,6 +5,7 @@ Authors: Keeley Hoek, Patrick Massot, Scott Morrison
 -/
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Order.Monotone.Basic
+import Mathlib.Order.Hom.Basic
 
 /-!
 # The `apply_fun` tactic.
@@ -13,8 +14,6 @@ Apply a function to an equality or inequality in either a local hypothesis or th
 
 ## Porting notes
 When the `mono` tactic has been ported we can attempt to automatically discharge `Monotone f` goals.
-
-When `Logic.Equiv.Basic` and `Order.Hom.Basic` have been ported some additional testing is required.
 -/
 
 namespace Mathlib.Tactic
@@ -86,6 +85,11 @@ def maybeProveInjective (ginj : Expr) (using? : Option Expr) : MetaM Bool := do
   if ok.isSome then return true
   return false
 
+-- for simplicity of the implementation below it is helpful
+-- to have the forward direction of these lemmas
+alias ⟨ApplyFun.le_of_le, _⟩ := OrderIso.le_iff_le
+alias ⟨ApplyFun.lt_of_lt, _⟩ := OrderIso.lt_iff_lt
+
 /-- Apply a function to the main goal. -/
 def applyFunTarget (f : Term) (using? : Option Expr) (g : MVarId) : TacticM (List MVarId) := do
   -- handle applying a two-argument theorem whose first argument is f
@@ -105,11 +109,10 @@ def applyFunTarget (f : Term) (using? : Option Expr) (g : MVarId) : TacticM (Lis
   | (``Not, #[p]) => match p.getAppFnArgs with
     | (``Eq, #[_, _, _]) => handle ``ne_of_apply_ne
     | _ => applyFunTargetFailure f
-  -- TODO Once `Order.Hom.Basic` has been ported, verify these work.
-  -- | (``LE.le, _) => g.apply (← mkAppM ``OrderIso.le_iff_le #[f])
-  -- | (``GE.ge, _) => g.apply (← mkAppM ``OrderIso.le_iff_le #[f])
-  -- | (``LT.lt, _) => g.apply (← mkAppM ``OrderIso.lt_iff_lt #[f])
-  -- | (``GT.gt, _) => g.apply (← mkAppM ``OrderIso.lt_iff_lt #[f])
+  | (``LE.le, _)
+  | (``GE.ge, _) => handle ``ApplyFun.le_of_le
+  | (``LT.lt, _)
+  | (``GT.gt, _) => handle ``ApplyFun.lt_of_lt
   | (``Eq, #[_, _, _]) => do
     -- g' is for the `f lhs = f rhs` goal
     let g' ← mkFreshExprSyntheticOpaqueMVar (← mkFreshTypeMVar) (← g.getTag)
@@ -170,7 +173,7 @@ placeholders. Named placeholders (like `?a` or `?_`) will produce new goals.
 syntax (name := applyFun) "apply_fun " term (location)? (" using " term)? : tactic
 
 elab_rules : tactic | `(tactic| apply_fun $f $[$loc]? $[using $P]?) => do
-  let P ← P.mapM (elabTerm · none)
+  let P ← withMainContext <| P.mapM (elabTerm · none)
   withLocation (expandOptLocation (Lean.mkOptionalNode loc))
     (atLocal := fun h ↦ do replaceMainGoal <| ← applyFunHyp f P h (← getMainGoal))
     (atTarget := withMainContext do

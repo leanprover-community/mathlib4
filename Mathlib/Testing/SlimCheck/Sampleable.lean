@@ -85,6 +85,8 @@ random testing
 
 -/
 
+set_option autoImplicit true
+
 namespace SlimCheck
 
 open Random Gen

@@ -375,7 +375,7 @@ theorem orderOf_pow_coprime (h : (orderOf y).coprime m) : orderOf (y ^ m) = orde
 
 namespace Commute
 
-variable {x} (h : _root_.Commute x y)
+variable {x} (h : Commute x y)
 
 @[to_additive]
 theorem orderOf_mul_dvd_lcm : orderOf (x * y) ∣ Nat.lcm (orderOf x) (orderOf y) := by

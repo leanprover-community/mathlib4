@@ -481,7 +481,7 @@ theorem induction_on {C : α ⧸ s → Prop} (x : α ⧸ s) (H : ∀ z, C (Quoti
 #align quotient_add_group.induction_on QuotientAddGroup.induction_on
 
 @[to_additive]
-instance : CoeTC α (α ⧸ s) :=
+instance : Coe α (α ⧸ s) :=
   ⟨mk⟩
 
 @[to_additive (attr := elab_as_elim)]

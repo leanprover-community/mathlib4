@@ -42,17 +42,17 @@ section NatPow
 theorem inv_pow' (A : M) (n : ℕ) : A⁻¹ ^ n = (A ^ n)⁻¹ := by
   induction' n with n ih
   · simp
-  · rw [pow_succ A, mul_eq_mul, mul_inv_rev, ← ih, ← mul_eq_mul, ← pow_succ']
+  · rw [pow_succ A, mul_inv_rev, ← ih, ← pow_succ']
 #align matrix.inv_pow' Matrix.inv_pow'
 
 theorem pow_sub' (A : M) {m n : ℕ} (ha : IsUnit A.det) (h : n ≤ m) :
-    A ^ (m - n) = A ^ m ⬝ (A ^ n)⁻¹ := by
-  rw [← tsub_add_cancel_of_le h, pow_add, mul_eq_mul, Matrix.mul_assoc, mul_nonsing_inv,
+    A ^ (m - n) = A ^ m * (A ^ n)⁻¹ := by
+  rw [← tsub_add_cancel_of_le h, pow_add, Matrix.mul_assoc, mul_nonsing_inv,
     tsub_add_cancel_of_le h, Matrix.mul_one]
   simpa using ha.pow n
 #align matrix.pow_sub' Matrix.pow_sub'
 
-theorem pow_inv_comm' (A : M) (m n : ℕ) : A⁻¹ ^ m ⬝ A ^ n = A ^ n ⬝ A⁻¹ ^ m := by
+theorem pow_inv_comm' (A : M) (m n : ℕ) : A⁻¹ ^ m * A ^ n = A ^ n * A⁻¹ ^ m := by
   induction' n with n IH generalizing m
   · simp
   cases' m with m m
@@ -60,12 +60,12 @@ theorem pow_inv_comm' (A : M) (m n : ℕ) : A⁻¹ ^ m ⬝ A ^ n = A ^ n ⬝ A�
   rcases nonsing_inv_cancel_or_zero A with (⟨h, h'⟩ | h)
   · simp only [Nat.succ_eq_add_one]
     calc
-       A⁻¹ ^ (m + 1) ⬝ A ^ (n + 1) = A⁻¹ ^ m ⬝ (A⁻¹ ⬝ A) ⬝ A ^ n := by
-        simp only [pow_succ' A⁻¹, pow_succ A, mul_eq_mul, Matrix.mul_assoc]
-      _ = A ^ n ⬝ A⁻¹ ^ m := by simp only [h, Matrix.mul_one, Matrix.one_mul, IH m]
-      _ = A ^ n ⬝ (A ⬝ A⁻¹) ⬝ A⁻¹ ^ m := by simp only [h', Matrix.mul_one, Matrix.one_mul]
-      _ = A ^ (n + 1) ⬝ A⁻¹ ^ (m + 1) := by
-        simp only [pow_succ' A, pow_succ A⁻¹, mul_eq_mul, Matrix.mul_assoc]
+       A⁻¹ ^ (m + 1) * A ^ (n + 1) = A⁻¹ ^ m * (A⁻¹ * A) * A ^ n := by
+        simp only [pow_succ' A⁻¹, pow_succ A, Matrix.mul_assoc]
+      _ = A ^ n * A⁻¹ ^ m := by simp only [h, Matrix.mul_one, Matrix.one_mul, IH m]
+      _ = A ^ n * (A * A⁻¹) * A⁻¹ ^ m := by simp only [h', Matrix.mul_one, Matrix.one_mul]
+      _ = A ^ (n + 1) * A⁻¹ ^ (m + 1) := by
+        simp only [pow_succ' A, pow_succ A⁻¹, Matrix.mul_assoc]
   · simp [h]
 #align matrix.pow_inv_comm' Matrix.pow_inv_comm'
 
@@ -151,16 +151,16 @@ theorem zpow_add_one {A : M} (h : IsUnit A.det) : ∀ n : ℤ, A ^ (n + 1) = A ^
     calc
       A ^ (-(n + 1) + 1 : ℤ) = (A ^ n)⁻¹ := by
         rw [neg_add, neg_add_cancel_right, zpow_neg h, zpow_ofNat]
-      _ = (A ⬝ A ^ n)⁻¹ ⬝ A := by
+      _ = (A * A ^ n)⁻¹ * A := by
         rw [mul_inv_rev, Matrix.mul_assoc, nonsing_inv_mul _ h, Matrix.mul_one]
       _ = A ^ (-(n + 1 : ℤ)) * A := by
-        rw [zpow_neg h, ← Int.ofNat_succ, zpow_ofNat, pow_succ, mul_eq_mul, mul_eq_mul]
+        rw [zpow_neg h, ← Int.ofNat_succ, zpow_ofNat, pow_succ]
 #align matrix.zpow_add_one Matrix.zpow_add_one
 
 theorem zpow_sub_one {A : M} (h : IsUnit A.det) (n : ℤ) : A ^ (n - 1) = A ^ n * A⁻¹ :=
   calc
     A ^ (n - 1) = A ^ (n - 1) * A * A⁻¹ := by
-      rw [mul_assoc, mul_eq_mul A, mul_nonsing_inv _ h, mul_one]
+      rw [mul_assoc, mul_nonsing_inv _ h, mul_one]
     _ = A ^ n * A⁻¹ := by rw [← zpow_add_one h, sub_add_cancel]
 #align matrix.zpow_sub_one Matrix.zpow_sub_one
 
@@ -204,8 +204,8 @@ theorem SemiconjBy.zpow_right {A X Y : M} (hx : IsUnit X.det) (hy : IsUnit Y.det
     rw [zpow_negSucc, zpow_negSucc, nonsing_inv_apply _ hx', nonsing_inv_apply _ hy', SemiconjBy]
     refine' (isRegular_of_isLeftRegular_det hy'.isRegular.left).left _
     dsimp only
-    rw [← mul_assoc, ← (h.pow_right n.succ).eq, mul_assoc, mul_eq_mul (X ^ _), mul_smul,
-      mul_adjugate, mul_eq_mul, mul_eq_mul, mul_eq_mul, ← Matrix.mul_assoc,
+    rw [← mul_assoc, ← (h.pow_right n.succ).eq, mul_assoc, mul_smul,
+      mul_adjugate, ← Matrix.mul_assoc,
       mul_smul (Y ^ _) (↑hy'.unit⁻¹ : R), mul_adjugate, smul_smul, smul_smul, hx'.val_inv_mul,
       hy'.val_inv_mul, one_smul, Matrix.mul_one, Matrix.one_mul]
 #align matrix.semiconj_by.zpow_right Matrix.SemiconjBy.zpow_right
@@ -252,7 +252,7 @@ theorem zpow_add_one_of_ne_neg_one {A : M} : ∀ n : ℤ, n ≠ -1 → A ^ (n + 
     rcases nonsing_inv_cancel_or_zero A with (⟨h, _⟩ | h)
     · apply zpow_add_one (isUnit_det_of_left_inverse h)
     · show A ^ (-((n + 1 : ℕ) : ℤ)) = A ^ (-((n + 2 : ℕ) : ℤ)) * A
-      simp_rw [zpow_neg_coe_nat, ← inv_pow', h, zero_pow Nat.succ_pos', MulZeroClass.zero_mul]
+      simp_rw [zpow_neg_coe_nat, ← inv_pow', h, zero_pow Nat.succ_pos', zero_mul]
 #align matrix.zpow_add_one_of_ne_neg_one Matrix.zpow_add_one_of_ne_neg_one
 
 set_option linter.deprecated false in
@@ -301,9 +301,9 @@ theorem zpow_sub {A : M} (ha : IsUnit A.det) (z1 z2 : ℤ) : A ^ (z1 - z2) = A ^
 #align matrix.zpow_sub Matrix.zpow_sub
 
 theorem Commute.mul_zpow {A B : M} (h : Commute A B) : ∀ i : ℤ, (A * B) ^ i = A ^ i * B ^ i
-  | (n : ℕ) => by simp [h.mul_pow n, -mul_eq_mul]
+  | (n : ℕ) => by simp [h.mul_pow n]
   | -[n+1] => by
-    rw [zpow_negSucc, zpow_negSucc, zpow_negSucc, mul_eq_mul _⁻¹, ← mul_inv_rev, ← mul_eq_mul,
+    rw [zpow_negSucc, zpow_negSucc, zpow_negSucc, ← mul_inv_rev,
       h.mul_pow n.succ, (h.pow_pow _ _).eq]
 #align matrix.commute.mul_zpow Matrix.Commute.mul_zpow
 
@@ -318,7 +318,7 @@ theorem zpow_bit1' (A : M) (n : ℤ) : A ^ bit1 n = (A * A) ^ n * A := by
 #align matrix.zpow_bit1' Matrix.zpow_bit1'
 
 theorem zpow_neg_mul_zpow_self (n : ℤ) {A : M} (h : IsUnit A.det) : A ^ (-n) * A ^ n = 1 := by
-  rw [zpow_neg h, mul_eq_mul, nonsing_inv_mul _ (h.det_zpow _)]
+  rw [zpow_neg h, nonsing_inv_mul _ (h.det_zpow _)]
 #align matrix.zpow_neg_mul_zpow_self Matrix.zpow_neg_mul_zpow_self
 
 theorem one_div_pow {A : M} (n : ℕ) : (1 / A) ^ n = 1 / A ^ n := by simp only [one_div, inv_pow']

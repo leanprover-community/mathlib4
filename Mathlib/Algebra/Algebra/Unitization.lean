@@ -137,6 +137,14 @@ theorem inr_injective [Zero R] : Function.Injective ((↑) : A → Unitization R
   Function.LeftInverse.injective <| snd_inr _
 #align unitization.coe_injective Unitization.inr_injective
 
+instance instNontrivialLeft {𝕜 A} [Nontrivial 𝕜] [Nonempty A] :
+    Nontrivial (Unitization 𝕜 A) :=
+  nontrivial_prod_left
+
+instance instNontrivialRight {𝕜 A} [Nonempty 𝕜] [Nontrivial A] :
+    Nontrivial (Unitization 𝕜 A) :=
+  nontrivial_prod_right
+
 end Basic
 
 /-! ### Structures inherited from `Prod`
@@ -207,6 +215,11 @@ instance instDistribMulAction [Monoid S] [AddMonoid R] [AddMonoid A] [DistribMul
 instance instModule [Semiring S] [AddCommMonoid R] [AddCommMonoid A] [Module S R] [Module S A] :
     Module S (Unitization R A) :=
   Prod.instModule
+
+variable (R A) in
+/-- The identity map between `Unitization R A` and `R × A` as an `AddEquiv`. -/
+def addEquiv [Add R] [Add A] : Unitization R A ≃+ R × A :=
+  AddEquiv.refl _
 
 @[simp]
 theorem fst_zero [Zero R] [Zero A] : (0 : Unitization R A).fst = 0 :=
@@ -390,7 +403,7 @@ theorem inl_mul [Monoid R] [NonUnitalNonAssocSemiring A] [DistribMulAction R A] 
     (inl (r₁ * r₂) : Unitization R A) = inl r₁ * inl r₂ :=
   ext rfl <|
     show (0 : A) = r₁ • (0 : A) + r₂ • (0 : A) + 0 * 0 by
-      simp only [smul_zero, add_zero, MulZeroClass.mul_zero]
+      simp only [smul_zero, add_zero, mul_zero]
 #align unitization.inl_mul Unitization.inl_mul
 
 theorem inl_mul_inl [Monoid R] [NonUnitalNonAssocSemiring A] [DistribMulAction R A] (r₁ r₂ : R) :
@@ -407,7 +420,7 @@ variable (R)
 @[simp]
 theorem inr_mul [Semiring R] [AddCommMonoid A] [Mul A] [SMulWithZero R A] (a₁ a₂ : A) :
     (↑(a₁ * a₂) : Unitization R A) = a₁ * a₂ :=
-  ext (MulZeroClass.mul_zero _).symm <|
+  ext (mul_zero _).symm <|
     show a₁ * a₂ = (0 : R) • a₂ + (0 : R) • a₁ + a₁ * a₂ by simp only [zero_smul, zero_add]
 #align unitization.coe_mul Unitization.inr_mul
 
@@ -415,16 +428,16 @@ end
 
 theorem inl_mul_inr [Semiring R] [NonUnitalNonAssocSemiring A] [DistribMulAction R A] (r : R)
     (a : A) : ((inl r : Unitization R A) * a) = ↑(r • a) :=
-  ext (MulZeroClass.mul_zero r) <|
+  ext (mul_zero r) <|
     show r • a + (0 : R) • (0 : A) + 0 * a = r • a by
-      rw [smul_zero, add_zero, MulZeroClass.zero_mul, add_zero]
+      rw [smul_zero, add_zero, zero_mul, add_zero]
 #align unitization.inl_mul_coe Unitization.inl_mul_inr
 
 theorem inr_mul_inl [Semiring R] [NonUnitalNonAssocSemiring A] [DistribMulAction R A] (r : R)
     (a : A) : a * (inl r : Unitization R A) = ↑(r • a) :=
-  ext (MulZeroClass.zero_mul r) <|
+  ext (zero_mul r) <|
     show (0 : R) • (0 : A) + r • a + a * 0 = r • a by
-      rw [smul_zero, zero_add, MulZeroClass.mul_zero, add_zero]
+      rw [smul_zero, zero_add, mul_zero, add_zero]
 #align unitization.coe_mul_inl Unitization.inr_mul_inl
 
 instance instMulOneClass [Monoid R] [NonUnitalNonAssocSemiring A] [DistribMulAction R A] :
@@ -433,11 +446,11 @@ instance instMulOneClass [Monoid R] [NonUnitalNonAssocSemiring A] [DistribMulAct
     one_mul := fun x =>
       ext (one_mul x.1) <|
         show (1 : R) • x.2 + x.1 • (0 : A) + 0 * x.2 = x.2 by
-          rw [one_smul, smul_zero, add_zero, MulZeroClass.zero_mul, add_zero]
+          rw [one_smul, smul_zero, add_zero, zero_mul, add_zero]
     mul_one := fun x =>
       ext (mul_one x.1) <|
         show (x.1 • (0 : A)) + (1 : R) • x.2 + x.2 * (0 : A) = x.2 by
-          rw [smul_zero, zero_add, one_smul, MulZeroClass.mul_zero, add_zero] }
+          rw [smul_zero, zero_add, one_smul, mul_zero, add_zero] }
 #align unitization.mul_one_class Unitization.instMulOneClass
 
 instance instNonAssocSemiring [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A] :
@@ -445,13 +458,13 @@ instance instNonAssocSemiring [Semiring R] [NonUnitalNonAssocSemiring A] [Module
   { Unitization.instMulOneClass,
     Unitization.instAddCommMonoid with
     zero_mul := fun x =>
-      ext (MulZeroClass.zero_mul x.1) <|
+      ext (zero_mul x.1) <|
         show (0 : R) • x.2 + x.1 • (0 : A) + 0 * x.2 = 0 by
-          rw [zero_smul, zero_add, smul_zero, MulZeroClass.zero_mul, add_zero]
+          rw [zero_smul, zero_add, smul_zero, zero_mul, add_zero]
     mul_zero := fun x =>
-      ext (MulZeroClass.mul_zero x.1) <|
+      ext (mul_zero x.1) <|
         show x.1 • (0 : A) + (0 : R) • x.2 + x.2 * 0 = 0 by
-          rw [smul_zero, zero_add, zero_smul, MulZeroClass.mul_zero, add_zero]
+          rw [smul_zero, zero_add, zero_smul, mul_zero, add_zero]
     left_distrib := fun x₁ x₂ x₃ =>
       ext (mul_add x₁.1 x₂.1 x₃.1) <|
         show x₁.1 • (x₂.2 + x₃.2) + (x₂.1 + x₃.1) • x₁.2 + x₁.2 * (x₂.2 + x₃.2) =

@@ -228,7 +228,7 @@ theorem coe_real_preimage_closedBall_inter_eq {x ε : ℝ} (s : Set ℝ)
       · have : p ≤ ↑z * p
         nlinarith
         linarith [abs_eq_self.mpr hp.le]
-    · simp only [MulZeroClass.mul_zero, add_zero, abs_zero, zero_div] at hy₁ hy₂ hε
+    · simp only [mul_zero, add_zero, abs_zero, zero_div] at hy₁ hy₂ hε
       linarith
     · cases' Int.cast_le_neg_one_or_one_le_cast_of_ne_zero ℝ hz with hz' hz'
       · have : -p ≤ ↑z * p
@@ -268,7 +268,7 @@ theorem le_add_order_smul_norm_of_isOfFinAddOrder {u : AddCircle p} (hu : IsOfFi
   rw [hn, nsmul_eq_mul, ← mul_assoc, mul_comm _ p, mul_assoc, mul_div_cancel' _ hu,
     mul_le_mul_left hp.out, Nat.one_le_cast, Nat.one_le_iff_ne_zero]
   contrapose! hu'
-  simpa only [hu', Nat.cast_zero, zero_div, MulZeroClass.mul_zero, norm_eq_zero] using hn
+  simpa only [hu', Nat.cast_zero, zero_div, mul_zero, norm_eq_zero] using hn
 #align add_circle.le_add_order_smul_norm_of_is_of_fin_add_order AddCircle.le_add_order_smul_norm_of_isOfFinAddOrder
 
 end FiniteOrderPoints

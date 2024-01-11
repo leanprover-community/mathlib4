@@ -129,7 +129,7 @@ theorem smul_pos_iff_of_pos (hc : 0 < c) : 0 < c • a ↔ 0 < a :=
     _ ↔ 0 < a := smul_lt_smul_iff_of_pos hc
 #align smul_pos_iff_of_pos smul_pos_iff_of_pos
 
-alias smul_pos_iff_of_pos ↔ _ smul_pos
+alias ⟨_, smul_pos⟩ := smul_pos_iff_of_pos
 #align smul_pos smul_pos
 
 theorem monotone_smul_left (hc : 0 ≤ c) : Monotone (SMul.smul c : M → M) := fun _ _ h =>

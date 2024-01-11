@@ -26,6 +26,8 @@ which automatically inserts associators and unitors as needed
 to make the target of `f` match the source of `g`.
 -/
 
+set_option autoImplicit true
+
 -- Porting note: restore when ported
 -- import Mathlib.CategoryTheory.Bicategory.CoherenceTactic
 
@@ -170,8 +172,9 @@ def monoidalComp {W X Y Z : C} [LiftObj X] [LiftObj Y]
     [MonoidalCoherence X Y] (f : W ⟶ X) (g : Y ⟶ Z) : W ⟶ Z :=
   f ≫ MonoidalCoherence.hom ≫ g
 
-@[inherit_doc monoidalComp]
-infixr:80 " ⊗≫ " => monoidalComp -- type as \ot \gg
+@[inherit_doc Mathlib.Tactic.Coherence.monoidalComp]
+scoped[CategoryTheory.MonoidalCategory] infixr:80 " ⊗≫ " =>
+  Mathlib.Tactic.Coherence.monoidalComp -- type as \ot \gg
 
 /-- Compose two isomorphisms in a monoidal category,
 inserting unitors and associators between as necessary. -/
@@ -179,8 +182,9 @@ noncomputable def monoidalIsoComp {W X Y Z : C} [LiftObj X] [LiftObj Y]
     [MonoidalCoherence X Y] (f : W ≅ X) (g : Y ≅ Z) : W ≅ Z :=
   f ≪≫ asIso MonoidalCoherence.hom ≪≫ g
 
-@[inherit_doc monoidalIsoComp]
-infixr:80 " ≪⊗≫ " => monoidalIsoComp -- type as \ot \gg
+@[inherit_doc Mathlib.Tactic.Coherence.monoidalIsoComp]
+scoped[CategoryTheory.MonoidalCategory] infixr:80 " ≪⊗≫ " =>
+  Mathlib.Tactic.Coherence.monoidalIsoComp -- type as \ll \ot \gg
 
 example {U V W X Y : C} (f : U ⟶ V ⊗ (W ⊗ X)) (g : (V ⊗ W) ⊗ X ⟶ Y) : U ⟶ Y := f ⊗≫ g
 
@@ -285,9 +289,11 @@ elab (name := liftable_prefixes) "liftable_prefixes" : tactic => do
   withOptions (fun opts => synthInstance.maxSize.set opts
     (max 256 (synthInstance.maxSize.get opts))) do
   evalTactic (← `(tactic|
-    simp only [monoidalComp, Category.assoc, MonoidalCoherence.hom] <;>
+    (simp (config := {failIfUnchanged := false}) only
+      [monoidalComp, Category.assoc, MonoidalCoherence.hom]) <;>
     (apply (cancel_epi (𝟙 _)).1 <;> try infer_instance) <;>
-    simp only [assoc_liftHom, Mathlib.Tactic.BicategoryCoherence.assoc_liftHom₂]))
+    (simp (config := {failIfUnchanged := false}) only
+      [assoc_liftHom, Mathlib.Tactic.BicategoryCoherence.assoc_liftHom₂])))
 
 lemma insert_id_lhs {C : Type*} [Category C] {X Y : C} (f g : X ⟶ Y) (w : f ≫ 𝟙 _ = g) :
     f = g := by
@@ -362,8 +368,10 @@ syntax (name := coherence) "coherence" : tactic
 elab_rules : tactic
 | `(tactic| coherence) => do
   evalTactic (← `(tactic|
-    simp only [bicategoricalComp];
-    simp only [monoidalComp];
-    try whisker_simps
+    (simp (config := {failIfUnchanged := false}) only [bicategoricalComp,
+      Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom,
+      Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom',
+      monoidalComp]);
+    whisker_simps (config := {failIfUnchanged := false})
     ))
   coherence_loop

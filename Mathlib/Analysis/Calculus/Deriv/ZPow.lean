@@ -92,7 +92,7 @@ theorem deriv_zpow (m : ℤ) (x : 𝕜) : deriv (fun x => x ^ m) x = m * x ^ (m 
   · rw [deriv_zero_of_not_differentiableAt (mt differentiableAt_zpow.1 H)]
     push_neg at H
     rcases H with ⟨rfl, hm⟩
-    rw [zero_zpow _ ((sub_one_lt _).trans hm).ne, MulZeroClass.mul_zero]
+    rw [zero_zpow _ ((sub_one_lt _).trans hm).ne, mul_zero]
 #align deriv_zpow deriv_zpow
 
 @[simp]
@@ -128,7 +128,7 @@ theorem iter_deriv_pow (n : ℕ) (x : 𝕜) (k : ℕ) :
   · rw [Int.ofNat_sub hkn]
   · have : (∏ i in Finset.range k, (n - i : 𝕜)) = 0 :=
       Finset.prod_eq_zero (Finset.mem_range.2 hnk) (sub_self _)
-    simp only [this, MulZeroClass.zero_mul]
+    simp only [this, zero_mul]
 #align iter_deriv_pow iter_deriv_pow
 
 @[simp]

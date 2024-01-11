@@ -16,6 +16,8 @@ in realistic conditions. Instead, we create stub definitions and lemmas on objec
 open Lean Meta Elab Tactic
 
 /-! ## Syntax of objects and lemmas needed for testing `MfldSetTac` -/
+
+set_option autoImplicit true
 section stub_lemmas
 
 structure LocalHomeomorph (α : Type u) (β : Type u) extends LocalEquiv α β

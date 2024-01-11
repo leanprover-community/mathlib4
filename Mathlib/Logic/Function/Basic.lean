@@ -13,6 +13,8 @@ import Mathlib.Init.Set
 # Miscellaneous function constructions and lemmas
 -/
 
+set_option autoImplicit true
+
 open Function
 
 universe u v w

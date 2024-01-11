@@ -17,6 +17,8 @@ TODO: Define pullbacks of open embeddings.
 
 -/
 
+set_option autoImplicit true
+
 open CategoryTheory
 
 namespace Stonean
@@ -96,6 +98,33 @@ instance hasFiniteCoproducts : HasFiniteCoproducts Stonean.{u} where
       exists_colimit := ⟨{
         cocone := finiteCoproduct.cocone F
         isColimit := finiteCoproduct.isColimit F }⟩ } }
+
+/--
+A coproduct cocone associated to the explicit finite coproduct with cone point `finiteCoproduct X`.
+-/
+@[simps]
+def finiteCoproduct.explicitCocone : Limits.Cocone (Discrete.functor X) where
+  pt := finiteCoproduct X
+  ι := Discrete.natTrans fun ⟨a⟩ => finiteCoproduct.ι X a
+
+/--
+The more explicit finite coproduct cocone is a colimit cocone.
+-/
+@[simps]
+def finiteCoproduct.isColimit' : Limits.IsColimit (finiteCoproduct.explicitCocone X) where
+  desc := fun s => finiteCoproduct.desc _ fun a => s.ι.app ⟨a⟩
+  fac := fun s ⟨a⟩ => finiteCoproduct.ι_desc _ _ _
+  uniq := fun s m hm => finiteCoproduct.hom_ext _ _ _ fun a => by
+    specialize hm ⟨a⟩
+    ext t
+    apply_fun (fun q => q t) at hm
+    exact hm
+
+/-- The isomorphism from the explicit finite coproducts to the abstract coproduct. -/
+noncomputable
+def coproductIsoCoproduct : finiteCoproduct X ≅ ∐ X :=
+Limits.IsColimit.coconePointUniqueUpToIso
+  (finiteCoproduct.isColimit' X) (Limits.colimit.isColimit _)
 
 end FiniteCoproducts
 

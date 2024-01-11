@@ -151,7 +151,6 @@ def cechNerveEquiv (X : SimplicialObject.Augmented C) (F : Arrow C) :
   invFun := equivalenceRightToLeft _ _
   left_inv := by
     intro A
-    dsimp
     ext
     · dsimp
       erw [WidePullback.lift_π]
@@ -167,7 +166,6 @@ def cechNerveEquiv (X : SimplicialObject.Augmented C) (F : Arrow C) :
     · rfl
   right_inv := by
     intro A
-    dsimp
     ext x : 2
     · refine' WidePullback.hom_ext _ _ _ (fun j => _) _
       · dsimp
@@ -309,7 +307,6 @@ def cechConerveEquiv (F : Arrow C) (X : CosimplicialObject.Augmented C) :
   invFun := equivalenceRightToLeft _ _
   left_inv := by
     intro A
-    dsimp
     ext x : 2
     · rfl
     · refine' WidePushout.hom_ext _ _ _ (fun j => _) _

@@ -261,7 +261,6 @@ theorem le_inducedMap_mul_self_of_mem_cutMap (ha : 0 < a) (b : β) (hb : b ∈ c
   trans (q' : β) ^ 2
   exact_mod_cast hqq'.le
   rw [pow_two] at hqa ⊢
-  push_cast at hqa
   exact mul_self_le_mul_self (by exact_mod_cast hq'.le)
     (le_csSup (cutMap_bddAbove β a) <|
       coe_mem_cutMap_iff.2 <| lt_of_mul_self_lt_mul_self ha.le hqa)
@@ -302,7 +301,7 @@ def inducedOrderRingHom : α →+*o β :=
         · convert this (-x) (neg_pos.2 h) using 1
           · rw [neg_mul, mul_neg, neg_neg]
           · simp_rw [AddMonoidHom.map_neg, neg_mul, mul_neg, neg_neg]
-        · simp only [MulZeroClass.mul_zero, AddMonoidHom.map_zero]
+        · simp only [mul_zero, AddMonoidHom.map_zero]
         · exact this x h
         -- prove that the (Sup of rationals less than x) ^ 2 is the Sup of the set of rationals less
         -- than (x ^ 2) by showing it is an upper bound and any smaller number is not an upper bound

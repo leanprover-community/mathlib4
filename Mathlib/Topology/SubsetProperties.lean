@@ -169,7 +169,7 @@ theorem isCompact_iff_ultrafilter_le_nhds :
   · simp only [Ultrafilter.clusterPt_iff]
 #align is_compact_iff_ultrafilter_le_nhds isCompact_iff_ultrafilter_le_nhds
 
-alias isCompact_iff_ultrafilter_le_nhds ↔ IsCompact.ultrafilter_le_nhds _
+alias ⟨IsCompact.ultrafilter_le_nhds, _⟩ := isCompact_iff_ultrafilter_le_nhds
 #align is_compact.ultrafilter_le_nhds IsCompact.ultrafilter_le_nhds
 
 /-- For every open directed cover of a compact set, there exists a single element of the
@@ -647,6 +647,7 @@ def NhdsContainBoxes (s : Set α) (t : Set β) : Prop :=
     ∃ (u : Set α) (v : Set β), IsOpen u ∧ IsOpen v ∧ s ⊆ u ∧ t ⊆ v ∧ u ×ˢ v ⊆ n
 #align nhds_contain_boxes NhdsContainBoxes
 
+@[symm]
 theorem NhdsContainBoxes.symm {s : Set α} {t : Set β} :
     NhdsContainBoxes s t → NhdsContainBoxes t s := fun H n hn hp =>
   let ⟨u, v, uo, vo, su, tv, p⟩ :=
@@ -1557,7 +1558,7 @@ theorem isClopen_iff_frontier_eq_empty {s : Set α} : IsClopen s ↔ frontier s 
     (h.trans interior_subset).antisymm subset_closure⟩
 #align is_clopen_iff_frontier_eq_empty isClopen_iff_frontier_eq_empty
 
-alias isClopen_iff_frontier_eq_empty ↔ IsClopen.frontier_eq _
+alias ⟨IsClopen.frontier_eq, _⟩ := isClopen_iff_frontier_eq_empty
 #align is_clopen.frontier_eq IsClopen.frontier_eq
 
 theorem IsClopen.union {s t : Set α} (hs : IsClopen s) (ht : IsClopen t) : IsClopen (s ∪ t) :=
@@ -1730,16 +1731,10 @@ theorem isIrreducible_iff_closure {s : Set α} : IsIrreducible (closure s) ↔ I
   and_congr closure_nonempty_iff isPreirreducible_iff_closure
 #align is_irreducible_iff_closure isIrreducible_iff_closure
 
--- porting note: todo: use `alias` + `@[protected]`
-protected lemma IsPreirreducible.closure {s : Set α} (h : IsPreirreducible s) :
-    IsPreirreducible (closure s) :=
-  isPreirreducible_iff_closure.2 h
+protected alias ⟨_, IsPreirreducible.closure⟩ := isPreirreducible_iff_closure
 #align is_preirreducible.closure IsPreirreducible.closure
 
--- porting note: todo: use `alias` + `@[protected]`
-protected lemma IsIrreducible.closure {s : Set α} (h : IsIrreducible s) :
-    IsIrreducible (closure s) :=
-  isIrreducible_iff_closure.2 h
+protected alias ⟨_, IsIrreducible.closure⟩ := isIrreducible_iff_closure
 #align is_irreducible.closure IsIrreducible.closure
 
 theorem exists_preirreducible (s : Set α) (H : IsPreirreducible s) :

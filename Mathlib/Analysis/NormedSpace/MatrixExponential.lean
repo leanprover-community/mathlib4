@@ -50,12 +50,6 @@ results for general rings are instead stated about `Ring.inverse`:
 * `Matrix.exp_conj`
 * `Matrix.exp_conj'`
 
-## Implementation notes
-
-This file runs into some sharp edges on typeclass search in lean 3, especially regarding pi types.
-To work around this, we copy a handful of instances for when lean can't find them by itself.
-Hopefully we will be able to remove these in Lean 4.
-
 ## TODO
 
 * Show that `Matrix.det (exp 𝕂 A) = exp 𝕂 (Matrix.trace A)`
@@ -67,35 +61,6 @@ Hopefully we will be able to remove these in Lean 4.
 
 
 open scoped Matrix BigOperators
-
-section HacksForPiInstanceSearch
-
-/-- A special case of `Pi.instTopologicalRing` for when `R` is not dependently typed. -/
-instance Function.topologicalRing (I : Type*) (R : Type*) [NonUnitalRing R] [TopologicalSpace R]
-    [TopologicalRing R] : TopologicalRing (I → R) :=
-  Pi.instTopologicalRing
-#align function.topological_ring Function.topologicalRing
-
-/-- A special case of `Function.algebra` for when A is a `Ring` not a `Semiring` -/
-instance Function.algebraRing (I : Type*) {R : Type*} (A : Type*) [CommSemiring R] [Ring A]
-    [Algebra R A] : Algebra R (I → A) :=
-  Pi.algebra _ _
-#align function.algebra_ring Function.algebraRing
-
-/-- A special case of `Pi.algebra` for when `f = λ i, Matrix (m i) (m i) A`. -/
-instance Pi.matrixAlgebra (I R A : Type*) (m : I → Type*) [CommSemiring R] [Semiring A]
-    [Algebra R A] [∀ i, Fintype (m i)] [∀ i, DecidableEq (m i)] :
-    Algebra R (∀ i, Matrix (m i) (m i) A) :=
-  @Pi.algebra I R (fun i => Matrix (m i) (m i) A) _ _ fun _ => Matrix.instAlgebra
-#align pi.matrix_algebra Pi.matrixAlgebra
-
-/-- A special case of `Pi.instTopologicalRing` for when `f = λ i, Matrix (m i) (m i) A`. -/
-instance Pi.matrix_topologicalRing (I A : Type*) (m : I → Type*) [Ring A] [TopologicalSpace A]
-    [TopologicalRing A] [∀ i, Fintype (m i)] : TopologicalRing (∀ i, Matrix (m i) (m i) A) :=
-  @Pi.instTopologicalRing _ (fun i => Matrix (m i) (m i) A) _ _ fun _ => Matrix.topologicalRing
-#align pi.matrix_topological_ring Pi.matrix_topologicalRing
-
-end HacksForPiInstanceSearch
 
 variable (𝕂 : Type*) {m n p : Type*} {n' : m → Type*} {𝔸 : Type*}
 
@@ -158,7 +123,7 @@ variable [IsROrC 𝕂] [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n] [
   [∀ i, DecidableEq (n' i)] [NormedRing 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
 
 nonrec theorem exp_add_of_commute (A B : Matrix m m 𝔸) (h : Commute A B) :
-    exp 𝕂 (A + B) = exp 𝕂 A ⬝ exp 𝕂 B := by
+    exp 𝕂 (A + B) = exp 𝕂 A * exp 𝕂 B := by
   letI : SeminormedRing (Matrix m m 𝔸) := Matrix.linftyOpSemiNormedRing
   letI : NormedRing (Matrix m m 𝔸) := Matrix.linftyOpNormedRing
   letI : NormedAlgebra 𝕂 (Matrix m m 𝔸) := Matrix.linftyOpNormedAlgebra
@@ -189,16 +154,18 @@ nonrec theorem isUnit_exp (A : Matrix m m 𝔸) : IsUnit (exp 𝕂 A) := by
   exact isUnit_exp _ A
 #align matrix.is_unit_exp Matrix.isUnit_exp
 
+-- TODO(mathlib4#6607): fix elaboration so `val` isn't needed
 nonrec theorem exp_units_conj (U : (Matrix m m 𝔸)ˣ) (A : Matrix m m 𝔸) :
-    exp 𝕂 (↑U ⬝ A ⬝ ↑U⁻¹ : Matrix m m 𝔸) = ↑U ⬝ exp 𝕂 A ⬝ ↑U⁻¹ := by
+    exp 𝕂 (U.val * A * (U⁻¹).val) = U.val * exp 𝕂 A * (U⁻¹).val := by
   letI : SeminormedRing (Matrix m m 𝔸) := Matrix.linftyOpSemiNormedRing
   letI : NormedRing (Matrix m m 𝔸) := Matrix.linftyOpNormedRing
   letI : NormedAlgebra 𝕂 (Matrix m m 𝔸) := Matrix.linftyOpNormedAlgebra
   exact exp_units_conj _ U A
 #align matrix.exp_units_conj Matrix.exp_units_conj
 
+-- TODO(mathlib4#6607): fix elaboration so `val` isn't needed
 theorem exp_units_conj' (U : (Matrix m m 𝔸)ˣ) (A : Matrix m m 𝔸) :
-    exp 𝕂 (↑U⁻¹ ⬝ A ⬝ U : Matrix m m 𝔸) = ↑U⁻¹ ⬝ exp 𝕂 A ⬝ U :=
+    exp 𝕂 ((U⁻¹).val * A * U.val) = (U⁻¹).val * exp 𝕂 A * U.val :=
   exp_units_conj 𝕂 U⁻¹ A
 #align matrix.exp_units_conj' Matrix.exp_units_conj'
 
@@ -225,13 +192,13 @@ theorem exp_zsmul (z : ℤ) (A : Matrix m m 𝔸) : exp 𝕂 (z • A) = exp �
 #align matrix.exp_zsmul Matrix.exp_zsmul
 
 theorem exp_conj (U : Matrix m m 𝔸) (A : Matrix m m 𝔸) (hy : IsUnit U) :
-    exp 𝕂 (U ⬝ A ⬝ U⁻¹) = U ⬝ exp 𝕂 A ⬝ U⁻¹ :=
+    exp 𝕂 (U * A * U⁻¹) = U * exp 𝕂 A * U⁻¹ :=
   let ⟨u, hu⟩ := hy
   hu ▸ by simpa only [Matrix.coe_units_inv] using exp_units_conj 𝕂 u A
 #align matrix.exp_conj Matrix.exp_conj
 
 theorem exp_conj' (U : Matrix m m 𝔸) (A : Matrix m m 𝔸) (hy : IsUnit U) :
-    exp 𝕂 (U⁻¹ ⬝ A ⬝ U) = U⁻¹ ⬝ exp 𝕂 A ⬝ U :=
+    exp 𝕂 (U⁻¹ * A * U) = U⁻¹ * exp 𝕂 A * U :=
   let ⟨u, hu⟩ := hy
   hu ▸ by simpa only [Matrix.coe_units_inv] using exp_units_conj' 𝕂 u A
 #align matrix.exp_conj' Matrix.exp_conj'

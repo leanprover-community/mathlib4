@@ -80,7 +80,7 @@ theorem left_distrib [Mul R] [Add R] [LeftDistribClass R] (a b c : R) :
   LeftDistribClass.left_distrib a b c
 #align left_distrib left_distrib
 
-alias left_distrib ← mul_add
+alias mul_add := left_distrib
 #align mul_add mul_add
 
 theorem right_distrib [Mul R] [Add R] [RightDistribClass R] (a b c : R) :
@@ -88,7 +88,7 @@ theorem right_distrib [Mul R] [Add R] [RightDistribClass R] (a b c : R) :
   RightDistribClass.right_distrib a b c
 #align right_distrib right_distrib
 
-alias right_distrib ← add_mul
+alias add_mul := right_distrib
 #align add_mul add_mul
 
 theorem distrib_three_right [Mul R] [Add R] [RightDistribClass R] (a b c d : R) :
@@ -362,14 +362,14 @@ theorem mul_sub_left_distrib (a b c : α) : a * (b - c) = a * b - a * c := by
   simpa only [sub_eq_add_neg, neg_mul_eq_mul_neg] using mul_add a b (-c)
 #align mul_sub_left_distrib mul_sub_left_distrib
 
-alias mul_sub_left_distrib ← mul_sub
+alias mul_sub := mul_sub_left_distrib
 #align mul_sub mul_sub
 
 theorem mul_sub_right_distrib (a b c : α) : (a - b) * c = a * c - b * c := by
   simpa only [sub_eq_add_neg, neg_mul_eq_neg_mul] using add_mul a (-b) c
 #align mul_sub_right_distrib mul_sub_right_distrib
 
-alias mul_sub_right_distrib ← sub_mul
+alias sub_mul := mul_sub_right_distrib
 #align sub_mul sub_mul
 
 variable {a b c d e : α}

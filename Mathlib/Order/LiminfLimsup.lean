@@ -36,6 +36,8 @@ the definitions of Limsup and Liminf.
 In complete lattices, however, it coincides with the `Inf Sup` definition.
 -/
 
+set_option autoImplicit true
+
 
 open Filter Set Function
 

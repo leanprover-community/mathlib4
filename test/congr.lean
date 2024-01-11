@@ -4,6 +4,8 @@ import Mathlib.Algebra.Group.Basic
 import Mathlib.Data.Subtype
 import Mathlib.Data.List.Defs
 
+set_option autoImplicit true
+
 theorem ex1 (a b c : Nat) (h : a = b) : a + c = b + c := by
   congr!
 

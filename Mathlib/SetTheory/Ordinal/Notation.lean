@@ -464,8 +464,8 @@ theorem add_nfBelow {b} : ∀ {o₁ o₂}, NFBelow o₁ b → NFBelow o₂ b →
     have h' := add_nfBelow (h₁.snd.mono <| le_of_lt h₁.lt) h₂
     simp [oadd_add]; revert h'; cases' a + o with e' n' a' <;> intro h'
     · exact NFBelow.oadd h₁.fst NFBelow.zero h₁.lt
-    simp [add]; have : ((e.cmp e').Compares e e') := @cmp_compares _ _ h₁.fst h'.fst
-    cases h: cmp e e' <;> simp [add] <;> dsimp [addAux] <;> simp [h]
+    have : ((e.cmp e').Compares e e') := @cmp_compares _ _ h₁.fst h'.fst
+    cases h: cmp e e' <;> dsimp [addAux] <;> simp [h]
     · exact h'
     · simp [h] at this
       subst e'
@@ -835,7 +835,7 @@ instance nf_opow (o₁ o₂) [NF o₁] [NF o₂] : NF (o₁ ^ o₂) := by
         infer_instance
   · simp [(· ^ ·),Pow.pow,pow, opow, opowAux2, e₁, e₂, split_eq_scale_split' e₂]
     have := na.fst
-    cases' k with k <;> simp <;> skip <;> dsimp
+    cases' k with k <;> simp
     · infer_instance
     · cases k <;> cases m <;> infer_instance
 #align onote.NF_opow ONote.nf_opow

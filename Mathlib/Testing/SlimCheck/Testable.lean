@@ -79,6 +79,8 @@ random testing
 
 -/
 
+set_option autoImplicit true
+
 namespace SlimCheck
 
 /-- Result of trying to disprove `p`

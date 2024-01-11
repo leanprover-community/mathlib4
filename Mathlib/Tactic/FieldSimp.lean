@@ -17,6 +17,8 @@ import Qq
 Tactic to clear denominators in algebraic expressions, based on `simp` with a specific simpset.
 -/
 
+set_option autoImplicit true
+
 namespace Mathlib.Tactic.FieldSimp
 
 open Lean Elab.Tactic Parser.Tactic Lean.Meta

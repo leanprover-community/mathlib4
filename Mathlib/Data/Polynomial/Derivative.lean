@@ -160,12 +160,6 @@ theorem derivative_X_add_C (c : R) : derivative (X + C c) = 1 := by
 set_option linter.uppercaseLean3 false in
 #align polynomial.derivative_X_add_C Polynomial.derivative_X_add_C
 
-@[simp]
-theorem iterate_derivative_add {f g : R[X]} {k : ℕ} :
-    derivative^[k] (f + g) = derivative^[k] f + derivative^[k] g :=
-  derivative.toAddMonoidHom.iterate_map_add _ _ _
-#align polynomial.iterate_derivative_add Polynomial.iterate_derivative_add
-
 --Porting note: removed `simp`: `simp` can prove it.
 theorem derivative_sum {s : Finset ι} {f : ι → R[X]} :
     derivative (∑ b in s, f b) = ∑ b in s, derivative (f b) :=

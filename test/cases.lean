@@ -2,6 +2,7 @@ import Mathlib.Tactic.Cases
 import Mathlib.Init.Logic
 import Mathlib.Init.Data.Nat.Notation
 
+set_option autoImplicit true
 example (x : α × β × γ) : True := by
   cases' x with a b; cases' b with b c
   guard_hyp a : α

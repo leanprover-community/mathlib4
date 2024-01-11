@@ -43,7 +43,7 @@ def orthogonal : Submodule 𝕜 E where
   carrier := { v | ∀ u ∈ K, ⟪u, v⟫ = 0 }
   zero_mem' _ _ := inner_zero_right _
   add_mem' hx hy u hu := by rw [inner_add_right, hx u hu, hy u hu, add_zero]
-  smul_mem' c x hx u hu := by rw [inner_smul_right, hx u hu, MulZeroClass.mul_zero]
+  smul_mem' c x hx u hu := by rw [inner_smul_right, hx u hu, mul_zero]
 #align submodule.orthogonal Submodule.orthogonal
 
 @[inherit_doc]
@@ -420,7 +420,7 @@ theorem orthogonalFamily_iff_pairwise {ι} {V : ι → Submodule 𝕜 E} :
         forall₂_congr fun _y _hy => inner_eq_zero_symm
 #align orthogonal_family_iff_pairwise orthogonalFamily_iff_pairwise
 
-alias orthogonalFamily_iff_pairwise ↔ OrthogonalFamily.pairwise OrthogonalFamily.of_pairwise
+alias ⟨OrthogonalFamily.pairwise, OrthogonalFamily.of_pairwise⟩ := orthogonalFamily_iff_pairwise
 #align orthogonal_family.pairwise OrthogonalFamily.pairwise
 #align orthogonal_family.of_pairwise OrthogonalFamily.of_pairwise
 

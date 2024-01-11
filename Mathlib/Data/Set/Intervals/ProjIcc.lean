@@ -163,7 +163,7 @@ theorem range_projIic : range (projIic a) = univ := projIic_surjective.range_eq
 
 @[simp]
 theorem range_projIcc : range (projIcc a b h) = univ :=
-  Function.Surjective.range_eq (projIcc_surjective h)
+  (projIcc_surjective h).range_eq
 #align set.range_proj_Icc Set.range_projIcc
 
 theorem monotone_projIci : Monotone (projIci a) := fun _ _ => max_le_max le_rfl

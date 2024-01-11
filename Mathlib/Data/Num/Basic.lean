@@ -18,6 +18,8 @@ in favor of the "Peano" natural numbers `Nat`, and the purpose of this
 collection of theorems is to show the equivalence of the different approaches.
 -/
 
+set_option autoImplicit true
+
 
 /-- The type of positive binary numbers.
 

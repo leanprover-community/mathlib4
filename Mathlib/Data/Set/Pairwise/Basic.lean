@@ -94,7 +94,7 @@ theorem pairwise_iff_of_refl [IsRefl α r] : s.Pairwise r ↔ ∀ ⦃a⦄, a ∈
   forall₄_congr fun _ _ _ _ => or_iff_not_imp_left.symm.trans <| or_iff_right_of_imp of_eq
 #align set.pairwise_iff_of_refl Set.pairwise_iff_of_refl
 
-alias pairwise_iff_of_refl ↔ Pairwise.of_refl _
+alias ⟨Pairwise.of_refl, _⟩ := pairwise_iff_of_refl
 #align set.pairwise.of_refl Set.Pairwise.of_refl
 
 theorem Nonempty.pairwise_iff_exists_forall [IsEquiv α r] {s : Set ι} (hs : s.Nonempty) :
@@ -206,7 +206,7 @@ theorem pairwise_bot_iff : s.Pairwise (⊥ : α → α → Prop) ↔ (s : Set α
   ⟨fun h _a ha _b hb => h.eq ha hb id, fun h => h.pairwise _⟩
 #align set.pairwise_bot_iff Set.pairwise_bot_iff
 
-alias pairwise_bot_iff ↔ Pairwise.subsingleton _
+alias ⟨Pairwise.subsingleton, _⟩ := pairwise_bot_iff
 #align set.pairwise.subsingleton Set.Pairwise.subsingleton
 
 theorem InjOn.pairwise_image {s : Set ι} (h : s.InjOn f) :
@@ -223,7 +223,7 @@ theorem pairwise_subtype_iff_pairwise_set (s : Set α) (r : α → α → Prop) 
   simp only [Pairwise, Set.Pairwise, SetCoe.forall, Ne.def, Subtype.ext_iff, Subtype.coe_mk]
 #align pairwise_subtype_iff_pairwise_set pairwise_subtype_iff_pairwise_set
 
-alias pairwise_subtype_iff_pairwise_set ↔ Pairwise.set_of_subtype Set.Pairwise.subtype
+alias ⟨Pairwise.set_of_subtype, Set.Pairwise.subtype⟩ := pairwise_subtype_iff_pairwise_set
 #align pairwise.set_of_subtype Pairwise.set_of_subtype
 #align set.pairwise.subtype Set.Pairwise.subtype
 

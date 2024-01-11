@@ -1116,12 +1116,13 @@ theorem closure_subtype {x : { a // p a }} {s : Set { a // p a }} :
   closure_induced
 #align closure_subtype closure_subtype
 
+@[simp]
 theorem continuousAt_codRestrict_iff {f : α → β} {t : Set β} (h1 : ∀ x, f x ∈ t) {x : α} :
-    ContinuousAt (codRestrict f t h1) x ↔ ContinuousAt f x := by
-  simp_rw [inducing_subtype_val.continuousAt_iff, Function.comp, val_codRestrict_apply]
+    ContinuousAt (codRestrict f t h1) x ↔ ContinuousAt f x :=
+  inducing_subtype_val.continuousAt_iff
 #align continuous_at_cod_restrict_iff continuousAt_codRestrict_iff
 
-alias continuousAt_codRestrict_iff ↔ _ ContinuousAt.codRestrict
+alias ⟨_, ContinuousAt.codRestrict⟩ := continuousAt_codRestrict_iff
 #align continuous_at.cod_restrict ContinuousAt.codRestrict
 
 theorem ContinuousAt.restrict {f : α → β} {s : Set α} {t : Set β} (h1 : MapsTo f s t) {x : s}
@@ -1139,6 +1140,16 @@ theorem Continuous.codRestrict {f : α → β} {s : Set β} (hf : Continuous f) 
     Continuous (s.codRestrict f hs) :=
   hf.subtype_mk hs
 #align continuous.cod_restrict Continuous.codRestrict
+
+@[continuity]
+theorem Continuous.restrict {f : α → β} {s : Set α} {t : Set β} (h1 : MapsTo f s t)
+    (h2 : Continuous f) : Continuous (h1.restrict f s t) :=
+  (h2.comp continuous_subtype_val).codRestrict _
+
+@[continuity]
+theorem Continuous.restrictPreimage {f : α → β} {s : Set β} (h : Continuous f) :
+    Continuous (s.restrictPreimage f) :=
+  h.restrict _
 
 theorem Inducing.codRestrict {e : α → β} (he : Inducing e) {s : Set β} (hs : ∀ x, e x ∈ s) :
     Inducing (codRestrict e s hs) :=

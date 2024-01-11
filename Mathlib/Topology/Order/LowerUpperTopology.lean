@@ -51,6 +51,8 @@ of the lower topology to the spectrum of a complete lattice coincides with the h
 lower topology, upper topology, preorder
 -/
 
+set_option autoImplicit true
+
 open Set TopologicalSpace
 
 section WithLowerTopology
@@ -274,14 +276,17 @@ instance instUpperTopologyDual [Preorder α] [TopologicalSpace α] [LowerTopolog
   topology_eq_upperTopology := topology_eq_lowerTopology (α := α)
 
 /-- Left-closed right-infinite intervals [a, ∞) are closed in the lower topology. -/
-theorem isClosed_Ici (a : α) : IsClosed (Ici a) :=
-  isOpen_compl_iff.1 <| isOpen_iff_generate_Ici_compl.2 <| GenerateOpen.basic _ ⟨a, rfl⟩
-#align lower_topology.is_closed_Ici LowerTopology.isClosed_Ici
+instance : ClosedIciTopology α :=
+  ⟨fun a ↦ isOpen_compl_iff.1 <| isOpen_iff_generate_Ici_compl.2 <| GenerateOpen.basic _ ⟨a, rfl⟩⟩
+
+-- Porting note: The old `LowerTopology.isClosed_Ici` was removed, since one can now use
+-- the general `isClosed_Ici` lemma thanks to the instance above.
+#align lower_topology.is_closed_Ici isClosed_Ici
 
 /-- The upper closure of a finite set is closed in the lower topology. -/
 theorem isClosed_upperClosure (h : s.Finite) : IsClosed (upperClosure s : Set α) := by
   simp only [← UpperSet.iInf_Ici, UpperSet.coe_iInf]
-  exact isClosed_biUnion h fun a _ => isClosed_Ici a
+  exact isClosed_biUnion h fun _ _ => isClosed_Ici
 #align lower_topology.is_closed_upper_closure LowerTopology.isClosed_upperClosure
 
 /-- Every set open in the lower topology is a lower set. -/
@@ -305,7 +310,7 @@ The closure of a singleton `{a}` in the lower topology is the left-closed right-
 -/
 @[simp]
 theorem closure_singleton (a : α) : closure {a} = Ici a :=
-  Subset.antisymm ((closure_minimal fun _ h => h.ge) <| isClosed_Ici a) <|
+  Subset.antisymm ((closure_minimal fun _ h => h.ge) <| isClosed_Ici) <|
     (isUpperSet_of_isClosed isClosed_closure).Ici_subset <| subset_closure rfl
 #align lower_topology.closure_singleton LowerTopology.closure_singleton
 
@@ -381,8 +386,8 @@ instance instLowerTopologyDual [Preorder α] [TopologicalSpace α] [UpperTopolog
   topology_eq_lowerTopology := topology_eq_upperTopology (α := α)
 
 /-- Left-infinite right-closed intervals (-∞,a] are closed in the upper topology. -/
-theorem isClosed_Iic (a : α) : IsClosed (Iic a) :=
-  isOpen_compl_iff.1 <| isOpen_iff_generate_Iic_compl.2 <| GenerateOpen.basic _ ⟨a, rfl⟩
+instance : ClosedIicTopology α :=
+  ⟨fun a ↦ isOpen_compl_iff.1 <| isOpen_iff_generate_Iic_compl.2 <| GenerateOpen.basic _ ⟨a, rfl⟩⟩
 
 /-- The lower closure of a finite set is closed in the upper topology. -/
 theorem isClosed_lowerClosure (h : s.Finite) : IsClosed (lowerClosure s : Set α) :=
@@ -435,7 +440,7 @@ instance instLowerTopologyProd [Preorder α] [TopologicalSpace α] [LowerTopolog
   topology_eq_lowerTopology := by
     refine' le_antisymm (le_generateFrom _) _
     · rintro _ ⟨x, rfl⟩
-      exact ((LowerTopology.isClosed_Ici _).prod <| LowerTopology.isClosed_Ici _).isOpen_compl
+      exact (isClosed_Ici.prod isClosed_Ici).isOpen_compl
     rw [(LowerTopology.isTopologicalBasis.prod LowerTopology.isTopologicalBasis).eq_generateFrom,
       le_generateFrom_iff_subset_isOpen, image2_subset_iff]
     rintro _ ⟨s, hs, rfl⟩ _ ⟨t, ht, rfl⟩
@@ -461,7 +466,7 @@ variable [CompleteLattice α] [CompleteLattice β] [TopologicalSpace α] [LowerT
 
 protected theorem sInfHom.continuous (f : sInfHom α β) : Continuous f := by
   refine LowerTopology.continuous_of_Ici fun b => ?_
-  convert LowerTopology.isClosed_Ici (sInf <| f ⁻¹' Ici b)
+  convert isClosed_Ici (a := sInf <| f ⁻¹' Ici b)
   refine' Subset.antisymm (fun a => sInf_le) fun a ha => le_trans _ <|
     OrderHomClass.mono (f : α →o β) ha
   refine' LE.le.trans _ (map_sInf f _).ge

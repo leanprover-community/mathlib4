@@ -5,6 +5,8 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Fin.Basic
 
+set_option autoImplicit true
+
 /-- A max-heap data structure. -/
 structure BinaryHeap (α) (lt : α → α → Bool) where
   arr : Array α

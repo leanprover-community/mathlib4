@@ -44,6 +44,7 @@ In lemma names,
 * `⨅ i, f i` : `iInf f`, the infimum of the range of `f`.
 -/
 
+set_option autoImplicit true
 
 open Function OrderDual Set
 

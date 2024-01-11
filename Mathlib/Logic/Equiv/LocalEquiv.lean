@@ -95,11 +95,13 @@ elab (name := mfldSetTac) "mfld_set_tac" : tactic => withMainContext do
       apply Set.ext; intro my_y
       constructor <;>
         · intro h_my_y
-          try (simp only [*, mfld_simps] at h_my_y; simp only [*, mfld_simps]))))
+          try simp only [*, mfld_simps] at h_my_y
+          try simp only [*, mfld_simps])))
   | (``Subset, #[_ty, _inst, _e₁, _e₂]) =>
     evalTactic (← `(tactic| (
       intro my_y h_my_y
-      try (simp only [*, mfld_simps] at h_my_y; simp only [*, mfld_simps]))))
+      try simp only [*, mfld_simps] at h_my_y
+      try simp only [*, mfld_simps])))
   | _ => throwError "goal should be an equality or an inclusion"
 
 attribute [mfld_simps] and_true eq_self_iff_true Function.comp_apply
@@ -407,7 +409,7 @@ theorem iff_preimage_eq : e.IsImage s t ↔ e.source ∩ e ⁻¹' t = e.source �
   simp only [IsImage, ext_iff, mem_inter_iff, mem_preimage, and_congr_right_iff]
 #align local_equiv.is_image.iff_preimage_eq LocalEquiv.IsImage.iff_preimage_eq
 
-alias iff_preimage_eq ↔ preimage_eq of_preimage_eq
+alias ⟨preimage_eq, of_preimage_eq⟩ := iff_preimage_eq
 #align local_equiv.is_image.of_preimage_eq LocalEquiv.IsImage.of_preimage_eq
 #align local_equiv.is_image.preimage_eq LocalEquiv.IsImage.preimage_eq
 
@@ -415,7 +417,7 @@ theorem iff_symm_preimage_eq : e.IsImage s t ↔ e.target ∩ e.symm ⁻¹' s = 
   symm_iff.symm.trans iff_preimage_eq
 #align local_equiv.is_image.iff_symm_preimage_eq LocalEquiv.IsImage.iff_symm_preimage_eq
 
-alias iff_symm_preimage_eq ↔ symm_preimage_eq of_symm_preimage_eq
+alias ⟨symm_preimage_eq, of_symm_preimage_eq⟩ := iff_symm_preimage_eq
 #align local_equiv.is_image.of_symm_preimage_eq LocalEquiv.IsImage.of_symm_preimage_eq
 #align local_equiv.is_image.symm_preimage_eq LocalEquiv.IsImage.symm_preimage_eq
 

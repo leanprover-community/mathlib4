@@ -4,6 +4,8 @@ import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Data.Quot
 import Mathlib.Data.Nat.Prime
 
+set_option autoImplicit true
+
 -- Enable this option for tracing:
 -- set_option trace.Tactic.librarySearch true
 -- And this option to trace all candidate lemmas before application.
@@ -171,9 +173,9 @@ axiom F (a b : ℕ) : f a ≤ f b ↔ a ≤ b
 #guard_msgs in
 example (a b : ℕ) (h : a ≤ b) : f a ≤ f b := by apply?
 
--- FIXME `apply? using x` is apparently partially broken at present.
--- This is returning `exact []`.
--- example (L _M : List (List ℕ)) : List ℕ := by apply? using L
+/-- info: Try this: exact List.join L -/
+#guard_msgs in
+example (L _M : List (List ℕ)) : List ℕ := by apply? using L
 
 -- Could be any number of results
 #guard_msgs (drop info) in

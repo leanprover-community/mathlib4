@@ -13,6 +13,8 @@ This file checks that this and similar tricks have had the desired effect:
 `with_reducible_and_instances apply mul_le_mul` fails although `apply mul_le_mul` succeeds.
 -/
 
+set_option autoImplicit true
+
 example {a b : α} [LinearOrderedField α] : a / 2 ≤ b / 2 := by
   fail_if_success with_reducible_and_instances apply mul_le_mul -- fails, as desired
   sorry

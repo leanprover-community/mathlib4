@@ -205,8 +205,7 @@ theorem refinement_of_locallyCompact_sigmaCompact_of_nhds_basis_set [LocallyComp
     set K : CompactExhaustion X := K'.shiftr.shiftr
     set Kdiff := fun n ↦ K (n + 1) \ interior (K n)
     -- Now we restate some properties of `CompactExhaustion` for `K`/`Kdiff`
-    have hKcov : ∀ x, x ∈ Kdiff (K'.find x + 1) := by
-      intro x
+    have hKcov : ∀ x, x ∈ Kdiff (K'.find x + 1) := fun x ↦ by
       simpa only [K'.find_shiftr] using
         diff_subset_diff_right interior_subset (K'.shiftr.mem_diff_shiftr_find x)
     have Kdiffc : ∀ n, IsCompact (Kdiff n ∩ s) :=
@@ -214,8 +213,7 @@ theorem refinement_of_locallyCompact_sigmaCompact_of_nhds_basis_set [LocallyComp
     -- Next we choose a finite covering `B (c n i) (r n i)` of each
     -- `Kdiff (n + 1) ∩ s` such that `B (c n i) (r n i) ∩ s` is disjoint with `K n`
     have : ∀ (n) (x : ↑(Kdiff (n + 1) ∩ s)), (K n)ᶜ ∈ 𝓝 (x : X) :=
-      fun n x ↦ IsOpen.mem_nhds (K.isClosed n).isOpen_compl
-        fun hx' ↦ x.2.1.2 <| K.subset_interior_succ _ hx'
+      fun n x ↦ (K.isClosed n).compl_mem_nhds fun hx' ↦ x.2.1.2 <| K.subset_interior_succ _ hx'
     -- Porting note: Commented out `haveI` for now.
     --haveI : ∀ (n) (x : ↑(Kdiff n ∩ s)), Nonempty (ι x) := fun n x ↦ (hB x x.2.2).nonempty
     choose! r hrp hr using fun n (x : ↑(Kdiff (n + 1) ∩ s)) ↦ (hB x x.2.2).mem_iff.1 (this n x)

@@ -33,6 +33,8 @@ variable {α : Type u} {β : Type v} {f fa g : α → α} {x y : α} {fb : β �
 
 namespace Function
 
+open Function (Commute)
+
 /-- A point `x` is a fixed point of `f : α → α` if `f x = x`. -/
 def IsFixedPt (f : α → α) (x : α) :=
   f x = x

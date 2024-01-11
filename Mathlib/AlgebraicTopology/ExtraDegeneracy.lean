@@ -335,7 +335,6 @@ noncomputable def extraDegeneracy : SimplicialObject.Augmented.ExtraDegeneracy f
         subst hk
         erw [Fin.succ_succAbove_succ, ExtraDegeneracy.s_comp_π_succ,
           ExtraDegeneracy.s_comp_π_succ]
-        dsimp
         simp only [WidePullback.lift_π]
     · simp only [assoc, WidePullback.lift_base]
       erw [ExtraDegeneracy.s_comp_base, ExtraDegeneracy.s_comp_base]
@@ -354,7 +353,6 @@ noncomputable def extraDegeneracy : SimplicialObject.Augmented.ExtraDegeneracy f
         subst hk
         erw [Fin.succ_predAbove_succ, ExtraDegeneracy.s_comp_π_succ,
           ExtraDegeneracy.s_comp_π_succ]
-        dsimp
         simp only [WidePullback.lift_π]
     · simp only [assoc, WidePullback.lift_base]
       erw [ExtraDegeneracy.s_comp_base, ExtraDegeneracy.s_comp_base]

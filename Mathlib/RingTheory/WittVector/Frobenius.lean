@@ -7,7 +7,7 @@ import Mathlib.Data.Nat.Multiplicity
 import Mathlib.Data.ZMod.Algebra
 import Mathlib.RingTheory.WittVector.Basic
 import Mathlib.RingTheory.WittVector.IsPoly
-import Mathlib.FieldTheory.PerfectClosure
+import Mathlib.FieldTheory.Perfect
 
 #align_import ring_theory.witt_vector.frobenius from "leanprover-community/mathlib"@"0723536a0522d24fc2f159a096fb3304bef77472"
 
@@ -199,7 +199,7 @@ theorem map_frobeniusPoly (n : ℕ) :
 theorem frobeniusPoly_zmod (n : ℕ) :
     MvPolynomial.map (Int.castRingHom (ZMod p)) (frobeniusPoly p n) = X n ^ p := by
   rw [frobeniusPoly, RingHom.map_add, RingHom.map_pow, RingHom.map_mul, map_X, map_C]
-  simp only [Int.cast_ofNat, add_zero, eq_intCast, ZMod.nat_cast_self, MulZeroClass.zero_mul, C_0]
+  simp only [Int.cast_ofNat, add_zero, eq_intCast, ZMod.nat_cast_self, zero_mul, C_0]
 #align witt_vector.frobenius_poly_zmod WittVector.frobeniusPoly_zmod
 
 @[simp]
@@ -326,10 +326,13 @@ variable (R)
 def frobeniusEquiv [PerfectRing R p] : WittVector p R ≃+* WittVector p R :=
   { (WittVector.frobenius : WittVector p R →+* WittVector p R) with
     toFun := WittVector.frobenius
-    invFun := map (pthRoot R p)
-    left_inv := fun f => ext fun n => by rw [frobenius_eq_map_frobenius]; exact pthRoot_frobenius _
-    right_inv := fun f =>
-      ext fun n => by rw [frobenius_eq_map_frobenius]; exact frobenius_pthRoot _ }
+    invFun := map (_root_.frobeniusEquiv R p).symm
+    left_inv := fun f => ext fun n => by
+      rw [frobenius_eq_map_frobenius]
+      exact frobeniusEquiv_symm_apply_frobenius R p _
+    right_inv := fun f => ext fun n => by
+      rw [frobenius_eq_map_frobenius]
+      exact frobenius_apply_frobeniusEquiv_symm R p _ }
 #align witt_vector.frobenius_equiv WittVector.frobeniusEquiv
 
 theorem frobenius_bijective [PerfectRing R p] :

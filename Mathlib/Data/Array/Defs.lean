@@ -13,6 +13,8 @@ This file contains various definitions on `Array`. It does not contain
 proofs about these definitions, those are contained in other files in `Mathlib.Data.Array`.
 -/
 
+set_option autoImplicit true
+
 namespace Array
 
 /-- Permute the array using a sequence of indices defining a cyclic permutation.

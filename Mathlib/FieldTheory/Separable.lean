@@ -345,7 +345,7 @@ theorem exists_separable_of_irreducible {f : F[X]} (hf : Irreducible f) (hp : p 
     have hg1 : g.natDegree * p = N.succ := by rwa [← natDegree_expand, hgf]
     have hg2 : g.natDegree ≠ 0 := by
       intro this
-      rw [this, MulZeroClass.zero_mul] at hg1
+      rw [this, zero_mul] at hg1
       cases hg1
     have hg3 : g.natDegree < N.succ := by
       rw [← mul_one g.natDegree, ← hg1]
@@ -361,7 +361,7 @@ theorem isUnit_or_eq_zero_of_separable_expand {f : F[X]} (n : ℕ) (hp : 0 < p)
   rintro hn : n ≠ 0
   have hf2 : derivative (expand F (p ^ n) f) = 0 := by
     rw [derivative_expand, Nat.cast_pow, CharP.cast_eq_zero, zero_pow hn.bot_lt,
-      MulZeroClass.zero_mul, MulZeroClass.mul_zero]
+      zero_mul, mul_zero]
   rw [separable_def, hf2, isCoprime_zero_right, isUnit_iff] at hf
   rcases hf with ⟨r, hr, hrf⟩
   rw [eq_comm, expand_eq_C (pow_pos hp _)] at hrf
@@ -410,7 +410,7 @@ theorem X_pow_sub_one_separable_iff {n : ℕ} : (X ^ n - 1 : F[X]).Separable ↔
   rw [separable_def', derivative_sub, derivative_X_pow, derivative_one, sub_zero]
   -- Suppose `(n : F) = 0`, then the derivative is `0`, so `X ^ n - 1` is a unit, contradiction.
   rintro (h : IsCoprime _ _) hn'
-  rw [hn', C_0, MulZeroClass.zero_mul, isCoprime_zero_right] at h
+  rw [hn', C_0, zero_mul, isCoprime_zero_right] at h
   exact not_isUnit_X_pow_sub_one F n h
 set_option linter.uppercaseLean3 false in
 #align polynomial.X_pow_sub_one_separable_iff Polynomial.X_pow_sub_one_separable_iff

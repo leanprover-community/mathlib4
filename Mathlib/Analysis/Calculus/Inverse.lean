@@ -150,8 +150,8 @@ theorem approximatesLinearOn_iff_lipschitzOnWith {f : E → F} {f' : E →L[𝕜
   simp only [this, lipschitzOnWith_iff_norm_sub_le, ApproximatesLinearOn]
 #align approximates_linear_on.approximates_linear_on_iff_lipschitz_on_with ApproximatesLinearOn.approximatesLinearOn_iff_lipschitzOnWith
 
-alias approximatesLinearOn_iff_lipschitzOnWith ↔
-  lipschitzOnWith _root_.LipschitzOnWith.approximatesLinearOn
+alias ⟨lipschitzOnWith, _root_.LipschitzOnWith.approximatesLinearOn⟩ :=
+  approximatesLinearOn_iff_lipschitzOnWith
 #align approximates_linear_on.lipschitz_on_with ApproximatesLinearOn.lipschitzOnWith
 #align lipschitz_on_with.approximates_linear_on LipschitzOnWith.approximatesLinearOn
 

@@ -2257,11 +2257,11 @@ variable {M₁} {R₄ : Type*} [Semiring R₄] [Module R₄ M₄] {σ₃₄ : R�
   [RingHomInvPair σ₃₄ σ₄₃] [RingHomInvPair σ₄₃ σ₃₄] {σ₂₄ : R₂ →+* R₄} {σ₁₄ : R₁ →+* R₄}
   [RingHomCompTriple σ₂₁ σ₁₄ σ₂₄] [RingHomCompTriple σ₂₄ σ₄₃ σ₂₃] [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄]
 
-/-- The continuous linear equivalence between `ULift M₁` and `M₁`. -/
+/-- The continuous linear equivalence between `ULift M₁` and `M₁`.
+
+This is a continuous version of `ULift.moduleEquiv`. -/
 def ulift : ULift M₁ ≃L[R₁] M₁ :=
-  { Equiv.ulift with
-    map_add' := fun _x _y => rfl
-    map_smul' := fun _c _x => rfl
+  { ULift.moduleEquiv with
     continuous_toFun := continuous_uLift_down
     continuous_invFun := continuous_uLift_up }
 #align continuous_linear_equiv.ulift ContinuousLinearEquiv.ulift

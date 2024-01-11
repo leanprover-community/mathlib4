@@ -50,19 +50,19 @@ theorem isometry_iff_dist_eq [PseudoMetricSpace α] [PseudoMetricSpace β] {f : 
 #align isometry_iff_dist_eq isometry_iff_dist_eq
 
 /-- An isometry preserves distances. -/
-alias isometry_iff_dist_eq ↔ Isometry.dist_eq _
+alias ⟨Isometry.dist_eq, _⟩ := isometry_iff_dist_eq
 #align isometry.dist_eq Isometry.dist_eq
 
 /-- A map that preserves distances is an isometry -/
-alias isometry_iff_dist_eq ↔ _ Isometry.of_dist_eq
+alias ⟨_, Isometry.of_dist_eq⟩ := isometry_iff_dist_eq
 #align isometry.of_dist_eq Isometry.of_dist_eq
 
 /-- An isometry preserves non-negative distances. -/
-alias isometry_iff_nndist_eq ↔ Isometry.nndist_eq _
+alias ⟨Isometry.nndist_eq, _⟩ := isometry_iff_nndist_eq
 #align isometry.nndist_eq Isometry.nndist_eq
 
 /-- A map that preserves non-negative distances is an isometry. -/
-alias isometry_iff_nndist_eq ↔ _ Isometry.of_nndist_eq
+alias ⟨_, Isometry.of_nndist_eq⟩ := isometry_iff_nndist_eq
 #align isometry.of_nndist_eq Isometry.of_nndist_eq
 
 namespace Isometry

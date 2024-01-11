@@ -189,14 +189,14 @@ theorem wSameSide_comm {s : AffineSubspace R P} {x y : P} : s.WSameSide x y ↔ 
     fun ⟨p₁, hp₁, p₂, hp₂, h⟩ => ⟨p₂, hp₂, p₁, hp₁, h.symm⟩⟩
 #align affine_subspace.w_same_side_comm AffineSubspace.wSameSide_comm
 
-alias wSameSide_comm ↔ WSameSide.symm _
+alias ⟨WSameSide.symm, _⟩ := wSameSide_comm
 #align affine_subspace.w_same_side.symm AffineSubspace.WSameSide.symm
 
 theorem sSameSide_comm {s : AffineSubspace R P} {x y : P} : s.SSameSide x y ↔ s.SSameSide y x := by
   rw [SSameSide, SSameSide, wSameSide_comm, and_comm (b := x ∉ s)]
 #align affine_subspace.s_same_side_comm AffineSubspace.sSameSide_comm
 
-alias sSameSide_comm ↔ SSameSide.symm _
+alias ⟨SSameSide.symm, _⟩ := sSameSide_comm
 #align affine_subspace.s_same_side.symm AffineSubspace.SSameSide.symm
 
 theorem wOppSide_comm {s : AffineSubspace R P} {x y : P} : s.WOppSide x y ↔ s.WOppSide y x := by
@@ -209,14 +209,14 @@ theorem wOppSide_comm {s : AffineSubspace R P} {x y : P} : s.WOppSide x y ↔ s.
     rwa [SameRay.sameRay_comm, ← sameRay_neg_iff, neg_vsub_eq_vsub_rev, neg_vsub_eq_vsub_rev]
 #align affine_subspace.w_opp_side_comm AffineSubspace.wOppSide_comm
 
-alias wOppSide_comm ↔ WOppSide.symm _
+alias ⟨WOppSide.symm, _⟩ := wOppSide_comm
 #align affine_subspace.w_opp_side.symm AffineSubspace.WOppSide.symm
 
 theorem sOppSide_comm {s : AffineSubspace R P} {x y : P} : s.SOppSide x y ↔ s.SOppSide y x := by
   rw [SOppSide, SOppSide, wOppSide_comm, and_comm (b := x ∉ s)]
 #align affine_subspace.s_opp_side_comm AffineSubspace.sOppSide_comm
 
-alias sOppSide_comm ↔ SOppSide.symm _
+alias ⟨SOppSide.symm, _⟩ := sOppSide_comm
 #align affine_subspace.s_opp_side.symm AffineSubspace.SOppSide.symm
 
 theorem not_wSameSide_bot (x y : P) : ¬(⊥ : AffineSubspace R P).WSameSide x y :=
@@ -398,8 +398,11 @@ theorem _root_.Wbtw.wOppSide₁₃ {s : AffineSubspace R P} {x y z : P} (h : Wbt
   rcases ht0.lt_or_eq with (ht0' | rfl); swap
   · rw [lineMap_apply_zero]; simp
   refine' Or.inr (Or.inr ⟨1 - t, t, sub_pos.2 ht1', ht0', _⟩)
-  simp_rw [lineMap_apply, vadd_vsub_assoc, vsub_vadd_eq_vsub_sub, ← neg_vsub_eq_vsub_rev z x,
-    vsub_self, zero_sub, ← neg_one_smul R (z -ᵥ x), ← add_smul, smul_neg, ← neg_smul, smul_smul]
+  -- TODO: after lean4#2336 "simp made no progress feature"
+  -- had to add `_` to several lemmas here. Not sure why!
+  simp_rw [lineMap_apply _, vadd_vsub_assoc _, vsub_vadd_eq_vsub_sub _,
+    ← neg_vsub_eq_vsub_rev z x, vsub_self _, zero_sub, ← neg_one_smul R (z -ᵥ x),
+    ← add_smul, smul_neg, ← neg_smul, smul_smul]
   ring_nf
 #align wbtw.w_opp_side₁₃ Wbtw.wOppSide₁₃
 
@@ -765,7 +768,7 @@ theorem sOppSide_lineMap_right {s : AffineSubspace R P} {x y : P} (hx : x ∈ s)
 theorem setOf_wSameSide_eq_image2 {s : AffineSubspace R P} {x p : P} (hx : x ∉ s) (hp : p ∈ s) :
     { y | s.WSameSide x y } = Set.image2 (fun (t : R) q => t • (x -ᵥ p) +ᵥ q) (Set.Ici 0) s := by
   ext y
-  simp_rw [Set.mem_setOf, Set.mem_image2, Set.mem_Ici, mem_coe]
+  simp_rw [Set.mem_setOf, Set.mem_image2, Set.mem_Ici]
   constructor
   · rw [wSameSide_iff_exists_left hp, or_iff_right hx]
     rintro ⟨p₂, hp₂, h | h | ⟨r₁, r₂, hr₁, hr₂, h⟩⟩
@@ -784,7 +787,7 @@ theorem setOf_wSameSide_eq_image2 {s : AffineSubspace R P} {x p : P} (hx : x ∉
 theorem setOf_sSameSide_eq_image2 {s : AffineSubspace R P} {x p : P} (hx : x ∉ s) (hp : p ∈ s) :
     { y | s.SSameSide x y } = Set.image2 (fun (t : R) q => t • (x -ᵥ p) +ᵥ q) (Set.Ioi 0) s := by
   ext y
-  simp_rw [Set.mem_setOf, Set.mem_image2, Set.mem_Ioi, mem_coe]
+  simp_rw [Set.mem_setOf, Set.mem_image2, Set.mem_Ioi]
   constructor
   · rw [sSameSide_iff_exists_left hp]
     rintro ⟨-, hy, p₂, hp₂, h | h | ⟨r₁, r₂, hr₁, hr₂, h⟩⟩
@@ -802,7 +805,7 @@ theorem setOf_sSameSide_eq_image2 {s : AffineSubspace R P} {x p : P} (hx : x ∉
 theorem setOf_wOppSide_eq_image2 {s : AffineSubspace R P} {x p : P} (hx : x ∉ s) (hp : p ∈ s) :
     { y | s.WOppSide x y } = Set.image2 (fun (t : R) q => t • (x -ᵥ p) +ᵥ q) (Set.Iic 0) s := by
   ext y
-  simp_rw [Set.mem_setOf, Set.mem_image2, Set.mem_Iic, mem_coe]
+  simp_rw [Set.mem_setOf, Set.mem_image2, Set.mem_Iic]
   constructor
   · rw [wOppSide_iff_exists_left hp, or_iff_right hx]
     rintro ⟨p₂, hp₂, h | h | ⟨r₁, r₂, hr₁, hr₂, h⟩⟩
@@ -821,7 +824,7 @@ theorem setOf_wOppSide_eq_image2 {s : AffineSubspace R P} {x p : P} (hx : x ∉ 
 theorem setOf_sOppSide_eq_image2 {s : AffineSubspace R P} {x p : P} (hx : x ∉ s) (hp : p ∈ s) :
     { y | s.SOppSide x y } = Set.image2 (fun (t : R) q => t • (x -ᵥ p) +ᵥ q) (Set.Iio 0) s := by
   ext y
-  simp_rw [Set.mem_setOf, Set.mem_image2, Set.mem_Iio, mem_coe]
+  simp_rw [Set.mem_setOf, Set.mem_image2, Set.mem_Iio]
   constructor
   · rw [sOppSide_iff_exists_left hp]
     rintro ⟨-, hy, p₂, hp₂, h | h | ⟨r₁, r₂, hr₁, hr₂, h⟩⟩

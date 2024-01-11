@@ -20,6 +20,8 @@ A subsingleton type is `w`-small for any `w`.
 If `α ≃ β`, then `Small.{w} α ↔ Small.{w} β`.
 -/
 
+set_option autoImplicit true
+
 
 universe u w v
 

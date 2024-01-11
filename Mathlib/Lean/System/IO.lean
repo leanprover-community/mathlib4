@@ -13,6 +13,8 @@ import Mathlib.Data.List.Indexes
   the list of all results.
 -/
 
+set_option autoImplicit true
+
 -- duplicated from `lean4/src/Init/System/IO.lean`
 local macro "nonempty_list" : tactic =>
   `(tactic| exact Nat.zero_lt_succ _)

@@ -19,6 +19,8 @@ tactics. `range' a b = [a, ..., a + b - 1]` is there to help prove properties ab
 Actual maths should use `List.Ico` instead.
 -/
 
+set_option autoImplicit true
+
 
 universe u
 

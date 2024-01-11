@@ -61,6 +61,8 @@ import Mathlib.RingTheory.Finiteness
 Torsion, submodule, module, quotient
 -/
 
+set_option autoImplicit true
+
 
 namespace Ideal
 
@@ -424,8 +426,7 @@ theorem iSup_torsionBySet_ideal_eq_torsionBySet_iInf [DecidableEq ι] :
       · have := coe_mem (μ i)
         simp only [mem_iInf] at this
         exact Ideal.mul_mem_left _ _ (this j hj ij)
-    · simp_rw [coe_mk]
-      rw [← Finset.sum_smul, hμ, one_smul]
+    · rw [← Finset.sum_smul, hμ, one_smul]
 #align submodule.supr_torsion_by_ideal_eq_torsion_by_infi Submodule.iSup_torsionBySet_ideal_eq_torsionBySet_iInf
 
 -- Porting note: iSup_torsionBySet_ideal_eq_torsionBySet_iInf now requires DecidableEq ι

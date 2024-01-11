@@ -68,10 +68,10 @@ theorem traceAux_eq : traceAux R b = traceAux R c :=
       Matrix.trace (LinearMap.toMatrix b b f) =
           Matrix.trace (LinearMap.toMatrix b b ((LinearMap.id.comp f).comp LinearMap.id)) := by
         rw [LinearMap.id_comp, LinearMap.comp_id]
-      _ = Matrix.trace (LinearMap.toMatrix c b LinearMap.id ⬝ LinearMap.toMatrix c c f ⬝
+      _ = Matrix.trace (LinearMap.toMatrix c b LinearMap.id * LinearMap.toMatrix c c f *
           LinearMap.toMatrix b c LinearMap.id) := by
         rw [LinearMap.toMatrix_comp _ c, LinearMap.toMatrix_comp _ c]
-      _ = Matrix.trace (LinearMap.toMatrix c c f ⬝ LinearMap.toMatrix b c LinearMap.id ⬝
+      _ = Matrix.trace (LinearMap.toMatrix c c f * LinearMap.toMatrix b c LinearMap.id *
           LinearMap.toMatrix c b LinearMap.id) := by
         rw [Matrix.mul_assoc, Matrix.trace_mul_comm]
       _ = Matrix.trace (LinearMap.toMatrix c c ((f.comp LinearMap.id).comp LinearMap.id)) := by
@@ -113,6 +113,14 @@ theorem trace_mul_comm (f g : M →ₗ[R] M) : trace R M (f * g) = trace R M (g 
   else by rw [trace, dif_neg H, LinearMap.zero_apply, LinearMap.zero_apply]
 #align linear_map.trace_mul_comm LinearMap.trace_mul_comm
 
+lemma trace_mul_cycle (f g h : M →ₗ[R] M) :
+    trace R M (f * g * h) = trace R M (h * f * g) := by
+  rw [LinearMap.trace_mul_comm, ← mul_assoc]
+
+lemma trace_mul_cycle' (f g h : M →ₗ[R] M) :
+    trace R M (f * (g * h)) = trace R M (h * (f * g)) := by
+  rw [← mul_assoc, LinearMap.trace_mul_comm]
+
 /-- The trace of an endomorphism is invariant under conjugation -/
 @[simp]
 theorem trace_conj (g : M →ₗ[R] M) (f : (M →ₗ[R] M)ˣ) :
@@ -127,7 +135,7 @@ section
 
 variable {R : Type*} [CommRing R] {M : Type*} [AddCommGroup M] [Module R M]
 
-variable (N : Type*) [AddCommGroup N] [Module R N]
+variable (N P : Type*) [AddCommGroup N] [Module R N] [AddCommGroup P] [Module R P]
 
 variable {ι : Type*}
 
@@ -158,6 +166,7 @@ theorem trace_eq_contract_of_basis' [Fintype ι] [DecidableEq ι] (b : Basis ι 
 variable (R M)
 
 variable [Module.Free R M] [Module.Finite R M] [Module.Free R N] [Module.Finite R N]
+  [Module.Free R P] [Module.Finite R P]
 
 /-- When `M` is finite free, the trace of a linear map correspond to the contraction pairing under
 the isomorphism `End(M) ≃ M* ⊗ M`-/
@@ -218,7 +227,7 @@ theorem trace_prodMap :
       trace_eq_contract_apply, contractLeft_apply, snd_apply, coprod_apply, id_coe, id_eq, zero_add]
 #align linear_map.trace_prod_map LinearMap.trace_prodMap
 
-variable {R M N}
+variable {R M N P}
 
 theorem trace_prodMap' (f : M →ₗ[R] M) (g : N →ₗ[R] N) :
     trace R (M × N) (prodMap f g) = trace R M f + trace R N g := by
@@ -228,7 +237,7 @@ theorem trace_prodMap' (f : M →ₗ[R] M) (g : N →ₗ[R] N) :
   exact h
 #align linear_map.trace_prod_map' LinearMap.trace_prodMap'
 
-variable (R M N)
+variable (R M N P)
 
 open TensorProduct Function
 
@@ -255,7 +264,7 @@ theorem trace_comp_comm :
     trace_eq_contract_apply, contractLeft_apply, smul_eq_mul, mul_comm, flip_apply]
 #align linear_map.trace_comp_comm LinearMap.trace_comp_comm
 
-variable {R M N}
+variable {R M N P}
 
 @[simp]
 theorem trace_transpose' (f : M →ₗ[R] M) :
@@ -277,6 +286,14 @@ theorem trace_comp_comm' (f : M →ₗ[R] N) (g : N →ₗ[R] M) :
   simp only [llcomp_apply', compr₂_apply, flip_apply] at h
   exact h
 #align linear_map.trace_comp_comm' LinearMap.trace_comp_comm'
+
+lemma trace_comp_cycle (f : M →ₗ[R] N) (g : N →ₗ[R] P) (h : P →ₗ[R] M) :
+    trace R P (g ∘ₗ f ∘ₗ h) = trace R N (f ∘ₗ h ∘ₗ g) := by
+  rw [trace_comp_comm', comp_assoc]
+
+lemma trace_comp_cycle' (f : M →ₗ[R] N) (g : N →ₗ[R] P) (h : P →ₗ[R] M) :
+    trace R P ((g ∘ₗ f) ∘ₗ h) = trace R M ((h ∘ₗ g) ∘ₗ f) := by
+  rw [trace_comp_comm', ← comp_assoc]
 
 @[simp]
 theorem trace_conj' (f : M →ₗ[R] M) (e : M ≃ₗ[R] N) : trace R N (e.conj f) = trace R M f := by

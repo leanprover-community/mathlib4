@@ -62,7 +62,7 @@ theorem liouvilleWith_one (x : ℝ) : LiouvilleWith 1 x := by
   rw [abs_sub_comm, abs_of_pos (sub_pos.2 this), rpow_one, sub_lt_iff_lt_add',
     add_div_eq_mul_add_div _ _ hn'.ne', div_lt_div_right hn']
   convert add_lt_add_right ((Int.floor_le (x * n)).trans_lt (lt_add_one _)) 1 using 1 <;>
-  push_cast <;> ring
+    (try push_cast) <;> ring
 #align liouville_with_one liouvilleWith_one
 
 namespace LiouvilleWith

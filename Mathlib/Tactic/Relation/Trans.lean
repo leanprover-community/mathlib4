@@ -14,6 +14,8 @@ This implements the `trans` tactic, which can apply transitivity theorems with a
 variable argument.
 -/
 
+set_option autoImplicit true
+
 namespace Mathlib.Tactic
 open Lean Meta Elab
 

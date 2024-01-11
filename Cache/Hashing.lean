@@ -6,6 +6,7 @@ Authors: Arthur Paulino
 
 import Cache.IO
 import Lean.Elab.ParseImportsFast
+import Lake.Build.Trace
 
 namespace Cache.Hashing
 
@@ -52,7 +53,7 @@ def getFileImports (source : String) (pkgDirs : PackageDirs) : Array FilePath :=
 /-- Computes a canonical hash of a file's contents. -/
 def hashFileContents (contents : String) : UInt64 :=
   -- revert potential file transformation by git's `autocrlf`
-  let contents := contents.replace "\r\n" "\n"
+  let contents := Lake.crlf2lf contents
   hash contents
 
 /--

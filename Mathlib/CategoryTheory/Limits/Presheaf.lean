@@ -42,6 +42,8 @@ colimit, representable, presheaf, free cocompletion
 * https://ncatlab.org/nlab/show/Yoneda+extension
 -/
 
+set_option autoImplicit true
+
 
 namespace CategoryTheory
 

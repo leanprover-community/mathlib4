@@ -22,6 +22,8 @@ wrap the result in an `Option` type instead:
 
 -/
 
+set_option autoImplicit true
+
 
 namespace Nat
 

@@ -643,14 +643,15 @@ theorem injective_iff_surjective_of_equiv {f : α → β} (e : α ≃ β) : Inje
     simpa [Function.comp] using e.injective.comp (this.2 (e.symm.surjective.comp hsurj))⟩
 #align finite.injective_iff_surjective_of_equiv Finite.injective_iff_surjective_of_equiv
 
-alias injective_iff_bijective ↔ _root_.Function.Injective.bijective_of_finite _
+alias ⟨_root_.Function.Injective.bijective_of_finite, _⟩ := injective_iff_bijective
 #align function.injective.bijective_of_finite Function.Injective.bijective_of_finite
 
-alias surjective_iff_bijective ↔ _root_.Function.Surjective.bijective_of_finite _
+alias ⟨_root_.Function.Surjective.bijective_of_finite, _⟩ := surjective_iff_bijective
 #align function.surjective.bijective_of_finite Function.Surjective.bijective_of_finite
 
-alias injective_iff_surjective_of_equiv ↔
-  _root_.Function.Injective.surjective_of_fintype _root_.Function.Surjective.injective_of_fintype
+alias ⟨_root_.Function.Injective.surjective_of_fintype,
+    _root_.Function.Surjective.injective_of_fintype⟩ :=
+  injective_iff_surjective_of_equiv
 #align function.injective.surjective_of_fintype Function.Injective.surjective_of_fintype
 #align function.surjective.injective_of_fintype Function.Surjective.injective_of_fintype
 
@@ -1062,7 +1063,7 @@ instance Prod.infinite_of_left [Infinite α] [Nonempty β] : Infinite (α × β)
 #align prod.infinite_of_left Prod.infinite_of_left
 
 instance instInfiniteProdSubtypeCommute [Mul α] [Infinite α] :
-    Infinite { p : α × α // _root_.Commute p.1 p.2 } :=
+    Infinite { p : α × α // Commute p.1 p.2 } :=
   Infinite.of_injective (fun a => ⟨⟨a, a⟩, rfl⟩) (by intro; simp)
 
 namespace Infinite

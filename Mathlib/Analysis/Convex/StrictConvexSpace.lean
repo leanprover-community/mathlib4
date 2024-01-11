@@ -57,6 +57,8 @@ formulated only for the case `𝕜 = ℝ`.
 convex, strictly convex
 -/
 
+set_option autoImplicit true
+
 
 open Set Metric
 

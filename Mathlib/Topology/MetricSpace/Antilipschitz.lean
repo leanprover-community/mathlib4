@@ -54,8 +54,8 @@ theorem antilipschitzWith_iff_le_mul_nndist :
   norm_cast
 #align antilipschitz_with_iff_le_mul_nndist antilipschitzWith_iff_le_mul_nndist
 
-alias antilipschitzWith_iff_le_mul_nndist ↔
-  AntilipschitzWith.le_mul_nndist AntilipschitzWith.of_le_mul_nndist
+alias ⟨AntilipschitzWith.le_mul_nndist, AntilipschitzWith.of_le_mul_nndist⟩ :=
+  antilipschitzWith_iff_le_mul_nndist
 #align antilipschitz_with.le_mul_nndist AntilipschitzWith.le_mul_nndist
 #align antilipschitz_with.of_le_mul_nndist AntilipschitzWith.of_le_mul_nndist
 
@@ -65,8 +65,8 @@ theorem antilipschitzWith_iff_le_mul_dist :
   norm_cast
 #align antilipschitz_with_iff_le_mul_dist antilipschitzWith_iff_le_mul_dist
 
-alias antilipschitzWith_iff_le_mul_dist ↔
-  AntilipschitzWith.le_mul_dist AntilipschitzWith.of_le_mul_dist
+alias ⟨AntilipschitzWith.le_mul_dist, AntilipschitzWith.of_le_mul_dist⟩ :=
+  antilipschitzWith_iff_le_mul_dist
 #align antilipschitz_with.le_mul_dist AntilipschitzWith.le_mul_dist
 #align antilipschitz_with.of_le_mul_dist AntilipschitzWith.of_le_mul_dist
 

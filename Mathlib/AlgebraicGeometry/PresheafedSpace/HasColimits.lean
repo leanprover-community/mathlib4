@@ -156,7 +156,6 @@ def pushforwardDiagramToColimit (F : J ⥤ PresheafedSpace.{_, _, v} C) :
       Opens.map_comp_obj, Pushforward.comp_inv_app, pushforwardEq_hom_app, eqToHom_op, id_eq,
       eqToHom_map, id_comp, assoc, eqToHom_trans]
     dsimp
-    simp only [eqToHom_trans, id_comp]
     congr 1
     -- The key fact is `(F.map f).c.congr`,
     -- which allows us in rewrite in the argument of `(F.map f).c.app`.

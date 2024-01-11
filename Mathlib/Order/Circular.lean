@@ -171,7 +171,7 @@ theorem btw_cyclic_right {a b c : α} (h : btw a b c) : btw c a b :=
   h.cyclic_left.cyclic_left
 #align btw_cyclic_right btw_cyclic_right
 
-alias btw_cyclic_right ← Btw.btw.cyclic_right
+alias Btw.btw.cyclic_right := btw_cyclic_right
 #align has_btw.btw.cyclic_right Btw.btw.cyclic_right
 
 /-- The order of the `↔` has been chosen so that `rw [btw_cyclic]` cycles to the right while
@@ -188,41 +188,41 @@ theorem btw_of_sbtw {a b c : α} (h : sbtw a b c) : btw a b c :=
   (sbtw_iff_btw_not_btw.1 h).1
 #align btw_of_sbtw btw_of_sbtw
 
-alias btw_of_sbtw ← SBtw.sbtw.btw
+alias SBtw.sbtw.btw := btw_of_sbtw
 #align has_sbtw.sbtw.btw SBtw.sbtw.btw
 
 theorem not_btw_of_sbtw {a b c : α} (h : sbtw a b c) : ¬btw c b a :=
   (sbtw_iff_btw_not_btw.1 h).2
 #align not_btw_of_sbtw not_btw_of_sbtw
 
-alias not_btw_of_sbtw ← SBtw.sbtw.not_btw
+alias SBtw.sbtw.not_btw := not_btw_of_sbtw
 #align has_sbtw.sbtw.not_btw SBtw.sbtw.not_btw
 
 theorem not_sbtw_of_btw {a b c : α} (h : btw a b c) : ¬sbtw c b a := fun h' => h'.not_btw h
 #align not_sbtw_of_btw not_sbtw_of_btw
 
-alias not_sbtw_of_btw ← Btw.btw.not_sbtw
+alias Btw.btw.not_sbtw := not_sbtw_of_btw
 #align has_btw.btw.not_sbtw Btw.btw.not_sbtw
 
 theorem sbtw_of_btw_not_btw {a b c : α} (habc : btw a b c) (hcba : ¬btw c b a) : sbtw a b c :=
   sbtw_iff_btw_not_btw.2 ⟨habc, hcba⟩
 #align sbtw_of_btw_not_btw sbtw_of_btw_not_btw
 
-alias sbtw_of_btw_not_btw ← Btw.btw.sbtw_of_not_btw
+alias Btw.btw.sbtw_of_not_btw := sbtw_of_btw_not_btw
 #align has_btw.btw.sbtw_of_not_btw Btw.btw.sbtw_of_not_btw
 
 theorem sbtw_cyclic_left {a b c : α} (h : sbtw a b c) : sbtw b c a :=
   h.btw.cyclic_left.sbtw_of_not_btw fun h' => h.not_btw h'.cyclic_left
 #align sbtw_cyclic_left sbtw_cyclic_left
 
-alias sbtw_cyclic_left ← SBtw.sbtw.cyclic_left
+alias SBtw.sbtw.cyclic_left := sbtw_cyclic_left
 #align has_sbtw.sbtw.cyclic_left SBtw.sbtw.cyclic_left
 
 theorem sbtw_cyclic_right {a b c : α} (h : sbtw a b c) : sbtw c a b :=
   h.cyclic_left.cyclic_left
 #align sbtw_cyclic_right sbtw_cyclic_right
 
-alias sbtw_cyclic_right ← SBtw.sbtw.cyclic_right
+alias SBtw.sbtw.cyclic_right := sbtw_cyclic_right
 #align has_sbtw.sbtw.cyclic_right SBtw.sbtw.cyclic_right
 
 /-- The order of the `↔` has been chosen so that `rw [sbtw_cyclic]` cycles to the right while
@@ -241,14 +241,14 @@ theorem sbtw_trans_right {a b c d : α} (hbc : sbtw a b c) (hcd : sbtw a c d) : 
   (hbc.cyclic_left.trans_left hcd.cyclic_left).cyclic_right
 #align sbtw_trans_right sbtw_trans_right
 
-alias sbtw_trans_right ← SBtw.sbtw.trans_right
+alias SBtw.sbtw.trans_right := sbtw_trans_right
 #align has_sbtw.sbtw.trans_right SBtw.sbtw.trans_right
 
 theorem sbtw_asymm {a b c : α} (h : sbtw a b c) : ¬sbtw c b a :=
   h.btw.not_sbtw
 #align sbtw_asymm sbtw_asymm
 
-alias sbtw_asymm ← SBtw.sbtw.not_sbtw
+alias SBtw.sbtw.not_sbtw := sbtw_asymm
 #align has_sbtw.sbtw.not_sbtw SBtw.sbtw.not_sbtw
 
 theorem sbtw_irrefl_left_right {a b : α} : ¬sbtw a b a := fun h => h.not_btw h.btw

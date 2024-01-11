@@ -1245,8 +1245,7 @@ theorem finprod_mem_finset_product' [DecidableEq α] [DecidableEq β] (s : Finse
     ∀ a,
       (∏ i : β in (s.filter fun ab => Prod.fst ab = a).image Prod.snd, f (a, i)) =
         (Finset.filter (fun ab => Prod.fst ab = a) s).prod f := by
-    refine' fun a => Finset.prod_bij (fun b _ => (a, b)) _ _ _ _ <;>-- `finish` closes these goals
-      try simp; done
+    refine' fun a => Finset.prod_bij (fun b _ => (a, b)) _ _ _ _ <;> simp
     suffices ∀ a' b, (a', b) ∈ s → a' = a → (a, b) ∈ s ∧ a' = a by simpa
     rintro a' b hp rfl
     exact ⟨hp, rfl⟩

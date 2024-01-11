@@ -53,6 +53,8 @@ In lemma names,
 * `⋂₀`: `Set.sInter`
 -/
 
+set_option autoImplicit true
+
 
 open Function Tactic Set
 
@@ -1342,7 +1344,7 @@ theorem Sigma.univ (X : α → Type*) : (Set.univ : Set (Σa, X a)) = ⋃ a, ran
     iff_of_true trivial ⟨range (Sigma.mk x.1), Set.mem_range_self _, x.2, Sigma.eta x⟩
 #align set.sigma.univ Set.Sigma.univ
 
-alias sUnion_subset_sUnion ← sUnion_mono
+alias sUnion_mono := sUnion_subset_sUnion
 #align set.sUnion_mono Set.sUnion_mono
 
 theorem iUnion_subset_iUnion_const {s : Set α} (h : ι → ι₂) : ⋃ _ : ι, s ⊆ ⋃ _ : ι₂, s :=
@@ -2302,3 +2304,19 @@ theorem sSup_sUnion (s : Set (Set β)) : sSup (⋃₀ s) = ⨆ t ∈ s, sSup t :
 theorem sInf_sUnion (s : Set (Set β)) : sInf (⋃₀ s) = ⨅ t ∈ s, sInf t :=
   @sSup_sUnion βᵒᵈ _ _
 #align Inf_sUnion sInf_sUnion
+
+lemma iSup_sUnion (S : Set (Set α)) (f : α → β) :
+    (⨆ x ∈ ⋃₀ S, f x) = ⨆ (s ∈ S) (x ∈ s), f x := by
+  rw [sUnion_eq_iUnion, iSup_iUnion, ← iSup_subtype'']
+
+lemma iInf_sUnion (S : Set (Set α)) (f : α → β) :
+    (⨅ x ∈ ⋃₀ S, f x) = ⨅ (s ∈ S) (x ∈ s), f x := by
+  rw [sUnion_eq_iUnion, iInf_iUnion, ← iInf_subtype'']
+
+lemma forall_sUnion {p : α → Prop} :
+    (∀ x ∈ ⋃₀ S, p x) ↔ ∀ s ∈ S, ∀ x ∈ s, p x := by
+  simp_rw [← iInf_Prop_eq, iInf_sUnion]
+
+lemma exists_sUnion {p : α → Prop} :
+    (∃ x ∈ ⋃₀ S, p x) ↔ ∃ s ∈ S, ∃ x ∈ s, p x := by
+  simp_rw [← exists_prop, ← iSup_Prop_eq, iSup_sUnion]

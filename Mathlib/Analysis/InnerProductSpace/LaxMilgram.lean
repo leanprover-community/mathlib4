@@ -94,7 +94,7 @@ theorem range_eq_top (coercive : IsCoercive B) : range B♯ = ⊤ := by
   intro v w mem_w_orthogonal
   rcases coercive with ⟨C, C_pos, coercivity⟩
   obtain rfl : w = 0 := by
-    rw [← norm_eq_zero, ← mul_self_eq_zero, ← mul_right_inj' C_pos.ne', MulZeroClass.mul_zero, ←
+    rw [← norm_eq_zero, ← mul_self_eq_zero, ← mul_right_inj' C_pos.ne', mul_zero, ←
       mul_assoc]
     apply le_antisymm
     · calc

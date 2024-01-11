@@ -7,6 +7,8 @@ import Mathlib.Tactic.Basic
 import Std.Tactic.Simpa
 import Mathlib.Data.Array.Basic
 
+set_option autoImplicit true
+
 structure UFModel (n) where
   parent : Fin n → Fin n
   rank : Nat → Nat
@@ -45,8 +47,8 @@ def setParentBump {n} (m : UFModel n) (x y : Fin n)
   rank i := if y.1 = i ∧ m.rank x = m.rank y then m.rank y + 1 else m.rank i
   rank_lt i := by
     simp; split <;>
-      (rename_i h₁; simp [h₁]; split <;> rename_i h₂ <;>
-        (intro h; simp [h] at h₂ <;> simp [h₁, h₂, h]))
+      (rename_i h₁; (try simp [h₁]); split <;> rename_i h₂ <;>
+        (intro h; try simp [h] at h₂ <;> simp [h₁, h₂, h]))
     · simp [← h₁]; split <;> rename_i h₃
       · rw [h₃]; apply Nat.lt_succ_self
       · exact lt_of_le_of_ne H h₃

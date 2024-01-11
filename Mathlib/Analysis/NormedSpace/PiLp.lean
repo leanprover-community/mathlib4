@@ -597,8 +597,8 @@ theorem norm_sq_eq_of_L2 (β : ι → Type*) [∀ i, SeminormedAddCommGroup (β 
 
 theorem dist_eq_of_L2 {β : ι → Type*} [∀ i, SeminormedAddCommGroup (β i)] (x y : PiLp 2 β) :
     dist x y = (∑ i, dist (x i) (y i) ^ 2).sqrt := by
-  simp_rw [dist_eq_norm, norm_eq_of_L2, Pi.sub_apply]
-  rfl -- Porting note: `Pi.sub_apply` doesn't work
+  simp_rw [dist_eq_norm, norm_eq_of_L2]
+  rfl
 #align pi_Lp.dist_eq_of_L2 PiLp.dist_eq_of_L2
 
 theorem nndist_eq_of_L2 {β : ι → Type*} [∀ i, SeminormedAddCommGroup (β i)] (x y : PiLp 2 β) :
@@ -700,10 +700,9 @@ def _root_.LinearIsometryEquiv.piLpCongrLeft (e : ι ≃ ι') :
   -- Porting note: this avoids spurious `x` and `y` arguments
     clear x y
     rcases p.dichotomy with (rfl | h)
-    · simp_rw [norm_eq_ciSup, LinearEquiv.piCongrLeft'_apply 𝕜 (fun _ : ι => E) e x' _]
+    · simp_rw [norm_eq_ciSup]
       exact e.symm.iSup_congr fun _ => rfl
     · simp only [norm_eq_sum (zero_lt_one.trans_le h)]
-      simp_rw [LinearEquiv.piCongrLeft'_apply 𝕜 (fun _ : ι => E) e x' _]
       congr 1
       exact Fintype.sum_equiv e.symm _ _ fun _ => rfl
 #align linear_isometry_equiv.pi_Lp_congr_left LinearIsometryEquiv.piLpCongrLeft
@@ -914,7 +913,7 @@ open Matrix
 
 nonrec theorem basis_toMatrix_basisFun_mul (b : Basis ι 𝕜 (PiLp p fun _ : ι => 𝕜))
     (A : Matrix ι ι 𝕜) :
-    b.toMatrix (PiLp.basisFun _ _ _) ⬝ A =
+    b.toMatrix (PiLp.basisFun _ _ _) * A =
       Matrix.of fun i j => b.repr ((PiLp.equiv _ _).symm (Aᵀ j)) i := by
   have := basis_toMatrix_basisFun_mul (b.map (PiLp.linearEquiv _ 𝕜 _)) A
   simp_rw [← PiLp.basisFun_map p, Basis.map_repr, LinearEquiv.trans_apply,

@@ -32,6 +32,8 @@ from a non-surjective order preserving function `Fin n → Fin n`
 a morphism `Δ[n] ⟶ ∂Δ[n]`.
 -/
 
+set_option autoImplicit true
+
 
 universe v u
 

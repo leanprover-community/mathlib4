@@ -29,6 +29,8 @@ symmetric powers
 
 -/
 
+set_option autoImplicit true
+
 
 open Function
 
@@ -542,9 +544,9 @@ def filterNe [DecidableEq α] (a : α) (m : Sym α n) : Σi : Fin (n + 1), Sym �
     eq_tsub_of_add_eq <|
       Eq.trans
         (by
-          rw [← countp_eq_card_filter, add_comm]
+          rw [← countP_eq_card_filter, add_comm]
           simp only [eq_comm, Ne.def, count]
-          rw [← card_eq_countp_add_countp _ _])
+          rw [← card_eq_countP_add_countP _ _])
         m.2⟩
 #align sym.filter_ne Sym.filterNe
 

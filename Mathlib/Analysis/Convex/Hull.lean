@@ -112,11 +112,7 @@ theorem convexHull_nonempty_iff : (convexHull 𝕜 s).Nonempty ↔ s.Nonempty :=
   exact not_congr convexHull_empty_iff
 #align convex_hull_nonempty_iff convexHull_nonempty_iff
 
--- Porting note: `alias` cannot be protected.
---alias convexHull_nonempty_iff ↔ _ Set.Nonempty.convexHull
---attribute [protected] Set.Nonempty.convexHull
-protected theorem Set.Nonempty.convexHull (h : s.Nonempty) : (convexHull 𝕜 s).Nonempty :=
-convexHull_nonempty_iff.2 h
+protected alias ⟨_, Set.Nonempty.convexHull⟩ := convexHull_nonempty_iff
 #align set.nonempty.convex_hull Set.Nonempty.convexHull
 
 theorem segment_subset_convexHull (hx : x ∈ s) (hy : y ∈ s) : segment 𝕜 x y ⊆ convexHull 𝕜 s :=

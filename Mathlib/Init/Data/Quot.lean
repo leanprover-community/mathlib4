@@ -11,6 +11,8 @@ import Mathlib.Init.Logic
 These are ported from the Lean 3 standard library file `init/data/quot.lean`.
 -/
 
+set_option autoImplicit true
+
 section
 variable {α : Type u}
 variable (r : α → α → Prop)

@@ -14,6 +14,7 @@ example : False ↔ False := test.false_iff
 mk_iff_of_inductive_prop True     test.true_iff
 example : True ↔ True := test.true_iff
 
+universe u
 mk_iff_of_inductive_prop Nonempty test.non_empty_iff
 example (α : Sort u) : Nonempty α ↔ ∃ (_ : α), True := test.non_empty_iff α
 

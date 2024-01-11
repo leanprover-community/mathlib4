@@ -13,6 +13,8 @@ import Mathlib.Data.Nat.Cast.Basic
 # Lemmas about `invOf` in ordered (semi)rings.
 -/
 
+set_option autoImplicit true
+
 variable [LinearOrderedSemiring α] {a : α}
 
 @[simp]

@@ -40,6 +40,7 @@ variable {α : Type*} {l l₁ l₂ : List α} {p : α → Prop} {a : α}
 
 section Disjoint
 
+@[symm]
 theorem Disjoint.symm (d : Disjoint l₁ l₂) : Disjoint l₂ l₁ := fun _ i₂ i₁ => d i₁ i₂
 #align list.disjoint.symm List.Disjoint.symm
 
@@ -238,11 +239,11 @@ theorem count_bagInter {a : α} :
   | l₁, [] => by simp
   | b :: l₁, l₂ => by
     by_cases hb : b ∈ l₂
-    · rw [cons_bagInter_of_pos _ hb, count_cons', count_cons', count_bagInter, count_erase, ←
+    · rw [cons_bagInter_of_pos _ hb, count_cons, count_cons, count_bagInter, count_erase, ←
         min_add_add_right]
       by_cases ab : a = b
       · rw [if_pos ab, @tsub_add_cancel_of_le]
-        rwa [succ_le_iff, count_pos, ab]
+        rwa [succ_le_iff, count_pos_iff_mem, ab]
       · rw [if_neg ab, tsub_zero, add_zero, add_zero]
     · rw [cons_bagInter_of_neg _ hb, count_bagInter]
       by_cases ab : a = b

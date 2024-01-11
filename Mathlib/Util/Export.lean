@@ -10,6 +10,9 @@ A rudimentary export format, adapted from
 <https://github.com/leanprover-community/lean/blob/master/doc/export_format.md>
 with support for lean 4 kernel primitives.
 -/
+
+set_option autoImplicit true
+
 open Lean (HashMap HashSet)
 
 namespace Lean

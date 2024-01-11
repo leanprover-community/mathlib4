@@ -413,7 +413,6 @@ def Cofix.dest : Cofix F → F (Cofix F) :=
         intro x y h
         exact ⟨r, pr, h⟩
       rw [← Quot.factor_mk_eq _ _ this]
-      dsimp
       conv =>
         lhs
         rw [comp_map, ← abs_map, pr rxy, abs_map, ← comp_map])

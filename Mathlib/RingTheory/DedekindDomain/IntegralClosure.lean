@@ -68,7 +68,7 @@ then `L` is the localization of the integral closure `C` of `A` in `L` at `A⁰`
 theorem IsIntegralClosure.isLocalization [IsSeparable K L] [NoZeroSMulDivisors A L] :
     IsLocalization (Algebra.algebraMapSubmonoid C A⁰) L := by
   haveI : IsDomain C :=
-    (IsIntegralClosure.equiv A C L (integralClosure A L)).toRingEquiv.isDomain (integralClosure A L)
+    (IsIntegralClosure.equiv A C L (integralClosure A L)).toMulEquiv.isDomain (integralClosure A L)
   haveI : NoZeroSMulDivisors A C := IsIntegralClosure.noZeroSMulDivisors A L
   refine' ⟨_, fun z => _, fun {x y} => ⟨fun h => ⟨1, _⟩, _⟩⟩
   · rintro ⟨_, x, hx, rfl⟩

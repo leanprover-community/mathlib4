@@ -551,13 +551,13 @@ theorem Convex.mem_Ioc (h : x < y) :
   · obtain ⟨a, b, ha, hb, hab, rfl⟩ := (Convex.mem_Icc h.le).1 (Ioc_subset_Icc_self hz)
     obtain rfl | hb' := hb.eq_or_lt
     · rw [add_zero] at hab
-      rw [hab, one_mul, MulZeroClass.zero_mul, add_zero] at hz
+      rw [hab, one_mul, zero_mul, add_zero] at hz
       exact (hz.1.ne rfl).elim
     · exact ⟨a, b, ha, hb', hab, rfl⟩
   · rintro ⟨a, b, ha, hb, hab, rfl⟩
     obtain rfl | ha' := ha.eq_or_lt
     · rw [zero_add] at hab
-      rwa [hab, one_mul, MulZeroClass.zero_mul, zero_add, right_mem_Ioc]
+      rwa [hab, one_mul, zero_mul, zero_add, right_mem_Ioc]
     · exact Ioo_subset_Ioc_self ((Convex.mem_Ioo h).2 ⟨a, b, ha', hb, hab, rfl⟩)
 #align convex.mem_Ioc Convex.mem_Ioc
 
@@ -569,13 +569,13 @@ theorem Convex.mem_Ico (h : x < y) :
   · obtain ⟨a, b, ha, hb, hab, rfl⟩ := (Convex.mem_Icc h.le).1 (Ico_subset_Icc_self hz)
     obtain rfl | ha' := ha.eq_or_lt
     · rw [zero_add] at hab
-      rw [hab, one_mul, MulZeroClass.zero_mul, zero_add] at hz
+      rw [hab, one_mul, zero_mul, zero_add] at hz
       exact (hz.2.ne rfl).elim
     · exact ⟨a, b, ha', hb, hab, rfl⟩
   · rintro ⟨a, b, ha, hb, hab, rfl⟩
     obtain rfl | hb' := hb.eq_or_lt
     · rw [add_zero] at hab
-      rwa [hab, one_mul, MulZeroClass.zero_mul, add_zero, left_mem_Ico]
+      rwa [hab, one_mul, zero_mul, add_zero, left_mem_Ico]
     · exact Ioo_subset_Ico_self ((Convex.mem_Ioo h).2 ⟨a, b, ha, hb', hab, rfl⟩)
 #align convex.mem_Ico Convex.mem_Ico
 

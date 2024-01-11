@@ -48,6 +48,8 @@ isometrically and in a way compatible with `f n`.
 
 -/
 
+set_option autoImplicit true
+
 
 noncomputable section
 

@@ -4,6 +4,7 @@ open Lake DSL
 
 def moreServerArgs := #[
   "-Dpp.unicode.fun=true", -- pretty-prints `fun a ↦ b`
+  "-DautoImplicit=false",
   "-DrelaxedAutoImplicit=false"
 ]
 

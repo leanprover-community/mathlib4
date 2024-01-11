@@ -132,8 +132,8 @@ theorem BlockTriangular.mul [Fintype m] {M N : Matrix m m R} (hM : BlockTriangul
   apply Finset.sum_eq_zero
   intro k _
   by_cases hki : b k < b i
-  · simp_rw [hM hki, MulZeroClass.zero_mul]
-  · simp_rw [hN (lt_of_lt_of_le hij (le_of_not_lt hki)), MulZeroClass.mul_zero]
+  · simp_rw [hM hki, zero_mul]
+  · simp_rw [hN (lt_of_lt_of_le hij (le_of_not_lt hki)), mul_zero]
 #align matrix.block_triangular.mul Matrix.BlockTriangular.mul
 
 end LinearOrder
@@ -250,13 +250,13 @@ theorem det_of_lowerTriangular [LinearOrder m] (M : Matrix m m R) (h : M.BlockTr
 
 theorem BlockTriangular.toBlock_inverse_mul_toBlock_eq_one [LinearOrder α] [Invertible M]
     (hM : BlockTriangular M b) (k : α) :
-    ((M⁻¹.toBlock (fun i => b i < k) fun i => b i < k) ⬝
+    ((M⁻¹.toBlock (fun i => b i < k) fun i => b i < k) *
         M.toBlock (fun i => b i < k) fun i => b i < k) =
       1 := by
   let p i := b i < k
   have h_sum :
-    M⁻¹.toBlock p p ⬝ M.toBlock p p +
-        (M⁻¹.toBlock p fun i => ¬p i) ⬝ M.toBlock (fun i => ¬p i) p =
+    M⁻¹.toBlock p p * M.toBlock p p +
+        (M⁻¹.toBlock p fun i => ¬p i) * M.toBlock (fun i => ¬p i) p =
       1 :=
     by rw [← toBlock_mul_eq_add, inv_mul_of_invertible M, toBlock_one_self]
   have h_zero : M.toBlock (fun i => ¬p i) p = 0 := by
@@ -287,14 +287,14 @@ theorem toBlock_inverse_eq_zero [LinearOrder α] [Invertible M] (hM : BlockTrian
     (M⁻¹.toBlock (fun i => k ≤ b i) fun i => b i < k) = 0 := by
   let p i := b i < k
   let q i := ¬b i < k
-  have h_sum : M⁻¹.toBlock q p ⬝ M.toBlock p p + M⁻¹.toBlock q q ⬝ M.toBlock q p = 0 := by
+  have h_sum : M⁻¹.toBlock q p * M.toBlock p p + M⁻¹.toBlock q q * M.toBlock q p = 0 := by
     rw [← toBlock_mul_eq_add, inv_mul_of_invertible M, toBlock_one_disjoint]
     rw [disjoint_iff_inf_le]
     exact fun i h => h.1 h.2
   have h_zero : M.toBlock q p = 0 := by
     ext i j
     simpa using hM (lt_of_lt_of_le j.2 <| le_of_not_lt i.2)
-  have h_mul_eq_zero : M⁻¹.toBlock q p ⬝ M.toBlock p p = 0 := by simpa [h_zero] using h_sum
+  have h_mul_eq_zero : M⁻¹.toBlock q p * M.toBlock p p = 0 := by simpa [h_zero] using h_sum
   haveI : Invertible (M.toBlock p p) := hM.invertibleToBlock k
   have : (fun i => k ≤ b i) = q := by
     ext

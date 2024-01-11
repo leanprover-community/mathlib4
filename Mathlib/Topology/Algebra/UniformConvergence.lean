@@ -50,6 +50,8 @@ uniform convergence, strong dual
 
 -/
 
+set_option autoImplicit true
+
 
 open Filter
 

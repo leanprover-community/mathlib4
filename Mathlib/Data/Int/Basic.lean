@@ -19,6 +19,8 @@ This file contains:
 * some basic lemmas about integers
 -/
 
+set_option autoImplicit true
+
 open Nat
 
 namespace Int

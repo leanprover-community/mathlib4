@@ -104,6 +104,9 @@ def mk (I : Ideal R) : R →+* R ⧸ I where
   map_add' _ _ := rfl
 #align ideal.quotient.mk Ideal.Quotient.mk
 
+instance {I : Ideal R} : Coe R (R ⧸ I) :=
+  ⟨Ideal.Quotient.mk I⟩
+
 /-- Two `RingHom`s from the quotient by an ideal are equal if their
 compositions with `Ideal.Quotient.mk'` are equal.
 

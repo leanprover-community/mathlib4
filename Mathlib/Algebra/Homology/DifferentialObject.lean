@@ -18,6 +18,8 @@ This equivalence is probably not particularly useful in practice;
 it's here to check that definitions match up as expected.
 -/
 
+set_option autoImplicit true
+
 
 open CategoryTheory CategoryTheory.Limits
 

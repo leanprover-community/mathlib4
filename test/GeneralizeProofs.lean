@@ -3,6 +3,7 @@ import Mathlib.Tactic.GeneralizeProofs
 import Std.Tactic.GuardExpr
 import Mathlib.Tactic.LibrarySearch
 
+set_option autoImplicit true
 def List.nthLe (l : List α) (n) (h : n < l.length) : α := sorry
 
 example : List.nthLe [1, 2] 1 (by simp) = 2 := by

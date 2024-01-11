@@ -262,12 +262,12 @@ theorem mod_eq_self_iff (hq0 : q ≠ 0) : p % q = p ↔ degree p < degree q :=
 theorem div_eq_zero_iff (hq0 : q ≠ 0) : p / q = 0 ↔ degree p < degree q :=
   ⟨fun h => by
     have := EuclideanDomain.div_add_mod p q;
-      rwa [h, MulZeroClass.mul_zero, zero_add, mod_eq_self_iff hq0] at this,
+      rwa [h, mul_zero, zero_add, mod_eq_self_iff hq0] at this,
     fun h => by
     have hlt : degree p < degree (q * C (leadingCoeff q)⁻¹) := by
       rwa [degree_mul_leadingCoeff_inv q hq0]
     have hm : Monic (q * C (leadingCoeff q)⁻¹) := monic_mul_leadingCoeff_inv hq0
-    rw [div_def, (divByMonic_eq_zero_iff hm).2 hlt, MulZeroClass.mul_zero]⟩
+    rw [div_def, (divByMonic_eq_zero_iff hm).2 hlt, mul_zero]⟩
 #align polynomial.div_eq_zero_iff Polynomial.div_eq_zero_iff
 
 theorem degree_add_div (hq0 : q ≠ 0) (hpq : degree q ≤ degree p) :
@@ -329,7 +329,7 @@ theorem eval₂_gcd_eq_zero [CommSemiring k] [DecidableEq R]
     {ϕ : R →+* k} {f g : R[X]} {α : k} (hf : f.eval₂ ϕ α = 0)
     (hg : g.eval₂ ϕ α = 0) : (EuclideanDomain.gcd f g).eval₂ ϕ α = 0 := by
   rw [EuclideanDomain.gcd_eq_gcd_ab f g, Polynomial.eval₂_add, Polynomial.eval₂_mul,
-    Polynomial.eval₂_mul, hf, hg, MulZeroClass.zero_mul, MulZeroClass.zero_mul, zero_add]
+    Polynomial.eval₂_mul, hf, hg, zero_mul, zero_mul, zero_add]
 #align polynomial.eval₂_gcd_eq_zero Polynomial.eval₂_gcd_eq_zero
 
 theorem eval_gcd_eq_zero [DecidableEq R] {f g : R[X]} {α : R}
@@ -340,13 +340,13 @@ theorem eval_gcd_eq_zero [DecidableEq R] {f g : R[X]} {α : R}
 theorem root_left_of_root_gcd [CommSemiring k] [DecidableEq R] {ϕ : R →+* k} {f g : R[X]} {α : k}
     (hα : (EuclideanDomain.gcd f g).eval₂ ϕ α = 0) : f.eval₂ ϕ α = 0 := by
   cases' EuclideanDomain.gcd_dvd_left f g with p hp
-  rw [hp, Polynomial.eval₂_mul, hα, MulZeroClass.zero_mul]
+  rw [hp, Polynomial.eval₂_mul, hα, zero_mul]
 #align polynomial.root_left_of_root_gcd Polynomial.root_left_of_root_gcd
 
 theorem root_right_of_root_gcd [CommSemiring k] [DecidableEq R] {ϕ : R →+* k} {f g : R[X]} {α : k}
     (hα : (EuclideanDomain.gcd f g).eval₂ ϕ α = 0) : g.eval₂ ϕ α = 0 := by
   cases' EuclideanDomain.gcd_dvd_right f g with p hp
-  rw [hp, Polynomial.eval₂_mul, hα, MulZeroClass.zero_mul]
+  rw [hp, Polynomial.eval₂_mul, hα, zero_mul]
 #align polynomial.root_right_of_root_gcd Polynomial.root_right_of_root_gcd
 
 theorem root_gcd_iff_root_left_right [CommSemiring k] [DecidableEq R]

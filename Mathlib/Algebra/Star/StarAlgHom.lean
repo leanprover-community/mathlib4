@@ -84,11 +84,15 @@ variable [NonUnitalNonAssocSemiring A] [DistribMulAction R A] [Star A]
 
 variable [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [Star B]
 
-instance [NonUnitalStarAlgHomClass F R A B] : CoeTC F (A →⋆ₙₐ[R] B)
-    where coe f :=
-    { (f : A →ₙₐ[R] B) with
-      toFun := f
-      map_star' := map_star f }
+/-- Turn an element of a type `F` satisfying `NonUnitalStarAlgHomClass F R A B` into an actual
+`NonUnitalStarAlgHom`. This is declared as the default coercion from `F` to `A →⋆ₙₐ[R] B`. -/
+@[coe]
+def toNonUnitalStarAlgHom [NonUnitalStarAlgHomClass F R A B] (f : F) : A →⋆ₙₐ[R] B :=
+  { (f : A →ₙₐ[R] B) with
+    map_star' := map_star f }
+
+instance [NonUnitalStarAlgHomClass F R A B] : CoeTC F (A →⋆ₙₐ[R] B) :=
+  ⟨toNonUnitalStarAlgHom⟩
 
 end NonUnitalStarAlgHomClass
 
@@ -339,11 +343,16 @@ variable [CommSemiring R] [Semiring A] [Algebra R A] [Star A]
 
 variable [Semiring B] [Algebra R B] [Star B] [hF : StarAlgHomClass F R A B]
 
-instance : CoeTC F (A →⋆ₐ[R] B)
-    where coe f :=
-    { (f : A →ₐ[R] B) with
-      toFun := f
-      map_star' := map_star f }
+variable {F R A B} in
+/-- Turn an element of a type `F` satisfying `StarAlgHomClass F R A B` into an actual
+`StarAlgHom`. This is declared as the default coercion from `F` to `A →⋆ₐ[R] B`. -/
+@[coe]
+def toStarAlgHom (f : F) : A →⋆ₐ[R] B :=
+  { (f : A →ₐ[R] B) with
+    map_star' := map_star f }
+
+instance : CoeTC F (A →⋆ₐ[R] B) :=
+  ⟨toStarAlgHom⟩
 
 end StarAlgHomClass
 

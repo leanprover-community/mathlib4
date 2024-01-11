@@ -35,6 +35,8 @@ defining objects that can be created randomly.
 
 -/
 
+set_option autoImplicit true
+
 /-- A monad to generate random objects using the generic generator type `g` -/
 abbrev RandG (g : Type) := StateM (ULift g)
 

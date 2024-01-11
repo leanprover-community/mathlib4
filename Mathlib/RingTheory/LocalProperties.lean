@@ -301,14 +301,14 @@ theorem localization_isReduced : LocalizationPreserves fun R hR => IsReduced R :
   obtain ⟨⟨y, m⟩, hx⟩ := IsLocalization.surj M x
   dsimp only at hx
   let hx' := congr_arg (· ^ n.succ) hx
-  simp only [mul_pow, e, MulZeroClass.zero_mul, ← RingHom.map_pow] at hx'
+  simp only [mul_pow, e, zero_mul, ← RingHom.map_pow] at hx'
   rw [← (algebraMap R S).map_zero] at hx'
   obtain ⟨m', hm'⟩ := (IsLocalization.eq_iff_exists M S).mp hx'
   apply_fun (· * (m' : R) ^ n) at hm'
-  simp only [mul_assoc, MulZeroClass.zero_mul, MulZeroClass.mul_zero] at hm'
+  simp only [mul_assoc, zero_mul, mul_zero] at hm'
   rw [← mul_left_comm, ← pow_succ, ← mul_pow] at hm'
   replace hm' := IsNilpotent.eq_zero ⟨_, hm'.symm⟩
-  rw [← (IsLocalization.map_units S m).mul_left_inj, hx, MulZeroClass.zero_mul,
+  rw [← (IsLocalization.map_units S m).mul_left_inj, hx, zero_mul,
     IsLocalization.map_eq_zero_iff M]
   exact ⟨m', by rw [← hm', mul_comm]⟩
 #align localization_is_reduced localization_isReduced

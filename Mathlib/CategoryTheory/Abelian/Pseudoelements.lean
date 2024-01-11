@@ -3,6 +3,7 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
+import Mathlib.Init.Align
 import Mathlib.CategoryTheory.Abelian.Exact
 import Mathlib.CategoryTheory.Over
 import Mathlib.Algebra.Category.ModuleCat.EpiMono
@@ -459,7 +460,7 @@ variable [Limits.HasPullbacks C]
     that `f p = g q`, then there is some `s : pullback f g` such that `fst s = p` and `snd s = q`.
 
     Remark: Borceux claims that `s` is unique, but this is false. See
-    `counterexamples/pseudoelement` for details. -/
+    `Counterexamples/Pseudoelement` for details. -/
 theorem pseudo_pullback {P Q R : C} {f : P ⟶ R} {g : Q ⟶ R} {p : P} {q : Q} :
     f p = g q →
       ∃ s, (pullback.fst : pullback f g ⟶ P) s = p ∧ (pullback.snd : pullback f g ⟶ Q) s = q :=

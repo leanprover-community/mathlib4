@@ -9,6 +9,8 @@ import Mathlib.Data.Set.Function
 /-! ### Lemmas about monotone functions on intervals, and intervals in subtypes.
 -/
 
+set_option autoImplicit true
+
 variable {f : α → β}
 
 open Set

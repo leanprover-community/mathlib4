@@ -81,7 +81,7 @@ theorem dedup_eq_self {s : Multiset α} : dedup s = s ↔ Nodup s :=
   ⟨fun e => e ▸ nodup_dedup s, Quot.induction_on s fun _ h => congr_arg ofList h.dedup⟩
 #align multiset.dedup_eq_self Multiset.dedup_eq_self
 
-alias dedup_eq_self ↔ _ Nodup.dedup
+alias ⟨_, Nodup.dedup⟩ := dedup_eq_self
 #align multiset.nodup.dedup Multiset.Nodup.dedup
 
 theorem count_dedup (m : Multiset α) (a : α) : m.dedup.count a = if a ∈ m then 1 else 0 :=

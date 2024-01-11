@@ -76,6 +76,8 @@ invertible, inverse element, invOf, a half, one half, a third, one third, ½, �
 
 -/
 
+set_option autoImplicit true
+
 
 universe u
 
@@ -186,14 +188,14 @@ theorem Invertible.congr [Ring α] (a b : α) [Invertible a] [Invertible b] (h :
 
 /-- An `Invertible` element is a unit. -/
 @[simps]
-def unitOfInvertible [Monoid α] (a : α) [Invertible a] :
-    αˣ where
+def unitOfInvertible [Monoid α] (a : α) [Invertible a] : αˣ where
   val := a
   inv := ⅟ a
   val_inv := by simp
   inv_val := by simp
 #align unit_of_invertible unitOfInvertible
-#align coe_unit_of_invertible unitOfInvertible_val
+#align coe_unit_of_invertible val_unitOfInvertible
+#align coe_inv_unit_of_invertible val_inv_unitOfInvertible
 
 theorem isUnit_of_invertible [Monoid α] (a : α) [Invertible a] : IsUnit a :=
   ⟨unitOfInvertible a, rfl⟩
@@ -375,8 +377,7 @@ variable [Monoid α]
 
 /-- This is the `Invertible` version of `Units.isUnit_units_mul` -/
 @[reducible]
-def invertibleOfInvertibleMul (a b : α) [Invertible a] [Invertible (a * b)] : Invertible b
-    where
+def invertibleOfInvertibleMul (a b : α) [Invertible a] [Invertible (a * b)] : Invertible b where
   invOf := ⅟ (a * b) * a
   invOf_mul_self := by rw [mul_assoc, invOf_mul_self]
   mul_invOf_self := by
@@ -386,8 +387,7 @@ def invertibleOfInvertibleMul (a b : α) [Invertible a] [Invertible (a * b)] : I
 
 /-- This is the `Invertible` version of `Units.isUnit_mul_units` -/
 @[reducible]
-def invertibleOfMulInvertible (a b : α) [Invertible (a * b)] [Invertible b] : Invertible a
-    where
+def invertibleOfMulInvertible (a b : α) [Invertible (a * b)] [Invertible b] : Invertible a where
   invOf := b * ⅟ (a * b)
   invOf_mul_self := by
     rw [← (isUnit_of_invertible b).mul_left_inj, mul_assoc, mul_assoc, invOf_mul_self, mul_one,
@@ -396,24 +396,26 @@ def invertibleOfMulInvertible (a b : α) [Invertible (a * b)] [Invertible b] : I
 #align invertible_of_mul_invertible invertibleOfMulInvertible
 
 /-- `invertibleOfInvertibleMul` and `invertibleMul` as an equivalence. -/
-@[simps]
-def Invertible.mulLeft {a : α} (_ : Invertible a) (b : α) : Invertible b ≃ Invertible (a * b)
-    where
+@[simps apply symm_apply]
+def Invertible.mulLeft {a : α} (_ : Invertible a) (b : α) : Invertible b ≃ Invertible (a * b) where
   toFun _ := invertibleMul a b
   invFun _ := invertibleOfInvertibleMul a _
   left_inv _ := Subsingleton.elim _ _
   right_inv _ := Subsingleton.elim _ _
 #align invertible.mul_left Invertible.mulLeft
+#align invertible.mul_left_apply Invertible.mulLeft_apply
+#align invertible.mul_left_symm_apply Invertible.mulLeft_symm_apply
 
 /-- `invertibleOfMulInvertible` and `invertibleMul` as an equivalence. -/
-@[simps]
-def Invertible.mulRight (a : α) {b : α} (_ : Invertible b) : Invertible a ≃ Invertible (a * b)
-    where
+@[simps apply symm_apply]
+def Invertible.mulRight (a : α) {b : α} (_ : Invertible b) : Invertible a ≃ Invertible (a * b) where
   toFun _ := invertibleMul a b
   invFun _ := invertibleOfMulInvertible _ b
   left_inv _ := Subsingleton.elim _ _
   right_inv _ := Subsingleton.elim _ _
 #align invertible.mul_right Invertible.mulRight
+#align invertible.mul_right_apply Invertible.mulRight_apply
+#align invertible.mul_right_symm_apply Invertible.mulRight_symm_apply
 
 end Monoid
 

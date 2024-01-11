@@ -10,6 +10,8 @@ import Mathlib.Logic.Basic
 import Mathlib.Init.Algebra.Order
 import Mathlib.Tactic.Conv
 
+set_option autoImplicit true
+
 namespace Mathlib.Tactic.PushNeg
 
 open Lean Meta Elab.Tactic Parser.Tactic
