@@ -80,7 +80,6 @@ set_option linter.uppercaseLean3 false in
 section FintypeCat
 
 /-- Bundles a finite type `H` with a multiplicative action of `G` as an `Action`. -/
-@[simps]
 def FintypeCat.ofMulAction (G : Type u) (H : FintypeCat.{u}) [Monoid G] [MulAction G H] :
     Action FintypeCat (MonCat.of G) where
   V := H
@@ -88,7 +87,7 @@ def FintypeCat.ofMulAction (G : Type u) (H : FintypeCat.{u}) [Monoid G] [MulActi
 
 @[simp]
 theorem FintypeCat.ofMulAction_apply {G : Type u} {H : FintypeCat.{u}} [Monoid G] [MulAction G H]
-    (g : G) (x : H) : (ofMulAction G H).ρ g x = (g • x : H) :=
+    (g : G) (x : H) : (FintypeCat.ofMulAction G H).ρ g x = (g • x : H) :=
   rfl
 
 end FintypeCat
