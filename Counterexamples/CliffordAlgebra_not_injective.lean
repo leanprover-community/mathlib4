@@ -9,6 +9,7 @@ import Mathlib.Algebra.CharP.Two
 import Mathlib.Data.MvPolynomial.CommRing
 import Mathlib.Data.ZMod.Basic
 import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
+import Mathlib.LinearAlgebra.CliffordAlgebra.Contraction
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.RingTheory.MvPolynomial.Basic
 import Mathlib.RingTheory.MvPolynomial.Ideal
@@ -28,6 +29,9 @@ The outline is that we define:
 and discover that $αβγ ≠ 0$ as an element of $K$, but $αβγ = 0$ as an element of $𝒞l(Q)$.
 
 Some Zulip discussion at https://leanprover.zulipchat.com/#narrow/stream/113489-new-members/topic/.F0.9D.94.BD.E2.82.82.5B.CE.B1.2C.20.CE.B2.2C.20.CE.B3.5D.20.2F.20.28.CE.B1.C2.B2.2C.20.CE.B2.C2.B2.2C.20.CE.B3.C2.B2.29/near/222716333.
+
+As a bonus result, we also show `QuadraticForm.not_forall_mem_range_toQuadraticForm`: that there
+are quadratic forms that cannot be expressed via even non-symmetric bilinear forms.
 -/
 
 noncomputable section
@@ -260,6 +264,16 @@ is not injective, as it sends the non-zero `α * β * γ` to zero. -/
 theorem algebraMap_not_injective : ¬Function.Injective (algebraMap K <| CliffordAlgebra Q) :=
   fun h => αβγ_ne_zero <| h <| by rw [algebraMap_αβγ_eq_zero, RingHom.map_zero]
 
+/-- Bonus counterexample: `Q` is a quadratic form that has no bilinear form. -/
+theorem Q_not_in_range_toQuadraticForm : Q ∉ Set.range BilinForm.toQuadraticForm := by
+  rintro ⟨B, hB⟩
+  rw [←sub_zero Q] at hB
+  apply algebraMap_not_injective
+  eta_expand
+  simp_rw [←changeForm_algebraMap hB, ←changeFormEquiv_apply]
+  refine (LinearEquiv.injective _).comp ?_
+  exact (ExteriorAlgebra.algebraMap_leftInverse _).injective
+
 end Q60596
 
 open Q60596 in
@@ -276,3 +290,18 @@ theorem CliffordAlgebra.not_forall_algebraMap_injective.{v} :
     let uC := CliffordAlgebra.map f
     have := uC.congr_arg hxy
     rwa [AlgHom.commutes, AlgHom.commutes] at this
+
+open Q60596 in
+/-- The general bonus statement: not every quadratic form is the diagonal of a bilinear form. -/
+theorem QuadraticForm.not_forall_mem_range_toQuadraticForm.{v} :
+    -- TODO: make `R` universe polymorphic
+    ¬∀ (R : Type) (M : Type v) [CommRing R] [AddCommGroup M] [Module R M] (Q : QuadraticForm R M),
+      Q ∈ Set.range BilinForm.toQuadraticForm :=
+  fun h => Q_not_in_range_toQuadraticForm <| by
+    let uU := ULift.moduleEquiv (R := K) (M := L)
+    let uQ := Q.comp uU.toLinearMap
+    let f : Q →qᵢ uQ := { uU.symm with map_app' := fun _ => rfl }
+    obtain ⟨x, hx⟩ := h K (ULift L) (Q.comp uU.toLinearMap)
+    refine ⟨x.comp uU.symm uU.symm, ?_⟩
+    ext
+    simp [toQuadraticForm_comp_same, hx]
