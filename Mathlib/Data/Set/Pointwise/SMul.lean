@@ -77,9 +77,6 @@ section SMul
 variable {ι : Sort*} {κ : ι → Sort*} [SMul α β] {s s₁ s₂ : Set α} {t t₁ t₂ u : Set β} {a : α}
   {b : β}
 
-/- Porting note: Could `@[simp, to_additive]` be automatically changed to
-`@[to_additive (attr := simp)]`?
--/
 @[to_additive (attr := simp)]
 theorem image2_smul : image2 SMul.smul s t = s • t :=
   rfl

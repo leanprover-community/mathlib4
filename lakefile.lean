@@ -61,6 +61,33 @@ lean_lib Cache where
 lean_exe cache where
   root := `Cache.Main
 
+/--
+When a package depending on Mathlib updates its dependencies,
+update its toolchain to match Mathlib's and fetch the new cache.
+-/
+post_update pkg do
+  let rootPkg ← getRootPackage
+  if rootPkg.name = pkg.name then
+    return -- do not run in Mathlib itself
+  /-
+  Once Lake updates the toolchains,
+  this toolchain copy will be unnecessary.
+  https://github.com/leanprover/lean4/issues/2752
+  -/
+  let wsToolchainFile := rootPkg.dir / "lean-toolchain"
+  let mathlibToolchain ← IO.FS.readFile <| pkg.dir / "lean-toolchain"
+  IO.FS.writeFile wsToolchainFile mathlibToolchain
+  /-
+  Instead of building and running cache via the Lake API,
+  spawn a new `lake` since the toolchain may have changed.
+  -/
+  let exitCode ← IO.Process.spawn {
+    cmd := (← getElan?).map (·.toString) |>.getD "elan"
+    args := #["run", mathlibToolchain, "lake", "exe", "cache", "get"]
+  } >>= (·.wait)
+  if exitCode ≠ 0 then
+    logError s!"{pkg.name}: failed to fetch cache"
+
 lean_lib MathlibExtras where
   roots := #[`MathlibExtras]
 

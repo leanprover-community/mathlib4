@@ -136,6 +136,15 @@ theorem trivial_def {V : Type u} [AddCommGroup V] [Module k V] (g : G) (v : V) :
 set_option linter.uppercaseLean3 false in
 #align Rep.trivial_def Rep.trivial_def
 
+/-- A predicate for representations that fix every element. -/
+abbrev IsTrivial (A : Rep k G) := A.ρ.IsTrivial
+
+instance {V : Type u} [AddCommGroup V] [Module k V] :
+    IsTrivial (Rep.trivial k G V) where
+
+instance {V : Type u} [AddCommGroup V] [Module k V] (ρ : Representation k G V) [ρ.IsTrivial] :
+    IsTrivial (Rep.of ρ) where
+
 -- Porting note: the two following instances were found automatically in mathlib3
 noncomputable instance : PreservesLimits (forget₂ (Rep k G) (ModuleCat.{u} k)) :=
   Action.instPreservesLimitsForget.{u} _ _

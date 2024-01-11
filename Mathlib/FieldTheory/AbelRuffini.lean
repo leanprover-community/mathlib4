@@ -341,13 +341,14 @@ theorem induction2 {α β γ : solvableByRad F E} (hγ : γ ∈ F⟮α, β⟯) (
   have hpq := Polynomial.splits_of_splits_mul _
     (mul_ne_zero (minpoly.ne_zero (isIntegral α)) (minpoly.ne_zero (isIntegral β)))
     (SplittingField.splits (p * q))
-  let f : ↥F⟮α, β⟯ →ₐ[F] (p * q).SplittingField := Classical.choice <| algHom_mk_adjoin_splits (by
-    intro x hx
-    cases' hx with hx hx
-    rw [hx]
-    exact ⟨isIntegral α, hpq.1⟩
-    cases hx
-    exact ⟨isIntegral β, hpq.2⟩)
+  let f : ↥F⟮α, β⟯ →ₐ[F] (p * q).SplittingField :=
+    Classical.choice <| nonempty_algHom_adjoin_of_splits <| by
+      intro x hx
+      cases' hx with hx hx
+      rw [hx]
+      exact ⟨isIntegral α, hpq.1⟩
+      cases hx
+      exact ⟨isIntegral β, hpq.2⟩
   have key : minpoly F γ = minpoly F (f ⟨γ, hγ⟩) := by
     refine' minpoly.eq_of_irreducible_of_monic
       (minpoly.irreducible (isIntegral γ)) _ (minpoly.monic (isIntegral γ))

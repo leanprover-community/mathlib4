@@ -198,8 +198,7 @@ theorem card_commutator_le_of_finite_commutatorSet [Finite (commutatorSet G)] :
   rw [← pow_succ'] at h2
   refine' (Nat.le_of_dvd _ h2).trans (Nat.pow_le_pow_of_le_left h1 _)
   exact pow_pos (Nat.pos_of_ne_zero FiniteIndex.finiteIndex) _
-#align subgroup.card_commutator_le_of_finite_commutator_set
-  Subgroup.card_commutator_le_of_finite_commutatorSet
+#align subgroup.card_commutator_le_of_finite_commutator_set Subgroup.card_commutator_le_of_finite_commutatorSet
 
 /-- A theorem of Schur: A group with finitely many commutators has finite commutator subgroup. -/
 instance [Finite (commutatorSet G)] : Finite (_root_.commutator G) := by

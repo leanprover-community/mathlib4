@@ -157,27 +157,24 @@ theorem trace_eq_neg_charpoly_coeff [Nonempty n] (M : Matrix n n R) :
   simp_rw [diag_apply]
 #align matrix.trace_eq_neg_charpoly_coeff Matrix.trace_eq_neg_charpoly_coeff
 
+theorem matPolyEquiv_symm_map_eval (M : (Matrix n n R)[X]) (r : R) :
+    (matPolyEquiv.symm M).map (eval r) = M.eval (scalar n r) := by
+  suffices ((aeval r).mapMatrix.comp matPolyEquiv.symm.toAlgHom : (Matrix n n R)[X] →ₐ[R] _) =
+      (eval₂AlgHom' (AlgHom.id R _) (scalar n r) fun x => (scalar.commute _ _).symm) from
+    FunLike.congr_fun this M
+  ext : 1
+  · ext M : 1
+    simp [Function.comp]
+  · simp [smul_eq_diagonal_mul]
+
+theorem matPolyEquiv_eval_eq_map (M : Matrix n n R[X]) (r : R) :
+    (matPolyEquiv M).eval (scalar n r) = M.map (eval r) := by
+  simpa only [AlgEquiv.symm_apply_apply] using (matPolyEquiv_symm_map_eval (matPolyEquiv M) r).symm
+
 -- I feel like this should use `Polynomial.algHom_eval₂_algebraMap`
 theorem matPolyEquiv_eval (M : Matrix n n R[X]) (r : R) (i j : n) :
-    (matPolyEquiv M).eval ((scalar n) r) i j = (M i j).eval r := by
-  unfold Polynomial.eval
-  rw [Polynomial.eval₂_def, Polynomial.eval₂_def]  -- porting note: was `unfold eval₂`
-  trans Polynomial.sum (matPolyEquiv M) fun (e : ℕ) (a : Matrix n n R) => (a * (scalar n) r ^ e) i j
-  · unfold Polynomial.sum
-    simp only [sum_apply]
-    dsimp
-  · simp_rw [← RingHom.map_pow, ← (scalar.commute _ _).eq]
-    simp only [coe_scalar, Matrix.one_mul, RingHom.id_apply, Pi.smul_apply, smul_eq_mul,
-      Algebra.smul_mul_assoc]
-    -- porting note: the `have` was present and unused also in the original
-    --have h : ∀ x : ℕ, (fun (e : ℕ) (a : R) => r ^ e * a) x 0 = 0 := by simp
-    simp only [Polynomial.sum, matPolyEquiv_coeff_apply, mul_comm]
-    simp only [smul_apply, matPolyEquiv_coeff_apply, smul_eq_mul]  -- porting note: added
-    apply (Finset.sum_subset (support_subset_support_matPolyEquiv _ _ _) _).symm
-    intro n _hn h'n
-    rw [not_mem_support_iff] at h'n
-    simp only [h'n, zero_mul]
-    simp only [mul_zero]  -- porting note: added
+    (matPolyEquiv M).eval (scalar n r) i j = (M i j).eval r := by
+  rw [matPolyEquiv_eval_eq_map, map_apply]
 #align matrix.mat_poly_equiv_eval Matrix.matPolyEquiv_eval
 
 theorem eval_det (M : Matrix n n R[X]) (r : R) :

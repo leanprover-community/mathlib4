@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Tactic.NormNum.BigOperators
 import Mathlib.Tactic.NormNum.GCD
 import Mathlib.Tactic.NormNum.IsCoprime
+import Mathlib.Tactic.NormNum.Mod
 import Mathlib.Tactic.NormNum.NatFib
 import Mathlib.Tactic.NormNum.NatSqrt
 import Mathlib.Tactic.NormNum.Prime
@@ -414,3 +415,19 @@ instance prime_1000003 : Fact (Nat.Prime 1000003) := ⟨by norm_num1⟩
 example : legendreSym 1000003 7 = -1 := by norm_num1
 
 end jacobi
+
+section mod
+
+example : (5 : ℕ) % 4 = 1 := by norm_num1
+example : (3 : ℕ) % 2 = 1 := by norm_num1
+example : 3 + (42 : ℕ) % 5 = 5 := by norm_num1
+
+example : (5 : ℤ) % 4 = 1 := by norm_num1
+example : (2 : ℤ) % 2 = 0 := by norm_num1
+example : (3 : ℤ) % 2 = 1 := by norm_num1
+example : (3 : ℤ) % 4 = 3 := by norm_num1
+example : (-3 : ℤ) % 4 = 1 := by norm_num1
+example : (3 : ℤ) % -4 = 3 := by norm_num1
+example : 3 + (42 : ℤ) % 5 = 5 := by norm_num1
+
+end mod

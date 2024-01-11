@@ -6,7 +6,7 @@ Authors: Anne Baanen, Paul Lezeau
 import Mathlib.RingTheory.DedekindDomain.Ideal
 import Mathlib.RingTheory.IsAdjoinRoot
 
-#align_import number_theory.kummer_dedekind from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
+#align_import number_theory.kummer_dedekind from "leanprover-community/mathlib"@"65a1391a0106c9204fe45bc73a039f056558cb83"
 
 /-!
 # Kummer-Dedekind theorem
@@ -297,7 +297,7 @@ theorem normalizedFactors_ideal_map_eq_normalizedFactors_min_poly_mk_map (hI : I
   rw [Multiset.count_map_eq_count' fun f =>
       ((normalizedFactorsMapEquivNormalizedFactorsMinPolyMk hI hI' hx hx').symm f :
         Ideal S),
-    Multiset.attach_count_eq_count_coe]
+    Multiset.count_attach]
   · exact Subtype.coe_injective.comp (Equiv.injective _)
   · exact (normalizedFactorsMapEquivNormalizedFactorsMinPolyMk hI hI' hx hx' _).prop
   · exact irreducible_of_normalized_factor _

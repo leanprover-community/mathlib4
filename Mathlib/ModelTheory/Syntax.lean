@@ -208,7 +208,7 @@ def constantsVarsEquiv : L[[γ]].Term α ≃ L.Term (Sum γ α) :=
     · cases n
       · cases f
         · simp [constantsToVars, varsToConstants, ih]
-        · simp [constantsToVars, varsToConstants, Constants.term]
+        · simp [constantsToVars, varsToConstants, Constants.term, eq_iff_true_of_subsingleton]
       · cases' f with f f
         · simp [constantsToVars, varsToConstants, ih]
         · exact isEmptyElim f, by

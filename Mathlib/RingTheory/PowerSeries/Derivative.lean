@@ -56,7 +56,7 @@ theorem derivativeFun_C (r : R) : derivativeFun (C R r) = 0 := by
   rw [coeff_derivativeFun, coeff_succ_C, zero_mul, map_zero]
 
 theorem trunc_derivativeFun (f : R⟦X⟧) (n : ℕ) :
-    trunc n f.derivativeFun = derivative (trunc (n + 1) f):= by
+    trunc n f.derivativeFun = derivative (trunc (n + 1) f) := by
   ext d
   rw [coeff_trunc]
   split_ifs with h
@@ -91,8 +91,7 @@ theorem derivativeFun_smul (r : R) (f : R⟦X⟧) : derivativeFun (r • f) = r 
 
 variable (R)
 /--The formal derivative of a formal power series.-/
-noncomputable def derivative : Derivation R R⟦X⟧ R⟦X⟧
-where
+noncomputable def derivative : Derivation R R⟦X⟧ R⟦X⟧ where
   toFun             := derivativeFun
   map_add'          := derivativeFun_add
   map_smul'         := derivativeFun_smul
@@ -119,20 +118,20 @@ theorem derivative_coe (f : R[X]) : d⁄dX R f = Polynomial.derivative f := deri
   · rfl
 
 theorem trunc_derivative (f : R⟦X⟧) (n : ℕ) :
-    trunc n (d⁄dX R f) = Polynomial.derivative (trunc (n + 1) f) := by apply trunc_derivativeFun
+    trunc n (d⁄dX R f) = Polynomial.derivative (trunc (n + 1) f) :=
+  trunc_derivativeFun ..
 
 theorem trunc_derivative' (f : R⟦X⟧) (n : ℕ) :
     trunc (n-1) (d⁄dX R f) = Polynomial.derivative (trunc n f) := by
   cases n with
   | zero =>
-    simp only [zero_eq, ge_iff_le, tsub_eq_zero_of_le]
-    rfl
+    simp
   | succ n =>
     rw [succ_sub_one, trunc_derivative]
 
 end CommutativeSemiring
 
-/-In the next lemma, we use `smul_right_inj`, which requires not only `no_smul_divisors ℕ R`, but
+/-In the next lemma, we use `smul_right_inj`, which requires not only `NoZeroSMulDivisors ℕ R`, but
 also cancellation of addition in `R`. For this reason, the next lemma is stated in the case that `R`
 is a `CommRing`.-/
 
@@ -146,8 +145,7 @@ theorem derivative.ext {R} [CommRing R] [NoZeroSMulDivisors ℕ R] {f g} (hD : d
   | succ n =>
     have equ : coeff R n (d⁄dX R f) = coeff R n (d⁄dX R g) := by rw [hD]
     rwa [coeff_derivative, coeff_derivative, ←cast_succ, mul_comm, ←nsmul_eq_mul,
-      mul_comm, ←nsmul_eq_mul, smul_right_inj] at equ
-    exact n.succ_ne_zero
+      mul_comm, ←nsmul_eq_mul, smul_right_inj n.succ_ne_zero] at equ
 
 @[simp] theorem derivative_inv {R} [CommRing R] (f : R⟦X⟧ˣ) :
     d⁄dX R ↑f⁻¹ = -(↑f⁻¹ : R⟦X⟧) ^ 2 * d⁄dX R f := by
@@ -164,8 +162,8 @@ there is currently no instance of `Inv R⟦X⟧` for more general base rings `R`
 -/
 @[simp] theorem derivative_inv' {R} [Field R] (f : R⟦X⟧) : d⁄dX R f⁻¹ = -f⁻¹ ^ 2 * d⁄dX R f := by
   by_cases constantCoeff R f = 0
-  · suffices : f⁻¹ = 0
-    rw [this, pow_two, zero_mul, neg_zero, zero_mul, map_zero]
+  · suffices f⁻¹ = 0 by
+      rw [this, pow_two, zero_mul, neg_zero, zero_mul, map_zero]
     rwa [MvPowerSeries.inv_eq_zero]
   apply Derivation.leibniz_of_mul_eq_one
   exact PowerSeries.inv_mul_cancel (h := h)

@@ -57,7 +57,7 @@ theorem isAddFundamentalDomain_of_ae_ball (I : Set <| AddCircle T) (u x : AddCir
   set G := AddSubgroup.zmultiples u
   set n := addOrderOf u
   set B := ball x (T / (2 * n))
-  have hn : 1 ≤ (n : ℝ) := by norm_cast; linarith [addOrderOf_pos' hu]
+  have hn : 1 ≤ (n : ℝ) := by norm_cast; linarith [hu.addOrderOf_pos]
   refine' IsAddFundamentalDomain.mk_of_measure_univ_le _ _ _ _
   · -- `NullMeasurableSet I volume`
     exact measurableSet_ball.nullMeasurableSet.congr hI.symm

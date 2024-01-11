@@ -88,6 +88,12 @@ theorem toGroup.unique (g : PresentedGroup rels →* G)
   exact fun _ ↦ FreeGroup.lift.unique (g.comp (QuotientGroup.mk' _)) hg
 #align presented_group.to_group.unique PresentedGroup.toGroup.unique
 
+@[ext]
+theorem ext {φ ψ : PresentedGroup rels →* G} (hx : ∀ (x : α), φ (.of x) = ψ (.of x)) : φ = ψ := by
+  unfold PresentedGroup
+  ext
+  apply hx
+
 end ToGroup
 
 instance (rels : Set (FreeGroup α)) : Inhabited (PresentedGroup rels) :=

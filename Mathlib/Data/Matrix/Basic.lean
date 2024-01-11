@@ -154,6 +154,9 @@ theorem map_id (M : Matrix m n α) : M.map id = M := by
 #align matrix.map_id Matrix.map_id
 
 @[simp]
+theorem map_id' (M : Matrix m n α) : M.map (·) = M := map_id M
+
+@[simp]
 theorem map_map {M : Matrix m n α} {β γ : Type*} {f : α → β} {g : β → γ} :
     (M.map f).map g = M.map (g ∘ f) := by
   ext

@@ -192,12 +192,12 @@ instance : RepresentablyFlat (Opens.map f) := by
       exact ⟨⟨⟨PUnit.unit⟩, V.right ⊓ W.right, homOfLE $ le_inf V.hom.le W.hom.le⟩,
         StructuredArrow.homMk (homOfLE inf_le_left),
         StructuredArrow.homMk (homOfLE inf_le_right), trivial⟩
-    · exact fun _ _ _ _ ↦ ⟨_, 𝟙 _, by aesop⟩
+    · exact fun _ _ _ _ ↦ ⟨_, 𝟙 _, by simp [eq_iff_true_of_subsingleton]⟩
   · exact ⟨StructuredArrow.mk $ show U ⟶ (Opens.map f).obj ⊤ from homOfLE le_top⟩
 
 theorem compatiblePreserving_opens_map :
     CompatiblePreserving (Opens.grothendieckTopology X) (Opens.map f) :=
-compatiblePreservingOfFlat _ _
+  compatiblePreservingOfFlat _ _
 
 theorem coverPreserving_opens_map : CoverPreserving (Opens.grothendieckTopology Y)
     (Opens.grothendieckTopology X) (Opens.map f) := by

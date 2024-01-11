@@ -328,6 +328,9 @@ def sheafToPresheaf : Sheaf J A ⥤ Cᵒᵖ ⥤ A where
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf_to_presheaf CategoryTheory.sheafToPresheaf
 
+/-- The sections of a sheaf (i.e. evaluation as a presheaf on `C`). -/
+abbrev sheafSections : Cᵒᵖ ⥤ Sheaf J A ⥤ A := (sheafToPresheaf J A).flip
+
 instance : Full (sheafToPresheaf J A) where preimage f := ⟨f⟩
 
 instance : Faithful (sheafToPresheaf J A) where

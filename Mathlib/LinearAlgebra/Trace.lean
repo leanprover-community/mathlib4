@@ -193,7 +193,7 @@ theorem trace_eq_contract' :
 @[simp]
 theorem trace_one : trace R M 1 = (finrank R M : R) := by
   cases subsingleton_or_nontrivial R
-  · simp
+  · simp [eq_iff_true_of_subsingleton]
   have b := Module.Free.chooseBasis R M
   rw [trace_eq_matrix_trace R b, toMatrix_one, finrank_eq_card_chooseBasisIndex]
   simp

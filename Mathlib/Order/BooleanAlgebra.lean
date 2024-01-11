@@ -482,13 +482,18 @@ theorem sup_lt_of_lt_sdiff_right (h : x < z \ y) (hyz : y ≤ z) : x ⊔ y < z :
   exact (sdiff_le_sdiff_of_sup_le_sup_right h').trans sdiff_le
 #align sup_lt_of_lt_sdiff_right sup_lt_of_lt_sdiff_right
 
+instance Prod.instGeneralizedBooleanAlgebra [GeneralizedBooleanAlgebra β] :
+    GeneralizedBooleanAlgebra (α × β) where
+  sup_inf_sdiff _ _ := Prod.ext (sup_inf_sdiff _ _) (sup_inf_sdiff _ _)
+  inf_inf_sdiff _ _ := Prod.ext (inf_inf_sdiff _ _) (inf_inf_sdiff _ _)
+
 -- Porting note:
 -- Once `pi_instance` has been ported, this is just `by pi_instance`.
-instance Pi.generalizedBooleanAlgebra {α : Type u} {β : Type v} [GeneralizedBooleanAlgebra β] :
-    GeneralizedBooleanAlgebra (α → β) where
+instance Pi.instGeneralizedBooleanAlgebra {ι : Type*} {α : ι → Type*}
+    [∀ i, GeneralizedBooleanAlgebra (α i)] : GeneralizedBooleanAlgebra (∀ i, α i) where
   sup_inf_sdiff := fun f g => funext fun a => sup_inf_sdiff (f a) (g a)
   inf_inf_sdiff := fun f g => funext fun a => inf_inf_sdiff (f a) (g a)
-#align pi.generalized_boolean_algebra Pi.generalizedBooleanAlgebra
+#align pi.generalized_boolean_algebra Pi.instGeneralizedBooleanAlgebra
 
 end GeneralizedBooleanAlgebra
 

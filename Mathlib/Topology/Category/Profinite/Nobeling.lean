@@ -16,7 +16,8 @@ This file proves Nöbeling's theorem.
 
 ## Main result
 
-- `Nobeling`: For `S : Profinite`, the `ℤ`-module `LocallyConstant S ℤ` is free.
+* `LocallyConstant.freeOfProfinite`: Nöbeling's theorem.
+  For `S : Profinite`, the `ℤ`-module `LocallyConstant S ℤ` is free.
 
 ## Proof idea
 
@@ -225,7 +226,7 @@ def spanCone [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] : Cone (spanFunct
 
 /-- `spanCone` is a limit cone. -/
 noncomputable
-def spanCone_isLimit [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] [DecidableEq I] :
+def spanCone_isLimit [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] :
     CategoryTheory.Limits.IsLimit (spanCone hC) := by
   refine (IsLimit.postcomposeHomEquiv (NatIso.ofComponents
     (fun s ↦ (Profinite.isoOfBijective _ (iso_map_bijective C (· ∈ unop s)))) ?_) (spanCone hC))
@@ -802,7 +803,7 @@ instance {α : Type*} [TopologicalSpace α] [Inhabited α] : Nontrivial (Locally
   apply @zero_ne_one ℤ
   exact FunLike.congr_fun h default
 
-theorem Products.isGood_nil : Products.isGood ({fun _ ↦ false} : Set (I → Bool)) Products.nil:= by
+theorem Products.isGood_nil : Products.isGood ({fun _ ↦ false} : Set (I → Bool)) Products.nil := by
   intro h
   simp only [Products.lt_nil_empty, Products.eval, List.map, List.prod_nil, Set.image_empty,
     Submodule.span_empty, Submodule.mem_bot, one_ne_zero] at h

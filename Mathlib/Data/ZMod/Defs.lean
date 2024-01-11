@@ -108,6 +108,8 @@ instance ZMod.repr : ∀ n : ℕ, Repr (ZMod n)
 
 namespace ZMod
 
+instance instUnique : Unique (ZMod 1) := Fin.unique
+
 instance fintype : ∀ (n : ℕ) [NeZero n], Fintype (ZMod n)
   | 0, h => (h.ne rfl).elim
   | n + 1, _ => Fin.fintype (n + 1)

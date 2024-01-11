@@ -412,24 +412,9 @@ def toSignedMeasure (μ : Measure α) [hμ : IsFiniteMeasure μ] : SignedMeasure
   empty' := by simp [μ.empty]
   not_measurable' _ hi := if_neg hi
   m_iUnion' f hf₁ hf₂ := by
-    simp only
-    rw [μ.m_iUnion hf₁ hf₂, ENNReal.tsum_toReal_eq, if_pos (MeasurableSet.iUnion hf₁),
-      Summable.hasSum_iff]
-    · congr
-      ext n
-      rw [if_pos (hf₁ n)]
-    · refine' @summable_of_nonneg_of_le _ (ENNReal.toReal ∘ μ ∘ f) _ _ _ _
-      · intro
-        split_ifs
-        exacts [ENNReal.toReal_nonneg, le_rfl]
-      · intro
-        split_ifs
-        exacts [le_rfl, ENNReal.toReal_nonneg]
-      exact summable_measure_toReal hf₁ hf₂
-    · intro a ha
-      apply ne_of_lt hμ.measure_univ_lt_top
-      rw [eq_top_iff, ← ha]
-      exact measure_mono (Set.subset_univ _)
+    simp only [*, MeasurableSet.iUnion hf₁, if_true, measure_iUnion hf₂ hf₁]
+    rw [ENNReal.tsum_toReal_eq]
+    exacts [(summable_measure_toReal hf₁ hf₂).hasSum, fun _ ↦ measure_ne_top _ _]
 #align measure_theory.measure.to_signed_measure MeasureTheory.Measure.toSignedMeasure
 
 theorem toSignedMeasure_apply_measurable {μ : Measure α} [IsFiniteMeasure μ] {i : Set α}

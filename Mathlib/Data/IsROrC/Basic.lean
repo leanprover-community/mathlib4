@@ -646,14 +646,17 @@ theorem natCast_re (n : ℕ) : re (n : K) = n := by rw [← ofReal_natCast, ofRe
 theorem natCast_im (n : ℕ) : im (n : K) = 0 := by rw [← ofReal_natCast, ofReal_im]
 #align is_R_or_C.nat_cast_im IsROrC.natCast_im
 
+-- See note [no_index around OfNat.ofNat]
 @[simp, isROrC_simps]
 theorem ofNat_re (n : ℕ) [n.AtLeastTwo] : re (no_index (OfNat.ofNat n) : K) = OfNat.ofNat n :=
   natCast_re n
 
+-- See note [no_index around OfNat.ofNat]
 @[simp, isROrC_simps]
 theorem ofNat_im (n : ℕ) [n.AtLeastTwo] : im (no_index (OfNat.ofNat n) : K) = 0 :=
   natCast_im n
 
+-- See note [no_index around OfNat.ofNat]
 @[simp, isROrC_simps, norm_cast]
 theorem ofReal_ofNat (n : ℕ) [n.AtLeastTwo] :
     ((no_index (OfNat.ofNat n) : ℝ) : K) = OfNat.ofNat n :=
