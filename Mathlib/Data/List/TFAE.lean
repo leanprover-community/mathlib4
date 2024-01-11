@@ -58,6 +58,7 @@ theorem tfae_of_forall (b : Prop) (l : List Prop) (h : ∀ a ∈ l, a ↔ b) : T
   fun _a₁ h₁ _a₂ h₂ => (h _ h₁).trans (h _ h₂).symm
 #align list.tfae_of_forall List.tfae_of_forall
 
+set_option linter.deprecated true in
 theorem tfae_of_cycle {a b} {l : List Prop} :
     List.Chain (· → ·) a (b :: l) → (ilast' b l → a) → TFAE (a :: b :: l) := by
   induction' l with c l IH generalizing a b <;>
