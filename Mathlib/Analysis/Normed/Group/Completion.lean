@@ -37,6 +37,7 @@ theorem norm_coe {E} [SeminormedAddCommGroup E] (x : E) : ‖(x : Completion E)�
 #align uniform_space.completion.norm_coe UniformSpace.Completion.norm_coe
 
 instance [SeminormedAddCommGroup E] : NormedAddCommGroup (Completion E) where
+  __ : MetricSpace _ := inferInstance
   dist_eq x y := by
     induction x, y using Completion.induction_on₂
     · refine' isClosed_eq (Completion.uniformContinuous_extension₂ _).continuous _
