@@ -1987,7 +1987,7 @@ if `M` is a cancellative monoid with zero, and all elements of `S` are
 regular, then N is a cancellative monoid with zero.  -/
 theorem isLeftRegular_of_le_IsCancelMulZero (f : LocalizationWithZeroMap S N)
     [IsCancelMulZero M] (h : ∀ ⦃x⦄, x ∈ S → IsRegular x): IsCancelMulZero N := by
-  have:IsLeftCancelMulZero N:=
+  have : IsLeftCancelMulZero N:=
     leftCancelMulZero_of_le_isLeftRegular f (fun x h' => (h h').left)
   exact IsLeftCancelMulZero.to_isCancelMulZero
 
