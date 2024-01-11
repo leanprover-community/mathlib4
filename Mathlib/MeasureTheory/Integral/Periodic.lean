@@ -159,8 +159,7 @@ protected theorem lintegral_preimage (t : ℝ) (f : AddCircle T → ℝ≥0∞) 
     have : ((↑) : Ioc t (t + T) → AddCircle T) = ((↑) : ℝ → AddCircle T) ∘ ((↑) : _ → ℝ) := by
       ext1 x; rfl
     simp_rw [this]
-    rw [← Measure.map_map AddCircle.measurable_mk' measurable_subtype_coe,
-        ← map_comap_subtype_coe m]
+    rw [← map_map AddCircle.measurable_mk' measurable_subtype_coe, ← map_comap_subtype_coe m]
     rfl
 #align add_circle.lintegral_preimage AddCircle.lintegral_preimage
 
@@ -179,7 +178,7 @@ protected theorem integral_preimage (t : ℝ) (f : AddCircle T → E) :
   have : ((↑) : Ioc t (t + T) → AddCircle T) = ((↑) : ℝ → AddCircle T) ∘ ((↑) : _ → ℝ) := by
     ext1 x; rfl
   simp_rw [this]
-  rw [← Measure.map_map AddCircle.measurable_mk' measurable_subtype_coe, ← map_comap_subtype_coe m]
+  rw [← map_map AddCircle.measurable_mk' measurable_subtype_coe, ← map_comap_subtype_coe m]
   rfl
 #align add_circle.integral_preimage AddCircle.integral_preimage
 
