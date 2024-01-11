@@ -171,28 +171,6 @@ theorem goldConj_irrational : Irrational ψ := by
 ## Links with Fibonacci sequence
 -/
 
-theorem fib_golden_conj_exp (n : ℕ) : Nat.fib (n + 1) - φ * Nat.fib n = ψ ^ n := by
-  repeat rw [coe_fib_eq]
-  rw [mul_div, div_sub_div_same, mul_sub, ← pow_succ]
-  ring_nf
-  have nz : sqrt 5 ≠ 0 := by norm_num
-  rw [← (mul_inv_cancel nz).symm, one_mul]
-#align fib_golden_conj_exp fib_golden_conj_exp
-
-theorem fib_golden_conj_exp' (n : ℕ) : φ * Nat.fib (n + 1) + Nat.fib n = φ ^ (n + 1) := by
-  induction n with
-  | zero => norm_num
-  | succ n ih =>
-    rw [Nat.succ_eq_add_one, Nat.fib_add_one, Nat.cast_add, mul_add, Nat.add_sub_cancel]
-    calc
-      φ * ↑(Nat.fib n) + φ * ↑(Nat.fib (n + 1)) + ↑(Nat.fib (n + 1)) = φ * ↑(Nat.fib n) + (φ + 1) * ↑(Nat.fib (n + 1)) := by rw [add_mul, one_mul, add_assoc];
-      _ = φ * ↑(Nat.fib n) + φ ^ 2 * ↑(Nat.fib (n + 1)) := by rw [gold_sq]
-      _ = φ * (↑(Nat.fib n) + φ * ↑(Nat.fib (n + 1))) := by rw [sq, mul_assoc, ← mul_add]
-      _ = φ * φ ^ (n + 1) := by rw [add_comm, ih]
-      _ = φ ^ (n + 2) := by rw [← pow_succ]
-    linarith
-#align fib_golden_conj_exp' fib_golden_conj_exp'
-
 section Fibrec
 
 variable {α : Type*} [CommSemiring α]
@@ -266,3 +244,28 @@ theorem Real.coe_fib_eq' :
 theorem Real.coe_fib_eq : ∀ n, (Nat.fib n : ℝ) = (φ ^ n - ψ ^ n) / Real.sqrt 5 := by
   rw [← Function.funext_iff, Real.coe_fib_eq']
 #align real.coe_fib_eq Real.coe_fib_eq
+
+/-- Relationship between the Fibonacci Sequence, Golden Ratio and its conjugate's exponents --/
+theorem fib_golden_conj_exp (n : ℕ) : Nat.fib (n + 1) - φ * Nat.fib n = ψ ^ n := by
+  repeat rw [coe_fib_eq]
+  rw [mul_div, div_sub_div_same, mul_sub, ← pow_succ]
+  ring_nf
+  have nz : sqrt 5 ≠ 0 := by norm_num
+  rw [← (mul_inv_cancel nz).symm, one_mul]
+#align fib_golden_conj_exp fib_golden_conj_exp
+
+/-- Relationship between the Fibonacci Sequence, Golden Ratio and its exponents --/
+theorem fib_golden_exp' (n : ℕ) : φ * Nat.fib (n + 1) + Nat.fib n = φ ^ (n + 1) := by
+  induction n with
+  | zero => norm_num
+  | succ n ih =>
+    rw [Nat.succ_eq_add_one, Nat.fib_add_one, Nat.cast_add, mul_add, Nat.add_sub_cancel]
+    calc
+      φ * ↑(Nat.fib n) + φ * ↑(Nat.fib (n + 1)) + ↑(Nat.fib (n + 1))
+      = φ * ↑(Nat.fib n) + (φ + 1) * ↑(Nat.fib (n + 1)) := by rw [add_mul, one_mul, add_assoc];
+      _ = φ * ↑(Nat.fib n) + φ ^ 2 * ↑(Nat.fib (n + 1)) := by rw [gold_sq]
+      _ = φ * (↑(Nat.fib n) + φ * ↑(Nat.fib (n + 1))) := by rw [sq, mul_assoc, ← mul_add]
+      _ = φ * φ ^ (n + 1) := by rw [add_comm, ih]
+      _ = φ ^ (n + 2) := by rw [← pow_succ]
+    linarith
+#align fib_golden_exp' fib_golden_exp'
