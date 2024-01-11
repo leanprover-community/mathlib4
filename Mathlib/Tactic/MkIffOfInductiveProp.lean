@@ -363,7 +363,7 @@ structure Foo (m n : Nat) : Prop where
 
 Then `#check Foo_iff` returns:
 ```lean
-Foo_iff : ∀ (m n : Nat), Foo m n ↔ m = n ∧ m + n = 2
+foo_iff : ∀ (m n : Nat), Foo m n ↔ m = n ∧ m + n = 2
 ```
 
 You can add an optional string after `mk_iff` to change the name of the generated lemma.
@@ -380,10 +380,13 @@ Then `#check bar` returns:
 bar : ∀ (m n : ℕ), Foo m n ↔ m = n ∧ m + n = 2
 ```
 
-See also the user command `mk_iff_of_inductive_prop`.
+See also the user command `mk_iff_of_inductive_prop` and the `mk_eq` attribute.
 -/
 syntax (name := mkIff) "mk_iff" (ppSpace ident)? : attr
 
+/-- Attribute similar to `mk_iff` but generates a lemma like `foo_eq : @foo = fun m n ↦ _`
+instead of `foo_iff : ∀ m n, foo m n ↔ _`.
+-/
 syntax (name := mkEq) "mk_eq" (ppSpace ident)? : attr
 
 /--
