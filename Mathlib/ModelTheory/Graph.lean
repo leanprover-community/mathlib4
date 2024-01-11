@@ -9,7 +9,7 @@ import Mathlib.Combinatorics.SimpleGraph.Basic
 #align_import model_theory.graph from "leanprover-community/mathlib"@"e56b8fea84d60fe434632b9d3b829ee685fb0c8f"
 
 /-!
-# First-Ordered Structures in Graph Theory
+# First-Order Structures in Graph Theory
 This file defines first-order languages, structures, and theories in graph theory.
 
 ## Main Definitions
