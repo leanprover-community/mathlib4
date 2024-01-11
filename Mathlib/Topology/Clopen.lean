@@ -22,18 +22,6 @@ variable [TopologicalSpace X] [TopologicalSpace Y] {s t : Set X}
 
 section Clopen
 
--- porting note: todo: redefine as `IsClosed s ∧ IsOpen s`
-/-- A set is clopen if it is both open and closed. -/
-def IsClopen (s : Set X) : Prop :=
-  IsOpen s ∧ IsClosed s
-#align is_clopen IsClopen
-
-protected theorem IsClopen.isOpen (hs : IsClopen s) : IsOpen s := hs.1
-#align is_clopen.is_open IsClopen.isOpen
-
-protected theorem IsClopen.isClosed (hs : IsClopen s) : IsClosed s := hs.2
-#align is_clopen.is_closed IsClopen.isClosed
-
 theorem isClopen_iff_frontier_eq_empty : IsClopen s ↔ frontier s = ∅ := by
   rw [IsClopen, ← closure_eq_iff_isClosed, ← interior_eq_iff_isOpen, frontier, diff_eq_empty]
   refine' ⟨fun h => (h.2.trans h.1.symm).subset, fun h => _⟩
