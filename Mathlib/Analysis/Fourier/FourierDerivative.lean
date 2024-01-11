@@ -10,7 +10,7 @@ import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 import Mathlib.Analysis.InnerProductSpace.Calculus
 
 /-!
-# The Frechet Derivative of the Fourier transform
+# The Fréchet Derivative of the Fourier transform
 In this file, we evaluate the Fréchet derivative of the Fourier transform
 
 ## Main result
