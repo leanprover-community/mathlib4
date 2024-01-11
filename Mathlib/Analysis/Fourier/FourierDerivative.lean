@@ -57,20 +57,17 @@ theorem hasFDerivAt_fourier {f : E → F} (hf_int : Integrable f)
       ext1 v
       rw [innerSL_apply]
       exact @inner_re_symm ℝ E _ _ _ v w
-    refine AEStronglyMeasurable.smul (Continuous.aestronglyMeasurable hcont.subtype_val)
+    exact AEStronglyMeasurable.smul (Continuous.aestronglyMeasurable hcont.subtype_val)
         hf_int.aestronglyMeasurable
   · refine (VectorFourier.fourier_integral_convergent_iff ?_ ?_ x).mp hf_int
     · exact continuous_fourierChar.comp  continuous_id'
     · exact continuous_inner
   · refine AEStronglyMeasurable.smul ?_ ?_
-    · refine Measurable.aestronglyMeasurable ?_
-      apply Measurable.comp measurable_inv
-      apply Continuous.measurable
-      apply Continuous.subtype_val
-      apply continuous_fourierChar.comp ?_
-      refine Continuous.comp' continuous_coinduced_rng  ?_
+    · refine (measurable_inv.comp (Continuous.measurable ?_)).aestronglyMeasurable
+      apply (continuous_fourierChar.comp ?_).subtype_val
+      refine continuous_coinduced_rng.comp' ?_
       convert  (innerSL ℝ x).continuous using 1
-      ext v
+      ext1 v
       rw [innerSL_apply]
       exact @inner_re_symm ℝ E _ _ _ v x
     · have : (-(2:ℂ) * π * I) ≠ 0 := by simp [pi_ne_zero, I_ne_zero]
@@ -80,12 +77,14 @@ theorem hasFDerivAt_fourier {f : E → F} (hf_int : Integrable f)
         · simp
         · exact (ContinuousLinearMap.smulRightL ℝ ℝ F 1).continuous
       · exact (innerSL ℝ).continuous.aestronglyMeasurable
-  · filter_upwards [] with w u hu
+  · filter_upwards [] with w u _
     simp only [Multiplicative.toAdd_symm_eq, neg_smul, norm_smul, norm_inv, norm_eq_of_mem_sphere,
       inv_one, one_mul, ge_iff_le]
     convert ContinuousLinearMap.op_norm_comp_le _ _
     · rw [ContinuousLinearMap.norm_toSpanSingleton]
-      simp [norm_smul]
+      simp only [norm_neg, norm_smul, norm_mul, IsROrC.norm_ofNat, Complex.norm_eq_abs, abs_ofReal,
+        abs_I, mul_one, mul_eq_mul_right_iff, mul_eq_mul_left_iff, OfNat.ofNat_ne_zero, or_false,
+        norm_eq_zero]
       left
       exact (abs_of_pos Real.pi_pos).symm
     · simp
@@ -96,8 +95,8 @@ theorem hasFDerivAt_fourier {f : E → F} (hf_int : Integrable f)
     simp only [Pi.smul_apply, smul_eq_mul]
     ring
   · filter_upwards [] with w
-    intro u hu
-    convert (((Complex.ofRealClm.hasFDerivAt.comp u (hasFDerivAt.inner ℝ w u)).const_mul
+    intro u _
+    convert (((Complex.ofRealClm.hasFDerivAt.comp u (hasFDerivAt_inner ℝ w u)).const_mul
       (2 * π)).mul_const I).neg.cexp.smul_const (f w) using 1
     · ext1 y
       simp only [fourierChar, ofAdd_neg, map_inv, MonoidHom.coe_mk, OneHom.coe_mk, toAdd_ofAdd,
