@@ -620,7 +620,6 @@ lemma toSpecFromSpec {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m) (x : 
     refine Ideal.sum_mem _ fun j hj ↦ Ideal.mul_mem_left _ _ ?_
     obtain ⟨s, _, hs, n, s_mem, F_mem, ⟨k, rfl⟩, rfl⟩ := support_le hj
     refine x.IsPrime.mem_of_pow_mem m <| show Quotient.mk'' ⟨_, ⟨s^m, _⟩, _, _⟩ ∈ x.asIdeal from ?_
-    -- simp only [CommRingCat.coe_of, smul_eq_mul]
     convert hs n using 1
     rw [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.val_mk'',
       HomogeneousLocalization.val_mk'']
