@@ -777,7 +777,7 @@ TODO: Formalize the existence of a Dirichlet domain as in Kapovich's paper.
 
 section HasFundamentalDomain
 
-/-- We say a quotient of `α` by `G` `HasFundamentalDomain` if there is a measurable set
+/-- We say a quotient of `α` by `G` `HasAddFundamentalDomain` if there is a measurable set
   `s` for which `IsAddFundamentalDomain G s` holds. -/
 class HasAddFundamentalDomain (G α : Type*) [Zero G] [VAdd G α] [MeasureSpace α] : Prop where
   has_add_fundamental_domain_characterization : ∃ s : Set α, IsAddFundamentalDomain G s
