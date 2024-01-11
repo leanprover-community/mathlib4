@@ -74,6 +74,9 @@ theorem Equiv.toEmbedding_apply (a : α) : f.toEmbedding a = f a :=
   rfl
 #align equiv.to_embedding_apply Equiv.toEmbedding_apply
 
+theorem Equiv.toEmbedding_injective : Function.Injective (Equiv.toEmbedding : (α ≃ β) → (α ↪ β)) :=
+  fun _ _ h ↦ by rwa [FunLike.ext'_iff] at h ⊢
+
 instance Equiv.coeEmbedding : Coe (α ≃ β) (α ↪ β) :=
   ⟨Equiv.toEmbedding⟩
 #align equiv.coe_embedding Equiv.coeEmbedding
