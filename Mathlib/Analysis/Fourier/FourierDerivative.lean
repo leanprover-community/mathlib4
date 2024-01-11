@@ -34,7 +34,6 @@ noncomputable section
 abbrev integralFourier (f : E → F) :=
   (VectorFourier.fourierIntegral (E := F)) Real.fourierChar (volume : Measure E) (innerₛₗ ℝ) f
 
-set_option maxHeartbeats 800000 in
 /-- The Fréchet derivative of the Fourier transform of `f` is the Fourier transform of
     `fun v ↦ ((-2 * π * I) • f v) ⊗ (innerSL ℝ v)`. -/
 theorem hasFDerivAt_fourier {f : E → F} (hf_int : Integrable f)
