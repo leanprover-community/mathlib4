@@ -210,7 +210,7 @@ theorem sum_pow_mul_eq_add_pow {α R : Type*} [CommSemiring R] (a b : R) (s : Fi
 
 @[norm_cast]
 theorem prod_natCast (s : Finset α) (f : α → ℕ) : ↑(∏ x in s, f x : ℕ) = ∏ x in s, (f x : β) :=
-  (Nat.castRingHom β).map_prod f s
+  map_prod (Nat.castRingHom β) f s
 #align finset.prod_nat_cast Finset.prod_natCast
 
 end CommSemiring
