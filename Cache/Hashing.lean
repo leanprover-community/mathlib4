@@ -85,7 +85,7 @@ Computes the hash of a file, which mixes:
 * The hash of its content
 * The hashes of the imported files that are part of `Mathlib`
 -/
-partial def getFileHash (filePath : FilePath) : HashM $ Option UInt64 := do
+partial def getFileHash (filePath : FilePath) : HashM <| Option UInt64 := do
   match (← get).cache.find? filePath with
   | some hash? => return hash?
   | none =>
@@ -105,7 +105,7 @@ partial def getFileHash (filePath : FilePath) : HashM $ Option UInt64 := do
         return none
     let rootHash := (← get).rootHash
     let pathHash := hash filePath.components
-    let fileHash := hash $ rootHash :: pathHash :: hashFileContents content :: importHashes.toList
+    let fileHash := hash <| rootHash :: pathHash :: hashFileContents content :: importHashes.toList
     modifyGet fun stt =>
       (some fileHash, { stt with
         hashMap := stt.hashMap.insert filePath fileHash

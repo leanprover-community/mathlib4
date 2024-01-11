@@ -10,6 +10,7 @@ import Mathlib.Init.Data.Bool.Lemmas
 import Mathlib.Init.ZeroOne
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.Says
+import Mathlib.Tactic.GeneralizeProofs
 
 #align_import init.data.nat.bitwise from "leanprover-community/lean"@"53e8520d8964c7632989880372d91ba0cecbaf00"
 
@@ -115,12 +116,7 @@ theorem div2_two : div2 2 = 1 :=
 @[simp]
 theorem div2_succ (n : ℕ) : div2 (succ n) = cond (bodd n) (succ (div2 n)) (div2 n) := by
   simp only [bodd, boddDiv2, div2]
-  cases' boddDiv2 n with fst snd
-  cases fst
-  case mk.false =>
-    simp
-  case mk.true =>
-    simp
+  rcases boddDiv2 n with ⟨_|_, _⟩ <;> simp
 #align nat.div2_succ Nat.div2_succ
 
 attribute [local simp] Nat.add_comm Nat.add_assoc Nat.add_left_comm Nat.mul_comm Nat.mul_assoc
@@ -324,26 +320,20 @@ theorem testBit_succ (m b n) : testBit (bit b n) (succ m) = testBit n m := by
 theorem binaryRec_eq {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bit b n)}
     (h : f false 0 z = z) (b n) : binaryRec z f (bit b n) = f b n (binaryRec z f n) := by
   rw [binaryRec]
-  by_cases h : bit b n = 0
-  -- Note: this renames the original `h : f false 0 z = z` to `h'` and leaves `h : bit b n = 0`
-  case pos h' =>
-    simp only [dif_pos h]
-    generalize binaryRec z f (bit b n) = e
+  split <;> rename_i h'
+  · generalize binaryRec z f (bit b n) = e
     revert e
     have bf := bodd_bit b n
     have n0 := div2_bit b n
-    rw [h] at bf n0
+    rw [h'] at bf n0
     simp only [bodd_zero, div2_zero] at bf n0
     subst bf n0
     rw [binaryRec_zero]
     intros
-    rw [h']
+    rw [h]
     rfl
-  case neg h' =>
-    simp only [dif_neg h]
-    generalize @id (C (bit b n) = C (bit (bodd (bit b n)) (div2 (bit b n))))
-      (Eq.symm (bit_decomp (bit b n)) ▸ Eq.refl (C (bit b n))) = e
-    revert e
+  · simp only; generalize_proofs h
+    revert h
     rw [bodd_bit, div2_bit]
     intros; rfl
 #align nat.binary_rec_eq Nat.binaryRec_eq

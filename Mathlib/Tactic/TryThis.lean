@@ -15,21 +15,25 @@ This file could be upstreamed to `Std`.
 open Lean Elab Elab.Tactic PrettyPrinter Meta Std.Tactic.TryThis
 
 /-- Add a suggestion for `have : t := e`. -/
-def addHaveSuggestion (ref : Syntax) (t? : Option Expr) (e : Expr)
+def addHaveSuggestion (ref : Syntax) (h? : Option Name) (t? : Option Expr) (e : Expr)
     (origSpan? : Option Syntax := none) : TermElabM Unit := do
   let estx ← delabToRefinableSyntax e
   let prop ← isProp (← inferType e)
   let tac ← if let some t := t? then
     let tstx ← delabToRefinableSyntax t
     if prop then
-      `(tactic| have : $tstx := $estx)
+      match h? with
+      | some h => `(tactic| have $(mkIdent h) : $tstx := $estx)
+      | none => `(tactic| have : $tstx := $estx)
     else
-      `(tactic| let this : $tstx := $estx)
+      `(tactic| let $(mkIdent (h?.getD `_)) : $tstx := $estx)
   else
     if prop then
-      `(tactic| have := $estx)
+      match h? with
+      | some h => `(tactic| have $(mkIdent h) := $estx)
+      | none => `(tactic| have := $estx)
     else
-      `(tactic| let this := $estx)
+      `(tactic| let $(mkIdent (h?.getD `_)) := $estx)
   addSuggestion ref tac origSpan?
 
 open Lean.Parser.Tactic

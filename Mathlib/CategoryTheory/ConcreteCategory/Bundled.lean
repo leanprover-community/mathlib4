@@ -15,9 +15,10 @@ import Mathlib.Mathport.Rename
 
 `Bundled c` provides a uniform structure for bundling a type equipped with a type class.
 
-We provide `Category` instances for these in `CategoryTheory/UnbundledHom.lean`
+We provide `Category` instances for these in `CategoryTheory/ConcreteCategory/UnbundledHom.lean`
 (for categories with unbundled homs, e.g. topological spaces)
-and in `CategoryTheory/BundledHom.lean` (for categories with bundled homs, e.g. monoids).
+and in `CategoryTheory/ConcreteCategory/BundledHom.lean`
+(for categories with bundled homs, e.g. monoids).
 -/
 
 universe u v

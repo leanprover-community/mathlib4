@@ -332,7 +332,7 @@ end NormedAddTorsor
 
 private theorem aux {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] (φ : α ≃ₜ β)
     (s : Set β) : (interior s).Nonempty ↔ (interior (φ ⁻¹' s)).Nonempty := by
-  rw [← φ.image_symm, ← φ.symm.image_interior, nonempty_image_iff]
+  rw [← φ.image_symm, ← φ.symm.image_interior, image_nonempty]
 
 variable [NormedAddCommGroup V] [NormedSpace ℝ V] [FiniteDimensional ℝ V] {s : Set V}
 
@@ -342,7 +342,7 @@ protected theorem Set.Nonempty.intrinsicInterior (hscv : Convex ℝ s) (hsne : s
   haveI := hsne.coe_sort
   obtain ⟨p, hp⟩ := hsne
   let p' : _root_.affineSpan ℝ s := ⟨p, subset_affineSpan _ _ hp⟩
-  rw [intrinsicInterior, nonempty_image_iff,
+  rw [intrinsicInterior, image_nonempty,
     aux (AffineIsometryEquiv.constVSub ℝ p').symm.toHomeomorph,
     Convex.interior_nonempty_iff_affineSpan_eq_top, AffineIsometryEquiv.coe_toHomeomorph, ←
     AffineIsometryEquiv.coe_toAffineEquiv, ← comap_span, affineSpan_coe_preimage_eq_top, comap_top]
