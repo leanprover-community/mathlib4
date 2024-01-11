@@ -38,7 +38,7 @@ open TensorProduct
 
 section IsTensorProduct
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [CommSemiring R]
 
 variable {M₁ M₂ M M' : Type*}
 
@@ -140,9 +140,9 @@ section IsBaseChange
 
 variable {R : Type*} {M : Type v₁} {N : Type v₂} (S : Type v₃)
 
-variable [AddCommMonoid M] [AddCommMonoid N] [CommRing R]
+variable [AddCommMonoid M] [AddCommMonoid N] [CommSemiring R]
 
-variable [CommRing S] [Algebra R S] [Module R M] [Module R N] [Module S N] [IsScalarTower R S N]
+variable [CommSemiring S] [Algebra R S] [Module R M] [Module R N] [Module S N] [IsScalarTower R S N]
 
 variable (f : M →ₗ[R] N)
 
@@ -325,7 +325,7 @@ theorem IsBaseChange.ofEquiv (e : M ≃ₗ[R] N) : IsBaseChange R e.toLinearMap 
   simp
 #align is_base_change.of_equiv IsBaseChange.ofEquiv
 
-variable {T O : Type*} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+variable {T O : Type*} [CommSemiring T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 
 variable [AddCommMonoid O] [Module R O] [Module S O] [Module T O] [IsScalarTower S T O]
 
@@ -356,7 +356,7 @@ theorem IsBaseChange.comp {f : M →ₗ[R] N} (hf : IsBaseChange S f) {g : N →
   rfl
 #align is_base_change.comp IsBaseChange.comp
 
-variable {R' S' : Type*} [CommRing R'] [CommRing S']
+variable {R' S' : Type*} [CommSemiring R'] [CommSemiring S']
 
 variable [Algebra R R'] [Algebra S S'] [Algebra R' S'] [Algebra R S']
 
