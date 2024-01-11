@@ -6,6 +6,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 import Mathlib.Init.Data.Int.Basic
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.TypeStar
+import Mathlib.Util.AssertExists
 
 #align_import algebra.group.defs from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 
@@ -1261,3 +1262,4 @@ initialize_simps_projections CommGroup
 initialize_simps_projections AddCommGroup
 
 assert_not_exists Function.Injective
+assert_not_exists IsCommutative
