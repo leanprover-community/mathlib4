@@ -34,6 +34,7 @@ noncomputable section
 abbrev integralFourier (f : E → F) :=
   (VectorFourier.fourierIntegral (E := F)) Real.fourierChar (volume : Measure E) (innerₛₗ ℝ) f
 
+set_option maxHeartbeats 800000 in
 /-- The Fréchet derivative of the Fourier transform of `f` is the Fourier transform of
     `fun v ↦ ((-2 * π * I) • f v) ⊗ (innerSL ℝ v)`. -/
 theorem hasFDerivAt_fourier {f : E → F} (hf_int : Integrable f)
@@ -51,10 +52,14 @@ theorem hasFDerivAt_fourier {f : E → F} (hf_int : Integrable f)
       ofReal_ofNat, neg_smul, smul_neg, neg_mul, ← mul_smul]
     rfl
   · filter_upwards [] with w
-    refine AEStronglyMeasurable.smul (Continuous.aestronglyMeasurable ?_)
-      hf_int.aestronglyMeasurable
-    apply Continuous.comp continuous_subtype_val
-    continuity
+    have hcont : Continuous fun v ↦ fourierChar (Multiplicative.ofAdd (-((innerₛₗ ℝ) v) w))
+    · apply continuous_fourierChar.comp (Continuous.inv ?_)
+      convert (innerSL ℝ w).continuous using 1
+      ext1 v
+      rw [innerSL_apply]
+      exact @inner_re_symm ℝ E _ _ _ v w
+    refine AEStronglyMeasurable.smul (Continuous.aestronglyMeasurable hcont.subtype_val)
+        hf_int.aestronglyMeasurable
   · refine (VectorFourier.fourier_integral_convergent_iff ?_ ?_ x).mp hf_int
     · exact continuous_fourierChar.comp  continuous_id'
     · exact continuous_inner
@@ -62,21 +67,20 @@ theorem hasFDerivAt_fourier {f : E → F} (hf_int : Integrable f)
     · refine Measurable.aestronglyMeasurable ?_
       apply Measurable.comp measurable_inv
       apply Continuous.measurable
-      continuity
+      apply Continuous.subtype_val
+      apply continuous_fourierChar.comp ?_
+      refine Continuous.comp' continuous_coinduced_rng  ?_
+      convert  (innerSL ℝ x).continuous using 1
+      ext v
+      rw [innerSL_apply]
+      exact @inner_re_symm ℝ E _ _ _ v x
     · have : (-(2:ℂ) * π * I) ≠ 0 := by simp [pi_ne_zero, I_ne_zero]
       have := (aestronglyMeasurable_const_smul_iff₀ this).mpr hf_int.aestronglyMeasurable
-      --have := hf_int.aestronglyMeasurable.smul_measure (-(2 : ℂ) * π * I)
-
-      -- have := (aestronglyMeasurable_const_smul_iff (c := -(2:ℂ) * π * I)).mpr
-      --   hf_int.aestronglyMeasurable
-
-#exit
-      sorry
---       have : AEStronglyMeasurable f volume := hf_int.aestronglyMeasurable
---       refine (this.smul (𝕜 := ℂ) ?_).comp_measurable
-
--- #exit
-      -- sorry
+      refine (ContinuousLinearMap.compL ℝ E ℝ F).aestronglyMeasurable_comp₂ ?_ ?_
+      · convert Continuous.comp_aestronglyMeasurable ?_ this using 4
+        · simp
+        · exact (ContinuousLinearMap.smulRightL ℝ ℝ F 1).continuous
+      · exact (innerSL ℝ).continuous.aestronglyMeasurable
   · filter_upwards [] with w u hu
     simp only [Multiplicative.toAdd_symm_eq, neg_smul, norm_smul, norm_inv, norm_eq_of_mem_sphere,
       inv_one, one_mul, ge_iff_le]
@@ -94,7 +98,7 @@ theorem hasFDerivAt_fourier {f : E → F} (hf_int : Integrable f)
     ring
   · filter_upwards [] with w
     intro u hu
-    convert (((Complex.ofRealClm.hasFDerivAt.comp u (hasFDerivAt_inner ℝ w u)).const_mul
+    convert (((Complex.ofRealClm.hasFDerivAt.comp u (hasFDerivAt.inner ℝ w u)).const_mul
       (2 * π)).mul_const I).neg.cexp.smul_const (f w) using 1
     · ext1 y
       simp only [fourierChar, ofAdd_neg, map_inv, MonoidHom.coe_mk, OneHom.coe_mk, toAdd_ofAdd,
