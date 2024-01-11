@@ -88,7 +88,7 @@ theorem isLUB_hasSum (h : ∀ i, 0 ≤ f i) (hf : HasSum f a) :
 
 theorem le_hasSum (hf : HasSum f a) (i : ι) (hb : ∀ j, j ≠ i → 0 ≤ f j) : f i ≤ a :=
   calc
-    f i = ∑ i in {i}, f i := Finset.sum_singleton.symm
+    f i = ∑ i in {i}, f i := by rw [sum_singleton]
     _ ≤ a := sum_le_hasSum _ (by simpa) hf
 #align le_has_sum le_hasSum
 

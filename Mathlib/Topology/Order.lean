@@ -367,6 +367,15 @@ theorem discreteTopology_iff_nhds_ne [TopologicalSpace α] :
   simp only [discreteTopology_iff_singleton_mem_nhds, nhdsWithin, inf_principal_eq_bot, compl_compl]
 #align discrete_topology_iff_nhds_ne discreteTopology_iff_nhds_ne
 
+/-- If the codomain of a continuous injective function has discrete topology,
+then so does the domain.
+
+See also `Embedding.discreteTopology` for an important special case. -/
+theorem DiscreteTopology.of_continuous_injective
+    {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [DiscreteTopology β] {f : α → β}
+    (hc : Continuous f) (hinj : Injective f) : DiscreteTopology α :=
+  forall_open_iff_discrete.1 fun s ↦ hinj.preimage_image s ▸ (isOpen_discrete _).preimage hc
+
 end Lattice
 
 section GaloisConnection

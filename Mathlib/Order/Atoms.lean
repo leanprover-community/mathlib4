@@ -1022,7 +1022,7 @@ theorem isAtom_single [DecidableEq ι] [∀ i, PartialOrder (π i)] [∀ i, Orde
   isAtom_iff.2 ⟨i, by simpa, fun j hji => Function.update_noteq hji _ _⟩
 
 theorem isAtom_iff_eq_single [DecidableEq ι] [∀ i, PartialOrder (π i)]
-      [∀ i, OrderBot (π i)] {f : ∀ i, π i} :
+    [∀ i, OrderBot (π i)] {f : ∀ i, π i} :
     IsAtom f ↔ ∃ i a, IsAtom a ∧ f = Function.update ⊥ i a := by
   constructor
   case mp =>

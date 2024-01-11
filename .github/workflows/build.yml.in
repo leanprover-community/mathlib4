@@ -23,11 +23,12 @@ jobs:
 
       - uses: actions/checkout@v3
 
-      - name: Install bibtool
-        if: ${{ 'STYLE_LINT_RUNNER' == 'ubuntu-latest' }}
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y bibtool
+      # Run the case checker action
+      - name: Check Case Sensitivity
+        uses: credfeto/action-case-checker@v1.3.0
+
+      - name: Look for ignored files
+        uses: credfeto/action-no-ignored-files@v1.1.0
 
       - name: install Python
         if: ${{ 'STYLE_LINT_RUNNER' == 'ubuntu-latest' }}
@@ -38,6 +39,12 @@ jobs:
       - name: lint
         run: |
           ./scripts/lint-style.sh
+
+      - name: Install bibtool
+        if: ${{ 'STYLE_LINT_RUNNER' == 'ubuntu-latest' }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y bibtool
 
       - name: lint references.bib
         run: |
@@ -85,8 +92,10 @@ jobs:
       - name: cleanup
         run: |
           find . -name . -o -prune -exec rm -rf -- {} +
-          # Delete any elan toolchains older than two weeks.
-          find $HOME/.elan/toolchains/ -maxdepth 1 -type d -ctime +14 -exec rm -rf {} || true
+          # Delete all but the 10 most recent toolchains.
+          # Make sure to delete both the `~/.elan/toolchains/X` directory and the `~/.elan/update-hashes/X` file.
+          # Skip symbolic links (`-type d`), the current directory (`! -name .`), and `nightly` and `stable`.
+          cd ~/.elan/toolchains && find . -maxdepth 1 -type d ! -name . -print0 | xargs -0 ls -1td | grep -v 'nightly$' | grep -v 'stable$' | tail -n +11 | xargs -I {} sh -c 'echo {} && rm -rf "{}" && rm "../update-hashes/{}"' || true
 
       # The Hoskinson runners may not have jq installed, so do that now.
       - name: 'Setup jq'
@@ -95,7 +104,7 @@ jobs:
       - name: install elan
         run: |
           set -o pipefail
-          curl -sSfL https://github.com/leanprover/elan/releases/download/v1.4.2/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
+          curl -sSfL https://github.com/leanprover/elan/releases/download/v3.0.0/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
           ./elan-init -y --default-toolchain none
           echo "$HOME/.elan/bin" >> $GITHUB_PATH
 
@@ -117,7 +126,9 @@ jobs:
       - name: get cache
         run: |
           lake exe cache clean
-          lake exe cache get
+          # We've been seeing many failures at this step recently because of network errors.
+          # As a band-aid, we try twice.
+          lake exe cache get || lake exe cache get
 
       - name: build mathlib
         id: build
@@ -137,10 +148,23 @@ jobs:
       - name: upload cache
         if: always()
         run: |
+          # run this in CI if it gets an incorrect lake hash for existing cache files somehow
+          # lake exe cache pack! || true
           lake exe cache commit || true
           lake exe cache put || true
         env:
           MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
+
+      - name: check the cache
+        run: |
+          # Because the `lean-pr-testing-NNNN` branches use toolchains that are "updated in place"
+          # the cache mechanism is unreliable, so we don't test it if we are on such a branch.
+          if [[ ! `cat lean-toolchain` =~ ^leanprover/lean4-pr-releases:pr-release-[0-9]+$ ]]; then
+            lake exe cache get
+            # We pipe the output of `lake build` to a file,
+            # and if we find " Building Mathlib" in that file we kill `lake build`, and error.
+            lake build > tmp & tail --pid=$! -n +1 -F tmp | (! (grep -m 1 " Building Mathlib" && kill $! ))
+          fi
 
       - name: build archive
         run: |
@@ -170,6 +194,11 @@ jobs:
           python3 scripts/yaml_check.py docs/100.yaml docs/overview.yaml docs/undergrad.yaml
           lake exe checkYaml
 
+      - name: verify `lake exe graph` works
+        run: |
+          lake exe graph
+          rm import_graph.dot
+
       - name: test mathlib
         id: test
         run: make -j 8 test
@@ -179,14 +208,23 @@ jobs:
         uses: liskin/gh-problem-matcher-wrap@v2
         with:
           linters: gcc
-          run: env LEAN_ABORT_ON_PANIC=1 lake exe runLinter
+          run: env LEAN_ABORT_ON_PANIC=1 lake exe runMathlibLinter
+
+      - name: check environments using lean4checker
+        id: lean4checker
+        run: |
+          git clone https://github.com/leanprover/lean4checker
+          cd lean4checker
+          lake build
+          cd ..
+          lake env lean4checker/build/bin/lean4checker
 
       - name: Post comments for lean-pr-testing branch
         if: always()
         env:
           TOKEN: ${{ secrets.LEAN_PR_TESTING }}
           GITHUB_CONTEXT: ${{ toJson(github) }}
-          WORKFLOW_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}
+          WORKFLOW_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
           LINT_OUTCOME: ${{ steps.lint.outcome }}
           TEST_OUTCOME: ${{ steps.test.outcome }}
           BUILD_OUTCOME: ${{ steps.build.outcome }}

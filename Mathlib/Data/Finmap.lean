@@ -477,8 +477,8 @@ def insert (a : α) (b : β a) (s : Finmap β) : Finmap β :=
 #align finmap.insert Finmap.insert
 
 @[simp]
-theorem insert_toFinmap (a : α) (b : β a) (s : AList β)
-  : insert a b (AList.toFinmap s) = AList.toFinmap (s.insert a b) := by
+theorem insert_toFinmap (a : α) (b : β a) (s : AList β) :
+    insert a b (AList.toFinmap s) = AList.toFinmap (s.insert a b) := by
   simp [insert]
 #align finmap.insert_to_finmap Finmap.insert_toFinmap
 
@@ -571,8 +571,8 @@ theorem mem_union {a} {s₁ s₂ : Finmap β} : a ∈ s₁ ∪ s₂ ↔ a ∈ s�
 #align finmap.mem_union Finmap.mem_union
 
 @[simp]
-theorem union_toFinmap (s₁ s₂ : AList β)
-  : (toFinmap s₁) ∪ (toFinmap s₂) = toFinmap (s₁ ∪ s₂) := by simp [(· ∪ ·), union]
+theorem union_toFinmap (s₁ s₂ : AList β) : (toFinmap s₁) ∪ (toFinmap s₂) = toFinmap (s₁ ∪ s₂) := by
+  simp [(· ∪ ·), union]
 #align finmap.union_to_finmap Finmap.union_toFinmap
 
 theorem keys_union {s₁ s₂ : Finmap β} : (s₁ ∪ s₂).keys = s₁.keys ∪ s₂.keys :=

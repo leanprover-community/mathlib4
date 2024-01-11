@@ -248,13 +248,12 @@ open Lean.Parser.Tactic
 `rw?` should not be left in proofs; it is a search tool, like `apply?`.
 
 Suggestions are printed as `rw [h]` or `rw [←h]`.
-`rw?!` is the "I'm feeling lucky" mode, and will run the first rewrite it finds.
 -/
-syntax (name := rewrites') "rw?" "!"? (ppSpace location)? : tactic
+syntax (name := rewrites') "rw?" (ppSpace location)? : tactic
 
 open Elab.Tactic Elab Tactic in
 elab_rules : tactic |
-    `(tactic| rw?%$tk $[!%$lucky]? $[$loc]?) => do
+    `(tactic| rw?%$tk $[$loc]?) => do
   let lems ← rewriteLemmas.get
   reportOutOfHeartbeats `rewrites tk
   let goal ← getMainGoal
@@ -273,13 +272,10 @@ elab_rules : tactic |
       for r in results do withMCtx r.mctx do
         addRewriteSuggestion tk [(r.expr, r.symm)]
           r.result.eNew (loc? := .some (.fvar f)) (origSpan? := ← getRef)
-      if lucky.isSome then
-        match results[0]? with
-        | some r => do
-            setMCtx r.mctx
-            let replaceResult ← goal.replaceLocalDecl f r.result.eNew r.result.eqProof
-            replaceMainGoal (replaceResult.mvarId :: r.result.mvarIds)
-        | _ => failure
+      if let some r := results[0]? then
+        setMCtx r.mctx
+        let replaceResult ← goal.replaceLocalDecl f r.result.eNew r.result.eqProof
+        replaceMainGoal (replaceResult.mvarId :: r.result.mvarIds)
     -- See https://github.com/leanprover/lean4/issues/2150
     do withMainContext do
       let target ← instantiateMVars (← goal.getType)
@@ -292,17 +288,9 @@ elab_rules : tactic |
         let newGoal := if r.rfl? = some true then Expr.lit (.strVal "no goals") else r.result.eNew
         addRewriteSuggestion tk [(r.expr, r.symm)]
           newGoal (origSpan? := ← getRef)
-      if lucky.isSome then
-        match results[0]? with
-        | some r => do
-            setMCtx r.mctx
-            replaceMainGoal
-              ((← goal.replaceTargetEq r.result.eNew r.result.eqProof) :: r.result.mvarIds)
-            evalTactic (← `(tactic| try rfl))
-        | _ => failure
+      if let some r := results[0]? then
+        setMCtx r.mctx
+        replaceMainGoal
+          ((← goal.replaceTargetEq r.result.eNew r.result.eqProof) :: r.result.mvarIds)
+        evalTactic (← `(tactic| try rfl))
     (fun _ => throwError "Failed to find a rewrite for some location")
-
-@[inherit_doc rewrites'] macro "rw?!" h:(ppSpace location)? : tactic =>
-  `(tactic| rw? ! $[$h]?)
-@[inherit_doc rewrites'] macro "rw!?" h:(ppSpace location)? : tactic =>
-  `(tactic| rw? ! $[$h]?)

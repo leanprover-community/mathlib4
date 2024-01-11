@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.TypeTags
-import Mathlib.Algebra.Group.Commute
-import Mathlib.Algebra.Hom.Group
+import Mathlib.Algebra.Group.Commute.Defs
+import Mathlib.Algebra.Hom.Group.Defs
 import Mathlib.Algebra.Opposites
 import Mathlib.Logic.Embedding.Basic
 
@@ -802,7 +802,6 @@ See note [reducible non-instances]. -/
 protected def Function.Injective.distribSMul [AddZeroClass B] [SMul M B] (f : B →+ A)
     (hf : Injective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) : DistribSMul M B :=
   { hf.smulZeroClass f.toZeroHom smul with
-    smul := (· • ·),
     smul_add := fun c x y => hf <| by simp only [smul, map_add, smul_add] }
 #align function.injective.distrib_smul Function.Injective.distribSMul
 
@@ -813,7 +812,6 @@ See note [reducible non-instances]. -/
 protected def Function.Surjective.distribSMul [AddZeroClass B] [SMul M B] (f : A →+ B)
     (hf : Surjective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) : DistribSMul M B :=
   { f.toZeroHom.smulZeroClass smul with
-    smul := (· • ·),
     smul_add := fun c x y => by
       rcases hf x with ⟨x, rfl⟩
       rcases hf y with ⟨y, rfl⟩
@@ -829,7 +827,6 @@ def Function.Surjective.distribSMulLeft {R S M : Type*} [AddZeroClass M] [Distri
     [SMul S M] (f : R → S) (hf : Function.Surjective f)
     (hsmul : ∀ (c) (x : M), f c • x = c • x) : DistribSMul S M :=
   { hf.smulZeroClassLeft f hsmul with
-    smul := (· • ·),
     smul_add := hf.forall.mpr fun c x y => by simp only [hsmul, smul_add] }
 #align function.surjective.distrib_smul_left Function.Surjective.distribSMulLeft
 
@@ -840,7 +837,6 @@ See note [reducible non-instances]. -/
 @[reducible]
 def DistribSMul.compFun (f : N → M) : DistribSMul N A :=
   { SMulZeroClass.compFun A f with
-    smul := SMul.comp.smul f,
     smul_add := fun x => smul_add (f x) }
 #align distrib_smul.comp_fun DistribSMul.compFun
 
@@ -888,7 +884,7 @@ See note [reducible non-instances]. -/
 @[reducible]
 protected def Function.Injective.distribMulAction [AddMonoid B] [SMul M B] (f : B →+ A)
     (hf : Injective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) : DistribMulAction M B :=
-  { hf.distribSMul f smul, hf.mulAction f smul with smul := (· • ·) }
+  { hf.distribSMul f smul, hf.mulAction f smul with }
 #align function.injective.distrib_mul_action Function.Injective.distribMulAction
 
 /-- Pushforward a distributive multiplicative action along a surjective additive monoid
@@ -897,7 +893,7 @@ See note [reducible non-instances]. -/
 @[reducible]
 protected def Function.Surjective.distribMulAction [AddMonoid B] [SMul M B] (f : A →+ B)
     (hf : Surjective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) : DistribMulAction M B :=
-  { hf.distribSMul f smul, hf.mulAction f smul with smul := (· • ·) }
+  { hf.distribSMul f smul, hf.mulAction f smul with }
 #align function.surjective.distrib_mul_action Function.Surjective.distribMulAction
 
 /-- Push forward the action of `R` on `M` along a compatible surjective map `f : R →* S`.
@@ -908,7 +904,7 @@ See also `Function.Surjective.mulActionLeft` and `Function.Surjective.moduleLeft
 def Function.Surjective.distribMulActionLeft {R S M : Type*} [Monoid R] [AddMonoid M]
     [DistribMulAction R M] [Monoid S] [SMul S M] (f : R →* S) (hf : Function.Surjective f)
     (hsmul : ∀ (c) (x : M), f c • x = c • x) : DistribMulAction S M :=
-  { hf.distribSMulLeft f hsmul, hf.mulActionLeft f hsmul with smul := (· • ·) }
+  { hf.distribSMulLeft f hsmul, hf.mulActionLeft f hsmul with }
 #align function.surjective.distrib_mul_action_left Function.Surjective.distribMulActionLeft
 
 variable (A)
@@ -917,7 +913,7 @@ variable (A)
 See note [reducible non-instances]. -/
 @[reducible]
 def DistribMulAction.compHom [Monoid N] (f : N →* M) : DistribMulAction N A :=
-  { DistribSMul.compFun A f, MulAction.compHom A f with smul := SMul.comp.smul f }
+  { DistribSMul.compFun A f, MulAction.compHom A f with }
 #align distrib_mul_action.comp_hom DistribMulAction.compHom
 
 /-- Each element of the monoid defines an additive monoid homomorphism. -/
@@ -1005,7 +1001,6 @@ See note [reducible non-instances]. -/
 protected def Function.Injective.mulDistribMulAction [Monoid B] [SMul M B] (f : B →* A)
     (hf : Injective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) : MulDistribMulAction M B :=
   { hf.mulAction f smul with
-    smul := (· • ·),
     smul_mul := fun c x y => hf <| by simp only [smul, f.map_mul, smul_mul'],
     smul_one := fun c => hf <| by simp only [smul, f.map_one, smul_one] }
 #align function.injective.mul_distrib_mul_action Function.Injective.mulDistribMulAction
@@ -1017,7 +1012,6 @@ See note [reducible non-instances]. -/
 protected def Function.Surjective.mulDistribMulAction [Monoid B] [SMul M B] (f : A →* B)
     (hf : Surjective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) : MulDistribMulAction M B :=
   { hf.mulAction f smul with
-    smul := (· • ·),
     smul_mul := fun c x y => by
       rcases hf x with ⟨x, rfl⟩
       rcases hf y with ⟨y, rfl⟩
@@ -1032,7 +1026,6 @@ See note [reducible non-instances]. -/
 @[reducible]
 def MulDistribMulAction.compHom [Monoid N] (f : N →* M) : MulDistribMulAction N A :=
   { MulAction.compHom A f with
-    smul := SMul.comp.smul f,
     smul_one := fun x => smul_one (f x),
     smul_mul := fun x => smul_mul' (f x) }
 #align mul_distrib_mul_action.comp_hom MulDistribMulAction.compHom

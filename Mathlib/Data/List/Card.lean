@@ -16,7 +16,7 @@ namespace List
 def inj_on (f : α → β) (as : List α) := ∀ {x y}, x ∈ as → y ∈ as → f x = f y → x = y
 
 theorem inj_on_of_subset {f : α → β} {as bs : List α} (h : inj_on f bs) (hsub : as ⊆ bs) :
-  inj_on f as := fun xas yas heq ↦ h (hsub xas) (hsub yas) heq
+    inj_on f as := fun xas yas heq ↦ h (hsub xas) (hsub yas) heq
 
 protected def equiv (as bs : List α) := ∀ x, x ∈ as ↔ x ∈ bs
 

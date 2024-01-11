@@ -643,14 +643,14 @@ theorem IsPreconnected.subset_connectedComponentIn {x : α} {F : Set α} (hs : I
     (hxs : x ∈ s) (hsF : s ⊆ F) : s ⊆ connectedComponentIn F x := by
   have : IsPreconnected (((↑) : F → α) ⁻¹' s) := by
     refine' inducing_subtype_val.isPreconnected_image.mp _
-    rwa [Subtype.image_preimage_coe, inter_eq_left_iff_subset.mpr hsF]
+    rwa [Subtype.image_preimage_coe, inter_eq_left.mpr hsF]
   have h2xs : (⟨x, hsF hxs⟩ : F) ∈ (↑) ⁻¹' s := by
     rw [mem_preimage]
     exact hxs
   have := this.subset_connectedComponent h2xs
   rw [connectedComponentIn_eq_image (hsF hxs)]
   refine' Subset.trans _ (image_subset _ this)
-  rw [Subtype.image_preimage_coe, inter_eq_left_iff_subset.mpr hsF]
+  rw [Subtype.image_preimage_coe, inter_eq_left.mpr hsF]
 #align is_preconnected.subset_connected_component_in IsPreconnected.subset_connectedComponentIn
 
 theorem IsConnected.subset_connectedComponent {x : α} {s : Set α} (H1 : IsConnected s)
@@ -771,13 +771,13 @@ theorem isConnected_range [TopologicalSpace β] [ConnectedSpace α] {f : α → 
 #align is_connected_range isConnected_range
 
 theorem Function.Surjective.connectedSpace [ConnectedSpace α] [TopologicalSpace β]
-  {f : α → β} (hf : Surjective f) (hf' : Continuous f) : ConnectedSpace β := by
+    {f : α → β} (hf : Surjective f) (hf' : Continuous f) : ConnectedSpace β := by
   rw [connectedSpace_iff_univ, ← hf.range_eq]
   exact isConnected_range hf'
 
 instance Quotient.instConnectedSpace {s : Setoid α} [ConnectedSpace α] :
     ConnectedSpace (Quotient s) :=
-  (surjective_quotient_mk _).connectedSpace continuous_coinduced_rng
+  (surjective_quotient_mk' _).connectedSpace continuous_coinduced_rng
 
 theorem DenseRange.preconnectedSpace [TopologicalSpace β] [PreconnectedSpace α] {f : α → β}
     (hf : DenseRange f) (hc : Continuous f) : PreconnectedSpace β :=

@@ -28,7 +28,7 @@ universe u v w
 
 variable {F : Type*} {α : Type u} {β : Type v} {γ : Type w} [TopologicalSpace α]
 
-open BoundedContinuousFunction Topology
+open BoundedContinuousFunction Topology Bornology
 
 open Filter Metric
 
@@ -398,7 +398,7 @@ variable [MetricSpace β] [Zero β] [ZeroAtInftyContinuousMapClass F α β]
 protected theorem bounded (f : F) : ∃ C, ∀ x y : α, dist ((f : α → β) x) (f y) ≤ C := by
   obtain ⟨K : Set α, hK₁, hK₂⟩ := mem_cocompact.mp
     (tendsto_def.mp (zero_at_infty (f : F)) _ (closedBall_mem_nhds (0 : β) zero_lt_one))
-  obtain ⟨C, hC⟩ := (hK₁.image (map_continuous f)).bounded.subset_ball (0 : β)
+  obtain ⟨C, hC⟩ := (hK₁.image (map_continuous f)).isBounded.subset_closedBall (0 : β)
   refine' ⟨max C 1 + max C 1, fun x y => _⟩
   have : ∀ x, f x ∈ closedBall (0 : β) (max C 1) := by
     intro x
@@ -409,13 +409,13 @@ protected theorem bounded (f : F) : ∃ C, ∀ x y : α, dist ((f : α → β) x
     (add_le_add (mem_closedBall.mp <| this x) (mem_closedBall'.mp <| this y))
 #align zero_at_infty_continuous_map.bounded ZeroAtInftyContinuousMap.bounded
 
-theorem bounded_range (f : C₀(α, β)) : Bounded (range f) :=
-  bounded_range_iff.2 (ZeroAtInftyContinuousMap.bounded f)
-#align zero_at_infty_continuous_map.bounded_range ZeroAtInftyContinuousMap.bounded_range
+theorem isBounded_range (f : C₀(α, β)) : IsBounded (range f) :=
+  isBounded_range_iff.2 (ZeroAtInftyContinuousMap.bounded f)
+#align zero_at_infty_continuous_map.bounded_range ZeroAtInftyContinuousMap.isBounded_range
 
-theorem bounded_image (f : C₀(α, β)) (s : Set α) : Bounded (f '' s) :=
-  f.bounded_range.mono <| image_subset_range _ _
-#align zero_at_infty_continuous_map.bounded_image ZeroAtInftyContinuousMap.bounded_image
+theorem isBounded_image (f : C₀(α, β)) (s : Set α) : IsBounded (f '' s) :=
+  f.isBounded_range.subset <| image_subset_range _ _
+#align zero_at_infty_continuous_map.bounded_image ZeroAtInftyContinuousMap.isBounded_image
 
 instance (priority := 100) instBoundedContinuousMapClass : BoundedContinuousMapClass F α β :=
   { ‹ZeroAtInftyContinuousMapClass F α β› with

@@ -65,7 +65,7 @@ instance left_quotientAction : QuotientAction α H :=
 #align add_action.left_quotient_action AddAction.left_quotientAction
 
 @[to_additive]
-instance right_quotientAction : QuotientAction (opposite (normalizer H)) H :=
+instance right_quotientAction : QuotientAction (normalizer H).op H :=
   ⟨fun b c _ _ => by
     rwa [smul_def, smul_def, smul_eq_mul_unop, smul_eq_mul_unop, mul_inv_rev, ← mul_assoc,
       mem_normalizer_iff'.mp b.prop, mul_assoc, mul_inv_cancel_left]⟩
@@ -130,8 +130,8 @@ end QuotientAction
 open QuotientGroup
 
 /-- The canonical map to the left cosets. -/
-def _root_.MulActionHom.toQuotient (H : Subgroup α) : α →[α] α ⧸ H :=
-  ⟨(↑), Quotient.smul_coe H⟩
+def _root_.MulActionHom.toQuotient (H : Subgroup α) : α →[α] α ⧸ H where
+  toFun := (↑); map_smul' := Quotient.smul_coe H
 #align mul_action_hom.to_quotient MulActionHom.toQuotient
 
 @[simp]

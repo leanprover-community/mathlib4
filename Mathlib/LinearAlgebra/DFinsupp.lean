@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau
 -/
 import Mathlib.Data.Finsupp.ToDFinsupp
-import Mathlib.LinearAlgebra.Basis
+import Mathlib.LinearAlgebra.Finsupp
+import Mathlib.LinearAlgebra.LinearIndependent
 
 #align_import linear_algebra.dfinsupp from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
 
@@ -220,7 +221,7 @@ theorem sum_mapRange_index.linearMap [∀ (i : ι) (x : β₁ i), Decidable (x �
     {l : Π₀ i, β₁ i} :
     -- Porting note: Needed to add (M := ...) below
     (DFinsupp.lsum ℕ (M := β₂)) h (mapRange.linearMap f l)
-      = (DFinsupp.lsum ℕ (M := β₁)) (fun i => (h i).comp (f i)) l  := by
+      = (DFinsupp.lsum ℕ (M := β₁)) (fun i => (h i).comp (f i)) l := by
   simpa [DFinsupp.sumAddHom_apply] using sum_mapRange_index fun i => by simp
 #align dfinsupp.sum_map_range_index.linear_map DFinsupp.sum_mapRange_index.linearMap
 
@@ -278,19 +279,6 @@ theorem coprodMap_apply_single (f : ∀ i : ι, M i →ₗ[R] N) (i : ι) (x : M
   simp [coprodMap]
 
 end CoprodMap
-
-section Basis
-
-/-- The direct sum of free modules is free.
-
-Note that while this is stated for `DFinsupp` not `DirectSum`, the types are defeq. -/
-noncomputable def basis {η : ι → Type*} (b : ∀ i, Basis (η i) R (M i)) :
-    Basis (Σi, η i) R (Π₀ i, M i) :=
-  .ofRepr
-    ((mapRange.linearEquiv fun i => (b i).repr).trans (sigmaFinsuppLequivDFinsupp R).symm)
-#align dfinsupp.basis DFinsupp.basis
-
-end Basis
 
 end DFinsupp
 

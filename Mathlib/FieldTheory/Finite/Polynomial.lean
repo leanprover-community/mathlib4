@@ -142,13 +142,13 @@ theorem map_restrict_dom_evalₗ : (restrictDegree σ K (Fintype.card K - 1)).ma
   refine' ⟨∑ n : σ → K, e n • indicator n, _, _⟩
   · exact sum_mem fun c _ => smul_mem _ _ (indicator_mem_restrictDegree _)
   · ext n
-    simp only [LinearMap.map_sum, @Finset.sum_apply (σ → K) (fun _ => K) _ _ _ _ _, Pi.smul_apply,
-      LinearMap.map_smul]
+    simp only [_root_.map_sum, @Finset.sum_apply (σ → K) (fun _ => K) _ _ _ _ _, Pi.smul_apply,
+      map_smul]
     simp only [evalₗ_apply]
     trans
-    refine' Finset.sum_eq_single n (fun b _ h => _) _
-    · rw [eval_indicator_apply_eq_zero _ _ h.symm, smul_zero]
-    · exact fun h => (h <| Finset.mem_univ n).elim
+    · refine' Finset.sum_eq_single n (fun b _ h => _) _
+      · rw [eval_indicator_apply_eq_zero _ _ h.symm, smul_zero]
+      · exact fun h => (h <| Finset.mem_univ n).elim
     · rw [eval_indicator_apply_eq_one, smul_eq_mul, mul_one]
 #align mv_polynomial.map_restrict_dom_evalₗ MvPolynomial.map_restrict_dom_evalₗ
 

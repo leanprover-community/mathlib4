@@ -3,6 +3,7 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
+import Mathlib.LinearAlgebra.DFinsupp
 import Mathlib.LinearAlgebra.StdBasis
 
 #align_import linear_algebra.finsupp_vector_space from "leanprover-community/mathlib"@"59628387770d82eb6f6dd7b7107308aa2509ec95"
@@ -135,6 +136,21 @@ theorem coe_basisSingleOne : (Finsupp.basisSingleOne : ι → ι →₀ R) = fun
 end Semiring
 
 end Finsupp
+
+namespace DFinsupp
+variable {ι : Type*} {R : Type*} {M : ι → Type*}
+variable [Semiring R] [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
+
+/-- The direct sum of free modules is free.
+
+Note that while this is stated for `DFinsupp` not `DirectSum`, the types are defeq. -/
+noncomputable def basis {η : ι → Type*} (b : ∀ i, Basis (η i) R (M i)) :
+    Basis (Σi, η i) R (Π₀ i, M i) :=
+  .ofRepr
+    ((mapRange.linearEquiv fun i => (b i).repr).trans (sigmaFinsuppLequivDFinsupp R).symm)
+#align dfinsupp.basis DFinsupp.basis
+
+end DFinsupp
 
 /-! TODO: move this section to an earlier file. -/
 

@@ -391,7 +391,7 @@ theorem continuousMul_induced {M N F : Type*} [Mul M] [Mul N] [MulHomClass F M N
 @[to_additive]
 instance Subsemigroup.continuousMul [TopologicalSpace M] [Semigroup M] [ContinuousMul M]
     (S : Subsemigroup M) : ContinuousMul S :=
-  Inducing.continuousMul (⟨(↑), fun _ _ => rfl⟩ : MulHom S M) ⟨rfl⟩
+  Inducing.continuousMul ({ toFun := (↑), map_mul' := fun _ _ => rfl} : MulHom S M) ⟨rfl⟩
 #align subsemigroup.has_continuous_mul Subsemigroup.continuousMul
 #align add_subsemigroup.has_continuous_add AddSubsemigroup.continuousAdd
 
@@ -436,7 +436,7 @@ def Submonoid.topologicalClosure (s : Submonoid M) : Submonoid M where
 -- Porting note: new lemma
 @[to_additive]
 theorem Submonoid.coe_topologicalClosure (s : Submonoid M) :
-  (s.topologicalClosure : Set M) = _root_.closure (s : Set M) := rfl
+    (s.topologicalClosure : Set M) = _root_.closure (s : Set M) := rfl
 
 @[to_additive]
 theorem Submonoid.le_topologicalClosure (s : Submonoid M) : s ≤ s.topologicalClosure :=

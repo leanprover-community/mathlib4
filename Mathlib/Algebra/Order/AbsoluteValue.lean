@@ -148,7 +148,7 @@ protected theorem sub_le (a b c : R) : abv (a - c) ≤ abv (a - b) + abv (b - c)
   simpa [sub_eq_add_neg, add_assoc] using abv.add_le (a - b) (b - c)
 #align absolute_value.sub_le AbsoluteValue.sub_le
 
-@[simp high] -- porting note: added `high` to apply it before `abv.eq_zero`
+@[simp high] -- porting note: added `high` to apply it before `AbsoluteValue.eq_zero`
 theorem map_sub_eq_zero_iff (a b : R) : abv (a - b) = 0 ↔ a = b :=
   abv.eq_zero.trans sub_eq_zero
 #align absolute_value.map_sub_eq_zero_iff AbsoluteValue.map_sub_eq_zero_iff
@@ -460,8 +460,8 @@ theorem abv_one' : abv 1 = 1 :=
 #align is_absolute_value.abv_one' IsAbsoluteValue.abv_one'
 
 /-- An absolute value as a monoid with zero homomorphism, assuming the target is a semifield. -/
-def abvHom' : R →*₀ S :=
-  ⟨⟨abv, abv_zero abv⟩, abv_one' abv, abv_mul abv⟩
+def abvHom' : R →*₀ S where
+  toFun := abv; map_zero' := abv_zero abv; map_one' := abv_one' abv; map_mul' := abv_mul abv
 #align is_absolute_value.abv_hom' IsAbsoluteValue.abvHom'
 
 end Semiring

@@ -164,6 +164,15 @@ theorem degree_modByMonic_lt [Nontrivial R] :
   termination_by degree_modByMonic_lt p q hq => p
 #align polynomial.degree_mod_by_monic_lt Polynomial.degree_modByMonic_lt
 
+theorem natDegree_modByMonic_lt (p : R[X]) {q : R[X]} (hmq : Monic q) (hq : q ≠ 1) :
+    natDegree (p %ₘ q) < q.natDegree := by
+  by_cases hpq : p %ₘ q = 0
+  · rw [hpq, natDegree_zero, Nat.pos_iff_ne_zero]
+    contrapose! hq
+    exact eq_one_of_monic_natDegree_zero hmq hq
+  · haveI := Nontrivial.of_polynomial_ne hpq
+    exact natDegree_lt_natDegree hpq (degree_modByMonic_lt p hmq)
+
 @[simp]
 theorem zero_modByMonic (p : R[X]) : 0 %ₘ p = 0 := by
   unfold modByMonic divModByMonicAux
@@ -217,11 +226,18 @@ theorem degree_modByMonic_le (p : R[X]) {q : R[X]} (hq : Monic q) : degree (p %�
   exact (degree_modByMonic_lt _ hq).le
 #align polynomial.degree_mod_by_monic_le Polynomial.degree_modByMonic_le
 
+theorem natDegree_modByMonic_le (p : Polynomial R) {g : Polynomial R} (hg : g.Monic) :
+    natDegree (p %ₘ g) ≤ g.natDegree :=
+natDegree_le_natDegree (degree_modByMonic_le p hg)
+
 end Ring
 
 section CommRing
 
 variable [CommRing R] {p q : R[X]}
+
+theorem X_dvd_sub_C : X ∣ p - C (p.coeff 0) := by
+  simp [X_dvd_iff, coeff_C]
 
 theorem modByMonic_eq_sub_mul_div :
     ∀ (p : R[X]) {q : R[X]} (_hq : Monic q), p %ₘ q = p - q * (p /ₘ q)

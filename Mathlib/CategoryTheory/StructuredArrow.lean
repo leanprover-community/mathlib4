@@ -91,11 +91,10 @@ theorem w {A B : StructuredArrow S T} (f : A ⟶ B) : A.hom ≫ T.map f.right = 
 
 @[simp]
 theorem comp_right {X Y Z : StructuredArrow S T} (f : X ⟶ Y) (g : Y ⟶ Z) :
-  (f ≫ g).right = f.right ≫ g.right := rfl
+    (f ≫ g).right = f.right ≫ g.right := rfl
 
 @[simp]
-theorem id_right (X : StructuredArrow S T) :
-  (𝟙 X : X ⟶ X).right = 𝟙 X.right := rfl
+theorem id_right (X : StructuredArrow S T) : (𝟙 X : X ⟶ X).right = 𝟙 X.right := rfl
 
 theorem eqToHom_right {X Y : StructuredArrow S T} (h : X = Y) :
     (eqToHom h).right = eqToHom (by rw [h]) := by
@@ -103,8 +102,7 @@ theorem eqToHom_right {X Y : StructuredArrow S T} (h : X = Y) :
   simp only [eqToHom_refl, id_right]
 
 @[simp]
-theorem left_eq_id {X Y : StructuredArrow S T} (f : X ⟶ Y) :
-  f.left = 𝟙 _ := rfl
+theorem left_eq_id {X Y : StructuredArrow S T} (f : X ⟶ Y) : f.left = 𝟙 _ := rfl
 
 /-- To construct a morphism of structured arrows,
 we need a morphism of the objects underlying the target,
@@ -424,11 +422,10 @@ theorem w {A B : CostructuredArrow S T} (f : A ⟶ B) : S.map f.left ≫ B.hom =
 
 @[simp]
 theorem comp_left {X Y Z : CostructuredArrow S T} (f : X ⟶ Y) (g : Y ⟶ Z) :
-  (f ≫ g).left = f.left ≫ g.left := rfl
+    (f ≫ g).left = f.left ≫ g.left := rfl
 
 @[simp]
-theorem id_left (X : CostructuredArrow S T) :
-  (𝟙 X : X ⟶ X).left = 𝟙 X.left := rfl
+theorem id_left (X : CostructuredArrow S T) : (𝟙 X : X ⟶ X).left = 𝟙 X.left := rfl
 
 theorem eqToHom_left {X Y : CostructuredArrow S T} (h : X = Y) :
     (eqToHom h).left = eqToHom (by rw [h]) := by
@@ -436,8 +433,7 @@ theorem eqToHom_left {X Y : CostructuredArrow S T} (h : X = Y) :
   simp only [eqToHom_refl, id_left]
 
 @[simp]
-theorem right_eq_id {X Y : CostructuredArrow S T} (f : X ⟶ Y) :
-  f.right = 𝟙 _ := rfl
+theorem right_eq_id {X Y : CostructuredArrow S T} (f : X ⟶ Y) : f.right = 𝟙 _ := rfl
 
 /-- To construct a morphism of costructured arrows,
 we need a morphism of the objects underlying the source,
@@ -836,12 +832,12 @@ def structuredArrowOpEquivalence (F : C ⥤ D) (d : D) :
       (fun X => (StructuredArrow.isoMk (Iso.refl _)).op)
       fun {X Y} f => Quiver.Hom.unop_inj <| by
         apply CommaMorphism.ext <;>
-          dsimp [StructuredArrow.isoMk, Comma.isoMk,StructuredArrow.homMk]; simp )
+          dsimp [StructuredArrow.isoMk, Comma.isoMk,StructuredArrow.homMk]; simp)
     (NatIso.ofComponents
       (fun X => CostructuredArrow.isoMk (Iso.refl _))
       fun {X Y} f => by
         apply CommaMorphism.ext <;>
-          dsimp [CostructuredArrow.isoMk, Comma.isoMk, CostructuredArrow.homMk]; simp )
+          dsimp [CostructuredArrow.isoMk, Comma.isoMk, CostructuredArrow.homMk]; simp)
 #align category_theory.structured_arrow_op_equivalence CategoryTheory.structuredArrowOpEquivalence
 
 /-- For a functor `F : C ⥤ D` and an object `d : D`, the category of costructured arrows
@@ -856,12 +852,12 @@ def costructuredArrowOpEquivalence (F : C ⥤ D) (d : D) :
       (fun X => (CostructuredArrow.isoMk (Iso.refl _)).op)
       fun {X Y} f => Quiver.Hom.unop_inj <| by
         apply CommaMorphism.ext <;>
-          dsimp [CostructuredArrow.isoMk, CostructuredArrow.homMk, Comma.isoMk]; simp )
+          dsimp [CostructuredArrow.isoMk, CostructuredArrow.homMk, Comma.isoMk]; simp)
     (NatIso.ofComponents
       (fun X => StructuredArrow.isoMk (Iso.refl _))
       fun {X Y} f => by
         apply CommaMorphism.ext <;>
-          dsimp [StructuredArrow.isoMk, StructuredArrow.homMk, Comma.isoMk]; simp )
+          dsimp [StructuredArrow.isoMk, StructuredArrow.homMk, Comma.isoMk]; simp)
 #align category_theory.costructured_arrow_op_equivalence CategoryTheory.costructuredArrowOpEquivalence
 
 end CategoryTheory

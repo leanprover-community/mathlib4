@@ -243,27 +243,21 @@ theorem splitFun_comp {α₀ α₁ α₂ : TypeVec (n + 1)} (f₀ : drop α₀ �
 #align typevec.split_fun_comp TypeVec.splitFun_comp
 
 theorem appendFun_comp_splitFun {α γ : TypeVec n} {β δ : Type*} {ε : TypeVec (n + 1)}
-          (f₀ : drop ε ⟹ α)
-          (f₁ : α ⟹ γ)
-          (g₀ : last ε → β)
-          (g₁ : β → δ) :
-   appendFun f₁ g₁ ⊚ splitFun f₀ g₀
-      = splitFun (α' := γ.append1 δ) (f₁ ⊚ f₀) (g₁ ∘ g₀)
-  :=
+    (f₀ : drop ε ⟹ α) (f₁ : α ⟹ γ) (g₀ : last ε → β) (g₁ : β → δ) :
+    appendFun f₁ g₁ ⊚ splitFun f₀ g₀ = splitFun (α' := γ.append1 δ) (f₁ ⊚ f₀) (g₁ ∘ g₀) :=
   (splitFun_comp _ _ _ _).symm
 #align typevec.append_fun_comp_split_fun TypeVec.appendFun_comp_splitFun
 
 theorem appendFun_comp  {α₀ α₁ α₂ : TypeVec n}
-                        {β₀ β₁ β₂ : Type*}
-                        (f₀ : α₀ ⟹ α₁) (f₁ : α₁ ⟹ α₂)
-                        (g₀ : β₀ → β₁) (g₁ : β₁ → β₂) :
+    {β₀ β₁ β₂ : Type*}
+    (f₀ : α₀ ⟹ α₁) (f₁ : α₁ ⟹ α₂)
+    (g₀ : β₀ → β₁) (g₁ : β₁ → β₂) :
     (f₁ ⊚ f₀ ::: g₁ ∘ g₀) = (f₁ ::: g₁) ⊚ (f₀ ::: g₀) :=
   eq_of_drop_last_eq rfl rfl
 #align typevec.append_fun_comp TypeVec.appendFun_comp
 
 theorem appendFun_comp' {α₀ α₁ α₂ : TypeVec n} {β₀ β₁ β₂ : Type*}
-                        (f₀ : α₀ ⟹ α₁) (f₁ : α₁ ⟹ α₂)
-                        (g₀ : β₀ → β₁) (g₁ : β₁ → β₂) :
+    (f₀ : α₀ ⟹ α₁) (f₁ : α₁ ⟹ α₂) (g₀ : β₀ → β₁) (g₁ : β₁ → β₂) :
     (f₁ ::: g₁) ⊚ (f₀ ::: g₀) = (f₁ ⊚ f₀ ::: g₁ ∘ g₀) :=
   eq_of_drop_last_eq rfl rfl
 #align typevec.append_fun_comp' TypeVec.appendFun_comp'
@@ -306,13 +300,13 @@ instance subsingleton0 : Subsingleton (TypeVec 0) :=
 -- Porting note: `simp` attribute `TypeVec` moved to file `Tactic/Attr/Register.lean`
 
 /-- cases distinction for 0-length type vector -/
-protected def casesNil {β : TypeVec 0 → Sort*} (f : β Fin2.elim0) : ∀ v, β v
-  := fun v => cast (by congr; funext i; cases i) f
+protected def casesNil {β : TypeVec 0 → Sort*} (f : β Fin2.elim0) : ∀ v, β v :=
+  fun v => cast (by congr; funext i; cases i) f
 #align typevec.cases_nil TypeVec.casesNil
 
 /-- cases distinction for (n+1)-length type vector -/
 protected def casesCons (n : ℕ) {β : TypeVec (n + 1) → Sort*}
-                        (f : ∀ (t) (v : TypeVec n), β (v ::: t)) :
+    (f : ∀ (t) (v : TypeVec n), β (v ::: t)) :
     ∀ v, β v :=
   fun v : TypeVec (n + 1) => cast (by simp) (f v.last v.drop)
 #align typevec.cases_cons TypeVec.casesCons
@@ -341,8 +335,8 @@ def typevecCasesNil₃ {β : ∀ v v' : TypeVec 0, v ⟹ v' → Sort*}
 
 /-- cases distinction for an arrow in the category of (n+1)-length type vectors -/
 def typevecCasesCons₃ (n : ℕ) {β : ∀ v v' : TypeVec (n + 1), v ⟹ v' → Sort*}
-                      (F : ∀ (t t') (f : t → t') (v v' : TypeVec n) (fs : v ⟹ v'),
-                              β (v ::: t) (v' ::: t') (fs ::: f)) :
+    (F : ∀ (t t') (f : t → t') (v v' : TypeVec n) (fs : v ⟹ v'),
+    β (v ::: t) (v' ::: t') (fs ::: f)) :
     ∀ v v' fs, β v v' fs := by
   intro v v'
   rw [← append1_drop_last v, ← append1_drop_last v']
@@ -360,7 +354,7 @@ def typevecCasesNil₂ {β : Fin2.elim0 ⟹ Fin2.elim0 → Sort*} (f : β nilFun
 
 /-- specialized cases distinction for an arrow in the category of (n+1)-length type vectors -/
 def typevecCasesCons₂ (n : ℕ) (t t' : Type*) (v v' : TypeVec n)
-                      {β : (v ::: t) ⟹ (v' ::: t') → Sort*}
+    {β : (v ::: t) ⟹ (v' ::: t') → Sort*}
     (F : ∀ (f : t → t') (fs : v ⟹ v'), β (fs ::: f)) : ∀ fs, β fs := by
   intro fs
   rw [← split_dropFun_lastFun fs]
@@ -374,9 +368,9 @@ theorem typevecCasesNil₂_appendFun {β : Fin2.elim0 ⟹ Fin2.elim0 → Sort*} 
 #align typevec.typevec_cases_nil₂_append_fun TypeVec.typevecCasesNil₂_appendFun
 
 theorem typevecCasesCons₂_appendFun (n : ℕ) (t t' : Type*) (v v' : TypeVec n)
-                                      {β : (v ::: t) ⟹ (v' ::: t') → Sort*}
-                                      (F : ∀ (f : t → t') (fs : v ⟹ v'), β (fs ::: f))
-                                      (f fs) :
+    {β : (v ::: t) ⟹ (v' ::: t') → Sort*}
+    (F : ∀ (f : t → t') (fs : v ⟹ v'), β (fs ::: f))
+    (f fs) :
     typevecCasesCons₂ n t t' v v' F (fs ::: f) = F f fs :=
   rfl
 #align typevec.typevec_cases_cons₂_append_fun TypeVec.typevecCasesCons₂_appendFun
@@ -391,7 +385,7 @@ def PredLast (α : TypeVec n) {β : Type*} (p : β → Prop) : ∀ ⦃i⦄, (α.
 /-- `RelLast α r x y` says that `p` the last elements of `x y : α.append1 β` are related by `r` and
 all the other elements are equal. -/
 def RelLast (α : TypeVec n) {β γ : Type _} (r : β → γ → Prop) :
-      ∀ ⦃i⦄, (α.append1 β) i → (α.append1 γ) i → Prop
+    ∀ ⦃i⦄, (α.append1 β) i → (α.append1 γ) i → Prop
   | Fin2.fs _ => Eq
   | Fin2.fz => r
 #align typevec.rel_last TypeVec.RelLast
@@ -617,21 +611,21 @@ def toSubtype :
 /-- arrow that rearranges the type of `Subtype_` to turn a vector of subtypes
 into a subtype of vector -/
 def ofSubtype {n} {α : TypeVec.{u} n} (p : α ⟹ «repeat» n Prop) :
-      Subtype_ p ⟹ fun i : Fin2 n => { x // ofRepeat <| p i x }
+    Subtype_ p ⟹ fun i : Fin2 n => { x // ofRepeat <| p i x }
   | Fin2.fs i, x => ofSubtype _ i x
   | Fin2.fz,   x => x
 #align typevec.of_subtype TypeVec.ofSubtype
 
 /-- similar to `toSubtype` adapted to relations (i.e. predicate on product) -/
 def toSubtype' {n} {α : TypeVec.{u} n} (p : α ⊗ α ⟹ «repeat» n Prop) :
-      (fun i : Fin2 n => { x : α i × α i // ofRepeat <| p i (prod.mk _ x.1 x.2) }) ⟹ Subtype_ p
+    (fun i : Fin2 n => { x : α i × α i // ofRepeat <| p i (prod.mk _ x.1 x.2) }) ⟹ Subtype_ p
   | Fin2.fs i, x => toSubtype' (dropFun p) i x
   | Fin2.fz, x => ⟨x.val, cast (by congr) x.property⟩
 #align typevec.to_subtype' TypeVec.toSubtype'
 
 /-- similar to `of_subtype` adapted to relations (i.e. predicate on product) -/
 def ofSubtype' {n} {α : TypeVec.{u} n} (p : α ⊗ α ⟹ «repeat» n Prop) :
-      Subtype_ p ⟹ fun i : Fin2 n => { x : α i × α i // ofRepeat <| p i (prod.mk _ x.1 x.2) }
+    Subtype_ p ⟹ fun i : Fin2 n => { x : α i × α i // ofRepeat <| p i (prod.mk _ x.1 x.2) }
   | Fin2.fs i, x => ofSubtype' _ i x
   | Fin2.fz, x => ⟨x.val, cast (by congr) x.property⟩
 #align typevec.of_subtype' TypeVec.ofSubtype'

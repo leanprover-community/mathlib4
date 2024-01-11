@@ -500,7 +500,7 @@ theorem _root_.ApproximatesLinearOn.norm_fderiv_sub_le {A : E →L[ℝ] E} {δ :
   -- `f y - f x` is well approximated by `f' x (y - x)`.
   have B₂ : ∀ᶠ r in 𝓝[>] (0 : ℝ), {x} + r • closedBall z ε ⊆ ball x ρ := by
     apply nhdsWithin_le_nhds
-    exact eventually_singleton_add_smul_subset bounded_closedBall (ball_mem_nhds x ρpos)
+    exact eventually_singleton_add_smul_subset isBounded_closedBall (ball_mem_nhds x ρpos)
   -- fix a small positive `r` satisfying the above properties, as well as a corresponding `y`.
   obtain ⟨r, ⟨y, ⟨ys, hy⟩⟩, rρ, rpos⟩ :
     ∃ r : ℝ,

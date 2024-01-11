@@ -10,6 +10,7 @@ import Std.Lean.Parser
 import Mathlib.Algebra.Group.Units
 import Mathlib.Tactic.Positivity.Core
 import Mathlib.Tactic.NormNum.Core
+import Mathlib.Util.DischargerAsTactic
 import Qq
 
 /-!
@@ -80,6 +81,9 @@ partial def discharge (prop : Expr) : SimpM (Option Expr) :=
     else
       return none
 
+@[inherit_doc discharge]
+elab "field_simp_discharge" : tactic => wrapSimpDischarger Mathlib.Tactic.FieldSimp.discharge
+
 /--
 The goal of `field_simp` is to reduce an expression in a field to an expression of the form `n / d`
 where neither `n` nor `d` contains any division symbol, just using the simplifier (with a carefully
@@ -93,10 +97,10 @@ iterating the following steps:
 - reduce a sum to a common denominator
 
 If the goal is an equality, this simpset will also clear the denominators, so that the proof
-can normally be concluded by an application of `ring` or `ring_exp`.
+can normally be concluded by an application of `ring`.
 
 `field_simp [hx, hy]` is a short form for
-`simp (discharger := Tactic.FieldSimp.discharge) [-one_div, -mul_eq_zero, hx, hy, field_simps]`
+`simp (disch := field_simp_discharge) [-one_div, -one_divp, -mul_eq_zero, hx, hy, field_simps]`
 
 Note that this naive algorithm will not try to detect common factors in denominators to reduce the
 complexity of the resulting expression. Instead, it relies on the ability of `ring` to handle
@@ -132,7 +136,7 @@ a general (commutative) monoid/ring and partial division `/ₚ`, see `Algebra.Gr
 for the definition. Analogue to the case above, the lemma `one_divp` is removed from the simpset
 as this works against the algorithm. If you have objects with an `IsUnit x` instance like
 `(x : R) (hx : IsUnit x)`, you should lift them with
-`lift x to Rˣ using id hx, rw [IsUnit.unit_of_val_units] clear hx`
+`lift x to Rˣ using id hx; rw [IsUnit.unit_of_val_units] clear hx`
 before using `field_simp`.
 
 See also the `cancel_denoms` tactic, which tries to do a similar simplification for expressions

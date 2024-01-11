@@ -735,7 +735,7 @@ instance instPartialOrder (α : Type*) [PartialOrder α] : PartialOrder αᵒᵈ
 
 instance instLinearOrder (α : Type*) [LinearOrder α] : LinearOrder αᵒᵈ where
   __ := inferInstanceAs (PartialOrder αᵒᵈ)
-  le_total     := λ a b : α => le_total b a
+  le_total := λ a b : α => le_total b a
   max := fun a b ↦ (min a b : α)
   min := fun a b ↦ (max a b : α)
   min_def := fun a b ↦ show (max .. : α) = _ by rw [max_comm, max_def]; rfl
@@ -1452,3 +1452,41 @@ noncomputable instance AsLinearOrder.linearOrder {α} [PartialOrder α] [IsTotal
   le_total := @total_of α (· ≤ ·) _
   decidableLE := Classical.decRel _
 #align as_linear_order.linear_order AsLinearOrder.linearOrder
+
+section dite
+variable [One α] {p : Prop} [Decidable p] {a : p → α} {b : ¬ p → α}
+
+@[to_additive dite_nonneg]
+lemma one_le_dite [LE α] (ha : ∀ h, 1 ≤ a h) (hb : ∀ h, 1 ≤ b h) : 1 ≤ dite p a b := by
+  split; exacts [ha ‹_›, hb ‹_›]
+
+@[to_additive]
+lemma dite_le_one [LE α] (ha : ∀ h, a h ≤ 1) (hb : ∀ h, b h ≤ 1) : dite p a b ≤ 1 := by
+  split; exacts [ha ‹_›, hb ‹_›]
+
+@[to_additive dite_pos]
+lemma one_lt_dite [LT α] (ha : ∀ h, 1 < a h) (hb : ∀ h, 1 < b h) : 1 < dite p a b := by
+  split; exacts [ha ‹_›, hb ‹_›]
+
+@[to_additive]
+lemma dite_lt_one [LT α] (ha : ∀ h, a h < 1) (hb : ∀ h, b h < 1) : dite p a b < 1 := by
+  split; exacts [ha ‹_›, hb ‹_›]
+
+end dite
+
+section
+variable [One α] {p : Prop} [Decidable p] {a b : α}
+
+@[to_additive ite_nonneg]
+lemma one_le_ite [LE α] (ha : 1 ≤ a) (hb : 1 ≤ b) : 1 ≤ ite p a b := by split <;> assumption
+
+@[to_additive]
+lemma ite_le_one [LE α] (ha : a ≤ 1) (hb : b ≤ 1) : ite p a b ≤ 1 := by split <;> assumption
+
+@[to_additive ite_pos]
+lemma one_lt_ite [LT α] (ha : 1 < a) (hb : 1 < b) : 1 < ite p a b := by split <;> assumption
+
+@[to_additive]
+lemma ite_lt_one [LT α] (ha : a < 1) (hb : b < 1) : ite p a b < 1 := by split <;> assumption
+
+end

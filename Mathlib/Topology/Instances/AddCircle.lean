@@ -243,7 +243,7 @@ theorem coe_eq_coe_iff_of_mem_Ico {x y : 𝕜} (hx : x ∈ Ico a (a + p)) (hy : 
 #align add_circle.coe_eq_coe_iff_of_mem_Ico AddCircle.coe_eq_coe_iff_of_mem_Ico
 
 theorem liftIco_coe_apply {f : 𝕜 → B} {x : 𝕜} (hx : x ∈ Ico a (a + p)) :
-  liftIco p a f ↑x = f x := by
+    liftIco p a f ↑x = f x := by
   have : (equivIco p a) x = ⟨x, hx⟩ := by
     rw [Equiv.apply_eq_iff_eq_symm_apply]
     rfl
@@ -252,7 +252,7 @@ theorem liftIco_coe_apply {f : 𝕜 → B} {x : 𝕜} (hx : x ∈ Ico a (a + p))
 #align add_circle.lift_Ico_coe_apply AddCircle.liftIco_coe_apply
 
 theorem liftIoc_coe_apply {f : 𝕜 → B} {x : 𝕜} (hx : x ∈ Ioc a (a + p)) :
-  liftIoc p a f ↑x = f x := by
+    liftIoc p a f ↑x = f x := by
   have : (equivIoc p a) x = ⟨x, hx⟩ := by
     rw [Equiv.apply_eq_iff_eq_symm_apply]
     rfl
@@ -517,7 +517,7 @@ instance compactSpace [Fact (0 < p)] : CompactSpace <| AddCircle p := by
 
 /-- The action on `ℝ` by right multiplication of its the subgroup `zmultiples p` (the multiples of
 `p:ℝ`) is properly discontinuous. -/
-instance : ProperlyDiscontinuousVAdd (AddSubgroup.opposite (zmultiples p)) ℝ :=
+instance : ProperlyDiscontinuousVAdd (zmultiples p).op ℝ :=
   (zmultiples p).properlyDiscontinuousVAdd_opposite_of_tendsto_cofinite
     (AddSubgroup.tendsto_zmultiples_subtype_cofinite p)
 
@@ -525,9 +525,8 @@ instance : ProperlyDiscontinuousVAdd (AddSubgroup.opposite (zmultiples p)) ℝ :
 instance : T2Space (AddCircle p) :=
   t2Space_of_properlyDiscontinuousVAdd_of_t2Space
 
-/-- The "additive circle" `ℝ ⧸ (ℤ ∙ p)` is normal. -/
-instance [Fact (0 < p)] : NormalSpace (AddCircle p) :=
-  normalOfCompactT2
+/-- The "additive circle" `ℝ ⧸ (ℤ ∙ p)` is T₄. -/
+instance [Fact (0 < p)] : T4Space (AddCircle p) := inferInstance
 
 /-- The "additive circle" `ℝ ⧸ (ℤ ∙ p)` is second-countable. -/
 instance : SecondCountableTopology (AddCircle p) :=

@@ -1224,7 +1224,7 @@ end Quotient
 section Pi
 
 variable {ι : Type*} {π : ι → Type*} {κ : Type*} [TopologicalSpace α]
-  [∀ i, TopologicalSpace (π i)] {f : α → ∀ i : ι, π i}
+  [T : ∀ i, TopologicalSpace (π i)] {f : α → ∀ i : ι, π i}
 
 theorem continuous_pi_iff : Continuous f ↔ ∀ i, Continuous fun a => f a i := by
   simp only [continuous_iInf_rng, continuous_induced_rng, comp]
@@ -1268,6 +1268,42 @@ theorem continuousAt_pi {f : α → ∀ i, π i} {x : α} :
     ContinuousAt f x ↔ ∀ i, ContinuousAt (fun y => f y i) x :=
   tendsto_pi_nhds
 #align continuous_at_pi continuousAt_pi
+
+theorem Pi.continuous_precomp' {ι' : Type*} (φ : ι' → ι) :
+    Continuous (fun (f : (∀ i, π i)) (j : ι') ↦ f (φ j)) :=
+  continuous_pi fun j ↦ continuous_apply (φ j)
+
+theorem Pi.continuous_precomp {ι' : Type*} (φ : ι' → ι) :
+    Continuous (· ∘ φ : (ι → α) → (ι' → α)) :=
+  Pi.continuous_precomp' φ
+
+theorem Pi.continuous_postcomp' {ρ : ι → Type*} [∀ i, TopologicalSpace (ρ i)]
+    {g : ∀ i, π i → ρ i} (hg : ∀ i, Continuous (g i)) :
+    Continuous (fun (f : (∀ i, π i)) (i : ι) ↦ g i (f i)) :=
+  continuous_pi fun i ↦ (hg i).comp <| continuous_apply i
+
+theorem Pi.continuous_postcomp [TopologicalSpace β] {g : α → β} (hg : Continuous g) :
+    Continuous (g ∘ · : (ι → α) → (ι → β)) :=
+  Pi.continuous_postcomp' fun _ ↦ hg
+
+lemma Pi.induced_precomp' {ι' : Type*} (φ : ι' → ι) :
+    induced (fun (f : (∀ i, π i)) (j : ι') ↦ f (φ j)) Pi.topologicalSpace =
+    ⨅ i', induced (eval (φ i')) (T (φ i')) := by
+  simp [Pi.topologicalSpace, induced_iInf, induced_compose, comp]
+
+lemma Pi.induced_precomp [TopologicalSpace β] {ι' : Type*} (φ : ι' → ι) :
+    induced (· ∘ φ) Pi.topologicalSpace =
+    ⨅ i', induced (eval (φ i')) ‹TopologicalSpace β› :=
+  induced_precomp' φ
+
+lemma Pi.continuous_restrict (S : Set ι) :
+    Continuous (S.restrict : (∀ i : ι, π i) → (∀ i : S, π i)) :=
+  Pi.continuous_precomp' ((↑) : S → ι)
+
+lemma Pi.induced_restrict (S : Set ι) :
+    induced (S.restrict) Pi.topologicalSpace =
+    ⨅ i ∈ S, induced (eval i) (T i) := by
+  simp [← iInf_subtype'', ← induced_precomp' ((↑) : S → ι), Set.restrict]
 
 theorem Filter.Tendsto.update [DecidableEq ι] {l : Filter β} {f : β → ∀ i, π i} {x : ∀ i, π i}
     (hf : Tendsto f l (𝓝 x)) (i : ι) {g : β → π i} {xi : π i} (hg : Tendsto g l (𝓝 xi)) :

@@ -106,7 +106,7 @@ set_option linter.uppercaseLean3 false in
 #align mvqpf.recF_eq_of_Wequiv MvQPF.recF_eq_of_wEquiv
 
 theorem wEquiv.abs' {α : TypeVec n} (x y : q.P.W α)
-                    (h : MvQPF.abs (q.P.wDest' x ) = MvQPF.abs (q.P.wDest' y)) :
+    (h : MvQPF.abs (q.P.wDest' x) = MvQPF.abs (q.P.wDest' y)) :
     WEquiv x y := by
   revert h
   apply q.P.w_cases _ x

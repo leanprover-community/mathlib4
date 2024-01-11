@@ -23,7 +23,7 @@ projective object.
 epimorphism.
 
 Given a morphism `f : X ⟶ Y`, `CategoryTheory.Projective.left f` is a projective object over
-`CategoryTheory.Limits.kernel f`, and `projective.d f : projective.left f ⟶ X` is the morphism
+`CategoryTheory.Limits.kernel f`, and `Projective.d f : Projective.left f ⟶ X` is the morphism
 `π (kernel f) ≫ kernel.ι f`.
 
 -/
@@ -174,7 +174,7 @@ section
 
 variable [HasZeroMorphisms C] {X Y : C} (f : X ⟶ Y) [HasKernel f]
 
-/-- When `C` has enough projectives, the object `projective.syzygies f` is
+/-- When `C` has enough projectives, the object `Projective.syzygies f` is
 an arbitrarily chosen projective object over `kernel f`.
 -/
 def syzygies : C := over (kernel f)
@@ -183,7 +183,7 @@ def syzygies : C := over (kernel f)
 instance : Projective (syzygies f) := inferInstanceAs (Projective (over _))
 
 /-- When `C` has enough projectives,
-`projective.d f : projective.syzygies f ⟶ X` is the composition
+`Projective.d f : Projective.syzygies f ⟶ X` is the composition
 `π (kernel f) ≫ kernel.ι f`.
 
 (When `C` is abelian, we have `exact (projective.d f) f`.)
@@ -236,6 +236,9 @@ end Adjunction
 namespace Equivalence
 
 variable {D : Type u'} [Category.{v'} D] (F : C ≌ D)
+
+theorem map_projective_iff (P : C) : Projective (F.functor.obj P) ↔ Projective P :=
+  ⟨F.toAdjunction.projective_of_map_projective P, F.toAdjunction.map_projective P⟩
 
 /-- Given an equivalence of categories `F`, a projective presentation of `F(X)` induces a
 projective presentation of `X.` -/

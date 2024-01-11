@@ -183,6 +183,32 @@ theorem Definable.image_comp_equiv {s : Set (β → M)} (h : A.Definable L s) (f
     simp
 #align set.definable.image_comp_equiv Set.Definable.image_comp_equiv
 
+theorem definable_iff_finitely_definable :
+    A.Definable L s ↔ ∃ (A0 : Finset M), (A0 : Set M) ⊆ A ∧
+      (A0 : Set M).Definable L s := by
+  letI := Classical.decEq M
+  letI := Classical.decEq α
+  constructor
+  · simp only [definable_iff_exists_formula_sum]
+    rintro ⟨φ, rfl⟩
+    let A0 := (φ.freeVarFinset.preimage Sum.inl
+      (Function.Injective.injOn Sum.inl_injective _)).image Subtype.val
+    have hA0 : (A0 : Set M) ⊆ A := by simp
+    refine ⟨A0, hA0, (φ.restrictFreeVar
+      (Set.inclusion (Set.Subset.refl _))).relabel ?_, ?_⟩
+    · rintro ⟨a | a, ha⟩
+      · exact Sum.inl (Sum.inl ⟨a, by simpa using ha⟩)
+      · exact Sum.inl (Sum.inr a)
+    · ext v
+      simp only [Formula.Realize, BoundedFormula.realize_relabel,
+        Set.mem_setOf_eq]
+      apply Iff.symm
+      convert BoundedFormula.realize_restrictFreeVar _
+      · ext a
+        rcases a with ⟨_ | _, _⟩ <;> simp
+  · rintro ⟨A0, hA0, hd⟩
+    exact Definable.mono hd hA0
+
 /-- This lemma is only intended as a helper for `Definable.image_comp`. -/
 theorem Definable.image_comp_sum_inl_fin (m : ℕ) {s : Set (Sum α (Fin m) → M)}
     (h : A.Definable L s) : A.Definable L ((fun g : Sum α (Fin m) → M => g ∘ Sum.inl) '' s) := by
@@ -190,7 +216,7 @@ theorem Definable.image_comp_sum_inl_fin (m : ℕ) {s : Set (Sum α (Fin m) → 
   refine' ⟨(BoundedFormula.relabel id φ).exs, _⟩
   ext x
   simp only [Set.mem_image, mem_setOf_eq, BoundedFormula.realize_exs,
-    BoundedFormula.realize_relabel, Function.comp.right_id, Fin.castAdd_zero, Fin.castIso_refl]
+    BoundedFormula.realize_relabel, Function.comp.right_id, Fin.castAdd_zero, Fin.cast_refl]
   constructor
   · rintro ⟨y, hy, rfl⟩
     exact

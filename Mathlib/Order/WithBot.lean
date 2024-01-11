@@ -57,7 +57,7 @@ instance nontrivial [Nonempty α] : Nontrivial (WithBot α) :=
 
 open Function
 
-theorem coe_injective : Injective (fun (a : α) => (a : WithBot α)) :=
+theorem coe_injective : Injective ((↑) : α → WithBot α) :=
   Option.some_injective _
 #align with_bot.coe_injective WithBot.coe_injective
 
@@ -227,6 +227,12 @@ theorem not_coe_le_bot (a : α) : ¬(a : WithBot α) ≤ ⊥ := fun h =>
   Option.not_mem_none _ hb
 #align with_bot.not_coe_le_bot WithBot.not_coe_le_bot
 
+/-- There is a general version `le_bot_iff`, but this lemma does not require a `PartialOrder`. -/
+@[simp]
+protected theorem le_bot_iff : ∀ {a : WithBot α}, a ≤ ⊥ ↔ a = ⊥
+  | (a : α) => by simp [not_coe_le_bot _]
+  | ⊥ => by simp
+
 theorem coe_le : ∀ {o : Option α}, b ∈ o → ((a : WithBot α) ≤ o ↔ a ≤ b)
   | _, rfl => coe_le_coe
 #align with_bot.coe_le WithBot.coe_le
@@ -394,16 +400,18 @@ theorem le_coe_unbot' [Preorder α] : ∀ (a : WithBot α) (b : α), a ≤ a.unb
   | ⊥, _ => bot_le
 #align with_bot.le_coe_unbot' WithBot.le_coe_unbot'
 
-theorem unbot'_bot_le_iff [LE α] [OrderBot α] {a : WithBot α} {b : α} :
-    a.unbot' ⊥ ≤ b ↔ a ≤ b := by
-  cases a <;> simp [none_eq_bot, some_eq_coe]
-#align with_bot.unbot'_bot_le_iff WithBot.unbot'_bot_le_iff
-
-theorem unbot'_lt_iff [LT α] {a : WithBot α} {b c : α} (ha : a ≠ ⊥) : a.unbot' b < c ↔ a < c := by
+theorem unbot'_le_iff [LE α] {a : WithBot α} {b c : α} (h : a = ⊥ → b ≤ c) :
+    a.unbot' b ≤ c ↔ a ≤ c := by
   cases a
-  · exact (ha rfl).elim
-  · rw [some_eq_coe, unbot'_coe, coe_lt_coe]
-#align with_bot.unbot'_lt_iff WithBot.unbot'_lt_iff
+  · simpa using h rfl
+  · simp [some_eq_coe]
+#align with_bot.unbot'_bot_le_iff WithBot.unbot'_le_iff
+
+theorem unbot'_lt_iff [LT α] {a : WithBot α} {b c : α} (h : a = ⊥ → b < c) :
+    a.unbot' b < c ↔ a < c := by
+  cases a
+  · simpa [bot_lt_coe] using h rfl
+  · simp [some_eq_coe]
 
 instance semilatticeSup [SemilatticeSup α] : SemilatticeSup (WithBot α) :=
   { WithBot.partialOrder, @WithBot.orderBot α _ with
@@ -585,6 +593,15 @@ instance inhabited : Inhabited (WithTop α) :=
 
 instance nontrivial [Nonempty α] : Nontrivial (WithTop α) :=
   Option.nontrivial
+
+open Function
+
+theorem coe_injective : Injective ((↑) : α → WithTop α) :=
+  Option.some_injective _
+
+@[norm_cast]
+theorem coe_inj : (a : WithTop α) = b ↔ a = b :=
+  Option.some_inj
 
 protected theorem «forall» {p : WithTop α → Prop} : (∀ x, p x) ↔ p ⊤ ∧ ∀ x : α, p x :=
   Option.forall
@@ -853,6 +870,12 @@ instance boundedOrder [OrderBot α] : BoundedOrder (WithTop α) :=
 theorem not_top_le_coe (a : α) : ¬(⊤ : WithTop α) ≤ ↑a :=
   WithBot.not_coe_le_bot (toDual a)
 #align with_top.not_top_le_coe WithTop.not_top_le_coe
+
+/-- There is a general version `top_le_iff`, but this lemma does not require a `PartialOrder`. -/
+@[simp]
+protected theorem top_le_iff : ∀ {a : WithTop α}, ⊤ ≤ a ↔ a = ⊤
+  | (a : α) => by simp [not_top_le_coe _]
+  | ⊤ => by simp
 
 theorem le_coe : ∀ {o : Option α}, a ∈ o → (@LE.le (WithTop α) _ o b ↔ a ≤ b)
   | _, rfl => coe_le_coe
@@ -1169,6 +1192,22 @@ theorem map_le_iff [Preorder α] [Preorder β] (f : α → β) (a b : WithTop α
   erw [← toDual_le_toDual_iff, toDual_map, toDual_map, WithBot.map_le_iff, toDual_le_toDual_iff]
   simp [mono_iff]
 #align with_top.map_le_iff WithTop.map_le_iff
+
+theorem coe_untop'_le [Preorder α] : ∀ (a : WithTop α) (b : α), a.untop' b ≤ a
+  | (a : α), _ => le_rfl
+  | ⊤, _ => le_top
+
+theorem le_untop'_iff [LE α] {a : WithTop α} {b c : α} (h : a = ⊤ → c ≤ b) :
+    c ≤ a.untop' b ↔ c ≤ a := by
+  cases a
+  · simpa using h rfl
+  · simp [some_eq_coe]
+
+theorem lt_untop'_iff [LT α] {a : WithTop α} {b c : α} (h : a = ⊤ → c < b) :
+    c < a.untop' b ↔ c < a := by
+  cases a
+  · simpa [none_eq_top, coe_lt_top] using h rfl
+  · simp [some_eq_coe]
 
 instance semilatticeInf [SemilatticeInf α] : SemilatticeInf (WithTop α) :=
   { WithTop.partialOrder with

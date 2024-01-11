@@ -233,15 +233,15 @@ instance instIsScalarTower' [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTow
     IsScalarTower R' R S :=
   S.toSubmodule.isScalarTower
 
-instance [IsScalarTower R A A] : IsScalarTower R S S
-    where smul_assoc r x y := Subtype.ext <| smul_assoc r (x : A) (y : A)
+instance [IsScalarTower R A A] : IsScalarTower R S S where
+  smul_assoc r x y := Subtype.ext <| smul_assoc r (x : A) (y : A)
 
 instance instSMulCommClass' [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A]
-    [SMulCommClass R' R A] : SMulCommClass R' R S
-    where smul_comm r' r s := Subtype.ext <| smul_comm r' r (s : A)
+    [SMulCommClass R' R A] : SMulCommClass R' R S where
+  smul_comm r' r s := Subtype.ext <| smul_comm r' r (s : A)
 
-instance instSMulCommClass [SMulCommClass R A A] : SMulCommClass R S S
-    where smul_comm r x y := Subtype.ext <| smul_comm r (x : A) (y : A)
+instance instSMulCommClass [SMulCommClass R A A] : SMulCommClass R S S where
+  smul_comm r x y := Subtype.ext <| smul_comm r (x : A) (y : A)
 
 end
 
@@ -320,7 +320,8 @@ theorem mem_map {S : NonUnitalSubalgebra R A} {f : F} {y : B} : y ∈ map f S �
   NonUnitalSubsemiring.mem_map
 
 theorem map_toSubmodule {S : NonUnitalSubalgebra R A} {f : F} :
-    (map f S).toSubmodule = Submodule.map (f : A →ₗ[R] B) S.toSubmodule :=
+    -- TODO: introduce a better coercion from `NonUnitalAlgHomClass` to `LinearMap`
+    (map f S).toSubmodule = Submodule.map ((↑f : A →+[R] B) : A →ₗ[R] B) S.toSubmodule :=
   SetLike.coe_injective rfl
 
 theorem map_toNonUnitalSubsemiring {S : NonUnitalSubalgebra R A} {f : F} :
@@ -545,10 +546,10 @@ theorem adjoin_induction₂ {s : Set A} {p : A → A → Prop} {a b : A} (ha : a
 
 /-- The difference with `NonUnitalAlgebra.adjoin_induction` is that this acts on the subtype. -/
 lemma adjoin_induction' {s : Set A} {p : adjoin R s → Prop} (a : adjoin R s)
-  (Hs : ∀ x (h : x ∈ s), p ⟨x, subset_adjoin R h⟩)
-  (Hadd : ∀ x y, p x → p y → p (x + y)) (H0 : p 0)
-  (Hmul : ∀ x y, p x → p y → p (x * y)) (Hsmul : ∀ (r : R) x, p x → p (r • x)) : p a :=
-Subtype.recOn a <| fun b hb => by
+    (Hs : ∀ x (h : x ∈ s), p ⟨x, subset_adjoin R h⟩)
+    (Hadd : ∀ x y, p x → p y → p (x + y)) (H0 : p 0)
+    (Hmul : ∀ x y, p x → p y → p (x * y)) (Hsmul : ∀ (r : R) x, p x → p (r • x)) : p a :=
+  Subtype.recOn a <| fun b hb => by
   refine Exists.elim ?_ (fun (hb : b ∈ adjoin R s) (hc : p ⟨b, hb⟩) => hc)
   apply adjoin_induction hb
   · exact fun x hx => ⟨subset_adjoin R hx, Hs x hx⟩
@@ -943,7 +944,8 @@ end NonAssoc
 section Center
 
 theorem _root_.Set.smul_mem_center {R A : Type*} [CommSemiring R] [NonUnitalNonAssocSemiring A]
-  [Module R A] [IsScalarTower R A A] [SMulCommClass R A A](r : R) {a : A} (ha : a ∈ Set.center A) :
+    [Module R A] [IsScalarTower R A A] [SMulCommClass R A A](r : R) {a : A}
+    (ha : a ∈ Set.center A) :
     r • a ∈ Set.center A := by
   simp [Set.mem_center_iff, mul_smul_comm, smul_mul_assoc, (Set.mem_center_iff A).mp ha]
 

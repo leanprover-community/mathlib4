@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.MeasureTheory.Measure.NullMeasurable
-import Mathlib.MeasureTheory.MeasurableSpace
+import Mathlib.MeasureTheory.MeasurableSpace.Basic
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
 
 #align_import measure_theory.measure.measure_space from "leanprover-community/mathlib"@"343e80208d29d2d15f8050b929aa50fe4ce71b55"
@@ -196,17 +196,25 @@ theorem measure_biUnion_finset {s : Finset ι} {f : ι → Set α} (hd : Pairwis
   measure_biUnion_finset₀ hd.aedisjoint fun b hb => (hm b hb).nullMeasurableSet
 #align measure_theory.measure_bUnion_finset MeasureTheory.measure_biUnion_finset
 
-/-- The measure of a disjoint union (even uncountable) of measurable sets is at least the sum of
-the measures of the sets. -/
-theorem tsum_meas_le_meas_iUnion_of_disjoint {ι : Type*} [MeasurableSpace α] (μ : Measure α)
-    {As : ι → Set α} (As_mble : ∀ i : ι, MeasurableSet (As i))
-    (As_disj : Pairwise (Disjoint on As)) : (∑' i, μ (As i)) ≤ μ (⋃ i, As i) := by
+/-- The measure of an a.e. disjoint union (even uncountable) of null-measurable sets is at least
+the sum of the measures of the sets. -/
+theorem tsum_meas_le_meas_iUnion_of_disjoint₀ {ι : Type*} [MeasurableSpace α] (μ : Measure α)
+    {As : ι → Set α} (As_mble : ∀ i : ι, NullMeasurableSet (As i) μ)
+    (As_disj : Pairwise (AEDisjoint μ on As)) : (∑' i, μ (As i)) ≤ μ (⋃ i, As i) := by
   rcases show Summable fun i => μ (As i) from ENNReal.summable with ⟨S, hS⟩
   rw [hS.tsum_eq]
   refine' tendsto_le_of_eventuallyLE hS tendsto_const_nhds (eventually_of_forall _)
   intro s
-  simp [← measure_biUnion_finset (fun _i _hi _j _hj hij => As_disj hij) fun i _ => As_mble i]
+  simp [← measure_biUnion_finset₀ (fun _i _hi _j _hj hij => As_disj hij) fun i _ => As_mble i]
   exact measure_mono (iUnion₂_subset_iUnion (fun i : ι => i ∈ s) fun i : ι => As i)
+
+/-- The measure of a disjoint union (even uncountable) of measurable sets is at least the sum of
+the measures of the sets. -/
+theorem tsum_meas_le_meas_iUnion_of_disjoint {ι : Type*} [MeasurableSpace α] (μ : Measure α)
+    {As : ι → Set α} (As_mble : ∀ i : ι, MeasurableSet (As i))
+    (As_disj : Pairwise (Disjoint on As)) : (∑' i, μ (As i)) ≤ μ (⋃ i, As i) :=
+  tsum_meas_le_meas_iUnion_of_disjoint₀ μ (fun i ↦ (As_mble i).nullMeasurableSet)
+    (fun _ _ h ↦ Disjoint.aedisjoint (As_disj h))
 #align measure_theory.tsum_meas_le_meas_Union_of_disjoint MeasureTheory.tsum_meas_le_meas_iUnion_of_disjoint
 
 /-- If `s` is a countable set, then the measure of its preimage can be found as the sum of measures
@@ -2704,6 +2712,28 @@ theorem ae_eventually_not_mem {s : ℕ → Set α} (hs : (∑' i, μ (s i)) ≠ 
   measure_setOf_frequently_eq_zero hs
 #align measure_theory.ae_eventually_not_mem MeasureTheory.ae_eventually_not_mem
 
+lemma NullMeasurable.measure_preimage_eq_measure_restrict_preimage_of_ae_compl_eq_const
+    {β : Type*} [MeasurableSpace β] {b : β} {f : α → β} {s : Set α}
+    (f_mble : NullMeasurable f (μ.restrict s)) (hs : f =ᵐ[Measure.restrict μ sᶜ] (fun _ ↦ b))
+    {t : Set β} (t_mble : MeasurableSet t) (ht : b ∉ t) :
+    μ (f ⁻¹' t) = μ.restrict s (f ⁻¹' t) := by
+  rw [Measure.restrict_apply₀ (f_mble t_mble)]
+  simp only [EventuallyEq, Filter.Eventually, Pi.zero_apply, Measure.ae,
+             MeasurableSet.compl_iff, Filter.mem_mk, mem_setOf_eq] at hs
+  rw [Measure.restrict_apply₀] at hs
+  · apply le_antisymm _ (measure_mono (inter_subset_left _ _))
+    apply (measure_mono (Eq.symm (inter_union_compl (f ⁻¹' t) s)).le).trans
+    apply (measure_union_le _ _).trans
+    have obs : μ ((f ⁻¹' t) ∩ sᶜ) = 0 := by
+      apply le_antisymm _ (zero_le _)
+      rw [← hs]
+      apply measure_mono (inter_subset_inter_left _ _)
+      intro x hx hfx
+      simp only [mem_preimage, mem_setOf_eq] at hx hfx
+      exact ht (hfx ▸ hx)
+    simp only [obs, add_zero, le_refl]
+  · exact NullMeasurableSet.of_null hs
+
 section Intervals
 
 theorem biSup_measure_Iic [Preorder α] {s : Set α} (hsc : s.Countable)
@@ -2894,8 +2924,8 @@ instance isFiniteMeasureAdd [IsFiniteMeasure μ] [IsFiniteMeasure ν] : IsFinite
     exact ⟨measure_lt_top _ _, measure_lt_top _ _⟩
 #align measure_theory.is_finite_measure_add MeasureTheory.isFiniteMeasureAdd
 
-instance isFiniteMeasureSMulNNReal [IsFiniteMeasure μ] {r : ℝ≥0} : IsFiniteMeasure (r • μ)
-    where measure_univ_lt_top := ENNReal.mul_lt_top ENNReal.coe_ne_top (measure_ne_top _ _)
+instance isFiniteMeasureSMulNNReal [IsFiniteMeasure μ] {r : ℝ≥0} : IsFiniteMeasure (r • μ) where
+  measure_univ_lt_top := ENNReal.mul_lt_top ENNReal.coe_ne_top (measure_ne_top _ _)
 #align measure_theory.is_finite_measure_smul_nnreal MeasureTheory.isFiniteMeasureSMulNNReal
 
 instance IsFiniteMeasure.average : IsFiniteMeasure ((μ univ)⁻¹ • μ) where
@@ -3368,15 +3398,24 @@ theorem exists_measure_inter_spanningSets_pos [MeasurableSpace α] {μ : Measure
   exact forall_measure_inter_spanningSets_eq_zero s
 #align measure_theory.measure.exists_measure_inter_spanning_sets_pos MeasureTheory.Measure.exists_measure_inter_spanningSets_pos
 
+/-- If the union of a.e.-disjoint null-measurable sets has finite measure, then there are only
+finitely many members of the union whose measure exceeds any given positive number. -/
+theorem finite_const_le_meas_of_disjoint_iUnion₀ {ι : Type*} [MeasurableSpace α] (μ : Measure α)
+    {ε : ℝ≥0∞} (ε_pos : 0 < ε) {As : ι → Set α} (As_mble : ∀ i : ι, NullMeasurableSet (As i) μ)
+    (As_disj : Pairwise (AEDisjoint μ on As)) (Union_As_finite : μ (⋃ i, As i) ≠ ∞) :
+    Set.Finite { i : ι | ε ≤ μ (As i) } :=
+  ENNReal.finite_const_le_of_tsum_ne_top
+    (ne_top_of_le_ne_top Union_As_finite (tsum_meas_le_meas_iUnion_of_disjoint₀ μ As_mble As_disj))
+    ε_pos.ne'
+
 /-- If the union of disjoint measurable sets has finite measure, then there are only
 finitely many members of the union whose measure exceeds any given positive number. -/
 theorem finite_const_le_meas_of_disjoint_iUnion {ι : Type*} [MeasurableSpace α] (μ : Measure α)
     {ε : ℝ≥0∞} (ε_pos : 0 < ε) {As : ι → Set α} (As_mble : ∀ i : ι, MeasurableSet (As i))
     (As_disj : Pairwise (Disjoint on As)) (Union_As_finite : μ (⋃ i, As i) ≠ ∞) :
     Set.Finite { i : ι | ε ≤ μ (As i) } :=
-  ENNReal.finite_const_le_of_tsum_ne_top
-    (ne_top_of_le_ne_top Union_As_finite (tsum_meas_le_meas_iUnion_of_disjoint μ As_mble As_disj))
-    ε_pos.ne'
+  finite_const_le_meas_of_disjoint_iUnion₀ μ ε_pos (fun i ↦ (As_mble i).nullMeasurableSet)
+    (fun _ _ h ↦ Disjoint.aedisjoint (As_disj h)) Union_As_finite
 #align measure_theory.measure.finite_const_le_meas_of_disjoint_Union MeasureTheory.Measure.finite_const_le_meas_of_disjoint_iUnion
 
 /-- If all elements of an infinite set have measure uniformly separated from zero,
@@ -3391,11 +3430,11 @@ theorem _root_.Set.Infinite.meas_eq_top [MeasurableSingletonClass α]
       (fun _ ↦ MeasurableSet.singleton _) fun x y hne ↦ by simpa [Subtype.val_inj]
     _ = μ s := by simp
 
-/-- If the union of disjoint measurable sets has finite measure, then there are only
+/-- If the union of a.e.-disjoint null-measurable sets has finite measure, then there are only
 countably many members of the union whose measure is positive. -/
-theorem countable_meas_pos_of_disjoint_of_meas_iUnion_ne_top {ι : Type*} [MeasurableSpace α]
-    (μ : Measure α) {As : ι → Set α} (As_mble : ∀ i : ι, MeasurableSet (As i))
-    (As_disj : Pairwise (Disjoint on As)) (Union_As_finite : μ (⋃ i, As i) ≠ ∞) :
+theorem countable_meas_pos_of_disjoint_of_meas_iUnion_ne_top₀ {ι : Type*} [MeasurableSpace α]
+    (μ : Measure α) {As : ι → Set α} (As_mble : ∀ i : ι, NullMeasurableSet (As i) μ)
+    (As_disj : Pairwise (AEDisjoint μ on As)) (Union_As_finite : μ (⋃ i, As i) ≠ ∞) :
     Set.Countable { i : ι | 0 < μ (As i) } := by
   set posmeas := { i : ι | 0 < μ (As i) } with posmeas_def
   rcases exists_seq_strictAnti_tendsto' (zero_lt_one : (0 : ℝ≥0∞) < 1) with
@@ -3409,35 +3448,60 @@ theorem countable_meas_pos_of_disjoint_of_meas_iUnion_ne_top {ι : Type*} [Measu
       iUnion_Ici_eq_Ioi_of_lt_of_tendsto (0 : ℝ≥0∞) (fun n => (as_mem n).1) as_lim]
   rw [countable_union]
   refine' countable_iUnion fun n => Finite.countable _
-  refine' finite_const_le_meas_of_disjoint_iUnion μ (as_mem n).1 As_mble As_disj Union_As_finite
+  refine' finite_const_le_meas_of_disjoint_iUnion₀ μ (as_mem n).1 As_mble As_disj Union_As_finite
+
+/-- If the union of disjoint measurable sets has finite measure, then there are only
+countably many members of the union whose measure is positive. -/
+theorem countable_meas_pos_of_disjoint_of_meas_iUnion_ne_top {ι : Type*} [MeasurableSpace α]
+    (μ : Measure α) {As : ι → Set α} (As_mble : ∀ i : ι, MeasurableSet (As i))
+    (As_disj : Pairwise (Disjoint on As)) (Union_As_finite : μ (⋃ i, As i) ≠ ∞) :
+    Set.Countable { i : ι | 0 < μ (As i) } :=
+  countable_meas_pos_of_disjoint_of_meas_iUnion_ne_top₀ μ (fun i ↦ (As_mble i).nullMeasurableSet)
+    ((fun _ _ h ↦ Disjoint.aedisjoint (As_disj h))) Union_As_finite
 #align measure_theory.measure.countable_meas_pos_of_disjoint_of_meas_Union_ne_top MeasureTheory.Measure.countable_meas_pos_of_disjoint_of_meas_iUnion_ne_top
 
-/-- In a σ-finite space, among disjoint measurable sets, only countably many can have positive
+/-- In a σ-finite space, among disjoint null-measurable sets, only countably many can have positive
 measure. -/
-theorem countable_meas_pos_of_disjoint_iUnion {ι : Type*} [MeasurableSpace α] {μ : Measure α}
-    [SigmaFinite μ] {As : ι → Set α} (As_mble : ∀ i : ι, MeasurableSet (As i))
-    (As_disj : Pairwise (Disjoint on As)) : Set.Countable { i : ι | 0 < μ (As i) } := by
+theorem countable_meas_pos_of_disjoint_iUnion₀ {ι : Type*} [MeasurableSpace α] {μ : Measure α}
+    [SigmaFinite μ] {As : ι → Set α} (As_mble : ∀ i : ι, NullMeasurableSet (As i) μ)
+    (As_disj : Pairwise (AEDisjoint μ on As)) :
+    Set.Countable { i : ι | 0 < μ (As i) } := by
   have obs : { i : ι | 0 < μ (As i) } ⊆ ⋃ n, { i : ι | 0 < μ (As i ∩ spanningSets μ n) } := by
     intro i i_in_nonzeroes
     by_contra con
     simp only [mem_iUnion, mem_setOf_eq, not_exists, not_lt, nonpos_iff_eq_zero] at *
     simp [(forall_measure_inter_spanningSets_eq_zero _).mp con] at i_in_nonzeroes
   apply Countable.mono obs
-  refine' countable_iUnion fun n => countable_meas_pos_of_disjoint_of_meas_iUnion_ne_top μ _ _ _
-  · exact fun i => MeasurableSet.inter (As_mble i) (measurable_spanningSets μ n)
-  · exact fun i j i_ne_j b hbi hbj =>
-      As_disj i_ne_j (hbi.trans (inter_subset_left _ _)) (hbj.trans (inter_subset_left _ _))
+  refine' countable_iUnion fun n => countable_meas_pos_of_disjoint_of_meas_iUnion_ne_top₀ μ _ _ _
+  · exact fun i ↦ NullMeasurableSet.inter (As_mble i)
+      (measurable_spanningSets μ n).nullMeasurableSet
+  · exact fun i j i_ne_j ↦ (As_disj i_ne_j).mono
+      (inter_subset_left (As i) (spanningSets μ n)) (inter_subset_left (As j) (spanningSets μ n))
   · refine' (lt_of_le_of_lt (measure_mono _) (measure_spanningSets_lt_top μ n)).ne
     exact iUnion_subset fun i => inter_subset_right _ _
+
+/-- In a σ-finite space, among disjoint measurable sets, only countably many can have positive
+measure. -/
+theorem countable_meas_pos_of_disjoint_iUnion {ι : Type*} [MeasurableSpace α] {μ : Measure α}
+    [SigmaFinite μ] {As : ι → Set α} (As_mble : ∀ i : ι, MeasurableSet (As i))
+    (As_disj : Pairwise (Disjoint on As)) : Set.Countable { i : ι | 0 < μ (As i) } :=
+  countable_meas_pos_of_disjoint_iUnion₀ (fun i ↦ (As_mble i).nullMeasurableSet)
+    ((fun _ _ h ↦ Disjoint.aedisjoint (As_disj h)))
 #align measure_theory.measure.countable_meas_pos_of_disjoint_Union MeasureTheory.Measure.countable_meas_pos_of_disjoint_iUnion
+
+theorem countable_meas_level_set_pos₀ {α β : Type*} [MeasurableSpace α] {μ : Measure α}
+    [SigmaFinite μ] [MeasurableSpace β] [MeasurableSingletonClass β] {g : α → β}
+    (g_mble : NullMeasurable g μ) : Set.Countable { t : β | 0 < μ { a : α | g a = t } } := by
+  have level_sets_disjoint : Pairwise (Disjoint on fun t : β => { a : α | g a = t }) :=
+    fun s t hst => Disjoint.preimage g (disjoint_singleton.mpr hst)
+  exact Measure.countable_meas_pos_of_disjoint_iUnion₀
+    (fun b => g_mble (‹MeasurableSingletonClass β›.measurableSet_singleton b))
+    ((fun _ _ h ↦ Disjoint.aedisjoint (level_sets_disjoint h)))
 
 theorem countable_meas_level_set_pos {α β : Type*} [MeasurableSpace α] {μ : Measure α}
     [SigmaFinite μ] [MeasurableSpace β] [MeasurableSingletonClass β] {g : α → β}
     (g_mble : Measurable g) : Set.Countable { t : β | 0 < μ { a : α | g a = t } } :=
-  haveI level_sets_disjoint : Pairwise (Disjoint on fun t : β => { a : α | g a = t }) :=
-    fun s t hst => Disjoint.preimage g (disjoint_singleton.mpr hst)
-  Measure.countable_meas_pos_of_disjoint_iUnion
-    (fun b => g_mble (‹MeasurableSingletonClass β›.measurableSet_singleton b)) level_sets_disjoint
+  countable_meas_level_set_pos₀ g_mble.nullMeasurable
 #align measure_theory.measure.countable_meas_level_set_pos MeasureTheory.Measure.countable_meas_level_set_pos
 
 /-- If a set `t` is covered by a countable family of finite measure sets, then its measurable
@@ -3734,8 +3798,7 @@ instance isLocallyFiniteMeasureSMulNNReal [TopologicalSpace α] (μ : Measure α
   rcases μ.exists_isOpen_measure_lt_top x with ⟨o, xo, o_open, μo⟩
   refine' ⟨o, o_open.mem_nhds xo, _⟩
   apply ENNReal.mul_lt_top _ μo.ne
-  simp only [RingHom.id_apply, RingHom.toMonoidHom_eq_coe, ENNReal.coe_ne_top,
-    ENNReal.coe_ofNNRealHom, Ne.def, not_false_iff]
+  simp
 #align measure_theory.is_locally_finite_measure_smul_nnreal MeasureTheory.isLocallyFiniteMeasureSMulNNReal
 
 protected theorem Measure.isTopologicalBasis_isOpen_lt_top [TopologicalSpace α]
@@ -3762,22 +3825,22 @@ theorem _root_.IsCompact.measure_lt_top [TopologicalSpace α] {μ : Measure α}
 
 /-- A bounded subset has finite measure for a measure which is finite on compact sets, in a
 proper space. -/
-theorem _root_.Metric.Bounded.measure_lt_top [PseudoMetricSpace α] [ProperSpace α] {μ : Measure α}
-    [IsFiniteMeasureOnCompacts μ] ⦃s : Set α⦄ (hs : Metric.Bounded s) : μ s < ∞ :=
+theorem _root_.Bornology.IsBounded.measure_lt_top [PseudoMetricSpace α] [ProperSpace α]
+    {μ : Measure α} [IsFiniteMeasureOnCompacts μ] ⦃s : Set α⦄ (hs : Bornology.IsBounded s) :
+    μ s < ∞ :=
   calc
     μ s ≤ μ (closure s) := measure_mono subset_closure
-    _ < ∞ := (Metric.isCompact_of_isClosed_bounded isClosed_closure hs.closure).measure_lt_top
-
-#align metric.bounded.measure_lt_top Metric.Bounded.measure_lt_top
+    _ < ∞ := (Metric.isCompact_of_isClosed_isBounded isClosed_closure hs.closure).measure_lt_top
+#align metric.bounded.measure_lt_top Bornology.IsBounded.measure_lt_top
 
 theorem measure_closedBall_lt_top [PseudoMetricSpace α] [ProperSpace α] {μ : Measure α}
     [IsFiniteMeasureOnCompacts μ] {x : α} {r : ℝ} : μ (Metric.closedBall x r) < ∞ :=
-  Metric.bounded_closedBall.measure_lt_top
+  Metric.isBounded_closedBall.measure_lt_top
 #align measure_theory.measure_closed_ball_lt_top MeasureTheory.measure_closedBall_lt_top
 
 theorem measure_ball_lt_top [PseudoMetricSpace α] [ProperSpace α] {μ : Measure α}
     [IsFiniteMeasureOnCompacts μ] {x : α} {r : ℝ} : μ (Metric.ball x r) < ∞ :=
-  Metric.bounded_ball.measure_lt_top
+  Metric.isBounded_ball.measure_lt_top
 #align measure_theory.measure_ball_lt_top MeasureTheory.measure_ball_lt_top
 
 protected theorem IsFiniteMeasureOnCompacts.smul [TopologicalSpace α] (μ : Measure α)
@@ -4156,118 +4219,6 @@ theorem OuterMeasure.toMeasure_zero [MeasurableSpace α] :
   rw [← Measure.measure_univ_eq_zero, toMeasure_apply _ _ MeasurableSet.univ,
     OuterMeasure.coe_zero, Pi.zero_apply]
 #align measure_theory.outer_measure.to_measure_zero MeasureTheory.OuterMeasure.toMeasure_zero
-
-section Trim
-
-/-- Restriction of a measure to a sub-sigma algebra.
-It is common to see a measure `μ` on a measurable space structure `m0` as being also a measure on
-any `m ≤ m0`. Since measures in mathlib have to be trimmed to the measurable space, `μ` itself
-cannot be a measure on `m`, hence the definition of `μ.trim hm`.
-
-This notion is related to `OuterMeasure.trim`, see the lemma
-`toOuterMeasure_trim_eq_trim_toOuterMeasure`. -/
-def Measure.trim {m m0 : MeasurableSpace α} (μ : @Measure α m0) (hm : m ≤ m0) : @Measure α m :=
-  @OuterMeasure.toMeasure α m μ.toOuterMeasure (hm.trans (le_toOuterMeasure_caratheodory μ))
-#align measure_theory.measure.trim MeasureTheory.Measure.trim
-
-@[simp]
-theorem trim_eq_self [MeasurableSpace α] {μ : Measure α} : μ.trim le_rfl = μ := by
-  simp [Measure.trim]
-#align measure_theory.trim_eq_self MeasureTheory.trim_eq_self
-
-variable {m m0 : MeasurableSpace α} {μ : Measure α} {s : Set α}
-
-theorem toOuterMeasure_trim_eq_trim_toOuterMeasure (μ : Measure α) (hm : m ≤ m0) :
-    @Measure.toOuterMeasure _ m (μ.trim hm) = @OuterMeasure.trim _ m μ.toOuterMeasure := by
-  rw [Measure.trim, toMeasure_toOuterMeasure (ms := m)]
-#align measure_theory.to_outer_measure_trim_eq_trim_to_outer_measure MeasureTheory.toOuterMeasure_trim_eq_trim_toOuterMeasure
-
-@[simp]
-theorem zero_trim (hm : m ≤ m0) : (0 : Measure α).trim hm = (0 : @Measure α m) := by
-  simp [Measure.trim, @OuterMeasure.toMeasure_zero _ m]
-#align measure_theory.zero_trim MeasureTheory.zero_trim
-
-theorem trim_measurableSet_eq (hm : m ≤ m0) (hs : @MeasurableSet α m s) : μ.trim hm s = μ s := by
-  rw [Measure.trim, toMeasure_apply (ms := m) _ _ hs]
-#align measure_theory.trim_measurable_set_eq MeasureTheory.trim_measurableSet_eq
-
-theorem le_trim (hm : m ≤ m0) : μ s ≤ μ.trim hm s := by
-  simp_rw [Measure.trim]
-  exact @le_toMeasure_apply _ m _ _ _
-#align measure_theory.le_trim MeasureTheory.le_trim
-
-theorem measure_eq_zero_of_trim_eq_zero (hm : m ≤ m0) (h : μ.trim hm s = 0) : μ s = 0 :=
-  le_antisymm ((le_trim hm).trans (le_of_eq h)) (zero_le _)
-#align measure_theory.measure_eq_zero_of_trim_eq_zero MeasureTheory.measure_eq_zero_of_trim_eq_zero
-
-theorem measure_trim_toMeasurable_eq_zero {hm : m ≤ m0} (hs : μ.trim hm s = 0) :
-    μ (@toMeasurable α m (μ.trim hm) s) = 0 :=
-  measure_eq_zero_of_trim_eq_zero hm (by rwa [@measure_toMeasurable _ m])
-#align measure_theory.measure_trim_to_measurable_eq_zero MeasureTheory.measure_trim_toMeasurable_eq_zero
-
-theorem ae_of_ae_trim (hm : m ≤ m0) {μ : Measure α} {P : α → Prop} (h : ∀ᵐ x ∂μ.trim hm, P x) :
-    ∀ᵐ x ∂μ, P x :=
-  measure_eq_zero_of_trim_eq_zero hm h
-#align measure_theory.ae_of_ae_trim MeasureTheory.ae_of_ae_trim
-
-theorem ae_eq_of_ae_eq_trim {E} {hm : m ≤ m0} {f₁ f₂ : α → E}
-    (h12 : f₁ =ᶠ[@Measure.ae α m (μ.trim hm)] f₂) : f₁ =ᵐ[μ] f₂ :=
-  measure_eq_zero_of_trim_eq_zero hm h12
-#align measure_theory.ae_eq_of_ae_eq_trim MeasureTheory.ae_eq_of_ae_eq_trim
-
-theorem ae_le_of_ae_le_trim {E} [LE E] {hm : m ≤ m0} {f₁ f₂ : α → E}
-    (h12 : f₁ ≤ᶠ[@Measure.ae α m (μ.trim hm)] f₂) : f₁ ≤ᵐ[μ] f₂ :=
-  measure_eq_zero_of_trim_eq_zero hm h12
-#align measure_theory.ae_le_of_ae_le_trim MeasureTheory.ae_le_of_ae_le_trim
-
-theorem trim_trim {m₁ m₂ : MeasurableSpace α} {hm₁₂ : m₁ ≤ m₂} {hm₂ : m₂ ≤ m0} :
-    (μ.trim hm₂).trim hm₁₂ = μ.trim (hm₁₂.trans hm₂) := by
-  refine @Measure.ext _ m₁ _ _ (fun t ht => ?_)
-  rw [trim_measurableSet_eq hm₁₂ ht, trim_measurableSet_eq (hm₁₂.trans hm₂) ht,
-    trim_measurableSet_eq hm₂ (hm₁₂ t ht)]
-#align measure_theory.trim_trim MeasureTheory.trim_trim
-
-theorem restrict_trim (hm : m ≤ m0) (μ : Measure α) (hs : @MeasurableSet α m s) :
-    @Measure.restrict α m (μ.trim hm) s = (μ.restrict s).trim hm := by
-  refine @Measure.ext _ m _ _ (fun t ht => ?_)
-  rw [@Measure.restrict_apply α m _ _ _ ht, trim_measurableSet_eq hm ht,
-    Measure.restrict_apply (hm t ht),
-    trim_measurableSet_eq hm (@MeasurableSet.inter α m t s ht hs)]
-#align measure_theory.restrict_trim MeasureTheory.restrict_trim
-
-instance isFiniteMeasure_trim (hm : m ≤ m0) [IsFiniteMeasure μ] : IsFiniteMeasure (μ.trim hm) where
-  measure_univ_lt_top := by
-    rw [trim_measurableSet_eq hm (@MeasurableSet.univ _ m)]
-    exact measure_lt_top _ _
-#align measure_theory.is_finite_measure_trim MeasureTheory.isFiniteMeasure_trim
-
-theorem sigmaFiniteTrim_mono {m m₂ m0 : MeasurableSpace α} {μ : Measure α} (hm : m ≤ m0)
-    (hm₂ : m₂ ≤ m) [SigmaFinite (μ.trim (hm₂.trans hm))] : SigmaFinite (μ.trim hm) := by
-  have _ := Measure.FiniteSpanningSetsIn (μ.trim (hm₂.trans hm)) Set.univ
-  refine' Measure.FiniteSpanningSetsIn.sigmaFinite _
-  · exact Set.univ
-  · refine'
-      { set := spanningSets (μ.trim (hm₂.trans hm))
-        set_mem := fun _ => Set.mem_univ _
-        finite := fun i => _ -- This is the only one left to prove
-        spanning := iUnion_spanningSets _ }
-    calc
-      (μ.trim hm) (spanningSets (μ.trim (hm₂.trans hm)) i) =
-          ((μ.trim hm).trim hm₂) (spanningSets (μ.trim (hm₂.trans hm)) i) :=
-        by rw [@trim_measurableSet_eq α m₂ m (μ.trim hm) _ hm₂ (measurable_spanningSets _ _)]
-      _ = (μ.trim (hm₂.trans hm)) (spanningSets (μ.trim (hm₂.trans hm)) i) := by
-        rw [@trim_trim _ _ μ _ _ hm₂ hm]
-      _ < ∞ := measure_spanningSets_lt_top _ _
-#align measure_theory.sigma_finite_trim_mono MeasureTheory.sigmaFiniteTrim_mono
-
-theorem sigmaFinite_trim_bot_iff : SigmaFinite (μ.trim bot_le) ↔ IsFiniteMeasure μ := by
-  rw [sigmaFinite_bot_iff]
-  refine' ⟨fun h => ⟨_⟩, fun h => ⟨_⟩⟩ <;> have h_univ := h.measure_univ_lt_top
-  · rwa [trim_measurableSet_eq bot_le MeasurableSet.univ] at h_univ
-  · rwa [trim_measurableSet_eq bot_le MeasurableSet.univ]
-#align measure_theory.sigma_finite_trim_bot_iff MeasureTheory.sigmaFinite_trim_bot_iff
-
-end Trim
 
 end MeasureTheory
 

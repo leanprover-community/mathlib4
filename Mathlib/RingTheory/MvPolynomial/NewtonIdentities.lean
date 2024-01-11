@@ -150,7 +150,7 @@ private theorem sum_filter_pairs_eq_sum_powersetLen_mem_filter_antidiagonal_sum 
     (∑ t in filter (fun t ↦ card t.fst = a.fst) (pairs σ k), f t) =
     ∑ A in powersetLen a.fst univ, (∑ j, f (A, j)) := by
   apply sum_finset_product
-  simp only [mem_filter, mem_powerset_len_univ_iff, mem_univ, and_true, and_iff_right_iff_imp]
+  simp only [mem_filter, mem_powersetLen_univ, mem_univ, and_true, and_iff_right_iff_imp]
   rintro p hp
   have : card p.fst ≤ k := by apply le_of_lt; aesop
   aesop
@@ -207,7 +207,7 @@ private theorem disjUnion_filter_pairs_eq_pairs (k : ℕ) :
 
 private theorem esymm_summand_to_weight (k : ℕ) (A : Finset σ) (h : A ∈ powersetLen k univ) :
     ∑ j in A, weight σ R k (A, j) = k * (-1) ^ k * (∏ i in A, X i : MvPolynomial σ R) := by
-  simp [weight, mem_powerset_len_univ_iff.mp h, mul_assoc]
+  simp [weight, mem_powersetLen_univ.mp h, mul_assoc]
 
 private theorem esymm_to_weight (k : ℕ) : k * esymm σ R k =
     (-1) ^ k * ∑ t in filter (fun t ↦ card t.fst = k) (pairs σ k), weight σ R k t := by
@@ -223,7 +223,7 @@ private theorem esymm_mul_psum_summand_to_weight (k : ℕ) (a : ℕ × ℕ) (ha 
   refine' sum_congr rfl fun x _ ↦ _
   rw [sum_mul]
   refine' sum_congr rfl fun s hs ↦ _
-  rw [mem_powerset_len_univ_iff.mp hs, ← mem_antidiagonal.mp ha, add_sub_self_left]
+  rw [mem_powersetLen_univ.mp hs, ← mem_antidiagonal.mp ha, add_sub_self_left]
 
 private theorem esymm_mul_psum_to_weight (k : ℕ) :
     ∑ a in (antidiagonal k).filter (fun a ↦ a.fst < k),

@@ -570,7 +570,7 @@ protected def gen (𝔖) (S : Set α) (V : Set (β × β)) : Set ((α →ᵤ[�
 `UniformOnFun.gen 𝔖 S V = (S.restrict × S.restrict) ⁻¹' (UniformFun.gen S β V)`.
 This is the crucial fact for proving that the family `UniformOnFun.gen S V` for `S ∈ 𝔖` and
 `V ∈ 𝓤 β` is indeed a basis for the uniformity `α →ᵤ[𝔖] β` endowed with `𝒱(α, β, 𝔖, uβ)`
-the uniform structure of `𝔖`-convergence, as defined in `uniform_on_fun.uniform_space`. -/
+the uniform structure of `𝔖`-convergence, as defined in `UniformOnFun.uniform_space`. -/
 protected theorem gen_eq_preimage_restrict {𝔖} (S : Set α) (V : Set (β × β)) :
     UniformOnFun.gen 𝔖 S V =
       Prod.map (S.restrict ∘ UniformFun.toFun) (S.restrict ∘ UniformFun.toFun) ⁻¹'

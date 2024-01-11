@@ -237,6 +237,25 @@ theorem ωSup_le_iff (c : Chain α) (x : α) : ωSup c ≤ x ↔ ∀ i, c i ≤ 
   exact ωSup_le _ _ ‹_›
 #align omega_complete_partial_order.ωSup_le_iff OmegaCompletePartialOrder.ωSup_le_iff
 
+lemma isLUB_range_ωSup (c : Chain α) : IsLUB (Set.range c) (ωSup c) := by
+  constructor
+  · simp only [upperBounds, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff',
+      Set.mem_setOf_eq]
+    exact fun a ↦ le_ωSup c a
+  · simp only [lowerBounds, upperBounds, Set.mem_range, forall_exists_index,
+      forall_apply_eq_imp_iff', Set.mem_setOf_eq]
+    exact fun ⦃a⦄ a_1 ↦ ωSup_le c a a_1
+
+lemma ωSup_eq_of_isLUB {c : Chain α} {a : α} (h : IsLUB (Set.range c) a) : a = ωSup c := by
+  rw [le_antisymm_iff]
+  simp only [IsLUB, IsLeast, upperBounds, lowerBounds, Set.mem_range, forall_exists_index,
+    forall_apply_eq_imp_iff', Set.mem_setOf_eq] at h
+  constructor
+  · apply h.2
+    exact fun a ↦ le_ωSup c a
+  · rw [ωSup_le_iff]
+    apply h.1
+
 /-- A subset `p : α → Prop` of the type closed under `ωSup` induces an
 `OmegaCompletePartialOrder` on the subtype `{a : α // p a}`. -/
 def subtype {α : Type*} [OmegaCompletePartialOrder α] (p : α → Prop)
@@ -267,6 +286,18 @@ def Continuous (f : α →o β) : Prop :=
 def Continuous' (f : α → β) : Prop :=
   ∃ hf : Monotone f, Continuous ⟨f, hf⟩
 #align omega_complete_partial_order.continuous' OmegaCompletePartialOrder.Continuous'
+
+lemma isLUB_of_scottContinuous {c : Chain α} {f : α → β} (hf : ScottContinuous f) :
+    IsLUB (Set.range (Chain.map c ⟨f, (ScottContinuous.monotone hf)⟩)) (f (ωSup c)) := by
+  simp only [map_coe, OrderHom.coe_mk]
+  rw [(Set.range_comp f ↑c)]
+  exact hf (Set.range_nonempty ↑c) (IsChain.directedOn (isChain_range c)) (isLUB_range_ωSup c)
+
+lemma ScottContinuous.continuous' {f : α → β} (hf : ScottContinuous f) : Continuous' f := by
+  constructor
+  intro c
+  rw [← (ωSup_eq_of_isLUB (isLUB_of_scottContinuous hf))]
+  simp only [OrderHom.coe_mk]
 
 theorem Continuous'.to_monotone {f : α → β} (hf : Continuous' f) : Monotone f :=
   hf.fst

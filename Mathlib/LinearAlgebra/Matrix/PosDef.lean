@@ -120,15 +120,23 @@ theorem posSemidef_self_mul_conjTranspose (A : Matrix m n R) : Matrix.PosSemidef
   by simpa only [conjTranspose_conjTranspose] using posSemidef_conjTranspose_mul_self Aᴴ
 
 /-- The eigenvalues of a positive definite matrix are positive -/
-lemma PosDef.eigenvalues_pos [DecidableEq n] [DecidableEq 𝕜] {A : Matrix n n 𝕜}
+lemma PosDef.eigenvalues_pos [DecidableEq n] {A : Matrix n n 𝕜}
     (hA : Matrix.PosDef A) (i : n) : 0 < hA.1.eigenvalues i := by
   rw [hA.1.eigenvalues_eq, hA.1.transpose_eigenvectorMatrix_apply]
   exact hA.re_dotProduct_pos <| hA.1.eigenvectorBasis.orthonormal.ne_zero i
 
 /-- The eigenvalues of a positive semi-definite matrix are non-negative -/
-lemma PosSemidef.eigenvalues_nonneg [DecidableEq n] [DecidableEq 𝕜] {A : Matrix n n 𝕜}
+lemma PosSemidef.eigenvalues_nonneg [DecidableEq n] {A : Matrix n n 𝕜}
     (hA : Matrix.PosSemidef A) (i : n) : 0 ≤ hA.1.eigenvalues i :=
   (hA.re_dotProduct_nonneg _).trans_eq (hA.1.eigenvalues_eq _).symm
+
+lemma eigenvalues_conjTranspose_mul_self_nonneg (A : Matrix m n 𝕜) [DecidableEq n] (i : n) :
+    0 ≤ (isHermitian_transpose_mul_self A).eigenvalues i :=
+  (Matrix.posSemidef_conjTranspose_mul_self _).eigenvalues_nonneg _
+
+lemma eigenvalues_self_mul_conjTranspose_nonneg (A : Matrix m n 𝕜) [DecidableEq m] (i : m) :
+    0 ≤ (isHermitian_mul_conjTranspose_self A).eigenvalues i :=
+  (Matrix.posSemidef_self_mul_conjTranspose _).eigenvalues_nonneg _
 
 namespace PosDef
 

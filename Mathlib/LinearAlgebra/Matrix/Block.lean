@@ -24,7 +24,7 @@ matrices built out of blocks.
 ## Main results
   * `Matrix.det_of_blockTriangular`: the determinant of a block triangular matrix
     is equal to the product of the determinants of all the blocks
-  * `Matrix.det_of_upperTriangular` and `matrix.det_of_lowerTriangular`: the determinant of
+  * `Matrix.det_of_upperTriangular` and `Matrix.det_of_lowerTriangular`: the determinant of
     a triangular matrix is the product of the entries along the diagonal
 
 ## Tags

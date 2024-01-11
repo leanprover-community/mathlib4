@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+import Mathlib.Data.Int.Bitwise
 
 #align_import linear_algebra.matrix.zpow from "leanprover-community/mathlib"@"03fda9112aa6708947da13944a19310684bfdfcb"
 
@@ -17,7 +18,7 @@ the nonsingular inverse definition for negative powers.
 
 The main definition is a direct recursive call on the integer inductive type,
 as provided by the `DivInvMonoid.Pow` default implementation.
-The lemma names are taken from `Algebra.group_with_zero.power`.
+The lemma names are taken from `Algebra.GroupWithZero.Power`.
 
 ## Tags
 

@@ -212,6 +212,16 @@ theorem prod_congr {f : α →₀ M} {g1 g2 : α → M → N} (h : ∀ x ∈ f.s
 #align finsupp.prod_congr Finsupp.prod_congr
 #align finsupp.sum_congr Finsupp.sum_congr
 
+@[to_additive]
+theorem prod_eq_single {f : α →₀ M} (a : α) {g : α → M → N}
+    (h₀ : ∀ b, f b ≠ 0 → b ≠ a → g b (f b) = 1) (h₁ : f a = 0 → g a 0 = 1) :
+    f.prod g = g a (f a) := by
+  refine Finset.prod_eq_single a (fun b hb₁ hb₂ => ?_) (fun h => ?_)
+  · exact h₀ b (mem_support_iff.mp hb₁) hb₂
+  · simp only [not_mem_support_iff] at h
+    rw [h]
+    refine h₁ h
+
 end SumProd
 
 end Finsupp

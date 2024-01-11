@@ -43,7 +43,7 @@ open CategoryTheory
 section theorems
 
 theorem forall_congr_forget_Type (α : Type u) (p : α → Prop) :
-  (∀ (x : (forget (Type u)).obj α), p x) ↔ ∀ (x : α), p x := Iff.rfl
+    (∀ (x : (forget (Type u)).obj α), p x) ↔ ∀ (x : α), p x := Iff.rfl
 
 attribute [local instance] ConcreteCategory.funLike ConcreteCategory.hasCoeToSort
 

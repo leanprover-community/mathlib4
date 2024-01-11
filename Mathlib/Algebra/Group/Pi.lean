@@ -3,6 +3,7 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 -/
+import Mathlib.Init.CCLemmas
 import Mathlib.Logic.Pairwise
 import Mathlib.Algebra.Hom.GroupInstances
 import Mathlib.Data.Pi.Algebra
@@ -245,7 +246,7 @@ namespace MulHom
 
 @[to_additive]
 theorem coe_mul {M N} {_ : Mul M} {_ : CommSemigroup N} (f g : M →ₙ* N) : (f * g : M → N) =
-  fun x => f x * g x := rfl
+    fun x => f x * g x := rfl
 #align mul_hom.coe_mul MulHom.coe_mul
 #align add_hom.coe_add AddHom.coe_add
 

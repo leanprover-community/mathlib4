@@ -203,8 +203,7 @@ theorem divLeft_eq_inv_trans_mulLeft (a : G) :
 
 /-- A version of `Equiv.mulRight a⁻¹ b` that is defeq to `b / a`. -/
 @[to_additive (attr := simps) " A version of `Equiv.addRight (-a) b` that is defeq to `b - a`. "]
-protected def divRight (a : G) : G ≃
-      G where
+protected def divRight (a : G) : G ≃ G where
   toFun b := b / a
   invFun b := b * a
   left_inv b := by simp [div_eq_mul_inv]

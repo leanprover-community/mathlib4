@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Eric Wieser
 -/
 import Mathlib.LinearAlgebra.QuadraticForm.Basic
+import Mathlib.LinearAlgebra.QuadraticForm.Isometry
 
 #align_import linear_algebra.quadratic_form.isometry from "leanprover-community/mathlib"@"14b69e9f3c16630440a2cbd46f1ddad0d561dee7"
 
@@ -96,6 +97,12 @@ def trans (f : Q₁.IsometryEquiv Q₂) (g : Q₂.IsometryEquiv Q₃) : Q₁.Iso
   { (f : M₁ ≃ₗ[R] M₂).trans (g : M₂ ≃ₗ[R] M₃) with
     map_app' := by intro m; rw [← f.map_app, ← g.map_app]; rfl }
 #align quadratic_form.isometry.trans QuadraticForm.IsometryEquiv.trans
+
+/-- Isometric equivalences are isometric maps -/
+@[simps]
+def toIsometry (g : Q₁.IsometryEquiv Q₂) : Q₁ →qᵢ Q₂ where
+  toFun x := g x
+  __ := g
 
 end IsometryEquiv
 

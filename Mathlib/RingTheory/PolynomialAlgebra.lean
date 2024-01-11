@@ -19,7 +19,7 @@ Combining this with the isomorphism `Matrix n n A ≃ₐ[R] (A ⊗[R] Matrix n n
 in `RingTheory.MatrixAlgebra`, we obtain the algebra isomorphism
 ```
 def matPolyEquiv :
-  Matrix n n R[X] ≃ₐ[R] (Matrix n n R)[X]
+    Matrix n n R[X] ≃ₐ[R] (Matrix n n R)[X]
 ```
 which is characterized by
 ```
@@ -108,19 +108,17 @@ theorem toFunLinear_mul_tmul_mul (a₁ a₂ : A) (p₁ p₂ : R[X]) :
     simp_rw [toFunLinear_mul_tmul_mul_aux_1, toFunLinear_mul_tmul_mul_aux_2]
 #align poly_equiv_tensor.to_fun_linear_mul_tmul_mul PolyEquivTensor.toFunLinear_mul_tmul_mul
 
-theorem toFunLinear_algebraMap_tmul_one (r : R) :
-    (toFunLinear R A) ((algebraMap R A) r ⊗ₜ[R] 1) = (algebraMap R A[X]) r := by
-  rw [toFunLinear_tmul_apply, toFunBilinear_apply_apply, Polynomial.aeval_one, algebraMap_smul,
-    Algebra.algebraMap_eq_smul_one, Algebra.algebraMap_eq_smul_one] -- porting note: had to
-  -- add extra `Algebra.algebraMap_eq_smul_one`
-#align poly_equiv_tensor.to_fun_linear_algebra_map_tmul_one PolyEquivTensor.toFunLinear_algebraMap_tmul_one
+theorem toFunLinear_one_tmul_one :
+    toFunLinear R A (1 ⊗ₜ[R] 1) = 1 := by
+  rw [toFunLinear_tmul_apply, toFunBilinear_apply_apply, Polynomial.aeval_one, one_smul]
+#align poly_equiv_tensor.to_fun_linear_algebra_map_tmul_one PolyEquivTensor.toFunLinear_one_tmul_oneₓ
 
 /-- (Implementation detail).
 The algebra homomorphism `A ⊗[R] R[X] →ₐ[R] A[X]`.
 -/
 def toFunAlgHom : A ⊗[R] R[X] →ₐ[R] A[X] :=
   algHomOfLinearMapTensorProduct (toFunLinear R A) (toFunLinear_mul_tmul_mul R A)
-    (toFunLinear_algebraMap_tmul_one R A)
+    (toFunLinear_one_tmul_one R A)
 #align poly_equiv_tensor.to_fun_alg_hom PolyEquivTensor.toFunAlgHom
 
 @[simp]

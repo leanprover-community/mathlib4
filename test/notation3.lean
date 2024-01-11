@@ -83,3 +83,24 @@ def myId (x : α) := x
 notation3 "BAD " c "; " (x", "* => foldl (a b => b) c) " DAB" => myId x
 /-- info: myId 3 : ℕ -/
 #guard_msgs in #check BAD 1; 2, 3 DAB
+
+section
+/--
+warning: Could not generate matchers for a delaborator, so notation will not be pretty printed.
+Consider either adjusting the expansions or use `notation3 (prettyPrint := false)`.
+-/
+#guard_msgs in local notation3 "#" n => Fin.mk n (by decide)
+end
+
+section
+local notation3 (prettyPrint := false) "#" n => Fin.mk n (by decide)
+
+example : Fin 5 := #1
+
+/--
+error: failed to reduce to 'true'
+  false
+-/
+#guard_msgs in example : Fin 5 := #6
+
+end

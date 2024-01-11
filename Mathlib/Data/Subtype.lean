@@ -158,7 +158,7 @@ theorem restrict_apply {α} {β : α → Type*} (f : ∀ x, β x) (p : α → Pr
 #align subtype.restrict_apply Subtype.restrict_apply
 
 theorem restrict_def {α β} (f : α → β) (p : α → Prop) :
-  restrict p f = f ∘ (fun (a : Subtype p) ↦ a) := rfl
+    restrict p f = f ∘ (fun (a : Subtype p) ↦ a) := rfl
 #align subtype.restrict_def Subtype.restrict_def
 
 theorem restrict_injective {α β} {f : α → β} (p : α → Prop) (h : Injective f) :

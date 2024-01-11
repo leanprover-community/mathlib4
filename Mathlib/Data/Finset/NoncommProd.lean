@@ -353,7 +353,7 @@ theorem noncommProd_eq_prod {β : Type*} [CommMonoid β] (s : Finset α) (f : α
 #align finset.noncomm_sum_eq_sum Finset.noncommSum_eq_sum
 
 /-- The non-commutative version of `Finset.prod_union` -/
-@[to_additive "The non-commutative version of `finset.sum_union`"]
+@[to_additive "The non-commutative version of `Finset.sum_union`"]
 theorem noncommProd_union_of_disjoint [DecidableEq α] {s t : Finset α} (h : Disjoint s t)
     (f : α → β) (comm : { x | x ∈ s ∪ t }.Pairwise fun a b => Commute (f a) (f b)) :
     noncommProd (s ∪ t) f comm =
@@ -417,10 +417,11 @@ theorem noncommProd_mul_single [Fintype ι] [DecidableEq ι] (x : ∀ i, M i) :
     (univ.noncommProd (fun i => Pi.mulSingle i (x i)) fun i _ j _ _ =>
         Pi.mulSingle_apply_commute x i j) = x := by
   ext i
-  apply (univ.noncommProd_map (fun i => MonoidHom.single M i (x i)) _ (Pi.evalMonoidHom M i)).trans
-  refine' (noncommProd_congr (insert_erase (mem_univ i)).symm _ _).trans _
-  · intro i _ j _ _
+  apply (univ.noncommProd_map (fun i => MonoidHom.single M i (x i)) ?a (Pi.evalMonoidHom M i)).trans
+  case a =>
+    intro i _ j _ _
     exact Pi.mulSingle_apply_commute x i j
+  refine' (noncommProd_congr (insert_erase (mem_univ i)).symm _ _).trans _
   · intro j
     exact Pi.mulSingle j (x j) i
   · intro j _; dsimp

@@ -198,7 +198,6 @@ instance : MulOneClass αˣ where
 @[to_additive "Additive units of an additive monoid form an additive group."]
 instance : Group αˣ :=
   { (inferInstance : MulOneClass αˣ) with
-    one := 1,
     mul_assoc := fun _ _ _ => ext <| mul_assoc _ _ _,
     inv := Inv.inv, mul_left_inv := fun u => ext u.inv_val }
 

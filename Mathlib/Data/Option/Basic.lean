@@ -141,7 +141,7 @@ theorem map_eq_id {f : α → α} : Option.map f = id ↔ f = id :=
 #align option.map_eq_id Option.map_eq_id
 
 theorem map_comm {f₁ : α → β} {f₂ : α → γ} {g₁ : β → δ} {g₂ : γ → δ} (h : g₁ ∘ f₁ = g₂ ∘ f₂)
-  (a : α) :
+    (a : α) :
     (Option.map f₁ a).map g₁ = (Option.map f₂ a).map g₂ := by rw [map_map, h, ← map_map]
 #align option.map_comm Option.map_comm
 
@@ -416,5 +416,15 @@ end
 theorem elim_none_some (f : Option α → β) : (fun x ↦ Option.elim x (f none) (f ∘ some)) = f :=
   funext fun o ↦ by cases o <;> rfl
 #align option.elim_none_some Option.elim_none_some
+
+theorem elim_comp (h : α → β) {f : γ → α} {x : α} {i : Option γ} :
+    (i.elim (h x) fun j => h (f j)) = h (i.elim x f) := by cases i <;> rfl
+
+theorem elim_comp₂ (h : α → β → γ) {f : γ → α} {x : α} {g : γ → β} {y : β}
+    {i : Option γ} : (i.elim (h x y) fun j => h (f j) (g j)) = h (i.elim x f) (i.elim y g) := by
+  cases i <;> rfl
+
+theorem elim_apply {f : γ → α → β} {x : α → β} {i : Option γ} {y : α} :
+    i.elim x f y = i.elim (x y) fun j => f j y := by rw [elim_comp fun f : α → β => f y]
 
 end Option

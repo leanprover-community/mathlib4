@@ -65,8 +65,7 @@ elab_rules : command
       let (binders, type?) := expandOptDeclSig sig
       let views := #[{
         declId := newId, binders, type?, value := .missing,
-        ref := ← getRef, kind := default, modifiers := {}
-      : DefView}]
+        ref := ← getRef, kind := default, modifiers := {} : DefView}]
       liftTermElabM do
         let elabView := (← elabHeaders views)[0]!
         unless (← isDefEq info.type elabView.type) do

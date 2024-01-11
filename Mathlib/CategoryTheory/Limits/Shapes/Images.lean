@@ -106,7 +106,7 @@ variable {f}
 determined. -/
 @[ext]
 theorem ext {F F' : MonoFactorisation f} (hI : F.I = F'.I)
-  (hm : F.m = eqToHom hI ≫ F'.m) : F = F' := by
+    (hm : F.m = eqToHom hI ≫ F'.m) : F = F' := by
   cases' F with _ Fm _ _ Ffac; cases' F' with _ Fm' _ _ Ffac'
   cases' hI
   simp at hm

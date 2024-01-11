@@ -132,7 +132,7 @@ instance AdjoinMonic.algebra : Algebra k (AdjoinMonic k) :=
 
 -- Porting note: In the statement, the type of `C` had to be made explicit.
 theorem AdjoinMonic.algebraMap : algebraMap k (AdjoinMonic k) = (Ideal.Quotient.mk _).comp
-  (C : k →+* MvPolynomial (MonicIrreducible k) k) := rfl
+    (C : k →+* MvPolynomial (MonicIrreducible k) k) := rfl
 #align algebraic_closure.adjoin_monic.algebra_map AlgebraicClosure.AdjoinMonic.algebraMap
 
 theorem AdjoinMonic.isIntegral (z : AdjoinMonic k) : IsIntegral k z := by
@@ -325,7 +325,7 @@ def ofStep (n : ℕ) : Step k n →+* AlgebraicClosureAux k :=
 
 theorem ofStep_succ (n : ℕ) : (ofStep k (n + 1)).comp (toStepSucc k n) = ofStep k n := by
   ext x
-  have hx : toStepOfLE' k n (n+1) n.le_succ x = toStepSucc k n x:= Nat.leRecOn_succ' x
+  have hx : toStepOfLE' k n (n+1) n.le_succ x = toStepSucc k n x := Nat.leRecOn_succ' x
   unfold ofStep
   rw [RingHom.comp_apply]
   dsimp [toStepOfLE]

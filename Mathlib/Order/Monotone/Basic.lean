@@ -805,8 +805,8 @@ theorem AntitoneOn.reflect_lt (hf : AntitoneOn f s) {a b : α} (ha : a ∈ s) (h
   lt_of_not_ge fun h' ↦ h.not_le <| hf ha hb h'
 #align antitone_on.reflect_lt AntitoneOn.reflect_lt
 
-theorem StrictMonoOn.le_iff_le (hf : StrictMonoOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s)
-    : f a ≤ f b ↔ a ≤ b :=
+theorem StrictMonoOn.le_iff_le (hf : StrictMonoOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s) :
+    f a ≤ f b ↔ a ≤ b :=
   ⟨fun h ↦ le_of_not_gt fun h' ↦ (hf hb ha h').not_le h, fun h ↦
     h.lt_or_eq_dec.elim (fun h' ↦ (hf ha hb h').le) fun h' ↦ h' ▸ le_rfl⟩
 #align strict_mono_on.le_iff_le StrictMonoOn.le_iff_le
@@ -926,7 +926,7 @@ variable [LinearOrder β] {f : α → β} {s : Set α} {x y : α}
 /-- A function between linear orders which is neither monotone nor antitone makes a dent upright or
 downright. -/
 lemma not_monotone_not_antitone_iff_exists_le_le :
-  ¬ Monotone f ∧ ¬ Antitone f ↔ ∃ a b c, a ≤ b ∧ b ≤ c ∧
+    ¬ Monotone f ∧ ¬ Antitone f ↔ ∃ a b c, a ≤ b ∧ b ≤ c ∧
     (f a < f b ∧ f c < f b ∨ f b < f a ∧ f b < f c) := by
   simp_rw [Monotone, Antitone, not_forall, not_le]
   refine' Iff.symm ⟨_, _⟩
@@ -957,7 +957,7 @@ lemma not_monotone_not_antitone_iff_exists_le_le :
 /-- A function between linear orders which is neither monotone nor antitone makes a dent upright or
 downright. -/
 lemma not_monotone_not_antitone_iff_exists_lt_lt :
-  ¬ Monotone f ∧ ¬ Antitone f ↔ ∃ a b c, a < b ∧ b < c ∧
+    ¬ Monotone f ∧ ¬ Antitone f ↔ ∃ a b c, a < b ∧ b < c ∧
     (f a < f b ∧ f c < f b ∨ f b < f a ∧ f b < f c) := by
   simp_rw [not_monotone_not_antitone_iff_exists_le_le, ←and_assoc]
   refine' exists₃_congr (fun a b c ↦ and_congr_left $

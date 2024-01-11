@@ -306,7 +306,7 @@ theorem exponent_eq_iSup_orderOf (h : ∀ g : G, 0 < orderOf g) :
   have hpk' : orderOf (t ^ p ^ k) = orderOf t / p ^ k := by
     rw [orderOf_pow' t (pow_ne_zero k hp.ne_zero), Nat.gcd_eq_right hpk]
   obtain ⟨a, ha⟩ := Nat.exists_eq_add_of_lt hpe
-  have hcoprime : (orderOf (t ^ p ^ k)).coprime (orderOf g) := by
+  have hcoprime : (orderOf (t ^ p ^ k)).Coprime (orderOf g) := by
     rw [hg, Nat.coprime_pow_right_iff (pos_of_gt hpe), Nat.coprime_comm]
     apply Or.resolve_right (Nat.coprime_or_dvd_of_prime hp _)
     nth_rw 1 [← pow_one p]
@@ -386,4 +386,3 @@ theorem card_dvd_exponent_pow_rank' {n : ℕ} (hG : ∀ g : G, g ^ n = 1) :
 #align card_dvd_exponent_nsmul_rank' card_dvd_exponent_nsmul_rank'
 
 end CommGroup
-

@@ -485,8 +485,8 @@ def curriedYonedaLemma {C : Type u₁} [SmallCategory C] :
 
 /-- The curried version of yoneda lemma when `C` is small. -/
 def curriedYonedaLemma' {C : Type u₁} [SmallCategory C] :
-    yoneda ⋙ (whiskeringLeft Cᵒᵖ (Cᵒᵖ ⥤ Type u₁)ᵒᵖ (Type u₁)).obj yoneda.op ≅ 𝟭 (Cᵒᵖ ⥤ Type u₁)
-    := by
+    yoneda ⋙ (whiskeringLeft Cᵒᵖ (Cᵒᵖ ⥤ Type u₁)ᵒᵖ (Type u₁)).obj yoneda.op
+      ≅ 𝟭 (Cᵒᵖ ⥤ Type u₁) := by
   refine eqToIso ?_ ≪≫ curry.mapIso (isoWhiskerLeft (Prod.swap _ _)
     (yonedaLemma C ≪≫ isoWhiskerLeft (evaluationUncurried Cᵒᵖ (Type u₁)) uliftFunctorTrivial :_))
     ≪≫ eqToIso ?_
@@ -496,5 +496,11 @@ def curriedYonedaLemma' {C : Type u₁} [SmallCategory C] :
   · apply Functor.ext
     · aesop_cat
 #align category_theory.curried_yoneda_lemma' CategoryTheory.curriedYonedaLemma'
+
+lemma isIso_of_yoneda_map_bijective {X Y : C} (f : X ⟶ Y)
+    (hf : ∀ (T : C), Function.Bijective (fun (x : T ⟶ X) => x ≫ f)) :
+    IsIso f := by
+  obtain ⟨g, hg : g ≫ f = 𝟙 Y⟩ := (hf Y).2 (𝟙 Y)
+  exact ⟨g, (hf _).1 (by aesop_cat), hg⟩
 
 end CategoryTheory

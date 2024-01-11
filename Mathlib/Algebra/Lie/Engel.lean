@@ -222,14 +222,12 @@ theorem LieAlgebra.exists_engelian_lieSubalgebra_of_lt_normalizer {K : LieSubalg
 
 attribute [local instance] LieSubalgebra.subsingleton_bot
 
-variable [IsNoetherian R L]
-
 /-- *Engel's theorem*.
 
 Note that this implies all traditional forms of Engel's theorem via
 `LieModule.nontrivial_max_triv_of_isNilpotent`, `LieModule.isNilpotent_iff_forall`,
 `LieAlgebra.isNilpotent_iff_forall`. -/
-theorem LieAlgebra.isEngelian_of_isNoetherian : LieAlgebra.IsEngelian R L := by
+theorem LieAlgebra.isEngelian_of_isNoetherian [IsNoetherian R L] : LieAlgebra.IsEngelian R L := by
   intro M _i1 _i2 _i3 _i4 h
   rw [← isNilpotent_range_toEndomorphism_iff]
   let L' := (toEndomorphism R L M).range
@@ -283,15 +281,22 @@ theorem LieAlgebra.isEngelian_of_isNoetherian : LieAlgebra.IsEngelian R L := by
   exact hK₃ ▸ hK₁
 #align lie_algebra.is_engelian_of_is_noetherian LieAlgebra.isEngelian_of_isNoetherian
 
-/-- Engel's theorem. -/
-theorem LieModule.isNilpotent_iff_forall :
+/-- Engel's theorem.
+
+See also `LieModule.isNilpotent_iff_forall'` which assumes that `M` is Noetherian instead of `L`. -/
+theorem LieModule.isNilpotent_iff_forall [IsNoetherian R L] :
     LieModule.IsNilpotent R L M ↔ ∀ x, _root_.IsNilpotent <| toEndomorphism R L M x :=
   ⟨fun _ ↦ isNilpotent_toEndomorphism_of_isNilpotent R L M,
    fun h => LieAlgebra.isEngelian_of_isNoetherian M h⟩
 #align lie_module.is_nilpotent_iff_forall LieModule.isNilpotent_iff_forall
 
 /-- Engel's theorem. -/
-theorem LieAlgebra.isNilpotent_iff_forall :
+theorem LieModule.isNilpotent_iff_forall' [IsNoetherian R M] :
+    LieModule.IsNilpotent R L M ↔ ∀ x, _root_.IsNilpotent <| toEndomorphism R L M x := by
+  rw [← isNilpotent_range_toEndomorphism_iff, LieModule.isNilpotent_iff_forall]; simp
+
+/-- Engel's theorem. -/
+theorem LieAlgebra.isNilpotent_iff_forall [IsNoetherian R L] :
     LieAlgebra.IsNilpotent R L ↔ ∀ x, _root_.IsNilpotent <| LieAlgebra.ad R L x :=
   LieModule.isNilpotent_iff_forall
 #align lie_algebra.is_nilpotent_iff_forall LieAlgebra.isNilpotent_iff_forall

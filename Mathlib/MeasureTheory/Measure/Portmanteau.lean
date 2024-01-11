@@ -120,7 +120,7 @@ theorem le_measure_compl_liminf_of_limsup_measure_le {ι : Type*} {L : Filter ι
     simpa only [measure_univ] using measure_compl E_mble (measure_lt_top (μs i) E).ne
   simp_rw [meas_Ec, meas_i_Ec]
   have obs :
-    (L.liminf fun i : ι => 1 - μs i E) = L.liminf ((fun x => 1 - x) ∘ fun i : ι => μs i E) := by rfl
+    (L.liminf fun i : ι => 1 - μs i E) = L.liminf ((fun x => 1 - x) ∘ fun i : ι => μs i E) := rfl
   rw [obs]
   have := antitone_const_tsub.map_limsup_of_continuousAt (F := L)
     (fun i => μs i E) (ENNReal.continuous_sub_left ENNReal.one_ne_top).continuousAt
@@ -148,7 +148,7 @@ theorem limsup_measure_compl_le_of_le_liminf_measure {ι : Type*} {L : Filter ι
     simpa only [measure_univ] using measure_compl E_mble (measure_lt_top (μs i) E).ne
   simp_rw [meas_Ec, meas_i_Ec]
   have obs :
-    (L.limsup fun i : ι => 1 - μs i E) = L.limsup ((fun x => 1 - x) ∘ fun i : ι => μs i E) := by rfl
+    (L.limsup fun i : ι => 1 - μs i E) = L.limsup ((fun x => 1 - x) ∘ fun i : ι => μs i E) := rfl
   rw [obs]
   have := antitone_const_tsub.map_liminf_of_continuousAt (F := L)
     (fun i => μs i E) (ENNReal.continuous_sub_left ENNReal.one_ne_top).continuousAt
@@ -365,9 +365,9 @@ theorem FiniteMeasure.limsup_measure_closed_le_of_tendsto {Ω ι : Type*} {L : F
   have room₂ :
     (lintegral (μ : Measure Ω) fun a => thickenedIndicator (δs_pos M) F a) <
       (lintegral (μ : Measure Ω) fun a => thickenedIndicator (δs_pos M) F a) + ε / 2 := by
-    apply
-      ENNReal.lt_add_right (lintegral_lt_top_of_boundedContinuous_to_nnreal (μ : Measure Ω) _).ne
+    apply ENNReal.lt_add_right (ne_of_lt ?_)
         (ENNReal.div_pos_iff.mpr ⟨(ENNReal.coe_pos.mpr ε_pos).ne.symm, ENNReal.two_ne_top⟩).ne.symm
+    apply BoundedContinuousFunction.lintegral_lt_top_of_nnreal
   have ev_near := Eventually.mono (eventually_lt_of_tendsto_lt room₂ key₂) fun n => le_of_lt
   have ev_near' := Eventually.mono ev_near fun n => le_trans
     (measure_le_lintegral_thickenedIndicator (μs n : Measure Ω) F_closed.measurableSet (δs_pos M))

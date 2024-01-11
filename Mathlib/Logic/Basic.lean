@@ -383,6 +383,10 @@ theorem imp_iff_or_not : b → a ↔ a ∨ ¬b := Decidable.imp_iff_or_not
 theorem not_imp_not : ¬a → ¬b ↔ b → a := Decidable.not_imp_not
 #align not_imp_not not_imp_not
 
+@[simp]
+theorem imp_and_neg_imp_iff (p q : Prop) : (p → q) ∧ (¬p → q) ↔ q := by
+  rw [imp_iff_or_not, imp_iff_or_not, not_not, ← or_and_left, not_and_self_iff, or_false_iff]
+
 /-- Provide the reverse of modus tollens (`mt`) as dot notation for implications. -/
 protected theorem Function.mtr : (¬a → ¬b) → b → a := not_imp_not.mp
 #align function.mtr Function.mtr
@@ -562,6 +566,9 @@ theorem heq_of_cast_eq : ∀ (e : α = β) (_ : cast e a = a'), HEq a a'
 theorem cast_eq_iff_heq : cast e a = a' ↔ HEq a a' :=
   ⟨heq_of_cast_eq _, fun h ↦ by cases h; rfl⟩
 #align cast_eq_iff_heq cast_eq_iff_heq
+
+theorem Eq.rec_eq_cast {α : Sort _} {P : α → Sort _} {x y : α} (h : x = y) (z : P x) :
+    h ▸ z = cast (congr_arg P h) z := by induction h; rfl
 
 --Porting note: new theorem. More general version of `eqRec_heq`
 theorem eqRec_heq' {α : Sort u_1} {a' : α} {motive : (a : α) → a' = a → Sort u}
@@ -977,7 +984,7 @@ namespace Classical
 variable {p : α → Prop}
 
 -- use shortened names to avoid conflict when classical namespace is open.
-/-- Any prop `p` is decidable classically. A shorthand for `classical.prop_decidable`. -/
+/-- Any prop `p` is decidable classically. A shorthand for `Classical.propDecidable`. -/
 noncomputable def dec (p : Prop) : Decidable p := by infer_instance
 #align classical.dec Classical.dec
 
@@ -1279,5 +1286,22 @@ theorem ite_ite_comm (h : P → ¬Q) :
      if Q then b else if P then a else c :=
   dite_dite_comm P Q h
 #align ite_ite_comm ite_ite_comm
+
+variable {R : Prop}
+
+theorem ite_prop_iff_or : (if P then Q else R) ↔ (P ∧ Q ∨ ¬ P ∧ R) := by
+  by_cases p : P <;> simp [p]
+
+theorem dite_prop_iff_or {Q : P → Prop} {R : ¬P → Prop} [Decidable P] :
+    dite P Q R ↔ (∃ p, Q p) ∨ (∃ p, R p) := by
+  by_cases h : P <;> simp [h, exists_prop_of_false, exists_prop_of_true]
+
+-- TODO make this a simp lemma in a future PR
+theorem ite_prop_iff_and : (if P then Q else R) ↔ ((P → Q) ∧ (¬ P → R)) := by
+  by_cases p : P <;> simp [p]
+
+theorem dite_prop_iff_and {Q : P → Prop} {R : ¬P → Prop} [Decidable P] :
+    dite P Q R ↔ (∀ h, Q h) ∧ (∀ h, R h) := by
+  by_cases h : P <;> simp [h, forall_prop_of_false, forall_prop_of_true]
 
 end ite

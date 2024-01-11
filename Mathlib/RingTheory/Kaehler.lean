@@ -141,7 +141,7 @@ To view elements as a linear combination of the form `s • D s'`, use
 We also provide the notation `Ω[S⁄R]` for `KaehlerDifferential R S`.
 Note that the slash is `\textfractionsolidus`.
 -/
-def KaehlerDifferential : Type _ :=
+def KaehlerDifferential : Type v :=
   (KaehlerDifferential.ideal R S).Cotangent
 #align kaehler_differential KaehlerDifferential
 
@@ -153,6 +153,7 @@ instance KaehlerDifferential.module : Module (S ⊗[R] S) (KaehlerDifferential R
   Ideal.Cotangent.moduleOfTower _
 #align kaehler_differential.module KaehlerDifferential.module
 
+@[inherit_doc KaehlerDifferential]
 notation:100 "Ω[" S "⁄" R "]" => KaehlerDifferential R S
 
 instance : Nonempty (Ω[S⁄R]) := ⟨0⟩
@@ -285,11 +286,8 @@ theorem Derivation.liftKaehlerDifferential_comp (D : Derivation R S M) :
 
 @[simp]
 theorem Derivation.liftKaehlerDifferential_comp_D (D' : Derivation R S M) (x : S) :
-    D'.liftKaehlerDifferential (KaehlerDifferential.D R S x) = D' x := by
--- Porting note: original proof (timeout)
---  Derivation.congr_fun D'.liftKaehlerDifferential_comp x
-  rw [← Derivation.congr_fun D'.liftKaehlerDifferential_comp x]
-  simp
+    D'.liftKaehlerDifferential (KaehlerDifferential.D R S x) = D' x :=
+  Derivation.congr_fun D'.liftKaehlerDifferential_comp x
 set_option linter.uppercaseLean3 false in
 #align derivation.lift_kaehler_differential_comp_D Derivation.liftKaehlerDifferential_comp_D
 
@@ -388,18 +386,48 @@ theorem KaehlerDifferential.End_equiv_aux (f : S →ₐ[R] S ⊗ S ⧸ KaehlerDi
     exact e₁.symm.trans (e.trans e₂)
 #align kaehler_differential.End_equiv_aux KaehlerDifferential.End_equiv_aux
 
-set_option maxHeartbeats 700000 in
--- Porting note: extra heartbeats are needed to infer the instance
--- Module S { x // x ∈ Ideal.cotangentIdeal (ideal R S) }
-set_option synthInstance.maxHeartbeats 200000 in
--- This has type
--- `Derivation R S (Ω[S⁄R]) ≃ₗ[R] Derivation R S (KaehlerDifferential.ideal R S).cotangentIdeal`
--- But lean times-out if this is given explicitly.
+/- Note: Lean is slow to synthesize theses instances (times out).
+  Without them the endEquivDerivation' and endEquivAuxEquiv both have significant timeouts.
+  In Mathlib 3, it was slow but not this slow. -/
+/-- A shortcut instance to prevent timing out. Hopefully to be removed in the future. -/
+local instance smul_SSmod_SSmod : SMul (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2)
+    (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) := Mul.toSMul _
+
+/-- A shortcut instance to prevent timing out. Hopefully to be removed in the future. -/
+@[nolint defLemma]
+local instance isScalarTower_S_right :
+    IsScalarTower S (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2)
+      (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) := IsScalarTower.right
+
+/-- A shortcut instance to prevent timing out. Hopefully to be removed in the future. -/
+@[nolint defLemma]
+local instance isScalarTower_R_right :
+    IsScalarTower R (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2)
+      (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) := IsScalarTower.right
+
+/-- A shortcut instance to prevent timing out. Hopefully to be removed in the future. -/
+@[nolint defLemma]
+local instance isScalarTower_SS_right : IsScalarTower (S ⊗[R] S)
+    (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) :=
+  IsScalarTower.right
+
+/-- A shortcut instance to prevent timing out. Hopefully to be removed in the future. -/
+local instance instS : Module S (KaehlerDifferential.ideal R S).cotangentIdeal :=
+  Submodule.module' _
+
+/-- A shortcut instance to prevent timing out. Hopefully to be removed in the future. -/
+local instance instR : Module R (KaehlerDifferential.ideal R S).cotangentIdeal :=
+  Submodule.module' _
+
+/-- A shortcut instance to prevent timing out. Hopefully to be removed in the future. -/
+local instance instSS : Module (S ⊗[R] S) (KaehlerDifferential.ideal R S).cotangentIdeal :=
+  Submodule.module' _
+
 /-- Derivations into `Ω[S⁄R]` is equivalent to derivations
 into `(KaehlerDifferential.ideal R S).cotangentIdeal`. -/
-noncomputable def KaehlerDifferential.endEquivDerivation' :=
-  @LinearEquiv.compDer R _ S _ _ (Ω[S⁄R]) _ _ _ (KaehlerDifferential.ideal R S).cotangentIdeal
-    _ _ _ _ _ ((KaehlerDifferential.ideal R S).cotangentEquivIdeal.restrictScalars S)
+noncomputable def KaehlerDifferential.endEquivDerivation' :
+    Derivation R S (Ω[S⁄R]) ≃ₗ[R] Derivation R S (ideal R S).cotangentIdeal :=
+  LinearEquiv.compDer ((KaehlerDifferential.ideal R S).cotangentEquivIdeal.restrictScalars S)
 #align kaehler_differential.End_equiv_derivation' KaehlerDifferential.endEquivDerivation'
 
 /-- (Implementation) An `Equiv` version of `KaehlerDifferential.End_equiv_aux`.
@@ -412,9 +440,6 @@ def KaehlerDifferential.endEquivAuxEquiv :
   (Equiv.refl _).subtypeEquiv (KaehlerDifferential.End_equiv_aux R S)
 #align kaehler_differential.End_equiv_aux_equiv KaehlerDifferential.endEquivAuxEquiv
 
-
-set_option maxHeartbeats 1200000 in
-set_option synthInstance.maxHeartbeats 900000 in
 /--
 The endomorphisms of `Ω[S⁄R]` corresponds to sections of the surjection `S ⊗[R] S ⧸ J ^ 2 →ₐ[R] S`,
 with `J` being the kernel of the multiplication map `S ⊗[R] S →ₐ[R] S`.
@@ -547,8 +572,9 @@ noncomputable def KaehlerDifferential.quotKerTotalEquiv :
     right_inv := by
       intro x
       obtain ⟨x, rfl⟩ := KaehlerDifferential.total_surjective R S x
-      erw [LinearMap.congr_fun (KaehlerDifferential.derivationQuotKerTotal_lift_comp_total R S : _)
-          x]
+      have := LinearMap.congr_fun (KaehlerDifferential.derivationQuotKerTotal_lift_comp_total R S) x
+      rw [LinearMap.comp_apply] at this
+      rw [this]
       rfl }
 #align kaehler_differential.quot_ker_total_equiv KaehlerDifferential.quotKerTotalEquiv
 
@@ -569,7 +595,6 @@ local macro "finsupp_map" : term =>
   `((Finsupp.mapRange.linearMap (Algebra.linearMap A B)).comp
     (Finsupp.lmapDomain A A (algebraMap A B)))
 
-set_option maxHeartbeats 300000 in
 theorem KaehlerDifferential.kerTotal_map (h : Function.Surjective (algebraMap A B)) :
     (KaehlerDifferential.kerTotal R A).map finsupp_map ⊔
         Submodule.span A (Set.range fun x : S => single (algebraMap S B x) (1 : B)) =
@@ -584,7 +609,7 @@ theorem KaehlerDifferential.kerTotal_map (h : Function.Surjective (algebraMap A 
     Finsupp.mapRange.linearMap_apply, Finsupp.mapRange_single, Algebra.linearMap_apply,
     map_one, map_add, map_mul]
   simp_rw [sup_assoc, ← (h.Prod_map h).range_comp]
-  congr 3
+  congr!
   -- Porting note: new
   simp_rw [← IsScalarTower.algebraMap_apply R A B]
   rw [sup_eq_right]

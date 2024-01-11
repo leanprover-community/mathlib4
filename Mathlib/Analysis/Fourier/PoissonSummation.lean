@@ -202,7 +202,7 @@ theorem isBigO_norm_restrict_cocompact (f : C(ℝ, E)) {b : ℝ} (hb : 0 < b)
     (hf : IsBigO (cocompact ℝ) f fun x : ℝ => |x| ^ (-b)) (K : Compacts ℝ) :
     IsBigO (cocompact ℝ) (fun x => ‖(f.comp (ContinuousMap.addRight x)).restrict K‖) fun x =>
       |x| ^ (-b) := by
-  obtain ⟨r, hr⟩ := K.isCompact.bounded.subset_ball 0
+  obtain ⟨r, hr⟩ := K.isCompact.isBounded.subset_closedBall 0
   rw [closedBall_eq_Icc, zero_add, zero_sub] at hr
   have :
     ∀ x : ℝ,

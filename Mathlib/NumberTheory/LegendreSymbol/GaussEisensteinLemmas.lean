@@ -5,7 +5,7 @@ Authors: Chris Hughes
 -/
 import Mathlib.NumberTheory.LegendreSymbol.QuadraticReciprocity
 
-#align_import number_theory.legendre_symbol.gauss_eisenstein_lemmas from "leanprover-community/mathlib"@"c471da714c044131b90c133701e51b877c246677"
+#align_import number_theory.legendre_symbol.gauss_eisenstein_lemmas from "leanprover-community/mathlib"@"442a83d738cb208d3600056c489be16900ba701d"
 
 /-!
 # Lemmas of Gauss and Eisenstein
@@ -86,7 +86,7 @@ private theorem gauss_lemma_aux₁ (p : ℕ) [Fact p.Prime] {a : ℤ}
           (fun x => by split_ifs <;> simp_all (config := { contextual := true }))
           (fun _ _ _ _ _ _ => id) (fun b h _ => ⟨b, by simp_all [-not_le]⟩)
           (by intros; split_ifs at * <;> simp_all)
-      rw [prod_mul_distrib, this]; simp
+      rw [prod_mul_distrib, this, prod_const]
     _ = (-1 : ZMod p) ^ ((Ico 1 (p / 2).succ).filter fun x : ℕ =>
         ¬(a * x : ZMod p).val ≤ p / 2).card * (p / 2)! := by
       rw [← prod_natCast, Finset.prod_eq_multiset_prod,

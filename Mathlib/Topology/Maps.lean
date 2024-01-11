@@ -256,13 +256,13 @@ theorem Embedding.closure_eq_preimage_closure_image {e : α → β} (he : Embedd
   he.1.closure_eq_preimage_closure_image s
 #align embedding.closure_eq_preimage_closure_image Embedding.closure_eq_preimage_closure_image
 
-/-- The topology induced under an inclusion `f : X → Y` from the discrete topological space `Y`
-is the discrete topology on `X`. -/
-theorem Embedding.discreteTopology {X Y : Type*} [TopologicalSpace X] [tY : TopologicalSpace Y]
+/-- The topology induced under an inclusion `f : X → Y` from a discrete topological space `Y`
+is the discrete topology on `X`.
+
+See also `DiscreteTopology.of_continuous_injective`. -/
+theorem Embedding.discreteTopology {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
     [DiscreteTopology Y] {f : X → Y} (hf : Embedding f) : DiscreteTopology X :=
-  discreteTopology_iff_nhds.2 fun x => by
-    rw [hf.nhds_eq_comap, nhds_discrete, comap_pure, ← image_singleton, hf.inj.preimage_image,
-      principal_singleton]
+  .of_continuous_injective hf.continuous hf.inj
 #align embedding.discrete_topology Embedding.discreteTopology
 
 end Embedding

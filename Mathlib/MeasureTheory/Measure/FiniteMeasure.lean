@@ -3,9 +3,8 @@ Copyright (c) 2021 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
-import Mathlib.Topology.ContinuousFunction.Bounded
 import Mathlib.Topology.Algebra.Module.WeakDual
-import Mathlib.MeasureTheory.Integral.Bochner
+import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
 
 #align_import measure_theory.measure.finite_measure from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
@@ -216,8 +215,8 @@ instance instAdd : Add (FiniteMeasure Ω) where add μ ν := ⟨μ + ν, Measure
 variable {R : Type*} [SMul R ℝ≥0] [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0 ℝ≥0∞]
   [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
 
-instance instSMul : SMul R (FiniteMeasure Ω)
-    where smul (c : R) μ := ⟨c • (μ : Measure Ω), MeasureTheory.isFiniteMeasureSMulOfNNRealTower⟩
+instance instSMul : SMul R (FiniteMeasure Ω) where
+  smul (c : R) μ := ⟨c • (μ : Measure Ω), MeasureTheory.isFiniteMeasureSMulOfNNRealTower⟩
 
 -- porting note: with `simp` here the `coeFn` lemmas below fall prey to `simpNF`: the LHS simplifies
 @[norm_cast]
@@ -321,29 +320,10 @@ def testAgainstNN (μ : FiniteMeasure Ω) (f : Ω →ᵇ ℝ≥0) : ℝ≥0 :=
   (∫⁻ ω, f ω ∂(μ : Measure Ω)).toNNReal
 #align measure_theory.finite_measure.test_against_nn MeasureTheory.FiniteMeasure.testAgainstNN
 
-theorem _root_.BoundedContinuousFunction.NNReal.coe_ennreal_comp_measurable {Ω : Type*}
-    [TopologicalSpace Ω] [MeasurableSpace Ω] [OpensMeasurableSpace Ω] (f : Ω →ᵇ ℝ≥0) :
-    Measurable fun ω => (f ω : ℝ≥0∞) :=
-  measurable_coe_nnreal_ennreal.comp f.continuous.measurable
-#align bounded_continuous_function.nnreal.to_ennreal_comp_measurable BoundedContinuousFunction.NNReal.coe_ennreal_comp_measurable
-
-theorem _root_.MeasureTheory.lintegral_lt_top_of_boundedContinuous_to_nnreal (μ : Measure Ω)
-    [IsFiniteMeasure μ] (f : Ω →ᵇ ℝ≥0) : (∫⁻ ω, f ω ∂μ) < ∞ := by
-  apply IsFiniteMeasure.lintegral_lt_top_of_bounded_to_eNNReal
-  use nndist f 0
-  intro x
-  have key := BoundedContinuousFunction.Nnreal.upper_bound f x
-  rw [ENNReal.coe_le_coe]
-  have eq : nndist f 0 = ⟨dist f 0, dist_nonneg⟩ := by
-    ext
-    simp only [Real.coe_toNNReal', max_eq_left_iff, NNReal.coe_mk, coe_nndist]
-  rwa [eq] at key
-#align measure_theory.lintegral_lt_top_of_bounded_continuous_to_nnreal MeasureTheory.lintegral_lt_top_of_boundedContinuous_to_nnreal
-
 @[simp]
 theorem testAgainstNN_coe_eq {μ : FiniteMeasure Ω} {f : Ω →ᵇ ℝ≥0} :
     (μ.testAgainstNN f : ℝ≥0∞) = ∫⁻ ω, f ω ∂(μ : Measure Ω) :=
-  ENNReal.coe_toNNReal (lintegral_lt_top_of_boundedContinuous_to_nnreal _ f).ne
+  ENNReal.coe_toNNReal (f.lintegral_lt_top_of_nnreal _).ne
 #align measure_theory.finite_measure.test_against_nn_coe_eq MeasureTheory.FiniteMeasure.testAgainstNN_coe_eq
 
 theorem testAgainstNN_const (μ : FiniteMeasure Ω) (c : ℝ≥0) :
@@ -391,7 +371,7 @@ theorem testAgainstNN_add (μ : FiniteMeasure Ω) (f₁ f₂ : Ω →ᵇ ℝ≥0
     μ.testAgainstNN (f₁ + f₂) = μ.testAgainstNN f₁ + μ.testAgainstNN f₂ := by
   simp only [← ENNReal.coe_eq_coe, BoundedContinuousFunction.coe_add, ENNReal.coe_add, Pi.add_apply,
     testAgainstNN_coe_eq]
-  exact lintegral_add_left (BoundedContinuousFunction.NNReal.coe_ennreal_comp_measurable _) _
+  exact lintegral_add_left (BoundedContinuousFunction.measurable_coe_ennreal_comp _) _
 #align measure_theory.finite_measure.test_against_nn_add MeasureTheory.FiniteMeasure.testAgainstNN_add
 
 theorem testAgainstNN_smul [IsScalarTower R ℝ≥0 ℝ≥0] [PseudoMetricSpace R] [Zero R]
@@ -402,8 +382,7 @@ theorem testAgainstNN_smul [IsScalarTower R ℝ≥0 ℝ≥0] [PseudoMetricSpace 
   simp_rw [← smul_one_smul ℝ≥0∞ c (f _ : ℝ≥0∞), ← smul_one_smul ℝ≥0∞ c (lintegral _ _ : ℝ≥0∞),
     smul_eq_mul]
   exact
-    @lintegral_const_mul _ _ (μ : Measure Ω) (c • (1 : ℝ≥0∞)) _
-      (BoundedContinuousFunction.NNReal.coe_ennreal_comp_measurable f)
+    @lintegral_const_mul _ _ (μ : Measure Ω) (c • (1 : ℝ≥0∞)) _ f.measurable_coe_ennreal_comp
 #align measure_theory.finite_measure.test_against_nn_smul MeasureTheory.FiniteMeasure.testAgainstNN_smul
 
 theorem testAgainstNN_lipschitz_estimate (μ : FiniteMeasure Ω) (f g : Ω →ᵇ ℝ≥0) :
@@ -628,9 +607,7 @@ theorem tendsto_testAgainstNN_filter_of_le_const {ι : Type*} {L : Filter ι}
     (fs_le_const : ∀ᶠ i in L, ∀ᵐ ω : Ω ∂(μ : Measure Ω), fs i ω ≤ c) {f : Ω →ᵇ ℝ≥0}
     (fs_lim : ∀ᵐ ω : Ω ∂(μ : Measure Ω), Tendsto (fun i => fs i ω) L (𝓝 (f ω))) :
     Tendsto (fun i => μ.testAgainstNN (fs i)) L (𝓝 (μ.testAgainstNN f)) := by
-  apply
-    (ENNReal.tendsto_toNNReal
-        (lintegral_lt_top_of_boundedContinuous_to_nnreal (μ : Measure Ω) f).ne).comp
+  apply (ENNReal.tendsto_toNNReal (f.lintegral_lt_top_of_nnreal (μ : Measure Ω)).ne).comp
   exact tendsto_lintegral_nn_filter_of_le_const μ fs_le_const fs_lim
 #align measure_theory.finite_measure.tendsto_test_against_nn_filter_of_le_const MeasureTheory.FiniteMeasure.tendsto_testAgainstNN_filter_of_le_const
 
@@ -668,40 +645,6 @@ condition that the integrals of all bounded continuous real-valued functions con
 
 variable {Ω : Type*} [MeasurableSpace Ω] [TopologicalSpace Ω] [OpensMeasurableSpace Ω]
 
-theorem integrable_of_boundedContinuous_to_nnreal (μ : Measure Ω) [IsFiniteMeasure μ]
-    (f : Ω →ᵇ ℝ≥0) : Integrable (((↑) : ℝ≥0 → ℝ) ∘ ⇑f) μ := by
-  refine' ⟨(NNReal.continuous_coe.comp f.continuous).measurable.aestronglyMeasurable, _⟩
-  simp only [HasFiniteIntegral, Function.comp_apply, NNReal.nnnorm_eq]
-  exact lintegral_lt_top_of_boundedContinuous_to_nnreal _ f
-#align measure_theory.finite_measure.integrable_of_bounded_continuous_to_nnreal MeasureTheory.FiniteMeasure.integrable_of_boundedContinuous_to_nnreal
-
-theorem integrable_of_boundedContinuous_to_real (μ : Measure Ω) [IsFiniteMeasure μ] (f : Ω →ᵇ ℝ) :
-    Integrable (⇑f) μ := by
-  refine' ⟨f.continuous.measurable.aestronglyMeasurable, _⟩
-  have aux : ((↑) : ℝ≥0 → ℝ) ∘ ⇑f.nnnorm = fun x => ‖f x‖ := by
-    ext ω
-    simp only [Function.comp_apply, BoundedContinuousFunction.nnnorm_coeFn_eq, coe_nnnorm]
-  apply (hasFiniteIntegral_iff_norm f).mpr
-  rw [← ofReal_integral_eq_lintegral_ofReal]
-  · exact ENNReal.ofReal_lt_top
-  · exact aux ▸ integrable_of_boundedContinuous_to_nnreal μ f.nnnorm
-  · exact eventually_of_forall fun ω => norm_nonneg (f ω)
-#align measure_theory.finite_measure.integrable_of_bounded_continuous_to_real MeasureTheory.FiniteMeasure.integrable_of_boundedContinuous_to_real
-
-theorem _root_.BoundedContinuousFunction.integral_eq_integral_nnrealPart_sub (μ : Measure Ω)
-    [IsFiniteMeasure μ] (f : Ω →ᵇ ℝ) :
-    ∫ ω, f ω ∂μ = (∫ ω, (f.nnrealPart ω : ℝ) ∂μ) - ∫ ω, ((-f).nnrealPart ω : ℝ) ∂μ := by
-  simp only [f.self_eq_nnrealPart_sub_nnrealPart_neg, Pi.sub_apply, integral_sub,
-    integrable_of_boundedContinuous_to_nnreal]
-  rfl
-#align bounded_continuous_function.integral_eq_integral_nnreal_part_sub BoundedContinuousFunction.integral_eq_integral_nnrealPart_sub
-
-theorem lintegral_lt_top_of_boundedContinuous_to_real {Ω : Type*} [MeasurableSpace Ω]
-    [TopologicalSpace Ω] (μ : Measure Ω) [IsFiniteMeasure μ] (f : Ω →ᵇ ℝ) :
-    (∫⁻ ω, ENNReal.ofReal (f ω) ∂μ) < ∞ :=
-  lintegral_lt_top_of_boundedContinuous_to_nnreal _ f.nnrealPart
-#align measure_theory.finite_measure.lintegral_lt_top_of_bounded_continuous_to_real MeasureTheory.FiniteMeasure.lintegral_lt_top_of_boundedContinuous_to_real
-
 theorem tendsto_of_forall_integral_tendsto {γ : Type*} {F : Filter γ} {μs : γ → FiniteMeasure Ω}
     {μ : FiniteMeasure Ω}
     (h :
@@ -712,13 +655,12 @@ theorem tendsto_of_forall_integral_tendsto {γ : Type*} {F : Filter γ} {μs : �
   intro f
   have key :=
     @ENNReal.tendsto_toReal_iff _ F _
-      (fun i => (lintegral_lt_top_of_boundedContinuous_to_nnreal (μs i : Measure Ω) f).ne) _
-      (lintegral_lt_top_of_boundedContinuous_to_nnreal (μ : Measure Ω) f).ne
+      (fun i => (f.lintegral_lt_top_of_nnreal (μs i)).ne) _ (f.lintegral_lt_top_of_nnreal μ).ne
   simp only [ENNReal.ofReal_coe_nnreal] at key
   apply key.mp
   have lip : LipschitzWith 1 ((↑) : ℝ≥0 → ℝ) := isometry_subtype_coe.lipschitz
   set f₀ := BoundedContinuousFunction.comp _ lip f with _def_f₀
-  have f₀_eq : ⇑f₀ = ((↑) : ℝ≥0 → ℝ) ∘ ⇑f := by rfl
+  have f₀_eq : ⇑f₀ = ((↑) : ℝ≥0 → ℝ) ∘ ⇑f := rfl
   have f₀_nn : 0 ≤ ⇑f₀ := fun _ => by
     simp only [f₀_eq, Pi.zero_apply, Function.comp_apply, NNReal.zero_le_coe]
   have f₀_ae_nn : 0 ≤ᵐ[(μ : Measure Ω)] ⇑f₀ := eventually_of_forall f₀_nn
@@ -730,15 +672,6 @@ theorem tendsto_of_forall_integral_tendsto {γ : Type*} {F : Filter γ} {μs : �
   simp_rw [f₀_eq, Function.comp_apply, ENNReal.ofReal_coe_nnreal] at aux auxs
   simpa only [← aux, ← auxs] using h f₀
 #align measure_theory.finite_measure.tendsto_of_forall_integral_tendsto MeasureTheory.FiniteMeasure.tendsto_of_forall_integral_tendsto
-
-theorem _root_.BoundedContinuousFunction.NNReal.toReal_lintegral_eq_integral (f : Ω →ᵇ ℝ≥0)
-    (μ : Measure Ω) : (∫⁻ x, (f x : ℝ≥0∞) ∂μ).toReal = ∫ x, (f x : ℝ) ∂μ := by
-  rw [integral_eq_lintegral_of_nonneg_ae _ (by simpa [Function.comp_apply] using
-        (NNReal.continuous_coe.comp f.continuous).measurable.aestronglyMeasurable)]
-  · simp only [ENNReal.ofReal_coe_nnreal]
-  · apply eventually_of_forall
-    simp only [Pi.zero_apply, NNReal.zero_le_coe, imp_true_iff]
-#align bounded_continuous_function.nnreal.to_real_lintegral_eq_integral BoundedContinuousFunction.NNReal.toReal_lintegral_eq_integral
 
 /-- A characterization of weak convergence in terms of integrals of bounded continuous
 real-valued functions. -/
@@ -753,21 +686,14 @@ theorem tendsto_iff_forall_integral_tendsto {γ : Type*} {F : Filter γ} {μs : 
   simp_rw [BoundedContinuousFunction.integral_eq_integral_nnrealPart_sub]
   set f_pos := f.nnrealPart with _def_f_pos
   set f_neg := (-f).nnrealPart with _def_f_neg
-  have tends_pos :=
-    (ENNReal.tendsto_toReal
-          (lintegral_lt_top_of_boundedContinuous_to_nnreal (μ : Measure Ω) f_pos).ne).comp
-      (h f_pos)
-  have tends_neg :=
-    (ENNReal.tendsto_toReal
-          (lintegral_lt_top_of_boundedContinuous_to_nnreal (μ : Measure Ω) f_neg).ne).comp
-      (h f_neg)
+  have tends_pos := (ENNReal.tendsto_toReal (f_pos.lintegral_lt_top_of_nnreal μ).ne).comp (h f_pos)
+  have tends_neg := (ENNReal.tendsto_toReal (f_neg.lintegral_lt_top_of_nnreal μ).ne).comp (h f_neg)
   have aux :
     ∀ g : Ω →ᵇ ℝ≥0,
       (ENNReal.toReal ∘ fun i : γ => ∫⁻ x : Ω, ↑(g x) ∂(μs i : Measure Ω)) = fun i : γ =>
         (∫⁻ x : Ω, ↑(g x) ∂(μs i : Measure Ω)).toReal :=
     fun _ => rfl
-  simp_rw [aux, BoundedContinuousFunction.NNReal.toReal_lintegral_eq_integral]
-    at tends_pos tends_neg
+  simp_rw [aux, BoundedContinuousFunction.toReal_lintegral_coe_eq_integral] at tends_pos tends_neg
   exact Tendsto.sub tends_pos tends_neg
 #align measure_theory.finite_measure.tendsto_iff_forall_integral_tendsto MeasureTheory.FiniteMeasure.tendsto_iff_forall_integral_tendsto
 

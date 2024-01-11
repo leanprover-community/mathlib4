@@ -256,7 +256,7 @@ instance : sSupHomClass (sSupHom α β) α β
 
 -- Porting note: times out
 @[simp]
-theorem toFun_eq_coe {f : sSupHom α β} : f.toFun = ⇑f  :=
+theorem toFun_eq_coe {f : sSupHom α β} : f.toFun = ⇑f :=
   rfl
 #align Sup_hom.to_fun_eq_coe sSupHom.toFun_eq_coe
 

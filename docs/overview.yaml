@@ -139,6 +139,10 @@ General algebra:
   Transcendental numbers:
     Liouville's theorem on existence of transcendental numbers: 'transcendental_liouvilleNumber'
 
+  Algebraic Number Theory:
+    Finiteness of the class number: 'NumberField.RingOfIntegers.instFintypeClassGroup'
+    Dirichlet unit theorem: 'NumberField.Units.exist_unique_eq_mul_prod'
+
   Representation theory:
     representation : 'Representation'
     category of finite dimensional representations : 'FdRep'

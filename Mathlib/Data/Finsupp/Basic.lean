@@ -7,6 +7,7 @@ import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Algebra.Hom.GroupAction
 import Mathlib.Algebra.Regular.SMul
 import Mathlib.Data.Finset.Preimage
+import Mathlib.Data.Finsupp.Notation
 import Mathlib.Data.Rat.BigOperators
 import Mathlib.Data.Set.Countable
 
@@ -450,11 +451,11 @@ def mapDomain (f : α → β) (v : α →₀ M) : β →₀ M :=
 
 theorem mapDomain_apply {f : α → β} (hf : Function.Injective f) (x : α →₀ M) (a : α) :
     mapDomain f x (f a) = x a := by
-  rw [mapDomain, sum_apply, sum, Finset.sum_eq_single a, single_eq_same]
+  rw [mapDomain, sum_apply, sum_eq_single a, single_eq_same]
   · intro b _ hba
     exact single_eq_of_ne (hf.ne hba)
-  · intro h
-    rw [not_mem_support_iff.1 h, single_zero, zero_apply]
+  · intro _
+    rw [single_zero, coe_zero, Pi.zero_apply]
 #align finsupp.map_domain_apply Finsupp.mapDomain_apply
 
 theorem mapDomain_notin_range {f : α → β} (x : α →₀ M) (a : β) (h : a ∉ Set.range f) :
@@ -1210,11 +1211,11 @@ theorem curry_apply (f : α × β →₀ M) (x : α) (y : β) : f.curry x y = f 
       rintro ⟨b₁, b₂⟩
       simp [single_apply, ite_apply, Prod.ext_iff, ite_and]
       split_ifs <;> simp [single_apply, *]
-    rw [Finsupp.curry, sum_apply, sum_apply, Finsupp.sum, Finset.sum_eq_single, this, if_pos rfl]
+    rw [Finsupp.curry, sum_apply, sum_apply, sum_eq_single, this, if_pos rfl]
     · intro b _ b_ne
       rw [this b, if_neg b_ne]
-    · intro hxy
-      rw [this (x, y), if_pos rfl, not_mem_support_iff.mp hxy]
+    · intro _
+      rw [single_zero, single_zero, coe_zero, Pi.zero_apply, coe_zero, Pi.zero_apply]
 #align finsupp.curry_apply Finsupp.curry_apply
 
 theorem sum_curry_index (f : α × β →₀ M) (g : α → β → M → N) (hg₀ : ∀ a b, g a b 0 = 0)
@@ -1869,8 +1870,8 @@ end Sigma
 /-- Stringify a `Finsupp` as a sequence of `Finsupp.single` terms.
 
 Note this is `meta` as it has to choose some order for the terms. -/
-unsafe instance (ι α : Type*) [Zero α] [Repr ι] [Repr α] : Repr (ι →₀ α)
-    where repr f :=
+unsafe instance (ι α : Type*) [Zero α] [Repr ι] [Repr α] : Repr (ι →₀ α) where
+  repr f :=
     if f.support.card = 0 then "0"
     else
       " + ".intercalate <|

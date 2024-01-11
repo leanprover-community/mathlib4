@@ -69,7 +69,7 @@ theorem IsCompact.has_extreme_point (hscomp : IsCompact s) (hsnemp : s.Nonempty)
     by_contra hyx
     obtain ⟨l, hl⟩ := geometric_hahn_banach_point_point hyx
     obtain ⟨z, hzt, hz⟩ :=
-      (isCompact_of_isClosed_subset hscomp htclos hst.1).exists_forall_ge ⟨x, hxt⟩
+      (hscomp.of_isClosed_subset htclos hst.1).exists_forall_ge ⟨x, hxt⟩
         l.continuous.continuousOn
     have h : IsExposed ℝ t ({ z ∈ t | ∀ w ∈ t, l w ≤ l z }) := fun _ => ⟨l, rfl⟩
     rw [← hBmin ({ z ∈ t | ∀ w ∈ t, l w ≤ l z })
@@ -84,7 +84,7 @@ theorem IsCompact.has_extreme_point (hscomp : IsCompact s) (hsnemp : s.Nonempty)
   rw [sInter_eq_iInter]
   refine' IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed _ (fun t u => _)
     (fun t => (hFS t.mem).1)
-    (fun t => isCompact_of_isClosed_subset hscomp (hFS t.mem).2.1 (hFS t.mem).2.2.1) fun t =>
+    (fun t => hscomp.of_isClosed_subset (hFS t.mem).2.1 (hFS t.mem).2.2.1) fun t =>
       (hFS t.mem).2.1
   obtain htu | hut := hF.total t.mem u.mem
   exacts [⟨t, Subset.rfl, htu⟩, ⟨u, hut, Subset.rfl⟩]

@@ -502,7 +502,7 @@ theorem add_one_le_iff_lt {x y : PartENat} (hx : x ≠ ⊤) : x + 1 ≤ y ↔ x 
   norm_cast; apply Nat.lt_of_succ_le; norm_cast at h
 #align part_enat.add_one_le_iff_lt PartENat.add_one_le_iff_lt
 
-theorem coe_succ_le_iff {n : ℕ} {e : PartENat} : ↑n.succ ≤ e ↔ ↑n < e:= by
+theorem coe_succ_le_iff {n : ℕ} {e : PartENat} : ↑n.succ ≤ e ↔ ↑n < e := by
   rw [Nat.succ_eq_add_one n, Nat.cast_add, Nat.cast_one, add_one_le_iff_lt (natCast_ne_top n)]
 #align part_enat.coe_succ_le_succ_iff PartENat.coe_succ_le_iff
 
@@ -637,11 +637,11 @@ example (n : ℕ) : ((n : ℕ∞) : PartENat) = ↑n := rfl
 
 -- Porting note : new
 @[simp]
-lemma ofENat_none : ofENat Option.none = ⊤ := by rfl
+lemma ofENat_none : ofENat Option.none = ⊤ := rfl
 
 -- Porting note : new
 @[simp]
-lemma ofENat_some (n : ℕ) : ofENat (Option.some n) = ↑n := by rfl
+lemma ofENat_some (n : ℕ) : ofENat (Option.some n) = ↑n := rfl
 
 -- Porting note : new
 @[simp, norm_cast]

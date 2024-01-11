@@ -20,9 +20,9 @@ namespace Rat
 open Rat
 
 @[simp]
-theorem cast_hom_rat : castHom ℚ = RingHom.id ℚ :=
+theorem castHom_rat : castHom ℚ = RingHom.id ℚ :=
   RingHom.ext cast_id
-#align rat.cast_hom_rat Rat.cast_hom_rat
+#align rat.cast_hom_rat Rat.castHom_rat
 
 section LinearOrderedField
 
@@ -62,22 +62,22 @@ theorem cast_lt {m n : ℚ} : (m : K) < n ↔ m < n :=
 
 @[simp]
 theorem cast_nonneg {n : ℚ} : 0 ≤ (n : K) ↔ 0 ≤ n := by
-      norm_cast
+  norm_cast
 #align rat.cast_nonneg Rat.cast_nonneg
 
 @[simp]
 theorem cast_nonpos {n : ℚ} : (n : K) ≤ 0 ↔ n ≤ 0 := by
-      norm_cast
+  norm_cast
 #align rat.cast_nonpos Rat.cast_nonpos
 
 @[simp]
 theorem cast_pos {n : ℚ} : (0 : K) < n ↔ 0 < n := by
-      norm_cast
+  norm_cast
 #align rat.cast_pos Rat.cast_pos
 
 @[simp]
 theorem cast_lt_zero {n : ℚ} : (n : K) < 0 ↔ n < 0 := by
-      norm_cast
+  norm_cast
 #align rat.cast_lt_zero Rat.cast_lt_zero
 
 @[simp, norm_cast]

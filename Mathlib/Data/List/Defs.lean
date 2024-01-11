@@ -298,7 +298,7 @@ def permutations'Aux (t : α) : List α → List (List α)
 
 /-- List of all permutations of `l`. This version of `permutations` is less efficient but has
 simpler definitional equations. The permutations are in a different order,
-but are equal up to permutation, as shown by `list.permutations_perm_permutations'`.
+but are equal up to permutation, as shown by `List.permutations_perm_permutations'`.
 
      permutations [1, 2, 3] =
        [[1, 2, 3], [2, 1, 3], [2, 3, 1],
@@ -436,21 +436,21 @@ Example: suppose `l = [1, 2, 3]`. `mapDiagM' f l` will evaluate, in this order,
 `f 1 1`, `f 1 2`, `f 1 3`, `f 2 2`, `f 2 3`, `f 3 3`.
 -/
 def mapDiagM' {m} [Monad m] {α} (f : α → α → m Unit) : List α → m Unit
--- as ported:
---   | [] => return ()
---   | h :: t => (f h h >> t.mapM' (f h)) >> t.mapDiagM'
   | [] => return ()
   | h :: t => do
     _ ← f h h
     _ ← t.mapM' (f h)
     t.mapDiagM' f
+-- as ported:
+--   | [] => return ()
+--   | h :: t => (f h h >> t.mapM' (f h)) >> t.mapDiagM'
 #align list.mmap'_diag List.mapDiagM'
 
 /-- Map each element of a `List` to an action, evaluate these actions in order,
     and collect the results.
 -/
-protected def traverse {F : Type u → Type v} [Applicative F] {α β : Type _} (f : α → F β)
-    : List α → F (List β)
+protected def traverse {F : Type u → Type v} [Applicative F] {α β : Type _} (f : α → F β) :
+    List α → F (List β)
   | [] => pure []
   | x :: xs => List.cons <$> f x <*> List.traverse f xs
 #align list.traverse List.traverse

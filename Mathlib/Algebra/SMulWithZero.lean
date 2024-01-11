@@ -198,7 +198,6 @@ variable (M)
 /-- Compose a `MulActionWithZero` with a `MonoidWithZeroHom`, with action `f r' • m` -/
 def MulActionWithZero.compHom (f : R' →*₀ R) : MulActionWithZero R' M :=
   { SMulWithZero.compHom M f.toZeroHom with
-    smul := (· • ·) ∘ f
     mul_smul := fun r s m => by show f (r * s) • m = (f r) • (f s) • m; simp [mul_smul]
     one_smul := fun m => by show (f 1) • m = m; simp }
 #align mul_action_with_zero.comp_hom MulActionWithZero.compHom

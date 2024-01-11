@@ -91,10 +91,11 @@ theorem algHom_ext' [Algebra R A'] [Algebra R B'] {f g : A'[X] →ₐ[R] B'}
 
 variable (R)
 
-/-- Algebra isomorphism between `R[X]` and `AddMonoidAlgebra R ℕ`. This is just an
+open AddMonoidAlgebra in
+/-- Algebra isomorphism between `R[X]` and `R[ℕ]`. This is just an
 implementation detail, but it can be useful to transfer results from `Finsupp` to polynomials. -/
 @[simps!]
-def toFinsuppIsoAlg : R[X] ≃ₐ[R] AddMonoidAlgebra R ℕ :=
+def toFinsuppIsoAlg : R[X] ≃ₐ[R] R[ℕ] :=
   { toFinsuppIso R with
     commutes' := fun r => by
       dsimp
@@ -510,7 +511,7 @@ end Ring
 theorem aeval_endomorphism {M : Type*} [CommRing R] [AddCommGroup M] [Module R M] (f : M →ₗ[R] M)
     (v : M) (p : R[X]) : aeval f p v = p.sum fun n b => b • (f ^ n) v := by
   rw [aeval_def, eval₂_eq_sum]
-  exact (LinearMap.applyₗ v).map_sum
+  exact map_sum (LinearMap.applyₗ v) _ _
 #align polynomial.aeval_endomorphism Polynomial.aeval_endomorphism
 
 end Polynomial

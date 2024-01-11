@@ -6,7 +6,7 @@ Authors: Sébastien Gouëzel, Johannes Hölzl, Rémy Degenne
 import Mathlib.Order.Filter.Cofinite
 import Mathlib.Order.Hom.CompleteLattice
 
-#align_import order.liminf_limsup from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
+#align_import order.liminf_limsup from "leanprover-community/mathlib"@"ffde2d8a6e689149e44fd95fa862c23a57f8c780"
 
 /-!
 # liminfs and limsups of functions and filters
@@ -160,7 +160,7 @@ theorem not_isBoundedUnder_of_tendsto_atBot [Preorder β] [NoMinOrder β] {f : �
   not_isBoundedUnder_of_tendsto_atTop (β := βᵒᵈ) hf
 #align filter.not_is_bounded_under_of_tendsto_at_bot Filter.not_isBoundedUnder_of_tendsto_atBot
 
-theorem IsBoundedUnder.bddAbove_range_of_cofinite [SemilatticeSup β] {f : α → β}
+theorem IsBoundedUnder.bddAbove_range_of_cofinite [Preorder β] [IsDirected β (· ≤ ·)] {f : α → β}
     (hf : IsBoundedUnder (· ≤ ·) cofinite f) : BddAbove (range f) := by
   rcases hf with ⟨b, hb⟩
   haveI : Nonempty β := ⟨b⟩
@@ -168,18 +168,18 @@ theorem IsBoundedUnder.bddAbove_range_of_cofinite [SemilatticeSup β] {f : α �
   exact ⟨⟨b, ball_image_iff.2 fun x => id⟩, (hb.image f).bddAbove⟩
 #align filter.is_bounded_under.bdd_above_range_of_cofinite Filter.IsBoundedUnder.bddAbove_range_of_cofinite
 
-theorem IsBoundedUnder.bddBelow_range_of_cofinite [SemilatticeInf β] {f : α → β}
+theorem IsBoundedUnder.bddBelow_range_of_cofinite [Preorder β] [IsDirected β (· ≥ ·)] {f : α → β}
     (hf : IsBoundedUnder (· ≥ ·) cofinite f) : BddBelow (range f) :=
   IsBoundedUnder.bddAbove_range_of_cofinite (β := βᵒᵈ) hf
 #align filter.is_bounded_under.bdd_below_range_of_cofinite Filter.IsBoundedUnder.bddBelow_range_of_cofinite
 
-theorem IsBoundedUnder.bddAbove_range [SemilatticeSup β] {f : ℕ → β}
+theorem IsBoundedUnder.bddAbove_range [Preorder β] [IsDirected β (· ≤ ·)] {f : ℕ → β}
     (hf : IsBoundedUnder (· ≤ ·) atTop f) : BddAbove (range f) := by
   rw [← Nat.cofinite_eq_atTop] at hf
   exact hf.bddAbove_range_of_cofinite
 #align filter.is_bounded_under.bdd_above_range Filter.IsBoundedUnder.bddAbove_range
 
-theorem IsBoundedUnder.bddBelow_range [SemilatticeInf β] {f : ℕ → β}
+theorem IsBoundedUnder.bddBelow_range [Preorder β] [IsDirected β (· ≥ ·)] {f : ℕ → β}
     (hf : IsBoundedUnder (· ≥ ·) atTop f) : BddBelow (range f) :=
   IsBoundedUnder.bddAbove_range (β := βᵒᵈ) hf
 #align filter.is_bounded_under.bdd_below_range Filter.IsBoundedUnder.bddBelow_range
@@ -263,6 +263,37 @@ theorem IsCobounded.mono (h : f ≤ g) : f.IsCobounded r → g.IsCobounded r
 #align filter.is_cobounded.mono Filter.IsCobounded.mono
 
 end Relation
+
+section Nonempty
+variable [Preorder α] [Nonempty α] {f : Filter β} {u : β → α}
+
+theorem isBounded_le_atBot : (atBot : Filter α).IsBounded (· ≤ ·) :=
+  ‹Nonempty α›.elim fun a => ⟨a, eventually_le_atBot _⟩
+#align filter.is_bounded_le_at_bot Filter.isBounded_le_atBot
+
+theorem isBounded_ge_atTop : (atTop : Filter α).IsBounded (· ≥ ·) :=
+  ‹Nonempty α›.elim fun a => ⟨a, eventually_ge_atTop _⟩
+#align filter.is_bounded_ge_at_top Filter.isBounded_ge_atTop
+
+theorem Tendsto.isBoundedUnder_le_atBot (h : Tendsto u f atBot) : f.IsBoundedUnder (· ≤ ·) u :=
+  isBounded_le_atBot.mono h
+#align filter.tendsto.is_bounded_under_le_at_bot Filter.Tendsto.isBoundedUnder_le_atBot
+
+theorem Tendsto.isBoundedUnder_ge_atTop (h : Tendsto u f atTop) : f.IsBoundedUnder (· ≥ ·) u :=
+  isBounded_ge_atTop.mono h
+#align filter.tendsto.is_bounded_under_ge_at_top Filter.Tendsto.isBoundedUnder_ge_atTop
+
+theorem bddAbove_range_of_tendsto_atTop_atBot [IsDirected α (· ≤ ·)] {u : ℕ → α}
+    (hx : Tendsto u atTop atBot) : BddAbove (Set.range u) :=
+  hx.isBoundedUnder_le_atBot.bddAbove_range
+#align filter.bdd_above_range_of_tendsto_at_top_at_bot Filter.bddAbove_range_of_tendsto_atTop_atBot
+
+theorem bddBelow_range_of_tendsto_atTop_atTop [IsDirected α (· ≥ ·)] {u : ℕ → α}
+    (hx : Tendsto u atTop atTop) : BddBelow (Set.range u) :=
+  hx.isBoundedUnder_ge_atTop.bddBelow_range
+#align filter.bdd_below_range_of_tendsto_at_top_at_top Filter.bddBelow_range_of_tendsto_atTop_atTop
+
+end Nonempty
 
 theorem isCobounded_le_of_bot [Preorder α] [OrderBot α] {f : Filter α} : f.IsCobounded (· ≤ ·) :=
   ⟨⊥, fun _ _ => bot_le⟩
@@ -959,7 +990,7 @@ theorem blimsup_and_le_inf : (blimsup u f fun x => p x ∧ q x) ≤ blimsup u f 
 
 @[simp]
 theorem bliminf_sup_le_inf_aux_left :
-  (blimsup u f fun x => p x ∧ q x) ≤ blimsup u f p :=
+    (blimsup u f fun x => p x ∧ q x) ≤ blimsup u f p :=
   blimsup_and_le_inf.trans inf_le_left
 
 @[simp]
@@ -1232,10 +1263,25 @@ theorem frequently_lt_of_liminf_lt {α β} [ConditionallyCompleteLinearOrder β]
   frequently_lt_of_lt_limsup (β := βᵒᵈ) hu h
 #align filter.frequently_lt_of_liminf_lt Filter.frequently_lt_of_liminf_lt
 
+variable [ConditionallyCompleteLinearOrder α] {f : Filter α} {b : α}
+
+-- The linter erroneously claims that I'm not referring to `c`
+set_option linter.unusedVariables false in
+theorem lt_mem_sets_of_limsSup_lt (h : f.IsBounded (· ≤ ·)) (l : f.limsSup < b) :
+    ∀ᶠ a in f, a < b :=
+  let ⟨c, (h : ∀ᶠ a in f, a ≤ c), hcb⟩ := exists_lt_of_csInf_lt h l
+  mem_of_superset h fun _a => hcb.trans_le'
+set_option linter.uppercaseLean3 false in
+#align filter.lt_mem_sets_of_Limsup_lt Filter.lt_mem_sets_of_limsSup_lt
+
+theorem gt_mem_sets_of_limsInf_gt : f.IsBounded (· ≥ ·) → b < f.limsInf → ∀ᶠ a in f, b < a :=
+  @lt_mem_sets_of_limsSup_lt αᵒᵈ _ _ _
+set_option linter.uppercaseLean3 false in
+#align filter.gt_mem_sets_of_Liminf_gt Filter.gt_mem_sets_of_limsInf_gt
+
 section Classical
 
 open Classical
-variable [ConditionallyCompleteLinearOrder α]
 
 /-- Given an indexed family of sets `s j` over `j : Subtype p` and a function `f`, then
 `liminf_reparam j` is equal to `j` if `f` is bounded below on `s j`, and otherwise to some

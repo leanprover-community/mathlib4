@@ -85,7 +85,7 @@ def applySimpResultToProp' (proof : Expr) (prop : Expr) (r : Simp.Result) : Meta
 
 /-- Translate a proof and the proposition into a zified form. -/
 def zifyProof (simpArgs : Option (Syntax.TSepArray `Lean.Parser.Tactic.simpStar ","))
-  (proof : Expr) (prop : Expr) : TacticM (Expr × Expr) := do
+    (proof : Expr) (prop : Expr) : TacticM (Expr × Expr) := do
   let ctx_result ← mkZifyContext simpArgs
   let (r, _) ← simp prop ctx_result.ctx
   applySimpResultToProp' proof prop r

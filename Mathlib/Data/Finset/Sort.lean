@@ -259,3 +259,14 @@ unsafe instance [Repr α] : Repr (Finset α) where
     if s.card = 0 then "∅" else repr s.1
 
 end Finset
+
+namespace Fin
+
+theorem sort_univ (n : ℕ) : Finset.univ.sort (fun x y : Fin n => x ≤ y) = List.finRange n :=
+  List.eq_of_perm_of_sorted
+    (List.perm_of_nodup_nodup_toFinset_eq
+      (Finset.univ.sort_nodup _) (List.nodup_finRange n) (by simp))
+    (Finset.univ.sort_sorted LE.le)
+    (List.pairwise_le_finRange n)
+
+end Fin

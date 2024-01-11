@@ -55,7 +55,7 @@ section
 `is_sheaf_iff_is_sheaf_pairwise_intersections`).
 
 A presheaf is a sheaf if `F` sends the cone `(pairwise.cocone U).op` to a limit cone.
-(Recall `pairwise.cocone U` has cone point `supr U`, mapping down to the `U i` and the `U i ⊓ U j`.)
+(Recall `Pairwise.cocone U` has cone point `supr U`, mapping down to the `U i` and the `U i ⊓ U j`.)
 -/
 def IsSheafPairwiseIntersections (F : Presheaf C X) : Prop :=
   ∀ ⦃ι : Type w⦄ (U : ι → Opens X), Nonempty (IsLimit (F.mapCone (Pairwise.cocone U).op))
@@ -66,8 +66,8 @@ set_option linter.uppercaseLean3 false in
 (which we prove equivalent to the usual one below as
 `is_sheaf_iff_is_sheaf_preserves_limit_pairwise_intersections`).
 
-A presheaf is a sheaf if `F` preserves the limit of `pairwise.diagram U`.
-(Recall `pairwise.diagram U` is the diagram consisting of the pairwise intersections
+A presheaf is a sheaf if `F` preserves the limit of `Pairwise.diagram U`.
+(Recall `Pairwise.diagram U` is the diagram consisting of the pairwise intersections
 `U i ⊓ U j` mapping into the open sets `U i`. This diagram has limit `supr U`.)
 -/
 def IsSheafPreservesLimitPairwiseIntersections (F : Presheaf C X) : Prop :=
@@ -225,7 +225,7 @@ set_option linter.uppercaseLean3 false in
 #align Top.presheaf.sheaf_condition.pairwise_diagram_iso TopCat.Presheaf.SheafCondition.pairwiseDiagramIso
 
 /--
-The cocone `pairwise.cocone U` with cocone point `supr U` over `pairwise.diagram U` is isomorphic
+The cocone `Pairwise.cocone U` with cocone point `supr U` over `Pairwise.diagram U` is isomorphic
 to the cocone `opens_le_cover_cocone U` (with the same cocone point)
 after appropriate whiskering and postcomposition.
 -/
@@ -452,7 +452,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- `F(U ⊔ V)` is isomorphic to the `eq_locus` of the two maps `F(U) × F(V) ⟶ F(U ⊓ V)`. -/
 def objSupIsoProdEqLocus {X : TopCat} (F : X.Sheaf CommRingCat) (U V : Opens X) :
-  F.1.obj (op <| U ⊔ V) ≅ CommRingCat.of <|
+    F.1.obj (op <| U ⊔ V) ≅ CommRingCat.of <|
     -- Porting note : Lean 3 is able to figure out the ring homomorphism automatically
     RingHom.eqLocus
       (RingHom.comp (F.val.map (homOfLE inf_le_left : U ⊓ V ⟶ U).op)

@@ -63,7 +63,7 @@ namespace TopologicalSpace
 
 universe u
 
-variable {α : Type u} [t : TopologicalSpace α]
+variable {α : Type u} [t : TopologicalSpace α] {B : Set (Set α)} {s : Set α}
 
 /-- A topological basis is one that satisfies the necessary conditions so that
   it suffices to take unions of the basis sets to get a topology (without taking
@@ -207,6 +207,15 @@ theorem IsTopologicalBasis.open_eq_iUnion {B : Set (Set α)} (hB : IsTopological
     rw [← sUnion_eq_iUnion]
     apply hB.open_eq_sUnion' ou, fun s => And.left s.2⟩
 #align topological_space.is_topological_basis.open_eq_Union TopologicalSpace.IsTopologicalBasis.open_eq_iUnion
+
+lemma IsTopologicalBasis.subset_of_forall_subset {t : Set α} (hB : IsTopologicalBasis B)
+    (hs : IsOpen s) (h : ∀ U ∈ B, U ⊆ s → U ⊆ t) : s ⊆ t := by
+  rw [hB.open_eq_sUnion' hs]; simpa [sUnion_subset_iff]
+
+lemma IsTopologicalBasis.eq_of_forall_subset_iff {t : Set α} (hB : IsTopologicalBasis B)
+    (hs : IsOpen s) (ht : IsOpen t) (h : ∀ U ∈ B, U ⊆ s ↔ U ⊆ t) : s = t := by
+  rw [hB.open_eq_sUnion' hs, hB.open_eq_sUnion' ht]
+  exact congr_arg _ (Set.ext λ U ↦ and_congr_right $ h _)
 
 /-- A point `a` is in the closure of `s` iff all basis sets containing `a` intersect `s`. -/
 theorem IsTopologicalBasis.mem_closure_iff {b : Set (Set α)} (hb : IsTopologicalBasis b) {s : Set α}
@@ -425,7 +434,7 @@ theorem _root_.Set.PairwiseDisjoint.countable_of_nonempty_interior [SeparableSpa
 set `c`. Beware that this definition does not require that `c` is contained in `s` (to express the
 latter, use `TopologicalSpace.SeparableSpace s` or
 `TopologicalSpace.IsSeparable (univ : Set s))`. In metric spaces, the two definitions are
-equivalent, see `TopologicalSpace.IsSeparable.SeparableSpace`. -/
+equivalent, see `TopologicalSpace.IsSeparable.separableSpace`. -/
 def IsSeparable (s : Set α) :=
   ∃ c : Set α, c.Countable ∧ s ⊆ closure c
 #align topological_space.is_separable TopologicalSpace.IsSeparable
@@ -456,6 +465,25 @@ theorem isSeparable_iUnion {ι : Type*} [Countable ι] {s : ι → Set α}
   refine' ⟨⋃ i, c i, countable_iUnion hc, iUnion_subset_iff.2 fun i => _⟩
   exact (h'c i).trans (closure_mono (subset_iUnion _ i))
 #align topological_space.is_separable_Union TopologicalSpace.isSeparable_iUnion
+
+lemma isSeparable_pi {ι : Type*} [Fintype ι] {α : ∀ (_ : ι), Type*} {s : ∀ i, Set (α i)}
+    [∀ i, TopologicalSpace (α i)] (h : ∀ i, IsSeparable (s i)) :
+    IsSeparable {f : ∀ i, α i | ∀ i, f i ∈ s i} := by
+  choose c c_count hc using h
+  refine ⟨{f | ∀ i, f i ∈ c i}, countable_pi c_count, ?_⟩
+  simp_rw [← mem_univ_pi]
+  dsimp
+  rw [closure_pi_set]
+  exact Set.pi_mono (fun i _ ↦ hc i)
+
+lemma IsSeparable.prod {β : Type*} [TopologicalSpace β]
+    {s : Set α} {t : Set β} (hs : IsSeparable s) (ht : IsSeparable t) :
+    IsSeparable (s ×ˢ t) := by
+  rcases hs with ⟨cs, cs_count, hcs⟩
+  rcases ht with ⟨ct, ct_count, hct⟩
+  refine ⟨cs ×ˢ ct, cs_count.prod ct_count, ?_⟩
+  rw [closure_prod_eq]
+  exact Set.prod_mono hcs hct
 
 theorem _root_.Set.Countable.isSeparable {s : Set α} (hs : s.Countable) : IsSeparable s :=
   ⟨s, hs, subset_closure⟩
@@ -761,7 +789,8 @@ theorem secondCountableTopology_of_countable_cover {ι} [Encodable ι] {U : ι �
 #align topological_space.second_countable_topology_of_countable_cover TopologicalSpace.secondCountableTopology_of_countable_cover
 
 /-- In a second-countable space, an open set, given as a union of open sets,
-is equal to the union of countably many of those sets. -/
+is equal to the union of countably many of those sets.
+In particular, any open covering of `α` has a countable subcover: α is a Lindelöf space. -/
 theorem isOpen_iUnion_countable [SecondCountableTopology α] {ι} (s : ι → Set α)
     (H : ∀ i, IsOpen (s i)) : ∃ T : Set ι, T.Countable ∧ ⋃ i ∈ T, s i = ⋃ i, s i := by
   let B := { b ∈ countableBasis α | ∃ i, b ⊆ s i }

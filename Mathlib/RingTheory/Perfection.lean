@@ -231,9 +231,9 @@ to its perfection. -/
 -- @[nolint has_nonempty_instance] -- Porting note: This linter does not exist yet.
 structure PerfectionMap (p : ℕ) [Fact p.Prime] {R : Type u₁} [CommSemiring R] [CharP R p]
     {P : Type u₂} [CommSemiring P] [CharP P p] [PerfectRing P p] (π : P →+* R) : Prop where
-  Injective : ∀ ⦃x y : P⦄,
+  injective : ∀ ⦃x y : P⦄,
     (∀ n, π (((frobeniusEquiv P p).symm)^[n] x) = π (((frobeniusEquiv P p).symm)^[n] y)) → x = y
-  Surjective : ∀ f : ℕ → R, (∀ n, f (n + 1) ^ p = f n) → ∃ x : P, ∀ n,
+  surjective : ∀ f : ℕ → R, (∀ n, f (n + 1) ^ p = f n) → ∃ x : P, ∀ n,
     π (((frobeniusEquiv P p).symm)^[n] x) = f n
 #align perfection_map PerfectionMap
 
@@ -249,11 +249,11 @@ variable {P : Type u₃} [CommSemiring P] [CharP P p] [PerfectRing P p]
 @[simps]
 theorem mk' {f : P →+* R} (g : P ≃+* Ring.Perfection R p) (hfg : Perfection.lift p P R f = g) :
     PerfectionMap p f :=
-  { Injective := fun x y hxy =>
+  { injective := fun x y hxy =>
       g.injective <|
         (RingHom.ext_iff.1 hfg x).symm.trans <|
           Eq.symm <| (RingHom.ext_iff.1 hfg y).symm.trans <| Perfection.ext fun n => (hxy n).symm
-    Surjective := fun y hy =>
+    surjective := fun y hy =>
       let ⟨x, hx⟩ := g.surjective ⟨y, hy⟩
       ⟨x, fun n =>
         show Perfection.coeff R p n (Perfection.lift p P R f x) = Perfection.coeff R p n ⟨y, hy⟩ by
@@ -269,8 +269,8 @@ theorem of : PerfectionMap p (Perfection.coeff R p 0) :=
 
 /-- For a perfect ring, it itself is the perfection. -/
 theorem id [PerfectRing R p] : PerfectionMap p (RingHom.id R) :=
-  { Injective := fun x y hxy => hxy 0
-    Surjective := fun f hf =>
+  { injective := fun x y hxy => hxy 0
+    surjective := fun f hf =>
       ⟨f 0, fun n =>
         show ((frobeniusEquiv R p).symm)^[n] (f 0) = f n from
           Nat.recOn n rfl fun n ih => injective_pow_p R p <| by
@@ -282,8 +282,8 @@ variable {p R P}
 /-- A perfection map induces an isomorphism to the perfection. -/
 noncomputable def equiv {π : P →+* R} (m : PerfectionMap p π) : P ≃+* Ring.Perfection R p :=
   RingEquiv.ofBijective (Perfection.lift p P R π)
-    ⟨fun _ _ hxy => m.Injective fun n => (congr_arg (Perfection.coeff R p n) hxy : _), fun f =>
-      let ⟨x, hx⟩ := m.Surjective f.1 f.2
+    ⟨fun _ _ hxy => m.injective fun n => (congr_arg (Perfection.coeff R p n) hxy : _), fun f =>
+      let ⟨x, hx⟩ := m.surjective f.1 f.2
       ⟨x, Perfection.ext <| hx⟩⟩
 #align perfection_map.equiv PerfectionMap.equiv
 
@@ -327,7 +327,7 @@ noncomputable def lift [PerfectRing R p] (S : Type u₂) [CommSemiring S] [CharP
   right_inv f := by
     exact RingHom.ext fun x => m.equiv.injective <| (m.equiv.apply_symm_apply _).trans
       <| show Perfection.lift p R S (π.comp f) x = RingHom.comp (↑m.equiv) f x from
-        RingHom.ext_iff.1 (by rw [Equiv.apply_eq_iff_eq_symm_apply]; rfl ) _
+        RingHom.ext_iff.1 (by rw [Equiv.apply_eq_iff_eq_symm_apply]; rfl) _
 #align perfection_map.lift PerfectionMap.lift
 
 variable {R p}

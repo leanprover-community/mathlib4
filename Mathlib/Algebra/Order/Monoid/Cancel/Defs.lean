@@ -55,9 +55,7 @@ instance (priority := 200) OrderedCancelCommMonoid.to_contravariantClass_le_left
 
 @[to_additive]
 theorem OrderedCancelCommMonoid.lt_of_mul_lt_mul_left : ∀ a b c : α, a * b < a * c → b < c :=
-  fun a b c h =>
-  lt_of_le_not_le (OrderedCancelCommMonoid.le_of_mul_le_mul_left a b c h.le) <|
-    mt (fun h => OrderedCancelCommMonoid.mul_le_mul_left _ _ h _) (not_le_of_gt h)
+  contravariant_lt_of_contravariant_le α α _ ContravariantClass.elim
 #align ordered_cancel_comm_monoid.lt_of_mul_lt_mul_left OrderedCancelCommMonoid.lt_of_mul_lt_mul_left
 #align ordered_cancel_add_comm_monoid.lt_of_add_lt_add_left OrderedCancelAddCommMonoid.lt_of_add_lt_add_left
 
@@ -77,7 +75,7 @@ instance. -/
 instance OrderedCancelCommMonoid.to_contravariantClass_right (M : Type*)
     [OrderedCancelCommMonoid M] :
     ContravariantClass M M (swap (· * ·)) (· < ·) :=
-  contravariant_swap_mul_lt_of_contravariant_mul_lt M
+  contravariant_swap_mul_of_contravariant_mul M _
 #align ordered_cancel_comm_monoid.to_contravariant_class_right OrderedCancelCommMonoid.to_contravariantClass_right
 #align ordered_cancel_add_comm_monoid.to_contravariant_class_right OrderedCancelAddCommMonoid.to_contravariantClass_right
 

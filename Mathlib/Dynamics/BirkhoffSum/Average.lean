@@ -23,7 +23,8 @@ see `birkhoffAverage_congr_ring`.
 
 -/
 
-set_option autoImplicit true
+open Finset
+open scoped BigOperators
 
 section birkhoffAverage
 
@@ -79,7 +80,7 @@ end birkhoffAverage
 /-- Birkhoff average is "almost invariant" under `f`:
 the difference between `birkhoffAverage R f g n (f x)` and `birkhoffAverage R f g n x`
 is equal to `(n : R)⁻¹ • (g (f^[n] x) - g x)`. -/
-theorem birkhoffAverage_apply_sub_birkhoffAverage (R : Type*) [DivisionRing R]
+theorem birkhoffAverage_apply_sub_birkhoffAverage {α M : Type*} (R : Type*) [DivisionRing R]
     [AddCommGroup M] [Module R M] (f : α → α) (g : α → M) (n : ℕ) (x : α) :
     birkhoffAverage R f g n (f x) - birkhoffAverage R f g n x =
       (n : R)⁻¹ • (g (f^[n] x) - g x) := by

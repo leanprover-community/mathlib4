@@ -37,7 +37,7 @@ variable {α : Type*} {ι : Sort*} {κ : ι → Sort*}
 
 namespace Set
 
-variable {A B : Set (Finset α)} {r : ℕ}
+variable {A B : Set (Finset α)} {s : Finset α} {r : ℕ}
 
 /-! ### Families of `r`-sets -/
 
@@ -49,6 +49,9 @@ def Sized (r : ℕ) (A : Set (Finset α)) : Prop :=
 
 theorem Sized.mono (h : A ⊆ B) (hB : B.Sized r) : A.Sized r := fun _x hx => hB <| h hx
 #align set.sized.mono Set.Sized.mono
+
+@[simp] lemma sized_empty : (∅ : Set (Finset α)).Sized r := by simp [Sized]
+@[simp] lemma sized_singleton : ({s} : Set (Finset α)).Sized r ↔ s.card = r := by simp [Sized]
 
 theorem sized_union : (A ∪ B).Sized r ↔ A.Sized r ∧ B.Sized r :=
   ⟨fun hA => ⟨hA.mono <| subset_union_left _ _, hA.mono <| subset_union_right _ _⟩, fun hA _x hx =>
@@ -104,17 +107,17 @@ section Sized
 variable [Fintype α] {𝒜 : Finset (Finset α)} {s : Finset α} {r : ℕ}
 
 theorem subset_powersetLen_univ_iff : 𝒜 ⊆ powersetLen r univ ↔ (𝒜 : Set (Finset α)).Sized r :=
-  forall_congr' fun A => by rw [mem_powerset_len_univ_iff, mem_coe]
+  forall_congr' fun A => by rw [mem_powersetLen_univ, mem_coe]
 #align finset.subset_powerset_len_univ_iff Finset.subset_powersetLen_univ_iff
 
 alias ⟨_, _root_.Set.Sized.subset_powersetLen_univ⟩ := subset_powersetLen_univ_iff
 #align set.sized.subset_powerset_len_univ Set.Sized.subset_powersetLen_univ
 
-theorem Set.Sized.card_le (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
+theorem _root_.Set.Sized.card_le (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
     card 𝒜 ≤ (Fintype.card α).choose r := by
   rw [Fintype.card, ← card_powersetLen]
   exact card_le_of_subset (subset_powersetLen_univ_iff.mpr h𝒜)
-#align set.sized.card_le Finset.Set.Sized.card_le
+#align set.sized.card_le Set.Sized.card_le
 
 end Sized
 

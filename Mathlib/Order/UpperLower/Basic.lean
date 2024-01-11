@@ -7,7 +7,7 @@ import Mathlib.Data.SetLike.Basic
 import Mathlib.Data.Set.Intervals.OrdConnected
 import Mathlib.Data.Set.Intervals.OrderIso
 
-#align_import order.upper_lower.basic from "leanprover-community/mathlib"@"e9ce88cd0d54891c714c604076084f763dd480ed"
+#align_import order.upper_lower.basic from "leanprover-community/mathlib"@"c0c52abb75074ed8b73a948341f50521fbf43b4c"
 
 /-!
 # Up-sets and down-sets
@@ -187,17 +187,17 @@ theorem isUpperSet_preimage_toDual_iff {s : Set αᵒᵈ} : IsUpperSet (toDual �
   Iff.rfl
 #align is_upper_set_preimage_to_dual_iff isUpperSet_preimage_toDual_iff
 
-alias ⟨_, IsUpperSet.ofDual⟩ := isLowerSet_preimage_ofDual_iff
-#align is_upper_set.of_dual IsUpperSet.ofDual
-
-alias ⟨_, IsLowerSet.ofDual⟩ := isUpperSet_preimage_ofDual_iff
-#align is_lower_set.of_dual IsLowerSet.ofDual
-
-alias ⟨_, IsUpperSet.toDual⟩ := isLowerSet_preimage_toDual_iff
+alias ⟨_, IsUpperSet.toDual⟩ := isLowerSet_preimage_ofDual_iff
 #align is_upper_set.to_dual IsUpperSet.toDual
 
-alias ⟨_, IsLowerSet.toDual⟩ := isUpperSet_preimage_toDual_iff
+alias ⟨_, IsLowerSet.toDual⟩ := isUpperSet_preimage_ofDual_iff
 #align is_lower_set.to_dual IsLowerSet.toDual
+
+alias ⟨_, IsUpperSet.ofDual⟩ := isLowerSet_preimage_toDual_iff
+#align is_upper_set.of_dual IsUpperSet.ofDual
+
+alias ⟨_, IsLowerSet.ofDual⟩ := isUpperSet_preimage_toDual_iff
+#align is_lower_set.of_dual IsLowerSet.ofDual
 
 end LE
 
@@ -385,6 +385,24 @@ alias ⟨IsLowerSet.Iio_subset, _⟩ := isLowerSet_iff_Iio_subset
 
 end PartialOrder
 
+section LinearOrder
+variable [LinearOrder α] {s t : Set α}
+
+theorem IsUpperSet.total (hs : IsUpperSet s) (ht : IsUpperSet t) : s ⊆ t ∨ t ⊆ s := by
+  by_contra' h
+  simp_rw [Set.not_subset] at h
+  obtain ⟨⟨a, has, hat⟩, b, hbt, hbs⟩ := h
+  obtain hab | hba := le_total a b
+  · exact hbs (hs hab has)
+  · exact hat (ht hba hbt)
+#align is_upper_set.total IsUpperSet.total
+
+theorem IsLowerSet.total (hs : IsLowerSet s) (ht : IsLowerSet t) : s ⊆ t ∨ t ⊆ s :=
+  hs.toDual.total ht.toDual
+#align is_lower_set.total IsLowerSet.total
+
+end LinearOrder
+
 /-! ### Bundled upper/lower sets -/
 
 
@@ -496,7 +514,7 @@ instance : SupSet (UpperSet α) :=
 instance : InfSet (UpperSet α) :=
   ⟨fun S => ⟨⋃ s ∈ S, ↑s, isUpperSet_iUnion₂ fun s _ => s.upper⟩⟩
 
-instance : CompletelyDistribLattice (UpperSet α) :=
+instance completelyDistribLattice : CompletelyDistribLattice (UpperSet α) :=
   (toDual.injective.comp SetLike.coe_injective).completelyDistribLattice _ (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl) rfl rfl
 
@@ -645,7 +663,7 @@ instance : SupSet (LowerSet α) :=
 instance : InfSet (LowerSet α) :=
   ⟨fun S => ⟨⋂ s ∈ S, ↑s, isLowerSet_iInter₂ fun s _ => s.lower⟩⟩
 
-instance : CompletelyDistribLattice (LowerSet α) :=
+instance completelyDistribLattice : CompletelyDistribLattice (LowerSet α) :=
   SetLike.coe_injective.completelyDistribLattice _ (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
     (fun _ => rfl) rfl rfl
 
@@ -942,6 +960,31 @@ def upperSetIsoLowerSet : UpperSet α ≃o LowerSet α
 #align upper_set_iso_lower_set upperSetIsoLowerSet
 
 end LE
+
+section LinearOrder
+variable [LinearOrder α]
+
+instance UpperSet.isTotal_le : IsTotal (UpperSet α) (· ≤ ·) := ⟨fun s t => t.upper.total s.upper⟩
+#align upper_set.is_total_le UpperSet.isTotal_le
+
+instance LowerSet.isTotal_le : IsTotal (LowerSet α) (· ≤ ·) := ⟨fun s t => s.lower.total t.lower⟩
+#align lower_set.is_total_le LowerSet.isTotal_le
+
+noncomputable instance : CompleteLinearOrder (UpperSet α) :=
+  { UpperSet.completelyDistribLattice with
+    le_total := IsTotal.total
+    decidableLE := Classical.decRel _
+    decidableEq := Classical.decRel _
+    decidableLT := Classical.decRel _ }
+
+noncomputable instance : CompleteLinearOrder (LowerSet α) :=
+  { LowerSet.completelyDistribLattice with
+    le_total := IsTotal.total
+    decidableLE := Classical.decRel _
+    decidableEq := Classical.decRel _
+    decidableLT := Classical.decRel _ }
+
+end LinearOrder
 
 /-! #### Map -/
 
@@ -1286,6 +1329,12 @@ theorem coe_lowerClosure (s : Set α) : ↑(lowerClosure s) = ⋃ a ∈ s, Iic a
   ext
   simp
 #align coe_lower_closure coe_lowerClosure
+
+instance instDecidablePredMemUpperClosure [DecidablePred (∃ a ∈ s, a ≤ ·)] :
+    DecidablePred (· ∈ upperClosure s) := ‹DecidablePred _›
+
+instance instDecidablePredMemLowerClosure [DecidablePred (∃ a ∈ s, · ≤ a)] :
+    DecidablePred (· ∈ lowerClosure s) := ‹DecidablePred _›
 
 theorem subset_upperClosure : s ⊆ upperClosure s := fun x hx => ⟨x, hx, le_rfl⟩
 #align subset_upper_closure subset_upperClosure

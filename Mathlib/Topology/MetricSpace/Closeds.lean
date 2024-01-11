@@ -407,8 +407,8 @@ variable {α : Type u} [MetricSpace α]
 edistance between two such sets is finite. -/
 instance NonemptyCompacts.metricSpace : MetricSpace (NonemptyCompacts α) :=
   EMetricSpace.toMetricSpace fun x y =>
-    hausdorffEdist_ne_top_of_nonempty_of_bounded x.nonempty y.nonempty x.isCompact.bounded
-      y.isCompact.bounded
+    hausdorffEdist_ne_top_of_nonempty_of_bounded x.nonempty y.nonempty x.isCompact.isBounded
+      y.isCompact.isBounded
 #align metric.nonempty_compacts.metric_space Metric.NonemptyCompacts.metricSpace
 
 /-- The distance on `NonemptyCompacts α` is the Hausdorff distance, by construction -/

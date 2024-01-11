@@ -24,7 +24,7 @@ We prove the following facts:
 
 assert_not_exists Norm
 
-open Metric Set Pointwise Convex
+open Metric Bornology Set Pointwise Convex
 
 variable {ι 𝕜 E : Type*}
 
@@ -43,8 +43,7 @@ section stdSimplex
 variable [Fintype ι]
 
 /-- Every vector in `stdSimplex 𝕜 ι` has `max`-norm at most `1`. -/
-theorem stdSimplex_subset_closedBall : stdSimplex ℝ ι ⊆ Metric.closedBall 0 1 := by
-  intro f hf
+theorem stdSimplex_subset_closedBall : stdSimplex ℝ ι ⊆ Metric.closedBall 0 1 := fun f hf ↦ by
   rw [Metric.mem_closedBall, dist_pi_le_iff zero_le_one]
   intro x
   rw [Pi.zero_apply, Real.dist_0_eq_abs, abs_of_nonneg <| hf.1 x]
@@ -54,8 +53,8 @@ theorem stdSimplex_subset_closedBall : stdSimplex ℝ ι ⊆ Metric.closedBall 0
 variable (ι)
 
 /-- `stdSimplex ℝ ι` is bounded. -/
-theorem bounded_stdSimplex : Metric.Bounded (stdSimplex ℝ ι) :=
-  (Metric.bounded_iff_subset_ball 0).2 ⟨1, stdSimplex_subset_closedBall⟩
+theorem bounded_stdSimplex : IsBounded (stdSimplex ℝ ι) :=
+  (Metric.isBounded_iff_subset_closedBall 0).2 ⟨1, stdSimplex_subset_closedBall⟩
 #align bounded_std_simplex bounded_stdSimplex
 
 /-- `stdSimplex ℝ ι` is closed. -/
@@ -97,9 +96,8 @@ variable [LinearOrderedRing 𝕜] [DenselyOrdered 𝕜] [PseudoMetricSpace 𝕜]
 @[simp]
 theorem closure_openSegment (x y : E) : closure (openSegment 𝕜 x y) = [x -[𝕜] y] := by
   rw [segment_eq_image, openSegment_eq_image, ← closure_Ioo (zero_ne_one' 𝕜)]
-  exact
-    (image_closure_of_isCompact (bounded_Ioo _ _).isCompact_closure <|
-        Continuous.continuousOn <| by continuity).symm
+  exact (image_closure_of_isCompact (isBounded_Ioo _ _).isCompact_closure <|
+    Continuous.continuousOn <| by continuity).symm
 #align closure_open_segment closure_openSegment
 
 end PseudoMetricSpace

@@ -16,7 +16,7 @@ open Lean Elab Elab.Tactic PrettyPrinter Meta Std.Tactic.TryThis
 
 /-- Add a suggestion for `have : t := e`. -/
 def addHaveSuggestion (ref : Syntax) (t? : Option Expr) (e : Expr)
-  (origSpan? : Option Syntax := none) : TermElabM Unit := do
+    (origSpan? : Option Syntax := none) : TermElabM Unit := do
   let estx ← delabToRefinableSyntax e
   let prop ← isProp (← inferType e)
   let tac ← if let some t := t? then
@@ -37,7 +37,7 @@ open Lean.Syntax
 
 /-- Add a suggestion for `rw [h₁, ← h₂] at loc`. -/
 def addRewriteSuggestion (ref : Syntax) (rules : List (Expr × Bool))
-  (type? : Option Expr := none) (loc? : Option Expr := none)
+    (type? : Option Expr := none) (loc? : Option Expr := none)
   (origSpan? : Option Syntax := none) :
     TermElabM Unit := do
   let rules_stx := TSepArray.ofElems <| ← rules.toArray.mapM fun ⟨e, symm⟩ => do

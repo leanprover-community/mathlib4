@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Rémy Degenne
+Authors: Rémy Degenne, Kexing Ying
 -/
 import Mathlib.Probability.Kernel.CondCdf
 import Mathlib.MeasureTheory.Constructions.Polish
@@ -42,6 +42,7 @@ function `condCdf ρ a` (the conditional cumulative distribution function).
   `kernel.const γ ρ = (kernel.const γ ρ.fst) ⊗ₖ (kernel.prodMkLeft γ ρ.condKernel)`
 * `ProbabilityTheory.measure_eq_compProd`:
   `ρ = ((kernel.const Unit ρ.fst) ⊗ₖ (kernel.prodMkLeft Unit ρ.condKernel)) ()`
+* `ProbabilityTheory.eq_condKernel_of_measure_eq_compProd`: a.e. uniqueness of `condKernel`
 
 -/
 
@@ -476,6 +477,121 @@ theorem set_integral_condKernel_univ_left {ρ : Measure (α × Ω)} [IsFiniteMea
 #align probability_theory.set_integral_cond_kernel_univ_left ProbabilityTheory.set_integral_condKernel_univ_left
 
 end IntegralCondKernel
+
+section Unique
+
+/-! ### Uniqueness
+
+This section will prove that the conditional kernel is unique almost everywhere. -/
+
+/-- A s-finite kernel which satisfy the disintegration property of the given measure `ρ` is almost
+everywhere equal to the disintegration kernel of `ρ` when evaluated on a measurable set.
+
+This theorem in the case of finite kernels is weaker than `eq_condKernel_of_measure_eq_compProd`
+which asserts that the kernels are equal almost everywhere and not just on a given measurable
+set. -/
+theorem eq_condKernel_of_measure_eq_compProd' (κ : kernel α Ω) [IsSFiniteKernel κ]
+    (hκ : ρ = (kernel.const Unit ρ.fst ⊗ₖ kernel.prodMkLeft Unit κ) ())
+    {s : Set Ω} (hs : MeasurableSet s) :
+    ∀ᵐ x ∂ρ.fst, κ x s = ρ.condKernel x s := by
+  refine' ae_eq_of_forall_set_lintegral_eq_of_sigmaFinite
+    (kernel.measurable_coe κ hs) (kernel.measurable_coe ρ.condKernel hs) _
+  intros t ht _
+  conv_rhs => rw [set_lintegral_condKernel_eq_measure_prod _ ht hs, hκ]
+  simp only [kernel.compProd_apply _ _ _ (ht.prod hs), kernel.prodMkLeft_apply, Set.mem_prod,
+    kernel.lintegral_const, ← lintegral_indicator _ ht]
+  congr; ext x
+  by_cases hx : x ∈ t
+  all_goals simp [hx]
+
+-- This lemma establishes uniqueness of the disintegration kernel on ℝ
+lemma eq_condKernel_of_measure_eq_compProd_real (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ]
+    (κ : kernel α ℝ) [IsFiniteKernel κ]
+    (hκ : ρ = (kernel.const Unit ρ.fst ⊗ₖ kernel.prodMkLeft Unit κ) ()) :
+    ∀ᵐ x ∂ρ.fst, κ x = ρ.condKernel x := by
+  have huniv : ∀ᵐ x ∂ρ.fst, κ x Set.univ = ρ.condKernel x Set.univ :=
+    eq_condKernel_of_measure_eq_compProd' ρ κ hκ MeasurableSet.univ
+  suffices : ∀ᵐ x ∂ρ.fst, ∀ ⦃t⦄, MeasurableSet t → κ x t = ρ.condKernel x t
+  · filter_upwards [this] with x hx
+    ext t ht; exact hx ht
+  apply MeasurableSpace.ae_induction_on_inter Real.borel_eq_generateFrom_Iic_rat
+    Real.isPiSystem_Iic_rat
+  · simp only [OuterMeasure.empty', Filter.eventually_true]
+  · simp only [iUnion_singleton_eq_range, mem_range, forall_exists_index, forall_apply_eq_imp_iff']
+    exact ae_all_iff.2 <| fun q => eq_condKernel_of_measure_eq_compProd' ρ κ hκ measurableSet_Iic
+  · filter_upwards [huniv] with x hxuniv t ht heq
+    rw [measure_compl ht <| measure_ne_top _ _, heq, hxuniv, measure_compl ht <| measure_ne_top _ _]
+  · refine' ae_of_all _ (fun x f hdisj hf heq => _)
+    rw [measure_iUnion hdisj hf, measure_iUnion hdisj hf]
+    exact tsum_congr heq
+
+/-- A finite kernel which satisfies the disintegration property is almost everywhere equal to the
+disintegration kernel. -/
+theorem eq_condKernel_of_measure_eq_compProd (κ : kernel α Ω) [IsFiniteKernel κ]
+    (hκ : ρ = (kernel.const Unit ρ.fst ⊗ₖ kernel.prodMkLeft Unit κ) ()) :
+    ∀ᵐ x ∂ρ.fst, κ x = ρ.condKernel x := by
+-- The idea is to transporting the question to `ℝ` from `Ω` using `exists_measurableEmbedding_real`
+-- and then constructing a measure on `α × ℝ` using the obtained measurable embedding
+  obtain ⟨f, hf⟩ := exists_measurableEmbedding_real Ω
+  set ρ' : Measure (α × ℝ) := ρ.map (Prod.map id f) with hρ'def
+  have hρ' : ρ'.fst = ρ.fst
+  · ext s hs
+    rw [hρ'def, Measure.fst_apply, Measure.fst_apply, Measure.map_apply]
+    exacts [rfl, Measurable.prod measurable_fst <| hf.measurable.comp measurable_snd,
+      measurable_fst hs, hs, hs]
+  have hρ'' : ∀ᵐ x ∂ρ'.fst, kernel.map κ f hf.measurable x = ρ'.condKernel x
+  · refine' eq_condKernel_of_measure_eq_compProd_real ρ' (kernel.map κ f hf.measurable) _
+    ext s hs
+    simp only [Measure.map_apply (measurable_id.prod_map hf.measurable) hs]
+    conv_lhs => congr; rw [hκ]
+    rw [kernel.compProd_apply _ _ _ hs, kernel.compProd_apply _ _ _
+      (measurable_id.prod_map hf.measurable hs), (_ : (ρ.map (Prod.map id f)).fst = ρ.fst)]
+    · congr
+      ext x
+      simp only [Set.mem_preimage, Prod_map, id_eq, kernel.prodMkLeft_apply, kernel.map_apply]
+      rw [Measure.map_apply hf.measurable]
+      · rfl
+      · exact measurable_prod_mk_left hs
+    · rw [Measure.fst_map_prod_mk]
+      · simp only [Prod_map, id_eq]; rfl
+      · exact (hf.measurable.comp measurable_snd)
+  rw [hρ'] at hρ''
+  suffices : ∀ᵐ x ∂ρ.fst, ∀ s, MeasurableSet s →
+    ((ρ.map (Prod.map id f)).condKernel x) s = (ρ.condKernel x) (f ⁻¹' s)
+  · filter_upwards [hρ'', this] with x hx h
+    rw [kernel.map_apply] at hx
+    ext s hs
+    rw [← Set.preimage_image_eq s hf.injective,
+      ← Measure.map_apply hf.measurable <| hf.measurableSet_image.2 hs, hx,
+      h _ <| hf.measurableSet_image.2 hs]
+  have hprod : (ρ.map (Prod.map id f)).fst = ρ.fst
+  · ext s hs
+    rw [Measure.fst_apply hs,
+      Measure.map_apply (measurable_id.prod_map hf.measurable) (measurable_fst hs),
+      ← Set.preimage_comp, Measure.fst_apply hs]
+    rfl
+  suffices : ρ.map (Prod.map id f) =
+    (kernel.const Unit (ρ.map (Prod.map id f)).fst ⊗ₖ
+      kernel.prodMkLeft Unit (kernel.map (Measure.condKernel ρ) f hf.measurable)) ()
+  · have heq := eq_condKernel_of_measure_eq_compProd_real _ _ this
+    rw [hprod] at heq
+    filter_upwards [heq] with x hx s hs
+    rw [← hx, kernel.map_apply, Measure.map_apply hf.measurable hs]
+  ext s hs
+  have hinteq : ∀ x, (ρ.condKernel x).map f {c | (x, c) ∈ s} =
+      ρ.condKernel x {c | (x, c) ∈ Prod.map id f ⁻¹' s}
+  · intro x
+    rw [Measure.map_apply hf.measurable]
+    · rfl
+    · exact measurable_prod_mk_left hs
+  simp only [hprod, kernel.compProd_apply _ _ _ hs, kernel.prodMkLeft_apply,
+    kernel.map_apply _ hf.measurable, hinteq, Set.mem_preimage, Prod_map, id_eq,
+    kernel.lintegral_const]
+  rw [Measure.map_apply (measurable_id.prod_map hf.measurable) hs, ← lintegral_condKernel_mem]
+  · rfl
+  · exact measurable_id.prod_map hf.measurable hs
+
+end Unique
 
 end Polish
 

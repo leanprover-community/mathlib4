@@ -327,6 +327,8 @@ by linarith
 ```
 
 `linarith` will use all appropriate hypotheses and the negation of the goal, if applicable.
+Disequality hypotheses require case splitting and are not normally considered
+(see the `splitNe` option below).
 
 `linarith [t1, t2, t3]` will additionally use proof terms `t1, t2, t3`.
 
@@ -350,6 +352,10 @@ optional arguments:
   it will only unfold `reducible` definitions.
 * If `split_hypotheses` is true, `linarith` will split conjunctions in the context into separate
   hypotheses.
+* If `splitNe` is `true`, `linarith` will case split on disequality hypotheses.
+  For a given `x ≠ y` hypothesis, `linarith` is run with both `x < y` and `x > y`,
+  and so this runs linarith exponentially many times with respect to the number of
+  disequality hypotheses. (False by default.)
 * If `exfalso` is false, `linarith` will fail when the goal is neither an inequality nor `false`.
   (True by default.)
 * `restrict_type` (not yet implemented in mathlib4)

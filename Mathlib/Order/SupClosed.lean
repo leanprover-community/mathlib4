@@ -5,6 +5,7 @@ Authors: Yaël Dillies, Christopher Hoskin
 -/
 import Mathlib.Data.Finset.Lattice
 import Mathlib.Order.Closure
+import Mathlib.Order.UpperLower.Basic
 
 /-!
 # Sets closed under join/meet
@@ -24,22 +25,6 @@ is automatically complete. All dually for `⊓`.
 * `SemilatticeInf.toCompleteSemilatticeInf`: A meet-semilattice where every inf-closed set has a
   greatest lower bound is automatically complete.
 -/
-
-namespace Finset
-variable {α β : Type*}
-
--- This will come from https://github.com/leanprover-community/mathlib/pull/18989
-lemma sup'_union [SemilatticeSup α] [DecidableEq β] {s₁ s₂ : Finset β} (h₁ : s₁.Nonempty)
-  (h₂ : s₂.Nonempty) (f : β → α) :
-  (s₁ ∪ s₂).sup' (h₁.mono $ subset_union_left _ _) f = s₁.sup' h₁ f ⊔ s₂.sup' h₂ f :=
-eq_of_forall_ge_iff $ λ a ↦ by simp [or_imp, forall_and]
-
-lemma inf'_union [SemilatticeInf α] [DecidableEq β] {s₁ s₂ : Finset β} (h₁ : s₁.Nonempty)
-  (h₂ : s₂.Nonempty) (f : β → α) :
-  (s₁ ∪ s₂).inf' (h₁.mono $ subset_union_left _ _) f = s₁.inf' h₁ f ⊓ s₂.inf' h₂ f :=
-eq_of_forall_le_iff $ λ a ↦ by simp [or_imp, forall_and]
-
-end Finset
 
 variable {α : Type*}
 
@@ -69,6 +54,8 @@ supClosed_sInter $ forall_range_iff.2 hf
 lemma SupClosed.directedOn (hs : SupClosed s) : DirectedOn (· ≤ ·) s :=
 λ _a ha _b hb ↦ ⟨_, hs ha hb, le_sup_left, le_sup_right⟩
 
+lemma IsUpperSet.supClosed (hs : IsUpperSet s) : SupClosed s := fun _a _ _b ↦ hs le_sup_right
+
 end Set
 
 section Finset
@@ -76,11 +63,11 @@ variable {ι : Type*} {f : ι → α} {s : Set α} {t : Finset ι} {a : α}
 open Finset
 
 lemma SupClosed.finsetSup'_mem (hs : SupClosed s) (ht : t.Nonempty) :
-  (∀ i ∈ t, f i ∈ s) → t.sup' ht f ∈ s :=
+    (∀ i ∈ t, f i ∈ s) → t.sup' ht f ∈ s :=
   sup'_induction _ _ hs
 
 lemma SupClosed.finsetSup_mem [OrderBot α] (hs : SupClosed s) (ht : t.Nonempty) :
-  (∀ i ∈ t, f i ∈ s) → t.sup f ∈ s :=
+    (∀ i ∈ t, f i ∈ s) → t.sup f ∈ s :=
   sup'_eq_sup ht f ▸ hs.finsetSup'_mem ht
 #align finset.sup_closed_of_sup_closed SupClosed.finsetSup_mem
 
@@ -113,6 +100,8 @@ infClosed_sInter $ forall_range_iff.2 hf
 lemma InfClosed.codirectedOn (hs : InfClosed s) : DirectedOn (· ≥ ·) s :=
 λ _a ha _b hb ↦ ⟨_, hs ha hb, inf_le_left, inf_le_right⟩
 
+lemma IsLowerSet.infClosed (hs : IsLowerSet s) :  InfClosed s := λ _a _ _b ↦ hs inf_le_right
+
 end Set
 
 section Finset
@@ -120,11 +109,11 @@ variable {ι : Type*} {f : ι → α} {s : Set α} {t : Finset ι} {a : α}
 open Finset
 
 lemma InfClosed.finsetInf'_mem (hs : InfClosed s) (ht : t.Nonempty) :
-  (∀ i ∈ t, f i ∈ s) → t.inf' ht f ∈ s :=
+    (∀ i ∈ t, f i ∈ s) → t.inf' ht f ∈ s :=
   inf'_induction _ _ hs
 
 lemma InfClosed.finsetInf_mem [OrderTop α] (hs : InfClosed s) (ht : t.Nonempty) :
-  (∀ i ∈ t, f i ∈ s) → t.inf f ∈ s :=
+    (∀ i ∈ t, f i ∈ s) → t.inf f ∈ s :=
   inf'_eq_inf ht f ▸ hs.finsetInf'_mem ht
 #align finset.inf_closed_of_inf_closed InfClosed.finsetInf_mem
 

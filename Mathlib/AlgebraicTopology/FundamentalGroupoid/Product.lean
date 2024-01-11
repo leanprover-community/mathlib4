@@ -47,7 +47,7 @@ def proj (i : I) : πₓ (TopCat.of (∀ i, X i)) ⥤ πₓ (X i) :=
   πₘ ⟨_, continuous_apply i⟩
 #align fundamental_groupoid_functor.proj FundamentalGroupoidFunctor.proj
 
-/-- The projection map is precisely path.homotopic.proj interpreted as a functor -/
+/-- The projection map is precisely `Path.Homotopic.proj` interpreted as a functor -/
 @[simp]
 theorem proj_map (i : I) (x₀ x₁ : πₓ (TopCat.of (∀ i, X i))) (p : x₀ ⟶ x₁) :
     (proj X i).map p = @Path.Homotopic.proj _ _ _ _ _ i p :=
@@ -113,11 +113,12 @@ theorem coneDiscreteComp_obj_mapCone :
 /-- This is `piIso.inv` as a cone morphism (in fact, isomorphism) -/
 def piTopToPiCone :
     Limits.Fan.mk (πₓ (TopCat.of (∀ i, X i))) (proj X) ⟶ Grpd.piLimitFan fun i : I => πₓ (X i)
-    where Hom := CategoryTheory.Functor.pi' (proj X)
+    where
+  hom := CategoryTheory.Functor.pi' (proj X)
 #align fundamental_groupoid_functor.pi_Top_to_pi_cone FundamentalGroupoidFunctor.piTopToPiCone
 
 instance : IsIso (piTopToPiCone X) :=
-  haveI : IsIso (piTopToPiCone X).Hom := (inferInstance : IsIso (piIso X).inv)
+  haveI : IsIso (piTopToPiCone X).hom := (inferInstance : IsIso (piIso X).inv)
   Limits.Cones.cone_iso_of_hom_iso (piTopToPiCone X)
 
 /-- The fundamental groupoid functor preserves products -/

@@ -171,7 +171,7 @@ theorem lt_trichotomy [LinearOrder α] (A B : Finset.Colex α) : A < B ∨ A = B
   have h : Finset.Nonempty (A \ B ∪ B \ A) := by
     rw [nonempty_iff_ne_empty]
     intro a
-    simp only [union_eq_empty_iff, sdiff_eq_empty_iff_subset] at a
+    simp only [union_eq_empty, sdiff_eq_empty_iff_subset] at a
     apply h₁ (Subset.antisymm a.1 a.2)
   rcases exists_max_image (A \ B ∪ B \ A) id h with ⟨k, ⟨hk, z⟩⟩
   · simp only [mem_union, mem_sdiff] at hk

@@ -62,7 +62,7 @@ instance instConditionallyCompleteLatticeTropical [ConditionallyCompleteLattice 
     ConditionallyCompleteLattice (Tropical R) :=
   { @instInfTropical R _, @instSupTropical R _,
     instLatticeTropical with
-    le_csSup  := fun _s _x hs hx ↦
+    le_csSup := fun _s _x hs hx ↦
       le_csSup (untrop_monotone.map_bddAbove hs) (Set.mem_image_of_mem untrop hx)
     csSup_le := fun _s _x hs hx ↦
       csSup_le (hs.image untrop) (untrop_monotone.mem_upperBounds_image hx)

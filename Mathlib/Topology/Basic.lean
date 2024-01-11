@@ -161,20 +161,20 @@ theorem IsOpen.union (h₁ : IsOpen s₁) (h₂ : IsOpen s₂) : IsOpen (s₁ �
 #align is_open_empty isOpen_empty
 
 theorem Set.Finite.isOpen_sInter {s : Set (Set α)} (hs : s.Finite) :
-  (∀ t ∈ s, IsOpen t) → IsOpen (⋂₀ s) :=
+    (∀ t ∈ s, IsOpen t) → IsOpen (⋂₀ s) :=
   Finite.induction_on hs (fun _ => by rw [sInter_empty]; exact isOpen_univ) fun _ _ ih h => by
     simp only [sInter_insert, ball_insert_iff] at h ⊢
     exact h.1.inter (ih h.2)
 #align is_open_sInter Set.Finite.isOpen_sInter
 
 theorem Set.Finite.isOpen_biInter {s : Set β} {f : β → Set α} (hs : s.Finite)
-  (h : ∀ i ∈ s, IsOpen (f i)) :
+    (h : ∀ i ∈ s, IsOpen (f i)) :
     IsOpen (⋂ i ∈ s, f i) :=
   sInter_image f s ▸ (hs.image _).isOpen_sInter (ball_image_iff.2 h)
 #align is_open_bInter Set.Finite.isOpen_biInter
 
 theorem isOpen_iInter_of_finite [Finite ι] {s : ι → Set α} (h : ∀ i, IsOpen (s i)) :
-  IsOpen (⋂ i, s i) :=
+    IsOpen (⋂ i, s i) :=
   (finite_range _).isOpen_sInter  (forall_range_iff.2 h)
 #align is_open_Inter isOpen_iInter_of_finite
 
@@ -266,7 +266,7 @@ theorem IsClosed.sdiff {s t : Set α} (h₁ : IsClosed s) (h₂ : IsOpen t) : Is
 #align is_closed.sdiff IsClosed.sdiff
 
 theorem Set.Finite.isClosed_biUnion {s : Set β} {f : β → Set α} (hs : s.Finite)
-  (h : ∀ i ∈ s, IsClosed (f i)) :
+    (h : ∀ i ∈ s, IsClosed (f i)) :
     IsClosed (⋃ i ∈ s, f i) := by
   simp only [← isOpen_compl_iff, compl_iUnion] at *
   exact hs.isOpen_biInter h
@@ -338,6 +338,9 @@ theorem subset_interior_iff {s t : Set α} : t ⊆ interior s ↔ ∃ U, IsOpen 
   ⟨fun h => ⟨interior s, isOpen_interior, h, interior_subset⟩, fun ⟨_U, hU, htU, hUs⟩ =>
     htU.trans (interior_maximal hUs hU)⟩
 #align subset_interior_iff subset_interior_iff
+
+lemma interior_subset_iff : interior s ⊆ t ↔ ∀ U, IsOpen U → U ⊆ s → U ⊆ t := by
+  simp [interior]
 
 @[mono]
 theorem interior_mono {s t : Set α} (h : s ⊆ t) : interior s ⊆ interior t :=
@@ -2013,8 +2016,8 @@ get something like this: (assumption `hf` could be weakened, but the important t
 of the conclusion)
 ```
 lemma ContinuousOn.comp_fract {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-  {f : X → ℝ → Y} {g : X → ℝ} (hf : Continuous ↿f) (hg : Continuous g) (h : ∀ s, f s 0 = f s 1) :
-  Continuous (fun x ↦ f x (fract (g x)))
+    {f : X → ℝ → Y} {g : X → ℝ} (hf : Continuous ↿f) (hg : Continuous g) (h : ∀ s, f s 0 = f s 1) :
+    Continuous (fun x ↦ f x (fract (g x)))
 ```
 With `ContinuousAt` you can be even more precise about what to prove in case of discontinuities,
 see e.g. `ContinuousAt.comp_div_cases`.

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Data.Pi.Algebra
-import Mathlib.Algebra.Hom.Group
+import Mathlib.Algebra.Hom.Group.Basic
 import Mathlib.Algebra.Order.Group.Instances
 import Mathlib.Algebra.Order.Monoid.WithZero.Defs
 import Mathlib.Order.Hom.Basic

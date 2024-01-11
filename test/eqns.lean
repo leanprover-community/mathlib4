@@ -4,8 +4,7 @@ import Std.Tactic.GuardMsgs
 def transpose {m n} (A : m → n → Nat) : n → m → Nat
   | i, j => A j i
 
-theorem transpose_apply {m n} (A : m → n → Nat) (i j) :
-  transpose A i j = A j i := rfl
+theorem transpose_apply {m n} (A : m → n → Nat) (i j) : transpose A i j = A j i := rfl
 
 attribute [eqns transpose_apply] transpose
 

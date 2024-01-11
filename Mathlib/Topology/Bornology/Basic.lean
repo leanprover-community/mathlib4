@@ -179,6 +179,11 @@ theorem isBounded_singleton : IsBounded ({x} : Set α) := by
   exact le_cofinite _ (finite_singleton x).compl_mem_cofinite
 #align bornology.is_bounded_singleton Bornology.isBounded_singleton
 
+theorem isBounded_iff_forall_mem : IsBounded s ↔ ∀ x ∈ s, IsBounded s :=
+  ⟨fun h _ _ ↦ h, fun h ↦ by
+    rcases s.eq_empty_or_nonempty with rfl | ⟨x, hx⟩
+    exacts [isBounded_empty, h x hx]⟩
+
 @[simp]
 theorem isCobounded_univ : IsCobounded (univ : Set α) :=
   univ_mem
@@ -215,6 +220,13 @@ theorem sUnion_bounded_univ : ⋃₀ { s : Set α | IsBounded s } = univ :=
   sUnion_eq_univ_iff.2 fun a => ⟨{a}, isBounded_singleton, mem_singleton a⟩
 #align bornology.sUnion_bounded_univ Bornology.sUnion_bounded_univ
 
+theorem IsBounded.insert (h : IsBounded s) (x : α) : IsBounded (insert x s) :=
+  isBounded_singleton.union h
+
+@[simp]
+theorem isBounded_insert : IsBounded (insert x s) ↔ IsBounded s :=
+  ⟨fun h ↦ h.subset (subset_insert _ _), (.insert · x)⟩
+
 theorem comap_cobounded_le_iff [Bornology β] {f : α → β} :
     (cobounded β).comap f ≤ cobounded α ↔ ∀ ⦃s⦄, IsBounded s → IsBounded (f '' s) := by
   refine'
@@ -228,16 +240,13 @@ theorem comap_cobounded_le_iff [Bornology β] {f : α → β} :
 end
 
 theorem ext_iff' {t t' : Bornology α} :
-    t = t' ↔ ∀ s, (@cobounded α t).sets s ↔ (@cobounded α t').sets s :=
+    t = t' ↔ ∀ s, s ∈ @cobounded α t ↔ s ∈ @cobounded α t' :=
   (Bornology.ext_iff _ _).trans Filter.ext_iff
 #align bornology.ext_iff' Bornology.ext_iff'
 
 theorem ext_iff_isBounded {t t' : Bornology α} :
     t = t' ↔ ∀ s, @IsBounded α t s ↔ @IsBounded α t' s :=
-  ⟨fun h s => h ▸ Iff.rfl, fun h => by
-    ext s
-    simpa [@isBounded_def _ t, isBounded_def, compl_compl] using h sᶜ⟩
--- porting note: Lean 3 could do this without `@isBounded_def _ t`
+  ext_iff'.trans compl_surjective.forall
 #align bornology.ext_iff_is_bounded Bornology.ext_iff_isBounded
 
 variable {s : Set α}
@@ -301,6 +310,11 @@ end Bornology
 
 open Bornology
 
+theorem Filter.HasBasis.disjoint_cobounded_iff [Bornology α] {ι : Sort*} {p : ι → Prop}
+    {s : ι → Set α} {l : Filter α} (h : l.HasBasis p s) :
+    Disjoint l (cobounded α) ↔ ∃ i, p i ∧ IsBounded (s i) :=
+  h.disjoint_iff_left
+
 theorem Set.Finite.isBounded [Bornology α] {s : Set α} (hs : s.Finite) : IsBounded s :=
   Bornology.le_cofinite α hs.compl_mem_cofinite
 #align set.finite.is_bounded Set.Finite.isBounded
@@ -310,8 +324,7 @@ instance : Bornology PUnit :=
 
 /-- The cofinite filter as a bornology -/
 @[reducible]
-def Bornology.cofinite : Bornology α
-    where
+def Bornology.cofinite : Bornology α where
   cobounded' := Filter.cofinite
   le_cofinite' := le_rfl
 #align bornology.cofinite Bornology.cofinite

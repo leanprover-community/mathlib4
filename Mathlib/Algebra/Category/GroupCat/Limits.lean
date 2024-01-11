@@ -127,8 +127,8 @@ set_option linter.uppercaseLean3 false in
 
 /-- The category of groups has all limits. -/
 @[to_additive "The category of additive groups has all limits."]
-instance hasLimitsOfSize : HasLimitsOfSize.{v, v} GroupCatMax.{v, u}
-    where has_limits_of_shape J _ :=
+instance hasLimitsOfSize : HasLimitsOfSize.{v, v} GroupCatMax.{v, u} where
+  has_limits_of_shape J _ :=
     { has_limit :=
         -- Porting note: add this instance to help Lean unify universe levels
         fun F => letI : HasLimit (F ⋙ forget₂ GroupCatMax.{v, u} MonCat.{max v u}) :=
@@ -318,8 +318,8 @@ of groups.)
   (That is, the underlying group could have been computed instead as limits in the category
     of additive groups.)"]
 noncomputable instance forget₂GroupPreservesLimitsOfSize :
-    PreservesLimitsOfSize.{v, v} (forget₂ CommGroupCatMax.{v, u} GroupCatMax.{v, u})
-    where preservesLimitsOfShape {J 𝒥} := { preservesLimit := fun {F} => by infer_instance }
+    PreservesLimitsOfSize.{v, v} (forget₂ CommGroupCatMax.{v, u} GroupCatMax.{v, u}) where
+  preservesLimitsOfShape {J 𝒥} := { preservesLimit := fun {F} => by infer_instance }
 set_option linter.uppercaseLean3 false in
 #align CommGroup.forget₂_Group_preserves_limits_of_size CommGroupCat.forget₂GroupPreservesLimitsOfSize
 set_option linter.uppercaseLean3 false in

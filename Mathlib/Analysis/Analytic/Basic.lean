@@ -544,6 +544,13 @@ theorem HasFPowerSeriesAt.add (hf : HasFPowerSeriesAt f pf x) (hg : HasFPowerSer
   exact ⟨r, hr.1.add hr.2⟩
 #align has_fpower_series_at.add HasFPowerSeriesAt.add
 
+theorem AnalyticAt.congr (hf : AnalyticAt 𝕜 f x) (hg : f =ᶠ[𝓝 x] g) : AnalyticAt 𝕜 g x :=
+  let ⟨_, hpf⟩ := hf
+  (hpf.congr hg).analyticAt
+
+theorem analyticAt_congr (h : f =ᶠ[𝓝 x] g) : AnalyticAt 𝕜 f x ↔ AnalyticAt 𝕜 g x :=
+  ⟨fun hf ↦ hf.congr h, fun hg ↦ hg.congr h.symm⟩
+
 theorem AnalyticAt.add (hf : AnalyticAt 𝕜 f x) (hg : AnalyticAt 𝕜 g x) : AnalyticAt 𝕜 (f + g) x :=
   let ⟨_, hpf⟩ := hf
   let ⟨_, hqf⟩ := hg
@@ -587,6 +594,21 @@ theorem AnalyticAt.sub (hf : AnalyticAt 𝕜 f x) (hg : AnalyticAt 𝕜 g x) :
 theorem AnalyticOn.mono {s t : Set E} (hf : AnalyticOn 𝕜 f t) (hst : s ⊆ t) : AnalyticOn 𝕜 f s :=
   fun z hz => hf z (hst hz)
 #align analytic_on.mono AnalyticOn.mono
+
+theorem AnalyticOn.congr' {s : Set E} (hf : AnalyticOn 𝕜 f s) (hg : f =ᶠ[𝓝ˢ s] g) :
+    AnalyticOn 𝕜 g s :=
+  fun z hz => (hf z hz).congr (mem_nhdsSet_iff_forall.mp hg z hz)
+
+theorem analyticOn_congr' {s : Set E} (h : f =ᶠ[𝓝ˢ s] g) : AnalyticOn 𝕜 f s ↔ AnalyticOn 𝕜 g s :=
+  ⟨fun hf => hf.congr' h, fun hg => hg.congr' h.symm⟩
+
+theorem AnalyticOn.congr {s : Set E} (hs : IsOpen s) (hf : AnalyticOn 𝕜 f s) (hg : s.EqOn f g) :
+    AnalyticOn 𝕜 g s :=
+  hf.congr' $ mem_nhdsSet_iff_forall.mpr
+    (fun _ hz => eventuallyEq_iff_exists_mem.mpr ⟨s, hs.mem_nhds hz, hg⟩)
+
+theorem analyticOn_congr {s : Set E} (hs : IsOpen s) (h : s.EqOn f g) : AnalyticOn 𝕜 f s ↔
+    AnalyticOn 𝕜 g s := ⟨fun hf => hf.congr hs h, fun hg => hg.congr hs h.symm⟩
 
 theorem AnalyticOn.add {s : Set E} (hf : AnalyticOn 𝕜 f s) (hg : AnalyticOn 𝕜 g s) :
     AnalyticOn 𝕜 (f + g) s :=

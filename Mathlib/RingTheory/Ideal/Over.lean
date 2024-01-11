@@ -150,13 +150,13 @@ theorem comap_eq_of_scalar_tower_quotient [Algebra R S] [Algebra (R ⧸ p) (S �
 #align ideal.comap_eq_of_scalar_tower_quotient Ideal.comap_eq_of_scalar_tower_quotient
 
 /-- If `P` lies over `p`, then `R / p` has a canonical map to `S / P`. -/
-def Quotient.algebraQuotientOfLeComap (h : p ≤ comap f P) : Algebra (R ⧸ p) (S ⧸ P) :=
+def Quotient.algebraQuotientOfLEComap (h : p ≤ comap f P) : Algebra (R ⧸ p) (S ⧸ P) :=
   RingHom.toAlgebra <| quotientMap _ f h
-#align ideal.quotient.algebra_quotient_of_le_comap Ideal.Quotient.algebraQuotientOfLeComap
+#align ideal.quotient.algebra_quotient_of_le_comap Ideal.Quotient.algebraQuotientOfLEComap
 
 /-- `R / p` has a canonical map to `S / pS`. -/
 instance Quotient.algebraQuotientMapQuotient : Algebra (R ⧸ p) (S ⧸ map f p) :=
-  Ideal.Quotient.algebraQuotientOfLeComap le_comap_map
+  Ideal.Quotient.algebraQuotientOfLEComap le_comap_map
 #align ideal.quotient.algebra_quotient_map_quotient Ideal.Quotient.algebraQuotientMapQuotient
 
 @[simp]
@@ -236,13 +236,7 @@ theorem comap_lt_comap_of_integral_mem_sdiff [Algebra R S] [hI : I.IsPrime] (hIJ
     (mem : x ∈ (J : Set S) \ I) (integral : IsIntegral R x) :
     I.comap (algebraMap R S) < J.comap (algebraMap R S) := by
   obtain ⟨p, p_monic, hpx⟩ := integral
-  refine' comap_lt_comap_of_root_mem_sdiff hIJ mem _ _
-  swap
-  · apply map_monic_ne_zero p_monic
-    -- Porting note : no longer needed
-    -- apply Quotient.NonTrivial
-    -- apply mt comap_eq_top_iff.mp
-    -- apply hI.1
+  refine comap_lt_comap_of_root_mem_sdiff hIJ mem (map_monic_ne_zero p_monic) ?_
   convert I.zero_mem
 #align ideal.comap_lt_comap_of_integral_mem_sdiff Ideal.comap_lt_comap_of_integral_mem_sdiff
 

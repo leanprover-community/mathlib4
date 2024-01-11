@@ -92,7 +92,7 @@ def toMulAut : RingAut R →* MulAut R := by
 #align ring_aut.to_mul_aut RingAut.toMulAut
 
 /-- Monoid homomorphism from ring automorphisms to permutations. -/
-def toPerm : RingAut R →* Equiv.Perm R :=by
+def toPerm : RingAut R →* Equiv.Perm R := by
   refine'
   { toFun := RingEquiv.toEquiv
     .. } <;> (intros; rfl)

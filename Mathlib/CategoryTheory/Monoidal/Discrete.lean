@@ -3,7 +3,7 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Algebra.Hom.Group
+import Mathlib.Algebra.Hom.Group.Defs
 import Mathlib.CategoryTheory.DiscreteCategory
 import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
 
@@ -17,7 +17,7 @@ Multiplicative morphisms induced monoidal functors.
 -/
 
 
-universe u
+universe u u'
 
 open CategoryTheory Discrete MonoidalCategory
 
@@ -40,10 +40,9 @@ instance Discrete.monoidal : MonoidalCategory (Discrete M)
 #align category_theory.discrete.add_monoidal CategoryTheory.Discrete.addMonoidal
 
 @[to_additive (attr := simp) Discrete.addMonoidal_tensorUnit_as]
-lemma Discrete.monoidal_tensorUnit_as :
-  (𝟙_ (Discrete M)).as = 1 := rfl
+lemma Discrete.monoidal_tensorUnit_as : (𝟙_ (Discrete M)).as = 1 := rfl
 
-variable {M} {N : Type u} [Monoid N]
+variable {M} {N : Type u'} [Monoid N]
 
 /-- A multiplicative morphism between monoids gives a monoidal functor between the corresponding
 discrete monoidal categories.

@@ -164,7 +164,7 @@ theorem ιSummand_comp_d_comp_πSummand_eq_zero (j k : ℕ) (A : IndexSet (op [j
 #align simplicial_object.splitting.ι_summand_comp_d_comp_π_summand_eq_zero SimplicialObject.Splitting.ιSummand_comp_d_comp_πSummand_eq_zero
 
 /-- If `s` is a splitting of a simplicial object `X` in a preadditive category,
-`s.nondeg_complex` is a chain complex which is given in degree `n` by
+`s.nondegComplex` is a chain complex which is given in degree `n` by
 the nondegenerate `n`-simplices of `X`. -/
 @[simps]
 noncomputable def nondegComplex : ChainComplex C ℕ where

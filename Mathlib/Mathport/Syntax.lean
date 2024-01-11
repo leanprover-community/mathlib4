@@ -10,7 +10,9 @@ import Std.Tactic.RCases
 import Std.Tactic.Where
 import Mathlib.Data.Matrix.Notation
 import Mathlib.Logic.Equiv.LocalEquiv
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 import Mathlib.Order.Filter.Basic
+import Mathlib.RingTheory.WittVector.Basic
 import Mathlib.RingTheory.WittVector.IsPoly
 import Mathlib.SetTheory.Game.PGame
 import Mathlib.Tactic.Abel
@@ -21,10 +23,12 @@ import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.CancelDenoms
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.CasesM
+import Mathlib.Tactic.CategoryTheory.Coherence
 import Mathlib.Tactic.CategoryTheory.Elementwise
 import Mathlib.Tactic.CategoryTheory.Slice
 import Mathlib.Tactic.Choose
 import Mathlib.Tactic.Classical
+import Mathlib.Tactic.Clean
 import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.Clear!
 import Mathlib.Tactic.ClearExcept
@@ -42,6 +46,7 @@ import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Find
 import Mathlib.Tactic.GeneralizeProofs
+import Mathlib.Tactic.Group
 import Mathlib.Tactic.GuardHypNums
 import Mathlib.Tactic.InferParam
 import Mathlib.Tactic.IntervalCases
@@ -139,7 +144,6 @@ open Lean Parser.Tactic
 /- E -/ syntax (name := unfoldWf) "unfold_wf" : tactic
 /- M -/ syntax (name := unfoldAux) "unfold_aux" : tactic
 /- S -/ syntax (name := «continue») "continue " tacticSeq : tactic
-/- M -/ syntax (name := clean) "clean " term : tactic
 /- B -/ syntax (name := refineStruct) "refine_struct " term : tactic
 /- M -/ syntax (name := matchHyp) "match_hyp " ("(" &"m" " := " term ") ")? ident " : " term :
   tactic
@@ -226,8 +230,6 @@ syntax termList := " [" term,* "]"
 
 /- S -/ syntax (name := subtypeInstance) "subtype_instance" : tactic
 
-/- M -/ syntax (name := group) "group" (location)? : tactic
-
 /- S -/ syntax (name := transport) "transport" (ppSpace term)? " using " term : tactic
 
 /- M -/ syntax (name := unfoldCases) "unfold_cases " tacticSeq : tactic
@@ -263,15 +265,9 @@ syntax termList := " [" term,* "]"
 
 /- M -/ syntax (name := padicIndexSimp) "padic_index_simp" " [" term,* "]" (location)? : tactic
 
-/- M -/ syntax (name := borelize) "borelize" (ppSpace colGt term:max)* : tactic
-
 /- E -/ syntax (name := uniqueDiffWithinAt_Ici_Iic_univ) "uniqueDiffWithinAt_Ici_Iic_univ" : tactic
 
-/- M -/ syntax (name := ghostFunTac) "ghost_fun_tac " term ", " term : tactic
 /- E -/ syntax (name := wittTruncateFunTac) "witt_truncate_fun_tac" : tactic
-
-/- M -/ syntax (name := pure_coherence) "pure_coherence" : tactic
-/- M -/ syntax (name := coherence) "coherence" : tactic
 
 /- M -/ syntax (name := moveOp) "move_op " term:max ppSpace rwRule,+ (location)? : tactic
 macro (name := moveMul) "move_mul " pats:rwRule,+ loc:(location)? : tactic =>

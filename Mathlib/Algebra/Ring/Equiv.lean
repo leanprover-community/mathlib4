@@ -3,9 +3,11 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
+import Mathlib.Init.CCLemmas
 import Mathlib.Algebra.Field.IsField
 import Mathlib.Algebra.Group.Opposite
-import Mathlib.Algebra.Hom.Ring
+import Mathlib.Algebra.GroupWithZero.InjSurj
+import Mathlib.Algebra.Hom.Ring.Defs
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Util.AssertExists
 import Mathlib.Algebra.Hom.Equiv.Basic
@@ -118,8 +120,8 @@ instance (priority := 100) toNonUnitalRingHomClass [NonUnitalNonAssocSemiring R]
 `RingEquiv`. This is declared as the default coercion from `F` to `α ≃+* β`. -/
 @[coe]
 def toRingEquiv [Mul α] [Add α] [Mul β] [Add β] [RingEquivClass F α β] (f : F) :
-  α ≃+* β :=
-{ (f : α ≃* β), (f : α ≃+ β) with }
+    α ≃+* β :=
+  { (f : α ≃* β), (f : α ≃+ β) with }
 
 end RingEquivClass
 
@@ -142,8 +144,8 @@ instance : RingEquivClass (R ≃+* S) R S where
     cases f
     congr
     apply Equiv.coe_fn_injective h₁
-  map_add := map_add'
-  map_mul := map_mul'
+  map_add f := f.map_add'
+  map_mul f := f.map_mul'
   left_inv f := f.left_inv
   right_inv f := f.right_inv
 

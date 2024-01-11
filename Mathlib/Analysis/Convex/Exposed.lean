@@ -187,7 +187,7 @@ protected theorem isClosed [OrderClosedTopology 𝕜] {A B : Set E} (hAB : IsExp
 
 protected theorem isCompact [OrderClosedTopology 𝕜] [T2Space E] {A B : Set E}
     (hAB : IsExposed 𝕜 A B) (hA : IsCompact A) : IsCompact B :=
-  isCompact_of_isClosed_subset hA (hAB.isClosed hA.isClosed) hAB.subset
+  hA.of_isClosed_subset (hAB.isClosed hA.isClosed) hAB.subset
 #align is_exposed.is_compact IsExposed.isCompact
 
 end IsExposed

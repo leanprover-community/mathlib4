@@ -1043,7 +1043,7 @@ theorem Perm.pairwise_iff {R : α → α → Prop} (S : Symmetric R) :
   · have : a ∈ l₂ := p.subset (mem_cons_self _ _)
     rcases mem_split this with ⟨s₂, t₂, rfl⟩
     have p' := (p.trans perm_middle).cons_inv
-    refine' (pairwise_middle S).2 (pairwise_cons.2 ⟨fun b m => _, IH _ p'⟩)
+    refine' (pairwise_middle @S).2 (pairwise_cons.2 ⟨fun b m => _, IH _ p'⟩)
     exact h _ (p'.symm.subset m)
 #align list.perm.pairwise_iff List.Perm.pairwise_iff
 

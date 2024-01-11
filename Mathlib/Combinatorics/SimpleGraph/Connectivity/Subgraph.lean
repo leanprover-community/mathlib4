@@ -98,7 +98,7 @@ protected lemma Connected.mono' {H H' : G.Subgraph}
   exact h.mono ⟨hv.le, hle⟩ hv
 
 protected lemma Connected.sup {H K : G.Subgraph}
-    (hH : H.Connected) (hK : K.Connected) (hn : (H ⊓ K).verts.Nonempty ) :
+    (hH : H.Connected) (hK : K.Connected) (hn : (H ⊓ K).verts.Nonempty) :
     (H ⊔ K).Connected := by
   rw [Subgraph.connected_iff', connected_iff_exists_forall_reachable]
   obtain ⟨u, hu, hu'⟩ := hn
@@ -111,15 +111,14 @@ lemma _root_.SimpleGraph.Walk.toSubgraph_connected {u v : V} (p : G.Walk u v) :
     p.toSubgraph.Connected := by
   induction p with
   | nil => apply singletonSubgraph_connected
-  | cons h p ih =>
+  | @cons _ w _ h p ih =>
     apply (subgraphOfAdj_connected h).sup ih
-    rename_i w _
     exists w
     simp
 
 lemma induce_union_connected {H : G.Subgraph} {s t : Set V}
     (sconn : (H.induce s).Connected) (tconn : (H.induce t).Connected)
-    (sintert : (s ⊓ t).Nonempty ) :
+    (sintert : (s ⊓ t).Nonempty) :
     (H.induce (s ∪ t)).Connected := by
   refine (sconn.sup tconn sintert).mono ?_ ?_
   · apply le_induce_union
@@ -148,8 +147,9 @@ lemma preconnected_iff_forall_exists_walk_subgraph (H : G.Subgraph) :
       (p.toSubgraph_connected ⟨_, p.start_mem_verts_toSubgraph⟩ ⟨_, p.end_mem_verts_toSubgraph⟩)
 
 lemma connected_iff_forall_exists_walk_subgraph (H : G.Subgraph) :
-    H.Connected ↔ H.verts.Nonempty ∧ ∀ {u v}, u ∈ H.verts → v ∈ H.verts →
-                                        ∃ p : G.Walk u v, p.toSubgraph ≤ H := by
+    H.Connected ↔
+      H.verts.Nonempty ∧
+        ∀ {u v}, u ∈ H.verts → v ∈ H.verts → ∃ p : G.Walk u v, p.toSubgraph ≤ H := by
   rw [H.connected_iff, preconnected_iff_forall_exists_walk_subgraph, and_comm]
 
 end Subgraph
@@ -161,7 +161,7 @@ lemma connected_induce_iff : (G.induce s).Connected ↔ ((⊤ : G.Subgraph).indu
 
 lemma induce_union_connected {s t : Set V}
     (sconn : (G.induce s).Connected) (tconn : (G.induce t).Connected)
-    (sintert : (s ∩ t).Nonempty ) :
+    (sintert : (s ∩ t).Nonempty) :
     (G.induce (s ∪ t)).Connected := by
   rw [connected_induce_iff] at sconn tconn ⊢
   exact Subgraph.induce_union_connected sconn tconn sintert

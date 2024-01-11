@@ -118,6 +118,10 @@ instance (priority := 100) locallySmall_self (C : Type u) [Category.{v} C] : Loc
     where
 #align category_theory.locally_small_self CategoryTheory.locallySmall_self
 
+theorem locallySmall_max {C : Type u} [Category.{v} C] : LocallySmall.{max v w} C
+    where
+  hom_small _ _ := small_max.{w} _
+
 instance (priority := 100) locallySmall_of_essentiallySmall (C : Type u) [Category.{v} C]
     [EssentiallySmall.{w} C] : LocallySmall.{w} C :=
   (locallySmall_congr (equivSmallModel C)).mpr (CategoryTheory.locallySmall_self _)
@@ -221,6 +225,10 @@ theorem essentiallySmall_iff (C : Type u) [Category.{v} C] :
       (skeletonEquivalence (ShrinkHoms C)).symm.trans
         ((inducedFunctor (e'.trans e).symm).asEquivalence.symm)
 #align category_theory.essentially_small_iff CategoryTheory.essentiallySmall_iff
+
+theorem essentiallySmall_of_small_of_locallySmall [Small.{w} C] [LocallySmall.{w} C] :
+    EssentiallySmall.{w} C :=
+  (essentiallySmall_iff C).2 ⟨small_of_surjective Quotient.exists_rep, by infer_instance⟩
 
 /-- Any thin category is locally small.
 -/

@@ -7,6 +7,7 @@ import Mathlib.Algebra.Parity
 import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.GroupWithZero.Power
 import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Data.Int.Bitwise
 
 #align_import algebra.order.field.power from "leanprover-community/mathlib"@"acb3d204d4ee883eb686f45d486a2a6811a01329"
 

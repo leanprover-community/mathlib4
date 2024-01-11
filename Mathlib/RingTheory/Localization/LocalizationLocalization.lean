@@ -71,8 +71,8 @@ theorem localization_localization_map_units [IsLocalization N T]
 #align is_localization.localization_localization_map_units IsLocalization.localization_localization_map_units
 
 theorem localization_localization_surj [IsLocalization N T] (x : T) :
-    ∃ y : R × localizationLocalizationSubmodule M N, x * algebraMap R T y.2 = algebraMap R T y.1
-    := by
+    ∃ y : R × localizationLocalizationSubmodule M N,
+        x * algebraMap R T y.2 = algebraMap R T y.1 := by
   rcases IsLocalization.surj N x with ⟨⟨y, s⟩, eq₁⟩
   -- x = y / s
   rcases IsLocalization.surj M y with ⟨⟨z, t⟩, eq₂⟩

@@ -202,6 +202,10 @@ def padicValRat (p : ℕ) (q : ℚ) : ℤ :=
   padicValInt p q.num - padicValNat p q.den
 #align padic_val_rat padicValRat
 
+lemma padicValRat_def (p : ℕ) (q : ℚ) :
+    padicValRat p q = padicValInt p q.num - padicValNat p q.den :=
+  rfl
+
 namespace padicValRat
 
 open multiplicity
@@ -431,6 +435,38 @@ theorem min_le_padicValRat_add {q r : ℚ} (hqr : q + r ≠ 0) :
   (fun h => by rw [min_eq_right h, add_comm]; exact le_padicValRat_add_of_le (by rwa [add_comm]) h)
 #align padic_val_rat.min_le_padic_val_rat_add padicValRat.min_le_padicValRat_add
 
+/-- Ultrametric property of a p-adic valuation. -/
+lemma add_eq_min {q r : ℚ} (hqr : q + r ≠ 0) (hq : q ≠ 0) (hr : r ≠ 0)
+    (hval : padicValRat p q ≠ padicValRat p r) :
+    padicValRat p (q + r) = min (padicValRat p q) (padicValRat p r) := by
+  have h1 := min_le_padicValRat_add (p := p) hqr
+  have h2 := min_le_padicValRat_add (p := p) (ne_of_eq_of_ne (add_neg_cancel_right q r) hq)
+  have h3 := min_le_padicValRat_add (p := p) (ne_of_eq_of_ne (add_neg_cancel_right r q) hr)
+  rw [add_neg_cancel_right, padicValRat.neg] at h2 h3
+  rw [add_comm] at h3
+  refine' le_antisymm (le_min _ _) h1
+  · contrapose! h2
+    rw [min_eq_right h2.le] at h3
+    exact lt_min h2 (lt_of_le_of_ne h3 hval)
+  · contrapose! h3
+    rw [min_eq_right h3.le] at h2
+    exact lt_min h3 (lt_of_le_of_ne h2 hval.symm)
+
+lemma add_eq_of_lt {q r : ℚ} (hqr : q + r ≠ 0)
+    (hq : q ≠ 0) (hr : r ≠ 0) (hval : padicValRat p q < padicValRat p r) :
+    padicValRat p (q + r) = padicValRat p q := by
+  rw [add_eq_min hqr hq hr (ne_of_lt hval), min_eq_left (le_of_lt hval)]
+
+lemma lt_add_of_lt {q r₁ r₂ : ℚ} (hqr : r₁ + r₂ ≠ 0)
+    (hval₁ : padicValRat p q < padicValRat p r₁) (hval₂ : padicValRat p q < padicValRat p r₂) :
+    padicValRat p q < padicValRat p (r₁ + r₂) :=
+  lt_of_lt_of_le (lt_min hval₁ hval₂) (padicValRat.min_le_padicValRat_add hqr)
+
+@[simp]
+lemma self_pow_inv (r : ℕ) : padicValRat p ((p : ℚ) ^ r)⁻¹ = -r := by
+  rw [padicValRat.inv, neg_inj, padicValRat.pow (Nat.cast_ne_zero.mpr hp.elim.ne_zero),
+      padicValRat.self hp.elim.one_lt, mul_one]
+
 open BigOperators
 
 /-- A finite sum of rationals with positive `p`-adic valuation has positive `p`-adic valuation
@@ -447,6 +483,20 @@ theorem sum_pos_of_pos {n : ℕ} {F : ℕ → ℚ} (hF : ∀ i, i < n → 0 < pa
       · refine' lt_min (hd (fun i hi => _) h) (hF d (lt_add_one _))
         exact hF _ (lt_trans hi (lt_add_one _))
 #align padic_val_rat.sum_pos_of_pos padicValRat.sum_pos_of_pos
+
+/-- If the p-adic valuation of a finite set of positive rationals is greater than a given rational
+number, then the p-adic valuation of their sum is also greater than the same rational number. -/
+theorem lt_sum_of_lt {p j : ℕ} [hp : Fact (Nat.Prime p)] {F : ℕ → ℚ} {S : Finset ℕ}
+    (hS : S.Nonempty) (hF : ∀ i, i ∈ S → padicValRat p (F j) < padicValRat p (F i))
+    (hn1 : ∀ i : ℕ, 0 < F i) : padicValRat p (F j) < padicValRat p (∑ i in S, F i) := by
+  induction' hS using Finset.Nonempty.cons_induction with k s S' Hnot Hne Hind
+  · rw [Finset.sum_singleton]
+    exact hF k (by simp)
+  · rw [Finset.cons_eq_insert, Finset.sum_insert Hnot]
+    exact padicValRat.lt_add_of_lt
+      (ne_of_gt (add_pos (hn1 s) (Finset.sum_pos (fun i _ => hn1 i) Hne)))
+      (hF _ (by simp [Finset.mem_insert, true_or]))
+      (Hind (fun i hi => hF _ (by rw [Finset.cons_eq_insert,Finset.mem_insert]; exact Or.inr hi)))
 
 end padicValRat
 
@@ -487,7 +537,7 @@ protected theorem div_pow (dvd : p ^ a ∣ b) : padicValNat p (b / p ^ a) = padi
   rw [padicValNat.div_of_dvd dvd, padicValNat.prime_pow]
 #align padic_val_nat.div_pow padicValNat.div_pow
 
-protected theorem div' {m : ℕ} (cpm : coprime p m) {b : ℕ} (dvd : m ∣ b) :
+protected theorem div' {m : ℕ} (cpm : Coprime p m) {b : ℕ} (dvd : m ∣ b) :
     padicValNat p (b / m) = padicValNat p b := by
   rw [padicValNat.div_of_dvd dvd, eq_zero_of_not_dvd (hp.out.coprime_iff_not_dvd.mp cpm),
     Nat.sub_zero]
@@ -534,6 +584,40 @@ theorem padicValNat_primes {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Prime] (ne
   @padicValNat.eq_zero_of_not_dvd p q <|
     (not_congr (Iff.symm (prime_dvd_prime_iff_eq hp.1 hq.1))).mp neq
 #align padic_val_nat_primes padicValNat_primes
+
+/-- The p-adic valuation of `n` is less than or equal to its logarithm w.r.t `p`.-/
+lemma padicValNat_le_nat_log (n : ℕ) : padicValNat p n ≤ Nat.log p n := by
+  rcases n with _ | n
+  · simp
+  rcases p with _ | _ | p
+  · simp
+  · simp
+  exact Nat.le_log_of_pow_le p.one_lt_succ_succ (le_of_dvd n.succ_pos pow_padicValNat_dvd)
+
+/-- The p-adic valuation of `n` is equal to the logarithm w.r.t `p` iff
+    `n` is less than `p` raised to one plus the p-adic valuation of `n`. -/
+lemma nat_log_eq_padicValNat_iff {n : ℕ} [hp : Fact (Nat.Prime p)] (hn : 0 < n) :
+    Nat.log p n = padicValNat p n ↔ n < p ^ (padicValNat p n + 1) := by
+  rw [Nat.log_eq_iff (Or.inr ⟨(Nat.Prime.one_lt' p).out, by linarith⟩), and_iff_right_iff_imp]
+  exact (fun _ => Nat.le_of_dvd hn pow_padicValNat_dvd)
+
+lemma Nat.log_ne_padicValNat_succ {n : ℕ} (hn : n ≠ 0) : log 2 n ≠ padicValNat 2 (n + 1) := by
+  rw [Ne, log_eq_iff (by simp [hn])]
+  rintro ⟨h1, h2⟩
+  rw [← lt_add_one_iff, ← mul_one (2 ^ _)] at h1
+  rw [← add_one_le_iff, pow_succ] at h2
+  refine' not_dvd_of_between_consec_multiples h1 (lt_of_le_of_ne' h2 _) pow_padicValNat_dvd
+  exact pow_succ_padicValNat_not_dvd n.succ_ne_zero ∘ dvd_of_eq
+
+lemma Nat.max_log_padicValNat_succ_eq_log_succ (n : ℕ) :
+    max (log 2 n) (padicValNat 2 (n + 1)) = log 2 (n + 1) := by
+  apply le_antisymm (max_le (le_log_of_pow_le one_lt_two (pow_log_le_add_one 2 n))
+    (padicValNat_le_nat_log (n + 1)))
+  rw [le_max_iff, or_iff_not_imp_left, not_le]
+  intro h
+  replace h := le_antisymm (add_one_le_iff.mpr (lt_pow_of_log_lt one_lt_two h))
+    (pow_log_le_self 2 n.succ_ne_zero)
+  rw [h, padicValNat.prime_pow, ← h]
 
 open BigOperators
 

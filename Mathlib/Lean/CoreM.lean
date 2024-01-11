@@ -17,7 +17,7 @@ open Lean Core
 /--
 Run a `CoreM α` in a fresh `Environment` with specified `modules : List Name` imported.
 -/
-def CoreM.withImportModules (modules : List Name) (run : CoreM α)
+def CoreM.withImportModules (modules : Array Name) (run : CoreM α)
     (searchPath : Option SearchPath := none) (options : Options := {})
     (trustLevel : UInt32 := 0) (fileName := "") :
     IO α := unsafe do

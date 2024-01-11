@@ -66,7 +66,7 @@ theorem minFacHelper_0 (n : ℕ)
   · exact h
 
 theorem minFacHelper_1 {n k k' : ℕ} (e : k + 2 = k') (h : MinFacHelper n k)
-  (np : minFac n ≠ k) : MinFacHelper n k' := by
+    (np : minFac n ≠ k) : MinFacHelper n k' := by
   rw [← e]
   refine ⟨Nat.lt_add_right _ _ _ h.1, ?_, ?_⟩
   · rw [add_mod, mod_self, add_zero, mod_mod]

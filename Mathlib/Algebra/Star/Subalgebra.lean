@@ -58,6 +58,10 @@ instance subsemiringClass : SubsemiringClass (StarSubalgebra R A) A where
   one_mem {s} := s.one_mem'
   zero_mem {s} := s.zero_mem'
 
+instance smulMemClass : SMulMemClass (StarSubalgebra R A) R A where
+  smul_mem {s} r a (ha : a ∈ s.toSubalgebra) :=
+    (SMulMemClass.smul_mem r ha : r • a ∈ s.toSubalgebra)
+
 instance subringClass {R A} [CommRing R] [StarRing R] [Ring A] [StarRing A] [Algebra R A]
     [StarModule R A] : SubringClass (StarSubalgebra R A) A where
   neg_mem {s a} ha := show -a ∈ s.toSubalgebra from neg_mem ha

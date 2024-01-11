@@ -203,11 +203,16 @@ theorem eqOn_comm : EqOn f₁ f₂ s ↔ EqOn f₂ f₁ s :=
   ⟨EqOn.symm, EqOn.symm⟩
 #align set.eq_on_comm Set.eqOn_comm
 
--- porting note: can't add `@[refl]` for some reason
+-- This can not be tagged as `@[refl]` with the current argument order.
+-- See note below at `EqOn.trans`.
 theorem eqOn_refl (f : α → β) (s : Set α) : EqOn f f s := fun _ _ => rfl
 #align set.eq_on_refl Set.eqOn_refl
 
-@[trans]
+-- Note: this was formerly tagged with `@[trans]`, and although the `trans` attribute accepted it
+-- the `trans` tactic could not use it.
+-- An update to the trans tactic coming in mathlib4#7014 will reject this attribute.
+-- It can be restored by changing the argument order from `EqOn f₁ f₂ s` to `EqOn s f₁ f₂`.
+-- This change will be made separately: [zulip](https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Reordering.20arguments.20of.20.60Set.2EEqOn.60/near/390467581).
 theorem EqOn.trans (h₁ : EqOn f₁ f₂ s) (h₂ : EqOn f₂ f₃ s) : EqOn f₁ f₃ s := fun _ hx =>
   (h₁ hx).trans (h₂ hx)
 #align set.eq_on.trans Set.EqOn.trans
@@ -526,7 +531,7 @@ lemma MapsTo.comp_left (g : β → γ) (hf : MapsTo f s t) : MapsTo (g ∘ f) s 
 #align set.maps_to.comp_left Set.MapsTo.comp_left
 
 lemma MapsTo.comp_right {s : Set β} {t : Set γ} (hg : MapsTo g s t) (f : α → β) :
-  MapsTo (g ∘ f) (f ⁻¹' s) t := fun _ hx ↦ hg hx
+    MapsTo (g ∘ f) (f ⁻¹' s) t := fun _ hx ↦ hg hx
 #align set.maps_to.comp_right Set.MapsTo.comp_right
 
 @[simp]
@@ -1264,7 +1269,7 @@ theorem InjOn.invFunOn_image [Nonempty α] (h : InjOn f s₂) (ht : s₁ ⊆ s�
   h.leftInvOn_invFunOn.image_image' ht
 #align set.inj_on.inv_fun_on_image Set.InjOn.invFunOn_image
 
-theorem _root_.Function.LeftInvOn_invFunOn_of_subset_image_image [Nonempty α]
+theorem _root_.Function.leftInvOn_invFunOn_of_subset_image_image [Nonempty α]
     (h : s ⊆ (invFunOn f s) '' (f '' s)) : LeftInvOn (invFunOn f s) f s :=
   fun x hx ↦ by
     obtain ⟨-, ⟨x, hx', rfl⟩, rfl⟩ := h hx
@@ -1273,7 +1278,7 @@ theorem _root_.Function.LeftInvOn_invFunOn_of_subset_image_image [Nonempty α]
 theorem injOn_iff_invFunOn_image_image_eq_self [Nonempty α] :
     InjOn f s ↔ (invFunOn f s) '' (f '' s) = s :=
   ⟨fun h ↦ h.invFunOn_image Subset.rfl, fun h ↦
-    (Function.LeftInvOn_invFunOn_of_subset_image_image h.symm.subset).injOn⟩
+    (Function.leftInvOn_invFunOn_of_subset_image_image h.symm.subset).injOn⟩
 
 theorem _root_.Function.invFunOn_injOn_image [Nonempty α] (f : α → β) (s : Set α) :
     Set.InjOn (invFunOn f s) (f '' s) := by

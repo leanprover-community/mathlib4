@@ -109,9 +109,9 @@ class IsFraisse : Prop where
   FG : ∀ M : Bundled.{w} L.Structure, M ∈ K → Structure.FG L M
   is_equiv_invariant : ∀ M N : Bundled.{w} L.Structure, Nonempty (M ≃[L] N) → (M ∈ K ↔ N ∈ K)
   is_essentially_countable : (Quotient.mk' '' K).Countable
-  Hereditary : Hereditary K
-  JointEmbedding : JointEmbedding K
-  Amalgamation : Amalgamation K
+  hereditary : Hereditary K
+  jointEmbedding : JointEmbedding K
+  amalgamation : Amalgamation K
 #align first_order.language.is_fraisse FirstOrder.Language.IsFraisse
 
 variable {K} (L) (M : Type w) [Structure L M]
@@ -139,12 +139,12 @@ theorem Structure.FG.mem_age_of_equiv {M N : Bundled L.Structure} (h : Structure
 set_option linter.uppercaseLean3 false in
 #align first_order.language.Structure.fg.mem_age_of_equiv FirstOrder.Language.Structure.FG.mem_age_of_equiv
 
-theorem Hereditary.is_equiv_invariant_of_fG (h : Hereditary K)
+theorem Hereditary.is_equiv_invariant_of_fg (h : Hereditary K)
     (fg : ∀ M : Bundled.{w} L.Structure, M ∈ K → Structure.FG L M) (M N : Bundled.{w} L.Structure)
     (hn : Nonempty (M ≃[L] N)) : M ∈ K ↔ N ∈ K :=
-  ⟨fun MK => h M MK ((fg M MK).mem_age_of_equiv hn), fun NK =>
-    h N NK ((fg N NK).mem_age_of_equiv ⟨hn.some.symm⟩)⟩
-#align first_order.language.hereditary.is_equiv_invariant_of_fg FirstOrder.Language.Hereditary.is_equiv_invariant_of_fG
+  ⟨fun MK => h M MK ((fg M MK).mem_age_of_equiv hn),
+   fun NK => h N NK ((fg N NK).mem_age_of_equiv ⟨hn.some.symm⟩)⟩
+#align first_order.language.hereditary.is_equiv_invariant_of_fg FirstOrder.Language.Hereditary.is_equiv_invariant_of_fg
 
 variable (M)
 
@@ -168,7 +168,7 @@ theorem age.jointEmbedding : JointEmbedding (L.age M) := fun _ hN _ hP =>
 classes). -/
 theorem age.countable_quotient [h : Countable M] : (Quotient.mk' '' L.age M).Countable := by
   classical
-  refine' (congr_arg _ (Set.ext <| forall_quotient_iff.2 fun N => _)).mp
+  refine' (congr_arg _ (Set.ext <| Quotient.forall.2 fun N => _)).mp
     (countable_range fun s : Finset M => ⟦⟨closure L (s : Set M), inferInstance⟩⟧)
   constructor
   · rintro ⟨s, hs⟩
@@ -215,7 +215,7 @@ theorem exists_cg_is_age_of (hn : K.Nonempty)
     (fg : ∀ M : Bundled.{w} L.Structure, M ∈ K → Structure.FG L M) (hp : Hereditary K)
     (jep : JointEmbedding K) : ∃ M : Bundled.{w} L.Structure, Structure.CG L M ∧ L.age M = K := by
   obtain ⟨F, hF⟩ := hc.exists_eq_range (hn.image _)
-  simp only [Set.ext_iff, forall_quotient_iff, mem_image, mem_range, Quotient.eq'] at hF
+  simp only [Set.ext_iff, Quotient.forall, mem_image, mem_range, Quotient.eq'] at hF
   simp_rw [Quotient.eq_mk_iff_out] at hF
   have hF' : ∀ n : ℕ, (F n).out ∈ K := by
     intro n

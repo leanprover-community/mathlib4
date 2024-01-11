@@ -61,9 +61,9 @@ variable (T : Type*) [Semiring T] [MulSemiringAction M T]
 -- @[nolint has_nonempty_instance]
 structure MulActionHom where
   /-- The underlying function. -/
-  toFun : X → Y
+  protected toFun : X → Y
   /-- The proposition that the function preserves the action. -/
-  map_smul' : ∀ (m : M') (x : X), toFun (m • x) = m • toFun x
+  protected map_smul' : ∀ (m : M') (x : X), toFun (m • x) = m • toFun x
 #align mul_action_hom MulActionHom
 
 /- Porting note: local notation given a name, conflict with Algebra.Hom.GroupAction
@@ -262,7 +262,7 @@ see also Algebra.Hom.Group -/
 `MulActionHom`. This is declared as the default coercion from `F` to `MulActionHom M X Y`. -/
 @[coe]
 def _root_.DistribMulActionHomClass.toDistribMulActionHom [DistribMulActionHomClass F M A B]
-  (f : F) : A →+[M] B :=
+    (f : F) : A →+[M] B :=
   { (f : A →+ B), (f : A →[M] B) with }
 
 /-- Any type satisfying `SMulHomClass` can be cast into `MulActionHom` via
@@ -498,7 +498,7 @@ see also Algebra.Hom.Group -/
 `MulSemiringActionHom M X Y`. -/
 @[coe]
 def _root_.MulSemiringActionHomClass.toMulSemiringActionHom [MulSemiringActionHomClass F M R S]
-  (f : F) : R →+*[M] S :=
+    (f : F) : R →+*[M] S :=
  { (f : R →+* S), (f : R →+[M] S) with }
 
 /-- Any type satisfying `MulSemiringActionHomClass` can be cast into `MulSemiringActionHom` via

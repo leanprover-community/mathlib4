@@ -44,8 +44,8 @@ def Over (X : T) :=
 instance (X : T) : Category (Over X) := commaCategory
 
 -- Satisfying the inhabited linter
-instance Over.inhabited [Inhabited T] : Inhabited (Over (default : T))
-    where default :=
+instance Over.inhabited [Inhabited T] : Inhabited (Over (default : T)) where
+  default :=
     { left := default
       right := default
       hom := 𝟙 _ }
@@ -341,8 +341,8 @@ def Under (X : T) :=
 instance (X : T) : Category (Under X) := commaCategory
 
 -- Satisfying the inhabited linter
-instance Under.inhabited [Inhabited T] : Inhabited (Under (default : T))
-    where default :=
+instance Under.inhabited [Inhabited T] : Inhabited (Under (default : T)) where
+  default :=
     { left := default
       right := default
       hom := 𝟙 _ }
@@ -524,7 +524,7 @@ instance epi_right_of_epi {f g : Under X} (k : f ⟶ g) [Epi k] : Epi k.right :=
   let l' : g ⟶ mk (g.hom ≫ m) := homMk l (by
     dsimp; rw [← Under.w k, Category.assoc, a, Category.assoc])
   -- Porting note: add type ascription here to `homMk m`
-  suffices l' = (homMk m  : g ⟶ mk (g.hom ≫ m)) by apply congrArg CommaMorphism.right this
+  suffices l' = (homMk m : g ⟶ mk (g.hom ≫ m)) by apply congrArg CommaMorphism.right this
   rw [← cancel_epi k]; ext; apply a
 #align category_theory.under.epi_right_of_epi CategoryTheory.Under.epi_right_of_epi
 

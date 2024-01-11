@@ -117,7 +117,7 @@ theorem isPrimePow_pow_iff {n k : ℕ} (hk : k ≠ 0) : IsPrimePow (n ^ k) ↔ I
   exact ⟨hp.dvd_of_dvd_pow, fun t => t.trans (dvd_pow_self _ hk)⟩
 #align is_prime_pow_pow_iff isPrimePow_pow_iff
 
-theorem Nat.coprime.isPrimePow_dvd_mul {n a b : ℕ} (hab : Nat.coprime a b) (hn : IsPrimePow n) :
+theorem Nat.Coprime.isPrimePow_dvd_mul {n a b : ℕ} (hab : Nat.Coprime a b) (hn : IsPrimePow n) :
     n ∣ a * b ↔ n ∣ a ∨ n ∣ b := by
   rcases eq_or_ne a 0 with (rfl | ha)
   · simp only [Nat.coprime_zero_left] at hab
@@ -139,9 +139,9 @@ theorem Nat.coprime.isPrimePow_dvd_mul {n a b : ℕ} (hab : Nat.coprime a b) (hn
     intro t -- porting note: used to be `exact` below, but the definition of `∈` has changed.
     simpa using (Nat.factorization_disjoint_of_coprime hab).le_bot t
   cases' this with h h <;> simp [h, imp_or]
-#align nat.coprime.is_prime_pow_dvd_mul Nat.coprime.isPrimePow_dvd_mul
+#align nat.coprime.is_prime_pow_dvd_mul Nat.Coprime.isPrimePow_dvd_mul
 
-theorem Nat.mul_divisors_filter_prime_pow {a b : ℕ} (hab : a.coprime b) :
+theorem Nat.mul_divisors_filter_prime_pow {a b : ℕ} (hab : a.Coprime b) :
     (a * b).divisors.filter IsPrimePow = (a.divisors ∪ b.divisors).filter IsPrimePow := by
   rcases eq_or_ne a 0 with (rfl | ha)
   · simp only [Nat.coprime_zero_left] at hab

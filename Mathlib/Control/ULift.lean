@@ -155,7 +155,7 @@ instance : LawfulMonad ULift where
 
 @[simp]
 theorem rec.constant {α : Type u} {β : Sort v} (b : β) :
-     (@ULift.rec α (fun _ => β) fun _ => b) = fun _ => b := rfl
+    (@ULift.rec α (fun _ => β) fun _ => b) = fun _ => b := rfl
 #align ulift.rec.constant ULift.rec.constant
 
 end ULift

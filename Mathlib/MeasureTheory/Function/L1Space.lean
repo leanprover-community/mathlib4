@@ -184,6 +184,15 @@ theorem hasFiniteIntegral_of_bounded [IsFiniteMeasure μ] {f : α → β} {C : �
   (hasFiniteIntegral_const C).mono' hC
 #align measure_theory.has_finite_integral_of_bounded MeasureTheory.hasFiniteIntegral_of_bounded
 
+theorem hasFiniteIntegral_of_fintype [Fintype α] [IsFiniteMeasure μ] {f : α → β} :
+    HasFiniteIntegral f μ :=
+  hasFiniteIntegral_of_bounded (C := (Finset.sup .univ (fun a => ‖f a‖₊) : NNReal)) <| by
+    apply ae_of_all μ
+    intro x
+    rw [← coe_nnnorm (f x)]
+    apply NNReal.toReal_le_toReal
+    apply Finset.le_sup (Finset.mem_univ x)
+
 theorem HasFiniteIntegral.mono_measure {f : α → β} (h : HasFiniteIntegral f ν) (hμ : μ ≤ ν) :
     HasFiniteIntegral f μ :=
   lt_of_le_of_lt (lintegral_mono' hμ le_rfl) h
@@ -498,6 +507,12 @@ theorem integrable_const [IsFiniteMeasure μ] (c : β) : Integrable (fun _ : α 
   integrable_const_iff.2 <| Or.inr <| measure_lt_top _ _
 #align measure_theory.integrable_const MeasureTheory.integrable_const
 
+@[simp]
+theorem integrable_of_fintype [Fintype α] [MeasurableSpace α] [MeasurableSingletonClass α]
+    (μ : Measure α) [IsFiniteMeasure μ] (f : α → β) : Integrable (fun a ↦ f a) μ :=
+  ⟨ StronglyMeasurable.aestronglyMeasurable (stronglyMeasurable_of_fintype f),
+    hasFiniteIntegral_of_fintype ⟩
+
 theorem Memℒp.integrable_norm_rpow {f : α → β} {p : ℝ≥0∞} (hf : Memℒp f p μ) (hp_ne_zero : p ≠ 0)
     (hp_ne_top : p ≠ ∞) : Integrable (fun x : α => ‖f x‖ ^ p.toReal) μ := by
   rw [← memℒp_one_iff_integrable]
@@ -797,7 +812,7 @@ theorem Memℒp.integrable {q : ℝ≥0∞} (hq1 : 1 ≤ q) {f : α → β} [IsF
 
 /-- A non-quantitative version of Markov inequality for integrable functions: the measure of points
 where `‖f x‖ ≥ ε` is finite for all positive `ε`. -/
-theorem Integrable.measure_ge_lt_top {f : α → β} (hf : Integrable f μ) {ε : ℝ} (hε : 0 < ε) :
+theorem Integrable.measure_norm_ge_lt_top {f : α → β} (hf : Integrable f μ) {ε : ℝ} (hε : 0 < ε) :
     μ { x | ε ≤ ‖f x‖ } < ∞ := by
   rw [show { x | ε ≤ ‖f x‖ } = { x | ENNReal.ofReal ε ≤ ‖f x‖₊ } by
       simp only [ENNReal.ofReal, Real.toNNReal_le_iff_le_coe, ENNReal.coe_le_coe, coe_nnnorm]]
@@ -808,7 +823,45 @@ theorem Integrable.measure_ge_lt_top {f : α → β} (hf : Integrable f μ) {ε 
       ENNReal.ofReal_eq_zero, not_le] using hε
   simpa only [ENNReal.one_toReal, ENNReal.rpow_one] using
     (memℒp_one_iff_integrable.2 hf).snorm_ne_top
-#align measure_theory.integrable.measure_ge_lt_top MeasureTheory.Integrable.measure_ge_lt_top
+#align measure_theory.integrable.measurege_lt_top MeasureTheory.Integrable.measure_norm_ge_lt_top
+
+/-- A non-quantitative version of Markov inequality for integrable functions: the measure of points
+where `‖f x‖ > ε` is finite for all positive `ε`. -/
+lemma Integrable.measure_norm_gt_lt_top {f : α → β} (hf : Integrable f μ) {ε : ℝ} (hε : 0 < ε) :
+    μ {x | ε < ‖f x‖} < ∞ :=
+  lt_of_le_of_lt (measure_mono (fun _ h ↦ (Set.mem_setOf_eq ▸ h).le)) (hf.measure_norm_ge_lt_top hε)
+
+/-- If `f` is `ℝ`-valued and integrable, then for any `c > 0` the set `{x | f x ≥ c}` has finite
+measure. -/
+lemma Integrable.measure_ge_lt_top {f : α → ℝ} (hf : Integrable f μ) {ε : ℝ} (ε_pos : 0 < ε) :
+    μ {a : α | ε ≤ f a} < ∞ := by
+  refine lt_of_le_of_lt (measure_mono ?_) (hf.measure_norm_ge_lt_top ε_pos)
+  intro x hx
+  simp only [Real.norm_eq_abs, Set.mem_setOf_eq] at hx ⊢
+  exact hx.trans (le_abs_self _)
+
+/-- If `f` is `ℝ`-valued and integrable, then for any `c < 0` the set `{x | f x ≤ c}` has finite
+measure. -/
+lemma Integrable.measure_le_lt_top {f : α → ℝ} (hf : Integrable f μ) {c : ℝ} (c_neg : c < 0) :
+    μ {a : α | f a ≤ c} < ∞ := by
+  refine lt_of_le_of_lt (measure_mono ?_) (hf.measure_norm_ge_lt_top (show 0 < -c by linarith))
+  intro x hx
+  simp only [Real.norm_eq_abs, Set.mem_setOf_eq] at hx ⊢
+  exact (show -c ≤ - f x by linarith).trans (neg_le_abs_self _)
+
+/-- If `f` is `ℝ`-valued and integrable, then for any `c > 0` the set `{x | f x > c}` has finite
+measure. -/
+lemma Integrable.measure_gt_lt_top {f : α → ℝ} (hf : Integrable f μ) {ε : ℝ} (ε_pos : 0 < ε) :
+    μ {a : α | ε < f a} < ∞ :=
+  lt_of_le_of_lt (measure_mono (fun _ hx ↦ (Set.mem_setOf_eq ▸ hx).le))
+    (Integrable.measure_ge_lt_top hf ε_pos)
+
+/-- If `f` is `ℝ`-valued and integrable, then for any `c < 0` the set `{x | f x < c}` has finite
+measure. -/
+lemma Integrable.measure_lt_lt_top {f : α → ℝ} (hf : Integrable f μ) {c : ℝ} (c_neg : c < 0) :
+    μ {a : α | f a < c} < ∞ :=
+  lt_of_le_of_lt (measure_mono (fun _ hx ↦ (Set.mem_setOf_eq ▸ hx).le))
+    (Integrable.measure_le_lt_top hf c_neg)
 
 theorem LipschitzWith.integrable_comp_iff_of_antilipschitz {K K'} {f : α → β} {g : β → γ}
     (hg : LipschitzWith K g) (hg' : AntilipschitzWith K' g) (g0 : g 0 = 0) :
@@ -1427,6 +1480,22 @@ theorem toL1_smul' (f : α → β) (hf : Integrable f μ) (k : 𝕜) :
 #align measure_theory.integrable.to_L1_smul' MeasureTheory.Integrable.toL1_smul'
 
 end Integrable
+
+section restrict
+
+variable {E : Type*} [NormedAddCommGroup E] {f : α → E}
+
+lemma HasFiniteIntegral.restrict (h : HasFiniteIntegral f μ) {s : Set α} :
+    HasFiniteIntegral f (μ.restrict s) := by
+  refine lt_of_le_of_lt ?_ h
+  convert lintegral_mono_set (μ := μ) (s := s) (t := univ) (f := fun x ↦ ↑‖f x‖₊) (subset_univ s)
+  exact Measure.restrict_univ.symm
+
+lemma Integrable.restrict (f_intble : Integrable f μ) {s : Set α} :
+    Integrable f (μ.restrict s) :=
+  ⟨f_intble.aestronglyMeasurable.restrict, f_intble.hasFiniteIntegral.restrict⟩
+
+end restrict
 
 end MeasureTheory
 

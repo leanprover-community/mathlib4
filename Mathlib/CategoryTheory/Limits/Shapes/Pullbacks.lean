@@ -1594,7 +1594,7 @@ open WalkingCospan
 noncomputable def pullbackIsPullbackOfCompMono (f : X ⟶ W) (g : Y ⟶ W) (i : W ⟶ Z) [Mono i]
     [HasPullback f g] : IsLimit (PullbackCone.mk pullback.fst pullback.snd
       (show pullback.fst ≫ f ≫ i = pullback.snd ≫ g ≫ i from by -- Porting note: used to be _
-        simp only [← Category.assoc]; rw [cancel_mono]; apply pullback.condition )) :=
+        simp only [← Category.assoc]; rw [cancel_mono]; apply pullback.condition)) :=
   PullbackCone.isLimitOfCompMono f g i _ (limit.isLimit (cospan f g))
 #align category_theory.limits.pullback_is_pullback_of_comp_mono CategoryTheory.Limits.pullbackIsPullbackOfCompMono
 
@@ -1708,8 +1708,8 @@ theorem pullbackConeOfRightIso_π_app_left : (pullbackConeOfRightIso f g).π.app
 #align category_theory.limits.pullback_cone_of_right_iso_π_app_left CategoryTheory.Limits.pullbackConeOfRightIso_π_app_left
 
 @[simp]
-theorem pullbackConeOfRightIso_π_app_right : (pullbackConeOfRightIso f g).π.app right = f ≫ inv g
-  := rfl
+theorem pullbackConeOfRightIso_π_app_right : (pullbackConeOfRightIso f g).π.app right = f ≫ inv g :=
+  rfl
 #align category_theory.limits.pullback_cone_of_right_iso_π_app_right CategoryTheory.Limits.pullbackConeOfRightIso_π_app_right
 
 /-- Verify that the constructed limit cone is indeed a limit. -/

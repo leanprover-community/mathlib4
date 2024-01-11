@@ -42,7 +42,7 @@ The main definitions are in the `AdjoinRoot` namespace.
 * `lift_hom (x : S) (hfx : aeval x f = 0) : AdjoinRoot f →ₐ[R] S`, the algebra
   homomorphism from R[X]/(f) to S extending `algebraMap R S` and sending `X` to `x`
 
-* `equiv : (AdjoinRoot f →ₐ[F] E) ≃ {x // x ∈ (f.map (algebraMap F E)).roots}` a
+* `equiv : (AdjoinRoot f →ₐ[F] E) ≃ {x // x ∈ f.aroots E}` a
   bijection between algebra homomorphisms from `AdjoinRoot` and roots of `f` in `S`
 
 -/
@@ -697,12 +697,11 @@ variable (pb : PowerBasis F K)
 /-- If `L` is a field extension of `F` and `f` is a polynomial over `F` then the set
 of maps from `F[x]/(f)` into `L` is in bijection with the set of roots of `f` in `L`. -/
 def equiv (f : F[X]) (hf : f ≠ 0) :
-    (AdjoinRoot f →ₐ[F] L) ≃ { x // x ∈ (f.map (algebraMap F L)).roots } :=
+    (AdjoinRoot f →ₐ[F] L) ≃ { x // x ∈ f.aroots L } :=
   (powerBasis hf).liftEquiv'.trans
     ((Equiv.refl _).subtypeEquiv fun x => by
-      rw [powerBasis_gen, minpoly_root hf, Polynomial.map_mul, roots_mul, Polynomial.map_C,
-        roots_C, add_zero, Equiv.refl_apply]
-      rw [← Polynomial.map_mul]; exact map_monic_ne_zero (monic_mul_leadingCoeff_inv hf))
+      rw [powerBasis_gen, minpoly_root hf, aroots_mul, aroots_C, add_zero, Equiv.refl_apply]
+      exact (monic_mul_leadingCoeff_inv hf).ne_zero)
 #align adjoin_root.equiv AdjoinRoot.equiv
 
 end Field
@@ -853,7 +852,7 @@ noncomputable def quotEquivQuotMap (f : R[X]) (I : Ideal R) :
         rfl
       rw [this, quotAdjoinRootEquivQuotPolynomialQuot_mk_of, map_C]
       -- Porting note: the following `rfl` was not needed
-      rfl )
+      rfl)
 #align adjoin_root.quot_equiv_quot_map AdjoinRoot.quotEquivQuotMap
 
 @[simp]

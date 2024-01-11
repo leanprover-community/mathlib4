@@ -106,6 +106,22 @@ theorem aestronglyMeasurable'_integral_condDistrib (hX : AEMeasurable X μ) (hY 
 
 end Measurability
 
+/-- `condDistrib` is a.e. uniquely defined as the kernel satisfying the defining property of
+`condKernel`. -/
+theorem condDistrib_ae_eq_of_measure_eq_compProd (hX : Measurable X) (hY : Measurable Y)
+    (κ : kernel β Ω) [IsFiniteKernel κ]
+    (hκ : μ.map (fun x => (X x, Y x)) =
+      (kernel.const Unit (μ.map X) ⊗ₖ kernel.prodMkLeft Unit κ) ()) :
+    ∀ᵐ x ∂μ.map X, κ x = condDistrib Y X μ x := by
+  have heq : μ.map X = (μ.map (fun x => (X x, Y x))).fst
+  · ext s hs
+    rw [Measure.map_apply hX hs, Measure.fst_apply hs, Measure.map_apply]
+    exacts [rfl, Measurable.prod hX hY, measurable_fst hs]
+  rw [heq, condDistrib]
+  refine' eq_condKernel_of_measure_eq_compProd _ _ _
+  convert hκ
+  exact heq.symm
+
 section Integrability
 
 theorem integrable_toReal_condDistrib (hX : AEMeasurable X μ) (hs : MeasurableSet s) :

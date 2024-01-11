@@ -681,7 +681,7 @@ theorem isComplement'_iff_card_mul_and_disjoint [Fintype G] [Fintype H] [Fintype
 
 theorem isComplement'_of_coprime [Fintype G] [Fintype H] [Fintype K]
     (h1 : Fintype.card H * Fintype.card K = Fintype.card G)
-    (h2 : Nat.coprime (Fintype.card H) (Fintype.card K)) : IsComplement' H K :=
+    (h2 : Nat.Coprime (Fintype.card H) (Fintype.card K)) : IsComplement' H K :=
   isComplement'_of_card_mul_and_disjoint h1 (disjoint_iff.mpr (inf_eq_bot_of_coprime h2))
 #align subgroup.is_complement'_of_coprime Subgroup.isComplement'_of_coprime
 

@@ -6,10 +6,11 @@ Authors: Jeremy Avigad, Robert Y. Lewis
 
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.GroupWithZero.Commute
-import Mathlib.Algebra.Hom.Ring
+import Mathlib.Algebra.Hom.Ring.Defs
+import Mathlib.Algebra.Hom.Units
 import Mathlib.Algebra.Ring.Commute
 import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Algebra.Ring.Divisibility
+import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Data.Nat.Order.Basic
 
 #align_import algebra.group_power.ring from "leanprover-community/mathlib"@"fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e"
@@ -197,6 +198,9 @@ variable {R}
 theorem neg_pow (a : R) (n : ℕ) : (-a) ^ n = (-1) ^ n * a ^ n :=
   neg_one_mul a ▸ (Commute.neg_one_left a).mul_pow n
 #align neg_pow neg_pow
+
+theorem neg_pow' (a : R) (n : ℕ) : (-a) ^ n = a ^ n * (-1) ^ n :=
+  mul_neg_one a ▸ (Commute.neg_one_right a).mul_pow n
 
 section
 set_option linter.deprecated false

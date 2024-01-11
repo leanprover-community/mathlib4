@@ -6,7 +6,7 @@ Authors: Jeremy Avigad
 import Mathlib.Data.Set.Function
 import Mathlib.Data.Int.Order.Lemmas
 import Mathlib.Data.Int.Bitwise
-import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Data.Nat.Cast.Order
 import Mathlib.Data.Nat.Order.Lemmas
 
 #align_import data.int.lemmas from "leanprover-community/mathlib"@"09597669f02422ed388036273d8848119699c22f"

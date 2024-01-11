@@ -30,21 +30,9 @@ namespace List
 
 variable {α : Type u} {β γ δ ε : Type*}
 
-@[simp]
-theorem zipWith_cons_cons (f : α → β → γ) (a : α) (b : β) (l₁ : List α) (l₂ : List β) :
-    zipWith f (a :: l₁) (b :: l₂) = f a b :: zipWith f l₁ l₂ := rfl
 #align list.zip_with_cons_cons List.zipWith_cons_cons
-
-@[simp]
-theorem zip_cons_cons (a : α) (b : β) (l₁ : List α) (l₂ : List β) :
-    zip (a :: l₁) (b :: l₂) = (a, b) :: zip l₁ l₂ := rfl
 #align list.zip_cons_cons List.zip_cons_cons
-
-@[simp]
-theorem zipWith_nil_left (f : α → β → γ) (l) : zipWith f [] l = [] := rfl
 #align list.zip_with_nil_left List.zipWith_nil_left
-
-theorem zipWith_nil_right (f : α → β → γ) (l) : zipWith f l [] = [] := by simp
 #align list.zip_with_nil_right List.zipWith_nil_right
 
 @[simp]
@@ -52,19 +40,12 @@ theorem zipWith_eq_nil_iff {f : α → β → γ} {l l'} : zipWith f l l' = [] �
   cases l <;> cases l' <;> simp
 #align list.zip_with_eq_nil_iff List.zipWith_eq_nil_iff
 
-@[simp]
-theorem zip_nil_left (l : List α) : zip ([] : List β) l = [] :=
-  rfl
 #align list.zip_nil_left List.zip_nil_left
-
-@[simp]
-theorem zip_nil_right (l : List α) : zip l ([] : List β) = [] :=
-  zipWith_nil_right _ l
 #align list.zip_nil_right List.zip_nil_right
 
 @[simp]
 theorem zip_swap : ∀ (l₁ : List α) (l₂ : List β), (zip l₁ l₂).map Prod.swap = zip l₂ l₁
-  | [], l₂ => (zip_nil_right _).symm
+  | [], l₂ => zip_nil_right.symm
   | l₁, [] => by rw [zip_nil_right]; rfl
   | a :: l₁, b :: l₂ => by
     simp only [zip_cons_cons, map_cons, zip_swap l₁ l₂, Prod.swap_prod_mk]
@@ -72,10 +53,6 @@ theorem zip_swap : ∀ (l₁ : List α) (l₂ : List β), (zip l₁ l₂).map Pr
 
 #align list.length_zip_with List.length_zipWith
 
-@[simp]
-theorem length_zip :
-    ∀ (l₁ : List α) (l₂ : List β), length (zip l₁ l₂) = min (length l₁) (length l₂) :=
-  length_zipWith _
 #align list.length_zip List.length_zip
 
 theorem all₂_zipWith {f : α → β → γ} {p : γ → Prop} :
@@ -199,13 +176,8 @@ theorem map_snd_zip :
     rw [map_snd_zip as bs h]
 #align list.map_snd_zip List.map_snd_zip
 
-@[simp]
-theorem unzip_nil : unzip (@nil (α × β)) = ([], []) := rfl
 #align list.unzip_nil List.unzip_nil
 
-@[simp]
-theorem unzip_cons (a : α) (b : β) (l : List (α × β)) :
-    unzip ((a, b) :: l) = (a :: (unzip l).1, b :: (unzip l).2) := rfl
 #align list.unzip_cons List.unzip_cons
 
 theorem unzip_eq_map : ∀ l : List (α × β), unzip l = (l.map Prod.fst, l.map Prod.snd)
@@ -268,7 +240,7 @@ theorem map_prod_right_eq_zip {l : List α} (f : α → β) :
 
 theorem zipWith_comm (f : α → β → γ) :
     ∀ (la : List α) (lb : List β), zipWith f la lb = zipWith (fun b a => f a b) lb la
-  | [], _ => (List.zipWith_nil_right _ _).symm
+  | [], _ => List.zipWith_nil_right.symm
   | _ :: _, [] => rfl
   | _ :: as, _ :: bs => congr_arg _ (zipWith_comm f as bs)
 #align list.zip_with_comm List.zipWith_comm

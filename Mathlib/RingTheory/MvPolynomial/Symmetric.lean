@@ -182,7 +182,7 @@ theorem aeval_esymm_eq_multiset_esymm [Algebra R S] (f : σ → S) (n : ℕ) :
 /-- We can define `esymm σ R n` by summing over a subtype instead of over `powerset_len`. -/
 theorem esymm_eq_sum_subtype (n : ℕ) :
     esymm σ R n = ∑ t : { s : Finset σ // s.card = n }, ∏ i in (t : Finset σ), X i :=
-  sum_subtype _ (fun _ => mem_powerset_len_univ_iff) _
+  sum_subtype _ (fun _ => mem_powersetLen_univ) _
 #align mv_polynomial.esymm_eq_sum_subtype MvPolynomial.esymm_eq_sum_subtype
 
 /-- We can define `esymm σ R n` as a sum over explicit monomials -/
