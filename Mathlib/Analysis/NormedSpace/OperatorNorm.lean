@@ -993,12 +993,9 @@ def prodMapL : (M₁ →L[𝕜] M₂) × (M₃ →L[𝕜] M₄) →L[𝕜] M₁ 
       -- simp
       -- ```
       -- Here neither `dsimp` or `simp` seem to make progress.
-      -- We have to use `rw` to access `.default` reducibility. `simp` cannot
-      rw [add_apply, add_apply, comp_apply, comp_apply, comp_apply, comp_apply,
-        flip_apply, flip_apply, compL_apply, compL_apply, compL_apply, compL_apply,
-        comp_apply, comp_apply, comp_apply, comp_apply]
-      simp only [coe_prodMap', Prod_map, coe_fst', inl_apply, coe_snd', inr_apply, Prod.mk_add_mk,
-        add_zero, zero_add])
+      -- We have to use `simp [(X)]` to avoid unification of instance implicit agruments
+      -- which only unify at `.default` reducibility
+      simp [(add_apply), (comp_apply), (flip_apply), (compL_apply)])
 #align continuous_linear_map.prod_mapL ContinuousLinearMap.prodMapL
 
 variable {M₁ M₂ M₃ M₄}
