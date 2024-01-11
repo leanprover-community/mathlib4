@@ -695,13 +695,6 @@ theorem getLast_congr {l₁ l₂ : List α} (h₁ : l₁ ≠ []) (h₂ : l₂ �
     getLast l₁ h₁ = getLast l₂ h₂ := by subst l₁; rfl
 #align list.last_congr List.getLast_congr
 
-theorem getLast_mem : ∀ {l : List α} (h : l ≠ []), getLast l h ∈ l
-  | [], h => absurd rfl h
-  | [a], _ => by simp only [getLast, mem_singleton]
-  | a :: b :: l, h =>
-    List.mem_cons.2 <| Or.inr <| by
-        rw [getLast_cons_cons]
-        exact getLast_mem (cons_ne_nil b l)
 #align list.last_mem List.getLast_mem
 
 theorem getLast_replicate_succ (m : ℕ) (a : α) :
@@ -711,11 +704,6 @@ theorem getLast_replicate_succ (m : ℕ) (a : α) :
 #align list.last_replicate_succ List.getLast_replicate_succ
 
 /-! ### getLast? -/
-
--- Porting note: New lemma, since definition of getLast? is slightly different.
-@[simp]
-theorem getLast?_singleton (a : α) :
-    getLast? [a] = a := rfl
 
 -- Porting note: Moved earlier in file, for use in subsequent lemmas.
 @[simp]
@@ -4236,6 +4224,7 @@ theorem get_attach (L : List α) (i) :
       by rw [get_map]
     _ = L.get { val := i, isLt := _ } := by congr 2 <;> simp
 
+set_option linter.deprecated true in
 @[simp, deprecated get_attach]
 theorem nthLe_attach (L : List α) (i) (H : i < L.attach.length) :
     (L.attach.nthLe i H).1 = L.nthLe i (length_attach L ▸ H) := get_attach ..
