@@ -186,6 +186,7 @@ import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Algebra.Group.Hom.Instances
 import Mathlib.Algebra.Group.InjSurj
 import Mathlib.Algebra.Group.MinimalAxioms
+import Mathlib.Algebra.Group.NatPowAssoc
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.Group.OrderSynonym
 import Mathlib.Algebra.Group.PNatPowAssoc
@@ -565,11 +566,13 @@ import Mathlib.AlgebraicTopology.SingularSet
 import Mathlib.AlgebraicTopology.SplitSimplicialObject
 import Mathlib.AlgebraicTopology.TopologicalSimplex
 import Mathlib.Analysis.Analytic.Basic
+import Mathlib.Analysis.Analytic.CPolynomial
 import Mathlib.Analysis.Analytic.Composition
 import Mathlib.Analysis.Analytic.Constructions
 import Mathlib.Analysis.Analytic.Inverse
 import Mathlib.Analysis.Analytic.IsolatedZeros
 import Mathlib.Analysis.Analytic.Linear
+import Mathlib.Analysis.Analytic.Meromorphic
 import Mathlib.Analysis.Analytic.Polynomial
 import Mathlib.Analysis.Analytic.RadiusLiminf
 import Mathlib.Analysis.Analytic.Uniqueness
@@ -1043,6 +1046,7 @@ import Mathlib.CategoryTheory.Functor.Hom
 import Mathlib.CategoryTheory.Functor.InvIsos
 import Mathlib.CategoryTheory.Functor.ReflectsIso
 import Mathlib.CategoryTheory.Functor.Trifunctor
+import Mathlib.CategoryTheory.Galois.Basic
 import Mathlib.CategoryTheory.Generator
 import Mathlib.CategoryTheory.GlueData
 import Mathlib.CategoryTheory.GradedObject
@@ -1515,6 +1519,7 @@ import Mathlib.Data.Fin.SuccPred
 import Mathlib.Data.Fin.Tuple.Basic
 import Mathlib.Data.Fin.Tuple.BubbleSortInduction
 import Mathlib.Data.Fin.Tuple.Curry
+import Mathlib.Data.Fin.Tuple.Finset
 import Mathlib.Data.Fin.Tuple.Monotone
 import Mathlib.Data.Fin.Tuple.NatAntidiagonal
 import Mathlib.Data.Fin.Tuple.Reflection
@@ -1774,6 +1779,7 @@ import Mathlib.Data.Nat.Choose.Multinomial
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Data.Nat.Choose.Vandermonde
 import Mathlib.Data.Nat.Count
+import Mathlib.Data.Nat.Defs
 import Mathlib.Data.Nat.Digits
 import Mathlib.Data.Nat.Dist
 import Mathlib.Data.Nat.EvenOddRec
@@ -2995,6 +3001,7 @@ import Mathlib.Probability.Density
 import Mathlib.Probability.Distributions.Exponential
 import Mathlib.Probability.Distributions.Gamma
 import Mathlib.Probability.Distributions.Gaussian
+import Mathlib.Probability.Distributions.Poisson
 import Mathlib.Probability.IdentDistrib
 import Mathlib.Probability.Independence.Basic
 import Mathlib.Probability.Independence.Conditional
@@ -3131,6 +3138,7 @@ import Mathlib.RingTheory.Localization.AsSubring
 import Mathlib.RingTheory.Localization.AtPrime
 import Mathlib.RingTheory.Localization.Away.AdjoinRoot
 import Mathlib.RingTheory.Localization.Away.Basic
+import Mathlib.RingTheory.Localization.BaseChange
 import Mathlib.RingTheory.Localization.Basic
 import Mathlib.RingTheory.Localization.Cardinality
 import Mathlib.RingTheory.Localization.FractionRing
@@ -3788,7 +3796,6 @@ import Mathlib.Util.CountHeartbeats
 import Mathlib.Util.Delaborators
 import Mathlib.Util.DischargerAsTactic
 import Mathlib.Util.Export
-import Mathlib.Util.Imports
 import Mathlib.Util.IncludeStr
 import Mathlib.Util.LongNames
 import Mathlib.Util.MemoFix
