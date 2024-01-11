@@ -315,7 +315,7 @@ sequence defining the same ideal and their quotient is the desired unit `u_w₁`
 
 open NumberField.mixedEmbedding NNReal
 
-variable (w₁ : InfinitePlace K) {B : ℕ} (hB : minkowskiBound K ⊤ < (convexBodyLTFactor K) * B)
+variable (w₁ : InfinitePlace K) {B : ℕ} (hB : minkowskiBound K 1 < (convexBodyLTFactor K) * B)
 
 /-- This result shows that there always exists a next term in the sequence. -/
 theorem seq_next {x : 𝓞 K} (hx : x ≠ 0) :
@@ -395,10 +395,10 @@ image by the `logEmbedding` of these units is `ℝ`-linearly independent, see
 `unitLattice_span_eq_top`. -/
 theorem exists_unit (w₁ : InfinitePlace K) :
     ∃ u : (𝓞 K)ˣ, ∀ w : InfinitePlace K, w ≠ w₁ → Real.log (w u) < 0 := by
-  obtain ⟨B, hB⟩ : ∃ B : ℕ, minkowskiBound K ⊤ < (convexBodyLTFactor K) * B := by
+  obtain ⟨B, hB⟩ : ∃ B : ℕ, minkowskiBound K 1 < (convexBodyLTFactor K) * B := by
     conv => congr; ext; rw [mul_comm]
     exact ENNReal.exists_nat_mul_gt (ne_of_gt (convexBodyLTFactor_pos K))
-      (ne_of_lt (minkowskiBound_lt_top K ⊤))
+      (ne_of_lt (minkowskiBound_lt_top K 1))
   rsuffices ⟨n, m, hnm, h⟩ : ∃ n m, n < m ∧
       (Ideal.span ({ (seq K w₁ hB n : 𝓞 K) }) = Ideal.span ({ (seq K w₁ hB m : 𝓞 K) }))
   · have hu := Ideal.span_singleton_eq_span_singleton.mp h

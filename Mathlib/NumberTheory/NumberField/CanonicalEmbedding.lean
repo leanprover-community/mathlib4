@@ -867,9 +867,9 @@ theorem exists_ne_zero_mem_ideal_lt (h : minkowskiBound K I < volume (convexBody
   exact Subtype.ne_of_val_ne h_nzr
 
 /-- A version of `exists_ne_zero_mem_ideal_lt` for the ring of integers of `K`. -/
-theorem exists_ne_zero_mem_ringOfIntegers_lt (h : minkowskiBound K ⊤ < volume (convexBodyLT K f)) :
+theorem exists_ne_zero_mem_ringOfIntegers_lt (h : minkowskiBound K 1 < volume (convexBodyLT K f)) :
     ∃ (a : 𝓞 K), a ≠ 0 ∧ ∀ w : InfinitePlace K, w a < f w := by
-  obtain ⟨a, _, _⟩ := exists_ne_zero_mem_ideal_lt K ⊤ h
+  obtain ⟨a, _, _⟩ := exists_ne_zero_mem_ideal_lt K 1 h
   use a
 
 theorem exists_ne_zero_mem_ideal_of_norm_le {B : ℝ}
@@ -911,9 +911,9 @@ theorem exists_ne_zero_mem_ideal_of_norm_le {B : ℝ}
       exact finrank_pos
 
 theorem exists_ne_zero_mem_ringOfIntegers_of_norm_le {B : ℝ}
-    (h : (minkowskiBound K ⊤) ≤ volume (convexBodySum K B)) :
+    (h : (minkowskiBound K 1) ≤ volume (convexBodySum K B)) :
     ∃ (a : 𝓞 K), a ≠ 0 ∧ |Algebra.norm ℚ (a:K)| ≤ (B / (finrank ℚ K)) ^ (finrank ℚ K) := by
-  obtain ⟨a, _, _⟩ := exists_ne_zero_mem_ideal_of_norm_le K ⊤ h
+  obtain ⟨a, _, _⟩ := exists_ne_zero_mem_ideal_of_norm_le K 1 h
   use a
 
 end minkowski

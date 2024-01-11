@@ -106,10 +106,9 @@ theorem exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr (I : (Ideal (𝓞 K))
         (finrank ℚ K).factorial / (finrank ℚ K) ^ (finrank ℚ K) * Real.sqrt |discr K| := by
   -- The smallest possible value for `exists_ne_zero_mem_ideal_of_norm_le`
   let B := (minkowskiBound K I * (convexBodySumFactor K)⁻¹).toReal ^ (1 / (finrank ℚ K : ℝ))
-  have hB : 0 ≤ B := Real.rpow_nonneg_of_nonneg toReal_nonneg _
   have h_le : (minkowskiBound K I) ≤ volume (convexBodySum K B) := by
     refine le_of_eq ?_
-    rw [convexBodySum_volume, ← ENNReal.ofReal_pow hB, ← Real.rpow_nat_cast, ← Real.rpow_mul
+    rw [convexBodySum_volume, ← ENNReal.ofReal_pow (by positivity), ← Real.rpow_nat_cast, ← Real.rpow_mul
       toReal_nonneg, div_mul_cancel _ (Nat.cast_ne_zero.mpr (ne_of_gt finrank_pos)), Real.rpow_one,
       ofReal_toReal, mul_comm, mul_assoc, ENNReal.inv_mul_cancel (convexBodySumFactor_ne_zero K)
       (convexBodySumFactor_ne_top K), mul_one]
@@ -147,13 +146,14 @@ theorem exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr (I : (Ideal (𝓞 K))
       rw [show ‖discr K‖ = |(discr K : ℝ)| by rfl, zpow_mul, show (2:ℝ) ^ (2:ℤ) = 4 by norm_cast,
         div_pow, inv_eq_one_div, div_pow, one_pow, zpow_coe_nat]
       ring
+
 theorem exists_ne_zero_mem_ringOfIntegers_of_norm_le_mul_sqrt_discr :
     ∃ (a : 𝓞 K), a ≠ 0 ∧
       |Algebra.norm ℚ (a:K)| ≤ (4 / π) ^ NrComplexPlaces K *
         (finrank ℚ K).factorial / (finrank ℚ K) ^ (finrank ℚ K) * Real.sqrt |discr K| := by
-  obtain ⟨⟨x, _⟩, h_nz, h_nm⟩ := exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr K ⊤
+  obtain ⟨⟨x, _⟩, h_nz, h_nm⟩ := exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr K 1
   refine ⟨x, by rwa [ne_eq, Submodule.mk_eq_zero] at h_nz, ?_⟩
-  simp_rw [Ideal.nonZeroDivisors_coe_top, Ideal.absNorm_top, Nat.cast_one, one_mul] at h_nm
+  simp_rw [OneMemClass.coe_one, Ideal.one_eq_top, Ideal.absNorm_top, Nat.cast_one, one_mul] at h_nm
   exact h_nm
 
 variable {K}
@@ -206,7 +206,7 @@ theorem abs_discr_gt_two (h : 1 < finrank ℚ K) : 2 < |discr K| := by
     exact Real.pi_gt_three
   refine Int.cast_lt.mp <| lt_of_lt_of_le ?_ (abs_discr_ge h)
   rw [← _root_.div_lt_iff' (by positivity), Int.int_cast_ofNat]
-  refine lt_of_lt_of_le ?_ (pow_le_pow (n := 2) h₁ h)
+  refine lt_of_lt_of_le ?_ (pow_le_pow_right (n := 2) h₁ h)
   rw [div_pow, _root_.lt_div_iff (by norm_num), mul_pow, show (2:ℝ) / (4 / 9) * 4 ^ 2 = 72 by
     norm_num, show (3:ℝ) ^ 2 = 9 by norm_num, ← _root_.div_lt_iff' (by positivity),
     show (72:ℝ) / 9 = 8 by norm_num]
