@@ -256,8 +256,8 @@ C⋆algebras `F : Cpct → CommCStarAlg := X ↦ C(X, ℂ)` and
 `G : CommCStarAlg → Cpct := A → characterSpace ℂ A` whose actions on morphisms are given by
 `WeakDual.CharacterSpace.compContinuousMap` and `ContinuousMap.compStarAlgHom'`, respectively.
 
-Then `η : id → F ∘ G := gelfandStarTransform` is a natural isomorphism implementing the duality
-between these categories. That is, for commutative unital C⋆-algebras `A` and `B` and
+Then `η : id → F ∘ G := gelfandStarTransform` is a natural isomorphism implementing (half of)
+the duality between these categories. That is, for commutative unital C⋆-algebras `A` and `B` and
 `φ : A →⋆ₐ[ℂ] B` the following diagram commutes:
 
 ```
@@ -273,9 +273,10 @@ V                     V
 B  --- η B ---> C(characterSpace ℂ B, ℂ)
 ```
 -/
-theorem gelfand_duality {A B : Type*} [NormedCommRing A] [NormedAlgebra ℂ A] [CompleteSpace A]
-    [StarRing A] [CstarRing A] [StarModule ℂ A] [NormedCommRing B] [NormedAlgebra ℂ B]
-    [CompleteSpace B] [StarRing B] [CstarRing B] [StarModule ℂ B] (φ : A →⋆ₐ[ℂ] B) :
+theorem gelfandStarTransform_naturality {A B : Type*} [NormedCommRing A] [NormedAlgebra ℂ A]
+    [CompleteSpace A] [StarRing A] [CstarRing A] [StarModule ℂ A] [NormedCommRing B]
+    [NormedAlgebra ℂ B] [CompleteSpace B] [StarRing B] [CstarRing B] [StarModule ℂ B]
+    (φ : A →⋆ₐ[ℂ] B) :
     (gelfandStarTransform B : _ →⋆ₐ[ℂ] _).comp φ =
       (compContinuousMap φ |>.compStarAlgHom' ℂ ℂ).comp (gelfandStarTransform A : _ →⋆ₐ[ℂ] _) := by
   rfl
