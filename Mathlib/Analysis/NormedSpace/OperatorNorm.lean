@@ -1,4 +1,5 @@
 /-
+rt
 Copyright (c) 2019 Jan-David Salchow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
@@ -394,11 +395,6 @@ theorem op_norm_comp_le (f : E →SL[σ₁₂] F) : ‖h.comp f‖ ≤ ‖h‖ *
       exact h.le_op_norm_of_le (f.le_op_norm x)⟩
 #align continuous_linear_map.op_norm_comp_le ContinuousLinearMap.op_norm_comp_le
 
--- Porting note: restatement of `op_norm_comp_le` for linear maps.
-/-- The operator norm is submultiplicative. -/
-theorem op_norm_comp_le' (h : Eₗ →L[𝕜] Fₗ) (f : E →L[𝕜] Eₗ) : ‖h.comp f‖ ≤ ‖h‖ * ‖f‖ :=
-  op_norm_comp_le h f
-
 theorem op_nnnorm_comp_le [RingHomIsometric σ₁₃] (f : E →SL[σ₁₂] F) : ‖h.comp f‖₊ ≤ ‖h‖₊ * ‖f‖₊ :=
   op_norm_comp_le h f
 #align continuous_linear_map.op_nnnorm_comp_le ContinuousLinearMap.op_nnnorm_comp_le
@@ -409,12 +405,10 @@ instance toSemiNormedRing : SeminormedRing (E →L[𝕜] E) :=
     norm_mul := fun f g => op_norm_comp_le f g }
 #align continuous_linear_map.to_semi_normed_ring ContinuousLinearMap.toSemiNormedRing
 
--- Porting FIXME: replacing `(algebra : Algebra 𝕜 (E →L[𝕜] E))` with
--- just `algebra` below causes a massive timeout.
 /-- For a normed space `E`, continuous linear endomorphisms form a normed algebra with
 respect to the operator norm. -/
 instance toNormedAlgebra : NormedAlgebra 𝕜 (E →L[𝕜] E) :=
-  { (algebra : Algebra 𝕜 (E →L[𝕜] E)) with
+  { algebra with
     norm_smul_le := by
       intro c f
       apply op_norm_smul_le c f}
@@ -734,10 +728,8 @@ def flip (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : F →SL[σ₂₃] E →SL
     ‖f‖ fun y x => (f.le_op_norm₂ x y).trans_eq <| by simp only [mul_right_comm]
 #align continuous_linear_map.flip ContinuousLinearMap.flip
 
--- Porting note: in mathlib3, in the proof `norm_nonneg (flip f)` was just `norm_nonneg _`,
--- but this causes a defeq error now.
 private theorem le_norm_flip (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : ‖f‖ ≤ ‖flip f‖ :=
-  f.op_norm_le_bound₂ (norm_nonneg (flip f)) fun x y => by
+  f.op_norm_le_bound₂ (norm_nonneg _) fun x y => by
     rw [mul_right_comm]
     exact (flip f).le_op_norm₂ y x
 
@@ -980,19 +972,6 @@ def prodMapL : (M₁ →L[𝕜] M₂) × (M₃ →L[𝕜] M₄) →L[𝕜] M₁ 
       apply funext
       rintro ⟨φ, ψ⟩
       refine' ContinuousLinearMap.ext fun ⟨x₁, x₂⟩ => _
-      -- Porting note: mathport suggested:
-      -- ```
-      -- simp only [add_apply, coe_comp', coe_fst', Function.comp_apply, compL_apply, flip_apply,
-      --   coe_snd', inl_apply, inr_apply, Prod.mk_add_mk, add_zero, zero_add, coe_prodMap'
-      --   Prod_map, Prod.mk.inj_iff, eq_self_iff_true, and_self_iff]
-      -- rfl
-      -- ```
-      -- Frustratingly, in `mathlib3` we can use:
-      -- ```
-      -- dsimp   -- ⊢ (⇑φ x.fst, ⇑ψ x.snd) = (⇑φ x.fst + 0, 0 + ⇑ψ x.snd)
-      -- simp
-      -- ```
-      -- Here neither `dsimp` or `simp` seem to make progress.
       -- We have to use `simp [(X)]` to avoid unification of instance implicit agruments
       -- which only unify at `.default` reducibility
       simp [(add_apply), (comp_apply), (flip_apply), (compL_apply)])
