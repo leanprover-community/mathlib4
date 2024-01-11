@@ -131,7 +131,7 @@ partial def proveChain (i : ℕ) (is : List ℕ) (P : Q(Prop)) (l : Q(List Prop)
     let p ← proveImpl hyps atoms i i' P P'
     return q(Chain.cons $p $cl')
 
-set_option linter.deprecated true in
+set_option linter.deprecated false in
 /-- Attempt to prove `ilast' P' l → P` given an explicit list `l`. -/
 partial def proveILast'Impl (i i' : ℕ) (is : List ℕ) (P P' : Q(Prop)) (l : Q(List Prop)) :
     MetaM Q(ilast' $P' $l → $P) := do

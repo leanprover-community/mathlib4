@@ -4211,7 +4211,7 @@ theorem getLast_reverse {l : List α} (hl : l.reverse ≠ [])
   · simpa using hl'
 #align list.last_reverse List.getLast_reverse
 
-set_option linter.deprecated true in
+set_option linter.deprecated false in
 theorem ilast'_mem : ∀ a l, @ilast' α a l ∈ a :: l
   | a, [] => by simp [ilast']
   | a, b :: l => by rw [mem_cons]; exact Or.inr (ilast'_mem b l)
@@ -4225,7 +4225,7 @@ theorem get_attach (L : List α) (i) :
       by rw [get_map]
     _ = L.get { val := i, isLt := _ } := by congr 2 <;> simp
 
-set_option linter.deprecated true in
+set_option linter.deprecated false in
 @[simp, deprecated get_attach]
 theorem nthLe_attach (L : List α) (i) (H : i < L.attach.length) :
     (L.attach.nthLe i H).1 = L.nthLe i (length_attach L ▸ H) := get_attach ..
