@@ -1042,15 +1042,6 @@ theorem powerlt_aleph0_le (c : Cardinal) : c ^< ℵ₀ ≤ max c ℵ₀ := by
 /-! ### Computing cardinality of various types -/
 
 
-namespace Equiv
-
-variable (α β : Sort*)
-
-theorem toEmbedding_injective : Injective (Equiv.toEmbedding : (α ≃ β) → (α ↪ β)) :=
-  fun _ _ h ↦ by rwa [FunLike.ext'_iff] at h ⊢
-
-end Equiv
-
 section Function
 
 variable {α β : Type u} {β' : Type v}
@@ -1075,7 +1066,7 @@ theorem mk_embedding_eq_zero_iff_lt : #(α ↪ β) = 0 ↔ #β < #α := by
 variable (α β')
 
 theorem mk_equiv_le_embedding : #(α ≃ β') ≤ #(α ↪ β') :=
-  ⟨⟨_, Equiv.toEmbedding_injective α β'⟩⟩
+  ⟨⟨_, Equiv.toEmbedding_injective⟩⟩
 
 theorem mk_embedding_le_arrow : #(α ↪ β') ≤ #(α → β') := ⟨⟨_, FunLike.coe_injective⟩⟩
 
