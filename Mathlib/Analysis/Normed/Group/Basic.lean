@@ -77,7 +77,7 @@ notation "‖" e "‖₊" => nnnorm e
 
 /-- A seminormed group is an additive group endowed with a norm for which `dist x y = ‖x - y‖`
 defines a pseudometric space structure. -/
-class SeminormedAddGroup (E : Type*) extends Norm E, AddGroup E, PseudoMetricSpace E where
+class SeminormedAddGroup (E : Type*) extends AddGroup E, Norm E, PseudoMetricSpace E where
   dist := fun x y => ‖x - y‖
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x - y‖ := by aesop
@@ -86,7 +86,7 @@ class SeminormedAddGroup (E : Type*) extends Norm E, AddGroup E, PseudoMetricSpa
 /-- A seminormed group is a group endowed with a norm for which `dist x y = ‖x / y‖` defines a
 pseudometric space structure. -/
 @[to_additive]
-class SeminormedGroup (E : Type*) extends Norm E, Group E, PseudoMetricSpace E where
+class SeminormedGroup (E : Type*) extends Group E, Norm E, PseudoMetricSpace E where
   dist := fun x y => ‖x / y‖
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x / y‖ := by aesop
@@ -94,83 +94,60 @@ class SeminormedGroup (E : Type*) extends Norm E, Group E, PseudoMetricSpace E w
 
 /-- A normed group is an additive group endowed with a norm for which `dist x y = ‖x - y‖` defines a
 metric space structure. -/
-class NormedAddGroup (E : Type*) extends Norm E, AddGroup E, MetricSpace E where
-  dist := fun x y => ‖x - y‖
-  /-- The distance function is induced by the norm. -/
-  dist_eq : ∀ x y, dist x y = ‖x - y‖ := by aesop
+class NormedAddGroup (E : Type*) extends SeminormedAddGroup E, MetricSpace E
 #align normed_add_group NormedAddGroup
 
 /-- A normed group is a group endowed with a norm for which `dist x y = ‖x / y‖` defines a metric
 space structure. -/
 @[to_additive]
-class NormedGroup (E : Type*) extends Norm E, Group E, MetricSpace E where
-  dist := fun x y => ‖x / y‖
-  /-- The distance function is induced by the norm. -/
-  dist_eq : ∀ x y, dist x y = ‖x / y‖ := by aesop
+class NormedGroup (E : Type*) extends SeminormedGroup E, MetricSpace E
 #align normed_group NormedGroup
 
 /-- A seminormed group is an additive group endowed with a norm for which `dist x y = ‖x - y‖`
 defines a pseudometric space structure. -/
-class SeminormedAddCommGroup (E : Type*) extends Norm E, AddCommGroup E,
-  PseudoMetricSpace E where
-  dist := fun x y => ‖x - y‖
-  /-- The distance function is induced by the norm. -/
-  dist_eq : ∀ x y, dist x y = ‖x - y‖ := by aesop
+class SeminormedAddCommGroup (E : Type*) extends AddCommGroup E, SeminormedAddGroup E
 #align seminormed_add_comm_group SeminormedAddCommGroup
 
 /-- A seminormed group is a group endowed with a norm for which `dist x y = ‖x / y‖`
 defines a pseudometric space structure. -/
 @[to_additive]
-class SeminormedCommGroup (E : Type*) extends Norm E, CommGroup E, PseudoMetricSpace E where
-  dist := fun x y => ‖x / y‖
-  /-- The distance function is induced by the norm. -/
-  dist_eq : ∀ x y, dist x y = ‖x / y‖ := by aesop
+class SeminormedCommGroup (E : Type*) extends CommGroup E, SeminormedGroup E
 #align seminormed_comm_group SeminormedCommGroup
+
+attribute [to_additive existing] SeminormedCommGroup.toSeminormedGroup
 
 /-- A normed group is an additive group endowed with a norm for which `dist x y = ‖x - y‖` defines a
 metric space structure. -/
-class NormedAddCommGroup (E : Type*) extends Norm E, AddCommGroup E, MetricSpace E where
-  dist := fun x y => ‖x - y‖
-  /-- The distance function is induced by the norm. -/
-  dist_eq : ∀ x y, dist x y = ‖x - y‖ := by aesop
+class NormedAddCommGroup (E : Type*) extends SeminormedAddCommGroup E, NormedAddGroup E
 #align normed_add_comm_group NormedAddCommGroup
 
 /-- A normed group is a group endowed with a norm for which `dist x y = ‖x / y‖` defines a metric
 space structure. -/
 @[to_additive]
-class NormedCommGroup (E : Type*) extends Norm E, CommGroup E, MetricSpace E where
-  dist := fun x y => ‖x / y‖
-  /-- The distance function is induced by the norm. -/
-  dist_eq : ∀ x y, dist x y = ‖x / y‖ := by aesop
+class NormedCommGroup (E : Type*) extends SeminormedCommGroup E, NormedGroup E
 #align normed_comm_group NormedCommGroup
 
--- See note [lower instance priority]
-@[to_additive]
-instance (priority := 100) NormedGroup.toSeminormedGroup [NormedGroup E] : SeminormedGroup E :=
-  { ‹NormedGroup E› with }
+attribute [to_additive existing] NormedCommGroup.toNormedGroup
+
+attribute [instance 100] NormedAddGroup.toSeminormedAddGroup
+attribute [instance 100] NormedGroup.toSeminormedGroup
 #align normed_group.to_seminormed_group NormedGroup.toSeminormedGroup
 #align normed_add_group.to_seminormed_add_group NormedAddGroup.toSeminormedAddGroup
 
 -- See note [lower instance priority]
-@[to_additive]
-instance (priority := 100) NormedCommGroup.toSeminormedCommGroup [NormedCommGroup E] :
-    SeminormedCommGroup E :=
-  { ‹NormedCommGroup E› with }
+attribute [instance 100] NormedAddCommGroup.toSeminormedAddCommGroup
+attribute [instance 100] NormedCommGroup.toSeminormedCommGroup
 #align normed_comm_group.to_seminormed_comm_group NormedCommGroup.toSeminormedCommGroup
 #align normed_add_comm_group.to_seminormed_add_comm_group NormedAddCommGroup.toSeminormedAddCommGroup
 
--- See note [lower instance priority]
-@[to_additive]
-instance (priority := 100) SeminormedCommGroup.toSeminormedGroup [SeminormedCommGroup E] :
-    SeminormedGroup E :=
-  { ‹SeminormedCommGroup E› with }
+attribute [instance 100] SeminormedAddCommGroup.toSeminormedAddGroup
+attribute [instance 100] SeminormedCommGroup.toSeminormedGroup
 #align seminormed_comm_group.to_seminormed_group SeminormedCommGroup.toSeminormedGroup
 #align seminormed_add_comm_group.to_seminormed_add_group SeminormedAddCommGroup.toSeminormedAddGroup
 
 -- See note [lower instance priority]
-@[to_additive]
-instance (priority := 100) NormedCommGroup.toNormedGroup [NormedCommGroup E] : NormedGroup E :=
-  { ‹NormedCommGroup E› with }
+attribute [instance 100] NormedAddCommGroup.toNormedAddGroup
+attribute [instance 100] NormedCommGroup.toNormedGroup
 #align normed_comm_group.to_normed_group NormedCommGroup.toNormedGroup
 #align normed_add_comm_group.to_normed_add_group NormedAddCommGroup.toNormedAddGroup
 
@@ -185,9 +162,8 @@ level when declaring a `NormedAddGroup` instance as a special case of a more gen
 def NormedGroup.ofSeparation [SeminormedGroup E] (h : ∀ x : E, ‖x‖ = 0 → x = 1) :
     NormedGroup E where
   dist_eq := ‹SeminormedGroup E›.dist_eq
-  toMetricSpace :=
-    { eq_of_dist_eq_zero := fun hxy =>
-        div_eq_one.1 <| h _ <| by exact (‹SeminormedGroup E›.dist_eq _ _).symm.trans hxy }
+  eq_of_dist_eq_zero := fun hxy =>
+        div_eq_one.1 <| h _ <| by exact (‹SeminormedGroup E›.dist_eq _ _).symm.trans hxy
       -- porting note: the `rwa` no longer worked, but it was easy enough to provide the term.
       -- however, notice that if you make `x` and `y` accessible, then the following does work:
       -- `have := ‹SeminormedGroup E›.dist_eq x y; rwa [← this]`, so I'm not sure why the `rwa`
@@ -259,7 +235,7 @@ def SeminormedCommGroup.ofMulDist' [Norm E] [CommGroup E] [PseudoMetricSpace E]
 def NormedGroup.ofMulDist [Norm E] [Group E] [MetricSpace E] (h₁ : ∀ x : E, ‖x‖ = dist x 1)
     (h₂ : ∀ x y z : E, dist x y ≤ dist (x * z) (y * z)) : NormedGroup E :=
   { SeminormedGroup.ofMulDist h₁ h₂ with
-    eq_of_dist_eq_zero := eq_of_dist_eq_zero }
+    eq_of_dist_eq_zero := _root_.eq_of_dist_eq_zero }
 #align normed_group.of_mul_dist NormedGroup.ofMulDist
 #align normed_add_group.of_add_dist NormedAddGroup.ofAddDist
 
@@ -268,7 +244,7 @@ def NormedGroup.ofMulDist [Norm E] [Group E] [MetricSpace E] (h₁ : ∀ x : E, 
 def NormedGroup.ofMulDist' [Norm E] [Group E] [MetricSpace E] (h₁ : ∀ x : E, ‖x‖ = dist x 1)
     (h₂ : ∀ x y z : E, dist (x * z) (y * z) ≤ dist x y) : NormedGroup E :=
   { SeminormedGroup.ofMulDist' h₁ h₂ with
-    eq_of_dist_eq_zero := eq_of_dist_eq_zero }
+    eq_of_dist_eq_zero := _root_.eq_of_dist_eq_zero }
 #align normed_group.of_mul_dist' NormedGroup.ofMulDist'
 #align normed_add_group.of_add_dist' NormedAddGroup.ofAddDist'
 
@@ -358,6 +334,7 @@ def GroupNorm.toNormedCommGroup [CommGroup E] (f : GroupNorm E) : NormedCommGrou
 instance PUnit.normedAddCommGroup : NormedAddCommGroup PUnit where
   norm := Function.const _ 0
   dist_eq _ _ := rfl
+  __ : MetricSpace PUnit := inferInstance
 
 @[simp]
 theorem PUnit.norm_eq_zero (r : PUnit) : ‖r‖ = 0 :=
@@ -1343,7 +1320,7 @@ theorem SeminormedCommGroup.mem_closure_iff : a ∈ closure s ↔ ∀ ε, 0 < ε
 @[to_additive norm_le_zero_iff']
 theorem norm_le_zero_iff''' [T0Space E] {a : E} : ‖a‖ ≤ 0 ↔ a = 1 := by
   letI : NormedGroup E :=
-    { ‹SeminormedGroup E› with toMetricSpace := MetricSpace.ofT0PseudoMetricSpace E }
+    { ‹SeminormedGroup E›, MetricSpace.ofT0PseudoMetricSpace E with }
   rw [← dist_one_right, dist_le_zero]
 #align norm_le_zero_iff''' norm_le_zero_iff'''
 #align norm_le_zero_iff' norm_le_zero_iff'
@@ -1780,8 +1757,8 @@ theorem norm_eq_abs (r : ℝ) : ‖r‖ = |r| :=
   rfl
 #align real.norm_eq_abs Real.norm_eq_abs
 
-instance normedAddCommGroup : NormedAddCommGroup ℝ :=
-  ⟨fun _r _y => rfl⟩
+instance normedAddCommGroup : NormedAddCommGroup ℝ where
+  eq_of_dist_eq_zero := _root_.eq_of_dist_eq_zero
 
 theorem norm_of_nonneg (hr : 0 ≤ r) : ‖r‖ = r :=
   abs_of_nonneg hr
@@ -1853,6 +1830,7 @@ namespace Int
 instance normedAddCommGroup : NormedAddCommGroup ℤ where
   norm n := ‖(n : ℝ)‖
   dist_eq m n := by simp only [Int.dist_eq, norm, Int.cast_sub]
+  __ : MetricSpace ℤ := inferInstance
 
 @[norm_cast]
 theorem norm_cast_real (m : ℤ) : ‖(m : ℝ)‖ = ‖m‖ :=
@@ -1887,6 +1865,7 @@ namespace Rat
 instance normedAddCommGroup : NormedAddCommGroup ℚ where
   norm r := ‖(r : ℝ)‖
   dist_eq r₁ r₂ := by simp only [Rat.dist_eq, norm, Rat.cast_sub]
+  __ : MetricSpace _ := inferInstance
 
 @[norm_cast, simp 1001]
 -- porting note: increase priority to prevent the left-hand side from simplifying
