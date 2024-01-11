@@ -462,7 +462,7 @@ Many lemmas are proven more generally in mathlib `algebra/order/sub` -/
 
 #align nat.mul_self_sub_mul_self_eq Nat.mul_self_sub_mul_self_eq
 
-#align nat.succ_mul_succ_eq Nat.succ_mul_succ_eq
+#align nat.succ_mul_succ_eq Nat.succ_mul_succ
 
 /-! min -/
 

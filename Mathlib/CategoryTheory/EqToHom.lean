@@ -107,7 +107,7 @@ theorem congrArg_cast_hom_left {X Y Z : C} (p : X = Y) (q : Y ⟶ Z) :
   cases p
   simp
 
- /-- If we (perhaps unintentionally) perform equational rewriting on
+/-- If we (perhaps unintentionally) perform equational rewriting on
 the source object of a morphism,
 we can replace the resulting `_.mpr f` term by a composition with an `eqToHom`.
 
