@@ -41,7 +41,7 @@ def image₂ (f : α → β → γ) (s : Finset α) (t : Finset β) : Finset γ 
 #align finset.image₂ Finset.image₂
 
 @[simp]
-theorem mem_image₂ : c ∈ image₂ f s t ↔ ∃ a b, a ∈ s ∧ b ∈ t ∧ f a b = c := by
+theorem mem_image₂ : c ∈ image₂ f s t ↔ ∃ a ∈ s, ∃ b ∈ t, f a b = c := by
   simp [image₂, and_assoc]
 #align finset.mem_image₂ Finset.mem_image₂
 
@@ -68,7 +68,7 @@ theorem card_image₂ (hf : Injective2 f) (s : Finset α) (t : Finset β) :
 #align finset.card_image₂ Finset.card_image₂
 
 theorem mem_image₂_of_mem (ha : a ∈ s) (hb : b ∈ t) : f a b ∈ image₂ f s t :=
-  mem_image₂.2 ⟨a, b, ha, hb, rfl⟩
+  mem_image₂.2 ⟨a, ha, b, hb, rfl⟩
 #align finset.mem_image₂_of_mem Finset.mem_image₂_of_mem
 
 theorem mem_image₂_iff (hf : Injective2 f) : f a b ∈ image₂ f s t ↔ a ∈ s ∧ b ∈ t := by

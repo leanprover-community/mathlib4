@@ -606,7 +606,7 @@ theorem exists_subset_affineIndependent_affineSpan_eq_top {s : Set P}
 variable (k V)
 
 theorem exists_affineIndependent (s : Set P) :
-    ∃ (t : _) (_ : t ⊆ s), affineSpan k t = affineSpan k s ∧ AffineIndependent k ((↑) : t → P) := by
+    ∃ t ⊆ s, affineSpan k t = affineSpan k s ∧ AffineIndependent k ((↑) : t → P) := by
   rcases s.eq_empty_or_nonempty with (rfl | ⟨p, hp⟩)
   · exact ⟨∅, Set.empty_subset ∅, rfl, affineIndependent_of_subsingleton k _⟩
   obtain ⟨b, hb₁, hb₂, hb₃⟩ := exists_linearIndependent k ((Equiv.vaddConst p).symm '' s)

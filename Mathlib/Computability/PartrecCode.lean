@@ -696,36 +696,36 @@ theorem smn :
 #align nat.partrec.code.smn Nat.Partrec.Code.smn
 
 /-- A function is partial recursive if and only if there is a code implementing it. -/
-theorem exists_code {f : ℕ →. ℕ} : Nat.Partrec f ↔ ∃ c : Code, eval c = f :=
-  ⟨fun h => by
-    induction h
-    case zero => exact ⟨zero, rfl⟩
-    case succ => exact ⟨succ, rfl⟩
-    case left => exact ⟨left, rfl⟩
-    case right => exact ⟨right, rfl⟩
-    case pair f g pf pg hf hg =>
+theorem exists_code {f : ℕ →. ℕ} : Nat.Partrec f ↔ ∃ c : Code, eval c = f := by
+  refine ⟨fun h => ?_, ?_⟩
+  · induction h with
+    | zero => exact ⟨zero, rfl⟩
+    | succ => exact ⟨succ, rfl⟩
+    | left => exact ⟨left, rfl⟩
+    | right => exact ⟨right, rfl⟩
+    | pair pf pg hf hg =>
       rcases hf with ⟨cf, rfl⟩; rcases hg with ⟨cg, rfl⟩
       exact ⟨pair cf cg, rfl⟩
-    case comp f g pf pg hf hg =>
+    | comp pf pg hf hg =>
       rcases hf with ⟨cf, rfl⟩; rcases hg with ⟨cg, rfl⟩
       exact ⟨comp cf cg, rfl⟩
-    case prec f g pf pg hf hg =>
+    | prec pf pg hf hg =>
       rcases hf with ⟨cf, rfl⟩; rcases hg with ⟨cg, rfl⟩
       exact ⟨prec cf cg, rfl⟩
-    case rfind f pf hf =>
+    | rfind pf hf =>
       rcases hf with ⟨cf, rfl⟩
       refine' ⟨comp (rfind' cf) (pair Code.id zero), _⟩
-      simp [eval, Seq.seq, pure, PFun.pure, Part.map_id'],
-    fun h => by
-    rcases h with ⟨c, rfl⟩; induction c
-    case zero => exact Nat.Partrec.zero
-    case succ => exact Nat.Partrec.succ
-    case left => exact Nat.Partrec.left
-    case right => exact Nat.Partrec.right
-    case pair cf cg pf pg => exact pf.pair pg
-    case comp cf cg pf pg => exact pf.comp pg
-    case prec cf cg pf pg => exact pf.prec pg
-    case rfind' cf pf => exact pf.rfind'⟩
+      simp [eval, Seq.seq, pure, PFun.pure, Part.map_id']
+  · rintro ⟨c, rfl⟩
+    induction c with
+    | zero => exact Nat.Partrec.zero
+    | succ => exact Nat.Partrec.succ
+    | left => exact Nat.Partrec.left
+    | right => exact Nat.Partrec.right
+    | pair cf cg pf pg => exact pf.pair pg
+    | comp cf cg pf pg => exact pf.comp pg
+    | prec cf cg pf pg => exact pf.prec pg
+    | rfind' cf pf => exact pf.rfind'
 #align nat.partrec.code.exists_code Nat.Partrec.Code.exists_code
 
 -- Porting note: `>>`s in `evaln` are now `>>=` because `>>`s are not elaborated well in Lean4.
@@ -812,7 +812,8 @@ theorem evaln_mono : ∀ {k₁ k₂ c n x}, k₁ ≤ k₂ → x ∈ evaln k₁ c
       · exact fun y h₁ h₂ => ⟨y, evaln_mono hl' h₁, hg _ _ h₂⟩
     · -- rfind' cf
       simp? [Bind.bind] at h ⊢ says
-        simp only [unpaired, bind, pair_unpair, Option.mem_def, Option.bind_eq_some] at h ⊢
+        simp only [unpaired, bind, pair_unpair, Option.pure_def, Option.mem_def,
+          Option.bind_eq_some] at h ⊢
       refine' h.imp fun x => And.imp (hf _ _) _
       by_cases x0 : x = 0 <;> simp [x0]
       exact evaln_mono hl'
@@ -844,8 +845,7 @@ theorem evaln_sound : ∀ {k c n x}, x ∈ evaln k c n → x ∈ eval c n
       rcases h with ⟨m, h₁, h₂⟩
       by_cases m0 : m = 0 <;> simp [m0] at h₂
       · exact
-          ⟨0, ⟨by simpa [m0] using hf _ _ h₁, fun {m} => (Nat.not_lt_zero _).elim⟩, by
-            injection h₂ with h₂; simp [h₂]⟩
+          ⟨0, ⟨by simpa [m0] using hf _ _ h₁, fun {m} => (Nat.not_lt_zero _).elim⟩, by simp [h₂]⟩
       · have := evaln_sound h₂
         simp [eval] at this
         rcases this with ⟨y, ⟨hy₁, hy₂⟩, rfl⟩
@@ -858,73 +858,72 @@ theorem evaln_sound : ∀ {k c n x}, x ∈ evaln k c n → x ∈ eval c n
           exact ⟨z, by simpa [Nat.succ_eq_add_one, add_comm, add_left_comm] using hz, z0⟩
 #align nat.partrec.code.evaln_sound Nat.Partrec.Code.evaln_sound
 
-theorem evaln_complete {c n x} : x ∈ eval c n ↔ ∃ k, x ∈ evaln k c n :=
-  ⟨fun h => by
-    rsuffices ⟨k, h⟩ : ∃ k, x ∈ evaln (k + 1) c n
-    · exact ⟨k + 1, h⟩
-    induction c generalizing n x <;> simp [eval, evaln, pure, PFun.pure, Seq.seq, Bind.bind] at h ⊢
-    iterate 4 exact ⟨⟨_, le_rfl⟩, h.symm⟩
-    case pair cf cg hf hg =>
-      rcases h with ⟨x, hx, y, hy, rfl⟩
-      rcases hf hx with ⟨k₁, hk₁⟩; rcases hg hy with ⟨k₂, hk₂⟩
-      refine' ⟨max k₁ k₂, _⟩
+theorem evaln_complete {c n x} : x ∈ eval c n ↔ ∃ k, x ∈ evaln k c n := by
+  refine ⟨fun h => ?_, fun ⟨k, h⟩ => evaln_sound h⟩
+  rsuffices ⟨k, h⟩ : ∃ k, x ∈ evaln (k + 1) c n
+  · exact ⟨k + 1, h⟩
+  induction c generalizing n x with simp [eval, evaln, pure, PFun.pure, Seq.seq, Bind.bind] at h ⊢
+  | pair cf cg hf hg =>
+    rcases h with ⟨x, hx, y, hy, rfl⟩
+    rcases hf hx with ⟨k₁, hk₁⟩; rcases hg hy with ⟨k₂, hk₂⟩
+    refine' ⟨max k₁ k₂, _⟩
+    refine'
+      ⟨le_max_of_le_left <| Nat.le_of_lt_succ <| evaln_bound hk₁, _,
+        evaln_mono (Nat.succ_le_succ <| le_max_left _ _) hk₁, _,
+        evaln_mono (Nat.succ_le_succ <| le_max_right _ _) hk₂, rfl⟩
+  | comp cf cg hf hg =>
+    rcases h with ⟨y, hy, hx⟩
+    rcases hg hy with ⟨k₁, hk₁⟩; rcases hf hx with ⟨k₂, hk₂⟩
+    refine' ⟨max k₁ k₂, _⟩
+    exact
+      ⟨le_max_of_le_left <| Nat.le_of_lt_succ <| evaln_bound hk₁, _,
+        evaln_mono (Nat.succ_le_succ <| le_max_left _ _) hk₁,
+        evaln_mono (Nat.succ_le_succ <| le_max_right _ _) hk₂⟩
+  | prec cf cg hf hg =>
+    revert h
+    generalize n.unpair.1 = n₁; generalize n.unpair.2 = n₂
+    induction' n₂ with m IH generalizing x n <;> simp
+    · intro h
+      rcases hf h with ⟨k, hk⟩
+      exact ⟨_, le_max_left _ _, evaln_mono (Nat.succ_le_succ <| le_max_right _ _) hk⟩
+    · intro y hy hx
+      rcases IH hy with ⟨k₁, nk₁, hk₁⟩
+      rcases hg hx with ⟨k₂, hk₂⟩
       refine'
-        ⟨le_max_of_le_left <| Nat.le_of_lt_succ <| evaln_bound hk₁, _,
-          evaln_mono (Nat.succ_le_succ <| le_max_left _ _) hk₁, _,
-          evaln_mono (Nat.succ_le_succ <| le_max_right _ _) hk₂, rfl⟩
-    case comp cf cg hf hg =>
-      rcases h with ⟨y, hy, hx⟩
-      rcases hg hy with ⟨k₁, hk₁⟩; rcases hf hx with ⟨k₂, hk₂⟩
-      refine' ⟨max k₁ k₂, _⟩
-      exact
-        ⟨le_max_of_le_left <| Nat.le_of_lt_succ <| evaln_bound hk₁, _,
-          evaln_mono (Nat.succ_le_succ <| le_max_left _ _) hk₁,
-          evaln_mono (Nat.succ_le_succ <| le_max_right _ _) hk₂⟩
-    case prec cf cg hf hg =>
-      revert h
-      generalize n.unpair.1 = n₁; generalize n.unpair.2 = n₂
-      induction' n₂ with m IH generalizing x n <;> simp
-      · intro h
-        rcases hf h with ⟨k, hk⟩
-        exact ⟨_, le_max_left _ _, evaln_mono (Nat.succ_le_succ <| le_max_right _ _) hk⟩
-      · intro y hy hx
-        rcases IH hy with ⟨k₁, nk₁, hk₁⟩
-        rcases hg hx with ⟨k₂, hk₂⟩
-        refine'
-          ⟨(max k₁ k₂).succ,
-            Nat.le_succ_of_le <| le_max_of_le_left <|
-              le_trans (le_max_left _ (Nat.pair n₁ m)) nk₁, y,
-            evaln_mono (Nat.succ_le_succ <| le_max_left _ _) _,
-            evaln_mono (Nat.succ_le_succ <| Nat.le_succ_of_le <| le_max_right _ _) hk₂⟩
-        simp only [evaln._eq_8, bind, unpaired, unpair_pair, Option.mem_def, Option.bind_eq_some,
-          Option.guard_eq_some', exists_and_left, exists_const]
-        exact ⟨le_trans (le_max_right _ _) nk₁, hk₁⟩
-    case rfind' cf hf =>
-      rcases h with ⟨y, ⟨hy₁, hy₂⟩, rfl⟩
-      suffices ∃ k, y + n.unpair.2 ∈ evaln (k + 1) (rfind' cf) (Nat.pair n.unpair.1 n.unpair.2) by
-        simpa [evaln, Bind.bind]
-      revert hy₁ hy₂
-      generalize n.unpair.2 = m
-      intro hy₁ hy₂
-      induction' y with y IH generalizing m <;> simp [evaln, Bind.bind]
-      · simp at hy₁
-        rcases hf hy₁ with ⟨k, hk⟩
-        exact ⟨_, Nat.le_of_lt_succ <| evaln_bound hk, _, hk, by simp; rfl⟩
-      · rcases hy₂ (Nat.succ_pos _) with ⟨a, ha, a0⟩
-        rcases hf ha with ⟨k₁, hk₁⟩
-        rcases IH m.succ (by simpa [Nat.succ_eq_add_one, add_comm, add_left_comm] using hy₁)
-            fun {i} hi => by
-            simpa [Nat.succ_eq_add_one, add_comm, add_left_comm] using
-              hy₂ (Nat.succ_lt_succ hi) with
-          ⟨k₂, hk₂⟩
-        use (max k₁ k₂).succ
-        rw [zero_add] at hk₁
-        use Nat.le_succ_of_le <| le_max_of_le_left <| Nat.le_of_lt_succ <| evaln_bound hk₁
-        use a
-        use evaln_mono (Nat.succ_le_succ <| Nat.le_succ_of_le <| le_max_left _ _) hk₁
-        simpa [Nat.succ_eq_add_one, a0, -max_eq_left, -max_eq_right, add_comm, add_left_comm] using
-          evaln_mono (Nat.succ_le_succ <| le_max_right _ _) hk₂,
-    fun ⟨k, h⟩ => evaln_sound h⟩
+        ⟨(max k₁ k₂).succ,
+          Nat.le_succ_of_le <| le_max_of_le_left <|
+            le_trans (le_max_left _ (Nat.pair n₁ m)) nk₁, y,
+          evaln_mono (Nat.succ_le_succ <| le_max_left _ _) _,
+          evaln_mono (Nat.succ_le_succ <| Nat.le_succ_of_le <| le_max_right _ _) hk₂⟩
+      simp only [evaln._eq_8, bind, unpaired, unpair_pair, Option.mem_def, Option.bind_eq_some,
+        Option.guard_eq_some', exists_and_left, exists_const]
+      exact ⟨le_trans (le_max_right _ _) nk₁, hk₁⟩
+  | rfind' cf hf =>
+    rcases h with ⟨y, ⟨hy₁, hy₂⟩, rfl⟩
+    suffices ∃ k, y + n.unpair.2 ∈ evaln (k + 1) (rfind' cf) (Nat.pair n.unpair.1 n.unpair.2) by
+      simpa [evaln, Bind.bind]
+    revert hy₁ hy₂
+    generalize n.unpair.2 = m
+    intro hy₁ hy₂
+    induction' y with y IH generalizing m <;> simp [evaln, Bind.bind]
+    · simp at hy₁
+      rcases hf hy₁ with ⟨k, hk⟩
+      exact ⟨_, Nat.le_of_lt_succ <| evaln_bound hk, _, hk, by simp⟩
+    · rcases hy₂ (Nat.succ_pos _) with ⟨a, ha, a0⟩
+      rcases hf ha with ⟨k₁, hk₁⟩
+      rcases IH m.succ (by simpa [Nat.succ_eq_add_one, add_comm, add_left_comm] using hy₁)
+          fun {i} hi => by
+          simpa [Nat.succ_eq_add_one, add_comm, add_left_comm] using
+            hy₂ (Nat.succ_lt_succ hi) with
+        ⟨k₂, hk₂⟩
+      use (max k₁ k₂).succ
+      rw [zero_add] at hk₁
+      use Nat.le_succ_of_le <| le_max_of_le_left <| Nat.le_of_lt_succ <| evaln_bound hk₁
+      use a
+      use evaln_mono (Nat.succ_le_succ <| Nat.le_succ_of_le <| le_max_left _ _) hk₁
+      simpa [Nat.succ_eq_add_one, a0, -max_eq_left, -max_eq_right, add_comm, add_left_comm] using
+        evaln_mono (Nat.succ_le_succ <| le_max_right _ _) hk₂
+  | _ => exact ⟨⟨_, le_rfl⟩, h.symm⟩
 #align nat.partrec.code.evaln_complete Nat.Partrec.Code.evaln_complete
 
 section

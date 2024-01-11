@@ -313,7 +313,7 @@ variable [Fintype ι]
 
 @[simp] theorem polarBilin_pi (Q : ∀ i, QuadraticForm R (Mᵢ i)) :
     (pi Q).polarBilin = ∑ i, (Q i).polarBilin.comp (.proj i) (.proj i) :=
-  BilinForm.ext <| fun x y => (polar_pi _ _ _).trans <| by simp
+  BilinForm.ext fun x y => (polar_pi _ _ _).trans <| by simp
 
 @[simp] theorem associated_pi [Invertible (2 : R)] (Q : ∀ i, QuadraticForm R (Mᵢ i)) :
     associated (pi Q) = ∑ i, (Q i).associated.comp (.proj i) (.proj i) := by

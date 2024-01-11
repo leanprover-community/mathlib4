@@ -4,11 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
 -/
 import Mathlib.Algebra.Algebra.Tower
-import Mathlib.Algebra.Ring.Equiv
+import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.GroupTheory.MonoidLocalization
 import Mathlib.RingTheory.Ideal.Basic
-import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-import Mathlib.Tactic.Ring
 
 #align_import ring_theory.localization.basic from "leanprover-community/mathlib"@"b69c9a770ecf37eb21f7b8cf4fa00de3b62694ec"
 
@@ -97,7 +95,7 @@ variable [Algebra R S] {P : Type*} [CommSemiring P]
 
 /-- The typeclass `IsLocalization (M : Submonoid R) S` where `S` is an `R`-algebra
 expresses that `S` is isomorphic to the localization of `R` at `M`. -/
-class IsLocalization : Prop where
+@[mk_iff] class IsLocalization : Prop where
   --Porting note: add ' to fields, and made new versions of these with either `S` or `M` explicit.
   /-- Everything in the image of `algebraMap` is a unit -/
   map_units' : ∀ y : M, IsUnit (algebraMap R S y)
@@ -382,6 +380,9 @@ theorem mk'_eq_of_eq' {a₁ b₁ : R} {a₂ b₂ : M} (H : b₁ * ↑a₂ = a₁
     mk' S a₁ a₂ = mk' S b₁ b₂ :=
   (toLocalizationMap M S).mk'_eq_of_eq' H
 #align is_localization.mk'_eq_of_eq' IsLocalization.mk'_eq_of_eq'
+
+theorem mk'_cancel (a : R) (b c : M) :
+    mk' S (a * c) (b * c) = mk' S a b := (toLocalizationMap M S).mk'_cancel _ _ _
 
 variable (S)
 

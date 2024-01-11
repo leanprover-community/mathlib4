@@ -283,12 +283,12 @@ See `exists_dvd_and_dvd_of_dvd_mul` for the more general but less constructive v
 `GCDMonoid`s. -/
 def prodDvdAndDvdOfDvdProd {m n k : ℕ} (H : k ∣ m * n) :
     { d : { m' // m' ∣ m } × { n' // n' ∣ n } // k = d.1 * d.2 } := by
-  cases h0 : gcd k m
-  case zero =>
+  cases h0 : gcd k m with
+  | zero =>
     obtain rfl : k = 0 := eq_zero_of_gcd_eq_zero_left h0
     obtain rfl : m = 0 := eq_zero_of_gcd_eq_zero_right h0
     exact ⟨⟨⟨0, dvd_refl 0⟩, ⟨n, dvd_refl n⟩⟩, (zero_mul n).symm⟩
-  case succ tmp =>
+  | succ tmp =>
     have hpos : 0 < gcd k m := h0.symm ▸ Nat.zero_lt_succ _; clear h0 tmp
     have hd : gcd k m * (k / gcd k m) = k := Nat.mul_div_cancel' (gcd_dvd_left k m)
     refine' ⟨⟨⟨gcd k m, gcd_dvd_right k m⟩, ⟨k / gcd k m, _⟩⟩, hd.symm⟩

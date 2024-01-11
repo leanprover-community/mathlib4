@@ -220,9 +220,9 @@ theorem log_nonpos (hx : 0 ≤ x) (h'x : x ≤ 1) : log x ≤ 0 :=
 #align real.log_nonpos Real.log_nonpos
 
 theorem log_nat_cast_nonneg (n : ℕ) : 0 ≤ log n := by
-  by_cases hn : n = 0
-  case pos => simp [hn]
-  case neg =>
+  if hn : n = 0 then
+    simp [hn]
+  else
     have : (1 : ℝ) ≤ n := mod_cast Nat.one_le_of_lt <| Nat.pos_of_ne_zero hn
     exact log_nonneg this
 
