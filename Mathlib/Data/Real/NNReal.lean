@@ -877,10 +877,7 @@ end Sub
 
 section Inv
 
-theorem sum_div {ι} (s : Finset ι) (f : ι → ℝ≥0) (b : ℝ≥0) :
-    (∑ i in s, f i) / b = ∑ i in s, f i / b :=
-  Finset.sum_div
-#align nnreal.sum_div NNReal.sum_div
+#align nnreal.sum_div Finset.sum_div
 
 @[simp]
 theorem inv_le {r p : ℝ≥0} (h : r ≠ 0) : r⁻¹ ≤ p ↔ 1 ≤ r * p := by
@@ -988,7 +985,7 @@ theorem div_lt_one_of_lt {a b : ℝ≥0} (h : a < b) : a / b < 1 := by
 #align nnreal.div_lt_one_of_lt NNReal.div_lt_one_of_lt
 
 theorem _root_.Real.toNNReal_inv {x : ℝ} : Real.toNNReal x⁻¹ = (Real.toNNReal x)⁻¹ := by
-  cases' le_total 0 x with hx hx
+  rcases le_total 0 x with hx | hx
   · nth_rw 1 [← Real.coe_toNNReal x hx]
     rw [← NNReal.coe_inv, Real.toNNReal_coe]
   · rw [toNNReal_eq_zero.mpr hx, inv_zero, toNNReal_eq_zero.mpr (inv_nonpos.mpr hx)]
@@ -1135,7 +1132,7 @@ theorem image_coe_nnreal_real (h : t.OrdConnected) : ((↑) '' t : Set ℝ).OrdC
 -- porting note: todo: does it generalize to a `GaloisInsertion`?
 theorem image_real_toNNReal (h : s.OrdConnected) : (Real.toNNReal '' s).OrdConnected := by
   refine' ⟨ball_image_iff.2 fun x hx => ball_image_iff.2 fun y hy z hz => _⟩
-  cases' le_total y 0 with hy₀ hy₀
+  rcases le_total y 0 with hy₀ | hy₀
   · rw [mem_Icc, Real.toNNReal_of_nonpos hy₀, nonpos_iff_eq_zero] at hz
     exact ⟨y, hy, (toNNReal_of_nonpos hy₀).trans hz.2.symm⟩
   · lift y to ℝ≥0 using hy₀

@@ -106,7 +106,7 @@ theorem exists_ne_zero_mem_ringOfIntegers_of_norm_le_mul_sqrt_discr :
         (finrank ℚ K).factorial / (finrank ℚ K) ^ (finrank ℚ K) * Real.sqrt |discr K| := by
   -- The smallest possible value for `exists_ne_zero_mem_ringOfIntegers_of_norm_le`
   let B := (minkowskiBound K * (convexBodySumFactor K)⁻¹).toReal ^ (1 / (finrank ℚ K : ℝ))
-  have hB : 0 ≤ B := Real.rpow_nonneg_of_nonneg toReal_nonneg _
+  have hB : 0 ≤ B := Real.rpow_nonneg toReal_nonneg _
   have h_le : (minkowskiBound K) ≤ volume (convexBodySum K B) := by
     refine le_of_eq ?_
     rw [convexBodySum_volume, ← ENNReal.ofReal_pow hB, ← Real.rpow_nat_cast, ← Real.rpow_mul
@@ -166,10 +166,9 @@ theorem abs_discr_ge (h : 1 < finrank ℚ K) :
   let a : ℕ → ℝ := fun n => (n:ℝ) ^ (n * 2) / ((4 / π) ^ n * (n.factorial:ℝ) ^ 2)
   suffices ∀ n, 2 ≤ n → (4 / 9 : ℝ) * (3 * π / 4) ^ n ≤ a n by
     refine le_trans (this (finrank ℚ K) h) ?_
-    refine div_le_div_of_le_left (by positivity) (by positivity) ?_
-    refine mul_le_mul_of_nonneg_right (pow_le_pow ?_ ?_) (by positivity)
-    · rw [_root_.le_div_iff Real.pi_pos, one_mul]
-      exact Real.pi_le_four
+    simp only -- unfold `a` and beta-reduce
+    gcongr
+    · exact (one_le_div Real.pi_pos).2 Real.pi_le_four
     · rw [← card_add_two_mul_card_eq_rank, mul_comm]
       exact Nat.le_add_left _ _
   intro n hn
@@ -197,7 +196,7 @@ theorem discr_gt_one (h : 1 < finrank ℚ K) : 2 < |discr K| := by
     exact Real.pi_gt_three
   refine Int.cast_lt.mp <| lt_of_lt_of_le ?_ (abs_discr_ge h)
   rw [← _root_.div_lt_iff' (by positivity), Int.int_cast_ofNat]
-  refine lt_of_lt_of_le ?_ (pow_le_pow (n := 2) h₁ h)
+  refine lt_of_lt_of_le ?_ (pow_le_pow_right (n := 2) h₁ h)
   rw [div_pow, _root_.lt_div_iff (by norm_num), mul_pow]
   norm_num
   rw [ ← _root_.div_lt_iff' (by positivity), show (72:ℝ) / 9 = 8 by norm_num]

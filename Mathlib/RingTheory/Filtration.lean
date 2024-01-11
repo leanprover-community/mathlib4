@@ -3,6 +3,7 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
+import Mathlib.Algebra.Ring.Idempotents
 import Mathlib.RingTheory.Ideal.LocalRing
 import Mathlib.RingTheory.Noetherian
 import Mathlib.RingTheory.ReesAlgebra
@@ -471,6 +472,19 @@ theorem Ideal.iInf_pow_eq_bot_of_localRing [IsNoetherianRing R] [LocalRing R] (h
   ext i
   rw [smul_eq_mul, ← Ideal.one_eq_top, mul_one]
 #align ideal.infi_pow_eq_bot_of_local_ring Ideal.iInf_pow_eq_bot_of_localRing
+
+/-- Also see `Ideal.isIdempotentElem_iff_eq_bot_or_top` for integral domains. -/
+theorem Ideal.isIdempotentElem_iff_eq_bot_or_top_of_localRing {R} [CommRing R]
+    [IsNoetherianRing R] [LocalRing R] (I : Ideal R) :
+    IsIdempotentElem I ↔ I = ⊥ ∨ I = ⊤ := by
+  constructor
+  · intro H
+    by_cases I = ⊤; · exact Or.inr ‹_›
+    refine Or.inl (eq_bot_iff.mpr ?_)
+    rw [← Ideal.iInf_pow_eq_bot_of_localRing I ‹_›]
+    apply le_iInf
+    rintro (_|n) <;> simp [H.pow_succ_eq]
+  · rintro (rfl | rfl) <;> simp [IsIdempotentElem]
 
 /-- **Krull's intersection theorem** for noetherian domains. -/
 theorem Ideal.iInf_pow_eq_bot_of_isDomain [IsNoetherianRing R] [IsDomain R] (h : I ≠ ⊤) :

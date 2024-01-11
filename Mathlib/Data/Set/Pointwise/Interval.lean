@@ -44,17 +44,17 @@ variable [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (Fun
 
 @[to_additive Icc_add_Icc_subset]
 theorem Icc_mul_Icc_subset' (a b c d : α) : Icc a b * Icc c d ⊆ Icc (a * c) (b * d) := by
-  rintro x ⟨y, z, ⟨hya, hyb⟩, ⟨hzc, hzd⟩, rfl⟩
+  rintro x ⟨y, ⟨hya, hyb⟩, z, ⟨hzc, hzd⟩, rfl⟩
   exact ⟨mul_le_mul' hya hzc, mul_le_mul' hyb hzd⟩
 
 @[to_additive Iic_add_Iic_subset]
 theorem Iic_mul_Iic_subset' (a b : α) : Iic a * Iic b ⊆ Iic (a * b) := by
-  rintro x ⟨y, z, hya, hzb, rfl⟩
+  rintro x ⟨y, hya, z, hzb, rfl⟩
   exact mul_le_mul' hya hzb
 
 @[to_additive Ici_add_Ici_subset]
 theorem Ici_mul_Ici_subset' (a b : α) : Ici a * Ici b ⊆ Ici (a * b) := by
-  rintro x ⟨y, z, hya, hzb, rfl⟩
+  rintro x ⟨y, hya, z, hzb, rfl⟩
   exact mul_le_mul' hya hzb
 
 end ContravariantLE
@@ -67,49 +67,49 @@ variable [CovariantClass α α (· * ·) (· < ·)] [CovariantClass α α (Funct
 @[to_additive Icc_add_Ico_subset]
 theorem Icc_mul_Ico_subset' (a b c d : α) : Icc a b * Ico c d ⊆ Ico (a * c) (b * d) := by
   haveI := covariantClass_le_of_lt
-  rintro x ⟨y, z, ⟨hya, hyb⟩, ⟨hzc, hzd⟩, rfl⟩
+  rintro x ⟨y, ⟨hya, hyb⟩, z, ⟨hzc, hzd⟩, rfl⟩
   exact ⟨mul_le_mul' hya hzc, mul_lt_mul_of_le_of_lt hyb hzd⟩
 
 @[to_additive Ico_add_Icc_subset]
 theorem Ico_mul_Icc_subset' (a b c d : α) : Ico a b * Icc c d ⊆ Ico (a * c) (b * d) := by
   haveI := covariantClass_le_of_lt
-  rintro x ⟨y, z, ⟨hya, hyb⟩, ⟨hzc, hzd⟩, rfl⟩
+  rintro x ⟨y, ⟨hya, hyb⟩, z, ⟨hzc, hzd⟩, rfl⟩
   exact ⟨mul_le_mul' hya hzc, mul_lt_mul_of_lt_of_le hyb hzd⟩
 
 @[to_additive Ioc_add_Ico_subset]
 theorem Ioc_mul_Ico_subset' (a b c d : α) : Ioc a b * Ico c d ⊆ Ioo (a * c) (b * d) := by
   haveI := covariantClass_le_of_lt
-  rintro x ⟨y, z, ⟨hya, hyb⟩, ⟨hzc, hzd⟩, rfl⟩
+  rintro x ⟨y, ⟨hya, hyb⟩, z, ⟨hzc, hzd⟩, rfl⟩
   exact ⟨mul_lt_mul_of_lt_of_le hya hzc, mul_lt_mul_of_le_of_lt hyb hzd⟩
 
 @[to_additive Ico_add_Ioc_subset]
 theorem Ico_mul_Ioc_subset' (a b c d : α) : Ico a b * Ioc c d ⊆ Ioo (a * c) (b * d) := by
   haveI := covariantClass_le_of_lt
-  rintro x ⟨y, z, ⟨hya, hyb⟩, ⟨hzc, hzd⟩, rfl⟩
+  rintro x ⟨y, ⟨hya, hyb⟩, z, ⟨hzc, hzd⟩, rfl⟩
   exact ⟨mul_lt_mul_of_le_of_lt hya hzc, mul_lt_mul_of_lt_of_le hyb hzd⟩
 
 @[to_additive Iic_add_Iio_subset]
 theorem Iic_mul_Iio_subset' (a b : α) : Iic a * Iio b ⊆ Iio (a * b) := by
   haveI := covariantClass_le_of_lt
-  rintro x ⟨y, z, hya, hzb, rfl⟩
+  rintro x ⟨y, hya, z, hzb, rfl⟩
   exact mul_lt_mul_of_le_of_lt hya hzb
 
 @[to_additive Iio_add_Iic_subset]
 theorem Iio_mul_Iic_subset' (a b : α) : Iio a * Iic b ⊆ Iio (a * b) := by
   haveI := covariantClass_le_of_lt
-  rintro x ⟨y, z, hya, hzb, rfl⟩
+  rintro x ⟨y, hya, z, hzb, rfl⟩
   exact mul_lt_mul_of_lt_of_le hya hzb
 
 @[to_additive Ioi_add_Ici_subset]
 theorem Ioi_mul_Ici_subset' (a b : α) : Ioi a * Ici b ⊆ Ioi (a * b) := by
   haveI := covariantClass_le_of_lt
-  rintro x ⟨y, z, hya, hzb, rfl⟩
+  rintro x ⟨y, hya, z, hzb, rfl⟩
   exact mul_lt_mul_of_lt_of_le hya hzb
 
 @[to_additive Ici_add_Ioi_subset]
 theorem Ici_mul_Ioi_subset' (a b : α) : Ici a * Ioi b ⊆ Ioi (a * b) := by
   haveI := covariantClass_le_of_lt
-  rintro x ⟨y, z, hya, hzb, rfl⟩
+  rintro x ⟨y, hya, z, hzb, rfl⟩
   exact mul_lt_mul_of_le_of_lt hya hzb
 
 end ContravariantLT

@@ -215,7 +215,7 @@ instance topologicalSpace : TopologicalSpace (Path x y) :=
   TopologicalSpace.induced ((↑) : _ → C(I, X)) ContinuousMap.compactOpen
 
 theorem continuous_eval : Continuous fun p : Path x y × I => p.1 p.2 :=
-  continuous_eval'.comp <| (continuous_induced_dom (α := Path x y)).prod_map continuous_id
+  continuous_eval.comp <| (continuous_induced_dom (α := Path x y)).prod_map continuous_id
 #align path.continuous_eval Path.continuous_eval
 
 @[continuity]
@@ -960,13 +960,13 @@ theorem isPathConnected_iff_eq : IsPathConnected F ↔ ∃ x ∈ F, pathComponen
 #align is_path_connected_iff_eq isPathConnected_iff_eq
 
 theorem IsPathConnected.joinedIn (h : IsPathConnected F) :
-    ∀ (x) (_ : x ∈ F) (y) (_ : y ∈ F), JoinedIn F x y := fun _x x_in _y y_in =>
+    ∀ᵉ (x ∈ F) (y ∈ F), JoinedIn F x y := fun _x x_in _y y_in =>
   let ⟨_b, _b_in, hb⟩ := h
   (hb x_in).symm.trans (hb y_in)
 #align is_path_connected.joined_in IsPathConnected.joinedIn
 
 theorem isPathConnected_iff :
-    IsPathConnected F ↔ F.Nonempty ∧ ∀ (x) (_ : x ∈ F) (y) (_ : y ∈ F), JoinedIn F x y :=
+    IsPathConnected F ↔ F.Nonempty ∧ ∀ᵉ (x ∈ F) (y ∈ F), JoinedIn F x y :=
   ⟨fun h =>
     ⟨let ⟨b, b_in, _hb⟩ := h; ⟨b, b_in⟩, h.joinedIn⟩,
     fun ⟨⟨b, b_in⟩, h⟩ => ⟨b, b_in, fun x_in => h _ b_in _ x_in⟩⟩
@@ -991,7 +991,7 @@ nonrec theorem Inducing.isPathConnected_iff {f : X → Y} (hf : Inducing f) :
     IsPathConnected F ↔ IsPathConnected (f '' F) := by
   refine ⟨fun hF ↦ hF.image hf.continuous, fun hF ↦ ?_⟩
   simp? [isPathConnected_iff] at hF ⊢ says
-    simp only [isPathConnected_iff, nonempty_image_iff, mem_image, forall_exists_index,
+    simp only [isPathConnected_iff, image_nonempty, mem_image, forall_exists_index,
       and_imp, forall_apply_eq_imp_iff₂] at hF ⊢
   refine ⟨hF.1, fun x hx y hy ↦ ?_⟩
   rcases hF.2 x hx y hy with ⟨γ, hγ⟩
