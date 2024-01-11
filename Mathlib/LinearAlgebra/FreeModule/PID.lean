@@ -160,21 +160,17 @@ but must also feed in a basis for `M` using `basis_of_pid` to keep the induction
 -/
 theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type*} [AddCommGroup O] [Module R O]
     (M N : Submodule R O) (b'M : Basis ι R M) (N_bot : N ≠ ⊥) (N_le_M : N ≤ M) :
-    ∃ y ∈ M,
-      ∃ (a : R) (_ : a • y ∈ N),
-        ∃ M' ≤ M,
-          ∃ N' ≤ N,
-            ∃ (_N'_le_M' : N' ≤ M') (_y_ortho_M' :
-              ∀ (c : R) (z : O), z ∈ M' → c • y + z = 0 → c = 0) (_ay_ortho_N' :
-              ∀ (c : R) (z : O), z ∈ N' → c • a • y + z = 0 → c = 0),
-              ∀ (n') (bN' : Basis (Fin n') R N'),
-                ∃ bN : Basis (Fin (n' + 1)) R N,
-                  ∀ (m') (hn'm' : n' ≤ m') (bM' : Basis (Fin m') R M'),
-                    ∃ (hnm : n' + 1 ≤ m' + 1) (bM : Basis (Fin (m' + 1)) R M),
-                      ∀ (as : Fin n' → R)
-                        (_h : ∀ i : Fin n', (bN' i : O) = as i • (bM' (Fin.castLE hn'm' i) : O)),
-                        ∃ as' : Fin (n' + 1) → R,
-                          ∀ i : Fin (n' + 1), (bN i : O) = as' i • (bM (Fin.castLE hnm i) : O) := by
+    ∃ y ∈ M, ∃ a : R, a • y ∈ N ∧ ∃ M' ≤ M, ∃ N' ≤ N,
+      N' ≤ M' ∧ (∀ (c : R) (z : O), z ∈ M' → c • y + z = 0 → c = 0) ∧
+      (∀ (c : R) (z : O), z ∈ N' → c • a • y + z = 0 → c = 0) ∧
+      ∀ (n') (bN' : Basis (Fin n') R N'),
+        ∃ bN : Basis (Fin (n' + 1)) R N,
+          ∀ (m') (hn'm' : n' ≤ m') (bM' : Basis (Fin m') R M'),
+            ∃ (hnm : n' + 1 ≤ m' + 1) (bM : Basis (Fin (m' + 1)) R M),
+              ∀ as : Fin n' → R,
+                (∀ i : Fin n', (bN' i : O) = as i • (bM' (Fin.castLE hn'm' i) : O)) →
+                  ∃ as' : Fin (n' + 1) → R,
+                    ∀ i : Fin (n' + 1), (bN i : O) = as' i • (bM (Fin.castLE hnm i) : O) := by
   -- Let `ϕ` be a maximal projection of `M` onto `R`, in the sense that there is
   -- no `ψ` whose image of `N` is larger than `ϕ`'s image of `N`.
   have : ∃ ϕ : M →ₗ[R] R, ∀ ψ : M →ₗ[R] R, ¬ϕ.submoduleImage N < ψ.submoduleImage N := by

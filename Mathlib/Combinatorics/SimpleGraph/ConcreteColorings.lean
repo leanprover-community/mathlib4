@@ -38,7 +38,7 @@ def pathGraph_two_embedding (n : ℕ) (h : 2 ≤ n) : pathGraph 2 ↪g pathGraph
     exact Fin.ext
   map_rel_iff' := by
     intro v w
-    fin_cases v <;> fin_cases w <;> simp [pathGraph, ← Fin.coe_covby_iff]
+    fin_cases v <;> fin_cases w <;> simp [pathGraph, ← Fin.coe_covBy_iff]
 
 theorem chromaticNumber_pathGraph (n : ℕ) (h : 2 ≤ n) :
     (pathGraph n).chromaticNumber = 2 := by
