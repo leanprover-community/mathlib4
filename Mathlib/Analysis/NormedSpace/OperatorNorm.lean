@@ -971,7 +971,7 @@ def prodMapL : (M₁ →L[𝕜] M₂) × (M₃ →L[𝕜] M₄) →L[𝕜] M₁ 
       apply funext
       rintro ⟨φ, ψ⟩
       refine' ContinuousLinearMap.ext fun ⟨x₁, x₂⟩ => _
-      -- We have to use `simp [(X)]` to avoid unification of instance implicit agruments
+      -- We have to use `simp [(X)]` to avoid unification of instance implicit arguments
       -- which only unify at `.default` reducibility
       simp [(add_apply), (comp_apply), (flip_apply), (compL_apply)])
 #align continuous_linear_map.prod_mapL ContinuousLinearMap.prodMapL
