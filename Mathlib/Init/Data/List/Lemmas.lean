@@ -176,7 +176,7 @@ theorem length_mapAccumr₂ :
     calc
       succ (length (mapAccumr₂ f x y c).2) = succ (min (length x) (length y)) :=
         congr_arg succ (length_mapAccumr₂ f x y c)
-      _ = min (succ (length x)) (succ (length y)) := Eq.symm (min_succ_succ (length x) (length y))
+      _ = min (succ (length x)) (succ (length y)) := Eq.symm (succ_min_succ (length x) (length y))
   | _, _ :: _, [], _ => rfl
   | _, [], _ :: _, _ => rfl
   | _, [], [], _ => rfl

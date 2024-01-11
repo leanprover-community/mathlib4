@@ -129,7 +129,7 @@ theorem orthogonalComplement_iSup_eigenspaces_eq_bot : (⨆ μ, eigenspace T μ)
   -- a self-adjoint operator on a nontrivial inner product space has an eigenvalue
   haveI :=
     hT'.subsingleton_of_no_eigenvalue_finiteDimensional hT.orthogonalComplement_iSup_eigenspaces
-  exact Submodule.eq_bot_of_subsingleton _
+  exact Submodule.eq_bot_of_subsingleton
 #align linear_map.is_symmetric.orthogonal_supr_eigenspaces_eq_bot LinearMap.IsSymmetric.orthogonalComplement_iSup_eigenspaces_eq_bot
 
 theorem orthogonalComplement_iSup_eigenspaces_eq_bot' :

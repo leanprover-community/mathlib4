@@ -47,6 +47,12 @@ class Nat.AtLeastTwo (n : ℕ) : Prop where
 instance instNatAtLeastTwo : Nat.AtLeastTwo (n + 2) where
   prop := Nat.succ_le_succ $ Nat.succ_le_succ $ Nat.zero_le _
 
+lemma Nat.AtLeastTwo.ne_zero (n : ℕ) [h : n.AtLeastTwo] : n ≠ 0 := by
+  rintro rfl; exact absurd h.1 (by decide)
+
+lemma Nat.AtLeastTwo.ne_one (n : ℕ) [h : n.AtLeastTwo] : n ≠ 1 := by
+  rintro rfl; exact absurd h.1 (by decide)
+
 /-- Recognize numeric literals which are at least `2` as terms of `R` via `Nat.cast`. This
 instance is what makes things like `37 : R` type check.  Note that `0` and `1` are not needed
 because they are recognized as terms of `R` (at least when `R` is an `AddMonoidWithOne`) through

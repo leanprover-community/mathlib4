@@ -203,6 +203,8 @@ theorem isSFiniteKernel_withDensity_of_isFiniteKernel (κ : kernel α β) [IsFin
   refine' isSFiniteKernel_sum fun n => _
   suffices IsFiniteKernel (withDensity κ (fs n)) by haveI := this; infer_instance
   refine' isFiniteKernel_withDensity_of_bounded _ (ENNReal.coe_ne_top : ↑n + 1 ≠ ∞) fun a b => _
+  -- After leanprover/lean4#2734, we need to do beta reduction before `norm_cast`
+  beta_reduce
   norm_cast
   calc
     fs n a b ≤ min (f a b) (n + 1) := tsub_le_self

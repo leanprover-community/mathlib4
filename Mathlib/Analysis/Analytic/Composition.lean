@@ -1045,7 +1045,6 @@ theorem blocksFun_sigmaCompositionAux (a : Composition n) (b : Composition a.len
     rw [get_of_eq (get_splitWrtComposition _ _ _), get_drop', get_take']; rfl
 #align composition.blocks_fun_sigma_composition_aux Composition.blocksFun_sigmaCompositionAux
 
-set_option linter.deprecated false in
 /-- Auxiliary lemma to prove that the composition of formal multilinear series is associative.
 
 Consider a composition `a` of `n` and a composition `b` of `a.length`. Grouping together some
@@ -1076,7 +1075,7 @@ theorem sizeUpTo_sizeUpTo_add (a : Composition n) (b : Composition a.length) {i 
           take (sum (take i b.blocks)) (take (sum (take (i + 1) b.blocks)) a.blocks) := by
         rw [take_take, min_eq_left]
         apply monotone_sum_take _ (Nat.le_succ _)
-      rw [this, nthLe_map', nthLe, get_splitWrtComposition, ←
+      rw [this, get_map, get_splitWrtComposition, ←
         take_append_drop (sum (take i b.blocks)) (take (sum (take (Nat.succ i) b.blocks)) a.blocks),
         sum_append]
       congr

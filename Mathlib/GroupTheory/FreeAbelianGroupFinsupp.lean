@@ -3,7 +3,7 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Hom.Equiv.TypeTags
+import Mathlib.Algebra.Group.Equiv.TypeTags
 import Mathlib.Algebra.Module.Equiv
 import Mathlib.Data.Finsupp.Defs
 import Mathlib.GroupTheory.FreeAbelianGroup

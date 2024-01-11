@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Init.Data.Quot
 import Mathlib.Logic.Relator
+import Mathlib.Mathport.Notation
 
 #align_import data.quot from "leanprover-community/mathlib"@"6ed6abbde29b8f630001a1b481603f657a3384f1"
 
@@ -39,8 +40,8 @@ namespace Quot
 variable {ra : α → α → Prop} {rb : β → β → Prop} {φ : Quot ra → Quot rb → Sort*}
 
 -- mathport name: mk
-@[inherit_doc]
-local notation:arg "⟦" a "⟧" => Quot.mk _ a
+@[inherit_doc Quot.mk]
+local notation3:arg "⟦" a "⟧" => Quot.mk _ a
 
 @[elab_as_elim]
 protected theorem induction_on {α : Sort u} {r : α → α → Prop} {β : Quot r → Prop} (q : Quot r)
@@ -220,8 +221,8 @@ variable {φ : Quotient sa → Quotient sb → Sort*}
 -- We have not yet decided which one works best, since the setoid instance can't always be
 -- reliably found but it can't always be inferred from the expected type either.
 -- See also: https://leanprover.zulipchat.com/#narrow/stream/113489-new-members/topic/confusion.20between.20equivalence.20and.20instance.20setoid/near/360822354
-@[inherit_doc]
-notation:arg "⟦" a "⟧" => Quotient.mk _ a
+@[inherit_doc Quotient.mk]
+notation3:arg "⟦" a "⟧" => Quotient.mk _ a
 
 instance instInhabitedQuotient (s : Setoid α) [Inhabited α] : Inhabited (Quotient s) :=
   ⟨⟦default⟧⟩

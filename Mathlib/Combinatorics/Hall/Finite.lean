@@ -62,7 +62,7 @@ theorem hall_cond_of_erase {x : ι} (a : α)
     rw [← erase_biUnion]
     by_cases hb : a ∈ s'.biUnion fun x => t x
     · rw [card_erase_of_mem hb]
-      exact Nat.le_pred_of_lt ha'
+      exact Nat.le_sub_one_of_lt ha'
     · rw [erase_eq_of_not_mem hb]
       exact Nat.le_of_lt ha'
   · rw [nonempty_iff_ne_empty, not_not] at he

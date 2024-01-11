@@ -271,8 +271,8 @@ theorem exp_add_of_commute_of_mem_ball [CharZero 𝕂] {x y : 𝔸} (hxy : Commu
     ext
     rw [hxy.add_pow' _, Finset.smul_sum]
   refine' tsum_congr fun n => Finset.sum_congr rfl fun kl hkl => _
-  rw [nsmul_eq_smul_cast 𝕂, smul_smul, smul_mul_smul, ← Finset.Nat.mem_antidiagonal.mp hkl,
-    Nat.cast_add_choose, Finset.Nat.mem_antidiagonal.mp hkl]
+  rw [nsmul_eq_smul_cast 𝕂, smul_smul, smul_mul_smul, ← Finset.mem_antidiagonal.mp hkl,
+    Nat.cast_add_choose, Finset.mem_antidiagonal.mp hkl]
   congr 1
   have : (n ! : 𝕂) ≠ 0 := Nat.cast_ne_zero.mpr n.factorial_ne_zero
   field_simp [this]

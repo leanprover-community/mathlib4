@@ -861,9 +861,8 @@ namespace LocallyBoundedVariationOn
 `ae_differentiableWithinAt_of_mem`. -/
 theorem ae_differentiableWithinAt_of_mem_real {f : ℝ → ℝ} {s : Set ℝ}
     (h : LocallyBoundedVariationOn f s) : ∀ᵐ x, x ∈ s → DifferentiableWithinAt ℝ f s x := by
-  obtain ⟨p, q, hp, hq, fpq⟩ : ∃ p q, MonotoneOn p s ∧ MonotoneOn q s ∧ f = p - q :=
+  obtain ⟨p, q, hp, hq, rfl⟩ : ∃ p q, MonotoneOn p s ∧ MonotoneOn q s ∧ f = p - q :=
     h.exists_monotoneOn_sub_monotoneOn
-  subst f -- porting note: TODO: `rfl` instead of `fpq` doesn't work
   filter_upwards [hp.ae_differentiableWithinAt_of_mem, hq.ae_differentiableWithinAt_of_mem] with
     x hxp hxq xs
   exact (hxp xs).sub (hxq xs)

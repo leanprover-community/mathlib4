@@ -8,6 +8,7 @@ import Mathlib.Algebra.Invertible.GroupWithZero
 import Mathlib.Data.Sigma.Basic
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Int.Cast.Basic
+import Qq.MetaM
 
 /-!
 ## The `Result` type for `norm_num`

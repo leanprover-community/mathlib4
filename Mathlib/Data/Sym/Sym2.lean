@@ -633,39 +633,19 @@ end SymEquiv
 
 section Decidable
 
-/-- An algorithm for computing `Sym2.Rel`.
--/
-@[aesop norm unfold (rule_sets [Sym2])]
-def relBool [DecidableEq α] (x y : α × α) : Bool :=
-  if x.1 = y.1 then x.2 = y.2 else if x.1 = y.2 then x.2 = y.1 else false
-#align sym2.rel_bool Sym2.relBool
-
-@[aesop norm (rule_sets [Sym2])]
-theorem relBool_spec [DecidableEq α] (x y : α × α) : ↥(relBool x y) ↔ Rel α x y := by
-  cases' x with x₁ x₂; cases' y with y₁ y₂
-  aesop (rule_sets [Sym2]) (add norm unfold [relBool])
-#align sym2.rel_bool_spec Sym2.relBool_spec
+#noalign sym2.rel_bool
+#noalign sym2.rel_bool_spec
 
 /-- Given `[DecidableEq α]` and `[Fintype α]`, the following instance gives `Fintype (Sym2 α)`.
 -/
-instance instRelDecidable (α : Type*) [DecidableEq α] : DecidableRel (Sym2.Rel α) := fun x y =>
-  decidable_of_bool (relBool x y) (relBool_spec x y)
--- Porting note: add this other version needed for Data.Finset.Sym
-instance instRelDecidable' (α : Type*) [DecidableEq α] :
-  DecidableRel (· ≈ · : α × α → α × α → Prop) := instRelDecidable _
+instance instDecidableRel [DecidableEq α] : DecidableRel (Rel α) :=
+  fun _ _ => decidable_of_iff' _ rel_iff
 
--- porting note: extra definitions and lemmas for proving decidable equality in `Sym2`
-/-- An algorithm for deciding equality in `Sym2 α`. -/
-@[aesop norm unfold (rule_sets [Sym2])]
-def eqBool [DecidableEq α] : Sym2 α → Sym2 α → Bool :=
-  Sym2.lift₂.toFun
-    ⟨fun x₁ x₂ y₁ y₂ => relBool (x₁, x₂) (y₁, y₂), by aesop (add norm unfold [relBool])⟩
+instance instDecidableRel' [DecidableEq α] : DecidableRel (HasEquiv.Equiv (α := α × α)) :=
+  instDecidableRel
 
-@[aesop norm (rule_sets [Sym2])]
-theorem eqBool_spec [DecidableEq α] (a b : Sym2 α) : (eqBool a b) ↔ (a = b) :=
-  Sym2.inductionOn₂ a b <| by aesop (rule_sets [Sym2])
-
-
+-- the `Equiv` version above is needed for this
+example [DecidableEq α] : DecidableEq (Sym2 α) := inferInstance
 
 /-! ### The other element of an element of the symmetric square -/
 
@@ -693,8 +673,7 @@ def Mem.other' [DecidableEq α] {a : α} {z : Sym2 α} (h : a ∈ z) : α :=
           intro _ e _; subst e; rfl
       apply this
     · rw [mem_iff] at hy
-      have : relBool x y := (relBool_spec x y).mpr h
-      aesop (add norm unfold [pairOther, relBool]))
+      aesop (add norm unfold [pairOther]))
     z h
 #align sym2.mem.other' Sym2.Mem.other'
 

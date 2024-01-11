@@ -554,6 +554,89 @@ theorem diag_image (s : Set α) : (fun x => (x, x)) '' s = diagonal α ∩ s ×�
 
 end Diagonal
 
+end Set
+
+section Pullback
+
+open Set
+
+variable {X Y Z}
+
+/-- The fiber product $X \times_Y Z$. -/
+abbrev Function.Pullback (f : X → Y) (g : Z → Y) := {p : X × Z // f p.1 = g p.2}
+
+/-- The fiber product $X \times_Y X$. -/
+abbrev Function.PullbackSelf (f : X → Y) := f.Pullback f
+
+/-- The projection from the fiber product to the first factor. -/
+def Function.Pullback.fst {f : X → Y} {g : Z → Y} (p : f.Pullback g) : X := p.val.1
+
+/-- The projection from the fiber product to the second factor. -/
+def Function.Pullback.snd {f : X → Y} {g : Z → Y} (p : f.Pullback g) : Z := p.val.2
+
+open Function.Pullback in
+lemma Function.pullback_comm_sq (f : X → Y) (g : Z → Y) :
+    f ∘ @fst X Y Z f g = g ∘ @snd X Y Z f g := funext fun p ↦ p.2
+
+/-- The diagonal map $\Delta: X \to X \times_Y X$. -/
+def toPullbackDiag (f : X → Y) (x : X) : f.Pullback f := ⟨(x, x), rfl⟩
+
+/-- The diagonal $\Delta(X) \subseteq X \times_Y X$. -/
+def Function.pullbackDiagonal (f : X → Y) : Set (f.Pullback f) := {p | p.fst = p.snd}
+
+/-- Three functions between the three pairs of spaces $X_i, Y_i, Z_i$ that are compatible
+  induce a function $X_1 \times_{Y_1} Z_1 \to X_2 \times_{Y_2} Z_2$. -/
+def Function.mapPullback {X₁ X₂ Y₁ Y₂ Z₁ Z₂}
+    {f₁ : X₁ → Y₁} {g₁ : Z₁ → Y₁} {f₂ : X₂ → Y₂} {g₂ : Z₂ → Y₂}
+    (mapX : X₁ → X₂) (mapY : Y₁ → Y₂) (mapZ : Z₁ → Z₂)
+    (commX : f₂ ∘ mapX = mapY ∘ f₁) (commZ : g₂ ∘ mapZ = mapY ∘ g₁)
+    (p : f₁.Pullback g₁) : f₂.Pullback g₂ :=
+  ⟨(mapX p.fst, mapZ p.snd),
+    (congr_fun commX _).trans <| (congr_arg mapY p.2).trans <| congr_fun commZ.symm _⟩
+
+open Function.Pullback in
+/-- The projection $(X \times_Y Z) \times_Z (X \times_Y Z) \to X \times_Y X$. -/
+def Function.PullbackSelf.map_fst {f : X → Y} {g : Z → Y} :
+    (@snd X Y Z f g).PullbackSelf → f.PullbackSelf :=
+  mapPullback fst g fst (pullback_comm_sq f g) (pullback_comm_sq f g)
+
+open Function.Pullback in
+/-- The projection $(X \times_Y Z) \times_X (X \times_Y Z) \to Z \times_Y Z$. -/
+def Function.PullbackSelf.map_snd {f : X → Y} {g : Z → Y} :
+    (@fst X Y Z f g).PullbackSelf → g.PullbackSelf :=
+  mapPullback snd f snd (pullback_comm_sq f g).symm (pullback_comm_sq f g).symm
+
+open Function.PullbackSelf Function.Pullback
+theorem preimage_map_fst_pullbackDiagonal {f : X → Y} {g : Z → Y} :
+    @map_fst X Y Z f g ⁻¹' pullbackDiagonal f = pullbackDiagonal (@snd X Y Z f g) := by
+  ext ⟨⟨p₁, p₂⟩, he⟩
+  simp_rw [pullbackDiagonal, mem_setOf, Subtype.ext_iff, Prod.ext_iff]
+  exact (and_iff_left he).symm
+
+theorem Function.Injective.preimage_pullbackDiagonal {f : X → Y} {g : Z → X} (inj : g.Injective) :
+    mapPullback g id g (by rfl) (by rfl) ⁻¹' pullbackDiagonal f = pullbackDiagonal (f ∘ g) :=
+  ext fun _ ↦ inj.eq_iff
+
+theorem image_toPullbackDiag (f : X → Y) (s : Set X) :
+    toPullbackDiag f '' s = pullbackDiagonal f ∩ Subtype.val ⁻¹' s ×ˢ s := by
+  ext x
+  constructor
+  · rintro ⟨x, hx, rfl⟩
+    exact ⟨rfl, hx, hx⟩
+  · obtain ⟨⟨x, y⟩, h⟩ := x
+    rintro ⟨rfl : x = y, h2x⟩
+    exact mem_image_of_mem _ h2x.1
+
+theorem range_toPullbackDiag (f : X → Y) : range (toPullbackDiag f) = pullbackDiagonal f := by
+  rw [← image_univ, image_toPullbackDiag, univ_prod_univ, preimage_univ, inter_univ]
+
+theorem injective_toPullbackDiag (f : X → Y) : (toPullbackDiag f).Injective :=
+  fun _ _ h ↦ congr_arg Prod.fst (congr_arg Subtype.val h)
+
+end Pullback
+
+namespace Set
+
 section OffDiag
 
 variable {α : Type*} {s t : Set α} {x : α × α} {a : α}

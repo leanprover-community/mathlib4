@@ -153,11 +153,10 @@ theorem drop_take_succ_join_eq_nthLe (L : List (List α)) {i : ℕ} (hi : i < L.
   simp [take_sum_join, this, drop_sum_join, drop_take_succ_eq_cons_nthLe _ hi]
 #align list.drop_take_succ_join_eq_nth_le List.drop_take_succ_join_eq_nthLe
 
-set_option linter.deprecated false in
 /-- Auxiliary lemma to control elements in a join. -/
 @[deprecated]
 theorem sum_take_map_length_lt1 (L : List (List α)) {i j : ℕ} (hi : i < L.length)
-    (hj : j < (nthLe L i hi).length) :
+    (hj : j < (L.get ⟨i, hi⟩).length) :
     ((L.map length).take i).sum + j < ((L.map length).take (i + 1)).sum := by
   simp [hi, sum_take_succ, hj]
 #align list.sum_take_map_length_lt1 List.sum_take_map_length_lt1

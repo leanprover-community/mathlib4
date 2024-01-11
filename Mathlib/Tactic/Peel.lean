@@ -207,6 +207,7 @@ def peelIffAux : TacticM Unit := do
           | apply exists_congr
           | apply eventually_congr
           | apply frequently_congr
+          | apply and_congr_right
           | fail "failed to apply a quantifier congruence lemma."))
 
 /-- Peel off quantifiers from an `↔` and assign the names given in `l` to the introduced

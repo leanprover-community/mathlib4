@@ -240,6 +240,17 @@ instance (X : Stonean) : Projective (toProfinite.obj X) where
     ext
     exact congr_fun h.right _
 
+/-- Every Stonean space is projective in `Stonean`. -/
+instance (X : Stonean) : Projective X where
+  factors := by
+    intro B C φ f _
+    haveI : ExtremallyDisconnected X.compHaus.toTop := X.extrDisc
+    have hf : Function.Surjective f := by rwa [← Stonean.epi_iff_surjective]
+    obtain ⟨f', h⟩ := CompactT2.ExtremallyDisconnected.projective φ.continuous f.continuous hf
+    use ⟨f', h.left⟩
+    ext
+    exact congr_fun h.right _
+
 end Stonean
 
 namespace CompHaus

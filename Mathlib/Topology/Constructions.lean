@@ -532,6 +532,10 @@ theorem mem_nhds_prod_iff {a : α} {b : β} {s : Set (α × β)} :
     s ∈ 𝓝 (a, b) ↔ ∃ u ∈ 𝓝 a, ∃ v ∈ 𝓝 b, u ×ˢ v ⊆ s := by rw [nhds_prod_eq, mem_prod_iff]
 #align mem_nhds_prod_iff mem_nhds_prod_iff
 
+theorem mem_nhdsWithin_prod_iff {a : α} {b : β} {s : Set (α × β)} {ta : Set α} {tb : Set β} :
+    s ∈ 𝓝[ta ×ˢ tb] (a, b) ↔ ∃ u ∈ 𝓝[ta] a, ∃ v ∈ 𝓝[tb] b, u ×ˢ v ⊆ s :=
+  by rw [nhdsWithin_prod_eq, mem_prod_iff]
+
 -- porting note: moved up
 theorem Filter.HasBasis.prod_nhds {ιa ιb : Type*} {pa : ιa → Prop} {pb : ιb → Prop}
     {sa : ιa → Set α} {sb : ιb → Set β} {a : α} {b : β} (ha : (𝓝 a).HasBasis pa sa)
@@ -1046,7 +1050,7 @@ lemma IsClosedMap.restrictPreimage {f : α → β} (hcl : IsClosedMap f) (T : Se
     IsClosedMap (T.restrictPreimage f) := by
   rw [isClosedMap_iff_clusterPt] at hcl ⊢
   intro A ⟨y, hyT⟩ hy
-  rw [restrictPreimage, MapClusterPt, ← inducing_subtype_val.mapClusterPt_iff, MapClusterPt,
+  rw [Set.restrictPreimage, MapClusterPt, ← inducing_subtype_val.mapClusterPt_iff, MapClusterPt,
       map_map, MapsTo.restrict_commutes, ← map_map, ← MapClusterPt, map_principal] at hy
   rcases hcl _ y hy with ⟨x, hxy, hx⟩
   have hxT : f x ∈ T := hxy ▸ hyT

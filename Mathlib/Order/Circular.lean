@@ -289,7 +289,7 @@ section CircularOrder
 variable {α : Type*} [CircularOrder α]
 
 theorem btw_refl_left_right (a b : α) : btw a b a :=
-  (or_self_iff _).1 (btw_total a b a)
+  or_self_iff.1 (btw_total a b a)
 #align btw_refl_left_right btw_refl_left_right
 
 theorem btw_rfl_left_right {a b : α} : btw a b a :=

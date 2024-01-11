@@ -337,19 +337,34 @@ theorem biSup_eq_range_dfinsupp_lsum (p : ι → Prop) [DecidablePred p] (S : ι
     · simp [hp]
 #align submodule.bsupr_eq_range_dfinsupp_lsum Submodule.biSup_eq_range_dfinsupp_lsum
 
+/-- A characterisation of the span of a family of submodules.
+
+See also `Submodule.mem_iSup_iff_exists_finsupp`. -/
 theorem mem_iSup_iff_exists_dfinsupp (p : ι → Submodule R N) (x : N) :
     x ∈ iSup p ↔
       ∃ f : Π₀ i, p i, DFinsupp.lsum ℕ (M := fun i ↦ ↥(p i)) (fun i => (p i).subtype) f = x :=
   SetLike.ext_iff.mp (iSup_eq_range_dfinsupp_lsum p) x
 #align submodule.mem_supr_iff_exists_dfinsupp Submodule.mem_iSup_iff_exists_dfinsupp
 
-/-- A variant of `Submodule.mem_iSup_iff_exists_dfinsupp` with the RHS fully unfolded. -/
+/-- A variant of `Submodule.mem_iSup_iff_exists_dfinsupp` with the RHS fully unfolded.
+
+See also `Submodule.mem_iSup_iff_exists_finsupp`. -/
 theorem mem_iSup_iff_exists_dfinsupp' (p : ι → Submodule R N) [∀ (i) (x : p i), Decidable (x ≠ 0)]
     (x : N) : x ∈ iSup p ↔ ∃ f : Π₀ i, p i, (f.sum fun i xi => ↑xi) = x := by
   rw [mem_iSup_iff_exists_dfinsupp]
   simp_rw [DFinsupp.lsum_apply_apply, DFinsupp.sumAddHom_apply,
     LinearMap.toAddMonoidHom_coe, coeSubtype]
 #align submodule.mem_supr_iff_exists_dfinsupp' Submodule.mem_iSup_iff_exists_dfinsupp'
+
+lemma mem_iSup_iff_exists_finsupp (p : ι → Submodule R N) (x : N) :
+    x ∈ iSup p ↔ ∃ (f : ι →₀ N), (∀ i, f i ∈ p i) ∧ (f.sum fun _i xi ↦ xi) = x := by
+  classical
+  rw [mem_iSup_iff_exists_dfinsupp']
+  refine ⟨fun ⟨f, hf⟩ ↦ ⟨⟨f.support, fun i ↦ (f i : N), by simp⟩, by simp, hf⟩, ?_⟩
+  rintro ⟨f, hf, rfl⟩
+  refine ⟨DFinsupp.mk f.support <| fun i ↦ ⟨f i, hf i⟩, Finset.sum_congr ?_ fun i hi ↦ ?_⟩
+  · ext; simp
+  · simp [Finsupp.mem_support_iff.mp hi]
 
 theorem mem_biSup_iff_exists_dfinsupp (p : ι → Prop) [DecidablePred p] (S : ι → Submodule R N)
     (x : N) :

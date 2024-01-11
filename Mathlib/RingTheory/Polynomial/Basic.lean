@@ -631,7 +631,7 @@ theorem _root_.Polynomial.coeff_prod_mem_ideal_pow_tsub {ι : Type*} (s : Finset
     · rw [sum_insert ha, prod_insert ha, coeff_mul]
       apply sum_mem
       rintro ⟨i, j⟩ e
-      obtain rfl : i + j = k := Nat.mem_antidiagonal.mp e
+      obtain rfl : i + j = k := mem_antidiagonal.mp e
       apply Ideal.pow_le_pow add_tsub_add_le_tsub_add_tsub
       rw [pow_add]
       exact
@@ -703,14 +703,14 @@ theorem isPrime_map_C_iff_isPrime (P : Ideal R) :
         let m := Nat.find hf
         let n := Nat.find hg
         refine' ⟨m + n, _⟩
-        rw [coeff_mul, ← Finset.insert_erase ((@Finset.Nat.mem_antidiagonal _ (m, n)).mpr rfl),
+        rw [coeff_mul, ← Finset.insert_erase ((Finset.mem_antidiagonal (a := (m,n))).mpr rfl),
           Finset.sum_insert (Finset.not_mem_erase _ _), (P.add_mem_iff_left _).not]
         · apply mt h.2
           rw [not_or]
           exact ⟨Nat.find_spec hf, Nat.find_spec hg⟩
         apply P.sum_mem
         rintro ⟨i, j⟩ hij
-        rw [Finset.mem_erase, Finset.Nat.mem_antidiagonal] at hij
+        rw [Finset.mem_erase, Finset.mem_antidiagonal] at hij
         simp only [Ne.def, Prod.mk.inj_iff, not_and_or] at hij
         obtain hi | hj : i < m ∨ j < n := by
           rw [or_iff_not_imp_left, not_lt, le_iff_lt_or_eq]
@@ -860,8 +860,7 @@ instance (priority := 100) {R : Type*} [CommRing R] [IsDomain R] [WfDvdMonoid R]
           (⟨fun p : R[X] =>
               ((if p = 0 then ⊤ else ↑p.degree : WithTop (WithBot ℕ)), p.leadingCoeff), _⟩ :
             DvdNotUnit →r Prod.Lex (· < ·) DvdNotUnit)
-          (WellFounded.prod_lex (WithTop.wellFounded_lt <| WithBot.wellFounded_lt Nat.lt_wfRel.wf)
-            ‹WfDvdMonoid R›.wellFounded_dvdNotUnit)
+          (wellFounded_lt.prod_lex ‹WfDvdMonoid R›.wellFounded_dvdNotUnit)
       rintro a b ⟨ane0, ⟨c, ⟨not_unit_c, rfl⟩⟩⟩
       dsimp
       rw [Polynomial.degree_mul, if_neg ane0]

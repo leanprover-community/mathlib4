@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury G. Kudryashov, Scott Morrison
 -/
 import Mathlib.Algebra.Algebra.Equiv
+import Mathlib.Algebra.Algebra.NonUnitalHom
 import Mathlib.Algebra.BigOperators.Finsupp
-import Mathlib.Algebra.Hom.NonUnitalAlg
 import Mathlib.Algebra.Module.BigOperators
 import Mathlib.LinearAlgebra.Finsupp
 

@@ -48,7 +48,7 @@ def trailingDegree (p : R[X]) : ℕ∞ :=
 #align polynomial.trailing_degree Polynomial.trailingDegree
 
 theorem trailingDegree_lt_wf : WellFounded fun p q : R[X] => trailingDegree p < trailingDegree q :=
-  InvImage.wf trailingDegree (WithTop.wellFounded_lt Nat.lt_wfRel.2)
+  InvImage.wf trailingDegree wellFounded_lt
 #align polynomial.trailing_degree_lt_wf Polynomial.trailingDegree_lt_wf
 
 /-- `natTrailingDegree p` forces `trailingDegree p` to `ℕ`, by defining
@@ -363,7 +363,7 @@ theorem le_trailingDegree_mul : p.trailingDegree + q.trailingDegree ≤ (p * q).
     (add_le_add (min_le (mem_support_iff.mpr (left_ne_zero_of_mul hpq)))
           (min_le (mem_support_iff.mpr (right_ne_zero_of_mul hpq)))).trans
       (le_of_eq _)
-  rwa [← WithTop.coe_add, WithTop.coe_eq_coe, ← Nat.mem_antidiagonal]
+  rwa [← WithTop.coe_add, WithTop.coe_eq_coe, ← mem_antidiagonal]
 #align polynomial.le_trailing_degree_mul Polynomial.le_trailingDegree_mul
 
 theorem le_natTrailingDegree_mul (h : p * q ≠ 0) :
@@ -384,9 +384,9 @@ theorem coeff_mul_natTrailingDegree_add_natTrailingDegree : (p * q).coeff
   rw [coeff_mul]
   refine'
     Finset.sum_eq_single (p.natTrailingDegree, q.natTrailingDegree) _ fun h =>
-      (h (Nat.mem_antidiagonal.mpr rfl)).elim
+      (h (mem_antidiagonal.mpr rfl)).elim
   rintro ⟨i, j⟩ h₁ h₂
-  rw [Nat.mem_antidiagonal] at h₁
+  rw [mem_antidiagonal] at h₁
   by_cases hi : i < p.natTrailingDegree
   · rw [coeff_eq_zero_of_lt_natTrailingDegree hi, zero_mul]
   by_cases hj : j < q.natTrailingDegree

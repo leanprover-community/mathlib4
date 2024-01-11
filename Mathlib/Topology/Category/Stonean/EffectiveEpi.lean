@@ -15,6 +15,9 @@ In this file, we show that the following are all equivalent:
 - The induced map `∐ X ⟶ B` is epimorphic.
 - The family `π` is jointly surjective.
 
+As a consequence, we show (see `effectiveEpi_iff_surjective`) that all epimorphisms in `Stonean` 
+are effective, and that `Stonean` is preregular.
+
 ## Main results
 - `Stonean.effectiveEpiFamily_tfae`: characterise being an effective epimorphic family.
 - `Stonean.instPrecoherent`: `Stonean` is precoherent.
@@ -169,6 +172,11 @@ lemma effectiveEpi_iff_surjective {X Y : Stonean} (f : X ⟶ Y) :
     EffectiveEpi f ↔ Function.Surjective f := by
   rw [← epi_iff_surjective]
   exact effectiveEpi_iff_epi (fun _ _ ↦ (effectiveEpiFamily_tfae _ _).out 0 1) f
+
+instance : Preregular Stonean where
+  exists_fac := by
+    intro X Y Z f π hπ
+    exact ⟨X, 𝟙 X, inferInstance, Projective.factors f π⟩
 
 end JointlySurjective
 

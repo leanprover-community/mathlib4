@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, Scott Morrison
 -/
 import Std.Util.Pickle
-import Mathlib.Tactic.Cache
+import Std.Util.Cache
 import Mathlib.Tactic.SolveByElim
 import Std.Data.MLList.Heartbeats
+import Mathlib.Lean.Name
 
 /-!
 # Library search
@@ -31,6 +32,9 @@ open Lean Meta Std.Tactic.TryThis
 initialize registerTraceClass `Tactic.librarySearch
 initialize registerTraceClass `Tactic.librarySearch.lemmas
 
+/-- Configuration for `DiscrTree`. -/
+def discrTreeConfig : WhnfCoreConfig := {}
+
 /--
 A "modifier" for a declaration.
 * `none` indicates the original declaration,
@@ -47,17 +51,17 @@ instance : ToString DeclMod where
 
 /-- Prepare the discrimination tree entries for a lemma. -/
 def processLemma (name : Name) (constInfo : ConstantInfo) :
-    MetaM (Array (Array (DiscrTree.Key true) × (Name × DeclMod))) := do
+    MetaM (Array (Array DiscrTree.Key × (Name × DeclMod))) := do
   if constInfo.isUnsafe then return #[]
   if ← name.isBlackListed then return #[]
   withNewMCtxDepth do withReducible do
     let (_, _, type) ← forallMetaTelescope constInfo.type
-    let keys ← DiscrTree.mkPath type
+    let keys ← DiscrTree.mkPath type discrTreeConfig
     let mut r := #[(keys, (name, .none))]
     match type.getAppFnArgs with
     | (``Iff, #[lhs, rhs]) => do
-      return r.push (← DiscrTree.mkPath rhs, (name, .mp))
-        |>.push (← DiscrTree.mkPath lhs, (name, .mpr))
+      return r.push (← DiscrTree.mkPath rhs discrTreeConfig, (name, .mp))
+        |>.push (← DiscrTree.mkPath lhs discrTreeConfig, (name, .mpr))
     | _ => return r
 
 /-- Insert a lemma into the discrimination tree. -/
@@ -66,10 +70,10 @@ def processLemma (name : Name) (constInfo : ConstantInfo) :
 -- `build/lib/MathlibExtras/LibrarySearch.extra`
 -- so that the cache is rebuilt.
 def addLemma (name : Name) (constInfo : ConstantInfo)
-    (lemmas : DiscrTree (Name × DeclMod) true) : MetaM (DiscrTree (Name × DeclMod) true) := do
+    (lemmas : DiscrTree (Name × DeclMod)) : MetaM (DiscrTree (Name × DeclMod)) := do
   let mut lemmas := lemmas
   for (key, value) in ← processLemma name constInfo do
-    lemmas := lemmas.insertIfSpecific key value
+    lemmas := lemmas.insertIfSpecific key value discrTreeConfig
   return lemmas
 
 /-- Construct the discrimination tree of all lemmas. -/
@@ -98,7 +102,7 @@ Retrieve the current current of lemmas.
 initialize librarySearchLemmas : DiscrTreeCache (Name × DeclMod) ← unsafe do
   let path ← cachePath
   if (← path.pathExists) then
-    let (d, _r) ← unpickle (DiscrTree (Name × DeclMod) true) path
+    let (d, _r) ← unpickle (DiscrTree (Name × DeclMod)) path
     -- We can drop the `CompactedRegion` value; we do not plan to free it
     DiscrTreeCache.mk "apply?: using cache" processLemma (init := some d)
   else

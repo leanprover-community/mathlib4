@@ -96,6 +96,16 @@ irreducible_def rnDeriv (μ ν : Measure α) : α → ℝ≥0∞ :=
   if h : HaveLebesgueDecomposition μ ν then (Classical.choose h.lebesgue_decomposition).2 else 0
 #align measure_theory.measure.rn_deriv MeasureTheory.Measure.rnDeriv
 
+lemma singularPart_of_not_haveLebesgueDecomposition {μ ν : Measure α}
+    (h : ¬ HaveLebesgueDecomposition μ ν) :
+    μ.singularPart ν = 0 := by
+  rw [singularPart]; exact dif_neg h
+
+lemma rnDeriv_of_not_haveLebesgueDecomposition {μ ν : Measure α}
+    (h : ¬ HaveLebesgueDecomposition μ ν) :
+    μ.rnDeriv ν = 0 := by
+  rw [rnDeriv]; exact dif_neg h
+
 theorem haveLebesgueDecomposition_spec (μ ν : Measure α) [h : HaveLebesgueDecomposition μ ν] :
     Measurable (μ.rnDeriv ν) ∧
       μ.singularPart ν ⟂ₘ ν ∧ μ = μ.singularPart ν + ν.withDensity (μ.rnDeriv ν) := by
@@ -172,6 +182,32 @@ theorem withDensity_rnDeriv_le (μ ν : Measure α) : ν.withDensity (μ.rnDeriv
     exact Measure.zero_le μ
 #align measure_theory.measure.with_density_rn_deriv_le MeasureTheory.Measure.withDensity_rnDeriv_le
 
+@[simp]
+lemma withDensity_rnDeriv_eq_zero (μ ν : Measure α) [μ.HaveLebesgueDecomposition ν] :
+    ν.withDensity (μ.rnDeriv ν) = 0 ↔ μ ⟂ₘ ν := by
+  have h_dec := haveLebesgueDecomposition_add μ ν
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rw [h, add_zero] at h_dec
+    rw [h_dec]
+    exact mutuallySingular_singularPart μ ν
+  · rw [← MutuallySingular.self_iff]
+    rw [h_dec, MutuallySingular.add_left_iff] at h
+    refine MutuallySingular.mono_ac h.2 AbsolutelyContinuous.rfl ?_
+    exact withDensity_absolutelyContinuous _ _
+
+@[simp]
+lemma rnDeriv_eq_zero (μ ν : Measure α) [μ.HaveLebesgueDecomposition ν] :
+    μ.rnDeriv ν =ᵐ[ν] 0 ↔ μ ⟂ₘ ν := by
+  rw [← withDensity_rnDeriv_eq_zero,
+    withDensity_eq_zero_iff (measurable_rnDeriv _ _).aemeasurable]
+
+lemma MutuallySingular.rnDeriv_ae_eq_zero {μ ν : Measure α} (hμν : μ ⟂ₘ ν) :
+    μ.rnDeriv ν =ᵐ[ν] 0 := by
+  by_cases h : μ.HaveLebesgueDecomposition ν
+  · rw [rnDeriv_eq_zero]
+    exact hμν
+  · rw [rnDeriv_of_not_haveLebesgueDecomposition h]
+
 instance singularPart.instIsFiniteMeasure [IsFiniteMeasure μ] :
     IsFiniteMeasure (μ.singularPart ν) :=
   isFiniteMeasure_of_le μ <| singularPart_le μ ν
@@ -202,7 +238,7 @@ instance withDensity.instIsLocallyFiniteMeasure [TopologicalSpace α] [IsLocally
 #align measure_theory.measure.with_density.measure_theory.is_locally_finite_measure MeasureTheory.Measure.withDensity.instIsLocallyFiniteMeasure
 
 theorem lintegral_rnDeriv_lt_top_of_measure_ne_top {μ : Measure α} (ν : Measure α) {s : Set α}
-    (hs : μ s ≠ ∞) : (∫⁻ x in s, μ.rnDeriv ν x ∂ν) < ∞ := by
+    (hs : μ s ≠ ∞) : ∫⁻ x in s, μ.rnDeriv ν x ∂ν < ∞ := by
   by_cases hl : HaveLebesgueDecomposition μ ν
   · haveI := hl
     obtain ⟨-, -, hadd⟩ := haveLebesgueDecomposition_spec μ ν
@@ -226,6 +262,11 @@ theorem lintegral_rnDeriv_lt_top (μ ν : Measure α) [IsFiniteMeasure μ] :
   exact lintegral_rnDeriv_lt_top_of_measure_ne_top _ (measure_lt_top _ _).ne
 #align measure_theory.measure.lintegral_rn_deriv_lt_top MeasureTheory.Measure.lintegral_rnDeriv_lt_top
 
+lemma integrable_toReal_rnDeriv {μ ν : Measure α} [IsFiniteMeasure μ] :
+    Integrable (fun x ↦ (μ.rnDeriv ν x).toReal) ν :=
+  integrable_toReal_of_lintegral_ne_top (Measure.measurable_rnDeriv _ _).aemeasurable
+    (Measure.lintegral_rnDeriv_lt_top _ _).ne
+
 /-- The Radon-Nikodym derivative of a sigma-finite measure `μ` with respect to another
 measure `ν` is `ν`-almost everywhere finite. -/
 theorem rnDeriv_lt_top (μ ν : Measure α) [SigmaFinite μ] : ∀ᵐ x ∂ν, μ.rnDeriv ν x < ∞ := by
@@ -237,6 +278,9 @@ theorem rnDeriv_lt_top (μ ν : Measure α) [SigmaFinite μ] : ∀ᵐ x ∂ν, �
   refine' (lintegral_rnDeriv_lt_top_of_measure_ne_top _ _).ne
   exact (measure_spanningSets_lt_top _ _).ne
 #align measure_theory.measure.rn_deriv_lt_top MeasureTheory.Measure.rnDeriv_lt_top
+
+lemma rnDeriv_ne_top (μ ν : Measure α) [SigmaFinite μ] : ∀ᵐ x ∂ν, μ.rnDeriv ν x ≠ ∞ := by
+  filter_upwards [Measure.rnDeriv_lt_top μ ν] with x hx using hx.ne
 
 /-- Given measures `μ` and `ν`, if `s` is a measure mutually singular to `ν` and `f` is a
 measurable function such that `μ = s + fν`, then `s = μ.singularPart μ`.
@@ -289,8 +333,7 @@ theorem singularPart_smul (μ ν : Measure α) (r : ℝ≥0) :
   by_cases hr : r = 0
   · rw [hr, zero_smul, zero_smul, singularPart_zero]
   by_cases hl : HaveLebesgueDecomposition μ ν
-  · haveI := hl
-    refine'
+  · refine'
       (eq_singularPart ((measurable_rnDeriv μ ν).const_smul (r : ℝ≥0∞))
           (MutuallySingular.smul r (haveLebesgueDecomposition_spec _ _).2.1) _).symm
     rw [withDensity_smul _ (measurable_rnDeriv _ _), ← smul_add,
@@ -384,6 +427,22 @@ theorem eq_withDensity_rnDeriv {s : Measure α} {f : α → ℝ≥0∞} (hf : Me
     restrict_apply hA, ← diff_eq, measure_inter_add_diff _ (hS₁.inter hT₁)]
 #align measure_theory.measure.eq_with_density_rn_deriv MeasureTheory.Measure.eq_withDensity_rnDeriv
 
+theorem eq_withDensity_rnDeriv₀ {μ ν : Measure α} {s : Measure α} {f : α → ℝ≥0∞}
+    (hf : AEMeasurable f ν) (hs : s ⟂ₘ ν) (hadd : μ = s + ν.withDensity f) :
+    ν.withDensity f = ν.withDensity (μ.rnDeriv ν) := by
+  rw [withDensity_congr_ae hf.ae_eq_mk] at hadd ⊢
+  exact eq_withDensity_rnDeriv hf.measurable_mk hs hadd
+
+theorem eq_rnDeriv₀ {μ ν : Measure α} [SigmaFinite ν] {s : Measure α} {f : α → ℝ≥0∞}
+    (hf : AEMeasurable f ν) (hs : s ⟂ₘ ν) (hadd : μ = s + ν.withDensity f) :
+    f =ᵐ[ν] μ.rnDeriv ν := by
+  refine' ae_eq_of_forall_set_lintegral_eq_of_sigmaFinite₀ hf
+    (measurable_rnDeriv μ ν).aemeasurable _
+  intro a ha _
+  calc ∫⁻ x : α in a, f x ∂ν = ν.withDensity f a := (withDensity_apply f ha).symm
+    _ = ν.withDensity (μ.rnDeriv ν) a := by rw [eq_withDensity_rnDeriv₀ hf hs hadd]
+    _ = ∫⁻ x : α in a, μ.rnDeriv ν x ∂ν := withDensity_apply _ ha
+
 /-- Given measures `μ` and `ν`, if `s` is a measure mutually singular to `ν` and `f` is a
 measurable function such that `μ = s + fν`, then `f = μ.rnDeriv ν`.
 
@@ -392,13 +451,8 @@ theorem, while `MeasureTheory.Measure.eq_singularPart` provides the uniqueness o
 `singularPart`. Here, the uniqueness is given in terms of the functions, while the uniqueness in
 terms of the functions is given in `eq_withDensity_rnDeriv`. -/
 theorem eq_rnDeriv [SigmaFinite ν] {s : Measure α} {f : α → ℝ≥0∞} (hf : Measurable f) (hs : s ⟂ₘ ν)
-    (hadd : μ = s + ν.withDensity f) : f =ᵐ[ν] μ.rnDeriv ν := by
-  refine' ae_eq_of_forall_set_lintegral_eq_of_sigmaFinite hf (measurable_rnDeriv μ ν) _
-  intro a ha _
-  calc
-    ∫⁻ x : α in a, f x ∂ν = ν.withDensity f a := (withDensity_apply f ha).symm
-    _ = ν.withDensity (μ.rnDeriv ν) a := by rw [eq_withDensity_rnDeriv hf hs hadd]
-    _ = ∫⁻ x : α in a, μ.rnDeriv ν x ∂ν := withDensity_apply _ ha
+    (hadd : μ = s + ν.withDensity f) : f =ᵐ[ν] μ.rnDeriv ν :=
+  eq_rnDeriv₀ hf.aemeasurable hs hadd
 #align measure_theory.measure.eq_rn_deriv MeasureTheory.Measure.eq_rnDeriv
 
 /-- The Radon-Nikodym derivative of `f ν` with respect to `ν` is `f`. -/
@@ -415,6 +469,93 @@ theorem rnDeriv_restrict (ν : Measure α) [SigmaFinite ν] {s : Set α} (hs : M
   rw [← withDensity_indicator_one hs]
   exact rnDeriv_withDensity _ (measurable_one.indicator hs)
 #align measure_theory.measure.rn_deriv_restrict MeasureTheory.Measure.rnDeriv_restrict
+
+/-- Radon-Nikodym derivative of the scalar multiple of a measure.
+See also `rnDeriv_smul_left'`, which requires sigma-finite `ν` and `μ`. -/
+theorem rnDeriv_smul_left (ν μ : Measure α) [IsFiniteMeasure ν]
+    [ν.HaveLebesgueDecomposition μ] (r : ℝ≥0) :
+    (r • ν).rnDeriv μ =ᵐ[μ] r • ν.rnDeriv μ := by
+  rw [← withDensity_eq_iff]
+  · simp_rw [ENNReal.smul_def]
+    rw [withDensity_smul _ (measurable_rnDeriv _ _)]
+    suffices (r • ν).singularPart μ + withDensity μ (rnDeriv (r • ν) μ)
+        = (r • ν).singularPart μ + r • withDensity μ (rnDeriv ν μ) by
+      rwa [Measure.add_right_inj] at this
+    rw [← (r • ν).haveLebesgueDecomposition_add μ, singularPart_smul, ← smul_add,
+      ← ν.haveLebesgueDecomposition_add μ]
+  · exact (measurable_rnDeriv _ _).aemeasurable
+  · exact (measurable_rnDeriv _ _).aemeasurable.const_smul _
+  · exact (lintegral_rnDeriv_lt_top (r • ν) μ).ne
+
+/-- Radon-Nikodym derivative of the scalar multiple of a measure.
+See also `rnDeriv_smul_left_of_ne_top'`, which requires sigma-finite `ν` and `μ`. -/
+theorem rnDeriv_smul_left_of_ne_top (ν μ : Measure α) [IsFiniteMeasure ν]
+    [ν.HaveLebesgueDecomposition μ] {r : ℝ≥0∞} (hr : r ≠ ∞) :
+    (r • ν).rnDeriv μ =ᵐ[μ] r • ν.rnDeriv μ := by
+  have h : (r.toNNReal • ν).rnDeriv μ =ᵐ[μ] r.toNNReal • ν.rnDeriv μ :=
+    rnDeriv_smul_left ν μ r.toNNReal
+  simpa [ENNReal.smul_def, ENNReal.coe_toNNReal hr] using h
+
+/-- Radon-Nikodym derivative with respect to the scalar multiple of a measure.
+See also `rnDeriv_smul_right'`, which requires sigma-finite `ν` and `μ`. -/
+theorem rnDeriv_smul_right (ν μ : Measure α) [IsFiniteMeasure ν]
+    [ν.HaveLebesgueDecomposition μ] {r : ℝ≥0} (hr : r ≠ 0) :
+    ν.rnDeriv (r • μ) =ᵐ[μ] r⁻¹ • ν.rnDeriv μ := by
+  suffices ν.rnDeriv (r • μ) =ᵐ[r • μ] r⁻¹ • ν.rnDeriv μ by
+    suffices hμ : μ ≪ r • μ by exact hμ.ae_le this
+    refine absolutelyContinuous_of_le_smul (c := r⁻¹) ?_
+    rw [← ENNReal.coe_inv hr, ← ENNReal.smul_def, ← smul_assoc, smul_eq_mul,
+      inv_mul_cancel hr, one_smul]
+  rw [← withDensity_eq_iff]
+  rotate_left
+  · exact (measurable_rnDeriv _ _).aemeasurable
+  · exact (measurable_rnDeriv _ _).aemeasurable.const_smul _
+  · exact (lintegral_rnDeriv_lt_top ν _).ne
+  · simp_rw [ENNReal.smul_def]
+    rw [withDensity_smul _ (measurable_rnDeriv _ _)]
+    suffices ν.singularPart (r • μ) + withDensity (r • μ) (rnDeriv ν (r • μ))
+        = ν.singularPart (r • μ) + r⁻¹ • withDensity (r • μ) (rnDeriv ν μ) by
+      rwa [add_right_inj] at this
+    rw [← ν.haveLebesgueDecomposition_add (r • μ), singularPart_smul_right _ _ _ hr,
+      ENNReal.smul_def r, withDensity_smul_measure, ← ENNReal.smul_def, ← smul_assoc,
+      smul_eq_mul, inv_mul_cancel hr, one_smul]
+    exact ν.haveLebesgueDecomposition_add μ
+
+/-- Radon-Nikodym derivative with respect to the scalar multiple of a measure.
+See also `rnDeriv_smul_right_of_ne_top'`, which requires sigma-finite `ν` and `μ`. -/
+theorem rnDeriv_smul_right_of_ne_top (ν μ : Measure α) [IsFiniteMeasure ν]
+    [ν.HaveLebesgueDecomposition μ] {r : ℝ≥0∞} (hr : r ≠ 0) (hr_ne_top : r ≠ ∞) :
+    ν.rnDeriv (r • μ) =ᵐ[μ] r⁻¹ • ν.rnDeriv μ := by
+  have h : ν.rnDeriv (r.toNNReal • μ) =ᵐ[μ] r.toNNReal⁻¹ • ν.rnDeriv μ := by
+    refine rnDeriv_smul_right ν μ ?_
+    rw [ne_eq, ENNReal.toNNReal_eq_zero_iff]
+    simp [hr, hr_ne_top]
+  have : (r.toNNReal)⁻¹ • rnDeriv ν μ = r⁻¹ • rnDeriv ν μ := by
+    ext x
+    simp only [Pi.smul_apply, ENNReal.smul_def, ne_eq, smul_eq_mul]
+    rw [ENNReal.coe_inv, ENNReal.coe_toNNReal hr_ne_top]
+    rw [ne_eq, ENNReal.toNNReal_eq_zero_iff]
+    simp [hr, hr_ne_top]
+  simp_rw [this, ENNReal.smul_def, ENNReal.coe_toNNReal hr_ne_top] at h
+  exact h
+
+/-- Radon-Nikodym derivative of a sum of two measures.
+See also `rnDeriv_add'`, which requires sigma-finite `ν₁`, `ν₂` and `μ`. -/
+lemma rnDeriv_add (ν₁ ν₂ μ : Measure α) [IsFiniteMeasure ν₁] [IsFiniteMeasure ν₂]
+    [ν₁.HaveLebesgueDecomposition μ] [ν₂.HaveLebesgueDecomposition μ]
+    [(ν₁ + ν₂).HaveLebesgueDecomposition μ] :
+    (ν₁ + ν₂).rnDeriv μ =ᵐ[μ] ν₁.rnDeriv μ + ν₂.rnDeriv μ := by
+  rw [← withDensity_eq_iff]
+  · suffices (ν₁ + ν₂).singularPart μ + μ.withDensity ((ν₁ + ν₂).rnDeriv μ)
+        = (ν₁ + ν₂).singularPart μ + μ.withDensity (ν₁.rnDeriv μ + ν₂.rnDeriv μ) by
+      rwa [add_right_inj] at this
+    rw [← (ν₁ + ν₂).haveLebesgueDecomposition_add μ, singularPart_add,
+      withDensity_add_left (measurable_rnDeriv _ _), add_assoc,
+      add_comm (ν₂.singularPart μ), add_assoc, add_comm _ (ν₂.singularPart μ),
+      ← ν₂.haveLebesgueDecomposition_add μ, ← add_assoc, ← ν₁.haveLebesgueDecomposition_add μ]
+  · exact (measurable_rnDeriv _ _).aemeasurable
+  · exact ((measurable_rnDeriv _ _).add (measurable_rnDeriv _ _)).aemeasurable
+  · exact (lintegral_rnDeriv_lt_top (ν₁ + ν₂) μ).ne
 
 open VectorMeasure SignedMeasure
 
@@ -798,6 +939,90 @@ instance (priority := 100) haveLebesgueDecomposition_of_sigmaFinite (μ ν : Mea
             coe_zero, Pi.zero_apply]
       · exact fun n => Measurable.indicator (measurable_rnDeriv _ _) (S.set_mem n)⟩
 #align measure_theory.measure.have_lebesgue_decomposition_of_sigma_finite MeasureTheory.Measure.haveLebesgueDecomposition_of_sigmaFinite
+
+section rnDeriv
+
+/-- Radon-Nikodym derivative of the scalar multiple of a measure.
+See also `rnDeriv_smul_left`, which has no hypothesis on `μ` but requires finite `ν`. -/
+theorem rnDeriv_smul_left' (ν μ : Measure α) [SigmaFinite ν] [SigmaFinite μ] (r : ℝ≥0) :
+    (r • ν).rnDeriv μ =ᵐ[μ] r • ν.rnDeriv μ := by
+  rw [← withDensity_eq_iff_of_sigmaFinite]
+  · simp_rw [ENNReal.smul_def]
+    rw [withDensity_smul _ (measurable_rnDeriv _ _)]
+    suffices (r • ν).singularPart μ + withDensity μ (rnDeriv (r • ν) μ)
+        = (r • ν).singularPart μ + r • withDensity μ (rnDeriv ν μ) by
+      rwa [Measure.add_right_inj] at this
+    rw [← (r • ν).haveLebesgueDecomposition_add μ, singularPart_smul, ← smul_add,
+      ← ν.haveLebesgueDecomposition_add μ]
+  · exact (measurable_rnDeriv _ _).aemeasurable
+  · exact (measurable_rnDeriv _ _).aemeasurable.const_smul _
+
+/-- Radon-Nikodym derivative of the scalar multiple of a measure.
+See also `rnDeriv_smul_left_of_ne_top`, which has no hypothesis on `μ` but requires finite `ν`. -/
+theorem rnDeriv_smul_left_of_ne_top' (ν μ : Measure α) [SigmaFinite ν] [SigmaFinite μ]
+    {r : ℝ≥0∞} (hr : r ≠ ∞) :
+    (r • ν).rnDeriv μ =ᵐ[μ] r • ν.rnDeriv μ := by
+  have h : (r.toNNReal • ν).rnDeriv μ =ᵐ[μ] r.toNNReal • ν.rnDeriv μ :=
+    rnDeriv_smul_left' ν μ r.toNNReal
+  simpa [ENNReal.smul_def, ENNReal.coe_toNNReal hr] using h
+
+/-- Radon-Nikodym derivative with respect to the scalar multiple of a measure.
+See also `rnDeriv_smul_right`, which has no hypothesis on `μ` but requires finite `ν`. -/
+theorem rnDeriv_smul_right' (ν μ : Measure α) [SigmaFinite ν] [SigmaFinite μ]
+    {r : ℝ≥0} (hr : r ≠ 0) :
+    ν.rnDeriv (r • μ) =ᵐ[μ] r⁻¹ • ν.rnDeriv μ := by
+  suffices ν.rnDeriv (r • μ) =ᵐ[r • μ] r⁻¹ • ν.rnDeriv μ by
+    suffices hμ : μ ≪ r • μ by exact hμ.ae_le this
+    refine absolutelyContinuous_of_le_smul (c := r⁻¹) ?_
+    rw [← ENNReal.coe_inv hr, ← ENNReal.smul_def, ← smul_assoc, smul_eq_mul,
+      inv_mul_cancel hr, one_smul]
+  rw [← withDensity_eq_iff_of_sigmaFinite]
+  · simp_rw [ENNReal.smul_def]
+    rw [withDensity_smul _ (measurable_rnDeriv _ _)]
+    suffices ν.singularPart (r • μ) + withDensity (r • μ) (rnDeriv ν (r • μ))
+        = ν.singularPart (r • μ) + r⁻¹ • withDensity (r • μ) (rnDeriv ν μ) by
+      rwa [add_right_inj] at this
+    rw [← ν.haveLebesgueDecomposition_add (r • μ), singularPart_smul_right _ _ _ hr,
+      ENNReal.smul_def r, withDensity_smul_measure, ← ENNReal.smul_def, ← smul_assoc,
+      smul_eq_mul, inv_mul_cancel hr, one_smul]
+    exact ν.haveLebesgueDecomposition_add μ
+  · exact (measurable_rnDeriv _ _).aemeasurable
+  · exact (measurable_rnDeriv _ _).aemeasurable.const_smul _
+
+/-- Radon-Nikodym derivative with respect to the scalar multiple of a measure.
+See also `rnDeriv_smul_right_of_ne_top`, which has no hypothesis on `μ` but requires finite `ν`. -/
+theorem rnDeriv_smul_right_of_ne_top' (ν μ : Measure α) [SigmaFinite ν] [SigmaFinite μ]
+    {r : ℝ≥0∞} (hr : r ≠ 0) (hr_ne_top : r ≠ ∞) :
+    ν.rnDeriv (r • μ) =ᵐ[μ] r⁻¹ • ν.rnDeriv μ := by
+  have h : ν.rnDeriv (r.toNNReal • μ) =ᵐ[μ] r.toNNReal⁻¹ • ν.rnDeriv μ := by
+    refine rnDeriv_smul_right' ν μ ?_
+    rw [ne_eq, ENNReal.toNNReal_eq_zero_iff]
+    simp [hr, hr_ne_top]
+  have : (r.toNNReal)⁻¹ • rnDeriv ν μ = r⁻¹ • rnDeriv ν μ := by
+    ext x
+    simp only [Pi.smul_apply, ENNReal.smul_def, ne_eq, smul_eq_mul]
+    rw [ENNReal.coe_inv, ENNReal.coe_toNNReal hr_ne_top]
+    rw [ne_eq, ENNReal.toNNReal_eq_zero_iff]
+    simp [hr, hr_ne_top]
+  simp_rw [this, ENNReal.smul_def, ENNReal.coe_toNNReal hr_ne_top] at h
+  exact h
+
+/-- Radon-Nikodym derivative of a sum of two measures.
+See also `rnDeriv_add`, which has no hypothesis on `μ` but requires finite `ν₁` and `ν₂`. -/
+lemma rnDeriv_add' (ν₁ ν₂ μ : Measure α) [SigmaFinite ν₁] [SigmaFinite ν₂] [SigmaFinite μ] :
+    (ν₁ + ν₂).rnDeriv μ =ᵐ[μ] ν₁.rnDeriv μ + ν₂.rnDeriv μ := by
+  rw [← withDensity_eq_iff_of_sigmaFinite]
+  · suffices (ν₁ + ν₂).singularPart μ + μ.withDensity ((ν₁ + ν₂).rnDeriv μ)
+        = (ν₁ + ν₂).singularPart μ + μ.withDensity (ν₁.rnDeriv μ + ν₂.rnDeriv μ) by
+      rwa [add_right_inj] at this
+    rw [← (ν₁ + ν₂).haveLebesgueDecomposition_add μ, singularPart_add,
+      withDensity_add_left (measurable_rnDeriv _ _), add_assoc,
+      add_comm (ν₂.singularPart μ), add_assoc, add_comm _ (ν₂.singularPart μ),
+      ← ν₂.haveLebesgueDecomposition_add μ, ← add_assoc, ← ν₁.haveLebesgueDecomposition_add μ]
+  · exact (measurable_rnDeriv _ _).aemeasurable
+  · exact ((measurable_rnDeriv _ _).add (measurable_rnDeriv _ _)).aemeasurable
+
+end rnDeriv
 
 end Measure
 

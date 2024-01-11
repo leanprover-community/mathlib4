@@ -142,7 +142,7 @@ theorem exists_disjoint_subfamily_covering_enlargment (B : ι → Set α) (t : S
       -- Moreover, `δ c` is smaller than the maximum `m` of `δ` over `A`, which is `≤ δ a' / τ`
       -- thanks to the good choice of `a'`. This is the desired inequality.
       push_neg at H
-      simp only [← not_disjoint_iff_nonempty_inter, Classical.not_not] at H
+      simp only [← disjoint_iff_inter_eq_empty] at H
       rcases mem_insert_iff.1 ba'u with (rfl | H')
       · refine' ⟨b, mem_insert _ _, hcb, _⟩
         calc

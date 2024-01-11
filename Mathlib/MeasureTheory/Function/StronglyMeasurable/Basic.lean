@@ -5,7 +5,6 @@ Authors: Rémy Degenne, Sébastien Gouëzel
 -/
 import Mathlib.Analysis.NormedSpace.FiniteDimension
 import Mathlib.Analysis.NormedSpace.BoundedLinearMaps
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
 import Mathlib.MeasureTheory.Measure.WithDensity
 import Mathlib.MeasureTheory.Function.SimpleFuncDense
 
@@ -699,14 +698,38 @@ theorem _root_.Continuous.stronglyMeasurable [MeasurableSpace α] [TopologicalSp
   · exact hf.measurable.stronglyMeasurable
 #align continuous.strongly_measurable Continuous.stronglyMeasurable
 
-/-- A continuous function with compact support is strongly measurable. -/
-theorem _root_.Continuous.stronglyMeasurable_of_hasCompactSupport
+/-- A continuous function whose support is contained in a compact set is strongly measurable. -/
+@[to_additive]
+theorem _root_.Continuous.stronglyMeasurable_of_mulSupport_subset_isCompact
     [MeasurableSpace α] [TopologicalSpace α] [OpensMeasurableSpace α] [MeasurableSpace β]
-    [TopologicalSpace β] [PseudoMetrizableSpace β] [BorelSpace β] [Zero β] {f : α → β}
-    (hf : Continuous f) (h'f : HasCompactSupport f) : StronglyMeasurable f := by
+    [TopologicalSpace β] [PseudoMetrizableSpace β] [BorelSpace β] [One β] {f : α → β}
+    (hf : Continuous f) {k : Set α} (hk : IsCompact k)
+    (h'f : mulSupport f ⊆ k) : StronglyMeasurable f := by
   letI : PseudoMetricSpace β := pseudoMetrizableSpacePseudoMetric β
   rw [stronglyMeasurable_iff_measurable_separable]
-  refine ⟨hf.measurable, IsCompact.isSeparable (s := range f) (h'f.isCompact_range hf)⟩
+  exact ⟨hf.measurable, (isCompact_range_of_mulSupport_subset_isCompact hf hk h'f).isSeparable⟩
+
+/-- A continuous function with compact support is strongly measurable. -/
+@[to_additive]
+theorem _root_.Continuous.stronglyMeasurable_of_hasCompactMulSupport
+    [MeasurableSpace α] [TopologicalSpace α] [OpensMeasurableSpace α] [MeasurableSpace β]
+    [TopologicalSpace β] [PseudoMetrizableSpace β] [BorelSpace β] [One β] {f : α → β}
+    (hf : Continuous f) (h'f : HasCompactMulSupport f) : StronglyMeasurable f :=
+  hf.stronglyMeasurable_of_mulSupport_subset_isCompact h'f (subset_mulTSupport f)
+
+/-- A continuous function with compact support on a product space is strongly measurable for the
+product sigma-algebra. The subtlety is that we do not assume that the spaces are separable, so the
+product of the Borel sigma algebras might not contain all open sets, but still it contains enough
+of them to approximate compactly supported continuous functions. -/
+lemma _root_.HasCompactSupport.stronglyMeasurable_of_prod {X Y : Type*} [Zero α]
+    [TopologicalSpace X] [TopologicalSpace Y] [MeasurableSpace X] [MeasurableSpace Y]
+    [OpensMeasurableSpace X] [OpensMeasurableSpace Y] [TopologicalSpace α] [PseudoMetrizableSpace α]
+    {f : X × Y → α} (hf : Continuous f) (h'f : HasCompactSupport f) :
+    StronglyMeasurable f := by
+  borelize α
+  apply stronglyMeasurable_iff_measurable_separable.2 ⟨h'f.measurable_of_prod hf, ?_⟩
+  letI : PseudoMetricSpace α := pseudoMetrizableSpacePseudoMetric α
+  exact IsCompact.isSeparable (s := range f) (h'f.isCompact_range hf)
 
 /-- If `g` is a topological embedding, then `f` is strongly measurable iff `g ∘ f` is. -/
 theorem _root_.Embedding.comp_stronglyMeasurable_iff {m : MeasurableSpace α} [TopologicalSpace β]

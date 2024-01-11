@@ -116,13 +116,13 @@ theorem mem_sieves_iff_coe : S ∈ J.sieves X ↔ S ∈ J X :=
 #align category_theory.grothendieck_topology.mem_sieves_iff_coe CategoryTheory.GrothendieckTopology.mem_sieves_iff_coe
 -/
 
--- Also known as the maximality axiom.
+/-- Also known as the maximality axiom. -/
 @[simp]
 theorem top_mem (X : C) : ⊤ ∈ J X :=
   J.top_mem' X
 #align category_theory.grothendieck_topology.top_mem CategoryTheory.GrothendieckTopology.top_mem
 
--- Also known as the stability axiom.
+/-- Also known as the stability axiom. -/
 @[simp]
 theorem pullback_stable (f : Y ⟶ X) (hS : S ∈ J X) : S.pullback f ∈ J Y :=
   J.pullback_stable' f hS

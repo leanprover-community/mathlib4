@@ -3,10 +3,10 @@ Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
-import Mathlib.Algebra.Hom.Iterate
+import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Data.List.Cycle
-import Mathlib.Data.PNat.Basic
 import Mathlib.Data.Nat.Prime
+import Mathlib.Data.PNat.Basic
 import Mathlib.Dynamics.FixedPoints.Basic
 import Mathlib.GroupTheory.GroupAction.Group
 

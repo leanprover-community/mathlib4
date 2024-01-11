@@ -131,7 +131,7 @@ theorem iSup_iInf_eq [CompletelyDistribLattice α] {f : ∀ a, κ a → α} :
   refine le_trans ?_ (le_iSup _ a)
   refine le_iInf fun b => ?_
   obtain ⟨h, rfl, rfl⟩ := ha b
-  refine iInf_le _ _
+  exact iInf_le _ _
 
 instance (priority := 100) CompletelyDistribLattice.toCompleteDistribLattice
     [CompletelyDistribLattice α] : CompleteDistribLattice α where
@@ -182,7 +182,7 @@ instance (priority := 100) CompleteLinearOrder.toCompletelyDistribLattice [Compl
       have : ∀ a, lhs ≤ g a (f a) := fun a =>
         (h (g a (f a))).resolve_left (by simpa using hf a)
       refine le_trans ?_ (le_iSup _ f)
-      refine le_iInf fun a => this _
+      exact le_iInf fun a => this _
 
 section Frame
 

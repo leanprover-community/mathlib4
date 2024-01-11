@@ -56,7 +56,7 @@ theorem isClique_iff_induce_eq : G.IsClique s ↔ G.induce s = ⊤ := by
   constructor
   · intro h
     ext ⟨v, hv⟩ ⟨w, hw⟩
-    simp only [comap_Adj, Subtype.coe_mk, top_adj, Ne.def, Subtype.mk_eq_mk]
+    simp only [comap_adj, Subtype.coe_mk, top_adj, Ne.def, Subtype.mk_eq_mk]
     exact ⟨Adj.ne, h hv hw⟩
   · intro h v hv w hw hne
     have h2 : (G.induce s).Adj ⟨v, hv⟩ ⟨w, hw⟩ = _ := rfl
@@ -173,7 +173,7 @@ theorem not_cliqueFree_of_top_embedding {n : ℕ} (f : (⊤ : SimpleGraph (Fin n
   simp only [coe_map, Set.mem_image, coe_univ, Set.mem_univ, true_and_iff] at hv hw
   obtain ⟨v', rfl⟩ := hv
   obtain ⟨w', rfl⟩ := hw
-  simp only [coe_sort_coe, RelEmbedding.coe_toEmbedding, comap_Adj, Function.Embedding.coe_subtype,
+  simp only [coe_sort_coe, RelEmbedding.coe_toEmbedding, comap_adj, Function.Embedding.coe_subtype,
     f.map_adj_iff, top_adj, ne_eq, Subtype.mk.injEq, RelEmbedding.inj]
   -- This used to be the end of the proof before leanprover/lean4#2644
   erw [Function.Embedding.coe_subtype, f.map_adj_iff]
@@ -226,7 +226,7 @@ theorem CliqueFree.anti (h : G ≤ H) : H.CliqueFree n → G.CliqueFree n :=
 /-- See `SimpleGraph.cliqueFree_of_chromaticNumber_lt` for a tighter bound. -/
 theorem cliqueFree_of_card_lt [Fintype α] (hc : card α < n) : G.CliqueFree n := by
   by_contra h
-  refine' Nat.lt_le_antisymm hc _
+  refine' Nat.lt_le_asymm hc _
   rw [cliqueFree_iff, not_isEmpty_iff] at h
   simpa only [Fintype.card_fin] using Fintype.card_le_of_embedding h.some.toEmbedding
 #align simple_graph.clique_free_of_card_lt SimpleGraph.cliqueFree_of_card_lt
@@ -237,7 +237,7 @@ theorem cliqueFree_completeMultipartiteGraph {ι : Type*} [Fintype ι] (V : ι �
   rw [cliqueFree_iff, isEmpty_iff]
   intro f
   obtain ⟨v, w, hn, he⟩ := exists_ne_map_eq_of_card_lt (Sigma.fst ∘ f) (by simp [hc])
-  rw [← top_adj, ← f.map_adj_iff, comap_Adj, top_adj] at hn
+  rw [← top_adj, ← f.map_adj_iff, comap_adj, top_adj] at hn
   exact absurd he hn
 
 /-- Clique-freeness is preserved by `replaceVertex`. -/

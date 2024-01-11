@@ -1217,10 +1217,10 @@ end Trunc
 
 namespace Multiset
 
-variable [Fintype α] [DecidableEq α] [Fintype β]
+variable [Fintype α] [Fintype β]
 
 @[simp]
-theorem count_univ (a : α) : count a Finset.univ.val = 1 :=
+theorem count_univ [DecidableEq α] (a : α) : count a Finset.univ.val = 1 :=
   count_eq_one_of_mem Finset.univ.nodup (Finset.mem_univ _)
 #align multiset.count_univ Multiset.count_univ
 
@@ -1228,6 +1228,15 @@ theorem count_univ (a : α) : count a Finset.univ.val = 1 :=
 theorem map_univ_val_equiv (e : α ≃ β) :
     map e univ.val = univ.val := by
   rw [←congr_arg Finset.val (Finset.map_univ_equiv e), Finset.map_val, Equiv.coe_toEmbedding]
+
+/-- For functions on finite sets, they are bijections iff they map universes into universes. -/
+@[simp]
+theorem bijective_iff_map_univ_eq_univ (f : α → β) :
+    f.Bijective ↔ map f (Finset.univ : Finset α).val = univ.val :=
+  ⟨fun bij ↦ congr_arg (·.val) (map_univ_equiv <| Equiv.ofBijective f bij),
+    fun eq ↦ ⟨
+      fun a₁ a₂ ↦ inj_on_of_nodup_map (eq.symm ▸ univ.nodup) _ (mem_univ a₁) _ (mem_univ a₂),
+      fun b ↦ have ⟨a, _, h⟩ := mem_map.mp (eq.symm ▸ mem_univ_val b); ⟨a, h⟩⟩⟩
 
 end Multiset
 

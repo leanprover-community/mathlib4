@@ -272,8 +272,8 @@ theorem LocallyFinite.finite_nonempty_inter_compact {ι : Type*} {f : ι → Set
 theorem IsCompact.inter_iInter_nonempty {s : Set α} {ι : Type v} (hs : IsCompact s) (Z : ι → Set α)
     (hZc : ∀ i, IsClosed (Z i)) (hsZ : ∀ t : Finset ι, (s ∩ ⋂ i ∈ t, Z i).Nonempty) :
     (s ∩ ⋂ i, Z i).Nonempty := by
-  simp only [nonempty_iff_ne_empty] at hsZ ⊢
-  apply mt (hs.elim_finite_subfamily_closed Z hZc); push_neg; exact hsZ
+  contrapose! hsZ
+  exact hs.elim_finite_subfamily_closed Z hZc hsZ
 #align is_compact.inter_Inter_nonempty IsCompact.inter_iInter_nonempty
 
 /-- Cantor's intersection theorem:

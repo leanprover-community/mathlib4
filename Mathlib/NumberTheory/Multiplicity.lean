@@ -114,7 +114,7 @@ theorem odd_sq_dvd_geom_sum₂_sub (hp : Odd p) :
       have : ∀ (x : ℕ), (hx : x ∈ range p) → a ^ (x + (p - 1 - x)) = a ^ (p - 1) := by
         intro x hx
         rw [← Nat.add_sub_assoc _ x, Nat.add_sub_cancel_left]
-        exact Nat.le_pred_of_lt (Finset.mem_range.mp hx)
+        exact Nat.le_sub_one_of_lt (Finset.mem_range.mp hx)
       rw [Finset.sum_congr rfl this]
     _ =
         mk (span {s})
@@ -129,7 +129,7 @@ theorem odd_sq_dvd_geom_sum₂_sub (hp : Odd p) :
       rintro (⟨⟩ | ⟨x⟩) hx
       · rw [Nat.cast_zero, mul_zero, mul_zero]
       · have : x.succ - 1 + (p - 1 - x.succ) = p - 2 := by
-          rw [← Nat.add_sub_assoc (Nat.le_pred_of_lt (Finset.mem_range.mp hx))]
+          rw [← Nat.add_sub_assoc (Nat.le_sub_one_of_lt (Finset.mem_range.mp hx))]
           exact congr_arg Nat.pred (Nat.add_sub_cancel_left _ _)
         rw [this]
         ring1

@@ -465,7 +465,7 @@ theorem strong_law_aux1 {c : ℝ} (c_one : 1 < c) {ε : ℝ} (εpos : 0 < ε) : 
         · rintro ⟨i, j⟩ hij
           simp only [mem_sigma, mem_range] at hij
           simp only [hij.1, hij.2, mem_sigma, mem_range, mem_filter, and_true_iff]
-          exact hij.2.trans_le (u_mono (Nat.le_pred_of_lt hij.1))
+          exact hij.2.trans_le (u_mono (Nat.le_sub_one_of_lt hij.1))
         · rintro ⟨i, j⟩ hij
           simp only [mem_sigma, mem_range, mem_filter] at hij
           simp only [hij.2.1, hij.2.2, mem_sigma, mem_range, and_self_iff]

@@ -245,7 +245,7 @@ theorem card_units_zmod_lt_sub_one {p : ℕ} (hp : 1 < p) [Fintype (ZMod p)ˣ] :
     Fintype.card (ZMod p)ˣ ≤ p - 1 := by
   haveI : NeZero p := ⟨(pos_of_gt hp).ne'⟩
   rw [ZMod.card_units_eq_totient p]
-  exact Nat.le_pred_of_lt (Nat.totient_lt p hp)
+  exact Nat.le_sub_one_of_lt (Nat.totient_lt p hp)
 #align nat.card_units_zmod_lt_sub_one Nat.card_units_zmod_lt_sub_one
 
 theorem prime_iff_card_units (p : ℕ) [Fintype (ZMod p)ˣ] :

@@ -73,7 +73,7 @@ theorem bodd_succ (n : ℕ) : bodd (succ n) = not (bodd n) := by
 
 @[simp]
 theorem bodd_add (m n : ℕ) : bodd (m + n) = bxor (bodd m) (bodd n) := by
-  induction n <;> simp_all [add_succ]
+  induction n <;> simp_all [add_succ, Bool.xor_not]
 #align nat.bodd_add Nat.bodd_add
 
 @[simp]
@@ -271,7 +271,7 @@ theorem binaryRec_zero {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (b
 theorem bodd_bit (b n) : bodd (bit b n) = b := by
   rw [bit_val]
   simp only [Nat.mul_comm, Nat.add_comm, bodd_add, bodd_mul, bodd_succ, bodd_zero, Bool.not_false,
-    Bool.not_true, Bool.and_false, Bool.xor_false_right]
+    Bool.not_true, Bool.and_false, Bool.xor_false]
   cases b <;> cases bodd n <;> rfl
 #align nat.bodd_bit Nat.bodd_bit
 

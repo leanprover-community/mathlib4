@@ -103,7 +103,8 @@ theorem U_complex_cos (n : ℕ) : (U ℂ n).eval (cos θ) * sin θ = sin ((n + 1
 
 end Complex
 
--- ### Real versions
+/-! ### Real versions -/
+
 section Real
 
 open Real

@@ -4,17 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
 
-import Mathlib.Init.Data.Nat.Notation
-import Mathlib.Lean.Message
-import Mathlib.Lean.Expr.Basic
 import Mathlib.Data.KVMap
 import Mathlib.Tactic.Simps.NotationClass
 import Std.Classes.Dvd
 import Std.Data.String.Basic
 import Std.Util.LibraryNote
-import Mathlib.Tactic.RunCmd -- not necessary, but useful for debugging
 import Mathlib.Lean.Linter
 import Std.Data.List.Count
+import Mathlib.Lean.Expr.Basic
 
 /-!
 # Simps attribute
@@ -369,7 +366,7 @@ structure ProjectionData where
   target of the first projection is a structure with at least two projections).
   The composition of these projections is required to be definitionally equal to the provided
   Expression. -/
-  projNrs : List ℕ
+  projNrs : List Nat
   /-- A boolean specifying whether `simp` lemmas are generated for this projection by default. -/
   isDefault : Bool
   /-- A boolean specifying whether this projection is written as prefix. -/
@@ -469,7 +466,7 @@ def projectionsInfo (l : List ProjectionData) (pref : String) (str : Name) : Mes
 /-- Find the indices of the projections that need to be applied to elaborate `$e.$projName`.
 Example: If `e : α ≃+ β` and ``projName = `invFun`` then this returns `[0, 1]`, because the first
 projection of `MulEquiv` is `toEquiv` and the second projection of `Equiv` is `invFun`. -/
-def findProjectionIndices (strName projName : Name) : MetaM (List ℕ) := do
+def findProjectionIndices (strName projName : Name) : MetaM (List Nat) := do
   let env ← getEnv
   let .some baseStr := findField? env strName projName |
     throwError "{strName} has no field {projName} in parent structure"
@@ -481,8 +478,8 @@ def findProjectionIndices (strName projName : Name) : MetaM (List ℕ) := do
   return allProjs.map (env.getProjectionFnInfo? · |>.get!.i)
 
 /-- Auxiliary function of `getCompositeOfProjections`. -/
-partial def getCompositeOfProjectionsAux
-    (proj : String) (e : Expr) (pos : Array ℕ) (args : Array Expr) : MetaM (Expr × Array ℕ) := do
+partial def getCompositeOfProjectionsAux (proj : String) (e : Expr) (pos : Array Nat)
+    (args : Array Expr) : MetaM (Expr × Array Nat) := do
   let env ← getEnv
   let .const structName _ := (← whnf (←inferType e)).getAppFn |
     throwError "{e} doesn't have a structure as type"
@@ -515,7 +512,7 @@ partial def getCompositeOfProjectionsAux
   we will be able to generate the "projection"
     `λ {A} (f : gradedFun A) (x : A i) (y : A j) ↦ ↑(↑(f.toFun i j) x) y`,
   which projection notation cannot do. -/
-def getCompositeOfProjections (structName : Name) (proj : String) : MetaM (Expr × Array ℕ) := do
+def getCompositeOfProjections (structName : Name) (proj : String) : MetaM (Expr × Array Nat) := do
   let strExpr ← mkConstWithLevelParams structName
   let type ← inferType strExpr
   forallTelescopeReducing type fun typeArgs _ ↦
@@ -995,7 +992,7 @@ partial def headStructureEtaReduce (e : Expr) : MetaM Expr := do
   -/
 partial def addProjections (nm : Name) (type lhs rhs : Expr)
   (args : Array Expr) (mustBeStr : Bool) (cfg : Config)
-  (todo : List (String × Syntax)) (toApply : List ℕ) : MetaM (Array Name) := do
+  (todo : List (String × Syntax)) (toApply : List Nat) : MetaM (Array Name) := do
   -- we don't want to unfold non-reducible definitions (like `set`) to apply more arguments
   trace[simps.debug] "Type of the Expression before normalizing: {type}"
   withTransparency cfg.typeMd <| forallTelescopeReducing type fun typeArgs tgt ↦ withDefault do

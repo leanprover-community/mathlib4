@@ -128,7 +128,7 @@ protected theorem IsTotal.isTrichotomous (r) [IsTotal α r] : IsTrichotomous α 
 
 -- see Note [lower instance priority]
 instance (priority := 100) IsTotal.to_isRefl (r) [IsTotal α r] : IsRefl α r :=
-  ⟨fun a => (or_self_iff _).1 <| total_of r a a⟩
+  ⟨fun a => or_self_iff.1 <| total_of r a a⟩
 
 theorem ne_of_irrefl {r} [IsIrrefl α r] : ∀ {x y : α}, r x y → x ≠ y
   | _, _, h, rfl => irrefl _ h
@@ -355,6 +355,9 @@ def WellFoundedLT (α : Type*) [LT α] : Prop :=
 def WellFoundedGT (α : Type*) [LT α] : Prop :=
   IsWellFounded α (· > ·)
 #align well_founded_gt WellFoundedGT
+
+lemma wellFounded_lt [LT α] [WellFoundedLT α] : @WellFounded α (· < ·) := IsWellFounded.wf
+lemma wellFounded_gt [LT α] [WellFoundedGT α] : @WellFounded α (· > ·) := IsWellFounded.wf
 
 -- See note [lower instance priority]
 instance (priority := 100) (α : Type*) [LT α] [h : WellFoundedLT α] : WellFoundedGT αᵒᵈ :=

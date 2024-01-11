@@ -89,7 +89,7 @@ theorem isBounded_prod : IsBounded (s ×ˢ t) ↔ s = ∅ ∨ t = ∅ ∨ IsBoun
 
 theorem isBounded_prod_self : IsBounded (s ×ˢ s) ↔ IsBounded s := by
   rcases s.eq_empty_or_nonempty with (rfl | hs); · simp
-  exact (isBounded_prod_of_nonempty (hs.prod hs)).trans (and_self_iff _)
+  exact (isBounded_prod_of_nonempty (hs.prod hs)).trans and_self_iff
 #align bornology.is_bounded_prod_self Bornology.isBounded_prod_self
 
 /-!

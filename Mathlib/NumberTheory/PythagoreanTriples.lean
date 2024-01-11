@@ -374,13 +374,13 @@ private theorem coprime_sq_sub_mul_of_even_odd {m n : ℤ} (h : Int.gcd m n = 1)
       -- Porting note: norm_num is not enough to close this
       field_simp [sq, Int.sub_emod, Int.mul_emod, hm, hn]
     apply mt (Int.dvd_gcd (Int.coe_nat_dvd_left.mpr hpm)) hnp
-    apply (or_self_iff _).mp
+    apply or_self_iff.mp
     apply Int.Prime.dvd_mul' hp
     rw [(by ring : n * n = -(m ^ 2 - n ^ 2) + m * m)]
     exact hp1.neg_right.add ((Int.coe_nat_dvd_left.2 hpm).mul_right _)
   rw [Int.gcd_comm] at hnp
   apply mt (Int.dvd_gcd (Int.coe_nat_dvd_left.mpr hpn)) hnp
-  apply (or_self_iff _).mp
+  apply or_self_iff.mp
   apply Int.Prime.dvd_mul' hp
   rw [(by ring : m * m = m ^ 2 - n ^ 2 + n * n)]
   apply dvd_add hp1
@@ -485,6 +485,11 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
   let m := (q.den : ℤ)
   let n := q.num
   have hm0 : m ≠ 0 := by
+    -- Added to adapt to leanprover/lean4#2734.
+    -- Without `unfold_let`, `norm_cast` can't see the coercion.
+    -- One might try `zeta := true` in `Tactic.NormCast.derive`,
+    -- but that seems to break many other things.
+    unfold_let m
     norm_cast
     apply Rat.den_nz q
   have hq2 : q = n / m := (Rat.num_div_den q).symm

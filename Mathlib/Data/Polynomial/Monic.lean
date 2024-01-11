@@ -211,7 +211,7 @@ theorem nextCoeff_mul (hp : Monic p) (hq : Monic q) :
   nontriviality
   simp only [← coeff_one_reverse]
   rw [reverse_mul] <;>
-    simp [coeff_mul, Nat.antidiagonal, hp.leadingCoeff, hq.leadingCoeff, add_comm,
+    simp [coeff_mul, antidiagonal, hp.leadingCoeff, hq.leadingCoeff, add_comm,
       show Nat.succ 0 = 1 from rfl]
 #align polynomial.monic.next_coeff_mul Polynomial.Monic.nextCoeff_mul
 

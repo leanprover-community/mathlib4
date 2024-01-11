@@ -53,6 +53,8 @@ This is demonstrated by means of the following four lemmas:
 complete lattice, well-founded, compact
 -/
 
+open Set
+
 variable {ι : Sort*} {α : Type*} [CompleteLattice α] {f : ι → α}
 
 namespace CompleteLattice
@@ -437,6 +439,28 @@ theorem CompleteLattice.setIndependent_iff_finite {s : Set α} :
       · rw [Finset.coe_insert, Set.insert_subset_iff]
         exact ⟨ha, Set.Subset.trans ht (Set.diff_subset _ _)⟩⟩
 #align complete_lattice.set_independent_iff_finite CompleteLattice.setIndependent_iff_finite
+
+lemma CompleteLattice.independent_iff_supIndep_of_injOn {ι : Type*} {f : ι → α}
+    (hf : InjOn f {i | f i ≠ ⊥}) :
+    CompleteLattice.Independent f ↔ ∀ (s : Finset ι), s.SupIndep f := by
+  refine ⟨fun h ↦ h.supIndep', fun h ↦ CompleteLattice.independent_def'.mpr fun i ↦ ?_⟩
+  simp_rw [disjoint_iff, inf_sSup_eq_iSup_inf_sup_finset, iSup_eq_bot, ← disjoint_iff]
+  intro s hs
+  classical
+  rw [← Finset.sup_erase_bot]
+  set t := s.erase ⊥
+  replace hf : InjOn f (f ⁻¹' t) := fun i hi j _ hij ↦ by refine hf ?_ ?_ hij <;> aesop
+  have : (Finset.erase (insert i (t.preimage _ hf)) i).image f = t := by
+    ext a
+    simp only [Finset.mem_preimage, Finset.mem_erase, ne_eq, Finset.mem_insert, true_or, not_true,
+      Finset.erase_insert_eq_erase, not_and, Finset.mem_image]
+    refine ⟨by aesop, fun ⟨ha, has⟩ ↦ ?_⟩
+    obtain ⟨j, hj, rfl⟩ := hs has
+    exact ⟨j, ⟨hj, ha, has⟩, rfl⟩
+  rw [← this, Finset.sup_image]
+  specialize h (insert i (t.preimage _ hf))
+  rw [Finset.supIndep_iff_disjoint_erase] at h
+  exact h i (Finset.mem_insert_self i _)
 
 theorem CompleteLattice.setIndependent_iUnion_of_directed {η : Type*} {s : η → Set α}
     (hs : Directed (· ⊆ ·) s) (h : ∀ i, CompleteLattice.SetIndependent (s i)) :

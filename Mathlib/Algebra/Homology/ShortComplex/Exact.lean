@@ -416,6 +416,49 @@ lemma exact_of_g_is_cokernel (hS : IsColimit (CokernelCofork.ofπ S.g S.zero))
           exact Cofork.IsColimit.π_desc hS }⟩⟩
   infer_instance
 
+variable {S}
+
+lemma Exact.mono_g (hS : S.Exact) (hf : S.f = 0) : Mono S.g := by
+  have := hS.hasHomology
+  have := hS.epi_toCycles
+  have : S.iCycles = 0 := by rw [← cancel_epi S.toCycles, comp_zero, toCycles_i, hf]
+  apply Preadditive.mono_of_cancel_zero
+  intro A x₂ hx₂
+  rw [← S.liftCycles_i x₂ hx₂, this, comp_zero]
+
+lemma Exact.epi_f (hS : S.Exact) (hg : S.g = 0) : Epi S.f := by
+  have := hS.hasHomology
+  have := hS.mono_fromOpcycles
+  have : S.pOpcycles = 0 := by rw [← cancel_mono S.fromOpcycles, zero_comp, p_fromOpcycles, hg]
+  apply Preadditive.epi_of_cancel_zero
+  intro A x₂ hx₂
+  rw [← S.p_descOpcycles x₂ hx₂, this, zero_comp]
+
+lemma Exact.mono_g_iff (hS : S.Exact) : Mono S.g ↔ S.f = 0 := by
+  constructor
+  · intro
+    rw [← cancel_mono S.g, zero, zero_comp]
+  · exact hS.mono_g
+
+lemma Exact.epi_f_iff (hS : S.Exact) : Epi S.f ↔ S.g = 0 := by
+  constructor
+  · intro
+    rw [← cancel_epi S.f, zero, comp_zero]
+  · exact hS.epi_f
+
+lemma Exact.isZero_X₂ (hS : S.Exact) (hf : S.f = 0) (hg : S.g = 0) : IsZero S.X₂ := by
+  have := hS.mono_g hf
+  rw [IsZero.iff_id_eq_zero, ← cancel_mono S.g, hg, comp_zero, comp_zero]
+
+lemma Exact.isZero_X₂_iff (hS : S.Exact) : IsZero S.X₂ ↔ S.f = 0 ∧ S.g = 0 := by
+  constructor
+  · intro h
+    exact ⟨h.eq_of_tgt _ _, h.eq_of_src _ _⟩
+  · rintro ⟨hf, hg⟩
+    exact hS.isZero_X₂ hf hg
+
+variable (S)
+
 /-- A splitting for a short complex `S` consists of the data of a retraction `r : X₂ ⟶ X₁`
 of `S.f` and section `s : X₃ ⟶ X₂` of `S.g` which satisfy `r ≫ S.f + S.g ≫ s = 𝟙 _` -/
 structure Splitting (S : ShortComplex C) where
@@ -758,6 +801,123 @@ lemma epi_τ₂_of_exact_of_epi {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂
 end Balanced
 
 end Preadditive
+
+section Abelian
+
+variable [Abelian C]
+
+/-- Given a morphism of short complexes `φ : S₁ ⟶ S₂` in an abelian category, if `S₁.f`
+and `S₁.g` are zero (e.g. when `S₁` is of the form `0 ⟶ S₁.X₂ ⟶ 0`) and `S₂.f = 0`
+(e.g when `S₂` is of the form `0 ⟶ S₂.X₂ ⟶ S₂.X₃`), then `φ` is a quasi-isomorphism iff
+the obvious short complex `S₁.X₂ ⟶ S₂.X₂ ⟶ S₂.X₃` is exact and `φ.τ₂` is a mono). -/
+lemma quasiIso_iff_of_zeros {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂)
+    (hf₁ : S₁.f = 0) (hg₁ : S₁.g = 0) (hf₂ : S₂.f = 0) :
+    QuasiIso φ ↔
+      (ShortComplex.mk φ.τ₂ S₂.g (by rw [φ.comm₂₃, hg₁, zero_comp])).Exact ∧ Mono φ.τ₂ := by
+  have w : φ.τ₂ ≫ S₂.g = 0 := by rw [φ.comm₂₃, hg₁, zero_comp]
+  rw [quasiIso_iff_isIso_liftCycles φ hf₁ hg₁ hf₂]
+  constructor
+  · intro h
+    have : Mono φ.τ₂ := by
+      rw [← S₂.liftCycles_i φ.τ₂ w]
+      apply mono_comp
+    refine' ⟨_, this⟩
+    apply exact_of_f_is_kernel
+    exact IsLimit.ofIsoLimit S₂.cyclesIsKernel
+      (Fork.ext (asIso (S₂.liftCycles φ.τ₂ w)).symm (by simp))
+  · rintro ⟨h₁, h₂⟩
+    refine' ⟨⟨h₁.lift S₂.iCycles (by simp), _, _⟩⟩
+    · rw [← cancel_mono φ.τ₂, assoc, h₁.lift_f, liftCycles_i, id_comp]
+    · rw [← cancel_mono S₂.iCycles, assoc, liftCycles_i, h₁.lift_f, id_comp]
+
+/-- Given a morphism of short complexes `φ : S₁ ⟶ S₂` in an abelian category, if `S₁.g = 0`
+(e.g when `S₁` is of the form `S₁.X₁ ⟶ S₁.X₂ ⟶ 0`) and both `S₂.f` and `S₂.g` are zero
+(e.g when `S₂` is of the form `0 ⟶ S₂.X₂ ⟶ 0`), then `φ` is a quasi-isomorphism iff
+the obvious short complex `S₁.X₂ ⟶ S₁.X₂ ⟶ S₂.X₂` is exact and `φ.τ₂` is an epi). -/
+lemma quasiIso_iff_of_zeros' {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂)
+    (hg₁ : S₁.g = 0) (hf₂ : S₂.f = 0) (hg₂ : S₂.g = 0) :
+    QuasiIso φ ↔
+      (ShortComplex.mk S₁.f φ.τ₂ (by rw [← φ.comm₁₂, hf₂, comp_zero])).Exact ∧ Epi φ.τ₂ := by
+  rw [← quasiIso_opMap_iff, quasiIso_iff_of_zeros]
+  rotate_left
+  · dsimp
+    rw [hg₂, op_zero]
+  · dsimp
+    rw [hf₂, op_zero]
+  · dsimp
+    rw [hg₁, op_zero]
+  rw [← exact_unop_iff]
+  have : Mono φ.τ₂.op ↔ Epi φ.τ₂ :=
+    ⟨fun _ => unop_epi_of_mono φ.τ₂.op, fun _ => op_mono_of_epi _⟩
+  tauto
+
+end Abelian
+
+end ShortComplex
+
+namespace Functor
+
+variable (F : C ⥤ D) [Preadditive C] [Preadditive D] [HasZeroObject C]
+  [HasZeroObject D] [F.PreservesZeroMorphisms] [F.PreservesHomology]
+
+instance : F.PreservesMonomorphisms where
+  preserves {X Y} f hf := by
+    let S := ShortComplex.mk (0 : X ⟶ X) f zero_comp
+    exact ((S.map F).exact_iff_mono (by simp)).1
+      (((S.exact_iff_mono rfl).2 hf).map F)
+
+instance [Faithful F] [CategoryWithHomology C] : F.ReflectsMonomorphisms where
+  reflects {X Y} f hf := by
+    let S := ShortComplex.mk (0 : X ⟶ X) f zero_comp
+    exact (S.exact_iff_mono rfl).1
+      ((ShortComplex.exact_map_iff_of_faithful S F).1
+      (((S.map F).exact_iff_mono (by simp)).2 hf))
+
+instance : F.PreservesEpimorphisms where
+  preserves {X Y} f hf := by
+    let S := ShortComplex.mk f (0 : Y ⟶ Y) comp_zero
+    exact ((S.map F).exact_iff_epi (by simp)).1
+      (((S.exact_iff_epi rfl).2 hf).map F)
+
+instance [Faithful F] [CategoryWithHomology C] : F.ReflectsEpimorphisms where
+  reflects {X Y} f hf := by
+    let S := ShortComplex.mk f (0 : Y ⟶ Y) comp_zero
+    exact (S.exact_iff_epi rfl).1
+      ((ShortComplex.exact_map_iff_of_faithful S F).1
+      (((S.map F).exact_iff_epi (by simp)).2 hf))
+
+end Functor
+
+namespace ShortComplex
+
+namespace Splitting
+
+variable [Preadditive C] [Balanced C]
+
+/-- This is the splitting of a short complex `S` in a balanced category induced by
+a section of the morphism `S.g : S.X₂ ⟶ S.X₃` -/
+noncomputable def ofExactOfSection (S : ShortComplex C) (hS : S.Exact) (s : S.X₃ ⟶ S.X₂)
+    (s_g : s ≫ S.g = 𝟙 S.X₃) (hf : Mono S.f) :
+    S.Splitting where
+  r := hS.lift (𝟙 S.X₂ - S.g ≫ s) (by simp [s_g])
+  s := s
+  f_r := by rw [← cancel_mono S.f, assoc, Exact.lift_f, comp_sub, comp_id,
+    zero_assoc, zero_comp, sub_zero, id_comp]
+  s_g := s_g
+
+/-- This is the splitting of a short complex `S` in a balanced category induced by
+a retraction of the morphism `S.f : S.X₁ ⟶ S.X₂` -/
+noncomputable def ofExactOfRetraction (S : ShortComplex C) (hS : S.Exact) (r : S.X₂ ⟶ S.X₁)
+    (f_r : S.f ≫ r = 𝟙 S.X₁) (hg : Epi S.g) :
+    S.Splitting where
+  r := r
+  s := hS.desc (𝟙 S.X₂ - r ≫ S.f) (by simp [reassoc_of% f_r])
+  f_r := f_r
+  s_g := by
+    rw [← cancel_epi S.g, Exact.g_desc_assoc, sub_comp, id_comp, assoc, zero,
+      comp_zero, sub_zero, comp_id]
+
+end Splitting
 
 end ShortComplex
 

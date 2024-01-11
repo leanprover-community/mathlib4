@@ -507,17 +507,17 @@ theorem coe_max [LinearOrder α] (x y : α) : ((max x y : α) : WithBot α) = ma
   rfl
 #align with_bot.coe_max WithBot.coe_max
 
-theorem wellFounded_lt [LT α] (h : @WellFounded α (· < ·)) :
-    @WellFounded (WithBot α) (· < ·) :=
+instance instWellFoundedLT [LT α] [WellFoundedLT α] : WellFoundedLT (WithBot α) where
+  wf :=
   have not_lt_bot : ∀ a : WithBot α, ¬ a < ⊥ := (fun.)
   have acc_bot := ⟨_, by simp [not_lt_bot]⟩
   .intro fun
     | ⊥ => acc_bot
-    | (a : α) => (h.1 a).rec fun a _ ih =>
+    | (a : α) => (wellFounded_lt.1 a).rec fun a _ ih =>
       .intro _ fun
         | ⊥, _ => acc_bot
         | (b : α), hlt => ih _ (some_lt_some.1 hlt)
-#align with_bot.well_founded_lt WithBot.wellFounded_lt
+#align with_bot.well_founded_lt WithBot.instWellFoundedLT
 
 instance denselyOrdered [LT α] [DenselyOrdered α] [NoMinOrder α] : DenselyOrdered (WithBot α) :=
   ⟨fun a b =>
@@ -1294,11 +1294,11 @@ theorem coe_max [LinearOrder α] (x y : α) : (↑(max x y) : WithTop α) = max 
   rfl
 #align with_top.coe_max WithTop.coe_max
 
-theorem wellFounded_lt [LT α] (h : @WellFounded α (· < ·)) :
-    @WellFounded (WithTop α) (· < ·) :=
+instance instWellFoundedLT [LT α] [WellFoundedLT α] : WellFoundedLT (WithTop α) where
+  wf :=
   have not_top_lt : ∀ a : WithTop α, ¬ ⊤ < a := (fun.)
   have acc_some (a : α) : Acc ((· < ·) : WithTop α → WithTop α → Prop) a :=
-    (h.1 a).rec fun _ _ ih =>
+    (wellFounded_lt.1 a).rec fun _ _ ih =>
       .intro _ fun
         | (b : α), hlt => ih _ (some_lt_some.1 hlt)
         | ⊤, hlt => nomatch not_top_lt _ hlt
@@ -1307,16 +1307,14 @@ theorem wellFounded_lt [LT α] (h : @WellFounded α (· < ·)) :
     | ⊤ => .intro _ fun
       | (b : α), _ => acc_some b
       | ⊤, hlt => nomatch not_top_lt _ hlt
-#align with_top.well_founded_lt WithTop.wellFounded_lt
+#align with_top.well_founded_lt WithTop.instWellFoundedLT
 
 open OrderDual
 
-theorem wellFounded_gt [LT α] (h : @WellFounded α (· > ·)) :
-    @WellFounded (WithTop α) (· > ·) :=
-  ⟨fun a => by
-    -- ideally, use rel_hom_class.acc, but that is defined later
-    have : Acc (· < ·) (WithTop.toDual a) := WellFounded.apply (WithBot.wellFounded_lt
-      (by convert h using 1)) _
+instance instWellFoundedGT [LT α] [WellFoundedGT α] : WellFoundedGT (WithTop α) where
+  wf := ⟨fun a => by
+    -- ideally, use RelHomClass.acc, but that is defined later
+    have : Acc (· < ·) (WithTop.toDual a) := wellFounded_lt.apply _
     revert this
     generalize ha : WithBot.toDual a = b
     intro ac
@@ -1324,14 +1322,12 @@ theorem wellFounded_gt [LT α] (h : @WellFounded α (· > ·)) :
     induction' ac with _ H IH generalizing a
     subst ha
     exact ⟨_, fun a' h => IH (WithTop.toDual a') (toDual_lt_toDual.mpr h) _ rfl⟩⟩
-#align with_top.well_founded_gt WithTop.wellFounded_gt
+#align with_top.well_founded_gt WithTop.instWellFoundedGT
 
-theorem _root_.WithBot.wellFounded_gt [LT α] (h : @WellFounded α (· > ·)) :
-    @WellFounded (WithBot α) (· > ·) :=
-  ⟨fun a => by
-    -- ideally, use rel_hom_class.acc, but that is defined later
-    have : Acc (· < ·) (WithBot.toDual a) :=
-      WellFounded.apply (WithTop.wellFounded_lt (by convert h using 1)) _
+instance _root_.WithBot.instWellFoundedGT [LT α] [WellFoundedGT α] : WellFoundedGT (WithBot α) where
+  wf := ⟨fun a => by
+    -- ideally, use RelHomClass.acc, but that is defined later
+    have : Acc (· < ·) (WithBot.toDual a) := wellFounded_lt.apply _
     revert this
     generalize ha : WithBot.toDual a = b
     intro ac
@@ -1339,7 +1335,7 @@ theorem _root_.WithBot.wellFounded_gt [LT α] (h : @WellFounded α (· > ·)) :
     induction' ac with _ H IH generalizing a
     subst ha
     exact ⟨_, fun a' h => IH (WithBot.toDual a') (toDual_lt_toDual.mpr h) _ rfl⟩⟩
-#align with_bot.well_founded_gt WithBot.wellFounded_gt
+#align with_bot.well_founded_gt WithBot.instWellFoundedGT
 
 instance trichotomous.lt [Preorder α] [IsTrichotomous α (· < ·)] :
     IsTrichotomous (WithTop α) (· < ·) :=
@@ -1351,8 +1347,7 @@ instance trichotomous.lt [Preorder α] [IsTrichotomous α (· < ·)] :
     · simpa [some_eq_coe, IsTrichotomous, coe_eq_coe] using @trichotomous α (· < ·) _ a b⟩
 #align with_top.trichotomous.lt WithTop.trichotomous.lt
 
-instance IsWellOrder.lt [Preorder α] [h : IsWellOrder α (· < ·)] :
-    IsWellOrder (WithTop α) (· < ·) where wf := wellFounded_lt h.wf
+instance IsWellOrder.lt [Preorder α] [IsWellOrder α (· < ·)] : IsWellOrder (WithTop α) (· < ·) where
 #align with_top.is_well_order.lt WithTop.IsWellOrder.lt
 
 instance trichotomous.gt [Preorder α] [IsTrichotomous α (· > ·)] :
@@ -1365,8 +1360,7 @@ instance trichotomous.gt [Preorder α] [IsTrichotomous α (· > ·)] :
     · simpa [some_eq_coe, IsTrichotomous, coe_eq_coe] using @trichotomous α (· > ·) _ a b⟩
 #align with_top.trichotomous.gt WithTop.trichotomous.gt
 
-instance IsWellOrder.gt [Preorder α] [h : IsWellOrder α (· > ·)] :
-    IsWellOrder (WithTop α) (· > ·) where wf := wellFounded_gt h.wf
+instance IsWellOrder.gt [Preorder α] [IsWellOrder α (· > ·)] : IsWellOrder (WithTop α) (· > ·) where
 #align with_top.is_well_order.gt WithTop.IsWellOrder.gt
 
 instance _root_.WithBot.trichotomous.lt [Preorder α] [h : IsTrichotomous α (· < ·)] :
@@ -1374,9 +1368,8 @@ instance _root_.WithBot.trichotomous.lt [Preorder α] [h : IsTrichotomous α (·
   @WithTop.trichotomous.gt αᵒᵈ _ h
 #align with_bot.trichotomous.lt WithBot.trichotomous.lt
 
-instance _root_.WithBot.isWellOrder.lt [Preorder α] [h : IsWellOrder α (· < ·)] :
-    IsWellOrder (WithBot α) (· < ·) :=
-  @WithTop.IsWellOrder.gt αᵒᵈ _ h
+instance _root_.WithBot.isWellOrder.lt [Preorder α] [IsWellOrder α (· < ·)] :
+    IsWellOrder (WithBot α) (· < ·) where
 #align with_bot.is_well_order.lt WithBot.isWellOrder.lt
 
 instance _root_.WithBot.trichotomous.gt [Preorder α] [h : IsTrichotomous α (· > ·)] :

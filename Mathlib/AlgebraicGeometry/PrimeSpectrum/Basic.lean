@@ -298,7 +298,7 @@ theorem zeroLocus_empty_iff_eq_top {I : Ideal R} : zeroLocus (I : Set R) = ∅ �
   · contrapose!
     intro h
     rcases Ideal.exists_le_maximal I h with ⟨M, hM, hIM⟩
-    exact Set.Nonempty.ne_empty ⟨⟨M, hM.isPrime⟩, hIM⟩
+    exact ⟨⟨M, hM.isPrime⟩, hIM⟩
   · rintro rfl
     apply zeroLocus_empty_of_one_mem
     trivial

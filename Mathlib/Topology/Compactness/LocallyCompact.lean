@@ -164,7 +164,9 @@ instance (priority := 100) [LocallyCompactSpace X] : WeaklyLocallyCompactSpace X
 
 /-- In a locally compact space, for every containment `K ⊆ U` of a compact set `K` in an open
   set `U`, there is a compact neighborhood `L` such that `K ⊆ L ⊆ U`: equivalently, there is a
-  compact `L` such that `K ⊆ interior L` and `L ⊆ U`. -/
+  compact `L` such that `K ⊆ interior L` and `L ⊆ U`.
+  See also `exists_compact_closed_between`, in which one guarantees additionally that `L` is closed
+  if the space is regular. -/
 theorem exists_compact_between [hX : LocallyCompactSpace X] {K U : Set X} (hK : IsCompact K)
     (hU : IsOpen U) (h_KU : K ⊆ U) : ∃ L, IsCompact L ∧ K ⊆ interior L ∧ L ⊆ U := by
   choose V hVc hxV hKV using fun x : K => exists_compact_subset hU (h_KU x.2)

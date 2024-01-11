@@ -21,7 +21,7 @@ open Lean Server RequestM
 
 /-- Code action to create a `calc` tactic from the current goal. -/
 @[tactic_code_action calcTactic]
-def createCalc : TacticCodeAction := fun params _snap ctx _stack node => do
+def createCalc : TacticCodeAction := fun _params _snap ctx _stack node => do
   let .node (.ofTacticInfo info) _ := node | return #[]
   if info.goalsBefore.isEmpty then return #[]
   let eager := {
@@ -37,7 +37,7 @@ def createCalc : TacticCodeAction := fun params _snap ctx _stack node => do
       let goal := info.goalsBefore[0]!
       let goalFmt ← ctx.runMetaM {} <| goal.withContext do Meta.ppExpr (← goal.getType)
       return { eager with
-        edit? := some <|.ofTextEdit params.textDocument.uri
+        edit? := some <|.ofTextEdit doc.versionedIdentifier
           { range := ⟨tacPos, endPos⟩, newText := s!"calc {goalFmt} := by sorry" }
       }
   }]

@@ -587,6 +587,12 @@ theorem coe_mul_rpow (x y : ℝ≥0) (z : ℝ) : ((x : ℝ≥0∞) * y) ^ z = (x
   mul_rpow_of_ne_top coe_ne_top coe_ne_top z
 #align ennreal.coe_mul_rpow ENNReal.coe_mul_rpow
 
+theorem prod_coe_rpow {ι} (s : Finset ι) (f : ι → ℝ≥0) (r : ℝ) :
+    ∏ i in s, (f i : ℝ≥0∞) ^ r = ((∏ i in s, f i : ℝ≥0) : ℝ≥0∞) ^ r := by
+  induction s using Finset.induction
+  case empty => simp
+  case insert i s hi ih => simp_rw [prod_insert hi, ih, ← coe_mul_rpow, coe_mul]
+
 theorem mul_rpow_of_ne_zero {x y : ℝ≥0∞} (hx : x ≠ 0) (hy : y ≠ 0) (z : ℝ) :
     (x * y) ^ z = x ^ z * y ^ z := by simp [*, mul_rpow_eq_ite]
 #align ennreal.mul_rpow_of_ne_zero ENNReal.mul_rpow_of_ne_zero
@@ -594,6 +600,21 @@ theorem mul_rpow_of_ne_zero {x y : ℝ≥0∞} (hx : x ≠ 0) (hy : y ≠ 0) (z 
 theorem mul_rpow_of_nonneg (x y : ℝ≥0∞) {z : ℝ} (hz : 0 ≤ z) : (x * y) ^ z = x ^ z * y ^ z := by
   simp [hz.not_lt, mul_rpow_eq_ite]
 #align ennreal.mul_rpow_of_nonneg ENNReal.mul_rpow_of_nonneg
+
+theorem prod_rpow_of_ne_top {ι} {s : Finset ι} {f : ι → ℝ≥0∞} (hf : ∀ i ∈ s, f i ≠ ∞) (r : ℝ) :
+    ∏ i in s, f i ^ r = (∏ i in s, f i) ^ r := by
+  induction s using Finset.induction
+  case empty => simp
+  case insert i s hi ih =>
+    have h2f : ∀ i ∈ s, f i ≠ ∞ := fun i hi ↦ hf i <| mem_insert_of_mem hi
+    rw [prod_insert hi, prod_insert hi, ih h2f, ← mul_rpow_of_ne_top <| hf i <| mem_insert_self ..]
+    apply prod_lt_top h2f |>.ne
+
+theorem prod_rpow_of_nonneg {ι} {s : Finset ι} {f : ι → ℝ≥0∞} {r : ℝ} (hr : 0 ≤ r) :
+    ∏ i in s, f i ^ r = (∏ i in s, f i) ^ r := by
+  induction s using Finset.induction
+  case empty => simp
+  case insert i s hi ih => simp_rw [prod_insert hi, ih, ← mul_rpow_of_nonneg _ _ hr]
 
 theorem inv_rpow (x : ℝ≥0∞) (y : ℝ) : x⁻¹ ^ y = (x ^ y)⁻¹ := by
   rcases eq_or_ne y 0 with (rfl | hy); · simp only [rpow_zero, inv_one]

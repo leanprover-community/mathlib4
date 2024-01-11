@@ -19,7 +19,7 @@ General-Valued CSP subsumes Min-Cost-Hom (including 3-SAT for example) and Finit
 * `ValuedCsp.Term.evalSolution`: An evaluation of the VCSP term for given solution.
 * `ValuedCsp.Instance`: An instance of a VCSP problem over given template.
 * `ValuedCsp.Instance.evalSolution`: An evaluation of the VCSP instance for given solution.
-* `ValuedCsp.Instance.OptimumSolution`: Is given solution a minimum of the VCSP instance?
+* `ValuedCsp.Instance.IsOptimumSolution`: Is given solution a minimum of the VCSP instance?
 
 ## References
 * [D. A. Cohen, M. C. Cooper, P. Creed, P. G. Jeavons, S. Živný,

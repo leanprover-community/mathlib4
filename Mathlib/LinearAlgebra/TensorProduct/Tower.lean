@@ -308,10 +308,13 @@ protected def rid : M ⊗[R] R ≃ₗ[A] M :=
 theorem rid_eq_rid : AlgebraTensorModule.rid R R M = TensorProduct.rid R M :=
   LinearEquiv.toLinearMap_injective <| TensorProduct.ext' fun _ _ => rfl
 
-variable {R M}
-
+variable {R M} in
 @[simp]
 theorem rid_tmul (r : R) (m : M) : AlgebraTensorModule.rid R A M (m ⊗ₜ r) = r • m := rfl
+
+variable {M} in
+@[simp]
+theorem rid_symm_apply (m : M) : (AlgebraTensorModule.rid R A M).symm m = m ⊗ₜ 1 := rfl
 
 end Semiring
 

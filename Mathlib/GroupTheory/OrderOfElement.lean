@@ -3,7 +3,7 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Julian Kuelshammer
 -/
-import Mathlib.Algebra.Hom.Iterate
+import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Data.Int.ModEq
 import Mathlib.Data.Set.Pointwise.Basic
 import Mathlib.Data.Set.Intervals.Infinite

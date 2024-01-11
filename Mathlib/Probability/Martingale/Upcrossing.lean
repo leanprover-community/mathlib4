@@ -321,7 +321,7 @@ theorem upperCrossingTime_bound_eq (f : ℕ → Ω → ℝ) (N : ℕ) (ω : Ω) 
       refine' strictMonoOn_Iic_of_lt_succ fun m hm => upperCrossingTime_lt_succ hab _
       rw [Nat.lt_pred_iff] at hm
       convert Nat.find_min _ hm
-    convert StrictMonoOn.Iic_id_le hmono N (Nat.le_pred_of_lt hN')
+    convert StrictMonoOn.Iic_id_le hmono N (Nat.le_sub_one_of_lt hN')
   · rw [not_lt] at hN'
     exact upperCrossingTime_stabilize hN' (Nat.find_spec (exists_upperCrossingTime_eq f N ω hab))
 #align measure_theory.upper_crossing_time_bound_eq MeasureTheory.upperCrossingTime_bound_eq

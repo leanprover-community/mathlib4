@@ -315,7 +315,7 @@ def idGroupoid (H : Type u) [TopologicalSpace H] : StructureGroupoid H where
     cases' he with he he
     · left
       have : e = e' := by
-        refine' eq_of_eq_on_source_univ (Setoid.symm he'e) _ _ <;>
+        refine' eq_of_eqOnSource_univ (Setoid.symm he'e) _ _ <;>
           rw [Set.mem_singleton_iff.1 he] <;> rfl
       rwa [← this]
     · right

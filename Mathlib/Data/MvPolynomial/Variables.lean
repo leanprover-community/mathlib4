@@ -348,7 +348,7 @@ theorem vars_mul [DecidableEq σ] (φ ψ : MvPolynomial σ R) : (φ * ψ).vars �
   cases hd
   rw [Finset.sum_eq_zero]
   rintro ⟨d₁, d₂⟩ H
-  rw [Finsupp.mem_antidiagonal] at H
+  rw [Finset.mem_antidiagonal] at H
   subst H
   obtain H | H : i ∈ d₁.support ∨ i ∈ d₂.support := by
     simpa only [Finset.mem_union] using Finsupp.support_add hi

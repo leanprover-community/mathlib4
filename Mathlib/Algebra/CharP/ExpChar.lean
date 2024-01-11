@@ -71,9 +71,9 @@ theorem char_zero_of_expChar_one (p : ℕ) [hp : CharP R p] [hq : ExpChar R 1] :
   · exact False.elim (CharP.char_ne_one R 1 rfl)
 #align char_zero_of_exp_char_one char_zero_of_expChar_one
 
--- see Note [lower instance priority]
+-- This could be an instance, but there are no `ExpChar R 1` instances in mathlib.
 /-- The characteristic is zero if the exponential characteristic is one. -/
-instance (priority := 100) charZero_of_expChar_one' [hq : ExpChar R 1] : CharZero R := by
+theorem charZero_of_expChar_one' [hq : ExpChar R 1] : CharZero R := by
   cases hq
   · assumption
   · exact False.elim (CharP.char_ne_one R 1 rfl)

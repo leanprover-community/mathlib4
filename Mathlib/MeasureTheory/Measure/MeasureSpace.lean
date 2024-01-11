@@ -418,8 +418,7 @@ theorem exists_nonempty_inter_of_measure_univ_lt_tsum_measure {m : MeasurableSpa
   contrapose! H
   apply tsum_measure_le_measure_univ hs
   intro i j hij
-  rw [Function.onFun, disjoint_iff_inf_le]
-  exact fun x hx => H i j hij ⟨x, hx⟩
+  exact disjoint_iff_inter_eq_empty.mpr (H i j hij)
 #align measure_theory.exists_nonempty_inter_of_measure_univ_lt_tsum_measure MeasureTheory.exists_nonempty_inter_of_measure_univ_lt_tsum_measure
 
 /-- Pigeonhole principle for measure spaces: if `s` is a `Finset` and
@@ -431,8 +430,7 @@ theorem exists_nonempty_inter_of_measure_univ_lt_sum_measure {m : MeasurableSpac
   contrapose! H
   apply sum_measure_le_measure_univ h
   intro i hi j hj hij
-  rw [Function.onFun, disjoint_iff_inf_le]
-  exact fun x hx => H i hi j hj hij ⟨x, hx⟩
+  exact disjoint_iff_inter_eq_empty.mpr (H i hi j hj hij)
 #align measure_theory.exists_nonempty_inter_of_measure_univ_lt_sum_measure MeasureTheory.exists_nonempty_inter_of_measure_univ_lt_sum_measure
 
 /-- If two sets `s` and `t` are included in a set `u`, and `μ s + μ t > μ u`,
@@ -3107,8 +3105,8 @@ attribute [simp] measure_singleton
 
 variable [NoAtoms μ]
 
-theorem _root_.Set.Subsingleton.measure_zero {α : Type*} {_m : MeasurableSpace α} {s : Set α}
-    (hs : s.Subsingleton) (μ : Measure α) [NoAtoms μ] : μ s = 0 :=
+theorem _root_.Set.Subsingleton.measure_zero (hs : s.Subsingleton) (μ : Measure α) [NoAtoms μ] :
+    μ s = 0 :=
   hs.induction_on (p := fun s => μ s = 0) measure_empty measure_singleton
 #align set.subsingleton.measure_zero Set.Subsingleton.measure_zero
 
@@ -3124,25 +3122,31 @@ instance Measure.restrict.instNoAtoms (s : Set α) : NoAtoms (μ.restrict s) := 
   apply measure_mono_null (inter_subset_left t s) ht2
 #align measure_theory.measure.restrict.has_no_atoms MeasureTheory.Measure.restrict.instNoAtoms
 
-theorem _root_.Set.Countable.measure_zero {α : Type*} {m : MeasurableSpace α} {s : Set α}
-    (h : s.Countable) (μ : Measure α) [NoAtoms μ] : μ s = 0 := by
+theorem _root_.Set.Countable.measure_zero (h : s.Countable) (μ : Measure α) [NoAtoms μ] :
+    μ s = 0 := by
   rw [← biUnion_of_singleton s, ← nonpos_iff_eq_zero]
   refine' le_trans (measure_biUnion_le h _) _
   simp
 #align set.countable.measure_zero Set.Countable.measure_zero
 
-theorem _root_.Set.Countable.ae_not_mem {α : Type*} {m : MeasurableSpace α} {s : Set α}
-    (h : s.Countable) (μ : Measure α) [NoAtoms μ] : ∀ᵐ x ∂μ, x ∉ s := by
+theorem _root_.Set.Countable.ae_not_mem (h : s.Countable) (μ : Measure α) [NoAtoms μ] :
+    ∀ᵐ x ∂μ, x ∉ s := by
   simpa only [ae_iff, Classical.not_not] using h.measure_zero μ
 #align set.countable.ae_not_mem Set.Countable.ae_not_mem
 
-theorem _root_.Set.Finite.measure_zero {α : Type*} {_m : MeasurableSpace α} {s : Set α}
-    (h : s.Finite) (μ : Measure α) [NoAtoms μ] : μ s = 0 :=
+lemma _root_.Set.Countable.measure_restrict_compl (h : s.Countable) (μ : Measure α) [NoAtoms μ] :
+    μ.restrict sᶜ = μ :=
+  restrict_eq_self_of_ae_mem <| h.ae_not_mem μ
+
+@[simp]
+lemma restrict_compl_singleton (a : α) : μ.restrict ({a}ᶜ) = μ :=
+  (countable_singleton _).measure_restrict_compl μ
+
+theorem _root_.Set.Finite.measure_zero (h : s.Finite) (μ : Measure α) [NoAtoms μ] : μ s = 0 :=
   h.countable.measure_zero μ
 #align set.finite.measure_zero Set.Finite.measure_zero
 
-theorem _root_.Finset.measure_zero {α : Type*} {_m : MeasurableSpace α} (s : Finset α)
-    (μ : Measure α) [NoAtoms μ] : μ s = 0 :=
+theorem _root_.Finset.measure_zero (s : Finset α) (μ : Measure α) [NoAtoms μ] : μ s = 0 :=
   s.finite_toSet.measure_zero μ
 #align finset.measure_zero Finset.measure_zero
 
@@ -3821,8 +3825,7 @@ theorem Measure.smul_finite (μ : Measure α) [IsFiniteMeasure μ] {c : ℝ≥0�
 
 theorem Measure.exists_isOpen_measure_lt_top [TopologicalSpace α] (μ : Measure α)
     [IsLocallyFiniteMeasure μ] (x : α) : ∃ s : Set α, x ∈ s ∧ IsOpen s ∧ μ s < ∞ := by
-  simpa only [exists_prop, and_assoc] using
-    (μ.finiteAt_nhds x).exists_mem_basis (nhds_basis_opens x)
+  simpa only [and_assoc] using (μ.finiteAt_nhds x).exists_mem_basis (nhds_basis_opens x)
 #align measure_theory.measure.exists_is_open_measure_lt_top MeasureTheory.Measure.exists_isOpen_measure_lt_top
 
 instance isLocallyFiniteMeasureSMulNNReal [TopologicalSpace α] (μ : Measure α)

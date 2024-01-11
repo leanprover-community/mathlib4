@@ -253,6 +253,11 @@ theorem piecewise_empty (f g : α →ₛ β) : piecewise ∅ MeasurableSet.empty
   coe_injective <| by simp; convert Set.piecewise_empty f g
 #align measure_theory.simple_func.piecewise_empty MeasureTheory.SimpleFunc.piecewise_empty
 
+@[simp]
+theorem piecewise_same (f : α →ₛ β) {s : Set α} (hs : MeasurableSet s) :
+    piecewise s hs f f = f :=
+  coe_injective <| Set.piecewise_same _ _
+
 theorem support_indicator [Zero β] {s : Set α} (hs : MeasurableSet s) (f : α →ₛ β) :
     Function.support (f.piecewise s hs (SimpleFunc.const α 0)) = s ∩ Function.support f :=
   Set.support_indicator
@@ -1312,7 +1317,7 @@ theorem _root_.Measurable.add_simpleFunc
   · simp only [SimpleFunc.const_zero, SimpleFunc.coe_piecewise, SimpleFunc.coe_const,
       SimpleFunc.coe_zero]
     change Measurable (g + s.piecewise (Function.const α c) (0 : α → E))
-    rw [← piecewise_same s g, ← piecewise_add]
+    rw [← s.piecewise_same g, ← piecewise_add]
     exact Measurable.piecewise hs (hg.add_const _) (hg.add_const _)
   · have : (g + ↑(f + f'))
         = (Function.support f).piecewise (g + (f : α → E)) (g + f') := by
@@ -1337,7 +1342,7 @@ theorem _root_.Measurable.simpleFunc_add
   · simp only [SimpleFunc.const_zero, SimpleFunc.coe_piecewise, SimpleFunc.coe_const,
       SimpleFunc.coe_zero]
     change Measurable (s.piecewise (Function.const α c) (0 : α → E) + g)
-    rw [← piecewise_same s g, ← piecewise_add]
+    rw [← s.piecewise_same g, ← piecewise_add]
     exact Measurable.piecewise hs (hg.const_add _) (hg.const_add _)
   · have : (↑(f + f') + g)
         = (Function.support f).piecewise ((f : α → E) + g) (f' + g) := by

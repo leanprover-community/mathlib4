@@ -16,6 +16,7 @@ on:
       - 'nolints'
       # ignore staging branch used by bors, this is handled by bors.yml
       - 'staging'
+  merge_group:
 
 name: continuous integration
 
@@ -185,7 +186,7 @@ jobs:
 
       - name: check for noisy stdout lines
         run: |
-          ! grep "stdout:" stdout.log
+          ! grep --after-context=1 "stdout:" stdout.log
 
       - name: build library_search cache
         run: lake build -KCI MathlibExtras
@@ -262,10 +263,7 @@ jobs:
         run: |
           git clone https://github.com/leanprover/lean4checker
           cd lean4checker
-          # Because `Lean4Checker/Tests/ReduceBool.lean` is non-deterministic (compiles only 1/4 of the time),
-          # we just keep rebuilding until it works!
-          # I'll try to come up with something better.
-          until lake build > /dev/null 2>&1; do :; done
+          lake build
           ./test.sh
           cd ..
           lake env lean4checker/build/bin/lean4checker

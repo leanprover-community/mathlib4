@@ -104,7 +104,7 @@ def extensiveCoverage [FinitaryPreExtensive C] : Coverage C where
       rcases hg with ⟨a⟩
       refine ⟨Z a, pullback.snd, π a, ?_, by rw [CategoryTheory.Limits.pullback.condition]⟩
       rw [hS]
-      refine Presieve.ofArrows.mk a
+      exact Presieve.ofArrows.mk a
 
 
 /-- The union of the extensive and regular coverages generates the coherent topology on `C`. -/

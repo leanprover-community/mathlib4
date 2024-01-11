@@ -147,7 +147,7 @@ theorem prod_add [DecidableEq α] (f g : α → β) (s : Finset α) :
           rw [prod_ite]
           congr 1
           exact prod_bij'
-            (fun a _ => a.1) (by simp; tauto) (by simp)
+            (fun a _ => a.1) (by simp) (by simp)
             (fun a ha => ⟨a, (mem_filter.1 ha).1⟩) (fun a ha => by simp at ha; simp; tauto)
             (by simp) (by simp)
           exact prod_bij'

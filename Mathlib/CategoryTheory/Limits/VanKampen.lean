@@ -85,7 +85,7 @@ theorem NatTrans.equifibered_of_discrete {ι : Type*} {F G : Discrete ι ⥤ C}
     (α : F ⟶ G) : NatTrans.Equifibered α := by
   rintro ⟨i⟩ ⟨j⟩ ⟨⟨rfl : i = j⟩⟩
   simp only [Discrete.functor_map_id]
-  refine IsPullback.of_horiz_isIso ⟨by rw [Category.id_comp, Category.comp_id]⟩
+  exact IsPullback.of_horiz_isIso ⟨by rw [Category.id_comp, Category.comp_id]⟩
 
 end NatTrans
 

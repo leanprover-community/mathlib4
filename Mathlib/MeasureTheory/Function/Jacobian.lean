@@ -243,7 +243,8 @@ theorem exists_closed_cover_approximatesLinearOn_of_hasFDerivWithinAt [SecondCou
   obtain ⟨q, hq⟩ : ∃ q, F q = (n, z, p) := hF _
   -- then `x` belongs to `t q`.
   apply mem_iUnion.2 ⟨q, _⟩
-  simp (config := { zeta := false }) only [hq, subset_closure hnz, hp, mem_inter_iff, and_true, hnz]
+  simp (config := { zeta := false }) only [K, hq, mem_inter_iff, hp, and_true]
+  exact subset_closure hnz
 #align exists_closed_cover_approximates_linear_on_of_has_fderiv_within_at exists_closed_cover_approximatesLinearOn_of_hasFDerivWithinAt
 
 variable [MeasurableSpace E] [BorelSpace E] (μ : Measure E) [IsAddHaarMeasure μ]

@@ -173,6 +173,12 @@ theorem isBounded_empty : IsBounded (∅ : Set α) := by
   exact univ_mem
 #align bornology.is_bounded_empty Bornology.isBounded_empty
 
+theorem nonempty_of_not_isBounded (h : ¬IsBounded s) : s.Nonempty := by
+  rw [nonempty_iff_ne_empty]
+  rintro rfl
+  exact h isBounded_empty
+#align metric.nonempty_of_unbounded Bornology.nonempty_of_not_isBounded
+
 @[simp]
 theorem isBounded_singleton : IsBounded ({x} : Set α) := by
   rw [isBounded_def]
