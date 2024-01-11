@@ -1638,38 +1638,22 @@ theorem isGLB_prod [Preorder α] [Preorder β] {s : Set (α × β)} (p : α × �
 
 lemma BddAbove.range_mono [Preorder β] {f : α → β} (g : α → β) (h : ∀ a, f a ≤ g a)
     (hbdd : BddAbove (Set.range g)) : BddAbove (Set.range f) := by
-  rw [bddAbove_def] at hbdd ⊢
   obtain ⟨C, hC⟩ := hbdd
-  refine ⟨C, fun y hy => ?_⟩
-  rw [Set.mem_range] at hy
-  obtain ⟨y', hy'⟩ := hy
-  calc y = f y'  := hy'.symm
-       _ ≤ g y'  := h _
-       _ ≤ C := hC (g y') (by simp)
+  use C
+  rintro - ⟨x, rfl⟩
+  exact (h x).trans (hC <| mem_range_self x)
 
 lemma BddBelow.range_mono [Preorder β] (f : α → β) {g : α → β} (h : ∀ a, f a ≤ g a)
     (hbdd : BddBelow (Set.range f)) : BddBelow (Set.range g) :=
   BddAbove.range_mono (β := OrderDual β) f h hbdd
 
 lemma BddAbove.range_comp {γ : Type*} [Preorder β] [Preorder γ] {f : α → β} {g : β → γ}
-    (hf : BddAbove (Set.range f)) (hg : Monotone g) : BddAbove (Set.range (fun x => g (f x))) := by
-  rw [bddAbove_def] at hf ⊢
-  obtain ⟨C, hC⟩ := hf
-  refine ⟨g C, fun y hy => ?_⟩
-  rw [Set.mem_range] at hy
-  obtain ⟨y', hy'⟩ := hy
-  calc y = g (f y') := hy'.symm
-      _ ≤ g C := hg <| hC (f y') <| Set.mem_range_self _
+    (hf : BddAbove (Set.range f)) (hg : Monotone g) : BddAbove (range (g ∘ f)) := by
+  simpa only [Set.range_comp] using hg.map_bddAbove hf
 
 lemma BddBelow.range_comp {γ : Type*} [Preorder β] [Preorder γ] {f : α → β} {g : β → γ}
-    (hf : BddBelow (Set.range f)) (hg : Monotone g) : BddBelow (Set.range (fun x => g (f x))) := by
-  rw [bddBelow_def] at hf ⊢
-  obtain ⟨C, hC⟩ := hf
-  refine ⟨g C, fun y hy => ?_⟩
-  rw [Set.mem_range] at hy
-  obtain ⟨y', hy'⟩ := hy
-  calc y = g (f y') := hy'.symm
-      _ ≥ g C := hg <| hC (f y') <| Set.mem_range_self _
+    (hf : BddBelow (Set.range f)) (hg : Monotone g) : BddBelow (range (g ∘ f)) := by
+  simpa only [Set.range_comp] using hg.map_bddBelow hf
 
 section ScottContinuous
 variable [Preorder α] [Preorder β] {f : α → β} {a : α}
