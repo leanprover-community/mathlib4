@@ -25,16 +25,16 @@ following equivalent conditions are met:
 - If `{ u_i }`, `{ v_j }` are `F`-bases for `A`, `B`, then the products `{ u_i * v_j }` are
   linearly independent over `F`.
 
-Our definition `IntermediateField.LinearlyDisjoint` is very closed to the second equivalent
+Our definition `IntermediateField.LinearDisjoint` is very closed to the second equivalent
 definition in the above.
 
 (<https://mathoverflow.net/questions/8324>) For two abstract fields `E` and `K` over `F`, they are
-called linearly disjoint over `F` (`LinearlyDisjoint F E K`), if `E ⊗[F] K` is a field.
+called linearly disjoint over `F` (`LinearDisjoint F E K`), if `E ⊗[F] K` is a field.
 In this case, it can be shown that at least one of `E / F` and `K / F` are algebraic, and if this
-holds, then it is equivalent to the above `IntermediateField.LinearlyDisjoint`.
+holds, then it is equivalent to the above `IntermediateField.LinearDisjoint`.
 
-The advantage of `LinearlyDisjoint` is that it is preserved under algebra isomorphisms, while for
-`IntermediateField.LinearlyDisjoint` this is not so easy to prove, in fact it's wrong if both of the
+The advantage of `LinearDisjoint` is that it is preserved under algebra isomorphisms, while for
+`IntermediateField.LinearDisjoint` this is not so easy to prove, in fact it's wrong if both of the
 extensions are not algebraic.
 
 ## Main definitions
@@ -76,25 +76,29 @@ variable (A B : IntermediateField F E)
 /-- Two intermediate fields `A` and `B` of `E / F` are called linearly disjoint, if any `F`-linearly
 independent subset of `A` remains linearly independent over `B`. Marked as `protected` because later
 we will define linearly disjoint for two abstract fields over a base field. -/
-protected def LinearlyDisjoint := ∀ {a : Set A}, LinearIndependent F (fun x : a ↦ x.1) →
+protected def LinearDisjoint := ∀ ⦃a : Set A⦄, LinearIndependent F (fun x : a ↦ x.1) →
     LinearIndependent B (fun x : a ↦ x.1.1)
 
-variable {A B}
+theorem linearDisjoint_iff :
+    A.LinearDisjoint B ↔ ∀ {a : Set A}, LinearIndependent F (fun x : a ↦ x.1) →
+      LinearIndependent B (fun x : a ↦ x.1.1) := Iff.rfl
 
 /-- In the definition of linearly disjoint, linearly independent subset of `A` can be replaced
 by its embedding into `E`. -/
-theorem linearlyDisjoint_def' :
-    A.LinearlyDisjoint B ↔ ∀ {a : Set A}, LinearIndependent F (fun x : a ↦ x.1.1) →
+theorem linearDisjoint_iff' :
+    A.LinearDisjoint B ↔ ∀ {a : Set A}, LinearIndependent F (fun x : a ↦ x.1.1) →
       LinearIndependent B (fun x : a ↦ x.1.1) := by
   have h {a : Set A} : LinearIndependent F (fun x : a ↦ x.1) ↔
       LinearIndependent F (fun x : a ↦ x.1.1) :=
     ⟨fun H ↦ H.map' A.val.toLinearMap (LinearMap.ker_eq_bot_of_injective A.val.injective),
       fun H ↦ H.of_comp A.val.toLinearMap⟩
-  simp_rw [IntermediateField.LinearlyDisjoint, h]
+  simp_rw [linearDisjoint_iff, h]
+
+variable {A B}
 
 /-- If `A` and `B` are linearly disjoint, then any `F`-linearly independent family on `A` remains
 linearly independent over `B`. -/
-theorem LinearlyDisjoint.linearIndependent_map (H : A.LinearlyDisjoint B)
+theorem LinearDisjoint.linearIndependent_map (H : A.LinearDisjoint B)
     {ιA : Type*} {vA : ιA → A} (hA : LinearIndependent F vA) :
     LinearIndependent B (A.val ∘ vA) :=
   (H hA.coe_range).comp (Set.rangeFactorization vA)
@@ -102,7 +106,7 @@ theorem LinearlyDisjoint.linearIndependent_map (H : A.LinearlyDisjoint B)
 
 /-- If `A` and `B` are linearly disjoint, then for a family on `A` which is `F`-linearly independent
 when embedded into `E`, it remains linearly independent over `B`. -/
-theorem LinearlyDisjoint.linearIndependent_map' (H : A.LinearlyDisjoint B)
+theorem LinearDisjoint.linearIndependent_map' (H : A.LinearDisjoint B)
     {ιA : Type*} {vA : ιA → A} (hA : LinearIndependent F (A.val ∘ vA)) :
     LinearIndependent B (A.val ∘ vA) :=
   H.linearIndependent_map (hA.of_comp A.val.toLinearMap)
@@ -159,8 +163,8 @@ private lemma test2 {a b : Type*} {v : a → b →₀ F} (H : LinearIndependent 
 
 /-- If there exists an `F`-basis of `A` which remains linearly independent over `B`, then
 `A` and `B` are linearly disjoint. -/
-theorem LinearlyDisjoint.of_basis_map {ιA : Type*} (bA : Basis ιA F A)
-    (H : LinearIndependent B (A.val ∘ bA)) : A.LinearlyDisjoint B := fun {a} ha ↦ by
+theorem LinearDisjoint.of_basis_map {ιA : Type*} (bA : Basis ιA F A)
+    (H : LinearIndependent B (A.val ∘ bA)) : A.LinearDisjoint B := fun a ha ↦ by
   replace ha := test2 F B <|
     ha.map' bA.repr.toLinearMap (LinearMap.ker_eq_bot_of_injective bA.repr.injective)
   letI : Algebra B B := Algebra.id B
@@ -191,7 +195,7 @@ theorem LinearlyDisjoint.of_basis_map {ιA : Type*} (bA : Basis ιA F A)
 
 /-- If `A` and `B` are linearly disjoint, then for any `F`-linearly independent families
 `{ u_i }`, `{ v_j }` of `A`, `B`, the products `{ u_i * v_j }` are linearly independent over `F`. -/
-theorem LinearlyDisjoint.linearIndependent_mul (H : A.LinearlyDisjoint B)
+theorem LinearDisjoint.linearIndependent_mul (H : A.LinearDisjoint B)
     {ιA ιB : Type*} {vA : ιA → A} {vB : ιB → B}
     (hA : LinearIndependent F vA)
     (hB : LinearIndependent F vB) :
@@ -207,9 +211,9 @@ theorem LinearlyDisjoint.linearIndependent_mul (H : A.LinearlyDisjoint B)
 
 /-- If there are `F`-bases `{ u_i }`, `{ v_j }` of `A`, `B`, such that the products
 `{ u_i * v_j }` are linearly independent over `F`, then `A` and `B` are linearly disjoint. -/
-theorem LinearlyDisjoint.of_basis_mul {ιA ιB : Type*} (bA : Basis ιA F A) (bB : Basis ιB F B)
+theorem LinearDisjoint.of_basis_mul {ιA ιB : Type*} (bA : Basis ιA F A) (bB : Basis ιB F B)
     (H : LinearIndependent F (fun x : ιA × ιB ↦ (bA x.1).1 * (bB x.2).1)) :
-    A.LinearlyDisjoint B := by
+    A.LinearDisjoint B := by
   refine of_basis_map bA ?_
   rw [linearIndependent_iff] at H ⊢
   intro l hl
@@ -237,35 +241,83 @@ private lemma test3 (K V : Type*) [DivisionRing K] [AddCommGroup V] [Module K V]
 
 /-- `A` and `B` are linearly disjoint if and only if for any `F`-linearly independent subsets
 `{ u_i }`, `{ v_j }` of `A`, `B`, the products `{ u_i * v_j }` are linearly independent over `F`. -/
-theorem linearlyDisjoint_iff_linearIndependent_mul_of_set :
-    A.LinearlyDisjoint B ↔ ∀ {a : Set A} {b : Set B}, LinearIndependent F (fun x : a ↦ x.1) →
+theorem linearDisjoint_iff_linearIndependent_mul_of_set :
+    A.LinearDisjoint B ↔ ∀ {a : Set A} {b : Set B}, LinearIndependent F (fun x : a ↦ x.1) →
       LinearIndependent F (fun y : b ↦ y.1) →
       LinearIndependent F (fun x : a × b ↦ x.1.1.1 * x.2.1.1) := by
   refine ⟨fun H _ _ hA hB ↦ H.linearIndependent_mul hA hB,
-    fun H ↦ LinearlyDisjoint.of_basis_mul (Basis.ofVectorSpace F A) (Basis.ofVectorSpace F B) ?_⟩
+    fun H ↦ LinearDisjoint.of_basis_mul (Basis.ofVectorSpace F A) (Basis.ofVectorSpace F B) ?_⟩
   simpa only [test3'] using H (test3 F A) (test3 F B)
 
 /-- Linearly disjoint is symmetric. -/
-theorem LinearlyDisjoint.symm (H : A.LinearlyDisjoint B) : B.LinearlyDisjoint A := by
-  rw [linearlyDisjoint_iff_linearIndependent_mul_of_set] at H ⊢
+theorem LinearDisjoint.symm (H : A.LinearDisjoint B) : B.LinearDisjoint A := by
+  rw [linearDisjoint_iff_linearIndependent_mul_of_set] at H ⊢
   intro a b ha hb
   rw [← linearIndependent_equiv (Equiv.prodComm b a)]
   convert H hb ha
   exact mul_comm _ _
 
 /-- Linearly disjoint is symmetric. -/
-theorem linearlyDisjoint_symm : A.LinearlyDisjoint B ↔ B.LinearlyDisjoint A :=
-  ⟨LinearlyDisjoint.symm, LinearlyDisjoint.symm⟩
+theorem linearDisjoint_symm : A.LinearDisjoint B ↔ B.LinearDisjoint A :=
+  ⟨LinearDisjoint.symm, LinearDisjoint.symm⟩
+
+variable (A) in
+theorem LinearDisjoint.of_bot_right : A.LinearDisjoint ⊥ := fun a ha ↦
+  ha.map_of_injective_injective (M' := E) (botEquiv F E) A.val
+    (fun _ _ ↦ (botEquiv F E).injective (by rwa [map_zero]))
+    (fun _ _ ↦ A.val.injective (by rwa [map_zero]))
+    (fun r _ ↦ by obtain ⟨x, h⟩ := r.2; simp_rw [Algebra.smul_def,
+      show r = algebraMap F _ x from SetCoe.ext h.symm, botEquiv_def]; rfl)
+
+variable (B) in
+theorem LinearDisjoint.of_bot_left : (⊥ : IntermediateField F E).LinearDisjoint B :=
+  LinearDisjoint.of_bot_right B |>.symm
+
+theorem LinearDisjoint.of_inclusion_right {B' : IntermediateField F E} (H : A.LinearDisjoint B)
+    (h : B' ≤ B) : A.LinearDisjoint B' := fun a ha ↦
+  (H ha).map_of_injective_injective (M' := E) (inclusion h)
+    (AddMonoidHom.id E) (fun _ _ ↦ (inclusion h).injective (by rwa [map_zero]))
+    (fun _ ↦ id) (fun _ _ ↦ rfl)
+
+theorem LinearDisjoint.of_inclusion_left {A' : IntermediateField F E} (H : A.LinearDisjoint B)
+    (h : A' ≤ A) : A'.LinearDisjoint B := H.symm.of_inclusion_right h |>.symm
+
+/-- If `A` and `B` are linearly disjoint, `A'` and `B'` are contained in `A` and `B`, respectively,
+then `A'` and `B'` are also linearly disjoint. -/
+theorem LinearDisjoint.of_inclusion {A' B' : IntermediateField F E} (H : A.LinearDisjoint B)
+    (hA : A' ≤ A) (hB : B' ≤ B) : A'.LinearDisjoint B' :=
+  H.of_inclusion_left hA |>.of_inclusion_right hB
+
+/-- If `A` and `B` are linearly disjoint over `F`, then their intersection is equal to `F`. -/
+theorem LinearDisjoint.inf_eq_bot (H : A.LinearDisjoint B) : A ⊓ B = ⊥ := bot_unique fun x hx ↦ by
+  have hxA := inf_le_left (a := A) (b := B) hx
+  replace H := not_imp_not.2 (H.linearIndependent_map (vA := ![1, ⟨x, hxA⟩]))
+  have : A.val ∘ ![1, ⟨x, hxA⟩] = ![1, x] := by ext i; fin_cases i <;> rfl
+  simp_rw [this, LinearIndependent.pair_iff, not_forall] at H
+  obtain ⟨s, t, h1, h2⟩ := H ⟨⟨-x, neg_mem <| inf_le_right (a := A) (b := B) hx⟩, 1,
+    by rw [one_smul, Algebra.smul_def, mul_one]; exact add_left_neg x, by simp⟩
+  apply_fun algebraMap A E at h1
+  simp_rw [Algebra.smul_def, mul_one, map_add, map_mul, map_zero] at h1
+  change algebraMap F E s + algebraMap F E t * x = 0 at h1
+  have : algebraMap F E t ≠ 0 := (_root_.map_ne_zero _).2 fun h ↦ h2
+    ⟨(algebraMap F E).injective (by rw [map_zero, ← h1, h, map_zero, zero_mul, add_zero]), h⟩
+  use -s / t
+  change algebraMap F E (-s / t) = _
+  rwa [map_div₀, map_neg, div_eq_iff this, neg_eq_iff_add_eq_zero, mul_comm]
+
+/-- If `A` and itself are linearly disjoint over `F`, then it is equal to `F`. -/
+theorem LinearDisjoint.eq_bot_of_self (H : A.LinearDisjoint A) : A = ⊥ :=
+  inf_of_le_left (le_refl A) ▸ H.inf_eq_bot
 
 end IntermediateField
 
 /-- Two abstract fields `E` and `K` over `F` are called linearly disjoint, if their tensor product
 over `F` is a field. -/
-def LinearlyDisjoint := IsField (E ⊗[F] K)
+def LinearDisjoint := IsField (E ⊗[F] K)
 
 set_option linter.unusedVariables false in
 variable {F E K} in
 /-- If two abstract fields `E` and `K` over `F` are linearly disjoint, then at least one of `E / F`
 and `K / F` are algebraic. -/
-proof_wanted LinearlyDisjoint.isAlgebraic (H : LinearlyDisjoint F E K) :
+proof_wanted LinearDisjoint.isAlgebraic (H : LinearDisjoint F E K) :
     Algebra.IsAlgebraic F E ∨ Algebra.IsAlgebraic F K
