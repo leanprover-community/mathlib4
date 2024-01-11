@@ -960,7 +960,98 @@ lemma α_mul (x y : (Spec (A⁰_ f)).presheaf.obj V) : α (m := m) (V := V) (x *
     ring_nf at eq1 ⊢
     exact eq1.symm
 
+example : true := rfl
+
+namespace isLocallyFraction
+
+abbrev U (V' : Opens (Spec.T (A⁰_ f))) : Opens Proj.T where
+  carrier := {x | ∃ x' ∈ φ ⁻¹' V'.1, x = x'.1}
+  is_open' := by
+    have ho1 := Homeomorph.isOpen_preimage (h := homeoOfIso (projIsoSpecTopComponent hm.out f_deg.out))
+      |>.mpr V'.2
+    rw [isOpen_induced_iff] at ho1
+    obtain ⟨o, ho1, (eq : _ = φ ⁻¹' V'.1)⟩ := ho1
+    simp_rw [← eq]
+    convert IsOpen.inter ho1 (pbo f).2 using 1
+    ext z; constructor
+    · rintro ⟨x, hx, rfl⟩; exact ⟨hx, x.2⟩
+    · rintro ⟨h1, h2⟩; exact ⟨⟨z, h2⟩, h1, rfl⟩
+
+def U.LE {V' : Opens (Spec.T (A⁰_ f))} (le : V' ⟶ V.unop) :
+    (U (m := m) V') ⟶
+    ((@Opens.openEmbedding Proj.T (pbo f)).isOpenMap.functor.op.obj <|
+      Opens.map φ |>.op.obj V).unop :=
+  homOfLE <| by rintro _ ⟨x, hx, rfl⟩; simpa using leOfHom le hx
+
+end isLocallyFraction
+
+set_option maxHeartbeats 300000 in
+lemma α_isLocallyFraction : isLocallyFraction 𝒜 |>.pred (α (m := m) s) := by
+  intro y
+  obtain ⟨V', ⟨(mem1 : φ _ ∈ V'), le, a, b, is_local⟩⟩ := s.2 ⟨φ ⟨y.1, _mem_pbo _⟩, _mem_V _⟩
+
+  obtain ⟨la, (hla : f^_ = _)⟩ := a.den_mem
+  obtain ⟨lb, (hlb : f^_ = _)⟩ := b.den_mem
+
+  refine ⟨isLocallyFraction.U (m := m) V', ⟨⟨⟨y.1, _mem_pbo _⟩, mem1, rfl⟩,
+    isLocallyFraction.U.LE le, a.deg + b.deg, ⟨a.num * f^lb, SetLike.mul_mem_graded a.num_mem_deg
+      (hlb ▸ b.den_mem_deg)⟩, ⟨b.num * f^la, add_comm a.deg _ ▸ SetLike.mul_mem_graded b.num_mem_deg
+      (hla ▸ a.den_mem_deg)⟩, fun z ↦ ?_⟩⟩
+
+  have z_mem_pbo : z.1 ∈ pbo f
+  · obtain ⟨⟨_, h1⟩, _, h2⟩ := z.2; rw [h2]; exact h1
+  have z_mem_V' : φ ⟨z.1, z_mem_pbo⟩ ∈ V'
+  · obtain ⟨z, ⟨_, h1, rfl⟩⟩ := z; exact h1
+  have z_mem_V : φ ⟨z.1, z_mem_pbo⟩ ∈ V.unop
+  · exact leOfHom le z_mem_V'
+  specialize is_local ⟨φ ⟨z.1, z_mem_pbo⟩, z_mem_V'⟩
+  obtain ⟨b_not_mem, (eq1 : s.1 ⟨φ _, _⟩ * _ = Localization.mk a 1)⟩ := is_local
+  change _ * Localization.mk b 1 =  _ at eq1
+  replace eq1 : s.1 ⟨φ ⟨z.1, z_mem_pbo⟩, z_mem_V⟩ =
+    (Localization.mk a ⟨b, b_not_mem⟩ : Localization.AtPrime _)
+  · rw [show Localization.mk a _ = Localization.mk a 1 * Localization.mk 1 _ by
+      rw [mk_mul, one_mul, mul_one], ← eq1, mul_assoc, mk_mul, one_mul, mul_one,
+      show Localization.mk b ⟨b, _⟩ = 1 from Localization.mk_self ⟨b, _⟩, mul_one]
+
+  fconstructor <;> dsimp only
+  · rw [mul_comm]
+    exact ProjIsoSpecTopComponent.ToSpec.pow_mul_num_not_mem_of_not_mem_carrier _ _ b_not_mem _
+
+  rw [HomogeneousLocalization.ext_iff_val, val_α, HomogeneousLocalization.val_mk'', mk_eq_mk_iff,
+    r_iff_exists]
+  rw [show s.1 ⟨φ ⟨z.1, z_mem_pbo⟩, z_mem_V⟩ =
+    eval (m := m) (V := V) s ⟨z.1, (isLocallyFraction.U.LE le z) |>.2⟩ from rfl,
+    eval_eq_num_div_den, mk_eq_mk_iff, r_iff_exists] at eq1
+  obtain ⟨⟨C, hC⟩, eq1⟩ := eq1
+  dsimp only at eq1 ⊢
+  simp only [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.mul_val] at eq1
+  simp only [HomogeneousLocalization.eq_num_div_den, mk_mul, Submonoid.mk_mul_mk] at eq1
+  rw [mk_eq_mk_iff, r_iff_exists] at eq1
+  obtain ⟨⟨_, ⟨M, rfl⟩⟩, eq1⟩ := eq1
+  dsimp only at eq1
+  rw [← hla, ←hlb] at eq1
+  refine ⟨⟨f^M * C.den * C.num, ?_⟩, ?_⟩
+  · rw [show C.den = f^_ from C.den_mem.choose_spec.symm, ← pow_add]
+    exact ProjIsoSpecTopComponent.ToSpec.pow_mul_num_not_mem_of_not_mem_carrier _ _ hC _
+  · dsimp only
+    ring_nf at eq1 ⊢
+    exact eq1
+
+def ringHom :
+    (Spec (A⁰_ f)).presheaf.obj V ⟶ (φ _* (Proj| (pbo f)).presheaf).obj V where
+  toFun s := ⟨α s, α_isLocallyFraction s⟩
+  map_one' := Subtype.ext α_one
+  map_mul' _ _ := Subtype.ext <| α_mul _ _
+  map_zero' := Subtype.ext α_zero
+  map_add' _ _ := Subtype.ext <| α_add _ _
+
 end FromSpec
+
+def fromSpec {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m) :
+    (Spec (A⁰_ f)).presheaf ⟶
+    (projIsoSpecTopComponent hm f_deg).hom  _* (Proj| (pbo f)).presheaf where
+  app V := FromSpec.ringHom (hm := ⟨hm⟩) (f_deg := ⟨f_deg⟩) (V := V)
+  naturality U V le := by aesop_cat
 
 end ProjIsoSpecSheafComponent
 
