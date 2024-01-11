@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kyle Miller
+Authors: Kyle Miller, Thomas R. Murrills
 -/
 import Std.Classes.SetNotation
 
@@ -164,3 +164,75 @@ open Lean Lean.PrettyPrinter.Delaborator
   let stx₁ ← SubExpr.withAppArg <| SubExpr.withNaryArg 3 delab
   let stx₂ ← SubExpr.withAppArg <| SubExpr.withNaryArg 4 delab
   return ← `($stx₁ ∉ $stx₂)
+
+/-!
+# Anonymous mvar suffixes
+
+The option `pp.anonymousMVarSuffixes` controls whether anonymous mvars are printed with numeric s
+suffixes. When `false`, all anonymous mvars are printed as `?m✝` (or in the case of universe mvars
+in `Sort` or `Type`, `?u✝`).
+
+Note that this does not handle universe mvars in constants.
+
+Note also that mvar names are not distinguished by superscripts as inaccessible fvars are: both
+`?m.1` and `?m.2` are delaborated to `?m✝`.
+-/
+
+/-- If false, do not use numeric suffixes to distinguish anonymous metavariables. E.g., `?m.1234`
+will instead be rendered as `?m✝`. -/
+register_option pp.anonymousMVarSuffixes : Bool := {
+  defValue := true
+  group    := "pp"
+  descr    := s!"(pretty printer) if false, do not use numeric suffixes to distinguish anonymous {
+              ""}metavariables. E.g., `?m.1234` will instead be rendered as `?m✝`."
+}
+
+/-- Get the value of the option `pp.anonymousMVarSuffixes`. -/
+def getPPAnonymousMVarSuffixes (o : Options) : Bool := o.get pp.anonymousMVarSuffixes.name true
+
+namespace Lean.Level
+
+/-- Exactly like `PP.toResult`, but uses `?u✝` in the `mvar` case. -/
+private def PP.toResultNoSuffix : Level → Result
+  | .zero       => Result.num 0
+  | .succ l     => Result.succ (toResult l)
+  | .max l₁ l₂  => Result.max (toResult l₁) (toResult l₂)
+  | .imax l₁ l₂ => Result.imax (toResult l₁) (toResult l₂)
+  | .param n    => Result.leaf n
+  | .mvar _     => Result.leaf (Name.mkSimple "?u✝")
+
+/-- Exactly like `Level.quote`, but uses `?u✝` for level mvars. -/
+private def quoteNoSuffix (u : Level) (prec : Nat := 0) : Syntax.Level :=
+  (PP.toResultNoSuffix u).quote prec
+
+end Lean.Level
+
+namespace Lean.PrettyPrinter.Delaborator
+
+open SubExpr
+
+/-- Delaborate `Sort`s/`Type`s without using numeric suffixes to distinguish between level mvars.
+E.g., `?u.1234` will instead be rendered as `?u✝`.
+
+Requires `set_option pp.anonymousMVarSuffxies false`. -/
+@[delab sort]
+def delabSortNoLevelSuffix : Delab := whenNotPPOption getPPAnonymousMVarSuffixes do
+  let Expr.sort l ← getExpr | unreachable!
+  match l with
+  | Level.zero => `(Prop)
+  | Level.succ .zero => `(Type)
+  | _ => match l.dec with
+    | some l' => `(Type $(Level.quoteNoSuffix l' max_prec))
+    | none    => `(Sort $(Level.quoteNoSuffix l max_prec))
+
+/-- Delaborate metavariables without using numeric suffixes to distinguish between anonymous mvars.
+E.g., `?m.1234` will instead be rendered as `?m✝`.
+
+Requires `set_option pp.anonymousMVarSuffxies false`. -/
+@[delab mvar]
+def delabMVarNoSuffix : Delab := whenNotPPOption getPPAnonymousMVarSuffixes do
+  let Expr.mvar mvarId ← getExpr | unreachable!
+  let n := match ← mvarId.getTag with
+    | .anonymous => Name.mkSimple "m✝"
+    | n => n
+  `(?$(mkIdent n))

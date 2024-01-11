@@ -2335,6 +2335,7 @@ import Mathlib.Init.Set
 import Mathlib.Init.ZeroOne
 import Mathlib.Lean.CoreM
 import Mathlib.Lean.Elab.Tactic.Basic
+import Mathlib.Lean.Elab.Tactic.ElabTerm
 import Mathlib.Lean.Elab.Term
 import Mathlib.Lean.EnvExtension
 import Mathlib.Lean.Exception
@@ -3415,6 +3416,7 @@ import Mathlib.Tactic.Recall
 import Mathlib.Tactic.Recover
 import Mathlib.Tactic.ReduceModChar
 import Mathlib.Tactic.ReduceModChar.Ext
+import Mathlib.Tactic.RefineFix
 import Mathlib.Tactic.Relation.Rfl
 import Mathlib.Tactic.Relation.Symm
 import Mathlib.Tactic.Relation.Trans
