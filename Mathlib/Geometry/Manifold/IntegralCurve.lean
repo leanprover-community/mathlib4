@@ -727,13 +727,10 @@ lemma exists_isIntegralCurve_of_isIntegralCurveOn [BoundarylessManifold I M]
   let s := {a | ∃ γ, γ 0 = x ∧ IsIntegralCurveOn γ v (Ioo (-a) a)}
   suffices hbdd : ¬BddAbove s by
     rw [not_bddAbove_iff] at hbdd
-    simp_rw [mem_setOf] at hbdd
     rw [exists_isIntegralCurve_iff_exists_isIntegralCurveOn_Ioo hv]
     intro a
     obtain ⟨⟨γ, hγ1, hγ2⟩, hlt⟩ := choose_spec (hbdd a)
-    refine ⟨γ, hγ1, hγ2.mono ?_⟩
-    apply Ioo_subset_Ioo <;>
-    simp [le_of_lt hlt]
+    exact ⟨γ, hγ1, hγ2.mono <| Ioo_subset_Ioo (neg_le_neg <| le_of_lt hlt) (le_of_lt hlt)⟩
   intro hbdd
   set asup := sSup s with hasup
   -- we will obtain two integral curves, one centred at some `t₀ > 0` with
