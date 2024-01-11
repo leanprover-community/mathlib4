@@ -467,10 +467,10 @@ lemma isOpen_image_of_subset_source {s : Set α} (hs : IsOpen s) (hse : s ⊆ e.
 #align local_homeomorph.image_open_of_open PartialHomeomorph.isOpen_image_of_subset_source
 
 /-- The image of the restriction of an open set to the source is open. -/
-theorem isOpen_image_source_inter_of_isOpen {s : Set α} (hs : IsOpen s) :
+theorem isOpen_image_source_inter {s : Set α} (hs : IsOpen s) :
     IsOpen (e '' (e.source ∩ s)) :=
   e.isOpen_image_of_subset_source (e.open_source.inter hs) (inter_subset_left _ _)
-#align local_homeomorph.image_open_of_open' PartialHomeomorph.isOpen_image_source_inter_of_isOpen
+#align local_homeomorph.image_open_of_open' PartialHomeomorph.isOpen_image_source_inter
 
 /-- The inverse of a partial homeomorphism `e` is an open map on `e.target`. -/
 lemma isOpen_image_symm_of_subset_target {t : Set β} (ht : IsOpen t) (hte : t ⊆ e.target) :
