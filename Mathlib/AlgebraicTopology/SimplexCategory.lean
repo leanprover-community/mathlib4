@@ -319,7 +319,7 @@ open Fin in
 lemma factor_δ_spec {m n : ℕ} (f : ([m] : SimplexCategory) ⟶ [n+1]) (j : Fin (n+2))
     (hj : ∀ (k : Fin (m+1)), f.toOrderHom k ≠ j) :
     factor_δ f j ≫ δ j = f :=
-  Hom.ext _ _ (OrderHom.ext _ _ (succAbove_comp_predAbove_predAbove_left_cancel hj))
+  Hom.ext _ _ (OrderHom.ext _ _ (succAbove_comp_predAbove_predAbove_left_cancel _ hj))
 
 end Generators
 
