@@ -862,7 +862,7 @@ theorem mk'_cancel (a : M) (b c : S) :
 
 @[to_additive]
 theorem eq₂ {a b} {d : S} :
-    f.mk' a d = f.mk' b d ↔ ∃ c : S, ↑c * a = c * b := by
+    f.mk' a d = f.mk' b d ↔ ∃ c : S, c * a = c * b := by
   rw [mk'_eq_iff_eq', map_mul, map_mul, ← eq_iff_exists f]
   exact (map_units f d).mul_left_inj
 
