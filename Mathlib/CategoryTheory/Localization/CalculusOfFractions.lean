@@ -291,7 +291,7 @@ lemma comp₀_rel {X Y Z : C} (z₁ : W.LeftFraction X Y) (z₂ : W.LeftFraction
   dsimp at fac
   have eq : z₁.s ≫ z₃.f ≫ z₄.f = z₁.s ≫ z₃'.f ≫ z₄.s := by
     rw [← reassoc_of% h₃, ← reassoc_of% h₃', fac]
-  obtain ⟨Y, t, ht, fac'⟩ := ext _ _ _ z₁.hs eq
+  obtain ⟨Y, t, ht, fac'⟩ := HasLeftCalculusOfFractions.ext _ _ _ z₁.hs eq
   simp only [assoc] at fac'
   refine' ⟨Y, z₄.f ≫ t, z₄.s ≫ t, _, _, _⟩
   · simp only [comp₀, assoc, reassoc_of% fac]
@@ -346,7 +346,7 @@ noncomputable def Hom.comp {X Y Z : C} (z₁ : Hom W X Y) (z₂ : Hom W Y Z) : H
     have eq : a.s ≫ z₁.f ≫ w₁.f ≫ u.f = a.s ≫ z₂.f ≫ w₂.f ≫ u.s := by
       rw [← reassoc_of% fac₁, ← reassoc_of% fac₂, ← reassoc_of% fac₁', ← reassoc_of% fac₂',
         reassoc_of% hft, fac₃]
-    obtain ⟨Z, p, hp, fac₄⟩ := ext _ _ _ a.hs eq
+    obtain ⟨Z, p, hp, fac₄⟩ := HasLeftCalculusOfFractions.ext _ _ _ a.hs eq
     simp only [assoc] at fac₄
     rw [comp_eq _ _ z₁ fac₁, comp_eq _ _ z₂ fac₂]
     apply Quot.sound
@@ -376,7 +376,7 @@ noncomputable def Hom.comp {X Y Z : C} (z₁ : Hom W X Y) (z₂ : Hom W Y Z) : H
     apply Quot.sound
     refine' LeftFractionRel.trans _ ((_ : LeftFractionRel p₁ p₂).trans _)
     · have eq : a₁.s ≫ z₁.f ≫ w₁.s = a₁.s ≫ t₁ ≫ w₁.f := by rw [← fac₁', reassoc_of% fac₁]
-      obtain ⟨Z, u, hu, fac₃⟩ := ext _ _ _ a₁.hs eq
+      obtain ⟨Z, u, hu, fac₃⟩ := HasLeftCalculusOfFractions.ext _ _ _ a₁.hs eq
       simp only [assoc] at fac₃
       refine' ⟨Z, w₁.s ≫ u, u, _, _, _⟩
       · dsimp
@@ -392,7 +392,7 @@ noncomputable def Hom.comp {X Y Z : C} (z₁ : Hom W X Y) (z₂ : Hom W Y Z) : H
       simp only [assoc] at fac₃
       have eq : a₁.s ≫ t₁ ≫ w₁.f ≫ q.f = a₁.s ≫ t₁ ≫ w₂.f ≫ q.s := by
         rw [← reassoc_of% fac₁', ← fac₃, reassoc_of% hst, reassoc_of% fac₂']
-      obtain ⟨Z, u, hu, fac₄⟩ := ext _ _ _ a₁.hs eq
+      obtain ⟨Z, u, hu, fac₄⟩ := HasLeftCalculusOfFractions.ext _ _ _ a₁.hs eq
       simp only [assoc] at fac₄
       refine' ⟨Z, q.f ≫ u, q.s ≫ u, _, _, _⟩
       · simp only [assoc, reassoc_of% fac₃]
@@ -402,7 +402,7 @@ noncomputable def Hom.comp {X Y Z : C} (z₁ : Hom W X Y) (z₂ : Hom W Y Z) : H
           (W.comp_mem _ _ w₂.hs (W.comp_mem _ _ q.hs hu)))
     · have eq : a₂.s ≫ z₂.f ≫ w₂.s = a₂.s ≫ t₂ ≫ w₂.f := by
         rw [← fac₂', reassoc_of% fac₂]
-      obtain ⟨Z, u, hu, fac₄⟩ := ext _ _ _ a₂.hs eq
+      obtain ⟨Z, u, hu, fac₄⟩ := HasLeftCalculusOfFractions.ext _ _ _ a₂.hs eq
       simp only [assoc] at fac₄
       refine' ⟨Z, u, w₂.s ≫ u, _, _, _⟩
       · dsimp
