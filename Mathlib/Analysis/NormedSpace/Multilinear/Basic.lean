@@ -94,7 +94,6 @@ We relate continuity of multilinear maps to the inequality `‖f m‖ ≤ C * �
 both directions. Along the way, we prove useful bounds on the difference `‖f m₁ - f m₂‖`.
 -/
 
-
 namespace MultilinearMap
 
 variable (f : MultilinearMap 𝕜 E G)
@@ -119,7 +118,7 @@ lemma zero_of_continuous_of_one_entry_norm_zero (hf : Continuous f)
      conv_lhs => rw[← one_smul 𝕜 (f m)]
      congr
      rw [← Finset.prod_erase_mul Finset.univ _ (Finset.mem_univ i),
-       Finset.prod_congr (s₂ := Finset.univ.erase i) rfl (f := c) (g := fun _ ↦ a⁻¹)
+       Finset.prod_congr (s₂ := Finset.univ.erase i) rfl (g := fun _ ↦ a⁻¹)
        (fun j hj ↦ by rw [Finset.mem_erase] at hj; simp only [hj.1, ite_false]),
        Finset.prod_const, Finset.card_erase_of_mem (Finset.mem_univ i), Finset.card_univ]
      simp only [ite_true]
