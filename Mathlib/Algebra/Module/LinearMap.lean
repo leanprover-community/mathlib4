@@ -374,7 +374,7 @@ protected theorem map_smulₛₗ (c : R) (x : M) : f (c • x) = σ c • f x :=
 #align linear_map.map_smulₛₗ LinearMap.map_smulₛₗ
 
 protected theorem map_smul (c : R) (x : M) : fₗ (c • x) = c • fₗ x :=
-  map_smul' fₗ c x
+  map_smul fₗ c x
 #align linear_map.map_smul LinearMap.map_smul
 
 protected theorem map_smul_inv {σ' : S →+* R} [RingHomInvPair σ σ'] (c : S) (x : M) :
