@@ -742,10 +742,9 @@ def lift : (A →ₙₐ[R] C) ≃ (Unitization R A →ₐ[R] C) where
   right_inv φ := Unitization.algHom_ext' <| by
     ext a
     unfold inrNonUnitalAlgHom
-    simp
-    rw [NonUnitalAlgHom.comp_apply]
-    simp only [NonUnitalAlgHom.coe_mk, NonUnitalAlgHom.toAlgHom_apply,
-      fst_inr, map_zero, snd_inr, zero_add]
+    simp only [AlgHom.toNonUnitalAlgHom_eq_coe, MonoidHom.coe_mk, OneHom.coe_mk,
+      NonUnitalAlgHom.coe_comp, NonUnitalAlgHom.coe_mk, Function.comp_apply,
+      NonUnitalAlgHom.toAlgHom_apply, fst_inr, map_zero, snd_inr, zero_add]
 #align unitization.lift Unitization.lift
 
 theorem lift_symm_apply_apply (φ : Unitization R A →ₐ[R] C) (a : A) :
