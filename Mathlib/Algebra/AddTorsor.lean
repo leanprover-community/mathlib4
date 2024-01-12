@@ -379,15 +379,13 @@ theorem coe_vaddConst_symm (p : P) : ⇑(vaddConst p).symm = fun p' => p' -ᵥ p
 
 /-- `p' ↦ p -ᵥ p'` as an equivalence. -/
 def constVSub (p : P) : P ≃ G where
-  toFun := (· -ᵥ ·) p
-  invFun v := -v +ᵥ p
+  toFun := (p -ᵥ ·)
+  invFun := (-· +ᵥ p)
   left_inv p' := by simp
   right_inv v := by simp [vsub_vadd_eq_vsub_sub]
 #align equiv.const_vsub Equiv.constVSub
 
-@[simp]
-theorem coe_constVSub (p : P) : ⇑(constVSub p) = (· -ᵥ ·) p :=
-  rfl
+@[simp] lemma coe_constVSub (p : P) : ⇑(constVSub p) = (p -ᵥ ·) := rfl
 #align equiv.coe_const_vsub Equiv.coe_constVSub
 
 @[simp]
@@ -399,15 +397,13 @@ variable (P)
 
 /-- The permutation given by `p ↦ v +ᵥ p`. -/
 def constVAdd (v : G) : Equiv.Perm P where
-  toFun := (· +ᵥ ·) v
-  invFun := (· +ᵥ ·) (-v)
+  toFun := (v +ᵥ ·)
+  invFun := (-v +ᵥ ·)
   left_inv p := by simp [vadd_vadd]
   right_inv p := by simp [vadd_vadd]
 #align equiv.const_vadd Equiv.constVAdd
 
-@[simp]
-theorem coe_constVAdd (v : G) : ⇑(constVAdd P v) = (· +ᵥ ·) v :=
-  rfl
+@[simp] lemma coe_constVAdd (v : G) : ⇑(constVAdd P v) = (v +ᵥ ·) := rfl
 #align equiv.coe_const_vadd Equiv.coe_constVAdd
 
 variable (G)

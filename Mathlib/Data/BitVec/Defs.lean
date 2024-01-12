@@ -58,9 +58,11 @@ namespace Std.BitVec
 /-! ### Arithmetic operators -/
 
 #align bitvec.neg Std.BitVec.neg
-/-- Add with carry (no overflow) -/
-def adc {n} (x y : BitVec n) (c : Bool) : BitVec (n+1) :=
-  ofFin (x.toNat + y.toNat + c.toNat)
+/-- Add with carry (no overflow)
+
+See also `Std.BitVec.adc`, which stores the carry bit separately. -/
+def adc' {n} (x y : BitVec n) (c : Bool) : BitVec (n+1) :=
+  let a := x.adc y c; .cons a.1 a.2
 #align bitvec.adc Std.BitVec.adc
 
 #align bitvec.add Std.BitVec.add
@@ -137,5 +139,11 @@ def toLEList (x : BitVec w) : List Bool :=
 -/
 def toBEList (x : BitVec w) : List Bool :=
   List.ofFn x.getMsb'
+
+instance : SMul ℕ (BitVec w) := ⟨fun x y => ofFin <| x • y.toFin⟩
+instance : SMul ℤ (BitVec w) := ⟨fun x y => ofFin <| x • y.toFin⟩
+instance : Pow (BitVec w) ℕ  := ⟨fun x n => ofFin <| x.toFin ^ n⟩
+instance : NatCast (BitVec w) := ⟨BitVec.ofNat w⟩
+instance : IntCast (BitVec w) := ⟨BitVec.ofInt w⟩
 
 end Std.BitVec

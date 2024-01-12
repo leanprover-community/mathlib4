@@ -261,7 +261,7 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
     In this proof, we use explicit coercions `↑s` for `s : A` as otherwise the system tries to find
     a `CoeFun` instance on `↥A`, which is too costly.
     -/
-  by_contra' h
+  by_contra! h
   -- We will formulate things in terms of the type of countable subsets of `α`, as this is more
   -- convenient to formalize the inductive construction.
   let A : Set (Set α) := {t | t.Countable}
@@ -287,8 +287,7 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
     refine' ⟨t, fun u => _⟩
     calc
       f (↑u \ ↑s) ≤ S := le_ciSup B _
-      _ = 2 * (S / 2) := by ring
-      _ ≤ 2 * f (↑t \ ↑s) := mul_le_mul_of_nonneg_left ht.le (by norm_num)
+      _ ≤ 2 * f (↑t \ ↑s) := (div_le_iff' two_pos).1 ht.le
   choose! F hF using this
   -- iterate the above construction, by adding at each step a set with measure close to maximal in
   -- the complement of already chosen points. This is the set `s n` at step `n`.
@@ -570,9 +569,9 @@ theorem countable_ne (Hcont : #ℝ = aleph 1) (φ : (DiscreteCopy ℝ →ᵇ ℝ
     {x | φ.toBoundedAdditiveMeasure.continuousPart univ ≠ φ (f Hcont x)} ⊆
       {x | φ.toBoundedAdditiveMeasure.discreteSupport ∩ spf Hcont x ≠ ∅} := by
     intro x hx
+    simp only [mem_setOf] at *
     contrapose! hx
-    simp only [Classical.not_not, mem_setOf_eq, not_nonempty_iff_eq_empty] at hx
-    simp [apply_f_eq_continuousPart Hcont φ x hx]
+    exact apply_f_eq_continuousPart Hcont φ x hx |>.symm
   have B :
     {x | φ.toBoundedAdditiveMeasure.discreteSupport ∩ spf Hcont x ≠ ∅} ⊆
       ⋃ y ∈ φ.toBoundedAdditiveMeasure.discreteSupport, {x | y ∈ spf Hcont x} := by

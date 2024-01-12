@@ -94,7 +94,7 @@ theorem ext : (∀ i j, M i j = N i j) → M = N :=
 -- and restore the `@[ext]` attribute on `Matrix.ext` above.
 @[ext]
 theorem ext' : (∀ i, M i = N i) → M = N :=
-  fun h => Matrix.ext <| fun i => by simp[h]
+  fun h => Matrix.ext fun i => by simp[h]
 
 end Ext
 
@@ -588,7 +588,7 @@ instance instAddMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (Matrix n
   natCast_zero := show diagonal _ = _ by
     rw [Nat.cast_zero, diagonal_zero]
   natCast_succ n := show diagonal _ = diagonal _ + _ by
-    rw [Nat.cast_succ, ←diagonal_add, diagonal_one]
+    rw [Nat.cast_succ, ← diagonal_add, diagonal_one]
 
 instance instAddGroupWithOne [AddGroupWithOne α] : AddGroupWithOne (Matrix n n α) where
   intCast_ofNat n := show diagonal _ = diagonal _ by
@@ -849,21 +849,21 @@ variable [DecidableEq m] [NonUnitalNonAssocSemiring α] (u v w : m → α)
 
 @[simp]
 theorem diagonal_dotProduct (i : m) : diagonal v i ⬝ᵥ w = v i * w i := by
-  have : ∀ (j) (_ : j ≠ i), diagonal v i j * w j = 0 := fun j hij => by
+  have : ∀ j ≠ i, diagonal v i j * w j = 0 := fun j hij => by
     simp [diagonal_apply_ne' _ hij]
   convert Finset.sum_eq_single i (fun j _ => this j) _ using 1 <;> simp
 #align matrix.diagonal_dot_product Matrix.diagonal_dotProduct
 
 @[simp]
 theorem dotProduct_diagonal (i : m) : v ⬝ᵥ diagonal w i = v i * w i := by
-  have : ∀ (j) (_ : j ≠ i), v j * diagonal w i j = 0 := fun j hij => by
+  have : ∀ j ≠ i, v j * diagonal w i j = 0 := fun j hij => by
     simp [diagonal_apply_ne' _ hij]
   convert Finset.sum_eq_single i (fun j _ => this j) _ using 1 <;> simp
 #align matrix.dot_product_diagonal Matrix.dotProduct_diagonal
 
 @[simp]
 theorem dotProduct_diagonal' (i : m) : (v ⬝ᵥ fun j => diagonal w j i) = v i * w i := by
-  have : ∀ (j) (_ : j ≠ i), v j * diagonal w j i = 0 := fun j hij => by
+  have : ∀ j ≠ i, v j * diagonal w j i = 0 := fun j hij => by
     simp [diagonal_apply_ne _ hij]
   convert Finset.sum_eq_single i (fun j _ => this j) _ using 1 <;> simp
 #align matrix.dot_product_diagonal' Matrix.dotProduct_diagonal'
@@ -871,7 +871,7 @@ theorem dotProduct_diagonal' (i : m) : (v ⬝ᵥ fun j => diagonal w j i) = v i 
 @[simp]
 theorem single_dotProduct (x : α) (i : m) : Pi.single i x ⬝ᵥ v = x * v i := by
   -- Porting note: (implicit arg) added `(f := fun _ => α)`
-  have : ∀ (j) (_ : j ≠ i), Pi.single (f := fun _ => α) i x j * v j = 0 := fun j hij => by
+  have : ∀ j ≠ i, Pi.single (f := fun _ => α) i x j * v j = 0 := fun j hij => by
     simp [Pi.single_eq_of_ne hij]
   convert Finset.sum_eq_single i (fun j _ => this j) _ using 1 <;> simp
 #align matrix.single_dot_product Matrix.single_dotProduct
@@ -879,7 +879,7 @@ theorem single_dotProduct (x : α) (i : m) : Pi.single i x ⬝ᵥ v = x * v i :=
 @[simp]
 theorem dotProduct_single (x : α) (i : m) : v ⬝ᵥ Pi.single i x = v i * x := by
   -- Porting note: (implicit arg) added `(f := fun _ => α)`
-  have : ∀ (j) (_ : j ≠ i), v j * Pi.single (f := fun _ => α) i x j = 0 := fun j hij => by
+  have : ∀ j ≠ i, v j * Pi.single (f := fun _ => α) i x j = 0 := fun j hij => by
     simp [Pi.single_eq_of_ne hij]
   convert Finset.sum_eq_single i (fun j _ => this j) _ using 1 <;> simp
 #align matrix.dot_product_single Matrix.dotProduct_single
@@ -1104,12 +1104,12 @@ def addMonoidHomMulRight [Fintype m] (M : Matrix m n α) : Matrix l m α →+ Ma
 
 protected theorem sum_mul [Fintype m] (s : Finset β) (f : β → Matrix l m α) (M : Matrix m n α) :
     (∑ a in s, f a) * M = ∑ a in s, f a * M :=
-  (addMonoidHomMulRight M : Matrix l m α →+ _).map_sum f s
+  map_sum (addMonoidHomMulRight M) f s
 #align matrix.sum_mul Matrix.sum_mul
 
 protected theorem mul_sum [Fintype m] (s : Finset β) (f : β → Matrix m n α) (M : Matrix l m α) :
     (M * ∑ a in s, f a) = ∑ a in s, M * f a :=
-  (addMonoidHomMulLeft M : Matrix m n α →+ _).map_sum f s
+  map_sum (addMonoidHomMulLeft M) f s
 #align matrix.mul_sum Matrix.mul_sum
 
 /-- This instance enables use with `smul_mul_assoc`. -/
@@ -1287,7 +1287,7 @@ theorem scalar_inj [Nonempty n] {r s : α} : scalar n r = scalar n s ↔ r = s :
 theorem scalar_commute [Fintype n] [DecidableEq n] (r : α) (hr : ∀ r', Commute r r')
     (M : Matrix n n α) :
     Commute (scalar n r) M := by
-  simp_rw [Commute, SemiconjBy, scalar_apply, ←smul_eq_diagonal_mul, ←op_smul_eq_mul_diagonal]
+  simp_rw [Commute, SemiconjBy, scalar_apply, ← smul_eq_diagonal_mul, ← op_smul_eq_mul_diagonal]
   ext i j'
   exact hr _
 #align matrix.scalar.commute Matrix.scalar_commuteₓ
@@ -1703,6 +1703,11 @@ def mulVec.addMonoidHomLeft [Fintype n] (v : n → α) : Matrix m n α →+ m �
     apply add_dotProduct
 #align matrix.mul_vec.add_monoid_hom_left Matrix.mulVec.addMonoidHomLeft
 
+/-- The `i`th row of the multiplication is the same as the `vecMul` with the `i`th row of `A`. -/
+theorem mul_apply_eq_vecMul [Fintype n] (A : Matrix m n α) (B : Matrix n o α) (i : m) :
+    (A * B) i = vecMul (A i) B :=
+  rfl
+
 theorem mulVec_diagonal [Fintype m] [DecidableEq m] (v w : m → α) (x : m) :
     mulVec (diagonal v) w x = v x * w x :=
   diagonal_dotProduct v w x
@@ -2068,7 +2073,7 @@ theorem transpose_multiset_sum [AddCommMonoid α] (s : Multiset (Matrix m n α))
 
 theorem transpose_sum [AddCommMonoid α] {ι : Type*} (s : Finset ι) (M : ι → Matrix m n α) :
     (∑ i in s, M i)ᵀ = ∑ i in s, (M i)ᵀ :=
-  (transposeAddEquiv m n α).toAddMonoidHom.map_sum _ s
+  map_sum (transposeAddEquiv m n α) _ s
 #align matrix.transpose_sum Matrix.transpose_sum
 
 variable (m n R α)
@@ -2167,7 +2172,7 @@ theorem conjTranspose_zero [AddMonoid α] [StarAddMonoid α] : (0 : Matrix m n �
 @[simp]
 theorem conjTranspose_eq_zero [AddMonoid α] [StarAddMonoid α] {M : Matrix m n α} :
     Mᴴ = 0 ↔ M = 0 :=
-  by rw [←conjTranspose_inj (A := M), conjTranspose_zero]
+  by rw [← conjTranspose_inj (A := M), conjTranspose_zero]
 
 @[simp]
 theorem conjTranspose_one [DecidableEq n] [Semiring α] [StarRing α] : (1 : Matrix n n α)ᴴ = 1 := by
@@ -2325,7 +2330,7 @@ theorem conjTranspose_multiset_sum [AddCommMonoid α] [StarAddMonoid α]
 
 theorem conjTranspose_sum [AddCommMonoid α] [StarAddMonoid α] {ι : Type*} (s : Finset ι)
     (M : ι → Matrix m n α) : (∑ i in s, M i)ᴴ = ∑ i in s, (M i)ᴴ :=
-  (conjTransposeAddEquiv m n α).toAddMonoidHom.map_sum _ s
+  map_sum (conjTransposeAddEquiv m n α) _ s
 #align matrix.conj_transpose_sum Matrix.conjTranspose_sum
 
 variable (m n R α)

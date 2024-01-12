@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp
 -/
 import Mathlib.Analysis.InnerProductSpace.PiL2
+import Mathlib.LinearAlgebra.Matrix.ZPow
 
 #align_import linear_algebra.matrix.hermitian from "leanprover-community/mathlib"@"caa58cbf5bfb7f81ccbaca4e8b8ac4bc2b39cc1c"
 
@@ -130,12 +131,17 @@ section AddMonoid
 
 variable [AddMonoid α] [StarAddMonoid α] [AddMonoid β] [StarAddMonoid β]
 
-/-- A diagonal matrix is hermitian if the entries are self-adjoint -/
+/-- A diagonal matrix is hermitian if the entries are self-adjoint (as a vector) -/
 theorem isHermitian_diagonal_of_self_adjoint [DecidableEq n] (v : n → α) (h : IsSelfAdjoint v) :
     (diagonal v).IsHermitian :=
   (-- TODO: add a `pi.has_trivial_star` instance and remove the `funext`
         diagonal_conjTranspose v).trans <| congr_arg _ h
 #align matrix.is_hermitian_diagonal_of_self_adjoint Matrix.isHermitian_diagonal_of_self_adjoint
+
+/-- A diagonal matrix is hermitian if each diagonal entry is self-adjoint -/
+lemma isHermitian_diagonal_iff [DecidableEq n]{d : n → α} :
+    IsHermitian (diagonal d) ↔ (∀ i : n, IsSelfAdjoint (d i)) := by
+  simp [isSelfAdjoint_iff, IsHermitian, conjTranspose, diagonal_transpose, diagonal_map]
 
 /-- A diagonal matrix is hermitian if the entries have the trivial `star` operation
 (such as on the reals). -/
@@ -215,6 +221,10 @@ theorem isHermitian_mul_mul_conjTranspose [Fintype m] {A : Matrix m m α} (B : M
   simp only [IsHermitian, conjTranspose_mul, conjTranspose_conjTranspose, hA.eq, Matrix.mul_assoc]
 #align matrix.is_hermitian_mul_mul_conj_transpose Matrix.isHermitian_mul_mul_conjTranspose
 
+lemma commute_iff [Fintype n] {A B : Matrix n n α}
+    (hA : A.IsHermitian) (hB : B.IsHermitian) : Commute A B ↔ (A * B).IsHermitian :=
+  hA.isSelfAdjoint.commute_iff hB.isSelfAdjoint
+
 end NonUnitalSemiring
 
 section Semiring
@@ -227,6 +237,9 @@ require `Fintype n`, which is necessary for `Monoid (Matrix n n R)`. -/
 theorem isHermitian_one [DecidableEq n] : (1 : Matrix n n α).IsHermitian :=
   conjTranspose_one
 #align matrix.is_hermitian_one Matrix.isHermitian_one
+
+theorem IsHermitian.pow [Fintype n] [DecidableEq n] {A : Matrix n n α} (h : A.IsHermitian) (k : ℕ) :
+    (A ^ k).IsHermitian := IsSelfAdjoint.pow h _
 
 end Semiring
 
@@ -247,6 +260,12 @@ theorem isHermitian_inv [Fintype m] [DecidableEq m] (A : Matrix m m α) [Inverti
 theorem IsHermitian.adjugate [Fintype m] [DecidableEq m] {A : Matrix m m α} (hA : A.IsHermitian) :
     A.adjugate.IsHermitian := by simp [IsHermitian, adjugate_conjTranspose, hA.eq]
 #align matrix.is_hermitian.adjugate Matrix.IsHermitian.adjugate
+
+/-- Note that `IsSelfAdjoint.zpow` does not apply to matrices as they are not a division ring. -/
+theorem IsHermitian.zpow [Fintype m] [DecidableEq m] {A : Matrix m m α} (h : A.IsHermitian)
+    (k : ℤ) :
+    (A ^ k).IsHermitian := by
+  rw [IsHermitian, conjTranspose_zpow, h]
 
 end CommRing
 

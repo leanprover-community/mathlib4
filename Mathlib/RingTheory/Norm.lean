@@ -331,6 +331,43 @@ theorem isIntegral_norm [Algebra R L] [Algebra R K] [IsScalarTower R K L] [IsSep
   · apply IsAlgClosed.splits_codomain
 #align algebra.is_integral_norm Algebra.isIntegral_norm
 
+lemma norm_eq_of_algEquiv [Ring T] [Algebra R T] (e : S ≃ₐ[R] T) (x) :
+    Algebra.norm R (e x) = Algebra.norm R x := by
+  simp_rw [Algebra.norm_apply, ← LinearMap.det_conj _ e.toLinearEquiv]; congr; ext; simp
+
+lemma norm_eq_of_ringEquiv {A B C : Type*} [CommRing A] [CommRing B] [Ring C]
+    [Algebra A C] [Algebra B C] (e : A ≃+* B) (he : (algebraMap B C).comp e = algebraMap A C)
+    (x : C) :
+    e (Algebra.norm A x) = Algebra.norm B x := by
+  classical
+  by_cases h : ∃ s : Finset C, Nonempty (Basis s B C)
+  · obtain ⟨s, ⟨b⟩⟩ := h
+    letI : Algebra A B := RingHom.toAlgebra e
+    letI : IsScalarTower A B C := IsScalarTower.of_algebraMap_eq' he.symm
+    rw [Algebra.norm_eq_matrix_det b,
+      Algebra.norm_eq_matrix_det (b.mapCoeffs e.symm (by simp [Algebra.smul_def, ← he])),
+      e.map_det]
+    congr
+    ext i j
+    simp [leftMulMatrix_apply, LinearMap.toMatrix_apply]
+  rw [norm_eq_one_of_not_exists_basis _ h, norm_eq_one_of_not_exists_basis, _root_.map_one]
+  intro ⟨s, ⟨b⟩⟩
+  exact h ⟨s, ⟨b.mapCoeffs e (by simp [Algebra.smul_def, ← he])⟩⟩
+
+lemma norm_eq_of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [CommRing A₁] [Ring B₁]
+    [CommRing A₂] [Ring B₂] [Algebra A₁ B₁] [Algebra A₂ B₂] (e₁ : A₁ ≃+* A₂) (e₂ : B₁ ≃+* B₂)
+    (he : RingHom.comp (algebraMap A₂ B₂) ↑e₁ = RingHom.comp ↑e₂ (algebraMap A₁ B₁)) (x) :
+    Algebra.norm A₁ x = e₁.symm (Algebra.norm A₂ (e₂ x)) := by
+  letI := (RingHom.comp (e₂ : B₁ →+* B₂) (algebraMap A₁ B₁)).toAlgebra' ?_
+  let e' : B₁ ≃ₐ[A₁] B₂ := { e₂ with commutes' := fun _ ↦ rfl }
+  rw [← Algebra.norm_eq_of_ringEquiv e₁ he, ← Algebra.norm_eq_of_algEquiv e',
+    RingEquiv.symm_apply_apply]
+  rfl
+  intros c x
+  apply e₂.symm.injective
+  simp only [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply, _root_.map_mul,
+    RingEquiv.symm_apply_apply, commutes]
+
 variable {F} (L)
 
 -- TODO. Generalize this proof to rings

@@ -29,7 +29,7 @@ theorem le_mul_ciInf [CovariantClass α α (· * ·) (· ≤ ·)] {a : α} {g : 
 @[to_additive]
 theorem mul_ciSup_le [CovariantClass α α (· * ·) (· ≤ ·)] {a : α} {g : α} {h : ι → α}
     (H : ∀ j, g * h j ≤ a) : g * iSup h ≤ a :=
-  @le_mul_ciInf αᵒᵈ _ _ _ _ _ _ _ _ H
+  le_mul_ciInf (α := αᵒᵈ) H
 #align mul_csupr_le mul_ciSup_le
 #align add_csupr_le add_ciSup_le
 
@@ -43,7 +43,7 @@ theorem le_ciInf_mul [CovariantClass α α (Function.swap (· * ·)) (· ≤ ·)
 @[to_additive]
 theorem ciSup_mul_le [CovariantClass α α (Function.swap (· * ·)) (· ≤ ·)] {a : α} {g : ι → α}
     {h : α} (H : ∀ i, g i * h ≤ a) : iSup g * h ≤ a :=
-  @le_ciInf_mul αᵒᵈ _ _ _ _ _ _ _ _ H
+  le_ciInf_mul (α := αᵒᵈ) H
 #align csupr_mul_le ciSup_mul_le
 #align csupr_add_le ciSup_add_le
 

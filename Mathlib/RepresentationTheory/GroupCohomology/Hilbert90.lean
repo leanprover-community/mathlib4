@@ -76,14 +76,14 @@ theorem hilbert90 (f : (L ≃ₐ[K] L) → Lˣ)
     ∃ β : Lˣ, ∀ g : (L ≃ₐ[K] L), f g * Units.map g β = β := by
 /- Let `z : L` be such that `∑ f(h) * h(z) ≠ 0`, for `h ∈ Aut_K(L)` -/
   obtain ⟨z, hz⟩ : ∃ z, aux K L f z ≠ 0 :=
-    not_forall.1 (fun H => aux_ne_zero K L f $ funext $ fun x => H x)
+    not_forall.1 (fun H => aux_ne_zero K L f <| funext fun x => H x)
   have : aux K L f z = ∑ h, f h * h z := by simp [aux, Finsupp.total, Finsupp.sum_fintype]
 /- Let `β = ∑ f(h) * h(z).` -/
   use Units.mk0 (aux K L f z) hz
   intro g
 /- Then the equality follows from the hypothesis `hf` (that `f` is a 1-cocycle). -/
   simp_rw [Units.ext_iff, this, Units.val_mul, Units.coe_map, Units.val_mk0, MonoidHom.coe_coe,
-    map_sum, map_mul, Finset.mul_sum, ←mul_assoc, mul_comm (f _ : L), ←hf, mul_comm (f _ : L)]
+    map_sum, map_mul, Finset.mul_sum, ← mul_assoc, mul_comm (f _ : L), ← hf, mul_comm (f _ : L)]
   exact Fintype.sum_bijective (fun i => g * i) (Group.mulLeft_bijective g) _ _ (fun i => rfl)
 
 end

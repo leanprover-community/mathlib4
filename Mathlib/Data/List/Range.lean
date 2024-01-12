@@ -243,7 +243,7 @@ section Ranges
 * Example: `[1,2,3].ranges = [[0],[1,2],[3,4,5]]` -/
 def ranges : List ℕ → List (List ℕ)
   | [] => nil
-  | a::l => range a::(ranges l).map (map (Nat.add a))
+  | a::l => range a::(ranges l).map (map (a + ·))
 
 /-- The members of `l.ranges` are pairwise disjoint -/
 theorem ranges_disjoint (l : List ℕ) :
@@ -287,7 +287,6 @@ theorem ranges_join (l : List ℕ) :
     simp only [sum_cons, join]
     rw [← map_join, hl]
     rw [range_add]
-    rfl
 
 /-- Any entry of any member of `l.ranges` is strictly smaller than `l.sum` -/
 theorem mem_mem_ranges_iff_lt_sum (l : List ℕ) {n : ℕ} :

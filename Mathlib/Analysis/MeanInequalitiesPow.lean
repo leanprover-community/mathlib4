@@ -104,9 +104,9 @@ theorem arith_mean_le_rpow_mean (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 ≤ w i)
   rw [← rpow_le_rpow_iff _ _ this, ← rpow_mul, one_div_mul_cancel (ne_of_gt this), rpow_one]
   exact rpow_arith_mean_le_arith_mean_rpow s w z hw hw' hz hp
   all_goals
-    apply_rules [sum_nonneg, rpow_nonneg_of_nonneg]
+    apply_rules [sum_nonneg, rpow_nonneg]
     intro i hi
-    apply_rules [mul_nonneg, rpow_nonneg_of_nonneg, hw i hi, hz i hi]
+    apply_rules [mul_nonneg, rpow_nonneg, hw i hi, hz i hi]
 #align real.arith_mean_le_rpow_mean Real.arith_mean_le_rpow_mean
 
 end Real
@@ -289,13 +289,10 @@ theorem rpow_arith_mean_le_arith_mean2_rpow (w₁ w₂ z₁ z₂ : ℝ≥0∞) (
 /-- Unweighted mean inequality, version for two elements of `ℝ≥0∞` and real exponents. -/
 theorem rpow_add_le_mul_rpow_add_rpow (z₁ z₂ : ℝ≥0∞) {p : ℝ} (hp : 1 ≤ p) :
     (z₁ + z₂) ^ p ≤ (2 : ℝ≥0∞) ^ (p - 1) * (z₁ ^ p + z₂ ^ p) := by
-  rcases eq_or_lt_of_le hp with (rfl | h'p)
-  · simp only [rpow_one, sub_self, rpow_zero, one_mul, le_refl]
   convert rpow_arith_mean_le_arith_mean2_rpow (1 / 2) (1 / 2) (2 * z₁) (2 * z₂)
       (ENNReal.add_halves 1) hp using 1
   · simp [← mul_assoc, ENNReal.inv_mul_cancel two_ne_zero two_ne_top]
-  · have _ : p - 1 ≠ 0 := ne_of_gt (sub_pos.2 h'p)
-    simp only [mul_rpow_of_nonneg _ _ (zero_le_one.trans hp), rpow_sub _ _ two_ne_zero two_ne_top,
+  · simp only [mul_rpow_of_nonneg _ _ (zero_le_one.trans hp), rpow_sub _ _ two_ne_zero two_ne_top,
       ENNReal.div_eq_inv_mul, rpow_one, mul_one]
     ring
 #align ennreal.rpow_add_le_mul_rpow_add_rpow ENNReal.rpow_add_le_mul_rpow_add_rpow

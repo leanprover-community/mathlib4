@@ -249,7 +249,7 @@ Topology:
     Lipschitz continuity: 'LipschitzWith'
     Hölder continuity: 'HolderWith'
     contraction mapping theorem: 'ContractingWith.exists_fixedPoint'
-    Baire theorem: 'dense_iInter_of_open'
+    Baire theorem: 'dense_iInter_of_isOpen'
     Arzela-Ascoli theorem: 'BoundedContinuousFunction.arzela_ascoli'
     Hausdorff distance: 'EMetric.hausdorffEdist'
     Gromov-Hausdorff space: 'GromovHausdorff.GHSpace'
@@ -408,7 +408,7 @@ Geometry:
     tangent bundle: 'TangentBundle'
     tangent map: 'tangentMap'
     Lie group: 'LieGroup'
-    sphere: 'smoothMfldWithCorners'
+    sphere: 'EuclideanSpace.instSmoothManifoldWithCornersSphere'
 
   Algebraic geometry:
     prime spectrum: 'PrimeSpectrum'

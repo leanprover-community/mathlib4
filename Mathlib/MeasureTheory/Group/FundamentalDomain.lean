@@ -110,8 +110,8 @@ sufficiently large. -/
   to check that its translates `g +ᵥ s` are (almost) disjoint and that the sum `∑' g, μ (g +ᵥ s)` is
   sufficiently large."]
 theorem mk_of_measure_univ_le [IsFiniteMeasure μ] [Countable G] (h_meas : NullMeasurableSet s μ)
-    (h_ae_disjoint : ∀ (g) (_ : g ≠ (1 : G)), AEDisjoint μ (g • s) s)
-    (h_qmp : ∀ g : G, QuasiMeasurePreserving ((· • ·) g : α → α) μ μ)
+    (h_ae_disjoint : ∀ g ≠ (1 : G), AEDisjoint μ (g • s) s)
+    (h_qmp : ∀ g : G, QuasiMeasurePreserving (g • · : α → α) μ μ)
     (h_measure_univ_le : μ (univ : Set α) ≤ ∑' g : G, μ (g • s)) : IsFundamentalDomain G s μ :=
   have aedisjoint : Pairwise (AEDisjoint μ on fun g : G => g • s) :=
     pairwise_aedisjoint_of_aedisjoint_forall_ne_one h_ae_disjoint h_qmp
@@ -384,7 +384,7 @@ protected theorem aEStronglyMeasurable_on_iff {β : Type*} [TopologicalSpace β]
     _ ↔ ∀ g : G, AEStronglyMeasurable f (μ.restrict (g⁻¹ • (g • s ∩ t))) := by simp only [inv_inv]
     _ ↔ ∀ g : G, AEStronglyMeasurable f (μ.restrict (g • s ∩ t)) := by
       refine' forall_congr' fun g => _
-      have he : MeasurableEmbedding ((· • ·) g⁻¹ : α → α) := measurableEmbedding_const_smul _
+      have he : MeasurableEmbedding (g⁻¹ • · : α → α) := measurableEmbedding_const_smul _
       rw [← image_smul, ← ((measurePreserving_smul g⁻¹ μ).restrict_image_emb he
         _).aestronglyMeasurable_comp_iff he]
       simp only [(· ∘ ·), hf]

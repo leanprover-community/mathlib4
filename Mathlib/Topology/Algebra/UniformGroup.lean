@@ -163,6 +163,13 @@ instance [UniformSpace β] [Group β] [UniformGroup β] : UniformGroup (α × β
         (uniformContinuous_snd.comp uniformContinuous_snd))⟩
 
 @[to_additive]
+instance Pi.instUniformGroup {ι : Type*} {G : ι → Type*} [∀ i, UniformSpace (G i)]
+    [∀ i, Group (G i)] [∀ i, UniformGroup (G i)] : UniformGroup (∀ i, G i) where
+  uniformContinuous_div := uniformContinuous_pi.mpr fun i ↦
+    (uniformContinuous_proj G i).comp uniformContinuous_fst |>.div <|
+      (uniformContinuous_proj G i).comp uniformContinuous_snd
+
+@[to_additive]
 theorem uniformity_translate_mul (a : α) : ((𝓤 α).map fun x : α × α => (x.1 * a, x.2 * a)) = 𝓤 α :=
   le_antisymm (uniformContinuous_id.mul uniformContinuous_const)
     (calc
@@ -196,18 +203,6 @@ instance : UniformGroup αᵐᵒᵖ :=
 
 end MulOpposite
 
-namespace Subgroup
-
-@[to_additive]
-instance uniformGroup (S : Subgroup α) : UniformGroup S :=
-  ⟨uniformContinuous_comap'
-      (uniformContinuous_div.comp <|
-        uniformContinuous_subtype_val.prod_map uniformContinuous_subtype_val)⟩
-#align subgroup.uniform_group Subgroup.uniformGroup
-#align add_subgroup.uniform_add_group AddSubgroup.uniformAddGroup
-
-end Subgroup
-
 section LatticeOps
 
 variable [Group β]
@@ -240,16 +235,30 @@ theorem uniformGroup_inf {u₁ u₂ : UniformSpace β} (h₁ : @UniformGroup β 
 #align uniform_add_group_inf uniformAddGroup_inf
 
 @[to_additive]
-theorem uniformGroup_comap {γ : Type*} [Group γ] {u : UniformSpace γ} [UniformGroup γ] {F : Type*}
-    [MonoidHomClass F β γ] (f : F) : @UniformGroup β (u.comap f) _ :=
-  letI : UniformSpace β := u.comap f
-  ⟨uniformContinuous_comap' <| by
-    simp_rw [Function.comp, map_div]
-    exact uniformContinuous_div.comp (uniformContinuous_comap.prod_map uniformContinuous_comap)⟩
-#align uniform_group_comap uniformGroup_comap
-#align uniform_add_group_comap uniformAddGroup_comap
+lemma UniformInducing.uniformGroup {γ : Type*} [Group γ] [UniformSpace γ] [UniformGroup γ]
+    [UniformSpace β] {F : Type*} [MonoidHomClass F β γ] (f : F) (hf : UniformInducing f) :
+    UniformGroup β where
+  uniformContinuous_div := by
+    simp_rw [hf.uniformContinuous_iff, Function.comp_def, map_div]
+    exact uniformContinuous_div.comp (hf.uniformContinuous.prod_map hf.uniformContinuous)
+
+@[to_additive]
+protected theorem UniformGroup.comap {γ : Type*} [Group γ] {u : UniformSpace γ} [UniformGroup γ]
+    {F : Type*} [MonoidHomClass F β γ] (f : F) : @UniformGroup β (u.comap f) _ :=
+  letI : UniformSpace β := u.comap f; UniformInducing.uniformGroup f ⟨rfl⟩
+#align uniform_group_comap UniformGroup.comap
+#align uniform_add_group_comap UniformAddGroup.comap
 
 end LatticeOps
+
+namespace Subgroup
+
+@[to_additive]
+instance uniformGroup (S : Subgroup α) : UniformGroup S := .comap S.subtype
+#align subgroup.uniform_group Subgroup.uniformGroup
+#align add_subgroup.uniform_add_group AddSubgroup.uniformAddGroup
+
+end Subgroup
 
 section
 
@@ -557,7 +566,7 @@ def TopologicalGroup.toUniformSpace : UniformSpace G where
     have : Tendsto (fun p : G × G ↦ (p.2 / p.1)⁻¹) (comap (fun p : G × G ↦ p.2 / p.1) (𝓝 1))
       (𝓝 1⁻¹) := tendsto_id.inv.comp tendsto_comap
     by simpa [tendsto_comap_iff]
-  comp := Tendsto.le_comap <| fun U H ↦ by
+  comp := Tendsto.le_comap fun U H ↦ by
     rcases exists_nhds_one_split H with ⟨V, V_nhds, V_mul⟩
     refine mem_map.2 (mem_of_superset (mem_lift' <| preimage_mem_comap V_nhds) ?_)
     rintro ⟨x, y⟩ ⟨z, hz₁, hz₂⟩
@@ -686,7 +695,7 @@ theorem comm_topologicalGroup_is_uniform : UniformGroup G := by
     tendsto_comap_iff, prod_comap_comap_eq]
   simp only [Function.comp, div_eq_mul_inv, mul_inv_rev, inv_inv, mul_comm, mul_left_comm] at *
   simp only [inv_one, mul_one, ← mul_assoc] at this
-  simp_rw [←mul_assoc, mul_comm]
+  simp_rw [← mul_assoc, mul_comm]
   assumption
 #align topological_comm_group_is_uniform comm_topologicalGroup_is_uniform
 #align topological_add_comm_group_is_uniform comm_topologicalAddGroup_is_uniform
@@ -763,8 +772,8 @@ variable (hφ : Continuous (fun p : β × δ => φ p.1 p.2))
 
 variable {W' : Set G} (W'_nhd : W' ∈ 𝓝 (0 : G))
 
-private theorem extend_Z_bilin_aux (x₀ : α) (y₁ : δ) : ∃ U₂ ∈ comap e (𝓝 x₀), ∀ (x) (_ : x ∈ U₂)
-    (x') (_ : x' ∈ U₂), (fun p : β × δ => φ p.1 p.2) (x' - x, y₁) ∈ W' := by
+private theorem extend_Z_bilin_aux (x₀ : α) (y₁ : δ) : ∃ U₂ ∈ comap e (𝓝 x₀), ∀ x ∈ U₂, ∀ x' ∈ U₂,
+    (fun p : β × δ => φ p.1 p.2) (x' - x, y₁) ∈ W' := by
   let Nx := 𝓝 x₀
   let ee := fun u : β × β => (e u.1, e u.2)
   have lim1 : Tendsto (fun a : β × β => (a.2 - a.1, y₁))
@@ -782,7 +791,7 @@ private theorem extend_Z_bilin_aux (x₀ : α) (y₁ : δ) : ∃ U₂ ∈ comap 
 #noalign dense_inducing.extend_Z_bilin_aux
 
 private theorem extend_Z_bilin_key (x₀ : α) (y₀ : γ) : ∃ U ∈ comap e (𝓝 x₀), ∃ V ∈ comap f (𝓝 y₀),
-    ∀ (x) (_ : x ∈ U) (x') (_ : x' ∈ U), ∀ (y) (_ : y ∈ V) (y') (_ : y' ∈ V),
+    ∀ x ∈ U, ∀ x' ∈ U, ∀ (y) (_ : y ∈ V) (y') (_ : y' ∈ V),
     (fun p : β × δ => φ p.1 p.2) (x', y') - (fun p : β × δ => φ p.1 p.2) (x, y) ∈ W' := by
   let ee := fun u : β × β => (e u.1, e u.2)
   let ff := fun u : δ × δ => (f u.1, f u.2)
@@ -959,7 +968,7 @@ instance QuotientGroup.completeSpace' (G : Type u) [Group G] [TopologicalSpace G
     exact fun m =>
       ⟨m, fun n hmn =>
         Nat.decreasingInduction'
-          (fun k _ _ hk => u_mul k ⟨_, _, hx' k, hk, div_mul_div_cancel' _ _ _⟩) hmn
+          (fun k _ _ hk => u_mul k ⟨_, hx' k, _, hk, div_mul_div_cancel' _ _ _⟩) hmn
           (by simpa only [div_self'] using mem_of_mem_nhds (hu.mem _))⟩
   /- Since `G` is complete, `x'` converges to some `x₀`, and so the image of this sequence under
     the quotient map converges to `↑x₀`. The image of `x'` is a convergent subsequence of `x`, and

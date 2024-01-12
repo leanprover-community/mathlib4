@@ -186,7 +186,7 @@ theorem gramSchmidt_of_orthogonal {f : ι → E} (hf : Pairwise fun i j => ⟪f 
   · congr
     apply Finset.sum_eq_zero
     intro j hj
-    rw [coe_eq_zero]
+    rw [Submodule.coe_eq_zero]
     suffices span 𝕜 (f '' Set.Iic j) ⟂ 𝕜 ∙ f i by
       apply orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero
       rw [mem_orthogonal_singleton_iff_inner_left]

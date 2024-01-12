@@ -56,9 +56,7 @@ theorem antidiagonal_zero : antidiagonal (0 : α →₀ ℕ) = singleton (0, 0) 
 theorem prod_antidiagonal_swap {M : Type*} [CommMonoid M] (n : α →₀ ℕ)
     (f : (α →₀ ℕ) → (α →₀ ℕ) → M) :
     ∏ p in antidiagonal n, f p.1 p.2 = ∏ p in antidiagonal n, f p.2 p.1 :=
-  Finset.prod_bij (fun p _hp ↦ p.swap) (fun _p ↦ swap_mem_antidiagonal.2) (fun _p _hp ↦ rfl)
-    (fun _p₁ _p₂ _ _ h ↦ Prod.swap_injective h) fun p hp ↦
-    ⟨p.swap, swap_mem_antidiagonal.2 hp, p.swap_swap.symm⟩
+  prod_equiv (Equiv.prodComm _ _) (by simp [add_comm]) (by simp)
 #align finsupp.prod_antidiagonal_swap Finsupp.prod_antidiagonal_swap
 #align finsupp.sum_antidiagonal_swap Finsupp.sum_antidiagonal_swap
 
@@ -72,7 +70,7 @@ theorem antidiagonal_single (a : α) (n : ℕ) :
   constructor
   · intro h
     refine ⟨x a, y a, FunLike.congr_fun h a |>.trans single_eq_same, ?_⟩
-    simp_rw [FunLike.ext_iff, ←forall_and]
+    simp_rw [FunLike.ext_iff, ← forall_and]
     intro i
     replace h := FunLike.congr_fun h i
     simp_rw [single_apply, Finsupp.add_apply] at h ⊢

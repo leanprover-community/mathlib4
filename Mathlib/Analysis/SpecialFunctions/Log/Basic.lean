@@ -141,22 +141,18 @@ theorem log_inv (x : ℝ) : log x⁻¹ = -log x := by
   rw [← exp_eq_exp, exp_log_eq_abs (inv_ne_zero hx), exp_neg, exp_log_eq_abs hx, abs_inv]
 #align real.log_inv Real.log_inv
 
-theorem log_le_log (h : 0 < x) (h₁ : 0 < y) : log x ≤ log y ↔ x ≤ y := by
+theorem log_le_log_iff (h : 0 < x) (h₁ : 0 < y) : log x ≤ log y ↔ x ≤ y := by
   rw [← exp_le_exp, exp_log h, exp_log h₁]
-#align real.log_le_log Real.log_le_log
+#align real.log_le_log Real.log_le_log_iff
 
 @[gcongr]
-theorem log_lt_log (hx : 0 < x) : x < y → log x < log y := by
-  intro h
+lemma log_le_log (hx : 0 < x) (hxy : x ≤ y) : log x ≤ log y :=
+  (log_le_log_iff hx (hx.trans_le hxy)).2 hxy
+
+@[gcongr]
+theorem log_lt_log (hx : 0 < x) (h : x < y) : log x < log y := by
   rwa [← exp_lt_exp, exp_log hx, exp_log (lt_trans hx h)]
 #align real.log_lt_log Real.log_lt_log
-
-@[gcongr]
-theorem log_le_log' (hx : 0 < x) : x ≤ y → log x ≤ log y := by
-  intro hxy
-  cases hxy.eq_or_lt with
-  | inl h_eq => simp [h_eq]
-  | inr hlt => exact le_of_lt <| log_lt_log hx hlt
 
 theorem log_lt_log_iff (hx : 0 < x) (hy : 0 < y) : log x < log y ↔ x < y := by
   rw [← exp_lt_exp, exp_log hx, exp_log hy]
@@ -184,7 +180,7 @@ theorem log_pos (hx : 1 < x) : 0 < log x :=
 #align real.log_pos Real.log_pos
 
 theorem log_pos_of_lt_neg_one (hx : x < -1) : 0 < log x := by
-  rw [←neg_neg x, log_neg_eq_log]
+  rw [← neg_neg x, log_neg_eq_log]
   have : 1 < -x := by linarith
   exact log_pos this
 
@@ -198,7 +194,7 @@ theorem log_neg (h0 : 0 < x) (h1 : x < 1) : log x < 0 :=
 #align real.log_neg Real.log_neg
 
 theorem log_neg_of_lt_zero (h0 : x < 0) (h1 : -1 < x) : log x < 0 := by
-  rw [←neg_neg x, log_neg_eq_log]
+  rw [← neg_neg x, log_neg_eq_log]
   have h0' : 0 < -x := by linarith
   have h1' : -x < 1 := by linarith
   exact log_neg h0' h1'
@@ -224,14 +220,14 @@ theorem log_nonpos (hx : 0 ≤ x) (h'x : x ≤ 1) : log x ≤ 0 :=
 #align real.log_nonpos Real.log_nonpos
 
 theorem log_nat_cast_nonneg (n : ℕ) : 0 ≤ log n := by
-  by_cases hn : n = 0
-  case pos => simp [hn]
-  case neg =>
+  if hn : n = 0 then
+    simp [hn]
+  else
     have : (1 : ℝ) ≤ n := mod_cast Nat.one_le_of_lt <| Nat.pos_of_ne_zero hn
     exact log_nonneg this
 
 theorem log_neg_nat_cast_nonneg (n : ℕ) : 0 ≤ log (-n) := by
-  rw [←log_neg_eq_log, neg_neg]
+  rw [← log_neg_eq_log, neg_neg]
   exact log_nat_cast_nonneg _
 
 theorem log_int_cast_nonneg (n : ℤ) : 0 ≤ log n := by
@@ -243,8 +239,8 @@ theorem log_int_cast_nonneg (n : ℤ) : 0 ≤ log n := by
       cases hn with
       | inl hn => simp [hn.symm]
       | inr hn =>
-          have : (1 : ℝ) ≤ -n := by rw [←neg_zero, ←lt_neg] at hn; exact mod_cast hn
-          rw [←log_neg_eq_log]
+          have : (1 : ℝ) ≤ -n := by rw [← neg_zero, ← lt_neg] at hn; exact mod_cast hn
+          rw [← log_neg_eq_log]
           exact log_nonneg this
 
 theorem strictMonoOn_log : StrictMonoOn log (Set.Ioi 0) := fun _ hx _ _ hxy => log_lt_log hx hxy
@@ -265,7 +261,7 @@ theorem log_lt_sub_one_of_pos (hx1 : 0 < x) (hx2 : x ≠ 1) : log x < x - 1 := b
   have h : log x ≠ 0
   · rwa [← log_one, log_injOn_pos.ne_iff hx1]
     exact mem_Ioi.mpr zero_lt_one
-  linarith [add_one_lt_exp_of_nonzero h, exp_log hx1]
+  linarith [add_one_lt_exp h, exp_log hx1]
 #align real.log_lt_sub_one_of_pos Real.log_lt_sub_one_of_pos
 
 theorem eq_one_of_pos_of_log_eq_zero {x : ℝ} (h₁ : 0 < x) (h₂ : log x = 0) : x = 1 :=
@@ -511,21 +507,21 @@ lemma log_pos_of_isNegNat (h : NormNum.IsInt e (.negOfNat n)) (w : Nat.blt 1 n =
 lemma log_pos_of_isRat :
     (NormNum.IsRat e n d) → (decide ((1 : ℚ) < n / d)) → (0 < Real.log (e : ℝ))
   | ⟨inv, eq⟩, h => by
-    rw [eq, invOf_eq_inv, ←div_eq_mul_inv]
+    rw [eq, invOf_eq_inv, ← div_eq_mul_inv]
     have : 1 < (n : ℝ) / d := by exact_mod_cast of_decide_eq_true h
     exact Real.log_pos this
 
 lemma log_pos_of_isRat_neg :
     (NormNum.IsRat e n d) → (decide (n / d < (-1 : ℚ))) → (0 < Real.log (e : ℝ))
   | ⟨inv, eq⟩, h => by
-    rw [eq, invOf_eq_inv, ←div_eq_mul_inv]
+    rw [eq, invOf_eq_inv, ← div_eq_mul_inv]
     have : (n : ℝ) / d < -1 := by exact_mod_cast of_decide_eq_true h
     exact Real.log_pos_of_lt_neg_one this
 
 lemma log_nz_of_isRat : (NormNum.IsRat e n d) → (decide ((0 : ℚ) < n / d))
     → (decide (n / d < (1 : ℚ))) → (Real.log (e : ℝ) ≠ 0)
   | ⟨inv, eq⟩, h₁, h₂ => by
-    rw [eq, invOf_eq_inv, ←div_eq_mul_inv]
+    rw [eq, invOf_eq_inv, ← div_eq_mul_inv]
     have h₁' : 0 < (n : ℝ) / d := by exact_mod_cast of_decide_eq_true h₁
     have h₂' : (n : ℝ) / d < 1 := by exact_mod_cast of_decide_eq_true h₂
     exact ne_of_lt <| Real.log_neg h₁' h₂'
@@ -533,7 +529,7 @@ lemma log_nz_of_isRat : (NormNum.IsRat e n d) → (decide ((0 : ℚ) < n / d))
 lemma log_nz_of_isRat_neg : (NormNum.IsRat e n d) → (decide (n / d < (0 : ℚ)))
     → (decide ((-1 : ℚ) < n / d)) → (Real.log (e : ℝ) ≠ 0)
   | ⟨inv, eq⟩, h₁, h₂ => by
-    rw [eq, invOf_eq_inv, ←div_eq_mul_inv]
+    rw [eq, invOf_eq_inv, ← div_eq_mul_inv]
     have h₁' : (n : ℝ) / d < 0 := by exact_mod_cast of_decide_eq_true h₁
     have h₂' : -1 < (n : ℝ) / d := by exact_mod_cast of_decide_eq_true h₂
     exact ne_of_lt <| Real.log_neg_of_lt_zero h₁' h₂'
@@ -557,7 +553,7 @@ def evalLogIntCast : PositivityExt where eval {_ _} _zα _pα e := do
 def evalLogNatLit : PositivityExt where eval {_ _} _zα _pα e := do
   let .app (f : Q(ℝ → ℝ)) (a : Q(ℝ)) ← withReducible (whnf e) | throwError "not Real.log"
   guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(Real.log)
-  match ←NormNum.derive a with
+  match ← NormNum.derive a with
   | .isNat (_ : Q(AddMonoidWithOne ℝ)) lit p =>
     assumeInstancesCommute
     have p : Q(NormNum.IsNat $a $lit) := p

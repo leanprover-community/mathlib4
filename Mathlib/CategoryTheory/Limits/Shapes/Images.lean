@@ -109,7 +109,7 @@ theorem ext {F F' : MonoFactorisation f} (hI : F.I = F'.I)
     (hm : F.m = eqToHom hI ≫ F'.m) : F = F' := by
   cases' F with _ Fm _ _ Ffac; cases' F' with _ Fm' _ _ Ffac'
   cases' hI
-  simp at hm
+  simp? at hm says simp only [eqToHom_refl, Category.id_comp] at hm
   congr
   · apply (cancel_mono Fm).1
     rw [Ffac, hm, Ffac']
@@ -595,7 +595,7 @@ instance hasImage_iso_comp [IsIso f] [HasImage g] : HasImage (f ≫ g) :=
                    lift_fac := fun F' => by
                     dsimp
                     have : (MonoFactorisation.ofIsoComp f F').m = F'.m := rfl
-                    rw [←this,image.lift_fac (MonoFactorisation.ofIsoComp f F')] } }
+                    rw [← this,image.lift_fac (MonoFactorisation.ofIsoComp f F')] } }
 #align category_theory.limits.has_image_iso_comp CategoryTheory.Limits.hasImage_iso_comp
 
 /-- `image.preComp f g` is an isomorphism when `f` is an isomorphism
@@ -622,7 +622,7 @@ instance hasImage_comp_iso [HasImage f] [IsIso g] : HasImage (f ≫ g) :=
       { lift := fun F' => image.lift F'.ofCompIso
         lift_fac := fun F' => by
           rw [← Category.comp_id (image.lift (MonoFactorisation.ofCompIso F') ≫ F'.m),
-            ←IsIso.inv_hom_id g,← Category.assoc]
+            ← IsIso.inv_hom_id g,← Category.assoc]
           refine congrArg (· ≫ g) ?_
           have : (image.lift (MonoFactorisation.ofCompIso F') ≫ F'.m) ≫ inv g =
             image.lift (MonoFactorisation.ofCompIso F') ≫

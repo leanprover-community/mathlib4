@@ -766,8 +766,8 @@ theorem HasIntegral.of_bRiemann_eq_false_of_forall_isLittleO (hl : l.bRiemann = 
     refine' (sum_le_sum _).trans (hεs _ _)
     · rintro b -
       rw [← Nat.cast_two, ← Nat.cast_pow, ← nsmul_eq_mul]
-      refine' nsmul_le_nsmul (hεs0 _).le _
-      refine' (Finset.card_le_of_subset _).trans ((hπδ.isHenstock hlH).card_filter_tag_eq_le b)
+      refine' nsmul_le_nsmul_left (hεs0 _).le _
+      refine' (Finset.card_le_card _).trans ((hπδ.isHenstock hlH).card_filter_tag_eq_le b)
       exact filter_subset_filter _ (filter_subset _ _)
     · rw [Finset.coe_image, Set.image_subset_iff]
       exact fun J hJ => (Finset.mem_filter.1 hJ).2

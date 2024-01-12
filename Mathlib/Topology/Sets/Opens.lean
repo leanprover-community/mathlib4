@@ -260,8 +260,11 @@ instance : Frame (Opens α) :=
     inf_sSup_le_iSup_inf := fun a s =>
       (ext <| by simp only [coe_inf, coe_iSup, coe_sSup, Set.inter_iUnion₂]).le }
 
+theorem openEmbedding' (U : Opens α) : OpenEmbedding (Subtype.val : U → α) :=
+  U.isOpen.openEmbedding_subtype_val
+
 theorem openEmbedding_of_le {U V : Opens α} (i : U ≤ V) :
-    OpenEmbedding (Set.inclusion $ SetLike.coe_subset_coe.2 i) :=
+    OpenEmbedding (Set.inclusion <| SetLike.coe_subset_coe.2 i) :=
   { toEmbedding := embedding_inclusion i
     open_range := by
       rw [Set.range_inclusion i]
@@ -302,7 +305,7 @@ theorem isBasis_iff_nbhd {B : Set (Opens α)} :
     dsimp at H₂
     subst H₂
     exact hsV
-  · refine' isTopologicalBasis_of_open_of_nhds _ _
+  · refine' isTopologicalBasis_of_isOpen_of_nhds _ _
     · rintro sU ⟨U, -, rfl⟩
       exact U.2
     · intro x sU hx hsU

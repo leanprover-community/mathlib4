@@ -171,11 +171,11 @@ instance commGroup [∀ i, CommGroup <| f i] : CommGroup (∀ i : I, f i) :=
 
 @[to_additive]
 instance [∀ i, Mul <| f i] [∀ i, IsLeftCancelMul <| f i] : IsLeftCancelMul (∀ i : I, f i) where
-  mul_left_cancel  _ _ _ h := funext <| fun _ => mul_left_cancel (congr_fun h _)
+  mul_left_cancel  _ _ _ h := funext fun _ => mul_left_cancel (congr_fun h _)
 
 @[to_additive]
 instance [∀ i, Mul <| f i] [∀ i, IsRightCancelMul <| f i] : IsRightCancelMul (∀ i : I, f i) where
-  mul_right_cancel  _ _ _ h := funext <| fun _ => mul_right_cancel (congr_fun h _)
+  mul_right_cancel  _ _ _ h := funext fun _ => mul_right_cancel (congr_fun h _)
 
 @[to_additive]
 instance [∀ i, Mul <| f i] [∀ i, IsCancelMul <| f i] : IsCancelMul (∀ i : I, f i) where
@@ -545,6 +545,26 @@ theorem Pi.single_mul_right [∀ i, MulZeroClass <| f i] (a : f i) :
   funext fun _ => Pi.single_mul_right_apply _ _ _ _
 #align pi.single_mul_right Pi.single_mul_right
 
+section
+variable [∀ i, Mul <| f i]
+
+@[to_additive]
+theorem SemiconjBy.pi {x y z : ∀ i, f i} (h : ∀ i, SemiconjBy (x i) (y i) (z i)) :
+    SemiconjBy x y z :=
+  funext h
+
+@[to_additive]
+theorem Pi.semiconjBy_iff {x y z : ∀ i, f i} :
+    SemiconjBy x y z ↔ ∀ i, SemiconjBy (x i) (y i) (z i) := Function.funext_iff
+
+@[to_additive]
+theorem Commute.pi {x y : ∀ i, f i} (h : ∀ i, Commute (x i) (y i)) : Commute x y := .pi h
+
+@[to_additive]
+theorem Pi.commute_iff {x y : ∀ i, f i} : Commute x y ↔ ∀ i, Commute (x i) (y i) := semiconjBy_iff
+
+end
+
 /-- The injection into a pi group at different indices commutes.
 
 For injections of commuting elements at the same index, see `Commute.map` -/
@@ -563,7 +583,7 @@ theorem Pi.mulSingle_commute [∀ i, MulOneClass <| f i] :
     simp [hij]
   simp [h1, h2]
 #align pi.mul_single_commute Pi.mulSingle_commute
-#align pi.single_commute Pi.single_commute
+#align pi.single_commute Pi.single_addCommute
 
 /-- The injection into a pi group with the same values commutes. -/
 @[to_additive "The injection into an additive pi group with the same values commutes."]
@@ -573,7 +593,7 @@ theorem Pi.mulSingle_apply_commute [∀ i, MulOneClass <| f i] (x : ∀ i, f i) 
   · rfl
   · exact Pi.mulSingle_commute hij _ _
 #align pi.mul_single_apply_commute Pi.mulSingle_apply_commute
-#align pi.single_apply_commute Pi.single_apply_commute
+#align pi.single_apply_commute Pi.single_apply_addCommute
 
 @[to_additive]
 theorem Pi.update_eq_div_mul_mulSingle [∀ i, Group <| f i] (g : ∀ i : I, f i) (x : f i) :

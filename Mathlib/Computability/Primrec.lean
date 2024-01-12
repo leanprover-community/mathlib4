@@ -112,7 +112,7 @@ theorem casesOn1 {f} (m : ℕ) (hf : Nat.Primrec f) : Nat.Primrec (Nat.casesOn �
 -- Porting note: `Nat.Primrec.casesOn` is already declared as a recursor.
 theorem casesOn' {f g} (hf : Nat.Primrec f) (hg : Nat.Primrec g) :
     Nat.Primrec (unpaired fun z n => n.casesOn (f z) fun y => g <| Nat.pair z y) :=
-  (prec hf (hg.comp (pair left (left.comp right)))).of_eq <| fun n => by simp
+  (prec hf (hg.comp (pair left (left.comp right)))).of_eq fun n => by simp
 #align nat.primrec.cases Nat.Primrec.casesOn'
 
 protected theorem swap : Nat.Primrec (unpaired (swap Nat.pair)) :=
@@ -776,7 +776,7 @@ theorem list_findIdx₁ {p : α → β → Bool} (hp : Primrec₂ p) :
 #align primrec.list_find_index₁ Primrec.list_findIdx₁
 
 theorem list_indexOf₁ [DecidableEq α] (l : List α) : Primrec fun a => l.indexOf a :=
-  list_findIdx₁ .beq l
+  list_findIdx₁ (.swap .beq) l
 #align primrec.list_index_of₁ Primrec.list_indexOf₁
 
 theorem dom_fintype [Fintype α] (f : α → σ) : Primrec f :=
@@ -971,9 +971,8 @@ instance list : Primcodable (List α) :=
         intro n IH; simp
         cases' @decode α _ n.unpair.1 with a; · rfl
         simp only [decode_eq_ofNat, Option.some.injEq, Option.some_bind, Option.map_some']
-        suffices :
-          ∀ (o : Option (List ℕ)) (p) (_ : encode o = encode p),
-            encode (Option.map (List.cons (encode a)) o) = encode (Option.map (List.cons a) p)
+        suffices : ∀ (o : Option (List ℕ)) (p), encode o = encode p →
+          encode (Option.map (List.cons (encode a)) o) = encode (Option.map (List.cons a) p)
         exact this _ _ (IH _ (Nat.unpair_right_le n))
         intro o p IH
         cases o <;> cases p
@@ -1134,7 +1133,7 @@ theorem list_findIdx {f : α → List β} {p : α → β → Bool}
 #align primrec.list_find_index Primrec.list_findIdx
 
 theorem list_indexOf [DecidableEq α] : Primrec₂ (@List.indexOf α _) :=
-  to₂ <| list_findIdx snd <| Primrec.beq.comp₂ (fst.comp fst).to₂ snd.to₂
+  to₂ <| list_findIdx snd <| Primrec.beq.comp₂ snd.to₂ (fst.comp fst).to₂
 #align primrec.list_index_of Primrec.list_indexOfₓ
 
 theorem nat_strong_rec (f : α → ℕ → σ) {g : α → List σ → Option σ} (hg : Primrec₂ g)
@@ -1378,12 +1377,12 @@ namespace Nat.Primrec'
 open Vector Primrec
 
 theorem to_prim {n f} (pf : @Nat.Primrec' n f) : Primrec f := by
-  induction pf
-  case zero => exact .const 0
-  case succ => exact _root_.Primrec.succ.comp .vector_head
-  case get n i => exact Primrec.vector_get.comp .id (.const i)
-  case comp m n f g _ _ hf hg => exact hf.comp (.vector_ofFn fun i => hg i)
-  case prec n f g _ _ hf hg =>
+  induction pf with
+  | zero => exact .const 0
+  | succ => exact _root_.Primrec.succ.comp .vector_head
+  | get i => exact Primrec.vector_get.comp .id (.const i)
+  | comp _ _ _ hf hg => exact hf.comp (.vector_ofFn fun i => hg i)
+  | @prec n f g _ _ hf hg =>
     exact
       .nat_rec' .vector_head (hf.comp Primrec.vector_tail)
         (hg.comp <|
@@ -1526,14 +1525,14 @@ theorem of_prim {n f} : Primrec f → @Primrec' n f :=
             Primrec'.encode).of_eq
       fun i => by simp [encodek]
   fun f hf => by
-  induction hf
-  case zero => exact const 0
-  case succ => exact succ
-  case left => exact unpair₁ head
-  case right => exact unpair₂ head
-  case pair f g _ _ hf hg => exact natPair.comp₂ _ hf hg
-  case comp f g _ _ hf hg => exact hf.comp₁ _ hg
-  case prec f g _ _ hf hg =>
+  induction hf with
+  | zero => exact const 0
+  | succ => exact succ
+  | left => exact unpair₁ head
+  | right => exact unpair₂ head
+  | pair _ _ hf hg => exact natPair.comp₂ _ hf hg
+  | comp _ _ hf hg => exact hf.comp₁ _ hg
+  | prec _ _ hf hg =>
     simpa using
       prec' (unpair₂ head) (hf.comp₁ _ (unpair₁ head))
         (hg.comp₁ _ <|

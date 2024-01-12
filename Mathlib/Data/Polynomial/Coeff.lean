@@ -61,7 +61,7 @@ theorem coeff_smul [SMulZeroClass S R] (r : S) (p : R[X]) (n : ℕ) :
 theorem support_smul [Monoid S] [DistribMulAction S R] (r : S) (p : R[X]) :
     support (r • p) ⊆ support p := by
   intro i hi
-  simp [mem_support_iff] at hi ⊢
+  simp? [mem_support_iff] at hi ⊢ says simp only [mem_support_iff, coeff_smul, ne_eq] at hi ⊢
   contrapose! hi
   simp [hi]
 #align polynomial.support_smul Polynomial.support_smul

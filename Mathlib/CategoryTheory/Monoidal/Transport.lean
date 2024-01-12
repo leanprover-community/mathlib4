@@ -17,7 +17,7 @@ we can transport a monoidal structure on `C` along the equivalence as
 More generally, we can transport the lawfulness of a monoidal structure along a suitable faithful
 functor, as `CategoryTheory.Monoidal.induced`.
 The comparison is analogous to the difference between `Equiv.monoid` and
-`Function.Injective.Monoid`.
+`Function.Injective.monoid`.
 
 We then upgrade the original functor and its inverse to monoidal functors
 with respect to the new monoidal structure on `D`.
@@ -117,25 +117,25 @@ abbrev induced [MonoidalCategoryStruct D] (F : D ⥤ C) [Faithful F]
     simp only [Functor.map_comp, fData.tensorHom_eq, Functor.map_id, fData.leftUnitor_eq,
       Iso.trans_assoc, Iso.trans_hom, Iso.symm_hom, tensorIso_hom, Iso.refl_hom, assoc,
       Iso.hom_inv_id_assoc, id_tensor_comp_tensor_id_assoc, Iso.cancel_iso_inv_left]
-    rw [←this, ←assoc, ←tensor_comp, id_comp, comp_id]
+    rw [← this, ← assoc, ← tensor_comp, id_comp, comp_id]
   rightUnitor_naturality {X Y : D} f := F.map_injective <| by
     have := rightUnitor_naturality (F.map f)
     simp only [Functor.map_comp, fData.tensorHom_eq, Functor.map_id, fData.rightUnitor_eq,
       Iso.trans_assoc, Iso.trans_hom, Iso.symm_hom, tensorIso_hom, Iso.refl_hom, assoc,
       Iso.hom_inv_id_assoc, tensor_id_comp_id_tensor_assoc, Iso.cancel_iso_inv_left]
-    rw [←this, ←assoc, ←tensor_comp, id_comp, comp_id]
+    rw [← this, ← assoc, ← tensor_comp, id_comp, comp_id]
   associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃} f₁ f₂ f₃ := F.map_injective <| by
     have := associator_naturality (F.map f₁) (F.map f₂) (F.map f₃)
     simp [fData.associator_eq, fData.tensorHom_eq]
-    simp_rw [←assoc, ←tensor_comp, assoc, Iso.hom_inv_id, ←assoc]
+    simp_rw [← assoc, ← tensor_comp, assoc, Iso.hom_inv_id, ← assoc]
     congr 1
-    conv_rhs => rw [←comp_id (F.map f₁), ←id_comp (F.map f₁)]
+    conv_rhs => rw [← comp_id (F.map f₁), ← id_comp (F.map f₁)]
     simp only [tensor_comp]
     simp only [tensor_id, comp_id, assoc, tensor_hom_inv_id_assoc, id_comp]
-    slice_rhs 2 3 => rw [←this]
+    slice_rhs 2 3 => rw [← this]
     simp only [← assoc, Iso.inv_hom_id, comp_id]
     congr 2
-    simp_rw [←tensor_comp, id_comp]
+    simp_rw [← tensor_comp, id_comp]
 
 
 /--
