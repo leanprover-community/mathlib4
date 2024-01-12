@@ -960,8 +960,6 @@ lemma α_mul (x y : (Spec (A⁰_ f)).presheaf.obj V) : α (m := m) (V := V) (x *
     ring_nf at eq1 ⊢
     exact eq1.symm
 
-example : true := rfl
-
 namespace isLocallyFraction
 
 abbrev U (V' : Opens (Spec.T (A⁰_ f))) : Opens Proj.T where
@@ -985,7 +983,6 @@ def U.LE {V' : Opens (Spec.T (A⁰_ f))} (le : V' ⟶ V.unop) :
 
 end isLocallyFraction
 
-set_option maxHeartbeats 300000 in
 lemma α_isLocallyFraction : isLocallyFraction 𝒜 |>.pred (α (m := m) s) := by
   intro y
   obtain ⟨V', ⟨(mem1 : φ _ ∈ V'), le, a, b, is_local⟩⟩ := s.2 ⟨φ ⟨y.1, _mem_pbo _⟩, _mem_V _⟩
@@ -1052,6 +1049,150 @@ def fromSpec {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m) :
     (projIsoSpecTopComponent hm f_deg).hom  _* (Proj| (pbo f)).presheaf where
   app V := FromSpec.ringHom (hm := ⟨hm⟩) (f_deg := ⟨f_deg⟩) (V := V)
   naturality U V le := by aesop_cat
+
+namespace ToSpec
+
+variable {𝒜}
+variable {m : ℕ} {f : A} [hm : Fact <| 0 < m] [f_deg : Fact <| f ∈ 𝒜 m]
+variable {V : (Opens <| Spec (A⁰_ f))ᵒᵖ}
+
+local notation "φ" => (projIsoSpecTopComponent hm.out f_deg.out).hom
+local notation "ψ" => (projIsoSpecTopComponent hm.out f_deg.out).inv
+
+variable (s : φ _* (Proj| (pbo f)).presheaf |>.obj V) (y : V.unop)
+
+private lemma _mem_V :
+    (ψ y.1).1 ∈ ((@Opens.openEmbedding Proj.T (pbo f)).isOpenMap.functor.op.obj <|
+      Opens.map φ |>.op.obj V).unop := by
+  refine ⟨(ψ y.1), show _ ∈ φ ⁻¹' _ from ?_, rfl⟩
+  rw [Set.mem_preimage, Iso.inv_hom_id_apply]
+  exact y.2
+
+variable (m) in
+abbrev eval : HomogeneousLocalization.AtPrime 𝒜 (ψ y.1).1.asHomogeneousIdeal.toIdeal :=
+  s.1 ⟨ψ y.1 |>.1, _mem_V _⟩
+
+lemma eval_zero : eval m  0 y = 0 := by delta eval; norm_cast
+lemma eval_one : eval m 1 y = 1 := by delta eval; norm_cast
+
+lemma eval_add (s s' : φ _* (Proj| (pbo f)).presheaf |>.obj V) :
+    eval m (s + s' : φ _* (Proj| (pbo f)).presheaf |>.obj V) y =
+    eval m s y + eval m s' y := by
+  delta eval; norm_cast
+
+lemma eval_mul (s s' : φ _* (Proj| (pbo f)).presheaf |>.obj V) :
+    eval m (s * s' : φ _* (Proj| (pbo f)).presheaf |>.obj V) y =
+    eval m s y * eval m s' y := by
+  delta eval; norm_cast
+
+variable (m) in
+def β : Localization.AtPrime y.1.asIdeal :=
+  .mk
+    (Quotient.mk''
+      { deg := m * (eval m s y).deg
+        num := ⟨(eval m s y).num * (eval m s y).den ^ m.pred, by
+          rw [calc
+              m * (eval m s y).deg = (m.pred + 1) * (eval m s y).deg := by
+                congr; exact Nat.succ_pred_eq_of_pos hm.out |>.symm
+            _ = m.pred * (eval m s y).deg + (eval m s y).deg := by rw [add_mul, one_mul]
+            _ = (eval m s y).deg + m.pred * (eval m s y).deg := add_comm _ _]
+          exact SetLike.mul_mem_graded (eval m s y).num_mem_deg <|
+            SetLike.pow_mem_graded m.pred (eval m s y).den_mem_deg⟩
+        den := ⟨f ^ (eval m s y).deg, by rw [mul_comm]; exact SetLike.pow_mem_graded _ f_deg.out⟩
+        den_mem := ⟨_, rfl⟩ })
+    { val := Quotient.mk''
+        { deg := m * (eval m s y).deg
+          num := ⟨(eval m s y).den ^ m, SetLike.pow_mem_graded _ (eval m s y).den_mem_deg⟩
+          den := ⟨f ^ (eval m s y).deg, by rw [mul_comm]; exact SetLike.pow_mem_graded _ f_deg.out⟩
+          den_mem := ⟨_, rfl⟩ }
+      property := show _ ∉ _ by
+        have mem : _ ∉ _ := (eval m s y).den_mem
+        contrapose! mem
+        intro i
+        dsimp only [GradedAlgebra.proj_apply]
+        by_cases ineq1 : (eval m s y).deg = i
+        · subst ineq1
+          simp_rw [DirectSum.decompose_of_mem_same 𝒜 (eval m s y).den_mem_deg]
+          exact mem
+        · simp_rw [DirectSum.decompose_of_mem_ne 𝒜 (eval m s y).den_mem_deg ineq1, zero_pow hm.out]
+          convert Ideal.zero_mem _
+          rw [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.val_mk'',
+            HomogeneousLocalization.zero_val]
+          exact Localization.mk_zero _ }
+
+lemma β_zero : β m 0 y = 0 := by
+  rw [show (0 : Localization.AtPrime y.1.asIdeal) = Localization.mk 0 1 from
+    Localization.mk_zero _ |>.symm, β, mk_eq_mk_iff, r_iff_exists]
+  have eq1 := (eval m 0 y).eq_num_div_den.symm
+  rw [eval_zero, HomogeneousLocalization.zero_val,
+    show (0 : Localization.AtPrime (ψ y.1).1.asHomogeneousIdeal.toIdeal) = .mk 0 1 from
+    mk_zero _ |>.symm, mk_eq_mk_iff, r_iff_exists] at eq1
+  obtain ⟨⟨c, (hc : ¬ ∀ _, _)⟩, eq1⟩ := eq1
+  rw [not_forall] at hc
+  obtain ⟨j, hc⟩ := hc
+  simp only [one_mul, mul_zero, Submonoid.coe_one] at eq1 ⊢
+  replace eq1 : GradedAlgebra.proj 𝒜 (j + (eval m 0 y).deg) (c * (eval m 0 y).num) = 0
+  · rw [eval_zero, eq1, map_zero]
+  rw [GradedAlgebra.proj_apply,
+    coe_decompose_mul_add_of_right_mem 𝒜 (a := c) (i := j) (eval m 0 y).num_mem_deg,
+    eval_zero] at eq1
+  refine ⟨⟨Quotient.mk'' ⟨m * j,
+    ⟨decompose 𝒜 c j ^ m, SetLike.pow_mem_graded m (Submodule.coe_mem _)⟩,
+    ⟨f^j, mul_comm m j ▸ SetLike.pow_mem_graded j f_deg.out⟩, ⟨j, rfl⟩⟩, hc⟩, ?_⟩
+  rw [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.mul_val,
+    HomogeneousLocalization.val_mk'', HomogeneousLocalization.val_mk'',
+    HomogeneousLocalization.zero_val, mk_mul]
+  simp only [eval_zero, ← mul_assoc]
+  rw [show ∀ x : A, decompose 𝒜 c j ^ m * x = (decompose 𝒜 c j * x) * decompose 𝒜 c j ^ m.pred from
+    fun x ↦ calc _ = decompose 𝒜 c j ^ (1 + m.pred) * x :=
+                      by congr; rw [add_comm]; exact Nat.succ_pred_eq_of_pos hm.out |>.symm
+                  _ = decompose 𝒜 c j * decompose 𝒜 c j ^ m.pred * x := by rw [pow_add, pow_one]
+                  _ = decompose 𝒜 c j * x * decompose 𝒜 c j ^ m.pred := by ring,
+    eq1, zero_mul, zero_mul]
+  exact Localization.mk_zero _
+
+lemma β_one : β m 1 y = 1 := by
+  rw [show (1 : Localization.AtPrime y.1.asIdeal) = Localization.mk 1 1 from
+    Localization.mk_self 1 |>.symm, β, mk_eq_mk_iff, r_iff_exists]
+  have eq1 := (eval m 1 y).eq_num_div_den.symm
+  rw [eval_one, HomogeneousLocalization.one_val,
+    show (1 : Localization.AtPrime (ψ y.1).1.asHomogeneousIdeal.toIdeal) = .mk 1 1 from
+    mk_self 1 |>.symm, mk_eq_mk_iff, r_iff_exists] at eq1
+  obtain ⟨⟨c, (hc : ¬ ∀ _, _)⟩, eq1⟩ := eq1
+  rw [not_forall] at hc
+  obtain ⟨j, hc⟩ := hc
+  simp only [one_mul, mul_one, Submonoid.coe_one] at eq1 ⊢
+  replace eq1 : GradedAlgebra.proj 𝒜 (j + (eval m 1 y).deg) (c * (eval m 1 y).num) = _
+  · rw [eval_one, eq1]
+  rw [GradedAlgebra.proj_apply, GradedAlgebra.proj_apply,
+    coe_decompose_mul_add_of_right_mem 𝒜 (a := c) (i := j) (eval m 1 y).num_mem_deg,
+    coe_decompose_mul_add_of_right_mem 𝒜 (a := c) (i := j) (HomogeneousLocalization.den_mem_deg _),
+    eval_one] at eq1
+  refine ⟨⟨Quotient.mk'' ⟨m * j,
+    ⟨decompose 𝒜 c j ^ m, SetLike.pow_mem_graded m (Submodule.coe_mem _)⟩,
+    ⟨f^j, mul_comm m j ▸ SetLike.pow_mem_graded j f_deg.out⟩, ⟨j, rfl⟩⟩, hc⟩, ?_⟩
+  rw [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.mul_val,
+    HomogeneousLocalization.val_mk'', HomogeneousLocalization.val_mk'',
+    HomogeneousLocalization.mul_val, HomogeneousLocalization.val_mk'', mk_mul,
+    HomogeneousLocalization.val_mk'', mk_mul]
+  simp only [eval_one, ← mul_assoc]
+  have eq0 (x : A) : x^m = x * x^m.pred
+  · rw [show m = (1 + m.pred) by rw [add_comm]; exact Nat.succ_pred_eq_of_pos hm.out |>.symm,
+      pow_add, pow_one]
+  have reorder (x : A) : decompose 𝒜 c j ^ m * x = (decompose 𝒜 c j * x) * decompose 𝒜 c j ^ m.pred
+  · calc _ = decompose 𝒜 c j * decompose 𝒜 c j ^ m.pred * x := by rw [eq0]
+         _ = decompose 𝒜 c j * x * decompose 𝒜 c j ^ m.pred := by ring
+  rw [reorder, eq1, ← reorder, mul_assoc, ← eq0]
+
+-- lemma β_add (s s' : φ _* (Proj| (pbo f)).presheaf |>.obj V) :
+--     β m (s + s' : φ _* (Proj| (pbo f)).presheaf |>.obj V) y = β m s y + β m s' y := by
+--   sorry
+
+-- lemma β_mul (s s' : φ _* (Proj| (pbo f)).presheaf |>.obj V) :
+--     β m (s * s' : φ _* (Proj| (pbo f)).presheaf |>.obj V) y = β m s y * β m s' y := by
+--   sorry
+
+end ToSpec
 
 end ProjIsoSpecSheafComponent
 
