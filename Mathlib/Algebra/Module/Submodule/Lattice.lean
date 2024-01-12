@@ -236,21 +236,66 @@ instance : Inf (Submodule R M) :=
       add_mem' := by simp (config := { contextual := true }) [add_mem]
       smul_mem' := by simp (config := { contextual := true }) [smul_mem] }⟩
 
+instance : SupSet (Submodule R M) where
+  sSup S :=
+    { sSup (toAddSubmonoid '' S) with
+      smul_mem' := fun t {m} hm ↦ by
+        simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup] at hm ⊢
+        rw [sSup_eq_iSup'] at hm ⊢
+        refine AddSubmonoid.iSup_induction'
+          (C := fun x _ ↦ t • x ∈ ⨆ p : toAddSubmonoid '' S, (p : AddSubmonoid M)) ?_ ?_
+          (fun x y _ _ ↦ ?_) hm
+        · rintro ⟨-, ⟨p : Submodule R M, hp : p ∈ S, rfl⟩⟩ x (hx : x ∈ p)
+          suffices p.toAddSubmonoid ≤ ⨆ q : toAddSubmonoid '' S, (q : AddSubmonoid M) by
+            exact this (smul_mem p t hx)
+          apply le_sSup
+          rw [Subtype.range_coe_subtype]
+          exact ⟨p, hp, rfl⟩
+        · simpa only [smul_zero] using zero_mem _
+        · simp_rw [smul_add]; exact add_mem }
+
+instance : Sup (Submodule R M) where
+  sup p q :=
+    { toAddSubmonoid := p.toAddSubmonoid ⊔ q.toAddSubmonoid
+      smul_mem' := fun t m (hm : m ∈ p.toAddSubmonoid ⊔ q.toAddSubmonoid) ↦ by
+        change t • m ∈ p.toAddSubmonoid ⊔ q.toAddSubmonoid
+        rw [AddSubmonoid.mem_sup] at hm ⊢
+        obtain ⟨y, hy, z, hz, rfl⟩ := hm
+        exact ⟨t • y, p.smul_mem t hy, t • z, q.smul_mem t hz, (smul_add _ _ _).symm⟩ }
+
+@[simp]
+theorem sInf_coe (P : Set (Submodule R M)) : (↑(sInf P) : Set M) = ⋂ p ∈ P, ↑p :=
+  rfl
+#align submodule.Inf_coe Submodule.sInf_coe
+
+theorem toAddSubmonoid_inf (p q : Submodule R M) :
+    (p ⊓ q).toAddSubmonoid = p.toAddSubmonoid ⊓ q.toAddSubmonoid := by
+  rfl
+
+theorem toAddSubmonoid_sInf (S : Set (Submodule R M)) :
+    (sInf S).toAddSubmonoid = sInf {x | ∃ s ∈ S, s.toAddSubmonoid = x} :=
+  SetLike.coe_injective <| by simp
+
+theorem toAddSubmonoid_sInf' (S : Set (Submodule R M)) :
+    (sInf S).toAddSubmonoid = ⨅ p ∈ S, p.toAddSubmonoid := by
+  rw [toAddSubmonoid_sInf, ← Set.image, sInf_image]
+
+theorem toAddSubmonoid_sup (p q : Submodule R M) :
+    (p ⊔ q).toAddSubmonoid = p.toAddSubmonoid ⊔ q.toAddSubmonoid := by
+  rfl
+
+theorem toAddSubmonoid_sSup (S : Set (Submodule R M)) :
+    (sSup S).toAddSubmonoid = sSup {x | ∃ s ∈ S, s.toAddSubmonoid = x} :=
+  rfl
+
+theorem toAddSubmonoid_sSup' (S : Set (Submodule R M)) :
+    (sSup S).toAddSubmonoid = ⨆ p ∈ S, p.toAddSubmonoid := by
+  rw [toAddSubmonoid_sSup, ← Set.image, sSup_image]
+
 instance completeLattice : CompleteLattice (Submodule R M) :=
-  { (inferInstance : OrderTop (Submodule R M)),
-    (inferInstance : OrderBot (Submodule R M)) with
-    sup := fun a b ↦ sInf { x | a ≤ x ∧ b ≤ x }
-    le_sup_left := fun _ _ ↦ le_sInf' fun _ ⟨h, _⟩ ↦ h
-    le_sup_right := fun _ _ ↦ le_sInf' fun _ ⟨_, h⟩ ↦ h
-    sup_le := fun _ _ _ h₁ h₂ ↦ sInf_le' ⟨h₁, h₂⟩
-    inf := (· ⊓ ·)
-    le_inf := fun _ _ _ ↦ Set.subset_inter
-    inf_le_left := fun _ _ ↦ Set.inter_subset_left _ _
-    inf_le_right := fun _ _ ↦ Set.inter_subset_right _ _
-    le_sSup := fun _ _ hs ↦ le_sInf' fun _ hq ↦ by exact hq _ hs
-    sSup_le := fun _ _ hs ↦ sInf_le' hs
-    le_sInf := fun _ _ ↦ le_sInf'
-    sInf_le := fun _ _ ↦ sInf_le' }
+  { toAddSubmonoid_injective.completeLattice toAddSubmonoid toAddSubmonoid_sup toAddSubmonoid_inf
+      toAddSubmonoid_sSup' toAddSubmonoid_sInf' rfl rfl with
+    toPartialOrder := SetLike.instPartialOrder }
 #align submodule.complete_lattice Submodule.completeLattice
 
 @[simp]
@@ -262,11 +307,6 @@ theorem inf_coe : ↑(p ⊓ q) = (p ∩ q : Set M) :=
 theorem mem_inf {p q : Submodule R M} {x : M} : x ∈ p ⊓ q ↔ x ∈ p ∧ x ∈ q :=
   Iff.rfl
 #align submodule.mem_inf Submodule.mem_inf
-
-@[simp]
-theorem sInf_coe (P : Set (Submodule R M)) : (↑(sInf P) : Set M) = ⋂ p ∈ P, ↑p :=
-  rfl
-#align submodule.Inf_coe Submodule.sInf_coe
 
 @[simp]
 theorem finset_inf_coe {ι} (s : Finset ι) (p : ι → Submodule R M) :
