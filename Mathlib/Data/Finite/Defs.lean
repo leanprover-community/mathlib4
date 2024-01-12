@@ -57,8 +57,9 @@ A particular benefit to this is that `Finite` instances are definitionally equal
 (due to proof irrelevance) rather than being merely propositionally equal,
 and, furthermore, `Finite` instances generally avoid the need for `Decidable` instances.
 One other notable difference is that `Finite` allows there to be `Finite p` instances
-for `p : Prop`, which is not allowed by `Fintype` due to universe constraints.
-An application of this is that `Finite (x ∈ s → β x)` follows from the general pi `Finite` instance.
+for all `p : Prop`, which is not allowed by `Fintype` due to universe constraints.
+An application of this is that `Finite (x ∈ s → β x)` follows from the general instance for pi
+types, assuming `[∀ x, Finite (β x)]`.
 Implementation note: this is a reason `Finite α` is not defined as `Nonempty (Fintype α)`.
 
 Every `Fintype` instance provides a `Finite` instance via `Finite.of_fintype`.
