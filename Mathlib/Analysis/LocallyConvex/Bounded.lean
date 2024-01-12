@@ -253,11 +253,8 @@ theorem TotallyBounded.isVonNBounded {s : Set E} (hs : TotallyBounded s) :
   rcases hs x.snd hx.2.1 with ⟨t, ht, hs⟩
   refine' Absorbs.mono_right _ hs
   rw [ht.absorbs_iUnion]
-  have hx_fstsnd : x.fst + x.snd ⊆ U := by
-    intro z hz
-    rcases Set.mem_add.mp hz with ⟨z1, z2, hz1, hz2, hz⟩
-    have hz' : (z1, z2) ∈ x.fst ×ˢ x.snd := ⟨hz1, hz2⟩
-    simpa only [hz] using h'' hz'
+  have hx_fstsnd : x.fst + x.snd ⊆ U := add_subset_iff.mpr fun z1 hz1 z2 hz2 ↦
+    h'' <| mk_mem_prod hz1 hz2
   refine' fun y _ => Absorbs.mono_left _ hx_fstsnd
   rw [← Set.singleton_vadd, vadd_eq_add]
   exact (absorbent_nhds_zero hx.1.1).absorbs.add hx.2.2.absorbs_self

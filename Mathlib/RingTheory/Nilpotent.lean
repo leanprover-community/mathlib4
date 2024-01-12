@@ -122,7 +122,7 @@ theorem Commute.IsNilpotent.add_isUnit [Ring R] {r : R} {u : Rˣ} (hnil : IsNilp
   simp
 
 /-- A structure that has zero and pow is reduced if it has no nonzero nilpotent elements. -/
-@[mk_iff isReduced_iff]
+@[mk_iff]
 class IsReduced (R : Type*) [Zero R] [Pow R ℕ] : Prop where
   /-- A reduced structure has no nonzero nilpotent elements. -/
   eq_zero : ∀ x : R, IsNilpotent x → x = 0

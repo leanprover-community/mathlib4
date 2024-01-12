@@ -828,9 +828,8 @@ theorem fix_aux {α σ} (f : α →. Sum σ α) (a : α) (b : σ) :
     · cases' h₁ (Nat.lt_succ_self _) with a' h
       injection mem_unique h h₂
     · exact this _ _ am' (PFun.mem_fix_iff.2 (Or.inl fa'))
-  · suffices
-      ∀ (a') (_ : b ∈ PFun.fix f a') (k) (_ : Sum.inr a' ∈ F a k),
-        ∃ n, Sum.inl b ∈ F a n ∧ ∀ m < n, ∀ (_ : k ≤ m), ∃ a₂, Sum.inr a₂ ∈ F a m by
+  · suffices ∀ a', b ∈ PFun.fix f a' → ∀ k, Sum.inr a' ∈ F a k →
+        ∃ n, Sum.inl b ∈ F a n ∧ ∀ m < n, k ≤ m → ∃ a₂, Sum.inr a₂ ∈ F a m by
       rcases this _ h 0 (by simp) with ⟨n, hn₁, hn₂⟩
       exact ⟨_, ⟨⟨_, hn₁⟩, fun {m} mn => hn₂ m mn (Nat.zero_le _)⟩, hn₁⟩
     intro a₁ h₁

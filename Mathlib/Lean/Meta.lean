@@ -17,16 +17,6 @@ open Lean Meta
 
 namespace Lean.MVarId
 
-/-- Solve a goal by synthesizing an instance. -/
--- FIXME: probably can just be `g.inferInstance` once lean4#2054 is fixed
-def synthInstance (g : MVarId) : MetaM Unit := do
-  g.assign (← Lean.Meta.synthInstance (← g.getType))
-
-/-- Add the hypothesis `h : t`, given `v : t`, and return the new `FVarId`. -/
-def note (g : MVarId) (h : Name) (v : Expr) (t : Option Expr := .none) :
-    MetaM (FVarId × MVarId) := do
-  (← g.assert h (← t.getDM (inferType v)) v).intro1P
-
 /-- Add the hypothesis `h : t`, given `v : t`, and return the new `FVarId`. -/
 def «let» (g : MVarId) (h : Name) (v : Expr) (t : Option Expr := .none) :
     MetaM (FVarId × MVarId) := do
@@ -36,7 +26,7 @@ def «let» (g : MVarId) (h : Name) (v : Expr) (t : Option Expr := .none) :
 -/
 def existsi (mvar : MVarId) (es : List Expr) : MetaM MVarId := do
   es.foldlM (λ mv e => do
-      let (subgoals,_) ← Elab.Term.TermElabM.run $ Elab.Tactic.run mv do
+      let (subgoals,_) ← Elab.Term.TermElabM.run <| Elab.Tactic.run mv do
         Elab.Tactic.evalTactic (← `(tactic| refine ⟨?_,?_⟩))
       let [sg1, sg2] := subgoals | throwError "expected two subgoals"
       sg1.assign e

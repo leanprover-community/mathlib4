@@ -1326,7 +1326,7 @@ def piEquivSubtypeSigma (ι) (π : ι → Type*) :
   left_inv := fun f => funext fun i => rfl
   right_inv := fun ⟨f, hf⟩ =>
     Subtype.eq <| funext fun i =>
-      Sigma.eq (hf i).symm <| eq_of_heq <| rec_heq_of_heq _ <| by simp
+      Sigma.eq (hf i).symm <| eq_of_heq <| rec_heq_of_heq _ <| by simp [eq_mpr_eq_cast]
 #align equiv.pi_equiv_subtype_sigma Equiv.piEquivSubtypeSigma
 
 /-- The type of functions `f : ∀ a, β a` such that for all `a` we have `p a (f a)` is equivalent
@@ -1475,27 +1475,6 @@ theorem subtypeEquivCodomain_symm_apply_ne
 #align equiv.subtype_equiv_codomain_symm_apply_ne Equiv.subtypeEquivCodomain_symm_apply_ne
 
 end subtypeEquivCodomain
-
-/-- If `f` is a bijective function, then its domain is equivalent to its codomain. -/
-@[simps apply]
-noncomputable def ofBijective (f : α → β) (hf : Bijective f) : α ≃ β where
-  toFun := f
-  invFun := Function.surjInv hf.surjective
-  left_inv := Function.leftInverse_surjInv hf
-  right_inv := Function.rightInverse_surjInv _
-#align equiv.of_bijective Equiv.ofBijective
-#align equiv.of_bijective_apply Equiv.ofBijective_apply
-
-theorem ofBijective_apply_symm_apply (f : α → β) (hf : Bijective f) (x : β) :
-    f ((ofBijective f hf).symm x) = x :=
-  (ofBijective f hf).apply_symm_apply x
-#align equiv.of_bijective_apply_symm_apply Equiv.ofBijective_apply_symm_apply
-
-@[simp]
-theorem ofBijective_symm_apply_apply (f : α → β) (hf : Bijective f) (x : α) :
-    (ofBijective f hf).symm (f x) = x :=
-  (ofBijective f hf).symm_apply_apply x
-#align equiv.of_bijective_symm_apply_apply Equiv.ofBijective_symm_apply_apply
 
 instance : CanLift (α → β) (α ≃ β) (↑) Bijective where prf f hf := ⟨ofBijective f hf, rfl⟩
 
@@ -1836,6 +1815,11 @@ def piCongrLeft' (P : α → Sort*) (e : α ≃ β) : (∀ a, P a) ≃ ∀ b, P 
 LHS would have type `P a` while the RHS would have type `P (e.symm (e a))`. For that reason,
 we have to explicitly substitute along `e.symm (e a) = a` in the statement of this lemma. -/
 add_decl_doc Equiv.piCongrLeft'_symm_apply
+
+/-- This lemma is impractical to state in the dependent case. -/
+@[simp]
+theorem piCongrLeft'_symm (P : Sort*) (e : α ≃ β) :
+    (piCongrLeft' (fun _ => P) e).symm = piCongrLeft' _ e.symm := by ext; simp [piCongrLeft']
 
 /-- Note: the "obvious" statement `(piCongrLeft' P e).symm g a = g (e a)` doesn't typecheck: the
 LHS would have type `P a` while the RHS would have type `P (e.symm (e a))`. This lemma is a way

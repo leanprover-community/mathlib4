@@ -28,9 +28,10 @@ require «doc-gen4» from git "https://github.com/leanprover/doc-gen4" @ "main"
 
 require std from git "https://github.com/leanprover/std4" @ "nightly-testing"
 require Qq from git "https://github.com/leanprover-community/quote4" @ "master"
-require aesop from git "https://github.com/leanprover-community/aesop" @ "master"
-require proofwidgets from git "https://github.com/leanprover-community/ProofWidgets4" @ "v0.0.24-pre2"
+require aesop from git "https://github.com/leanprover-community/aesop" @ "nightly-testing"
+require proofwidgets from git "https://github.com/leanprover-community/ProofWidgets4" @ "v0.0.25"
 require Cli from git "https://github.com/leanprover/lean4-cli" @ "main"
+require importGraph from git "https://github.com/leanprover-community/import-graph.git" @ "main"
 
 /-!
 ## Mathlib libraries
@@ -43,7 +44,6 @@ lean_lib Cache
 lean_lib MathlibExtras
 lean_lib Archive
 lean_lib Counterexamples
-lean_lib ImportGraph
 /-- Additional documentation in the form of modules that only contain module docstrings. -/
 lean_lib docs where
   roots := #[`docs]
@@ -59,11 +59,6 @@ lean_exe cache where
 /-- `lake exe checkYaml` verifies that all declarations referred to in `docs/*.yaml` files exist. -/
 lean_exe checkYaml where
   srcDir := "scripts"
-  supportInterpreter := true
-
-/-- `lake exe graph` constructs import graphs in `.dot` or graphical formats. -/
-lean_exe graph where
-  root := `ImportGraph.Main
   supportInterpreter := true
 
 /-!
@@ -93,7 +88,7 @@ post_update pkg do
     -/
     let exitCode ← IO.Process.spawn {
       cmd := "elan"
-      args := #["run", mathlibToolchain.trim, "lake", "exe", "cache", "get"]
+      args := #["run", "--install", mathlibToolchain.trim, "lake", "exe", "cache", "get"]
     } >>= (·.wait)
     if exitCode ≠ 0 then
       logError s!"{pkg.name}: failed to fetch cache"

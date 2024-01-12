@@ -148,17 +148,9 @@ lemma IsCompact.smul_set {k : Set M} {u : Set X} (hk : IsCompact k) (hu : IsComp
 
 @[to_additive]
 lemma smul_set_closure_subset (K : Set M) (L : Set X) :
-    closure K • closure L ⊆ closure (K • L) := by
-  rintro - ⟨x, y, hx, hy, rfl⟩
-  apply mem_closure_iff_nhds.2 (fun u hu ↦ ?_)
-  have A : (fun p ↦ p.fst • p.snd) ⁻¹' u ∈ 𝓝 (x, y) :=
-    (continuous_smul.continuousAt (x := (x, y))).preimage_mem_nhds hu
-  obtain ⟨a, ha, b, hb, hab⟩ :
-    ∃ a, a ∈ 𝓝 x ∧ ∃ b, b ∈ 𝓝 y ∧ a ×ˢ b ⊆ (fun p ↦ p.fst • p.snd) ⁻¹' u :=
-      mem_nhds_prod_iff.1 A
-  obtain ⟨x', ⟨x'a, x'K⟩⟩ : Set.Nonempty (a ∩ K) := mem_closure_iff_nhds.1 hx a ha
-  obtain ⟨y', ⟨y'b, y'L⟩⟩ : Set.Nonempty (b ∩ L) := mem_closure_iff_nhds.1 hy b hb
-  exact ⟨x' • y', hab (Set.mk_mem_prod x'a y'b), Set.smul_mem_smul x'K y'L⟩
+    closure K • closure L ⊆ closure (K • L) :=
+  Set.smul_subset_iff.2 fun _x hx _y hy ↦ map_mem_closure₂ continuous_smul hx hy fun _a ha _b hb ↦
+    Set.smul_mem_smul ha hb
 
 end SMul
 

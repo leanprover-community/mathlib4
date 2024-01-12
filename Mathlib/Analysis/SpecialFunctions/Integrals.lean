@@ -81,7 +81,7 @@ theorem intervalIntegrable_rpow' {r : ℝ} (h : -1 < r) :
       convert (Real.hasDerivAt_rpow_const (p := r + 1) (Or.inl hx.1.ne')).div_const (r + 1) using 1
       field_simp [(by linarith : r + 1 ≠ 0)]; ring
     apply integrableOn_deriv_of_nonneg _ hderiv
-    · intro x hx; apply rpow_nonneg_of_nonneg hx.1.le
+    · intro x hx; apply rpow_nonneg hx.1.le
     · refine' (continuousOn_id.rpow_const _).div_const _; intro x _; right; linarith
   intro c; rcases le_total 0 c with (hc | hc)
   · exact this c hc
@@ -387,7 +387,7 @@ theorem integral_rpow {r : ℝ} (h : -1 < r ∨ r ≠ -1 ∧ (0 : ℝ) ∉ [[a, 
     (∫ x in a..b, (x : ℂ) ^ (r : ℂ)) = ((b : ℂ) ^ (r + 1 : ℂ) - (a : ℂ) ^ (r + 1 : ℂ)) / (r + 1) :=
     integral_cpow h'
   apply_fun Complex.re at this; convert this
-  · simp_rw [intervalIntegral_eq_integral_uIoc, Complex.real_smul, Complex.ofReal_mul_re]
+  · simp_rw [intervalIntegral_eq_integral_uIoc, Complex.real_smul, Complex.re_ofReal_mul]
     · -- Porting note: was `change ... with ...`
       have : Complex.re = IsROrC.re := rfl
       rw [this, ← integral_re]; rfl
@@ -396,7 +396,7 @@ theorem integral_rpow {r : ℝ} (h : -1 < r ∨ r ≠ -1 ∧ (0 : ℝ) ∉ [[a, 
       · exact intervalIntegrable_cpow' h'
       · exact intervalIntegrable_cpow (Or.inr h'.2)
   · rw [(by push_cast; rfl : (r : ℂ) + 1 = ((r + 1 : ℝ) : ℂ))]
-    simp_rw [div_eq_inv_mul, ← Complex.ofReal_inv, Complex.ofReal_mul_re, Complex.sub_re]
+    simp_rw [div_eq_inv_mul, ← Complex.ofReal_inv, Complex.re_ofReal_mul, Complex.sub_re]
     rfl
 #align integral_rpow integral_rpow
 
@@ -612,8 +612,8 @@ theorem integral_mul_cpow_one_add_sq {t : ℂ} (ht : t ≠ -1) :
     · exact continuous_const.add (continuous_ofReal.pow 2)
     · exact continuous_const
     · intro a
-      rw [add_re, one_re, ← ofReal_pow, ofReal_re]
-      exact Or.inl (add_pos_of_pos_of_nonneg zero_lt_one (sq_nonneg a))
+      norm_cast
+      exact ofReal_mem_slitPlane.2 <| add_pos_of_pos_of_nonneg one_pos <| sq_nonneg a
 #align integral_mul_cpow_one_add_sq integral_mul_cpow_one_add_sq
 
 theorem integral_mul_rpow_one_add_sq {t : ℝ} (ht : t ≠ -1) :

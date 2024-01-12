@@ -58,6 +58,7 @@ theorem sq_add_sq_of_two_mul_sq_add_sq {m x y : ℤ} (h : 2 * m = x ^ 2 + y ^ 2)
         rw [even_iff_two_dvd] at hxsuby hxaddy
         rw [Int.mul_ediv_cancel' hxsuby, Int.mul_ediv_cancel' hxaddy]
       _ = 2 * 2 * (((x - y) / 2) ^ 2 + ((x + y) / 2) ^ 2) := by
+        set_option simprocs false in
         simp [mul_add, pow_succ, mul_comm, mul_assoc, mul_left_comm]
 #align int.sq_add_sq_of_two_mul_sq_add_sq Int.sq_add_sq_of_two_mul_sq_add_sq
 
@@ -161,7 +162,7 @@ protected theorem Prime.sum_four_squares {p : ℕ} (hp : p.Prime) :
   by_cases hm : 2 ∣ m
   · -- If `m` is an even number, then `(m / 2) * p` can be represented as a sum of four squares
     rcases hm with ⟨m, rfl⟩
-    rw [zero_lt_mul_left two_pos] at hm₀
+    rw [mul_pos_iff_of_pos_left two_pos] at hm₀
     have hm₂ : m < 2 * m := by simpa [two_mul]
     apply_fun (Nat.cast : ℕ → ℤ) at habcd
     push_cast [mul_assoc] at habcd

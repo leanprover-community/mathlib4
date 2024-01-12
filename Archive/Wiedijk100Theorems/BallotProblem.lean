@@ -167,14 +167,14 @@ theorem countedSequence_finite : ∀ p q : ℕ, (countedSequence p q).Finite
     rw [counted_succ_succ, Set.finite_union, Set.finite_image_iff (List.cons_injective.injOn _),
       Set.finite_image_iff (List.cons_injective.injOn _)]
     exact ⟨countedSequence_finite _ _, countedSequence_finite _ _⟩
-termination_by _ p q => p + q -- Porting note: Added `termination_by`
+termination_by p q => p + q -- Porting note: Added `termination_by`
 #align ballot.counted_sequence_finite Ballot.countedSequence_finite
 
 theorem countedSequence_nonempty : ∀ p q : ℕ, (countedSequence p q).Nonempty
   | 0, q => by simp
   | p + 1, 0 => by simp
   | p + 1, q + 1 => by
-    rw [counted_succ_succ, union_nonempty, nonempty_image_iff]
+    rw [counted_succ_succ, union_nonempty, image_nonempty]
     exact Or.inl (countedSequence_nonempty _ _)
 #align ballot.counted_sequence_nonempty Ballot.countedSequence_nonempty
 
@@ -211,7 +211,7 @@ theorem count_countedSequence : ∀ p q : ℕ, count (countedSequence p q) = (p 
       count_injective_image List.cons_injective, count_countedSequence _ _]
     · norm_cast
       rw [add_assoc, add_comm 1 q, ← Nat.choose_succ_succ, Nat.succ_eq_add_one, add_right_comm]
-termination_by _ p q => p + q -- Porting note: Added `termination_by`
+termination_by p q => p + q -- Porting note: Added `termination_by`
 #align ballot.count_counted_sequence Ballot.count_countedSequence
 
 theorem first_vote_pos :
@@ -231,7 +231,7 @@ theorem first_vote_pos :
         ((countedSequence_finite _ _).image _) (disjoint_bits _ _),
       ← counted_succ_succ,
       condCount_eq_one_of ((countedSequence_finite p (q + 1)).image _)
-        (nonempty_image_iff.2 (countedSequence_nonempty _ _))]
+        ((countedSequence_nonempty _ _).image _)]
     · have : List.cons (-1) '' countedSequence (p + 1) q ∩ {l : List ℤ | l.headI = 1} = ∅ := by
         ext
         simp only [mem_inter_iff, mem_image, mem_setOf_eq, mem_empty_iff_false, iff_false_iff,

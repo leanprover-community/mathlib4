@@ -996,9 +996,7 @@ theorem Composition.toCompositionAsSet_blocks (c : Composition n) :
     c.toCompositionAsSet.blocks = c.blocks := by
   let d := c.toCompositionAsSet
   change d.blocks = c.blocks
-  have length_eq : d.blocks.length = c.blocks.length := by
-    convert c.toCompositionAsSet_length
-    simp [CompositionAsSet.blocks]
+  have length_eq : d.blocks.length = c.blocks.length := by simp [blocks_length]
   suffices H : ∀ i ≤ d.blocks.length, (d.blocks.take i).sum = (c.blocks.take i).sum
   exact eq_of_sum_take_eq length_eq H
   intro i hi
@@ -1045,6 +1043,7 @@ theorem Composition.toCompositionAsSet_boundaries (c : Composition n) :
   rfl
 #align composition.to_composition_as_set_boundaries Composition.toCompositionAsSet_boundaries
 
+set_option maxHeartbeats 400000 in
 /-- Equivalence between `Composition n` and `CompositionAsSet n`. -/
 def compositionEquiv (n : ℕ) : Composition n ≃ CompositionAsSet n
     where

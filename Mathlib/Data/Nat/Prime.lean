@@ -95,7 +95,7 @@ theorem Prime.eq_one_or_self_of_dvd {p : ℕ} (pp : p.Prime) (m : ℕ) (hm : m �
   rw [hn, mul_one]
 #align nat.prime.eq_one_or_self_of_dvd Nat.Prime.eq_one_or_self_of_dvd
 
-theorem prime_def_lt'' {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ (m) (_ : m ∣ p), m = 1 ∨ m = p := by
+theorem prime_def_lt'' {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m, m ∣ p → m = 1 ∨ m = p := by
   refine' ⟨fun h => ⟨h.two_le, h.eq_one_or_self_of_dvd⟩, fun h => _⟩
   -- Porting note: needed to make ℕ explicit
   have h1 := (@one_lt_two ℕ ..).trans_le h.1
@@ -255,7 +255,7 @@ def minFacAux (n : ℕ) : ℕ → ℕ
       else
         have := minFac_lemma n k h
         minFacAux n (k + 2)
-termination_by _ n k => sqrt n + 2 - k
+termination_by k => sqrt n + 2 - k
 #align nat.min_fac_aux Nat.minFacAux
 
 /-- Returns the smallest prime factor of `n ≠ 1`. -/
@@ -306,7 +306,7 @@ theorem minFacAux_has_prop {n : ℕ} (n2 : 2 ≤ n) :
       have := a _ le_rfl (dvd_of_mul_right_dvd d')
       rw [e] at this
       exact absurd this (by contradiction)
-  termination_by _ n _ k => sqrt n + 2 - k
+  termination_by k => sqrt n + 2 - k
 #align nat.min_fac_aux_has_prop Nat.minFacAux_has_prop
 
 theorem minFac_has_prop {n : ℕ} (n1 : n ≠ 1) : minFacProp n (minFac n) := by

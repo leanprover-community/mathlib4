@@ -139,9 +139,7 @@ theorem lintegral_condKernelReal_mem {s : Set (α × ℝ)} (hs : MeasurableSet s
   apply MeasurableSpace.induction_on_inter generateFrom_prod.symm isPiSystem_prod _ _ _ _ hs
   · simp only [mem_empty_iff_false, setOf_false, measure_empty, lintegral_const,
       zero_mul]
-  · intro t ht
-    rw [mem_image2] at ht
-    obtain ⟨t₁, t₂, ht₁, ht₂, rfl⟩ := ht
+  · rintro _ ⟨t₁, ht₁, t₂, ht₂, rfl⟩
     have h_prod_eq_snd : ∀ a ∈ t₁, {x : ℝ | (a, x) ∈ t₁ ×ˢ t₂} = t₂ := by
       intro a ha
       simp only [ha, prod_mk_mem_set_prod_eq, true_and_iff, setOf_mem_eq]
@@ -495,7 +493,7 @@ lemma eq_condKernel_of_measure_eq_compProd_real (ρ : Measure (α × ℝ)) [IsFi
     Real.isPiSystem_Iic_rat
   · simp only [OuterMeasure.empty', Filter.eventually_true]
   · simp only [iUnion_singleton_eq_range, mem_range, forall_exists_index, forall_apply_eq_imp_iff]
-    exact ae_all_iff.2 <| fun q => eq_condKernel_of_measure_eq_compProd' ρ κ hκ measurableSet_Iic
+    exact ae_all_iff.2 fun q => eq_condKernel_of_measure_eq_compProd' ρ κ hκ measurableSet_Iic
   · filter_upwards [huniv] with x hxuniv t ht heq
     rw [measure_compl ht <| measure_ne_top _ _, heq, hxuniv, measure_compl ht <| measure_ne_top _ _]
   · refine' ae_of_all _ (fun x f hdisj hf heq => _)

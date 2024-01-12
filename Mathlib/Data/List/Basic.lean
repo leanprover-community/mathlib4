@@ -695,13 +695,6 @@ theorem getLast_congr {l₁ l₂ : List α} (h₁ : l₁ ≠ []) (h₂ : l₂ �
     getLast l₁ h₁ = getLast l₂ h₂ := by subst l₁; rfl
 #align list.last_congr List.getLast_congr
 
-theorem getLast_mem : ∀ {l : List α} (h : l ≠ []), getLast l h ∈ l
-  | [], h => absurd rfl h
-  | [a], _ => by simp only [getLast, mem_singleton]
-  | a :: b :: l, h =>
-    List.mem_cons.2 <| Or.inr <| by
-        rw [getLast_cons_cons]
-        exact getLast_mem (cons_ne_nil b l)
 #align list.last_mem List.getLast_mem
 
 theorem getLast_replicate_succ (m : ℕ) (a : α) :
@@ -711,11 +704,6 @@ theorem getLast_replicate_succ (m : ℕ) (a : α) :
 #align list.last_replicate_succ List.getLast_replicate_succ
 
 /-! ### getLast? -/
-
--- Porting note: New lemma, since definition of getLast? is slightly different.
-@[simp]
-theorem getLast?_singleton (a : α) :
-    getLast? [a] = a := rfl
 
 -- Porting note: Moved earlier in file, for use in subsequent lemmas.
 @[simp]
@@ -954,7 +942,7 @@ def reverseRecOn {C : List α → Sort*} (l : List α) (H0 : C [])
     let ih := reverseRecOn (reverse tail) H0 H1
     rw [reverse_cons]
     exact H1 _ _ ih
-termination_by _ _ l _ _ => l.length
+termination_by l.length
 #align list.reverse_rec_on List.reverseRecOn
 
 /-- Bidirectional induction principle for lists: if a property holds for the empty list, the
@@ -971,7 +959,7 @@ def bidirectionalRec {C : List α → Sort*} (H0 : C []) (H1 : ∀ a : α, C [a]
     rw [← dropLast_append_getLast (cons_ne_nil b l)]
     have : C l' := bidirectionalRec H0 H1 Hn l'
     exact Hn a l' b' this
-termination_by _ l => l.length
+termination_by l => l.length
 #align list.bidirectional_rec List.bidirectionalRecₓ -- universe order
 
 /-- Like `bidirectionalRec`, but with the list parameter placed first. -/
@@ -4223,6 +4211,8 @@ theorem getLast_reverse {l : List α} (hl : l.reverse ≠ [])
   · simpa using hl'
 #align list.last_reverse List.getLast_reverse
 
+set_option linter.deprecated false in
+@[deprecated]
 theorem ilast'_mem : ∀ a l, @ilast' α a l ∈ a :: l
   | a, [] => by simp [ilast']
   | a, b :: l => by rw [mem_cons]; exact Or.inr (ilast'_mem b l)

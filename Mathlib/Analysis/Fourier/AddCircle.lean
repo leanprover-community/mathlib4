@@ -358,7 +358,8 @@ theorem fourierCoeff_eq_intervalIntegral (f : AddCircle T → E) (n : ℤ) (a : 
     fourierCoeff f n = (1 / T) • ∫ x in a..a + T, @fourier T (-n) x • f x := by
   have : ∀ x : ℝ, @fourier T (-n) x • f x = (fun z : AddCircle T => @fourier T (-n) z • f z) x := by
     intro x; rfl
-  simp_rw [this]
+  -- After leanprover/lean4#3124, we need to add `singlePass := true` to avoid an infinite loop.
+  simp_rw (config := {singlePass := true}) [this]
   rw [fourierCoeff, AddCircle.intervalIntegral_preimage T a (fun z => _ • _),
     volume_eq_smul_haarAddCircle, integral_smul_measure, ENNReal.toReal_ofReal hT.out.le,
     ← smul_assoc, smul_eq_mul, one_div_mul_cancel hT.out.ne', one_smul]
@@ -550,11 +551,7 @@ theorem has_antideriv_at_fourier_neg (hT : Fact (0 < T)) {n : ℤ} (hn : n ≠ 0
       (fourier (-n) (x : AddCircle T)) x := by
   convert (hasDerivAt_fourier_neg T n x).div_const (-2 * π * I * n / T) using 1
   · ext1 y; rw [div_div_eq_mul_div]; ring
-  · rw [mul_div_cancel_left]
-    simp only [Ne.def, div_eq_zero_iff, neg_eq_zero, mul_eq_zero, bit0_eq_zero, one_ne_zero,
-      ofReal_eq_zero, false_or_iff, Int.cast_eq_zero, not_or]
-    norm_num
-    exact ⟨⟨⟨Real.pi_ne_zero, I_ne_zero⟩, hn⟩, hT.out.ne'⟩
+  · simp [mul_div_cancel_left, hn, (Fact.out : 0 < T).ne', Real.pi_pos.ne']
 #align has_antideriv_at_fourier_neg has_antideriv_at_fourier_neg
 
 /-- Express Fourier coefficients of `f` on an interval in terms of those of its derivative. -/

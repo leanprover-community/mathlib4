@@ -247,9 +247,9 @@ subalgebra is just the reverse of the representation. -/
 theorem coe_toEven_reverse_involute (x : CliffordAlgebra Q) :
     ↑(toEven Q (reverse (involute x))) =
       reverse (Q := Q' Q) (toEven Q x : CliffordAlgebra (Q' Q)) := by
-  induction x using CliffordAlgebra.induction
-  case h_grade0 r => simp only [AlgHom.commutes, Subalgebra.coe_algebraMap, reverse.commutes]
-  case h_grade1 m =>
+  induction x using CliffordAlgebra.induction with
+  | h_grade0 r => simp only [AlgHom.commutes, Subalgebra.coe_algebraMap, reverse.commutes]
+  | h_grade1 m =>
     -- porting note: added `letI`
     letI : SubtractionMonoid (even (Q' Q)) := AddGroup.toSubtractionMonoid
     simp only [involute_ι, Subalgebra.coe_neg, toEven_ι, reverse.map_mul, reverse_v, reverse_e0,

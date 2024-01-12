@@ -106,7 +106,7 @@ theorem Finset.centerMass_segment (s : Finset ι) (w₁ w₂ : ι → R) (z : ι
     a • s.centerMass w₁ z + b • s.centerMass w₂ z =
     s.centerMass (fun i => a * w₁ i + b * w₂ i) z := by
   have hw : (∑ i in s, (a * w₁ i + b * w₂ i)) = 1 := by
-    simp only [mul_sum.symm, sum_add_distrib, mul_one, *]
+    simp only [← mul_sum, sum_add_distrib, mul_one, *]
   simp only [Finset.centerMass_eq_of_sum_1, Finset.centerMass_eq_of_sum_1 _ _ hw,
     smul_sum, sum_add_distrib, add_smul, mul_smul, *]
 #align finset.center_mass_segment Finset.centerMass_segment
@@ -143,8 +143,8 @@ namespace Finset
 theorem centerMass_le_sup {s : Finset ι} {f : ι → α} {w : ι → R} (hw₀ : ∀ i ∈ s, 0 ≤ w i)
     (hw₁ : 0 < ∑ i in s, w i) :
     s.centerMass w f ≤ s.sup' (nonempty_of_ne_empty <| by rintro rfl; simp at hw₁) f := by
-  rw [centerMass, inv_smul_le_iff hw₁, sum_smul]
-  exact sum_le_sum fun i hi => smul_le_smul_of_nonneg (le_sup' _ hi) <| hw₀ i hi
+  rw [centerMass, inv_smul_le_iff_of_pos hw₁, sum_smul]
+  exact sum_le_sum fun i hi => smul_le_smul_of_nonneg_left (le_sup' _ hi) <| hw₀ i hi
 #align finset.center_mass_le_sup Finset.centerMass_le_sup
 
 theorem inf_le_centerMass {s : Finset ι} {f : ι → α} {w : ι → R} (hw₀ : ∀ i ∈ s, 0 ≤ w i)
@@ -241,7 +241,7 @@ theorem Finset.centerMass_mem_convexHull (t : Finset ι) {w : ι → R} (hw₀ :
 lemma Finset.centerMass_mem_convexHull_of_nonpos (t : Finset ι) (hw₀ : ∀ i ∈ t, w i ≤ 0)
     (hws : ∑ i in t, w i < 0) (hz : ∀ i ∈ t, z i ∈ s) : t.centerMass w z ∈ convexHull R s := by
   rw [← centerMass_neg_left]
-  exact Finset.centerMass_mem_convexHull _ (λ _i hi ↦ neg_nonneg.2 $ hw₀ _ hi) (by simpa) hz
+  exact Finset.centerMass_mem_convexHull _ (λ _i hi ↦ neg_nonneg.2 <| hw₀ _ hi) (by simpa) hz
 
 /-- A refinement of `Finset.centerMass_mem_convexHull` when the indexed family is a `Finset` of
 the space. -/
@@ -341,7 +341,7 @@ theorem convexHull_eq (s : Set E) : convexHull R s =
       rw [Finset.mem_disjSum] at hi
       rcases hi with (⟨j, hj, rfl⟩ | ⟨j, hj, rfl⟩) <;> simp only [Sum.elim_inl, Sum.elim_inr] <;>
         apply_rules [mul_nonneg, hwx₀, hwy₀]
-    · simp [Finset.sum_sum_elim, Finset.mul_sum.symm, *]
+    · simp [Finset.sum_sum_elim, ← mul_sum, *]
     · intro i hi
       rw [Finset.mem_disjSum] at hi
       rcases hi with (⟨j, hj, rfl⟩ | ⟨j, hj, rfl⟩) <;> apply_rules [hzx, hzy]
@@ -364,7 +364,7 @@ theorem Finset.convexHull_eq (s : Finset E) : convexHull R ↑s =
     refine' ⟨_, _, _, rfl⟩
     · rintro i hi
       apply_rules [add_nonneg, mul_nonneg, hwx₀, hwy₀]
-    · simp only [Finset.sum_add_distrib, Finset.mul_sum.symm, mul_one, *]
+    · simp only [Finset.sum_add_distrib, ← mul_sum, mul_one, *]
   · rintro _ ⟨w, hw₀, hw₁, rfl⟩
     exact
       s.centerMass_mem_convexHull (fun x hx => hw₀ _ hx) (hw₁.symm ▸ zero_lt_one) fun x hx => hx
@@ -513,15 +513,13 @@ to prove that this map is linear. -/
 theorem Set.Finite.convexHull_eq_image {s : Set E} (hs : s.Finite) : convexHull R s =
     haveI := hs.fintype
     (⇑(∑ x : s, (@LinearMap.proj R s _ (fun _ => R) _ _ x).smulRight x.1)) '' stdSimplex R s := by
-  -- Porting note: Original proof didn't need to specify `hs.fintype`
-  rw [← @convexHull_basis_eq_stdSimplex _ _ _ hs.fintype, ← LinearMap.convexHull_image,
-    ← Set.range_comp]
-  simp_rw [Function.comp]
+  letI := hs.fintype
+  rw [← convexHull_basis_eq_stdSimplex, ← LinearMap.convexHull_image, ← Set.range_comp]
   apply congr_arg
+  simp_rw [Function.comp]
   convert Subtype.range_coe.symm
-  -- Porting note: Original proof didn't need to specify `hs.fintype` and `(1 : R)`
-  simp [LinearMap.sum_apply, ite_smul _ (1 : R), Finset.filter_eq,
-    @Finset.mem_univ _ hs.fintype _]
+  -- Porting note: Original proof didn't need to specify `(1 : R)`
+  simp [LinearMap.sum_apply, ite_smul _ _ (1 : R), Finset.filter_eq, Finset.mem_univ]
 #align set.finite.convex_hull_eq_image Set.Finite.convexHull_eq_image
 
 /-- All values of a function `f ∈ stdSimplex 𝕜 ι` belong to `[0, 1]`. -/

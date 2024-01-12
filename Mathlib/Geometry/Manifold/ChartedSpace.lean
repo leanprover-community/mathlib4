@@ -31,22 +31,22 @@ therefore two different ingredients in a charted space:
 We separate these two parts in the definition: the charted space structure is just the set of
 charts, and then the different smoothness requirements (smooth manifold, orientable manifold,
 contact manifold, and so on) are additional properties of these charts. These properties are
-formalized through the notion of structure groupoid, i.e., a set of local homeomorphisms stable
+formalized through the notion of structure groupoid, i.e., a set of partial homeomorphisms stable
 under composition and inverse, to which the change of coordinates should belong.
 
 ## Main definitions
 
-* `StructureGroupoid H` : a subset of local homeomorphisms of `H` stable under composition,
-  inverse and restriction (ex: local diffeos).
-* `continuousGroupoid H` : the groupoid of all local homeomorphisms of `H`.
+* `StructureGroupoid H` : a subset of partial homeomorphisms of `H` stable under composition,
+  inverse and restriction (ex: partial diffeomorphisms).
+* `continuousGroupoid H` : the groupoid of all partial homeomorphisms of `H`.
 * `ChartedSpace H M` : charted space structure on `M` modelled on `H`, given by an atlas of
-  local homeomorphisms from `M` to `H` whose sources cover `M`. This is a type class.
+  partial homeomorphisms from `M` to `H` whose sources cover `M`. This is a type class.
 * `HasGroupoid M G` : when `G` is a structure groupoid on `H` and `M` is a charted space
   modelled on `H`, require that all coordinate changes belong to `G`. This is a type class.
 * `atlas H M` : when `M` is a charted space modelled on `H`, the atlas of this charted
   space structure, i.e., the set of charts.
 * `G.maximalAtlas M` : when `M` is a charted space modelled on `H` and admitting `G` as a
-  structure groupoid, one can consider all the local homeomorphisms from `M` to `H` such that
+  structure groupoid, one can consider all the partial homeomorphisms from `M` to `H` such that
   changing coordinate from any chart to them belongs to `G`. This is a larger atlas, called the
   maximal atlas (for the groupoid `G`).
 * `Structomorph G M M'` : the type of diffeomorphisms between the charted spaces `M` and `M'` for
@@ -59,7 +59,7 @@ This charted space structure is compatible with any groupoid.
 
 Additional useful definitions:
 
-* `Pregroupoid H` : a subset of local maps of `H` stable under composition and
+* `Pregroupoid H` : a subset of partial maps of `H` stable under composition and
   restriction, but not inverse (ex: smooth maps)
 * `Pregroupoid.groupoid` : construct a groupoid from a pregroupoid, by requiring that a map and
   its inverse both belong to the pregroupoid (ex: construct diffeos from smooth maps)
@@ -71,9 +71,9 @@ Additional useful definitions:
   maximal atlas associated to the groupoid `G`, the composition of `e.symm` and `e'` belongs to the
   `G` if `M` admits `G` as a structure groupoid.
 * `ChartedSpaceCore.toChartedSpace`: consider a space without a topology, but endowed with a set
-  of charts (which are local equivs) for which the change of coordinates are local homeos. Then
-  one can construct a topology on the space for which the charts become local homeos, defining
-  a genuine charted space structure.
+  of charts (which are partial equivs) for which the change of coordinates are partial homeos.
+  Then one can construct a topology on the space for which the charts become partial homeos,
+  defining a genuine charted space structure.
 
 ## Implementation notes
 
@@ -98,7 +98,7 @@ otherwise, there would be an instance from manifolds to topological spaces, whic
 instance search for topological spaces would try to find manifold structures involving a yet
 unknown model space, leading to problems. However, we also introduce the latter approach,
 through a structure `ChartedSpaceCore` making it possible to construct a topology out of a set of
-local equivs with compatibility conditions (but we do not register it as an instance).
+partial equivs with compatibility conditions (but we do not register it as an instance).
 
 In the definition of a charted space, the model space is written as an explicit parameter as there
 can be several model spaces for a given topological space. For instance, a complex manifold
@@ -106,22 +106,19 @@ can be several model spaces for a given topological space. For instance, a compl
 
 ## Notations
 
-In the locale `Manifold`, we denote the composition of local homeomorphisms with `≫ₕ`, and the
-composition of local equivs with `≫`.
+In the locale `Manifold`, we denote the composition of partial homeomorphisms with `≫ₕ`, and the
+composition of partial equivs with `≫`.
 -/
-
-set_option autoImplicit true
-
 
 noncomputable section
 
-open Classical Topology Filter
+open Topology
 
 universe u
 
 variable {H : Type u} {H' : Type*} {M : Type*} {M' : Type*} {M'' : Type*}
 
-/- Notational shortcut for the composition of local homeomorphisms and local equivs, i.e.,
+/- Notational shortcut for the composition of partial homeomorphisms and partial equivs, i.e.,
 `PartialHomeomorph.trans` and `PartialEquiv.trans`.
 Note that, as is usual for equivs, the composition is from left to right, hence the direction of
 the arrow. -/
@@ -145,13 +142,13 @@ groupoid is naturally a vector bundle) I prefer that the members of the groupoid
 defined on sets of the form `s × E`. There is a typeclass `ClosedUnderRestriction` for groupoids
 which have the restriction property.
 
-The only nontrivial requirement is locality: if a local homeomorphism belongs to the groupoid
+The only nontrivial requirement is locality: if a partial homeomorphism belongs to the groupoid
 around each point in its domain of definition, then it belongs to the groupoid. Without this
 requirement, the composition of structomorphisms does not have to be a structomorphism. Note that
-this implies that a local homeomorphism with empty source belongs to any structure groupoid, as
+this implies that a partial homeomorphism with empty source belongs to any structure groupoid, as
 it trivially satisfies this condition.
 
-There is also a technical point, related to the fact that a local homeomorphism is by definition a
+There is also a technical point, related to the fact that a partial homeomorphism is by definition a
 global map which is a homeomorphism when restricted to its source subset (and its values outside
 of the source are not relevant). Therefore, we also require that being a member of the groupoid only
 depends on the values on the source.
@@ -161,7 +158,7 @@ We use primes in the structure names as we will reformulate them below (without 
 -/
 
 
-/-- A structure groupoid is a set of local homeomorphisms of a topological space stable under
+/-- A structure groupoid is a set of partial homeomorphisms of a topological space stable under
 composition and inverse. They appear in the definition of the smoothness class of a manifold. -/
 structure StructureGroupoid (H : Type u) [TopologicalSpace H] where
   members : Set (PartialHomeomorph H H)
@@ -340,8 +337,8 @@ instance instStructureGroupoidOrderBot : OrderBot (StructureGroupoid H) where
 
 instance : Inhabited (StructureGroupoid H) := ⟨idGroupoid H⟩
 
-/-- To construct a groupoid, one may consider classes of local homeos such that both the function
-and its inverse have some property. If this property is stable under composition,
+/-- To construct a groupoid, one may consider classes of partial homeomorphisms such that
+both the function and its inverse have some property. If this property is stable under composition,
 one gets a groupoid. `Pregroupoid` bundles the properties needed for this construction, with the
 groupoid of smooth functions with smooth inverses as an application. -/
 structure Pregroupoid (H : Type*) [TopologicalSpace H] where
@@ -354,7 +351,7 @@ structure Pregroupoid (H : Type*) [TopologicalSpace H] where
   congr : ∀ {f g : H → H} {u}, IsOpen u → (∀ x ∈ u, g x = f x) → property f u → property g u
 #align pregroupoid Pregroupoid
 
-/-- Construct a groupoid of local homeos for which the map and its inverse have some property,
+/-- Construct a groupoid of partial homeos for which the map and its inverse have some property,
 from a pregroupoid asserting that this property is stable under composition. -/
 def Pregroupoid.groupoid (PG : Pregroupoid H) : StructureGroupoid H where
   members := { e : PartialHomeomorph H H | PG.property e e.source ∧ PG.property e.symm e.target }
@@ -414,7 +411,7 @@ theorem mem_pregroupoid_of_eq_on_source (PG : Pregroupoid H) {e e' : PartialHome
   exact PG.congr e.open_source he'.eqOn.symm he
 #align mem_pregroupoid_of_eq_on_source mem_pregroupoid_of_eq_on_source
 
-/-- The pregroupoid of all local maps on a topological space `H`. -/
+/-- The pregroupoid of all partial maps on a topological space `H`. -/
 @[reducible]
 def continuousPregroupoid (H : Type*) [TopologicalSpace H] : Pregroupoid H where
   property _ _ := True
@@ -427,12 +424,12 @@ def continuousPregroupoid (H : Type*) [TopologicalSpace H] : Pregroupoid H where
 instance (H : Type*) [TopologicalSpace H] : Inhabited (Pregroupoid H) :=
   ⟨continuousPregroupoid H⟩
 
-/-- The groupoid of all local homeomorphisms on a topological space `H`. -/
+/-- The groupoid of all partial homeomorphisms on a topological space `H`. -/
 def continuousGroupoid (H : Type*) [TopologicalSpace H] : StructureGroupoid H :=
   Pregroupoid.groupoid (continuousPregroupoid H)
 #align continuous_groupoid continuousGroupoid
 
-/-- Every structure groupoid is contained in the groupoid of all local homeomorphisms. -/
+/-- Every structure groupoid is contained in the groupoid of all partial homeomorphisms. -/
 instance instStructureGroupoidOrderTop : OrderTop (StructureGroupoid H) where
   top := continuousGroupoid H
   le_top _ _ _ := ⟨trivial, trivial⟩
@@ -466,13 +463,13 @@ theorem closedUnderRestriction' {G : StructureGroupoid H} [ClosedUnderRestrictio
   ClosedUnderRestriction.closedUnderRestriction he s hs
 #align closed_under_restriction' closedUnderRestriction'
 
-/-- The trivial restriction-closed groupoid, containing only local homeomorphisms equivalent to the
-restriction of the identity to the various open subsets. -/
+/-- The trivial restriction-closed groupoid, containing only partial homeomorphisms equivalent
+to the restriction of the identity to the various open subsets. -/
 def idRestrGroupoid : StructureGroupoid H where
   members := { e | ∃ (s : Set H) (h : IsOpen s), e ≈ PartialHomeomorph.ofSet s h }
   trans' := by
     rintro e e' ⟨s, hs, hse⟩ ⟨s', hs', hse'⟩
-    refine' ⟨s ∩ s', IsOpen.inter hs hs', _⟩
+    refine ⟨s ∩ s', hs.inter hs', ?_⟩
     have := PartialHomeomorph.EqOnSource.trans' hse hse'
     rwa [PartialHomeomorph.ofSet_trans_ofSet] at this
   symm' := by
@@ -505,7 +502,7 @@ theorem idRestrGroupoid_mem {s : Set H} (hs : IsOpen s) : ofSet s hs ∈ @idRest
 instance closedUnderRestriction_idRestrGroupoid : ClosedUnderRestriction (@idRestrGroupoid H _) :=
   ⟨by
     rintro e ⟨s', hs', he⟩ s hs
-    use s' ∩ s, IsOpen.inter hs' hs
+    use s' ∩ s, hs'.inter hs
     refine' Setoid.trans (PartialHomeomorph.EqOnSource.restr he s) _
     exact ⟨by simp only [hs.interior_eq, mfld_simps], by simp only [mfld_simps, eqOn_refl]⟩⟩
 #align closed_under_restriction_id_restr_groupoid closedUnderRestriction_idRestrGroupoid
@@ -537,8 +534,8 @@ theorem closedUnderRestriction_iff_id_le (G : StructureGroupoid H) :
     exact idRestrGroupoid_mem hs
 #align closed_under_restriction_iff_id_le closedUnderRestriction_iff_id_le
 
-/-- The groupoid of all local homeomorphisms on a topological space `H` is closed under restriction.
--/
+/-- The groupoid of all partial homeomorphisms on a topological space `H`
+is closed under restriction. -/
 instance : ClosedUnderRestriction (continuousGroupoid H) :=
   (closedUnderRestriction_iff_id_le _).mpr le_top
 
@@ -676,7 +673,7 @@ theorem ChartedSpace.locallyCompactSpace [LocallyCompactSpace H] : LocallyCompac
     rw [← (chartAt H x).symm_map_nhds_eq (mem_chart_source H x)]
     exact ((compact_basis_nhds (chartAt H x x)).hasBasis_self_subset
       (chart_target_mem_nhds H x)).map _
-  refine locallyCompactSpace_of_hasBasis this ?_
+  refine .of_hasBasis this ?_
   rintro x s ⟨_, h₂, h₃⟩
   exact h₂.image_of_continuousOn ((chartAt H x).continuousOn_symm.mono h₃)
 #align charted_space.locally_compact ChartedSpace.locallyCompactSpace
@@ -703,7 +700,7 @@ def ChartedSpace.comp (H : Type*) [TopologicalSpace H] (H' : Type*) [Topological
   atlas := image2 PartialHomeomorph.trans (atlas H' M) (atlas H H')
   chartAt p := (chartAt H' p).trans (chartAt H (chartAt H' p p))
   mem_chart_source p := by simp only [mfld_simps]
-  chart_mem_atlas p := ⟨chartAt _ p, chartAt _ _, chart_mem_atlas _ p, chart_mem_atlas _ _, rfl⟩
+  chart_mem_atlas p := ⟨chartAt _ p, chart_mem_atlas _ p, chartAt _ _, chart_mem_atlas _ _, rfl⟩
 #align charted_space.comp ChartedSpace.comp
 
 theorem chartAt_comp (H : Type*) [TopologicalSpace H] (H' : Type*) [TopologicalSpace H']
@@ -719,7 +716,7 @@ library_note "Manifold type tags" /-- For technical reasons we introduce two typ
 * `ModelPi H` is the same as `∀ i, H i`, where `H : ι → Type*` and `ι` is a finite type.
 
 In both cases the reason is the same, so we explain it only in the case of the product. A charted
-space `M` with model `H` is a set of local charts from `M` to `H` covering the space. Every space is
+space `M` with model `H` is a set of charts from `M` to `H` covering the space. Every space is
 registered as a charted space over itself, using the only chart `id`, in `chartedSpaceSelf`. You
 can also define a product of charted space `M` and `M'` (with model space `H × H'`) by taking the
 products of the charts. Now, on `H × H'`, there are two charted space structures with model space
@@ -792,7 +789,7 @@ instance prodChartedSpace (H : Type*) [TopologicalSpace H] (M : Type*) [Topologi
 section prodChartedSpace
 
 @[ext]
-theorem ModelProd.ext {x y : ModelProd α β} (h₁ : x.1 = y.1) (h₂ : x.2 = y.2) : x = y :=
+theorem ModelProd.ext {x y : ModelProd H H'} (h₁ : x.1 = y.1) (h₂ : x.2 = y.2) : x = y :=
   Prod.ext h₁ h₂
 
 variable [TopologicalSpace H] [TopologicalSpace M] [ChartedSpace H M] [TopologicalSpace H']
@@ -840,7 +837,7 @@ end ChartedSpace
 
 /-- Sometimes, one may want to construct a charted space structure on a space which does not yet
 have a topological structure, where the topology would come from the charts. For this, one needs
-charts that are only local equivs, and continuity properties for their composition.
+charts that are only partial equivs, and continuity properties for their composition.
 This is formalised in `ChartedSpaceCore`. -/
 -- @[nolint has_nonempty_instance]  -- Porting note: commented out
 structure ChartedSpaceCore (H : Type*) [TopologicalSpace H] (M : Type*) where
@@ -878,10 +875,10 @@ theorem open_target (he : e ∈ c.atlas) : IsOpen e.target := by
   simpa [PartialEquiv.trans_source, E] using c.open_source e e he he
 #align charted_space_core.open_target ChartedSpaceCore.open_target
 
-/-- An element of the atlas in a charted space without topology becomes a local homeomorphism
-for the topology constructed from this atlas. The `localHomeomorph` version is given in this
+/-- An element of the atlas in a charted space without topology becomes a partial homeomorphism
+for the topology constructed from this atlas. The `PartialHomeomorph` version is given in this
 definition. -/
-protected def localHomeomorph (e : PartialEquiv M H) (he : e ∈ c.atlas) :
+protected def partialHomeomorph (e : PartialEquiv M H) (he : e ∈ c.atlas) :
     @PartialHomeomorph M H c.toTopologicalSpace _ :=
   { c.toTopologicalSpace, e with
     open_source := by convert c.open_source' he
@@ -911,14 +908,14 @@ protected def localHomeomorph (e : PartialEquiv M H) (he : e ∈ c.atlas) :
         congr 1
         exact inter_comm _ _
       simpa [PartialEquiv.trans_source, preimage_inter, preimage_comp.symm, A] using this }
-#align charted_space_core.local_homeomorph ChartedSpaceCore.localHomeomorph
+#align charted_space_core.local_homeomorph ChartedSpaceCore.partialHomeomorph
 
 /-- Given a charted space without topology, endow it with a genuine charted space structure with
 respect to the topology constructed from the atlas. -/
 def toChartedSpace : @ChartedSpace H _ M c.toTopologicalSpace :=
   { c.toTopologicalSpace with
-    atlas := ⋃ (e : PartialEquiv M H) (he : e ∈ c.atlas), {c.localHomeomorph e he}
-    chartAt := fun x ↦ c.localHomeomorph (c.chartAt x) (c.chart_mem_atlas x)
+    atlas := ⋃ (e : PartialEquiv M H) (he : e ∈ c.atlas), {c.partialHomeomorph e he}
+    chartAt := fun x ↦ c.partialHomeomorph (c.chartAt x) (c.chart_mem_atlas x)
     mem_chart_source := fun x ↦ c.mem_chart_source x
     chart_mem_atlas := fun x ↦ by
       simp only [mem_iUnion, mem_singleton_iff]
@@ -974,7 +971,7 @@ instance hasGroupoid_model_space (H : Type*) [TopologicalSpace H] (G : Structure
     simp [he, he', StructureGroupoid.id_mem]
 #align has_groupoid_model_space hasGroupoid_model_space
 
-/-- Any charted space structure is compatible with the groupoid of all local homeomorphisms. -/
+/-- Any charted space structure is compatible with the groupoid of all partial homeomorphisms. -/
 instance hasGroupoid_continuousGroupoid : HasGroupoid M (continuousGroupoid H) := by
   refine' ⟨fun _ _ ↦ _⟩
   rw [continuousGroupoid, mem_groupoid_of_pregroupoid]
@@ -986,7 +983,7 @@ section MaximalAtlas
 variable (M) (G : StructureGroupoid H)
 
 /-- Given a charted space admitting a structure groupoid, the maximal atlas associated to this
-structure groupoid is the set of all local charts that are compatible with the atlas, i.e., such
+structure groupoid is the set of all charts that are compatible with the atlas, i.e., such
 that changing coordinates with an atlas member gives an element of the groupoid. -/
 def StructureGroupoid.maximalAtlas : Set (PartialHomeomorph M H) :=
   { e | ∀ e' ∈ atlas H M, e.symm ≫ₕ e' ∈ G ∧ e'.symm ≫ₕ e ∈ G }
@@ -1030,7 +1027,7 @@ theorem StructureGroupoid.compatible_of_mem_maximalAtlas {e e' : PartialHomeomor
   have D : (e.symm ≫ₕ f) ≫ₕ f.symm ≫ₕ e' ≈ (e.symm ≫ₕ e').restr s := calc
     (e.symm ≫ₕ f) ≫ₕ f.symm ≫ₕ e' = e.symm ≫ₕ (f ≫ₕ f.symm) ≫ₕ e' := by simp only [trans_assoc]
     _ ≈ e.symm ≫ₕ ofSet f.source f.open_source ≫ₕ e' :=
-      EqOnSource.trans' (refl _) (EqOnSource.trans' (trans_self_symm _) (refl _))
+      EqOnSource.trans' (refl _) (EqOnSource.trans' (self_trans_symm _) (refl _))
     _ ≈ (e.symm ≫ₕ ofSet f.source f.open_source) ≫ₕ e' := by rw [trans_assoc]
     _ ≈ e.symm.restr s ≫ₕ e' := by rw [trans_of_set']; apply refl
     _ ≈ (e.symm ≫ₕ e').restr s := by rw [restr_trans]
@@ -1061,8 +1058,8 @@ namespace PartialHomeomorph
 
 variable (e : PartialHomeomorph α H)
 
-/-- If a single local homeomorphism `e` from a space `α` into `H` has source covering the whole
-space `α`, then that local homeomorphism induces an `H`-charted space structure on `α`.
+/-- If a single partial homeomorphism `e` from a space `α` into `H` has source covering the whole
+space `α`, then that partial homeomorphism induces an `H`-charted space structure on `α`.
 (This condition is equivalent to `e` being an open embedding of `α` into `H`; see
 `OpenEmbedding.singletonChartedSpace`.) -/
 def singletonChartedSpace (h : e.source = Set.univ) : ChartedSpace H α where
@@ -1088,7 +1085,7 @@ theorem singletonChartedSpace_mem_atlas_eq (h : e.source = Set.univ) (e' : Parti
   h'
 #align local_homeomorph.singleton_charted_space_mem_atlas_eq PartialHomeomorph.singletonChartedSpace_mem_atlas_eq
 
-/-- Given a local homeomorphism `e` from a space `α` into `H`, if its source covers the whole
+/-- Given a partial homeomorphism `e` from a space `α` into `H`, if its source covers the whole
 space `α`, then the induced charted space structure on `α` is `HasGroupoid G` for any structure
 groupoid `G` which is closed under restrictions. -/
 theorem singleton_hasGroupoid (h : e.source = Set.univ) (G : StructureGroupoid H)
@@ -1098,7 +1095,7 @@ theorem singleton_hasGroupoid (h : e.source = Set.univ) (G : StructureGroupoid H
       intro e' e'' he' he''
       rw [e.singletonChartedSpace_mem_atlas_eq h e' he',
         e.singletonChartedSpace_mem_atlas_eq h e'' he'']
-      refine' G.eq_on_source _ e.trans_symm_self
+      refine' G.eq_on_source _ e.symm_trans_self
       have hle : idRestrGroupoid ≤ G := (closedUnderRestriction_iff_id_le G).mp (by assumption)
       exact StructureGroupoid.le_iff.mp hle _ (idRestrGroupoid_mem _) }
 #align local_homeomorph.singleton_has_groupoid PartialHomeomorph.singleton_hasGroupoid
@@ -1262,7 +1259,7 @@ def Structomorph.trans (e : Structomorph G M M') (e' : Structomorph G M' M'') :
         F₁ ≈ c.symm ≫ₕ f₁ ≫ₕ (g ≫ₕ g.symm) ≫ₕ f₂ ≫ₕ c' := by simp only [trans_assoc, _root_.refl]
         _ ≈ c.symm ≫ₕ f₁ ≫ₕ ofSet g.source g.open_source ≫ₕ f₂ ≫ₕ c' :=
           EqOnSource.trans' (_root_.refl _) (EqOnSource.trans' (_root_.refl _)
-            (EqOnSource.trans' (trans_self_symm g) (_root_.refl _)))
+            (EqOnSource.trans' (self_trans_symm g) (_root_.refl _)))
         _ ≈ ((c.symm ≫ₕ f₁) ≫ₕ ofSet g.source g.open_source) ≫ₕ f₂ ≫ₕ c' :=
           by simp only [trans_assoc, _root_.refl]
         _ ≈ (c.symm ≫ₕ f₁).restr s ≫ₕ f₂ ≫ₕ c' := by rw [trans_of_set']

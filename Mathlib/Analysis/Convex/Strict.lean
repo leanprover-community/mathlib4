@@ -244,7 +244,7 @@ variable [ContinuousAdd E] {s t : Set E}
 
 theorem StrictConvex.add (hs : StrictConvex 𝕜 s) (ht : StrictConvex 𝕜 t) :
     StrictConvex 𝕜 (s + t) := by
-  rintro _ ⟨v, w, hv, hw, rfl⟩ _ ⟨x, y, hx, hy, rfl⟩ h a b ha hb hab
+  rintro _ ⟨v, hv, w, hw, rfl⟩ _ ⟨x, hx, y, hy, rfl⟩ h a b ha hb hab
   rw [smul_add, smul_add, add_add_add_comm]
   obtain rfl | hvx := eq_or_ne v x
   · refine' interior_mono (add_subset_add (singleton_subset_iff.2 hv) Subset.rfl) _

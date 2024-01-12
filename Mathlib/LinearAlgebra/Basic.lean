@@ -658,7 +658,7 @@ theorem range_inclusion (p q : Submodule R M) (h : p ≤ q) :
 
 @[simp]
 theorem map_subtype_range_inclusion {p p' : Submodule R M} (h : p ≤ p') :
-    map p'.subtype (range $ inclusion h) = p := by simp [range_inclusion, map_comap_eq, h]
+    map p'.subtype (range <| inclusion h) = p := by simp [range_inclusion, map_comap_eq, h]
 #align submodule.map_subtype_range_of_le Submodule.map_subtype_range_inclusion
 
 theorem disjoint_iff_comap_eq_bot {p q : Submodule R M} : Disjoint p q ↔ comap p.subtype q = ⊥ := by
@@ -672,7 +672,7 @@ def MapSubtype.relIso : Submodule R p ≃o { p' : Submodule R M // p' ≤ p } wh
   invFun q := comap p.subtype q
   left_inv p' := comap_map_eq_of_injective (by exact Subtype.val_injective) p'
   right_inv := fun ⟨q, hq⟩ => Subtype.ext_val <| by simp [map_comap_subtype p, inf_of_le_right hq]
-  map_rel_iff' {p₁ p₂} := Subtype.coe_le_coe.symm.trans $ by
+  map_rel_iff' {p₁ p₂} := Subtype.coe_le_coe.symm.trans <| by
     dsimp
     rw [map_le_iff_le_comap,
       comap_map_eq_of_injective (show Injective p.subtype from Subtype.coe_injective) p₂]
@@ -681,7 +681,7 @@ def MapSubtype.relIso : Submodule R p ≃o { p' : Submodule R M // p' ≤ p } wh
 /-- If `p ⊆ M` is a submodule, the ordering of submodules of `p` is embedded in the ordering of
 submodules of `M`. -/
 def MapSubtype.orderEmbedding : Submodule R p ↪o Submodule R M :=
-  (RelIso.toRelEmbedding <| MapSubtype.relIso p).trans $
+  (RelIso.toRelEmbedding <| MapSubtype.relIso p).trans <|
     Subtype.relEmbedding (X := Submodule R M) (fun p p' ↦ p ≤ p') _
 #align submodule.map_subtype.order_embedding Submodule.MapSubtype.orderEmbedding
 
@@ -739,7 +739,7 @@ def submoduleImage {M' : Type*} [AddCommMonoid M'] [Module R M'] {O : Submodule 
 @[simp]
 theorem mem_submoduleImage {M' : Type*} [AddCommMonoid M'] [Module R M'] {O : Submodule R M}
     {ϕ : O →ₗ[R] M'} {N : Submodule R M} {x : M'} :
-    x ∈ ϕ.submoduleImage N ↔ ∃ (y : _) (yO : y ∈ O) (_ : y ∈ N), ϕ ⟨y, yO⟩ = x := by
+    x ∈ ϕ.submoduleImage N ↔ ∃ (y : _) (yO : y ∈ O), y ∈ N ∧ ϕ ⟨y, yO⟩ = x := by
   refine' Submodule.mem_map.trans ⟨_, _⟩ <;> simp_rw [Submodule.mem_comap]
   · rintro ⟨⟨y, yO⟩, yN : y ∈ N, h⟩
     exact ⟨y, yO, yN, h⟩

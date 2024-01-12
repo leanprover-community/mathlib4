@@ -98,8 +98,11 @@ error: abel_nf made no progress
 example [AddCommGroup α] (x y z : α) (_w : x = y + z) : False := by
   abel_nf at *
 
+-- Prior to https://github.com/leanprover/lean4/pull/2917 this would fail
+-- (the `at *` would close the goal,
+-- and then error when trying to work on the hypotheses because there was no goal.)
 example [AddCommGroup α] (x y z : α) (_w : x = y + z) : x - x = 0 := by
-  abel_nf
+  abel_nf at *
 
 /--
 error: abel_nf made no progress

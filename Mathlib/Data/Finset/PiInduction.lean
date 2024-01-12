@@ -71,9 +71,7 @@ maps provided that it is true on `fun _ ↦ ∅` and for any function `g : ∀ i
 See also `Finset.induction_on_pi_max` and `Finset.induction_on_pi_min` for specialized versions
 that require `∀ i, LinearOrder (α i)`.  -/
 theorem induction_on_pi {p : (∀ i, Finset (α i)) → Prop} (f : ∀ i, Finset (α i)) (h0 : p fun _ ↦ ∅)
-    (step :
-      ∀ (g : ∀ i, Finset (α i)) (i : ι) (x : α i) (_ : x ∉ g i),
-        p g → p (update g i (insert x (g i)))) :
+    (step : ∀ (g : ∀ i, Finset (α i)) (i : ι), ∀ x ∉ g i, p g → p (update g i (insert x (g i)))) :
     p f :=
   induction_on_pi_of_choice (fun _ x s ↦ x ∉ s) (fun _ s ⟨x, hx⟩ ↦ ⟨x, hx, not_mem_erase x s⟩) f
     h0 step

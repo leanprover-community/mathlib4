@@ -100,8 +100,8 @@ theorem GammaIntegral_convergent {s : ℂ} (hs : 0 < s.re) :
     apply (continuous_ofReal.comp continuous_neg.exp).continuousOn.mul
     apply ContinuousAt.continuousOn
     intro x hx
-    have : ContinuousAt (fun x : ℂ => x ^ (s - 1)) ↑x := by
-      apply continuousAt_cpow_const; rw [ofReal_re]; exact Or.inl hx
+    have : ContinuousAt (fun x : ℂ => x ^ (s - 1)) ↑x :=
+      continuousAt_cpow_const <| ofReal_mem_slitPlane.2 hx
     exact ContinuousAt.comp this continuous_ofReal.continuousAt
   · rw [← hasFiniteIntegral_norm_iff]
     refine' HasFiniteIntegral.congr (Real.GammaIntegral_convergent hs).2 _
@@ -189,7 +189,7 @@ private theorem Gamma_integrand_deriv_integrable_B {s : ℂ} (hs : 0 < s.re) {Y 
     apply ContinuousAt.continuousOn
     intro x hx
     refine' (_ : ContinuousAt (fun x : ℂ => x ^ (s - 1)) _).comp continuous_ofReal.continuousAt
-    apply continuousAt_cpow_const; rw [ofReal_re]; exact Or.inl hx.1
+    exact continuousAt_cpow_const <| ofReal_mem_slitPlane.2 hx.1
   rw [← hasFiniteIntegral_norm_iff]
   simp_rw [norm_eq_abs, map_mul]
   refine' (((Real.GammaIntegral_convergent hs).mono_set
@@ -211,9 +211,8 @@ theorem partialGamma_add_one {s : ℂ} (hs : 0 < s.re) {X : ℝ} (hX : 0 ≤ X) 
       simpa using (hasDerivAt_neg x).exp
     have d2 : HasDerivAt (fun y : ℝ => (y : ℂ) ^ s) (s * x ^ (s - 1)) x := by
       have t := @HasDerivAt.cpow_const _ _ _ s (hasDerivAt_id ↑x) ?_
-      simpa only [mul_one] using t.comp_ofReal
-      simpa only [id.def, ofReal_re, ofReal_im, Ne.def, eq_self_iff_true, not_true, or_false_iff,
-        mul_one] using hx.1
+      · simpa only [mul_one] using t.comp_ofReal
+      · exact ofReal_mem_slitPlane.2 hx.1
     simpa only [ofReal_neg, neg_mul] using d1.ofReal_comp.mul d2
   have cont := (continuous_ofReal.comp continuous_neg.exp).mul (continuous_ofReal_cpow_const hs)
   have der_ible :=
@@ -390,6 +389,33 @@ theorem Gamma_conj (s : ℂ) : Gamma (conj s) = conj (Gamma s) := by
     rw [RingHom.map_add, RingHom.map_one]
 #align complex.Gamma_conj Complex.Gamma_conj
 
+/-- Expresses the integral over `Ioi 0` of `t ^ (a - 1) * exp (-(r * t))` in terms of the Gamma
+function, for complex `a`. -/
+lemma integral_cpow_mul_exp_neg_mul_Ioi {a : ℂ} {r : ℝ} (ha : 0 < a.re) (hr : 0 < r) :
+    ∫ (t : ℝ) in Ioi 0, t ^ (a - 1) * exp (-(r * t)) = (1 / r) ^ a * Gamma a := by
+  have aux : (1 / r : ℂ) ^ a = 1 / r * (1 / r) ^ (a - 1) := by
+    nth_rewrite 2 [← cpow_one (1 / r : ℂ)]
+    rw [← cpow_add _ _ (one_div_ne_zero <| ofReal_ne_zero.mpr hr.ne'), add_sub_cancel'_right]
+  calc
+    _ = ∫ (t : ℝ) in Ioi 0, (1 / r) ^ (a - 1) * (r * t) ^ (a - 1) * exp (-(r * t)) := by
+      refine MeasureTheory.set_integral_congr measurableSet_Ioi (fun x (hx : 0 < x) ↦ ?_)
+      rw [mul_cpow_ofReal_nonneg hr.le hx.le, ← mul_assoc, one_div, ← ofReal_inv,
+        ← mul_cpow_ofReal_nonneg (inv_pos.mpr hr).le hr.le, ← ofReal_mul r⁻¹, inv_mul_cancel hr.ne',
+        ofReal_one, one_cpow, one_mul]
+    _ = |1 / r| * ∫ (t : ℝ) in Ioi (r * 0), (1 / r) ^ (a - 1) * t ^ (a - 1) * exp (-t) := by
+      simp_rw [← ofReal_mul]
+      rw [integral_comp_mul_left_Ioi (fun x ↦ _ * x ^ (a - 1) * exp (-x)) _ hr, mul_zero,
+        real_smul, ← one_div]
+    _ = 1 / r * ∫ (t : ℝ) in Ioi 0, (1 / r) ^ (a - 1) * t ^ (a - 1) * exp (-t) := by
+      rw [congr_arg Ioi (mul_zero r), _root_.abs_of_nonneg (one_div_pos.mpr hr).le, ofReal_div,
+        ofReal_one]
+    _ = 1 / r * (1 / r : ℂ) ^ (a - 1) * (∫ (t : ℝ) in Ioi 0, t ^ (a - 1) * exp (-t)) := by
+      simp_rw [← integral_mul_left, mul_assoc]
+    _ = (1 / r) ^ a * Gamma a := by
+      rw [aux, Gamma_eq_integral ha]
+      congr 2 with x
+      rw [ofReal_exp, ofReal_neg, mul_comm]
+
 end GammaDef
 
 /-! Now check that the `Γ` function is differentiable, wherever this makes sense. -/
@@ -498,7 +524,7 @@ theorem Gamma_eq_integral {s : ℝ} (hs : 0 < s) :
 
 theorem Gamma_add_one {s : ℝ} (hs : s ≠ 0) : Gamma (s + 1) = s * Gamma s := by
   simp_rw [Gamma]
-  rw [Complex.ofReal_add, Complex.ofReal_one, Complex.Gamma_add_one, Complex.ofReal_mul_re]
+  rw [Complex.ofReal_add, Complex.ofReal_one, Complex.Gamma_add_one, Complex.re_ofReal_mul]
   rwa [Complex.ofReal_ne_zero]
 #align real.Gamma_add_one Real.Gamma_add_one
 
@@ -554,6 +580,18 @@ theorem Gamma_nonneg_of_nonneg {s : ℝ} (hs : 0 ≤ s) : 0 ≤ Gamma s := by
   obtain rfl | h := eq_or_lt_of_le hs
   · rw [Gamma_zero]
   · exact (Gamma_pos_of_pos h).le
+
+open Complex in
+/-- Expresses the integral over `Ioi 0` of `t ^ (a - 1) * exp (-(r * t))`, for positive real `r`,
+in terms of the Gamma function. -/
+lemma integral_rpow_mul_exp_neg_mul_Ioi {a r : ℝ} (ha : 0 < a) (hr : 0 < r) :
+    ∫ t : ℝ in Ioi 0, t ^ (a - 1) * exp (-(r * t)) = (1 / r) ^ a * Gamma a := by
+  rw [← ofReal_inj, ofReal_mul, ← Gamma_ofReal, ofReal_cpow (by positivity), ofReal_div]
+  convert integral_cpow_mul_exp_neg_mul_Ioi (by rwa [ofReal_re] : 0 < (a : ℂ).re) hr
+  refine _root_.integral_ofReal.symm.trans <| set_integral_congr measurableSet_Ioi (fun t ht ↦ ?_)
+  norm_cast
+  rw [← ofReal_cpow (le_of_lt ht), IsROrC.ofReal_mul]
+  rfl
 
 open Lean.Meta Qq in
 /-- The `positivity` extension which identifies expressions of the form `Gamma a`. -/

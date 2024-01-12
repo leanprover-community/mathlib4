@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Nicolò Cavalleri
 -/
 import Mathlib.Algebra.Algebra.Pi
-import Mathlib.Algebra.Order.LatticeGroup
 import Mathlib.Algebra.Periodic
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.Star.StarAlgHom
@@ -336,9 +335,9 @@ instance [LocallyCompactSpace α] [Mul β] [ContinuousMul β] : ContinuousMul C(
   ⟨by
     refine' continuous_of_continuous_uncurry _ _
     have h1 : Continuous fun x : (C(α, β) × C(α, β)) × α => x.fst.fst x.snd :=
-      continuous_eval'.comp (continuous_fst.prod_map continuous_id)
+      continuous_eval.comp (continuous_fst.prod_map continuous_id)
     have h2 : Continuous fun x : (C(α, β) × C(α, β)) × α => x.fst.snd x.snd :=
-      continuous_eval'.comp (continuous_snd.prod_map continuous_id)
+      continuous_eval.comp (continuous_snd.prod_map continuous_id)
     exact h1.mul h2⟩
 
 /-- Coercion to a function as a `MonoidHom`. Similar to `MonoidHom.coeFn`. -/
@@ -561,9 +560,8 @@ attribute [local ext] Subtype.eq
 
 section ModuleStructure
 
--- Porting note: Is "Semiodule" a typo of "Semimodule" or "Submodule"?
 /-!
-### Semiodule structure
+### Module structure
 
 In this section we show that continuous functions valued in a topological module `M` over a
 topological semiring `R` inherit the structure of a module.
@@ -603,7 +601,7 @@ instance instSMul [SMul R M] [ContinuousConstSMul R M] : SMul R C(α, M) :=
 @[to_additive]
 instance [LocallyCompactSpace α] [SMul R M] [ContinuousConstSMul R M] :
     ContinuousConstSMul R C(α, M) :=
-  ⟨fun γ => continuous_of_continuous_uncurry _ (continuous_eval'.const_smul γ)⟩
+  ⟨fun γ => continuous_of_continuous_uncurry _ (continuous_eval.const_smul γ)⟩
 
 @[to_additive]
 instance [LocallyCompactSpace α] [TopologicalSpace R] [SMul R M] [ContinuousSMul R M] :
@@ -611,7 +609,7 @@ instance [LocallyCompactSpace α] [TopologicalSpace R] [SMul R M] [ContinuousSMu
   ⟨by
     refine' continuous_of_continuous_uncurry _ _
     have h : Continuous fun x : (R × C(α, M)) × α => x.fst.snd x.snd :=
-      continuous_eval'.comp (continuous_snd.prod_map continuous_id)
+      continuous_eval.comp (continuous_snd.prod_map continuous_id)
     exact (continuous_fst.comp continuous_fst).smul h⟩
 
 @[to_additive (attr := simp, norm_cast)]
@@ -930,6 +928,13 @@ instance instCovariantClass_mul_le_right [PartialOrder β] [Mul β] [ContinuousM
   [CovariantClass β β (Function.swap (· * ·)) (· ≤ ·)] :
   CovariantClass C(α, β) C(α, β) (Function.swap (· * ·)) (· ≤ ·) :=
 ⟨fun _ _ _ hg₁₂ x => mul_le_mul_right' (hg₁₂ x) _⟩
+
+variable [Group β] [TopologicalGroup β] [Lattice β] [TopologicalLattice β]
+
+@[to_additive (attr := simp, norm_cast) coe_abs] lemma coe_mabs (f : C(α, β)) : ⇑|f| = |⇑f| := rfl
+@[to_additive (attr := simp) abs_apply]
+lemma mabs_apply (f : C(α, β)) (x : α) : |f| x = |f x| := rfl
+#align continuous_map.abs_apply ContinuousMap.abs_apply
 
 end Lattice
 

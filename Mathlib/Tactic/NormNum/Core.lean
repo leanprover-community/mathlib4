@@ -69,7 +69,7 @@ initialize normNumExt : ScopedEnvExtension Entry (Entry × NormNumExt) NormNums 
   -- we only need this to deduplicate entries in the DiscrTree
   have : BEq NormNumExt := ⟨fun _ _ ↦ false⟩
   /- Insert `v : NormNumExt` into the tree `dt` on all key sequences given in `kss`. -/
-  let insert kss v dt := kss.foldl (fun dt ks ↦ dt.insertCore ks v discrTreeConfig) dt
+  let insert kss v dt := kss.foldl (fun dt ks ↦ dt.insertCore ks v) dt
   registerScopedEnvExtension {
     mkInitial := pure {}
     ofOLeanEntry := fun _ e@(_, n) ↦ return (e, ← mkNormNumExt n)
@@ -273,7 +273,8 @@ def getSimpContext (args : Syntax) (simpOnly := false) :
     TacticM Simp.Context := do
   let simpTheorems ←
     if simpOnly then simpOnlyBuiltins.foldlM (·.addConst ·) {} else getSimpTheorems
-  let mut { ctx, starArg } ← elabSimpArgs args[0] (eraseLocal := false) (kind := .simp)
+  let mut { ctx, simprocs := _, starArg } ←
+    elabSimpArgs args[0] (eraseLocal := false) (kind := .simp) (simprocs := {})
     { simpTheorems := #[simpTheorems], congrTheorems := ← getSimpCongrTheorems }
   unless starArg do return ctx
   let mut simpTheorems := ctx.simpTheorems

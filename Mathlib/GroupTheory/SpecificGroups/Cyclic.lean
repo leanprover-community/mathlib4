@@ -284,7 +284,7 @@ theorem IsCyclic.card_pow_eq_one_le [DecidableEq α] [Fintype α] [IsCyclic α] 
   calc
     (univ.filter fun a : α => a ^ n = 1).card ≤
         (zpowers (g ^ (Fintype.card α / Nat.gcd n (Fintype.card α))) : Set α).toFinset.card :=
-      card_le_of_subset fun x hx =>
+      card_le_card fun x hx =>
         let ⟨m, hm⟩ := show x ∈ Submonoid.powers g from mem_powers_iff_mem_zpowers.2 <| hg x
         Set.mem_toFinset.2
           ⟨(m / (Fintype.card α / Nat.gcd n (Fintype.card α)) : ℕ), by
@@ -670,8 +670,8 @@ lemma not_isCyclic_iff_exponent_eq_prime [Group α] {p : ℕ} (hp : p.Prime)
   orders of `g` are `1`, `p`, or `p ^ 2`. It can't be the former because `g ≠ 1`, and it can't
   the latter because the group isn't cyclic. -/
   have := (Nat.mem_divisors (m := p ^ 2)).mpr ⟨hα' ▸ orderOf_dvd_card (x := g), by aesop⟩
-  simp? [Nat.divisors_prime_pow hp 2] at this says
-    simp only [Nat.divisors_prime_pow hp 2, Finset.mem_map, Finset.mem_range,
+  simp? [Nat.divisors_prime_pow hp 2]  at this says
+    simp only [Nat.divisors_prime_pow hp 2, Nat.reduceAdd, Finset.mem_map, Finset.mem_range,
       Function.Embedding.coeFn_mk] at this
   obtain ⟨a, ha, ha'⟩ := this
   interval_cases a

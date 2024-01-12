@@ -82,8 +82,8 @@ attribute [local instance] Ultrafilter.semigroup Ultrafilter.addSemigroup
 @[to_additive]
 theorem Ultrafilter.continuous_mul_left {M} [Semigroup M] (V : Ultrafilter M) :
     Continuous (· * V) :=
-  TopologicalSpace.IsTopologicalBasis.continuous ultrafilterBasis_is_basis _ <|
-    Set.forall_range_iff.mpr fun s => ultrafilter_isOpen_basic { m : M | ∀ᶠ m' in V, m * m' ∈ s }
+  ultrafilterBasis_is_basis.continuous_iff.2 <| Set.forall_range_iff.mpr fun s ↦
+    ultrafilter_isOpen_basic { m : M | ∀ᶠ m' in V, m * m' ∈ s }
 #align ultrafilter.continuous_mul_left Ultrafilter.continuous_mul_left
 #align ultrafilter.continuous_add_left Ultrafilter.continuous_add_left
 
