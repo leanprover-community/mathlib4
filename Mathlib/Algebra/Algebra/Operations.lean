@@ -473,7 +473,7 @@ protected theorem pow_induction_on_left' {C : ∀ (n : ℕ) (x), x ∈ M ^ n →
       (fun x hx y hy Cx Cy => hadd _ _ _ _ _ Cx Cy) hx
 #align submodule.pow_induction_on_left' Submodule.pow_induction_on_left'
 
-set_option maxHeartbeats 700000 in
+set_option maxHeartbeats 800000 in
 /-- Dependent version of `Submodule.pow_induction_on_right`. -/
 @[elab_as_elim]
 protected theorem pow_induction_on_right' {C : ∀ (n : ℕ) (x), x ∈ M ^ n → Prop}
@@ -491,8 +491,9 @@ protected theorem pow_induction_on_right' {C : ∀ (n : ℕ) (x), x ∈ M ^ n �
   revert hx
   simp_rw [pow_succ']
   intro hx
+  let C' : (x : A) → x ∈ M ^ n * M → Prop := fun y hy ↦ C (Nat.succ n) y (pow_succ' M n ▸ hy)
   exact
-    Submodule.mul_induction_on' (fun m hm x ih => hmul _ _ hm (n_ih _) _ ih)
+    Submodule.mul_induction_on' (C := C') (fun m hm x ih => hmul _ _ hm (n_ih _) _ ih)
       (fun x hx y hy Cx Cy => hadd _ _ _ _ _ Cx Cy) hx
 #align submodule.pow_induction_on_right' Submodule.pow_induction_on_right'
 
