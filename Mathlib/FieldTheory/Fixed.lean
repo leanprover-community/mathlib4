@@ -345,7 +345,7 @@ theorem finrank_eq_card (G : Type u) (F : Type v) [Group G] [Field F] [Fintype G
       Fintype.card G ≤ Fintype.card (F →ₐ[FixedPoints.subfield G F] F) :=
         Fintype.card_le_of_injective _ (MulSemiringAction.toAlgHom_injective _ F)
       _ ≤ finrank F (F →ₗ[FixedPoints.subfield G F] F) := (finrank_algHom (subfield G F) F)
-      _ = finrank (FixedPoints.subfield G F) F := finrank_linear_map' _ _ _
+      _ = finrank (FixedPoints.subfield G F) F := finrank_linearMap_self _ _ _
 #align fixed_points.finrank_eq_card FixedPoints.finrank_eq_card
 
 /-- `MulSemiringAction.toAlgHom` is bijective. -/
@@ -359,7 +359,7 @@ theorem toAlgHom_bijective (G : Type u) (F : Type v) [Group G] [Field F] [Finite
   · apply le_antisymm
     · exact Fintype.card_le_of_injective _ (MulSemiringAction.toAlgHom_injective _ F)
     · rw [← finrank_eq_card G F]
-      exact LE.le.trans_eq (finrank_algHom _ F) (finrank_linear_map' _ _ _)
+      exact LE.le.trans_eq (finrank_algHom _ F) (finrank_linearMap_self _ _ _)
 #align fixed_points.to_alg_hom_bijective FixedPoints.toAlgHom_bijective
 
 /-- Bijection between G and algebra homomorphisms that fix the fixed points -/
