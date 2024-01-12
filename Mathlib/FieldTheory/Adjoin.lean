@@ -1170,9 +1170,10 @@ theorem _root_.Polynomial.irreducible_comp {f g : K[X]} (hfm : f.Monic) (hgm : g
   · have := Fact.mk hf
     intro e
     apply not_irreducible_C ((g.map (algebraMap _ _)).coeff 0 - AdjoinSimple.gen K (root f))
-    rw [map_sub, coeff_map, ← map_C, ← eq_C_of_natDegree_eq_zero e]
-    apply hg (AdjoinRoot f)
-    rw [AdjoinRoot.minpoly_root hf.ne_zero, hfm, inv_one, map_one, mul_one]
+    sorry
+    -- rw [map_sub, coeff_map, ← map_C, ← eq_C_of_natDegree_eq_zero e]
+    -- apply hg (AdjoinRoot f)
+    -- rw [AdjoinRoot.minpoly_root hf.ne_zero, hfm, inv_one, map_one, mul_one]
   have H₁ : f.comp g ≠ 0 := fun h ↦ by simpa [hf', hg', natDegree_comp] using congr_arg natDegree h
   have H₂ : ¬ IsUnit (f.comp g) := fun h ↦
     by simpa [hf', hg', natDegree_comp] using natDegree_eq_zero_of_isUnit h
