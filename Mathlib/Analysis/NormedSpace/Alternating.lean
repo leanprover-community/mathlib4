@@ -3,8 +3,8 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov, Heather Macbeth, Patrick Massot
 -/
-import Mathlib.Topology.Algebra.Module.Alternating
-import Mathlib.Analysis.NormedSpace.Multilinear
+import Mathlib.Topology.Algebra.Module.Alternating.Basic
+import Mathlib.Analysis.NormedSpace.Multilinear.Basic
 
 /-!
 # Operator norm on the space of continuous alternating maps
