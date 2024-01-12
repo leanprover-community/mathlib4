@@ -1295,7 +1295,7 @@ theorem map_injective_of_injective (hg : Injective g)
     rw [hizw.symm,eqz] at eqw
     exact exists_of_eq k (g z') (g w') (id eqw)
   obtain ⟨c, hc⟩ := (Set.exists_image_iff g S _).mp (exists_apply_eq_apply' Subtype.val d)
-  simp_rw [hc,←map_mul] at hd
+  simp_rw [hc,← map_mul] at hd
   exact ⟨c, hg hd⟩
 
 section AwayMap
