@@ -35,10 +35,6 @@ def replaceVertex : SimpleGraph V where
                       else if w = t then G.Adj v s else G.Adj v w
   symm v w := by dsimp only; split_ifs <;> simp [adj_comm]
 
-lemma adj_replaceVertex_iff {v w : V} : (G.replaceVertex s t).Adj v w ↔
-    if v = t then if w = t then False else G.Adj s w
-             else if w = t then G.Adj v s else G.Adj v w := by rfl
-
 /-- There is never an `s-t` edge in `G.replaceVertex s t`. -/
 lemma not_adj_replaceVertex_same : ¬(G.replaceVertex s t).Adj s t := by simp [replaceVertex]
 
@@ -132,9 +128,6 @@ section AddEdge
 def addEdge : SimpleGraph V where
   Adj v w := G.Adj v w ∨ s ≠ t ∧ (s = v ∧ t = w ∨ s = w ∧ t = v)
   symm v w := by simp_rw [adj_comm]; (conv_lhs => arg 2; arg 2; rw [or_comm]); exact id
-
-lemma adj_addEdge_iff {v w : V} : (G.addEdge s t).Adj v w ↔
-    G.Adj v w ∨ s ≠ t ∧ (s = v ∧ t = w ∨ s = w ∧ t = v) := by rfl
 
 @[simp]
 lemma addEdge_self : G.addEdge s s = G := by ext; simp [addEdge]
