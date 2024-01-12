@@ -165,27 +165,18 @@ theorem Balanced.smul_mono (hs : Balanced 𝕝 s) {a : 𝕝} {b : 𝕜} (h : ‖
   exact div_le_one_of_le h (norm_nonneg _)
 #align balanced.smul_mono Balanced.smul_mono
 
-/-- A balanced set absorbs itself. -/
-theorem Balanced.absorbs_self (hA : Balanced 𝕜 A) : Absorbs 𝕜 A A := by
-  refine' ⟨1, zero_lt_one, fun a ha x hx => _⟩
-  rw [mem_smul_set_iff_inv_smul_mem₀ (norm_pos_iff.1 <| zero_lt_one.trans_le ha)]
-  refine' hA a⁻¹ _ (smul_mem_smul_set hx)
-  rw [norm_inv]
-  exact inv_le_one ha
-#align balanced.absorbs_self Balanced.absorbs_self
-
 theorem Balanced.subset_smul (hA : Balanced 𝕜 A) (ha : 1 ≤ ‖a‖) : A ⊆ a • A := by
-  refine' (subset_set_smul_iff₀ _).2 (hA a⁻¹ _)
-  · rintro rfl
-    rw [norm_zero] at ha
-    exact zero_lt_one.not_le ha
-  · rw [norm_inv]
-    exact inv_le_one ha
+  rw [← @norm_one 𝕜] at ha; simpa using hA.smul_mono ha
 #align balanced.subset_smul Balanced.subset_smul
 
 theorem Balanced.smul_eq (hA : Balanced 𝕜 A) (ha : ‖a‖ = 1) : a • A = A :=
   (hA _ ha.le).antisymm <| hA.subset_smul ha.ge
 #align balanced.smul_eq Balanced.smul_eq
+
+/-- A balanced set absorbs itself. -/
+theorem Balanced.absorbs_self (hA : Balanced 𝕜 A) : Absorbs 𝕜 A A :=
+  .of_norm ⟨1, fun _ => hA.subset_smul⟩
+#align balanced.absorbs_self Balanced.absorbs_self
 
 theorem Balanced.mem_smul_iff (hs : Balanced 𝕜 s) (h : ‖a‖ = ‖b‖) : a • x ∈ s ↔ b • x ∈ s := by
   obtain rfl | hb := eq_or_ne b 0
@@ -270,9 +261,8 @@ theorem balanced_iff_neg_mem (hs : Convex ℝ s) : Balanced ℝ s ↔ ∀ ⦃x�
   refine' ⟨fun h x => h.neg_mem_iff.2, fun h a ha => smul_set_subset_iff.2 fun x hx => _⟩
   rw [Real.norm_eq_abs, abs_le] at ha
   rw [show a = -((1 - a) / 2) + (a - -1) / 2 by ring, add_smul, neg_smul, ← smul_neg]
-  exact
-    hs (h hx) hx (div_nonneg (sub_nonneg_of_le ha.2) zero_le_two)
-      (div_nonneg (sub_nonneg_of_le ha.1) zero_le_two) (by ring)
+  exact hs (h hx) hx (div_nonneg (sub_nonneg_of_le ha.2) zero_le_two)
+    (div_nonneg (sub_nonneg_of_le ha.1) zero_le_two) (by ring)
 #align balanced_iff_neg_mem balanced_iff_neg_mem
 
 end Real
