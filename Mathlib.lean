@@ -182,7 +182,7 @@ import Mathlib.Algebra.Group.Equiv.TypeTags
 import Mathlib.Algebra.Group.Ext
 import Mathlib.Algebra.Group.Freiman
 import Mathlib.Algebra.Group.Hom.Basic
-import Mathlib.Algebra.Group.Hom.CompTripleClass
+import Mathlib.Algebra.Group.Hom.CompTypeclasses
 import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Algebra.Group.Hom.Instances
 import Mathlib.Algebra.Group.InjSurj
