@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2024 David Loeffler. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: David Loeffler
+-/
 import Mathlib.Analysis.Calculus.ParametricIntegral
 import Mathlib.Analysis.Fourier.AddCircle
 import Mathlib.Analysis.Fourier.FourierTransform
@@ -101,14 +106,14 @@ def ring_lmap_equiv_self (𝕜 M : Type*)
         norm_smul, mul_comm]
 
 lemma ring_lmap_equiv_self_apply (𝕜 : Type*) {M : Type*} [NontriviallyNormedField 𝕜]
-  [NormedAddCommGroup M] [NormedSpace 𝕜 M] (f : 𝕜 →L[𝕜] M) :
-  (ring_lmap_equiv_self 𝕜 M) f = f 1 :=
-rfl
+    [NormedAddCommGroup M] [NormedSpace 𝕜 M] (f : 𝕜 →L[𝕜] M) :
+    (ring_lmap_equiv_self 𝕜 M) f = f 1 :=
+  rfl
 
 lemma ring_lmap_equiv_self_symm_apply (𝕜 : Type*) {M : Type*} (m : M)
-  [NontriviallyNormedField 𝕜] [NormedAddCommGroup M] [NormedSpace 𝕜 M] :
-  (ring_lmap_equiv_self 𝕜 M).symm m = (ContinuousLinearMap.id 𝕜 𝕜).smulRight m :=
-rfl
+    [NontriviallyNormedField 𝕜] [NormedAddCommGroup M] [NormedSpace 𝕜 M] :
+    (ring_lmap_equiv_self 𝕜 M).symm m = (ContinuousLinearMap.id 𝕜 𝕜).smulRight m :=
+  rfl
 
 end ContinuousLinearMap
 
