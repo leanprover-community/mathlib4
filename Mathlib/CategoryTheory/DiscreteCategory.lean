@@ -312,7 +312,7 @@ def piEquivalenceFunctorDiscrete (J : Type u₂) (C : Type u₁) [Category.{v₁
     (by
       rintro ⟨x⟩ ⟨y⟩ f
       obtain rfl : x = y := Discrete.eq_of_hom f
-      obtain rfl : f = 𝟙 _ := by cases f ; rfl
+      obtain rfl : f = 𝟙 _ := rfl
       simp))) (by aesop_cat)
 
 end CategoryTheory
