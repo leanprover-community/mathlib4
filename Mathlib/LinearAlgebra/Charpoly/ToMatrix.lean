@@ -39,7 +39,7 @@ section Basic
 attribute [-instance] instCoeOut
 
 attribute [local instance 2000] RingHomClass.toNonUnitalRingHomClass
-attribute [local instance 2000] NonUnitalRingHomClass.toMulHomClass MulHomClass.toFunLike
+attribute [local instance 2000] NonUnitalRingHomClass.toMulHomClass
 
 /-- `charpoly f` is the characteristic polynomial of the matrix of `f` in any basis. -/
 @[simp]
