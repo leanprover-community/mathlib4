@@ -318,19 +318,8 @@ def factor_δ {m n : ℕ} (f : ([m] : SimplexCategory) ⟶ [n+1]) (j : Fin (n+2)
 open Fin in
 lemma factor_δ_spec {m n : ℕ} (f : ([m] : SimplexCategory) ⟶ [n+1]) (j : Fin (n+2))
     (hj : ∀ (k : Fin (m+1)), f.toOrderHom k ≠ j) :
-    factor_δ f j ≫ δ j = f := by
-  apply Hom.ext
-  ext k : 2
-  specialize hj k
-  rw [Ne.def, ext_iff] at hj
-  dsimp [factor_δ, δ, σ, succAbove, predAbove]
-  split <;> rename_i h0j
-  all_goals
-  · split <;> rename_i hjk <;>
-    simp only [← val_fin_lt,
-      coe_castSucc, coe_pred, coe_castLT, succ_pred, castSucc_castLT] at h0j hjk ⊢
-    · rw [if_neg]; omega
-    · rw [if_pos]; omega
+    factor_δ f j ≫ δ j = f :=
+  Hom.ext _ _ (OrderHom.ext _ _ (succAbove_comp_predAbove_predAbove_left_cancel hj))
 
 end Generators
 

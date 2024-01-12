@@ -2340,9 +2340,8 @@ theorem predAbove_succAbove_succAbove {j : Fin (n + 1)} {p : Fin n} {i : Fin n} 
   rw [predAbove_eq_iff, succAbove_succAbove_succAbove_succAbove]
 
 theorem predAbove_succAbove_id {j : Fin (n + 1)} {p : Fin n} :
-    (predAbove p) ∘ (succAbove (succAbove j p)) = id := by
-  ext
-  simp only [comp_apply, predAbove_succAbove_succAbove, id_eq]
+    (predAbove p) ∘ (succAbove (succAbove j p)) = id :=
+  funext (fun _ => predAbove_succAbove_succAbove)
 
 @[simp]
 lemma predAbove_predAbove_succAbove {p : Fin (n + 1)} {i : Fin n} :
@@ -2513,7 +2512,7 @@ theorem predAbove_predAbove {i j : Fin (n + 1)} (p q : Fin n) (hij : i ≠ j) :
   · rw [predAbove_pred_eq_predAbove_castPred hij h₂ h]
 
 @[simp]
-theorem succAbove_predAbove_predAbove {i j : Fin (n + 1)} (h : i ≠ j) {p : Fin n} :
+theorem succAbove_predAbove_predAbove {i j : Fin (n + 1)} (h : i ≠ j) (p : Fin n) :
     succAbove j (predAbove (predAbove p j) i) = i := by
   cases n
   · exact p.elim0
@@ -2528,6 +2527,11 @@ theorem succAbove_predAbove_predAbove {i j : Fin (n + 1)} (h : i ≠ j) {p : Fin
       · rw [← castSucc_inj, ← succAbove_castSucc_castSucc, castSucc_predAbove_of_le_castSucc hji]
         rw [le_castSucc_iff] at hji
         exact succAbove_castSucc_of_lt hji
+
+theorem succAbove_comp_predAbove_predAbove_left_cancel (f : α → Fin (n + 1))
+    {j : Fin (n + 1)} (h : ∀ a, f a ≠ j) {p : Fin n} :
+    (succAbove j) ∘ (predAbove (predAbove p j)) ∘ f = f :=
+  funext (fun a => succAbove_predAbove_predAbove (h a) p)
 
 lemma succAbove_eq_iff (h : i ≠ j) (k : Fin n) :
     succAbove j p = i ↔ p = predAbove (predAbove k j) i := by
