@@ -32,7 +32,7 @@ continuity set of a function from a topological space to an (e)metric space is a
 
 - `isClosed_isNowhereDense_iff_compl`: a closed set is nowhere dense iff
 its complement is open and dense
-- `meagre_iff_countable_union_isNowhereDense`: a set is meagre iff it is contained in a countable
+- `isMeagre_iff_countable_union_isNowhereDense`: a set is meagre iff it is contained in a countable
 union of nowhere dense sets
 - subsets of meagre sets are meagre; countable unions of meagre sets are meagre
 
@@ -283,13 +283,13 @@ lemma IsMeagre.inter {s t : Set X} (hs : IsMeagre s) : IsMeagre (s ∩ t) :=
   hs.mono (inter_subset_left s t)
 
 /-- A countable union of meagre sets is meagre. -/
-lemma meagre_iUnion {s : ℕ → Set X} (hs : ∀ n, IsMeagre (s n)) : IsMeagre (⋃ n, s n) := by
+lemma isMeagre_iUnion {s : ℕ → Set X} (hs : ∀ n, IsMeagre (s n)) : IsMeagre (⋃ n, s n) := by
   rw [IsMeagre, compl_iUnion]
   exact countable_iInter_mem.mpr hs
 
 /-- A set is meagre iff it is contained in a countable union of nowhere dense sets. -/
-lemma meagre_iff_countable_union_isNowhereDense {s : Set X} : IsMeagre s ↔
-    ∃ S : Set (Set X), (∀ t ∈ S, IsNowhereDense t) ∧ S.Countable ∧ s ⊆ ⋃₀ S := by
+lemma isMeagre_iff_countable_union_isNowhereDense {s : Set X} :
+    IsMeagre s ↔ ∃ S : Set (Set X), (∀ t ∈ S, IsNowhereDense t) ∧ S.Countable ∧ s ⊆ ⋃₀ S := by
   rw [IsMeagre, mem_residual_iff, compl_bijective.surjective.image_surjective.exists]
   simp_rw [← and_assoc, ← forall_and, ball_image_iff, ← isClosed_isNowhereDense_iff_compl,
     sInter_image, ← compl_iUnion₂, compl_subset_compl, ← sUnion_eq_biUnion, and_assoc]
