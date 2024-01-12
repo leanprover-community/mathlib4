@@ -511,8 +511,7 @@ def divBy (s : S) : LocalizedModule S M →ₗ[R] LocalizedModule S M where
     refine x.induction_on (fun _ _ ↦ ?_)
     dsimp only
     change liftOn (mk _ _) _ _ = r • (liftOn (mk _ _) _ _)
-    simp_rw [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
-      MonoidHom.coe_coe, ZeroHom.coe_mk, liftOn_mk, mul_assoc, ← smul_def, algebraMap_smul]
+    simp_rw [MonoidHom.coe_coe, liftOn_mk, mul_assoc, ← smul_def, algebraMap_smul]
 #align localized_module.div_by LocalizedModule.divBy
 
 theorem divBy_mul_by (s : S) (p : LocalizedModule S M) :
@@ -520,8 +519,9 @@ theorem divBy_mul_by (s : S) (p : LocalizedModule S M) :
   p.induction_on fun m t => by
     rw [Module.algebraMap_end_apply, divBy_apply]
     erw [smul_def]
-    rw [LocalizedModule.liftOn_mk, mul_assoc, ← smul_def, ZeroHom.coe_mk, RingHom.toFun_eq_coe,
-      algebraMap_smul, smul'_mk, ← Submonoid.smul_def, mk_cancel_common_right _ s]
+    rw [LocalizedModule.liftOn_mk, mul_assoc, ← smul_def]
+    erw [smul'_mk]
+    rw [← Submonoid.smul_def, mk_cancel_common_right _ s]
 #align localized_module.div_by_mul_by LocalizedModule.divBy_mul_by
 
 theorem mul_by_divBy (s : S) (p : LocalizedModule S M) :
