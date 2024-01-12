@@ -1061,12 +1061,24 @@ theorem mk_embedding_eq_zero_iff_lift_lt : #(α ↪ β') = 0 ↔ lift.{u} #β' <
   rw [mk_eq_zero_iff, ← not_nonempty_iff, ← lift_mk_le', not_le]
 
 theorem mk_embedding_eq_zero_iff_lt : #(α ↪ β) = 0 ↔ #β < #α := by
-  rw [mk_embedding_eq_zero_iff_lift_lt, lift_id, lift_id]
+  rw [mk_embedding_eq_zero_iff_lift_lt, lift_lt]
+
+theorem mk_arrow_eq_zero_iff : #(α → β') = 0 ↔ #α ≠ 0 ∧ #β' = 0 := by
+  simp_rw [mk_eq_zero_iff, mk_ne_zero_iff, isEmpty_fun]
+
+theorem mk_surjective_eq_zero_iff_lift :
+    #{f : α → β' | Surjective f} = 0 ↔ lift.{v} #α < lift.{u} #β' ∨ (#α ≠ 0 ∧ #β' = 0) := by
+  rw [← not_iff_not, not_or, not_lt, lift_mk_le', ← Ne, not_and_or, not_ne_iff, and_comm]
+  simp_rw [mk_ne_zero_iff, mk_eq_zero_iff, nonempty_coe_sort,
+    Set.Nonempty, mem_setOf, exists_surjective_iff, nonempty_fun]
+
+theorem mk_surjective_eq_zero_iff :
+    #{f : α → β | Surjective f} = 0 ↔ #α < #β ∨ (#α ≠ 0 ∧ #β = 0) := by
+  rw [mk_surjective_eq_zero_iff_lift, lift_lt]
 
 variable (α β')
 
-theorem mk_equiv_le_embedding : #(α ≃ β') ≤ #(α ↪ β') :=
-  ⟨⟨_, Equiv.toEmbedding_injective⟩⟩
+theorem mk_equiv_le_embedding : #(α ≃ β') ≤ #(α ↪ β') := ⟨⟨_, Equiv.toEmbedding_injective⟩⟩
 
 theorem mk_embedding_le_arrow : #(α ↪ β') ≤ #(α → β') := ⟨⟨_, FunLike.coe_injective⟩⟩
 
@@ -1087,22 +1099,23 @@ theorem mk_perm_eq_self_power : #(Equiv.Perm α) = #α ^ #α :=
 theorem mk_perm_eq_two_power : #(Equiv.Perm α) = 2 ^ #α := by
   rw [mk_perm_eq_self_power, power_self_eq (aleph0_le_mk α)]
 
-theorem mk_equiv_eq_arrow_of_lift_eq (h : lift.{v} #α = lift.{u} #β') : #(α ≃ β') = #(α → β') := by
-  obtain ⟨e⟩ := lift_mk_eq'.mp h
+variable (leq : lift.{v} #α = lift.{u} #β') (eq : #α = #β)
+
+theorem mk_equiv_eq_arrow_of_lift_eq : #(α ≃ β') = #(α → β') := by
+  obtain ⟨e⟩ := lift_mk_eq'.mp leq
   have e₁ := lift_mk_eq'.mpr ⟨.equivCongr (.refl α) e⟩
   have e₂ := lift_mk_eq'.mpr ⟨.arrowCongr (.refl α) e⟩
   rw [lift_id'.{u,v}] at e₁ e₂
   rw [← e₁, ← e₂, lift_inj, mk_perm_eq_self_power, power_def]
 
-theorem mk_equiv_eq_arrow_of_eq (h : #α = #β) : #(α ≃ β) = #(α → β) :=
-  mk_equiv_eq_arrow_of_lift_eq congr(lift $h)
+theorem mk_equiv_eq_arrow_of_eq : #(α ≃ β) = #(α → β) :=
+  mk_equiv_eq_arrow_of_lift_eq congr(lift $eq)
 
-theorem mk_equiv_of_lift_eq (h : lift.{v} #α = lift.{u} #β') : #(α ≃ β') = 2 ^ lift.{v} #α := by
-  erw [← (lift_mk_eq'.2 ⟨.equivCongr (.refl α) (lift_mk_eq'.1 h).some⟩).trans (lift_id'.{u,v} _),
+theorem mk_equiv_of_lift_eq : #(α ≃ β') = 2 ^ lift.{v} #α := by
+  erw [← (lift_mk_eq'.2 ⟨.equivCongr (.refl α) (lift_mk_eq'.1 leq).some⟩).trans (lift_id'.{u,v} _),
     lift_umax.{u,v}, mk_perm_eq_two_power, lift_power, lift_natCast]; rfl
 
-theorem mk_equiv_of_eq (h : #α = #β) : #(α ≃ β) = 2 ^ #α := by
-  rw [mk_equiv_of_lift_eq (lift_inj.mpr h), lift_id]
+theorem mk_equiv_of_eq : #(α ≃ β) = 2 ^ #α := by rw [mk_equiv_of_lift_eq (lift_inj.mpr eq), lift_id]
 
 variable (lle : lift.{u} #β' ≤ lift.{v} #α) (le : #β ≤ #α)
 
