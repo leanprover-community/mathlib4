@@ -62,11 +62,11 @@ variable [Add A] {t : Set A}
 structure IsAddSubsemigroup (s : Set A) : Prop where
   add_mem {a b : A} : a ∈ s → b ∈ s → a + b ∈ s
 
-@[to_additive (attr := mk_iff)]
+@[to_additive (attr := mk_eq)]
 structure IsSubsemigroup (s : Set M) : Prop where
   mul_mem {a b : M} : a ∈ s → b ∈ s → a * b ∈ s
 
-attribute [to_additive existing] IsSubsemigroup_iff
+attribute [to_additive existing] isSubsemigroup_eq
 
 /-- A subsemigroup is closed under multiplication. -/
 @[to_additive "An additive subsemigroup is closed under addition."]
@@ -107,9 +107,7 @@ namespace Subsemigroup
 open BundledSet
 
 @[to_additive]
-instance : SetInterPred M IsSubsemigroup := by
-  rw [show IsSubsemigroup = _ by ext; simp [IsSubsemigroup_iff]; rfl]
-  infer_instance
+instance : SetInterPred M IsSubsemigroup := by simp only [isSubsemigroup_eq]; infer_instance
 
 #align subsemigroup.mem_top BundledSet.mem_top
 #align add_subsemigroup.mem_top BundledSet.mem_top
@@ -128,9 +126,13 @@ instance : SetInterPred M IsSubsemigroup := by
 #align subsemigroup.coe_infi BundledSet.iInf_carrier
 #align add_subsemigroup.coe_infi BundledSet.iInf_carrier
 
-@[to_additive]
-instance : BotPred M IsSubsemigroup ∅ :=
-  ⟨⟨False.elim⟩, fun _ ↦ Set.empty_subset _⟩
+@[to_additive] instance : BotPred M IsSubsemigroup ∅ := .mk_empty ⟨False.elim⟩
+
+@[to_additive] instance : SupPred M IsSubsemigroup (supOfSetInter M IsSubsemigroup) :=
+  .of_setInterPred _ _
+
+@[to_additive] instance : CompleteLattice (BundledSet M IsSubsemigroup) :=
+  completeLatticeOfBotSupSetInter _ _
 
 #align subsemigroup.not_mem_bot BundledSet.not_mem_bot
 #align add_subsemigroup.not_mem_bot BundledSet.not_mem_bot

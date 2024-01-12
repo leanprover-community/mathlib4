@@ -37,62 +37,29 @@ variable [Mul M]
 
 open Set BundledSet
 
+@[to_additive]
+instance : DirectedSetUnionPred M IsSubsemigroup := by rw [isSubsemigroup_eq]; infer_instance
+
 namespace Subsemigroup
 
--- TODO: this section can be generalized to `[MulMemClass B M] [CompleteLattice B]`
--- such that `complete_lattice.le` coincides with `set_like.le`
-@[to_additive]
-theorem mem_iSup_of_directed {S : ι → Subsemigroup M} (hS : Directed (· ≤ ·) S) {x : M} :
-    (x ∈ ⨆ i, S i) ↔ ∃ i, x ∈ S i := by
-  refine ⟨?_, fun ⟨i, hi⟩ ↦ le_iSup S i hi⟩
-  suffices x ∈ closure (⋃ i, (S i : Set M)) → ∃ i, x ∈ S i by
-    simpa only [closure_iUnion, closure_eq (S _)] using this
-  refine fun hx ↦ closure_induction hx (fun y hy ↦ mem_iUnion.mp hy) ?_
-  · rintro x y ⟨i, hi⟩ ⟨j, hj⟩
-    rcases hS i j with ⟨k, hki, hkj⟩
-    exact ⟨k, (S k).mul_mem (hki hi) (hkj hj)⟩
-#align subsemigroup.mem_supr_of_directed Subsemigroup.mem_iSup_of_directed
-#align add_subsemigroup.mem_supr_of_directed AddSubsemigroup.mem_iSup_of_directed
+#align subsemigroup.mem_supr_of_directed BundledSet.mem_iSup_of_directed'
+#align add_subsemigroup.mem_supr_of_directed BundledSet.mem_iSup_of_directed'
+#align subsemigroup.coe_supr_of_directed BundledSet.carrier_iSup_of_directed'
+#align add_subsemigroup.coe_supr_of_directed BundledSet.carrier_iSup_of_directed'
+#align subsemigroup.mem_Sup_of_directed_on BundledSet.mem_sSup_of_directedOn'
+#align add_subsemigroup.mem_Sup_of_directed_on BundledSet.mem_sSup_of_directedOn'
+#align subsemigroup.coe_Sup_of_directed_on BundledSet.carrier_sSup_of_directedOn'
+#align add_subsemigroup.coe_Sup_of_directed_on BundledSet.carrier_sSup_of_directedOn'
 
-@[to_additive]
-theorem coe_iSup_of_directed {S : ι → Subsemigroup M} (hS : Directed (· ≤ ·) S) :
-    ((⨆ i, S i : Subsemigroup M) : Set M) = ⋃ i, S i :=
-  Set.ext fun x => by simp [mem_iSup_of_directed hS]
-#align subsemigroup.coe_supr_of_directed Subsemigroup.coe_iSup_of_directed
-#align add_subsemigroup.coe_supr_of_directed AddSubsemigroup.coe_iSup_of_directed
+#align subsemigroup.mem_sup_left BundledSet.mem_sup_left
+#align add_subsemigroup.mem_sup_left BundledSet.mem_sup_left
 
-@[to_additive]
-theorem mem_sSup_of_directed_on {S : Set (Subsemigroup M)} (hS : DirectedOn (· ≤ ·) S) {x : M} :
-    x ∈ sSup S ↔ ∃ s ∈ S, x ∈ s := by
-  simp only [sSup_eq_iSup', mem_iSup_of_directed hS.directed_val, SetCoe.exists, Subtype.coe_mk,
-    exists_prop]
-#align subsemigroup.mem_Sup_of_directed_on Subsemigroup.mem_sSup_of_directed_on
-#align add_subsemigroup.mem_Sup_of_directed_on AddSubsemigroup.mem_sSup_of_directed_on
-
-@[to_additive]
-theorem coe_sSup_of_directed_on {S : Set (Subsemigroup M)} (hS : DirectedOn (· ≤ ·) S) :
-    (↑(sSup S) : Set M) = ⋃ s ∈ S, ↑s :=
-  Set.ext fun x => by simp [mem_sSup_of_directed_on hS]
-#align subsemigroup.coe_Sup_of_directed_on Subsemigroup.coe_sSup_of_directed_on
-#align add_subsemigroup.coe_Sup_of_directed_on AddSubsemigroup.coe_sSup_of_directed_on
-
-@[to_additive]
-theorem mem_sup_left {S T : Subsemigroup M} : ∀ {x : M}, x ∈ S → x ∈ S ⊔ T := by
-  have : S ≤ S ⊔ T := le_sup_left
-  tauto
-#align subsemigroup.mem_sup_left Subsemigroup.mem_sup_left
-#align add_subsemigroup.mem_sup_left AddSubsemigroup.mem_sup_left
-
-@[to_additive]
-theorem mem_sup_right {S T : Subsemigroup M} : ∀ {x : M}, x ∈ T → x ∈ S ⊔ T := by
-  have : T ≤ S ⊔ T := le_sup_right
-  tauto
-#align subsemigroup.mem_sup_right Subsemigroup.mem_sup_right
-#align add_subsemigroup.mem_sup_right AddSubsemigroup.mem_sup_right
+#align subsemigroup.mem_sup_right BundledSet.mem_sup_right
+#align add_subsemigroup.mem_sup_right BundledSet.mem_sup_right
 
 @[to_additive]
 theorem mul_mem_sup {S T : Subsemigroup M} {x y : M} (hx : x ∈ S) (hy : y ∈ T) : x * y ∈ S ⊔ T :=
-  mul_mem (mem_sup_left hx) (mem_sup_right hy)
+  mul_mem _ (mem_sup_left hx) (mem_sup_right hy)
 #align subsemigroup.mul_mem_sup Subsemigroup.mul_mem_sup
 #align add_subsemigroup.add_mem_sup AddSubsemigroup.add_mem_sup
 

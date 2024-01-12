@@ -4,7 +4,7 @@ open Function
 
 structure BundledSet (α : Type*) (p : Set α → Prop) where
   carrier : Set α
-  prop : p carrier
+  protected prop : p carrier
 
 namespace BundledSet
 
