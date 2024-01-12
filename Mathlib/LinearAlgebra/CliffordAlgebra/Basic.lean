@@ -363,9 +363,8 @@ lemma map_injective
 
 /-- If a linear map preserves the quadratic forms and is surjective, then the algebra
 maps it induces betweem Clifford algebras is also surjective.-/
-lemma map_surjective
-{Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂} (f : Q₁ →qᵢ Q₂) (hf : Function.Surjective f):
-Function.Surjective (CliffordAlgebra.map f) := by
+lemma map_surjective {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂} (f : Q₁ →qᵢ Q₂)
+    (hf : Function.Surjective f) : Function.Surjective (CliffordAlgebra.map f) := by
   rw [← LinearMap.range_eq_top, LinearMap.range_eq_map, Submodule.eq_top_iff']
   intro y
   apply CliffordAlgebra.induction (C:= fun y ↦ y ∈ Submodule.map (CliffordAlgebra.map f) ⊤)
