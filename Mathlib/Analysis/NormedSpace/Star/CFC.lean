@@ -73,6 +73,14 @@ lemma cfc_comp_emb [CFCEmb S i] [CFCEmb T j] (f : C(S, T)) (a : A) [CFCCompatibl
     cfc f a = cfc (CFC.X T |>.comp f) a :=
   rfl -- unbelievable...
 
+lemma cfc_ext [CFCEmb S i] [hj : CFCEmb T j] (f g : C(S, T)) (a : A)
+    [CFCCompatible S a] (H : ∀ x ∈ (CFC.X S) ⁻¹' spectrum ℂ a, f x = g x) :
+    cfc f a = cfc g a := by
+  rw [cfc, cfc]
+  congr 3
+  ext x
+  exact H _ <| by simp [CFCCompatible.apply_spectrum_map S a x]
+
 lemma spectrum_cfc_eq [CFCEmb S i] [hj : CFCEmb T j] (f : C(S, T)) (a : A)
     [CFCCompatible S a] : spectrum ℂ (cfc f a) = (j ∘ f) '' (i ⁻¹' spectrum ℂ a) := by
   have : IsStarNormal a := CFCCompatible.isStarNormal i
@@ -107,4 +115,8 @@ lemma cfc_comp [CFCEmb S i] [CFCEmb T j] [CFCEmb U k] (a : A) [CFCCompatible S a
     map_add' := sorry,
     map_star' := sorry,
     commutes' := sorry }
-  refine cfc_unique (cfc f a) Φ rfl sorry ((CFC.X U).comp g)
+  refine cfc_unique (cfc f a) Φ rfl (fun h₁ h₂ H ↦ cfc_ext _ _ a fun x hx ↦ H ?_)
+    ((CFC.X U).comp g)
+  sorry -- annoying but true, there's probably a better route
+
+/-! Examples -/
