@@ -28,14 +28,14 @@ open scoped Real BigOperators
 The sum is only convergent for `0 < im τ`; we are implictly extending it by 0 for other values of
 `τ`. -/
 noncomputable def jacobiTheta₂ (z τ : ℂ) : ℂ :=
-  ∑' n : ℤ, cexp (2 * π * I * ↑n * z +  π * I * n ^ 2 * τ)
+  ∑' n : ℤ, cexp (2 * π * I * n * z + π * I * n ^ 2 * τ)
 
 /-- A uniform bound for the summands in the Jacobi theta function on compact subsets. -/
 lemma jacobiTheta₂_term_bound {S T : ℝ} (hT : 0 < T) {z τ : ℂ}
     (hz : |im z| ≤ S) (hτ : T ≤ im τ) (n : ℤ) :
     ‖cexp (2 * π * I * n * z + π * I * n ^ 2 * τ)‖ ≤ Real.exp (-π * (T * n ^ 2 - 2 * S * |n|)) := by
   rw [Complex.norm_eq_abs, Complex.abs_exp, (by push_cast; ring :
-    2 * π * I * n * z + π * I * n ^ 2 * τ = (π * (2 * n) : ℝ) * z * I + (π * n ^ 2 : ℝ) * τ * I),
+    2 * π * I * n * z + π * I * n ^ 2 * τ = (π * (2 * n) :) * z * I + (π * n ^ 2 :) * τ * I),
     add_re, mul_I_re, im_ofReal_mul, mul_I_re, im_ofReal_mul, Real.exp_le_exp, neg_mul, ← neg_add,
     neg_le_neg_iff, mul_assoc π, mul_assoc π, ← mul_add, mul_le_mul_left pi_pos, add_comm,
     mul_comm T]
@@ -50,11 +50,7 @@ lemma summable_jacobiTheta₂_term_bound (S : ℝ) {T : ℝ} (hT : 0 < T) :
   suffices : Summable (fun n : ℕ ↦ Real.exp (-π * (T * n ^ 2 - 2 * S * n)))
   · apply summable_int_of_summable_nat <;>
     simpa only [Int.cast_neg, neg_sq, abs_neg, Int.cast_ofNat, Nat.abs_cast]
-  have : Summable (fun n : ℕ ↦ Real.exp (-n))
-  · convert summable_geometric_of_abs_lt_1 (?_ : |Real.exp (-1)| < 1) with n
-    · rw [← Real.exp_nat_mul, mul_neg_one]
-    · simpa only [_root_.abs_of_nonneg (exp_nonneg _), exp_lt_one_iff, neg_lt_zero] using one_pos
-  apply summable_of_isBigO_nat this
+  apply summable_of_isBigO_nat summable_exp_neg_nat
   refine Real.isBigO_exp_comp_exp_comp.mpr (Tendsto.isBoundedUnder_le_atBot ?_)
   rw [← tendsto_neg_atTop_iff]
   simp only [neg_mul, Pi.sub_apply, sub_neg_eq_add, neg_add_rev, neg_neg]
@@ -129,8 +125,8 @@ theorem jacobiTheta₂_functional_equation (z : ℂ) {τ : ℂ} (hτ : 0 < im τ
       congr 2 with n : 1; congr 1
       field_simp [I_ne_zero]
       ring_nf
-      rw [(by ring : I ^ 4 = (I ^ 2) ^ 2), I_sq]
-      ring
+      simp_rw [I_sq, I_pow_4]
+      ring_nf
     _ = _ := by
       congr 3
       ring

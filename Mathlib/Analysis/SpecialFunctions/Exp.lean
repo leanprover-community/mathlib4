@@ -416,6 +416,11 @@ theorem isTheta_exp_comp_one {f : α → ℝ} :
 set_option linter.uppercaseLean3 false in
 #align real.is_Theta_exp_comp_one Real.isTheta_exp_comp_one
 
+lemma summable_exp_neg_nat : Summable (fun n : ℕ ↦ exp (-n)) := by
+  convert summable_geometric_of_abs_lt_1 (?_ : |exp (-1)| < 1) with n
+  · rw [← Real.exp_nat_mul, mul_neg_one]
+  · simpa only [_root_.abs_of_nonneg (exp_nonneg _), exp_lt_one_iff, neg_lt_zero] using one_pos
+
 end Real
 
 namespace Complex
