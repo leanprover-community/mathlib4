@@ -299,9 +299,7 @@ theorem QuadraticForm.not_forall_mem_range_toQuadraticForm.{v} :
       Q ∈ Set.range BilinForm.toQuadraticForm :=
   fun h => Q_not_in_range_toQuadraticForm <| by
     let uU := ULift.moduleEquiv (R := K) (M := L)
-    let uQ := Q.comp uU.toLinearMap
-    let f : Q →qᵢ uQ := { uU.symm with map_app' := fun _ => rfl }
-    obtain ⟨x, hx⟩ := h K (ULift L) (Q.comp uU.toLinearMap)
+    obtain ⟨x, hx⟩ := h K (ULift L) (Q.comp uU)
     refine ⟨x.comp uU.symm uU.symm, ?_⟩
     ext
-    simp [toQuadraticForm_comp_same, hx]
+    simp [BilinForm.toQuadraticForm_comp_same, hx]
