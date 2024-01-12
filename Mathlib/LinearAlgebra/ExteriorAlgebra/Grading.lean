@@ -96,4 +96,24 @@ instance gradedAlgebra :
     (by apply GradedAlgebra.liftι_eq R M)
 #align exterior_algebra.graded_algebra ExteriorAlgebra.gradedAlgebra
 
+/-- The union of the images of the maps `ExteriorAlgebra.ιMulti R n` for `n` running through
+all natural numbers spans the exterior algebra.-/
+lemma ιMulti_span :
+    Submodule.span R (Set.range (fun (x : Σ (n : ℕ), (Fin n → M)) => ιMulti R x.1 x.2)) = ⊤ := by
+  rw [Submodule.eq_top_iff']
+  refine DirectSum.Decomposition.inductionOn (fun i => LinearMap.range (ι R (M := M)) ^ i)
+    (p := (fun m => m ∈ Submodule.span R (Set.range (fun (x : Σ (n : ℕ),
+    (Fin n → M)) => ιMulti R x.1 x.2)))) (by simp only [Submodule.zero_mem]) ?_
+    (fun _ _ hm hm' => Submodule.add_mem _ hm hm')
+  intro i ⟨_, hm⟩
+  apply Set.mem_of_mem_of_subset hm
+  simp only
+  rw [← ιMulti_span_fixedDegree]
+  refine Submodule.span_mono (fun _ hx ↦ ?_)
+  simp only [Set.mem_range, Sigma.exists] at hx ⊢
+  obtain ⟨y, hyx⟩ := hx
+  rw [← hyx]
+  existsi i, y
+  rfl
+
 end ExteriorAlgebra
