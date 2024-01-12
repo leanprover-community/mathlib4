@@ -320,7 +320,7 @@ theorem linearIndependent_toLinearMap (R : Type u) (A : Type v) (B : Type w) [Co
 #align linear_independent_to_linear_map linearIndependent_toLinearMap
 
 theorem cardinal_mk_algHom (K : Type u) (V : Type v) (W : Type w) [Field K] [Field V] [Algebra K V]
-    [FiniteDimensional K V] [Field W] [Algebra K W] [FiniteDimensional K W] :
+    [FiniteDimensional K V] [Field W] [Algebra K W] :
     Cardinal.mk (V →ₐ[K] W) ≤ finrank W (V →ₗ[K] W) :=
   (linearIndependent_toLinearMap K V W).cardinal_mk_le_finrank
 #align cardinal_mk_alg_hom cardinal_mk_algHom
