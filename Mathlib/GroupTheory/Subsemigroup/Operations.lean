@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzzard,
 Amelia Livingston, Yury Kudryashov, Yakov Pechersky, Jireh Loreaux
 -/
+import Mathlib.Data.BundledSet.OrderIso
+import Mathlib.Data.BundledSet.Prod
 import Mathlib.GroupTheory.Subsemigroup.Basic
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Group.TypeTags
@@ -77,20 +79,13 @@ section
 variable [Mul M]
 
 /-- Subsemigroups of semigroup `M` are isomorphic to additive subsemigroups of `Additive M`. -/
-@[simps]
-def Subsemigroup.toAddSubsemigroup : Subsemigroup M ≃o AddSubsemigroup (Additive M) where
-  toFun S :=
-    { carrier := Additive.toMul ⁻¹' S
-      add_mem' := S.mul_mem' }
-  invFun S :=
-    { carrier := Additive.ofMul ⁻¹' S
-      mul_mem' := S.add_mem' }
-  left_inv _ := rfl
-  right_inv _ := rfl
-  map_rel_iff' := Iff.rfl
+@[simps!]
+def Subsemigroup.toAddSubsemigroup : Subsemigroup M ≃o AddSubsemigroup (Additive M) :=
+  Additive.ofMul.bundledSetCongr _ _ fun _ ↦ by
+    simp only [isSubsemigroup_eq, isAddSubsemigroup_eq, Additive.ofMul.surjective.forall]; rfl
 #align subsemigroup.to_add_subsemigroup Subsemigroup.toAddSubsemigroup
-#align subsemigroup.to_add_subsemigroup_symm_apply_coe Subsemigroup.toAddSubsemigroup_symm_apply_coe
-#align subsemigroup.to_add_subsemigroup_apply_coe Subsemigroup.toAddSubsemigroup_apply_coe
+#align subsemigroup.to_add_subsemigroup_symm_apply_coe Subsemigroup.toAddSubsemigroup_symm_apply_carrier
+#align subsemigroup.to_add_subsemigroup_apply_coe Subsemigroup.toAddSubsemigroup_apply_carrier
 
 /-- Additive subsemigroups of an additive semigroup `Additive M` are isomorphic to subsemigroups
 of `M`. -/
@@ -101,19 +96,13 @@ abbrev AddSubsemigroup.toSubsemigroup' : AddSubsemigroup (Additive M) ≃o Subse
 theorem Subsemigroup.toAddSubsemigroup_closure (S : Set M) :
     Subsemigroup.toAddSubsemigroup (Subsemigroup.closure S) =
     AddSubsemigroup.closure (Additive.toMul ⁻¹' S) :=
-  le_antisymm
-    (Subsemigroup.toAddSubsemigroup.le_symm_apply.1 <|
-      Subsemigroup.closure_le.2 (AddSubsemigroup.subset_closure (M := Additive M)))
-    (AddSubsemigroup.closure_le.2 (Subsemigroup.subset_closure (M := M)))
+  Equiv.bundledSetCongr_closure _ _
 #align subsemigroup.to_add_subsemigroup_closure Subsemigroup.toAddSubsemigroup_closure
 
 theorem AddSubsemigroup.toSubsemigroup'_closure (S : Set (Additive M)) :
     AddSubsemigroup.toSubsemigroup' (AddSubsemigroup.closure S) =
-      Subsemigroup.closure (Multiplicative.ofAdd ⁻¹' S) :=
-  le_antisymm
-    (AddSubsemigroup.toSubsemigroup'.le_symm_apply.1 <|
-      AddSubsemigroup.closure_le.2 (Subsemigroup.subset_closure (M := M)))
-    (Subsemigroup.closure_le.2 <| AddSubsemigroup.subset_closure (M := Additive M))
+      Subsemigroup.closure (Additive.ofMul ⁻¹' S) :=
+  Equiv.bundledSetCongr_symm_closure _ _
 #align add_subsemigroup.to_subsemigroup'_closure AddSubsemigroup.toSubsemigroup'_closure
 
 end

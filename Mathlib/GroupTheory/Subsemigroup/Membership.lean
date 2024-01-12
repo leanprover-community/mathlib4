@@ -58,25 +58,16 @@ namespace Subsemigroup
 #align add_subsemigroup.mem_sup_right BundledSet.mem_sup_right
 
 @[to_additive]
-theorem mul_mem_sup {S T : Subsemigroup M} {x y : M} (hx : x ∈ S) (hy : y ∈ T) : x * y ∈ S ⊔ T :=
-  mul_mem _ (mem_sup_left hx) (mem_sup_right hy)
+theorem mul_mem_sup {p : Set M → Prop} [BundledSet.Implies p IsSubsemigroup] {op} [SupPred M p op]
+    {S T : BundledSet M p} {x y : M} (hx : x ∈ S) (hy : y ∈ T) : x * y ∈ S ⊔ T :=
+  mul_mem (mem_sup_left hx) (mem_sup_right hy)
 #align subsemigroup.mul_mem_sup Subsemigroup.mul_mem_sup
 #align add_subsemigroup.add_mem_sup AddSubsemigroup.add_mem_sup
 
-@[to_additive]
-theorem mem_iSup_of_mem {S : ι → Subsemigroup M} (i : ι) : ∀ {x : M}, x ∈ S i → x ∈ iSup S := by
-  have : S i ≤ iSup S := le_iSup _ _
-  tauto
-#align subsemigroup.mem_supr_of_mem Subsemigroup.mem_iSup_of_mem
-#align add_subsemigroup.mem_supr_of_mem AddSubsemigroup.mem_iSup_of_mem
-
-@[to_additive]
-theorem mem_sSup_of_mem {S : Set (Subsemigroup M)} {s : Subsemigroup M} (hs : s ∈ S) :
-    ∀ {x : M}, x ∈ s → x ∈ sSup S := by
-  have : s ≤ sSup S := le_sSup hs
-  tauto
-#align subsemigroup.mem_Sup_of_mem Subsemigroup.mem_sSup_of_mem
-#align add_subsemigroup.mem_Sup_of_mem AddSubsemigroup.mem_sSup_of_mem
+#align subsemigroup.mem_supr_of_mem BundledSet.mem_iSup_of_mem
+#align add_subsemigroup.mem_supr_of_mem BundledSet.mem_iSup_of_mem
+#align subsemigroup.mem_Sup_of_mem BundledSet.mem_sSup_of_mem
+#align add_subsemigroup.mem_Sup_of_mem BundledSet.mem_sSup_of_mem
 
 /-- An induction principle for elements of `⨆ i, S i`.
 If `C` holds all elements of `S i` for all `i`, and is preserved under multiplication,
