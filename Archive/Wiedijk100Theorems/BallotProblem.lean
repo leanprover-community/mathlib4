@@ -405,11 +405,11 @@ theorem ballot_problem' :
       have h₅ : (p + 1 : ℝ) + ↑q ≠ (0 : ℝ) := by
         apply ne_of_gt
         norm_cast
-        linarith
+        omega
       have h₆ : ↑p + (q + 1 : ℝ) ≠ (0 : ℝ) := by
         apply ne_of_gt
         norm_cast
-        linarith
+        omega
       field_simp [h₄, h₅, h₆] at *
       ring
     all_goals
@@ -436,7 +436,7 @@ theorem ballot_problem :
       add_eq_zero_iff, Nat.cast_eq_zero, ENNReal.add_eq_top, ENNReal.nat_ne_top, or_self_iff,
       not_false_iff, and_true_iff]
     push_neg
-    exact ⟨fun _ _ => by linarith, (lt_of_le_of_lt tsub_le_self (ENNReal.nat_ne_top p).lt_top).ne⟩
+    exact ⟨fun _ _ => by omega, (lt_of_le_of_lt tsub_le_self (ENNReal.nat_ne_top p).lt_top).ne⟩
 #align ballot.ballot_problem Ballot.ballot_problem
 
 end Ballot

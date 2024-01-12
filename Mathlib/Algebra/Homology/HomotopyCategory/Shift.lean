@@ -48,7 +48,7 @@ def shiftFunctor (n : ℤ) : CochainComplex C ℤ ⥤ CochainComplex C ℤ where
         intro hij'
         apply hij
         dsimp at hij' ⊢
-        linarith }
+        omega }
   map φ :=
     { f := fun i => φ.f _
       comm' := by
@@ -75,7 +75,7 @@ functor when `n = 0`. -/
 def shiftFunctorZero' (n : ℤ) (h : n = 0) :
     shiftFunctor C n ≅ 𝟭 _ :=
   NatIso.ofComponents (fun K => Hom.isoOfComponents
-    (fun i => K.shiftFunctorObjXIso _ _ _ (by linarith))
+    (fun i => K.shiftFunctorObjXIso _ _ _ (by omega))
     (fun _ _ _ => by simp [h])) (by aesop_cat)
 
 /-- The compatibility of the shift functors on `CochainComplex C ℤ` with respect
@@ -84,7 +84,7 @@ to the addition of integers. -/
 def shiftFunctorAdd' (n₁ n₂ n₁₂ : ℤ) (h : n₁ + n₂ = n₁₂) :
     shiftFunctor C n₁₂ ≅ shiftFunctor C n₁ ⋙ shiftFunctor C n₂ :=
   NatIso.ofComponents (fun K => Hom.isoOfComponents
-    (fun i => K.shiftFunctorObjXIso _ _ _ (by linarith))
+    (fun i => K.shiftFunctorObjXIso _ _ _ (by omega))
     (fun _ _ _ => by
       subst h
       dsimp
@@ -260,15 +260,15 @@ def shift {K L : CochainComplex C ℤ} {φ₁ φ₂ : K ⟶ L} (h : Homotopy φ�
     rw [h.zero, smul_zero]
     intro hij'
     dsimp at hij hij'
-    exact hij (by linarith)
+    exact hij (by omega)
   comm := fun i => by
     rw [dNext_eq _ (show (ComplexShape.up ℤ).Rel i (i + 1) by simp),
       prevD_eq _ (show (ComplexShape.up ℤ).Rel (i - 1) i by simp)]
     dsimp
     simpa only [Linear.units_smul_comp, Linear.comp_units_smul, smul_smul,
       Int.units_mul_self, one_smul,
-      dNext_eq _ (show (ComplexShape.up ℤ).Rel (i + n) (i + 1 + n) by dsimp; linarith),
-      prevD_eq _ (show (ComplexShape.up ℤ).Rel (i - 1 + n) (i + n) by dsimp; linarith)]
+      dNext_eq _ (show (ComplexShape.up ℤ).Rel (i + n) (i + 1 + n) by dsimp; omega),
+      prevD_eq _ (show (ComplexShape.up ℤ).Rel (i - 1 + n) (i + n) by dsimp; omega)]
         using h.comm (i + n)
 
 end Homotopy
