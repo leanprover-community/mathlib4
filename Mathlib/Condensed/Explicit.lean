@@ -33,8 +33,8 @@ open CategoryTheory Limits Opposite Functor Presieve regularCoverage
 
 namespace CategoryTheory
 
-variable {C : Type u} [Category.{v} C] (F : Cᵒᵖ ⥤ Type (max u v)) [Preregular C]
-  [FinitaryPreExtensive C] [Precoherent C]
+variable {C : Type u} [Category.{v} C] (F : Cᵒᵖ ⥤ Type*) [Preregular C]
+  [FinitaryPreExtensive C]
 
 theorem isSheaf_coherent_iff_regular_and_extensive : IsSheaf (coherentTopology C) F ↔
     IsSheaf (extensiveCoverage C).toGrothendieck F ∧
