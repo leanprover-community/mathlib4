@@ -22,9 +22,6 @@ We prove some basic properties of this function and show that it is continuous.
 logarithm, continuity
 -/
 
-set_option autoImplicit true
-
-
 open Set Filter Function
 
 open Topology
@@ -483,6 +480,9 @@ end TendstoCompAddSub
 
 namespace Mathlib.Meta.Positivity
 open Lean.Meta Qq
+
+set_option autoImplicit true
+variable {e : ℝ} {n : ℕ}
 
 lemma log_nonneg_of_isNat (h : NormNum.IsNat e n) : 0 ≤ Real.log (e : ℝ) := by
   rw [NormNum.IsNat.to_eq h rfl]
