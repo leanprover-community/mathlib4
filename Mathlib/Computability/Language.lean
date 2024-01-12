@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fox Thomson, Martin Dvorak
 -/
 import Mathlib.Algebra.Order.Kleene
-import Mathlib.Algebra.Order.Hom.Ring
+import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Data.List.Join
 import Mathlib.Data.Set.Lattice
 import Mathlib.Tactic.DeriveFintype
