@@ -52,9 +52,6 @@ More fine grained instances for `FirstCountableTopology`,
 `TopologicalSpace.SeparableSpace`, and more.
 -/
 
-set_option autoImplicit true
-
-
 open Set Filter Function Topology
 
 noncomputable section
@@ -63,7 +60,7 @@ namespace TopologicalSpace
 
 universe u
 
-variable {α : Type u} [t : TopologicalSpace α] {B : Set (Set α)} {s : Set α}
+variable {α : Type u} {β : Type*} [t : TopologicalSpace α] {B : Set (Set α)} {s : Set α}
 
 /-- A topological basis is one that satisfies the necessary conditions so that
   it suffices to take unions of the basis sets to get a topology (without taking
