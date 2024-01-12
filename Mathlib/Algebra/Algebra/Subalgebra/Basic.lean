@@ -360,7 +360,8 @@ section
 /-! `Subalgebra`s inherit structure from their `Submodule` coercions. -/
 
 
-instance module' [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] : Module R' S :=
+instance (priority := low) module' [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] :
+    Module R' S :=
   S.toSubmodule.module'
 #align subalgebra.module' Subalgebra.module'
 
