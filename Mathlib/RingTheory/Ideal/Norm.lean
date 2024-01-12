@@ -253,8 +253,8 @@ noncomputable def Ideal.absNorm [Nontrivial S] [IsDedekindDomain S] [Module.Free
   map_mul' I J := by dsimp only; rw [cardQuot_mul]
   map_one' := by dsimp only; rw [Ideal.one_eq_top, cardQuot_top]
   map_zero' := by
-  have : Infinite S :=  Module.Free.infinite ℤ S
-  rw [Ideal.zero_eq_bot, cardQuot_bot]
+    have : Infinite S :=  Module.Free.infinite ℤ S
+    rw [Ideal.zero_eq_bot, cardQuot_bot]
 #align ideal.abs_norm Ideal.absNorm
 
 namespace Ideal
