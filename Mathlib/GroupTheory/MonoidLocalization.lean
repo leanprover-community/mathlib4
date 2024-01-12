@@ -1285,16 +1285,16 @@ theorem map_injective_of_injective (hg : Injective g)
     Injective (map f (apply_coe_mem_map g S) k) := fun z w hizw ↦ by
   set i := map f (apply_coe_mem_map g S) k
   have ifkg (a : M) : i (f.toMap a) = k.toMap (g a) := map_eq f (apply_coe_mem_map g S) a
-  obtain ⟨z', w', x, hxz, hxw⟩ := surj₂ f z w
+  let ⟨z', w', x, hxz, hxw⟩ := surj₂ f z w
   rw [(eq_mk'_iff_mul_eq f).mpr hxz, (eq_mk'_iff_mul_eq f).mpr hxw, LocalizationMap.eq₂]
-  obtain ⟨d, hd⟩ : ∃ d : S.map g, d * g z' = d * g w' := by
+  let ⟨d, hd⟩ : ∃ d : S.map g, d * g z' = d * g w' := by
     have eqz := congrArg i hxz
     rw [map_mul, ifkg, ifkg] at eqz
     have eqw := congrArg i hxw
     rw [map_mul, ifkg, ifkg] at eqw
     rw [hizw.symm, eqz] at eqw
     exact exists_of_eq k (g z') (g w') (id eqw)
-  obtain ⟨c, hc⟩ := (Set.exists_image_iff g S _).mp (exists_apply_eq_apply' Subtype.val d)
+  let ⟨c, hc⟩ := (Set.exists_image_iff g S _).mp (exists_apply_eq_apply' Subtype.val d)
   simp_rw [hc, ← map_mul] at hd
   exact ⟨c, hg hd⟩
 
