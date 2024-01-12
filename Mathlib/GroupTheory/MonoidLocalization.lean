@@ -861,7 +861,7 @@ theorem mk'_cancel (a : M) (b c : S) :
   mk'_eq_of_eq' f (by rw [Submonoid.coe_mul, mul_comm (b:M), mul_assoc])
 
 @[to_additive]
-theorem eq₂ {a b} {d : S} :
+theorem eq_of_same {a b} {d : S} :
     f.mk' a d = f.mk' b d ↔ ∃ c : S, c * a = c * b := by
   rw [mk'_eq_iff_eq', map_mul, map_mul, ← eq_iff_exists f]
   exact (map_units f d).mul_left_inj
@@ -1286,7 +1286,7 @@ theorem map_injective_of_injective (hg : Injective g)
   set i := map f (apply_coe_mem_map g S) k
   have ifkg (a : M) : i (f.toMap a) = k.toMap (g a) := map_eq f (apply_coe_mem_map g S) a
   let ⟨z', w', x, hxz, hxw⟩ := surj₂ f z w
-  rw [(eq_mk'_iff_mul_eq f).mpr hxz, (eq_mk'_iff_mul_eq f).mpr hxw, LocalizationMap.eq₂]
+  rw [(eq_mk'_iff_mul_eq f).mpr hxz, (eq_mk'_iff_mul_eq f).mpr hxw, eq_of_same]
   let ⟨d, hd⟩ : ∃ d : S.map g, d * g z' = d * g w' := by
     have eqz := congrArg i hxz
     rw [map_mul, ifkg, ifkg] at eqz
