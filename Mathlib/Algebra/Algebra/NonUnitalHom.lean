@@ -328,31 +328,31 @@ instance : Inhabited (A →ₛₙₐ[φ] B) :=
 variable {φ' : S →* R} {ψ : S →* T} {χ : R →* T}
 
 /-- The composition of morphisms is a morphism. -/
-def comp (f : B →ₛₙₐ[ψ] C) (g : A →ₛₙₐ[φ] B) : A →ₛₙₐ[ψ.comp φ] C :=
+def comp (f : B →ₛₙₐ[ψ] C) (g : A →ₛₙₐ[φ] B) [MonoidHom.CompTriple φ ψ χ]:
+    A →ₛₙₐ[χ] C :=
   { (f : B →ₙ* C).comp (g : A →ₙ* B), (f : B →ₑ+[ψ] C).comp (g : A →ₑ+[φ] B) with }
 #align non_unital_alg_hom.comp NonUnitalAlgHom.comp
 
 /-- The composition of morphisms is a morphism. -/
-def comp' (f : B →ₛₙₐ[ψ] C) (g : A →ₛₙₐ[φ] B) (κ : CompTriple φ ψ χ) : A →ₛₙₐ[χ] C :=
-  { (f : B →ₙ* C).comp (g : A →ₙ* B), (f : B →ₑ+[ψ] C).comp' (g : A →ₑ+[φ] B) κ with }
+def comp' (f : B →ₛₙₐ[ψ] C) (g : A →ₛₙₐ[φ] B) : A →ₛₙₐ[ψ.comp φ] C :=
+  { (f : B →ₙ* C).comp (g : A →ₙ* B),
+    (f : B →ₑ+[ψ] C).comp (g : A →ₑ+[φ] B) (κ := MonoidHom.CompTriple.comp) with }
 
 @[simp, norm_cast]
-theorem coe_comp (f : B →ₛₙₐ[ψ] C) (g : A →ₛₙₐ[φ] B) :
-    ⇑(f.comp g) = (⇑f) ∘ (⇑g) :=
-  rfl
+theorem coe_comp (f : B →ₛₙₐ[ψ] C) (g : A →ₛₙₐ[φ] B) [MonoidHom.CompTriple φ ψ χ] :
+    ⇑(f.comp g) = (⇑f) ∘ (⇑g) := rfl
 #align non_unital_alg_hom.coe_comp NonUnitalAlgHom.coe_comp
 
 @[simp, norm_cast]
-theorem coe_comp' (f : B →ₛₙₐ[ψ] C) (g : A →ₛₙₐ[φ] B) (κ : CompTriple φ ψ χ) :
-    ⇑(f.comp' g κ) = (⇑f) ∘ (⇑g) := rfl
+theorem coe_comp' (f : B →ₛₙₐ[ψ] C) (g : A →ₛₙₐ[φ] B) :
+    ⇑(f.comp' g) = (⇑f) ∘ (⇑g) := rfl
 
-theorem comp_apply (f : B →ₛₙₐ[ψ] C) (g : A →ₛₙₐ[φ] B) (x : A) : f.comp g x = f (g x) :=
-  rfl
+theorem comp_apply (f : B →ₛₙₐ[ψ] C) (g : A →ₛₙₐ[φ] B) [MonoidHom.CompTriple φ ψ χ] (x : A) :
+    f.comp g x = f (g x) := rfl
 #align non_unital_alg_hom.comp_apply NonUnitalAlgHom.comp_apply
 
-theorem comp'_apply (f : B →ₛₙₐ[ψ] C) (g : A →ₛₙₐ[φ] B) (κ : CompTriple φ ψ χ) (x : A) :
-    f.comp' g κ x = f (g x) :=
-  rfl
+theorem comp'_apply (f : B →ₛₙₐ[ψ] C) (g : A →ₛₙₐ[φ] B) (x : A) :
+    f.comp' g x = f (g x) := rfl
 
 variable {B₁: Type*} [NonUnitalNonAssocSemiring B₁] [DistribMulAction R B₁]
 /-- The inverse of a bijective morphism is a morphism. -/
