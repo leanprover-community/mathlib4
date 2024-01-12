@@ -629,10 +629,10 @@ theorem iUnion_source_eq_univ : (⋃ x : M, (chartAt H x).source) = (univ : Set 
 
 theorem isOpen_iff (s : Set M) :
     IsOpen s ↔ ∀ x : M, IsOpen <| chartAt H x '' ((chartAt H x).source ∩ s) := by
-  refine ⟨fun h x ↦ (chartAt H x).isOpen_image_source_inter h, fun h ↦ ?_⟩
-  rw [← s.inter_univ, ← iUnion_source_eq_univ H, s.inter_iUnion]
-  refine isOpen_iUnion fun x ↦ ?_
-  rw [← (chartAt H x).isOpen_image_iff_of_subset_source (inter_subset_right _ _), inter_comm]
+  refine ⟨fun h x ↦ (chartAt H x).isOpen_image_source_inter h,
+    fun h ↦ (isOpen_iff_of_cover (fun i ↦ (chartAt H i).open_source)
+      (iUnion_source_eq_univ H M)).mpr fun x ↦ ?_⟩
+  rw [← (chartAt H x).isOpen_image_iff_of_subset_source (inter_subset_left _ _)]
   exact h x
 
 /-- `achart H x` is the chart at `x`, considered as an element of the atlas.
