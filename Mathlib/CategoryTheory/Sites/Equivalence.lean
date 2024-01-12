@@ -109,19 +109,19 @@ instance : IsContinuous e.inverse (e.locallyCoverDense J).inducedTopology J :=
 
 /-- The functor in the equivalence of sheaf categories. -/
 @[simps!]
-def sheafCongr_functor : Sheaf J A ⥤ Sheaf (e.locallyCoverDense J).inducedTopology A where
+def sheafCongr.functor : Sheaf J A ⥤ Sheaf (e.locallyCoverDense J).inducedTopology A where
   obj F := ⟨e.inverse.op ⋙ F.val, e.inverse.op_comp_isSheaf _ _ _⟩
   map f := ⟨whiskerLeft e.inverse.op f.val⟩
 
 /-- The inverse in the equivalence of sheaf categories. -/
 @[simps!]
-def sheafCongr_inverse : Sheaf (e.locallyCoverDense J).inducedTopology A ⥤ Sheaf J A where
+def sheafCongr.inverse : Sheaf (e.locallyCoverDense J).inducedTopology A ⥤ Sheaf J A where
   obj F := ⟨e.functor.op ⋙ F.val, e.functor.op_comp_isSheaf _ _ _⟩
   map f := ⟨whiskerLeft e.functor.op f.val⟩
 
 /-- The unit iso in the equivalence of sheaf categories. -/
 @[simps!]
-def sheafCongr_unitIso : 𝟭 (Sheaf J A) ≅ e.sheafCongr_functor J A ⋙ e.sheafCongr_inverse J A :=
+def sheafCongr.unitIso : 𝟭 (Sheaf J A) ≅ functor J e A ⋙ inverse J e A :=
   NatIso.ofComponents (fun F ↦ ⟨⟨(isoWhiskerRight e.op.unitIso F.val).hom⟩,
     ⟨(isoWhiskerRight e.op.unitIso F.val).inv⟩,
     Sheaf.hom_ext _ _ (isoWhiskerRight e.op.unitIso F.val).hom_inv_id,
@@ -129,7 +129,7 @@ def sheafCongr_unitIso : 𝟭 (Sheaf J A) ≅ e.sheafCongr_functor J A ⋙ e.she
 
 /-- The counit iso in the equivalence of sheaf categories. -/
 @[simps!]
-def sheafCongr_counitIso : e.sheafCongr_inverse J A ⋙ e.sheafCongr_functor J A ≅ 𝟭 (Sheaf _ A) :=
+def sheafCongr.counitIso : inverse J e A ⋙ functor J e A ≅ 𝟭 (Sheaf _ A) :=
   NatIso.ofComponents (fun F ↦ ⟨⟨(isoWhiskerRight e.op.counitIso F.val).hom⟩,
     ⟨(isoWhiskerRight e.op.counitIso F.val).inv⟩,
     Sheaf.hom_ext _ _ (isoWhiskerRight e.op.counitIso F.val).hom_inv_id,
@@ -137,16 +137,16 @@ def sheafCongr_counitIso : e.sheafCongr_inverse J A ⋙ e.sheafCongr_functor J A
 
 /-- The equivalence of sheaf categories. -/
 def sheafCongr : Sheaf J A ≌ Sheaf (e.locallyCoverDense J).inducedTopology A where
-  functor := e.sheafCongr_functor J A
-  inverse := e.sheafCongr_inverse J A
-  unitIso := e.sheafCongr_unitIso J A
-  counitIso := e.sheafCongr_counitIso J A
+  functor := sheafCongr.functor J e A
+  inverse := sheafCongr.inverse J e A
+  unitIso := sheafCongr.unitIso J e A
+  counitIso := sheafCongr.counitIso J e A
   functor_unitIso_comp X := by
     ext
-    simp only [id_obj, sheafCongr_functor_obj_val_obj, comp_obj, Sheaf.instCategorySheaf_comp_val,
-      NatTrans.comp_app, sheafCongr_inverse_obj_val_obj, Opposite.unop_op,
-      sheafCongr_functor_map_val_app, sheafCongr_unitIso_hom_app_val_app,
-      sheafCongr_counitIso_hom_app_val_app, sheafCongr_functor_obj_val_map, Quiver.Hom.unop_op,
+    simp only [id_obj, sheafCongr.functor_obj_val_obj, comp_obj, Sheaf.instCategorySheaf_comp_val,
+      NatTrans.comp_app, sheafCongr.inverse_obj_val_obj, Opposite.unop_op,
+      sheafCongr.functor_map_val_app, sheafCongr.unitIso_hom_app_val_app,
+      sheafCongr.counitIso_hom_app_val_app, sheafCongr.functor_obj_val_map, Quiver.Hom.unop_op,
       Sheaf.instCategorySheaf_id_val, NatTrans.id_app]
     simp [← Functor.map_comp, ← op_comp]
 
@@ -194,8 +194,8 @@ theorem hasSheafCompose : J.HasSheafCompose F where
 
 end Equivalence
 
-variable {C : Type (u+1)} [LargeCategory C] [EssentiallySmall C] (J : GrothendieckTopology C)
-variable (A : Type*) [Category A] --[LargeCategory A]
+variable {C : Type*} [Category C] [EssentiallySmall C] (J : GrothendieckTopology C)
+variable (A : Type*) [Category A]
 variable (B : Type*) [Category B] (F : A ⥤ B)
 variable [HasSheafify ((equivSmallModel C).locallyCoverDense J).inducedTopology A]
 variable [((equivSmallModel C).locallyCoverDense J).inducedTopology.HasSheafCompose F]
