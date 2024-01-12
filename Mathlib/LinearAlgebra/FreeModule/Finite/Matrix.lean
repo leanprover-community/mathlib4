@@ -80,18 +80,18 @@ variable (K M : Type*) (L : Type v) [CommRing K] [Ring M] [Algebra K M]
 instance Finite.algHom : Finite (M →ₐ[K] L) :=
   (linearIndependent_algHom_toLinearMap K M L).finite
 
-variable [Nontrivial K]
 open Cardinal
 
 theorem cardinal_mk_algHom_le_rank : #(M →ₐ[K] L) ≤ lift.{v} (Module.rank K M) := by
   convert (linearIndependent_algHom_toLinearMap K M L).cardinal_lift_le_rank
   · rw [lift_id]
-  · rw [lift_id, FiniteDimensional.rank_linearMap_self]
+  · have := Module.nontrivial K L
+    rw [lift_id, FiniteDimensional.rank_linearMap_self]
 
 theorem card_algHom_le_finrank : Nat.card (M →ₐ[K] L) ≤ finrank K M := by
   convert toNat_le_of_le_of_lt_aleph0 ?_ (cardinal_mk_algHom_le_rank K M L)
   · rw [toNat_lift, finrank]
-  · rw [lift_lt_aleph0]; apply rank_lt_aleph0
+  · rw [lift_lt_aleph0]; have := Module.nontrivial K L; apply rank_lt_aleph0
 
 end AlgHom
 
