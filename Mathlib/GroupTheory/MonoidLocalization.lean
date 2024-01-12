@@ -1273,7 +1273,6 @@ theorem map_map {A : Type*} [CommMonoid A] {U : Submonoid A} {R} [CommMonoid R]
 #align submonoid.localization_map.map_map Submonoid.LocalizationMap.map_map
 #align add_submonoid.localization_map.map_map AddSubmonoid.LocalizationMap.map_map
 
-
 /-- Given an injective `CommMonoid` homomorphism `g : M →* P`, and a Submonoid `S ⊆ M`,
 the induced Monoid homomorphism from the Localization of `M` at `S` to the
 Localization of `P` at `g S`, is injective.
@@ -1286,22 +1285,17 @@ theorem map_injective_of_injective (hg : Injective g)
     Injective (map f (apply_coe_mem_map g S) k) := fun z w hizw ↦ by
   set i := map f (apply_coe_mem_map g S) k
   have ifkg (a : M) : i (f.toMap a) = k.toMap (g a) := map_eq f (apply_coe_mem_map g S) a
-  obtain ⟨x, hx⟩ := surj f z
-  obtain ⟨y, hy⟩ := surj f w
-  rw [(eq_mk'_iff_mul_eq f).mpr hx, (eq_mk'_iff_mul_eq f).mpr hy, LocalizationMap.eq]
-  --- The following is equivalent to `hizw : i z = i w`
-  obtain ⟨d, hd⟩ : ∃ d : S.map g, d * (g y.2 * g x.1) = d * (g x.2 * g y.1) := by
-    lift g x.2 to S.map g using apply_coe_mem_map g S x.2 with gx2 hgx2
-    lift g y.2 to S.map g using apply_coe_mem_map g S y.2 with gy2 hgy2
-    have eqz := congrArg i hx
-    rw [map_mul, ifkg, ifkg, ← hgx2] at eqz
-    have eqw := congrArg i hy
-    rw [map_mul, ifkg, ifkg, ← hgy2] at eqw
-    rw [(eq_mk'_iff_mul_eq k).mpr eqz, (eq_mk'_iff_mul_eq k).mpr eqw, LocalizationMap.eq] at hizw
-    exact hizw
+  obtain ⟨z',w',x, hxz,hxw⟩ := surj₂ f z w
+  rw [(eq_mk'_iff_mul_eq f).mpr hxz, (eq_mk'_iff_mul_eq f).mpr hxw, LocalizationMap.eq₂]
+  obtain ⟨d, hd⟩ : ∃ d : S.map g, d * g z' = d * g w' := by
+    have eqz := congrArg i hxz
+    rw [map_mul, ifkg, ifkg] at eqz
+    have eqw := congrArg i hxw
+    rw [map_mul, ifkg, ifkg] at eqw
+    rw [hizw.symm,eqz] at eqw
+    exact exists_of_eq k (g z') (g w') (id eqw)
   obtain ⟨c, hc⟩ := (Set.exists_image_iff g S _).mp (exists_apply_eq_apply' Subtype.val d)
-  simp_rw [hc, ← map_mul] at hd
-  --- The last step is just applying hg, injectivity of g
+  simp_rw [hc,←map_mul] at hd
   exact ⟨c, hg hd⟩
 
 section AwayMap
