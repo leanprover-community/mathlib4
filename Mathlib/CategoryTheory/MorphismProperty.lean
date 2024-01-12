@@ -979,19 +979,12 @@ def IsStableUnderLimitsOfShape (J : Type*) [Category J] : Prop :=
     (_ : IsLimit c₁) (h₂ : IsLimit c₂) (f : X₁ ⟶ X₂) (_ : W.functorCategory J f),
       W (h₂.lift (Cone.mk _ (c₁.π ≫ f)))
 
-/-lemma IsStableUnderLimitsOfShape.mk (J : Type*) [Category J] (hW₀ : W.RespectsIso)
-    [HasLimitsOfShape J C]
-    (h : ∀ (X₁ X₂ : J ⥤ C) (f : X₁ ⟶ X₂) (_ : W.functorCategory J f),
-      ∃ (c₁' : Cone X₁) (c₂' : Cone X₂)
-      (h₁ : IsLimit c₁') (h₂ : IsLimit c₂'), W (h₂.lift (Cone.mk _ (c₁'.π ≫ f)))) :
-    W.IsStableUnderLimitsOfShape J := sorry-/
-
 variable {W}
 
 lemma IsStableUnderLimitsOfShape.lim_map {J : Type*} [Category J]
-  (hW : W.IsStableUnderLimitsOfShape J) {X Y : J ⥤ C}
-  (f : X ⟶ Y) [HasLimitsOfShape J C]
-  (hf : W.functorCategory _ f) : W (lim.map f) :=
+    (hW : W.IsStableUnderLimitsOfShape J) {X Y : J ⥤ C}
+    (f : X ⟶ Y) [HasLimitsOfShape J C] (hf : W.functorCategory _ f) :
+    W (lim.map f) :=
   hW X Y _ _ (limit.isLimit X) (limit.isLimit Y) f hf
 
 variable (W)
