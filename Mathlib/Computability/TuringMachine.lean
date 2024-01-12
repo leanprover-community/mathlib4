@@ -1082,9 +1082,6 @@ def step (M : Machine₀) : Cfg₀ → Option Cfg₀ :=
 /-- Chainable step function -/
 def step_chain (M : Machine₀) (cfg : Option Cfg₀) : Option Cfg₀ := cfg.bind (step M)
 
-/-- Step a given number of times -/
-def multistep (M : Machine₀) (n : ℕ) (cfg : Cfg₀) : Option Cfg₀ := (step_chain M)^[n] (some cfg)
-
 /-- The statement `Reaches M s₁ s₂` means that `s₂` is obtained
   starting from `s₁` after a finite number of steps from `s₂`. -/
 def Reaches (M : Machine₀) : Cfg₀ → Cfg₀ → Prop :=
@@ -1220,9 +1217,6 @@ def eval (M : MachineQ) (l : List Γ) : Part (ListBlank Γ) :=
 /-- Chainable step function -/
 def step_chain (M : MachineQ) (cfg : Option Cfg₀) : Option Cfg₀ := cfg.bind (step M)
 
-/-- Step a given number of times -/
-def multistep (M : MachineQ) (n : ℕ) (cfg : Cfg₀) : Option Cfg₀ := (step_chain M)^[n] (some cfg)
-
 end TMQ
 
 /-!
@@ -1334,9 +1328,6 @@ def step (M : Λ → Stmt₁) : Cfg₁ → Option Cfg₁
 
 /-- Chainable step function -/
 def step_chain (M : Λ → Stmt₁) (cfg : Option Cfg₁) : Option Cfg₁ := cfg.bind (step M)
-
-/-- Step a given number of times -/
-def multistep (M : Λ → Stmt₁) (n : ℕ) (cfg : Cfg₁) : Option Cfg₁ := (step_chain M)^[n] (some cfg)
 
 /-- A set `S` of labels supports the statement `q` if all the `goto`
   statements in `q` refer only to other functions in `S`. -/
@@ -2203,9 +2194,6 @@ def step (M : Λ → Stmt₂) : Cfg₂ → Option Cfg₂
 
 /-- Chainable step function -/
 def step_chain (M : Λ → Stmt₂) (cfg : Option Cfg₂) : Option Cfg₂ := cfg.bind (step M)
-
-/-- Step a given number of times -/
-def multistep (M : Λ → Stmt₂) (n : ℕ) (cfg : Cfg₂) : Option Cfg₂ := (step_chain M)^[n] (some cfg)
 
 /-- The (reflexive) reachability relation for the TM2 model. -/
 def Reaches (M : Λ → Stmt₂) : Cfg₂ → Cfg₂ → Prop :=
