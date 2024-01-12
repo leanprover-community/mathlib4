@@ -633,6 +633,7 @@ instance : Inhabited (A →ₑ+[φ] B) :=
 
 attribute [instance] MonoidHom.CompTriple.id_comp MonoidHom.CompTriple.comp_id
 
+set_option linter.unusedVariables false in
 /-- Composition of two equivariant additive monoid homomorphisms. -/
 def comp (g : B →ₑ+[ψ] C) (f : A →ₑ+[φ] B) [κ : MonoidHom.CompTriple φ ψ χ] :
     A →ₑ+[χ] C :=
