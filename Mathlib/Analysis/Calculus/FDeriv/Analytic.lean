@@ -119,7 +119,8 @@ theorem AnalyticOn.iteratedFDeriv [CompleteSpace F] (h : AnalyticOn 𝕜 f s) (n
     -- Porting note: for reasons that I do not understand at all, `?g` cannot be inlined.
     convert ContinuousLinearMap.comp_analyticOn ?g IH.fderiv
     case g => exact ↑(continuousMultilinearCurryLeftEquiv 𝕜 (fun _ : Fin (n + 1) ↦ E) F)
-    rfl
+    simp only [ContinuousLinearMap.strongUniformity_topology_eq, ContinuousLinearEquiv.coe_coe,
+      LinearIsometryEquiv.coe_coe]
 #align analytic_on.iterated_fderiv AnalyticOn.iteratedFDeriv
 
 /-- An analytic function is infinitely differentiable. -/
@@ -254,7 +255,8 @@ theorem CPolynomialOn.iteratedFDeriv (h : CPolynomialOn 𝕜 f s) (n : ℕ) :
   · rw [iteratedFDeriv_succ_eq_comp_left]
     convert ContinuousLinearMap.comp_cPolynomialOn ?g IH.fderiv
     case g => exact ↑(continuousMultilinearCurryLeftEquiv 𝕜 (fun _ : Fin (n + 1) ↦ E) F)
-    rfl
+    simp only [ContinuousLinearMap.strongUniformity_topology_eq, ContinuousLinearEquiv.coe_coe,
+      LinearIsometryEquiv.coe_coe]
 
 /-- A polynomial function is infinitely differentiable. -/
 theorem CPolynomialOn.contDiffOn (h : CPolynomialOn 𝕜 f s) {n : ℕ∞} :
