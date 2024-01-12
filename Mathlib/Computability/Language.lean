@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Fox Thomson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Fox Thomson
+Authors: Fox Thomson, Martin Dvorak
 -/
 import Mathlib.Algebra.Order.Kleene
 import Mathlib.Algebra.Ring.Hom.Defs
@@ -14,10 +14,12 @@ import Mathlib.Tactic.DeriveFintype
 /-!
 # Languages
 
-This file contains the definition and operations on formal languages over an alphabet. Note strings
-are implemented as lists over the alphabet.
-The operations in this file define a [Kleene algebra](https://en.wikipedia.org/wiki/Kleene_algebra)
+This file contains the definition and operations on formal languages over an alphabet.
+Note that "strings" are implemented as lists over the alphabet.
+Union and concatenation define a [Kleene algebra](https://en.wikipedia.org/wiki/Kleene_algebra)
 over the languages.
+In addition to that, we define a reversal of a language and prove that it behaves well
+with respect to other language operations.
 -/
 
 
@@ -299,6 +301,76 @@ instance : KleeneAlgebra (Language α) :=
       · simp
       rw [pow_succ, ← mul_assoc m l (l^n)]
       exact le_trans (le_mul_congr h le_rfl) ih }
+
+/-- Language `l.reverse` is defined as the set of words from `l` backwards. -/
+def reverse (l : Language α) : Language α := { w : List α | w.reverse ∈ l }
+
+@[simp]
+lemma mem_reverse : a ∈ l.reverse ↔ a.reverse ∈ l := Iff.rfl
+
+lemma reverse_mem_reverse : a.reverse ∈ l.reverse ↔ a ∈ l := by
+  rw [mem_reverse, List.reverse_reverse]
+
+lemma reverse_eq_image (l : Language α) : l.reverse = List.reverse '' l :=
+  ((List.reverse_involutive.toPerm _).image_eq_preimage _).symm
+
+@[simp]
+lemma reverse_zero : (0 : Language α).reverse = 0 := rfl
+
+@[simp]
+lemma reverse_one : (1 : Language α).reverse = 1 := by
+  simp [reverse, ← one_def]
+
+lemma reverse_involutive : Function.Involutive (reverse : Language α → _) :=
+  List.reverse_involutive.preimage
+
+lemma reverse_bijective : Function.Bijective (reverse : Language α → _) :=
+  reverse_involutive.bijective
+
+lemma reverse_injective : Function.Injective (reverse : Language α → _) :=
+  reverse_involutive.injective
+
+lemma reverse_surjective : Function.Surjective (reverse : Language α → _) :=
+  reverse_involutive.surjective
+
+@[simp]
+lemma reverse_reverse (l : Language α) : l.reverse.reverse = l := reverse_involutive l
+
+@[simp]
+lemma reverse_add (l m : Language α) : (l + m).reverse = l.reverse + m.reverse := rfl
+
+@[simp]
+lemma reverse_mul (l m : Language α) : (l * m).reverse = m.reverse * l.reverse := by
+  simp only [mul_def, reverse_eq_image, image2_image_left, image2_image_right, image_image2,
+    List.reverse_append]
+  apply image2_swap
+
+@[simp]
+lemma reverse_iSup {ι : Sort*} (l : ι → Language α) : (⨆ i, l i).reverse = ⨆ i, (l i).reverse :=
+  preimage_iUnion
+
+@[simp]
+lemma reverse_iInf {ι : Sort*} (l : ι → Language α) : (⨅ i, l i).reverse = ⨅ i, (l i).reverse :=
+  preimage_iInter
+
+variable (α) in
+/-- `Language.reverse` as a ring isomorphism to the opposite ring. -/
+@[simps]
+def reverseIso : Language α ≃+* (Language α)ᵐᵒᵖ where
+  toFun l := .op l.reverse
+  invFun l' := l'.unop.reverse
+  left_inv := reverse_reverse
+  right_inv l' := MulOpposite.unop_injective <| reverse_reverse l'.unop
+  map_mul' l₁ l₂ := MulOpposite.unop_injective <| reverse_mul l₁ l₂
+  map_add' l₁ l₂ := MulOpposite.unop_injective <| reverse_add l₁ l₂
+
+@[simp]
+lemma reverse_pow (l : Language α) (n : ℕ) : (l ^ n).reverse = l.reverse ^ n :=
+  MulOpposite.op_injective (map_pow (reverseIso α) l n)
+
+@[simp]
+lemma reverse_kstar (l : Language α) : l∗.reverse = l.reverse∗ := by
+  simp only [kstar_eq_iSup_pow, reverse_iSup, reverse_pow]
 
 end Language
 
