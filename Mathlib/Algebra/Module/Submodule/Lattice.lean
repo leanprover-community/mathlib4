@@ -223,12 +223,6 @@ instance : InfSet (Submodule R M) :=
       add_mem' := by simp (config := { contextual := true }) [add_mem]
       smul_mem' := by simp (config := { contextual := true }) [smul_mem] }⟩
 
-private theorem sInf_le' {S : Set (Submodule R M)} {p} : p ∈ S → sInf S ≤ p :=
-  Set.biInter_subset_of_mem
-
-private theorem le_sInf' {S : Set (Submodule R M)} {p} : (∀ q ∈ S, p ≤ q) → p ≤ sInf S :=
-  Set.subset_iInter₂
-
 instance : Inf (Submodule R M) :=
   ⟨fun p q ↦
     { carrier := p ∩ q
@@ -238,7 +232,7 @@ instance : Inf (Submodule R M) :=
 
 instance : SupSet (Submodule R M) where
   sSup S :=
-    { sSup (toAddSubmonoid '' S) with
+    { toAddSubmonoid := sSup (toAddSubmonoid '' S)
       smul_mem' := fun t {m} hm ↦ by
         simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup] at hm ⊢
         rw [sSup_eq_iSup'] at hm ⊢
