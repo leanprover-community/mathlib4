@@ -25,6 +25,7 @@ Commands:
   # Privilege required
   put          Run 'mk' then upload linked files missing on the server
   put!         Run 'mk' then upload all linked files
+  put-unpacked 'put' only files not already 'pack'ed; intended for CI use
   commit       Write a commit on the server
   commit!      Overwrite a commit on the server
   collect      TODO
@@ -76,6 +77,10 @@ def main (args : List String) : IO Unit := do
   let hashMap := hashMemo.hashMap
   let goodCurl ← pure !curlArgs.contains (args.headD "") <||> validateCurl
   if leanTarArgs.contains (args.headD "") then validateLeanTar
+  let pack (overwrite verbose unpackedOnly := false) := do
+    packCache hashMap overwrite verbose unpackedOnly (← getGitCommitHash)
+  let put (overwrite unpackedOnly := false) := do
+    putFiles (← pack overwrite (verbose := true) unpackedOnly) overwrite (← getToken)
   match args with
   | ["get"] => getFiles hashMap false false goodCurl true
   | ["get!"] => getFiles hashMap true true goodCurl true
@@ -86,16 +91,17 @@ def main (args : List String) : IO Unit := do
     getFiles (← hashMemo.filterByFilePaths (toPaths args)) true true goodCurl true
   | "get-" :: args =>
     getFiles (← hashMemo.filterByFilePaths (toPaths args)) false false goodCurl false
-  | ["pack"] => discard <| packCache hashMap false false (← getGitCommitHash)
-  | ["pack!"] => discard <| packCache hashMap true false (← getGitCommitHash)
+  | ["pack"] => discard <| pack
+  | ["pack!"] => discard <| pack (overwrite := true)
   | ["unpack"] => unpackCache hashMap false
   | ["unpack!"] => unpackCache hashMap true
   | ["clean"] =>
     cleanCache <| hashMap.fold (fun acc _ hash => acc.insert <| CACHEDIR / hash.asLTar) .empty
   | ["clean!"] => cleanCache
-  -- We allow arguments for `put` and `put!` so they can be added to the `roots`.
-  | "put" :: _ => putFiles (← packCache hashMap false true (← getGitCommitHash)) false (← getToken)
-  | "put!" :: _ => putFiles (← packCache hashMap false true (← getGitCommitHash)) true (← getToken)
+  -- We allow arguments for `put*` so they can be added to the `roots`.
+  | "put" :: _ => put
+  | "put!" :: _ => put (overwrite := true)
+  | "put-unpacked" :: _ => put (unpackedOnly := true)
   | ["commit"] =>
     if !(← isGitStatusClean) then IO.println "Please commit your changes first" return else
     commit hashMap false (← getToken)
