@@ -12,7 +12,7 @@ import Mathlib.RingTheory.Ideal.Norm
 
 This file defines the absolute ideal norm of a fractional ideal `I : FractionalIdeal R⁰ K` where
 `K` is a fraction field of `R`. The norm is defined by
-`FractionalIdeal.absNorm I = Ideal.absNorm I.num / |Algebra.norm ℤ I.den|` where `I.num` is a
+`FractionalIdeal.absNorm I = Ideal.absNorm I.num / |Algebra.norm ℤ I.den|` where `I.num` is an
 ideal of `R` and `I.den` an element of `R⁰` such that `I.den • I = I.num`.
 
 ## Main definitions and results
@@ -42,7 +42,7 @@ theorem absNorm_div_norm_eq_absNorm_div_norm {I : FractionalIdeal R⁰ K} (a : R
       (Ideal.absNorm I₀ : ℚ) / |Algebra.norm ℤ (a:R)| := by
   rw [div_eq_div_iff]
   · replace h := congr_arg (I.den • ·) h
-    have h' := congr_arg (a • ·) (den_mul_eq_num I)
+    have h' := congr_arg (a • ·) (den_mul_self_eq_num I)
     dsimp only at h h'
     rw [smul_comm] at h
     rw [h, Submonoid.smul_def, Submonoid.smul_def, ← Submodule.ideal_span_singleton_smul,
@@ -69,11 +69,11 @@ noncomputable def absNorm : FractionalIdeal R⁰ K →*₀ ℚ where
   map_mul' I J := by
     dsimp only
     rw [absNorm_div_norm_eq_absNorm_div_norm (I.den * J.den) (I.num * J.num) (by
-      have : Algebra.linearMap R K = (IsScalarTower.toAlgHom R R K).toLinearMap := rfl
-      rw [coe_mul, this, Submodule.map_mul, ← this, ← den_mul_eq_num I, ← den_mul_eq_num J]
-      exact Submodule.mul_smul_mul_eq_smul_mul_smul _ _ _ _), Submonoid.coe_mul, _root_.map_mul,
-      _root_.map_mul, Nat.cast_mul, div_mul_div_comm, Int.cast_abs, Int.cast_abs, Int.cast_abs,
-      ← abs_mul, Int.cast_mul]
+        have : Algebra.linearMap R K = (IsScalarTower.toAlgHom R R K).toLinearMap := rfl
+        rw [coe_mul, this, Submodule.map_mul, ← this, ← den_mul_self_eq_num, ← den_mul_self_eq_num]
+        exact Submodule.mul_smul_mul_eq_smul_mul_smul _ _ _ _),
+      Submonoid.coe_mul, _root_.map_mul, _root_.map_mul, Nat.cast_mul, div_mul_div_comm,
+      Int.cast_abs, Int.cast_abs, Int.cast_abs, ← abs_mul, Int.cast_mul]
 
 theorem absNorm_eq (I : FractionalIdeal R⁰ K) :
     absNorm I = (Ideal.absNorm I.num : ℚ) / |Algebra.norm ℤ (I.den : R)| := rfl
@@ -102,12 +102,13 @@ section IsLocalization
 
 variable [IsLocalization (Algebra.algebraMapSubmonoid R ℤ⁰) K] [Algebra ℚ K]
 
-theorem abs_det_basis_change [NoZeroDivisors K] {ι : Type*} [Fintype ι] [DecidableEq ι]
-    (b : Basis ι ℤ R) (I : FractionalIdeal R⁰ K) (bI : Basis ι ℤ I) :
+theorem abs_det_basis_change [NoZeroDivisors K] {ι : Type*} [Fintype ι]
+    [DecidableEq ι] (b : Basis ι ℤ R) (I : FractionalIdeal R⁰ K) (bI : Basis ι ℤ I) :
     |(b.localizationLocalization ℚ ℤ⁰ K).det ((↑) ∘ bI)| = absNorm I := by
+  have := IsFractionRing.nontrivial R K
   let b₀ : Basis ι ℚ K := b.localizationLocalization ℚ ℤ⁰ K
   let bI.num : Basis ι ℤ I.num := bI.map
-      ((equivNum (IsFractionRing.injective R K) (nonZeroDivisors.coe_ne_zero _)).restrictScalars ℤ)
+      ((equivNum (nonZeroDivisors.coe_ne_zero _)).restrictScalars ℤ)
   rw [absNorm_eq, ← Ideal.natAbs_det_basis_change b I.num bI.num, Int.cast_natAbs, Int.cast_abs,
     Int.cast_abs, Basis.det_apply, Basis.det_apply]
   change _ = |algebraMap ℤ ℚ _| / _
@@ -126,8 +127,9 @@ theorem abs_det_basis_change [NoZeroDivisors K] {ι : Type*} [Fintype ι] [Decid
     exact nonZeroDivisors.coe_ne_zero _)]
 
 @[simp]
-theorem absNorm_span_singleton [IsDomain K] [Module.Finite ℚ K] (x : K) :
+theorem absNorm_span_singleton [Module.Finite ℚ K] (x : K) :
     absNorm (spanSingleton R⁰ x) = |(Algebra.norm ℚ x)| := by
+  have : IsDomain K := IsFractionRing.isDomain R
   obtain ⟨d, ⟨r, hr⟩⟩ := IsLocalization.exists_integer_multiple R⁰ x
   rw [absNorm_eq' d (Ideal.span {r})]
   · rw [Ideal.absNorm_span_singleton]
