@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fox Thomson, Martin Dvorak
 -/
 import Mathlib.Algebra.Order.Kleene
-import Mathlib.Algebra.Ring.Hom.Defs
+import Mathlib.Algebra.Order.Hom.Ring
 import Mathlib.Data.List.Join
 import Mathlib.Data.Set.Lattice
 import Mathlib.Tactic.DeriveFintype
@@ -14,8 +14,8 @@ import Mathlib.Tactic.DeriveFintype
 /-!
 # Languages
 
-This file contains the definition and operations on formal languages over an alphabet. Note that
-"strings" are implemented as lists over the alphabet.
+This file contains the definition and operations on formal languages over an alphabet.
+Note that "strings" are implemented as lists over the alphabet.
 Union and concatenation define a [Kleene algebra](https://en.wikipedia.org/wiki/Kleene_algebra)
 over the languages.
 In addition to that, we define a reversal of a language and prove that it behaves well
@@ -311,6 +311,9 @@ lemma mem_reverse : a ∈ l.reverse ↔ a.reverse ∈ l := Iff.rfl
 lemma reverse_mem_reverse : a.reverse ∈ l.reverse ↔ a ∈ l := by
   rw [mem_reverse, List.reverse_reverse]
 
+lemma reverse_eq_image (l : Language α) : l.reverse = List.reverse '' l :=
+  ((List.reverse_involutive.toPerm _).image_eq_preimage _).symm
+
 @[simp]
 lemma reverse_zero : (0 : Language α).reverse = 0 := rfl
 
@@ -318,32 +321,42 @@ lemma reverse_zero : (0 : Language α).reverse = 0 := rfl
 lemma reverse_one : (1 : Language α).reverse = 1 := by
   simp [reverse, ← one_def]
 
-@[simp]
-lemma reverse_reverse (l : Language α) : l.reverse.reverse = l := by
-  ext w
-  rw [mem_reverse, reverse_mem_reverse]
+lemma reverse_involutive : Function.Involutive (reverse : Language α → _) :=
+  List.reverse_involutive.preimage
 
-lemma reverse_involutive : Function.Involutive (reverse : Language α → _) := reverse_reverse
+lemma reverse_bijective : Function.Bijective (reverse : Language α → _) :=
+  reverse_involutive.bijective
+
+lemma reverse_injective : Function.Injective (reverse : Language α → _) :=
+  reverse_involutive.injective
+
+lemma reverse_surjective : Function.Surjective (reverse : Language α → _) :=
+  reverse_involutive.surjective
+
+@[simp]
+lemma reverse_reverse (l : Language α) : l.reverse.reverse = l := reverse_involutive l
 
 @[simp]
 lemma reverse_add (l m : Language α) : (l + m).reverse = l.reverse + m.reverse := rfl
 
 @[simp]
 lemma reverse_mul (l m : Language α) : (l * m).reverse = m.reverse * l.reverse := by
-  ext w
-  show
-    (∃ u v, u ∈ l ∧ v ∈ m ∧ u ++ v = w.reverse) ↔
-    (∃ u v, u.reverse ∈ m ∧ v.reverse ∈ l ∧ u ++ v = w)
-  rw [exists_comm, List.reverse_involutive.surjective.exists]
-  refine exists_congr fun u => ?_
-  rw [List.reverse_involutive.surjective.exists]
-  refine exists_congr fun v => ?_
-  rw [and_left_comm, ← List.reverse_append, List.reverse_inj]
+  simp only [mul_def, reverse_eq_image, image2_image_left, image2_image_right, image_image2,
+    List.reverse_append]
+  apply image2_swap
+
+@[simp]
+lemma reverse_iSup {ι : Sort*} (l : ι → Language α) : (⨆ i, l i).reverse = ⨆ i, (l i).reverse :=
+  preimage_iUnion
+
+@[simp]
+lemma reverse_iInf {ι : Sort*} (l : ι → Language α) : (⨅ i, l i).reverse = ⨅ i, (l i).reverse :=
+  preimage_iInter
 
 variable (α) in
 /-- `Language.reverse` as a ring isomorphism to the opposite ring. -/
 @[simps]
-def reverseHom : Language α ≃+* (Language α)ᵐᵒᵖ where
+def reverseIso : Language α ≃+* (Language α)ᵐᵒᵖ where
   toFun l := .op l.reverse
   invFun l' := l'.unop.reverse
   left_inv := reverse_reverse
@@ -353,22 +366,11 @@ def reverseHom : Language α ≃+* (Language α)ᵐᵒᵖ where
 
 @[simp]
 lemma reverse_pow (l : Language α) (n : ℕ) : (l ^ n).reverse = l.reverse ^ n :=
-  MulOpposite.op_injective (map_pow (reverseHom α) l n)
+  MulOpposite.op_injective (map_pow (reverseIso α) l n)
 
 @[simp]
 lemma reverse_kstar (l : Language α) : l∗.reverse = l.reverse∗ := by
-  ext w
-  show
-    (∃ L, w.reverse = join L ∧ ∀ y, y ∈ L → y ∈ l) ↔
-    (∃ L, w = join L ∧ ∀ y, y ∈ L → y.reverse ∈ l)
-  rw [(List.reverse_involutive (α := α).list_map.surjective.comp
-    List.reverse_involutive.surjective).exists]
-  simp only [Function.comp, List.reverse_involutive.eq_iff, reverse_join, reverse_map,
-    List.reverse_reverse, List.map_map, List.map_id'']
-  refine exists_congr fun a => and_congr_right' ?_
-  rw [List.reverse_involutive.surjective.forall]
-  simp_rw [List.mem_map_of_involutive List.reverse_involutive, List.reverse_reverse,
-    List.mem_reverse]
+  simp only [kstar_eq_iSup_pow, reverse_iSup, reverse_pow]
 
 end Language
 
