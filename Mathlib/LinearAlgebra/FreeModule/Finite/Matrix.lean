@@ -23,7 +23,7 @@ We provide some instances for finite and free modules involving matrices.
 
 universe u u' v w
 
-variable (R : Type u) (S : Type u') (M : Type v) (M' : Type v) (N : Type w)
+variable (R : Type u) (S : Type u') (M : Type v) (N : Type w)
 
 open Module.Free (chooseBasis ChooseBasisIndex)
 
@@ -33,7 +33,6 @@ section Ring
 
 variable [Ring R] [Ring S] [AddCommGroup M] [Module R M] [Module.Free R M] [Module.Finite R M]
 variable [AddCommGroup N] [Module R N] [Module S N] [SMulCommClass R S N]
-variable [AddCommGroup M'] [Module R M'] [Module S M'] [SMulCommClass R S M']
 
 private noncomputable def linearMapEquivFun : (M →ₗ[R] N) ≃ₗ[S] ChooseBasisIndex R M → N :=
   (chooseBasis R M).repr.congrLeft N S ≪≫ₗ (Finsupp.lsum S).symm ≪≫ₗ
