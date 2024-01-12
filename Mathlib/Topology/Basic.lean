@@ -157,6 +157,12 @@ theorem IsOpen.union (h₁ : IsOpen s₁) (h₂ : IsOpen s₂) : IsOpen (s₁ �
   rw [union_eq_iUnion]; exact isOpen_iUnion (Bool.forall_bool.2 ⟨h₂, h₁⟩)
 #align is_open.union IsOpen.union
 
+lemma isOpen_iff_of_cover {ι : Type*} {f : ι → Set α} (ho : ∀ i, IsOpen (f i))
+    (hU : (⋃ i, f i) = univ) : IsOpen s ↔ ∀ i, IsOpen (f i ∩ s) := by
+  refine ⟨fun h i ↦ (ho i).inter h, fun h ↦ ?_⟩
+  rw [← s.inter_univ, inter_comm, ← hU, iUnion_inter]
+  exact isOpen_iUnion fun i ↦ h i
+
 @[simp] theorem isOpen_empty : IsOpen (∅ : Set α) := by
   rw [← sUnion_empty]; exact isOpen_sUnion fun a => False.elim
 #align is_open_empty isOpen_empty
