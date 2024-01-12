@@ -1559,3 +1559,27 @@ instance mulDistribMulAction [Monoid α] [MulDistribMulAction M' α] (S : Submon
   MulDistribMulAction.compHom _ S.subtype
 
 example {S : Submonoid M'} : IsScalarTower S M' M' := by infer_instance
+
+end Submonoid
+
+end Actions
+
+section Units
+
+namespace Submonoid
+
+/-- The multiplicative equivalence between the type of units of `M` and the submonoid of unit
+elements of `M`. -/
+@[to_additive (attr := simps!) " The additive equivalence between the type of additive units of `M`
+  and the additive submonoid whose elements are the additive units of `M`. "]
+noncomputable def unitsTypeEquivIsUnitSubmonoid [Monoid M] :
+  Mˣ ≃* IsUnit.submonoid M where
+  toFun x := ⟨x, Units.isUnit x⟩
+  invFun x := x.prop.unit
+  left_inv x := IsUnit.unit_of_val_units _
+  right_inv x := by simp_rw [IsUnit.unit_spec]
+  map_mul' x y := by simp_rw [Units.val_mul]; rfl
+
+end Submonoid
+
+end Units

@@ -11,12 +11,28 @@ import Mathlib.GroupTheory.Subgroup.Basic
 
 # Submonoid of units
 
-Given a submonoid `S` of a monoid `M`, we define the submonoid `S.units` as the units of `S` as a
+Given a submonoid `S` of a monoid `M`, we define the subgroup `S.units` as the units of `S` as a
 subgroup of `Mˣ`. That is to say, `S.units` contains all members of `S` which have a
 two-sided inverse within `S`, as terms of type `Mˣ`.
-This is multiplicatively equivalent to `Sˣ` and also to `IsUnit.submonoid S`,
-but it is as a `Subgroup Mˣ` rather than as a type in and of itself or a `Submonoid S`.
 
+We also define, for subgroups `S` of `Mˣ`, `S.ofUnits`, which is `S` considered as a submonoid
+of `M`. `Submonoid.units` and `Subgroup.ofUnits` form a Galois coinsertion.
+
+We also make the equivalent additive definitions.
+
+# Implementation details
+There are a number of other constructions which are multiplicatively equivalent to `S.units` but
+which have a different type.
+
+| Definition           | Type          |
+|----------------------|---------------|
+| `S.units`            | `Subgroup Mˣ` |
+| `Sˣ`                 | `Type u`      |
+| `IsUnit.submonoid S` | `Submonoid S` |
+| `S.units.ofUnits`    | `Submonoid M` |
+
+All of these are distinct from `S.leftInv`, which is the submonoid of `M` which contains
+every member of `M` with a right inverse in `S`.
 -/
 
 variable {M : Type*}
@@ -154,29 +170,12 @@ lemma units_left_inverse :
     Function.LeftInverse (Submonoid.units (M := M)) (Subgroup.ofUnits (M := M)) :=
     ofUnits_units_gci.u_l_leftInverse
 
-/-- The multiplicative equivalence between the type of units of `M` and the submonoid of unit
-elements of `M`. -/
-@[to_additive (attr := simps!) " The additive equivalence between the type of additive units of `M`
-  and the additive submonoid whose elements are the additive units of `M`. "]
-noncomputable def unitsTypeEquivIsUnitSubmonoid :
-  Mˣ ≃* IsUnit.submonoid M where
-  toFun x := ⟨x, Units.isUnit x⟩
-  invFun x := x.prop.unit
-  left_inv x := IsUnit.unit_of_val_units _
-  right_inv x := by simp_rw [IsUnit.unit_spec]
-  map_mul' x y := by simp_rw [Units.val_mul]; rfl
-
 /-- The equivalence between the subgroup of units of `S` and the submonoid of unit
 elements of `S`. -/
 @[to_additive (attr := simps!) " The equivalence between the additive subgroup of additive units of
 `S` and the additive submonoid of additive unit elements of `S`.  "]
 noncomputable def unitsEquivIsUnitSubmonoid (S : Submonoid M) : S.units ≃* IsUnit.submonoid S :=
 S.unitsEquivUnitsType.trans unitsTypeEquivIsUnitSubmonoid
-
-/-- The unit group of a unit group is equivalent to the same group. -/
-@[to_additive " The additive unit group of an additive unit group is equivalent to the same
-group. " ]
-def unitsTypeUnitsTypeEquivUnitsType : Mˣˣ ≃* Mˣ := toUnits.symm
 
 end Units
 
@@ -278,7 +277,7 @@ lemma ofUnits_iSup₂ {ι : Sort*} {κ : ι → Sort*} {f : (i : ι) → κ i �
     ofUnits_units_gc.l_iSup₂
 
 @[to_additive]
-lemma Submonoid.ofUnits_surjective : Function.Injective (Subgroup.ofUnits (M := M)) :=
+lemma Submonoid.ofUnits_injective : Function.Injective (Subgroup.ofUnits (M := M)) :=
 ofUnits_units_gci.l_injective
 
 @[to_additive (attr := simp)]
@@ -311,7 +310,6 @@ lemma mem_units_iff_coe_mem (T : Subgroup G) (x : Gˣ): x ∈ T.units ↔ (x : G
 lemma mem_iff_toUnits_mem_units (T : Subgroup G) (x : G) : x ∈ T ↔ toUnits x ∈ T.units := by
     simp_rw [Submonoid.mem_units_iff, mem_toSubmonoid, Units.val_inv_eq_inv_val, inv_mem_iff,
     and_self, val_toUnits_apply]
-
 
 /-- The equivalence between the greatest subgroup of units contained within `T` and `T` itself. -/
 @[to_additive " The equivalence between the greatest subgroup of additive units

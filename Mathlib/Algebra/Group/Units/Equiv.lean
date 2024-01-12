@@ -26,6 +26,11 @@ def toUnits [Group G] : G ≃* Gˣ where
 #align to_units toUnits
 #align to_add_units toAddUnits
 
+/-- The unit group of a unit group is equivalent to the same group. -/
+@[to_additive " The additive unit group of an additive unit group is equivalent to the same
+group. " ]
+def unitsTypeUnitsTypeEquivUnitsType [Monoid M] : Mˣˣ ≃* Mˣ := toUnits.symm
+
 #align coe_to_units val_toUnits_apply
 #align coe_to_add_units val_toAddUnits_apply
 
