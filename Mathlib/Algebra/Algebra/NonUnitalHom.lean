@@ -47,8 +47,7 @@ set_option autoImplicit true
 
 universe u v w w₁ w₂ w₃
 
-variable {R : Type*} {S : Type*} -- [Monoid R] [Monoid S] (φ : R →* S)
---   (A : Type v) (B : Type w) (C : Type w₁)
+variable {R : Type*} {S : Type*}
 
 /-- A morphism respecting addition, multiplication, and scalar multiplication. When these arise from
 algebra structures, this is the same as a not-necessarily-unital morphism of algebras. -/
@@ -81,7 +80,6 @@ class NonUnitalAlgSemiHomClass (F : Type*)
     extends DistribMulActionSemiHomClass F φ A B, MulHomClass F A B
 #align non_unital_alg_hom_class NonUnitalAlgSemiHomClass
 
--- TODO (ACL) : why doesn't it work later?
 /-- `NonUnitalAlgHomClass F R A B` asserts `F` is a type of bundled algebra homomorphisms
   from `A` to `B` which are `R`-linear.
 

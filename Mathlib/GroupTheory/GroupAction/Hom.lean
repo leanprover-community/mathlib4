@@ -12,6 +12,9 @@ Authors: Kenny Lau, Antoine Chambert-Loir
 import Mathlib.Algebra.GroupRingAction.Basic
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Ring.Equiv
+import Mathlib.Algebra.Group.Hom.CompTripleClass
+
+#align_import algebra.hom.group_action from "leanprover-community/mathlib"@"e7bab9a85e92cf46c02cb4725a7be2f04691e3a7"
 
 /-!
 # Equivariant homomorphisms
@@ -45,157 +48,6 @@ The above types have corresponding classes:
 * When `M = N` and `φ = MonoidHom.id M`, we provide the notation `X →[M] Y`
 -/
 
-section CompTriple
-
-/-- Class of composing triples -/
-class CompTriple  {M N P : Type _} (φ : M → N) (ψ : N → P) (χ : outParam (M → P)) : Prop where
-  /-- The maps form a commuting triangle -/
-  comp_eq : ψ.comp φ = χ
-
-attribute [simp] CompTriple.comp_eq
-
-namespace CompTriple
-
-/-- Class of Id maps -/
-class isId {M : Type*} (σ : M → M) : Prop where
-  eq_id : σ = id
-
-instance {M : Type*} : isId (@id M) where
-  eq_id := rfl
-
-lemma comp_id {N P : Type _} {φ : N → N} [isId φ] {ψ : N → P} :
-    CompTriple φ ψ ψ := {
-  comp_eq := by simp only [isId.eq_id, Function.comp.right_id]}
-
-lemma id_comp {M N : Type _} {φ : M → N} {ψ : N → N} [isId ψ] :
-    CompTriple φ ψ φ := {
-  comp_eq := by simp only [isId.eq_id, Function.comp.left_id]}
-
-lemma comp {M N P : Type _}
-    {φ : M → N} {ψ : N → P} :
-  CompTriple φ ψ  (ψ.comp φ) := {comp_eq := rfl}
-
-lemma comp_inv {M N : Type _} {φ : M → N} {ψ : N → M}
-    (h : Function.RightInverse φ ψ) {χ : M → M} [isId χ] :
-    CompTriple φ ψ χ := {
-  comp_eq := by simp only [isId.eq_id, h.id] }
-
-lemma apply {M N P : Type _}
-    {φ : M → N} {ψ : N → P} {χ : M → P} (h : CompTriple φ ψ χ) (x : M) :
-  ψ (φ x) = χ x := by
-  rw [← h.comp_eq, Function.comp_apply]
-
-end CompTriple
-
-section MonoidHomCompTriple
-
-namespace MonoidHomCompTriple
-
-variable {M' : Type*} [Monoid M']
-variable {M N P : Type*} [Monoid M] [Monoid N] [Monoid P]
---  {φ : M →* N} {ψ  : N →* P}
-
-/-- Class of Id maps -/
-class isId (σ : M →* M) : Prop where
-  eq_id : σ = MonoidHom.id M
-
-instance {M : Type*} [Monoid M] : isId (MonoidHom.id M) where
-  eq_id := rfl
-
-instance {σ : M →* M} [MonoidHomCompTriple.isId σ] : CompTriple.isId σ := {
-    eq_id := by simp only [isId.eq_id, MonoidHom.coe_mk, OneHom.coe_mk] }
-
-/-
-lemma comp_id {φ : N →* N} [isId φ] {ψ : N → P} :
-    CompTriple φ ψ ψ := {
-  comp_eq := by simp only [isId.eq_id, MonoidHom.coe_mk, OneHom.coe_mk, Function.comp.right_id]}
-
-example {φ : N →* N} [isId φ] {ψ : N → P} : CompTriple φ ψ ψ := comp_id
-
-lemma id_comp {φ : M →* N} {ψ : N →* N} [isId ψ] :
-    CompTriple φ ψ φ := {
-  comp_eq := by simp only [isId.eq_id, MonoidHom.coe_mk, OneHom.coe_mk, Function.comp.left_id]}
-
--/
-
-lemma comp {φ : M →* N} {ψ : N →* P} :
-    CompTriple φ ψ (ψ.comp φ) := {comp_eq := rfl}
-
-lemma comp_inv {φ : M →* N} {ψ : N →* M} (h : Function.RightInverse φ ψ)
-    {χ : M →* M} [MonoidHomCompTriple.isId χ] :
-    CompTriple φ ψ χ := {
-  comp_eq := by simp only [h.id, isId.eq_id, MonoidHom.coe_mk, OneHom.coe_mk] }
-
-lemma apply
-    {φ : M →* N} {ψ : N →* P} {χ : M →* P} (h : CompTriple φ ψ χ) (x : M) :
-  ψ (φ x) = χ x := by
-  rw [← h.comp_eq, Function.comp_apply]
-
-@[simp]
-theorem comp_assoc {Q : Type*} [Monoid Q]
-    {φ₁ : M →* N} {φ₂ : N →* P} {φ₁₂ : M →* P}
-    (κ : CompTriple φ₁ φ₂ φ₁₂)
-    {φ₃ : P →* Q} {φ₂₃ : N →* Q} (κ' : CompTriple φ₂ φ₃ φ₂₃)
-    {φ₁₂₃ : M →* Q} :
-    CompTriple φ₁ φ₂₃ φ₁₂₃ ↔ CompTriple φ₁₂ φ₃ φ₁₂₃ := by
-  constructor
-  all_goals {
-    rintro ⟨h⟩
-    exact ⟨ by simp only [← κ.comp_eq, ← h, ← κ'.comp_eq]; rfl ⟩ }
-
-end MonoidHomCompTriple
-
-/-
-section CompTripleClass
-
-/-- Class of composing triples -/
-class CompTripleClass (F : Type _) {M N P : outParam (Type _)}
-    (φ : outParam (M → N)) (ψ : outParam (N → P)) (χ : outParam (M → P)) : Prop where
-  /-- The maps form a commuting triangle -/
-  comp_eq : ψ.comp φ = χ
-
-attribute [simp] CompTripleClass.comp_eq
-
-namespace CompTripleClass
-
-lemma comp_id (F : Type _) {N P : outParam (Type _)} (ψ : outParam (N → P)) :
-    CompTripleClass F (@id N) ψ ψ := {comp_eq := rfl}
-
-lemma id_comp (F : Type _) {M N : outParam (Type _)} (φ : outParam (M → N)) :
-    CompTripleClass F φ (@id N) φ := {comp_eq := rfl}
-
-lemma comp (F : Type _) {M N P : outParam (Type _)}
-    (φ : outParam (M → N)) (ψ : outParam (N → P)) :
-    CompTripleClass F φ ψ (ψ.comp φ) := {comp_eq := rfl}
-
-lemma comp_inv {M N : outParam (Type _)} {φ : outParam (M → N)} {ψ :outParam (N → M)}
-    (h : Function.RightInverse ↑φ ↑ψ) :
-    CompTriple φ ψ id := {comp_eq := h.id }
-
-lemma apply {M N P : outParam (Type _)}
-    {φ : outParam (M → N)} {ψ : outParam (N → P)} {χ : outParam (M → P)}
-    (h : CompTriple φ ψ χ) (x : M) :
-    ψ (φ x) = χ x := by
-  rw [← h.comp_eq, Function.comp_apply]
-
-@[simp]
-theorem comp_assoc {M N P Q : outParam (Type _)}
-    {φ₁ : outParam (M → N)} {φ₂ : outParam (N → P)} {φ₁₂ : outParam (M → P)}
-    (κ : CompTriple φ₁ φ₂ φ₁₂)
-    {φ₃ : outParam (P → Q)} {φ₂₃ : outParam (N → Q)} (κ' : CompTriple φ₂ φ₃ φ₂₃)
-    {φ₁₂₃ : outParam (M → Q)} :
-    CompTriple φ₁ φ₂₃ φ₁₂₃ ↔ CompTriple φ₁₂ φ₃ φ₁₂₃ := by
-  constructor
-  all_goals {
-    rintro ⟨h⟩
-    exact ⟨ by simp only [← κ.comp_eq, ← h, ← κ'.comp_eq]; rfl ⟩ }
-
-end CompTripleClass
-
-end CompTripleClass
-
--/
-
 assert_not_exists Submonoid
 
 section MulActionHom
@@ -212,9 +64,9 @@ variable (Z : Type*) [SMul P Z]
 -- @[nolint has_nonempty_instance]
 structure MulActionHom where
   /-- The underlying function. -/
-  toFun : X → Y
+  protected toFun : X → Y
   /-- The proposition that the function commutes with the actions. -/
-  map_smul' : ∀ (m : M) (x : X), toFun (m • x) = (φ m) • toFun x
+  protected map_smul' : ∀ (m : M) (x : X), toFun (m • x) = (φ m) • toFun x
 
 /- Porting note: local notation given a name, conflict with Algebra.Hom.GroupAction
  see https://github.com/leanprover/lean4/issues/2000 -/
@@ -234,8 +86,8 @@ abbrev MulActionHom (M : Type _) (X Y : Type _) [SMul M X] [SMul M Y] := MulActi
 
 You should extend this class when you extend `MulActionHom`. -/
 class MulActionSemiHomClass (F : Type _) {M N : outParam (Type _)}
-(φ : outParam (M → N)) (X Y : outParam (Type _)) [SMul M X] [SMul N Y] extends
-  FunLike F X fun _ => Y where
+    (φ : outParam (M → N)) (X Y : outParam (Type _)) [SMul M X] [SMul N Y]
+    extends FunLike F X fun _ => Y where
   /-- The proposition that the function preserves the action. -/
   map_smulₛₗ : ∀ (f : F) (c : M) (x : X), f (c • x) = (φ c) • (f x)
 #align smul_hom_class MulActionSemiHomClass
@@ -246,7 +98,7 @@ export MulActionSemiHomClass (map_smulₛₗ)
 morphisms which are equivariant with respect to actions of `M`
 This is an abbreviation of `MulActionSemiHomClass`. -/
 abbrev MulActionHomClass (F : Type _) (M : outParam (Type _))
-(X Y : outParam (Type _)) [SMul M X] [SMul M Y] :=
+    (X Y : outParam (Type _)) [SMul M X] [SMul M Y] :=
   MulActionSemiHomClass F (@id M) X Y
 
 @[simp]
@@ -301,16 +153,18 @@ protected theorem map_smul (f : X →[M'] Y) (m : M') (x : X) : f (m • x) = m 
 #align mul_action_hom.map_smul MulActionHom.map_smul
 
 @[ext]
-theorem ext [MulActionSemiHomClass F φ X Y] {f g : F} :
+theorem ext {f g : X →ₑ[φ] Y} :
     (∀ x, f x = g x) → f = g :=
   FunLike.ext f g
 #align mul_action_hom.ext MulActionHom.ext
 
-theorem ext_iff [MulActionSemiHomClass F φ X Y] {f g : F} : f = g ↔ ∀ x, f x = g x :=
+theorem ext_iff [MulActionSemiHomClass F φ X Y] {f g : F} :
+    f = g ↔ ∀ x, f x = g x :=
   FunLike.ext_iff
 #align mul_action_hom.ext_iff MulActionHom.ext_iff
 
-protected theorem congr_fun [MulActionSemiHomClass F φ X Y] {f g : F} (h : f = g) (x : X) :
+protected theorem congr_fun [MulActionSemiHomClass F φ X Y] {f g : F}
+    (h : f = g) (x : X) :
     f x = g x :=
   FunLike.congr_fun h _
 #align mul_action_hom.congr_fun MulActionHom.congr_fun
@@ -356,6 +210,72 @@ open MulActionHom
 
 variable {φ ψ χ X Y Z}
 
+attribute [instance] CompTriple.id_comp CompTriple.comp_id
+
+/-- Composition of two equivariant maps. -/
+def comp (g : Y →ₑ[ψ] Z) (f : X →ₑ[φ] Y) [κ : CompTriple φ ψ χ] :
+    X →ₑ[χ] Z :=
+  ⟨g ∘ f, fun m x =>
+    calc
+      g (f (m • x)) = g (φ m • f x) := by rw [map_smulₛₗ]
+      _ = ψ (φ m) • g (f x) := by rw [map_smulₛₗ]
+      _ = (ψ ∘ φ) m • g (f x) := rfl
+      _ = χ m • g (f x) := by rw [κ.comp_eq] ⟩
+#align mul_action_hom.comp MulActionHom.comp
+
+/-- Composition of two equivariant maps. -/
+def comp' (g : Y →ₑ[ψ] Z) (f : X →ₑ[φ] Y) : X →ₑ[ψ ∘ φ] Z :=
+  g.comp f (κ := CompTriple.comp)
+
+@[simp]
+lemma comp'_eq_comp (g : Y →ₑ[ψ] Z) (f : X →ₑ[φ] Y) :
+    g.comp' f = g.comp f (κ := CompTriple.comp) := rfl
+
+@[simp]
+theorem comp_apply
+    (g : Y →ₑ[ψ] Z) (f : X →ₑ[φ] Y) [CompTriple φ ψ χ] (x : X) :
+    g.comp f x = g (f x) := rfl
+#align mul_action_hom.comp_apply MulActionHom.comp_apply
+
+theorem comp'_apply
+    (g : Y →ₑ[ψ] Z) (f : X →ₑ[φ] Y) (x : X) : (g.comp' f) x = g (f x) := rfl
+
+@[simp]
+theorem id_comp (f : X →ₑ[φ] Y) :
+    (MulActionHom.id N).comp f = f :=
+  ext fun x => by rw [comp_apply, id_apply]
+#align mul_action_hom.id_comp MulActionHom.id_comp
+
+theorem id_comp' (f : X →ₑ[φ] Y) :
+    (MulActionHom.id N).comp' f = f :=
+  ext fun x => by rw [comp'_apply, id_apply]
+
+@[simp]
+theorem comp_id (f : X →ₑ[φ] Y) :
+    f.comp (MulActionHom.id M) = f :=
+  ext fun x => by rw [comp_apply, id_apply]
+#align mul_action_hom.comp_id MulActionHom.comp_id
+
+theorem comp'_id (f : X →ₑ[φ] Y) : f.comp' (MulActionHom.id M) = f :=
+  ext fun x => by rw [comp'_apply, id_apply]
+
+@[simp]
+theorem comp_assoc {Q T : Type _} [SMul Q T]
+    {η : P → Q} {θ : M → Q} {ζ : N → Q}
+    (h : Z →ₑ[η] T) (g : Y →ₑ[ψ] Z) (f : X →ₑ[φ] Y)
+    [CompTriple φ ψ χ] [CompTriple χ η θ]
+    [CompTriple ψ η ζ] [CompTriple φ ζ θ] :
+    h.comp (g.comp f) = (h.comp g).comp f :=
+  ext fun _ => rfl
+#align equivariant_map.comp_assoc MulActionHom.comp_assoc
+
+theorem comp'_assoc {Q T : Type _} [SMul Q T]
+    {η : P → Q}
+    (h : Z →ₑ[η] T) (g : Y →ₑ[ψ] Z) (f : X →ₑ[φ] Y) :
+    h.comp' (g.comp' f) = (h.comp' g).comp' f :=
+  ext fun _ => rfl
+
+/- old version
 /-- Composition of two equivariant maps. -/
 def comp' (g : Y →ₑ[ψ] Z) (f : X →ₑ[φ] Y) (κ : CompTriple φ ψ χ) :
     X →ₑ[χ] Z :=
@@ -420,6 +340,7 @@ theorem comp_assoc {Q T : Type _} [SMul Q T]
     h.comp (g.comp f) = (h.comp g).comp f :=
   ext fun _ => rfl
 #align equivariant_map.comp_assoc MulActionHom.comp_assoc
+-/
 
 variable {φ' : N → M}
 variable {Y₁ : Type*} [SMul M Y₁]
@@ -465,7 +386,8 @@ theorem inverse'_inverse'
 theorem comp_inverse' {f : X →ₑ[φ] Y } {g : Y → X}
     {k₁ : Function.LeftInverse φ' φ} {k₂ : Function.RightInverse φ' φ}
     {h₁ : Function.LeftInverse g f} {h₂ : Function.RightInverse g f} :
-    (inverse' f g k₂ h₁ h₂).comp' f (CompTriple.comp_inv k₁) = MulActionHom.id M := by
+    (inverse' f g k₂ h₁ h₂).comp f (κ := CompTriple.comp_inv k₁)
+      = MulActionHom.id M := by
   rw [ext_iff]
   intro x
   simp only [comp'_apply, inverse_apply, id_apply]
@@ -474,7 +396,7 @@ theorem comp_inverse' {f : X →ₑ[φ] Y } {g : Y → X}
 theorem inverse'_comp' {f : X →ₑ[φ] Y } {g : Y → X}
     {k₂ : Function.RightInverse φ' φ}
     {h₁ : Function.LeftInverse g f} {h₂ : Function.RightInverse g f} :
-    f.comp' (inverse' f g k₂ h₁ h₂) (CompTriple.comp_inv k₂) = MulActionHom.id N := by
+    f.comp (inverse' f g k₂ h₁ h₂) (κ := CompTriple.comp_inv k₂) = MulActionHom.id N := by
   rw [ext_iff]
   intro x
   simp only [comp'_apply, inverse_apply, id_apply]
@@ -510,14 +432,6 @@ variable (B' : Type _) [AddGroup B'] [DistribMulAction N B']
 /-- Equivariant additive monoid homomorphisms. -/
 structure DistribMulActionHom extends A →ₑ[φ] B, A →+ B
 #align distrib_mul_action_hom DistribMulActionHom
-
-/-
-/-- Equivariant additive monoid homomorphisms. -/
-abbrev DistribMulActionHom (M : Type _) [Monoid M]
-  (A : Type _) [AddMonoid A] [DistribMulAction M A]
-  (B : Type _) [AddMonoid B] [DistribMulAction M B] :=
-  DistribMulActionSemiHom (@id M) A B
--/
 
 /-- Reinterpret an equivariant additive monoid homomorphism as an additive monoid homomorphism. -/
 add_decl_doc DistribMulActionHom.toAddMonoidHom
@@ -717,31 +631,32 @@ theorem one_apply (a : A) : (1 : A →+[M] A) a = a :=
 instance : Inhabited (A →ₑ+[φ] B) :=
   ⟨0⟩
 
+attribute [instance] MonoidHom.CompTriple.id_comp MonoidHom.CompTriple.comp_id
+
 /-- Composition of two equivariant additive monoid homomorphisms. -/
-def comp (g : B →ₑ+[ψ] C) (f : A →ₑ+[φ] B) : A →ₑ+[ψ.comp φ] C :=
-  { MulActionHom.comp (g : B →ₑ[ψ] C) (f : A →ₑ[φ] B) ,
+def comp (g : B →ₑ+[ψ] C) (f : A →ₑ+[φ] B) [κ : MonoidHom.CompTriple φ ψ χ] :
+    A →ₑ+[χ] C :=
+  { MulActionHom.comp (g : B →ₑ[ψ] C) (f : A →ₑ[φ] B),
     AddMonoidHom.comp (g : B →+ C) (f : A →+ B) with }
 #align distrib_mul_action_hom.comp DistribMulActionHom.comp
 
 /-- Composition of two equivariant additive monoid homomorphisms. -/
-def comp' (g : B →ₑ+[ψ] C) (f : A →ₑ+[φ] B) (κ : CompTriple φ ψ χ) :
-    A →ₑ+[χ] C :=
-  { MulActionHom.comp' (g : B →ₑ[ψ] C) (f : A →ₑ[φ] B) κ,
-    AddMonoidHom.comp (g : B →+ C) (f : A →+ B) with }
+def comp' (g : B →ₑ+[ψ] C) (f : A →ₑ+[φ] B) :
+    A →ₑ+[ψ.comp φ] C :=
+    g.comp f (κ := MonoidHom.CompTriple.comp)
 
-lemma comp_eq_comp' (g : B →ₑ+[ψ] C) (f : A →ₑ+[φ] B) :
-    g.comp f = g.comp' f (MonoidHomCompTriple.comp) := rfl
+lemma comp'_eq_comp (g : B →ₑ+[ψ] C) (f : A →ₑ+[φ] B) :
+    g.comp' f = g.comp f (κ := MonoidHom.CompTriple.comp) := rfl
 
 @[simp]
-theorem comp_apply (g : B →ₑ+[ψ] C) (f : A →ₑ+[φ] B) (x : A) :
-    g.comp f x = g (f x) :=
-  rfl
+theorem comp_apply
+    (g : B →ₑ+[ψ] C) (f : A →ₑ+[φ] B) [MonoidHom.CompTriple φ ψ χ] (x : A) :
+    g.comp f x = g (f x) := rfl
 #align distrib_mul_action_hom.comp_apply DistribMulActionHom.comp_apply
 
 @[simp]
-theorem comp'_apply (g : B →ₑ+[ψ] C) (f : A →ₑ+[φ] B) {κ : CompTriple φ ψ χ} (x : A) :
-    g.comp' f κ x = g (f x) :=
-  rfl
+theorem comp'_apply (g : B →ₑ+[ψ] C) (f : A →ₑ+[φ] B) (x : A) :
+    g.comp' f x = g (f x) := rfl
 
 @[simp]
 theorem id_comp (f : A →ₑ+[φ] B) :
@@ -751,7 +666,7 @@ theorem id_comp (f : A →ₑ+[φ] B) :
 
 @[simp]
 theorem id_comp' (f : A →ₑ+[φ] B) :
-    comp' (DistribMulActionHom.id N) f (CompTriple.id_comp) = f :=
+    comp' (DistribMulActionHom.id N) f = f :=
   ext fun x => by rw [comp'_apply, id_apply]
 
 @[simp]
@@ -762,8 +677,23 @@ theorem comp_id (f : A →ₑ+[φ] B) :
 
 @[simp]
 theorem comp'_id (f : A →ₑ+[φ] B) :
-    f.comp' (DistribMulActionHom.id M) (CompTriple.comp_id)= f :=
+    f.comp' (DistribMulActionHom.id M) =f :=
   ext fun x => by rw [comp'_apply, id_apply]
+
+@[simp]
+theorem comp_assoc {Q D : Type*} [Monoid Q] [AddMonoid D] [DistribMulAction Q D]
+    {η : P →* Q} {θ : M →* Q} {ζ : N →* Q}
+    (h : C →ₑ+[η] D) (g : B →ₑ+[ψ] C) (f : A →ₑ+[φ] B)
+    [MonoidHom.CompTriple φ ψ χ] [MonoidHom.CompTriple χ η θ]
+    [MonoidHom.CompTriple ψ η ζ] [MonoidHom.CompTriple φ ζ θ] :
+    h.comp (g.comp f) = (h.comp g).comp f :=
+  ext fun _ => rfl
+
+theorem comp'_assoc {Q D : Type*} [Monoid Q] [AddMonoid D] [DistribMulAction Q D]
+    {η : P →* Q}
+    (h : C →ₑ+[η] D) (g : B →ₑ+[ψ] C) (f : A →ₑ+[φ] B) :
+    h.comp' (g.comp' f) = (h.comp' g).comp' f :=
+  ext fun _ => rfl
 
 /-- The inverse of a bijective `DistribMulActionHom` is a `DistribMulActionHom`. -/
 @[simps]
@@ -857,11 +787,11 @@ the ring structure and equivariant with respect to `φ`.
 
 You should extend this class when you extend `MulSemiringActionHom`. -/
 class MulSemiringActionSemiHomClass (F : Type _)
-  {M N : outParam (Type _)} [Monoid M] [Monoid N]
-  (φ : outParam (M → N))
-  (R S : outParam (Type _)) [Semiring R] [Semiring S]
-  [DistribMulAction M R] [DistribMulAction N S] extends
-  DistribMulActionSemiHomClass F φ R S, RingHomClass F R S
+    {M N : outParam (Type _)} [Monoid M] [Monoid N]
+    (φ : outParam (M → N))
+    (R S : outParam (Type _)) [Semiring R] [Semiring S]
+    [DistribMulAction M R] [DistribMulAction N S] extends
+    DistribMulActionSemiHomClass F φ R S, RingHomClass F R S
 #align mul_semiring_action_hom_class MulSemiringActionSemiHomClass
 
 /-- `MulSemiringActionHomClass F M R S` states that `F` is a type of morphisms preserving
@@ -1006,42 +936,45 @@ variable {R S T}
 variable {φ φ' ψ χ}
 
 /-- Composition of two equivariant additive ring homomorphisms. -/
-def comp' (g : S →ₑ+*[ψ] T) (f : R →ₑ+*[φ] S)  (κ : CompTriple φ ψ χ) : R →ₑ+*[χ] T :=
-  { DistribMulActionHom.comp' (g : S →ₑ+[ψ] T) (f : R →ₑ+[φ] S) κ,
+def comp (g : S →ₑ+*[ψ] T) (f : R →ₑ+*[φ] S) [κ : MonoidHom.CompTriple φ ψ χ] : R →ₑ+*[χ] T :=
+  { DistribMulActionHom.comp (g : S →ₑ+[ψ] T) (f : R →ₑ+[φ] S),
     RingHom.comp (g : S →+* T) (f : R →+* S) with }
 
 /-- Composition of two equivariant additive ring homomorphisms. -/
-def comp (g : S →ₑ+*[ψ] T) (f : R →ₑ+*[φ] S) : R →ₑ+*[ψ.comp φ] T :=
-  g.comp' f (CompTriple.comp)
+def comp' (g : S →ₑ+*[ψ] T) (f : R →ₑ+*[φ] S) : R →ₑ+*[ψ.comp φ] T :=
+  g.comp f (κ := MonoidHom.CompTriple.comp)
 #align mul_semiring_action_hom.comp MulSemiringActionHom.comp
 
-theorem comp_eq_comp' (g : S →ₑ+*[ψ] T) (f : R →ₑ+*[φ] S) :
-    g.comp f = g.comp' f (MonoidHomCompTriple.comp) := rfl
+theorem comp'_eq_comp (g : S →ₑ+*[ψ] T) (f : R →ₑ+*[φ] S) :
+    g.comp' f = g.comp f (κ := MonoidHom.CompTriple.comp) := rfl
 
 @[simp]
-theorem comp'_apply (g : S →ₑ+*[ψ] T) (f : R →ₑ+*[φ] S) {κ : CompTriple φ ψ χ} (x : R) :
-    g.comp' f κ x = g (f x) :=
-  rfl
+theorem comp_apply (g : S →ₑ+*[ψ] T) (f : R →ₑ+*[φ] S) [MonoidHom.CompTriple φ ψ χ] (x : R) :
+    g.comp f x = g (f x) := rfl
 
 @[simp]
-theorem id_comp' (f : R →ₑ+*[φ] S) :
-    (MulSemiringActionHom.id N).comp' f (CompTriple.id_comp)= f :=
-  ext fun x => by rw [comp'_apply, id_apply]
+theorem comp'_apply (g : S →ₑ+*[ψ] T) (f : R →ₑ+*[φ] S) (x : R) :
+    g.comp' f x = g (f x) := rfl
 
 @[simp]
 theorem id_comp (f : R →ₑ+*[φ] S) :
-    (MulSemiringActionHom.id N).comp f = f := by
-  rw [comp_eq_comp', id_comp']
+    (MulSemiringActionHom.id N).comp f = f :=
+  ext fun x => by rw [comp_apply, id_apply]
 
 @[simp]
-theorem comp'_id (f : R →ₑ+*[φ] S) :
-    f.comp' (MulSemiringActionHom.id M) (CompTriple.comp_id) = f :=
-  ext fun x => by rw [comp'_apply, id_apply]
+theorem id_comp' (f : R →ₑ+*[φ] S) :
+    (MulSemiringActionHom.id N).comp' f = f := by
+  rw [comp'_eq_comp, id_comp]
 
 @[simp]
 theorem comp_id (f : R →ₑ+*[φ] S) :
-    f.comp (MulSemiringActionHom.id M) = f := by
-  rw [comp_eq_comp', comp'_id]
+    f.comp (MulSemiringActionHom.id M) = f :=
+  ext fun x => by rw [comp_apply, id_apply]
+
+@[simp]
+theorem comp'_id (f : R →ₑ+*[φ] S) :
+    f.comp' (MulSemiringActionHom.id M) = f := by
+  rw [comp'_eq_comp, comp_id]
 #align mul_semiring_action_hom.comp_id MulSemiringActionHom.comp_id
 
 /-- The inverse of a bijective `MulSemiringActionHom` is a `MulSemiringActionHom`. -/
