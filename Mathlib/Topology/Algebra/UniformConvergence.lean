@@ -336,7 +336,7 @@ theorem UniformOnFun.continuousSMul_induced_of_image_bounded (h𝔖₁ : 𝔖.No
     rw [map_smul]
     exact hf x hx
   · rintro u ⟨S, V⟩ ⟨hS, hV⟩
-    rcases h u S hS hV with ⟨r, hrpos, hr⟩
+    rcases (h u S hS hV).exists_pos with ⟨r, hrpos, hr⟩
     rw [Metric.eventually_nhds_iff_ball]
     refine' ⟨r⁻¹, inv_pos.mpr hrpos, fun a ha x hx => _⟩
     by_cases ha0 : a = 0

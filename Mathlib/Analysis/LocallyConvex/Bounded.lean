@@ -69,7 +69,7 @@ def IsVonNBounded (s : Set E) : Prop :=
 variable (E)
 
 @[simp]
-theorem isVonNBounded_empty : IsVonNBounded 𝕜 (∅ : Set E) := fun _ _ => absorbs_empty
+theorem isVonNBounded_empty : IsVonNBounded 𝕜 (∅ : Set E) := fun _ _ => Absorbs.empty
 #align bornology.is_vonN_bounded_empty Bornology.isVonNBounded_empty
 
 variable {𝕜 E}
@@ -126,8 +126,8 @@ theorem IsVonNBounded.image {σ : 𝕜₁ →+* 𝕜₂} [RingHomSurjective σ] 
   have f_tendsto_zero := f.continuous.tendsto 0
   rw [map_zero] at f_tendsto_zero
   intro V hV
-  rcases hs (f_tendsto_zero hV) with ⟨r, hrpos, hr⟩
-  refine' ⟨r, hrpos, fun a ha => _⟩
+  rcases (hs (f_tendsto_zero hV)).exists_pos with ⟨r, hrpos, hr⟩
+  refine' .of_norm ⟨r, fun a ha => _⟩
   rw [← σ'.apply_symm_apply a]
   have hanz : a ≠ 0 := norm_pos_iff.mp (hrpos.trans_le ha)
   have : σ'.symm a ≠ 0 := (map_ne_zero σ'.symm.toRingHom).mpr hanz
@@ -149,7 +149,7 @@ theorem IsVonNBounded.smul_tendsto_zero {S : Set E} {ε : ι → 𝕜} {x : ι �
     Tendsto (ε • x) l (𝓝 0) := by
   rw [tendsto_def] at *
   intro V hV
-  rcases hS hV with ⟨r, r_pos, hrS⟩
+  rcases (hS hV).exists_pos with ⟨r, r_pos, hrS⟩
   filter_upwards [hxS, hε _ (Metric.ball_mem_nhds 0 <| inv_pos.mpr r_pos)] with n hnS hnr
   by_cases hε : ε n = 0
   · simp [hε, mem_of_mem_nhds hV]
@@ -166,9 +166,9 @@ theorem isVonNBounded_of_smul_tendsto_zero {ε : ι → 𝕝} {l : Filter ι} [l
   rcases H' with ⟨V, ⟨hV, hVb⟩, hVS⟩
   have : ∀ᶠ n in l, ∃ x : S, ε n • (x : E) ∉ V := by
     filter_upwards [hε] with n hn
-    rw [Absorbs] at hVS
+    rw [absorbs_iff_norm] at hVS
     push_neg at hVS
-    rcases hVS _ (norm_pos_iff.mpr <| inv_ne_zero hn) with ⟨a, haε, haS⟩
+    rcases hVS ‖(ε n)⁻¹‖ with ⟨a, haε, haS⟩
     rcases Set.not_subset.mp haS with ⟨x, hxS, hx⟩
     refine' ⟨⟨x, hxS⟩, fun hnx => _⟩
     rw [← Set.mem_inv_smul_set_iff₀ hn] at hnx
@@ -251,13 +251,13 @@ theorem TotallyBounded.isVonNBounded {s : Set E} (hs : TotallyBounded s) :
   simp_rw [← nhds_prod_eq, id.def] at h'
   rcases h.basis_left h' U hU with ⟨x, hx, h''⟩
   rcases hs x.snd hx.2.1 with ⟨t, ht, hs⟩
-  refine' Absorbs.mono_right _ hs
-  rw [ht.absorbs_iUnion]
+  refine Absorbs.mono_right ?_ hs
+  rw [ht.absorbs_biUnion]
   have hx_fstsnd : x.fst + x.snd ⊆ U := add_subset_iff.mpr fun z1 hz1 z2 hz2 ↦
     h'' <| mk_mem_prod hz1 hz2
   refine' fun y _ => Absorbs.mono_left _ hx_fstsnd
   rw [← Set.singleton_vadd, vadd_eq_add]
-  exact (absorbent_nhds_zero hx.1.1).absorbs.add hx.2.2.absorbs_self
+  exact Absorbs.add (absorbent_nhds_zero hx.1.1 _) hx.2.2.absorbs_self
 #align totally_bounded.is_vonN_bounded TotallyBounded.isVonNBounded
 
 end UniformAddGroup
@@ -282,7 +282,7 @@ theorem isVonNBounded_iff (s : Set E) : Bornology.IsVonNBounded 𝕜 s ↔ Borno
   rw [Metric.isBounded_iff_subset_closedBall (0 : E)]
   constructor
   · intro h
-    rcases h (Metric.ball_mem_nhds 0 zero_lt_one) with ⟨ρ, hρ, hρball⟩
+    rcases (h (Metric.ball_mem_nhds 0 zero_lt_one)).exists_pos with ⟨ρ, hρ, hρball⟩
     rcases NormedField.exists_lt_norm 𝕜 ρ with ⟨a, ha⟩
     specialize hρball a ha.le
     rw [← ball_normSeminorm 𝕜 E, Seminorm.smul_ball_zero (norm_pos_iff.1 <| hρ.trans ha),
@@ -315,7 +315,7 @@ theorem isBounded_iff_subset_smul_ball {s : Set E} :
   rw [← isVonNBounded_iff 𝕜]
   constructor
   · intro h
-    rcases h (Metric.ball_mem_nhds 0 zero_lt_one) with ⟨ρ, _, hρball⟩
+    rcases (h (Metric.ball_mem_nhds 0 zero_lt_one)).exists_pos with ⟨ρ, _, hρball⟩
     rcases NormedField.exists_lt_norm 𝕜 ρ with ⟨a, ha⟩
     exact ⟨a, hρball a ha.le⟩
   · rintro ⟨a, ha⟩
