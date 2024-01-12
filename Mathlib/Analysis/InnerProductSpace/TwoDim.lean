@@ -89,10 +89,10 @@ namespace Orientation
 notation `ω`). When evaluated on two vectors, it gives the oriented area of the parallelogram they
 span. -/
 irreducible_def areaForm : E →ₗ[ℝ] E →ₗ[ℝ] ℝ := by
-  let z : AlternatingMap ℝ E ℝ (Fin 0) ≃ₗ[ℝ] ℝ :=
+  let z : E [Λ^Fin 0]→ₗ[ℝ] ℝ ≃ₗ[ℝ] ℝ :=
     AlternatingMap.constLinearEquivOfIsEmpty.symm
-  let y : AlternatingMap ℝ E ℝ (Fin 1) →ₗ[ℝ] E →ₗ[ℝ] ℝ :=
-    LinearMap.llcomp ℝ E (AlternatingMap ℝ E ℝ (Fin 0)) ℝ z ∘ₗ AlternatingMap.curryLeftLinearMap
+  let y : E [Λ^Fin 1]→ₗ[ℝ] ℝ →ₗ[ℝ] E →ₗ[ℝ] ℝ :=
+    LinearMap.llcomp ℝ E (E [Λ^Fin 0]→ₗ[ℝ] ℝ) ℝ z ∘ₗ AlternatingMap.curryLeftLinearMap
   exact y ∘ₗ AlternatingMap.curryLeftLinearMap (R' := ℝ) o.volumeForm
 #align orientation.area_form Orientation.areaForm
 

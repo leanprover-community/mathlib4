@@ -7,6 +7,7 @@ import Mathlib.MeasureTheory.Group.AddCircle
 import Mathlib.Dynamics.Ergodic.Ergodic
 import Mathlib.MeasureTheory.Covering.DensityTheorem
 import Mathlib.Data.Set.Pointwise.Iterate
+import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 #align_import dynamics.ergodic.add_circle from "leanprover-community/mathlib"@"5f6e827d81dfbeb6151d7016586ceeb0099b9655"
 

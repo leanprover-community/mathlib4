@@ -186,7 +186,7 @@ instance {S : Type*} [Semiring S] [SMul S R] [SMul Sᵐᵒᵖ R] [Module S M] [M
     [IsScalarTower S R M] [IsScalarTower Sᵐᵒᵖ R M] [IsCentralScalar S M] : IsCentralScalar S N :=
   N.toSubmodule.isCentralScalar
 
-instance : LieModule R L N where
+instance instLieModule : LieModule R L N where
   lie_smul := by intro t x y; apply SetCoe.ext; apply lie_smul
   smul_lie := by intro t x y; apply SetCoe.ext; apply smul_lie
 

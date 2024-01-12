@@ -517,27 +517,27 @@ affine combinations of vertices together with the circumcenter.  (An
 equivalent form sometimes used in the literature is placing the
 circumcenter at the origin and working with vectors for the vertices.) -/
 inductive PointsWithCircumcenterIndex (n : ℕ)
-  | point_index : Fin (n + 1) → PointsWithCircumcenterIndex n
-  | circumcenter_index : PointsWithCircumcenterIndex n
+  | pointIndex : Fin (n + 1) → PointsWithCircumcenterIndex n
+  | circumcenterIndex : PointsWithCircumcenterIndex n
   deriving Fintype
 #align affine.simplex.points_with_circumcenter_index Affine.Simplex.PointsWithCircumcenterIndex
 
 open PointsWithCircumcenterIndex
 
 instance pointsWithCircumcenterIndexInhabited (n : ℕ) : Inhabited (PointsWithCircumcenterIndex n) :=
-  ⟨circumcenter_index⟩
+  ⟨circumcenterIndex⟩
 #align affine.simplex.points_with_circumcenter_index_inhabited Affine.Simplex.pointsWithCircumcenterIndexInhabited
 
-/-- `point_index` as an embedding. -/
+/-- `pointIndex` as an embedding. -/
 def pointIndexEmbedding (n : ℕ) : Fin (n + 1) ↪ PointsWithCircumcenterIndex n :=
-  ⟨fun i => point_index i, fun _ _ h => by injection h⟩
+  ⟨fun i => pointIndex i, fun _ _ h => by injection h⟩
 #align affine.simplex.point_index_embedding Affine.Simplex.pointIndexEmbedding
 
 /-- The sum of a function over `PointsWithCircumcenterIndex`. -/
 theorem sum_pointsWithCircumcenter {α : Type*} [AddCommMonoid α] {n : ℕ}
     (f : PointsWithCircumcenterIndex n → α) :
-    ∑ i, f i = (∑ i : Fin (n + 1), f (point_index i)) + f circumcenter_index := by
-  have h : univ = insert circumcenter_index (univ.map (pointIndexEmbedding n)) := by
+    ∑ i, f i = (∑ i : Fin (n + 1), f (pointIndex i)) + f circumcenterIndex := by
+  have h : univ = insert circumcenterIndex (univ.map (pointIndexEmbedding n)) := by
     ext x
     refine' ⟨fun h => _, fun _ => mem_univ _⟩
     cases' x with i
@@ -552,38 +552,38 @@ theorem sum_pointsWithCircumcenter {α : Type*} [AddCommMonoid α] {n : ℕ}
 
 /-- The vertices of a simplex plus its circumcenter. -/
 def pointsWithCircumcenter {n : ℕ} (s : Simplex ℝ P n) : PointsWithCircumcenterIndex n → P
-  | point_index i => s.points i
-  | circumcenter_index => s.circumcenter
+  | pointIndex i => s.points i
+  | circumcenterIndex => s.circumcenter
 #align affine.simplex.points_with_circumcenter Affine.Simplex.pointsWithCircumcenter
 
-/-- `pointsWithCircumcenter`, applied to a `point_index` value,
+/-- `pointsWithCircumcenter`, applied to a `pointIndex` value,
 equals `points` applied to that value. -/
 @[simp]
 theorem pointsWithCircumcenter_point {n : ℕ} (s : Simplex ℝ P n) (i : Fin (n + 1)) :
-    s.pointsWithCircumcenter (point_index i) = s.points i :=
+    s.pointsWithCircumcenter (pointIndex i) = s.points i :=
   rfl
 #align affine.simplex.points_with_circumcenter_point Affine.Simplex.pointsWithCircumcenter_point
 
-/-- `pointsWithCircumcenter`, applied to `circumcenter_index`, equals the
+/-- `pointsWithCircumcenter`, applied to `circumcenterIndex`, equals the
 circumcenter. -/
 @[simp]
 theorem pointsWithCircumcenter_eq_circumcenter {n : ℕ} (s : Simplex ℝ P n) :
-    s.pointsWithCircumcenter circumcenter_index = s.circumcenter :=
+    s.pointsWithCircumcenter circumcenterIndex = s.circumcenter :=
   rfl
 #align affine.simplex.points_with_circumcenter_eq_circumcenter Affine.Simplex.pointsWithCircumcenter_eq_circumcenter
 
 /-- The weights for a single vertex of a simplex, in terms of
 `pointsWithCircumcenter`. -/
 def pointWeightsWithCircumcenter {n : ℕ} (i : Fin (n + 1)) : PointsWithCircumcenterIndex n → ℝ
-  | point_index j => if j = i then 1 else 0
-  | circumcenter_index => 0
+  | pointIndex j => if j = i then 1 else 0
+  | circumcenterIndex => 0
 #align affine.simplex.point_weights_with_circumcenter Affine.Simplex.pointWeightsWithCircumcenter
 
 /-- `point_weights_with_circumcenter` sums to 1. -/
 @[simp]
 theorem sum_pointWeightsWithCircumcenter {n : ℕ} (i : Fin (n + 1)) :
     ∑ j, pointWeightsWithCircumcenter i j = 1 := by
-  convert sum_ite_eq' univ (point_index i) (Function.const _ (1 : ℝ)) with j
+  convert sum_ite_eq' univ (pointIndex i) (Function.const _ (1 : ℝ)) with j
   · cases j <;> simp [pointWeightsWithCircumcenter]
   · simp
 #align affine.simplex.sum_point_weights_with_circumcenter Affine.Simplex.sum_pointWeightsWithCircumcenter
@@ -610,8 +610,8 @@ theorem point_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ} (s : Simp
 terms of `pointsWithCircumcenter`. -/
 def centroidWeightsWithCircumcenter {n : ℕ} (fs : Finset (Fin (n + 1))) :
     PointsWithCircumcenterIndex n → ℝ
-  | point_index i => if i ∈ fs then (card fs : ℝ)⁻¹ else 0
-  | circumcenter_index => 0
+  | pointIndex i => if i ∈ fs then (card fs : ℝ)⁻¹ else 0
+  | circumcenterIndex => 0
 #align affine.simplex.centroid_weights_with_circumcenter Affine.Simplex.centroidWeightsWithCircumcenter
 
 /-- `centroidWeightsWithCircumcenter` sums to 1, if the `Finset` is nonempty. -/
@@ -641,15 +641,15 @@ theorem centroid_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ} (s : S
 
 /-- The weights for the circumcenter of a simplex, in terms of `pointsWithCircumcenter`. -/
 def circumcenterWeightsWithCircumcenter (n : ℕ) : PointsWithCircumcenterIndex n → ℝ
-  | point_index _ => 0
-  | circumcenter_index => 1
+  | pointIndex _ => 0
+  | circumcenterIndex => 1
 #align affine.simplex.circumcenter_weights_with_circumcenter Affine.Simplex.circumcenterWeightsWithCircumcenter
 
 /-- `circumcenterWeightsWithCircumcenter` sums to 1. -/
 @[simp]
 theorem sum_circumcenterWeightsWithCircumcenter (n : ℕ) :
     ∑ i, circumcenterWeightsWithCircumcenter n i = 1 := by
-  convert sum_ite_eq' univ circumcenter_index (Function.const _ (1 : ℝ)) with j
+  convert sum_ite_eq' univ circumcenterIndex (Function.const _ (1 : ℝ)) with j
   · cases j <;> simp [circumcenterWeightsWithCircumcenter]
   · simp
 #align affine.simplex.sum_circumcenter_weights_with_circumcenter Affine.Simplex.sum_circumcenterWeightsWithCircumcenter
@@ -669,8 +669,8 @@ theorem circumcenter_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ} (s
 simplex.  This definition is only valid with `i₁ ≠ i₂`. -/
 def reflectionCircumcenterWeightsWithCircumcenter {n : ℕ} (i₁ i₂ : Fin (n + 1)) :
     PointsWithCircumcenterIndex n → ℝ
-  | point_index i => if i = i₁ ∨ i = i₂ then 1 else 0
-  | circumcenter_index => -1
+  | pointIndex i => if i = i₁ ∨ i = i₂ then 1 else 0
+  | circumcenterIndex => -1
 #align affine.simplex.reflection_circumcenter_weights_with_circumcenter Affine.Simplex.reflectionCircumcenterWeightsWithCircumcenter
 
 /-- `reflectionCircumcenterWeightsWithCircumcenter` sums to 1. -/

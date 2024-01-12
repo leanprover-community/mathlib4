@@ -35,7 +35,7 @@ open scoped BigOperators
 -/
 structure ContinuousAlternatingMap (R M N ι : Type*) [Semiring R] [AddCommMonoid M] [Module R M]
     [TopologicalSpace M] [AddCommMonoid N] [Module R N] [TopologicalSpace N] extends
-    ContinuousMultilinearMap R (fun _ : ι => M) N, AlternatingMap R M N ι where
+    ContinuousMultilinearMap R (fun _ : ι => M) N, M [Λ^ι]→ₗ[R] N where
 
 /-- Projection to `ContinuousMultilinearMap`s. -/
 add_decl_doc ContinuousAlternatingMap.toContinuousMultilinearMap
@@ -96,13 +96,13 @@ theorem ext_iff {f g : M [Λ^ι]→L[R] N} : f = g ↔ ∀ x, f x = g x :=
   FunLike.ext_iff
 
 theorem toAlternatingMap_injective :
-    Injective (toAlternatingMap : M [Λ^ι]→L[R] N → AlternatingMap R M N ι) := fun f g h =>
+    Injective (toAlternatingMap : (M [Λ^ι]→L[R] N) → (M [Λ^ι]→ₗ[R] N)) := fun f g h =>
   FunLike.ext' <| by convert FunLike.ext'_iff.1 h
 
 @[simp]
 theorem range_toAlternatingMap :
-    Set.range (toAlternatingMap : M [Λ^ι]→L[R] N → AlternatingMap R M N ι) =
-      {f : AlternatingMap R M N ι | Continuous f} :=
+    Set.range (toAlternatingMap : M [Λ^ι]→L[R] N → (M [Λ^ι]→ₗ[R] N)) =
+      {f : M [Λ^ι]→ₗ[R] N | Continuous f} :=
   Set.ext fun f => ⟨fun ⟨g, hg⟩ => hg ▸ g.cont, fun h => ⟨{ f with cont := h }, FunLike.ext' rfl⟩⟩
 
 @[simp]
@@ -138,7 +138,7 @@ def codRestrict (f : M [Λ^ι]→L[R] N) (p : Submodule R N) (h : ∀ v, f v ∈
   { f.toAlternatingMap.codRestrict p h with toContinuousMultilinearMap := f.1.codRestrict p h }
 
 instance : Zero (M [Λ^ι]→L[R] N) :=
-  ⟨⟨0, (0 : AlternatingMap R M N ι).map_eq_zero_of_eq⟩⟩
+  ⟨⟨0, (0 : M [Λ^ι]→ₗ[R] N).map_eq_zero_of_eq⟩⟩
 
 instance : Inhabited (M [Λ^ι]→L[R] N) :=
   ⟨0⟩

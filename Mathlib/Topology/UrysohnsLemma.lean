@@ -12,7 +12,7 @@ import Mathlib.Topology.ContinuousFunction.Basic
 /-!
 # Urysohn's lemma
 
-In this file we prove Urysohn's lemma `exists_continuous_zero_one_of_closed`: for any two disjoint
+In this file we prove Urysohn's lemma `exists_continuous_zero_one_of_isClosed`: for any two disjoint
 closed sets `s` and `t` in a normal topological space `X` there exists a continuous function
 `f : X → ℝ` such that
 
@@ -320,7 +320,7 @@ then there exists a continuous function `f : X → ℝ` such that
 * `f` equals one on `t`;
 * `0 ≤ f x ≤ 1` for all `x`.
 -/
-theorem exists_continuous_zero_one_of_closed [NormalSpace X]
+theorem exists_continuous_zero_one_of_isClosed [NormalSpace X]
     {s t : Set X} (hs : IsClosed s) (ht : IsClosed t)
     (hd : Disjoint s t) : ∃ f : C(X, ℝ), EqOn f 0 s ∧ EqOn f 1 t ∧ ∀ x, f x ∈ Icc (0 : ℝ) 1 := by
   -- The actual proof is in the code above. Here we just repack it into the expected format.
@@ -338,7 +338,7 @@ theorem exists_continuous_zero_one_of_closed [NormalSpace X]
       exact ⟨v, v_open, cv, hv, trivial⟩ }
   exact ⟨⟨c.lim, c.continuous_lim⟩, c.lim_of_mem_C, fun x hx => c.lim_of_nmem_U _ fun h => h hx,
     c.lim_mem_Icc⟩
-#align exists_continuous_zero_one_of_closed exists_continuous_zero_one_of_closed
+#align exists_continuous_zero_one_of_closed exists_continuous_zero_one_of_isClosed
 
 /-- Urysohn's lemma: if `s` and `t` are two disjoint sets in a regular locally compact topological
 space `X`, with `s` compact and `t` closed, then there exists a continuous

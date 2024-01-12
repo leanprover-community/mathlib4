@@ -256,7 +256,7 @@ theorem ContinuousWithinAt.closure_le [TopologicalSpace β] {f g : β → α} {s
 then the set `{x ∈ s | f x ≤ g x}` is a closed set. -/
 theorem IsClosed.isClosed_le [TopologicalSpace β] {f g : β → α} {s : Set β} (hs : IsClosed s)
     (hf : ContinuousOn f s) (hg : ContinuousOn g s) : IsClosed ({ x ∈ s | f x ≤ g x }) :=
-  (hf.prod hg).preimage_closed_of_closed hs OrderClosedTopology.isClosed_le'
+  (hf.prod hg).preimage_isClosed_of_isClosed hs OrderClosedTopology.isClosed_le'
 #align is_closed.is_closed_le IsClosed.isClosed_le
 
 theorem le_on_closure [TopologicalSpace β] {f g : β → α} {s : Set β} (h : ∀ x ∈ s, f x ≤ g x)

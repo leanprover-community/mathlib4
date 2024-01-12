@@ -383,7 +383,7 @@ theorem IsPreconnected.preimage_of_open_map [TopologicalSpace β] {s : Set β} (
   · exact ⟨a, has, hau, hinj.mem_set_image.1 hav⟩
 #align is_preconnected.preimage_of_open_map IsPreconnected.preimage_of_open_map
 
-theorem IsPreconnected.preimage_of_closed_map [TopologicalSpace β] {s : Set β}
+theorem IsPreconnected.preimage_of_isClosedMap [TopologicalSpace β] {s : Set β}
     (hs : IsPreconnected s) {f : α → β} (hinj : Function.Injective f) (hf : IsClosedMap f)
     (hsf : s ⊆ range f) : IsPreconnected (f ⁻¹' s) :=
   isPreconnected_closed_iff.2 fun u v hu hv hsuv hsu hsv => by
@@ -394,7 +394,7 @@ theorem IsPreconnected.preimage_of_closed_map [TopologicalSpace β] {s : Set β}
       · simpa only [image_preimage_inter] using hsu.image f
       · simpa only [image_preimage_inter] using hsv.image f
     · exact ⟨a, has, hau, hinj.mem_set_image.1 hav⟩
-#align is_preconnected.preimage_of_closed_map IsPreconnected.preimage_of_closed_map
+#align is_preconnected.preimage_of_closed_map IsPreconnected.preimage_of_isClosedMap
 
 theorem IsConnected.preimage_of_openMap [TopologicalSpace β] {s : Set β} (hs : IsConnected s)
     {f : α → β} (hinj : Function.Injective f) (hf : IsOpenMap f) (hsf : s ⊆ range f) :
@@ -402,11 +402,11 @@ theorem IsConnected.preimage_of_openMap [TopologicalSpace β] {s : Set β} (hs :
   ⟨hs.nonempty.preimage' hsf, hs.isPreconnected.preimage_of_open_map hinj hf hsf⟩
 #align is_connected.preimage_of_open_map IsConnected.preimage_of_openMap
 
-theorem IsConnected.preimage_of_closedMap [TopologicalSpace β] {s : Set β} (hs : IsConnected s)
+theorem IsConnected.preimage_of_isClosedMap [TopologicalSpace β] {s : Set β} (hs : IsConnected s)
     {f : α → β} (hinj : Function.Injective f) (hf : IsClosedMap f) (hsf : s ⊆ range f) :
     IsConnected (f ⁻¹' s) :=
-  ⟨hs.nonempty.preimage' hsf, hs.isPreconnected.preimage_of_closed_map hinj hf hsf⟩
-#align is_connected.preimage_of_closed_map IsConnected.preimage_of_closedMap
+  ⟨hs.nonempty.preimage' hsf, hs.isPreconnected.preimage_of_isClosedMap hinj hf hsf⟩
+#align is_connected.preimage_of_closed_map IsConnected.preimage_of_isClosedMap
 
 theorem IsPreconnected.subset_or_subset (hu : IsOpen u) (hv : IsOpen v) (huv : Disjoint u v)
     (hsuv : s ⊆ u ∪ v) (hs : IsPreconnected s) : s ⊆ u ∨ s ⊆ v := by
@@ -438,10 +438,10 @@ theorem IsPreconnected.subset_right_of_subset_union (hu : IsOpen u) (hv : IsOpen
 
 -- porting note: moved up
 /-- Preconnected sets are either contained in or disjoint to any given clopen set. -/
-theorem IsPreconnected.subset_clopen {s t : Set α} (hs : IsPreconnected s) (ht : IsClopen t)
+theorem IsPreconnected.subset_isClopen {s t : Set α} (hs : IsPreconnected s) (ht : IsClopen t)
     (hne : (s ∩ t).Nonempty) : s ⊆ t :=
   hs.subset_left_of_subset_union ht.isOpen ht.compl.isOpen disjoint_compl_right (by simp) hne
-#align is_preconnected.subset_clopen IsPreconnected.subset_clopen
+#align is_preconnected.subset_clopen IsPreconnected.subset_isClopen
 
 /-- If a preconnected set `s` intersects an open set `u`, and limit points of `u` inside `s` are
 contained in `u`, then the whole set `s` is contained in `u`. -/
@@ -511,7 +511,7 @@ theorem Sigma.isConnected_iff [∀ i, TopologicalSpace (π i)] {s : Set (Σi, π
   refine' ⟨fun hs => _, _⟩
   · obtain ⟨⟨i, x⟩, hx⟩ := hs.nonempty
     have : s ⊆ range (Sigma.mk i) :=
-      hs.isPreconnected.subset_clopen isClopen_range_sigmaMk ⟨⟨i, x⟩, hx, x, rfl⟩
+      hs.isPreconnected.subset_isClopen isClopen_range_sigmaMk ⟨⟨i, x⟩, hx, x, rfl⟩
     exact ⟨i, Sigma.mk i ⁻¹' s, hs.preimage_of_openMap sigma_mk_injective isOpenMap_sigmaMk this,
       (Set.image_preimage_eq_of_subset this).symm⟩
   · rintro ⟨i, t, ht, rfl⟩
@@ -535,12 +535,12 @@ theorem Sum.isConnected_iff [TopologicalSpace β] {s : Set (Sum α β)} :
   refine' ⟨fun hs => _, _⟩
   · obtain ⟨x | x, hx⟩ := hs.nonempty
     · have h : s ⊆ range Sum.inl :=
-        hs.isPreconnected.subset_clopen isClopen_range_inl ⟨.inl x, hx, x, rfl⟩
+        hs.isPreconnected.subset_isClopen isClopen_range_inl ⟨.inl x, hx, x, rfl⟩
       refine' Or.inl ⟨Sum.inl ⁻¹' s, _, _⟩
       · exact hs.preimage_of_openMap Sum.inl_injective isOpenMap_inl h
       · exact (image_preimage_eq_of_subset h).symm
     · have h : s ⊆ range Sum.inr :=
-        hs.isPreconnected.subset_clopen isClopen_range_inr ⟨.inr x, hx, x, rfl⟩
+        hs.isPreconnected.subset_isClopen isClopen_range_inr ⟨.inr x, hx, x, rfl⟩
       refine' Or.inr ⟨Sum.inr ⁻¹' s, _, _⟩
       · exact hs.preimage_of_openMap Sum.inr_injective isOpenMap_inr h
       · exact (image_preimage_eq_of_subset h).symm
@@ -1058,13 +1058,13 @@ theorem isConnected_iff_sUnion_disjoint_open {s : Set α} :
     simpa [*, or_imp, forall_and] using h {u, v}
 #align is_connected_iff_sUnion_disjoint_open isConnected_iff_sUnion_disjoint_open
 
--- porting note: `IsPreconnected.subset_clopen` moved up from here
+-- porting note: `IsPreconnected.subset_isClopen` moved up from here
 
 /-- Preconnected sets are either contained in or disjoint to any given clopen set. -/
-theorem disjoint_or_subset_of_clopen {s t : Set α} (hs : IsPreconnected s) (ht : IsClopen t) :
+theorem disjoint_or_subset_of_isClopen {s t : Set α} (hs : IsPreconnected s) (ht : IsClopen t) :
     Disjoint s t ∨ s ⊆ t :=
-  (disjoint_or_nonempty_inter s t).imp_right <| hs.subset_clopen ht
-#align disjoint_or_subset_of_clopen disjoint_or_subset_of_clopen
+  (disjoint_or_nonempty_inter s t).imp_right <| hs.subset_isClopen ht
+#align disjoint_or_subset_of_clopen disjoint_or_subset_of_isClopen
 
 /-- A set `s` is preconnected if and only if
 for every cover by two closed sets that are disjoint on `s`,
@@ -1115,15 +1115,15 @@ theorem isPreconnected_iff_subset_of_fully_disjoint_closed {s : Set α} (hs : Is
 
 theorem IsClopen.connectedComponent_subset {x} (hs : IsClopen s) (hx : x ∈ s) :
     connectedComponent x ⊆ s :=
-  isPreconnected_connectedComponent.subset_clopen hs ⟨x, mem_connectedComponent, hx⟩
+  isPreconnected_connectedComponent.subset_isClopen hs ⟨x, mem_connectedComponent, hx⟩
 #align is_clopen.connected_component_subset IsClopen.connectedComponent_subset
 
 /-- The connected component of a point is always a subset of the intersection of all its clopen
 neighbourhoods. -/
-theorem connectedComponent_subset_iInter_clopen {x : α} :
+theorem connectedComponent_subset_iInter_isClopen {x : α} :
     connectedComponent x ⊆ ⋂ Z : { Z : Set α // IsClopen Z ∧ x ∈ Z }, Z :=
   subset_iInter fun Z => Z.2.1.connectedComponent_subset Z.2.2
-#align connected_component_subset_Inter_clopen connectedComponent_subset_iInter_clopen
+#align connected_component_subset_Inter_clopen connectedComponent_subset_iInter_isClopen
 
 /-- A clopen set is the union of its connected components. -/
 theorem IsClopen.biUnion_connectedComponent_eq {Z : Set α} (h : IsClopen Z) :
@@ -1315,7 +1315,7 @@ theorem isPreconnected_of_forall_constant {s : Set α}
   rcases this with ⟨u, v, u_op, v_op, hsuv, ⟨x, x_in_s, x_in_u⟩, ⟨y, y_in_s, y_in_v⟩, H⟩
   have hy : y ∉ u := fun y_in_u => eq_empty_iff_forall_not_mem.mp H y ⟨y_in_s, ⟨y_in_u, y_in_v⟩⟩
   have : ContinuousOn u.boolIndicator s := by
-    apply (continuousOn_boolIndicator_iff_clopen _ _).mpr ⟨_, _⟩
+    apply (continuousOn_boolIndicator_iff_isClopen _ _).mpr ⟨_, _⟩
     · exact u_op.preimage continuous_subtype_val
     · rw [preimage_subtype_coe_eq_compl hsuv H]
       exact (v_op.preimage continuous_subtype_val).isClosed_compl

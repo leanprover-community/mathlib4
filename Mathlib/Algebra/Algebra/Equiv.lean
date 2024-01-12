@@ -754,6 +754,13 @@ instance applyMulSemiringAction : MulSemiringAction (A₁ ≃ₐ[R] A₁) A₁ w
   mul_smul _ _ _ := rfl
 #align alg_equiv.apply_mul_semiring_action AlgEquiv.applyMulSemiringAction
 
+instance : MulDistribMulAction (A₁ ≃ₐ[R] A₁) A₁ˣ where
+  smul := fun f => Units.map f
+  one_smul := fun x => by ext; rfl
+  mul_smul := fun x y z => by ext; rfl
+  smul_mul := fun x y z => by ext; exact x.map_mul _ _
+  smul_one := fun x => by ext; exact x.map_one
+
 @[simp]
 protected theorem smul_def (f : A₁ ≃ₐ[R] A₁) (a : A₁) : f • a = f a :=
   rfl

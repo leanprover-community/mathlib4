@@ -321,7 +321,7 @@ theorem exists_isSubordinate_of_locallyFinite [NormalSpace X] (hs : IsClosed s) 
   let ⟨f, _, hfU⟩ :=
     exists_isSubordinate_of_locallyFinite_of_prop (fun _ => True)
       (fun _ _ hs ht hd =>
-        (exists_continuous_zero_one_of_closed hs ht hd).imp fun _ hf => ⟨trivial, hf⟩)
+        (exists_continuous_zero_one_of_isClosed hs ht hd).imp fun _ hf => ⟨trivial, hf⟩)
       hs U ho hf hU
   ⟨f, hfU⟩
 #align bump_covering.exists_is_subordinate_of_locally_finite BumpCovering.exists_isSubordinate_of_locallyFinite

@@ -848,19 +848,19 @@ scoped[Topology] notation "𝓝" => nhds
 scoped[Topology] notation "𝓝[" s "] " x:100 => nhdsWithin x s
 
 /-- Notation for the filter of punctured neighborhoods of a point. -/
-scoped[Topology] notation "𝓝[≠] " x:100 => nhdsWithin x (@singleton _ (Set _) instSingletonSet x)ᶜ
+scoped[Topology] notation3 "𝓝[≠] " x:100 => nhdsWithin x (@singleton _ (Set _) instSingletonSet x)ᶜ
 
 /-- Notation for the filter of right neighborhoods of a point. -/
-scoped[Topology] notation "𝓝[≥] " x:100 => nhdsWithin x (Set.Ici x)
+scoped[Topology] notation3 "𝓝[≥] " x:100 => nhdsWithin x (Set.Ici x)
 
 /-- Notation for the filter of left neighborhoods of a point. -/
-scoped[Topology] notation "𝓝[≤] " x:100 => nhdsWithin x (Set.Iic x)
+scoped[Topology] notation3 "𝓝[≤] " x:100 => nhdsWithin x (Set.Iic x)
 
 /-- Notation for the filter of punctured right neighborhoods of a point. -/
-scoped[Topology] notation "𝓝[>] " x:100 => nhdsWithin x (Set.Ioi x)
+scoped[Topology] notation3 "𝓝[>] " x:100 => nhdsWithin x (Set.Ioi x)
 
 /-- Notation for the filter of punctured left neighborhoods of a point. -/
-scoped[Topology] notation "𝓝[<] " x:100 => nhdsWithin x (Set.Iio x)
+scoped[Topology] notation3 "𝓝[<] " x:100 => nhdsWithin x (Set.Iio x)
 
 end
 

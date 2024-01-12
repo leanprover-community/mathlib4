@@ -19,9 +19,9 @@ noncomputable section
 
 namespace Complex
 
-open Set Filter
+open Set Filter Bornology
 
-open Real Topology ComplexConjugate
+open scoped Real Topology ComplexConjugate
 
 /-- Inverse of the `exp` function. Returns values such that `(log x).im > - π` and `(log x).im ≤ π`.
   `log 0 = 0`-/
@@ -221,9 +221,9 @@ theorem map_exp_comap_re_atBot : map exp (comap re atBot) = 𝓝[≠] 0 := by
 #align complex.map_exp_comap_re_at_bot Complex.map_exp_comap_re_atBot
 
 @[simp]
-theorem map_exp_comap_re_atTop : map exp (comap re atTop) = comap abs atTop := by
-  rw [← comap_exp_comap_abs_atTop, map_comap, range_exp, inf_eq_left, le_principal_iff]
-  exact eventually_ne_of_tendsto_norm_atTop tendsto_comap 0
+theorem map_exp_comap_re_atTop : map exp (comap re atTop) = cobounded ℂ := by
+  rw [← comap_exp_cobounded, map_comap, range_exp, inf_eq_left, le_principal_iff]
+  exact eventually_ne_cobounded _
 #align complex.map_exp_comap_re_at_top Complex.map_exp_comap_re_atTop
 
 end Complex

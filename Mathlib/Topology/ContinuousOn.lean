@@ -1075,12 +1075,12 @@ theorem ContinuousOn.isOpen_preimage {f : α → β} {s : Set α} {t : Set β} (
   rw [inter_comm, inter_eq_self_of_subset_left hp]
 #align continuous_on.is_open_preimage ContinuousOn.isOpen_preimage
 
-theorem ContinuousOn.preimage_closed_of_closed {f : α → β} {s : Set α} {t : Set β}
+theorem ContinuousOn.preimage_isClosed_of_isClosed {f : α → β} {s : Set α} {t : Set β}
     (hf : ContinuousOn f s) (hs : IsClosed s) (ht : IsClosed t) : IsClosed (s ∩ f ⁻¹' t) := by
   rcases continuousOn_iff_isClosed.1 hf t ht with ⟨u, hu⟩
   rw [inter_comm, hu.2]
   apply IsClosed.inter hu.1 hs
-#align continuous_on.preimage_closed_of_closed ContinuousOn.preimage_closed_of_closed
+#align continuous_on.preimage_closed_of_closed ContinuousOn.preimage_isClosed_of_isClosed
 
 theorem ContinuousOn.preimage_interior_subset_interior_preimage {f : α → β} {s : Set α} {t : Set β}
     (hf : ContinuousOn f s) (hs : IsOpen s) : s ∩ f ⁻¹' interior t ⊆ s ∩ interior (f ⁻¹' t) :=

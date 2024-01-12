@@ -110,11 +110,11 @@ theorem IsClopen.preimage {s : Set Y} (h : IsClopen s) {f : X → Y} (hf : Conti
   ⟨h.1.preimage hf, h.2.preimage hf⟩
 #align is_clopen.preimage IsClopen.preimage
 
-theorem ContinuousOn.preimage_clopen_of_clopen {f : X → Y} {s : Set X} {t : Set Y}
+theorem ContinuousOn.preimage_isClopen_of_isClopen {f : X → Y} {s : Set X} {t : Set Y}
     (hf : ContinuousOn f s) (hs : IsClopen s) (ht : IsClopen t) : IsClopen (s ∩ f ⁻¹' t) :=
   ⟨ContinuousOn.preimage_open_of_open hf hs.1 ht.1,
-    ContinuousOn.preimage_closed_of_closed hf hs.2 ht.2⟩
-#align continuous_on.preimage_clopen_of_clopen ContinuousOn.preimage_clopen_of_clopen
+    ContinuousOn.preimage_isClosed_of_isClosed hf hs.2 ht.2⟩
+#align continuous_on.preimage_clopen_of_clopen ContinuousOn.preimage_isClopen_of_isClopen
 
 /-- The intersection of a disjoint covering by two open sets of a clopen set will be clopen. -/
 theorem isClopen_inter_of_disjoint_cover_clopen {s a b : Set X} (h : IsClopen s) (cover : s ⊆ a ∪ b)
@@ -150,7 +150,7 @@ protected theorem QuotientMap.isClopen_preimage {f : X → Y} (hf : QuotientMap 
   and_congr hf.isOpen_preimage hf.isClosed_preimage
 #align quotient_map.is_clopen_preimage QuotientMap.isClopen_preimage
 
-theorem continuous_boolIndicator_iff_clopen (U : Set X) :
+theorem continuous_boolIndicator_iff_isClopen (U : Set X) :
     Continuous U.boolIndicator ↔ IsClopen U := by
   constructor
   · intro hc
@@ -159,12 +159,12 @@ theorem continuous_boolIndicator_iff_clopen (U : Set X) :
   · refine' fun hU => ⟨fun s _ => _⟩
     rcases U.preimage_boolIndicator s with (h | h | h | h) <;> rw [h]
     exacts [isOpen_univ, hU.1, hU.2.isOpen_compl, isOpen_empty]
-#align continuous_bool_indicator_iff_clopen continuous_boolIndicator_iff_clopen
+#align continuous_bool_indicator_iff_clopen continuous_boolIndicator_iff_isClopen
 
-theorem continuousOn_boolIndicator_iff_clopen (s U : Set X) :
+theorem continuousOn_boolIndicator_iff_isClopen (s U : Set X) :
     ContinuousOn U.boolIndicator s ↔ IsClopen (((↑) : s → X) ⁻¹' U) := by
-  rw [continuousOn_iff_continuous_restrict, ← continuous_boolIndicator_iff_clopen]
+  rw [continuousOn_iff_continuous_restrict, ← continuous_boolIndicator_iff_isClopen]
   rfl
-#align continuous_on_indicator_iff_clopen continuousOn_boolIndicator_iff_clopen
+#align continuous_on_indicator_iff_clopen continuousOn_boolIndicator_iff_isClopen
 
 end Clopen

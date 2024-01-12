@@ -3,7 +3,7 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
-import Mathlib.Algebra.Category.ModuleCat.Basic
+import Mathlib.Algebra.Category.ModuleCat.EpiMono
 import Mathlib.RingTheory.TensorProduct
 
 #align_import algebra.category.Module.change_of_rings from "leanprover-community/mathlib"@"56b71f0b55c03f70332b862e65c3aa1aa1249ca1"
@@ -84,10 +84,14 @@ def restrictScalars {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →
   map_comp _ _ := LinearMap.ext fun _ => rfl
 #align category_theory.Module.restrict_scalars ModuleCat.restrictScalars
 
-instance {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* S) :
+instance {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S) :
     CategoryTheory.Faithful (restrictScalars.{v} f) where
   map_injective h :=
     LinearMap.ext fun x => by simpa only using FunLike.congr_fun h x
+
+instance {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S) :
+    (restrictScalars.{v} f).PreservesMonomorphisms where
+  preserves _ h := by rwa [mono_iff_injective] at h ⊢
 
 -- Porting note: this should be automatic
 instance {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] {f : R →+* S}

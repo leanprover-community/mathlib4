@@ -202,6 +202,13 @@ theorem one_mem_properDivisors_iff_one_lt : 1 ∈ n.properDivisors ↔ 1 < n := 
 #align nat.one_mem_proper_divisors_iff_one_lt Nat.one_mem_properDivisors_iff_one_lt
 
 @[simp]
+lemma sup_divisors_id (n : ℕ) : n.divisors.sup id = n := by
+  refine le_antisymm (Finset.sup_le fun _ ↦ divisor_le) ?_
+  rcases Decidable.eq_or_ne n 0 with rfl | hn
+  · apply zero_le
+  · exact Finset.le_sup (f := id) <| mem_divisors_self n hn
+
+@[simp]
 theorem divisorsAntidiagonal_zero : divisorsAntidiagonal 0 = ∅ := by
   ext
   simp
@@ -339,6 +346,13 @@ theorem divisors_prime_pow {p : ℕ} (pp : p.Prime) (k : ℕ) :
   · intro h; rcases h with ⟨x, hx, hap⟩; use x; tauto
   · tauto
 #align nat.divisors_prime_pow Nat.divisors_prime_pow
+
+theorem divisors_injective : Function.Injective divisors :=
+  Function.LeftInverse.injective sup_divisors_id
+
+@[simp]
+theorem divisors_inj {a b : ℕ} : a.divisors = b.divisors ↔ a = b :=
+  ⟨fun x => divisors_injective x, congrArg divisors⟩
 
 theorem eq_properDivisors_of_subset_of_sum_eq_sum {s : Finset ℕ} (hsub : s ⊆ n.properDivisors) :
     ((∑ x in s, x) = ∑ x in n.properDivisors, x) → s = n.properDivisors := by

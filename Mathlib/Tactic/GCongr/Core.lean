@@ -274,7 +274,7 @@ partial def _root_.Lean.MVarId.gcongr
     -- and also build an array of booleans according to which arguments `_ ... _` to the head
     -- function differ between the LHS and RHS
     (lhsArgs.zip rhsArgs).mapM fun (lhsArg, rhsArg) =>
-      return (none, !(← isDefEq lhsArg rhsArg))
+      return (none, !(← withReducibleAndInstances <| isDefEq lhsArg rhsArg))
   -- Name the array of booleans `varyingArgs`: this records which arguments to the head function are
   -- supposed to vary, according to the template (if there is one), and in the absence of a template
   -- to record which arguments to the head function differ between the two sides of the goal.
