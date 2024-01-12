@@ -11,17 +11,17 @@ import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
 
 /-! # Gamma distributions over ℝ
 
-Define the Gamma Measure over the Reals
+Define the gamma measure over the reals.
 
 ## Main definitions
 * `gammaPdfReal`: the function `a r x ↦ r ^ a / (Gamma a) * x ^ (a-1) * exp (-(r * x))`
-  for `0 ≤ x` or `0` else, which is the probability density function of a Gamma distribution with
+  for `0 ≤ x` or `0` else, which is the probability density function of a gamma distribution with
   shape `a` and rate `r` (when `ha : 0 < a ` and `hr : 0 < r`).
 * `gammaPdf`: `ℝ≥0∞`-valued pdf,
   `gammaPdf a r = ENNReal.ofReal (gammaPdfReal a r)`.
-* `gammaMeasure`: a Gamma measure on `ℝ`, parametrized by its shape `a` and rate `r`.
+* `gammaMeasure`: a gamma measure on `ℝ`, parametrized by its shape `a` and rate `r`.
 * `gammaCdfReal`: the CDF given by the definition of CDF in `ProbabilityTheory.Cdf` applied to the
-  Gamma measure.
+  gamma measure.
 -/
 
 open scoped ENNReal NNReal
@@ -40,12 +40,12 @@ namespace ProbabilityTheory
 
 section GammaPdf
 
-/-- The pdf of the gamma distribution depending on its scale and rate-/
+/-- The pdf of the gamma distribution depending on its scale and rate -/
 noncomputable
 def gammaPdfReal (a r x : ℝ) : ℝ :=
   if 0 ≤ x then r ^ a / (Gamma a) * x ^ (a-1) * exp (-(r * x)) else 0
 
-/-- The pdf of the Gamma distribution, as a function valued in `ℝ≥0∞` -/
+/-- The pdf of the gamma distribution, as a function valued in `ℝ≥0∞` -/
 noncomputable
 def gammaPdf (a r x : ℝ) : ℝ≥0∞ :=
   ENNReal.ofReal (gammaPdfReal a r x)
@@ -61,7 +61,7 @@ lemma gammaPdf_of_nonneg {a r x : ℝ} (hx : 0 ≤ x) :
     gammaPdf a r x = ENNReal.ofReal (r ^ a / (Gamma a) * x ^ (a-1) * exp (-(r * x))) := by
   simp only [gammaPdf_eq, if_pos hx]
 
-/-- the Lebesgue integral of the Gamma pdf over nonpositive reals equals 0 -/
+/-- The Lebesgue integral of the gamma pdf over nonpositive reals equals 0 -/
 lemma lintegral_gammaPdf_of_nonpos {x a r : ℝ} (hx : x ≤ 0) :
     ∫⁻ y in Iio x, gammaPdf a r y = 0 := by
   rw [set_lintegral_congr_fun (g := fun _ ↦ 0) measurableSet_Iio]
@@ -70,17 +70,24 @@ lemma lintegral_gammaPdf_of_nonpos {x a r : ℝ} (hx : x ≤ 0) :
     apply ae_of_all _ fun a (_ : a < _) ↦ by rw [if_neg (by linarith)]
 
 /-- The gamma pdf is measurable. -/
+@[measurability]
 lemma measurable_gammaPdfReal (a r : ℝ) : Measurable (gammaPdfReal a r) :=
   Measurable.ite measurableSet_Ici (((measurable_id'.pow_const _).const_mul _).mul
     (measurable_id'.const_mul _).neg.exp) measurable_const
 
-/-- the Gamma pdf is positive for all positive reals -/
+/-- The gamma pdf is strongly measurable -/
+@[measurability]
+ lemma stronglyMeasurable_gammaPdfReal (a r : ℝ) :
+     StronglyMeasurable (gammaPdfReal a r) :=
+   (measurable_gammaPdfReal a r).stronglyMeasurable
+
+/-- The gamma pdf is positive for all positive reals -/
 lemma gammaPdfReal_pos {x a r : ℝ} (ha : 0 < a) (hr : 0 < r) (hx : 0 < x) :
     0 < gammaPdfReal a r x := by
   simp only [gammaPdfReal, if_pos hx.le]
   positivity
 
-/-- The Gamma pdf is nonnegative -/
+/-- The gamma pdf is nonnegative -/
 lemma gammaPdfReal_nonneg {a r : ℝ} (ha : 0 < a) (hr : 0 < r) (x : ℝ) :
     0 ≤ gammaPdfReal a r x := by
   unfold gammaPdfReal
@@ -88,7 +95,7 @@ lemma gammaPdfReal_nonneg {a r : ℝ} (ha : 0 < a) (hr : 0 < r) (x : ℝ) :
 
 open Measure
 
-/-- The pdf of the Gamma distribution integrates to 1 -/
+/-- The pdf of the gamma distribution integrates to 1 -/
 @[simp]
 lemma lintegral_gammaPdf_eq_one {a r : ℝ} (ha : 0 < a) (hr : 0 < r) :
     ∫⁻ x, gammaPdf a r x = 1 := by
@@ -114,7 +121,7 @@ end GammaPdf
 
 open MeasureTheory
 
-/-- Measure defined by the Gamma distribution -/
+/-- Measure defined by the gamma distribution -/
 noncomputable
 def gammaMeasure (a r : ℝ) : Measure ℝ :=
   volume.withDensity (gammaPdf a r)
@@ -125,7 +132,7 @@ lemma isProbabilityMeasureGamma {a r : ℝ} (ha : 0 < a) (hr : 0 < r) :
 
 section GammaCdf
 
-/-- CDF of the Gamma distribution -/
+/-- CDF of the gamma distribution -/
 noncomputable
 def gammaCdfReal (a r : ℝ) : StieltjesFunction :=
   cdf (gammaMeasure a r)
