@@ -130,7 +130,6 @@ noncomputable def preservesLimitsOfShape_of_const_adjunction
 
 end
 
-
 end Limits
 
 end CategoryTheory
