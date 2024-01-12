@@ -214,7 +214,7 @@ instance (V W : FGModuleCat K) : Module.Finite K (V ⟶ W) :=
 
 instance closedPredicateModuleFinite :
     MonoidalCategory.ClosedPredicate fun V : ModuleCat.{u} K ↦ Module.Finite K V where
-  prop_ihom {X Y} _ _ ↦ Module.Finite.linearMap K K X Y
+  prop_ihom {X Y} _ _ := Module.Finite.linearMap K K X Y
 #align fgModule.closed_predicate_module_finite FGModuleCat.closedPredicateModuleFinite
 
 instance : MonoidalClosed (FGModuleCat K) := by
