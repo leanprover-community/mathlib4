@@ -46,10 +46,9 @@ theorem StandardLP.weakDuality (P : StandardLP m n K) {v : K} (hP : P.Reaches v)
   obtain ⟨y, ⟨hyc, h0y⟩, rfl⟩ := hD
   dsimp only [StandardLP.dual] at hyc ⊢
   have hxyb : P.A.mulVec x ⬝ᵥ y ≤ P.b ⬝ᵥ y
-  · exact Matrix.dotProduct_le_dotProduct_of_nonneg_right hxb h0y
+  · exact dotProduct_le_dotProduct_of_nonneg_right hxb h0y
   have hcxy : P.c ⬝ᵥ x ≤ P.Aᵀ.mulVec y ⬝ᵥ x
-  · rw [← neg_le_neg_iff, ← neg_dotProduct, ← neg_dotProduct, ← Matrix.neg_mulVec]
-    exact Matrix.dotProduct_le_dotProduct_of_nonneg_right hyc h0x
-  have middle : P.Aᵀ.mulVec y ⬝ᵥ x = P.A.mulVec x ⬝ᵥ y
-  · sorry
-  exact (hcxy.trans_eq middle).trans hxyb
+  · rw [← neg_le_neg_iff, ← neg_dotProduct, ← neg_dotProduct, ← neg_mulVec]
+    exact dotProduct_le_dotProduct_of_nonneg_right hyc h0x
+  rw [dotProduct_comm (P.Aᵀ.mulVec y), dotProduct_mulVec, vecMul_transpose] at hcxy
+  exact hcxy.trans hxyb
