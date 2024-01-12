@@ -81,14 +81,6 @@ end HomologicalComplexUpToQis
 
 end
 
-/-- The condition on a complex shape `c` saying that homotopic maps become equal in
-the localized category with respect to quasi-isomorphisms. -/
-class ComplexShape.QFactorsThroughHomotopy {ι : Type*} (c : ComplexShape ι)
-    (C : Type*) [Category C] [Preadditive C]
-    [CategoryWithHomology C] : Prop where
-  areEqualizedByLocalization {K L : HomologicalComplex C c} {f g : K ⟶ L} (h : Homotopy f g) :
-    AreEqualizedByLocalization (HomologicalComplex.qis C c) f g
-
 section
 
 variable (C : Type*) [Category C] {ι : Type*} (c : ComplexShape ι) [Preadditive C]
@@ -144,6 +136,14 @@ lemma qis_eq_qis_map_quotient :
     exact ((respectsIso_qis C c).arrow_mk_iso_iff e).1 h
 
 end HomotopyCategory
+
+/-- The condition on a complex shape `c` saying that homotopic maps become equal in
+the localized category with respect to quasi-isomorphisms. -/
+class ComplexShape.QFactorsThroughHomotopy {ι : Type*} (c : ComplexShape ι)
+    (C : Type*) [Category C] [Preadditive C]
+    [CategoryWithHomology C] : Prop where
+  areEqualizedByLocalization {K L : HomologicalComplex C c} {f g : K ⟶ L} (h : Homotopy f g) :
+    AreEqualizedByLocalization (HomologicalComplex.qis C c) f g
 
 namespace HomologicalComplexUpToQis
 
