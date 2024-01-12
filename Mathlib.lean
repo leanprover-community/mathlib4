@@ -182,7 +182,7 @@ import Mathlib.Algebra.Group.Equiv.TypeTags
 import Mathlib.Algebra.Group.Ext
 import Mathlib.Algebra.Group.Freiman
 import Mathlib.Algebra.Group.Hom.Basic
-import Mathlib.Algebra.Group.Hom.CompTripleClass
+import Mathlib.Algebra.Group.Hom.CompTypeclasses
 import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Algebra.Group.Hom.Instances
 import Mathlib.Algebra.Group.InjSurj
@@ -2556,7 +2556,7 @@ import Mathlib.Logic.Equiv.PartialEquiv
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Logic.Equiv.TransferInstance
 import Mathlib.Logic.Function.Basic
-import Mathlib.Logic.Function.CompTripleclass
+import Mathlib.Logic.Function.CompTypeclasses
 import Mathlib.Logic.Function.Conjugate
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Logic.Function.OfArity
