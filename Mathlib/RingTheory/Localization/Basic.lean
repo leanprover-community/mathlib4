@@ -792,11 +792,9 @@ section
 
 variable [IsLocalization M S] (M) (Q : Type*) [CommSemiring Q] {g : R →+* P} [Algebra P Q]
 
-theorem map_injective_of_injective (hg : Function.Injective g)
-    [IsLocalization (M.map g : Submonoid P) Q] :
+theorem map_injective_of_injective (hg : Function.Injective g) [IsLocalization (M.map g) Q] :
     Function.Injective (map Q g (Submonoid.le_comap_map M) : S → Q) :=
-  Submonoid.LocalizationMap.map_injective_of_injective (IsLocalization.toLocalizationMap M S) hg
-      (IsLocalization.toLocalizationMap (M.map g : Submonoid P) Q)
+  (toLocalizationMap M S).map_injective_of_injective hg (toLocalizationMap (M.map g) Q)
 
 end
 
@@ -1428,7 +1426,8 @@ variable (Rₘ Sₘ)
 /-- Injectivity of the underlying `algebraMap` descends to the algebra induced by localization. -/
 theorem localizationAlgebra_injective (hRS : Function.Injective (algebraMap R S)) :
     Function.Injective (@algebraMap Rₘ Sₘ _ _ (localizationAlgebra M S)) :=
-  @IsLocalization.map_injective_of_injective _ _ M _ _ _ _ _ _ _ _ _ _ hRS i
+  have : IsLocalization (M.map (algebraMap R S)) Sₘ := i
+  IsLocalization.map_injective_of_injective _ _ _ hRS
 #align localization_algebra_injective localizationAlgebra_injective
 
 end Algebra

@@ -1260,36 +1260,27 @@ Localization of `P` at `g S`, is injective.
 Submonoid `S ⊆ M`, the induced AddMonoid homomorphism from the Localization of `M` at `S`
 to the Localization of `P` at `g S`, is injective. "]
 theorem map_injective_of_injective (hg : Injective g)
-    (k : LocalizationMap (Submonoid.map g S) Q) :
-    Injective (map f (apply_coe_mem_map g S) k : N →* Q) := by
-  rw [Injective]
-  intro z w hizw
-  let i := (map f (apply_coe_mem_map g S) k : N→* Q)
-  have ifkg (a:M): i (f.toMap a) = k.toMap (g a) := map_eq f (apply_coe_mem_map g S) a
+    (k : LocalizationMap (S.map g) Q) :
+    Injective (map f (apply_coe_mem_map g S) k) := fun z w hizw ↦ by
+  set i := map f (apply_coe_mem_map g S) k
+  have ifkg (a : M) : i (f.toMap a) = k.toMap (g a) := map_eq f (apply_coe_mem_map g S) a
   obtain ⟨x, hx⟩ := surj f z
   obtain ⟨y, hy⟩ := surj f w
-  rw [(eq_mk'_iff_mul_eq f).mpr hx,
-      (eq_mk'_iff_mul_eq f).mpr hy, LocalizationMap.eq]
-  --- The following is equivalent to `hizw: i z = i w`
-  obtain ⟨d, hd⟩: ∃(d: Submonoid.map g S), d* (g y.2 * g x.1) = d* (g x.2 * g y.1) := by
-    lift (g x.2) to (Submonoid.map g S) using
-       (apply_coe_mem_map g S x.2) with gx2 hgx2
-    lift (g y.2) to (Submonoid.map g S) using
-       (apply_coe_mem_map g S y.2) with gy2 hgy2
-    have eqz:= congrArg i hx
+  rw [(eq_mk'_iff_mul_eq f).mpr hx, (eq_mk'_iff_mul_eq f).mpr hy, LocalizationMap.eq]
+  --- The following is equivalent to `hizw : i z = i w`
+  obtain ⟨d, hd⟩ : ∃ d : S.map g, d * (g y.2 * g x.1) = d * (g x.2 * g y.1) := by
+    lift g x.2 to S.map g using apply_coe_mem_map g S x.2 with gx2 hgx2
+    lift g y.2 to S.map g using apply_coe_mem_map g S y.2 with gy2 hgy2
+    have eqz := congrArg i hx
     rw [map_mul, ifkg, ifkg, ← hgx2] at eqz
-    have eqw:= congrArg i hy
+    have eqw := congrArg i hy
     rw [map_mul, ifkg, ifkg, ← hgy2] at eqw
-    rw [(eq_mk'_iff_mul_eq k).mpr eqz,
-        (eq_mk'_iff_mul_eq k).mpr eqw, LocalizationMap.eq] at hizw
+    rw [(eq_mk'_iff_mul_eq k).mpr eqz, (eq_mk'_iff_mul_eq k).mpr eqw, LocalizationMap.eq] at hizw
     exact hizw
-  obtain ⟨c, hc⟩:=
-    (Set.exists_image_iff g S _).mp (exists_apply_eq_apply' Subtype.val d)
-  simp_rw [hc,← map_mul] at hd
+  obtain ⟨c, hc⟩ := (Set.exists_image_iff g S _).mp (exists_apply_eq_apply' Subtype.val d)
+  simp_rw [hc, ← map_mul] at hd
   --- The last step is just applying hg, injectivity of g
-  apply hg at hd
-  use c
-
+  exact ⟨c, hg hd⟩
 
 section AwayMap
 
