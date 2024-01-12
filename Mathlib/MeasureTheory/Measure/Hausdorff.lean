@@ -761,7 +761,7 @@ theorem hausdorffMeasure_image_le (h : HolderOnWith C r f s) (hr : 0 < r) {d : �
     · rw [← image_iUnion, ← iUnion_inter]
       exact image_subset _ (subset_inter hst Subset.rfl)
     · refine' ENNReal.tsum_le_tsum fun n => _
-      simp only [iSup_le_iff, nonempty_image_iff]
+      simp only [iSup_le_iff, image_nonempty]
       intro hft
       simp only [Nonempty.mono ((t n).inter_subset_left s) hft, ciSup_pos]
       rw [ENNReal.rpow_mul, ← ENNReal.mul_rpow_of_nonneg _ _ hd]

@@ -10,9 +10,22 @@ set_option autoImplicit true
 
 namespace Cache.Requests
 
-/-- FRO cache public URL -/
+-- FRO cache is flaky so disable until we work out the kinks: https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/The.20cache.20doesn't.20work/near/411058849
+def useFROCache : Bool := false
+
+/-- Public URL for mathlib cache -/
 def URL : String :=
-  "https://mathlib4.lean-cache.cloud"
+  if useFROCache then
+    "https://mathlib4.lean-cache.cloud"
+  else
+    "https://lakecache.blob.core.windows.net/mathlib4"
+
+/-- Retrieves the azure token from the environment -/
+def getToken : IO String := do
+  let envVar := if useFROCache then "MATHLIB_CACHE_S3_TOKEN" else "MATHLIB_CACHE_SAS"
+  let some token ← IO.getEnv envVar
+    | throw <| IO.userError s!"environment variable {envVar} must be set to upload caches"
+  return token
 
 open System (FilePath)
 
@@ -21,7 +34,7 @@ Given a file name like `"1234.tar.gz"`, makes the URL to that file on the server
 
 The `f/` prefix means that it's a common file for caching.
 -/
-def mkFileURL (fileName : String) : String :=
+def mkFileURL (URL fileName : String) : String :=
   s!"{URL}/f/{fileName}"
 
 section Get
@@ -45,13 +58,13 @@ def mkGetConfigContent (hashMap : IO.HashMap) : IO String := do
 
     -- Note we append a '.part' to the filenames here,
     -- which `downloadFiles` then removes when the download is successful.
-    pure $ acc ++ s!"url = {mkFileURL fileName}\n\
+    pure <| acc ++ s!"url = {mkFileURL URL fileName}\n\
       -o {(IO.CACHEDIR / (fileName ++ ".part")).toString.quote}\n"
 
 /-- Calls `curl` to download a single file from the server to `CACHEDIR` (`.cache`) -/
 def downloadFile (hash : UInt64) : IO Bool := do
   let fileName := hash.asLTar
-  let url := mkFileURL fileName
+  let url := mkFileURL URL fileName
   let path := IO.CACHEDIR / fileName
   let partFileName := fileName ++ ".part"
   let partPath := IO.CACHEDIR / partFileName
@@ -161,12 +174,16 @@ section Put
 
 /-- FRO cache S3 URL -/
 def UPLOAD_URL : String :=
-  "https://a09a7664adc082e00f294ac190827820.r2.cloudflarestorage.com/mathlib4"
+  if useFROCache then
+    "https://a09a7664adc082e00f294ac190827820.r2.cloudflarestorage.com/mathlib4"
+  else
+    URL
 
 /-- Formats the config file for `curl`, containing the list of files to be uploaded -/
-def mkPutConfigContent (fileNames : Array String) : IO String := do
+def mkPutConfigContent (fileNames : Array String) (token : String) : IO String := do
+  let token := if useFROCache then "" else s!"?{token}" -- the FRO cache doesn't pass the token here
   let l ← fileNames.data.mapM fun fileName : String => do
-    pure s!"-T {(IO.CACHEDIR / fileName).toString}\nurl = {UPLOAD_URL}/f/{fileName}"
+    pure s!"-T {(IO.CACHEDIR / fileName).toString}\nurl = {mkFileURL UPLOAD_URL fileName}{token}"
   return "\n".intercalate l
 
 /-- Calls `curl` to send a set of cached files to the server -/
@@ -175,10 +192,20 @@ def putFiles (fileNames : Array String) (overwrite : Bool) (token : String) : IO
   let _ := overwrite
   let size := fileNames.size
   if size > 0 then
-    IO.FS.writeFile IO.CURLCFG (← mkPutConfigContent fileNames)
+    IO.FS.writeFile IO.CURLCFG (← mkPutConfigContent fileNames token)
     IO.println s!"Attempting to upload {size} file(s)"
-    discard $ IO.runCurl #["-X", "PUT", "--aws-sigv4", "aws:amz:auto:s3", "--user", token,
-      "--parallel", "-K", IO.CURLCFG.toString]
+    if useFROCache then
+      -- TODO: reimplement using HEAD requests?
+      let _ := overwrite
+      discard <| IO.runCurl #["-s", "-X", "PUT", "--aws-sigv4", "aws:amz:auto:s3", "--user", token,
+        "--parallel", "-K", IO.CURLCFG.toString]
+    else if overwrite then
+      discard <| IO.runCurl #["-s", "-X", "PUT", "-H", "x-ms-blob-type: BlockBlob", "--parallel",
+        "-K", IO.CURLCFG.toString]
+    else
+      discard <| IO.runCurl #["-s", "-X", "PUT", "-H", "x-ms-blob-type: BlockBlob",
+        "-H", "If-None-Match: *", "--parallel", "-K", IO.CURLCFG.toString]
+    IO.FS.removeFile IO.CURLCFG
   else IO.println "No files to upload"
 
 end Put
@@ -196,20 +223,24 @@ Sends a commit file to the server, containing the hashes of the respective commi
 The file name is the current Git hash and the `c/` prefix means that it's a commit file.
 -/
 def commit (hashMap : IO.HashMap) (overwrite : Bool) (token : String) : IO Unit := do
-  -- TODO: reimplement using HEAD requests?
-  let _ := overwrite
   let hash ← getGitCommitHash
   let path := IO.CACHEDIR / hash
   IO.mkDir IO.CACHEDIR
-  IO.FS.writeFile path $ ("\n".intercalate $ hashMap.hashes.toList.map toString) ++ "\n"
-  discard $ IO.runCurl $ #["-T", path.toString, "--aws-sigv4", "aws:amz:auto:s3",
-    "--user", token, s!"{UPLOAD_URL}/c/{hash}"]
+  IO.FS.writeFile path <| ("\n".intercalate <| hashMap.hashes.toList.map toString) ++ "\n"
+  if useFROCache then
+    -- TODO: reimplement using HEAD requests?
+    let _ := overwrite
+    discard <| IO.runCurl <| #["-T", path.toString, "--aws-sigv4", "aws:amz:auto:s3",
+      "--user", token, s!"{UPLOAD_URL}/c/{hash}"]
+  else
+    let params := if overwrite
+      then #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob"]
+      else #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *"]
+    discard <| IO.runCurl <| params ++ #["-T", path.toString, s!"{URL}/c/{hash}?{token}"]
   IO.FS.removeFile path
 
 end Commit
 
--- TODO: unused, not adapted to the FRO cache yet
-/-
 section Collect
 
 inductive QueryType
@@ -221,7 +252,7 @@ def QueryType.prefix : QueryType → String
   | all     => default
 
 def formatError : IO α :=
-  throw $ IO.userError "Invalid format for curl return"
+  throw <| IO.userError "Invalid format for curl return"
 
 def QueryType.desc : QueryType → String
   | files   => "hosted files"
@@ -233,7 +264,9 @@ Retrieves metadata about hosted files: their names and the timestamps of last mo
 
 Example: `["f/39476538726384726.tar.gz", "Sat, 24 Dec 2022 17:33:01 GMT"]`
 -/
-def getFilesInfo (q : QueryType) : IO $ List (String × String) := do
+def getFilesInfo (q : QueryType) : IO <| List (String × String) := do
+  if useFROCache then
+    throw <| .userError "FIXME: getFilesInfo is not adapted to FRO cache yet"
   IO.println s!"Downloading info list of {q.desc}"
   let ret ← IO.runCurl #["-X", "GET", s!"{URL}?comp=list&restype=container{q.prefix}"]
   match ret.splitOn "<Name>" with
@@ -249,6 +282,5 @@ def getFilesInfo (q : QueryType) : IO $ List (String × String) := do
       | _ => formatError
 
 end Collect
--/
 
 end Cache.Requests

@@ -294,20 +294,6 @@ theorem smul_ne_zero_iff_ne (a : α) {x : β} : a • x ≠ 0 ↔ x ≠ 0 :=
 
 end Group
 
-section Gwz
-
-variable [GroupWithZero α] [AddMonoid β] [DistribMulAction α β]
-
-theorem smul_eq_zero_iff_eq' {a : α} (ha : a ≠ 0) {x : β} : a • x = 0 ↔ x = 0 :=
-  show Units.mk0 a ha • x = 0 ↔ x = 0 from smul_eq_zero_iff_eq _
-#align smul_eq_zero_iff_eq' smul_eq_zero_iff_eq'
-
-theorem smul_ne_zero_iff_ne' {a : α} (ha : a ≠ 0) {x : β} : a • x ≠ 0 ↔ x ≠ 0 :=
-  show Units.mk0 a ha • x ≠ 0 ↔ x ≠ 0 from smul_ne_zero_iff_ne _
-#align smul_ne_zero_iff_ne' smul_ne_zero_iff_ne'
-
-end Gwz
-
 end DistribMulAction
 
 section MulDistribMulAction

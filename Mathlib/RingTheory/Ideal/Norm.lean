@@ -553,7 +553,7 @@ theorem spanNorm_localization (I : Ideal S) [Module.Finite R S] [Module.Free R S
     [Algebra Rₘ Sₘ] [Algebra R Sₘ] [IsScalarTower R Rₘ Sₘ] [IsScalarTower R S Sₘ]
     [IsLocalization M Rₘ] [IsLocalization (Algebra.algebraMapSubmonoid S M) Sₘ] :
     spanNorm Rₘ (I.map (algebraMap S Sₘ)) = (spanNorm R I).map (algebraMap R Rₘ) := by
-  cases h : subsingleton_or_nontrivial R
+  cases subsingleton_or_nontrivial R
   · haveI := IsLocalization.unique R Rₘ M
     simp [eq_iff_true_of_subsingleton]
   let b := Module.Free.chooseBasis R S

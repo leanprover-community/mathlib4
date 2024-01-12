@@ -85,9 +85,6 @@ any `U : M → Set M` such that `∀ x ∈ s, U x ∈ 𝓝 x` there exists a `Sm
 subordinate to `U`. Then we use this fact to prove a version of the Whitney embedding theorem: any
 compact real manifold can be embedded into `ℝ^n` for large enough `n`.  -/
 
-set_option autoImplicit true
-
-
 variable (ι M)
 
 /-- We say that a collection of `SmoothBumpFunction`s is a `SmoothBumpCovering` of a set `s` if
@@ -634,7 +631,7 @@ lemma IsOpen.exists_msmooth_support_eq_aux {s : Set H} (hs : IsOpen s) :
 
 /-- Given an open set in a finite-dimensional real manifold, there exists a nonnegative smooth
 function with support equal to `s`. -/
-theorem IsOpen.exists_msmooth_support_eq (hs : IsOpen s) :
+theorem IsOpen.exists_msmooth_support_eq {s : Set M} (hs : IsOpen s) :
     ∃ f : M → ℝ, f.support = s ∧ Smooth I 𝓘(ℝ) f ∧ ∀ x, 0 ≤ f x := by
   rcases SmoothPartitionOfUnity.exists_isSubordinate_chartAt_source I M with ⟨f, hf⟩
   have A : ∀ (c : M), ∃ g : H → ℝ,
