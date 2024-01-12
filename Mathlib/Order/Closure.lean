@@ -73,13 +73,9 @@ namespace ClosureOperator
 
 instance [Preorder α] : NDFunLike (ClosureOperator α) α α where
   coe c := c.1
-<<<<<<< HEAD
   coe_injective' := by rintro ⟨⟩ ⟨⟩ h; obtain rfl := FunLike.ext' h; congr with x; simp [*]
-=======
-  coe_injective' := by rintro ⟨⟩ ⟨⟩ h; congr; exact FunLike.ext' h
 
 instance [Preorder α] : OrderHomClass (ClosureOperator α) α α where
->>>>>>> Vierkantor/unbundled-FunLike-testings
   map_rel f _ _ h := f.mono h
 
 initialize_simps_projections ClosureOperator (toFun → apply, IsClosed → isClosed)
