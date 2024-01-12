@@ -53,7 +53,7 @@ variable {V : Type*} [AddCommGroup V] [Module K V] [FiniteDimensional K V]
 variable {W : Type*} [AddCommGroup W] [Module K W] [FiniteDimensional K W]
 
 instance finiteDimensional : FiniteDimensional K (V →ₗ[K] W) :=
-  Module.Finite.linearMap _ _
+  Module.Finite.linearMap _ _ _ _
 #align linear_map.finite_dimensional LinearMap.finiteDimensional
 
 variable {A : Type*} [Ring A] [Algebra K A] [Module A V] [IsScalarTower K A V] [Module A W]
