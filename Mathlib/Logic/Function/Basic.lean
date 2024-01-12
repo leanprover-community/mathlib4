@@ -209,12 +209,12 @@ protected theorem Surjective.forall (hf : Surjective f) {p : β → Prop} :
 
 protected theorem Surjective.forall₂ (hf : Surjective f) {p : β → β → Prop} :
     (∀ y₁ y₂, p y₁ y₂) ↔ ∀ x₁ x₂, p (f x₁) (f x₂) :=
-  hf.forall.trans $ forall_congr' fun _ ↦ hf.forall
+  hf.forall.trans <| forall_congr' fun _ ↦ hf.forall
 #align function.surjective.forall₂ Function.Surjective.forall₂
 
 protected theorem Surjective.forall₃ (hf : Surjective f) {p : β → β → β → Prop} :
     (∀ y₁ y₂ y₃, p y₁ y₂ y₃) ↔ ∀ x₁ x₂ x₃, p (f x₁) (f x₂) (f x₃) :=
-  hf.forall.trans $ forall_congr' fun _ ↦ hf.forall₂
+  hf.forall.trans <| forall_congr' fun _ ↦ hf.forall₂
 #align function.surjective.forall₃ Function.Surjective.forall₃
 
 protected theorem Surjective.exists (hf : Surjective f) {p : β → Prop} :
