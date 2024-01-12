@@ -53,7 +53,7 @@ variable {α β : Sort*}
 /-- A type is `Finite` if it is in bijective correspondence to some `Fin n`.
 
 This is similar to `Fintype`, but `Finite` is a proposition rather than data.
-A particular benefit to this is that `Finite` instances are definitionally equal
+A particular benefit to this is that `Finite` instances are definitionally equal to one another
 (due to proof irrelevance) rather than being merely propositionally equal,
 and, furthermore, `Finite` instances generally avoid the need for `Decidable` instances.
 One other notable difference is that `Finite` allows there to be `Finite p` instances
