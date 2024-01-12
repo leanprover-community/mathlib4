@@ -6,6 +6,17 @@ Authors: Antoine Chambert-Loir
 
 import Mathlib.Logic.Function.Basic
 
+
+/-!
+# Propositional typeclasses on several monoid homs
+
+This file contains typeclasses used in the definition of (semi)linear maps:
+
+TODO :
+* align with RingHomCompTriple
+
+-/
+
 section CompTriple
 
 /-- Class of composing triples -/

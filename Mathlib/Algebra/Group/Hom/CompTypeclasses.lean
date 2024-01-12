@@ -4,8 +4,23 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
 
-import Mathlib.Logic.Function.CompTripleclass
+
+import Mathlib.Logic.Function.CompTypeclasses
 import Mathlib.Algebra.Group.Hom.Defs
+
+/-!
+# Propositional typeclasses on several monoid homs
+
+This file contains typeclasses used in the definition of (semi)linear maps:
+
+TODO :
+* align with RingHomCompTriple
+* probably rename MonoidHom.CompTriple as MonoidHomCompTriple
+(or, on the opposite, rename RingHomCompTriple as RingHom.CompTriple)
+* does one need AddHom.CompTriple ?
+
+-/
+
 
 section MonoidHomCompTriple
 
