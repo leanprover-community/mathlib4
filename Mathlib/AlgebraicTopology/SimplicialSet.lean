@@ -84,6 +84,54 @@ scoped[Simplicial] notation3 "Δ[" n "]" => SSet.standardSimplex.obj (SimplexCat
 instance : Inhabited SSet :=
   ⟨Δ[0]⟩
 
+section Product
+
+def Prod (X Y : SSet) : SSet where
+  obj n := X.obj n × Y.obj n
+  map f a := (X.map f a.1, Y.map f a.2)
+
+@[simp]
+def Prod.fst {X Y : SSet} : (Prod X Y) ⟶ X where
+  app _ a := a.1
+
+@[simp]
+def Prod.snd {X Y : SSet} : (Prod X Y) ⟶ Y where
+  app _ a := a.2
+
+@[simps! pt]
+def binaryProductCone (X Y : SSet.{0}) : BinaryFan X Y :=
+  BinaryFan.mk (Prod.fst) (Prod.snd)
+
+@[simp]
+theorem binaryProductCone_fst (X Y : SSet) : (binaryProductCone X Y).fst = Prod.fst :=
+  rfl
+
+@[simp]
+theorem binaryProductCone_snd (X Y : SSet) : (binaryProductCone X Y).snd = Prod.snd :=
+  rfl
+
+@[simps]
+def binaryProductLimit (X Y : SSet) : IsLimit (binaryProductCone X Y) where
+  lift (s : BinaryFan X Y) := {
+    app := fun n x => ((s.fst).app n x, (s.snd).app n x)
+    naturality := fun j k g => by
+      ext a
+      simp [FunctorToTypes.naturality]
+      congr
+  }
+  fac _ j := Discrete.recOn j fun j => WalkingPair.casesOn j rfl rfl
+  uniq s t ht := by
+    simp only [← ht ⟨WalkingPair.right⟩, ← ht ⟨WalkingPair.left⟩]
+    congr
+
+def binaryProductLimitCone (X Y : SSet) : Limits.LimitCone (pair X Y) :=
+  ⟨_, binaryProductLimit X Y⟩
+
+noncomputable def binaryProductIso (X Y : SSet) : X ⨯ Y ≅ Prod X Y :=
+  limit.isoLimitCone (binaryProductLimitCone X Y)
+
+end Product
+
 namespace standardSimplex
 
 open Finset Opposite SimplexCategory
