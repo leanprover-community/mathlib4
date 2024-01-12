@@ -496,21 +496,14 @@ instance : IsSuccArchimedean (zStar Z b) where
       · rw [AddSubgroupClass.coe_sub, DigitExpansion.sub_def, hz _ hw, zero_sub]
         simp [single_apply_of_ne _ _ _ hw.ne']
 
-lemma fromRealHensel (f : realHensel Z b) :
-    ∃ (k : ℕ) (f' : zStar Z b), shift^[k] f'.val = f := by
-  obtain ⟨k, f', hf⟩ := henselInt.fromHensel ⟨f.val, f.prop.right⟩
-  refine ⟨k, ⟨f'.val, ?_, f'.prop⟩, hf⟩
-  simp only [AddSubgroup.coe_toAddSubmonoid, SetLike.mem_coe]
-  suffices f'.val = leftShift^[k] f.val by
-    rw [this]
-    convert (real.leftShift^[k] ⟨f.val, f.prop.left⟩).prop
-    clear this hf f'
-    induction' k with k IH
-    · simp
-    · simp [- Function.iterate_succ, Function.iterate_succ', Function.comp_apply, IH]
-  rw [← (leftInverse_shift_leftShift.iterate k).injective.eq_iff,
-      (leftInverse_leftShift_shift.iterate k) _] at hf
-  exact hf
+lemma exists_nsmul_one_of_nonneg {f : zStar Z b} (hf : 0 ≤ f) : ∃ k : ℕ, f = k • 1 := by
+  obtain ⟨k, rfl⟩ := exists_succ_iterate_of_le hf
+  clear hf
+  refine ⟨k, ?_⟩
+  induction' k with k IH
+  · simp
+  · rw [Function.iterate_succ_apply', IH, succ_nsmul']
+    rfl
 
 end zStar
 
@@ -542,15 +535,132 @@ lemma negative_iff {x : realHensel Z b} :
 
 variable [Zero Z]
 
+instance : One (realHensel Z b) where
+  one := AddSubgroup.inclusion zStar_le_realHensel 1
+
+protected lemma one_def : (1 : realHensel Z b) = AddSubgroup.inclusion zStar_le_realHensel 1 := rfl
+
+/-- "Divide" the expansion by shifting the expansion one digit to the right. Also called
+"half" in the orignal de Bruijn paper. -/
+def shift (f : realHensel Z b) : realHensel Z b :=
+  ⟨DigitExpansion.shift f.val, by simpa using (real.shift ⟨f.val, f.prop.left⟩).prop,
+    shift_hensel f.prop.right⟩
+
+@[simp]
+lemma val_shift (f : realHensel Z b) : (shift f).val = f.val.shift := rfl
+
+@[simp]
+lemma val_iterate_shift (f : realHensel Z b) (k : ℕ) :
+    (shift^[k] f).val = DigitExpansion.shift^[k] f.val := by
+  induction k
+  case zero => simp
+  case succ k IH => simp only [Function.iterate_succ_apply', val_shift, IH]
+
+end realHensel
+
+lemma zStar.fromRealHensel [Zero Z] (f : realHensel Z b) :
+    ∃ (k : ℕ) (f' : zStar Z b),
+      realHensel.shift^[k] (AddSubgroup.inclusion zStar_le_realHensel f') = f := by
+  obtain ⟨k, f', hf⟩ := henselInt.fromHensel ⟨f.val, f.prop.right⟩
+  refine ⟨k, ⟨f'.val, ?_, f'.prop⟩, ?_⟩
+  · simp only [AddSubgroup.coe_toAddSubmonoid, SetLike.mem_coe]
+    suffices f'.val = leftShift^[k] f.val by
+      rw [this]
+      convert (real.leftShift^[k] ⟨f.val, f.prop.left⟩).prop
+      clear this hf f'
+      induction' k with k IH
+      · simp
+      · simp [- Function.iterate_succ, Function.iterate_succ', Function.comp_apply, IH]
+    rw [← (leftInverse_shift_leftShift.iterate k).injective.eq_iff,
+        (leftInverse_leftShift_shift.iterate k) _] at hf
+    exact hf
+  · rw [Subtype.ext_iff, realHensel.val_iterate_shift]
+    exact hf
+
+namespace realHensel
+
+variable [Zero Z]
+
+lemma inclusion_one : AddSubgroup.inclusion zStar_le_realHensel (1 : zStar Z b) = 1 := rfl
+
+@[simp]
+lemma base_nsmul_shift_eq (f : realHensel Z b) : (b + 1) • shift f = f := by
+  obtain ⟨k, f', hk⟩ := zStar.fromRealHensel f
+  ext : 1
+  simp only [AddSubmonoidClass.coe_nsmul, val_shift, ← shift_nsmul_comm]
+  rw [← hk]
+  clear hk f
+  simp only [val_iterate_shift, AddSubgroup.coe_inclusion]
+  induction' k with k IH
+  · simp only [Nat.zero_eq, Function.iterate_zero, id_eq]
+    rcases le_total 0 f' with fpos|fneg
+    · obtain ⟨r, rfl⟩ := zStar.exists_nsmul_one_of_nonneg fpos
+      simp only [map_nsmul, inclusion_one, AddSubmonoidClass.coe_nsmul,
+        AddSubgroup.coe_toAddSubmonoid]
+      rw [← mul_nsmul, mul_nsmul', zStar.one_def,
+          zStar.val_single, ← succ_pred (0 : Z), base_nsmul_single_succ_one_eq_single,
+          shift_nsmul_comm, shift_single]
+    · rw [← neg_zero, le_neg] at fneg
+      obtain ⟨r, hr⟩ := zStar.exists_nsmul_one_of_nonneg fneg
+      rw [neg_eq_iff_eq_neg] at hr
+      rw [hr]
+      simp only [map_neg, map_nsmul, inclusion_one, AddSubgroup.coe_neg,
+        AddSubmonoidClass.coe_nsmul, AddSubgroup.coe_toAddSubmonoid, smul_neg]
+      simp only [AddSubgroupClass.coe_neg, AddSubmonoidClass.coe_nsmul, smul_neg, shift_neg]
+      rw [← mul_nsmul, mul_nsmul', zStar.one_def, zStar.val_single,
+          ← succ_pred (0 : Z), base_nsmul_single_succ_one_eq_single, shift_nsmul_comm,
+          shift_single]
+  · rw [Function.iterate_succ_apply', ← shift_nsmul_comm, IH]
+
+lemma exists_shift_nsmul_one_of_nonneg {f : realHensel Z b} (hf : 0 ≤ f) :
+    ∃ (k r : ℕ), shift^[k] (r • 1) = f := by
+  obtain ⟨k, f', hk⟩ := zStar.fromRealHensel f
+  have fpos : 0 ≤ f' := by
+    rcases hf.eq_or_lt with rfl|hf
+    · refine le_of_eq ?_
+      induction' k with k IH generalizing f'
+      · simp only [Nat.zero_eq, Function.iterate_zero, id_eq, ZeroMemClass.coe_zero,
+        ZeroMemClass.coe_eq_zero] at hk
+        rw [map_eq_zero_iff _ (AddSubgroup.inclusion_injective _)] at hk
+        simp [hk]
+      · refine IH _ ?_
+        rw [Function.iterate_succ_apply'] at hk
+        simp only [Subtype.ext_iff, val_shift, ZeroMemClass.coe_zero, shift_eq_zero] at hk
+        rw [Subtype.ext_iff, hk]
+        simp
+    rw [← positive_iff, ← hk] at hf
+    contrapose! hf
+    rw [← zStar.negative_iff] at hf
+    clear hk
+    induction' k with k IH
+    · exact hf.not_positive
+    · contrapose! IH
+      convert IH.leftShift using 1
+      rw [Function.iterate_succ_apply', val_shift, leftInverse_leftShift_shift]
+  obtain ⟨r, rfl⟩ := zStar.exists_nsmul_one_of_nonneg fpos
+  refine ⟨k, r, ?_⟩
+  ext : 1
+  rw [←hk]
+  clear hk
+  induction' k with k IH
+  · simp only [Nat.zero_eq, Function.iterate_zero, id_eq, AddSubmonoidClass.coe_nsmul]
+    rfl
+  · rw [Function.iterate_succ_apply', val_shift, IH, Function.iterate_succ_apply', val_shift]
+
+lemma exists_shift_nsmul_one_of_nonpos {f : realHensel Z b} (hf : f ≤ 0) :
+    ∃ (k r : ℕ), shift^[k] (r • 1) = -f := by
+  refine exists_shift_nsmul_one_of_nonneg ?_
+  simp [hf]
+
+lemma shift_nsmul_comm (f : realHensel Z b) (n : ℕ) : shift (n • f) = n • shift f :=
+  Subtype.ext (DigitExpansion.shift_nsmul_comm _ _)
+
 @[elab_as_elim]
 lemma shift_induction {motive : realHensel Z b → Prop}
-    (h0 : motive (AddSubgroup.inclusion zStar_le_realHensel 0))
-    (hs : ∀ f, motive f → motive (f + (AddSubgroup.inclusion zStar_le_realHensel 1)))
-    (hp : ∀ f, motive f → motive (f - (AddSubgroup.inclusion zStar_le_realHensel 1)))
-    (hd : ∀ f, motive f → motive (⟨
-      shift f.val,
-      by simpa using (real.shift ⟨f.val, f.prop.left⟩).prop,
-      shift_hensel f.prop.right⟩))
+    (h0 : motive 0)
+    (hs : ∀ f, motive f → motive (f + 1))
+    (hp : ∀ f, motive f → motive (f - 1))
+    (hd : ∀ f, motive f → motive (shift f))
     (f : realHensel Z b) : motive f := by
   obtain ⟨k, f', hf⟩ := zStar.fromRealHensel f
   induction' k with k IH generalizing f f'
@@ -560,25 +670,23 @@ lemma shift_induction {motive : realHensel Z b → Prop}
     · exact 0
     · intro f hf
       convert h0
-      rw [map_zero, Subtype.ext_iff, ← hf]
+      rw [Subtype.ext_iff, ← hf]
       simp
     · intro g IH f hf
       convert hs _ (IH (AddSubgroup.inclusion zStar_le_realHensel g) rfl)
-      ext : 1
       exact hf.symm
     · intro g IH f hf
       convert hp _ (IH (AddSubgroup.inclusion zStar_le_realHensel g) rfl)
-      ext : 1
       exact hf.symm
   · let g : realHensel Z b := ⟨real.leftShift ⟨f.val, f.prop.left⟩,
       (real.leftShift _).prop, leftShift_hensel f.prop.right⟩
     have hg : g.val = leftShift f.val := rfl
-    rw [Function.iterate_succ', Function.comp_apply,
-        ← leftInverse_shift_leftShift.injective.eq_iff,
-        leftInverse_leftShift_shift, ← hg] at hf
+    rw [Function.iterate_succ', Function.comp_apply, Subtype.ext_iff,
+        ← leftInverse_shift_leftShift.injective.eq_iff, val_shift,
+        leftInverse_leftShift_shift, ← hg, ← Subtype.ext_iff] at hf
     specialize IH _ _ hf
     convert hd _ IH
-    rw [hg, leftInverse_shift_leftShift]
+    rw [Subtype.ext_iff, val_shift, hg, leftInverse_shift_leftShift]
 
 end realHensel
 

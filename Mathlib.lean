@@ -1488,7 +1488,8 @@ import Mathlib.Data.DList.Instances
 import Mathlib.Data.DigitExpansion.Add
 import Mathlib.Data.DigitExpansion.Defs
 import Mathlib.Data.DigitExpansion.Hensel
-import Mathlib.Data.DigitExpansion.Integer
+import Mathlib.Data.DigitExpansion.Integer.Basic
+import Mathlib.Data.DigitExpansion.Integer.Mul
 import Mathlib.Data.DigitExpansion.Real.Basic
 import Mathlib.Data.DigitExpansion.Real.ConditionallyComplete
 import Mathlib.Data.ENat.Basic

@@ -924,4 +924,32 @@ lemma base_nsmul_single_succ_one_eq_single (z : Z) (n : Fin (b + 1)) :
   rw [succ_nsmul, ← nsmul_single_eq_single, nsmul_left_comm, ← nsmul_add,
       ← nsmul_single_eq_single z, ← base_nsmul_single_one_succ_one_eq_single z, succ_nsmul]
 
+lemma shift_sub (f g : DigitExpansion Z b) : shift (f - g) = shift f - shift g := by
+  ext z : 1
+  simp only [shift_apply, DigitExpansion.sub_def, sub_right_inj]
+  rcases difcar_eq_zero_or_one f g (pred z) with hd|hd
+  · rw [hd, eq_comm]
+    rw [difcar_eq_zero_iff] at hd ⊢
+    simp only [gt_iff_lt, shift_apply]
+    intro x hx hx'
+    obtain ⟨y, hy, hy', hy''⟩ := hd (pred x) (pred_lt_pred hx) hx'
+    exact ⟨succ y, by simpa using succ_lt_succ hy, by simpa using succ_lt_succ hy', by simp [hy'']⟩
+  · rw [hd, eq_comm]
+    rw [difcar_eq_one_iff] at hd ⊢
+    obtain ⟨x, hx, hx', hx''⟩ := hd
+    refine ⟨succ x, by simpa using succ_lt_succ hx, by simp [hx'], fun y hy hy' ↦ ?_⟩
+    simp only [shift_apply]
+    exact hx'' _ (by simpa using hy) (pred_lt_pred hy')
+
+lemma shift_neg (f : DigitExpansion Z b) : shift (-f) = - shift f := by
+  rw [← zero_sub, shift_sub, shift_zero, zero_sub]
+
+lemma shift_add (f g : DigitExpansion Z b) : shift (f + g) = shift f + shift g := by
+  rw [← sub_neg_eq_add, shift_sub, shift_neg, sub_neg_eq_add]
+
+lemma shift_nsmul_comm (f : DigitExpansion Z b) (n : ℕ) : shift (n • f) = n • shift f := by
+  induction' n with n IH
+  · simp [zero_nsmul]
+  · rw [succ_nsmul, shift_add, IH, succ_nsmul]
+
 end DigitExpansion
