@@ -125,7 +125,7 @@ theorem polar_add_left_iff {f : M → R} {x x' y : M} :
     add_right_comm (f (x + y)), add_left_inj]
 #align quadratic_form.polar_add_left_iff QuadraticForm.polar_add_left_iff
 
-theorem polar_comp {F : Type*} [CommRing S] [AddMonoidHomClass F R S]
+theorem polar_comp {F : Type*} [CommRing S] [NDFunLike F R S] [AddMonoidHomClass F R S]
     (f : M → R) (g : F) (x y : M) :
     polar (g ∘ f) x y = g (polar f x y) := by
   simp only [polar, Pi.smul_apply, Function.comp_apply, map_sub]
@@ -240,8 +240,8 @@ theorem map_zero : Q 0 = 0 := by
   rw [← @zero_smul R _ _ _ _ (0 : M), map_smul, zero_mul, zero_mul]
 #align quadratic_form.map_zero QuadraticForm.map_zero
 
-instance zeroHomClass : ZeroHomClass (QuadraticForm R M) M R :=
-  { QuadraticForm.funLike with map_zero := map_zero }
+instance zeroHomClass : ZeroHomClass (QuadraticForm R M) M R where
+  map_zero := map_zero
 #align quadratic_form.zero_hom_class QuadraticForm.zeroHomClass
 
 theorem map_smul_of_tower [CommSemiring S] [Algebra S R] [Module S M] [IsScalarTower S R M] (a : S)

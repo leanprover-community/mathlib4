@@ -85,12 +85,14 @@ theorem smoothSheafCommRing.isUnit_stalk_iff {x : M}
         ext y
         apply mul_inv_cancel
         exact hVf y
+        · infer_instance
       · rw [← map_mul]
         convert map_one _
         apply Subtype.ext
         ext y
         apply inv_mul_cancel
         exact hVf y
+        · infer_instance
     · intro y
       exact ((contDiffAt_inv _ (hVf y)).contMDiffAt).comp y
         (f.smooth.comp (smooth_inclusion hUV)).smoothAt

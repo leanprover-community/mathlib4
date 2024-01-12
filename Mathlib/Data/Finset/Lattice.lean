@@ -90,8 +90,9 @@ theorem sup_congr {f g : β → α} (hs : s₁ = s₂) (hfg : ∀ a ∈ s₂, f 
 #align finset.sup_congr Finset.sup_congr
 
 @[simp]
-theorem _root_.map_finset_sup [SemilatticeSup β] [OrderBot β] [SupBotHomClass F α β] (f : F)
-    (s : Finset ι) (g : ι → α) : f (s.sup g) = s.sup (f ∘ g) :=
+theorem _root_.map_finset_sup [SemilatticeSup β] [OrderBot β]
+    [NDFunLike F α β] [SupBotHomClass F α β]
+    (f : F) (s : Finset ι) (g : ι → α) : f (s.sup g) = s.sup (f ∘ g) :=
   Finset.cons_induction_on s (map_bot f) fun i s _ h => by
     rw [sup_cons, sup_cons, map_sup, h, Function.comp_apply]
 #align map_finset_sup map_finset_sup
@@ -369,8 +370,9 @@ theorem inf_congr {f g : β → α} (hs : s₁ = s₂) (hfg : ∀ a ∈ s₂, f 
 #align finset.inf_congr Finset.inf_congr
 
 @[simp]
-theorem _root_.map_finset_inf [SemilatticeInf β] [OrderTop β] [InfTopHomClass F α β] (f : F)
-    (s : Finset ι) (g : ι → α) : f (s.inf g) = s.inf (f ∘ g) :=
+theorem _root_.map_finset_inf [SemilatticeInf β] [OrderTop β]
+    [NDFunLike F α β] [InfTopHomClass F α β]
+    (f : F) (s : Finset ι) (g : ι → α) : f (s.inf g) = s.inf (f ∘ g) :=
   Finset.cons_induction_on s (map_top f) fun i s _ h => by
     rw [inf_cons, inf_cons, map_inf, h, Function.comp_apply]
 #align map_finset_inf map_finset_inf
@@ -912,10 +914,19 @@ theorem sup'_congr {t : Finset β} {f g : β → α} (h₁ : s = t) (h₂ : ∀ 
   simp (config := { contextual := true }) only [sup'_le_iff, h₂]
 #align finset.sup'_congr Finset.sup'_congr
 
+<<<<<<< HEAD
 theorem comp_sup'_eq_sup'_comp [SemilatticeSup γ] {s : Finset β} (H : s.Nonempty) {f : β → α}
     (g : α → γ) (g_sup : ∀ x y, g (x ⊔ y) = g x ⊔ g y) : g (s.sup' H f) = s.sup' H (g ∘ f) := by
   refine' H.cons_induction _ _ <;> intros <;> simp [*]
 #align finset.comp_sup'_eq_sup'_comp Finset.comp_sup'_eq_sup'_comp
+=======
+@[simp]
+theorem _root_.map_finset_sup' [SemilatticeSup β] [NDFunLike F α β] [SupHomClass F α β]
+    (f : F) {s : Finset ι} (hs) (g : ι → α) :
+    f (s.sup' hs g) = s.sup' hs (f ∘ g) := by
+  refine' hs.cons_induction _ _ <;> intros <;> simp [*]
+#align map_finset_sup' map_finset_sup'
+>>>>>>> Vierkantor/unbundled-FunLike-testings
 
 @[simp]
 theorem _root_.map_finset_sup' [SemilatticeSup β] [SupHomClass F α β] (f : F) {s : Finset ι} (hs)
@@ -1083,8 +1094,9 @@ theorem inf'_congr {t : Finset β} {f g : β → α} (h₁ : s = t) (h₂ : ∀ 
 #align finset.inf'_congr Finset.inf'_congr
 
 @[simp]
-theorem _root_.map_finset_inf' [SemilatticeInf β] [InfHomClass F α β] (f : F) {s : Finset ι} (hs)
-    (g : ι → α) : f (s.inf' hs g) = s.inf' hs (f ∘ g) := by
+theorem _root_.map_finset_inf' [SemilatticeInf β] [NDFunLike F α β] [InfHomClass F α β]
+    (f : F) {s : Finset ι} (hs) (g : ι → α) :
+    f (s.inf' hs g) = s.inf' hs (f ∘ g) := by
   refine' hs.cons_induction _ _ <;> intros <;> simp [*]
 #align map_finset_inf' map_finset_inf'
 

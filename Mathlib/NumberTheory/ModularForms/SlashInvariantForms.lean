@@ -46,21 +46,21 @@ structure SlashInvariantForm where
 
 /-- `SlashInvariantFormClass F Γ k` asserts `F` is a type of bundled functions that are invariant
 under the `SlashAction`. -/
-class SlashInvariantFormClass extends FunLike F ℍ fun _ => ℂ where
+class SlashInvariantFormClass [NDFunLike F ℍ ℂ] : Prop where
   slash_action_eq : ∀ (f : F) (γ : Γ), (f : ℍ → ℂ) ∣[k] γ = f
 #align slash_invariant_form_class SlashInvariantFormClass
 
-instance (priority := 100) SlashInvariantFormClass.slashInvariantForm :
-    SlashInvariantFormClass (SlashInvariantForm Γ k) Γ k where
+instance (priority := 100) SlashInvariantForm.funLike :
+    NDFunLike (SlashInvariantForm Γ k) ℍ ℂ where
   coe := SlashInvariantForm.toFun
   coe_injective' f g h := by cases f; cases g; congr
+
+instance (priority := 100) SlashInvariantFormClass.slashInvariantForm :
+    SlashInvariantFormClass (SlashInvariantForm Γ k) Γ k where
   slash_action_eq := SlashInvariantForm.slash_action_eq'
 #align slash_invariant_form_class.slash_invariant_form SlashInvariantFormClass.slashInvariantForm
 
 variable {F Γ k}
-
-instance : CoeFun (SlashInvariantForm Γ k) fun _ => ℍ → ℂ :=
-  FunLike.hasCoeToFun
 
 @[simp]
 theorem SlashInvariantForm.toFun_eq_coe {f : SlashInvariantForm Γ k} : f.toFun = (f : ℍ → ℂ) :=
@@ -89,10 +89,11 @@ namespace SlashInvariantForm
 
 open SlashInvariantForm
 
-variable {F : Type*} {Γ : outParam <| Subgroup SL(2, ℤ)} {k : outParam ℤ}
+variable {F : Type*} {Γ : Subgroup SL(2, ℤ)} {k : ℤ} [NDFunLike F ℍ ℂ]
 
 -- @[simp] -- Porting note: simpNF says LHS simplifies to something more complex
-theorem slash_action_eqn [SlashInvariantFormClass F Γ k] (f : F) (γ : Γ) : ↑f ∣[k] γ = ⇑f :=
+theorem slash_action_eqn [SlashInvariantFormClass F Γ k] (f : F) (γ : Γ) :
+    ↑f ∣[k] γ = ⇑f :=
   SlashInvariantFormClass.slash_action_eq f γ
 #align slash_invariant_form.slash_action_eqn SlashInvariantForm.slash_action_eqn
 

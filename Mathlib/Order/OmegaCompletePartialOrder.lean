@@ -95,6 +95,7 @@ namespace Chain
 variable {α : Type u} {β : Type v} {γ : Type*}
 variable [Preorder α] [Preorder β] [Preorder γ]
 
+instance : NDFunLike (Chain α) ℕ α := inferInstanceAs <| NDFunLike (ℕ →o α) ℕ α
 instance : OrderHomClass (Chain α) ℕ α := inferInstanceAs <| OrderHomClass (ℕ →o α) ℕ α
 instance : CoeFun (Chain α) fun _ => ℕ → α := ⟨FunLike.coe⟩
 
@@ -622,9 +623,11 @@ attribute [nolint docBlame] ContinuousHom.toOrderHom
 
 @[inherit_doc] infixr:25 " →𝒄 " => ContinuousHom -- Input: \r\MIc
 
-instance : OrderHomClass (α →𝒄 β) α β where
+instance : NDFunLike (α →𝒄 β) α β where
   coe f := f.toFun
   coe_injective' := by rintro ⟨⟩ ⟨⟩ h; congr; exact FunLike.ext' h
+
+instance : OrderHomClass (α →𝒄 β) α β where
   map_rel f _ _ h := f.mono h
 
 -- Porting note: removed to avoid conflict with the generic instance

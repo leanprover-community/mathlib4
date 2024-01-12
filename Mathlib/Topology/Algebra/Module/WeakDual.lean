@@ -179,10 +179,6 @@ instance instTopologicalAddGroup [ContinuousAdd 𝕜] : TopologicalAddGroup (Wea
     refine' cast (congr_arg _ _) (eval_continuous B (-y))
     ext x
     simp only [map_neg, Function.comp_apply, LinearMap.neg_apply]
-    -- Porting note: mathlib3 proof was done here
-    rw [← (B x).neg_apply]
-    congr
-    exact (map_neg B x).symm
 
 end Ring
 
@@ -232,6 +228,9 @@ instance instContinuousAdd : ContinuousAdd (WeakDual 𝕜 E) :=
 
 instance instInhabited : Inhabited (WeakDual 𝕜 E) :=
   ContinuousLinearMap.inhabited
+
+instance instFunLike : NDFunLike (WeakDual 𝕜 E) E 𝕜 :=
+  ContinuousLinearMap.funLike
 
 instance instContinuousLinearMapClass : ContinuousLinearMapClass (WeakDual 𝕜 E) 𝕜 E 𝕜 :=
   ContinuousLinearMap.continuousSemilinearMapClass

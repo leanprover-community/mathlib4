@@ -99,7 +99,7 @@ variable [CommSemiring R]
 variable [NonUnitalNonAssocSemiring A] [Module R A] [Star A]
 variable [NonUnitalNonAssocSemiring B] [Module R B] [Star B]
 variable [NonUnitalNonAssocSemiring C] [Module R C] [Star C]
-variable [NonUnitalStarAlgHomClass F R A B]
+variable [NDFunLike F A B] [NonUnitalAlgHomClass F R A B] [NonUnitalStarAlgHomClass F R A B]
 
 instance instSetLike : SetLike (NonUnitalStarSubalgebra R A) A where
   coe {s} := s.carrier
@@ -400,7 +400,7 @@ variable [CommSemiring R]
 variable [NonUnitalNonAssocSemiring A] [Module R A] [Star A]
 variable [NonUnitalNonAssocSemiring B] [Module R B] [Star B]
 variable [NonUnitalNonAssocSemiring C] [Module R C] [Star C]
-variable [NonUnitalStarAlgHomClass F R A B]
+variable [NDFunLike F A B] [NonUnitalAlgHomClass F R A B] [NonUnitalStarAlgHomClass F R A B]
 
 /-- Range of an `NonUnitalAlgHom` as a `NonUnitalStarSubalgebra`. -/
 protected def range (φ : F) : NonUnitalStarSubalgebra R B where
@@ -473,7 +473,7 @@ variable [CommSemiring R]
 variable [NonUnitalSemiring A] [Module R A] [Star A]
 variable [NonUnitalSemiring B] [Module R B] [Star B]
 variable [NonUnitalSemiring C] [Module R C] [Star C]
-variable [hF : NonUnitalStarAlgHomClass F R A B]
+variable [NDFunLike F A B] [NonUnitalAlgHomClass F R A B] [NonUnitalStarAlgHomClass F R A B]
 
 /-- Restrict a non-unital star algebra homomorphism with a left inverse to an algebra isomorphism
 to its range.
@@ -606,7 +606,7 @@ variable [NonUnitalSemiring A] [StarRing A]
 variable [Module R A] [IsScalarTower R A A] [SMulCommClass R A A] [StarModule R A]
 variable [NonUnitalSemiring B] [StarRing B]
 variable [Module R B] [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B]
-variable [hF : NonUnitalStarAlgHomClass F R A B]
+variable [NDFunLike F A B] [NonUnitalAlgHomClass F R A B] [NonUnitalStarAlgHomClass F R A B]
 
 open scoped Pointwise
 
@@ -803,7 +803,8 @@ variable [NonUnitalSemiring A] [StarRing A]
 variable [Module R A] [IsScalarTower R A A] [SMulCommClass R A A] [StarModule R A]
 variable [NonUnitalSemiring B] [StarRing B]
 variable [Module R B] [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B]
-variable [hF : NonUnitalStarAlgHomClass F R A B] (S : NonUnitalStarSubalgebra R A)
+variable [NDFunLike F A B] [NonUnitalAlgHomClass F R A B] [NonUnitalStarAlgHomClass F R A B]
+variable (S : NonUnitalStarSubalgebra R A)
 
 instance subsingleton_of_subsingleton [Subsingleton A] :
     Subsingleton (NonUnitalStarSubalgebra R A) :=

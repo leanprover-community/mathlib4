@@ -43,7 +43,7 @@ section
 
 You should extend this class when you extend `ContinuousOpenMap`. -/
 class ContinuousOpenMapClass (F : Type*) (α β : outParam <| Type*) [TopologicalSpace α]
-  [TopologicalSpace β] extends ContinuousMapClass F α β where
+  [TopologicalSpace β] [NDFunLike F α β] extends ContinuousMapClass F α β : Prop where
   map_open (f : F) : IsOpenMap f
 #align continuous_open_map_class ContinuousOpenMapClass
 
@@ -51,7 +51,8 @@ end
 
 export ContinuousOpenMapClass (map_open)
 
-instance [TopologicalSpace α] [TopologicalSpace β] [ContinuousOpenMapClass F α β] :
+instance [TopologicalSpace α] [TopologicalSpace β] [NDFunLike F α β]
+    [ContinuousOpenMapClass F α β] :
     CoeTC F (α →CO β) :=
   ⟨fun f => ⟨f, map_open f⟩⟩
 
@@ -62,12 +63,14 @@ namespace ContinuousOpenMap
 
 variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ] [TopologicalSpace δ]
 
-instance : ContinuousOpenMapClass (α →CO β) α β where
+instance : NDFunLike (α →CO β) α β where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨_, _⟩, _⟩ := f
     obtain ⟨⟨_, _⟩, _⟩ := g
     congr
+
+instance : ContinuousOpenMapClass (α →CO β) α β where
   map_continuous f := f.continuous_toFun
   map_open f := f.map_open'
 

@@ -174,10 +174,10 @@ instance [Semiring R] [∀ x : B, AddCommMonoid (E x)] [i : ∀ x, Module R (E x
 
 variable {E F} [TopologicalSpace B'] [TopologicalSpace (TotalSpace F E)] [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] [TopologicalSpace B] [∀ x, AddCommMonoid (E x)]
-  [∀ x, Module 𝕜 (E x)] {K : Type*} [ContinuousMapClass K B' B]
+  [∀ x, Module 𝕜 (E x)] {K : Type*} [NDFunLike K B' B] [ContinuousMapClass K B' B]
 
 instance Trivialization.pullback_linear (e : Trivialization F (π F E)) [e.IsLinear 𝕜] (f : K) :
-    (@Trivialization.pullback _ _ _ B' _ _ _ _ _ _ _ e f).IsLinear 𝕜 where
+    (Trivialization.pullback (B' := B') e f).IsLinear 𝕜 where
   linear _ h := e.linear 𝕜 h
 #align trivialization.pullback_linear Trivialization.pullback_linear
 

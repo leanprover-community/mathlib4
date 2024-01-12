@@ -325,7 +325,8 @@ theorem eq_int_castAddHom (f : ℤ →+ A) (h1 : f 1 = 1) : f = Int.castAddHom A
 
 end AddMonoidHom
 
-theorem eq_intCast' [AddGroupWithOne α] [AddMonoidHomClass F ℤ α] (f : F) (h₁ : f 1 = 1) :
+theorem eq_intCast' [AddGroupWithOne α] [NDFunLike F ℤ α] [AddMonoidHomClass F ℤ α]
+    (f : F) (h₁ : f 1 = 1) :
     ∀ n : ℤ, f n = n :=
   FunLike.ext_iff.1 <| (f : ℤ →+ α).eq_int_castAddHom h₁
 #align eq_int_cast' eq_intCast'
@@ -378,7 +379,7 @@ theorem ext_int {f g : ℤ →*₀ M} (h_neg_one : f (-1) = g (-1))
 end MonoidWithZeroHom
 
 /-- If two `MonoidWithZeroHom`s agree on `-1` and the _positive_ naturals then they are equal. -/
-theorem ext_int' [MonoidWithZero α] [MonoidWithZeroHomClass F ℤ α] {f g : F}
+theorem ext_int' [MonoidWithZero α] [NDFunLike F ℤ α] [MonoidWithZeroHomClass F ℤ α] {f g : F}
     (h_neg_one : f (-1) = g (-1)) (h_pos : ∀ n : ℕ, 0 < n → f n = g n) : f = g :=
   (FunLike.ext _ _) fun n =>
     haveI :=
@@ -394,12 +395,12 @@ section NonAssocRing
 variable [NonAssocRing α] [NonAssocRing β]
 
 @[simp]
-theorem eq_intCast [RingHomClass F ℤ α] (f : F) (n : ℤ) : f n = n :=
+theorem eq_intCast [NDFunLike F ℤ α] [RingHomClass F ℤ α] (f : F) (n : ℤ) : f n = n :=
   eq_intCast' f (map_one _) n
 #align eq_int_cast eq_intCast
 
 @[simp]
-theorem map_intCast [RingHomClass F α β] (f : F) (n : ℤ) : f n = n :=
+theorem map_intCast [NDFunLike F α β] [RingHomClass F α β] (f : F) (n : ℤ) : f n = n :=
   eq_intCast ((f : α →+* β).comp (Int.castRingHom α)) n
 #align map_int_cast map_intCast
 

@@ -283,15 +283,11 @@ instance {K : Type*} [Field K] : FunLike (InfinitePlace K) K (fun _ => ℝ) :=
   coe_injective' := fun _ _ h => Subtype.eq (AbsoluteValue.ext fun x => congr_fun h x)}
 
 instance : MonoidWithZeroHomClass (InfinitePlace K) K ℝ where
-  coe w x := w.1 x
-  coe_injective' _ _ h := Subtype.eq (AbsoluteValue.ext fun x => congr_fun h x)
   map_mul w _ _ := w.1.map_mul _ _
   map_one w := w.1.map_one
   map_zero w := w.1.map_zero
 
 instance : NonnegHomClass (InfinitePlace K) K ℝ where
-  coe w x := w x
-  coe_injective' _ _ h := Subtype.eq (AbsoluteValue.ext fun x => congr_fun h x)
   map_nonneg w _ := w.1.nonneg _
 
 @[simp]
@@ -341,7 +337,8 @@ theorem mk_eq_iff {φ ψ : K →+* ℂ} : mk φ = mk ψ ↔ φ = ψ ∨ ComplexE
       apply LipschitzWith.of_dist_le_mul
       intro x y
       rw [NNReal.coe_one, one_mul, NormedField.dist_eq, Function.comp_apply, Function.comp_apply,
-        ← map_sub, ← map_sub]
+        -- FIXME: had to specialize this `map_sub`
+        ← map_sub, ← RingEquiv.map_sub]
       apply le_of_eq
       suffices ‖φ (ι.symm (x - y))‖ = ‖ψ (ι.symm (x - y))‖ by
         rw [← this, ← RingEquiv.ofLeftInverse_apply hiφ _, RingEquiv.apply_symm_apply ι _]

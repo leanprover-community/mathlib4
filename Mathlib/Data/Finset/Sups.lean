@@ -49,7 +49,8 @@ variable {F α β : Type*} [DecidableEq α] [DecidableEq β]
 namespace Finset
 
 section Sups
-variable [SemilatticeSup α] [SemilatticeSup β] [SupHomClass F α β] (s s₁ s₂ t t₁ t₂ u v : Finset α)
+variable [SemilatticeSup α] [SemilatticeSup β] [NDFunLike F α β] [SupHomClass F α β]
+variable (s s₁ s₂ t t₁ t₂ u v : Finset α)
 
 /-- `s ⊻ t` is the finset of elements of the form `a ⊔ b` where `a ∈ s`, `b ∈ t`. -/
 protected def hasSups : HasSups (Finset α) :=
@@ -233,7 +234,8 @@ theorem sups_sups_sups_comm : s ⊻ t ⊻ (u ⊻ v) = s ⊻ u ⊻ (t ⊻ v) :=
 end Sups
 
 section Infs
-variable [SemilatticeInf α] [SemilatticeInf β] [InfHomClass F α β] (s s₁ s₂ t t₁ t₂ u v : Finset α)
+variable [SemilatticeInf α] [SemilatticeInf β] [NDFunLike F α β] [InfHomClass F α β]
+variable (s s₁ s₂ t t₁ t₂ u v : Finset α)
 
 /-- `s ⊼ t` is the finset of elements of the form `a ⊓ b` where `a ∈ s`, `b ∈ t`. -/
 protected def hasInfs : HasInfs (Finset α) :=

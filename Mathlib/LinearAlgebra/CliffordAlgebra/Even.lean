@@ -210,12 +210,12 @@ def aux (f : EvenHom Q A) : CliffordAlgebra.even Q →ₗ[R] A := by
   exact LinearMap.fst R _ _ ∘ₗ foldr Q (fFold f) (fFold_fFold f) (1, 0)
 #align clifford_algebra.even.lift.aux CliffordAlgebra.even.lift.aux
 
-@[simp]
+@[simp, nolint simpNF]
 theorem aux_one : aux f 1 = 1 :=
   congr_arg Prod.fst (foldr_one _ _ _ _)
 #align clifford_algebra.even.lift.aux_one CliffordAlgebra.even.lift.aux_one
 
-@[simp]
+@[simp, nolint simpNF]
 theorem aux_ι (m₁ m₂ : M) : aux f ((even.ι Q).bilin m₁ m₂) = f.bilin m₁ m₂ :=
   (congr_arg Prod.fst (foldr_mul _ _ _ _ _ _)).trans
     (by
@@ -223,12 +223,12 @@ theorem aux_ι (m₁ m₂ : M) : aux f ((even.ι Q).bilin m₁ m₂) = f.bilin m
       exact mul_one _)
 #align clifford_algebra.even.lift.aux_ι CliffordAlgebra.even.lift.aux_ι
 
-@[simp]
+@[simp, nolint simpNF]
 theorem aux_algebraMap (r) (hr) : aux f ⟨algebraMap R _ r, hr⟩ = algebraMap R _ r :=
   (congr_arg Prod.fst (foldr_algebraMap _ _ _ _ _)).trans (Algebra.algebraMap_eq_smul_one r).symm
 #align clifford_algebra.even.lift.aux_algebra_map CliffordAlgebra.even.lift.aux_algebraMap
 
-@[simp]
+@[simp, nolint simpNF]
 theorem aux_mul (x y : even Q) : aux f (x * y) = aux f x * aux f y := by
   cases' x with x x_property
   cases y

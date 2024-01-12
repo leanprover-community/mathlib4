@@ -1727,7 +1727,7 @@ def prod [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)] [CommMon
 @[to_additive (attr := simp)]
 theorem _root_.map_dfinsupp_prod
     {R S H : Type*} [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
-    [CommMonoid R] [CommMonoid S] [MonoidHomClass H R S] (h : H) (f : Π₀ i, β i)
+    [CommMonoid R] [CommMonoid S] [NDFunLike H R S] [MonoidHomClass H R S] (h : H) (f : Π₀ i, β i)
     (g : ∀ i, β i → R) : h (f.prod g) = f.prod fun a b => h (g a b) :=
   map_prod _ _ _
 

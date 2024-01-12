@@ -670,7 +670,8 @@ variable {S R A : Type*} [CommSemiring S] [CommSemiring R] [NonUnitalSemiring A]
   [SMulCommClass R A A] [IsScalarTower R A A] {B : Type*} [Semiring B] [Algebra S B] [Algebra S R]
   [DistribMulAction S A] [IsScalarTower S R A] {C : Type*} [Semiring C] [Algebra R C]
 
-theorem algHom_ext {F : Type*} [AlgHomClass F S (Unitization R A) B] {φ ψ : F}
+theorem algHom_ext {F : Type*}
+    [NDFunLike F (Unitization R A) B] [AlgHomClass F S (Unitization R A) B] {φ ψ : F}
     (h : ∀ a : A, φ a = ψ a)
     (h' : ∀ r, φ (algebraMap R (Unitization R A) r) = ψ (algebraMap R (Unitization R A) r)) :
     φ = ψ := by
@@ -679,7 +680,8 @@ theorem algHom_ext {F : Type*} [AlgHomClass F S (Unitization R A) B] {φ ψ : F}
   simp only [map_add, ← algebraMap_eq_inl, h, h']
 #align unitization.alg_hom_ext Unitization.algHom_ext
 
-lemma algHom_ext'' {F : Type*} [AlgHomClass F R (Unitization R A) C] {φ ψ : F}
+lemma algHom_ext'' {F : Type*}
+    [NDFunLike F (Unitization R A) C] [AlgHomClass F R (Unitization R A) C] {φ ψ : F}
     (h : ∀ a : A, φ a = ψ a) : φ = ψ :=
   algHom_ext h (fun r => by simp only [AlgHomClass.commutes])
 

@@ -103,7 +103,8 @@ theorem isSquare_one [MulOneClass α] : IsSquare (1 : α) :=
 #align even_zero even_zero
 
 @[to_additive]
-theorem IsSquare.map [MulOneClass α] [MulOneClass β] [MonoidHomClass F α β] {m : α} (f : F) :
+theorem IsSquare.map [MulOneClass α] [MulOneClass β] [NDFunLike F α β] [MonoidHomClass F α β]
+    {m : α} (f : F) :
     IsSquare m → IsSquare (f m) := by
   rintro ⟨m, rfl⟩
   exact ⟨f m, by simp⟩
@@ -397,7 +398,7 @@ theorem odd_two_mul_add_one (m : α) : Odd (2 * m + 1) :=
 
 @[simp] lemma one_add_self_self : Odd (1 + m + m) := by simp [add_comm 1 m]
 
-theorem Odd.map [RingHomClass F α β] (f : F) : Odd m → Odd (f m) := by
+theorem Odd.map [NDFunLike F α β] [RingHomClass F α β] (f : F) : Odd m → Odd (f m) := by
   rintro ⟨m, rfl⟩
   exact ⟨f m, by simp [two_mul]⟩
 #align odd.map Odd.map

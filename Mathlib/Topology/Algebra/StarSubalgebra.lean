@@ -170,7 +170,8 @@ theorem _root_.StarAlgHom.ext_topologicalClosure [T2Space B] {S : StarSubalgebra
 #align star_alg_hom.ext_topological_closure StarAlgHom.ext_topologicalClosure
 
 theorem _root_.StarAlgHomClass.ext_topologicalClosure [T2Space B] {F : Type*}
-    {S : StarSubalgebra R A} [StarAlgHomClass F R S.topologicalClosure B] {φ ψ : F}
+    {S : StarSubalgebra R A} [NDFunLike F S.topologicalClosure B]
+    [AlgHomClass F R S.topologicalClosure B] [StarAlgHomClass F R S.topologicalClosure B] {φ ψ : F}
     (hφ : Continuous φ) (hψ : Continuous ψ) (h : ∀ x : S,
         φ (inclusion (le_topologicalClosure S) x) = ψ ((inclusion (le_topologicalClosure S)) x)) :
     φ = ψ := by
@@ -252,8 +253,12 @@ theorem closedEmbedding_coe (x : A) : ClosedEmbedding ((↑) : elementalStarAlge
 #align elemental_star_algebra.closed_embedding_coe elementalStarAlgebra.closedEmbedding_coe
 
 theorem starAlgHomClass_ext [T2Space B] {F : Type*} {a : A}
-    [StarAlgHomClass F R (elementalStarAlgebra R a) B] {φ ψ : F} (hφ : Continuous φ)
+    [NDFunLike F (elementalStarAlgebra R a) B] [AlgHomClass F R _ B] [StarAlgHomClass F R _ B]
+    {φ ψ : F} (hφ : Continuous φ)
     (hψ : Continuous ψ) (h : φ ⟨a, self_mem R a⟩ = ψ ⟨a, self_mem R a⟩) : φ = ψ := by
+  -- Note: help with unfolding `elementalStarAlgebra`
+  have : StarAlgHomClass F R (↥(topologicalClosure (adjoin R {a}))) B :=
+    inferInstanceAs (StarAlgHomClass F R (elementalStarAlgebra R a) B)
   refine StarAlgHomClass.ext_topologicalClosure hφ hψ fun x => ?_
   apply adjoin_induction' x ?_ ?_ ?_ ?_ ?_
   exacts [fun y hy => by simpa only [Set.mem_singleton_iff.mp hy] using h, fun r => by

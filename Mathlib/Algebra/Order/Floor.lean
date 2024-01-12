@@ -1624,7 +1624,7 @@ end round
 namespace Nat
 
 variable [LinearOrderedSemiring α] [LinearOrderedSemiring β] [FloorSemiring α] [FloorSemiring β]
-  [RingHomClass F α β] {a : α} {b : β}
+variable [NDFunLike F α β] [RingHomClass F α β] {a : α} {b : β}
 
 -- Porting note: no longer needed
 -- include β
@@ -1653,7 +1653,7 @@ end Nat
 namespace Int
 
 variable [LinearOrderedRing α] [LinearOrderedRing β] [FloorRing α] [FloorRing β]
-  [RingHomClass F α β] {a : α} {b : β}
+variable [NDFunLike F α β] [RingHomClass F α β] {a : α} {b : β}
 
 -- Porting note: no longer needed
 -- include β
@@ -1683,7 +1683,7 @@ end Int
 namespace Int
 
 variable [LinearOrderedField α] [LinearOrderedField β] [FloorRing α] [FloorRing β]
-  [RingHomClass F α β] {a : α} {b : β}
+variable [NDFunLike F α β] [RingHomClass F α β] {a : α} {b : β}
 
 -- Porting note: no longer needed
 -- include β

@@ -183,6 +183,8 @@ lemma noncommProd_induction (s : Multiset α) (comm)
   simp only [quot_mk_to_coe, noncommProd_coe, mem_coe] at base ⊢
   exact l.prod_induction p hom unit base
 
+variable [NDFunLike F α β]
+
 @[to_additive]
 protected theorem noncommProd_map_aux [MonoidHomClass F α β] (s : Multiset α)
     (comm : { x | x ∈ s }.Pairwise Commute) (f : F) : { x | x ∈ s.map f }.Pairwise Commute := by
@@ -348,6 +350,8 @@ theorem noncommProd_singleton (a : α) (f : α → β) :
       f a := mul_one _
 #align finset.noncomm_prod_singleton Finset.noncommProd_singleton
 #align finset.noncomm_sum_singleton Finset.noncommSum_singleton
+
+variable [NDFunLike F β γ]
 
 @[to_additive]
 theorem noncommProd_map [MonoidHomClass F β γ] (s : Finset α) (f : α → β) (comm) (g : F) :

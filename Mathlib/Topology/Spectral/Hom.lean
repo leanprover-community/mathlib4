@@ -75,8 +75,8 @@ section
 /-- `SpectralMapClass F α β` states that `F` is a type of spectral maps.
 
 You should extend this class when you extend `SpectralMap`. -/
-class SpectralMapClass (F : Type*) (α β : outParam <| Type*) [TopologicalSpace α]
-  [TopologicalSpace β] extends FunLike F α fun _ => β where
+class SpectralMapClass (F α β : Type*) [TopologicalSpace α] [TopologicalSpace β]
+    [NDFunLike F α β] : Prop where
   /-- statement that `F` is a type of spectral maps-/
   map_spectral (f : F) : IsSpectralMap f
 #align spectral_map_class SpectralMapClass
@@ -89,11 +89,11 @@ attribute [simp] map_spectral
 
 -- See note [lower instance priority]
 instance (priority := 100) SpectralMapClass.toContinuousMapClass [TopologicalSpace α]
-    [TopologicalSpace β] [SpectralMapClass F α β] : ContinuousMapClass F α β :=
+    [TopologicalSpace β] [NDFunLike F α β] [SpectralMapClass F α β] : ContinuousMapClass F α β :=
   { ‹SpectralMapClass F α β› with map_continuous := fun f => (map_spectral f).continuous }
 #align spectral_map_class.to_continuous_map_class SpectralMapClass.toContinuousMapClass
 
-instance [TopologicalSpace α] [TopologicalSpace β] [SpectralMapClass F α β] :
+instance [TopologicalSpace α] [TopologicalSpace β] [NDFunLike F α β] [SpectralMapClass F α β] :
     CoeTC F (SpectralMap α β) :=
   ⟨fun f => ⟨_, map_spectral f⟩⟩
 
@@ -109,17 +109,12 @@ def toContinuousMap (f : SpectralMap α β) : ContinuousMap α β :=
   ⟨_, f.spectral'.continuous⟩
 #align spectral_map.to_continuous_map SpectralMap.toContinuousMap
 
-instance : SpectralMapClass (SpectralMap α β) α β
-    where
+instance : NDFunLike (SpectralMap α β) α β where
   coe := SpectralMap.toFun
   coe_injective' f g h := by cases f; cases g; congr
-  map_spectral f := f.spectral'
 
--- Porting note: These CoeFun instances are not desirable in Lean 4.
---/-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`
---directly. -/
---instance : CoeFun (SpectralMap α β) fun _ => α → β :=
---  FunLike.hasCoeToFun
+instance : SpectralMapClass (SpectralMap α β) α β where
+  map_spectral f := f.spectral'
 
 @[simp]
 theorem toFun_eq_coe {f : SpectralMap α β} : f.toFun = (f : α → β) :=

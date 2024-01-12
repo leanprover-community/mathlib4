@@ -785,9 +785,7 @@ theorem algebraMap_injective [CommRing R] [Ring A] [Nontrivial A] [Algebra R A]
 
 theorem _root_.NeZero.of_noZeroSMulDivisors (n : ℕ) [CommRing R] [NeZero (n : R)] [Ring A]
     [Nontrivial A] [Algebra R A] [NoZeroSMulDivisors R A] : NeZero (n : A) :=
-  -- porting note: todo: drop implicit args
-  @NeZero.nat_of_injective R A (R →+* A) _ _ n ‹_› _ _ <|
-    NoZeroSMulDivisors.algebraMap_injective R A
+  NeZero.nat_of_injective <| NoZeroSMulDivisors.algebraMap_injective R A
 #align ne_zero.of_no_zero_smul_divisors NeZero.of_noZeroSMulDivisors
 
 variable {R A}

@@ -499,9 +499,8 @@ variable {F : Type*} [NormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [C
 
 local notation "↑ₐ" => algebraMap 𝕜 A
 
-/-- An algebra homomorphism into the base field, as a continuous linear map (since it is
-automatically bounded). See note [lower instance priority] -/
-instance (priority := 100) [AlgHomClass F 𝕜 A 𝕜] : ContinuousLinearMapClass F 𝕜 A 𝕜 :=
+instance (priority := 100) [NDFunLike F A 𝕜] [AlgHomClass F 𝕜 A 𝕜] :
+    ContinuousLinearMapClass F 𝕜 A 𝕜 :=
   { AlgHomClass.linearMapClass with
     map_continuous := fun φ =>
       AddMonoidHomClass.continuous_of_bound φ ‖(1 : A)‖ fun a =>
@@ -518,12 +517,13 @@ theorem coe_toContinuousLinearMap (φ : A →ₐ[𝕜] 𝕜) : ⇑φ.toContinuou
   rfl
 #align alg_hom.coe_to_continuous_linear_map AlgHom.coe_toContinuousLinearMap
 
-theorem norm_apply_le_self_mul_norm_one [AlgHomClass F 𝕜 A 𝕜] (f : F) (a : A) :
+theorem norm_apply_le_self_mul_norm_one [NDFunLike F A 𝕜] [AlgHomClass F 𝕜 A 𝕜] (f : F) (a : A) :
     ‖f a‖ ≤ ‖a‖ * ‖(1 : A)‖ :=
   spectrum.norm_le_norm_mul_of_mem (apply_mem_spectrum f _)
 #align alg_hom.norm_apply_le_self_mul_norm_one AlgHom.norm_apply_le_self_mul_norm_one
 
-theorem norm_apply_le_self [NormOneClass A] [AlgHomClass F 𝕜 A 𝕜] (f : F) (a : A) : ‖f a‖ ≤ ‖a‖ :=
+theorem norm_apply_le_self [NormOneClass A] [NDFunLike F A 𝕜] [AlgHomClass F 𝕜 A 𝕜]
+    (f : F) (a : A) : ‖f a‖ ≤ ‖a‖ :=
   spectrum.norm_le_norm_of_mem (apply_mem_spectrum f _)
 #align alg_hom.norm_apply_le_self AlgHom.norm_apply_le_self
 

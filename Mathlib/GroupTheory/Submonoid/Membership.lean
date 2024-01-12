@@ -570,7 +570,8 @@ theorem log_pow_int_eq_self {x : ℤ} (h : 1 < x.natAbs) (m : ℕ) : log (pow x 
 #align submonoid.log_pow_int_eq_self Submonoid.log_pow_int_eq_self
 
 @[simp]
-theorem map_powers {N : Type*} {F : Type*} [Monoid N] [MonoidHomClass F M N] (f : F) (m : M) :
+theorem map_powers {N : Type*} {F : Type*} [Monoid N] [NDFunLike F M N] [MonoidHomClass F M N]
+    (f : F) (m : M) :
     (powers m).map f = powers (f m) := by
   simp only [powers_eq_closure, map_mclosure f, Set.image_singleton]
 #align submonoid.map_powers Submonoid.map_powers

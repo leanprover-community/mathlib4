@@ -396,11 +396,20 @@ lemma Module.Finite_of_isLocalization (R S Rₚ Sₚ) [CommSemiring R] [CommRing
     IsLocalization.mk'_surjective (Algebra.algebraMapSubmonoid S M) x
   rw [IsLocalization.mk'_eq_mul_mk'_one, mul_comm, Finset.coe_image]
   have hy : y ∈ Submodule.span R ↑T := by rw [hT]; trivial
+<<<<<<< HEAD
   replace hy : algebraMap S Sₚ y ∈ Submodule.map (IsScalarTower.toAlgHom R S Sₚ).toLinearMap
     (Submodule.span R (T : Set S)) := Submodule.mem_map_of_mem hy
   rw [Submodule.map_span (IsScalarTower.toAlgHom R S Sₚ).toLinearMap T] at hy
   have H : Submodule.span R (algebraMap S Sₚ '' T) ≤
       (Submodule.span Rₚ (algebraMap S Sₚ '' T)).restrictScalars R := by
+=======
+  replace hy : algebraMap S S' y ∈ Submodule.map fₐ.toLinearMap (Submodule.span R (T : Set S)) :=
+    -- Note: #8386 had to specify the value of `f` below
+    Submodule.mem_map_of_mem (f := fₐ.toLinearMap) hy
+  rw [Submodule.map_span fₐ.toLinearMap T] at hy
+  have H : Submodule.span R (algebraMap S S' '' T) ≤
+      (Submodule.span R' (algebraMap S S' '' T)).restrictScalars R := by
+>>>>>>> Vierkantor/unbundled-FunLike-testings
     rw [Submodule.span_le]; exact Submodule.subset_span
   -- Now, since `y ∈ span T`, and `(f r)⁻¹ ∈ R'`, `x / (f r)` is in `span T` as well.
   convert (Submodule.span Rₚ (algebraMap S Sₚ '' T)).smul_mem

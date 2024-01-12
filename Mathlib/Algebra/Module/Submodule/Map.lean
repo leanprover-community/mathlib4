@@ -44,7 +44,7 @@ variable {x : M}
 
 section
 
-variable [RingHomSurjective σ₁₂] {F : Type*} [sc : SemilinearMapClass F σ₁₂ M M₂]
+variable [RingHomSurjective σ₁₂] {F : Type*} [NDFunLike F M M₂] [SemilinearMapClass F σ₁₂ M M₂]
 
 /-- The pushforward of a submodule `p ⊆ M` by `f : M → M₂` -/
 def map (f : F) (p : Submodule R M) : Submodule R₂ M₂ :=
@@ -142,7 +142,7 @@ end
 
 section SemilinearMap
 
-variable {F : Type*} [sc : SemilinearMapClass F σ₁₂ M M₂]
+variable {F : Type*} [NDFunLike F M M₂] [SemilinearMapClass F σ₁₂ M M₂]
 
 /-- The pushforward of a submodule by an injective linear map is
 linearly equivalent to the original submodule. See also `LinearEquiv.submoduleMap` for a
@@ -156,7 +156,8 @@ noncomputable def equivMapOfInjective (f : F) (i : Injective f) (p : Submodule R
       rfl
     map_smul' := by
       intros
-      simp only [coe_smul_of_tower, map_smulₛₗ, Equiv.toFun_as_coe, Equiv.Set.image_apply]
+      -- Note: #8386 changed `map_smulₛₗ` into `map_smulₛₗ _`
+      simp only [coe_smul_of_tower, map_smulₛₗ _, Equiv.toFun_as_coe, Equiv.Set.image_apply]
       rfl }
 #align submodule.equiv_map_of_injective Submodule.equivMapOfInjective
 
@@ -170,7 +171,8 @@ theorem coe_equivMapOfInjective_apply (f : F) (i : Injective f) (p : Submodule R
 def comap (f : F) (p : Submodule R₂ M₂) : Submodule R M :=
   { p.toAddSubmonoid.comap f with
     carrier := f ⁻¹' p
-    smul_mem' := fun a x h => by simp [p.smul_mem (σ₁₂ a) h] }
+    -- Note: #8386 added `map_smulₛₗ _`
+    smul_mem' := fun a x h => by simp [p.smul_mem (σ₁₂ a) h, map_smulₛₗ _] }
 #align submodule.comap Submodule.comap
 
 @[simp]
@@ -384,7 +386,7 @@ end SemilinearMap
 
 section OrderIso
 
-variable {F : Type*} [SemilinearEquivClass F σ₁₂ M M₂]
+variable {F : Type*} [EquivLike F M M₂] [SemilinearEquivClass F σ₁₂ M M₂]
 
 /-- A linear isomorphism induces an order isomorphism of submodules. -/
 @[simps symm_apply apply]
@@ -398,7 +400,7 @@ def orderIsoMapComap (f : F) : Submodule R M ≃o Submodule R₂ M₂ where
 
 end OrderIso
 
-variable {F : Type*} [sc : SemilinearMapClass F σ₁₂ M M₂]
+variable {F : Type*} [NDFunLike F M M₂] [SemilinearMapClass F σ₁₂ M M₂]
 
 --TODO(Mario): is there a way to prove this from order properties?
 theorem map_inf_eq_map_inf_comap [RingHomSurjective σ₁₂] {f : F} {p : Submodule R M}

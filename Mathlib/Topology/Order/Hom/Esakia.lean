@@ -54,7 +54,8 @@ section
 
 You should extend this class when you extend `PseudoEpimorphism`. -/
 class PseudoEpimorphismClass (F : Type*) (α β : outParam <| Type*) [Preorder α] [Preorder β]
-    extends RelHomClass F ((· ≤ ·) : α → α → Prop) ((· ≤ ·) : β → β → Prop) where
+    [NDFunLike F α β]
+    extends RelHomClass F ((· ≤ ·) : α → α → Prop) ((· ≤ ·) : β → β → Prop) : Prop where
   exists_map_eq_of_map_le (f : F) ⦃a : α⦄ ⦃b : β⦄ : f a ≤ b → ∃ c, a ≤ c ∧ f c = b
 #align pseudo_epimorphism_class PseudoEpimorphismClass
 
@@ -62,13 +63,18 @@ class PseudoEpimorphismClass (F : Type*) (α β : outParam <| Type*) [Preorder �
 
 You should extend this class when you extend `EsakiaHom`. -/
 class EsakiaHomClass (F : Type*) (α β : outParam <| Type*) [TopologicalSpace α] [Preorder α]
-    [TopologicalSpace β] [Preorder β] extends ContinuousOrderHomClass F α β where
+    [TopologicalSpace β] [Preorder β] [NDFunLike F α β]
+    extends ContinuousOrderHomClass F α β : Prop where
   exists_map_eq_of_map_le (f : F) ⦃a : α⦄ ⦃b : β⦄ : f a ≤ b → ∃ c, a ≤ c ∧ f c = b
 #align esakia_hom_class EsakiaHomClass
 
 end
 
 export PseudoEpimorphismClass (exists_map_eq_of_map_le)
+
+section Hom
+
+variable [NDFunLike F α β]
 
 -- See note [lower instance priority]
 instance (priority := 100) PseudoEpimorphismClass.toTopHomClass [PartialOrder α] [OrderTop α]
@@ -77,13 +83,6 @@ instance (priority := 100) PseudoEpimorphismClass.toTopHomClass [PartialOrder α
     let ⟨b, h⟩ := exists_map_eq_of_map_le f (@le_top _ _ _ <| f ⊤)
     rw [← top_le_iff.1 h.1, h.2]
 #align pseudo_epimorphism_class.to_top_hom_class PseudoEpimorphismClass.toTopHomClass
-
--- See note [lower instance priority]
-instance (priority := 100) OrderIsoClass.toPseudoEpimorphismClass [Preorder α] [Preorder β]
-    [OrderIsoClass F α β] : PseudoEpimorphismClass F α β where
-  exists_map_eq_of_map_le f _a b h :=
-    ⟨EquivLike.inv f b, (le_map_inv_iff f).2 h, EquivLike.right_inv _ _⟩
-#align order_iso_class.to_pseudo_epimorphism_class OrderIsoClass.toPseudoEpimorphismClass
 
 -- See note [lower instance priority]
 instance (priority := 100) EsakiaHomClass.toPseudoEpimorphismClass [TopologicalSpace α] [Preorder α]
@@ -100,6 +99,15 @@ instance [TopologicalSpace α] [Preorder α] [TopologicalSpace β] [Preorder β]
     [EsakiaHomClass F α β] : CoeTC F (EsakiaHom α β) :=
   ⟨fun f => ⟨f, exists_map_eq_of_map_le f⟩⟩
 
+end Hom
+
+-- See note [lower instance priority]
+instance (priority := 100) OrderIsoClass.toPseudoEpimorphismClass [Preorder α] [Preorder β]
+    [EquivLike F α β] [OrderIsoClass F α β] : PseudoEpimorphismClass F α β where
+  exists_map_eq_of_map_le f _a b h :=
+    ⟨EquivLike.inv f b, (le_map_inv_iff f).2 h, EquivLike.right_inv _ _⟩
+#align order_iso_class.to_pseudo_epimorphism_class OrderIsoClass.toPseudoEpimorphismClass
+
 /-! ### Pseudo-epimorphisms -/
 
 
@@ -107,19 +115,16 @@ namespace PseudoEpimorphism
 
 variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ]
 
-instance : PseudoEpimorphismClass (PseudoEpimorphism α β) α β where
+instance : NDFunLike (PseudoEpimorphism α β) α β where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨_, _⟩, _⟩ := f
     obtain ⟨⟨_, _⟩, _⟩ := g
     congr
+
+instance : PseudoEpimorphismClass (PseudoEpimorphism α β) α β where
   map_rel f _ _ h := f.monotone' h
   exists_map_eq_of_map_le := PseudoEpimorphism.exists_map_eq_of_map_le'
-
-/-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`
-directly. -/
-instance : CoeFun (PseudoEpimorphism α β) fun _ => α → β :=
-  FunLike.hasCoeToFun
 
 @[simp]
 theorem toOrderHom_eq_coe (f : PseudoEpimorphism α β) : ⇑f.toOrderHom = f := rfl
@@ -234,20 +239,17 @@ def toPseudoEpimorphism (f : EsakiaHom α β) : PseudoEpimorphism α β :=
   { f with }
 #align esakia_hom.to_pseudo_epimorphism EsakiaHom.toPseudoEpimorphism
 
-instance : EsakiaHomClass (EsakiaHom α β) α β where
+instance : NDFunLike (EsakiaHom α β) α β where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := f
     obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := g
     congr
+
+instance : EsakiaHomClass (EsakiaHom α β) α β where
   map_monotone f := f.monotone'
   map_continuous f := f.continuous_toFun
   exists_map_eq_of_map_le f := f.exists_map_eq_of_map_le'
-
-/-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`
-directly. -/
-instance : CoeFun (EsakiaHom α β) fun _ => α → β :=
-  FunLike.hasCoeToFun
 
 -- Porting note: introduced this to appease simpNF linter with `toFun_eq_coe`
 @[simp]

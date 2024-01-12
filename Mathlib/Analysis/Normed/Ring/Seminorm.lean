@@ -78,7 +78,7 @@ section NonUnitalRing
 
 variable [NonUnitalRing R]
 
-instance ringSeminormClass : RingSeminormClass (RingSeminorm R) R ℝ where
+instance funLike : NDFunLike (RingSeminorm R) R ℝ where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
@@ -86,15 +86,13 @@ instance ringSeminormClass : RingSeminormClass (RingSeminorm R) R ℝ where
     congr
     ext x
     exact congr_fun h x
+
+instance ringSeminormClass : RingSeminormClass (RingSeminorm R) R ℝ where
   map_zero f := f.map_zero'
   map_add_le_add f := f.add_le'
   map_mul_le_mul f := f.mul_le'
   map_neg_eq_map f := f.neg'
 #align ring_seminorm.ring_seminorm_class RingSeminorm.ringSeminormClass
-
-/-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`. -/
-instance : CoeFun (RingSeminorm R) fun _ => R → ℝ :=
-  FunLike.hasCoeToFun
 
 @[simp]
 theorem toFun_eq_coe (p : RingSeminorm R) : (p.toAddGroupSeminorm : R → ℝ) = p :=
@@ -176,7 +174,7 @@ namespace RingNorm
 
 variable [NonUnitalRing R]
 
-instance ringNormClass : RingNormClass (RingNorm R) R ℝ where
+instance funLike : NDFunLike (RingNorm R) R ℝ where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
@@ -184,6 +182,8 @@ instance ringNormClass : RingNormClass (RingNorm R) R ℝ where
     congr
     ext x
     exact congr_fun h x
+
+instance ringNormClass : RingNormClass (RingNorm R) R ℝ where
   map_zero f := f.map_zero'
   map_add_le_add f := f.add_le'
   map_mul_le_mul f := f.mul_le'
@@ -191,14 +191,9 @@ instance ringNormClass : RingNormClass (RingNorm R) R ℝ where
   eq_zero_of_map_eq_zero f := f.eq_zero_of_map_eq_zero' _
 #align ring_norm.ring_norm_class RingNorm.ringNormClass
 
-/-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`. -/
-instance : CoeFun (RingNorm R) fun _ => R → ℝ :=
-  ⟨fun p => p.toFun⟩
-
--- Porting note: This is a syntactic tautology in Lean 4
--- @[simp]
--- theorem toFun_eq_coe (p : RingNorm R) : p.toFun = p := rfl
-#noalign ring_norm.to_fun_eq_coe
+-- Porting note: This is no longer `@[simp]` in Lean 4
+theorem toFun_eq_coe (p : RingNorm R) : p.toFun = p := rfl
+#align ring_norm.to_fun_eq_coe RingNorm.toFun_eq_coe
 
 @[ext]
 theorem ext {p q : RingNorm R} : (∀ x, p x = q x) → p = q :=
@@ -226,7 +221,7 @@ namespace MulRingSeminorm
 
 variable [NonAssocRing R]
 
-instance mulRingSeminormClass : MulRingSeminormClass (MulRingSeminorm R) R ℝ where
+instance funLike : NDFunLike (MulRingSeminorm R) R ℝ where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
@@ -234,16 +229,14 @@ instance mulRingSeminormClass : MulRingSeminormClass (MulRingSeminorm R) R ℝ w
     congr
     ext x
     exact congr_fun h x
+
+instance mulRingSeminormClass : MulRingSeminormClass (MulRingSeminorm R) R ℝ where
   map_zero f := f.map_zero'
   map_one f := f.map_one'
   map_add_le_add f := f.add_le'
   map_mul f := f.map_mul'
   map_neg_eq_map f := f.neg'
 #align mul_ring_seminorm.mul_ring_seminorm_class MulRingSeminorm.mulRingSeminormClass
-
-/-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`. -/
-instance : CoeFun (MulRingSeminorm R) fun _ => R → ℝ :=
-  FunLike.hasCoeToFun
 
 @[simp]
 theorem toFun_eq_coe (p : MulRingSeminorm R) : (p.toAddGroupSeminorm : R → ℝ) = p :=
@@ -283,7 +276,7 @@ namespace MulRingNorm
 
 variable [NonAssocRing R]
 
-instance mulRingNormClass : MulRingNormClass (MulRingNorm R) R ℝ where
+instance funLike : NDFunLike (MulRingNorm R) R ℝ where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
@@ -291,6 +284,8 @@ instance mulRingNormClass : MulRingNormClass (MulRingNorm R) R ℝ where
     congr
     ext x
     exact congr_fun h x
+
+instance mulRingNormClass : MulRingNormClass (MulRingNorm R) R ℝ where
   map_zero f := f.map_zero'
   map_one f := f.map_one'
   map_add_le_add f := f.add_le'
@@ -299,14 +294,9 @@ instance mulRingNormClass : MulRingNormClass (MulRingNorm R) R ℝ where
   eq_zero_of_map_eq_zero f := f.eq_zero_of_map_eq_zero' _
 #align mul_ring_norm.mul_ring_norm_class MulRingNorm.mulRingNormClass
 
-/-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`. -/
-instance : CoeFun (MulRingNorm R) fun _ => R → ℝ :=
-  ⟨fun p => p.toFun⟩
-
--- Porting note: This is a syntactic tautology in Lean 4
--- @[simp]
--- theorem toFun_eq_coe (p : MulRingNorm R) : p.toFun = p := rfl
-#noalign mul_ring_norm.to_fun_eq_coe
+-- Porting note: This no longer in `@[simp]`-normal form in Lean 4
+theorem toFun_eq_coe (p : MulRingNorm R) : p.toFun = p := rfl
+#align mul_ring_norm.to_fun_eq_coe MulRingNorm.toFun_eq_coe
 
 @[ext]
 theorem ext {p q : MulRingNorm R} : (∀ x, p x = q x) → p = q :=

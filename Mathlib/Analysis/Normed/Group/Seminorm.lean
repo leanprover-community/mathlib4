@@ -124,8 +124,9 @@ structure NonarchAddGroupNorm (G : Type*) [AddGroup G] extends NonarchAddGroupSe
 the additive group `α`.
 
 You should extend this class when you extend `NonarchAddGroupSeminorm`. -/
-class NonarchAddGroupSeminormClass (F : Type*) (α : outParam <| Type*) [AddGroup α] extends
-  NonarchimedeanHomClass F α ℝ where
+class NonarchAddGroupSeminormClass (F : Type*) (α : outParam <| Type*) [AddGroup α]
+    [NDFunLike F α ℝ]
+    extends NonarchimedeanHomClass F α ℝ : Prop where
   /-- The image of zero is zero. -/
   protected map_zero (f : F) : f 0 = 0
   /-- The seminorm is invariant under negation. -/
@@ -136,15 +137,16 @@ class NonarchAddGroupSeminormClass (F : Type*) (α : outParam <| Type*) [AddGrou
 additive group `α`.
 
 You should extend this class when you extend `NonarchAddGroupNorm`. -/
-class NonarchAddGroupNormClass (F : Type*) (α : outParam <| Type*) [AddGroup α] extends
-  NonarchAddGroupSeminormClass F α where
+class NonarchAddGroupNormClass (F : Type*) (α : outParam <| Type*) [AddGroup α]
+    [NDFunLike F α ℝ]
+    extends NonarchAddGroupSeminormClass F α : Prop where
   /-- If the image under the norm is zero, then the argument is zero. -/
   protected eq_zero_of_map_eq_zero (f : F) {a : α} : f a = 0 → a = 0
 #align nonarch_add_group_norm_class NonarchAddGroupNormClass
 
 section NonarchAddGroupSeminormClass
 
-variable [AddGroup E] [NonarchAddGroupSeminormClass F E] (f : F) (x y : E)
+variable [AddGroup E] [NDFunLike F E ℝ] [NonarchAddGroupSeminormClass F E] (f : F) (x y : E)
 
 theorem map_sub_le_max : f (x - y) ≤ max (f x) (f y) := by
   rw [sub_eq_add_neg, ← NonarchAddGroupSeminormClass.map_neg_eq_map' f y]
@@ -152,6 +154,8 @@ theorem map_sub_le_max : f (x - y) ≤ max (f x) (f y) := by
 #align map_sub_le_max map_sub_le_max
 
 end NonarchAddGroupSeminormClass
+
+variable [NDFunLike F E ℝ]
 
 -- See note [lower instance priority]
 instance (priority := 100) NonarchAddGroupSeminormClass.toAddGroupSeminormClass [AddGroup E]
@@ -185,10 +189,14 @@ section Group
 variable [Group E] [Group F] [Group G] {p q : GroupSeminorm E}
 
 @[to_additive]
-instance groupSeminormClass : GroupSeminormClass (GroupSeminorm E) E ℝ
+instance funLike : NDFunLike (GroupSeminorm E) E ℝ
     where
   coe f := f.toFun
   coe_injective' f g h := by cases f; cases g; congr
+
+@[to_additive]
+instance groupSeminormClass : GroupSeminormClass (GroupSeminorm E) E ℝ
+    where
   map_one_eq_zero f := f.map_one'
   map_mul_le_add f := f.mul_le'
   map_inv_eq_map f := f.inv'
@@ -504,10 +512,13 @@ section AddGroup
 
 variable [AddGroup E] [AddGroup F] [AddGroup G] {p q : NonarchAddGroupSeminorm E}
 
-instance nonarchAddGroupSeminormClass : NonarchAddGroupSeminormClass (NonarchAddGroupSeminorm E) E
+instance funLike : NDFunLike (NonarchAddGroupSeminorm E) E ℝ
     where
   coe f := f.toFun
   coe_injective' f g h := by obtain ⟨⟨_, _⟩, _, _⟩ := f; cases g; congr
+
+instance nonarchAddGroupSeminormClass : NonarchAddGroupSeminormClass (NonarchAddGroupSeminorm E) E
+    where
   map_add_le_max f := f.add_le_max'
   map_zero f := f.map_zero'
   map_neg_eq_map' f := f.neg'
@@ -741,10 +752,14 @@ section Group
 variable [Group E] [Group F] [Group G] {p q : GroupNorm E}
 
 @[to_additive]
-instance groupNormClass : GroupNormClass (GroupNorm E) E ℝ
+instance funLike : NDFunLike (GroupNorm E) E ℝ
     where
   coe f := f.toFun
   coe_injective' f g h := by obtain ⟨⟨_, _, _, _⟩, _⟩ := f; cases g; congr
+
+@[to_additive]
+instance groupNormClass : GroupNormClass (GroupNorm E) E ℝ
+    where
   map_one_eq_zero f := f.map_one'
   map_mul_le_add f := f.mul_le'
   map_inv_eq_map f := f.inv'
@@ -896,10 +911,13 @@ section AddGroup
 
 variable [AddGroup E] [AddGroup F] {p q : NonarchAddGroupNorm E}
 
-instance nonarchAddGroupNormClass : NonarchAddGroupNormClass (NonarchAddGroupNorm E) E
+instance funLike : NDFunLike (NonarchAddGroupNorm E) E ℝ
     where
   coe f := f.toFun
   coe_injective' f g h := by obtain ⟨⟨⟨_, _⟩, _, _⟩, _⟩ := f; cases g; congr
+
+instance nonarchAddGroupNormClass : NonarchAddGroupNormClass (NonarchAddGroupNorm E) E
+    where
   map_add_le_max f := f.add_le_max'
   map_zero f := f.map_zero'
   map_neg_eq_map' f := f.neg'

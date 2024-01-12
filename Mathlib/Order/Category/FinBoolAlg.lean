@@ -78,6 +78,9 @@ instance concreteCategory : ConcreteCategory FinBoolAlg :=
   InducedCategory.concreteCategory FinBoolAlg.toBoolAlg
 #align FinBoolAlg.concrete_category FinBoolAlg.concreteCategory
 
+instance instFunLike {X Y : FinBoolAlg} : NDFunLike (X ⟶ Y) X Y :=
+  BoundedLatticeHom.instFunLike
+
 -- Porting note: added
 -- TODO: in all of the earlier bundled order categories,
 -- we should be constructing instances analogous to this,

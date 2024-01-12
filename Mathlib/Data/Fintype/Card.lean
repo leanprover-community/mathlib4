@@ -511,7 +511,7 @@ theorem card_range_le {α β : Type*} (f : α → β) [Fintype α] [Fintype (Set
   Fintype.card_le_of_surjective (fun a => ⟨f a, by simp⟩) fun ⟨_, a, ha⟩ => ⟨a, by simpa using ha⟩
 #align fintype.card_range_le Fintype.card_range_le
 
-theorem card_range {α β F : Type*} [EmbeddingLike F α β] (f : F) [Fintype α]
+theorem card_range {α β F : Type*} [NDFunLike F α β] [EmbeddingLike F α β] (f : F) [Fintype α]
     [Fintype (Set.range f)] : Fintype.card (Set.range f) = Fintype.card α :=
   Eq.symm <| Fintype.card_congr <| Equiv.ofInjective _ <| EmbeddingLike.injective f
 #align fintype.card_range Fintype.card_range

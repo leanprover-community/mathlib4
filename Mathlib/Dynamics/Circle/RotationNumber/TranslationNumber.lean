@@ -133,9 +133,11 @@ structure CircleDeg1Lift extends ℝ →o ℝ : Type where
 
 namespace CircleDeg1Lift
 
-instance : OrderHomClass CircleDeg1Lift ℝ ℝ where
+instance : NDFunLike CircleDeg1Lift ℝ ℝ where
   coe f := f.toFun
   coe_injective' | ⟨⟨_, _⟩, _⟩, ⟨⟨_, _⟩, _⟩, rfl => rfl
+
+instance : OrderHomClass CircleDeg1Lift ℝ ℝ where
   map_rel f _ _ h := f.monotone' h
 
 @[simp] theorem coe_mk (f h) : ⇑(mk f h) = f := rfl

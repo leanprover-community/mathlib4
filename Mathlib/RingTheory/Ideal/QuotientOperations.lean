@@ -164,7 +164,7 @@ lemma ker_Pi_Quotient_mk {ι : Type*} (I : ι → Ideal R) :
 theorem bot_quotient_isMaximal_iff (I : Ideal R) : (⊥ : Ideal (R ⧸ I)).IsMaximal ↔ I.IsMaximal :=
   ⟨fun hI =>
     @mk_ker _ _ I ▸
-      @comap_isMaximal_of_surjective _ _ _ _ _ _ (Quotient.mk I) Quotient.mk_surjective ⊥ hI,
+      comap_isMaximal_of_surjective (Quotient.mk I) Quotient.mk_surjective (K := ⊥) (H := hI),
     fun hI => by
     skip
     letI := Quotient.field I
@@ -221,7 +221,6 @@ lemma quotientInfToPiQuotient_surj [Fintype ι] {I : ι → Ideal R}
     replace he : ∀ j, j ≠ i → e ∈ I j := by simpa using he
     refine ⟨e, ?_, ?_⟩
     · simp [eq_sub_of_add_eq' hue, map_sub, eq_zero_iff_mem.mpr hu]
-      rfl
     · exact fun j hj ↦ eq_zero_iff_mem.mpr (he j hj)
   choose e he using key
   use mk _ (∑ i, f i*e i)
@@ -497,12 +496,10 @@ theorem quotientMap_comp_mk {J : Ideal R} {I : Ideal S} {f : R →+* S} (H : J �
 def quotientEquiv (I : Ideal R) (J : Ideal S) (f : R ≃+* S) (hIJ : J = I.map (f : R →+* S)) :
     R ⧸ I ≃+* S ⧸ J :=
   {
-    quotientMap J (↑f)
-      (by
-        rw [hIJ]
-        exact
-          @le_comap_map _ S _ _ _ _ _
-            _) with
+    quotientMap J (↑f) (by
+      rw [hIJ]
+      exact le_comap_map)
+  with
     invFun :=
       quotientMap I (↑f.symm)
         (by

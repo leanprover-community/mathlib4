@@ -57,15 +57,14 @@ Continuing the example above:
 ```
 /-- `MyHomClass F A B` states that `F` is a type of `MyClass.op`-preserving morphisms.
 You should extend this class when you extend `MyHom`. -/
-class MyHomClass (F : Type*) (A B : outParam <| Type*) [MyClass A] [MyClass B]
-  extends FunLike F A (λ _, B) :=
+class MyHomClass (F A B : Type*) [MyClass A] [MyClass B] [FunLike F A (fun _ => B)] : Prop :=
 (map_op : ∀ (f : F) (x y : A), f (MyClass.op x y) = MyClass.op (f x) (f y))
 
 @[simp] lemma map_op {F A B : Type*} [MyClass A] [MyClass B] [MyHomClass F A B]
   (f : F) (x y : A) : f (MyClass.op x y) = MyClass.op (f x) (f y) :=
 MyHomClass.map_op
 
--- You can replace `MyHom.FunLike` with the below instance:
+-- You can add the below instance next to `MyHomClass.instFunLike`:
 instance : MyHomClass (MyHom A B) A B :=
   { coe := MyHom.toFun,
     coe_injective' := λ f g h, by cases f; cases g; congr',
@@ -82,15 +81,15 @@ structure CoolerHom (A B : Type*) [CoolClass A] [CoolClass B]
   extends MyHom A B :=
 (map_cool' : toFun CoolClass.cool = CoolClass.cool)
 
-class CoolerHomClass (F : Type*) (A B : outParam <| Type*) [CoolClass A] [CoolClass B]
+class CoolerHomClass (F A B : Type*) [CoolClass A] [CoolClass B] [FunLike F A (fun _ => B)]
   extends MyHomClass F A B :=
 (map_cool : ∀ (f : F), f CoolClass.cool = CoolClass.cool)
 
-@[simp] lemma map_cool {F A B : Type*} [CoolClass A] [CoolClass B] [CoolerHomClass F A B]
-  (f : F) : f CoolClass.cool = CoolClass.cool :=
+@[simp] lemma map_cool {F A B : Type*} [CoolClass A] [CoolClass B] [FunLike F A (fun _ => B)]
+    [CoolerHomClass F A B] (f : F) :
+    f CoolClass.cool = CoolClass.cool :=
 MyHomClass.map_op
 
--- You can also replace `MyHom.FunLike` with the below instance:
 instance : CoolerHomClass (CoolHom A B) A B :=
   { coe := CoolHom.toFun,
     coe_injective' := λ f g h, by cases f; cases g; congr',
@@ -104,7 +103,8 @@ Then any declaration taking a specific type of morphisms as parameter can instea
 class you just defined:
 ```
 -- Compare with: lemma do_something (f : MyHom A B) : sorry := sorry
-lemma do_something {F : Type*} [MyHomClass F A B] (f : F) : sorry := sorry
+lemma do_something {F : Type*} [FunLike F A (fun _ => B)] [MyHomClass F A B] (f : F) : sorry :=
+  sorry
 ```
 
 This means anything set up for `MyHom`s will automatically work for `CoolerHomClass`es,
@@ -205,9 +205,15 @@ end Dependent
 
 section NonDependent
 
-/-! ### `FunLike F α (λ _, β)` where `β` does not depend on `a : α` -/
+/-! ### `FunLike F α (fun _ => β)` where `β` does not depend on `a : α` -/
 
 variable {F α β : Sort*} [i : FunLike F α fun _ ↦ β]
+
+/-- `NDFunLike` is the Non-Dependent version of `FunLike`.
+
+TODO: switch around the names: `FunLike` → `DFunLike` and `NDFunLike` → `Funlike`.
+-/
+abbrev NDFunLike F α β := FunLike F α fun _ => β
 
 namespace FunLike
 

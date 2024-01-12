@@ -296,7 +296,8 @@ theorem eval_unique (φ : R[X] →ₐ[R] A) (p) : φ p = eval₂ (algebraMap R A
   rw [← aeval_def, aeval_algHom, aeval_X_left, AlgHom.comp_id]
 #align polynomial.eval_unique Polynomial.eval_unique
 
-theorem aeval_algHom_apply {F : Type*} [AlgHomClass F R A B] (f : F) (x : A) (p : R[X]) :
+theorem aeval_algHom_apply {F : Type*} [NDFunLike F A B] [AlgHomClass F R A B]
+    (f : F) (x : A) (p : R[X]) :
     aeval (f x) p = f (aeval x p) := by
   refine' Polynomial.induction_on p (by simp [AlgHomClass.commutes]) (fun p q hp hq => _)
     (by simp [AlgHomClass.commutes])

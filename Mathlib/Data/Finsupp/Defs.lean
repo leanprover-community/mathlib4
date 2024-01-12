@@ -1233,7 +1233,8 @@ theorem mapRange_add [AddZeroClass N] {f : M → N} {hf : f 0 = 0}
   ext fun _ => by simp only [hf', add_apply, mapRange_apply]
 #align finsupp.map_range_add Finsupp.mapRange_add
 
-theorem mapRange_add' [AddZeroClass N] [AddMonoidHomClass β M N] {f : β} (v₁ v₂ : α →₀ M) :
+theorem mapRange_add' [AddZeroClass N] [NDFunLike β M N] [AddMonoidHomClass β M N]
+    {f : β} (v₁ v₂ : α →₀ M) :
     mapRange f (map_zero f) (v₁ + v₂) = mapRange f (map_zero f) v₁ + mapRange f (map_zero f) v₂ :=
   mapRange_add (map_add f) v₁ v₂
 #align finsupp.map_range_add' Finsupp.mapRange_add'
@@ -1298,8 +1299,9 @@ theorem mapRange_neg [NegZeroClass G] [NegZeroClass H] {f : G → H} {hf : f 0 =
   ext fun _ => by simp only [hf', neg_apply, mapRange_apply]
 #align finsupp.map_range_neg Finsupp.mapRange_neg
 
-theorem mapRange_neg' [AddGroup G] [SubtractionMonoid H] [AddMonoidHomClass β G H] {f : β}
-    (v : α →₀ G) : mapRange f (map_zero f) (-v) = -mapRange f (map_zero f) v :=
+theorem mapRange_neg' [AddGroup G] [SubtractionMonoid H] [NDFunLike β G H] [AddMonoidHomClass β G H]
+    {f : β} (v : α →₀ G) :
+    mapRange f (map_zero f) (-v) = -mapRange f (map_zero f) v :=
   mapRange_neg (map_neg f) v
 #align finsupp.map_range_neg' Finsupp.mapRange_neg'
 
@@ -1320,8 +1322,8 @@ theorem mapRange_sub [SubNegZeroMonoid G] [SubNegZeroMonoid H] {f : G → H} {hf
   ext fun _ => by simp only [hf', sub_apply, mapRange_apply]
 #align finsupp.map_range_sub Finsupp.mapRange_sub
 
-theorem mapRange_sub' [AddGroup G] [SubtractionMonoid H] [AddMonoidHomClass β G H] {f : β}
-    (v₁ v₂ : α →₀ G) :
+theorem mapRange_sub' [AddGroup G] [SubtractionMonoid H] [NDFunLike β G H] [AddMonoidHomClass β G H]
+    {f : β} (v₁ v₂ : α →₀ G) :
     mapRange f (map_zero f) (v₁ - v₂) = mapRange f (map_zero f) v₁ - mapRange f (map_zero f) v₂ :=
   mapRange_sub (map_sub f) v₁ v₂
 #align finsupp.map_range_sub' Finsupp.mapRange_sub'

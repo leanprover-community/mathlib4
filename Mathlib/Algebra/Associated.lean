@@ -79,8 +79,9 @@ theorem not_prime_one : ¬Prime (1 : α) := fun h => h.not_unit isUnit_one
 
 section Map
 
-variable [CommMonoidWithZero β] {F : Type*} {G : Type*} [MonoidWithZeroHomClass F α β]
-  [MulHomClass G β α] (f : F) (g : G) {p : α}
+variable [CommMonoidWithZero β] {F : Type*} {G : Type*} [NDFunLike F α β]
+variable [MonoidWithZeroHomClass F α β] [NDFunLike G β α] [MulHomClass G β α]
+variable (f : F) (g : G) {p : α}
 
 theorem comap_prime (hinv : ∀ a, g (f a : β) = a) (hp : Prime (f p)) : Prime p :=
   ⟨fun h => hp.1 <| by simp [h], fun h => hp.2.1 <| h.map f, fun a b h => by

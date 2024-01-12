@@ -168,7 +168,7 @@ theorem pureOneHom_apply (a : α) : pureOneHom a = pure a :=
 variable [One β]
 
 @[to_additive] -- porting note: removed `simp` attribute because `simpNF` says it can prove it.
-protected theorem map_one [OneHomClass F α β] (φ : F) : map φ 1 = 1 := by
+protected theorem map_one [NDFunLike F α β] [OneHomClass F α β] (φ : F) : map φ 1 = 1 := by
   rw [Filter.map_one', map_one, pure_one]
 #align filter.map_one Filter.map_one
 #align filter.map_zero Filter.map_zero
@@ -400,7 +400,8 @@ instance covariant_swap_mul : CovariantClass (Filter α) (Filter α) (swap (· *
 #align filter.covariant_swap_add Filter.covariant_swap_add
 
 @[to_additive]
-protected theorem map_mul [MulHomClass F α β] (m : F) : (f₁ * f₂).map m = f₁.map m * f₂.map m :=
+protected theorem map_mul [NDFunLike F α β] [MulHomClass F α β] (m : F) :
+    (f₁ * f₂).map m = f₁.map m * f₂.map m :=
   map_map₂_distrib <| map_mul m
 #align filter.map_mul Filter.map_mul
 #align filter.map_add Filter.map_add
@@ -626,6 +627,8 @@ protected def mulOneClass : MulOneClass (Filter α) where
 
 scoped[Pointwise] attribute [instance] Filter.semigroup Filter.addSemigroup
   Filter.commSemigroup Filter.addCommSemigroup Filter.mulOneClass Filter.addZeroClass
+
+variable [NDFunLike F α β]
 
 /-- If `φ : α →* β` then `mapMonoidHom φ` is the monoid homomorphism
 `Filter α →* Filter β` induced by `map φ`. -/
@@ -862,8 +865,8 @@ end MulZeroClass
 
 section Group
 
-variable [Group α] [DivisionMonoid β] [MonoidHomClass F α β] (m : F) {f g f₁ g₁ : Filter α}
-  {f₂ g₂ : Filter β}
+variable [Group α] [DivisionMonoid β] [NDFunLike F α β] [MonoidHomClass F α β]
+  (m : F) {f g f₁ g₁ : Filter α} {f₂ g₂ : Filter β}
 
 /-! Note that `Filter α` is not a group because `f / f ≠ 1` in general -/
 

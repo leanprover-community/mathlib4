@@ -46,7 +46,8 @@ notation:50 A " ≃ₐ[" R "] " A' => AlgEquiv R A A'
 /-- `AlgEquivClass F R A B` states that `F` is a type of algebra structure preserving
   equivalences. You should extend this class when you extend `AlgEquiv`. -/
 class AlgEquivClass (F : Type*) (R A B : outParam (Type*)) [CommSemiring R] [Semiring A]
-  [Semiring B] [Algebra R A] [Algebra R B] extends RingEquivClass F A B where
+    [Semiring B] [Algebra R A] [Algebra R B] [EquivLike F A B]
+    extends RingEquivClass F A B : Prop where
   /-- An equivalence of algebras commutes with the action of scalars. -/
   commutes : ∀ (f : F) (r : R), f (algebraMap R A r) = algebraMap R B r
 #align alg_equiv_class AlgEquivClass
@@ -57,18 +58,14 @@ namespace AlgEquivClass
 
 -- See note [lower instance priority]
 instance (priority := 100) toAlgHomClass (F R A B : Type*) [CommSemiring R] [Semiring A]
-    [Semiring B] [Algebra R A] [Algebra R B] [h : AlgEquivClass F R A B] :
+    [Semiring B] [Algebra R A] [Algebra R B] [EquivLike F A B] [h : AlgEquivClass F R A B] :
     AlgHomClass F R A B :=
-  { h with
-    coe := (⇑)
-    coe_injective' := FunLike.coe_injective
-    map_zero := map_zero
-    map_one := map_one }
+  { h with }
 #align alg_equiv_class.to_alg_hom_class AlgEquivClass.toAlgHomClass
 
 instance (priority := 100) toLinearEquivClass (F R A B : Type*) [CommSemiring R]
     [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
-    [h : AlgEquivClass F R A B] : LinearEquivClass F R A B :=
+    [EquivLike F A B] [h : AlgEquivClass F R A B] : LinearEquivClass F R A B :=
   { h with map_smulₛₗ := fun f => map_smulₛₗ f }
 #align alg_equiv_class.to_linear_equiv_class AlgEquivClass.toLinearEquivClass
 
@@ -76,11 +73,11 @@ instance (priority := 100) toLinearEquivClass (F R A B : Type*) [CommSemiring R]
 This is declared as the default coercion from `F` to `A ≃ₐ[R] B`. -/
 @[coe]
 def toAlgEquiv {F R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A]
-    [Algebra R B] [AlgEquivClass F R A B] (f : F) : A ≃ₐ[R] B :=
+    [Algebra R B] [EquivLike F A B] [AlgEquivClass F R A B] (f : F) : A ≃ₐ[R] B :=
   { (f : A ≃ B), (f : A ≃+* B) with commutes' := commutes f }
 
 instance (F R A B : Type*) [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
-    [AlgEquivClass F R A B] : CoeTC F (A ≃ₐ[R] B) :=
+    [EquivLike F A B] [AlgEquivClass F R A B] : CoeTC F (A ≃ₐ[R] B) :=
   ⟨toAlgEquiv⟩
 end AlgEquivClass
 
@@ -101,25 +98,6 @@ variable [Algebra R A₁'] [Algebra R A₂'] [Algebra R A₃']
 
 variable (e : A₁ ≃ₐ[R] A₂)
 
-instance : AlgEquivClass (A₁ ≃ₐ[R] A₂) R A₁ A₂ where
-  coe f := f.toFun
-  inv f := f.invFun
-  coe_injective' f g h₁ h₂ := by
-    obtain ⟨⟨f,_⟩,_⟩ := f
-    obtain ⟨⟨g,_⟩,_⟩ := g
-    congr
-  map_add f := f.map_add'
-  map_mul f := f.map_mul'
-  commutes f := f.commutes'
-  left_inv f := f.left_inv
-  right_inv f := f.right_inv
-
--- Porting note: replaced with EquivLike instance
--- /-- Helper instance for when there's too many metavariables to apply
--- `fun_like.has_coe_to_fun` directly. -/
--- instance : CoeFun (A₁ ≃ₐ[R] A₂) fun _ => A₁ → A₂ :=
---   ⟨AlgEquiv.toFun⟩
-
 instance : EquivLike (A₁ ≃ₐ[R] A₂) A₁ A₂ where
   coe f := f.toFun
   inv f := f.invFun
@@ -129,6 +107,16 @@ instance : EquivLike (A₁ ≃ₐ[R] A₂) A₁ A₂ where
     obtain ⟨⟨f,_⟩,_⟩ := f
     obtain ⟨⟨g,_⟩,_⟩ := g
     congr
+
+/-- Helper instance since the coercion is not always found. -/
+instance : NDFunLike (A₁ ≃ₐ[R] A₂) A₁ A₂ where
+  coe := FunLike.coe
+  coe_injective' := FunLike.coe_injective'
+
+instance : AlgEquivClass (A₁ ≃ₐ[R] A₂) R A₁ A₂ where
+  map_add f := f.map_add'
+  map_mul f := f.map_mul'
+  commutes f := f.commutes'
 
 -- Porting note: the default simps projection was `e.toEquiv.toFun`, it should be `FunLike.coe`
 /-- See Note [custom simps projection] -/
@@ -142,7 +130,7 @@ def Simps.toEquiv (e : A₁ ≃ₐ[R] A₂) : A₁ ≃ A₂ :=
 
 -- Porting note: `protected` used to be an attribute below
 @[simp]
-protected theorem coe_coe {F : Type*} [AlgEquivClass F R A₁ A₂] (f : F) :
+protected theorem coe_coe {F : Type*} [EquivLike F A₁ A₂] [AlgEquivClass F R A₁ A₂] (f : F) :
     ⇑(f : A₁ ≃ₐ[R] A₂) = f :=
   rfl
 #align alg_equiv.coe_coe AlgEquiv.coe_coe
@@ -341,13 +329,15 @@ def Simps.symm_apply (e : A₁ ≃ₐ[R] A₂) : A₂ → A₁ :=
 initialize_simps_projections AlgEquiv (toFun → apply, invFun → symm_apply)
 
 --@[simp] -- Porting note: simp can prove this once symm_mk is introduced
-theorem coe_apply_coe_coe_symm_apply {F : Type*} [AlgEquivClass F R A₁ A₂] (f : F) (x : A₂) :
+theorem coe_apply_coe_coe_symm_apply {F : Type*} [EquivLike F A₁ A₂] [AlgEquivClass F R A₁ A₂]
+    (f : F) (x : A₂) :
     f ((f : A₁ ≃ₐ[R] A₂).symm x) = x :=
   EquivLike.right_inv f x
 #align alg_equiv.coe_apply_coe_coe_symm_apply AlgEquiv.coe_apply_coe_coe_symm_apply
 
 --@[simp] -- Porting note: simp can prove this once symm_mk is introduced
-theorem coe_coe_symm_apply_coe_apply {F : Type*} [AlgEquivClass F R A₁ A₂] (f : F) (x : A₁) :
+theorem coe_coe_symm_apply_coe_apply {F : Type*} [EquivLike F A₁ A₂] [AlgEquivClass F R A₁ A₂]
+    (f : F) (x : A₁) :
     (f : A₁ ≃ₐ[R] A₂).symm (f x) = x :=
   EquivLike.left_inv f x
 #align alg_equiv.coe_coe_symm_apply_coe_apply AlgEquiv.coe_coe_symm_apply_coe_apply

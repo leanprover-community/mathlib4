@@ -127,6 +127,9 @@ instead of linearly increasing the work per `MyIso`-related declaration.
 /-- The class `EquivLike E α β` expresses that terms of type `E` have an
 injective coercion to bijections between `α` and `β`.
 
+Note that this does not directly extend `FunLike`, nor take `FunLike` as a parameter,
+so we can state `coe_injective'` in a nicer way.
+
 This typeclass is used in the definition of the homomorphism typeclasses,
 such as `ZeroEquivClass`, `MulEquivClass`, `MonoidEquivClass`, ....
 -/
@@ -153,10 +156,12 @@ theorem inv_injective : Function.Injective (EquivLike.inv : E → β → α) := 
   coe_injective' e g ((right_inv e).eq_rightInverse (h.symm ▸ left_inv g)) h
 #align equiv_like.inv_injective EquivLike.inv_injective
 
-instance (priority := 100) toEmbeddingLike : EmbeddingLike E α β where
+instance (priority := 100) toFunLike : NDFunLike E α β where
   coe := (coe : E → α → β)
   coe_injective' e g h :=
     coe_injective' e g h ((left_inv e).eq_rightInverse (h.symm ▸ right_inv g))
+
+instance (priority := 100) toEmbeddingLike : EmbeddingLike E α β where
   injective' e := (left_inv e).injective
 
 protected theorem injective (e : E) : Function.Injective e :=

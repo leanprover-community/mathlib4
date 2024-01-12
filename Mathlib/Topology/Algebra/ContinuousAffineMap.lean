@@ -59,15 +59,12 @@ theorem to_affineMap_injective {f g : P →A[R] Q} (h : (f : P →ᵃ[R] Q) = (g
   congr
 #align continuous_affine_map.to_affine_map_injective ContinuousAffineMap.to_affineMap_injective
 
-instance : ContinuousMapClass (P →A[R] Q) P Q where
+instance : NDFunLike (P →A[R] Q) P Q where
   coe f := f.toAffineMap
   coe_injective' _ _ h := to_affineMap_injective <| FunLike.coe_injective h
-  map_continuous := cont
 
-/-- Helper instance for when there's too many metavariables to apply
-`FunLike.hasCoeToFun` directly. -/
-instance : CoeFun (P →A[R] Q) fun _ ↦ P → Q :=
-  FunLike.hasCoeToFun
+instance : ContinuousMapClass (P →A[R] Q) P Q where
+  map_continuous := cont
 
 theorem toFun_eq_coe (f : P →A[R] Q) : f.toFun = ⇑f := rfl
 #align continuous_affine_map.to_fun_eq_coe ContinuousAffineMap.toFun_eq_coe

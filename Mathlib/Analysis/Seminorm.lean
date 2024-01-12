@@ -59,7 +59,7 @@ attribute [nolint docBlame] Seminorm.toAddGroupSeminorm
 
 You should extend this class when you extend `Seminorm`. -/
 class SeminormClass (F : Type*) (𝕜 E : outParam <| Type*) [SeminormedRing 𝕜] [AddGroup E]
-  [SMul 𝕜 E] extends AddGroupSeminormClass F E ℝ where
+  [SMul 𝕜 E] [NDFunLike F E ℝ] extends AddGroupSeminormClass F E ℝ : Prop where
   /-- The seminorm of a scalar multiplication is the product of the absolute value of the scalar
   and the original seminorm. -/
   map_smul_eq_mul (f : F) (a : 𝕜) (x : E) : f (a • x) = ‖a‖ * f x
@@ -117,21 +117,19 @@ section SMul
 
 variable [SMul 𝕜 E]
 
-instance instSeminormClass : SeminormClass (Seminorm 𝕜 E) 𝕜 E where
+instance instFunLike : NDFunLike (Seminorm 𝕜 E) E ℝ where
   coe f := f.toFun
   coe_injective' f g h := by
     rcases f with ⟨⟨_⟩⟩
     rcases g with ⟨⟨_⟩⟩
     congr
+
+instance instSeminormClass : SeminormClass (Seminorm 𝕜 E) 𝕜 E where
   map_zero f := f.map_zero'
   map_add_le_add f := f.add_le'
   map_neg_eq_map f := f.neg'
   map_smul_eq_mul f := f.smul'
 #align seminorm.seminorm_class Seminorm.instSeminormClass
-
-/-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`. -/
-instance instCoeFun : CoeFun (Seminorm 𝕜 E) fun _ => E → ℝ :=
-  FunLike.hasCoeToFun
 
 @[ext]
 theorem ext {p q : Seminorm 𝕜 E} (h : ∀ x, (p : E → ℝ) x = q x) : p = q :=
@@ -312,7 +310,8 @@ def comp (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) : Seminorm
     toFun := fun x => p (f x)
     -- Porting note: the `simp only` below used to be part of the `rw`.
     -- I'm not sure why this change was needed, and am worried by it!
-    smul' := fun _ _ => by simp only [map_smulₛₗ]; rw [map_smul_eq_mul, RingHomIsometric.is_iso] }
+    -- Note: #8386 had to change `map_smulₛₗ` to `map_smulₛₗ _`
+    smul' := fun _ _ => by simp only [map_smulₛₗ _]; rw [map_smul_eq_mul, RingHomIsometric.is_iso] }
 #align seminorm.comp Seminorm.comp
 
 theorem coe_comp (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) : ⇑(p.comp f) = p ∘ f :=

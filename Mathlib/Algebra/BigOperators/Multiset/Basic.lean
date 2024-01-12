@@ -154,14 +154,16 @@ theorem pow_count [DecidableEq α] (a : α) : a ^ s.count a = (s.filter (Eq a)).
 #align multiset.nsmul_count Multiset.nsmul_count
 
 @[to_additive]
-theorem prod_hom [CommMonoid β] (s : Multiset α) {F : Type*} [MonoidHomClass F α β] (f : F) :
+theorem prod_hom [CommMonoid β] (s : Multiset α) {F : Type*} [NDFunLike F α β]
+    [MonoidHomClass F α β] (f : F) :
     (s.map f).prod = f s.prod :=
   Quotient.inductionOn s fun l => by simp only [l.prod_hom f, quot_mk_to_coe, coe_map, coe_prod]
 #align multiset.prod_hom Multiset.prod_hom
 #align multiset.sum_hom Multiset.sum_hom
 
 @[to_additive]
-theorem prod_hom' [CommMonoid β] (s : Multiset ι) {F : Type*} [MonoidHomClass F α β] (f : F)
+theorem prod_hom' [CommMonoid β] (s : Multiset ι) {F : Type*} [NDFunLike F α β]
+    [MonoidHomClass F α β] (f : F)
     (g : ι → α) : (s.map fun i => f <| g i).prod = f (s.map g).prod := by
   convert (s.map g).prod_hom f
   exact (map_map _ _ _).symm
@@ -561,7 +563,8 @@ theorem prod_int_mod (s : Multiset ℤ) (n : ℤ) : s.prod % n = (s.map (· % n)
 end Multiset
 
 @[to_additive]
-theorem map_multiset_prod [CommMonoid α] [CommMonoid β] {F : Type*} [MonoidHomClass F α β] (f : F)
+theorem map_multiset_prod [CommMonoid α] [CommMonoid β] {F : Type*} [NDFunLike F α β]
+    [MonoidHomClass F α β] (f : F)
     (s : Multiset α) : f s.prod = (s.map f).prod :=
   (s.prod_hom f).symm
 #align map_multiset_prod map_multiset_prod

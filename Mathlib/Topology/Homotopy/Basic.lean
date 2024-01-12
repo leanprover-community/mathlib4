@@ -89,7 +89,8 @@ section
 
 You should extend this class when you extend `ContinuousMap.Homotopy`. -/
 class HomotopyLike {X Y : outParam (Type*)} [TopologicalSpace X] [TopologicalSpace Y]
-    (F : Type*) (f₀ f₁ : outParam <| C(X, Y)) extends ContinuousMapClass F (I × X) Y where
+    (F : Type*) (f₀ f₁ : outParam <| C(X, Y)) [NDFunLike F (I × X) Y]
+    extends ContinuousMapClass F (I × X) Y : Prop where
   /-- value of the homotopy at 0 -/
   map_zero_left (f : F) : ∀ x, f (0, x) = f₀ x
   /-- value of the homotopy at 1 -/
@@ -104,21 +105,17 @@ section
 
 variable {f₀ f₁ : C(X, Y)}
 
-instance : HomotopyLike (Homotopy f₀ f₁) f₀ f₁ where
+instance : NDFunLike (Homotopy f₀ f₁) (I × X) Y where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨_, _⟩, _⟩ := f
     obtain ⟨⟨_, _⟩, _⟩ := g
     congr
+
+instance : HomotopyLike (Homotopy f₀ f₁) f₀ f₁ where
   map_continuous f := f.continuous_toFun
   map_zero_left f := f.map_zero_left
   map_one_left f := f.map_one_left
-
-/- porting note: probably not needed anymore
-/-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`
-directly. -/
-instance : CoeFun (Homotopy f₀ f₁) fun _ => I × X → Y :=
-  FunLike.hasCoeToFun -/
 
 @[ext]
 theorem ext {F G : Homotopy f₀ f₁} (h : ∀ x, F x = G x) : F = G :=
@@ -422,10 +419,12 @@ section
 
 variable {f₀ f₁ : C(X, Y)} {P : C(X, Y) → Prop}
 
-instance : HomotopyLike (HomotopyWith f₀ f₁ P) f₀ f₁ where
+instance : NDFunLike (HomotopyWith f₀ f₁ P) (I × X) Y where
   coe F := ⇑F.toHomotopy
   coe_injective'
   | ⟨⟨⟨_, _⟩, _, _⟩, _⟩, ⟨⟨⟨_, _⟩, _, _⟩, _⟩, rfl => rfl
+
+instance : HomotopyLike (HomotopyWith f₀ f₁ P) f₀ f₁ where
   map_continuous F := F.continuous_toFun
   map_zero_left F := F.map_zero_left
   map_one_left F := F.map_one_left

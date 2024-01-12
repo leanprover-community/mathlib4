@@ -233,8 +233,9 @@ theorem eventually_codisjoint_ker_pow_range_pow (f : M →ₗ[R] M) :
   intro x
   rsuffices ⟨y, hy⟩ : ∃ y, (f ^ m) ((f ^ n) y) = (f ^ m) x
   · exact ⟨x - (f ^ n) y, by simp [hy], (f ^ n) y, by simp⟩
+  -- Note: #8386 had to change `mem_range` into `mem_range (f := _)`
   simp_rw [f.pow_apply n, f.pow_apply m, ← iterate_add_apply, ← f.pow_apply (m + n),
-    ← f.pow_apply m, ← mem_range, ← hn _ (n.le_add_left m), hn _ hm]
+    ← f.pow_apply m, ← mem_range (f := _), ← hn _ (n.le_add_left m), hn _ hm]
   exact LinearMap.mem_range_self (f ^ m) x
 #align is_artinian.exists_endomorphism_iterate_ker_sup_range_eq_top LinearMap.eventually_codisjoint_ker_pow_range_pow
 
@@ -408,7 +409,8 @@ theorem isArtinian_span_of_finite (R) {M} [Ring R] [AddCommGroup M] [Module R M]
   isArtinian_of_fg_of_artinian _ (Submodule.fg_def.mpr ⟨A, hA, rfl⟩)
 #align is_artinian_span_of_finite isArtinian_span_of_finite
 
-theorem Function.Surjective.isArtinianRing {R} [Ring R] {S} [Ring S] {F} [RingHomClass F R S]
+theorem Function.Surjective.isArtinianRing {R} [Ring R] {S} [Ring S] {F}
+    [NDFunLike F R S] [RingHomClass F R S]
     {f : F} (hf : Function.Surjective f) [H : IsArtinianRing R] : IsArtinianRing S := by
   rw [isArtinianRing_iff, isArtinian_iff_wellFounded] at H ⊢
   exact (Ideal.orderEmbeddingOfSurjective f hf).wellFounded H

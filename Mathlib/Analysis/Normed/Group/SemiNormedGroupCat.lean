@@ -59,9 +59,11 @@ instance (M : SemiNormedGroupCat) : SeminormedAddCommGroup M :=
   M.str
 
 -- Porting Note: added
-instance toAddMonoidHomClass {V W : SemiNormedGroupCat} : AddMonoidHomClass (V ⟶ W) V W where
+instance funLike {V W : SemiNormedGroupCat} : NDFunLike (V ⟶ W) V W where
   coe := (forget SemiNormedGroupCat).map
   coe_injective' := fun f g h => by cases f; cases g; congr
+
+instance toAddMonoidHomClass {V W : SemiNormedGroupCat} : AddMonoidHomClass (V ⟶ W) V W where
   map_add f := f.map_add'
   map_zero f := (AddMonoidHom.mk' f.toFun f.map_add').map_zero
 

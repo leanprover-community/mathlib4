@@ -94,7 +94,7 @@ theorem le_one_toAddSubmonoid : 1 ≤ (1 : Submodule R A).toAddSubmonoid := by
 #align submodule.le_one_to_add_submonoid Submodule.le_one_toAddSubmonoid
 
 theorem algebraMap_mem (r : R) : algebraMap R A r ∈ (1 : Submodule R A) :=
-  LinearMap.mem_range_self _ _
+  LinearMap.mem_range_self (Algebra.linearMap R A) _
 #align submodule.algebra_map_mem Submodule.algebraMap_mem
 
 @[simp]
@@ -573,7 +573,8 @@ theorem map_unop_pow (n : ℕ) (M : Submodule R Aᵐᵒᵖ) :
 on either side). -/
 @[simps]
 def span.ringHom : SetSemiring A →+* Submodule R A where
-  toFun s := Submodule.span R (SetSemiring.down s)
+  -- Note: the hint `(α := A)` is new in #8386
+  toFun s := Submodule.span R (SetSemiring.down (α := A) s)
   map_zero' := span_empty
   map_one' := one_eq_span.symm
   map_add' := span_union
@@ -644,7 +645,8 @@ variable (R A)
 /-- R-submodules of the R-algebra A are a module over `Set A`. -/
 instance moduleSet : Module (SetSemiring A) (Submodule R A) where
   -- porting note: have to unfold both `HSMul.hSMul` and `SMul.smul`
-  smul s P := span R (SetSemiring.down s) * P
+  -- Note: the hint `(α := A)` is new in #8386
+  smul s P := span R (SetSemiring.down (α := A) s) * P
   smul_add _ _ _ := mul_add _ _ _
   add_smul s t P := by
     simp_rw [HSMul.hSMul, SetSemiring.down_add, span_union, sup_mul, add_eq_sup]
@@ -660,12 +662,12 @@ instance moduleSet : Module (SetSemiring A) (Submodule R A) where
 variable {R A}
 
 theorem smul_def (s : SetSemiring A) (P : Submodule R A) :
-    s • P = span R (SetSemiring.down s) * P :=
+    s • P = span R (SetSemiring.down (α := A) s) * P :=
   rfl
 #align submodule.smul_def Submodule.smul_def
 
 theorem smul_le_smul {s t : SetSemiring A} {M N : Submodule R A}
-    (h₁ : SetSemiring.down s ⊆ SetSemiring.down t)
+    (h₁ : SetSemiring.down (α := A) s ⊆ SetSemiring.down (α := A) t)
     (h₂ : M ≤ N) : s • M ≤ t • N :=
   mul_le_mul (span_mono h₁) h₂
 #align submodule.smul_le_smul Submodule.smul_le_smul

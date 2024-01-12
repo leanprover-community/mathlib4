@@ -67,8 +67,8 @@ structure BiheytingHom (α β : Type*) [BiheytingAlgebra α] [BiheytingAlgebra �
 /-- `HeytingHomClass F α β` states that `F` is a type of Heyting homomorphisms.
 
 You should extend this class when you extend `HeytingHom`. -/
-class HeytingHomClass (F : Type*) (α β : outParam <| Type*) [HeytingAlgebra α]
-  [HeytingAlgebra β] extends LatticeHomClass F α β where
+class HeytingHomClass (F α β : Type*) [HeytingAlgebra α] [HeytingAlgebra β] [NDFunLike F α β]
+  extends LatticeHomClass F α β : Prop where
   /-- The proposition that a Heyting homomorphism preserves the bottom element.-/
   map_bot (f : F) : f ⊥ = ⊥
   /-- The proposition that a Heyting homomorphism preserves the Heyting implication.-/
@@ -78,8 +78,8 @@ class HeytingHomClass (F : Type*) (α β : outParam <| Type*) [HeytingAlgebra α
 /-- `CoheytingHomClass F α β` states that `F` is a type of co-Heyting homomorphisms.
 
 You should extend this class when you extend `CoheytingHom`. -/
-class CoheytingHomClass (F : Type*) (α β : outParam <| Type*) [CoheytingAlgebra α]
-  [CoheytingAlgebra β] extends LatticeHomClass F α β where
+class CoheytingHomClass (F α β : Type*) [CoheytingAlgebra α] [CoheytingAlgebra β] [NDFunLike F α β]
+  extends LatticeHomClass F α β : Prop where
   /-- The proposition that a co-Heyting homomorphism preserves the top element.-/
   map_top (f : F) : f ⊤ = ⊤
   /-- The proposition that a co-Heyting homomorphism preserves the difference operation.-/
@@ -89,8 +89,8 @@ class CoheytingHomClass (F : Type*) (α β : outParam <| Type*) [CoheytingAlgebr
 /-- `BiheytingHomClass F α β` states that `F` is a type of bi-Heyting homomorphisms.
 
 You should extend this class when you extend `BiheytingHom`. -/
-class BiheytingHomClass (F : Type*) (α β : outParam <| Type*) [BiheytingAlgebra α]
-  [BiheytingAlgebra β] extends LatticeHomClass F α β where
+class BiheytingHomClass (F α β : Type*) [BiheytingAlgebra α] [BiheytingAlgebra β] [NDFunLike F α β]
+  extends LatticeHomClass F α β : Prop where
   /-- The proposition that a bi-Heyting homomorphism preserves the Heyting implication.-/
   map_himp (f : F) : ∀ a b, f (a ⇨ b) = f a ⇨ f b
   /-- The proposition that a bi-Heyting homomorphism preserves the difference operation.-/
@@ -102,6 +102,10 @@ export HeytingHomClass (map_himp)
 export CoheytingHomClass (map_sdiff)
 
 attribute [simp] map_himp map_sdiff
+
+section Hom
+
+variable [NDFunLike F α β]
 
 /- Porting note: `[HeytingAlgebra α, β]` -> `{ _ : HeytingAlgebra α, β}` as a dangerous instance fix
 similar for Coheyting & Biheyting instances -/
@@ -132,6 +136,12 @@ instance (priority := 100) BiheytingHomClass.toCoheytingHomClass [BiheytingAlgeb
   { ‹BiheytingHomClass F α β› with
     map_top := fun f => by rw [← @himp_self α _ ⊥, ← himp_self, map_himp] }
 #align biheyting_hom_class.to_coheyting_hom_class BiheytingHomClass.toCoheytingHomClass
+
+end Hom
+
+section Equiv
+
+variable [EquivLike F α β]
 
 -- See note [lower instance priority]
 instance (priority := 100) OrderIsoClass.toHeytingHomClass [HeytingAlgebra α]
@@ -171,11 +181,15 @@ instance (priority := 100) OrderIsoClass.toBiheytingHomClass [BiheytingAlgebra �
         simp }
 #align order_iso_class.to_biheyting_hom_class OrderIsoClass.toBiheytingHomClass
 
+end Equiv
+
+variable [NDFunLike F α β]
+
 -- Porting note: Revisit this issue to see if it works in Lean 4. -/
 -- See note [reducible non instances]
 /-- This can't be an instance because of typeclass loops. -/
 @[reducible]
-def BoundedLatticeHomClass.toBiheytingHomClass [BooleanAlgebra α] [BooleanAlgebra β]
+lemma BoundedLatticeHomClass.toBiheytingHomClass [BooleanAlgebra α] [BooleanAlgebra β]
     [BoundedLatticeHomClass F α β] : BiheytingHomClass F α β :=
   { ‹BoundedLatticeHomClass F α β› with
     map_himp := fun f a b => by rw [himp_eq, himp_eq, map_sup, (isCompl_compl.map _).compl_eq]
@@ -241,9 +255,11 @@ namespace HeytingHom
 
 variable [HeytingAlgebra α] [HeytingAlgebra β] [HeytingAlgebra γ] [HeytingAlgebra δ]
 
-instance instHeytingHomClass : HeytingHomClass (HeytingHom α β) α β where
+instance instFunLike : NDFunLike (HeytingHom α β) α β where
   coe f := f.toFun
   coe_injective' f g h := by obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := f; obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := g; congr
+
+instance instHeytingHomClass : HeytingHomClass (HeytingHom α β) α β where
   map_sup f := f.map_sup'
   map_inf f := f.map_inf'
   map_bot f := f.map_bot'
@@ -368,20 +384,15 @@ namespace CoheytingHom
 
 variable [CoheytingAlgebra α] [CoheytingAlgebra β] [CoheytingAlgebra γ] [CoheytingAlgebra δ]
 
-instance : CoheytingHomClass (CoheytingHom α β) α β where
+instance : NDFunLike (CoheytingHom α β) α β where
   coe f := f.toFun
   coe_injective' f g h := by obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := f; obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := g; congr
+
+instance : CoheytingHomClass (CoheytingHom α β) α β where
   map_sup f := f.map_sup'
   map_inf f := f.map_inf'
   map_top f := f.map_top'
   map_sdiff := CoheytingHom.map_sdiff'
-
--- Porting note: CoeFun undesired here in lean 4
--- /-- Helper instance for when there's too many metavariables to apply `FunLike.CoeFun`
--- directly. -/
--- instance : CoeFun (CoheytingHom α β) fun _ => α → β :=
---   FunLike.hasCoeToFun
-
 
 -- @[simp] -- Porting note: not in simp-nf, simp can simplify lhs. Added aux simp lemma
 theorem toFun_eq_coe {f : CoheytingHom α β} : f.toFun = (f : α → β) :=
@@ -495,19 +506,15 @@ namespace BiheytingHom
 
 variable [BiheytingAlgebra α] [BiheytingAlgebra β] [BiheytingAlgebra γ] [BiheytingAlgebra δ]
 
-instance : BiheytingHomClass (BiheytingHom α β) α β where
+instance : NDFunLike (BiheytingHom α β) α β where
   coe f := f.toFun
   coe_injective' f g h := by obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := f; obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := g; congr
+
+instance : BiheytingHomClass (BiheytingHom α β) α β where
   map_sup f := f.map_sup'
   map_inf f := f.map_inf'
   map_himp f := f.map_himp'
   map_sdiff f := f.map_sdiff'
-
--- Porting note: CoeFun undesired here in lean 4
--- /-- Helper instance for when there's too many metavariables to apply `FunLike.CoeFun`
--- directly. -/
--- instance : CoeFun (BiheytingHom α β) fun _ => α → β :=
---   FunLike.hasCoeToFun
 
 -- @[simp] -- Porting note: not in simp-nf, simp can simplify lhs. Added aux simp lemma
 theorem toFun_eq_coe {f : BiheytingHom α β} : f.toFun = (f : α → β) :=

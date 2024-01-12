@@ -85,16 +85,14 @@ variable {f g : NormedAddGroupHom V₁ V₂}
 def ofLipschitz (f : V₁ →+ V₂) {K : ℝ≥0} (h : LipschitzWith K f) : NormedAddGroupHom V₁ V₂ :=
   f.mkNormedAddGroupHom K fun x ↦ by simpa only [map_zero, dist_zero_right] using h.dist_le_mul x 0
 
--- porting note: moved this declaration up so we could get a `FunLike` instance sooner.
-instance toAddMonoidHomClass : AddMonoidHomClass (NormedAddGroupHom V₁ V₂) V₁ V₂ where
+instance funLike : NDFunLike (NormedAddGroupHom V₁ V₂) V₁ V₂ where
   coe := toFun
   coe_injective' := fun f g h => by cases f; cases g; congr
+
+-- porting note: moved this declaration up so we could get a `FunLike` instance sooner.
+instance toAddMonoidHomClass : AddMonoidHomClass (NormedAddGroupHom V₁ V₂) V₁ V₂ where
   map_add f := f.map_add'
   map_zero f := (AddMonoidHom.mk' f.toFun f.map_add').map_zero
-
-/-- Helper instance for when there are too many metavariables to apply `FunLike.coeFun` directly. -/
-instance coeFun : CoeFun (NormedAddGroupHom V₁ V₂) fun _ => V₁ → V₂ :=
-  ⟨FunLike.coe⟩
 
 initialize_simps_projections NormedAddGroupHom (toFun → apply)
 

@@ -100,15 +100,15 @@ lemma commute_iff {R : Type*} [Mul R] [StarMul R] {x y : R}
   · simpa only [star_mul, hx.star_eq, hy.star_eq] using h.symm
 
 /-- Functions in a `StarHomClass` preserve self-adjoint elements. -/
-theorem starHom_apply {F R S : Type*} [Star R] [Star S] [StarHomClass F R S] {x : R}
-    (hx : IsSelfAdjoint x) (f : F) : IsSelfAdjoint (f x) :=
+theorem starHom_apply {F R S : Type*} [Star R] [Star S] [NDFunLike F R S] [StarHomClass F R S]
+    {x : R} (hx : IsSelfAdjoint x) (f : F) : IsSelfAdjoint (f x) :=
   show star (f x) = f x from map_star f x ▸ congr_arg f hx
 #align is_self_adjoint.star_hom_apply IsSelfAdjoint.starHom_apply
 
 /- note: this lemma is *not* marked as `simp` so that Lean doesn't look for a `[TrivialStar R]`
 instance every time it sees `⊢ IsSelfAdjoint (f x)`, which will likely occur relatively often. -/
-theorem _root_.isSelfAdjoint_starHom_apply {F R S : Type*} [Star R] [Star S] [StarHomClass F R S]
-    [TrivialStar R] (f : F) (x : R) : IsSelfAdjoint (f x) :=
+theorem _root_.isSelfAdjoint_starHom_apply {F R S : Type*} [Star R] [Star S] [NDFunLike F R S]
+    [StarHomClass F R S] [TrivialStar R] (f : F) (x : R) : IsSelfAdjoint (f x) :=
   (IsSelfAdjoint.all x).starHom_apply f
 
 section AddMonoid

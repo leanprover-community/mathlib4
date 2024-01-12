@@ -83,8 +83,8 @@ section
 /-- `OrderAddMonoidHomClass F α β` states that `F` is a type of ordered monoid homomorphisms.
 
 You should also extend this typeclass when you extend `OrderAddMonoidHom`. -/
-class OrderAddMonoidHomClass (F : Type*) (α β : outParam <| Type*) [Preorder α] [Preorder β]
-  [AddZeroClass α] [AddZeroClass β] extends AddMonoidHomClass F α β where
+class OrderAddMonoidHomClass (F α β : Type*) [Preorder α] [Preorder β]
+  [AddZeroClass α] [AddZeroClass β] [NDFunLike F α β] extends AddMonoidHomClass F α β : Prop where
   /-- An `OrderAddMonoidHom` is a monotone function. -/
   monotone (f : F) : Monotone f
 #align order_add_monoid_hom_class OrderAddMonoidHomClass
@@ -120,15 +120,15 @@ section
 
 You should also extend this typeclass when you extend `OrderMonoidHom`. -/
 @[to_additive]
-class OrderMonoidHomClass (F : Type*) (α β : outParam <| Type*) [Preorder α] [Preorder β]
-  [MulOneClass α] [MulOneClass β] extends MonoidHomClass F α β where
+class OrderMonoidHomClass (F α β : Type*) [Preorder α] [Preorder β] [MulOneClass α] [MulOneClass β]
+  [NDFunLike F α β] extends MonoidHomClass F α β : Prop where
   /-- An `OrderMonoidHom` is a monotone function. -/
   monotone (f : F) : Monotone f
 #align order_monoid_hom_class OrderMonoidHomClass
 
 end
 
-variable {_ : Preorder α} {_ : Preorder β} {_ : MulOneClass α} {_ : MulOneClass β}
+variable [Preorder α] [Preorder β] [MulOneClass α] [MulOneClass β] [NDFunLike F α β]
 
 /-- Turn an element of a type `F` satisfying `OrderMonoidHomClass F α β` into an actual
 `OrderMonoidHom`. This is declared as the default coercion from `F` to `α →*o β`. -/
@@ -183,11 +183,14 @@ section
 ordered monoid with zero homomorphisms.
 
 You should also extend this typeclass when you extend `OrderMonoidWithZeroHom`. -/
-class OrderMonoidWithZeroHomClass (F : Type*) (α β : outParam <| Type*) [Preorder α] [Preorder β]
-  [MulZeroOneClass α] [MulZeroOneClass β] extends MonoidWithZeroHomClass F α β where
+class OrderMonoidWithZeroHomClass (F α β : Type*) [Preorder α] [Preorder β]
+  [MulZeroOneClass α] [MulZeroOneClass β] [NDFunLike F α β]
+  extends MonoidWithZeroHomClass F α β : Prop where
   /-- An `OrderMonoidWithZeroHom` is a monotone function. -/
   monotone (f : F) : Monotone f
 #align order_monoid_with_zero_hom_class OrderMonoidWithZeroHomClass
+
+variable [NDFunLike F α β]
 
 /-- Turn an element of a type `F` satisfying `OrderMonoidWithZeroHomClass F α β` into an actual
 `OrderMonoidWithZeroHom`. This is declared as the default coercion from `F` to `α →+*₀o β`. -/
@@ -197,6 +200,8 @@ def OrderMonoidWithZeroHomClass.toOrderMonoidWithZeroHom [OrderMonoidWithZeroHom
 { (f : α →*₀ β) with monotone' := monotone f }
 
 end
+
+variable [NDFunLike F α β]
 
 -- See note [lower instance priority]
 instance (priority := 100) OrderMonoidWithZeroHomClass.toOrderMonoidHomClass
@@ -212,6 +217,7 @@ end MonoidWithZero
 
 section OrderedAddCommMonoid
 
+variable [NDFunLike F α β]
 variable [OrderedAddCommMonoid α] [OrderedAddCommMonoid β] [OrderAddMonoidHomClass F α β] (f : F)
   {a : α}
 
@@ -229,7 +235,8 @@ end OrderedAddCommMonoid
 
 section OrderedAddCommGroup
 
-variable [OrderedAddCommGroup α] [OrderedAddCommMonoid β] [AddMonoidHomClass F α β] (f : F)
+variable [OrderedAddCommGroup α] [OrderedAddCommMonoid β] [i : NDFunLike F α β]
+variable [iamhc : AddMonoidHomClass F α β] (f : F)
 
 theorem monotone_iff_map_nonneg : Monotone (f : α → β) ↔ ∀ a, 0 ≤ a → 0 ≤ f a :=
   ⟨fun h a => by
@@ -240,15 +247,15 @@ theorem monotone_iff_map_nonneg : Monotone (f : α → β) ↔ ∀ a, 0 ≤ a �
 #align monotone_iff_map_nonneg monotone_iff_map_nonneg
 
 theorem antitone_iff_map_nonpos : Antitone (f : α → β) ↔ ∀ a, 0 ≤ a → f a ≤ 0 :=
-  monotone_toDual_comp_iff.symm.trans <| monotone_iff_map_nonneg _
+  monotone_toDual_comp_iff.symm.trans <| monotone_iff_map_nonneg (β := βᵒᵈ) (iamhc := iamhc) _
 #align antitone_iff_map_nonpos antitone_iff_map_nonpos
 
 theorem monotone_iff_map_nonpos : Monotone (f : α → β) ↔ ∀ a ≤ 0, f a ≤ 0 :=
-  antitone_comp_ofDual_iff.symm.trans <| antitone_iff_map_nonpos _
+  antitone_comp_ofDual_iff.symm.trans <| antitone_iff_map_nonpos (α := αᵒᵈ) (iamhc := iamhc) _
 #align monotone_iff_map_nonpos monotone_iff_map_nonpos
 
 theorem antitone_iff_map_nonneg : Antitone (f : α → β) ↔ ∀ a ≤ 0, 0 ≤ f a :=
-  monotone_comp_ofDual_iff.symm.trans <| monotone_iff_map_nonneg _
+  monotone_comp_ofDual_iff.symm.trans <| monotone_iff_map_nonneg (α := αᵒᵈ) (iamhc := iamhc) _
 #align antitone_iff_map_nonneg antitone_iff_map_nonneg
 
 variable [CovariantClass β β (· + ·) (· < ·)]
@@ -262,15 +269,15 @@ theorem strictMono_iff_map_pos : StrictMono (f : α → β) ↔ ∀ a, 0 < a →
 #align strict_mono_iff_map_pos strictMono_iff_map_pos
 
 theorem strictAnti_iff_map_neg : StrictAnti (f : α → β) ↔ ∀ a, 0 < a → f a < 0 :=
-  strictMono_toDual_comp_iff.symm.trans <| strictMono_iff_map_pos _
+  strictMono_toDual_comp_iff.symm.trans <| strictMono_iff_map_pos (β := βᵒᵈ) (iamhc := iamhc) _
 #align strict_anti_iff_map_neg strictAnti_iff_map_neg
 
 theorem strictMono_iff_map_neg : StrictMono (f : α → β) ↔ ∀ a < 0, f a < 0 :=
-  strictAnti_comp_ofDual_iff.symm.trans <| strictAnti_iff_map_neg _
+  strictAnti_comp_ofDual_iff.symm.trans <| strictAnti_iff_map_neg (α := αᵒᵈ) (iamhc := iamhc) _
 #align strict_mono_iff_map_neg strictMono_iff_map_neg
 
 theorem strictAnti_iff_map_pos : StrictAnti (f : α → β) ↔ ∀ a < 0, 0 < f a :=
-  strictMono_comp_ofDual_iff.symm.trans <| strictMono_iff_map_pos _
+  strictMono_comp_ofDual_iff.symm.trans <| strictMono_iff_map_pos (α := αᵒᵈ) (iamhc := iamhc) _
 #align strict_anti_iff_map_pos strictAnti_iff_map_pos
 
 end OrderedAddCommGroup
@@ -283,24 +290,18 @@ variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ] [MulOneClass α
   [MulOneClass γ] [MulOneClass δ] {f g : α →*o β}
 
 @[to_additive]
- instance : OrderMonoidHomClass (α →*o β) α β where
+instance : NDFunLike (α →*o β) α β where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨⟨_, _⟩⟩, _⟩ := f
     obtain ⟨⟨⟨_, _⟩⟩, _⟩ := g
     congr
+
+@[to_additive]
+instance : OrderMonoidHomClass (α →*o β) α β where
   map_mul f := f.map_mul'
   map_one f := f.map_one'
   monotone f := f.monotone'
-
--- Porting note:
--- These helper instances are unhelpful in Lean 4, so omitting:
--- /-- Helper instance for when there's too many metavariables to apply `FunLike.instCoeFunForAll`
--- directly. -/
--- @[to_additive "Helper instance for when there's too many metavariables to apply
--- `FunLike.instCoeFunForAll` directly."]
--- instance : CoeFun (α →*o β) fun _ => α → β :=
---   FunLike.instCoeFunForAll
 
 -- Other lemmas should be accessed through the `FunLike` API
 @[to_additive (attr := ext)]
@@ -577,23 +578,18 @@ section Preorder
 variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ] [MulZeroOneClass α] [MulZeroOneClass β]
   [MulZeroOneClass γ] [MulZeroOneClass δ] {f g : α →*₀o β}
 
-instance : OrderMonoidWithZeroHomClass (α →*₀o β) α β where
+instance : NDFunLike (α →*₀o β) α β where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨⟨_, _⟩⟩, _⟩ := f
     obtain ⟨⟨⟨_, _⟩⟩, _⟩ := g
     congr
+
+instance : OrderMonoidWithZeroHomClass (α →*₀o β) α β where
   map_mul f := f.map_mul'
   map_one f := f.map_one'
   map_zero f := f.map_zero'
   monotone f := f.monotone'
-
--- Porting note:
--- These helper instances are unhelpful in Lean 4, so omitting:
---/-- Helper instance for when there's too many metavariables to apply `FunLike.instCoeFunForAll`
---directly. -/
---instance : CoeFun (α →*₀o β) fun _ => α → β :=
---  FunLike.instCoeFunForAll
 
 -- Other lemmas should be accessed through the `FunLike` API
 @[ext]

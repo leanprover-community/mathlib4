@@ -241,7 +241,6 @@ def equivEven : CliffordAlgebra Q ≃ₐ[R] CliffordAlgebra.even (Q' Q) :=
 -- Note: times out on linting CI
 attribute [nolint simpNF] equivEven_symm_apply
 
-set_option synthInstance.maxHeartbeats 30000 in
 /-- The representation of the clifford conjugate (i.e. the reverse of the involute) in the even
 subalgebra is just the reverse of the representation. -/
 theorem coe_toEven_reverse_involute (x : CliffordAlgebra Q) :
@@ -256,8 +255,8 @@ theorem coe_toEven_reverse_involute (x : CliffordAlgebra Q) :
       reverse_ι, neg_e0_mul_v, map_neg]
   case h_mul x y hx hy => simp only [map_mul, Subalgebra.coe_mul, reverse.map_mul, hx, hy]
   case h_add x y hx hy =>
-    repeat (rw [map_add])
-    simp only [map_add, Subalgebra.coe_add, hx, hy]
+    -- HACK: not sure why the timeout with unspecified `map_add`
+    simp only [AlgHom.map_add, LinearMap.map_add, Subalgebra.coe_add, hx, hy]
 #align clifford_algebra.coe_to_even_reverse_involute CliffordAlgebra.coe_toEven_reverse_involute
 
 /-! ### Constructions needed for `CliffordAlgebra.evenEquivEvenNeg` -/
@@ -271,7 +270,9 @@ def evenToNeg (Q' : QuadraticForm R M) (h : Q' = -Q) :
     letI : HasDistribNeg (even Q') := NonUnitalNonAssocRing.toHasDistribNeg;
     { bilin := -(even.ι Q' : _).bilin
       contract := fun m => by
-        simp_rw [LinearMap.neg_apply, EvenHom.contract, h, QuadraticForm.neg_apply, map_neg,
+        -- HACK: not sure what causes the timeout with unqualified `map_neg`,
+        -- the synthInstance trace looks okay.
+        simp_rw [LinearMap.neg_apply, EvenHom.contract, h, QuadraticForm.neg_apply, RingHom.map_neg,
           neg_neg]
       contract_mid := fun m₁ m₂ m₃ => by
         simp_rw [LinearMap.neg_apply, neg_mul_neg, EvenHom.contract_mid, h,
@@ -285,7 +286,7 @@ theorem evenToNeg_ι (Q' : QuadraticForm R M) (h : Q' = -Q) (m₁ m₂ : M) :
   even.lift_ι _ _ m₁ m₂
 #align clifford_algebra.even_to_neg_ι CliffordAlgebra.evenToNeg_ι
 
-set_option synthInstance.maxHeartbeats 100000 in
+set_option synthInstance.maxHeartbeats 300000 in
 theorem evenToNeg_comp_evenToNeg (Q' : QuadraticForm R M) (h : Q' = -Q) (h' : Q = -Q') :
     (evenToNeg Q' Q h').comp (evenToNeg Q Q' h) = AlgHom.id R _ := by
   ext m₁ m₂ : 4

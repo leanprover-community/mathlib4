@@ -1058,6 +1058,7 @@ end RingHomIsometric
 section Induced
 
 variable {F : Type*} (R S : Type*)
+variable [NDFunLike F R S]
 
 /-- A non-unital ring homomorphism from a `NonUnitalRing` to a `NonUnitalSeminormedRing`
 induces a `NonUnitalSeminormedRing` structure on the domain.
@@ -1166,7 +1167,7 @@ def NormedField.induced [Field R] [NormedField S] [NonUnitalRingHomClass F R S] 
 /-- A ring homomorphism from a `Ring R` to a `SeminormedRing S` which induces the norm structure
 `SeminormedRing.induced` makes `R` satisfy `‖(1 : R)‖ = 1` whenever `‖(1 : S)‖ = 1`. -/
 theorem NormOneClass.induced {F : Type*} (R S : Type*) [Ring R] [SeminormedRing S]
-    [NormOneClass S] [RingHomClass F R S] (f : F) :
+    [NormOneClass S] [NDFunLike F R S] [RingHomClass F R S] (f : F) :
     @NormOneClass R (SeminormedRing.induced R S f).toNorm _ :=
   -- porting note: is this `let` a bad idea somehow?
   let _ : SeminormedRing R := SeminormedRing.induced R S f

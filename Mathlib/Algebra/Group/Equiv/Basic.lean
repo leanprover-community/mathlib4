@@ -75,8 +75,7 @@ structure AddEquiv (A B : Type*) [Add A] [Add B] extends A ≃ B, AddHom A B
 
 /-- `AddEquivClass F A B` states that `F` is a type of addition-preserving morphisms.
 You should extend this class when you extend `AddEquiv`. -/
-class AddEquivClass (F : Type*) (A B : outParam (Type*)) [Add A] [Add B]
-    extends EquivLike F A B where
+class AddEquivClass (F A B : Type*) [Add A] [Add B] [EquivLike F A B] : Prop where
   /-- Preserves addition. -/
   map_add : ∀ (f : F) (a b), f (a + b) = f a + f b
 #align add_equiv_class AddEquivClass
@@ -107,9 +106,9 @@ add_decl_doc MulEquiv.toMulHom
 
 /-- `MulEquivClass F A B` states that `F` is a type of multiplication-preserving morphisms.
 You should extend this class when you extend `MulEquiv`. -/
+-- TODO: make this a synonym for MulHomClass?
 @[to_additive]
-class MulEquivClass (F : Type*) (A B : outParam (Type*)) [Mul A] [Mul B] extends
-  EquivLike F A B where
+class MulEquivClass (F A B : Type*) [Mul A] [Mul B] [EquivLike F A B] : Prop where
   /-- Preserves multiplication. -/
   map_mul : ∀ (f : F) (a b), f (a * b) = f a * f b
 #align mul_equiv_class MulEquivClass
@@ -124,11 +123,13 @@ namespace MulEquivClass
 
 variable (F)
 
+variable [EquivLike F M N]
+
 -- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) instMulHomClass (F : Type*)
-    [Mul M] [Mul N] [h : MulEquivClass F M N] : MulHomClass F M N :=
-  { h with coe := h.coe, coe_injective' := FunLike.coe_injective' }
+    [Mul M] [Mul N] [EquivLike F M N] [h : MulEquivClass F M N] : MulHomClass F M N :=
+  { h with }
 
 -- See note [lower instance priority]
 @[to_additive]
@@ -136,14 +137,15 @@ instance (priority := 100) instMonoidHomClass
     [MulOneClass M] [MulOneClass N] [MulEquivClass F M N] :
     MonoidHomClass F M N :=
   { MulEquivClass.instMulHomClass F with
-    coe := fun _ => _,
     map_one := fun e =>
       calc
         e 1 = e 1 * 1 := (mul_one _).symm
-        _ = e 1 * e (MulEquivClass.toEquivLike.inv e (1 : N) : M) :=
-          congr_arg _ (MulEquivClass.toEquivLike.right_inv e 1).symm
-        _ = e (MulEquivClass.toEquivLike.inv e (1 : N)) := by rw [← map_mul, one_mul]
-        _ = 1 := MulEquivClass.toEquivLike.right_inv e 1 }
+        _ = e 1 * e (EquivLike.inv e (1 : N) : M) :=
+          congr_arg _ (EquivLike.right_inv e 1).symm
+        _ = e (EquivLike.inv e (1 : N)) := by rw [← map_mul, one_mul]
+        _ = 1 := EquivLike.right_inv e 1 }
+
+variable [EquivLike F α β]
 
 -- See note [lower instance priority]
 instance (priority := 100) toZeroHomClass
@@ -164,18 +166,22 @@ instance (priority := 100) toMonoidWithZeroHomClass
 variable {F}
 
 @[to_additive (attr := simp)]
-theorem map_eq_one_iff {M N} [MulOneClass M] [MulOneClass N] [MulEquivClass F M N] (h : F) {x : M} :
+theorem map_eq_one_iff {M N} [MulOneClass M] [MulOneClass N] [EquivLike F M N] [MulEquivClass F M N]
+    (h : F) {x : M} :
     h x = 1 ↔ x = 1 := _root_.map_eq_one_iff h (EquivLike.injective h)
 #align mul_equiv_class.map_eq_one_iff MulEquivClass.map_eq_one_iff
 #align add_equiv_class.map_eq_zero_iff AddEquivClass.map_eq_zero_iff
 
 @[to_additive]
-theorem map_ne_one_iff {M N} [MulOneClass M] [MulOneClass N] [MulEquivClass F M N] (h : F) {x : M} :
+theorem map_ne_one_iff {M N} [MulOneClass M] [MulOneClass N] [EquivLike F M N] [MulEquivClass F M N]
+    (h : F) {x : M} :
     h x ≠ 1 ↔ x ≠ 1 := _root_.map_ne_one_iff h (EquivLike.injective h)
 #align mul_equiv_class.map_ne_one_iff MulEquivClass.map_ne_one_iff
 #align add_equiv_class.map_ne_zero_iff AddEquivClass.map_ne_zero_iff
 
 end MulEquivClass
+
+variable [EquivLike F α β]
 
 /-- Turn an element of a type `F` satisfying `MulEquivClass F α β` into an actual
 `MulEquiv`. This is declared as the default coercion from `F` to `α ≃* β`. -/
@@ -200,7 +206,7 @@ theorem MulEquivClass.toMulEquiv_injective [Mul α] [Mul β] [MulEquivClass F α
 namespace MulEquiv
 
 @[to_additive]
-instance [Mul M] [Mul N] : MulEquivClass (M ≃* N) M N where
+instance [Mul M] [Mul N] : EquivLike (M ≃* N) M N where
   coe f := f.toFun
   inv f := f.invFun
   left_inv f := f.left_inv
@@ -210,6 +216,9 @@ instance [Mul M] [Mul N] : MulEquivClass (M ≃* N) M N where
     cases g
     congr
     apply Equiv.coe_fn_injective h₁
+
+@[to_additive]
+instance [Mul M] [Mul N] : MulEquivClass (M ≃* N) M N where
   map_mul f := f.map_mul'
 
 @[to_additive] -- shortcut instance that doesn't generate any subgoals
@@ -588,7 +597,7 @@ theorem map_ne_one_iff {M N} [MulOneClass M] [MulOneClass N] (h : M ≃* N) {x :
 
 /-- A bijective `Semigroup` homomorphism is an isomorphism -/
 @[to_additive (attr := simps! apply) "A bijective `AddSemigroup` homomorphism is an isomorphism"]
-noncomputable def ofBijective {M N F} [Mul M] [Mul N] [MulHomClass F M N]
+noncomputable def ofBijective {M N F} [Mul M] [Mul N] [NDFunLike F M N] [MulHomClass F M N]
 (f : F) (hf : Function.Bijective f) :
     M ≃* N :=
   { Equiv.ofBijective f hf with map_mul' := map_mul f }

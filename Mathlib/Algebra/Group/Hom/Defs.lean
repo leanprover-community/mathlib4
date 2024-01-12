@@ -90,8 +90,8 @@ structure ZeroHom (M : Type*) (N : Type*) [Zero M] [Zero N] where
 
 You should extend this typeclass when you extend `ZeroHom`.
 -/
-class ZeroHomClass (F : Type*) (M N : outParam (Type*)) [Zero M] [Zero N]
-  extends FunLike F M fun _ => N where
+class ZeroHomClass (F : Type*) (M N : outParam Type*) [Zero M] [Zero N] [NDFunLike F M N] : Prop
+    where
   /-- The proposition that the function preserves 0 -/
   map_zero : ∀ f : F, f 0 = 0
 #align zero_hom_class ZeroHomClass
@@ -119,8 +119,7 @@ structure AddHom (M : Type*) (N : Type*) [Add M] [Add N] where
 /-- `AddHomClass F M N` states that `F` is a type of addition-preserving homomorphisms.
 You should declare an instance of this typeclass when you extend `AddHom`.
 -/
-class AddHomClass (F : Type*) (M N : outParam (Type*)) [Add M] [Add N]
-  extends FunLike F M fun _ => N where
+class AddHomClass (F : Type*) (M N : outParam Type*) [Add M] [Add N] [NDFunLike F M N] : Prop where
   /-- The proposition that the function preserves addition -/
   map_add : ∀ (f : F) (x y : M), f (x + y) = f x + f y
 #align add_hom_class AddHomClass
@@ -154,8 +153,8 @@ homomorphisms.
 
 You should also extend this typeclass when you extend `AddMonoidHom`.
 -/
-class AddMonoidHomClass (F : Type*) (M N : outParam (Type*)) [AddZeroClass M] [AddZeroClass N]
-  extends AddHomClass F M N, ZeroHomClass F M N
+class AddMonoidHomClass (F M N : Type*) [AddZeroClass M] [AddZeroClass N] [NDFunLike F M N]
+  extends AddHomClass F M N, ZeroHomClass F M N : Prop
 #align add_monoid_hom_class AddMonoidHomClass
 
 -- Instances and lemmas are defined below through `@[to_additive]`.
@@ -184,22 +183,26 @@ structure OneHom (M : Type*) (N : Type*) [One M] [One N] where
 You should extend this typeclass when you extend `OneHom`.
 -/
 @[to_additive]
-class OneHomClass (F : Type*) (M N : outParam (Type*)) [One M] [One N]
-  extends FunLike F M fun _ => N where
+class OneHomClass (F : Type*) (M N : outParam Type*) [One M] [One N] [NDFunLike F M N] : Prop where
   /-- The proposition that the function preserves 1 -/
   map_one : ∀ f : F, f 1 = 1
 #align one_hom_class OneHomClass
 
 @[to_additive]
-instance OneHom.oneHomClass : OneHomClass (OneHom M N) M N where
+instance OneHom.funLike : NDFunLike (OneHom M N) M N where
   coe := OneHom.toFun
   coe_injective' f g h := by cases f; cases g; congr
+
+@[to_additive]
+instance OneHom.oneHomClass : OneHomClass (OneHom M N) M N where
   map_one := OneHom.map_one'
 #align one_hom.one_hom_class OneHom.oneHomClass
 #align zero_hom.zero_hom_class ZeroHom.zeroHomClass
 
+variable [NDFunLike F M N]
+
 @[to_additive (attr := simp)]
-theorem map_one [OneHomClass F M N] (f : F) : f 1 = 1 :=
+theorem map_one  [OneHomClass F M N] (f : F) : f 1 = 1 :=
   OneHomClass.map_one f
 #align map_one map_one
 #align map_zero map_zero
@@ -213,20 +216,21 @@ theorem Subsingleton.of_oneHomClass [Subsingleton M] [OneHomClass F M N] :
 @[to_additive] instance [Subsingleton M] : Subsingleton (OneHom M N) := .of_oneHomClass
 
 @[to_additive]
-theorem map_eq_one_iff [OneHomClass F M N] (f : F) (hf : Function.Injective f) {x : M} :
+theorem map_eq_one_iff [OneHomClass F M N] (f : F) (hf : Function.Injective f)
+    {x : M} :
     f x = 1 ↔ x = 1 := hf.eq_iff' (map_one f)
 #align map_eq_one_iff map_eq_one_iff
 #align map_eq_zero_iff map_eq_zero_iff
 
 @[to_additive]
-theorem map_ne_one_iff {R S F : Type*} [One R] [One S] [OneHomClass F R S] (f : F)
+theorem map_ne_one_iff {R S F : Type*} [One R] [One S] [NDFunLike F R S] [OneHomClass F R S] (f : F)
     (hf : Function.Injective f) {x : R} : f x ≠ 1 ↔ x ≠ 1 := (map_eq_one_iff f hf).not
 #align map_ne_one_iff map_ne_one_iff
 #align map_ne_zero_iff map_ne_zero_iff
 
 @[to_additive]
-theorem ne_one_of_map {R S F : Type*} [One R] [One S] [OneHomClass F R S] {f : F} {x : R}
-    (hx : f x ≠ 1) : x ≠ 1 := ne_of_apply_ne f <| (by rwa [(map_one f)])
+theorem ne_one_of_map {R S F : Type*} [One R] [One S] [NDFunLike F R S] [OneHomClass F R S]
+    {f : F} {x : R} (hx : f x ≠ 1) : x ≠ 1 := ne_of_apply_ne f <| (by rwa [(map_one f)])
 #align ne_one_of_map ne_one_of_map
 #align ne_zero_of_map ne_zero_of_map
 
@@ -246,7 +250,8 @@ instance [OneHomClass F M N] : CoeTC F (OneHom M N) :=
   ⟨OneHomClass.toOneHom⟩
 
 @[to_additive (attr := simp)]
-theorem OneHom.coe_coe [OneHomClass F M N] (f : F) : ((f : OneHom M N) : M → N) = f := rfl
+theorem OneHom.coe_coe [OneHomClass F M N] (f : F) :
+    ((f : OneHom M N) : M → N) = f := rfl
 #align one_hom.coe_coe OneHom.coe_coe
 #align zero_hom.coe_coe ZeroHom.coe_coe
 
@@ -280,20 +285,24 @@ infixr:25 " →ₙ* " => MulHom
 You should declare an instance of this typeclass when you extend `MulHom`.
 -/
 @[to_additive]
-class MulHomClass (F : Type*) (M N : outParam (Type*)) [Mul M] [Mul N]
-  extends FunLike F M fun _ => N where
+class MulHomClass (F : Type*) (M N : outParam Type*) [Mul M] [Mul N] [NDFunLike F M N] : Prop where
   /-- The proposition that the function preserves multiplication -/
   map_mul : ∀ (f : F) (x y : M), f (x * y) = f x * f y
 #align mul_hom_class MulHomClass
 
+@[to_additive]
+instance MulHom.funLike : NDFunLike (M →ₙ* N) M N where
+  coe := MulHom.toFun
+  coe_injective' f g h := by cases f; cases g; congr
+
 /-- `MulHom` is a type of multiplication-preserving homomorphisms -/
 @[to_additive "`AddHom` is a type of addition-preserving homomorphisms"]
 instance MulHom.mulHomClass : MulHomClass (M →ₙ* N) M N where
-  coe := MulHom.toFun
-  coe_injective' f g h := by cases f; cases g; congr
   map_mul := MulHom.map_mul'
 #align mul_hom.mul_hom_class MulHom.mulHomClass
 #align add_hom.add_hom_class AddHom.addHomClass
+
+variable [NDFunLike F M N]
 
 @[to_additive (attr := simp)]
 theorem map_mul [MulHomClass F M N] (f : F) (x y : M) : f (x * y) = f x * f y :=
@@ -352,12 +361,13 @@ infixr:25 " →* " => MonoidHom
 /-- `MonoidHomClass F M N` states that `F` is a type of `Monoid`-preserving homomorphisms.
 You should also extend this typeclass when you extend `MonoidHom`. -/
 @[to_additive]
-class MonoidHomClass (F : Type*) (M N : outParam (Type*)) [MulOneClass M] [MulOneClass N]
-  extends MulHomClass F M N, OneHomClass F M N
+class MonoidHomClass (F : Type*) (M N : outParam Type*) [MulOneClass M] [MulOneClass N]
+  [NDFunLike F M N]
+  extends MulHomClass F M N, OneHomClass F M N : Prop
 #align monoid_hom_class MonoidHomClass
 
 @[to_additive]
-instance MonoidHom.monoidHomClass : MonoidHomClass (M →* N) M N where
+instance MonoidHom.funLike : NDFunLike (M →* N) M N where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
@@ -365,6 +375,9 @@ instance MonoidHom.monoidHomClass : MonoidHomClass (M →* N) M N where
     congr
     apply FunLike.coe_injective'
     exact h
+
+@[to_additive]
+instance MonoidHom.monoidHomClass : MonoidHomClass (M →* N) M N where
   map_mul := MonoidHom.map_mul'
   map_one f := f.toOneHom.map_one'
 #align monoid_hom.monoid_hom_class MonoidHom.monoidHomClass
@@ -372,9 +385,14 @@ instance MonoidHom.monoidHomClass : MonoidHomClass (M →* N) M N where
 
 -- Porting note: we need to add an extra `to_additive`.
 -- This is waiting on https://github.com/leanprover-community/mathlib4/issues/660
-attribute [to_additive existing] MonoidHomClass.toOneHomClass
+/-
+-- Seems to be fixed by unbundling FunLike from MonoidHomClass
+attribute [to_additive existing] MonoidHomClass.toMulHomClass
+-/
 
 @[to_additive] instance [Subsingleton M] : Subsingleton (M →* N) := .of_oneHomClass
+
+variable [NDFunLike F M N]
 
 /-- Turn an element of a type `F` satisfying `MonoidHomClass F M N` into an actual
 `MonoidHom`. This is declared as the default coercion from `F` to `M →* N`. -/
@@ -401,6 +419,8 @@ theorem map_mul_eq_one [MonoidHomClass F M N] (f : F) {a b : M} (h : a * b = 1) 
   by rw [← map_mul, h, map_one]
 #align map_mul_eq_one map_mul_eq_one
 #align map_add_eq_zero map_add_eq_zero
+
+variable [NDFunLike F G H]
 
 @[to_additive]
 theorem map_div' [DivInvMonoid G] [DivInvMonoid H] [MonoidHomClass F G H]
@@ -431,7 +451,7 @@ theorem map_div [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) :
 #align map_div map_div
 #align map_sub map_sub
 
-@[to_additive (attr := simp) (reorder := 8 9)]
+@[to_additive (attr := simp) (reorder := 9 10)]
 theorem map_pow [Monoid G] [Monoid H] [MonoidHomClass F G H] (f : F) (a : G) :
     ∀ n : ℕ, f (a ^ n) = f a ^ n
   | 0 => by rw [pow_zero, pow_zero, map_one]
@@ -448,7 +468,7 @@ theorem map_zpow' [DivInvMonoid G] [DivInvMonoid H] [MonoidHomClass F G H]
 #align map_zsmul' map_zsmul'
 
 /-- Group homomorphisms preserve integer power. -/
-@[to_additive (attr := simp) (reorder := 8 9)
+@[to_additive (attr := simp) (reorder := 9 10)
 "Additive group homomorphisms preserve integer scaling."]
 theorem map_zpow [Group G] [DivisionMonoid H] [MonoidHomClass F G H]
     (f : F) (g : G) (n : ℤ) : f (g ^ n) = f g ^ n := map_zpow' f (map_inv f) g n
@@ -486,11 +506,13 @@ infixr:25 " →*₀ " => MonoidWithZeroHom
 
 You should also extend this typeclass when you extend `MonoidWithZeroHom`.
 -/
-class MonoidWithZeroHomClass (F : Type*) (M N : outParam (Type*)) [MulZeroOneClass M]
-  [MulZeroOneClass N] extends MonoidHomClass F M N, ZeroHomClass F M N
+class MonoidWithZeroHomClass (F : Type*) (M N : outParam Type*)
+  [MulZeroOneClass M] [MulZeroOneClass N]
+  [NDFunLike F M N]
+  extends MonoidHomClass F M N, ZeroHomClass F M N : Prop
 #align monoid_with_zero_hom_class MonoidWithZeroHomClass
 
-instance MonoidWithZeroHom.monoidWithZeroHomClass : MonoidWithZeroHomClass (M →*₀ N) M N where
+instance MonoidWithZeroHom.funLike : NDFunLike (M →*₀ N) M N where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
@@ -498,12 +520,16 @@ instance MonoidWithZeroHom.monoidWithZeroHomClass : MonoidWithZeroHomClass (M �
     congr
     apply FunLike.coe_injective'
     exact h
+
+instance MonoidWithZeroHom.monoidWithZeroHomClass : MonoidWithZeroHomClass (M →*₀ N) M N where
   map_mul := MonoidWithZeroHom.map_mul'
   map_one := MonoidWithZeroHom.map_one'
   map_zero f := f.map_zero'
 #align monoid_with_zero_hom.monoid_with_zero_hom_class MonoidWithZeroHom.monoidWithZeroHomClass
 
 instance [Subsingleton M] : Subsingleton (M →*₀ N) := .of_oneHomClass
+
+variable [NDFunLike F M N]
 
 /-- Turn an element of a type `F` satisfying `MonoidWithZeroHomClass F M N` into an actual
 `MonoidWithZeroHom`. This is declared as the default coercion from `F` to `M →*₀ N`. -/
@@ -949,7 +975,7 @@ add_decl_doc AddMonoidHom.map_add
 
 namespace MonoidHom
 
-variable [MulOneClass M] [MulOneClass N] [MonoidHomClass F M N]
+variable [MulOneClass M] [MulOneClass N] [NDFunLike F M N] [MonoidHomClass F M N]
 
 /-- Given a monoid homomorphism `f : M →* N` and an element `x : M`, if `x` has a right inverse,
 then `f x` has a right inverse too. For elements invertible on both sides see `IsUnit.map`. -/
@@ -1310,6 +1336,8 @@ instance : Monoid (Monoid.End M) where
 
 instance : Inhabited (Monoid.End M) := ⟨1⟩
 
+instance : NDFunLike (Monoid.End M) M M := MonoidHom.funLike
+
 instance : MonoidHomClass (Monoid.End M) M M := MonoidHom.monoidHomClass
 
 end End
@@ -1342,6 +1370,8 @@ instance monoid : Monoid (AddMonoid.End A) where
   one_mul := AddMonoidHom.id_comp
 
 instance : Inhabited (AddMonoid.End A) := ⟨1⟩
+
+instance : NDFunLike (AddMonoid.End A) A A := AddMonoidHom.funLike
 
 instance : AddMonoidHomClass (AddMonoid.End A) A A := AddMonoidHom.addMonoidHomClass
 

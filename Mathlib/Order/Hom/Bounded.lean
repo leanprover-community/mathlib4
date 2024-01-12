@@ -64,8 +64,7 @@ section
 /-- `TopHomClass F α β` states that `F` is a type of `⊤`-preserving morphisms.
 
 You should extend this class when you extend `TopHom`. -/
-class TopHomClass (F : Type*) (α β : outParam <| Type*) [Top α] [Top β] extends
-  FunLike F α fun _ => β where
+class TopHomClass (F α β : Type*) [Top α] [Top β] [NDFunLike F α β] : Prop where
   /-- A `TopHomClass` morphism preserves the top element. -/
   map_top (f : F) : f ⊤ = ⊤
 #align top_hom_class TopHomClass
@@ -73,8 +72,7 @@ class TopHomClass (F : Type*) (α β : outParam <| Type*) [Top α] [Top β] exte
 /-- `BotHomClass F α β` states that `F` is a type of `⊥`-preserving morphisms.
 
 You should extend this class when you extend `BotHom`. -/
-class BotHomClass (F : Type*) (α β : outParam <| Type*) [Bot α] [Bot β] extends
-  FunLike F α fun _ => β where
+class BotHomClass (F α β : Type*) [Bot α] [Bot β] [NDFunLike F α β] : Prop where
   /-- A `BotHomClass` morphism preserves the bottom element. -/
   map_bot (f : F) : f ⊥ = ⊥
 #align bot_hom_class BotHomClass
@@ -82,8 +80,9 @@ class BotHomClass (F : Type*) (α β : outParam <| Type*) [Bot α] [Bot β] exte
 /-- `BoundedOrderHomClass F α β` states that `F` is a type of bounded order morphisms.
 
 You should extend this class when you extend `BoundedOrderHom`. -/
-class BoundedOrderHomClass (F : Type*) (α β : outParam <| Type*) [LE α] [LE β] [BoundedOrder α]
-  [BoundedOrder β] extends RelHomClass F ((· ≤ ·) : α → α → Prop) ((· ≤ ·) : β → β → Prop) where
+class BoundedOrderHomClass (F α β : Type*) [LE α] [LE β] [BoundedOrder α] [BoundedOrder β]
+  [NDFunLike F α β]
+  extends RelHomClass F ((· ≤ ·) : α → α → Prop) ((· ≤ ·) : β → β → Prop) : Prop where
   /-- Morphisms preserve the top element. The preferred spelling is `_root_.map_top`. -/
   map_top (f : F) : f ⊤ = ⊤
   /-- Morphisms preserve the bottom element. The preferred spelling is `_root_.map_bot`. -/
@@ -98,6 +97,10 @@ export BotHomClass (map_bot)
 
 attribute [simp] map_top map_bot
 
+section Hom
+
+variable [NDFunLike F α β]
+
 -- See note [lower instance priority]
 instance (priority := 100) BoundedOrderHomClass.toTopHomClass [LE α] [LE β]
     [BoundedOrder α] [BoundedOrder β] [BoundedOrderHomClass F α β] : TopHomClass F α β :=
@@ -109,6 +112,12 @@ instance (priority := 100) BoundedOrderHomClass.toBotHomClass [LE α] [LE β]
     [BoundedOrder α] [BoundedOrder β] [BoundedOrderHomClass F α β] : BotHomClass F α β :=
   { ‹BoundedOrderHomClass F α β› with }
 #align bounded_order_hom_class.to_bot_hom_class BoundedOrderHomClass.toBotHomClass
+
+end Hom
+
+section Equiv
+
+variable [EquivLike F α β]
 
 -- See note [lower instance priority]
 instance (priority := 100) OrderIsoClass.toTopHomClass [LE α] [OrderTop α]
@@ -152,6 +161,10 @@ theorem map_eq_bot_iff [LE α] [OrderBot α] [PartialOrder β] [OrderBot β] [Or
   rw [← map_bot f, (EquivLike.injective f).eq_iff]
 #align map_eq_bot_iff map_eq_bot_iff
 
+end Equiv
+
+variable [NDFunLike F α β]
+
 /-- Turn an element of a type `F` satisfying `TopHomClass F α β` into an actual
 `TopHom`. This is declared as the default coercion from `F` to `TopHom α β`. -/
 @[coe]
@@ -169,6 +182,8 @@ def BotHomClass.toBotHom [Bot α] [Bot β] [BotHomClass F α β] (f : F) : BotHo
 
 instance [Bot α] [Bot β] [BotHomClass F α β] : CoeTC F (BotHom α β) :=
   ⟨BotHomClass.toBotHom⟩
+
+variable [NDFunLike F α β]
 
 /-- Turn an element of a type `F` satisfying `BoundedOrderHomClass F α β` into an actual
 `BoundedOrderHom`. This is declared as the default coercion from `F` to `BoundedOrderHom α β`. -/
@@ -192,10 +207,11 @@ section Top
 
 variable [Top β] [Top γ] [Top δ]
 
-instance : TopHomClass (TopHom α β) α
-      β where
+instance : NDFunLike (TopHom α β) α β where
   coe := TopHom.toFun
   coe_injective' f g h := by cases f; cases g; congr
+
+instance : TopHomClass (TopHom α β) α β where
   map_top := TopHom.map_top'
 
 #noalign top_hom.to_fun_eq_coe
@@ -384,10 +400,11 @@ section Bot
 
 variable [Bot β] [Bot γ] [Bot δ]
 
-instance : BotHomClass (BotHom α β) α
-      β where
+instance : NDFunLike (BotHom α β) α β where
   coe := BotHom.toFun
   coe_injective' f g h := by cases f; cases g; congr
+
+instance : BotHomClass (BotHom α β) α β where
   map_bot := BotHom.map_bot'
 
 #noalign bot_hom.to_fun_eq_coe
@@ -586,10 +603,11 @@ def toBotHom (f : BoundedOrderHom α β) : BotHom α β :=
   { f with }
 #align bounded_order_hom.to_bot_hom BoundedOrderHom.toBotHom
 
-instance : BoundedOrderHomClass (BoundedOrderHom α β) α
-      β where
+instance : NDFunLike (BoundedOrderHom α β) α β where
   coe f := f.toFun
   coe_injective' f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := g; congr
+
+instance : BoundedOrderHomClass (BoundedOrderHom α β) α β where
   map_rel f := @(f.monotone')
   map_top f := f.map_top'
   map_bot f := f.map_bot'

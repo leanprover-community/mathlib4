@@ -745,7 +745,7 @@ theorem isPrime_map_C_iff_isPrime (P : Ideal R) :
   -- `(Quotient.isDomain_iff_prime (map C P : Ideal R[X]))`
   constructor
   · intro H
-    have := @comap_isPrime R R[X] (R →+* R[X]) _ _ _ C (map C P) H
+    have := comap_isPrime C (map C P)
     convert this using 1
     ext x
     simp only [mem_comap, mem_map_C_iff]

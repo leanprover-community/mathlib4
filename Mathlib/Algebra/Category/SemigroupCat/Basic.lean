@@ -77,6 +77,10 @@ unif_hint _root_.AddMagmaCat.forget_obj_eq_coe (R : AddMagmaCat) where ⊢
 instance (X : MagmaCat) : Mul X := X.str
 
 @[to_additive]
+instance instFunLike (X Y : MagmaCat) : NDFunLike (X ⟶ Y) X Y :=
+  inferInstanceAs <| NDFunLike (X →ₙ* Y) X Y
+
+@[to_additive]
 instance instMulHomClass (X Y : MagmaCat) : MulHomClass (X ⟶ Y) X Y :=
   inferInstanceAs <| MulHomClass (X →ₙ* Y) X Y
 
@@ -160,6 +164,10 @@ unif_hint _root_.AddSemigroupCat.forget_obj_eq_coe (R : AddSemigroupCat) where �
 
 @[to_additive]
 instance (X : SemigroupCat) : Semigroup X := X.str
+
+@[to_additive]
+instance instFunLike (X Y : SemigroupCat) : NDFunLike (X ⟶ Y) X Y :=
+  inferInstanceAs <| NDFunLike (X →ₙ* Y) X Y
 
 @[to_additive]
 instance instMulHomClass (X Y : SemigroupCat) : MulHomClass (X ⟶ Y) X Y :=

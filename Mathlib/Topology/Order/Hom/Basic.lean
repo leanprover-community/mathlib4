@@ -48,8 +48,8 @@ section
 
 You should extend this class when you extend `ContinuousOrderHom`. -/
 class ContinuousOrderHomClass (F : Type*) (α β : outParam <| Type*) [Preorder α] [Preorder β]
-    [TopologicalSpace α] [TopologicalSpace β] extends
-    ContinuousMapClass F α β where
+    [TopologicalSpace α] [TopologicalSpace β] [NDFunLike F α β] extends
+    ContinuousMapClass F α β : Prop where
   map_monotone (f : F) : Monotone f
 #align continuous_order_hom_class ContinuousOrderHomClass
 
@@ -57,7 +57,7 @@ class ContinuousOrderHomClass (F : Type*) (α β : outParam <| Type*) [Preorder 
 namespace ContinuousOrderHomClass
 
 variable [Preorder α] [Preorder β] [TopologicalSpace α] [TopologicalSpace β]
-  [ContinuousOrderHomClass F α β]
+  [NDFunLike F α β] [ContinuousOrderHomClass F α β]
 
 -- See note [lower instance priority]
 instance (priority := 100) toOrderHomClass  :
@@ -98,12 +98,14 @@ def toContinuousMap (f : α →Co β) : C(α, β) :=
   { f with }
 #align continuous_order_hom.to_continuous_map ContinuousOrderHom.toContinuousMap
 
-instance : ContinuousOrderHomClass (α →Co β) α β where
+instance : NDFunLike (α →Co β) α β where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨_, _⟩, _⟩ := f
     obtain ⟨⟨_, _⟩, _⟩ := g
     congr
+
+instance : ContinuousOrderHomClass (α →Co β) α β where
   map_monotone f := f.monotone'
   map_continuous f := f.continuous_toFun
 

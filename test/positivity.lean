@@ -324,7 +324,8 @@ example {r : ℝ≥0} (hr : 0 < r) : (0 : ℝ) < r := by positivity
 
 /- ## Other extensions -/
 
-example [Zero β] [PartialOrder β] [NonnegHomClass F α β] (f : F) (x : α) : 0 ≤ f x := by positivity
+example [Zero β] [PartialOrder β] [NDFunLike F α β] [NonnegHomClass F α β]
+    (f : F) (x : α) : 0 ≤ f x := by positivity
 
 example [OrderedSemiring S] [Semiring R] (abv : R → S) [IsAbsoluteValue abv] (x : R) :
     0 ≤ abv x := by

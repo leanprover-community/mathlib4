@@ -64,8 +64,8 @@ satisfy `r a b → s (f a) (f b)`.
 The relations `r` and `s` are `outParam`s since figuring them out from a goal is a higher-order
 matching problem that Lean usually can't do unaided.
 -/
-class RelHomClass (F : Type*) {α β : outParam <| Type*} (r : outParam <| α → α → Prop)
-  (s : outParam <| β → β → Prop) extends FunLike F α fun _ => β where
+class RelHomClass (F : Type*) {α β : Type*} (r : outParam <| α → α → Prop)
+  (s : outParam <| β → β → Prop) [NDFunLike F α β] : Prop where
   /-- A `RelHomClass` sends related elements to related elements -/
   map_rel : ∀ (f : F) {a b}, r a b → s (f a) (f b)
 #align rel_hom_class RelHomClass
@@ -76,7 +76,7 @@ end
 
 namespace RelHomClass
 
-variable {F : Type*}
+variable {F : Type*} [NDFunLike F α β]
 
 protected theorem isIrrefl [RelHomClass F r s] (f : F) : ∀ [IsIrrefl β s], IsIrrefl α r
   | ⟨H⟩ => ⟨fun _ h => H _ (map_rel f h)⟩
@@ -102,12 +102,14 @@ end RelHomClass
 
 namespace RelHom
 
-instance : RelHomClass (r →r s) r s where
+instance : NDFunLike (r →r s) α β where
   coe o := o.toFun
   coe_injective' f g h := by
     cases f
     cases g
     congr
+
+instance : RelHomClass (r →r s) r s where
   map_rel := map_rel'
 
 initialize_simps_projections RelHom (toFun → apply)
@@ -230,14 +232,22 @@ instance : Coe (r ↪r s) (r →r s) :=
 -- instance : CoeFun (r ↪r s) fun _ => α → β :=
 --   ⟨fun o => o.toEmbedding⟩
 
+<<<<<<< HEAD
 -- TODO: define and instantiate a `RelEmbeddingClass`
 instance : RelHomClass (r ↪r s) r s where
+=======
+-- TODO: define and instantiate a `RelEmbeddingClass` when `EmbeddingLike` is defined
+instance : NDFunLike (r ↪r s) α β where
+>>>>>>> Vierkantor/unbundled-FunLike-testings
   coe := fun x => x.toFun
   coe_injective' f g h := by
     rcases f with ⟨⟨⟩⟩
     rcases g with ⟨⟨⟩⟩
     congr
-  map_rel f a b := Iff.mpr (map_rel_iff' f)
+
+-- TODO: define and instantiate a `RelEmbeddingClass` when `EmbeddingLike` is defined
+instance : RelHomClass (r ↪r s) r s where
+  map_rel f _ _ := Iff.mpr (map_rel_iff' f)
 
 initialize_simps_projections RelEmbedding (toFun → apply)
 
@@ -634,10 +644,18 @@ instance : CoeOut (r ≃r s) (r ↪r s) :=
 -- instance : CoeFun (r ≃r s) fun _ => α → β :=
 --   ⟨fun f => f⟩
 
+<<<<<<< HEAD
 -- TODO: define and instantiate a `RelIsoClass`
 instance : RelHomClass (r ≃r s) r s where
+=======
+-- TODO: define and instantiate a `RelIsoClass` when `EquivLike` is defined
+instance : NDFunLike (r ≃r s) α β where
+>>>>>>> Vierkantor/unbundled-FunLike-testings
   coe := fun x => x
   coe_injective' := Equiv.coe_fn_injective.comp toEquiv_injective
+
+-- TODO: define and instantiate a `RelIsoClass` when `EquivLike` is defined
+instance : RelHomClass (r ≃r s) r s where
   map_rel f _ _ := Iff.mpr (map_rel_iff' f)
 
 instance : EquivLike (r ≃r s) α β where

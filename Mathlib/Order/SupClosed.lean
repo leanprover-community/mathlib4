@@ -59,15 +59,17 @@ lemma SupClosed.directedOn (hs : SupClosed s) : DirectedOn (· ≤ ·) s :=
 
 lemma IsUpperSet.supClosed (hs : IsUpperSet s) : SupClosed s := fun _a _ _b ↦ hs le_sup_right
 
-lemma SupClosed.preimage [SupHomClass F β α] (hs : SupClosed s) (f : F) : SupClosed (f ⁻¹' s) :=
+lemma SupClosed.preimage [NDFunLike F β α] [SupHomClass F β α] (hs : SupClosed s) (f : F) :
+    SupClosed (f ⁻¹' s) :=
   fun a ha b hb ↦ by simpa [map_sup] using hs ha hb
 
-lemma SupClosed.image [SupHomClass F α β] (hs : SupClosed s) (f : F) : SupClosed (f '' s) := by
+lemma SupClosed.image [NDFunLike F α β] [SupHomClass F α β] (hs : SupClosed s) (f : F) :
+    SupClosed (f '' s) := by
   rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩
   rw [← map_sup]
   exact Set.mem_image_of_mem _ <| hs ha hb
 
-lemma supClosed_range [SupHomClass F α β] (f : F) : SupClosed (Set.range f) := by
+lemma supClosed_range [NDFunLike F α β] [SupHomClass F α β] (f : F) : SupClosed (Set.range f) := by
   simpa using supClosed_univ.image f
 
 lemma SupClosed.prod {t : Set β} (hs : SupClosed s) (ht : SupClosed t) : SupClosed (s ×ˢ t) :=
@@ -123,15 +125,17 @@ lemma InfClosed.codirectedOn (hs : InfClosed s) : DirectedOn (· ≥ ·) s :=
 
 lemma IsLowerSet.infClosed (hs : IsLowerSet s) :  InfClosed s := λ _a _ _b ↦ hs inf_le_right
 
-lemma InfClosed.preimage [InfHomClass F β α] (hs : InfClosed s) (f : F) : InfClosed (f ⁻¹' s) :=
+lemma InfClosed.preimage [NDFunLike F β α] [InfHomClass F β α] (hs : InfClosed s) (f : F) :
+    InfClosed (f ⁻¹' s) :=
   fun a ha b hb ↦ by simpa [map_inf] using hs ha hb
 
-lemma InfClosed.image [InfHomClass F α β] (hs : InfClosed s) (f : F) : InfClosed (f '' s) := by
+lemma InfClosed.image [NDFunLike F α β] [InfHomClass F α β] (hs : InfClosed s) (f : F) :
+    InfClosed (f '' s) := by
   rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩
   rw [← map_inf]
   exact Set.mem_image_of_mem _ <| hs ha hb
 
-lemma infClosed_range [InfHomClass F α β] (f : F) : InfClosed (Set.range f) := by
+lemma infClosed_range [NDFunLike F α β] [InfHomClass F α β] (f : F) : InfClosed (Set.range f) := by
   simpa using infClosed_univ.image f
 
 lemma InfClosed.prod {t : Set β} (hs : InfClosed s) (ht : InfClosed t) : InfClosed (s ×ˢ t) :=
@@ -189,13 +193,15 @@ lemma isSublattice_sInter (hS : ∀ s ∈ S, IsSublattice s) : IsSublattice (⋂
 lemma isSublattice_iInter (hf : ∀ i, IsSublattice (f i)) : IsSublattice (⋂ i, f i) :=
   ⟨supClosed_iInter fun _i ↦ (hf _).1, infClosed_iInter fun _i ↦ (hf _).2⟩
 
-lemma IsSublattice.preimage [LatticeHomClass F β α] (hs : IsSublattice s) (f : F) :
+lemma IsSublattice.preimage [NDFunLike F β α] [LatticeHomClass F β α]
+    (hs : IsSublattice s) (f : F) :
     IsSublattice (f ⁻¹' s) := ⟨hs.1.preimage _, hs.2.preimage _⟩
 
-lemma IsSublattice.image [LatticeHomClass F α β] (hs : IsSublattice s) (f : F) :
+lemma IsSublattice.image [NDFunLike F α β] [LatticeHomClass F α β] (hs : IsSublattice s) (f : F) :
     IsSublattice (f '' s) := ⟨hs.1.image _, hs.2.image _⟩
 
-lemma IsSublattice_range [LatticeHomClass F α β] (f : F) : IsSublattice (Set.range f) :=
+lemma IsSublattice_range [NDFunLike F α β] [LatticeHomClass F α β] (f : F) :
+    IsSublattice (Set.range f) :=
   ⟨supClosed_range _, infClosed_range _⟩
 
 lemma IsSublattice.prod {t : Set β} (hs : IsSublattice s) (ht : IsSublattice t) :

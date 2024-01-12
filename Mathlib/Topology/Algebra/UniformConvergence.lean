@@ -296,7 +296,8 @@ section Module
 
 variable (𝕜 α E H : Type*) {hom : Type*} [NormedField 𝕜] [AddCommGroup H] [Module 𝕜 H]
   [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace H] [UniformSpace E] [UniformAddGroup E]
-  [ContinuousSMul 𝕜 E] {𝔖 : Set <| Set α} [LinearMapClass hom 𝕜 H (α →ᵤ[𝔖] E)]
+  [ContinuousSMul 𝕜 E] {𝔖 : Set <| Set α}
+  [NDFunLike hom H (α →ᵤ[𝔖] E)] [LinearMapClass hom 𝕜 H (α →ᵤ[𝔖] E)]
 
 /-- Let `E` be a TVS, `𝔖 : Set (Set α)` and `H` a submodule of `α →ᵤ[𝔖] E`. If the image of any
 `S ∈ 𝔖` by any `u ∈ H` is bounded (in the sense of `Bornology.IsVonNBounded`), then `H`,

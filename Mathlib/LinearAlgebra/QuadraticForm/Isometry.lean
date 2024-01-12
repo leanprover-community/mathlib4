@@ -40,9 +40,11 @@ notation:25 Q₁ " →qᵢ " Q₂:0 => Isometry Q₁ Q₂
 variable {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂}
 variable {Q₃ : QuadraticForm R M₃} {Q₄ : QuadraticForm R M₄}
 
-instance instLinearMapClass : LinearMapClass (Q₁ →qᵢ Q₂) R M₁ M₂ where
+instance instFunLike : NDFunLike (Q₁ →qᵢ Q₂) M₁ M₂ where
   coe f := f.toLinearMap
   coe_injective' f g h := by cases f; cases g; congr; exact FunLike.coe_injective h
+
+instance instLinearMapClass : LinearMapClass (Q₁ →qᵢ Q₂) R M₁ M₂ where
   map_add f := f.toLinearMap.map_add
   map_smulₛₗ f := f.toLinearMap.map_smul
 

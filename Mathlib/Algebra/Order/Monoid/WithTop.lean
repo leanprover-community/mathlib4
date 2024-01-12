@@ -302,7 +302,8 @@ protected theorem add_lt_add_of_lt_of_le [Preorder α] [CovariantClass α α (·
 
 --  There is no `WithTop.map_mul_of_mulHom`, since `WithTop` does not have a multiplication.
 @[simp]
-protected theorem map_add {F} [Add β] [AddHomClass F α β] (f : F) (a b : WithTop α) :
+protected theorem map_add {F} [Add β] [NDFunLike F α β] [AddHomClass F α β]
+    (f : F) (a b : WithTop α) :
     (a + b).map f = a.map f + b.map f := by
   induction a using WithTop.recTopCoe
   · exact (top_add _).symm
@@ -663,7 +664,8 @@ theorem add_left_cancel [IsLeftCancelAdd α] (ha : a ≠ ⊥) (h : a + b = a + c
 
 -- There is no `WithBot.map_mul_of_mulHom`, since `WithBot` does not have a multiplication.
 @[simp]
-protected theorem map_add {F} [Add β] [AddHomClass F α β] (f : F) (a b : WithBot α) :
+protected theorem map_add {F} [Add β] [NDFunLike F α β] [AddHomClass F α β]
+    (f : F) (a b : WithBot α) :
     (a + b).map f = a.map f + b.map f :=
   WithTop.map_add f a b
 #align with_bot.map_add WithBot.map_add

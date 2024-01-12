@@ -93,8 +93,9 @@ is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
 `f (c • x) = (σ c) • f x`. -/
 class SemilinearEquivClass (F : Type*) {R S : outParam (Type*)} [Semiring R] [Semiring S]
   (σ : outParam <| R →+* S) {σ' : outParam <| S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
-  (M M₂ : outParam (Type*)) [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂] extends
-  AddEquivClass F M M₂ where
+  (M M₂ : outParam (Type*)) [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂]
+  [EquivLike F M M₂]
+  extends AddEquivClass F M M₂ : Prop where
   /-- Applying a semilinear equivalence `f` over `σ` to `r • x` equals `σ r • f x`. -/
   map_smulₛₗ : ∀ (f : F) (r : R) (x : M), f (r • x) = σ r • f x
 #align semilinear_equiv_class SemilinearEquivClass
@@ -105,7 +106,7 @@ class SemilinearEquivClass (F : Type*) {R S : outParam (Type*)} [Semiring R] [Se
 This is an abbreviation for `SemilinearEquivClass F (RingHom.id R) M M₂`.
 -/
 abbrev LinearEquivClass (F : Type*) (R M M₂ : outParam (Type*)) [Semiring R] [AddCommMonoid M]
-    [AddCommMonoid M₂] [Module R M] [Module R M₂] :=
+    [AddCommMonoid M₂] [Module R M] [Module R M₂] [EquivLike F M M₂] :=
   SemilinearEquivClass F (RingHom.id R) M M₂
 #align linear_equiv_class LinearEquivClass
 
@@ -120,10 +121,8 @@ variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂]
 variable [Module R M] [Module S M₂] {σ : R →+* S} {σ' : S →+* R}
 
 instance (priority := 100) [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
-  [s : SemilinearEquivClass F σ M M₂] : SemilinearMapClass F σ M M₂ :=
-  { s with
-    coe := (s.coe : F → M → M₂)
-    coe_injective' := @FunLike.coe_injective F _ _ _ }
+  [EquivLike F M M₂] [s : SemilinearEquivClass F σ M M₂] : SemilinearMapClass F σ M M₂ :=
+  { s with }
 
 end SemilinearEquivClass
 
@@ -171,11 +170,17 @@ theorem toLinearMap_inj {e₁ e₂ : M ≃ₛₗ[σ] M₂} : (↑e₁ : M →ₛ
   toLinearMap_injective.eq_iff
 #align linear_equiv.to_linear_map_inj LinearEquiv.toLinearMap_inj
 
-instance : SemilinearEquivClass (M ≃ₛₗ[σ] M₂) σ M M₂ where
+instance : EquivLike (M ≃ₛₗ[σ] M₂) M M₂ where
   inv := LinearEquiv.invFun
   coe_injective' _ _ h _ := toLinearMap_injective (FunLike.coe_injective h)
   left_inv := LinearEquiv.left_inv
   right_inv := LinearEquiv.right_inv
+
+instance : NDFunLike (M ≃ₛₗ[σ] M₂) M M₂ where
+  coe := FunLike.coe
+  coe_injective' := FunLike.coe_injective
+
+instance : SemilinearEquivClass (M ≃ₛₗ[σ] M₂) σ M M₂ where
   map_add := (·.map_add') --map_add' Porting note: TODO why did I need to change this?
   map_smulₛₗ := (·.map_smul') --map_smul' Porting note: TODO why did I need to change this?
 

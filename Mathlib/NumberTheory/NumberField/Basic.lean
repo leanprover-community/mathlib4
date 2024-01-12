@@ -115,7 +115,8 @@ theorem isIntegral_coe (x : 𝓞 K) : IsIntegral ℤ (x : K) :=
   x.2
 #align number_field.ring_of_integers.is_integral_coe NumberField.RingOfIntegers.isIntegral_coe
 
-theorem map_mem {F L : Type*} [Field L] [CharZero K] [CharZero L] [AlgHomClass F ℚ K L] (f : F)
+theorem map_mem {F L : Type*} [Field L] [CharZero K] [CharZero L]
+    [NDFunLike F K L] [AlgHomClass F ℚ K L] (f : F)
     (x : 𝓞 K) : f x ∈ 𝓞 L :=
   (mem_ringOfIntegers _ _).2 <| map_isIntegral_int f <| RingOfIntegers.isIntegral_coe x
 #align number_field.ring_of_integers.map_mem NumberField.RingOfIntegers.map_mem

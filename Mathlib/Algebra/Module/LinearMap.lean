@@ -116,8 +116,9 @@ A map `f` between an `R`-module and an `S`-module over a ring homomorphism `σ :
 is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
 `f (c • x) = (σ c) • f x`. -/
 class SemilinearMapClass (F : Type*) {R S : outParam (Type*)} [Semiring R] [Semiring S]
-  (σ : outParam (R →+* S)) (M M₂ : outParam (Type*)) [AddCommMonoid M] [AddCommMonoid M₂]
-  [Module R M] [Module S M₂] extends AddHomClass F M M₂ where
+  (σ : outParam (R →+* S)) (M M₂ : outParam Type*) [AddCommMonoid M] [AddCommMonoid M₂]
+  [Module R M] [Module S M₂] [NDFunLike F M M₂]
+  extends AddHomClass F M M₂ : Prop where
   /-- A semilinear map preserves scalar multiplication up to some ring homomorphism `σ`.
   See also `_root_.map_smul` for the case where `σ` is the identity. -/
   map_smulₛₗ : ∀ (f : F) (r : R) (x : M), f (r • x) = σ r • f x
@@ -131,14 +132,16 @@ end
 
 export SemilinearMapClass (map_smulₛₗ)
 
-attribute [simp] map_smulₛₗ
+-- `map_smulₛₗ` should be `@[simp]` but doesn't fire due to `lean4#3701`.
+-- attribute [simp] map_smulₛₗ
 
 /-- `LinearMapClass F R M M₂` asserts `F` is a type of bundled `R`-linear maps `M → M₂`.
 
 This is an abbreviation for `SemilinearMapClass F (RingHom.id R) M M₂`.
 -/
-abbrev LinearMapClass (F : Type*) (R M M₂ : outParam (Type*)) [Semiring R] [AddCommMonoid M]
-    [AddCommMonoid M₂] [Module R M] [Module R M₂] :=
+abbrev LinearMapClass (F : Type*) (R : outParam (Type*)) (M M₂ : Type*)
+    [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module R M₂]
+    [NDFunLike F M M₂] :=
   SemilinearMapClass F (RingHom.id R) M M₂
 #align linear_map_class LinearMapClass
 
@@ -151,7 +154,7 @@ variable [Module R M] [Module R M₂] [Module S M₃]
 variable {σ : R →+* S}
 
 -- Porting note: the `dangerousInstance` linter has become smarter about `outParam`s
-instance (priority := 100) addMonoidHomClass [SemilinearMapClass F σ M M₃] :
+instance (priority := 100) addMonoidHomClass [NDFunLike F M M₃] [SemilinearMapClass F σ M M₃] :
     AddMonoidHomClass F M M₃ :=
   { SemilinearMapClass.toAddHomClass with
     map_zero := fun f ↦
@@ -159,15 +162,15 @@ instance (priority := 100) addMonoidHomClass [SemilinearMapClass F σ M M₃] :
         rw [← zero_smul R (0 : M), map_smulₛₗ]
         simp }
 
-instance (priority := 100) distribMulActionHomClass [LinearMapClass F R M M₂] :
+instance (priority := 100) distribMulActionHomClass [NDFunLike F M M₂] [LinearMapClass F R M M₂] :
     DistribMulActionHomClass F R M M₂ :=
   { SemilinearMapClass.addMonoidHomClass F with
     map_smul := fun f c x ↦ by rw [map_smulₛₗ, RingHom.id_apply] }
 
-variable {F} (f : F) [i : SemilinearMapClass F σ M M₃]
+variable {F} (f : F) [i : NDFunLike F M M₃] [i : SemilinearMapClass F σ M M₃]
 
 theorem map_smul_inv {σ' : S →+* R} [RingHomInvPair σ σ'] (c : S) (x : M) :
-    c • f x = f (σ' c • x) := by simp
+    c • f x = f (σ' c • x) := by simp [map_smulₛₗ _]
 #align semilinear_map_class.map_smul_inv SemilinearMapClass.map_smul_inv
 
 /-- Reinterpret an element of a type of semilinear maps as a semilinear map. -/
@@ -180,7 +183,7 @@ end SemilinearMapClass
 
 namespace LinearMapClass
 variable {F : Type*} [Semiring R] [AddCommMonoid M₁] [AddCommMonoid M₂] [Module R M₁] [Module R M₂]
-  (f : F) [LinearMapClass F R M₁ M₂]
+  (f : F) [NDFunLike F M₁ M₂] [LinearMapClass F R M₁ M₂]
 
 /-- Reinterpret an element of a type of linear maps as a linear map. -/
 abbrev linearMap : M₁ →ₗ[R] M₂ := SemilinearMapClass.semilinearMap f
@@ -203,7 +206,7 @@ variable [Module R M] [Module R M₂] [Module S M₃]
 
 variable {σ : R →+* S}
 
-instance semilinearMapClass : SemilinearMapClass (M →ₛₗ[σ] M₃) σ M M₃ where
+instance ndFunLike : NDFunLike (M →ₛₗ[σ] M₃) M M₃ where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
@@ -211,16 +214,14 @@ instance semilinearMapClass : SemilinearMapClass (M →ₛₗ[σ] M₃) σ M M�
     congr
     apply FunLike.coe_injective'
     exact h
+
+instance semilinearMapClass : SemilinearMapClass (M →ₛₗ[σ] M₃) σ M M₃ where
   map_add f := f.map_add'
   map_smulₛₗ := LinearMap.map_smul'
 #align linear_map.semilinear_map_class LinearMap.semilinearMapClass
 
 -- Porting note: we don't port specialized `CoeFun` instances if there is `FunLike` instead
 #noalign LinearMap.has_coe_to_fun
-
--- Porting note: adding this instance prevents a timeout in `ext_ring_op`
-instance instFunLike {σ : R →+* S} : FunLike (M →ₛₗ[σ] M₃) M (λ _ ↦ M₃) :=
-  { AddHomClass.toFunLike with }
 
 /-- The `DistribMulActionHom` underlying a `LinearMap`. -/
 def toDistribMulActionHom (f : M →ₗ[R] M₂) : DistribMulActionHom R M M₂ :=
@@ -354,6 +355,8 @@ protected theorem map_zero : f 0 = 0 :=
 -- Porting note: `simp` wasn't picking up `map_smulₛₗ` for `LinearMap`s without specifying
 -- `map_smulₛₗ f`, so we marked this as `@[simp]` in Mathlib3.
 -- For Mathlib4, let's try without the `@[simp]` attribute and hope it won't need to be re-enabled.
+-- This has to be re-tagged as `@[simp]` in #8386 (see also leanprover/lean4#3107).
+@[simp]
 protected theorem map_smulₛₗ (c : R) (x : M) : f (c • x) = σ c • f x :=
   map_smulₛₗ f c x
 #align linear_map.map_smulₛₗ LinearMap.map_smulₛₗ
@@ -377,8 +380,9 @@ open Pointwise
 
 variable (M M₃ σ) {F : Type*} (h : F)
 
-@[simp]
-theorem _root_.image_smul_setₛₗ [SemilinearMapClass F σ M M₃] (c : R) (s : Set M) :
+-- This should be `@[simp]` but doesn't fire reliably due to `lean4#3701`.
+theorem _root_.image_smul_setₛₗ [NDFunLike F M M₃] [SemilinearMapClass F σ M M₃]
+    (c : R) (s : Set M) :
     h '' (c • s) = σ c • h '' s := by
   apply Set.Subset.antisymm
   · rintro x ⟨y, ⟨z, zs, rfl⟩, rfl⟩
@@ -387,7 +391,14 @@ theorem _root_.image_smul_setₛₗ [SemilinearMapClass F σ M M₃] (c : R) (s 
     exact (Set.mem_image _ _ _).2 ⟨c • z, Set.smul_mem_smul_set hz, map_smulₛₗ _ _ _⟩
 #align image_smul_setₛₗ image_smul_setₛₗ
 
-theorem _root_.preimage_smul_setₛₗ [SemilinearMapClass F σ M M₃] {c : R} (hc : IsUnit c)
+@[simp] -- This should be replaced with `image_smul_setₛₗ` when `lean4#3701` is fixed.
+theorem _root_.LinearMap.image_smul_setₛₗ' (h : M →ₛₗ[σ] M₃)
+    (c : R) (s : Set M) :
+    h '' (c • s) = σ c • h '' s :=
+  image_smul_setₛₗ _ _ _ _ _ _
+
+theorem _root_.preimage_smul_setₛₗ [NDFunLike F M M₃] [SemilinearMapClass F σ M M₃]
+    {c : R} (hc : IsUnit c)
     (s : Set M₃) :
     h ⁻¹' (σ c • s) = c • h ⁻¹' s := by
   apply Set.Subset.antisymm
@@ -402,12 +413,13 @@ theorem _root_.preimage_smul_setₛₗ [SemilinearMapClass F σ M M₃] {c : R} 
 
 variable (R M₂)
 
-theorem _root_.image_smul_set [LinearMapClass F R M M₂] (c : R) (s : Set M) :
+theorem _root_.image_smul_set [NDFunLike F M M₂] [LinearMapClass F R M M₂] (c : R) (s : Set M) :
     h '' (c • s) = c • h '' s :=
   image_smul_setₛₗ _ _ _ h c s
 #align image_smul_set image_smul_set
 
-theorem _root_.preimage_smul_set [LinearMapClass F R M M₂] {c : R} (hc : IsUnit c) (s : Set M₂) :
+theorem _root_.preimage_smul_set [NDFunLike F M M₂] [LinearMapClass F R M M₂]
+    {c : R} (hc : IsUnit c) (s : Set M₂) :
     h ⁻¹' (c • s) = c • h ⁻¹' s :=
   preimage_smul_setₛₗ _ _ _ h hc s
 #align preimage_smul_set preimage_smul_set
@@ -567,7 +579,8 @@ variable (f : M₂ →ₛₗ[σ₂₃] M₃) (g : M₁ →ₛₗ[σ₁₂] M₂)
 def comp : M₁ →ₛₗ[σ₁₃] M₃ where
   toFun := f ∘ g
   map_add' := by simp only [map_add, forall_const, Function.comp_apply]
-  map_smul' r x := by simp only [Function.comp_apply, map_smulₛₗ, RingHomCompTriple.comp_apply]
+  -- Note that #8386 changed `map_smulₛₗ` to `map_smulₛₗ _`
+  map_smul' r x := by simp only [Function.comp_apply, map_smulₛₗ _, RingHomCompTriple.comp_apply]
 #align linear_map.comp LinearMap.comp
 
 /-- `∘ₗ` is notation for composition of two linear (not semilinear!) maps into a linear map.

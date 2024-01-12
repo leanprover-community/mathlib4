@@ -768,8 +768,9 @@ theorem image_smul_comm [SMul α β] [SMul α γ] (f : β → γ) (a : α) (s : 
 #align set.image_vadd_comm Set.image_vadd_comm
 
 @[to_additive]
-theorem image_smul_distrib [MulOneClass α] [MulOneClass β] [MonoidHomClass F α β] (f : F) (a : α)
-    (s : Set α) : f '' (a • s) = f a • f '' s :=
+theorem image_smul_distrib [MulOneClass α] [MulOneClass β] [NDFunLike F α β] [MonoidHomClass F α β]
+    (f : F) (a : α) (s : Set α) :
+    f '' (a • s) = f a • f '' s :=
   image_comm <| map_mul _ _
 #align set.image_smul_distrib Set.image_smul_distrib
 #align set.image_vadd_distrib Set.image_vadd_distrib

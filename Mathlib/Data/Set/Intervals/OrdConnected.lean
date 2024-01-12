@@ -216,13 +216,13 @@ instance instDenselyOrdered [DenselyOrdered α] {s : Set α} [hs : OrdConnected 
     ⟨⟨x, (hs.out a.2 b.2) (Ioo_subset_Icc_self H)⟩, H⟩⟩
 
 @[instance]
-theorem ordConnected_preimage {F : Type*} [OrderHomClass F α β] (f : F) {s : Set β}
-    [hs : OrdConnected s] : OrdConnected (f ⁻¹' s) :=
+theorem ordConnected_preimage {F : Type*} [NDFunLike F α β] [OrderHomClass F α β] (f : F)
+    {s : Set β} [hs : OrdConnected s] : OrdConnected (f ⁻¹' s) :=
   ⟨fun _ hx _ hy _ hz => hs.out hx hy ⟨OrderHomClass.mono _ hz.1, OrderHomClass.mono _ hz.2⟩⟩
 #align set.ord_connected_preimage Set.ordConnected_preimage
 
 @[instance]
-theorem ordConnected_image {E : Type*} [OrderIsoClass E α β] (e : E) {s : Set α}
+theorem ordConnected_image {E : Type*} [EquivLike E α β] [OrderIsoClass E α β] (e : E) {s : Set α}
     [hs : OrdConnected s] : OrdConnected (e '' s) := by
   erw [(e : α ≃o β).image_eq_preimage]
   apply ordConnected_preimage (e : α ≃o β).symm
@@ -230,7 +230,8 @@ theorem ordConnected_image {E : Type*} [OrderIsoClass E α β] (e : E) {s : Set 
 
 -- porting note: split up `simp_rw [← image_univ, OrdConnected_image e]`, would not work otherwise
 @[instance]
-theorem ordConnected_range {E : Type*} [OrderIsoClass E α β] (e : E) : OrdConnected (range e) := by
+theorem ordConnected_range {E : Type*} [EquivLike E α β] [OrderIsoClass E α β] (e : E) :
+    OrdConnected (range e) := by
   simp_rw [← image_univ]
   exact ordConnected_image (e : α ≃o β)
 #align set.ord_connected_range Set.ordConnected_range

@@ -203,7 +203,7 @@ end ZeroHom
 section AddMonoidHom
 
 variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
-variable {F : Type*} [AddMonoidHomClass F M N]
+variable {F : Type*} [NDFunLike F M N] [AddMonoidHomClass F M N]
 
 /-- Composition with a fixed additive homomorphism is itself an additive homomorphism on functions.
 -/

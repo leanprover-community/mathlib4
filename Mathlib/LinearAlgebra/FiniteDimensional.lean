@@ -245,7 +245,7 @@ theorem _root_.Submodule.eq_top_of_finrank_eq [FiniteDimensional K V] {S : Submo
     span_image]
   have := bS.span_eq
   rw [bS_eq, Basis.coe_ofVectorSpace, Subtype.range_coe] at this
-  rw [this, map_top (Submodule.subtype S), range_subtype]
+  rw [this, Submodule.map_top (Submodule.subtype S), range_subtype]
 #align finite_dimensional.eq_top_of_finrank_eq Submodule.eq_top_of_finrank_eq
 #align submodule.eq_top_of_finrank_eq Submodule.eq_top_of_finrank_eq
 

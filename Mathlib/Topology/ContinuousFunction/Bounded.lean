@@ -54,7 +54,7 @@ section
 
 You should also extend this typeclass when you extend `BoundedContinuousFunction`. -/
 class BoundedContinuousMapClass (F : Type*) (α β : outParam <| Type*) [TopologicalSpace α]
-    [PseudoMetricSpace β] extends ContinuousMapClass F α β where
+    [PseudoMetricSpace β] [NDFunLike F α β] extends ContinuousMapClass F α β : Prop where
   map_bounded (f : F) : ∃ C, ∀ x y, dist (f x) (f y) ≤ C
 #align bounded_continuous_map_class BoundedContinuousMapClass
 
@@ -70,21 +70,18 @@ variable [TopologicalSpace α] [PseudoMetricSpace β] [PseudoMetricSpace γ]
 
 variable {f g : α →ᵇ β} {x : α} {C : ℝ}
 
-instance : BoundedContinuousMapClass (α →ᵇ β) α β where
+instance : NDFunLike (α →ᵇ β) α β where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨_, _⟩, _⟩ := f
     obtain ⟨⟨_, _⟩, _⟩ := g
     congr
+
+instance : BoundedContinuousMapClass (α →ᵇ β) α β where
   map_continuous f := f.continuous_toFun
   map_bounded f := f.map_bounded'
 
-/-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`
-directly. -/
-instance : CoeFun (α →ᵇ β) fun _ => α → β :=
-  FunLike.hasCoeToFun
-
-instance [BoundedContinuousMapClass F α β] : CoeTC F (α →ᵇ β) :=
+instance [NDFunLike F α β] [BoundedContinuousMapClass F α β] : CoeTC F (α →ᵇ β) :=
   ⟨fun f =>
     { toFun := f
       continuous_toFun := map_continuous f
