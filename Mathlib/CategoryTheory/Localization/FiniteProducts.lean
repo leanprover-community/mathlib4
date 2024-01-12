@@ -34,12 +34,14 @@ variable {J C : Type*} [Category J] [Category C] {L : (J ⥤ C) ⥤ C}
 @[simps]
 noncomputable def coneOfAdj (F : J ⥤ C) : Cone F where
   pt := L.obj F
-  π := ((adj.homEquiv _ F).symm (𝟙 _))
+  π := adj.counit.app F
 
 /-- The cones defined by `coneOfAdj` are limit cones. -/
 def isLimitConeOfAdj (F : J ⥤ C) :
-    IsLimit (coneOfAdj adj F) := by
-  sorry
+    IsLimit (coneOfAdj adj F) where
+  lift := sorry
+  fac := sorry
+  uniq := sorry
 
 end Limits
 
@@ -48,12 +50,11 @@ open Limits
 namespace Localization
 
 variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D] (L : C ⥤ D)
-    (W : MorphismProperty C) [L.IsLocalization W]
+    {W : MorphismProperty C} [L.IsLocalization W]
     [W.ContainsIdentities]
 
 namespace HasProductsOfShapeAux
 
-variable {W}
 variable {J : Type} [Finite J] [HasProductsOfShape J C]
   (hW : W.IsStableUnderProductsOfShape J)
 
@@ -99,6 +100,8 @@ noncomputable def isLimitMapCone (F : Discrete J ⥤ C) :
       sorry))
 
 end HasProductsOfShapeAux
+
+variable (W)
 
 lemma hasProductsOfShape (J : Type) [Finite J] [HasProductsOfShape J C]
     (hW : W.IsStableUnderProductsOfShape J) :
