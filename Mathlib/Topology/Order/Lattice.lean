@@ -131,7 +131,7 @@ end SupInf
 
 open Finset
 
-variable {α ι : Type*} {s : Finset ι} {f : ι → α → L} {g : ι → L} {l : Filter α}
+variable {ι α : Type*} {s : Finset ι} {f : ι → α → L} {l : Filter α} {g : ι → L}
 
 lemma finset_sup'_nhds [SemilatticeSup L] [ContinuousSup L]
     (hne : s.Nonempty) (hs : ∀ i ∈ s, Tendsto (f i) l (𝓝 (g i))) :
