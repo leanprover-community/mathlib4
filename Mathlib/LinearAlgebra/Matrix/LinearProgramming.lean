@@ -37,17 +37,8 @@ def StandardLP.Admits (P : StandardLP m n K) (x : n → K) : Prop :=
 def StandardLP.Reaches (P : StandardLP m n K) (v : K) : Prop :=
   ∃ x : n → K, P.Admits x ∧ P.c ⬝ᵥ x = v
 
-def StandardLP.Minimum (P : StandardLP m n K) (v : K) : Prop :=
-  IsLeast P.Reaches v
-
-def StandardLP.Maximum (P : StandardLP m n K) (v : K) : Prop :=
-  IsGreatest P.Reaches v
-
 def StandardLP.dual (P : StandardLP m n K) : StandardLP n m K :=
   ⟨-P.Aᵀ, -P.c, P.b⟩
-
-example (a b c : ℤ) (hab : a ≤ b) (hc : 0 ≤ c) : a * c ≤ b * c := by
-  exact Int.mul_le_mul_of_nonneg_right hab hc
 
 theorem StandardLP.weakDuality (P : StandardLP m n K) {v : K} (hP : P.Reaches v)
     {w : K} (hD : P.dual.Reaches w) : v ≤ w := by
