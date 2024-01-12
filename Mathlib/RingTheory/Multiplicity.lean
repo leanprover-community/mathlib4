@@ -251,12 +251,12 @@ theorem multiplicity_eq_multiplicity_iff {a b : α} {c d : β} :
       (multiplicity_le_multiplicity_iff.mpr fun n => (h n).mpr)⟩
 #align multiplicity.multiplicity_eq_multiplicity_iff multiplicity.multiplicity_eq_multiplicity_iff
 
-theorem le_multiplicity_map {F : Type*} [MonoidHomClass F α β] (f : F) {a b : α} :
-    multiplicity a b ≤ multiplicity (f a) (f b) :=
+theorem le_multiplicity_map {F : Type*} [NDFunLike F α β] [MonoidHomClass F α β]
+    (f : F) {a b : α} : multiplicity a b ≤ multiplicity (f a) (f b) :=
   multiplicity_le_multiplicity_iff.mpr fun n ↦ by rw [← map_pow]; exact map_dvd f
 
-theorem multiplicity_map_eq {F : Type*} [MulEquivClass F α β] (f : F) {a b : α} :
-    multiplicity (f a) (f b) = multiplicity a b :=
+theorem multiplicity_map_eq {F : Type*} [EquivLike F α β] [MulEquivClass F α β]
+    (f : F) {a b : α} : multiplicity (f a) (f b) = multiplicity a b :=
   multiplicity_eq_multiplicity_iff.mpr fun n ↦ by rw [← map_pow]; exact map_dvd_iff f
 
 theorem multiplicity_le_multiplicity_of_dvd_right {a b c : α} (h : b ∣ c) :
