@@ -154,8 +154,8 @@ example {α : Type _} [CommRing α] {a b c d e f g h i : α} :
       Fin.succ_one_eq_two, cons_val_two, tail_cons, head_fin_const, Fin.sum_univ_succ, Fin.val_zero,
       pow_zero, one_mul, Fin.zero_succAbove, Finset.univ_unique, Fin.val_succ, Fin.coe_fin_one,
       zero_add, pow_one, neg_mul, Fin.succ_succAbove_zero, Finset.sum_neg_distrib,
-      Finset.sum_singleton, cons_val_succ, Fin.succ_succAbove_one, even_add_self, Even.neg_pow,
-      one_pow, Finset.sum_const, Finset.card_singleton, one_smul]
+      Finset.sum_singleton, cons_val_succ, Fin.succ_succAbove_one, Nat.reduceAdd, even_two,
+      Even.neg_pow, one_pow, Finset.sum_const, Finset.card_singleton, one_smul]
   ring
 
 end Matrix
