@@ -20,12 +20,10 @@ define this subspace.
 euclidean geometry, perpendicular, perpendicular bisector, line segment bisector, equidistant
 -/
 
-set_option autoImplicit true
-
 open Set
 open scoped BigOperators RealInnerProductSpace
 
-variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
 variable [NormedAddTorsor V P]
 
 noncomputable section
@@ -135,7 +133,7 @@ theorem inner_vsub_vsub_of_dist_eq_of_dist_eq {c₁ c₂ p₁ p₂ : P} (hc₁ :
 
 end EuclideanGeometry
 
-variable [NormedAddCommGroup V'] [InnerProductSpace ℝ V'] [MetricSpace P']
+variable {P' V' : Type*} [NormedAddCommGroup V'] [InnerProductSpace ℝ V'] [MetricSpace P']
 variable [NormedAddTorsor V' P']
 
 theorem Isometry.preimage_perpBisector {f : P → P'} (h : Isometry f) (p₁ p₂ : P) :

@@ -59,9 +59,6 @@ fields, they can also be C^k vector bundles, etc.
   bundle.
 -/
 
-set_option autoImplicit true
-
-
 assert_not_exists mfderiv
 
 open Bundle Set PartialHomeomorph
@@ -327,6 +324,7 @@ theorem contMDiffOn_symm_coordChangeL :
   (smoothOn_symm_coordChangeL IB e e').of_le le_top
 
 variable {e e'}
+set_option autoImplicit true
 
 theorem contMDiffAt_coordChangeL (h : x ∈ e.baseSet) (h' : x ∈ e'.baseSet) :
     ContMDiffAt IB 𝓘(𝕜, F →L[𝕜] F) n (fun b : B => (e.coordChangeL 𝕜 e' b : F →L[𝕜] F)) x :=
