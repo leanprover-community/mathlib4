@@ -220,7 +220,7 @@ open MeasureTheory.Measure (QuasiMeasurePreserving)
 See also `AEEqFun.compMeasurePreserving`. -/
 def compQuasiMeasurePreserving (g : β →ₘ[ν] γ) (f : α → β) (hf : QuasiMeasurePreserving f μ ν) :
     α →ₘ[μ] γ :=
-  Quotient.liftOn' g (fun g ↦ mk (g ∘ f) <| g.2.comp_quasiMeasurePreserving hf) <| fun _ _ h ↦
+  Quotient.liftOn' g (fun g ↦ mk (g ∘ f) <| g.2.comp_quasiMeasurePreserving hf) fun _ _ h ↦
     mk_eq_mk.2 <| h.comp_tendsto hf.tendsto_ae
 
 @[simp]
@@ -835,7 +835,7 @@ theorem div_toGerm (f g : α →ₘ[μ] γ) : (f / g).toGerm = f.toGerm / g.toGe
 
 end Div
 
-section Zpow
+section ZPow
 
 instance instPowInt : Pow (α →ₘ[μ] γ) ℤ :=
   ⟨fun f n => comp _ (continuous_zpow n) f⟩
@@ -856,7 +856,7 @@ theorem zpow_toGerm (f : α →ₘ[μ] γ) (n : ℤ) : (f ^ n).toGerm = f.toGerm
   comp_toGerm _ _ _
 #align measure_theory.ae_eq_fun.zpow_to_germ MeasureTheory.AEEqFun.zpow_toGerm
 
-end Zpow
+end ZPow
 
 end Group
 

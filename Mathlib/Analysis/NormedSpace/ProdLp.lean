@@ -745,7 +745,7 @@ instance instProdNormedSpace : NormedSpace 𝕜 (WithLp p (α × β)) where
       have smul_snd : (c • f).snd = c • f.snd := rfl
       simp only [prod_norm_eq_add (zero_lt_one.trans_le hp), norm_smul, Real.mul_rpow,
         norm_nonneg, smul_fst, smul_snd]
-      rw [← mul_add, mul_rpow (rpow_nonneg_of_nonneg (norm_nonneg _) _),
+      rw [← mul_add, mul_rpow (rpow_nonneg (norm_nonneg _) _),
         ← rpow_mul (norm_nonneg _), this, Real.rpow_one]
       positivity
 

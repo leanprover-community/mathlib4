@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Kyle Miller
 import Lean
 import Std
 import Mathlib.Tactic.PPWithUniv
+import Mathlib.Tactic.ExtendDoc
 
 set_option autoImplicit true
 

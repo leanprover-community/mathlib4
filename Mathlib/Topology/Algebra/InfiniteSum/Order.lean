@@ -267,7 +267,7 @@ theorem Finite.of_summable_const [LinearOrderedAddCommGroup α] [TopologicalSpac
     simpa using sum_le_hasSum s (fun a _ => hb.le) hf.hasSum
   obtain ⟨n, hn⟩ := Archimedean.arch (∑' _ : ι, b) hb
   have : ∀ s : Finset ι, s.card ≤ n := fun s => by
-    simpa [nsmul_le_nsmul_iff hb] using (H s).trans hn
+    simpa [nsmul_le_nsmul_iff_left hb] using (H s).trans hn
   have : Fintype ι := fintypeOfFinsetCardLe n this
   infer_instance
 
