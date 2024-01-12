@@ -232,13 +232,8 @@ instance : Coe (r ↪r s) (r →r s) :=
 -- instance : CoeFun (r ↪r s) fun _ => α → β :=
 --   ⟨fun o => o.toEmbedding⟩
 
-<<<<<<< HEAD
--- TODO: define and instantiate a `RelEmbeddingClass`
-instance : RelHomClass (r ↪r s) r s where
-=======
 -- TODO: define and instantiate a `RelEmbeddingClass` when `EmbeddingLike` is defined
 instance : NDFunLike (r ↪r s) α β where
->>>>>>> Vierkantor/unbundled-FunLike-testings
   coe := fun x => x.toFun
   coe_injective' f g h := by
     rcases f with ⟨⟨⟩⟩
@@ -644,13 +639,8 @@ instance : CoeOut (r ≃r s) (r ↪r s) :=
 -- instance : CoeFun (r ≃r s) fun _ => α → β :=
 --   ⟨fun f => f⟩
 
-<<<<<<< HEAD
--- TODO: define and instantiate a `RelIsoClass`
-instance : RelHomClass (r ≃r s) r s where
-=======
 -- TODO: define and instantiate a `RelIsoClass` when `EquivLike` is defined
 instance : NDFunLike (r ≃r s) α β where
->>>>>>> Vierkantor/unbundled-FunLike-testings
   coe := fun x => x
   coe_injective' := Equiv.coe_fn_injective.comp toEquiv_injective
 
