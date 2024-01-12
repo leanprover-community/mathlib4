@@ -584,6 +584,22 @@ theorem surj (f : LocalizationMap S N) (z : N) : ∃ x : M × S, z * f.toMap x.2
 #align submonoid.localization_map.surj Submonoid.LocalizationMap.surj
 #align add_submonoid.localization_map.surj AddSubmonoid.LocalizationMap.surj
 
+/-- Given a localization map `f : M →* N`, and `z w : N`, have `z' w' :M` and `d : S`
+such that `f z' * (f d)⁻¹ = z` and `f w' * (f d)⁻¹ = w`. -/
+@[to_additive
+    "Given a localization map `f : M →+ N`, and `z w : N`, have `z' w' :M` and `d : S`
+such that `f z' - f d = z` and `f w' - f d = w`."]
+theorem surj₂ (f : LocalizationMap S N) (z w : N) : ∃ z' w' : M, ∃ d : S,
+    (z * f.toMap d = f.toMap z') ∧  (w * f.toMap d = f.toMap w') := by
+  let ⟨a , ha⟩ := surj f z
+  let ⟨b , hb⟩ := surj f w
+  use a.1*b.2 , a.2*b.1 , a.2*b.2
+  constructor
+  · simp_rw [@mul_def, @MonoidHom.map_mul, ← ha]
+    exact (mul_assoc z ((toMap f) ↑a.2) ((toMap f) ↑b.2)).symm
+  · simp_rw [@mul_def, @MonoidHom.map_mul, ← hb]
+    exact mul_left_comm w ((toMap f) ↑a.2) ((toMap f) ↑b.2)
+
 @[to_additive]
 theorem eq_iff_exists (f : LocalizationMap S N) {x y} :
     f.toMap x = f.toMap y ↔ ∃ c : S, ↑c * x = c * y := Iff.intro (f.4 x y)
