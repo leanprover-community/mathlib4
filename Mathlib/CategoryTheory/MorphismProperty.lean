@@ -963,6 +963,67 @@ lemma IsInvertedBy.pi (F : ∀ j, C j ⥤ D j) (hF : ∀ j, (W j).IsInvertedBy (
 
 end
 
+section
+
+variable (W : MorphismProperty C)
+
+/-- The morphism property on `J ⥤ C` which is defined objectwise
+from `W : MorphismProperty C`. -/
+def functorCategory (J : Type*) [Category J] : MorphismProperty (J ⥤ C) :=
+  fun _ _ f => ∀ (j : J), W (f.app j)
+
+/-- The property that a morphism property `W` is stable under limits
+indexed by a category `J`. -/
+def IsStableUnderLimitsOfShape (J : Type*) [Category J] : Prop :=
+  ∀ (X₁ X₂ : J ⥤ C) (c₁ : Cone X₁) (c₂ : Cone X₂)
+    (_ : IsLimit c₁) (h₂ : IsLimit c₂) (f : X₁ ⟶ X₂) (_ : W.functorCategory J f),
+      W (h₂.lift (Cone.mk _ (c₁.π ≫ f)))
+
+/-lemma IsStableUnderLimitsOfShape.mk (J : Type*) [Category J] (hW₀ : W.RespectsIso)
+    [HasLimitsOfShape J C]
+    (h : ∀ (X₁ X₂ : J ⥤ C) (f : X₁ ⟶ X₂) (_ : W.functorCategory J f),
+      ∃ (c₁' : Cone X₁) (c₂' : Cone X₂)
+      (h₁ : IsLimit c₁') (h₂ : IsLimit c₂'), W (h₂.lift (Cone.mk _ (c₁'.π ≫ f)))) :
+    W.IsStableUnderLimitsOfShape J := sorry-/
+
+variable {W}
+
+lemma IsStableUnderLimitsOfShape.lim_map {J : Type*} [Category J]
+  (hW : W.IsStableUnderLimitsOfShape J) {X Y : J ⥤ C}
+  (f : X ⟶ Y) [HasLimitsOfShape J C]
+  (hf : W.functorCategory _ f) : W (lim.map f) :=
+  hW X Y _ _ (limit.isLimit X) (limit.isLimit Y) f hf
+
+variable (W)
+
+/-- The property that a morphism property `W` is stable under products indexed by a type `J`. -/
+abbrev IsStableUnderProductsOfShape (J : Type*) := W.IsStableUnderLimitsOfShape (Discrete J)
+
+lemma IsStableUnderProductsOfShape.mk (J : Type*)
+    (hW₀ : W.RespectsIso) [HasProductsOfShape J C]
+    (hW : ∀ (X₁ X₂ : J → C) (f : ∀ j, X₁ j ⟶ X₂ j) (_ : ∀ (j : J), W (f j)),
+      W (Pi.map f)) : W.IsStableUnderProductsOfShape J := by
+  intro X₁ X₂ c₁ c₂ hc₁ hc₂ f hf
+  let φ := fun j => f.app (Discrete.mk j)
+  have hf' := hW _ _ φ (fun j => hf (Discrete.mk j))
+  refine' (hW₀.arrow_mk_iso_iff _).2 hf'
+  refine' Arrow.isoMk
+    (IsLimit.conePointUniqueUpToIso hc₁ (limit.isLimit X₁) ≪≫ (Pi.isoLimit _).symm)
+    (IsLimit.conePointUniqueUpToIso hc₂ (limit.isLimit X₂) ≪≫ (Pi.isoLimit _).symm) _
+  apply limit.hom_ext
+  rintro ⟨j⟩
+  simp
+
+class IsStableUnderFiniteProducts : Prop :=
+  isStableUnderProductsOfShape (J : Type) [Finite J] : W.IsStableUnderProductsOfShape J
+
+lemma isStableUnderProductsOfShape_of_isStableUnderFiniteProducts
+    (J : Type) [Finite J] [W.IsStableUnderFiniteProducts] :
+    W.IsStableUnderProductsOfShape J :=
+  IsStableUnderFiniteProducts.isStableUnderProductsOfShape J
+
+end
+
 end MorphismProperty
 
 end CategoryTheory
