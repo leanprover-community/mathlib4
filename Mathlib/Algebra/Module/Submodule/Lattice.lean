@@ -18,11 +18,6 @@ If `p` and `q` are submodules of a module, `p ≤ q` means that `p ⊆ q`.
 Many results about operations on this lattice structure are defined in `LinearAlgebra/Basic.lean`,
 most notably those which use `span`.
 
-## Implementation notes
-
-This structure should match the `AddSubmonoid.CompleteLattice` structure, and we should try
-to unify the APIs where possible.
-
 -/
 
 universe v
@@ -286,10 +281,25 @@ theorem toAddSubmonoid_sSup' (S : Set (Submodule R M)) :
     (sSup S).toAddSubmonoid = ⨆ p ∈ S, p.toAddSubmonoid := by
   rw [toAddSubmonoid_sSup, ← Set.image, sSup_image]
 
-instance completeLattice : CompleteLattice (Submodule R M) :=
-  { toAddSubmonoid_injective.completeLattice toAddSubmonoid toAddSubmonoid_sup toAddSubmonoid_inf
-      toAddSubmonoid_sSup' toAddSubmonoid_sInf' rfl rfl with
-    toPartialOrder := SetLike.instPartialOrder }
+instance completeLattice : CompleteLattice (Submodule R M) where
+    le_top _ _ _ := trivial
+    bot_le p x hx := by rw [(mem_bot R).mp hx]; exact Submodule.zero_mem p
+    le_sup_left := fun _ _ ↦ Set.subset_iInter₂ fun _ ⟨h, _⟩ ↦ h
+    le_sup_right := fun _ _ ↦ Set.subset_iInter₂ fun _ ⟨_, h⟩ ↦ h
+    sup_le := fun _ _ _ h₁ h₂ ↦ Set.biInter_subset_of_mem ⟨h₁, h₂⟩
+    le_inf := fun _ _ _ ↦ Set.subset_inter
+    inf_le_left := fun _ _ ↦ Set.inter_subset_left _ _
+    inf_le_right := fun _ _ ↦ Set.inter_subset_right _ _
+    le_sSup := fun S p hs ↦ by
+      rw [← toAddSubmonoid_le, toAddSubmonoid_sSup]
+      exact le_sSup ⟨p, hs, rfl⟩
+    sSup_le := fun S p hs ↦ by
+      rw [← toAddSubmonoid_le, toAddSubmonoid_sSup]
+      refine sSup_le fun _ ⟨q, hq, hq'⟩ ↦ ?_
+      rw [← hq']
+      exact hs q hq
+    le_sInf := fun _ _ ↦ Set.subset_iInter₂
+    sInf_le := fun _ _ ↦ Set.biInter_subset_of_mem
 #align submodule.complete_lattice Submodule.completeLattice
 
 @[simp]

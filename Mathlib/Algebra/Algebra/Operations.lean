@@ -473,7 +473,7 @@ protected theorem pow_induction_on_left' {C : ∀ (n : ℕ) (x), x ∈ M ^ n →
       (fun x hx y hy Cx Cy => hadd _ _ _ _ _ Cx Cy) hx
 #align submodule.pow_induction_on_left' Submodule.pow_induction_on_left'
 
-set_option maxHeartbeats 700000 in
+set_option maxHeartbeats 600000 in
 /-- Dependent version of `Submodule.pow_induction_on_right`. -/
 @[elab_as_elim]
 protected theorem pow_induction_on_right' {C : ∀ (n : ℕ) (x), x ∈ M ^ n → Prop}
