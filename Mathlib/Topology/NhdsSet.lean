@@ -177,3 +177,65 @@ lemma Continuous.tendsto_nhdsSet_nhds
     Tendsto f (𝓝ˢ s) (𝓝 y) := by
   rw [← nhdsSet_singleton]
   exact h.tendsto_nhdsSet h'
+
+theorem IsOpen.forall_near_mem_of_subset {s t : Set X} (h : IsOpen s) (ht : t ⊆ s) :
+    ∀ᶠ x in 𝓝ˢ t, x ∈ s := by
+  apply Eventually.filter_mono (nhdsSet_mono ht)
+  rw [h.nhdsSet_eq, eventually_principal]
+  exact fun x => id
+
+/- In the next lemma, the inequality cannot be improved to an equality. For instance,
+if `X` has two elements and the coarse topology and s and t are distinct singletons then
+𝓝ˢ (s ∩ t) = ⊥ while 𝓝ˢ s ⊓ 𝓝ˢ t = ⊤ and those are different. -/
+-- XXX: this lemma or the next lemma? change or move the comment!
+theorem nhdsSet_inter_le (s t : Set X) : 𝓝ˢ (s ∩ t) ≤ 𝓝ˢ s ⊓ 𝓝ˢ t :=
+  (monotone_nhdsSet (X := X)).map_inf_le s t
+
+theorem IsClosed.nhdsSet_le_sup {t : Set X} (h : IsClosed t) (s : Set X) :
+    𝓝ˢ s ≤ 𝓝ˢ (s ∩ t) ⊔ 𝓟 (tᶜ) :=
+  calc
+    𝓝ˢ s = 𝓝ˢ (s ∩ t ∪ s ∩ tᶜ) := by rw [Set.inter_union_compl s t]
+    _ = 𝓝ˢ (s ∩ t) ⊔ 𝓝ˢ (s ∩ tᶜ) := by rw [nhdsSet_union]
+    _ ≤ 𝓝ˢ (s ∩ t) ⊔ 𝓝ˢ (tᶜ) := (sup_le_sup_left (monotone_nhdsSet (s.inter_subset_right (tᶜ))) _)
+    _ = 𝓝ˢ (s ∩ t) ⊔ 𝓟 (tᶜ) := by rw [h.isOpen_compl.nhdsSet_eq]
+
+theorem IsClosed.nhdsSet_le_sup' {t : Set X} (h : IsClosed t) (s : Set X) :
+    𝓝ˢ s ≤ 𝓝ˢ (t ∩ s) ⊔ 𝓟 (tᶜ) := by rw [Set.inter_comm]; exact h.nhdsSet_le_sup s
+
+theorem eventually_nhdsSet_iff {p : X → Prop} : (∀ᶠ x in 𝓝ˢ s, p x) ↔ ∀ x ∈ s, ∀ᶠ y in 𝓝 x, p y :=
+  by rw [nhdsSet, eventually_sSup, Set.ball_image_iff]
+
+theorem Filter.Eventually.eventually_nhdsSet {p : X → Prop} (h : ∀ᶠ y in 𝓝ˢ s, p y) :
+    ∀ᶠ y in 𝓝ˢ s, ∀ᶠ x in 𝓝 y, p x :=
+  eventually_nhdsSet_iff.mpr fun x x_in => (eventually_nhdsSet_iff.mp h x x_in).eventually_nhds
+
+@[deprecated Filter.Eventually.self_of_nhdsSet]
+theorem Filter.Eventually.on_set {p : X → Prop} (h : ∀ᶠ y in 𝓝ˢ s, p y) : ∀ x ∈ s, p x :=
+  h.self_of_nhdsSet
+
+theorem Filter.Eventually.union_nhdsSet {p : X → Prop} :
+    (∀ᶠ x in 𝓝ˢ (s ∪ t), p x) ↔ (∀ᶠ x in 𝓝ˢ s, p x) ∧ ∀ᶠ x in 𝓝ˢ t, p x := by
+  rw [nhdsSet_union, eventually_sup]
+
+theorem Filter.Eventually.union {p : X → Prop} (hs : ∀ᶠ x in 𝓝ˢ s, p x) (ht : ∀ᶠ x in 𝓝ˢ t, p x) :
+    ∀ᶠ x in 𝓝ˢ (s ∪ t), p x :=
+  Filter.Eventually.union_nhdsSet.mpr ⟨hs, ht⟩
+
+-- xxx: where is a good place? can the proof be golfed?
+theorem sSup_iUnion {α : Type*} {ι : Sort*} (t : ι → Set (Filter α)) :
+  sSup (⋃ i, t i) = ⨆ i, sSup (t i) := by
+  ext
+  simp only [mem_sSup, mem_iUnion, forall_exists_index, mem_iSup]
+  exact ⟨fun a i f h ↦ a f i h, fun a f i h ↦ a i f h⟩
+
+theorem nhdsSet_iUnion {ι : Sort*} (s : ι → Set X) : 𝓝ˢ (⋃ i, s i) = ⨆ i, 𝓝ˢ (s i) := by
+  simp only [nhdsSet, image_iUnion,  sSup_iUnion]
+
+theorem eventually_nhdsSet_iUnion₂ {X ι : Type*} [TopologicalSpace X] {p : ι → Prop}
+    {s : ι → Set X} {P : X → Prop} :
+    (∀ᶠ x in 𝓝ˢ (⋃ (i) (_ : p i), s i), P x) ↔ ∀ i, p i → ∀ᶠ x in 𝓝ˢ (s i), P x := by
+  simp only [nhdsSet_iUnion, eventually_iSup]
+
+theorem eventually_nhdsSet_iUnion {X ι : Type*} [TopologicalSpace X] {s : ι → Set X}
+    {P : X → Prop} : (∀ᶠ x in 𝓝ˢ (⋃ i, s i), P x) ↔ ∀ i, ∀ᶠ x in 𝓝ˢ (s i), P x := by
+  simp only [nhdsSet_iUnion, eventually_iSup]
