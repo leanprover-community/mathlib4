@@ -51,9 +51,6 @@ Topology in mathlib heavily uses filters (even more than in Bourbaki). See expla
 topological space, interior, closure, frontier, neighborhood, continuity, continuous function
 -/
 
-set_option autoImplicit true
-
-
 noncomputable section
 
 open Set Filter
@@ -1083,11 +1080,11 @@ instance nhds_neBot {a : α} : NeBot (𝓝 a) :=
   neBot_of_le (pure_le_nhds a)
 #align nhds_ne_bot nhds_neBot
 
-theorem tendsto_nhds_of_eventually_eq {f : β → α} {a : α} (h : ∀ᶠ x in l, f x = a) :
+theorem tendsto_nhds_of_eventually_eq {l : Filter β} {f : β → α} {a : α} (h : ∀ᶠ x in l, f x = a) :
     Tendsto f l (𝓝 a) :=
   tendsto_const_nhds.congr' (.symm h)
 
-theorem Filter.EventuallyEq.tendsto {f : β → α} {a : α} (hf : f =ᶠ[l] fun _ ↦ a) :
+theorem Filter.EventuallyEq.tendsto {l : Filter β} {f : β → α} {a : α} (hf : f =ᶠ[l] fun _ ↦ a) :
     Tendsto f l (𝓝 a) :=
   tendsto_nhds_of_eventually_eq hf
 
