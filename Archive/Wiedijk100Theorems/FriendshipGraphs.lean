@@ -222,7 +222,7 @@ theorem adjMatrix_pow_mod_p_of_regular {p : ℕ} (dmod : (d : ZMod p) = 1)
     (hd : G.IsRegularOfDegree d) {k : ℕ} (hk : 2 ≤ k) :
     G.adjMatrix (ZMod p) ^ k = of (fun _ _ => 1) := by
   match k with
-  | 0 | 1 => exfalso; linarith
+  | 0 | 1 => exfalso; omega
   | k + 2 =>
     induction' k with k hind
     · exact adjMatrix_sq_mod_p_of_regular hG dmod hd
@@ -241,9 +241,9 @@ theorem false_of_three_le_degree (hd : G.IsRegularOfDegree d) (h : 3 ≤ d) : Fa
   -- get a prime factor of d - 1
   let p : ℕ := (d - 1).minFac
   have p_dvd_d_pred := (ZMod.nat_cast_zmod_eq_zero_iff_dvd _ _).mpr (d - 1).minFac_dvd
-  have dpos : 1 ≤ d := by linarith
+  have dpos : 1 ≤ d := by omega
   have d_cast : ↑(d - 1) = (d : ℤ) - 1 := by norm_cast
-  haveI : Fact p.Prime := ⟨Nat.minFac_prime (by linarith)⟩
+  haveI : Fact p.Prime := ⟨Nat.minFac_prime (by omega)⟩
   have hp2 : 2 ≤ p := (Fact.out (p := p.Prime)).two_le
   have dmod : (d : ZMod p) = 1 := by
     rw [← Nat.succ_pred_eq_of_pos dpos, Nat.succ_eq_add_one, Nat.pred_eq_sub_one]
@@ -262,7 +262,7 @@ theorem false_of_three_le_degree (hd : G.IsRegularOfDegree d) (h : 3 ≤ d) : Fa
     of_apply, Ne.def]
   rw [Vmod, ← Nat.cast_one (R := ZMod (Nat.minFac (d - 1))), ZMod.nat_cast_zmod_eq_zero_iff_dvd,
     Nat.dvd_one, Nat.minFac_eq_one_iff]
-  linarith
+  omega
 #align theorems_100.friendship.false_of_three_le_degree Theorems100.Friendship.false_of_three_le_degree
 
 /-- If `d ≤ 1`, a `d`-regular friendship graph has at most one vertex, which is
@@ -278,7 +278,7 @@ theorem existsPolitician_of_degree_le_one (hd : G.IsRegularOfDegree d) (hd1 : d 
     | succ n =>
       have : n = 0 := by
         rw [hn, Nat.succ_sub_succ_eq_sub, tsub_zero] at h
-        linarith
+        omega
       subst n
       rfl
   use Classical.arbitrary V
@@ -299,7 +299,7 @@ theorem neighborFinset_eq_of_degree_eq_two (hd : G.IsRegularOfDegree 2) (v : V) 
   convert_to 2 ≤ _
   · convert_to _ = Fintype.card V - 1
     · have hfr := card_of_regular hG hd
-      linarith
+      omega
     · exact Finset.card_erase_of_mem (Finset.mem_univ _)
   · dsimp only [IsRegularOfDegree, degree] at hd
     rw [hd]

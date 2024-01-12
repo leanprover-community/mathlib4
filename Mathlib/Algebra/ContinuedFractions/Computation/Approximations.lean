@@ -199,7 +199,7 @@ theorem fib_le_of_continuantsAux_b :
       · simp [fib_add_two, continuantsAux] -- case n = 0
       · simp [fib_add_two, continuantsAux] -- case n = 1
       · let g := of v -- case 2 ≤ n
-        have : ¬n + 2 ≤ 1 := by linarith
+        have : ¬n + 2 ≤ 1 := by omega
         have not_terminated_at_n : ¬g.TerminatedAt n := Or.resolve_left hyp this
         obtain ⟨gp, s_ppred_nth_eq⟩ : ∃ gp, g.s.get? n = some gp
         exact Option.ne_none_iff_exists'.mp not_terminated_at_n

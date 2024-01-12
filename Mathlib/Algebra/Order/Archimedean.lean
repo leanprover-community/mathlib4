@@ -397,7 +397,7 @@ end LinearOrderedField
 instance : Archimedean ℕ :=
   ⟨fun n m m0 => ⟨n, by
     rw [← mul_one n, smul_eq_mul, mul_assoc, one_mul m]
-    exact Nat.mul_le_mul_left n (by linarith)⟩⟩
+    exact Nat.mul_le_mul_left n (by omega)⟩⟩
 
 instance : Archimedean ℤ :=
   ⟨fun n m m0 =>

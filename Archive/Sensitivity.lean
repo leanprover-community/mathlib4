@@ -424,7 +424,7 @@ theorem exists_eigenvalue (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
   norm_cast at dim_le dim_add dimW ⊢
   rw [pow_succ'] at dim_le
   rw [Set.toFinset_card] at hH
-  linarith
+  omega
 #align sensitivity.exists_eigenvalue Sensitivity.exists_eigenvalue
 
 /-- **Huang sensitivity theorem** also known as the **Huang degree theorem** -/

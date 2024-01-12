@@ -322,7 +322,7 @@ theorem CharP.neg_one_ne_one [Ring R] (p : ℕ) [CharP R p] [Fact (2 < p)] : (-1
   have := (CharP.cast_eq_zero_iff R p 2).mp h
   have := Nat.le_of_dvd (by decide) this
   rw [fact_iff] at *
-  linarith
+  omega
 #align char_p.neg_one_ne_one CharP.neg_one_ne_one
 
 theorem CharP.neg_one_pow_char [Ring R] (p : ℕ) [CharP R p] [Fact p.Prime] :
