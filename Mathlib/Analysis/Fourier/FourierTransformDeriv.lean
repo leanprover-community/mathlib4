@@ -251,7 +251,7 @@ lemma ring_lmap_equiv_self_symm_apply (𝕜 : Type*) {M : Type*} (m : M)
 
 end ContinuousLinearMap
 
-/-- the lemma which doesn't work
+/- the lemma which doesn't work
 
 
 lemma has_deriv_at_fourier_integral [complete_space E] [second_countable_topology E]
