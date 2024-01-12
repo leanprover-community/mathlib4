@@ -9,87 +9,102 @@ import Mathlib.Analysis.NormedSpace.Star.ContinuousFunctionalCalculus
 open Set
 
 -- TODO : this is a terrible name...
-class CFCDomain (X : Type*) [TopologicalSpace X] (i : outParam (X → ℂ)) extends Embedding i : Prop
+class CFCEmb (S : Type*) [TopologicalSpace S] (i : outParam (S → ℂ)) extends Embedding i : Prop
 
-instance : CFCDomain ℂ id where toEmbedding := embedding_id
-instance {s : Set ℂ} : CFCDomain s (↑) where toEmbedding := embedding_subtype_val
-instance {s : Submonoid ℂ} : CFCDomain s (↑) where toEmbedding := embedding_subtype_val
-instance : CFCDomain ℝ (↑) where toEmbedding := Complex.isometry_ofReal.embedding
+instance : CFCEmb ℂ id where toEmbedding := embedding_id
+instance {s : Set ℂ} : CFCEmb s (↑) where toEmbedding := embedding_subtype_val
+instance {s : Submonoid ℂ} : CFCEmb s (↑) where toEmbedding := embedding_subtype_val
+instance : CFCEmb ℝ (↑) where toEmbedding := Complex.isometry_ofReal.embedding
 
-abbrev CFCDomain.incl (X : Type*) [TopologicalSpace X] {i : X → ℂ} [hi : CFCDomain X i] : C(X, ℂ) :=
+abbrev CFC.X (S : Type*) [TopologicalSpace S] {i : S → ℂ} [hi : CFCEmb S i] : C(S, ℂ) :=
   ⟨i, hi.continuous⟩
 
-variable {A : Type*} (X Y : Type*) [NormedRing A] [StarRing A] [NormedAlgebra ℂ A]
+variable {A : Type*} (S T U : Type*) [NormedRing A] [StarRing A] [NormedAlgebra ℂ A]
   [CstarRing A] [StarModule ℂ A] [CompleteSpace A]
-  [TopologicalSpace X] [TopologicalSpace Y] {i : X → ℂ} {j : Y → ℂ}
+  [TopologicalSpace S] [TopologicalSpace T] [TopologicalSpace U] {i : S → ℂ} {j : T → ℂ} {k : U → ℂ}
 
 -- TODO : this is a terrible name...
-class CFCElement [TopologicalSpace X] {i : X → ℂ} [CFCDomain X i] (a : A) : Prop where
+class CFCCompatible [TopologicalSpace S] {i : S → ℂ} [CFCEmb S i] (a : A) : Prop where
   isStarNormal : IsStarNormal a
   spectrum_subset : spectrum ℂ a ⊆ range i
 
-instance {a : A} [IsStarNormal a] : CFCElement ℂ a where
+instance {a : A} [IsStarNormal a] : CFCCompatible ℂ a where
   isStarNormal := inferInstance
   spectrum_subset := range_id ▸ subset_univ _
 
-lemma IsSelfAdjoint.cfcElement {a : A} (ha : IsSelfAdjoint a) : CFCElement ℝ a where
+lemma IsSelfAdjoint.cfcElement {a : A} (ha : IsSelfAdjoint a) : CFCCompatible ℝ a where
   isStarNormal := ha.isStarNormal
   spectrum_subset z hz := ⟨z.re, .symm <| ha.mem_spectrum_eq_re hz⟩
 
-instance {a : selfAdjoint A} : CFCElement ℝ (a : A) :=
+instance {a : selfAdjoint A} : CFCCompatible ℝ (a : A) :=
   a.2.cfcElement
 
-lemma cfcElement_of_unitary {a : A} (ha : a ∈ unitary A) : CFCElement circle a where
+lemma cfcElement_of_unitary {a : A} (ha : a ∈ unitary A) : CFCCompatible circle a where
   isStarNormal := ⟨ha.1.trans ha.2.symm⟩ -- TODO: we should have a name for this
   spectrum_subset := Subtype.range_val ▸ spectrum.subset_circle_of_unitary ha
 
-instance {a : unitary A} : CFCElement circle (a : A) :=
+instance {a : unitary A} : CFCCompatible circle (a : A) :=
   cfcElement_of_unitary a.2
 
 -- TODO: develop general `Embedding.lift`
-noncomputable def CFCElement.spectrumMap [Nonempty X] [hi : CFCDomain X i] (a : A)
-    [CFCElement X a] : C(spectrum ℂ a, X) :=
+noncomputable def CFCCompatible.spectrumMap [Nonempty S] [hi : CFCEmb S i] (a : A)
+    [CFCCompatible S a] : C(spectrum ℂ a, S) :=
   ⟨i.invFun ∘ (↑), hi.continuous_iff.mpr <| continuous_subtype_val.congr fun x ↦
     .symm <| i.invFun_eq <| spectrum_subset x.2⟩
 
-lemma CFCElement.apply_spectrum_map [Nonempty X] [CFCDomain X i] (a : A) [CFCElement X a]
-    (x : spectrum ℂ a) : i (spectrumMap X a x) = x :=
+lemma CFCCompatible.apply_spectrum_map [Nonempty S] [CFCEmb S i] (a : A) [CFCCompatible S a]
+    (x : spectrum ℂ a) : i (spectrumMap S a x) = x :=
   i.invFun_eq <| spectrum_subset x.2
 
-lemma CFCElement.range_spectrum_map [Nonempty X] [hi : CFCDomain X i] (a : A) [CFCElement X a] :
-    range (spectrumMap X a) = i ⁻¹' spectrum ℂ a :=
+lemma CFCCompatible.range_spectrum_map [Nonempty S] [hi : CFCEmb S i] (a : A) [CFCCompatible S a] :
+    range (spectrumMap S a) = i ⁻¹' spectrum ℂ a :=
   -- ugly
-  subset_antisymm (range_subset_iff.mpr fun x ↦ by simp [apply_spectrum_map X a])
+  subset_antisymm (range_subset_iff.mpr fun x ↦ by simp [apply_spectrum_map S a])
     (fun x hx ↦ ⟨⟨i x, hx⟩, hi.inj i.apply_invFun_apply⟩)
 
-variable {X Y} [CstarRing A] [StarModule ℂ A] [CompleteSpace A] [Nonempty X]
+variable {S T} [CstarRing A] [StarModule ℂ A] [CompleteSpace A] [Nonempty S] [Nonempty T]
 
-noncomputable def cfc [CFCDomain X i] [CFCDomain Y j] (f : C(X, Y)) (a : A) [CFCElement X a] : A :=
-  haveI : IsStarNormal a := CFCElement.isStarNormal i
-  ↑(continuousFunctionalCalculus a <| (CFCDomain.incl Y).comp <| f.comp <|
-    CFCElement.spectrumMap X a)
+noncomputable def cfc [CFCEmb S i] [CFCEmb T j] (f : C(S, T)) (a : A) [CFCCompatible S a] : A :=
+  haveI : IsStarNormal a := CFCCompatible.isStarNormal i
+  ↑(continuousFunctionalCalculus a <| (CFC.X T).comp <| f.comp <|
+    CFCCompatible.spectrumMap S a)
 
-lemma cfc_eq_cfc' [CFCDomain X i] [CFCDomain Y j] (f : C(X, Y)) (a : A) [CFCElement X a] :
-    cfc f a = cfc (CFCDomain.incl Y |>.comp f) a :=
+lemma cfc_comp_emb [CFCEmb S i] [CFCEmb T j] (f : C(S, T)) (a : A) [CFCCompatible S a] :
+    cfc f a = cfc (CFC.X T |>.comp f) a :=
   rfl -- unbelievable...
 
-lemma cfc'_add [CFCDomain X i] (f g : C(X, ℂ)) (a : A) [CFCElement X a] :
-    cfc (f + g) a = cfc f a + cfc g a := by
-  rw [cfc, cfc, cfc, ← AddMemClass.coe_add (elementalStarAlgebra ℂ a), ← map_add]
-
-lemma cfc_add [CFCDomain X i] [CFCDomain Y j] [AddMonoid Y] [ContinuousAdd Y]
-    (hj : ∀ y₁ y₂, j (y₁ + y₂) = j y₁ + j y₂) (f g : C(X, Y)) (a : A) [CFCElement X a] :
-    cfc (f + g) a = cfc f a + cfc g a :=
-  rw []
-
-lemma spectrum_cfc_eq [CFCDomain X i] [hj : CFCDomain Y j] (f : C(X, Y)) (a : A)
-    [CFCElement X a] : spectrum ℂ (cfc f a) = (j ∘ f) '' (i ⁻¹' spectrum ℂ a) := by
-  have : IsStarNormal a := CFCElement.isStarNormal i
+lemma spectrum_cfc_eq [CFCEmb S i] [hj : CFCEmb T j] (f : C(S, T)) (a : A)
+    [CFCCompatible S a] : spectrum ℂ (cfc f a) = (j ∘ f) '' (i ⁻¹' spectrum ℂ a) := by
+  have : IsStarNormal a := CFCCompatible.isStarNormal i
   rw [cfc, ← StarSubalgebra.spectrum_eq, AlgEquiv.spectrum_eq (continuousFunctionalCalculus a),
       ContinuousMap.spectrum_eq_range, ← ContinuousMap.comp_assoc, ContinuousMap.coe_comp,
-      ContinuousMap.coe_comp, range_comp, CFCElement.range_spectrum_map, ContinuousMap.coe_mk]
+      ContinuousMap.coe_comp, range_comp, CFCCompatible.range_spectrum_map, ContinuousMap.coe_mk]
   exact elementalStarAlgebra.isClosed ℂ a
 
-instance [CFCDomain X i] [hj : CFCDomain Y j] (f : C(X, Y)) (a : A) [CFCElement X a] :
-    CFCElement Y (cfc f a) where
+instance [CFCEmb S i] [hj : CFCEmb T j] (f : C(S, T)) (a : A) [CFCCompatible S a] :
+    CFCCompatible T (cfc f a) where
   isStarNormal := sorry
+  spectrum_subset := by
+    rw [spectrum_cfc_eq, image_comp]
+    exact image_subset_range _ _
+
+lemma cfc_unique [CFCEmb S i] (a : A) [CFCCompatible S a] (Φ : C(S, ℂ) →⋆ₐ[ℂ] A)
+    (hΦa : Φ (CFC.X S) = a)
+    (hΦspec : ∀ (f g : C(S, ℂ)), (CFC.X S ⁻¹' spectrum ℂ a).EqOn f g → Φ f = Φ g)
+    (f : C(S, ℂ)) :
+    Φ f = cfc f a :=
+  sorry
+
+lemma cfc_comp [CFCEmb S i] [CFCEmb T j] [CFCEmb U k] (a : A) [CFCCompatible S a] (f : C(S, T))
+    (g : C(T, U)) :
+    cfc (g.comp f) a = cfc g (cfc f a) := by
+  rw [cfc_comp_emb (f := g.comp f), cfc_comp_emb (f := g), ← ContinuousMap.comp_assoc]
+  let Φ : C(T, ℂ) →⋆ₐ[ℂ] A :=
+  { toFun := fun h ↦ cfc (h.comp f) a,
+    map_one' := sorry,
+    map_mul' := sorry
+    map_zero' := sorry,
+    map_add' := sorry,
+    map_star' := sorry,
+    commutes' := sorry }
+  refine cfc_unique (cfc f a) Φ rfl sorry ((CFC.X U).comp g)
