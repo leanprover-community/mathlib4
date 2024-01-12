@@ -34,14 +34,18 @@ variable {m n K : Type} [Fintype m] [Fintype n] [LinearOrderedField K]
 def StandardLP.Admits (P : StandardLP m n K) (x : n → K) : Prop :=
   P.A.mulVec x ≤ P.b ∧ 0 ≤ x
 
+def StandardLP.Admissible (P : StandardLP m n K) : Prop :=
+  ∃ x : n → K, P.Admits x
+
 def StandardLP.Reaches (P : StandardLP m n K) (v : K) : Prop :=
   ∃ x : n → K, P.Admits x ∧ P.c ⬝ᵥ x = v
 
 def StandardLP.dual (P : StandardLP m n K) : StandardLP n m K :=
   ⟨-P.Aᵀ, -P.c, P.b⟩
 
-theorem StandardLP.weakDuality (P : StandardLP m n K) {v : K} (hP : P.Reaches v)
-    {w : K} (hD : P.dual.Reaches w) : v ≤ w := by
+theorem StandardLP.weakDuality {P : StandardLP m n K}
+    {v : K} (hP : P.Reaches v) {w : K} (hD : P.dual.Reaches w) :
+    v ≤ w := by
   obtain ⟨x, ⟨hxb, h0x⟩, rfl⟩ := hP
   obtain ⟨y, ⟨hyc, h0y⟩, rfl⟩ := hD
   dsimp only [StandardLP.dual] at hyc ⊢
@@ -52,3 +56,8 @@ theorem StandardLP.weakDuality (P : StandardLP m n K) {v : K} (hP : P.Reaches v)
     exact dotProduct_le_dotProduct_of_nonneg_right hyc h0x
   rw [dotProduct_comm (P.Aᵀ.mulVec y), dotProduct_mulVec, vecMul_transpose] at hcxy
   exact hcxy.trans hxyb
+
+theorem StandardLP.strongDuality {P : StandardLP m n K}
+    (hP : P.Admissible) (hD : P.dual.Admissible) :
+    ∃ v : K, P.Reaches v ∧ P.dual.Reaches v := by
+  sorry
