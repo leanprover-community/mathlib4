@@ -72,8 +72,8 @@ end Ring
 
 section AlgHom
 
-variable (K M : Type*) (L : Type v) [CommRing K] [Ring M] [Algebra K M]
-  [Module.Free K M] [Module.Finite K M] [CommRing L] [IsDomain L] [StrongRankCondition L] [Algebra K L]
+variable (K M : Type*) (L : Type v) [CommRing K] [Ring M] [Algebra K M] [Module.Free K M]
+  [Module.Finite K M] [CommRing L] [IsDomain L] [StrongRankCondition L] [Algebra K L]
 
 instance Finite.algHom : Finite (M →ₐ[K] L) :=
   (linearIndependent_algHom_toLinearMap K M L).finite
