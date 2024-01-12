@@ -80,6 +80,7 @@ variable (K M : Type*) (L : Type v) [CommRing K] [Ring M] [Algebra K M]
 instance Finite.algHom : Finite (M →ₐ[K] L) :=
   (linearIndependent_algHom_toLinearMap K M L).finite
 
+variable [Nontrivial K]
 open Cardinal
 
 theorem cardinal_mk_algHom_le_rank : #(M →ₐ[K] L) ≤ lift.{v} (Module.rank K M) := by
