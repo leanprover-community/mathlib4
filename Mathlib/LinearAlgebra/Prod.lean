@@ -978,11 +978,7 @@ theorem tailing_le_tunnel (f : M × N →ₗ[R] M) (i : Injective f) (n : ℕ) :
 #align linear_map.tailing_le_tunnel LinearMap.tailing_le_tunnel
 
 theorem tailing_disjoint_tunnel_succ (f : M × N →ₗ[R] M) (i : Injective f) (n : ℕ) :
-<<<<<<< HEAD
-    Disjoint (tailing f i n) (OrderDual.ofDual <| tunnel f i (n + 1)) := by
-=======
-    Disjoint (tailing f i n) (OrderDual.ofDual (α := Submodule R M) $ tunnel f i (n + 1)) := by
->>>>>>> Vierkantor/unbundled-FunLike-testings
+    Disjoint (tailing f i n) (OrderDual.ofDual (α := Submodule R M) <| tunnel f i (n + 1)) := by
   rw [disjoint_iff]
   dsimp [tailing, tunnel, tunnel']
   erw [Submodule.map_inf_eq_map_inf_comap,
@@ -991,13 +987,8 @@ theorem tailing_disjoint_tunnel_succ (f : M × N →ₗ[R] M) (i : Injective f) 
 #align linear_map.tailing_disjoint_tunnel_succ LinearMap.tailing_disjoint_tunnel_succ
 
 theorem tailing_sup_tunnel_succ_le_tunnel (f : M × N →ₗ[R] M) (i : Injective f) (n : ℕ) :
-<<<<<<< HEAD
-    tailing f i n ⊔ (OrderDual.ofDual <| tunnel f i (n + 1)) ≤
-      (OrderDual.ofDual <| tunnel f i n) := by
-=======
     tailing f i n ⊔ (OrderDual.ofDual (α := Submodule R M) $ tunnel f i (n + 1)) ≤
-      (OrderDual.ofDual (α := Submodule R M) $ tunnel f i n) := by
->>>>>>> Vierkantor/unbundled-FunLike-testings
+      (OrderDual.ofDual (α := Submodule R M) <| tunnel f i n) := by
   dsimp [tailing, tunnel, tunnel', tunnelAux]
   erw [← Submodule.map_sup, sup_comm, Submodule.fst_sup_snd, Submodule.map_comp, Submodule.map_comp]
   apply Submodule.map_subtype_le
@@ -1019,11 +1010,7 @@ theorem tailings_succ (f : M × N →ₗ[R] M) (i : Injective f) (n : ℕ) :
 #align linear_map.tailings_succ LinearMap.tailings_succ
 
 theorem tailings_disjoint_tunnel (f : M × N →ₗ[R] M) (i : Injective f) (n : ℕ) :
-<<<<<<< HEAD
-    Disjoint (tailings f i n) (OrderDual.ofDual <| tunnel f i (n + 1)) := by
-=======
-    Disjoint (tailings f i n) (OrderDual.ofDual (α := Submodule R M) $ tunnel f i (n + 1)) := by
->>>>>>> Vierkantor/unbundled-FunLike-testings
+    Disjoint (tailings f i n) (OrderDual.ofDual (α := Submodule R M) <| tunnel f i (n + 1)) := by
   induction' n with n ih
   · simp only [tailings_zero]
     apply tailing_disjoint_tunnel_succ
