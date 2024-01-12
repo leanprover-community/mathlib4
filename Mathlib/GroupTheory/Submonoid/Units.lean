@@ -64,7 +64,7 @@ fun _ _ hST _ ⟨x, hx, hy⟩ => ⟨x, hST hx, hy⟩
 
 @[to_additive (attr := simp)]
 lemma Subgroup.ofUnits_units_eq (S : Subgroup Mˣ) : S.ofUnits.units = S := Subgroup.ext (fun _ =>
-  ⟨fun ⟨⟨_, hm, he⟩, _⟩ => (Units.ext he) ▸ hm, fun hm => ⟨⟨_, hm, rfl⟩, ⟨_, S.inv_mem hm, rfl⟩⟩⟩)
+  ⟨fun ⟨⟨_, hm, he⟩, _⟩ => (Units.ext he) ▸ hm, fun hm => ⟨⟨_, hm, rfl⟩, _, S.inv_mem hm, rfl⟩⟩)
 
 /-- A Galois coinsertion exists between the coercion from a subgroup of units to a submonoid and
 the reduction from a submonoid to its unit group. -/
@@ -150,11 +150,11 @@ lemma units_sInf {s: Set (Submonoid M)} : (sInf s).units = ⨅ S ∈ s, S.units 
 ofUnits_units_gc.u_sInf
 
 @[to_additive]
-lemma units_iInf {ι : Sort*} {f : ι → Submonoid M} : (iInf f).units = ⨅ (i : ι), (f i).units :=
+lemma units_iInf {ι : Sort*} (f : ι → Submonoid M) : (iInf f).units = ⨅ (i : ι), (f i).units :=
 ofUnits_units_gc.u_iInf
 
 @[to_additive]
-lemma units_iInf₂ {ι : Sort*} {κ : ι → Sort*} {f : (i : ι) → κ i → Submonoid M} :
+lemma units_iInf₂ {ι : Sort*} {κ : ι → Sort*} (f : (i : ι) → κ i → Submonoid M) :
     (⨅ (i : ι), ⨅ (j : κ i), f i j).units = ⨅ (i : ι), ⨅ (j : κ i), (f i j).units :=
     ofUnits_units_gc.u_iInf₂
 
@@ -212,7 +212,7 @@ noncomputable def unit_of_mem_ofUnits (S : Subgroup Mˣ) {x : M} (h : x ∈ S.of
 
 @[to_additive]
 lemma unit_of_mem_ofUnits_spec_eq_of_coe_mem (S : Subgroup Mˣ) {x : Mˣ} (h : (x : M) ∈ S.ofUnits) :
-    S.unit_of_mem_ofUnits h = x := Units.ext <| rfl
+    S.unit_of_mem_ofUnits h = x := Units.ext rfl
 
 @[to_additive]
 lemma unit_of_mem_ofUnits_spec_coe_eq_of_mem (S : Subgroup Mˣ) {x : M} (h : x ∈ S.ofUnits) :
@@ -224,7 +224,7 @@ lemma unit_of_mem_ofUnits_spec_mem (S : Subgroup Mˣ) {x : M} {h : x ∈ S.ofUni
 
 @[to_additive]
 lemma unit_eq_unit_of_mem_ofUnits (S : Subgroup Mˣ) {x : M} (h₁ : IsUnit x)
-    (h₂ : x ∈ S.ofUnits) : h₁.unit = S.unit_of_mem_ofUnits h₂ := Units.ext <| rfl
+    (h₂ : x ∈ S.ofUnits) : h₁.unit = S.unit_of_mem_ofUnits h₂ := Units.ext rfl
 
 @[to_additive]
 lemma unit_mem_of_mem_ofUnits (S : Subgroup Mˣ) {x : M} {h₁ : IsUnit x}
@@ -264,7 +264,7 @@ lemma ofUnits_inf (S T : Subgroup Mˣ): (S ⊔ T).ofUnits = S.ofUnits ⊔ T.ofUn
 ofUnits_units_gc.l_sup
 
 @[to_additive]
-lemma ofUnits_sSup {s: Set (Subgroup Mˣ)} : (sSup s).ofUnits = ⨆ S ∈ s, S.ofUnits :=
+lemma ofUnits_sSup (s: Set (Subgroup Mˣ)) : (sSup s).ofUnits = ⨆ S ∈ s, S.ofUnits :=
 ofUnits_units_gc.l_sSup
 
 @[to_additive]
@@ -272,7 +272,7 @@ lemma ofUnits_iSup {ι : Sort*} {f : ι → Subgroup Mˣ} :
     (iSup f).ofUnits = ⨆ (i : ι), (f i).ofUnits := ofUnits_units_gc.l_iSup
 
 @[to_additive]
-lemma ofUnits_iSup₂ {ι : Sort*} {κ : ι → Sort*} {f : (i : ι) → κ i → Subgroup Mˣ} :
+lemma ofUnits_iSup₂ {ι : Sort*} {κ : ι → Sort*} (f : (i : ι) → κ i → Subgroup Mˣ) :
     (⨆ (i : ι), ⨆ (j : κ i), f i j).ofUnits = ⨆ (i : ι), ⨆ (j : κ i), (f i j).ofUnits :=
     ofUnits_units_gc.l_iSup₂
 
