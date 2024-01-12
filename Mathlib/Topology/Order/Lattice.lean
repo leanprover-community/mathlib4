@@ -24,8 +24,6 @@ class `TopologicalLattice` as a topological space and lattice `L` extending `Con
 topological, lattice
 -/
 
-set_option autoImplicit true
-
 open Filter
 
 open Topology
@@ -79,7 +77,7 @@ instance (priority := 100) LinearOrder.topologicalLattice {L : Type*} [Topologic
   continuous_sup := continuous_max
 #align linear_order.topological_lattice LinearOrder.topologicalLattice
 
-variable [TopologicalSpace L] [TopologicalSpace X]
+variable {L X : Type*} [TopologicalSpace L] [TopologicalSpace X]
 
 @[continuity]
 theorem continuous_inf [Inf L] [ContinuousInf L] : Continuous fun p : L × L => p.1 ⊓ p.2 :=
@@ -133,7 +131,7 @@ end SupInf
 
 open Finset
 
-variable {ι : Type*} {s : Finset ι} {f : ι → α → L} {g : ι → L}
+variable {α ι : Type*} {s : Finset ι} {f : ι → α → L} {g : ι → L} {l : Filter α}
 
 lemma finset_sup'_nhds [SemilatticeSup L] [ContinuousSup L]
     (hne : s.Nonempty) (hs : ∀ i ∈ s, Tendsto (f i) l (𝓝 (g i))) :
