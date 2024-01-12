@@ -49,7 +49,7 @@ theorem mem_nhdsSet_iff_forall : s ∈ 𝓝ˢ t ↔ ∀ x : X, x ∈ t → s ∈
   simp_rw [nhdsSet, Filter.mem_sSup, ball_image_iff]
 #align mem_nhds_set_iff_forall mem_nhdsSet_iff_forall
 
-lemma nhdsSet_le : 𝓝ˢ s ≤ f ↔ ∀ a ∈ s, 𝓝 a ≤ f := by simp [nhdsSet]
+lemma nhdsSet_le : 𝓝ˢ s ≤ f ↔ ∀ x ∈ s, 𝓝 x ≤ f := by simp [nhdsSet]
 
 theorem bUnion_mem_nhdsSet {t : X → Set X} (h : ∀ x ∈ s, t x ∈ 𝓝 x) : (⋃ x ∈ s, t x) ∈ 𝓝ˢ s :=
   mem_nhdsSet_iff_forall.2 fun x hx => mem_of_superset (h x hx) <|
