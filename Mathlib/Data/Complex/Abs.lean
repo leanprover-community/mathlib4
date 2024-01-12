@@ -110,6 +110,9 @@ theorem sq_abs_sub_sq_im (z : ℂ) : Complex.abs z ^ 2 - z.im ^ 2 = z.re ^ 2 := 
   rw [← sq_abs_sub_sq_re, sub_sub_cancel]
 #align complex.sq_abs_sub_sq_im Complex.sq_abs_sub_sq_im
 
+lemma abs_add_mul_I (x y : ℝ) : abs (x + y * I) = (x ^ 2 + y ^ 2).sqrt := by
+  rw [← normSq_add_mul_I]; rfl
+
 @[simp]
 theorem abs_I : Complex.abs I = 1 := by simp [Complex.abs]
 set_option linter.uppercaseLean3 false in
@@ -348,3 +351,9 @@ theorem lim_abs (f : CauSeq ℂ Complex.abs) : lim (cauSeqAbs f) = Complex.abs (
     let ⟨i, hi⟩ := equiv_lim f ε ε0
     ⟨i, fun j hj => lt_of_le_of_lt (Complex.abs.abs_abv_sub_le_abv_sub _ _) (hi j hj)⟩
 #align complex.lim_abs Complex.lim_abs
+
+lemma ne_zero_of_one_lt_re {s : ℂ} (hs : 1 < s.re) : s ≠ 0 :=
+  fun h ↦ ((zero_re ▸ h ▸ hs).trans zero_lt_one).false
+
+lemma re_neg_ne_zero_of_one_lt_re {s : ℂ} (hs : 1 < s.re) : (-s).re ≠ 0 :=
+  ne_iff_lt_or_gt.mpr <| Or.inl <| neg_re s ▸ by linarith

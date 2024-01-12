@@ -82,8 +82,8 @@ attribute [local instance] Ultrafilter.semigroup Ultrafilter.addSemigroup
 @[to_additive]
 theorem Ultrafilter.continuous_mul_left {M} [Semigroup M] (V : Ultrafilter M) :
     Continuous (· * V) :=
-  TopologicalSpace.IsTopologicalBasis.continuous ultrafilterBasis_is_basis _ <|
-    Set.forall_range_iff.mpr fun s => ultrafilter_isOpen_basic { m : M | ∀ᶠ m' in V, m * m' ∈ s }
+  ultrafilterBasis_is_basis.continuous_iff.2 <| Set.forall_range_iff.mpr fun s ↦
+    ultrafilter_isOpen_basic { m : M | ∀ᶠ m' in V, m * m' ∈ s }
 #align ultrafilter.continuous_mul_left Ultrafilter.continuous_mul_left
 #align ultrafilter.continuous_add_left Ultrafilter.continuous_add_left
 
@@ -286,7 +286,7 @@ theorem FP.finset_prod {M} [CommMonoid M] (a : Stream' M) (s : Finset ℕ) (hs :
   refine' FP_drop_subset_FP _ (s.min' hs) _
   induction' s using Finset.strongInduction with s ih
   rw [← Finset.mul_prod_erase _ _ (s.min'_mem hs), ← Stream'.head_drop]
-  cases' (s.erase (s.min' hs)).eq_empty_or_nonempty with h h
+  rcases (s.erase (s.min' hs)).eq_empty_or_nonempty with h | h
   · rw [h, Finset.prod_empty, mul_one]
     exact FP.head _
   · apply FP.cons

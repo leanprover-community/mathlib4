@@ -62,13 +62,13 @@ instance _root_.GradedMonoid.smulCommClass_right :
     SMulCommClass R (GradedMonoid A) (GradedMonoid A) where
   smul_comm s x y := by
     dsimp
-    rw [GAlgebra.smul_def, GAlgebra.smul_def, ←mul_assoc, GAlgebra.commutes, mul_assoc]
+    rw [GAlgebra.smul_def, GAlgebra.smul_def, ← mul_assoc, GAlgebra.commutes, mul_assoc]
 
 instance _root_.GradedMonoid.isScalarTower_right :
     IsScalarTower R (GradedMonoid A) (GradedMonoid A) where
   smul_assoc s x y := by
     dsimp
-    rw [GAlgebra.smul_def, GAlgebra.smul_def, ←mul_assoc, GAlgebra.commutes, mul_assoc]
+    rw [GAlgebra.smul_def, GAlgebra.smul_def, ← mul_assoc, GAlgebra.commutes, mul_assoc]
 
 instance : Algebra R (⨁ i, A i) where
   toFun := (DirectSum.of A 0).comp GAlgebra.toFun
@@ -121,7 +121,7 @@ def toAlgebra (f : ∀ i, A i →ₗ[R] B) (hone : f _ GradedMonoid.GOne.one = 1
     commutes' := fun r => by
       show toModule R _ _ f (algebraMap R _ r) = _
       rw [Algebra.algebraMap_eq_smul_one, Algebra.algebraMap_eq_smul_one, map_smul, one_def,
-        ←lof_eq_of R, toModule_lof, hone] }
+        ← lof_eq_of R, toModule_lof, hone] }
 #align direct_sum.to_algebra DirectSum.toAlgebra
 
 /-- Two `AlgHom`s out of a direct sum are equal if they agree on the generators.

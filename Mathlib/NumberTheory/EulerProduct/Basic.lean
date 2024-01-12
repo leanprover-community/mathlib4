@@ -187,7 +187,7 @@ theorem eulerProduct_completely_multiplicative {f : ℕ →*₀ F} (hsum : Summa
   simp_rw [map_pow]
   refine (tsum_geometric_of_norm_lt_1 <| summable_geometric_iff_norm_lt_1.mp ?_).symm
   refine Summable.of_norm ?_
-  convert hsum.comp_injective <| pow_right_injective (prime_of_mem_primesBelow hN).one_lt
+  convert hsum.comp_injective <| Nat.pow_right_injective (prime_of_mem_primesBelow hN).one_lt
   simp only [norm_pow, Function.comp_apply, map_pow]
 
 end CompletelyMultiplicative

@@ -192,7 +192,7 @@ by linarith (config := {exfalso := false})
 example (x y : Rat)
     (h : 6 + ((x + 4) * x + (6 + 3 * y) * y) = 3 ∧ (x + 4) * x ≥ 0 ∧ (6 + 3 * y) * y ≥ 0) : False := by
   fail_if_success
-    linarith (config := {split_hypotheses := false})
+    linarith (config := {splitHypotheses := false})
   linarith
 
 example (h : 1 < 0) (g : ¬ 37 < 42) (k : True) (l : (-7 : ℤ) < 5) : 3 < 7 := by
@@ -490,8 +490,7 @@ end
 -- Checks that splitNe handles metavariables and also that conjunction splitting occurs
 -- before splitNe splitting
 example (r : ℚ) (h' : 1 = r * 2) : 1 = 0 ∨ r = 1 / 2 := by
-  by_contra h''
-  push_neg at h''
+  by_contra! h''
   linarith (config := {splitNe := true})
 
 example (x y : ℚ) (h₁ : 0 ≤ y) (h₂ : y ≤ x) : y * x ≤ x * x := by nlinarith

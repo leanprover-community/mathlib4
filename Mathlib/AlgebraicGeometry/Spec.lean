@@ -117,7 +117,7 @@ theorem Spec.sheafedSpaceMap_id {R : CommRingCat} :
   AlgebraicGeometry.PresheafedSpace.Hom.ext _ _ (Spec.topMap_id R) <| by
     ext U
     dsimp
-    erw [NatTrans.comp_app, sheafedSpaceMap_c_app, PresheafedSpace.id_c_app, comap_id]; swap
+    erw [PresheafedSpace.id_c_app, comap_id]; swap
     · rw [Spec.topMap_id, TopologicalSpace.Opens.map_id_obj_unop]
     simp [eqToHom_map]
 set_option linter.uppercaseLean3 false in
@@ -196,7 +196,7 @@ theorem Spec.basicOpen_hom_ext {X : RingedSpace.{u}} {R : CommRingCat.{u}}
     specialize h r
     simp only [sheafedSpaceObj_carrier, Functor.op_obj, unop_op, TopCat.Presheaf.pushforwardObj_obj,
       sheafedSpaceObj_presheaf, Category.assoc] at h
-    rw [NatTrans.comp_app, ←h]
+    rw [NatTrans.comp_app, ← h]
     congr
     simp
 set_option linter.uppercaseLean3 false in
@@ -450,7 +450,7 @@ instance isLocalizedModule_toPushforwardStalkAlgHom :
     exact (IsLocalization.map_units ((structureSheaf R).presheaf.stalk p) ⟨x, hx⟩).map _
   · apply isLocalizedModule_toPushforwardStalkAlgHom_aux
   · intro x hx
-    rw [toPushforwardStalkAlgHom_apply, ←(toPushforwardStalk (algebraMap R S) p).map_zero,
+    rw [toPushforwardStalkAlgHom_apply, ← (toPushforwardStalk (algebraMap R S) p).map_zero,
       toPushforwardStalk] at hx
     -- Porting note : this `change` is manually rewriting `comp_apply`
     change _ = (TopCat.Presheaf.germ (Spec.topMap (algebraMap ↑R ↑S) _* (structureSheaf ↑S).val)

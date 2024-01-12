@@ -53,7 +53,7 @@ end ContinuousLinearEquiv
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
   [FiniteDimensional ℝ E] (μ : Measure E) [IsAddHaarMeasure μ] {F : Type*} [NormedAddCommGroup F]
-  [NormedSpace ℝ F] [CompleteSpace F]
+  [NormedSpace ℝ F]
 
 variable {s : Set E}
 
@@ -62,6 +62,8 @@ integral of `f`. The formula we give works even when `f` is not integrable or `R
 thanks to the convention that a non-integrable function has integral zero. -/
 theorem integral_comp_smul (f : E → F) (R : ℝ) :
     (∫ x, f (R • x) ∂μ) = |(R ^ finrank ℝ E)⁻¹| • ∫ x, f x ∂μ := by
+  by_cases hF : CompleteSpace F; swap
+  · simp [integral, hF]
   rcases eq_or_ne R 0 with (rfl | hR)
   · simp only [zero_smul, integral_const]
     rcases Nat.eq_zero_or_pos (finrank ℝ E) with (hE | hE)
