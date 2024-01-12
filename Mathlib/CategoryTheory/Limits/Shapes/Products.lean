@@ -347,11 +347,14 @@ section
 
 variable (X : Discrete α ⥤ C) [HasProduct (fun j => X.obj (Discrete.mk j))]
 
+/-- A limit cone for `X : Discrete α ⥤ C` that is given
+by `∏ (fun j => X.obj (Discrete.mk j))`. -/
 @[simps]
 def Pi.cone : Cone X where
   pt := ∏ (fun j => X.obj (Discrete.mk j))
   π := Discrete.natTrans (fun _ => Pi.π _ _)
 
+/-- The cone `Pi.cone X` is a limit cone. -/
 def productIsProduct' :
     IsLimit (Pi.cone X) where
   lift s := Pi.lift (fun j => s.π.app ⟨j⟩)
@@ -364,6 +367,7 @@ def productIsProduct' :
 
 variable [HasLimit X]
 
+/-- The isomorphism `∏ (fun j => X.obj (Discrete.mk j)) ≅ limit X`. -/
 def Pi.isoLimit :
     ∏ (fun j => X.obj (Discrete.mk j)) ≅ limit X :=
   IsLimit.conePointUniqueUpToIso (productIsProduct' X) (limit.isLimit X)

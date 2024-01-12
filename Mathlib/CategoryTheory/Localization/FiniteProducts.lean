@@ -11,11 +11,10 @@ import Mathlib.CategoryTheory.Localization.Pi
 
 /-! The localized category has finite products
 
-In this file, it is shown that if `W : MorphismProperty C` and
-`L : C ⥤ D` is a localization functor for `C`, then `D`
-has finite products if `C` has finite products and `W` is
-stable under finite products, and the localization functor
-`L` preserves finite products.
+In this file, it is shown that if `L : C ⥤ D` is
+a localization functor for `W : MorphismProperty C` and that
+`W` is stable under finite products, then `D` has finite
+products, and `L` preserves finite products.
 
 -/
 
@@ -23,42 +22,12 @@ universe v₁ v₂ u₁ u₂
 
 namespace CategoryTheory
 
-open Category
-
-namespace Limits
-
-variable {J C : Type*} [Category J] [Category C] {L : (J ⥤ C) ⥤ C}
-  (adj : Functor.const _ ⊣ L)
-
--- this should be moved to a more suitable file
-
-/-- The limit cone obtained from a right adjoint of the constant functor. -/
-@[simps]
-noncomputable def coneOfAdj (F : J ⥤ C) : Cone F where
-  pt := L.obj F
-  π := adj.counit.app F
-
-/-- The cones defined by `coneOfAdj` are limit cones. -/
-def isLimitConeOfAdj (F : J ⥤ C) :
-    IsLimit (coneOfAdj adj F) where
-  lift s := adj.homEquiv _ _ s.π
-  fac s j := by
-    have eq := NatTrans.congr_app (adj.counit.naturality s.π) j
-    -- TOOD: fix the parameters of Adjunction.left_triangle_components
-    have eq' := NatTrans.congr_app (@Adjunction.left_triangle_components _ _ _ _ _ _ adj s.pt) j
-    dsimp at eq eq' ⊢
-    rw [Adjunction.homEquiv_unit, assoc, eq, reassoc_of% eq']
-  uniq s m hm := (adj.homEquiv _ _).symm.injective (by ext j; simpa using hm j)
-
-end Limits
-
 open Limits
 
 namespace Localization
 
 variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D] (L : C ⥤ D)
-    {W : MorphismProperty C} [L.IsLocalization W]
-    [W.ContainsIdentities]
+  {W : MorphismProperty C} [L.IsLocalization W] [W.ContainsIdentities]
 
 namespace HasProductsOfShapeAux
 
@@ -146,8 +115,7 @@ noncomputable def preservesFiniteProducts :
 
 instance : HasFiniteProducts (W.Localization) := hasFiniteProducts W.Q W
 
-noncomputable instance :
-  PreservesFiniteProducts W.Q := preservesFiniteProducts W.Q W
+noncomputable instance : PreservesFiniteProducts W.Q := preservesFiniteProducts W.Q W
 
 instance [W.HasLocalization] :
     HasFiniteProducts (W.Localization') :=

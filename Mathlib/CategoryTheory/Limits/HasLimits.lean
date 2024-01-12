@@ -607,6 +607,37 @@ instance limMap_mono {F G : J ⥤ C} [HasLimit F] [HasLimit G] (α : F ⟶ G) [�
     limit.hom_ext fun j => (cancel_mono (α.app j)).1 <| by simpa using h =≫ limit.π _ j⟩
 #align category_theory.limits.lim_map_mono CategoryTheory.Limits.limMap_mono
 
+section Adjunction
+
+variable {L : (J ⥤ C) ⥤ C} (adj : Functor.const _ ⊣ L)
+
+/- The fact that the existence of limits of shape `J` is equivalent to the existence
+of a right adjoint to the constant functor `C ⥤ (J ⥤ C)` is obtained in
+the file `Mathlib.CategoryTheory.Limits.ConeCategory`: see the lemma
+`hasLimitsOfShape_iff_isLeftAdjoint_const`. In the definitions below, given an
+adjunction `adj : Functor.const _ ⊣ (L : (J ⥤ C) ⥤ C)`, we directly construct
+a limit cone for any `F : J ⥤ C`. -/
+
+/-- The limit cone obtained from a right adjoint of the constant functor. -/
+@[simps]
+noncomputable def coneOfAdj (F : J ⥤ C) : Cone F where
+  pt := L.obj F
+  π := adj.counit.app F
+
+/-- The cones defined by `coneOfAdj` are limit cones. -/
+@[simps]
+def isLimitConeOfAdj (F : J ⥤ C) :
+    IsLimit (coneOfAdj adj F) where
+  lift s := adj.homEquiv _ _ s.π
+  fac s j := by
+    have eq := NatTrans.congr_app (adj.counit.naturality s.π) j
+    have eq' := NatTrans.congr_app (adj.left_triangle_components s.pt) j
+    dsimp at eq eq' ⊢
+    rw [Adjunction.homEquiv_unit, assoc, eq, reassoc_of% eq']
+  uniq s m hm := (adj.homEquiv _ _).symm.injective (by ext j; simpa using hm j)
+
+end Adjunction
+
 /-- We can transport limits of shape `J` along an equivalence `J ≌ J'`.
 -/
 theorem hasLimitsOfShape_of_equivalence {J' : Type u₂} [Category.{v₂} J'] (e : J ≌ J')

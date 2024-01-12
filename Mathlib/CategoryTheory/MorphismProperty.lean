@@ -1007,6 +1007,7 @@ lemma IsStableUnderProductsOfShape.mk (J : Type*)
   rintro ⟨j⟩
   simp
 
+/-- The condition that a property of morphisms is stable by finite products. -/
 class IsStableUnderFiniteProducts : Prop :=
   isStableUnderProductsOfShape (J : Type) [Finite J] : W.IsStableUnderProductsOfShape J
 
