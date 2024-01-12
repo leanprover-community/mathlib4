@@ -1112,8 +1112,8 @@ theorem map_extend_symm_nhdsWithin_range {y : M} (hy : y ∈ f.source) :
   rw [← nhdsWithin_univ, ← map_extend_symm_nhdsWithin f I hy, preimage_univ, univ_inter]
 #align local_homeomorph.map_extend_symm_nhds_within_range PartialHomeomorph.map_extend_symm_nhdsWithin_range
 
-theorem tendsto_extend_comp_iff {α : Type*} {l : Filter α} {g : α → M} (hg : ∀ᶠ z in l, g z ∈ f.source)
-    {y : M} (hy : y ∈ f.source) :
+theorem tendsto_extend_comp_iff {α : Type*} {l : Filter α} {g : α → M}
+    (hg : ∀ᶠ z in l, g z ∈ f.source) {y : M} (hy : y ∈ f.source) :
     Tendsto (f.extend I ∘ g) l (𝓝 (f.extend I y)) ↔ Tendsto g l (𝓝 y) := by
   refine ⟨fun h u hu ↦ mem_map.2 ?_, (continuousAt_extend _ _ hy).tendsto.comp⟩
   have := (f.continuousAt_extend_symm I hy).tendsto.comp h

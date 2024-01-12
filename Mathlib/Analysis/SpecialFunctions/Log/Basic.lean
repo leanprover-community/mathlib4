@@ -487,12 +487,14 @@ lemma log_nonneg_of_isNat {n : ℕ} (h : NormNum.IsNat e n) : 0 ≤ Real.log (e 
   rw [NormNum.IsNat.to_eq h rfl]
   exact Real.log_nat_cast_nonneg _
 
-lemma log_pos_of_isNat {n : ℕ} (h : NormNum.IsNat e n) (w : Nat.blt 1 n = true) : 0 < Real.log (e : ℝ) := by
+lemma log_pos_of_isNat {n : ℕ} (h : NormNum.IsNat e n) (w : Nat.blt 1 n = true) :
+    0 < Real.log (e : ℝ) := by
   rw [NormNum.IsNat.to_eq h rfl]
   apply Real.log_pos
   simpa using w
 
-lemma log_nonneg_of_isNegNat {n : ℕ} (h : NormNum.IsInt e (.negOfNat n)) : 0 ≤ Real.log (e : ℝ) := by
+lemma log_nonneg_of_isNegNat {n : ℕ} (h : NormNum.IsInt e (.negOfNat n)) :
+    0 ≤ Real.log (e : ℝ) := by
   rw [NormNum.IsInt.neg_to_eq h rfl]
   exact Real.log_neg_nat_cast_nonneg _
 
