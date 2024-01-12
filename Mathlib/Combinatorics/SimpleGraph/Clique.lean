@@ -307,16 +307,20 @@ protected theorem CliqueFree.replaceVertex [DecidableEq α] (h : G.CliqueFree n)
   by_cases mt : t ∈ Set.range φ
   · obtain ⟨x, hx⟩ := mt
     by_cases ms : s ∈ Set.range φ
-    · obtain ⟨y, _⟩ := ms
-      have := @hφ x y
-      simp_all [not_cliqueFree_iff]
-    · use φ.setValue x s
+    · obtain ⟨y, hy⟩ := ms
+      have e := @hφ x y
+      simp_rw [hx, hy, adj_comm, not_adj_replaceVertex_same, top_adj, false_iff, not_ne_iff] at e
+      rwa [← hx, e, hy, replaceVertex_self, not_cliqueFree_iff] at h
+    · unfold replaceVertex at hφ
+      use φ.setValue x s
       intro a b
       simp only [Embedding.coeFn_mk, Embedding.setValue, not_exists.mp ms, ite_false]
       rw [apply_ite (G.Adj · _), apply_ite (G.Adj _ ·), apply_ite (G.Adj _ ·)]
-      unfold replaceVertex at hφ
       convert @hφ a b <;> simp only [← φ.apply_eq_iff_eq, SimpleGraph.irrefl, hx]
-  · use φ; simp_all
+  · use φ
+    simp_rw [Set.mem_range, not_exists, ← ne_eq] at mt
+    conv at hφ => enter [a, b]; rw [G.adj_replaceVertex_iff_of_ne _ (mt a) (mt b)]
+    exact hφ
 
 @[simp]
 theorem cliqueFree_two : G.CliqueFree 2 ↔ G = ⊥ := by

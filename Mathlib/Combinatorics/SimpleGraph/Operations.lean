@@ -35,32 +35,31 @@ def replaceVertex : SimpleGraph V where
                       else if w = t then G.Adj v s else G.Adj v w
   symm v w := by dsimp only; split_ifs <;> simp [adj_comm]
 
-@[simp]
 lemma adj_replaceVertex_iff {v w : V} : (G.replaceVertex s t).Adj v w ↔
     if v = t then if w = t then False else G.Adj s w
              else if w = t then G.Adj v s else G.Adj v w := by rfl
 
 /-- There is never an `s-t` edge in `G.replaceVertex s t`. -/
-lemma not_adj_replaceVertex_same : ¬(G.replaceVertex s t).Adj s t := by simp
+lemma not_adj_replaceVertex_same : ¬(G.replaceVertex s t).Adj s t := by simp [replaceVertex]
 
 @[simp]
-lemma replaceVertex_self : G.replaceVertex s s = G := by ext; aesop
+lemma replaceVertex_self : G.replaceVertex s s = G := by ext; unfold replaceVertex; aesop
 
 variable {t}
 
 /-- Except possibly for `t`, the neighbours of `s` in `G.replaceVertex s t` are its neighbours in
 `G`. -/
 lemma adj_replaceVertex_iff_of_ne_left {w : V} (hw : w ≠ t) :
-    (G.replaceVertex s t).Adj s w ↔ G.Adj s w := by simp [hw]
+    (G.replaceVertex s t).Adj s w ↔ G.Adj s w := by simp [replaceVertex, hw]
 
 /-- Except possibly for itself, the neighbours of `t` in `G.replaceVertex s t` are the neighbours of
 `s` in `G`. -/
 lemma adj_replaceVertex_iff_of_ne_right {w : V} (hw : w ≠ t) :
-    (G.replaceVertex s t).Adj t w ↔ G.Adj s w := by simp [hw]
+    (G.replaceVertex s t).Adj t w ↔ G.Adj s w := by simp [replaceVertex, hw]
 
 /-- Adjacency in `G.replaceVertex s t` which does not involve `t` is the same as that of `G`. -/
 lemma adj_replaceVertex_iff_of_ne {v w : V} (hv : v ≠ t) (hw : w ≠ t) :
-    (G.replaceVertex s t).Adj v w ↔ G.Adj v w := by simp [hv, hw]
+    (G.replaceVertex s t).Adj v w ↔ G.Adj v w := by simp [replaceVertex, hv, hw]
 
 variable {s}
 
@@ -134,12 +133,11 @@ def addEdge : SimpleGraph V where
   Adj v w := G.Adj v w ∨ s ≠ t ∧ (s = v ∧ t = w ∨ s = w ∧ t = v)
   symm v w := by simp_rw [adj_comm]; (conv_lhs => arg 2; arg 2; rw [or_comm]); exact id
 
-@[simp]
 lemma adj_addEdge_iff {v w : V} : (G.addEdge s t).Adj v w ↔
     G.Adj v w ∨ s ≠ t ∧ (s = v ∧ t = w ∨ s = w ∧ t = v) := by rfl
 
 @[simp]
-lemma addEdge_self : G.addEdge s s = G := by ext; simp
+lemma addEdge_self : G.addEdge s s = G := by ext; simp [addEdge]
 
 variable {s t}
 
@@ -154,7 +152,7 @@ instance : DecidableRel (G.addEdge s t).Adj := by unfold addEdge; infer_instance
 
 theorem edgeFinset_addEdge (hn : ¬G.Adj s t) (h : s ≠ t) :
     (G.addEdge s t).edgeFinset = G.edgeFinset.cons s(s, t) (by simp_all) := by
-  ext e; refine' e.inductionOn _; aesop
+  ext e; refine' e.inductionOn _; unfold addEdge; aesop
 
 theorem card_edgeFinset_addEdge (hn : ¬G.Adj s t) (h : s ≠ t) :
     (G.addEdge s t).edgeFinset.card = G.edgeFinset.card + 1 := by
