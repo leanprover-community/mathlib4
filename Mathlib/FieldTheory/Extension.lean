@@ -12,6 +12,11 @@ import Mathlib.FieldTheory.Adjoin
 field extensions, K is another extension of F, and `f` is an embedding of L/F into K/F, such
 that the minimal polynomials of a set of generators of E/L splits in K (via `f`), then `f`
 extends to an embedding of E/F into K/F.
+
+Reference:
+[Isaacs1980] Roots of Polynomials in Algebraic Extensions of Fields,
+The American Mathematical Monthly
+
 -/
 
 open Polynomial
@@ -53,22 +58,44 @@ noncomputable instance : OrderBot (Lifts F E K) where
 noncomputable instance : Inhabited (Lifts F E K) :=
   ⟨⊥⟩
 
-/-- A chain of lifts has an upper bound. -/
-theorem Lifts.exists_upper_bound (c : Set (Lifts F E K)) (hc : IsChain (· ≤ ·) c) :
-    ∃ ub, ∀ a ∈ c, a ≤ ub := by
+/-- `σ : L →ₐ[F] K` is an extendible lift ("extendible pair" in [Isaacs]) if for every
+intermediate field `M` that is finite-dimensional over `L`, `σ` extends to some `M →ₐ[F] K`. -/
+def Lifts.IsExtendible (σ : Lifts F E K) : Prop := ∀ M : IntermediateField σ.carrier E,
+  FiniteDimensional σ.carrier M → ∃ τ ≥ σ, M.restrictScalars F ≤ τ.carrier
+
+section Chain
+variable (c : Set (Lifts F E K)) (hc : IsChain (· ≤ ·) c)
+
+/-- The union of a chain of lifts. -/
+protected noncomputable
+def Lifts.union : Lifts F E K :=
   let t (i : ↑(insert ⊥ c)) := i.val.carrier
-  let t' (i) := (t i).toSubalgebra
   have hc := hc.insert fun _ _ _ ↦ .inl bot_le
   have dir : Directed (· ≤ ·) t := hc.directedOn.directed_val.mono_comp _ fun _ _ h ↦ h.1
-  refine ⟨⟨iSup t, (Subalgebra.iSupLift t' dir (fun i ↦ i.val.emb) (fun i j h ↦ ?_) _ rfl).comp
-      (Subalgebra.equivOfEq _ _ <| toSubalgebra_iSup_of_directed dir)⟩,
-    fun L hL ↦ have hL := Set.mem_insert_of_mem ⊥ hL; ⟨le_iSup t ⟨L, hL⟩, fun x ↦ ?_⟩⟩
-  · refine AlgHom.ext fun x ↦ (hc.total i.2 j.2).elim (fun hij ↦ (hij.snd x).symm) fun hji ↦ ?_
-    erw [AlgHom.comp_apply, ← hji.snd (Subalgebra.inclusion h x),
-         inclusion_inclusion, inclusion_self, AlgHom.id_apply x]
-  · dsimp only [AlgHom.comp_apply]
-    exact Subalgebra.iSupLift_inclusion (K := t') (i := ⟨L, hL⟩) x (le_iSup t' ⟨L, hL⟩)
+  ⟨iSup t, (Subalgebra.iSupLift (toSubalgebra <| t ·) dir (·.val.emb) (fun i j h ↦
+    AlgHom.ext fun x ↦ (hc.total i.2 j.2).elim (fun hij ↦ (hij.snd x).symm) fun hji ↦ by
+      erw [AlgHom.comp_apply, ← hji.snd (Subalgebra.inclusion h x),
+        inclusion_inclusion, inclusion_self, AlgHom.id_apply x]) _ rfl).comp
+      (Subalgebra.equivOfEq _ _ <| toSubalgebra_iSup_of_directed dir)⟩
+
+theorem Lifts.le_union : ∀ σ ∈ c, σ ≤ Lifts.union c hc := fun σ hσ ↦
+  have hσ := Set.mem_insert_of_mem ⊥ hσ
+  let t (i : ↑(insert ⊥ c)) := i.val.carrier
+  ⟨le_iSup t ⟨σ, hσ⟩, fun x ↦ by
+    dsimp only [Lifts.union, AlgHom.comp_apply]
+    exact Subalgebra.iSupLift_inclusion (K := (toSubalgebra <| t ·))
+      (i := ⟨σ, hσ⟩) x (le_iSup (toSubalgebra <| t ·) ⟨σ, hσ⟩)⟩
+
+/-- A chain of lifts has an upper bound. -/
+theorem Lifts.exists_upper_bound (c : Set (Lifts F E K)) (hc : IsChain (· ≤ ·) c) :
+    ∃ ub, ∀ a ∈ c, a ≤ ub := ⟨_, Lifts.le_union c hc⟩
 #align intermediate_field.lifts.exists_upper_bound IntermediateField.Lifts.exists_upper_bound
+
+theorem Lifts.exists_upper_bound_isExtendible (he : ∀ σ ∈ c, σ.IsExtendible) :
+    (Lifts.union c hc).IsExtendible := by
+  sorry
+
+end Chain
 
 /-- Given a lift `x` and an integral element `s : E` over `x.carrier` whose conjugates over
 `x.carrier` are all in `K`, we can extend the lift to a lift whose carrier contains `s`. -/
