@@ -126,7 +126,7 @@ protected lemma add {M E : Type*} [Bornology M] [AddZeroClass E] [DistribSMul M 
   h₂.mp <| h₁.eventually.mono fun x hx₁ hx₂ ↦ by rw [smul_add]; exact add_subset_add hx₁ hx₂
 #align absorbs.add Absorbs.add
 
-protected lemma zero {M₀ E : Type*} [Bornology M₀] [Zero M₀] [Zero E] [SMulZeroClass M₀ E]
+protected lemma zero {M₀ E : Type*} [Bornology M₀] [Zero E] [SMulZeroClass M₀ E]
     {s : Set E} (hs : 0 ∈ s) : Absorbs M₀ s 0 :=
   eventually_of_forall fun _ ↦ zero_subset.2 <| zero_mem_smul_set hs
 
