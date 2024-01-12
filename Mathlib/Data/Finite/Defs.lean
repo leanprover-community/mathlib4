@@ -54,8 +54,12 @@ variable {α β : Sort*}
 
 This is similar to `Fintype`, but `Finite` is a proposition rather than data.
 A particular benefit to this is that `Finite` instances are definitionally equal
-(due to proof irrelevance) rather than being merely propositionally equal.
-Furthermore, `Finite` instances generally avoid needing `Decidable` instances.
+(due to proof irrelevance) rather than being merely propositionally equal,
+and, furthermore, `Finite` instances generally avoid the need for `Decidable` instances.
+One other notable difference is that `Finite` allows there to be `Finite p` instances
+for `p : Prop`, which is not allowed by `Fintype` due to universe constraints.
+An application of this is that `Finite (x ∈ s → β x)` follows from the general pi `Finite` instance.
+Implementation note: this is a reason `Finite α` is not defined as `Nonempty (Fintype α)`.
 
 Every `Fintype` instance provides a `Finite` instance via `Finite.of_fintype`.
 Conversely, one can noncomputably create a `Fintype` instance from a `Finite` instance
@@ -73,9 +77,6 @@ Theorems should use `Finite` instead of `Fintype`, unless definitions in the the
 require `Fintype`.
 Definitions should prefer `Finite` as well, unless it is important that the definitions
 are meant to be computable in the reduction or `#eval` sense.
-
-Implementation note: while this could be defined as `Nonempty (Fintype α)`,
-it is defined in the current way to allow there to be `Finite p` instances for `p : Prop`.
 -/
 class inductive Finite (α : Sort*) : Prop
   | intro {n : ℕ} : α ≃ Fin n → Finite _
