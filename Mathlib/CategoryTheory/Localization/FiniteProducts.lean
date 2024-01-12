@@ -23,6 +23,8 @@ universe v₁ v₂ u₁ u₂
 
 namespace CategoryTheory
 
+open Category
+
 namespace Limits
 
 variable {J C : Type*} [Category J] [Category C] {L : (J ⥤ C) ⥤ C}
@@ -39,9 +41,14 @@ noncomputable def coneOfAdj (F : J ⥤ C) : Cone F where
 /-- The cones defined by `coneOfAdj` are limit cones. -/
 def isLimitConeOfAdj (F : J ⥤ C) :
     IsLimit (coneOfAdj adj F) where
-  lift := sorry
-  fac := sorry
-  uniq := sorry
+  lift s := adj.homEquiv _ _ s.π
+  fac s j := by
+    have eq := NatTrans.congr_app (adj.counit.naturality s.π) j
+    -- TOOD: fix the parameters of Adjunction.left_triangle_components
+    have eq' := NatTrans.congr_app (@Adjunction.left_triangle_components _ _ _ _ _ _ adj s.pt) j
+    dsimp at eq eq' ⊢
+    rw [Adjunction.homEquiv_unit, assoc, eq, reassoc_of% eq']
+  uniq s m hm := (adj.homEquiv _ _).symm.injective (by ext j; simpa using hm j)
 
 end Limits
 
@@ -91,13 +98,18 @@ noncomputable def adj :
   constLimAdj.localization L W ((whiskeringRight (Discrete J) C D).obj L)
     (W.functorCategory (Discrete J)) (Functor.const _) (limitFunctor L hW)
 
+lemma adj_counit_app (F : Discrete J ⥤ C) :
+    (adj L hW).counit.app (F ⋙ L) =
+      (Functor.const (Discrete J)).map ((compLimitFunctorIso L hW).hom.app F) ≫
+        (Functor.compConstIso (Discrete J) L).hom.app (lim.obj F) ≫
+        whiskerRight (constLimAdj.counit.app F) L := by
+  apply constLimAdj.localization_counit_app
+
 /-- Auxiliary definition for `Localization.preservesProductsOfShape`. -/
 noncomputable def isLimitMapCone (F : Discrete J ⥤ C) :
     IsLimit (L.mapCone (limit.cone F)) :=
   IsLimit.ofIsoLimit (isLimitConeOfAdj (adj L hW) (F ⋙ L))
-    (Cones.ext ((compLimitFunctorIso L hW).app F) (by
-      rintro ⟨j⟩
-      sorry))
+    (Cones.ext ((compLimitFunctorIso L hW).app F) (by simp [adj_counit_app, constLimAdj]))
 
 end HasProductsOfShapeAux
 
