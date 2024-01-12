@@ -860,6 +860,12 @@ theorem mk'_cancel (a : M) (b c : S) :
     f.mk' (a * c) (b * c) = f.mk' a b :=
   mk'_eq_of_eq' f (by rw [Submonoid.coe_mul, mul_comm (b:M), mul_assoc])
 
+@[to_additive]
+theorem eq₂ {a b} {d : S} :
+    f.mk' a d = f.mk' b d ↔ ∃ c : S, ↑c * a = c * b := by
+  simp_rw [@Submonoid.LocalizationMap.mk'_eq_iff_eq', @MonoidHom.map_mul, ← eq_iff_exists f]
+  exact IsUnit.mul_left_inj (Submonoid.LocalizationMap.map_units f d)
+
 @[to_additive (attr := simp)]
 theorem mk'_self' (y : S) : f.mk' (y : M) y = 1 :=
   show _ * _ = _ by rw [mul_inv_left, mul_one]
