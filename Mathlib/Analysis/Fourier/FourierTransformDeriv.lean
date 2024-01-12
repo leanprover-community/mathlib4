@@ -75,49 +75,6 @@ lemma aestronglyMeasurable_smulRight {X : Type*} [MeasurableSpace X] {μ : Measu
 
 end SmulRight
 
-namespace ContinuousLinearMap
-
-/-- If `M` is a normed space over `𝕜`, then the space of maps `𝕜 →L[𝕜] M` is linearly equivalent
-to `M`. (See `ring_lmap_equiv_self` for a stronger statement.) -/
-def ring_lmap_equiv_selfₗ (𝕜 M : Type*)
-    [NontriviallyNormedField 𝕜] [NormedAddCommGroup M] [NormedSpace 𝕜 M] :
-    (𝕜 →L[𝕜] M) ≃ₗ[𝕜] M where
-  toFun := fun f ↦ f 1
-  invFun := (ContinuousLinearMap.id 𝕜 𝕜).smulRight
-  map_smul' := fun a f ↦ by simp only [coe_smul', Pi.smul_apply, RingHom.id_apply]
-  map_add' := fun f g ↦ by simp only [add_apply]
-  left_inv := fun f ↦ by ext; simp only [smulRight_apply, coe_id', id.def, one_smul]
-  right_inv := fun m ↦ by simp only [smulRight_apply, id_apply, one_smul]
-
-/-- If `M` is a normed space over `𝕜`, then the space of maps `𝕜 →L[𝕜] M` is linearly isometrically
-equivalent to `M`. -/
-def ring_lmap_equiv_self (𝕜 M : Type*)
-    [NontriviallyNormedField 𝕜] [NormedAddCommGroup M] [NormedSpace 𝕜 M] :
-    (𝕜 →L[𝕜] M) ≃ₗᵢ[𝕜] M where
-  toLinearEquiv := ContinuousLinearMap.ring_lmap_equiv_selfₗ 𝕜 M
-  norm_map' := fun f ↦ by
-    dsimp only [ContinuousLinearMap.ring_lmap_equiv_selfₗ]
-    rw [LinearEquiv.coe_mk]
-    apply eq_of_le_of_not_lt
-    · simpa only [norm_one, mul_one] using ContinuousLinearMap.le_op_norm f 1
-    · push_neg
-      refine ContinuousLinearMap.op_norm_le_bound' f (norm_nonneg _) (fun x _ ↦ ?_)
-      rw [(by rw [smul_eq_mul, mul_one] : f x = f (x • 1)), ContinuousLinearMap.map_smul,
-        norm_smul, mul_comm]
-
-lemma ring_lmap_equiv_self_apply (𝕜 : Type*) {M : Type*} [NontriviallyNormedField 𝕜]
-    [NormedAddCommGroup M] [NormedSpace 𝕜 M] (f : 𝕜 →L[𝕜] M) :
-    (ring_lmap_equiv_self 𝕜 M) f = f 1 :=
-  rfl
-
-lemma ring_lmap_equiv_self_symm_apply (𝕜 : Type*) {M : Type*} (m : M)
-    [NontriviallyNormedField 𝕜] [NormedAddCommGroup M] [NormedSpace 𝕜 M] :
-    (ring_lmap_equiv_self 𝕜 M).symm m = (ContinuousLinearMap.id 𝕜 𝕜).smulRight m :=
-  rfl
-
-end ContinuousLinearMap
-
-
 variable {E V W : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
 
 lemma hasDerivAt_fourierChar (x : ℝ) :
@@ -183,7 +140,7 @@ lemma norm_fderiv_fourier_transform_integrand_right
   by rw [norm_smul, norm_smul, Complex.norm_eq_abs (↑(fourierChar _)), abs_coe_circle,
       one_mul, norm_mul, Complex.norm_eq_abs Complex.I, Complex.abs_I, mul_one,
       norm_mul, Complex.norm_eq_abs (↑(_: ℝ)), Complex.abs_of_nonneg pi_pos.le, norm_neg,
-      Complex.norm_eq_abs 2, Complex.abs_two, norm_mul_L, ←mul_assoc]
+      Complex.norm_eq_abs 2, Complex.abs_two, norm_mul_L, ← mul_assoc]
 
 lemma norm_fderiv_fourier_transform_integrand_right_le
     (L : V →L[ℝ] W →L[ℝ] ℝ) (f : V → E) (v : V) (w : W) :
@@ -244,3 +201,101 @@ theorem hasFDerivAt_fourier [CompleteSpace E] [SecondCountableTopology E]
     using hasFDerivAt_integral_of_dominated_of_fderiv_le zero_lt_one h1 h2 h3 h4 h5 h6
 
 end VectorFourier
+
+section scalar
+
+/- This stuff is leading up to a not-yet-ported lemma which reformulates the result as
+`HasDerivAt` rather than `HasFDerivAt` when `V = ℝ`. The preliminaries below all compile OK but
+I didn't manage to port the main result yet, since the mathlib3 lemma
+"continuous_linear_map.to_linear_map_eq_coe" doesn't seem to have a direct analogue in mathlib4.-/
+
+namespace ContinuousLinearMap
+
+/-- If `M` is a normed space over `𝕜`, then the space of maps `𝕜 →L[𝕜] M` is linearly equivalent
+to `M`. (See `ring_lmap_equiv_self` for a stronger statement.) -/
+def ring_lmap_equiv_selfₗ (𝕜 M : Type*)
+    [NontriviallyNormedField 𝕜] [NormedAddCommGroup M] [NormedSpace 𝕜 M] :
+    (𝕜 →L[𝕜] M) ≃ₗ[𝕜] M where
+  toFun := fun f ↦ f 1
+  invFun := (ContinuousLinearMap.id 𝕜 𝕜).smulRight
+  map_smul' := fun a f ↦ by simp only [coe_smul', Pi.smul_apply, RingHom.id_apply]
+  map_add' := fun f g ↦ by simp only [add_apply]
+  left_inv := fun f ↦ by ext; simp only [smulRight_apply, coe_id', id.def, one_smul]
+  right_inv := fun m ↦ by simp only [smulRight_apply, id_apply, one_smul]
+
+/-- If `M` is a normed space over `𝕜`, then the space of maps `𝕜 →L[𝕜] M` is linearly isometrically
+equivalent to `M`. -/
+def ring_lmap_equiv_self (𝕜 M : Type*)
+    [NontriviallyNormedField 𝕜] [NormedAddCommGroup M] [NormedSpace 𝕜 M] :
+    (𝕜 →L[𝕜] M) ≃ₗᵢ[𝕜] M where
+  toLinearEquiv := ContinuousLinearMap.ring_lmap_equiv_selfₗ 𝕜 M
+  norm_map' := fun f ↦ by
+    dsimp only [ContinuousLinearMap.ring_lmap_equiv_selfₗ]
+    rw [LinearEquiv.coe_mk]
+    apply eq_of_le_of_not_lt
+    · simpa only [norm_one, mul_one] using ContinuousLinearMap.le_op_norm f 1
+    · push_neg
+      refine ContinuousLinearMap.op_norm_le_bound' f (norm_nonneg _) (fun x _ ↦ ?_)
+      rw [(by rw [smul_eq_mul, mul_one] : f x = f (x • 1)), ContinuousLinearMap.map_smul,
+        norm_smul, mul_comm]
+
+lemma ring_lmap_equiv_self_apply (𝕜 : Type*) {M : Type*} [NontriviallyNormedField 𝕜]
+    [NormedAddCommGroup M] [NormedSpace 𝕜 M] (f : 𝕜 →L[𝕜] M) :
+    (ring_lmap_equiv_self 𝕜 M) f = f 1 :=
+  rfl
+
+lemma ring_lmap_equiv_self_symm_apply (𝕜 : Type*) {M : Type*} (m : M)
+    [NontriviallyNormedField 𝕜] [NormedAddCommGroup M] [NormedSpace 𝕜 M] :
+    (ring_lmap_equiv_self 𝕜 M).symm m = (ContinuousLinearMap.id 𝕜 𝕜).smulRight m :=
+  rfl
+
+end ContinuousLinearMap
+
+/-- the lemma which doesn't work
+
+
+lemma has_deriv_at_fourier_integral [complete_space E] [second_countable_topology E]
+  {f : ℝ → E} (hf : integrable f) (hf' : integrable (λ x : ℝ, x • f x)) (w : ℝ) :
+  has_deriv_at (fourier_integral f)
+    ((-2 * ↑π * complex.I : ℂ) • fourier_integral (λ x : ℝ, x • f x) w) w :=
+begin
+  have hf'' : integrable (λ v : ℝ, ‖v‖ * ‖f v‖), by simpa only [norm_smul] using hf'.norm,
+  have := (vector_fourier.has_fderiv_at_fourier
+    (continuous_linear_map.mul ℝ ℝ) hf hf'' w).has_deriv_at,
+  convert this,
+  rw [real.fourier_integral, vector_fourier.fourier_integral],
+  have : (∫ (v : ℝ), real.fourier_char [-(to_bilinear_map (continuous_linear_map.mul ℝ ℝ)) v w] •
+    vector_fourier.mul_L (continuous_linear_map.mul ℝ ℝ) f v).to_linear_map 1 =
+    (∫ (v : ℝ), real.fourier_char [-(to_bilinear_map (continuous_linear_map.mul ℝ ℝ)) v w] •
+      ((vector_fourier.mul_L (continuous_linear_map.mul ℝ ℝ) f v) 1)),
+  { change (∫ (v : ℝ), real.fourier_char[-(to_bilinear_map (continuous_linear_map.mul ℝ ℝ)) v w] •
+      vector_fourier.mul_L (continuous_linear_map.mul ℝ ℝ) f v).to_linear_map 1
+      with (∫ (v : ℝ), real.fourier_char[-(to_bilinear_map (continuous_linear_map.mul ℝ ℝ)) v w] •
+      vector_fourier.mul_L (continuous_linear_map.mul ℝ ℝ) f v) 1,
+    rw continuous_linear_map.integral_apply,
+    { refl },
+    { refine vector_fourier.fourier_integral_convergent continuous_fourier_char _ _ _,
+      { exact (continuous_linear_map.mul ℝ ℝ).continuous₂ },
+      { let A : (ℝ →L[ℝ] E) ≃ₗᵢ[ℝ] E := continuous_linear_map.ring_lmap_equiv_self ℝ E,
+        have := continuous_linear_map.integrable_comp
+          A.symm.to_continuous_linear_equiv.to_continuous_linear_map hf',
+        convert this,
+        ext1 x,
+        apply continuous_linear_map.ext_ring,
+        rw [vector_fourier.mul_L, continuous_linear_equiv.to_continuous_linear_map,
+          continuous_linear_map.coe_mk', linear_map.coe_mk, linear_map.to_fun_eq_coe,
+          linear_equiv.coe_to_linear_map, continuous_linear_equiv.coe_to_linear_equiv,
+          linear_isometry_equiv.coe_to_continuous_linear_equiv,
+          continuous_linear_map.ring_lmap_equiv_self_symm_apply,
+          continuous_linear_map.smul_right_apply, continuous_linear_map.smul_right_apply,
+          continuous_linear_map.id_apply, continuous_linear_map.mul_apply', mul_one, one_smul] }}},
+  rw [←continuous_linear_map.to_linear_map_eq_coe, this],
+  congr' 1 with x : 1,
+  simp_rw vector_fourier.mul_L,
+  rw [continuous_linear_map.smul_right_apply, continuous_linear_map.mul_apply', mul_one],
+end
+
+
+
+-/
+end scalar
