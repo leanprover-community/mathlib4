@@ -3,7 +3,6 @@ Copyright (c) 2024 Martin Dvorak. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Martin Dvorak
 -/
-import Mathlib.Data.Matrix.Notation
 import Mathlib.LinearAlgebra.Matrix.DotProduct
 
 /-!
