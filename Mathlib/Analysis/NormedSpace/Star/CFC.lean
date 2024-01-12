@@ -32,19 +32,19 @@ instance {a : A} [IsStarNormal a] : CFCCompatible ℂ a where
   isStarNormal := inferInstance
   spectrum_subset := range_id ▸ subset_univ _
 
-lemma IsSelfAdjoint.cfcElement {a : A} (ha : IsSelfAdjoint a) : CFCCompatible ℝ a where
+lemma IsSelfAdjoint.cfcCompatible {a : A} (ha : IsSelfAdjoint a) : CFCCompatible ℝ a where
   isStarNormal := ha.isStarNormal
   spectrum_subset z hz := ⟨z.re, .symm <| ha.mem_spectrum_eq_re hz⟩
 
 instance {a : selfAdjoint A} : CFCCompatible ℝ (a : A) :=
-  a.2.cfcElement
+  a.2.cfcCompatible
 
-lemma cfcElement_of_unitary {a : A} (ha : a ∈ unitary A) : CFCCompatible circle a where
+lemma cfcCompatible_of_unitary {a : A} (ha : a ∈ unitary A) : CFCCompatible circle a where
   isStarNormal := ⟨ha.1.trans ha.2.symm⟩ -- TODO: we should have a name for this
   spectrum_subset := Subtype.range_val ▸ spectrum.subset_circle_of_unitary ha
 
 instance {a : unitary A} : CFCCompatible circle (a : A) :=
-  cfcElement_of_unitary a.2
+  cfcCompatible_of_unitary a.2
 
 -- TODO: develop general `Embedding.lift`
 noncomputable def CFCCompatible.spectrumMap [Nonempty S] [hi : CFCEmb S i] (a : A)
