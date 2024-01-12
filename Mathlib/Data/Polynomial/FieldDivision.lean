@@ -655,6 +655,49 @@ theorem isCoprime_of_is_root_of_eval_derivative_ne_zero {K : Type*} [Field K] (f
   rwa [← C_inj, C_0]
 #align polynomial.is_coprime_of_is_root_of_eval_derivative_ne_zero Polynomial.isCoprime_of_is_root_of_eval_derivative_ne_zero
 
+/-- To check a polynomial over a field is irreducible, it suffices to check only for
+divisors that have smaller degree.
+
+See also: `Polynomial.Monic.irreducible_iff_natDegree`.
+-/
+theorem irreducible_iff_degree_lt (p : R[X]) (hp0 : p ≠ 0) (hpu : ¬ IsUnit p) :
+    Irreducible p ↔ ∀ q, q.degree < degree p → q ∣ p → IsUnit q := by
+  rw [← irreducible_mul_C_leadingCoeff_inv hp0,
+      (monic_mul_leadingCoeff_inv hp0).irreducible_iff_degree_lt]
+  simp [hp0]
+  · contrapose! hpu
+    exact isUnit_of_mul_eq_one _ _ hpu
+
+/-- To check a polynomial `p` over a field is irreducible, it suffices to check there are no
+divisors of degree `0 < d ≤ degree p / 2`.
+
+See also: `Polynomial.Monic.irreducible_iff_natDegree'`.
+-/
+theorem irreducible_iff_lt_natDegree_lt {p : R[X]} (hp0 : p ≠ 0) (hpu : ¬ IsUnit p) :
+    Irreducible p ↔ ∀ q, q ∣ p → natDegree q ∉ Finset.Ioc 0 (natDegree p / 2) := by
+  rw [← irreducible_mul_C_leadingCoeff_inv hp0,
+      (monic_mul_leadingCoeff_inv hp0).irreducible_iff_natDegree']
+  have : p * C (leadingCoeff p)⁻¹ ≠ 1
+  · contrapose! hpu
+    exact isUnit_of_mul_eq_one _ _ hpu
+  simp only [ne_eq, this, not_false_eq_true, Finset.mem_Ioc, not_and, not_le, true_and]
+  constructor
+  · rintro h f ⟨g, rfl⟩ hf
+    obtain ⟨hf0, hg0⟩ := mul_ne_zero_iff.mp hp0
+    convert h (g * C (leadingCoeff g)⁻¹) (f * C (leadingCoeff f)⁻¹)
+      (monic_mul_leadingCoeff_inv hg0) (monic_mul_leadingCoeff_inv hf0)
+      ?_
+      ?_ using 1
+    · rw [natDegree_mul_C_leadingCoeff_inv hp0]
+    · rw [natDegree_mul_C_leadingCoeff_inv hf0]
+    · simp; ring
+    · rwa [natDegree_mul_C_leadingCoeff_inv hf0]
+  · rintro h f g _ _ hfg hdeg
+    convert h g ⟨f * C (leadingCoeff p), ?_⟩ hdeg using 2
+    · rw [natDegree_mul_C_leadingCoeff_inv hp0]
+    · rw [mul_left_comm, ← mul_assoc, hfg, mul_assoc, ← map_mul, inv_mul_cancel, map_one, mul_one]
+      exact leadingCoeff_ne_zero.mpr hp0
+
 end Field
 
 end Polynomial

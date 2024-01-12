@@ -421,4 +421,30 @@ theorem leadingCoeff_comp (hq : natDegree q ≠ 0) :
 
 end NoZeroDivisors
 
+section Field
+
+variable {K : Type*} [Field K]
+
+/-! Useful lemmas for the "monicization" of a nonzero polynomial `p`. -/
+@[simp] lemma irreducible_mul_C_leadingCoeff_inv {p : K[X]} (hp0 : p ≠ 0) :
+    Irreducible (p * C (leadingCoeff p)⁻¹) ↔ Irreducible p :=
+  irreducible_mul_isUnit <| isUnit_C.mpr <| IsUnit.mk0 _ <|
+    inv_ne_zero <| leadingCoeff_ne_zero.mpr hp0
+
+@[simp] lemma dvd_mul_C_leadingCoeff_inv {p q : K[X]} (hp0 : p ≠ 0) :
+    q ∣ p * C (leadingCoeff p)⁻¹ ↔ q ∣ p :=
+  IsUnit.dvd_mul_right <| isUnit_C.mpr <| IsUnit.mk0 _ <|
+    inv_ne_zero <| leadingCoeff_ne_zero.mpr hp0
+
+-- `simp` normal form of `degree_mul_C_leadingCoeff_inv`
+@[simp] lemma degree_C_leadingCoeff_inv {p : K[X]} (hp0 : p ≠ 0) :
+    degree (C (leadingCoeff p)⁻¹) = 0 :=
+  degree_C (inv_ne_zero <| leadingCoeff_ne_zero.mpr hp0)
+
+lemma degree_mul_C_leadingCoeff_inv {p : K[X]} (hp0 : p ≠ 0) :
+    degree (p * C (leadingCoeff p)⁻¹) = degree p := by
+  simp [degree_C_leadingCoeff_inv hp0]
+
+end Field
+
 end Polynomial
