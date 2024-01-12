@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.MonoidAlgebra.Support
-import Mathlib.Algebra.Regular.Pow
+import Mathlib.Algebra.Regular.Basic
 import Mathlib.Data.Polynomial.Basic
 import Mathlib.Data.Nat.Choose.Sum
 
@@ -322,15 +322,14 @@ theorem mul_X_pow_eq_zero {p : R[X]} {n : ℕ} (H : p * X ^ n = 0) : p = 0 :=
   ext fun k => (coeff_mul_X_pow p n k).symm.trans <| ext_iff.1 H (k + n)
 #align polynomial.mul_X_pow_eq_zero Polynomial.mul_X_pow_eq_zero
 
-@[simp] theorem isRegular_X : IsRegular (X : R[X]) := by
-  suffices : IsLeftRegular (X : R[X])
-  · exact ⟨this, this.right_of_commute commute_X⟩
-  intro P Q (hPQ : X * P = X * Q)
+theorem isRegular_X_pow (n : ℕ) : IsRegular (X ^ n : R[X]) := by
+  suffices : IsLeftRegular (X^n : R[X])
+  · exact ⟨this, this.right_of_commute (fun p => commute_X_pow p n)⟩
+  intro P Q (hPQ : X^n * P = X^n * Q)
   ext i
-  rw [← coeff_X_mul P i, hPQ, coeff_X_mul Q i]
+  rw [← coeff_X_pow_mul P n i, hPQ, coeff_X_pow_mul Q n i]
 
--- TODO Unify this with `Polynomial.Monic.isRegular`
-theorem isRegular_X_pow (n : ℕ) : IsRegular (X ^ n : R[X]) := isRegular_X.pow n
+@[simp] theorem isRegular_X : IsRegular (X : R[X]) := pow_one (X : R[X]) ▸ isRegular_X_pow 1
 
 theorem coeff_X_add_C_pow (r : R) (n k : ℕ) :
     ((X + C r) ^ n).coeff k = r ^ (n - k) * (n.choose k : R) := by
