@@ -5,7 +5,6 @@ Authors: Adrian Wüthrich
 -/
 import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
 import Mathlib.Combinatorics.SimpleGraph.IncMatrix
-import Mathlib.LinearAlgebra.Finrank
 import Mathlib.LinearAlgebra.Matrix.PosDef
 import Mathlib.LinearAlgebra.Matrix.IsDiag
 
