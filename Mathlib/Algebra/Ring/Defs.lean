@@ -213,6 +213,16 @@ theorem ite_mul {α} [Mul α] (P : Prop) [Decidable P] (a b c : α) :
 -- `mul_ite` and `ite_mul`.
 attribute [simp] mul_ite ite_mul
 
+theorem ite_sub_ite {α} [Sub α] (P : Prop) [Decidable P] (a b c d : α) :
+    ((if P then a else b) - if P then c else d) = if P then a - c else b - d := by
+  split
+  repeat rfl
+
+theorem ite_add_ite {α} [Add α] (P : Prop) [Decidable P] (a b c d : α) :
+    ((if P then a else b) + if P then c else d) = if P then a + c else b + d := by
+  split
+  repeat rfl
+
 section MulZeroClass
 variable [MulZeroClass α] (P Q : Prop) [Decidable P] [Decidable Q] (a b : α)
 
