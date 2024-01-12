@@ -936,6 +936,7 @@ variable {R S T}
 
 variable {φ φ' ψ χ}
 
+set_option linter.unusedVariables false in
 /-- Composition of two equivariant additive ring homomorphisms. -/
 def comp (g : S →ₑ+*[ψ] T) (f : R →ₑ+*[φ] S) [κ : MonoidHom.CompTriple φ ψ χ] : R →ₑ+*[χ] T :=
   { DistribMulActionHom.comp (g : S →ₑ+[ψ] T) (f : R →ₑ+[φ] S),
