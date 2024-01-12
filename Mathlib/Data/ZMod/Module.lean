@@ -41,8 +41,9 @@ def AddCommGroup.zmodModule {G : Type*} [AddCommGroup G] (h : ∀ (x : G), n •
   | 0 => AddCommGroup.intModule G
   | _ + 1 => AddCommMonoid.zmodModule h
 
-variable {F S : Type*} [AddCommGroup M] [AddCommGroup M₁] [AddMonoidHomClass F M M₁]
-  [Module (ZMod n) M] [Module (ZMod n) M₁] [SetLike S M] [AddSubgroupClass S M] {x : M} {K : S}
+variable {F S : Type*} [AddCommGroup M] [AddCommGroup M₁] [NDFunLike F M M₁]
+  [AddMonoidHomClass F M M₁] [Module (ZMod n) M] [Module (ZMod n) M₁] [SetLike S M]
+  [AddSubgroupClass S M] {x : M} {K : S}
 
 namespace ZMod
 
