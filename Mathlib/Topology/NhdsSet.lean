@@ -221,9 +221,9 @@ theorem Filter.Eventually.union {p : X → Prop} (hs : ∀ᶠ x in 𝓝ˢ s, p x
     ∀ᶠ x in 𝓝ˢ (s ∪ t), p x :=
   Filter.Eventually.union_nhdsSet.mpr ⟨hs, ht⟩
 
--- xxx: where is a good place? can the proof be golfed?
+-- xxx: is there a better place for this lemma? can the proof be golfed?
 theorem sSup_iUnion {α : Type*} {ι : Sort*} (t : ι → Set (Filter α)) :
-  sSup (⋃ i, t i) = ⨆ i, sSup (t i) := by
+    sSup (⋃ i, t i) = ⨆ i, sSup (t i) := by
   ext
   simp only [mem_sSup, mem_iUnion, forall_exists_index, mem_iSup]
   exact ⟨fun a i f h ↦ a f i h, fun a f i h ↦ a i f h⟩
