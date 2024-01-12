@@ -113,13 +113,8 @@ lemma zero_of_continuous_of_one_entry_norm_zero (hf : Continuous f)
     NormedAddCommGroup.tendsto_nhds_nhds.1 (hf.tendsto 0) δ hδ
   simp only [sub_zero, f.map_zero] at hε
   rcases NormedField.exists_lt_norm 𝕜 (‖m‖ / ε) with ⟨a, ha⟩
-  have hapos : 0 < ‖a‖ := by
-    refine lt_of_le_of_lt ?_ ha
-    rw [le_div_iff ε0, zero_mul]
-    exact norm_nonneg _
-  have hane : a ≠ 0 := fun habs ↦ by rw [habs, norm_zero] at hapos; exact lt_irrefl 0 hapos
-  set c : (i : ι) → 𝕜 := fun j ↦ if j = i then a^(Fintype.card ι - 1) else a⁻¹
-  have heq : f m = f (fun j ↦ c j • m j) := by
+  have hapos : 0 < ‖a‖ := lt_of_le_of_lt (by rw [le_div_iff ε0, zero_mul]; exact norm_nonneg _) ha
+  have heq : f m = f (fun j ↦ (if j = i then a^(Fintype.card ι - 1) else a⁻¹) • m j) := by
      rw [MultilinearMap.map_smul_univ]
      conv_lhs => rw[← one_smul 𝕜 (f m)]
      congr
@@ -129,21 +124,19 @@ lemma zero_of_continuous_of_one_entry_norm_zero (hf : Continuous f)
        Finset.prod_const, Finset.card_erase_of_mem (Finset.mem_univ i), Finset.card_univ]
      simp only [ite_true]
      rw [← mul_pow]
-     conv_lhs => rw [← one_pow (Fintype.card ι - 1), ← inv_mul_cancel hane]
-  have h : ‖fun j ↦ c j • m j‖ < ε := by
-    rw [pi_norm_lt_iff ε0]
-    intro j
-    rw [norm_smul]
-    by_cases h : j = i
-    · rw [h, hi, mul_zero]
-      exact ε0
-    · simp only [h, ite_false]
-      refine lt_of_le_of_lt (mul_le_mul_of_nonneg_left (norm_le_pi_norm m j) (norm_nonneg _)) ?_
-      rw [norm_inv, inv_mul_lt_iff hapos, ← div_lt_iff ε0]
-      exact ha
+     conv_lhs => rw [← one_pow (Fintype.card ι - 1), ← inv_mul_cancel
+       (fun (h : a = 0) ↦ by rw [h, norm_zero] at hapos; exact lt_irrefl 0 hapos)]
   rw [heq]
-  exact hε _ h
-
+  refine hε _ ?_
+  rw [pi_norm_lt_iff ε0]
+  intro j
+  rw [norm_smul]
+  by_cases h : j = i
+  · rw [h, hi, mul_zero]
+    exact ε0
+  · simp only [h, ite_false]
+    exact lt_of_le_of_lt (mul_le_mul_of_nonneg_left (norm_le_pi_norm m j) (norm_nonneg _))
+      (by rw [norm_inv, inv_mul_lt_iff hapos, ← div_lt_iff ε0]; exact ha)
 
 /-- If a continuous multilinear map in finitely many variables on normed spaces satisfies
 the inequality `‖f m‖ ≤ C * ∏ i, ‖m i‖` on a shell `ε i / ‖c i‖ < ‖m i‖ < ε i` for some positive
