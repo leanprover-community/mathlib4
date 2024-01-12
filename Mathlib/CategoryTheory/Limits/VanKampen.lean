@@ -318,7 +318,7 @@ theorem IsUniversalColimit.map_reflective
   have hadj : ∀ X, Gl.map (adj.unit.app X) = inv (adj.counit.app _)
   · intro X
     apply IsIso.eq_inv_of_inv_hom_id
-    exact adj.left_triangle_components
+    exact adj.left_triangle_components _
   haveI : ∀ X, IsIso (Gl.map (adj.unit.app X)) := by
     simp_rw [hadj]
     infer_instance
