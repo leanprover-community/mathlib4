@@ -482,9 +482,11 @@ theorem chaar_sup_le {K₀ : PositiveCompacts G} (K₁ K₂ : Compacts G) :
 #align measure_theory.measure.haar.add_chaar_sup_le MeasureTheory.Measure.haar.addCHaar_sup_le
 
 @[to_additive addCHaar_sup_eq]
-theorem chaar_sup_eq [T2Space G] {K₀ : PositiveCompacts G} {K₁ K₂ : Compacts G}
-    (h : Disjoint K₁.1 K₂.1) : chaar K₀ (K₁ ⊔ K₂) = chaar K₀ K₁ + chaar K₀ K₂ := by
-  rcases isCompact_isCompact_separated K₁.2 K₂.2 h with ⟨U₁, U₂, h1U₁, h1U₂, h2U₁, h2U₂, hU⟩
+theorem chaar_sup_eq [T2OrLocallyCompactRegularSpace G] {K₀ : PositiveCompacts G}
+    {K₁ K₂ : Compacts G} (h : Disjoint K₁.1 K₂.1) (h₂ : IsClosed K₂.1) :
+    chaar K₀ (K₁ ⊔ K₂) = chaar K₀ K₁ + chaar K₀ K₂ := by
+  rcases isCompact_isCompact_isClosed_separated K₁.2 K₂.2 h₂ h
+    with ⟨U₁, U₂, h1U₁, h1U₂, h2U₁, h2U₂, hU⟩
   rcases compact_open_separated_mul_right K₁.2 h1U₁ h2U₁ with ⟨L₁, h1L₁, h2L₁⟩
   rcases mem_nhds_iff.mp h1L₁ with ⟨V₁, h1V₁, h2V₁, h3V₁⟩
   replace h2L₁ := Subset.trans (mul_subset_mul_left h1V₁) h2L₁
@@ -530,7 +532,7 @@ theorem is_left_invariant_chaar {K₀ : PositiveCompacts G} (g : G) (K : Compact
 #align measure_theory.measure.haar.is_left_invariant_chaar MeasureTheory.Measure.haar.is_left_invariant_chaar
 #align measure_theory.measure.haar.is_left_invariant_add_chaar MeasureTheory.Measure.haar.is_left_invariant_addCHaar
 
-variable [T2Space G]
+variable [T2OrLocallyCompactRegularSpace G]
 
 -- Porting note: Even in `noncomputable section`, a definition with `to_additive` require
 --               `noncomputable` to generate an additive definition.
@@ -541,7 +543,7 @@ variable [T2Space G]
 noncomputable def haarContent (K₀ : PositiveCompacts G) : Content G where
   toFun K := ⟨chaar K₀ K, chaar_nonneg _ _⟩
   mono' K₁ K₂ h := by simp only [← NNReal.coe_le_coe, NNReal.toReal, chaar_mono, h]
-  sup_disjoint' K₁ K₂ h := by simp only [chaar_sup_eq h]; rfl
+  sup_disjoint' K₁ K₂ h _h₁ h₂ := by simp only [chaar_sup_eq h]; rfl
   sup_le' K₁ K₂ := by
     simp only [← NNReal.coe_le_coe, NNReal.coe_add]
     simp only [NNReal.toReal, chaar_sup_le]
@@ -593,7 +595,8 @@ open haar
 -/
 
 
-variable [TopologicalSpace G] [T2Space G] [TopologicalGroup G] [MeasurableSpace G] [BorelSpace G]
+variable [TopologicalSpace G] [T2OrLocallyCompactRegularSpace G] [TopologicalGroup G]
+[MeasurableSpace G] [BorelSpace G]
 
 -- Porting note: Even in `noncomputable section`, a definition with `to_additive` require
 --               `noncomputable` to generate an additive definition.

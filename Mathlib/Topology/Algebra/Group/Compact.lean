@@ -33,7 +33,7 @@ variable [TopologicalSpace G] [Group G] [TopologicalGroup G]
 /-- Every topological group in which there exists a compact set with nonempty interior
 is weakly locally compact. -/
 @[to_additive
-  "Every separated topological additive group
+  "Every topological additive group
   in which there exists a compact set with nonempty interior is weakly locally compact."]
 theorem TopologicalSpace.PositiveCompacts.weaklyLocallyCompactSpace_of_group
     (K : PositiveCompacts G) : WeaklyLocallyCompactSpace G where
@@ -48,8 +48,8 @@ is locally compact. -/
 @[to_additive
   "Every separated topological additive group
   in which there exists a compact set with nonempty interior is locally compact."]
-theorem TopologicalSpace.PositiveCompacts.locallyCompactSpace_of_group [T2Space G]
-    (K : PositiveCompacts G) : LocallyCompactSpace G :=
+theorem TopologicalSpace.PositiveCompacts.locallyCompactSpace_of_group
+    [T2OrLocallyCompactRegularSpace G] (K : PositiveCompacts G) : LocallyCompactSpace G :=
   have := K.weaklyLocallyCompactSpace_of_group; inferInstance
 #align topological_space.positive_compacts.locally_compact_space_of_group TopologicalSpace.PositiveCompacts.locallyCompactSpace_of_group
 #align topological_space.positive_compacts.locally_compact_space_of_add_group TopologicalSpace.PositiveCompacts.locallyCompactSpace_of_addGroup
