@@ -473,7 +473,6 @@ protected theorem pow_induction_on_left' {C : ∀ (n : ℕ) (x), x ∈ M ^ n →
       (fun x hx y hy Cx Cy => hadd _ _ _ _ _ Cx Cy) hx
 #align submodule.pow_induction_on_left' Submodule.pow_induction_on_left'
 
-set_option maxHeartbeats 600000 in
 /-- Dependent version of `Submodule.pow_induction_on_right`. -/
 @[elab_as_elim]
 protected theorem pow_induction_on_right' {C : ∀ (n : ℕ) (x), x ∈ M ^ n → Prop}
@@ -488,12 +487,13 @@ protected theorem pow_induction_on_right' {C : ∀ (n : ℕ) (x), x ∈ M ^ n �
   · rw [pow_zero] at hx
     obtain ⟨r, rfl⟩ := hx
     exact hr r
-  revert hx
-  simp_rw [pow_succ']
-  intro hx
-  exact
-    Submodule.mul_induction_on' (fun m hm x ih => hmul _ _ hm (n_ih _) _ ih)
-      (fun x hx y hy Cx Cy => hadd _ _ _ _ _ Cx Cy) hx
+  replace hx : x ∈ M ^ n * M := by rwa [← pow_succ']
+  let C' := fun (x : A) (hx : x ∈ M ^ n * M) ↦ C (1 + n) x (by rwa [← n.succ_eq_one_add, pow_succ'])
+  suffices C' x hx by convert this using 1; exact n.succ_eq_one_add
+  refine Submodule.mul_induction_on' (fun m hm x ih ↦ ?_)
+    (fun x hx y hy Cx Cy ↦ hadd _ _ _ _ _ Cx Cy) hx
+  · convert hmul n m hm (n_ih hm) x ih using 1
+    rw [← n.succ_eq_one_add]
 #align submodule.pow_induction_on_right' Submodule.pow_induction_on_right'
 
 /-- To show a property on elements of `M ^ n` holds, it suffices to show that it holds for scalars,
