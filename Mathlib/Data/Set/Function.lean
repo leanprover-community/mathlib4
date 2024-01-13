@@ -628,6 +628,7 @@ end
 
 /-! ### Injectivity on a set -/
 
+
 /-- `f` is injective on `a` if the restriction of `f` to `a` is injective. -/
 def InjOn (f : α → β) (s : Set α) : Prop :=
   ∀ ⦃x₁ : α⦄, x₁ ∈ s → ∀ ⦃x₂ : α⦄, x₂ ∈ s → f x₁ = f x₂ → x₁ = x₂
