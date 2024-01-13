@@ -290,9 +290,8 @@ theorem exists_subset_restrict_nonpos (hi : s i < 0) :
     have : Summable fun l => s (restrictNonposSeq s i l) :=
       HasSum.summable
         (s.m_iUnion (fun _ => restrictNonposSeq_measurableSet _) restrictNonposSeq_disjoint)
-    refine'
-      summable_of_nonneg_of_le (fun n => _) (fun n => _)
-        (Summable.comp_injective this Nat.succ_injective)
+    refine' .of_nonneg_of_le (fun n => _) (fun n => _)
+        (this.comp_injective Nat.succ_injective)
     · exact le_of_lt Nat.one_div_pos_of_nat
     · exact le_of_lt (restrictNonposSeq_lt n (hn' n))
   have h₃ : Tendsto (fun n => (bdd n : ℝ) + 1) atTop atTop := by

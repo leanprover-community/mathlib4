@@ -338,7 +338,7 @@ section DescFactorial
 
 /-- `n.descFactorial k = n! / (n - k)!` (as seen in `Nat.descFactorial_eq_div`), but
 implemented recursively to allow for "quick" computation when using `norm_num`. This is closely
-related to `ascPochhammer`, but much less general. -/
+related to `descPochhammer`, but much less general. -/
 def descFactorial (n : ℕ) : ℕ → ℕ
   | 0 => 1
   | k + 1 => (n - k) * descFactorial n k

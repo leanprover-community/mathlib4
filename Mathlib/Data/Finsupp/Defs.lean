@@ -955,6 +955,15 @@ theorem support_zipWith [D : DecidableEq α] {f : M → N → P} {hf : f 0 0 = 0
   rw [Subsingleton.elim D] <;> exact support_onFinset_subset
 #align finsupp.support_zip_with Finsupp.support_zipWith
 
+@[simp]
+theorem zipWith_single_single (f : M → N → P) (hf : f 0 0 = 0) (a : α) (m : M) (n : N) :
+    zipWith f hf (single a m) (single a n) = single a (f m n) := by
+  ext a'
+  rw [zipWith_apply]
+  obtain rfl | ha' := eq_or_ne a a'
+  · rw [single_eq_same, single_eq_same, single_eq_same]
+  · rw [single_eq_of_ne ha', single_eq_of_ne ha', single_eq_of_ne ha', hf]
+
 end ZipWith
 
 /-! ### Additive monoid structure on `α →₀ M` -/
@@ -996,10 +1005,7 @@ theorem support_add_eq [DecidableEq α] {g₁ g₂ : α →₀ M} (h : Disjoint 
 
 @[simp]
 theorem single_add (a : α) (b₁ b₂ : M) : single a (b₁ + b₂) = single a b₁ + single a b₂ :=
-  ext fun a' => by
-    by_cases h : a = a'
-    · rw [h, add_apply, single_eq_same, single_eq_same, single_eq_same]
-    · rw [add_apply, single_eq_of_ne h, single_eq_of_ne h, single_eq_of_ne h, zero_add]
+  (zipWith_single_single _ _ _ _ _).symm
 #align finsupp.single_add Finsupp.single_add
 
 instance addZeroClass : AddZeroClass (α →₀ M) :=

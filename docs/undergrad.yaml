@@ -422,7 +422,7 @@ Topology:
     Banach open mapping theorem: 'ContinuousLinearMap.isOpenMap'
     equivalence of norms in finite dimension: 'LinearEquiv.toContinuousLinearEquiv'
     norms $\lVert\cdot\rVert_p$ on $\R^n$ and $\C^n$: 'PiLp.normedSpace'
-    absolutely convergent series in Banach spaces: 'summable_of_summable_norm'
+    absolutely convergent series in Banach spaces: 'Summable.of_norm'
     continuous linear maps: 'ContinuousLinearMap'
     norm of a continuous linear map: 'LinearMap.mkContinuous'
     uniform convergence norm (sup-norm): 'EMetric.tendstoUniformlyOn_iff'

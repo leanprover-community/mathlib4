@@ -6,7 +6,6 @@ Authors: Kevin Lacker
 import Mathlib.Algebra.GroupPower.Identities
 import Mathlib.Data.Int.NatPrime
 import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.NormCast
 import Mathlib.Data.Set.Finite
 
 #align_import imo.imo1969_q1 from "leanprover-community/mathlib"@"2d6f88c296da8df484d7f5b9ee1d10910ab473a2"

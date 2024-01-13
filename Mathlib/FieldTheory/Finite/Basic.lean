@@ -126,7 +126,7 @@ theorem card_cast_subgroup_card_ne_zero [Ring K] [NoZeroDivisors K] [Nontrivial 
     have ⟨x, hx⟩ := exists_prime_orderOf_dvd_card p hd
     -- F has an element u (= ↑↑x) of order p
     let u := ((x : Kˣ) : K)
-    have hu : orderOf u = p := by rwa [orderOf_units, orderOf_subgroup]
+    have hu : orderOf u = p := by rwa [orderOf_units, Subgroup.orderOf_coe]
     -- u ^ p = 1 implies (u - 1) ^ p = 0 and hence u = 1 ...
     have h : u = 1 := by
       rw [← sub_left_inj, sub_self 1]

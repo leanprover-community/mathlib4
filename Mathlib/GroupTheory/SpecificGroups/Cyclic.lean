@@ -105,7 +105,7 @@ theorem isCyclic_of_orderOf_eq_card [Fintype α] (x : α) (hx : orderOf x = Fint
   classical
     use x
     simp_rw [← SetLike.mem_coe, ← Set.eq_univ_iff_forall]
-    rw [← Fintype.card_congr (Equiv.Set.univ α), orderOf_eq_card_zpowers] at hx
+    rw [← Fintype.card_congr (Equiv.Set.univ α), ←Fintype.card_zpowers] at hx
     exact Set.eq_of_subset_of_card_le (Set.subset_univ _) (ge_of_eq hx)
 #align is_cyclic_of_order_of_eq_card isCyclic_of_orderOf_eq_card
 #align is_add_cyclic_of_order_of_eq_card isAddCyclic_of_orderOf_eq_card
@@ -146,7 +146,7 @@ theorem isCyclic_of_prime_card {α : Type u} [Group α] [Fintype α] {p : ℕ} [
 theorem orderOf_eq_card_of_forall_mem_zpowers [Fintype α] {g : α} (hx : ∀ x, x ∈ zpowers g) :
     orderOf g = Fintype.card α := by
   classical
-    rw [orderOf_eq_card_zpowers]
+    rw [←Fintype.card_zpowers]
     apply Fintype.card_of_finset'
     simpa using hx
 #align order_of_eq_card_of_forall_mem_zpowers orderOf_eq_card_of_forall_mem_zpowers
@@ -159,7 +159,7 @@ theorem exists_pow_ne_one_of_isCyclic {G : Type*} [Group G] [Fintype G] [G_cycli
   use a
   contrapose! k_lt_card_G
   convert orderOf_le_of_pow_eq_one k_pos.bot_lt k_lt_card_G
-  rw [orderOf_eq_card_zpowers, eq_comm, Subgroup.card_eq_iff_eq_top, eq_top_iff]
+  rw [←Fintype.card_zpowers, eq_comm, Subgroup.card_eq_iff_eq_top, eq_top_iff]
   exact fun x _ ↦ ha x
 
 @[to_additive Infinite.addOrderOf_eq_zero_of_forall_mem_zmultiples]
@@ -168,18 +168,18 @@ theorem Infinite.orderOf_eq_zero_of_forall_mem_zpowers [Infinite α] {g : α}
   classical
     rw [orderOf_eq_zero_iff']
     refine' fun n hn hgn => _
-    have ho := orderOf_pos' ((isOfFinOrder_iff_pow_eq_one g).mpr ⟨n, hn, hgn⟩)
+    have ho := isOfFinOrder_iff_pow_eq_one.mpr ⟨n, hn, hgn⟩
     obtain ⟨x, hx⟩ :=
       Infinite.exists_not_mem_finset
         (Finset.image (fun x => g ^ x) <| Finset.range <| orderOf g)
     apply hx
-    rw [← mem_powers_iff_mem_range_order_of' (x := g) (y := x) ho, Submonoid.mem_powers_iff]
+    rw [←ho.mem_powers_iff_mem_range_orderOf, Submonoid.mem_powers_iff]
     obtain ⟨k, hk⟩ := h x
     dsimp at hk
     obtain ⟨k, rfl | rfl⟩ := k.eq_nat_or_neg
     · exact ⟨k, by exact_mod_cast hk⟩
-    rw [zpow_eq_mod_orderOf] at hk
-    have : 0 ≤ (-k % orderOf g : ℤ) := Int.emod_nonneg (-k) (by exact_mod_cast ho.ne')
+    rw [←zpow_mod_orderOf] at hk
+    have : 0 ≤ (-k % orderOf g : ℤ) := Int.emod_nonneg (-k) (by exact_mod_cast ho.orderOf_pos.ne')
     refine' ⟨(-k % orderOf g : ℤ).toNat, _⟩
     rwa [← zpow_ofNat, Int.toNat_of_nonneg this]
 #align infinite.order_of_eq_zero_of_forall_mem_zpowers Infinite.orderOf_eq_zero_of_forall_mem_zpowers
@@ -276,7 +276,7 @@ theorem IsCyclic.card_pow_eq_one_le [DecidableEq α] [Fintype α] [IsCyclic α] 
           rw [hm0, mul_zero, Fintype.card_eq_zero_iff] at hm
           exact hm.elim' 1
       simp only [Set.toFinset_card, SetLike.coe_sort_coe]
-      rw [← orderOf_eq_card_zpowers, orderOf_pow g, orderOf_eq_card_of_forall_mem_zpowers hg]
+      rw [Fintype.card_zpowers, orderOf_pow g, orderOf_eq_card_of_forall_mem_zpowers hg]
       nth_rw 2 [hm]; nth_rw 3 [hm]
       rw [Nat.mul_div_cancel_left _ (gcd_pos_of_pos_left _ hn0), gcd_mul_left_left, hm,
         Nat.mul_div_cancel _ hm0]
@@ -324,7 +324,7 @@ private theorem card_pow_eq_one_eq_orderOf_aux (a : α) :
     (Finset.univ.filter fun b : α => b ^ orderOf a = 1).card = orderOf a :=
   le_antisymm (hn _ (orderOf_pos a))
     (calc
-      orderOf a = @Fintype.card (zpowers a) (id _) := orderOf_eq_card_zpowers
+      orderOf a = @Fintype.card (zpowers a) (id _) := Fintype.card_zpowers.symm
       _ ≤
           @Fintype.card (↑(univ.filter fun b : α => b ^ orderOf a = 1) : Set α)
             (Fintype.ofFinset _ fun _ => Iff.rfl) :=
@@ -574,7 +574,7 @@ theorem IsCyclic.exponent_eq_card [Group α] [IsCyclic α] [Fintype α] :
   obtain ⟨g, hg⟩ := IsCyclic.exists_generator (α := α)
   apply Nat.dvd_antisymm
   · rw [← lcm_order_eq_exponent, Finset.lcm_dvd_iff]
-    exact fun b _ => orderOf_dvd_card_univ
+    exact fun b _ => orderOf_dvd_card
   rw [← orderOf_eq_card_of_forall_mem_zpowers hg]
   exact order_dvd_exponent _
 #align is_cyclic.exponent_eq_card IsCyclic.exponent_eq_card

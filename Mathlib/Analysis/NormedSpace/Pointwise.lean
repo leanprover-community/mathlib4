@@ -108,6 +108,14 @@ theorem smul_closedBall' {c : 𝕜} (hc : c ≠ 0) (x : E) (r : ℝ) :
   simp only [← ball_union_sphere, Set.smul_set_union, _root_.smul_ball hc, smul_sphere' hc]
 #align smul_closed_ball' smul_closedBall'
 
+theorem set_smul_sphere_zero {s : Set 𝕜} (hs : 0 ∉ s) (r : ℝ) :
+    s • sphere (0 : E) r = (‖·‖) ⁻¹' ((‖·‖ * r) '' s) :=
+  calc
+    s • sphere (0 : E) r = ⋃ c ∈ s, c • sphere (0 : E) r := iUnion_smul_left_image.symm
+    _ = ⋃ c ∈ s, sphere (0 : E) (‖c‖ * r) := iUnion₂_congr fun c hc ↦ by
+      rw [smul_sphere' (ne_of_mem_of_not_mem hc hs), smul_zero]
+    _ = (‖·‖) ⁻¹' ((‖·‖ * r) '' s) := by ext; simp [eq_comm]
+
 /-- Image of a bounded set in a normed space under scalar multiplication by a constant is
 bounded. See also `Metric.Bounded.smul` for a similar lemma about an isometric action. -/
 theorem Bornology.IsBounded.smul₀ {s : Set E} (hs : IsBounded s) (c : 𝕜) : IsBounded (c • s) :=
@@ -144,6 +152,13 @@ constant `r` is the ball of radius `r`. -/
 theorem smul_unitBall_of_pos {r : ℝ} (hr : 0 < r) : r • ball (0 : E) 1 = ball (0 : E) r := by
   rw [smul_unitBall hr.ne', Real.norm_of_nonneg hr.le]
 #align smul_unit_ball_of_pos smul_unitBall_of_pos
+
+lemma Ioo_smul_sphere_zero {a b r : ℝ} (ha : 0 ≤ a) (hr : 0 < r) :
+    Ioo a b • sphere (0 : E) r = ball 0 (b * r) \ closedBall 0 (a * r) := by
+  have : EqOn (‖·‖) id (Ioo a b) := fun x hx ↦ abs_of_pos (ha.trans_lt hx.1)
+  rw [set_smul_sphere_zero (by simp [ha.not_lt]), ← image_image (· * r), this.image_eq, image_id,
+    image_mul_right_Ioo _ _ hr]
+  ext x; simp [and_comm]
 
 -- This is also true for `ℚ`-normed spaces
 theorem exists_dist_eq (x z : E) {a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) (hab : a + b = 1) :
