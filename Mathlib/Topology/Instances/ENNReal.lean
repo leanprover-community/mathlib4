@@ -727,7 +727,7 @@ theorem exists_frequently_lt_of_liminf_ne_top' {ι : Type*} {l : Filter ι} {x :
   simp_rw [not_exists, not_frequently, not_lt] at h
   refine hx (ENNReal.eq_top_of_forall_nnreal_le fun r => le_limsInf_of_le (by isBoundedDefault) ?_)
   simp only [eventually_map, ENNReal.coe_le_coe]
-  filter_upwards [h (-r)] with i hi using(le_neg.1 hi).trans (neg_le_abs_self _)
+  filter_upwards [h (-r)] with i hi using(le_neg.1 hi).trans (neg_le_abs _)
 #align ennreal.exists_frequently_lt_of_liminf_ne_top' ENNReal.exists_frequently_lt_of_liminf_ne_top'
 
 theorem exists_upcrossings_of_not_bounded_under {ι : Type*} {l : Filter ι} {x : ι → ℝ}
@@ -1647,7 +1647,7 @@ end truncateToReal
 
 section LimsupLiminf
 
-set_option autoImplicit true
+variable {ι : Type*}
 
 lemma limsup_sub_const (F : Filter ι) [NeBot F] (f : ι → ℝ≥0∞) (c : ℝ≥0∞) :
     Filter.limsup (fun i ↦ f i - c) F = Filter.limsup f F - c :=
