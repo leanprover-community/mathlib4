@@ -5,9 +5,10 @@ Authors: Scott Carnahan
 -/
 
 import Mathlib.Algebra.Group.Defs
-import Mathlib.Data.PNat.Defs
-import Mathlib.Logic.Function.Basic
-import Mathlib.Tactic.ComputeDegree
+import Mathlib.Algebra.GroupPower.Basic
+import Mathlib.Algebra.Group.Prod
+import Mathlib.GroupTheory.GroupAction.Prod
+import Mathlib.Algebra.BigOperators.Basic
 
 /-!
 # Typeclasses for power-associative structures
@@ -96,18 +97,10 @@ section Monoid
 
 variable [Monoid M]
 
-instance Monoid.PowAssoc [Monoid M] : NatPowAssoc M :=
-  {
-  npow_add := by
-    intro k n x
-    rw [pow_add]
-  npow_zero := by
-    intro x
-    rw [pow_zero]
-  npow_one := by
-    intro x
-    rw [pow_one]
-  }
+instance Monoid.PowAssoc [Monoid M] : NatPowAssoc M where
+  npow_add _ _ _ := pow_add _ _ _
+  npow_zero _ := pow_zero _
+  npow_one _ := pow_one _
 
 @[simp, norm_cast]
 theorem Nat.cast_npow (R : Type*) [NonAssocSemiring R] [Pow R ℕ] [NatPowAssoc R] (n m : ℕ) :

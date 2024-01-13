@@ -71,8 +71,7 @@ variable {R : Type*} [NonAssocSemiring R] [Pow R ℕ] [BinomialRing R]
 /-- The multichoose function is the quotient of ascending Pochhammer evaluation by the corresponding
 factorial. When applied to natural numbers, `multichoose k n` describes choosing a multiset of `n`
 items from a group of `k`, i.e., choosing with replacement. -/
-def multichoose (r : R) (n : ℕ) : R :=
-  BinomialRing.multichoose r n
+def multichoose (r : R) (n : ℕ) : R := BinomialRing.multichoose r n
 
 @[simp]
 theorem multichoose_eq_multichoose (r : R) (n : ℕ) :
@@ -176,13 +175,15 @@ theorem ascPochhammer_smeval_eq_eval {R : Type*} [Semiring R] (r : R) (k : ℕ) 
       pow_zero, nsmul_one, Nat.cast_id, eval_add, eval_mul_X, ← Nat.cast_comm, eval_nat_cast_mul,
       mul_add, Nat.cast_comm]
 
+/-- The multichoose function for integers. -/
+def Int.multichoose (n : ℤ) (k : ℕ) : ℤ := by
+  cases n with
+  | ofNat n => use ((Nat.choose (n + k - 1) k) : ℤ)
+  | negSucc n => use (-1) ^ k * Nat.choose n.succ k
+
 instance Int.instBinomialRing : BinomialRing ℤ where
   nsmul_right_injective n hn r s hrs := Int.eq_of_mul_eq_mul_left (Int.ofNat_ne_zero.mpr hn) hrs
-  multichoose r k := by
-    cases r with
-    | ofNat n =>
-      use ((Nat.choose (n + k - 1) k):ℤ)
-    | negSucc n => use (-1)^k * Nat.choose n.succ k
+  multichoose := Int.multichoose
   factorial_nsmul_multichoose r k := by
     cases r with
     | ofNat n =>

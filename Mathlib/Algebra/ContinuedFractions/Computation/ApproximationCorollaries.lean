@@ -123,8 +123,8 @@ theorem of_convergence_epsilon :
     have B_ineq : (fib (n + 1) : K) ≤ B :=
       haveI : ¬g.TerminatedAt (n - 1) := mt (terminated_stable n.pred_le) not_terminated_at_n
       succ_nth_fib_le_of_nth_denom (Or.inr this)
-    have zero_lt_B : 0 < B := B_ineq.trans_lt' $ mod_cast fib_pos.2 n.succ_pos
-    have nB_pos : 0 < nB := nB_ineq.trans_lt' $ mod_cast fib_pos.2 $ succ_pos _
+    have zero_lt_B : 0 < B := B_ineq.trans_lt' <| mod_cast fib_pos.2 n.succ_pos
+    have nB_pos : 0 < nB := nB_ineq.trans_lt' <| mod_cast fib_pos.2 <| succ_pos _
     have zero_lt_mul_conts : 0 < B * nB := by positivity
     suffices 1 < ε * (B * nB) from (div_lt_iff zero_lt_mul_conts).mpr this
     -- use that `N' ≥ n` was obtained from the archimedean property to show the following

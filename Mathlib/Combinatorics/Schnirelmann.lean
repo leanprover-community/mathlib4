@@ -5,6 +5,7 @@ Authors: Yaël Dillies, Bhavik Mehta, Doga Can Sertbas
 -/
 import Mathlib.Data.Nat.Interval
 import Mathlib.Data.Nat.Parity
+import Mathlib.Data.Nat.Prime
 import Mathlib.Data.Real.Archimedean
 
 /-!
@@ -206,10 +207,10 @@ lemma schnirelmannDensity_finite {A : Set ℕ} [DecidablePred (· ∈ A)] (hA : 
   (schnirelmannDensity_eq_one_iff_of_zero_mem (by simp)).2 (by simp)
 
 lemma schnirelmannDensity_setOf_even : schnirelmannDensity (setOf Even) = 0 :=
-  schnirelmannDensity_eq_zero_of_one_not_mem $ by simp
+  schnirelmannDensity_eq_zero_of_one_not_mem <| by simp
 
 lemma schnirelmannDensity_setOf_prime : schnirelmannDensity (setOf Nat.Prime) = 0 :=
-  schnirelmannDensity_eq_zero_of_one_not_mem $ by simp [Nat.not_prime_one]
+  schnirelmannDensity_eq_zero_of_one_not_mem <| by simp [Nat.not_prime_one]
 
 /--
 The Schnirelmann density of the set of naturals which are `1 mod m` is `m⁻¹`, for any `m ≠ 1`.
@@ -223,9 +224,9 @@ lemma schnirelmannDensity_setOf_mod_eq_one {m : ℕ} (hm : m ≠ 1) :
     refine schnirelmannDensity_finite ?_
     simp
   apply le_antisymm (schnirelmannDensity_le_of_le m hm'.ne' _) _
-  · rw [← one_div]
-    apply div_le_div_of_le (Nat.cast_nonneg _)
-    simp only [Set.mem_setOf_eq, Nat.cast_le_one, card_le_one_iff_subset_singleton, subset_iff,
+  · rw [← one_div, ← @Nat.cast_one ℝ]
+    gcongr
+    simp only [Set.mem_setOf_eq, card_le_one_iff_subset_singleton, subset_iff,
       mem_filter, mem_Ioc, mem_singleton, and_imp]
     use 1
     intro x _ hxm h

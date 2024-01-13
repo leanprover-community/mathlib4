@@ -115,7 +115,7 @@ theorem leftLim_le (h : x ≤ y) : leftLim f x ≤ f y := by
   haveI A : NeBot (𝓝[<] x) := neBot_iff.2 h'
   rw [leftLim_eq_sSup hf h']
   refine' csSup_le _ _
-  · simp only [nonempty_image_iff]
+  · simp only [image_nonempty]
     exact (forall_mem_nonempty_iff_neBot.2 A) _ self_mem_nhdsWithin
   · simp only [mem_image, mem_Iio, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
     intro z hz
