@@ -132,7 +132,7 @@ theorem bool_eq_false {b : Bool} : ¬b → b = false :=
   bool_iff_false.1
 #align bool_eq_false Bool.bool_eq_false
 
-theorem decide_false_iff (p : Prop) [Decidable p] : decide p = false ↔ ¬p :=
+theorem decide_false_iff (p : Prop) {_ : Decidable p} : decide p = false ↔ ¬p :=
   bool_iff_false.symm.trans (not_congr (decide_iff _))
 #align to_bool_ff_iff Bool.decide_false_iff
 

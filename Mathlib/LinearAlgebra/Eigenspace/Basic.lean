@@ -295,6 +295,28 @@ lemma mapsTo_iSup_generalizedEigenspace_of_comm {f g : End R M} (h : Commute f g
   rintro x ⟨k, hk⟩
   exact ⟨k, f.mapsTo_generalizedEigenspace_of_comm h μ k hk⟩
 
+/-- The restriction of `f - μ • 1` to the `k`-fold generalized `μ`-eigenspace is nilpotent. -/
+lemma isNilpotent_restrict_sub_algebraMap (f : End R M) (μ : R) (k : ℕ)
+    (h : MapsTo (f - algebraMap R (End R M) μ)
+      (f.generalizedEigenspace μ k) (f.generalizedEigenspace μ k) :=
+      mapsTo_generalizedEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes f μ) μ k) :
+    IsNilpotent ((f - algebraMap R (End R M) μ).restrict h) := by
+  use k
+  ext
+  simp [LinearMap.restrict_apply, LinearMap.pow_restrict _]
+
+/-- The restriction of `f - μ • 1` to the generalized `μ`-eigenspace is nilpotent. -/
+lemma isNilpotent_restrict_iSup_sub_algebraMap [IsNoetherian R M] (f : End R M) (μ : R)
+    (h : MapsTo (f - algebraMap R (End R M) μ)
+      ↑(⨆ k, f.generalizedEigenspace μ k) ↑(⨆ k, f.generalizedEigenspace μ k) :=
+      mapsTo_iSup_generalizedEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes f μ) μ) :
+    IsNilpotent ((f - algebraMap R (End R M) μ).restrict h) := by
+  obtain ⟨l, hl⟩ : ∃ l, ⨆ k, f.generalizedEigenspace μ k = f.generalizedEigenspace μ l :=
+    ⟨_, maximalGeneralizedEigenspace_eq f μ⟩
+  use l
+  ext ⟨x, hx⟩
+  simpa [hl, LinearMap.restrict_apply, LinearMap.pow_restrict _] using hx
+
 lemma disjoint_generalizedEigenspace [NoZeroSMulDivisors R M]
     (f : End R M) {μ₁ μ₂ : R} (hμ : μ₁ ≠ μ₂) (k l : ℕ) :
     Disjoint (f.generalizedEigenspace μ₁ k) (f.generalizedEigenspace μ₂ l) := by

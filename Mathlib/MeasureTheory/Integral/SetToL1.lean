@@ -1081,8 +1081,6 @@ theorem setToL1_add_left (hT : DominatedFinMeasAdditive μ T C)
     rw [this, ContinuousLinearMap.add_apply]
   refine' ContinuousLinearMap.extend_unique (setToL1SCLM α E μ (hT.add hT')) _ _ _ _ _
   ext1 f
-  simp only [ContinuousLinearMap.add_comp, ContinuousLinearMap.coe_comp', Function.comp_apply,
-    ContinuousLinearMap.add_apply]
   suffices setToL1 hT f + setToL1 hT' f = setToL1SCLM α E μ (hT.add hT') f by
     rw [← this]; rfl
   rw [setToL1_eq_setToL1SCLM, setToL1_eq_setToL1SCLM, setToL1SCLM_add_left hT hT']
@@ -1095,8 +1093,6 @@ theorem setToL1_add_left' (hT : DominatedFinMeasAdditive μ T C)
   suffices setToL1 hT'' = setToL1 hT + setToL1 hT' by rw [this, ContinuousLinearMap.add_apply]
   refine' ContinuousLinearMap.extend_unique (setToL1SCLM α E μ hT'') _ _ _ _ _
   ext1 f
-  simp only [ContinuousLinearMap.add_comp, ContinuousLinearMap.coe_comp', Function.comp_apply,
-    ContinuousLinearMap.add_apply]
   suffices setToL1 hT f + setToL1 hT' f = setToL1SCLM α E μ hT'' f by rw [← this]; congr
   rw [setToL1_eq_setToL1SCLM, setToL1_eq_setToL1SCLM,
     setToL1SCLM_add_left' hT hT' hT'' h_add]
@@ -1107,8 +1103,6 @@ theorem setToL1_smul_left (hT : DominatedFinMeasAdditive μ T C) (c : ℝ) (f : 
   suffices setToL1 (hT.smul c) = c • setToL1 hT by rw [this, ContinuousLinearMap.smul_apply]
   refine' ContinuousLinearMap.extend_unique (setToL1SCLM α E μ (hT.smul c)) _ _ _ _ _
   ext1 f
-  simp only [ContinuousLinearMap.coe_comp', Function.comp_apply, ContinuousLinearMap.smul_comp,
-    Pi.smul_apply, ContinuousLinearMap.coe_smul']
   suffices c • setToL1 hT f = setToL1SCLM α E μ (hT.smul c) f by rw [← this]; congr
   rw [setToL1_eq_setToL1SCLM, setToL1SCLM_smul_left c hT]
 #align measure_theory.L1.set_to_L1_smul_left MeasureTheory.L1.setToL1_smul_left
@@ -1120,8 +1114,6 @@ theorem setToL1_smul_left' (hT : DominatedFinMeasAdditive μ T C)
   suffices setToL1 hT' = c • setToL1 hT by rw [this, ContinuousLinearMap.smul_apply]
   refine' ContinuousLinearMap.extend_unique (setToL1SCLM α E μ hT') _ _ _ _ _
   ext1 f
-  simp only [ContinuousLinearMap.coe_comp', Function.comp_apply, ContinuousLinearMap.smul_comp,
-    Pi.smul_apply, ContinuousLinearMap.coe_smul']
   suffices c • setToL1 hT f = setToL1SCLM α E μ hT' f by rw [← this]; congr
   rw [setToL1_eq_setToL1SCLM, setToL1SCLM_smul_left' c hT hT' h_smul]
 #align measure_theory.L1.set_to_L1_smul_left' MeasureTheory.L1.setToL1_smul_left'

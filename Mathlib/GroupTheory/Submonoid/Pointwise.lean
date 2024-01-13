@@ -678,8 +678,9 @@ theorem closure_pow (s : Set R) : ∀ n : ℕ, closure s ^ n = closure (s ^ n)
   | n + 1 => by rw [pow_succ, pow_succ, closure_pow s n, closure_mul_closure]
 #align add_submonoid.closure_pow AddSubmonoid.closure_pow
 
-theorem pow_eq_closure_pow_set (s : AddSubmonoid R) (n : ℕ) : s ^ n = closure ((s : Set R) ^ n) :=
-  by rw [← closure_pow, closure_eq]
+theorem pow_eq_closure_pow_set (s : AddSubmonoid R) (n : ℕ) :
+    s ^ n = closure ((s : Set R) ^ n) := by
+  rw [← closure_pow, closure_eq]
 #align add_submonoid.pow_eq_closure_pow_set AddSubmonoid.pow_eq_closure_pow_set
 
 theorem pow_subset_pow {s : AddSubmonoid R} {n : ℕ} : (↑s : Set R) ^ n ⊆ ↑(s ^ n) :=

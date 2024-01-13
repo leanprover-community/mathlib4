@@ -353,7 +353,7 @@ theorem g_injective : Injective (g m) := by
 
 theorem f_image_g (w : V m.succ) (hv : ∃ v, g m v = w) : f m.succ w = √ (m + 1) • w := by
   rcases hv with ⟨v, rfl⟩
-  have : √ (m + 1) * √ (m + 1) = m + 1 := Real.mul_self_sqrt (by exact_mod_cast zero_le _)
+  have : √ (m + 1) * √ (m + 1) = m + 1 := Real.mul_self_sqrt (mod_cast zero_le _)
   rw [f_succ_apply, g_apply]
   simp [this, f_squared, smul_add, add_smul, smul_smul, V]
   abel
@@ -400,8 +400,8 @@ theorem exists_eigenvalue (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
   let W := Span (e '' H)
   let img := range (g m)
   suffices 0 < dim (W ⊓ img) by
-    exact_mod_cast exists_mem_ne_zero_of_rank_pos this
-  have dim_le : dim (W ⊔ img) ≤ 2 ^ (m + 1) := by
+    exact mod_cast exists_mem_ne_zero_of_rank_pos this
+  have dim_le : dim (W ⊔ img) ≤ 2 ^ (m + 1 : Cardinal) := by
     convert ← rank_submodule_le (W ⊔ img)
     rw [← Nat.cast_succ]
     apply dim_V
@@ -455,7 +455,6 @@ theorem huang_degree_theorem (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
         |(coeffs y).sum fun (i : Q m.succ) (a : ℝ) =>
             a • (ε q ∘ f m.succ ∘ fun i : Q m.succ => e i) i| := by
       erw [(f m.succ).map_finsupp_total, (ε q).map_finsupp_total, Finsupp.total_apply]
-      rfl
     _ ≤ ∑ p in (coeffs y).support, |coeffs y p * (ε q <| f m.succ <| e p)| :=
       (norm_sum_le _ fun p => coeffs y p * _)
     _ = ∑ p in (coeffs y).support, |coeffs y p| * ite (p ∈ q.adjacent) 1 0 := by

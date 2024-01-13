@@ -68,6 +68,9 @@ def main (args : List String) : IO Unit := do
   let extraRoots := match args with
   | [] => #[]
   | _ :: t => t.toArray.map FilePath.mk
+  if args.isEmpty then
+    println help
+    Process.exit 0
   let hashMemo ← getHashMemo extraRoots
   let hashMap := hashMemo.hashMap
   let goodCurl ← pure !curlArgs.contains (args.headD "") <||> validateCurl

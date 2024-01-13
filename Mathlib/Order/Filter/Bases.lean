@@ -460,8 +460,8 @@ theorem HasBasis.ge_iff (hl' : l'.HasBasis p' s') : l ≤ l' ↔ ∀ i', p' i' �
 #align filter.has_basis.ge_iff Filter.HasBasis.ge_iff
 
 -- porting note: use `∃ i, p i ∧ _` instead of `∃ i (hi : p i), _`.
-theorem HasBasis.le_iff (hl : l.HasBasis p s) : l ≤ l' ↔ ∀ t ∈ l', ∃ i, p i ∧ s i ⊆ t :=
-  by simp only [le_def, hl.mem_iff]
+theorem HasBasis.le_iff (hl : l.HasBasis p s) : l ≤ l' ↔ ∀ t ∈ l', ∃ i, p i ∧ s i ⊆ t := by
+  simp only [le_def, hl.mem_iff]
 #align filter.has_basis.le_iff Filter.HasBasis.le_iffₓ
 
 -- porting note: use `∃ i, p i ∧ _` instead of `∃ i (hi : p i), _`.
@@ -581,8 +581,9 @@ theorem hasBasis_principal (t : Set α) : (𝓟 t).HasBasis (fun _ : Unit => Tru
   ⟨fun U => by simp⟩
 #align filter.has_basis_principal Filter.hasBasis_principal
 
-theorem hasBasis_pure (x : α) : (pure x : Filter α).HasBasis (fun _ : Unit => True) fun _ => {x} :=
-  by simp only [← principal_singleton, hasBasis_principal]
+theorem hasBasis_pure (x : α) :
+    (pure x : Filter α).HasBasis (fun _ : Unit => True) fun _ => {x} := by
+  simp only [← principal_singleton, hasBasis_principal]
 #align filter.has_basis_pure Filter.hasBasis_pure
 
 theorem HasBasis.sup' (hl : l.HasBasis p s) (hl' : l'.HasBasis p' s') :

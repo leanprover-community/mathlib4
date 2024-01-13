@@ -103,7 +103,7 @@ theorem Multiset.support_sum_eq [AddCommMonoid M] (s : Multiset (ι →₀ M))
   suffices : a.Pairwise (_root_.Disjoint on Finsupp.support)
   · convert List.support_sum_eq a this
     · simp only [Multiset.quot_mk_to_coe'', Multiset.coe_sum]
-    · dsimp only [Function.comp]
+    · dsimp only [Function.comp_def]
       simp only [quot_mk_to_coe'', coe_map, sup_coe, ge_iff_le, Finset.le_eq_subset,
         Finset.sup_eq_union, Finset.bot_eq_empty, List.foldr_map]
   · simp only [Multiset.quot_mk_to_coe'', Multiset.coe_map, Multiset.coe_eq_coe] at hl

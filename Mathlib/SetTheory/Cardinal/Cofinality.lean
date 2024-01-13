@@ -849,10 +849,6 @@ namespace Cardinal
 
 open Ordinal
 
---Porting note: commented out, doesn't seem necessary
--- mathport name: cardinal.pow
---local infixr:0 "^" => @HPow.hPow Cardinal Cardinal Cardinal instHPow
-
 /-- A cardinal is a strong limit if it is not zero and it is
   closed under powersets. Note that `ℵ₀` is a strong limit by this definition. -/
 def IsStrongLimit (c : Cardinal) : Prop :=
@@ -870,7 +866,7 @@ theorem IsStrongLimit.two_power_lt {x c} (h : IsStrongLimit c) : x < c → (2^x)
 theorem isStrongLimit_aleph0 : IsStrongLimit ℵ₀ :=
   ⟨aleph0_ne_zero, fun x hx => by
     rcases lt_aleph0.1 hx with ⟨n, rfl⟩
-    exact_mod_cast nat_lt_aleph0 (2 ^ n)⟩
+    exact mod_cast nat_lt_aleph0 (2 ^ n)⟩
 #align cardinal.is_strong_limit_aleph_0 Cardinal.isStrongLimit_aleph0
 
 protected theorem IsStrongLimit.isSuccLimit {c} (H : IsStrongLimit c) : IsSuccLimit c :=

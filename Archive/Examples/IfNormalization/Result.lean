@@ -29,19 +29,12 @@ attribute [local simp] normalized hasNestedIf hasConstantIf hasRedundantIf disjo
 /-!
 Adding these lemmas to the simp set allows Lean to handle the termination proof automatically.
 -/
-attribute [local simp] Nat.lt_add_one_iff le_add_of_le_right
+attribute [local simp] Nat.lt_add_one_iff le_add_of_le_right max_add_add_right max_mul_mul_left
 
 /-!
 Some further simp lemmas for handling if-then-else statements.
 -/
 attribute [local simp] apply_ite ite_eq_iff'
-
--- A copy of Lean's `decide_eq_true_eq` which unifies the `Decidable` instance
--- rather than finding it by typeclass search.
--- See https://github.com/leanprover/lean4/pull/2816
-@[simp] theorem decide_eq_true_eq {i : Decidable p} : (@decide p i = true) = p :=
-  _root_.decide_eq_true_eq
-
 
 /-!
 Simp lemmas for `eval`.

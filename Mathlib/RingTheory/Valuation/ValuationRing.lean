@@ -428,7 +428,7 @@ variable (K : Type u) [Field K]
 instance (priority := 100) of_field : ValuationRing K := by
   constructor
   intro a b
-  by_cases b = 0
+  by_cases h : b = 0
   · use 0; left; simp [h]
   · use a * b⁻¹; right; field_simp; rw [mul_comm]
 #align valuation_ring.of_field ValuationRing.of_field

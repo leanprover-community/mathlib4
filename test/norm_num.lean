@@ -678,4 +678,7 @@ example : (1 : R PUnit.{u+1} PUnit.{v+1}) <= 2 := by
   norm_num
 
 -- Check that we avoid deep recursion in evaluating large powers.
-example : 10^40000000 = 10^40000000 := by norm_num
+-- This used to be 10^40000000, but Lean's non-GMP multiplication is
+-- asymptotically slower than the GMP implementation.
+-- It would be great to fix that, and restore this test.
+example : 10^400000 = 10^400000 := by norm_num

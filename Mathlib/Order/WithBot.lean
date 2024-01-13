@@ -198,8 +198,8 @@ instance (priority := 10) le : LE (WithBot α) :=
   ⟨fun o₁ o₂ : Option α => ∀ a ∈ o₁, ∃ b ∈ o₂, a ≤ b⟩
 
 @[simp]
-theorem some_le_some : @LE.le (WithBot α) _ (Option.some a) (Option.some b) ↔ a ≤ b :=
-  by simp [LE.le]
+theorem some_le_some : @LE.le (WithBot α) _ (Option.some a) (Option.some b) ↔ a ≤ b := by
+  simp [LE.le]
 #align with_bot.some_le_some WithBot.some_le_some
 
 @[simp, norm_cast]
@@ -893,7 +893,7 @@ protected theorem _root_.IsMin.withTop (h : IsMin a) : IsMin (a : WithTop α) :=
   -- defeq to is_max_to_dual_iff.mp (is_max.with_bot _), but that breaks API boundary
   intro _ hb
   rw [← toDual_le_toDual_iff] at hb
-  simpa [toDual_le_iff] using (IsMax.withBot h : IsMax (toDual a : WithBot αᵒᵈ)) hb
+  simpa [toDual_le_iff] using h.toDual.withBot hb
 #align is_min.with_top IsMin.withTop
 
 theorem untop_le_iff {a : WithTop α} {b : α} (h : a ≠ ⊤) :
@@ -1318,7 +1318,6 @@ instance instWellFoundedGT [LT α] [WellFoundedGT α] : WellFoundedGT (WithTop �
     revert this
     generalize ha : WithBot.toDual a = b
     intro ac
-    dsimp at ac
     induction' ac with _ H IH generalizing a
     subst ha
     exact ⟨_, fun a' h => IH (WithTop.toDual a') (toDual_lt_toDual.mpr h) _ rfl⟩⟩
@@ -1331,7 +1330,6 @@ instance _root_.WithBot.instWellFoundedGT [LT α] [WellFoundedGT α] : WellFound
     revert this
     generalize ha : WithBot.toDual a = b
     intro ac
-    dsimp at ac
     induction' ac with _ H IH generalizing a
     subst ha
     exact ⟨_, fun a' h => IH (WithBot.toDual a') (toDual_lt_toDual.mpr h) _ rfl⟩⟩

@@ -48,9 +48,10 @@ lemma zagierSet_lower_bound {x y z : ℕ} (h : (x, y, z) ∈ zagierSet k) : 0 < 
   all_goals
     cases' (Nat.dvd_prime hk.out).1 (dvd_of_mul_left_eq _ h) with e e
     all_goals
-      simp only [e, self_eq_add_left, ne_eq, add_eq_zero, and_false, mul_eq_left₀] at h
+      simp only [e, self_eq_add_left, ne_eq, add_eq_zero, and_false, not_false_eq_true,
+        mul_eq_left₀] at h
       simp only [h, zero_add] at hk
-      exact hk.out
+      exact Nat.not_prime_one hk.out
 
 lemma zagierSet_upper_bound {x y z : ℕ} (h : (x, y, z) ∈ zagierSet k) :
     x ≤ k + 1 ∧ y ≤ k ∧ z ≤ k := by
@@ -143,7 +144,8 @@ theorem eq_of_mem_fixedPoints {t : zagierSet k} (mem : t ∈ fixedPoints (comple
   rw [mem_fixedPoints_iff, complexInvo, Subtype.mk.injEq] at mem
   split_ifs at mem with less more <;>
     -- less (completely handled by the pre-applied `simp_all only`)
-    simp_all only [not_lt, Prod.mk.injEq, add_right_eq_self, mul_eq_zero, false_or]
+    simp_all only [not_lt, Prod.mk.injEq, add_right_eq_self, mul_eq_zero, false_or,
+      lt_self_iff_false]
   · -- more
     obtain ⟨_, _, _⟩ := mem; simp_all
   · -- middle (the one fixed point falls under this case)
@@ -194,3 +196,4 @@ theorem Nat.Prime.sq_add_sq' {p : ℕ} [h : Fact p.Prime] (hp : p % 4 = 1) :
   contrapose key
   rw [Set.not_nonempty_iff_eq_empty] at key
   simp_rw [key, Fintype.card_of_isEmpty, card_fixedPoints_eq_one]
+  decide

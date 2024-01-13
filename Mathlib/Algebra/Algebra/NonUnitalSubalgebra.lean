@@ -287,7 +287,7 @@ protected theorem coe_sub {R : Type u} {A : Type v} [CommRing R] [Ring A] [Algeb
 
 @[simp, norm_cast]
 theorem coe_smul [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] (r : R') (x : S) :
-    (r • x : A) = r • (x : A) :=
+    ↑(r • x) = r • (x : A) :=
   rfl
 
 protected theorem coe_eq_zero {x : S} : (x : A) = 0 ↔ x = 0 :=
@@ -792,7 +792,7 @@ theorem range_val : NonUnitalAlgHom.range (NonUnitalSubalgebraClass.subtype S) =
 
 /-- The map `S → T` when `S` is a non-unital subalgebra contained in the non-unital subalgebra `T`.
 
-This is the non-unital subalgebra version of `Submodule.ofLe`, or `Subring.inclusion`  -/
+This is the non-unital subalgebra version of `Submodule.inclusion`, or `Subring.inclusion`  -/
 def inclusion {S T : NonUnitalSubalgebra R A} (h : S ≤ T) : S →ₙₐ[R] T
     where
   toFun := Set.inclusion h

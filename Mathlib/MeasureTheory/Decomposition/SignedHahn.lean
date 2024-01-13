@@ -224,7 +224,8 @@ private theorem restrictNonposSeq_disjoint : Pairwise (Disjoint on restrictNonpo
 private theorem exists_subset_restrict_nonpos' (hi₁ : MeasurableSet i) (hi₂ : s i < 0)
     (hn : ¬∀ n : ℕ, ¬s ≤[i \ ⋃ l < n, restrictNonposSeq s i l] 0) :
     ∃ j : Set α, MeasurableSet j ∧ j ⊆ i ∧ s ≤[j] 0 ∧ s j < 0 := by
-  by_cases s ≤[i] 0; · exact ⟨i, hi₁, Set.Subset.refl _, h, hi₂⟩
+  by_cases h : s ≤[i] 0
+  · exact ⟨i, hi₁, Set.Subset.refl _, h, hi₂⟩
   push_neg at hn
   set k := Nat.find hn
   have hk₂ : s ≤[i \ ⋃ l < k, restrictNonposSeq s i l] 0 := Nat.find_spec hn
@@ -243,7 +244,7 @@ private theorem exists_subset_restrict_nonpos' (hi₁ : MeasurableSet i) (hi₂ 
       rw [sub_neg]
       exact lt_of_lt_of_le hi₂ this
     refine' tsum_nonneg _
-    intro l; by_cases l < k
+    intro l; by_cases h : l < k
     · convert h₁ _ h
       ext x
       rw [Set.mem_iUnion, exists_prop, and_iff_right_iff_imp]
@@ -266,7 +267,7 @@ private theorem exists_subset_restrict_nonpos' (hi₁ : MeasurableSet i) (hi₂ 
 theorem exists_subset_restrict_nonpos (hi : s i < 0) :
     ∃ j : Set α, MeasurableSet j ∧ j ⊆ i ∧ s ≤[j] 0 ∧ s j < 0 := by
   have hi₁ : MeasurableSet i := by_contradiction fun h => ne_of_lt hi <| s.not_measurable h
-  by_cases s ≤[i] 0; · exact ⟨i, hi₁, Set.Subset.refl _, h, hi⟩
+  by_cases h : s ≤[i] 0; · exact ⟨i, hi₁, Set.Subset.refl _, h, hi⟩
   by_cases hn : ∀ n : ℕ, ¬s ≤[i \ ⋃ l < n, restrictNonposSeq s i l] 0
   swap; · exact exists_subset_restrict_nonpos' hi₁ hi hn
   set A := i \ ⋃ l, restrictNonposSeq s i l with hA

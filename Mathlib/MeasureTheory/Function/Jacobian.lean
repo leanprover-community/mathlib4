@@ -88,9 +88,6 @@ Change of variables in integrals
 [Fremlin, *Measure Theory* (volume 2)][fremlin_vol2]
 -/
 
-
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open MeasureTheory MeasureTheory.Measure Metric Filter Set FiniteDimensional Asymptotics
   TopologicalSpace
 
@@ -426,7 +423,7 @@ theorem mul_le_addHaar_image_of_lt_det (A : E →L[ℝ] E) {m : ℝ≥0}
     exact ⟨δ₀, h', h⟩
   -- record smallness conditions for `δ` that will be needed to apply `hδ₀` below.
   have L1 : ∀ᶠ δ in 𝓝 (0 : ℝ≥0), Subsingleton E ∨ δ < ‖(B.symm : E →L[ℝ] E)‖₊⁻¹ := by
-    by_cases Subsingleton E
+    by_cases h : Subsingleton E
     · simp only [h, true_or_iff, eventually_const]
     simp only [h, false_or_iff]
     apply Iio_mem_nhds

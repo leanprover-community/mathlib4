@@ -362,7 +362,7 @@ instance (f : K[X]) : NoZeroSMulDivisors K f.SplittingField :=
 def algEquiv (f : K[X]) [h : IsSplittingField K L f] : L ≃ₐ[K] SplittingField f :=
   AlgEquiv.ofBijective (lift L f <| splits (SplittingField f) f) <|
     have := finiteDimensional L f
-    ((Algebra.isAlgebraic_of_finite K L).algHom_bijective₂ _ <| lift _ f h.1).1
+    ((Algebra.IsAlgebraic.of_finite K L).algHom_bijective₂ _ <| lift _ f h.1).1
 #align polynomial.is_splitting_field.alg_equiv Polynomial.IsSplittingField.algEquiv
 
 end IsSplittingField

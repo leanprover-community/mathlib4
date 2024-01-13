@@ -32,8 +32,6 @@ stronger assumptions (e.g., `im z` is bounded from below and from above) are not
 open Asymptotics Filter Function
 open scoped Topology
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 namespace Complex
 
 /-- We say that `l : Filter ℂ` is an *exponential comparison filter* if the real part tends to
@@ -71,7 +69,7 @@ set_option linter.uppercaseLean3 false in
 
 theorem of_isBigO_im_re_pow (hre : Tendsto re l atTop) (n : ℕ) (hr : im =O[l] fun z => z.re ^ n) :
     IsExpCmpFilter l :=
-  of_isBigO_im_re_rpow hre n <| by exact_mod_cast hr
+  of_isBigO_im_re_rpow hre n <| mod_cast hr
 set_option linter.uppercaseLean3 false in
 #align complex.is_exp_cmp_filter.of_is_O_im_re_pow Complex.IsExpCmpFilter.of_isBigO_im_re_pow
 

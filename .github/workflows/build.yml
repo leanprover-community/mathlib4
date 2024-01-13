@@ -132,10 +132,10 @@ jobs:
       - name: cleanup
         run: |
           find . -name . -o -prune -exec rm -rf -- {} +
-          # Delete all but the 10 most recent toolchains.
+          # Delete all but the 5 most recent toolchains.
           # Make sure to delete both the `~/.elan/toolchains/X` directory and the `~/.elan/update-hashes/X` file.
           # Skip symbolic links (`-type d`), the current directory (`! -name .`), and `nightly` and `stable`.
-          cd ~/.elan/toolchains && find . -maxdepth 1 -type d ! -name . -print0 | xargs -0 ls -1td | grep -v 'nightly$' | grep -v 'stable$' | tail -n +11 | xargs -I {} sh -c 'echo {} && rm -rf "{}" && rm "../update-hashes/{}"' || true
+          cd ~/.elan/toolchains && find . -maxdepth 1 -type d ! -name . -print0 | xargs -0 ls -1td | grep -v 'nightly$' | grep -v 'stable$' | tail -n +6 | xargs -I {} sh -c 'echo {} && rm -rf "{}" && rm "../update-hashes/{}"' || true
 
       # The Hoskinson runners may not have jq installed, so do that now.
       - name: 'Setup jq'
@@ -249,24 +249,29 @@ jobs:
 
       - name: test mathlib
         id: test
-        run: make -j 8 test
+        run: |
+          # Tests use parts of ProofWidgets not imported by Mathlib.
+          # Ensure everything has been built.
+          lake build ProofWidgets
+          make -j 8 test
 
       - name: lint mathlib
         id: lint
         uses: liskin/gh-problem-matcher-wrap@v2
         with:
           linters: gcc
-          run: env LEAN_ABORT_ON_PANIC=1 lake exe runMathlibLinter
+          run: env LEAN_ABORT_ON_PANIC=1 lake exe runLinter Mathlib
 
       - name: check environments using lean4checker
         id: lean4checker
         run: |
           git clone https://github.com/leanprover/lean4checker
           cd lean4checker
+          git checkout toolchain/v4.3.0-rc2
           lake build
           ./test.sh
           cd ..
-          lake env lean4checker/build/bin/lean4checker
+          lake env lean4checker/.lake/build/bin/lean4checker
 
       - name: Post comments for lean-pr-testing branch
         if: always()

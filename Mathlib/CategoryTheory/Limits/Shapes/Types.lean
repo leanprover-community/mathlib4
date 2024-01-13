@@ -438,7 +438,7 @@ end UnivLE
 
 /-- The category of types has `Σ j, f j` as the coproduct of a type family `f : J → Type`.
 -/
-def coproductColimitCocone {J : Type u} (F : J → Type u) :
+def coproductColimitCocone {J : Type v} (F : J → TypeMax.{v, u}) :
     Limits.ColimitCocone (Discrete.functor F) where
   cocone :=
     { pt := Σj, F j
@@ -451,19 +451,19 @@ def coproductColimitCocone {J : Type u} (F : J → Type u) :
 #align category_theory.limits.types.coproduct_colimit_cocone CategoryTheory.Limits.Types.coproductColimitCocone
 
 /-- The categorical coproduct in `Type u` is the type theoretic coproduct `Σ j, F j`. -/
-noncomputable def coproductIso {J : Type u} (F : J → Type u) : ∐ F ≅ Σj, F j :=
+noncomputable def coproductIso {J : Type v} (F : J → TypeMax.{v, u}) : ∐ F ≅ Σj, F j :=
   colimit.isoColimitCocone (coproductColimitCocone F)
 #align category_theory.limits.types.coproduct_iso CategoryTheory.Limits.Types.coproductIso
 
 @[elementwise (attr := simp)]
-theorem coproductIso_ι_comp_hom {J : Type u} (F : J → Type u) (j : J) :
+theorem coproductIso_ι_comp_hom {J : Type v} (F : J → TypeMax.{v, u}) (j : J) :
     Sigma.ι F j ≫ (coproductIso F).hom = fun x : F j => (⟨j, x⟩ : Σj, F j) :=
   colimit.isoColimitCocone_ι_hom (coproductColimitCocone F) ⟨j⟩
 #align category_theory.limits.types.coproduct_iso_ι_comp_hom CategoryTheory.Limits.Types.coproductIso_ι_comp_hom
 
 -- porting note: was @[elementwise (attr := simp)], but it produces a trivial lemma
 -- removed simp attribute because it seems it never applies
-theorem coproductIso_mk_comp_inv {J : Type u} (F : J → Type u) (j : J) :
+theorem coproductIso_mk_comp_inv {J : Type v} (F : J → TypeMax.{v, u}) (j : J) :
     (↾fun x : F j => (⟨j, x⟩ : Σj, F j)) ≫ (coproductIso F).inv = Sigma.ι F j :=
   rfl
 #align category_theory.limits.types.coproduct_iso_mk_comp_inv CategoryTheory.Limits.Types.coproductIso_mk_comp_inv

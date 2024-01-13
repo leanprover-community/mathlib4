@@ -47,7 +47,7 @@ theorem one_le_zpow_of_nonneg (ha : 1 ≤ a) (hn : 0 ≤ n) : 1 ≤ a ^ n :=
 
 protected theorem Nat.zpow_pos_of_pos {a : ℕ} (h : 0 < a) (n : ℤ) : 0 < (a : α) ^ n := by
   apply zpow_pos_of_pos
-  exact_mod_cast h
+  exact mod_cast h
 #align nat.zpow_pos_of_pos Nat.zpow_pos_of_pos
 
 theorem Nat.zpow_ne_zero_of_pos {a : ℕ} (h : 0 < a) (n : ℤ) : (a : α) ^ n ≠ 0 :=

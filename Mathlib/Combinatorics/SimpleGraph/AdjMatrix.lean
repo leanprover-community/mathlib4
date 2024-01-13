@@ -182,7 +182,7 @@ variable (α)
 /-- The adjacency matrix of `G` is an adjacency matrix. -/
 @[simp]
 theorem isAdjMatrix_adjMatrix [Zero α] [One α] : (G.adjMatrix α).IsAdjMatrix :=
-  { zero_or_one := fun i j => by by_cases G.Adj i j <;> simp [h] }
+  { zero_or_one := fun i j => by by_cases h : G.Adj i j <;> simp [h] }
 #align simple_graph.is_adj_matrix_adj_matrix SimpleGraph.isAdjMatrix_adjMatrix
 
 /-- The graph induced by the adjacency matrix of `G` is `G` itself. -/

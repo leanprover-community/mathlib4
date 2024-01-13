@@ -62,7 +62,7 @@ noncomputable def finrank (R V : Type*) [Semiring R] [AddCommGroup V] [Module R 
 theorem finrank_eq_of_rank_eq {n : ℕ} (h : Module.rank K V = ↑n) : finrank K V = n := by
   apply_fun toNat at h
   rw [toNat_cast] at h
-  exact_mod_cast h
+  exact mod_cast h
 #align finite_dimensional.finrank_eq_of_rank_eq FiniteDimensional.finrank_eq_of_rank_eq
 
 lemma rank_eq_one_iff_finrank_eq_one : Module.rank K V = 1 ↔ finrank K V = 1 :=
@@ -436,7 +436,7 @@ theorem linearIndependent_of_top_le_span_of_card_eq_finrank {ι : Type*} [Fintyp
     · refine' neg_mem (smul_mem _ _ (sum_mem fun k hk => _))
       obtain ⟨k_ne_i, _⟩ := Finset.mem_erase.mp hk
       refine' smul_mem _ _ (subset_span ⟨k, _, rfl⟩)
-      simp_all only [Set.mem_univ, Set.mem_diff, Set.mem_singleton_iff]
+      simp_all only [Set.mem_univ, Set.mem_diff, Set.mem_singleton_iff, and_self, not_false_eq_true]
     -- To show `b i` is a weighted sum of the other `b j`s, we'll rewrite this sum
     -- to have the form of the assumption `dependent`.
     apply eq_neg_of_add_eq_zero_left

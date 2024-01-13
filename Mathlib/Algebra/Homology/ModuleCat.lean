@@ -120,9 +120,8 @@ example (f g : C ⟶ D) (h : Homotopy f g) (i : ι) :
   erw [LinearMap.add_apply]
   rw [LinearMap.add_apply, prevD_eq_toPrev_dTo, dNext_eq_dFrom_fromNext]
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-  erw [comp_apply, comp_apply, comp_apply]
+  erw [comp_apply, comp_apply]
   erw [x.2, map_zero]
-  dsimp
   abel
 
 end ModuleCat

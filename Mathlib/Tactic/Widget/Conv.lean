@@ -87,7 +87,11 @@ open Lean Syntax in
 def insertEnter (locations : Array Lean.SubExpr.GoalsLocation) (goalType : Expr)
     (params : SelectInsertParams): MetaM (String × String × Option (String.Pos × String.Pos)) := do
   let some pos := locations[0]? | throwError "You must select something."
-  let ⟨_, .target subexprPos⟩ := pos | throwError "You must select something in the goal."
+  let (fvar, subexprPos) ← match pos with
+  | ⟨_, .target subexprPos⟩ => pure (none, subexprPos)
+  | ⟨_, .hypType fvar subexprPos⟩ => pure (some fvar, subexprPos)
+  | ⟨_, .hypValue fvar subexprPos⟩ => pure (some fvar, subexprPos)
+  | _ => throwError "You must select something in the goal or in a local value."
   let mut list := (SubExpr.Pos.toArray subexprPos).toList
     let mut expr := goalType
   let mut retList := []
@@ -104,7 +108,10 @@ def insertEnter (locations : Array Lean.SubExpr.GoalsLocation) (goalType : Expr)
   retList := List.reverse retList
   -- prepare `enter` indentation
   let spc := String.replicate (SelectInsertParamsClass.replaceRange params).start.character ' '
-  let mut enterval := s!"conv =>\n{spc} enter {retList}"
+  let loc ← match fvar with
+  | some fvarId => pure s!"at {← fvarId.getUserName} "
+  | none => pure ""
+  let mut enterval := s!"conv {loc}=>\n{spc}  enter {retList}"
   if enterval.contains '0' then enterval := "Error: Not a valid conv target"
   if retList.isEmpty then enterval := ""
   return ("Generate conv", enterval, none)
@@ -114,7 +121,7 @@ def insertEnter (locations : Array Lean.SubExpr.GoalsLocation) (goalType : Expr)
 def ConvSelectionPanel.rpc :=
 mkSelectionPanelRPC insertEnter
   "Use shift-click to select one sub-expression in the goal that you want to zoom on."
-  "Conv 🔍" (onlyOne := true)
+  "Conv 🔍" (onlyGoal := false) (onlyOne := true)
 
 /-- The conv widget. -/
 @[widget_module]

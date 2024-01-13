@@ -4,6 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.IndicatorFunction
 import Mathlib.Algebra.Order.Field.Canonical.Basic
 import Mathlib.Algebra.Order.Nonneg.Field
 import Mathlib.Algebra.Order.Nonneg.Floor
@@ -648,8 +651,8 @@ lemma toNNReal_eq_iff_eq_coe {r : ℝ} {p : ℝ≥0} (hp : p ≠ 0) : r.toNNReal
 lemma toNNReal_eq_one {r : ℝ} : r.toNNReal = 1 ↔ r = 1 := toNNReal_eq_iff_eq_coe one_ne_zero
 
 @[simp]
-lemma toNNReal_eq_nat_cast {r : ℝ} {n : ℕ} (hn : n ≠ 0) : r.toNNReal = n ↔ r = n := by
-  exact_mod_cast toNNReal_eq_iff_eq_coe <| Nat.cast_ne_zero.2 hn
+lemma toNNReal_eq_nat_cast {r : ℝ} {n : ℕ} (hn : n ≠ 0) : r.toNNReal = n ↔ r = n :=
+  mod_cast toNNReal_eq_iff_eq_coe <| Nat.cast_ne_zero.2 hn
 
 @[simp]
 lemma toNNReal_eq_ofNat {r : ℝ} {n : ℕ} [h : n.AtLeastTwo] :

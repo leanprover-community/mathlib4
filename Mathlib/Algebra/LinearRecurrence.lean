@@ -102,7 +102,7 @@ theorem eq_mk_of_is_sol_of_eq_init {u : ℕ → α} {init : Fin E.order → α} 
   intro n
   rw [mkSol]
   split_ifs with h'
-  · exact_mod_cast heq ⟨n, h'⟩
+  · exact mod_cast heq ⟨n, h'⟩
   simp only
   rw [← tsub_add_cancel_of_le (le_of_not_lt h'), h (n - E.order)]
   congr with k
@@ -163,7 +163,7 @@ theorem sol_eq_of_eq_init (u v : ℕ → α) (hu : E.IsSolution u) (hv : E.IsSol
   suffices h' : u' = v'; exact h' ▸ rfl
   rw [← E.toInit.toEquiv.apply_eq_iff_eq, LinearEquiv.coe_toEquiv]
   ext x
-  exact_mod_cast h (mem_range.mpr x.2)
+  exact mod_cast h (mem_range.mpr x.2)
 #align linear_recurrence.sol_eq_of_eq_init LinearRecurrence.sol_eq_of_eq_init
 
 /-! `E.tupleSucc` maps `![s₀, s₁, ..., sₙ]` to `![s₁, ..., sₙ, ∑ (E.coeffs i) * sᵢ]`,

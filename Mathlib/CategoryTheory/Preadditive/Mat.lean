@@ -107,8 +107,8 @@ instance : Category.{v₁} (Mat_ C) where
   Hom := Hom
   id := Hom.id
   comp f g := f.comp g
-  id_comp f := by simp [dite_comp]
-  comp_id f := by simp [comp_dite]
+  id_comp f := by simp (config := { unfoldPartialApp := true }) [dite_comp]
+  comp_id f := by simp (config := { unfoldPartialApp := true }) [comp_dite]
   assoc f g h := by
     apply DMatrix.ext
     intros
@@ -243,11 +243,11 @@ instance hasFiniteBiproducts : HasFiniteBiproducts (Mat_ C) where
               simp at hj
             simp only [eqToHom_refl, dite_eq_ite, ite_true, Category.id_comp, ne_eq,
               Sigma.mk.inj_iff, not_and, id_def]
-            by_cases i' = i
+            by_cases h : i' = i
             · subst h
               rw [dif_pos rfl]
               simp only [heq_eq_eq, true_and]
-              by_cases j' = j
+              by_cases h : j' = j
               · subst h
                 simp
               · rw [dif_neg h, dif_neg (Ne.symm h)]

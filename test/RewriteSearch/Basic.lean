@@ -50,6 +50,6 @@ def makeSingleton : Nat → List Nat
 #guard_msgs in
 example (n : Nat) : makeSingleton n = [0] := by
   induction' n with n' ih
-  · simp
+  · simp only [makeSingleton]
   · -- At one point, this failed with: unknown free variable '_uniq.62770'
     rw_search

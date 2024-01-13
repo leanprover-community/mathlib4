@@ -88,7 +88,7 @@ theorem Γ₀_obj_termwise_mapMono_comp_PInfty (X : SimplicialObject C) {Δ Δ' 
   induction' Δ' using SimplexCategory.rec with n'
   dsimp
   -- We start with the case `i` is an identity
-  by_cases n = n'
+  by_cases h : n = n'
   · subst h
     simp only [SimplexCategory.eq_id_of_mono i, Γ₀.Obj.Termwise.mapMono_id, op_id, X.map_id]
     dsimp

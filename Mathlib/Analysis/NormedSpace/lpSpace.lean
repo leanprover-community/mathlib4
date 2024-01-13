@@ -57,9 +57,6 @@ say that `‖-f‖ = ‖f‖`, instead of the non-working `f.norm_neg`.
 
 set_option autoImplicit true
 
-
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 noncomputable section
 
 open scoped NNReal ENNReal BigOperators Function

@@ -452,7 +452,8 @@ noncomputable def liftCover : C(α, β) :=
     Set.iUnion_eq_univ_iff.2 fun x ↦ (hS x).imp fun _ ↦ mem_of_mem_nhds
   mk (Set.liftCover S (fun i ↦ φ i) hφ H) <| continuous_of_cover_nhds hS fun i ↦ by
     rw [continuousOn_iff_continuous_restrict]
-    simpa only [Set.restrict, Set.liftCover_coe] using (φ i).continuous
+    simpa (config := { unfoldPartialApp := true }) only [Set.restrict, Set.liftCover_coe] using
+      (φ i).continuous
 #align continuous_map.lift_cover ContinuousMap.liftCover
 
 variable {S φ hφ hS}
@@ -612,14 +613,16 @@ theorem coe_trans : (f.trans g : C(α, γ)) = (g : C(β, γ)).comp f :=
 
 /-- Left inverse to a continuous map from a homeomorphism, mirroring `Equiv.symm_comp_self`. -/
 @[simp]
-theorem symm_comp_toContinuousMap : (f.symm : C(β, α)).comp (f : C(α, β)) = ContinuousMap.id α :=
-  by rw [← coe_trans, self_trans_symm, coe_refl]
+theorem symm_comp_toContinuousMap :
+    (f.symm : C(β, α)).comp (f : C(α, β)) = ContinuousMap.id α := by
+  rw [← coe_trans, self_trans_symm, coe_refl]
 #align homeomorph.symm_comp_to_continuous_map Homeomorph.symm_comp_toContinuousMap
 
 /-- Right inverse to a continuous map from a homeomorphism, mirroring `Equiv.self_comp_symm`. -/
 @[simp]
-theorem toContinuousMap_comp_symm : (f : C(α, β)).comp (f.symm : C(β, α)) = ContinuousMap.id β :=
-  by rw [← coe_trans, symm_trans_self, coe_refl]
+theorem toContinuousMap_comp_symm :
+    (f : C(α, β)).comp (f.symm : C(β, α)) = ContinuousMap.id β := by
+  rw [← coe_trans, symm_trans_self, coe_refl]
 #align homeomorph.to_continuous_map_comp_symm Homeomorph.toContinuousMap_comp_symm
 
 end Homeomorph

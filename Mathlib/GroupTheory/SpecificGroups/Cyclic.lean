@@ -177,9 +177,9 @@ theorem Infinite.orderOf_eq_zero_of_forall_mem_zpowers [Infinite α] {g : α}
     obtain ⟨k, hk⟩ := h x
     dsimp at hk
     obtain ⟨k, rfl | rfl⟩ := k.eq_nat_or_neg
-    · exact ⟨k, by exact_mod_cast hk⟩
+    · exact ⟨k, mod_cast hk⟩
     rw [←zpow_mod_orderOf] at hk
-    have : 0 ≤ (-k % orderOf g : ℤ) := Int.emod_nonneg (-k) (by exact_mod_cast ho.orderOf_pos.ne')
+    have : 0 ≤ (-k % orderOf g : ℤ) := Int.emod_nonneg (-k) (mod_cast ho.orderOf_pos.ne')
     refine' ⟨(-k % orderOf g : ℤ).toNat, _⟩
     rwa [← zpow_ofNat, Int.toNat_of_nonneg this]
 #align infinite.order_of_eq_zero_of_forall_mem_zpowers Infinite.orderOf_eq_zero_of_forall_mem_zpowers
@@ -213,7 +213,7 @@ instance Subgroup.isCyclic {α : Type u} [Group α] [IsCyclic α] (H : Subgroup 
         have hk₂ : g ^ ((Nat.find hex : ℤ) * (k / Nat.find hex : ℤ)) ∈ H := by
           rw [zpow_mul]
           apply H.zpow_mem
-          exact_mod_cast (Nat.find_spec hex).2
+          exact mod_cast (Nat.find_spec hex).2
         have hk₃ : g ^ (k % Nat.find hex : ℤ) ∈ H :=
           (Subgroup.mul_mem_cancel_right H hk₂).1 <| by
             rw [← zpow_add, Int.emod_add_ediv, hk]; exact hx

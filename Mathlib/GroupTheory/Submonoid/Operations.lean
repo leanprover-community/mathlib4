@@ -560,7 +560,7 @@ attribute [to_additive existing nSMul] nPow
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_pow {M} [Monoid M] {A : Type*} [SetLike A M] [SubmonoidClass A M] {S : A} (x : S)
-    (n : ℕ) : (x ^ n : M) = (x : M) ^ n :=
+    (n : ℕ) : ↑(x ^ n) = (x : M) ^ n :=
   rfl
 #align submonoid_class.coe_pow SubmonoidClass.coe_pow
 #align add_submonoid_class.coe_nsmul AddSubmonoidClass.coe_nsmul

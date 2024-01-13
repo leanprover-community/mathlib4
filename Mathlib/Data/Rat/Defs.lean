@@ -240,14 +240,16 @@ theorem divInt_zero_one : 0 /. 1 = 0 :=
 theorem divInt_one_one : 1 /. 1 = 1 :=
   show divInt _ _ = _ by
     rw [divInt]
-    simp
+    simp [mkRat, normalize]
+    rfl
 #align rat.mk_one_one Rat.divInt_one_one
 
 @[simp]
 theorem divInt_neg_one_one : -1 /. 1 = -1 :=
   show divInt _ _ = _ by
     rw [divInt]
-    simp
+    simp [mkRat, normalize]
+    rfl
 #align rat.mk_neg_one_one Rat.divInt_neg_one_one
 
 theorem divInt_one (n : ℤ) : n /. 1 = n :=
@@ -549,7 +551,7 @@ end Casts
 
 theorem mkRat_eq_div {n : ℤ} {d : ℕ} : mkRat n d = n / d := by
   simp only [mkRat, zero_mk]
-  by_cases d = 0
+  by_cases h : d = 0
   · simp [h]
   · simp [h, HDiv.hDiv, Rat.div, Div.div]
     unfold Rat.inv

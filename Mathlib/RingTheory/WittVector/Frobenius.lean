@@ -156,7 +156,7 @@ theorem map_frobeniusPoly (n : ℕ) :
     add_mul, mul_right_comm, mul_right_comm (C ((p : ℚ) ^ (n + 1))), ← C_mul, ← C_mul, pow_succ,
     mul_assoc (p : ℚ) ((p : ℚ) ^ n), h1, mul_one, C_1, one_mul, add_comm _ (X n ^ p), add_assoc,
     ← add_sub, add_right_inj, frobeniusPolyAux_eq, RingHom.map_sub, map_X, mul_sub, sub_eq_add_neg,
-    add_comm _ (C (p : ℚ) * X (n + 1)), ← add_sub, show (Int.castRingHom ℚ) ↑p = (p : ℚ) from rfl,
+    add_comm _ (C (p : ℚ) * X (n + 1)), ← add_sub,
     add_right_inj, neg_eq_iff_eq_neg, neg_sub, eq_comm]
   simp only [map_sum, mul_sum, sum_mul, ← sum_sub_distrib]
   apply sum_congr rfl
@@ -172,8 +172,7 @@ theorem map_frobeniusPoly (n : ℕ) :
   rw [mem_range] at hj
   rw [RingHom.map_mul, RingHom.map_mul, RingHom.map_pow, RingHom.map_pow, RingHom.map_pow,
     RingHom.map_pow, RingHom.map_pow, map_C, map_X, mul_pow]
-  rw [mul_comm (C (p : ℚ) ^ i), mul_comm _ ((X i ^ p) ^ _),
-    show (Int.castRingHom ℚ) ↑p = (p : ℚ) from rfl, mul_comm (C (p : ℚ) ^ (j + 1)),
+  rw [mul_comm (C (p : ℚ) ^ i), mul_comm _ ((X i ^ p) ^ _), mul_comm (C (p : ℚ) ^ (j + 1)),
     mul_comm (C (p : ℚ))]
   simp only [mul_assoc]
   apply congr_arg
@@ -189,9 +188,9 @@ theorem map_frobeniusPoly (n : ℕ) :
       = (p : ℚ) ^ j * p * ↑((p ^ (n - i)).choose (j + 1) * p ^ i) *
         (p : ℚ) ^ (n - i - v p ⟨j + 1, j.succ_pos⟩) by
     have aux : ∀ k : ℕ, (p : ℚ)^ k ≠ 0 := by
-      intro; apply pow_ne_zero; exact_mod_cast hp.1.ne_zero
+      intro; apply pow_ne_zero; exact mod_cast hp.1.ne_zero
     simpa [aux, -one_div, field_simps] using this.symm
-  rw [mul_comm _ (p : ℚ), mul_assoc, Nat.cast_pow, mul_assoc, ← pow_add,
+  rw [mul_comm _ (p : ℚ), mul_assoc, mul_assoc, ← pow_add,
     map_frobeniusPoly.key₂ p hi.le hj, Nat.cast_mul, Nat.cast_pow]
   ring
 #align witt_vector.map_frobenius_poly WittVector.map_frobeniusPoly

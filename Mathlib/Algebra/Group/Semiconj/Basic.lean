@@ -13,13 +13,11 @@ import Mathlib.Algebra.Group.Basic
 
 -/
 
-set_option autoImplicit true
-
 namespace SemiconjBy
 
 section DivisionMonoid
 
-variable [DivisionMonoid G] {a x y : G}
+variable {G : Type*} [DivisionMonoid G] {a x y : G}
 
 @[to_additive (attr := simp)]
 theorem inv_inv_symm_iff : SemiconjBy a⁻¹ x⁻¹ y⁻¹ ↔ SemiconjBy a y x :=

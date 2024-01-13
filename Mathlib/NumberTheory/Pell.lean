@@ -378,7 +378,7 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
   have hM : {q : ℚ | |q.1 ^ 2 - d * (q.2 : ℤ) ^ 2| < M}.Infinite := by
     refine' Infinite.mono (fun q h => _) (infinite_rat_abs_sub_lt_one_div_den_sq_of_irrational hξ)
     have h0 : 0 < (q.2 : ℝ) ^ 2 := pow_pos (Nat.cast_pos.mpr q.pos) 2
-    have h1 : (q.num : ℝ) / (q.den : ℝ) = q := by exact_mod_cast q.num_div_den
+    have h1 : (q.num : ℝ) / (q.den : ℝ) = q := mod_cast q.num_div_den
     rw [mem_setOf, abs_sub_comm, ← @Int.cast_lt ℝ, ← div_lt_div_right (abs_pos_of_pos h0)]
     push_cast
     rw [← abs_div, abs_sq, sub_div, mul_div_cancel _ h0.ne', ← div_pow, h1, ←
@@ -433,7 +433,7 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
     ring
   · qify [hd₂]
     refine' div_ne_zero_iff.mpr ⟨_, hm₀⟩
-    exact_mod_cast mt sub_eq_zero.mp (mt Rat.eq_iff_mul_eq_mul.mpr hne)
+    exact mod_cast mt sub_eq_zero.mp (mt Rat.eq_iff_mul_eq_mul.mpr hne)
 #align pell.exists_of_not_is_square Pell.exists_of_not_isSquare
 
 /-- If `d` is a positive integer, then there is a nontrivial solution
@@ -528,7 +528,7 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
   -- to avoid having to show that the predicate is decidable
   let x₁ := Nat.find P
   obtain ⟨hx, y₁, hy₀, hy₁⟩ := Nat.find_spec P
-  refine' ⟨mk x₁ y₁ hy₁, by rw [x_mk]; exact_mod_cast hx, hy₀, fun {b} hb => _⟩
+  refine' ⟨mk x₁ y₁ hy₁, by rw [x_mk]; exact mod_cast hx, hy₀, fun {b} hb => _⟩
   rw [x_mk]
   have hb' := (Int.toNat_of_nonneg <| zero_le_one.trans hb.le).symm
   have hb'' := hb
@@ -551,7 +551,7 @@ theorem y_strictMono {a : Solution₁ d} (h : IsFundamental a) :
       add_pos_of_pos_of_nonneg (mul_pos (x_zpow_pos h.x_pos _) h.2.1)
         (mul_nonneg _ (by rw [sub_nonneg]; exact h.1.le))
     rcases hn.eq_or_lt with (rfl | hn)
-    · simp only [zpow_zero, y_one]
+    · simp only [zpow_zero, y_one, le_refl]
     · exact (y_zpow_pos h.x_pos h.2.1 hn).le
   refine' strictMono_int_of_lt_succ fun n => _
   cases' le_or_lt 0 n with hn hn
@@ -685,7 +685,7 @@ theorem eq_pow_of_nonneg {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : So
     have hyy := h.mul_inv_y_nonneg hx₁ hy
     lift (a * a₁⁻¹).x to ℕ using hxx₁.le with x' hx'
     -- Porting note: `ih` has its arguments in a different order compared to lean 3.
-    obtain ⟨n, hn⟩ := ih x' (by exact_mod_cast hxx₂.trans_eq hax'.symm) hyy hx' hxx₁
+    obtain ⟨n, hn⟩ := ih x' (mod_cast hxx₂.trans_eq hax'.symm) hyy hx' hxx₁
     exact ⟨n + 1, by rw [pow_succ, ← hn, mul_comm a, ← mul_assoc, mul_inv_self, one_mul]⟩
 #align pell.is_fundamental.eq_pow_of_nonneg Pell.IsFundamental.eq_pow_of_nonneg
 
@@ -695,7 +695,7 @@ theorem eq_zpow_or_neg_zpow {a₁ : Solution₁ d} (h : IsFundamental a₁) (a :
   obtain ⟨b, hbx, hby, hb⟩ := exists_pos_variant h.d_pos a
   obtain ⟨n, hn⟩ := h.eq_pow_of_nonneg hbx hby
   rcases hb with (rfl | rfl | rfl | hb)
-  · exact ⟨n, Or.inl (by exact_mod_cast hn)⟩
+  · exact ⟨n, Or.inl (mod_cast hn)⟩
   · exact ⟨-n, Or.inl (by simp [hn])⟩
   · exact ⟨n, Or.inr (by simp [hn])⟩
   · rw [Set.mem_singleton_iff] at hb

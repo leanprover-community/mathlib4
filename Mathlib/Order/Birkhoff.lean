@@ -151,7 +151,7 @@ variable [Fintype α] [@DecidablePred α SupIrred]
 /-- **Birkhoff's Representation Theorem**. Any finite distributive lattice can be embedded in a
 powerset lattice. -/
 noncomputable def birkhoffSet : α ↪o Set {a : α // SupIrred a} := by
-  by_cases IsEmpty α
+  by_cases h : IsEmpty α
   · exact OrderEmbedding.ofIsEmpty
   rw [not_isEmpty_iff] at h
   have := Fintype.toOrderBot α

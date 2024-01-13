@@ -399,7 +399,7 @@ theorem Integrable.tendsto_ae_condexp (hg : Integrable g μ)
     by_cases hnm : n ≤ m
     · exact ⟨m, (ℱ.mono hnm _ hs).inter ht⟩
     · exact ⟨n, hs.inter (ℱ.mono (not_le.1 hnm).le _ ht)⟩
-  · simp only [measure_empty, WithTop.zero_lt_top, Measure.restrict_empty, integral_zero_measure,
+  · simp only [measure_empty, ENNReal.zero_lt_top, Measure.restrict_empty, integral_zero_measure,
       forall_true_left]
   · rintro t ⟨n, ht⟩ -
     exact this n _ ht

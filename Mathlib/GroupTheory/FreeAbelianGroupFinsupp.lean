@@ -187,7 +187,7 @@ theorem support_zsmul (k : ℤ) (h : k ≠ 0) (a : FreeAbelianGroup X) :
 theorem support_nsmul (k : ℕ) (h : k ≠ 0) (a : FreeAbelianGroup X) :
     support (k • a) = support a := by
   apply support_zsmul k _ a
-  exact_mod_cast h
+  exact mod_cast h
 #align free_abelian_group.support_nsmul FreeAbelianGroup.support_nsmul
 
 open Classical
