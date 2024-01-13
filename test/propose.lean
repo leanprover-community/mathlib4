@@ -41,16 +41,15 @@ example (K L M : List α) (w : L.Disjoint M) (m : K ⊆ L) : True := by
 
 def bar (n : Nat) (x : String) : Nat × String := (n + x.length, x)
 
--- FIXME notice a bug here: should not generate `let this✝` with an inaccessible name.
 /--
-info: Try this: let this✝ : ℕ × String := bar p.1 p.2
+info: Try this: let a : ℕ × String := bar p.1 p.2
 ---
-info: Try this: let this✝ : ℕ × String := bar p.1 p.2
+info: Try this: let _ : ℕ × String := bar p.1 p.2
 -/
 #guard_msgs in
 example (p : Nat × String) : True := by
   fail_if_success have? using p
-  have? : Nat × String using p.1, p.2
+  have? a : Nat × String using p.1, p.2
   have? : Nat × _ using p.1, p.2
   trivial
 

@@ -445,7 +445,7 @@ theorem IsRotated.symm (h : l ~r l') : l' ~r l := by
   · exists 0
   · use (hd :: tl).length * n - n
     rw [rotate_rotate, add_tsub_cancel_of_le, rotate_length_mul]
-    exact Nat.le_mul_of_pos_left (by simp)
+    exact Nat.le_mul_of_pos_left _ (by simp)
 #align list.is_rotated.symm List.IsRotated.symm
 
 theorem isRotated_comm : l ~r l' ↔ l' ~r l :=
