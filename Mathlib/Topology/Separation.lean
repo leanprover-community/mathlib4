@@ -1709,16 +1709,22 @@ instance {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i,
     RegularSpace (∀ i, X i) :=
   regularSpace_iInf fun _ => regularSpace_induced _
 
+/-- In a regular space, if a compact set and a closed set are disjoint, then they have disjoint
+neighborhoods. -/
 lemma isCompact_isClosed_separated [RegularSpace X] {s t : Set X}
     (hs : IsCompact s) (ht : IsClosed t) (hst : Disjoint s t) : SeparatedNhds s t := by
   apply hs.induction_on (p := fun u ↦ SeparatedNhds u t)
   · simp
   · intro s u su hu
     exact hu.mono su Subset.rfl
-  ·
-
-
-#exit
+  · intro u v hu hv
+    exact hu.union_left hv
+  · intro x hx
+    have : tᶜ ∈ 𝓝 x := ht.isOpen_compl.mem_nhds (disjoint_left.1 hst hx)
+    rcases exists_mem_nhds_isClosed_subset this with ⟨u, u_mem, u_closed, hu⟩
+    refine ⟨interior u, mem_nhdsWithin_of_mem_nhds (interior_mem_nhds.2 u_mem), ?_⟩
+    exact ⟨interior u, uᶜ, isOpen_interior, u_closed.isOpen_compl, Subset.rfl,
+      subset_compl_comm.mp hu, disjoint_compl_right.mono_left (interior_subset)⟩
 
 end RegularSpace
 
@@ -1759,56 +1765,12 @@ theorem IsCompact.closure_subset_of_isOpen [hX : T2OrLocallyCompactRegularSpace 
       exact ⟨F, nhdsWithin_le_nhds F_mem, F, Subset.rfl, F_closed, Fu⟩
   exact (closure_minimal sF F_closed).trans Fu
 
-theorem isCompact_isClosed_isCompact_iClosed_separated [hX : T2OrLocallyCompactRegularSpace X]
-    {s t : Set X} (hs : IsCompact s) (h's : IsClosed s) (ht : IsCompact t) (h't : IsClosed t)
+theorem isCompact_isCompact_isClosed_separated [hX : T2OrLocallyCompactRegularSpace X]
+    {s t : Set X} (hs : IsCompact s) (ht : IsCompact t) (h't : IsClosed t)
     (hst : Disjoint s t) : SeparatedNhds s t := by
   rcases hX.out with h'|⟨-, h'⟩
   · exact isCompact_isCompact_separated hs ht hst
-  ·
-
-
-#exit
-
-/-- If a compact set is covered by two open sets, then we can cover it by two compact subsets. -/
-theorem IsCompact.binary_compact_cover [h : T2OrLocallyCompactRegularSpace X] {K U V : Set X}
-    (hK : IsCompact K) (hU : IsOpen U) (hV : IsOpen V) (h2K : K ⊆ U ∪ V) :
-    ∃ K₁ K₂ : Set X, IsCompact K₁ ∧ IsCompact K₂ ∧ K₁ ⊆ U ∧ K₂ ⊆ V ∧ K = K₁ ∪ K₂ := by
-  cases h.out
-  · obtain ⟨O₁, O₂, h1O₁, h1O₂, h2O₁, h2O₂, hO⟩ :=
-      isCompact_isCompact_separated (hK.diff hU) (hK.diff hV)
-        (by rwa [disjoint_iff_inter_eq_empty, diff_inter_diff, diff_eq_empty])
-    exact
-      ⟨_, _, hK.diff h1O₁, hK.diff h1O₂, by rwa [diff_subset_comm], by rwa [diff_subset_comm], by
-        rw [← diff_inter, hO.inter_eq, diff_empty]⟩
-  · sorry
-#align is_compact.binary_compact_cover IsCompact.binary_compact_cover
-
-open Finset Function
-
-/-- For every finite open cover `Uᵢ` of a compact set, there exists a compact cover `Kᵢ ⊆ Uᵢ`. -/
-theorem IsCompact.finite_compact_cover [T2OrLocallyCompactRegularSpace X] {s : Set X} (hs : IsCompact s) {ι}
-    (t : Finset ι) (U : ι → Set X) (hU : ∀ i ∈ t, IsOpen (U i)) (hsC : s ⊆ ⋃ i ∈ t, U i) :
-    ∃ K : ι → Set X, (∀ i, IsCompact (K i)) ∧ (∀ i, K i ⊆ U i) ∧ s = ⋃ i ∈ t, K i := by
-  induction' t using Finset.induction with x t hx ih generalizing U s
-  · refine' ⟨fun _ => ∅, fun _ => isCompact_empty, fun i => empty_subset _, _⟩
-    simpa only [subset_empty_iff, Finset.not_mem_empty, iUnion_false, iUnion_empty] using hsC
-  simp only [Finset.set_biUnion_insert] at hsC
-  simp only [Finset.forall_mem_insert] at hU
-  have hU' : ∀ i ∈ t, IsOpen (U i) := fun i hi => hU.2 i hi
-  rcases hs.binary_compact_cover hU.1 (isOpen_biUnion hU') hsC with
-    ⟨K₁, K₂, h1K₁, h1K₂, h2K₁, h2K₂, hK⟩
-  rcases ih h1K₂ U hU' h2K₂ with ⟨K, h1K, h2K, h3K⟩
-  refine' ⟨update K x K₁, _, _, _⟩
-  · intro i
-    rcases eq_or_ne i x with rfl | hi
-    · simp only [update_same, h1K₁]
-    · simp only [update_noteq hi, h1K]
-  · intro i
-    rcases eq_or_ne i x with rfl | hi
-    · simp only [update_same, h2K₁]
-    · simp only [update_noteq hi, h2K]
-  · simp only [set_biUnion_insert_update _ hx, hK, h3K]
-#align is_compact.finite_compact_cover IsCompact.finite_compact_cover
+  · exact isCompact_isClosed_separated hs h't hst
 
 protected theorem IsCompact.closure [hX : T2OrLocallyCompactRegularSpace X]
     {K : Set X} (hK : IsCompact K) : IsCompact (closure K) := by
@@ -1837,12 +1799,52 @@ theorem exists_compact_closed_between [LocallyCompactSpace X] [RegularSpace X]
   · apply M_comp.closure_subset_of_isOpen hU
     exact ML.trans (interior_subset.trans LU)
 
+/-- If a compact set is covered by two open sets, then we can cover it by two compact subsets. -/
+theorem IsCompact.binary_compact_cover [h : T2OrLocallyCompactRegularSpace X] {K U V : Set X}
+    (hK : IsCompact K) (hU : IsOpen U) (hV : IsOpen V) (h2K : K ⊆ U ∪ V) :
+    ∃ K₁ K₂ : Set X, IsCompact K₁ ∧ IsCompact K₂ ∧ K₁ ⊆ U ∧ K₂ ⊆ V ∧ K = K₁ ∪ K₂ := by
+  have hK' : IsCompact (closure K) := hK.closure
+  have : SeparatedNhds (closure K \ U) (closure K \ V) := by
+    apply isCompact_isCompact_isClosed_separated (hK'.diff hU) (hK'.diff hV)
+      (isClosed_closure.sdiff hV)
+    rw [disjoint_iff_inter_eq_empty, diff_inter_diff, diff_eq_empty]
+    exact hK.closure_subset_of_isOpen (hU.union hV) h2K
+  have : SeparatedNhds (K \ U) (K \ V) :=
+    this.mono (diff_subset_diff_left (subset_closure)) (diff_subset_diff_left (subset_closure))
+  rcases this with ⟨O₁, O₂, h1O₁, h1O₂, h2O₁, h2O₂, hO⟩
+  exact ⟨K \ O₁, K \ O₂, hK.diff h1O₁, hK.diff h1O₂, diff_subset_comm.mp h2O₁,
+    diff_subset_comm.mp h2O₂, by rw [← diff_inter, hO.inter_eq, diff_empty]⟩
+#align is_compact.binary_compact_cover IsCompact.binary_compact_cover
+
+open Finset Function
+
+/-- For every finite open cover `Uᵢ` of a compact set, there exists a compact cover `Kᵢ ⊆ Uᵢ`. -/
+theorem IsCompact.finite_compact_cover [T2OrLocallyCompactRegularSpace X]
+    {s : Set X} (hs : IsCompact s) {ι}
+    (t : Finset ι) (U : ι → Set X) (hU : ∀ i ∈ t, IsOpen (U i)) (hsC : s ⊆ ⋃ i ∈ t, U i) :
+    ∃ K : ι → Set X, (∀ i, IsCompact (K i)) ∧ (∀ i, K i ⊆ U i) ∧ s = ⋃ i ∈ t, K i := by
+  induction' t using Finset.induction with x t hx ih generalizing U s
+  · refine' ⟨fun _ => ∅, fun _ => isCompact_empty, fun i => empty_subset _, _⟩
+    simpa only [subset_empty_iff, Finset.not_mem_empty, iUnion_false, iUnion_empty] using hsC
+  simp only [Finset.set_biUnion_insert] at hsC
+  simp only [Finset.forall_mem_insert] at hU
+  have hU' : ∀ i ∈ t, IsOpen (U i) := fun i hi => hU.2 i hi
+  rcases hs.binary_compact_cover hU.1 (isOpen_biUnion hU') hsC with
+    ⟨K₁, K₂, h1K₁, h1K₂, h2K₁, h2K₂, hK⟩
+  rcases ih h1K₂ U hU' h2K₂ with ⟨K, h1K, h2K, h3K⟩
+  refine' ⟨update K x K₁, _, _, _⟩
+  · intro i
+    rcases eq_or_ne i x with rfl | hi
+    · simp only [update_same, h1K₁]
+    · simp only [update_noteq hi, h1K]
+  · intro i
+    rcases eq_or_ne i x with rfl | hi
+    · simp only [update_same, h2K₁]
+    · simp only [update_noteq hi, h2K]
+  · simp only [set_biUnion_insert_update _ hx, hK, h3K]
+#align is_compact.finite_compact_cover IsCompact.finite_compact_cover
 
 end T2OrLocallyCompactRegularSpace
-
-
-#exit
-
 
 section T3
 
