@@ -90,15 +90,8 @@ theorem IsLUB.inv (h : IsLUB s a) : IsGLB s⁻¹ a⁻¹ :=
 
 @[to_additive]
 lemma BddBelow.bddAbove_range_inv  {α : Type*} {f : α → G} (hf : BddBelow (Set.range f)) :
-    BddAbove (Set.range (fun x => (f x)⁻¹)) := by
-  rw [bddAbove_def]
-  rw [bddBelow_def] at hf
-  obtain ⟨C, hC⟩ := hf
-  refine ⟨C⁻¹, fun y hy => ?_⟩
-  rw [Set.mem_range] at hy
-  obtain ⟨y', hy'⟩ := hy
-  calc y = (f y')⁻¹  := hy'.symm
-       _ ≤ C⁻¹ := inv_le_inv_iff.mpr (hC (f y') (by simp))
+    BddAbove (Set.range (fun x => (f x)⁻¹)) :=
+  hf.range_comp (OrderIso.inv G).monotone
 
 @[to_additive]
 lemma BddAbove.bddBelow_range_inv  {α : Type*} {f : α → G} (hf : BddAbove (Set.range f)) :
