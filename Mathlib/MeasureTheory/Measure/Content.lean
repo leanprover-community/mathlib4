@@ -68,7 +68,8 @@ structure Content (G : Type w) [TopologicalSpace G] where
   toFun : Compacts G → ℝ≥0
   mono' : ∀ K₁ K₂ : Compacts G, (K₁ : Set G) ⊆ K₂ → toFun K₁ ≤ toFun K₂
   sup_disjoint' :
-    ∀ K₁ K₂ : Compacts G, Disjoint (K₁ : Set G) K₂ → toFun (K₁ ⊔ K₂) = toFun K₁ + toFun K₂
+    ∀ K₁ K₂ : Compacts G, Disjoint (K₁ : Set G) K₂ → IsClosed (K₁ : Set G) → IsClosed (K₂ : Set G)
+      → toFun (K₁ ⊔ K₂) = toFun K₁ + toFun K₂
   sup_le' : ∀ K₁ K₂ : Compacts G, toFun (K₁ ⊔ K₂) ≤ toFun K₁ + toFun K₂
 #align measure_theory.content MeasureTheory.Content
 
@@ -96,7 +97,8 @@ theorem mono (K₁ K₂ : Compacts G) (h : (K₁ : Set G) ⊆ K₂) : μ K₁ �
   simp [apply_eq_coe_toFun, μ.mono' _ _ h]
 #align measure_theory.content.mono MeasureTheory.Content.mono
 
-theorem sup_disjoint (K₁ K₂ : Compacts G) (h : Disjoint (K₁ : Set G) K₂) :
+theorem sup_disjoint (K₁ K₂ : Compacts G) (h : Disjoint (K₁ : Set G) K₂)
+    (h₁ : IsClosed (K₁ : Set G)) (h₂ : IsClosed (K₂ : Set G)) :
     μ (K₁ ⊔ K₂) = μ K₁ + μ K₂ := by
   simp [apply_eq_coe_toFun, μ.sup_disjoint' _ _ h]
 #align measure_theory.content.sup_disjoint MeasureTheory.Content.sup_disjoint
@@ -167,7 +169,7 @@ theorem innerContent_exists_compact {U : Opens G} (hU : μ.innerContent U ≠ �
 #align measure_theory.content.inner_content_exists_compact MeasureTheory.Content.innerContent_exists_compact
 
 /-- The inner content of a supremum of opens is at most the sum of the individual inner contents. -/
-theorem innerContent_iSup_nat [T2Space G] (U : ℕ → Opens G) :
+theorem innerContent_iSup_nat (U : ℕ → Opens G) :
     μ.innerContent (⨆ i : ℕ, U i) ≤ ∑' i : ℕ, μ.innerContent (U i) := by
   have h3 : ∀ (t : Finset ℕ) (K : ℕ → Compacts G), μ (t.sup K) ≤ t.sum fun i => μ (K i) := by
     intro t K

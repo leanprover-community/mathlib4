@@ -254,6 +254,17 @@ lemma integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport
   simp only [B, integral_smul_nnreal_measure]
   rfl
 
+@[to_additive integral_isAddLeftInvariant_eq_smul_of_hasCompactSupport]
+def glouk (μ' : Measure G) [IsFiniteMeasureOnCompacts μ']
+    [IsMulLeftInvariant μ'] : ℝ≥0 := by
+  let Z := integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport μ' (haar : Measure G)
+
+--    ∃ (c : ℝ≥0), ∀ (f : G → ℝ), Continuous f → HasCompactSupport f →
+--      ∫ x, f x ∂μ' = ∫ x, f x ∂(c • μ) := by
+
+#exit
+
+
 /-- **Uniqueness of left-invariant measures**: Given two left-invariant measures which are finite on
 compacts and inner regular for finite measure sets with respect to compact sets,
 they coincide in the following sense: they give the same value to finite measure sets,
