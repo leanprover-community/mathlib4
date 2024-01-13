@@ -480,8 +480,7 @@ instance normedSpace : NormedSpace 𝕜' (ContinuousMultilinearMap 𝕜 E G) :=
 
 /-- An alias of `ContinuousMultilinearMap.normedSpace` with non-dependent types to help typeclass
 search. -/
-instance normedSpace' :
-    NormedSpace 𝕜' (ContinuousMultilinearMap 𝕜 (fun _ : ι => G') G) :=
+instance normedSpace' : NormedSpace 𝕜' (ContinuousMultilinearMap 𝕜 (fun _ : ι => G') G) :=
   ContinuousMultilinearMap.normedSpace
 #align continuous_multilinear_map.normed_space' ContinuousMultilinearMap.normedSpace'
 
@@ -500,17 +499,16 @@ theorem le_of_op_nnnorm_le {C : ℝ≥0} (h : ‖f‖₊ ≤ C) : ‖f m‖₊ �
 theorem op_nnnorm_le_iff {C : ℝ≥0} : ‖f‖₊ ≤ C ↔ ∀ m, ‖f m‖₊ ≤ C * ∏ i, ‖m i‖₊ := by
   simp only [← NNReal.coe_le_coe]; simp [op_norm_le_iff _ C.coe_nonneg, NNReal.coe_prod]
 
-theorem isLeast_op_nnnorm :
-    IsLeast {C : ℝ≥0 | ∀ m, ‖f m‖₊ ≤ C * ∏ i, ‖m i‖₊} ‖f‖₊ := by
+theorem isLeast_op_nnnorm : IsLeast {C : ℝ≥0 | ∀ m, ‖f m‖₊ ≤ C * ∏ i, ‖m i‖₊} ‖f‖₊ := by
   simpa only [← op_nnnorm_le_iff] using isLeast_Ici
 
-theorem op_nnnorm_prod (f : ContinuousMultilinearMap 𝕜 E G)
-    (g : ContinuousMultilinearMap 𝕜 E G') : ‖f.prod g‖₊ = max ‖f‖₊ ‖g‖₊ :=
+theorem op_nnnorm_prod (f : ContinuousMultilinearMap 𝕜 E G) (g : ContinuousMultilinearMap 𝕜 E G') :
+    ‖f.prod g‖₊ = max ‖f‖₊ ‖g‖₊ :=
   eq_of_forall_ge_iff fun _ ↦ by
     simp only [op_nnnorm_le_iff, prod_apply, Prod.nnnorm_def', max_le_iff, forall_and]
 
-theorem op_norm_prod (f : ContinuousMultilinearMap 𝕜 E G)
-    (g : ContinuousMultilinearMap 𝕜 E G') : ‖f.prod g‖ = max ‖f‖ ‖g‖ :=
+theorem op_norm_prod (f : ContinuousMultilinearMap 𝕜 E G) (g : ContinuousMultilinearMap 𝕜 E G') :
+    ‖f.prod g‖ = max ‖f‖ ‖g‖ :=
   congr_arg NNReal.toReal (op_nnnorm_prod f g)
 #align continuous_multilinear_map.op_norm_prod ContinuousMultilinearMap.op_norm_prod
 
@@ -775,8 +773,7 @@ theorem norm_mkPiAlgebra_of_empty [IsEmpty ι] :
 #align continuous_multilinear_map.norm_mk_pi_algebra_of_empty ContinuousMultilinearMap.norm_mkPiAlgebra_of_empty
 
 @[simp]
-theorem norm_mkPiAlgebra [NormOneClass A] :
-    ‖ContinuousMultilinearMap.mkPiAlgebra 𝕜 ι A‖ = 1 := by
+theorem norm_mkPiAlgebra [NormOneClass A] : ‖ContinuousMultilinearMap.mkPiAlgebra 𝕜 ι A‖ = 1 := by
   cases isEmpty_or_nonempty ι
   · simp [norm_mkPiAlgebra_of_empty]
   · refine' le_antisymm norm_mkPiAlgebra_le _
@@ -851,8 +848,7 @@ theorem mkPiField_apply_one_eq_self (f : ContinuousMultilinearMap 𝕜 (fun _ : 
 #align continuous_multilinear_map.mk_pi_field_apply_one_eq_self ContinuousMultilinearMap.mkPiField_apply_one_eq_self
 
 @[simp]
-theorem norm_mkPiField (z : G) :
-    ‖ContinuousMultilinearMap.mkPiField 𝕜 ι z‖ = ‖z‖ :=
+theorem norm_mkPiField (z : G) : ‖ContinuousMultilinearMap.mkPiField 𝕜 ι z‖ = ‖z‖ :=
   (MultilinearMap.mkContinuous_norm_le _ (norm_nonneg z) _).antisymm <| by
     simpa using (ContinuousMultilinearMap.mkPiField 𝕜 ι z).le_op_norm fun _ => 1
 #align continuous_multilinear_map.norm_mk_pi_field ContinuousMultilinearMap.norm_mkPiField
@@ -878,8 +874,7 @@ variable (𝕜 ι G)
 continuous multilinear map is completely determined by its value on the constant vector made of
 ones. We register this bijection as a linear isometry in
 `ContinuousMultilinearMap.piFieldEquiv`. -/
-protected def piFieldEquiv :
-    G ≃ₗᵢ[𝕜] ContinuousMultilinearMap 𝕜 (fun _ : ι => 𝕜) G where
+protected def piFieldEquiv : G ≃ₗᵢ[𝕜] ContinuousMultilinearMap 𝕜 (fun _ : ι => 𝕜) G where
   toFun z := ContinuousMultilinearMap.mkPiField 𝕜 ι z
   invFun f := f fun i => 1
   map_add' z z' := by
@@ -897,8 +892,8 @@ end ContinuousMultilinearMap
 
 namespace ContinuousLinearMap
 
-theorem norm_compContinuousMultilinearMap_le (g : G →L[𝕜] G')
-    (f : ContinuousMultilinearMap 𝕜 E G) : ‖g.compContinuousMultilinearMap f‖ ≤ ‖g‖ * ‖f‖ :=
+theorem norm_compContinuousMultilinearMap_le (g : G →L[𝕜] G') (f : ContinuousMultilinearMap 𝕜 E G) :
+    ‖g.compContinuousMultilinearMap f‖ ≤ ‖g‖ * ‖f‖ :=
   ContinuousMultilinearMap.op_norm_le_bound _ (mul_nonneg (norm_nonneg _) (norm_nonneg _)) fun m =>
     calc
       ‖g (f m)‖ ≤ ‖g‖ * (‖f‖ * ∏ i, ‖m i‖) := g.le_op_norm_of_le <| f.le_op_norm _
@@ -1032,8 +1027,8 @@ theorem mkContinuousLinear_norm_le' (f : G →ₗ[𝕜] MultilinearMap 𝕜 E G'
   exact LinearMap.mkContinuous_norm_le _ (le_max_right _ _) _
 #align multilinear_map.mk_continuous_linear_norm_le' MultilinearMap.mkContinuousLinear_norm_le'
 
-theorem mkContinuousLinear_norm_le (f : G →ₗ[𝕜] MultilinearMap 𝕜 E G') {C : ℝ}
-    (hC : 0 ≤ C) (H : ∀ x m, ‖f x m‖ ≤ C * ‖x‖ * ∏ i, ‖m i‖) : ‖mkContinuousLinear f C H‖ ≤ C :=
+theorem mkContinuousLinear_norm_le (f : G →ₗ[𝕜] MultilinearMap 𝕜 E G') {C : ℝ} (hC : 0 ≤ C)
+    (H : ∀ x m, ‖f x m‖ ≤ C * ‖x‖ * ∏ i, ‖m i‖) : ‖mkContinuousLinear f C H‖ ≤ C :=
   (mkContinuousLinear_norm_le' f C H).trans_eq (max_eq_left hC)
 #align multilinear_map.mk_continuous_linear_norm_le MultilinearMap.mkContinuousLinear_norm_le
 
@@ -1105,8 +1100,8 @@ theorem norm_compContinuous_linearIsometry_le (g : ContinuousMultilinearMap 𝕜
     LinearIsometry.norm_map, le_rfl]
 #align continuous_multilinear_map.norm_comp_continuous_linear_isometry_le ContinuousMultilinearMap.norm_compContinuous_linearIsometry_le
 
-theorem norm_compContinuous_linearIsometryEquiv
-    (g : ContinuousMultilinearMap 𝕜 E₁ G) (f : ∀ i, E i ≃ₗᵢ[𝕜] E₁ i) :
+theorem norm_compContinuous_linearIsometryEquiv (g : ContinuousMultilinearMap 𝕜 E₁ G)
+    (f : ∀ i, E i ≃ₗᵢ[𝕜] E₁ i) :
     ‖g.compContinuousLinearMap fun i => (f i : E i →L[𝕜] E₁ i)‖ = ‖g‖ := by
   apply le_antisymm (g.norm_compContinuous_linearIsometry_le fun i => (f i).toLinearIsometry)
   have : g = (g.compContinuousLinearMap fun i => (f i : E i →L[𝕜] E₁ i)).compContinuousLinearMap
