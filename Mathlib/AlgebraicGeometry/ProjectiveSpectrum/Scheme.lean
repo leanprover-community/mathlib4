@@ -334,7 +334,7 @@ open set in `Spec A⁰_f`.
 def toSpec {f : A} : (Proj.T| pbo f) ⟶ Spec.T A⁰_ f where
   toFun := ToSpec.toFun f
   continuous_toFun := by
-    apply IsTopologicalBasis.continuous PrimeSpectrum.isTopologicalBasis_basic_opens
+    rw [PrimeSpectrum.isTopologicalBasis_basic_opens.continuous_iff]
     rintro _ ⟨⟨k, ⟨a, ha⟩, ⟨b, hb1⟩, ⟨k', hb2⟩⟩, rfl⟩; dsimp
     erw [ToSpec.preimage_eq f a b k ha hb1 ⟨k', hb2⟩]
     refine' isOpen_induced_iff.mpr ⟨(pbo f).1 ⊓ (pbo a).1, IsOpen.inter (pbo f).2 (pbo a).2, _⟩

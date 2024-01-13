@@ -3,7 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Scott Morrison
 -/
-import Mathlib.Algebra.IndicatorFunction
+import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Data.Set.Finite
 import Mathlib.GroupTheory.Submonoid.Basic
 
 #align_import data.finsupp.defs from "leanprover-community/mathlib"@"842328d9df7e96fd90fc424e115679c15fb23a71"
@@ -235,7 +236,7 @@ theorem finite_support (f : α →₀ M) : Set.Finite (Function.support f) :=
 /- ./././Mathport/Syntax/Translate/Basic.lean:632:2:
   warning: expanding binder collection (a «expr ∉ » s) -/
 theorem support_subset_iff {s : Set α} {f : α →₀ M} :
-    ↑f.support ⊆ s ↔ ∀ (a) (_ : a ∉ s), f a = 0 := by
+    ↑f.support ⊆ s ↔ ∀ a ∉ s, f a = 0 := by
   simp only [Set.subset_def, mem_coe, mem_support_iff]; exact forall_congr' fun a => not_imp_comm
 #align finsupp.support_subset_iff Finsupp.support_subset_iff
 
@@ -467,7 +468,7 @@ theorem support_eq_singleton {f : α →₀ M} {a : α} :
 /- ./././Mathport/Syntax/Translate/Basic.lean:632:2:
   warning: expanding binder collection (b «expr ≠ » 0) -/
 theorem support_eq_singleton' {f : α →₀ M} {a : α} :
-    f.support = {a} ↔ ∃ (b : _) (_ : b ≠ 0), f = single a b :=
+    f.support = {a} ↔ ∃ b ≠ 0, f = single a b :=
   ⟨fun h =>
     let h := support_eq_singleton.1 h
     ⟨_, h.1, h.2⟩,
@@ -481,7 +482,7 @@ theorem card_support_eq_one {f : α →₀ M} : card f.support = 1 ↔ ∃ a, f 
 /- ./././Mathport/Syntax/Translate/Basic.lean:632:2:
   warning: expanding binder collection (b «expr ≠ » 0) -/
 theorem card_support_eq_one' {f : α →₀ M} :
-    card f.support = 1 ↔ ∃ (a : _) (b : _) (_ : b ≠ 0), f = single a b := by
+    card f.support = 1 ↔ ∃ a, ∃ b ≠ 0, f = single a b := by
   simp only [card_eq_one, support_eq_singleton']
 #align finsupp.card_support_eq_one' Finsupp.card_support_eq_one'
 
@@ -599,6 +600,23 @@ theorem support_update_ne_zero [DecidableEq α] (h : b ≠ 0) :
   congr; apply Subsingleton.elim
 #align finsupp.support_update_ne_zero Finsupp.support_update_ne_zero
 
+theorem support_update_subset [DecidableEq α] [DecidableEq M] :
+    support (f.update a b) ⊆ insert a f.support := by
+  rw [support_update]
+  split_ifs
+  · exact (erase_subset _ _).trans (subset_insert _ _)
+  · rfl
+
+theorem update_comm (f : α →₀ M) {a₁ a₂ : α} (h : a₁ ≠ a₂) (m₁ m₂ : M) :
+    update (update f a₁ m₁) a₂ m₂ = update (update f a₂ m₂) a₁ m₁ :=
+  letI := Classical.decEq α
+  FunLike.coe_injective <| Function.update_comm h _ _ _
+
+@[simp] theorem update_idem (f : α →₀ M) (a : α) (b c : M) :
+    update (update f a b) a c = update f a c :=
+  letI := Classical.decEq α
+  FunLike.coe_injective <| Function.update_idem _ _ _
+
 end Update
 
 /-! ### Declarations about `erase` -/
@@ -671,6 +689,28 @@ theorem erase_of_not_mem_support {f : α →₀ M} {a} (haf : a ∉ f.support) :
 theorem erase_zero (a : α) : erase a (0 : α →₀ M) = 0 := by
   classical rw [← support_eq_empty, support_erase, support_zero, erase_empty]
 #align finsupp.erase_zero Finsupp.erase_zero
+
+theorem erase_eq_update_zero (f : α →₀ M) (a : α) : f.erase a = update f a 0 :=
+  letI := Classical.decEq α
+  ext fun _ => (Function.update_apply _ _ _ _).symm
+
+-- The name matches `Finset.erase_insert_of_ne`
+theorem erase_update_of_ne (f : α →₀ M) {a a' : α} (ha : a ≠ a') (b : M) :
+    erase a (update f a' b) = update (erase a f) a' b := by
+  rw [erase_eq_update_zero, erase_eq_update_zero, update_comm _ ha]
+
+-- not `simp` as `erase_of_not_mem_support` can prove this
+theorem erase_idem (f : α →₀ M) (a : α) :
+    erase a (erase a f) = erase a f := by
+  rw [erase_eq_update_zero, erase_eq_update_zero, update_idem]
+
+@[simp] theorem update_erase_eq_update (f : α →₀ M) (a : α) (b : M) :
+    update (erase a f) a b = update f a b := by
+  rw [erase_eq_update_zero, update_idem]
+
+@[simp] theorem erase_update_eq_erase (f : α →₀ M) (a : α) (b : M) :
+    erase a (update f a b) = erase a f := by
+  rw [erase_eq_update_zero, erase_eq_update_zero, update_idem]
 
 end Erase
 
@@ -1011,6 +1051,19 @@ instance addZeroClass : AddZeroClass (α →₀ M) :=
 instance instIsLeftCancelAdd [IsLeftCancelAdd M] : IsLeftCancelAdd (α →₀ M) where
   add_left_cancel _ _ _ h := ext fun x => add_left_cancel <| FunLike.congr_fun h x
 
+/-- When ι is finite and M is an AddMonoid,
+  then Finsupp.equivFunOnFinite gives an AddEquiv -/
+noncomputable def addEquivFunOnFinite {ι : Type*} [Finite ι] :
+    (ι →₀ M) ≃+ (ι → M) where
+  __ := Finsupp.equivFunOnFinite
+  map_add' _ _ := rfl
+
+/-- AddEquiv between (ι →₀ M) and M, when ι has a unique element -/
+noncomputable def _root_.AddEquiv.finsuppUnique {ι : Type*} [Unique ι] :
+    (ι →₀ M) ≃+ M where
+  __ := Equiv.finsuppUnique
+  map_add' _ _ := rfl
+
 instance instIsRightCancelAdd [IsRightCancelAdd M] : IsRightCancelAdd (α →₀ M) where
   add_right_cancel _ _ _ h := ext fun x => add_right_cancel <| FunLike.congr_fun h x
 
@@ -1214,7 +1267,7 @@ variable [AddMonoid M]
 /-- Note the general `SMul` instance for `Finsupp` doesn't apply as `ℕ` is not distributive
 unless `β i`'s addition is commutative. -/
 instance hasNatScalar : SMul ℕ (α →₀ M) :=
-  ⟨fun n v => v.mapRange ((· • ·) n) (nsmul_zero _)⟩
+  ⟨fun n v => v.mapRange (n • ·) (nsmul_zero _)⟩
 #align finsupp.has_nat_scalar Finsupp.hasNatScalar
 
 instance addMonoid : AddMonoid (α →₀ M) :=
@@ -1276,7 +1329,7 @@ theorem mapRange_sub' [AddGroup G] [SubtractionMonoid H] [AddMonoidHomClass β G
 /-- Note the general `SMul` instance for `Finsupp` doesn't apply as `ℤ` is not distributive
 unless `β i`'s addition is commutative. -/
 instance hasIntScalar [AddGroup G] : SMul ℤ (α →₀ G) :=
-  ⟨fun n v => v.mapRange ((· • ·) n) (zsmul_zero _)⟩
+  ⟨fun n v => v.mapRange (n • ·) (zsmul_zero _)⟩
 #align finsupp.has_int_scalar Finsupp.hasIntScalar
 
 instance addGroup [AddGroup G] : AddGroup (α →₀ G) :=

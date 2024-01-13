@@ -619,3 +619,23 @@ def compatibleMaps : Submodule R (N →ₗ[R] N₂) where
 #align submodule.compatible_maps Submodule.compatibleMaps
 
 end Submodule
+
+namespace LinearMap
+
+variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M₁] [Module R M] [Module R M₁]
+
+/-- A linear map between two modules restricts to a linear map from any submodule p of the
+domain onto the image of that submodule.
+
+This is the linear version of `AddMonoidHom.addSubmonoidMap` and `AddMonoidHom.addSubgroupMap`.-/
+def submoduleMap (f : M →ₗ[R] M₁) (p : Submodule R M) : p →ₗ[R] p.map f :=
+  f.restrict fun x hx ↦ Submodule.mem_map.mpr ⟨x, hx, rfl⟩
+
+@[simp]
+theorem submoduleMap_coe_apply (f : M →ₗ[R] M₁) {p : Submodule R M} (x : p) :
+    ↑(f.submoduleMap p x) = f x := rfl
+
+theorem submoduleMap_surjective (f : M →ₗ[R] M₁) (p : Submodule R M) :
+    Function.Surjective (f.submoduleMap p) := f.toAddMonoidHom.addSubmonoidMap_surjective _
+
+end LinearMap

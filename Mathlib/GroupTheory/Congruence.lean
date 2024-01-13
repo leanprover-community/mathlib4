@@ -451,6 +451,10 @@ theorem coe_sInf (S : Set (Con M)) :
 #align con.Inf_def Con.coe_sInf
 #align add_con.Inf_def AddCon.coe_sInf
 
+@[to_additive (attr := simp, norm_cast)]
+theorem coe_iInf {ι : Sort*} (f : ι → Con M) : ⇑(iInf f) = ⨅ i, ⇑(f i) := by
+  rw [iInf, coe_sInf, ← Set.range_comp, sInf_range, Function.comp]
+
 @[to_additive]
 instance : PartialOrder (Con M) where
   le_refl _ _ _ := id
@@ -789,7 +793,7 @@ theorem mem_coe {c : Con M} {x y} : (x, y) ∈ (↑c : Submonoid (M × M)) ↔ (
 
 @[to_additive]
 theorem to_submonoid_inj (c d : Con M) (H : (c : Submonoid (M × M)) = d) : c = d :=
-  ext <| fun x y => show (x, y) ∈ c.submonoid ↔ (x, y) ∈ d from H ▸ Iff.rfl
+  ext fun x y => show (x, y) ∈ c.submonoid ↔ (x, y) ∈ d from H ▸ Iff.rfl
 #align con.to_submonoid_inj Con.to_submonoid_inj
 #align add_con.to_add_submonoid_inj AddCon.to_addSubmonoid_inj
 
@@ -1156,7 +1160,7 @@ theorem smul {α M : Type*} [MulOneClass M] [SMul α M] [IsScalarTower α M M] (
 
 instance _root_.AddCon.Quotient.nsmul {M : Type*} [AddMonoid M] (c : AddCon M) :
     SMul ℕ c.Quotient where
-  smul n := (Quotient.map' ((· • ·) n)) fun _ _ => c.nsmul n
+  smul n := (Quotient.map' (n • ·)) fun _ _ => c.nsmul n
 #align add_con.quotient.has_nsmul AddCon.Quotient.nsmul
 
 @[to_additive existing AddCon.Quotient.nsmul]
@@ -1288,7 +1292,7 @@ instance hasDiv : Div c.Quotient :=
     subtraction. -/
 instance _root_.AddCon.Quotient.zsmul {M : Type*} [AddGroup M] (c : AddCon M) :
     SMul ℤ c.Quotient :=
-  ⟨fun z => (Quotient.map' ((· • ·) z)) fun _ _ => c.zsmul z⟩
+  ⟨fun z => (Quotient.map' (z • ·)) fun _ _ => c.zsmul z⟩
 #align add_con.quotient.has_zsmul AddCon.Quotient.zsmul
 
 /-- The integer power induced on the quotient by a congruence relation on a type with a
@@ -1372,7 +1376,7 @@ section Actions
 @[to_additive]
 instance instSMul {α M : Type*} [MulOneClass M] [SMul α M] [IsScalarTower α M M] (c : Con M) :
     SMul α c.Quotient where
-  smul a := (Quotient.map' ((· • ·) a)) fun _ _ => c.smul a
+  smul a := (Quotient.map' (a • ·)) fun _ _ => c.smul a
 #align con.has_smul Con.instSMul
 #align add_con.has_vadd AddCon.instVAdd
 

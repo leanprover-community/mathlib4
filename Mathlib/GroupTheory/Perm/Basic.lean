@@ -535,13 +535,20 @@ theorem swap_apply_apply (f : Perm α) (x y : α) : swap (f x) (f y) = f * swap 
   rw [mul_swap_eq_swap_mul, mul_inv_cancel_right]
 #align equiv.swap_apply_apply Equiv.swap_apply_apply
 
+@[simp]
+theorem swap_smul_self_smul [MulAction (Perm α) β] (i j : α) (x : β) :
+    swap i j • swap i j • x = x := by simp [smul_smul]
+
+theorem swap_smul_involutive [MulAction (Perm α) β] (i j : α) :
+    Function.Involutive (swap i j • · : β → β) := swap_smul_self_smul i j
+
 /-- Left-multiplying a permutation with `swap i j` twice gives the original permutation.
 
   This specialization of `swap_mul_self` is useful when using cosets of permutations.
 -/
 @[simp]
-theorem swap_mul_self_mul (i j : α) (σ : Perm α) : Equiv.swap i j * (Equiv.swap i j * σ) = σ := by
-  rw [← mul_assoc, swap_mul_self, one_mul]
+theorem swap_mul_self_mul (i j : α) (σ : Perm α) : Equiv.swap i j * (Equiv.swap i j * σ) = σ :=
+  swap_smul_self_smul i j σ
 #align equiv.swap_mul_self_mul Equiv.swap_mul_self_mul
 
 /-- Right-multiplying a permutation with `swap i j` twice gives the original permutation.
@@ -555,7 +562,7 @@ theorem mul_swap_mul_self (i j : α) (σ : Perm α) : σ * Equiv.swap i j * Equi
 
 /-- A stronger version of `mul_right_injective` -/
 @[simp]
-theorem swap_mul_involutive (i j : α) : Function.Involutive ((· * ·) (Equiv.swap i j)) :=
+theorem swap_mul_involutive (i j : α) : Function.Involutive (Equiv.swap i j * ·) :=
   swap_mul_self_mul i j
 #align equiv.swap_mul_involutive Equiv.swap_mul_involutive
 
@@ -570,30 +577,18 @@ theorem swap_eq_one_iff {i j : α} : swap i j = (1 : Perm α) ↔ i = j :=
   swap_eq_refl_iff
 #align equiv.swap_eq_one_iff Equiv.swap_eq_one_iff
 
-theorem swap_mul_eq_iff {i j : α} {σ : Perm α} : swap i j * σ = σ ↔ i = j :=
-  ⟨fun h => by
-    -- Porting note: added `_root_.`
-    have swap_id : swap i j = 1 := mul_right_cancel (_root_.trans h (one_mul σ).symm)
-    rw [← swap_apply_right i j, swap_id]
-    rfl,
-   fun h => by erw [h, swap_self, one_mul]⟩
+theorem swap_mul_eq_iff {i j : α} {σ : Perm α} : swap i j * σ = σ ↔ i = j := by
+  rw [mul_left_eq_self, swap_eq_one_iff]
 #align equiv.swap_mul_eq_iff Equiv.swap_mul_eq_iff
 
-theorem mul_swap_eq_iff {i j : α} {σ : Perm α} : σ * swap i j = σ ↔ i = j :=
-  ⟨fun h => by
-    -- Porting note: added `_root_.`
-    have swap_id : swap i j = 1 := mul_left_cancel (_root_.trans h (one_mul σ).symm)
-    rw [← swap_apply_right i j, swap_id]
-    rfl,
-   fun h => by erw [h, swap_self, mul_one]⟩
+theorem mul_swap_eq_iff {i j : α} {σ : Perm α} : σ * swap i j = σ ↔ i = j := by
+  rw [mul_right_eq_self, swap_eq_one_iff]
 #align equiv.mul_swap_eq_iff Equiv.mul_swap_eq_iff
 
-theorem swap_mul_swap_mul_swap {x y z : α} (hwz : x ≠ y) (hxz : x ≠ z) :
-    swap y z * swap x y * swap y z = swap z x :=
-  Equiv.ext fun n => by
-    simp only [swap_apply_def, Perm.mul_apply]
-    -- Porting note: was `cc`
-    split_ifs <;> aesop
+theorem swap_mul_swap_mul_swap {x y z : α} (hxy : x ≠ y) (hxz : x ≠ z) :
+    swap y z * swap x y * swap y z = swap z x := by
+  nth_rewrite 2 [← swap_inv]
+  rw [← swap_apply_apply, swap_apply_left, swap_apply_of_ne_of_ne hxy hxz, swap_comm]
 #align equiv.swap_mul_swap_mul_swap Equiv.swap_mul_swap_mul_swap
 
 end Swap
@@ -608,11 +603,11 @@ variable [AddGroup α] (a b : α)
 #align equiv.add_right_zero Equiv.addRight_zero
 
 @[simp] lemma addLeft_add : Equiv.addLeft (a + b) = Equiv.addLeft a * Equiv.addLeft b :=
-  ext $ add_assoc _ _
+  ext <| add_assoc _ _
 #align equiv.add_left_add Equiv.addLeft_add
 
 @[simp] lemma addRight_add : Equiv.addRight (a + b) = Equiv.addRight b * Equiv.addRight a :=
-  ext $ fun _ ↦ (add_assoc _ _ _).symm
+  ext fun _ ↦ (add_assoc _ _ _).symm
 #align equiv.add_right_add Equiv.addRight_add
 
 @[simp] lemma inv_addLeft : (Equiv.addLeft a)⁻¹ = Equiv.addLeft (-a) := Equiv.coe_inj.1 rfl
@@ -654,12 +649,12 @@ lemma mulRight_one : Equiv.mulRight (1 : α) = 1 := ext mul_one
 
 @[to_additive existing (attr := simp)]
 lemma mulLeft_mul : Equiv.mulLeft (a * b) = Equiv.mulLeft a * Equiv.mulLeft b :=
-  ext $ mul_assoc _ _
+  ext <| mul_assoc _ _
 #align equiv.mul_left_mul Equiv.mulLeft_mul
 
 @[to_additive existing (attr := simp)]
 lemma mulRight_mul : Equiv.mulRight (a * b) = Equiv.mulRight b * Equiv.mulRight a :=
-  ext $ fun _ ↦ (mul_assoc _ _ _).symm
+  ext fun _ ↦ (mul_assoc _ _ _).symm
 #align equiv.mul_right_mul Equiv.mulRight_mul
 
 @[to_additive existing (attr := simp) inv_addLeft]
@@ -714,8 +709,8 @@ lemma BijOn.perm_pow : BijOn f s s → ∀ n : ℕ, BijOn (f ^ n) s s := by
 #align set.bij_on.perm_pow Set.BijOn.perm_pow
 
 lemma BijOn.perm_zpow (hf : BijOn f s s) : ∀ n : ℤ, BijOn (f ^ n) s s
-  | (Int.ofNat _) => hf.perm_pow _
-  | (Int.negSucc _) => (hf.perm_pow _).perm_inv
+  | (Int.ofNat n) => hf.perm_pow n
+  | (Int.negSucc n) => (hf.perm_pow (n + 1)).perm_inv
 #align set.bij_on.perm_zpow Set.BijOn.perm_zpow
 
 end Set

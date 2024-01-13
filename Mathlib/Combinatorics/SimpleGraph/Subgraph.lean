@@ -3,7 +3,7 @@ Copyright (c) 2021 Hunter Monroe. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hunter Monroe, Kyle Miller, Alena Gusakov
 -/
-import Mathlib.Combinatorics.SimpleGraph.Basic
+import Mathlib.Combinatorics.SimpleGraph.Maps
 
 #align_import combinatorics.simple_graph.subgraph from "leanprover-community/mathlib"@"c6ef6387ede9983aee397d442974e61f89dfd87b"
 
@@ -83,7 +83,7 @@ protected def singletonSubgraph (G : SimpleGraph V) (v : V) : G.Subgraph where
 @[simps]
 def subgraphOfAdj (G : SimpleGraph V) {v w : V} (hvw : G.Adj v w) : G.Subgraph where
   verts := {v, w}
-  Adj a b := ⟦(v, w)⟧ = ⟦(a, b)⟧
+  Adj a b := s(v, w) = s(a, b)
   adj_sub h := by
     rw [← G.mem_edgeSet, ← h]
     exact hvw
@@ -239,7 +239,7 @@ theorem edgeSet_subset (G' : Subgraph G) : G'.edgeSet ⊆ G.edgeSet :=
 #align simple_graph.subgraph.edge_set_subset SimpleGraph.Subgraph.edgeSet_subset
 
 @[simp]
-theorem mem_edgeSet {G' : Subgraph G} {v w : V} : ⟦(v, w)⟧ ∈ G'.edgeSet ↔ G'.Adj v w := Iff.rfl
+theorem mem_edgeSet {G' : Subgraph G} {v w : V} : s(v, w) ∈ G'.edgeSet ↔ G'.Adj v w := Iff.rfl
 #align simple_graph.subgraph.mem_edge_set SimpleGraph.Subgraph.mem_edgeSet
 
 theorem mem_verts_if_mem_edge {G' : Subgraph G} {e : Sym2 V} {v : V} (he : e ∈ G'.edgeSet)
@@ -802,12 +802,12 @@ theorem finset_card_neighborSet_eq_degree {G' : Subgraph G} {v : V} [Fintype (G'
 theorem degree_le (G' : Subgraph G) (v : V) [Fintype (G'.neighborSet v)]
     [Fintype (G.neighborSet v)] : G'.degree v ≤ G.degree v := by
   rw [← card_neighborSet_eq_degree]
-  exact Set.card_le_of_subset (G'.neighborSet_subset v)
+  exact Set.card_le_card (G'.neighborSet_subset v)
 #align simple_graph.subgraph.degree_le SimpleGraph.Subgraph.degree_le
 
 theorem degree_le' (G' G'' : Subgraph G) (h : G' ≤ G'') (v : V) [Fintype (G'.neighborSet v)]
     [Fintype (G''.neighborSet v)] : G'.degree v ≤ G''.degree v :=
-  Set.card_le_of_subset (neighborSet_subset_of_subgraph h v)
+  Set.card_le_card (neighborSet_subset_of_subgraph h v)
 #align simple_graph.subgraph.degree_le' SimpleGraph.Subgraph.degree_le'
 
 @[simp]
@@ -893,7 +893,7 @@ instance nonempty_subgraphOfAdj_verts {v w : V} (hvw : G.Adj v w) :
 
 @[simp]
 theorem edgeSet_subgraphOfAdj {v w : V} (hvw : G.Adj v w) :
-    (G.subgraphOfAdj hvw).edgeSet = {⟦(v, w)⟧} := by
+    (G.subgraphOfAdj hvw).edgeSet = {s(v, w)} := by
   ext e
   refine' e.ind _
   simp only [eq_comm, Set.mem_singleton_iff, Subgraph.mem_edgeSet, subgraphOfAdj_adj, iff_self_iff,
@@ -906,7 +906,7 @@ lemma subgraphOfAdj_le_of_adj (H : G.Subgraph) (h : H.Adj v w) :
   constructor
   · intro x
     rintro (rfl | rfl) <;> simp [H.edge_vert h, H.edge_vert h.symm]
-  · simp only [subgraphOfAdj_adj, Quotient.eq, Sym2.rel_iff]
+  · simp only [subgraphOfAdj_adj, Sym2.eq, Sym2.rel_iff]
     rintro _ _ (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩) <;> simp [h, h.symm]
 
 theorem subgraphOfAdj_symm {v w : V} (hvw : G.Adj v w) :
@@ -927,7 +927,7 @@ theorem map_subgraphOfAdj (f : G →g G') {v w : V} (hvw : G.Adj v w) :
         simp
       · use w
         simp
-  · simp only [Relation.Map, Subgraph.map_adj, subgraphOfAdj_adj, Quotient.eq, Sym2.rel_iff]
+  · simp only [Relation.Map, Subgraph.map_adj, subgraphOfAdj_adj, Sym2.eq, Sym2.rel_iff]
     constructor
     · rintro ⟨a, b, ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩, rfl, rfl⟩ <;> simp
     · rintro (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩)
@@ -1065,7 +1065,7 @@ theorem deleteEdges_verts : (G'.deleteEdges s).verts = G'.verts :=
 #align simple_graph.subgraph.delete_edges_verts SimpleGraph.Subgraph.deleteEdges_verts
 
 @[simp]
-theorem deleteEdges_adj (v w : V) : (G'.deleteEdges s).Adj v w ↔ G'.Adj v w ∧ ¬⟦(v, w)⟧ ∈ s :=
+theorem deleteEdges_adj (v w : V) : (G'.deleteEdges s).Adj v w ↔ G'.Adj v w ∧ ¬s(v, w) ∈ s :=
   Iff.rfl
 #align simple_graph.subgraph.delete_edges_adj SimpleGraph.Subgraph.deleteEdges_adj
 
@@ -1097,7 +1097,7 @@ theorem deleteEdges_coe_eq (s : Set (Sym2 G'.verts)) :
   · intro hs
     refine' Sym2.ind _
     rintro ⟨v', hv'⟩ ⟨w', hw'⟩
-    simp only [Sym2.map_pair_eq, Quotient.eq]
+    simp only [Sym2.map_pair_eq, Sym2.eq]
     contrapose!
     rintro (_ | _) <;> simpa only [Sym2.eq_swap]
   · intro h' hs
@@ -1231,7 +1231,7 @@ theorem subgraphOfAdj_eq_induce {v w : V} (hvw : G.Adj v w) :
   · simp
   · constructor
     · intro h
-      simp only [subgraphOfAdj_adj, Quotient.eq, Sym2.rel_iff] at h
+      simp only [subgraphOfAdj_adj, Sym2.eq, Sym2.rel_iff] at h
       obtain ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ := h <;> simp [hvw, hvw.symm]
     · intro h
       simp only [induce_adj, Set.mem_insert_iff, Set.mem_singleton_iff, top_adj] at h

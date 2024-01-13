@@ -36,6 +36,6 @@ def Module.ofMinimalAxioms {R : Type u} {M : Type v} [Semiring R] [AddCommGroup 
     mul_smul := mul_smul,
     one_smul := one_smul,
     zero_smul := fun x =>
-      (AddMonoidHom.mk' (fun r : R => r • x) fun r s => add_smul r s x).map_zero
-    smul_zero := fun r => (AddMonoidHom.mk' ((· • ·) r) (smul_add r)).map_zero }
+      (AddMonoidHom.mk' (· • x) fun r s => add_smul r s x).map_zero
+    smul_zero := fun r => (AddMonoidHom.mk' (r • ·) (smul_add r)).map_zero }
 #align module.of_core Module.ofMinimalAxioms

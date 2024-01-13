@@ -33,13 +33,13 @@ variable (R : Type u) (M : Type v) (N : Type w) (X : Type x) (Y : Type y) [Unifo
 
 /-- An additive action such that for all `c`, the map `fun x ↦ c +ᵥ x` is uniformly continuous. -/
 class UniformContinuousConstVAdd [VAdd M X] : Prop where
-  uniformContinuous_const_vadd : ∀ c : M, UniformContinuous ((· +ᵥ ·) c : X → X)
+  uniformContinuous_const_vadd : ∀ c : M, UniformContinuous (c +ᵥ · : X → X)
 #align has_uniform_continuous_const_vadd UniformContinuousConstVAdd
 
 /-- A multiplicative action such that for all `c`, the map `λ x, c • x` is uniformly continuous. -/
 @[to_additive]
 class UniformContinuousConstSMul [SMul M X] : Prop where
-  uniformContinuous_const_smul : ∀ c : M, UniformContinuous ((· • ·) c : X → X)
+  uniformContinuous_const_smul : ∀ c : M, UniformContinuous (c • · : X → X)
 #align has_uniform_continuous_const_smul UniformContinuousConstSMul
 
 export UniformContinuousConstVAdd (uniformContinuous_const_vadd)
@@ -105,10 +105,7 @@ is. -/
 continuous when its left action is."]
 instance (priority := 100) UniformContinuousConstSMul.op [SMul Mᵐᵒᵖ X] [IsCentralScalar M X]
     [UniformContinuousConstSMul M X] : UniformContinuousConstSMul Mᵐᵒᵖ X :=
-  ⟨MulOpposite.rec' fun c => by
-    dsimp only
-    simp_rw [op_smul_eq_smul]
-    exact uniformContinuous_const_smul c⟩
+  ⟨MulOpposite.rec' fun c ↦ by simpa only [op_smul_eq_smul] using uniformContinuous_const_smul c⟩
 #align has_uniform_continuous_const_smul.op UniformContinuousConstSMul.op
 #align has_uniform_continuous_const_vadd.op UniformContinuousConstVAdd.op
 
@@ -139,7 +136,7 @@ variable [SMul M X]
 
 @[to_additive]
 noncomputable instance : SMul M (Completion X) :=
-  ⟨fun c => Completion.map ((· • ·) c)⟩
+  ⟨fun c => Completion.map (c • ·)⟩
 
 @[to_additive]
 theorem smul_def (c : M) (x : Completion X) : c • x = Completion.map (c • ·) x :=

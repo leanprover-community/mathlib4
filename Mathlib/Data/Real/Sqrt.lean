@@ -208,7 +208,7 @@ theorem sqrt_mul_self (h : 0 ≤ x) : sqrt (x * x) = x :=
 theorem sqrt_eq_cases : sqrt x = y ↔ y * y = x ∧ 0 ≤ y ∨ x < 0 ∧ y = 0 := by
   constructor
   · rintro rfl
-    cases' le_or_lt 0 x with hle hlt
+    rcases le_or_lt 0 x with hle | hlt
     · exact Or.inl ⟨mul_self_sqrt hle, sqrt_nonneg x⟩
     · exact Or.inr ⟨hlt, sqrt_eq_zero_of_nonpos hlt.le⟩
   · rintro (⟨rfl, hy⟩ | ⟨hx, rfl⟩)
@@ -417,7 +417,7 @@ theorem sqrt_div' (x) {y : ℝ} (hy : 0 ≤ y) : sqrt (x / y) = sqrt x / sqrt y 
 
 @[simp]
 theorem div_sqrt : x / sqrt x = sqrt x := by
-  cases' le_or_lt x 0 with h h
+  rcases le_or_lt x 0 with h | h
   · rw [sqrt_eq_zero'.mpr h, div_zero]
   · rw [div_eq_iff (sqrt_ne_zero'.mpr h), mul_self_sqrt h.le]
 #align real.div_sqrt Real.div_sqrt

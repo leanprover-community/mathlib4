@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Combinatorics.SimpleGraph.Clique
+import Mathlib.Data.Finset.Sym
 import Mathlib.Tactic.GCongr
 
-#align_import combinatorics.simple_graph.triangle.basic from "leanprover-community/mathlib"@"cd7f0626a0b04be1dda223a26123313514a55fb4"
+#align_import combinatorics.simple_graph.triangle.basic from "leanprover-community/mathlib"@"3365b20c2ffa7c35e47e5209b89ba9abdddf3ffe"
 
 /-!
 # Triangles in graphs
@@ -58,7 +59,7 @@ theorem FarFromTriangleFree.cliqueFinset_nonempty' (hH : H ≤ G) (hG : G.FarFro
     (hcard : (G.edgeFinset.card - H.edgeFinset.card : 𝕜) < ε * (card α ^ 2 : ℕ)) :
     (H.cliqueFinset 3).Nonempty :=
   nonempty_of_ne_empty <|
-    H.cliqueFinset_eq_empty_iff.not.2 fun hH' => (hG.le_card_sub_card hH hH').not_lt hcard
+    cliqueFinset_eq_empty_iff.not.2 fun hH' => (hG.le_card_sub_card hH hH').not_lt hcard
 #align simple_graph.far_from_triangle_free.clique_finset_nonempty' SimpleGraph.FarFromTriangleFree.cliqueFinset_nonempty'
 
 variable [Nonempty α]
@@ -80,7 +81,7 @@ theorem FarFromTriangleFree.not_cliqueFree (hG : G.FarFromTriangleFree ε) (hε 
 
 theorem FarFromTriangleFree.cliqueFinset_nonempty (hG : G.FarFromTriangleFree ε) (hε : 0 < ε) :
     (G.cliqueFinset 3).Nonempty :=
-  nonempty_of_ne_empty <| G.cliqueFinset_eq_empty_iff.not.2 <| hG.not_cliqueFree hε
+  nonempty_of_ne_empty <| cliqueFinset_eq_empty_iff.not.2 <| hG.not_cliqueFree hε
 #align simple_graph.far_from_triangle_free.clique_finset_nonempty SimpleGraph.FarFromTriangleFree.cliqueFinset_nonempty
 
 end SimpleGraph

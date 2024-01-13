@@ -257,7 +257,7 @@ theorem SameCycle.exists_pow_eq' [Finite α] : SameCycle f x y → ∃ i < order
 #align equiv.perm.same_cycle.exists_pow_eq' Equiv.Perm.SameCycle.exists_pow_eq'
 
 theorem SameCycle.exists_pow_eq'' [Finite α] (h : SameCycle f x y) :
-    ∃ (i : ℕ) (_ : 0 < i) (_ : i ≤ orderOf f), (f ^ i) x = y := by
+    ∃ i : ℕ, 0 < i ∧ i ≤ orderOf f ∧ (f ^ i) x = y := by
   classical
     obtain ⟨_ | i, hi, rfl⟩ := h.exists_pow_eq'
     · refine' ⟨orderOf f, orderOf_pos f, le_rfl, _⟩
@@ -978,7 +978,7 @@ theorem cycleOf_pow_apply_self (f : Perm α) (x : α) : ∀ n : ℕ, (cycleOf f 
   induction' n with n hn
   · rfl
   · rw [pow_succ, mul_apply, cycleOf_apply, hn, if_pos, pow_succ, mul_apply]
-    simpa [SameCycle] using ⟨n,rfl⟩
+    exact ⟨n, rfl⟩
 #align equiv.perm.cycle_of_pow_apply_self Equiv.Perm.cycleOf_pow_apply_self
 
 @[simp]
@@ -1187,16 +1187,14 @@ theorem isCycleOn_support_cycleOf (f : Perm α) (x : α) : f.IsCycleOn (f.cycleO
 #align equiv.perm.is_cycle_on_support_cycle_of Equiv.Perm.isCycleOn_support_cycleOf
 
 theorem SameCycle.exists_pow_eq_of_mem_support (h : SameCycle f x y) (hx : x ∈ f.support) :
-    ∃ (i : ℕ) (_ : i < (f.cycleOf x).support.card), (f ^ i) x = y := by
+    ∃ i < (f.cycleOf x).support.card, (f ^ i) x = y := by
   rw [mem_support] at hx
-  have := Equiv.Perm.IsCycleOn.exists_pow_eq (b := y) (f.isCycleOn_support_cycleOf x)
+  exact Equiv.Perm.IsCycleOn.exists_pow_eq (b := y) (f.isCycleOn_support_cycleOf x)
     (by rw [mem_support_cycleOf_iff' hx]) (by rwa [mem_support_cycleOf_iff' hx])
-  simp_rw [← exists_prop] at this
-  exact this
 #align equiv.perm.same_cycle.exists_pow_eq_of_mem_support Equiv.Perm.SameCycle.exists_pow_eq_of_mem_support
 
 theorem SameCycle.exists_pow_eq (f : Perm α) (h : SameCycle f x y) :
-    ∃ (i : ℕ) (_ : 0 < i) (_ : i ≤ (f.cycleOf x).support.card + 1), (f ^ i) x = y := by
+    ∃ i : ℕ, 0 < i ∧ i ≤ (f.cycleOf x).support.card + 1 ∧ (f ^ i) x = y := by
   by_cases hx : x ∈ f.support
   · obtain ⟨k, hk, hk'⟩ := h.exists_pow_eq_of_mem_support hx
     cases' k with k
@@ -1220,9 +1218,9 @@ end CycleOf
 ### `cycleFactors`
 -/
 
-
 variable [DecidableEq α]
 
+open scoped List in
 /-- Given a list `l : List α` and a permutation `f : perm α` whose nonfixed points are all in `l`,
   recursively factors `f` into cycles. -/
 def cycleFactorsAux [Fintype α] :
@@ -1263,7 +1261,7 @@ def cycleFactorsAux [Fintype α] :
                 List.cons_perm_iff_perm_erase.2 ⟨hg, List.Perm.refl _⟩
               have : ∀ h ∈ m.erase g, Disjoint g h :=
                 (List.pairwise_cons.1
-                    ((hgm.pairwise_iff fun a b (h : Disjoint a b) => h.symm).2 hm₃)).1
+                    ((hgm.pairwise_iff @fun a b (h : Disjoint a b) => h.symm).2 hm₃)).1
               by_cases id fun hgy : g y ≠ y =>
                 (disjoint_prod_right _ this y).resolve_right <| by
                   have hsc : SameCycle f⁻¹ x (f y) := by
@@ -1277,8 +1275,8 @@ def cycleFactorsAux [Fintype α] :
 
 theorem mem_list_cycles_iff {α : Type*} [Finite α] {l : List (Perm α)}
     (h1 : ∀ σ : Perm α, σ ∈ l → σ.IsCycle) (h2 : l.Pairwise Disjoint) {σ : Perm α} :
-    σ ∈ l ↔ σ.IsCycle ∧ ∀ (a : α) (_ : σ a ≠ a), σ a = l.prod a := by
-  suffices σ.IsCycle → (σ ∈ l ↔ ∀ (a : α) (_ : σ a ≠ a), σ a = l.prod a) by
+    σ ∈ l ↔ σ.IsCycle ∧ ∀ a, σ a ≠ a → σ a = l.prod a := by
+  suffices σ.IsCycle → (σ ∈ l ↔ ∀ a, σ a ≠ a → σ a = l.prod a) by
     exact ⟨fun hσ => ⟨h1 σ hσ, (this (h1 σ hσ)).mp hσ⟩, fun hσ => (this hσ.1).mpr hσ.2⟩
   intro h3
   classical
@@ -1303,13 +1301,14 @@ theorem mem_list_cycles_iff {α : Type*} [Finite α] {l : List (Perm α)}
       exact key a (mem_inter_of_mem ha hτa)
 #align equiv.perm.mem_list_cycles_iff Equiv.Perm.mem_list_cycles_iff
 
+open scoped List in
 theorem list_cycles_perm_list_cycles {α : Type*} [Finite α] {l₁ l₂ : List (Perm α)}
     (h₀ : l₁.prod = l₂.prod) (h₁l₁ : ∀ σ : Perm α, σ ∈ l₁ → σ.IsCycle)
     (h₁l₂ : ∀ σ : Perm α, σ ∈ l₂ → σ.IsCycle) (h₂l₁ : l₁.Pairwise Disjoint)
     (h₂l₂ : l₂.Pairwise Disjoint) : l₁ ~ l₂ := by
   classical
     refine'
-      (List.perm_ext (nodup_of_pairwise_disjoint_cycles h₁l₁ h₂l₁)
+      (List.perm_ext_iff_of_nodup (nodup_of_pairwise_disjoint_cycles h₁l₁ h₂l₁)
             (nodup_of_pairwise_disjoint_cycles h₁l₂ h₂l₂)).mpr
         fun σ => _
     by_cases hσ : σ.IsCycle
@@ -1348,6 +1347,7 @@ def cycleFactorsFinset : Finset (Perm α) :=
         hl.right.right hl'.right.right)
 #align equiv.perm.cycle_factors_finset Equiv.Perm.cycleFactorsFinset
 
+open scoped List in
 theorem cycleFactorsFinset_eq_list_toFinset {σ : Perm α} {l : List (Perm α)} (hn : l.Nodup) :
     σ.cycleFactorsFinset = l.toFinset ↔
       (∀ f : Perm α, f ∈ l → f.IsCycle) ∧ l.Pairwise Disjoint ∧ l.prod = σ := by
@@ -1361,7 +1361,8 @@ theorem cycleFactorsFinset_eq_list_toFinset {σ : Perm α} {l : List (Perm α)} 
     have hperm : l ~ l' := List.perm_of_nodup_nodup_toFinset_eq hn hn' h.symm
     refine' ⟨_, _, _⟩
     · exact fun _ h => hc' _ (hperm.subset h)
-    · rwa [List.Perm.pairwise_iff Disjoint.symmetric hperm]
+    · have := List.Perm.pairwise_iff (@Disjoint.symmetric _) hperm
+      rwa [this]
     · rw [← hp', hperm.symm.prod_eq']
       refine' hd'.imp _
       exact Disjoint.commute
@@ -1717,7 +1718,7 @@ theorem IsCycle.isConj (hσ : IsCycle σ) (hτ : IsCycle τ) (h : σ.support.car
   refine'
     isConj_of_support_equiv
       (hσ.zpowersEquivSupport.symm.trans <|
-        (zpowersEquivZpowers <| by rw [hσ.orderOf, h, hτ.orderOf]).trans hτ.zpowersEquivSupport)
+        (zpowersEquivZPowers <| by rw [hσ.orderOf, h, hτ.orderOf]).trans hτ.zpowersEquivSupport)
       _
   intro x hx
   simp only [Perm.mul_apply, Equiv.trans_apply, Equiv.sumCongr_apply]
@@ -1727,7 +1728,7 @@ theorem IsCycle.isConj (hσ : IsCycle σ) (hτ : IsCycle τ) (h : σ.support.car
       (congr rfl (congr rfl (congr rfl (congr rfl (hσ.zpowersEquivSupport_symm_apply n).symm))))
   apply (congr rfl (congr rfl (congr rfl (hσ.zpowersEquivSupport_symm_apply (n + 1))))).trans _
   -- This used to be a `simp only` before leanprover/lean4#2644
-  erw [zpowersEquivZpowers_apply, zpowersEquivZpowers_apply]
+  erw [zpowersEquivZPowers_apply, zpowersEquivZPowers_apply]
   dsimp
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [pow_succ, Perm.mul_apply]

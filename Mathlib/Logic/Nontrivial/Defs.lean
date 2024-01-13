@@ -90,6 +90,9 @@ theorem not_subsingleton (α) [Nontrivial α] : ¬Subsingleton α :=
   fun _ => not_nontrivial _ ‹_›
 #align not_subsingleton not_subsingleton
 
+lemma not_subsingleton_iff_nontrivial : ¬ Subsingleton α ↔ Nontrivial α := by
+  rw [← not_nontrivial_iff_subsingleton, not_not]
+
 /-- A type is either a subsingleton or nontrivial. -/
 theorem subsingleton_or_nontrivial (α : Type*) : Subsingleton α ∨ Nontrivial α := by
   rw [← not_nontrivial_iff_subsingleton, or_comm]

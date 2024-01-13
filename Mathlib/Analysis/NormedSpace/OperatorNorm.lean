@@ -370,7 +370,7 @@ theorem op_nnnorm_le_of_lipschitz {f : E →SL[σ₁₂] F} {K : ℝ≥0} (hf : 
   op_norm_le_of_lipschitz hf
 #align continuous_linear_map.op_nnnorm_le_of_lipschitz ContinuousLinearMap.op_nnnorm_le_of_lipschitz
 
-theorem op_nnnorm_eq_of_bounds {φ : E →SL[σ₁₂] F} (M : ℝ≥0) (h_above : ∀ x, ‖φ x‖ ≤ M * ‖x‖)
+theorem op_nnnorm_eq_of_bounds {φ : E →SL[σ₁₂] F} (M : ℝ≥0) (h_above : ∀ x, ‖φ x‖₊ ≤ M * ‖x‖₊)
     (h_below : ∀ N, (∀ x, ‖φ x‖₊ ≤ N * ‖x‖₊) → M ≤ N) : ‖φ‖₊ = M :=
   Subtype.ext <| op_norm_eq_of_bounds (zero_le M) h_above <| Subtype.forall'.mpr h_below
 #align continuous_linear_map.op_nnnorm_eq_of_bounds ContinuousLinearMap.op_nnnorm_eq_of_bounds
@@ -869,11 +869,11 @@ def compSL : (F →SL[σ₂₃] G) →L[𝕜₃] (E →SL[σ₁₂] F) →SL[σ�
     1 fun f g => by simpa only [one_mul] using op_norm_comp_le f g
 #align continuous_linear_map.compSL ContinuousLinearMap.compSL
 
-/-- Porting note: Local instance for `norm_compSL_le`.
-Should be by `inferInstance`, and indeed not be needed. -/
-local instance : Norm ((F →SL[σ₂₃] G) →L[𝕜₃] (E →SL[σ₁₂] F) →SL[σ₂₃] E →SL[σ₁₃] G) :=
-  hasOpNorm (E := F →SL[σ₂₃] G) (F := (E →SL[σ₁₂] F) →SL[σ₂₃] E →SL[σ₁₃] G) in
-theorem norm_compSL_le : ‖compSL E F G σ₁₂ σ₂₃‖ ≤ 1 :=
+theorem norm_compSL_le :
+    -- porting note: added
+    letI : Norm ((F →SL[σ₂₃] G) →L[𝕜₃] (E →SL[σ₁₂] F) →SL[σ₂₃] E →SL[σ₁₃] G) :=
+      hasOpNorm (E := F →SL[σ₂₃] G) (F := (E →SL[σ₁₂] F) →SL[σ₂₃] E →SL[σ₁₃] G)
+    ‖compSL E F G σ₁₂ σ₂₃‖ ≤ 1 :=
   LinearMap.mkContinuous₂_norm_le _ zero_le_one _
 #align continuous_linear_map.norm_compSL_le ContinuousLinearMap.norm_compSL_le
 
@@ -905,11 +905,10 @@ def compL : (Fₗ →L[𝕜] Gₗ) →L[𝕜] (E →L[𝕜] Fₗ) →L[𝕜] E �
   compSL E Fₗ Gₗ (RingHom.id 𝕜) (RingHom.id 𝕜)
 #align continuous_linear_map.compL ContinuousLinearMap.compL
 
-/-- Porting note: Local instance for `norm_compL_le`.
-Should be by `inferInstance`, and indeed not be needed. -/
-local instance : Norm ((Fₗ →L[𝕜] Gₗ) →L[𝕜] (E →L[𝕜] Fₗ) →L[𝕜] E →L[𝕜] Gₗ) :=
-  hasOpNorm (E := Fₗ →L[𝕜] Gₗ) (F := (E →L[𝕜] Fₗ) →L[𝕜] E →L[𝕜] Gₗ) in
-theorem norm_compL_le : ‖compL 𝕜 E Fₗ Gₗ‖ ≤ 1 :=
+theorem norm_compL_le :
+    letI : Norm ((Fₗ →L[𝕜] Gₗ) →L[𝕜] (E →L[𝕜] Fₗ) →L[𝕜] E →L[𝕜] Gₗ) :=
+      hasOpNorm (E := Fₗ →L[𝕜] Gₗ) (F := (E →L[𝕜] Fₗ) →L[𝕜] E →L[𝕜] Gₗ)
+    ‖compL 𝕜 E Fₗ Gₗ‖ ≤ 1 :=
   norm_compSL_le _ _ _ _ _
 #align continuous_linear_map.norm_compL_le ContinuousLinearMap.norm_compL_le
 
@@ -931,22 +930,22 @@ def precompL (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : (Eₗ →L[𝕜] E) →L[
   (precompR Eₗ (flip L)).flip
 #align continuous_linear_map.precompL ContinuousLinearMap.precompL
 
-/-- Porting note: Local instances for `norm_precompR_le`.
-Should be by `inferInstance`, and indeed not be needed. -/
-local instance : SeminormedAddCommGroup ((Eₗ →L[𝕜] Fₗ) →L[𝕜] Eₗ →L[𝕜] Gₗ) := inferInstance in
-local instance : NormedSpace 𝕜 ((Eₗ →L[𝕜] Fₗ) →L[𝕜] Eₗ →L[𝕜] Gₗ) := inferInstance in
-theorem norm_precompR_le (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : ‖precompR Eₗ L‖ ≤ ‖L‖ :=
+theorem norm_precompR_le (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) :
+    -- porting note: added
+    letI : SeminormedAddCommGroup ((Eₗ →L[𝕜] Fₗ) →L[𝕜] Eₗ →L[𝕜] Gₗ) := inferInstance
+    letI : NormedSpace 𝕜 ((Eₗ →L[𝕜] Fₗ) →L[𝕜] Eₗ →L[𝕜] Gₗ) := inferInstance
+    ‖precompR Eₗ L‖ ≤ ‖L‖ :=
   calc
     ‖precompR Eₗ L‖ ≤ ‖compL 𝕜 Eₗ Fₗ Gₗ‖ * ‖L‖ := op_norm_comp_le _ _
     _ ≤ 1 * ‖L‖ := (mul_le_mul_of_nonneg_right (norm_compL_le _ _ _ _) (norm_nonneg _))
     _ = ‖L‖ := by rw [one_mul]
 #align continuous_linear_map.norm_precompR_le ContinuousLinearMap.norm_precompR_le
 
-/-- Porting note: Local instance for `norm_precompL_le`.
-Should be by `inferInstance`, and indeed not be needed. -/
-local instance : Norm ((Eₗ →L[𝕜] E) →L[𝕜] Fₗ →L[𝕜] Eₗ →L[𝕜] Gₗ) :=
-  hasOpNorm (E := Eₗ →L[𝕜] E) (F := Fₗ →L[𝕜] Eₗ →L[𝕜] Gₗ) in
-theorem norm_precompL_le (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : ‖precompL Eₗ L‖ ≤ ‖L‖ := by
+theorem norm_precompL_le (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) :
+    -- porting note: added
+    letI : Norm ((Eₗ →L[𝕜] E) →L[𝕜] Fₗ →L[𝕜] Eₗ →L[𝕜] Gₗ) :=
+      hasOpNorm (E := Eₗ →L[𝕜] E) (F := Fₗ →L[𝕜] Eₗ →L[𝕜] Gₗ)
+    ‖precompL Eₗ L‖ ≤ ‖L‖ := by
   rw [precompL, op_norm_flip, ← op_norm_flip L]
   exact norm_precompR_le _ L.flip
 #align continuous_linear_map.norm_precompL_le ContinuousLinearMap.norm_precompL_le
@@ -1105,11 +1104,9 @@ theorem op_norm_mulLeftRight_apply_le (x : 𝕜') : ‖mulLeftRight 𝕜 𝕜' x
   op_norm_le_bound _ (norm_nonneg x) (op_norm_mulLeftRight_apply_apply_le 𝕜 𝕜' x)
 #align continuous_linear_map.op_norm_mul_left_right_apply_le ContinuousLinearMap.op_norm_mulLeftRight_apply_le
 
-/-- Porting note: Local instance for `op_norm_mulLeftRight_le`.
-Should be by `inferInstance`, and indeed not be needed. -/
-local instance : Norm (𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜') :=
-  hasOpNorm (E := 𝕜') (F := 𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜') in
-theorem op_norm_mulLeftRight_le : ‖mulLeftRight 𝕜 𝕜'‖ ≤ 1 :=
+theorem op_norm_mulLeftRight_le :
+    letI : Norm (𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜') := hasOpNorm (E := 𝕜') (F := 𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜')
+    ‖mulLeftRight 𝕜 𝕜'‖ ≤ 1 :=
   op_norm_le_bound _ zero_le_one fun x => (one_mul ‖x‖).symm ▸ op_norm_mulLeftRight_apply_le 𝕜 𝕜' x
 #align continuous_linear_map.op_norm_mul_left_right_le ContinuousLinearMap.op_norm_mulLeftRight_le
 
@@ -1163,7 +1160,7 @@ end NonUnital
 
 end MultiplicationLinear
 
-section SmulLinear
+section SMulLinear
 
 variable (𝕜) (𝕜' : Type*) [NormedField 𝕜']
 
@@ -1203,7 +1200,7 @@ theorem op_norm_lsmul_le : ‖(lsmul 𝕜 𝕜' : 𝕜' →L[𝕜] E →L[𝕜] 
   exact op_norm_lsmul_apply_le _
 #align continuous_linear_map.op_norm_lsmul_le ContinuousLinearMap.op_norm_lsmul_le
 
-end SmulLinear
+end SMulLinear
 
 section RestrictScalars
 
@@ -1479,7 +1476,7 @@ theorem homothety_norm [RingHomIsometric σ₁₂] [Nontrivial E] (f : E →SL[�
     (hf : ∀ x, ‖f x‖ = a * ‖x‖) : ‖f‖ = a := by
   obtain ⟨x, hx⟩ : ∃ x : E, x ≠ 0 := exists_ne 0
   rw [← norm_pos_iff] at hx
-  have ha : 0 ≤ a := by simpa only [hf, hx, zero_le_mul_right] using norm_nonneg (f x)
+  have ha : 0 ≤ a := by simpa only [hf, hx, mul_nonneg_iff_of_pos_right] using norm_nonneg (f x)
   apply le_antisymm (f.op_norm_le_bound ha fun y => le_of_eq (hf y))
   simpa only [hf, hx, mul_le_mul_right] using f.le_op_norm x
 #align continuous_linear_map.homothety_norm ContinuousLinearMap.homothety_norm
@@ -1624,7 +1621,7 @@ weak-* topology in `mathlib`, so we use an equivalent condition (see `isClosed_i
 theorem is_weak_closed_closedBall (f₀ : E' →SL[σ₁₂] F) (r : ℝ) ⦃f : E' →SL[σ₁₂] F⦄
     (hf : ⇑f ∈ closure (((↑) : (E' →SL[σ₁₂] F) → E' → F) '' closedBall f₀ r)) :
     f ∈ closedBall f₀ r := by
-  have hr : 0 ≤ r := nonempty_closedBall.1 (nonempty_image_iff.1 (closure_nonempty_iff.1 ⟨_, hf⟩))
+  have hr : 0 ≤ r := nonempty_closedBall.1 (closure_nonempty_iff.1 ⟨_, hf⟩).of_image
   refine' mem_closedBall_iff_norm.2 (op_norm_le_bound _ hr fun x => _)
   have : IsClosed { g : E' → F | ‖g x - f₀ x‖ ≤ r * ‖x‖ } :=
     isClosed_Iic.preimage ((@continuous_apply E' (fun _ => F) _ x).sub continuous_const).norm
