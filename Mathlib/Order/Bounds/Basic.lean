@@ -1662,28 +1662,6 @@ theorem IsLUB.of_image [Preorder α] [Preorder β] {f : α → β} (hf : ∀ {x 
     hf.1 <| hx.2 <| Monotone.mem_upperBounds_image (fun _ _ => hf.2) hy⟩
 #align is_lub.of_image IsLUB.of_image
 
-theorem isLUB_prod [Preorder α] [Preorder β] {s : Set (α × β)} (p : α × β) :
-    IsLUB s p ↔ IsLUB (Prod.fst '' s) p.1 ∧ IsLUB (Prod.snd '' s) p.2 := by
-  refine'
-    ⟨fun H =>
-      ⟨⟨monotone_fst.mem_upperBounds_image H.1, fun a ha => _⟩,
-        ⟨monotone_snd.mem_upperBounds_image H.1, fun a ha => _⟩⟩,
-      fun H => ⟨_, _⟩⟩
-  · suffices h : (a, p.2) ∈ upperBounds s from (H.2 h).1
-    exact fun q hq => ⟨ha <| mem_image_of_mem _ hq, (H.1 hq).2⟩
-  · suffices h : (p.1, a) ∈ upperBounds s from (H.2 h).2
-    exact fun q hq => ⟨(H.1 hq).1, ha <| mem_image_of_mem _ hq⟩
-  · exact fun q hq => ⟨H.1.1 <| mem_image_of_mem _ hq, H.2.1 <| mem_image_of_mem _ hq⟩
-  · exact fun q hq =>
-      ⟨H.1.2 <| monotone_fst.mem_upperBounds_image hq,
-        H.2.2 <| monotone_snd.mem_upperBounds_image hq⟩
-#align is_lub_prod isLUB_prod
-
-theorem isGLB_prod [Preorder α] [Preorder β] {s : Set (α × β)} (p : α × β) :
-    IsGLB s p ↔ IsGLB (Prod.fst '' s) p.1 ∧ IsGLB (Prod.snd '' s) p.2 :=
-  @isLUB_prod αᵒᵈ βᵒᵈ _ _ _ _
-#align is_glb_prod isGLB_prod
-
 lemma BddAbove.range_mono [Preorder β] {f : α → β} (g : α → β) (h : ∀ a, f a ≤ g a)
     (hbdd : BddAbove (range g)) : BddAbove (range f) := by
   obtain ⟨C, hC⟩ := hbdd
