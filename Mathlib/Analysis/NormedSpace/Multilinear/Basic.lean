@@ -5,7 +5,6 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.NormedSpace.OperatorNorm
 import Mathlib.Topology.Algebra.Module.Multilinear.Basic
-import Mathlib.Algebra.Order.Group.DenselyOrdered
 
 #align_import analysis.normed_space.multilinear from "leanprover-community/mathlib"@"f40476639bac089693a489c9e354ebd75dc0f886"
 
@@ -97,7 +96,6 @@ both directions. Along the way, we prove useful bounds on the difference `‖f m
 namespace MultilinearMap
 
 variable (f : MultilinearMap 𝕜 E G)
-
 /-- If `f` is a continuous multilinear map in finitely many variables on `E` and `m` is an element
 of `(i : ι) → E i` such that one of the `m i` has norm `0`, then `f m` has norm `0`.-/
 lemma zero_of_continuous_of_one_entry_norm_zero (hf : Continuous f)
@@ -153,7 +151,7 @@ theorem bound_of_shell_of_continuous (hfc : Continuous f)
   simpa [map_smul_univ, norm_smul, prod_mul_distrib, mul_left_comm C, mul_le_mul_left hδ0] using
     hf (fun i => δ i • m i) hle_δm hδm_lt
 
-/-- If a multilinear map in finitely many variables on (semi)normed spaces is continuous, then it
+/-- If a multilinear map in finitely many variables on normed spaces is continuous, then it
 satisfies the inequality `‖f m‖ ≤ C * ∏ i, ‖m i‖`, for some `C` which can be chosen to be
 positive. -/
 theorem exists_bound_of_continuous (hf : Continuous f) :
@@ -510,13 +508,14 @@ theorem op_norm_prod (f : ContinuousMultilinearMap 𝕜 E G) (g : ContinuousMult
   congr_arg NNReal.toReal (op_nnnorm_prod f g)
 #align continuous_multilinear_map.op_norm_prod ContinuousMultilinearMap.op_norm_prod
 
-theorem op_nnnorm_pi {ι' : Type v'} [Fintype ι'] {E' : ι' → Type wE'}
-    [∀ i', SeminormedAddCommGroup (E' i')] [∀ i', NormedSpace 𝕜 (E' i')]
-    (f : ∀ i', ContinuousMultilinearMap 𝕜 E (E' i')) : ‖pi f‖₊ = ‖f‖₊ :=
+theorem op_nnnorm_pi
+    {ι' : Type v'} [Fintype ι'] {E' : ι' → Type wE'} [∀ i', NormedAddCommGroup (E' i')]
+    [∀ i', NormedSpace 𝕜 (E' i')] (f : ∀ i', ContinuousMultilinearMap 𝕜 E (E' i')) :
+    ‖pi f‖₊ = ‖f‖₊ :=
   eq_of_forall_ge_iff fun _ ↦ by simpa [op_nnnorm_le_iff, pi_nnnorm_le_iff] using forall_swap
 
 theorem op_norm_pi {ι' : Type v'} [Fintype ι'] {E' : ι' → Type wE'}
-    [∀ i', SeminormedAddCommGroup (E' i')]
+    [∀ i', NormedAddCommGroup (E' i')]
     [∀ i', NormedSpace 𝕜 (E' i')] (f : ∀ i', ContinuousMultilinearMap 𝕜 E (E' i')) :
     ‖pi f‖ = ‖f‖ :=
   congr_arg NNReal.toReal (op_nnnorm_pi f)
@@ -596,8 +595,8 @@ set_option linter.uppercaseLean3 false in
 #align continuous_multilinear_map.prodL ContinuousMultilinearMap.prodL
 
 /-- `ContinuousMultilinearMap.pi` as a `LinearIsometryEquiv`. -/
-def piₗᵢ {ι' : Type v'} [Fintype ι'] {E' : ι' → Type wE'}
-    [∀ i', NormedAddCommGroup (E' i')] [∀ i', NormedSpace 𝕜 (E' i')] :
+def piₗᵢ {ι' : Type v'} [Fintype ι'] {E' : ι' → Type wE'} [∀ i', NormedAddCommGroup (E' i')]
+    [∀ i', NormedSpace 𝕜 (E' i')] :
     @LinearIsometryEquiv 𝕜 𝕜 _ _ (RingHom.id 𝕜) _ _ _ (∀ i', ContinuousMultilinearMap 𝕜 E (E' i'))
       (ContinuousMultilinearMap 𝕜 E (∀ i, E' i)) _ _ (@Pi.module ι' _ 𝕜 _ _ fun _ => inferInstance)
       _ where
@@ -913,7 +912,8 @@ def compContinuousMultilinearMapL :
 
 variable {𝕜 G G'}
 
-/-- `ContinuousLinearMap.compContinuousMultilinearMap` as a bundled continuous linear equiv. -/
+/-- `ContinuousLinearMap.compContinuousMultilinearMap` as a bundled
+continuous linear equiv. -/
 nonrec
 def _root_.ContinuousLinearEquiv.compContinuousMultilinearMapL (g : G ≃L[𝕜] G') :
     ContinuousMultilinearMap 𝕜 E G ≃L[𝕜] ContinuousMultilinearMap 𝕜 E G' :=
@@ -1245,12 +1245,12 @@ variable {𝕜 : Type u} {ι : Type v} {E : ι → Type wE} {G : Type wG} {G' : 
 
 variable (f : ContinuousMultilinearMap 𝕜 E G)
 
-/-- A continuous multilinear map is zero iff its norm vanishes. -/
+/-- A continuous linear map is zero iff its norm vanishes. -/
 theorem op_norm_zero_iff : ‖f‖ = 0 ↔ f = 0 := by
   simp [← (op_norm_nonneg f).le_iff_eq, op_norm_le_iff f le_rfl, ext_iff]
 #align continuous_multilinear_map.op_norm_zero_iff ContinuousMultilinearMap.op_norm_zero_iff
 
-/-- Continuous multilinear maps themselves form a normed space with respect to
+/-- Continuous multilinear maps themselves form a normed group with respect to
     the operator norm. -/
 instance normedAddCommGroup : NormedAddCommGroup (ContinuousMultilinearMap 𝕜 E G) :=
   NormedAddCommGroup.ofSeparation (fun f ↦ (op_norm_zero_iff f).mp)
@@ -1276,8 +1276,8 @@ theorem nnnorm_ofSubsingleton_id [Subsingleton ι] [Nontrivial G] (i : ι) :
 
 variable {𝕜 G}
 
-theorem tsum_eval {α : Type*} {p : α → ContinuousMultilinearMap 𝕜 E G}
-    (hp : Summable p) (m : ∀ i, E i) : (∑' a, p a) m = ∑' a, p a m :=
+theorem tsum_eval {α : Type*} {p : α → ContinuousMultilinearMap 𝕜 E G} (hp : Summable p)
+    (m : ∀ i, E i) : (∑' a, p a) m = ∑' a, p a m :=
   (hasSum_eval hp.hasSum m).tsum_eq.symm
 #align continuous_multilinear_map.tsum_eval ContinuousMultilinearMap.tsum_eval
 
@@ -1288,8 +1288,7 @@ complete. The proof is essentially the same as for the space of continuous linea
 addition of `Finset.prod` where needed. The duplication could be avoided by deducing the linear
 case from the multilinear case via a currying isomorphism. However, this would mess up imports,
 and it is more satisfactory to have the simplest case as a standalone proof. -/
-instance completeSpace [CompleteSpace G] :
-    CompleteSpace (ContinuousMultilinearMap 𝕜 E G) := by
+instance completeSpace [CompleteSpace G] : CompleteSpace (ContinuousMultilinearMap 𝕜 E G) := by
   have nonneg : ∀ v : ∀ i, E i, 0 ≤ ∏ i, ‖v i‖ := fun v =>
     Finset.prod_nonneg fun i _ => norm_nonneg _
   -- We show that every Cauchy sequence converges.
@@ -1365,14 +1364,14 @@ end Norm
 
 section Norm
 
-namespace MultilinearMap
-
-/-! Results that are only true if the target space is a `NormedAddCommGroup` (and not just a
-`SeminormedAddCommGroup`).-/
+/-! Results that are only true if the source and target spaces are `NormedAddCommGroup`s
+(and not just `SeminormedAddCommGroup`s).-/
 
 variable {𝕜 : Type u} {ι : Type v} {E : ι → Type wE} {G : Type wG} [Fintype ι]
   [NontriviallyNormedField 𝕜] [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
   [NormedAddCommGroup G][NormedSpace 𝕜 G]
+
+namespace MultilinearMap
 
 variable (f : MultilinearMap 𝕜 E G)
 
