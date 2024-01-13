@@ -152,7 +152,21 @@ lemma smul_set_closure_subset (K : Set M) (L : Set X) :
   Set.smul_subset_iff.2 fun _x hx _y hy ↦ map_mem_closure₂ continuous_smul hx hy fun _a ha _b hb ↦
     Set.smul_mem_smul ha hb
 
-@[to_additive]
+/-- Suppose that `N` acts on `X` and `M` continuously acts on `Y`.
+Suppose that `g : Y → X` is an action homomorphism in the following sense:
+there exists a continuous function `f : N → M` such that `g (c • x) = f c • g x`.
+Then the action of `N` on `X` is continuous as well.
+
+In many cases, `f = id` so that `g` is an action homomorphism in the sense of `MulActionHom`.
+However, this version also works for semilinear maps and `f = Units.val`. -/
+@[to_additive
+  "Suppose that `N` additively acts on `X` and `M` continuously additively acts on `Y`.
+Suppose that `g : Y → X` is an additive action homomorphism in the following sense:
+there exists a continuous function `f : N → M` such that `g (c +ᵥ x) = f c +ᵥ g x`.
+Then the action of `N` on `X` is continuous as well.
+
+In many cases, `f = id` so that `g` is an action homomorphism in the sense of `AddActionHom`.
+However, this version also works for `f = AddUnits.val`."]
 lemma Inducing.continuousSMul {N : Type*} [SMul N Y] [TopologicalSpace N] {f : N → M}
     (hg : Inducing g) (hf : Continuous f) (hsmul : ∀ {c x}, g (c • x) = f c • g x) :
     ContinuousSMul N Y where
