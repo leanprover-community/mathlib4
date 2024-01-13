@@ -1648,14 +1648,8 @@ lemma BddBelow.range_mono [Preorder β] (f : α → β) {g : α → β} (h : ∀
   BddAbove.range_mono (β := OrderDual β) f h hbdd
 
 lemma BddAbove.range_comp {γ : Type*} [Preorder β] [Preorder γ] {f : α → β} {g : β → γ}
-    (hf : BddAbove (Set.range f)) (hg : Monotone g) : BddAbove (Set.range (fun x => g (f x))) := by
-  rw [bddAbove_def] at hf ⊢
-  obtain ⟨C, hC⟩ := hf
-  refine ⟨g C, fun y hy => ?_⟩
-  rw [Set.mem_range] at hy
-  obtain ⟨y', hy'⟩ := hy
-  calc y = g (f y') := hy'.symm
-      _ ≤ g C := hg <| hC (f y') <| Set.mem_range_self _
+    (hf : BddAbove (Set.range f)) (hg : Monotone g) : BddAbove (Set.range (g ∘ f)) := by
+  simpa only [Set.range_comp] using hg.map_bddAbove hf
 
 lemma BddBelow.range_comp {γ : Type*} [Preorder β] [Preorder γ] {f : α → β} {g : β → γ}
     (hf : BddBelow (Set.range f)) (hg : Monotone g) : BddBelow (Set.range (fun x => g (f x))) := by
