@@ -931,9 +931,8 @@ instance instCovariantClass_mul_le_right [PartialOrder β] [Mul β] [ContinuousM
 
 variable [Group β] [TopologicalGroup β] [Lattice β] [TopologicalLattice β]
 
-@[to_additive (attr := simp, norm_cast) coe_abs] lemma coe_mabs (f : C(α, β)) : ⇑|f| = |⇑f| := rfl
-@[to_additive (attr := simp) abs_apply]
-lemma mabs_apply (f : C(α, β)) (x : α) : |f| x = |f x| := rfl
+@[to_additive (attr := simp, norm_cast)] lemma coe_mabs (f : C(α, β)) : ⇑|f|ₘ = |⇑f|ₘ := rfl
+@[to_additive (attr := simp)] lemma mabs_apply (f : C(α, β)) (x : α) : |f|ₘ x = |f x|ₘ := rfl
 #align continuous_map.abs_apply ContinuousMap.abs_apply
 
 end Lattice

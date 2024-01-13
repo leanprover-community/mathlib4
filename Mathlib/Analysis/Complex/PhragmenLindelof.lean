@@ -113,8 +113,8 @@ Then `‖f z‖` is bounded by the same constant on the closed strip
 only for sufficiently large values of `|re z|`.
 -/
 theorem horizontal_strip (hfd : DiffContOnCl ℂ f (im ⁻¹' Ioo a b))
-    (hB : ∃ c < π / (b - a), ∃ B,
-      f =O[comap (Abs.abs ∘ re) atTop ⊓ 𝓟 (im ⁻¹' Ioo a b)] fun z ↦ expR (B * expR (c * |z.re|)))
+    (hB : ∃ c < π / (b - a), ∃ B, f =O[comap (_root_.abs ∘ re) atTop ⊓ 𝓟 (im ⁻¹' Ioo a b)]
+      fun z ↦ expR (B * expR (c * |z.re|)))
     (hle_a : ∀ z : ℂ, im z = a → ‖f z‖ ≤ C) (hle_b : ∀ z, im z = b → ‖f z‖ ≤ C) (hza : a ≤ im z)
     (hzb : im z ≤ b) : ‖f z‖ ≤ C := by
   -- If `im z = a` or `im z = b`, then we apply `hle_a` or `hle_b`, otherwise `im z ∈ Ioo a b`.
@@ -231,8 +231,8 @@ Let `f : ℂ → E` be a function such that
 Then `f` is equal to zero on the closed strip `{z : ℂ | a ≤ im z ≤ b}`.
 -/
 theorem eq_zero_on_horizontal_strip (hd : DiffContOnCl ℂ f (im ⁻¹' Ioo a b))
-    (hB : ∃ c < π / (b - a), ∃ B,
-      f =O[comap (Abs.abs ∘ re) atTop ⊓ 𝓟 (im ⁻¹' Ioo a b)] fun z ↦ expR (B * expR (c * |z.re|)))
+    (hB : ∃ c < π / (b - a), ∃ B, f =O[comap (_root_.abs ∘ re) atTop ⊓ 𝓟 (im ⁻¹' Ioo a b)]
+      fun z ↦ expR (B * expR (c * |z.re|)))
     (ha : ∀ z : ℂ, z.im = a → f z = 0) (hb : ∀ z : ℂ, z.im = b → f z = 0) :
     EqOn f 0 (im ⁻¹' Icc a b) := fun _z hz =>
   norm_le_zero_iff.1 <| horizontal_strip hd hB (fun z hz => (ha z hz).symm ▸ norm_zero.le)
@@ -250,11 +250,11 @@ Let `f g : ℂ → E` be functions such that
 Then `f` is equal to `g` on the closed strip `{z : ℂ | a ≤ im z ≤ b}`.
 -/
 theorem eqOn_horizontal_strip {g : ℂ → E} (hdf : DiffContOnCl ℂ f (im ⁻¹' Ioo a b))
-    (hBf : ∃ c < π / (b - a), ∃ B,
-      f =O[comap (Abs.abs ∘ re) atTop ⊓ 𝓟 (im ⁻¹' Ioo a b)] fun z ↦ expR (B * expR (c * |z.re|)))
+    (hBf : ∃ c < π / (b - a), ∃ B, f =O[comap (_root_.abs ∘ re) atTop ⊓ 𝓟 (im ⁻¹' Ioo a b)]
+      fun z ↦ expR (B * expR (c * |z.re|)))
     (hdg : DiffContOnCl ℂ g (im ⁻¹' Ioo a b))
-    (hBg : ∃ c < π / (b - a), ∃ B,
-      g =O[comap (Abs.abs ∘ re) atTop ⊓ 𝓟 (im ⁻¹' Ioo a b)] fun z ↦ expR (B * expR (c * |z.re|)))
+    (hBg : ∃ c < π / (b - a), ∃ B, g =O[comap (_root_.abs ∘ re) atTop ⊓ 𝓟 (im ⁻¹' Ioo a b)]
+      fun z ↦ expR (B * expR (c * |z.re|)))
     (ha : ∀ z : ℂ, z.im = a → f z = g z) (hb : ∀ z : ℂ, z.im = b → f z = g z) :
     EqOn f g (im ⁻¹' Icc a b) := fun _z hz =>
   sub_eq_zero.1 (eq_zero_on_horizontal_strip (hdf.sub hdg) (isBigO_sub_exp_exp hBf hBg)
@@ -277,8 +277,8 @@ Then `‖f z‖` is bounded by the same constant on the closed strip
 only for sufficiently large values of `|im z|`.
 -/
 theorem vertical_strip (hfd : DiffContOnCl ℂ f (re ⁻¹' Ioo a b))
-    (hB : ∃ c < π / (b - a), ∃ B,
-      f =O[comap (Abs.abs ∘ im) atTop ⊓ 𝓟 (re ⁻¹' Ioo a b)] fun z ↦ expR (B * expR (c * |z.im|)))
+    (hB : ∃ c < π / (b - a), ∃ B, f =O[comap (_root_.abs ∘ im) atTop ⊓ 𝓟 (re ⁻¹' Ioo a b)]
+      fun z ↦ expR (B * expR (c * |z.im|)))
     (hle_a : ∀ z : ℂ, re z = a → ‖f z‖ ≤ C) (hle_b : ∀ z, re z = b → ‖f z‖ ≤ C) (hza : a ≤ re z)
     (hzb : re z ≤ b) : ‖f z‖ ≤ C := by
   suffices ‖f (z * I * -I)‖ ≤ C by simpa [mul_assoc] using this
@@ -306,8 +306,8 @@ Let `f : ℂ → E` be a function such that
 Then `f` is equal to zero on the closed strip `{z : ℂ | a ≤ re z ≤ b}`.
 -/
 theorem eq_zero_on_vertical_strip (hd : DiffContOnCl ℂ f (re ⁻¹' Ioo a b))
-    (hB : ∃ c < π / (b - a), ∃ B,
-      f =O[comap (Abs.abs ∘ im) atTop ⊓ 𝓟 (re ⁻¹' Ioo a b)] fun z ↦ expR (B * expR (c * |z.im|)))
+    (hB : ∃ c < π / (b - a), ∃ B, f =O[comap (_root_.abs ∘ im) atTop ⊓ 𝓟 (re ⁻¹' Ioo a b)]
+      fun z ↦ expR (B * expR (c * |z.im|)))
     (ha : ∀ z : ℂ, re z = a → f z = 0) (hb : ∀ z : ℂ, re z = b → f z = 0) :
     EqOn f 0 (re ⁻¹' Icc a b) := fun _z hz =>
   norm_le_zero_iff.1 <| vertical_strip hd hB (fun z hz => (ha z hz).symm ▸ norm_zero.le)
@@ -325,11 +325,11 @@ Let `f g : ℂ → E` be functions such that
 Then `f` is equal to `g` on the closed strip `{z : ℂ | a ≤ re z ≤ b}`.
 -/
 theorem eqOn_vertical_strip {g : ℂ → E} (hdf : DiffContOnCl ℂ f (re ⁻¹' Ioo a b))
-    (hBf : ∃ c < π / (b - a), ∃ B,
-      f =O[comap (Abs.abs ∘ im) atTop ⊓ 𝓟 (re ⁻¹' Ioo a b)] fun z ↦ expR (B * expR (c * |z.im|)))
+    (hBf : ∃ c < π / (b - a), ∃ B, f =O[comap (_root_.abs ∘ im) atTop ⊓ 𝓟 (re ⁻¹' Ioo a b)]
+      fun z ↦ expR (B * expR (c * |z.im|)))
     (hdg : DiffContOnCl ℂ g (re ⁻¹' Ioo a b))
-    (hBg : ∃ c < π / (b - a), ∃ B,
-      g =O[comap (Abs.abs ∘ im) atTop ⊓ 𝓟 (re ⁻¹' Ioo a b)] fun z ↦ expR (B * expR (c * |z.im|)))
+    (hBg : ∃ c < π / (b - a), ∃ B, g =O[comap (_root_.abs ∘ im) atTop ⊓ 𝓟 (re ⁻¹' Ioo a b)]
+      fun z ↦ expR (B * expR (c * |z.im|)))
     (ha : ∀ z : ℂ, re z = a → f z = g z) (hb : ∀ z : ℂ, re z = b → f z = g z) :
     EqOn f g (re ⁻¹' Icc a b) := fun _z hz =>
   sub_eq_zero.1 (eq_zero_on_vertical_strip (hdf.sub hdg) (isBigO_sub_exp_exp hBf hBg)

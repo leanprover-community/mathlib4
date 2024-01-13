@@ -512,7 +512,7 @@ theorem strong_law_aux2 {c : ℝ} (c_one : 1 < c) :
   apply Asymptotics.isLittleO_iff.2 fun ε εpos => ?_
   obtain ⟨i, hi⟩ : ∃ i, v i < ε := ((tendsto_order.1 v_lim).2 ε εpos).exists
   filter_upwards [hω i] with n hn
-  simp only [Real.norm_eq_abs, LatticeOrderedGroup.abs_abs, Nat.abs_cast]
+  simp only [Real.norm_eq_abs, abs_abs, Nat.abs_cast]
   exact hn.le.trans (mul_le_mul_of_nonneg_right hi.le (Nat.cast_nonneg _))
 #align probability_theory.strong_law_aux2 ProbabilityTheory.strong_law_aux2
 
