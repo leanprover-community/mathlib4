@@ -29,6 +29,22 @@ lemma isSome_bind_eq {α β} {f : α → Option β} {o : Option α} :
 
 end Option
 
+namespace Sum
+
+lemma exists_isLeft {α β} {P : α ⊕ β → Prop} :
+    (∃ x, x.isLeft ∧ P x) ↔ (∃ a, P (Sum.inl a)) :=
+  Iff.trans (exists_congr $ fun _ =>
+    Iff.trans (and_congr_left' isLeft_iff) exists_and_right.symm)
+  $ Iff.trans exists_swap $ exists_congr $ fun _ => exists_eq_left
+
+lemma exists_isRight {α β} {P : α ⊕ β → Prop} :
+    (∃ x, x.isRight ∧ P x) ↔ (∃ a, P (Sum.inr a)) :=
+  Iff.trans (exists_congr $ fun _ =>
+    Iff.trans (and_congr_left' isRight_iff) exists_and_right.symm)
+  $ Iff.trans exists_swap (exists_congr (fun _ => exists_eq_left))
+
+end Sum
+
 end ShouldBeMoved
 
 /-!
@@ -62,15 +78,16 @@ namespace BinTree
 
 instance {L N} [Inhabited L] : Inhabited (BinTree N L) := ⟨leaf default⟩
 
-universe u v w
+universe u₁ u₂ u₃ v₁ v₂ v₃ w₁ w₂ w₃
 
-variable {α : Type u} {β : Type v}
+variable {α : Type u₁} {α' : Type u₂} {α'' : Type u₃}
+         {β : Type v₁} {β' : Type v₂} {β'' : Type v₃} {ω : Type w₁}
 
 abbrev Leafless N := BinTree N Unit
 abbrev Bare := Leafless Unit
 
 @[match_pattern, simp, reducible]
-def nil {N : Type v} : Leafless N := leaf ()
+def nil : Leafless α := leaf ()
 
 open Std (RBNode DList)
 def ofRBNode : RBNode α → Leafless α
@@ -80,12 +97,6 @@ def ofRBNode : RBNode α → Leafless α
 def perfect (x : α) (y : β) : ℕ → BinTree α β
   | 0 => leaf y
   | n+1 => branch x (perfect x y n) (perfect x y n)
-
-/-- The height - length of the longest path from the root - of a binary tree -/
-@[simp]
-def height : BinTree α β → ℕ
-  | leaf _ => 0
-  | branch _ l r => max l.height r.height + 1
 
 nonrec def Bare.perfect : ℕ → Bare := perfect () ()
 
@@ -99,6 +110,62 @@ def recOnBare {motive : Bare → Sort*} (t : Bare) (base : motive nil)
     -- structure eta makes it unnecessary (https://github.com/leanprover/lean4/issues/777).
     t.recOn (fun _ => base) fun _u => ind
 #align tree.unit_rec_on BinTree.recOnBare
+
+-- in time it would be nice to swap this for a version with memoization
+def cata (f : β → ω) (g : α → ω → ω → ω) : BinTree α β → ω
+  | leaf x => f x
+  | branch y l r => g y (cata f g l) (cata f g r)
+
+def bimap (f : α → α') (g : β → β') : BinTree α β → BinTree α' β'
+  | leaf x => leaf (g x)
+  | branch y l r => branch (f y) (bimap f g l) (bimap f g r)
+
+def shape : BinTree α β → Bare := bimap (fun _ => ()) (fun _ => ())
+
+section equations
+variable {x : β} {y : α} {l r t : BinTree α β}
+section cata
+variable {f : β → ω} {g : α → ω → ω → ω}
+
+@[simp] lemma cata_leaf : cata f g (leaf x) = f x := rfl
+@[simp] lemma cata_branch : cata f g (branch y l r) = g y (cata f g l) (cata f g r) := rfl
+end cata
+section bimap
+variable {f : α → α'} {g : β → β'}
+@[simp] lemma bimap_leaf : bimap f g (leaf x) = leaf (g x) := rfl
+@[simp] lemma bimap_branch :
+    bimap f g (branch y l r) = branch (f y) (bimap f g l) (bimap f g r) := rfl
+
+lemma bimap_as_cata' : bimap f g t = cata (leaf ∘ g) (branch ∘ f) t := by
+  induction' t
+  <;> simp only [bimap_leaf, cata_leaf, bimap_branch, cata_branch] <;> congr
+
+lemma bimap_as_cata : bimap f g = cata (leaf ∘ g) (branch ∘ f) :=
+  funext (fun _ => bimap_as_cata')
+end bimap
+section shape
+@[simp] lemma shape_leaf : shape (@leaf α β x) = nil :=
+  by simp only [shape, bimap_leaf]
+@[simp] lemma shape_branch : shape (branch y l r) = shape l △ shape r :=
+  by simp only [shape, bimap_branch]
+end shape
+end equations
+
+lemma cata_bimap {f : β' → ω} {g : α' → ω → ω → ω} {p : α → α'} {q : β → β'}
+    {t : BinTree α β} : cata f g (bimap p q t) = cata (f ∘ q) (g ∘ p) t := by
+  induction t with
+  | leaf x => simp only [bimap, cata_leaf, Function.comp_apply]
+  | branch y l r ihₗ ihᵣ =>
+    simp only [bimap, cata_branch, Function.comp_apply, ihₗ, ihᵣ]
+
+@[simp] theorem bimap_bimap (f₁ : α → α') (f₂ : α' → α'') (g₁ : β → β')
+    (g₂ : β' → β'') (t : BinTree α β) :
+    bimap f₂ g₂ (bimap f₁ g₁ t) = bimap (f₂ ∘ f₁) (g₂ ∘ g₁) t :=
+  Eq.trans bimap_as_cata' $ Eq.trans cata_bimap $ Eq.symm bimap_as_cata'
+
+@[simp] lemma shape_bimap {f : α → α'} {g : β → β'} {t} :
+    shape (bimap f g t) = shape t := bimap_bimap _ _ _ _ _
+@[simp] lemma shape_shape {t : BinTree α β} : shape (shape t) = shape t := shape_bimap
 
 section getNodeAt?
 
@@ -197,15 +264,13 @@ def hasNodeAt := ∃ n, n ∈ getNodeAt? t p
 def hasLeafAt := ∃ b, Sum.inr b ∈ getNodeAt? t p
 def hasInnerNodeAt := ∃ a, Sum.inl a ∈ getNodeAt? t p
 
-lemma hasNodeAt_iff_getNodeAt?_isSome : hasNodeAt t p ↔ (getNodeAt? t p).isSome := by
-  dsimp only [hasNodeAt]
-  rcases getNodeAt? t p with ⟨⟩ | ⟨_⟩
-  <;> simp only [Option.not_mem_none, Option.isSome_none, Option.isSome_some,
-                 Option.mem_some_iff, exists_false, exists_eq']
+lemma hasNodeAt_iff_getNodeAt?_isSome : hasNodeAt t p ↔ (getNodeAt? t p).isSome :=
+  Option.isSome_iff_exists.symm
 
+-- maybe switch to using pmap?
 lemma hasLeafAt_iff_getNodeAt?_getRight?_isSome :
     hasLeafAt t p ↔ ((getNodeAt? t p).bind Sum.getRight?).isSome := by
-  dsimp only [hasLeafAt]
+  simp only [hasLeafAt, hasNodeAt_iff_getNodeAt?_isSome]
   rcases getNodeAt? t p with ⟨⟩ | ⟨_|_⟩
   <;> simp only [Option.none_bind, Option.some_bind, Option.isSome_none, exists_eq',
                  Option.not_mem_none, exists_false, Sum.isRight_inl, Sum.isRight_inr,
@@ -313,23 +378,14 @@ end getNodeAt?
 
 section HigherOrderFunctions
 
-universe u₁ u₂ u₃ v₁ v₂ v₃ w₁ w₂
 variable {N : Type u₁} {N' : Type u₂} {N'' : Type u₃}
          {L : Type v₁} {L' : Type v₂} {L'' : Type v₃}
-         {ω : Type w₁} {ν : Type w₂} {σ : Type w}
-
--- in time it would be nice to swap this for a version with memoization
-def cata (f : L → ω) (g : N → ω → ω → ω) : BinTree N L → ω
-  | leaf x => f x
-  | branch y l r => g y (cata f g l) (cata f g r)
+         {ω : Type w₁} {ν : Type w₂} {σ : Type w₃}
 
 def autoEval : BinTree (α → α → α) α → α := cata id id
 def autoFold [Mul ω] : BinTree ω ω → ω := cata id (. * . * .)
 def autoFoldAdd [Add ω] : BinTree ω ω → ω := cata id (. + . + .)
 def autoFoldApp [Append ω] : BinTree ω ω → ω := cata id (. ++ . ++ .)
-
-def bimap (f : N → N') (g : L → L') : BinTree N L → BinTree N' L' :=
-  cata (leaf $ g .) (branch $ f .)
 
 -- grafts a new tree onto each leaf
 def bind (t : BinTree N L) (f : L → BinTree N L') : BinTree N L' :=
@@ -350,15 +406,9 @@ def bimapWithState (f : N → σ → N' × σ × σ) (g : L → σ → L') :
     BinTree N L → σ → BinTree N' L' :=
   cataWithState (leaf $ g . .) (branch $ Prod.fst $ f . .) (Prod.snd $ f . .)
 
-def labelWithState (h : N → σ → σ × σ) : BinTree N L → σ → BinTree (N × σ) (L × σ) :=
-  bimapWithState (fun x s => ((x, s), h x s)) Prod.mk
-
 def bimapIdx (f : BinAddr → N → N') (g : BinAddr → L → L') (t : BinTree N L) :
     BinTree N' L' :=
   bimapWithState (fun y p => (f p y, p.pushLeft, p.pushRight)) (fun x p => g p x) t BinAddr.here
-
-def labelWithIndex : BinTree N L → BinTree (BinAddr × N) (BinAddr × L) :=
-  bimapIdx Prod.mk Prod.mk
 
 def foldBimap [Mul ω] (f : N → ω) (g : L → ω) := cata g (f . * . * .)
 def foldBimapAdd [Add ω] (f : N → ω) (g : L → ω) := cata g (f . + . + .)
@@ -385,10 +435,16 @@ def foldBimapIdxApp [Append ω] (f : BinAddr → α → ω) (g : BinAddr → β 
 instance : Bifunctor BinTree where
   bimap := bimap
 
-instance {N : Type u} : Monad (BinTree N) :=
+instance : Monad (BinTree N) :=
   { Bifunctor.functor with
     pure := leaf
     bind := bind }
+
+def labelWithState (h : N → σ → σ × σ) : BinTree N L → σ → BinTree (N × σ) (L × σ) :=
+  bimapWithState (fun x s => ((x, s), h x s)) Prod.mk
+
+def labelWithIndex : BinTree N L → BinTree (BinAddr × N) (BinAddr × L) :=
+  bimapIdx Prod.mk Prod.mk
 
 section autoEvalLemmas
 variable {a : α} {y : α → α → α} {l r t : BinTree (α → α → α) α}
@@ -404,53 +460,42 @@ end autoEvalLemmas
 section cataLemmas
 variable {f : L → ω} {g : N → ω → ω → ω} {x y l r}
 
-@[simp] lemma cata_leaf : cata f g (leaf x) = f x := rfl
-@[simp] lemma cata_branch :
-    cata f g (branch y l r) = g y (cata f g l) (cata f g r) := rfl
-
 lemma cata_eq_autoEval_bimap (t : BinTree N L) :
     cata f g t = autoEval (bimap g f t) := by
   induction t with
   | leaf => simp only [bimap, cata_leaf, Function.comp_apply, autoEval_leaf]
   | branch => simp only [bimap, cata_branch, Function.comp_apply, autoEval_branch]; congr
 
-lemma cata_bimap {p : N' → N} {q : L' → L} {t : BinTree N' L'} :
-    cata f g (bimap p q t) = cata (f ∘ q) (g ∘ p) t := by
-  induction t with
-  | leaf x => simp only [bimap, cata_leaf, Function.comp_apply]
-  | branch y l r ihₗ ihᵣ =>
-    simp only [bimap, cata_branch, Function.comp_apply]
-    exact congrArg₂ _ ihₗ ihᵣ
-
 end cataLemmas
 
 section bimapLemmas
-variable {f : N → N'} {g : L → L'} {x y l r} {t : BinTree N L}
-@[simp] lemma bimap_leaf : bimap f g (leaf x) = leaf (g x) := cata_leaf
-@[simp] lemma bimap_branch :
-    bimap f g (branch y l r) = branch (f y) (bimap f g l) (bimap f g r) := cata_branch
-lemma bimap_as_cata : bimap f g = cata (leaf ∘ g) (branch ∘ f) := rfl
-lemma bimap_as_cata' : bimap f g t = cata (leaf ∘ g) (branch ∘ f) t := rfl
 
-@[simp] theorem bimap_def {t : BinTree N L} {f : N → N'} {g : L → L'} :
-    bimap f g t = t.bimap f g := rfl
+@[simp] theorem bimap_def {N N' L L'} {t : BinTree N L}
+    {f : N → N'} {g : L → L'} : Bifunctor.bimap f g t = t.bimap f g := rfl
 
-abbrev mapLeaves := bimap (id : N → N) g
-abbrev mapNodes := bimap f (id : L → L)
+abbrev mapLeaves (g : L → L') := bimap (id : N → N) g
+abbrev mapNodes (f : N → N') := bimap f (id : L → L)
 
 @[simp] theorem bimap_id_id (t : BinTree α β) : bimap id id t = t := by
   induction t with
   | leaf => exact bimap_leaf
   | branch => rw [bimap_branch]; congr
 
-@[simp] theorem bimap_bimap (f₁ : N → N') (f₂ : N' → N'') (g₁ : L → L')
-    (g₂ : L' → L'') (t : BinTree N L) :
-    bimap f₂ g₂ (bimap f₁ g₁ t) = bimap (f₂ ∘ f₁) (g₂ ∘ g₁) t := by
-  induction t with
-  | leaf => exact bimap_leaf
-  | branch => (repeat rw [bimap_branch]); congr
-
 end bimapLemmas
+
+section shapeLemmas
+variable {f : N → N'} {g : L → L'} {x : L} {y : N}
+         {l r t : BinTree N L} {t' : BinTree N' L'}
+
+lemma shape_hasNodeAt {p} : hasNodeAt (shape t) p ↔ hasNodeAt t p := by
+
+  admit
+
+lemma shape_eq_iff : shape t = shape t' ↔ ∀ p, hasNodeAt t p ↔ hasNodeAt t' p := by
+
+  admit
+
+end shapeLemmas
 
 section autoFoldLemmas
 variable [Mul ω] [Add ω] [Append ω] [Mul ν] [Add ν] [Append ν]
@@ -535,7 +580,137 @@ lemma cataWithState_eq_cata_labelWithState :
   | branch y l r ihₗ ihᵣ =>
     simp only [cataWithState, labelWithState, bimapWithState, ihₗ, ihᵣ, cata_branch]; rfl
 
+@[simp] lemma cataWithState_leaf : cataWithState f g h (leaf x) s = f x s := rfl
+
+@[simp] lemma cataWithState_branch :
+    cataWithState f g h (branch y l r) s
+    = g y s (cataWithState f g h l (h y s).fst)
+            (cataWithState f g h r (h y s).snd) := rfl
+
 end cataWithStateLemmas
+
+section bimapWithStateLemmas
+variable {f : N → σ → N' × σ × σ} {g : L → σ → L'}
+         {x : L} {y : N} {l r t : BinTree N L} {s : σ} {p : BinAddr}
+
+@[simp] lemma bimapWithState_leaf : bimapWithState f g (leaf x) s = leaf (g x s) :=
+  by simp only [bimapWithState, cataWithState_leaf]
+@[simp] lemma bimapWithState_branch :
+    bimapWithState f g (branch y l r) s
+    = branch (f y s).fst (bimapWithState f g l (f y s).snd.fst)
+                         (bimapWithState f g r (f y s).snd.snd) :=
+  by simp only [bimapWithState, cataWithState_branch]
+
+-- lemma bimapWithState_eq_bimap_labelWithState :
+--     bimapWithState f g t s = bimap (Prod.fst ∘ Function.uncurry f) (Function.uncurry g)
+--                                    (labelWithState (Prod.snd $ f . .) t s) :=
+--   cataWithState_eq_cata_labelWithState
+
+lemma bimap_eq_bimapWithState_any {f : N → N'} {g : L → L'} (h : N → σ → σ × σ) :
+    bimap f g t = bimapWithState (fun y s' => (f y, h y s')) (fun x _ => g x) t s := by
+  induction t generalizing s with
+  | leaf x => simp only [bimap_leaf, bimapWithState_leaf]
+  | branch y l r ihₗ ihᵣ =>
+    simp only [bimap_branch, bimapWithState_branch]
+    exact congrArg₂ (branch (f y)) ihₗ ihᵣ
+
+lemma bimap_eq_bimapWithState_unit {f : N → N'} {g : L → L'} :
+    bimap f g t = bimapWithState (fun y _ => (f y, (), ()))
+                                 (fun x _ => g x) t () :=
+  bimap_eq_bimapWithState_any _
+
+lemma bimapWithState_congr_state (e : σ ≃ ν) :
+    bimapWithState f g t s
+    = bimapWithState (Prod.map id (Prod.map e e) $ f . $ e.symm .)
+                     (g . $ e.symm .) t (e s) := by
+  induction t generalizing s with
+  | leaf x => simp only [bimap_leaf, bimapWithState_leaf, Equiv.symm_apply_apply]
+  | branch y l r ihₗ ihᵣ =>
+    simp only [bimap_branch, bimapWithState_branch, Equiv.symm_apply_apply,
+               Prod.map_fst, Prod.map_snd, id_eq, ihₗ, ihᵣ]
+
+lemma bimapWithState_bimapWithState
+    {f' : N' → ν → N'' × ν × ν} {g' : L' → ν → L''} {s' : ν} :
+    bimapWithState f' g' (bimapWithState f g t s) s'
+    = bimapWithState (fun x (p, q) => let (x', s₁, s₂) := f x p
+                                      let (x'', s₁', s₂') := f' x' q
+                                      (x'', (s₁, s₁'), (s₂, s₂')))
+                     (fun x (p, q) => g' (g x p) q) t (s, s') := by
+  induction t generalizing s s' with
+  | leaf _ => simp only [bimapWithState_leaf]
+  | branch y l r ihₗ ihᵣ => simp only [bimapWithState_branch, ihₗ, ihᵣ]
+
+lemma bimap_bimapWithState {f' : N' → N''} {g' : L' → L''} :
+    bimap f' g' (bimapWithState f g t s)
+    = bimapWithState (Prod.map f' id $ f . .) (g' $ g . .) t s := by
+  rw [bimap_eq_bimapWithState_unit, bimapWithState_bimapWithState]
+  exact bimapWithState_congr_state (Equiv.prodPUnit σ)
+
+lemma bimapWithState_bimap {f' : N'' → N} {g' : L'' → L} {t} :
+    bimapWithState f g (bimap f' g' t) s
+    = bimapWithState (f ∘ f') (g ∘ g') t s := by
+  rw [bimap_eq_bimapWithState_unit, bimapWithState_bimapWithState]
+  exact bimapWithState_congr_state (Equiv.punitProd σ)
+
+lemma shape_bimapWithState : shape (bimapWithState f g t s) = shape t := by
+  simp only [shape, bimap_bimapWithState, Prod_map, Function.const_apply]
+  exact (bimap_eq_bimapWithState_any (Prod.snd $ f . .)).symm
+
+lemma shape_labelWithState {h : N → σ → σ × σ} :
+    shape (labelWithState h t s) = shape t := shape_bimapWithState
+
+def getStateAt? (f : N → σ → N' × σ × σ) (t : BinTree N L) (p : BinAddr) :
+    σ → Option σ :=
+  BinAddr.rec' (motive:=fun _ => σ → Option σ) some
+               (fun q self s => ((getNodeAt? t q.reverse).bind Sum.getLeft?).bind
+                                  ((self s).map $ Prod.fst ∘ Prod.snd ∘ f .))
+               (fun q self s => ((getNodeAt? t q.reverse).bind Sum.getLeft?).bind
+                                  ((self s).map $ Prod.snd ∘ Prod.snd ∘ f .))
+               p.reverse
+
+lemma getStateAt?_eq_getNodeAt?_labelWithState :
+    getStateAt? f t p s
+    = Option.map (Prod.snd $ (Equiv.sumProdDistrib _ _ _).symm .)
+                 (getNodeAt? (labelWithState (Prod.snd $ f . .) t s) p) := by
+  rw [← BinAddr.reverse_reverse p]; generalize p.reverse = p'
+  induction' p' with p' ih p' ih generalizing t s
+  . simp only [BinAddr.reverse_here, getStateAt?, BinAddr.rec'_here]
+    cases' t
+    <;> simp only [getNodeAt?, getSubtreeAt?_here_eq, Option.map_some',
+                   labelWithState, bimapWithState_leaf, bimapWithState_branch,
+                   getNodeData, Equiv.sumProdDistrib_symm_apply_left,
+                   Equiv.sumProdDistrib_symm_apply_right]
+  . conv_lhs => rw [getStateAt?, BinAddr.reverse_reverse, BinAddr.rec'_left]
+                right; rw [← BinAddr.reverse_reverse p', ← getStateAt?, ih]
+    simp only [getNodeAt?, BinAddr.reverse_left, getSubtreeAt?_append]
+    generalize H : getSubtreeAt? (labelWithState (fun x x_1 ↦ (f x x_1).2) t s) (BinAddr.reverse p') = t'
+    rcases t' with ⟨⟩|⟨_⟩|⟨_, _, _⟩
+    . simp only [Option.map_none', Option.bind_none, Option.none_bind]
+    . simp only [Option.map_some', Function.comp_apply, Option.some_bind,
+                 getSubtreeAt?_leaf_left, Option.map_none', getNodeData,
+                 Equiv.sumProdDistrib_symm_apply_right]
+
+      admit
+    . admit
+  .
+    admit
+
+-- lemma getSubtreeAt?_bimapWithState_eq (p : BinAddr) :
+--     getSubtreeAt? (bimapWithState f g t s) p
+--     = (getSubtreeAt? t p).bind ((getStateAt? f t p s).map
+--                                 $ bimapWithState f g .) := by
+--   induction' t with x y l r ihₗ ihᵣ generalizing p s
+--   . simp only [bimapWithState_leaf]
+--     by_cases h : p.isHere?
+--     . induction h
+--       simp only [getSubtreeAt?_here_eq, Option.some_bind, getStateAt?_here,
+--                  bimapWithState_leaf, Option.map_some']
+--     . rw [getSubtreeAt?_leaf_eq_none _ h]
+
+--       admit
+--   . admit
+
+end bimapWithStateLemmas
 
 section bimapIdxLemmas
 
@@ -566,7 +741,7 @@ instance : LawfulBifunctor BinTree where
   id_bimap := bimap_id_id
   bimap_bimap := bimap_bimap
 
-instance {N : Type u} : LawfulMonad (BinTree N) :=
+instance : LawfulMonad (BinTree α) :=
   { Bifunctor.lawfulFunctor with
     pure_bind := leaf_bind
     bind_pure_comp := bind_leaf_comp
@@ -591,11 +766,17 @@ instance {N : Type u} : LawfulMonad (BinTree N) :=
 
 end bifunctor
 
--- /-- The number of internal nodes (i.e. not including leaves) of a binary tree -/
+/-- The number of internal nodes (i.e. not including leaves) of a binary tree -/
 abbrev numInnerNodes : BinTree α β → ℕ := foldMapInnerNodesAdd (fun _ => 1)
 
--- /-- The number of leaves of a binary tree -/
+/-- The number of leaves of a binary tree -/
 abbrev numLeaves : BinTree α β → ℕ := foldMapInnerNodesAdd (fun _ => 1)
+
+/-- The height - length of the longest path from the root - of a binary tree -/
+def height : BinTree α β → ℕ
+  | leaf _ => 0
+  | branch _ l r => max l.height r.height + 1
+
 
 def flatten (t : BinTree α β) : List (α ⊕ β) :=
   DList.toList
