@@ -3,7 +3,6 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.GroupWithZero.Power
 import Mathlib.Data.Int.Bitwise
 
@@ -34,3 +33,6 @@ set_option linter.deprecated false in
 theorem zpow_bit1' (a : G₀) (n : ℤ) : a ^ bit1 n = (a * a) ^ n * a := by
   rw [zpow_bit1₀, (Commute.refl a).mul_zpow]
 #align zpow_bit1' zpow_bit1'
+
+
+#minimize_imports

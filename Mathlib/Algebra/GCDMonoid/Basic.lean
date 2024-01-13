@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker
 -/
 import Mathlib.Algebra.Associated
-import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.Ring.Regular
 import Mathlib.Tactic.Common
 
@@ -1440,3 +1439,5 @@ theorem normalize_eq_one {a : G₀} (h0 : a ≠ 0) : normalize a = 1 := by simp 
 #align comm_group_with_zero.normalize_eq_one CommGroupWithZero.normalize_eq_one
 
 end CommGroupWithZero
+
+#minimize_imports

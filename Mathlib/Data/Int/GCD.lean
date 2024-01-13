@@ -3,7 +3,6 @@ Copyright (c) 2018 Guy Leroy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sangwoo Jo (aka Jason), Guy Leroy, Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.GroupWithZero.Power
 import Mathlib.Algebra.Ring.Regular
 import Mathlib.Data.Int.Dvd.Basic
@@ -553,3 +552,4 @@ lemma pow_mem_range_pow_of_coprime (hmn : m.Coprime n) (a : α) :
   simp [pow_eq_pow_iff_of_coprime hmn.symm]; aesop
 
 end CommGroupWithZero
+
