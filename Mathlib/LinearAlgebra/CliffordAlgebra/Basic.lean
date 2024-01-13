@@ -351,16 +351,6 @@ theorem ι_range_map_map (f : Q₁ →qᵢ Q₂) :
   (ι_range_map_lift _ _).trans (LinearMap.range_comp _ _)
 #align clifford_algebra.ι_range_map_map CliffordAlgebra.ι_range_map_map
 
-/-- If a linear map preserves the quadratic forms and admits a section that also preserves
-the quadratic forms, then the algebra map it induces on Clifford algebras is injective.-/
-lemma map_injective
-    {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂} (f : Q₁ →qᵢ Q₂) (hf : ∃ (g : Q₂ →qᵢ Q₁),
-    g.comp f = QuadraticForm.Isometry.id _) : Function.Injective (CliffordAlgebra.map f) :=
-  let ⟨g, hg⟩ := hf
-  Function.RightInverse.injective (g := CliffordAlgebra.map g)
-  (fun x ↦ by rw [← AlgHom.comp_apply, CliffordAlgebra.map_comp_map, hg, CliffordAlgebra.map_id,
-        AlgHom.coe_id, id_eq])
-
 /-- If a linear map preserves the quadratic forms and is surjective, then the algebra
 maps it induces betweem Clifford algebras is also surjective.-/
 lemma map_surjective {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂} (f : Q₁ →qᵢ Q₂)
