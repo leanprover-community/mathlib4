@@ -16,7 +16,7 @@ The [binary entropy function](https://en.wikipedia.org/wiki/Binary_entropy_funct
 is the Shannon entropy of a Bernoulli random variable with success probability `p`.
 
 This file assumes that entropy is measured in bits, hence logarithms base 2.
-Most lemmas are also valid using any other logarithm
+Most lemmas are also valid using any other logarithm.
 
 ## Tags
 
@@ -29,8 +29,8 @@ open Real
 
 noncomputable abbrev log₂ (p : ℝ) : ℝ := Real.logb 2 p
 
-/-- Shannon Binary entropy measured in bits
- Usual domain of definition is p ∈ [0,1], i.e., expects a probability as input. -/
+/-- Shannon Binary entropy (measured in bits).
+Usual domain of definition is p ∈ [0,1], i.e., expects a probability as input. -/
 noncomputable def h₂ (p : ℝ) : ℝ := -p * log₂ p - (1 - p) * log₂ (1 - p)
 
 -- Example values
@@ -126,19 +126,18 @@ lemma h2_lt_1_of_p_lt_half {p : ℝ} (pge0 : 0 ≤ p) (plehalf : p < 1/2) : h₂
     have : -(p * log p) - (1 - p) * log (1 - p)
       = p * log (1/p) + (1 - p) * log (1 / (1 - p)) := by calc
           _ = p * (-log p) + (1 - p) * (-log (1 - p)) := by ring
-          _ = p * log (1/p) + (1 - p) * log (1 / (1 - p)) := by rw [←log_inv]; norm_num
+          _ = p * log (1/p) + (1 - p) * log (1 / (1 - p)) := by rw [← log_inv]; norm_num
     rw [this]
     apply logConcave
 
 lemma h2_lt_one_of_p_gt_half {p : ℝ} : 0 ≤ p → 1/2 < p → p ≤ 1 → h₂ p < 1 := by
   intros
-  rw [←h2_p_eq_h2_1_minus_p]
+  rw [← h2_p_eq_h2_1_minus_p]
   have : 1 - p < 1/2 := by linarith
   refine h2_lt_1_of_p_lt_half ?_ this
   linarith
 
-lemma h2_one_iff_p_is_half {p : ℝ} (pge0 : 0 ≤ p) (ple1 : p ≤ 1) : h₂ p = 1 ↔ p = 1/2
-:= by
+lemma h2_one_iff_p_is_half {p : ℝ} (pge0 : 0 ≤ p) (ple1 : p ≤ 1) : h₂ p = 1 ↔ p = 1/2 := by
   constructor <;> intro h
   · by_cases h' : p < 1/2
     · linarith [h2_lt_1_of_p_lt_half pge0 h']
@@ -148,8 +147,7 @@ lemma h2_one_iff_p_is_half {p : ℝ} (pge0 : 0 ≤ p) (ple1 : p ≤ 1) : h₂ p 
       · linarith
   · simp [h]
 
-lemma h2_le_1 {p : ℝ} (pge0 : 0 ≤ p) (ple1 : p ≤ 1) : h₂ p ≤ 1
-:= by
+lemma h2_le_1 {p : ℝ} (pge0 : 0 ≤ p) (ple1 : p ≤ 1) : h₂ p ≤ 1 := by
   by_cases hh: p = 1/2
   · simp [*];
   · by_cases h₂ p = 1
@@ -287,11 +285,12 @@ lemma h₂_continuous : Continuous h₂ := by
   apply Continuous.neg
   apply Continuous.div_const
   apply continuous_mul_log
-  have mycalc2 (x : ℝ) : -((1-x) * (log (1-x) / log 2)) = -(((1-x) * log (1-x))) / log 2 := by field_simp
+  have mycalc2 (x : ℝ) : -((1-x) * (log (1-x) / log 2)) = -(((1-x) * log (1-x))) / log 2 := by
+    field_simp
   simp_rw [mycalc2]
   apply Continuous.div_const
   apply Continuous.neg
-  exact Continuous.comp continuous_mul_log (show Continuous fun x ↦ 1 - x by continuity)
+  exact Continuous.comp continuous_mul_log (continuous_sub_left 1)
 
 lemma strictConcave_h2 : StrictConcaveOn ℝ (Icc 0 1) h₂ := by
   apply strictConcaveOn_of_deriv2_neg (convex_Icc 0 1) h₂_continuous.continuousOn
@@ -312,7 +311,7 @@ lemma h2_strictMono : StrictMonoOn h₂ (Set.Icc 0 (1/2)) := by
   · apply h₂_continuous.continuousOn
   · intro x hx
     simp at hx
-    rw [←one_div 2] at hx
+    rw [← one_div 2] at hx
     rw [deriv_h₂ (by linarith) (by linarith)]
     · simp [log₂, logb]
       apply mul_log2_lt.mpr
