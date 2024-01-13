@@ -103,9 +103,7 @@ theorem _root_.Measurable.lmarginal (hf : Measurable f) : Measurable (∫⋯∫�
 
 /-- The marginal distribution is independent of the variables in `s`. -/
 theorem lmarginal_congr {x y : ∀ i, π i} (f : (∀ i, π i) → ℝ≥0∞)
-    -- TODO: change back from `∀ i, i ∉ s →` to `∀ i ∉ s,` after bumping past
-    -- https://github.com/leanprover/std4/pull/427
-    (h : ∀ i, i ∉ s → x i = y i) :
+    (h : ∀ i ∉ s, x i = y i) :
     (∫⋯∫⁻_s, f ∂μ) x = (∫⋯∫⁻_s, f ∂μ) y := by
   dsimp [lmarginal, updateFinset_def]; rcongr; exact h _ ‹_›
 
@@ -205,9 +203,9 @@ theorem lmarginal_image [DecidableEq δ'] {e : δ' → δ} (he : Injective e) (s
       (∫⋯∫⁻_s.image e, f ∘ (· ∘' e) ∂μ) x = (∫⋯∫⁻_s, f ∂μ ∘' e) (x ∘' e) := by
   have h : Measurable ((· ∘' e) : (∀ i, π i) → _) :=
     measurable_pi_iff.mpr <| λ i ↦ measurable_pi_apply (e i)
-  induction s using Finset.induction generalizing x
-  case empty => simp
-  case insert i s hi ih =>
+  induction s using Finset.induction generalizing x with
+  | empty => simp
+  | insert hi ih =>
     rw [image_insert, lmarginal_insert _ (hf.comp h) (he.mem_finset_image.not.mpr hi),
       lmarginal_insert _ hf hi]
     simp_rw [ih, ← update_comp_eq_of_injective' x he]
@@ -215,9 +213,9 @@ theorem lmarginal_image [DecidableEq δ'] {e : δ' → δ} (he : Injective e) (s
 theorem lmarginal_update_of_not_mem {i : δ}
     {f : (∀ i, π i) → ℝ≥0∞} (hf : Measurable f) (hi : i ∉ s) (x : ∀ i, π i) (y : π i) :
     (∫⋯∫⁻_s, f ∂μ) (Function.update x i y) = (∫⋯∫⁻_s, f ∘ (Function.update · i y) ∂μ) x := by
-  induction s using Finset.induction generalizing x
-  case empty => simp
-  case insert i' s hi' ih =>
+  induction s using Finset.induction generalizing x with
+  | empty => simp
+  | @insert i' s hi' ih =>
     rw [lmarginal_insert _ hf hi', lmarginal_insert _ (hf.comp measurable_update_left) hi']
     have hii' : i ≠ i' := mt (by rintro rfl; exact mem_insert_self i s) hi
     simp_rw [update_comm hii', ih (mt Finset.mem_insert_of_mem hi)]

@@ -102,7 +102,7 @@ def lift (f : ∀ i, G i →* K) (k : H →* K)
     (hf : ∀ i, (f i).comp (φ i) = k) :
     PushoutI φ →* K :=
   Con.lift _ (Coprod.lift (CoprodI.lift f) k) <| by
-    apply Con.conGen_le <| fun x y => ?_
+    apply Con.conGen_le fun x y => ?_
     rintro ⟨i, x', rfl, rfl⟩
     simp only [FunLike.ext_iff, MonoidHom.coe_comp, comp_apply] at hf
     simp [hf]
@@ -229,9 +229,7 @@ structure Transversal : Type _ where
   compl : ∀ i, IsComplement (φ i).range (set i)
 
 theorem transversal_nonempty (hφ : ∀ i, Injective (φ i)) : Nonempty (Transversal φ) := by
-  have := fun i => exists_right_transversal (H := (φ i).range) 1
-  simp only [Classical.skolem] at this
-  rcases this with ⟨t, ht⟩
+  choose t ht using fun i => (φ i).range.exists_right_transversal 1
   apply Nonempty.intro
   exact
     { injective := hφ

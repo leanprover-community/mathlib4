@@ -315,7 +315,7 @@ theorem exists_unique_equiv (a : ℤ) {b : ℤ} (hb : 0 < b) :
 theorem exists_unique_equiv_nat (a : ℤ) {b : ℤ} (hb : 0 < b) : ∃ z : ℕ, ↑z < b ∧ ↑z ≡ a [ZMOD b] :=
   let ⟨z, hz1, hz2, hz3⟩ := exists_unique_equiv a hb
   ⟨z.natAbs, by
-    constructor <;> rw [ofNat_natAbs_eq_of_nonneg z hz1] <;> assumption⟩
+    constructor <;> rw [natAbs_of_nonneg hz1] <;> assumption⟩
 #align int.exists_unique_equiv_nat Int.exists_unique_equiv_nat
 
 theorem mod_mul_right_mod (a b c : ℤ) : a % (b * c) % b = a % b :=

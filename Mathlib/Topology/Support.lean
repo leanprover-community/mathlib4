@@ -3,6 +3,7 @@ Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Patrick Massot
 -/
+import Mathlib.Algebra.Module.Basic
 import Mathlib.Topology.Separation
 
 #align_import topology.support from "leanprover-community/mathlib"@"d90e4e186f1d18e375dcd4e5b5f6364b01cb3e46"
@@ -80,7 +81,7 @@ theorem range_subset_insert_image_mulTSupport (f : X → α) :
 @[to_additive]
 theorem range_eq_image_mulTSupport_or (f : X → α) :
     range f = f '' mulTSupport f ∨ range f = insert 1 (f '' mulTSupport f) :=
-  (wcovby_insert _ _).eq_or_eq (image_subset_range _ _) (range_subset_insert_image_mulTSupport f)
+  (wcovBy_insert _ _).eq_or_eq (image_subset_range _ _) (range_subset_insert_image_mulTSupport f)
 #align range_eq_image_mul_tsupport_or range_eq_image_mulTSupport_or
 #align range_eq_image_tsupport_or range_eq_image_tsupport_or
 
@@ -100,6 +101,13 @@ theorem tsupport_smul_subset_left {M α} [TopologicalSpace X] [Zero M] [Zero α]
     (f : X → M) (g : X → α) : (tsupport fun x => f x • g x) ⊆ tsupport f :=
   closure_mono <| support_smul_subset_left f g
 #align tsupport_smul_subset_left tsupport_smul_subset_left
+
+@[to_additive]
+theorem mulTSupport_mul [TopologicalSpace X] [Monoid α] {f g : X → α} :
+    (mulTSupport fun x ↦ f x * g x) ⊆ mulTSupport f ∪ mulTSupport g :=
+  closure_minimal
+    ((mulSupport_mul f g).trans (union_subset_union (subset_mulTSupport _) (subset_mulTSupport _)))
+    (isClosed_closure.union isClosed_closure)
 
 section
 

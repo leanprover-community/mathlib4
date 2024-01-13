@@ -419,7 +419,7 @@ theorem Submonoid.top_closure_mul_self_subset (s : Submonoid M) :
 theorem Submonoid.top_closure_mul_self_eq (s : Submonoid M) :
     _root_.closure (s : Set M) * _root_.closure s = _root_.closure s :=
   Subset.antisymm s.top_closure_mul_self_subset fun x hx =>
-    ⟨x, 1, hx, _root_.subset_closure s.one_mem, mul_one _⟩
+    ⟨x, hx, 1, _root_.subset_closure s.one_mem, mul_one _⟩
 #align submonoid.top_closure_mul_self_eq Submonoid.top_closure_mul_self_eq
 #align add_submonoid.top_closure_add_self_eq AddSubmonoid.top_closure_add_self_eq
 
@@ -430,7 +430,7 @@ itself a submonoid. -/
 def Submonoid.topologicalClosure (s : Submonoid M) : Submonoid M where
   carrier := _root_.closure (s : Set M)
   one_mem' := _root_.subset_closure s.one_mem
-  mul_mem' ha hb := s.top_closure_mul_self_subset ⟨_, _, ha, hb, rfl⟩
+  mul_mem' ha hb := s.top_closure_mul_self_subset ⟨_, ha, _, hb, rfl⟩
 #align submonoid.topological_closure Submonoid.topologicalClosure
 #align add_submonoid.topological_closure AddSubmonoid.topologicalClosure
 
@@ -508,7 +508,7 @@ theorem exists_open_nhds_one_mul_subset {U : Set M} (hU : U ∈ 𝓝 (1 : M)) :
     ∃ V : Set M, IsOpen V ∧ (1 : M) ∈ V ∧ V * V ⊆ U := by
   rcases exists_open_nhds_one_split hU with ⟨V, Vo, V1, hV⟩
   use V, Vo, V1
-  rintro _ ⟨x, y, hx, hy, rfl⟩
+  rintro _ ⟨x, hx, y, hy, rfl⟩
   exact hV _ hx _ hy
 #align exists_open_nhds_one_mul_subset exists_open_nhds_one_mul_subset
 #align exists_open_nhds_zero_add_subset exists_open_nhds_zero_add_subset

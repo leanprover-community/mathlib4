@@ -110,7 +110,7 @@ sufficiently large. -/
   to check that its translates `g +ᵥ s` are (almost) disjoint and that the sum `∑' g, μ (g +ᵥ s)` is
   sufficiently large."]
 theorem mk_of_measure_univ_le [IsFiniteMeasure μ] [Countable G] (h_meas : NullMeasurableSet s μ)
-    (h_ae_disjoint : ∀ (g) (_ : g ≠ (1 : G)), AEDisjoint μ (g • s) s)
+    (h_ae_disjoint : ∀ g ≠ (1 : G), AEDisjoint μ (g • s) s)
     (h_qmp : ∀ g : G, QuasiMeasurePreserving (g • · : α → α) μ μ)
     (h_measure_univ_le : μ (univ : Set α) ≤ ∑' g : G, μ (g • s)) : IsFundamentalDomain G s μ :=
   have aedisjoint : Pairwise (AEDisjoint μ on fun g : G => g • s) :=

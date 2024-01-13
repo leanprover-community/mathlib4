@@ -135,7 +135,7 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
   · rintro ⟨cc₃, cr₃⟩ ⟨hcc₃, hcr₃⟩
     simp only at hcc₃ hcr₃
     obtain ⟨t₃, cc₃', hcc₃', hcc₃''⟩ :
-      ∃ (r : ℝ)(p0 : P)(_ : p0 ∈ s), cc₃ = r • (p -ᵥ ↑((orthogonalProjection s) p)) +ᵥ p0 := by
+      ∃ r : ℝ, ∃ p0 ∈ s, cc₃ = r • (p -ᵥ ↑((orthogonalProjection s) p)) +ᵥ p0 := by
       rwa [mem_affineSpan_insert_iff (orthogonalProjection_mem p)] at hcc₃
     have hcr₃' : ∃ r, ∀ p1 ∈ ps, dist p1 cc₃ = r :=
       ⟨cr₃, fun p1 hp1 => dist_of_mem_subset_mk_sphere (Set.mem_insert_of_mem _ hp1) hcr₃⟩
@@ -208,7 +208,8 @@ theorem _root_.AffineIndependent.existsUnique_dist_eq {ι : Type*} [hne : Nonemp
       · rintro ⟨cc, cr⟩
         simp only
         rintro ⟨rfl, hdist⟩
-        simp [Set.singleton_subset_iff] at hdist
+        simp? [Set.singleton_subset_iff] at hdist says
+          simp only [Set.singleton_subset_iff, Metric.mem_sphere, dist_self] at hdist
         rw [hi default, hdist]
     · have i := hne.some
       let ι2 := { x // x ≠ i }
@@ -619,7 +620,7 @@ def centroidWeightsWithCircumcenter {n : ℕ} (fs : Finset (Fin (n + 1))) :
 theorem sum_centroidWeightsWithCircumcenter {n : ℕ} {fs : Finset (Fin (n + 1))} (h : fs.Nonempty) :
     ∑ i, centroidWeightsWithCircumcenter fs i = 1 := by
   simp_rw [sum_pointsWithCircumcenter, centroidWeightsWithCircumcenter, add_zero, ←
-    fs.sum_centroidWeights_eq_one_of_nonempty ℝ h, Set.sum_indicator_subset _ fs.subset_univ]
+    fs.sum_centroidWeights_eq_one_of_nonempty ℝ h, ← sum_indicator_subset _ fs.subset_univ]
   rcongr
 #align affine.simplex.sum_centroid_weights_with_circumcenter Affine.Simplex.sum_centroidWeightsWithCircumcenter
 
@@ -632,7 +633,7 @@ theorem centroid_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ} (s : S
   simp_rw [centroid_def, affineCombination_apply, weightedVSubOfPoint_apply,
     sum_pointsWithCircumcenter, centroidWeightsWithCircumcenter,
     pointsWithCircumcenter_point, zero_smul, add_zero, centroidWeights,
-    Set.sum_indicator_subset_of_eq_zero (Function.const (Fin (n + 1)) (card fs : ℝ)⁻¹)
+    ← sum_indicator_subset_of_eq_zero (Function.const (Fin (n + 1)) (card fs : ℝ)⁻¹)
       (fun i wi => wi • (s.points i -ᵥ Classical.choice AddTorsor.nonempty)) fs.subset_univ fun _ =>
       zero_smul ℝ _,
     Set.indicator_apply]

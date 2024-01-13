@@ -153,7 +153,7 @@ open IsIntegrallyClosed
 theorem Monic.irreducible_iff_irreducible_map_fraction_map [IsIntegrallyClosed R] {p : R[X]}
     (h : p.Monic) : Irreducible p ↔ Irreducible (p.map <| algebraMap R K) := by
   /- The ← direction follows from `IsPrimitive.irreducible_of_irreducible_map_of_injective`.
-       For the → direction, it is enought to show that if `(p.map $ algebraMap R K) = a * b` and
+       For the → direction, it is enought to show that if `(p.map <| algebraMap R K) = a * b` and
        `a` is not a unit then `b` is a unit -/
   refine'
     ⟨fun hp =>

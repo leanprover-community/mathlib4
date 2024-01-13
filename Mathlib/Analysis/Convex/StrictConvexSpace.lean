@@ -80,7 +80,7 @@ variable (𝕜 : Type*) {E : Type*} [NormedLinearOrderedField 𝕜] [NormedAddCo
 /-- A closed ball in a strictly convex space is strictly convex. -/
 theorem strictConvex_closedBall [StrictConvexSpace 𝕜 E] (x : E) (r : ℝ) :
     StrictConvex 𝕜 (closedBall x r) := by
-  cases' le_or_lt r 0 with hr hr
+  rcases le_or_lt r 0 with hr | hr
   · exact (subsingleton_closedBall x hr).strictConvex
   rw [← vadd_closedBall_zero]
   exact (StrictConvexSpace.strictConvex_closedBall r hr).vadd _

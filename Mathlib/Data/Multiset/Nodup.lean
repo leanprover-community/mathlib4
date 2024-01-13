@@ -167,6 +167,8 @@ theorem nodup_attach {s : Multiset α} : Nodup (attach s) ↔ Nodup s :=
   Quot.induction_on s fun _ => List.nodup_attach
 #align multiset.nodup_attach Multiset.nodup_attach
 
+protected alias ⟨_, Nodup.attach⟩ := nodup_attach
+
 theorem Nodup.pmap {p : α → Prop} {f : ∀ a, p a → β} {s : Multiset α} {H}
     (hf : ∀ a ha b hb, f a ha = f b hb → a = b) : Nodup s → Nodup (pmap f s H) :=
   Quot.induction_on s (fun _ _ => List.Nodup.pmap hf) H
@@ -242,7 +244,7 @@ theorem nodup_bind {s : Multiset α} {t : α → Multiset β} :
 #align multiset.nodup_bind Multiset.nodup_bind
 
 theorem Nodup.ext {s t : Multiset α} : Nodup s → Nodup t → (s = t ↔ ∀ a, a ∈ s ↔ a ∈ t) :=
-  Quotient.inductionOn₂ s t fun _ _ d₁ d₂ => Quotient.eq.trans <| perm_ext d₁ d₂
+  Quotient.inductionOn₂ s t fun _ _ d₁ d₂ => Quotient.eq.trans <| perm_ext_iff_of_nodup d₁ d₂
 #align multiset.nodup.ext Multiset.Nodup.ext
 
 theorem le_iff_subset {s t : Multiset α} : Nodup s → (s ≤ t ↔ s ⊆ t) :=
@@ -265,16 +267,12 @@ theorem mem_sub_of_nodup [DecidableEq α] {a : α} {s t : Multiset α} (d : Nodu
 
 theorem map_eq_map_of_bij_of_nodup (f : α → γ) (g : β → γ) {s : Multiset α} {t : Multiset β}
     (hs : s.Nodup) (ht : t.Nodup) (i : ∀ a ∈ s, β) (hi : ∀ a ha, i a ha ∈ t)
-    (h : ∀ a ha, f a = g (i a ha)) (i_inj : ∀ a₁ a₂ ha₁ ha₂, i a₁ ha₁ = i a₂ ha₂ → a₁ = a₂)
-    (i_surj : ∀ b ∈ t, ∃ a ha, b = i a ha) : s.map f = t.map g :=
-  have : t = s.attach.map fun x => i x.1 x.2 :=
-    (ht.ext <|
-          (nodup_attach.2 hs).map <|
-            show Injective fun x : { x // x ∈ s } => i x x.2 from fun x y hxy =>
-              Subtype.ext <| i_inj x y x.2 y.2 hxy).2
-      fun x => by
-        simp only [mem_map, true_and_iff, Subtype.exists, eq_comm, mem_attach]
-        exact ⟨i_surj _, fun ⟨y, hy⟩ => hy.snd.symm ▸ hi _ _⟩
+    (i_inj : ∀ a₁ ha₁ a₂ ha₂, i a₁ ha₁ = i a₂ ha₂ → a₁ = a₂)
+    (i_surj : ∀ b ∈ t, ∃ a ha, i a ha = b) (h : ∀ a ha, f a = g (i a ha)) : s.map f = t.map g := by
+  have : t = s.attach.map fun x => i x.1 x.2
+  · rw [ht.ext]
+    · aesop
+    · exact hs.attach.map fun x y hxy ↦ Subtype.ext <| i_inj _ x.2 _ y.2 hxy
   calc
     s.map f = s.pmap (fun x _ => f x) fun _ => id := by rw [pmap_eq_map]
     _ = s.attach.map fun x => f x.1 := by rw [pmap_eq_map_attach]

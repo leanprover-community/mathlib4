@@ -57,7 +57,7 @@ theorem Finset.support_sum_subset [AddCommMonoid M] (s : Finset (ι →₀ M)) :
 #align finset.support_sum_subset Finset.support_sum_subset
 
 theorem List.mem_foldr_sup_support_iff [Zero M] {l : List (ι →₀ M)} {x : ι} :
-    x ∈ l.foldr (Finsupp.support · ⊔ ·) ∅ ↔ ∃ (f : ι →₀ M) (_ : f ∈ l), x ∈ f.support := by
+    x ∈ l.foldr (Finsupp.support · ⊔ ·) ∅ ↔ ∃ f ∈ l, x ∈ f.support := by
   simp only [Finset.sup_eq_union, List.foldr_map, Finsupp.mem_support_iff, exists_prop]
   induction' l with hd tl IH
   · simp
@@ -66,14 +66,14 @@ theorem List.mem_foldr_sup_support_iff [Zero M] {l : List (ι →₀ M)} {x : ι
 #align list.mem_foldr_sup_support_iff List.mem_foldr_sup_support_iff
 
 theorem Multiset.mem_sup_map_support_iff [Zero M] {s : Multiset (ι →₀ M)} {x : ι} :
-    x ∈ (s.map Finsupp.support).sup ↔ ∃ (f : ι →₀ M) (_ : f ∈ s), x ∈ f.support :=
+    x ∈ (s.map Finsupp.support).sup ↔ ∃ f ∈ s, x ∈ f.support :=
   Quot.inductionOn s fun _ ↦ by
     simpa only [Multiset.quot_mk_to_coe'', Multiset.coe_map, Multiset.sup_coe, List.foldr_map]
     using List.mem_foldr_sup_support_iff
 #align multiset.mem_sup_map_support_iff Multiset.mem_sup_map_support_iff
 
 theorem Finset.mem_sup_support_iff [Zero M] {s : Finset (ι →₀ M)} {x : ι} :
-    x ∈ s.sup Finsupp.support ↔ ∃ (f : ι →₀ M) (_ : f ∈ s), x ∈ f.support :=
+    x ∈ s.sup Finsupp.support ↔ ∃ f ∈ s, x ∈ f.support :=
   Multiset.mem_sup_map_support_iff
 #align finset.mem_sup_support_iff Finset.mem_sup_support_iff
 
@@ -107,7 +107,7 @@ theorem Multiset.support_sum_eq [AddCommMonoid M] (s : Multiset (ι →₀ M))
       simp only [quot_mk_to_coe'', coe_map, sup_coe, ge_iff_le, Finset.le_eq_subset,
         Finset.sup_eq_union, Finset.bot_eq_empty, List.foldr_map]
   · simp only [Multiset.quot_mk_to_coe'', Multiset.coe_map, Multiset.coe_eq_coe] at hl
-    exact hl.symm.pairwise hd fun _ _ h ↦ _root_.Disjoint.symm h
+    exact hl.symm.pairwise hd fun h ↦ _root_.Disjoint.symm h
 #align multiset.support_sum_eq Multiset.support_sum_eq
 
 theorem Finset.support_sum_eq [AddCommMonoid M] (s : Finset (ι →₀ M))

@@ -82,3 +82,29 @@ theorem Polynomial.lift_of_splits {F K L : Type*} [Field F] [Field K] [Field L] 
 #align lift_of_splits Polynomial.lift_of_splits
 
 end Embeddings
+
+variable {R K L M : Type*} [CommRing R] [Field K] [Field L] [CommRing M] [Algebra R K] [Algebra R L]
+  [Algebra R M] {x : L} (int : IsIntegral R x) (h : Splits (algebraMap R K) (minpoly R x))
+
+theorem IsIntegral.mem_range_algHom_of_minpoly_splits (f : K →ₐ[R] L) : x ∈ f.range :=
+  show x ∈ Set.range f from Set.image_subset_range _ _ <| by
+    rw [image_rootSet h f, mem_rootSet']
+    exact ⟨((minpoly.monic int).map _).ne_zero, minpoly.aeval R x⟩
+
+theorem IsIntegral.mem_range_algebraMap_of_minpoly_splits [Algebra K L] [IsScalarTower R K L] :
+    x ∈ (algebraMap K L).range :=
+  int.mem_range_algHom_of_minpoly_splits h (IsScalarTower.toAlgHom R K L)
+
+variable [Algebra K M] [IsScalarTower R K M] {x : M} (int : IsIntegral R x)
+
+theorem IsIntegral.minpoly_splits_tower_top' {f : K →+* L}
+    (h : Splits (f.comp <| algebraMap R K) (minpoly R x)) :
+    Splits f (minpoly K x) :=
+  splits_of_splits_of_dvd _ ((minpoly.monic int).map _).ne_zero
+    ((splits_map_iff _ _).mpr h) (minpoly.dvd_map_of_isScalarTower R _ x)
+
+theorem IsIntegral.minpoly_splits_tower_top [Algebra K L] [IsScalarTower R K L]
+    (h : Splits (algebraMap R L) (minpoly R x)) :
+    Splits (algebraMap K L) (minpoly K x) := by
+  rw [IsScalarTower.algebraMap_eq R K L] at h
+  exact int.minpoly_splits_tower_top' h

@@ -10,7 +10,7 @@ import Mathlib.Tactic.Basic
 import Std.Util.LibraryNote
 import Std.Tactic.Lint.Basic
 
-#align_import logic.basic from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
+#align_import logic.basic from "leanprover-community/mathlib"@"3365b20c2ffa7c35e47e5209b89ba9abdddf3ffe"
 
 /-!
 # Basic logic properties
@@ -281,12 +281,15 @@ theorem Iff.not_right (h : ¬a ↔ b) : a ↔ ¬b := not_not.symm.trans h.not
 
 protected lemma Iff.ne {α β : Sort*} {a b : α} {c d : β} : (a = b ↔ c = d) → (a ≠ b ↔ c ≠ d) :=
   Iff.not
+#align iff.ne Iff.ne
 
 lemma Iff.ne_left {α β : Sort*} {a b : α} {c d : β} : (a = b ↔ c ≠ d) → (a ≠ b ↔ c = d) :=
   Iff.not_left
+#align iff.ne_left Iff.ne_left
 
 lemma Iff.ne_right {α β : Sort*} {a b : α} {c d : β} : (a ≠ b ↔ c = d) → (a = b ↔ c ≠ d) :=
   Iff.not_right
+#align iff.ne_right Iff.ne_right
 
 /-! ### Declarations about `Xor'` -/
 
@@ -524,23 +527,17 @@ theorem ball_mem_comm {α β} [Membership α β] {s : β} {p : α → α → Pro
   ball_cond_comm
 #align ball_mem_comm ball_mem_comm
 
-theorem ne_of_apply_ne {α β : Sort*} (f : α → β) {x y : α} (h : f x ≠ f y) : x ≠ y :=
-  fun w : x = y ↦ h (congr_arg f w)
 #align ne_of_apply_ne ne_of_apply_ne
 
 theorem eq_equivalence : Equivalence (@Eq α) :=
   ⟨Eq.refl, @Eq.symm _, @Eq.trans _⟩
 #align eq_equivalence eq_equivalence
 
-@[simp] theorem eq_mp_eq_cast (h : α = β) : Eq.mp h = cast h := rfl
+-- These were migrated to Std but the `@[simp]` attributes were (mysteriously?) removed.
+attribute [simp] eq_mp_eq_cast eq_mpr_eq_cast
+
 #align eq_mp_eq_cast eq_mp_eq_cast
-
-@[simp] theorem eq_mpr_eq_cast (h : α = β) : Eq.mpr h = cast h.symm := rfl
 #align eq_mpr_eq_cast eq_mpr_eq_cast
-
-@[simp] theorem cast_cast : ∀ (ha : α = β) (hb : β = γ) (a : α),
-    cast hb (cast ha a) = cast (ha.trans hb) a
-  | rfl, rfl, _ => rfl
 #align cast_cast cast_cast
 
 -- @[simp] -- FIXME simp ignores proof rewrites
@@ -566,12 +563,7 @@ theorem congr_fun_congr_arg (f : α → β → γ) {a a' : α} (p : a = a') (b :
     congr_fun (congr_arg f p) b = congr_arg (fun a ↦ f a b) p := rfl
 #align congr_fun_congr_arg congr_fun_congr_arg
 
-theorem heq_of_cast_eq : ∀ (e : α = β) (_ : cast e a = a'), HEq a a'
-  | rfl, h => Eq.recOn h (HEq.refl _)
 #align heq_of_cast_eq heq_of_cast_eq
-
-theorem cast_eq_iff_heq : cast e a = a' ↔ HEq a a' :=
-  ⟨heq_of_cast_eq _, fun h ↦ by cases h; rfl⟩
 #align cast_eq_iff_heq cast_eq_iff_heq
 
 theorem Eq.rec_eq_cast {α : Sort _} {P : α → Sort _} {x y : α} (h : x = y) (z : P x) :
@@ -595,36 +587,16 @@ theorem heq_rec_iff_heq {C : α → Sort*} {x : β} {y : C a} {e : a = b} :
     HEq x (e ▸ y) ↔ HEq x y := by subst e; rfl
 #align heq_rec_iff_heq heq_rec_iff_heq
 
-protected theorem Eq.congr (h₁ : x₁ = y₁) (h₂ : x₂ = y₂) : x₁ = x₂ ↔ y₁ = y₂ := by
-  subst h₁; subst h₂; rfl
 #align eq.congr Eq.congr
-
-theorem Eq.congr_left {x y z : α} (h : x = y) : x = z ↔ y = z := by rw [h]
 #align eq.congr_left Eq.congr_left
-
-theorem Eq.congr_right {x y z : α} (h : x = y) : z = x ↔ z = y := by rw [h]
 #align eq.congr_right Eq.congr_right
-
-alias congr_arg₂ := congrArg₂
 #align congr_arg2 congr_arg₂
 
 variable {β : α → Sort*} {γ : ∀ a, β a → Sort*} {δ : ∀ a b, γ a b → Sort*}
 
-theorem congr_fun₂ {f g : ∀ a b, γ a b} (h : f = g) (a : α) (b : β a) : f a b = g a b :=
-  congr_fun (congr_fun h _) _
 #align congr_fun₂ congr_fun₂
-
-theorem congr_fun₃ {f g : ∀ a b c, δ a b c} (h : f = g) (a : α) (b : β a) (c : γ a b) :
-    f a b c = g a b c :=
-  congr_fun₂ (congr_fun h _) _ _
 #align congr_fun₃ congr_fun₃
-
-theorem funext₂ {f g : ∀ a b, γ a b} (h : ∀ a b, f a b = g a b) : f = g :=
-  funext fun _ ↦ funext <| h _
 #align funext₂ funext₂
-
-theorem funext₃ {f g : ∀ a b c, δ a b c} (h : ∀ a b c, f a b c = g a b c) : f = g :=
-  funext fun _ ↦ funext₂ <| h _
 #align funext₃ funext₃
 
 end Equality
@@ -1214,8 +1186,6 @@ protected theorem Ne.ite_ne_right_iff (h : a ≠ b) : ite P a b ≠ b ↔ P :=
 
 variable (P Q a b)
 
-/-- A `dite` whose results do not actually depend on the condition may be reduced to an `ite`. -/
-@[simp] theorem dite_eq_ite : (dite P (fun _ ↦ a) fun _ ↦ b) = ite P a b := rfl
 #align dite_eq_ite dite_eq_ite
 
 theorem dite_eq_or_eq : (∃ h, dite P A B = A h) ∨ ∃ h, dite P A B = B h :=

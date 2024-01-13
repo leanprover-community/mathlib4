@@ -258,6 +258,10 @@ theorem powersetCard_cons (n : ℕ) (a : α) (s) :
   Quotient.inductionOn s fun l => by simp [powersetCard_coe']
 #align multiset.powerset_len_cons Multiset.powersetCard_cons
 
+theorem powersetCard_one (s : Multiset α) : powersetCard 1 s = s.map singleton :=
+  Quotient.inductionOn s fun l ↦ by
+    simp [powersetCard_coe, sublistsLen_one, map_reverse, Function.comp]
+
 @[simp]
 theorem mem_powersetCard {n : ℕ} {s t : Multiset α} : s ∈ powersetCard n t ↔ s ≤ t ∧ card s = n :=
   Quotient.inductionOn t fun l => by simp [powersetCard_coe']
@@ -283,15 +287,15 @@ theorem powersetCard_mono (n : ℕ) {s t : Multiset α} (h : s ≤ t) :
 #align multiset.powerset_len_mono Multiset.powersetCard_mono
 
 @[simp]
-theorem powersetCard_empty {α : Type*} (n : ℕ) {s : Multiset α} (h : card s < n) :
+theorem powersetCard_eq_empty {α : Type*} (n : ℕ) {s : Multiset α} (h : card s < n) :
     powersetCard n s = 0 :=
   card_eq_zero.mp (Nat.choose_eq_zero_of_lt h ▸ card_powersetCard _ _)
-#align multiset.powerset_len_empty Multiset.powersetCard_empty
+#align multiset.powerset_len_empty Multiset.powersetCard_eq_empty
 
 @[simp]
 theorem powersetCard_card_add (s : Multiset α) {i : ℕ} (hi : 0 < i) :
     s.powersetCard (card s + i) = 0 :=
-  powersetCard_empty _ (lt_add_of_pos_right (card s) hi)
+  powersetCard_eq_empty _ (lt_add_of_pos_right (card s) hi)
 #align multiset.powerset_len_card_add Multiset.powersetCard_card_add
 
 theorem powersetCard_map {β : Type*} (f : α → β) (n : ℕ) (s : Multiset α) :
@@ -322,7 +326,7 @@ theorem nodup_powerset {s : Multiset α} : Nodup (powerset s) ↔ Nodup s :=
       simp only [quot_mk_to_coe, powerset_coe', coe_nodup]
       refine' (nodup_sublists'.2 h).map_on _
       exact fun x sx y sy e =>
-        (h.sublist_ext (mem_sublists'.1 sx) (mem_sublists'.1 sy)).1 (Quotient.exact e)⟩
+        (h.perm_iff_eq_of_sublist (mem_sublists'.1 sx) (mem_sublists'.1 sy)).1 (Quotient.exact e)⟩
 #align multiset.nodup_powerset Multiset.nodup_powerset
 
 alias ⟨Nodup.ofPowerset, Nodup.powerset⟩ := nodup_powerset

@@ -141,6 +141,20 @@ theorem mul_cancel_left_coe_nonZeroDivisors {x y : R'} {c : R'⁰} : (c : R') * 
   mul_cancel_left_mem_nonZeroDivisors c.prop
 #align mul_cancel_left_coe_non_zero_divisor mul_cancel_left_coe_nonZeroDivisors
 
+theorem dvd_cancel_right_mem_nonZeroDivisors {x y r : R'} (hr : r ∈ R'⁰) : x * r ∣ y * r ↔ x ∣ y :=
+  ⟨fun ⟨z, _⟩ ↦ ⟨z, by rwa [← mul_cancel_right_mem_nonZeroDivisors hr, mul_assoc, mul_comm z r,
+    ← mul_assoc]⟩, fun ⟨z, h⟩ ↦ ⟨z, by rw [h, mul_assoc, mul_comm z r, ← mul_assoc]⟩⟩
+
+theorem dvd_cancel_right_coe_nonZeroDivisors {x y : R'} {c : R'⁰} : x * c ∣ y * c ↔ x ∣ y :=
+  dvd_cancel_right_mem_nonZeroDivisors c.prop
+
+theorem dvd_cancel_left_mem_nonZeroDivisors {x y r : R'} (hr : r ∈ R'⁰) : r * x ∣ r * y ↔ x ∣ y :=
+  ⟨fun ⟨z, _⟩ ↦ ⟨z, by rwa [← mul_cancel_left_mem_nonZeroDivisors hr, ← mul_assoc]⟩,
+    fun ⟨z, h⟩ ↦ ⟨z, by rw [h, ← mul_assoc]⟩⟩
+
+theorem dvd_cancel_left_coe_nonZeroDivisors {x y : R'} {c : R'⁰} : c * x ∣ c * y ↔ x ∣ y :=
+  dvd_cancel_left_mem_nonZeroDivisors c.prop
+
 theorem nonZeroDivisors.ne_zero [Nontrivial M] {x} (hx : x ∈ M⁰) : x ≠ 0 := fun h ↦
   one_ne_zero (hx _ <| (one_mul _).trans h)
 #align non_zero_divisors.ne_zero nonZeroDivisors.ne_zero
@@ -220,22 +234,10 @@ theorem nonZeroDivisors_le_comap_nonZeroDivisors_of_injective [NoZeroDivisors M'
   Submonoid.le_comap_of_map_le _ (map_le_nonZeroDivisors_of_injective _ hf le_rfl)
 #align non_zero_divisors_le_comap_non_zero_divisors_of_injective nonZeroDivisors_le_comap_nonZeroDivisors_of_injective
 
+@[deprecated Multiset.prod_eq_zero_iff] -- since 26 Dec 2023
 theorem prod_zero_iff_exists_zero [NoZeroDivisors M₁] [Nontrivial M₁] {s : Multiset M₁} :
     s.prod = 0 ↔ ∃ (r : M₁) (_ : r ∈ s), r = 0 := by
-  constructor; swap
-  · rintro ⟨r, hrs, rfl⟩
-    exact Multiset.prod_eq_zero hrs
-  induction' s using Multiset.induction_on with a s ih
-  · intro habs
-    simp at habs
-  · rw [Multiset.prod_cons]
-    intro hprod
-    replace hprod := eq_zero_or_eq_zero_of_mul_eq_zero hprod
-    cases' hprod with ha hb
-    · exact ⟨a, Multiset.mem_cons_self a s, ha⟩
-    · apply (ih hb).imp _
-      rintro b ⟨hb₁, hb₂⟩
-      exact ⟨Multiset.mem_cons_of_mem hb₁, hb₂⟩
+  simp [Multiset.prod_eq_zero_iff]
 #align prod_zero_iff_exists_zero prod_zero_iff_exists_zero
 
 end nonZeroDivisors
@@ -251,13 +253,13 @@ lemma mem_nonZeroSMulDivisors_iff {x : R} : x ∈ R⁰[M] ↔ ∀ (m : M), x •
 variable (R)
 
 @[simp]
-lemma unop_nonZeroSmulDivisors_mulOpposite_eq_nonZeroDivisors :
+lemma unop_nonZeroSMulDivisors_mulOpposite_eq_nonZeroDivisors :
     (Rᵐᵒᵖ ⁰[R]).unop = R⁰ := rfl
 
 /-- The non-zero `•`-divisors with `•` as right multiplication correspond with the non-zero
 divisors. Note that the `MulOpposite` is needed because we defined `nonZeroDivisors` with
 multiplication on the right. -/
-lemma nonZeroSmulDivisors_mulOpposite_eq_op_nonZeroDivisors :
+lemma nonZeroSMulDivisors_mulOpposite_eq_op_nonZeroDivisors :
     Rᵐᵒᵖ ⁰[R] = R⁰.op := rfl
 
 end nonZeroSMulDivisors

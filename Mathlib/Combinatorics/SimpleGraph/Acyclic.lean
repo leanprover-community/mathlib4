@@ -66,7 +66,7 @@ variable {G}
 @[simp] lemma isAcyclic_bot : IsAcyclic (⊥ : SimpleGraph V) := λ _a _w hw ↦ hw.ne_bot rfl
 
 theorem isAcyclic_iff_forall_adj_isBridge :
-    G.IsAcyclic ↔ ∀ ⦃v w : V⦄, G.Adj v w → G.IsBridge ⟦(v, w)⟧ := by
+    G.IsAcyclic ↔ ∀ ⦃v w : V⦄, G.Adj v w → G.IsBridge s(v, w) := by
   simp_rw [isBridge_iff_adj_and_forall_cycle_not_mem]
   constructor
   · intro ha v w hvw
@@ -134,7 +134,7 @@ theorem isAcyclic_iff_path_unique : G.IsAcyclic ↔ ∀ ⦃v w : V⦄ (p q : G.P
 theorem isTree_iff_existsUnique_path :
     G.IsTree ↔ Nonempty V ∧ ∀ v w : V, ∃! p : G.Walk v w, p.IsPath := by
   classical
-  rw [IsTree_iff, isAcyclic_iff_path_unique]
+  rw [isTree_iff, isAcyclic_iff_path_unique]
   constructor
   · rintro ⟨hc, hu⟩
     refine ⟨hc.nonempty, ?_⟩
