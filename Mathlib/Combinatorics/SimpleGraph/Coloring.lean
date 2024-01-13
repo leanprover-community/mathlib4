@@ -31,9 +31,10 @@ a complete graph, whose vertices represent the colors.
   is whether there exists a coloring with at most *n* colors.
 
 * `G.chromaticNumber` is the minimal `n` such that `G` is
-  `n`-colorable, or `∞` if it cannot be colored with finitely many
+  `n`-colorable, or `⊤` if it cannot be colored with finitely many
   colors.
   (Cardinal-valued chromatic numbers are more niche, so we stick to `ℕ∞`.)
+  We write `G.chromaticNumber ≠ ⊤` to mean a graph is colorable with finitely many colors.
 
 * `C.colorClass c` is the set of vertices colored by `c : α` in the
   coloring `C : G.Coloring α`.
@@ -159,13 +160,20 @@ def selfColoring : G.Coloring V := Coloring.mk id fun {_ _} => G.ne_of_adj
 #align simple_graph.self_coloring SimpleGraph.selfColoring
 
 /-- The chromatic number of a graph is the minimal number of colors needed to color it.
-This is `∞` iff `G` isn't colorable with finitely many colors.
+This is `⊤` (infinity) iff `G` isn't colorable with finitely many colors.
 
 If `G` is colorable, then `ENat.toNat G.chromaticNumber` is the `ℕ`-valued chromatic number. -/
-noncomputable def chromaticNumber : ℕ∞ := ⨅ n ∈ setOf G.Colorable, ↑n
+noncomputable def chromaticNumber : ℕ∞ := ⨅ n ∈ setOf G.Colorable, (n : ℕ∞)
 #align simple_graph.chromatic_number SimpleGraph.chromaticNumber
 
-theorem Colorable.chromaticNumber_def {G : SimpleGraph V} {n} (h : G.Colorable n) :
+lemma chromaticNumber_eq_biInf {G : SimpleGraph V} :
+    G.chromaticNumber = ⨅ n ∈ setOf G.Colorable, (n : ℕ∞) := rfl
+
+lemma chromaticNumber_eq_iInf {G : SimpleGraph V} :
+    G.chromaticNumber = ⨅ n : {m | G.Colorable m}, (n : ℕ∞) := by
+  rw [chromaticNumber, iInf_subtype]
+
+lemma Colorable.chromaticNumber_eq_sInf {G : SimpleGraph V} {n} (h : G.Colorable n) :
     G.chromaticNumber = sInf {n' : ℕ | G.Colorable n'} := by
   rw [ENat.coe_sInf, chromaticNumber]
   exact ⟨_, h⟩
@@ -255,43 +263,33 @@ theorem chromaticNumber_bddBelow : BddBelow { n : ℕ | G.Colorable n } :=
   ⟨0, fun _ _ => zero_le _⟩
 #align simple_graph.chromatic_number_bdd_below SimpleGraph.chromaticNumber_bddBelow
 
-theorem chromaticNumber_le_of_colorable {n : ℕ} (hc : G.Colorable n) : G.chromaticNumber ≤ n := by
-  rw [hc.chromaticNumber_def]
+theorem Colorable.chromaticNumber_le {n : ℕ} (hc : G.Colorable n) : G.chromaticNumber ≤ n := by
+  rw [hc.chromaticNumber_eq_sInf]
   norm_cast
   apply csInf_le chromaticNumber_bddBelow
-  constructor
-  exact Classical.choice hc
-#align simple_graph.chromatic_number_le_of_colorable SimpleGraph.chromaticNumber_le_of_colorable
+  exact hc
+#align simple_graph.chromatic_number_le_of_colorable SimpleGraph.Colorable.chromaticNumber_le
 
-theorem colorable_of_chromaticNumber_le {n : ℕ} (h : G.chromaticNumber ≤ n) : G.Colorable n := by
-  rw [chromaticNumber] at h
-  have h : ⨅ m : {m | G.Colorable m}, ↑m ≤ (n : ℕ∞) := by
-    rw [iInf_subtype]
-    exact h
-  have : ⨅ m : {m | G.Colorable m}, ↑m < (⊤ : ℕ∞) := by
-    exact Trans.trans h (show n < (⊤ : ℕ∞) by rw [← cmp_eq_gt_iff]; rfl)
-  rw [ENat.iInf_coe_lt_top] at this
-  have h : sInf {m | G.Colorable m} ≤ n := by
-    rw [← ENat.coe_iInf, ← sInf_range] at h
-    simp only [Set.coe_setOf, Set.mem_setOf_eq, Subtype.range_coe_subtype, Nat.cast_le] at h
-    exact h
-  have := Nat.sInf_mem (Set.nonempty_coe_sort.mp this)
+theorem chromaticNumber_ne_top_iff_exists : G.chromaticNumber ≠ ⊤ ↔ ∃ n, G.Colorable n := by
+  rw [chromaticNumber]
+  convert_to ⨅ n : {m | G.Colorable m}, (n : ℕ∞) ≠ ⊤ ↔ _
+  · rw [iInf_subtype]
+  rw [← lt_top_iff_ne_top, ENat.iInf_coe_lt_top]
+  simp
+
+theorem chromaticNumber_le_iff_colorable {n : ℕ} : G.chromaticNumber ≤ n ↔ G.Colorable n := by
+  refine ⟨fun h ↦ ?_, Colorable.chromaticNumber_le⟩
+  have : G.chromaticNumber ≠ ⊤ := (trans h (WithTop.coe_lt_top n)).ne
+  rw [chromaticNumber_ne_top_iff_exists] at this
+  obtain ⟨m, hm⟩ := this
+  rw [hm.chromaticNumber_eq_sInf, Nat.cast_le] at h
+  have := Nat.sInf_mem (⟨m, hm⟩ : {n' | G.Colorable n'}.Nonempty)
   rw [Set.mem_setOf_eq] at this
   exact this.mono h
 
-theorem chromaticNumber_le_iff_colorable {n : ℕ} : G.chromaticNumber ≤ n ↔ G.Colorable n :=
-  ⟨colorable_of_chromaticNumber_le, chromaticNumber_le_of_colorable⟩
-
-theorem chromaticNumber_lt_top_iff_exists : G.chromaticNumber < ⊤ ↔ ∃ n, G.Colorable n := by
-  rw [chromaticNumber]
-  convert_to ⨅ n : {m | G.Colorable m}, (n : ℕ∞) < ⊤ ↔ _
-  · rw [iInf_subtype]
-  rw [ENat.iInf_coe_lt_top]
-  simp
-
 theorem chromaticNumber_le_card [Fintype α] (C : G.Coloring α) :
     G.chromaticNumber ≤ Fintype.card α := by
-  rw [C.colorable.chromaticNumber_def]
+  rw [C.colorable.chromaticNumber_eq_sInf]
   norm_cast
   exact csInf_le chromaticNumber_bddBelow C.colorable
 #align simple_graph.chromatic_number_le_card SimpleGraph.chromaticNumber_le_card
@@ -299,7 +297,7 @@ theorem chromaticNumber_le_card [Fintype α] (C : G.Coloring α) :
 theorem colorable_chromaticNumber {m : ℕ} (hc : G.Colorable m) :
     G.Colorable (ENat.toNat G.chromaticNumber) := by
   classical
-  rw [hc.chromaticNumber_def, Nat.sInf_def]
+  rw [hc.chromaticNumber_eq_sInf, Nat.sInf_def]
   apply Nat.find_spec
   exact colorable_set_nonempty_of_colorable hc
 #align simple_graph.colorable_chromatic_number SimpleGraph.colorable_chromaticNumber
@@ -333,7 +331,7 @@ theorem isEmpty_of_chromaticNumber_eq_zero (G : SimpleGraph V) [Finite V]
 #align simple_graph.is_empty_of_chromatic_number_eq_zero SimpleGraph.isEmpty_of_chromaticNumber_eq_zero
 
 theorem chromaticNumber_pos [Nonempty V] {n : ℕ} (hc : G.Colorable n) : 0 < G.chromaticNumber := by
-  rw [hc.chromaticNumber_def, Nat.cast_pos]
+  rw [hc.chromaticNumber_eq_sInf, Nat.cast_pos]
   apply le_csInf (colorable_set_nonempty_of_colorable hc)
   intro m hm
   by_contra h'
@@ -343,12 +341,12 @@ theorem chromaticNumber_pos [Nonempty V] {n : ℕ} (hc : G.Colorable n) : 0 < G.
   exact Nat.not_lt_zero _ h₁
 #align simple_graph.chromatic_number_pos SimpleGraph.chromaticNumber_pos
 
-theorem colorable_of_chromaticNumber_lt_top (h : G.chromaticNumber < ⊤) :
+theorem colorable_of_chromaticNumber_ne_top (h : G.chromaticNumber ≠ ⊤) :
     G.Colorable (ENat.toNat G.chromaticNumber) := by
-  rw [chromaticNumber_lt_top_iff_exists] at h
+  rw [chromaticNumber_ne_top_iff_exists] at h
   obtain ⟨n, hn⟩ := h
   exact colorable_chromaticNumber hn
-#align simple_graph.colorable_of_chromatic_number_pos SimpleGraph.colorable_of_chromaticNumber_lt_top
+#align simple_graph.colorable_of_chromatic_number_pos SimpleGraph.colorable_of_chromaticNumber_ne_top
 
 theorem Colorable.mono_left {G' : SimpleGraph V} (h : G ≤ G') {n : ℕ} (hc : G'.Colorable n) :
     G.Colorable n :=
@@ -380,7 +378,7 @@ theorem chromaticNumber_eq_card_of_forall_surj [Fintype α] (C : G.Coloring α)
     (h : ∀ C' : G.Coloring α, Function.Surjective C') : G.chromaticNumber = Fintype.card α := by
   apply le_antisymm
   · apply chromaticNumber_le_card C
-  · rw [C.colorable.chromaticNumber_def, Nat.cast_le]
+  · rw [C.colorable.chromaticNumber_eq_sInf, Nat.cast_le]
     by_contra hc
     rw [not_le] at hc
     obtain ⟨n, cn, hc⟩ :=
@@ -417,8 +415,7 @@ theorem chromaticNumber_top [Fintype V] : (⊤ : SimpleGraph V).chromaticNumber 
 theorem chromaticNumber_top_eq_top_of_infinite (V : Type*) [Infinite V] :
     (⊤ : SimpleGraph V).chromaticNumber = ⊤ := by
   by_contra hc
-  replace hc := Ne.lt_top hc
-  rw [chromaticNumber_lt_top_iff_exists] at hc
+  rw [← Ne.def, chromaticNumber_ne_top_iff_exists] at hc
   obtain ⟨n, ⟨hn⟩⟩ := hc
   exact not_injective_infinite_finite _ hn.injective_of_top_hom
 #align simple_graph.chromatic_number_top_eq_zero_of_infinite SimpleGraph.chromaticNumber_top_eq_top_of_infinite
@@ -474,8 +471,8 @@ theorem IsClique.card_le_chromaticNumber {s : Finset V} (h : G.IsClique s) :
   obtain (hc | hc) := eq_or_ne G.chromaticNumber ⊤
   · rw [hc]
     exact le_top
-  · have hc' := Ne.lt_top hc
-    rw [chromaticNumber_lt_top_iff_exists] at hc'
+  · have hc' := hc
+    rw [chromaticNumber_ne_top_iff_exists] at hc'
     obtain ⟨n, c⟩ := hc'
     rw [← ENat.coe_toNat_eq_self] at hc
     rw [← hc, Nat.cast_le]
@@ -492,9 +489,8 @@ protected theorem Colorable.cliqueFree {n m : ℕ} (hc : G.Colorable n) (hm : n 
 
 theorem cliqueFree_of_chromaticNumber_lt {n : ℕ} (hc : G.chromaticNumber < n) :
     G.CliqueFree n := by
-  have : G.chromaticNumber < ⊤ := Trans.trans hc (show n < (⊤ : ℕ∞) by rw [← cmp_eq_gt_iff]; rfl)
-  have hne : G.chromaticNumber ≠ ⊤ := ne_top_of_lt hc
-  obtain ⟨m, hc'⟩ := chromaticNumber_lt_top_iff_exists.mp this
+  have hne : G.chromaticNumber ≠ ⊤ := hc.ne_top
+  obtain ⟨m, hc'⟩ := chromaticNumber_ne_top_iff_exists.mp hne
   have := colorable_chromaticNumber hc'
   refine this.cliqueFree ?_
   rw [← ENat.coe_toNat_eq_self] at hne
