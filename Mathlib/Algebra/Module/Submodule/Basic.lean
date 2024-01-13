@@ -402,6 +402,11 @@ theorem coe_restrictScalars (V : Submodule R M) : (V.restrictScalars S : Set M) 
 #align submodule.coe_restrict_scalars Submodule.coe_restrictScalars
 
 @[simp]
+theorem toAddSubmonoid_restrictScalars (V : Submodule R M) :
+    (V.restrictScalars S).toAddSubmonoid = V.toAddSubmonoid :=
+  rfl
+
+@[simp]
 theorem restrictScalars_mem (V : Submodule R M) (m : M) : m ∈ V.restrictScalars S ↔ m ∈ V :=
   Iff.refl _
 #align submodule.restrict_scalars_mem Submodule.restrictScalars_mem

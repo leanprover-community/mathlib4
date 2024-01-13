@@ -85,6 +85,47 @@ instance instIsScalarTowerOrigPolynomial : IsScalarTower R R[X] <| AEval R M a w
 instance instFinitePolynomial [Finite R M] : Finite R[X] <| AEval R M a :=
   Finite.of_restrictScalars_finite R _ _
 
+section Submodule
+
+variable {p : Submodule R M} (hp : p ≤ p.comap (Algebra.lsmul R R M a))
+  {q : Submodule R[X] <| AEval R M a}
+
+variable (R M) in
+def submoduleLatticeHom :
+    CompleteLatticeHom (Submodule R[X] <| AEval R M a) (Submodule R M) :=
+  (Submodule.orderIsoMapComap (of R M a)).symm.toCompleteLatticeHom.comp <|
+    Submodule.restrictScalarsLatticeHom R[X] R (AEval R M a)
+
+@[simp] lemma mem_submoduleLatticeHom q {x : M} :
+    x ∈ submoduleLatticeHom R M a q ↔ of R M a x ∈ q :=
+  Iff.rfl
+
+@[simp] lemma submoduleLatticeHom_le_comap :
+    submoduleLatticeHom R M a q ≤ (submoduleLatticeHom R M a q).comap (Algebra.lsmul R R M a) := by
+  intro m hm
+  simpa only [Submodule.mem_comap, Algebra.lsmul_coe, mem_submoduleLatticeHom, ← X_smul_of] using
+    q.smul_mem (X : R[X]) hm
+
+/-- An `R`-submodule which is stable under the action of `a` can be promoted to an
+`R[X]`-submodule. -/
+def extendScalars : Submodule R[X] <| AEval R M a :=
+  { toAddSubmonoid := p.toAddSubmonoid.map (of R M a)
+    smul_mem' := by
+      rintro f - ⟨m : M, h : m ∈ p, rfl⟩
+      simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup, AddSubmonoid.mem_map,
+        Submodule.mem_toAddSubmonoid]
+      exact ⟨aeval a f • m, aeval_apply_smul_mem_of_le_comap' h f a hp, of_aeval_smul a f m⟩ }
+
+@[simp] lemma mem_extendScalars {m : AEval R M a} :
+    m ∈ extendScalars a hp ↔ (of R M a).symm m ∈ p :=
+  ⟨fun ⟨_, hm, hm'⟩ ↦ hm'.symm ▸ hm, fun hm ↦ ⟨(of R M a).symm m, hm, rfl⟩⟩
+
+@[simp] lemma submoduleLatticeHom_extendScalars :
+    submoduleLatticeHom R M a (extendScalars a hp) = p := by
+  ext; simp
+
+end Submodule
+
 end AEval
 
 variable (φ : M →ₗ[R] M)
