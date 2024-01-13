@@ -138,7 +138,7 @@ theorem range_subset_insert_image_mulSupport (f : α → M) :
 @[to_additive]
 lemma range_eq_image_or_of_mulSupport_subset {f : α → M} {k : Set α} (h : mulSupport f ⊆ k) :
     range f = f '' k ∨ range f = insert 1 (f '' k) := by
-  apply (wcovby_insert _ _).eq_or_eq (image_subset_range _ _)
+  apply (wcovBy_insert _ _).eq_or_eq (image_subset_range _ _)
   exact (range_subset_insert_image_mulSupport f).trans (insert_subset_insert (image_subset f h))
 
 @[to_additive (attr := simp)]
