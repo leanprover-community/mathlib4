@@ -152,6 +152,14 @@ lemma smul_set_closure_subset (K : Set M) (L : Set X) :
   Set.smul_subset_iff.2 fun _x hx _y hy ↦ map_mem_closure₂ continuous_smul hx hy fun _a ha _b hb ↦
     Set.smul_mem_smul ha hb
 
+@[to_additive]
+lemma Inducing.continuousSMul {N : Type*} [SMul N Y] [TopologicalSpace N] {f : N → M}
+    (hg : Inducing g) (hf : Continuous f) (hsmul : ∀ {c x}, g (c • x) = f c • g x) :
+    ContinuousSMul N Y where
+  continuous_smul := by
+    simpa only [hg.continuous_iff, Function.comp_def, hsmul]
+      using (hf.comp continuous_fst).smul <| hg.continuous.comp continuous_snd
+
 end SMul
 
 section Monoid
@@ -159,10 +167,8 @@ section Monoid
 variable [Monoid M] [MulAction M X] [ContinuousSMul M X]
 
 @[to_additive]
-instance Units.continuousSMul : ContinuousSMul Mˣ X where
-  continuous_smul :=
-    show Continuous ((fun p : M × X => p.fst • p.snd) ∘ fun p : Mˣ × X => (p.1, p.2)) from
-      continuous_smul.comp ((Units.continuous_val.comp continuous_fst).prod_mk continuous_snd)
+instance Units.continuousSMul : ContinuousSMul Mˣ X :=
+  inducing_id.continuousSMul Units.continuous_val rfl
 #align units.has_continuous_smul Units.continuousSMul
 #align add_units.has_continuous_vadd AddUnits.continuousVAdd
 
@@ -176,6 +182,10 @@ theorem MulAction.continuousSMul_compHom
   let _ : MulAction N X := MulAction.compHom _ f
   exact ⟨(hf.comp continuous_fst).smul continuous_snd⟩
 
+@[to_additive]
+instance Submonoid.continuousSMul {S : Submonoid M} : ContinuousSMul S X :=
+  inducing_id.continuousSMul continuous_subtype_val rfl
+
 end Monoid
 
 section Group
@@ -183,12 +193,8 @@ section Group
 variable [Group M] [MulAction M X] [ContinuousSMul M X]
 
 @[to_additive]
-instance Submonoid.continuousSMul {S : Submonoid M} : ContinuousSMul S X where
-  continuous_smul := (continuous_subtype_val.comp continuous_fst).smul continuous_snd
-
-@[to_additive]
-instance Subgroup.continuousSMul {S : Subgroup M} : ContinuousSMul S X where
-  continuous_smul := (continuous_subtype_val.comp continuous_fst).smul continuous_snd
+instance Subgroup.continuousSMul {S : Subgroup M} : ContinuousSMul S X :=
+  S.toSubmonoid.continuousSMul
 
 end Group
 
