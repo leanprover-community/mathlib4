@@ -380,15 +380,14 @@ theorem le_op_norm : ‖f m‖ ≤ ‖f‖ * ∏ i, ‖m i‖ := f.isLeast_op_no
 
 variable {f m}
 
-theorem le_mul_prod_of_le_op_norm_of_le {C : ℝ} {b : ι → ℝ} (hC : ‖f‖ ≤ C)
-    (hm : ∀ i, ‖m i‖ ≤ b i) : ‖f m‖ ≤ C * ∏ i, b i :=
+theorem le_mul_prod_of_le_op_norm_of_le {C : ℝ} {b : ι → ℝ} (hC : ‖f‖ ≤ C) (hm : ∀ i, ‖m i‖ ≤ b i) :
+    ‖f m‖ ≤ C * ∏ i, b i :=
   (f.le_op_norm m).trans <| mul_le_mul hC (prod_le_prod (fun _ _ ↦ norm_nonneg _) fun _ _ ↦ hm _)
     (prod_nonneg fun _ _ ↦ norm_nonneg _) ((op_norm_nonneg _).trans hC)
 
 variable (f)
 
-theorem le_op_norm_mul_prod_of_le {b : ι → ℝ} (hm : ∀ i, ‖m i‖ ≤ b i) :
-    ‖f m‖ ≤ ‖f‖ * ∏ i, b i :=
+theorem le_op_norm_mul_prod_of_le {b : ι → ℝ} (hm : ∀ i, ‖m i‖ ≤ b i) : ‖f m‖ ≤ ‖f‖ * ∏ i, b i :=
   le_mul_prod_of_le_op_norm_of_le le_rfl hm
 #align continuous_multilinear_map.le_op_norm_mul_prod_of_le ContinuousMultilinearMap.le_op_norm_mul_prod_of_le
 
@@ -426,8 +425,7 @@ theorem op_norm_le_bound {M : ℝ} (hMp : 0 ≤ M) (hM : ∀ m, ‖f m‖ ≤ M 
   csInf_le bounds_bddBelow ⟨hMp, hM⟩
 #align continuous_multilinear_map.op_norm_le_bound ContinuousMultilinearMap.op_norm_le_bound
 
-theorem op_norm_le_iff {C : ℝ} (hC : 0 ≤ C) :
-    ‖f‖ ≤ C ↔ ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖ :=
+theorem op_norm_le_iff {C : ℝ} (hC : 0 ≤ C) : ‖f‖ ≤ C ↔ ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖ :=
   ⟨fun h _ ↦ le_of_op_norm_le _ h, op_norm_le_bound _ hC⟩
 
 /-- The operator norm satisfies the triangle inequality. -/
