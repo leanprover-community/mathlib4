@@ -438,6 +438,13 @@ lemma of_restrict [OpensMeasurableSpace α] {μ : Measure α} {s : ℕ → Set �
     _ = μ (⋃ n, A n) + ∑' n, δ n := (congr_arg₂ (· + ·) (measure_iUnion hAd hAm).symm rfl)
     _ < r := hδε
 
+lemma measure_closure_eq_of_isCompact [T2OrLocallyCompactRegularSpace α] [OuterRegular μ]
+    {k : Set α} (hk : IsCompact k) : μ (closure k) = μ k := by
+  apply le_antisymm ?_ (measure_mono subset_closure)
+  simp only [measure_eq_iInf_isOpen k, le_iInf_iff]
+  intro u ku u_open
+  exact measure_mono (hk.closure_subset_of_isOpen u_open ku)
+
 end OuterRegular
 
 /-- If a measure `μ` admits finite spanning open sets such that the restriction of `μ` to each set
