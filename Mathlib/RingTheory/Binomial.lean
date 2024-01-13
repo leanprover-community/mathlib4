@@ -31,11 +31,13 @@ Pochhammer polynomial `X(X+1)⋯(X+(k-1))` at any element is divisible by `k!`. 
 
 * Replace `Nat.multichoose` with `Ring.multichoose`.
 * `Ring.choose` for binomial rings.
-* Generalize to the power-associative case, when power-associativity is implemented.
+* Generalize to the power-associative case (needs PR #9139).
 
 -/
 
 open Function
+
+section Multichoose
 
 /-- A binomial ring is a ring for which ascending Pochhammer evaluations are uniquely divisible by
 suitable factorials.  We define this notion for semirings, but retain the ring name.  We introduce
@@ -48,8 +50,6 @@ class BinomialRing (R : Type*) [Semiring R] where
   /-- `ascPochhammer R n` evaluated at any `r` is divisible by n! (witnessed by multichoose) -/
   factorial_nsmul_multichoose (r : R) (n : ℕ) :
     n.factorial • multichoose r n = Polynomial.eval r (ascPochhammer R n)
-
-section Binomial
 
 namespace Ring
 
@@ -67,7 +67,7 @@ def multichoose (r : R) (n : ℕ) : R := BinomialRing.multichoose r n
 theorem multichoose_eq_multichoose (r : R) (n : ℕ) :
     BinomialRing.multichoose r n = multichoose r n := rfl
 
-theorem factorial_nsmul_multichoose_eq_eval_ascPochhammer (r : R) (n : ℕ) :
+theorem factorial_nsmul_multichoose_eq_ascPochhammer (r : R) (n : ℕ) :
     n.factorial • multichoose r n = Polynomial.eval r (ascPochhammer R n) :=
   BinomialRing.factorial_nsmul_multichoose r n
 
@@ -78,7 +78,7 @@ instance Nat.instBinomialRing : BinomialRing ℕ where
   multichoose := Nat.multichoose
   factorial_nsmul_multichoose r n := by
     rw [Nat.multichoose_eq, smul_eq_mul, ← Nat.descFactorial_eq_factorial_mul_choose,
-    ascPochhammer_nat_eq_descFactorial]
+      ascPochhammer_nat_eq_descFactorial]
 
 /-- The multichoose function for integers. -/
 def Int.multichoose (n : ℤ) (k : ℕ) : ℤ := by
@@ -98,7 +98,31 @@ instance Int.instBinomialRing : BinomialRing ℤ where
         ascPochhammer_eval_cast]
     | negSucc n =>
       rw [mul_comm, mul_assoc, ← Nat.cast_mul, mul_comm _ (k.factorial),
-        ← Nat.descFactorial_eq_factorial_mul_choose, ← descPochhammer_int_eq_descFactorial,
+        ← Nat.descFactorial_eq_factorial_mul_choose, ← descPochhammer_eval_eq_descFactorial,
         ← Int.neg_ofNat_succ, ascPochhammer_eval_neg_eq_descPochhammer]
 
-end Binomial
+end Multichoose
+
+section Choose
+
+namespace Ring
+
+variable {R : Type*} [Ring R] [BinomialRing R]
+
+/-- The binomial coefficient `choose r n` generalizes the natural number `choose` function,
+  interpreted in terms of choosing without replacement. -/
+def choose (r : R) (n : ℕ): R := multichoose (r - n + 1) n
+
+theorem descPochhammer_eq_factorial_smul_choose (r : R) (n : ℕ) :
+    Polynomial.eval r (descPochhammer R n) = n.factorial • choose r n := by
+  rw [choose, factorial_nsmul_multichoose_eq_ascPochhammer, descPochhammer_eval_eq_ascPochhammer]
+
+theorem choose_nat_cast (n k : ℕ) : choose (n : R) k = Nat.choose n k := by
+  refine nsmul_right_injective (Nat.factorial k) (Nat.factorial_ne_zero k) ?_
+  simp only
+  rw [← descPochhammer_eq_factorial_smul_choose, nsmul_eq_mul, ← Nat.cast_mul,
+  ← Nat.descFactorial_eq_factorial_mul_choose, ← descPochhammer_eval_eq_descFactorial]
+
+end Ring
+
+end Choose

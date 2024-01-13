@@ -92,7 +92,7 @@ private theorem matrixOf_eval_descPochhammer_eq_mul_matrixOf_choose {n : ℕ} (v
     (∏ i : Fin n, Nat.factorial i) *
       (Matrix.of (fun (i j : Fin n) => (Nat.choose (v i) (j : ℕ) : ℤ))).det := by
   convert Matrix.det_mul_row (fun (i : Fin n) => ((Nat.factorial (i : ℕ)):ℤ)) _
-  · rw [Matrix.of_apply, descPochhammer_int_eq_descFactorial _ _]
+  · rw [Matrix.of_apply, descPochhammer_eval_eq_descFactorial ℤ _ _]
     congr
     exact Nat.descFactorial_eq_factorial_mul_choose _ _
   · rw [Nat.cast_prod]
