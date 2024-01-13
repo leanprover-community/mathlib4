@@ -68,7 +68,7 @@ def coherentCoverage [Precoherent C] : Coverage C where
 /--
 The coherent Grothendieck topology on a precoherent category `C`.
 -/
-def coherentTopology [Precoherent C] : GrothendieckTopology C :=
+abbrev coherentTopology [Precoherent C] : GrothendieckTopology C :=
   Coverage.toGrothendieck _ <| coherentCoverage C
 
 lemma isSheaf_coherent [Precoherent C] (P : Cᵒᵖ ⥤ Type w) :
