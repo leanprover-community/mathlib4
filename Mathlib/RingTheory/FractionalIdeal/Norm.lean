@@ -26,15 +26,13 @@ ideal of `R` and `I.den` an element of `R⁰` such that `I.den • I = I.num`.
    norm of its generator
 -/
 
-
-variable {R : Type*} [CommRing R]
-
 namespace FractionalIdeal
 
 open scoped Pointwise nonZeroDivisors
 
-variable [IsDomain R] [Infinite R] [IsDedekindDomain R] [Module.Free ℤ R] [Module.Finite ℤ R]
-  {K : Type*} [CommRing K] [Algebra R K] [IsFractionRing R K]
+variable {R : Type*} [CommRing R] [IsDedekindDomain R] [Module.Free ℤ R] [Module.Finite ℤ R]
+
+variable {K : Type*} [CommRing K] [Algebra R K] [IsFractionRing R K]
 
 theorem absNorm_div_norm_eq_absNorm_div_norm {I : FractionalIdeal R⁰ K} (a : R⁰) (I₀ : Ideal R)
     (h : a • (I : Submodule R K) = Submodule.map (Algebra.linearMap R K) I₀) :
