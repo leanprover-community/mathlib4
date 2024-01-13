@@ -38,8 +38,6 @@ set_option autoImplicit true
 /- Eq -/
 
 alias proof_irrel := proofIrrel
-alias congr_fun := congrFun
-alias congr_arg := congrArg
 
 @[deprecated] theorem trans_rel_left {α : Sort u} {a b c : α}
     (r : α → α → Prop) (h₁ : r a b) (h₂ : b = c) : r a c := h₂ ▸ h₁
