@@ -70,7 +70,7 @@ if [[ "$branch_name" =~ ^lean-pr-testing-([0-9]+)$ ]]; then
   existing_comment=$(curl -L -s -H "Authorization: token $TOKEN" \
                           -H "Accept: application/vnd.github.v3+json" \
                           "https://api.github.com/repos/leanprover/lean4/issues/$pr_number/comments" \
-                          | jq '.[] | select(.body | test("^- . Mathlib")) | select(.user.login == "leanprover-community-mathlib4-bot")')
+                          | jq 'first(.[] | select(.body | test("^- . Mathlib") or startswith("Mathlib CI status")) | select(.user.login == "leanprover-community-mathlib4-bot"))')
   existing_comment_id=$(echo "$existing_comment" | jq -r .id)
   existing_comment_body=$(echo "$existing_comment" | jq -r .body)
 
@@ -104,7 +104,7 @@ if [[ "$branch_name" =~ ^lean-pr-testing-([0-9]+)$ ]]; then
       -X POST \
       -H "Authorization: token $TOKEN" \
       -H "Accept: application/vnd.github.v3+json" \
-      -d "$(jq --null-input --arg intro "$intro" --arg val "$message" '{"body": "$intro + "\n" + $val}')" \
+      -d "$(jq --null-input --arg intro "$intro" --arg val "$message" '{"body": ($intro + "\n" + $val)}')" \
       "https://api.github.com/repos/leanprover/lean4/issues/$pr_number/comments"
   else
     # Append new result to the existing comment
