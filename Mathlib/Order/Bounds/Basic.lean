@@ -1638,14 +1638,10 @@ theorem isGLB_prod [Preorder α] [Preorder β] {s : Set (α × β)} (p : α × �
 
 lemma BddAbove.range_mono [Preorder β] {f : α → β} (g : α → β) (h : ∀ a, f a ≤ g a)
     (hbdd : BddAbove (Set.range g)) : BddAbove (Set.range f) := by
-  rw [bddAbove_def] at hbdd ⊢
   obtain ⟨C, hC⟩ := hbdd
-  refine ⟨C, fun y hy => ?_⟩
-  rw [Set.mem_range] at hy
-  obtain ⟨y', hy'⟩ := hy
-  calc y = f y'  := hy'.symm
-       _ ≤ g y'  := h _
-       _ ≤ C := hC (g y') (by simp)
+  use C
+  rintro - ⟨x, rfl⟩
+  exact (h x).trans (hC <| mem_range_self x)
 
 lemma BddBelow.range_mono [Preorder β] (f : α → β) {g : α → β} (h : ∀ a, f a ≤ g a)
     (hbdd : BddBelow (Set.range f)) : BddBelow (Set.range g) :=
