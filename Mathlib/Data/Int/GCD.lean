@@ -552,4 +552,3 @@ lemma pow_mem_range_pow_of_coprime (hmn : m.Coprime n) (a : α) :
   simp [pow_eq_pow_iff_of_coprime hmn.symm]; aesop
 
 end CommGroupWithZero
-

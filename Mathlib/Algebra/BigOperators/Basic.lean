@@ -2673,4 +2673,3 @@ Those lemmas were deprecated on the 2023/12/23.
 
 @[deprecated] alias Equiv.prod_comp' := Fintype.prod_equiv
 @[deprecated] alias Equiv.sum_comp' := Fintype.sum_equiv
-

@@ -33,6 +33,3 @@ set_option linter.deprecated false in
 theorem zpow_bit1' (a : G₀) (n : ℤ) : a ^ bit1 n = (a * a) ^ n * a := by
   rw [zpow_bit1₀, (Commute.refl a).mul_zpow]
 #align zpow_bit1' zpow_bit1'
-
-
-#minimize_imports
