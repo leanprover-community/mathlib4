@@ -309,7 +309,7 @@ instance [One α] [Pow α ℤ] : Pow (WithZero α) ℤ :=
     | some x, n => ↑(x ^ n)⟩
 
 @[simp, norm_cast]
-theorem coe_zpow [DivInvMonoid α] {a : α} (n : ℤ) : ↑(a ^ n : α) = ((↑a : WithZero α) ^ n) :=
+theorem coe_zpow [DivInvMonoid α] {a : α} (n : ℤ) : ↑(a ^ n) = (↑a : WithZero α) ^ n :=
   rfl
 #align with_zero.coe_zpow WithZero.coe_zpow
 

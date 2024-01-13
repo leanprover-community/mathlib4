@@ -36,7 +36,6 @@ namespace LinearMap
 
 section Basic
 
-set_option maxHeartbeats 250000 in
 /-- `charpoly f` is the characteristic polynomial of the matrix of `f` in any basis. -/
 @[simp]
 theorem charpoly_toMatrix {ι : Type w} [DecidableEq ι] [Fintype ι] (b : Basis ι R M) :
@@ -68,7 +67,8 @@ theorem charpoly_toMatrix {ι : Type w} [DecidableEq ι] [Fintype ι] (b : Basis
           C.mapMatrix (φ₁ P) * C.mapMatrix A' * C.mapMatrix (φ₃ Q)) := by
       rw [Matrix.mul_assoc ((scalar ι') X), hPQ, Matrix.mul_one]
     _ = det (C.mapMatrix (φ₁ P) * scalar ι' X * C.mapMatrix (φ₃ Q) -
-          C.mapMatrix (φ₁ P) * C.mapMatrix A' * C.mapMatrix (φ₃ Q)) := by simp
+          C.mapMatrix (φ₁ P) * C.mapMatrix A' * C.mapMatrix (φ₃ Q)) := by
+      rw [scalar_commute _ commute_X]
     _ = det (C.mapMatrix (φ₁ P) * (scalar ι' X - C.mapMatrix A') * C.mapMatrix (φ₃ Q)) := by
       rw [← Matrix.sub_mul, ← Matrix.mul_sub]
     _ = det (C.mapMatrix (φ₁ P)) * det (scalar ι' X - C.mapMatrix A') * det (C.mapMatrix (φ₃ Q)) :=

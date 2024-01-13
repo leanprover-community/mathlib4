@@ -633,7 +633,7 @@ theorem centroid_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ} (s : S
     sum_pointsWithCircumcenter, centroidWeightsWithCircumcenter,
     pointsWithCircumcenter_point, zero_smul, add_zero, centroidWeights,
     Set.sum_indicator_subset_of_eq_zero (Function.const (Fin (n + 1)) (card fs : ℝ)⁻¹)
-      (fun i wi => wi • (s.points i -ᵥ Classical.choice AddTorsor.Nonempty)) fs.subset_univ fun _ =>
+      (fun i wi => wi • (s.points i -ᵥ Classical.choice AddTorsor.nonempty)) fs.subset_univ fun _ =>
       zero_smul ℝ _,
     Set.indicator_apply]
   congr

@@ -9,7 +9,6 @@ import Mathlib.Data.Bool.Basic
 import Mathlib.Init.Data.Bool.Lemmas
 import Mathlib.Init.ZeroOne
 import Mathlib.Tactic.Cases
-import Mathlib.Tactic.PermuteGoals
 
 #align_import init.data.nat.bitwise from "leanprover-community/lean"@"53e8520d8964c7632989880372d91ba0cecbaf00"
 

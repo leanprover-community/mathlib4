@@ -635,14 +635,14 @@ theorem indepFun_iff_indepSet_preimage {mβ : MeasurableSpace β} {mβ' : Measur
 #align probability_theory.indep_fun_iff_indep_set_preimage ProbabilityTheory.indepFun_iff_indepSet_preimage
 
 theorem indepFun_iff_map_prod_eq_prod_map_map {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
-    [IsFiniteMeasure μ] (hf : Measurable f) (hg : Measurable g) :
+    [IsFiniteMeasure μ] (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     IndepFun f g μ ↔ μ.map (fun ω ↦ (f ω, g ω)) = (μ.map f).prod (μ.map g) := by
   rw [indepFun_iff_measure_inter_preimage_eq_mul]
   have h₀ {s : Set β} {t : Set β'} (hs : MeasurableSet s) (ht : MeasurableSet t) :
       μ (f ⁻¹' s) * μ (g ⁻¹' t) = μ.map f s * μ.map g t ∧
       μ (f ⁻¹' s ∩ g ⁻¹' t) = μ.map (fun ω ↦ (f ω, g ω)) (s ×ˢ t) :=
-    ⟨by rw [Measure.map_apply hf hs, Measure.map_apply hg ht],
-      (Measure.map_apply (hf.prod_mk hg) (hs.prod ht)).symm⟩
+    ⟨by rw [Measure.map_apply_of_aemeasurable hf hs, Measure.map_apply_of_aemeasurable hg ht],
+      (Measure.map_apply_of_aemeasurable (hf.prod_mk hg) (hs.prod ht)).symm⟩
   constructor
   · refine fun h ↦ (Measure.prod_eq fun s t hs ht ↦ ?_).symm
     rw [← (h₀ hs ht).1, ← (h₀ hs ht).2, h s t hs ht]

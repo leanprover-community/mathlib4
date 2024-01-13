@@ -2177,8 +2177,8 @@ theorem pi_diff_pi_subset (i : Set α) (s t : ∀ a, Set (π a)) :
   exact hx.2 _ ha (hx.1 _ ha)
 #align set.pi_diff_pi_subset Set.pi_diff_pi_subset
 
-theorem iUnion_univ_pi (t : ∀ i, ι → Set (π i)) :
-    ⋃ x : α → ι, pi univ (fun i => t i (x i)) = pi univ fun i => ⋃ j : ι, t i j := by
+theorem iUnion_univ_pi {ι : α → Type*} (t : (a : α) → ι a → Set (π a)) :
+    ⋃ x : (a : α) → ι a, pi univ (fun a => t a (x a)) = pi univ fun a => ⋃ j : ι a, t a j := by
   ext
   simp [Classical.skolem]
 #align set.Union_univ_pi Set.iUnion_univ_pi

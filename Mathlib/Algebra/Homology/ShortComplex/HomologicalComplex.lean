@@ -3,8 +3,9 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.HomologicalComplex
+import Mathlib.Algebra.Homology.Additive
 import Mathlib.Algebra.Homology.ShortComplex.Exact
+import Mathlib.Algebra.Homology.ShortComplex.Preadditive
 import Mathlib.Tactic.Linarith
 
 /-!
@@ -601,3 +602,53 @@ lemma isoHomologyπ₀_inv_naturality [L.HasHomology 0] :
     HomologicalComplex.isoHomologyπ_hom_inv_id_assoc]
 
 end CochainComplex
+
+namespace HomologicalComplex
+
+variable {C ι : Type*} [Category C] [Preadditive C] {c : ComplexShape ι}
+  {K L : HomologicalComplex C c} {f g : K ⟶ L}
+
+variable (φ ψ : K ⟶ L) (i : ι) [K.HasHomology i] [L.HasHomology i]
+
+@[simp]
+lemma homologyMap_neg : homologyMap (-φ) i = -homologyMap φ i := by
+  dsimp [homologyMap]
+  rw [← ShortComplex.homologyMap_neg]
+  rfl
+
+@[simp]
+lemma homologyMap_add : homologyMap (φ + ψ) i = homologyMap φ i + homologyMap ψ i := by
+  dsimp [homologyMap]
+  rw [← ShortComplex.homologyMap_add]
+  rfl
+
+@[simp]
+lemma homologyMap_sub : homologyMap (φ - ψ) i = homologyMap φ i - homologyMap ψ i := by
+  dsimp [homologyMap]
+  rw [← ShortComplex.homologyMap_sub]
+  rfl
+
+instance [CategoryWithHomology C] : (homologyFunctor C c i).Additive where
+
+end HomologicalComplex
+
+namespace CochainComplex
+
+variable {C : Type*} [Category C] [Abelian C]
+
+lemma isIso_liftCycles_iff (K : CochainComplex C ℕ) {X : C} (φ : X ⟶ K.X 0)
+    [K.HasHomology 0] (hφ : φ ≫ K.d 0 1 = 0) :
+    IsIso (K.liftCycles φ 1 (by simp) hφ) ↔
+      (ShortComplex.mk _ _ hφ).Exact ∧ Mono φ := by
+  suffices ∀ (i : ℕ) (hx : (ComplexShape.up ℕ).next 0 = i)
+    (hφ : φ ≫ K.d 0 i = 0), IsIso (K.liftCycles φ i hx hφ) ↔
+      (ShortComplex.mk _ _ hφ).Exact ∧ Mono φ from this 1 (by simp) hφ
+  rintro _ rfl hφ
+  let α : ShortComplex.mk (0 : X ⟶ X) (0 : X ⟶ X) (by simp) ⟶ K.sc 0 :=
+    { τ₁ := 0
+      τ₂ := φ
+      τ₃ := 0 }
+  exact (ShortComplex.quasiIso_iff_isIso_liftCycles α rfl rfl (by simp)).symm.trans
+    (ShortComplex.quasiIso_iff_of_zeros α rfl rfl (by simp))
+
+namespace CochainComplex

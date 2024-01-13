@@ -390,7 +390,6 @@ def toAddTorsor (s : AffineSubspace k P) [Nonempty s] : AddTorsor s.direction s 
     ext
     apply add_vadd
   vsub a b := ⟨(a : P) -ᵥ (b : P), (vsub_left_mem_direction_iff_mem a.2 _).mpr b.2⟩
-  Nonempty := by infer_instance
   vsub_vadd' a b := by
     ext
     apply AddTorsor.vsub_vadd'
@@ -767,7 +766,7 @@ variable (P)
 /-- The direction of `⊤` is the whole module as a submodule. -/
 @[simp]
 theorem direction_top : (⊤ : AffineSubspace k P).direction = ⊤ := by
-  cases' S.Nonempty with p
+  cases' S.nonempty with p
   ext v
   refine' ⟨imp_intro Submodule.mem_top, fun _hv => _⟩
   have hpv : (v +ᵥ p -ᵥ p : V) ∈ (⊤ : AffineSubspace k P).direction :=

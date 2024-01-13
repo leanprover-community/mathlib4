@@ -141,6 +141,9 @@ instance haveLebesgueDecomposition_smul_right (μ ν : Measure α) [HaveLebesgue
       · simp [hr]
       · exact ENNReal.coe_ne_top
 
+theorem haveLebesgueDecomposition_withDensity (μ : Measure α) {f : α → ℝ≥0∞} (hf : Measurable f) :
+    (μ.withDensity f).HaveLebesgueDecomposition μ := ⟨⟨⟨0, f⟩, hf, .zero_left, (zero_add _).symm⟩⟩
+
 @[measurability]
 theorem measurable_rnDeriv (μ ν : Measure α) : Measurable <| μ.rnDeriv ν := by
   by_cases h : HaveLebesgueDecomposition μ ν

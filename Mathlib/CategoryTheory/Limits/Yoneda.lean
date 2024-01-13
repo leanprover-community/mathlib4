@@ -162,7 +162,4 @@ instance coyonedaFunctorReflectsLimits : ReflectsLimits (@coyoneda D _) := infer
 
 end CategoryTheory
 
-assert_not_exists Set.range
-
--- Porting note: after the port see if this import can be removed
--- assert_not_exists AddCommMonoid
+assert_not_exists AddCommMonoid

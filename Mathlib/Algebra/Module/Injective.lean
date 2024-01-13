@@ -175,8 +175,7 @@ set_option linter.uppercaseLean3 false in
 /-- The maximal element of every nonempty chain of `extension_of i f`. -/
 def ExtensionOf.max {c : Set (ExtensionOf i f)} (hchain : IsChain (· ≤ ·) c)
     (hnonempty : c.Nonempty) : ExtensionOf i f :=
-  {
-    LinearPMap.sSup _
+  { LinearPMap.sSup _
       (IsChain.directedOn <|
         chain_linearPMap_of_chain_extensionOf
           hchain) with

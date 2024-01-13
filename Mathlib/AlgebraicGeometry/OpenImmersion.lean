@@ -750,6 +750,28 @@ def Scheme.OpenCover.pullbackCover {X : Scheme} (𝒰 : X.OpenCover) {W : Scheme
     · rw [← TopCat.epi_iff_surjective]; infer_instance
 #align algebraic_geometry.Scheme.open_cover.pullback_cover AlgebraicGeometry.Scheme.OpenCover.pullbackCover
 
+/-- Given an open cover on `X`, we may pull them back along a morphism `f : W ⟶ X` to obtain
+an open cover of `W`. This is similar to `Scheme.OpenCover.pullbackCover`, but here we
+take `pullback (𝒰.map x) f` instead of `pullback f (𝒰.map x)`. -/
+@[simps]
+def Scheme.OpenCover.pullbackCover' {X : Scheme} (𝒰 : X.OpenCover) {W : Scheme} (f : W ⟶ X) :
+    W.OpenCover where
+  J := 𝒰.J
+  obj x := pullback (𝒰.map x) f
+  map x := pullback.snd
+  f x := 𝒰.f (f.1.base x)
+  Covers x := by
+    rw [←
+      show _ = (pullback.snd : pullback (𝒰.map (𝒰.f (f.1.base x))) f ⟶ _).1.base from
+        PreservesPullback.iso_hom_snd Scheme.forgetToTop (𝒰.map (𝒰.f (f.1.base x))) f]
+    -- Porting note : `rw` to `erw` on this single lemma
+    erw [coe_comp]
+    rw [Set.range_comp, Set.range_iff_surjective.mpr, Set.image_univ,
+      TopCat.pullback_snd_range]
+    obtain ⟨y, h⟩ := 𝒰.Covers (f.1.base x)
+    exact ⟨y, h⟩
+    · rw [← TopCat.epi_iff_surjective]; infer_instance
+
 theorem Scheme.OpenCover.iUnion_range {X : Scheme} (𝒰 : X.OpenCover) :
     ⋃ i, Set.range (𝒰.map i).1.base = Set.univ := by
   rw [Set.eq_univ_iff_forall]

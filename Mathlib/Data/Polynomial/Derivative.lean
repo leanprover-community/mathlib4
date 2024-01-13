@@ -64,7 +64,7 @@ theorem coeff_derivative (p : R[X]) (n : ℕ) :
     · intros
       rw [Nat.cast_zero, mul_zero, zero_mul]
     · intro _ H
-      rw [Nat.succ_sub_one, if_neg (mt (congr_arg Nat.succ) H.symm), mul_zero]
+      rw [Nat.add_one_sub_one, if_neg (mt (congr_arg Nat.succ) H.symm), mul_zero]
   · rw [if_pos (add_tsub_cancel_right n 1).symm, mul_one, Nat.cast_add, Nat.cast_one,
       mem_support_iff]
     intro h
@@ -314,7 +314,7 @@ theorem derivative_mul {f g : R[X]} : derivative (f * g) = derivative f * g + f 
           cases n <;> cases m <;>
             simp_rw [add_smul, mul_smul_comm, smul_mul_assoc, X_pow_mul_assoc, ← mul_assoc, ←
               C_mul, mul_assoc, ← pow_add] <;>
-            simp [Nat.add_succ, Nat.succ_add, Nat.succ_sub_one, zero_smul, add_comm])
+            simp [Nat.add_succ, Nat.succ_add, Nat.add_one_sub_one, zero_smul, add_comm])
     _ = derivative f * g + f * derivative g := by
       conv =>
         rhs
@@ -468,7 +468,7 @@ theorem derivative_pow_succ (p : R[X]) (n : ℕ) :
 theorem derivative_pow (p : R[X]) (n : ℕ) :
     derivative (p ^ n) = C (n : R) * p ^ (n - 1) * derivative p :=
   Nat.casesOn n (by rw [pow_zero, derivative_one, Nat.cast_zero, C_0, zero_mul, zero_mul]) fun n =>
-    by rw [p.derivative_pow_succ n, n.succ_sub_one, n.cast_succ]
+    by rw [p.derivative_pow_succ n, Nat.add_one_sub_one, n.cast_succ]
 #align polynomial.derivative_pow Polynomial.derivative_pow
 
 theorem derivative_sq (p : R[X]) : derivative (p ^ 2) = C 2 * p * derivative p := by

@@ -70,7 +70,7 @@ theorem discr_prime_pow_ne_two [IsCyclotomicExtension {p ^ (k + 1)} K L] [hp : F
   haveI se : IsSeparable K L := (isGalois (p ^ (k + 1)) K L).to_isSeparable
   rw [discr_powerBasis_eq_norm, finrank L hirr, hζ.powerBasis_gen _, ←
     hζ.minpoly_eq_cyclotomic_of_irreducible hirr, PNat.pow_coe,
-    totient_prime_pow hp.out (succ_pos k), succ_sub_one]
+    totient_prime_pow hp.out (succ_pos k), Nat.add_one_sub_one]
   have coe_two : ((2 : ℕ+) : ℕ) = 2 := rfl
   have hp2 : p = 2 → k ≠ 0 := by
     rintro rfl rfl

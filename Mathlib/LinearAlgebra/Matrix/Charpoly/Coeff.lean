@@ -160,7 +160,8 @@ theorem trace_eq_neg_charpoly_coeff [Nonempty n] (M : Matrix n n R) :
 theorem matPolyEquiv_symm_map_eval (M : (Matrix n n R)[X]) (r : R) :
     (matPolyEquiv.symm M).map (eval r) = M.eval (scalar n r) := by
   suffices ((aeval r).mapMatrix.comp matPolyEquiv.symm.toAlgHom : (Matrix n n R)[X] →ₐ[R] _) =
-      (eval₂AlgHom' (AlgHom.id R _) (scalar n r) fun x => (scalar.commute _ _).symm) from
+      (eval₂AlgHom' (AlgHom.id R _) (scalar n r)
+        fun x => (scalar_commute _ (Commute.all _) _).symm) from
     FunLike.congr_fun this M
   ext : 1
   · ext M : 1
@@ -249,7 +250,8 @@ theorem coeff_charpoly_mem_ideal_pow {I : Ideal R} (h : ∀ i j, M i j ∈ I) (k
   apply coeff_prod_mem_ideal_pow_tsub
   rintro i - (_ | k)
   · rw [Nat.zero_eq]  -- porting note: `rw [Nat.zero_eq]` was not present
-    rw [tsub_zero, pow_one, charmatrix_apply, coeff_sub, coeff_X_mul_zero, coeff_C_zero, zero_sub]
+    rw [tsub_zero, pow_one, charmatrix_apply, coeff_sub, ←smul_one_eq_diagonal, smul_apply,
+      smul_eq_mul, coeff_X_mul_zero, coeff_C_zero, zero_sub]
     apply neg_mem  -- porting note: was `rw [neg_mem_iff]`, but Lean could not synth `NegMemClass`
     exact h (c i) i
   · rw [Nat.succ_eq_one_add, tsub_self_add, pow_zero, Ideal.one_eq_top]
@@ -283,14 +285,15 @@ lemma reverse_charpoly (M : Matrix n n R) :
   have hp : toLaurentAlg M.charpoly = p := by
     simp [charpoly, charmatrix, AlgHom.map_det, map_sub, map_smul']
   have hq : toLaurentAlg M.charpolyRev = q := by
-    simp [charpolyRev, AlgHom.map_det, map_sub, map_smul']
+    simp [charpolyRev, AlgHom.map_det, map_sub, map_smul', smul_eq_diagonal_mul]
   suffices : t_inv ^ Fintype.card n * p = invert q
   · apply toLaurent_injective
     rwa [toLaurent_reverse, ← coe_toLaurentAlg, hp, hq, ← involutive_invert.injective.eq_iff,
       invert.map_mul, involutive_invert p, charpoly_natDegree_eq_dim,
       ← mul_one (Fintype.card n : ℤ), ← T_pow, invert.map_pow, invert_T, mul_comm]
-  rw [← det_smul, smul_sub, coe_scalar, ← smul_assoc, smul_eq_mul, ht, one_smul, invert.map_det]
-  simp [map_smul']
+  rw [← det_smul, smul_sub, scalar_apply, ← diagonal_smul, Pi.smul_def, smul_eq_mul, ht,
+    diagonal_one, invert.map_det]
+  simp [map_smul', smul_eq_diagonal_mul]
 
 @[simp] lemma eval_charpolyRev :
     eval 0 M.charpolyRev = 1 := by

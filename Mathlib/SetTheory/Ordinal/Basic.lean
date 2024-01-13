@@ -1224,7 +1224,7 @@ theorem enum_zero_eq_bot {o : Ordinal} (ho : 0 < o) :
 -- intended to be used with explicit universe parameters
 /-- `univ.{u v}` is the order type of the ordinals of `Type u` as a member
   of `Ordinal.{v}` (when `u < v`). It is an inaccessible cardinal. -/
- @[nolint checkUnivs]
+@[pp_with_univ, nolint checkUnivs]
 def univ : Ordinal.{max (u + 1) v} :=
   lift.{v, u + 1} (@type Ordinal (· < ·) _)
 #align ordinal.univ Ordinal.univ
@@ -1475,7 +1475,7 @@ theorem ord.orderEmbedding_coe : (ord.orderEmbedding : Cardinal → Ordinal) = o
 /-- The cardinal `univ` is the cardinality of ordinal `univ`, or
   equivalently the cardinal of `Ordinal.{u}`, or `Cardinal.{u}`,
   as an element of `Cardinal.{v}` (when `u < v`). -/
-@[nolint checkUnivs]
+@[pp_with_univ, nolint checkUnivs]
 def univ :=
   lift.{v, u + 1} #Ordinal
 #align cardinal.univ Cardinal.univ

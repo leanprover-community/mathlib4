@@ -49,14 +49,14 @@ by the `+ᵥ` operation and a corresponding subtraction given by the
 space. -/
 class AddTorsor (G : outParam (Type*)) (P : Type*) [outParam <| AddGroup G] extends AddAction G P,
   VSub G P where
-  [Nonempty : Nonempty P]
+  [nonempty : Nonempty P]
   /-- Torsor subtraction and addition with the same element cancels out. -/
   vsub_vadd' : ∀ p1 p2 : P, (p1 -ᵥ p2 : G) +ᵥ p2 = p1
   /-- Torsor addition and subtraction with the same element cancels out. -/
   vadd_vsub' : ∀ (g : G) (p : P), g +ᵥ p -ᵥ p = g
 #align add_torsor AddTorsor
 
-attribute [instance 100] AddTorsor.Nonempty -- porting note: removers `nolint instance_priority`
+attribute [instance 100] AddTorsor.nonempty -- porting note: removers `nolint instance_priority`
 
 --Porting note: removed
 --attribute [nolint dangerous_instance] AddTorsor.toVSub
@@ -287,7 +287,7 @@ instance instAddTorsor : AddTorsor (G × G') (P × P') where
   zero_vadd _ := Prod.ext (zero_vadd _ _) (zero_vadd _ _)
   add_vadd _ _ _ := Prod.ext (add_vadd _ _ _) (add_vadd _ _ _)
   vsub p₁ p₂ := (p₁.1 -ᵥ p₂.1, p₁.2 -ᵥ p₂.2)
-  Nonempty := Prod.Nonempty
+  nonempty := Prod.Nonempty
   vsub_vadd' _ _ := Prod.ext (vsub_vadd _ _) (vsub_vadd _ _)
   vadd_vsub' _ _ := Prod.ext (vadd_vsub _ _) (vadd_vsub _ _)
 
@@ -342,12 +342,11 @@ variable {I : Type u} {fg : I → Type v} [∀ i, AddGroup (fg i)] {fp : I → T
 open AddAction AddTorsor
 
 /-- A product of `AddTorsor`s is an `AddTorsor`. -/
-instance instAddTorsor [T : ∀ i, AddTorsor (fg i) (fp i)] : AddTorsor (∀ i, fg i) (∀ i, fp i) where
+instance instAddTorsor [∀ i, AddTorsor (fg i) (fp i)] : AddTorsor (∀ i, fg i) (∀ i, fp i) where
   vadd g p i := g i +ᵥ p i
   zero_vadd p := funext fun i => zero_vadd (fg i) (p i)
   add_vadd g₁ g₂ p := funext fun i => add_vadd (g₁ i) (g₂ i) (p i)
   vsub p₁ p₂ i := p₁ i -ᵥ p₂ i
-  Nonempty := ⟨fun i => Classical.choice (T i).Nonempty⟩
   vsub_vadd' p₁ p₂ := funext fun i => vsub_vadd (p₁ i) (p₂ i)
   vadd_vsub' g p := funext fun i => vadd_vsub (g i) (p i)
 

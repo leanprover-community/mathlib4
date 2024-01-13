@@ -54,11 +54,17 @@ def RenameMap.insert (m : RenameMap) (e : NameEntry) : RenameMap :=
 /-- Look up a lean 4 name from the lean 3 name. Also return the `dubious` error message. -/
 def RenameMap.find? (m : RenameMap) : Name → Option (String × Name) := m.toLean4.find?
 
+-- TODO: upstream into core/std
+instance [Inhabited α] : Inhabited (Thunk α) where
+  default := .pure default
+
 /-- This extension stores the lookup data generated from `#align` commands. -/
-initialize renameExtension : SimplePersistentEnvExtension NameEntry RenameMap ←
+-- wrap state in `Thunk` as downstream projects rarely actually query it; it only
+-- gets queried when new `#align`s are added.
+initialize renameExtension : SimplePersistentEnvExtension NameEntry (Thunk RenameMap) ←
   registerSimplePersistentEnvExtension {
-    addEntryFn := (·.insert)
-    addImportedFn := mkStateFromImportedEntries (·.insert) {}
+    addEntryFn := fun t e => t.map (·.insert e)
+    addImportedFn := fun es => ⟨fun _ => mkStateFromImportedEntries (·.insert) {} es⟩
   }
 
 /-- Insert a new name alignment into the rename extension. -/
@@ -121,7 +127,7 @@ syntax (name := align) "#align " ident ppSpace ident : command
 
 /-- Checks that `id` has not already been `#align`ed or `#noalign`ed. -/
 def ensureUnused [Monad m] [MonadEnv m] [MonadError m] (id : Name) : m Unit := do
-  if let some (_, n) := (renameExtension.getState (← getEnv)).toLean4.find? id then
+  if let some (_, n) := (renameExtension.getState (← getEnv)).get.toLean4.find? id then
     if n.isAnonymous then
       throwError "{id} has already been no-aligned"
     else
@@ -191,7 +197,7 @@ syntax (name := lookup3) "#lookup3 " ident : command
 @[command_elab lookup3] def elabLookup3 : CommandElab
   | `(#lookup3%$tk $id3:ident) => do
     let n3 := id3.getId
-    let m := renameExtension.getState (← getEnv)
+    let m := renameExtension.getState (← getEnv) |>.get
     match m.find? n3 with
     | none    => logInfoAt tk s!"name `{n3} not found"
     | some (dubious, n4) => do

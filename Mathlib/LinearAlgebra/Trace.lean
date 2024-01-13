@@ -328,6 +328,15 @@ lemma trace_comp_eq_mul_of_commute_of_isNilpotent [IsReduced R] {f g : Module.En
   have : f ∘ₗ algebraMap R _ μ = μ • f := by ext; simp -- TODO Surely exists?
   rw [hμ, comp_add, map_add, hg, add_zero, this, LinearMap.map_smul, smul_eq_mul]
 
+@[simp]
+lemma trace_baseChange [Module.Free R M] [Module.Finite R M]
+    (f : M →ₗ[R] M) (A : Type*) [CommRing A] [Algebra R A] :
+    trace A _ (f.baseChange A) = algebraMap R A (trace R _ f) := by
+  let b := Module.Free.chooseBasis R M
+  let b' := Algebra.TensorProduct.basis A b
+  change _ = (algebraMap R A : R →+ A) _
+  simp [trace_eq_matrix_trace R b, trace_eq_matrix_trace A b', AddMonoidHom.map_trace]
+
 end
 
 end LinearMap

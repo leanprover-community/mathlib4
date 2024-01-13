@@ -283,6 +283,12 @@ instance Subtype.borelSpace {α : Type*} [TopologicalSpace α] [MeasurableSpace 
   ⟨by borelize α; symm; apply borel_comap⟩
 #align subtype.borel_space Subtype.borelSpace
 
+instance Countable.instBorelSpace [Countable α] [MeasurableSpace α] [MeasurableSingletonClass α]
+    [TopologicalSpace α] [DiscreteTopology α] : BorelSpace α := by
+  have : ∀ s, @MeasurableSet α inferInstance s := fun s ↦ s.to_countable.measurableSet
+  have : ∀ s, @MeasurableSet α (borel α) s := fun s ↦ measurableSet_generateFrom (isOpen_discrete s)
+  exact ⟨by aesop⟩
+
 instance Subtype.opensMeasurableSpace {α : Type*} [TopologicalSpace α] [MeasurableSpace α]
     [h : OpensMeasurableSpace α] (s : Set α) : OpensMeasurableSpace s :=
   ⟨by

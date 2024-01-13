@@ -65,18 +65,14 @@ instance isCentralScalar [DistribMulAction Rᵐᵒᵖ B] [IsCentralScalar R B] :
 end
 
 /-- Scalar multiplication on the left as an additive monoid homomorphism. -/
-@[simps (config := .asFn)]
-protected def smulLeft [Monoid M] [AddMonoid A] [DistribMulAction M A] (c : M) : A →+ A where
-  toFun := (c • ·)
-  map_zero' := smul_zero c
-  map_add' := smul_add c
+@[simps! (config := .asFn)]
+protected def smulLeft [Monoid M] [AddMonoid A] [DistribMulAction M A] (c : M) : A →+ A :=
+  DistribMulAction.toAddMonoidHom _ c
 
 /-- Scalar multiplication as a biadditive monoid homomorphism. We need `M` to be commutative
 to have addition on `M →+ M`. -/
-protected def smul [Semiring R] [AddCommMonoid M] [Module R M] : R →+ M →+ M where
-  toFun := .smulLeft
-  map_zero' := AddMonoidHom.ext <| zero_smul _
-  map_add' _ _ := AddMonoidHom.ext <| add_smul _ _
+protected def smul [Semiring R] [AddCommMonoid M] [Module R M] : R →+ M →+ M :=
+  (Module.toAddMonoidEnd R M).toAddMonoidHom
 
 @[simp] theorem coe_smul' [Semiring R] [AddCommMonoid M] [Module R M] :
     ⇑(.smul : R →+ M →+ M) = AddMonoidHom.smulLeft := rfl
@@ -87,3 +83,10 @@ instance module [Semiring R] [AddMonoid A] [AddCommMonoid B] [Module R B] : Modu
 #align add_monoid_hom.module AddMonoidHom.module
 
 end AddMonoidHom
+
+/-- The tautological action by `AddMonoid.End α` on `α`.
+
+This generalizes `AddMonoid.End.applyDistribMulAction`. -/
+instance AddMonoid.End.applyModule [AddCommMonoid A] : Module (AddMonoid.End A) A where
+  add_smul _ _ _ := rfl
+  zero_smul _ := rfl

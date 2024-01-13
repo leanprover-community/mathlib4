@@ -194,6 +194,9 @@ instance decidableMem [_h : DecidableEq α] (a : α) (s : Finset α) : Decidable
   Multiset.decidableMem _ _
 #align finset.decidable_mem Finset.decidableMem
 
+@[simp] lemma forall_mem_not_eq {s : Finset α} {a : α} : (∀ b ∈ s, ¬ a = b) ↔ a ∉ s := by aesop
+@[simp] lemma forall_mem_not_eq' {s : Finset α} {a : α} : (∀ b ∈ s, ¬ b = a) ↔ a ∉ s := by aesop
+
 /-! ### set coercion -/
 
 --Porting note: new definition

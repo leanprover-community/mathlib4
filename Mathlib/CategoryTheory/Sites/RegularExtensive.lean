@@ -192,6 +192,8 @@ class Presieve.regular {X : C} (R : Presieve X) : Prop where
   single_epi : ∃ (Y : C) (f : Y ⟶ X), R = Presieve.ofArrows (fun (_ : Unit) ↦ Y)
     (fun (_ : Unit) ↦ f) ∧ EffectiveEpi f
 
+namespace regularCoverage
+
 /--
 The map to the explicit equalizer used in the sheaf condition.
 -/
@@ -261,6 +263,33 @@ lemma isSheaf_of_projective (F : Cᵒᵖ ⥤ Type (max u v)) [Preregular C] [∀
     IsSheaf (regularCoverage C).toGrothendieck F :=
   (isSheaf_coverage _ _).mpr fun S ⟨_, h⟩ ↦ have : S.regular := ⟨_, h⟩
     isSheafFor_regular_of_projective _ _
+
+/-- Every Yoneda-presheaf is a sheaf for the regular topology. -/
+theorem isSheaf_yoneda_obj [Preregular C] (W : C)  :
+    Presieve.IsSheaf (regularCoverage C).toGrothendieck (yoneda.obj W) := by
+  rw [isSheaf_coverage]
+  intro X S ⟨_, hS⟩
+  have : S.regular := ⟨_, hS⟩
+  obtain ⟨Y, f, rfl, hf⟩ := Presieve.regular.single_epi (R := S)
+  have h_colim := isColimitOfEffectiveEpiStruct f hf.effectiveEpi.some
+  rw [← Sieve.generateSingleton_eq, ← Presieve.ofArrows_pUnit] at h_colim
+  intro x hx
+  let x_ext := Presieve.FamilyOfElements.sieveExtend x
+  have hx_ext := Presieve.FamilyOfElements.Compatible.sieveExtend hx
+  let S := Sieve.generate (Presieve.ofArrows (fun () ↦ Y) (fun () ↦ f))
+  obtain ⟨t, t_amalg, t_uniq⟩ :=
+    (Sieve.forallYonedaIsSheaf_iff_colimit S).mpr ⟨h_colim⟩ W x_ext hx_ext
+  refine ⟨t, ?_, ?_⟩
+  · convert Presieve.isAmalgamation_restrict (Sieve.le_generate
+      (Presieve.ofArrows (fun () ↦ Y) (fun () ↦ f))) _ _ t_amalg
+    exact (Presieve.restrict_extend hx).symm
+  · exact fun y hy ↦ t_uniq y <| Presieve.isAmalgamation_sieveExtend x y hy
+
+/-- The regular topology on any preregular category is subcanonical. -/
+theorem subcanonical [Preregular C] : Sheaf.Subcanonical (regularCoverage C).toGrothendieck :=
+  Sheaf.Subcanonical.of_yoneda_isSheaf _ isSheaf_yoneda_obj
+
+end regularCoverage
 
 end RegularSheaves
 

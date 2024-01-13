@@ -117,30 +117,10 @@ section AtUnits
 
 variable (R) (S)
 
-/-- The localization at a module of units is isomorphic to the ring. -/
-noncomputable def atUnits (H : ∀ x : M, IsUnit (x : R)) : R ≃ₐ[R] S := by
-  refine' AlgEquiv.ofBijective (Algebra.ofId R S) ⟨_, _⟩
-  · intro x y hxy
-    obtain ⟨c, eq⟩ := (IsLocalization.eq_iff_exists M S).mp hxy
-    obtain ⟨u, hu⟩ := H c
-    rwa [← hu, Units.mul_right_inj] at eq
-  · intro y
-    obtain ⟨⟨x, s⟩, eq⟩ := IsLocalization.surj M y
-    obtain ⟨u, hu⟩ := H s
-    use x * u.inv
-    dsimp [Algebra.ofId, RingHom.toFun_eq_coe, AlgHom.coe_mks]
-    rw [RingHom.map_mul, ← eq, ← hu, mul_assoc, ← RingHom.map_mul]
-    simp
-#align is_localization.at_units IsLocalization.atUnits
-
 /-- The localization away from a unit is isomorphic to the ring. -/
-noncomputable def atUnit (x : R) (e : IsUnit x) [IsLocalization.Away x S] : R ≃ₐ[R] S := by
-  apply atUnits R (Submonoid.powers x)
-  rintro ⟨xn, n, hxn⟩
-  obtain ⟨u, hu⟩ := e
-  rw [isUnit_iff_exists_inv]
-  use u.inv ^ n
-  simp [← hxn, ← hu, ← mul_pow]
+noncomputable def atUnit (x : R) (e : IsUnit x) [IsLocalization.Away x S] : R ≃ₐ[R] S :=
+  atUnits R (Submonoid.powers x)
+    (by rwa [Submonoid.powers_eq_closure, Submonoid.closure_le, Set.singleton_subset_iff])
 #align is_localization.at_unit IsLocalization.atUnit
 
 /-- The localization at one is isomorphic to the ring. -/

@@ -1369,6 +1369,10 @@ theorem ContDiffAt.differentiableAt (h : ContDiffAt 𝕜 n f x) (hn : 1 ≤ n) :
   simpa [hn, differentiableWithinAt_univ] using h.differentiableWithinAt
 #align cont_diff_at.differentiable_at ContDiffAt.differentiableAt
 
+nonrec lemma ContDiffAt.contDiffOn {m : ℕ} (h : ContDiffAt 𝕜 n f x) (hm : m ≤ n) :
+    ∃ u ∈ 𝓝 x, ContDiffOn 𝕜 m f u := by
+  simpa [nhdsWithin_univ] using h.contDiffOn hm
+
 /-- A function is `C^(n + 1)` at a point iff locally, it has a derivative which is `C^n`. -/
 theorem contDiffAt_succ_iff_hasFDerivAt {n : ℕ} :
     ContDiffAt 𝕜 (n + 1 : ℕ) f x ↔

@@ -2005,13 +2005,13 @@ namespace Fintype
 
 open Finset
 
-/-- `Fintype.prod_bijective` is a variant of `Finset.prod_bij` that accepts `Function.bijective`.
+/-- `Fintype.prod_bijective` is a variant of `Finset.prod_bij` that accepts `Function.Bijective`.
 
-See `Function.bijective.prod_comp` for a version without `h`. -/
-@[to_additive "`Fintype.sum_equiv` is a variant of `Finset.sum_bij` that accepts
-`Function.bijective`.
+See `Function.Bijective.prod_comp` for a version without `h`. -/
+@[to_additive "`Fintype.sum_bijective` is a variant of `Finset.sum_bij` that accepts
+`Function.Bijective`.
 
-See `Function.bijective.sum_comp` for a version without `h`. "]
+See `Function.Bijective.sum_comp` for a version without `h`. "]
 theorem prod_bijective {α β M : Type*} [Fintype α] [Fintype β] [CommMonoid M] (e : α → β)
     (he : Function.Bijective e) (f : α → M) (g : β → M) (h : ∀ x, f x = g (e x)) :
     ∏ x : α, f x = ∏ x : β, g x :=
@@ -2020,6 +2020,9 @@ theorem prod_bijective {α β M : Type*} [Fintype α] [Fintype β] [CommMonoid M
     (he.surjective y).imp fun _a h => ⟨mem_univ _, h.symm⟩
 #align fintype.prod_bijective Fintype.prod_bijective
 #align fintype.sum_bijective Fintype.sum_bijective
+
+alias _root_.Function.Bijective.finset_prod := prod_bijective
+attribute [to_additive] Function.Bijective.finset_prod
 
 /-- `Fintype.prod_equiv` is a specialization of `Finset.prod_bij` that
 automatically fills in most arguments.
@@ -2032,7 +2035,7 @@ automatically fills in most arguments.
 See `Equiv.sum_comp` for a version without `h`."]
 theorem prod_equiv {α β M : Type*} [Fintype α] [Fintype β] [CommMonoid M] (e : α ≃ β) (f : α → M)
     (g : β → M) (h : ∀ x, f x = g (e x)) : ∏ x : α, f x = ∏ x : β, g x :=
-  prod_bijective e e.bijective f g h
+  e.bijective.finset_prod _ f g h
 #align fintype.prod_equiv Fintype.prod_equiv
 #align fintype.sum_equiv Fintype.sum_equiv
 
