@@ -39,9 +39,7 @@ variable [OrderedSemiring R] {a b x y : R} {n m : ℕ}
 
 theorem zero_pow_le_one : ∀ n : ℕ, (0 : R) ^ n ≤ 1
   | 0 => (pow_zero _).le
-  | n + 1 => by
-    rw [zero_pow n.succ_pos]
-    exact zero_le_one
+  | n + 1 => by rw [zero_pow n.succ_ne_zero]; exact zero_le_one
 #align zero_pow_le_one zero_pow_le_one
 
 theorem pow_add_pow_le (hx : 0 ≤ x) (hy : 0 ≤ y) (hn : n ≠ 0) : x ^ n + y ^ n ≤ (x + y) ^ n := by
@@ -317,7 +315,7 @@ alias pow_two_pos_of_ne_zero := sq_pos_of_ne_zero
 theorem pow_bit0_pos_iff (a : R) {n : ℕ} (hn : n ≠ 0) : 0 < a ^ bit0 n ↔ a ≠ 0 := by
   refine' ⟨fun h => _, fun h => pow_bit0_pos h n⟩
   rintro rfl
-  rw [zero_pow (Nat.zero_lt_bit0 hn)] at h
+  rw [zero_pow (Nat.bit0_ne_zero hn)] at h
   exact lt_irrefl _ h
 #align pow_bit0_pos_iff pow_bit0_pos_iff
 
@@ -405,8 +403,7 @@ section LinearOrderedCommMonoidWithZero
 
 variable [LinearOrderedCommMonoidWithZero M] [NoZeroDivisors M] {a : M} {n : ℕ}
 
-theorem pow_pos_iff (hn : 0 < n) : 0 < a ^ n ↔ 0 < a := by
-  simp_rw [zero_lt_iff, pow_ne_zero_iff hn]
+theorem pow_pos_iff (hn : n ≠ 0) : 0 < a ^ n ↔ 0 < a := by simp_rw [zero_lt_iff, pow_ne_zero_iff hn]
 #align pow_pos_iff pow_pos_iff
 
 end LinearOrderedCommMonoidWithZero
