@@ -636,7 +636,7 @@ instance moduleSet : Module (SetSemiring A) (Submodule R A) where
   mul_smul s t P := by
     simp_rw [HSMul.hSMul, SetSemiring.down_mul, ← mul_assoc, span_mul_span]
   one_smul P := by
-    simp_rw [HSMul.hSMul, SetSemiring.down_one, ←one_eq_span_one_set, one_mul]
+    simp_rw [HSMul.hSMul, SetSemiring.down_one, ← one_eq_span_one_set, one_mul]
   zero_smul P := by
     simp_rw [HSMul.hSMul, SetSemiring.down_zero, span_empty, bot_mul, bot_eq_zero]
   smul_zero _ := mul_bot _

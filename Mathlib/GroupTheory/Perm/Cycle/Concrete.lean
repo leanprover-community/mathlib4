@@ -307,7 +307,7 @@ theorem next_toList_eq_apply (p : Perm α) (x y : α) (hy : y ∈ toList p x) :
   rw [← nthLe_toList p x k (by simpa using hk)] at hk'
   simp_rw [← hk']
   rw [next_nthLe _ (nodup_toList _ _), nthLe_toList, nthLe_toList, ← mul_apply, ← pow_succ,
-    length_toList, ←pow_mod_orderOf_cycleOf_apply p (k + 1), IsCycle.orderOf]
+    length_toList, ← pow_mod_orderOf_cycleOf_apply p (k + 1), IsCycle.orderOf]
   exact isCycle_cycleOf _ (mem_support.mp hy.right)
 #align equiv.perm.next_to_list_eq_apply Equiv.Perm.next_toList_eq_apply
 

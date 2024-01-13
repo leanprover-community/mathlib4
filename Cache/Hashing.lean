@@ -76,7 +76,7 @@ def getRootHash : IO UInt64 := do
       pure ((← mathlibDepPath) / ·)
   let hashs ← rootFiles.mapM fun path =>
     hashFileContents <$> IO.FS.readFile (qualifyPath path)
-  return hash ((hash Lean.versionString) :: hashs)
+  return hash (hash Lean.githash :: hashs)
 
 /--
 Computes the hash of a file, which mixes:

@@ -226,7 +226,7 @@ theorem hasDerivAt_resolvent {a : A} {k : 𝕜} (hk : k ∈ ρ a) :
 #noalign spectrum.norm_resolvent_le_forall
 
 theorem eventually_isUnit_resolvent (a : A) : ∀ᶠ z in cobounded 𝕜, IsUnit (resolvent a z) := by
-  rw [←comap_norm_atTop, atTop_basis.comap (‖·‖) |>.eventually_iff]
+  rw [← comap_norm_atTop, atTop_basis.comap (‖·‖) |>.eventually_iff]
   refine ⟨‖a‖ * ‖(1 : A)‖ + 1, by trivial, fun z hz ↦ ?_⟩
   exact isUnit_resolvent.mp <| mem_resolventSet_of_norm_lt_mul <| (lt_add_one (‖a‖ * _)).trans_le hz
 
@@ -380,7 +380,7 @@ variable [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A] [Nontrivial A] (
 protected theorem nonempty : (spectrum ℂ a).Nonempty := by
   /- Suppose `σ a = ∅`, then resolvent set is `ℂ`, any `(z • 1 - a)` is a unit, and `resolvent a`
     is differentiable on `ℂ`. -/
-  by_contra' h
+  by_contra! h
   have H₀ : resolventSet ℂ a = Set.univ := by rwa [spectrum, Set.compl_empty_iff] at h
   have H₁ : Differentiable ℂ fun z : ℂ => resolvent a z := fun z =>
     (hasDerivAt_resolvent (H₀.symm ▸ Set.mem_univ z : z ∈ resolventSet ℂ a)).differentiableAt

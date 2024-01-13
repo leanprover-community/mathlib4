@@ -490,7 +490,7 @@ theorem image_subset_image_iff {t : Finset α} (hf : Injective f) :
 #align finset.image_subset_image_iff Finset.image_subset_image_iff
 
 lemma image_ssubset_image {t : Finset α} (hf : Injective f) : s.image f ⊂ t.image f ↔ s ⊂ t := by
-  simp_rw [←lt_iff_ssubset]
+  simp_rw [← lt_iff_ssubset]
   exact lt_iff_lt_of_le_iff_le' (image_subset_image_iff hf) (image_subset_image_iff hf)
 
 theorem coe_image_subset_range : ↑(s.image f) ⊆ Set.range f :=
@@ -716,7 +716,7 @@ theorem filterMap_some : s.filterMap some (by simp) = s :=
 
 theorem filterMap_mono (h : s ⊆ t) :
     filterMap f s f_inj ⊆ filterMap f t f_inj := by
-  rw [←val_le_iff] at h ⊢
+  rw [← val_le_iff] at h ⊢
   exact Multiset.filterMap_le_filterMap f h
 
 end FilterMap

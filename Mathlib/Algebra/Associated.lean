@@ -779,6 +779,11 @@ theorem quot_mk_eq_mk [Monoid α] (a : α) : Quot.mk Setoid.r a = Associates.mk 
   rfl
 #align associates.quot_mk_eq_mk Associates.quot_mk_eq_mk
 
+@[simp]
+theorem quot_out [Monoid α] (a : Associates α) : Associates.mk (Quot.out a) = a := by
+  rw [← quot_mk_eq_mk, Quot.out_eq]
+#align associates.quot_out Associates.quot_outₓ
+
 theorem forall_associated [Monoid α] {p : Associates α → Prop} :
     (∀ a, p a) ↔ ∀ a, p (Associates.mk a) :=
   Iff.intro (fun h _ => h _) fun h a => Quotient.inductionOn a h
@@ -1158,9 +1163,9 @@ theorem one_or_eq_of_le_of_prime : ∀ p m : Associates α, Prime p → m ≤ p 
 #align associates.one_or_eq_of_le_of_prime Associates.one_or_eq_of_le_of_prime
 
 instance : CanonicallyOrderedCommMonoid (Associates α) where
-    exists_mul_of_le := fun h => h
-    le_self_mul := fun _ b => ⟨b, rfl⟩
-    bot_le := fun _ => one_le
+  exists_mul_of_le := fun h => h
+  le_self_mul := fun _ b => ⟨b, rfl⟩
+  bot_le := fun _ => one_le
 
 theorem dvdNotUnit_iff_lt {a b : Associates α} : DvdNotUnit a b ↔ a < b :=
   dvd_and_not_dvd_iff.symm

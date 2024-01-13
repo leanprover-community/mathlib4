@@ -46,6 +46,9 @@ The main definitions are
  * `MeasureTheory.ProbabilityMeasure.continuous_map`: For a continuous function `f : Ω → Ω'`, the
    push-forward of probability measures `f* : ProbabilityMeasure Ω → ProbabilityMeasure Ω'` is
    continuous.
+ * `MeasureTheory.ProbabilityMeasure.t2Space`: The topology of convergence in distribution is
+   Hausdorff on Borel spaces where indicators of closed sets have continuous decreasing
+   approximating sequences (in particular on any pseudo-metrizable spaces).
 
 TODO:
  * Probability measures form a convex space.
@@ -214,6 +217,8 @@ theorem toFiniteMeasure_nonzero (μ : ProbabilityMeasure Ω) : μ.toFiniteMeasur
   exact one_ne_zero
 #align measure_theory.probability_measure.to_finite_measure_nonzero MeasureTheory.ProbabilityMeasure.toFiniteMeasure_nonzero
 
+section convergence_in_distribution
+
 variable [TopologicalSpace Ω] [OpensMeasurableSpace Ω]
 
 theorem testAgainstNN_lipschitz (μ : ProbabilityMeasure Ω) :
@@ -300,6 +305,22 @@ theorem tendsto_iff_forall_integral_tendsto {γ : Type*} {F : Filter γ}
   rfl
 #align measure_theory.probability_measure.tendsto_iff_forall_integral_tendsto MeasureTheory.ProbabilityMeasure.tendsto_iff_forall_integral_tendsto
 
+end convergence_in_distribution -- section
+
+section Hausdorff
+
+variable [TopologicalSpace Ω] [HasOuterApproxClosed Ω] [BorelSpace Ω]
+
+variable (Ω)
+
+/-- On topological spaces where indicators of closed sets have decreasing approximating sequences of
+continuous functions (`HasOuterApproxClosed`), the topology of convergence in distribution of Borel
+probability measures is Hausdorff (`T2Space`). -/
+instance t2Space : T2Space (ProbabilityMeasure Ω) :=
+  Embedding.t2Space (toFiniteMeasure_embedding Ω)
+
+end Hausdorff -- section
+
 end ProbabilityMeasure
 
 -- namespace
@@ -333,7 +354,7 @@ def normalize : ProbabilityMeasure Ω :=
         rw [FiniteMeasure.toMeasure_smul]
         simp only [Measure.smul_toOuterMeasure, OuterMeasure.coe_smul, Pi.smul_apply,
           Measure.nnreal_smul_coe_apply, ne_eq, mass_zero_iff, ENNReal.coe_inv zero, ennreal_mass]
-        rw [←Ne.def, ←ENNReal.coe_ne_zero, ennreal_mass] at zero
+        rw [← Ne.def, ← ENNReal.coe_ne_zero, ennreal_mass] at zero
         exact ENNReal.inv_mul_cancel zero μ.prop.measure_univ_lt_top.ne }
 #align measure_theory.finite_measure.normalize MeasureTheory.FiniteMeasure.normalize
 

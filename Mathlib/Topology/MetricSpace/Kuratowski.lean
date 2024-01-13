@@ -155,7 +155,7 @@ theorem LipschitzOnWith.extend_lp_infty [PseudoMetricSpace α] {s : Set α} {f :
     · apply LipschitzWith.uniformly_bounded (swap g) hgl a₀
       use ‖f a₀‖
       rintro - ⟨i, rfl⟩
-      simp_rw [←hgeq i ha₀_in_s]
+      simp_rw [← hgeq i ha₀_in_s]
       exact lp.norm_apply_le_norm top_ne_zero (f a₀) i
     -- Construct witness by bundling the function with its certificate of membership in ℓ^∞
     let f_ext' : α → ℓ^∞(ι) := fun i ↦ ⟨swap g i, hf_extb i⟩

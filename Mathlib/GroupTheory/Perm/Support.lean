@@ -438,7 +438,7 @@ theorem support_swap {x y : α} (h : x ≠ y) : support (swap x y) = {x, y} := b
 
 theorem support_swap_iff (x y : α) : support (swap x y) = {x, y} ↔ x ≠ y := by
   refine' ⟨fun h => _, fun h => support_swap h⟩
-  by_contra'
+  by_contra!
   rw [← this] at h
   simp only [swap_self, support_refl, pair_eq_singleton] at h
   have : x ∈ ∅ := by

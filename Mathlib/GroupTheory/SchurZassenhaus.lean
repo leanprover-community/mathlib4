@@ -88,10 +88,10 @@ noncomputable instance : MulAction G H.QuotientDiff where
 theorem smul_diff' (h : H) :
     diff (MonoidHom.id H) α (op (h : G) • β) = diff (MonoidHom.id H) α β * h ^ H.index := by
   letI := H.fintypeQuotientOfFiniteIndex
-  rw [diff, diff, index_eq_card, ←Finset.card_univ, ←Finset.prod_const, ←Finset.prod_mul_distrib]
+  rw [diff, diff, index_eq_card, ← Finset.card_univ, ← Finset.prod_const, ← Finset.prod_mul_distrib]
   refine' Finset.prod_congr rfl fun q _ => _
   simp_rw [Subtype.ext_iff, MonoidHom.id_apply, coe_mul, mul_assoc, mul_right_inj]
-  rw [smul_apply_eq_smul_apply_inv_smul, smul_eq_mul_unop, unop_op, mul_left_inj, ←Subtype.ext_iff,
+  rw [smul_apply_eq_smul_apply_inv_smul, smul_eq_mul_unop, unop_op, mul_left_inj, ← Subtype.ext_iff,
     Equiv.apply_eq_iff_eq, inv_smul_eq_iff]
   exact self_eq_mul_right.mpr ((QuotientGroup.eq_one_iff _).mpr h.2)
 #align subgroup.smul_diff' Subgroup.smul_diff'
@@ -183,9 +183,9 @@ private theorem step1 (K : Subgroup G) (hK : K ⊔ N = ⊤) : K = ⊤ := by
     exact h1.coprime_dvd_left (card_comap_dvd_of_injective N K.subtype Subtype.coe_injective)
   obtain ⟨H, hH⟩ := h2 K h5 h6
   replace hH : Fintype.card (H.map K.subtype) = N.index := by
-    rw [←relindex_bot_left_eq_card, ←relindex_comap, MonoidHom.comap_bot, Subgroup.ker_subtype,
-      relindex_bot_left, ←IsComplement'.index_eq_card (IsComplement'.symm hH), index_comap,
-      subtype_range, ←relindex_sup_right, hK, relindex_top_right]
+    rw [← relindex_bot_left_eq_card, ← relindex_comap, MonoidHom.comap_bot, Subgroup.ker_subtype,
+      relindex_bot_left, ← IsComplement'.index_eq_card (IsComplement'.symm hH), index_comap,
+      subtype_range, ← relindex_sup_right, hK, relindex_top_right]
   have h7 : Fintype.card N * Fintype.card (H.map K.subtype) = Fintype.card G := by
     rw [hH, ← N.index_mul_card, mul_comm]
   have h8 : (Fintype.card N).Coprime (Fintype.card (H.map K.subtype)) := by
@@ -304,7 +304,7 @@ theorem exists_right_complement'_of_coprime {N : Subgroup G} [N.Normal]
   haveI := (Cardinal.lt_aleph0_iff_fintype.mp
     (lt_of_not_ge (mt Cardinal.toNat_apply_of_aleph0_le hN3))).some
   apply exists_right_complement'_of_coprime_of_fintype
-  rwa [←Nat.card_eq_fintype_card]
+  rwa [← Nat.card_eq_fintype_card]
 #align subgroup.exists_right_complement'_of_coprime Subgroup.exists_right_complement'_of_coprime
 
 /-- **Schur-Zassenhaus** for normal subgroups:

@@ -629,11 +629,11 @@ theorem lift_bit1 (a : Cardinal) : lift.{v} (bit1 a) = bit1 (lift.{v} a) := by s
 end deprecated
 
 -- Porting note: Proof used to be simp, needed to remind simp that 1 + 1 = 2
-theorem lift_two : lift.{u, v} 2 = 2 := by simp [←one_add_one_eq_two]
+theorem lift_two : lift.{u, v} 2 = 2 := by simp [← one_add_one_eq_two]
 #align cardinal.lift_two Cardinal.lift_two
 
 @[simp]
-theorem mk_set {α : Type u} : #(Set α) = 2 ^ #α := by simp [←one_add_one_eq_two, Set, mk_arrow]
+theorem mk_set {α : Type u} : #(Set α) = 2 ^ #α := by simp [← one_add_one_eq_two, Set, mk_arrow]
 #align cardinal.mk_set Cardinal.mk_set
 
 /-- A variant of `Cardinal.mk_set` expressed in terms of a `Set` instead of a `Type`. -/
@@ -643,7 +643,7 @@ theorem mk_powerset {α : Type u} (s : Set α) : #(↥(𝒫 s)) = 2 ^ #(↥s) :=
 #align cardinal.mk_powerset Cardinal.mk_powerset
 
 theorem lift_two_power (a : Cardinal) : lift.{v} (2 ^ a) = 2 ^ lift.{v} a := by
-  simp [←one_add_one_eq_two]
+  simp [← one_add_one_eq_two]
 #align cardinal.lift_two_power Cardinal.lift_two_power
 
 section OrderProperties
@@ -1103,7 +1103,7 @@ theorem lift_sInf (s : Set Cardinal) : lift.{u,v} (sInf s) = sInf (lift.{u,v} ''
 theorem lift_iInf {ι} (f : ι → Cardinal) : lift.{u,v} (iInf f) = ⨅ i, lift.{u,v} (f i) := by
   unfold iInf
   convert lift_sInf (range f)
-  simp_rw [←comp_apply (f := lift), range_comp]
+  simp_rw [← comp_apply (f := lift), range_comp]
 #align cardinal.lift_infi Cardinal.lift_iInf
 
 theorem lift_down {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
@@ -1449,7 +1449,7 @@ theorem isLimit_aleph0 : IsLimit ℵ₀ :=
 #align cardinal.is_limit_aleph_0 Cardinal.isLimit_aleph0
 
 theorem IsLimit.aleph0_le {c : Cardinal} (h : IsLimit c) : ℵ₀ ≤ c := by
-  by_contra' h'
+  by_contra! h'
   rcases lt_aleph0.1 h' with ⟨_ | n, rfl⟩
   · exact h.ne_zero.irrefl
   · rw [nat_succ] at h
@@ -1703,7 +1703,7 @@ def toNat : ZeroHom Cardinal ℕ where
 lemma toNat_eq_zero : toNat c = 0 ↔ c = 0 ∨ ℵ₀ ≤ c := by
   simp only [toNat, ZeroHom.coe_mk, dite_eq_right_iff, or_iff_not_imp_right, not_le]
   refine' forall_congr' fun h => _
-  rw [←@Nat.cast_eq_zero Cardinal, ← Classical.choose_spec (p := fun n : ℕ ↦ c = n)]
+  rw [← @Nat.cast_eq_zero Cardinal, ← Classical.choose_spec (p := fun n : ℕ ↦ c = n)]
 
 lemma toNat_ne_zero : toNat c ≠ 0 ↔ c ≠ 0 ∧ c < ℵ₀ := by simp [not_or]
 @[simp] lemma toNat_pos : 0 < toNat c ↔ c ≠ 0 ∧ c < ℵ₀ := pos_iff_ne_zero.trans toNat_ne_zero
@@ -1757,8 +1757,10 @@ theorem toNat_cast (n : ℕ) : Cardinal.toNat n = n := by
   exact (Classical.choose_spec (lt_aleph0.1 (nat_lt_aleph0 n))).symm
 #align cardinal.to_nat_cast Cardinal.toNat_cast
 
+-- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem toNat_ofNat (n : ℕ) [n.AtLeastTwo] : Cardinal.toNat (OfNat.ofNat n) = OfNat.ofNat n :=
+theorem toNat_ofNat (n : ℕ) [n.AtLeastTwo] :
+    Cardinal.toNat (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
   toNat_cast n
 
 /-- `toNat` has a right-inverse: coercion. -/

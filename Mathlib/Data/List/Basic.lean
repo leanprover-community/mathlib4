@@ -1765,20 +1765,6 @@ theorem map_eq_map {α β} (f : α → β) (l : List α) : f <$> l = map f l :=
 theorem map_tail (f : α → β) (l) : map f (tail l) = tail (map f l) := by cases l <;> rfl
 #align list.map_tail List.map_tail
 
-@[simp]
-theorem map_injective_iff {f : α → β} : Injective (map f) ↔ Injective f := by
-  constructor <;> intro h x y hxy
-  · suffices [x] = [y] by simpa using this
-    apply h
-    simp [hxy]
-  · induction' y with yh yt y_ih generalizing x
-    · simpa using hxy
-    cases x
-    · simp at hxy
-    · simp only [map, cons.injEq] at hxy
-      simp [y_ih hxy.2, h hxy.1]
-#align list.map_injective_iff List.map_injective_iff
-
 /-- A single `List.map` of a composition of functions is equal to
 composing a `List.map` with another `List.map`, fully applied.
 This is the reverse direction of `List.map_map`.
@@ -1794,6 +1780,68 @@ a single `List.map` of composed functions.
 theorem map_comp_map (g : β → γ) (f : α → β) : map g ∘ map f = map (g ∘ f) := by
   ext l; rw [comp_map, Function.comp_apply]
 #align list.map_comp_map List.map_comp_map
+
+section map_bijectivity
+
+theorem _root_.Function.LeftInverse.list_map {f : α → β} {g : β → α} (h : LeftInverse f g) :
+    LeftInverse (map f) (map g)
+  | [] => by simp_rw [map_nil]
+  | x :: xs => by simp_rw [map_cons, h x, h.list_map xs]
+
+nonrec theorem _root_.Function.RightInverse.list_map {f : α → β} {g : β → α}
+    (h : RightInverse f g) : RightInverse (map f) (map g) :=
+  h.list_map
+
+nonrec theorem _root_.Function.Involutive.list_map {f : α → α}
+    (h : Involutive f) : Involutive (map f) :=
+  Function.LeftInverse.list_map h
+
+@[simp]
+theorem map_leftInverse_iff {f : α → β} {g : β → α} :
+    LeftInverse (map f) (map g) ↔ LeftInverse f g :=
+  ⟨fun h x => by injection h [x], (·.list_map)⟩
+
+@[simp]
+theorem map_rightInverse_iff {f : α → β} {g : β → α} :
+    RightInverse (map f) (map g) ↔ RightInverse f g := map_leftInverse_iff
+
+@[simp]
+theorem map_involutive_iff {f : α → α} :
+    Involutive (map f) ↔ Involutive f := map_leftInverse_iff
+
+theorem _root_.Function.Injective.list_map {f : α → β} (h : Injective f) :
+    Injective (map f)
+  | [], [], _ => rfl
+  | x :: xs, y :: ys, hxy => by
+    injection hxy with hxy hxys
+    rw [h hxy, h.list_map hxys]
+
+@[simp]
+theorem map_injective_iff {f : α → β} : Injective (map f) ↔ Injective f := by
+  refine ⟨fun h x y hxy => ?_, (·.list_map)⟩
+  suffices [x] = [y] by simpa using this
+  apply h
+  simp [hxy]
+#align list.map_injective_iff List.map_injective_iff
+
+theorem _root_.Function.Surjective.list_map {f : α → β} (h : Surjective f) :
+    Surjective (map f) :=
+  let ⟨_, h⟩ := h.hasRightInverse; h.list_map.surjective
+
+@[simp]
+theorem map_surjective_iff {f : α → β} : Surjective (map f) ↔ Surjective f := by
+  refine ⟨fun h x => ?_, (·.list_map)⟩
+  let ⟨[y], hxy⟩ := h [x]
+  exact ⟨_, List.singleton_injective hxy⟩
+
+theorem _root_.Function.Bijective.list_map {f : α → β} (h : Bijective f) : Bijective (map f) :=
+  ⟨h.1.list_map, h.2.list_map⟩
+
+@[simp]
+theorem map_bijective_iff {f : α → β} : Bijective (map f) ↔ Bijective f := by
+  simp_rw [Function.Bijective, map_injective_iff, map_surjective_iff]
+
+end map_bijectivity
 
 theorem map_filter_eq_foldr (f : α → β) (p : α → Bool) (as : List α) :
     map f (filter p as) = foldr (fun a bs => bif p a then f a :: bs else bs) [] as := by
@@ -2492,7 +2540,7 @@ variable {f : β → α → β} {b : β} {a : α} {l : List α}
 theorem length_scanl : ∀ a l, length (scanl f a l) = l.length + 1
   | a, [] => rfl
   | a, x :: l => by
-    rw [scanl, length_cons, length_cons, ←succ_eq_add_one, congr_arg succ]
+    rw [scanl, length_cons, length_cons, ← succ_eq_add_one, congr_arg succ]
     exact length_scanl _ _
 #align list.length_scanl List.length_scanl
 
@@ -2704,7 +2752,7 @@ theorem foldlM_eq_foldl (f : β → α → m β) (b l) :
     by simp [← h (pure b)]
   induction l with
   | nil => intro; simp
-  | cons _ _ l_ih => intro; simp only [List.foldlM, foldl, ←l_ih, functor_norm]
+  | cons _ _ l_ih => intro; simp only [List.foldlM, foldl, ← l_ih, functor_norm]
 #align list.mfoldl_eq_foldl List.foldlM_eq_foldl
 
 -- Porting note: now in std
@@ -2763,8 +2811,8 @@ where
         | nil => contradiction
         | cons hd tl =>
           rw [length, succ_eq_add_one] at h
-          rw [splitAt.go, take, drop, append_cons, Array.toList_eq, ←Array.push_data,
-            ←Array.toList_eq]
+          rw [splitAt.go, take, drop, append_cons, Array.toList_eq, ← Array.push_data,
+            ← Array.toList_eq]
           exact ih _ _ <| lt_of_add_lt_add_right h
     · induction n generalizing xs acc with
       | zero =>
@@ -2946,7 +2994,7 @@ theorem modifyLast_append (f : α → α) (l₁ l₂ : List α) (_ : l₂ ≠ []
     cases tl with
     | nil => exact modifyLast_append_one _ hd _
     | cons hd' tl' =>
-      rw [append_cons, ←nil_append (hd :: hd' :: tl'), append_cons [], nil_append,
+      rw [append_cons, ← nil_append (hd :: hd' :: tl'), append_cons [], nil_append,
         modifyLast_append _ (l₁ ++ [hd]) (hd' :: tl') _, modifyLast_append _ [hd] (hd' :: tl') _,
         append_assoc]
       all_goals { exact cons_ne_nil _ _ }
@@ -3471,8 +3519,8 @@ lemma filter_attach (l : List α) (p : α → Bool) :
     (l.attach.filter fun x => p x : List {x // x ∈ l}) =
       (l.filter p).attach.map (Subtype.map id fun x => mem_of_mem_filter) :=
   map_injective_iff.2 Subtype.coe_injective <| by
-    simp_rw [map_map, (· ∘ ·), Subtype.map, id.def, ←Function.comp_apply (g := Subtype.val),
-      ←map_filter, attach_map_val]
+    simp_rw [map_map, (· ∘ ·), Subtype.map, id.def, ← Function.comp_apply (g := Subtype.val),
+      ← map_filter, attach_map_val]
 #align list.filter_attach List.filter_attach
 
 #align list.filter_filter List.filter_filter
@@ -4179,7 +4227,7 @@ theorem forall_iff_forall_mem : ∀ {l : List α}, Forall p l ↔ ∀ x ∈ l, p
 
 theorem Forall.imp (h : ∀ x, p x → q x) : ∀ {l : List α}, Forall p l → Forall q l
   | [] => id
-  | x :: l => by simp; rw [←and_imp]; exact And.imp (h x) (Forall.imp h)
+  | x :: l => by simp; rw [← and_imp]; exact And.imp (h x) (Forall.imp h)
 #align list.all₂.imp List.Forall.imp
 
 @[simp]
@@ -4262,7 +4310,7 @@ theorem sizeOf_dropSlice_lt [SizeOf α] (i j : ℕ) (hj : 0 < j) (xs : List α) 
           cases n
           · simp
           · simp [drop]
-            rw [←Nat.zero_add (sizeOf (drop _ xs_tl))]
+            rw [← Nat.zero_add (sizeOf (drop _ xs_tl))]
             exact Nat.add_le_add (Nat.zero_le _) (drop_sizeOf_le xs_tl _)
         · simp
     · simp

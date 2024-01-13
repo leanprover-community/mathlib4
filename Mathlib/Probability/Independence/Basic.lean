@@ -156,7 +156,7 @@ lemma iIndepSets.meas_biInter (h : iIndepSets π μ) (s : Finset ι) {f : ι →
   (iIndepSets_iff _ _).1 h s hf
 
 lemma iIndepSets.meas_iInter [Fintype ι] (h : iIndepSets π μ) (hs : ∀ i, s i ∈ π i) :
-    μ (⋂ i, s i) = ∏ i, μ (s i) := by simp [←h.meas_biInter _ fun _i _ ↦ hs _]
+    μ (⋂ i, s i) = ∏ i, μ (s i) := by simp [← h.meas_biInter _ fun _i _ ↦ hs _]
 set_option linter.uppercaseLean3 false in
 #align probability_theory.Indep_sets.meas_Inter ProbabilityTheory.iIndepSets.meas_iInter
 
@@ -180,7 +180,7 @@ lemma iIndep.meas_biInter (hμ : iIndep m μ) (hs : ∀ i, i ∈ S → Measurabl
     μ (⋂ i ∈ S, s i) = ∏ i in S, μ (s i) := (iIndep_iff _ _).1 hμ _ hs
 
 lemma iIndep.meas_iInter [Fintype ι] (hμ : iIndep m μ) (hs : ∀ i, MeasurableSet[m i] (s i)) :
-    μ (⋂ i, s i) = ∏ i, μ (s i) := by simp [←hμ.meas_biInter fun _ _ ↦ hs _]
+    μ (⋂ i, s i) = ∏ i, μ (s i) := by simp [← hμ.meas_biInter fun _ _ ↦ hs _]
 
 lemma Indep_iff_IndepSets (m₁ m₂ : MeasurableSpace Ω) [MeasurableSpace Ω] (μ : Measure Ω) :
     Indep m₁ m₂ μ ↔ IndepSets {s | MeasurableSet[m₁] s} {s | MeasurableSet[m₂] s} μ := by

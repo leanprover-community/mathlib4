@@ -319,7 +319,7 @@ def Module.addCommMonoidToAddCommGroup [Ring R] [AddCommMonoid M] [Module R M] :
     zsmul := fun z a => (z : R) • a
     zsmul_zero' := fun a => by simpa only [Int.cast_zero] using zero_smul R a
     zsmul_succ' := fun z a => by simp [add_comm, add_smul]
-    zsmul_neg' := fun z a => by simp [←smul_assoc, neg_one_smul] }
+    zsmul_neg' := fun z a => by simp [← smul_assoc, neg_one_smul] }
 #align module.add_comm_monoid_to_add_comm_group Module.addCommMonoidToAddCommGroup
 
 variable {R}

@@ -69,6 +69,7 @@ lemma tendsto_cdf_atBot : Tendsto (cdf μ) atBot (𝓝 0) := tendsto_condCdf_atB
 /-- The cdf tends to 1 at +∞. -/
 lemma tendsto_cdf_atTop : Tendsto (cdf μ) atTop (𝓝 1) := tendsto_condCdf_atTop _ _
 
+set_option synthInstance.maxHeartbeats 25000 in
 lemma ofReal_cdf [IsProbabilityMeasure μ] (x : ℝ) : ENNReal.ofReal (cdf μ x) = μ (Iic x) := by
   have h := lintegral_condCdf ((Measure.dirac Unit.unit).prod μ) x
   simpa only [MeasureTheory.Measure.fst_prod, Measure.prod_prod, measure_univ, one_mul,

@@ -151,7 +151,7 @@ theorem integrable_exp_neg_mul_sq {b : ℝ} (hb : 0 < b) : Integrable fun x : �
 theorem integrableOn_Ioi_exp_neg_mul_sq_iff {b : ℝ} :
     IntegrableOn (fun x : ℝ => exp (-b * x ^ 2)) (Ioi 0) ↔ 0 < b := by
   refine' ⟨fun h => _, fun h => (integrable_exp_neg_mul_sq h).integrableOn⟩
-  by_contra' hb
+  by_contra! hb
   have : ∫⁻ _ : ℝ in Ioi 0, 1 ≤ ∫⁻ x : ℝ in Ioi 0, ‖exp (-b * x ^ 2)‖₊ := by
     apply lintegral_mono (fun x ↦ _)
     simp only [neg_mul, ENNReal.one_le_coe_iff, ← toNNReal_one, toNNReal_le_iff_le_coe,
@@ -172,7 +172,7 @@ theorem integrable_mul_exp_neg_mul_sq {b : ℝ} (hb : 0 < b) :
 
 theorem norm_cexp_neg_mul_sq (b : ℂ) (x : ℝ) :
     ‖Complex.exp (-b * (x : ℂ) ^ 2)‖ = exp (-b.re * x ^ 2) := by
-  rw [Complex.norm_eq_abs, Complex.abs_exp, ←ofReal_pow, mul_comm (-b) _, ofReal_mul_re, neg_re,
+  rw [Complex.norm_eq_abs, Complex.abs_exp, ← ofReal_pow, mul_comm (-b) _, ofReal_mul_re, neg_re,
     mul_comm]
 #align norm_cexp_neg_mul_sq norm_cexp_neg_mul_sq
 
@@ -278,8 +278,9 @@ theorem continuousAt_gaussian_integral (b : ℂ) (hb : 0 < re b) :
   have f_le_bd : ∀ᶠ c : ℂ in 𝓝 b, ∀ᵐ x : ℝ, ‖f c x‖ ≤ exp (-d * x ^ 2) := by
     refine' eventually_of_mem ((continuous_re.isOpen_preimage _ isOpen_Ioi).mem_nhds hd') _
     refine' fun c hc => ae_of_all _ fun x => _
-    rw [norm_cexp_neg_mul_sq, exp_le_exp]
-    exact mul_le_mul_of_nonneg_right (neg_le_neg (le_of_lt hc)) (sq_nonneg _)
+    rw [norm_cexp_neg_mul_sq]
+    gcongr
+    exact le_of_lt hc
   exact
     continuousAt_of_dominated (eventually_of_forall f_meas) f_le_bd (integrable_exp_neg_mul_sq hd)
       (ae_of_all _ f_cts)
@@ -443,14 +444,14 @@ theorem verticalIntegral_norm_le (hb : 0 < b.re) (c : ℝ) {T : ℝ} (hT : 0 ≤
             ‖cexp (-b * (T + y * I) ^ 2)‖ ≤
               exp (-(b.re * T ^ 2 - (2 : ℝ) * |b.im| * |c| * T - b.re * c ^ 2)) := by
     intro T hT c y hy
-    rw [norm_cexp_neg_mul_sq_add_mul_I b, exp_le_exp, neg_le_neg_iff]
-    refine' sub_le_sub (sub_le_sub (le_refl _) (mul_le_mul_of_nonneg_right _ hT)) _
+    rw [norm_cexp_neg_mul_sq_add_mul_I b]
+    gcongr exp (- (_ - ?_ * _ - _ * ?_))
     · (conv_lhs => rw [mul_assoc]); (conv_rhs => rw [mul_assoc])
-      refine' mul_le_mul_of_nonneg_left ((le_abs_self _).trans _) zero_le_two
+      gcongr _ * ?_
+      refine' (le_abs_self _).trans _
       rw [abs_mul]
-      exact mul_le_mul_of_nonneg_left hy (abs_nonneg _)
-    · refine' mul_le_mul_of_nonneg_left _ hb.le
-      rwa [sq_le_sq]
+      gcongr
+    · rwa [sq_le_sq]
   -- now main proof
   refine' (intervalIntegral.norm_integral_le_of_norm_le_const _).trans _
   pick_goal 3

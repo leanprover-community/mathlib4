@@ -39,6 +39,9 @@ import Mathlib.Tactic.ExtractGoal
 import Mathlib.Tactic.ExtractLets
 import Mathlib.Tactic.FailIfNoProgress
 import Mathlib.Tactic.Find
+-- `gcongr` currently imports `Algebra.Order.Field.Power` and thence `Algebra.CharZero.Lemmas`
+-- Hopefully this can be rearranged.
+-- import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.GeneralizeProofs
 import Mathlib.Tactic.GuardGoalNums
 import Mathlib.Tactic.GuardHypNums
@@ -57,6 +60,8 @@ import Mathlib.Tactic.MkIffOfInductiveProp
 -- import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Tactic.NthRewrite
 import Mathlib.Tactic.Observe
+-- `positivity` imports `Data.Nat.Factorial.Basic`, but hopefully this can be rearranged.
+-- import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.ProjectionNotation
 import Mathlib.Tactic.Propose
 import Mathlib.Tactic.PushNeg
@@ -98,6 +103,9 @@ import Mathlib.Tactic.TypeCheck
 import Mathlib.Tactic.UnsetOption
 import Mathlib.Tactic.Use
 import Mathlib.Tactic.Variable
+import Mathlib.Tactic.Widget.Calc
+import Mathlib.Tactic.Widget.Congrm
+import Mathlib.Tactic.Widget.Conv
 import Mathlib.Tactic.WLOG
 import Mathlib.Util.AssertExists
 import Mathlib.Util.CountHeartbeats

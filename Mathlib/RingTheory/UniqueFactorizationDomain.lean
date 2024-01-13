@@ -1920,10 +1920,6 @@ section
 
 open Associates UniqueFactorizationMonoid
 
-theorem Associates.quot_out {α : Type*} [CommMonoid α] (a : Associates α) :
-    Associates.mk (Quot.out a) = a := by rw [← quot_mk_eq_mk, Quot.out_eq]
-#align associates.quot_out Associates.quot_out
-
 /-- `toGCDMonoid` constructs a GCD monoid out of a unique factorization domain. -/
 noncomputable def UniqueFactorizationMonoid.toGCDMonoid (α : Type*) [CancelCommMonoidWithZero α]
     [UniqueFactorizationMonoid α] [DecidableEq (Associates α)] [DecidableEq α] : GCDMonoid α where

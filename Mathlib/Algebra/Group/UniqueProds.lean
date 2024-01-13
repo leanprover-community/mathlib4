@@ -420,7 +420,7 @@ open MulOpposite in
       · refine ⟨c1, hc1, d2, hd2, h12, fun c3 d3 hc3 hd3 he => ?_⟩
         specialize hu ⟨_, _, ⟨_, hd1, rfl⟩, hc3, rfl⟩ ⟨_, _, hd3, ⟨_, hc2, rfl⟩, rfl⟩
         rw [mul_left_cancel_iff, mul_right_cancel_iff,
-            mul_assoc, ←mul_assoc c3, he, mul_assoc, mul_assoc] at hu; exact hu rfl
+            mul_assoc, ← mul_assoc c3, he, mul_assoc, mul_assoc] at hu; exact hu rfl
       push_neg at h12; obtain ⟨rfl, rfl⟩ := h12
       by_cases h21 : c2 ≠ 1 ∨ d1 ≠ 1
       · refine ⟨c2, hc2, d1, hd1, h21, fun c4 d4 hc4 hd4 he => ?_⟩

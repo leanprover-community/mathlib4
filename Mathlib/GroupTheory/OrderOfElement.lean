@@ -254,7 +254,7 @@ theorem orderOf_dvd_of_pow_eq_one (h : x ^ n = 1) : orderOf x ∣ n :=
 
 @[to_additive]
 theorem orderOf_dvd_iff_pow_eq_one {n : ℕ} : orderOf x ∣ n ↔ x ^ n = 1 :=
-  ⟨fun h => by rw [←pow_mod_orderOf, Nat.mod_eq_zero_of_dvd h, _root_.pow_zero],
+  ⟨fun h => by rw [← pow_mod_orderOf, Nat.mod_eq_zero_of_dvd h, _root_.pow_zero],
     orderOf_dvd_of_pow_eq_one⟩
 #align order_of_dvd_iff_pow_eq_one orderOf_dvd_iff_pow_eq_one
 #align add_order_of_dvd_iff_nsmul_eq_zero addOrderOf_dvd_iff_nsmul_eq_zero
@@ -308,7 +308,7 @@ theorem exists_pow_eq_self_of_coprime (h : n.Coprime (orderOf x)) : ∃ m : ℕ,
   by_cases h1 : orderOf x = 1
   · exact ⟨0, by rw [orderOf_eq_one_iff.mp h1, one_pow, one_pow]⟩
   obtain ⟨m, h⟩ := exists_mul_emod_eq_one_of_coprime h (one_lt_iff_ne_zero_and_ne_one.mpr ⟨h0, h1⟩)
-  exact ⟨m, by rw [← pow_mul, ←pow_mod_orderOf, h, pow_one]⟩
+  exact ⟨m, by rw [← pow_mul, ← pow_mod_orderOf, h, pow_one]⟩
 #align exists_pow_eq_self_of_coprime exists_pow_eq_self_of_coprime
 #align exists_nsmul_eq_self_of_coprime exists_nsmul_eq_self_of_coprime
 
@@ -557,7 +557,7 @@ lemma finite_powers : (powers a : Set G).Finite ↔ IsOfFinOrder a := by
   obtain ⟨m, n, hmn, ha⟩ := h.exists_lt_map_eq_of_forall_mem (f := fun n : ℕ ↦ a ^ n)
     (fun n ↦ by simp [mem_powers_iff])
   refine isOfFinOrder_iff_pow_eq_one.2 ⟨n - m, tsub_pos_iff_lt.2 hmn, ?_⟩
-  rw [←mul_left_cancel_iff (a := a ^ m), ←pow_add, add_tsub_cancel_of_le hmn.le, ha, mul_one]
+  rw [← mul_left_cancel_iff (a := a ^ m), ← pow_add, add_tsub_cancel_of_le hmn.le, ha, mul_one]
 
 @[to_additive (attr := simp) infinite_multiples]
 lemma infinite_powers : (powers a : Set G).Infinite ↔ ¬ IsOfFinOrder a := finite_powers.not
@@ -583,7 +583,7 @@ lemma finEquivPowers_apply (x : G) (hx) {n : Fin (orderOf x)} :
 @[to_additive (attr := simp, nolint simpNF) finEquivMultiples_symm_apply]
 lemma finEquivPowers_symm_apply (x : G) (hx) (n : ℕ) {hn : ∃ m : ℕ, x ^ m = x ^ n} :
     (finEquivPowers x hx).symm ⟨x ^ n, hn⟩ = ⟨n % orderOf x, Nat.mod_lt _ hx.orderOf_pos⟩ := by
-  rw [Equiv.symm_apply_eq, finEquivPowers_apply, Subtype.mk_eq_mk, ←pow_mod_orderOf, Fin.val_mk]
+  rw [Equiv.symm_apply_eq, finEquivPowers_apply, Subtype.mk_eq_mk, ← pow_mod_orderOf, Fin.val_mk]
 #align fin_equiv_powers_symm_apply finEquivPowers_symm_apply
 #align fin_equiv_multiples_symm_apply finEquivMultiples_symm_apply
 
@@ -1037,13 +1037,13 @@ theorem Subgroup.pow_index_mem {G : Type*} [Group G] (H : Subgroup G) [Normal H]
 
 @[to_additive]
 theorem pow_eq_mod_card (n : ℕ) : x ^ n = x ^ (n % Fintype.card G) := by
-  rw [←pow_mod_orderOf, ← Nat.mod_mod_of_dvd n orderOf_dvd_card, pow_mod_orderOf]
+  rw [← pow_mod_orderOf, ← Nat.mod_mod_of_dvd n orderOf_dvd_card, pow_mod_orderOf]
 #align pow_eq_mod_card pow_eq_mod_card
 #align nsmul_eq_mod_card nsmul_eq_mod_card
 
 @[to_additive]
 theorem zpow_eq_mod_card (n : ℤ) : x ^ n = x ^ (n % Fintype.card G : ℤ) := by
-  rw [←zpow_mod_orderOf, ← Int.emod_emod_of_dvd n (Int.coe_nat_dvd.2 orderOf_dvd_card),
+  rw [← zpow_mod_orderOf, ← Int.emod_emod_of_dvd n (Int.coe_nat_dvd.2 orderOf_dvd_card),
     zpow_mod_orderOf]
 #align zpow_eq_mod_card zpow_eq_mod_card
 #align zsmul_eq_mod_card zsmul_eq_mod_card

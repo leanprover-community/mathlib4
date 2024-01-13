@@ -41,7 +41,7 @@ theorem coe_join :
   | [] => rfl
   | l :: L => by
       -- Porting note: was `congr_arg (fun s : Multiset α => ↑l + s) (coe_join L)`
-      simp only [join, List.map, coe_sum, List.sum_cons, List.join, ←coe_add, ←coe_join L]
+      simp only [join, List.map, coe_sum, List.sum_cons, List.join, ← coe_add, ← coe_join L]
 #align multiset.coe_join Multiset.coe_join
 
 @[simp]

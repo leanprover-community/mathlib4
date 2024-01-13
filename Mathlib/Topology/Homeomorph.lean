@@ -79,6 +79,9 @@ protected def symm (h : X ≃ₜ Y) : Y ≃ₜ X where
 @[simp] theorem symm_symm (h : X ≃ₜ Y) : h.symm.symm = h := rfl
 #align homeomorph.symm_symm Homeomorph.symm_symm
 
+theorem symm_bijective : Function.Bijective (Homeomorph.symm : (X ≃ₜ Y) → Y ≃ₜ X) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
+
 /-- See Note [custom simps projection] -/
 def Simps.symm_apply (h : X ≃ₜ Y) : Y → X :=
   h.symm

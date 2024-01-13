@@ -749,7 +749,7 @@ theorem val_inv_mul (h : IsUnit a) : ↑h.unit⁻¹ * a = 1 :=
 
 @[to_additive (attr := simp)]
 theorem mul_val_inv (h : IsUnit a) : a * ↑h.unit⁻¹ = 1 := by
-  rw [←h.unit.mul_inv]; congr
+  rw [← h.unit.mul_inv]; congr
 #align is_unit.mul_coe_inv IsUnit.mul_val_inv
 #align is_add_unit.add_coe_neg IsAddUnit.add_val_neg
 

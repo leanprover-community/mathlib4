@@ -273,7 +273,7 @@ theorem natDegree_eq_zero_of_derivative_eq_zero [NoZeroSMulDivisors ℕ R] {f : 
   rcases eq_or_ne f 0 with (rfl | hf)
   · exact natDegree_zero
   rw [natDegree_eq_zero_iff_degree_le_zero]
-  by_contra' f_nat_degree_pos
+  by_contra! f_nat_degree_pos
   rw [← natDegree_pos_iff_degree_pos] at f_nat_degree_pos
   let m := f.natDegree - 1
   have hm : m + 1 = f.natDegree := tsub_add_cancel_of_le f_nat_degree_pos

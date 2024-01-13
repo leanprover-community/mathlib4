@@ -61,7 +61,7 @@ theorem num_den_mk {q : ℚ} {n d : ℤ} (hd : d ≠ 0) (qdf : q = n /. d) :
 
 theorem num_mk (n d : ℤ) : (n /. d).num = d.sign * n / n.gcd d := by
   rcases d with ((_ | _) | _) <;>
-  rw [←Int.div_eq_ediv_of_dvd] <;>
+  rw [← Int.div_eq_ediv_of_dvd] <;>
   simp [divInt, mkRat, Rat.normalize, Nat.succPNat, Int.sign, Int.gcd, -Nat.cast_succ,
     Int.zero_ediv, Int.ofNat_dvd_left, Nat.gcd_dvd_left]
 #align rat.num_mk Rat.num_mk
@@ -210,15 +210,15 @@ theorem den_div_cast_eq_one_iff (m n : ℤ) (hn : n ≠ 0) : ((m : ℚ) / n).den
 theorem num_div_eq_of_coprime {a b : ℤ} (hb0 : 0 < b) (h : Nat.Coprime a.natAbs b.natAbs) :
     (a / b : ℚ).num = a := by
   -- Porting note: was `lift b to ℕ using le_of_lt hb0`
-  rw [←Int.natAbs_of_nonneg hb0.le, ← Rat.divInt_eq_div,
-    ←mk_eq_divInt _ _ (Int.natAbs_ne_zero.mpr hb0.ne') h]
+  rw [← Int.natAbs_of_nonneg hb0.le, ← Rat.divInt_eq_div,
+    ← mk_eq_divInt _ _ (Int.natAbs_ne_zero.mpr hb0.ne') h]
 #align rat.num_div_eq_of_coprime Rat.num_div_eq_of_coprime
 
 theorem den_div_eq_of_coprime {a b : ℤ} (hb0 : 0 < b) (h : Nat.Coprime a.natAbs b.natAbs) :
     ((a / b : ℚ).den : ℤ) = b := by
   -- Porting note: was `lift b to ℕ using le_of_lt hb0`
-  rw [←Int.natAbs_of_nonneg hb0.le, ← Rat.divInt_eq_div,
-    ←mk_eq_divInt _ _ (Int.natAbs_ne_zero.mpr hb0.ne') h]
+  rw [← Int.natAbs_of_nonneg hb0.le, ← Rat.divInt_eq_div,
+    ← mk_eq_divInt _ _ (Int.natAbs_ne_zero.mpr hb0.ne') h]
 #align rat.denom_div_eq_of_coprime Rat.den_div_eq_of_coprime
 
 theorem div_int_inj {a b c d : ℤ} (hb0 : 0 < b) (hd0 : 0 < d) (h1 : Nat.Coprime a.natAbs b.natAbs)

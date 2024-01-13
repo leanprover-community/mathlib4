@@ -728,7 +728,7 @@ theorem sub_one_mul_padicValNat_choose_eq_sub_sum_digits' {k n : ℕ} [hp : Fact
       padicValNat.mul (factorial_ne_zero _) (factorial_ne_zero _), Nat.mul_add]
   simp only [sub_one_mul_padicValNat_factorial]
   rw [← Nat.sub_add_comm <| digit_sum_le p k, Nat.add_sub_cancel n k, ← Nat.add_sub_assoc <|
-      digit_sum_le p n, Nat.sub_sub (k + n),  ← Nat.sub_right_comm, Nat.sub_sub, sub_add_eq,
+      digit_sum_le p n, Nat.sub_sub (k + n), ← Nat.sub_right_comm, Nat.sub_sub, sub_add_eq,
       add_comm, tsub_tsub_assoc (Nat.le_refl (k + n)) <| (add_comm k n) ▸ (Nat.add_le_add
       (digit_sum_le p n) (digit_sum_le p k)), Nat.sub_self (k + n), zero_add, add_comm]
 

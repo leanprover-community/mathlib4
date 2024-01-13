@@ -410,10 +410,11 @@ def chooseX : ∀ l : List α, ∀ _ : ∃ a, a ∈ l ∧ p a, { a // a ∈ l �
   | l :: ls, hp =>
     if pl : p l then ⟨l, ⟨mem_cons.mpr <| Or.inl rfl, pl⟩⟩
     else
-      let ⟨a, ⟨a_mem_ls, pa⟩⟩ :=
+      -- pattern matching on `hx` too makes this not reducible!
+      let ⟨a, ha⟩ :=
         chooseX ls
           (hp.imp fun _ ⟨o, h₂⟩ => ⟨(mem_cons.mp o).resolve_left fun e => pl <| e ▸ h₂, h₂⟩)
-      ⟨a, ⟨mem_cons.mpr <| Or.inr a_mem_ls, pa⟩⟩
+      ⟨a, mem_cons.mpr <| Or.inr ha.1, ha.2⟩
 #align list.choose_x List.chooseX
 
 /-- Given a decidable predicate `p` and a proof of existence of `a ∈ l` such that `p a`,

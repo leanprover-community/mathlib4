@@ -5,7 +5,7 @@ Authors: Yury Kudryashov, Heather Macbeth, Sébastien Gouëzel
 -/
 import Mathlib.LinearAlgebra.Alternating.Basic
 import Mathlib.LinearAlgebra.BilinearMap
-import Mathlib.Topology.Algebra.Module.Multilinear
+import Mathlib.Topology.Algebra.Module.Multilinear.Basic
 
 /-!
 # Continuous alternating multilinear maps
@@ -35,7 +35,7 @@ open scoped BigOperators
 -/
 structure ContinuousAlternatingMap (R M N ι : Type*) [Semiring R] [AddCommMonoid M] [Module R M]
     [TopologicalSpace M] [AddCommMonoid N] [Module R N] [TopologicalSpace N] extends
-    ContinuousMultilinearMap R (fun _ : ι => M) N, AlternatingMap R M N ι where
+    ContinuousMultilinearMap R (fun _ : ι => M) N, M [Λ^ι]→ₗ[R] N where
 
 /-- Projection to `ContinuousMultilinearMap`s. -/
 add_decl_doc ContinuousAlternatingMap.toContinuousMultilinearMap
@@ -96,13 +96,13 @@ theorem ext_iff {f g : M [Λ^ι]→L[R] N} : f = g ↔ ∀ x, f x = g x :=
   FunLike.ext_iff
 
 theorem toAlternatingMap_injective :
-    Injective (toAlternatingMap : M [Λ^ι]→L[R] N → AlternatingMap R M N ι) := fun f g h =>
+    Injective (toAlternatingMap : (M [Λ^ι]→L[R] N) → (M [Λ^ι]→ₗ[R] N)) := fun f g h =>
   FunLike.ext' <| by convert FunLike.ext'_iff.1 h
 
 @[simp]
 theorem range_toAlternatingMap :
-    Set.range (toAlternatingMap : M [Λ^ι]→L[R] N → AlternatingMap R M N ι) =
-      {f : AlternatingMap R M N ι | Continuous f} :=
+    Set.range (toAlternatingMap : M [Λ^ι]→L[R] N → (M [Λ^ι]→ₗ[R] N)) =
+      {f : M [Λ^ι]→ₗ[R] N | Continuous f} :=
   Set.ext fun f => ⟨fun ⟨g, hg⟩ => hg ▸ g.cont, fun h => ⟨{ f with cont := h }, FunLike.ext' rfl⟩⟩
 
 @[simp]
@@ -138,7 +138,7 @@ def codRestrict (f : M [Λ^ι]→L[R] N) (p : Submodule R N) (h : ∀ v, f v ∈
   { f.toAlternatingMap.codRestrict p h with toContinuousMultilinearMap := f.1.codRestrict p h }
 
 instance : Zero (M [Λ^ι]→L[R] N) :=
-  ⟨⟨0, (0 : AlternatingMap R M N ι).map_eq_zero_of_eq⟩⟩
+  ⟨⟨0, (0 : M [Λ^ι]→ₗ[R] N).map_eq_zero_of_eq⟩⟩
 
 instance : Inhabited (M [Λ^ι]→L[R] N) :=
   ⟨0⟩
@@ -229,7 +229,7 @@ def applyAddHom (v : ι → M) : M [Λ^ι]→L[R] N →+ N :=
 @[simp]
 theorem sum_apply {α : Type*} (f : α → M [Λ^ι]→L[R] N) (m : ι → M) {s : Finset α} :
     (∑ a in s, f a) m = ∑ a in s, f a m :=
-  (applyAddHom m).map_sum f s
+  map_sum (applyAddHom m) f s
 
 /-- Projection to `ContinuousMultilinearMap`s as a bundled `AddMonoidHom`. -/
 @[simps]
@@ -270,21 +270,27 @@ theorem pi_apply {ι' : Type*} {M' : ι' → Type*} [∀ i, AddCommMonoid (M' i)
 
 section
 
-variable (R M)
+variable (R M N)
 
-/-- The evaluation map from `ι → M` to `M` is alternating at a given `i` when `ι` is subsingleton.
--/
-@[simps! toContinuousMultilinearMap apply]
-def ofSubsingleton [Subsingleton ι] (i' : ι) : M [Λ^ι]→L[R] M :=
-  { AlternatingMap.ofSubsingleton R _ i' with
-    toContinuousMultilinearMap := ContinuousMultilinearMap.ofSubsingleton R _ i' }
+/-- The natural equivalence between continuous linear maps from `M` to `N`
+and continuous 1-multilinear alternating maps from `M` to `N`. -/
+@[simps! apply_apply symm_apply_apply apply_toContinuousMultilinearMap]
+def ofSubsingleton [Subsingleton ι] (i : ι) :
+    (M →L[R] N) ≃ M [Λ^ι]→L[R] N where
+  toFun f :=
+    { AlternatingMap.ofSubsingleton R M N i f with
+      toContinuousMultilinearMap := ContinuousMultilinearMap.ofSubsingleton R M N i f }
+  invFun f := (ContinuousMultilinearMap.ofSubsingleton R M N i).symm f.1
+  left_inv _ := rfl
+  right_inv _ := toContinuousMultilinearMap_injective <|
+    (ContinuousMultilinearMap.ofSubsingleton R M N i).apply_symm_apply _
 
 @[simp]
-theorem ofSubsingleton_toAlternatingMap [Subsingleton ι] (i' : ι) :
-    (ofSubsingleton R M i').toAlternatingMap = AlternatingMap.ofSubsingleton R M i' :=
+theorem ofSubsingleton_toAlternatingMap [Subsingleton ι] (i : ι) (f : M →L[R] N) :
+    (ofSubsingleton R M N i f).toAlternatingMap = AlternatingMap.ofSubsingleton R M N i f :=
   rfl
 
-variable (ι)
+variable (ι) {N}
 
 /-- The constant map is alternating when `ι` is empty. -/
 @[simps! toContinuousMultilinearMap apply]

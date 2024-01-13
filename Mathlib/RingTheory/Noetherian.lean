@@ -410,7 +410,7 @@ theorem finite_of_linearIndependent [Nontrivial R] {s : Set M}
     exact ⟨fun hab x (hxa : x ≤ a) => le_trans hxa hab, fun hx => hx a (le_refl a)⟩
   exact
     ⟨⟨fun n => span R (coe' ∘ f '' { m | m ≤ n }), fun x y => by
-        rw [le_antisymm_iff, (this x y).symm, (this y x).symm, ←le_antisymm_iff, imp_self]
+        rw [le_antisymm_iff, (this x y).symm, (this y x).symm, ← le_antisymm_iff, imp_self]
         trivial⟩,
       by dsimp [GT.gt]; simp only [lt_iff_le_not_le, (this _ _).symm]; tauto⟩
 #align finite_of_linear_independent finite_of_linearIndependent

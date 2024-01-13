@@ -280,7 +280,7 @@ theorem abs_sum_of_nonneg' {G : Type*} [LinearOrderedAddCommGroup G] {f : ι →
 
 theorem abs_prod {R : Type*} [LinearOrderedCommRing R] {f : ι → R} {s : Finset ι} :
     |∏ x in s, f x| = ∏ x in s, |f x| :=
-  (absHom.toMonoidHom : R →* R).map_prod _ _
+  map_prod absHom _ _
 #align finset.abs_prod Finset.abs_prod
 
 section Pigeonhole
@@ -442,23 +442,16 @@ section OrderedCancelCommMonoid
 variable [OrderedCancelCommMonoid M] {f g : ι → M} {s t : Finset ι}
 
 @[to_additive sum_lt_sum]
-theorem prod_lt_prod' (Hle : ∀ i ∈ s, f i ≤ g i) (Hlt : ∃ i ∈ s, f i < g i) :
-    ∏ i in s, f i < ∏ i in s, g i := by
-  classical
-    rcases Hlt with ⟨i, hi, hlt⟩
-    rw [← insert_erase hi, prod_insert (not_mem_erase _ _), prod_insert (not_mem_erase _ _)]
-    exact mul_lt_mul_of_lt_of_le hlt (prod_le_prod' fun j hj ↦ Hle j <| mem_of_mem_erase hj)
+theorem prod_lt_prod' (hle : ∀ i ∈ s, f i ≤ g i) (hlt : ∃ i ∈ s, f i < g i) :
+    ∏ i in s, f i < ∏ i in s, g i :=
+  Multiset.prod_lt_prod' hle hlt
 #align finset.prod_lt_prod' Finset.prod_lt_prod'
 #align finset.sum_lt_sum Finset.sum_lt_sum
 
 @[to_additive sum_lt_sum_of_nonempty]
-theorem prod_lt_prod_of_nonempty' (hs : s.Nonempty) (Hlt : ∀ i ∈ s, f i < g i) :
-    ∏ i in s, f i < ∏ i in s, g i := by
-  apply prod_lt_prod'
-  · intro i hi
-    apply le_of_lt (Hlt i hi)
-  cases' hs with i hi
-  exact ⟨i, hi, Hlt i hi⟩
+theorem prod_lt_prod_of_nonempty' (hs : s.Nonempty) (hlt : ∀ i ∈ s, f i < g i) :
+    ∏ i in s, f i < ∏ i in s, g i :=
+  Multiset.prod_lt_prod_of_nonempty' (by aesop) hlt
 #align finset.prod_lt_prod_of_nonempty' Finset.prod_lt_prod_of_nonempty'
 #align finset.sum_lt_sum_of_nonempty Finset.sum_lt_sum_of_nonempty
 
@@ -552,13 +545,15 @@ variable [DecidableEq ι]
 
 @[to_additive] lemma prod_sdiff_le_prod_sdiff :
     ∏ i in s \ t, f i ≤ ∏ i in t \ s, f i ↔ ∏ i in s, f i ≤ ∏ i in t, f i := by
-  rw [←mul_le_mul_iff_right, ←prod_union (disjoint_sdiff_inter _ _), sdiff_union_inter, ←prod_union,
-    inter_comm, sdiff_union_inter]; simpa only [inter_comm] using disjoint_sdiff_inter t s
+  rw [← mul_le_mul_iff_right, ← prod_union (disjoint_sdiff_inter _ _), sdiff_union_inter,
+    ← prod_union, inter_comm, sdiff_union_inter];
+  simpa only [inter_comm] using disjoint_sdiff_inter t s
 
 @[to_additive] lemma prod_sdiff_lt_prod_sdiff :
     ∏ i in s \ t, f i < ∏ i in t \ s, f i ↔ ∏ i in s, f i < ∏ i in t, f i := by
-  rw [←mul_lt_mul_iff_right, ←prod_union (disjoint_sdiff_inter _ _), sdiff_union_inter, ←prod_union,
-    inter_comm, sdiff_union_inter]; simpa only [inter_comm] using disjoint_sdiff_inter t s
+  rw [← mul_lt_mul_iff_right, ← prod_union (disjoint_sdiff_inter _ _), sdiff_union_inter,
+    ← prod_union, inter_comm, sdiff_union_inter];
+  simpa only [inter_comm] using disjoint_sdiff_inter t s
 
 end OrderedCancelCommMonoid
 
@@ -822,10 +817,10 @@ theorem IsAbsoluteValue.abv_sum [Semiring R] [OrderedSemiring S] (abv : R → S)
   (IsAbsoluteValue.toAbsoluteValue abv).sum_le _ _
 #align is_absolute_value.abv_sum IsAbsoluteValue.abv_sum
 
-theorem AbsoluteValue.map_prod [CommSemiring R] [Nontrivial R] [LinearOrderedCommRing S]
+nonrec theorem AbsoluteValue.map_prod [CommSemiring R] [Nontrivial R] [LinearOrderedCommRing S]
     (abv : AbsoluteValue R S) (f : ι → R) (s : Finset ι) :
     abv (∏ i in s, f i) = ∏ i in s, abv (f i) :=
-  abv.toMonoidHom.map_prod f s
+  map_prod abv f s
 #align absolute_value.map_prod AbsoluteValue.map_prod
 
 theorem IsAbsoluteValue.map_prod [CommSemiring R] [Nontrivial R] [LinearOrderedCommRing S]

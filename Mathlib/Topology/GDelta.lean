@@ -74,16 +74,16 @@ theorem isGδ_univ : IsGδ (univ : Set X) :=
   isOpen_univ.isGδ
 #align is_Gδ_univ isGδ_univ
 
-theorem isGδ_biInter_of_open {I : Set ι} (hI : I.Countable) {f : ι → Set X}
+theorem isGδ_biInter_of_isOpen {I : Set ι} (hI : I.Countable) {f : ι → Set X}
     (hf : ∀ i ∈ I, IsOpen (f i)) : IsGδ (⋂ i ∈ I, f i) :=
   ⟨f '' I, by rwa [ball_image_iff], hI.image _, by rw [sInter_image]⟩
-#align is_Gδ_bInter_of_open isGδ_biInter_of_open
+#align is_Gδ_bInter_of_open isGδ_biInter_of_isOpen
 
 -- porting note: TODO: generalize to `Sort*` + `Countable _`
-theorem isGδ_iInter_of_open [Encodable ι] {f : ι → Set X} (hf : ∀ i, IsOpen (f i)) :
+theorem isGδ_iInter_of_isOpen [Encodable ι] {f : ι → Set X} (hf : ∀ i, IsOpen (f i)) :
     IsGδ (⋂ i, f i) :=
   ⟨range f, by rwa [forall_range_iff], countable_range _, by rw [sInter_range]⟩
-#align is_Gδ_Inter_of_open isGδ_iInter_of_open
+#align is_Gδ_Inter_of_open isGδ_iInter_of_isOpen
 
 -- porting note: TODO: generalize to `Sort*` + `Countable _`
 /-- The intersection of an encodable family of Gδ sets is a Gδ set. -/
@@ -116,7 +116,7 @@ theorem IsGδ.union {s t : Set X} (hs : IsGδ s) (ht : IsGδ t) : IsGδ (s ∪ t
   rcases hs with ⟨S, Sopen, Scount, rfl⟩
   rcases ht with ⟨T, Topen, Tcount, rfl⟩
   rw [sInter_union_sInter]
-  apply isGδ_biInter_of_open (Scount.prod Tcount)
+  apply isGδ_biInter_of_isOpen (Scount.prod Tcount)
   rintro ⟨a, b⟩ ⟨ha, hb⟩
   exact (Sopen a ha).union (Topen b hb)
 #align is_Gδ.union IsGδ.union

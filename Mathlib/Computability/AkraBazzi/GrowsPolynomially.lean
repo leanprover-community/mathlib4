@@ -647,11 +647,11 @@ lemma growsPolynomially_log : GrowsPolynomially Real.log := by
     1 / 2 * Real.log x = Real.log x + (-1 / 2) * Real.log x := by ring
       _ ≤ Real.log x + Real.log b := by
               gcongr
-              rw [neg_div, neg_mul, ←neg_le]
+              rw [neg_div, neg_mul, ← neg_le]
               refine le_of_lt (hx x ?_)
               calc b * x ≤ 1 * x := by gcongr; exact le_of_lt hb.2
                        _ = x := by rw [one_mul]
-      _ = Real.log (b * x) := by rw [←Real.log_mul (by positivity) (by positivity), mul_comm]
+      _ = Real.log (b * x) := by rw [← Real.log_mul (by positivity) (by positivity), mul_comm]
       _ ≤ Real.log u := by gcongr; exact hu.1
   case ub =>
     rw [one_mul]
@@ -691,21 +691,21 @@ lemma GrowsPolynomially.of_isTheta {f g : ℝ → ℝ} (hg : GrowsPolynomially g
   refine ⟨?lb, ?ub⟩
   case lb => calc
     c₁ * c₂⁻¹ * c₃ * f x ≤ c₁ * c₂⁻¹ * c₃ * (c₂ * ‖g x‖) := by
-          rw [←Real.norm_of_nonneg (hf_pos x hbx)]; gcongr; exact h_ub x hbx
+          rw [← Real.norm_of_nonneg (hf_pos x hbx)]; gcongr; exact h_ub x hbx
       _ = (c₂⁻¹ * c₂) * c₁ * (c₃ * ‖g x‖) := by ring
       _ = c₁ * (c₃ * ‖g x‖) := by simp [c₂_cancel]
       _ ≤ c₁ * ‖g u‖ := by gcongr; exact (hg_bound u hu).1
       _ ≤ f u := by
-          rw [←Real.norm_of_nonneg (hf_pos u hu.1)]
+          rw [← Real.norm_of_nonneg (hf_pos u hu.1)]
           exact h_lb u hu.1
   case ub => calc
-    f u ≤ c₂ * ‖g u‖ := by rw [←Real.norm_of_nonneg (hf_pos u hu.1)]; exact h_ub u hu.1
+    f u ≤ c₂ * ‖g u‖ := by rw [← Real.norm_of_nonneg (hf_pos u hu.1)]; exact h_ub u hu.1
       _ ≤ c₂ * (c₄ * ‖g x‖) := by gcongr; exact (hg_bound u hu).2
       _ = c₂ * c₄ * (c₁⁻¹ * c₁) * ‖g x‖ := by simp [c₁_cancel]; ring
       _ = c₂ * c₄ * c₁⁻¹ * (c₁ * ‖g x‖) := by ring
       _ ≤ c₂ * c₄ * c₁⁻¹ * f x := by
                 gcongr
-                rw [←Real.norm_of_nonneg (hf_pos x hbx)]
+                rw [← Real.norm_of_nonneg (hf_pos x hbx)]
                 exact h_lb x hbx
 
 lemma GrowsPolynomially.of_isEquivalent {f g : ℝ → ℝ} (hg : GrowsPolynomially g)

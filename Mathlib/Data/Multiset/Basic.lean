@@ -2487,25 +2487,25 @@ theorem count_eq_card {a : α} {s} : count a s = card s ↔ ∀ x ∈ s, a = x :
 @[simp]
 theorem count_replicate_self (a : α) (n : ℕ) : count a (replicate n a) = n := by
   convert List.count_replicate_self a n
-  rw [←coe_count, coe_replicate]
+  rw [← coe_count, coe_replicate]
 #align multiset.count_replicate_self Multiset.count_replicate_self
 
 theorem count_replicate (a b : α) (n : ℕ) : count a (replicate n b) = if a = b then n else 0 := by
   convert List.count_replicate a b n
-  rw [←coe_count, coe_replicate]
+  rw [← coe_count, coe_replicate]
 #align multiset.count_replicate Multiset.count_replicate
 
 @[simp]
 theorem count_erase_self (a : α) (s : Multiset α) : count a (erase s a) = count a s - 1 :=
   Quotient.inductionOn s <| fun l => by
-    convert List.count_erase_self a l <;> rw [←coe_count] <;> simp
+    convert List.count_erase_self a l <;> rw [← coe_count] <;> simp
 #align multiset.count_erase_self Multiset.count_erase_self
 
 @[simp]
 theorem count_erase_of_ne {a b : α} (ab : a ≠ b) (s : Multiset α) :
     count a (erase s b) = count a s :=
   Quotient.inductionOn s <| fun l => by
-    convert List.count_erase_of_ne ab l <;> rw [←coe_count] <;> simp
+    convert List.count_erase_of_ne ab l <;> rw [← coe_count] <;> simp
 #align multiset.count_erase_of_ne Multiset.count_erase_of_ne
 
 @[simp]

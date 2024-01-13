@@ -167,6 +167,20 @@ theorem discr_eq_det_embeddingsMatrixReindex_pow_two [IsSeparable K L] (e : ι �
     traceMatrix_eq_embeddingsMatrixReindex_mul_trans, det_mul, det_transpose, pow_two]
 #align algebra.discr_eq_det_embeddings_matrix_reindex_pow_two Algebra.discr_eq_det_embeddingsMatrixReindex_pow_two
 
+/-- Mapping a family of vectors along an `AlgEquiv` preserves the discriminant. -/
+theorem discr_eq_discr_of_algEquiv {L' : Type*} [Field L'] [Algebra K L'] [IsSeparable K L]
+    (e : ι ≃ (L →ₐ[K] E)) (f : L ≃ₐ[K] L') :
+    Algebra.discr K b = Algebra.discr K (f ∘ b) := by
+  have : Module.Finite K L' := Module.Finite.equiv f.toLinearEquiv
+  have : IsSeparable K L' := IsSeparable.of_algHom K L f.symm
+  apply (NoZeroSMulDivisors.algebraMap_injective K E)
+  let e' : ι ≃ (L' →ₐ[K] E) := e.trans (f.arrowCongr AlgEquiv.refl)
+  rw [Algebra.discr_eq_det_embeddingsMatrixReindex_pow_two _ _ _ e,
+    Algebra.discr_eq_det_embeddingsMatrixReindex_pow_two _ _ _ e']
+  congr
+  ext
+  simp [Algebra.embeddingsMatrixReindex]
+
 /-- The discriminant of a power basis. -/
 theorem discr_powerBasis_eq_prod (e : Fin pb.dim ≃ (L →ₐ[K] E)) [IsSeparable K L] :
     algebraMap K E (discr K pb.basis) =

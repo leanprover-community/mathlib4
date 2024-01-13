@@ -519,6 +519,12 @@ theorem restrict_sum (μ : ι → Measure α) {s : Set α} (hs : MeasurableSet s
   ext fun t ht => by simp only [sum_apply, restrict_apply, ht, ht.inter hs]
 #align measure_theory.measure.restrict_sum MeasureTheory.Measure.restrict_sum
 
+@[simp]
+theorem restrict_sum_of_countable [Countable ι] (μ : ι → Measure α) (s : Set α) :
+    (sum μ).restrict s = sum fun i => (μ i).restrict s := by
+  ext t ht
+  simp_rw [sum_apply _ ht, restrict_apply ht, sum_apply_of_countable]
+
 lemma AbsolutelyContinuous.restrict (h : μ ≪ ν) (s : Set α) : μ.restrict s ≪ ν.restrict s := by
   refine Measure.AbsolutelyContinuous.mk (fun t ht htν ↦ ?_)
   rw [restrict_apply ht] at htν ⊢

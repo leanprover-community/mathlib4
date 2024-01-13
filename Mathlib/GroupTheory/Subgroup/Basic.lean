@@ -941,7 +941,7 @@ theorem nontrivial_iff_exists_ne_one (H : Subgroup G) : Nontrivial H ↔ ∃ x �
 @[to_additive]
 theorem exists_ne_one_of_nontrivial (H : Subgroup G) [Nontrivial H] :
     ∃ x ∈ H, x ≠ 1 := by
-  rwa [←Subgroup.nontrivial_iff_exists_ne_one]
+  rwa [← Subgroup.nontrivial_iff_exists_ne_one]
 
 @[to_additive]
 theorem nontrivial_iff_ne_bot (H : Subgroup G) : Nontrivial H ↔ H ≠ ⊥ := by
@@ -966,7 +966,7 @@ theorem bot_or_exists_ne_one (H : Subgroup G) : H = ⊥ ∨ ∃ x ∈ H, x ≠ (
 
 @[to_additive]
 lemma ne_bot_iff_exists_ne_one {H : Subgroup G} : H ≠ ⊥ ↔ ∃ a : ↥H, a ≠ 1 := by
-  rw [←nontrivial_iff_ne_bot, nontrivial_iff_exists_ne_one]
+  rw [← nontrivial_iff_ne_bot, nontrivial_iff_exists_ne_one]
   simp only [ne_eq, Subtype.exists, mk_eq_one_iff, exists_prop]
 
 /-- The inf of two subgroups is their intersection. -/
@@ -3717,7 +3717,7 @@ theorem commute_of_normal_of_disjoint (H₁ H₂ : Subgroup G) (hH₁ : H₁.Nor
     apply H₂.mul_mem _ (H₂.inv_mem hy)
     apply hH₂.conj_mem _ hy
 #align subgroup.commute_of_normal_of_disjoint Subgroup.commute_of_normal_of_disjoint
-#align add_subgroup.commute_of_normal_of_disjoint AddSubgroup.commute_of_normal_of_disjoint
+#align add_subgroup.commute_of_normal_of_disjoint AddSubgroup.addCommute_of_normal_of_disjoint
 
 end SubgroupNormal
 

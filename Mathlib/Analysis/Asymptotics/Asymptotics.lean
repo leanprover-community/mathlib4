@@ -150,7 +150,7 @@ theorem isBigO_iff'' {g : α → E'''} :
     obtain ⟨c, ⟨hc_pos, hc⟩⟩ := h
     refine ⟨c⁻¹, ⟨by positivity, ?_⟩⟩
     filter_upwards [hc] with x hx
-    rwa [←inv_inv c, inv_mul_le_iff (by positivity)] at hx
+    rwa [← inv_inv c, inv_mul_le_iff (by positivity)] at hx
 
 theorem IsBigO.of_bound (c : ℝ) (h : ∀ᶠ x in l, ‖f x‖ ≤ c * ‖g x‖) : f =O[l] g :=
   isBigO_iff.2 ⟨c, h⟩
@@ -1692,7 +1692,7 @@ theorem IsLittleO.pow {f : α → R} {g : α → 𝕜} (h : f =o[l] g) {n : ℕ}
     (fun x => f x ^ n) =o[l] fun x => g x ^ n := by
   obtain ⟨n, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hn.ne'; clear hn
   induction' n with n ihn
-  · simpa only [Nat.zero_eq, ←Nat.one_eq_succ_zero, pow_one]
+  · simpa only [Nat.zero_eq, ← Nat.one_eq_succ_zero, pow_one]
   · convert h.mul ihn <;> simp [pow_succ]
 #align asymptotics.is_o.pow Asymptotics.IsLittleO.pow
 
@@ -1915,10 +1915,10 @@ theorem isLittleO_pure {x} : f'' =o[pure x] g'' ↔ f'' x = 0 :=
     _ ↔ f'' x = 0 := isLittleO_const_const_iff
 #align asymptotics.is_o_pure Asymptotics.isLittleO_pure
 
-theorem isLittleO_const_id_comap_norm_atTop (c : F'') :
-    (fun _x : E'' => c) =o[comap norm atTop] id :=
-  isLittleO_const_left.2 <| Or.inr tendsto_comap
-#align asymptotics.is_o_const_id_comap_norm_at_top Asymptotics.isLittleO_const_id_comap_norm_atTop
+theorem isLittleO_const_id_cobounded (c : F'') :
+    (fun _ => c) =o[Bornology.cobounded E''] id :=
+  isLittleO_const_left.2 <| .inr tendsto_norm_cobounded_atTop
+#align asymptotics.is_o_const_id_comap_norm_at_top Asymptotics.isLittleO_const_id_cobounded
 
 theorem isLittleO_const_id_atTop (c : E'') : (fun _x : ℝ => c) =o[atTop] id :=
   isLittleO_const_left.2 <| Or.inr tendsto_abs_atTop_atTop

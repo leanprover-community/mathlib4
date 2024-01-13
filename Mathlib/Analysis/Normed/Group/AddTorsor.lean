@@ -207,7 +207,7 @@ def pseudoMetricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type*) [SeminormedAd
     [AddTorsor V P] : PseudoMetricSpace P where
   dist x y := ‖(x -ᵥ y : V)‖
   -- porting note: `edist_dist` is no longer an `autoParam`
-  edist_dist _ _ := by simp only [←ENNReal.ofReal_eq_coe_nnreal]
+  edist_dist _ _ := by simp only [← ENNReal.ofReal_eq_coe_nnreal]
   dist_self x := by simp
   dist_comm x y := by simp only [← neg_vsub_eq_vsub_rev y x, norm_neg]
   dist_triangle x y z := by

@@ -5,6 +5,7 @@ Authors: Oliver Nash
 -/
 import Mathlib.FieldTheory.Separable
 import Mathlib.FieldTheory.SplittingField.Construction
+import Mathlib.Algebra.CharP.Reduced
 
 /-!
 

@@ -13,7 +13,7 @@ import Mathlib.Probability.Kernel.IntegralCompProd
 # Disintegration of measures on product spaces
 
 Let `ρ` be a finite measure on `α × Ω`, where `Ω` is a standard Borel space. In mathlib terms, `Ω`
-verifies `[Nonempty Ω] [TopologicalSpace Ω] [PolishSpace Ω] [MeasurableSpace Ω] [BorelSpace Ω]`.
+verifies `[Nonempty Ω] [MeasurableSpace Ω] [StandardBorelSpace Ω]`.
 Then there exists a kernel `ρ.condKernel : kernel α Ω` such that for any measurable set
 `s : Set (α × Ω)`, `ρ s = ∫⁻ a, ρ.condKernel a {x | (a, x) ∈ s} ∂ρ.fst`.
 
@@ -250,15 +250,15 @@ theorem ae_condKernelReal_eq_one {s : Set ℝ} (hs : MeasurableSet s) (hρ : ρ 
 
 end Real
 
-section Polish
+section StandardBorel
 
-/-! ### Disintegration of measures on Polish Borel spaces
+/-! ### Disintegration of measures on standard Borel spaces
 
 Since every standard Borel space embeds measurably into `ℝ`, we can generalize the disintegration
 property on `ℝ` to all these spaces. -/
 
 
-variable {Ω : Type*} [TopologicalSpace Ω] [PolishSpace Ω] [MeasurableSpace Ω] [BorelSpace Ω]
+variable {Ω : Type*} [MeasurableSpace Ω] [StandardBorelSpace Ω]
   [Nonempty Ω] (ρ : Measure (α × Ω)) [IsFiniteMeasure ρ]
 
 /-- Existence of a conditional kernel. Use the definition `condKernel` to get that kernel. -/
@@ -362,7 +362,7 @@ theorem kernel.const_unit_eq_compProd :
   simp_rw [condKernel_def]; exact (exists_cond_kernel ρ Unit).choose_spec.choose_spec
 #align probability_theory.kernel.const_unit_eq_comp_prod ProbabilityTheory.kernel.const_unit_eq_compProd
 
-/-- **Disintegration** of finite product measures on `α × Ω`, where `Ω` is Polish Borel. Such a
+/-- **Disintegration** of finite product measures on `α × Ω`, where `Ω` is standard Borel. Such a
 measure can be written as the composition-product of the constant kernel with value `ρ.fst`
 (marginal measure over `α`) and a Markov kernel from `α` to `Ω`. We call that Markov kernel
 `ProbabilityTheory.condKernel ρ`. -/
@@ -372,9 +372,9 @@ theorem measure_eq_compProd :
 #align probability_theory.measure_eq_comp_prod ProbabilityTheory.measure_eq_compProd
 
 /-- **Disintegration** of constant kernels. A constant kernel on a product space `α × Ω`, where `Ω`
-is Polish Borel, can be written as the composition-product of the constant kernel with value `ρ.fst`
-(marginal measure over `α`) and a Markov kernel from `α` to `Ω`. We call that Markov kernel
-`ProbabilityTheory.condKernel ρ`. -/
+is standard Borel, can be written as the composition-product of the constant kernel with
+value `ρ.fst` (marginal measure over `α`) and a Markov kernel from `α` to `Ω`. We call that
+Markov kernel `ProbabilityTheory.condKernel ρ`. -/
 theorem kernel.const_eq_compProd (γ : Type*) [MeasurableSpace γ] (ρ : Measure (α × Ω))
     [IsFiniteMeasure ρ] :
     kernel.const γ ρ = kernel.const γ ρ.fst ⊗ₖ kernel.prodMkLeft γ ρ.condKernel := by
@@ -593,7 +593,7 @@ theorem eq_condKernel_of_measure_eq_compProd (κ : kernel α Ω) [IsFiniteKernel
 
 end Unique
 
-end Polish
+end StandardBorel
 
 end ProbabilityTheory
 
@@ -606,8 +606,8 @@ We place these lemmas in the `MeasureTheory` namespace to enable dot notation. -
 
 open ProbabilityTheory
 
-variable {α Ω E F : Type*} {mα : MeasurableSpace α} [MeasurableSpace Ω] [TopologicalSpace Ω]
-  [BorelSpace Ω] [PolishSpace Ω] [Nonempty Ω] [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {α Ω E F : Type*} {mα : MeasurableSpace α} [MeasurableSpace Ω]
+  [StandardBorelSpace Ω] [Nonempty Ω] [NormedAddCommGroup E] [NormedSpace ℝ E]
   [CompleteSpace E] [NormedAddCommGroup F] {ρ : Measure (α × Ω)} [IsFiniteMeasure ρ]
 
 theorem AEStronglyMeasurable.ae_integrable_condKernel_iff {f : α × Ω → F}

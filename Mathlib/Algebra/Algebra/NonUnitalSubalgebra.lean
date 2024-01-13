@@ -657,11 +657,11 @@ theorem to_subring_eq_top {R A : Type*} [CommRing R] [Ring A] [Algebra R A]
   NonUnitalSubalgebra.toNonUnitalSubring_injective.eq_iff' top_toSubring
 
 theorem mem_sup_left {S T : NonUnitalSubalgebra R A} : ∀ {x : A}, x ∈ S → x ∈ S ⊔ T := by
-  rw [←SetLike.le_def]
+  rw [← SetLike.le_def]
   exact le_sup_left
 
 theorem mem_sup_right {S T : NonUnitalSubalgebra R A} : ∀ {x : A}, x ∈ T → x ∈ S ⊔ T := by
-  rw [←SetLike.le_def]
+  rw [← SetLike.le_def]
   exact le_sup_right
 
 theorem mul_mem_sup {S T : NonUnitalSubalgebra R A} {x y : A} (hx : x ∈ S) (hy : y ∈ T) :

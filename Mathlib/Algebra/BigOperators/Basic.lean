@@ -216,13 +216,8 @@ theorem map_prod [CommMonoid β] [CommMonoid γ] {G : Type*} [MonoidHomClass G �
 
 section Deprecated
 
-/-- Deprecated: use `_root_.map_prod` instead. -/
-@[to_additive (attr := deprecated) "Deprecated: use `_root_.map_sum` instead."]
-protected theorem MonoidHom.map_prod [CommMonoid β] [CommMonoid γ] (g : β →* γ) (f : α → β)
-    (s : Finset α) : g (∏ x in s, f x) = ∏ x in s, g (f x) :=
-  map_prod g f s
-#align monoid_hom.map_prod MonoidHom.map_prod
-#align add_monoid_hom.map_sum AddMonoidHom.map_sum
+#align monoid_hom.map_prod map_prodₓ
+#align add_monoid_hom.map_sum map_sumₓ
 
 /-- Deprecated: use `_root_.map_prod` instead. -/
 @[to_additive (attr := deprecated) "Deprecated: use `_root_.map_sum` instead."]
@@ -280,7 +275,7 @@ end Deprecated
 @[to_additive]
 theorem MonoidHom.coe_finset_prod [MulOneClass β] [CommMonoid γ] (f : α → β →* γ) (s : Finset α) :
     ⇑(∏ x in s, f x) = ∏ x in s, ⇑(f x) :=
-  (MonoidHom.coeFn β γ).map_prod _ _
+  map_prod (MonoidHom.coeFn β γ) _ _
 #align monoid_hom.coe_finset_prod MonoidHom.coe_finset_prod
 #align add_monoid_hom.coe_finset_sum AddMonoidHom.coe_finset_sum
 
@@ -291,7 +286,7 @@ theorem MonoidHom.coe_finset_prod [MulOneClass β] [CommMonoid γ] (f : α → �
   `f : α → β → γ`"]
 theorem MonoidHom.finset_prod_apply [MulOneClass β] [CommMonoid γ] (f : α → β →* γ) (s : Finset α)
     (b : β) : (∏ x in s, f x) b = ∏ x in s, f x b :=
-  (MonoidHom.eval b).map_prod _ _
+  map_prod (MonoidHom.eval b) _ _
 #align monoid_hom.finset_prod_apply MonoidHom.finset_prod_apply
 #align add_monoid_hom.finset_sum_apply AddMonoidHom.finset_sum_apply
 
@@ -2300,7 +2295,7 @@ end Int
 @[simp, norm_cast]
 theorem Units.coe_prod {M : Type*} [CommMonoid M] (f : α → Mˣ) (s : Finset α) :
     (↑(∏ i in s, f i) : M) = ∏ i in s, (f i : M) :=
-  (Units.coeHom M).map_prod _ _
+  map_prod (Units.coeHom M) _ _
 #align units.coe_prod Units.coe_prod
 
 theorem Units.mk0_prod [CommGroupWithZero β] (s : Finset α) (f : α → β) (h) :

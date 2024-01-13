@@ -333,6 +333,9 @@ theorem symm_symm : e.symm.symm = e := by
   rfl
 #align local_equiv.symm_symm LocalEquiv.symm_symm
 
+theorem symm_bijective : Function.Bijective (LocalEquiv.symm : LocalEquiv α β → LocalEquiv β α) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
+
 theorem image_source_eq_target : e '' e.source = e.target :=
   e.bijOn.image_eq
 #align local_equiv.image_source_eq_target LocalEquiv.image_source_eq_target
@@ -677,9 +680,9 @@ protected def trans' (e' : LocalEquiv β γ) (h : e.target = e'.source) : LocalE
   invFun := e.symm ∘ e'.symm
   source := e.source
   target := e'.target
-  map_source' x hx := by simp [←h, hx]
+  map_source' x hx := by simp [← h, hx]
   map_target' y hy := by simp [h, hy]
-  left_inv' x hx := by simp [hx, ←h]
+  left_inv' x hx := by simp [hx, ← h]
   right_inv' y hy := by simp [hy, h]
 #align local_equiv.trans' LocalEquiv.trans'
 

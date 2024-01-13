@@ -448,7 +448,7 @@ private theorem aux₂ : 0 < u - ⌊ξ⌋ * v ∧ u - ⌊ξ⌋ * v < v := by
     -- Porting note: this abused the definitional equality `-1 + 1 = 0`
     -- refine' (zero_le_mul_right hv₁).mp ((lt_iff_add_one_le (-1 : ℤ) _).mp _)
     refine' (zero_le_mul_right hv₁).mp ?_
-    rw [←sub_one_lt_iff, zero_sub]
+    rw [← sub_one_lt_iff, zero_sub]
     replace h := h.1
     rw [← lt_sub_iff_add_lt, ← mul_assoc, ← sub_mul] at h
     exact mod_cast

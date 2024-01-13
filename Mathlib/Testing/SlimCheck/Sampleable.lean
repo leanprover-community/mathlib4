@@ -160,6 +160,10 @@ instance Fin.shrinkable {n : Nat} : Shrinkable (Fin n.succ) where
 instance Int.shrinkable : Shrinkable Int where
   shrink n := Nat.shrink n.natAbs |>.map (λ x => ([x, -x] : List ℤ)) |>.join
 
+instance Rat.shrinkable : Shrinkable Rat where
+  shrink r :=
+    (Shrinkable.shrink r.num).bind fun d => Nat.shrink r.den |>.map fun n => Rat.divInt d n
+
 instance Bool.shrinkable : Shrinkable Bool := {}
 instance Char.shrinkable : Shrinkable Char := {}
 
@@ -192,17 +196,24 @@ section Samplers
 open SampleableExt
 
 instance Nat.sampleableExt : SampleableExt Nat :=
-  mkSelfContained (do choose Nat 0 (←getSize) (Nat.zero_le _))
+  mkSelfContained (do choose Nat 0 (← getSize) (Nat.zero_le _))
 
 instance Fin.sampleableExt {n : Nat} : SampleableExt (Fin (n.succ)) :=
-  mkSelfContained (do choose (Fin n.succ) (Fin.ofNat 0) (Fin.ofNat (←getSize)) (by
+  mkSelfContained (do choose (Fin n.succ) (Fin.ofNat 0) (Fin.ofNat (← getSize)) (by
     simp only [LE.le, Fin.ofNat, Nat.zero_mod, Fin.zero_eta, Fin.val_zero, Nat.le_eq]
     exact Nat.zero_le _))
 
 instance Int.sampleableExt : SampleableExt Int :=
   mkSelfContained (do
-    choose Int (-(←getSize)) (←getSize)
+    choose Int (-(← getSize)) (← getSize)
       (le_trans (Int.neg_nonpos_of_nonneg (Int.ofNat_zero_le _)) (Int.ofNat_zero_le _)))
+
+instance Rat.sampleableExt : SampleableExt Rat :=
+  mkSelfContained (do
+    let d ← choose Int (-(← getSize)) (← getSize)
+      (le_trans (Int.neg_nonpos_of_nonneg (Int.ofNat_zero_le _)) (Int.ofNat_zero_le _))
+    let n ← choose Nat 0 (← getSize) (Nat.zero_le _)
+    return Rat.divInt d n)
 
 instance Bool.sampleableExt : SampleableExt Bool :=
   mkSelfContained $ chooseAny Bool

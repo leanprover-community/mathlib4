@@ -2623,7 +2623,7 @@ theorem adj_and_reachable_delete_edges_iff_exists_cycle {v w : V} :
     · simp only [Sym2.eq_swap, Walk.edges_cons, List.mem_cons, eq_self_iff_true, true_or_iff]
   · rintro ⟨u, c, hc, he⟩
     refine ⟨c.adj_of_mem_edges he, ?_⟩
-    by_contra' hb
+    by_contra! hb
     have hb' : ∀ p : G.Walk w v, ⟦(w, v)⟧ ∈ p.edges := by
       intro p
       simpa [Sym2.eq_swap] using hb p.reverse

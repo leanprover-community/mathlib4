@@ -217,7 +217,7 @@ theorem eq_mk₃_closed (c : ClosureOperator α) :
 @[simp] theorem mem_mk₃_closed {f : α → α} {p : α → Prop} {hf hfp hmin} {x : α} :
   x ∈ (mk₃ f p hf hfp hmin).closed ↔ p x := by
   refine' ⟨λ hx ↦ _, λ hx ↦ (hmin le_rfl hx).antisymm (hf _)⟩
-  rw [←closure_eq_self_of_mem_closed _ hx]
+  rw [← closure_eq_self_of_mem_closed _ hx]
   exact hfp _
 #align closure_operator.mem_mk₃_closed ClosureOperator.mem_mk₃_closedₓ
 

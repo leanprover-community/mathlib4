@@ -3,6 +3,7 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
+import Mathlib.Logic.Function.Basic
 import Mathlib.Logic.Relator
 import Mathlib.Init.Propext
 import Mathlib.Init.Data.Quot
@@ -47,7 +48,7 @@ the bundled version, see `Rel`.
 
 open Function
 
-variable {α β γ δ : Type*}
+variable {α β γ δ ε ζ : Type*}
 
 section NeImp
 
@@ -206,6 +207,9 @@ theorem _root_.Acc.of_downward_closed (dc : ∀ {a b}, rβ b (f a) → ∃ c, f 
 
 end Fibration
 
+section map
+variable {r : α → β → Prop} {f : α → γ} {g : β → δ} {c : γ} {d : δ}
+
 /-- The map of a relation `r` through a pair of functions pushes the
 relation to the codomains of the functions.  The resulting relation is
 defined by having pairs of terms related if they have preimages
@@ -214,6 +218,22 @@ related by `r`.
 protected def Map (r : α → β → Prop) (f : α → γ) (g : β → δ) : γ → δ → Prop := fun c d ↦
   ∃ a b, r a b ∧ f a = c ∧ g b = d
 #align relation.map Relation.Map
+
+@[simp] lemma map_map (r : α → β → Prop) (f₁ : α → γ) (g₁ : β → δ) (f₂ : γ → ε) (g₂ : δ → ζ) :
+    Relation.Map (Relation.Map r f₁ g₁) f₂ g₂ = Relation.Map r (f₂ ∘ f₁) (g₂ ∘ g₁) := by
+  ext a b
+  simp_rw [Relation.Map, Function.comp_apply, ←exists_and_right, @exists_comm γ, @exists_comm δ]
+  refine' exists₂_congr fun a b ↦ ⟨_, fun h ↦ ⟨_, _, ⟨⟨h.1, rfl, rfl⟩, h.2⟩⟩⟩
+  rintro ⟨_, _, ⟨hab, rfl, rfl⟩, h⟩
+  exact ⟨hab, h⟩
+
+@[simp]
+lemma map_apply_apply (hf : Injective f) (hg : Injective g) (r : α → β → Prop) (a : α) (b : β) :
+    Relation.Map r f g (f a) (g b) ↔ r a b := by simp [Relation.Map, hf.eq_iff, hg.eq_iff]
+
+@[simp] lemma map_id_id (r : α → β → Prop) : Relation.Map r id id = r := by ext; simp [Relation.Map]
+
+end map
 
 variable {r : α → α → Prop} {a b c d : α}
 
@@ -615,10 +635,10 @@ theorem reflTransGen_swap : ReflTransGen (swap r) a b ↔ ReflTransGen r b a :=
     · exact TransGen.mono (fun _ _ ↦ .single) h
 
 @[simp] lemma reflTransGen_reflGen : ReflTransGen (ReflGen r) = ReflTransGen r := by
-  simp only [←transGen_reflGen, reflGen_eq_self reflexive_reflGen]
+  simp only [← transGen_reflGen, reflGen_eq_self reflexive_reflGen]
 
 @[simp] lemma reflTransGen_transGen : ReflTransGen (TransGen r) = ReflTransGen r := by
-  simp only [←reflGen_transGen, transGen_idem]
+  simp only [← reflGen_transGen, transGen_idem]
 
 lemma reflTransGen_eq_transGen (hr : Reflexive r) :
     ReflTransGen r = TransGen r := by

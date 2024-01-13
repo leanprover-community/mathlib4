@@ -93,7 +93,7 @@ theorem exists_continuous_snorm_sub_le_of_closed [μ.OuterRegular] (hp : p ≠ �
   have hsv : s ⊆ v := subset_inter hsu sV
   have hμv : μ v < ∞ := (measure_mono (inter_subset_right _ _)).trans_lt h'V
   obtain ⟨g, hgv, hgs, hg_range⟩ :=
-    exists_continuous_zero_one_of_closed (u_open.inter V_open).isClosed_compl s_closed
+    exists_continuous_zero_one_of_isClosed (u_open.inter V_open).isClosed_compl s_closed
       (disjoint_compl_left_iff.2 hsv)
   -- Multiply this by `c` to get a continuous approximation to the function `f`; the key point is
   -- that this is pointwise bounded by the indicator of the set `v \ s`, which has small measure.

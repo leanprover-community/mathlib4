@@ -64,7 +64,7 @@ lemma SupClosed.preimage [SupHomClass F β α] (hs : SupClosed s) (f : F) : SupC
 
 lemma SupClosed.image [SupHomClass F α β] (hs : SupClosed s) (f : F) : SupClosed (f '' s) := by
   rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩
-  rw [←map_sup]
+  rw [← map_sup]
   exact Set.mem_image_of_mem _ $ hs ha hb
 
 lemma supClosed_range [SupHomClass F α β] (f : F) : SupClosed (Set.range f) := by
@@ -128,7 +128,7 @@ lemma InfClosed.preimage [InfHomClass F β α] (hs : InfClosed s) (f : F) : InfC
 
 lemma InfClosed.image [InfHomClass F α β] (hs : InfClosed s) (f : F) : InfClosed (f '' s) := by
   rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩
-  rw [←map_inf]
+  rw [← map_inf]
   exact Set.mem_image_of_mem _ $ hs ha hb
 
 lemma infClosed_range [InfHomClass F α β] (f : F) : InfClosed (Set.range f) := by
@@ -446,7 +446,7 @@ protected lemma InfClosed.supClosure (hs : InfClosed s) : InfClosed (supClosure 
       ⟨supClosed_supClosure.infClosure, infClosed_infClosure⟩
 
 lemma Set.Finite.latticeClosure (hs : s.Finite) : (latticeClosure s).Finite := by
-  rw [←supClosure_infClosure]; exact hs.infClosure.supClosure
+  rw [← supClosure_infClosure]; exact hs.infClosure.supClosure
 
 end DistribLattice
 

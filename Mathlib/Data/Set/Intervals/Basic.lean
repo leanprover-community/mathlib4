@@ -1180,8 +1180,7 @@ theorem Ico_eq_Ico_iff (h : a₁ < b₁ ∨ a₂ < b₂) : Ico a₁ b₁ = Ico a
 
 lemma Ici_eq_singleton_iff_isTop {x : α} : (Ici x = {x}) ↔ IsTop x := by
   refine ⟨fun h y ↦ ?_, fun h ↦ by ext y; simp [(h y).ge_iff_eq]⟩
-  by_contra H
-  push_neg at H
+  by_contra! H
   have : y ∈ Ici x := H.le
   rw [h, mem_singleton_iff] at this
   exact lt_irrefl y (this.le.trans_lt H)

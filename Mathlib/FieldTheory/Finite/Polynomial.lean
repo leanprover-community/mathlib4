@@ -93,7 +93,7 @@ theorem indicator_mem_restrictDegree (c : σ → K) :
   rw [mem_restrictDegree_iff_sup, indicator]
   intro n
   refine' le_trans (Multiset.count_le_of_le _ <| degrees_indicator _) (le_of_eq _)
-  simp_rw [← Multiset.coe_countAddMonoidHom, (Multiset.countAddMonoidHom n).map_sum,
+  simp_rw [← Multiset.coe_countAddMonoidHom, map_sum,
     AddMonoidHom.map_nsmul, Multiset.coe_countAddMonoidHom, nsmul_eq_mul, Nat.cast_id]
   trans
   refine' Finset.sum_eq_single n _ _

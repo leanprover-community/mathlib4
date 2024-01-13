@@ -358,7 +358,7 @@ theorem card_le_card_of_inj_on {t : Finset β} (f : α → β) (hf : ∀ a ∈ s
 theorem exists_ne_map_eq_of_card_lt_of_maps_to {t : Finset β} (hc : t.card < s.card) {f : α → β}
     (hf : ∀ a ∈ s, f a ∈ t) : ∃ x ∈ s, ∃ y ∈ s, x ≠ y ∧ f x = f y := by
   classical
-    by_contra' hz
+    by_contra! hz
     refine' hc.not_le (card_le_card_of_inj_on f hf _)
     intro x hx y hy
     contrapose
@@ -473,7 +473,7 @@ theorem card_sdiff_add_card : (s \ t).card + t.card = (s ∪ t).card := by
 #align finset.card_sdiff_add_card Finset.card_sdiff_add_card
 
 lemma card_sdiff_comm (h : s.card = t.card) : (s \ t).card = (t \ s).card :=
-  add_left_injective t.card $ by simp_rw [card_sdiff_add_card, ←h, card_sdiff_add_card, union_comm]
+  add_left_injective t.card $ by simp_rw [card_sdiff_add_card, ← h, card_sdiff_add_card, union_comm]
 
 @[simp]
 lemma card_sdiff_add_card_inter (s t : Finset α) :
@@ -507,7 +507,7 @@ theorem exists_intermediate_set {A B : Finset α} (i : ℕ) (h₁ : i + card B �
       apply Nat.succ_pos
     have z : i + card B + k = card (erase A a) := by
       rw [card_erase_of_mem (mem_sdiff.1 ha).1, ← h,
-        Nat.add_sub_assoc (Nat.one_le_iff_ne_zero.mpr k.succ_ne_zero), ←pred_eq_sub_one,
+        Nat.add_sub_assoc (Nat.one_le_iff_ne_zero.mpr k.succ_ne_zero), ← pred_eq_sub_one,
         k.pred_succ]
     have : B ⊆ A.erase a := by
       rintro t th
@@ -685,7 +685,7 @@ lemma covby_iff_card_sdiff_eq_one : t ⋖ s ↔ t ⊆ s ∧ (s \ t).card = 1 := 
   · simp_rw [card_eq_one]
     rintro ⟨hts, a, ha⟩
     refine ⟨a, (mem_sdiff.1 $ superset_of_eq ha $ mem_singleton_self _).2, ?_⟩
-    rw [insert_eq, ←ha, sdiff_union_of_subset hts]
+    rw [insert_eq, ← ha, sdiff_union_of_subset hts]
 
 end DecidableEq
 

@@ -8,6 +8,7 @@ import Mathlib.Algebra.Category.ModuleCat.EpiMono
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.LinearAlgebra.LinearPMap
 import Mathlib.Data.TypeMax -- Porting note: added for universe issues
+import Mathlib.Algebra.Module.ULift
 
 #align_import algebra.module.injective from "leanprover-community/mathlib"@"f8d8465c3c392a93b9ed226956e26dee00975946"
 
@@ -463,5 +464,14 @@ protected theorem injective (h : Module.Baer R Q) : Module.Injective R Q :=
         fun x => ((extensionOfMax i f).is_extension x).symm⟩ }
 set_option linter.uppercaseLean3 false in
 #align module.Baer.injective Module.Baer.injective
+
+protected theorem of_injective (inj : Module.Injective R Q) : Module.Baer R Q := fun I g ↦
+  let ⟨g', hg'⟩ := inj.1 (ULift.{max u v} I) (ULift.{max u v} R)
+    (ULift.moduleEquiv.symm.toLinearMap ∘ₗ I.subtype ∘ₗ ULift.moduleEquiv.toLinearMap)
+    (fun a b h ↦ by aesop) (g ∘ₗ ULift.moduleEquiv.toLinearMap)
+  ⟨g' ∘ₗ ULift.moduleEquiv.symm.toLinearMap, by aesop⟩
+
+protected theorem iff_injective : Module.Baer R Q ↔ Module.Injective R Q :=
+  ⟨Module.Baer.injective, Module.Baer.of_injective⟩
 
 end Module.Baer

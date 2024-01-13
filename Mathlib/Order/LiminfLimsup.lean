@@ -1164,7 +1164,7 @@ lemma mem_liminf_iff_eventually_mem : (a ∈ liminf s 𝓕) ↔ (∀ᶠ i in �
     using ⟨fun ⟨S, hS, hS'⟩ ↦ mem_of_superset hS (by tauto), fun h ↦ ⟨{i | a ∈ s i}, h, by tauto⟩⟩
 
 lemma mem_limsup_iff_frequently_mem : (a ∈ limsup s 𝓕) ↔ (∃ᶠ i in 𝓕, a ∈ s i) := by
-  simp only [Filter.Frequently, iff_not_comm, ←mem_compl_iff, limsup_compl, comp_apply,
+  simp only [Filter.Frequently, iff_not_comm, ← mem_compl_iff, limsup_compl, comp_apply,
     mem_liminf_iff_eventually_mem]
 
 theorem cofinite.blimsup_set_eq :

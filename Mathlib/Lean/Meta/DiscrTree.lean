@@ -43,4 +43,11 @@ partial def getSubexpressionMatches (d : DiscrTree α) (e : Expr) (config : Whnf
     e.foldlM (fun a f => do
       pure <| a ++ (← d.getSubexpressionMatches f config)) (← d.getMatch e config).reverse
 
+/--
+Check if a `keys : Array DiscTree.Key` is "specific",
+i.e. something other than `[*]` or `[=, *, *, *]`.
+-/
+def keysSpecific (keys : Array DiscrTree.Key) : Bool :=
+  keys != #[Key.star] && keys != #[Key.const `Eq 3, Key.star, Key.star, Key.star]
+
 end Lean.Meta.DiscrTree

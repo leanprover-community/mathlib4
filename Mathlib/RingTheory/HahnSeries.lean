@@ -798,7 +798,7 @@ private theorem mul_assoc' [NonUnitalSemiring R] (x y z : HahnSeries Γ R) :
     obtain ⟨⟨nx, H, rfl⟩, ny, nz, rfl⟩ := H1
     exact
       ⟨i + k, l, i, k, ⟨⟨Set.add_mem_add nx ny, nz, add_assoc _ _ _⟩ , nx, ny, rfl⟩,
-        fun h => H2 <| by rw [←h, mul_assoc], rfl⟩
+        fun h => H2 <| by rw [← h, mul_assoc], rfl⟩
   · rintro ⟨⟨i, j⟩, ⟨k, l⟩⟩ _ _
     simp [mul_assoc]
 

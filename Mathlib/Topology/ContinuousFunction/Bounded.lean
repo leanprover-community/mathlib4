@@ -767,7 +767,7 @@ open BigOperators
 @[simp]
 theorem coe_sum {ι : Type*} (s : Finset ι) (f : ι → α →ᵇ β) :
     ⇑(∑ i in s, f i) = ∑ i in s, (f i : α → β) :=
-  (@coeFnAddHom α β _ _ _ _).map_sum f s
+  map_sum coeFnAddHom f s
 #align bounded_continuous_function.coe_sum BoundedContinuousFunction.coe_sum
 
 theorem sum_apply {ι : Type*} (s : Finset ι) (f : ι → α →ᵇ β) (a : α) :

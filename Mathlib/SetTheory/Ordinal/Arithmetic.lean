@@ -1282,7 +1282,7 @@ theorem ne_sup_iff_lt_sup {ι : Type u} {f : ι → Ordinal.{max u v}} :
 
 theorem sup_not_succ_of_ne_sup {ι : Type u} {f : ι → Ordinal.{max u v}}
     (hf : ∀ i, f i ≠ sup.{_, v} f) {a} (hao : a < sup.{_, v} f) : succ a < sup.{_, v} f := by
-  by_contra' hoa
+  by_contra! hoa
   exact
     hao.not_le (sup_le fun i => le_of_lt_succ <| (lt_of_le_of_ne (le_sup _ _) (hf i)).trans_le hoa)
 #align ordinal.sup_not_succ_of_ne_sup Ordinal.sup_not_succ_of_ne_sup
@@ -1623,7 +1623,7 @@ theorem sup_eq_lsub_or_sup_succ_eq_lsub {ι : Type u} (f : ι → Ordinal.{max u
 theorem sup_succ_le_lsub {ι : Type u} (f : ι → Ordinal.{max u v}) :
     succ (sup.{_, v} f) ≤ lsub.{_, v} f ↔ ∃ i, f i = sup.{_, v} f := by
   refine' ⟨fun h => _, _⟩
-  · by_contra' hf
+  · by_contra! hf
     exact (succ_le_iff.1 h).ne ((sup_le_lsub f).antisymm (lsub_le (ne_sup_iff_lt_sup.1 hf)))
   rintro ⟨_, hf⟩
   rw [succ_le_iff, ← hf]
@@ -1640,7 +1640,7 @@ theorem sup_eq_lsub_iff_succ {ι : Type u} (f : ι → Ordinal.{max u v}) :
   refine' ⟨fun h => _, fun hf => le_antisymm (sup_le_lsub f) (lsub_le fun i => _)⟩
   · rw [← h]
     exact fun a => sup_not_succ_of_ne_sup fun i => (lsub_le_iff.1 (le_of_eq h.symm) i).ne
-  by_contra' hle
+  by_contra! hle
   have heq := (sup_succ_eq_lsub f).2 ⟨i, le_antisymm (le_sup _ _) hle⟩
   have :=
     hf _
@@ -1717,7 +1717,7 @@ theorem nonempty_compl_range {ι : Type u} (f : ι → Ordinal.{max u v}) : (Set
 theorem lsub_typein (o : Ordinal) : lsub.{u, u} (typein ((· < ·) : o.out.α → o.out.α → Prop)) = o :=
   (lsub_le.{u, u} typein_lt_self).antisymm
     (by
-      by_contra' h
+      by_contra! h
       -- Porting note: `nth_rw` → `conv_rhs` & `rw`
       conv_rhs at h => rw [← type_lt o]
       simpa [typein_enum] using lt_lsub.{u, u} (typein (· < ·)) (enum (· < ·) _ h))
@@ -1839,7 +1839,7 @@ theorem bsup_eq_blsub_or_succ_bsup_eq_blsub {o : Ordinal.{u}} (f : ∀ a < o, Or
 theorem bsup_succ_le_blsub {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{max u v}) :
     succ (bsup.{_, v} o f) ≤ blsub.{_, v} o f ↔ ∃ i hi, f i hi = bsup.{_, v} o f := by
   refine' ⟨fun h => _, _⟩
-  · by_contra' hf
+  · by_contra! hf
     exact
       ne_of_lt (succ_le_iff.1 h)
         (le_antisymm (bsup_le_blsub f) (blsub_le (lt_bsup_of_ne_bsup.1 hf)))
@@ -2027,7 +2027,7 @@ theorem mex_not_mem_range {ι : Type u} (f : ι → Ordinal.{max u v}) : mex.{_,
 
 theorem le_mex_of_forall {ι : Type u} {f : ι → Ordinal.{max u v}} {a : Ordinal}
     (H : ∀ b < a, ∃ i, f i = b) : a ≤ mex.{_, v} f := by
-  by_contra' h
+  by_contra! h
   exact mex_not_mem_range f (H _ h)
 #align ordinal.le_mex_of_forall Ordinal.le_mex_of_forall
 
@@ -2040,7 +2040,7 @@ theorem mex_le_of_ne {ι} {f : ι → Ordinal} {a} (ha : ∀ i, f i ≠ a) : mex
 #align ordinal.mex_le_of_ne Ordinal.mex_le_of_ne
 
 theorem exists_of_lt_mex {ι} {f : ι → Ordinal} {a} (ha : a < mex f) : ∃ i, f i = a := by
-  by_contra' ha'
+  by_contra! ha'
   exact ha.not_le (mex_le_of_ne ha')
 #align ordinal.exists_of_lt_mex Ordinal.exists_of_lt_mex
 
@@ -2058,7 +2058,7 @@ theorem mex_monotone {α β : Type u} {f : α → Ordinal.{max u v}} {g : β →
 
 theorem mex_lt_ord_succ_mk {ι : Type u} (f : ι → Ordinal.{u}) :
     mex.{_, u} f < (succ #ι).ord := by
-  by_contra' h
+  by_contra! h
   apply (lt_succ #ι).not_le
   have H := fun a => exists_of_lt_mex ((typein_lt_self a).trans_le h)
   let g : (succ #ι).ord.out.α → ι := fun a => Classical.choose (H a)
@@ -2088,7 +2088,7 @@ theorem bmex_not_mem_brange {o : Ordinal} (f : ∀ a < o, Ordinal) : bmex o f �
 
 theorem le_bmex_of_forall {o : Ordinal} (f : ∀ a < o, Ordinal) {a : Ordinal}
     (H : ∀ b < a, ∃ i hi, f i hi = b) : a ≤ bmex o f := by
-  by_contra' h
+  by_contra! h
   exact bmex_not_mem_brange f (H _ h)
 #align ordinal.le_bmex_of_forall Ordinal.le_bmex_of_forall
 
@@ -2268,7 +2268,7 @@ theorem enumOrd_surjective (hS : Unbounded (· < ·) S) : ∀ s ∈ S, ∃ a, en
       -- Porting note: `flip` is required to infer a metavariable.
       rcases flip exists_lt_of_lt_csSup ha ⟨0, this⟩ with ⟨b, hb, hab⟩
       exact (enumOrd_strictMono hS hab).trans_le hb
-    · by_contra' h
+    · by_contra! h
       exact
         (le_csSup ⟨s, fun a => (lt_wf.self_le_of_strictMono (enumOrd_strictMono hS) a).trans⟩
               (enumOrd_succ_le hS hs h)).not_lt
@@ -2514,7 +2514,7 @@ theorem add_le_of_forall_add_lt {a b c : Ordinal} (hb : 0 < b) (h : ∀ d < b, a
         exact (h _ hb).le)
   rw [← H]
   apply add_le_add_left _ a
-  by_contra' hb
+  by_contra! hb
   exact (h _ hb).ne H
 #align ordinal.add_le_of_forall_add_lt Ordinal.add_le_of_forall_add_lt
 

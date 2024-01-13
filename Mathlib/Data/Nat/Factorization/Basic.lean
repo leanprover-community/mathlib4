@@ -419,7 +419,7 @@ theorem factorization_le_iff_dvd {d n : ℕ} (hd : d ≠ 0) (hn : n ≠ 0) :
     set K := n.factorization - d.factorization with hK
     use K.prod (· ^ ·)
     rw [← factorization_prod_pow_eq_self hn, ← factorization_prod_pow_eq_self hd,
-        ←Finsupp.prod_add_index' pow_zero pow_add, hK, add_tsub_cancel_of_le hdn]
+        ← Finsupp.prod_add_index' pow_zero pow_add, hK, add_tsub_cancel_of_le hdn]
   · rintro ⟨c, rfl⟩
     rw [factorization_mul hd (right_ne_zero_of_mul hn)]
     simp

@@ -292,7 +292,7 @@ theorem nfpBFamily_monotone (hf : ∀ i hi, Monotone (f i hi)) : Monotone (nfpBF
 
 theorem apply_lt_nfpBFamily (H : ∀ i hi, IsNormal (f i hi)) {a b} (hb : b < nfpBFamily.{u, v} o f a)
     (i hi) : f i hi b < nfpBFamily.{u, v} o f a := by
-  rw [←familyOfBFamily_enum o f]
+  rw [← familyOfBFamily_enum o f]
   apply apply_lt_nfpFamily (fun _ => H _ _) hb
 #align ordinal.apply_lt_nfp_bfamily Ordinal.apply_lt_nfpBFamily
 
