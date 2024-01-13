@@ -242,8 +242,8 @@ theorem ascFactorial_eq_factorial_mul_choose (n k : ℕ) :
 
 theorem ascFactorial_eq_factorial_mul_choose' (n k : ℕ) :
     n.ascFactorial k = k ! * (n + k - 1).choose k := by
-  cases hn : n
-  cases hk : k
+  cases n
+  cases k
   rw [ascFactorial_zero, choose_zero_right, factorial_zero, mul_one]
   simp only [zero_ascFactorial, zero_eq, zero_add, ge_iff_le, succ_sub_succ_eq_sub,
     nonpos_iff_eq_zero, tsub_zero, choose_succ_self, mul_zero]
@@ -377,7 +377,7 @@ def multichoose : ℕ → ℕ → ℕ
   | 0, _ + 1 => 0
   | n + 1, k + 1 =>
     multichoose n (k + 1) + multichoose (n + 1) k
-  termination_by multichoose a b => (a, b)
+  termination_by a b => (a, b)
 #align nat.multichoose Nat.multichoose
 
 @[simp]
@@ -420,8 +420,8 @@ theorem multichoose_eq : ∀ n k : ℕ, multichoose n k = (n + k - 1).choose k
     have : (n + 1) + k < (n + 1) + (k + 1) := add_lt_add_left (Nat.lt_succ_self _) _
     erw [multichoose_succ_succ, add_comm, Nat.succ_add_sub_one, ← add_assoc, Nat.choose_succ_succ]
     simp [multichoose_eq n (k+1), multichoose_eq (n+1) k]
-  termination_by multichoose_eq a b => a + b
-  decreasing_by { assumption }
+  termination_by a b => a + b
+  decreasing_by all_goals assumption
 #align nat.multichoose_eq Nat.multichoose_eq
 
 end Nat
