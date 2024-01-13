@@ -1,4 +1,3 @@
-import Mathlib.Algebra.Abs
 import Mathlib.Algebra.AddTorsor
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Algebra.Algebra.Bilinear
@@ -1559,6 +1558,7 @@ import Mathlib.Data.Finset.Order
 import Mathlib.Data.Finset.PImage
 import Mathlib.Data.Finset.Pairwise
 import Mathlib.Data.Finset.Pi
+import Mathlib.Data.Finset.PiAntidiagonal
 import Mathlib.Data.Finset.PiInduction
 import Mathlib.Data.Finset.Pointwise
 import Mathlib.Data.Finset.Pointwise.Interval
@@ -2084,6 +2084,7 @@ import Mathlib.FieldTheory.Adjoin
 import Mathlib.FieldTheory.AxGrothendieck
 import Mathlib.FieldTheory.Cardinality
 import Mathlib.FieldTheory.ChevalleyWarning
+import Mathlib.FieldTheory.Extension
 import Mathlib.FieldTheory.Finite.Basic
 import Mathlib.FieldTheory.Finite.GaloisField
 import Mathlib.FieldTheory.Finite.Polynomial
@@ -3007,6 +3008,7 @@ import Mathlib.Probability.Density
 import Mathlib.Probability.Distributions.Exponential
 import Mathlib.Probability.Distributions.Gamma
 import Mathlib.Probability.Distributions.Gaussian
+import Mathlib.Probability.Distributions.Poisson
 import Mathlib.Probability.IdentDistrib
 import Mathlib.Probability.Independence.Basic
 import Mathlib.Probability.Independence.Conditional

@@ -354,6 +354,11 @@ theorem equivMapDomain_zero {f : α ≃ β} : equivMapDomain f (0 : α →₀ M)
   ext; simp only [equivMapDomain_apply, coe_zero, Pi.zero_apply]
 #align finsupp.equiv_map_domain_zero Finsupp.equivMapDomain_zero
 
+@[to_additive (attr := simp)]
+theorem prod_equivMapDomain [CommMonoid N] (f : α ≃ β) (l : α →₀ M) (g : β → M → N):
+    prod (equivMapDomain f l) g = prod l (fun a m => g (f a) m) := by
+  simp [prod, equivMapDomain]
+
 /-- Given `f : α ≃ β`, the finitely supported function spaces are also in bijection:
 `(α →₀ M) ≃ (β →₀ M)`.
 
@@ -722,6 +727,15 @@ section Zero
 
 variable [Zero M]
 
+lemma embDomain_comapDomain {f : α ↪ β} {g : β →₀ M} (hg : ↑g.support ⊆ Set.range f) :
+    embDomain f (comapDomain f g (f.injective.injOn _)) = g := by
+  ext b
+  by_cases hb : b ∈ Set.range f
+  · obtain ⟨a, rfl⟩ := hb
+    rw [embDomain_apply, comapDomain_apply]
+  · replace hg : g b = 0 := not_mem_support_iff.mp <| mt (hg ·) hb
+    rw [embDomain_notin_range _ _ _ hb, hg]
+
 /-- Note the `hif` argument is needed for this to work in `rw`. -/
 @[simp]
 theorem comapDomain_zero (f : α → β)
@@ -777,14 +791,9 @@ end AddZeroClass
 variable [AddCommMonoid M] (f : α → β)
 
 theorem mapDomain_comapDomain (hf : Function.Injective f) (l : β →₀ M)
-    (hl : ↑l.support ⊆ Set.range f) : mapDomain f (comapDomain f l (hf.injOn _)) = l := by
-  ext a
-  by_cases h_cases : a ∈ Set.range f
-  · rcases Set.mem_range.1 h_cases with ⟨b, hb⟩
-    rw [hb.symm, mapDomain_apply hf, comapDomain_apply]
-  · rw [mapDomain_notin_range _ _ h_cases]
-    by_contra h_contr
-    apply h_cases (hl <| Finset.mem_coe.2 <| mem_support_iff.2 fun h => h_contr h.symm)
+    (hl : ↑l.support ⊆ Set.range f) :
+    mapDomain f (comapDomain f l (hf.injOn _)) = l := by
+  conv_rhs => rw [← embDomain_comapDomain (f := ⟨f, hf⟩) hl (M := M), embDomain_eq_mapDomain]
 #align finsupp.map_domain_comap_domain Finsupp.mapDomain_comapDomain
 
 end FInjective

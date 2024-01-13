@@ -87,23 +87,7 @@ theorem Subalgebra.isSimpleOrder_of_finrank_prime (F A) [Field F] [Ring A] [IsDo
 #align finite_dimensional.subalgebra.is_simple_order_of_finrank_prime FiniteDimensional.Subalgebra.isSimpleOrder_of_finrank_prime
 -- TODO: `IntermediateField` version
 
--- TODO: generalize by removing [FiniteDimensional F K]
--- V = ⊕F,
--- (V →ₗ[F] K) = ((⊕F) →ₗ[F] K) = (⊕ (F →ₗ[F] K)) = ⊕K
-instance _root_.LinearMap.finite_dimensional'' (F : Type u) (K : Type v) (V : Type w) [Field F]
-    [Field K] [Algebra F K] [FiniteDimensional F K] [AddCommGroup V] [Module F V]
-    [FiniteDimensional F V] : FiniteDimensional K (V →ₗ[F] K) :=
-  right F _ _
-#align linear_map.finite_dimensional'' LinearMap.finite_dimensional''
-
-theorem finrank_linear_map' (F : Type u) (K : Type v) (V : Type w) [Field F] [Field K] [Algebra F K]
-    [FiniteDimensional F K] [AddCommGroup V] [Module F V] [FiniteDimensional F V] :
-    finrank K (V →ₗ[F] K) = finrank F V :=
-  mul_right_injective₀ finrank_pos.ne' <|
-    calc
-      finrank F K * finrank K (V →ₗ[F] K) = finrank F (V →ₗ[F] K) := finrank_mul_finrank _ _ _
-      _ = finrank F V * finrank F K := (finrank_linearMap F V K)
-      _ = finrank F K * finrank F V := mul_comm _ _
+@[deprecated] alias finrank_linear_map' := FiniteDimensional.finrank_linearMap_self
 #align finite_dimensional.finrank_linear_map' FiniteDimensional.finrank_linear_map'
 
 end FiniteDimensional
