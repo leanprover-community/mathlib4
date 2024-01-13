@@ -374,6 +374,8 @@ theorem toAddSubmonoid_sSup (s : Set (Submodule R M)) :
   · exact sSup_le fun _ ⟨q, hq, hq'⟩ ↦ hq'.symm ▸ le_sSup hq
 
 variable (S R M) in
+/-- If ring `S` acts on a ring `R` and `M` is a module over both (compatibly with this action) then
+we can turn an `R`-submodule into an `S`-submodule by forgetting the action of `R`. -/
 def restrictScalarsLatticeHom : CompleteLatticeHom (Submodule R M) (Submodule S M) where
   toFun := restrictScalars S
   map_sInf' s := by ext; simp
