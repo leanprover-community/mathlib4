@@ -69,6 +69,8 @@ subsemigroup, range, product, map, comap
 
 variable {M N P σ : Type*}
 
+open BundledSet
+
 /-!
 ### Conversion to/from `Additive`/`Multiplicative`
 -/
@@ -113,20 +115,13 @@ variable {A : Type*} [Add A]
 
 /-- Additive subsemigroups of an additive semigroup `A` are isomorphic to
 multiplicative subsemigroups of `Multiplicative A`. -/
-@[simps]
-def AddSubsemigroup.toSubsemigroup : AddSubsemigroup A ≃o Subsemigroup (Multiplicative A) where
-  toFun S :=
-    { carrier := Multiplicative.toAdd ⁻¹' S
-      mul_mem' := S.add_mem' }
-  invFun S :=
-    { carrier := Multiplicative.ofAdd ⁻¹' S
-      add_mem' := S.mul_mem' }
-  left_inv _ := rfl
-  right_inv _ := rfl
-  map_rel_iff' := Iff.rfl
+@[simps!]
+def AddSubsemigroup.toSubsemigroup : AddSubsemigroup A ≃o Subsemigroup (Multiplicative A) :=
+  Multiplicative.ofAdd.bundledSetCongr _ _ fun _ ↦ by
+    simp only [isSubsemigroup_eq, isAddSubsemigroup_eq, Additive.ofMul.surjective.forall]; rfl
 #align add_subsemigroup.to_subsemigroup AddSubsemigroup.toSubsemigroup
-#align add_subsemigroup.to_subsemigroup_apply_coe AddSubsemigroup.toSubsemigroup_apply_coe
-#align add_subsemigroup.to_subsemigroup_symm_apply_coe AddSubsemigroup.toSubsemigroup_symm_apply_coe
+#align add_subsemigroup.to_subsemigroup_apply_coe AddSubsemigroup.toSubsemigroup_apply_carrier
+#align add_subsemigroup.to_subsemigroup_symm_apply_coe AddSubsemigroup.toSubsemigroup_symm_apply_carrier
 
 /-- Subsemigroups of a semigroup `Multiplicative A` are isomorphic to additive subsemigroups
 of `A`. -/
@@ -137,19 +132,13 @@ abbrev Subsemigroup.toAddSubsemigroup' : Subsemigroup (Multiplicative A) ≃o Ad
 theorem AddSubsemigroup.toSubsemigroup_closure (S : Set A) :
     AddSubsemigroup.toSubsemigroup (AddSubsemigroup.closure S) =
       Subsemigroup.closure (Multiplicative.toAdd ⁻¹' S) :=
-  le_antisymm
-    (AddSubsemigroup.toSubsemigroup.to_galoisConnection.l_le <|
-      AddSubsemigroup.closure_le.2 <| Subsemigroup.subset_closure (M := Multiplicative A))
-    (Subsemigroup.closure_le.2 <| AddSubsemigroup.subset_closure (M := A))
+  Equiv.bundledSetCongr_closure _ _
 #align add_subsemigroup.to_subsemigroup_closure AddSubsemigroup.toSubsemigroup_closure
 
 theorem Subsemigroup.toAddSubsemigroup'_closure (S : Set (Multiplicative A)) :
     Subsemigroup.toAddSubsemigroup' (Subsemigroup.closure S) =
-    AddSubsemigroup.closure (Additive.ofMul ⁻¹' S) :=
-  le_antisymm
-    (Subsemigroup.toAddSubsemigroup'.to_galoisConnection.l_le <|
-      Subsemigroup.closure_le.2 <| AddSubsemigroup.subset_closure (M := A))
-    (AddSubsemigroup.closure_le.2 <| Subsemigroup.subset_closure (M := Multiplicative A))
+      AddSubsemigroup.closure (Multiplicative.ofAdd ⁻¹' S) :=
+  Equiv.bundledSetCongr_symm_closure _ _
 #align subsemigroup.to_add_subsemigroup'_closure Subsemigroup.toAddSubsemigroup'_closure
 
 end
@@ -172,7 +161,7 @@ variable [Mul M] [Mul N] [Mul P] (S : Subsemigroup M)
 def comap (f : M →ₙ* N) (S : Subsemigroup N) :
     Subsemigroup M where
   carrier := f ⁻¹' S
-  mul_mem' ha hb := show f (_ * _) ∈ S by rw [map_mul]; exact mul_mem ha hb
+  prop := { mul_mem := fun ha hb ↦ by rw [mem_preimage, map_mul]; exact mul_mem ha hb }
 #align subsemigroup.comap Subsemigroup.comap
 #align add_subsemigroup.comap AddSubsemigroup.comap
 
@@ -196,8 +185,7 @@ theorem comap_comap (S : Subsemigroup P) (g : N →ₙ* P) (f : M →ₙ* N) :
 #align add_subsemigroup.comap_comap AddSubsemigroup.comap_comap
 
 @[to_additive (attr := simp)]
-theorem comap_id (S : Subsemigroup P) : S.comap (MulHom.id _) = S :=
-  ext (by simp)
+theorem comap_id (S : Subsemigroup P) : S.comap (MulHom.id _) = S := by ext; simp
 #align subsemigroup.comap_id Subsemigroup.comap_id
 #align add_subsemigroup.comap_id AddSubsemigroup.comap_id
 
