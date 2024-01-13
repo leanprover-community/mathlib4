@@ -124,7 +124,8 @@ theorem contDiffWithinAt_localInvariantProp (n : ℕ∞) :
     symm
     apply contDiffWithinAt_inter
     have : u ∈ 𝓝 (I.symm (I x)) := by
-      rw [ModelWithCorners.left_inv]; exact IsOpen.mem_nhds u_open xu
+      rw [ModelWithCorners.left_inv]
+      exact u_open.mem_nhds xu
     apply ContinuousAt.preimage_mem_nhds I.continuous_symm.continuousAt this
   right_invariance' := by
     intro s x f e he hx h
@@ -901,6 +902,10 @@ theorem contMDiffOn_congr (h₁ : ∀ y ∈ s, f₁ y = f y) :
     ContMDiffOn I I' n f₁ s ↔ ContMDiffOn I I' n f s :=
   (contDiffWithinAt_localInvariantProp I I' n).liftPropOn_congr_iff h₁
 #align cont_mdiff_on_congr contMDiffOn_congr
+
+theorem ContMDiffOn.congr_mono (hf : ContMDiffOn I I' n f s) (h₁ : ∀ y ∈ s₁, f₁ y = f y)
+    (hs : s₁ ⊆ s) : ContMDiffOn I I' n f₁ s₁ :=
+  (hf.mono hs).congr h₁
 
 /-! ### Locality -/
 

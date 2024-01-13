@@ -59,7 +59,7 @@ structure IsSubmonoid (s : Set M) : Prop where
 #align is_submonoid IsSubmonoid
 
 theorem Additive.isAddSubmonoid {s : Set M} :
-    ∀ _ : IsSubmonoid s, @IsAddSubmonoid (Additive M) _ s
+    IsSubmonoid s → @IsAddSubmonoid (Additive M) _ s
   | ⟨h₁, h₂⟩ => ⟨h₁, @h₂⟩
 #align additive.is_add_submonoid Additive.isAddSubmonoid
 
@@ -69,7 +69,7 @@ theorem Additive.isAddSubmonoid_iff {s : Set M} :
 #align additive.is_add_submonoid_iff Additive.isAddSubmonoid_iff
 
 theorem Multiplicative.isSubmonoid {s : Set A} :
-    ∀ _ : IsAddSubmonoid s, @IsSubmonoid (Multiplicative A) _ s
+    IsAddSubmonoid s → @IsSubmonoid (Multiplicative A) _ s
   | ⟨h₁, h₂⟩ => ⟨h₁, @h₂⟩
 #align multiplicative.is_submonoid Multiplicative.isSubmonoid
 

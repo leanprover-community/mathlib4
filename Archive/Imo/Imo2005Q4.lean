@@ -79,5 +79,5 @@ theorem imo2005_q4 {k : ℕ} (hk : 0 < k) : (∀ n : ℕ, 1 ≤ n → IsCoprime 
   refine h (p - 2) ?_ (find_specified_factor hp hp2 hp3)
   calc
     1 = 3 - 2 := by norm_num
-    _ ≤ p - 2 := tsub_le_tsub_right (Nat.succ_le_of_lt $ hp.two_le.lt_of_ne' hp2) _
+    _ ≤ p - 2 := tsub_le_tsub_right (Nat.succ_le_of_lt <| hp.two_le.lt_of_ne' hp2) _
 #align imo2005_q4 imo2005_q4

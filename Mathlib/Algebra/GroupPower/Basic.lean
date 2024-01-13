@@ -43,24 +43,6 @@ First we prove some facts about `SemiconjBy` and `Commute`. They do not require 
 `pow` and/or `nsmul` and will be useful later in this file.
 -/
 
-
-section Pow
-
-variable [Pow M ℕ]
-
-@[to_additive (attr := simp) ite_nsmul]
-theorem pow_ite (P : Prop) [Decidable P] (a : M) (b c : ℕ) :
-    (a ^ if P then b else c) = if P then a ^ b else a ^ c := by split_ifs <;> rfl
-#align pow_ite pow_ite
-
-@[to_additive (attr := simp) nsmul_ite]
-theorem ite_pow (P : Prop) [Decidable P] (a b : M) (c : ℕ) :
-    (if P then a else b) ^ c = if P then a ^ c else b ^ c := by split_ifs <;> rfl
-#align ite_pow ite_pow
-
-end Pow
-
-
 /-!
 ### Monoids
 -/
