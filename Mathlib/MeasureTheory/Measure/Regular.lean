@@ -320,7 +320,7 @@ class InnerRegularCompactLTTop (μ : Measure α) : Prop where
 
 -- see Note [lower instance priority]
 /-- A regular measure is weakly regular in a T2 space or in a regular space. -/
-instance (priority := 100) Regular.weaklyRegular [ClosableCompactSubsetOpenSpace α] [Regular μ] :
+instance (priority := 100) Regular.weaklyRegular [T2OrLocallyCompactRegularSpace α] [Regular μ] :
     WeaklyRegular μ := by
   constructor
   intro U hU r hr
@@ -665,7 +665,7 @@ instance smul_nnreal [InnerRegular μ] (c : ℝ≥0) : InnerRegular (c • μ) :
 instance (priority := 100) [InnerRegular μ] : InnerRegularCompactLTTop μ :=
   ⟨fun _s hs r hr ↦ InnerRegular.innerRegular hs.1 r hr⟩
 
-lemma innerRegularWRT_isClosed_isOpen [ClosableCompactSubsetOpenSpace α] [OpensMeasurableSpace α]
+lemma innerRegularWRT_isClosed_isOpen [T2OrLocallyCompactRegularSpace α] [OpensMeasurableSpace α]
     [h : InnerRegular μ] : InnerRegularWRT μ IsClosed IsOpen := by
   intro U hU r hr
   rcases h.innerRegular hU.measurableSet r hr with ⟨K, KU, K_comp, hK⟩
@@ -759,12 +759,12 @@ instance (priority := 50) [h : InnerRegularCompactLTTop μ] [IsFiniteMeasure μ]
   convert h.innerRegular with s
   simp [measure_ne_top μ s]
 
-instance (priority := 50) [BorelSpace α] [ClosableCompactSubsetOpenSpace α]
+instance (priority := 50) [BorelSpace α] [T2OrLocallyCompactRegularSpace α]
     [InnerRegularCompactLTTop μ] [IsFiniteMeasure μ] : WeaklyRegular μ := by
   apply InnerRegularWRT.weaklyRegular_of_finite
   exact InnerRegular.innerRegularWRT_isClosed_isOpen
 
-instance (priority := 50) [BorelSpace α] [ClosableCompactSubsetOpenSpace α]
+instance (priority := 50) [BorelSpace α] [T2OrLocallyCompactRegularSpace α]
     [h : InnerRegularCompactLTTop μ] [IsFiniteMeasure μ] : Regular μ := by
   constructor
   apply InnerRegularWRT.trans h.innerRegular
@@ -999,7 +999,7 @@ protected theorem smul [Regular μ] {x : ℝ≥0∞} (hx : x ≠ ∞) : (x • �
 instance smul_nnreal [Regular μ] (c : ℝ≥0) : Regular (c • μ) := Regular.smul coe_ne_top
 
 /-- The restriction of a regular measure to a set of finite measure is regular. -/
-theorem restrict_of_measure_ne_top [ClosableCompactSubsetOpenSpace α] [BorelSpace α] [Regular μ]
+theorem restrict_of_measure_ne_top [T2OrLocallyCompactRegularSpace α] [BorelSpace α] [Regular μ]
     {A : Set α} (h'A : μ A ≠ ∞) : Regular (μ.restrict A) := by
   have : WeaklyRegular (μ.restrict A) := WeaklyRegular.restrict_of_measure_ne_top h'A
   constructor
