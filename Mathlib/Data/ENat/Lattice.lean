@@ -35,9 +35,7 @@ lemma iInf_coe_ne_top : ⨅ i, (f i : ℕ∞) ≠ ⊤ ↔ Nonempty ι := by
   rw [Ne.def, iInf_coe_eq_top, not_isEmpty_iff]
 lemma iInf_coe_lt_top : ⨅ i, (f i : ℕ∞) < ⊤ ↔ Nonempty ι := WithTop.iInf_coe_lt_top
 
-lemma coe_sSup' : BddAbove s → (↑(sSup s) : ℕ∞) = sSup ((↑) '' s) := WithTop.coe_sSup'
 lemma coe_sSup : BddAbove s → ↑(sSup s) = ⨆ a ∈ s, (a : ℕ∞) := WithTop.coe_sSup
-lemma coe_sInf' : s.Nonempty → (↑(sInf s) : ℕ∞) = sInf ((↑) '' s) := WithTop.coe_sInf'
 lemma coe_sInf : s.Nonempty → ↑(sInf s) = ⨅ a ∈ s, (a : ℕ∞) := WithTop.coe_sInf
 lemma coe_iSup : BddAbove (range f) → ↑(⨆ i, f i) = ⨆ i, (f i : ℕ∞) := WithTop.coe_iSup _
 @[norm_cast] lemma coe_iInf [Nonempty ι] : ↑(⨅ i, f i) = ⨅ i, (f i : ℕ∞) := WithTop.coe_iInf _
