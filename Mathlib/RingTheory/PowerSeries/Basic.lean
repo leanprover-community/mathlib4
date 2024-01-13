@@ -2085,35 +2085,6 @@ variable {R : Type*} [CommSemiring R] {ι : Type*} [DecidableEq ι]
 -- Ugly proof, by rewriting as much as possible to use the case of
 -- multivariable power series
 
-/-
-example (a b c : ι) (h : a = b) : (a = c ↔ b = c) := by
-  exact Eq.congr h rfl
-
-example {α : Type*} [AddCommMonoid α]: (Unit → α) ≃+ α := by
-  exact AddEquiv.piUnique fun j ↦ α
-
-example (a b c : ℕ) :
-  ((fun₀ | (default : Unit) => a) = (fun₀ | default => b))
-  ↔ a = b := by
-  exact Finsupp.unique_single_eq_iff
-
-  -/
-
-example (ι α : Type*) [Fintype ι] [AddCommMonoid α] :
-    (ι →₀ α) ≃ (ι → α) := by
-  exact Finsupp.equivFunOnFinite
-
-#check Finsupp.addEquivFunOnFinite
-
-example {ι α : Type*} [Fintype ι] [AddCommMonoid α] :
-    (ι →₀ α) ≃+ (ι → α) where
-  toEquiv := Finsupp.equivFunOnFinite
-  map_add' _ _ := rfl
-
-example {α : Type*} [AddCommMonoid α]: (Unit →₀ α) ≃+ α :=
-  Finsupp.addEquivFunOnFinite.trans (AddEquiv.piUnique _)
-  -- have := AddEquiv.piUnique fun (j : Unit) ↦ α
-
 /-- Coefficients of a product of power series -/
 theorem coeff_prod (f : ι → PowerSeries R) (d : ℕ) (s : Finset ι) :
     coeff R d (∏ j in s, f j) =
@@ -2136,7 +2107,8 @@ theorem coeff_prod (f : ι → PowerSeries R) (d : ℕ) (s : Finset ι) :
   ext
   simp only [PUnit.default_eq_unit, Finsupp.single_eq_same]
   rfl
-  · -- rw [AddEquiv.symm_apply_eq, AddEquiv.finsuppUnique]
+  · -- which proof is better?
+    -- rw [AddEquiv.symm_apply_eq, AddEquiv.finsuppUnique]
     -- simp
     rw [Finsupp.unique_single  (AddEquiv.finsuppUnique.symm d),
       Finsupp.unique_single_eq_iff]
