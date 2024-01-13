@@ -44,7 +44,7 @@ theorem chromaticNumber_pathGraph (n : ℕ) (h : 2 ≤ n) :
     (pathGraph n).chromaticNumber = 2 := by
   have hc := (pathGraph.bicoloring n).colorable
   apply le_antisymm
-  · exact chromaticNumber_le_of_colorable hc
+  · exact hc.chromaticNumber_le
   · simpa only [pathGraph_two_eq_top, chromaticNumber_top] using
       chromaticNumber_mono_of_embedding (pathGraph_two_embedding n h)
 
