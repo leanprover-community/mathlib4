@@ -1079,7 +1079,7 @@ variable [CommSemiring R] [Semiring S] [Algebra R S] (x : S) (p q : R[X])
 @[simp]
 theorem eval₂_mul' :
     (p * q).eval₂ (algebraMap R S) x = p.eval₂ (algebraMap R S) x * q.eval₂ (algebraMap R S) x := by
-  refine eval₂_mul_noncomm _ _ fun k => Algebra.commute_algebraMap_left (coeff q k) x
+  exact eval₂_mul_noncomm _ _ fun k => Algebra.commute_algebraMap_left (coeff q k) x
 
 @[simp]
 theorem eval₂_pow' (n : ℕ) :
