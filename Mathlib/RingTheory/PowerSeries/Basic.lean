@@ -845,7 +845,6 @@ theorem coeff_prod [DecidableEq σ]
       · rintro ⟨u, v⟩ huv
         simp only [mem_antidiagonal] at huv
         simp only [sum_map, Function.Embedding.coeFn_mk, coe_update]
---        simp only [sum_map, Set.InjOn.embedding_apply, Finsupp.coe_update, ne_eq, Function.update_same]
         rw [ih, Finset.mul_sum, ← Finset.sum_attach]
         apply Finset.sum_congr rfl
         rintro ⟨x, hx⟩ _
@@ -2093,12 +2092,6 @@ example (a b c : ι) (h : a = b) : (a = c ↔ b = c) := by
 example {α : Type*} [AddCommMonoid α]: (Unit → α) ≃+ α := by
   exact AddEquiv.piUnique fun j ↦ α
 
-example {α : Type*} [AddCommMonoid α]: (Unit →₀ α) ≃+ α := by
-  have := AddEquiv.piUnique fun (j : Unit) ↦ α
-  apply AddEquiv.trans _ this
-
-  --  _ (AddEquiv.piUnique _)
-  sorry
 example (a b c : ℕ) :
   ((fun₀ | (default : Unit) => a) = (fun₀ | default => b))
   ↔ a = b := by
@@ -2106,21 +2099,33 @@ example (a b c : ℕ) :
 
   -/
 
+example (ι α : Type*) [Fintype ι] [AddCommMonoid α] :
+    (ι →₀ α) ≃ (ι → α) := by
+  exact Finsupp.equivFunOnFinite
+
+#check Finsupp.addEquivFunOnFinite
+
+example {ι α : Type*} [Fintype ι] [AddCommMonoid α] :
+    (ι →₀ α) ≃+ (ι → α) where
+  toEquiv := Finsupp.equivFunOnFinite
+  map_add' _ _ := rfl
+
+example {α : Type*} [AddCommMonoid α]: (Unit →₀ α) ≃+ α :=
+  Finsupp.addEquivFunOnFinite.trans (AddEquiv.piUnique _)
+  -- have := AddEquiv.piUnique fun (j : Unit) ↦ α
+
 /-- Coefficients of a product of power series -/
 theorem coeff_prod (f : ι → PowerSeries R) (d : ℕ) (s : Finset ι) :
     coeff R d (∏ j in s, f j) =
       ∑ l in piAntidiagonal s d,
         ∏ i in s, coeff R (l i) (f i) := by
   simp only [PowerSeries.coeff]
-  -- haveI : HasPiAntidiagonal ι (Unit →₀ ℕ) := HasAntidiagonal.HasPiAntidiagonal
   convert MvPowerSeries.coeff_prod f (fun₀ | () => d) s
 -- maybe it would be better to have this in general
-  suffices this : piAntidiagonal s ((AddEquiv.symm AddEquiv.finsuppUnique) d) = piAntidiagonal s fun₀ | () => d
-  rw [← this]
---  it would be nice to be able to apply Finset.sum_equiv
-  rw [← Finset.mapRange_piAntidiagonal_eq]
-  rw [Finset.sum_map]
-  apply Finset.sum_congr rfl
+  suffices this : ((AddEquiv.symm AddEquiv.finsuppUnique) d)
+    = fun₀ | () => d
+  rw [← this, ← Finset.mapRange_piAntidiagonal_eq, Finset.sum_map,
+    Finset.sum_congr rfl]
   intro x _
   apply Finset.prod_congr rfl
   intro i _
@@ -2131,35 +2136,11 @@ theorem coeff_prod (f : ι → PowerSeries R) (d : ℕ) (s : Finset ι) :
   ext
   simp only [PUnit.default_eq_unit, Finsupp.single_eq_same]
   rfl
-  · ext h
-    simp only [mem_piAntidiagonal, and_congr_right_iff]
-    intro _
-    rw [AddEquiv.eq_symm_apply]
-    rw [_root_.map_finsupp_sum]
-    rw [Finsupp.unique_single (Finsupp.sum h fun _ x ↦ x)]
-    rw [Finsupp.unique_single_eq_iff]
-    apply Eq.congr_left
-    exact Finsupp.sum_apply.symm
-/-  -- old proof
-  have := Finset.mapRange_piAntidiagonal_eq
-    (e := AddEquiv.finsuppUnique (ι := Unit)) (s := s) (n := AddEquiv.finsuppUnique.symm d)
-  simp only [AddEquiv.toEquiv_eq_coe, Finsupp.mapRange.addEquiv_toEquiv,
-    AddEquiv.apply_symm_apply] at this
-  rw [← this, Finset.sum_map]
-  apply Finset.sum_congr
-  · apply congr_arg₂ _ rfl
-    ext
-    simp only [PUnit.default_eq_unit, Finsupp.single_eq_same]
+  · -- rw [AddEquiv.symm_apply_eq, AddEquiv.finsuppUnique]
+    -- simp
+    rw [Finsupp.unique_single  (AddEquiv.finsuppUnique.symm d),
+      Finsupp.unique_single_eq_iff]
     rfl
-  · intro d _
-    apply Finset.prod_congr rfl
-    intro i _
-    congr
-    simp only [Equiv.coe_toEmbedding, Finsupp.mapRange.equiv_apply, EquivLike.coe_coe,
-      Finsupp.mapRange_apply]
-    ext
-    simp only [PUnit.default_eq_unit, Finsupp.single_eq_same]
-    rfl -/
 
 end CommSemiring
 
