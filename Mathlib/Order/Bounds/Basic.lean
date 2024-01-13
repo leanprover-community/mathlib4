@@ -1652,14 +1652,8 @@ lemma BddAbove.range_comp {γ : Type*} [Preorder β] [Preorder γ] {f : α → �
   simpa only [Set.range_comp] using hg.map_bddAbove hf
 
 lemma BddBelow.range_comp {γ : Type*} [Preorder β] [Preorder γ] {f : α → β} {g : β → γ}
-    (hf : BddBelow (Set.range f)) (hg : Monotone g) : BddBelow (Set.range (fun x => g (f x))) := by
-  rw [bddBelow_def] at hf ⊢
-  obtain ⟨C, hC⟩ := hf
-  refine ⟨g C, fun y hy => ?_⟩
-  rw [Set.mem_range] at hy
-  obtain ⟨y', hy'⟩ := hy
-  calc y = g (f y') := hy'.symm
-      _ ≥ g C := hg <| hC (f y') <| Set.mem_range_self _
+    (hf : BddBelow (Set.range f)) (hg : Monotone g) : BddBelow (range (g ∘ f)) := by
+  simpa only [Set.range_comp] using hg.map_bddBelow hf
 
 section ScottContinuous
 variable [Preorder α] [Preorder β] {f : α → β} {a : α}
