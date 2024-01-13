@@ -760,9 +760,9 @@ theorem uniformity_basis_dist_inv_nat_succ :
 
 theorem uniformity_basis_dist_inv_nat_pos :
     (𝓤 α).HasBasis (fun n : ℕ => 0 < n) fun n : ℕ => { p : α × α | dist p.1 p.2 < 1 / ↑n } :=
-  Metric.mk_uniformity_basis (fun n hn => div_pos zero_lt_one <| Nat.cast_pos.2 hn) fun ε ε0 =>
+  Metric.mk_uniformity_basis (fun _ hn => div_pos zero_lt_one <| Nat.cast_pos.2 hn) fun _ ε0 =>
     let ⟨n, hn⟩ := exists_nat_one_div_lt ε0
-    ⟨n + 1, Nat.succ_pos n, by exact_mod_cast hn.le⟩
+    ⟨n + 1, Nat.succ_pos n, mod_cast hn.le⟩
 #align metric.uniformity_basis_dist_inv_nat_pos Metric.uniformity_basis_dist_inv_nat_pos
 
 theorem uniformity_basis_dist_pow {r : ℝ} (h0 : 0 < r) (h1 : r < 1) :
@@ -870,7 +870,7 @@ theorem totallyBounded_of_finite_discretization {s : Set α}
     (H : ∀ ε > (0 : ℝ),
         ∃ (β : Type u) (_ : Fintype β) (F : s → β), ∀ x y, F x = F y → dist (x : α) y < ε) :
     TotallyBounded s := by
-  cases' s.eq_empty_or_nonempty with hs hs
+  rcases s.eq_empty_or_nonempty with hs | hs
   · rw [hs]
     exact totallyBounded_empty
   rcases hs with ⟨x0, hx0⟩
@@ -1564,7 +1564,8 @@ theorem NNReal.dist_eq (a b : ℝ≥0) : dist a b = |(a : ℝ) - b| := rfl
 
 theorem NNReal.nndist_eq (a b : ℝ≥0) : nndist a b = max (a - b) (b - a) :=
   eq_of_forall_ge_iff fun _ => by
-    simp only [← NNReal.coe_le_coe, coe_nndist, dist_eq, max_le_iff, abs_sub_le_iff,
+    simp only [max_le_iff, tsub_le_iff_right (α := ℝ≥0)]
+    simp only [← NNReal.coe_le_coe, coe_nndist, dist_eq, abs_sub_le_iff,
       tsub_le_iff_right, NNReal.coe_add]
 #align nnreal.nndist_eq NNReal.nndist_eq
 
@@ -2108,7 +2109,7 @@ instance (priority := 100) proper_of_compact [CompactSpace α] : ProperSpace α 
 -- see Note [lower instance priority]
 /-- A proper space is locally compact -/
 instance (priority := 100) locally_compact_of_proper [ProperSpace α] : LocallyCompactSpace α :=
-  locallyCompactSpace_of_hasBasis (fun _ => nhds_basis_closedBall) fun _ _ _ =>
+  .of_hasBasis (fun _ => nhds_basis_closedBall) fun _ _ _ =>
     isCompact_closedBall _ _
 #align locally_compact_of_proper locally_compact_of_proper
 
@@ -2165,7 +2166,7 @@ theorem exists_pos_lt_subset_ball (hr : 0 < r) (hs : IsClosed s) (h : s ⊆ ball
 /-- If a ball in a proper space includes a closed set `s`, then there exists a ball with the same
 center and a strictly smaller radius that includes `s`. -/
 theorem exists_lt_subset_ball (hs : IsClosed s) (h : s ⊆ ball x r) : ∃ r' < r, s ⊆ ball x r' := by
-  cases' le_or_lt r 0 with hr hr
+  rcases le_or_lt r 0 with hr | hr
   · rw [ball_eq_empty.2 hr, subset_empty_iff] at h
     subst s
     exact (exists_lt r).imp fun r' hr' => ⟨hr', empty_subset _⟩
@@ -2192,9 +2193,9 @@ theorem secondCountable_of_almost_dense_set
     SecondCountableTopology α := by
   refine' EMetric.secondCountable_of_almost_dense_set fun ε ε0 => _
   rcases ENNReal.lt_iff_exists_nnreal_btwn.1 ε0 with ⟨ε', ε'0, ε'ε⟩
-  choose s hsc y hys hyx using H ε' (by exact_mod_cast ε'0)
+  choose s hsc y hys hyx using H ε' (mod_cast ε'0)
   refine' ⟨s, hsc, iUnion₂_eq_univ_iff.2 fun x => ⟨y x, hys _, le_trans _ ε'ε.le⟩⟩
-  exact_mod_cast hyx x
+  exact mod_cast hyx x
 #align metric.second_countable_of_almost_dense_set Metric.secondCountable_of_almost_dense_set
 
 end SecondCountable

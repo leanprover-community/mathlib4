@@ -154,17 +154,12 @@ instance coyonedaFunctorPreservesLimits : PreservesLimits (@coyoneda D _) := by
   infer_instance
 #align category_theory.coyoneda_functor_preserves_limits CategoryTheory.coyonedaFunctorPreservesLimits
 
-instance yonedaFunctorReflectsLimits : ReflectsLimits (@yoneda D _) :=
-  Limits.fullyFaithfulReflectsLimits _
+instance yonedaFunctorReflectsLimits : ReflectsLimits (@yoneda D _) := inferInstance
 #align category_theory.yoneda_functor_reflects_limits CategoryTheory.yonedaFunctorReflectsLimits
 
-instance coyonedaFunctorReflectsLimits : ReflectsLimits (@coyoneda D _) :=
-  Limits.fullyFaithfulReflectsLimits _
+instance coyonedaFunctorReflectsLimits : ReflectsLimits (@coyoneda D _) := inferInstance
 #align category_theory.coyoneda_functor_reflects_limits CategoryTheory.coyonedaFunctorReflectsLimits
 
 end CategoryTheory
 
-assert_not_exists Set.range
-
--- Porting note: after the port see if this import can be removed
--- assert_not_exists AddCommMonoid
+assert_not_exists AddCommMonoid

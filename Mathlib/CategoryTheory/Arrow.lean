@@ -231,7 +231,7 @@ instance mono_left [Mono sq] : Mono sq.left where
     apply CommaMorphism.ext
     · exact h
     · rw [Comma.comp_right, Comma.comp_right, this, this, Category.assoc, Category.assoc]
-      rw [←Arrow.w]
+      rw [← Arrow.w]
       simp only [← Category.assoc, h]
 #align category_theory.arrow.mono_left CategoryTheory.Arrow.mono_left
 

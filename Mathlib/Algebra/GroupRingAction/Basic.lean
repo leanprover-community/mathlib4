@@ -66,6 +66,29 @@ theorem toRingHom_injective [MulSemiringAction M R] [FaithfulSMul M R] :
   eq_of_smul_eq_smul fun r => RingHom.ext_iff.1 h r
 #align to_ring_hom_injective toRingHom_injective
 
+/-- The tautological action by `R →+* R` on `R`.
+
+This generalizes `Function.End.applyMulAction`. -/
+instance RingHom.applyMulSemiringAction [Semiring R] : MulSemiringAction (R →+* R) R where
+  smul := (· <| ·)
+  smul_one := map_one
+  smul_mul := map_mul
+  smul_zero := RingHom.map_zero
+  smul_add := RingHom.map_add
+  one_smul _ := rfl
+  mul_smul _ _ _ := rfl
+#align ring_hom.apply_distrib_mul_action RingHom.applyMulSemiringActionₓ
+
+@[simp]
+protected theorem RingHom.smul_def [Semiring R] (f : R →+* R) (a : R) : f • a = f a :=
+  rfl
+#align ring_hom.smul_def RingHom.smul_def
+
+/-- `RingHom.applyMulSemiringAction` is faithful. -/
+instance RingHom.applyFaithfulSMul [Semiring R] : FaithfulSMul (R →+* R) R :=
+  ⟨fun {_ _} h => RingHom.ext h⟩
+#align ring_hom.apply_has_faithful_smul RingHom.applyFaithfulSMul
+
 /-- Each element of the group defines a semiring isomorphism. -/
 @[simps!]
 def MulSemiringAction.toRingEquiv [MulSemiringAction G R] (x : G) : R ≃+* R :=

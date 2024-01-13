@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Gabriel Ebner
 -/
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Data.Int.Cast.Defs
+import Mathlib.Data.Int.Defs
 import Mathlib.Algebra.Group.Basic
 
 #align_import data.int.cast.basic from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
@@ -49,7 +50,7 @@ namespace Int
 
 variable {R : Type u} [AddGroupWithOne R]
 
-@[simp, norm_cast]
+@[simp, norm_cast squash]
 theorem cast_negSucc (n : ℕ) : (-[n+1] : R) = -(n + 1 : ℕ) :=
   AddGroupWithOne.intCast_negSucc n
 #align int.cast_neg_succ_of_nat Int.cast_negSuccₓ
@@ -127,16 +128,6 @@ theorem cast_sub (m n) : ((m - n : ℤ) : R) = m - n := by
 
 section deprecated
 set_option linter.deprecated false
-
-@[norm_cast, deprecated]
-theorem ofNat_bit0 (n : ℕ) : (↑(bit0 n) : ℤ) = bit0 ↑n :=
-  rfl
-#align int.coe_nat_bit0 Int.ofNat_bit0
-
-@[norm_cast, deprecated]
-theorem ofNat_bit1 (n : ℕ) : (↑(bit1 n) : ℤ) = bit1 ↑n :=
-  rfl
-#align int.coe_nat_bit1 Int.ofNat_bit1
 
 @[norm_cast, deprecated]
 theorem cast_bit0 (n : ℤ) : ((bit0 n : ℤ) : R) = bit0 (n : R) :=

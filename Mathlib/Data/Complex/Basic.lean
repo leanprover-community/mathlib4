@@ -16,8 +16,6 @@ of characteristic zero. The result that the complex numbers are algebraically cl
 `FieldTheory.AlgebraicClosure`.
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open Set Function
 
 /-! ### Definition and basic arithmetic -/
@@ -53,10 +51,12 @@ theorem eta : ∀ z : ℂ, Complex.mk z.re z.im = z
   | ⟨_, _⟩ => rfl
 #align complex.eta Complex.eta
 
-@[ext]
+-- We only mark this lemma with `ext` *locally* to avoid it applying whenever terms of `ℂ` appear.
 theorem ext : ∀ {z w : ℂ}, z.re = w.re → z.im = w.im → z = w
   | ⟨_, _⟩, ⟨_, _⟩, rfl, rfl => rfl
 #align complex.ext Complex.ext
+
+attribute [local ext] Complex.ext
 
 theorem ext_iff {z w : ℂ} : z = w ↔ z.re = w.re ∧ z.im = w.im :=
   ⟨fun H => by simp [H], fun h => ext h.1 h.2⟩
@@ -275,14 +275,17 @@ theorem ofReal_mul (r s : ℝ) : ((r * s : ℝ) : ℂ) = r * s :=
   ext_iff.2 <| by simp [ofReal']
 #align complex.of_real_mul Complex.ofReal_mul
 
-theorem ofReal_mul_re (r : ℝ) (z : ℂ) : (↑r * z).re = r * z.re := by simp [ofReal']
-#align complex.of_real_mul_re Complex.ofReal_mul_re
+theorem re_ofReal_mul (r : ℝ) (z : ℂ) : (r * z).re = r * z.re := by simp [ofReal']
+#align complex.of_real_mul_re Complex.re_ofReal_mul
 
-theorem ofReal_mul_im (r : ℝ) (z : ℂ) : (↑r * z).im = r * z.im := by simp [ofReal']
-#align complex.of_real_mul_im Complex.ofReal_mul_im
+theorem im_ofReal_mul (r : ℝ) (z : ℂ) : (r * z).im = r * z.im := by simp [ofReal']
+#align complex.of_real_mul_im Complex.im_ofReal_mul
+
+lemma re_mul_ofReal (z : ℂ) (r : ℝ) : (z * r).re = z.re *  r := by simp [ofReal']
+lemma im_mul_ofReal (z : ℂ) (r : ℝ) : (z * r).im = z.im *  r := by simp [ofReal']
 
 theorem ofReal_mul' (r : ℝ) (z : ℂ) : ↑r * z = ⟨r * z.re, r * z.im⟩ :=
-  ext (ofReal_mul_re _ _) (ofReal_mul_im _ _)
+  ext (re_ofReal_mul _ _) (im_ofReal_mul _ _)
 #align complex.of_real_mul' Complex.ofReal_mul'
 
 /-! ### The imaginary unit, `I` -/
@@ -317,8 +320,7 @@ theorem I_mul (z : ℂ) : I * z = ⟨-z.im, z.re⟩ :=
 set_option linter.uppercaseLean3 false in
 #align complex.I_mul Complex.I_mul
 
-theorem I_ne_zero : (I : ℂ) ≠ 0 :=
-  mt (congr_arg im) zero_ne_one.symm
+@[simp] lemma I_ne_zero : (I : ℂ) ≠ 0 := mt (congr_arg im) zero_ne_one.symm
 set_option linter.uppercaseLean3 false in
 #align complex.I_ne_zero Complex.I_ne_zero
 
@@ -831,6 +833,9 @@ theorem rat_cast_re (q : ℚ) : (q : ℂ).re = (q : ℝ) := rfl
 theorem rat_cast_im (q : ℚ) : (q : ℂ).im = 0 := rfl
 #align complex.rat_cast_im Complex.rat_cast_im
 
+@[norm_cast] lemma ofReal_nsmul (n : ℕ) (r : ℝ) : ↑(n • r) = n • (r : ℂ) := by simp
+@[norm_cast] lemma ofReal_zsmul (n : ℤ) (r : ℝ) : ↑(n • r) = n • (r : ℂ) := by simp
+
 /-! ### Field instance and lemmas -/
 
 noncomputable instance instField : Field ℂ :=
@@ -907,14 +912,14 @@ theorem normSq_div (z w : ℂ) : normSq (z / w) = normSq z / normSq w :=
 lemma div_ofReal (z : ℂ) (x : ℝ) : z / x = ⟨z.re / x, z.im / x⟩ := by
   simp_rw [div_eq_inv_mul, ← ofReal_inv, ofReal_mul']
 
-lemma div_nat_cast (z : ℂ) (n : ℕ) : z / n = ⟨z.re / n, z.im / n⟩ := by
-  exact_mod_cast div_ofReal z n
+lemma div_nat_cast (z : ℂ) (n : ℕ) : z / n = ⟨z.re / n, z.im / n⟩ :=
+  mod_cast div_ofReal z n
 
-lemma div_int_cast (z : ℂ) (n : ℤ) : z / n = ⟨z.re / n, z.im / n⟩ := by
-  exact_mod_cast div_ofReal z n
+lemma div_int_cast (z : ℂ) (n : ℤ) : z / n = ⟨z.re / n, z.im / n⟩ :=
+  mod_cast div_ofReal z n
 
-lemma div_rat_cast (z : ℂ) (x : ℚ) : z / x = ⟨z.re / x, z.im / x⟩ := by
-  exact_mod_cast div_ofReal z x
+lemma div_rat_cast (z : ℂ) (x : ℚ) : z / x = ⟨z.re / x, z.im / x⟩ :=
+  mod_cast div_ofReal z x
 
 lemma div_ofNat (z : ℂ) (n : ℕ) [n.AtLeastTwo] :
     z / OfNat.ofNat n = ⟨z.re / OfNat.ofNat n, z.im / OfNat.ofNat n⟩ :=

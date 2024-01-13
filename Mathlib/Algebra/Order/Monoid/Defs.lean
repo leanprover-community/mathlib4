@@ -123,15 +123,13 @@ set_option linter.deprecated false in
 #align bit0_pos bit0_pos
 
 /-- A linearly ordered additive commutative monoid. -/
-class LinearOrderedAddCommMonoid (α : Type*) extends LinearOrder α, OrderedAddCommMonoid α
+class LinearOrderedAddCommMonoid (α : Type*) extends OrderedAddCommMonoid α, LinearOrder α
 #align linear_ordered_add_comm_monoid LinearOrderedAddCommMonoid
 
 /-- A linearly ordered commutative monoid. -/
 @[to_additive]
-class LinearOrderedCommMonoid (α : Type*) extends LinearOrder α, OrderedCommMonoid α
+class LinearOrderedCommMonoid (α : Type*) extends OrderedCommMonoid α, LinearOrder α
 #align linear_ordered_comm_monoid LinearOrderedCommMonoid
-
-attribute [to_additive existing] LinearOrderedCommMonoid.toOrderedCommMonoid
 
 /-- A linearly ordered cancellative additive commutative monoid is an additive commutative monoid
 with a decidable linear order in which addition is cancellative and monotone. -/
@@ -151,17 +149,10 @@ attribute [to_additive existing] LinearOrderedCancelCommMonoid.toLinearOrderedCo
 /-- A linearly ordered commutative monoid with an additively absorbing `⊤` element.
   Instances should include number systems with an infinite element adjoined. -/
 class LinearOrderedAddCommMonoidWithTop (α : Type*) extends LinearOrderedAddCommMonoid α,
-    Top α where
-  /-- In a `LinearOrderedAddCommMonoidWithTop`, the `⊤` element is larger than any other element.-/
-  protected le_top : ∀ x : α, x ≤ ⊤
+    OrderTop α where
   /-- In a `LinearOrderedAddCommMonoidWithTop`, the `⊤` element is invariant under addition. -/
   protected top_add' : ∀ x : α, ⊤ + x = ⊤
 #align linear_ordered_add_comm_monoid_with_top LinearOrderedAddCommMonoidWithTop
-
--- see Note [lower instance priority]
-instance (priority := 100) LinearOrderedAddCommMonoidWithTop.toOrderTop (α : Type*)
-    [h : LinearOrderedAddCommMonoidWithTop α] : OrderTop α :=
-  { h with }
 #align linear_ordered_add_comm_monoid_with_top.to_order_top LinearOrderedAddCommMonoidWithTop.toOrderTop
 
 section LinearOrderedAddCommMonoidWithTop

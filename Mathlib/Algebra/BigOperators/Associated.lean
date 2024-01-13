@@ -134,8 +134,9 @@ theorem finset_prod_mk {p : Finset β} {f : β → α} :
     (∏ i in p, Associates.mk (f i)) = Associates.mk (∏ i in p, f i) := by
   -- Porting note: added
   have : (fun i => Associates.mk (f i)) = Associates.mk ∘ f :=
-    funext <| fun x => Function.comp_apply
-  rw [Finset.prod_eq_multiset_prod, this, ←Multiset.map_map, prod_mk, ←Finset.prod_eq_multiset_prod]
+    funext fun x => Function.comp_apply
+  rw [Finset.prod_eq_multiset_prod, this, ← Multiset.map_map, prod_mk,
+    ← Finset.prod_eq_multiset_prod]
 #align associates.finset_prod_mk Associates.finset_prod_mk
 
 theorem rel_associated_iff_map_eq_map {p q : Multiset α} :

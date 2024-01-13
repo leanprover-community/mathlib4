@@ -68,7 +68,7 @@ def MeasurableSet [MeasurableSpace α] (s : Set α) : Prop :=
 -- porting note: todo: `scoped[MeasureTheory]` doesn't work for unknown reason
 namespace MeasureTheory
 set_option quotPrecheck false in
-/-- Notation for `MeasurableSet` with respect to a non-standanrd σ-algebra. -/
+/-- Notation for `MeasurableSet` with respect to a non-standard σ-algebra. -/
 scoped notation "MeasurableSet[" m "]" => @MeasurableSet _ m
 
 end MeasureTheory
@@ -208,10 +208,18 @@ protected theorem MeasurableSet.diff {s₁ s₂ : Set α} (h₁ : MeasurableSet 
 #align measurable_set.diff MeasurableSet.diff
 
 @[simp, measurability]
+protected lemma MeasurableSet.himp {s₁ s₂ : Set α} (h₁ : MeasurableSet s₁) (h₂ : MeasurableSet s₂) :
+    MeasurableSet (s₁ ⇨ s₂) := by rw [himp_eq]; exact h₂.union h₁.compl
+
+@[simp, measurability]
 protected theorem MeasurableSet.symmDiff {s₁ s₂ : Set α} (h₁ : MeasurableSet s₁)
     (h₂ : MeasurableSet s₂) : MeasurableSet (s₁ ∆ s₂) :=
   (h₁.diff h₂).union (h₂.diff h₁)
 #align measurable_set.symm_diff MeasurableSet.symmDiff
+
+@[simp, measurability]
+protected lemma MeasurableSet.bihimp {s₁ s₂ : Set α} (h₁ : MeasurableSet s₁)
+    (h₂ : MeasurableSet s₂) : MeasurableSet (s₁ ⇔ s₂) := (h₂.himp h₁).inter (h₁.himp h₂)
 
 @[simp, measurability]
 protected theorem MeasurableSet.ite {t s₁ s₂ : Set α} (ht : MeasurableSet t)
@@ -445,11 +453,11 @@ theorem generateFrom_sup_generateFrom {s t : Set (Set α)} :
 #align measurable_space.generate_from_sup_generate_from MeasurableSpace.generateFrom_sup_generateFrom
 
 theorem generateFrom_singleton_empty : generateFrom {∅} = (⊥ : MeasurableSpace α) :=
-  bot_unique $ generateFrom_le <| by simp [@MeasurableSet.empty α ⊥]
+  bot_unique <| generateFrom_le <| by simp [@MeasurableSet.empty α ⊥]
 #align measurable_space.generate_from_singleton_empty MeasurableSpace.generateFrom_singleton_empty
 
 theorem generateFrom_singleton_univ : generateFrom {Set.univ} = (⊥ : MeasurableSpace α) :=
-  bot_unique $ generateFrom_le <| by simp
+  bot_unique <| generateFrom_le <| by simp
 #align measurable_space.generate_from_singleton_univ MeasurableSpace.generateFrom_singleton_univ
 
 @[simp]
@@ -575,8 +583,36 @@ theorem Measurable.le {α} {m m0 : MeasurableSpace α} {_ : MeasurableSpace β} 
     {f : α → β} (hf : Measurable[m] f) : Measurable[m0] f := fun _ hs => hm _ (hf hs)
 #align measurable.le Measurable.le
 
-theorem MeasurableSpace.Top.measurable {α β : Type*} [MeasurableSpace β] (f : α → β) :
-    Measurable[⊤] f := fun _ _ => MeasurableSpace.measurableSet_top
-#align measurable_space.top.measurable MeasurableSpace.Top.measurable
-
 end MeasurableFunctions
+
+/-- A typeclass mixin for `MeasurableSpace`s such that all sets are measurable. -/
+class DiscreteMeasurableSpace (α : Type*) [MeasurableSpace α] : Prop where
+  /-- Do not use this. Use `measurableSet_discrete` instead. -/
+  forall_measurableSet : ∀ s : Set α, MeasurableSet s
+
+instance : @DiscreteMeasurableSpace α ⊤ :=
+  @DiscreteMeasurableSpace.mk _ (_) fun _ ↦ MeasurableSpace.measurableSet_top
+
+-- See note [lower instance priority]
+instance (priority := 100) MeasurableSingletonClass.toDiscreteMeasurableSpace [MeasurableSpace α]
+    [MeasurableSingletonClass α] [Countable α] : DiscreteMeasurableSpace α where
+  forall_measurableSet _ := (Set.to_countable _).measurableSet
+
+section DiscreteMeasurableSpace
+variable [MeasurableSpace α] [MeasurableSpace β] [DiscreteMeasurableSpace α]
+
+@[measurability] lemma measurableSet_discrete (s : Set α) : MeasurableSet s :=
+  DiscreteMeasurableSpace.forall_measurableSet _
+
+@[measurability]
+lemma measurable_discrete (f : α → β) : Measurable f := fun _ _ ↦ measurableSet_discrete _
+#align measurable_space.top.measurable measurable_discrete
+
+/-- Warning: Creates a typeclass loop with `MeasurableSingletonClass.toDiscreteMeasurableSpace`.
+To be monitored. -/
+-- See note [lower instance priority]
+instance (priority := 100) DiscreteMeasurableSpace.toMeasurableSingletonClass :
+    MeasurableSingletonClass α where
+  measurableSet_singleton _ := measurableSet_discrete _
+
+end DiscreteMeasurableSpace

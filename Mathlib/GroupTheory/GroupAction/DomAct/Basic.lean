@@ -172,7 +172,7 @@ instance [SMul M α] [SMul N α] [SMulCommClass M N α] : SMulCommClass Mᵈᵐ�
 
 @[to_additive]
 instance [SMul M α] [FaithfulSMul M α] [Nontrivial β] : FaithfulSMul Mᵈᵐᵃ (α → β) where
-  eq_of_smul_eq_smul {c₁ c₂} h := mk.symm.injective <| eq_of_smul_eq_smul <| fun a : α ↦ by
+  eq_of_smul_eq_smul {c₁ c₂} h := mk.symm.injective <| eq_of_smul_eq_smul fun a : α ↦ by
     rcases exists_pair_ne β with ⟨x, y, hne⟩
     contrapose! hne
     haveI := Classical.decEq α

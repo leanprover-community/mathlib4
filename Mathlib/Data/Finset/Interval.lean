@@ -3,6 +3,7 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.Data.Finset.Grade
 import Mathlib.Data.Finset.LocallyFinite
 
 #align_import data.finset.interval from "leanprover-community/mathlib"@"98e83c3d541c77cdb7da20d79611a780ff8e7d90"
@@ -34,10 +35,10 @@ variable [DecidableEq α] (s t : Finset α)
 
 instance : LocallyFiniteOrder (Finset α)
     where
-  finsetIcc s t := t.powerset.filter ((· ⊆ ·) s)
-  finsetIco s t := t.ssubsets.filter ((· ⊆ ·) s)
-  finsetIoc s t := t.powerset.filter ((· ⊂ ·) s)
-  finsetIoo s t := t.ssubsets.filter ((· ⊂ ·) s)
+  finsetIcc s t := t.powerset.filter (s ⊆ ·)
+  finsetIco s t := t.ssubsets.filter (s ⊆ ·)
+  finsetIoc s t := t.powerset.filter (s ⊂ ·)
+  finsetIoo s t := t.ssubsets.filter (s ⊂ ·)
   finset_mem_Icc s t u := by
     rw [mem_filter, mem_powerset]
     exact and_comm
@@ -51,19 +52,19 @@ instance : LocallyFiniteOrder (Finset α)
     rw [mem_filter, mem_ssubsets]
     exact and_comm
 
-theorem Icc_eq_filter_powerset : Icc s t = t.powerset.filter ((· ⊆ ·) s) :=
+theorem Icc_eq_filter_powerset : Icc s t = t.powerset.filter (s ⊆ ·) :=
   rfl
 #align finset.Icc_eq_filter_powerset Finset.Icc_eq_filter_powerset
 
-theorem Ico_eq_filter_ssubsets : Ico s t = t.ssubsets.filter ((· ⊆ ·) s) :=
+theorem Ico_eq_filter_ssubsets : Ico s t = t.ssubsets.filter (s ⊆ ·) :=
   rfl
 #align finset.Ico_eq_filter_ssubsets Finset.Ico_eq_filter_ssubsets
 
-theorem Ioc_eq_filter_powerset : Ioc s t = t.powerset.filter ((· ⊂ ·) s) :=
+theorem Ioc_eq_filter_powerset : Ioc s t = t.powerset.filter (s ⊂ ·) :=
   rfl
 #align finset.Ioc_eq_filter_powerset Finset.Ioc_eq_filter_powerset
 
-theorem Ioo_eq_filter_ssubsets : Ioo s t = t.ssubsets.filter ((· ⊂ ·) s) :=
+theorem Ioo_eq_filter_ssubsets : Ioo s t = t.ssubsets.filter (s ⊂ ·) :=
   rfl
 #align finset.Ioo_eq_filter_ssubsets Finset.Ioo_eq_filter_ssubsets
 
@@ -77,7 +78,7 @@ theorem Iio_eq_ssubsets : Iio s = s.ssubsets :=
 
 variable {s t}
 
-theorem Icc_eq_image_powerset (h : s ⊆ t) : Icc s t = (t \ s).powerset.image ((· ∪ ·) s) := by
+theorem Icc_eq_image_powerset (h : s ⊆ t) : Icc s t = (t \ s).powerset.image (s ∪ ·) := by
   ext u
   simp_rw [mem_Icc, mem_image, mem_powerset]
   constructor
@@ -87,7 +88,7 @@ theorem Icc_eq_image_powerset (h : s ⊆ t) : Icc s t = (t \ s).powerset.image (
     exact ⟨le_sup_left, union_subset h <| hv.trans <| sdiff_subset _ _⟩
 #align finset.Icc_eq_image_powerset Finset.Icc_eq_image_powerset
 
-theorem Ico_eq_image_ssubsets (h : s ⊆ t) : Ico s t = (t \ s).ssubsets.image ((· ∪ ·) s) := by
+theorem Ico_eq_image_ssubsets (h : s ⊆ t) : Ico s t = (t \ s).ssubsets.image (s ∪ ·) := by
   ext u
   simp_rw [mem_Ico, mem_image, mem_ssubsets]
   constructor
@@ -139,7 +140,7 @@ section Cons
 /-- A function `f` from `Finset α` is monotone if and only if `f s ≤ f (cons a s ha)` for all `s`
 and `a ∉ s`. -/
 lemma monotone_iff_forall_le_cons : Monotone f ↔ ∀ s, ∀ ⦃a⦄ (ha), f s ≤ f (cons a s ha) := by
-  classical simp [monotone_iff_forall_covby, covby_iff_exists_cons]
+  classical simp [monotone_iff_forall_covBy, covBy_iff_exists_cons]
 
 /-- A function `f` from `Finset α` is antitone if and only if `f (cons a s ha) ≤ f s` for all
 `s` and `a ∉ s`. -/
@@ -149,7 +150,7 @@ lemma antitone_iff_forall_cons_le : Antitone f ↔ ∀ s ⦃a⦄ ha, f (cons a s
 /-- A function `f` from `Finset α` is strictly monotone if and only if `f s < f (cons a s ha)` for
 all `s` and `a ∉ s`. -/
 lemma strictMono_iff_forall_lt_cons : StrictMono f ↔ ∀ s ⦃a⦄ ha, f s < f (cons a s ha) := by
-  classical simp [strictMono_iff_forall_covby, covby_iff_exists_cons]
+  classical simp [strictMono_iff_forall_covBy, covBy_iff_exists_cons]
 
 /-- A function `f` from `Finset α` is strictly antitone if and only if `f (cons a s ha) < f s` for
 all `s` and `a ∉ s`. -/

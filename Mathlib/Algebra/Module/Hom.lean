@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Module.Pi
+import Mathlib.Algebra.Group.Hom.Instances
 
 #align_import algebra.module.hom from "leanprover-community/mathlib"@"134625f523e737f650a6ea7f0c82a6177e45e622"
 
@@ -19,15 +20,15 @@ We also define bundled versions of `(c • ·)` and `(· • ·)` as `AddMonoidH
 `AddMonoidHom.smul`, respectively.
 -/
 
-set_option autoImplicit true
+variable {R S M A B : Type*}
 
-variable {R S A B : Type*}
+/-! ### Instances for `AddMonoidHom` -/
 
 namespace AddMonoidHom
 
 section
 
-instance distribSMul [AddZeroClass A] [AddCommMonoid B] [DistribSMul M B] :
+instance instDistribSMul [AddZeroClass A] [AddCommMonoid B] [DistribSMul M B] :
     DistribSMul M (A →+ B) where
   smul_add _ _ _ := ext fun _ => smul_add _ _ _
 
@@ -35,12 +36,12 @@ variable [Monoid R] [Monoid S] [AddMonoid A] [AddCommMonoid B]
 
 variable [DistribMulAction R B] [DistribMulAction S B]
 
-instance distribMulAction : DistribMulAction R (A →+ B) where
+instance instDistribMulAction : DistribMulAction R (A →+ B) where
   smul_zero := smul_zero
   smul_add := smul_add
   one_smul _ := ext fun _ => one_smul _ _
   mul_smul _ _ _ := ext fun _ => mul_smul _ _ _
-#align add_monoid_hom.distrib_mul_action AddMonoidHom.distribMulAction
+#align add_monoid_hom.distrib_mul_action AddMonoidHom.instDistribMulAction
 
 @[simp] theorem coe_smul (r : R) (f : A →+ B) : ⇑(r • f) = r • ⇑f := rfl
 #align add_monoid_hom.coe_smul AddMonoidHom.coe_smul
@@ -64,26 +65,77 @@ instance isCentralScalar [DistribMulAction Rᵐᵒᵖ B] [IsCentralScalar R B] :
 
 end
 
+instance instModule [Semiring R] [AddMonoid A] [AddCommMonoid B] [Module R B] : Module R (A →+ B) :=
+  { add_smul := fun _ _ _=> ext fun _ => add_smul _ _ _
+    zero_smul := fun _ => ext fun _ => zero_smul _ _ }
+#align add_monoid_hom.module AddMonoidHom.instModule
+
+end AddMonoidHom
+
+/-!
+### Instances for `AddMonoid.End`
+
+These are direct copies of the instances above.
+-/
+
+namespace AddMonoid.End
+
+section
+
+variable [Monoid R] [Monoid S] [AddCommMonoid A]
+
+instance instDistribSMul [DistribSMul M A] : DistribSMul M (AddMonoid.End A) :=
+  AddMonoidHom.instDistribSMul
+
+variable [DistribMulAction R A] [DistribMulAction S A]
+
+instance instDistribMulAction : DistribMulAction R (AddMonoid.End A) :=
+  AddMonoidHom.instDistribMulAction
+
+@[simp] theorem coe_smul (r : R) (f : AddMonoid.End A) : ⇑(r • f) = r • ⇑f := rfl
+
+theorem smul_apply (r : R) (f : AddMonoid.End A) (x : A) : (r • f) x = r • f x :=
+  rfl
+
+instance smulCommClass [SMulCommClass R S A] : SMulCommClass R S (AddMonoid.End A) :=
+  AddMonoidHom.smulCommClass
+
+instance isScalarTower [SMul R S] [IsScalarTower R S A] : IsScalarTower R S (AddMonoid.End A) :=
+  AddMonoidHom.isScalarTower
+
+instance isCentralScalar [DistribMulAction Rᵐᵒᵖ A] [IsCentralScalar R A] :
+    IsCentralScalar R (AddMonoid.End A) :=
+  AddMonoidHom.isCentralScalar
+
+end
+
+instance instModule [Semiring R] [AddCommMonoid A] [Module R A] : Module R (AddMonoid.End A) :=
+  AddMonoidHom.instModule
+
+/-- The tautological action by `AddMonoid.End α` on `α`.
+
+This generalizes `AddMonoid.End.applyDistribMulAction`. -/
+instance applyModule [AddCommMonoid A] : Module (AddMonoid.End A) A where
+  add_smul _ _ _ := rfl
+  zero_smul _ := rfl
+
+end AddMonoid.End
+
+/-! ### Miscelaneous morphisms -/
+
+namespace AddMonoidHom
+
 /-- Scalar multiplication on the left as an additive monoid homomorphism. -/
-@[simps (config := .asFn)]
-protected def smulLeft [Monoid M] [AddMonoid A] [DistribMulAction M A] (c : M) : A →+ A where
-  toFun := (c • ·)
-  map_zero' := smul_zero c
-  map_add' := smul_add c
+@[simps! (config := .asFn)]
+protected def smulLeft [Monoid M] [AddMonoid A] [DistribMulAction M A] (c : M) : A →+ A :=
+  DistribMulAction.toAddMonoidHom _ c
 
 /-- Scalar multiplication as a biadditive monoid homomorphism. We need `M` to be commutative
 to have addition on `M →+ M`. -/
-protected def smul [Semiring R] [AddCommMonoid M] [Module R M] : R →+ M →+ M where
-  toFun := .smulLeft
-  map_zero' := AddMonoidHom.ext <| zero_smul _
-  map_add' _ _ := AddMonoidHom.ext <| add_smul _ _
+protected def smul [Semiring R] [AddCommMonoid M] [Module R M] : R →+ M →+ M :=
+  (Module.toAddMonoidEnd R M).toAddMonoidHom
 
 @[simp] theorem coe_smul' [Semiring R] [AddCommMonoid M] [Module R M] :
     ⇑(.smul : R →+ M →+ M) = AddMonoidHom.smulLeft := rfl
-
-instance module [Semiring R] [AddMonoid A] [AddCommMonoid B] [Module R B] : Module R (A →+ B) :=
-  { add_smul := fun _ _ _=> ext fun _ => add_smul _ _ _
-    zero_smul := fun _ => ext fun _ => zero_smul _ _ }
-#align add_monoid_hom.module AddMonoidHom.module
 
 end AddMonoidHom

@@ -375,24 +375,24 @@ theorem upcrossingStrat_nonneg : 0 ≤ upcrossingStrat a b f N n ω :=
 #align measure_theory.upcrossing_strat_nonneg MeasureTheory.upcrossingStrat_nonneg
 
 theorem upcrossingStrat_le_one : upcrossingStrat a b f N n ω ≤ 1 := by
-  rw [upcrossingStrat, ← Set.indicator_finset_biUnion_apply]
+  rw [upcrossingStrat, ← Finset.indicator_biUnion_apply]
   · exact Set.indicator_le_self' (fun _ _ => zero_le_one) _
-  · intro i _ j _ hij
-    rw [Set.Ico_disjoint_Ico]
-    obtain hij' | hij' := lt_or_gt_of_ne hij
-    · rw [min_eq_left (upperCrossingTime_mono (Nat.succ_le_succ hij'.le) :
-        upperCrossingTime a b f N _ ω ≤ upperCrossingTime a b f N _ ω),
-        max_eq_right (lowerCrossingTime_mono hij'.le :
-          lowerCrossingTime a b f N _ _ ≤ lowerCrossingTime _ _ _ _ _ _)]
-      refine' le_trans upperCrossingTime_le_lowerCrossingTime
-        (lowerCrossingTime_mono (Nat.succ_le_of_lt hij'))
-    · rw [gt_iff_lt] at hij'
-      rw [min_eq_right (upperCrossingTime_mono (Nat.succ_le_succ hij'.le) :
-        upperCrossingTime a b f N _ ω ≤ upperCrossingTime a b f N _ ω),
-        max_eq_left (lowerCrossingTime_mono hij'.le :
-          lowerCrossingTime a b f N _ _ ≤ lowerCrossingTime _ _ _ _ _ _)]
-      refine' le_trans upperCrossingTime_le_lowerCrossingTime
-        (lowerCrossingTime_mono (Nat.succ_le_of_lt hij'))
+  intro i _ j _ hij
+  simp only [Set.Ico_disjoint_Ico]
+  obtain hij' | hij' := lt_or_gt_of_ne hij
+  · rw [min_eq_left (upperCrossingTime_mono (Nat.succ_le_succ hij'.le) :
+      upperCrossingTime a b f N _ ω ≤ upperCrossingTime a b f N _ ω),
+      max_eq_right (lowerCrossingTime_mono hij'.le :
+        lowerCrossingTime a b f N _ _ ≤ lowerCrossingTime _ _ _ _ _ _)]
+    refine' le_trans upperCrossingTime_le_lowerCrossingTime
+      (lowerCrossingTime_mono (Nat.succ_le_of_lt hij'))
+  · rw [gt_iff_lt] at hij'
+    rw [min_eq_right (upperCrossingTime_mono (Nat.succ_le_succ hij'.le) :
+      upperCrossingTime a b f N _ ω ≤ upperCrossingTime a b f N _ ω),
+      max_eq_left (lowerCrossingTime_mono hij'.le :
+        lowerCrossingTime a b f N _ _ ≤ lowerCrossingTime _ _ _ _ _ _)]
+    refine' le_trans upperCrossingTime_le_lowerCrossingTime
+      (lowerCrossingTime_mono (Nat.succ_le_of_lt hij'))
 #align measure_theory.upcrossing_strat_le_one MeasureTheory.upcrossingStrat_le_one
 
 theorem Adapted.upcrossingStrat_adapted (hf : Adapted ℱ f) :
@@ -683,7 +683,8 @@ theorem crossing_pos_eq (hab : a < b) :
     rw [LatticeOrderedGroup.pos_nonpos_iff, sub_nonpos]
   induction' n with k ih
   · refine' ⟨rfl, _⟩
-    simp only [lowerCrossingTime_zero, hitting, Set.mem_Icc, Set.mem_Iic, Nat.zero_eq]
+    simp (config := { unfoldPartialApp := true }) only [lowerCrossingTime_zero, hitting,
+      Set.mem_Icc, Set.mem_Iic, Nat.zero_eq]
     ext ω
     split_ifs with h₁ h₂ h₂
     · simp_rw [hf']
@@ -699,7 +700,7 @@ theorem crossing_pos_eq (hab : a < b) :
       split_ifs with h₁ h₂ h₂
       · simp_rw [← sub_le_iff_le_add, hf ω]
       · refine' False.elim (h₂ _)
-        simp_all only [Set.mem_Ici]
+        simp_all only [Set.mem_Ici, not_true_eq_false]
       · refine' False.elim (h₁ _)
         simp_all only [Set.mem_Ici]
       · rfl
@@ -709,7 +710,7 @@ theorem crossing_pos_eq (hab : a < b) :
     split_ifs with h₁ h₂ h₂
     · simp_rw [hf' ω]
     · refine' False.elim (h₂ _)
-      simp_all only [Set.mem_Iic]
+      simp_all only [Set.mem_Iic, not_true_eq_false]
     · refine' False.elim (h₁ _)
       simp_all only [Set.mem_Iic]
     · rfl

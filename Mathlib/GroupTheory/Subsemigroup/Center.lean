@@ -56,19 +56,22 @@ structure IsMulCentral [Mul M] (z : M) : Prop where
   /-- associative property for right multiplication -/
   right_assoc (a b : M) : (a * b) * z = a * (b * z)
 
+attribute [mk_iff] IsMulCentral IsAddCentral
+attribute [to_additive existing] isMulCentral_iff
+
 namespace IsMulCentral
 
 variable {a b c : M} [Mul M]
 
 -- c.f. Commute.left_comm
 @[to_additive]
-protected theorem left_comm (h : IsMulCentral a) (b c) : a * (b * c) = b * (a * c) :=
-  by simp only [h.comm, h.right_assoc]
+protected theorem left_comm (h : IsMulCentral a) (b c) : a * (b * c) = b * (a * c) := by
+  simp only [h.comm, h.right_assoc]
 
 -- c.f. Commute.right_comm
 @[to_additive]
-protected theorem right_comm (h : IsMulCentral c) (a b) : a * b * c = a * c * b :=
-  by simp only [h.right_assoc, h.mid_assoc, h.comm]
+protected theorem right_comm (h : IsMulCentral c) (a b) : a * b * c = a * c * b := by
+  simp only [h.right_assoc, h.mid_assoc, h.comm]
 
 end IsMulCentral
 
@@ -185,9 +188,10 @@ theorem natCast_mem_center [NonAssocSemiring M] (n : ℕ) : (n : M) ∈ Set.cent
     | zero => rw [Nat.zero_eq, Nat.cast_zero, mul_zero, mul_zero, mul_zero]
     | succ n ihn => rw [Nat.cast_succ, mul_add, ihn, mul_add, mul_add, mul_one, mul_one]
 
+-- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem ofNat_mem_center [NonAssocSemiring M] (n : ℕ) [n.AtLeastTwo] :
-    OfNat.ofNat n ∈ Set.center M :=
+    (no_index (OfNat.ofNat n)) ∈ Set.center M :=
   natCast_mem_center M n
 
 @[simp]
@@ -228,9 +232,9 @@ theorem inv_mem_center [Group M] {a : M} (ha : a ∈ Set.center M) : a⁻¹ ∈ 
 theorem add_mem_center [Distrib M] {a b : M} (ha : a ∈ Set.center M) (hb : b ∈ Set.center M) :
     a + b ∈ Set.center M  where
   comm _ := by rw [add_mul, mul_add, ha.comm, hb.comm]
-  left_assoc _ _ := by rw [add_mul, ha.left_assoc, hb.left_assoc, ←add_mul, ←add_mul]
-  mid_assoc _ _ := by rw [mul_add, add_mul, ha.mid_assoc, hb.mid_assoc, ←mul_add, ←add_mul]
-  right_assoc _ _ := by rw [mul_add, ha.right_assoc, hb.right_assoc, ←mul_add, ←mul_add]
+  left_assoc _ _ := by rw [add_mul, ha.left_assoc, hb.left_assoc, ← add_mul, ← add_mul]
+  mid_assoc _ _ := by rw [mul_add, add_mul, ha.mid_assoc, hb.mid_assoc, ← mul_add, ← add_mul]
+  right_assoc _ _ := by rw [mul_add, ha.right_assoc, hb.right_assoc, ← mul_add, ← mul_add]
 #align set.add_mem_center Set.add_mem_center
 
 @[simp]
@@ -247,7 +251,7 @@ theorem subset_center_units [Monoid M] : ((↑) : Mˣ → M) ⁻¹' center M ⊆
   fun _ ha => by
   rw [_root_.Semigroup.mem_center_iff]
   intro _
-  rw [←Units.eq_iff, Units.val_mul, Units.val_mul, ha.comm]
+  rw [← Units.eq_iff, Units.val_mul, Units.val_mul, ha.comm]
 #align set.subset_center_units Set.subset_center_units
 #align set.subset_add_center_add_units Set.subset_addCenter_add_units
 

@@ -40,7 +40,7 @@ theorem nat_gcd_helper_2 (d x y a b : ℕ) (hu : x % d = 0) (hv : y % d = 0)
     (Int.coe_nat_dvd.mpr (Nat.dvd_of_mod_eq_zero hu))
     (Int.coe_nat_dvd.mpr (Nat.dvd_of_mod_eq_zero hv))
   rw [mul_neg, ← sub_eq_add_neg, sub_eq_iff_eq_add']
-  exact_mod_cast h
+  exact mod_cast h
 
 theorem nat_gcd_helper_1 (d x y a b : ℕ) (hu : x % d = 0) (hv : y % d = 0)
     (h : y * b = x * a + d) : Nat.gcd x y = d :=

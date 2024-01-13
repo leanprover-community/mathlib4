@@ -486,12 +486,12 @@ theorem mem_support_C_mul_X_pow {n a : ℕ} {c : R} (h : a ∈ support (C c * X 
 
 theorem card_support_C_mul_X_pow_le_one {c : R} {n : ℕ} : card (support (C c * X ^ n)) ≤ 1 := by
   rw [← card_singleton n]
-  apply card_le_of_subset (support_C_mul_X_pow' n c)
+  apply card_le_card (support_C_mul_X_pow' n c)
 #align polynomial.card_support_C_mul_X_pow_le_one Polynomial.card_support_C_mul_X_pow_le_one
 
 theorem card_supp_le_succ_natDegree (p : R[X]) : p.support.card ≤ p.natDegree + 1 := by
   rw [← Finset.card_range (p.natDegree + 1)]
-  exact Finset.card_le_of_subset supp_subset_range_natDegree_succ
+  exact Finset.card_le_card supp_subset_range_natDegree_succ
 #align polynomial.card_supp_le_succ_nat_degree Polynomial.card_supp_le_succ_natDegree
 
 theorem le_degree_of_mem_supp (a : ℕ) : a ∈ p.support → ↑a ≤ degree p :=
@@ -635,7 +635,7 @@ theorem degree_le_zero_iff : degree p ≤ 0 ↔ p = C (coeff p 0) :=
 #align polynomial.degree_le_zero_iff Polynomial.degree_le_zero_iff
 
 theorem degree_add_le (p q : R[X]) : degree (p + q) ≤ max (degree p) (degree q) := by
-  simpa only [degree, ←support_toFinsupp, toFinsupp_add]
+  simpa only [degree, ← support_toFinsupp, toFinsupp_add]
     using AddMonoidAlgebra.sup_support_add_le _ _ _
 #align polynomial.degree_add_le Polynomial.degree_add_le
 
@@ -749,6 +749,26 @@ theorem degree_add_eq_of_leadingCoeff_add_ne_zero (h : leadingCoeff p + leadingC
       rw [degree_add_eq_left_of_degree_lt hlt, max_eq_left_of_lt hlt]
 #align polynomial.degree_add_eq_of_leading_coeff_add_ne_zero Polynomial.degree_add_eq_of_leadingCoeff_add_ne_zero
 
+lemma natDegree_eq_of_natDegree_add_lt_left (p q : R[X])
+    (H : natDegree (p + q) < natDegree p) : natDegree p = natDegree q := by
+  by_contra h
+  cases Nat.lt_or_lt_of_ne h with
+  | inl h => exact lt_asymm h (by rwa [natDegree_add_eq_right_of_natDegree_lt h] at H)
+  | inr h =>
+    rw [natDegree_add_eq_left_of_natDegree_lt h] at H
+    exact LT.lt.false H
+
+lemma natDegree_eq_of_natDegree_add_lt_right (p q : R[X])
+    (H : natDegree (p + q) < natDegree q) : natDegree p = natDegree q :=
+  (natDegree_eq_of_natDegree_add_lt_left q p (add_comm p q ▸ H)).symm
+
+lemma natDegree_eq_of_natDegree_add_eq_zero (p q : R[X])
+    (H : natDegree (p + q) = 0) : natDegree p = natDegree q := by
+  by_cases h₁ : natDegree p = 0; by_cases h₂ : natDegree q = 0
+  · exact h₁.trans h₂.symm
+  · apply natDegree_eq_of_natDegree_add_lt_right; rwa [H, Nat.pos_iff_ne_zero]
+  · apply natDegree_eq_of_natDegree_add_lt_left; rwa [H, Nat.pos_iff_ne_zero]
+
 theorem degree_erase_le (p : R[X]) (n : ℕ) : degree (p.erase n) ≤ degree p := by
   rcases p with ⟨p⟩
   simp only [erase_def, degree, coeff, support]
@@ -784,7 +804,7 @@ theorem degree_sum_le (s : Finset ι) (f : ι → R[X]) :
 #align polynomial.degree_sum_le Polynomial.degree_sum_le
 
 theorem degree_mul_le (p q : R[X]) : degree (p * q) ≤ degree p + degree q := by
-  simpa only [degree, ←support_toFinsupp, toFinsupp_mul]
+  simpa only [degree, ← support_toFinsupp, toFinsupp_mul]
     using AddMonoidAlgebra.sup_support_mul_le (WithBot.coe_add _ _).le _ _
 #align polynomial.degree_mul_le Polynomial.degree_mul_le
 
@@ -937,7 +957,7 @@ theorem coeff_mul_degree_add_degree (p q : R[X]) :
               rw [coeff_eq_zero_of_degree_lt
                   (lt_of_le_of_lt degree_le_natDegree (WithBot.coe_lt_coe.2 this)),
                 mul_zero]
-            · by_contra' H'
+            · by_contra! H'
               exact
                 ne_of_lt (Nat.lt_of_lt_of_le (Nat.add_lt_add_right H j) (Nat.add_le_add_left H' _))
                   h₁

@@ -295,8 +295,8 @@ theorem coe_toEquiv_symm (e : R ≃+* S) : (e.symm : S ≃ R) = (e : R ≃ S).sy
   rfl
 #align ring_equiv.coe_to_equiv_symm RingEquiv.coe_toEquiv_symm
 
-theorem symm_bijective : Function.Bijective (RingEquiv.symm : R ≃+* S → S ≃+* R) :=
-  Equiv.bijective ⟨RingEquiv.symm, RingEquiv.symm, symm_symm, symm_symm⟩
+theorem symm_bijective : Function.Bijective (RingEquiv.symm : (R ≃+* S) → S ≃+* R) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 #align ring_equiv.symm_bijective RingEquiv.symm_bijective
 
 @[simp]

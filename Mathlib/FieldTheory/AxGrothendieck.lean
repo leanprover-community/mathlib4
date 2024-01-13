@@ -34,7 +34,6 @@ theorem ax_grothendieck_of_locally_finite {ι K R : Type*} [Field K] [Finite K] 
     [Finite ι] [Algebra K R] (alg : Algebra.IsAlgebraic K R) (ps : ι → MvPolynomial ι R)
     (hinj : Injective fun v i => MvPolynomial.eval v (ps i)) :
     Surjective fun v i => MvPolynomial.eval v (ps i) := by
-  have is_int : ∀ x : R, IsIntegral K x := fun x => isAlgebraic_iff_isIntegral.1 (alg x)
   classical
     intro v
     cases nonempty_fintype ι
@@ -49,7 +48,7 @@ theorem ax_grothendieck_of_locally_finite {ι K R : Type*} [Field K] [Finite K] 
         k ∈ (ps i).support → coeff k (ps i) ∈ Algebra.adjoin K (s : Set R) :=
       fun i k hk => Algebra.subset_adjoin
         (mem_union_left _ (mem_biUnion.2 ⟨i, mem_univ _, mem_image_of_mem _ hk⟩))
-    letI := isNoetherian_adjoin_finset s fun x _ => is_int x
+    letI := isNoetherian_adjoin_finset s fun x _ => alg.isIntegral x
     letI := Module.IsNoetherian.finite K (Algebra.adjoin K (s : Set R))
     letI : Finite (Algebra.adjoin K (s : Set R)) :=
       FiniteDimensional.finite_of_finite K (Algebra.adjoin K (s : Set R))

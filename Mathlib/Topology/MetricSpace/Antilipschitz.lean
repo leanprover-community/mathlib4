@@ -78,7 +78,7 @@ theorem mul_le_nndist (hf : AntilipschitzWith K f) (x y : α) :
 #align antilipschitz_with.mul_le_nndist AntilipschitzWith.mul_le_nndist
 
 theorem mul_le_dist (hf : AntilipschitzWith K f) (x y : α) :
-    (K⁻¹ * dist x y : ℝ) ≤ dist (f x) (f y) := by exact_mod_cast hf.mul_le_nndist x y
+    (K⁻¹ * dist x y : ℝ) ≤ dist (f x) (f y) := mod_cast hf.mul_le_nndist x y
 #align antilipschitz_with.mul_le_dist AntilipschitzWith.mul_le_dist
 
 end AntilipschitzWith

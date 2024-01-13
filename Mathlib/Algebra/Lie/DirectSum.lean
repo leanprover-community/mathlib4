@@ -145,7 +145,7 @@ theorem lie_of [DecidableEq ι] {i j : ι} (x : L i) (y : L j) :
     ⁅of L i x, of L j y⁆ = if hij : i = j then of L i ⁅x, hij.symm.recOn y⁆ else 0 := by
   obtain rfl | hij := Decidable.eq_or_ne i j
   · simp only [lie_of_same L x y, dif_pos]
-  · simp only [lie_of_of_ne L hij x y, hij, dif_neg]
+  · simp only [lie_of_of_ne L hij x y, hij, dif_neg, dite_false]
 #align direct_sum.lie_of DirectSum.lie_of
 
 instance lieAlgebra : LieAlgebra R (⨁ i, L i) :=
@@ -170,7 +170,7 @@ def lieAlgebraOf [DecidableEq ι] (j : ι) : L j →ₗ⁅R⁆ ⨁ i, L i :=
         -- with `simp [of, singleAddHom]`
         simp only [of, singleAddHom, bracket_apply]
         erw [AddHom.coe_mk, single_apply, single_apply]
-        simp [h]
+        simp? [h] says simp only [h, dite_eq_ite, ite_true, single_apply]
         intros
         erw [single_add]
       · -- This used to be the end of the proof before leanprover/lean4#2644
@@ -204,7 +204,7 @@ variable {R L ι}
 then this map is a morphism of Lie algebras. -/
 @[simps]
 def toLieAlgebra [DecidableEq ι] (L' : Type w₁) [LieRing L'] [LieAlgebra R L']
-    (f : ∀ i, L i →ₗ⁅R⁆ L') (hf : ∀ i j : ι, i ≠ j → ∀ (x : L i) (y : L j), ⁅f i x, f j y⁆ = 0) :
+    (f : ∀ i, L i →ₗ⁅R⁆ L') (hf : Pairwise fun i j => ∀ (x : L i) (y : L j), ⁅f i x, f j y⁆ = 0) :
     (⨁ i, L i) →ₗ⁅R⁆ L' :=
   { toModule R ι L' fun i => (f i : L i →ₗ[R] L') with
     toFun := toModule R ι L' fun i => (f i : L i →ₗ[R] L')
@@ -234,7 +234,7 @@ def toLieAlgebra [DecidableEq ι] (L' : Type w₁) [LieRing L'] [LieAlgebra R L'
       · simp_rw [lie_of_same, toAddMonoid_of, LinearMap.toAddMonoidHom_coe, LieHom.coe_toLinearMap,
           LieHom.map_lie]
       · simp_rw [lie_of_of_ne _ hij.symm, map_zero,  LinearMap.toAddMonoidHom_coe,
-          LieHom.coe_toLinearMap, hf j i hij.symm x y] }
+          LieHom.coe_toLinearMap, hf hij.symm x y] }
 #align direct_sum.to_lie_algebra DirectSum.toLieAlgebra
 
 end Algebras

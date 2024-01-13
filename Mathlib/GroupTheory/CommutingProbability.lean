@@ -49,16 +49,16 @@ theorem commProb_def :
 #align comm_prob_def commProb_def
 
 theorem commProb_prod (M' : Type*) [Mul M'] : commProb (M × M') = commProb M * commProb M' := by
-  simp_rw [commProb_def, div_mul_div_comm, Nat.card_prod, Nat.cast_mul, mul_pow, ←Nat.cast_mul,
-    ←Nat.card_prod, Commute, SemiconjBy, Prod.ext_iff]
+  simp_rw [commProb_def, div_mul_div_comm, Nat.card_prod, Nat.cast_mul, mul_pow, ← Nat.cast_mul,
+    ← Nat.card_prod, Commute, SemiconjBy, Prod.ext_iff]
   congr 2
   exact Nat.card_congr ⟨fun x => ⟨⟨⟨x.1.1.1, x.1.2.1⟩, x.2.1⟩, ⟨⟨x.1.1.2, x.1.2.2⟩, x.2.2⟩⟩,
     fun x => ⟨⟨⟨x.1.1.1, x.2.1.1⟩, ⟨x.1.1.2, x.2.1.2⟩⟩, ⟨x.1.2, x.2.2⟩⟩, fun x => rfl, fun x => rfl⟩
 
 theorem commProb_pi (i : α → Type*) [Fintype α] [∀ a, Mul (i a)] :
     commProb (∀ a, i a) = ∏ a, commProb (i a) := by
-  simp_rw [commProb_def, Finset.prod_div_distrib, Finset.prod_pow, ←Nat.cast_prod,
-    ←Nat.card_pi, Commute, SemiconjBy, Function.funext_iff]
+  simp_rw [commProb_def, Finset.prod_div_distrib, Finset.prod_pow, ← Nat.cast_prod,
+    ← Nat.card_pi, Commute, SemiconjBy, Function.funext_iff]
   congr 2
   exact Nat.card_congr ⟨fun x a => ⟨⟨x.1.1 a, x.1.2 a⟩, x.2 a⟩, fun x => ⟨⟨fun a => (x a).1.1,
     fun a => (x a).1.2⟩, fun a => (x a).2⟩, fun x => rfl, fun x => rfl⟩
@@ -209,13 +209,13 @@ theorem commProb_reciprocal (n : ℕ) :
   rcases Nat.even_or_odd n with h2 | h2
   · have := div_two_lt h0
     rw [reciprocalFactors_even h0 h2, commProb_cons, commProb_reciprocal (n / 2),
-        commProb_odd (by norm_num)]
+        commProb_odd (by decide)]
     field_simp [h0, h2.two_dvd]
     norm_num
   · have := div_four_lt h0 h1
     rw [reciprocalFactors_odd h1 h2, commProb_cons, commProb_reciprocal (n / 4 + 1)]
     have key : n % 4 = 1 ∨ n % 4 = 3 := Nat.odd_mod_four_iff.mp (Nat.odd_iff.mp h2)
-    have hn : Odd (n % 4) := by rcases key with h | h <;> rw [h] <;> norm_num
+    have hn : Odd (n % 4) := by rcases key with h | h <;> rw [h] <;> decide
     rw [commProb_odd (hn.mul h2), div_mul_div_comm, mul_one, div_eq_div_iff, one_mul] <;> norm_cast
     · have h0 : (n % 4) ^ 2 + 3 = n % 4 * 4 := by rcases key with h | h <;> rw [h] <;> norm_num
       have h1 := (Nat.div_add_mod n 4).symm

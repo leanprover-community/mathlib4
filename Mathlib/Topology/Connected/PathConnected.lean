@@ -172,11 +172,14 @@ def symm (γ : Path x y) : Path y x where
 #align path.symm Path.symm
 
 @[simp]
-theorem symm_symm {γ : Path x y} : γ.symm.symm = γ := by
+theorem symm_symm (γ : Path x y) : γ.symm.symm = γ := by
   ext t
   show γ (σ (σ t)) = γ t
   rw [unitInterval.symm_symm]
 #align path.symm_symm Path.symm_symm
+
+theorem symm_bijective : Function.Bijective (Path.symm : Path x y → Path y x) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
 @[simp]
 theorem refl_symm {a : X} : (Path.refl a).symm = Path.refl a := by
@@ -212,7 +215,7 @@ instance topologicalSpace : TopologicalSpace (Path x y) :=
   TopologicalSpace.induced ((↑) : _ → C(I, X)) ContinuousMap.compactOpen
 
 theorem continuous_eval : Continuous fun p : Path x y × I => p.1 p.2 :=
-  continuous_eval'.comp <| (continuous_induced_dom (α := Path x y)).prod_map continuous_id
+  continuous_eval.comp <| (continuous_induced_dom (α := Path x y)).prod_map continuous_id
 #align path.continuous_eval Path.continuous_eval
 
 @[continuity]
@@ -957,13 +960,13 @@ theorem isPathConnected_iff_eq : IsPathConnected F ↔ ∃ x ∈ F, pathComponen
 #align is_path_connected_iff_eq isPathConnected_iff_eq
 
 theorem IsPathConnected.joinedIn (h : IsPathConnected F) :
-    ∀ (x) (_ : x ∈ F) (y) (_ : y ∈ F), JoinedIn F x y := fun _x x_in _y y_in =>
+    ∀ᵉ (x ∈ F) (y ∈ F), JoinedIn F x y := fun _x x_in _y y_in =>
   let ⟨_b, _b_in, hb⟩ := h
   (hb x_in).symm.trans (hb y_in)
 #align is_path_connected.joined_in IsPathConnected.joinedIn
 
 theorem isPathConnected_iff :
-    IsPathConnected F ↔ F.Nonempty ∧ ∀ (x) (_ : x ∈ F) (y) (_ : y ∈ F), JoinedIn F x y :=
+    IsPathConnected F ↔ F.Nonempty ∧ ∀ᵉ (x ∈ F) (y ∈ F), JoinedIn F x y :=
   ⟨fun h =>
     ⟨let ⟨b, b_in, _hb⟩ := h; ⟨b, b_in⟩, h.joinedIn⟩,
     fun ⟨⟨b, b_in⟩, h⟩ => ⟨b, b_in, fun x_in => h _ b_in _ x_in⟩⟩
@@ -988,7 +991,7 @@ nonrec theorem Inducing.isPathConnected_iff {f : X → Y} (hf : Inducing f) :
     IsPathConnected F ↔ IsPathConnected (f '' F) := by
   refine ⟨fun hF ↦ hF.image hf.continuous, fun hF ↦ ?_⟩
   simp? [isPathConnected_iff] at hF ⊢ says
-    simp only [isPathConnected_iff, nonempty_image_iff, mem_image, forall_exists_index,
+    simp only [isPathConnected_iff, image_nonempty, mem_image, forall_exists_index,
       and_imp, forall_apply_eq_imp_iff₂] at hF ⊢
   refine ⟨hF.1, fun x hx y hy ↦ ?_⟩
   rcases hF.2 x hx y hy with ⟨γ, hγ⟩
@@ -1118,9 +1121,9 @@ theorem IsPathConnected.exists_path_through_family' {n : ℕ}
 joined by a continuous path. -/
 class PathConnectedSpace (X : Type*) [TopologicalSpace X] : Prop where
   /-- A path-connected space must be nonempty. -/
-  Nonempty : Nonempty X
+  nonempty : Nonempty X
   /-- Any two points in a path-connected space must be joined by a continuous path. -/
-  Joined : ∀ x y : X, Joined x y
+  joined : ∀ x y : X, Joined x y
 #align path_connected_space PathConnectedSpace
 
 theorem pathConnectedSpace_iff_zerothHomotopy :
@@ -1130,7 +1133,7 @@ theorem pathConnectedSpace_iff_zerothHomotopy :
   · intro h
     refine' ⟨(nonempty_quotient_iff _).mpr h.1, ⟨_⟩⟩
     rintro ⟨x⟩ ⟨y⟩
-    exact Quotient.sound (PathConnectedSpace.Joined x y)
+    exact Quotient.sound (PathConnectedSpace.joined x y)
   · unfold ZerothHomotopy
     rintro ⟨h, h'⟩
     skip
@@ -1143,7 +1146,7 @@ variable [PathConnectedSpace X]
 
 /-- Use path-connectedness to build a path between two points. -/
 def somePath (x y : X) : Path x y :=
-  Nonempty.some (Joined x y)
+  Nonempty.some (joined x y)
 #align path_connected_space.some_path PathConnectedSpace.somePath
 
 end PathConnectedSpace
@@ -1165,11 +1168,11 @@ theorem isPathConnected_iff_pathConnectedSpace : IsPathConnected F ↔ PathConne
 theorem pathConnectedSpace_iff_univ : PathConnectedSpace X ↔ IsPathConnected (univ : Set X) := by
   constructor
   · intro h
-    haveI := @PathConnectedSpace.Nonempty X _ _
+    haveI := @PathConnectedSpace.nonempty X _ _
     inhabit X
     refine' ⟨default, mem_univ _, _⟩
     intros y _hy
-    simpa using PathConnectedSpace.Joined default y
+    simpa using PathConnectedSpace.joined default y
   · intro h
     have h' := h.joinedIn
     cases' h with x h
@@ -1196,8 +1199,8 @@ instance Quotient.instPathConnectedSpace {s : Setoid X} [PathConnectedSpace X] :
 /-- This is a special case of `NormedSpace.instPathConnectedSpace` (and
 `TopologicalAddGroup.pathConnectedSpace`). It exists only to simplify dependencies. -/
 instance Real.instPathConnectedSpace : PathConnectedSpace ℝ where
-  Nonempty := inferInstance
-  Joined := fun x y ↦ ⟨⟨⟨fun (t : I) ↦ (1 - t) * x + t * y, by continuity⟩, by simp, by simp⟩⟩
+  joined x y := ⟨⟨⟨fun (t : I) ↦ (1 - t) * x + t * y, by continuity⟩, by simp, by simp⟩⟩
+  nonempty := inferInstance
 
 theorem pathConnectedSpace_iff_eq : PathConnectedSpace X ↔ ∃ x : X, pathComponent x = univ := by
   simp [pathConnectedSpace_iff_univ, isPathConnected_iff_eq]

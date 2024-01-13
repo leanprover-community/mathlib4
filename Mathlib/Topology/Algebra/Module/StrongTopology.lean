@@ -110,10 +110,9 @@ theorem strongTopology.embedding_coeFn [UniformSpace F] [UniformAddGroup F] (�
 theorem strongUniformity.uniformAddGroup [UniformSpace F] [UniformAddGroup F] (𝔖 : Set (Set E)) :
     @UniformAddGroup (E →SL[σ] F) (strongUniformity σ F 𝔖) _ := by
   letI : UniformSpace (E →SL[σ] F) := strongUniformity σ F 𝔖
-  rw [strongUniformity, UniformSpace.replaceTopology_eq]
   let φ : (E →SL[σ] F) →+ E →ᵤ[𝔖] F :=
     ⟨⟨(FunLike.coe : (E →SL[σ] F) → E →ᵤ[𝔖] F), rfl⟩, fun _ _ => rfl⟩
-  exact uniformAddGroup_comap φ
+  exact (strongUniformity.uniformEmbedding_coeFn _ _ _).uniformAddGroup φ
 #align continuous_linear_map.strong_uniformity.uniform_add_group ContinuousLinearMap.strongUniformity.uniformAddGroup
 
 theorem strongTopology.topologicalAddGroup [TopologicalSpace F] [TopologicalAddGroup F]
@@ -172,6 +171,21 @@ theorem strongTopology.hasBasis_nhds_zero [TopologicalSpace F] [TopologicalAddGr
   strongTopology.hasBasis_nhds_zero_of_basis σ F 𝔖 h𝔖₁ h𝔖₂ (𝓝 0).basis_sets
 #align continuous_linear_map.strong_topology.has_basis_nhds_zero ContinuousLinearMap.strongTopology.hasBasis_nhds_zero
 
+theorem strongTopology.continuousConstSMul {M : Type*}
+    [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
+    [TopologicalSpace F] [TopologicalAddGroup F] [ContinuousConstSMul M F] (𝔖 : Set (Set E))
+    (h𝔖₁ : 𝔖.Nonempty) (h𝔖₂ : DirectedOn (· ⊆ ·) 𝔖) :
+    @ContinuousConstSMul M (E →SL[σ] F) (strongTopology σ F 𝔖) _ := by
+  letI := strongTopology σ F 𝔖
+  haveI : TopologicalAddGroup (E →SL[σ] F) := strongTopology.topologicalAddGroup σ F 𝔖
+  refine ⟨fun c ↦ continuous_of_continuousAt_zero (DistribSMul.toAddMonoidHom _ c) ?_⟩
+  have H₁ := strongTopology.hasBasis_nhds_zero σ F _ h𝔖₁ h𝔖₂
+  have H₂ : Filter.Tendsto (c • ·) (𝓝 0 : Filter F) (𝓝 0) :=
+    (continuous_const_smul c).tendsto' 0 _ (smul_zero _)
+  rw [ContinuousAt, map_zero, H₁.tendsto_iff H₁]
+  rintro ⟨s, t⟩ ⟨hs : s ∈ 𝔖, ht : t ∈ 𝓝 0⟩
+  exact ⟨(s, (c • ·) ⁻¹' t), ⟨hs, H₂ ht⟩, fun f  ↦ _root_.id⟩
+
 end General
 
 section BoundedSets
@@ -224,6 +238,13 @@ protected theorem hasBasis_nhds_zero [TopologicalSpace F] [TopologicalAddGroup F
       fun SV => { f : E →SL[σ] F | ∀ x ∈ SV.1, f x ∈ SV.2 } :=
   ContinuousLinearMap.hasBasis_nhds_zero_of_basis (𝓝 0).basis_sets
 #align continuous_linear_map.has_basis_nhds_zero ContinuousLinearMap.hasBasis_nhds_zero
+
+instance continuousConstSMul {M : Type*} [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
+    [TopologicalSpace F] [TopologicalAddGroup F] [ContinuousConstSMul M F] :
+    ContinuousConstSMul M (E →SL[σ] F) :=
+  strongTopology.continuousConstSMul σ F {S | Bornology.IsVonNBounded 𝕜₁ S}
+    ⟨∅, Bornology.isVonNBounded_empty 𝕜₁ E⟩
+    (directedOn_of_sup_mem fun _ _ => Bornology.IsVonNBounded.union)
 
 variable (G) [TopologicalSpace F] [TopologicalSpace G]
 

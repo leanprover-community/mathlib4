@@ -236,7 +236,7 @@ theorem iterate_commute (m n : ℕ) : Commute (fun f : α → α ↦ f^[m]) fun 
 #align function.iterate_commute Function.iterate_commute
 
 lemma iterate_add_eq_iterate (hf : Injective f) : f^[m + n] a = f^[n] a ↔ f^[m] a = a :=
-  Iff.trans (by rw [←iterate_add_apply, Nat.add_comm]) (hf.iterate n).eq_iff
+  Iff.trans (by rw [← iterate_add_apply, Nat.add_comm]) (hf.iterate n).eq_iff
 #align function.iterate_add_eq_iterate Function.iterate_add_eq_iterate
 
 alias ⟨iterate_cancel_of_add, _⟩ := iterate_add_eq_iterate

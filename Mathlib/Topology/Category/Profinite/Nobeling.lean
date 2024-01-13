@@ -90,7 +90,7 @@ def Proj : (I → Bool) → (I → Bool) :=
 @[simp]
 theorem continuous_proj :
     Continuous (Proj J : (I → Bool) → (I → Bool)) := by
-  dsimp [Proj]
+  dsimp (config := { unfoldPartialApp := true }) [Proj]
   apply continuous_pi
   intro i
   split
@@ -387,7 +387,7 @@ theorem eval_eq (l : Products I) (x : C) :
     push_neg at h
     convert h with i
     dsimp [LocallyConstant.evalMonoidHom, e]
-    simp only [ite_eq_right_iff]
+    simp only [ite_eq_right_iff, one_ne_zero]
 
 theorem evalFacProp {l : Products I} (J : I → Prop)
     (h : ∀ a, a ∈ l.val → J a) [∀ j, Decidable (J j)] :
@@ -677,8 +677,8 @@ theorem fin_comap_jointlySurjective
     (hC : IsClosed C)
     (f : LocallyConstant C ℤ) : ∃ (s : Finset I)
     (g : LocallyConstant (π C (· ∈ s)) ℤ), f = g.comap (ProjRestrict C (· ∈ s)) := by
-  obtain ⟨J, g, h⟩ := @Profinite.exists_locallyConstant (Finset I)ᵒᵖ _ _ _
-    (spanCone hC.isCompact) _
+  obtain ⟨J, g, h⟩ := @Profinite.exists_locallyConstant.{0, u, u} (Finset I)ᵒᵖ _ _ _
+    (spanCone hC.isCompact) ℤ
     (spanCone_isLimit hC.isCompact) f
   exact ⟨(Opposite.unop J), g, h⟩
 
@@ -883,7 +883,7 @@ theorem isClosed_proj (o : Ordinal) (hC : IsClosed C) : IsClosed (π C (ord I ·
 
 theorem contained_proj (o : Ordinal) : contained (π C (ord I · < o)) o := by
   intro x ⟨_, ⟨_, h⟩⟩ j hj
-  dsimp [Proj] at h
+  dsimp (config := { unfoldPartialApp := true }) [Proj] at h
   simp only [← congr_fun h j, Bool.ite_eq_true_distrib, if_false_right_eq_and] at hj
   exact hj.1
 
@@ -1024,7 +1024,7 @@ def range_equiv_smaller_toFun (o : Ordinal) (x : range (π C (ord I · < o))) : 
 
 theorem range_equiv_smaller_toFun_bijective (o : Ordinal) :
     Function.Bijective (range_equiv_smaller_toFun C o) := by
-  dsimp [range_equiv_smaller_toFun]
+  dsimp (config := { unfoldPartialApp := true }) [range_equiv_smaller_toFun]
   refine ⟨fun a b hab ↦ ?_, fun ⟨a, b, hb⟩ ↦ ?_⟩
   · ext1
     simp only [Subtype.mk.injEq] at hab
@@ -1232,7 +1232,7 @@ def SwapTrue : (I → Bool) → I → Bool :=
 
 theorem continuous_swapTrue  :
     Continuous (SwapTrue o : (I → Bool) → I → Bool) := by
-  dsimp [SwapTrue]
+  dsimp (config := { unfoldPartialApp := true }) [SwapTrue]
   apply continuous_pi
   intro i
   apply Continuous.comp'
@@ -1245,7 +1245,7 @@ theorem swapTrue_mem_C1 (f : π (C1 C ho) (ord I · < o)) :
     SwapTrue o f.val ∈ C1 C ho := by
   obtain ⟨f, g, hg, rfl⟩ := f
   convert hg
-  dsimp [SwapTrue]
+  dsimp (config := { unfoldPartialApp := true }) [SwapTrue]
   ext i
   split_ifs with h
   · rw [ord_term ho] at h
@@ -1367,13 +1367,11 @@ theorem succ_mono : CategoryTheory.Mono (ModuleCat.ofHom (πs C o)) := by
   exact injective_πs _ _
 
 theorem succ_exact :
-    CategoryTheory.Exact (ModuleCat.ofHom (πs C o)) (ModuleCat.ofHom (Linear_CC' C hsC ho)) := by
-  rw [ModuleCat.exact_iff]
-  ext f
-  rw [LinearMap.mem_ker, LinearMap.mem_range]
-  refine ⟨fun ⟨y, hy⟩ ↦ ?_, fun hf ↦ ?_⟩
-  · simpa only [ModuleCat.ofHom, ← hy] using CC_comp_zero _ _ _ y
-  · exact CC_exact _ hC _ ho hf
+    (ShortComplex.mk (ModuleCat.ofHom (πs C o)) (ModuleCat.ofHom (Linear_CC' C hsC ho))
+    (by ext; apply CC_comp_zero)).Exact := by
+  rw [ShortComplex.moduleCat_exact_iff]
+  intro f
+  exact CC_exact C hC hsC ho
 
 end ExactSequence
 
@@ -1639,7 +1637,7 @@ theorem maxTail_isGood (l : MaxProducts C ho)
     rw [Products.max_eq_o_cons_tail ho p hp.1 hp.2.1]
     rfl
   have hse := succ_exact C hC hsC ho
-  rw [ModuleCat.exact_iff] at hse
+  rw [ShortComplex.moduleCat_exact_iff_range_eq_ker] at hse
   dsimp [ModuleCat.ofHom] at hse
 
   -- Rewrite `this` using exact sequence manipulations to conclude that a term is in the range of
@@ -1754,8 +1752,8 @@ theorem GoodProducts.linearIndependentAux (μ : Ordinal) : P I μ := by
   have ho' : o < Ordinal.type (·<· : I → I → Prop) :=
     lt_of_lt_of_le (Order.lt_succ _) ho
   rw [linearIndependent_iff_sum C hsC ho']
-  refine ModuleCat.linearIndependent_leftExact ?_ ?_ (succ_mono C o) (succ_exact C hC hsC ho')
-      (square_commutes C ho')
+  refine' ModuleCat.linearIndependent_leftExact (succ_exact C hC hsC ho') ?_ ?_ (succ_mono C o)
+    (square_commutes C ho')
   · exact h (le_of_lt ho') (π C (ord I · < o)) (isClosed_proj C o hC) (contained_proj C o)
   · exact linearIndependent_comp_of_eval C hC hsC ho' (span (π C (ord I · < o))
       (isClosed_proj C o hC)) (h (le_of_lt ho') (C' C ho') (isClosed_C' C hC ho')
@@ -1797,7 +1795,7 @@ open Classical in
 /-- The map `Nobeling.ι` is a closed embedding. -/
 theorem Nobeling.embedding : ClosedEmbedding (Nobeling.ι S) := by
   apply Continuous.closedEmbedding
-  · dsimp [ι]
+  · dsimp (config := { unfoldPartialApp := true }) [ι]
     refine continuous_pi ?_
     intro C
     rw [← IsLocallyConstant.iff_continuous]
@@ -1814,9 +1812,9 @@ theorem Nobeling.embedding : ClosedEmbedding (Nobeling.ι S) := by
       simp only [Set.mem_preimage, Set.mem_singleton_iff, decide_eq_true_eq]
   · intro a b h
     by_contra hn
-    obtain ⟨C, hC, hh⟩ := exists_clopen_of_totally_separated hn
+    obtain ⟨C, hC, hh⟩ := exists_isClopen_of_totally_separated hn
     apply hh.2 ∘ of_decide_eq_true
-    dsimp [ι] at h
+    dsimp (config := { unfoldPartialApp := true }) [ι] at h
     rw [← congr_fun h ⟨C, hC⟩]
     exact decide_eq_true hh.1
 

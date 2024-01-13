@@ -124,10 +124,9 @@ theorem impl_cons_fst_zero (h) (w' : 0 < List.length ds) :
 
 theorem impl_length (d : {r : List δ // 0 < r.length}) (w : d.1.length = xs.length + 1) :
     (impl C xs y d).1.length = xs.length + 1 := by
-  induction xs generalizing d
-  · case nil =>
-    rfl
-  · case cons x xs ih =>
+  induction xs generalizing d with
+  | nil => rfl
+  | cons x xs ih =>
     dsimp [impl]
     match d, w with
     | ⟨d₁ :: d₂ :: ds, _⟩, w =>
@@ -164,14 +163,14 @@ variable {C}
 
 theorem suffixLevenshtein_length (xs : List α) (ys : List β) :
     (suffixLevenshtein C xs ys).1.length = xs.length + 1 := by
-  induction ys
-  · case nil =>
+  induction ys with
+  | nil =>
     dsimp [suffixLevenshtein]
-    induction xs
-    · case nil => rfl
-    · case cons _ xs ih =>
+    induction xs with
+    | nil => rfl
+    | cons _ xs ih =>
       simp_all
-  · case cons y ys ih =>
+  | cons y ys ih =>
     dsimp [suffixLevenshtein]
     rw [impl_length]
     exact ih
@@ -229,10 +228,10 @@ theorem suffixLevenshtein_cons₁
     suffixLevenshtein C (x :: xs) ys =
       ⟨levenshtein C (x :: xs) ys ::
         (suffixLevenshtein C xs ys).1, by simp⟩ := by
-  induction ys
-  · case nil =>
+  induction ys with
+  | nil =>
     dsimp [levenshtein, suffixLevenshtein]
-  · case cons y ys ih =>
+  | cons y ys ih =>
     apply suffixLevenshtein_cons₁_aux
     · rfl
     · rw [suffixLevenshtein_cons₂ (x :: xs), ih, impl_cons]
@@ -265,10 +264,10 @@ theorem suffixLevenshtein_cons_cons_fst_get_zero
 
 theorem suffixLevenshtein_eq_tails_map (xs ys) :
     (suffixLevenshtein C xs ys).1 = xs.tails.map fun xs' => levenshtein C xs' ys := by
-  induction xs
-  · case nil =>
+  induction xs with
+  | nil =>
     simp only [List.map, suffixLevenshtein_nil']
-  · case cons x xs ih =>
+  | cons x xs ih =>
     simp only [List.map, suffixLevenshtein_cons₁, ih]
 
 @[simp]
@@ -278,7 +277,7 @@ theorem levenshtein_nil_nil : levenshtein C [] [] = 0 := by
 @[simp]
 theorem levenshtein_nil_cons (y) (ys) :
     levenshtein C [] (y :: ys) = C.insert y + levenshtein C [] ys := by
-  dsimp [levenshtein, suffixLevenshtein, impl]
+  dsimp (config := { unfoldPartialApp := true }) [levenshtein, suffixLevenshtein, impl]
   congr
   rw [List.getLast_eq_get]
   congr

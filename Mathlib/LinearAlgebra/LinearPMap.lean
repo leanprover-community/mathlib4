@@ -30,8 +30,6 @@ They are also the basis for the theory of unbounded operators.
 
 -/
 
-open Set
-
 universe u v w
 
 /-- A `LinearPMap R E F` or `E →ₗ.[R] F` is a linear map from a submodule of `E` to `F`. -/
@@ -85,7 +83,7 @@ theorem ext_iff {f g : E →ₗ.[R] F} :
     EQ ▸
       ⟨rfl, fun x y h => by
         congr
-        exact_mod_cast h⟩,
+        exact mod_cast h⟩,
     fun ⟨deq, feq⟩ => ext deq feq⟩
 #align linear_pmap.ext_iff LinearPMap.ext_iff
 
@@ -211,10 +209,10 @@ instance le : LE (E →ₗ.[R] F) :=
   ⟨fun f g => f.domain ≤ g.domain ∧ ∀ ⦃x : f.domain⦄ ⦃y : g.domain⦄ (_h : (x : E) = y), f x = g y⟩
 #align linear_pmap.has_le LinearPMap.le
 
-theorem apply_comp_ofLe {T S : E →ₗ.[R] F} (h : T ≤ S) (x : T.domain) :
-    T x = S (Submodule.ofLe h.1 x) :=
+theorem apply_comp_inclusion {T S : E →ₗ.[R] F} (h : T ≤ S) (x : T.domain) :
+    T x = S (Submodule.inclusion h.1 x) :=
   h.2 rfl
-#align linear_pmap.apply_comp_of_le LinearPMap.apply_comp_ofLe
+#align linear_pmap.apply_comp_of_le LinearPMap.apply_comp_inclusion
 
 theorem exists_of_le {T S : E →ₗ.[R] F} (h : T ≤ S) (x : T.domain) :
     ∃ y : S.domain, (x : E) = y ∧ T x = S y :=
@@ -243,7 +241,7 @@ def eqLocus (f g : E →ₗ.[R] F) : Submodule R E where
 #align linear_pmap.eq_locus LinearPMap.eqLocus
 
 instance inf : Inf (E →ₗ.[R] F) :=
-  ⟨fun f g => ⟨f.eqLocus g, f.toFun.comp <| ofLe fun _x hx => hx.fst⟩⟩
+  ⟨fun f g => ⟨f.eqLocus g, f.toFun.comp <| inclusion fun _x hx => hx.fst⟩⟩
 #align linear_pmap.has_inf LinearPMap.inf
 
 instance bot : Bot (E →ₗ.[R] F) :=
@@ -259,7 +257,7 @@ instance semilatticeInf : SemilatticeInf (E →ₗ.[R] F) where
   le_refl f := ⟨le_refl f.domain, fun x y h => Subtype.eq h ▸ rfl⟩
   le_trans := fun f g h ⟨fg_le, fg_eq⟩ ⟨gh_le, gh_eq⟩ =>
     ⟨le_trans fg_le gh_le, fun x z hxz =>
-      have hxy : (x : E) = ofLe fg_le x := rfl
+      have hxy : (x : E) = inclusion fg_le x := rfl
       (fg_eq hxy).trans (gh_eq <| hxy.symm.trans hxz)⟩
   le_antisymm f g fg gf := eq_of_le_of_domain_eq fg (le_antisymm fg.1 gf.1)
   inf := (· ⊓ ·)
@@ -460,8 +458,8 @@ section Add
 instance instAdd : Add (E →ₗ.[R] F) :=
   ⟨fun f g =>
     { domain := f.domain ⊓ g.domain
-      toFun := f.toFun.comp (ofLe (inf_le_left : f.domain ⊓ g.domain ≤ _))
-        + g.toFun.comp (ofLe (inf_le_right : f.domain ⊓ g.domain ≤ _)) }⟩
+      toFun := f.toFun.comp (inclusion (inf_le_left : f.domain ⊓ g.domain ≤ _))
+        + g.toFun.comp (inclusion (inf_le_right : f.domain ⊓ g.domain ≤ _)) }⟩
 
 theorem add_domain (f g : E →ₗ.[R] F) : (f + g).domain = f.domain ⊓ g.domain := rfl
 
@@ -535,8 +533,8 @@ section Sub
 instance instSub : Sub (E →ₗ.[R] F) :=
   ⟨fun f g =>
     { domain := f.domain ⊓ g.domain
-      toFun := f.toFun.comp (ofLe (inf_le_left : f.domain ⊓ g.domain ≤ _))
-        - g.toFun.comp (ofLe (inf_le_right : f.domain ⊓ g.domain ≤ _)) }⟩
+      toFun := f.toFun.comp (inclusion (inf_le_left : f.domain ⊓ g.domain ≤ _))
+        - g.toFun.comp (inclusion (inf_le_right : f.domain ⊓ g.domain ≤ _)) }⟩
 
 theorem sub_domain (f g : E →ₗ.[R] F) : (f - g).domain = f.domain ⊓ g.domain := rfl
 
@@ -607,7 +605,7 @@ end
 
 private theorem sSup_aux (c : Set (E →ₗ.[R] F)) (hc : DirectedOn (· ≤ ·) c) :
     ∃ f : ↥(sSup (domain '' c)) →ₗ[R] F, (⟨_, f⟩ : E →ₗ.[R] F) ∈ upperBounds c := by
-  cases' c.eq_empty_or_nonempty with ceq cne
+  rcases c.eq_empty_or_nonempty with ceq | cne
   · subst c
     simp
   have hdir : DirectedOn (· ≤ ·) (domain '' c) :=
@@ -617,27 +615,27 @@ private theorem sSup_aux (c : Set (E →ₗ.[R] F)) (hc : DirectedOn (· ≤ ·)
     apply Classical.indefiniteDescription
     have := (mem_sSup_of_directed (cne.image _) hdir).1 x.2
     -- Porting note: + `← bex_def`
-    rwa [bex_image_iff, ← bex_def, SetCoe.exists'] at this
+    rwa [Set.bex_image_iff, ← bex_def, SetCoe.exists'] at this
   set f : ↥(sSup (domain '' c)) → F := fun x => (P x).val.val ⟨x, (P x).property⟩
   have f_eq : ∀ (p : c) (x : ↥(sSup (domain '' c))) (y : p.1.1) (_hxy : (x : E) = y),
       f x = p.1 y := by
     intro p x y hxy
     rcases hc (P x).1.1 (P x).1.2 p.1 p.2 with ⟨q, _hqc, hxq, hpq⟩
-    -- Porting note: `refine' ..; exacts [ofLe hpq.1 y, hxy, rfl]`
-    --               → `refine' .. <;> [skip; exact ofLe hpq.1 y; rfl]; exact hxy`
-    refine' (hxq.2 _).trans (hpq.2 _).symm <;> [skip; exact ofLe hpq.1 y; rfl]; exact hxy
+    -- Porting note: `refine' ..; exacts [inclusion hpq.1 y, hxy, rfl]`
+    --               → `refine' .. <;> [skip; exact inclusion hpq.1 y; rfl]; exact hxy`
+    refine' (hxq.2 _).trans (hpq.2 _).symm <;> [skip; exact inclusion hpq.1 y; rfl]; exact hxy
   refine' ⟨{ toFun := f.. }, _⟩
   · intro x y
     rcases hc (P x).1.1 (P x).1.2 (P y).1.1 (P y).1.2 with ⟨p, hpc, hpx, hpy⟩
-    set x' := ofLe hpx.1 ⟨x, (P x).2⟩
-    set y' := ofLe hpy.1 ⟨y, (P y).2⟩
+    set x' := inclusion hpx.1 ⟨x, (P x).2⟩
+    set y' := inclusion hpy.1 ⟨y, (P y).2⟩
     rw [f_eq ⟨p, hpc⟩ x x' rfl, f_eq ⟨p, hpc⟩ y y' rfl, f_eq ⟨p, hpc⟩ (x + y) (x' + y') rfl,
       map_add]
   · intro c x
     -- Porting note: `simp [..]` to `simp only [..]`, or timeouts.
     simp only [f_eq (P x).1 (c • x) (c • ⟨x, (P x).2⟩) rfl, ← map_smul, RingHom.id_apply]
   · intro p hpc
-    refine' ⟨le_sSup <| mem_image_of_mem domain hpc, fun x y hxy => Eq.symm _⟩
+    refine' ⟨le_sSup <| Set.mem_image_of_mem domain hpc, fun x y hxy => Eq.symm _⟩
     exact f_eq ⟨p, hpc⟩ _ _ hxy.symm
 
 protected noncomputable def sSup (c : Set (E →ₗ.[R] F)) (hc : DirectedOn (· ≤ ·) c) : E →ₗ.[R] F :=
@@ -735,7 +733,7 @@ theorem coprod_apply (f : E →ₗ.[R] G) (g : F →ₗ.[R] G) (x) :
 
 /-- Restrict a partially defined linear map to a submodule of `E` contained in `f.domain`. -/
 def domRestrict (f : E →ₗ.[R] F) (S : Submodule R E) : E →ₗ.[R] F :=
-  ⟨S ⊓ f.domain, f.toFun.comp (Submodule.ofLe (by simp))⟩
+  ⟨S ⊓ f.domain, f.toFun.comp (Submodule.inclusion (by simp))⟩
 #align linear_pmap.dom_restrict LinearPMap.domRestrict
 
 @[simp]
@@ -746,7 +744,7 @@ theorem domRestrict_domain (f : E →ₗ.[R] F) {S : Submodule R E} :
 
 theorem domRestrict_apply {f : E →ₗ.[R] F} {S : Submodule R E} ⦃x : ↥(S ⊓ f.domain)⦄ ⦃y : f.domain⦄
     (h : (x : E) = y) : f.domRestrict S x = f y := by
-  have : Submodule.ofLe (by simp) x = y := by
+  have : Submodule.inclusion (by simp) x = y := by
     ext
     simp [h]
   rw [← this]
@@ -791,7 +789,7 @@ theorem graph_map_fst_eq_domain (f : E →ₗ.[R] F) :
   · rcases h with ⟨x, hx, _⟩
     exact hx
   · use f ⟨x, h⟩
-    simp only [h, exists_prop]
+    simp only [h, exists_const]
 
 theorem graph_map_snd_eq_range (f : E →ₗ.[R] F) :
     f.graph.map (LinearMap.snd R E F) = LinearMap.range f.toFun := by ext; simp

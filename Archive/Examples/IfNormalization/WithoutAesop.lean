@@ -22,12 +22,6 @@ namespace IfExpr
 attribute [local simp] eval normalized hasNestedIf hasConstantIf hasRedundantIf disjoint vars
   List.disjoint max_add_add_right max_mul_mul_left Nat.lt_add_one_iff le_add_of_le_right
 
--- A copy of Lean's `decide_eq_true_eq` which unifies the `Decidable` instance
--- rather than finding it by typeclass search.
--- See https://github.com/leanprover/lean4/pull/2816
-@[simp] theorem decide_eq_true_eq' {i : Decidable p} : (@decide p i = true) = p :=
-  _root_.decide_eq_true_eq
-
 theorem eval_ite_ite' :
     (ite (ite a b c) d e).eval f = (ite a (ite b d e) (ite c d e)).eval f := by
   cases h : eval f a <;> simp_all
@@ -72,13 +66,13 @@ def normalize' (l : AList (fun _ : ℕ => Bool)) :
             refine ⟨fun _ => ?_, fun _ => ?_⟩
             · congr
               ext w
-              by_cases w = v <;> rename_i x
+              by_cases h : w = v <;> rename_i x
               · substs h
                 simp_all
               · simp_all
             · congr
               ext w
-              by_cases w = v <;> rename_i x
+              by_cases h : w = v <;> rename_i x
               · substs h
                 simp_all
               · simp_all
@@ -86,35 +80,33 @@ def normalize' (l : AList (fun _ : ℕ => Bool)) :
             refine ⟨fun _ => ?_, fun _ => ?_⟩
             · congr
               ext w
-              by_cases w = v <;> rename_i x
+              by_cases h : w = v <;> rename_i x
               · substs h
                 simp_all
               · simp_all
             · congr
               ext w
-              by_cases w = v <;> rename_i x
+              by_cases h : w = v <;> rename_i x
               · substs h
                 simp_all
               · simp_all
         · have := ht₃ v
           have := he₃ v
-          simp_all? says simp_all only [Option.elim, ne_eq, normalized, Bool.and_eq_true,
-              Bool.not_eq_true', AList.lookup_insert]
+          simp_all? says simp_all only [Option.elim, normalized, Bool.and_eq_true,
+              Bool.not_eq_true', AList.lookup_insert, imp_false]
           obtain ⟨⟨⟨tn, tc⟩, tr⟩, td⟩ := ht₂
           split <;> rename_i h'
           · subst h'
             simp_all
-          · simp_all? says simp_all only [ne_eq, hasNestedIf, Bool.or_self, hasConstantIf,
-              and_self, hasRedundantIf, Bool.or_false, beq_eq_false_iff_ne, not_false_eq_true,
-              disjoint, List.disjoint, Bool.and_true, Bool.and_eq_true, decide_eq_true_eq',
-              true_and]
-            constructor <;> assumption
+          · simp_all? says simp_all only [hasNestedIf, Bool.or_self, hasConstantIf, and_self,
+              hasRedundantIf, Bool.or_false, beq_eq_false_iff_ne, ne_eq, not_false_eq_true,
+              disjoint, List.disjoint, decide_True, Bool.and_self]
         · have := ht₃ w
           have := he₃ w
-          by_cases w = v
+          by_cases h : w = v
           · subst h; simp_all
-          · simp_all? says simp_all only [Option.elim, ne_eq, normalized, Bool.and_eq_true,
-              Bool.not_eq_true', not_false_eq_true, AList.lookup_insert_ne]
+          · simp_all? says simp_all only [Option.elim, normalized, Bool.and_eq_true,
+              Bool.not_eq_true', ne_eq, not_false_eq_true, AList.lookup_insert_ne]
             obtain ⟨⟨⟨en, ec⟩, er⟩, ed⟩ := he₂
             split at b <;> rename_i h'
             · subst h'; simp_all

@@ -81,14 +81,13 @@ instance covariantClass_swap_mul_lt [LT α] [Mul α]
 
 @[to_additive]
 instance orderedCommMonoid [OrderedCommMonoid α] : OrderedCommMonoid αᵒᵈ :=
-  { OrderDual.instPartialOrder α, OrderDual.instCommMonoid with
-    mul_le_mul_left := fun _ _ h c => mul_le_mul_left' h c }
+  { mul_le_mul_left := fun _ _ h c => mul_le_mul_left' h c }
 #align order_dual.ordered_comm_monoid OrderDual.orderedCommMonoid
 #align order_dual.ordered_add_comm_monoid OrderDual.orderedAddCommMonoid
 
 @[to_additive OrderDual.OrderedCancelAddCommMonoid.to_contravariantClass]
 instance OrderedCancelCommMonoid.to_contravariantClass [OrderedCancelCommMonoid α] :
-    ContravariantClass αᵒᵈ αᵒᵈ Mul.mul LE.le where
+    ContravariantClass αᵒᵈ αᵒᵈ HMul.hMul LE.le where
     -- Porting note: We need to specify the implicit arguments here because of
     -- https://github.com/leanprover/lean4/issues/1892
     -- We should be able to remove this after nightly-2022-11-30 arrives.
@@ -99,8 +98,7 @@ instance OrderedCancelCommMonoid.to_contravariantClass [OrderedCancelCommMonoid 
 
 @[to_additive]
 instance orderedCancelCommMonoid [OrderedCancelCommMonoid α] : OrderedCancelCommMonoid αᵒᵈ :=
-  { OrderDual.orderedCommMonoid, @OrderDual.instCancelCommMonoid α _ with
-    le_of_mul_le_mul_left := fun _ _ _ : α => le_of_mul_le_mul_left' }
+  { le_of_mul_le_mul_left := fun _ _ _ : α => le_of_mul_le_mul_left' }
 
 @[to_additive]
 instance linearOrderedCancelCommMonoid [LinearOrderedCancelCommMonoid α] :

@@ -7,7 +7,7 @@ import Mathlib.Algebra.Module.LinearMap
 import Mathlib.LinearAlgebra.Basis.Bilinear
 import Mathlib.LinearAlgebra.BilinearMap
 import Mathlib.Algebra.EuclideanDomain.Instances
-import Mathlib.RingTheory.NonZeroDivisors
+import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 
 #align_import linear_algebra.sesquilinear_form from "leanprover-community/mathlib"@"87c54600fe3cdc7d32ff5b50873ac724d86aef8d"
 
@@ -274,7 +274,8 @@ theorem self_eq_zero (x : M₁) : B x x = 0 :=
 
 theorem neg (x y : M₁) : -B x y = B y x := by
   have H1 : B (y + x) (y + x) = 0 := self_eq_zero H (y + x)
-  simp [map_add, self_eq_zero H] at H1
+  simp? [map_add, self_eq_zero H] at H1 says
+    simp only [map_add, add_apply, self_eq_zero H, zero_add, add_zero] at H1
   rw [add_eq_zero_iff_neg_eq] at H1
   exact H1
 #align linear_map.is_alt.neg LinearMap.IsAlt.neg
@@ -368,7 +369,7 @@ theorem span_singleton_inf_orthogonal_eq_bot (B : V₁ →ₛₗ[J₁] V₁ →�
   rw [isOrtho_def, map_smulₛₗ, smul_eq_mul] at h
   exact Or.elim (zero_eq_mul.mp h.symm)
       (fun y ↦ by simpa using y)
-      (fun hfalse ↦ False.elim $ hx hfalse)
+      (fun hfalse ↦ False.elim <| hx hfalse)
 #align linear_map.span_singleton_inf_orthogonal_eq_bot LinearMap.span_singleton_inf_orthogonal_eq_bot
 
 -- ↓ This lemma only applies in fields since we use the `mul_eq_zero`

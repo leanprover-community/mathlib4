@@ -119,7 +119,7 @@ theorem exponent_eq_zero_of_order_zero {g : G} (hg : orderOf g = 0) : exponent G
 
 @[to_additive exponent_nsmul_eq_zero]
 theorem pow_exponent_eq_one (g : G) : g ^ exponent G = 1 := by
-  by_cases ExponentExists G
+  by_cases h : ExponentExists G
   · simp_rw [exponent, dif_pos h]
     exact (Nat.find_spec h).2 g
   · simp_rw [exponent, dif_neg h, pow_zero]
@@ -155,7 +155,7 @@ theorem exponent_min' (n : ℕ) (hpos : 0 < n) (hG : ∀ g : G, g ^ n = 1) : exp
 
 @[to_additive]
 theorem exponent_min (m : ℕ) (hpos : 0 < m) (hm : m < exponent G) : ∃ g : G, g ^ m ≠ 1 := by
-  by_contra' h
+  by_contra! h
   have hcon : exponent G ≤ m := exponent_min' m hpos h
   linarith
 #align monoid.exponent_min Monoid.exponent_min
@@ -236,6 +236,21 @@ theorem _root_.Nat.Prime.exists_orderOf_eq_pow_factorization_exponent {p : ℕ} 
 #align nat.prime.exists_order_of_eq_pow_factorization_exponent Nat.Prime.exists_orderOf_eq_pow_factorization_exponent
 #align nat.prime.exists_order_of_eq_pow_padic_val_nat_add_exponent Nat.Prime.exists_addOrderOf_eq_pow_padic_val_nat_add_exponent
 
+/-- A nontrivial monoid has prime exponent `p` if and only if every non-identity element has
+order `p`. -/
+@[to_additive]
+lemma exponent_eq_prime_iff {G : Type*} [Monoid G] [Nontrivial G] {p : ℕ} (hp : p.Prime) :
+    Monoid.exponent G = p ↔ ∀ g : G, g ≠ 1 → orderOf g = p := by
+  refine ⟨fun hG g hg ↦ ?_, fun h ↦ dvd_antisymm ?_ ?_⟩
+  · rw [Ne.def, ← orderOf_eq_one_iff] at hg
+    exact Eq.symm <| (hp.dvd_iff_eq hg).mp <| hG ▸ Monoid.order_dvd_exponent g
+  · apply Monoid.exponent_dvd_of_forall_pow_eq_one G p fun g ↦ ?_
+    by_cases hg : g = 1
+    · simp [hg]
+    · simpa [h g hg] using pow_orderOf_eq_one g
+  · obtain ⟨g, hg⟩ := exists_ne (1 : G)
+    simpa [h g hg] using Monoid.order_dvd_exponent g
+
 variable {G}
 
 @[to_additive]
@@ -256,7 +271,7 @@ theorem exponent_ne_zero_iff_range_orderOf_finite (h : ∀ g : G, 0 < orderOf g)
       rw [h, zero_dvd_iff] at this
       exact htpos.ne' this
     refine' exponent_dvd_of_forall_pow_eq_one _ _ fun g => _
-    rw [←pow_mod_orderOf, Nat.mod_eq_zero_of_dvd, pow_zero g]
+    rw [← pow_mod_orderOf, Nat.mod_eq_zero_of_dvd, pow_zero g]
     apply Finset.dvd_prod_of_mem
     rw [← Finset.mem_coe, ht]
     exact Set.mem_range_self g
@@ -314,7 +329,7 @@ theorem exponent_eq_iSup_orderOf (h : ∀ g : G, 0 < orderOf g) :
     apply order_dvd_exponent
   refine' Nat.dvd_of_factors_subperm he _
   rw [List.subperm_ext_iff]
-  by_contra' h
+  by_contra! h
   obtain ⟨p, hp, hpe⟩ := h
   replace hp := Nat.prime_of_mem_factors hp
   simp only [Nat.factors_count_eq] at hpe
@@ -374,6 +389,23 @@ end CancelCommMonoid
 
 end Monoid
 
+section Group
+
+@[to_additive AddGroup.one_lt_exponent]
+lemma Group.one_lt_exponent [Group G] [Finite G] [Nontrivial G] :
+    1 < Monoid.exponent G := by
+  let _inst := Fintype.ofFinite G
+  obtain ⟨g, hg⟩ := exists_ne (1 : G)
+  rw [← Monoid.lcm_order_eq_exponent]
+  have hg' : 2 ≤ orderOf g := Nat.lt_of_le_of_ne (orderOf_pos g) <| by
+    simpa [eq_comm, orderOf_eq_one_iff] using hg
+  refine hg'.trans <| Nat.le_of_dvd ?_ <| Finset.dvd_lcm (by simp)
+  rw [Nat.pos_iff_ne_zero, Ne.def, Finset.lcm_eq_zero_iff]
+  rintro ⟨x, -, hx⟩
+  exact (orderOf_pos x).ne' hx
+
+end Group
+
 section CommGroup
 
 open Subgroup
@@ -417,7 +449,7 @@ theorem Monoid.exponent_pi_eq_zero {ι : Type*} {M : ι → Type*} [∀ i, Monoi
     (hj : exponent (M j) = 0) : exponent ((i : ι) → M i) = 0 := by
   rw [@exponent_eq_zero_iff, ExponentExists] at hj ⊢
   push_neg at hj ⊢
-  peel hj with _ n hn
+  peel hj with n hn _
   obtain ⟨m, hm⟩ := this
   refine ⟨Pi.mulSingle j m, fun h ↦ hm ?_⟩
   simpa using congr_fun h j
@@ -428,7 +460,7 @@ theorem MonoidHom.exponent_dvd {F M₁ M₂ : Type*} [Monoid M₁] [Monoid M₂]
     {f : F} (hf : Function.Surjective f) : exponent M₂ ∣ exponent M₁ := by
   refine Monoid.exponent_dvd_of_forall_pow_eq_one M₂ _ fun m₂ ↦ ?_
   obtain ⟨m₁, rfl⟩ := hf m₂
-  rw [←map_pow, pow_exponent_eq_one, map_one]
+  rw [← map_pow, pow_exponent_eq_one, map_one]
 
 /-- The exponent of finite product of monoids is the `Finset.lcm` of the exponents of the
 constituent monoids. -/

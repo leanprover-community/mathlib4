@@ -97,7 +97,7 @@ theorem single_map_f_self (j : ι) {A B : V} (f : A ⟶ B) :
 lemma from_single_hom_ext {K : HomologicalComplex V c} {j : ι} {A : V}
     {f g : (single V c j).obj A ⟶ K} (hfg : f.f j = g.f j) : f = g := by
   ext i
-  by_cases i = j
+  by_cases h : i = j
   · subst h
     exact hfg
   · apply (isZero_single_obj_X c j A i h).eq_of_src
@@ -106,7 +106,7 @@ lemma from_single_hom_ext {K : HomologicalComplex V c} {j : ι} {A : V}
 lemma to_single_hom_ext {K : HomologicalComplex V c} {j : ι} {A : V}
     {f g : K ⟶ (single V c j).obj A} (hfg : f.f j = g.f j) : f = g := by
   ext i
-  by_cases i = j
+  by_cases h : i = j
   · subst h
     exact hfg
   · apply (isZero_single_obj_X c j A i h).eq_of_tgt
@@ -229,6 +229,7 @@ noncomputable def fromSingle₀Equiv (C : ChainComplex V ℕ) (X : V) :
   invFun f := HomologicalComplex.mkHomFromSingle f (fun i hi => by simp at hi)
   left_inv := by aesop_cat
   right_inv := by aesop_cat
+#align chain_complex.from_single₀_equiv ChainComplex.fromSingle₀Equiv
 
 @[simp]
 lemma fromSingle₀Equiv_symm_apply_f_zero

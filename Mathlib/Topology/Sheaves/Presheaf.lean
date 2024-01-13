@@ -55,6 +55,9 @@ variable {C}
 
 namespace Presheaf
 
+@[simp] theorem comp_app {P Q R : Presheaf C X} (f : P ⟶ Q) (g : Q ⟶ R) :
+    (f ≫ g).app U = f.app U ≫ g.app U := rfl
+
 -- Porting note: added an `ext` lemma,
 -- since `NatTrans.ext` can not see through the definition of `Presheaf`.
 -- See https://github.com/leanprover-community/mathlib4/issues/5229
@@ -243,7 +246,7 @@ set_option linter.uppercaseLean3 false in
 @[simp (high)]
 theorem id_hom_app' (U) (p) : (id ℱ).hom.app (op ⟨U, p⟩) = ℱ.map (𝟙 (op ⟨U, p⟩)) := by
   dsimp [id]
-  simp [CategoryStruct.comp]
+  simp
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward.id_hom_app' TopCat.Presheaf.Pushforward.id_hom_app'
 
@@ -343,7 +346,7 @@ def pullbackObjObjOfImageOpen {X Y : TopCat.{v}} (f : X ⟶ Y) (ℱ : Y.Presheaf
         · refine' (homOfLE _).op
           apply (Set.image_subset f s.pt.hom.unop.le).trans
           exact Set.image_preimage.l_u_le (SetLike.coe s.pt.left.unop)
-        · simp [eq_iff_true_of_subsingleton]
+        · simp [autoParam, eq_iff_true_of_subsingleton]
       -- porting note : add `fac`, `uniq` manually
       fac := fun _ _ => by ext; simp [eq_iff_true_of_subsingleton]
       uniq := fun _ _ _ => by ext; simp [eq_iff_true_of_subsingleton] }
@@ -454,7 +457,7 @@ theorem toPushforwardOfIso_app {X Y : TopCat} (H₁ : X ≅ Y) {ℱ : X.Presheaf
     Functor.id_obj, Functor.comp_obj, Iso.symm_hom, NatIso.op_inv, Iso.symm_inv, NatTrans.op_app,
     NatIso.ofComponents_hom_app, eqToIso.hom, eqToHom_op, Equivalence.Equivalence_mk'_unitInv,
     Equivalence.Equivalence_mk'_counitInv, NatIso.op_hom, unop_op, op_unop, eqToIso.inv,
-    NatIso.ofComponents_inv_app, eqToHom_unop, ←ℱ.map_comp, eqToHom_trans, eqToHom_map,
+    NatIso.ofComponents_inv_app, eqToHom_unop, ← ℱ.map_comp, eqToHom_trans, eqToHom_map,
     presheafEquivOfIso_unitIso_hom_app_app]
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.to_pushforward_of_iso_app TopCat.Presheaf.toPushforwardOfIso_app
@@ -474,7 +477,7 @@ theorem pushforwardToOfIso_app {X Y : TopCat} (H₁ : X ≅ Y) {ℱ : Y.Presheaf
     (pushforwardToOfIso H₁ H₂).app U =
       H₂.app (op ((Opens.map H₁.inv).obj (unop U))) ≫
         𝒢.map (eqToHom (by simp [Opens.map, Set.preimage_preimage])) := by
-  simp [pushforwardToOfIso, Equivalence.toAdjunction, CategoryStruct.comp]
+  simp [pushforwardToOfIso, Equivalence.toAdjunction]
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward_to_of_iso_app TopCat.Presheaf.pushforwardToOfIso_app
 

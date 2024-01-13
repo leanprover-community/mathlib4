@@ -52,13 +52,13 @@ universe u v u' v' u'' v''
 
 variable {V : Type u} [Quiver.{v + 1} V]
 
-/-- Shorthand for the "forward" arrow corresponding to `f` in `paths $ symmetrify V` -/
+/-- Shorthand for the "forward" arrow corresponding to `f` in `paths <| symmetrify V` -/
 abbrev _root_.Quiver.Hom.toPosPath {X Y : V} (f : X ⟶ Y) :
     (CategoryTheory.Paths.categoryPaths <| Quiver.Symmetrify V).Hom X Y :=
   f.toPos.toPath
 #align category_theory.groupoid.free.quiver.hom.to_pos_path Quiver.Hom.toPosPath
 
-/-- Shorthand for the "forward" arrow corresponding to `f` in `paths $ symmetrify V` -/
+/-- Shorthand for the "forward" arrow corresponding to `f` in `paths <| symmetrify V` -/
 abbrev _root_.Quiver.Hom.toNegPath {X Y : V} (f : X ⟶ Y) :
     (CategoryTheory.Paths.categoryPaths <| Quiver.Symmetrify V).Hom Y X :=
   f.toNeg.toPath
@@ -112,7 +112,7 @@ theorem congr_comp_reverse {X Y : Paths <| Quiver.Symmetrify V} (p : X ⟶ Y) :
       -- category notation
       change Quotient.CompClosure redStep (q ≫ Quiver.Path.reverse q)
         (Quiver.Path.cons q f ≫ (Quiver.Hom.toPath (Quiver.reverse f)) ≫ (Quiver.Path.reverse q))
-      simp only [←Category.assoc] at this ⊢
+      simp only [← Category.assoc] at this ⊢
       exact this
     · exact ih
 #align category_theory.groupoid.free.congr_comp_reverse CategoryTheory.Groupoid.Free.congr_comp_reverse

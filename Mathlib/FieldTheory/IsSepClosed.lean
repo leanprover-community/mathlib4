@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
 import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+import Mathlib.FieldTheory.Galois
 
 /-!
 # Separably Closed Field
@@ -25,23 +26,25 @@ and prove some of their properties.
 - `IsSepClosure.equiv` is a proof that any two separable closures of the
   same field are isomorphic.
 
+- `IsSepClosure.isAlgClosure_of_perfectField`, `IsSepClosure.of_isAlgClosure_of_perfectField`:
+  if `k` is a perfect field, then its separable closure coincides with its algebraic closure.
+
 ## Tags
 
 separable closure, separably closed
 
-## TODO
+## Related
 
-- Maximal separable subextension of `K/k`, consisting of all elements of `K` which are separable
-  over `k`.
+- `separableClosure`: maximal separable subextension of `K/k`, consisting of all elements of `K`
+  which are separable over `k`.
 
-- If `K` is a separably closed field containing `k`, then the maximal separable subextension
-  of `K/k` is a separable closure of `k`.
+- `separableClosure.isSepClosure`: if `K` is a separably closed field containing `k`, then the
+  maximal separable subextension of `K/k` is a separable closure of `k`.
 
-- In particular, a separable closure exists.
+- In particular, a separable closure (`SeparableClosure`) exists.
 
-- If `k` is a perfect field, then its separable closure coincides with its algebraic closure.
-
-- An algebraic extension of a separably closed field is purely inseparable.
+- `Algebra.IsAlgebraic.isPurelyInseparable_of_isSepClosed`: an algebraic extension of a separably
+  closed field is purely inseparable.
 
 -/
 
@@ -91,9 +94,16 @@ theorem exists_root [IsSepClosed k] (p : k[X]) (hp : p.degree ≠ 0) (hsep : p.S
     ∃ x, IsRoot p x :=
   exists_root_of_splits _ (IsSepClosed.splits_of_separable p hsep) hp
 
+variable (k) in
+/-- A separably closed perfect field is also algebraically closed. -/
+instance (priority := 100) isAlgClosed_of_perfectField [IsSepClosed k] [PerfectField k] :
+    IsAlgClosed k :=
+  IsAlgClosed.of_exists_root k fun p _ h ↦ exists_root p ((degree_pos_of_irreducible h).ne')
+    (PerfectField.separable_of_irreducible h)
+
 theorem exists_pow_nat_eq [IsSepClosed k] (x : k) (n : ℕ) [hn : NeZero (n : k)] :
     ∃ z, z ^ n = x := by
-  have hn' : 0 < n := Nat.pos_of_ne_zero <| fun h => by
+  have hn' : 0 < n := Nat.pos_of_ne_zero fun h => by
     rw [h, Nat.cast_zero] at hn
     exact hn.out rfl
   have : degree (X ^ n - C x) ≠ 0 := by
@@ -112,7 +122,7 @@ theorem exists_eq_mul_self [IsSepClosed k] (x : k) [h2 : NeZero (2 : k)] : ∃ z
 theorem roots_eq_zero_iff [IsSepClosed k] {p : k[X]} (hsep : p.Separable) :
     p.roots = 0 ↔ p = Polynomial.C (p.coeff 0) := by
   refine' ⟨fun h => _, fun hp => by rw [hp, roots_C]⟩
-  cases' le_or_lt (degree p) 0 with hd hd
+  rcases le_or_lt (degree p) 0 with hd | hd
   · exact eq_C_of_degree_le_zero hd
   · obtain ⟨z, hz⟩ := IsSepClosed.exists_root p hd.ne' hsep
     rw [← mem_roots (ne_zero_of_degree_gt hd), h] at hz
@@ -153,7 +163,7 @@ theorem degree_eq_one_of_irreducible [IsSepClosed k] {p : k[X]}
     (hp : Irreducible p) (hsep : p.Separable) : p.degree = 1 :=
   degree_eq_one_of_irreducible_of_splits hp (IsSepClosed.splits_codomain p hsep)
 
-variable {k}
+variable (K)
 
 theorem algebraMap_surjective
     [IsSepClosed k] [Algebra k K] [IsSeparable k K] :
@@ -170,6 +180,13 @@ theorem algebraMap_surjective
 
 end IsSepClosed
 
+/-- If `k` is separably closed, `K / k` is a field extension, `L / k` is an intermediate field
+which is separable, then `L` is equal to `k`. A corollary of `IsSepClosed.algebraMap_surjective`. -/
+theorem IntermediateField.eq_bot_of_isSepClosed_of_isSeparable [IsSepClosed k] [Algebra k K]
+    (L : IntermediateField k K) [IsSeparable k L] : L = ⊥ := bot_unique fun x hx ↦ by
+  obtain ⟨y, hy⟩ := IsSepClosed.algebraMap_surjective k L ⟨x, hx⟩
+  exact ⟨y, congr_arg (algebraMap L K) hy⟩
+
 variable (k) (K)
 
 /-- Typeclass for an extension being a separable closure. -/
@@ -180,6 +197,27 @@ class IsSepClosure [Algebra k K] : Prop where
 /-- A separably closed field is its separable closure. -/
 instance IsSepClosure.self_of_isSepClosed [IsSepClosed k] : IsSepClosure k k :=
   ⟨by assumption, isSeparable_self k⟩
+
+/-- If `K` is perfect and is a separable closure of `k`,
+then it is also an algebraic closure of `k`. -/
+instance (priority := 100) IsSepClosure.isAlgClosure_of_perfectField_top
+    [Algebra k K] [IsSepClosure k K] [PerfectField K] : IsAlgClosure k K :=
+  haveI : IsSepClosed K := IsSepClosure.sep_closed k
+  ⟨inferInstance, IsSepClosure.separable.isAlgebraic⟩
+
+/-- If `k` is perfect, `K` is a separable closure of `k`,
+then it is also an algebraic closure of `k`. -/
+instance (priority := 100) IsSepClosure.isAlgClosure_of_perfectField
+    [Algebra k K] [IsSepClosure k K] [PerfectField k] : IsAlgClosure k K :=
+  have halg : Algebra.IsAlgebraic k K := IsSepClosure.separable.isAlgebraic
+  haveI := halg.perfectField; inferInstance
+
+/-- If `k` is perfect, `K` is an algebraic closure of `k`,
+then it is also a separable closure of `k`. -/
+instance (priority := 100) IsSepClosure.of_isAlgClosure_of_perfectField
+    [Algebra k K] [IsAlgClosure k K] [PerfectField k] : IsSepClosure k K :=
+  ⟨haveI := IsAlgClosure.alg_closed (R := k) (K := K); inferInstance,
+    (IsAlgClosure.algebraic (R := k) (K := K)).isSeparable_of_perfectField⟩
 
 variable {k} {K}
 
@@ -192,22 +230,31 @@ namespace IsSepClosure
 instance isSeparable [Algebra k K] [IsSepClosure k K] : IsSeparable k K :=
   IsSepClosure.separable
 
-instance (priority := 100) normal [Algebra k K] [IsSepClosure k K] : Normal k K :=
-  ⟨fun x ↦ (IsSeparable.isIntegral' x).isAlgebraic k,
+instance (priority := 100) isGalois [Algebra k K] [IsSepClosure k K] : IsGalois k K where
+  to_isSeparable := IsSepClosure.separable
+  to_normal := ⟨fun x ↦ (IsSeparable.isIntegral k x).isAlgebraic,
     fun x ↦ (IsSepClosure.sep_closed k).splits_codomain _ (IsSeparable.separable k x)⟩
 
 end IsSepClosure
 
 namespace IsSepClosed
 
-variable {K : Type u} {L : Type v} {M : Type w} [Field K] [Field L] [Algebra K L] [Field M]
-  [Algebra K M] [IsSepClosed M] [IsSeparable K L]
+variable {K : Type u} (L : Type v) {M : Type w} [Field K] [Field L] [Algebra K L] [Field M]
+  [Algebra K M] [IsSepClosed M]
+
+theorem surjective_comp_algebraMap_of_isSeparable {E : Type*}
+    [Field E] [Algebra K E] [Algebra L E] [IsScalarTower K L E] [IsSeparable L E] :
+    Function.Surjective fun φ : E →ₐ[K] M ↦ φ.comp (IsScalarTower.toAlgHom K L E) :=
+  fun f ↦ IntermediateField.exists_algHom_of_splits' (E := E) f
+    fun s ↦ ⟨IsSeparable.isIntegral L s, IsSepClosed.splits_codomain _ <| IsSeparable.separable L s⟩
+
+variable [IsSeparable K L] {L}
 
 /-- A (random) homomorphism from a separable extension L of K into a separably
   closed extension M of K. -/
 noncomputable irreducible_def lift : L →ₐ[K] M :=
   Classical.choice <| IntermediateField.nonempty_algHom_of_adjoin_splits
-    (fun x _ ↦ ⟨IsSeparable.isIntegral' x, splits_codomain _ (IsSeparable.separable K x)⟩)
+    (fun x _ ↦ ⟨IsSeparable.isIntegral K x, splits_codomain _ (IsSeparable.separable K x)⟩)
     (IntermediateField.adjoin_univ K L)
 
 end IsSepClosed
