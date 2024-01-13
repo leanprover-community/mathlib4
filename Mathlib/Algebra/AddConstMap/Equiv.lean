@@ -85,7 +85,7 @@ def refl (a : G) : G ≃+c[a, a] G where
 @[simps! (config := { simpRhs := true }) toEquiv apply, pp_dot]
 def trans (e₁ : G ≃+c[a, b] H) (e₂ : H ≃+c[b, c] K) : G ≃+c[a, c] K where
   toEquiv := e₁.toEquiv.trans e₂.toEquiv
-  map_add_const' := (AddConstMapClass.semiconj e₁).comp_left (AddConstMapClass.semiconj e₂)
+  map_add_const' := (AddConstMapClass.semiconj e₁).trans (AddConstMapClass.semiconj e₂)
 
 @[simp] lemma trans_refl (e : G ≃+c[a, b] H) : e.trans (.refl b) = e := rfl
 @[simp] lemma refl_trans (e : G ≃+c[a, b] H) : (refl a).trans e = e := rfl
