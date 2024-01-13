@@ -810,7 +810,6 @@ theorem of_graph {f : α → ℕ} (h₁ : PrimrecBounded f)
   exact (Nat.findGreatest_spec (P := fun b => f n = b) (hg n) rfl).symm
 
 -- We show that division is primitive recursive by showing that the graph is
-set_option maxHeartbeats 400000 in
 theorem nat_div : Primrec₂ ((· / ·) : ℕ → ℕ → ℕ) := by
   refine of_graph ⟨_, fst, fun p => Nat.div_le_self _ _⟩ ?_
   have : PrimrecRel fun (a : ℕ × ℕ) (b : ℕ) => (a.2 = 0 ∧ b = 0) ∨
