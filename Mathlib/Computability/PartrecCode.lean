@@ -768,8 +768,8 @@ def evaln : ℕ → Code → ℕ → Option ℕ
         pure m
       else
         evaln k (rfind' cf) (Nat.pair a (m + 1))
-  termination_by evaln k c => (k, c)
-  decreasing_by { decreasing_with simp (config := { arith := true }) [Zero.zero]; done }
+  termination_by k c => (k, c)
+  decreasing_by all_goals { decreasing_with simp (config := { arith := true }) [Zero.zero]; done }
 #align nat.partrec.code.evaln Nat.Partrec.Code.evaln
 
 theorem evaln_bound : ∀ {k c n x}, x ∈ evaln k c n → n < k
@@ -935,6 +935,10 @@ private def lup (L : List (List (Option ℕ))) (p : ℕ × Code) (n : ℕ) := do
   let o ← l.get? n
   o
 
+-- This is a massive blow-out apparently caused by leanprover/lean4#3124.
+-- This is 32 times the usual limit!
+-- `set_option simprocs false` does not help.
+set_option maxHeartbeats 6400000 in
 private theorem hlup : Primrec fun p : _ × (_ × _) × _ => lup p.1 p.2.1 p.2.2 :=
   Primrec.option_bind
     (Primrec.list_get?.comp Primrec.fst (Primrec.encode.comp <| Primrec.fst.comp Primrec.snd))
@@ -972,6 +976,7 @@ private def G (L : List (List (Option ℕ))) : Option (List (Option ℕ)) :=
               let x ← lup L (k, cf) (Nat.pair z m)
               x.casesOn (some m) fun _ => lup L (k', c) (Nat.pair z (m + 1)))
 
+set_option maxHeartbeats 25600000 in
 private theorem hG : Primrec G := by
   have a := (Primrec.ofNat (ℕ × Code)).comp (Primrec.list_length (α := List (Option ℕ)))
   have k := Primrec.fst.comp a

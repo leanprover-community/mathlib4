@@ -551,11 +551,7 @@ theorem has_antideriv_at_fourier_neg (hT : Fact (0 < T)) {n : ℤ} (hn : n ≠ 0
       (fourier (-n) (x : AddCircle T)) x := by
   convert (hasDerivAt_fourier_neg T n x).div_const (-2 * π * I * n / T) using 1
   · ext1 y; rw [div_div_eq_mul_div]; ring
-  · rw [mul_div_cancel_left]
-    simp only [Ne.def, div_eq_zero_iff, neg_eq_zero, mul_eq_zero, bit0_eq_zero, one_ne_zero,
-      ofReal_eq_zero, false_or_iff, Int.cast_eq_zero, not_or]
-    norm_num
-    exact ⟨⟨⟨Real.pi_ne_zero, I_ne_zero⟩, hn⟩, hT.out.ne'⟩
+  · simp [mul_div_cancel_left, hn, (Fact.out : 0 < T).ne', Real.pi_pos.ne']
 #align has_antideriv_at_fourier_neg has_antideriv_at_fourier_neg
 
 /-- Express Fourier coefficients of `f` on an interval in terms of those of its derivative. -/

@@ -107,7 +107,7 @@ theorem congrArg_cast_hom_left {X Y Z : C} (p : X = Y) (q : Y ⟶ Z) :
   cases p
   simp
 
- /-- If we (perhaps unintentionally) perform equational rewriting on
+/-- If we (perhaps unintentionally) perform equational rewriting on
 the source object of a morphism,
 we can replace the resulting `_.mpr f` term by a composition with an `eqToHom`.
 
@@ -117,7 +117,7 @@ rather than relying on this lemma firing.
 theorem congrArg_mpr_hom_left {X Y Z : C} (p : X = Y) (q : Y ⟶ Z) :
     (congrArg (fun W : C => W ⟶ Z) p).mpr q = eqToHom p ≫ q := by
   cases p
-  simp
+  simp [eq_mpr_eq_cast]
 #align category_theory.congr_arg_mpr_hom_left CategoryTheory.congrArg_mpr_hom_left
 
 /- Porting note: simpNF complains about this not reducing but it is clearly used
@@ -139,7 +139,7 @@ rather than relying on this lemma firing.
 theorem congrArg_mpr_hom_right {X Y Z : C} (p : X ⟶ Y) (q : Z = Y) :
     (congrArg (fun W : C => X ⟶ W) q).mpr p = p ≫ eqToHom q.symm := by
   cases q
-  simp
+  simp [eq_mpr_eq_cast]
 #align category_theory.congr_arg_mpr_hom_right CategoryTheory.congrArg_mpr_hom_right
 
 /-- An equality `X = Y` gives us an isomorphism `X ≅ Y`.

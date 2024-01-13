@@ -652,7 +652,7 @@ theorem mul [CommSemiring R] {f g : ArithmeticFunction R} (hf : f.IsMultiplicati
   refine ⟨by simp [hf.1, hg.1], ?_⟩
   simp only [mul_apply]
   intro m n cop
-  rw [sum_mul_sum]
+  rw [sum_mul_sum, ← sum_product']
   symm
   apply sum_nbij fun ((i, j), k, l) ↦ (i * k, j * l)
   · rintro ⟨⟨a1, a2⟩, ⟨b1, b2⟩⟩ h

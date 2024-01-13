@@ -3,9 +3,9 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.GroupPower.Lemmas
-import Mathlib.Util.AssertExists
-import Mathlib.Data.Int.GCD
+import Mathlib.Algebra.GroupPower.Ring
+import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+import Mathlib.Data.Int.Order.Basic
 
 #align_import algebra.group_with_zero.power from "leanprover-community/mathlib"@"46a64b5b4268c594af770c44d9e502afc6a515cb"
 
@@ -172,24 +172,6 @@ theorem zpow_neg_mul_zpow_self (n : ℤ) {x : G₀} (h : x ≠ 0) : x ^ (-n) * x
   exact inv_mul_cancel (zpow_ne_zero n h)
 #align zpow_neg_mul_zpow_self zpow_neg_mul_zpow_self
 
-lemma Commute.exists_eq_pow_of_pow_eq_pow_of_coprime {a b : G₀} (h : Commute a b) {m n : ℕ}
-    (hmn : m.Coprime n) (hab : a ^ m = b ^ n) :
-    ∃ c, a = c ^ n ∧ b = c ^ m := by
-  by_cases hn : n = 0; · aesop
-  by_cases hm : m = 0; · aesop
-  by_cases hb : b = 0; exact ⟨0, by aesop⟩
-  by_cases ha : a = 0; exact ⟨0, by have := hab.symm; aesop⟩
-  use a ^ (Nat.gcdB m n) * b ^ (Nat.gcdA m n)
-  constructor
-  all_goals
-    refine (pow_one _).symm.trans ?_
-    conv_lhs => rw [← zpow_ofNat, ← hmn, Nat.gcd_eq_gcd_ab]
-    simp only [zpow_add₀ ha, zpow_add₀ hb, ← zpow_ofNat, (h.zpow_zpow₀ _ _).mul_zpow, ← zpow_mul,
-      mul_comm (Nat.gcdB m n), mul_comm (Nat.gcdA m n)]
-    simp only [zpow_mul, zpow_ofNat, hab]
-    refine ((Commute.pow_pow ?_ _ _).zpow_zpow₀ _ _).symm
-    aesop
-
 end ZPow
 
 section
@@ -202,16 +184,9 @@ theorem div_sq_cancel (a b : G₀) : a ^ 2 * b / a = a * b := by
   rw [sq, mul_assoc, mul_div_cancel_left _ ha]
 #align div_sq_cancel div_sq_cancel
 
-theorem pow_mem_range_pow_of_coprime {m n : ℕ} (hmn : m.Coprime n) (a : G₀) :
-    a ^ m ∈ Set.range (· ^ n : G₀ → G₀) ↔ a ∈ Set.range (· ^ n : G₀ → G₀) := by
-  constructor
-  · intro ⟨x, hx⟩
-    obtain ⟨c, rfl, rfl⟩ := (Commute.all x a).exists_eq_pow_of_pow_eq_pow_of_coprime hmn.symm hx
-    exact ⟨c, rfl⟩
-  · rintro ⟨x, rfl⟩
-    exact ⟨x ^ m, by simp [← pow_mul, mul_comm m n]⟩
-
 end
 
 -- Guard against import creep regression.
 assert_not_exists Int.bitwise_or
+assert_not_exists Set.range
+assert_not_exists Nat.gcdA

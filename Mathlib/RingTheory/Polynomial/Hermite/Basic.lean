@@ -172,7 +172,7 @@ theorem coeff_hermite_explicit :
       simp only
       -- Factor out (-1)'s.
       rw [mul_comm (↑k + _ : ℤ), sub_eq_add_neg]
-      nth_rw 3 [neg_eq_neg_one_mul]
+      nth_rw 4 [neg_eq_neg_one_mul]
       simp only [mul_assoc, ← mul_add, pow_succ]
       congr 2
       -- Factor out double factorials.
@@ -194,7 +194,7 @@ theorem coeff_hermite_explicit :
     · rw [coeff_hermite_explicit (n + 1) k]
     · rw [(by ring : 2 * (n + 1) + k = 2 * n + (k + 2)), coeff_hermite_explicit n (k + 2)]
 -- porting note: Lean 3 worked this out automatically
-termination_by _ n k => (n, k)
+termination_by n k => (n, k)
 #align polynomial.coeff_hermite_explicit Polynomial.coeff_hermite_explicit
 
 theorem coeff_hermite_of_even_add {n k : ℕ} (hnk : Even (n + k)) :

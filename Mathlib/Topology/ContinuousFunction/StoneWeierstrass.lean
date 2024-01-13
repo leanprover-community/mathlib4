@@ -111,7 +111,7 @@ theorem comp_attachBound_mem_closure (A : Subalgebra ℝ C(X, ℝ)) (f : A)
 #align continuous_map.comp_attach_bound_mem_closure ContinuousMap.comp_attachBound_mem_closure
 
 theorem abs_mem_subalgebra_closure (A : Subalgebra ℝ C(X, ℝ)) (f : A) :
-    (f : C(X, ℝ)).abs ∈ A.topologicalClosure := by
+    |(f : C(X, ℝ))| ∈ A.topologicalClosure := by
   let f' := attachBound (f : C(X, ℝ))
   let abs : C(Set.Icc (-‖f‖) ‖f‖, ℝ) := { toFun := fun x : Set.Icc (-‖f‖) ‖f‖ => |(x : ℝ)| }
   change abs.comp f' ∈ A.topologicalClosure
@@ -222,7 +222,7 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
     intro x z
     obtain ⟨y, ym, zm⟩ := Set.exists_set_mem_of_union_eq_top _ _ (ys_w x) z
     dsimp
-    simp only [Subtype.coe_mk, sup'_coe, Finset.sup'_apply, Finset.lt_sup'_iff]
+    simp only [Subtype.coe_mk, coe_sup', Finset.sup'_apply, Finset.lt_sup'_iff]
     exact ⟨y, ym, zm⟩
   have h_eq : ∀ x, (h x : X → ℝ) x = f x := by intro x; simp [w₁]
   -- For each `x`, we define `W x` to be `{z | h x z < f z + ε}`,
@@ -364,16 +364,14 @@ theorem Subalgebra.SeparatesPoints.isROrC_to_real {A : StarSubalgebra 𝕜 C(X, 
     simp only [coe_smul, coe_one, smul_apply, one_apply, Algebra.id.smul_eq_mul, mul_one,
       const_apply]
   -- Consider now the function `fun x ↦ |f x - f x₂| ^ 2`
-  refine' ⟨_, ⟨(⟨IsROrC.normSq, continuous_normSq⟩ : C(𝕜, ℝ)).comp F, _, rfl⟩, _⟩
+  refine' ⟨_, ⟨⟨(‖F ·‖ ^ 2), by continuity⟩, _, rfl⟩, _⟩
   · -- This is also an element of the subalgebra, and takes only real values
     rw [SetLike.mem_coe, Subalgebra.mem_comap]
     convert (A.restrictScalars ℝ).mul_mem hFA (star_mem hFA : star F ∈ A)
     ext1
-    exact (IsROrC.mul_conj (K := 𝕜) _).symm
+    simp [← IsROrC.mul_conj]
   · -- And it also separates the points `x₁`, `x₂`
-    have : f x₁ - f x₂ ≠ 0 := sub_ne_zero.mpr hf
-    simpa only [comp_apply, coe_sub, coe_const, sub_apply, coe_mk, sub_self, map_zero, Ne.def,
-      normSq_eq_zero, const_apply] using this
+    simpa using sub_ne_zero.mpr hf
 #align subalgebra.separates_points.is_R_or_C_to_real Subalgebra.SeparatesPoints.isROrC_to_real
 
 variable [CompactSpace X]

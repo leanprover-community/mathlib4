@@ -850,7 +850,7 @@ def strongInductionOn {p : Multiset α → Sort*} (s : Multiset α) (ih : ∀ s,
     p s :=
     (ih s) fun t _h =>
       strongInductionOn t ih
-termination_by _ => card s
+termination_by card s
 decreasing_by exact card_lt_card _h
 #align multiset.strong_induction_on Multiset.strongInductionOnₓ -- Porting note: reorderd universes
 
@@ -877,7 +877,7 @@ def strongDownwardInduction {p : Multiset α → Sort*} {n : ℕ}
     card s ≤ n → p s :=
   H s fun {t} ht _h =>
     strongDownwardInduction H t ht
-termination_by _ => n - card s
+termination_by n - card s
 decreasing_by exact (tsub_lt_tsub_iff_left_of_le ht).2 (card_lt_card _h)
 -- Porting note: reorderd universes
 #align multiset.strong_downward_induction Multiset.strongDownwardInductionₓ

@@ -739,7 +739,7 @@ def submoduleImage {M' : Type*} [AddCommMonoid M'] [Module R M'] {O : Submodule 
 @[simp]
 theorem mem_submoduleImage {M' : Type*} [AddCommMonoid M'] [Module R M'] {O : Submodule R M}
     {ϕ : O →ₗ[R] M'} {N : Submodule R M} {x : M'} :
-    x ∈ ϕ.submoduleImage N ↔ ∃ (y : _) (yO : y ∈ O) (_ : y ∈ N), ϕ ⟨y, yO⟩ = x := by
+    x ∈ ϕ.submoduleImage N ↔ ∃ (y : _) (yO : y ∈ O), y ∈ N ∧ ϕ ⟨y, yO⟩ = x := by
   refine' Submodule.mem_map.trans ⟨_, _⟩ <;> simp_rw [Submodule.mem_comap]
   · rintro ⟨⟨y, yO⟩, yN : y ∈ N, h⟩
     exact ⟨y, yO, yN, h⟩
@@ -1345,6 +1345,19 @@ theorem conj_id (e : M ≃ₗ[R] M₂) : e.conj LinearMap.id = LinearMap.id := b
   ext
   simp [conj_apply]
 #align linear_equiv.conj_id LinearEquiv.conj_id
+
+variable (M) in
+/-- An `R`-linear isomorphism between two `R`-modules `M₂` and `M₃` induces an `S`-linear
+isomorphism between `M₂ →ₗ[R] M` and `M₃ →ₗ[R] M`, if `M` is both an `R`-module and an
+`S`-module and their actions commute. -/
+def congrLeft {R} (S) [Semiring R] [Semiring S] [Module R M₂] [Module R M₃] [Module R M]
+    [Module S M] [SMulCommClass R S M] (e : M₂ ≃ₗ[R] M₃) : (M₂ →ₗ[R] M) ≃ₗ[S] (M₃ →ₗ[R] M) where
+  toFun f := f.comp e.symm.toLinearMap
+  invFun f := f.comp e.toLinearMap
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+  left_inv f := by dsimp only; apply FunLike.ext; exact (congr_arg f <| e.left_inv ·)
+  right_inv f := by dsimp only; apply FunLike.ext; exact (congr_arg f <| e.right_inv ·)
 
 end CommSemiring
 

@@ -63,7 +63,7 @@ def ack : ℕ → ℕ → ℕ
   | 0, n => n + 1
   | m + 1, 0 => ack m 1
   | m + 1, n + 1 => ack m (ack (m + 1) n)
-  termination_by ack m n => (m, n)
+  termination_by m n => (m, n)
 #align ack ack
 
 @[simp]
@@ -143,7 +143,7 @@ theorem ack_strictMono_right : ∀ m, StrictMono (ack m)
     rw [ack_succ_succ, ack_succ_succ]
     apply ack_strictMono_right _ (ack_strictMono_right _ _)
     rwa [add_lt_add_iff_right] at h
-  termination_by ack_strictMono_right m x y h => (m, x)
+  termination_by m x y h => (m, x)
 #align ack_strict_mono_right ack_strictMono_right
 
 theorem ack_mono_right (m : ℕ) : Monotone (ack m) :=
@@ -184,7 +184,7 @@ theorem add_lt_ack : ∀ m n, m + n < ack m n
         ack_mono_right m <| le_of_eq_of_le (by rw [succ_eq_add_one]; ring_nf)
         <| succ_le_of_lt <| add_lt_ack (m + 1) n
       _ = ack (m + 1) (n + 1) := (ack_succ_succ m n).symm
-  termination_by add_lt_ack m n => (m, n)
+  termination_by m n => (m, n)
 #align add_lt_ack add_lt_ack
 
 theorem add_add_one_le_ack (m n : ℕ) : m + n + 1 ≤ ack m n :=
@@ -214,7 +214,7 @@ private theorem ack_strict_mono_left' : ∀ {m₁ m₂} (n), m₁ < m₂ → ack
     exact
       (ack_strict_mono_left' _ <| (add_lt_add_iff_right 1).1 h).trans
         (ack_strictMono_right _ <| ack_strict_mono_left' n h)
-  termination_by ack_strict_mono_left' x y => (x, y)
+  termination_by _ m n => (m, n)
 
 theorem ack_strictMono_left (n : ℕ) : StrictMono fun m => ack m n := fun _m₁ _m₂ =>
   ack_strict_mono_left' n
