@@ -147,17 +147,9 @@ theorem BddBelow.mul {s t : Set M} (hs : BddBelow s) (ht : BddBelow t) : BddBelo
 
 @[to_additive]
 lemma BddAbove.range_mul {α : Type*} {f g : α → M} (hf : BddAbove (range f))
-    (hg : BddAbove (range g)) : BddAbove (range (fun x => f x * g x)) := by
-  rw [bddAbove_def] at hf hg ⊢
-  obtain ⟨Cf, hCf⟩ := hf
-  obtain ⟨Cg, hCg⟩ := hg
-  refine ⟨Cf * Cg, fun y hy => ?_⟩
-  rw [Set.mem_range] at hy
-  obtain ⟨y', hy'⟩ := hy
-  specialize hCf (f y') (by simp)
-  specialize hCg (g y') (by simp)
-  calc y = f y' * g y'  := hy'.symm
-       _ ≤ Cf * Cg := mul_le_mul' hCf hCg
+    (hg : BddAbove (range g)) : BddAbove (range (fun x => f x * g x)) :=
+  BddAbove.range_comp (f := fun x => (⟨f x, g x⟩ : M × M))
+    (bddAbove_range_prod.mpr ⟨hf, hg⟩) (Monotone.mul' monotone_fst monotone_snd)
 
 @[to_additive]
 lemma BddBelow.range_mul {α : Type*} {f g : α → M} (hf : BddBelow (range f))
