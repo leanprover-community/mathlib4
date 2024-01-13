@@ -844,8 +844,8 @@ theorem coeff_prod [DecidableEq σ]
     · apply Finset.sum_congr rfl
       · rintro ⟨u, v⟩ huv
         simp only [mem_antidiagonal] at huv
-        simp only [sum_map, Set.InjOn.embedding_apply, Finsupp.coe_update, ne_eq,
-          Function.update_same]
+        simp only [sum_map, Function.Embedding.coeFn_mk, coe_update]
+--        simp only [sum_map, Set.InjOn.embedding_apply, Finsupp.coe_update, ne_eq, Function.update_same]
         rw [ih, Finset.mul_sum, ← Finset.sum_attach]
         apply Finset.sum_congr rfl
         rintro ⟨x, hx⟩ _
@@ -864,7 +864,7 @@ theorem coeff_prod [DecidableEq σ]
       simp only [mem_map, mem_attach, true_and, Subtype.exists]
       rintro ⟨k, _, rfl⟩
       rintro ⟨l, _, hkl⟩
-      simp only [Set.InjOn.embedding, Function.Embedding.coeFn_mk, Set.restrict_apply] at hkl
+      simp only [Function.Embedding.coeFn_mk] at hkl
       rw [FunLike.ext_iff] at hkl
       specialize hkl a
       simp only [Finsupp.coe_update, Function.update_same] at hkl
@@ -2086,6 +2086,26 @@ variable {R : Type*} [CommSemiring R] {ι : Type*} [DecidableEq ι]
 -- Ugly proof, by rewriting as much as possible to use the case of
 -- multivariable power series
 
+/-
+example (a b c : ι) (h : a = b) : (a = c ↔ b = c) := by
+  exact Eq.congr h rfl
+
+example {α : Type*} [AddCommMonoid α]: (Unit → α) ≃+ α := by
+  exact AddEquiv.piUnique fun j ↦ α
+
+example {α : Type*} [AddCommMonoid α]: (Unit →₀ α) ≃+ α := by
+  have := AddEquiv.piUnique fun (j : Unit) ↦ α
+  apply AddEquiv.trans _ this
+
+  --  _ (AddEquiv.piUnique _)
+  sorry
+example (a b c : ℕ) :
+  ((fun₀ | (default : Unit) => a) = (fun₀ | default => b))
+  ↔ a = b := by
+  exact Finsupp.unique_single_eq_iff
+
+  -/
+
 /-- Coefficients of a product of power series -/
 theorem coeff_prod (f : ι → PowerSeries R) (d : ℕ) (s : Finset ι) :
     coeff R d (∏ j in s, f j) =
@@ -2094,7 +2114,34 @@ theorem coeff_prod (f : ι → PowerSeries R) (d : ℕ) (s : Finset ι) :
   simp only [PowerSeries.coeff]
   -- haveI : HasPiAntidiagonal ι (Unit →₀ ℕ) := HasAntidiagonal.HasPiAntidiagonal
   convert MvPowerSeries.coeff_prod f (fun₀ | () => d) s
-  have := Finset.HasAntidiagonal.mapRange_piAntidiagonal_eq
+-- maybe it would be better to have this in general
+  suffices this : piAntidiagonal s ((AddEquiv.symm AddEquiv.finsuppUnique) d) = piAntidiagonal s fun₀ | () => d
+  rw [← this]
+--  it would be nice to be able to apply Finset.sum_equiv
+  rw [← Finset.mapRange_piAntidiagonal_eq]
+  rw [Finset.sum_map]
+  apply Finset.sum_congr rfl
+  intro x _
+  apply Finset.prod_congr rfl
+  intro i _
+  simp only [AddEquiv.toEquiv_eq_coe, Finsupp.mapRange.addEquiv_toEquiv, AddEquiv.toEquiv_symm,
+    Equiv.coe_toEmbedding, Finsupp.mapRange.equiv_apply, AddEquiv.coe_toEquiv_symm,
+    Finsupp.mapRange_apply]
+  congr
+  ext
+  simp only [PUnit.default_eq_unit, Finsupp.single_eq_same]
+  rfl
+  · ext h
+    simp only [mem_piAntidiagonal, and_congr_right_iff]
+    intro _
+    rw [AddEquiv.eq_symm_apply]
+    rw [_root_.map_finsupp_sum]
+    rw [Finsupp.unique_single (Finsupp.sum h fun _ x ↦ x)]
+    rw [Finsupp.unique_single_eq_iff]
+    apply Eq.congr_left
+    exact Finsupp.sum_apply.symm
+/-  -- old proof
+  have := Finset.mapRange_piAntidiagonal_eq
     (e := AddEquiv.finsuppUnique (ι := Unit)) (s := s) (n := AddEquiv.finsuppUnique.symm d)
   simp only [AddEquiv.toEquiv_eq_coe, Finsupp.mapRange.addEquiv_toEquiv,
     AddEquiv.apply_symm_apply] at this
@@ -2112,7 +2159,7 @@ theorem coeff_prod (f : ι → PowerSeries R) (d : ℕ) (s : Finset ι) :
       Finsupp.mapRange_apply]
     ext
     simp only [PUnit.default_eq_unit, Finsupp.single_eq_same]
-    rfl
+    rfl -/
 
 end CommSemiring
 
