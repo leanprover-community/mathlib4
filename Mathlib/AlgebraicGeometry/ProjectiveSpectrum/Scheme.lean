@@ -1034,6 +1034,7 @@ lemma α_isLocallyFraction : isLocallyFraction 𝒜 |>.pred (α (m := m) s) := b
     ring_nf at eq1 ⊢
     exact eq1
 
+@[simps]
 def ringHom :
     (Spec (A⁰_ f)).presheaf.obj V ⟶ (φ _* (Proj| (pbo f)).presheaf).obj V where
   toFun s := ⟨α s, α_isLocallyFraction s⟩
@@ -1044,6 +1045,7 @@ def ringHom :
 
 end FromSpec
 
+@[simps]
 def fromSpec {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m) :
     (Spec (A⁰_ f)).presheaf ⟶
     (projIsoSpecTopComponent hm f_deg).hom  _* (Proj| (pbo f)).presheaf where
@@ -1346,6 +1348,9 @@ lemma section_eval_num_congr {x y} (h1 : x = y) : (s.1 y).num = (s.1 x).num := b
 lemma section_eval_den_congr {x y} (h1 : x = y) : (s.1 y).den = (s.1 x).den := by
   induction h1; rfl
 
+lemma section_eval_deg_congr {x y} (h1 : x = y) : (s.1 y).deg = (s.1 x).deg := by
+  induction h1; rfl
+
 end isLocallyFraction
 
 set_option maxHeartbeats 1000000 in
@@ -1433,6 +1438,7 @@ lemma β_isLocallyFraction : StructureSheaf.isLocallyFraction (A⁰_ f) |>.pred 
   conv_rhs => rw [eq0, eq0]
   ring
 
+@[simps]
 def ringHom : (φ _* (Proj| (pbo f)).presheaf).obj V ⟶ (Spec (A⁰_ f)).presheaf.obj V where
   toFun s := ⟨β m s, β_isLocallyFraction s⟩
   map_one' := Subtype.ext <| funext <| β_one
@@ -1442,11 +1448,92 @@ def ringHom : (φ _* (Proj| (pbo f)).presheaf).obj V ⟶ (Spec (A⁰_ f)).preshe
 
 end ToSpec
 
+@[simps]
 def toSpec {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m) :
     (projIsoSpecTopComponent hm f_deg).hom  _* (Proj| (pbo f)).presheaf ⟶
     (Spec (A⁰_ f)).presheaf where
   app V := ToSpec.ringHom (hm := ⟨hm⟩) (f_deg := ⟨f_deg⟩)
   naturality := by aesop_cat
+
+namespace FromSpecToSpec
+
+variable {𝒜}
+variable {m : ℕ} {f : A} [hm : Fact <| 0 < m] [f_deg : Fact <| f ∈ 𝒜 m]
+-- variable {V : (Opens <| Spec (A⁰_ f))ᵒᵖ}
+
+local notation "φ" => (projIsoSpecTopComponent hm.out f_deg.out).hom
+local notation "ψ" => (projIsoSpecTopComponent hm.out f_deg.out).inv
+
+variable (V : (Opens (Spec.T (A⁰_ f)))ᵒᵖ)
+variable (s : (φ _* (Proj| (pbo f)).presheaf).obj V)
+variable (x : ((@Opens.openEmbedding Proj.T (pbo f)).isOpenMap.functor.op.obj <|
+  Opens.map φ |>.op.obj V).unop)
+
+set_option maxHeartbeats 500000 in
+lemma α_toSpec_ringHom : FromSpec.α (ToSpec.ringHom s) x = s.1 x := by
+  rw [HomogeneousLocalization.ext_iff_val, FromSpec.val_α, HomogeneousLocalization.eq_num_div_den,
+    mk_eq_mk_iff, r_iff_exists]
+  have eq1 := FromSpec.eval_eq_num_div_den (ToSpec.ringHom s) x
+  rw [FromSpec.eval, ToSpec.ringHom_apply_coe, ToSpec.β, mk_eq_mk_iff, r_iff_exists] at eq1
+  obtain ⟨⟨C, hC⟩, eq1⟩ := eq1
+  dsimp at eq1 ⊢
+  rw [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.mul_val,
+    HomogeneousLocalization.mul_val, HomogeneousLocalization.mul_val,
+    HomogeneousLocalization.mul_val, HomogeneousLocalization.val_mk'',
+    HomogeneousLocalization.val_mk'', HomogeneousLocalization.eq_num_div_den,
+    HomogeneousLocalization.eq_num_div_den, HomogeneousLocalization.eq_num_div_den,
+    mk_mul, mk_mul, mk_mul, mk_mul, mk_eq_mk_iff, r_iff_exists] at eq1
+  obtain ⟨⟨_, ⟨L, rfl⟩⟩, eq1⟩ := eq1
+  simp only [Submonoid.mk_mul_mk] at eq1
+  erw [ToSpec.eval,
+    ToSpec.isLocallyFraction.section_eval_num_congr (hm := hm) (f_deg := f_deg) s
+      (x := x)
+      (y := ⟨ψ (φ ⟨x.1, FromSpec._mem_pbo _⟩) |>.1,
+        by rw [(projIsoSpecTopComponent hm.out f_deg.out).hom_inv_id_apply]; exact x.2⟩)
+      (h1 := by simp_rw [(projIsoSpecTopComponent hm.out f_deg.out).hom_inv_id_apply]; rfl),
+    ToSpec.isLocallyFraction.section_eval_den_congr (hm := hm) (f_deg := f_deg) s
+      (x := x)
+      (y := ⟨ψ (φ ⟨x.1, FromSpec._mem_pbo _⟩) |>.1,
+        by rw [(projIsoSpecTopComponent hm.out f_deg.out).hom_inv_id_apply]; exact x.2⟩)
+      (h1 := by simp_rw [(projIsoSpecTopComponent hm.out f_deg.out).hom_inv_id_apply]; rfl),
+    ToSpec.isLocallyFraction.section_eval_deg_congr (hm := hm) (f_deg := f_deg) s
+      (x := x)
+      (y := ⟨ψ (φ ⟨x.1, FromSpec._mem_pbo _⟩) |>.1,
+        by rw [(projIsoSpecTopComponent hm.out f_deg.out).hom_inv_id_apply]; exact x.2⟩)
+      (h1 := by simp_rw [(projIsoSpecTopComponent hm.out f_deg.out).hom_inv_id_apply]; rfl)] at eq1
+
+  refine ⟨⟨(f ^ L * C.den * f ^ (s.1 x).deg) * C.num * (s.1 x).den ^ m.pred, ?_⟩, ?_⟩
+  · intro rid
+    refine x.1.isPrime.mem_or_mem rid |>.elim ?_ ?_
+    · intro rid
+      rw [← C.den_mem.choose_spec, ← pow_add, ← pow_add] at rid
+      exact ProjIsoSpecTopComponent.ToSpec.pow_mul_num_not_mem_of_not_mem_carrier _ _ hC _ rid
+    · intro rid
+      exact (s.1 x).den_mem <| x.1.isPrime.mem_of_pow_mem _ rid
+  · have eq0 (x : A) : x^m = x * x^m.pred
+    · conv_lhs =>
+      rw [show m = (1 + m.pred) by rw [add_comm]; exact Nat.succ_pred_eq_of_pos hm.out |>.symm,
+        pow_add, pow_one]
+    dsimp
+    rw [show f ^ L * C.den * f ^ (s.1 x).deg * C.num * (s.1 x).den ^ Nat.pred m *
+      ((s.1 x).den *
+        ((FromSpec.eval_num (ToSpec.ringHom s) x).num *
+        (FromSpec.eval_den (ToSpec.ringHom s) x).den)) =
+      f^L * (C.den * ((FromSpec.eval_den (ToSpec.ringHom s) x).den * (f ^ (s.1 x).deg)) *
+        (C.num * ((s.1 x).den ^ m * (FromSpec.eval_num (ToSpec.ringHom s) x).num))) by
+      · rw [eq0]; ring, ← eq1]
+    ring
+
+end FromSpecToSpec
+
+variable {𝒜} in
+lemma fromSpecToSpec {m : ℕ} {f : A} (hm : 0 < m) (f_deg : f ∈ 𝒜 m) :
+    toSpec 𝒜 hm f_deg ≫ fromSpec 𝒜 hm f_deg = 𝟙 _  := by
+  ext V s
+  refine Subtype.ext <| funext fun x ↦ ?_
+  erw [comp_apply, fromSpec_app, id_apply, toSpec_app,
+    FromSpec.ringHom_apply_coe (hm := ⟨hm⟩) (f_deg := ⟨f_deg⟩)]
+  apply FromSpecToSpec.α_toSpec_ringHom (hm := ⟨hm⟩) (f_deg := ⟨f_deg⟩)
 
 end ProjIsoSpecSheafComponent
 
