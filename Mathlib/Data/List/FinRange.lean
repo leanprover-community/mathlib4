@@ -78,7 +78,7 @@ open List
 
 theorem Equiv.Perm.map_finRange_perm {n : ℕ} (σ : Equiv.Perm (Fin n)) :
     map σ (finRange n) ~ finRange n := by
-  rw [perm_ext ((nodup_finRange n).map σ.injective) <| nodup_finRange n]
+  rw [perm_ext_iff_of_nodup ((nodup_finRange n).map σ.injective) <| nodup_finRange n]
   simpa [mem_map, mem_finRange, true_and_iff, iff_true_iff] using σ.surjective
 #align equiv.perm.map_fin_range_perm Equiv.Perm.map_finRange_perm
 

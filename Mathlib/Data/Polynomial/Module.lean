@@ -409,14 +409,10 @@ theorem eval_map' (f : M →ₗ[R] M) (q : PolynomialModule R M) (r : R) :
   eval_map R f q r
 #align polynomial_module.eval_map' PolynomialModule.eval_map'
 
--- Porting note: Synthesized `RingHomCompTriple (RingHom.id R) (RingHom.id R) (RingHom.id R)`
--- in a very ugly way.
 /-- `comp p q` is the composition of `p : R[X]` and `q : M[X]` as `q(p(x))`.  -/
 @[simps!]
 noncomputable def comp (p : R[X]) : PolynomialModule R M →ₗ[R] PolynomialModule R M :=
-  @LinearMap.comp _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-    (@RingHomInvPair.triples _ _ _ _ _ _ RingHomInvPair.ids)
-    ((eval p).restrictScalars R) (map R[X] (lsingle R 0))
+  LinearMap.comp ((eval p).restrictScalars R) (map R[X] (lsingle R 0))
 #align polynomial_module.comp PolynomialModule.comp
 
 theorem comp_single (p : R[X]) (i : ℕ) (m : M) : comp p (single R i m) = p ^ i • single R 0 m := by

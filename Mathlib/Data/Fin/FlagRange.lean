@@ -33,7 +33,7 @@ theorem IsMaxChain.range_fin_of_covby (h0 : f 0 = ⊥) (hlast : f (.last n) = �
     IsMaxChain (· ≤ ·) (range f) := by
   have hmono : Monotone f := Fin.monotone_iff_le_succ.2 fun k ↦ (hcovby k).1
   refine ⟨hmono.isChain_range, fun t htc hbt ↦ hbt.antisymm fun x hx ↦ ?_⟩
-  rw [mem_range]; by_contra' h
+  rw [mem_range]; by_contra! h
   suffices ∀ k, f k < x by simpa [hlast] using this (.last _)
   intro k
   induction k using Fin.induction with

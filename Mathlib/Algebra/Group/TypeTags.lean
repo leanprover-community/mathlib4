@@ -142,13 +142,13 @@ instance [h : DecidableEq α] : DecidableEq (Multiplicative α) := h
 
 instance [h : DecidableEq α] : DecidableEq (Additive α) := h
 
-instance instNontrivialAdditive [Nontrivial α] : Nontrivial (Additive α) :=
+instance Additive.instNontrivial [Nontrivial α] : Nontrivial (Additive α) :=
   ofMul.injective.nontrivial
-#align additive.nontrivial instNontrivialAdditive
+#align additive.nontrivial Additive.instNontrivial
 
-instance instNontrivialMultiplicative [Nontrivial α] : Nontrivial (Multiplicative α) :=
+instance Multiplicative.instNontrivial [Nontrivial α] : Nontrivial (Multiplicative α) :=
   ofAdd.injective.nontrivial
-#align multiplicative.nontrivial instNontrivialMultiplicative
+#align multiplicative.nontrivial Multiplicative.instNontrivial
 
 instance Additive.add [Mul α] : Add (Additive α) where
   add x y := ofMul (toMul x * toMul y)

@@ -338,18 +338,18 @@ theorem Ico_filter_lt_of_le_right [DecidablePred (· < c)] (hcb : c ≤ b) :
   exact and_iff_left_of_imp fun h => h.2.trans_le hcb
 #align finset.Ico_filter_lt_of_le_right Finset.Ico_filter_lt_of_le_right
 
-theorem Ico_filter_le_of_le_left {a b c : α} [DecidablePred ((· ≤ ·) c)] (hca : c ≤ a) :
-    (Ico a b).filter ((· ≤ ·) c) = Ico a b :=
+theorem Ico_filter_le_of_le_left {a b c : α} [DecidablePred (c ≤ ·)] (hca : c ≤ a) :
+    (Ico a b).filter (c ≤ ·) = Ico a b :=
   filter_true_of_mem fun _ hx => hca.trans (mem_Ico.1 hx).1
 #align finset.Ico_filter_le_of_le_left Finset.Ico_filter_le_of_le_left
 
-theorem Ico_filter_le_of_right_le {a b : α} [DecidablePred ((· ≤ ·) b)] :
-    (Ico a b).filter ((· ≤ ·) b) = ∅ :=
+theorem Ico_filter_le_of_right_le {a b : α} [DecidablePred (b ≤ ·)] :
+    (Ico a b).filter (b ≤ ·) = ∅ :=
   filter_false_of_mem fun _ hx => (mem_Ico.1 hx).2.not_le
 #align finset.Ico_filter_le_of_right_le Finset.Ico_filter_le_of_right_le
 
-theorem Ico_filter_le_of_left_le {a b c : α} [DecidablePred ((· ≤ ·) c)] (hac : a ≤ c) :
-    (Ico a b).filter ((· ≤ ·) c) = Ico c b := by
+theorem Ico_filter_le_of_left_le {a b c : α} [DecidablePred (c ≤ ·)] (hac : a ≤ c) :
+    (Ico a b).filter (c ≤ ·) = Ico c b := by
   ext x
   rw [mem_filter, mem_Ico, mem_Ico, and_comm, and_left_comm]
   exact and_iff_right_of_imp fun h => hac.trans h.1
@@ -485,12 +485,12 @@ theorem _root_.Set.Infinite.not_bddBelow {s : Set α} : s.Infinite → ¬BddBelo
 
 variable [Fintype α]
 
-theorem filter_lt_eq_Ioi [DecidablePred ((· < ·) a)] : univ.filter ((· < ·) a) = Ioi a := by
+theorem filter_lt_eq_Ioi [DecidablePred (a < ·)] : univ.filter (a < ·) = Ioi a := by
   ext
   simp
 #align finset.filter_lt_eq_Ioi Finset.filter_lt_eq_Ioi
 
-theorem filter_le_eq_Ici [DecidablePred ((· ≤ ·) a)] : univ.filter ((· ≤ ·) a) = Ici a := by
+theorem filter_le_eq_Ici [DecidablePred (a ≤ ·)] : univ.filter (a ≤ ·) = Ici a := by
   ext
   simp
 #align finset.filter_le_eq_Ici Finset.filter_le_eq_Ici
@@ -1134,22 +1134,22 @@ theorem map_add_right_Ioo (a b c : α) :
 variable [DecidableEq α]
 
 @[simp]
-theorem image_add_left_Icc (a b c : α) : (Icc a b).image ((· + ·) c) = Icc (c + a) (c + b) := by
+theorem image_add_left_Icc (a b c : α) : (Icc a b).image (c + ·) = Icc (c + a) (c + b) := by
   rw [← map_add_left_Icc, map_eq_image, addLeftEmbedding, Embedding.coeFn_mk]
 #align finset.image_add_left_Icc Finset.image_add_left_Icc
 
 @[simp]
-theorem image_add_left_Ico (a b c : α) : (Ico a b).image ((· + ·) c) = Ico (c + a) (c + b) := by
+theorem image_add_left_Ico (a b c : α) : (Ico a b).image (c + ·) = Ico (c + a) (c + b) := by
   rw [← map_add_left_Ico, map_eq_image, addLeftEmbedding, Embedding.coeFn_mk]
 #align finset.image_add_left_Ico Finset.image_add_left_Ico
 
 @[simp]
-theorem image_add_left_Ioc (a b c : α) : (Ioc a b).image ((· + ·) c) = Ioc (c + a) (c + b) := by
+theorem image_add_left_Ioc (a b c : α) : (Ioc a b).image (c + ·) = Ioc (c + a) (c + b) := by
   rw [← map_add_left_Ioc, map_eq_image, addLeftEmbedding, Embedding.coeFn_mk]
 #align finset.image_add_left_Ioc Finset.image_add_left_Ioc
 
 @[simp]
-theorem image_add_left_Ioo (a b c : α) : (Ioo a b).image ((· + ·) c) = Ioo (c + a) (c + b) := by
+theorem image_add_left_Ioo (a b c : α) : (Ioo a b).image (c + ·) = Ioo (c + a) (c + b) := by
   rw [← map_add_left_Ioo, map_eq_image, addLeftEmbedding, Embedding.coeFn_mk]
 #align finset.image_add_left_Ioo Finset.image_add_left_Ioo
 
@@ -1208,7 +1208,7 @@ lemma transGen_wcovby_of_le [Preorder α] [LocallyFiniteOrder α] {x y : α} (hx
     obtain ⟨z, z_mem, hz⟩ := (Ico x y).exists_maximal h_non
     have z_card : (Icc x z).card <(Icc x y).card := calc
       (Icc x z).card ≤ (Ico x y).card :=
-        card_le_of_subset <| Icc_subset_Ico_right (mem_Ico.mp z_mem).2
+        card_le_card <| Icc_subset_Ico_right (mem_Ico.mp z_mem).2
       _              < (Icc x y).card := this
     have h₁ := transGen_wcovby_of_le (mem_Ico.mp z_mem).1
     have h₂ : z ⩿ y := by

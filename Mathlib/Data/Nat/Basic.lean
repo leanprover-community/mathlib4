@@ -560,21 +560,18 @@ theorem decreasingInduction_succ_left {P : ℕ → Sort*} (h : ∀ n, P (n + 1) 
 strictly below `(a,b)` to `P a b`, then we have `P n m` for all `n m : ℕ`.
 Note that for non-`Prop` output it is preferable to use the equation compiler directly if possible,
 since this produces equation lemmas. -/
+@[elab_as_elim]
 def strongSubRecursion {P : ℕ → ℕ → Sort*} (H : ∀ a b, (∀ x y, x < a → y < b → P x y) → P a b) :
     ∀ n m : ℕ, P n m
   | n, m => H n m fun x y _ _ => strongSubRecursion H x y
 #align nat.strong_sub_recursion Nat.strongSubRecursion
-
--- Porting note:
--- we can't put this on the definition itself because of
--- https://github.com/leanprover/lean4/issues/1900
-attribute [elab_as_elim] strongSubRecursion
 
 /-- Given `P : ℕ → ℕ → Sort*`, if we have `P i 0` and `P 0 i` for all `i : ℕ`,
 and for any `x y : ℕ` we can extend `P` from `(x,y+1)` and `(x+1,y)` to `(x+1,y+1)`
 then we have `P n m` for all `n m : ℕ`.
 Note that for non-`Prop` output it is preferable to use the equation compiler directly if possible,
 since this produces equation lemmas. -/
+@[elab_as_elim]
 def pincerRecursion {P : ℕ → ℕ → Sort*} (Ha0 : ∀ a : ℕ, P a 0) (H0b : ∀ b : ℕ, P 0 b)
     (H : ∀ x y : ℕ, P x y.succ → P x.succ y → P x.succ y.succ) : ∀ n m : ℕ, P n m
   | a, 0 => Ha0 a
@@ -582,11 +579,6 @@ def pincerRecursion {P : ℕ → ℕ → Sort*} (Ha0 : ∀ a : ℕ, P a 0) (H0b 
   | Nat.succ a, Nat.succ b => H _ _ (pincerRecursion Ha0 H0b H _ _) (pincerRecursion Ha0 H0b H _ _)
 termination_by pincerRecursion Ha0 Hab H n m => n + m
 #align nat.pincer_recursion Nat.pincerRecursion
-
--- Porting note:
--- we can't put this on the definition itself because of
--- https://github.com/leanprover/lean4/issues/1900
-attribute [elab_as_elim] pincerRecursion
 
 /-- Recursion starting at a non-zero number: given a map `C k → C (k+1)` for each `k ≥ n`,
 there is a map from `C n` to each `C m`, `n ≤ m`. -/
@@ -741,6 +733,10 @@ theorem mod_succ_eq_iff_lt {a b : ℕ} : a % b.succ = a ↔ a < b.succ :=
   mod_eq_iff_lt (succ_ne_zero _)
 #align nat.mod_succ_eq_iff_lt Nat.mod_succ_eq_iff_lt
 
+@[simp]
+theorem mod_succ (n : ℕ) : n % n.succ = n :=
+  Nat.mod_eq_of_lt (Nat.lt_succ_self _)
+
 -- Porting note `Nat.div_add_mod` is now in core.
 
 theorem mod_add_div' (m k : ℕ) : m % k + m / k * k = m := by
@@ -778,11 +774,14 @@ protected theorem mul_dvd_mul_iff_right {a b c : ℕ} (hc : 0 < c) : a * c ∣ b
   exists_congr fun d => by rw [Nat.mul_right_comm, mul_left_inj' hc.ne']
 #align nat.mul_dvd_mul_iff_right Nat.mul_dvd_mul_iff_right
 
+@[simp] -- TODO: move to Std4
+theorem dvd_one {a : ℕ} : a ∣ 1 ↔ a = 1 :=
+  ⟨eq_one_of_dvd_one, fun h ↦ h.symm ▸ Nat.dvd_refl _⟩
+#align nat.dvd_one Nat.dvd_one
+
 @[simp]
 theorem mod_mod_of_dvd (n : Nat) {m k : Nat} (h : m ∣ k) : n % k % m = n % m := by
-  conv =>
-  rhs
-  rw [← mod_add_div n k]
+  conv_rhs => rw [← mod_add_div n k]
   rcases h with ⟨t, rfl⟩
   rw [mul_assoc, add_mul_mod_self_left]
 #align nat.mod_mod_of_dvd Nat.mod_mod_of_dvd

@@ -241,8 +241,10 @@ theorem map_smul (r : R) (x : A₁) : e (r • x) = r • e x := by
   simp only [Algebra.smul_def, map_mul, commutes]
 #align alg_equiv.map_smul AlgEquiv.map_smul
 
-theorem map_sum {ι : Type*} (f : ι → A₁) (s : Finset ι) : e (∑ x in s, f x) = ∑ x in s, e (f x) :=
-  e.toAddEquiv.map_sum f s
+@[deprecated map_sum]
+nonrec theorem map_sum {ι : Type*} (f : ι → A₁) (s : Finset ι) :
+    e (∑ x in s, f x) = ∑ x in s, e (f x) :=
+  map_sum e f s
 #align alg_equiv.map_sum AlgEquiv.map_sum
 
 theorem map_finsupp_sum {α : Type*} [Zero α] {ι : Type*} (f : ι →₀ α) (g : ι → α → A₁) :
@@ -275,6 +277,10 @@ theorem coe_algHom : FunLike.coe (e.toAlgHom) = FunLike.coe e :=
 theorem coe_algHom_injective : Function.Injective ((↑) : (A₁ ≃ₐ[R] A₂) → A₁ →ₐ[R] A₂) :=
   fun _ _ h => ext <| AlgHom.congr_fun h
 #align alg_equiv.coe_alg_hom_injective AlgEquiv.coe_algHom_injective
+
+@[simp, norm_cast]
+lemma toAlgHom_toRingHom : ((e : A₁ →ₐ[R] A₂) : A₁ →+* A₂) = e :=
+  rfl
 
 /-- The two paths coercion can take to a `RingHom` are equivalent -/
 theorem coe_ringHom_commutes : ((e : A₁ →ₐ[R] A₂) : A₁ →+* A₂) = ((e : A₁ ≃+* A₂) : A₁ →+* A₂) :=
@@ -784,6 +790,37 @@ theorem algebraMap_eq_apply (e : A₁ ≃ₐ[R] A₂) {y : R} {x : A₁} :
   ⟨fun h => by simpa using e.symm.toAlgHom.algebraMap_eq_apply h, fun h =>
     e.toAlgHom.algebraMap_eq_apply h⟩
 #align alg_equiv.algebra_map_eq_apply AlgEquiv.algebraMap_eq_apply
+
+/-- `AlgEquiv.toLinearMap` as a `MonoidHom`. -/
+@[simps]
+def toLinearMapHom (R A) [CommSemiring R] [Semiring A] [Algebra R A] :
+    (A ≃ₐ[R] A) →* A →ₗ[R] A where
+  toFun := AlgEquiv.toLinearMap
+  map_one' := rfl
+  map_mul' := fun _ _ ↦ rfl
+
+lemma pow_toLinearMap (σ : A₁ ≃ₐ[R] A₁) (n : ℕ) :
+    (σ ^ n).toLinearMap = σ.toLinearMap ^ n :=
+  (AlgEquiv.toLinearMapHom R A₁).map_pow σ n
+
+@[simp]
+lemma one_toLinearMap :
+    (1 : A₁ ≃ₐ[R] A₁).toLinearMap = 1 := rfl
+
+/-- The units group of `S →ₐ[R] S` is `S ≃ₐ[R] S`.
+See `LinearMap.GeneralLinearGroup.generalLinearEquiv` for the linear map version. -/
+@[simps]
+def algHomUnitsEquiv (R S : Type*) [CommSemiring R] [Semiring S] [Algebra R S] :
+    (S →ₐ[R] S)ˣ ≃* (S ≃ₐ[R] S) where
+  toFun := fun f ↦
+    { (f : S →ₐ[R] S) with
+      invFun := ↑(f⁻¹)
+      left_inv := (fun x ↦ show (↑(f⁻¹ * f) : S →ₐ[R] S) x = x by rw [inv_mul_self]; rfl)
+      right_inv := (fun x ↦ show (↑(f * f⁻¹) : S →ₐ[R] S) x = x by rw [mul_inv_self]; rfl) }
+  invFun := fun f ↦ ⟨f, f.symm, f.comp_symm, f.symm_comp⟩
+  left_inv := fun _ ↦ rfl
+  right_inv := fun _ ↦ rfl
+  map_mul' := fun _ _ ↦ rfl
 
 end Semiring
 

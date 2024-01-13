@@ -59,7 +59,7 @@ theorem one_lt_zpow (ha : 1 < a) : ∀ n : ℤ, 0 < n → 1 < a ^ n
   | -[_+1], h => ((Int.negSucc_not_pos _).mp h).elim
 #align one_lt_zpow one_lt_zpow
 
-theorem zpow_strictMono (hx : 1 < a) : StrictMono ((· ^ ·) a : ℤ → α) :=
+theorem zpow_strictMono (hx : 1 < a) : StrictMono (a ^ · : ℤ → α) :=
   strictMono_int_of_lt_succ fun n =>
     have xpos : 0 < a := zero_lt_one.trans hx
     calc
@@ -67,7 +67,7 @@ theorem zpow_strictMono (hx : 1 < a) : StrictMono ((· ^ ·) a : ℤ → α) :=
       _ = a ^ (n + 1) := (zpow_add_one₀ xpos.ne' _).symm
 #align zpow_strict_mono zpow_strictMono
 
-theorem zpow_strictAnti (h₀ : 0 < a) (h₁ : a < 1) : StrictAnti ((· ^ ·) a : ℤ → α) :=
+theorem zpow_strictAnti (h₀ : 0 < a) (h₁ : a < 1) : StrictAnti (a ^ · : ℤ → α) :=
   strictAnti_int_of_succ_lt fun n =>
     calc
       a ^ (n + 1) = a ^ n * a := zpow_add_one₀ h₀.ne' _
@@ -90,7 +90,7 @@ theorem div_pow_le (ha : 0 ≤ a) (hb : 1 ≤ b) (k : ℕ) : a / b ^ k ≤ a :=
   div_le_self ha <| one_le_pow_of_one_le hb _
 #align div_pow_le div_pow_le
 
-theorem zpow_injective (h₀ : 0 < a) (h₁ : a ≠ 1) : Injective ((· ^ ·) a : ℤ → α) := by
+theorem zpow_injective (h₀ : 0 < a) (h₁ : a ≠ 1) : Injective (a ^ · : ℤ → α) := by
   rcases h₁.lt_or_lt with (H | H)
   · exact (zpow_strictAnti h₀ H).injective
   · exact (zpow_strictMono H).injective

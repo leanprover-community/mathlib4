@@ -21,7 +21,7 @@ We introduce the following typeclasses for measures:
 -/
 
 open scoped ENNReal NNReal Topology
-open Set MeasureTheory Measure Filter MeasurableSpace ENNReal
+open Set MeasureTheory Measure Filter Function MeasurableSpace ENNReal
 
 variable {α β δ ι : Type*}
 
@@ -218,6 +218,9 @@ export MeasureTheory.IsProbabilityMeasure (measure_univ)
 
 attribute [simp] IsProbabilityMeasure.measure_univ
 
+lemma isProbabilityMeasure_iff : IsProbabilityMeasure μ ↔ μ univ = 1 :=
+  ⟨fun _ ↦ measure_univ, IsProbabilityMeasure.mk⟩
+
 instance (priority := 100) IsProbabilityMeasure.toIsFiniteMeasure (μ : Measure α)
     [IsProbabilityMeasure μ] : IsFiniteMeasure μ :=
   ⟨by simp only [measure_univ, ENNReal.one_lt_top]⟩
@@ -248,33 +251,73 @@ instance isProbabilityMeasureSMul [IsFiniteMeasure μ] [NeZero μ] :
   ⟨ENNReal.inv_mul_cancel (NeZero.ne (μ univ)) (measure_ne_top _ _)⟩
 #align measure_theory.is_probability_measure_smul MeasureTheory.isProbabilityMeasureSMulₓ
 
-theorem isProbabilityMeasure_map [IsProbabilityMeasure μ] {f : α → β} (hf : AEMeasurable f μ) :
+variable [IsProbabilityMeasure μ] {p : α → Prop} {f : β → α}
+
+theorem isProbabilityMeasure_map {f : α → β} (hf : AEMeasurable f μ) :
     IsProbabilityMeasure (map f μ) :=
   ⟨by simp [map_apply_of_aemeasurable, hf]⟩
 #align measure_theory.is_probability_measure_map MeasureTheory.isProbabilityMeasure_map
 
 @[simp]
-theorem one_le_prob_iff [IsProbabilityMeasure μ] : 1 ≤ μ s ↔ μ s = 1 :=
+theorem one_le_prob_iff : 1 ≤ μ s ↔ μ s = 1 :=
   ⟨fun h => le_antisymm prob_le_one h, fun h => h ▸ le_refl _⟩
 #align measure_theory.one_le_prob_iff MeasureTheory.one_le_prob_iff
 
 /-- Note that this is not quite as useful as it looks because the measure takes values in `ℝ≥0∞`.
 Thus the subtraction appearing is the truncated subtraction of `ℝ≥0∞`, rather than the
 better-behaved subtraction of `ℝ`. -/
-theorem prob_compl_eq_one_sub [IsProbabilityMeasure μ] (hs : MeasurableSet s) : μ sᶜ = 1 - μ s :=
-  by simpa only [measure_univ] using measure_compl hs (measure_lt_top μ s).ne
+lemma prob_compl_eq_one_sub₀ (h : NullMeasurableSet s μ) : μ sᶜ = 1 - μ s := by
+  rw [measure_compl₀ h (measure_ne_top _ _), measure_univ]
+
+/-- Note that this is not quite as useful as it looks because the measure takes values in `ℝ≥0∞`.
+Thus the subtraction appearing is the truncated subtraction of `ℝ≥0∞`, rather than the
+better-behaved subtraction of `ℝ`. -/
+theorem prob_compl_eq_one_sub (hs : MeasurableSet s) : μ sᶜ = 1 - μ s :=
+  prob_compl_eq_one_sub₀ hs.nullMeasurableSet
 #align measure_theory.prob_compl_eq_one_sub MeasureTheory.prob_compl_eq_one_sub
 
-@[simp]
-theorem prob_compl_eq_zero_iff [IsProbabilityMeasure μ] (hs : MeasurableSet s) :
-    μ sᶜ = 0 ↔ μ s = 1 := by
-  rw [prob_compl_eq_one_sub hs, tsub_eq_zero_iff_le, one_le_prob_iff]
+@[simp] lemma prob_compl_eq_zero_iff₀ (hs : NullMeasurableSet s μ) : μ sᶜ = 0 ↔ μ s = 1 := by
+  rw [prob_compl_eq_one_sub₀ hs, tsub_eq_zero_iff_le, one_le_prob_iff]
+
+@[simp] lemma prob_compl_eq_zero_iff (hs : MeasurableSet s) : μ sᶜ = 0 ↔ μ s = 1 :=
+  prob_compl_eq_zero_iff₀ hs.nullMeasurableSet
 #align measure_theory.prob_compl_eq_zero_iff MeasureTheory.prob_compl_eq_zero_iff
 
-@[simp]
-theorem prob_compl_eq_one_iff [IsProbabilityMeasure μ] (hs : MeasurableSet s) :
-    μ sᶜ = 1 ↔ μ s = 0 := by rw [← prob_compl_eq_zero_iff hs.compl, compl_compl]
+@[simp] lemma prob_compl_eq_one_iff₀ (hs : NullMeasurableSet s μ) : μ sᶜ = 1 ↔ μ s = 0 := by
+  rw [← prob_compl_eq_zero_iff₀ hs.compl, compl_compl]
+
+@[simp] lemma prob_compl_eq_one_iff (hs : MeasurableSet s) : μ sᶜ = 1 ↔ μ s = 0 :=
+  prob_compl_eq_one_iff₀ hs.nullMeasurableSet
 #align measure_theory.prob_compl_eq_one_iff MeasureTheory.prob_compl_eq_one_iff
+
+lemma mem_ae_iff_prob_eq_one₀ (hs : NullMeasurableSet s μ) : s ∈ μ.ae ↔ μ s = 1 :=
+  mem_ae_iff.trans $ prob_compl_eq_zero_iff₀ hs
+
+lemma mem_ae_iff_prob_eq_one (hs : MeasurableSet s) : s ∈ μ.ae ↔ μ s = 1 :=
+  mem_ae_iff.trans $ prob_compl_eq_zero_iff hs
+
+lemma ae_iff_prob_eq_one (hp : Measurable p) : (∀ᵐ a ∂μ, p a) ↔ μ {a | p a} = 1 :=
+  mem_ae_iff_prob_eq_one hp.setOf
+
+lemma isProbabilityMeasure_comap (hf : Injective f) (hf' : ∀ᵐ a ∂μ, a ∈ range f)
+    (hf'' : ∀ s, MeasurableSet s → MeasurableSet (f '' s)) :
+    IsProbabilityMeasure (μ.comap f) where
+  measure_univ := by
+    rw [comap_apply _ hf hf'' _ MeasurableSet.univ,
+      ← mem_ae_iff_prob_eq_one (hf'' _ MeasurableSet.univ)]
+    simpa
+
+protected lemma _root_.MeasurableEmbedding.isProbabilityMeasure_comap (hf : MeasurableEmbedding f)
+    (hf' : ∀ᵐ a ∂μ, a ∈ range f) : IsProbabilityMeasure (μ.comap f) :=
+  isProbabilityMeasure_comap hf.injective hf' hf.measurableSet_image'
+
+instance isProbabilityMeasure_map_up [IsProbabilityMeasure μ] :
+    IsProbabilityMeasure (μ.map ULift.up) := isProbabilityMeasure_map measurable_up.aemeasurable
+
+instance isProbabilityMeasure_comap_down [IsProbabilityMeasure μ] :
+    IsProbabilityMeasure (μ.comap ULift.down) :=
+  MeasurableEquiv.ulift.measurableEmbedding.isProbabilityMeasure_comap <| ae_of_all _ <| by
+    simp [Function.Surjective.range_eq <| EquivLike.surjective _]
 
 end IsProbabilityMeasure
 
@@ -990,7 +1033,7 @@ theorem sigmaFinite_bot_iff (μ : @Measure α ⊥) : SigmaFinite μ ↔ IsFinite
   · rw [h_univ_empty, @measure_empty α ⊥]
     exact ENNReal.zero_ne_top.lt_top
   obtain ⟨i, hsi⟩ : ∃ i, s i = Set.univ := by
-    by_contra' h_not_univ
+    by_contra! h_not_univ
     have h_empty : ∀ i, s i = ∅ := by simpa [h_not_univ] using hs_meas
     simp only [h_empty, iUnion_empty] at hs_univ
     exact h_univ_empty hs_univ.symm

@@ -150,7 +150,7 @@ theorem Injective.of_comp_iff' (f : α → β) {g : γ → α} (hg : Bijective g
 
 /-- Composition by an injective function on the left is itself injective. -/
 theorem Injective.comp_left {g : β → γ} (hg : Function.Injective g) :
-    Function.Injective ((· ∘ ·) g : (α → β) → α → γ) :=
+    Function.Injective (g ∘ · : (α → β) → α → γ) :=
   fun _ _ hgf ↦ funext fun i ↦ hg <| (congr_fun hgf i : _)
 #align function.injective.comp_left Function.Injective.comp_left
 
@@ -196,7 +196,7 @@ theorem Surjective.of_comp_iff' (hf : Bijective f) (g : γ → α) :
   ⟨fun S ↦ S.of_comp_left hf.1, hf.surjective.comp⟩
 #align function.surjective.of_comp_iff' Function.Surjective.of_comp_iff'
 
-instance decidableEqPfun (p : Prop) [Decidable p] (α : p → Type*) [∀ hp, DecidableEq (α hp)] :
+instance decidableEqPFun (p : Prop) [Decidable p] (α : p → Type*) [∀ hp, DecidableEq (α hp)] :
     DecidableEq (∀ hp, α hp)
   | f, g => decidable_of_iff (∀ hp, f hp = g hp) funext_iff.symm
 
@@ -539,13 +539,13 @@ theorem surjective_to_subsingleton [na : Nonempty α] [Subsingleton β] (f : α 
 
 /-- Composition by a surjective function on the left is itself surjective. -/
 theorem Surjective.comp_left {g : β → γ} (hg : Surjective g) :
-    Surjective ((· ∘ ·) g : (α → β) → α → γ) := fun f ↦
+    Surjective (g ∘ · : (α → β) → α → γ) := fun f ↦
   ⟨surjInv hg ∘ f, funext fun _ ↦ rightInverse_surjInv _ _⟩
 #align function.surjective.comp_left Function.Surjective.comp_left
 
 /-- Composition by a bijective function on the left is itself bijective. -/
 theorem Bijective.comp_left {g : β → γ} (hg : Bijective g) :
-    Bijective ((· ∘ ·) g : (α → β) → α → γ) :=
+    Bijective (g ∘ · : (α → β) → α → γ) :=
   ⟨hg.injective.comp_left, hg.surjective.comp_left⟩
 #align function.bijective.comp_left Function.Bijective.comp_left
 

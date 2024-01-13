@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Algebra.CharP.Basic
+import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.Data.Fintype.Units
 import Mathlib.Data.Nat.Parity
 import Mathlib.Tactic.FinCases
@@ -80,25 +81,23 @@ theorem val_mul' {m n : ZMod 0} : (m * n).val = m.val * n.val :=
   Int.natAbs_mul m n
 #align zmod.val_mul' ZMod.val_mul'
 
+@[simp]
 theorem val_nat_cast {n : ℕ} (a : ℕ) : (a : ZMod n).val = a % n := by
   cases n
   · rw [Nat.mod_zero]
     exact Int.natAbs_ofNat a
-  rw [← Fin.ofNat_eq_val]
-  rfl
+  · apply Fin.val_nat_cast
 #align zmod.val_nat_cast ZMod.val_nat_cast
 
 theorem val_nat_cast_of_lt {n a : ℕ} (h : a < n) : (a : ZMod n).val = a := by
   rwa [val_nat_cast, Nat.mod_eq_of_lt]
 
 instance charP (n : ℕ) : CharP (ZMod n) n where
-    cast_eq_zero_iff' := by
-      intro k
-      cases' n with n
-      · simp [zero_dvd_iff, Int.coe_nat_eq_zero, Nat.zero_eq]
-      rw [Fin.eq_iff_veq]
-      show (k : ZMod (n + 1)).val = (0 : ZMod (n + 1)).val ↔ _
-      rw [val_nat_cast, val_zero, Nat.dvd_iff_mod_eq_zero]
+  cast_eq_zero_iff' := by
+    intro k
+    cases' n with n
+    · simp [zero_dvd_iff, Int.coe_nat_eq_zero, Nat.zero_eq]
+    · exact Fin.nat_cast_eq_zero
 
 @[simp]
 theorem addOrderOf_one (n : ℕ) : addOrderOf (1 : ZMod n) = n :=
@@ -249,7 +248,7 @@ theorem nat_cast_comp_val [NeZero n] : ((↑) : ℕ → R) ∘ (val : ZMod n →
 @[simp]
 theorem int_cast_comp_cast : ((↑) : ℤ → R) ∘ ((↑) : ZMod n → ℤ) = (↑) := by
   cases n
-  · exact congr_arg ((· ∘ ·) Int.cast) ZMod.cast_id'
+  · exact congr_arg (Int.cast ∘ ·) ZMod.cast_id'
   · ext
     simp [ZMod, ZMod.cast]
 #align zmod.int_cast_comp_cast ZMod.int_cast_comp_cast
@@ -570,21 +569,21 @@ theorem ker_int_castRingHom (n : ℕ) :
   rw [Ideal.mem_span_singleton, RingHom.mem_ker, Int.coe_castRingHom, int_cast_zmod_eq_zero_iff_dvd]
 #align zmod.ker_int_cast_ring_hom ZMod.ker_int_castRingHom
 
-theorem cast_injective_of_lt {m n : ℕ} [nzm : NeZero m] (h : m < n) :
+theorem cast_injective_of_le {m n : ℕ} [nzm : NeZero m] (h : m ≤ n) :
     Function.Injective (@cast (ZMod n) _ m) := by
   cases m with
   | zero => cases nzm; simp_all
   | succ m =>
     rintro ⟨x, hx⟩ ⟨y, hy⟩ f
     simp only [cast, val, nat_cast_eq_nat_cast_iff',
-      Nat.mod_eq_of_lt (lt_trans hx h), Nat.mod_eq_of_lt (lt_trans hy h)] at f
+      Nat.mod_eq_of_lt (hx.trans_le h), Nat.mod_eq_of_lt (hy.trans_le h)] at f
     apply Fin.ext
     exact f
 
-theorem cast_zmod_eq_zero_iff_of_lt {m n : ℕ} [NeZero m] (h : m < n) (a : ZMod m) :
+theorem cast_zmod_eq_zero_iff_of_le {m n : ℕ} [NeZero m] (h : m ≤ n) (a : ZMod m) :
     (a : ZMod n) = 0 ↔ a = 0 := by
   rw [← ZMod.cast_zero (n := m)]
-  exact Injective.eq_iff' (cast_injective_of_lt h) rfl
+  exact Injective.eq_iff' (cast_injective_of_le h) rfl
 
 --Porting note: commented
 -- attribute [local semireducible] Int.NonNeg
@@ -773,6 +772,11 @@ theorem inv_mul_of_unit {n : ℕ} (a : ZMod n) (h : IsUnit a) : a⁻¹ * a = 1 :
   rw [mul_comm, mul_inv_of_unit a h]
 #align zmod.inv_mul_of_unit ZMod.inv_mul_of_unit
 
+-- TODO: If we changed `⁻¹` so that `ZMod n` is always a `DivisionMonoid`,
+-- then we could use the general lemma `inv_eq_of_mul_eq_one`
+protected theorem inv_eq_of_mul_eq_one (n : ℕ) (a b : ZMod n) (h : a * b = 1) : a⁻¹ = b :=
+  left_inv_eq_right_inv (inv_mul_of_unit a ⟨⟨a, b, h, mul_comm a b ▸ h⟩, rfl⟩) h
+
 -- TODO: this equivalence is true for `ZMod 0 = ℤ`, but needs to use different functions.
 /-- Equivalence between the units of `ZMod n` and
 the subtype of terms `x : ZMod n` for which `x.val` is coprime to `n` -/
@@ -947,6 +951,11 @@ theorem val_cast_eq_val_of_lt {m n : ℕ} [nzm : NeZero m] {a : ZMod m}
     cases n with
     | zero => cases nzn; simp_all
     | succ n => exact Fin.val_cast_of_lt h
+
+theorem cast_cast_zmod_of_le {m n : ℕ} [hm : NeZero m] (h : m ≤ n) (a : ZMod m) :
+    ((a : ZMod n) : ZMod m) = a := by
+  have : NeZero n := ⟨((Nat.zero_lt_of_ne_zero hm.out).trans_le h).ne'⟩
+  rw [cast_eq_val, val_cast_eq_val_of_lt (a.val_lt.trans_le h), nat_cast_zmod_val]
 
 /-- `valMinAbs x` returns the integer in the same equivalence class as `x` that is closest to `0`,
   The result will be in the interval `(-n/2, n/2]`. -/

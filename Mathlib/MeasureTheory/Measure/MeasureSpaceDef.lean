@@ -295,6 +295,9 @@ theorem measure_sUnion_null_iff {S : Set (Set α)} (hS : S.Countable) :
   μ.toOuterMeasure.sUnion_null_iff hS
 #align measure_theory.measure_sUnion_null_iff MeasureTheory.measure_sUnion_null_iff
 
+lemma measure_null_iff_singleton {s : Set α} (hs : s.Countable) : μ s = 0 ↔ ∀ x ∈ s, μ {x} = 0 := by
+  rw [← measure_biUnion_null_iff hs, biUnion_of_singleton]
+
 theorem measure_union_le (s₁ s₂ : Set α) : μ (s₁ ∪ s₂) ≤ μ s₁ + μ s₂ :=
   μ.toOuterMeasure.union _ _
 #align measure_theory.measure_union_le MeasureTheory.measure_union_le
@@ -428,7 +431,11 @@ theorem all_ae_of {ι : Sort _} {p : α → ι → Prop} (hp : ∀ᵐ a ∂μ, �
     ∀ᵐ a ∂μ, p a i := by
   filter_upwards [hp] with a ha using ha i
 
-theorem ae_ball_iff {S : Set ι} (hS : S.Countable) {p : ∀ (_x : α), ∀ i ∈ S, Prop} :
+lemma ae_iff_of_countable [Countable α] {p : α → Prop} : (∀ᵐ x ∂μ, p x) ↔ ∀ x, μ {x} ≠ 0 → p x := by
+  rw [ae_iff, measure_null_iff_singleton]
+  exacts [forall_congr' fun _ ↦ not_imp_comm, Set.to_countable _]
+
+theorem ae_ball_iff {S : Set ι} (hS : S.Countable) {p : α → ∀ i ∈ S, Prop} :
     (∀ᵐ x ∂μ, ∀ i (hi : i ∈ S), p x i hi) ↔ ∀ i (hi : i ∈ S), ∀ᵐ x ∂μ, p x i hi :=
   eventually_countable_ball hS
 #align measure_theory.ae_ball_iff MeasureTheory.ae_ball_iff
@@ -561,9 +568,9 @@ theorem inter_ae_eq_empty_of_ae_eq_empty_right (h : t =ᵐ[μ] (∅ : Set α)) :
   rw [inter_empty]
 #align measure_theory.inter_ae_eq_empty_of_ae_eq_empty_right MeasureTheory.inter_ae_eq_empty_of_ae_eq_empty_right
 
-/-- Given a predicate on `β` and `set α` where both `α` and `β` are measurable spaces, if the
+/-- Given a predicate on `β` and `Set α` where both `α` and `β` are measurable spaces, if the
 predicate holds for almost every `x : β` and
-- `∅ : set α`
+- `∅ : Set α`
 - a family of sets generating the σ-algebra of `α`
 Moreover, if for almost every `x : β`, the predicate is closed under complements and countable
 disjoint unions, then the predicate holds for almost every `x : β` and all measurable sets of `α`.

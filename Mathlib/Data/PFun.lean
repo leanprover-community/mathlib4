@@ -342,7 +342,7 @@ theorem fixInduction_spec {C : α → Sort*} {f : α →. Sum β α} {b : β} {a
     @fixInduction _ _ C _ _ _ h H = H a h fun a' h' => fixInduction (fix_fwd h h') H := by
   unfold fixInduction
   -- Porting note: `generalize` required to address `generalize_proofs` bug
-  generalize (Part.mem_assert_iff.1 h).fst = ha
+  generalize @fixInduction.proof_1 α β f b a h = ha
   induction ha
   rfl
 #align pfun.fix_induction_spec PFun.fixInduction_spec

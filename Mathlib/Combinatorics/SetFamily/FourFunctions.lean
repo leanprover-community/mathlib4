@@ -44,6 +44,10 @@ Prove the Fishburn-Shepp inequality.
 
 Is `collapse` a construct generally useful for set family inductions? If so, we should move it to an
 earlier file and give it a proper API.
+
+## References
+
+[*Applications of the FKG Inequality and Its Relatives*, Graham][Graham1983]
 -/
 
 open Finset Fintype
@@ -354,4 +358,5 @@ lemma Finset.le_card_diffs_mul_card_diffs (s t : Finset α) :
 
 /-- The **Marica-Schönheim Inequality**. -/
 lemma Finset.card_le_card_diffs (s : Finset α) : s.card ≤ (s \\ s).card :=
-  le_of_pow_le_pow 2 (zero_le _) two_pos $ by simpa [← sq] using s.le_card_diffs_mul_card_diffs s
+  le_of_pow_le_pow_left two_ne_zero (zero_le _) $ by
+    simpa [← sq] using s.le_card_diffs_mul_card_diffs s

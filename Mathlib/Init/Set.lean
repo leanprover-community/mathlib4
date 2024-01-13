@@ -102,6 +102,44 @@ for instance, `{(x) | (x : Nat) (y : Nat) (_hxy : x = y^2)}`.
 macro (priority := low) "{" t:term " | " bs:extBinders "}" : term =>
   `({x | ∃ᵉ $bs:extBinders, $t = x})
 
+/--
+* `{ pat : X | p }` is notation for pattern matching in set-builder notation,
+  where `pat` is a pattern that is matched by all objects of type `X`
+  and `p` is a proposition that can refer to variables in the pattern.
+  It is the set of all objects of type `X` which, when matched with the pattern `pat`,
+  make `p` come out true.
+* `{ pat | p }` is the same, but in the case when the type `X` can be inferred.
+
+For example, `{ (m, n) : ℕ × ℕ | m * n = 12 }` denotes the set of all ordered pairs of
+natural numbers whose product is 12.
+
+Note that if the type ascription is left out and `p` can be interpreted as an extended binder,
+then the extended binder interpretation will be used.  For example, `{ n + 1 | n < 3 }` will
+be interpreted as `{ x : Nat | ∃ n < 3, n + 1 = x }` rather than using pattern matching.
+-/
+macro (name := macroPattSetBuilder) (priority := low-1)
+  "{" pat:term " : " t:term " | " p:term "}" : term =>
+  `({ x : $t | match x with | $pat => $p })
+
+@[inherit_doc macroPattSetBuilder]
+macro (priority := low-1) "{" pat:term " | " p:term "}" : term =>
+  `({ x | match x with | $pat => $p })
+
+/-- Pretty printing for set-builder notation with pattern matching. -/
+@[app_unexpander setOf]
+def setOfPatternMatchUnexpander : Lean.PrettyPrinter.Unexpander
+  | `($_ fun $x:ident ↦ match $y:ident with | $pat => $p) =>
+      if x == y then
+        `({ $pat:term | $p:term })
+      else
+        throw ()
+  | `($_ fun ($x:ident : $ty:term) ↦ match $y:ident with | $pat => $p) =>
+      if x == y then
+        `({ $pat:term : $ty:term | $p:term })
+      else
+        throw ()
+  | _ => throw ()
+
 def univ : Set α := {_a | True}
 #align set.univ Set.univ
 

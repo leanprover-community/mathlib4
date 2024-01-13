@@ -255,7 +255,7 @@ theorem size'_two_pow_sub_one {w : ℕ} : size' (2^w - 1) = w := by
     . assumption
     . rw [ne_eq, tsub_eq_zero_iff_le, not_le, one_lt_pow_iff]
       . exact one_lt_two
-      . exact Ne.symm (succ_ne_zero _)
+      . exact succ_ne_zero _
 
 theorem size'_le_size {m n : ℕ} (h : m ≤ n) : size' m ≤ size' n := by
   induction' n using div2Rec' with n h' ih generalizing m
@@ -615,8 +615,14 @@ def reverse (xs : BitVec w) : BitVec w :=
   ⟨reverseBitsPadded xs.toNat w,
   size'_le.mp $ size'_reverseBitsPadded_of_size'_le_padding $ size'_le.mpr (isLt xs)⟩
 
-theorem toNat_injective {n : Nat} : Function.Injective (@Std.BitVec.toNat n) :=
-  fun _ _ => eq_of_toNat_eq
+theorem toFin_injective : Function.Injective (toFin : BitVec w → _) :=
+  fun _ _ h => congrArg ofFin h
+
+theorem toFin_inj {x y : BitVec w} : x.toFin = y.toFin ↔ x = y :=
+  toFin_injective.eq_iff
+
+theorem toNat_injective {n : Nat} : Function.Injective (BitVec.toNat : BitVec n → _) :=
+  Fin.val_injective.comp toFin_injective
 
 theorem toNat_inj {x y : BitVec w} : x.toNat = y.toNat ↔ x = y :=
   Iff.symm (toNat_eq x y)
@@ -624,6 +630,14 @@ theorem toNat_inj {x y : BitVec w} : x.toNat = y.toNat ↔ x = y :=
 /-- `x < y` as natural numbers if and only if `x < y` as `BitVec w`. -/
 theorem toNat_lt_toNat {x y : BitVec w} : x.toNat < y.toNat ↔ x < y :=
   Iff.rfl
+
+lemma toNat_one : BitVec.toNat (1 : BitVec w) = Bool.toNat (w != 0) :=
+  have : 2 ^ w ≤ 1 ↔ w = 0 := show 2^w ≤ 2^0 ↔ w = 0 from
+    Iff.trans not_lt.symm $ Iff.trans (pow_lt_pow_iff_right Nat.one_lt_two).not
+    $ Iff.symm (Decidable.iff_not_comm.mp Nat.pos_iff_ne_zero)
+  Eq.trans (toNat_ofNat 1 w) $ Eq.trans (Nat.mod_eq _ _) $ by
+  simp only [Bool.toNat, Bool.cond_eq_ite, two_pow_pos, bne_iff_ne, zero_mod,
+             true_and, this, ite_not, Nat.sub_eq_zero_of_le, Nat.one_le_two_pow]
 
 attribute [simp] toNat_ofNat toNat_ofFin
 
@@ -694,36 +708,143 @@ theorem ofFin_toFin {n} (v : BitVec n) : ofFin (toFin v) = v := by
   rfl
 #align bitvec.of_fin_to_fin Std.BitVec.ofFin_toFin
 
-instance addCommSemigroup (w : ℕ) : AddCommSemigroup (BitVec w) where
-  add_assoc _ _ _ := congrArg BitVec.ofFin (add_assoc _ _ _)
-  add_comm _ _ := congrArg BitVec.ofFin (add_comm _ _)
+/-!
+### Distributivity of `Std.BitVec.ofFin`
+-/
+section
+variable (x y : Fin (2^w))
 
-instance addCommMonoid (w : ℕ) : AddCommMonoid (BitVec w) where
-  add_zero := BitVec.add_zero
-  zero_add x := Eq.trans (add_comm 0 x) (add_zero x)
-  __ := BitVec.addCommSemigroup w
+@[simp] lemma ofFin_neg : ofFin (-x) = -(ofFin x) := by
+  rw [neg_eq_zero_sub]; rfl
 
-lemma toFin_sub (xs ys : BitVec w) : (xs - ys).toFin = xs.toFin - ys.toFin := rfl
+@[simp] lemma ofFin_and : ofFin (x &&& y) = ofFin x &&& ofFin y := by
+  simp only [HAnd.hAnd, AndOp.and, Fin.land, BitVec.and, toNat_ofFin, ofFin.injEq, Fin.mk.injEq]
+  exact mod_eq_of_lt (Nat.and_lt_two_pow _ y.prop)
 
-lemma toFin_neg (xs : BitVec w) : (-xs).toFin = -xs.toFin :=
-  Eq.trans (toFin_sub 0 xs) $ Eq.symm $ neg_eq_zero_sub xs.toFin
+@[simp] lemma ofFin_or  : ofFin (x ||| y) = ofFin x ||| ofFin y := by
+  simp only [HOr.hOr, OrOp.or, Fin.lor, BitVec.or, toNat_ofFin, ofFin.injEq, Fin.mk.injEq]
+  exact mod_eq_of_lt (Nat.or_lt_two_pow x.prop y.prop)
 
-instance addCommGroup (w : ℕ) : AddCommGroup (BitVec w) := {
-  BitVec.addCommMonoid w, instNegBitVec, instSubBitVec with
-  add_left_neg := fun _ =>
-    Eq.trans (congrArg BitVec.ofFin (congrArg (. + _) $ toFin_neg _))
-    $ congrArg BitVec.ofFin (add_left_neg _)
-  add_comm := (BitVec.addCommMonoid w).add_comm
-  sub_eq_add_neg := fun _ _ =>
-    Eq.trans (congrArg BitVec.ofFin $ Eq.trans (toFin_sub _ _) $ sub_eq_add_neg _ _)
-    $ congrArg (BitVec.ofFin $ _ + .) (toFin_neg _).symm
-}
+@[simp] lemma ofFin_xor : ofFin (x ^^^ y) = ofFin x ^^^ ofFin y := by
+  simp only [HXor.hXor, Xor.xor, Fin.xor, BitVec.xor, toNat_ofFin, ofFin.injEq, Fin.mk.injEq]
+  exact mod_eq_of_lt (Nat.xor_lt_two_pow x.prop y.prop)
 
-lemma toNat_one : (1 : BitVec w).toNat = Bool.toNat (w != 0) := by
-  refine Eq.trans (toNat_ofNat 1 w) ?_
-  simp_rw [Bool.toNat, Bool.cond_eq_ite, bne_iff_ne, ite_not]
-  exact eq_ite_iff'.mpr $ And.intro (congrArg (1 % 2 ^ .))
-        $ Nat.mod_eq_of_lt ∘ Nat.one_lt_two_pow w ∘ Nat.pos_of_ne_zero
+@[simp] lemma ofFin_add : ofFin (x + y)   = ofFin x + ofFin y   := rfl
+@[simp] lemma ofFin_sub : ofFin (x - y)   = ofFin x - ofFin y   := rfl
+@[simp] lemma ofFin_mul : ofFin (x * y)   = ofFin x * ofFin y   := rfl
+
+-- These should be simp, but Std's simp-lemmas do not allow this yet.
+lemma ofFin_zero : ofFin (0 : Fin (2^w)) = 0 := rfl
+lemma ofFin_one  : ofFin (1 : Fin (2^w)) = 1 := by
+  simp only [OfNat.ofNat, BitVec.ofNat, and_pow_two_is_mod]
+  rfl
+
+lemma ofFin_nsmul (n : ℕ) (x : Fin (2^w)) : ofFin (n • x) = n • ofFin x := rfl
+lemma ofFin_zsmul (z : ℤ) (x : Fin (2^w)) : ofFin (z • x) = z • ofFin x := rfl
+@[simp] lemma ofFin_pow (n : ℕ) : ofFin (x ^ n) = ofFin x ^ n := rfl
+
+@[simp] lemma ofFin_natCast (n : ℕ) : ofFin (n : Fin (2^w)) = n := by
+  simp only [Nat.cast, NatCast.natCast, OfNat.ofNat, BitVec.ofNat, and_pow_two_is_mod]
+  rfl
+
+-- See Note [no_index around OfNat.ofNat]
+@[simp] lemma ofFin_ofNat (n : ℕ) :
+    ofFin (no_index (OfNat.ofNat n : Fin (2^w))) = OfNat.ofNat n := by
+  simp only [OfNat.ofNat, Fin.ofNat', BitVec.ofNat, and_pow_two_is_mod]
+
+end
+
+/-!
+### Distributivity of `Std.BitVec.toFin`
+-/
+section
+variable (x y : BitVec w)
+
+@[simp] lemma toFin_neg : toFin (-x) = -(toFin x) := by
+  rw [neg_eq_zero_sub]; rfl
+
+@[simp] lemma toFin_and : toFin (x &&& y) = toFin x &&& toFin y := by
+  apply toFin_inj.mpr; simp only [ofFin_and]
+
+@[simp] lemma toFin_or  : toFin (x ||| y) = toFin x ||| toFin y := by
+  apply toFin_inj.mpr; simp only [ofFin_or]
+
+@[simp] lemma toFin_xor : toFin (x ^^^ y) = toFin x ^^^ toFin y := by
+  apply toFin_inj.mpr; simp only [ofFin_xor]
+
+@[simp] lemma toFin_add : toFin (x + y)   = toFin x + toFin y   := rfl
+@[simp] lemma toFin_sub : toFin (x - y)   = toFin x - toFin y   := rfl
+@[simp] lemma toFin_mul : toFin (x * y)   = toFin x * toFin y   := rfl
+
+-- These should be simp, but Std's simp-lemmas do not allow this yet.
+lemma toFin_zero : toFin (0 : BitVec w) = 0 := rfl
+lemma toFin_one  : toFin (1 : BitVec w) = 1 := by
+  apply toFin_inj.mpr; simp only [ofNat_eq_ofNat, ofFin_ofNat]
+
+lemma toFin_nsmul (n : ℕ) (x : BitVec w) : toFin (n • x) = n • x.toFin := rfl
+lemma toFin_zsmul (z : ℤ) (x : BitVec w) : toFin (z • x) = z • x.toFin := rfl
+@[simp] lemma toFin_pow (n : ℕ) : toFin (x ^ n) = x.toFin ^ n := rfl
+
+@[simp] lemma toFin_natCast (n : ℕ) : toFin (n : BitVec w) = n := by
+  apply toFin_inj.mpr; simp only [ofFin_natCast]
+
+-- See Note [no_index around OfNat.ofNat]
+lemma toFin_ofNat (n : ℕ) :
+    toFin (no_index (OfNat.ofNat n : BitVec w)) = OfNat.ofNat n := by
+  simp only [OfNat.ofNat, BitVec.ofNat, and_pow_two_is_mod, Fin.ofNat']
+
+end
+
+/-!
+### `IntCast`
+-/
+
+-- Either of these follows trivially from the other. Which one to
+-- prove is not yet clear.
+lemma ofFin_intCast (z : ℤ) : ofFin (z : Fin (2^w)) = z := by
+  cases' z with n n
+  . simp only [Int.ofNat_eq_coe, Int.cast_ofNat, ofFin_natCast]; rfl
+  . refine congrArg ofFin ?_
+    change -(_ : Fin (2^w)) = { val := _ - 1 ^^^ (n#w).toNat, isLt := _ }
+    simp_rw [← Fin.ofNat''_eq_cast, Fin.ofNat'']
+    simp (config:={singlePass:=true}) only [Nat.add_mod, toNat_ofNat]
+    change (- ((n : Fin (2^w)) + 1)) = _
+    refine Eq.trans (neg_add _ _) $ neg_add_eq_of_eq_add ?_
+    by_cases h : w = 0
+    . subst h; exact Fin.subsingleton_one.allEq _ _
+    . refine Fin.val_injective ?_
+      have h' : ((1 : Fin (2 ^ w)) : ℕ) = 1 :=
+        Eq.trans (Fin.val_one' _) $ Nat.mod_eq_of_lt
+        $ pow_right_strictMono Nat.one_lt_two (Nat.pos_iff_ne_zero.mpr h)
+      have h'' : n % 2 ^ w &&& (2 ^ w - 1 ^^^ n % 2 ^ w) = 0
+      . refine zero_of_testBit_eq_false (fun _ => ?_)
+        simp only [testBit_land, testBit_xor, testBit_two_pow_sub_one,
+                   Nat.testBit_mod_two_pow]
+        rw [and_distrib_of_false_false_ax (Bool.xor_self false),
+            Bool.and_self, Bool.and_right_comm, Bool.and_self, Bool.xor_self]
+      rw [neg_eq_zero_sub, Fin.coe_sub_iff_lt.mpr, h']
+      . refine Eq.trans (congrArg (_ + . - _) (zero_mod _)) ?_
+        simp only [Nat.add_zero, Fin.val_add, Fin.val_nat_cast,
+                   shiftLeft_eq_mul_pow, one_mul]
+        rw [← or_eq_add_of_and_eq_zero h'', or_eq_xor_of_and_eq_zero h'',
+            ← Nat.xor_comm, Nat.xor_assoc, Nat.xor_self, Nat.xor_zero]
+        exact Eq.symm (mod_eq_of_lt (Nat.sub_lt_self zero_lt_one (two_pow_pos _)))
+      . exact Nat.pos_iff_ne_zero.mpr (ne_of_eq_of_ne h' one_ne_zero)
+
+lemma toFin_intCast (z : ℤ) : toFin (z : BitVec w) = z :=
+  congrArg toFin $ Eq.symm $ ofFin_intCast z
+
+/-!
+## Ring
+-/
+
+instance : CommRing (BitVec w) :=
+  toFin_injective.commRing _
+    toFin_zero toFin_one toFin_add toFin_mul toFin_neg
+    toFin_sub (Function.swap toFin_nsmul) (Function.swap toFin_zsmul)
+    toFin_pow toFin_ofNat toFin_intCast
+
+-- todo: clean up proof of ofFin_intCast with these lemmas
 
 lemma toNat_one_eq_one (h : w ≠ 0) : (1 : BitVec w).toNat = 1 :=
   Eq.trans toNat_one (congrArg Bool.toNat (Iff.mpr (bne_iff_ne _ _) h))
@@ -745,8 +866,7 @@ theorem allOnes_def : BitVec.allOnes w = - 1 := rfl
 theorem toNat_allOnes : (BitVec.allOnes w).toNat = 2^w - 1 :=
   Eq.trans (toNat_neg _)
   $ Eq.trans (ite_congr (propext one_eq_zero_iff) (Eq.symm ∘ congrArg (2^.-1))
-              $ congrArg (2^w - .) ∘ toNat_ofNat_of_lt
-              ∘ Nat.one_lt_two_pow w ∘ Nat.pos_of_ne_zero)
+              $ congrArg (2^w - .) ∘ toNat_ofNat_of_lt ∘ Nat.one_lt_two_pow w)
   $ ite_self _
 
 lemma toNat_xor (xs ys : BitVec w) : (xs ^^^ ys).toNat = xs.toNat ^^^ ys.toNat := rfl
@@ -1095,21 +1215,8 @@ lemma getLsb_and (xs ys : BitVec w) (i : ℕ) :
     getLsb (xs &&& ys) i = (getLsb xs i && getLsb ys i) := testBit_land _ _ i
 
 theorem toNat_not (xs : BitVec w) : (~~~xs).toNat = (2^w - 1) ^^^ xs.toNat := by
-  refine Eq.trans (toNat_neg _) ?_
-  simp_rw [← ofNat_eq_ofNat, add_one_eq_zero_iff_allOnes]
-  split_ifs with h
-  . rw [h, toNat_allOnes, Nat.xor_self]
-  . simp_rw [toNat_add_one, h, ite_false, ← Nat.sub_sub]
-    refine Eq.trans (Nat.sub_right_comm _ _ _) (Nat.sub_eq_of_eq_add ?_)
-    refine Eq.trans ?_ (add_eq_xor_add_shiftLeft_and _ _).symm
-    rw [xor_assoc, Nat.xor_self, xor_zero, self_eq_add_right,
-        ← toNat_allOnes, ← toNat_xor, ← toNat_and]
-    refine Eq.trans (congrArg₂ _ ?_ rfl) (zero_shiftLeft _)
-    refine Eq.trans (congrArg _ ?_) (toNat_zero w)
-    apply eq_of_getLsb_eq; intro
-    rw [getLsb_and, ← getLsb', getLsb'_allOnes_xor]
-    refine Eq.trans (Bool.not_and_self _) (Eq.symm ?_)
-    exact Eq.trans (congrArg (testBit . _) (toNat_zero w)) (zero_testBit _)
+  refine Eq.trans (BitVec.toNat_xor _ _) (congrArg (. ^^^ _) ?_)
+  exact congrArg (. - 1) (Eq.trans (Nat.shiftLeft_eq _ _) (Nat.one_mul _))
 
 -- BitVec.not is changed to this (roughly) in an upcoming Std
 theorem not_alt_desc (xs : BitVec w) : ~~~xs = BitVec.allOnes w ^^^ xs :=

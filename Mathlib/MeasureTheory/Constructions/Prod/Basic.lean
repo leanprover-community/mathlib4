@@ -694,7 +694,7 @@ theorem prodAssoc_prod [SFinite τ] :
         (sFiniteSeq μ p.1.1).prod ((sFiniteSeq ν p.1.2).prod (sFiniteSeq τ p.2))) := by
     ext s hs
     rw [sum_apply _ hs, sum_apply _ hs, ← (Equiv.prodAssoc _ _ _).tsum_eq]
-    rfl
+    simp only [Equiv.prodAssoc_apply]
   rw [← sum_sFiniteSeq μ, ← sum_sFiniteSeq ν, ← sum_sFiniteSeq τ, prod_sum, prod_sum,
     map_sum MeasurableEquiv.prodAssoc.measurable.aemeasurable, prod_sum, prod_sum, this]
   congr
@@ -820,8 +820,8 @@ theorem skew_product [SFinite μa] [SFinite μc] {f : α → β} (hf : MeasurePr
     ← hf.lintegral_comp (measurable_measure_prod_mk_left hs)]
   apply lintegral_congr_ae
   filter_upwards [hg] with a ha
-  rw [← ha, map_apply hgm.of_uncurry_left (measurable_prod_mk_left hs)]
-  rfl
+  rw [← ha, map_apply hgm.of_uncurry_left (measurable_prod_mk_left hs), preimage_preimage,
+    preimage_preimage]
 #align measure_theory.measure_preserving.skew_product MeasureTheory.MeasurePreserving.skew_product
 
 /-- If `f : α → β` sends the measure `μa` to `μb` and `g : γ → δ` sends the measure `μc` to `μd`,

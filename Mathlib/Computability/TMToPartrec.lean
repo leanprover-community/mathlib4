@@ -341,9 +341,9 @@ theorem exists_code {n} {f : Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
     refine' Part.ext fun x => _
     simp only [rfind, Part.bind_eq_bind, Part.pure_eq_some, Part.map_eq_map, Part.bind_some,
       exists_prop, cons_eval, comp_eval, fix_eval, tail_eval, succ_eval, zero'_eval,
-      List.headI_nil, List.headI_cons, pred_eval, Part.map_some, Bool.false_eq_decide_iff,
+      List.headI_nil, List.headI_cons, pred_eval, Part.map_some, false_eq_decide_iff,
       Part.mem_bind_iff, List.length, Part.mem_map_iff, Nat.mem_rfind, List.tail_nil,
-      List.tail_cons, Bool.true_eq_decide_iff, Part.mem_some_iff, Part.map_bind]
+      List.tail_cons, true_eq_decide_iff, Part.mem_some_iff, Part.map_bind]
     constructor
     · rintro ⟨v', h1, rfl⟩
       suffices ∀ v₁ : List ℕ, v' ∈ PFun.fix
@@ -1545,7 +1545,7 @@ theorem succ_ok {q s n} {c d : List Γ'} :
         Reaches₁ (TM2.step tr) ⟨some q.succ, s, K'.elim (trPosNum a ++ [Γ'.cons]) l₁ c d⟩
           ⟨some (unrev q), s', K'.elim (l₂' ++ [Γ'.cons]) l₁' c d⟩ by
     obtain ⟨l₁', l₂', s', e, h⟩ := this []
-    simp [List.reverseAux] at e
+    simp? [List.reverseAux] at e says simp only [List.reverseAux] at e
     refine' h.trans _
     convert unrev_ok using 2
     simp [e, List.reverseAux_eq]
@@ -1590,7 +1590,7 @@ theorem pred_ok (q₁ q₂ s v) (c d : List Γ') : ∃ s',
         ⟨some (q₁.pred q₂), s, K'.elim (trPosNum a.succ ++ Γ'.cons :: trList v) l₁ c d⟩
         ⟨some (unrev q₂), s', K'.elim (l₂' ++ Γ'.cons :: trList v) l₁' c d⟩ by
     obtain ⟨l₁', l₂', s', e, h⟩ := this []
-    simp [List.reverseAux] at e
+    simp only [List.reverseAux] at e
     refine' h.trans _
     convert unrev_ok using 2
     simp [e, List.reverseAux_eq]
@@ -1729,7 +1729,8 @@ theorem tr_eval (c v) : eval (TM2.step tr) (init c v) = halt <$> Code.eval c v :
     exact ⟨_, hv, hc₁.symm⟩
   · rintro ⟨v', hv, rfl⟩
     have := Turing.tr_eval (b₁ := Cfg.halt v') tr_respects h₁
-    simp [stepNormal_eval, -TM2.step] at this
+    simp only [stepNormal_eval, Part.map_eq_map, Part.mem_map_iff, Cfg.halt.injEq,
+      exists_eq_right] at this
     obtain ⟨_, ⟨⟩, h⟩ := this hv
     exact h
 #align turing.partrec_to_TM2.tr_eval Turing.PartrecToTM2.tr_eval
@@ -1992,7 +1993,7 @@ theorem trStmts₁_supports {S q} (H₁ : (q : Λ').Supports S) (HS₁ : trStmts
 
 theorem trStmts₁_supports' {S q K} (H₁ : (q : Λ').Supports S) (H₂ : trStmts₁ q ∪ K ⊆ S)
     (H₃ : K ⊆ S → Supports K S) : Supports (trStmts₁ q ∪ K) S := by
-  simp [Finset.union_subset_iff] at H₂
+  simp only [Finset.union_subset_iff] at H₂
   exact supports_union.2 ⟨trStmts₁_supports H₁ H₂.1, H₃ H₂.2⟩
 #align turing.partrec_to_TM2.tr_stmts₁_supports' Turing.PartrecToTM2.trStmts₁_supports'
 

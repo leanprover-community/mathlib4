@@ -241,7 +241,7 @@ theorem mapRange_multiset_sum (f : F) (m : Multiset (α →₀ M)) :
 
 theorem mapRange_finset_sum (f : F) (s : Finset ι) (g : ι → α →₀ M) :
     mapRange f (map_zero f) (∑ x in s, g x) = ∑ x in s, mapRange f (map_zero f) (g x) :=
-  (mapRange.addMonoidHom (f : M →+ N) : (α →₀ _) →+ _).map_sum _ _
+  map_sum (mapRange.addMonoidHom (f : M →+ N)) _ _
 #align finsupp.map_range_finset_sum Finsupp.mapRange_finset_sum
 
 /-- `Finsupp.mapRange.AddMonoidHom` as an equiv. -/
@@ -528,7 +528,7 @@ theorem mapDomain.addMonoidHom_comp (f : β → γ) (g : α → β) :
 
 theorem mapDomain_finset_sum {f : α → β} {s : Finset ι} {v : ι → α →₀ M} :
     mapDomain f (∑ i in s, v i) = ∑ i in s, mapDomain f (v i) :=
-  (mapDomain.addMonoidHom f : (α →₀ M) →+ β →₀ M).map_sum _ _
+  map_sum (mapDomain.addMonoidHom f) _ _
 #align finsupp.map_domain_finset_sum Finsupp.mapDomain_finset_sum
 
 theorem mapDomain_sum [Zero N] {f : α → β} {s : α →₀ N} {v : α → N → α →₀ M} :
@@ -1099,7 +1099,7 @@ variable [AddCommMonoid M] {p : α → Prop}
 
 theorem subtypeDomain_sum {s : Finset ι} {h : ι → α →₀ M} :
     (∑ c in s, h c).subtypeDomain p = ∑ c in s, (h c).subtypeDomain p :=
-  (subtypeDomainAddMonoidHom : _ →+ Subtype p →₀ M).map_sum _ s
+  map_sum subtypeDomainAddMonoidHom _ s
 #align finsupp.subtype_domain_sum Finsupp.subtypeDomain_sum
 
 theorem subtypeDomain_finsupp_sum [Zero N] {s : β →₀ N} {h : β → N → α →₀ M} :
@@ -1109,7 +1109,7 @@ theorem subtypeDomain_finsupp_sum [Zero N] {s : β →₀ N} {h : β → N → �
 
 theorem filter_sum (s : Finset ι) (f : ι → α →₀ M) :
     (∑ a in s, f a).filter p = ∑ a in s, filter p (f a) :=
-  (filterAddHom p : (α →₀ M) →+ _).map_sum f s
+  map_sum (filterAddHom p) f s
 #align finsupp.filter_sum Finsupp.filter_sum
 
 theorem filter_eq_sum (p : α → Prop) [D : DecidablePred p] (f : α →₀ M) :
@@ -1265,7 +1265,6 @@ theorem filter_curry (f : α × β →₀ M) (p : α → Prop) :
       sum_filter]
     refine' Finset.sum_congr rfl _
     rintro ⟨a₁, a₂⟩ _
-    dsimp only
     split_ifs with h
     · rw [filter_apply_pos, filter_single_of_pos] <;> exact h
     · rwa [filter_single_of_neg]
@@ -1300,7 +1299,7 @@ def sumElim {α β γ : Type*} [Zero γ] (f : α →₀ γ) (g : β →₀ γ) :
     simpa
 #align finsupp.sum_elim Finsupp.sumElim
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_sumElim {α β γ : Type*} [Zero γ] (f : α →₀ γ) (g : β →₀ γ) :
     ⇑(sumElim f g) = Sum.elim f g :=
   rfl
@@ -1416,12 +1415,12 @@ variable [Monoid G] [MulAction G α] [AddCommMonoid M]
 
 This is not an instance as it would conflict with the action on the range.
 See the `instance_diamonds` test for examples of such conflicts. -/
-def comapSMul : SMul G (α →₀ M) where smul g := mapDomain ((· • ·) g)
+def comapSMul : SMul G (α →₀ M) where smul g := mapDomain (g • ·)
 #align finsupp.comap_has_smul Finsupp.comapSMul
 
 attribute [local instance] comapSMul
 
-theorem comapSMul_def (g : G) (f : α →₀ M) : g • f = mapDomain ((· • ·) g) f :=
+theorem comapSMul_def (g : G) (f : α →₀ M) : g • f = mapDomain (g • ·) f :=
   rfl
 #align finsupp.comap_smul_def Finsupp.comapSMul_def
 
@@ -1474,7 +1473,7 @@ end
 section
 
 instance smulZeroClass [Zero M] [SMulZeroClass R M] : SMulZeroClass R (α →₀ M) where
-  smul a v := v.mapRange ((· • ·) a) (smul_zero _)
+  smul a v := v.mapRange (a • ·) (smul_zero _)
   smul_zero a := by
     ext
     apply smul_zero
@@ -1485,7 +1484,7 @@ Throughout this section, some `Monoid` and `Semiring` arguments are specified wi
 `[]`. See note [implicit instance arguments].
 -/
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_smul [Zero M] [SMulZeroClass R M] (b : R) (v : α →₀ M) : ⇑(b • v) = b • ⇑v :=
   rfl
 #align finsupp.coe_smul Finsupp.coe_smul
@@ -1506,6 +1505,9 @@ instance faithfulSMul [Nonempty α] [Zero M] [SMulZeroClass R M] [FaithfulSMul R
     let ⟨a⟩ := ‹Nonempty α›
     eq_of_smul_eq_smul fun m : M => by simpa using FunLike.congr_fun (h (single a m)) a
 #align finsupp.faithful_smul Finsupp.faithfulSMul
+
+instance instSMulWithZero [Zero R] [Zero M] [SMulWithZero R M] : SMulWithZero R (α →₀ M) where
+  zero_smul f := by ext i; exact zero_smul _ _
 
 variable (α M)
 
@@ -1589,7 +1591,7 @@ theorem mapRange_smul {_ : Monoid R} [AddMonoid M] [DistribMulAction R M] [AddMo
     [DistribMulAction R N] {f : M → N} {hf : f 0 = 0} (c : R) (v : α →₀ M)
     (hsmul : ∀ x, f (c • x) = c • f x) : mapRange f hf (c • v) = c • mapRange f hf v := by
   erw [← mapRange_comp]
-  have : f ∘ (· • ·) c = (· • ·) c ∘ f := funext hsmul
+  have : f ∘ (c • ·) = (c • ·) ∘ f := funext hsmul
   simp_rw [this]
   apply mapRange_comp
   simp only [Function.comp_apply, smul_zero, hf]

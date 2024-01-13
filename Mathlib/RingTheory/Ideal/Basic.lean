@@ -650,7 +650,7 @@ lemma isPrime_of_maximally_disjoint (I : Ideal α)
     have : 1 ∈ (S : Set α) := S.one_mem
     aesop
   mem_or_mem' {x y} hxy := by
-    by_contra' rid
+    by_contra! rid
     have hx := maximally_disjoint (I ⊔ span {x}) (Submodule.lt_sup_iff_not_mem.mpr rid.1)
     have hy := maximally_disjoint (I ⊔ span {y}) (Submodule.lt_sup_iff_not_mem.mpr rid.2)
     simp only [Set.not_disjoint_iff, mem_inter_iff, SetLike.mem_coe, Submodule.mem_sup,

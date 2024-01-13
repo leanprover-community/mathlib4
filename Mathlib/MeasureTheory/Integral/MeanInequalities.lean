@@ -322,10 +322,6 @@ theorem lintegral_Lp_mul_le_Lq_mul_Lr {α} [MeasurableSpace α] {p q r : ℝ} (h
   have hq0_lt : 0 < q := lt_of_le_of_lt hp0 hpq
   have hq0_ne : q ≠ 0 := (ne_of_lt hq0_lt).symm
   have h_one_div_r : 1 / r = 1 / p - 1 / q := by rw [hpqr]; simp
-  have _ : r ≠ 0 := by
-    have hr_inv_pos : 0 < 1 / r := by rwa [h_one_div_r, sub_pos, one_div_lt_one_div hq0_lt hp0_lt]
-    rw [one_div, _root_.inv_pos] at hr_inv_pos
-    exact (ne_of_lt hr_inv_pos).symm
   let p2 := q / p
   let q2 := p2.conjugateExponent
   have hp2q2 : p2.IsConjugateExponent q2 :=
@@ -438,7 +434,7 @@ private theorem lintegral_Lp_add_le_aux {p q : ℝ} (hpq : p.IsConjugateExponent
   conv_lhs at h => rw [← one_mul (∫⁻ a : α, (f + g) a ^ p ∂μ)]
   rwa [← mul_assoc, ENNReal.mul_le_mul_right h_add_zero h_add_top, mul_comm] at h
 
-/-- Minkowski's inequality for functions `α → ℝ≥0∞`: the `ℒp` seminorm of the sum of two
+/-- **Minkowski's inequality for functions** `α → ℝ≥0∞`: the `ℒp` seminorm of the sum of two
 functions is bounded by the sum of their `ℒp` seminorms. -/
 theorem lintegral_Lp_add_le {p : ℝ} {f g : α → ℝ≥0∞} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ)
     (hp1 : 1 ≤ p) :

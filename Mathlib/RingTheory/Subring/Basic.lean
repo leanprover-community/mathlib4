@@ -559,6 +559,9 @@ def topEquiv : (⊤ : Subring R) ≃+* R :=
   Subsemiring.topEquiv
 #align subring.top_equiv Subring.topEquiv
 
+theorem card_top (R) [Ring R] [Fintype R] : Fintype.card (⊤ : Subring R) = Fintype.card R :=
+  Fintype.card_congr topEquiv.toEquiv
+
 /-! ## comap -/
 
 
@@ -1234,6 +1237,10 @@ theorem range_top_of_surjective (f : R →+* S) (hf : Function.Surjective f) :
   range_top_iff_surjective.2 hf
 #align ring_hom.range_top_of_surjective RingHom.range_top_of_surjective
 
+section eqLocus
+
+variable {S : Type v} [Semiring S]
+
 /-- The subring of elements `x : R` such that `f x = g x`, i.e.,
   the equalizer of f and g as a subring of R -/
 def eqLocus (f g : R →+* S) : Subring R :=
@@ -1259,6 +1266,8 @@ theorem eq_of_eqOn_set_dense {s : Set R} (hs : closure s = ⊤) {f g : R →+* S
     f = g :=
   eq_of_eqOn_set_top <| hs ▸ eqOn_set_closure h
 #align ring_hom.eq_of_eq_on_set_dense RingHom.eq_of_eqOn_set_dense
+
+end eqLocus
 
 theorem closure_preimage_le (f : R →+* S) (s : Set S) : closure (f ⁻¹' s) ≤ (closure s).comap f :=
   closure_le.2 fun _ hx => SetLike.mem_coe.2 <| mem_comap.2 <| subset_closure hx
@@ -1383,10 +1392,8 @@ protected theorem InClosure.recOn {C : R → Prop} {x : R} (hx : x ∈ closure s
     exact ha this (ih HL.2)
   replace HL := HL.1
   clear ih tl
-  -- Porting note: was `rsuffices` instead of `obtain` + `rotate_left`
-  obtain ⟨L, HL', HP | HP⟩ :
+  rsuffices ⟨L, HL', HP | HP⟩ :
     ∃ L : List R, (∀ x ∈ L, x ∈ s) ∧ (List.prod hd = List.prod L ∨ List.prod hd = -List.prod L)
-  rotate_left
   · rw [HP]
     clear HP HL hd
     induction' L with hd tl ih

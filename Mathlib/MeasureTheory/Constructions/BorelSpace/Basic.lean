@@ -101,9 +101,12 @@ theorem TopologicalSpace.IsTopologicalBasis.borel_eq_generateFrom [TopologicalSp
   borel_eq_generateFrom_of_subbasis hs.eq_generateFrom
 #align topological_space.is_topological_basis.borel_eq_generate_from TopologicalSpace.IsTopologicalBasis.borel_eq_generateFrom
 
-theorem isPiSystem_isOpen [TopologicalSpace α] : IsPiSystem (IsOpen : Set α → Prop) :=
+theorem isPiSystem_isOpen [TopologicalSpace α] : IsPiSystem ({s : Set α | IsOpen s}) :=
   fun _s hs _t ht _ => IsOpen.inter hs ht
 #align is_pi_system_is_open isPiSystem_isOpen
+
+lemma isPiSystem_isClosed [TopologicalSpace α] : IsPiSystem ({s : Set α | IsClosed s}) :=
+  fun _s hs _t ht _ ↦ IsClosed.inter hs ht
 
 theorem borel_eq_generateFrom_isClosed [TopologicalSpace α] :
     borel α = .generateFrom { s | IsClosed s } :=
@@ -127,7 +130,9 @@ theorem borel_eq_generateFrom_Iio : borel α = .generateFrom (range Iio) := by
     letI : MeasurableSpace α := MeasurableSpace.generateFrom (range Iio)
     have H : ∀ a : α, MeasurableSet (Iio a) := fun a => GenerateMeasurable.basic _ ⟨_, rfl⟩
     refine' generateFrom_le _
-    rintro _ ⟨a, rfl | rfl⟩ <;> [skip; apply H]
+    rintro _ ⟨a, rfl | rfl⟩
+    swap
+    · apply H
     by_cases h : ∃ a', ∀ b, a < b ↔ a' ≤ b
     · rcases h with ⟨a', ha'⟩
       rw [(_ : Ioi a = (Iio a')ᶜ)]
@@ -135,7 +140,9 @@ theorem borel_eq_generateFrom_Iio : borel α = .generateFrom (range Iio) := by
       simp [Set.ext_iff, ha']
     · rcases isOpen_iUnion_countable (fun a' : { a' : α // a < a' } => { b | a'.1 < b }) fun a' =>
           isOpen_lt' _ with ⟨v, ⟨hv⟩, vu⟩
-      simp [Set.ext_iff] at vu
+      simp? [Set.ext_iff] at vu says
+        simp only [Set.ext_iff, mem_iUnion, mem_setOf_eq, exists_prop, Subtype.exists,
+          exists_and_right] at vu
       have : Ioi a = ⋃ x : v, (Iio x.1.1)ᶜ := by
         simp only [compl_Iio, iUnion_coe_set, Set.ext_iff, mem_Ioi, mem_iUnion, mem_Ici,
           exists_prop, Subtype.exists, exists_and_right]
@@ -146,7 +153,6 @@ theorem borel_eq_generateFrom_Iio : borel α = .generateFrom (range Iio) := by
             ⟨fun ab => le_of_not_lt fun h' => h ⟨b, ab, h'⟩, lt_of_lt_of_le ax⟩⟩) with ⟨a', h₁, h₂⟩
         · exact ⟨a', h₁, le_of_lt h₂⟩
       rw [this]
-      skip
       apply MeasurableSet.iUnion
       exact fun _ => (H _).compl
   · rw [forall_range_iff]
@@ -379,7 +385,7 @@ theorem measurable_of_isClosed {f : δ → γ} (hf : ∀ s, IsClosed s → Measu
 theorem measurable_of_isClosed' {f : δ → γ}
     (hf : ∀ s, IsClosed s → s.Nonempty → s ≠ univ → MeasurableSet (f ⁻¹' s)) : Measurable f := by
   apply measurable_of_isClosed; intro s hs
-  cases' eq_empty_or_nonempty s with h1 h1
+  rcases eq_empty_or_nonempty s with h1 | h1
   · simp [h1]
   by_cases h2 : s = univ
   · simp [h2]
@@ -1102,6 +1108,23 @@ instance Prod.borelSpace [SecondCountableTopologyEither α β] :
   ⟨le_antisymm prod_le_borel_prod OpensMeasurableSpace.borel_le⟩
 #align prod.borel_space Prod.borelSpace
 
+/-- Given a measurable embedding to a Borel space which is also a topological embedding, then the
+source space is also a Borel space. -/
+lemma MeasurableEmbedding.borelSpace {α β : Type*} [MeasurableSpace α] [TopologicalSpace α]
+    [MeasurableSpace β] [TopologicalSpace β] [hβ : BorelSpace β] {e : α → β}
+    (h'e : MeasurableEmbedding e) (h''e : Inducing e) :
+    BorelSpace α := by
+  constructor
+  have : MeasurableSpace.comap e (borel β) = ‹_› := by simpa [hβ.measurable_eq] using h'e.comap_eq
+  rw [← this, ← borel_comap, h''e.induced]
+
+instance _root_.ULift.instBorelSpace [BorelSpace α] : BorelSpace (ULift α) :=
+  MeasurableEquiv.ulift.measurableEmbedding.borelSpace Homeomorph.ulift.inducing
+
+instance DiscreteMeasurableSpace.toBorelSpace {α : Type*} [TopologicalSpace α] [DiscreteTopology α]
+    [MeasurableSpace α] [DiscreteMeasurableSpace α] : BorelSpace α := by
+  constructor; ext; simp [MeasurableSpace.measurableSet_generateFrom, measurableSet_discrete]
+
 protected theorem Embedding.measurableEmbedding {f : α → β} (h₁ : Embedding f)
     (h₂ : MeasurableSet (range f)) : MeasurableEmbedding f :=
   show MeasurableEmbedding
@@ -1263,7 +1286,7 @@ protected theorem Monotone.measurable [LinearOrder β] [OrderClosedTopology β] 
 theorem aemeasurable_restrict_of_monotoneOn [LinearOrder β] [OrderClosedTopology β] {μ : Measure β}
     {s : Set β} (hs : MeasurableSet s) {f : β → α} (hf : MonotoneOn f s) :
     AEMeasurable f (μ.restrict s) :=
-  have : Monotone (f ∘ (↑) : s → α) := fun ⟨x, hx⟩ ⟨y, hy⟩=> fun (hxy : x ≤ y) => hf hx hy hxy
+  have : Monotone (f ∘ (↑) : s → α) := fun ⟨x, hx⟩ ⟨y, hy⟩ => fun (hxy : x ≤ y) => hf hx hy hxy
   aemeasurable_restrict_of_measurable_subtype hs this.measurable
 #align ae_measurable_restrict_of_monotone_on aemeasurable_restrict_of_monotoneOn
 
@@ -1325,7 +1348,7 @@ theorem measurableSet_of_mem_nhdsWithin_Ioi {s : Set α} (h : ∀ x ∈ s, s ∈
 lemma measurableSet_bddAbove_range {ι} [Countable ι] {f : ι → δ → α} (hf : ∀ i, Measurable (f i)) :
     MeasurableSet {b | BddAbove (range (fun i ↦ f i b))} := by
   rcases isEmpty_or_nonempty α with hα|hα
-  · have : ∀ b, range (fun i ↦ f i b) = ∅ := fun b ↦ Iff.mp toFinset_eq_empty rfl
+  · have : ∀ b, range (fun i ↦ f i b) = ∅ := fun b ↦ eq_empty_of_isEmpty _
     simp [this]
   have A : ∀ (i : ι) (c : α), MeasurableSet {x | f i x ≤ c} := by
     intro i c

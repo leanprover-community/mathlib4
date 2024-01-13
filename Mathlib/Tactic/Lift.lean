@@ -149,7 +149,7 @@ def Lift.main (e t : TSyntax `term) (hUsing : Option (TSyntax `term))
     (.tuple Syntax.missing <| [newVarName, newEqName].map (.one Syntax.missing)) goal)
   -- if we use a new variable, then substitute it everywhere
   if isNewVar then
-    for decl in ←getLCtx do
+    for decl in ← getLCtx do
       if decl.userName != newEqName then
         let declIdent := mkIdent decl.userName
         -- The line below fails if $declIdent is there only once.

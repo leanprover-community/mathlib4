@@ -248,9 +248,9 @@ theorem logEmbedding_component_le {r : ℝ} {x : (𝓞 K)ˣ} (hr : 0 ≤ r) (h :
 theorem log_le_of_logEmbedding_le {r : ℝ} {x : (𝓞 K)ˣ} (hr : 0 ≤ r) (h : ‖logEmbedding K x‖ ≤ r)
     (w : InfinitePlace K) : |Real.log (w x)| ≤ (Fintype.card (InfinitePlace K)) * r := by
   have tool : ∀ x : ℝ, 0 ≤ x → x ≤ mult w * x := fun x hx => by
-      nth_rw 1 [← one_mul x]
-      refine mul_le_mul ?_ le_rfl hx ?_
-      all_goals { rw [mult]; split_ifs <;> norm_num }
+    nth_rw 1 [← one_mul x]
+    refine mul_le_mul ?_ le_rfl hx ?_
+    all_goals { rw [mult]; split_ifs <;> norm_num }
   by_cases hw : w = w₀
   · have hyp := congr_arg (‖·‖) (sum_logEmbedding_component x).symm
     replace hyp := (le_of_eq hyp).trans (norm_sum_le _ _)
@@ -316,7 +316,7 @@ sequence defining the same ideal and their quotient is the desired unit `u_w₁`
 
 open NumberField.mixedEmbedding NNReal
 
-variable (w₁ : InfinitePlace K) {B : ℕ} (hB : minkowskiBound K < (convexBodyLtFactor K) * B)
+variable (w₁ : InfinitePlace K) {B : ℕ} (hB : minkowskiBound K < (convexBodyLTFactor K) * B)
 
 /-- This result shows that there always exists a next term in the sequence. -/
 theorem seq_next {x : 𝓞 K} (hx : x ≠ 0) :
@@ -326,7 +326,7 @@ theorem seq_next {x : 𝓞 K} (hx : x ≠ 0) :
   suffices ∀ w, w ≠ w₁ → f w ≠ 0 by
     obtain ⟨g, h_geqf, h_gprod⟩ := adjust_f K B this
     obtain ⟨y, h_ynz, h_yle⟩ := exists_ne_zero_mem_ringOfIntegers_lt (f := g)
-      (by rw [convexBodyLt_volume]; convert hB; exact congr_arg ((↑): NNReal → ENNReal) h_gprod)
+      (by rw [convexBodyLT_volume]; convert hB; exact congr_arg ((↑): NNReal → ENNReal) h_gprod)
     refine ⟨y, h_ynz, fun w hw => (h_geqf w hw ▸ h_yle w).trans ?_, ?_⟩
     · rw [← Rat.cast_le (K := ℝ), Rat.cast_coe_nat]
       calc
@@ -334,7 +334,7 @@ theorem seq_next {x : 𝓞 K} (hx : x ≠ 0) :
         _ ≤ ∏ w : InfinitePlace K, (g w : ℝ) ^ mult w := by
           refine prod_le_prod ?_ ?_
           · exact fun _ _ => pow_nonneg (by positivity) _
-          · exact fun w _ => pow_le_pow_of_le_left (by positivity) (le_of_lt (h_yle w)) (mult w)
+          · exact fun w _ => pow_le_pow_left (by positivity) (le_of_lt (h_yle w)) (mult w)
         _ ≤ (B : ℝ) := by
           simp_rw [← NNReal.coe_pow, ← NNReal.coe_prod]
           exact le_of_eq (congr_arg toReal h_gprod)
@@ -396,9 +396,9 @@ image by the `logEmbedding` of these units is `ℝ`-linearly independent, see
 `unitLattice_span_eq_top`. -/
 theorem exists_unit (w₁ : InfinitePlace K) :
     ∃ u : (𝓞 K)ˣ, ∀ w : InfinitePlace K, w ≠ w₁ → Real.log (w u) < 0 := by
-  obtain ⟨B, hB⟩ : ∃ B : ℕ, minkowskiBound K < (convexBodyLtFactor K) * B := by
+  obtain ⟨B, hB⟩ : ∃ B : ℕ, minkowskiBound K < (convexBodyLTFactor K) * B := by
     conv => congr; ext; rw [mul_comm]
-    exact ENNReal.exists_nat_mul_gt (ne_of_gt (convexBodyLtFactor_pos K))
+    exact ENNReal.exists_nat_mul_gt (ne_of_gt (convexBodyLTFactor_pos K))
       (ne_of_lt (minkowskiBound_lt_top K))
   rsuffices ⟨n, m, hnm, h⟩ : ∃ n m, n < m ∧
       (Ideal.span ({ (seq K w₁ hB n : 𝓞 K) }) = Ideal.span ({ (seq K w₁ hB m : 𝓞 K) }))
@@ -493,6 +493,7 @@ theorem unitLattice_rank :
   rw [← Units.finrank_eq_rank]
   exact Zlattice.rank ℝ (unitLattice_span_eq_top K)
 
+set_option synthInstance.maxHeartbeats 27000 in
 /-- The linear equivalence between `unitLattice` and `(𝓞 K)ˣ ⧸ (torsion K)` as an additive
 `ℤ`-module. -/
 def unitLatticeEquiv : (unitLattice K) ≃ₗ[ℤ] Additive ((𝓞 K)ˣ ⧸ (torsion K)) := by
@@ -561,11 +562,12 @@ theorem fun_eq_repr {x ζ : (𝓞 K)ˣ} {f : Fin (rank K) → ℤ} (hζ : ζ ∈
   suffices Additive.ofMul ↑x = ∑ i, (f i) • (basisModTorsion K i) by
     rw [← (basisModTorsion K).repr_sum_self f, ← this]
   calc
-    Additive.ofMul ↑x = ∑ i, (f i) • Additive.ofMul ↑(fundSystem K i) := by
-                      rw [h, QuotientGroup.mk_mul, (QuotientGroup.eq_one_iff _).mpr hζ, one_mul,
-                        QuotientGroup.mk_prod, ofMul_prod]; rfl
-                    _ = ∑ i, (f i) • (basisModTorsion K i) := by
-                      simp_rw [fundSystem, QuotientGroup.out_eq', ofMul_toMul]
+    Additive.ofMul ↑x
+    _ = ∑ i, (f i) • Additive.ofMul ↑(fundSystem K i) := by
+          rw [h, QuotientGroup.mk_mul, (QuotientGroup.eq_one_iff _).mpr hζ, one_mul,
+            QuotientGroup.mk_prod, ofMul_prod]; rfl
+    _ = ∑ i, (f i) • (basisModTorsion K i) := by
+          simp_rw [fundSystem, QuotientGroup.out_eq', ofMul_toMul]
 
 /-- **Dirichlet Unit Theorem**. Any unit `x` of `𝓞 K` can be written uniquely as the product of
 a root of unity and powers of the units of the fundamental system `fundSystem`. -/

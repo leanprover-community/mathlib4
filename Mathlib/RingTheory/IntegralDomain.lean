@@ -19,9 +19,10 @@ Assorted theorems about integral domains.
 * `isCyclic_of_subgroup_isDomain`: A finite subgroup of the units of an integral domain is cyclic.
 * `Fintype.fieldOfDomain`: A finite integral domain is a field.
 
-## TODO
+## Notes
 
-Prove Wedderburn's little theorem, which shows that all finite division rings are actually fields.
+Wedderburn's little theorem, which shows that all finite division rings are actually fields,
+is in `Mathlib.RingTheory.LittleWedderburn`.
 
 ## Tags
 
@@ -71,7 +72,7 @@ theorem exists_eq_pow_of_mul_eq_pow_of_coprime {R : Type*} [CommSemiring R] [IsD
 nonrec
 theorem Finset.exists_eq_pow_of_mul_eq_pow_of_coprime {ι R : Type*} [CommSemiring R] [IsDomain R]
     [GCDMonoid R] [Unique Rˣ] {n : ℕ} {c : R} {s : Finset ι} {f : ι → R}
-    (h : ∀ (i) (_ : i ∈ s) (j) (_ : j ∈ s), i ≠ j → IsCoprime (f i) (f j))
+    (h : ∀ i ∈ s, ∀ j ∈ s, i ≠ j → IsCoprime (f i) (f j))
     (hprod : ∏ i in s, f i = c ^ n) : ∀ i ∈ s, ∃ d : R, f i = d ^ n := by
   classical
     intro i hi
@@ -91,19 +92,15 @@ section Ring
 
 variable [Ring R] [IsDomain R] [Fintype R]
 
-/-- Every finite domain is a division ring.
-
-TODO: Prove Wedderburn's little theorem,
-which shows a finite domain is in fact commutative, hence a field. -/
+/-- Every finite domain is a division ring. More generally, they are fields; this can be found in
+`Mathlib.RingTheory.LittleWedderburn`. -/
 def Fintype.divisionRingOfIsDomain (R : Type*) [Ring R] [IsDomain R] [DecidableEq R] [Fintype R] :
     DivisionRing R :=
   { show GroupWithZero R from Fintype.groupWithZeroOfCancel R, ‹Ring R› with }
 #align fintype.division_ring_of_is_domain Fintype.divisionRingOfIsDomain
 
-/-- Every finite commutative domain is a field.
-
-TODO: Prove Wedderburn's little theorem, which shows a finite domain is automatically commutative,
-dropping one assumption from this theorem. -/
+/-- Every finite commutative domain is a field. More generally, commutativity is not required: this
+can be found in `Mathlib.RingTheory.LittleWedderburn`. -/
 def Fintype.fieldOfDomain (R) [CommRing R] [IsDomain R] [DecidableEq R] [Fintype R] : Field R :=
   { Fintype.groupWithZeroOfCancel R, ‹CommRing R› with }
 #align fintype.field_of_domain Fintype.fieldOfDomain

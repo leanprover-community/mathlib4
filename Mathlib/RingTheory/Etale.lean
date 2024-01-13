@@ -261,9 +261,7 @@ instance FormallySmooth.mvPolynomial (σ : Type u) : FormallySmooth R (MvPolynom
 #align algebra.formally_smooth.mv_polynomial Algebra.FormallySmooth.mvPolynomial
 
 instance FormallySmooth.polynomial : FormallySmooth R R[X] :=
-  -- Porting note: this needed more underscores than in lean3.
-  @FormallySmooth.of_equiv _ _ _ _ _ _ _ _ (FormallySmooth.mvPolynomial R PUnit)
-    (MvPolynomial.pUnitAlgEquiv R)
+  FormallySmooth.of_equiv (MvPolynomial.pUnitAlgEquiv R)
 #align algebra.formally_smooth.polynomial Algebra.FormallySmooth.polynomial
 
 end Polynomial
@@ -340,7 +338,7 @@ theorem FormallySmooth.of_split [FormallySmooth R P] (g : A →ₐ[R] P ⧸ (Rin
       have : _ = i (f x) := (FormallySmooth.mk_lift I ⟨2, hI⟩ (i.comp f) x : _)
       rwa [hx, map_zero, ← Ideal.Quotient.mk_eq_mk, Submodule.Quotient.mk_eq_zero] at this
     intro x hx
-    have := (Ideal.pow_mono this 2).trans (Ideal.le_comap_pow _ 2) hx
+    have := (Ideal.pow_right_mono this 2).trans (Ideal.le_comap_pow _ 2) hx
     rwa [hI] at this
   have : i.comp f.kerSquareLift = (Ideal.Quotient.mkₐ R _).comp l := by
     apply AlgHom.coe_ringHom_injective

@@ -57,9 +57,8 @@ namespace Submonoid
 variable {s t u : Set M}
 
 @[to_additive]
-theorem mul_subset {S : Submonoid M} (hs : s ⊆ S) (ht : t ⊆ S) : s * t ⊆ S := by
-  rintro _ ⟨p, q, hp, hq, rfl⟩
-  exact Submonoid.mul_mem _ (hs hp) (ht hq)
+theorem mul_subset {S : Submonoid M} (hs : s ⊆ S) (ht : t ⊆ S) : s * t ⊆ S :=
+  mul_subset_iff.2 fun _x hx _y hy ↦ mul_mem (hs hx) (ht hy)
 #align submonoid.mul_subset Submonoid.mul_subset
 #align add_submonoid.add_subset AddSubmonoid.add_subset
 
@@ -593,9 +592,8 @@ theorem mul_le_mul_right {M N P : AddSubmonoid R} (h : N ≤ P) : M * N ≤ M * 
 #align add_submonoid.mul_le_mul_right AddSubmonoid.mul_le_mul_right
 
 theorem mul_subset_mul {M N : AddSubmonoid R} :
-    (↑M : Set R) * (↑N : Set R) ⊆ (↑(M * N) : Set R) := by
-  rintro _ ⟨i, j, hi, hj, rfl⟩
-  exact mul_mem_mul hi hj
+    (↑M : Set R) * (↑N : Set R) ⊆ (↑(M * N) : Set R) :=
+  mul_subset_iff.2 fun _i hi _j hj ↦ mul_mem_mul hi hj
 #align add_submonoid.mul_subset_mul AddSubmonoid.mul_subset_mul
 
 end NonUnitalNonAssocSemiring

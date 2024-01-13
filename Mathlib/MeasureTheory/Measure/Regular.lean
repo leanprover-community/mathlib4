@@ -221,7 +221,7 @@ theorem measure_eq_iSup (H : InnerRegularWRT μ p q) (hU : q U) :
 
 theorem exists_subset_lt_add (H : InnerRegularWRT μ p q) (h0 : p ∅) (hU : q U) (hμU : μ U ≠ ∞)
     (hε : ε ≠ 0) : ∃ K, K ⊆ U ∧ p K ∧ μ U < μ K + ε := by
-  cases' eq_or_ne (μ U) 0 with h₀ h₀
+  rcases eq_or_ne (μ U) 0 with h₀ | h₀
   · refine' ⟨∅, empty_subset _, h0, _⟩
     rwa [measure_empty, h₀, zero_add, pos_iff_ne_zero]
   · rcases H hU _ (ENNReal.sub_lt_self hμU h₀ hε) with ⟨K, hKU, hKc, hrK⟩

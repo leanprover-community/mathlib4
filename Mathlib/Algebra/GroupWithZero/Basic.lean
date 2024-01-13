@@ -65,7 +65,7 @@ theorem mul_eq_zero_of_ne_zero_imp_eq_zero {a b : M₀} (h : a ≠ 0 → b = 0) 
 #align mul_eq_zero_of_ne_zero_imp_eq_zero mul_eq_zero_of_ne_zero_imp_eq_zero
 
 /-- To match `one_mul_eq_id`. -/
-theorem zero_mul_eq_const : (· * ·) (0 : M₀) = Function.const _ 0 :=
+theorem zero_mul_eq_const : ((0 : M₀) * ·) = Function.const _ 0 :=
   funext zero_mul
 #align zero_mul_eq_const zero_mul_eq_const
 

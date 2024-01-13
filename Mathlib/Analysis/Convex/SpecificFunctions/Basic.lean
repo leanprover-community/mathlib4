@@ -52,14 +52,14 @@ theorem strictConvexOn_exp : StrictConvexOn ℝ univ exp := by
     calc
       exp y - exp x = exp y - exp y * exp (x - y) := by rw [← exp_add]; ring_nf
       _ = exp y * (1 - exp (x - y)) := by ring
-      _ < exp y * -(x - y) := by gcongr; linarith [add_one_lt_exp_of_nonzero h2.ne]
+      _ < exp y * -(x - y) := by gcongr; linarith [add_one_lt_exp h2.ne]
       _ = exp y * (y - x) := by ring
   · have h1 : 0 < z - y := by linarith
     rw [lt_div_iff h1]
     calc
       exp y * (z - y) < exp y * (exp (z - y) - 1) := by
         gcongr _ * ?_
-        linarith [add_one_lt_exp_of_nonzero h1.ne']
+        linarith [add_one_lt_exp h1.ne']
       _ = exp (z - y) * exp y - exp y := by ring
       _ ≤ exp z - exp y := by rw [← exp_add]; ring_nf; rfl
 #align strict_convex_on_exp strictConvexOn_exp
@@ -115,7 +115,7 @@ theorem one_add_mul_self_lt_rpow_one_add {s : ℝ} (hs : -1 ≤ s) (hs' : s ≠ 
   · have : p ≠ 0 := by positivity
     simpa [zero_rpow this]
   have hs1 : 0 < 1 + s := by linarith
-  cases' le_or_lt (1 + p * s) 0 with hs2 hs2
+  rcases le_or_lt (1 + p * s) 0 with hs2 | hs2
   · exact hs2.trans_lt (rpow_pos_of_pos hs1 _)
   rw [rpow_def_of_pos hs1, ← exp_log hs2]
   apply exp_strictMono
@@ -216,3 +216,16 @@ theorem strictConcaveOn_log_Iio : StrictConcaveOn ℝ (Iio 0) log := by
     _ = _ := by rw [log_neg_eq_log]
 
 #align strict_concave_on_log_Iio strictConcaveOn_log_Iio
+
+namespace Real
+
+lemma exp_mul_le_cosh_add_mul_sinh {t : ℝ} (ht : |t| ≤ 1) (x : ℝ) :
+    exp (t * x) ≤ cosh x + t * sinh x := by
+  rw [abs_le] at ht
+  calc
+    _ = exp ((1 + t) / 2 * x + (1 - t) / 2 * (-x)) := by ring_nf
+    _ ≤ (1 + t) / 2 * exp x + (1 - t) / 2 * exp (-x) :=
+        convexOn_exp.2 (Set.mem_univ _) (Set.mem_univ _) (by linarith) (by linarith) $ by ring
+    _ = _ := by rw [cosh_eq, sinh_eq]; ring
+
+end Real

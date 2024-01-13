@@ -422,7 +422,7 @@ def valuationSubring : ValuationSubring K :=
   { v.integer with
     mem_or_inv_mem' := by
       intro x
-      cases' le_or_lt (v x) 1 with h h
+      rcases le_or_lt (v x) 1 with h | h
       · left; exact h
       · right; change v x⁻¹ ≤ 1
         rw [map_inv₀ v, ← inv_one, inv_le_inv₀]

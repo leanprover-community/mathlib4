@@ -63,7 +63,7 @@ namespace Nat
 
 #align nat.one_mul Nat.one_mul
 
-#align nat.succ_add_eq_succ_add Nat.succ_add_eq_succ_add
+#align nat.succ_add_eq_succ_add Nat.succ_add_eq_add_succ
 
 theorem eq_zero_of_mul_eq_zero : ∀ {n m : ℕ}, n * m = 0 → n = 0 ∨ m = 0
   | 0, m => fun _ => Or.inl rfl
@@ -784,10 +784,9 @@ lemma to_digits_core_length (b : Nat) (h : 2 <= b) (f n e : Nat)
             to_digits_core_lens_eq b f (n / b) (Nat.digitChar $ n % b), if_false]
           exact Nat.succ_le_succ ih
       case neg =>
-        have _ : e = 0 := Nat.eq_zero_of_not_pos h_pred_pos
-        rw [‹e = 0›]
+        obtain rfl : e = 0 := Nat.eq_zero_of_not_pos h_pred_pos
         have _ : b ^ 1 = b := by simp only [pow_succ, pow_zero, Nat.one_mul]
-        have _ : n < b := ‹b ^ 1 = b› ▸ (‹e = 0› ▸ hlt : n < b ^ Nat.succ 0)
+        have _ : n < b := ‹b ^ 1 = b› ▸ hlt
         simp [(@Nat.div_eq_of_lt n b ‹n < b› : n / b = 0)]
 
 /-- The core implementation of `Nat.repr` returns a String with length less than or equal to the

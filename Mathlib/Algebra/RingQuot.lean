@@ -195,7 +195,7 @@ private irreducible_def npow (n : ℕ) : RingQuot r → RingQuot r
             -- mysteriously doesn't work
             have := congr_arg₂ (fun x y ↦ mul r ⟨x⟩ ⟨y⟩) (Quot.sound h) ih
             dsimp only at this
-            simp [mul_def] at this
+            simp? [mul_def] at this says simp only [mul_def, Quot.map₂_mk, mk.injEq] at this
             exact this)
         a⟩
 

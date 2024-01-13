@@ -242,7 +242,7 @@ def IsNowhereDense (s : Set X) := interior (closure s) = ∅
 
 /-- The empty set is nowhere dense. -/
 @[simp]
-lemma isNowhereDense_of_empty : IsNowhereDense (∅ : Set X) := by
+lemma isNowhereDense_empty : IsNowhereDense (∅ : Set X) := by
   rw [IsNowhereDense, closure_empty, interior_empty]
 
 /-- A closed set is nowhere dense iff its interior is empty. -/

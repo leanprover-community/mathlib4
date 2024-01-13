@@ -196,18 +196,6 @@ instance : UniformGroup αᵐᵒᵖ :=
 
 end MulOpposite
 
-namespace Subgroup
-
-@[to_additive]
-instance uniformGroup (S : Subgroup α) : UniformGroup S :=
-  ⟨uniformContinuous_comap'
-      (uniformContinuous_div.comp <|
-        uniformContinuous_subtype_val.prod_map uniformContinuous_subtype_val)⟩
-#align subgroup.uniform_group Subgroup.uniformGroup
-#align add_subgroup.uniform_add_group AddSubgroup.uniformAddGroup
-
-end Subgroup
-
 section LatticeOps
 
 variable [Group β]
@@ -240,16 +228,30 @@ theorem uniformGroup_inf {u₁ u₂ : UniformSpace β} (h₁ : @UniformGroup β 
 #align uniform_add_group_inf uniformAddGroup_inf
 
 @[to_additive]
-theorem uniformGroup_comap {γ : Type*} [Group γ] {u : UniformSpace γ} [UniformGroup γ] {F : Type*}
-    [MonoidHomClass F β γ] (f : F) : @UniformGroup β (u.comap f) _ :=
-  letI : UniformSpace β := u.comap f
-  ⟨uniformContinuous_comap' <| by
-    simp_rw [Function.comp, map_div]
-    exact uniformContinuous_div.comp (uniformContinuous_comap.prod_map uniformContinuous_comap)⟩
-#align uniform_group_comap uniformGroup_comap
-#align uniform_add_group_comap uniformAddGroup_comap
+lemma UniformInducing.uniformGroup {γ : Type*} [Group γ] [UniformSpace γ] [UniformGroup γ]
+    [UniformSpace β] {F : Type*} [MonoidHomClass F β γ] (f : F) (hf : UniformInducing f) :
+    UniformGroup β where
+  uniformContinuous_div := by
+    simp_rw [hf.uniformContinuous_iff, Function.comp_def, map_div]
+    exact uniformContinuous_div.comp (hf.uniformContinuous.prod_map hf.uniformContinuous)
+
+@[to_additive]
+protected theorem UniformGroup.comap {γ : Type*} [Group γ] {u : UniformSpace γ} [UniformGroup γ]
+    {F : Type*} [MonoidHomClass F β γ] (f : F) : @UniformGroup β (u.comap f) _ :=
+  letI : UniformSpace β := u.comap f; UniformInducing.uniformGroup f ⟨rfl⟩
+#align uniform_group_comap UniformGroup.comap
+#align uniform_add_group_comap UniformAddGroup.comap
 
 end LatticeOps
+
+namespace Subgroup
+
+@[to_additive]
+instance uniformGroup (S : Subgroup α) : UniformGroup S := .comap S.subtype
+#align subgroup.uniform_group Subgroup.uniformGroup
+#align add_subgroup.uniform_add_group AddSubgroup.uniformAddGroup
+
+end Subgroup
 
 section
 
@@ -763,8 +765,8 @@ variable (hφ : Continuous (fun p : β × δ => φ p.1 p.2))
 
 variable {W' : Set G} (W'_nhd : W' ∈ 𝓝 (0 : G))
 
-private theorem extend_Z_bilin_aux (x₀ : α) (y₁ : δ) : ∃ U₂ ∈ comap e (𝓝 x₀), ∀ (x) (_ : x ∈ U₂)
-    (x') (_ : x' ∈ U₂), (fun p : β × δ => φ p.1 p.2) (x' - x, y₁) ∈ W' := by
+private theorem extend_Z_bilin_aux (x₀ : α) (y₁ : δ) : ∃ U₂ ∈ comap e (𝓝 x₀), ∀ x ∈ U₂, ∀ x' ∈ U₂,
+    (fun p : β × δ => φ p.1 p.2) (x' - x, y₁) ∈ W' := by
   let Nx := 𝓝 x₀
   let ee := fun u : β × β => (e u.1, e u.2)
   have lim1 : Tendsto (fun a : β × β => (a.2 - a.1, y₁))
@@ -782,7 +784,7 @@ private theorem extend_Z_bilin_aux (x₀ : α) (y₁ : δ) : ∃ U₂ ∈ comap 
 #noalign dense_inducing.extend_Z_bilin_aux
 
 private theorem extend_Z_bilin_key (x₀ : α) (y₀ : γ) : ∃ U ∈ comap e (𝓝 x₀), ∃ V ∈ comap f (𝓝 y₀),
-    ∀ (x) (_ : x ∈ U) (x') (_ : x' ∈ U), ∀ (y) (_ : y ∈ V) (y') (_ : y' ∈ V),
+    ∀ x ∈ U, ∀ x' ∈ U, ∀ (y) (_ : y ∈ V) (y') (_ : y' ∈ V),
     (fun p : β × δ => φ p.1 p.2) (x', y') - (fun p : β × δ => φ p.1 p.2) (x, y) ∈ W' := by
   let ee := fun u : β × β => (e u.1, e u.2)
   let ff := fun u : δ × δ => (f u.1, f u.2)

@@ -49,9 +49,6 @@ Note that if `M` does not fit in `w`, the reverse direction of this implication 
 `Module.Free.of_basis`. -/
 theorem Module.free_def [Small.{w,v} M] :
     Module.Free R M ↔ ∃ I : Type w, Nonempty (Basis I R M) :=
-  -- Porting note: this is required or Lean cannot solve universe constraints
-  -- The same error presents if inferInstance is called to solve `small`
-  have _small (s : Set M) : Small.{w} ↑s := small_of_injective (fun _ _ => (Subtype.val_inj).mp)
   ⟨fun h =>
     ⟨Shrink (Set.range h.exists_basis.some.2),
       ⟨(Basis.reindexRange h.exists_basis.some.2).reindex (equivShrink _)⟩⟩,

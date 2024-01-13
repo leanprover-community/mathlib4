@@ -541,7 +541,7 @@ instance : Module R (HahnSeries Γ V) :=
 
 /-- `single` as a linear map -/
 @[simps]
-def single.linearMap (a : Γ) : R →ₗ[R] HahnSeries Γ R :=
+def single.linearMap (a : Γ) : V →ₗ[R] HahnSeries Γ V :=
   { single.addMonoidHom a with
     map_smul' := fun r s => by
       ext b
@@ -550,7 +550,7 @@ def single.linearMap (a : Γ) : R →ₗ[R] HahnSeries Γ R :=
 
 /-- `coeff g` as a linear map -/
 @[simps]
-def coeff.linearMap (g : Γ) : HahnSeries Γ R →ₗ[R] R :=
+def coeff.linearMap (g : Γ) : HahnSeries Γ V →ₗ[R] V :=
   { coeff.addMonoidHom g with map_smul' := fun _ _ => rfl }
 #align hahn_series.coeff.linear_map HahnSeries.coeff.linearMap
 
@@ -1117,12 +1117,13 @@ def toPowerSeries : HahnSeries ℕ R ≃+* PowerSeries R where
     ext n
     simp only [PowerSeries.coeff_mul, PowerSeries.coeff_mk, mul_coeff, isPwo_support]
     classical
-      refine' sum_filter_ne_zero.symm.trans ((sum_congr _ fun _ _ => rfl).trans sum_filter_ne_zero)
-      ext m
-      simp only [mem_antidiagonal, mem_addAntidiagonal, and_congr_left_iff, mem_filter,
-        mem_support]
-      rintro h
-      rw [and_iff_right (left_ne_zero_of_mul h), and_iff_right (right_ne_zero_of_mul h)]
+    refine (sum_filter_ne_zero _).symm.trans $ (sum_congr ?_ fun _ _ ↦ rfl).trans $
+      sum_filter_ne_zero _
+    ext m
+    simp only [mem_antidiagonal, mem_addAntidiagonal, and_congr_left_iff, mem_filter,
+      mem_support]
+    rintro h
+    rw [and_iff_right (left_ne_zero_of_mul h), and_iff_right (right_ne_zero_of_mul h)]
 #align hahn_series.to_power_series HahnSeries.toPowerSeries
 
 theorem coeff_toPowerSeries {f : HahnSeries ℕ R} {n : ℕ} :
@@ -1231,7 +1232,8 @@ def toMvPowerSeries {σ : Type*} [Fintype σ] : HahnSeries (σ →₀ ℕ) R ≃
     classical
       change (f * g).coeff n = _
       simp_rw [mul_coeff]
-      refine' sum_filter_ne_zero.symm.trans ((sum_congr _ fun _ _ => rfl).trans sum_filter_ne_zero)
+      refine' (sum_filter_ne_zero _).symm.trans $ (sum_congr _ fun _ _ ↦ rfl).trans $
+        sum_filter_ne_zero _
       ext m
       simp only [and_congr_left_iff, mem_addAntidiagonal, mem_filter, mem_support,
         Finset.mem_antidiagonal]

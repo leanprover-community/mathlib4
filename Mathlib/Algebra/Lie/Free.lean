@@ -123,7 +123,7 @@ instance : Inhabited (FreeLieAlgebra R X) := by rw [FreeLieAlgebra]; infer_insta
 namespace FreeLieAlgebra
 
 instance {S : Type*} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] :
-    SMul S (FreeLieAlgebra R X) where smul t := Quot.map ((· • ·) t) (Rel.smulOfTower t)
+    SMul S (FreeLieAlgebra R X) where smul t := Quot.map (t • ·) (Rel.smulOfTower t)
 
 instance {S : Type*} [Monoid S] [DistribMulAction S R] [DistribMulAction Sᵐᵒᵖ R]
     [IsScalarTower S R R] [IsCentralScalar S R] : IsCentralScalar S (FreeLieAlgebra R X) where

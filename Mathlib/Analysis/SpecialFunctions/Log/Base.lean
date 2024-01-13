@@ -55,7 +55,7 @@ theorem logb_one : logb b 1 = 0 := by simp [logb]
 
 @[simp]
 lemma logb_self_eq_one (hb : 1 < b) : logb b b = 1 :=
-   div_self (log_pos hb).ne'
+  div_self (log_pos hb).ne'
 
 lemma logb_self_eq_one_iff : logb b b = 1 ↔ b ≠ 0 ∧ b ≠ 1 ∧ b ≠ -1 :=
   Iff.trans ⟨fun h h' => by simp [logb, h'] at h, div_self⟩ log_ne_zero
@@ -182,7 +182,7 @@ private theorem b_ne_one' : b ≠ 1 := by linarith
 
 @[simp]
 theorem logb_le_logb (h : 0 < x) (h₁ : 0 < y) : logb b x ≤ logb b y ↔ x ≤ y := by
-  rw [logb, logb, div_le_div_right (log_pos hb), log_le_log h h₁]
+  rw [logb, logb, div_le_div_right (log_pos hb), log_le_log_iff h h₁]
 #align real.logb_le_logb Real.logb_le_logb
 
 @[gcongr]
@@ -295,7 +295,7 @@ private theorem b_ne_one : b ≠ 1 := by linarith
 
 @[simp]
 theorem logb_le_logb_of_base_lt_one (h : 0 < x) (h₁ : 0 < y) : logb b x ≤ logb b y ↔ y ≤ x := by
-  rw [logb, logb, div_le_div_right_of_neg (log_neg b_pos b_lt_one), log_le_log h₁ h]
+  rw [logb, logb, div_le_div_right_of_neg (log_neg b_pos b_lt_one), log_le_log_iff h₁ h]
 #align real.logb_le_logb_of_base_lt_one Real.logb_le_logb_of_base_lt_one
 
 theorem logb_lt_logb_of_base_lt_one (hx : 0 < x) (hxy : x < y) : logb b y < logb b x := by
@@ -450,18 +450,17 @@ lemma Real.induction_Ico_mul {P : ℝ → Prop} (x₀ r : ℝ) (hr : 1 < r) (hx�
     (step : ∀ n : ℕ, n ≥ 1 → (∀ z ∈ Set.Ico x₀ (r ^ n * x₀), P z) →
       (∀ z ∈ Set.Ico (r ^ n * x₀) (r ^ (n+1) * x₀), P z)) :
     ∀ x ≥ x₀, P x := by
-  suffices : ∀ n : ℕ, ∀ x ∈ Set.Ico x₀ (r ^ (n + 1) * x₀), P x
-  · intro x hx
+  suffices ∀ n : ℕ, ∀ x ∈ Set.Ico x₀ (r ^ (n + 1) * x₀), P x by
+    intro x hx
     have hx' : 0 < x / x₀ := div_pos (hx₀.trans_le hx) hx₀
     refine this ⌊logb r (x / x₀)⌋₊ x ?_
     rw [mem_Ico, ← div_lt_iff hx₀, ← rpow_nat_cast, ← logb_lt_iff_lt_rpow hr hx', Nat.cast_add,
       Nat.cast_one]
     exact ⟨hx, Nat.lt_floor_add_one _⟩
   intro n
-  induction n
-  case zero => simpa using base
-  case succ n ih =>
-    specialize step (n + 1) (by simp)
-    exact fun x hx => (Ico_subset_Ico_union_Ico hx).elim (ih x) (step ih _)
+  induction n with
+  | zero => simpa using base
+  | succ n ih =>
+    exact fun x hx => (Ico_subset_Ico_union_Ico hx).elim (ih x) (step (n + 1) (by simp) ih _)
 
 end Induction

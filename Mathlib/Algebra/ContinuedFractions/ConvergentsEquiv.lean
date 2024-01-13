@@ -145,9 +145,7 @@ theorem squashSeq_succ_n_tail_eq_squashSeq_tail_n :
     ext1 m
     cases' Decidable.em (m = n) with m_eq_n m_ne_n
     · simp [*, squashSeq]
-    · have : s.tail.get? m = s.get? (m + 1) := s.get?_tail m
-      cases s_succ_mth_eq : s.get? (m + 1)
-      all_goals have _ := this.trans s_succ_mth_eq
+    · cases s_succ_mth_eq : s.get? (m + 1)
       · simp only [*, squashSeq, Stream'.Seq.get?_tail, Stream'.Seq.get?_zipWith,
           Option.map₂_none_right]
       · simp [*, squashSeq]

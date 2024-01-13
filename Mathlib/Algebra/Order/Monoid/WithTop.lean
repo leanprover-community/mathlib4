@@ -621,7 +621,7 @@ theorem add_ne_bot : a + b ≠ ⊥ ↔ a ≠ ⊥ ∧ b ≠ ⊥ :=
 #align with_bot.add_ne_bot WithBot.add_ne_bot
 
 theorem bot_lt_add [LT α] {a b : WithBot α} : ⊥ < a + b ↔ ⊥ < a ∧ ⊥ < b :=
-  @WithTop.add_lt_top αᵒᵈ _ _ _ _
+  WithTop.add_lt_top (α := αᵒᵈ)
 #align with_bot.bot_lt_add WithBot.bot_lt_add
 
 theorem add_eq_coe : a + b = x ↔ ∃ a' b' : α, ↑a' = a ∧ ↑b' = b ∧ a' + b' = x :=
@@ -692,42 +692,42 @@ variable [Preorder α]
 
 instance covariantClass_add_le [CovariantClass α α (· + ·) (· ≤ ·)] :
     CovariantClass (WithBot α) (WithBot α) (· + ·) (· ≤ ·) :=
-  @OrderDual.covariantClass_add_le (WithTop αᵒᵈ) _ _ _
+  OrderDual.covariantClass_add_le (α := WithTop αᵒᵈ)
 #align with_bot.covariant_class_add_le WithBot.covariantClass_add_le
 
 instance covariantClass_swap_add_le [CovariantClass α α (swap (· + ·)) (· ≤ ·)] :
     CovariantClass (WithBot α) (WithBot α) (swap (· + ·)) (· ≤ ·) :=
-  @OrderDual.covariantClass_swap_add_le (WithTop αᵒᵈ) _ _ _
+  OrderDual.covariantClass_swap_add_le (α := WithTop αᵒᵈ)
 #align with_bot.covariant_class_swap_add_le WithBot.covariantClass_swap_add_le
 
 instance contravariantClass_add_lt [ContravariantClass α α (· + ·) (· < ·)] :
     ContravariantClass (WithBot α) (WithBot α) (· + ·) (· < ·) :=
-  @OrderDual.contravariantClass_add_lt (WithTop αᵒᵈ) _ _ _
+  OrderDual.contravariantClass_add_lt (α := WithTop αᵒᵈ)
 #align with_bot.contravariant_class_add_lt WithBot.contravariantClass_add_lt
 
 instance contravariantClass_swap_add_lt [ContravariantClass α α (swap (· + ·)) (· < ·)] :
     ContravariantClass (WithBot α) (WithBot α) (swap (· + ·)) (· < ·) :=
-  @OrderDual.contravariantClass_swap_add_lt (WithTop αᵒᵈ) _ _ _
+  OrderDual.contravariantClass_swap_add_lt (α := WithTop αᵒᵈ)
 #align with_bot.contravariant_class_swap_add_lt WithBot.contravariantClass_swap_add_lt
 
 protected theorem le_of_add_le_add_left [ContravariantClass α α (· + ·) (· ≤ ·)] (ha : a ≠ ⊥)
     (h : a + b ≤ a + c) : b ≤ c :=
-  @WithTop.le_of_add_le_add_left αᵒᵈ _ _ _ _ _ _ ha h
+  WithTop.le_of_add_le_add_left (α := αᵒᵈ) ha h
 #align with_bot.le_of_add_le_add_left WithBot.le_of_add_le_add_left
 
 protected theorem le_of_add_le_add_right [ContravariantClass α α (swap (· + ·)) (· ≤ ·)]
     (ha : a ≠ ⊥) (h : b + a ≤ c + a) : b ≤ c :=
-  @WithTop.le_of_add_le_add_right αᵒᵈ _ _ _ _ _ _ ha h
+  WithTop.le_of_add_le_add_right (α := αᵒᵈ) ha h
 #align with_bot.le_of_add_le_add_right WithBot.le_of_add_le_add_right
 
 protected theorem add_lt_add_left [CovariantClass α α (· + ·) (· < ·)] (ha : a ≠ ⊥) (h : b < c) :
     a + b < a + c :=
-  @WithTop.add_lt_add_left αᵒᵈ _ _ _ _ _ _ ha h
+  WithTop.add_lt_add_left (α := αᵒᵈ) ha h
 #align with_bot.add_lt_add_left WithBot.add_lt_add_left
 
 protected theorem add_lt_add_right [CovariantClass α α (swap (· + ·)) (· < ·)] (ha : a ≠ ⊥)
     (h : b < c) : b + a < c + a :=
-  @WithTop.add_lt_add_right αᵒᵈ _ _ _ _ _ _ ha h
+  WithTop.add_lt_add_right (α := αᵒᵈ) ha h
 #align with_bot.add_lt_add_right WithBot.add_lt_add_right
 
 protected theorem add_le_add_iff_left [CovariantClass α α (· + ·) (· ≤ ·)]
@@ -753,13 +753,13 @@ protected theorem add_lt_add_iff_right [CovariantClass α α (swap (· + ·)) (�
 protected theorem add_lt_add_of_le_of_lt [CovariantClass α α (· + ·) (· < ·)]
     [CovariantClass α α (swap (· + ·)) (· ≤ ·)] (hb : b ≠ ⊥) (hab : a ≤ b) (hcd : c < d) :
     a + c < b + d :=
-  @WithTop.add_lt_add_of_le_of_lt αᵒᵈ _ _ _ _ _ _ _ _ hb hab hcd
+  WithTop.add_lt_add_of_le_of_lt (α := αᵒᵈ) hb hab hcd
 #align with_bot.add_lt_add_of_le_of_lt WithBot.add_lt_add_of_le_of_lt
 
 protected theorem add_lt_add_of_lt_of_le [CovariantClass α α (· + ·) (· ≤ ·)]
     [CovariantClass α α (swap (· + ·)) (· < ·)] (hd : d ≠ ⊥) (hab : a < b) (hcd : c ≤ d) :
     a + c < b + d :=
-  @WithTop.add_lt_add_of_lt_of_le αᵒᵈ _ _ _ _ _ _ _ _ hd hab hcd
+  WithTop.add_lt_add_of_lt_of_le (α := αᵒᵈ) hd hab hcd
 #align with_bot.add_lt_add_of_lt_of_le WithBot.add_lt_add_of_lt_of_le
 
 end Add

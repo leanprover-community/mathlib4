@@ -1699,7 +1699,7 @@ theorem sInter_empty : ⋂₀ (∅ : Class.{u}) = univ := by
 theorem eq_univ_of_powerset_subset {A : Class} (hA : powerset A ⊆ A) : A = univ :=
   eq_univ_of_forall
     (by
-      by_contra' hnA
+      by_contra! hnA
       exact
         WellFounded.min_mem ZFSet.mem_wf _ hnA
           (hA fun x hx =>

@@ -191,20 +191,31 @@ theorem IsCompact.elim_finite_subcover {ι : Type v} (hs : IsCompact s) (U : ι 
     (directed_of_isDirected_le fun _ _ h => biUnion_subset_biUnion_left h)
 #align is_compact.elim_finite_subcover IsCompact.elim_finite_subcover
 
-theorem IsCompact.elim_nhds_subcover' (hs : IsCompact s) (U : ∀ x ∈ s, Set X)
-    (hU : ∀ x (hx : x ∈ s), U x ‹x ∈ s› ∈ 𝓝 x) : ∃ t : Finset s, s ⊆ ⋃ x ∈ t, U (x : s) x.2 :=
-  (hs.elim_finite_subcover (fun x : s => interior (U x x.2)) (fun _ => isOpen_interior) fun x hx =>
-        mem_iUnion.2 ⟨⟨x, hx⟩, mem_interior_iff_mem_nhds.2 <| hU _ _⟩).imp
-    fun _t ht => ht.trans <| iUnion₂_mono fun _ _ => interior_subset
-#align is_compact.elim_nhds_subcover' IsCompact.elim_nhds_subcover'
+lemma IsCompact.elim_nhds_subcover_nhdsSet' (hs : IsCompact s) (U : ∀ x ∈ s, Set X)
+    (hU : ∀ x hx, U x hx ∈ 𝓝 x) : ∃ t : Finset s, (⋃ x ∈ t, U x.1 x.2) ∈ 𝓝ˢ s := by
+  rcases hs.elim_finite_subcover (fun x : s ↦ interior (U x x.2)) (fun _ ↦ isOpen_interior)
+    fun x hx ↦ mem_iUnion.2 ⟨⟨x, hx⟩, mem_interior_iff_mem_nhds.2 <| hU _ _⟩ with ⟨t, hst⟩
+  refine ⟨t, mem_nhdsSet_iff_forall.2 fun x hx ↦ ?_⟩
+  rcases mem_iUnion₂.1 (hst hx) with ⟨y, hyt, hy⟩
+  refine mem_of_superset ?_ (subset_biUnion_of_mem hyt)
+  exact mem_interior_iff_mem_nhds.1 hy
 
-theorem IsCompact.elim_nhds_subcover (hs : IsCompact s) (U : X → Set X) (hU : ∀ x ∈ s, U x ∈ 𝓝 x) :
-    ∃ t : Finset X, (∀ x ∈ t, x ∈ s) ∧ s ⊆ ⋃ x ∈ t, U x :=
-  let ⟨t, ht⟩ := hs.elim_nhds_subcover' (fun x _ => U x) hU
+lemma IsCompact.elim_nhds_subcover_nhdsSet (hs : IsCompact s) {U : X → Set X}
+    (hU : ∀ x ∈ s, U x ∈ 𝓝 x) : ∃ t : Finset X, (∀ x ∈ t, x ∈ s) ∧ (⋃ x ∈ t, U x) ∈ 𝓝ˢ s :=
+  let ⟨t, ht⟩ := hs.elim_nhds_subcover_nhdsSet' (fun x _ => U x) hU
   ⟨t.image (↑), fun x hx =>
     let ⟨y, _, hyx⟩ := Finset.mem_image.1 hx
     hyx ▸ y.2,
     by rwa [Finset.set_biUnion_finset_image]⟩
+
+theorem IsCompact.elim_nhds_subcover' (hs : IsCompact s) (U : ∀ x ∈ s, Set X)
+    (hU : ∀ x (hx : x ∈ s), U x ‹x ∈ s› ∈ 𝓝 x) : ∃ t : Finset s, s ⊆ ⋃ x ∈ t, U (x : s) x.2 :=
+  (hs.elim_nhds_subcover_nhdsSet' U hU).imp fun _ ↦ subset_of_mem_nhdsSet
+#align is_compact.elim_nhds_subcover' IsCompact.elim_nhds_subcover'
+
+theorem IsCompact.elim_nhds_subcover (hs : IsCompact s) (U : X → Set X) (hU : ∀ x ∈ s, U x ∈ 𝓝 x) :
+    ∃ t : Finset X, (∀ x ∈ t, x ∈ s) ∧ s ⊆ ⋃ x ∈ t, U x :=
+  (hs.elim_nhds_subcover_nhdsSet hU).imp fun _ h ↦ h.imp_right subset_of_mem_nhdsSet
 #align is_compact.elim_nhds_subcover IsCompact.elim_nhds_subcover
 
 /-- The neighborhood filter of a compact set is disjoint with a filter `l` if and only if the
@@ -486,7 +497,7 @@ theorem exists_subset_nhds_of_isCompact' [Nonempty ι] {V : ι → Set X}
   obtain ⟨W, hsubW, W_op, hWU⟩ := exists_open_set_nhds hU
   suffices : ∃ i, V i ⊆ W
   · exact this.imp fun i hi => hi.trans hWU
-  by_contra' H
+  by_contra! H
   replace H : ∀ i, (V i ∩ Wᶜ).Nonempty := fun i => Set.inter_compl_nonempty_iff.mpr (H i)
   have : (⋂ i, V i ∩ Wᶜ).Nonempty := by
     refine'
@@ -796,12 +807,29 @@ theorem finite_of_compact_of_discrete [CompactSpace X] [DiscreteTopology X] : Fi
   Finite.of_finite_univ <| isCompact_univ.finite_of_discrete
 #align finite_of_compact_of_discrete finite_of_compact_of_discrete
 
+lemma Set.Infinite.exists_accPt_cofinite_inf_principal_of_subset_isCompact
+    {K : Set X} (hs : s.Infinite) (hK : IsCompact K) (hsub : s ⊆ K) :
+    ∃ x ∈ K, AccPt x (cofinite ⊓ 𝓟 s) :=
+  (@hK _ hs.cofinite_inf_principal_neBot (inf_le_right.trans <| principal_mono.2 hsub)).imp
+    fun x hx ↦ by rwa [acc_iff_cluster, inf_comm, inf_right_comm,
+      (finite_singleton _).cofinite_inf_principal_compl]
+
+lemma Set.Infinite.exists_accPt_of_subset_isCompact {K : Set X} (hs : s.Infinite)
+    (hK : IsCompact K) (hsub : s ⊆ K) : ∃ x ∈ K, AccPt x (𝓟 s) :=
+  let ⟨x, hxK, hx⟩ := hs.exists_accPt_cofinite_inf_principal_of_subset_isCompact hK hsub
+  ⟨x, hxK, hx.mono inf_le_right⟩
+
+lemma Set.Infinite.exists_accPt_cofinite_inf_principal [CompactSpace X] (hs : s.Infinite) :
+    ∃ x, AccPt x (cofinite ⊓ 𝓟 s) := by
+  simpa only [mem_univ, true_and]
+    using hs.exists_accPt_cofinite_inf_principal_of_subset_isCompact isCompact_univ s.subset_univ
+
+lemma Set.Infinite.exists_accPt_principal [CompactSpace X] (hs : s.Infinite) : ∃ x, AccPt x (𝓟 s) :=
+  hs.exists_accPt_cofinite_inf_principal.imp fun _x hx ↦ hx.mono inf_le_right
+
 theorem exists_nhds_ne_neBot (X : Type*) [TopologicalSpace X] [CompactSpace X] [Infinite X] :
-    ∃ x : X, (𝓝[≠] x).NeBot := by
-  by_contra' H
-  simp_rw [not_neBot] at H
-  haveI := discreteTopology_iff_nhds_ne.2 H
-  exact Infinite.not_finite (finite_of_compact_of_discrete : Finite X)
+    ∃ z : X, (𝓝[≠] z).NeBot := by
+  simpa [AccPt] using (@infinite_univ X _).exists_accPt_principal
 #align exists_nhds_ne_ne_bot exists_nhds_ne_neBot
 
 theorem finite_cover_nhds_interior [CompactSpace X] {U : X → Set X} (hU : ∀ x, U x ∈ 𝓝 x) :
@@ -937,10 +965,8 @@ theorem IsCompact.finite (hs : IsCompact s) (hs' : DiscreteTopology s) : s.Finit
 #align is_compact.finite IsCompact.finite
 
 theorem exists_nhds_ne_inf_principal_neBot (hs : IsCompact s) (hs' : s.Infinite) :
-    ∃ x ∈ s, (𝓝[≠] x ⊓ 𝓟 s).NeBot := by
-  by_contra' H
-  simp_rw [not_neBot] at H
-  exact hs' (hs.finite <| discreteTopology_subtype_iff.mpr H)
+    ∃ z ∈ s, (𝓝[≠] z ⊓ 𝓟 s).NeBot :=
+  hs'.exists_accPt_of_subset_isCompact hs Subset.rfl
 #align exists_nhds_ne_inf_principal_ne_bot exists_nhds_ne_inf_principal_neBot
 
 protected theorem ClosedEmbedding.noncompactSpace [NoncompactSpace X] {f : X → Y}

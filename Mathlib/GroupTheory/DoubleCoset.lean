@@ -29,9 +29,10 @@ this is the usual left or right quotient of a group by a subgroup.
 
 variable {G : Type*} [Group G] {α : Type*} [Mul α] (J : Subgroup G) (g : G)
 
-namespace Doset
+open MulOpposite
+open scoped Pointwise
 
-open Pointwise
+namespace Doset
 
 /-- The double coset as an element of `Set α` corresponding to `s a t` -/
 def doset (a : α) (s t : Set α) : Set α :=
@@ -168,7 +169,7 @@ theorem union_quotToDoset (H K : Subgroup G) : ⋃ q, quotToDoset H K q = Set.un
 #align doset.union_quot_to_doset Doset.union_quotToDoset
 
 theorem doset_union_rightCoset (H K : Subgroup G) (a : G) :
-    ⋃ k : K, rightCoset (↑H) (a * k) = doset a H K := by
+    ⋃ k : K, op (a * k) • ↑H = doset a H K := by
   ext x
   simp only [mem_rightCoset_iff, exists_prop, mul_inv_rev, Set.mem_iUnion, mem_doset,
     Subgroup.mem_carrier, SetLike.mem_coe]
@@ -182,7 +183,7 @@ theorem doset_union_rightCoset (H K : Subgroup G) (a : G) :
 #align doset.doset_union_right_coset Doset.doset_union_rightCoset
 
 theorem doset_union_leftCoset (H K : Subgroup G) (a : G) :
-    ⋃ h : H, leftCoset (h * a : G) K = doset a H K := by
+    ⋃ h : H, (h * a : G) • ↑K = doset a H K := by
   ext x
   simp only [mem_leftCoset_iff, mul_inv_rev, Set.mem_iUnion, mem_doset]
   constructor

@@ -326,12 +326,12 @@ theorem one_lt_zpow' (ha : 1 < a) {k : ℤ} (hk : (0 : ℤ) < k) : 1 < a ^ k := 
 #align zsmul_pos zsmul_pos
 
 @[to_additive zsmul_strictMono_left]
-theorem zpow_strictMono_right (ha : 1 < a) : StrictMono fun n : ℤ => a ^ n := fun m n h =>
+theorem zpow_right_strictMono (ha : 1 < a) : StrictMono fun n : ℤ => a ^ n := fun m n h =>
   calc
     a ^ m = a ^ m * 1 := (mul_one _).symm
     _ < a ^ m * a ^ (n - m) := mul_lt_mul_left' (one_lt_zpow' ha <| sub_pos_of_lt h) _
     _ = a ^ n := by rw [← zpow_add]; simp
-#align zpow_strict_mono_right zpow_strictMono_right
+#align zpow_strict_mono_right zpow_right_strictMono
 #align zsmul_strict_mono_left zsmul_strictMono_left
 
 @[to_additive zsmul_mono_left]
@@ -351,19 +351,19 @@ theorem zpow_le_zpow (ha : 1 ≤ a) (h : m ≤ n) : a ^ m ≤ a ^ n :=
 
 @[to_additive]
 theorem zpow_lt_zpow (ha : 1 < a) (h : m < n) : a ^ m < a ^ n :=
-  zpow_strictMono_right ha h
+  zpow_right_strictMono ha h
 #align zpow_lt_zpow zpow_lt_zpow
 #align zsmul_lt_zsmul zsmul_lt_zsmul
 
 @[to_additive]
 theorem zpow_le_zpow_iff (ha : 1 < a) : a ^ m ≤ a ^ n ↔ m ≤ n :=
-  (zpow_strictMono_right ha).le_iff_le
+  (zpow_right_strictMono ha).le_iff_le
 #align zpow_le_zpow_iff zpow_le_zpow_iff
 #align zsmul_le_zsmul_iff zsmul_le_zsmul_iff
 
 @[to_additive]
 theorem zpow_lt_zpow_iff (ha : 1 < a) : a ^ m < a ^ n ↔ m < n :=
-  (zpow_strictMono_right ha).lt_iff_lt
+  (zpow_right_strictMono ha).lt_iff_lt
 #align zpow_lt_zpow_iff zpow_lt_zpow_iff
 #align zsmul_lt_zsmul_iff zsmul_lt_zsmul_iff
 
@@ -449,7 +449,7 @@ section LinearOrderedAddCommGroup
 variable [LinearOrderedAddCommGroup α] {a b : α}
 
 theorem abs_nsmul (n : ℕ) (a : α) : |n • a| = n • |a| := by
-  cases' le_total a 0 with hneg hpos
+  rcases le_total a 0 with hneg | hpos
   · rw [abs_of_nonpos hneg, ← abs_neg, ← neg_nsmul, abs_of_nonneg]
     exact nsmul_nonneg (neg_nonneg.mpr hneg) n
   · rw [abs_of_nonneg hpos, abs_of_nonneg]
@@ -743,12 +743,12 @@ theorem pow_bit1_pos_iff : 0 < a ^ bit1 n ↔ 0 < a :=
 
 theorem strictMono_pow_bit1 (n : ℕ) : StrictMono fun a : R => a ^ bit1 n := by
   intro a b hab
-  cases' le_total a 0 with ha ha
-  · cases' le_or_lt b 0 with hb hb
+  rcases le_total a 0 with ha | ha
+  · rcases le_or_lt b 0 with hb | hb
     · rw [← neg_lt_neg_iff, ← neg_pow_bit1, ← neg_pow_bit1]
-      exact pow_lt_pow_of_lt_left (neg_lt_neg hab) (neg_nonneg.2 hb) (bit1_pos (zero_le n))
+      exact pow_lt_pow_left (neg_lt_neg hab) (neg_nonneg.2 hb) n.bit1_ne_zero
     · exact (pow_bit1_nonpos_iff.2 ha).trans_lt (pow_bit1_pos_iff.2 hb)
-  · exact pow_lt_pow_of_lt_left hab ha (bit1_pos (zero_le n))
+  · exact pow_lt_pow_left hab ha n.bit1_ne_zero
 #align strict_mono_pow_bit1 strictMono_pow_bit1
 
 end bit1
@@ -791,8 +791,8 @@ alias le_self_pow_two := le_self_sq
 #align int.le_self_pow_two Int.le_self_pow_two
 
 theorem pow_right_injective {x : ℤ} (h : 1 < x.natAbs) :
-    Function.Injective ((· ^ ·) x : ℕ → ℤ) := by
-  suffices Function.Injective (natAbs ∘ ((· ^ ·) x : ℕ → ℤ)) by
+    Function.Injective ((x ^ ·) : ℕ → ℤ) := by
+  suffices Function.Injective (natAbs ∘ (x ^ · : ℕ → ℤ)) by
     exact Function.Injective.of_comp this
   convert Nat.pow_right_injective h using 2
   rw [Function.comp_apply, natAbs_pow]

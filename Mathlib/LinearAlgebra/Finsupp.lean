@@ -214,6 +214,13 @@ theorem lapply_apply (a : α) (f : α →₀ M) : (lapply a : (α →₀ M) →�
 #align finsupp.lapply_apply Finsupp.lapply_apply
 
 @[simp]
+theorem lapply_comp_lsingle_same (a : α) : lapply a ∘ₗ lsingle a = (.id : M →ₗ[R] M) := by ext; simp
+
+@[simp]
+theorem lapply_comp_lsingle_of_ne (a a' : α) (h : a ≠ a') :
+    lapply a ∘ₗ lsingle a' = (0 : M →ₗ[R] M) := by ext; simp [h.symm]
+
+@[simp]
 theorem ker_lsingle (a : α) : ker (lsingle a : M →ₗ[R] α →₀ M) = ⊥ :=
   ker_eq_bot_of_injective (single_injective a)
 #align finsupp.ker_lsingle Finsupp.ker_lsingle
@@ -288,7 +295,7 @@ theorem mem_supported {s : Set α} (p : α →₀ M) : p ∈ supported M R s ↔
 #align finsupp.mem_supported Finsupp.mem_supported
 
 theorem mem_supported' {s : Set α} (p : α →₀ M) :
-    p ∈ supported M R s ↔ ∀ (x) (_ : x ∉ s), p x = 0 := by
+    p ∈ supported M R s ↔ ∀ x ∉ s, p x = 0 := by
   haveI := Classical.decPred fun x : α => x ∈ s; simp [mem_supported, Set.subset_def, not_imp_comm]
 #align finsupp.mem_supported' Finsupp.mem_supported'
 
@@ -467,6 +474,9 @@ theorem lsum_single (f : α → M →ₗ[R] N) (i : α) (m : M) :
   Finsupp.sum_single_index (f i).map_zero
 #align finsupp.lsum_single Finsupp.lsum_single
 
+@[simp] theorem lsum_comp_lsingle (f : α → M →ₗ[R] N) (i : α) :
+    Finsupp.lsum S f ∘ₗ lsingle i = f i := by ext; simp
+
 theorem lsum_symm_apply (f : (α →₀ M) →ₗ[R] N) (x : α) : (lsum S).symm f x = f.comp (lsingle x) :=
   rfl
 #align finsupp.lsum_symm_apply Finsupp.lsum_symm_apply
@@ -580,7 +590,7 @@ theorem lmapDomain_supported (f : α → α') (s : Set α) :
 #align finsupp.lmap_domain_supported Finsupp.lmapDomain_supported
 
 theorem lmapDomain_disjoint_ker (f : α → α') {s : Set α}
-    (H : ∀ (a) (_ : a ∈ s) (b) (_ : b ∈ s), f a = f b → a = b) :
+    (H : ∀ a ∈ s, ∀ b ∈ s, f a = f b → a = b) :
     Disjoint (supported M R s) (ker (lmapDomain M R f)) := by
   rw [disjoint_iff_inf_le]
   rintro l ⟨h₁, h₂⟩

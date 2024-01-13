@@ -1160,7 +1160,8 @@ theorem reduce.not {p : Prop} : ∀ {L₁ L₂ L₃ : List (α × Bool)} {x : α
         intro h
         exfalso
         have := congr_arg List.length h
-        simp [List.length] at this
+        simp? [List.length] at this says
+         simp only [List.length, zero_add, List.length_append] at this
         rw [add_comm, add_assoc, add_assoc, add_comm, <-add_assoc] at this
         simp [Nat.one_eq_succ_zero, Nat.succ_add] at this
         -- Porting note: needed to add this step in #3414.
@@ -1343,8 +1344,8 @@ theorem toWord_inv {x : FreeGroup α} : x⁻¹.toWord = invRev x.toWord := by
 #align free_group.to_word_inv FreeGroup.toWord_inv
 #align free_add_group.to_word_neg FreeAddGroup.toWord_neg
 
-/-- Constructive Church-Rosser theorem (compare `church_rosser`). -/
-@[to_additive "Constructive Church-Rosser theorem (compare `church_rosser`)."]
+/-- **Constructive Church-Rosser theorem** (compare `church_rosser`). -/
+@[to_additive "**Constructive Church-Rosser theorem** (compare `church_rosser`)."]
 def reduce.churchRosser (H12 : Red L₁ L₂) (H13 : Red L₁ L₃) : { L₄ // Red L₂ L₄ ∧ Red L₃ L₄ } :=
   ⟨reduce L₁, reduce.rev H12, reduce.rev H13⟩
 #align free_group.reduce.church_rosser FreeGroup.reduce.churchRosser

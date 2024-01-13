@@ -41,7 +41,7 @@ Hausdorff space as continuous maps such that preimages of compact sets are compa
 
 In algebraic geometry, it is common to also ask that proper maps are *separated*, in the sense of
 [Stacks: definition OCY1](https://stacks.math.columbia.edu/tag/0CY1). We don't follow this
-convention because it is unclear wether it would give the right notion in all cases, and in
+convention because it is unclear whether it would give the right notion in all cases, and in
 particular for the theory of proper group actions. That means that our terminology does **NOT**
 align with that of [Stacks: Characterizing proper maps](https://stacks.math.columbia.edu/tag/005M),
 instead our definition of `IsProperMap` coincides with what they call "Bourbaki-proper".

@@ -157,9 +157,8 @@ theorem ContinuousLinearMap.curry_uncurryLeft
     (f : Ei 0 →L[𝕜] ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei i.succ) G) :
     f.uncurryLeft.curryLeft = f := by
   ext m x
-  simp only [tail_cons, ContinuousLinearMap.uncurryLeft_apply,
-    ContinuousMultilinearMap.curryLeft_apply]
-  rw [cons_zero]
+  rw [ContinuousMultilinearMap.curryLeft_apply, ContinuousLinearMap.uncurryLeft_apply, tail_cons,
+    cons_zero]
 #align continuous_linear_map.curry_uncurry_left ContinuousLinearMap.curry_uncurryLeft
 
 @[simp]
@@ -191,11 +190,13 @@ def continuousMultilinearCurryLeftEquiv :
         rfl
       invFun := ContinuousMultilinearMap.curryLeft
       left_inv := ContinuousLinearMap.curry_uncurryLeft
-      right_inv := ContinuousMultilinearMap.uncurry_curryLeft } (fun f => by
-        simp only [LinearEquiv.coe_mk]
-        exact MultilinearMap.mkContinuous_norm_le _ (norm_nonneg f) _) fun f => by
-          simp only [LinearEquiv.coe_symm_mk]
-          exact LinearMap.mkContinuous_norm_le _ (norm_nonneg f) _
+      right_inv := ContinuousMultilinearMap.uncurry_curryLeft }
+    (fun f => by
+      simp only [LinearEquiv.coe_mk]
+      exact MultilinearMap.mkContinuous_norm_le _ (norm_nonneg f) _)
+    (fun f => by
+      simp only [LinearEquiv.coe_symm_mk]
+      exact LinearMap.mkContinuous_norm_le _ (norm_nonneg f) _)
 #align continuous_multilinear_curry_left_equiv continuousMultilinearCurryLeftEquiv
 
 variable {𝕜 Ei G}
@@ -261,11 +262,11 @@ def ContinuousMultilinearMap.curryRight (f : ContinuousMultilinearMap 𝕜 Ei G)
         (f.toMultilinearMap.curryRight m).mkContinuous (‖f‖ * ∏ i, ‖m i‖) fun x =>
           f.norm_map_snoc_le m x
       map_add' := fun m i x y => by
+        ext
         simp
-        rfl
       map_smul' := fun m i c x => by
-        simp
-        rfl }
+        ext
+        simp }
   f'.mkContinuous ‖f‖ fun m => by
     simp only [MultilinearMap.coe_mk]
     exact LinearMap.mkContinuous_norm_le _
@@ -283,16 +284,15 @@ theorem ContinuousMultilinearMap.curry_uncurryRight
     (f : ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei <| castSucc i) (Ei (last n) →L[𝕜] G)) :
     f.uncurryRight.curryRight = f := by
   ext m x
-  simp only [snoc_last, ContinuousMultilinearMap.curryRight_apply,
-    ContinuousMultilinearMap.uncurryRight_apply]
-  rw [init_snoc]
+  rw [ContinuousMultilinearMap.curryRight_apply, ContinuousMultilinearMap.uncurryRight_apply,
+    snoc_last, init_snoc]
 #align continuous_multilinear_map.curry_uncurry_right ContinuousMultilinearMap.curry_uncurryRight
 
 @[simp]
 theorem ContinuousMultilinearMap.uncurry_curryRight (f : ContinuousMultilinearMap 𝕜 Ei G) :
     f.curryRight.uncurryRight = f := by
   ext m
-  simp
+  rw [uncurryRight_apply, curryRight_apply, snoc_init_self]
 #align continuous_multilinear_map.uncurry_curry_right ContinuousMultilinearMap.uncurry_curryRight
 
 variable (𝕜 Ei G)
@@ -430,7 +430,7 @@ theorem ContinuousMultilinearMap.uncurry0_apply (f : G[×0]→L[𝕜] G') : f.un
 theorem ContinuousMultilinearMap.apply_zero_curry0 (f : G[×0]→L[𝕜] G') {x : Fin 0 → G} :
     ContinuousMultilinearMap.curry0 𝕜 G (f x) = f := by
   ext m
-  simp [(Subsingleton.elim _ _ : x = m)]
+  simp [Subsingleton.elim x m]
 #align continuous_multilinear_map.apply_zero_curry0 ContinuousMultilinearMap.apply_zero_curry0
 
 theorem ContinuousMultilinearMap.uncurry0_curry0 (f : G[×0]→L[𝕜] G') :
@@ -670,7 +670,6 @@ theorem curryFinFinset_apply_const (hk : s.card = k) (hl : sᶜ.card = l) (f : G
     (x y : G) : (curryFinFinset 𝕜 G G' hk hl f (fun _ => x) fun _ => y) =
       f (s.piecewise (fun _ => x) fun _ => y) := by
   refine' (curryFinFinset_symm_apply_piecewise_const hk hl _ _ _).symm.trans _
-  -- `rw` fails
   rw [LinearIsometryEquiv.symm_apply_apply]
 #align continuous_multilinear_map.curry_fin_finset_apply_const ContinuousMultilinearMap.curryFinFinset_apply_const
 

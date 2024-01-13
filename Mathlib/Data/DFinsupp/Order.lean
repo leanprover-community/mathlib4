@@ -3,6 +3,7 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.Algebra.Order.Module.Defs
 import Mathlib.Data.DFinsupp.Basic
 
 #align_import data.dfinsupp.order from "leanprover-community/mathlib"@"1d29de43a5ba4662dd33b5cfeecfc2a27a5a8a29"
@@ -34,15 +35,15 @@ section Zero
 variable [∀ i, Zero (α i)]
 
 section LE
-
-variable [∀ i, LE (α i)]
+variable [∀ i, LE (α i)] {f g : Π₀ i, α i}
 
 instance : LE (Π₀ i, α i) :=
   ⟨fun f g ↦ ∀ i, f i ≤ g i⟩
 
-theorem le_def {f g : Π₀ i, α i} : f ≤ g ↔ ∀ i, f i ≤ g i :=
-  Iff.rfl
+lemma le_def : f ≤ g ↔ ∀ i, f i ≤ g i := Iff.rfl
 #align dfinsupp.le_def DFinsupp.le_def
+
+@[simp, norm_cast] lemma coe_le_coe : ⇑f ≤ g ↔ f ≤ g := Iff.rfl
 
 /-- The order on `DFinsupp`s over a partial order embeds into the order on functions -/
 def orderEmbeddingToFun : (Π₀ i, α i) ↪o ∀ i, α i where
@@ -51,8 +52,10 @@ def orderEmbeddingToFun : (Π₀ i, α i) ↪o ∀ i, α i where
   map_rel_iff' := by rfl
 #align dfinsupp.order_embedding_to_fun DFinsupp.orderEmbeddingToFun
 
+@[simp, norm_cast]
+lemma coe_orderEmbeddingToFun : ⇑(orderEmbeddingToFun (α := α)) = FunLike.coe := rfl
+
 -- Porting note: we added implicit arguments here in #3414.
-@[simp]
 theorem orderEmbeddingToFun_apply {f : Π₀ i, α i} {i : ι} :
     (@orderEmbeddingToFun ι α _ _ f) i = f i :=
   rfl
@@ -61,16 +64,20 @@ theorem orderEmbeddingToFun_apply {f : Π₀ i, α i} {i : ι} :
 end LE
 
 section Preorder
-
-variable [∀ i, Preorder (α i)]
+variable [∀ i, Preorder (α i)] {f g : Π₀ i, α i}
 
 instance : Preorder (Π₀ i, α i) :=
   { (inferInstance : LE (DFinsupp α)) with
     le_refl := fun f i ↦ le_rfl
     le_trans := fun f g h hfg hgh i ↦ (hfg i).trans (hgh i) }
 
-theorem coeFn_mono : Monotone (FunLike.coe : (Π₀ i, α i) → ∀ i, α i) := fun _ _ ↦ le_def.1
-#align dfinsupp.coe_fn_mono DFinsupp.coeFn_mono
+lemma lt_def : f < g ↔ f ≤ g ∧ ∃ i, f i < g i := Pi.lt_def
+@[simp, norm_cast] lemma coe_lt_coe : ⇑f < g ↔ f < g := Iff.rfl
+
+lemma coe_mono : Monotone ((⇑) : (Π₀ i, α i) → ∀ i, α i) := fun _ _ ↦ id
+#align dfinsupp.coe_fn_mono DFinsupp.coe_mono
+
+lemma coe_strictMono : Monotone ((⇑) : (Π₀ i, α i) → ∀ i, α i) := fun _ _ ↦ id
 
 end Preorder
 
@@ -85,7 +92,9 @@ instance [∀ i, SemilatticeInf (α i)] : SemilatticeInf (Π₀ i, α i) :=
     inf_le_right := fun _ _ _ ↦ inf_le_right
     le_inf := fun _ _ _ hf hg i ↦ le_inf (hf i) (hg i) }
 
-@[simp]
+@[simp, norm_cast]
+lemma coe_inf [∀ i, SemilatticeInf (α i)] (f g : Π₀ i, α i) : f ⊓ g = ⇑f ⊓ g := rfl
+
 theorem inf_apply [∀ i, SemilatticeInf (α i)] (f g : Π₀ i, α i) (i : ι) : (f ⊓ g) i = f i ⊓ g i :=
   zipWith_apply _ _ _ _ _
 #align dfinsupp.inf_apply DFinsupp.inf_apply
@@ -97,7 +106,9 @@ instance [∀ i, SemilatticeSup (α i)] : SemilatticeSup (Π₀ i, α i) :=
     le_sup_right := fun _ _ _ ↦ le_sup_right
     sup_le := fun _ _ _ hf hg i ↦ sup_le (hf i) (hg i) }
 
-@[simp]
+@[simp, norm_cast]
+lemma coe_sup [∀ i, SemilatticeSup (α i)] (f g : Π₀ i, α i) : f ⊔ g = ⇑f ⊔ g := rfl
+
 theorem sup_apply [∀ i, SemilatticeSup (α i)] (f g : Π₀ i, α i) (i : ι) : (f ⊔ g) i = f i ⊔ g i :=
   zipWith_apply _ _ _ _ _
 #align dfinsupp.sup_apply DFinsupp.sup_apply
@@ -139,6 +150,42 @@ instance (α : ι → Type*) [∀ i, OrderedCancelAddCommMonoid (α i)] :
 instance [∀ i, OrderedAddCommMonoid (α i)] [∀ i, ContravariantClass (α i) (α i) (· + ·) (· ≤ ·)] :
     ContravariantClass (Π₀ i, α i) (Π₀ i, α i) (· + ·) (· ≤ ·) :=
   ⟨fun _ _ _ H i ↦ le_of_add_le_add_left (H i)⟩
+
+section Module
+variable {α : Type*} {β : ι → Type*} [Semiring α] [Preorder α] [∀ i, AddCommMonoid (β i)]
+  [∀ i, Preorder (β i)] [∀ i, Module α (β i)]
+
+instance instPosSMulMono [∀ i, PosSMulMono α (β i)] : PosSMulMono α (Π₀ i, β i) :=
+  PosSMulMono.lift _ coe_le_coe coe_smul
+
+instance instSMulPosMono [∀ i, SMulPosMono α (β i)] : SMulPosMono α (Π₀ i, β i) :=
+  SMulPosMono.lift _ coe_le_coe coe_smul coe_zero
+
+instance instPosSMulReflectLE [∀ i, PosSMulReflectLE α (β i)] : PosSMulReflectLE α (Π₀ i, β i) :=
+  PosSMulReflectLE.lift _ coe_le_coe coe_smul
+
+instance instSMulPosReflectLE [∀ i, SMulPosReflectLE α (β i)] : SMulPosReflectLE α (Π₀ i, β i) :=
+  SMulPosReflectLE.lift _ coe_le_coe coe_smul coe_zero
+
+end Module
+
+section Module
+variable {α : Type*} {β : ι → Type*} [Semiring α] [PartialOrder α] [∀ i, AddCommMonoid (β i)]
+  [∀ i, PartialOrder (β i)] [∀ i, Module α (β i)]
+
+instance instPosSMulStrictMono [∀ i, PosSMulStrictMono α (β i)] : PosSMulStrictMono α (Π₀ i, β i) :=
+  PosSMulStrictMono.lift _ coe_le_coe coe_smul
+
+instance instSMulPosStrictMono [∀ i, SMulPosStrictMono α (β i)] : SMulPosStrictMono α (Π₀ i, β i) :=
+  SMulPosStrictMono.lift _ coe_le_coe coe_smul coe_zero
+
+-- Note: There is no interesting instance for `PosSMulReflectLT α (Π₀ i, β i)` that's not already
+-- implied by the other instances
+
+instance instSMulPosReflectLT [∀ i, SMulPosReflectLT α (β i)] : SMulPosReflectLT α (Π₀ i, β i) :=
+  SMulPosReflectLT.lift _ coe_le_coe coe_smul coe_zero
+
+end Module
 
 section CanonicallyOrderedAddCommMonoid
 
@@ -210,7 +257,7 @@ theorem tsub_apply (f g : Π₀ i, α i) (i : ι) : (f - g) i = f i - g i :=
   zipWith_apply _ _ _ _ _
 #align dfinsupp.tsub_apply DFinsupp.tsub_apply
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_tsub (f g : Π₀ i, α i) : ⇑(f - g) = f - g := by
   ext i
   exact tsub_apply f g i

@@ -5,7 +5,7 @@ Authors: Oliver Nash
 -/
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Algebra.Algebra.Bilinear
-import Mathlib.GroupTheory.Submonoid.ZeroDivisors
+import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.Algebra.GeomSum
 import Mathlib.LinearAlgebra.Matrix.ToLin
@@ -58,17 +58,28 @@ theorem IsNilpotent.neg [Ring R] (h : IsNilpotent x) : IsNilpotent (-x) := by
   rw [neg_pow, hn, mul_zero]
 #align is_nilpotent.neg IsNilpotent.neg
 
-lemma IsNilpotent.pow {n : ℕ} {S : Type*} [MonoidWithZero S] {x : S}
+lemma IsNilpotent.pow_succ (n : ℕ) {S : Type*} [MonoidWithZero S] {x : S}
     (hx : IsNilpotent x) : IsNilpotent (x ^ n.succ) := by
   obtain ⟨N,hN⟩ := hx
   use N
   rw [← pow_mul, Nat.succ_mul, pow_add, hN, mul_zero]
 
+theorem  IsNilpotent.of_pow [MonoidWithZero R] {x : R} {m : ℕ}
+    (h : IsNilpotent (x ^ m)) : IsNilpotent x := by
+  obtain ⟨n, h⟩ := h
+  use (m*n)
+  rw [← h, pow_mul x m n]
+
 lemma IsNilpotent.pow_of_pos {n} {S : Type*} [MonoidWithZero S] {x : S}
     (hx : IsNilpotent x) (hn : n ≠ 0) : IsNilpotent (x ^ n) := by
   cases n with
   | zero => contradiction
-  | succ => exact IsNilpotent.pow hx
+  | succ => exact  IsNilpotent.pow_succ _ hx
+
+@[simp]
+lemma IsNilpotent.pow_iff_pos {n} {S : Type*} [MonoidWithZero S] {x : S}
+    (hn : n ≠ 0) : IsNilpotent (x ^ n) ↔ IsNilpotent x :=
+ ⟨fun h => of_pow h, fun h => pow_of_pos h hn⟩
 
 @[simp]
 theorem isNilpotent_neg_iff [Ring R] : IsNilpotent (-x) ↔ IsNilpotent x :=
@@ -205,7 +216,9 @@ protected lemma isNilpotent_sum {ι : Type*} {s : Finset ι} {f : ι → R}
     (hnp : ∀ i ∈ s, IsNilpotent (f i)) (h_comm : ∀ i j, i ∈ s → j ∈ s → Commute (f i) (f j)) :
     IsNilpotent (∑ i in s, f i) := by
   classical
-  induction' s using Finset.induction with j s hj ih; simp
+  induction s using Finset.induction with
+  | empty => simp
+  | @insert j s hj ih => ?_
   rw [Finset.sum_insert hj]
   apply Commute.isNilpotent_add
   · exact Commute.sum_right _ _ _ (fun i hi ↦ h_comm _ _ (by simp) (by simp [hi]))

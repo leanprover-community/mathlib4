@@ -640,23 +640,23 @@ end Bit
 section OfNatCoe
 
 @[simp]
-theorem ofNat_eq_val (n : ℕ) [NeZero n] (a : ℕ) : (Fin.ofNat'' a : Fin n) = a :=
+theorem ofNat''_eq_cast (n : ℕ) [NeZero n] (a : ℕ) : (Fin.ofNat'' a : Fin n) = a :=
   rfl
-#align fin.of_nat_eq_coe Fin.ofNat_eq_val
+#align fin.of_nat_eq_coe Fin.ofNat''_eq_cast
+
+@[simp] lemma val_nat_cast (a n : ℕ) [NeZero n] : (a : Fin n).val = a % n := rfl
 
 -- porting note: is this the right name for things involving `Nat.cast`?
 /-- Converting an in-range number to `Fin (n + 1)` produces a result
 whose value is the original number.  -/
-theorem val_cast_of_lt {n : ℕ} [NeZero n] {a : ℕ} (h : a < n) : (a : Fin n).val = a := by
-  rw [← ofNat_eq_val]
-  exact Nat.mod_eq_of_lt h
+theorem val_cast_of_lt {n : ℕ} [NeZero n] {a : ℕ} (h : a < n) : (a : Fin n).val = a :=
+  Nat.mod_eq_of_lt h
 #align fin.coe_val_of_lt Fin.val_cast_of_lt
 
 /-- Converting the value of a `Fin (n + 1)` to `Fin (n + 1)` results
 in the same value.  -/
-theorem cast_val_eq_self {n : ℕ} [NeZero n] (a : Fin n) : (a.val : Fin n) = a := by
-  rw [Fin.eq_iff_veq]
-  exact val_cast_of_lt a.isLt
+theorem cast_val_eq_self {n : ℕ} [NeZero n] (a : Fin n) : (a.val : Fin n) = a :=
+  ext <| val_cast_of_lt a.isLt
 #align fin.coe_val_eq_self Fin.cast_val_eq_self
 
 -- porting note: this is syntactically the same as `val_cast_of_lt`
@@ -665,9 +665,13 @@ theorem cast_val_eq_self {n : ℕ} [NeZero n] (a : Fin n) : (a.val : Fin n) = a 
 -- porting note: this is syntactically the same as `cast_val_of_lt`
 #align fin.coe_coe_eq_self Fin.cast_val_eq_self
 
-theorem cast_nat_eq_last (n) : (n : Fin (n + 1)) = Fin.last n := by
-  rw [← Fin.ofNat_eq_val, Fin.ofNat'', Fin.last]
-  simp only [Nat.mod_eq_of_lt n.lt_succ_self]
+@[simp] lemma nat_cast_self (n : ℕ) [NeZero n] : (n : Fin n) = 0 := by ext; simp
+
+@[simp] lemma nat_cast_eq_zero {a n : ℕ} [NeZero n] : (a : Fin n) = 0 ↔ n ∣ a := by
+  simp [eq_iff_veq, Nat.dvd_iff_mod_eq_zero]
+
+@[simp]
+theorem cast_nat_eq_last (n) : (n : Fin (n + 1)) = Fin.last n := by ext; simp
 #align fin.coe_nat_eq_last Fin.cast_nat_eq_last
 
 theorem le_val_last (i : Fin (n + 1)) : i ≤ n := by
@@ -682,19 +686,13 @@ end OfNatCoe
 #align fin.zero_ne_one Fin.zero_ne_one
 
 @[simp]
-theorem zero_eq_one_iff [NeZero n] : (0 : Fin n) = 1 ↔ n = 1 := by
-  constructor
-  · intro h
-    have := congr_arg ((↑) : Fin n → ℕ) h
-    simp only [val_zero', val_one', @eq_comm _ 0, ← Nat.dvd_iff_mod_eq_zero] at this
-    exact eq_one_of_dvd_one this
-  · rintro rfl
-    rfl
-#align fin.zero_eq_one_iff Fin.zero_eq_one_iff
+theorem one_eq_zero_iff [NeZero n] : (1 : Fin n) = 0 ↔ n = 1 := by
+  rw [← Nat.cast_one, nat_cast_eq_zero, Nat.dvd_one]
+#align fin.one_eq_zero_iff Fin.one_eq_zero_iff
 
 @[simp]
-theorem one_eq_zero_iff [NeZero n] : (1 : Fin n) = 0 ↔ n = 1 := by rw [eq_comm, zero_eq_one_iff]
-#align fin.one_eq_zero_iff Fin.one_eq_zero_iff
+theorem zero_eq_one_iff [NeZero n] : (0 : Fin n) = 1 ↔ n = 1 := by rw [eq_comm, one_eq_zero_iff]
+#align fin.zero_eq_one_iff Fin.zero_eq_one_iff
 
 end Add
 
@@ -1274,7 +1272,7 @@ theorem coe_sub_one {n} (a : Fin (n + 1)) : ↑(a - 1) = if a = 0 then n else a 
 theorem coe_sub_iff_le {n : ℕ} {a b : Fin n} : (↑(a - b) : ℕ) = a - b ↔ b ≤ a := by
   cases n; · exact @finZeroElim (fun _ => _) a
   rw [le_iff_val_le_val, Fin.coe_sub, ← add_tsub_assoc_of_le b.is_lt.le a]
-  cases' le_or_lt (b : ℕ) a with h h
+  rcases le_or_lt (b : ℕ) a with h | h
   · simp [← tsub_add_eq_add_tsub h, val_fin_le.mp h,
       Nat.mod_eq_of_lt ((Nat.sub_le _ _).trans_lt a.is_lt)]
   · rw [Nat.mod_eq_of_lt, tsub_eq_zero_of_le h.le, tsub_eq_zero_iff_le, ← not_iff_not]
@@ -1286,7 +1284,7 @@ theorem coe_sub_iff_lt {n : ℕ} {a b : Fin n} : (↑(a - b) : ℕ) = n + a - b 
   cases' n with n
   · exact @finZeroElim (fun _ => _) a
   rw [lt_iff_val_lt_val, Fin.coe_sub, add_comm]
-  cases' le_or_lt (b : ℕ) a with h h
+  rcases le_or_lt (b : ℕ) a with h | h
   · refine iff_of_false ?_ (not_lt_of_le h)
     simpa [add_tsub_assoc_of_le h] using
       ((Nat.mod_lt _ (Nat.succ_pos _)).trans_le le_self_add).ne

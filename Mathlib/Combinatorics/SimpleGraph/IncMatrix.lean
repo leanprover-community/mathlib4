@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Moise, Yaël Dillies, Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.Basic
+import Mathlib.Data.Finset.Sym
 import Mathlib.Data.Matrix.Basic
 
 #align_import combinatorics.simple_graph.inc_matrix from "leanprover-community/mathlib"@"bb168510ef455e9280a152e7f31673cabd3d7496"
@@ -77,7 +78,7 @@ variable [MulZeroOneClass R] {a b : α} {e : Sym2 α}
 
 theorem incMatrix_apply_mul_incMatrix_apply : G.incMatrix R a e * G.incMatrix R b e =
     (G.incidenceSet a ∩ G.incidenceSet b).indicator 1 e := by
-  classical simp only [incMatrix, Set.indicator_apply, ← ite_and_mul_zero, Pi.one_apply, mul_one,
+  classical simp only [incMatrix, Set.indicator_apply, ite_zero_mul_ite_zero, Pi.one_apply, mul_one,
     Set.mem_inter_iff]
 #align simple_graph.inc_matrix_apply_mul_inc_matrix_apply SimpleGraph.incMatrix_apply_mul_incMatrix_apply
 
@@ -150,7 +151,7 @@ theorem sum_incMatrix_apply_of_not_mem_edgeSet (h : e ∉ G.edgeSet) :
 theorem incMatrix_transpose_mul_diag [DecidableRel G.Adj] :
     ((G.incMatrix R)ᵀ * G.incMatrix R) e e = if e ∈ G.edgeSet then 2 else 0 := by
   classical
-    simp only [Matrix.mul_apply, incMatrix_apply', transpose_apply, ← ite_and_mul_zero, one_mul,
+    simp only [Matrix.mul_apply, incMatrix_apply', transpose_apply, ite_zero_mul_ite_zero, one_mul,
       sum_boole, and_self_iff]
     split_ifs with h
     · revert h
@@ -180,7 +181,7 @@ theorem incMatrix_mul_transpose_apply_of_adj (h : G.Adj a b) :
     simp_rw [Matrix.mul_apply, Matrix.transpose_apply, incMatrix_apply_mul_incMatrix_apply,
       Set.indicator_apply, Pi.one_apply, sum_boole]
     convert @Nat.cast_one R _
-    convert card_singleton ⟦(a, b)⟧
+    convert card_singleton s(a, b)
     rw [← coe_eq_singleton, coe_filter_univ]
     exact G.incidenceSet_inter_incidenceSet_of_adj h
 #align simple_graph.inc_matrix_mul_transpose_apply_of_adj SimpleGraph.incMatrix_mul_transpose_apply_of_adj

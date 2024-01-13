@@ -237,8 +237,7 @@ theorem one_lt_iff_ne_one : 1 < a ↔ a ≠ 1 :=
 #align pos_iff_ne_zero pos_iff_ne_zero
 
 @[to_additive]
-theorem eq_one_or_one_lt : a = 1 ∨ 1 < a :=
-  (one_le a).eq_or_lt.imp_left Eq.symm
+theorem eq_one_or_one_lt (a : α) : a = 1 ∨ 1 < a := (one_le a).eq_or_lt.imp_left Eq.symm
 #align eq_one_or_one_lt eq_one_or_one_lt
 #align eq_zero_or_pos eq_zero_or_pos
 
@@ -349,9 +348,9 @@ instance (priority := 100) CanonicallyLinearOrderedCommMonoid.semilatticeSup : S
 
 @[to_additive]
 theorem min_mul_distrib (a b c : α) : min a (b * c) = min a (min a b * min a c) := by
-  cases' le_total a b with hb hb
+  rcases le_total a b with hb | hb
   · simp [hb, le_mul_right]
-  · cases' le_total a c with hc hc
+  · rcases le_total a c with hc | hc
     · simp [hc, le_mul_left]
     · simp [hb, hc]
 #align min_mul_distrib min_mul_distrib

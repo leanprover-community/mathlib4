@@ -411,7 +411,7 @@ theorem isPreconnected_Icc : IsPreconnected (Icc a b) :=
     (by
       rintro s t hs ht hab ⟨x, hx⟩ ⟨y, hy⟩
       -- This used to use `wlog`, but it was causing timeouts.
-      cases' le_total x y with h h
+      rcases le_total x y with h | h
       · exact isPreconnected_Icc_aux x y s t h hs ht hab hx hy
       · rw [inter_comm s t]
         rw [union_comm s t] at hab
@@ -606,7 +606,7 @@ theorem ContinuousOn.surjOn_Icc {s : Set α} [hs : OrdConnected s] {f : α → �
 `b` are two points of this set, then `f` sends `s` to a superset of `[f x, f y]`. -/
 theorem ContinuousOn.surjOn_uIcc {s : Set α} [hs : OrdConnected s] {f : α → δ}
     (hf : ContinuousOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s) : SurjOn f s (uIcc (f a) (f b)) :=
-  by cases' le_total (f a) (f b) with hab hab <;> simp [hf.surjOn_Icc, *]
+  by rcases le_total (f a) (f b) with hab | hab <;> simp [hf.surjOn_Icc, *]
 #align continuous_on.surj_on_uIcc ContinuousOn.surjOn_uIcc
 
 /-- A continuous function which tendsto `Filter.atTop` along `Filter.atTop` and to `atBot` along
@@ -621,7 +621,7 @@ theorem Continuous.surjective {f : α → δ} (hf : Continuous f) (h_top : Tends
 along `atBot` is surjective. -/
 theorem Continuous.surjective' {f : α → δ} (hf : Continuous f) (h_top : Tendsto f atBot atTop)
     (h_bot : Tendsto f atTop atBot) : Function.Surjective f :=
-  @Continuous.surjective αᵒᵈ _ _ _ _ _ _ _ _ _ hf h_top h_bot
+  Continuous.surjective (α := αᵒᵈ) hf h_top h_bot
 #align continuous.surjective' Continuous.surjective'
 
 /-- If a function `f : α → β` is continuous on a nonempty interval `s`, its restriction to `s`

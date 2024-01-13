@@ -97,7 +97,7 @@ theorem exists_eq_mul_self [IsAlgClosed k] (x : k) : ∃ z, x = z * z := by
 theorem roots_eq_zero_iff [IsAlgClosed k] {p : k[X]} :
     p.roots = 0 ↔ p = Polynomial.C (p.coeff 0) := by
   refine' ⟨fun h => _, fun hp => by rw [hp, roots_C]⟩
-  cases' le_or_lt (degree p) 0 with hd hd
+  rcases le_or_lt (degree p) 0 with hd | hd
   · exact eq_C_of_degree_le_zero hd
   · obtain ⟨z, hz⟩ := IsAlgClosed.exists_root p hd.ne'
     rw [← mem_roots (ne_zero_of_degree_gt hd), h] at hz
@@ -204,8 +204,7 @@ instance (priority := 100) IsAlgClosure.normal (R K : Type*) [Field R] [Field K]
 
 instance (priority := 100) IsAlgClosure.separable (R K : Type*) [Field R] [Field K] [Algebra R K]
     [IsAlgClosure R K] [CharZero R] : IsSeparable R K :=
-  ⟨fun _ => (IsAlgClosure.algebraic _).isIntegral, fun _ =>
-    (minpoly.irreducible (IsAlgClosure.algebraic _).isIntegral).separable⟩
+  ⟨fun _ => (minpoly.irreducible (IsAlgClosure.algebraic _).isIntegral).separable⟩
 #align is_alg_closure.separable IsAlgClosure.separable
 
 namespace IsAlgClosed
@@ -397,15 +396,49 @@ end EquivOfEquiv
 
 end IsAlgClosure
 
+section Algebra.IsAlgebraic
+
+variable {F K : Type*} (A : Type*) [Field F] [Field K] [Field A] [Algebra F K] [Algebra F A]
+  (hK : Algebra.IsAlgebraic F K)
+
 /-- Let `A` be an algebraically closed field and let `x ∈ K`, with `K/F` an algebraic extension
   of fields. Then the images of `x` by the `F`-algebra morphisms from `K` to `A` are exactly
   the roots in `A` of the minimal polynomial of `x` over `F`. -/
-theorem Algebra.IsAlgebraic.range_eval_eq_rootSet_minpoly {F K} (A) [Field F] [Field K] [Field A]
-    [IsAlgClosed A] [Algebra F K] (hK : Algebra.IsAlgebraic F K) [Algebra F A] (x : K) :
-    (Set.range fun ψ : K →ₐ[F] A ↦ ψ x) = (minpoly F x).rootSet A := by
-  ext a
-  rw [mem_rootSet_of_ne (minpoly.ne_zero (hK.isIntegral x))]
-  refine ⟨fun ⟨ψ, hψ⟩ ↦ ?_, fun ha ↦ IntermediateField.exists_algHom_of_splits_of_aeval
-    (fun x ↦ ⟨hK.isIntegral x, IsAlgClosed.splits_codomain _⟩) ha⟩
-  rw [← hψ, aeval_algHom_apply ψ x, minpoly.aeval, map_zero]
+theorem Algebra.IsAlgebraic.range_eval_eq_rootSet_minpoly [IsAlgClosed A] (x : K) :
+    (Set.range fun ψ : K →ₐ[F] A ↦ ψ x) = (minpoly F x).rootSet A :=
+  range_eval_eq_rootSet_minpoly_of_splits A (fun _ ↦ IsAlgClosed.splits_codomain _) hK x
 #align algebra.is_algebraic.range_eval_eq_root_set_minpoly Algebra.IsAlgebraic.range_eval_eq_rootSet_minpoly
+
+/-- All `F`-embeddings of a field `K` into another field `A` factor through any intermediate
+field of `A/F` in which the minimal polynomial of elements of `K` splits. -/
+@[simps]
+def IntermediateField.algHomEquivAlgHomOfSplits (L : IntermediateField F A)
+    (hL : ∀ x : K, (minpoly F x).Splits (algebraMap F L)) :
+    (K →ₐ[F] L) ≃ (K →ₐ[F] A) where
+  toFun := L.val.comp
+  invFun f := f.codRestrict _ fun x ↦
+    ((hK x).isIntegral.map f).mem_intermediateField_of_minpoly_splits <| by
+      rw [minpoly.algHom_eq f f.injective]; exact hL x
+  left_inv _ := rfl
+  right_inv _ := by rfl
+
+theorem IntermediateField.algHomEquivAlgHomOfSplits_apply_apply (L : IntermediateField F A)
+    (hL : ∀ x : K, (minpoly F x).Splits (algebraMap F L)) (f : K →ₐ[F] L) (x : K) :
+    algHomEquivAlgHomOfSplits A hK L hL f x = algebraMap L A (f x) := rfl
+
+/-- All `F`-embeddings of a field `K` into another field `A` factor through any subextension
+of `A/F` in which the minimal polynomial of elements of `K` splits. -/
+noncomputable def Algebra.IsAlgebraic.algHomEquivAlgHomOfSplits (L : Type*) [Field L]
+    [Algebra F L] [Algebra L A] [IsScalarTower F L A]
+    (hL : ∀ x : K, (minpoly F x).Splits (algebraMap F L)) :
+    (K →ₐ[F] L) ≃ (K →ₐ[F] A) :=
+  (AlgEquiv.refl.arrowCongr (AlgEquiv.ofInjectiveField (IsScalarTower.toAlgHom F L A))).trans <|
+    IntermediateField.algHomEquivAlgHomOfSplits A hK (IsScalarTower.toAlgHom F L A).fieldRange
+    fun x ↦ splits_of_algHom (hL x) (AlgHom.rangeRestrict _)
+
+theorem Algebra.IsAlgebraic.algHomEquivAlgHomOfSplits_apply_apply (L : Type*) [Field L]
+    [Algebra F L] [Algebra L A] [IsScalarTower F L A]
+    (hL : ∀ x : K, (minpoly F x).Splits (algebraMap F L)) (f : K →ₐ[F] L) (x : K) :
+    Algebra.IsAlgebraic.algHomEquivAlgHomOfSplits A hK L hL f x = algebraMap L A (f x) := rfl
+
+end Algebra.IsAlgebraic

@@ -146,10 +146,9 @@ The proof is by contradiction. We assume that `G` is a minimal counterexample to
 
 variable {G : Type u} [Group G] [Fintype G] {N : Subgroup G} [Normal N]
   (h1 : Nat.Coprime (Fintype.card N) N.index)
-  (h2 :
-    ∀ (G' : Type u) [Group G'] [Fintype G'],
-      ∀ (_ : Fintype.card G' < Fintype.card G) {N' : Subgroup G'} [N'.Normal]
-        (_ : Nat.Coprime (Fintype.card N') N'.index), ∃ H' : Subgroup G', IsComplement' N' H')
+  (h2 : ∀ (G' : Type u) [Group G'] [Fintype G'],
+    Fintype.card G' < Fintype.card G → ∀ {N' : Subgroup G'} [N'.Normal],
+      Nat.Coprime (Fintype.card N') N'.index → ∃ H' : Subgroup G', IsComplement' N' H')
   (h3 : ∀ H : Subgroup G, ¬IsComplement' N H)
 
 /-! We will arrive at a contradiction via the following steps:

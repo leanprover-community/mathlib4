@@ -71,6 +71,13 @@ the abstract `S.cycles` of the homology API and the more concrete description as
 noncomputable def abCyclesIso : S.cycles ≅ AddCommGroupCat.of (AddMonoidHom.ker S.g) :=
   S.abLeftHomologyData.cyclesIso
 
+@[simp]
+lemma abCyclesIso_inv_apply_iCycles (x : AddMonoidHom.ker S.g) :
+    S.iCycles (S.abCyclesIso.inv x) = x := by
+  dsimp only [abCyclesIso]
+  erw [← comp_apply, S.abLeftHomologyData.cyclesIso_inv_comp_iCycles]
+  rfl
+
 /-- Given a short complex `S` of abelian groups, this is the isomorphism between
 the abstract `S.homology` of the homology API and the more explicit
 quotient of `AddMonoidHom.ker S.g` by the image of

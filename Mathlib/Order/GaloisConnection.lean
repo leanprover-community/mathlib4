@@ -400,18 +400,18 @@ theorem sSup_image2_eq_sSup_sSup (h₁ : ∀ b, GaloisConnection (swap l b) (u�
 theorem sSup_image2_eq_sSup_sInf (h₁ : ∀ b, GaloisConnection (swap l b) (u₁ b))
     (h₂ : ∀ a, GaloisConnection (l a ∘ ofDual) (toDual ∘ u₂ a)) :
     sSup (image2 l s t) = l (sSup s) (sInf t) :=
-  @sSup_image2_eq_sSup_sSup _ βᵒᵈ _ _ _ _ _ _ _ _ _ h₁ h₂
+  sSup_image2_eq_sSup_sSup (β := βᵒᵈ) h₁ h₂
 #align Sup_image2_eq_Sup_Inf sSup_image2_eq_sSup_sInf
 
 theorem sSup_image2_eq_sInf_sSup (h₁ : ∀ b, GaloisConnection (swap l b ∘ ofDual) (toDual ∘ u₁ b))
     (h₂ : ∀ a, GaloisConnection (l a) (u₂ a)) : sSup (image2 l s t) = l (sInf s) (sSup t) :=
-  @sSup_image2_eq_sSup_sSup αᵒᵈ _ _ _ _ _ _ _ _ _ _ h₁ h₂
+  sSup_image2_eq_sSup_sSup (α := αᵒᵈ) h₁ h₂
 #align Sup_image2_eq_Inf_Sup sSup_image2_eq_sInf_sSup
 
 theorem sSup_image2_eq_sInf_sInf (h₁ : ∀ b, GaloisConnection (swap l b ∘ ofDual) (toDual ∘ u₁ b))
     (h₂ : ∀ a, GaloisConnection (l a ∘ ofDual) (toDual ∘ u₂ a)) :
     sSup (image2 l s t) = l (sInf s) (sInf t) :=
-  @sSup_image2_eq_sSup_sSup αᵒᵈ βᵒᵈ _ _ _ _ _ _ _ _ _ h₁ h₂
+  sSup_image2_eq_sSup_sSup (α := αᵒᵈ) (β := βᵒᵈ) h₁ h₂
 #align Sup_image2_eq_Inf_Inf sSup_image2_eq_sInf_sInf
 
 theorem sInf_image2_eq_sInf_sInf (h₁ : ∀ b, GaloisConnection (l₁ b) (swap u b))
@@ -422,18 +422,18 @@ theorem sInf_image2_eq_sInf_sInf (h₁ : ∀ b, GaloisConnection (l₁ b) (swap 
 theorem sInf_image2_eq_sInf_sSup (h₁ : ∀ b, GaloisConnection (l₁ b) (swap u b))
     (h₂ : ∀ a, GaloisConnection (toDual ∘ l₂ a) (u a ∘ ofDual)) :
     sInf (image2 u s t) = u (sInf s) (sSup t) :=
-  @sInf_image2_eq_sInf_sInf _ βᵒᵈ _ _ _ _ _ _ _ _ _ h₁ h₂
+  sInf_image2_eq_sInf_sInf (β := βᵒᵈ) h₁ h₂
 #align Inf_image2_eq_Inf_Sup sInf_image2_eq_sInf_sSup
 
 theorem sInf_image2_eq_sSup_sInf (h₁ : ∀ b, GaloisConnection (toDual ∘ l₁ b) (swap u b ∘ ofDual))
     (h₂ : ∀ a, GaloisConnection (l₂ a) (u a)) : sInf (image2 u s t) = u (sSup s) (sInf t) :=
-  @sInf_image2_eq_sInf_sInf αᵒᵈ _ _ _ _ _ _ _ _ _ _ h₁ h₂
+  sInf_image2_eq_sInf_sInf (α := αᵒᵈ) h₁ h₂
 #align Inf_image2_eq_Sup_Inf sInf_image2_eq_sSup_sInf
 
 theorem sInf_image2_eq_sSup_sSup (h₁ : ∀ b, GaloisConnection (toDual ∘ l₁ b) (swap u b ∘ ofDual))
     (h₂ : ∀ a, GaloisConnection (toDual ∘ l₂ a) (u a ∘ ofDual)) :
     sInf (image2 u s t) = u (sSup s) (sSup t) :=
-  @sInf_image2_eq_sInf_sInf αᵒᵈ βᵒᵈ _ _ _ _ _ _ _ _ _ h₁ h₂
+  sInf_image2_eq_sInf_sInf (α := αᵒᵈ) (β := βᵒᵈ) h₁ h₂
 #align Inf_image2_eq_Sup_Sup sInf_image2_eq_sSup_sSup
 
 end
@@ -563,7 +563,7 @@ theorem l_iSup_u [CompleteLattice α] [CompleteLattice β] (gi : GaloisInsertion
 #align galois_insertion.l_supr_u GaloisInsertion.l_iSup_u
 
 theorem l_biSup_u [CompleteLattice α] [CompleteLattice β] (gi : GaloisInsertion l u) {ι : Sort x}
-    {p : ι → Prop} (f : ∀ (i) (_ : p i), β) : l (⨆ (i) (hi), u (f i hi)) = ⨆ (i) (hi), f i hi := by
+    {p : ι → Prop} (f : ∀ i, p i → β) : l (⨆ (i) (hi), u (f i hi)) = ⨆ (i) (hi), f i hi := by
   simp only [iSup_subtype', gi.l_iSup_u]
 #align galois_insertion.l_bsupr_u GaloisInsertion.l_biSup_u
 

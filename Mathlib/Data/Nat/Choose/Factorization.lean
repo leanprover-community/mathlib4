@@ -85,7 +85,7 @@ theorem factorization_choose_of_lt_three_mul (hp' : p ≠ 2) (hk : p ≤ k) (hk'
         n < 3 * p := hn
         _ ≤ p * p := mul_le_mul_right' this p
         _ = p ^ 2 := (sq p).symm
-        _ ≤ p ^ i := pow_le_pow hp.one_lt.le hi
+        _ ≤ p ^ i := pow_le_pow_right hp.one_lt.le hi
     rwa [mod_eq_of_lt (lt_of_le_of_lt hkn hn), mod_eq_of_lt (lt_of_le_of_lt tsub_le_self hn),
       add_tsub_cancel_of_le hkn]
 #align nat.factorization_choose_of_lt_three_mul Nat.factorization_choose_of_lt_three_mul
