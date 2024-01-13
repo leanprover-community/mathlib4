@@ -173,6 +173,10 @@ theorem toLocalizationMap_toMap_apply (x) : (toLocalizationMap M S).toMap x = al
   rfl
 #align is_localization.to_localization_map_to_map_apply IsLocalization.toLocalizationMap_toMap_apply
 
+theorem surj₂ : ∀ z w : S, ∃ z' w' : R, ∃ d : M,
+    ( z * algebraMap R S d = algebraMap R S z') ∧ ( w * algebraMap R S d = algebraMap R S w')
+    := (toLocalizationMap M S).surj₂
+
 end
 
 variable (M) {S}
@@ -786,17 +790,17 @@ noncomputable def atUnits (H : M ≤ IsUnit.submonoid R) : R ≃ₐ[R] S := by
 
 end at_units
 
-end IsLocalization
-
 section
 
-variable [IsLocalization M S] (M) (Q : Type*) [CommSemiring Q] {g : R →+* P} [Algebra P Q]
+variable (M S) (Q : Type*) [CommSemiring Q] [Algebra P Q]
 
-theorem map_injective_of_injective (hg : Function.Injective g) [IsLocalization (M.map g) Q] :
+theorem map_injective_of_injective (h : Function.Injective g) [IsLocalization (M.map g) Q] :
     Function.Injective (map Q g (Submonoid.le_comap_map M) : S → Q) :=
-  (toLocalizationMap M S).map_injective_of_injective hg (toLocalizationMap (M.map g) Q)
+  (toLocalizationMap M S).map_injective_of_injective h (toLocalizationMap (M.map g) Q)
 
 end
+
+end IsLocalization
 
 section
 
