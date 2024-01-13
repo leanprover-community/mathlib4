@@ -323,7 +323,7 @@ variable {F : Type*} [Field F] {E : Type*} [Field E] [Algebra F E]
 theorem map_eq : L.map f = (f.comp L.val).fieldRange := toSubalgebra_injective <| by
   rw [toSubalgebra_map, AlgHom.fieldRange_toSubalgebra, AlgHom.range_comp, range_val]
 
-/-- An intermediate field is isomorphic to its image under an algebra map
+/-- An intermediate field is isomorphic to its image under an `AlgHom`
 (which is automatically injective) -/
 noncomputable def equivMap : L ≃ₐ[F] L.map f :=
   (AlgEquiv.ofInjective _ (f.comp L.val).injective).trans (equivOfEq (map_eq L f).symm)

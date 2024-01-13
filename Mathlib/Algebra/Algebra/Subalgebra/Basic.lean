@@ -1108,7 +1108,7 @@ theorem map_eq : S.map f = (f.comp S.val).range := by
 
 variable (hf : Function.Injective f)
 
-/-- A subalgebra is isomorphic to its image under an injective function -/
+/-- A subalgebra is isomorphic to its image under an injective `AlgHom` -/
 noncomputable def equivMapOfInjective : S ≃ₐ[R] S.map f :=
   (AlgEquiv.ofInjective (f.comp S.val) (hf.comp Subtype.val_injective)).trans
     (equivOfEq _ _ (map_eq S f).symm)
