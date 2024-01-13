@@ -174,8 +174,8 @@ theorem toLocalizationMap_toMap_apply (x) : (toLocalizationMap M S).toMap x = al
 #align is_localization.to_localization_map_to_map_apply IsLocalization.toLocalizationMap_toMap_apply
 
 theorem surj₂ : ∀ z w : S, ∃ z' w' : R, ∃ d : M,
-    ( z * algebraMap R S d = algebraMap R S z') ∧ ( w * algebraMap R S d = algebraMap R S w')
-    := (toLocalizationMap M S).surj₂
+    ( z * algebraMap R S d = algebraMap R S z') ∧ ( w * algebraMap R S d = algebraMap R S w'):=
+  (toLocalizationMap M S).surj₂
 
 end
 
