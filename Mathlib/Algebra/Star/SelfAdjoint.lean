@@ -586,10 +586,14 @@ instance isStarNormal_one [MulOneClass R] [StarMul R] : IsStarNormal (1 : R) :=
   ⟨by simp only [Commute.refl, star_comm_self, star_one]⟩
 #align is_star_normal_one isStarNormal_one
 
-instance isStarNormal_star_self [Mul R] [StarMul R] {x : R} [IsStarNormal x] :
+instance isStarNormal_star [Mul R] [StarMul R] {x : R} [IsStarNormal x] :
     IsStarNormal (star x) :=
   ⟨show star (star x) * star x = star x * star (star x) by rw [star_star, star_comm_self']⟩
-#align is_star_normal_star_self isStarNormal_star_self
+#align is_star_normal_star_self isStarNormal_star
+
+instance isStarNormal_neg [Ring R] [StarAddMonoid R] {x : R} [IsStarNormal x] :
+    IsStarNormal (-x) :=
+  ⟨show star (-x) * -x = -x * star (-x) by simp_rw [star_neg, neg_mul_neg, star_comm_self']⟩
 
 -- see Note [lower instance priority]
 instance (priority := 100) TrivialStar.isStarNormal [Mul R] [StarMul R] [TrivialStar R]
