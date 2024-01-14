@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.AddTorsor
 import Mathlib.Topology.Algebra.Constructions
-import Mathlib.GroupTheory.GroupAction.Prod
+import Mathlib.GroupTheory.GroupAction.SubMulAction
 import Mathlib.Topology.Algebra.ConstMulAction
 
 #align_import topology.algebra.mul_action from "leanprover-community/mathlib"@"d90e4e186f1d18e375dcd4e5b5f6364b01cb3e46"
@@ -173,6 +173,11 @@ lemma Inducing.continuousSMul {N : Type*} [SMul N Y] [TopologicalSpace N] {f : N
   continuous_smul := by
     simpa only [hg.continuous_iff, Function.comp_def, hsmul]
       using (hf.comp continuous_fst).smul <| hg.continuous.comp continuous_snd
+
+@[to_additive]
+instance SMulMemClass.continuousSMul {S : Type*} [SetLike S X] [SMulMemClass S M X] (s : S) :
+    ContinuousSMul M s :=
+  inducing_subtype_val.continuousSMul continuous_id rfl
 
 end SMul
 
