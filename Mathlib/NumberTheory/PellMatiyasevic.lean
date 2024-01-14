@@ -946,7 +946,8 @@ theorem eq_pow_of_pell {m n k} :
   constructor
   · rintro rfl
     refine' k.eq_zero_or_pos.imp (fun k0 : k = 0 => k0.symm ▸ ⟨rfl, rfl⟩) fun hk => ⟨hk, _⟩
-    refine' n.eq_zero_or_pos.imp (fun n0 : n = 0 => n0.symm ▸ ⟨rfl, zero_pow hk⟩) fun hn => ⟨hn, _⟩
+    refine n.eq_zero_or_pos.imp (fun n0 : n = 0 ↦ n0.symm ▸ ⟨rfl, zero_pow hk.ne'⟩)
+      fun hn ↦ ⟨hn, ?_⟩
     set w := max n k
     have nw : n ≤ w := le_max_left _ _
     have kw : k ≤ w := le_max_right _ _
@@ -978,7 +979,7 @@ theorem eq_pow_of_pell {m n k} :
     exact ⟨w, a, t, z, a1, tm, ta, Nat.cast_lt.1 nt, nw, kw, zp⟩
   · rintro (⟨rfl, rfl⟩ | ⟨hk0, ⟨rfl, rfl⟩ | ⟨hn0, w, a, t, z, a1, tm, ta, mt, nw, kw, zp⟩⟩)
     · exact _root_.pow_zero n
-    · exact zero_pow hk0
+    · exact zero_pow hk0.ne'
     have hw0 : 0 < w := hn0.trans_le nw
     have hw1 : 1 < w + 1 := Nat.succ_lt_succ hw0
     rcases eq_pell hw1 zp with ⟨j, rfl, yj⟩

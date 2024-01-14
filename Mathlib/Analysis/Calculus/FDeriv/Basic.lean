@@ -737,7 +737,7 @@ theorem Asymptotics.IsBigO.hasFDerivWithinAt {s : Set E} {x₀ : E} {n : ℕ}
     (h : f =O[𝓝[s] x₀] fun x => ‖x - x₀‖ ^ n) (hx₀ : x₀ ∈ s) (hn : 1 < n) :
     HasFDerivWithinAt f (0 : E →L[𝕜] F) s x₀ := by
   simp_rw [HasFDerivWithinAt, hasFDerivAtFilter_iff_isLittleO,
-    h.eq_zero_of_norm_pow_within hx₀ <| zero_lt_one.trans hn, zero_apply, sub_zero,
+    h.eq_zero_of_norm_pow_within hx₀ hn.ne_bot, zero_apply, sub_zero,
     h.trans_isLittleO ((isLittleO_pow_sub_sub x₀ hn).mono nhdsWithin_le_nhds)]
 set_option linter.uppercaseLean3 false in
 #align asymptotics.is_O.has_fderiv_within_at Asymptotics.IsBigO.hasFDerivWithinAt
