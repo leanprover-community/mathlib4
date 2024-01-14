@@ -812,7 +812,7 @@ theorem roots_pow (p : R[X]) (n : ℕ) : (p ^ n).roots = n • p.roots := by
   induction' n with n ihn
   · rw [pow_zero, roots_one, Nat.zero_eq, zero_smul, empty_eq_zero]
   · rcases eq_or_ne p 0 with (rfl | hp)
-    · rw [zero_pow n.succ_pos, roots_zero, smul_zero]
+    · rw [zero_pow n.succ_ne_zero, roots_zero, smul_zero]
     · rw [pow_succ', roots_mul (mul_ne_zero (pow_ne_zero _ hp) hp), ihn, Nat.succ_eq_add_one,
         add_smul, one_smul]
 #align polynomial.roots_pow Polynomial.roots_pow
@@ -958,7 +958,7 @@ theorem ne_zero_of_mem_nthRootsFinset {η : R} (hη : η ∈ nthRootsFinset n R)
   | zero =>
     simp only [Nat.zero_eq, nthRootsFinset_zero, not_mem_empty] at hη
   | succ n =>
-    rw [mem_nthRootsFinset n.succ_pos, zero_pow n.succ_pos] at hη
+    rw [mem_nthRootsFinset n.succ_pos, zero_pow n.succ_ne_zero] at hη
     exact zero_ne_one hη
 
 theorem one_mem_nthRootsFinset (hn : 0 < n) : 1 ∈ nthRootsFinset n R := by

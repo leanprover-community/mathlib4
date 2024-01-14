@@ -50,7 +50,7 @@ theorem hasSum_expSeries_of_imaginary {q : Quaternion ℝ} (hq : q.re = 0) {c s 
     ext (_ | n) : 1
     · rw [pow_zero, Nat.zero_eq, mul_zero, pow_zero, Nat.factorial_zero, Nat.cast_one,
         div_one, one_mul, Pi.single_eq_same, coe_one]
-    · rw [zero_pow (mul_pos two_pos (Nat.succ_pos _)), mul_zero, zero_div,
+    · rw [zero_pow (by positivity), mul_zero, zero_div,
         Pi.single_eq_of_ne n.succ_ne_zero, coe_zero]
   simp_rw [expSeries_apply_eq]
   have hq2 : q ^ 2 = -normSq q := sq_eq_neg_normSq.mpr hq

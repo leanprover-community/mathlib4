@@ -115,7 +115,7 @@ theorem eq_pow (a : ℤ) : (legendreSym p a : ZMod p) = (a : ZMod p) ^ (p / 2) :
   rcases eq_or_ne (ringChar (ZMod p)) 2 with hc | hc
   · by_cases ha : (a : ZMod p) = 0
     · rw [legendreSym, ha, quadraticChar_zero,
-        zero_pow (Nat.div_pos (@Fact.out p.Prime).two_le (succ_pos 1))]
+        zero_pow (Nat.div_pos (@Fact.out p.Prime).two_le (succ_pos 1)).ne']
       norm_cast
     · have := (ringChar_zmod_n p).symm.trans hc
       -- p = 2
