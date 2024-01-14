@@ -349,16 +349,19 @@ theorem contMDiff_of_support {f : M → F} (hf : ∀ x ∈ tsupport f, ContMDiff
   · exact ContMDiffAt.congr_of_eventuallyEq contMDiffAt_const (eventuallyEq_zero_nhds.2 hx)
 #align cont_mdiff_of_support contMDiff_of_support
 
-theorem contMDiffWithinAt_of_not_mem {f : M → F} {x : M} (hx : x ∉ tsupport f) (n : ℕ∞)
-    (s : Set M) : ContMDiffWithinAt I 𝓘(𝕜, F) n f s x :=
-  contMDiffWithinAt_const.congr_of_eventuallyEq
-    (eventually_nhdsWithin_of_eventually_nhds <| not_mem_tsupport_iff_eventuallyEq.mp hx)
-    (image_eq_zero_of_nmem_tsupport hx)
+@[to_additive contMDiffWithinAt_of_not_mem]
+theorem contMDiffWithinAt_of_not_mem_mulTSupport {f : M → M'} [One M'] {x : M}
+    (hx : x ∉ mulTSupport f) (n : ℕ∞) (s : Set M) : ContMDiffWithinAt I I' n f s x := by
+  apply contMDiffWithinAt_const.congr_of_eventuallyEq
+    (eventually_nhdsWithin_of_eventually_nhds <| not_mem_mulTSupport_iff_eventuallyEq.mp hx)
+    (image_eq_one_of_nmem_mulTSupport hx)
 
-/-- `f` is continuously differentiable at each point outside of its `tsupport`. -/
-theorem contMDiffAt_of_not_mem {f : M → F} {x : M} (hx : x ∉ tsupport f) (n : ℕ∞) :
-    ContMDiffAt I 𝓘(𝕜, F) n f x :=
-  contMDiffWithinAt_of_not_mem hx n univ
+/-- `f` is continuously differentiable at each point outside of its `mulTSupport`. -/
+@[to_additive contMDiffAt_of_not_mem]
+theorem contMDiffAt_of_not_mem_mulTSupport {f : M → M'} [One M'] {x : M} (hx : x ∉ mulTSupport f) (n : ℕ∞) :
+    ContMDiffAt I I' n f x :=
+  contMDiffWithinAt_of_not_mem_mulTSupport hx n univ
+
 
 /-! ### The inclusion map from one open set to another is smooth -/
 
@@ -382,7 +385,7 @@ theorem ContMDiff.extend_one [T2Space M] [One M'] {n : ℕ∞} {U : Opens M} {f 
       (supp.mulTSupport_extend_one_subset continuous_subtype_val h)⟩ : U) by rfl,
       ← contMdiffAt_subtype_iff, ← comp_def, extend_comp Subtype.val_injective]
     exact diff.contMDiffAt
-  · exact contMDiffAt_const.congr_of_eventuallyEq (not_mem_mulTSupport_iff_eventuallyEq.mp h)
+  · exact contMDiffAt_of_not_mem_mulTSupport h n
 
 theorem contMDiff_inclusion {n : ℕ∞} {U V : Opens M} (h : U ≤ V) :
     ContMDiff I I n (Set.inclusion h : U → V) := by
