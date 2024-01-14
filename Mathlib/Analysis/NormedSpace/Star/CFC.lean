@@ -426,7 +426,6 @@ theorem selfAdjoint.pos_part_mul_neg_part (a : selfAdjoint A) : (↑(a⁺) : A) 
   rcases (le_total x 0) with (hx|hx) <;> simp [hx] <;> rfl
   all_goals infer_instance
 
--- it is essential to use coercions here because `self_adjoint A` can't have a `has_mul` instance
 theorem selfAdjoint.neg_part_mul_pos_part (a : selfAdjoint A) : (↑(a⁻) : A) * ↑(a⁺) = 0 := by
   convert selfAdjoint.pos_part_mul_neg_part a using 1
   exact cfc_commute _ _ _
