@@ -12,11 +12,11 @@ compile_def% EmptyCollection.emptyCollection
 compile_def% Insert.insert
 compile_def% Singleton.singleton
 
-universe u v
+universe u v w
 
 namespace Set
 
-variable {α : Type u} {β : Type v}
+variable {α : Type u} {β : Type v} {γ : Type w}
 
 @[simp, mfld_simps] theorem mem_setOf_eq {x : α} {p : α → Prop} : (x ∈ {y | p y}) = p x := rfl
 #align set.mem_set_of_eq Set.mem_setOf_eq
@@ -246,3 +246,35 @@ def RightInvOn (f' : β → α) (f : α → β) (t : Set β) : Prop :=
 def InvOn (g : β → α) (f : α → β) (s : Set α) (t : Set β) : Prop :=
   LeftInvOn g f s ∧ RightInvOn g f t
 #align set.inv_on Set.InvOn
+
+section image2
+
+/-- The image of a binary function `f : α → β → γ` as a function `Set α → Set β → Set γ`.
+Mathematically this should be thought of as the image of the corresponding function `α × β → γ`.-/
+def image2 (f : α → β → γ) (s : Set α) (t : Set β) : Set γ :=
+  { c | ∃ a ∈ s, ∃ b ∈ t, f a b = c }
+#align set.image2 Set.image2
+
+variable {f : α → β → γ} {s : Set α} {t : Set β} {a : α} {b : β} {c : γ}
+
+@[simp] theorem mem_image2 : c ∈ image2 f s t ↔ ∃ a ∈ s, ∃ b ∈ t, f a b = c := .rfl
+#align set.mem_image2 Set.mem_image2
+
+theorem mem_image2_of_mem (ha : a ∈ s) (hb : b ∈ t) : f a b ∈ image2 f s t :=
+  ⟨a, ha, b, hb, rfl⟩
+#align set.mem_image2_of_mem Set.mem_image2_of_mem
+
+end image2
+
+/-- Given a set `s` of functions `α → β` and `t : Set α`, `seq s t` is the union of `f '' t` over
+all `f ∈ s`. -/
+def seq (s : Set (α → β)) (t : Set α) : Set β := image2 (fun f ↦ f) s t
+#align set.seq Set.seq
+
+@[simp]
+theorem mem_seq_iff {s : Set (α → β)} {t : Set α} {b : β} :
+    b ∈ seq s t ↔ ∃ f ∈ s, ∃ a ∈ t, (f : α → β) a = b :=
+  Iff.rfl
+#align set.mem_seq_iff Set.mem_seq_iff
+
+lemma seq_eq_image2 (s : Set (α → β)) (t : Set α) : seq s t = image2 (fun f a ↦ f a) s t := rfl

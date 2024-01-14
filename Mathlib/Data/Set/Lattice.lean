@@ -2079,19 +2079,6 @@ end Image2
 
 section Seq
 
-/-- Given a set `s` of functions `α → β` and `t : Set α`, `seq s t` is the union of `f '' t` over
-all `f ∈ s`. -/
-def seq (s : Set (α → β)) (t : Set α) : Set β := image2 (fun f ↦ f) s t
-#align set.seq Set.seq
-
-@[simp]
-theorem mem_seq_iff {s : Set (α → β)} {t : Set α} {b : β} :
-    b ∈ seq s t ↔ ∃ f ∈ s, ∃ a ∈ t, (f : α → β) a = b :=
-  Iff.rfl
-#align set.mem_seq_iff Set.mem_seq_iff
-
-lemma seq_eq_image2 (s : Set (α → β)) (t : Set α) : seq s t = image2 (fun f a ↦ f a) s t := rfl
-
 theorem seq_def {s : Set (α → β)} {t : Set α} : seq s t = ⋃ f ∈ s, f '' t := by
   rw [seq_eq_image2, iUnion_image_left]
 #align set.seq_def Set.seq_def
