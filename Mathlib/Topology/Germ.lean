@@ -9,14 +9,13 @@ import Mathlib.Analysis.Calculus.FDeriv.Basic
 import Mathlib.Algebra.Order.Hom.Ring
 import Mathlib.Topology.NhdsSet
 
-/-! ## Additional lemmas about germs of functions
+/-! ## Germs of functions between topological spaces
 
 TODO: add a module docstring, eventually
 -/
 
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
-
-variable {G : Type*} [NormedAddCommGroup G] [NormedSpace ℝ G]
+variable {F G : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+  [NormedAddCommGroup G] [NormedSpace ℝ G]
 
 open scoped Topology
 
@@ -58,11 +57,13 @@ def _root_.Subring.orderedSubtype {R} [OrderedRing R] (s : Subring R) : s →+*o
 
 end Filter.Germ
 
+variable {X Y Z : Type*} [TopologicalSpace X] {f g : X → Y} {A : Set X} {x : X}
+
 /-- Given a predicate on germs `P : Π x : X, germ (𝓝 x) Y → Prop` and `A : set X`,
 build a new predicate on germs `restrict_germ_predicate P A` such that
 `(∀ x, restrict_germ_predicate P A x f) ↔ ∀ᶠ x near A, P x f`, see
 `forall_restrict_germ_predicate_iff` for this equivalence. -/
-def RestrictGermPredicate {X Y : Type*} [TopologicalSpace X] (P : ∀ x : X, Germ (𝓝 x) Y → Prop)
+def RestrictGermPredicate (P : ∀ x : X, Germ (𝓝 x) Y → Prop)
     (A : Set X) : ∀ x : X, Germ (𝓝 x) Y → Prop := fun x φ =>
   Quotient.liftOn' φ (fun f => x ∈ A → ∀ᶠ y in 𝓝 x, P y f)
     haveI : ∀ f f' : X → Y, f =ᶠ[𝓝 x] f' → (∀ᶠ y in 𝓝 x, P y f) → ∀ᶠ y in 𝓝 x, P y f' := by
@@ -72,22 +73,21 @@ def RestrictGermPredicate {X Y : Type*} [TopologicalSpace X] (P : ∀ x : X, Ger
       rwa [Germ.coe_eq.mpr (EventuallyEq.symm hy')]
     fun f f' hff' => propext <| forall_congr' fun _ => ⟨this f f' hff', this f' f hff'.symm⟩
 
-theorem Filter.Eventually.germ_congr {X Y : Type*} [TopologicalSpace X] {x : X}
-    {P : Germ (𝓝 x) Y → Prop} {f g : X → Y} (hf : P f) (h : ∀ᶠ z in 𝓝 x, g z = f z) : P g := by
+theorem Filter.Eventually.germ_congr
+    {P : Germ (𝓝 x) Y → Prop} (hf : P f) (h : ∀ᶠ z in 𝓝 x, g z = f z) : P g := by
   convert hf using 1
   apply Quotient.sound
   exact h
 
-theorem Filter.Eventually.germ_congr_set {X Y : Type*} [TopologicalSpace X]
-    {P : ∀ x : X, Germ (𝓝 x) Y → Prop} {A : Set X} {f g : X → Y} (hf : ∀ᶠ x in 𝓝ˢ A, P x f)
+theorem Filter.Eventually.germ_congr_set
+    {P : ∀ x : X, Germ (𝓝 x) Y → Prop} (hf : ∀ᶠ x in 𝓝ˢ A, P x f)
     (h : ∀ᶠ z in 𝓝ˢ A, g z = f z) : ∀ᶠ x in 𝓝ˢ A, P x g := by
   rw [eventually_nhdsSet_iff] at *
   intro x hx
   apply ((hf x hx).and (h x hx).eventually_nhds).mono
   exact fun y hy => hy.2.germ_congr hy.1
 
-theorem restrictGermPredicate_congr {X Y : Type*} [TopologicalSpace X]
-    {P : ∀ x : X, Germ (𝓝 x) Y → Prop} {A : Set X} {f g : X → Y} {x : X}
+theorem restrictGermPredicate_congr {P : ∀ x : X, Germ (𝓝 x) Y → Prop}
     (hf : RestrictGermPredicate P A x f) (h : ∀ᶠ z in 𝓝ˢ A, g z = f z) :
     RestrictGermPredicate P A x g := by
   intro hx
@@ -95,14 +95,13 @@ theorem restrictGermPredicate_congr {X Y : Type*} [TopologicalSpace X]
   rintro y ⟨hy, h'y⟩
   rwa [Germ.coe_eq.mpr h'y]
 
-theorem forall_restrictGermPredicate_iff {X Y : Type*} [TopologicalSpace X]
-    {P : ∀ x : X, Germ (𝓝 x) Y → Prop} {A : Set X} {f : X → Y} :
+theorem forall_restrictGermPredicate_iff {P : ∀ x : X, Germ (𝓝 x) Y → Prop} :
     (∀ x, RestrictGermPredicate P A x f) ↔ ∀ᶠ x in 𝓝ˢ A, P x f := by
   rw [eventually_nhdsSet_iff]
   rfl
 
-theorem forall_restrictGermPredicate_of_forall {X Y : Type*} [TopologicalSpace X]
-    {P : ∀ x : X, Germ (𝓝 x) Y → Prop} {A : Set X} {f : X → Y} (h : ∀ x, P x f) :
+theorem forall_restrictGermPredicate_of_forall
+    {P : ∀ x : X, Germ (𝓝 x) Y → Prop} (h : ∀ x, P x f) :
     ∀ x, RestrictGermPredicate P A x f :=
   forall_restrictGermPredicate_iff.mpr (eventually_of_forall h)
 
@@ -114,25 +113,23 @@ theorem Filter.Tendsto.congr_germ {α β γ : Type*} {f g : β → γ} {l : Filt
     (h : f =ᶠ[l'] g) {φ : α → β} (hφ : Tendsto φ l l') : (f ∘ φ : Germ l γ) = g ∘ φ :=
   @Quotient.sound _ (l.germSetoid γ) _ _ (hφ h)
 
-def Filter.Germ.sliceLeft {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] {p : X × Y}
-    (P : Germ (𝓝 p) Z) : Germ (𝓝 p.1) Z :=
+def Filter.Germ.sliceLeft [TopologicalSpace Y] {p : X × Y} (P : Germ (𝓝 p) Z) : Germ (𝓝 p.1) Z :=
   P.compTendsto (Prod.mk · p.2) (Continuous.Prod.mk_left p.2).continuousAt
 
 @[simp]
-theorem Filter.Germ.sliceLeft_coe {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] {x : X}
-    {y : Y} (f : X × Y → Z) : (↑f : Germ (𝓝 (x, y)) Z).sliceLeft = fun x' => f (x', y) :=
+theorem Filter.Germ.sliceLeft_coe [TopologicalSpace Y] {y : Y} (f : X × Y → Z) :
+    (↑f : Germ (𝓝 (x, y)) Z).sliceLeft = fun x' => f (x', y) :=
   rfl
 
-def Filter.Germ.sliceRight {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] {p : X × Y}
-    (P : Germ (𝓝 p) Z) : Germ (𝓝 p.2) Z :=
+def Filter.Germ.sliceRight [TopologicalSpace Y] {p : X × Y} (P : Germ (𝓝 p) Z) : Germ (𝓝 p.2) Z :=
   P.compTendsto (Prod.mk p.1) (Continuous.Prod.mk p.1).continuousAt
 
 @[simp]
-theorem Filter.Germ.sliceRight_coe {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-    {x : X} {y : Y} (f : X × Y → Z) : (↑f : Germ (𝓝 (x, y)) Z).sliceRight = fun y' => f (x, y') :=
+theorem Filter.Germ.sliceRight_coe [TopologicalSpace Y] {y : Y} (f : X × Y → Z) :
+    (↑f : Germ (𝓝 (x, y)) Z).sliceRight = fun y' => f (x, y') :=
   rfl
 
-def Filter.Germ.IsConstant {X Y : Type*} [TopologicalSpace X] {x : X} (P : Germ (𝓝 x) Y) : Prop :=
+def Filter.Germ.IsConstant (P : Germ (𝓝 x) Y) : Prop :=
   P.liftOn (fun f => ∀ᶠ x' in 𝓝 x, f x' = f x) <| by
     suffices : ∀ f g : X → Y, f =ᶠ[𝓝 x] g → (∀ᶠ x' in 𝓝 x, f x' = f x) → ∀ᶠ x' in 𝓝 x, g x' = g x
     exact fun f g hfg => propext ⟨fun h => this f g hfg h, fun h => this g f hfg.symm h⟩
@@ -140,16 +137,14 @@ def Filter.Germ.IsConstant {X Y : Type*} [TopologicalSpace X] {x : X} (P : Germ 
     refine (hf.and hfg).mono fun x' hx' => ?_
     rw [← hx'.2, hx'.1, hfg.eq_of_nhds]
 
-theorem Filter.Germ.isConstant_coe {X Y : Type*} [TopologicalSpace X] {x : X} {y} {f : X → Y}
-    (h : ∀ x', f x' = y) : (↑f : Germ (𝓝 x) Y).IsConstant :=
+theorem Filter.Germ.isConstant_coe {y} (h : ∀ x', f x' = y) : (↑f : Germ (𝓝 x) Y).IsConstant :=
   eventually_of_forall fun x' => by rw [h, h]
 
 @[simp]
-theorem Filter.Germ.isConstant_coe_const {X Y : Type*} [TopologicalSpace X] {x : X} {y : Y} :
-    (fun _ : X => y : Germ (𝓝 x) Y).IsConstant :=
+theorem Filter.Germ.isConstant_coe_const {y : Y} : (fun _ : X => y : Germ (𝓝 x) Y).IsConstant :=
   eventually_of_forall fun _ => rfl
 
-theorem eq_of_germ_isConstant {X Y : Type*} [TopologicalSpace X] [PreconnectedSpace X] {f : X → Y}
+theorem eq_of_germ_isConstant [PreconnectedSpace X]
     (h : ∀ x : X, (f : Germ (𝓝 x) Y).IsConstant) (x x' : X) : f x = f x' := by
   revert x
   erw [← eq_univ_iff_forall]
@@ -160,8 +155,8 @@ theorem eq_of_germ_isConstant {X Y : Type*} [TopologicalSpace X] [PreconnectedSp
   rcases ((h x).and_frequently hx).exists with ⟨x'', H⟩
   exact H.1.symm.trans H.2
 
-theorem eq_of_germ_isConstant_on {X Y : Type*} [TopologicalSpace X] {f : X → Y} {s : Set X}
-    (h : ∀ x ∈ s, (f : Germ (𝓝 x) Y).IsConstant) (hs : IsPreconnected s) {x x' : X} (x_in : x ∈ s)
+theorem eq_of_germ_isConstant_on {s : Set X}
+    (h : ∀ x ∈ s, (f : Germ (𝓝 x) Y).IsConstant) (hs : IsPreconnected s) {x' : X} (x_in : x ∈ s)
     (x'_in : x' ∈ s) : f x = f x' := by
   haveI := isPreconnected_iff_preconnectedSpace.mp hs
   let F : s → Y := f ∘ (↑)
