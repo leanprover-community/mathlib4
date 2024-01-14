@@ -104,7 +104,7 @@ protected lemma union' (m : AddContent C) (hs : s ∈ C) (ht : t ∈ C) (hst : s
   · simp only [coe_pair, sUnion_insert, sUnion_singleton]
   · rw [sum_insert, sum_singleton]
     simp only [Finset.mem_singleton]
-    refine' fun hs_eq_t => hs_empty _
+    refine fun hs_eq_t => hs_empty ?_
     rw [← hs_eq_t] at h_dis
     exact Disjoint.eq_bot_of_self h_dis
 
