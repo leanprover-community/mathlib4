@@ -417,6 +417,20 @@ theorem linearIndependent_bounded_of_finset_linearIndependent_bounded {n : ℕ}
   apply linearIndependent_finset_map_embedding_subtype _ li
 #align linear_independent_bounded_of_finset_linear_independent_bounded linearIndependent_bounded_of_finset_linearIndependent_bounded
 
+/-- If `v : ι → M` is a family of vectors and there exists a family of linear forms
+`dv : ι → (M →ₗ[R] R)` such that `dv i (v j)` is `1` for `i = j` and `0` for `i ≠ j`, then
+`v` is linearly independent.-/
+theorem linearIndependent_of_dualFamily (v : ι → M) (dv : ι → (M →ₗ[R] R))
+    (h1 : ∀ (a : ι) (b : ι), a ≠ b → (dv a) (v b) = 0) (h2 : ∀ (a : ι), (dv a) (v a) = 1) :
+    LinearIndependent R v := by
+  rw [linearIndependent_iff']
+  intro s g hrel i hi
+  apply_fun (fun x => dv i x) at hrel
+  simp only [map_sum, map_smul, smul_eq_mul, _root_.map_zero] at hrel
+  rw [Finset.sum_eq_single i (fun j _ hj ↦ by rw [h1 i j (Ne.symm hj), mul_zero])
+    (fun hi' ↦ False.elim (hi' hi)), h2 i, mul_one] at hrel
+  exact hrel
+
 section Subtype
 
 /-! The following lemmas use the subtype defined by a set in `M` as the index set `ι`. -/
