@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov, Rémy
 -/
 import Mathlib.Order.MinMax
 import Mathlib.Data.Set.Prod
+import Mathlib.Tactic.Says
 
 #align_import data.set.intervals.basic from "leanprover-community/mathlib"@"3ba15165bd6927679be7c22d6091a87337e3cd0c"
 
@@ -1167,10 +1168,11 @@ theorem Ioo_subset_Ioo_iff [DenselyOrdered α] (h₁ : a₁ < b₁) :
 
 theorem Ico_eq_Ico_iff (h : a₁ < b₁ ∨ a₂ < b₂) : Ico a₁ b₁ = Ico a₂ b₂ ↔ a₁ = a₂ ∧ b₁ = b₂ :=
   ⟨fun e => by
-      simp [Subset.antisymm_iff] at e
+      simp? [Subset.antisymm_iff] at e says
+        simp only [gt_iff_lt, not_lt, ge_iff_le, Subset.antisymm_iff] at e
       simp only [le_antisymm_iff]
       cases' h with h h <;>
-      simp [Ico_subset_Ico_iff h] at e <;>
+      simp only [gt_iff_lt, not_lt, ge_iff_le, Ico_subset_Ico_iff h] at e <;>
       [ rcases e with ⟨⟨h₁, h₂⟩, e'⟩; rcases e with ⟨e', ⟨h₁, h₂⟩⟩ ] <;>
       -- Porting note: restore `tauto`
       have hab := (Ico_subset_Ico_iff <| h₁.trans_lt <| h.trans_le h₂).1 e' <;>

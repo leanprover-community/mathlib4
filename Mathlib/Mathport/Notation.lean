@@ -587,7 +587,8 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
       let delabKeys := ms.foldr (·.1 ++ ·) []
       trace[notation3] "Adding `delab` attribute for keys {delabKeys}"
       for key in delabKeys do
-        elabCommand <| ← `(command| attribute [delab $(mkIdent key)] $(Lean.mkIdent delabName))
+        elabCommand <|
+          ← `(command| attribute [$attrKind delab $(mkIdent key)] $(Lean.mkIdent delabName))
     else
       logWarning s!"Was not able to generate a pretty printer for this notation.{
         ""} If you do not expect it to be pretty printable, then you can use{

@@ -53,7 +53,7 @@ variable {s t : Set E}
 
 variable {L L₁ L₂ : Filter E}
 
-section ConstSmul
+section ConstSMul
 
 variable {R : Type*} [Semiring R] [Module R F] [SMulCommClass 𝕜 R F] [ContinuousConstSMul R F]
 
@@ -109,7 +109,7 @@ theorem fderiv_const_smul (h : DifferentiableAt 𝕜 f x) (c : R) :
   (h.hasFDerivAt.const_smul c).fderiv
 #align fderiv_const_smul fderiv_const_smul
 
-end ConstSmul
+end ConstSMul
 
 section Add
 

@@ -143,6 +143,14 @@ noncomputable def toField : Field K :=
       exact dif_pos rfl }
 #align is_fraction_ring.to_field IsFractionRing.toField
 
+lemma surjective_iff_isField [IsDomain R] : Function.Surjective (algebraMap R K) ↔ IsField R where
+  mp h := (RingEquiv.ofBijective (algebraMap R K)
+      ⟨IsFractionRing.injective R K, h⟩).toMulEquiv.isField (IsFractionRing.toField R).toIsField
+  mpr h :=
+    letI := h.toField
+    (IsLocalization.atUnits R _ (S := K)
+      (fun _ hx ↦ Ne.isUnit (mem_nonZeroDivisors_iff_ne_zero.mp hx))).surjective
+
 end CommRing
 
 variable {B : Type*} [CommRing B] [IsDomain B] [Field K] {L : Type*} [Field L] [Algebra A K]

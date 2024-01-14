@@ -278,9 +278,9 @@ theorem mapsTo_sin_Ioo : MapsTo sin (Ioo (-(π / 2)) (π / 2)) (Ioo (-1) 1) := f
   rwa [mem_Ioo, ← arcsin_lt_pi_div_two, ← neg_pi_div_two_lt_arcsin, arcsin_sin h.1.le h.2.le]
 #align real.maps_to_sin_Ioo Real.mapsTo_sin_Ioo
 
-/-- `Real.sin` as a `LocalHomeomorph` between `(-π / 2, π / 2)` and `(-1, 1)`. -/
+/-- `Real.sin` as a `PartialHomeomorph` between `(-π / 2, π / 2)` and `(-1, 1)`. -/
 @[simp]
-def sinLocalHomeomorph : LocalHomeomorph ℝ ℝ where
+def sinPartialHomeomorph : PartialHomeomorph ℝ ℝ where
   toFun := sin
   invFun := arcsin
   source := Ioo (-(π / 2)) (π / 2)
@@ -293,7 +293,7 @@ def sinLocalHomeomorph : LocalHomeomorph ℝ ℝ where
   open_target := isOpen_Ioo
   continuousOn_toFun := continuous_sin.continuousOn
   continuousOn_invFun := continuous_arcsin.continuousOn
-#align real.sin_local_homeomorph Real.sinLocalHomeomorph
+#align real.sin_local_homeomorph Real.sinPartialHomeomorph
 
 theorem cos_arcsin_nonneg (x : ℝ) : 0 ≤ cos (arcsin x) :=
   cos_nonneg_of_mem_Icc ⟨neg_pi_div_two_le_arcsin _, arcsin_le_pi_div_two _⟩

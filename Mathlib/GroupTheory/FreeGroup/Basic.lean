@@ -1160,7 +1160,8 @@ theorem reduce.not {p : Prop} : ∀ {L₁ L₂ L₃ : List (α × Bool)} {x : α
         intro h
         exfalso
         have := congr_arg List.length h
-        simp [List.length] at this
+        simp? [List.length] at this says
+         simp only [List.length, zero_add, List.length_append] at this
         rw [add_comm, add_assoc, add_assoc, add_comm, <-add_assoc] at this
         simp [Nat.one_eq_succ_zero, Nat.succ_add] at this
         -- Porting note: needed to add this step in #3414.

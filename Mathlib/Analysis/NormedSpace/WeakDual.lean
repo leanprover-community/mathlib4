@@ -187,7 +187,7 @@ theorem isClosed_closedBall (x' : Dual 𝕜 E) (r : ℝ) : IsClosed (toNormedDua
 
 variable (𝕜)
 
-/-- The polar set `polar 𝕜 s` of `s : set E` seen as a subset of the dual of `E` with the
+/-- The polar set `polar 𝕜 s` of `s : Set E` seen as a subset of the dual of `E` with the
 weak-star topology is `WeakDual.polar 𝕜 s`. -/
 def polar (s : Set E) : Set (WeakDual 𝕜 E) :=
   toNormedDual ⁻¹' (NormedSpace.polar 𝕜) s

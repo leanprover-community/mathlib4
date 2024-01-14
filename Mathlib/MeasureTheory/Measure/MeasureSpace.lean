@@ -211,6 +211,10 @@ theorem tsum_measure_preimage_singleton {s : Set β} (hs : s.Countable) {f : α 
   rw [← Set.biUnion_preimage_singleton, measure_biUnion hs (pairwiseDisjoint_fiber f s) hf]
 #align measure_theory.tsum_measure_preimage_singleton MeasureTheory.tsum_measure_preimage_singleton
 
+lemma measure_preimage_eq_zero_iff_of_countable {s : Set β} {f : α → β} (hs : s.Countable) :
+    μ (f ⁻¹' s) = 0 ↔ ∀ x ∈ s, μ (f ⁻¹' {x}) = 0 := by
+  rw [← biUnion_preimage_singleton, measure_biUnion_null_iff hs]
+
 /-- If `s` is a `Finset`, then the measure of its preimage can be found as the sum of measures
 of the fibers `f ⁻¹' {y}`. -/
 theorem sum_measure_preimage_singleton (s : Finset β) {f : α → β}
@@ -287,10 +291,19 @@ theorem measure_eq_measure_larger_of_between_null_diff {s₁ s₂ s₃ : Set α}
   (measure_eq_measure_of_between_null_diff h12 h23 h_nulldiff).2
 #align measure_theory.measure_eq_measure_larger_of_between_null_diff MeasureTheory.measure_eq_measure_larger_of_between_null_diff
 
-theorem measure_compl (h₁ : MeasurableSet s) (h_fin : μ s ≠ ∞) : μ sᶜ = μ univ - μ s := by
-  rw [compl_eq_univ_diff]
-  exact measure_diff (subset_univ s) h₁ h_fin
+lemma measure_compl₀ (h : NullMeasurableSet s μ) (hs : μ s ≠ ∞) :
+    μ sᶜ = μ Set.univ - μ s := by
+  rw [← measure_add_measure_compl₀ h, ENNReal.add_sub_cancel_left hs]
+
+theorem measure_compl (h₁ : MeasurableSet s) (h_fin : μ s ≠ ∞) : μ sᶜ = μ univ - μ s :=
+  measure_compl₀ h₁.nullMeasurableSet h_fin
 #align measure_theory.measure_compl MeasureTheory.measure_compl
+
+lemma measure_inter_conull' (ht : μ (s \ t) = 0) : μ (s ∩ t) = μ s := by
+  rw [← diff_compl, measure_diff_null']; rwa [← diff_eq]
+
+lemma measure_inter_conull (ht : μ tᶜ = 0) : μ (s ∩ t) = μ s := by
+  rw [← diff_compl, measure_diff_null ht]
 
 @[simp]
 theorem union_ae_eq_left_iff_ae_subset : (s ∪ t : Set α) =ᵐ[μ] s ↔ t ≤ᵐ[μ] s := by
@@ -852,6 +865,10 @@ instance instIsCentralScalar [SMul Rᵐᵒᵖ ℝ≥0∞] [IsCentralScalar R ℝ
 
 end SMul
 
+instance instNoZeroSMulDivisors [Zero R] [SMulWithZero R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
+    [NoZeroSMulDivisors R ℝ≥0∞] : NoZeroSMulDivisors R (Measure α) where
+  eq_zero_or_eq_zero_of_smul_eq_zero h := by simpa [Ne.def, @ext_iff', forall_or_left] using h
+
 instance instMulAction [Monoid R] [MulAction R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
     [MeasurableSpace α] : MulAction R (Measure α) :=
   Injective.mulAction _ toOuterMeasure_injective smul_toOuterMeasure
@@ -1219,6 +1236,8 @@ protected theorem map_smul_nnreal (c : ℝ≥0) (μ : Measure α) (f : α → β
   μ.map_smul (c : ℝ≥0∞) f
 #align measure_theory.measure.map_smul_nnreal MeasureTheory.Measure.map_smul_nnreal
 
+variable {f : α → β}
+
 lemma map_apply₀ {f : α → β} (hf : AEMeasurable f μ) {s : Set β}
     (hs : NullMeasurableSet s (map f μ)) : μ.map f s = μ (f ⁻¹' s) := by
   rw [map, dif_pos hf, mapₗ, dif_pos hf.measurable_mk] at hs ⊢
@@ -1228,23 +1247,32 @@ lemma map_apply₀ {f : α → β} (hf : AEMeasurable f μ) {s : Set β}
 /-- We can evaluate the pushforward on measurable sets. For non-measurable sets, see
   `MeasureTheory.Measure.le_map_apply` and `MeasurableEquiv.map_apply`. -/
 @[simp]
-theorem map_apply_of_aemeasurable {f : α → β} (hf : AEMeasurable f μ) {s : Set β}
-    (hs : MeasurableSet s) : μ.map f s = μ (f ⁻¹' s) :=
-  map_apply₀ hf hs.nullMeasurableSet
+theorem map_apply_of_aemeasurable (hf : AEMeasurable f μ) {s : Set β} (hs : MeasurableSet s) :
+    μ.map f s = μ (f ⁻¹' s) := map_apply₀ hf hs.nullMeasurableSet
 #align measure_theory.measure.map_apply_of_ae_measurable MeasureTheory.Measure.map_apply_of_aemeasurable
 
 @[simp]
-theorem map_apply {f : α → β} (hf : Measurable f) {s : Set β} (hs : MeasurableSet s) :
+theorem map_apply (hf : Measurable f) {s : Set β} (hs : MeasurableSet s) :
     μ.map f s = μ (f ⁻¹' s) :=
   map_apply_of_aemeasurable hf.aemeasurable hs
 #align measure_theory.measure.map_apply MeasureTheory.Measure.map_apply
 
-theorem map_toOuterMeasure {f : α → β} (hf : AEMeasurable f μ) :
+theorem map_toOuterMeasure (hf : AEMeasurable f μ) :
     (μ.map f).toOuterMeasure = (OuterMeasure.map f μ.toOuterMeasure).trim := by
   rw [← trimmed, OuterMeasure.trim_eq_trim_iff]
   intro s hs
   rw [map_apply_of_aemeasurable hf hs, OuterMeasure.map_apply]
 #align measure_theory.measure.map_to_outer_measure MeasureTheory.Measure.map_toOuterMeasure
+
+@[simp] lemma map_eq_zero_iff (hf : AEMeasurable f μ) : μ.map f = 0 ↔ μ = 0 := by
+  simp_rw [← measure_univ_eq_zero, map_apply_of_aemeasurable hf .univ, preimage_univ]
+
+@[simp] lemma mapₗ_eq_zero_iff (hf : Measurable f) : Measure.mapₗ f μ = 0 ↔ μ = 0 := by
+  rw [mapₗ_apply_of_measurable hf, map_eq_zero_iff hf.aemeasurable]
+
+lemma map_ne_zero_iff (hf : AEMeasurable f μ) : μ.map f ≠ 0 ↔ μ ≠ 0 := (map_eq_zero_iff hf).not
+lemma mapₗ_ne_zero_iff (hf : Measurable f) : Measure.mapₗ f μ ≠ 0 ↔ μ ≠ 0 :=
+  (mapₗ_eq_zero_iff hf).not
 
 @[simp]
 theorem map_id : map id μ = μ :=
@@ -1615,10 +1643,18 @@ lemma add_right (h1 : μ ≪ ν) (ν' : Measure α) : μ ≪ ν + ν' := by
 
 end AbsolutelyContinuous
 
+alias absolutelyContinuous_refl := AbsolutelyContinuous.refl
+alias absolutelyContinuous_rfl := AbsolutelyContinuous.rfl
+
 theorem absolutelyContinuous_of_le_smul {μ' : Measure α} {c : ℝ≥0∞} (hμ'_le : μ' ≤ c • μ) :
     μ' ≪ μ :=
   (Measure.absolutelyContinuous_of_le hμ'_le).trans (Measure.AbsolutelyContinuous.rfl.smul c)
 #align measure_theory.measure.absolutely_continuous_of_le_smul MeasureTheory.Measure.absolutelyContinuous_of_le_smul
+
+lemma smul_absolutelyContinuous {c : ℝ≥0∞} : c • μ ≪ μ := absolutelyContinuous_of_le_smul le_rfl
+
+lemma absolutelyContinuous_smul {c : ℝ≥0∞} (hc : c ≠ 0) : μ ≪ c • μ := by
+  simp [AbsolutelyContinuous, hc]
 
 theorem ae_le_iff_absolutelyContinuous : μ.ae ≤ ν.ae ↔ μ ≪ ν :=
   ⟨fun h s => by
@@ -1869,6 +1905,15 @@ end Measure
 open Measure
 
 open MeasureTheory
+
+protected theorem _root_.AEMeasurable.nullMeasurable {f : α → β} (h : AEMeasurable f μ) :
+    NullMeasurable f μ :=
+  let ⟨_g, hgm, hg⟩ := h; hgm.nullMeasurable.congr hg.symm
+#align ae_measurable.null_measurable AEMeasurable.nullMeasurable
+
+lemma _root_.AEMeasurable.nullMeasurableSet_preimage {f : α → β} {s : Set β}
+    (hf : AEMeasurable f μ) (hs : MeasurableSet s) : NullMeasurableSet (f ⁻¹' s) μ :=
+  hf.nullMeasurable hs
 
 /-- The preimage of a null measurable set under a (quasi) measure preserving map is a null
 measurable set. -/

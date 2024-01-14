@@ -10,7 +10,7 @@ import Mathlib.Tactic.Basic
 import Std.Util.LibraryNote
 import Std.Tactic.Lint.Basic
 
-#align_import logic.basic from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
+#align_import logic.basic from "leanprover-community/mathlib"@"3365b20c2ffa7c35e47e5209b89ba9abdddf3ffe"
 
 /-!
 # Basic logic properties
@@ -281,12 +281,15 @@ theorem Iff.not_right (h : ¬a ↔ b) : a ↔ ¬b := not_not.symm.trans h.not
 
 protected lemma Iff.ne {α β : Sort*} {a b : α} {c d : β} : (a = b ↔ c = d) → (a ≠ b ↔ c ≠ d) :=
   Iff.not
+#align iff.ne Iff.ne
 
 lemma Iff.ne_left {α β : Sort*} {a b : α} {c d : β} : (a = b ↔ c ≠ d) → (a ≠ b ↔ c = d) :=
   Iff.not_left
+#align iff.ne_left Iff.ne_left
 
 lemma Iff.ne_right {α β : Sort*} {a b : α} {c d : β} : (a ≠ b ↔ c = d) → (a = b ↔ c ≠ d) :=
   Iff.not_right
+#align iff.ne_right Iff.ne_right
 
 /-! ### Declarations about `Xor'` -/
 
@@ -1214,8 +1217,6 @@ protected theorem Ne.ite_ne_right_iff (h : a ≠ b) : ite P a b ≠ b ↔ P :=
 
 variable (P Q a b)
 
-/-- A `dite` whose results do not actually depend on the condition may be reduced to an `ite`. -/
-@[simp] theorem dite_eq_ite : (dite P (fun _ ↦ a) fun _ ↦ b) = ite P a b := rfl
 #align dite_eq_ite dite_eq_ite
 
 theorem dite_eq_or_eq : (∃ h, dite P A B = A h) ∨ ∃ h, dite P A B = B h :=

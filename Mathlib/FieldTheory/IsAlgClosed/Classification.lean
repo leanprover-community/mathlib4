@@ -55,7 +55,7 @@ theorem cardinal_mk_le_sigma_polynomial :
           p.2.2]⟩)
     fun x y => by
       intro h
-      simp at h
+      simp? at h says simp only [Set.coe_setOf, ne_eq, Set.mem_setOf_eq, Sigma.mk.inj_iff] at h
       refine' (Subtype.heq_iff_coe_eq _).1 h.2
       simp only [h.1, iff_self_iff, forall_true_iff]
 #align algebra.is_algebraic.cardinal_mk_le_sigma_polynomial Algebra.IsAlgebraic.cardinal_mk_le_sigma_polynomial

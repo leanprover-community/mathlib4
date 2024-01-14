@@ -552,7 +552,7 @@ def piLinearEquiv {ι' : Type*} {M' : ι' → Type*} [∀ i, AddCommMonoid (M' i
 
 end Module
 
-section SmulRight
+section SMulRight
 
 variable {R A M N ι : Type*} [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M]
   [Module R N] [TopologicalSpace R] [TopologicalSpace M] [TopologicalSpace N] [ContinuousSMul R N]
@@ -564,7 +564,7 @@ continuous alternating map sending `m` to `f m • z`. -/
 def smulRight : M [Λ^ι]→L[R] N :=
   { f.toAlternatingMap.smulRight z with toContinuousMultilinearMap := f.1.smulRight z }
 
-end SmulRight
+end SMulRight
 
 section Semiring
 

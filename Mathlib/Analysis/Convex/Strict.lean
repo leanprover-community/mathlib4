@@ -273,7 +273,7 @@ theorem StrictConvex.vadd (hs : StrictConvex 𝕜 s) (x : E) : StrictConvex 𝕜
 
 end continuous_add
 
-section ContinuousSmul
+section ContinuousSMul
 
 variable [LinearOrderedField 𝕝] [Module 𝕝 E] [ContinuousConstSMul 𝕝 E]
   [LinearMap.CompatibleSMul E E 𝕜 𝕝] {s : Set E} {x : E}
@@ -289,7 +289,7 @@ theorem StrictConvex.affinity [ContinuousAdd E] (hs : StrictConvex 𝕜 s) (z : 
   (hs.smul c).vadd z
 #align strict_convex.affinity StrictConvex.affinity
 
-end ContinuousSmul
+end ContinuousSMul
 
 end AddCommGroup
 

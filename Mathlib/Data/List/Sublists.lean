@@ -175,7 +175,7 @@ theorem sublists_cons (a : α) (l : List α) :
 theorem sublists_concat (l : List α) (a : α) :
     sublists (l ++ [a]) = sublists l ++ map (fun x => x ++ [a]) (sublists l) := by
   rw [sublists_append, sublists_singleton, bind_eq_bind, cons_bind, cons_bind, nil_bind,
-     map_id' append_nil, append_nil]
+     map_id'' append_nil, append_nil]
 #align list.sublists_concat List.sublists_concat
 
 theorem sublists_reverse (l : List α) : sublists (reverse l) = map reverse (sublists' l) := by
@@ -189,7 +189,7 @@ theorem sublists_eq_sublists' (l : List α) : sublists l = map reverse (sublists
 #align list.sublists_eq_sublists' List.sublists_eq_sublists'
 
 theorem sublists'_reverse (l : List α) : sublists' (reverse l) = map reverse (sublists l) := by
-  simp only [sublists_eq_sublists', map_map, map_id' reverse_reverse, Function.comp]
+  simp only [sublists_eq_sublists', map_map, map_id'' reverse_reverse, Function.comp]
 #align list.sublists'_reverse List.sublists'_reverse
 
 theorem sublists'_eq_sublists (l : List α) : sublists' l = map reverse (sublists (reverse l)) := by
@@ -413,9 +413,11 @@ theorem sublists'_map (f : α → β) : ∀ (l : List α),
 --Porting note: moved because it is now used to prove `sublists_cons_perm_append`
 theorem sublists_perm_sublists' (l : List α) : sublists l ~ sublists' l := by
   rw [← finRange_map_get l, sublists_map, sublists'_map]
-  refine' Perm.map _ _
-  exact (perm_ext (nodup_sublists.2 (nodup_finRange _)) (nodup_sublists'.2 (nodup_finRange _))).2
-    (by simp)
+  apply Perm.map
+  apply (perm_ext_iff_of_nodup _ _).mpr
+  · simp
+  · exact nodup_sublists.mpr (nodup_finRange _)
+  · exact (nodup_sublists'.mpr (nodup_finRange _))
 #align list.sublists_perm_sublists' List.sublists_perm_sublists'
 
 theorem sublists_cons_perm_append (a : α) (l : List α) :
@@ -429,7 +431,9 @@ theorem revzip_sublists (l : List α) : ∀ l₁ l₂, (l₁, l₂) ∈ revzip l
   rw [revzip]
   induction' l using List.reverseRecOn with l' a ih
   · intro l₁ l₂ h
-    simp at h
+    simp? at h says
+      simp only [sublists_nil, reverse_cons, reverse_nil, nil_append, zip_cons_cons, zip_nil_right,
+        mem_singleton, Prod.mk.injEq] at h
     simp [h]
   · intro l₁ l₂ h
     rw [sublists_concat, reverse_append, zip_append, ← map_reverse, zip_map_right,

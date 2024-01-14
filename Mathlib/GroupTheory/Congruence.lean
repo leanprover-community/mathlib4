@@ -451,6 +451,10 @@ theorem coe_sInf (S : Set (Con M)) :
 #align con.Inf_def Con.coe_sInf
 #align add_con.Inf_def AddCon.coe_sInf
 
+@[to_additive (attr := simp, norm_cast)]
+theorem coe_iInf {ι : Sort*} (f : ι → Con M) : ⇑(iInf f) = ⨅ i, ⇑(f i) := by
+  rw [iInf, coe_sInf, ← Set.range_comp, sInf_range, Function.comp]
+
 @[to_additive]
 instance : PartialOrder (Con M) where
   le_refl _ _ _ := id

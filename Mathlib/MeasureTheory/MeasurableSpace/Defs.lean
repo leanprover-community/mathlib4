@@ -208,10 +208,18 @@ protected theorem MeasurableSet.diff {s₁ s₂ : Set α} (h₁ : MeasurableSet 
 #align measurable_set.diff MeasurableSet.diff
 
 @[simp, measurability]
+protected lemma MeasurableSet.himp {s₁ s₂ : Set α} (h₁ : MeasurableSet s₁) (h₂ : MeasurableSet s₂) :
+    MeasurableSet (s₁ ⇨ s₂) := by rw [himp_eq]; exact h₂.union h₁.compl
+
+@[simp, measurability]
 protected theorem MeasurableSet.symmDiff {s₁ s₂ : Set α} (h₁ : MeasurableSet s₁)
     (h₂ : MeasurableSet s₂) : MeasurableSet (s₁ ∆ s₂) :=
   (h₁.diff h₂).union (h₂.diff h₁)
 #align measurable_set.symm_diff MeasurableSet.symmDiff
+
+@[simp, measurability]
+protected lemma MeasurableSet.bihimp {s₁ s₂ : Set α} (h₁ : MeasurableSet s₁)
+    (h₂ : MeasurableSet s₂) : MeasurableSet (s₁ ⇔ s₂) := (h₂.himp h₁).inter (h₁.himp h₂)
 
 @[simp, measurability]
 protected theorem MeasurableSet.ite {t s₁ s₂ : Set α} (ht : MeasurableSet t)

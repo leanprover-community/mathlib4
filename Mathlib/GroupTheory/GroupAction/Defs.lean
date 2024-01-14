@@ -705,15 +705,15 @@ theorem SMulCommClass.of_mul_smul_one {M N} [Monoid N] [SMul M N]
 @[to_additive (attr := simps)
     "If the additive action of `M` on `N` is compatible with addition on `N`, then
     `fun x => x +ᵥ 0` is an additive monoid homomorphism from `M` to `N`."]
-def smulOneHom {M N} [Monoid M] [Monoid N] [MulAction M N] [IsScalarTower M N N] :
+def MonoidHom.smulOneHom {M N} [Monoid M] [MulOneClass N] [MulAction M N] [IsScalarTower M N N] :
     M →* N where
   toFun x := x • (1 : N)
   map_one' := one_smul _ _
   map_mul' x y := by rw [smul_one_mul, smul_smul]
-#align smul_one_hom smulOneHom
-#align vadd_zero_hom vaddZeroHom
-#align smul_one_hom_apply smulOneHom_apply
-#align vadd_zero_hom_apply vaddZeroHom_apply
+#align smul_one_hom MonoidHom.smulOneHom
+#align vadd_zero_hom AddMonoidHom.vaddZeroHom
+#align smul_one_hom_apply MonoidHom.smulOneHom_apply
+#align vadd_zero_hom_apply AddMonoidHom.vaddZeroHom_apply
 
 end CompatibleScalar
 

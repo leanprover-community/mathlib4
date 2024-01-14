@@ -170,7 +170,7 @@ def lieAlgebraOf [DecidableEq ι] (j : ι) : L j →ₗ⁅R⁆ ⨁ i, L i :=
         -- with `simp [of, singleAddHom]`
         simp only [of, singleAddHom, bracket_apply]
         erw [AddHom.coe_mk, single_apply, single_apply]
-        simp [h]
+        simp? [h] says simp only [h, dite_eq_ite, ite_true, single_apply]
         intros
         erw [single_add]
       · -- This used to be the end of the proof before leanprover/lean4#2644

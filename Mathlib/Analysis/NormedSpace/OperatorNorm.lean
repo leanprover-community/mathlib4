@@ -1163,7 +1163,7 @@ end NonUnital
 
 end MultiplicationLinear
 
-section SmulLinear
+section SMulLinear
 
 variable (𝕜) (𝕜' : Type*) [NormedField 𝕜']
 
@@ -1203,7 +1203,7 @@ theorem op_norm_lsmul_le : ‖(lsmul 𝕜 𝕜' : 𝕜' →L[𝕜] E →L[𝕜] 
   exact op_norm_lsmul_apply_le _
 #align continuous_linear_map.op_norm_lsmul_le ContinuousLinearMap.op_norm_lsmul_le
 
-end SmulLinear
+end SMulLinear
 
 section RestrictScalars
 

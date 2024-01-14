@@ -106,7 +106,7 @@ theorem exists_finset_card_le_mul [FiniteIndex H] {S : Finset G} (hS : closure (
     ∃ T : Finset H, T.card ≤ H.index * S.card ∧ closure (T : Set H) = ⊤ := by
   letI := H.fintypeQuotientOfFiniteIndex
   haveI : DecidableEq G := Classical.decEq G
-  obtain ⟨R₀, hR : R₀ ∈ rightTransversals (H : Set G), hR1⟩ := exists_right_transversal (1 : G)
+  obtain ⟨R₀, hR, hR1⟩ := H.exists_right_transversal 1
   haveI : Fintype R₀ := Fintype.ofEquiv _ (toEquiv hR)
   let R : Finset G := Set.toFinset R₀
   replace hR : (R : Set G) ∈ rightTransversals (H : Set G) := by rwa [Set.coe_toFinset]

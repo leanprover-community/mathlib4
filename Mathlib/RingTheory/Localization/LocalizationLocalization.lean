@@ -22,9 +22,6 @@ commutative ring, field of fractions
 -/
 
 
-variable {R : Type*} [CommRing R] (M : Submonoid R) {S : Type*} [CommRing S]
-
-variable [Algebra R S] {P : Type*} [CommRing P]
 
 open Function BigOperators
 
@@ -32,7 +29,12 @@ namespace IsLocalization
 
 section LocalizationLocalization
 
-variable (N : Submonoid S) (T : Type*) [CommRing T] [Algebra R T]
+variable {R : Type*} [CommSemiring R] (M : Submonoid R) {S : Type*} [CommSemiring S]
+
+variable [Algebra R S] {P : Type*} [CommSemiring P]
+
+variable (N : Submonoid S) (T : Type*) [CommSemiring T] [Algebra R T]
+
 
 section
 
@@ -253,6 +255,8 @@ end LocalizationLocalization
 end IsLocalization
 
 namespace IsFractionRing
+
+variable {R : Type*} [CommRing R] (M : Submonoid R) {S : Type*} [CommRing S]
 
 open IsLocalization
 

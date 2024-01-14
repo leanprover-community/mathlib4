@@ -286,6 +286,18 @@ theorem range_eq {α} (f : SignType → α) : Set.range f = {f zero, f neg, f po
   classical simp [Finset.coe_insert]
 #align sign_type.range_eq SignType.range_eq
 
+@[simp, norm_cast] lemma coe_mul {α} [MulZeroOneClass α] [HasDistribNeg α] (a b : SignType) :
+    ↑(a * b) = (a : α) * b :=
+  map_mul SignType.castHom _ _
+
+@[simp, norm_cast] lemma coe_pow {α} [MonoidWithZero α] [HasDistribNeg α] (a : SignType) (k : ℕ) :
+    ↑(a ^ k) = (a : α) ^ k :=
+  map_pow SignType.castHom _ _
+
+@[simp, norm_cast] lemma coe_zpow {α} [GroupWithZero α] [HasDistribNeg α] (a : SignType) (k : ℤ) :
+    ↑(a ^ k) = (a : α) ^ k :=
+  map_zpow₀ SignType.castHom _ _
+
 end SignType
 
 variable {α : Type*}
@@ -388,10 +400,6 @@ end OrderedSemiring
 section LinearOrderedRing
 
 variable [LinearOrderedRing α] {a b : α}
-
-/- I'm not sure why this is necessary, see https://leanprover.zulipchat.com/#narrow/stream/
-113488-general/topic/type.20class.20inference.20issues/near/276937942 -/
-attribute [local instance] LinearOrderedRing.decidableLT
 
 theorem sign_mul (x y : α) : sign (x * y) = sign x * sign y := by
   rcases lt_trichotomy x 0 with (hx | hx | hx) <;> rcases lt_trichotomy y 0 with (hy | hy | hy) <;>

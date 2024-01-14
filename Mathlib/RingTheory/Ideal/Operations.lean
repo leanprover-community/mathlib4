@@ -1089,71 +1089,39 @@ theorem radical_pow (n : ℕ) (H : n > 0) : radical (I ^ n) = radical I :=
     H
 #align ideal.radical_pow Ideal.radical_pow
 
-theorem IsPrime.mul_le {I J P : Ideal R} (hp : IsPrime P) : I * J ≤ P ↔ I ≤ P ∨ J ≤ P :=
-  ⟨fun h =>
-    or_iff_not_imp_left.2 fun hip _ hj =>
-      let ⟨_, hi, hip⟩ := Set.not_subset.1 hip
-      (hp.mem_or_mem <| h <| mul_mem_mul hi hj).resolve_left hip,
-    fun h =>
-    Or.casesOn h (le_trans <| le_trans mul_le_inf inf_le_left)
-      (le_trans <| le_trans mul_le_inf inf_le_right)⟩
+theorem IsPrime.mul_le {I J P : Ideal R} (hp : IsPrime P) : I * J ≤ P ↔ I ≤ P ∨ J ≤ P := by
+  rw [or_comm, Ideal.mul_le]
+  simp_rw [hp.mul_mem_iff_mem_or_mem, SetLike.le_def, ← forall_or_left, or_comm, forall_or_left]
 #align ideal.is_prime.mul_le Ideal.IsPrime.mul_le
 
 theorem IsPrime.inf_le {I J P : Ideal R} (hp : IsPrime P) : I ⊓ J ≤ P ↔ I ≤ P ∨ J ≤ P :=
-  ⟨fun h => hp.mul_le.1 <| le_trans mul_le_inf h, fun h =>
-    Or.casesOn h (le_trans inf_le_left) (le_trans inf_le_right)⟩
+  ⟨fun h ↦ hp.mul_le.1 <| mul_le_inf.trans h, fun h ↦ h.elim inf_le_left.trans inf_le_right.trans⟩
 #align ideal.is_prime.inf_le Ideal.IsPrime.inf_le
 
-theorem IsPrime.multiset_prod_le {s : Multiset (Ideal R)} {P : Ideal R} (hp : IsPrime P)
-    (hne : s ≠ 0) : s.prod ≤ P ↔ ∃ I ∈ s, I ≤ P := by
-  suffices s.prod ≤ P → ∃ I ∈ s, I ≤ P from
-    ⟨this, fun ⟨i, his, hip⟩ => le_trans multiset_prod_le_inf <| le_trans (Multiset.inf_le his) hip⟩
-  classical
-    obtain ⟨b, hb⟩ : ∃ b, b ∈ s := Multiset.exists_mem_of_ne_zero hne
-    obtain ⟨t, rfl⟩ : ∃ t, s = b ::ₘ t
-    exact ⟨s.erase b, (Multiset.cons_erase hb).symm⟩
-    refine' t.induction_on _ _
-    · simp only [exists_prop, Multiset.cons_zero, Multiset.prod_singleton, Multiset.mem_singleton,
-        exists_eq_left, imp_self]
-    intro a s ih h
-    rw [Multiset.cons_swap, Multiset.prod_cons, hp.mul_le] at h
-    rw [Multiset.cons_swap]
-    cases' h with h h
-    · exact ⟨a, Multiset.mem_cons_self a _, h⟩
-    obtain ⟨I, hI, ih⟩ : ∃ I ∈ b ::ₘ s, I ≤ P := ih h
-    exact ⟨I, Multiset.mem_cons_of_mem hI, ih⟩
+theorem IsPrime.multiset_prod_le {s : Multiset (Ideal R)} {P : Ideal R} (hp : IsPrime P) :
+    s.prod ≤ P ↔ ∃ I ∈ s, I ≤ P :=
+  s.induction_on (by simp [hp.ne_top]) fun I s ih ↦ by simp [hp.mul_le, ih]
 #align ideal.is_prime.multiset_prod_le Ideal.IsPrime.multiset_prod_le
 
 theorem IsPrime.multiset_prod_map_le {s : Multiset ι} (f : ι → Ideal R) {P : Ideal R}
-    (hp : IsPrime P) (hne : s ≠ 0) : (s.map f).prod ≤ P ↔ ∃ i ∈ s, f i ≤ P := by
-  rw [hp.multiset_prod_le (mt Multiset.map_eq_zero.mp hne)]
-  simp_rw [Multiset.mem_map, exists_exists_and_eq_and]
+    (hp : IsPrime P) : (s.map f).prod ≤ P ↔ ∃ i ∈ s, f i ≤ P := by
+  simp_rw [hp.multiset_prod_le, Multiset.mem_map, exists_exists_and_eq_and]
 #align ideal.is_prime.multiset_prod_map_le Ideal.IsPrime.multiset_prod_map_le
 
-theorem IsPrime.prod_le {s : Finset ι} {f : ι → Ideal R} {P : Ideal R} (hp : IsPrime P)
-    (hne : s.Nonempty) : s.prod f ≤ P ↔ ∃ i ∈ s, f i ≤ P :=
-  hp.multiset_prod_map_le f (mt Finset.val_eq_zero.mp hne.ne_empty)
+theorem IsPrime.prod_le {s : Finset ι} {f : ι → Ideal R} {P : Ideal R} (hp : IsPrime P) :
+    s.prod f ≤ P ↔ ∃ i ∈ s, f i ≤ P :=
+  hp.multiset_prod_map_le f
 #align ideal.is_prime.prod_le Ideal.IsPrime.prod_le
 
-theorem IsPrime.inf_le' {s : Finset ι} {f : ι → Ideal R} {P : Ideal R} (hp : IsPrime P)
-    (hsne : s.Nonempty) : s.inf f ≤ P ↔ ∃ i ∈ s, f i ≤ P :=
-  ⟨fun h => (hp.prod_le hsne).1 <| le_trans prod_le_inf h, fun ⟨_, his, hip⟩ =>
-    le_trans (Finset.inf_le his) hip⟩
+theorem IsPrime.inf_le' {s : Finset ι} {f : ι → Ideal R} {P : Ideal R} (hp : IsPrime P) :
+    s.inf f ≤ P ↔ ∃ i ∈ s, f i ≤ P :=
+  ⟨fun h ↦ hp.prod_le.1 <| prod_le_inf.trans h, fun ⟨_, his, hip⟩ ↦ (Finset.inf_le his).trans hip⟩
 #align ideal.is_prime.inf_le' Ideal.IsPrime.inf_le'
 
 -- Porting note: needed to add explicit coercions (· : Set R).
 theorem subset_union {R : Type u} [Ring R] {I J K : Ideal R} :
     (I : Set R) ⊆ J ∪ K ↔ I ≤ J ∨ I ≤ K :=
-  ⟨fun h =>
-    or_iff_not_imp_left.2 fun hij s hsi =>
-      let ⟨r, hri, hrj⟩ := Set.not_subset.1 hij
-      by_contradiction fun hsk =>
-        Or.casesOn (h <| I.add_mem hri hsi)
-          (fun hj => hrj <| add_sub_cancel r s ▸ J.sub_mem hj ((h hsi).resolve_right hsk)) fun hk =>
-          hsk <| add_sub_cancel' r s ▸ K.sub_mem hk ((h hri).resolve_left hrj),
-    fun h =>
-    Or.casesOn h (fun h => Set.Subset.trans h <| Set.subset_union_left (J : Set R) K) fun h =>
-      Set.Subset.trans h <| Set.subset_union_right (J : Set R) K ⟩
+  AddSubgroupClass.subset_union
 #align ideal.subset_union Ideal.subset_union
 
 theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι → Ideal R} {a b : ι}
@@ -1233,10 +1201,7 @@ theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι �
     by_cases Hi : I ≤ f i
     · exact Or.inr (Or.inr ⟨i, Finset.mem_insert_self i t, Hi⟩)
     have : ¬I ⊓ f a ⊓ f b ⊓ t.inf f ≤ f i := by
-      rcases t.eq_empty_or_nonempty with (rfl | hsne)
-      · rw [Finset.inf_empty, inf_top_eq, hp.1.inf_le, hp.1.inf_le, not_or, not_or]
-        exact ⟨⟨Hi, Ha⟩, Hb⟩
-      simp only [hp.1.inf_le, hp.1.inf_le' hsne, not_or]
+      simp only [hp.1.inf_le, hp.1.inf_le', not_or]
       exact ⟨⟨⟨Hi, Ha⟩, Hb⟩, Ht⟩
     rcases Set.not_subset.1 this with ⟨r, ⟨⟨⟨hrI, hra⟩, hrb⟩, hr⟩, hri⟩
     by_cases HI : (I : Set R) ⊆ f a ∪ f b ∪ ⋃ j ∈ (↑t : Set ι), f j

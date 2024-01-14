@@ -96,7 +96,7 @@ theorem Finite.smul : s.Finite → t.Finite → (s • t).Finite :=
 
 end SMul
 
-section HasSmulSet
+section HasSMulSet
 
 variable [SMul α β] {s : Set β} {a : α}
 
@@ -112,7 +112,7 @@ theorem Infinite.of_smul_set : (a • s).Infinite → s.Infinite :=
 #align set.infinite.of_smul_set Set.Infinite.of_smul_set
 #align set.infinite.of_vadd_set Set.Infinite.of_vadd_set
 
-end HasSmulSet
+end HasSMulSet
 
 section Vsub
 

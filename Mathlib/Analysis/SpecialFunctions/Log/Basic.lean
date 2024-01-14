@@ -265,7 +265,7 @@ theorem log_lt_sub_one_of_pos (hx1 : 0 < x) (hx2 : x ≠ 1) : log x < x - 1 := b
   have h : log x ≠ 0
   · rwa [← log_one, log_injOn_pos.ne_iff hx1]
     exact mem_Ioi.mpr zero_lt_one
-  linarith [add_one_lt_exp_of_nonzero h, exp_log hx1]
+  linarith [add_one_lt_exp h, exp_log hx1]
 #align real.log_lt_sub_one_of_pos Real.log_lt_sub_one_of_pos
 
 theorem eq_one_of_pos_of_log_eq_zero {x : ℝ} (h₁ : 0 < x) (h₂ : log x = 0) : x = 1 :=

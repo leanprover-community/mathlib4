@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenji Nakagawa, Anne Baanen, Filippo A. E. Nuccio
 -/
 import Mathlib.LinearAlgebra.FreeModule.PID
+import Mathlib.LinearAlgebra.BilinearForm.DualLattice
 import Mathlib.RingTheory.DedekindDomain.Basic
 import Mathlib.RingTheory.Localization.Module
 import Mathlib.RingTheory.Trace
@@ -92,26 +93,12 @@ theorem IsIntegralClosure.range_le_span_dualBasis [IsSeparable K L] {ι : Type*}
     [DecidableEq ι] (b : Basis ι K L) (hb_int : ∀ i, IsIntegral A (b i)) [IsIntegrallyClosed A] :
     LinearMap.range ((Algebra.linearMap C L).restrictScalars A) ≤
     Submodule.span A (Set.range <| (traceForm K L).dualBasis (traceForm_nondegenerate K L) b) := by
-  let db := (traceForm K L).dualBasis (traceForm_nondegenerate K L) b
-  rintro _ ⟨x, rfl⟩
-  simp only [LinearMap.coe_restrictScalars, Algebra.linearMap_apply]
-  have hx : IsIntegral A (algebraMap C L x) := (IsIntegralClosure.isIntegral A L x).algebraMap
-  rsuffices ⟨c, x_eq⟩ : ∃ c : ι → A, algebraMap C L x = ∑ i, c i • db i
-  · rw [x_eq]
-    refine' Submodule.sum_mem _ fun i _ => Submodule.smul_mem _ _ (Submodule.subset_span _)
-    rw [Set.mem_range]
-    exact ⟨i, rfl⟩
-  suffices ∃ c : ι → K, (∀ i, IsIntegral A (c i)) ∧ algebraMap C L x = ∑ i, c i • db i by
-    obtain ⟨c, hc, hx⟩ := this
-    have hc' : ∀ i, IsLocalization.IsInteger A (c i) := fun i =>
-      IsIntegrallyClosed.isIntegral_iff.mp (hc i)
-    use fun i => Classical.choose (hc' i)
-    refine' hx.trans (Finset.sum_congr rfl fun i _ => _)
-    conv_lhs => rw [← Classical.choose_spec (hc' i)]
-    rw [← IsScalarTower.algebraMap_smul K (Classical.choose (hc' i)) (db i)]
-  refine' ⟨fun i => db.repr (algebraMap C L x) i, fun i => _, (db.sum_repr _).symm⟩
-  simp_rw [BilinForm.dualBasis_repr_apply]
-  exact isIntegral_trace (hx.mul (hb_int i))
+  rw [← BilinForm.dualSubmodule_span_of_basis, ← BilinForm.le_flip_dualSubmodule,
+    Submodule.span_le]
+  rintro _ ⟨i, rfl⟩ _ ⟨y, rfl⟩
+  simp only [LinearMap.coe_restrictScalars, linearMap_apply, BilinForm.flip_apply, traceForm_apply]
+  refine IsIntegrallyClosed.isIntegral_iff.mp ?_
+  exact isIntegral_trace ((IsIntegralClosure.isIntegral A L y).algebraMap.mul (hb_int i))
 #align is_integral_closure.range_le_span_dual_basis IsIntegralClosure.range_le_span_dualBasis
 
 theorem integralClosure_le_span_dualBasis [IsSeparable K L] {ι : Type*} [Fintype ι] [DecidableEq ι]
