@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
 import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf
-import Mathlib.AlgebraicGeometry.Spec
+import Mathlib.AlgebraicGeometry.Scheme
 import Mathlib.RingTheory.GradedAlgebra.Radical
 
 #align_import algebraic_geometry.projective_spectrum.scheme from "leanprover-community/mathlib"@"d39590fc8728fbf6743249802486f8c91ffe07bc"
@@ -796,6 +796,7 @@ namespace ProjIsoSpecSheafComponent
 namespace FromSpec
 
 local notation "φ" => (projIsoSpecTopComponent hm.out f_deg.out).hom
+local notation "ψ" => (projIsoSpecTopComponent hm.out f_deg.out).inv
 
 -- We use `φ` denote the homeomorphism `Proj | D(f) ≅ Spec A⁰_f`constructed above.
 -- Let `V` be an open set in `Spec A⁰_f`, `s ∈ (Spec A⁰_f)(V)` be a section on `V` of prime spectrum
@@ -853,6 +854,20 @@ lemma eval_eq_num_div_den :
       ⟨eval_den s y,
         show eval_den s y ∈ (φ ⟨y, _⟩).asIdeal.primeCompl from eval_den_not_mem s y⟩ :=
   eval s y |>.exists_rep.choose_spec.symm
+
+lemma eval_pt_congr (x) (h : (ψ x.1).1 = y) :
+    s.1 x = Localization.mk (eval_num s y) ⟨eval_den s y, by
+      convert eval_den_not_mem s y
+      simp_rw [← h]
+      erw [(projIsoSpecTopComponent _ _).inv_hom_id_apply]
+      rfl⟩ := by
+  have pt_eq : x = ⟨φ ⟨y, _mem_pbo _⟩, _mem_V y⟩
+  · simp_rw [← h]
+    ext
+    dsimp
+    erw [(projIsoSpecTopComponent _ _).inv_hom_id_apply]
+  cases pt_eq
+  exact eval_eq_num_div_den s y
 
 abbrev α : HomogeneousLocalization.AtPrime 𝒜 y.1.asHomogeneousIdeal.toIdeal :=
   Quotient.mk''
@@ -1535,6 +1550,150 @@ lemma fromSpecToSpec {m : ℕ} {f : A} (hm : 0 < m) (f_deg : f ∈ 𝒜 m) :
     FromSpec.ringHom_apply_coe (hm := ⟨hm⟩) (f_deg := ⟨f_deg⟩)]
   apply FromSpecToSpec.α_toSpec_ringHom (hm := ⟨hm⟩) (f_deg := ⟨f_deg⟩)
 
+namespace ToSpecFromSpec
+
+variable {𝒜}
+variable {m : ℕ} {f : A} [hm : Fact <| 0 < m] [f_deg : Fact <| f ∈ 𝒜 m]
+variable {V : (Opens ((Spec.T (A⁰_ f))))ᵒᵖ} (s : ((Spec (A⁰_ f)).presheaf.obj V)) (x : V.unop)
+
+local notation "φ" => (projIsoSpecTopComponent hm.out f_deg.out).hom
+local notation "ψ" => (projIsoSpecTopComponent hm.out f_deg.out).inv
+
+lemma _ψ_apply_mem :
+    (ψ x.1).1 ∈ ((@Opens.openEmbedding Proj.T (pbo f)).isOpenMap.functor.op.obj <|
+      Opens.map φ |>.op.obj V).unop := by
+  refine ⟨ψ x.1, ?_, rfl⟩
+  erw [Set.mem_preimage, Set.mem_preimage,
+    (projIsoSpecTopComponent hm.out f_deg.out).inv_hom_id_apply]
+  exact x.2
+
+set_option maxHeartbeats 1000000 in
+lemma β_fromSpec_ringHom : ToSpec.β m (FromSpec.ringHom s) x = s.1 x := by
+  have eq1 := FromSpec.α s ⟨(ψ x.1).1, _ψ_apply_mem _⟩ |>.eq_num_div_den
+  rw [FromSpec.val_α, mk_eq_mk_iff, r_iff_exists] at eq1
+  obtain ⟨⟨C, (hC : ¬ ∀ _, _)⟩, eq1⟩ := eq1
+  rw [not_forall] at hC
+  obtain ⟨j, hC⟩ := hC
+  dsimp at eq1
+  rw [show (s.1 x) = Localization.mk (FromSpec.eval_num (m := m) s ⟨(ψ x.1).1, _ψ_apply_mem _⟩)
+    ⟨FromSpec.eval_den (m := m) s ⟨(ψ x.1).1, _ψ_apply_mem _⟩, by
+      convert FromSpec.eval_den_not_mem s ⟨(ψ x.1).1, _ψ_apply_mem _⟩
+      erw [(projIsoSpecTopComponent hm.out f_deg.out).inv_hom_id_apply]
+      rfl⟩ from FromSpec.eval_pt_congr (f_deg := f_deg) (h := rfl) s, ToSpec.β, mk_eq_mk_iff,
+    r_iff_exists]
+
+  refine ⟨⟨_, hC⟩, ?_⟩
+  dsimp
+  rw [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.mul_val,
+    HomogeneousLocalization.mul_val, HomogeneousLocalization.mul_val,
+    HomogeneousLocalization.mul_val, HomogeneousLocalization.val_mk'',
+    HomogeneousLocalization.val_mk'', HomogeneousLocalization.val_mk'',
+    HomogeneousLocalization.eq_num_div_den, HomogeneousLocalization.eq_num_div_den,
+    mk_mul, mk_mul, mk_mul, mk_mul, mk_eq_mk_iff, r_iff_exists]
+  refine ⟨1, ?_⟩
+  simp only [OneMemClass.coe_one, Submonoid.mk_mul_mk, one_mul]
+  rw [show (FromSpec.α (m := m) s ⟨(ψ x.1).1, _ψ_apply_mem _⟩) =
+    ToSpec.eval m (FromSpec.ringHom s) x from rfl] at eq1
+  replace eq1 := congr_arg
+    (GradedAlgebra.proj 𝒜
+      (j +
+        ((FromSpec.α (m := m) s ⟨(ψ x.1).1, _ψ_apply_mem _⟩).deg +
+          ((FromSpec.eval_num (m := m) s ⟨(ψ x.1).1, _ψ_apply_mem _⟩).deg +
+          (FromSpec.eval_den (m := m) s ⟨(ψ x.1).1, _ψ_apply_mem _⟩).deg))))
+    eq1
+
+  rw [GradedAlgebra.proj_apply, GradedAlgebra.proj_apply] at eq1
+  rw [coe_decompose_mul_add_of_right_mem 𝒜 (a := C) (i := j) ?_,
+    coe_decompose_mul_add_of_right_mem 𝒜 (a := C) (i := j) ?_] at eq1
+  pick_goal 2
+  · rw [show (FromSpec.α (m := m) s ⟨(ψ x.1).1, _ψ_apply_mem _⟩).deg +
+          ((FromSpec.eval_num (m := m) s ⟨(ψ x.1).1, _ψ_apply_mem _⟩).deg +
+          (FromSpec.eval_den (m := m) s ⟨(ψ x.1).1, _ψ_apply_mem _⟩).deg) =
+          (FromSpec.eval_den (m := m) s ⟨(ψ x.1).1, _ψ_apply_mem _⟩).deg +
+          (FromSpec.eval_num (m := m) s ⟨(ψ x.1).1, _ψ_apply_mem _⟩).deg +
+          (FromSpec.α (m := m) s ⟨(ψ x.1).1, _ψ_apply_mem _⟩).deg by abel]
+    exact SetLike.mul_mem_graded
+      (SetLike.mul_mem_graded (HomogeneousLocalization.num_mem_deg _)
+        (HomogeneousLocalization.den_mem_deg _))
+      (HomogeneousLocalization.num_mem_deg _)
+  pick_goal 2
+  · exact SetLike.mul_mem_graded
+      (HomogeneousLocalization.den_mem_deg _)
+      (SetLike.mul_mem_graded (HomogeneousLocalization.num_mem_deg _)
+        (HomogeneousLocalization.den_mem_deg _))
+  have eq0 (x : A) : x^m = x * x^m.pred
+  · conv_lhs =>
+    rw [show m = (1 + m.pred) by rw [add_comm]; exact Nat.succ_pred_eq_of_pos hm.out |>.symm,
+      pow_add, pow_one]
+  have reorder :
+      f^j *
+        ((FromSpec.eval_den (m := m) s ⟨(ψ x.1).1, _ψ_apply_mem _⟩).den *
+          f^(ToSpec.eval m (FromSpec.ringHom s) x).deg) *
+        (decompose 𝒜 C j ^ m *
+          ((ToSpec.eval m (FromSpec.ringHom s) x).den ^ m *
+            (FromSpec.eval_num (m := m) s ⟨(ψ x.1).1, _ψ_apply_mem _⟩).num)) =
+      f^j * f^(ToSpec.eval m (FromSpec.ringHom s) x).deg *
+        (decompose 𝒜 C j * ((ToSpec.eval m (FromSpec.ringHom s) x).den *
+          ((FromSpec.eval_num (m := m) s ⟨(ψ x.1).1, _ψ_apply_mem _⟩).num *
+            (FromSpec.eval_den (m := m) s ⟨(ψ x.1).1, _ψ_apply_mem _⟩).den))) *
+        (decompose 𝒜 C j ^ m.pred * (ToSpec.eval m (FromSpec.ringHom s) x).den^m.pred)
+  · rw [eq0, eq0]; ring
+  erw [reorder, eq1, eq0]
+  ring_nf
+  rfl
+
+end ToSpecFromSpec
+
+variable {𝒜} in
+lemma toSpecFromSpec {m : ℕ} {f : A} (hm : 0 < m) (f_deg : f ∈ 𝒜 m) :
+    fromSpec 𝒜 hm f_deg ≫ toSpec 𝒜 hm f_deg = 𝟙 _  := by
+  ext V s
+  refine Subtype.ext <| funext fun x ↦ ?_
+  erw [id_apply, comp_apply, fromSpec_app, toSpec_app,
+    ToSpec.ringHom_apply_coe (hm := ⟨hm⟩) (f_deg := ⟨f_deg⟩)]
+  apply ToSpecFromSpec.β_fromSpec_ringHom (hm := ⟨hm⟩) (f_deg := ⟨f_deg⟩)
+
 end ProjIsoSpecSheafComponent
+
+variable {𝒜} in
+def projIsoSpecSheafComponent {m : ℕ} {f : A} (hm : 0 < m) (f_deg : f ∈ 𝒜 m) :
+    (projIsoSpecTopComponent hm f_deg).hom _* (Proj| (pbo f)).presheaf ≅
+    (Spec (A⁰_ f)).presheaf where
+  hom := ProjIsoSpecSheafComponent.toSpec 𝒜 hm f_deg
+  inv := ProjIsoSpecSheafComponent.fromSpec 𝒜 hm f_deg
+  hom_inv_id := ProjIsoSpecSheafComponent.fromSpecToSpec hm f_deg
+  inv_hom_id := ProjIsoSpecSheafComponent.toSpecFromSpec hm f_deg
+
+variable {𝒜} in
+def projIsoSpec {m : ℕ} {f : A} (hm : 0 < m) (f_deg : f ∈ 𝒜 m) :
+    (Proj| (pbo f)) ≅ Spec (A⁰_ f) :=
+  let e := PresheafedSpace.isoOfComponents (projIsoSpecTopComponent hm f_deg)
+    (projIsoSpecSheafComponent hm f_deg)
+  LocallyRingedSpace.isoOfSheafedSpaceIso ⟨e.1, e.2, e.3, e.4⟩
+
+def ProjectiveSpectrum.exists_homogeneous_element_of_pos_degree_and_not_mem (x : Proj) :
+    Σ' (n : ℕ) (f : A), 0 < n ∧ f ∈ 𝒜 n ∧ f ∉ x.asHomogeneousIdeal := by
+  classical
+  have m := x.3
+  erw [Set.not_subset] at m
+  choose f h1 h2 using m
+  rw [← sum_support_decompose 𝒜 f] at h2
+  suffices m : ∃ (n : ℕ), 0 < n ∧ (decompose 𝒜 f n : A) ∉ x.asHomogeneousIdeal
+  · choose n hn m using m; exact ⟨n, decompose 𝒜 f n, hn, Submodule.coe_mem _, m⟩
+  by_contra! rid
+  refine h2 <| Ideal.sum_mem _ fun i hi ↦ rid i ?_
+  simp only [DFinsupp.mem_support_toFun, ne_eq] at hi
+  erw [HomogeneousIdeal.mem_irrelevant_iff, GradedAlgebra.proj_apply] at h1
+  by_contra! rid
+  norm_num at rid
+  subst rid
+  exact hi <| Subtype.ext_iff_val.mpr h1
+
+def Proj.toScheme : AlgebraicGeometry.Scheme where
+  __ := Proj
+  local_affine x := by
+    obtain ⟨n, f, hn, f_deg, hf⟩ :=
+      ProjectiveSpectrum.exists_homogeneous_element_of_pos_degree_and_not_mem 𝒜 x
+    exact ⟨⟨pbo f, hf⟩, .of (A⁰_ f), ⟨projIsoSpec hn f_deg⟩⟩
 
 end AlgebraicGeometry
