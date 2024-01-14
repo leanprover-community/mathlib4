@@ -567,11 +567,6 @@ lemma sup_mul_le [SemilatticeSup β] [OrderBot β] {s t : Finset α} {f : α →
     sup (s * t) f ≤ a ↔ ∀ x ∈ s, ∀ y ∈ t, f (x * y) ≤ a :=
   sup_image₂_le
 
-@[to_additive (attr := simp (default + 1))]
-lemma le_inf_mul [SemilatticeInf β] [OrderTop β] {s t : Finset α} {f : α → β} {a : β} :
-    a ≤ inf (s * t) f ↔ ∀ x ∈ s, ∀ y ∈ t, a ≤ f (x * y) :=
-  le_inf_image₂
-
 @[to_additive]
 lemma sup_mul_left [SemilatticeSup β] [OrderBot β] (s t : Finset α) (f : α → β) :
     sup (s * t) f = sup s fun x ↦ sup t (f <| x * ·) :=
@@ -581,6 +576,11 @@ lemma sup_mul_left [SemilatticeSup β] [OrderBot β] (s t : Finset α) (f : α �
 lemma sup_mul_right [SemilatticeSup β] [OrderBot β] (s t : Finset α) (f : α → β) :
     sup (s * t) f = sup t fun y ↦ sup s (f <| · * y) :=
   sup_image₂_right ..
+
+@[to_additive (attr := simp (default + 1))]
+lemma le_inf_mul [SemilatticeInf β] [OrderTop β] {s t : Finset α} {f : α → β} {a : β} :
+    a ≤ inf (s * t) f ↔ ∀ x ∈ s, ∀ y ∈ t, a ≤ f (x * y) :=
+  le_inf_image₂
 
 @[to_additive]
 lemma inf_mul_left [SemilatticeInf β] [OrderTop β] (s t : Finset α) (f : α → β) :
