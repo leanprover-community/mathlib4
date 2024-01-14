@@ -66,7 +66,7 @@ section Real
 /-- An operator `T` on an inner product space is symmetric if and only if it is
 `LinearMap.IsSelfAdjoint` with respect to the sesquilinear form given by the inner product. -/
 theorem isSymmetric_iff_sesqForm (T : E →ₗ[𝕜] E) :
-    T.IsSymmetric ↔ @LinearMap.IsSelfAdjoint 𝕜 E _ _ _ _ _ _ (starRingEnd 𝕜) sesqFormOfInner T :=
+    T.IsSymmetric ↔ LinearMap.IsSelfAdjoint (R := 𝕜) (M := E) (starRingEnd 𝕜) sesqFormOfInner T :=
   ⟨fun h x y => (h y x).symm, fun h x y => (h y x).symm⟩
 #align linear_map.is_symmetric_iff_sesq_form LinearMap.isSymmetric_iff_sesqForm
 
