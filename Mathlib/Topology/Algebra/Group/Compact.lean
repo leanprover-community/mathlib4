@@ -31,26 +31,20 @@ section
 variable [TopologicalSpace G] [Group G] [TopologicalGroup G]
 
 /-- Every topological group in which there exists a compact set with nonempty interior
-is weakly locally compact. -/
-@[to_additive
-  "Every topological additive group
-  in which there exists a compact set with nonempty interior is weakly locally compact."]
-theorem TopologicalSpace.PositiveCompacts.weaklyLocallyCompactSpace_of_group
-    (K : PositiveCompacts G) : WeaklyLocallyCompactSpace G where
-  exists_compact_mem_nhds x := by
-    obtain ⟨y, hy⟩ := K.interior_nonempty
-    refine ⟨(x * y⁻¹) • (K : Set G), K.isCompact.smul _, ?_⟩
-    rw [mem_interior_iff_mem_nhds] at hy
-    simpa using smul_mem_nhds (x * y⁻¹) hy
-
-/-- Every separated topological group in which there exists a compact set with nonempty interior
 is locally compact. -/
 @[to_additive
-  "Every separated topological additive group
+  "Every topological additive group
   in which there exists a compact set with nonempty interior is locally compact."]
 theorem TopologicalSpace.PositiveCompacts.locallyCompactSpace_of_group
-    [T2OrLocallyCompactRegularSpace G] (K : PositiveCompacts G) : LocallyCompactSpace G :=
-  have := K.weaklyLocallyCompactSpace_of_group; inferInstance
+    (K : PositiveCompacts G) : LocallyCompactSpace G := by
+  have A : WeaklyLocallyCompactSpace G :=
+    { exists_compact_mem_nhds := by
+        intro x
+        obtain ⟨y, hy⟩ := K.interior_nonempty
+        refine ⟨(x * y⁻¹) • (K : Set G), K.isCompact.smul _, ?_⟩
+        rw [mem_interior_iff_mem_nhds] at hy
+        simpa using smul_mem_nhds (x * y⁻¹) hy }
+  infer_instance
 #align topological_space.positive_compacts.locally_compact_space_of_group TopologicalSpace.PositiveCompacts.locallyCompactSpace_of_group
 #align topological_space.positive_compacts.locally_compact_space_of_add_group TopologicalSpace.PositiveCompacts.locallyCompactSpace_of_addGroup
 
