@@ -233,22 +233,6 @@ theorem image₂_congr' (h : ∀ a b, f a b = f' a b) : image₂ f s t = image�
 
 variable (s t)
 
-lemma sup_image₂_left [SemilatticeSup δ] [OrderBot δ] (g : γ → δ) :
-    sup (image₂ f s t) g = sup s fun x ↦ sup t (g ∘ f x) := by
-  simp only [image₂, sup_image, sup_product_left]; rfl
-
-lemma sup_image₂_right [SemilatticeSup δ] [OrderBot δ] (g : γ → δ) :
-    sup (image₂ f s t) g = sup t fun y ↦ sup s (g <| f · y) := by
-  simp only [image₂, sup_image, sup_product_right]; rfl
-
-lemma inf_image₂_left [SemilatticeInf δ] [OrderTop δ] (g : γ → δ) :
-    inf (image₂ f s t) g = inf s fun x ↦ inf t (g ∘ f x) :=
-  sup_image₂_left (δ := δᵒᵈ) ..
-
-lemma inf_image₂_right [SemilatticeInf δ] [OrderTop δ] (g : γ → δ) :
-    inf (image₂ f s t) g = inf t fun y ↦ inf s (g <| f · y) :=
-  sup_image₂_right (δ := δᵒᵈ) ..
-
 theorem card_image₂_singleton_left (hf : Injective (f a)) : (image₂ f {a} t).card = t.card := by
   rw [image₂_singleton_left, card_image_of_injective _ hf]
 #align finset.card_image₂_singleton_left Finset.card_image₂_singleton_left
