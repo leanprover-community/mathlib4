@@ -36,12 +36,12 @@ open sets in `Proj`, more specifically:
 1. We prove that `Proj` can be covered by basic open sets at homogeneous element of positive degree.
 2. We prove that for any homogeneous element `f : A` of positive degree `m`, `Proj.T | (pbo f)` is
     homeomorphic to `Spec.T A⁰_f`:
-  - forward direction `toSpec`:
+  - forward direction `toSpec`, we also denote this map as `ψ`:
     for any `x : pbo f`, i.e. a relevant homogeneous prime ideal `x`, send it to
     `A⁰_f ∩ span {g / 1 | g ∈ x}` (see `ProjIsoSpecTopComponent.IoSpec.carrier`). This ideal is
     prime, the proof is in `ProjIsoSpecTopComponent.ToSpec.toFun`. The fact that this function
     is continuous is found in `ProjIsoSpecTopComponent.toSpec`
-  - backward direction `fromSpec`:
+  - backward direction `fromSpec`, we also denote this map as `φ`:
     for any `q : Spec A⁰_f`, we send it to `{a | ∀ i, aᵢᵐ/fⁱ ∈ q}`; we need this to be a
     homogeneous prime ideal that is relevant.
     * This is in fact an ideal, the proof can be found in
@@ -56,7 +56,19 @@ open sets in `Proj`, more specifically:
     `ProjIsoSpecTopComponent.FromSpec.toFun`. But to prove the continuity of this function, we need
     to prove `fromSpec ∘ toSpec` and `toSpec ∘ fromSpec` are both identities; these are achieved in
     `ProjIsoSpecTopComponent.fromSpecToSpec` and `ProjIsoSpecTopComponent.toSpecFromSpec`.
-
+3. We then construct a sheaf isomorphism between `φ _* Proj| pbo f` and `Spec A⁰_ f`.
+  - `Spec A⁰_f` to `φ _* Proj | pbo f`: we need to construct a family of ring homomorphisms --- for
+    each open sets `V ⊆ Spec A⁰_f`, `(Spec A⁰_f)(V) ⟶ (Proj| pbo f)(φ⁻¹ V)`. Let `s` be a section
+    on `V` (i.e. a (dependent) function `Π (𝓅 ∈ V) (A⁰_f)_𝓅`) and `y : φ⁻¹ V`, we consider the
+    fraction `s φ(y) ∈ (A⁰_f)_φ(y)`, we can write it as `a/b` where `a, b` are fractions in `A⁰_f`;
+    by writing `a` as `n_a/m_a` and `b` as `n_b/m_b`, we obtain a homogeneous fraction in `A⁰_y`
+    ```
+              n_a * m_b
+    α(s)(y) = ---------.
+              n_b * m_a
+    ```
+    After checking that `α(s)` locally is a fraction, this defines a new section `α(s)` in
+    `(Proj| pbo f)(φ⁻¹ V)`; see `ProjIsoSpecSheafComponent.FromSpec.isLocallyFraction`.
 ## Main Definitions and Statements
 
 For a homogeneous element `f` of degree `n`
@@ -71,6 +83,7 @@ If we further assume `n` is positive
   defined by sending `q` to `{a | aᵢᵐ/fⁱ ∈ q}`. We also denote this map as `φ`
 * `projIsoSpecTopComponent`: the homeomorphism `Proj.T| pbo f ≅ Spec.T A⁰_f` obtained by `φ` and
   `ψ`.
+* `ProjIsoSpecSheafComponent.fromSpec`: the sheaf morphism from `Spec A⁰_f` to `φ _* Proj | pbo f`.
 ## Reference
 * [Robin Hartshorne, *Algebraic Geometry*][Har77]: Chapter II.2 Proposition 2.5
 -/
