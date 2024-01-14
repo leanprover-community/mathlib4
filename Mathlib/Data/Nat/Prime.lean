@@ -136,7 +136,7 @@ theorem prime_def_le_sqrt {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m, 2 ≤ m →
         have : ∀ {m k : ℕ}, m ≤ k → 1 < m → p ≠ m * k := fun {m k} mk m1 e =>
           a m m1 (le_sqrt.2 (e.symm ▸ Nat.mul_le_mul_left m mk)) ⟨k, e⟩
         fun m m2 l ⟨k, e⟩ => by
-        cases' le_total m k with mk km
+        rcases le_total m k with mk | km
         · exact this mk m2 e
         · rw [mul_comm] at e
           refine' this km (lt_of_mul_lt_mul_right _ (zero_le m)) e
@@ -296,7 +296,7 @@ theorem minFacAux_has_prop {n : ℕ} (n2 : 2 ≤ n) :
     · refine'
         have := minFac_lemma n k h
         minFacAux_has_prop n2 (k + 2) (i + 1) (by simp [e, left_distrib]) fun m m2 d => _
-      cases' Nat.eq_or_lt_of_le (a m m2 d) with me ml
+      rcases Nat.eq_or_lt_of_le (a m m2 d) with me | ml
       · subst me
         contradiction
       apply (Nat.eq_or_lt_of_le ml).resolve_left

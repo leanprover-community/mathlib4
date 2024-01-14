@@ -222,10 +222,10 @@ theorem card_unique [Unique α] [h : Fintype α] : Fintype.card α = 1 :=
   Subsingleton.elim (ofSubsingleton default) h ▸ card_ofSubsingleton _
 #align fintype.card_unique Fintype.card_unique
 
-/-- Note: this lemma is specifically about `Fintype.of_is_empty`. For a statement about
-arbitrary `Fintype` instances, use `Fintype.card_eq_zero_iff`. -/
+/-- Note: this lemma is specifically about `Fintype.ofIsEmpty`. For a statement about
+arbitrary `Fintype` instances, use `Fintype.card_eq_zero`. -/
 @[simp]
-theorem card_of_isEmpty [IsEmpty α] : Fintype.card α = 0 :=
+theorem card_of_isEmpty [IsEmpty α] : @Fintype.card α Fintype.ofIsEmpty = 0 :=
   rfl
 #align fintype.card_of_is_empty Fintype.card_of_isEmpty
 
@@ -356,12 +356,10 @@ theorem Fintype.card_subtype_eq' (y : α) [Fintype { x // y = x }] :
   Fintype.card_unique
 #align fintype.card_subtype_eq' Fintype.card_subtype_eq'
 
-@[simp]
 theorem Fintype.card_empty : Fintype.card Empty = 0 :=
   rfl
 #align fintype.card_empty Fintype.card_empty
 
-@[simp]
 theorem Fintype.card_pempty : Fintype.card PEmpty = 0 :=
   rfl
 #align fintype.card_pempty Fintype.card_pempty
@@ -534,7 +532,7 @@ theorem card_eq_zero_iff : card α = 0 ↔ IsEmpty α := by
   rw [card, Finset.card_eq_zero, univ_eq_empty_iff]
 #align fintype.card_eq_zero_iff Fintype.card_eq_zero_iff
 
-theorem card_eq_zero [IsEmpty α] : card α = 0 :=
+@[simp] theorem card_eq_zero [IsEmpty α] : card α = 0 :=
   card_eq_zero_iff.2 ‹_›
 #align fintype.card_eq_zero Fintype.card_eq_zero
 
@@ -1140,7 +1138,7 @@ theorem exists_superset_card_eq [Infinite α] (s : Finset α) (n : ℕ) (hn : s.
     ∃ t : Finset α, s ⊆ t ∧ t.card = n := by
   induction' n with n IH generalizing s
   · exact ⟨s, subset_refl _, Nat.eq_zero_of_le_zero hn⟩
-  · cases' hn.eq_or_lt with hn' hn'
+  · rcases hn.eq_or_lt with hn' | hn'
     · exact ⟨s, subset_refl _, hn'⟩
     obtain ⟨t, hs, ht⟩ := IH _ (Nat.le_of_lt_succ hn')
     obtain ⟨x, hx⟩ := exists_not_mem_finset t

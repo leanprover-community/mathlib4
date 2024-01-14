@@ -683,7 +683,7 @@ theorem integral_Ioi_of_hasDerivAt_of_tendsto (hcont : ContinuousWithinAt f (Ici
   apply
     intervalIntegral.integral_eq_sub_of_hasDerivAt_of_le h'x (hcont.mono Icc_subset_Ici_self)
       fun y hy => hderiv y hy.1
-  rw [intervalIntegrable_iff_integrable_Ioc_of_le h'x]
+  rw [intervalIntegrable_iff_integrableOn_Ioc_of_le h'x]
   exact f'int.mono (fun y hy => hy.1) le_rfl
 #align measure_theory.integral_Ioi_of_has_deriv_at_of_tendsto MeasureTheory.integral_Ioi_of_hasDerivAt_of_tendsto
 
@@ -731,7 +731,7 @@ theorem integrableOn_Ioi_deriv_of_nonneg (hcont : ContinuousWithinAt g (Ici a) a
       symm
       apply intervalIntegral.integral_eq_sub_of_hasDerivAt_of_le h'x
         (hcont.mono Icc_subset_Ici_self) fun y hy => hderiv y hy.1
-      rw [intervalIntegrable_iff_integrable_Ioc_of_le h'x]
+      rw [intervalIntegrable_iff_integrableOn_Ioc_of_le h'x]
       exact intervalIntegral.integrableOn_deriv_of_nonneg (hcont.mono Icc_subset_Ici_self)
         (fun y hy => hderiv y hy.1) fun y hy => g'pos y hy.1
     _ = ∫ y in a..id x, ‖g' y‖ := by
@@ -835,7 +835,7 @@ theorem integral_Iic_of_hasDerivAt_of_tendsto (hcont : ContinuousWithinAt f (Iic
   symm
   apply intervalIntegral.integral_eq_sub_of_hasDerivAt_of_le hx
     (hcont.mono Icc_subset_Iic_self) fun y hy => hderiv y hy.2
-  rw [intervalIntegrable_iff_integrable_Ioc_of_le hx]
+  rw [intervalIntegrable_iff_integrableOn_Ioc_of_le hx]
   exact f'int.mono (fun y hy => hy.2) le_rfl
 
 /-- **Fundamental theorem of calculus-2**, on semi-infinite intervals `(-∞, a)`.
@@ -867,7 +867,7 @@ open Real
 
 open scoped Interval
 
-variable {E : Type*} {f : ℝ → E} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+variable {E : Type*} {f : ℝ → E} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-- Change-of-variables formula for `Ioi` integrals of vector-valued functions, proved by taking
 limits from the result for finite intervals. -/

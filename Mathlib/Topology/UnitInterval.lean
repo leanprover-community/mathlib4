@@ -226,10 +226,10 @@ lemma addNSMul_eq_right [Archimedean α] (hδ : 0 < δ) :
   obtain ⟨m, hm⟩ := Archimedean.arch (b - a) hδ
   refine ⟨m, fun n hn ↦ ?_⟩
   rw [addNSMul, coe_projIcc, add_comm, min_eq_left_iff.mpr, max_eq_right h]
-  exact sub_le_iff_le_add.mp (hm.trans <| nsmul_le_nsmul hδ.le hn)
+  exact sub_le_iff_le_add.mp (hm.trans <| nsmul_le_nsmul_left hδ.le hn)
 
 lemma monotone_addNSMul (hδ : 0 ≤ δ) : Monotone (addNSMul h δ) :=
-  fun _ _ hnm ↦ monotone_projIcc h <| (add_le_add_iff_left _).mpr (nsmul_le_nsmul hδ hnm)
+  fun _ _ hnm ↦ monotone_projIcc h <| (add_le_add_iff_left _).mpr (nsmul_le_nsmul_left hδ hnm)
 
 lemma abs_sub_addNSMul_le (hδ : 0 ≤ δ) {t : Icc a b} (n : ℕ)
     (ht : t ∈ Icc (addNSMul h δ n) (addNSMul h δ (n+1))) :

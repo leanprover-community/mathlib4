@@ -721,7 +721,7 @@ theorem Tendsto.nsmul_atTop (hf : Tendsto f l atTop) {n : ℕ} (hn : 0 < n) :
         calc
           y ≤ f x := hy
           _ = 1 • f x := (one_nsmul _).symm
-          _ ≤ n • f x := nsmul_le_nsmul h₀ hn
+          _ ≤ n • f x := nsmul_le_nsmul_left h₀ hn
 #align filter.tendsto.nsmul_at_top Filter.Tendsto.nsmul_atTop
 
 theorem Tendsto.nsmul_atBot (hf : Tendsto f l atBot) {n : ℕ} (hn : 0 < n) :

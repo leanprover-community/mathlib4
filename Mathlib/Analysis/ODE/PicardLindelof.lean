@@ -126,7 +126,7 @@ theorem tDist_nonneg : 0 ≤ v.tDist :=
 
 theorem dist_t₀_le (t : Icc v.tMin v.tMax) : dist t v.t₀ ≤ v.tDist := by
   rw [Subtype.dist_eq, Real.dist_eq]
-  cases' le_total t v.t₀ with ht ht
+  rcases le_total t v.t₀ with ht | ht
   · rw [abs_of_nonpos (sub_nonpos.2 <| Subtype.coe_le_coe.2 ht), neg_sub]
     exact (sub_le_sub_left t.2.1 _).trans (le_max_right _ _)
   · rw [abs_of_nonneg (sub_nonneg.2 <| Subtype.coe_le_coe.2 ht)]

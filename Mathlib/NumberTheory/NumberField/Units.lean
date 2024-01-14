@@ -334,7 +334,7 @@ theorem seq_next {x : 𝓞 K} (hx : x ≠ 0) :
         _ ≤ ∏ w : InfinitePlace K, (g w : ℝ) ^ mult w := by
           refine prod_le_prod ?_ ?_
           · exact fun _ _ => pow_nonneg (by positivity) _
-          · exact fun w _ => pow_le_pow_of_le_left (by positivity) (le_of_lt (h_yle w)) (mult w)
+          · exact fun w _ => pow_le_pow_left (by positivity) (le_of_lt (h_yle w)) (mult w)
         _ ≤ (B : ℝ) := by
           simp_rw [← NNReal.coe_pow, ← NNReal.coe_prod]
           exact le_of_eq (congr_arg toReal h_gprod)

@@ -228,7 +228,7 @@ theorem mem_image_iff_bex {f : α → β} {s : Set α} {y : β} :
 #align set.mem_image_iff_bex Set.mem_image_iff_bex
 
 @[simp]
-theorem mem_image (f : α → β) (s : Set α) (y : β) : y ∈ f '' s ↔ ∃ x, x ∈ s ∧ f x = y :=
+theorem mem_image (f : α → β) (s : Set α) (y : β) : y ∈ f '' s ↔ ∃ x ∈ s, f x = y :=
   Iff.rfl
 #align set.mem_image Set.mem_image
 

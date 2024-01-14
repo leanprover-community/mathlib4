@@ -85,7 +85,7 @@ theorem integrableOn_rpow_mul_exp_neg_rpow {p s : ℝ} (hs : -1 < s) (hp : 1 ≤
     constructor
     · rw [← integrableOn_Icc_iff_integrableOn_Ioc]
       refine IntegrableOn.mul_continuousOn ?_ ?_ isCompact_Icc
-      · refine (intervalIntegrable_iff_integrable_Icc_of_le zero_le_one).mp ?_
+      · refine (intervalIntegrable_iff_integrableOn_Icc_of_le zero_le_one).mp ?_
         exact intervalIntegral.intervalIntegrable_rpow' hs
       · intro x _
         change ContinuousWithinAt ((fun x => exp (- x)) ∘ (fun x => x ^ p)) (Icc 0 1) x

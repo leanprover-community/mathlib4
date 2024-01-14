@@ -115,7 +115,7 @@ theorem one_add_mul_self_lt_rpow_one_add {s : ℝ} (hs : -1 ≤ s) (hs' : s ≠ 
   · have : p ≠ 0 := by positivity
     simpa [zero_rpow this]
   have hs1 : 0 < 1 + s := by linarith
-  cases' le_or_lt (1 + p * s) 0 with hs2 hs2
+  rcases le_or_lt (1 + p * s) 0 with hs2 | hs2
   · exact hs2.trans_lt (rpow_pos_of_pos hs1 _)
   rw [rpow_def_of_pos hs1, ← exp_log hs2]
   apply exp_strictMono
@@ -216,3 +216,16 @@ theorem strictConcaveOn_log_Iio : StrictConcaveOn ℝ (Iio 0) log := by
     _ = _ := by rw [log_neg_eq_log]
 
 #align strict_concave_on_log_Iio strictConcaveOn_log_Iio
+
+namespace Real
+
+lemma exp_mul_le_cosh_add_mul_sinh {t : ℝ} (ht : |t| ≤ 1) (x : ℝ) :
+    exp (t * x) ≤ cosh x + t * sinh x := by
+  rw [abs_le] at ht
+  calc
+    _ = exp ((1 + t) / 2 * x + (1 - t) / 2 * (-x)) := by ring_nf
+    _ ≤ (1 + t) / 2 * exp x + (1 - t) / 2 * exp (-x) :=
+        convexOn_exp.2 (Set.mem_univ _) (Set.mem_univ _) (by linarith) (by linarith) $ by ring
+    _ = _ := by rw [cosh_eq, sinh_eq]; ring
+
+end Real

@@ -70,7 +70,7 @@ instance (priority := 100) ConditionallyCompleteLinearOrder.toCompactIccSpace (�
     [ConditionallyCompleteLinearOrder α] [TopologicalSpace α] [OrderTopology α] :
     CompactIccSpace α := by
   refine' .mk'' fun {a b} hlt => ?_
-  cases' le_or_lt a b with hab hab
+  rcases le_or_lt a b with hab | hab
   swap
   · simp [hab]
   refine' isCompact_iff_ultrafilter_le_nhds.2 fun f hf => _

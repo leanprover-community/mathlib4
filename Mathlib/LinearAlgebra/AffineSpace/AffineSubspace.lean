@@ -214,16 +214,13 @@ def directionOfNonempty {s : AffineSubspace k P} (h : (s : Set P).Nonempty) : Su
     cases' h with p hp
     exact vsub_self p ▸ vsub_mem_vsub hp hp
   add_mem' := by
-    intro a b ha hb
-    rcases ha with ⟨p1, p2, hp1, hp2, rfl⟩
-    rcases hb with ⟨p3, p4, hp3, hp4, rfl⟩
+    rintro _ _ ⟨p1, p2, hp1, hp2, rfl⟩ ⟨p3, p4, hp3, hp4, rfl⟩
     rw [← vadd_vsub_assoc]
     refine' vsub_mem_vsub _ hp4
     convert s.smul_vsub_vadd_mem 1 hp1 hp2 hp3
     rw [one_smul]
   smul_mem' := by
-    intro c v hv
-    rcases hv with ⟨p1, p2, hp1, hp2, rfl⟩
+    rintro c _ ⟨p1, p2, hp1, hp2, rfl⟩
     rw [← vadd_vsub (c • (p1 -ᵥ p2)) p2]
     refine' vsub_mem_vsub _ hp2
     exact s.smul_vsub_vadd_mem c hp1 hp2 hp2
@@ -817,7 +814,7 @@ theorem affineSpan_eq_top_iff_vectorSpan_eq_top_of_nonempty {s : Set P} (hs : s.
 /-- For a non-trivial space, the affine span of a set is `⊤` iff its vector span is `⊤`. -/
 theorem affineSpan_eq_top_iff_vectorSpan_eq_top_of_nontrivial {s : Set P} [Nontrivial P] :
     affineSpan k s = ⊤ ↔ vectorSpan k s = ⊤ := by
-  cases' s.eq_empty_or_nonempty with hs hs
+  rcases s.eq_empty_or_nonempty with hs | hs
   · simp [hs, subsingleton_iff_bot_eq_top, AddTorsor.subsingleton_iff V P, not_subsingleton]
   · rw [affineSpan_eq_top_iff_vectorSpan_eq_top_of_nonempty k V P hs]
 #align affine_subspace.affine_span_eq_top_iff_vector_span_eq_top_of_nontrivial AffineSubspace.affineSpan_eq_top_iff_vectorSpan_eq_top_of_nontrivial

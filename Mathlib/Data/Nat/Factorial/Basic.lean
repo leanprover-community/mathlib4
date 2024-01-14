@@ -202,13 +202,9 @@ theorem add_factorial_le_factorial_add (i : ℕ) {n : ℕ} (n1 : 1 ≤ n) : i + 
 #align nat.add_factorial_le_factorial_add Nat.add_factorial_le_factorial_add
 
 theorem factorial_mul_pow_sub_le_factorial {n m : ℕ} (hnm : n ≤ m) : n ! * n ^ (m - n) ≤ m ! := by
-  suffices n ! * (n + 1) ^ (m - n) ≤ m ! from by
-    apply LE.le.trans _ this
-    apply mul_le_mul_left
-    apply pow_le_pow_of_le_left (le_succ n)
-  have := @Nat.factorial_mul_pow_le_factorial n (m - n)
-  simp? [hnm] at this says simp only [ge_iff_le, hnm, add_tsub_cancel_of_le] at this
-  exact this
+  calc
+    _ ≤ n ! * (n + 1) ^ (m - n) := mul_le_mul_left' (Nat.pow_le_pow_left n.le_succ _) _
+    _ ≤ _ := by simpa [hnm] using @Nat.factorial_mul_pow_le_factorial n (m - n)
 #align nat.factorial_mul_pow_sub_le_factorial Nat.factorial_mul_pow_sub_le_factorial
 
 end Factorial
@@ -297,7 +293,7 @@ theorem ascFactorial_le_pow_add (n : ℕ) : ∀ k : ℕ, n.ascFactorial k ≤ (n
     rw [ascFactorial_succ, pow_succ, ← add_assoc, mul_comm _ (succ (n + k))]
     exact
       Nat.mul_le_mul_of_nonneg_left
-        ((ascFactorial_le_pow_add _ k).trans (Nat.pow_le_pow_of_le_left (le_succ _) _))
+        ((ascFactorial_le_pow_add _ k).trans (Nat.pow_le_pow_left (le_succ _) _))
 #align nat.asc_factorial_le_pow_add Nat.ascFactorial_le_pow_add
 
 theorem ascFactorial_lt_pow_add (n : ℕ) : ∀ {k : ℕ}, 2 ≤ k → n.ascFactorial k < (n + k) ^ k
@@ -306,11 +302,8 @@ theorem ascFactorial_lt_pow_add (n : ℕ) : ∀ {k : ℕ}, 2 ≤ k → n.ascFact
   | k + 2 => fun _ => by
     rw [ascFactorial_succ, pow_succ]
     rw [add_assoc n (k + 1) 1, mul_comm <| (n + (k + 2)) ^ (k + 1)]
-    refine'
-      Nat.mul_lt_mul' le_rfl
-        ((ascFactorial_le_pow_add n _).trans_lt
-          (pow_lt_pow_of_lt_left (lt_add_one _) (succ_pos _)))
-        (succ_pos _)
+    exact mul_lt_mul_of_pos_left ((ascFactorial_le_pow_add n _).trans_lt $
+      Nat.pow_lt_pow_left (lt_add_one _) k.succ_ne_zero) (succ_pos _)
 #align nat.asc_factorial_lt_pow_add Nat.ascFactorial_lt_pow_add
 
 theorem ascFactorial_pos (n k : ℕ) : 0 < n.ascFactorial k :=
@@ -409,7 +402,7 @@ theorem pow_sub_le_descFactorial (n : ℕ) : ∀ k : ℕ, (n + 1 - k) ^ k ≤ n.
   | k + 1 => by
     rw [descFactorial_succ, pow_succ, succ_sub_succ, mul_comm]
     apply Nat.mul_le_mul_of_nonneg_left
-    exact   (le_trans (Nat.pow_le_pow_of_le_left (tsub_le_tsub_right (le_succ _) _) k)
+    exact   (le_trans (Nat.pow_le_pow_left (tsub_le_tsub_right (le_succ _) _) k)
           (pow_sub_le_descFactorial n k))
 #align nat.pow_sub_le_desc_factorial Nat.pow_sub_le_descFactorial
 
@@ -423,7 +416,7 @@ theorem pow_sub_lt_descFactorial' {n : ℕ} :
   | k + 1 => fun h => by
     rw [descFactorial_succ, pow_succ, mul_comm]
     apply Nat.mul_lt_mul_of_pos_left
-    · refine' ((Nat.pow_le_pow_of_le_left (tsub_le_tsub_right (le_succ n) _) _).trans_lt _)
+    · refine' ((Nat.pow_le_pow_left (tsub_le_tsub_right (le_succ n) _) _).trans_lt _)
       rw [succ_sub_succ]
       exact pow_sub_lt_descFactorial' ((le_succ _).trans h)
     · apply tsub_pos_of_lt; apply h

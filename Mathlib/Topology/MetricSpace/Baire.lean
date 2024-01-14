@@ -195,7 +195,7 @@ theorem dense_iInter_of_isOpen_nat {f : ℕ → Set α} (ho : ∀ n, IsOpen (f n
 /-- Baire theorem: a countable intersection of dense open sets is dense. Formulated here with ⋂₀. -/
 theorem dense_sInter_of_isOpen {S : Set (Set α)} (ho : ∀ s ∈ S, IsOpen s) (hS : S.Countable)
     (hd : ∀ s ∈ S, Dense s) : Dense (⋂₀ S) := by
-  cases' S.eq_empty_or_nonempty with h h
+  rcases S.eq_empty_or_nonempty with h | h
   · simp [h]
   · rcases hS.exists_eq_range h with ⟨f, hf⟩
     have F : ∀ n, f n ∈ S := fun n => by rw [hf]; exact mem_range_self _

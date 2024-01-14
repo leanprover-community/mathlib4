@@ -10,6 +10,7 @@ import Mathlib.Init.Data.Bool.Lemmas
 import Mathlib.Init.ZeroOne
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.Says
+import Mathlib.Tactic.GeneralizeProofs
 
 #align_import init.data.nat.bitwise from "leanprover-community/lean"@"53e8520d8964c7632989880372d91ba0cecbaf00"
 
@@ -341,9 +342,8 @@ theorem binaryRec_eq {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bit
     rfl
   case neg h' =>
     simp only [dif_neg h]
-    generalize @id (C (bit b n) = C (bit (bodd (bit b n)) (div2 (bit b n))))
-      (Eq.symm (bit_decomp (bit b n)) ▸ Eq.refl (C (bit b n))) = e
-    revert e
+    generalize_proofs h
+    revert h
     rw [bodd_bit, div2_bit]
     intros; rfl
 #align nat.binary_rec_eq Nat.binaryRec_eq

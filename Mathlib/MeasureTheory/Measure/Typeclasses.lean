@@ -21,7 +21,7 @@ We introduce the following typeclasses for measures:
 -/
 
 open scoped ENNReal NNReal Topology
-open Set MeasureTheory Measure Filter MeasurableSpace ENNReal
+open Set MeasureTheory Measure Filter Function MeasurableSpace ENNReal
 
 variable {α β δ ι : Type*}
 
@@ -218,6 +218,9 @@ export MeasureTheory.IsProbabilityMeasure (measure_univ)
 
 attribute [simp] IsProbabilityMeasure.measure_univ
 
+lemma isProbabilityMeasure_iff : IsProbabilityMeasure μ ↔ μ univ = 1 :=
+  ⟨fun _ ↦ measure_univ, IsProbabilityMeasure.mk⟩
+
 instance (priority := 100) IsProbabilityMeasure.toIsFiniteMeasure (μ : Measure α)
     [IsProbabilityMeasure μ] : IsFiniteMeasure μ :=
   ⟨by simp only [measure_univ, ENNReal.one_lt_top]⟩
@@ -275,6 +278,26 @@ theorem prob_compl_eq_zero_iff [IsProbabilityMeasure μ] (hs : MeasurableSet s) 
 theorem prob_compl_eq_one_iff [IsProbabilityMeasure μ] (hs : MeasurableSet s) :
     μ sᶜ = 1 ↔ μ s = 0 := by rw [← prob_compl_eq_zero_iff hs.compl, compl_compl]
 #align measure_theory.prob_compl_eq_one_iff MeasureTheory.prob_compl_eq_one_iff
+
+variable [IsProbabilityMeasure μ] {p : α → Prop} {f : β → α}
+
+lemma mem_ae_iff_prob_eq_one (hs : MeasurableSet s) : s ∈ μ.ae ↔ μ s = 1 :=
+  mem_ae_iff.trans $ prob_compl_eq_zero_iff hs
+
+lemma ae_iff_prob_eq_one (hp : Measurable p) : (∀ᵐ a ∂μ, p a) ↔ μ {a | p a} = 1 :=
+  mem_ae_iff_prob_eq_one hp.setOf
+
+lemma isProbabilityMeasure_comap (hf : Injective f) (hf' : ∀ᵐ a ∂μ, a ∈ range f)
+    (hf'' : ∀ s, MeasurableSet s → MeasurableSet (f '' s)) :
+    IsProbabilityMeasure (μ.comap f) where
+  measure_univ := by
+    rw [comap_apply _ hf hf'' _ MeasurableSet.univ,
+      ← mem_ae_iff_prob_eq_one (hf'' _ MeasurableSet.univ)]
+    simpa
+
+protected lemma _root_.MeasurableEmbedding.isProbabilityMeasure_comap (hf : MeasurableEmbedding f)
+    (hf' : ∀ᵐ a ∂μ, a ∈ range f) : IsProbabilityMeasure (μ.comap f) :=
+  isProbabilityMeasure_comap hf.injective hf' hf.measurableSet_image'
 
 end IsProbabilityMeasure
 

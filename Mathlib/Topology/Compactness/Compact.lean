@@ -796,12 +796,29 @@ theorem finite_of_compact_of_discrete [CompactSpace X] [DiscreteTopology X] : Fi
   Finite.of_finite_univ <| isCompact_univ.finite_of_discrete
 #align finite_of_compact_of_discrete finite_of_compact_of_discrete
 
+lemma Set.Infinite.exists_accPt_cofinite_inf_principal_of_subset_isCompact
+    {K : Set X} (hs : s.Infinite) (hK : IsCompact K) (hsub : s ⊆ K) :
+    ∃ x ∈ K, AccPt x (cofinite ⊓ 𝓟 s) :=
+  (@hK _ hs.cofinite_inf_principal_neBot (inf_le_right.trans <| principal_mono.2 hsub)).imp
+    fun x hx ↦ by rwa [acc_iff_cluster, inf_comm, inf_right_comm,
+      (finite_singleton _).cofinite_inf_principal_compl]
+
+lemma Set.Infinite.exists_accPt_of_subset_isCompact {K : Set X} (hs : s.Infinite)
+    (hK : IsCompact K) (hsub : s ⊆ K) : ∃ x ∈ K, AccPt x (𝓟 s) :=
+  let ⟨x, hxK, hx⟩ := hs.exists_accPt_cofinite_inf_principal_of_subset_isCompact hK hsub
+  ⟨x, hxK, hx.mono inf_le_right⟩
+
+lemma Set.Infinite.exists_accPt_cofinite_inf_principal [CompactSpace X] (hs : s.Infinite) :
+    ∃ x, AccPt x (cofinite ⊓ 𝓟 s) := by
+  simpa only [mem_univ, true_and]
+    using hs.exists_accPt_cofinite_inf_principal_of_subset_isCompact isCompact_univ s.subset_univ
+
+lemma Set.Infinite.exists_accPt_principal [CompactSpace X] (hs : s.Infinite) : ∃ x, AccPt x (𝓟 s) :=
+  hs.exists_accPt_cofinite_inf_principal.imp fun _x hx ↦ hx.mono inf_le_right
+
 theorem exists_nhds_ne_neBot (X : Type*) [TopologicalSpace X] [CompactSpace X] [Infinite X] :
-    ∃ x : X, (𝓝[≠] x).NeBot := by
-  by_contra! H
-  simp_rw [not_neBot] at H
-  haveI := discreteTopology_iff_nhds_ne.2 H
-  exact Infinite.not_finite (finite_of_compact_of_discrete : Finite X)
+    ∃ z : X, (𝓝[≠] z).NeBot := by
+  simpa [AccPt] using (@infinite_univ X _).exists_accPt_principal
 #align exists_nhds_ne_ne_bot exists_nhds_ne_neBot
 
 theorem finite_cover_nhds_interior [CompactSpace X] {U : X → Set X} (hU : ∀ x, U x ∈ 𝓝 x) :
@@ -937,10 +954,8 @@ theorem IsCompact.finite (hs : IsCompact s) (hs' : DiscreteTopology s) : s.Finit
 #align is_compact.finite IsCompact.finite
 
 theorem exists_nhds_ne_inf_principal_neBot (hs : IsCompact s) (hs' : s.Infinite) :
-    ∃ x ∈ s, (𝓝[≠] x ⊓ 𝓟 s).NeBot := by
-  by_contra! H
-  simp_rw [not_neBot] at H
-  exact hs' (hs.finite <| discreteTopology_subtype_iff.mpr H)
+    ∃ z ∈ s, (𝓝[≠] z ⊓ 𝓟 s).NeBot :=
+  hs'.exists_accPt_of_subset_isCompact hs Subset.rfl
 #align exists_nhds_ne_inf_principal_ne_bot exists_nhds_ne_inf_principal_neBot
 
 protected theorem ClosedEmbedding.noncompactSpace [NoncompactSpace X] {f : X → Y}

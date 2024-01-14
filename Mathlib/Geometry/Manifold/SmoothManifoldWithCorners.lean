@@ -976,6 +976,10 @@ theorem extend_target : (f.extend I).target = I.symm ⁻¹' f.target ∩ range I
   simp_rw [extend, PartialEquiv.trans_target, I.target_eq, I.toPartialEquiv_coe_symm, inter_comm]
 #align local_homeomorph.extend_target PartialHomeomorph.extend_target
 
+lemma isOpen_extend_target [I.Boundaryless] : IsOpen (f.extend I).target := by
+  rw [extend_target, I.range_eq_univ, inter_univ]
+  exact I.continuous_symm.isOpen_preimage _ f.open_target
+
 theorem mapsTo_extend (hs : s ⊆ f.source) :
     MapsTo (f.extend I) s ((f.extend I).symm ⁻¹' s ∩ range I) := by
   rw [mapsTo', extend_coe, extend_coe_symm, preimage_comp, ← I.image_eq, image_comp,
@@ -1022,6 +1026,19 @@ theorem extend_target_mem_nhdsWithin {y : M} (hy : y ∈ f.source) :
 
 theorem extend_target_subset_range : (f.extend I).target ⊆ range I := by simp only [mfld_simps]
 #align local_homeomorph.extend_target_subset_range PartialHomeomorph.extend_target_subset_range
+
+lemma interior_extend_target_subset_interior_range :
+    interior (f.extend I).target ⊆ interior (range I) := by
+  rw [f.extend_target, interior_inter, (f.open_target.preimage I.continuous_symm).interior_eq]
+  exact inter_subset_right _ _
+
+/-- If `y ∈ f.target` and `I y ∈ interior (range I)`,
+  then `I y` is an interior point of `(I ∘ f).target`. -/
+lemma mem_interior_extend_target {y : H} (hy : y ∈ f.target)
+    (hy' : I y ∈ interior (range I)) : I y ∈ interior (f.extend I).target := by
+  rw [f.extend_target, interior_inter, (f.open_target.preimage I.continuous_symm).interior_eq,
+    mem_inter_iff, mem_preimage]
+  exact ⟨mem_of_eq_of_mem (I.left_inv (y)) hy, hy'⟩
 
 theorem nhdsWithin_extend_target_eq {y : M} (hy : y ∈ f.source) :
     𝓝[(f.extend I).target] f.extend I y = 𝓝[range I] f.extend I y :=

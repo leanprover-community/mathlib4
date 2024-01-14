@@ -155,7 +155,7 @@ theorem prod_map_hom (L : List ι) (f : ι → M) {G : Type*} [MonoidHomClass G 
 #align list.sum_map_hom List.sum_map_hom
 
 @[to_additive]
-theorem prod_isUnit : ∀ {L : List M} (_ : ∀ m ∈ L, IsUnit m), IsUnit L.prod
+theorem prod_isUnit : ∀ {L : List M}, (∀ m ∈ L, IsUnit m) → IsUnit L.prod
   | [], _ => by simp
   | h :: t, u => by
     simp only [List.prod_cons]
@@ -499,7 +499,7 @@ theorem monotone_prod_take [CanonicallyOrderedCommMonoid M] (L : List M) :
 
 @[to_additive sum_pos]
 theorem one_lt_prod_of_one_lt [OrderedCommMonoid M] :
-    ∀ (l : List M) (_ : ∀ x ∈ l, (1 : M) < x) (_ : l ≠ []), 1 < l.prod
+    ∀ l : List M, (∀ x ∈ l, (1 : M) < x) → l ≠ [] → 1 < l.prod
   | [], _, h => (h rfl).elim
   | [b], h, _ => by simpa using h
   | a :: b :: l, hl₁, _ => by

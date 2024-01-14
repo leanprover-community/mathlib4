@@ -267,7 +267,7 @@ theorem fast_fib_eq (n : ℕ) : fastFib n = fib n := by rw [fastFib, fast_fib_au
 #align nat.fast_fib_eq Nat.fast_fib_eq
 
 theorem gcd_fib_add_self (m n : ℕ) : gcd (fib m) (fib (n + m)) = gcd (fib m) (fib n) := by
-  cases' Nat.eq_zero_or_pos n with h h
+  rcases Nat.eq_zero_or_pos n with h | h
   · rw [h]
     simp
   replace h := Nat.succ_pred_eq_of_pos h; rw [← h, succ_eq_add_one]

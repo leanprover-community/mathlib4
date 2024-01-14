@@ -332,10 +332,10 @@ theorem arg_inv (x : ℂ) : arg x⁻¹ = if arg x = π then π else -arg x := by
 #align complex.arg_inv Complex.arg_inv
 
 theorem arg_le_pi_div_two_iff {z : ℂ} : arg z ≤ π / 2 ↔ 0 ≤ re z ∨ im z < 0 := by
-  cases' le_or_lt 0 (re z) with hre hre
+  rcases le_or_lt 0 (re z) with hre | hre
   · simp only [hre, arg_of_re_nonneg hre, Real.arcsin_le_pi_div_two, true_or_iff]
   simp only [hre.not_le, false_or_iff]
-  cases' le_or_lt 0 (im z) with him him
+  rcases le_or_lt 0 (im z) with him | him
   · simp only [him.not_lt]
     rw [iff_false_iff, not_le, arg_of_re_neg_of_im_nonneg hre him, ← sub_lt_iff_lt_add, half_sub,
       Real.neg_pi_div_two_lt_arcsin, neg_im, neg_div, neg_lt_neg_iff, div_lt_one, ←
@@ -347,10 +347,10 @@ theorem arg_le_pi_div_two_iff {z : ℂ} : arg z ≤ π / 2 ↔ 0 ≤ re z ∨ im
 #align complex.arg_le_pi_div_two_iff Complex.arg_le_pi_div_two_iff
 
 theorem neg_pi_div_two_le_arg_iff {z : ℂ} : -(π / 2) ≤ arg z ↔ 0 ≤ re z ∨ 0 ≤ im z := by
-  cases' le_or_lt 0 (re z) with hre hre
+  rcases le_or_lt 0 (re z) with hre | hre
   · simp only [hre, arg_of_re_nonneg hre, Real.neg_pi_div_two_le_arcsin, true_or_iff]
   simp only [hre.not_le, false_or_iff]
-  cases' le_or_lt 0 (im z) with him him
+  rcases le_or_lt 0 (im z) with him | him
   · simp only [him]
     rw [iff_true_iff, arg_of_re_neg_of_im_nonneg hre him]
     exact (Real.neg_pi_div_two_le_arcsin _).trans (le_add_of_nonneg_right Real.pi_pos.le)

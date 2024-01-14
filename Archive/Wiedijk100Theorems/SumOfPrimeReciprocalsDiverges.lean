@@ -168,7 +168,7 @@ theorem card_le_two_pow {x k : ℕ} :
     card M₁ ≤ card (image f K) := card_le_of_subset h
     _ ≤ card K := card_image_le
     _ ≤ 2 ^ card (image Nat.succ (range k)) := by simp only [card_powerset]; rfl
-    _ ≤ 2 ^ card (range k) := (pow_le_pow one_le_two card_image_le)
+    _ ≤ 2 ^ card (range k) := (pow_le_pow_right one_le_two card_image_le)
     _ = 2 ^ k := by rw [card_range k]
 #align theorems_100.card_le_two_pow Theorems100.card_le_two_pow
 

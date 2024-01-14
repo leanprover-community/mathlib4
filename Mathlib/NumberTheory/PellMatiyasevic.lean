@@ -696,7 +696,7 @@ theorem eq_of_xn_modEq_lem3 {i n} (npos : 0 < n) :
             show 2 * n - (n + 1) = n - 1 by
               rw [two_mul, tsub_add_eq_tsub_tsub, add_tsub_cancel_right]]
           refine' lt_sub_left_of_add_lt (Int.ofNat_lt_ofNat_of_lt _)
-          cases' lt_or_eq_of_le <| Nat.le_of_succ_le_succ ij with lin ein
+          rcases lt_or_eq_of_le <| Nat.le_of_succ_le_succ ij with lin | ein
           · rw [Nat.mod_eq_of_lt (strictMono_x _ lin)]
             have ll : xn a1 (n - 1) + xn a1 (n - 1) ≤ xn a1 n := by
               rw [← two_mul, mul_comm,
@@ -708,7 +708,7 @@ theorem eq_of_xn_modEq_lem3 {i n} (npos : 0 < n) :
               apply Nat.le_of_succ_le_succ
               rw [npm]
               exact lin
-            cases' lt_or_eq_of_le il with ill ile
+            rcases lt_or_eq_of_le il with ill | ile
             · exact lt_of_lt_of_le (Nat.add_lt_add_left (strictMono_x a1 ill) _) ll
             · rw [ile]
               apply lt_of_le_of_ne ll
@@ -965,7 +965,7 @@ theorem eq_pow_of_pell {m n k} :
       refine' eq_pow_of_pell_lem hn.ne' hk.ne' _
       calc
         n ^ k ≤ n ^ w := Nat.pow_le_pow_of_le_right hn kw
-        _ < (w + 1) ^ w := (Nat.pow_lt_pow_of_lt_left (Nat.lt_succ_of_le nw) wpos)
+        _ < (w + 1) ^ w := (Nat.pow_lt_pow_left (Nat.lt_succ_of_le nw) wpos.ne')
         _ ≤ a := xn_ge_a_pow w1 w
     lift (2 * a * n - n * n - 1 : ℤ) to ℕ using (Nat.cast_nonneg _).trans nt.le with t te
     have tm : x ≡ y * (a - n) + n ^ k [MOD t] := by
@@ -995,7 +995,7 @@ theorem eq_pow_of_pell {m n k} :
     have hnka : n ^ k < xn hw1 j
     calc
       n ^ k ≤ n ^ j := Nat.pow_le_pow_of_le_right hn0 (le_trans kw wj)
-      _ < (w + 1) ^ j := (Nat.pow_lt_pow_of_lt_left (Nat.lt_succ_of_le nw) hj0)
+      _ < (w + 1) ^ j := (Nat.pow_lt_pow_left (Nat.lt_succ_of_le nw) hj0.ne')
       _ ≤ xn hw1 j := xn_ge_a_pow hw1 j
     have nt : (↑(n ^ k) : ℤ) < 2 * xn hw1 j * n - n * n - 1 :=
       eq_pow_of_pell_lem hn0.ne' hk0.ne' hnka

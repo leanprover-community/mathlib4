@@ -236,7 +236,6 @@ theorem bernsteinApproximation_uniform (f : C(I, ℝ)) :
   filter_upwards [nhds_zero.eventually (gt_mem_nhds (half_pos h)), eventually_gt_atTop 0] with n nh
     npos'
   have npos : 0 < (n : ℝ) := by positivity
-  have w₂ : 0 ≤ δ ^ (-2:ℤ) := zpow_neg_two_nonneg _ -- TODO: need a positivity extension for `zpow`
   -- As `[0,1]` is compact, it suffices to check the inequality pointwise.
   rw [ContinuousMap.norm_lt_iff _ h]
   intro x

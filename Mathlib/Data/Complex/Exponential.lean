@@ -541,6 +541,9 @@ theorem exp_sum {α : Type*} (s : Finset α) (f : α → ℂ) :
   @map_prod (Multiplicative ℂ) α ℂ _ _ _ _ expMonoidHom f s
 #align complex.exp_sum Complex.exp_sum
 
+lemma exp_nsmul (x : ℂ) (n : ℕ) : exp (n • x) = exp x ^ n :=
+  @MonoidHom.map_pow (Multiplicative ℂ) ℂ _ _  expMonoidHom _ _
+
 theorem exp_nat_mul (x : ℂ) : ∀ n : ℕ, exp (n * x) = exp x ^ n
   | 0 => by rw [Nat.cast_zero, zero_mul, exp_zero, pow_zero]
   | Nat.succ n => by rw [pow_succ', Nat.cast_add_one, add_mul, exp_add, ← exp_nat_mul _ n, one_mul]
@@ -1159,6 +1162,9 @@ theorem exp_sum {α : Type*} (s : Finset α) (f : α → ℝ) :
   @map_prod (Multiplicative ℝ) α ℝ _ _ _ _ expMonoidHom f s
 #align real.exp_sum Real.exp_sum
 
+lemma exp_nsmul (x : ℝ) (n : ℕ) : exp (n • x) = exp x ^ n :=
+  @MonoidHom.map_pow (Multiplicative ℝ) ℝ _ _  expMonoidHom _ _
+
 nonrec theorem exp_nat_mul (x : ℝ) (n : ℕ) : exp (n * x) = exp x ^ n :=
   ofReal_injective (by simp [exp_nat_mul])
 #align real.exp_nat_mul Real.exp_nat_mul
@@ -1584,7 +1590,7 @@ theorem cosh_pos (x : ℝ) : 0 < Real.cosh x :=
 #align real.cosh_pos Real.cosh_pos
 
 theorem sinh_lt_cosh : sinh x < cosh x :=
-  lt_of_pow_lt_pow 2 (cosh_pos _).le <| (cosh_sq x).symm ▸ lt_add_one _
+  lt_of_pow_lt_pow_left 2 (cosh_pos _).le <| (cosh_sq x).symm ▸ lt_add_one _
 #align real.sinh_lt_cosh Real.sinh_lt_cosh
 
 end Real
@@ -2007,7 +2013,7 @@ theorem one_sub_div_pow_le_exp_neg {n : ℕ} {t : ℝ} (ht' : t ≤ n) : (1 - t 
   rcases eq_or_ne n 0 with (rfl | hn)
   · simp
     rwa [Nat.cast_zero] at ht'
-  convert pow_le_pow_of_le_left ?_ (one_sub_le_exp_neg (t / n)) n using 2
+  convert pow_le_pow_left ?_ (one_sub_le_exp_neg (t / n)) n using 2
   · rw [← Real.exp_nat_mul]
     congr 1
     field_simp

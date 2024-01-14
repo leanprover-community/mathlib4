@@ -154,7 +154,7 @@ theorem exists_closed_cover_approximatesLinearOn_of_hasFDerivWithinAt [SecondCou
       simpa only [sub_pos] using mem_ball_iff_norm.mp hz
     obtain ⟨δ, δpos, hδ⟩ :
       ∃ (δ : ℝ), 0 < δ ∧ ball x δ ∩ s ⊆ {y | ‖f y - f x - (f' x) (y - x)‖ ≤ ε * ‖y - x‖} :=
-      Metric.mem_nhdsWithin_iff.1 (IsLittleO.def (hf' x xs) εpos)
+      Metric.mem_nhdsWithin_iff.1 ((hf' x xs).isLittleO.def εpos)
     obtain ⟨n, hn⟩ : ∃ n, u n < δ := ((tendsto_order.1 u_lim).2 _ δpos).exists
     refine' ⟨n, ⟨z, zT⟩, ⟨xs, _⟩⟩
     intro y hy
@@ -494,7 +494,7 @@ theorem _root_.ApproximatesLinearOn.norm_fderiv_sub_le {A : E →L[ℝ] E} {δ :
       (measure_closedBall_pos μ z εpos).ne'
   obtain ⟨ρ, ρpos, hρ⟩ :
     ∃ ρ > 0, ball x ρ ∩ s ⊆ {y : E | ‖f y - f x - (f' x) (y - x)‖ ≤ ε * ‖y - x‖} :=
-    mem_nhdsWithin_iff.1 (IsLittleO.def (hf' x xs) εpos)
+    mem_nhdsWithin_iff.1 ((hf' x xs).isLittleO.def εpos)
   -- for small enough `r`, the rescaled ball `r • closedBall z ε` is included in the set where
   -- `f y - f x` is well approximated by `f' x (y - x)`.
   have B₂ : ∀ᶠ r in 𝓝[>] (0 : ℝ), {x} + r • closedBall z ε ⊆ ball x ρ := by

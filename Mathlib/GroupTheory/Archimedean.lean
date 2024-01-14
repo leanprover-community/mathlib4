@@ -81,7 +81,7 @@ theorem AddSubgroup.exists_isLeast_pos {H : AddSubgroup G} (hbot : H ≠ ⊥) {a
   · exact hmin m hmn ⟨y, hyH, hm⟩
   · refine disjoint_left.1 hd (sub_mem hxH hyH) ⟨sub_pos.2 hxy, sub_lt_iff_lt_add'.2 ?_⟩
     calc x ≤ (n + 1) • a := hxn
-    _ ≤ (m + 1) • a := nsmul_le_nsmul h₀.le (add_le_add_right hnm _)
+    _ ≤ (m + 1) • a := nsmul_le_nsmul_left h₀.le (add_le_add_right hnm _)
     _ = m • a + a := succ_nsmul' _ _
     _ < y + a := add_lt_add_right hm.1 _
 

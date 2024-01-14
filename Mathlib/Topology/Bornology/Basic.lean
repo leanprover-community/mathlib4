@@ -91,10 +91,9 @@ and showing that they satisfy the appropriate conditions. -/
 @[simps]
 def Bornology.ofBounded {α : Type*} (B : Set (Set α))
     (empty_mem : ∅ ∈ B)
-    (subset_mem : ∀ s₁ (_ : s₁ ∈ B) s₂, s₂ ⊆ s₁ → s₂ ∈ B)
-    (union_mem : ∀ s₁ (_ : s₁ ∈ B) s₂ (_ : s₂ ∈ B), s₁ ∪ s₂ ∈ B)
-    (singleton_mem : ∀ x, {x} ∈ B) : Bornology α
-    where
+    (subset_mem : ∀ s₁ ∈ B, ∀ s₂ ⊆ s₁, s₂ ∈ B)
+    (union_mem : ∀ s₁ ∈ B, ∀ s₂ ∈ B, s₁ ∪ s₂ ∈ B)
+    (singleton_mem : ∀ x, {x} ∈ B) : Bornology α where
   cobounded' :=
     { sets := { s : Set α | sᶜ ∈ B }
       univ_sets := by rwa [← compl_univ] at empty_mem
@@ -114,8 +113,8 @@ and showing that they satisfy the appropriate conditions. -/
 @[simps!]
 def Bornology.ofBounded' {α : Type*} (B : Set (Set α))
     (empty_mem : ∅ ∈ B)
-    (subset_mem : ∀ s₁ (_ : s₁ ∈ B) s₂, s₂ ⊆ s₁ → s₂ ∈ B)
-    (union_mem : ∀ s₁ (_ : s₁ ∈ B) s₂ (_ : s₂ ∈ B), s₁ ∪ s₂ ∈ B)
+    (subset_mem : ∀ s₁ ∈ B, ∀ s₂ ⊆ s₁, s₂ ∈ B)
+    (union_mem : ∀ s₁ ∈ B, ∀ s₂ ∈ B, s₁ ∪ s₂ ∈ B)
     (sUnion_univ : ⋃₀ B = univ) :
     Bornology α :=
   Bornology.ofBounded B empty_mem subset_mem union_mem fun x => by

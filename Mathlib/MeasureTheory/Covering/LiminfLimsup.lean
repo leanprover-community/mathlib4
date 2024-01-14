@@ -168,7 +168,7 @@ theorem blimsup_cthickening_ae_le_of_eventually_mul_le (p : ℕ → Prop) {s : �
     rw [mul_max_of_nonneg _ _ hM.le, mul_zero]
     exact max_le_max (le_refl 0) hi
   simp_rw [← cthickening_max_zero (r₁ _), ← cthickening_max_zero (r₂ _)]
-  cases' le_or_lt 1 M with hM' hM'
+  rcases le_or_lt 1 M with hM' | hM'
   · apply HasSubset.Subset.eventuallyLE
     change _ ≤ _
     refine' mono_blimsup' (hMr.mono fun i hi _ => cthickening_mono _ (s i))

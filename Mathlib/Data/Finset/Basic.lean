@@ -2540,7 +2540,7 @@ theorem piecewise_eq_of_not_mem {i : α} (hi : i ∉ s) : s.piecewise f g i = g 
 #align finset.piecewise_eq_of_not_mem Finset.piecewise_eq_of_not_mem
 
 theorem piecewise_congr {f f' g g' : ∀ i, δ i} (hf : ∀ i ∈ s, f i = f' i)
-    (hg : ∀ (i) (_ : i ∉ s), g i = g' i) : s.piecewise f g = s.piecewise f' g' :=
+    (hg : ∀ i ∉ s, g i = g' i) : s.piecewise f g = s.piecewise f' g' :=
   funext fun i => if_ctx_congr Iff.rfl (hf i) (hg i)
 #align finset.piecewise_congr Finset.piecewise_congr
 
@@ -2633,7 +2633,7 @@ theorem le_piecewise_of_le_of_le {δ : α → Type*} [∀ i, Preorder (δ i)] {f
 #align finset.le_piecewise_of_le_of_le Finset.le_piecewise_of_le_of_le
 
 theorem piecewise_le_piecewise' {δ : α → Type*} [∀ i, Preorder (δ i)] {f g f' g' : ∀ i, δ i}
-    (Hf : ∀ x ∈ s, f x ≤ f' x) (Hg : ∀ (x) (_ : x ∉ s), g x ≤ g' x) :
+    (Hf : ∀ x ∈ s, f x ≤ f' x) (Hg : ∀ x ∉ s, g x ≤ g' x) :
     s.piecewise f g ≤ s.piecewise f' g' := fun x => by by_cases hx : x ∈ s <;> simp [hx, *]
 #align finset.piecewise_le_piecewise' Finset.piecewise_le_piecewise'
 
@@ -3245,7 +3245,7 @@ theorem toFinset_add (s t : Multiset α) : toFinset (s + t) = toFinset s ∪ toF
 #align multiset.to_finset_add Multiset.toFinset_add
 
 @[simp]
-theorem toFinset_nsmul (s : Multiset α) : ∀ (n : ℕ) (_ : n ≠ 0), (n • s).toFinset = s.toFinset
+theorem toFinset_nsmul (s : Multiset α) : ∀ n ≠ 0, (n • s).toFinset = s.toFinset
   | 0, h => by contradiction
   | n + 1, _ => by
     by_cases h : n = 0

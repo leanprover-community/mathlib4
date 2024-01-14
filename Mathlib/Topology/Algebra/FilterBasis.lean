@@ -251,7 +251,7 @@ instance (priority := 100) isTopologicalGroup (B : GroupFilterBasis G) :
     rcases mul U_in with ⟨V, V_in, hV⟩
     refine' ⟨V, V, ⟨V_in, V_in⟩, _⟩
     intro a b a_in b_in
-    exact hV ⟨a, b, a_in, b_in, rfl⟩
+    exact hV <| mul_mem_mul a_in b_in
   · rw [basis.tendsto_iff basis]
     intro U U_in
     simpa using inv U_in
@@ -318,7 +318,7 @@ instance (priority := 100) isTopologicalRing {R : Type u} [Ring R] (B : RingFilt
     rcases B.mul U_in with ⟨V, V_in, hV⟩
     refine' ⟨V, V, ⟨V_in, V_in⟩, _⟩
     intro a b a_in b_in
-    exact hV ⟨a, b, a_in, b_in, rfl⟩
+    exact hV <| mul_mem_mul a_in b_in
   · intro x₀
     rw [basis.tendsto_iff basis]
     intro U
@@ -409,8 +409,8 @@ But it turns out it's just easier to get it as a byproduct of the proof, so this
 quality-of-life improvement. -/
 theorem _root_.ContinuousSMul.of_basis_zero {ι : Type*} [TopologicalRing R] [TopologicalSpace M]
     [TopologicalAddGroup M] {p : ι → Prop} {b : ι → Set M} (h : HasBasis (𝓝 0) p b)
-    (hsmul : ∀ {i}, p i → ∃ V ∈ 𝓝 (0 : R), ∃ (j : _) (_ : p j), V • b j ⊆ b i)
-    (hsmul_left : ∀ (x₀ : R) {i}, p i → ∃ (j : _) (_ : p j), b j ⊆ (fun x ↦ x₀ • x) ⁻¹' b i)
+    (hsmul : ∀ {i}, p i → ∃ V ∈ 𝓝 (0 : R), ∃ j, p j ∧ V • b j ⊆ b i)
+    (hsmul_left : ∀ (x₀ : R) {i}, p i → ∃ j, p j ∧ MapsTo (x₀ • ·) (b j) (b i))
     (hsmul_right : ∀ (m₀ : M) {i}, p i → ∀ᶠ x in 𝓝 (0 : R), x • m₀ ∈ b i) : ContinuousSMul R M := by
   apply ContinuousSMul.of_nhds_zero
   · rw [h.tendsto_right_iff]

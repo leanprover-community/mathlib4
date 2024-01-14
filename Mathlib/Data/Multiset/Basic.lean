@@ -595,7 +595,7 @@ lemma cons_lt_cons (a : α) (h : s < t) : a ::ₘ s < a ::ₘ t := cons_lt_cons_
 
 theorem le_cons_of_not_mem (m : a ∉ s) : s ≤ a ::ₘ t ↔ s ≤ t := by
   refine' ⟨_, fun h => le_trans h <| le_cons_self _ _⟩
-  suffices ∀ {t'} (_ : s ≤ t') (_ : a ∈ t'), a ::ₘ s ≤ t' by
+  suffices ∀ {t'}, s ≤ t' → a ∈ t' → a ::ₘ s ≤ t' by
     exact fun h => (cons_le_cons_iff a).1 (this h (mem_cons_self _ _))
   introv h
   revert m
@@ -2154,6 +2154,16 @@ lemma map_filter' {f : α → β} (hf : Injective f) (s : Multiset α)
   simp [(· ∘ ·), map_filter, hf.eq_iff]
 #align multiset.map_filter' Multiset.map_filter'
 
+lemma card_filter_le_iff (s : Multiset α) (P : α → Prop) [DecidablePred P] (n : ℕ) :
+    card (s.filter P) ≤ n ↔ ∀ s' ≤ s, n < card s' → ∃ a ∈ s', ¬ P a := by
+  fconstructor
+  · intro H s' hs' s'_card
+    by_contra! rid
+    have card := card_le_of_le (monotone_filter_left P hs') |>.trans H
+    exact s'_card.not_le (filter_eq_self.mpr rid ▸ card)
+  · contrapose!
+    exact fun H ↦ ⟨s.filter P, filter_le _ _, H, fun a ha ↦ (mem_filter.mp ha).2⟩
+
 /-! ### Simultaneously filter and map elements of a multiset -/
 
 
@@ -2859,7 +2869,7 @@ theorem card_eq_card_of_rel {r : α → β → Prop} {s : Multiset α} {t : Mult
 #align multiset.card_eq_card_of_rel Multiset.card_eq_card_of_rel
 
 theorem exists_mem_of_rel_of_mem {r : α → β → Prop} {s : Multiset α} {t : Multiset β}
-    (h : Rel r s t) : ∀ {a : α} (_ha : a ∈ s), ∃ b ∈ t, r a b := by
+    (h : Rel r s t) : ∀ {a : α}, a ∈ s → ∃ b ∈ t, r a b := by
   induction' h with x y s t hxy _hst ih
   · simp
   · intro a ha

@@ -188,7 +188,7 @@ theorem stirlingSeq'_bounded_by_pos_constant : ∃ a, 0 < a ∧ ∀ n : ℕ, a �
 
 /-- The sequence `stirlingSeq ∘ succ` is monotone decreasing -/
 theorem stirlingSeq'_antitone : Antitone (stirlingSeq ∘ succ) := fun n m h =>
-  (log_le_log (stirlingSeq'_pos m) (stirlingSeq'_pos n)).mp (log_stirlingSeq'_antitone h)
+  (log_le_log_iff (stirlingSeq'_pos m) (stirlingSeq'_pos n)).mp (log_stirlingSeq'_antitone h)
 #align stirling.stirling_seq'_antitone Stirling.stirlingSeq'_antitone
 
 /-- The limit `a` of the sequence `stirlingSeq` satisfies `0 < a` -/
@@ -229,7 +229,8 @@ theorem stirlingSeq_pow_four_div_stirlingSeq_pow_two_eq (n : ℕ) (hn : n ≠ 0)
   simp_rw [div_pow, mul_pow]
   rw [sq_sqrt, sq_sqrt]
   any_goals positivity
-  field_simp; ring
+  field_simp [← exp_nsmul]
+  ring_nf
 #align stirling.stirling_seq_pow_four_div_stirling_seq_pow_two_eq Stirling.stirlingSeq_pow_four_div_stirlingSeq_pow_two_eq
 
 /-- Suppose the sequence `stirlingSeq` (defined above) has the limit `a ≠ 0`.

@@ -255,7 +255,7 @@ theorem Chain'.cons {x y l} (h₁ : R x y) (h₂ : Chain' R (y :: l)) : Chain' R
   chain'_cons.2 ⟨h₁, h₂⟩
 #align list.chain'.cons List.Chain'.cons
 
-theorem Chain'.tail : ∀ {l} (_ : Chain' R l), Chain' R l.tail
+theorem Chain'.tail : ∀ {l}, Chain' R l → Chain' R l.tail
   | [], _ => trivial
   | [_], _ => trivial
   | _ :: _ :: _, h => (chain'_cons.mp h).right

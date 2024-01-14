@@ -437,7 +437,7 @@ variable [IsAtomistic α]
 instance (priority := 100) : IsAtomic α :=
   ⟨fun b => by
     rcases eq_sSup_atoms b with ⟨s, rfl, hs⟩
-    cases' s.eq_empty_or_nonempty with h h
+    rcases s.eq_empty_or_nonempty with h | h
     · simp [h]
     · exact Or.intro_right _ ⟨h.some, hs _ h.choose_spec, le_sSup h.choose_spec⟩⟩
 
@@ -483,7 +483,7 @@ variable [IsCoatomistic α]
 instance (priority := 100) : IsCoatomic α :=
   ⟨fun b => by
     rcases eq_sInf_coatoms b with ⟨s, rfl, hs⟩
-    cases' s.eq_empty_or_nonempty with h h
+    rcases s.eq_empty_or_nonempty with h | h
     · simp [h]
     · exact Or.intro_right _ ⟨h.some, hs _ h.choose_spec, sInf_le h.choose_spec⟩⟩
 

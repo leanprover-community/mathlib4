@@ -59,11 +59,7 @@ theorem of_comm {A ι : Type*} [CommRing A] (B : ι → AddSubgroup A)
   { inter
     mul
     leftMul
-    rightMul := by
-      intro x i
-      cases' leftMul x i with j hj
-      use j
-      simpa [mul_comm] using hj }
+    rightMul := fun x i ↦ (leftMul x i).imp fun j hj ↦ by simpa only [mul_comm] using hj }
 #align ring_subgroups_basis.of_comm RingSubgroupsBasis.of_comm
 
 /-- Every subgroups basis on a ring leads to a ring filter basis. -/

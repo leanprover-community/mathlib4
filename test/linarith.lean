@@ -192,7 +192,7 @@ by linarith (config := {exfalso := false})
 example (x y : Rat)
     (h : 6 + ((x + 4) * x + (6 + 3 * y) * y) = 3 ∧ (x + 4) * x ≥ 0 ∧ (6 + 3 * y) * y ≥ 0) : False := by
   fail_if_success
-    linarith (config := {split_hypotheses := false})
+    linarith (config := {splitHypotheses := false})
   linarith
 
 example (h : 1 < 0) (g : ¬ 37 < 42) (k : True) (l : (-7 : ℤ) < 5) : 3 < 7 := by

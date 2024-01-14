@@ -286,7 +286,7 @@ theorem FP.finset_prod {M} [CommMonoid M] (a : Stream' M) (s : Finset ℕ) (hs :
   refine' FP_drop_subset_FP _ (s.min' hs) _
   induction' s using Finset.strongInduction with s ih
   rw [← Finset.mul_prod_erase _ _ (s.min'_mem hs), ← Stream'.head_drop]
-  cases' (s.erase (s.min' hs)).eq_empty_or_nonempty with h h
+  rcases (s.erase (s.min' hs)).eq_empty_or_nonempty with h | h
   · rw [h, Finset.prod_empty, mul_one]
     exact FP.head _
   · apply FP.cons

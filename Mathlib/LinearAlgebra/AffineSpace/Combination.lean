@@ -102,7 +102,7 @@ theorem weightedVSubOfPoint_eq_of_weights_eq (p : ι → P) (j : ι) (w₁ w₂ 
   simp only [Finset.weightedVSubOfPoint_apply]
   congr
   ext i
-  cases' eq_or_ne i j with h h
+  rcases eq_or_ne i j with h | h
   · simp [h]
   · simp [hw i h]
 #align finset.weighted_vsub_of_point_eq_of_weights_eq Finset.weightedVSubOfPoint_eq_of_weights_eq

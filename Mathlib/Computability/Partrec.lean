@@ -225,7 +225,7 @@ theorem ppred : Partrec fun n => ppred n :=
           simp [show 0 ≠ m.succ by intro h; injection h] at h
     · refine' eq_some_iff.2 _
       simp only [mem_rfind, not_true, IsEmpty.forall_iff, decide_True, mem_some_iff,
-        Bool.false_eq_decide_iff, true_and]
+        false_eq_decide_iff, true_and]
       intro m h
       simp [ne_of_gt h]
 #align nat.partrec.ppred Nat.Partrec.ppred
@@ -817,7 +817,7 @@ theorem fix_aux {α σ} (f : α →. Sum σ α) (a : α) (b : σ) :
       b ∈ PFun.fix f a := by
   intro F; refine' ⟨fun h => _, fun h => _⟩
   · rcases h with ⟨n, ⟨_x, h₁⟩, h₂⟩
-    have : ∀ (m a') (_ : Sum.inr a' ∈ F a m) (_ : b ∈ PFun.fix f a'), b ∈ PFun.fix f a := by
+    have : ∀ m a', Sum.inr a' ∈ F a m → b ∈ PFun.fix f a' → b ∈ PFun.fix f a := by
       intro m a' am ba
       induction' m with m IH generalizing a' <;> simp at am
       · rwa [← am]

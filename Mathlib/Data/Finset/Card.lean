@@ -267,6 +267,11 @@ theorem fiber_card_ne_zero_iff_mem_image (s : Finset α) (f : α → β) [Decida
   rw [← pos_iff_ne_zero, card_pos, fiber_nonempty_iff_mem_image]
 #align finset.fiber_card_ne_zero_iff_mem_image Finset.fiber_card_ne_zero_iff_mem_image
 
+lemma card_filter_le_iff (s : Finset α) (P : α → Prop) [DecidablePred P] (n : ℕ) :
+    (s.filter P).card ≤ n ↔ ∀ s' ⊆ s, n < s'.card → ∃ a ∈ s', ¬ P a :=
+  (s.1.card_filter_le_iff P n).trans ⟨fun H s' hs' h ↦ H s'.1 (by aesop) h,
+    fun H s' hs' h ↦ H ⟨s', nodup_of_le hs' s.2⟩ (fun x hx ↦ subset_of_le hs' hx) h⟩
+
 @[simp]
 theorem card_map (f : α ↪ β) : (s.map f).card = s.card :=
   Multiset.card_map _ _
@@ -547,7 +552,7 @@ theorem card_eq_one : s.card = 1 ↔ ∃ a, s = {a} := by
 #align finset.card_eq_one Finset.card_eq_one
 
 theorem exists_eq_insert_iff [DecidableEq α] {s t : Finset α} :
-    (∃ (a : _) (_ : a ∉ s), insert a s = t) ↔ s ⊆ t ∧ s.card + 1 = t.card := by
+    (∃ a ∉ s, insert a s = t) ↔ s ⊆ t ∧ s.card + 1 = t.card := by
   constructor
   · rintro ⟨a, ha, rfl⟩
     exact ⟨subset_insert _ _, (card_insert_of_not_mem ha).symm⟩
@@ -693,7 +698,7 @@ end DecidableEq
 /-- Suppose that, given objects defined on all strict subsets of any finset `s`, one knows how to
 define an object on `s`. Then one can inductively define an object on all finsets, starting from
 the empty set and iterating. This can be used either to define data, or to prove properties. -/
-def strongInduction {p : Finset α → Sort*} (H : ∀ s, (∀ (t) (_ : t ⊂ s), p t) → p s) :
+def strongInduction {p : Finset α → Sort*} (H : ∀ s, (∀ t ⊂ s, p t) → p s) :
     ∀ s : Finset α, p s
   | s =>
     H s fun t h =>
@@ -703,7 +708,7 @@ def strongInduction {p : Finset α → Sort*} (H : ∀ s, (∀ (t) (_ : t ⊂ s)
 #align finset.strong_induction Finset.strongInduction
 
 @[nolint unusedHavesSuffices] --Porting note: false positive
-theorem strongInduction_eq {p : Finset α → Sort*} (H : ∀ s, (∀ (t) (_ : t ⊂ s), p t) → p s)
+theorem strongInduction_eq {p : Finset α → Sort*} (H : ∀ s, (∀ t ⊂ s, p t) → p s)
     (s : Finset α) : strongInduction H s = H s fun t _ => strongInduction H t := by
   rw [strongInduction]
 #align finset.strong_induction_eq Finset.strongInduction_eq
@@ -711,12 +716,12 @@ theorem strongInduction_eq {p : Finset α → Sort*} (H : ∀ s, (∀ (t) (_ : t
 /-- Analogue of `strongInduction` with order of arguments swapped. -/
 @[elab_as_elim]
 def strongInductionOn {p : Finset α → Sort*} (s : Finset α) :
-    (∀ s, (∀ (t) (_ : t ⊂ s), p t) → p s) → p s := fun H => strongInduction H s
+    (∀ s, (∀ t ⊂ s, p t) → p s) → p s := fun H => strongInduction H s
 #align finset.strong_induction_on Finset.strongInductionOn
 
 @[nolint unusedHavesSuffices] --Porting note: false positive
 theorem strongInductionOn_eq {p : Finset α → Sort*} (s : Finset α)
-    (H : ∀ s, (∀ (t) (_ : t ⊂ s), p t) → p s) :
+    (H : ∀ s, (∀ t ⊂ s, p t) → p s) :
     s.strongInductionOn H = H s fun t _ => t.strongInductionOn H := by
   dsimp only [strongInductionOn]
   rw [strongInduction]
@@ -724,7 +729,7 @@ theorem strongInductionOn_eq {p : Finset α → Sort*} (s : Finset α)
 
 @[elab_as_elim]
 theorem case_strong_induction_on [DecidableEq α] {p : Finset α → Prop} (s : Finset α) (h₀ : p ∅)
-    (h₁ : ∀ a s, a ∉ s → (∀ (t) (_ : t ⊆ s), p t) → p (insert a s)) : p s :=
+    (h₁ : ∀ a s, a ∉ s → (∀ t ⊆ s, p t) → p (insert a s)) : p s :=
   Finset.strongInductionOn s fun s =>
     Finset.induction_on s (fun _ => h₀) fun a s n _ ih =>
       (h₁ a s n) fun t ss => ih _ (lt_of_le_of_lt ss (ssubset_insert n) : t < _)

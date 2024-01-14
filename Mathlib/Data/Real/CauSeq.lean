@@ -170,7 +170,7 @@ variable [IsAbsoluteValue abv]
 -- see Note [nolint_ge]
 -- @[nolint ge_or_gt] -- Porting note: restore attribute
 theorem cauchy₂ (f : CauSeq β abv) {ε} :
-    0 < ε → ∃ i, ∀ (j) (_ : j ≥ i) (k) (_ : k ≥ i), abv (f j - f k) < ε :=
+    0 < ε → ∃ i, ∀ j ≥ i, ∀ k ≥ i, abv (f j - f k) < ε :=
   f.2.cauchy₂
 #align cau_seq.cauchy₂ CauSeq.cauchy₂
 

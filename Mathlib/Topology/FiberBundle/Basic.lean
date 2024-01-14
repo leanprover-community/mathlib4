@@ -333,7 +333,7 @@ theorem FiberBundle.exists_trivialization_Icc_subset [ConditionallyCompleteLinea
   have hsc : IsLUB s c := isLUB_csSup sne sbd
   have hc : c ∈ Icc a b := ⟨hsc.1 ha, hsc.2 hsb⟩
   obtain ⟨-, ec : Trivialization F (π F E), hec : Icc a c ⊆ ec.baseSet⟩ : c ∈ s := by
-    cases' hc.1.eq_or_lt with heq hlt
+    rcases hc.1.eq_or_lt with heq | hlt
     · rwa [← heq]
     refine ⟨hc, ?_⟩
     /- In order to show that `c ∈ s`, consider a trivialization `ec` of `proj` over a neighborhood
@@ -351,7 +351,7 @@ theorem FiberBundle.exists_trivialization_Icc_subset [ConditionallyCompleteLinea
   /- So, `c ∈ s`. Let `ec` be a trivialization of `proj` over `[a, c]`.  If `c = b`, then we are
     done. Otherwise we show that `proj` can be trivialized over a larger interval `[a, d]`,
     `d ∈ (c, b]`, hence `c` is not an upper bound of `s`. -/
-  cases' hc.2.eq_or_lt with heq hlt
+  rcases hc.2.eq_or_lt with heq | hlt
   · exact ⟨ec, heq ▸ hec⟩
   rsuffices ⟨d, hdcb, hd⟩ : ∃ d ∈ Ioc c b, ∃ e : Trivialization F (π F E), Icc a d ⊆ e.baseSet
   · exact ((hsc.1 ⟨⟨hc.1.trans hdcb.1.le, hdcb.2⟩, hd⟩).not_lt hdcb.1).elim

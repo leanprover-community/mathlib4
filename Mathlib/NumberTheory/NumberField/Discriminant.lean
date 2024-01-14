@@ -167,7 +167,7 @@ theorem abs_discr_ge (h : 1 < finrank ℚ K) :
   suffices ∀ n, 2 ≤ n → (4 / 9 : ℝ) * (3 * π / 4) ^ n ≤ a n by
     refine le_trans (this (finrank ℚ K) h) ?_
     refine div_le_div_of_le_left (by positivity) (by positivity) ?_
-    refine mul_le_mul_of_nonneg_right (pow_le_pow ?_ ?_) (by positivity)
+    refine mul_le_mul_of_nonneg_right (pow_le_pow_right ?_ ?_) (by positivity)
     · rw [_root_.le_div_iff Real.pi_pos, one_mul]
       exact Real.pi_le_four
     · rw [← card_add_two_mul_card_eq_rank, mul_comm]
@@ -197,7 +197,7 @@ theorem discr_gt_one (h : 1 < finrank ℚ K) : 2 < |discr K| := by
     exact Real.pi_gt_three
   refine Int.cast_lt.mp <| lt_of_lt_of_le ?_ (abs_discr_ge h)
   rw [← _root_.div_lt_iff' (by positivity), Int.int_cast_ofNat]
-  refine lt_of_lt_of_le ?_ (pow_le_pow (n := 2) h₁ h)
+  refine lt_of_lt_of_le ?_ (pow_le_pow_right (n := 2) h₁ h)
   rw [div_pow, _root_.lt_div_iff (by norm_num), mul_pow]
   norm_num
   rw [ ← _root_.div_lt_iff' (by positivity), show (72:ℝ) / 9 = 8 by norm_num]

@@ -173,9 +173,8 @@ theorem map_map (g : β → γ) (f : α → β) (l : Language α) : map g (map f
   simp [map, image_image]
 #align language.map_map Language.map_map
 
-theorem kstar_def_nonempty (l : Language α) :
-    l∗ = { x | ∃ S : List (List α), x = S.join ∧ ∀ y ∈ S, y ∈ l ∧ y ≠ [] } := by
-  ext x
+lemma mem_kstar_iff_exists_nonempty {x : List α} :
+    x ∈ l∗ ↔ ∃ S : List (List α), x = S.join ∧ ∀ y ∈ S, y ∈ l ∧ y ≠ [] := by
   constructor
   · rintro ⟨S, rfl, h⟩
     refine' ⟨S.filter fun l ↦ ¬List.isEmpty l, by simp, fun y hy ↦ _⟩
@@ -186,6 +185,10 @@ theorem kstar_def_nonempty (l : Language α) :
     exact ⟨h y hy.1, hy.2⟩
   · rintro ⟨S, hx, h⟩
     exact ⟨S, hx, fun y hy ↦ (h y hy).1⟩
+
+theorem kstar_def_nonempty (l : Language α) :
+    l∗ = { x | ∃ S : List (List α), x = S.join ∧ ∀ y ∈ S, y ∈ l ∧ y ≠ [] } := by
+  ext x; apply mem_kstar_iff_exists_nonempty
 #align language.kstar_def_nonempty Language.kstar_def_nonempty
 
 theorem le_iff (l m : Language α) : l ≤ m ↔ l + m = m :=

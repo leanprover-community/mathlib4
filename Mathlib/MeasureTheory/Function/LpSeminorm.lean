@@ -187,7 +187,7 @@ theorem snorm'_zero (hp0_lt : 0 < q) : snorm' (0 : α → F) q μ = 0 := by simp
 
 @[simp]
 theorem snorm'_zero' (hq0_ne : q ≠ 0) (hμ : μ ≠ 0) : snorm' (0 : α → F) q μ = 0 := by
-  cases' le_or_lt 0 q with hq0 hq_neg
+  rcases le_or_lt 0 q with hq0 | hq_neg
   · exact snorm'_zero (lt_of_le_of_ne hq0 hq0_ne.symm)
   · simp [snorm', ENNReal.rpow_eq_zero_iff, hμ, hq_neg]
 #align measure_theory.snorm'_zero' MeasureTheory.snorm'_zero'
@@ -1135,7 +1135,7 @@ theorem snorm_le_snorm_of_exponent_le {p q : ℝ≥0∞} (hpq : p ≤ q) [IsProb
 theorem snorm'_lt_top_of_snorm'_lt_top_of_exponent_le {p q : ℝ} [IsFiniteMeasure μ] {f : α → E}
     (hf : AEStronglyMeasurable f μ) (hfq_lt_top : snorm' f q μ < ∞) (hp_nonneg : 0 ≤ p)
     (hpq : p ≤ q) : snorm' f p μ < ∞ := by
-  cases' le_or_lt p 0 with hp_nonpos hp_pos
+  rcases le_or_lt p 0 with hp_nonpos | hp_pos
   · rw [le_antisymm hp_nonpos hp_nonneg]
     simp
   have hq_pos : 0 < q := lt_of_lt_of_le hp_pos hpq

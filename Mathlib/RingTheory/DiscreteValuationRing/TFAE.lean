@@ -81,7 +81,7 @@ theorem exists_maximalIdeal_pow_eq_of_principal [IsNoetherianRing R] [LocalRing 
     by_cases hs₃ : s = 0; · rw [hs₃]; exact zero_mem _
     obtain ⟨n, u, rfl⟩ := H' s hs₃ (le_maximalIdeal hI' hs₁)
     rw [mul_comm, Ideal.unit_mul_mem_iff_mem _ u.isUnit] at hs₁ ⊢
-    apply Ideal.pow_le_pow (Nat.find_min' this hs₁)
+    apply Ideal.pow_le_pow_right (Nat.find_min' this hs₁)
     apply Ideal.pow_mem_pow
     exact (H _).mpr (dvd_refl _)
   · rw [hx, Ideal.span_singleton_pow, Ideal.span_le, Set.singleton_subset_iff]
@@ -245,8 +245,8 @@ theorem DiscreteValuationRing.TFAE [IsNoetherianRing R] [LocalRing R] [IsDomain 
     by_cases hJ : J = ⊥; · subst hJ; right; exact bot_le
     obtain ⟨n, rfl⟩ := H I hI
     obtain ⟨m, rfl⟩ := H J hJ
-    cases' le_total m n with h' h'
-    · left; exact Ideal.pow_le_pow h'
-    · right; exact Ideal.pow_le_pow h'
+    rcases le_total m n with h' | h'
+    · left; exact Ideal.pow_le_pow_right h'
+    · right; exact Ideal.pow_le_pow_right h'
   tfae_finish
 #align discrete_valuation_ring.tfae DiscreteValuationRing.TFAE

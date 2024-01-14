@@ -1162,7 +1162,7 @@ theorem mk_coord_apply_ne {i j : ι} (h : j ≠ i) : (Basis.mk hli hsp).coord i 
 `j`th element of the basis. -/
 theorem mk_coord_apply [DecidableEq ι] {i j : ι} :
     (Basis.mk hli hsp).coord i (v j) = if j = i then 1 else 0 := by
-  cases' eq_or_ne j i with h h
+  rcases eq_or_ne j i with h | h
   · simp only [h, if_true, eq_self_iff_true, mk_coord_apply_eq i]
   · simp only [h, if_false, mk_coord_apply_ne h]
 #align basis.mk_coord_apply Basis.mk_coord_apply

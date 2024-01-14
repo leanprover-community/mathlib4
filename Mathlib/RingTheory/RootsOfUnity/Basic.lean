@@ -821,7 +821,7 @@ theorem card_rootsOfUnity {ζ : R} {n : ℕ+} (h : IsPrimitiveRoot ζ n) :
 if there is a primitive root of unity in `R`. -/
 nonrec theorem card_nthRoots {ζ : R} {n : ℕ} (h : IsPrimitiveRoot ζ n) :
     Multiset.card (nthRoots n (1 : R)) = n := by
-  cases' Nat.eq_zero_or_pos n with hzero hpos
+  rcases Nat.eq_zero_or_pos n with hzero | hpos
   · simp only [hzero, Multiset.card_zero, nthRoots_zero]
   rw [eq_iff_le_not_lt]
   use card_nthRoots n 1
@@ -839,7 +839,7 @@ nonrec theorem card_nthRoots {ζ : R} {n : ℕ} (h : IsPrimitiveRoot ζ n) :
 /-- The multiset `nthRoots ↑n (1 : R)` has no repeated elements
 if there is a primitive root of unity in `R`. -/
 theorem nthRoots_nodup {ζ : R} {n : ℕ} (h : IsPrimitiveRoot ζ n) : (nthRoots n (1 : R)).Nodup := by
-  cases' Nat.eq_zero_or_pos n with hzero hpos
+  rcases Nat.eq_zero_or_pos n with hzero | hpos
   · simp only [hzero, Multiset.nodup_zero, nthRoots_zero]
   apply (Multiset.dedup_eq_self (α := R)).1
   rw [eq_iff_le_not_lt]

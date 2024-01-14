@@ -1313,7 +1313,7 @@ theorem isLUB_sSup' {β : Type*} [ConditionallyCompleteLattice β] {s : Set (Wit
 
 -- Porting note: in mathlib3 `dsimp only [sSup]` was not needed, we used `show IsLUB ∅ (ite _ _ _)`
 theorem isLUB_sSup (s : Set (WithTop α)) : IsLUB s (sSup s) := by
-  cases' s.eq_empty_or_nonempty with hs hs
+  rcases s.eq_empty_or_nonempty with hs | hs
   · rw [hs]
     dsimp only [sSup]
     show IsLUB ∅ _
@@ -1648,7 +1648,7 @@ noncomputable instance WithTop.WithBot.completeLattice {α : Type*}
   { instInfSet, instSupSet, boundedOrder, lattice with
     le_sSup := fun S a haS => (WithTop.isLUB_sSup' ⟨a, haS⟩).1 haS
     sSup_le := fun S a ha => by
-      cases' S.eq_empty_or_nonempty with h h
+      rcases S.eq_empty_or_nonempty with h | h
       · show ite _ _ _ ≤ a
         split_ifs with h₁ h₂
         · rw [h] at h₁

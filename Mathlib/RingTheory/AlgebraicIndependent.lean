@@ -302,7 +302,7 @@ theorem algebraicIndependent_subtype {s : Set A} :
 #align algebraic_independent_subtype algebraicIndependent_subtype
 
 theorem algebraicIndependent_of_finite (s : Set A)
-    (H : ∀ (t) (_ : t ⊆ s), t.Finite → AlgebraicIndependent R ((↑) : t → A)) :
+    (H : ∀ t ⊆ s, t.Finite → AlgebraicIndependent R ((↑) : t → A)) :
     AlgebraicIndependent R ((↑) : s → A) :=
   algebraicIndependent_subtype.2 fun p hp =>
     algebraicIndependent_subtype.1 (H _ (mem_supported.1 hp) (Finset.finite_toSet _)) _ (by simp)

@@ -341,9 +341,9 @@ theorem exists_code {n} {f : Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
     refine' Part.ext fun x => _
     simp only [rfind, Part.bind_eq_bind, Part.pure_eq_some, Part.map_eq_map, Part.bind_some,
       exists_prop, cons_eval, comp_eval, fix_eval, tail_eval, succ_eval, zero'_eval,
-      List.headI_nil, List.headI_cons, pred_eval, Part.map_some, Bool.false_eq_decide_iff,
+      List.headI_nil, List.headI_cons, pred_eval, Part.map_some, false_eq_decide_iff,
       Part.mem_bind_iff, List.length, Part.mem_map_iff, Nat.mem_rfind, List.tail_nil,
-      List.tail_cons, Bool.true_eq_decide_iff, Part.mem_some_iff, Part.map_bind]
+      List.tail_cons, true_eq_decide_iff, Part.mem_some_iff, Part.map_bind]
     constructor
     · rintro ⟨v', h1, rfl⟩
       suffices ∀ v₁ : List ℕ, v' ∈ PFun.fix

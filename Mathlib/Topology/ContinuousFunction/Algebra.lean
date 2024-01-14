@@ -969,6 +969,9 @@ theorem star_apply (f : C(α, β)) (x : α) : star f x = star (f x) :=
   rfl
 #align continuous_map.star_apply ContinuousMap.star_apply
 
+instance instTrivialStar [TrivialStar β] : TrivialStar C(α, β) where
+  star_trivial _ := ext fun _ => star_trivial _
+
 end Star
 
 instance [InvolutiveStar β] [ContinuousStar β] : InvolutiveStar C(α, β) where
@@ -992,12 +995,11 @@ instance [Star R] [Star β] [SMul R β] [StarModule R β] [ContinuousStar β]
 
 end StarStructure
 
+section Precomposition
+
 variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
-
 variable (𝕜 : Type*) [CommSemiring 𝕜]
-
-variable (A : Type*) [TopologicalSpace A] [Semiring A] [TopologicalSemiring A] [StarRing A]
-
+variable (A : Type*) [TopologicalSpace A] [Semiring A] [TopologicalSemiring A] [Star A]
 variable [ContinuousStar A] [Algebra 𝕜 A]
 
 /-- The functorial map taking `f : C(X, Y)` to `C(Y, A) →⋆ₐ[𝕜] C(X, A)` given by pre-composition
@@ -1028,7 +1030,46 @@ theorem compStarAlgHom'_comp (g : C(Y, Z)) (f : C(X, Y)) :
   StarAlgHom.ext fun _ => ContinuousMap.ext fun _ => rfl
 #align continuous_map.comp_star_alg_hom'_comp ContinuousMap.compStarAlgHom'_comp
 
+end Precomposition
+
+section Postcomposition
+
+variable (X : Type*) {𝕜 A B C : Type*} [TopologicalSpace X] [CommSemiring 𝕜]
+variable [TopologicalSpace A] [Semiring A] [TopologicalSemiring A] [Star A]
+variable [ContinuousStar A] [Algebra 𝕜 A]
+variable [TopologicalSpace B] [Semiring B] [TopologicalSemiring B] [Star B]
+variable [ContinuousStar B] [Algebra 𝕜 B]
+variable [TopologicalSpace C] [Semiring C] [TopologicalSemiring C] [Star C]
+variable [ContinuousStar C] [Algebra 𝕜 C]
+
+/-- Post-composition with a continuous star algebra homomorphism is a star algebra homomorphism
+between spaces of continuous maps. -/
+@[simps]
+def compStarAlgHom (φ : A →⋆ₐ[𝕜] B) (hφ : Continuous φ) :
+    C(X, A) →⋆ₐ[𝕜] C(X, B) where
+  toFun f := (⟨φ, hφ⟩ : C(A, B)).comp f
+  map_one' := ext fun _ => map_one φ
+  map_mul' f g := ext fun x => map_mul φ (f x) (g x)
+  map_zero' := ext fun _ => map_zero φ
+  map_add' f g := ext fun x => map_add φ (f x) (g x)
+  commutes' r := ext fun _x => AlgHomClass.commutes φ r
+  map_star' f := ext fun x => map_star φ (f x)
+
+/-- `ContinuousMap.compStarAlgHom` sends the identity `StarAlgHom` on `A` to the identity
+`StarAlgHom` on `C(X, A)`. -/
+lemma compStarAlgHom_id : compStarAlgHom X (.id 𝕜 A) continuous_id = .id 𝕜 C(X, A) := rfl
+
+/-- `ContinuousMap.compStarAlgHom` is functorial. -/
+lemma compStarAlgHom_comp (φ : A →⋆ₐ[𝕜] B) (ψ : B →⋆ₐ[𝕜] C) (hφ : Continuous φ)
+    (hψ : Continuous ψ) : compStarAlgHom X (ψ.comp φ) (hψ.comp hφ) =
+      (compStarAlgHom X ψ hψ).comp (compStarAlgHom X φ hφ) :=
+  rfl
+
+end Postcomposition
+
 section Periodicity
+
+variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 
 /-! ### Summing translates of a function -/
 

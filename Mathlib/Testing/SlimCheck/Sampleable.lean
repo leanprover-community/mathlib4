@@ -288,18 +288,20 @@ def printSamples {t : Type} [Repr t] (g : Gen t) : IO PUnit := do
 open Lean Meta Qq
 
 /-- Create a `Gen α` expression from the argument of `#sample` -/
-def mkGenerator (e : Expr) : MetaM (Expr × Expr) := do
-  let t ← inferType e
-  match t.getAppFnArgs with
-  | (`Gen, #[t]) => do
-    let repr_inst ← synthInstance (← mkAppM ``Repr #[t])
-    pure (repr_inst, e)
-  | _ => do
-    let sampleableExt_inst ← synthInstance (mkApp (← mkConstWithFreshMVarLevels ``SampleableExt) e)
-    let repr_inst ← mkAppOptM ``SampleableExt.proxyRepr #[e, sampleableExt_inst]
-    let gen ← mkAppOptM ``SampleableExt.sample #[none, sampleableExt_inst]
-    pure (repr_inst, gen)
-
+def mkGenerator (e : Expr) : MetaM (Σ (u : Level) (α : Q(Type $u)), Q(Repr $α) × Q(Gen $α)) := do
+  match ← inferTypeQ e with
+  | ⟨.succ u, ~q(Gen $α), gen⟩ =>
+    let repr_inst ← synthInstanceQ (q(Repr $α) : Q(Type $u))
+    pure ⟨u, α, repr_inst, gen⟩
+  | ⟨.succ u, ~q(Sort u), α⟩ => do
+    let v ← mkFreshLevelMVar
+    let _sampleableExt_inst ← synthInstanceQ (q(SampleableExt.{u,v} $α) : Q(Sort (max u (v + 2))))
+    let v ← instantiateLevelMVars v
+    let repr_inst := q(SampleableExt.proxyRepr (α := $α))
+    let gen := q(SampleableExt.sample (α := $α))
+    pure ⟨v, q(SampleableExt.proxy $α), repr_inst, gen⟩
+  | ⟨_u, t, _e⟩ =>
+    throwError "Must be a Sort u` or a `Gen α`, got value of type{indentExpr t}"
 open Elab
 
 /--
@@ -339,8 +341,10 @@ values of type `type` using an increasing size parameter.
 elab "#sample " e:term : command =>
   Command.runTermElabM fun _ => do
     let e ← Elab.Term.elabTermAndSynthesize e none
-    let (repr_inst, gen) ← mkGenerator e
-    let printSamples ← mkAppOptM ``printSamples #[none, repr_inst, gen]
+    let g ← mkGenerator e
+    -- `printSamples` only works in `Type 0` (see the porting note)
+    let ⟨0, α, _, gen⟩ := g | throwError "Cannot sample from {g.1} due to its universe"
+    let printSamples := q(printSamples (t := $α) $gen)
     let code ← unsafe evalExpr (IO PUnit) q(IO PUnit) printSamples
     _ ← code
 

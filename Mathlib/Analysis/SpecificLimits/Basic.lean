@@ -96,7 +96,7 @@ theorem tendsto_coe_nat_div_add_atTop {𝕜 : Type*} [DivisionRing 𝕜] [Topolo
 
 theorem tendsto_add_one_pow_atTop_atTop_of_pos [LinearOrderedSemiring α] [Archimedean α] {r : α}
     (h : 0 < r) : Tendsto (fun n : ℕ ↦ (r + 1) ^ n) atTop atTop :=
-  (tendsto_atTop_atTop_of_monotone' fun _ _ ↦ pow_le_pow (le_add_of_nonneg_left (le_of_lt h))) <|
+  tendsto_atTop_atTop_of_monotone' (fun _ _ ↦ pow_le_pow_right $ le_add_of_nonneg_left h.le) <|
     not_bddAbove_iff.2 fun _ ↦ Set.exists_range_iff.2 <| add_one_pow_unbounded_of_pos _ h
 #align tendsto_add_one_pow_at_top_at_top_of_pos tendsto_add_one_pow_atTop_atTop_of_pos
 
@@ -131,7 +131,7 @@ theorem tendsto_pow_atTop_nhds_0_of_lt_1 {𝕜 : Type*} [LinearOrderedField 𝕜
       simp only [hr.symm, one_pow] at h
       exact zero_ne_one <| tendsto_nhds_unique h tendsto_const_nhds
     · apply @not_tendsto_nhds_of_tendsto_atTop 𝕜 ℕ _ _ _ _ atTop _ (fun n ↦ |r| ^ n) _ 0 _
-      refine (pow_strictMono_right $ lt_of_le_of_ne (le_of_not_lt hr_le)
+      refine (pow_right_strictMono $ lt_of_le_of_ne (le_of_not_lt hr_le)
         hr).monotone.tendsto_atTop_atTop (fun b ↦ ?_)
       obtain ⟨n, hn⟩ := (pow_unbounded_of_one_lt b (lt_of_le_of_ne (le_of_not_lt hr_le) hr))
       exacts [⟨n, le_of_lt hn⟩, by simpa only [← abs_pow]]
@@ -465,7 +465,7 @@ theorem summable_one_div_pow_of_le {m : ℝ} {f : ℕ → ℕ} (hm : 1 < m) (fi 
       (summable_geometric_of_lt_1 (one_div_nonneg.mpr (zero_le_one.trans hm.le))
         ((one_div_lt (zero_lt_one.trans hm) zero_lt_one).mpr (one_div_one.le.trans_lt hm)))
   rw [div_pow, one_pow]
-  refine' (one_div_le_one_div _ _).mpr (pow_le_pow hm.le (fi a)) <;>
+  refine' (one_div_le_one_div _ _).mpr (pow_le_pow_right hm.le (fi a)) <;>
     exact pow_pos (zero_lt_one.trans hm) _
 #align summable_one_div_pow_of_le summable_one_div_pow_of_le
 

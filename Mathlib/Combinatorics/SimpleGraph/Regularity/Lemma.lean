@@ -104,7 +104,7 @@ theorem szemeredi_regularity (hε : 0 < ε) (hl : l ≤ card α) :
     refine' ⟨P, hP₁, (le_initialBound _ _).trans hP₂, hP₃.trans _,
       hP₄.resolve_right fun hPenergy => lt_irrefl (1 : ℝ) _⟩
     · rw [iterate_succ_apply']
-      exact mul_le_mul_left' (pow_le_pow_of_le_left (by norm_num) (by norm_num) _) _
+      exact mul_le_mul_left' (pow_le_pow_left (by norm_num) (by norm_num) _) _
     calc
       (1 : ℝ) = ε ^ 5 / ↑4 * (↑4 / ε ^ 5) := by
         rw [mul_comm, div_mul_div_cancel 4 (pow_pos hε 5).ne']; norm_num
@@ -131,7 +131,7 @@ theorem szemeredi_regularity (hε : 0 < ε) (hl : l ≤ card α) :
   -- We gather a few numerical facts.
   have hεl' : ↑100 < ↑4 ^ P.parts.card * ε ^ 5 :=
     (hundred_lt_pow_initialBound_mul hε l).trans_le
-      (mul_le_mul_of_nonneg_right (pow_le_pow (by norm_num) hP₂) <| by positivity)
+      (mul_le_mul_of_nonneg_right (pow_le_pow_right (by norm_num) hP₂) <| by positivity)
   have hi : (i : ℝ) ≤ 4 / ε ^ 5 := by
     have hi : ε ^ 5 / 4 * ↑i ≤ 1 := hP₄.trans (mod_cast P.energy_le_one G)
     rw [div_mul_eq_mul_div, div_le_iff (show (0 : ℝ) < 4 by norm_num)] at hi

@@ -166,7 +166,7 @@ theorem subsingleton [Subsingleton B] : minpoly A x = 1 := by
   nontriviality A
   have := minpoly.min A x monic_one (Subsingleton.elim _ _)
   rw [degree_one] at this
-  cases' le_or_lt (minpoly A x).degree 0 with h h
+  rcases le_or_lt (minpoly A x).degree 0 with h | h
   · rwa [(monic ⟨1, monic_one, by simp [eq_iff_true_of_subsingleton]⟩ :
            (minpoly A x).Monic).degree_le_zero_iff_eq_one] at h
   · exact (this.not_lt h).elim

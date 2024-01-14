@@ -504,7 +504,7 @@ theorem of_inverse {f : α → β} {f' : β → α} (h : Continuous f') (l_inv :
 
 theorem of_nonempty {f : α → β} (h : ∀ s, IsClosed s → s.Nonempty → IsClosed (f '' s)) :
     IsClosedMap f := by
-  intro s hs; cases' eq_empty_or_nonempty s with h2s h2s
+  intro s hs; rcases eq_empty_or_nonempty s with h2s | h2s
   · simp_rw [h2s, image_empty, isClosed_empty]
   · exact h s hs h2s
 #align is_closed_map.of_nonempty IsClosedMap.of_nonempty

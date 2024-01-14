@@ -1683,7 +1683,7 @@ theorem InjOn.image_iInter_eq [Nonempty ι] {s : ι → Set α} {f : α → β} 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i hi) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i hi) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i hi) -/
-theorem InjOn.image_biInter_eq {p : ι → Prop} {s : ∀ (i) (_ : p i), Set α} (hp : ∃ i, p i)
+theorem InjOn.image_biInter_eq {p : ι → Prop} {s : ∀ i, p i → Set α} (hp : ∃ i, p i)
     {f : α → β} (h : InjOn f (⋃ (i) (hi), s i hi)) :
     (f '' ⋂ (i) (hi), s i hi) = ⋂ (i) (hi), f '' s i hi := by
   simp only [iInter, iInf_subtype']
@@ -2117,7 +2117,8 @@ theorem seq_singleton {s : Set (α → β)} {a : α} : Set.seq s {a} = (fun f : 
 
 theorem seq_seq {s : Set (β → γ)} {t : Set (α → β)} {u : Set α} :
     seq s (seq t u) = seq (seq ((· ∘ ·) '' s) t) u := by
-  simp only [seq_eq_image2, image2_image_left, image2_image2_left, image2_image2_right, comp_apply]
+  simp only [seq_eq_image2, image2_image_left]
+  exact .symm <| image2_assoc fun _ _ _ ↦ rfl
 #align set.seq_seq Set.seq_seq
 
 theorem image_seq {f : β → γ} {s : Set (α → β)} {t : Set α} :

@@ -35,7 +35,7 @@ namespace Finset
 
 /-- General theorem for `Finset.induction_on_pi`-style induction principles. -/
 theorem induction_on_pi_of_choice (r : ∀ i, α i → Finset (α i) → Prop)
-    (H_ex : ∀ (i) (s : Finset (α i)) (_ : s.Nonempty), ∃ x ∈ s, r i x (s.erase x))
+    (H_ex : ∀ (i) (s : Finset (α i)), s.Nonempty → ∃ x ∈ s, r i x (s.erase x))
     {p : (∀ i, Finset (α i)) → Prop} (f : ∀ i, Finset (α i)) (h0 : p fun _ ↦ ∅)
     (step :
       ∀ (g : ∀ i, Finset (α i)) (i : ι) (x : α i),
@@ -43,7 +43,7 @@ theorem induction_on_pi_of_choice (r : ∀ i, α i → Finset (α i) → Prop)
     p f := by
   cases nonempty_fintype ι
   induction' hs : univ.sigma f using Finset.strongInductionOn with s ihs generalizing f; subst s
-  cases' eq_empty_or_nonempty (univ.sigma f) with he hne
+  rcases eq_empty_or_nonempty (univ.sigma f) with he | hne
   · convert h0 using 1
     simpa [funext_iff] using he
   · rcases sigma_nonempty.1 hne with ⟨i, -, hi⟩

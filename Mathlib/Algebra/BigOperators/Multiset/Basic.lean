@@ -133,14 +133,14 @@ theorem prod_replicate (n : ℕ) (a : α) : (replicate n a).prod = a ^ n := by
 
 @[to_additive]
 theorem prod_map_eq_pow_single [DecidableEq ι] (i : ι)
-    (hf : ∀ (i') (_ : i' ≠ i), i' ∈ m → f i' = 1) : (m.map f).prod = f i ^ m.count i := by
+    (hf : ∀ i' ≠ i, i' ∈ m → f i' = 1) : (m.map f).prod = f i ^ m.count i := by
   induction' m using Quotient.inductionOn with l
   simp [List.prod_map_eq_pow_single i f hf]
 #align multiset.prod_map_eq_pow_single Multiset.prod_map_eq_pow_single
 #align multiset.sum_map_eq_nsmul_single Multiset.sum_map_eq_nsmul_single
 
 @[to_additive]
-theorem prod_eq_pow_single [DecidableEq α] (a : α) (h : ∀ (a') (_ : a' ≠ a), a' ∈ s → a' = 1) :
+theorem prod_eq_pow_single [DecidableEq α] (a : α) (h : ∀ a' ≠ a, a' ∈ s → a' = 1) :
     s.prod = a ^ s.count a := by
   induction' s using Quotient.inductionOn with l
   simp [List.prod_eq_pow_single a h]

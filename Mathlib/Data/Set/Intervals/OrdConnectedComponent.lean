@@ -203,7 +203,7 @@ theorem disjoint_ordT5Nhd : Disjoint (ordT5Nhd s t) (ordT5Nhd t s) := by
   rcases mem_iUnion₂.1 hx₂ with ⟨b, hbt, hb⟩
   clear hx₂
   rw [mem_ordConnectedComponent, subset_inter_iff] at ha hb
-  cases' le_total a b with hab hab
+  rcases le_total a b with hab | hab
   on_goal 2 => swap_var a ↔ b, s ↔ t, ha ↔ hb, has ↔ hbt
   all_goals
 -- porting note: wlog not implemented yet, the following replaces the three previous lines
@@ -216,9 +216,9 @@ theorem disjoint_ordT5Nhd : Disjoint (ordT5Nhd s t) (ordT5Nhd t s) := by
         [[a, b]] ⊆ [[a, x]] ∪ [[x, b]] := uIcc_subset_uIcc_union_uIcc
         _ ⊆ (ordSeparatingSet s t).ordConnectedSectionᶜ := union_subset ha' hb'
     clear ha' hb'
-    cases' le_total x a with hxa hax
+    rcases le_total x a with hxa | hax
     · exact hb (Icc_subset_uIcc' ⟨hxa, hab⟩) has
-    cases' le_total b x with hbx hxb
+    rcases le_total b x with hbx | hxb
     · exact ha (Icc_subset_uIcc ⟨hab, hbx⟩) hbt
     have h' : x ∈ ordSeparatingSet s t := ⟨mem_iUnion₂.2 ⟨a, has, ha⟩, mem_iUnion₂.2 ⟨b, hbt, hb⟩⟩
     -- porting note: lift not implemented yet

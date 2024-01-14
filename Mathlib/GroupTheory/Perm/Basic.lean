@@ -570,30 +570,18 @@ theorem swap_eq_one_iff {i j : α} : swap i j = (1 : Perm α) ↔ i = j :=
   swap_eq_refl_iff
 #align equiv.swap_eq_one_iff Equiv.swap_eq_one_iff
 
-theorem swap_mul_eq_iff {i j : α} {σ : Perm α} : swap i j * σ = σ ↔ i = j :=
-  ⟨fun h => by
-    -- Porting note: added `_root_.`
-    have swap_id : swap i j = 1 := mul_right_cancel (_root_.trans h (one_mul σ).symm)
-    rw [← swap_apply_right i j, swap_id]
-    rfl,
-   fun h => by erw [h, swap_self, one_mul]⟩
+theorem swap_mul_eq_iff {i j : α} {σ : Perm α} : swap i j * σ = σ ↔ i = j := by
+  rw [mul_left_eq_self, swap_eq_one_iff]
 #align equiv.swap_mul_eq_iff Equiv.swap_mul_eq_iff
 
-theorem mul_swap_eq_iff {i j : α} {σ : Perm α} : σ * swap i j = σ ↔ i = j :=
-  ⟨fun h => by
-    -- Porting note: added `_root_.`
-    have swap_id : swap i j = 1 := mul_left_cancel (_root_.trans h (one_mul σ).symm)
-    rw [← swap_apply_right i j, swap_id]
-    rfl,
-   fun h => by erw [h, swap_self, mul_one]⟩
+theorem mul_swap_eq_iff {i j : α} {σ : Perm α} : σ * swap i j = σ ↔ i = j := by
+  rw [mul_right_eq_self, swap_eq_one_iff]
 #align equiv.mul_swap_eq_iff Equiv.mul_swap_eq_iff
 
-theorem swap_mul_swap_mul_swap {x y z : α} (hwz : x ≠ y) (hxz : x ≠ z) :
-    swap y z * swap x y * swap y z = swap z x :=
-  Equiv.ext fun n => by
-    simp only [swap_apply_def, Perm.mul_apply]
-    -- Porting note: was `cc`
-    split_ifs <;> aesop
+theorem swap_mul_swap_mul_swap {x y z : α} (hxy : x ≠ y) (hxz : x ≠ z) :
+    swap y z * swap x y * swap y z = swap z x := by
+  nth_rewrite 2 [← swap_inv]
+  rw [← swap_apply_apply, swap_apply_left, swap_apply_of_ne_of_ne hxy hxz, swap_comm]
 #align equiv.swap_mul_swap_mul_swap Equiv.swap_mul_swap_mul_swap
 
 end Swap

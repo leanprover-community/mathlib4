@@ -142,11 +142,8 @@ theorem left_mul_subset (U : OpenAddSubgroup R) (r : R) :
 
 /-- An open subgroup of a nonarchimedean ring contains the square of another one. -/
 theorem mul_subset (U : OpenAddSubgroup R) : ∃ V : OpenAddSubgroup R, (V : Set R) * V ⊆ U := by
-  let ⟨V, H⟩ :=
-    prod_self_subset
-      (IsOpen.mem_nhds (IsOpen.preimage continuous_mul U.isOpen)
-        (by simpa only [Set.mem_preimage, SetLike.mem_coe, Prod.snd_zero,
-            mul_zero] using U.zero_mem))
+  let ⟨V, H⟩ := prod_self_subset <| (U.isOpen.preimage continuous_mul).mem_nhds <| by
+    simpa only [Set.mem_preimage, Prod.snd_zero, mul_zero] using U.zero_mem
   use V
   rintro v ⟨a, b, ha, hb, hv⟩
   have hy := H (Set.mk_mem_prod ha hb)

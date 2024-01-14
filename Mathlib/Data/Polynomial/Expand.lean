@@ -149,7 +149,7 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.expand_eq_C Polynomial.expand_eq_C
 
 theorem natDegree_expand (p : ℕ) (f : R[X]) : (expand R p f).natDegree = f.natDegree * p := by
-  cases' p.eq_zero_or_pos with hp hp
+  rcases p.eq_zero_or_pos with hp | hp
   · rw [hp, coe_expand, pow_zero, mul_zero, ← C_1, eval₂_hom, natDegree_C]
   by_cases hf : f = 0
   · rw [hf, AlgHom.map_zero, natDegree_zero, zero_mul]

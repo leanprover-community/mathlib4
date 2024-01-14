@@ -1257,10 +1257,9 @@ variable [TopologicalSpace α] [TopologicalSpace β] [Group α] [MulAction α β
 theorem IsClosed.smul_left_of_isCompact (ht : IsClosed t) (hs : IsCompact s) :
     IsClosed (s • t) := by
   have : ∀ x ∈ s • t, ∃ g ∈ s, g⁻¹ • x ∈ t := by
-    intro x ⟨g, y, hgs, hyt, hgyx⟩
+    rintro x ⟨g, y, hgs, hyt, rfl⟩
     refine ⟨g, hgs, ?_⟩
-    convert hyt
-    rwa [inv_smul_eq_iff, eq_comm]
+    rwa [inv_smul_smul]
   choose! f hf using this
   refine isClosed_of_closure_subset (fun x hx ↦ ?_)
   rcases mem_closure_iff_ultrafilter.mp hx with ⟨u, hust, hux⟩

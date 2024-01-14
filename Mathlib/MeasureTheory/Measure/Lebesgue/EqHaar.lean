@@ -193,7 +193,7 @@ theorem addHaar_submodule {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     convert s.sub_mem hym hyn using 1
     simp only [sub_smul, neg_sub_neg, add_sub_add_right_eq_sub]
   have H : c ^ n - c ^ m ≠ 0 := by
-    simpa only [sub_eq_zero, Ne.def] using (strictAnti_pow cpos cone).injective.ne hmn.symm
+    simpa only [sub_eq_zero, Ne.def] using (pow_right_strictAnti cpos cone).injective.ne hmn.symm
   have : x ∈ s := by
     convert s.smul_mem (c ^ n - c ^ m)⁻¹ A
     rw [smul_smul, inv_mul_cancel H, one_smul]
@@ -448,7 +448,7 @@ theorem addHaar_ball_of_pos (x : E) {r : ℝ} (hr : 0 < r) :
 theorem addHaar_ball_mul [Nontrivial E] (x : E) {r : ℝ} (hr : 0 ≤ r) (s : ℝ) :
     μ (ball x (r * s)) = ENNReal.ofReal (r ^ finrank ℝ E) * μ (ball 0 s) := by
   rcases hr.eq_or_lt with (rfl | h)
-  · simp only [zero_pow (finrank_pos (K := ℝ) (V := E)), measure_empty, zero_mul,
+  · simp only [zero_pow (finrank_pos (R := ℝ) (V := E)), measure_empty, zero_mul,
       ENNReal.ofReal_zero, ball_zero]
   · exact addHaar_ball_mul_of_pos μ x h s
 #align measure_theory.measure.add_haar_ball_mul MeasureTheory.Measure.addHaar_ball_mul
