@@ -266,11 +266,11 @@ theorem discr_powerBasis_eq_norm [IsSeparable K L] :
       implies_true, forall_const, Equiv.symm_apply_apply, Sigma.ext_iff, Equiv.symm_apply_eq,
       heq_eq_eq, and_true] at *
   · simpa only [aeval_def, eval₂_eq_eval_map] using hσ.2.2
-  · exact fun a b hba ↦ ⟨fun h ↦ hba $ e.injective $ pb.algHom_ext h.symm, hroots _⟩
+  · exact fun a b hba ↦ ⟨fun h ↦ hba <| e.injective <| pb.algHom_ext h.symm, hroots _⟩
   · rintro a b hba ha
     rw [ha, PowerBasis.lift_gen] at hba
     exact hba.1 rfl
-  · exact fun a b _ ↦ pb.algHom_ext $ pb.lift_gen _ _
+  · exact fun a b _ ↦ pb.algHom_ext <| pb.lift_gen _ _
 #align algebra.discr_power_basis_eq_norm Algebra.discr_powerBasis_eq_norm
 
 section Integral

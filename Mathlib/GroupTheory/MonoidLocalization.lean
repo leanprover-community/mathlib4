@@ -839,6 +839,11 @@ theorem mk'_eq_of_eq' {a₁ b₁ : M} {a₂ b₂ : S} (H : b₁ * ↑a₂ = a₁
 #align submonoid.localization_map.mk'_eq_of_eq' Submonoid.LocalizationMap.mk'_eq_of_eq'
 #align add_submonoid.localization_map.mk'_eq_of_eq' AddSubmonoid.LocalizationMap.mk'_eq_of_eq'
 
+@[to_additive]
+theorem mk'_cancel (a : M) (b c : S) :
+    f.mk' (a * c) (b * c) = f.mk' a b :=
+  mk'_eq_of_eq' f (by rw [Submonoid.coe_mul, mul_comm (b:M), mul_assoc])
+
 @[to_additive (attr := simp)]
 theorem mk'_self' (y : S) : f.mk' (y : M) y = 1 :=
   show _ * _ = _ by rw [mul_inv_left, mul_one]
@@ -1604,6 +1609,21 @@ theorem of_mulEquivOfMulEquiv {k : LocalizationMap T Q} {j : M ≃* P} (H : S.ma
 #align submonoid.localization_map.of_mul_equiv_of_mul_equiv Submonoid.LocalizationMap.of_mulEquivOfMulEquiv
 #align add_submonoid.localization_map.of_add_equiv_of_add_equiv AddSubmonoid.LocalizationMap.of_addEquivOfAddEquiv
 
+@[to_additive]
+theorem toMap_injective_iff (f : LocalizationMap S N) :
+    Injective (LocalizationMap.toMap f) ↔ ∀ ⦃x⦄, x ∈ S → IsLeftRegular x := by
+  rw [Injective]
+  constructor <;> intro h
+  · intro x hx y z hyz
+    simp_rw [LocalizationMap.eq_iff_exists] at h
+    apply (fun y z _ => h) y z x
+    lift x to S using hx
+    use x
+  · intro a b hab
+    rw [LocalizationMap.eq_iff_exists] at hab
+    obtain ⟨c,hc⟩ := hab
+    apply (fun x a => h a) c (SetLike.coe_mem c) hc
+
 end LocalizationMap
 
 end Submonoid
@@ -1881,6 +1901,56 @@ noncomputable def lift (f : LocalizationWithZeroMap S N) (g : M →*₀ P)
       exact f.toMonoidWithZeroHom.map_zero.symm }
 #align submonoid.localization_with_zero_map.lift Submonoid.LocalizationWithZeroMap.lift
 
+/-- Given a Localization map `f : M →*₀ N` for a Submonoid `S ⊆ M`,
+if `M` is left cancellative monoid with zero, and all elements of `S` are
+left regular, then N is a left cancellative monoid with zero. -/
+theorem leftCancelMulZero_of_le_isLeftRegular
+    (f : LocalizationWithZeroMap S N) [IsLeftCancelMulZero M]
+    (h : ∀ ⦃x⦄, x ∈ S → IsLeftRegular x) : IsLeftCancelMulZero N := by
+  let fl := f.toLocalizationMap
+  let g := f.toMap
+  constructor
+  intro a z w ha hazw
+  obtain ⟨b, hb⟩ := LocalizationMap.surj fl a
+  obtain ⟨x, hx⟩ := LocalizationMap.surj fl z
+  obtain ⟨y, hy⟩ := LocalizationMap.surj fl w
+  rw [(LocalizationMap.eq_mk'_iff_mul_eq fl).mpr hx,
+    (LocalizationMap.eq_mk'_iff_mul_eq fl).mpr hy, LocalizationMap.eq]
+  use 1
+  rw [OneMemClass.coe_one, one_mul, one_mul]
+  -- The hypothesis `a ≠ 0` in `P` is equivalent to this
+  have b1ne0 : b.1 ≠ 0 := by
+    intro hb1
+    have m0 : (LocalizationMap.toMap fl) 0 = 0 := f.map_zero'
+    have a0 : a * (LocalizationMap.toMap fl) b.2 = 0 ↔ a = 0 :=
+      (f.toLocalizationMap.map_units' b.2).mul_left_eq_zero
+    rw [hb1, m0, a0] at hb
+    exact ha hb
+  have main : g (b.1 * (x.2 * y.1)) = g (b.1 * (y.2 * x.1)) :=
+    calc
+      g (b.1 * (x.2 * y.1)) = g b.1 * (g x.2 * g y.1) := by rw[map_mul g,map_mul g]
+      _ = a * g b.2 * (g x.2 * (w * g y.2)) := by rw[hb, hy]
+      _ = a * w * g b.2 * (g x.2 * g y.2) := by
+        rw [← mul_assoc, ← mul_assoc _ w, mul_comm _ w, mul_assoc w, mul_assoc,
+          ← mul_assoc w, ← mul_assoc w, mul_comm w]
+      _ = a * z * g b.2 * (g x.2 * g y.2) := by rw [hazw]
+      _ = a * g b.2 * (z * g x.2 * g y.2) := by
+        rw[mul_assoc a, mul_comm z, ← mul_assoc a, mul_assoc, mul_assoc z]
+      _ = g b.1 * g (y.2 * x.1) := by rw [hx, hb, mul_comm (g x.1), ← map_mul g]
+      _ = g (b.1 * (y.2 * x.1)):= by rw [← map_mul g]
+ -- The hypothesis `h` gives that `f` (so, `g`) is injective, and we can cancel out `b.1`.
+  exact (IsLeftCancelMulZero.mul_left_cancel_of_ne_zero b1ne0
+      ((LocalizationMap.toMap_injective_iff fl).mpr h main)).symm
+
+/-- Given a Localization map `f : M →*₀ N` for a Submonoid `S ⊆ M`,
+if `M` is a cancellative monoid with zero, and all elements of `S` are
+regular, then N is a cancellative monoid with zero.  -/
+theorem isLeftRegular_of_le_IsCancelMulZero (f : LocalizationWithZeroMap S N)
+    [IsCancelMulZero M] (h : ∀ ⦃x⦄, x ∈ S → IsRegular x): IsCancelMulZero N := by
+  have:IsLeftCancelMulZero N:=
+    leftCancelMulZero_of_le_isLeftRegular f (fun x h' => (h h').left)
+  exact IsLeftCancelMulZero.to_isCancelMulZero
+
 end LocalizationWithZeroMap
 
 end Submonoid
@@ -1929,7 +1999,7 @@ variable [OrderedCancelCommMonoid α] {s : Submonoid α} {a₁ b₁ : α} {a₂ 
 instance le : LE (Localization s) :=
   ⟨fun a b =>
     Localization.liftOn₂ a b (fun a₁ a₂ b₁ b₂ => ↑b₂ * a₁ ≤ a₂ * b₁)
-      @fun a₁ b₁ a₂ b₂ c₁ d₁ c₂ d₂ hab hcd => propext $ by
+      @fun a₁ b₁ a₂ b₂ c₁ d₁ c₂ d₂ hab hcd => propext <| by
         obtain ⟨e, he⟩ := r_iff_exists.1 hab
         obtain ⟨f, hf⟩ := r_iff_exists.1 hcd
         simp only [mul_right_inj] at he hf
@@ -1942,7 +2012,7 @@ instance le : LE (Localization s) :=
 instance lt : LT (Localization s) :=
   ⟨fun a b =>
     Localization.liftOn₂ a b (fun a₁ a₂ b₁ b₂ => ↑b₂ * a₁ < a₂ * b₁)
-      @fun a₁ b₁ a₂ b₂ c₁ d₁ c₂ d₂ hab hcd => propext $ by
+      @fun a₁ b₁ a₂ b₂ c₁ d₁ c₂ d₂ hab hcd => propext <| by
         obtain ⟨e, he⟩ := r_iff_exists.1 hab
         obtain ⟨f, hf⟩ := r_iff_exists.1 hcd
         simp only [mul_right_inj] at he hf

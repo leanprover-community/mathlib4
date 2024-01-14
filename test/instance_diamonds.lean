@@ -88,19 +88,13 @@ end TensorProduct
 section Units
 
 example (α : Type _) [Monoid α] :
-    (Units.instMulActionUnitsToMonoidToDivInvMonoidInstGroupUnits : MulAction αˣ (α × α)) =
-      Prod.mulAction :=
-  rfl
+    (Units.instMulAction : MulAction αˣ (α × α)) = Prod.mulAction := rfl
 
 example (R α : Type _) (β : α → Type _) [Monoid R] [∀ i, MulAction R (β i)] :
-    (Units.instMulActionUnitsToMonoidToDivInvMonoidInstGroupUnits : MulAction Rˣ (∀ i, β i)) =
-      Pi.mulAction _ :=
-  rfl
+    (Units.instMulAction : MulAction Rˣ (∀ i, β i)) = Pi.mulAction _ := rfl
 
 example (R α : Type _) [Monoid R] [Semiring α] [DistribMulAction R α] :
-    (Units.instDistribMulActionUnitsToMonoidToDivInvMonoidInstGroupUnits : DistribMulAction Rˣ α[X])
-      = Polynomial.distribMulAction :=
-  rfl
+    (Units.instDistribMulAction : DistribMulAction Rˣ α[X]) = Polynomial.distribMulAction := rfl
 
 /-!
 TODO: https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/units.2Emul_action'.20diamond/near/246402813

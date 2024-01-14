@@ -129,7 +129,7 @@ instance (priority := 100) sMulCommClass_mk {R : Type u₁} {S : Type u₂} [Rin
     haveI : SMul R M := (RestrictScalars.obj' f (ModuleCat.mk M)).isModule.toSMul
     SMulCommClass R S M :=
   @SMulCommClass.mk R S M (_) _
-   <| fun r s m => (by simp [← mul_smul, mul_comm] : f r • s • m = s • f r • m)
+   fun r s m => (by simp [← mul_smul, mul_comm] : f r • s • m = s • f r • m)
 #align category_theory.Module.smul_comm_class_mk ModuleCat.sMulCommClass_mk
 
 /-- Semilinear maps `M →ₛₗ[f] N` identify to

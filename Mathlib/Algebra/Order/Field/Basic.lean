@@ -351,6 +351,7 @@ theorem div_le_div_of_le_left (ha : 0 ≤ a) (hc : 0 < c) (h : c ≤ b) : a / b 
   exact mul_le_mul_of_nonneg_left ((inv_le_inv (hc.trans_le h) hc).mpr h) ha
 #align div_le_div_of_le_left div_le_div_of_le_left
 
+@[deprecated div_le_div_of_le]
 theorem div_le_div_of_le_of_nonneg (hab : a ≤ b) (hc : 0 ≤ c) : a / c ≤ b / c :=
   div_le_div_of_le hc hab
 #align div_le_div_of_le_of_nonneg div_le_div_of_le_of_nonneg

@@ -3,13 +3,8 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Algebra.Category.ModuleCat.Abelian
-import Mathlib.Algebra.Category.ModuleCat.Adjunctions
+import Mathlib.LinearAlgebra.Dimension.Finite
 import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
-import Mathlib.LinearAlgebra.FreeModule.Basic
-import Mathlib.LinearAlgebra.FreeModule.Finite.Rank
-import Mathlib.LinearAlgebra.Dimension
-import Mathlib.LinearAlgebra.Finrank
 
 /-!
 # Exact sequences with free modules
@@ -179,6 +174,6 @@ theorem free_shortExact_finrank_add [Module.Free R S.X₁] [Module.Free R S.X₃
     FiniteDimensional.finrank R S.X₂ = n + p := by
   apply FiniteDimensional.finrank_eq_of_rank_eq
   rw [free_shortExact_rank_add hS', ← hN, ← hP]
-  simp only [Nat.cast_add, FiniteDimensional.finrank_eq_rank]
+  simp only [Nat.cast_add, finrank_eq_rank]
 
 end ModuleCat

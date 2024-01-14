@@ -112,7 +112,7 @@ theorem casesOn1 {f} (m : â„•) (hf : Nat.Primrec f) : Nat.Primrec (Nat.casesOn Â
 -- Porting note: `Nat.Primrec.casesOn` is already declared as a recursor.
 theorem casesOn' {f g} (hf : Nat.Primrec f) (hg : Nat.Primrec g) :
     Nat.Primrec (unpaired fun z n => n.casesOn (f z) fun y => g <| Nat.pair z y) :=
-  (prec hf (hg.comp (pair left (left.comp right)))).of_eq <| fun n => by simp
+  (prec hf (hg.comp (pair left (left.comp right)))).of_eq fun n => by simp
 #align nat.primrec.cases Nat.Primrec.casesOn'
 
 protected theorem swap : Nat.Primrec (unpaired (swap Nat.pair)) :=

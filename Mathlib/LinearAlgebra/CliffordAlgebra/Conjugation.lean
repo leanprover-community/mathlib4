@@ -92,8 +92,8 @@ theorem reverseOp_ι (m : M) : reverseOp (ι Q m) = op (ι Q m) := lift_ι_apply
 @[simps! apply]
 def reverseOpEquiv : CliffordAlgebra Q ≃ₐ[R] (CliffordAlgebra Q)ᵐᵒᵖ :=
   AlgEquiv.ofAlgHom reverseOp (AlgHom.opComm reverseOp)
-    (AlgHom.unop.injective <| hom_ext <| LinearMap.ext <| fun _ => by simp)
-    (hom_ext <| LinearMap.ext <| fun _ => by simp)
+    (AlgHom.unop.injective <| hom_ext <| LinearMap.ext fun _ => by simp)
+    (hom_ext <| LinearMap.ext fun _ => by simp)
 
 @[simp]
 theorem reverseOpEquiv_opComm :
