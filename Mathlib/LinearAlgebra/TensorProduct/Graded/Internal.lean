@@ -191,12 +191,16 @@ theorem tmul_coe_mul_coe_tmul {j₁ i₂ : ι} (a₁ : A) (b₁ : ℬ j₁) (a�
   rw [tmul_of_gradedMul_of_tmul]
   simp_rw [lof_eq_of R]
   rw [LinearEquiv.symm_symm]
-  sorry
-  -- rw [@Units.smul_def _ _ (_) (_), zsmul_eq_smul_cast R, map_smul, map_smul,
-  --   ← zsmul_eq_smul_cast R, ← @Units.smul_def _ _ (_) (_)]
-  -- rw [congr_symm_tmul]
-  -- dsimp
-  -- simp_rw [decompose_symm_mul, decompose_symm_of, Equiv.symm_apply_apply]
+  -- HACK
+  letI : SMulHomClass (A ⊗[R] B ≃ₗ[R] 𝒜 ᵍ⊗[R] ℬ) R (A ⊗[R] B) (𝒜 ᵍ⊗[R] ℬ) :=
+    DistribMulActionHomClass.toSMulHomClass
+  rw [@Units.smul_def _ _ (_) (_), zsmul_eq_smul_cast R]
+  erw [LinearMap.map_smul, LinearMap.map_smul]
+  rw [← zsmul_eq_smul_cast R, ← @Units.smul_def _ _ (_) (_)]
+  erw [congr_symm_tmul]
+  dsimp
+  simp_rw [decompose_symm_mul, decompose_symm_of, Equiv.symm_apply_apply]
+  congr!
 
 /-- A special case for when `b₁` has grade 0. -/
 theorem tmul_zero_coe_mul_coe_tmul {i₂ : ι} (a₁ : A) (b₁ : ℬ 0) (a₂ : 𝒜 i₂) (b₂ : B) :
@@ -252,9 +256,10 @@ instance instAlgebra : Algebra R (𝒜 ᵍ⊗[R] ℬ) where
       gradedMul_algebraMap]
   smul_def' r x := by
     dsimp [mul_def, mulHom_apply, auxEquiv_tmul]
-    sorry
-    -- simp_rw [DirectSum.decompose_algebraMap, DirectSum.decompose_one, algebraMap_gradedMul,
-    --   map_smul, LinearEquiv.symm_apply_apply]
+    simp_rw [DirectSum.decompose_algebraMap, DirectSum.decompose_one, algebraMap_gradedMul]
+    -- HACK
+    erw [LinearMap.map_smul]
+    erw [LinearEquiv.symm_apply_apply]
 
 lemma algebraMap_def (r : R) : algebraMap R (𝒜 ᵍ⊗[R] ℬ) r = algebraMap R A r ᵍ⊗ₜ[R] 1 := rfl
 
@@ -374,9 +379,11 @@ def comm : (𝒜 ᵍ⊗[R] ℬ) ≃ₐ[R] (ℬ ᵍ⊗[R] 𝒜) :=
 
 @[simp] lemma comm_coe_tmul_coe {i j : ι} (a : 𝒜 i) (b : ℬ j) :
     comm 𝒜 ℬ (a ᵍ⊗ₜ b) = (-1 : ℤˣ)^(j * i) • (b ᵍ⊗ₜ a : ℬ ᵍ⊗[R] 𝒜) :=
-  (auxEquiv R ℬ 𝒜).injective <| by sorry
-    -- simp_rw [auxEquiv_comm, auxEquiv_tmul, decompose_coe, ← lof_eq_of R, gradedComm_of_tmul_of,
-    --   @Units.smul_def _ _ (_) (_), zsmul_eq_smul_cast R, map_smul, auxEquiv_tmul, decompose_coe,
-    --   lof_eq_of]
+  (auxEquiv R ℬ 𝒜).injective <| by
+    simp_rw [auxEquiv_comm, auxEquiv_tmul, decompose_coe, ← lof_eq_of R, gradedComm_of_tmul_of,
+      @Units.smul_def _ _ (_) (_), zsmul_eq_smul_cast R]
+    -- HACK
+    erw [LinearMap.map_smul, auxEquiv_tmul]
+    simp_rw [decompose_coe, lof_eq_of]
 
 end GradedTensorProduct
