@@ -357,7 +357,7 @@ lemma map_surjective {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂}
     (hf : Function.Surjective f) : Function.Surjective (CliffordAlgebra.map f) := by
   rw [← LinearMap.range_eq_top, LinearMap.range_eq_map, Submodule.eq_top_iff']
   intro y
-  apply CliffordAlgebra.induction (C:= fun y ↦ y ∈ Submodule.map (CliffordAlgebra.map f) ⊤)
+  apply CliffordAlgebra.induction (C := fun y ↦ y ∈ Submodule.map (CliffordAlgebra.map f) ⊤)
   all_goals (simp only [Submodule.map_top, LinearMap.mem_range, forall_exists_index])
   · exact fun r ↦ ⟨(algebraMap R (CliffordAlgebra Q₁)) r, by simp only [AlgHom.commutes]⟩
   · exact fun y ↦ let ⟨x, hx⟩ := hf y; ⟨CliffordAlgebra.ι Q₁ x,
