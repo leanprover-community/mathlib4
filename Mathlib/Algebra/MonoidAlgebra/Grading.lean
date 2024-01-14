@@ -103,7 +103,7 @@ instance gradeBy.gradedMonoid [AddMonoid M] [AddMonoid ι] [CommSemiring R] (f :
     obtain rfl : m = 0 := Finset.mem_singleton.1 <| Finsupp.support_single_subset h
     apply map_zero
   mul_mem i j a b ha hb c hc := by
-    obtain ⟨ma, mb, hma, hmb, rfl⟩ : ∃ y z, y ∈ a.support ∧ z ∈ b.support ∧ y + z = c :=
+    obtain ⟨ma, hma, mb, hmb, rfl⟩ : ∃ y ∈ a.support, ∃ z ∈ b.support, y + z = c :=
       Finset.mem_add.1 <| support_mul a b hc
     rw [map_add, ha ma hma, hb mb hmb]
 #align add_monoid_algebra.grade_by.graded_monoid AddMonoidAlgebra.gradeBy.gradedMonoid

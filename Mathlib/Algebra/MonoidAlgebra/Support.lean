@@ -79,11 +79,11 @@ theorem support_single_mul [Mul G] [IsLeftCancelMul G] (f : MonoidAlgebra k G) (
       mem_map, mulLeftEmbedding_apply]
 #align monoid_algebra.support_single_mul MonoidAlgebra.support_single_mul
 
-lemma support_one_subset [One G] : (1 : MonoidAlgebra k G).support ⊆ {1} :=
+lemma support_one_subset [One G] : (1 : MonoidAlgebra k G).support ⊆ 1 :=
   Finsupp.support_single_subset
 
 @[simp]
-lemma support_one [One G] [NeZero (1 : k)] : (1 : MonoidAlgebra k G).support = {1} :=
+lemma support_one [One G] [NeZero (1 : k)] : (1 : MonoidAlgebra k G).support = 1 :=
   Finsupp.support_single_ne_zero _ one_ne_zero
 
 section Span
@@ -123,11 +123,10 @@ theorem support_single_mul [Add G] [IsLeftCancelAdd G] (f : k[G]) (r : k)
   MonoidAlgebra.support_single_mul (G := Multiplicative G) _ _ hr _
 #align add_monoid_algebra.support_single_mul AddMonoidAlgebra.support_single_mul
 
-lemma support_zero_subset [Zero G] : (1 : k[G]).support ⊆ {0} :=
-  Finsupp.support_single_subset
+lemma support_one_subset [Zero G] : (1 : k[G]).support ⊆ 0 := Finsupp.support_single_subset
 
 @[simp]
-lemma support_zero [Zero G] [NeZero (1 : k)] : (1 : k[G]).support = {0} :=
+lemma support_one [Zero G] [NeZero (1 : k)] : (1 : k[G]).support = 0 :=
   Finsupp.support_single_ne_zero _ one_ne_zero
 
 section Span
