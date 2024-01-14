@@ -309,8 +309,8 @@ theorem translate_zpow (x : ℝ) (n : ℤ) :
 
 @[simp]
 theorem translate_pow (x : ℝ) (n : ℕ) :
-    translate (Multiplicative.ofAdd x) ^ n = translate (Multiplicative.ofAdd <| ↑n * x) := by
-  simpa using translate_zpow x n
+    translate (Multiplicative.ofAdd x) ^ n = translate (Multiplicative.ofAdd <| ↑n * x) :=
+  translate_zpow x n
 #align circle_deg1_lift.translate_pow CircleDeg1Lift.translate_pow
 
 @[simp]
