@@ -24,6 +24,15 @@ We formulate it in a more general settings for two reasons:
 - some proofs look nicer with this definition than with something like
   `∃ r : ℝ, ∀ a : R, r ≤ ‖a‖ → B ⊆ a • A`.
 
+## Implementation notes
+
+For now, all theorems assume that we deal with (a generalization of) a module over a division ring.
+Some lemmas have multiplicative versions for `MulDistribMulAction`s.
+They can be added later when someone needs them.
+
+## Keywords
+
+absorbs, absorbent
 -/
 
 open Set Bornology Filter
