@@ -604,7 +604,7 @@ variable [Algebra E K] [IsScalarTower F E K]
 /-- If `K / E / F` is a field extension tower, such that `E / F` is purely inseparable and `K / E`
 is separable, then `E` adjoin `separableClosure F K` is equal to `K`. It is a special case of
 `separableClosure.adjoin_eq_of_isAlgebraic`, and is an intermediate result used to prove it. -/
-lemma adjoin_eq_of_isPurelyInseparable' [IsPurelyInseparable F E] [IsSeparable E K] :
+lemma adjoin_eq_of_isPurelyInseparable_of_isSeparable [IsPurelyInseparable F E] [IsSeparable E K] :
     adjoin E (separableClosure F K : Set K) = ⊤ := top_unique fun x _ ↦ by
   set S := separableClosure F K
   set L := adjoin E (S : Set K)
@@ -626,7 +626,7 @@ lemma adjoin_eq_of_isPurelyInseparable' [IsPurelyInseparable F E] [IsSeparable E
 lemma adjoin_eq_of_isPurelyInseparable [IsPurelyInseparable F E] :
     adjoin E (separableClosure F K) = separableClosure E K := by
   set S := separableClosure E K
-  have h := congr_arg IntermediateField.lift (adjoin_eq_of_isPurelyInseparable' F E S)
+  have h := congr_arg IntermediateField.lift (adjoin_eq_of_isPurelyInseparable_of_isSeparable F E S)
   rw [lift_top, lift_adjoin] at h
   haveI : IsScalarTower F S K := IsScalarTower.of_algebraMap_eq (congrFun rfl)
   rw [← h, eq_map_of_separableClosure_eq_bot F (separableClosure_eq_bot E K)]
