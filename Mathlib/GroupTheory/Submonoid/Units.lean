@@ -317,6 +317,14 @@ lemma mem_units_iff_coe_mem (H : Subgroup G) (x : Gˣ): x ∈ H.units ↔ (x : G
 lemma mem_ofUnits_iff_toUnits_mem (H : Subgroup Gˣ) (x : G): x ∈ H.ofUnits ↔ (toUnits x) ∈ H := by
   simp_rw [mem_ofUnits_iff, toUnits.surjective.exists, val_toUnits_apply, exists_eq_right]
 
+@[to_additive (attr := simp)]
+lemma mem_iff_toUnits_mem_units (H : Subgroup G) (x : G) : toUnits x ∈ H.units ↔ x ∈ H := by
+  simp_rw [mem_units_iff_coe_mem, val_toUnits_apply]
+
+@[to_additive (attr := simp)]
+lemma coe_mem_ofUnits_iff_mem (H : Subgroup Gˣ) (x : Gˣ) : (x : G) ∈ H.ofUnits ↔ x ∈ H := by
+  simp_rw [mem_ofUnits_iff_toUnits_mem, toUnits_coe]
+
 /-- The equivalence between the greatest subgroup of units contained within `T` and `T` itself. -/
 @[to_additive " The equivalence between the greatest subgroup of additive units
 contained within `T` and `T` itself. "]
