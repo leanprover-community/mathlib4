@@ -109,8 +109,8 @@ lemma jacobiTheta₂_neg_left (z τ : ℂ) : jacobiTheta₂ (-z) τ = jacobiThet
 times `jacobiTheta₂ (x / τ) (-1 / τ)`. This is the key lemma behind the proof of the functional
 equation for Dirichlet L-series. -/
 theorem jacobiTheta₂_functional_equation (z : ℂ) {τ : ℂ} (hτ : 0 < im τ) :
-    jacobiTheta₂ z τ = 1 / (-I * τ) ^ (1 / 2 : ℂ) * cexp (-π * I * z ^ 2 / τ)
-    * jacobiTheta₂ (z / τ) (-1 / τ) := by
+    jacobiTheta₂ z τ =
+      1 / (-I * τ) ^ (1 / 2 : ℂ) * cexp (-π * I * z ^ 2 / τ) * jacobiTheta₂ (z / τ) (-1 / τ) := by
   have h0 : τ ≠ 0; contrapose! hτ; rw [hτ, zero_im]
   have h2 : 0 < (-I * τ).re
   · simpa only [neg_mul, neg_re, mul_re, I_re, zero_mul, I_im, one_mul, zero_sub, neg_neg] using hτ
@@ -119,8 +119,8 @@ theorem jacobiTheta₂_functional_equation (z : ℂ) {τ : ℂ} (hτ : 0 < im τ
       tsum_congr (fun n ↦ by ring_nf)
     _ = 1 / (-I * τ) ^ (1 / 2 : ℂ) * ∑' (n : ℤ), cexp (-π / (-I * τ) * (n + I * (I * z)) ^ 2) := by
       rw [tsum_exp_neg_quadratic h2]
-    _ = 1 / (-I * τ) ^ (1 / 2 : ℂ) * cexp (π * I * (-1 / τ) * z ^ 2) * ∑' (n : ℤ),
-        cexp (2 * π * I * n * (z / τ) + π * I * n ^ 2 * (-1 / τ)) := by
+    _ = 1 / (-I * τ) ^ (1 / 2 : ℂ) * cexp (π * I * (-1 / τ) * z ^ 2) *
+        ∑' (n : ℤ), cexp (2 * π * I * n * (z / τ) + π * I * n ^ 2 * (-1 / τ)) := by
       simp_rw [mul_assoc _ (cexp _), ← tsum_mul_left (a := cexp _), ← Complex.exp_add]
       congr 2 with n : 1; congr 1
       field_simp [I_ne_zero]
