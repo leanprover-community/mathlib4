@@ -3,10 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
 -/
+import Mathlib.Algebra.MonoidAlgebra.Support
+import Mathlib.Algebra.Regular.Basic
 import Mathlib.Data.Polynomial.Basic
-import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Data.Nat.Choose.Sum
-import Mathlib.Algebra.Regular.Pow
 
 #align_import data.polynomial.coeff from "leanprover-community/mathlib"@"2651125b48fc5c170ab1111afd0817c903b1fc6c"
 
@@ -65,6 +65,18 @@ theorem support_smul [Monoid S] [DistribMulAction S R] (r : S) (p : R[X]) :
   contrapose! hi
   simp [hi]
 #align polynomial.support_smul Polynomial.support_smul
+
+theorem card_support_mul_le : (p * q).support.card ≤ p.support.card * q.support.card := by
+  calc (p * q).support.card
+   _ = (p.toFinsupp * q.toFinsupp).support.card := by rw [← support_toFinsupp, toFinsupp_mul]
+   _ ≤ _ := Finset.card_le_card (AddMonoidAlgebra.support_mul p.toFinsupp q.toFinsupp)
+   _ ≤ _ := by
+    apply Finset.card_biUnion_le_card_mul
+    intro _ _
+    rw [← mul_one q.support.card]
+    apply Finset.card_biUnion_le_card_mul
+    intro _ _
+    exact (Finset.card_singleton _) ▸ le_rfl
 
 /-- `Polynomial.sum` as a linear map. -/
 @[simps]
@@ -310,15 +322,14 @@ theorem mul_X_pow_eq_zero {p : R[X]} {n : ℕ} (H : p * X ^ n = 0) : p = 0 :=
   ext fun k => (coeff_mul_X_pow p n k).symm.trans <| ext_iff.1 H (k + n)
 #align polynomial.mul_X_pow_eq_zero Polynomial.mul_X_pow_eq_zero
 
-@[simp] theorem isRegular_X : IsRegular (X : R[X]) := by
-  suffices : IsLeftRegular (X : R[X])
-  · exact ⟨this, this.right_of_commute commute_X⟩
-  intro P Q (hPQ : X * P = X * Q)
+theorem isRegular_X_pow (n : ℕ) : IsRegular (X ^ n : R[X]) := by
+  suffices : IsLeftRegular (X^n : R[X])
+  · exact ⟨this, this.right_of_commute (fun p => commute_X_pow p n)⟩
+  intro P Q (hPQ : X^n * P = X^n * Q)
   ext i
-  rw [← coeff_X_mul P i, hPQ, coeff_X_mul Q i]
+  rw [← coeff_X_pow_mul P n i, hPQ, coeff_X_pow_mul Q n i]
 
--- TODO Unify this with `Polynomial.Monic.isRegular`
-theorem isRegular_X_pow (n : ℕ) : IsRegular (X ^ n : R[X]) := isRegular_X.pow n
+@[simp] theorem isRegular_X : IsRegular (X : R[X]) := pow_one (X : R[X]) ▸ isRegular_X_pow 1
 
 theorem coeff_X_add_C_pow (r : R) (n k : ℕ) :
     ((X + C r) ^ n).coeff k = r ^ (n - k) * (n.choose k : R) := by
