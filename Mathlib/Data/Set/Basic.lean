@@ -82,9 +82,9 @@ instance instBooleanAlgebraSet : BooleanAlgebra (Set α) :=
     lt := fun s t => s ⊆ t ∧ ¬t ⊆ s,
     inf := (· ∩ ·),
     bot := ∅,
-    compl := fun s => { x | x ∉ s },
+    compl := (·ᶜ),
     top := univ,
-    sdiff := fun s t => { x | x ∈ s ∧ x ∉ t } }
+    sdiff := (· \ ·) }
 
 instance : HasSSubset (Set α) :=
   ⟨(· < ·)⟩
@@ -1618,7 +1618,6 @@ theorem inter_diff_distrib_right (s t u : Set α) : s \ t ∩ u = (s ∩ u) \ (t
 
 /-! ### Lemmas about complement -/
 
-
 theorem compl_def (s : Set α) : sᶜ = { x | x ∉ s } :=
   rfl
 #align set.compl_def Set.compl_def
@@ -1634,11 +1633,6 @@ theorem compl_setOf {α} (p : α → Prop) : { a | p a }ᶜ = { a | ¬p a } :=
 theorem not_mem_of_mem_compl {s : Set α} {x : α} (h : x ∈ sᶜ) : x ∉ s :=
   h
 #align set.not_mem_of_mem_compl Set.not_mem_of_mem_compl
-
-@[simp]
-theorem mem_compl_iff (s : Set α) (x : α) : x ∈ sᶜ ↔ x ∉ s :=
-  Iff.rfl
-#align set.mem_compl_iff Set.mem_compl_iff
 
 theorem not_mem_compl_iff {x : α} : x ∉ sᶜ ↔ x ∈ s :=
   not_not
@@ -1790,20 +1784,6 @@ theorem inter_compl_nonempty_iff {s t : Set α} : (s ∩ tᶜ).Nonempty ↔ ¬s 
 #align set.inter_compl_nonempty_iff Set.inter_compl_nonempty_iff
 
 /-! ### Lemmas about set difference -/
-
-
-theorem diff_eq (s t : Set α) : s \ t = s ∩ tᶜ :=
-  rfl
-#align set.diff_eq Set.diff_eq
-
-@[simp]
-theorem mem_diff {s t : Set α} (x : α) : x ∈ s \ t ↔ x ∈ s ∧ x ∉ t :=
-  Iff.rfl
-#align set.mem_diff Set.mem_diff
-
-theorem mem_diff_of_mem {s t : Set α} {x : α} (h1 : x ∈ s) (h2 : x ∉ t) : x ∈ s \ t :=
-  ⟨h1, h2⟩
-#align set.mem_diff_of_mem Set.mem_diff_of_mem
 
 theorem not_mem_diff_of_mem {s t : Set α} {x : α} (hx : x ∈ t) : x ∉ s \ t := fun h => h.2 hx
 #align set.not_mem_diff_of_mem Set.not_mem_diff_of_mem

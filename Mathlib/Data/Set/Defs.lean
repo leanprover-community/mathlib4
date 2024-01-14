@@ -1,7 +1,61 @@
+/-
+Copyright (c) 2016 Jeremy Avigad. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jeremy Avigad, Johannes Hölzl, Reid Barton, Scott Morrison, Patrick Massot, Kyle Miller, Minchao Wu, Yury Kudryashov, Floris van Doorn
+-/
 import Std.Classes.SetNotation
 import Mathlib.Order.Basic
 import Mathlib.Util.CompileInductive
 import Mathlib.Data.SProd
+
+/-!
+# Basic definitions about sets
+
+In this file we define various operations on sets.
+We also provide basic lemmas needed to unfold the definitions.
+More advanced theorems about these definitions are located in other files in `Mathlib/Data/Set`.
+
+## Main definitions
+
+- complement of a set and set difference;
+- `Set.Elem`: coercion of a set to a type; it is reducibly equal to `{x // x ∈ s}`;
+- `Set.preimage f s`, a.k.a. `f ⁻¹' s`: preimage of a set;
+- `Set.range f`: the range of a function;
+  it is more general than `f '' univ` because it allows functions from `Sort*`;
+- `s ×ˢ t`: product of `s : Set α` and `t : Set β` as a set in `α × β`;
+- `Set.diagonal`: the diagonal in `α × α`;
+- `Set.offDiag s`: the part of `s ×ˢ s` that is off the diagonal;
+- `Set.pi`: indexed product of a family of sets `∀ i, Set (α i)`,
+  as a set in `∀ i, α i`;
+- `Set.EqOn f g s`: the predicate saying that two functions are equal on a set;
+- `Set.MapsTo f s t`: the predicate syaing that `f` sends all points of `s` to `t;
+- `Set.MapsTo.restrict`: restrict `f : α → β` to `f' : s → t` provided that `Set.MapsTo f s t`;
+- `Set.restrictPreimage`: restrict `f : α → β` to `f' : (f ⁻¹' t) → t`;
+- `Set.InjOn`: the predicate saying that `f` is injective on a set;
+- `Set.SurjOn f s t`: the prediate saying that `t ⊆ f '' s`;
+- `Set.BijOn f s t`: the predicate saying that `f` is injective on `s` and `f '' s = t`;
+- `Set.graphOn`: the graph of a function on a set;
+- `Set.LeftInvOn`, `Set.RightInvOn`, `Set.InvOn`:
+  the predicates saying that `f'` is a left, right or two-sided inverse of `f` on `s`, `t`, or both;
+- `Set.image2`: the image of a pair of sets under a binary operation,
+  mostly useful to define pointwise algebraic operations on sets;
+- `Set.seq`: monadic `seq` operation on sets;
+  we don't use monadic notation to ensure support for maps between different universes;
+
+## Notations
+
+- `f '' s`: image of a set;
+- `f ⁻¹' s`: preimage of a set;
+- `s ×ˢ t`: the product of sets;
+- `s ∪ t`: the union of two sets;
+- `s ∩ t`: the intersection of two sets;
+- `sᶜ`: the complement of a set;
+- `s \ t`: the difference of two sets.
+
+## Keywords
+
+set, image, preimage
+-/
 
 -- https://github.com/leanprover/lean4/issues/2096
 compile_def% Union.union
@@ -23,6 +77,22 @@ variable {α : Type u} {β : Type v} {γ : Type w}
 
 @[simp, mfld_simps] theorem mem_univ (x : α) : x ∈ @univ α := trivial
 #align set.mem_univ Set.mem_univ
+
+instance : HasCompl (Set α) := ⟨fun s ↦ {x | x ∉ s}⟩
+
+@[simp] theorem mem_compl_iff (s : Set α) (x : α) : x ∈ sᶜ ↔ x ∉ s := Iff.rfl
+#align set.mem_compl_iff Set.mem_compl_iff
+
+instance : SDiff (Set α) := ⟨fun s t => { x | x ∈ s ∧ x ∉ t }⟩
+
+theorem diff_eq (s t : Set α) : s \ t = s ∩ tᶜ := rfl
+#align set.diff_eq Set.diff_eq
+
+@[simp] theorem mem_diff {s t : Set α} (x : α) : x ∈ s \ t ↔ x ∈ s ∧ x ∉ t := Iff.rfl
+#align set.mem_diff Set.mem_diff
+
+theorem mem_diff_of_mem {s t : Set α} {x : α} (h1 : x ∈ s) (h2 : x ∉ t) : x ∈ s \ t := ⟨h1, h2⟩
+#align set.mem_diff_of_mem Set.mem_diff_of_mem
 
 -- Porting note: I've introduced this abbreviation, with the `@[coe]` attribute,
 -- so that `norm_cast` has something to index on.
