@@ -15,7 +15,7 @@ The [binary entropy function](https://en.wikipedia.org/wiki/Binary_entropy_funct
 is the Shannon entropy of a Bernoulli random variable with success probability `p`.
 
 This file assumes that entropy is measured in bits, hence logarithms base 2.
-Most lemmas are also valid using any other logarithm.
+Most lemmas are also valid using a different-base logarithm.
 
 ## Tags
 
@@ -26,7 +26,7 @@ namespace Entropy
 
 open Real
 
-/- Base-2 logarithm-/
+/-- Base-2 logarithm-/
 noncomputable abbrev log₂ (p : ℝ) : ℝ := Real.logb 2 p
 
 /-- Shannon Binary entropy (measured in bits).
@@ -39,14 +39,11 @@ noncomputable def h₂ (p : ℝ) : ℝ := -p * log₂ p - (1 - p) * log₂ (1 - 
 
 @[simp] lemma h2_one : h₂ 1 = 0 := by simp [h₂]
 
-@[simp] lemma h2_onehalf' : h₂ 2⁻¹ = 1 := by
+@[simp] lemma h2_onehalf : h₂ 2⁻¹ = 1 := by
   simp [h₂, log₂, logb]
   norm_num
   simp
   field_simp
-
-@[simp] lemma h2_onehalf : h₂ (1 / 2) = 1 := by
-  simp only [one_div, h2_onehalf']
 
 lemma mul_log2_lt {x y : ℝ} : x < y ↔ x * log 2 < y * log 2 := by field_simp
 
@@ -59,9 +56,8 @@ lemma mul_log2_lt {x y : ℝ} : x < y ↔ x * log 2 < y * log 2 := by field_simp
 
 lemma h2_gt_0 {p : ℝ} (pge0 : 0 < p) (ple1 : p < 1) : 0 < h₂ p := by
   rw [h₂, log₂, log₂, logb, logb, mul_log2_lt]
-  simp
-  have : (-(p * (log p / log 2)) - (1 - p) * (log (1 - p) / log 2)) * log 2
-       = -p * log p - (1 - p) * log (1 - p) := by calc
+  simp only [zero_mul, neg_mul]
+  have := calc (-(p * (log p / log 2)) - (1 - p) * (log (1 - p) / log 2)) * log 2
        _ = (-(p * (log p / log 2)) * log 2 - (1 - p) * (log (1 - p) / log 2) * log 2) := by ring
        _ = -p * log p - (1 - p) * log (1 - p) := by simp; field_simp
   rw [this]
@@ -91,7 +87,7 @@ lemma h2_zero_iff_p_zero_or_1 {p : ℝ} (domup : p ≤ 1) (domun : 0 ≤ p) :
           repeat assumption
           exact Iff.mp ne_comm pz
         simp_all only [lt_self_iff_false]
-  · simp [h₂, log₂, logb]
+  · unfold h₂ log₂ logb
     cases h <;> simp [*]
 
 /-- For probability p < 0.5,
@@ -100,11 +96,10 @@ lemma h2_zero_iff_p_zero_or_1 {p : ℝ} (domup : p ≤ 1) (domun : 0 ≤ p) :
 -/
 lemma h2_lt_1_of_p_lt_half {p : ℝ} (pge0 : 0 ≤ p) (plehalf : p < 1/2) : h₂ p < 1 := by
   -- Proof by concavity of log.
-  simp only [h₂, logb]
+  unfold h₂ log₂ logb
   have (x y : ℝ) :  x < y ↔ x * log 2 < y * log 2 := by field_simp
   rw [this]
-  have : (-p * (log p / log 2) - (1 - p) * (log (1 - p) / log 2)) * log 2
-          = -p * log p - (1 - p) * log (1 - p) := by calc
+  have := calc (-p * (log p / log 2) - (1 - p) * (log (1 - p) / log 2)) * log 2
     _ = (-(p * (log p / log 2)) * log 2 - (1 - p) * (log (1 - p) / log 2) * log 2) := by ring
     _ = -p * log p - (1 - p) * log (1 - p) := by simp; field_simp
   rw [this]
@@ -120,19 +115,16 @@ lemma h2_lt_1_of_p_lt_half {p : ℝ} (pge0 : 0 ≤ p) (plehalf : p < 1/2) : h₂
       (by norm_num; linarith) (by norm_num)
     have : p • (1 / p) + (1 - p) • (1 / (1 - p)) = 2 := by field_simp; norm_num
     rw [this] at logConcave
-    have : -(p * log p) - (1 - p) * log (1 - p)
-      = p * log (1/p) + (1 - p) * log (1 / (1 - p)) := by calc
+    have := calc -(p * log p) - (1 - p) * log (1 - p)
           _ = p * (-log p) + (1 - p) * (-log (1 - p)) := by ring
           _ = p * log (1/p) + (1 - p) * log (1 / (1 - p)) := by rw [← log_inv]; norm_num
     rw [this]
-    apply logConcave
+    exact logConcave
 
 lemma h2_lt_one_of_p_gt_half {p : ℝ} : 1/2 < p → p ≤ 1 → h₂ p < 1 := by
   intros
   rw [← h2_p_eq_h2_1_minus_p]
-  have : 1 - p < 1/2 := by linarith
-  refine h2_lt_1_of_p_lt_half ?_ this
-  linarith
+  exact h2_lt_1_of_p_lt_half (by linarith) (by linarith)
 
 lemma h2_one_iff_p_is_half {p : ℝ} (pge0 : 0 ≤ p) (ple1 : p ≤ 1) : h₂ p = 1 ↔ p = 1/2 := by
   constructor <;> intro h
@@ -233,14 +225,12 @@ lemma deriv_h₂' {x : ℝ} (h: x ≠ 0) (hh : x ≠ 1) :
 
 -- TODO don't need assumptions
 lemma deriv_h₂ {x : ℝ} (h: x ≠ 0) (hh : x ≠ 1) : deriv h₂ x = log₂ (1 - x) - log₂ x := by
-  eta_expand
-  simp_rw [h₂]
+  unfold h₂
   apply deriv_h₂' h hh
 
 /- Binary entropy has derivative `log₂ (1 - p) - log₂ p`. -/
 lemma hasDerivAt_h₂ {x : ℝ} (xne0: x ≠ 0) (gne1 : x ≠ 1) :
     HasDerivAt h₂ (Entropy.h₂deriv x) x := by
-  eta_expand
   have diffAtStuff : DifferentiableAt ℝ (fun p => -p * log₂ p - (1 - p) * log₂ (1 - p)) x := by
     simp [log₂, logb]
     apply DifferentiableAt.sub
@@ -272,8 +262,7 @@ This is due to definition of `Real.log` for negative numbers. -/
 lemma h₂_continuous : Continuous h₂ := by
   have mycalc (x : ℝ) : (-x * (log x / log 2)) = -((x * log x) / log 2) := by
       field_simp
-  eta_expand
-  simp_rw [h₂, log₂, logb]
+  unfold h₂ log₂ logb
   apply Continuous.add
   simp_rw [mycalc]
   apply Continuous.neg
