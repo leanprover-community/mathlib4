@@ -65,7 +65,7 @@ section AddAction.minimalPeriod_eq_one_of_fixedBy
 variable {G : Type u} [AddGroup G] [AddAction G α]
 
 theorem _root_.AddAction.minimalPeriod_eq_one_of_fixedBy {a : α} {g : G}
-  (a_in_fixedBy : a ∈ AddAction.fixedBy α g) :
+    (a_in_fixedBy : a ∈ AddAction.fixedBy α g) :
     Function.minimalPeriod (fun x => g +ᵥ x) a = 1 := by
   rw [Function.minimalPeriod_eq_one_iff_isFixedPt]
   exact a_in_fixedBy
