@@ -692,3 +692,117 @@ theorem adjoin_eq_of_isAlgebraic (halg : Algebra.IsAlgebraic F E) :
   exact adjoin_eq_of_isPurelyInseparable S E K
 
 end separableClosure
+
+section TowerLaw
+
+variable [Algebra E K] [IsScalarTower F E K]
+
+-- TODO: move to suitable location
+-- NOTE: In fact it only requires `F`, `E`, `K` to be `CommSemiring`.
+variable {F K} in
+lemma Subalgebra.adjoin_eq_span_of_eq_span (L : Subalgebra F K) {S : Set K}
+    (h : Subalgebra.toSubmodule L = Submodule.span F S) :
+    Subalgebra.toSubmodule (Algebra.adjoin E (L : Set K)) = Submodule.span E S := by
+  have h0 := h.symm ▸ Submodule.span_le_restrictScalars F E S
+  change (L : Set K) ⊆ Submodule.span E S at h0
+  have hS : S ⊆ L := by simpa only [← h] using Submodule.subset_span (R := F) (s := S)
+  have h1 : Algebra.adjoin E (L : Set K) = Algebra.adjoin E S :=
+    Algebra.adjoin_eq_of_le _ (h0.trans (Algebra.span_le_adjoin E _)) (Algebra.adjoin_mono hS)
+  have h2 : (Submonoid.closure S : Set K) ⊆ L := fun _ h ↦
+    Submonoid.closure_induction h hS (one_mem L) (fun _ _ ↦ mul_mem)
+  exact h1.symm ▸ Algebra.adjoin_eq_span_of_subset _ (h2.trans h0)
+
+-- TODO: move to suitable location
+-- NOTE: In fact it only requires `F`, `E`, `K` to be `CommSemiring`.
+variable {F K} in
+lemma Subalgebra.adjoin_eq_span_basis (L : Subalgebra F K) {ι : Type*}
+    (bL : Basis ι F L) : Subalgebra.toSubmodule (Algebra.adjoin E (L : Set K)) =
+    Submodule.span E (Set.range fun i : ι ↦ (bL i).1) := by
+  refine L.adjoin_eq_span_of_eq_span E ?_
+  simpa only [← L.range_isScalarTower_toAlgHom, Submodule.map_span, Submodule.map_top,
+    ← Set.range_comp] using congr_arg (Submodule.map L.val) bL.span_eq.symm
+
+-- TODO: move to suitable location
+-- NOTE: In fact it only requires `F` be `Field`, others be `CommRing`.
+variable {F K} in
+lemma Subalgebra.adjoin_rank_le (L : Subalgebra F K) :
+    Module.rank E (Algebra.adjoin E (L : Set K)) ≤ Module.rank F L := by
+  obtain ⟨ι, ⟨bL⟩⟩ := Basis.exists_basis F L
+  change Module.rank E (Subalgebra.toSubmodule (Algebra.adjoin E (L : Set K))) ≤ _
+  rw [L.adjoin_eq_span_basis E bL, ← bL.mk_eq_rank'']
+  exact rank_span_le _ |>.trans Cardinal.mk_range_le
+
+-- TODO: move to suitable location
+-- TODO: In fact it only requires either `L / F` or `E / F` is algebraic
+variable {F K} in
+lemma IntermediateField.adjoin_rank_le_of_isAlgebraic (L : IntermediateField F K)
+    (halg : Algebra.IsAlgebraic F L) :
+    Module.rank E (adjoin E (L : Set K)) ≤ Module.rank F L := by
+  change Module.rank E (adjoin E (L.toSubalgebra : Set K)).toSubalgebra ≤ _
+  have : _ ≤ Module.rank F L := L.toSubalgebra.adjoin_rank_le E
+  have : ∀ x ∈ (L.toSubalgebra : Set K), IsAlgebraic E x := fun x hx ↦
+    IsAlgebraic.tower_top E (isAlgebraic_iff.1 (halg ⟨x, hx⟩))
+  -- rw [adjoin_algebraic_toSubalgebra this]
+  sorry
+
+namespace Field
+
+/-- If `K / E / F` is a field extension tower, such that `E / F` is purely inseparable and `K / E`
+is separable, then the (infinite) separable degree of `K / F` is equal to the degree of `K / E`.
+It is a special case of `Field.lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic`, and is an
+intermediate result used to prove it. -/
+lemma sepDegree_eq_of_isPurelyInseparable_of_isSeparable
+    [IsPurelyInseparable F E] [IsSeparable E K] :
+    sepDegree F K = Module.rank E K := by
+  sorry
+
+lemma lift_rank_mul_lift_sepDegree_of_isSeparable [IsSeparable F E] :
+    Cardinal.lift.{w} (Module.rank F E) * Cardinal.lift.{v} (sepDegree E K) =
+    Cardinal.lift.{v} (sepDegree F K) := by
+  rw [sepDegree, sepDegree, separableClosure.eq_restrictScalars_of_isSeparable F E K]
+  exact lift_rank_mul_lift_rank F E (separableClosure E K)
+
+lemma sepDegree_eq_of_isPurelyInseparable [IsPurelyInseparable F E] :
+    sepDegree F K = sepDegree E K := by
+  convert sepDegree_eq_of_isPurelyInseparable_of_isSeparable F E (separableClosure E K)
+  haveI : IsScalarTower F (separableClosure E K) K := IsScalarTower.of_algebraMap_eq (congrFun rfl)
+  rw [sepDegree, separableClosure.eq_map_of_separableClosure_eq_bot F
+    (separableClosure.separableClosure_eq_bot E K)]
+  exact (separableClosure F (separableClosure E K)).equivMap
+    (IsScalarTower.toAlgHom F (separableClosure E K) K) |>.symm.toLinearEquiv.rank_eq
+
+/-- If `K / E / F` is a field extension tower, such that `E / F` is algebraic, then their (infinite)
+separable degree satisfies the tower law: $[E:F]_s [K:E]_s = [K:F]_s$. -/
+theorem lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic
+    (halg : Algebra.IsAlgebraic F E) :
+    Cardinal.lift.{w} (sepDegree F E) * Cardinal.lift.{v} (sepDegree E K) =
+    Cardinal.lift.{v} (sepDegree F K) := by
+  have h := lift_rank_mul_lift_sepDegree_of_isSeparable F (separableClosure F E) K
+  haveI := separableClosure.isPurelyInseparable F E halg
+  rwa [sepDegree_eq_of_isPurelyInseparable (separableClosure F E) E K] at h
+
+  -- let S := separableClosure F E
+  -- let SF := separableClosure F K
+  -- let SE := separableClosure E K
+  -- have h1 : adjoin E SF = SE := separableClosure.adjoin_eq_of_isAlgebraic F E K halg
+  -- let S' := S.map (IsScalarTower.toAlgHom F E K)
+  -- let i' := (IsScalarTower.toAlgHom F E K).comp S.val
+  -- have hS' : i'.fieldRange = S' := toSubalgebra_injective <| by
+  --   rw [toSubalgebra_map, AlgHom.fieldRange_toSubalgebra, AlgHom.range_comp, range_val]
+  -- let i := (AlgEquiv.ofInjective i' i'.injective).trans (equivOfEq hS')
+  -- have h2 : S' ≤ SF := separableClosure.map_le_of_algHom _
+  -- letI : Algebra S' SF := (inclusion h2).toAlgebra
+  -- letI : Module S' SF := Algebra.toModule
+  -- letI : SMul S' SF := Algebra.toSMul
+  -- haveI : IsScalarTower F S' SF := SMul.comp.isScalarTower id
+  -- have h3 := congr_arg Cardinal.lift.{v} (rank_mul_rank F S' SF)
+  -- rw [Cardinal.lift_mul, ← i.toLinearEquiv.lift_rank_eq] at h3
+  -- convert h3
+  -- change Module.rank E SE = _
+  -- haveI : IsPurelyInseparable S E := separableClosure.isPurelyInseparable F E halg
+  -- rw [← sepDegree_eq_of_isPurelyInseparable_of_isSeparable S E SE]
+  -- sorry
+
+end Field
+
+end TowerLaw
