@@ -57,7 +57,7 @@ theorem factorial_eq_mul_doubleFactorial : ∀ n : ℕ, (n + 1)! = (n + 1)‼ * 
 lemma doubleFactorial_le_factorial : ∀ n, n‼ ≤ n !
   | 0 => le_rfl
   | n + 1 => by
-    rw [factorial_eq_mul_doubleFactorial]; exact le_mul_of_pos_right n.doubleFactorial_pos
+    rw [factorial_eq_mul_doubleFactorial]; exact Nat.le_mul_of_pos_right _ n.doubleFactorial_pos
 
 theorem doubleFactorial_two_mul : ∀ n : ℕ, (2 * n)‼ = 2 ^ n * n !
   | 0 => rfl
