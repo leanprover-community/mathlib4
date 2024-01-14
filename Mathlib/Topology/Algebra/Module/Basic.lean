@@ -102,11 +102,9 @@ variable {ι R M₁ M₂ : Type*} [Semiring R] [AddCommMonoid M₁] [AddCommMono
   [Module R M₂] [u : TopologicalSpace R] {t : TopologicalSpace M₂} [ContinuousSMul R M₂]
   (f : M₁ →ₗ[R] M₂)
 
-theorem continuousSMul_induced : @ContinuousSMul R M₁ _ u (t.induced f) := by
+theorem continuousSMul_induced : @ContinuousSMul R M₁ _ u (t.induced f) :=
   let _ : TopologicalSpace M₁ := t.induced f
-  refine' ⟨continuous_induced_rng.2 _⟩
-  simp_rw [Function.comp, f.map_smul]
-  exact continuous_fst.smul (continuous_induced_dom.comp continuous_snd)
+  Inducing.continuousSMul ⟨rfl⟩ continuous_id (map_smul f _ _)
 #align has_continuous_smul_induced continuousSMul_induced
 
 end LatticeOps
@@ -130,10 +128,7 @@ namespace Submodule
 
 variable {α β : Type*} [TopologicalSpace β]
 
-instance continuousSMul [TopologicalSpace α] [Semiring α] [AddCommMonoid β] [Module α β]
-    [ContinuousSMul α β] (S : Submodule α β) : ContinuousSMul α S :=
-  continuousSMul_induced S.subtype
-#align submodule.has_continuous_smul Submodule.continuousSMul
+#align submodule.has_continuous_smul SMulMemClass.continuousSMul
 
 instance topologicalAddGroup [Ring α] [AddCommGroup β] [Module α β] [TopologicalAddGroup β]
     (S : Submodule α β) : TopologicalAddGroup S :=
