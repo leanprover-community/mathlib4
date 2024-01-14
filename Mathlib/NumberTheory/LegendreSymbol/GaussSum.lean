@@ -153,7 +153,7 @@ of `χ` and `ψ` is the Gauss sum of `χ^p` and `ψ^p`. -/
 theorem gaussSum_frob (χ : MulChar R R') (ψ : AddChar R R') :
     gaussSum χ ψ ^ p = gaussSum (χ ^ p) (ψ ^ p) := by
   rw [← frobenius_def, gaussSum, gaussSum, map_sum]
-  simp_rw [pow_apply' χ fp.1.pos, map_mul, frobenius_def]
+  simp_rw [pow_apply' χ fp.1.ne_zero, map_mul, frobenius_def]
   rfl
 #align gauss_sum_frob gaussSum_frob
 
@@ -164,7 +164,7 @@ is a unit in the source ring, the `p`th power of the Gauss sum of`χ` and `ψ` i
 nonrec theorem MulChar.IsQuadratic.gaussSum_frob (hp : IsUnit (p : R)) {χ : MulChar R R'}
     (hχ : IsQuadratic χ) (ψ : AddChar R R') : gaussSum χ ψ ^ p = χ p * gaussSum χ ψ := by
   rw [gaussSum_frob, pow_mulShift, hχ.pow_char p, ← gaussSum_mulShift χ ψ hp.unit, ← mul_assoc,
-    hp.unit_spec, ← pow_two, ← pow_apply' _ (by norm_num : 0 < 2), hχ.sq_eq_one, ← hp.unit_spec,
+    hp.unit_spec, ← pow_two, ← pow_apply' _ two_ne_zero, hχ.sq_eq_one, ← hp.unit_spec,
     one_apply_coe, one_mul]
 #align mul_char.is_quadratic.gauss_sum_frob MulChar.IsQuadratic.gaussSum_frob
 
@@ -177,7 +177,7 @@ theorem MulChar.IsQuadratic.gaussSum_frob_iter (n : ℕ) (hp : IsUnit (p : R)) {
   induction' n with n ih
   · rw [pow_zero, pow_one, pow_zero, MulChar.map_one, one_mul]
   · rw [pow_succ, mul_comm p, pow_mul, ih, mul_pow, hχ.gaussSum_frob _ hp, ← mul_assoc, pow_succ,
-      mul_comm (p : R), map_mul, ← pow_apply' χ fp.1.pos ((p : R) ^ n), hχ.pow_char p]
+      mul_comm (p : R), map_mul, ← pow_apply' χ fp.1.ne_zero ((p : R) ^ n), hχ.pow_char p]
 #align mul_char.is_quadratic.gauss_sum_frob_iter MulChar.IsQuadratic.gaussSum_frob_iter
 
 end gaussSum_frob
