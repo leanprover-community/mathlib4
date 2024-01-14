@@ -17,8 +17,8 @@ under the geometric group law defined in `Mathlib.AlgebraicGeometry.EllipticCurv
 
 Let `W` be a Weierstrass curve over a field `F` given by a Weierstrass equation $W(X, Y) = 0$ in
 affine coordinates. As in `Mathlib.AlgebraicGeometry.EllipticCurve.Affine`, the set of nonsingular
-rational points $W(F)$ of `W` consist of the unique point at infinity $0$ and nonsingular affine
-points $(x, y)$. With this description, there is an addition-preserving injection between $W(F)$
+rational points $W⟮F⟯$ of `W` consist of the unique point at infinity $0$ and nonsingular affine
+points $(x, y)$. With this description, there is an addition-preserving injection between $W⟮F⟯$
 and the ideal class group of the coordinate ring $F[W] := F[X, Y] / \langle W(X, Y)\rangle$ of `W`.
 This is defined by mapping the point at infinity $0$ to the trivial ideal class and an affine point
 $(x, y)$ to the ideal class of the invertible fractional ideal $\langle X - x, Y - y\rangle$.

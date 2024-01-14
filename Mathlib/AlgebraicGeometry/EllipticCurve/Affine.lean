@@ -67,7 +67,7 @@ The group law on this set is then uniquely determined by these constructions.
 
 ## Notations
 
- * `W(K)`: the group of nonsingular rational points on `W` base changed to `K`.
+ * `W⟮K⟯`: the group of nonsingular rational points on `W` base changed to `K`.
 
 ## References
 
@@ -644,7 +644,7 @@ inductive Point
 #align weierstrass_curve.point WeierstrassCurve.Affine.Point
 
 /-- For an algebraic extension `S` of `R`, the type of nonsingular `S`-rational points on `W`. -/
-scoped[WeierstrassCurve] notation W "(" S ")" => Affine.Point <| baseChange W S
+scoped[WeierstrassCurve] notation W "⟮" S "⟯" => Affine.Point <| baseChange W S
 
 namespace Point
 
@@ -907,16 +907,16 @@ lemma baseChange_slope (x₁ x₂ y₁ y₂ : F) :
 
 namespace Point
 
-/-- The function from `W(F)` to `W(K)` induced by an algebra homomorphism `ψ : F →ₐ[S] K`,
+/-- The function from `W⟮F⟯` to `W⟮K⟯` induced by an algebra homomorphism `ψ : F →ₐ[S] K`,
 where `W` is defined over a subring of a ring `S`, and `F` and `K` are field extensions of `S`. -/
-def mapFun : W(F) → W(K)
+def mapFun : W⟮F⟯ → W⟮K⟯
   | 0 => 0
   | some h => some <| (W.baseChange_nonsingular ψ.injective ..).mpr h
 #align weierstrass_curve.point.of_base_change_fun WeierstrassCurve.Affine.Point.mapFun
 
-/-- The group homomorphism from `W(F)` to `W(K)` induced by an algebra homomorphism `ψ : F →ₐ[S] K`,
+/-- The group homomorphism from `W⟮F⟯` to `W⟮K⟯` induced by an algebra homomorphism `ψ : F →ₐ[S] K`,
 where `W` is defined over a subring of a ring `S`, and `F` and `K` are field extensions of `S`. -/
-def map : W(F) →+ W(K) where
+def map : W⟮F⟯ →+ W⟮K⟯ where
   toFun := mapFun W ψ
   map_zero' := rfl
   map_add' := by
@@ -940,18 +940,18 @@ def map : W(F) →+ W(K) where
         exact ψ.injective hx
 #align weierstrass_curve.point.of_base_change WeierstrassCurve.Affine.Point.map
 
-lemma map_zero : map W ψ (0 : W(F)) = 0 :=
+lemma map_zero : map W ψ (0 : W⟮F⟯) = 0 :=
   rfl
 
 lemma map_some {x y : F} (h : (W.baseChange F).toAffine.nonsingular x y) :
     map W ψ (some h) = some ((W.baseChange_nonsingular ψ.injective ..).mpr h) :=
   rfl
 
-lemma map_id (P : W(F)) : map W (Algebra.ofId F F) P = P := by
+lemma map_id (P : W⟮F⟯) : map W (Algebra.ofId F F) P = P := by
   cases P <;> rfl
 
 lemma map_map {L : Type r} [Field L] [Algebra R L] [Algebra S L] [IsScalarTower R S L]
-    (ψ : F →ₐ[S] K) (χ : K →ₐ[S] L) (P : W(F)) : map W χ (map W ψ P) = map W (χ.comp ψ) P := by
+    (ψ : F →ₐ[S] K) (χ : K →ₐ[S] L) (P : W⟮F⟯) : map W χ (map W ψ P) = map W (χ.comp ψ) P := by
   cases P <;> rfl
 
 lemma map_injective : Function.Injective <| map W ψ := by
@@ -963,9 +963,9 @@ lemma map_injective : Function.Injective <| map W ψ := by
 
 variable (F K)
 
-/-- The group homomorphism from `W(F)` to `W(K)` induced by the base change from `F` to `K`,
+/-- The group homomorphism from `W⟮F⟯` to `W⟮K⟯` induced by the base change from `F` to `K`,
 where `W` is defined over a subring of a ring `S`, and `F` and `K` are field extensions of `S`. -/
-abbrev baseChange [Algebra F K] [IsScalarTower R F K] : W(F) →+ W(K) :=
+abbrev baseChange [Algebra F K] [IsScalarTower R F K] : W⟮F⟯ →+ W⟮K⟯ :=
   map W <| Algebra.ofId F K
 
 end Point
