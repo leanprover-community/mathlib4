@@ -53,20 +53,25 @@ open sets in `Proj`, more specifically:
     * This ideal is prime, the proof can be found in
       `ProjIsoSpecTopComponent.FromSpec.carrier.prime`.
     Hence we have a well defined function `Spec.T A⁰_f → Proj.T | (pbo f)`, this function is called
-    `ProjIsoSpecTopComponent.FromSpec.toFun`. But to prove the continuity of this function,
-    we need to prove `fromSpec ∘ toSpec` and `toSpec ∘ fromSpec` are both identities (TBC).
+    `ProjIsoSpecTopComponent.FromSpec.toFun`. But to prove the continuity of this function, we need
+    to prove `fromSpec ∘ toSpec` and `toSpec ∘ fromSpec` are both identities; these are achieved in
+    `ProjIsoSpecTopComponent.fromSpecToSpec` and `ProjIsoSpecTopComponent.toSpecFromSpec`.
 
 ## Main Definitions and Statements
 
-* `degreeZeroPart`: the degree zero part of the localized ring `Aₓ` where `x` is a homogeneous
-  element of degree `n` is the subring of elements of the form `a/f^m` where `a` has degree `mn`.
-
 For a homogeneous element `f` of degree `n`
-* `ProjIsoSpecTopComponent.toSpec`: `forward f` is the
-  continuous map between `Proj.T| pbo f` and `Spec.T A⁰_f`
+* `ProjIsoSpecTopComponent.toSpec`: the continuous map between `Proj.T| pbo f` and `Spec.T A⁰_f`
+  defined by sending `x : Proj| (pbo f)` to `A⁰_f ∩ span {g / 1 | g ∈ x}`. We also denote this map
+  as `ψ`.
 * `ProjIsoSpecTopComponent.ToSpec.preimage_eq`: for any `a: A`, if `a/f^m` has degree zero,
   then the preimage of `sbo a/f^m` under `to_Spec f` is `pbo f ∩ pbo a`.
 
+If we further assume `n` is positive
+* `ProjIsoSpecTopComponent.fromSpec`: the continuous map between `Spec.T A⁰_f` and `Proj.T| pbo f`
+  defined by sending `q` to `{a | aᵢᵐ/fⁱ ∈ q}`. We also denote this map as `φ`
+* `projIsoSpecTopComponent`: the homeomorphism `Proj.T| pbo f ≅ Spec.T A⁰_f` obtained by `φ` and
+  `ψ`.
+## Reference
 * [Robin Hartshorne, *Algebraic Geometry*][Har77]: Chapter II.2 Proposition 2.5
 -/
 
@@ -713,6 +718,7 @@ lemma toSpec_bijective {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m):
 end fromSpecToSpec
 
 variable {𝒜} in
+/--The continuous function `Spec A⁰_f → Proj|D(f)` by sending `q` to `{a | aᵢᵐ/fⁱ ∈ q}`.-/
 def fromSpec {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m) :
     (Spec.T (A⁰_ f)) ⟶ (Proj.T| (pbo f)) where
   toFun := FromSpec.toFun f_deg hm
@@ -766,6 +772,11 @@ def fromSpec {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m) :
 end ProjIsoSpecTopComponent
 
 variable {𝒜} in
+/--
+The homeomorphism `Proj|D(f) ≅ Spec A⁰_f` defined by
+- `φ : Proj|D(f) ⟶ Spec A⁰_f` by sending `x` to `A⁰_f ∩ span {g / 1 | g ∈ x}`
+- `ψ : Spec A⁰_f ⟶ Proj|D(f)` by sending `q` to `{a | aᵢᵐ/fⁱ ∈ q}`.
+-/
 def projIsoSpecTopComponent {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m) :
     (Proj.T| (pbo f)) ≅ (Spec.T (A⁰_ f))  where
   hom := ProjIsoSpecTopComponent.toSpec
