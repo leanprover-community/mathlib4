@@ -93,6 +93,8 @@ variable [CovariantClass α α (· * ·) (· ≤ ·)]
 @[to_additive] lemma mabs_of_one_le (h : 1 ≤ a) : |a|ₘ = a :=
   sup_eq_left.2 <| (inv_le_one'.2 h).trans h
 #align abs_of_nonneg abs_of_nonneg
+#align lattice_ordered_comm_group.mabs_of_one_le mabs_of_one_le
+#align lattice_ordered_comm_group.abs_of_nonneg abs_of_nonneg
 
 @[to_additive] lemma mabs_of_one_lt (h : 1 < a) : |a|ₘ = a := mabs_of_one_le h.le
 #align abs_of_pos abs_of_pos
@@ -271,17 +273,17 @@ variable [CovariantClass α α (· * ·) (· ≤ ·)] {a b c : α}
   one_lt_mabs.2 h.ne
 #align abs_pos_of_neg abs_pos_of_neg
 
-@[to_additive] lemma inv_mabs_le_self (a : α) : |a|ₘ⁻¹ ≤ a := by
+@[to_additive] lemma inv_mabs_le (a : α) : |a|ₘ⁻¹ ≤ a := by
   obtain h | h := le_total 1 a
   · simpa [mabs_of_one_le h] using (inv_le_one'.2 h).trans h
   · simp [mabs_of_le_one h]
-#align neg_abs_le_self neg_abs_le_self
+#align neg_abs_le_self neg_abs_le
 
 @[to_additive add_abs_nonneg] lemma one_le_mul_mabs (a : α) : 1 ≤ a * |a|ₘ := by
   rw [← mul_right_inv a]; exact mul_le_mul_left' (inv_le_mabs a) _
 #align add_abs_nonneg add_abs_nonneg
 
-@[to_additive] lemma inv_mabs_le_inv (a : α) : |a|ₘ⁻¹ ≤ a⁻¹ := by simpa using inv_mabs_le_self a⁻¹
+@[to_additive] lemma inv_mabs_le_inv (a : α) : |a|ₘ⁻¹ ≤ a⁻¹ := by simpa using inv_mabs_le a⁻¹
 #align neg_abs_le_neg neg_abs_le_neg
 
 variable [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
@@ -521,3 +523,6 @@ lemma solidClosure_min (hst : s ⊆ t) (ht : IsSolid t) : solidClosure s ⊆ t :
 #align lattice_ordered_add_comm_group.solid_closure_min LatticeOrderedAddCommGroup.solidClosure_min
 
 end LatticeOrderedAddCommGroup
+
+@[deprecated] alias neg_le_abs_self := neg_le_abs
+@[deprecated] alias neg_abs_le_self := neg_abs_le

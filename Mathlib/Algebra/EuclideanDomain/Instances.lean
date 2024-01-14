@@ -30,7 +30,7 @@ instance Int.euclideanDomain : EuclideanDomain ℤ :=
       not_lt_of_ge <| by
         rw [← mul_one a.natAbs, Int.natAbs_mul]
         rw [← Int.natAbs_pos] at b0
-        exact Nat.mul_le_mul_of_nonneg_left b0 }
+        exact Nat.mul_le_mul_left _ b0 }
 
 -- see Note [lower instance priority]
 instance (priority := 100) Field.toEuclideanDomain {K : Type*} [Field K] : EuclideanDomain K :=
