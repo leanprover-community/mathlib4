@@ -346,7 +346,7 @@ def yonedaCompUliftFunctorEquiv (F : Cᵒᵖ ⥤ Type max v₁ w) (X : C) :
   left_inv φ := by
     ext Y f
     dsimp
-    rw [← FunctorToTypes.naturality ]
+    rw [← FunctorToTypes.naturality]
     dsimp
     rw [Category.comp_id]
     rfl
