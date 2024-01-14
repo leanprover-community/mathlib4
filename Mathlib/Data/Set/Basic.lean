@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
 import Mathlib.Order.SymmDiff
-import Mathlib.Logic.Function.Iterate
 import Mathlib.Tactic.Tauto
 import Mathlib.Tactic.ByContra
 import Mathlib.Util.Delaborators
+import Mathlib.Data.Set.Defs
 
 #align_import data.set.basic from "leanprover-community/mathlib"@"001ffdc42920050657fd45bd2b8bfbec8eaaeb29"
 
@@ -64,15 +64,6 @@ the `s.Nonempty` dot notation can be used.
 set, sets, subset, subsets, union, intersection, insert, singleton, complement, powerset
 
 -/
-
--- https://github.com/leanprover/lean4/issues/2096
-compile_def% Union.union
-compile_def% Inter.inter
-compile_def% SDiff.sdiff
-compile_def% HasCompl.compl
-compile_def% EmptyCollection.emptyCollection
-compile_def% Insert.insert
-compile_def% Singleton.singleton
 
 /-! ### Set coercion to a type -/
 
@@ -141,19 +132,6 @@ alias ⟨_root_.LE.le.subset, _root_.HasSubset.Subset.le⟩ := le_iff_subset
 
 alias ⟨_root_.LT.lt.ssubset, _root_.HasSSubset.SSubset.lt⟩ := lt_iff_ssubset
 #align has_ssubset.ssubset.lt HasSSubset.SSubset.lt
-
--- Porting note: I've introduced this abbreviation, with the `@[coe]` attribute,
--- so that `norm_cast` has something to index on.
--- It is currently an abbreviation so that instance coming from `Subtype` are available.
--- If you're interested in making it a `def`, as it probably should be,
--- you'll then need to create additional instances (and possibly prove lemmas about them).
--- The first error should appear below at `monotoneOn_iff_monotone`.
-/-- Given the set `s`, `Elem s` is the `Type` of element of `s`. -/
-@[coe, reducible] def Elem (s : Set α) : Type u := { x // x ∈ s }
-
-/-- Coercion from a set to the corresponding subtype. -/
-instance {α : Type u} : CoeSort (Set α) (Type u) :=
-  ⟨Elem⟩
 
 instance PiSetCoe.canLift (ι : Type u) (α : ι → Type v) [∀ i, Nonempty (α i)] (s : Set ι) :
     CanLift (∀ i : s, α i) (∀ i, α i) (fun f i => f i) fun _ => True :=
@@ -253,9 +231,6 @@ theorem forall_in_swap {p : α → β → Prop} : (∀ a ∈ s, ∀ (b), p a b) 
 #align set.forall_in_swap Set.forall_in_swap
 
 /-! ### Lemmas about `mem` and `setOf` -/
-
-@[simp, mfld_simps] theorem mem_setOf_eq {x : α} {p : α → Prop} : (x ∈ {y | p y}) = p x := rfl
-#align set.mem_set_of_eq Set.mem_setOf_eq
 
 theorem mem_setOf {a : α} {p : α → Prop} : a ∈ { x | p x } ↔ p a :=
   Iff.rfl
@@ -665,11 +640,6 @@ theorem setOf_true : { _x : α | True } = univ :=
 #align set.set_of_true Set.setOf_true
 
 @[simp] theorem setOf_top : { _x : α | ⊤ } = univ := rfl
-
-@[simp, mfld_simps]
-theorem mem_univ (x : α) : x ∈ @univ α :=
-  trivial
-#align set.mem_univ Set.mem_univ
 
 @[simp]
 theorem univ_eq_empty_iff : (univ : Set α) = ∅ ↔ IsEmpty α :=
