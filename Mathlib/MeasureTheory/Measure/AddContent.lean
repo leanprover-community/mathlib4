@@ -15,6 +15,8 @@ such that `⋃₀ I ∈ C`, `m (⋃₀ I) = ∑ s ∈ I, m s`.
 Mathlib also has a definition of contents over compact sets: see `MeasureTheory.Content`.
 A `Content` is in particular an `AddContent` on the set of compact sets.
 
+TODO: refactor `Content` to use properties of `AddContent`.
+
 ## Main definitions
 
 * `MeasureTheory.AddContent C`: additive contents over the set of sets `C`.
