@@ -19,6 +19,12 @@ open Function
 structure AddConstEquiv (G H : Type*) [Add G] [Add H] (a : G) (b : H)
   extends G ≃ H, G →+c[a, b] H
 
+/-- Interpret an `AddConstEquiv` as an `Equiv`. -/
+add_decl_doc AddConstEquiv.toEquiv
+
+/-- Interpret an `AddConstEquiv` as an `AddConstMap. -/
+add_decl_doc AddConstEquiv.toAddConstMap
+
 @[inherit_doc]
 notation:25 G " ≃+c[" a ", " b "] " H => AddConstEquiv G H a b
 
