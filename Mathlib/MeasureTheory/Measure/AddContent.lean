@@ -17,23 +17,24 @@ A `Content` is in particular an `AddContent` on the set of compact sets.
 
 ## Main definitions
 
-* `AddContent C`: additive contents over the set of sets `C`.
+* `MeasureTheory.AddContent C`: additive contents over the set of sets `C`.
 
 ## Main statements
 
 Let `m` be an `AddContent C`. If `C` is a set sem-iring (`IsSetSemiring C`) we have the properties
 
-* `AddContent.sum_le_of_subset`: if `I` is a finset of pairwise disjoint sets in `C` and `⋃₀ I ⊆ t`
-  for `t ∈ C`, then `∑ s in I, m s ≤ m t`.
-* `AddContent.mono`: if `s ⊆ t` for two sets in `C`, then `m s ≤ m t`.
-* `AddContent.union'`: if `s, t ∈ C` are disjoint and `s ∪ t ∈ C`, then `m (s ∪ t) = m s + m t`.
+* `MeasureTheory.AddContent.sum_le_of_subset`: if `I` is a finset of pairwise disjoint sets in `C`
+  and `⋃₀ I ⊆ t` for `t ∈ C`, then `∑ s in I, m s ≤ m t`.
+* `MeasureTheory.AddContent.mono`: if `s ⊆ t` for two sets in `C`, then `m s ≤ m t`.
+* `MeasureTheory.AddContent.union'`: if `s, t ∈ C` are disjoint and `s ∪ t ∈ C`,
+  then `m (s ∪ t) = m s + m t`.
   If `C` is a set ring (`IsSetRing`), then `AddContent.union` gives the same conclusion without the
   hypothesis `s ∪ t ∈ C` (since it is a consequence of `IsSetRing C`).
 
-If `C` is a set ring (`IsSetRing C`), we have, for `s, t ∈ C`,
+If `C` is a set ring (`MeasureTheory.IsSetRing C`), we have, for `s, t ∈ C`,
 
-* `AddContent.union_le`: `m (s ∪ t) ≤ m s + m t`
-* `AddContent.diff_le`: `m s - m t ≤ m (s \ t)`
+* `MeasureTheory.AddContent.union_le`: `m (s ∪ t) ≤ m s + m t`
+* `MeasureTheory.AddContent.diff_le`: `m s - m t ≤ m (s \ t)`
 
 -/
 
