@@ -303,5 +303,4 @@ lemma log_integral_exp_llrAddConst [IsProbabilityMeasure μ] [IsProbabilityMeasu
 
 end llrAddConst
 
-
 end MeasureTheory
