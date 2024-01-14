@@ -372,6 +372,7 @@ main point is that the new series `p.changeOrigin x` is still finite, with the s
 
 variable (p : FormalMultilinearSeries 𝕜 E F) {x y : E} {r R : ℝ≥0}
 
+-- set_option synthInstance.maxHeartbeats 0 in
 /-- If `p` is a formal multilinear series such that `p m = 0` for `n ≤ m`, then
 `p.changeOriginSeriesTerm k l = 0` for `n ≤ k + l`.  -/
 lemma changeOriginSeriesTerm_bound (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ}
@@ -379,8 +380,8 @@ lemma changeOriginSeriesTerm_bound (p : FormalMultilinearSeries 𝕜 E F) {n : �
     (hs : s.card = l) (hkl : n ≤ k + l) :
     p.changeOriginSeriesTerm k l s hs = 0 := by
   rw [changeOriginSeriesTerm]
-  simp only [AddEquivClass.map_eq_zero_iff]
   sorry
+  -- rw [AddEquivClass.map_eq_zero_iff]
   -- exact hn _ hkl
 
 /-- If `p` is a finite formal multilinear series, then so is `p.changeOriginSeries k` for every
