@@ -19,33 +19,36 @@ section defs
 
 variable (S : Type*) [TopologicalSpace S] (i : outParam (S → ℂ))
 
--- TODO : this is a terrible name...
 class CFC.Domain extends Embedding i : Prop
 
-class CFC.ZeroDomain [Zero S] extends CFC.Domain S i : Prop where
+class CFC.ZeroDomain [Zero S] [CFC.Domain S i] : Prop where
   map_zero' : i 0 = 0
 
-class CFC.NegDomain [Neg S] extends CFC.Domain S i : Prop where
+class CFC.NegDomain [Neg S] [CFC.Domain S i] : Prop where
   map_neg' : ∀ x, i (-x) = -(i x)
 
-class CFC.AddDomain [Add S] extends CFC.Domain S i : Prop where
+class CFC.AddDomain [Add S] [CFC.Domain S i] : Prop where
   map_add' : ∀ x y, i (x + y) = i x + i y
 
-class CFC.OneDomain [One S] extends CFC.Domain S i : Prop where
+class CFC.OneDomain [One S] [CFC.Domain S i] : Prop where
   map_one' : i 1 = 1
 
-class CFC.MulDomain [Mul S] extends CFC.Domain S i : Prop where
+class CFC.MulDomain [Mul S] [CFC.Domain S i] : Prop where
   map_mul' : ∀ x y, i (x * y) = i x * i y
 
-class CFC.StarDomain [Star S] extends CFC.Domain S i : Prop where
+class CFC.StarDomain [Star S] [CFC.Domain S i] : Prop where
   map_star' : ∀ x, i (star x) = star (i x)
 
-attribute [simp] CFC.ZeroDomain.map_zero'
-attribute [simp] CFC.AddDomain.map_add'
-attribute [simp] CFC.NegDomain.map_neg'
-attribute [simp] CFC.MulDomain.map_mul'
-attribute [simp] CFC.OneDomain.map_one'
-attribute [simp] CFC.StarDomain.map_star'
+class CFC.SMulDomain (R : Type*) [SMul R S] [SMul R ℂ] [CFC.Domain S i] : Prop where
+  map_smul' : ∀ (r : R) x, i (r • x) = r • (i x)
+
+-- attribute [simp] CFC.ZeroDomain.map_zero'
+-- attribute [simp] CFC.AddDomain.map_add'
+-- attribute [simp] CFC.NegDomain.map_neg'
+-- attribute [simp] CFC.MulDomain.map_mul'
+-- attribute [simp] CFC.OneDomain.map_one'
+-- attribute [simp] CFC.StarDomain.map_star'
+-- attribute [simp] CFC.SMulDomain.map_smul'
 
 end defs
 
@@ -58,6 +61,8 @@ instance : CFC.AddDomain ℂ id where map_add' _ _ := rfl
 instance : CFC.OneDomain ℂ id where map_one' := rfl
 instance : CFC.MulDomain ℂ id where map_mul' _ _ := rfl
 instance : CFC.StarDomain ℂ id where map_star' _ := rfl
+instance : CFC.SMulDomain ℂ id ℂ where map_smul' _ _ := rfl
+instance : CFC.SMulDomain ℂ id ℝ where map_smul' _ _ := rfl
 
 instance {s : Set ℂ} : CFC.Domain s (↑) where toEmbedding := embedding_subtype_val
 
@@ -72,6 +77,7 @@ instance : CFC.AddDomain ℝ (↑) where map_add' := Complex.ofReal_add
 instance : CFC.OneDomain ℝ (↑) where map_one' := rfl
 instance : CFC.MulDomain ℝ (↑) where map_mul' := Complex.ofReal_mul
 instance : CFC.StarDomain ℝ (↑) where map_star' _ := by simp [Complex.conj_ofReal]
+instance : CFC.SMulDomain ℝ (↑) ℝ where map_smul' _ _ := by simp
 
 instance : CFC.Domain ℝ≥0 (↑) where toEmbedding :=
   Complex.isometry_ofReal.embedding.comp embedding_subtype_val
@@ -86,9 +92,14 @@ end instances
 abbrev CFC.X (S : Type*) [TopologicalSpace S] {i : S → ℂ} [hi : CFC.Domain S i] : C(S, ℂ) :=
   ⟨i, hi.continuous⟩
 
-variable {A : Type*} (S T U : Type*) [NormedRing A] [StarRing A] [NormedAlgebra ℂ A]
+lemma CFC.X_injective {S : Type*} [TopologicalSpace S] {i : S → ℂ} [CFC.Domain S i] :
+    Function.Injective (CFC.X S) :=
+  CFC.Domain.toEmbedding.inj
+
+variable {A : Type*} (S T U V : Type*) [NormedRing A] [StarRing A] [NormedAlgebra ℂ A]
   [CstarRing A] [StarModule ℂ A] [CompleteSpace A]
-  [TopologicalSpace S] [TopologicalSpace T] [TopologicalSpace U] {i : S → ℂ} {j : T → ℂ} {k : U → ℂ}
+  [TopologicalSpace S] [TopologicalSpace T] [TopologicalSpace U] [TopologicalSpace V]
+  {i : S → ℂ} {j : T → ℂ} {k : U → ℂ} {l : V → ℂ}
 
 /-!
 ### `CFC.Compatible`
@@ -144,7 +155,7 @@ lemma CFC.Compatible.range_spectrum_map [Nonempty S] [hi : CFC.Domain S i] (a : 
   subset_antisymm (range_subset_iff.mpr fun x ↦ by simp [apply_spectrumMap S a])
     (fun x hx ↦ ⟨⟨i x, hx⟩, hi.inj i.apply_invFun_apply⟩)
 
-variable {S T U} [Nonempty S] [Nonempty T]
+variable {S T U V} [Nonempty S] [Nonempty T] [Nonempty U] [Nonempty V]
 
 noncomputable def cfc [CFC.Domain S i] [CFC.Domain T j] (f : C(S, T)) (a : A)
     [CFC.Compatible S a] : A :=
@@ -162,19 +173,19 @@ lemma cfc_X_comp [CFC.Domain S i] [CFC.Domain T j] (f : C(S, T)) (a : A) [CFC.Co
     cfc f a = cfc (CFC.X T |>.comp f) a :=
   rfl -- unbelievable...
 
-lemma cfc_ext' [CFC.Domain S i] [CFC.Domain T j] [hj : CFC.Domain U k] (f : C(S, T))
-    (g : C(S, U)) (a : A) [CFC.Compatible S a]
-    (H : ∀ x ∈ (CFC.X S) ⁻¹' spectrum ℂ a, CFC.X T (f x) = CFC.X U (g x)) :
+lemma cfc_ext' [CFC.Domain S i] [CFC.Domain T j] [hj : CFC.Domain U k] [CFC.Domain V l]
+    (f : C(S, T)) (g : C(U, V)) (a : A) [CFC.Compatible S a] [CFC.Compatible U a]
+    (H : ∀ x y, CFC.X S x ∈ spectrum ℂ a → CFC.X U y = CFC.X S x → CFC.X T (f x) = CFC.X V (g y)) :
     cfc f a = cfc g a := by
   rw [cfc, cfc]
-  congr 3
+  congr
   ext x
-  exact H _ <| by simp [CFC.Compatible.apply_spectrumMap S a x]
+  refine H _ _ ?_ ?_ <;> simp [CFC.Compatible.apply_spectrumMap _ a x]
 
 lemma cfc_ext [CFC.Domain S i] [CFC.Domain T j] (f g : C(S, T)) (a : A)
     [CFC.Compatible S a] (H : ∀ x ∈ (CFC.X S) ⁻¹' spectrum ℂ a, f x = g x) :
     cfc f a = cfc g a :=
-  cfc_ext' f g a (fun x hx ↦ congrArg _ (H x hx))
+  cfc_ext' f g a (fun x _y hx hxy ↦ (CFC.X_injective hxy).symm ▸ congrArg _ (H x hx))
 
 lemma cfc_mem [Star T] [ContinuousStar T] [CFC.Domain S i] [CFC.Domain T j]
     (f : C(S, T)) (a : A) [CFC.Compatible S a] :
@@ -191,11 +202,13 @@ lemma spectrum_cfc_eq [CFC.Domain S i] [hj : CFC.Domain T j] (f : C(S, T)) (a : 
 
 /-!
 ### Algebraic properties
-
-TODO : write a tactic to try filling the algebra fields
 -/
 
-lemma cfc_zero [Zero T] [CFC.Domain S i] [hj : CFC.ZeroDomain T j] (a : A)
+section
+
+variable [CFC.Domain S i] [CFC.Domain T j]
+
+lemma cfc_zero [Zero T] [hj : CFC.ZeroDomain T j] (a : A)
     [ha : CFC.Compatible S a] :
     cfc (0 : C(S, T)) a = 0 := by
   have := ha.isStarNormal
@@ -206,7 +219,7 @@ lemma cfc_zero [Zero T] [CFC.Domain S i] [hj : CFC.ZeroDomain T j] (a : A)
   congr
   exact map_zero (continuousFunctionalCalculus a)
 
-lemma cfc_add [Add T] [ContinuousAdd T] [CFC.Domain S i] [hj : CFC.AddDomain T j]
+lemma cfc_add [Add T] [ContinuousAdd T] [hj : CFC.AddDomain T j]
     (f g : C(S, T)) (a : A) [CFC.Compatible S a] :
     cfc (f + g) a = cfc f a + cfc g a := by
   rw [cfc, cfc, cfc, ← AddMemClass.coe_add, ← AddEquivClass.map_add]
@@ -215,12 +228,12 @@ lemma cfc_add [Add T] [ContinuousAdd T] [CFC.Domain S i] [hj : CFC.AddDomain T j
   exact hj.map_add' _ _
 
 -- `[AddGroup T] [TopologicalAddGroup T]` because of too strong requirements for neg on `C(S, T)`
-lemma cfc_neg [AddGroup T] [TopologicalAddGroup T] [CFC.Domain S i] [hj : CFC.NegDomain T j]
+lemma cfc_neg [AddGroup T] [TopologicalAddGroup T] [hj : CFC.NegDomain T j]
     (f : C(S, T)) (a : A) [CFC.Compatible S a] :
     cfc (-f) a = -(cfc f a) := by
   sorry -- lacking lemma
 
-lemma cfc_one [One T] [CFC.Domain S i] [hj : CFC.OneDomain T j]
+lemma cfc_one [One T] [hj : CFC.OneDomain T j]
     (a : A) [ha : CFC.Compatible S a] :
     cfc (1 : C(S, T)) a = 1 := by
   have := ha.isStarNormal
@@ -231,7 +244,7 @@ lemma cfc_one [One T] [CFC.Domain S i] [hj : CFC.OneDomain T j]
   congr
   exact map_one (continuousFunctionalCalculus a)
 
-lemma cfc_mul [Mul T] [ContinuousMul T] [CFC.Domain S i] [hj : CFC.MulDomain T j]
+lemma cfc_mul [Mul T] [ContinuousMul T] [hj : CFC.MulDomain T j]
     (f g : C(S, T)) (a : A)
     [CFC.Compatible S a] :
     cfc (f * g) a = cfc f a * cfc g a := by
@@ -256,27 +269,29 @@ lemma cfc_mul [Mul T] [ContinuousMul T] [CFC.Domain S i] [hj : CFC.MulDomain T j
 --    cfc (algebraMap R C(S, T) r) a = algebraMap R A r := by
 --  sorry -- lacking lemma
 
-lemma cfc_star [Star T] [ContinuousStar T] [CFC.Domain S i] [hj : CFC.StarDomain T j]
+lemma cfc_star [Star T] [ContinuousStar T] [hj : CFC.StarDomain T j]
     (f : C(S, T)) (a : A) [ha : CFC.Compatible S a] :
     cfc (star f) a = star (cfc f a) := by
   sorry -- lacking lemma
 
-lemma cfc_isSelfAdjoint [Star T] [TrivialStar T] [ContinuousStar T] [CFC.Domain S i]
+lemma cfc_isSelfAdjoint [Star T] [TrivialStar T] [ContinuousStar T]
     [hj : CFC.StarDomain T j] (f : C(S, T)) (a : A)
     [ha : CFC.Compatible S a] : IsSelfAdjoint (cfc f a) := by
   rw [IsSelfAdjoint, ← cfc_star, star_trivial]
 
-lemma cfc_commute [CFC.Domain S i] [CFC.Domain T j]
+lemma cfc_commute
     (f g : C(S, T)) (a : A) [ha : CFC.Compatible S a] :
     Commute (cfc f a) (cfc g a) :=
   have := ha.isStarNormal
   congrArg ((↑) : elementalStarAlgebra ℂ a → A) <|
     (Commute.all _ _).map (continuousFunctionalCalculus a)
 
-instance cfc_isStarNormal [CFC.Domain S i] [CFC.Domain T j] (f : C(S, T)) (a : A)
+instance cfc_isStarNormal (f : C(S, T)) (a : A)
     [ha : CFC.Compatible S a] : IsStarNormal (cfc f a) := .mk <| by
   rw [cfc_X_comp, ← cfc_star]
   exact cfc_commute _ _ a
+
+end
 
 /-!
 ### Composition
@@ -325,6 +340,10 @@ lemma cfc_id [CFC.Domain S i] (a : A) [CFC.Compatible S a] :
 ### Algebraic properties following from composition
 -/
 
+section
+
+variable [CFC.Domain S i] [CFC.Domain T j]
+
 variable (S) in
 lemma neg_eq_cfc [AddGroup S] [TopologicalAddGroup S] [CFC.NegDomain S i] (a : A)
     [CFC.Compatible S a] : -a = cfc (- .id S) a := calc
@@ -339,6 +358,8 @@ lemma cfc_neg_comm [AddGroup S] [TopologicalAddGroup S] [CFC.NegDomain S i] [CFC
     (f : C(S, T)) (a : A) [CFC.Compatible S a] : cfc f (-a) = cfc (f.comp (- .id S)) a := by
   simp_rw [neg_eq_cfc S a, cfc_comp]
 
+end
+
 /-!
 ### Examples
 -/
@@ -351,18 +372,22 @@ theorem CstarRing.coe_abs (a : A) [IsStarNormal a] :
   rfl
 
 noncomputable instance selfAdjoint.hasPosPart : PosPart (selfAdjoint A) where
-  pos a := ⟨cfc (PosPart.pos (ContinuousMap.id ℝ)) a, cfc_isSelfAdjoint _ _⟩
+  pos a := ⟨cfc (PosPart.pos (.id ℝ)) a, cfc_isSelfAdjoint _ _⟩
 
 theorem selfAdjoint.coe_pos_part (a : selfAdjoint A) :
-    (↑(a⁺) : A) = cfc (PosPart.pos (ContinuousMap.id ℝ)) (a : A) :=
+    (↑(a⁺) : A) = cfc (PosPart.pos (.id ℝ)) (a : A) :=
   rfl
 
 noncomputable instance selfAdjoint.hasNegPart : NegPart (selfAdjoint A) where
-  neg a := ⟨cfc (NegPart.neg (ContinuousMap.id ℝ)) a, cfc_isSelfAdjoint _ _⟩
+  neg a := ⟨cfc (NegPart.neg (.id ℝ)) a, cfc_isSelfAdjoint _ _⟩
 
 theorem selfAdjoint.coe_neg_part (a : selfAdjoint A) :
-    (↑(a⁻) : A) = cfc (NegPart.neg (ContinuousMap.id ℝ)) (a : A) :=
+    (↑(a⁻) : A) = cfc (NegPart.neg (.id ℝ)) (a : A) :=
   rfl
+
+theorem selfAdjoint.coe_abs (a : selfAdjoint A) :
+    (↑(CstarRing.abs (a : A)) : A) = cfc (|.id ℝ|) (a : A) :=
+  cfc_ext' _ _ (a : A) fun x y _ (hxy : ↑y = x) ↦ hxy.symm ▸ by simp
 
 -- TODO: move
 lemma ContinuousMap.pos_part_comp (f : C(S, ℝ)) (g : C(T, S)) : f⁺.comp g = (f.comp g)⁺ := by
@@ -389,14 +414,14 @@ theorem selfAdjoint.pos_part_sub_neg_part (a : selfAdjoint A) : a⁺ - a⁻ = a 
 theorem CstarRing.pos_part_add_neg_part (a : selfAdjoint A) : a⁺ + a⁻ = CstarRing.abs (a : A) := by
   ext
   rw [AddMemClass.coe_add, selfAdjoint.coe_neg_part, selfAdjoint.coe_pos_part,
-      ← cfc_add, ← LatticeOrderedGroup.pos_add_neg]
-  sorry -- exact cfc_ext |.id ℝ| _ (a : A) _
+      ← cfc_add, ← LatticeOrderedGroup.pos_add_neg, selfAdjoint.coe_abs]
 
 theorem selfAdjoint.pos_part_mul_neg_part (a : selfAdjoint A) : (↑(a⁺) : A) * ↑(a⁻) = 0 := by
   rw [selfAdjoint.coe_pos_part, selfAdjoint.coe_neg_part, ← cfc_mul]
   convert cfc_zero (a : A)
   ext x
-  simp only [ContinuousMap.mul_apply, ContinuousMap.sup_apply, ContinuousMap.id_apply,
+  simp only [LatticeOrderedGroup.pos_part_def, LatticeOrderedGroup.neg_part_def,
+    ContinuousMap.mul_apply, ContinuousMap.sup_apply, ContinuousMap.id_apply,
     ContinuousMap.zero_apply, ContinuousMap.neg_apply]
   rcases (le_total x 0) with (hx|hx) <;> simp [hx] <;> rfl
   all_goals infer_instance
