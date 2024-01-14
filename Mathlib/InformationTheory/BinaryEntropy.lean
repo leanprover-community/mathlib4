@@ -334,9 +334,6 @@ lemma deriv2_h₂ {x : ℝ} (h : x ≠ 0) (hh : 1 ≠ x) : deriv^[2] h₂ x = -1
     · exact differentiableAt_log₂ h
   filter_upwards [eventually_ne_nhds h, eventually_ne_nhds hh.symm] with y h h2 using deriv_h₂ h h2
 
-lemma tmptmp (x y : ℝ) (hx : x < 0) (hy : 0 < y) : x / y < 0 := by
-    exact div_neg_of_neg_of_pos hx hy
-
 lemma strictConcave_h2 : StrictConcaveOn ℝ (Icc 0 1) h₂ := by
   apply strictConcaveOn_of_deriv2_neg (convex_Icc 0 1) h₂_continuous.continuousOn
   intro x hx
