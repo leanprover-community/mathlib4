@@ -170,7 +170,7 @@ lemma Embedding.isTotallyDisconnected_image [TopologicalSpace β] {f : α → β
 
 lemma Embedding.isTotallyDisconnected_range [TopologicalSpace β] {f : α → β} (hf : Embedding f) :
     IsTotallyDisconnected (range f) ↔ TotallyDisconnectedSpace α := by
-  rw [TotallyDisconnectedSpace_iff, ← image_univ, hf.isTotallyDisconnected_image]
+  rw [totallyDisconnectedSpace_iff, ← image_univ, hf.isTotallyDisconnected_image]
 
 lemma totallyDisconnectedSpace_subtype_iff {s : Set α} :
     TotallyDisconnectedSpace s ↔ IsTotallyDisconnected s := by

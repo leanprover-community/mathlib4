@@ -401,10 +401,10 @@ theorem smul_apply (a : S) (Q : QuadraticForm R M) (x : M) : (a • Q) x = a •
 #align quadratic_form.smul_apply QuadraticForm.smul_apply
 
 instance [SMulCommClass S T R] : SMulCommClass S T (QuadraticForm R M) where
-  smul_comm _s _t _q := ext <| fun _ => smul_comm _ _ _
+  smul_comm _s _t _q := ext fun _ => smul_comm _ _ _
 
 instance [SMul S T] [IsScalarTower S T R] : IsScalarTower S T (QuadraticForm R M) where
-  smul_assoc _s _t _q := ext <| fun _ => smul_assoc _ _ _
+  smul_assoc _s _t _q := ext fun _ => smul_assoc _ _ _
 
 end SMul
 
@@ -765,7 +765,7 @@ theorem polarBilin_toQuadraticForm : polarBilin (toQuadraticForm B) = B + flip' 
 
 @[simp] theorem _root_.QuadraticForm.toQuadraticForm_polarBilin (Q : QuadraticForm R M) :
     toQuadraticForm (polarBilin Q) = 2 • Q :=
-  QuadraticForm.ext <| fun x => (polar_self _ x).trans <| by simp
+  QuadraticForm.ext fun x => (polar_self _ x).trans <| by simp
 
 theorem  _root_.QuadraticForm.polarBilin_injective (h : IsUnit (2 : R)) :
     Function.Injective (polarBilin : QuadraticForm R M → _) :=
@@ -778,7 +778,7 @@ variable [AddCommGroup N] [Module R N]
 
 theorem _root_.QuadraticForm.polarBilin_comp (Q : QuadraticForm R N) (f : M →ₗ[R] N) :
     polarBilin (Q.comp f) = BilinForm.comp (polarBilin Q) f f :=
-  BilinForm.ext <| fun x y => by simp [polar]
+  BilinForm.ext fun x y => by simp [polar]
 
 theorem _root_.LinearMap.compQuadraticForm_polar (f : R →ₗ[S] S) (Q : QuadraticForm R M) (x y : M) :
     polar (f.compQuadraticForm Q) x y = f (polar Q x y) := by

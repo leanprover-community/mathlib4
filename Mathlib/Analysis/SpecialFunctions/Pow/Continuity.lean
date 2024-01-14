@@ -348,7 +348,7 @@ theorem continuousAt_cpow_zero_of_re_pos {z : ℂ} (hz : 0 < z.re) :
     refine' ⟨Real.exp (π * C), eventually_map.2 _⟩
     refine'
       (((continuous_im.comp continuous_snd).abs.tendsto (_, z)).eventually (gt_mem_nhds hC)).mono
-        fun z hz => Real.exp_le_exp.2 <| (neg_le_abs_self _).trans _
+        fun z hz => Real.exp_le_exp.2 <| (neg_le_abs _).trans _
     rw [_root_.abs_mul]
     exact
       mul_le_mul (abs_le.2 ⟨(neg_pi_lt_arg _).le, arg_le_pi _⟩) hz.le (_root_.abs_nonneg _)
@@ -429,7 +429,7 @@ theorem continuousAt_rpow {x : ℝ≥0} {y : ℝ} (h : x ≠ 0 ∨ 0 < y) :
     (fun p : ℝ≥0 × ℝ => p.1 ^ p.2) =
       Real.toNNReal ∘ (fun p : ℝ × ℝ => p.1 ^ p.2) ∘ fun p : ℝ≥0 × ℝ => (p.1.1, p.2) := by
     ext p
-    erw [coe_rpow, Real.coe_toNNReal _ (Real.rpow_nonneg_of_nonneg p.1.2 _)]
+    erw [coe_rpow, Real.coe_toNNReal _ (Real.rpow_nonneg p.1.2 _)]
     rfl
   rw [this]
   refine' continuous_real_toNNReal.continuousAt.comp (ContinuousAt.comp _ _)

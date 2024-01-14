@@ -63,6 +63,10 @@ theorem bot_toAddSubmonoid : (⊥ : Submodule R M).toAddSubmonoid = ⊥ :=
   rfl
 #align submodule.bot_to_add_submonoid Submodule.bot_toAddSubmonoid
 
+@[simp]
+lemma bot_toAddSubgroup {R M} [Ring R] [AddCommGroup M] [Module R M] :
+    (⊥ : Submodule R M).toAddSubgroup = ⊥ := rfl
+
 section
 
 variable (R)
@@ -161,6 +165,10 @@ theorem top_coe : ((⊤ : Submodule R M) : Set M) = Set.univ :=
 theorem top_toAddSubmonoid : (⊤ : Submodule R M).toAddSubmonoid = ⊤ :=
   rfl
 #align submodule.top_to_add_submonoid Submodule.top_toAddSubmonoid
+
+@[simp]
+lemma top_toAddSubgroup {R M} [Ring R] [AddCommGroup M] [Module R M] :
+    (⊤ : Submodule R M).toAddSubgroup = ⊤ := rfl
 
 @[simp]
 theorem mem_top {x : M} : x ∈ (⊤ : Submodule R M) :=

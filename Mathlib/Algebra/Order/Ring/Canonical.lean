@@ -5,7 +5,6 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro
 -/
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Order.Sub.Canonical
-import Mathlib.GroupTheory.GroupAction.Defs
 
 #align_import algebra.order.ring.canonical from "leanprover-community/mathlib"@"824f9ae93a4f5174d2ea948e2d75843dd83447bb"
 
@@ -38,64 +37,6 @@ class CanonicallyOrderedCommSemiring (α : Type*) extends CanonicallyOrderedAddC
   /-- No zero divisors. -/
   protected eq_zero_or_eq_zero_of_mul_eq_zero : ∀ {a b : α}, a * b = 0 → a = 0 ∨ b = 0
 #align canonically_ordered_comm_semiring CanonicallyOrderedCommSemiring
-
-section StrictOrderedSemiring
-
-variable [StrictOrderedSemiring α] {a b c d : α}
-
-section ExistsAddOfLE
-
-variable [ExistsAddOfLE α]
-
-/-- Binary **rearrangement inequality**. -/
-theorem mul_add_mul_le_mul_add_mul (hab : a ≤ b) (hcd : c ≤ d) : a * d + b * c ≤ a * c + b * d := by
-  obtain ⟨b, rfl⟩ := exists_add_of_le hab
-  obtain ⟨d, rfl⟩ := exists_add_of_le hcd
-  rw [mul_add, add_right_comm, mul_add, ← add_assoc]
-  exact add_le_add_left (mul_le_mul_of_nonneg_right hab <| (le_add_iff_nonneg_right _).1 hcd) _
-#align mul_add_mul_le_mul_add_mul mul_add_mul_le_mul_add_mul
-
-/-- Binary **rearrangement inequality**. -/
-theorem mul_add_mul_le_mul_add_mul' (hba : b ≤ a) (hdc : d ≤ c) :
-    a • d + b • c ≤ a • c + b • d := by
-  rw [add_comm (a • d), add_comm (a • c)]
-  exact mul_add_mul_le_mul_add_mul hba hdc
-#align mul_add_mul_le_mul_add_mul' mul_add_mul_le_mul_add_mul'
-
-/-- Binary strict **rearrangement inequality**. -/
-theorem mul_add_mul_lt_mul_add_mul (hab : a < b) (hcd : c < d) : a * d + b * c < a * c + b * d := by
-  obtain ⟨b, rfl⟩ := exists_add_of_le hab.le
-  obtain ⟨d, rfl⟩ := exists_add_of_le hcd.le
-  rw [mul_add, add_right_comm, mul_add, ← add_assoc]
-  exact add_lt_add_left (mul_lt_mul_of_pos_right hab <| (lt_add_iff_pos_right _).1 hcd) _
-#align mul_add_mul_lt_mul_add_mul mul_add_mul_lt_mul_add_mul
-
-/-- Binary **rearrangement inequality**. -/
-theorem mul_add_mul_lt_mul_add_mul' (hba : b < a) (hdc : d < c) :
-    a • d + b • c < a • c + b • d := by
-  rw [add_comm (a • d), add_comm (a • c)]
-  exact mul_add_mul_lt_mul_add_mul hba hdc
-#align mul_add_mul_lt_mul_add_mul' mul_add_mul_lt_mul_add_mul'
-
-end ExistsAddOfLE
-
-end StrictOrderedSemiring
-
-section LinearOrderedCommSemiring
-variable [LinearOrderedCommSemiring α] [ExistsAddOfLE α] {a b : α}
-
-lemma add_sq_le : (a + b) ^ 2 ≤ 2 * (a ^ 2 + b ^ 2) := by
-  calc
-    (a + b) ^ 2 = a ^ 2 + b ^ 2 + (a * b + b * a) := by
-        simp_rw [pow_succ, pow_zero, mul_one, add_mul_self_eq, mul_assoc, two_mul,
-          add_right_comm _ (_ + _), mul_comm]
-    _ ≤ a ^ 2 + b ^ 2 + (a * a + b * b) := add_le_add_left ?_ _
-    _ = _ := by simp_rw [pow_succ, pow_zero, mul_one, two_mul]
-  cases le_total a b
-  · exact mul_add_mul_le_mul_add_mul ‹_› ‹_›
-  · exact mul_add_mul_le_mul_add_mul' ‹_› ‹_›
-
-end LinearOrderedCommSemiring
 
 namespace CanonicallyOrderedCommSemiring
 

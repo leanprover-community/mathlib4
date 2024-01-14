@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
+import Mathlib.Order.Filter.Basic
 import Mathlib.Topology.Bases
 import Mathlib.Data.Set.Accumulate
 import Mathlib.Topology.Bornology.Basic
@@ -69,11 +70,7 @@ theorem IsCompact.compl_mem_sets_of_nhdsWithin (hs : IsCompact s) {f : Filter X}
 theorem IsCompact.induction_on (hs : IsCompact s) {p : Set X → Prop} (he : p ∅)
     (hmono : ∀ ⦃s t⦄, s ⊆ t → p t → p s) (hunion : ∀ ⦃s t⦄, p s → p t → p (s ∪ t))
     (hnhds : ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, p t) : p s := by
-  let f : Filter X :=
-    { sets := { t | p tᶜ }
-      univ_sets := by simpa
-      sets_of_superset := fun ht₁ ht => hmono (compl_subset_compl.2 ht) ht₁
-      inter_sets := fun ht₁ ht₂ => by simp [compl_inter, hunion ht₁ ht₂] }
+  let f : Filter X := comk p he (fun _t ht _s hsub ↦ hmono hsub ht) (fun _s hs _t ht ↦ hunion hs ht)
   have : sᶜ ∈ f := hs.compl_mem_sets_of_nhdsWithin (by simpa using hnhds)
   rwa [← compl_compl s]
 #align is_compact.induction_on IsCompact.induction_on
@@ -436,7 +433,7 @@ theorem Set.Subsingleton.isCompact (hs : s.Subsingleton) : IsCompact s :=
 -- porting note: golfed a proof instead of fixing it
 theorem Set.Finite.isCompact_biUnion {s : Set ι} {f : ι → Set X} (hs : s.Finite)
     (hf : ∀ i ∈ s, IsCompact (f i)) : IsCompact (⋃ i ∈ s, f i) :=
-  isCompact_iff_ultrafilter_le_nhds'.2 <| fun l hl => by
+  isCompact_iff_ultrafilter_le_nhds'.2 fun l hl => by
     rw [Ultrafilter.finite_biUnion_mem_iff hs] at hl
     rcases hl with ⟨i, his, hi⟩
     rcases (hf i his).ultrafilter_le_nhds _ (le_principal_iff.2 hi) with ⟨x, hxi, hlx⟩
@@ -931,6 +928,15 @@ theorem Inducing.isCompact_preimage {f : X → Y} (hf : Inducing f) (hf' : IsClo
     {K : Set Y} (hK : IsCompact K) : IsCompact (f ⁻¹' K) := by
   replace hK := hK.inter_right hf'
   rwa [hf.isCompact_iff, image_preimage_eq_inter_range]
+
+lemma Inducing.isCompact_preimage_iff {f : X → Y} (hf : Inducing f) {K : Set Y}
+    (Kf : K ⊆ range f) : IsCompact (f ⁻¹' K) ↔ IsCompact K := by
+  rw [hf.isCompact_iff, image_preimage_eq_of_subset Kf]
+
+/-- The preimage of a compact set in the image of an inducing map is compact. -/
+lemma Inducing.isCompact_preimage' {f : X → Y} (hf : Inducing f) {K : Set Y}
+    (hK: IsCompact K) (Kf : K ⊆ range f) : IsCompact (f ⁻¹' K) :=
+  (hf.isCompact_preimage_iff Kf).2 hK
 
 /-- The preimage of a compact set under a closed embedding is a compact set. -/
 theorem ClosedEmbedding.isCompact_preimage {f : X → Y} (hf : ClosedEmbedding f)

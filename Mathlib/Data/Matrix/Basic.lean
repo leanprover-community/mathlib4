@@ -94,7 +94,7 @@ theorem ext : (∀ i j, M i j = N i j) → M = N :=
 -- and restore the `@[ext]` attribute on `Matrix.ext` above.
 @[ext]
 theorem ext' : (∀ i, M i = N i) → M = N :=
-  fun h => Matrix.ext <| fun i => by simp[h]
+  fun h => Matrix.ext fun i => by simp[h]
 
 end Ext
 

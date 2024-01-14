@@ -150,7 +150,7 @@ theorem ratio_of_trivial [DilationClass F α β] (f : F)
 
 @[nontriviality]
 theorem ratio_of_subsingleton [Subsingleton α] [DilationClass F α β] (f : F) : ratio f = 1 :=
-  if_pos <| fun x y ↦ by simp [Subsingleton.elim x y]
+  if_pos fun x y ↦ by simp [Subsingleton.elim x y]
 
 theorem ratio_ne_zero [DilationClass F α β] (f : F) : ratio f ≠ 0 := by
   rw [ratio]; split_ifs

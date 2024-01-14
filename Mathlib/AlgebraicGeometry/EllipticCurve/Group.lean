@@ -230,7 +230,7 @@ lemma XYIdeal_neg_mul {x y : F} (h : W.nonsingular x y) :
       congr_arg C (congr_arg C ((W.equation_iff _ _).mp h.left).symm)
   simp_rw [XYIdeal, XClass, YClass, span_pair_mul_span_pair, mul_comm, ← _root_.map_mul,
     AdjoinRoot.mk_eq_mk.mpr ⟨1, Y_rw⟩, _root_.map_mul, span_insert,
-    ← span_singleton_mul_span_singleton, ← mul_sup, ← span_insert]
+    ← span_singleton_mul_span_singleton, ← Ideal.mul_sup, ← span_insert]
   convert mul_top (_ : Ideal W.CoordinateRing) using 2
   simp_rw [← @Set.image_singleton _ _ <| mk W, ← Set.image_insert_eq, ← map_span]
   convert map_top (R := F[X][Y]) (mk W) using 1
@@ -269,10 +269,10 @@ lemma XYIdeal_mul_XYIdeal {x₁ x₂ y₁ y₂ : F} (h₁ : W.equation x₁ y₁
     fun _ _ c _ => by rw [← sup_assoc, @sup_comm _ _ c, sup_sup_sup_comm, ← sup_assoc]
   rw [XYIdeal_add_eq, XIdeal, mul_comm, XYIdeal_eq₁ W x₁ y₁ <| W.slope x₁ x₂ y₁ y₂, XYIdeal,
     XYIdeal_eq₂ h₁ h₂ hxy, XYIdeal, span_pair_mul_span_pair]
-  simp_rw [span_insert, sup_rw, sup_mul, span_singleton_mul_span_singleton]
+  simp_rw [span_insert, sup_rw, Ideal.sup_mul, span_singleton_mul_span_singleton]
   rw [← neg_eq_iff_eq_neg.mpr <| C_addPolynomial_slope h₁ h₂ hxy, span_singleton_neg,
     C_addPolynomial, _root_.map_mul, YClass]
-  simp_rw [mul_comm <| XClass W x₁, mul_assoc, ← span_singleton_mul_span_singleton, ← mul_sup]
+  simp_rw [mul_comm <| XClass W x₁, mul_assoc, ← span_singleton_mul_span_singleton, ← Ideal.mul_sup]
   rw [span_singleton_mul_span_singleton, ← span_insert,
     ← span_pair_add_mul_right <| -(XClass W <| W.addX x₁ x₂ <| W.slope x₁ x₂ y₁ y₂), mul_neg,
     ← sub_eq_add_neg, ← sub_mul, ← map_sub <| mk W, sub_sub_sub_cancel_right, span_insert,

@@ -116,7 +116,7 @@ theorem exists_disjoint_subfamily_covering_enlargment (B : ι → Set α) (t : S
         rw [div_lt_iff (zero_lt_one.trans hτ)]
         conv_lhs => rw [← mul_one m]
         exact (mul_lt_mul_left mpos).2 hτ
-      rcases exists_lt_of_lt_csSup (nonempty_image_iff.2 Anonempty) I with ⟨x, xA, hx⟩
+      rcases exists_lt_of_lt_csSup (Anonempty.image _) I with ⟨x, xA, hx⟩
       rcases (mem_image _ _ _).1 xA with ⟨a', ha', rfl⟩
       exact ⟨a', ha', hx.le⟩
   clear hat hu a_disj a
@@ -291,7 +291,7 @@ theorem exists_disjoint_covering_ae [MetricSpace α] [MeasurableSpace α] [Opens
         exact lt_irrefl _ (R0pos.trans_le (le_of_eq R0_def))
       obtain ⟨a, hav, R0a⟩ : ∃ a ∈ v, R0 / 2 < r a := by
         obtain ⟨r', r'mem, hr'⟩ : ∃ r' ∈ r '' v, R0 / 2 < r' :=
-          exists_lt_of_lt_csSup (nonempty_image_iff.2 vnonempty) (half_lt_self R0pos)
+          exists_lt_of_lt_csSup (vnonempty.image _) (half_lt_self R0pos)
         rcases (mem_image _ _ _).1 r'mem with ⟨a, hav, rfl⟩
         exact ⟨a, hav, hr'⟩
       refine' ⟨8 * R0, _, _⟩
@@ -404,9 +404,9 @@ protected def vitaliFamily [MetricSpace α] [MeasurableSpace α] [OpensMeasurabl
     VitaliFamily μ where
   setsAt x := { a | IsClosed a ∧ (interior a).Nonempty ∧
     ∃ r, a ⊆ closedBall x r ∧ μ (closedBall x (3 * r)) ≤ C * μ a }
-  MeasurableSet' x a ha := ha.1.measurableSet
+  measurableSet x a ha := ha.1.measurableSet
   nonempty_interior x a ha := ha.2.1
-  Nontrivial x ε εpos := by
+  nontrivial x ε εpos := by
     obtain ⟨r, μr, rpos, rε⟩ :
         ∃ r, μ (closedBall x (3 * r)) ≤ C * μ (closedBall x r) ∧ r ∈ Ioc (0 : ℝ) ε :=
       ((h x).and_eventually (Ioc_mem_nhdsWithin_Ioi ⟨le_rfl, εpos⟩)).exists

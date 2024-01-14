@@ -315,11 +315,11 @@ theorem star_rmatch_iff (P : RegularExpression α) :
         constructor
         · simp [hs, hsum]
         · intro t' ht'
-          cases ht'
-          case head ht' =>
+          cases ht' with
+          | head ht' =>
             simp only [ne_eq, not_false_iff, true_and, rmatch]
             exact ht
-          case tail ht' => exact helem t' ht'
+          | tail _ ht' => exact helem t' ht'
     · rintro ⟨S, hsum, helem⟩
       cases' x with a x
       · rfl
@@ -349,23 +349,23 @@ theorem star_rmatch_iff (P : RegularExpression α) :
 @[simp]
 theorem rmatch_iff_matches' (P : RegularExpression α) (x : List α) :
     P.rmatch x ↔ x ∈ P.matches' := by
-  induction P generalizing x
-  case zero =>
+  induction P generalizing x with
+  | zero =>
     rw [zero_def, zero_rmatch]
     tauto
-  case epsilon =>
+  | epsilon =>
     rw [one_def, one_rmatch_iff]
     rfl
-  case char =>
+  | char =>
     rw [char_rmatch_iff]
     rfl
-  case plus _ _ ih₁ ih₂ =>
+  | plus _ _ ih₁ ih₂ =>
     rw [plus_def, add_rmatch_iff, ih₁, ih₂]
     rfl
-  case comp P Q ih₁ ih₂ =>
+  | comp P Q ih₁ ih₂ =>
     simp only [comp_def, mul_rmatch_iff, matches'_mul, Language.mem_mul, *]
     tauto
-  case star _ ih =>
+  | star _ ih =>
     simp only [star_rmatch_iff, matches'_star, ih, Language.mem_kstar_iff_exists_nonempty, and_comm]
 #align regular_expression.rmatch_iff_matches RegularExpression.rmatch_iff_matches'
 
