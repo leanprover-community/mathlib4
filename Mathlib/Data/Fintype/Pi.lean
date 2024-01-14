@@ -3,9 +3,8 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Fintype.Basic
-import Mathlib.Data.Fin.Tuple.Basic
 import Mathlib.Data.Finset.Pi
+import Mathlib.Data.Fintype.Basic
 
 #align_import data.fintype.pi from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
@@ -93,7 +92,7 @@ lemma eval_image_piFinset_subset (t : ∀ a, Finset (δ a)) (a : α) [DecidableE
 
 lemma eval_image_piFinset (t : ∀ a, Finset (δ a)) (a : α) [DecidableEq (δ a)]
     (ht : ∀ b, a ≠ b → (t b).Nonempty) : ((piFinset t).image fun f ↦ f a) = t a := by
-  refine (eval_image_piFinset_subset _ _).antisymm $ fun x h ↦ mem_image.2 ?_
+  refine (eval_image_piFinset_subset _ _).antisymm fun x h ↦ mem_image.2 ?_
   choose f hf using ht
   exact ⟨fun b ↦ if h : a = b then h ▸ x else f _ h, by aesop, by simp⟩
 
@@ -134,26 +133,3 @@ theorem Finset.univ_pi_univ {α : Type*} {β : α → Type*} [DecidableEq α] [F
     (Finset.univ.pi fun a : α => (Finset.univ : Finset (β a))) = Finset.univ := by
   ext; simp
 #align finset.univ_pi_univ Finset.univ_pi_univ
-
-lemma Fin.mem_piFinset_succ_iff {n : ℕ} {α : Fin (n + 1) → Type*} (p : (i : Fin (n + 1)) → α i)
-    (S : (i : Fin (n + 1)) → Finset (α i)) :
-    p ∈ Fintype.piFinset S ↔ p 0 ∈ S 0 ∧ Fin.tail p ∈ Fintype.piFinset (Fin.tail S) := by
-  simp only [Fintype.mem_piFinset, forall_fin_succ, Fin.tail]
-
-lemma Fin.cons_mem_piFinset_cons_iff {n : ℕ} {α : Fin (n + 1) → Type*}
-    (x : α 0) (xs : (i : Fin n) → α i.succ)
-    (S₀ : Finset (α 0)) (Sᵢ : (i : Fin n) → Finset (α i.succ)) :
-    Fin.cons x xs ∈ Fintype.piFinset (Fin.cons S₀ Sᵢ) ↔ x ∈ S₀ ∧ xs ∈ Fintype.piFinset Sᵢ := by
-  simp_rw [Fin.mem_piFinset_succ_iff, cons_zero, tail_cons]
-
-lemma Fin.mem_piFinset_succ_iff' {n : ℕ} {α : Fin (n + 1) → Type*} (p : (i : Fin (n + 1)) → α i)
-    (S : (i : Fin (n + 1)) → Finset (α i)) :
-    p ∈ Fintype.piFinset S ↔
-      Fin.init p ∈ Fintype.piFinset (Fin.init S) ∧ p (Fin.last n) ∈ S (Fin.last n) := by
-  simp only [Fintype.mem_piFinset, forall_fin_succ', Fin.init]
-
-lemma Fin.snoc_mem_piFinset_snoc_iff {n : ℕ} {α : Fin (n + 1) → Type*}
-    (xs : (i : Fin n) → α i.castSucc) (x : α (.last n))
-    (Sᵢ : (i : Fin n) → Finset (α i.castSucc)) (Sₙ : Finset (α <| .last n)) :
-    Fin.snoc xs x ∈ Fintype.piFinset (Fin.snoc Sᵢ Sₙ) ↔ xs ∈ Fintype.piFinset Sᵢ ∧ x ∈ Sₙ := by
-  simp_rw [Fin.mem_piFinset_succ_iff', init_snoc, snoc_last]

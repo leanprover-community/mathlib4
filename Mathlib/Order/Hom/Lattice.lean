@@ -1804,7 +1804,7 @@ lemma withTopWithBot_apply (f : LatticeHom α β) (a : WithTop <| WithBot α) :
 
 @[simp]
 theorem withTopWithBot_id : (LatticeHom.id α).withTopWithBot = BoundedLatticeHom.id _ :=
-  FunLike.coe_injective $ by
+  FunLike.coe_injective <| by
     refine' (congr_arg Option.map _).trans Option.map_id
     rw [withBot_id]
     rfl
@@ -1831,7 +1831,7 @@ def withBot' [OrderBot β] (f : LatticeHom α β) : LatticeHom (WithBot α) β :
 /-- Adjoins a `⊤` and `⊥` to the codomain of a `LatticeHom`. -/
 @[simps]
 def withTopWithBot' [BoundedOrder β] (f : LatticeHom α β) :
-    BoundedLatticeHom (WithTop $ WithBot α) β where
+    BoundedLatticeHom (WithTop <| WithBot α) β where
   toLatticeHom := f.withBot'.withTop'
   map_top' := rfl
   map_bot' := rfl

@@ -6,8 +6,8 @@ Authors: Kevin Kappelmann
 import Mathlib.Algebra.ContinuedFractions.Computation.CorrectnessTerminating
 import Mathlib.Data.Nat.Fib.Basic
 import Mathlib.Tactic.Monotonicity
-import Mathlib.Tactic.SolveByElim
 import Mathlib.Algebra.GroupPower.Order
+import Std.Tactic.SolveByElim
 
 #align_import algebra.continued_fractions.computation.approximations from "leanprover-community/mathlib"@"a7e36e48519ab281320c4d192da6a7b348ce40ad"
 
@@ -435,10 +435,10 @@ theorem sub_convergents_eq {ifp : IntFractPair K}
         · simp [n_eq_zero, le_refl]
         · exact Or.inr not_terminated_at_pred_n
       fib_le_of_continuantsAux_b this
-    have zero_lt_B : 0 < B := B_ineq.trans_lt' $ cast_pos.2 $ fib_pos.2 n.succ_pos
+    have zero_lt_B : 0 < B := B_ineq.trans_lt' <| cast_pos.2 <| fib_pos.2 n.succ_pos
     have : 0 ≤ pB := (cast_nonneg _).trans pB_ineq
     have : 0 < ifp.fr :=
-      ifp_fr_ne_zero.lt_of_le' $ IntFractPair.nth_stream_fr_nonneg stream_nth_eq
+      ifp_fr_ne_zero.lt_of_le' <| IntFractPair.nth_stream_fr_nonneg stream_nth_eq
     have : pB + ifp.fr⁻¹ * B ≠ 0 := by positivity
     -- finally, let's do the rewriting
     calc
@@ -496,7 +496,7 @@ theorem abs_sub_convergents_le (not_terminated_at_n : ¬(of v).TerminatedAt n) :
     haveI : ¬g.TerminatedAt (n - 1) := mt (terminated_stable n.pred_le) not_terminated_at_n
     fib_le_of_continuantsAux_b <| Or.inr this
   have zero_lt_conts_b : 0 < conts.b :=
-    conts_b_ineq.trans_lt' $ mod_cast fib_pos.2 n.succ_pos
+    conts_b_ineq.trans_lt' <| mod_cast fib_pos.2 n.succ_pos
   -- `denom'` is positive, so we can remove `|⬝|` from our goal
   suffices 1 / denom' ≤ 1 / denom by
     have : |(-1) ^ n / denom'| = 1 / denom' := by
@@ -519,7 +519,7 @@ theorem abs_sub_convergents_le (not_terminated_at_n : ¬(of v).TerminatedAt n) :
   suffices 0 < denom ∧ denom ≤ denom' from div_le_div_of_le_left zero_le_one this.left this.right
   constructor
   · have : 0 < pred_conts.b + gp.b * conts.b :=
-      nextConts_b_ineq.trans_lt' $ mod_cast fib_pos.2 $ succ_pos _
+      nextConts_b_ineq.trans_lt' <| mod_cast fib_pos.2 <| succ_pos _
     solve_by_elim [mul_pos]
   · -- we can cancel multiplication by `conts.b` and addition with `pred_conts.b`
     suffices : gp.b * conts.b ≤ ifp_n.fr⁻¹ * conts.b

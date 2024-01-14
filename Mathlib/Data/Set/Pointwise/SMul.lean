@@ -337,7 +337,7 @@ theorem smul_set_eq_empty : a • s = ∅ ↔ s = ∅ :=
 
 @[to_additive (attr := simp)]
 theorem smul_set_nonempty : (a • s).Nonempty ↔ s.Nonempty :=
-  nonempty_image_iff
+  image_nonempty
 #align set.smul_set_nonempty Set.smul_set_nonempty
 #align set.vadd_set_nonempty Set.vadd_set_nonempty
 
@@ -789,6 +789,30 @@ theorem op_smul_set_smul_eq_smul_smul_set (a : α) (s : Set β) (t : Set γ)
 
 end SMul
 
+section SMulZeroClass
+
+variable [Zero β] [SMulZeroClass α β] {s : Set α} {t : Set β} {a : α}
+
+theorem smul_zero_subset (s : Set α) : s • (0 : Set β) ⊆ 0 := by simp [subset_def, mem_smul]
+#align set.smul_zero_subset Set.smul_zero_subset
+
+theorem Nonempty.smul_zero (hs : s.Nonempty) : s • (0 : Set β) = 0 :=
+  s.smul_zero_subset.antisymm <| by simpa [mem_smul] using hs
+#align set.nonempty.smul_zero Set.Nonempty.smul_zero
+
+theorem zero_mem_smul_set (h : (0 : β) ∈ t) : (0 : β) ∈ a • t := ⟨0, h, smul_zero _⟩
+#align set.zero_mem_smul_set Set.zero_mem_smul_set
+
+variable [Zero α] [NoZeroSMulDivisors α β]
+
+theorem zero_mem_smul_set_iff (ha : a ≠ 0) : (0 : β) ∈ a • t ↔ (0 : β) ∈ t := by
+  refine' ⟨_, zero_mem_smul_set⟩
+  rintro ⟨b, hb, h⟩
+  rwa [(eq_zero_or_eq_zero_of_smul_eq_zero h).resolve_left ha] at hb
+#align set.zero_mem_smul_set_iff Set.zero_mem_smul_set_iff
+
+end SMulZeroClass
+
 section SMulWithZero
 
 variable [Zero α] [Zero β] [SMulWithZero α β] {s : Set α} {t : Set β}
@@ -798,16 +822,8 @@ Note that we have neither `SMulWithZero α (Set β)` nor `SMulWithZero (Set α) 
 because `0 * ∅ ≠ 0`.
 -/
 
-
-theorem smul_zero_subset (s : Set α) : s • (0 : Set β) ⊆ 0 := by simp [subset_def, mem_smul]
-#align set.smul_zero_subset Set.smul_zero_subset
-
 theorem zero_smul_subset (t : Set β) : (0 : Set α) • t ⊆ 0 := by simp [subset_def, mem_smul]
 #align set.zero_smul_subset Set.zero_smul_subset
-
-theorem Nonempty.smul_zero (hs : s.Nonempty) : s • (0 : Set β) = 0 :=
-  s.smul_zero_subset.antisymm <| by simpa [mem_smul] using hs
-#align set.nonempty.smul_zero Set.Nonempty.smul_zero
 
 theorem Nonempty.zero_smul (ht : t.Nonempty) : (0 : Set α) • t = 0 :=
   t.zero_smul_subset.antisymm <| by simpa [mem_smul] using ht
@@ -826,10 +842,6 @@ theorem subsingleton_zero_smul_set (s : Set β) : ((0 : α) • s).Subsingleton 
   subsingleton_singleton.anti <| zero_smul_set_subset s
 #align set.subsingleton_zero_smul_set Set.subsingleton_zero_smul_set
 
-theorem zero_mem_smul_set {t : Set β} {a : α} (h : (0 : β) ∈ t) : (0 : β) ∈ a • t :=
-  ⟨0, h, smul_zero _⟩
-#align set.zero_mem_smul_set Set.zero_mem_smul_set
-
 variable [NoZeroSMulDivisors α β] {a : α}
 
 theorem zero_mem_smul_iff :
@@ -843,12 +855,6 @@ theorem zero_mem_smul_iff :
     · exact ⟨0, hs, b, hb, zero_smul _ _⟩
     · exact ⟨a, ha, 0, ht, smul_zero _⟩
 #align set.zero_mem_smul_iff Set.zero_mem_smul_iff
-
-theorem zero_mem_smul_set_iff (ha : a ≠ 0) : (0 : β) ∈ a • t ↔ (0 : β) ∈ t := by
-  refine' ⟨_, zero_mem_smul_set⟩
-  rintro ⟨b, hb, h⟩
-  rwa [(eq_zero_or_eq_zero_of_smul_eq_zero h).resolve_left ha] at hb
-#align set.zero_mem_smul_set_iff Set.zero_mem_smul_set_iff
 
 end SMulWithZero
 

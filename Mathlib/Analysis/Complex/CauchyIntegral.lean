@@ -620,7 +620,7 @@ protected theorem _root_.Differentiable.analyticAt {f : ℂ → E} (hf : Differe
 /-- A complex differentiable function `f : ℂ → E` is continuously differentiable at every point. -/
 protected theorem _root_.Differentiable.contDiff {f : ℂ → E} (hf : Differentiable ℂ f) {n : ℕ∞} :
     ContDiff ℂ n f :=
-  contDiff_iff_contDiffAt.mpr $ fun z ↦ (hf.analyticAt z).contDiffAt
+  contDiff_iff_contDiffAt.mpr fun z ↦ (hf.analyticAt z).contDiffAt
 
 /-- When `f : ℂ → E` is differentiable, the `cauchyPowerSeries f z R` represents `f` as a power
 series centered at `z` in the entirety of `ℂ`, regardless of `R : ℝ≥0`, with `0 < R`. -/

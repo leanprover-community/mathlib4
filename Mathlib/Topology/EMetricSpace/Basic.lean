@@ -510,7 +510,7 @@ spaces. -/
 instance pseudoEMetricSpacePi [∀ b, PseudoEMetricSpace (π b)] : PseudoEMetricSpace (∀ b, π b) where
   edist_self f := bot_unique <| Finset.sup_le <| by simp
   edist_comm f g := by simp [edist_pi_def, edist_comm]
-  edist_triangle f g h := edist_pi_le_iff.2 <| fun b => le_trans (edist_triangle _ (g b) _)
+  edist_triangle f g h := edist_pi_le_iff.2 fun b => le_trans (edist_triangle _ (g b) _)
     (add_le_add (edist_le_pi_edist _ _ _) (edist_le_pi_edist _ _ _))
   toUniformSpace := Pi.uniformSpace _
   uniformity_edist := by
@@ -1180,8 +1180,8 @@ instance [PseudoEMetricSpace X] : EMetricSpace (UniformSpace.SeparationQuotient 
       edist_comm := fun x y => Quotient.inductionOn₂' x y edist_comm,
       edist_triangle := fun x y z => Quotient.inductionOn₃' x y z edist_triangle,
       toUniformSpace := inferInstance,
-      uniformity_edist := (uniformity_basis_edist.map _).eq_biInf.trans $ iInf_congr $ fun ε =>
-        iInf_congr $ fun _ => congr_arg 𝓟 <| by
+      uniformity_edist := (uniformity_basis_edist.map _).eq_biInf.trans <| iInf_congr fun ε =>
+        iInf_congr fun _ => congr_arg 𝓟 <| by
           ext ⟨⟨x⟩, ⟨y⟩⟩
           refine ⟨?_, fun h => ⟨(x, y), h, rfl⟩⟩
           rintro ⟨⟨x', y'⟩, h', h⟩
