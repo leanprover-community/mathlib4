@@ -29,8 +29,14 @@ open Real
 /-- Base-2 logarithm-/
 noncomputable abbrev log₂ (p : ℝ) : ℝ := Real.logb 2 p
 
-/-- Shannon Binary entropy (measured in bits).
-Usual domain of definition is p ∈ [0,1], i.e., expects a probability as input. -/
+lemma differentiableAt_log₂ {x : ℝ} (hx : x ≠ 0): DifferentiableAt ℝ log₂ x := by
+    unfold log₂ logb
+    apply DifferentiableAt.div_const (DifferentiableAt.log differentiableAt_id' hx)
+
+/-- Shannon Binary entropy function (measured in bits).
+It's the Shannon entropy of a Bernoulli random variable with success probability `p`.
+Usual domain of definition is p ∈ [0,1], i.e., input is a probability.
+`h₂ p := - p * log₂ p - (1-p) * log₂ p` -/
 noncomputable def h₂ (p : ℝ) : ℝ := -p * log₂ p - (1 - p) * log₂ (1 - p)
 
 -- Example values
@@ -152,7 +158,7 @@ lemma h2_le_1 {p : ℝ} (pge0 : 0 ≤ p) (ple1 : p ≤ 1) : h₂ p ≤ 1 := by
 
 ---------------------------------------------------------------------------------- derivatives
 
-/-- Derivative of binary entropy function -/
+/-- Derivative of binary entropy function (shown in `deriv_h₂`) -/
 protected noncomputable def h₂deriv (p : ℝ) : ℝ := log₂ (1 - p) - log₂ p
 
 @[simp] lemma deriv_one_minus (x : ℝ) : deriv (fun (y : ℝ) ↦ 1 - y) x = -1 := by
@@ -173,7 +179,7 @@ lemma deriv_log_one_sub {x : ℝ} (hh : x ≠ 1): deriv (fun p ↦ log (1 - p)) 
   simp
   field_simp
   exact differentiable_1_minusp x
-  exact sub_ne_zero.mpr (id (Ne.symm hh))
+  exact sub_ne_zero.mpr hh.symm
 
 @[simp] lemma differentiableAt_log_const_neg {x c : ℝ} (h : x ≠ c) :
     DifferentiableAt ℝ (fun p ↦ log (c - p)) x := by
@@ -292,3 +298,55 @@ lemma h2_strictMono : StrictMonoOn h₂ (Set.Icc 0 (1/2)) := by
         linarith
       apply Real.strictMonoOn_log hx.1 this
       linarith
+
+open Filter Topology
+
+protected lemma the_calculation {x : ℝ} (hx : x ≠ 0) (h2 : x ≠ 1) :
+    -1 / (1 - x) / log 2 - x⁻¹ / log 2 = -1 / (x * (1 - x) * log 2) := by
+  apply neg_injective
+  simp only [neg_div, neg_sub, sub_neg_eq_add, neg_neg, ← add_div, ← one_div]
+  rw [← div_div, div_add_div _ _ hx (sub_ne_zero.mpr h2.symm)]
+  simp
+
+lemma deriv2_h₂ {x : ℝ} (h : x ≠ 0) (hh : 1 ≠ x) : deriv^[2] h₂ x = -1/(x*(1-x)*log 2) := by
+  simp only [Function.iterate_succ, Function.iterate_zero, Function.comp.left_id,
+    Function.comp_apply]
+  suffices ∀ᶠ y in (𝓝 x), deriv (fun x ↦ h₂ x) y = log₂ (1 - y) - log₂ y by
+    refine (Filter.EventuallyEq.deriv_eq this).trans ?_
+    rw [deriv_sub]
+    unfold log₂ logb
+    · repeat rw [deriv_div_const]
+      repeat rw [deriv.log]
+      simp
+      have : log 2 ≠ 0 := by norm_num
+      exact Entropy.the_calculation h hh.symm
+      exact differentiableAt_id'
+      exact h
+      exact differentiable_1_minusp x
+      exact sub_ne_zero.mpr hh
+    · apply DifferentiableAt.div_const
+      apply DifferentiableAt.log (differentiable_1_minusp x)
+      exact sub_ne_zero.mpr hh
+    · exact differentiableAt_log₂ h
+  filter_upwards [eventually_ne_nhds h, eventually_ne_nhds hh.symm] with y h1 h2 using deriv_h₂ h1 h2
+
+lemma log2_ne_0 : log 2 ≠ 0 := by norm_num
+lemma log2_gt_0 : 0 < log 2 := by positivity
+
+lemma tmptmp (x y : ℝ) (hx : x < 0) (hy : 0 < y) : x / y < 0 := by
+    exact div_neg_of_neg_of_pos hx hy
+
+lemma strictConcave_h2 : StrictConcaveOn ℝ (Icc 0 1) h₂ := by
+  apply strictConcaveOn_of_deriv2_neg (convex_Icc 0 1) h₂_continuous.continuousOn
+  intro x hx
+  rw [deriv2_h₂]
+  · simp_all
+    apply mul_log2_lt.mpr
+    field_simp [log2_ne_0]
+    apply div_neg_of_neg_of_pos
+    norm_num [log2_gt_0]
+    simp_all only [gt_iff_lt, mul_pos_iff_of_pos_left, sub_pos, hx, log2_gt_0]
+  · simp_all only [interior_Icc, mem_Ioo]
+    exact ne_of_gt hx.1
+  · simp_all only [interior_Icc, mem_Ioo]
+    exact (ne_of_lt (hx.2)).symm
