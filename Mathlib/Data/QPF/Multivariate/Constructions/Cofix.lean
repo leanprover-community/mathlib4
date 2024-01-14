@@ -413,7 +413,7 @@ theorem liftR_map_last [lawful : LawfulMvFunctor F]
       | fs _ ih =>
         apply ih
     simp only [lastFun_from_append1_drop_last, lastFun_toSubtype, lastFun_appendFun,
-      lastFun_subtypeVal, comp.left_id, lastFun_comp, lastFun_prod]
+      lastFun_subtypeVal, id_comp, lastFun_comp, lastFun_prod]
     ext1
     rfl
   liftR_map _ _ _ _ (toSubtype _ ⊚ fromAppend1DropLast ⊚ c ⊚ b) hh
