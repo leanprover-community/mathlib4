@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2024 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov
+Authors: Johannes Hölzl, Yury Kudryashov, Yaël Dillies
 -/
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.Simps.NotationClass
