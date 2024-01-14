@@ -252,9 +252,13 @@ theorem coe_toEven_reverse_involute (x : CliffordAlgebra Q) :
     simp only [involute_ι, Subalgebra.coe_neg, toEven_ι, reverse.map_mul, reverse_v, reverse_e0,
       reverse_ι, neg_e0_mul_v, map_neg]
   · simp only [map_mul, Subalgebra.coe_mul, reverse.map_mul, hx, hy]
-  · sorry
-  -- · repeat (rw [map_add])
-  --   simp only [map_add, Subalgebra.coe_add, hx, hy]
+  -- HACK
+  · letI : AddHomClass (CliffordAlgebra Q →ₐ[R]
+        (CliffordAlgebra.even (CliffordAlgebra.EquivEven.Q' Q)))
+        (CliffordAlgebra Q) (CliffordAlgebra.even (CliffordAlgebra.EquivEven.Q' Q)) :=
+      SemilinearMapClass.toAddHomClass
+    repeat (rw [map_add])
+    simp only [Subalgebra.coe_add, hx, hy, map_add]
 #align clifford_algebra.coe_to_even_reverse_involute CliffordAlgebra.coe_toEven_reverse_involute
 
 /-! ### Constructions needed for `CliffordAlgebra.evenEquivEvenNeg` -/
