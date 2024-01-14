@@ -308,6 +308,9 @@ protected lemma the_calculation {x : ℝ} (hx : x ≠ 0) (h2 : x ≠ 1) :
   rw [← div_div, div_add_div _ _ hx (sub_ne_zero.mpr h2.symm)]
   simp only [one_mul, mul_one, sub_add_cancel, one_div, mul_inv_rev]
 
+lemma log2_ne_0 : log 2 ≠ 0 := by norm_num
+lemma log2_gt_0 : 0 < log 2 := by positivity
+
 /- Assumptions not needed
 (use junk value after proving that `¬DifferentiableAt` there) ?!-/
 lemma deriv2_h₂ {x : ℝ} (h : x ≠ 0) (hh : 1 ≠ x) : deriv^[2] h₂ x = -1 / (x * (1-x) * log 2) := by
@@ -320,7 +323,6 @@ lemma deriv2_h₂ {x : ℝ} (h : x ≠ 0) (hh : 1 ≠ x) : deriv^[2] h₂ x = -1
     · repeat rw [deriv_div_const]
       repeat rw [deriv.log]
       simp only [deriv_one_minus, deriv_id'', one_div]
-      have : log 2 ≠ 0 := by norm_num
       exact Entropy.the_calculation h hh.symm
       exact differentiableAt_id'
       exact h
@@ -331,9 +333,6 @@ lemma deriv2_h₂ {x : ℝ} (h : x ≠ 0) (hh : 1 ≠ x) : deriv^[2] h₂ x = -1
       exact sub_ne_zero.mpr hh
     · exact differentiableAt_log₂ h
   filter_upwards [eventually_ne_nhds h, eventually_ne_nhds hh.symm] with y h h2 using deriv_h₂ h h2
-
-lemma log2_ne_0 : log 2 ≠ 0 := by norm_num
-lemma log2_gt_0 : 0 < log 2 := by positivity
 
 lemma tmptmp (x y : ℝ) (hx : x < 0) (hy : 0 < y) : x / y < 0 := by
     exact div_neg_of_neg_of_pos hx hy
