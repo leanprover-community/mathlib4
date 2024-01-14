@@ -171,7 +171,7 @@ lemma EquicontinuousOn.inducing_uniformOnFun_iff_pi [TopologicalSpace ι]
   exact ⟨fun H ↦ φ.inducing.comp H, fun H ↦ φ.symm.inducing.comp H⟩
 
 -- TODO: find a way to factor common elements of this proof and the proof of
--- `Equicontinuous.comap_uniformOnFun_eq`
+-- `EquicontinuousOn.comap_uniformOnFun_eq`
 theorem EquicontinuousOn.tendsto_uniformOnFun_iff_pi'
     {𝔖 : Set (Set X)} (h𝔖 : ∀ K ∈ 𝔖, IsCompact K)
     (hF : ∀ K ∈ 𝔖, EquicontinuousOn F K) (ℱ : Filter ι) (f : X → α) :
