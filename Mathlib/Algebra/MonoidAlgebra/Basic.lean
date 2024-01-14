@@ -979,7 +979,7 @@ def domCongr (e : G ≃* H) : MonoidAlgebra A G ≃ₐ[k] MonoidAlgebra A H :=
         congr_arg₂ _ (equivMapDomain_eq_mapDomain _ _).symm (equivMapDomain_eq_mapDomain _ _).symm)
 
 theorem domCongr_toAlgHom (e : G ≃* H) : (domCongr k A e).toAlgHom = mapDomainAlgHom k A e :=
-  AlgHom.ext <| fun _ => equivMapDomain_eq_mapDomain _ _
+  AlgHom.ext fun _ => equivMapDomain_eq_mapDomain _ _
 
 @[simp] theorem domCongr_apply (e : G ≃* H) (f : MonoidAlgebra A G) (h : H) :
     domCongr k A e f h = f (e.symm h) :=
@@ -2119,7 +2119,7 @@ def domCongr (e : G ≃+ H) : A[G] ≃ₐ[k] A[H] :=
         congr_arg₂ _ (equivMapDomain_eq_mapDomain _ _).symm (equivMapDomain_eq_mapDomain _ _).symm)
 
 theorem domCongr_toAlgHom (e : G ≃+ H) : (domCongr k A e).toAlgHom = mapDomainAlgHom k A e :=
-  AlgHom.ext <| fun _ => equivMapDomain_eq_mapDomain _ _
+  AlgHom.ext fun _ => equivMapDomain_eq_mapDomain _ _
 
 @[simp] theorem domCongr_apply (e : G ≃+ H) (f : MonoidAlgebra A G) (h : H) :
     domCongr k A e f h = f (e.symm h) :=

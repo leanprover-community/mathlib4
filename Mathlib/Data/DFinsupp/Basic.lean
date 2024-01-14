@@ -1490,7 +1490,7 @@ def sigmaCurry [∀ i j, Zero (δ i j)] (f : Π₀ (i : Σ _, _), δ i.1 i.2) :
   toFun := fun i ↦
   { toFun := fun j ↦ f ⟨i, j⟩,
     support' := f.support'.map (fun ⟨m, hm⟩ ↦
-      ⟨m.filterMap (fun ⟨i', j'⟩ ↦ if h : i' = i then some $ h.rec j' else none),
+      ⟨m.filterMap (fun ⟨i', j'⟩ ↦ if h : i' = i then some <| h.rec j' else none),
         fun j ↦ (hm ⟨i, j⟩).imp_left (fun h ↦ (m.mem_filterMap _).mpr ⟨⟨i, j⟩, h, dif_pos rfl⟩)⟩) }
   support' := f.support'.map (fun ⟨m, hm⟩ ↦
     ⟨m.map Sigma.fst, fun i ↦ Decidable.or_iff_not_imp_left.mpr (fun h ↦ DFinsupp.ext
@@ -2151,9 +2151,8 @@ theorem sum_single [∀ i, AddCommMonoid (β i)] [∀ (i) (x : β i), Decidable 
 @[to_additive]
 theorem prod_subtypeDomain_index [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
     [CommMonoid γ] {v : Π₀ i, β i} {p : ι → Prop} [DecidablePred p] {h : ∀ i, β i → γ}
-    (hp : ∀ x ∈ v.support, p x) : ((v.subtypeDomain p).prod fun i b => h i b) = v.prod h :=
-  Finset.prod_bij (fun p _ => p) (by simp) (by simp) (fun ⟨a₀, ha₀⟩ ⟨a₁, ha₁⟩ => by simp)
-    fun i hi => ⟨⟨i, hp i hi⟩, by simpa using hi, rfl⟩
+    (hp : ∀ x ∈ v.support, p x) : (v.subtypeDomain p).prod (fun i b => h i b) = v.prod h := by
+  refine Finset.prod_bij (fun p _ ↦ p) ?_ ?_ ?_ ?_ <;> aesop
 #align dfinsupp.prod_subtype_domain_index DFinsupp.prod_subtypeDomain_index
 #align dfinsupp.sum_subtype_domain_index DFinsupp.sum_subtypeDomain_index
 

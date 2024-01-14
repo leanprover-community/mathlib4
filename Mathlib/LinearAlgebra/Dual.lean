@@ -90,10 +90,6 @@ The dual space of an $R$-module $M$ is the $R$-module of $R$-linear maps $M \to 
   * `Subspace.dualQuotDistrib W` is an equivalence
     `Dual K (V₁ ⧸ W) ≃ₗ[K] Dual K V₁ ⧸ W.dualLift.range` from an arbitrary choice of
     splitting of `V₁`.
-
-## TODO
-
-Erdős-Kaplansky theorem about the dimension of a dual vector space in case of infinite dimension.
 -/
 
 noncomputable section
@@ -407,6 +403,18 @@ def toDualEquiv : M ≃ₗ[R] Dual R M :=
 theorem toDualEquiv_apply (m : M) : b.toDualEquiv m = b.toDual m :=
   rfl
 #align basis.to_dual_equiv_apply Basis.toDualEquiv_apply
+
+-- Not sure whether this is true for free modules over a commutative ring
+/-- A vector space over a field is isomorphic to its dual if and only if it is finite-dimensional:
+  a consequence of the Erdős-Kaplansky theorem. -/
+theorem linearEquiv_dual_iff_finiteDimensional [Field K] [AddCommGroup V] [Module K V] :
+    Nonempty (V ≃ₗ[K] Dual K V) ↔ FiniteDimensional K V := by
+  refine ⟨fun ⟨e⟩ ↦ ?_, fun h ↦ ⟨(Module.Free.chooseBasis K V).toDualEquiv⟩⟩
+  rw [FiniteDimensional, ← Module.rank_lt_alpeh0_iff]
+  by_contra!
+  apply (lift_rank_lt_rank_dual this).ne
+  have := e.lift_rank_eq
+  rwa [lift_umax.{uV,uK}, lift_id'.{uV,uK}] at this
 
 /-- Maps a basis for `V` to a basis for the dual space. -/
 def dualBasis : Basis ι R (Dual R M) :=
@@ -904,6 +912,7 @@ def dualCoannihilator (Φ : Submodule R (Module.Dual R M)) : Submodule R M :=
   Φ.dualAnnihilator.comap (Module.Dual.eval R M)
 #align submodule.dual_coannihilator Submodule.dualCoannihilator
 
+@[simp]
 theorem mem_dualCoannihilator {Φ : Submodule R (Module.Dual R M)} (x : M) :
     x ∈ Φ.dualCoannihilator ↔ ∀ φ ∈ Φ, (φ x : R) = 0 := by
   simp_rw [dualCoannihilator, mem_comap, mem_dualAnnihilator, Module.Dual.eval_apply]
@@ -1420,6 +1429,15 @@ theorem range_dualMap_eq_dualAnnihilator_ker_of_subtype_range_surjective (f : M 
     exact (ker_rangeRestrict f).symm
 #align linear_map.range_dual_map_eq_dual_annihilator_ker_of_subtype_range_surjective LinearMap.range_dualMap_eq_dualAnnihilator_ker_of_subtype_range_surjective
 
+theorem ker_dualMap_eq_dualCoannihilator_range (f : M →ₗ[R] M') :
+    LinearMap.ker f.dualMap = (Dual.eval R M' ∘ₗ f).range.dualCoannihilator := by
+  ext x; simp [ext_iff (f := dualMap f x)]
+
+@[simp]
+lemma dualCoannihilator_range_eq_ker_flip (B : M →ₗ[R] M' →ₗ[R] R) :
+    (range B).dualCoannihilator = LinearMap.ker B.flip := by
+  ext x; simp [ext_iff (f := B.flip x)]
+
 end LinearMap
 
 end CommRing
@@ -1586,6 +1604,12 @@ theorem dualMap_bijective_iff {f : V₁ →ₗ[K] V₂} :
 #align linear_map.dual_map_bijective_iff LinearMap.dualMap_bijective_iff
 
 variable {B : V₁ →ₗ[K] V₂ →ₗ[K] K}
+
+@[simp]
+lemma dualAnnihilator_ker_eq_range_flip [IsReflexive K V₂] :
+    (ker B).dualAnnihilator = range B.flip := by
+  change _ = range (B.dualMap.comp (Module.evalEquiv K V₂).toLinearMap)
+  rw [← range_dualMap_eq_dualAnnihilator_ker, range_comp_of_range_eq_top _ (LinearEquiv.range _)]
 
 open Function
 

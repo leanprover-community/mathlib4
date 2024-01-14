@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 -/
+import Mathlib.Algebra.Opposites
 import Mathlib.Data.List.BigOperators.Defs
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.List.Forall2
@@ -291,12 +292,12 @@ of `∀ a ∈ l₂, 1 ≤ a` but this lemma is not yet in `mathlib`. -/
 theorem Sublist.prod_le_prod' [Preorder M] [CovariantClass M M (Function.swap (· * ·)) (· ≤ ·)]
     [CovariantClass M M (· * ·) (· ≤ ·)] {l₁ l₂ : List M} (h : l₁ <+ l₂)
     (h₁ : ∀ a ∈ l₂, (1 : M) ≤ a) : l₁.prod ≤ l₂.prod := by
-  induction h
-  case slnil => rfl
-  case cons l₁ l₂ a _ ih' =>
+  induction h with
+  | slnil => rfl
+  | cons a _ ih' =>
     simp only [prod_cons, forall_mem_cons] at h₁ ⊢
     exact (ih' h₁.2).trans (le_mul_of_one_le_left' h₁.1)
-  case cons₂ l₁ l₂ a _ ih' =>
+  | cons₂ a _ ih' =>
     simp only [prod_cons, forall_mem_cons] at h₁ ⊢
     exact mul_le_mul_left' (ih' h₁.2) _
 #align list.sublist.prod_le_prod' List.Sublist.prod_le_prod'

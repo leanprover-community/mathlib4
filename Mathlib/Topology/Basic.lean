@@ -51,9 +51,6 @@ Topology in mathlib heavily uses filters (even more than in Bourbaki). See expla
 topological space, interior, closure, frontier, neighborhood, continuity, continuous function
 -/
 
-set_option autoImplicit true
-
-
 noncomputable section
 
 open Set Filter
@@ -901,7 +898,7 @@ theorem nhds_le_of_le {f a} {s : Set α} (h : a ∈ s) (o : IsOpen s) (sf : 𝓟
 
 -- porting note: use `∃ t, t ⊆ s ∧ _` instead of `∃ t ⊆ s, _`
 theorem mem_nhds_iff {a : α} {s : Set α} : s ∈ 𝓝 a ↔ ∃ t, t ⊆ s ∧ IsOpen t ∧ a ∈ t :=
-  (nhds_basis_opens a).mem_iff.trans <| exists_congr <| fun _ =>
+  (nhds_basis_opens a).mem_iff.trans <| exists_congr fun _ =>
     ⟨fun h => ⟨h.2, h.1.2, h.1.1⟩, fun h => ⟨⟨h.2.2, h.2.1⟩, h.1⟩⟩
 #align mem_nhds_iff mem_nhds_iffₓ
 
@@ -1083,11 +1080,11 @@ instance nhds_neBot {a : α} : NeBot (𝓝 a) :=
   neBot_of_le (pure_le_nhds a)
 #align nhds_ne_bot nhds_neBot
 
-theorem tendsto_nhds_of_eventually_eq {f : β → α} {a : α} (h : ∀ᶠ x in l, f x = a) :
+theorem tendsto_nhds_of_eventually_eq {l : Filter β} {f : β → α} {a : α} (h : ∀ᶠ x in l, f x = a) :
     Tendsto f l (𝓝 a) :=
   tendsto_const_nhds.congr' (.symm h)
 
-theorem Filter.EventuallyEq.tendsto {f : β → α} {a : α} (hf : f =ᶠ[l] fun _ ↦ a) :
+theorem Filter.EventuallyEq.tendsto {l : Filter β} {f : β → α} {a : α} (hf : f =ᶠ[l] fun _ ↦ a) :
     Tendsto f l (𝓝 a) :=
   tendsto_nhds_of_eventually_eq hf
 

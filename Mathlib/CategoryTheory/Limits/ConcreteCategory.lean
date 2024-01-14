@@ -145,17 +145,17 @@ theorem Concrete.isColimit_exists_of_rep_eq {D : Cocone F} {i j : J} (hD : IsCol
       ∃ (k : _) (f : a.1 ⟶ k) (g : b.1 ⟶ k), F.map f a.2 = F.map g b.2
     by exact this ⟨i, x⟩ ⟨j, y⟩ h
   intro a b h
-  induction h
-  case rel x y hh =>
+  induction h with
+  | rel x y hh =>
     obtain ⟨e, he⟩ := hh
     use y.1, e, 𝟙 _
     simpa using he.symm
-  case refl x =>
+  | refl x =>
     exact ⟨x.1, 𝟙 _, 𝟙 _, rfl⟩
-  case symm x y _ hh =>
+  | symm x y _ hh =>
     obtain ⟨k, f, g, hh⟩ := hh
     exact ⟨k, g, f, hh.symm⟩
-  case trans x y z _ _ hh1 hh2 =>
+  | trans x y z _ _ hh1 hh2 =>
     obtain ⟨k1, f1, g1, h1⟩ := hh1
     obtain ⟨k2, f2, g2, h2⟩ := hh2
     let k0 : J := IsFiltered.max k1 k2

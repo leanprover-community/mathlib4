@@ -804,7 +804,7 @@ theorem surj_on_of_inj_on_of_ncard_le {t : Set β} (f : ∀ a ∈ s, β) (hf : �
 #align set.surj_on_of_inj_on_of_ncard_le Set.surj_on_of_inj_on_of_ncard_le
 
 theorem inj_on_of_surj_on_of_ncard_le {t : Set β} (f : ∀ a ∈ s, β) (hf : ∀ a ha, f a ha ∈ t)
-    (hsurj : ∀ b ∈ t, ∃ a ha, b = f a ha) (hst : s.ncard ≤ t.ncard) ⦃a₁ a₂⦄ (ha₁ : a₁ ∈ s)
+    (hsurj : ∀ b ∈ t, ∃ a ha, f a ha = b) (hst : s.ncard ≤ t.ncard) ⦃a₁⦄ (ha₁ : a₁ ∈ s) ⦃a₂⦄
     (ha₂ : a₂ ∈ s) (ha₁a₂ : f a₁ ha₁ = f a₂ ha₂) (hs : s.Finite := by toFinite_tac) :
     a₁ = a₂ := by
   classical
@@ -820,8 +820,8 @@ theorem inj_on_of_surj_on_of_ncard_le {t : Set β} (f : ∀ a ∈ s, β) (hf : �
   exact
     @Finset.inj_on_of_surj_on_of_card_le _ _ _ t.toFinset f''
       (fun a ha ↦ by { rw [mem_toFinset] at ha ⊢; exact hf a ha }) (by simpa)
-      (by { rwa [← ncard_eq_toFinset_card', ← ncard_eq_toFinset_card'] }) a₁ a₂
-      (by simpa) (by simpa) (by simpa)
+      (by { rwa [← ncard_eq_toFinset_card', ← ncard_eq_toFinset_card'] }) a₁
+      (by simpa) a₂ (by simpa) (by simpa)
 #align set.inj_on_of_surj_on_of_ncard_le Set.inj_on_of_surj_on_of_ncard_le
 
 section Lattice

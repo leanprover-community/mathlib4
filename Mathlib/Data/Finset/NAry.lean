@@ -41,7 +41,7 @@ def image₂ (f : α → β → γ) (s : Finset α) (t : Finset β) : Finset γ 
 #align finset.image₂ Finset.image₂
 
 @[simp]
-theorem mem_image₂ : c ∈ image₂ f s t ↔ ∃ a b, a ∈ s ∧ b ∈ t ∧ f a b = c := by
+theorem mem_image₂ : c ∈ image₂ f s t ↔ ∃ a ∈ s, ∃ b ∈ t, f a b = c := by
   simp [image₂, and_assoc]
 #align finset.mem_image₂ Finset.mem_image₂
 
@@ -68,7 +68,7 @@ theorem card_image₂ (hf : Injective2 f) (s : Finset α) (t : Finset β) :
 #align finset.card_image₂ Finset.card_image₂
 
 theorem mem_image₂_of_mem (ha : a ∈ s) (hb : b ∈ t) : f a b ∈ image₂ f s t :=
-  mem_image₂.2 ⟨a, b, ha, hb, rfl⟩
+  mem_image₂.2 ⟨a, ha, b, hb, rfl⟩
 #align finset.mem_image₂_of_mem Finset.mem_image₂_of_mem
 
 theorem mem_image₂_iff (hf : Injective2 f) : f a b ∈ image₂ f s t ↔ a ∈ s ∧ b ∈ t := by
@@ -584,6 +584,18 @@ theorem image₂_union_inter_subset {f : α → α → β} {s t : Finset α} (hf
 #align finset.image₂_union_inter_subset Finset.image₂_union_inter_subset
 
 end Finset
+
+open Finset
+
+namespace Fintype
+variable {ι : Type*} {α β γ : ι → Type*} [DecidableEq ι] [Fintype ι] [∀ i, DecidableEq (γ i)]
+
+lemma piFinset_image₂ (f : ∀ i, α i → β i → γ i) (s : ∀ i, Finset (α i)) (t : ∀ i, Finset (β i)) :
+    piFinset (fun i ↦ image₂ (f i) (s i) (t i)) =
+      image₂ (fun a b i ↦ f _ (a i) (b i)) (piFinset s) (piFinset t) := by
+  ext; simp only [mem_piFinset, mem_image₂, Classical.skolem, forall_and, Function.funext_iff]
+
+end Fintype
 
 namespace Set
 

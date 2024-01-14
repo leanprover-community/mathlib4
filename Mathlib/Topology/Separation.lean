@@ -237,7 +237,7 @@ theorem inseparable_eq_eq [T0Space X] : Inseparable = @Eq X :=
 theorem TopologicalSpace.IsTopologicalBasis.inseparable_iff {b : Set (Set X)}
     (hb : IsTopologicalBasis b) {x y : X} : Inseparable x y ↔ ∀ s ∈ b, (x ∈ s ↔ y ∈ s) :=
   ⟨fun h s hs ↦ inseparable_iff_forall_open.1 h _ (hb.isOpen hs),
-    fun h ↦ hb.nhds_hasBasis.eq_of_same_basis $ by
+    fun h ↦ hb.nhds_hasBasis.eq_of_same_basis <| by
       convert hb.nhds_hasBasis using 2
       exact and_congr_right (h _)⟩
 
@@ -916,7 +916,7 @@ theorem TopologicalSpace.subset_trans {s t : Set X} (ts : t ⊆ s) :
 /-- A T₂ space, also known as a Hausdorff space, is one in which for every
   `x ≠ y` there exists disjoint open sets around `x` and `y`. This is
   the most widely used of the separation axioms. -/
-@[mk_iff t2Space_iff]
+@[mk_iff]
 class T2Space (X : Type u) [TopologicalSpace X] : Prop where
   /-- Every two points in a Hausdorff space admit disjoint open neighbourhoods. -/
   t2 : Pairwise fun x y => ∃ u v : Set X, IsOpen u ∧ IsOpen v ∧ x ∈ u ∧ y ∈ v ∧ Disjoint u v
@@ -1568,7 +1568,7 @@ section RegularSpace
 /-- A topological space is called a *regular space* if for any closed set `s` and `a ∉ s`, there
 exist disjoint open sets `U ⊇ s` and `V ∋ a`. We formulate this condition in terms of `Disjoint`ness
 of filters `𝓝ˢ s` and `𝓝 a`. -/
-@[mk_iff regularSpace_iff]
+@[mk_iff]
 class RegularSpace (X : Type u) [TopologicalSpace X] : Prop where
   /-- If `a` is a point that does not belong to a closed set `s`, then `a` and `s` admit disjoint
   neighborhoods.  -/
