@@ -128,12 +128,14 @@ section AddEdge
 /-- The graph with a single `s-t` edge. It is empty iff `s = t`. -/
 def edge : SimpleGraph V := fromEdgeSet {s(s, t)}
 
+lemma edge_adj (v w : V) : (edge s t).Adj v w ↔ (v = s ∧ w = t ∨ v = t ∧ w = s) ∧ v ≠ w := by
+  rw [edge, fromEdgeSet_adj, Set.mem_singleton_iff, Sym2.eq_iff]
+
 instance : Fintype (edge s t).edgeSet := by rw [edge]; infer_instance
 
 lemma edge_self_eq_bot : edge s s = ⊥ := by
   ext a b
-  rw [edge, fromEdgeSet_adj, Set.mem_singleton_iff, Sym2.eq_iff, or_self, bot_adj, iff_false,
-    not_and, and_imp, not_ne_iff]
+  rw [edge_adj, or_self, bot_adj, iff_false, not_and, and_imp, not_ne_iff]
   exact fun j k ↦ j.trans k.symm
 
 @[simp]

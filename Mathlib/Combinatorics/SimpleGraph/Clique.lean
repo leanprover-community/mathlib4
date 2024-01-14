@@ -333,8 +333,8 @@ theorem cliqueFree_two : G.CliqueFree 2 ↔ G = ⊥ := by
 #align simple_graph.clique_free_two SimpleGraph.cliqueFree_two
 
 /-- Adding an edge increases the clique number by at most one. -/
-protected theorem CliqueFree.addEdge (h : G.CliqueFree n) (v w) :
-    (G.addEdge v w).CliqueFree (n + 1) := by
+protected theorem CliqueFree.sup_edge (h : G.CliqueFree n) (v w : α) :
+    (G ⊔ edge v w).CliqueFree (n + 1) := by
   contrapose h
   obtain ⟨f, ha⟩ := topEmbeddingOfNotCliqueFree h
   simp only [ne_eq, top_adj] at ha
@@ -349,7 +349,8 @@ protected theorem CliqueFree.addEdge (h : G.CliqueFree n) (v w) :
       (hx ▸ f.apply_eq_iff_eq x (x.succAbove a)).ne.mpr (x.succAbove_ne a).symm
     have ib : w ≠ f (x.succAbove b) :=
       (hx ▸ f.apply_eq_iff_eq x (x.succAbove b)).ne.mpr (x.succAbove_ne b).symm
-    simp only [addEdge, ia, ib, and_false, false_and, or_false] at hs
+    rw [sup_adj, edge_adj] at hs
+    simp only [ia.symm, ib.symm, and_false, false_and, or_false] at hs
     rw [hs, Fin.succAbove_right_inj]
   · use ⟨f ∘ Fin.succEmbedding n, (f.2.of_comp_iff _).mpr (RelEmbedding.injective _)⟩
     intro a b
@@ -357,7 +358,8 @@ protected theorem CliqueFree.addEdge (h : G.CliqueFree n) (v w) :
     have hs := @ha a.succ b.succ
     have ia : f a.succ ≠ w := by simp_all
     have ib : f b.succ ≠ w := by simp_all
-    simp only [addEdge, ia.symm, ib.symm, and_false, false_and, or_false] at hs
+    rw [sup_adj, edge_adj] at hs
+    simp only [ia, ib, and_false, false_and, or_false] at hs
     rw [hs, Fin.succ_inj]
 
 end CliqueFree
