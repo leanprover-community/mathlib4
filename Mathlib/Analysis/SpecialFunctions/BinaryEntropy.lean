@@ -50,7 +50,7 @@ noncomputable def h₂ (p : ℝ) : ℝ := -p * log₂ p - (1 - p) * log₂ (1 - 
   simp
   field_simp
 
-lemma mul_log2_lt {x y : ℝ} :  x < y ↔ x * log 2 < y * log 2 := by field_simp
+lemma mul_log2_lt {x y : ℝ} : x < y ↔ x * log 2 < y * log 2 := by field_simp
 
 -- some basic facts about h₂
 
@@ -185,9 +185,6 @@ lemma deriv_log_one_sub {x : ℝ} (hh : x ≠ 1): deriv (fun p ↦ log (1 - p)) 
   exact differentiable_1_minusp x
   exact sub_ne_zero.mpr (id (Ne.symm hh))
 
-lemma not_differentiableAt_zero_log  : ¬DifferentiableAt ℝ Real.log 0 := by
-    simp_all only [differentiableAt_log_iff, ne_eq, not_true_eq_false, not_false_eq_true]
-
 @[simp] lemma differentiableAt_log_const_neg {x c : ℝ} (h : x ≠ c) :
     DifferentiableAt ℝ (fun p ↦ log (c - p)) x := by
   apply DifferentiableAt.log
@@ -270,20 +267,6 @@ lemma hasDerivAt_h₂ {x : ℝ} (xne0: x ≠ 0) (gne1 : x ≠ 1) :
 
 lemma cancel_log2 (x : ℝ) : log x / log 2 * log 2 = log x := by field_simp
 
-theorem not_differe : ¬ DifferentiableAt ℝ (abs : ℝ → ℝ) 0 := by
-  intro h
-  have h₁ : deriv abs (0 : ℝ) = 1 := by
-    have p1 := uniqueDiffOn_Ici 0 0 Set.left_mem_Ici
-    apply p1.eq_deriv (Set.Ici 0) h.hasDerivAt.hasDerivWithinAt
-    -- apply ((hasDerivWithinAt_id 0 _).congr_of_mem (fun _ h ↦ abs_of_nonneg h) Set.left_mem_Ici)
-    apply HasDerivWithinAt.congr_of_mem _ (fun _ h ↦ abs_of_nonneg h)
-    apply Set.left_mem_Ici
-    apply hasDerivWithinAt_id 0 _
-  have h₂ : deriv abs (0 : ℝ) = -1 :=
-    (uniqueDiffOn_Iic _ _ Set.right_mem_Iic).eq_deriv _ h.hasDerivAt.hasDerivWithinAt <|
-      (hasDerivWithinAt_neg _ _).congr_of_mem (fun _ h ↦ abs_of_nonpos h) Set.right_mem_Iic
-  linarith
-
 open Set
 
 /- Binary entropy is continuous everywhere.
@@ -304,15 +287,6 @@ lemma h₂_continuous : Continuous h₂ := by
   apply Continuous.div_const
   apply Continuous.neg
   exact Continuous.comp continuous_mul_log (continuous_sub_left 1)
-
-lemma strictConcave_h2 : StrictConcaveOn ℝ (Icc 0 1) h₂ := by
-  apply strictConcaveOn_of_deriv2_neg (convex_Icc 0 1) h₂_continuous.continuousOn
-  intro x hx
-  simp_all
-  eta_expand
-  sorry
-
-#check not_differentiableAt_abs_zero
 
 /- Binary entropy is strictly increasing in interval [0, 1/2]. -/
 lemma h2_strictMono : StrictMonoOn h₂ (Set.Icc 0 (1/2)) := by
