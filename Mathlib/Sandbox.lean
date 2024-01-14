@@ -4,27 +4,6 @@ import Mathlib.LinearAlgebra.FreeModule.PID
 import Mathlib.RingTheory.Ideal.Norm
 import Mathlib.RingTheory.Localization.Module
 
-section Ideal
-
-open Module
-
-variable {R S : Type*} [CommRing R] [IsDomain R] [IsPrincipalIdealRing R] [CommRing S] [IsDomain S]
-  [Algebra R S] [Module.Free R S] [Module.Finite R S] (I : Ideal S)
-
-instance : Module.Free R I := by
-  by_cases hI : I = ⊥
-  · have : Subsingleton I := Submodule.subsingleton_iff_eq_bot.mpr hI
-    exact Module.Free.of_subsingleton R I
-  · exact Free.of_basis (I.selfBasis (Free.chooseBasis R S) hI)
-
-instance : Module.Finite R I := by
-  by_cases hI : I = ⊥
-  · have : Subsingleton I := Submodule.subsingleton_iff_eq_bot.mpr hI
-    exact IsNoetherian.finite R ↥I
-  · exact Finite.of_basis (I.selfBasis (Free.chooseBasis R S) hI)
-
-end Ideal
-
 open NumberField FiniteDimensional Module
 
 namespace NumberField
