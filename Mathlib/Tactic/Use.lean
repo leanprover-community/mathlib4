@@ -3,8 +3,6 @@ Copyright (c) 2022 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Gabriel Ebner, Kyle Miller
 -/
-
-import Lean
 import Std.Logic
 
 /-!
@@ -87,7 +85,7 @@ def useLoop (eager : Bool) (gs : List MVarId) (args : List Term) (acc insts : Li
     return (gs, acc, insts)
   | [], arg :: _ =>
     throwErrorAt arg "too many arguments supplied to `use`"
-  | g :: gs', arg :: args' =>
+  | g :: gs', arg :: args' => g.withContext do
     if ← g.isAssigned then
       -- Goals might become assigned in inductive types with indices.
       -- Let's check that what's supplied is defeq to what's already there.
@@ -120,7 +118,7 @@ def runUse (eager : Bool) (discharger : TacticM Unit) (args : List Term) : Tacti
     -- Try synthesizing instance arguments
     for inst in insts do
       if !(← inst.isAssigned) then
-        discard <| observing? do inst.assign (← synthInstance (← inst.getType))
+        discard <| inst.withContext <| observing? do inst.assign (← synthInstance (← inst.getType))
     -- Set the goals.
     setGoals (egoals ++ acc)
     pruneSolvedGoals
@@ -129,9 +127,10 @@ def runUse (eager : Bool) (discharger : TacticM Unit) (args : List Term) : Tacti
   -- (`trivial` uses `assumption`, which isn't great for non-propositions)
   for g in egoals do
     if !(← g.isAssigned) then
-      if ← isProp (← g.getType) then
-        trace[tactic.use] "running discharger on {g}"
-        discard <| run g discharger
+      g.withContext do
+        if ← isProp (← g.getType) then
+          trace[tactic.use] "running discharger on {g}"
+          discard <| run g discharger
 
 /-- Default discharger to try to use for the `use` and `use!` tactics.
 This is similar to the `trivial` tactic but doesn't do things like `contradiction` or `decide`. -/

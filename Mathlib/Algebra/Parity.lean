@@ -58,12 +58,43 @@ theorem isSquare_mul_self (m : α) : IsSquare (m * m) :=
 #align even_add_self even_add_self
 
 @[to_additive]
-theorem isSquare_op_iff (a : α) : IsSquare (op a) ↔ IsSquare a :=
-  ⟨fun ⟨c, hc⟩ => ⟨unop c, by rw [← unop_mul, ← hc, unop_op]⟩, fun ⟨c, hc⟩ => by simp [hc]⟩
+theorem isSquare_op_iff {a : α} : IsSquare (op a) ↔ IsSquare a :=
+  ⟨fun ⟨c, hc⟩ => ⟨unop c, congr_arg unop hc⟩, fun ⟨c, hc⟩ => ⟨op c, congr_arg op hc⟩⟩
 #align is_square_op_iff isSquare_op_iff
 #align even_op_iff even_op_iff
 
+@[to_additive]
+theorem isSquare_unop_iff {a : αᵐᵒᵖ} : IsSquare (unop a) ↔ IsSquare a := isSquare_op_iff.symm
+
+@[to_additive]
+instance [DecidablePred (IsSquare : α → Prop)] : DecidablePred (IsSquare : αᵐᵒᵖ → Prop) :=
+  fun _ => decidable_of_iff _ isSquare_unop_iff
+
+@[simp]
+theorem even_ofMul_iff {a : α} : Even (Additive.ofMul a) ↔ IsSquare a := Iff.rfl
+
+@[simp]
+theorem isSquare_toMul_iff {a : Additive α} : IsSquare (Additive.toMul a) ↔ Even a := Iff.rfl
+
+instance [DecidablePred (IsSquare : α → Prop)] : DecidablePred (Even : Additive α → Prop) :=
+  fun _ => decidable_of_iff _ isSquare_toMul_iff
+
 end Mul
+
+section Add
+variable [Add α]
+
+@[simp]
+theorem isSquare_ofAdd_iff {a : α} : IsSquare (Multiplicative.ofAdd a) ↔ Even a := Iff.rfl
+
+@[simp]
+theorem even_toAdd_iff {a : Multiplicative α} :
+    Even (Multiplicative.toAdd a) ↔ IsSquare a := Iff.rfl
+
+instance [DecidablePred (Even : α → Prop)] : DecidablePred (IsSquare : Multiplicative α → Prop) :=
+  fun _ => decidable_of_iff _ even_toAdd_iff
+
+end Add
 
 @[to_additive (attr := simp)]
 theorem isSquare_one [MulOneClass α] : IsSquare (1 : α) :=
@@ -165,7 +196,7 @@ theorem isSquare_inv : IsSquare a⁻¹ ↔ IsSquare a := by
   refine' ⟨fun h => _, fun h => _⟩
   · rw [← isSquare_op_iff, ← inv_inv a]
     exact h.map (MulEquiv.inv' α)
-  · exact ((isSquare_op_iff a).mpr h).map (MulEquiv.inv' α).symm
+  · exact (isSquare_op_iff.mpr h).map (MulEquiv.inv' α).symm
 #align is_square_inv isSquare_inv
 #align even_neg even_neg
 
@@ -194,7 +225,7 @@ theorem Even.neg_one_zpow (h : Even n) : (-1 : α) ^ n = 1 := by rw [h.neg_zpow,
 
 end DivisionMonoid
 
-theorem even_abs [SubtractionMonoid α] [LinearOrder α] {a : α} : Even |a| ↔ Even a := by
+theorem even_abs [AddGroup α] [LinearOrder α] {a : α} : Even |a| ↔ Even a := by
   cases abs_choice a
   · have h : abs a = a := by assumption
     simp only [h, even_neg]

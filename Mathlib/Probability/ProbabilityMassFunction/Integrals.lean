@@ -22,8 +22,8 @@ open MeasureTheory BigOperators ENNReal TopologicalSpace
 
 section General
 
-variable {α : Type _} [MeasurableSpace α] [MeasurableSingletonClass α]
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+variable {α : Type*} [MeasurableSpace α] [MeasurableSingletonClass α]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
 
 theorem integral_eq_tsum (p : PMF α) (f : α → E) (hf : Integrable f p.toMeasure) :
     ∫ a, f a ∂(p.toMeasure) = ∑' a, (p a).toReal • f a := calc
@@ -35,7 +35,7 @@ theorem integral_eq_tsum (p : PMF α) (f : α → E) (hf : Integrable f p.toMeas
     congr with x; congr
     apply PMF.toMeasure_apply_singleton p x (MeasurableSet.singleton _)
   _ = ∑' a, (p a).toReal • f a :=
-    tsum_subtype_eq_of_support_subset $ by calc
+    tsum_subtype_eq_of_support_subset <| by calc
       (fun a ↦ (p a).toReal • f a).support ⊆ (fun a ↦ (p a).toReal).support :=
         Function.support_smul_subset_left _ _
       _ ⊆ support p := fun x h1 h2 => h1 (by simp [h2])

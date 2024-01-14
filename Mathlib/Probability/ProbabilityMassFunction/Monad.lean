@@ -130,7 +130,7 @@ theorem mem_support_bind_iff (b : β) :
 @[simp]
 theorem pure_bind (a : α) (f : α → PMF β) : (pure a).bind f = f a := by
   have : ∀ b a', ite (a' = a) (f a' b) 0 = ite (a' = a) (f a b) 0 := fun b a' => by
-    split_ifs with h <;> simp; subst h; simp
+    split_ifs with h <;> simp [h]
   ext b
   simp [this]
 #align pmf.pure_bind PMF.pure_bind
@@ -286,7 +286,7 @@ theorem bindOnSupport_bindOnSupport (p : PMF α) (f : ∀ a ∈ p.support, PMF �
   split_ifs with h _ h_1 _ h_2
   any_goals ring1
   · have := h_1 a'
-    simp [h] at this
+    simp? [h] at this says simp only [h, dite_false, mul_eq_zero, false_or] at this
     contradiction
   · simp [h_2]
 #align pmf.bind_on_support_bind_on_support PMF.bindOnSupport_bindOnSupport

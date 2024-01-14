@@ -300,6 +300,10 @@ theorem IsUltrahomogeneous.amalgamation_age (h : L.IsUltrahomogeneous M) :
   erw [Substructure.coe_inclusion, Substructure.coe_inclusion]
   simp only [Embedding.comp_apply, Equiv.coe_toEmbedding, Set.coe_inclusion,
     Embedding.equivRange_apply, hgn]
+  -- This used to be `simp only [...]` before leanprover/lean4#2644
+  erw [Embedding.comp_apply, Equiv.coe_toEmbedding,
+    Embedding.equivRange_apply]
+  simp
 #align first_order.language.is_ultrahomogeneous.amalgamation_age FirstOrder.Language.IsUltrahomogeneous.amalgamation_age
 
 theorem IsUltrahomogeneous.age_isFraisse [Countable M] (h : L.IsUltrahomogeneous M) :

@@ -63,11 +63,11 @@ number when you need its inverse.
 
 
 instance invertibleTwo : Invertible (2 : K) :=
-  invertibleOfNonzero (by exact_mod_cast (by decide : 2 ≠ 0))
+  invertibleOfNonzero (mod_cast (by decide : 2 ≠ 0))
 #align invertible_two invertibleTwo
 
 instance invertibleThree : Invertible (3 : K) :=
-  invertibleOfNonzero (by exact_mod_cast (by decide : 3 ≠ 0))
+  invertibleOfNonzero (mod_cast (by decide : 3 ≠ 0))
 #align invertible_three invertibleThree
 
 end DivisionRing

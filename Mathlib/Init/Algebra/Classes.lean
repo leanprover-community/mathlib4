@@ -420,7 +420,7 @@ theorem not_lt_of_equiv' {a b : α} : a ≈ b → ¬b ≺ a := fun h => h.2
 instance isEquiv : IsEquiv α (@Equiv _ r) where
   refl := erefl
   trans _ _ _ := etrans
-  symm _ _:= esymm
+  symm _ _ := esymm
 #align strict_weak_order.is_equiv StrictWeakOrder.isEquiv
 
 end

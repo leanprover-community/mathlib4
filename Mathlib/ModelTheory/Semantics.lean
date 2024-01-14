@@ -182,7 +182,7 @@ theorem realize_varsToConstants [L[[α]].Structure M] [(lhomWithConstants L α).
   induction' t with ab n f ts ih
   · cases' ab with a b
     --Porting note: both cases were `simp [Language.con]`
-    · simp [Language.con, realize, constantMap, funMap_eq_coe_constants]
+    · simp [Language.con, realize, funMap_eq_coe_constants]
     · simp [realize, constantMap]
   · simp only [realize, constantsOn, mk₂_Functions, ih]
     --Porting note: below lemma does not work with simp for some reason
@@ -281,7 +281,7 @@ theorem realize_top : (⊤ : L.BoundedFormula α l).Realize v xs ↔ True := by 
 
 @[simp]
 theorem realize_inf : (φ ⊓ ψ).Realize v xs ↔ φ.Realize v xs ∧ ψ.Realize v xs := by
-  simp [Inf.inf, Realize]; tauto
+  simp [Inf.inf, Realize]
 #align first_order.language.bounded_formula.realize_inf FirstOrder.Language.BoundedFormula.realize_inf
 
 @[simp]
@@ -476,11 +476,13 @@ theorem realize_constantsVarsEquiv [L[[α]].Structure M] [(lhomWithConstants L �
     {n} {φ : L[[α]].BoundedFormula β n} {v : β → M} {xs : Fin n → M} :
     (constantsVarsEquiv φ).Realize (Sum.elim (fun a => ↑(L.con a)) v) xs ↔ φ.Realize v xs := by
   refine' realize_mapTermRel_id (fun n t xs => realize_constantsVarsEquivLeft) fun n R xs => _
-  rw [← (lhomWithConstants L α).map_onRelation
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  erw [← (lhomWithConstants L α).map_onRelation
       (Equiv.sumEmpty (L.Relations n) ((constantsOn α).Relations n) R) xs]
   rcongr
   cases' R with R R
-  · simp
+  · -- This used to be `simp` before leanprover/lean4#2644
+    simp; erw [Equiv.sumEmpty_apply_inl]
   · exact isEmptyElim R
 #align first_order.language.bounded_formula.realize_constants_vars_equiv FirstOrder.Language.BoundedFormula.realize_constantsVarsEquiv
 
@@ -522,7 +524,7 @@ theorem realize_toPrenexImpRight {φ ψ : L.BoundedFormula α n} (hφ : IsQF φ)
     refine' ⟨_, fun h' => _⟩
     · rintro ⟨a, ha⟩ h
       exact ⟨a, ha h⟩
-    · by_cases φ.Realize v xs
+    · by_cases h : φ.Realize v xs
       · obtain ⟨a, ha⟩ := h' h
         exact ⟨a, fun _ => ha⟩
       · inhabit M
@@ -542,7 +544,7 @@ theorem realize_toPrenexImp {φ ψ : L.BoundedFormula α n} (hφ : IsPrenex φ) 
     refine' ⟨_, fun h' => _⟩
     · rintro ⟨a, ha⟩ h
       exact ha (h a)
-    · by_cases ψ.Realize v xs
+    · by_cases h : ψ.Realize v xs
       · inhabit M
         exact ⟨default, fun _h'' => h⟩
       · obtain ⟨a, ha⟩ := not_forall.1 (h ∘ h')
@@ -932,7 +934,7 @@ theorem realize_iAlls [Finite γ] {f : α → β ⊕ γ}
     {φ : L.Formula α} {v : β → M} {v' : Fin 0 → M} :
     BoundedFormula.Realize (φ.iAlls f) v v' ↔
       ∀ (i : γ → M), φ.Realize (fun a => Sum.elim v i (f a)) := by
-  rw [← Formula.realize_iAlls, iff_iff_eq]; congr; simp
+  rw [← Formula.realize_iAlls, iff_iff_eq]; congr; simp [eq_iff_true_of_subsingleton]
 
 @[simp]
 theorem _root_.FirstOrder.Language.Formula.realize_iExs
@@ -959,7 +961,7 @@ theorem realize_iExs [Finite γ] {f : α → β ⊕ γ}
     {φ : L.Formula α} {v : β → M} {v' : Fin 0 → M} :
     BoundedFormula.Realize (φ.iExs f) v v' ↔
       ∃ (i : γ → M), φ.Realize (fun a => Sum.elim v i (f a)) := by
-  rw [← Formula.realize_iExs, iff_iff_eq]; congr; simp
+  rw [← Formula.realize_iExs, iff_iff_eq]; congr; simp [eq_iff_true_of_subsingleton]
 
 @[simp]
 theorem realize_toFormula (φ : L.BoundedFormula α n) (v : Sum α (Fin n) → M) :

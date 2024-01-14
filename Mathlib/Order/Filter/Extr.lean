@@ -508,12 +508,14 @@ theorem IsMaxFilter.sub (hf : IsMaxFilter f l a) (hg : IsMinFilter g l a) :
     IsMaxFilter (fun x => f x - g x) l a := by simpa only [sub_eq_add_neg] using hf.add hg.neg
 #align is_max_filter.sub IsMaxFilter.sub
 
-theorem IsMinOn.sub (hf : IsMinOn f s a) (hg : IsMaxOn g s a) : IsMinOn (fun x => f x - g x) s a :=
-  by simpa only [sub_eq_add_neg] using hf.add hg.neg
+theorem IsMinOn.sub (hf : IsMinOn f s a) (hg : IsMaxOn g s a) :
+    IsMinOn (fun x => f x - g x) s a := by
+  simpa only [sub_eq_add_neg] using hf.add hg.neg
 #align is_min_on.sub IsMinOn.sub
 
-theorem IsMaxOn.sub (hf : IsMaxOn f s a) (hg : IsMinOn g s a) : IsMaxOn (fun x => f x - g x) s a :=
-  by simpa only [sub_eq_add_neg] using hf.add hg.neg
+theorem IsMaxOn.sub (hf : IsMaxOn f s a) (hg : IsMinOn g s a) :
+    IsMaxOn (fun x => f x - g x) s a := by
+  simpa only [sub_eq_add_neg] using hf.add hg.neg
 #align is_max_on.sub IsMaxOn.sub
 
 end OrderedAddCommGroup

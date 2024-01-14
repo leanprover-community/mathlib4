@@ -10,8 +10,6 @@ import Std.Tactic.GuardExpr
 
 open Qq
 
--- TODO: uncomment above imports when they are ported
-
 variable {α β : Type} [Semiring α] [Ring β]
 
 namespace Matrix
@@ -138,10 +136,11 @@ example {a b c d e f g h : α} : ![a, b, c, d, e, f, g, h] 99 = d := by simp
 example {α : Type _} [CommRing α] {a b c d : α} :
     Matrix.det !![a, b; c, d] = a * d - b * c := by
   simp? [Matrix.det_succ_row_zero, Fin.sum_univ_succ] says
-    simp only [det_succ_row_zero, Nat.odd_iff_not_even, of_apply, cons_val', empty_val',
-      cons_val_fin_one, cons_val_zero, det_unique, Fin.default_eq_zero, submatrix_apply, Fin.succ_zero_eq_one, ne_eq,
-      cons_val_one, head_fin_const, Fin.sum_univ_succ, Fin.val_zero, pow_zero, one_mul, Fin.zero_succAbove, head_cons,
-      Finset.univ_unique, Fin.val_succ, Fin.coe_fin_one, zero_add, pow_one, cons_val_succ, neg_mul,
+    simp only [det_succ_row_zero, of_apply, cons_val', empty_val',
+      cons_val_fin_one, cons_val_zero, det_unique, Fin.default_eq_zero, submatrix_apply,
+      Fin.succ_zero_eq_one, cons_val_one, head_fin_const, Fin.sum_univ_succ, Fin.val_zero,
+      pow_zero, one_mul, Fin.zero_succAbove, head_cons, Finset.univ_unique,
+      Fin.val_succ, Fin.coe_fin_one, zero_add, pow_one, cons_val_succ, neg_mul,
       Fin.succ_succAbove_zero, Finset.sum_const, Finset.card_singleton, smul_neg, one_smul]
   ring
 
@@ -149,12 +148,12 @@ example {α : Type _} [CommRing α] {a b c d e f g h i : α} :
     Matrix.det !![a, b, c; d, e, f; g, h, i] =
       a * e * i - a * f * h - b * d * i + b * f * g + c * d * h - c * e * g := by
   simp? [Matrix.det_succ_row_zero, Fin.sum_univ_succ] says
-    simp only [det_succ_row_zero, Nat.odd_iff_not_even, of_apply, cons_val', empty_val',
+    simp only [det_succ_row_zero, of_apply, cons_val', empty_val',
       cons_val_fin_one, cons_val_zero, submatrix_apply, Fin.succ_zero_eq_one, cons_val_one,
       head_cons, submatrix_submatrix, det_unique, Fin.default_eq_zero, Function.comp_apply,
-      Fin.succ_one_eq_two, ne_eq, cons_val_two, tail_cons, head_fin_const, Fin.sum_univ_succ,
-      Fin.val_zero, pow_zero, one_mul, Fin.zero_succAbove, Finset.univ_unique, Fin.val_succ,
-      Fin.coe_fin_one, zero_add, pow_one, neg_mul, Fin.succ_succAbove_zero, Finset.sum_neg_distrib,
+      Fin.succ_one_eq_two, cons_val_two, tail_cons, head_fin_const, Fin.sum_univ_succ, Fin.val_zero,
+      pow_zero, one_mul, Fin.zero_succAbove, Finset.univ_unique, Fin.val_succ, Fin.coe_fin_one,
+      zero_add, pow_one, neg_mul, Fin.succ_succAbove_zero, Finset.sum_neg_distrib,
       Finset.sum_singleton, cons_val_succ, Fin.succ_succAbove_one, even_add_self, Even.neg_pow,
       one_pow, Finset.sum_const, Finset.card_singleton, one_smul]
   ring

@@ -160,7 +160,9 @@ theorem mem_sumCongrHom_range_of_perm_mapsTo_inl {m n : Type*} [Finite m] [Finit
     cases' x with a b
     · rw [Equiv.sumCongr_apply, Sum.map_inl, permCongr_apply, Equiv.symm_symm,
         apply_ofInjective_symm Sum.inl_injective]
-      rw [ofInjective_apply, Subtype.coe_mk, Subtype.coe_mk, subtypePerm_apply]
+      rw [ofInjective_apply, Subtype.coe_mk, Subtype.coe_mk]
+      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+      erw [subtypePerm_apply]
     · rw [Equiv.sumCongr_apply, Sum.map_inr, permCongr_apply, Equiv.symm_symm,
         apply_ofInjective_symm Sum.inr_injective]
       erw [subtypePerm_apply]
@@ -326,21 +328,20 @@ def signBijAux {n : ℕ} (f : Perm (Fin n)) (a : Σ_ : Fin n, Fin n) : Σ_ : Fin
 
 -- porting note: Lean insists `ha` and `hb` are unused despite obvious uses
 set_option linter.unusedVariables false in
-theorem signBijAux_inj {n : ℕ} {f : Perm (Fin n)} :
-    ∀ a b : Σ_a : Fin n, Fin n,
-      a ∈ finPairsLT n → b ∈ finPairsLT n → signBijAux f a = signBijAux f b → a = b :=
-  fun ⟨a₁, a₂⟩ ⟨b₁, b₂⟩ ha hb h => by
-    unfold signBijAux at h
-    rw [mem_finPairsLT] at *
-    have : ¬b₁ < b₂ := hb.le.not_lt
-    split_ifs at h <;>
-    simp_all [(Equiv.injective f).eq_iff, eq_self_iff_true, and_self_iff, heq_iff_eq]
-    · exact absurd this (not_le.mpr ha)
-    · exact absurd this (not_le.mpr ha)
-#align equiv.perm.sign_bij_aux_inj Equiv.Perm.signBijAux_inj
+theorem signBijAux_injOn {n : ℕ} {f : Perm (Fin n)} :
+    (finPairsLT n : Set (Σ _, Fin n)).InjOn (signBijAux f) := by
+  rintro ⟨a₁, a₂⟩ ha ⟨b₁, b₂⟩ hb h
+  dsimp [signBijAux] at h
+  rw [Finset.mem_coe, mem_finPairsLT] at *
+  have : ¬b₁ < b₂ := hb.le.not_lt
+  split_ifs at h <;>
+  simp_all [(Equiv.injective f).eq_iff, eq_self_iff_true, and_self_iff, heq_iff_eq]
+  · exact absurd this (not_le.mpr ha)
+  · exact absurd this (not_le.mpr ha)
+#align equiv.perm.sign_bij_aux_inj Equiv.Perm.signBijAux_injOn
 
 theorem signBijAux_surj {n : ℕ} {f : Perm (Fin n)} :
-    ∀ a ∈ finPairsLT n, ∃ (b: Σ (_: Fin n), Fin n) (_H: b ∈ finPairsLT n), a = signBijAux f b :=
+    ∀ a ∈ finPairsLT n, ∃ b ∈ finPairsLT n, signBijAux f b = a :=
   fun ⟨a₁, a₂⟩ ha =>
     if hxa : f⁻¹ a₂ < f⁻¹ a₁ then
       ⟨⟨f⁻¹ a₁, f⁻¹ a₂⟩, mem_finPairsLT.2 hxa, by
@@ -367,37 +368,37 @@ theorem signBijAux_mem {n : ℕ} {f : Perm (Fin n)} :
 
 @[simp]
 theorem signAux_inv {n : ℕ} (f : Perm (Fin n)) : signAux f⁻¹ = signAux f :=
-  prod_bij (fun a _ => signBijAux f⁻¹ a) signBijAux_mem
-    (fun ⟨a, b⟩ hab =>
-      if h : f⁻¹ b < f⁻¹ a then by
-        simp_all [signBijAux, dif_pos h, if_neg h.not_le, apply_inv_self, apply_inv_self,
-          if_neg (mem_finPairsLT.1 hab).not_le]
-        split_ifs with h₁
-        · dsimp [finPairsLT] at hab
-          simp at hab
-          exact absurd h₁ (not_le_of_gt hab)
-        · rfl
-      else by
-        simp_all [signBijAux, if_pos (le_of_not_gt h), dif_neg h, apply_inv_self, apply_inv_self,
-          if_pos (mem_finPairsLT.1 hab).le]
-        split_ifs with h₁ h₂ h₃
-        · rfl
-        · exact absurd h (not_le_of_gt h₁)
-        · rfl
-        · dsimp at *
-          dsimp [finPairsLT] at hab
-          simp at *
-          exact absurd h₃ (asymm_of LT.lt hab))
-    signBijAux_inj signBijAux_surj
+  prod_nbij (signBijAux f⁻¹) signBijAux_mem signBijAux_injOn signBijAux_surj fun ⟨a, b⟩ hab ↦
+    if h : f⁻¹ b < f⁻¹ a then by
+      simp_all [signBijAux, dif_pos h, if_neg h.not_le, apply_inv_self, apply_inv_self,
+        if_neg (mem_finPairsLT.1 hab).not_le]
+      split_ifs with h₁
+      · dsimp [finPairsLT] at hab
+        simp? at hab says
+          simp only [mem_sigma, mem_univ, mem_attachFin, mem_range, Fin.val_fin_lt,
+            true_and] at hab
+        exact absurd h₁ (not_le_of_gt hab)
+      · rfl
+    else by
+      simp_all [signBijAux, if_pos (le_of_not_gt h), dif_neg h, apply_inv_self, apply_inv_self,
+        if_pos (mem_finPairsLT.1 hab).le]
+      split_ifs with h₁ h₂ h₃
+      · rfl
+      · exact absurd h (not_le_of_gt h₁)
+      · rfl
+      · dsimp at *
+        dsimp [finPairsLT] at hab
+        simp? at * says
+          simp only [mem_sigma, mem_univ, mem_attachFin, mem_range, Fin.val_fin_lt,
+            true_and, not_lt, apply_inv_self, not_le, Int.neg_units_ne_self] at *
+        exact absurd h₃ (asymm_of LT.lt hab)
 #align equiv.perm.sign_aux_inv Equiv.Perm.signAux_inv
 
 theorem signAux_mul {n : ℕ} (f g : Perm (Fin n)) : signAux (f * g) = signAux f * signAux g := by
   rw [← signAux_inv g]
   unfold signAux
   rw [← prod_mul_distrib]
-  refine'
-    prod_bij (fun a _ => signBijAux g a) signBijAux_mem _ signBijAux_inj
-    (by simpa using signBijAux_surj)
+  refine prod_nbij (signBijAux g) signBijAux_mem signBijAux_injOn signBijAux_surj ?_
   rintro ⟨a, b⟩ hab
   dsimp only [signBijAux]
   rw [mul_apply, mul_apply]
@@ -511,13 +512,14 @@ def signAux3 [Fintype α] (f : Perm α) {s : Multiset α} : (∀ x, x ∈ s) →
 
 theorem signAux3_mul_and_swap [Fintype α] (f g : Perm α) (s : Multiset α) (hs : ∀ x, x ∈ s) :
     signAux3 (f * g) hs = signAux3 f hs * signAux3 g hs ∧
-      ∀ x y, x ≠ y → signAux3 (swap x y) hs = -1 := by
+      Pairwise fun x y => signAux3 (swap x y) hs = -1 := by
   let ⟨l, hl⟩ := Quotient.exists_rep s
   let e := equivFin α
   --clear _let_match
   subst hl
   show
-    signAux2 l (f * g) = signAux2 l f * signAux2 l g ∧ ∀ x y, x ≠ y → signAux2 l (swap x y) = -1
+    signAux2 l (f * g) = signAux2 l f * signAux2 l g ∧
+    Pairwise fun x y => signAux2 l (swap x y) = -1
   have hfg : (e.symm.trans (f * g)).trans e = (e.symm.trans f).trans e * (e.symm.trans g).trans e :=
     Equiv.ext fun h => by simp [mul_apply]
   constructor
@@ -571,7 +573,7 @@ theorem sign_symm (e : Perm α) : sign e.symm = sign e :=
 #align equiv.perm.sign_symm Equiv.Perm.sign_symm
 
 theorem sign_swap {x y : α} (h : x ≠ y) : sign (swap x y) = -1 :=
-  (signAux3_mul_and_swap 1 1 _ mem_univ).2 x y h
+  (signAux3_mul_and_swap 1 1 _ mem_univ).2 h
 #align equiv.perm.sign_swap Equiv.Perm.sign_swap
 
 @[simp]

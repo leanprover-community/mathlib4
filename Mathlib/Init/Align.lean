@@ -5,7 +5,6 @@ Authors: Daniel Selsam, Mario Carneiro
 -/
 import Mathlib.Mathport.Rename
 import Mathlib.Init.Logic
-import Mathlib.Tactic.Relation.Rfl
 import Mathlib.Tactic.Relation.Symm
 import Mathlib.Tactic.Relation.Trans
 

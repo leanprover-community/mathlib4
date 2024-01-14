@@ -13,7 +13,7 @@ import Mathlib.Topology.Algebra.Module.Basic
 
 variable {ι R R₂ M M₂ : Type*}
 
-section SmulConst
+section SMulConst
 
 variable [Semiring R] [TopologicalSpace R] [TopologicalSpace M] [AddCommMonoid M] [Module R M]
   [ContinuousSMul R M] {f : ι → R}
@@ -30,7 +30,7 @@ theorem tsum_smul_const [T2Space M] (hf : Summable f) (a : M) : ∑' z, f z • 
   (hf.hasSum.smul_const _).tsum_eq
 #align tsum_smul_const tsum_smul_const
 
-end SmulConst
+end SMulConst
 
 section HasSum
 

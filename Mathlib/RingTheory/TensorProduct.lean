@@ -64,7 +64,9 @@ variable (r : R) (f g : M →ₗ[R] N)
 
 variable (A)
 
-/-- `baseChange A f` for `f : M →ₗ[R] N` is the `A`-linear map `A ⊗[R] M →ₗ[A] A ⊗[R] N`. -/
+/-- `baseChange A f` for `f : M →ₗ[R] N` is the `A`-linear map `A ⊗[R] M →ₗ[A] A ⊗[R] N`.
+
+This "base change" operation is also known as "extension of scalars". -/
 def baseChange (f : M →ₗ[R] N) : A ⊗[R] M →ₗ[A] A ⊗[R] N :=
   AlgebraTensorModule.map (LinearMap.id : A →ₗ[A] A) f
 #align linear_map.base_change LinearMap.baseChange
@@ -98,6 +100,10 @@ theorem baseChange_smul : (r • f).baseChange A = r • f.baseChange A := by
   ext
   simp [baseChange_tmul]
 #align linear_map.base_change_smul LinearMap.baseChange_smul
+
+lemma baseChange_comp {P : Type*} [AddCommMonoid P] [Module R P] (g : N →ₗ[R] P) :
+    (g ∘ₗ f).baseChange A = g.baseChange A ∘ₗ f.baseChange A := by
+  ext; simp
 
 variable (R A M N)
 
@@ -173,7 +179,7 @@ instance instAddCommMonoidWithOne : AddCommMonoidWithOne (A ⊗[R] B) where
 theorem natCast_def (n : ℕ) : (n : A ⊗[R] B) = (n : A) ⊗ₜ (1 : B) := rfl
 
 theorem natCast_def' (n : ℕ) : (n : A ⊗[R] B) = (1 : A) ⊗ₜ (n : B) := by
-  rw [natCast_def, ←nsmul_one, smul_tmul, nsmul_one]
+  rw [natCast_def, ← nsmul_one, smul_tmul, nsmul_one]
 
 end AddCommMonoidWithOne
 
@@ -382,9 +388,13 @@ instance instAlgebra : Algebra R (A ⊗[R] B) :=
 
 @[simp]
 theorem algebraMap_apply [SMulCommClass R S A] (r : S) :
-    (algebraMap S (A ⊗[R] B)) r = (algebraMap S A) r ⊗ₜ 1 :=
+    algebraMap S (A ⊗[R] B) r = (algebraMap S A) r ⊗ₜ 1 :=
   rfl
 #align algebra.tensor_product.algebra_map_apply Algebra.TensorProduct.algebraMap_apply
+
+theorem algebraMap_apply' (r : R) :
+    algebraMap R (A ⊗[R] B) r = 1 ⊗ₜ algebraMap R B r := by
+  rw [algebraMap_apply, Algebra.algebraMap_eq_smul_one, Algebra.algebraMap_eq_smul_one, smul_tmul]
 
 /-- The `R`-algebra morphism `A →ₐ[R] A ⊗[R] B` sending `a` to `a ⊗ₜ 1`. -/
 def includeLeft [SMulCommClass R S A] : A →ₐ[S] A ⊗[R] B :=
@@ -404,12 +414,7 @@ def includeRight : B →ₐ[R] A ⊗[R] B where
   map_add' := by simp [tmul_add]
   map_one' := rfl
   map_mul' := by simp
-  commutes' r := by
-    simp only [algebraMap_apply]
-    trans r • (1 : A) ⊗ₜ[R] (1 : B)
-    · rw [← tmul_smul, Algebra.smul_def]
-      simp
-    · simp [Algebra.smul_def]
+  commutes' r := by simp only [algebraMap_apply']
 #align algebra.tensor_product.include_right Algebra.TensorProduct.includeRight
 
 @[simp]
@@ -443,10 +448,10 @@ theorem ext ⦃f g : (A ⊗[R] B) →ₐ[S] C⦄
   ext a b
   have := congr_arg₂ HMul.hMul (AlgHom.congr_fun ha a) (AlgHom.congr_fun hb b)
   dsimp at *
-  rwa [←f.map_mul, ←g.map_mul, tmul_mul_tmul, _root_.one_mul, _root_.mul_one] at this
+  rwa [← f.map_mul, ← g.map_mul, tmul_mul_tmul, _root_.one_mul, _root_.mul_one] at this
 
 theorem ext' {g h : A ⊗[R] B →ₐ[S] C} (H : ∀ a b, g (a ⊗ₜ b) = h (a ⊗ₜ b)) : g = h :=
-  ext (AlgHom.ext <| fun _ => H _ _) (AlgHom.ext <| fun _ => H _ _)
+  ext (AlgHom.ext fun _ => H _ _) (AlgHom.ext fun _ => H _ _)
 #align algebra.tensor_product.ext Algebra.TensorProduct.ext
 
 end ext
@@ -503,6 +508,30 @@ instance instNonUnitalRing : NonUnitalRing (A ⊗[R] B) where
 
 end NonUnitalRing
 
+section CommSemiring
+variable [CommSemiring R]
+variable [CommSemiring A] [Algebra R A]
+variable [CommSemiring B] [Algebra R B]
+
+instance instCommSemiring : CommSemiring (A ⊗[R] B) where
+  toSemiring := inferInstance
+  mul_comm x y := by
+    refine TensorProduct.induction_on x ?_ ?_ ?_
+    · simp
+    · intro a₁ b₁
+      refine TensorProduct.induction_on y ?_ ?_ ?_
+      · simp
+      · intro a₂ b₂
+        simp [mul_comm]
+      · intro a₂ b₂ ha hb
+        -- porting note: was `simp` not `rw`
+        rw [mul_add, add_mul, ha, hb]
+    · intro x₁ x₂ h₁ h₂
+      -- porting note: was `simp` not `rw`
+      rw [mul_add, add_mul, h₁, h₂]
+
+end CommSemiring
+
 section Ring
 variable [CommRing R]
 variable [Ring A] [Algebra R A]
@@ -514,7 +543,7 @@ instance instRing : Ring (A ⊗[R] B) where
   __ := instNonAssocRing
 
 theorem intCast_def' (z : ℤ) : (z : A ⊗[R] B) = (1 : A) ⊗ₜ (z : B) := by
-  rw [intCast_def, ←zsmul_one, smul_tmul, zsmul_one]
+  rw [intCast_def, ← zsmul_one, smul_tmul, zsmul_one]
 
 -- verify there are no diamonds
 example : (instRing : Ring (A ⊗[R] B)).toAddCommGroup = addCommGroup := rfl
@@ -529,20 +558,7 @@ variable [CommRing B] [Algebra R B]
 
 instance instCommRing : CommRing (A ⊗[R] B) :=
   { toRing := inferInstance
-    mul_comm := fun x y => by
-      refine TensorProduct.induction_on x ?_ ?_ ?_
-      · simp
-      · intro a₁ b₁
-        refine TensorProduct.induction_on y ?_ ?_ ?_
-        · simp
-        · intro a₂ b₂
-          simp [mul_comm]
-        · intro a₂ b₂ ha hb
-          -- porting note: was `simp` not `rw`
-          rw [mul_add, add_mul, ha, hb]
-      · intro x₁ x₂ h₁ h₂
-        -- porting note: was `simp` not `rw`
-        rw [mul_add, add_mul, h₁, h₂] }
+    mul_comm := mul_comm }
 
 section RightAlgebra
 
@@ -694,7 +710,10 @@ theorem lift_comp_includeRight (f : A →ₐ[S] C) (g : B →ₐ[R] C) (hfg : �
 
 Pairs of algebra morphisms that commute are equivalent to algebra morphisms from the tensor product.
 
-This is `Algebra.TensorProduct.lift` as an equivalence. -/
+This is `Algebra.TensorProduct.lift` as an equivalence.
+
+See also `GradedTensorProduct.liftEquiv` for an alternative commutativity requirement for graded
+algebra. -/
 @[simps]
 def liftEquiv [IsScalarTower R S A] [IsScalarTower R S C] :
     {fg : (A →ₐ[S] C) × (B →ₐ[R] C) // ∀ x y, Commute (fg.1 x) (fg.2 y)}
@@ -734,9 +753,14 @@ protected nonrec def lid : R ⊗[R] A ≃ₐ[R] A :=
 @[simp] theorem lid_toLinearEquiv :
     (TensorProduct.lid R A).toLinearEquiv = _root_.TensorProduct.lid R A := rfl
 
+variable {R} {A} in
 @[simp]
-theorem lid_tmul (r : R) (a : A) : (TensorProduct.lid R A : R ⊗ A → A) (r ⊗ₜ a) = r • a := rfl
+theorem lid_tmul (r : R) (a : A) : TensorProduct.lid R A (r ⊗ₜ a) = r • a := rfl
 #align algebra.tensor_product.lid_tmul Algebra.TensorProduct.lid_tmul
+
+variable {A} in
+@[simp]
+theorem lid_symm_apply (a : A) : (TensorProduct.lid R A).symm a = 1 ⊗ₜ a := rfl
 
 variable (S)
 
@@ -758,6 +782,9 @@ variable {R A} in
 theorem rid_tmul (r : R) (a : A) : TensorProduct.rid R S A (a ⊗ₜ r) = r • a := rfl
 #align algebra.tensor_product.rid_tmul Algebra.TensorProduct.rid_tmul
 
+variable {A} in
+@[simp]
+theorem rid_symm_apply (a : A) : (TensorProduct.rid R S A).symm a = a ⊗ₜ 1 := rfl
 
 section
 
@@ -772,11 +799,22 @@ protected def comm : A ⊗[R] B ≃ₐ[R] B ⊗[R] A :=
 @[simp] theorem comm_toLinearEquiv :
     (Algebra.TensorProduct.comm R A B).toLinearEquiv = _root_.TensorProduct.comm R A B := rfl
 
+variable {A B} in
 @[simp]
 theorem comm_tmul (a : A) (b : B) :
-    (TensorProduct.comm R A B : A ⊗[R] B → B ⊗[R] A) (a ⊗ₜ b) = b ⊗ₜ a :=
+    TensorProduct.comm R A B (a ⊗ₜ b) = b ⊗ₜ a :=
   rfl
 #align algebra.tensor_product.comm_tmul Algebra.TensorProduct.comm_tmul
+
+variable {A B} in
+@[simp]
+theorem comm_symm_tmul (a : A) (b : B) :
+    (TensorProduct.comm R A B).symm (b ⊗ₜ a) = a ⊗ₜ b :=
+  rfl
+
+theorem comm_symm :
+    (TensorProduct.comm R A B).symm = TensorProduct.comm R B A := by
+  ext; rfl
 
 theorem adjoin_tmul_eq_top : adjoin R { t : A ⊗[R] B | ∃ a b, a ⊗ₜ[R] b = t } = ⊤ :=
   top_le_iff.mp <| (top_le_iff.mpr <| span_tmul_eq_top R A B).trans (span_le_adjoin R _)
@@ -817,9 +855,14 @@ variable {A B C}
 
 @[simp]
 theorem assoc_tmul (a : A) (b : B) (c : C) :
-    Algebra.TensorProduct.assoc R A B C (a ⊗ₜ b ⊗ₜ c) = a ⊗ₜ (b ⊗ₜ c) :=
+    Algebra.TensorProduct.assoc R A B C ((a ⊗ₜ b) ⊗ₜ c) = a ⊗ₜ (b ⊗ₜ c) :=
   rfl
 #align algebra.tensor_product.assoc_tmul Algebra.TensorProduct.assoc_tmul
+
+@[simp]
+theorem assoc_symm_tmul (a : A) (b : B) (c : C) :
+    (Algebra.TensorProduct.assoc R A B C).symm (a ⊗ₜ (b ⊗ₜ c)) = (a ⊗ₜ b) ⊗ₜ c :=
+  rfl
 
 end
 
@@ -837,7 +880,7 @@ theorem map_tmul (f : A →ₐ[S] B) (g : C →ₐ[R] D) (a : A) (c : C) : map f
 #align algebra.tensor_product.map_tmul Algebra.TensorProduct.map_tmul
 
 @[simp]
-theorem map_id : map (.id S A) (.id R C) = .id S _:=
+theorem map_id : map (.id S A) (.id R C) = .id S _ :=
   ext (AlgHom.ext fun _ => rfl) (AlgHom.ext fun _ => rfl)
 
 theorem map_comp (f₂ : B →ₐ[S] C) (f₁ : A →ₐ[S] B) (g₂ : E →ₐ[R] F) (g₁ : D →ₐ[R] E) :
@@ -1061,8 +1104,11 @@ theorem basis_repr_symm_apply (a : A) (i : ι) :
   rw [basis, LinearEquiv.coe_symm_mk] -- porting note: `coe_symm_mk` isn't firing in `simp`
   simp [Equiv.uniqueProd_symm_apply, basisAux]
 
--- Porting note: simpNF linter failed on `basis_repr_symm_apply`
 @[simp]
+theorem basis_apply (i : ι) :
+    Algebra.TensorProduct.basis A b i = 1 ⊗ₜ b i :=
+  Algebra.TensorProduct.basis_repr_symm_apply b 1 i
+
 theorem basis_repr_symm_apply' (a : A) (i : ι) :
     a • Algebra.TensorProduct.basis A b i = a ⊗ₜ b i := by
   simpa using basis_repr_symm_apply b a i
@@ -1072,6 +1118,23 @@ end Basis
 end TensorProduct
 
 end Algebra
+
+namespace LinearMap
+
+open Algebra.TensorProduct
+
+variable {R M₁ M₂ ι ι₂ : Type*} (A : Type*)
+  [Fintype ι] [Fintype ι₂] [DecidableEq ι] [DecidableEq ι₂]
+  [CommRing R] [CommRing A] [Algebra R A]
+  [AddCommGroup M₁] [Module R M₁] [AddCommGroup M₂] [Module R M₂]
+
+@[simp]
+lemma toMatrix_baseChange (f : M₁ →ₗ[R] M₂) (b₁ : Basis ι R M₁) (b₂ : Basis ι₂ R M₂) :
+    toMatrix (basis A b₁) (basis A b₂) (f.baseChange A) =
+    (toMatrix b₁ b₂ f).map (algebraMap R A) := by
+  ext; simp [toMatrix_apply]
+
+end LinearMap
 
 namespace Module
 

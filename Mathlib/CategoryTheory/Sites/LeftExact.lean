@@ -3,10 +3,10 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.CategoryTheory.Sites.Sheafification
 import Mathlib.CategoryTheory.Sites.Limits
 import Mathlib.CategoryTheory.Limits.FunctorCategory
 import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
+import Mathlib.CategoryTheory.Adhesive
 
 #align_import category_theory.sites.left_exact from "leanprover-community/mathlib"@"59382264386afdbaf1727e617f5fdda511992eb9"
 
@@ -18,7 +18,7 @@ In this file we show that sheafification commutes with finite limits.
 
 open CategoryTheory Limits Opposite
 
-universe w v u
+universe w' w v u
 
 -- porting note: was `C : Type max v u` which made most instances non automatically applicable
 -- it seems to me it is better to declare `C : Type u`: it works better, and it is more general
@@ -237,24 +237,76 @@ variable [PreservesLimits (forget D)]
 
 variable [ReflectsIsomorphisms (forget D)]
 
-variable (K : Type max v u)
+variable (K : Type w')
 
 variable [SmallCategory K] [FinCategory K] [HasLimitsOfShape K D]
 
 instance preservesLimitsOfShape_presheafToSheaf :
-    PreservesLimitsOfShape K (presheafToSheaf J D) := by
+    PreservesLimitsOfShape K (plusPlusSheaf J D) := by
+  let e := (FinCategory.equivAsType K).symm.trans (AsSmall.equiv.{0, 0, max v u})
+  haveI : HasLimitsOfShape (AsSmall.{max v u} (FinCategory.AsType K)) D :=
+    Limits.hasLimitsOfShape_of_equivalence e
+  haveI : FinCategory (AsSmall.{max v u} (FinCategory.AsType K)) := by
+    constructor
+    · show Fintype (ULift _)
+      infer_instance
+    · intro j j'
+      show Fintype (ULift _)
+      infer_instance
+  refine @preservesLimitsOfShapeOfEquiv _ _ _ _ _ _ _ _ e.symm _ (show _ from ?_)
   constructor; intro F; constructor; intro S hS
   apply isLimitOfReflects (sheafToPresheaf J D)
-  have : ReflectsLimitsOfShape K (forget D) := reflectsLimitsOfShapeOfReflectsIsomorphisms
+  have : ReflectsLimitsOfShape (AsSmall.{max v u} (FinCategory.AsType K)) (forget D) :=
+    reflectsLimitsOfShapeOfReflectsIsomorphisms
   -- porting note: the mathlib proof was by `apply is_limit_of_preserves (J.sheafification D) hS`
-  have : PreservesLimitsOfShape K (presheafToSheaf J D ⋙ sheafToPresheaf J D) :=
+  have : PreservesLimitsOfShape (AsSmall.{max v u} (FinCategory.AsType K))
+      (plusPlusSheaf J D ⋙ sheafToPresheaf J D) :=
     preservesLimitsOfShapeOfNatIso (J.sheafificationIsoPresheafToSheafCompSheafToPreasheaf D)
-  exact isLimitOfPreserves (presheafToSheaf J D ⋙ sheafToPresheaf J D) hS
+  exact isLimitOfPreserves (plusPlusSheaf J D ⋙ sheafToPresheaf J D) hS
 
 instance preservesfiniteLimits_presheafToSheaf [HasFiniteLimits D] :
-    PreservesFiniteLimits (presheafToSheaf J D) := by
+    PreservesFiniteLimits (plusPlusSheaf J D) := by
   apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{max v u}
   intros
   infer_instance
+
+instance : HasWeakSheafify J D := ⟨sheafToPresheafIsRightAdjoint J D⟩
+
+variable (J D)
+
+/-- `plusPlusSheaf` is isomorphic to an arbitrary choice of left adjoint. -/
+def plusPlusSheafIsoPresheafToSheaf : plusPlusSheaf J D ≅ presheafToSheaf J D :=
+  (plusPlusAdjunction J D).leftAdjointUniq (sheafificationAdjunction J D)
+
+/-- `plusPlusFunctor` is isomorphic to `sheafification`. -/
+def plusPlusFunctorIsoSheafification : J.sheafification D ≅ sheafification J D :=
+  isoWhiskerRight (plusPlusSheafIsoPresheafToSheaf J D) (sheafToPresheaf J D)
+
+/-- `plusPlus` is isomorphic to `sheafify`. -/
+def plusPlusIsoSheafify (P : Cᵒᵖ ⥤ D) : J.sheafify P ≅ sheafify J P :=
+  (sheafToPresheaf J D).mapIso  ((plusPlusSheafIsoPresheafToSheaf J D).app P)
+
+instance [HasFiniteLimits D] : HasSheafify J D := HasSheafify.mk' J D (plusPlusAdjunction J D)
+
+variable {J D}
+
+instance [FinitaryExtensive D] [HasFiniteCoproducts D] [HasPullbacks D] :
+    FinitaryExtensive (Sheaf J D) :=
+  finitaryExtensive_of_reflective (plusPlusAdjunction _ _)
+
+instance [Adhesive D] [HasPullbacks D] [HasPushouts D] : Adhesive (Sheaf J D) :=
+  adhesive_of_reflective (plusPlusAdjunction _ _)
+
+instance SheafOfTypes.finitary_extensive {C : Type u} [SmallCategory C]
+    (J : GrothendieckTopology C) : FinitaryExtensive (Sheaf J (Type u)) :=
+  inferInstance
+
+instance SheafOfTypes.adhesive {C : Type u} [SmallCategory C] (J : GrothendieckTopology C) :
+    Adhesive (Sheaf J (Type u)) :=
+  inferInstance
+
+instance SheafOfTypes.balanced {C : Type u} [SmallCategory C] (J : GrothendieckTopology C) :
+    Balanced (Sheaf J (Type u)) :=
+  inferInstance
 
 end CategoryTheory

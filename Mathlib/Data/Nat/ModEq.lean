@@ -105,7 +105,8 @@ theorem mod_modEq (a n) : a % n ≡ a [MOD n] :=
 
 namespace ModEq
 
-lemma of_dvd (d : m ∣ n) (h : a ≡ b [MOD n]) : a ≡ b [MOD m] := modEq_of_dvd $ d.natCast.trans h.dvd
+lemma of_dvd (d : m ∣ n) (h : a ≡ b [MOD n]) : a ≡ b [MOD m] :=
+  modEq_of_dvd <| d.natCast.trans h.dvd
 #align nat.modeq.of_dvd Nat.ModEq.of_dvd
 
 protected theorem mul_left' (c : ℕ) (h : a ≡ b [MOD n]) : c * a ≡ c * b [MOD c * n] := by
@@ -224,10 +225,10 @@ theorem of_div (h : a / c ≡ b / c [MOD m / c]) (ha : c ∣ a) (ha : c ∣ b) (
 
 end ModEq
 
-lemma modEq_sub (h : b ≤ a) : a ≡ b [MOD a - b] := (modEq_of_dvd $ by rw [Int.ofNat_sub h]).symm
+lemma modEq_sub (h : b ≤ a) : a ≡ b [MOD a - b] := (modEq_of_dvd <| by rw [Int.ofNat_sub h]).symm
 #align nat.modeq_sub Nat.modEq_sub
 
-lemma modEq_one : a ≡ b [MOD 1] := modEq_of_dvd $ one_dvd _
+lemma modEq_one : a ≡ b [MOD 1] := modEq_of_dvd <| one_dvd _
 #align nat.modeq_one Nat.modEq_one
 
 @[simp] lemma modEq_zero_iff : a ≡ b [MOD 0] ↔ a = b := by rw [ModEq, mod_zero, mod_zero]
@@ -272,9 +273,9 @@ lemma eq_of_abs_lt (h : a ≡ b [MOD m]) (h2 : |(b : ℤ) - a| < m) : a = b := b
 #align nat.modeq.eq_of_abs_lt Nat.ModEq.eq_of_abs_lt
 
 lemma eq_of_lt_of_lt (h : a ≡ b [MOD m]) (ha : a < m) (hb : b < m) : a = b :=
-  h.eq_of_abs_lt $ abs_sub_lt_iff.2
-    ⟨(sub_le_self _ $ Int.coe_nat_nonneg _).trans_lt $ Int.ofNat_lt.2 hb,
-    (sub_le_self _ $ Int.coe_nat_nonneg _).trans_lt $ Int.ofNat_lt.2 ha⟩
+  h.eq_of_abs_lt <| abs_sub_lt_iff.2
+    ⟨(sub_le_self _ <| Int.coe_nat_nonneg _).trans_lt <| Int.ofNat_lt.2 hb,
+    (sub_le_self _ <| Int.coe_nat_nonneg _).trans_lt <| Int.ofNat_lt.2 ha⟩
 #align nat.modeq.eq_of_lt_of_lt Nat.ModEq.eq_of_lt_of_lt
 
 /-- To cancel a common factor `c` from a `ModEq` we must divide the modulus `m` by `gcd m c` -/
@@ -302,12 +303,12 @@ lemma cancel_right_div_gcd (hm : 0 < m) (h : a * c ≡ b * c [MOD m]) : a ≡ b 
 
 lemma cancel_left_div_gcd' (hm : 0 < m) (hcd : c ≡ d [MOD m]) (h : c * a ≡ d * b [MOD m]) :
     a ≡ b [MOD m / gcd m c] :=
-  (h.trans $ hcd.symm.mul_right b).cancel_left_div_gcd hm
+  (h.trans <| hcd.symm.mul_right b).cancel_left_div_gcd hm
 #align nat.modeq.cancel_left_div_gcd' Nat.ModEq.cancel_left_div_gcd'
 
 lemma cancel_right_div_gcd' (hm : 0 < m) (hcd : c ≡ d [MOD m]) (h : a * c ≡ b * d [MOD m]) :
     a ≡ b [MOD m / gcd m c] :=
-  (h.trans $ hcd.symm.mul_left b).cancel_right_div_gcd hm
+  (h.trans <| hcd.symm.mul_left b).cancel_right_div_gcd hm
 #align nat.modeq.cancel_right_div_gcd' Nat.ModEq.cancel_right_div_gcd'
 
 /-- A common factor that's coprime with the modulus can be cancelled from a `ModEq` -/
@@ -322,7 +323,7 @@ lemma cancel_left_of_coprime (hmc : gcd m c = 1) (h : c * a ≡ c * b [MOD m]) :
 
 /-- A common factor that's coprime with the modulus can be cancelled from a `ModEq` -/
 lemma cancel_right_of_coprime (hmc : gcd m c = 1) (h : a * c ≡ b * c [MOD m]) : a ≡ b [MOD m] :=
-  cancel_left_of_coprime hmc $ by simpa [mul_comm] using h
+  cancel_left_of_coprime hmc <| by simpa [mul_comm] using h
 #align nat.modeq.cancel_right_of_coprime Nat.ModEq.cancel_right_of_coprime
 
 end ModEq
@@ -526,7 +527,7 @@ theorem odd_of_mod_four_eq_three {n : ℕ} : n % 4 = 3 → n % 2 = 1 := by
 theorem odd_mod_four_iff {n : ℕ} : n % 2 = 1 ↔ n % 4 = 1 ∨ n % 4 = 3 :=
   have help : ∀ m : ℕ, m < 4 → m % 2 = 1 → m = 1 ∨ m = 3 := by decide
   ⟨fun hn =>
-    help (n % 4) (mod_lt n (by norm_num)) <| (mod_mod_of_dvd n (by norm_num : 2 ∣ 4)).trans hn,
+    help (n % 4) (mod_lt n (by norm_num)) <| (mod_mod_of_dvd n (by decide : 2 ∣ 4)).trans hn,
     fun h => Or.elim h odd_of_mod_four_eq_one odd_of_mod_four_eq_three⟩
 #align nat.odd_mod_four_iff Nat.odd_mod_four_iff
 

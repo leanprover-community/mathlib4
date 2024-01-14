@@ -551,10 +551,10 @@ theorem monotone_or {p q : α → Prop} (m_p : Monotone p) (m_q : Monotone q) :
   fun _ _ h => Or.imp (m_p h) (m_q h)
 #align monotone_or monotone_or
 
-theorem monotone_le {x : α} : Monotone ((· ≤ ·) x) := fun _ _ h' h => h.trans h'
+theorem monotone_le {x : α} : Monotone (x ≤ ·) := fun _ _ h' h => h.trans h'
 #align monotone_le monotone_le
 
-theorem monotone_lt {x : α} : Monotone ((· < ·) x) := fun _ _ h' h => h.trans_le h'
+theorem monotone_lt {x : α} : Monotone (x < ·) := fun _ _ h' h => h.trans_le h'
 #align monotone_lt monotone_lt
 
 theorem antitone_le {x : α} : Antitone (· ≤ x) := fun _ _ h' h => h'.trans h
@@ -942,9 +942,9 @@ open Bool
 
 instance Bool.boundedOrder : BoundedOrder Bool where
   top := true
-  le_top _ := le_true
+  le_top := Bool.le_true
   bot := false
-  bot_le _ := false_le
+  bot_le := Bool.false_le
 
 @[simp]
 theorem top_eq_true : ⊤ = true :=

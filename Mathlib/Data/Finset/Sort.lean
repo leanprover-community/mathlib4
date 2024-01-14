@@ -74,6 +74,7 @@ theorem sort_singleton (a : α) : sort r {a} = [a] :=
   Multiset.sort_singleton r a
 #align finset.sort_singleton Finset.sort_singleton
 
+open scoped List in
 theorem sort_perm_toList (s : Finset α) : sort r s ~ s.toList := by
   rw [← Multiset.coe_eq_coe]
   simp only [coe_toList, sort_eq]
@@ -88,6 +89,9 @@ variable [LinearOrder α]
 theorem sort_sorted_lt (s : Finset α) : List.Sorted (· < ·) (sort (· ≤ ·) s) :=
   (sort_sorted _ _).lt_of_le (sort_nodup _ _)
 #align finset.sort_sorted_lt Finset.sort_sorted_lt
+
+theorem sort_sorted_gt (s : Finset α) : List.Sorted (· > ·) (sort (· ≥ ·) s) :=
+  (sort_sorted _ _).gt_of_ge (sort_nodup _ _)
 
 theorem sorted_zero_eq_min'_aux (s : Finset α) (h : 0 < (s.sort (· ≤ ·)).length) (H : s.Nonempty) :
     (s.sort (· ≤ ·)).nthLe 0 h = s.min' H := by
@@ -122,7 +126,7 @@ theorem sorted_last_eq_max'_aux (s : Finset α)
   · have : s.max' H ∈ l := (Finset.mem_sort (α := α) (· ≤ ·)).mpr (s.max'_mem H)
     obtain ⟨i, hi⟩ : ∃ i, l.get i = s.max' H := List.mem_iff_get.1 this
     rw [← hi]
-    exact (s.sort_sorted (· ≤ ·)).rel_nthLe_of_le _ _ (Nat.le_pred_of_lt i.prop)
+    exact (s.sort_sorted (· ≤ ·)).rel_nthLe_of_le _ _ (Nat.le_sub_one_of_lt i.prop)
 #align finset.sorted_last_eq_max'_aux Finset.sorted_last_eq_max'_aux
 
 theorem sorted_last_eq_max' {s : Finset α}

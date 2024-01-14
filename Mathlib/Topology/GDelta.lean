@@ -30,10 +30,10 @@ In this file we define `Gδ` sets and prove their basic properties.
 We prove that finite or countable intersections of Gδ sets are Gδ sets. We also prove that the
 continuity set of a function from a topological space to an (e)metric space is a Gδ set.
 
-- `closed_isNowhereDense_iff_compl`: a closed set is nowhere dense iff
+- `isClosed_isNowhereDense_iff_compl`: a closed set is nowhere dense iff
 its complement is open and dense
-- `meagre_iff_countable_union_nowhereDense`: a set is meagre iff it is contained in a countable
-union of nowhere dense
+- `isMeagre_iff_countable_union_isNowhereDense`: a set is meagre iff it is contained in a countable
+union of nowhere dense sets
 - subsets of meagre sets are meagre; countable unions of meagre sets are meagre
 
 ## Tags
@@ -74,16 +74,16 @@ theorem isGδ_univ : IsGδ (univ : Set X) :=
   isOpen_univ.isGδ
 #align is_Gδ_univ isGδ_univ
 
-theorem isGδ_biInter_of_open {I : Set ι} (hI : I.Countable) {f : ι → Set X}
+theorem isGδ_biInter_of_isOpen {I : Set ι} (hI : I.Countable) {f : ι → Set X}
     (hf : ∀ i ∈ I, IsOpen (f i)) : IsGδ (⋂ i ∈ I, f i) :=
   ⟨f '' I, by rwa [ball_image_iff], hI.image _, by rw [sInter_image]⟩
-#align is_Gδ_bInter_of_open isGδ_biInter_of_open
+#align is_Gδ_bInter_of_open isGδ_biInter_of_isOpen
 
 -- porting note: TODO: generalize to `Sort*` + `Countable _`
-theorem isGδ_iInter_of_open [Encodable ι] {f : ι → Set X} (hf : ∀ i, IsOpen (f i)) :
+theorem isGδ_iInter_of_isOpen [Encodable ι] {f : ι → Set X} (hf : ∀ i, IsOpen (f i)) :
     IsGδ (⋂ i, f i) :=
   ⟨range f, by rwa [forall_range_iff], countable_range _, by rw [sInter_range]⟩
-#align is_Gδ_Inter_of_open isGδ_iInter_of_open
+#align is_Gδ_Inter_of_open isGδ_iInter_of_isOpen
 
 -- porting note: TODO: generalize to `Sort*` + `Countable _`
 /-- The intersection of an encodable family of Gδ sets is a Gδ set. -/
@@ -116,7 +116,7 @@ theorem IsGδ.union {s t : Set X} (hs : IsGδ s) (ht : IsGδ t) : IsGδ (s ∪ t
   rcases hs with ⟨S, Sopen, Scount, rfl⟩
   rcases ht with ⟨T, Topen, Tcount, rfl⟩
   rw [sInter_union_sInter]
-  apply isGδ_biInter_of_open (Scount.prod Tcount)
+  apply isGδ_biInter_of_isOpen (Scount.prod Tcount)
   rintro ⟨a, b⟩ ⟨ha, hb⟩
   exact (Sopen a ha).union (Topen b hb)
 #align is_Gδ.union IsGδ.union
@@ -133,7 +133,7 @@ theorem isGδ_biUnion {s : Set ι} (hs : s.Finite) {f : ι → Set X} (h : ∀ i
 -- Porting note: Did not recognize notation 𝓤 X, needed to replace with uniformity X
 theorem IsClosed.isGδ {X} [UniformSpace X] [IsCountablyGenerated (uniformity X)] {s : Set X}
     (hs : IsClosed s) : IsGδ s := by
-  rcases(@uniformity_hasBasis_open X _).exists_antitone_subbasis with ⟨U, hUo, hU, -⟩
+  rcases (@uniformity_hasBasis_open X _).exists_antitone_subbasis with ⟨U, hUo, hU, -⟩
   rw [← hs.closure_eq, ← hU.biInter_biUnion_ball]
   refine' isGδ_biInter (to_countable _) fun n _ => IsOpen.isGδ _
   exact isOpen_biUnion fun x _ => UniformSpace.isOpen_ball _ (hUo _).2
@@ -193,7 +193,7 @@ theorem isGδ_setOf_continuousAt [UniformSpace Y] [IsCountablyGenerated (uniform
     setOf_forall, id]
   refine' isGδ_iInter fun k => IsOpen.isGδ <| isOpen_iff_mem_nhds.2 fun x => _
   rintro ⟨s, ⟨hsx, hso⟩, hsU⟩
-  filter_upwards [IsOpen.mem_nhds hso hsx]with _ hy using⟨s, ⟨hy, hso⟩, hsU⟩
+  filter_upwards [IsOpen.mem_nhds hso hsx] with _ hy using ⟨s, ⟨hy, hso⟩, hsU⟩
 #align is_Gδ_set_of_continuous_at isGδ_setOf_continuousAt
 
 end ContinuousAt
@@ -242,7 +242,7 @@ def IsNowhereDense (s : Set X) := interior (closure s) = ∅
 
 /-- The empty set is nowhere dense. -/
 @[simp]
-lemma isNowhereDense_of_empty : IsNowhereDense (∅ : Set X) := by
+lemma isNowhereDense_empty : IsNowhereDense (∅ : Set X) := by
   rw [IsNowhereDense, closure_empty, interior_empty]
 
 /-- A closed set is nowhere dense iff its interior is empty. -/
@@ -256,12 +256,12 @@ protected lemma IsNowhereDense.closure {s : Set X} (hs : IsNowhereDense s) :
   rwa [IsNowhereDense, closure_closure]
 
 /-- A nowhere dense set `s` is contained in a closed nowhere dense set (namely, its closure). -/
-lemma IsNowhereDense.subset_of_closed_nowhereDense {s : Set X} (hs : IsNowhereDense s) :
+lemma IsNowhereDense.subset_of_closed_isNowhereDense {s : Set X} (hs : IsNowhereDense s) :
     ∃ t : Set X, s ⊆ t ∧ IsNowhereDense t ∧ IsClosed t :=
   ⟨closure s, subset_closure, ⟨hs.closure, isClosed_closure⟩⟩
 
 /-- A set `s` is closed and nowhere dense iff its complement `sᶜ` is open and dense. -/
-lemma closed_isNowhereDense_iff_compl {s : Set X} :
+lemma isClosed_isNowhereDense_iff_compl {s : Set X} :
     IsClosed s ∧ IsNowhereDense s ↔ IsOpen sᶜ ∧ Dense sᶜ := by
   rw [and_congr_right IsClosed.isNowhereDense_iff,
     isOpen_compl_iff, interior_eq_empty_iff_dense_compl]
@@ -283,21 +283,22 @@ lemma IsMeagre.inter {s t : Set X} (hs : IsMeagre s) : IsMeagre (s ∩ t) :=
   hs.mono (inter_subset_left s t)
 
 /-- A countable union of meagre sets is meagre. -/
-lemma meagre_iUnion {s : ℕ → Set X} (hs : ∀ n, IsMeagre (s n)) : IsMeagre (⋃ n, s n) := by
+lemma isMeagre_iUnion {s : ℕ → Set X} (hs : ∀ n, IsMeagre (s n)) : IsMeagre (⋃ n, s n) := by
   rw [IsMeagre, compl_iUnion]
   exact countable_iInter_mem.mpr hs
 
 /-- A set is meagre iff it is contained in a countable union of nowhere dense sets. -/
-lemma meagre_iff_countable_union_nowhereDense {s : Set X} : IsMeagre s ↔
-    ∃ S : Set (Set X), (∀ t ∈ S, IsNowhereDense t) ∧ S.Countable ∧ s ⊆ ⋃₀ S := by
+lemma isMeagre_iff_countable_union_isNowhereDense {s : Set X} :
+    IsMeagre s ↔ ∃ S : Set (Set X), (∀ t ∈ S, IsNowhereDense t) ∧ S.Countable ∧ s ⊆ ⋃₀ S := by
   rw [IsMeagre, mem_residual_iff, compl_bijective.surjective.image_surjective.exists]
-  simp_rw [← and_assoc, ← forall_and, ball_image_iff, ← closed_isNowhereDense_iff_compl,
+  simp_rw [← and_assoc, ← forall_and, ball_image_iff, ← isClosed_isNowhereDense_iff_compl,
     sInter_image, ← compl_iUnion₂, compl_subset_compl, ← sUnion_eq_biUnion, and_assoc]
-  refine ⟨fun ⟨S, hS, hc, hsub⟩ ↦ ⟨S, fun s hs ↦ (hS s hs).2, ?_, hsub⟩, fun ⟨S, hS, hc, hsub⟩ ↦ ?_⟩
+  refine ⟨fun ⟨S, hS, hc, hsub⟩ ↦ ⟨S, fun s hs ↦ (hS s hs).2, ?_, hsub⟩, ?_⟩
   · rw [← compl_compl_image S]; exact hc.image _
-  use closure '' S
-  rw [ball_image_iff]
-  exact ⟨fun s hs ↦ ⟨isClosed_closure, (hS s hs).closure⟩,
-    (hc.image _).image _, hsub.trans (sUnion_mono_subsets fun s ↦ subset_closure)⟩
+  · intro ⟨S, hS, hc, hsub⟩
+    use closure '' S
+    rw [ball_image_iff]
+    exact ⟨fun s hs ↦ ⟨isClosed_closure, (hS s hs).closure⟩,
+      (hc.image _).image _, hsub.trans (sUnion_mono_subsets fun s ↦ subset_closure)⟩
 
 end meagre

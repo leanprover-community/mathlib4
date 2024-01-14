@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann
 -/
 import Mathlib.Algebra.ContinuedFractions.Computation.CorrectnessTerminating
-import Mathlib.Data.Nat.Fib
+import Mathlib.Data.Nat.Fib.Basic
 import Mathlib.Tactic.Monotonicity
-import Mathlib.Tactic.SolveByElim
+import Std.Tactic.SolveByElim
 
 #align_import algebra.continued_fractions.computation.approximations from "leanprover-community/mathlib"@"a7e36e48519ab281320c4d192da6a7b348ce40ad"
 
@@ -68,12 +68,12 @@ of great interest for the end user.
 /-- Shows that the fractional parts of the stream are in `[0,1)`. -/
 theorem nth_stream_fr_nonneg_lt_one {ifp_n : IntFractPair K}
     (nth_stream_eq : IntFractPair.stream v n = some ifp_n) : 0 ≤ ifp_n.fr ∧ ifp_n.fr < 1 := by
-  cases n
-  case zero =>
+  cases n with
+  | zero =>
     have : IntFractPair.of v = ifp_n := by injection nth_stream_eq
     rw [← this, IntFractPair.of]
     exact ⟨fract_nonneg _, fract_lt_one _⟩
-  case succ =>
+  | succ =>
     rcases succ_nth_stream_eq_some_iff.1 nth_stream_eq with ⟨_, _, _, ifp_of_eq_ifp_n⟩
     rw [← ifp_of_eq_ifp_n, IntFractPair.of]
     exact ⟨fract_nonneg _, fract_lt_one _⟩
@@ -143,7 +143,7 @@ theorem of_one_le_get?_part_denom {b : K}
     ∃ ifp, IntFractPair.stream v (n + 1) = some ifp ∧ (ifp.b : K) = gp_n.b
   exact IntFractPair.exists_succ_get?_stream_of_gcf_of_get?_eq_some nth_s_eq
   rw [← ifp_n_b_eq_gp_n_b]
-  exact_mod_cast IntFractPair.one_le_succ_nth_stream_b succ_nth_stream_eq
+  exact mod_cast IntFractPair.one_le_succ_nth_stream_b succ_nth_stream_eq
 #align generalized_continued_fraction.of_one_le_nth_part_denom GeneralizedContinuedFraction.of_one_le_get?_part_denom
 
 /--
@@ -225,7 +225,7 @@ theorem fib_le_of_continuantsAux_b :
         suffices 1 * (fib (n + 1) : K) ≤ gp.b * pconts.b by rwa [one_mul] at this
         have one_le_gp_b : (1 : K) ≤ gp.b :=
           of_one_le_get?_part_denom (part_denom_eq_s_b s_ppred_nth_eq)
-        have : (0 : K) ≤ fib (n + 1) := by exact_mod_cast (fib (n + 1)).zero_le
+        have : (0 : K) ≤ fib (n + 1) := mod_cast (fib (n + 1)).zero_le
         have : (0 : K) ≤ gp.b := le_trans zero_le_one one_le_gp_b
         mono
         · norm_num
@@ -238,9 +238,9 @@ theorem succ_nth_fib_le_of_nth_denom (hyp : n = 0 ∨ ¬(of v).TerminatedAt (n -
     (fib (n + 1) : K) ≤ (of v).denominators n := by
   rw [denom_eq_conts_b, nth_cont_eq_succ_nth_cont_aux]
   have : n + 1 ≤ 1 ∨ ¬(of v).TerminatedAt (n - 1) := by
-    cases' n with n
-    case zero => exact Or.inl <| le_refl 1
-    case succ => exact Or.inr (Or.resolve_left hyp n.succ_ne_zero)
+    cases n with
+    | zero => exact Or.inl <| le_refl 1
+    | succ n => exact Or.inr (Or.resolve_left hyp n.succ_ne_zero)
   exact fib_le_of_continuantsAux_b this
 #align generalized_continued_fraction.succ_nth_fib_le_of_nth_denom GeneralizedContinuedFraction.succ_nth_fib_le_of_nth_denom
 
@@ -249,9 +249,9 @@ theorem succ_nth_fib_le_of_nth_denom (hyp : n = 0 ∨ ¬(of v).TerminatedAt (n -
 
 theorem zero_le_of_continuantsAux_b : 0 ≤ ((of v).continuantsAux n).b := by
   let g := of v
-  induction' n with n IH
-  case zero => rfl
-  case succ =>
+  induction n with
+  | zero => rfl
+  | succ n IH =>
     cases' Decidable.em <| g.TerminatedAt (n - 1) with terminated not_terminated
     · -- terminating case
       cases' n with n
@@ -261,7 +261,7 @@ theorem zero_le_of_continuantsAux_b : 0 ≤ ((of v).continuantsAux n).b := by
         simp only [this, IH]
     · -- non-terminating case
       calc
-        (0 : K) ≤ fib (n + 1) := by exact_mod_cast (n + 1).fib.zero_le
+        (0 : K) ≤ fib (n + 1) := mod_cast (n + 1).fib.zero_le
         _ ≤ ((of v).continuantsAux (n + 1)).b := fib_le_of_continuantsAux_b (Or.inr not_terminated)
 #align generalized_continued_fraction.zero_le_of_continuants_aux_b GeneralizedContinuedFraction.zero_le_of_continuantsAux_b
 
@@ -320,9 +320,9 @@ Next we prove the so-called *determinant formula* for `GeneralizedContinuedFract
 theorem determinant_aux (hyp : n = 0 ∨ ¬(of v).TerminatedAt (n - 1)) :
     ((of v).continuantsAux n).a * ((of v).continuantsAux (n + 1)).b -
       ((of v).continuantsAux n).b * ((of v).continuantsAux (n + 1)).a = (-1) ^ n := by
-  induction' n with n IH
-  case zero => simp [continuantsAux]
-  case succ =>
+  induction n with
+  | zero => simp [continuantsAux]
+  | succ n IH =>
     -- set up some shorthand notation
     let g := of v
     let conts := continuantsAux g (n + 2)
@@ -434,10 +434,10 @@ theorem sub_convergents_eq {ifp : IntFractPair K}
         · simp [n_eq_zero, le_refl]
         · exact Or.inr not_terminated_at_pred_n
       fib_le_of_continuantsAux_b this
-    have zero_lt_B : 0 < B := B_ineq.trans_lt' $ cast_pos.2 $ fib_pos.2 n.succ_pos
+    have zero_lt_B : 0 < B := B_ineq.trans_lt' <| cast_pos.2 <| fib_pos.2 n.succ_pos
     have : 0 ≤ pB := (cast_nonneg _).trans pB_ineq
     have : 0 < ifp.fr :=
-      ifp_fr_ne_zero.lt_of_le' $ IntFractPair.nth_stream_fr_nonneg stream_nth_eq
+      ifp_fr_ne_zero.lt_of_le' <| IntFractPair.nth_stream_fr_nonneg stream_nth_eq
     have : pB + ifp.fr⁻¹ * B ≠ 0 := by positivity
     -- finally, let's do the rewriting
     calc
@@ -495,7 +495,7 @@ theorem abs_sub_convergents_le (not_terminated_at_n : ¬(of v).TerminatedAt n) :
     haveI : ¬g.TerminatedAt (n - 1) := mt (terminated_stable n.pred_le) not_terminated_at_n
     fib_le_of_continuantsAux_b <| Or.inr this
   have zero_lt_conts_b : 0 < conts.b :=
-    conts_b_ineq.trans_lt' $ by exact_mod_cast fib_pos.2 n.succ_pos
+    conts_b_ineq.trans_lt' <| mod_cast fib_pos.2 n.succ_pos
   -- `denom'` is positive, so we can remove `|⬝|` from our goal
   suffices 1 / denom' ≤ 1 / denom by
     have : |(-1) ^ n / denom'| = 1 / denom' := by
@@ -506,7 +506,7 @@ theorem abs_sub_convergents_le (not_terminated_at_n : ¬(of v).TerminatedAt n) :
             haveI : ¬g.TerminatedAt (n - 2) :=
               mt (terminated_stable (n.sub_le 2)) not_terminated_at_n
             fib_le_of_continuantsAux_b <| Or.inr this
-          le_trans (by exact_mod_cast (fib n).zero_le) this
+          le_trans (mod_cast (fib n).zero_le) this
         have : 0 < ifp_n.fr⁻¹ :=
           haveI zero_le_ifp_n_fract : 0 ≤ ifp_n.fr :=
             IntFractPair.nth_stream_fr_nonneg stream_nth_eq
@@ -518,7 +518,7 @@ theorem abs_sub_convergents_le (not_terminated_at_n : ¬(of v).TerminatedAt n) :
   suffices 0 < denom ∧ denom ≤ denom' from div_le_div_of_le_left zero_le_one this.left this.right
   constructor
   · have : 0 < pred_conts.b + gp.b * conts.b :=
-      nextConts_b_ineq.trans_lt' $ by exact_mod_cast fib_pos.2 $ succ_pos _
+      nextConts_b_ineq.trans_lt' <| mod_cast fib_pos.2 <| succ_pos _
     solve_by_elim [mul_pos]
   · -- we can cancel multiplication by `conts.b` and addition with `pred_conts.b`
     suffices : gp.b * conts.b ≤ ifp_n.fr⁻¹ * conts.b

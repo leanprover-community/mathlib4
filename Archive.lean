@@ -1,6 +1,10 @@
 import Archive.Arithcc
+import Archive.Examples.IfNormalization.Result
+import Archive.Examples.IfNormalization.Statement
+import Archive.Examples.IfNormalization.WithoutAesop
 import Archive.Examples.MersennePrimes
 import Archive.Examples.PropEncodable
+import Archive.Hairer
 import Archive.Imo.Imo1959Q1
 import Archive.Imo.Imo1960Q1
 import Archive.Imo.Imo1962Q1

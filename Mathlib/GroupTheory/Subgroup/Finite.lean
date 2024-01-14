@@ -174,7 +174,7 @@ theorem card_le_one_iff_eq_bot [Fintype H] : Fintype.card H ≤ 1 ↔ H = ⊥ :=
 #align add_subgroup.card_nonpos_iff_eq_bot AddSubgroup.card_le_one_iff_eq_bot
 
 @[to_additive] lemma eq_bot_iff_card [Fintype H] : H = ⊥ ↔ Fintype.card H = 1 :=
-  ⟨by rintro rfl;  exact card_bot, eq_bot_of_card_eq _⟩
+  ⟨by rintro rfl; exact card_bot, eq_bot_of_card_eq _⟩
 
 @[to_additive one_lt_card_iff_ne_bot]
 theorem one_lt_card_iff_ne_bot [Fintype H] : 1 < Fintype.card H ↔ H ≠ ⊥ :=
@@ -225,7 +225,7 @@ theorem pi_mem_of_mulSingle_mem_aux [DecidableEq η] (I : Finset η) {H : Subgro
         have : j ≠ i := by
           rintro rfl
           contradiction
-        simp [this]
+        simp only [ne_eq, this, not_false_eq_true, Function.update_noteq]
         exact h2 _ (Finset.mem_insert_of_mem hj)
     · apply h2
       simp

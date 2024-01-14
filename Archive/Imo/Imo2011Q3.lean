@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Renshaw
 -/
 import Mathlib.Data.Real.Basic
+import Mathlib.Tactic.Linarith
 
 #align_import imo.imo2011_q3 from "leanprover-community/mathlib"@"5f25c089cb34db4db112556f23c50d12da81b297"
 
@@ -57,4 +58,3 @@ theorem imo2011_q3 (f : ℝ → ℝ) (hf : ∀ x y, f (x + y) ≤ y * f x + f (f
     rw [hno] at hp
     linarith
 #align imo2011_q3 imo2011_q3
-

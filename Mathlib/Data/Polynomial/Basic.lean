@@ -362,7 +362,7 @@ instance unique [Subsingleton R] : Unique R[X] :=
     uniq := by
       rintro ⟨x⟩
       refine' congr_arg ofFinsupp _
-      simp }
+      simp [eq_iff_true_of_subsingleton] }
 #align polynomial.unique Polynomial.unique
 
 variable (R)
@@ -826,7 +826,7 @@ theorem ext_iff {p q : R[X]} : p = q ↔ ∀ n, coeff p n = coeff q n := by
   rcases p with ⟨⟩
   rcases q with ⟨⟩
   -- Porting note: Was `simp [coeff, FunLike.ext_iff]`
-  simp [coeff]
+  simp only [ofFinsupp.injEq, coeff._eq_1]
   exact FunLike.ext_iff (F := ℕ →₀ R)
 #align polynomial.ext_iff Polynomial.ext_iff
 
@@ -1213,6 +1213,10 @@ theorem monomial_neg (n : ℕ) (a : R) : monomial n (-a) = -monomial n a := by
   rw [eq_neg_iff_add_eq_zero, ← monomial_add, neg_add_self, monomial_zero_right]
 #align polynomial.monomial_neg Polynomial.monomial_neg
 
+theorem monomial_sub (n : ℕ) : monomial n (a - b) = monomial n a - monomial n b := by
+ rw [sub_eq_add_neg, monomial_add, monomial_neg]
+ rfl
+
 @[simp]
 theorem support_neg {p : R[X]} : (-p).support = p.support := by
   rcases p with ⟨⟩
@@ -1222,6 +1226,14 @@ theorem support_neg {p : R[X]} : (-p).support = p.support := by
 
 theorem C_eq_int_cast (n : ℤ) : C (n : R) = n := by simp
 #align polynomial.C_eq_int_cast Polynomial.C_eq_int_cast
+
+theorem C_neg : C (-a) = -C a :=
+  RingHom.map_neg C a
+#align polynomial.C_neg Polynomial.C_neg
+
+theorem C_sub : C (a - b) = C a - C b :=
+  RingHom.map_sub C a b
+#align polynomial.C_sub Polynomial.C_sub
 
 end Ring
 

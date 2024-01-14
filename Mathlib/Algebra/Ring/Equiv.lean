@@ -5,12 +5,12 @@ Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
 import Mathlib.Init.CCLemmas
 import Mathlib.Algebra.Field.IsField
+import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.GroupWithZero.InjSurj
-import Mathlib.Algebra.Hom.Ring.Defs
+import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Util.AssertExists
-import Mathlib.Algebra.Hom.Equiv.Basic
 
 #align_import algebra.ring.equiv from "leanprover-community/mathlib"@"00f91228655eecdcd3ac97a7fd8dbcb139fe990a"
 
@@ -295,8 +295,8 @@ theorem coe_toEquiv_symm (e : R ≃+* S) : (e.symm : S ≃ R) = (e : R ≃ S).sy
   rfl
 #align ring_equiv.coe_to_equiv_symm RingEquiv.coe_toEquiv_symm
 
-theorem symm_bijective : Function.Bijective (RingEquiv.symm : R ≃+* S → S ≃+* R) :=
-  Equiv.bijective ⟨RingEquiv.symm, RingEquiv.symm, symm_symm, symm_symm⟩
+theorem symm_bijective : Function.Bijective (RingEquiv.symm : (R ≃+* S) → S ≃+* R) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 #align ring_equiv.symm_bijective RingEquiv.symm_bijective
 
 @[simp]

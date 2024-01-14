@@ -28,8 +28,9 @@ theorem Finset.Nonempty.sup'_eq_cSup_image {s : Finset β} (hs : s.Nonempty) (f 
     simp [csSup_le_iff (s.finite_toSet.image f).bddAbove (hs.to_set.image f)]
 #align finset.nonempty.sup'_eq_cSup_image Finset.Nonempty.sup'_eq_cSup_image
 
-theorem Finset.Nonempty.sup'_id_eq_cSup {s : Finset α} (hs : s.Nonempty) : s.sup' hs id = sSup s :=
-  by rw [hs.sup'_eq_cSup_image, Set.image_id]
+theorem Finset.Nonempty.sup'_id_eq_cSup {s : Finset α} (hs : s.Nonempty) :
+    s.sup' hs id = sSup s := by
+  rw [hs.sup'_eq_cSup_image, Set.image_id]
 #align finset.nonempty.sup'_id_eq_cSup Finset.Nonempty.sup'_id_eq_cSup
 
 end ConditionallyCompleteLattice
@@ -83,9 +84,9 @@ non-empty. As a result, we can translate between the two.
 
 
 namespace Finset
+variable {ι : Type*} [ConditionallyCompleteLattice α]
 
-theorem sup'_eq_csSup_image [ConditionallyCompleteLattice β] (s : Finset α) (H) (f : α → β) :
-    s.sup' H f = sSup (f '' s) := by
+theorem sup'_eq_csSup_image (s : Finset ι) (H) (f : ι → α) : s.sup' H f = sSup (f '' s) := by
   apply le_antisymm
   · refine' Finset.sup'_le _ _ fun a ha => _
     refine' le_csSup ⟨s.sup' H f, _⟩ ⟨a, ha, rfl⟩
@@ -96,18 +97,24 @@ theorem sup'_eq_csSup_image [ConditionallyCompleteLattice β] (s : Finset α) (H
     exact Finset.le_sup' _ ha
 #align finset.sup'_eq_cSup_image Finset.sup'_eq_csSup_image
 
-theorem inf'_eq_csInf_image [ConditionallyCompleteLattice β] (s : Finset α) (H) (f : α → β) :
-    s.inf' H f = sInf (f '' s) :=
-  @sup'_eq_csSup_image _ βᵒᵈ _ _ H _
+theorem inf'_eq_csInf_image (s : Finset ι) (hs) (f : ι → α) : s.inf' hs f = sInf (f '' s) :=
+  sup'_eq_csSup_image (α := αᵒᵈ) _ hs _
 #align finset.inf'_eq_cInf_image Finset.inf'_eq_csInf_image
 
-theorem sup'_id_eq_csSup [ConditionallyCompleteLattice α] (s : Finset α) (H) :
-    s.sup' H id = sSup s := by rw [sup'_eq_csSup_image s H, Set.image_id]
+theorem sup'_id_eq_csSup (s : Finset α) (hs) : s.sup' hs id = sSup s := by
+  rw [sup'_eq_csSup_image s hs, Set.image_id]
 #align finset.sup'_id_eq_cSup Finset.sup'_id_eq_csSup
 
-theorem inf'_id_eq_csInf [ConditionallyCompleteLattice α] (s : Finset α) (H) :
-    s.inf' H id = sInf s :=
-  @sup'_id_eq_csSup αᵒᵈ _ _ H
+theorem inf'_id_eq_csInf (s : Finset α) (hs) : s.inf' hs id = sInf s :=
+  sup'_id_eq_csSup (α := αᵒᵈ) _ hs
 #align finset.inf'_id_eq_cInf Finset.inf'_id_eq_csInf
+
+variable [Fintype ι] [Nonempty ι]
+
+lemma sup'_univ_eq_ciSup (f : ι → α) : univ.sup' univ_nonempty f = ⨆ i, f i := by
+  simp [sup'_eq_csSup_image, iSup]
+
+lemma inf'_univ_eq_ciInf (f : ι → α) : univ.inf' univ_nonempty f = ⨅ i, f i := by
+  simp [inf'_eq_csInf_image, iInf]
 
 end Finset

@@ -69,7 +69,7 @@ instance top_isPrincipal : (⊤ : Submodule R R).IsPrincipal :=
 variable (R)
 
 /-- A ring is a principal ideal ring if all (left) ideals are principal. -/
-@[mk_iff isPrincipalIdealRing_iff]
+@[mk_iff]
 class IsPrincipalIdealRing (R : Type u) [Ring R] : Prop where
   principal : ∀ S : Ideal R, S.IsPrincipal
 #align is_principal_ideal_ring IsPrincipalIdealRing
@@ -173,12 +173,12 @@ theorem to_maximal_ideal [CommRing R] [IsDomain R] [IsPrincipalIdealRing R] {S :
     ⟨(ne_top_iff_one S).1 hpi.1, by
       intro T x hST hxS hxT
       cases' (mem_iff_generator_dvd _).1 (hST <| generator_mem S) with z hz
-      cases hpi.mem_or_mem (show generator T * z ∈ S from hz ▸ generator_mem S)
-      case inl h =>
+      cases hpi.mem_or_mem (show generator T * z ∈ S from hz ▸ generator_mem S) with
+      | inl h =>
         have hTS : T ≤ S
         rwa [← T.span_singleton_generator, Ideal.span_le, singleton_subset_iff]
         exact (hxS <| hTS hxT).elim
-      case inr h =>
+      | inr h =>
         cases' (mem_iff_generator_dvd _).1 h with y hy
         have : generator S ≠ 0 := mt (eq_bot_iff_generator_eq_zero _).2 hS
         rw [← mul_one (generator S), hy, mul_left_comm, mul_right_inj' this] at hz
@@ -290,7 +290,7 @@ theorem ne_zero_of_mem_factors {R : Type v} [CommRing R] [IsDomain R] [IsPrincip
 
 theorem mem_submonoid_of_factors_subset_of_units_subset (s : Submonoid R) {a : R} (ha : a ≠ 0)
     (hfac : ∀ b ∈ factors a, b ∈ s) (hunit : ∀ c : Rˣ, (c : R) ∈ s) : a ∈ s := by
-  rcases(factors_spec a ha).2 with ⟨c, hc⟩
+  rcases (factors_spec a ha).2 with ⟨c, hc⟩
   rw [← hc]
   exact mul_mem (multiset_prod_mem _ hfac) (hunit _)
 #align principal_ideal_ring.mem_submonoid_of_factors_subset_of_units_subset PrincipalIdealRing.mem_submonoid_of_factors_subset_of_units_subset

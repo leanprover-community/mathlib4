@@ -133,14 +133,14 @@ theorem prod_replicate (n : ℕ) (a : α) : (replicate n a).prod = a ^ n := by
 
 @[to_additive]
 theorem prod_map_eq_pow_single [DecidableEq ι] (i : ι)
-    (hf : ∀ (i') (_ : i' ≠ i), i' ∈ m → f i' = 1) : (m.map f).prod = f i ^ m.count i := by
+    (hf : ∀ i' ≠ i, i' ∈ m → f i' = 1) : (m.map f).prod = f i ^ m.count i := by
   induction' m using Quotient.inductionOn with l
   simp [List.prod_map_eq_pow_single i f hf]
 #align multiset.prod_map_eq_pow_single Multiset.prod_map_eq_pow_single
 #align multiset.sum_map_eq_nsmul_single Multiset.sum_map_eq_nsmul_single
 
 @[to_additive]
-theorem prod_eq_pow_single [DecidableEq α] (a : α) (h : ∀ (a') (_ : a' ≠ a), a' ∈ s → a' = 1) :
+theorem prod_eq_pow_single [DecidableEq α] (a : α) (h : ∀ a' ≠ a, a' ∈ s → a' = 1) :
     s.prod = a ^ s.count a := by
   induction' s using Quotient.inductionOn with l
   simp [List.prod_eq_pow_single a h]
@@ -285,6 +285,7 @@ theorem prod_eq_zero {s : Multiset α} (h : (0 : α) ∈ s) : s.prod = 0 := by
 
 variable [NoZeroDivisors α] [Nontrivial α] {s : Multiset α}
 
+@[simp]
 theorem prod_eq_zero_iff : s.prod = 0 ↔ (0 : α) ∈ s :=
   Quotient.inductionOn s fun l => by
     rw [quot_mk_to_coe, coe_prod]
@@ -310,7 +311,7 @@ theorem prod_map_inv' (m : Multiset α) : (m.map Inv.inv).prod = m.prod⁻¹ :=
 @[to_additive (attr := simp)]
 theorem prod_map_inv : (m.map fun i => (f i)⁻¹).prod = (m.map f).prod⁻¹ := by
   -- Porting note: used `convert`
-  simp_rw [←(m.map f).prod_map_inv', map_map, Function.comp_apply]
+  simp_rw [← (m.map f).prod_map_inv', map_map, Function.comp_apply]
 #align multiset.prod_map_inv Multiset.prod_map_inv
 #align multiset.sum_map_neg Multiset.sum_map_neg
 
@@ -426,6 +427,25 @@ theorem pow_card_le_prod (h : ∀ x ∈ s, a ≤ x) : a ^ card s ≤ s.prod := b
 #align multiset.card_nsmul_le_sum Multiset.card_nsmul_le_sum
 
 end OrderedCommMonoid
+
+section OrderedCancelCommMonoid
+
+variable [OrderedCancelCommMonoid α] {s : Multiset ι} {f g : ι → α}
+
+@[to_additive sum_lt_sum]
+theorem prod_lt_prod' (hle : ∀ i ∈ s, f i ≤ g i) (hlt : ∃ i ∈ s, f i < g i) :
+    (s.map f).prod < (s.map g).prod := by
+  obtain ⟨l⟩ := s
+  simp only [Multiset.quot_mk_to_coe'', Multiset.coe_map, Multiset.coe_prod]
+  exact List.prod_lt_prod' f g hle hlt
+
+@[to_additive sum_lt_sum_of_nonempty]
+theorem prod_lt_prod_of_nonempty' (hs : s ≠ ∅) (hfg : ∀ i ∈ s, f i < g i) :
+    (s.map f).prod < (s.map g).prod := by
+  obtain ⟨i, hi⟩ := exists_mem_of_ne_zero hs
+  exact prod_lt_prod' (fun i hi => le_of_lt (hfg i hi)) ⟨i, hi, hfg i hi⟩
+
+end OrderedCancelCommMonoid
 
 theorem prod_nonneg [OrderedCommSemiring α] {m : Multiset α} (h : ∀ a ∈ m, (0 : α) ≤ a) :
     0 ≤ m.prod := by

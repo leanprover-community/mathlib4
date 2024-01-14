@@ -182,14 +182,14 @@ variable (α)
 /-- The adjacency matrix of `G` is an adjacency matrix. -/
 @[simp]
 theorem isAdjMatrix_adjMatrix [Zero α] [One α] : (G.adjMatrix α).IsAdjMatrix :=
-  { zero_or_one := fun i j => by by_cases G.Adj i j <;> simp [h] }
+  { zero_or_one := fun i j => by by_cases h : G.Adj i j <;> simp [h] }
 #align simple_graph.is_adj_matrix_adj_matrix SimpleGraph.isAdjMatrix_adjMatrix
 
 /-- The graph induced by the adjacency matrix of `G` is `G` itself. -/
 theorem toGraph_adjMatrix_eq [MulZeroOneClass α] [Nontrivial α] :
     (G.isAdjMatrix_adjMatrix α).toGraph = G := by
   ext
-  simp only [IsAdjMatrix.toGraph_Adj, adjMatrix_apply, ite_eq_left_iff, zero_ne_one]
+  simp only [IsAdjMatrix.toGraph_adj, adjMatrix_apply, ite_eq_left_iff, zero_ne_one]
   apply Classical.not_not
 #align simple_graph.to_graph_adj_matrix_eq SimpleGraph.toGraph_adjMatrix_eq
 
@@ -243,14 +243,14 @@ theorem trace_adjMatrix [AddCommMonoid α] [One α] : Matrix.trace (G.adjMatrix 
 variable {α}
 
 theorem adjMatrix_mul_self_apply_self [NonAssocSemiring α] (i : V) :
-    (G.adjMatrix α * G.adjMatrix α) i i = degree G i := by simp [degree]
+    (G.adjMatrix α * G.adjMatrix α) i i = degree G i := by simp
 #align simple_graph.adj_matrix_mul_self_apply_self SimpleGraph.adjMatrix_mul_self_apply_self
 
 variable {G}
 
 -- @[simp] -- Porting note: simp can prove this
 theorem adjMatrix_mulVec_const_apply [Semiring α] {a : α} {v : V} :
-    (G.adjMatrix α).mulVec (Function.const _ a) v = G.degree v * a := by simp [degree]
+    (G.adjMatrix α).mulVec (Function.const _ a) v = G.degree v * a := by simp
 #align simple_graph.adj_matrix_mul_vec_const_apply SimpleGraph.adjMatrix_mulVec_const_apply
 
 theorem adjMatrix_mulVec_const_apply_of_regular [Semiring α] {d : ℕ} {a : α}

@@ -29,10 +29,10 @@ This file provides only basic operations (`mul_left`, `mul_right`, `inv_right` e
 operations (`pow_right`, field inverse etc) are in the files that define corresponding notions.
 -/
 
-set_option autoImplicit true
+variable {S M G : Type*}
 
 /-- `x` is semiconjugate to `y` by `a`, if `a * x = y * a`. -/
-@[to_additive AddSemiconjBy "`x` is additive semiconjugate to `y` by `a` if `a + x = y + a`"]
+@[to_additive "`x` is additive semiconjugate to `y` by `a` if `a + x = y + a`"]
 def SemiconjBy [Mul M] (a x y : M) : Prop :=
   a * x = y * a
 #align semiconj_by SemiconjBy
@@ -59,7 +59,7 @@ theorem mul_right (h : SemiconjBy a x y) (h' : SemiconjBy a x' y') :
     SemiconjBy a (x * x') (y * y') := by
   unfold SemiconjBy
   -- TODO this could be done using `assoc_rw` if/when this is ported to mathlib4
-  rw [←mul_assoc, h.eq, mul_assoc, h'.eq, ←mul_assoc]
+  rw [← mul_assoc, h.eq, mul_assoc, h'.eq, ← mul_assoc]
 #align semiconj_by.mul_right SemiconjBy.mul_right
 #align add_semiconj_by.add_right AddSemiconjBy.add_right
 
@@ -69,7 +69,7 @@ semiconjugates `x` to `z`. -/
 semiconjugates `x` to `z`."]
 theorem mul_left (ha : SemiconjBy a y z) (hb : SemiconjBy b x y) : SemiconjBy (a * b) x z := by
   unfold SemiconjBy
-  rw [mul_assoc, hb.eq, ←mul_assoc, ha.eq, mul_assoc]
+  rw [mul_assoc, hb.eq, ← mul_assoc, ha.eq, mul_assoc]
 #align semiconj_by.mul_left SemiconjBy.mul_left
 #align add_semiconj_by.add_left AddSemiconjBy.add_left
 
@@ -143,7 +143,7 @@ end Group
 
 end SemiconjBy
 
-@[to_additive (attr := simp) addSemiconjBy_iff_eq]
+@[to_additive (attr := simp)]
 theorem semiconjBy_iff_eq [CancelCommMonoid M] {a x y : M} : SemiconjBy a x y ↔ x = y :=
   ⟨fun h => mul_left_cancel (h.trans (mul_comm _ _)), fun h => by rw [h, SemiconjBy, mul_comm]⟩
 #align semiconj_by_iff_eq semiconjBy_iff_eq

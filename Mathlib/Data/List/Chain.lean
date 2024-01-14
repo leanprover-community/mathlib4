@@ -255,7 +255,7 @@ theorem Chain'.cons {x y l} (h₁ : R x y) (h₂ : Chain' R (y :: l)) : Chain' R
   chain'_cons.2 ⟨h₁, h₂⟩
 #align list.chain'.cons List.Chain'.cons
 
-theorem Chain'.tail : ∀ {l} (_ : Chain' R l), Chain' R l.tail
+theorem Chain'.tail : ∀ {l}, Chain' R l → Chain' R l.tail
   | [], _ => trivial
   | [_], _ => trivial
   | _ :: _ :: _, h => (chain'_cons.mp h).right
@@ -354,7 +354,7 @@ theorem chain'_iff_get {R} : ∀ {l : List α}, Chain' R l ↔
     rw [← and_forall_succ, chain'_cons, chain'_iff_get]
     simp only [length_cons, get_cons_succ, Fin.zero_eta, get_cons_zero, zero_add, Fin.mk_one,
       get_cons_cons_one, succ_sub_succ_eq_sub, nonpos_iff_eq_zero, add_eq_zero_iff, and_false,
-      tsub_zero, add_pos_iff, or_true, forall_true_left, and_congr_right_iff]
+      tsub_zero, add_pos_iff, zero_lt_one, or_true, forall_true_left, and_congr_right_iff]
     dsimp [succ_sub_one]
     exact fun _ => ⟨fun h i hi => h i (Nat.lt_of_succ_lt_succ hi),
                     fun h i hi => h i (Nat.succ_lt_succ hi)⟩
@@ -386,7 +386,7 @@ lemma chain'_join : ∀ {L : List (List α)}, [] ∉ L →
     rw [join, chain'_append, chain'_join hL.2, forall_mem_cons, chain'_cons]
     rw [mem_cons, not_or, ← Ne.def] at hL
     simp only [forall_mem_cons, and_assoc, join, head?_append_of_ne_nil _ hL.2.1.symm]
-    exact Iff.rfl.and (Iff.rfl.and $ Iff.rfl.and and_comm)
+    exact Iff.rfl.and (Iff.rfl.and <| Iff.rfl.and and_comm)
 
 /-- If `a` and `b` are related by the reflexive transitive closure of `r`, then there is an
 `r`-chain starting from `a` and ending on `b`.
@@ -440,6 +440,31 @@ theorem relationReflTransGen_of_exists_chain (l : List α) (hl₁ : Chain r a l)
   Chain.induction_head l hl₁ hl₂ (fun _ _ => Relation.ReflTransGen.head)
     Relation.ReflTransGen.refl
 #align list.relation_refl_trans_gen_of_exists_chain List.relationReflTransGen_of_exists_chain
+
+theorem Chain'.cons_of_le [LinearOrder α] {a : α} {as m : List α}
+    (ha : List.Chain' (· > ·) (a :: as)) (hm : List.Chain' (· > ·) m) (hmas : m ≤ as) :
+    List.Chain' (· > ·) (a :: m) := by
+  cases m with
+  | nil => simp only [List.chain'_singleton]
+  | cons b bs =>
+    apply hm.cons
+    cases as with
+    | nil =>
+      simp only [le_iff_lt_or_eq, or_false] at hmas
+      exact (List.Lex.not_nil_right (·<·) _ hmas).elim
+    | cons a' as =>
+      rw [List.chain'_cons] at ha
+      refine gt_of_gt_of_ge ha.1 ?_
+      rw [le_iff_lt_or_eq] at hmas
+      cases' hmas with hmas hmas
+      · by_contra! hh
+        rw [← not_le] at hmas
+        apply hmas
+        apply le_of_lt
+        exact (List.lt_iff_lex_lt _ _).mp (List.lt.head _ _ hh)
+      · simp only [List.cons.injEq] at hmas
+        rw [ge_iff_le, le_iff_lt_or_eq]
+        exact Or.inr hmas.1
 
 end List
 

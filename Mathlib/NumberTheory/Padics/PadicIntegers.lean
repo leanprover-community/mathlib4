@@ -338,14 +338,14 @@ theorem exists_pow_neg_lt {ε : ℝ} (hε : 0 < ε) : ∃ k : ℕ, (p : ℝ) ^ (
     apply le_of_lt
     convert Nat.lt_pow_self _ _ using 1
     exact hp.1.one_lt
-  · exact_mod_cast hp.1.pos
+  · exact mod_cast hp.1.pos
 #align padic_int.exists_pow_neg_lt PadicInt.exists_pow_neg_lt
 
 theorem exists_pow_neg_lt_rat {ε : ℚ} (hε : 0 < ε) : ∃ k : ℕ, (p : ℚ) ^ (-(k : ℤ)) < ε := by
-  obtain ⟨k, hk⟩ := @exists_pow_neg_lt p _ ε (by exact_mod_cast hε)
+  obtain ⟨k, hk⟩ := @exists_pow_neg_lt p _ ε (mod_cast hε)
   use k
   rw [show (p : ℝ) = (p : ℚ) by simp] at hk
-  exact_mod_cast hk
+  exact mod_cast hk
 #align padic_int.exists_pow_neg_lt_rat PadicInt.exists_pow_neg_lt_rat
 
 variable {p}
@@ -357,7 +357,8 @@ theorem norm_int_lt_one_iff_dvd (k : ℤ) : ‖(k : ℤ_[p])‖ < 1 ↔ (p : ℤ
 
 theorem norm_int_le_pow_iff_dvd {k : ℤ} {n : ℕ} :
     ‖(k : ℤ_[p])‖ ≤ (p : ℝ) ^ (-n : ℤ) ↔ (p ^ n : ℤ) ∣ k :=
-  suffices ‖(k : ℚ_[p])‖ ≤ (p : ℝ) ^ (-n : ℤ) ↔ ↑(p ^ n) ∣ k by simpa [norm_int_cast_eq_padic_norm]
+  suffices ‖(k : ℚ_[p])‖ ≤ (p : ℝ) ^ (-n : ℤ) ↔ (p ^ n : ℤ) ∣ k by
+    simpa [norm_int_cast_eq_padic_norm]
   padicNormE.norm_int_le_pow_iff_dvd _ _
 #align padic_int.norm_int_le_pow_iff_dvd PadicInt.norm_int_le_pow_iff_dvd
 
@@ -390,7 +391,7 @@ theorem valuation_p : valuation (p : ℤ_[p]) = 1 := by simp [valuation]
 theorem valuation_nonneg (x : ℤ_[p]) : 0 ≤ x.valuation := by
   by_cases hx : x = 0
   · simp [hx]
-  have h : (1 : ℝ) < p := by exact_mod_cast hp.1.one_lt
+  have h : (1 : ℝ) < p := mod_cast hp.1.one_lt
   rw [← neg_nonpos, ← (zpow_strictMono h).le_iff_le]
   show (p : ℝ) ^ (-valuation x) ≤ (p : ℝ) ^ (0 : ℤ)
   rw [← norm_eq_pow_val hx]
@@ -410,9 +411,9 @@ theorem valuation_p_pow_mul (n : ℕ) (c : ℤ_[p]) (hc : c ≠ 0) :
     · exact hc
   rwa [norm_eq_pow_val aux, norm_p_pow, norm_eq_pow_val hc, ← zpow_add₀, ← neg_add,
     zpow_inj, neg_inj] at this
-  · exact_mod_cast hp.1.pos
-  · exact_mod_cast hp.1.ne_one
-  · exact_mod_cast hp.1.ne_zero
+  · exact mod_cast hp.1.pos
+  · exact mod_cast hp.1.ne_one
+  · exact mod_cast hp.1.ne_zero
 #align padic_int.valuation_p_pow_mul PadicInt.valuation_p_pow_mul
 
 section Units
@@ -480,7 +481,7 @@ See `unitCoeff_spec`. -/
 def unitCoeff {x : ℤ_[p]} (hx : x ≠ 0) : ℤ_[p]ˣ :=
   let u : ℚ_[p] := x * (p : ℚ_[p]) ^ (-x.valuation)
   have hu : ‖u‖ = 1 := by
-    simp [hx, Nat.zpow_ne_zero_of_pos (by exact_mod_cast hp.1.pos) x.valuation, norm_eq_pow_val,
+    simp [hx, Nat.zpow_ne_zero_of_pos (mod_cast hp.1.pos) x.valuation, norm_eq_pow_val,
       zpow_neg, inv_mul_cancel]
   mkUnits hu
 #align padic_int.unit_coeff PadicInt.unitCoeff
@@ -497,7 +498,7 @@ theorem unitCoeff_spec {x : ℤ_[p]} (hx : x ≠ 0) :
   have repr : (x : ℚ_[p]) = unitCoeff hx * (p : ℚ_[p]) ^ x.valuation := by
     rw [unitCoeff_coe, mul_assoc, ← zpow_add₀]
     · simp
-    · exact_mod_cast hp.1.ne_zero
+    · exact mod_cast hp.1.ne_zero
   convert repr using 2
   rw [← zpow_ofNat, Int.natAbs_of_nonneg (valuation_nonneg x)]
 #align padic_int.unit_coeff_spec PadicInt.unitCoeff_spec
@@ -517,9 +518,9 @@ theorem norm_le_pow_iff_le_valuation (x : ℤ_[p]) (hx : x ≠ 0) (n : ℕ) :
   have aux : ∀ m : ℕ, 0 < (p : ℝ) ^ m := by
     intro m
     refine pow_pos ?_ m
-    exact_mod_cast hp.1.pos
+    exact mod_cast hp.1.pos
   rw [inv_le_inv (aux _) (aux _)]
-  have : p ^ n ≤ p ^ k ↔ n ≤ k := (pow_strictMono_right hp.1.one_lt).le_iff_le
+  have : p ^ n ≤ p ^ k ↔ n ≤ k := (pow_right_strictMono hp.1.one_lt).le_iff_le
   rw [← this]
   norm_cast
 #align padic_int.norm_le_pow_iff_le_valuation PadicInt.norm_le_pow_iff_le_valuation
@@ -547,7 +548,7 @@ theorem norm_le_pow_iff_mem_span_pow (x : ℤ_[p]) (n : ℕ) :
   by_cases hx : x = 0
   · subst hx
     simp only [norm_zero, zpow_neg, zpow_ofNat, inv_nonneg, iff_true_iff, Submodule.zero_mem]
-    exact_mod_cast Nat.zero_le _
+    exact mod_cast Nat.zero_le _
   rw [norm_le_pow_iff_le_valuation x hx, mem_span_pow_iff_le_valuation x hx]
 #align padic_int.norm_le_pow_iff_mem_span_pow PadicInt.norm_le_pow_iff_mem_span_pow
 
@@ -585,7 +586,7 @@ instance : LocalRing ℤ_[p] :=
   LocalRing.of_nonunits_add <| by simp only [mem_nonunits]; exact fun x y => norm_lt_one_add
 
 theorem p_nonnunit : (p : ℤ_[p]) ∈ nonunits ℤ_[p] := by
-  have : (p : ℝ)⁻¹ < 1 := inv_lt_one <| by exact_mod_cast hp.1.one_lt
+  have : (p : ℝ)⁻¹ < 1 := inv_lt_one <| mod_cast hp.1.one_lt
   rwa [← norm_p, ← mem_nonunits] at this
 #align padic_int.p_nonnunit PadicInt.p_nonnunit
 
@@ -601,7 +602,7 @@ theorem maximalIdeal_eq_span_p : maximalIdeal ℤ_[p] = Ideal.span {(p : ℤ_[p]
 theorem prime_p : Prime (p : ℤ_[p]) := by
   rw [← Ideal.span_singleton_prime, ← maximalIdeal_eq_span_p]
   · infer_instance
-  · exact_mod_cast hp.1.ne_zero
+  · exact mod_cast hp.1.ne_zero
 #align padic_int.prime_p PadicInt.prime_p
 
 theorem irreducible_p : Irreducible (p : ℤ_[p]) := Prime.irreducible prime_p
@@ -632,7 +633,7 @@ instance : IsAdicComplete (maximalIdeal ℤ_[p]) ℤ_[p] where
     · refine ⟨x'.lim, fun n => ?_⟩
       have : (0 : ℝ) < (p : ℝ) ^ (-n : ℤ) := by
         apply zpow_pos_of_pos
-        exact_mod_cast hp.1.pos
+        exact mod_cast hp.1.pos
       obtain ⟨i, hi⟩ := equiv_def₃ (equiv_lim x') this
       by_cases hin : i ≤ n
       · exact (hi i le_rfl n hin).le
@@ -684,11 +685,9 @@ instance isFractionRing : IsFractionRing ℤ_[p] ℚ_[p] where
           ⟨(p ^ n : ℤ_[p]), mem_nonZeroDivisors_iff_ne_zero.mpr (NeZero.ne _)⟩)
       simp only [map_pow, map_natCast, algebraMap_apply, PadicInt.coe_pow, PadicInt.coe_nat_cast,
         Subtype.coe_mk, Nat.cast_pow]
-  eq_iff_exists' := by
+  exists_of_eq := by
     simp_rw [algebraMap_apply, Subtype.coe_inj]
-    refine ⟨fun h => ⟨1, by rw [h]⟩, ?_⟩
-    rintro ⟨⟨c, hc⟩, h⟩
-    exact (mul_eq_mul_left_iff.mp h).resolve_right (mem_nonZeroDivisors_iff_ne_zero.mp hc)
+    exact fun h => ⟨1, by rw [h]⟩
 #align padic_int.is_fraction_ring PadicInt.isFractionRing
 
 end FractionRing

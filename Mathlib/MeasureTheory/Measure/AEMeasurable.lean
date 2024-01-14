@@ -15,7 +15,6 @@ function. This property, called `AEMeasurable f μ`, is defined in the file `Mea
 We discuss several of its properties that are analogous to properties of measurable functions.
 -/
 
-
 open MeasureTheory MeasureTheory.Measure Filter Set Function Classical ENNReal
 
 variable {ι α β γ δ R : Type*} {m0 : MeasurableSpace α} [MeasurableSpace β] [MeasurableSpace γ]
@@ -44,10 +43,19 @@ theorem aemeasurable_id'' (μ : Measure α) {m : MeasurableSpace α} (hm : m ≤
   @Measurable.aemeasurable α α m0 m id μ (measurable_id'' hm)
 #align probability_theory.ae_measurable_id'' aemeasurable_id''
 
+lemma aemeasurable_of_map_neZero {mβ : MeasurableSpace β} {μ : Measure α}
+    {f : α → β} (h : NeZero (μ.map f)) :
+    AEMeasurable f μ := by
+  by_contra h'
+  simp [h'] at h
+
 namespace AEMeasurable
 
+lemma mono_ac (hf : AEMeasurable f ν) (hμν : μ ≪ ν) : AEMeasurable f μ :=
+  ⟨hf.mk f, hf.measurable_mk, hμν.ae_le hf.ae_eq_mk⟩
+
 theorem mono_measure (h : AEMeasurable f μ) (h' : ν ≤ μ) : AEMeasurable f ν :=
-  ⟨h.mk f, h.measurable_mk, Eventually.filter_mono (ae_mono h') h.ae_eq_mk⟩
+  mono_ac h h'.absolutelyContinuous
 #align ae_measurable.mono_measure AEMeasurable.mono_measure
 
 theorem mono_set {s t} (h : s ⊆ t) (ht : AEMeasurable f (μ.restrict t)) :
@@ -171,16 +179,8 @@ theorem comp_quasiMeasurePreserving {ν : Measure δ} {f : α → δ} {g : δ �
 theorem map_map_of_aemeasurable {g : β → γ} {f : α → β} (hg : AEMeasurable g (Measure.map f μ))
     (hf : AEMeasurable f μ) : (μ.map f).map g = μ.map (g ∘ f) := by
   ext1 s hs
-  let g' := hg.mk g
-  have A : map g (map f μ) = map g' (map f μ) := by
-    apply MeasureTheory.Measure.map_congr
-    exact hg.ae_eq_mk
-  have B : map (g ∘ f) μ = map (g' ∘ f) μ := by
-    apply MeasureTheory.Measure.map_congr
-    exact ae_of_ae_map hf hg.ae_eq_mk
-  simp only [A, B, hs, hg.measurable_mk.aemeasurable.comp_aemeasurable hf, hg.measurable_mk,
-    hg.measurable_mk hs, hf, map_apply, map_apply_of_aemeasurable]
-  rfl
+  rw [map_apply_of_aemeasurable hg hs, map_apply₀ hf (hg.nullMeasurable hs),
+    map_apply_of_aemeasurable (hg.comp_aemeasurable hf) hs, preimage_comp]
 #align ae_measurable.map_map_of_ae_measurable AEMeasurable.map_map_of_aemeasurable
 
 @[measurability]
@@ -207,7 +207,7 @@ theorem exists_ae_eq_range_subset (H : AEMeasurable f μ) {t : Set β} (ht : ∀
   · have A : μ (toMeasurable μ { x | f x = H.mk f x ∧ f x ∈ t }ᶜ) = 0 := by
       rw [measure_toMeasurable, ← compl_mem_ae_iff, compl_compl]
       exact H.ae_eq_mk.and ht
-    filter_upwards [compl_mem_ae_iff.2 A]with x hx
+    filter_upwards [compl_mem_ae_iff.2 A] with x hx
     rw [mem_compl_iff] at hx
     simp only [hx, piecewise_eq_of_not_mem, not_false_iff]
     contrapose! hx
@@ -230,11 +230,6 @@ theorem subtype_mk (h : AEMeasurable f μ) {s : Set β} {hfs : ∀ x, f x ∈ s}
   filter_upwards [fg] with x hx
   simpa [Subtype.ext_iff]
 #align ae_measurable.subtype_mk AEMeasurable.subtype_mk
-
-protected theorem nullMeasurable (h : AEMeasurable f μ) : NullMeasurable f μ :=
-  let ⟨_g, hgm, hg⟩ := h
-  hgm.nullMeasurable.congr hg.symm
-#align ae_measurable.null_measurable AEMeasurable.nullMeasurable
 
 end AEMeasurable
 
@@ -438,3 +433,24 @@ lemma MeasureTheory.NullMeasurable.aemeasurable_of_aerange {f : α → β} {t : 
     lift f' to α → t using hf't
     replace hf'm : NullMeasurable f' μ := hf'm.measurable'.subtype_mk
     exact (measurable_subtype_coe.comp_aemeasurable hf'm.aemeasurable).congr hff'.symm
+
+namespace MeasureTheory
+namespace Measure
+
+lemma map_sum {ι : Type*} {m : ι → Measure α} {f : α → β} (hf : AEMeasurable f (Measure.sum m)) :
+    Measure.map f (Measure.sum m) = Measure.sum (fun i ↦ Measure.map f (m i)) := by
+  ext s hs
+  rw [map_apply_of_aemeasurable hf hs, sum_apply₀ _ (hf.nullMeasurable hs), sum_apply _ hs]
+  have M i : AEMeasurable f (m i) := hf.mono_measure (le_sum m i)
+  simp_rw [map_apply_of_aemeasurable (M _) hs]
+
+instance (μ : Measure α) (f : α → β) [SFinite μ] : SFinite (μ.map f) := by
+  by_cases H : AEMeasurable f μ
+  · rw [← sum_sFiniteSeq μ] at H ⊢
+    rw [map_sum H]
+    infer_instance
+  · rw [map_of_not_aemeasurable H]
+    infer_instance
+
+end Measure
+end MeasureTheory

@@ -166,7 +166,7 @@ example {α} (x : α) : rfl2.toFun x = x ∧ rfl2.invFun x = x := by
 
 /- test `fullyApplied` option -/
 
-@[simps (config := {fullyApplied := false})]
+@[simps (config := .asFn)]
 def rfl3 {α} : α ≃ α := ⟨id, λ x => x, λ _ => rfl, λ _ => rfl⟩
 
 end foo
@@ -181,7 +181,7 @@ def my_equiv := Equiv'
 
 namespace CountNested
 @[simps]
-def nested1 : MyProd ℕ $ MyProd ℤ ℕ :=
+def nested1 : MyProd ℕ <| MyProd ℤ ℕ :=
   ⟨2, -1, 1⟩
 
 @[simps (config := .lemmasOnly)]
@@ -205,7 +205,7 @@ run_cmd liftTermElabM <| do
   guard <| hasSimpAttribute env `CountNested.nested1_fst -- simp attribute is global
   guard <| not <| hasSimpAttribute env `CountNested.nested2_fst -- lemmas_only doesn't add simp lemma
   -- todo: maybe test that there are no other lemmas generated
-  -- guard $ 7 = env.fold 0
+  -- guard <| 7 = env.fold 0
   --   (λ d n => n + if d.to_name.components.init.ilast = `CountNested then 1 else 0)
 
 -- testing with arguments
@@ -386,7 +386,7 @@ attribute [local simp] Nat.zero_add Nat.one_mul Nat.mul_one
 @[simps (config := {simpRhs := true})] def myNatEquiv : ℕ ≃ ℕ :=
   ⟨λ n => 0 + n, λ n => 1 * n * 1, by intro n; simp, by intro n; simp⟩
 
-example (n : ℕ) : myNatEquiv.toFun (myNatEquiv.toFun $ myNatEquiv.invFun n) = n := by
+example (n : ℕ) : myNatEquiv.toFun (myNatEquiv.toFun <| myNatEquiv.invFun n) = n := by
   { /-successIfFail { rfl },-/ simp only [myNatEquiv_toFun, myNatEquiv_invFun] }
 
 @[simps (config := {simpRhs := true})] def succeed_without_simplification_possible : ℕ ≃ ℕ :=
@@ -762,8 +762,8 @@ initialize_simps_projections Equiv (toFun → coe, as_prefix coe, invFun → sym
 
 run_cmd liftTermElabM <| do
   let data ← getRawProjections .missing `PrefixProjectionNames.Equiv
-  guard $ data.2.map (·.name) = #[`coe, `symm_apply]
-  guard $ data.2.map (·.isPrefix) = #[true, false]
+  guard <| data.2.map (·.name) = #[`coe, `symm_apply]
+  guard <| data.2.map (·.isPrefix) = #[true, false]
 
 @[simps (config := {simpRhs := true})] protected def Equiv.trans (e₁ : α ≃ β) (e₂ : β ≃ γ) : α ≃ γ :=
   ⟨e₂ ∘ (e₁ : α → β), e₁.symm ∘ (e₂.symm : γ → β)⟩

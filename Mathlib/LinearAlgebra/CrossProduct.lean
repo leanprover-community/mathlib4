@@ -153,7 +153,7 @@ theorem cross_cross (u v w : Fin 3 → R) : u ×₃ v ×₃ w = u ×₃ (v ×₃
   lie_lie u v w
 #align cross_cross cross_cross
 
-/-- Jacobi identity: For a cross product of three vectors,
+/-- **Jacobi identity**: For a cross product of three vectors,
     their sum over the three even permutations is equal to the zero vector. -/
 theorem jacobi_cross (u v w : Fin 3 → R) : u ×₃ (v ×₃ w) + v ×₃ (w ×₃ u) + w ×₃ (u ×₃ v) = 0 :=
   lie_jacobi u v w

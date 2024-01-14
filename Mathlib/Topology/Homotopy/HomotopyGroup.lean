@@ -214,7 +214,7 @@ def toLoop (i : N) (p : Ω^ N X x) : Ω (Ω^ { j // j ≠ i } X x) const
 theorem continuous_toLoop (i : N) : Continuous (@toLoop N X _ x _ i) :=
   Path.continuous_uncurry_iff.1 <|
     Continuous.subtype_mk
-      (ContinuousMap.continuous_eval'.comp <|
+      (ContinuousMap.continuous_eval.comp <|
         Continuous.prod_map
           (ContinuousMap.continuous_curry.comp <|
             (ContinuousMap.continuous_comp_left _).comp continuous_subtype_val)
@@ -307,9 +307,9 @@ theorem homotopicTo (i : N) {p q : Ω^ N X x} :
   · apply H.apply_zero
   · apply H.apply_one
   intro t y yH
-  constructor <;> ext <;> erw [homotopyTo_apply]
-  apply H.eq_fst; on_goal 2 => apply H.eq_snd
-  all_goals use i; rw [funSplitAt_symm_apply, dif_pos rfl]; exact yH
+  ext; erw [homotopyTo_apply]
+  apply H.eq_fst; use i
+  rw [funSplitAt_symm_apply, dif_pos rfl]; exact yH
 #align gen_loop.homotopic_to GenLoop.homotopicTo
 
 /-- The converse to `GenLoop.homotopyTo`: a homotopy between two loops in the space of
@@ -330,10 +330,8 @@ theorem homotopicFrom (i : N) {p q : Ω^ N X x} :
   · rintro t y ⟨j, jH⟩
     erw [homotopyFrom_apply]
     obtain rfl | h := eq_or_ne j i
-    · constructor
-      · rw [H.eq_fst]; exacts [congr_arg p ((Cube.splitAt j).left_inv _), jH]
-      · rw [H.eq_snd]; exacts [congr_arg q ((Cube.splitAt j).left_inv _), jH]
-    · rw [p.2 _ ⟨j, jH⟩, q.2 _ ⟨j, jH⟩]; constructor <;> · apply boundary; exact ⟨⟨j, h⟩, jH⟩
+    · rw [H.eq_fst]; exacts [congr_arg p ((Cube.splitAt j).left_inv _), jH]
+    · rw [p.2 _ ⟨j, jH⟩]; apply boundary; exact ⟨⟨j, h⟩, jH⟩
     /- porting note: the following is indented two spaces more than it should be due to
       strange behavior of `erw` -/
     all_goals
@@ -494,9 +492,8 @@ def homotopyGroupEquivFundamentalGroupOfUnique (N) [Unique N] :
   · exact (H.apply_zero _).trans (congr_arg a₁ (eq_const_of_unique y).symm)
   · exact (H.apply_one _).trans (congr_arg a₂ (eq_const_of_unique y).symm)
   · rintro t y ⟨i, iH⟩
-    cases Unique.eq_default i; constructor
-    · exact (H.eq_fst _ iH).trans (congr_arg a₁ (eq_const_of_unique y).symm)
-    · exact (H.eq_snd _ iH).trans (congr_arg a₂ (eq_const_of_unique y).symm)
+    cases Unique.eq_default i
+    exact (H.eq_fst _ iH).trans (congr_arg a₁ (eq_const_of_unique y).symm)
 #align homotopy_group_equiv_fundamental_group_of_unique homotopyGroupEquivFundamentalGroupOfUnique
 
 /-- The first homotopy group at `x` is in bijection with the fundamental group. -/

@@ -215,8 +215,8 @@
 58:
   title  : Formula for the Number of Combinations
   decls  :
-    - Finset.card_powersetLen
-    - Finset.mem_powersetLen
+    - Finset.card_powersetCard
+    - Finset.mem_powersetCard
   author : mathlib <!--Jeremy Avigad in lean 2-->
 59:
   title  : The Laws of Large Numbers
@@ -412,3 +412,6 @@
   title  : Buffon Needle Problem
 100:
   title  : Descartes Rule of Signs
+  links  :
+    github : https://github.com/Timeroot/lean-descartes-signs/
+  author : Alex Meiburg

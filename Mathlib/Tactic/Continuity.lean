@@ -13,7 +13,6 @@ import Mathlib.Algebra.Group.Defs
 We define the `continuity` tactic using `aesop`. -/
 
 attribute [aesop (rule_sets [Continuous]) unfold norm] Function.comp
-attribute [aesop (rule_sets [Continuous]) unfold norm] npowRec
 
 /--
 The `continuity` attribute used to tag continuity statements for the `continuity` tactic. -/

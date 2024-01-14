@@ -33,6 +33,8 @@ along with a term `a : α` if the value is `True`.
 
 -/
 
+universe u
+
 namespace Option
 
 variable {α β γ δ : Type*}
@@ -101,18 +103,15 @@ theorem bind_eq_some' {x : Option α} {f : α → Option β} {b : β} :
   by cases x <;> simp
 #align option.bind_eq_some' Option.bind_eq_some'
 
-theorem bind_eq_none' {o : Option α} {f : α → Option β} :
-    o.bind f = none ↔ ∀ b a, a ∈ o → b ∉ f a := by
-  simp only [eq_none_iff_forall_not_mem, mem_def, bind_eq_some, not_exists, not_and]
 #align option.bind_eq_none' Option.bind_eq_none'
 
 theorem joinM_eq_join : joinM = @join α :=
   funext fun _ ↦ rfl
 #align option.join_eq_join Option.joinM_eq_join
 
-theorem bind_eq_bind {α β : Type _} {f : α → Option β} {x : Option α} : x >>= f = x.bind f :=
+theorem bind_eq_bind' {α β : Type u} {f : α → Option β} {x : Option α} : x >>= f = x.bind f :=
   rfl
-#align option.bind_eq_bind Option.bind_eq_bind
+#align option.bind_eq_bind Option.bind_eq_bind'
 
 theorem map_coe {α β} {a : α} {f : α → β} : f <$> (a : Option α) = ↑(f a) :=
   rfl

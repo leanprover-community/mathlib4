@@ -89,8 +89,8 @@ variable [CommSemiring α] (A : Matrix n n α)
 /-- The transpose of an invertible matrix is invertible. -/
 instance invertibleTranspose [Invertible A] : Invertible Aᵀ where
   invOf := (⅟A)ᵀ
-  invOf_mul_self := by rw [←transpose_mul, mul_invOf_self, transpose_one]
-  mul_invOf_self := by rw [←transpose_mul, invOf_mul_self, transpose_one]
+  invOf_mul_self := by rw [← transpose_mul, mul_invOf_self, transpose_one]
+  mul_invOf_self := by rw [← transpose_mul, invOf_mul_self, transpose_one]
 #align matrix.invertible_transpose Matrix.invertibleTranspose
 
 lemma transpose_invOf [Invertible A] [Invertible Aᵀ] : (⅟A)ᵀ = ⅟(Aᵀ) := by
@@ -100,8 +100,8 @@ lemma transpose_invOf [Invertible A] [Invertible Aᵀ] : (⅟A)ᵀ = ⅟(Aᵀ) :
 /-- `Aᵀ` is invertible when `A` is. -/
 def invertibleOfInvertibleTranspose [Invertible Aᵀ] : Invertible A where
   invOf := (⅟(Aᵀ))ᵀ
-  invOf_mul_self := by rw [←transpose_one, ← mul_invOf_self Aᵀ, transpose_mul, transpose_transpose]
-  mul_invOf_self := by rw [←transpose_one, ← invOf_mul_self Aᵀ, transpose_mul, transpose_transpose]
+  invOf_mul_self := by rw [← transpose_one, ← mul_invOf_self Aᵀ, transpose_mul, transpose_transpose]
+  mul_invOf_self := by rw [← transpose_one, ← invOf_mul_self Aᵀ, transpose_mul, transpose_transpose]
 #align matrix.invertible__of_invertible_transpose Matrix.invertibleOfInvertibleTranspose
 
 /-- Together `Matrix.invertibleTranspose` and `Matrix.invertibleOfInvertibleTranspose` form an
