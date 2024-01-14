@@ -308,7 +308,9 @@ protected lemma the_calculation {x : ℝ} (hx : x ≠ 0) (h2 : x ≠ 1) :
   rw [← div_div, div_add_div _ _ hx (sub_ne_zero.mpr h2.symm)]
   simp only [one_mul, mul_one, sub_add_cancel, one_div, mul_inv_rev]
 
-lemma deriv2_h₂ {x : ℝ} (h : x ≠ 0) (hh : 1 ≠ x) : deriv^[2] h₂ x = -1/(x*(1-x)*log 2) := by
+/- Assumptions not needed
+(use junk value after proving that `¬DifferentiableAt` there) ?!-/
+lemma deriv2_h₂ {x : ℝ} (h : x ≠ 0) (hh : 1 ≠ x) : deriv^[2] h₂ x = -1 / (x * (1-x) * log 2) := by
   simp only [Function.iterate_succ, Function.iterate_zero, Function.comp.left_id,
     Function.comp_apply]
   suffices ∀ᶠ y in (𝓝 x), deriv (fun x ↦ h₂ x) y = log₂ (1 - y) - log₂ y by
@@ -328,7 +330,7 @@ lemma deriv2_h₂ {x : ℝ} (h : x ≠ 0) (hh : 1 ≠ x) : deriv^[2] h₂ x = -1
       apply DifferentiableAt.log (differentiable_1_minusp x)
       exact sub_ne_zero.mpr hh
     · exact differentiableAt_log₂ h
-  filter_upwards [eventually_ne_nhds h, eventually_ne_nhds hh.symm] with y h1 h2 using deriv_h₂ h1 h2
+  filter_upwards [eventually_ne_nhds h, eventually_ne_nhds hh.symm] with y h h2 using deriv_h₂ h h2
 
 lemma log2_ne_0 : log 2 ≠ 0 := by norm_num
 lemma log2_gt_0 : 0 < log 2 := by positivity
