@@ -9,9 +9,25 @@ import Mathlib.Analysis.Calculus.FDeriv.Basic
 import Mathlib.Algebra.Order.Hom.Ring
 import Mathlib.Topology.NhdsSet
 
-/-! ## Germs of functions between topological spaces
+/-! # Germs of functions between topological spaces
 
-TODO: add a module docstring, eventually
+In this file, we prove basic properties of germs of functions between topological spaces,
+with respect to the neighbourhood filter `𝓝 x`.
+
+## Main definitions and results
+* `Filter.Germ.value φ f`: value associated to the germ `φ` at a point `x`, w.r.t. the neighbourhood
+filter at `x`. This is the common value of all representatives of `φ` at `x`.
+* `Filter.Germ.valueOrderRingHom`: the map `Germ (𝓝 x) E → E` as a monotone ring homeomorphism
+
+* `RestrictGermPredicate`: given a predicate on germs `P : Π x : X, germ (𝓝 x) Y → Prop` and
+`A : set X`, build a new predicate on germs `restrict_germ_predicate P A` such that
+`(∀ x, restrict_germ_predicate P A x f) ↔ ∀ᶠ x near A, P x f`;
+`forall_restrict_germ_predicate_iff` is this equivalence.
+
+* `Filter.Germ.slice{Left,Right}`: map the germ at `p=(x,y) ∈ X × Y` to the corresponding germ at
+`x ∈ X` resp. `y ∈ Y`, respectively.
+* `eq_of_germ_isConstant`: if each germ of `f : X → Y` is constant and `X` is pre-connected,
+`f` is constant.
 -/
 
 variable {F G : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
@@ -21,6 +37,8 @@ open scoped Topology
 
 open Filter Set
 
+variable {X Y Z : Type*} [TopologicalSpace X] {f g : X → Y} {A : Set X} {x : X}
+
 namespace Filter.Germ
 
 /-- The value associated to a germ at a point. This is the common value
@@ -28,7 +46,7 @@ shared by all representatives at the given point. -/
 def value {X α : Type*} [TopologicalSpace X] {x : X} (φ : Germ (𝓝 x) α) : α :=
   Quotient.liftOn' φ (fun f ↦ f x) fun f g h ↦ by dsimp only; rw [Eventually.self_of_nhds h]
 
-theorem value_smul {X α β : Type*} [TopologicalSpace X] {x : X} [SMul α β] (φ : Germ (𝓝 x) α)
+theorem value_smul {α β : Type*} [SMul α β] (φ : Germ (𝓝 x) α)
     (ψ : Germ (𝓝 x) β) : (φ • ψ).value = φ.value • ψ.value :=
   Germ.inductionOn φ fun _ ↦ Germ.inductionOn ψ fun _ ↦ rfl
 
@@ -57,8 +75,7 @@ def _root_.Subring.orderedSubtype {R} [OrderedRing R] (s : Subring R) : s →+*o
 
 end Filter.Germ
 
-variable {X Y Z : Type*} [TopologicalSpace X] {f g : X → Y} {A : Set X} {x : X}
-
+section RestrictGermPredicate
 /-- Given a predicate on germs `P : Π x : X, germ (𝓝 x) Y → Prop` and `A : set X`,
 build a new predicate on germs `restrict_germ_predicate P A` such that
 `(∀ x, restrict_germ_predicate P A x f) ↔ ∀ᶠ x near A, P x f`, see
@@ -104,6 +121,7 @@ theorem forall_restrictGermPredicate_of_forall
     {P : ∀ x : X, Germ (𝓝 x) Y → Prop} (h : ∀ x, P x f) :
     ∀ x, RestrictGermPredicate P A x f :=
   forall_restrictGermPredicate_iff.mpr (eventually_of_forall h)
+end RestrictGermPredicate
 
 theorem Filter.EventuallyEq.comp_fun {α β γ : Type*} {f g : β → γ} {l : Filter α} {l' : Filter β}
     (h : f =ᶠ[l'] g) {φ : α → β} (hφ : Tendsto φ l l') : f ∘ φ =ᶠ[l] g ∘ φ :=
