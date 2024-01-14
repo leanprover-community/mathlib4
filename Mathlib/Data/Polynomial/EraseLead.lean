@@ -1,10 +1,11 @@
 /-
 Copyright (c) 2020 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Damiano Testa
+Authors: Damiano Testa, Alex Meiburg
 -/
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Data.Polynomial.Degree.Definitions
+import Mathlib.Data.Polynomial.Degree.Lemmas
 
 #align_import data.polynomial.erase_lead from "leanprover-community/mathlib"@"fa256f00ce018e7b40e1dc756e403c86680bf448"
 
@@ -123,6 +124,21 @@ theorem eraseLead_card_support' {c : ℕ} (fc : f.support.card = c + 1) :
   eraseLead_card_support fc
 #align polynomial.erase_lead_card_support' Polynomial.eraseLead_card_support'
 
+theorem eraseLead_card_support_one (h : f ≠ 0) : f.eraseLead.support.card + 1 = f.support.card := by
+    set c := f.support.card with hc
+    cases h₁ : c
+    case zero => by_contra; exact h (card_support_eq_zero.mp h₁);
+    case succ => exact Nat.succ_inj'.mpr (eraseLead_card_support' (hc ▸ h₁))
+
+theorem card_support_eq_one_of_eraseLead_zero (h₀ : f ≠ 0) (h₁ : f.eraseLead = 0) :
+    f.support.card = 1 :=
+  (card_support_eq_zero.mpr h₁ ▸ eraseLead_card_support_one h₀).symm
+
+theorem card_support_lt_one_of_eraseLead_zero (h : f.eraseLead = 0) : f.support.card ≤ 1 := by
+  by_cases hpz : f = 0
+  case pos => simp [hpz]
+  case neg => exact le_of_eq (card_support_eq_one_of_eraseLead_zero hpz h)
+
 @[simp]
 theorem eraseLead_monomial (i : ℕ) (r : R) : eraseLead (monomial i r) = 0 := by
   classical
@@ -192,6 +208,11 @@ theorem eraseLead_natDegree_lt (f0 : 2 ≤ f.support.card) : (eraseLead f).natDe
       natDegree_mem_support_of_nonzero <| eraseLead_ne_zero f0
 #align polynomial.erase_lead_nat_degree_lt Polynomial.eraseLead_natDegree_lt
 
+theorem natDegree_pos_of_eraseLead_nz (h : f.eraseLead ≠ 0) : 0 < f.natDegree := by
+  by_contra h₂
+  rw [eq_C_of_natDegree_eq_zero (Nat.eq_zero_of_not_pos h₂)] at h
+  simp at h
+
 theorem eraseLead_natDegree_lt_or_eraseLead_eq_zero (f : R[X]) :
     (eraseLead f).natDegree < f.natDegree ∨ f.eraseLead = 0 := by
   by_cases h : f.support.card ≤ 1
@@ -207,6 +228,71 @@ theorem eraseLead_natDegree_le (f : R[X]) : (eraseLead f).natDegree ≤ f.natDeg
   · exact Nat.le_sub_one_of_lt h
   · simp only [h, natDegree_zero, zero_le]
 #align polynomial.erase_lead_nat_degree_le Polynomial.eraseLead_natDegree_le
+
+theorem eraseLead_natDegree_of_nextCoeff (h : f.nextCoeff ≠ 0) :
+    f.natDegree = f.eraseLead.natDegree + 1 := by
+  have hpos := natDegree_pos_of_nz_nextCoeff h
+  suffices f.natDegree - 1 ≤ f.eraseLead.natDegree by
+    have := (add_le_add_iff_right 1).mpr this
+    rw [Nat.sub_add_cancel hpos] at this
+    have : f.natDegree ≥ f.eraseLead.natDegree + 1 := by
+      have := eraseLead_natDegree_le f;
+      have : f.eraseLead.natDegree + 1 ≤ (f.natDegree - 1) + 1 := (add_le_add_iff_right 1).mpr this
+      rwa [Nat.sub_add_cancel hpos] at this
+    linarith
+  have : coeff f (f.natDegree - 1) = coeff f.eraseLead (f.natDegree - 1) := by
+    apply Eq.symm
+    apply eraseLead_coeff_of_ne
+    exact Nat.pred_ne_self (Nat.ne_zero_iff_zero_lt.mpr hpos)
+  rw [nextCoeff, if_neg (natDegree_pos_of_nz_nextCoeff h).ne.symm, this] at h
+  apply le_natDegree_of_ne_zero h
+
+theorem eraseLead_natDegree_of_zero_nextCoeff (h : f.nextCoeff = 0) :
+    f.eraseLead.natDegree ≤ f.natDegree - 2  := by
+  by_cases hepz : f.eraseLead = 0; case pos => simp_all
+  have hdp : f.natDegree ≠ 0 := (natDegree_pos_of_eraseLead_nz hepz).ne.symm
+  suffices f.natDegree - 1 ≠ f.eraseLead.natDegree by
+    exact Nat.le_pred_of_lt (lt_of_le_of_ne (eraseLead_natDegree_le f) this.symm)
+  by_contra h₂
+  have h₃ : coeff f.eraseLead (f.eraseLead.natDegree) = f.coeff (f.natDegree - 1) := by
+    rw [h₂]
+    apply eraseLead_coeff_of_ne
+    intro hc
+    have h₄ := eraseLead_natDegree_le f
+    obtain ⟨d1, hd1⟩ := Nat.exists_eq_succ_of_ne_zero hdp
+    rw [hd1, Nat.succ_sub_succ_eq_sub, tsub_zero, hc, hd1] at h₄
+    exact not_le_of_gt (Nat.lt_succ_self d1) h₄
+  simp only [nextCoeff, hdp, ite_false] at h
+  exact hepz (leadingCoeff_eq_zero.mp (h ▸ h₃))
+
+theorem natDegree_ge_2_of_nextCoeff_eraseLead (h₁ : f.eraseLead ≠ 0) (h₂ : f.nextCoeff = 0) :
+    2 ≤ f.natDegree := by
+  rcases lt_trichotomy f.natDegree 1 with h₃ | h₃ | h₃
+  · by_contra
+    revert h₁
+    rw [eq_C_of_natDegree_eq_zero (Nat.lt_one_iff.mp h₃), eraseLead_C]
+    simp
+  · by_contra
+    have h₀ : f.eraseLead.natDegree = 0 :=
+      nonpos_iff_eq_zero.mp (tsub_eq_zero_of_le (le_refl 1) ▸ h₃ ▸ eraseLead_natDegree_le f)
+    rw [nextCoeff, h₃, if_neg one_ne_zero, tsub_self] at h₂
+    rw [eq_C_of_natDegree_eq_zero h₀, eraseLead_coeff_of_ne, h₂] at h₁
+    · simp at h₁
+    · simp [h₃]
+  · exact h₃
+
+theorem leadingCoeff_eraseLead_eq_nextCoeff (h : f.nextCoeff ≠ 0) :
+    f.nextCoeff = f.eraseLead.leadingCoeff := by
+  have hd : f.natDegree = f.eraseLead.natDegree + 1 := eraseLead_natDegree_of_nextCoeff h
+  rw [leadingCoeff, nextCoeff]
+  simp only [coeff_natDegree, if_neg (natDegree_pos_of_nz_nextCoeff h).ne]
+  rw [leadingCoeff, eraseLead_natDegree_of_nextCoeff h]
+  apply Eq.symm
+  apply Polynomial.eraseLead_coeff_of_ne
+  linarith
+
+theorem ne_zero_eraseLead_of_nz_nextCoeff (h : f.nextCoeff ≠ 0) : f.eraseLead ≠ 0 :=
+  leadingCoeff_ne_zero.mp (leadingCoeff_eraseLead_eq_nextCoeff h ▸ h)
 
 end EraseLead
 

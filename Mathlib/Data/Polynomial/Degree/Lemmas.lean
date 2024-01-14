@@ -315,6 +315,15 @@ theorem natDegree_map_eq_iff {f : R →+* S} {p : Polynomial R} :
   simp [h, h2, h3] -- simp doesn't rewrite in the hypothesis for some reason
   tauto
 
+theorem natDegree_pos_of_nz_nextCoeff (h : p.nextCoeff ≠ 0) : 0 < p.natDegree := by
+  rw [nextCoeff] at h
+  by_cases hpz : p.natDegree = 0
+  · simp_all only [ne_eq, zero_le, ite_true, not_true_eq_false]
+  · apply Nat.zero_lt_of_ne_zero hpz
+
+theorem ne_zero_of_nz_nextCoeff (h : p.nextCoeff ≠ 0) : p ≠ 0 :=
+  ne_zero_of_natDegree_gt (natDegree_pos_of_nz_nextCoeff h)
+
 end Degree
 
 end Semiring
@@ -394,6 +403,19 @@ theorem leadingCoeff_comp (hq : natDegree q ≠ 0) :
     leadingCoeff (p.comp q) = leadingCoeff p * leadingCoeff q ^ natDegree p := by
   rw [← coeff_comp_degree_mul_degree hq, ← natDegree_comp, coeff_natDegree]
 #align polynomial.leading_coeff_comp Polynomial.leadingCoeff_comp
+
+/-- When there are no zero divisors, multiplying a polynomial by a nonzero constant leaves the
+    degree unchanged. -/
+theorem natDegree_mul_of_nonzero (ha : a ≠ 0) : natDegree (C a * p) = p.natDegree := by
+  by_cases hp : p = 0
+  next P0 => simp only [hp, mul_zero, natDegree_zero]
+  next Pn0 =>
+    rw [← zero_add p.natDegree, ← natDegree_C a]
+    apply natDegree_mul'
+    simp only [leadingCoeff_C, ne_eq, mul_eq_zero, leadingCoeff_eq_zero]
+    rintro ⟨a0 | p0⟩
+    next a0 => exact ha rfl
+    next p0 => exact hp p0
 
 end NoZeroDivisors
 
