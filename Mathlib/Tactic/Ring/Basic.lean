@@ -390,7 +390,7 @@ partial def evalMulProd (va : ExProd sα a) (vb : ExProd sα b) : Result (ExProd
       let rc := (NormNum.evalMul.core q($a * $b) q(HMul.hMul) _ _
           q(CommSemiring.toSemiring) ra rb).get!
       let ⟨zc, hc⟩ := rc.toRatNZ.get!
-      let ⟨c, pc⟩ :=  rc.toRawEq
+      let ⟨c, pc⟩ := rc.toRawEq
       ⟨c, .const zc hc, pc⟩
   | .mul (x := a₁) (e := a₂) va₁ va₂ va₃, .const _ _ =>
     let ⟨_, vc, pc⟩ := evalMulProd va₃ vb

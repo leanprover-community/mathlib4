@@ -519,7 +519,7 @@ noncomputable def coeHom [StarRing 𝕜] [StarRing A] [StarModule 𝕜 A] [Norme
   map_smul' _ _ := ext _ _ _ _ <| Prod.ext (map_smul _ _ _) (map_smul _ _ _)
   map_zero' := ext _ _ _ _ <| Prod.ext (map_zero _) (map_zero _)
   map_add' _ _ := ext _ _ _ _ <| Prod.ext (map_add _ _ _) (map_add _ _ _)
-  map_mul' _ _ :=  ext _ _ _ _ <| Prod.ext
+  map_mul' _ _ := ext _ _ _ _ <| Prod.ext
     (ContinuousLinearMap.ext fun _ => (mul_assoc _ _ _))
     (ContinuousLinearMap.ext fun _ => (mul_assoc _ _ _).symm)
   map_star' _ := ext _ _ _ _ <| Prod.ext

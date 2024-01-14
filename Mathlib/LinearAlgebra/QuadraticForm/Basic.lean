@@ -817,7 +817,7 @@ def associatedHom : QuadraticForm R M →ₗ[S] BilinForm R M :=
   (⟨⅟2, Set.invOf_mem_center (Set.ofNat_mem_center _ _)⟩ : Submonoid.center R) •
     { toFun := polarBilin
       map_add' := fun _x _y => BilinForm.ext <| polar_add _ _
-      map_smul' :=  fun _c _x => BilinForm.ext <| polar_smul _ _ }
+      map_smul' := fun _c _x => BilinForm.ext <| polar_smul _ _ }
 #align quadratic_form.associated_hom QuadraticForm.associatedHom
 
 variable (Q : QuadraticForm R M)

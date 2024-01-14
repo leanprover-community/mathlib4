@@ -102,7 +102,7 @@ theorem superFactorial_dvd_vandermonde_det {n : ℕ} (v : Fin (n + 1) → ℤ) :
   let m := inf' univ ⟨0, mem_univ _⟩ v
   let w' := fun i ↦ (v i - m).toNat
   have hw' : ∀ i, (w' i : ℤ) = v i - m := fun i ↦ Int.toNat_sub_of_le (inf'_le _ (mem_univ _))
-  have h :=  Matrix.det_eval_matrixOfPolynomials_eq_det_vandermonde (fun i ↦ ↑(w' i))
+  have h := Matrix.det_eval_matrixOfPolynomials_eq_det_vandermonde (fun i ↦ ↑(w' i))
       (fun i => descPochhammer ℤ i)
       (fun i => descPochhammer_natDegree ℤ i)
       (fun i => monic_descPochhammer ℤ i)
