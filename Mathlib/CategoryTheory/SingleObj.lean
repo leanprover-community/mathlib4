@@ -212,6 +212,26 @@ theorem id_toFunctor : (id M).toFunctor = 𝟭 _ :=
 
 end MonoidHom
 
+namespace MulEquiv
+
+variable {M : Type u} {N : Type v} [Monoid M] [Monoid N]
+
+/-- Reinterpret a monoid isomorphism `f : M ≃* N` as an equivalence `SingleObj M ≌ SingleObj N`. -/
+@[simps!]
+def toSingleObjEquiv (e : M ≃* N) : SingleObj M ≌ SingleObj N where
+  functor := e.toMonoidHom.toFunctor
+  inverse := e.symm.toMonoidHom.toFunctor
+  unitIso := eqToIso (by
+    rw [← MonoidHom.comp_toFunctor, ← MonoidHom.id_toFunctor]
+    congr 1
+    aesop_cat)
+  counitIso := eqToIso (by
+    rw [← MonoidHom.comp_toFunctor, ← MonoidHom.id_toFunctor]
+    congr 1
+    aesop_cat)
+
+end MulEquiv
+
 namespace Units
 
 variable (M : Type u) [Monoid M]
