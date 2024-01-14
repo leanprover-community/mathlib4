@@ -122,7 +122,7 @@ instance [SMul M X] [SMul M Y] [NDFunLike F X Y] [SMulHomClass F M X Y] : CoeTC 
 
 variable (M' X Y F) in
 /-- If Y/X/M forms a scalar tower, any map X → Y preserving X-action also preserves M-action. -/
-def _root_.IsScalarTower.smulHomClass [MulOneClass X] [SMul X Y] [IsScalarTower M' X Y]
+theorem _root_.IsScalarTower.smulHomClass [MulOneClass X] [SMul X Y] [IsScalarTower M' X Y]
     [NDFunLike F X Y] [SMulHomClass F X X Y] : SMulHomClass F M' X Y where
   map_smul f m x := by
     rw [← mul_one (m • x), ← smul_eq_mul, map_smul, smul_assoc, ← map_smul, smul_eq_mul, mul_one]

@@ -158,7 +158,8 @@ instance : Mul (𝒜 ᵍ⊗[R] ℬ) where mul x y := mulHom 𝒜 ℬ x y
 
 theorem mul_def (x y : 𝒜 ᵍ⊗[R] ℬ) : x * y = mulHom 𝒜 ℬ x y := rfl
 
-@[simp]
+-- HACK
+-- @[simp, nolint simpNF]
 theorem auxEquiv_mul (x y : 𝒜 ᵍ⊗[R] ℬ) :
     auxEquiv R 𝒜 ℬ (x * y) = gradedMul R (𝒜 ·) (ℬ ·) (auxEquiv R 𝒜 ℬ x) (auxEquiv R 𝒜 ℬ y) :=
   LinearEquiv.eq_symm_apply _ |>.mp rfl
