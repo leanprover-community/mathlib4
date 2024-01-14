@@ -22,8 +22,7 @@ most notably those which use `span`.
 ## Implementation notes
 
 This structure should match the `AddSubmonoid.CompleteLattice` structure, and we should try
-to unify the APIs where possible. For example `Submodule.toAddSubmonoid_sSup` should be true by
-definition.
+to unify the APIs where possible.
 
 -/
 
@@ -350,7 +349,6 @@ theorem mem_sSup_of_mem {S : Set (Submodule R M)} {s : Submodule R M} (hs : s âˆ
   exact this
 #align submodule.mem_Sup_of_mem Submodule.mem_sSup_of_mem
 
--- TODO Change `Submodule.completeLattice` so that this is true by definition.
 @[simp]
 theorem toAddSubmonoid_sSup (s : Set (Submodule R M)) :
     (sSup s).toAddSubmonoid = sSup (toAddSubmonoid '' s) := by
