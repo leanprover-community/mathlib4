@@ -43,7 +43,7 @@ def Absorbs (s t : Set α) : Prop :=
 
 /-- A set is *absorbent* if it absorbs every singleton. -/
 def Absorbent (s : Set α) : Prop :=
-  ∀ x : α, Absorbs M s {x}
+  ∀ x, Absorbs M s {x}
 #align absorbent Absorbent
 
 end Defs
