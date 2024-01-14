@@ -336,7 +336,7 @@ protected def Homeomorph.inv (G : Type*) [TopologicalSpace G] [InvolutiveInv G]
 
 @[to_additive (attr := simp)]
 lemma Homeomorph.coe_inv {G : Type*} [TopologicalSpace G] [InvolutiveInv G] [ContinuousInv G]
-    (a : G) : Homeomorph.inv G a = a⁻¹ := rfl
+    ⇑(Homeomorph.inv G) = (·⁻¹) := rfl
 
 @[to_additive]
 theorem isOpenMap_inv : IsOpenMap (Inv.inv : G → G) :=
