@@ -37,7 +37,7 @@ splitting field of `R` are precisely the $X$-coordinates of the non-zero 2-torsi
  * `WeierstrassCurve.ofJ`: a Weierstrass curve whose j-invariant is neither 0 nor 1728.
  * `WeierstrassCurve.VariableChange`: a change of variables of Weierstrass curves.
  * `WeierstrassCurve.variableChange`: the Weierstrass curve induced by a change of variables.
- * `WeierstrassCurve.baseChange`: the Weierstrass curve base changed over a ring homomorphism.
+ * `WeierstrassCurve.map`: the Weierstrass curve mapped over a ring homomorphism.
  * `WeierstrassCurve.twoTorsionPolynomial`: the 2-torsion polynomial of a Weierstrass curve.
  * `EllipticCurve`: an elliptic curve over a commutative ring.
  * `EllipticCurve.j`: the j-invariant of an elliptic curve.
@@ -78,7 +78,7 @@ elliptic curve, weierstrass equation, j invariant
 local macro "map_simp" : tactic =>
   `(tactic| simp only [map_ofNat, map_neg, map_add, map_sub, map_mul, map_pow])
 
-universe u v w
+universe s u v w
 
 /-! ## Weierstrass curves -/
 
@@ -358,68 +358,81 @@ end VariableChange
 
 section BaseChange
 
-/-! ### Base changes -/
+/-! ### Maps and base changes -/
 
-variable {A : Type v} [CommRing A] (φ : R →+* A) {B : Type w} [CommRing B] (ψ : A →+* B)
+variable {A : Type v} [CommRing A] (φ : R →+* A)
 
-/-- The Weierstrass curve base changed over a ring homomorphism `φ : R →+* A`. -/
+/-- The Weierstrass curve mapped over a ring homomorphism `φ : R →+* A`. -/
 @[pp_dot, simps]
-def baseChange : WeierstrassCurve A :=
+def map : WeierstrassCurve A :=
   ⟨φ W.a₁, φ W.a₂, φ W.a₃, φ W.a₄, φ W.a₆⟩
-#align weierstrass_curve.base_change WeierstrassCurve.baseChange
+#align weierstrass_curve.base_change WeierstrassCurve.map
+
+variable (A)
+
+/-- The Weierstrass curve base changed to an algebra `A` over `R`. -/
+@[pp_dot]
+abbrev baseChange [Algebra R A] : WeierstrassCurve A :=
+  W.map <| algebraMap R A
+
+variable {A}
 
 @[simp]
-lemma baseChange_b₂ : (W.baseChange φ).b₂ = φ W.b₂ := by
-  simp only [b₂, baseChange_a₁, baseChange_a₂]
+lemma map_b₂ : (W.map φ).b₂ = φ W.b₂ := by
+  simp only [b₂, map_a₁, map_a₂]
   map_simp
-#align weierstrass_curve.base_change_b₂ WeierstrassCurve.baseChange_b₂
+#align weierstrass_curve.base_change_b₂ WeierstrassCurve.map_b₂
 
 @[simp]
-lemma baseChange_b₄ : (W.baseChange φ).b₄ = φ W.b₄ := by
-  simp only [b₄, baseChange_a₁, baseChange_a₃, baseChange_a₄]
+lemma map_b₄ : (W.map φ).b₄ = φ W.b₄ := by
+  simp only [b₄, map_a₁, map_a₃, map_a₄]
   map_simp
-#align weierstrass_curve.base_change_b₄ WeierstrassCurve.baseChange_b₄
+#align weierstrass_curve.base_change_b₄ WeierstrassCurve.map_b₄
 
 @[simp]
-lemma baseChange_b₆ : (W.baseChange φ).b₆ = φ W.b₆ := by
-  simp only [b₆, baseChange_a₃, baseChange_a₆]
+lemma map_b₆ : (W.map φ).b₆ = φ W.b₆ := by
+  simp only [b₆, map_a₃, map_a₆]
   map_simp
-#align weierstrass_curve.base_change_b₆ WeierstrassCurve.baseChange_b₆
+#align weierstrass_curve.base_change_b₆ WeierstrassCurve.map_b₆
 
 @[simp]
-lemma baseChange_b₈ : (W.baseChange φ).b₈ = φ W.b₈ := by
-  simp only [b₈, baseChange_a₁, baseChange_a₂, baseChange_a₃, baseChange_a₄, baseChange_a₆]
+lemma map_b₈ : (W.map φ).b₈ = φ W.b₈ := by
+  simp only [b₈, map_a₁, map_a₂, map_a₃, map_a₄, map_a₆]
   map_simp
-#align weierstrass_curve.base_change_b₈ WeierstrassCurve.baseChange_b₈
+#align weierstrass_curve.base_change_b₈ WeierstrassCurve.map_b₈
 
 @[simp]
-lemma baseChange_c₄ : (W.baseChange φ).c₄ = φ W.c₄ := by
-  simp only [c₄, baseChange_b₂, baseChange_b₄]
+lemma map_c₄ : (W.map φ).c₄ = φ W.c₄ := by
+  simp only [c₄, map_b₂, map_b₄]
   map_simp
-#align weierstrass_curve.base_change_c₄ WeierstrassCurve.baseChange_c₄
+#align weierstrass_curve.base_change_c₄ WeierstrassCurve.map_c₄
 
 @[simp]
-lemma baseChange_c₆ : (W.baseChange φ).c₆ = φ W.c₆ := by
-  simp only [c₆, baseChange_b₂, baseChange_b₄, baseChange_b₆]
+lemma map_c₆ : (W.map φ).c₆ = φ W.c₆ := by
+  simp only [c₆, map_b₂, map_b₄, map_b₆]
   map_simp
-#align weierstrass_curve.base_change_c₆ WeierstrassCurve.baseChange_c₆
+#align weierstrass_curve.base_change_c₆ WeierstrassCurve.map_c₆
 
 @[simp]
-lemma baseChange_Δ : (W.baseChange φ).Δ = φ W.Δ := by
-  simp only [Δ, baseChange_b₂, baseChange_b₄, baseChange_b₆, baseChange_b₈]
+lemma map_Δ : (W.map φ).Δ = φ W.Δ := by
+  simp only [Δ, map_b₂, map_b₄, map_b₆, map_b₈]
   map_simp
-#align weierstrass_curve.base_change_Δ WeierstrassCurve.baseChange_Δ
+#align weierstrass_curve.base_change_Δ WeierstrassCurve.map_Δ
 
-lemma baseChange_self : W.baseChange (RingHom.id R) = W :=
+@[simp]
+lemma map_id : W.map (RingHom.id R) = W :=
   rfl
-#align weierstrass_curve.base_change_self WeierstrassCurve.baseChange_self
+#align weierstrass_curve.base_change_self WeierstrassCurve.map_id
 
-lemma baseChange_baseChange : (W.baseChange φ).baseChange ψ = W.baseChange (ψ.comp φ) :=
-  rfl
-#align weierstrass_curve.base_change_base_change WeierstrassCurve.baseChange_baseChange
+@[simp]
+lemma baseChange_map {S : Type s} [CommRing S] [Algebra R S] {A : Type v} [CommRing A] [Algebra R A]
+    [Algebra S A] [IsScalarTower R S A] {B : Type w} [CommRing B] [Algebra R B] [Algebra S B]
+    [IsScalarTower R S B] (ψ : A →ₐ[S] B) : (W.baseChange A).map ψ = W.baseChange B :=
+  congr_arg W.map <| ψ.comp_algebraMap_of_tower R
+#align weierstrass_curve.base_change_base_change WeierstrassCurve.baseChange_map
 
-lemma baseChange_injective {φ : R →+* A} (hφ : Function.Injective φ) :
-    Function.Injective <| baseChange (φ := φ) := fun _ _ h => by
+lemma map_injective {φ : R →+* A} (hφ : Function.Injective φ) :
+    Function.Injective <| map (φ := φ) := fun _ _ h => by
   rcases mk.inj h with ⟨_, _, _, _, _⟩
   ext <;> apply_fun _ using hφ <;> assumption
 
@@ -427,43 +440,55 @@ namespace VariableChange
 
 variable (C : VariableChange R)
 
-/-- The change of variables base changed over a ring homomorphism `φ : R →+* A`. -/
-@[simps]
-def baseChange : VariableChange A :=
+/-- The change of variables mapped over a ring homomorphism `φ : R →+* A`. -/
+@[pp_dot, simps]
+def map : VariableChange A :=
   ⟨Units.map φ C.u, φ C.r, φ C.s, φ C.t⟩
 
-lemma baseChange_id : (id : VariableChange R).baseChange φ = id := by
-  simp only [id, baseChange]
-  ext <;> simp only [map_one, Units.val_one, map_zero]
+variable (A)
 
-lemma baseChange_comp (C' : VariableChange R) :
-    (C.comp C').baseChange φ = (C.baseChange φ).comp (C'.baseChange φ) := by
-  simp only [comp, baseChange]
-  ext <;> map_simp <;> simp only [Units.coe_map, Units.coe_map_inv, MonoidHom.coe_coe]
+/-- The change of variables base changed to an algebra `A` over `R`. -/
+@[pp_dot]
+abbrev baseChange [Algebra R A] : VariableChange A :=
+  C.map <| algebraMap R A
 
-/-- The base change of a change of variables over a ring homomorphism is a group homomorphism. -/
-def baseChangeMap : VariableChange R →* VariableChange A where
-  toFun := baseChange φ
-  map_one' := baseChange_id φ
-  map_mul' := baseChange_comp φ
+variable {A}
 
-lemma baseChange_self : C.baseChange (RingHom.id R) = C :=
+@[simp]
+lemma map_id : C.map (RingHom.id R) = C :=
   rfl
 
-lemma baseChange_baseChange : (C.baseChange φ).baseChange ψ = C.baseChange (ψ.comp φ) :=
-  rfl
+@[simp]
+lemma baseChange_map {S : Type s} [CommRing S] [Algebra R S] {A : Type v} [CommRing A] [Algebra R A]
+    [Algebra S A] [IsScalarTower R S A] {B : Type w} [CommRing B] [Algebra R B] [Algebra S B]
+    [IsScalarTower R S B] (ψ : A →ₐ[S] B) : (C.baseChange A).map ψ = C.baseChange B :=
+  congr_arg C.map <| ψ.comp_algebraMap_of_tower R
 
-lemma baseChange_injective {φ : R →+* A} (hφ : Function.Injective φ) :
-    Function.Injective <| baseChange (φ := φ) := fun _ _ h => by
+lemma map_injective {φ : R →+* A} (hφ : Function.Injective φ) :
+    Function.Injective <| map (φ := φ) := fun _ _ h => by
   rcases mk.inj h with ⟨h, _, _, _⟩
   replace h := (Units.mk.inj h).left
   ext <;> apply_fun _ using hφ <;> assumption
 
+private lemma id_map : (id : VariableChange R).map φ = id := by
+  simp only [id, map]
+  ext <;> simp only [map_one, Units.val_one, map_zero]
+
+private lemma comp_map (C' : VariableChange R) : (C.comp C').map φ = (C.map φ).comp (C'.map φ) := by
+  simp only [comp, map]
+  ext <;> map_simp <;> simp only [Units.coe_map, Units.coe_map_inv, MonoidHom.coe_coe]
+
+/-- The map over a ring homomorphism of a change of variables is a group homomorphism. -/
+def mapHom : VariableChange R →* VariableChange A where
+  toFun := map φ
+  map_one' := id_map φ
+  map_mul' := comp_map φ
+
 end VariableChange
 
-lemma baseChange_variableChange (C : VariableChange R) :
-    (W.baseChange φ).variableChange (C.baseChange φ) = (W.variableChange C).baseChange φ := by
-  simp only [baseChange, variableChange, VariableChange.baseChange]
+lemma map_variableChange (C : VariableChange R) :
+    (W.map φ).variableChange (C.map φ) = (W.variableChange C).map φ := by
+  simp only [map, variableChange, VariableChange.map]
   ext <;> map_simp <;> simp only [Units.coe_map, Units.coe_map_inv, MonoidHom.coe_coe]
 
 end BaseChange
@@ -630,35 +655,43 @@ end VariableChange
 
 section BaseChange
 
-/-! ### Base changes -/
+/-! ### Maps and base changes -/
 
 variable {A : Type v} [CommRing A] (φ : R →+* A)
 
 -- porting note: was just `@[simps]`
-/-- The elliptic curve base changed over a ring homomorphism `φ : R →+* A`. -/
+/-- The elliptic curve mapped over a ring homomorphism `φ : R →+* A`. -/
 @[pp_dot, simps (config := { rhsMd := .default }) a₁ a₂ a₃ a₄ a₆ Δ' toWeierstrassCurve]
-def baseChange : EllipticCurve A :=
-  ⟨E.toWeierstrassCurve.baseChange φ, Units.map φ E.Δ',
-    by simp only [Units.coe_map, coe_Δ', E.baseChange_Δ]; rfl⟩
-#align elliptic_curve.base_change EllipticCurve.baseChange
+def map : EllipticCurve A :=
+  ⟨E.toWeierstrassCurve.map φ, Units.map φ E.Δ', by simp only [Units.coe_map, coe_Δ', E.map_Δ]; rfl⟩
+#align elliptic_curve.base_change EllipticCurve.map
 
-lemma coeBaseChange_Δ' : (E.baseChange φ).Δ' = φ E.Δ' :=
-  rfl
-#align elliptic_curve.coe_base_change_Δ' EllipticCurve.coeBaseChange_Δ'
+variable (A)
 
-lemma coe_inv_baseChange_Δ' : (E.baseChange φ).Δ'⁻¹ = φ ↑E.Δ'⁻¹ :=
+/-- The elliptic curve base changed to an algebra `A` over `R`. -/
+@[pp_dot]
+abbrev baseChange [Algebra R A] : EllipticCurve A :=
+  E.map <| algebraMap R A
+
+variable {A}
+
+lemma coe_map_Δ' : (E.map φ).Δ' = φ E.Δ' :=
   rfl
-#align elliptic_curve.coe_inv_base_change_Δ' EllipticCurve.coe_inv_baseChange_Δ'
+#align elliptic_curve.coe_base_change_Δ' EllipticCurve.coe_map_Δ'
+
+lemma coe_inv_map_Δ' : (E.map φ).Δ'⁻¹ = φ ↑E.Δ'⁻¹ :=
+  rfl
+#align elliptic_curve.coe_inv_base_change_Δ' EllipticCurve.coe_inv_map_Δ'
 
 @[simp]
-lemma baseChange_j : (E.baseChange φ).j = φ E.j := by
-  simp only [j, baseChange, E.baseChange_c₄]
+lemma map_j : (E.map φ).j = φ E.j := by
+  simp only [j, map, E.map_c₄]
   map_simp
   rfl
-#align elliptic_curve.base_change_j EllipticCurve.baseChange_j
+#align elliptic_curve.base_change_j EllipticCurve.map_j
 
-lemma baseChange_injective {φ : R →+* A} (hφ : Function.Injective φ) :
-    Function.Injective <| baseChange (φ := φ) := fun _ _ h => by
+lemma map_injective {φ : R →+* A} (hφ : Function.Injective φ) :
+    Function.Injective <| map (φ := φ) := fun _ _ h => by
   rcases mk.inj h with ⟨h1, h2⟩
   replace h2 := (Units.mk.inj h2).left
   rcases WeierstrassCurve.mk.inj h1 with ⟨_, _, _, _, _⟩
