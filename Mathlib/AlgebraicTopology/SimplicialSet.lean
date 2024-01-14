@@ -113,32 +113,10 @@ lemma map_apply {m₁ m₂ : SimplexCategoryᵒᵖ} (f : m₁ ⟶ m₂) {n : Sim
     (standardSimplex.{u}.obj n).map f x = (objEquiv _ _).symm (f.unop ≫ (objEquiv _ _) x) := by
   rfl
 
--- TODO: define more general bijection similar to `CategoryTheory.yonedaEquiv`, but
--- for `yoneda ⋙ uliftFunctor`
 /-- The canonical bijection `(standardSimplex.obj n ⟶ X) ≃ X.obj (op n)`. -/
 def _root_.SSet.yonedaEquiv (X : SSet.{u}) (n : SimplexCategory) :
-    (standardSimplex.obj n ⟶ X) ≃ X.obj (op n) where
-  toFun f := f.app (op n) (objMk (OrderHom.id))
-  invFun x :=
-    { app := fun m g => X.map g.down.op x
-      naturality := fun m₁ m₂ h => by
-        ext y
-        dsimp
-        erw [congr_fun (X.map_comp y.down.op h) x, types_comp_apply] }
-  left_inv f := by
-    ext m x
-    obtain ⟨y, rfl⟩ := (objEquiv _ _).symm.surjective x
-    refine' (congr_fun (f.naturality y.op) (objMk (OrderHom.id))).symm.trans _
-    dsimp
-    apply congr_arg
-    simp only [map_apply, unop_op, Quiver.Hom.unop_op, objMk, smallCategory_comp, Hom.comp,
-      EmbeddingLike.apply_eq_iff_eq]
-    ext
-    rfl
-  right_inv x := by
-    dsimp
-    erw [X.map_id]
-    rfl
+    (standardSimplex.obj n ⟶ X) ≃ X.obj (op n) :=
+  yonedaCompUliftFunctorEquiv X n
 
 /-- The (degenerate) `m`-simplex in the standard simplex concentrated in vertex `k`. -/
 def const (n : ℕ) (k : Fin (n+1)) (m : SimplexCategoryᵒᵖ) : Δ[n].obj m :=

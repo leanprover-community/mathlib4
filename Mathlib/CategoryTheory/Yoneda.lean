@@ -337,6 +337,21 @@ theorem yonedaPairing_map (P Q : Cᵒᵖ × (Cᵒᵖ ⥤ Type v₁)) (α : P ⟶
   rfl
 #align category_theory.yoneda_pairing_map CategoryTheory.yonedaPairing_map
 
+variable {C} in
+def yonedaCompUliftFunctorEquiv (F : Cᵒᵖ ⥤ Type max v₁ w) (X : C) :
+    (yoneda.obj X ⋙ uliftFunctor.{w} ⟶ F) ≃ F.obj (op X) where
+  toFun φ := φ.app (op X) (ULift.up (𝟙 _))
+  invFun f :=
+    { app := fun Y x => F.map (ULift.down x).op f }
+  left_inv φ := by
+    ext Y f
+    dsimp
+    rw [← FunctorToTypes.naturality ]
+    dsimp
+    rw [Category.comp_id]
+    rfl
+  right_inv f := by aesop_cat
+
 /-- The Yoneda lemma asserts that the Yoneda pairing
 `(X : Cᵒᵖ, F : Cᵒᵖ ⥤ Type) ↦ (yoneda.obj (unop X) ⟶ F)`
 is naturally isomorphic to the evaluation `(X, F) ↦ F.obj X`.
