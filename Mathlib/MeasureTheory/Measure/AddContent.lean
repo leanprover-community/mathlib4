@@ -21,7 +21,7 @@ A `Content` is in particular an `AddContent` on the set of compact sets.
 
 ## Main statements
 
-Let `m` be an `AddContent C`. If `C` is a set sem-iring (`IsSetSemiring C`) we have the properties
+Let `m` be an `AddContent C`. If `C` is a set semi-ring (`IsSetSemiring C`) we have the properties
 
 * `MeasureTheory.AddContent.sum_le_of_subset`: if `I` is a finset of pairwise disjoint sets in `C`
   and `⋃₀ I ⊆ t` for `t ∈ C`, then `∑ s in I, m s ≤ m t`.
@@ -34,7 +34,7 @@ Let `m` be an `AddContent C`. If `C` is a set sem-iring (`IsSetSemiring C`) we h
 If `C` is a set ring (`MeasureTheory.IsSetRing C`), we have, for `s, t ∈ C`,
 
 * `MeasureTheory.AddContent.union_le`: `m (s ∪ t) ≤ m s + m t`
-* `MeasureTheory.AddContent.diff_le`: `m s - m t ≤ m (s \ t)`
+* `MeasureTheory.AddContent.le_sdiff`: `m s - m t ≤ m (s \ t)`
 
 -/
 
@@ -52,8 +52,9 @@ structure AddContent (C : Set (Set α)) where
   /-- The value of the content on a set. -/
   toFun : Set α → ℝ≥0∞
   empty' : toFun ∅ = 0
-  add' : ∀ (I : Finset (Set α)) (_h_ss : ↑I ⊆ C) (_h_dis : PairwiseDisjoint (I : Set (Set α)) id)
-      (_h_mem : ⋃₀ ↑I ∈ C), toFun (⋃₀ I) = ∑ u in I, toFun u
+  add' (I : Finset (Set α)) (_h_ss : ↑I ⊆ C) (_h_dis : PairwiseDisjoint (I : Set (Set α)) id)
+      (_h_mem : ⋃₀ ↑I ∈ C) :
+    toFun (⋃₀ I) = ∑ u in I, toFun u
 
 instance : Inhabited (AddContent C) :=
   ⟨{toFun := fun _ => 0
@@ -171,7 +172,7 @@ protected lemma biUnion_le {ι : Type*} (m : AddContent C) (hC : IsSetRing C) {s
     refine (m.union_le hC hs.1 (hC.biUnion_mem S hs.2)).trans ?_
     exact add_le_add le_rfl (h hs.2)
 
-protected lemma diff_le (m : AddContent C) (hC : IsSetRing C) (hs : s ∈ C) (ht : t ∈ C) :
+protected lemma le_sdiff (m : AddContent C) (hC : IsSetRing C) (hs : s ∈ C) (ht : t ∈ C) :
     m s - m t ≤ m (s \ t) := by
   conv_lhs => rw [← inter_union_diff s t]
   rw [m.union hC (hC.inter_mem hs ht) (hC.diff_mem hs ht) disjoint_inf_sdiff, add_comm]
