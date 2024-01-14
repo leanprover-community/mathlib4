@@ -117,11 +117,11 @@ def mapSubmodule : Submodule R[X] <| AEval R M a :=
         Submodule.mem_toAddSubmonoid]
       exact ⟨aeval a f • m, aeval_apply_smul_mem_of_le_comap' h f a hp, of_aeval_smul a f m⟩ }
 
-@[simp] lemma mem_extendScalars {m : AEval R M a} :
+@[simp] lemma mem_mapSubmodule {m : AEval R M a} :
     m ∈ mapSubmodule a hp ↔ (of R M a).symm m ∈ p :=
   ⟨fun ⟨_, hm, hm'⟩ ↦ hm'.symm ▸ hm, fun hm ↦ ⟨(of R M a).symm m, hm, rfl⟩⟩
 
-@[simp] lemma comapSubmodule_extendScalars :
+@[simp] lemma comapSubmodule_mapSubmodule :
     comapSubmodule R M a (mapSubmodule a hp) = p := by
   ext; simp
 
