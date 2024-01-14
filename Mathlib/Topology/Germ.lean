@@ -183,3 +183,9 @@ theorem eq_of_germ_isConstant_on {s : Set X}
   rintro ⟨x, hx⟩
   have : ContinuousAt ((↑) : s → X) ⟨x, hx⟩ := continuousAt_subtype_val
   exact this (h x hx)
+
+open scoped BigOperators in
+@[to_additive (attr := simp)]
+theorem Germ.coe_prod {α : Type*} (l : Filter α) (R : Type*) [CommMonoid R] {ι} (f : ι → α → R)
+    (s : Finset ι) : ((∏ i in s, f i : α → R) : Germ l R) = ∏ i in s, (f i : Germ l R) :=
+  map_prod (Germ.coeMulHom l : (α → R) →* Germ l R) f s

@@ -8,7 +8,7 @@ open Filter Set
 
 open scoped Manifold Topology BigOperators
 
--- to smooth_functions
+-- FIXME: move to Manifold/Algebra/SmoothFunctions (yields universe errors)
 section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
@@ -20,31 +20,13 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCom
   {G : Type*} [CommMonoid G] [TopologicalSpace G] [ChartedSpace H' G] [SmoothMul I' G]
 
 @[to_additive]
-theorem SmoothMap.coe_prod {ι} (f : ι → C^∞⟮I, N; I', G⟯) (s : Finset ι) :
+theorem SmoothMap.coe_prod {ι : Type*} (f : ι → C^∞⟮I, N; I', G⟯) (s : Finset ι) :
     ⇑(∏ i in s, f i) = ∏ i in s, ⇑(f i) :=
   map_prod (SmoothMap.coeFnMonoidHom : C^∞⟮I, N; I', G⟯ →* N → G) f s
 
 end
 
 section
-
--- This should be in `order.filter.germ` (and the end of the module docstring of that file
--- should be fixed, it currently refers to things that are in the filter_product file).
-instance Filter.Germ.orderedCommRing' {α : Type*} (l : Filter α) (R : Type*) [OrderedCommRing R] :
-    OrderedCommRing (Germ l R) :=
-  { Filter.Germ.partialOrder, inferInstanceAs (CommRing (Germ l R)) with
-    add_le_add_left := by
-      rintro ⟨a⟩ ⟨b⟩ hab ⟨c⟩
-      exact Eventually.mono hab fun x hx ↦ add_le_add_left hx _
-    zero_le_one := eventually_of_forall fun _ ↦ zero_le_one
-    mul_nonneg := by
-      rintro ⟨a⟩ ⟨b⟩ ha hb
-      exact Eventually.mono (ha.and hb) fun x hx ↦ mul_nonneg hx.1 hx.2 }
-
-@[to_additive (attr := simp)]
-theorem Germ.coe_prod {α : Type*} (l : Filter α) (R : Type*) [CommMonoid R] {ι} (f : ι → α → R)
-    (s : Finset ι) : ((∏ i in s, f i : α → R) : Germ l R) = ∏ i in s, (f i : Germ l R) :=
-  map_prod (Germ.coeMulHom l : (α → R) →* Germ l R) f s
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {E' : Type*} [NormedAddCommGroup E']
   [NormedSpace ℝ E'] {H : Type*} [TopologicalSpace H] (I : ModelWithCorners ℝ E H) {H' : Type*}

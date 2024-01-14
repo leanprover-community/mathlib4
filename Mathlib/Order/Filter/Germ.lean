@@ -889,6 +889,19 @@ instance orderedRing [OrderedRing β] : OrderedRing (Germ l β) :=
 instance orderedCommRing [OrderedCommRing β] : OrderedCommRing (Germ l β) :=
   { Germ.orderedRing, Germ.orderedCommSemiring with }
 
+-- TODO still current? if so, fix! the end of the module docstring of this should be fixed,
+-- it currently refers to things that are in the filter_product file).
+instance orderedCommRing' {α : Type*} (l : Filter α) (R : Type*) [OrderedCommRing R] :
+    OrderedCommRing (Germ l R) :=
+  { Filter.Germ.partialOrder, inferInstanceAs (CommRing (Germ l R)) with
+    add_le_add_left := by
+      rintro ⟨a⟩ ⟨b⟩ hab ⟨c⟩
+      exact Eventually.mono hab fun x hx ↦ add_le_add_left hx _
+    zero_le_one := eventually_of_forall fun _ ↦ zero_le_one
+    mul_nonneg := by
+      rintro ⟨a⟩ ⟨b⟩ ha hb
+      exact Eventually.mono (ha.and hb) fun x hx ↦ mul_nonneg hx.1 hx.2 }
+
 end Germ
 
 end Filter
