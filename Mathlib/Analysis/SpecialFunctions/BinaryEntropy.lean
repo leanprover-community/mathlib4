@@ -26,6 +26,7 @@ namespace Entropy
 
 open Real
 
+/- Base-2 logarithm-/
 noncomputable abbrev log₂ (p : ℝ) : ℝ := Real.logb 2 p
 
 /-- Shannon Binary entropy (measured in bits).
@@ -38,17 +39,14 @@ noncomputable def h₂ (p : ℝ) : ℝ := -p * log₂ p - (1 - p) * log₂ (1 - 
 
 @[simp] lemma h2_one : h₂ 1 = 0 := by simp [h₂]
 
-@[simp] lemma h2_onehalf : h₂ (1 / 2) = 1 := by
-  simp [h₂, log₂, logb]
-  norm_num
-  simp
-  field_simp
-
 @[simp] lemma h2_onehalf' : h₂ 2⁻¹ = 1 := by
   simp [h₂, log₂, logb]
   norm_num
   simp
   field_simp
+
+@[simp] lemma h2_onehalf : h₂ (1 / 2) = 1 := by
+  simp only [one_div, h2_onehalf']
 
 lemma mul_log2_lt {x y : ℝ} : x < y ↔ x * log 2 < y * log 2 := by field_simp
 
@@ -129,7 +127,7 @@ lemma h2_lt_1_of_p_lt_half {p : ℝ} (pge0 : 0 ≤ p) (plehalf : p < 1/2) : h₂
     rw [this]
     apply logConcave
 
-lemma h2_lt_one_of_p_gt_half {p : ℝ} : 0 ≤ p → 1/2 < p → p ≤ 1 → h₂ p < 1 := by
+lemma h2_lt_one_of_p_gt_half {p : ℝ} : 1/2 < p → p ≤ 1 → h₂ p < 1 := by
   intros
   rw [← h2_p_eq_h2_1_minus_p]
   have : 1 - p < 1/2 := by linarith
@@ -141,7 +139,7 @@ lemma h2_one_iff_p_is_half {p : ℝ} (pge0 : 0 ≤ p) (ple1 : p ≤ 1) : h₂ p 
   · by_cases h' : p < 1/2
     · linarith [h2_lt_1_of_p_lt_half pge0 h']
     · by_cases pgthalf : 1/2 < p
-      · have := h2_lt_one_of_p_gt_half pge0 pgthalf ple1
+      · have := h2_lt_one_of_p_gt_half pgthalf ple1
         linarith
       · linarith
   · simp [h]
@@ -157,7 +155,7 @@ lemma h2_le_1 {p : ℝ} (pge0 : 0 ≤ p) (ple1 : p ≤ 1) : h₂ p ≤ 1 := by
           refine Ne.lt_of_le ?_ ?_
           aesop
           aesop
-        have := h2_lt_one_of_p_gt_half pge0 this ple1
+        have := h2_lt_one_of_p_gt_half this ple1
         exact LT.lt.le this
 
 ---------------------------------------------------------------------------------- derivatives
