@@ -114,7 +114,7 @@ def unitBallBall (c : P) (r : ℝ) (hr : 0 < r) : PartialHomeomorph E P :=
     rw [image_comp, image_smul, smul_unitBall hr.ne', IsometryEquiv.image_ball]
     simp [abs_of_pos hr]
 
-/-- If `r > 0`, then `PartialHomeomorph.univBall c r` is a smooth local homeomorphism
+/-- If `r > 0`, then `PartialHomeomorph.univBall c r` is a smooth partial homeomorphism
 with `source = Set.univ` and `target = Metric.ball c r`.
 Otherwise, it is the translation by `c`.
 Thus in all cases, it sends `0` to `c`, see `PartialHomeomorph.univBall_apply_zero`. -/

@@ -1190,10 +1190,7 @@ instance decidableZero : DecidablePred (Eq (0 : Π₀ i, β i)) := fun _ =>
   decidable_of_iff _ <| support_eq_empty.trans eq_comm
 #align dfinsupp.decidable_zero DFinsupp.decidableZero
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:632:2:
-  warning: expanding binder collection (i «expr ∉ » s) -/
-theorem support_subset_iff {s : Set ι} {f : Π₀ i, β i} :
-    ↑f.support ⊆ s ↔ ∀ (i) (_ : i ∉ s), f i = 0 := by
+theorem support_subset_iff {s : Set ι} {f : Π₀ i, β i} : ↑f.support ⊆ s ↔ ∀ i ∉ s, f i = 0 := by
   simp [Set.subset_def]; exact forall_congr' fun i => not_imp_comm
 #align dfinsupp.support_subset_iff DFinsupp.support_subset_iff
 

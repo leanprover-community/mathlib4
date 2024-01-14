@@ -2363,10 +2363,9 @@ theorem coeff_order (h : (order φ).Dom) : coeff R (φ.order.get h) φ ≠ 0 := 
 then the order of the power series is less than or equal to `n`.-/
 theorem order_le (n : ℕ) (h : coeff R n φ ≠ 0) : order φ ≤ n := by
   classical
-  have _ :  ∃ n, coeff R n φ ≠ 0 := Exists.intro n h
   rw [order, dif_neg]
-  · simp only [PartENat.coe_le_coe, Nat.find_le_iff]
-    exact ⟨n, le_rfl, h⟩
+  · simp only [PartENat.coe_le_coe]
+    exact Nat.find_le h
   · exact exists_coeff_ne_zero_iff_ne_zero.mp ⟨n, h⟩
 #align power_series.order_le PowerSeries.order_le
 

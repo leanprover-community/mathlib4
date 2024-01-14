@@ -445,11 +445,7 @@ variable {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {a : α} {b : β}
 @[to_additive]
 theorem range_smul_range {ι κ : Type*} [SMul α β] (b : ι → α) (c : κ → β) :
     range b • range c = range fun p : ι × κ ↦ b p.1 • c p.2 :=
-  ext fun _x ↦
-    ⟨fun hx ↦
-      let ⟨_p, _q, ⟨i, hi⟩, ⟨j, hj⟩, hpq⟩ := Set.mem_smul.1 hx
-      ⟨(i, j), hpq ▸ hi ▸ hj ▸ rfl⟩,
-      fun ⟨⟨i, j⟩, h⟩ ↦ Set.mem_smul.2 ⟨b i, c j, ⟨i, rfl⟩, ⟨j, rfl⟩, h⟩⟩
+  image2_range ..
 #align set.range_smul_range Set.range_smul_range
 #align set.range_vadd_range Set.range_vadd_range
 

@@ -83,14 +83,9 @@ theorem continuousAt_const_cpow' {a b : ℂ} (h : b ≠ 0) : ContinuousAt (fun x
 /-- The function `z ^ w` is continuous in `(z, w)` provided that `z` does not belong to the interval
 `(-∞, 0]` on the real line. See also `Complex.continuousAt_cpow_zero_of_re_pos` for a version that
 works for `z = 0` but assumes `0 < re w`. -/
-theorem continuousAt_cpow {p : ℂ × ℂ} (hp_fst : 0 < p.fst.re ∨ p.fst.im ≠ 0) :
+theorem continuousAt_cpow {p : ℂ × ℂ} (hp_fst : p.fst ∈ slitPlane) :
     ContinuousAt (fun x : ℂ × ℂ => x.1 ^ x.2) p := by
-  have hp_fst_ne_zero : p.fst ≠ 0 := by
-    intro h
-    cases' hp_fst with hp_fst hp_fst <;>
-      · rw [h] at hp_fst
-        simp at hp_fst
-  rw [continuousAt_congr (cpow_eq_nhds' hp_fst_ne_zero)]
+  rw [continuousAt_congr (cpow_eq_nhds' <| slitPlane_ne_zero hp_fst)]
   refine' continuous_exp.continuousAt.comp _
   exact
     ContinuousAt.mul
@@ -98,13 +93,13 @@ theorem continuousAt_cpow {p : ℂ × ℂ} (hp_fst : 0 < p.fst.re ∨ p.fst.im �
       continuous_snd.continuousAt
 #align continuous_at_cpow continuousAt_cpow
 
-theorem continuousAt_cpow_const {a b : ℂ} (ha : 0 < a.re ∨ a.im ≠ 0) :
+theorem continuousAt_cpow_const {a b : ℂ} (ha : a ∈ slitPlane) :
     ContinuousAt (fun x => cpow x b) a :=
   Tendsto.comp (@continuousAt_cpow (a, b) ha) (continuousAt_id.prod continuousAt_const)
 #align continuous_at_cpow_const continuousAt_cpow_const
 
 theorem Filter.Tendsto.cpow {l : Filter α} {f g : α → ℂ} {a b : ℂ} (hf : Tendsto f l (𝓝 a))
-    (hg : Tendsto g l (𝓝 b)) (ha : 0 < a.re ∨ a.im ≠ 0) :
+    (hg : Tendsto g l (𝓝 b)) (ha : a ∈ slitPlane) :
     Tendsto (fun x => f x ^ g x) l (𝓝 (a ^ b)) :=
   (@continuousAt_cpow (a, b) ha).tendsto.comp (hf.prod_mk_nhds hg)
 #align filter.tendsto.cpow Filter.Tendsto.cpow
@@ -119,7 +114,7 @@ theorem Filter.Tendsto.const_cpow {l : Filter α} {f : α → ℂ} {a b : ℂ} (
 variable [TopologicalSpace α] {f g : α → ℂ} {s : Set α} {a : α}
 
 nonrec theorem ContinuousWithinAt.cpow (hf : ContinuousWithinAt f s a)
-    (hg : ContinuousWithinAt g s a) (h0 : 0 < (f a).re ∨ (f a).im ≠ 0) :
+    (hg : ContinuousWithinAt g s a) (h0 : f a ∈ slitPlane) :
     ContinuousWithinAt (fun x => f x ^ g x) s a :=
   hf.cpow hg h0
 #align continuous_within_at.cpow ContinuousWithinAt.cpow
@@ -130,7 +125,7 @@ nonrec theorem ContinuousWithinAt.const_cpow {b : ℂ} (hf : ContinuousWithinAt 
 #align continuous_within_at.const_cpow ContinuousWithinAt.const_cpow
 
 nonrec theorem ContinuousAt.cpow (hf : ContinuousAt f a) (hg : ContinuousAt g a)
-    (h0 : 0 < (f a).re ∨ (f a).im ≠ 0) : ContinuousAt (fun x => f x ^ g x) a :=
+    (h0 : f a ∈ slitPlane) : ContinuousAt (fun x => f x ^ g x) a :=
   hf.cpow hg h0
 #align continuous_at.cpow ContinuousAt.cpow
 
@@ -140,7 +135,7 @@ nonrec theorem ContinuousAt.const_cpow {b : ℂ} (hf : ContinuousAt f a) (h : b 
 #align continuous_at.const_cpow ContinuousAt.const_cpow
 
 theorem ContinuousOn.cpow (hf : ContinuousOn f s) (hg : ContinuousOn g s)
-    (h0 : ∀ a ∈ s, 0 < (f a).re ∨ (f a).im ≠ 0) : ContinuousOn (fun x => f x ^ g x) s := fun a ha =>
+    (h0 : ∀ a ∈ s, f a ∈ slitPlane) : ContinuousOn (fun x => f x ^ g x) s := fun a ha =>
   (hf a ha).cpow (hg a ha) (h0 a ha)
 #align continuous_on.cpow ContinuousOn.cpow
 
@@ -149,7 +144,7 @@ theorem ContinuousOn.const_cpow {b : ℂ} (hf : ContinuousOn f s) (h : b ≠ 0 �
 #align continuous_on.const_cpow ContinuousOn.const_cpow
 
 theorem Continuous.cpow (hf : Continuous f) (hg : Continuous g)
-    (h0 : ∀ a, 0 < (f a).re ∨ (f a).im ≠ 0) : Continuous fun x => f x ^ g x :=
+    (h0 : ∀ a, f a ∈ slitPlane) : Continuous fun x => f x ^ g x :=
   continuous_iff_continuousAt.2 fun a => hf.continuousAt.cpow hg.continuousAt (h0 a)
 #align continuous.cpow Continuous.cpow
 
@@ -159,7 +154,7 @@ theorem Continuous.const_cpow {b : ℂ} (hf : Continuous f) (h : b ≠ 0 ∨ ∀
 #align continuous.const_cpow Continuous.const_cpow
 
 theorem ContinuousOn.cpow_const {b : ℂ} (hf : ContinuousOn f s)
-    (h : ∀ a : α, a ∈ s → 0 < (f a).re ∨ (f a).im ≠ 0) : ContinuousOn (fun x => f x ^ b) s :=
+    (h : ∀ a : α, a ∈ s → f a ∈ slitPlane) : ContinuousOn (fun x => f x ^ b) s :=
   hf.cpow continuousOn_const h
 #align continuous_on.cpow_const ContinuousOn.cpow_const
 

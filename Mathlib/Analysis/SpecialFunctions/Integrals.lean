@@ -610,8 +610,8 @@ theorem integral_mul_cpow_one_add_sq {t : ℂ} (ht : t ≠ -1) :
     · exact continuous_const.add (continuous_ofReal.pow 2)
     · exact continuous_const
     · intro a
-      rw [add_re, one_re, ← ofReal_pow, ofReal_re]
-      exact Or.inl (add_pos_of_pos_of_nonneg zero_lt_one (sq_nonneg a))
+      norm_cast
+      exact ofReal_mem_slitPlane.2 <| add_pos_of_pos_of_nonneg one_pos <| sq_nonneg a
 #align integral_mul_cpow_one_add_sq integral_mul_cpow_one_add_sq
 
 theorem integral_mul_rpow_one_add_sq {t : ℝ} (ht : t ≠ -1) :

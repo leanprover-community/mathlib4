@@ -23,11 +23,11 @@ it to put a smooth manifold structure on the sphere.
 ## Main results
 
 For a unit vector `v` in `E`, the definition `stereographic` gives the stereographic projection
-centred at `v`, a local homeomorphism from the sphere to `(ℝ ∙ v)ᗮ` (the orthogonal complement of
+centred at `v`, a partial homeomorphism from the sphere to `(ℝ ∙ v)ᗮ` (the orthogonal complement of
 `v`).
 
 For finite-dimensional `E`, we then construct a smooth manifold instance on the sphere; the charts
-here are obtained by composing the local homeomorphisms `stereographic` with arbitrary isometries
+here are obtained by composing the partial homeomorphisms `stereographic` with arbitrary isometries
 from `(ℝ ∙ v)ᗮ` to Euclidean space.
 
 We prove two lemmas about smooth maps:
@@ -279,8 +279,8 @@ theorem stereo_right_inv (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) : stereoToFun v
   · simp
 #align stereo_right_inv stereo_right_inv
 
-/-- Stereographic projection from the unit sphere in `E`, centred at a unit vector `v` in `E`; this
-is the version as a local homeomorphism. -/
+/-- Stereographic projection from the unit sphere in `E`, centred at a unit vector `v` in `E`;
+this is the version as a partial homeomorphism. -/
 def stereographic (hv : ‖v‖ = 1) : PartialHomeomorph (sphere (0 : E) 1) (ℝ ∙ v)ᗮ where
   toFun := stereoToFun v ∘ (↑)
   invFun := stereoInvFun hv

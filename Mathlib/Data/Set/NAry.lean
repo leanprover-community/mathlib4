@@ -248,6 +248,10 @@ theorem image2_right (h : s.Nonempty) : image2 (fun _ y => y) s t = t := by
   simp [nonempty_def.mp h, ext_iff]
 #align set.image2_right Set.image2_right
 
+lemma image2_range (f : α' → β' → γ) (g : α → α') (h : β → β') :
+    image2 f (range g) (range h) = range fun x : α × β ↦ f (g x.1) (h x.2) := by
+  simp_rw [← image_univ, image2_image_left, image2_image_right, ← image_prod, univ_prod_univ]
+
 theorem image2_assoc {f : δ → γ → ε} {g : α → β → δ} {f' : α → ε' → ε} {g' : β → γ → ε'}
     (h_assoc : ∀ a b c, f (g a b) c = f' a (g' b c)) :
     image2 f (image2 g s t) u = image2 f' s (image2 g' t u) := by

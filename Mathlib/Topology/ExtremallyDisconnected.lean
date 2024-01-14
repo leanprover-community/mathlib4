@@ -55,7 +55,7 @@ section TotallySeparated
 instance [ExtremallyDisconnected X] [T2Space X] : TotallySeparatedSpace X :=
 { isTotallySeparated_univ := by
     intro x _ y _ hxy
-    obtain ⟨U, V, hUV⟩ := T2Space.t2 x y hxy
+    obtain ⟨U, V, hUV⟩ := T2Space.t2 hxy
     refine ⟨closure U, (closure U)ᶜ, ExtremallyDisconnected.open_closure U hUV.1,
       by simp only [isOpen_compl_iff, isClosed_closure], subset_closure hUV.2.2.1, ?_,
       by simp only [Set.union_compl_self, Set.subset_univ], disjoint_compl_right⟩

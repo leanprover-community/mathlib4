@@ -94,7 +94,7 @@ lemma schnirelmannDensity_le_of_not_mem {k : ℕ} (hk : k ∉ A) :
   rw [← one_div, one_sub_div (Nat.cast_pos.2 hk').ne']
   apply div_le_div_of_le (Nat.cast_nonneg _)
   rw [← Nat.cast_pred hk', Nat.cast_le]
-  suffices : (Ioc 0 k).filter (· ∈ A) ⊆ Ioo 0 k; exact (card_le_of_subset this).trans_eq (by simp)
+  suffices : (Ioc 0 k).filter (· ∈ A) ⊆ Ioo 0 k; exact (card_le_card this).trans_eq (by simp)
   rw [← Ioo_insert_right hk', filter_insert, if_neg hk]
   exact filter_subset _ _
 
@@ -106,7 +106,7 @@ lemma schnirelmannDensity_eq_zero_of_one_not_mem (h : 1 ∉ A) : schnirelmannDen
 lemma schnirelmannDensity_le_of_subset {B : Set ℕ} [DecidablePred (· ∈ B)] (h : A ⊆ B) :
     schnirelmannDensity A ≤ schnirelmannDensity B :=
   ciInf_mono ⟨0, fun _ ⟨_, hx⟩ => hx ▸ by positivity⟩ fun _ => div_le_div_of_le (by positivity) <|
-    Nat.cast_le.2 <| card_le_of_subset <| monotone_filter_right _ h
+    Nat.cast_le.2 <| card_le_card <| monotone_filter_right _ h
 
 /-- The Schnirelmann density of `A` is `1` if and only if `A` contains all the positive naturals. -/
 lemma schnirelmannDensity_eq_one_iff : schnirelmannDensity A = 1 ↔ {0}ᶜ ⊆ A := by
@@ -196,7 +196,7 @@ lemma schnirelmannDensity_finset (A : Finset ℕ) : schnirelmannDensity A = 0 :=
   use n, hn
   rw [div_lt_iff (Nat.cast_pos.2 hn), ← div_lt_iff' hε, Nat.cast_add_one]
   exact (Nat.lt_floor_add_one _).trans_le' <| div_le_div_of_le hε.le <| Nat.cast_le.2 <|
-    card_le_of_subset <| by simp [subset_iff]
+    card_le_card <| by simp [subset_iff]
 
 /-- The Schnirelmann density of any finite set is `0`. -/
 lemma schnirelmannDensity_finite {A : Set ℕ} [DecidablePred (· ∈ A)] (hA : A.Finite) :
@@ -243,7 +243,7 @@ lemma schnirelmannDensity_setOf_mod_eq_one {m : ℕ} (hm : m ≠ 1) :
       ← Nat.le_sub_iff_add_le hn, zero_lt_one]
     exact Nat.mul_le_of_le_div _ _ _ hy'
   rw [le_div_iff (Nat.cast_pos.2 hn), mul_comm, ← div_eq_mul_inv]
-  apply (Nat.cast_le.2 (card_le_of_subset this)).trans'
+  apply (Nat.cast_le.2 (card_le_card this)).trans'
   rw [card_image_of_injective, Nat.card_Icc, Nat.sub_zero, div_le_iff (Nat.cast_pos.2 hm'),
     ← Nat.cast_mul, Nat.cast_le, add_one_mul (α := ℕ)]
   · have := @Nat.lt_div_mul_add n.pred m hm'

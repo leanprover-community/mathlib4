@@ -319,7 +319,7 @@ namespace Interval
 variable [OrderedCommMonoid α] (s : Interval α) {n : ℕ}
 
 @[to_additive]
-theorem bot_pow : ∀ {n : ℕ} (_ : n ≠ 0), (⊥ : Interval α) ^ n = ⊥
+theorem bot_pow : ∀ {n : ℕ}, n ≠ 0 → (⊥ : Interval α) ^ n = ⊥
   | 0, h => (h rfl).elim
   | Nat.succ n, _ => bot_mul (⊥ ^ n)
 #align interval.bot_pow Interval.bot_pow

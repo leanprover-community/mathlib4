@@ -636,7 +636,7 @@ theorem isLocalStructomorphWithinAt_localInvariantProp [ClosedUnderRestriction G
       · simpa only [hex, hef ⟨hx, hex⟩, mfld_simps] using hfx }
 #align structure_groupoid.is_local_structomorph_within_at_local_invariant_prop StructureGroupoid.isLocalStructomorphWithinAt_localInvariantProp
 
-/-- A slight reformulation of `IsLocalStructomorphWithinAt` when `f` is a local homeomorph.
+/-- A slight reformulation of `IsLocalStructomorphWithinAt` when `f` is a partial homeomorph.
   This gives us an `e` that is defined on a subset of `f.source`. -/
 theorem _root_.PartialHomeomorph.isLocalStructomorphWithinAt_iff {G : StructureGroupoid H}
     [ClosedUnderRestriction G] (f : PartialHomeomorph H H) {s : Set H} {x : H}
@@ -659,7 +659,7 @@ theorem _root_.PartialHomeomorph.isLocalStructomorphWithinAt_iff {G : StructureG
     exact ⟨e, he, hfe, hxe⟩
 #align local_homeomorph.is_local_structomorph_within_at_iff PartialHomeomorph.isLocalStructomorphWithinAt_iff
 
-/-- A slight reformulation of `IsLocalStructomorphWithinAt` when `f` is a local homeomorph and
+/-- A slight reformulation of `IsLocalStructomorphWithinAt` when `f` is a partial homeomorph and
   the set we're considering is a superset of `f.source`. -/
 theorem _root_.PartialHomeomorph.isLocalStructomorphWithinAt_iff' {G : StructureGroupoid H}
     [ClosedUnderRestriction G] (f : PartialHomeomorph H H) {s : Set H} {x : H} (hs : f.source ⊆ s)
@@ -673,7 +673,7 @@ theorem _root_.PartialHomeomorph.isLocalStructomorphWithinAt_iff' {G : Structure
   rw [inter_eq_right.mpr (h2e.trans hs)]
 #align local_homeomorph.is_local_structomorph_within_at_iff' PartialHomeomorph.isLocalStructomorphWithinAt_iff'
 
-/-- A slight reformulation of `IsLocalStructomorphWithinAt` when `f` is a local homeomorph and
+/-- A slight reformulation of `IsLocalStructomorphWithinAt` when `f` is a partial homeomorph and
   the set we're considering is `f.source`. -/
 theorem _root_.PartialHomeomorph.isLocalStructomorphWithinAt_source_iff {G : StructureGroupoid H}
     [ClosedUnderRestriction G] (f : PartialHomeomorph H H) {x : H} :

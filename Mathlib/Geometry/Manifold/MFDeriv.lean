@@ -242,7 +242,7 @@ def MDifferentiable (f : M → M') :=
   ∀ x, MDifferentiableAt I I' f x
 #align mdifferentiable MDifferentiable
 
-/-- Prop registering if a local homeomorphism is a local diffeomorphism on its source -/
+/-- Prop registering if a partial homeomorphism is a local diffeomorphism on its source -/
 def PartialHomeomorph.MDifferentiable (f : PartialHomeomorph M M') :=
   MDifferentiableOn I I' f f.source ∧ MDifferentiableOn I' I f.symm f.target
 #align local_homeomorph.mdifferentiable PartialHomeomorph.MDifferentiable
@@ -1898,7 +1898,7 @@ end Charts
 
 end SpecificFunctions
 
-/-! ### Differentiable local homeomorphisms -/
+/-! ### Differentiable partial homeomorphisms -/
 
 namespace PartialHomeomorph.MDifferentiable
 
@@ -1944,7 +1944,7 @@ theorem comp_symm_deriv {x : M'} (hx : x ∈ e.target) :
   he.symm.symm_comp_deriv hx
 #align local_homeomorph.mdifferentiable.comp_symm_deriv PartialHomeomorph.MDifferentiable.comp_symm_deriv
 
-/-- The derivative of a differentiable local homeomorphism, as a continuous linear equivalence
+/-- The derivative of a differentiable partial homeomorphism, as a continuous linear equivalence
 between the tangent spaces at `x` and `e x`. -/
 protected def mfderiv {x : M} (hx : x ∈ e.source) : TangentSpace I x ≃L[𝕜] TangentSpace I' (e x) :=
   { mfderiv I I' e x with

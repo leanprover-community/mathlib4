@@ -176,7 +176,7 @@ theorem mod_pow_succ {b : ℕ} (w m : ℕ) : m % b ^ succ w = b * (m / b % b ^ w
         rw [Eq.symm (mod_eq_sub_mod p_b_ge)]
 #align nat.mod_pow_succ Nat.mod_pow_succ
 
-theorem pow_dvd_pow_iff_pow_le_pow {k l : ℕ} : ∀ {x : ℕ} (_ : 0 < x), x ^ k ∣ x ^ l ↔ x ^ k ≤ x ^ l
+theorem pow_dvd_pow_iff_pow_le_pow {k l : ℕ} : ∀ {x : ℕ}, 0 < x → (x ^ k ∣ x ^ l ↔ x ^ k ≤ x ^ l)
   | x + 1, w => by
     constructor
     · intro a
@@ -228,3 +228,16 @@ theorem lt_of_pow_dvd_right {p i n : ℕ} (hn : n ≠ 0) (hp : 2 ≤ p) (h : p ^
 #align nat.lt_of_pow_dvd_right Nat.lt_of_pow_dvd_right
 
 end Nat
+
+/-!
+### Deprecated lemmas
+
+Those lemmas have been deprecated on 2023-12-23.
+-/
+
+@[deprecated] alias Nat.pow_lt_pow_of_lt_left := Nat.pow_lt_pow_left
+@[deprecated] alias Nat.pow_le_iff_le_left := Nat.pow_le_pow_iff_left
+@[deprecated] alias Nat.pow_lt_pow_of_lt_right := pow_lt_pow_right
+@[deprecated] protected alias Nat.pow_right_strictMono := pow_right_strictMono
+@[deprecated] alias Nat.pow_le_iff_le_right := pow_le_pow_iff_right
+@[deprecated] alias Nat.pow_lt_iff_lt_right := pow_lt_pow_iff_right

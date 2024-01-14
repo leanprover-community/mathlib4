@@ -569,10 +569,7 @@ theorem update_snoc_last : update (snoc p x) (last n) z = snoc p z := by
 theorem snoc_init_self : snoc (init q) (q (last n)) = q := by
   ext j
   by_cases h : j.val < n
-  · simp only [init, snoc, h, cast_eq, dite_true]
-    have _ : castSucc (castLT j h) = j := castSucc_castLT _ _
-    rw [← cast_eq rfl (q j)]
-    congr
+  · simp only [init, snoc, h, cast_eq, dite_true, castSucc_castLT]
   · rw [eq_last_of_not_lt h]
     simp
 #align fin.snoc_init_self Fin.snoc_init_self

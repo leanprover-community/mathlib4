@@ -271,14 +271,14 @@ theorem card_le_card_image₂_left {s : Finset α} (hs : s.Nonempty) (hf : ∀ a
     t.card ≤ (image₂ f s t).card := by
   obtain ⟨a, ha⟩ := hs
   rw [← card_image₂_singleton_left _ (hf a)]
-  exact card_le_of_subset (image₂_subset_right <| singleton_subset_iff.2 ha)
+  exact card_le_card (image₂_subset_right <| singleton_subset_iff.2 ha)
 #align finset.card_le_card_image₂_left Finset.card_le_card_image₂_left
 
 theorem card_le_card_image₂_right {t : Finset β} (ht : t.Nonempty)
     (hf : ∀ b, Injective fun a => f a b) : s.card ≤ (image₂ f s t).card := by
   obtain ⟨b, hb⟩ := ht
   rw [← card_image₂_singleton_right _ (hf b)]
-  exact card_le_of_subset (image₂_subset_left <| singleton_subset_iff.2 hb)
+  exact card_le_card (image₂_subset_left <| singleton_subset_iff.2 hb)
 #align finset.card_le_card_image₂_right Finset.card_le_card_image₂_right
 
 variable {s t}

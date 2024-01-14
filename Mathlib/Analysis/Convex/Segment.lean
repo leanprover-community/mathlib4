@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Yury Kudryashov, Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Invertible
-import Mathlib.Algebra.Order.SMul
+import Mathlib.Algebra.Order.Module.OrderedSMul
 import Mathlib.LinearAlgebra.AffineSpace.Midpoint
 import Mathlib.LinearAlgebra.Ray
 import Mathlib.Tactic.GCongr

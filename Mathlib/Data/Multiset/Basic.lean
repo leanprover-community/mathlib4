@@ -792,27 +792,27 @@ theorem card_eq_one {s : Multiset α} : card s = 1 ↔ ∃ a, s = {a} :=
     fun ⟨_a, e⟩ => e.symm ▸ rfl⟩
 #align multiset.card_eq_one Multiset.card_eq_one
 
-theorem card_le_of_le {s t : Multiset α} (h : s ≤ t) : card s ≤ card t :=
+theorem card_le_card {s t : Multiset α} (h : s ≤ t) : card s ≤ card t :=
   leInductionOn h Sublist.length_le
-#align multiset.card_le_of_le Multiset.card_le_of_le
+#align multiset.card_le_of_le Multiset.card_le_card
 
 @[mono]
-theorem card_mono : Monotone (@card α) := fun _a _b => card_le_of_le
+theorem card_mono : Monotone (@card α) := fun _a _b => card_le_card
 #align multiset.card_mono Multiset.card_mono
 
 theorem eq_of_le_of_card_le {s t : Multiset α} (h : s ≤ t) : card t ≤ card s → s = t :=
   leInductionOn h fun s h₂ => congr_arg _ <| s.eq_of_length_le h₂
 #align multiset.eq_of_le_of_card_le Multiset.eq_of_le_of_card_le
 
-theorem card_lt_of_lt {s t : Multiset α} (h : s < t) : card s < card t :=
+theorem card_lt_card {s t : Multiset α} (h : s < t) : card s < card t :=
   lt_of_not_ge fun h₂ => _root_.ne_of_lt h <| eq_of_le_of_card_le (le_of_lt h) h₂
-#align multiset.card_lt_of_lt Multiset.card_lt_of_lt
+#align multiset.card_lt_card Multiset.card_lt_card
 
-lemma card_strictMono : StrictMono (card : Multiset α → ℕ) := fun _ _ ↦ card_lt_of_lt
+lemma card_strictMono : StrictMono (card : Multiset α → ℕ) := fun _ _ ↦ card_lt_card
 
 theorem lt_iff_cons_le {s t : Multiset α} : s < t ↔ ∃ a, a ::ₘ s ≤ t :=
   ⟨Quotient.inductionOn₂ s t fun _l₁ _l₂ h =>
-      Subperm.exists_of_length_lt (le_of_lt h) (card_lt_of_lt h),
+      Subperm.exists_of_length_lt (le_of_lt h) (card_lt_card h),
     fun ⟨_a, h⟩ => lt_of_lt_of_le (lt_cons_self _ _) h⟩
 #align multiset.lt_iff_cons_le Multiset.lt_iff_cons_le
 
@@ -851,7 +851,7 @@ def strongInductionOn {p : Multiset α → Sort*} (s : Multiset α) (ih : ∀ s,
     (ih s) fun t _h =>
       strongInductionOn t ih
 termination_by _ => card s
-decreasing_by exact card_lt_of_lt _h
+decreasing_by exact card_lt_card _h
 #align multiset.strong_induction_on Multiset.strongInductionOnₓ -- Porting note: reorderd universes
 
 theorem strongInductionOn_eq {p : Multiset α → Sort*} (s : Multiset α) (H) :
@@ -878,7 +878,7 @@ def strongDownwardInduction {p : Multiset α → Sort*} {n : ℕ}
   H s fun {t} ht _h =>
     strongDownwardInduction H t ht
 termination_by _ => n - card s
-decreasing_by exact (tsub_lt_tsub_iff_left_of_le ht).2 (card_lt_of_lt _h)
+decreasing_by exact (tsub_lt_tsub_iff_left_of_le ht).2 (card_lt_card _h)
 -- Porting note: reorderd universes
 #align multiset.strong_downward_induction Multiset.strongDownwardInductionₓ
 
@@ -909,7 +909,7 @@ theorem strongDownwardInductionOn_eq {p : Multiset α → Sort*} (s : Multiset �
 
 /-- Another way of expressing `strongInductionOn`: the `(<)` relation is well-founded. -/
 instance instWellFoundedLT : WellFoundedLT (Multiset α) :=
-  ⟨Subrelation.wf Multiset.card_lt_of_lt (measure Multiset.card).2⟩
+  ⟨Subrelation.wf Multiset.card_lt_card (measure Multiset.card).2⟩
 #align multiset.is_well_founded_lt Multiset.instWellFoundedLT
 
 /-! ### `Multiset.replicate` -/
@@ -1152,11 +1152,11 @@ theorem card_erase_add_one {a : α} {s : Multiset α} : a ∈ s → card (s.eras
 #align multiset.card_erase_add_one Multiset.card_erase_add_one
 
 theorem card_erase_lt_of_mem {a : α} {s : Multiset α} : a ∈ s → card (s.erase a) < card s :=
-  fun h => card_lt_of_lt (erase_lt.mpr h)
+  fun h => card_lt_card (erase_lt.mpr h)
 #align multiset.card_erase_lt_of_mem Multiset.card_erase_lt_of_mem
 
 theorem card_erase_le {a : α} {s : Multiset α} : card (s.erase a) ≤ card s :=
-  card_le_of_le (erase_le a s)
+  card_le_card (erase_le a s)
 #align multiset.card_erase_le Multiset.card_erase_le
 
 theorem card_erase_eq_ite {a : α} {s : Multiset α} :
@@ -1357,7 +1357,7 @@ theorem map_le_map {f : α → β} {s t : Multiset α} (h : s ≤ t) : map f s �
 theorem map_lt_map {f : α → β} {s t : Multiset α} (h : s < t) : s.map f < t.map f := by
   refine' (map_le_map h.le).lt_of_not_le fun H => h.ne <| eq_of_le_of_card_le h.le _
   rw [← s.card_map f, ← t.card_map f]
-  exact card_le_of_le H
+  exact card_le_card H
 #align multiset.map_lt_map Multiset.map_lt_map
 
 theorem map_mono (f : α → β) : Monotone (map f) := fun _ _ => map_le_map
@@ -2159,7 +2159,7 @@ lemma card_filter_le_iff (s : Multiset α) (P : α → Prop) [DecidablePred P] (
   fconstructor
   · intro H s' hs' s'_card
     by_contra! rid
-    have card := card_le_of_le (monotone_filter_left P hs') |>.trans H
+    have card := card_le_card (monotone_filter_left P hs') |>.trans H
     exact s'_card.not_le (filter_eq_self.mpr rid ▸ card)
   · contrapose!
     exact fun H ↦ ⟨s.filter P, filter_le _ _, H, fun a ha ↦ (mem_filter.mp ha).2⟩
@@ -2335,7 +2335,7 @@ theorem countP_sub [DecidableEq α] {s t : Multiset α} (h : t ≤ s) :
 #align multiset.countp_sub Multiset.countP_sub
 
 theorem countP_le_of_le {s t} (h : s ≤ t) : countP p s ≤ countP p t := by
-  simpa [countP_eq_card_filter] using card_le_of_le (filter_le_filter p h)
+  simpa [countP_eq_card_filter] using card_le_card (filter_le_filter p h)
 #align multiset.countp_le_of_le Multiset.countP_le_of_le
 
 @[simp]
@@ -3185,5 +3185,14 @@ theorem coe_subsingletonEquiv [Subsingleton α] :
     (subsingletonEquiv α : List α → Multiset α) = ofList :=
   rfl
 #align multiset.coe_subsingleton_equiv Multiset.coe_subsingletonEquiv
+
+/-!
+### Deprecated lemmas
+
+Those lemmas have been deprecated on 2023-12-27.
+-/
+
+@[deprecated] alias card_le_of_le := card_le_card
+@[deprecated] alias card_lt_of_lt := card_lt_card
 
 end Multiset

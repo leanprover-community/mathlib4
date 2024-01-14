@@ -428,7 +428,7 @@ theorem NormedAddCommGroup.cauchy_series_of_le_geometric'' {C : ℝ} {u : ℕ �
     CauchySeq fun n ↦ ∑ k in range (n + 1), u k := by
   set v : ℕ → α := fun n ↦ if n < N then 0 else u n
   have hC : 0 ≤ C :=
-    (zero_le_mul_right <| pow_pos hr₀ N).mp ((norm_nonneg _).trans <| h N <| le_refl N)
+    (mul_nonneg_iff_of_pos_right <| pow_pos hr₀ N).mp ((norm_nonneg _).trans <| h N <| le_refl N)
   have : ∀ n ≥ N, u n = v n := by
     intro n hn
     simp [hn, if_neg (not_lt.mpr hn)]

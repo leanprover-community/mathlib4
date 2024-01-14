@@ -218,6 +218,13 @@ theorem Commute.smul_left_iff₀ [Mul β] [SMulCommClass α β β] [IsScalarTowe
   Commute.smul_left_iff (Units.mk0 c hc)
 #align commute.smul_left_iff₀ Commute.smul_left_iff₀
 
+/-- Right scalar multiplication as an order isomorphism. -/
+@[simps] def Equiv.smulRight (ha : a ≠ 0) : β ≃ β where
+  toFun b := a • b
+  invFun b := a⁻¹ • b
+  left_inv := inv_smul_smul₀ ha
+  right_inv := smul_inv_smul₀ ha
+
 protected theorem MulAction.bijective₀ (ha : a ≠ 0) : Function.Bijective (a • · : β → β) :=
   MulAction.bijective <| Units.mk0 a ha
 #align mul_action.bijective₀ MulAction.bijective₀

@@ -538,10 +538,15 @@ theorem mapsTo_range (f : α → β) (s : Set α) : MapsTo f s (range f) :=
 #align set.maps_to_range Set.mapsTo_range
 
 @[simp]
-theorem maps_image_to (f : α → β) (g : γ → α) (s : Set γ) (t : Set β) :
+theorem mapsTo_image_iff {f : α → β} {g : γ → α} {s : Set γ} {t : Set β} :
     MapsTo f (g '' s) t ↔ MapsTo (f ∘ g) s t :=
   ⟨fun h c hc => h ⟨c, hc, rfl⟩, fun h _ ⟨_, hc⟩ => hc.2 ▸ h hc.1⟩
-#align set.maps_image_to Set.maps_image_to
+#align set.maps_image_to Set.mapsTo_image_iff
+
+@[deprecated]
+lemma maps_image_to (f : α → β) (g : γ → α) (s : Set γ) (t : Set β) :
+    MapsTo f (g '' s) t ↔ MapsTo (f ∘ g) s t :=
+  mapsTo_image_iff
 
 lemma MapsTo.comp_left (g : β → γ) (hf : MapsTo f s t) : MapsTo (g ∘ f) s (g '' t) :=
   fun x hx ↦ ⟨f x, hf hx, rfl⟩
@@ -552,13 +557,21 @@ lemma MapsTo.comp_right {s : Set β} {t : Set γ} (hg : MapsTo g s t) (f : α �
 #align set.maps_to.comp_right Set.MapsTo.comp_right
 
 @[simp]
-theorem maps_univ_to (f : α → β) (s : Set β) : MapsTo f univ s ↔ ∀ a, f a ∈ s :=
+lemma mapsTo_univ_iff : MapsTo f univ t ↔ ∀ x, f x ∈ t :=
   ⟨fun h _ => h (mem_univ _), fun h x _ => h x⟩
+
+@[deprecated]
+theorem maps_univ_to (f : α → β) (s : Set β) : MapsTo f univ s ↔ ∀ a, f a ∈ s :=
+  mapsTo_univ_iff
 #align set.maps_univ_to Set.maps_univ_to
 
 @[simp]
+lemma mapsTo_range_iff {g : ι → α} : MapsTo f (range g) t ↔ ∀ i, f (g i) ∈ t :=
+  forall_range_iff
+
+@[deprecated mapsTo_range_iff]
 theorem maps_range_to (f : α → β) (g : γ → α) (s : Set β) :
-    MapsTo f (range g) s ↔ MapsTo (f ∘ g) univ s := by rw [← image_univ, maps_image_to]
+    MapsTo f (range g) s ↔ MapsTo (f ∘ g) univ s := by rw [← image_univ, mapsTo_image_iff]
 #align set.maps_range_to Set.maps_range_to
 
 theorem surjective_mapsTo_image_restrict (f : α → β) (s : Set α) :

@@ -81,9 +81,25 @@ end ExistsAddOfLE
 
 end StrictOrderedSemiring
 
+section LinearOrderedCommSemiring
+variable [LinearOrderedCommSemiring α] [ExistsAddOfLE α] {a b : α}
+
+lemma add_sq_le : (a + b) ^ 2 ≤ 2 * (a ^ 2 + b ^ 2) := by
+  calc
+    (a + b) ^ 2 = a ^ 2 + b ^ 2 + (a * b + b * a) := by
+        simp_rw [pow_succ, pow_zero, mul_one, add_mul_self_eq, mul_assoc, two_mul,
+          add_right_comm _ (_ + _), mul_comm]
+    _ ≤ a ^ 2 + b ^ 2 + (a * a + b * b) := add_le_add_left ?_ _
+    _ = _ := by simp_rw [pow_succ, pow_zero, mul_one, two_mul]
+  cases le_total a b
+  · exact mul_add_mul_le_mul_add_mul ‹_› ‹_›
+  · exact mul_add_mul_le_mul_add_mul' ‹_› ‹_›
+
+end LinearOrderedCommSemiring
+
 namespace CanonicallyOrderedCommSemiring
 
-variable [CanonicallyOrderedCommSemiring α] {a b : α}
+variable [CanonicallyOrderedCommSemiring α] {a b c d : α}
 
 -- see Note [lower instance priority]
 instance (priority := 100) toNoZeroDivisors : NoZeroDivisors α :=
@@ -112,9 +128,18 @@ instance (priority := 100) toOrderedCommSemiring : OrderedCommSemiring α :=
 #align canonically_ordered_comm_semiring.to_ordered_comm_semiring CanonicallyOrderedCommSemiring.toOrderedCommSemiring
 
 @[simp]
-theorem mul_pos : 0 < a * b ↔ 0 < a ∧ 0 < b := by
+protected theorem mul_pos : 0 < a * b ↔ 0 < a ∧ 0 < b := by
   simp only [pos_iff_ne_zero, ne_eq, mul_eq_zero, not_or]
 #align canonically_ordered_comm_semiring.mul_pos CanonicallyOrderedCommSemiring.mul_pos
+
+protected lemma mul_lt_mul_of_lt_of_lt [PosMulStrictMono α] (hab : a < b) (hcd : c < d) :
+    a * c < b * d := by
+  -- TODO: This should be an instance but it currently times out
+  have := posMulStrictMono_iff_mulPosStrictMono.1 ‹_›
+  obtain rfl | hc := eq_zero_or_pos c
+  · rw [mul_zero]
+    exact mul_pos ((zero_le _).trans_lt hab) hcd
+  · exact mul_lt_mul_of_lt_of_lt' hab hcd ((zero_le _).trans_lt hab) hc
 
 end CanonicallyOrderedCommSemiring
 

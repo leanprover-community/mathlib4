@@ -159,12 +159,6 @@ end
 instance [CompleteSpace β] : CompleteSpace C(α, β) :=
   (isometryEquivBoundedOfCompact α β).completeSpace
 
-/-- See also `ContinuousMap.continuous_eval'`. -/
-@[continuity]
-theorem continuous_eval : Continuous fun p : C(α, β) × α => p.1 p.2 :=
-  continuous_eval.comp ((isometryEquivBoundedOfCompact α β).continuous.prod_map continuous_id)
-#align continuous_map.continuous_eval ContinuousMap.continuous_eval
-
 -- TODO at some point we will need lemmas characterising this norm!
 -- At the moment the only way to reason about it is to transfer `f : C(α,E)` back to `α →ᵇ E`.
 instance : Norm C(α, E) where norm x := dist x 0

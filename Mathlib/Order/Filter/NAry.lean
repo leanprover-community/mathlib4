@@ -36,19 +36,9 @@ variable {α α' β β' γ γ' δ δ' ε ε' : Type*} {m : α → β → γ} {f 
 
 /-- The image of a binary function `m : α → β → γ` as a function `Filter α → Filter β → Filter γ`.
 Mathematically this should be thought of as the image of the corresponding function `α × β → γ`. -/
-def map₂ (m : α → β → γ) (f : Filter α) (g : Filter β) : Filter γ
-    where
-  sets := { s | ∃ u v, u ∈ f ∧ v ∈ g ∧ image2 m u v ⊆ s }
-  univ_sets := ⟨univ, univ, univ_sets _, univ_sets _, subset_univ _⟩
-  sets_of_superset hs hst :=
-    Exists₂.imp (fun u v => And.imp_right <| And.imp_right fun h => Subset.trans h hst) hs
-  inter_sets := by
-    simp only [exists_prop, Set.mem_setOf_eq, subset_inter_iff]
-    rintro _ _ ⟨s₁, s₂, hs₁, hs₂, hs⟩ ⟨t₁, t₂, ht₁, ht₂, ht⟩
-    exact
-      ⟨s₁ ∩ t₁, s₂ ∩ t₂, inter_sets f hs₁ ht₁, inter_sets g hs₂ ht₂,
-        (image2_subset (inter_subset_left _ _) <| inter_subset_left _ _).trans hs,
-        (image2_subset (inter_subset_right _ _) <| inter_subset_right _ _).trans ht⟩
+def map₂ (m : α → β → γ) (f : Filter α) (g : Filter β) : Filter γ :=
+  ((f ×ˢ g).map (uncurry m)).copy { s | ∃ u v, u ∈ f ∧ v ∈ g ∧ image2 m u v ⊆ s } fun _ ↦ by
+    simp only [mem_map, mem_prod_iff, image2_subset_iff, prod_subset_iff, exists_and_left]; rfl
 #align filter.map₂ Filter.map₂
 
 @[simp 900]
@@ -62,8 +52,7 @@ theorem image2_mem_map₂ (hs : s ∈ f) (ht : t ∈ g) : image2 m s t ∈ map�
 
 theorem map_prod_eq_map₂ (m : α → β → γ) (f : Filter α) (g : Filter β) :
     Filter.map (fun p : α × β => m p.1 p.2) (f ×ˢ g) = map₂ m f g := by
-  ext s
-  simp [mem_prod_iff, prod_subset_iff]
+  rw [map₂, copy_eq]; rfl
 #align filter.map_prod_eq_map₂ Filter.map_prod_eq_map₂
 
 theorem map_prod_eq_map₂' (m : α × β → γ) (f : Filter α) (g : Filter β) :
@@ -159,8 +148,7 @@ theorem map₂_pure : map₂ m (pure a) (pure b) = pure (m a b) := by rw [map₂
 
 theorem map₂_swap (m : α → β → γ) (f : Filter α) (g : Filter β) :
     map₂ m f g = map₂ (fun a b => m b a) g f := by
-  ext u
-  constructor <;> rintro ⟨s, t, hs, ht, hu⟩ <;> refine' ⟨t, s, ht, hs, by rwa [image2_swap]⟩
+  rw [← map_prod_eq_map₂, prod_comm, map_map, ← map_prod_eq_map₂]; rfl
 #align filter.map₂_swap Filter.map₂_swap
 
 @[simp]
@@ -269,7 +257,7 @@ theorem map_map₂_right_comm {m : α → β' → γ} {n : β → β'} {m' : α 
   (map_map₂_distrib_right fun a b => (h_right_comm a b).symm).symm
 #align filter.map_map₂_right_comm Filter.map_map₂_right_comm
 
-/-- The other direction does not hold because of the `f`-`f` cross terms on the RHS. -/
+/-- The other direction does not hold because of the `f-f` cross terms on the RHS. -/
 theorem map₂_distrib_le_left {m : α → δ → ε} {n : β → γ → δ} {m₁ : α → β → β'} {m₂ : α → γ → γ'}
     {n' : β' → γ' → ε} (h_distrib : ∀ a b c, m a (n b c) = n' (m₁ a b) (m₂ a c)) :
     map₂ m f (map₂ n g h) ≤ map₂ n' (map₂ m₁ f g) (map₂ m₂ f h) := by

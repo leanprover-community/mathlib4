@@ -401,6 +401,14 @@ instance isScalarTower_mid' : IsScalarTower K S L :=
   S.isScalarTower_mid
 #align intermediate_field.is_scalar_tower_mid' IntermediateField.isScalarTower_mid'
 
+section shortcut_instances
+variable {E} [Field E] [Algebra L E] (T : IntermediateField S E) {S}
+instance : Algebra S T := T.algebra
+instance : Module S T := Algebra.toModule
+instance : SMul S T := Algebra.toSMul
+instance [Algebra K E] [IsScalarTower K L E] : IsScalarTower K S T := T.isScalarTower
+end shortcut_instances
+
 /-- Given `f : L →ₐ[K] L'`, `S.comap f` is the intermediate field between `K` and `L`
   such that `f x ∈ S ↔ x ∈ S.comap f`. -/
 def comap (f : L →ₐ[K] L') (S : IntermediateField K L') : IntermediateField K L where

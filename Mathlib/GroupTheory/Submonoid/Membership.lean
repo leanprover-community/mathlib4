@@ -580,7 +580,7 @@ theorem map_powers {N : Type*} {F : Type*} [Monoid N] [MonoidHomClass F M N] (f 
 @[to_additive
       "If all the elements of a set `s` commute, then `closure s` forms an additive
       commutative monoid."]
-def closureCommMonoidOfComm {s : Set M} (hcomm : ∀ (a) (_ : a ∈ s) (b) (_ : b ∈ s), a * b = b * a) :
+def closureCommMonoidOfComm {s : Set M} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) :
     CommMonoid (closure s) :=
   { (closure s).toMonoid with
     mul_comm := fun x y => by

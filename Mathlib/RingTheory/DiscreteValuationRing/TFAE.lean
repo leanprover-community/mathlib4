@@ -15,7 +15,7 @@ import Mathlib.RingTheory.Nakayama
 # Equivalent conditions for DVR
 
 In `DiscreteValuationRing.TFAE`, we show that the following are equivalent for a
-noetherian local domain `(R, m, k)`:
+noetherian local domain that is not a field `(R, m, k)`:
 - `R` is a discrete valuation ring
 - `R` is a valuation ring
 - `R` is a dedekind domain
@@ -24,20 +24,21 @@ noetherian local domain `(R, m, k)`:
 - `dimₖ m/m² = 1`
 - Every nonzero ideal is a power of `m`.
 
+Also see `tfae_of_isNoetherianRing_of_localRing_of_isDomain` for a version without `¬ IsField R`.
 -/
 
 
 variable (R : Type*) [CommRing R] (K : Type*) [Field K] [Algebra R K] [IsFractionRing R K]
 
-open scoped DiscreteValuation
+open scoped DiscreteValuation BigOperators
 
-open LocalRing
-
-open scoped BigOperators
+open LocalRing FiniteDimensional
 
 theorem exists_maximalIdeal_pow_eq_of_principal [IsNoetherianRing R] [LocalRing R] [IsDomain R]
-    (h : ¬IsField R) (h' : (maximalIdeal R).IsPrincipal) (I : Ideal R) (hI : I ≠ ⊥) :
+    (h' : (maximalIdeal R).IsPrincipal) (I : Ideal R) (hI : I ≠ ⊥) :
     ∃ n : ℕ, I = maximalIdeal R ^ n := by
+  by_cases h : IsField R;
+  · exact ⟨0, by simp [letI := h.toField; (eq_bot_or_eq_top I).resolve_left hI]⟩
   classical
   obtain ⟨x, hx : _ = Ideal.span _⟩ := h'
   by_cases hI' : I = ⊤
@@ -149,87 +150,42 @@ theorem maximalIdeal_isPrincipal_of_isDedekindDomain [LocalRing R] [IsDomain R]
     · rwa [Submodule.span_le, Set.singleton_subset_iff]
 #align maximal_ideal_is_principal_of_is_dedekind_domain maximalIdeal_isPrincipal_of_isDedekindDomain
 
-theorem DiscreteValuationRing.TFAE [IsNoetherianRing R] [LocalRing R] [IsDomain R]
-    (h : ¬IsField R) :
+/--
+Let `(R, m, k)` be a noetherian local domain (possibly a field).
+The following are equivalent:
+0. `R` is a PID
+1. `R` is a valuation ring
+2. `R` is a dedekind domain
+3. `R` is integrally closed with at most one non-zero prime ideal
+4. `m` is principal
+5. `dimₖ m/m² ≤ 1`
+6. Every nonzero ideal is a power of `m`.
+
+Also see `DiscreteValuationRing.TFAE` for a version assuming `¬ IsField R`.
+-/
+theorem tfae_of_isNoetherianRing_of_localRing_of_isDomain
+    [IsNoetherianRing R] [LocalRing R] [IsDomain R] :
     List.TFAE
-      [DiscreteValuationRing R, ValuationRing R, IsDedekindDomain R,
-        IsIntegrallyClosed R ∧ ∃! P : Ideal R, P ≠ ⊥ ∧ P.IsPrime, (maximalIdeal R).IsPrincipal,
-        FiniteDimensional.finrank (ResidueField R) (CotangentSpace R) = 1,
+      [IsPrincipalIdealRing R, ValuationRing R, IsDedekindDomain R,
+        IsIntegrallyClosed R ∧ ∀ P : Ideal R, P ≠ ⊥ → P.IsPrime → P = maximalIdeal R,
+        (maximalIdeal R).IsPrincipal,
+        finrank (ResidueField R) (CotangentSpace R) ≤ 1,
         ∀ (I) (_ : I ≠ ⊥), ∃ n : ℕ, I = maximalIdeal R ^ n] := by
-  have ne_bot := Ring.ne_bot_of_isMaximal_of_not_isField (maximalIdeal.isMaximal R) h
-  classical
-  rw [finrank_eq_one_iff']
   tfae_have 1 → 2
-  · intro; infer_instance
+  · exact fun _ ↦ inferInstance
   tfae_have 2 → 1
-  · intro
-    haveI := IsBezout.toGCDDomain R
-    haveI : UniqueFactorizationMonoid R := ufm_of_gcd_of_wfDvdMonoid
-    apply DiscreteValuationRing.of_ufd_of_unique_irreducible
-    · obtain ⟨x, hx₁, hx₂⟩ := Ring.exists_not_isUnit_of_not_isField h
-      obtain ⟨p, hp₁, -⟩ := WfDvdMonoid.exists_irreducible_factor hx₂ hx₁
-      exact ⟨p, hp₁⟩
-    · exact ValuationRing.unique_irreducible
+  · exact fun _ ↦ ((IsBezout.TFAE (R := R)).out 0 1).mp ‹_›
   tfae_have 1 → 4
   · intro H
-    exact ⟨inferInstance, ((DiscreteValuationRing.iff_pid_with_one_nonzero_prime R).mp H).2⟩
+    exact ⟨inferInstance, fun P hP hP' ↦ eq_maximalIdeal (hP'.isMaximal hP)⟩
   tfae_have 4 → 3
-  · rintro ⟨h₁, h₂⟩;
-    exact { h₁ with
-      maximalOfPrime := fun hI hI' => ExistsUnique.unique h₂ ⟨ne_bot, inferInstance⟩ ⟨hI, hI'⟩ ▸
-        maximalIdeal.isMaximal R, }
+  · exact fun ⟨h₁, h₂⟩ ↦ { h₁ with maximalOfPrime := (h₂ _ · · ▸ maximalIdeal.isMaximal R) }
   tfae_have 3 → 5
-  · intro h; exact maximalIdeal_isPrincipal_of_isDedekindDomain R
-  tfae_have 5 → 6
-  · rintro ⟨x, hx⟩
-    have : x ∈ maximalIdeal R := by rw [hx]; exact Submodule.subset_span (Set.mem_singleton x)
-    let x' : maximalIdeal R := ⟨x, this⟩
-    use Submodule.Quotient.mk x'
-    constructor
-    swap
-    · intro e
-      rw [Submodule.Quotient.mk_eq_zero] at e
-      apply Ring.ne_bot_of_isMaximal_of_not_isField (maximalIdeal.isMaximal R) h
-      apply Submodule.eq_bot_of_le_smul_of_le_jacobson_bot (maximalIdeal R)
-      · exact ⟨{x}, (Finset.coe_singleton x).symm ▸ hx.symm⟩
-      · conv_lhs => rw [hx]
-        rw [Submodule.mem_smul_top_iff] at e
-        rwa [Submodule.span_le, Set.singleton_subset_iff]
-      · rw [LocalRing.jacobson_eq_maximalIdeal (⊥ : Ideal R) bot_ne_top]
-    · refine' fun w => Quotient.inductionOn' w fun y => _
-      obtain ⟨y, hy⟩ := y
-      rw [hx, Submodule.mem_span_singleton] at hy
-      obtain ⟨a, rfl⟩ := hy
-      exact ⟨Ideal.Quotient.mk _ a, rfl⟩
-  tfae_have 6 → 5
-  · rintro ⟨x, hx, hx'⟩
-    induction x using Quotient.inductionOn' with | h x => ?_
-    use x
-    apply le_antisymm
-    swap; · rw [Submodule.span_le, Set.singleton_subset_iff]; exact x.prop
-    have h₁ :
-      (Ideal.span {(x : R)} : Ideal R) ⊔ maximalIdeal R ≤
-        Ideal.span {(x : R)} ⊔ maximalIdeal R • maximalIdeal R := by
-      refine' sup_le le_sup_left _
-      rintro m hm
-      obtain ⟨c, hc⟩ := hx' (Submodule.Quotient.mk ⟨m, hm⟩)
-      induction c using Quotient.inductionOn' with | h c => ?_
-      rw [← sub_sub_cancel (c * x) m]
-      apply sub_mem _ _
-      · refine' Ideal.mem_sup_left (Ideal.mem_span_singleton'.mpr ⟨c, rfl⟩)
-      · have := (Submodule.Quotient.eq _).mp hc
-        rw [Submodule.mem_smul_top_iff] at this
-        exact Ideal.mem_sup_right this
-    have h₂ : maximalIdeal R ≤ (⊥ : Ideal R).jacobson := by
-      rw [LocalRing.jacobson_eq_maximalIdeal]
-      exact bot_ne_top
-    have :=
-      Submodule.sup_smul_eq_sup_smul_of_le_smul_of_le_jacobson (IsNoetherian.noetherian _) h₂ h₁
-    rw [Submodule.bot_smul, sup_bot_eq] at this
-    rw [← sup_eq_left, eq_comm]
-    exact le_sup_left.antisymm (h₁.trans <| le_of_eq this)
+  · exact fun h ↦ maximalIdeal_isPrincipal_of_isDedekindDomain R
+  tfae_have 6 ↔ 5
+  · exact finrank_cotangentSpace_le_one_iff
   tfae_have 5 → 7
-  · exact exists_maximalIdeal_pow_eq_of_principal R h
+  · exact exists_maximalIdeal_pow_eq_of_principal R
   tfae_have 7 → 2
   · rw [ValuationRing.iff_ideal_total]
     intro H
@@ -249,4 +205,54 @@ theorem DiscreteValuationRing.TFAE [IsNoetherianRing R] [LocalRing R] [IsDomain 
     · left; exact Ideal.pow_le_pow_right h'
     · right; exact Ideal.pow_le_pow_right h'
   tfae_finish
+
+/--
+The following are equivalent for a
+noetherian local domain that is not a field `(R, m, k)`:
+0. `R` is a discrete valuation ring
+1. `R` is a valuation ring
+2. `R` is a dedekind domain
+3. `R` is integrally closed with a unique non-zero prime ideal
+4. `m` is principal
+5. `dimₖ m/m² = 1`
+6. Every nonzero ideal is a power of `m`.
+
+Also see `tfae_of_isNoetherianRing_of_localRing_of_isDomain` for a version without `¬ IsField R`.
+-/
+theorem DiscreteValuationRing.TFAE [IsNoetherianRing R] [LocalRing R] [IsDomain R]
+    (h : ¬IsField R) :
+    List.TFAE
+      [DiscreteValuationRing R, ValuationRing R, IsDedekindDomain R,
+        IsIntegrallyClosed R ∧ ∃! P : Ideal R, P ≠ ⊥ ∧ P.IsPrime, (maximalIdeal R).IsPrincipal,
+        finrank (ResidueField R) (CotangentSpace R) = 1,
+        ∀ (I) (_ : I ≠ ⊥), ∃ n : ℕ, I = maximalIdeal R ^ n] := by
+  have : finrank (ResidueField R) (CotangentSpace R) = 1 ↔
+    finrank (ResidueField R) (CotangentSpace R) ≤ 1
+  · simp [Nat.le_one_iff_eq_zero_or_eq_one, finrank_cotangentSpace_eq_zero_iff, h]
+  rw [this]
+  have : maximalIdeal R ≠ ⊥ := isField_iff_maximalIdeal_eq.not.mp h
+  convert tfae_of_isNoetherianRing_of_localRing_of_isDomain R
+  · exact ⟨fun _ ↦ inferInstance, fun h ↦ { h with not_a_field' := this }⟩
+  · exact ⟨fun h P h₁ h₂ ↦ h.unique ⟨h₁, h₂⟩ ⟨this, inferInstance⟩,
+      fun H ↦ ⟨_, ⟨this, inferInstance⟩, fun P hP ↦ H P hP.1 hP.2⟩⟩
 #align discrete_valuation_ring.tfae DiscreteValuationRing.TFAE
+
+variable {R}
+
+lemma LocalRing.finrank_CotangentSpace_eq_one_iff [IsNoetherianRing R] [LocalRing R] [IsDomain R] :
+    finrank (ResidueField R) (CotangentSpace R) = 1 ↔ DiscreteValuationRing R := by
+  by_cases hR : IsField R
+  · letI := hR.toField
+    simp only [finrank_cotangentSpace_eq_zero, zero_ne_one, false_iff]
+    exact fun h ↦ h.3 maximalIdeal_eq_bot
+  · exact (DiscreteValuationRing.TFAE R hR).out 5 0
+
+variable (R)
+
+lemma LocalRing.finrank_CotangentSpace_eq_one [IsDomain R] [DiscreteValuationRing R] :
+    finrank (ResidueField R) (CotangentSpace R) = 1 :=
+  finrank_CotangentSpace_eq_one_iff.mpr ‹_›
+
+instance (priority := 100) IsDedekindDomain.isPrincipalIdealRing
+    [LocalRing R] [IsDedekindDomain R] :
+    IsPrincipalIdealRing R := ((tfae_of_isNoetherianRing_of_localRing_of_isDomain R).out 2 0).mp ‹_›

@@ -541,7 +541,7 @@ instance : Module R (HahnSeries Γ V) :=
 
 /-- `single` as a linear map -/
 @[simps]
-def single.linearMap (a : Γ) : R →ₗ[R] HahnSeries Γ R :=
+def single.linearMap (a : Γ) : V →ₗ[R] HahnSeries Γ V :=
   { single.addMonoidHom a with
     map_smul' := fun r s => by
       ext b
@@ -550,7 +550,7 @@ def single.linearMap (a : Γ) : R →ₗ[R] HahnSeries Γ R :=
 
 /-- `coeff g` as a linear map -/
 @[simps]
-def coeff.linearMap (g : Γ) : HahnSeries Γ R →ₗ[R] R :=
+def coeff.linearMap (g : Γ) : HahnSeries Γ V →ₗ[R] V :=
   { coeff.addMonoidHom g with map_smul' := fun _ _ => rfl }
 #align hahn_series.coeff.linear_map HahnSeries.coeff.linearMap
 

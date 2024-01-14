@@ -185,7 +185,7 @@ theorem of_exponent_ge {p q : ℝ≥0∞} {f : ∀ i, E i} (hfq : Memℓp f q) (
     · simp [hi]
     · exact (hC ⟨i, hi, rfl⟩).trans (le_max_right _ _)
   · apply memℓp_gen
-    have : ∀ (i) (_ : i ∉ hfq.finite_dsupport.toFinset), ‖f i‖ ^ p.toReal = 0 := by
+    have : ∀ i ∉ hfq.finite_dsupport.toFinset, ‖f i‖ ^ p.toReal = 0 := by
       intro i hi
       have : f i = 0 := by simpa using hi
       simp [this, Real.zero_rpow hp.ne']
@@ -1039,8 +1039,7 @@ protected theorem norm_sum_single (hp : 0 < p.toReal) (f : ∀ i, E i) (s : Fins
     ‖∑ i in s, lp.single p i (f i)‖ ^ p.toReal = ∑ i in s, ‖f i‖ ^ p.toReal := by
   refine' (hasSum_norm hp (∑ i in s, lp.single p i (f i))).unique _
   simp only [lp.single_apply, coeFn_sum, Finset.sum_apply, Finset.sum_dite_eq]
-  have h : ∀ (i) (_ : i ∉ s), ‖ite (i ∈ s) (f i) 0‖ ^ p.toReal = 0 := by
-    intro i hi
+  have h : ∀ i ∉ s, ‖ite (i ∈ s) (f i) 0‖ ^ p.toReal = 0 := fun i hi ↦ by
     simp [if_neg hi, Real.zero_rpow hp.ne']
   have h' : ∀ i ∈ s, ‖f i‖ ^ p.toReal = ‖ite (i ∈ s) (f i) 0‖ ^ p.toReal := by
     intro i hi

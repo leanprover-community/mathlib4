@@ -216,10 +216,12 @@ theorem finrank_eq_card_basis' [FiniteDimensional K V] {ι : Type w} (h : Basis 
   Module.mk_finrank_eq_card_basis h
 #align finite_dimensional.finrank_eq_card_basis' FiniteDimensional.finrank_eq_card_basis'
 
-theorem lt_aleph0_of_linearIndependent {ι : Type w} [FiniteDimensional K V] {v : ι → V}
-    (h : LinearIndependent K v) : #ι < ℵ₀ :=
-  Module.Finite.lt_aleph0_of_linearIndependent h
-#align finite_dimensional.lt_aleph_0_of_linear_independent FiniteDimensional.lt_aleph0_of_linearIndependent
+theorem _root_.LinearIndependent.lt_aleph0_of_finiteDimensional {ι : Type w} [FiniteDimensional K V]
+    {v : ι → V} (h : LinearIndependent K v) : #ι < ℵ₀ :=
+  h.lt_aleph0_of_finite
+#align finite_dimensional.lt_aleph_0_of_linear_independent LinearIndependent.lt_aleph0_of_finiteDimensional
+@[deprecated] alias
+lt_aleph0_of_linearIndependent := LinearIndependent.lt_aleph0_of_finiteDimensional
 
 /-- If a submodule has maximal dimension in a finite dimensional space, then it is equal to the
 whole space. -/

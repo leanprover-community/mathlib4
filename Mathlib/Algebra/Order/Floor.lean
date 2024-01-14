@@ -1108,7 +1108,7 @@ section LinearOrderedField
 variable {k : Type*} [LinearOrderedField k] [FloorRing k] {b : k}
 
 theorem fract_div_mul_self_mem_Ico (a b : k) (ha : 0 < a) : fract (b / a) * a ∈ Ico 0 a :=
-  ⟨(zero_le_mul_right ha).2 (fract_nonneg (b / a)),
+  ⟨(mul_nonneg_iff_of_pos_right ha).2 (fract_nonneg (b / a)),
     (mul_lt_iff_lt_one_left ha).2 (fract_lt_one (b / a))⟩
 #align int.fract_div_mul_self_mem_Ico Int.fract_div_mul_self_mem_Ico
 
@@ -1538,7 +1538,7 @@ theorem abs_sub_round_eq_min (x : α) : |x - round x| = min (fract x) (1 - fract
   · rw [if_pos hx, if_pos hx, self_sub_floor, abs_fract]
   · have : 0 < fract x := by
       replace hx : 0 < fract x + fract x := lt_of_lt_of_le zero_lt_one (tsub_le_iff_left.mp hx)
-      simpa only [← two_mul, zero_lt_mul_left, zero_lt_two] using hx
+      simpa only [← two_mul, mul_pos_iff_of_pos_left, zero_lt_two] using hx
     rw [if_neg (not_lt.mpr hx), if_neg (not_lt.mpr hx), abs_sub_comm, ceil_sub_self_eq this.ne.symm,
       abs_one_sub_fract]
 #align abs_sub_round_eq_min abs_sub_round_eq_min

@@ -458,3 +458,27 @@ theorem map_sub_swap (x y : R) : f (x - y) = f (y - x) := by rw [← map_neg, ne
 #align monoid_hom.map_sub_swap MonoidHom.map_sub_swap
 
 end MonoidHom
+
+/-!
+### Deprecated lemmas
+
+Those lemmas have been deprecated on 2023-12-23.
+-/
+
+@[deprecated] alias pow_mono := pow_right_mono
+@[deprecated] alias pow_le_pow := pow_le_pow_right
+@[deprecated] alias pow_le_pow_of_le_left := pow_le_pow_left
+@[deprecated] alias pow_lt_pow_of_lt_left := pow_lt_pow_left
+@[deprecated] alias strictMonoOn_pow := pow_left_strictMonoOn
+@[deprecated] alias pow_strictMono_right := pow_right_strictMono
+@[deprecated] alias pow_lt_pow := pow_lt_pow_right
+@[deprecated] alias pow_lt_pow_iff := pow_lt_pow_iff_right
+@[deprecated] alias pow_le_pow_iff := pow_le_pow_iff_right
+@[deprecated] alias self_lt_pow := lt_self_pow
+@[deprecated] alias strictAnti_pow := pow_right_strictAnti
+@[deprecated] alias pow_lt_pow_iff_of_lt_one := pow_lt_pow_iff_right_of_lt_one
+@[deprecated] alias pow_lt_pow_of_lt_one := pow_lt_pow_right_of_lt_one
+@[deprecated] alias lt_of_pow_lt_pow := lt_of_pow_lt_pow_left
+@[deprecated] alias le_of_pow_le_pow := le_of_pow_le_pow_left
+@[deprecated] alias pow_lt_pow₀ := pow_lt_pow_right₀
+@[deprecated] alias self_le_pow := le_self_pow

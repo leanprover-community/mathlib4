@@ -77,7 +77,7 @@ theorem prod_congr (f g : α → M) (h : ∀ a, f a = g a) : ∏ a, f a = ∏ a,
 #align fintype.sum_congr Fintype.sum_congr
 
 @[to_additive]
-theorem prod_eq_single {f : α → M} (a : α) (h : ∀ (x) (_ : x ≠ a), f x = 1) : ∏ x, f x = f a :=
+theorem prod_eq_single {f : α → M} (a : α) (h : ∀ x ≠ a, f x = 1) : ∏ x, f x = f a :=
   Finset.prod_eq_single a (fun x _ hx => h x hx) fun ha => (ha (Finset.mem_univ a)).elim
 #align fintype.prod_eq_single Fintype.prod_eq_single
 #align fintype.sum_eq_single Fintype.sum_eq_single
@@ -267,7 +267,7 @@ theorem Fintype.prod_fiberwise [Fintype α] [DecidableEq β] [Fintype β] [CommM
 #align fintype.sum_fiberwise Fintype.sum_fiberwise
 
 nonrec theorem Fintype.prod_dite [Fintype α] {p : α → Prop} [DecidablePred p] [CommMonoid β]
-    (f : ∀ (a : α) (_ha : p a), β) (g : ∀ (a : α) (_ha : ¬p a), β) :
+    (f : ∀ a, p a → β) (g : ∀ a, ¬p a → β) :
     (∏ a, dite (p a) (f a) (g a)) =
     (∏ a : { a // p a }, f a a.2) * ∏ a : { a // ¬p a }, g a a.2 := by
   simp only [prod_dite, attach_eq_univ]

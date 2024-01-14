@@ -290,9 +290,15 @@ theorem isTopologicalBasis_of_cover {ι} {U : ι → Set α} (Uo : ∀ i, IsOpen
       image_subset_iff.2 hvu⟩
 #align topological_space.is_topological_basis_of_cover TopologicalSpace.isTopologicalBasis_of_cover
 
+protected theorem IsTopologicalBasis.continuous_iff {β : Type*} [TopologicalSpace β]
+    {B : Set (Set β)} (hB : IsTopologicalBasis B) {f : α → β} :
+    Continuous f ↔ ∀ s ∈ B, IsOpen (f ⁻¹' s) := by
+  rw [hB.eq_generateFrom, continuous_generateFrom_iff]
+
+@[deprecated]
 protected theorem IsTopologicalBasis.continuous {β : Type*} [TopologicalSpace β] {B : Set (Set β)}
-    (hB : IsTopologicalBasis B) (f : α → β) (hf : ∀ s ∈ B, IsOpen (f ⁻¹' s)) : Continuous f := by
-  rw [hB.eq_generateFrom]; exact continuous_generateFrom hf
+    (hB : IsTopologicalBasis B) (f : α → β) (hf : ∀ s ∈ B, IsOpen (f ⁻¹' s)) : Continuous f :=
+  hB.continuous_iff.2 hf
 #align topological_space.is_topological_basis.continuous TopologicalSpace.IsTopologicalBasis.continuous
 
 variable (α)
