@@ -30,7 +30,7 @@ def toUnits [Group G] : G ≃* Gˣ where
 #align coe_to_add_units val_toAddUnits_apply
 
 @[to_additive (attr := simp)]
-lemma toUnits_coe {G : Type*} [Group G] (x : Gˣ) : toUnits (x : G) = x := by
+lemma toUnits_val_apply {G : Type*} [Group G] (x : Gˣ) : toUnits (x : G) = x := by
   simp_rw [MulEquiv.apply_eq_iff_symm_apply, toUnits_symm_apply]
 
 namespace Units

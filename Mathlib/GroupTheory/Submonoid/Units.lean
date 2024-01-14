@@ -94,22 +94,22 @@ lemma mem_units_iff (S : Submonoid M) (x : Mˣ) : x ∈ S.units ↔
     ((x : M) ∈ S ∧ ((x⁻¹ : Mˣ) : M) ∈ S) := Iff.rfl
 
 @[to_additive]
-lemma mem_units_of_coe_mem_coe_inv_mem (S : Submonoid M) {x : Mˣ} (h₁ : (x : M) ∈ S)
+lemma mem_units_of_val_mem_inv_val_mem (S : Submonoid M) {x : Mˣ} (h₁ : (x : M) ∈ S)
     (h₂ : ((x⁻¹ : Mˣ) : M) ∈ S) : x ∈ S.units := ⟨h₁, h₂⟩
 
 @[to_additive]
-lemma coe_mem_of_mem_units (S : Submonoid M) {x : Mˣ} (h : x ∈ S.units) : (x : M) ∈ S := h.1
+lemma val_mem_of_mem_units (S : Submonoid M) {x : Mˣ} (h : x ∈ S.units) : (x : M) ∈ S := h.1
 
 @[to_additive]
-lemma coe_inv_mem_of_mem_units (S : Submonoid M) {x : Mˣ} (h : x ∈ S.units) :
+lemma inv_val_mem_of_mem_units (S : Submonoid M) {x : Mˣ} (h : x ∈ S.units) :
     ((x⁻¹ : Mˣ) : M) ∈ S := h.2
 
 @[to_additive]
-lemma coe_coe_inv_mul_coe_coe (S : Submonoid M) {x : Sˣ} :
+lemma coe_inv_val_mul_coe_val (S : Submonoid M) {x : Sˣ} :
     ((x⁻¹ : Sˣ) : M) * ((x : Sˣ) : M) = 1 := congrArg ((↑) : S → M) (inv_mul _)
 
 @[to_additive]
-lemma coe_coe_mul_coe_coe_inv (S : Submonoid M) {x : Sˣ} :
+lemma coe_val_mul_coe_inv_val (S : Submonoid M) {x : Sˣ} :
     ((x : Sˣ) : M) * ((x⁻¹ : Sˣ) : M) = 1 := congrArg ((↑) : S → M) (mul_inv _)
 
 @[to_additive]
@@ -135,7 +135,7 @@ lemma inv_mem_units_iff (S : Submonoid M) {x : Mˣ} : x⁻¹ ∈ S.units ↔ x �
 `S` and the type of additive units of `S`. "]
 def unitsEquivUnitsType (S : Submonoid M) : S.units ≃* Sˣ where
   toFun := fun x => ⟨⟨_, x.2.1⟩, ⟨_, x.2.2⟩, S.mk_mul_mk_inv_eq_one x.2, S.mk_inv_mul_mk_eq_one x.2⟩
-  invFun := fun x => ⟨⟨_, _, S.coe_coe_mul_coe_coe_inv, S.coe_coe_inv_mul_coe_coe⟩, ⟨x.1.2, x.2.2⟩⟩
+  invFun := fun x => ⟨⟨_, _, S.coe_val_mul_coe_inv_val, S.coe_inv_val_mul_coe_val⟩, ⟨x.1.2, x.2.2⟩⟩
   left_inv := fun _ => rfl
   right_inv := fun _ => rfl
   map_mul' := fun _ _ => rfl
@@ -193,11 +193,11 @@ lemma mem_ofUnits (S : Subgroup Mˣ) {x : M} {y : Mˣ} (h₁ : y ∈ S) (h₂ : 
   ⟨_, h₁, h₂⟩
 
 @[to_additive]
-lemma exists_unit_coe_eq_mem_ofUnits (S : Subgroup Mˣ) {x : M} (h : x ∈ S.ofUnits) :
+lemma exists_mem_ofUnits_val_eq (S : Subgroup Mˣ) {x : M} (h : x ∈ S.ofUnits) :
     ∃ y ∈ S, y = x := h
 
 @[to_additive]
-lemma mem_of_mem_coe_ofUnits (S : Subgroup Mˣ) {y : Mˣ} (hy : (y : M) ∈ S.ofUnits ) : y ∈ S :=
+lemma mem_of_mem_val_ofUnits (S : Subgroup Mˣ) {y : Mˣ} (hy : (y : M) ∈ S.ofUnits ) : y ∈ S :=
   match hy with
   | ⟨_, hm, he⟩ => (Units.ext he) ▸ hm
 
@@ -215,16 +215,16 @@ noncomputable def unit_of_mem_ofUnits (S : Subgroup Mˣ) {x : M} (h : x ∈ S.of
 (Classical.choose h).copy x (Classical.choose_spec h).2.symm _ rfl
 
 @[to_additive]
-lemma unit_of_mem_ofUnits_spec_eq_of_coe_mem (S : Subgroup Mˣ) {x : Mˣ} (h : (x : M) ∈ S.ofUnits) :
+lemma unit_of_mem_ofUnits_spec_eq_of_val_mem (S : Subgroup Mˣ) {x : Mˣ} (h : (x : M) ∈ S.ofUnits) :
     S.unit_of_mem_ofUnits h = x := Units.ext rfl
 
 @[to_additive]
-lemma unit_of_mem_ofUnits_spec_coe_eq_of_mem (S : Subgroup Mˣ) {x : M} (h : x ∈ S.ofUnits) :
+lemma unit_of_mem_ofUnits_spec_val_eq_of_mem (S : Subgroup Mˣ) {x : M} (h : x ∈ S.ofUnits) :
     S.unit_of_mem_ofUnits h = x := rfl
 
 @[to_additive]
 lemma unit_of_mem_ofUnits_spec_mem (S : Subgroup Mˣ) {x : M} {h : x ∈ S.ofUnits} :
-    S.unit_of_mem_ofUnits h ∈ S := S.mem_of_mem_coe_ofUnits h
+    S.unit_of_mem_ofUnits h ∈ S := S.mem_of_mem_val_ofUnits h
 
 @[to_additive]
 lemma unit_eq_unit_of_mem_ofUnits (S : Subgroup Mˣ) {x : M} (h₁ : IsUnit x)
@@ -309,7 +309,7 @@ noncomputable def ofUnitsTopEquiv : (⊤ : Subgroup Mˣ).ofUnits ≃* Mˣ :=
 variable {G : Type*}  [Group G]
 
 @[to_additive]
-lemma mem_units_iff_coe_mem (H : Subgroup G) (x : Gˣ): x ∈ H.units ↔ (x : G) ∈ H := by
+lemma mem_units_iff_val_mem (H : Subgroup G) (x : Gˣ): x ∈ H.units ↔ (x : G) ∈ H := by
   simp_rw [Submonoid.mem_units_iff, mem_toSubmonoid, val_inv_eq_inv_val, inv_mem_iff,
   and_self]
 
@@ -319,11 +319,11 @@ lemma mem_ofUnits_iff_toUnits_mem (H : Subgroup Gˣ) (x : G): x ∈ H.ofUnits �
 
 @[to_additive (attr := simp)]
 lemma mem_iff_toUnits_mem_units (H : Subgroup G) (x : G) : toUnits x ∈ H.units ↔ x ∈ H := by
-  simp_rw [mem_units_iff_coe_mem, val_toUnits_apply]
+  simp_rw [mem_units_iff_val_mem, val_toUnits_apply]
 
 @[to_additive (attr := simp)]
-lemma coe_mem_ofUnits_iff_mem (H : Subgroup Gˣ) (x : Gˣ) : (x : G) ∈ H.ofUnits ↔ x ∈ H := by
-  simp_rw [mem_ofUnits_iff_toUnits_mem, toUnits_coe]
+lemma val_mem_ofUnits_iff_mem (H : Subgroup Gˣ) (x : Gˣ) : (x : G) ∈ H.ofUnits ↔ x ∈ H := by
+  simp_rw [mem_ofUnits_iff_toUnits_mem, toUnits_val_apply]
 
 /-- The equivalence between the greatest subgroup of units contained within `T` and `T` itself. -/
 @[to_additive " The equivalence between the greatest subgroup of additive units
