@@ -15,7 +15,8 @@ topological spaces.
 
 ## Main definitions
 
-* `CompactOpen` is the compact-open topology on `C(X, Y)`. It is declared as an instance.
+* `ContinuousMap.compactOpen` is the compact-open topology on `C(X, Y)`.
+  It is declared as an instance.
 * `ContinuousMap.coev` is the coevaluation map `Y → C(X, Y × X)`. It is always continuous.
 * `ContinuousMap.curry` is the currying map `C(X × Y, Z) → C(X, C(Y, Z))`. This map always exists
   and it is continuous as long as `X × Y` is locally compact.
@@ -39,9 +40,8 @@ namespace ContinuousMap
 
 section CompactOpen
 
-variable {X : Type*} {Y : Type*} {Z : Type*}
-
-variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
+variable {α X Y Z : Type*}
+variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] {K : Set X} {U : Set Y}
 
 /-- A generating set for the compact-open topology (when `s` is compact and `u` is open). -/
 def CompactOpen.gen (s : Set X) (u : Set Y) : Set C(X, Y) :=
@@ -90,15 +90,15 @@ protected theorem isOpen_gen {s : Set X} (hs : IsCompact s) {u : Set Y} (hu : Is
   TopologicalSpace.GenerateOpen.basic _ (by dsimp [mem_setOf_eq]; tauto)
 #align continuous_map.is_open_gen ContinuousMap.isOpen_gen
 
-lemma isOpen_setOf_mapsTo {K : Set X} (hK : IsCompact K) {U : Set Y} (hU : IsOpen U) :
+lemma isOpen_setOf_mapsTo (hK : IsCompact K) (hU : IsOpen U) :
     IsOpen {f : C(X, Y) | MapsTo f K U} := by
   simpa only [mapsTo'] using ContinuousMap.isOpen_gen hK hU
 
-lemma eventually_mapsTo {f : C(X, Y)} {K U} (hK : IsCompact K) (hU : IsOpen U) (h : MapsTo f K U) :
+lemma eventually_mapsTo {f : C(X, Y)} (hK : IsCompact K) (hU : IsOpen U) (h : MapsTo f K U) :
     ∀ᶠ g : C(X, Y) in 𝓝 f, MapsTo g K U :=
   (isOpen_setOf_mapsTo hK hU).mem_nhds h
 
-lemma tendsto_nhds_compactOpen {α : Type*} {l : Filter α} {f : α → C(Y, Z)} {g : C(Y, Z)} :
+lemma tendsto_nhds_compactOpen {l : Filter α} {f : α → C(Y, Z)} {g : C(Y, Z)} :
     Tendsto f l (𝓝 g) ↔
       ∀ K, IsCompact K → ∀ U, IsOpen U → MapsTo g K U → ∀ᶠ a in l, MapsTo (f a) K U := by
   simp_rw [compactOpen_eq, tendsto_nhds_generateFrom_iff, forall_image2_iff, mapsTo']; rfl
@@ -214,7 +214,7 @@ lemma isClosed_setOf_mapsTo {t : Set Y} (ht : IsClosed t) (s : Set X) :
     IsClosed {f : C(X, Y) | MapsTo f s t} :=
   ht.setOf_mapsTo fun _ _ ↦ continuous_eval_const _
 
-lemma isClopen_setOf_mapsTo {K : Set X} (hK : IsCompact K) {U : Set Y} (hU : IsClopen U) :
+lemma isClopen_setOf_mapsTo (hK : IsCompact K) (hU : IsClopen U) :
     IsClopen {f : C(X, Y) | MapsTo f K U} :=
   ⟨isOpen_setOf_mapsTo hK hU.isOpen, isClosed_setOf_mapsTo hU.isClosed K⟩
 
