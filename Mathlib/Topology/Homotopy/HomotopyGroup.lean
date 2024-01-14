@@ -214,7 +214,7 @@ def toLoop (i : N) (p : Ω^ N X x) : Ω (Ω^ { j // j ≠ i } X x) const
 theorem continuous_toLoop (i : N) : Continuous (@toLoop N X _ x _ i) :=
   Path.continuous_uncurry_iff.1 <|
     Continuous.subtype_mk
-      (ContinuousMap.continuous_eval'.comp <|
+      (ContinuousMap.continuous_eval.comp <|
         Continuous.prod_map
           (ContinuousMap.continuous_curry.comp <|
             (ContinuousMap.continuous_comp_left _).comp continuous_subtype_val)

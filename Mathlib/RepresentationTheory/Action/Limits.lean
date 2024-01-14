@@ -19,7 +19,7 @@ We show:
 * When `V` is preadditive, linear, or abelian so is `Action V G`.
 -/
 
-universe u v
+universe u v w₁ w₂ t₁ t₂
 
 open CategoryTheory Limits
 
@@ -40,10 +40,166 @@ instance [HasFiniteLimits V] : HasFiniteLimits (Action V G) where
 instance [HasLimits V] : HasLimits (Action V G) :=
   Adjunction.has_limits_of_equivalence (Action.functorCategoryEquivalence _ _).functor
 
+/-- If `V` has limits of shape `J`, so does `Action V G`.-/
+instance hasLimitsOfShape {J : Type w₁} [Category.{w₂} J] [HasLimitsOfShape J V] :
+    HasLimitsOfShape J (Action V G) :=
+  Adjunction.hasLimitsOfShape_of_equivalence (Action.functorCategoryEquivalence _ _).functor
+
+instance [HasFiniteCoproducts V] : HasFiniteCoproducts (Action V G) where
+  out _ :=
+    Adjunction.hasColimitsOfShape_of_equivalence (Action.functorCategoryEquivalence _ _).functor
+
+instance [HasFiniteColimits V] : HasFiniteColimits (Action V G) where
+  out _ _ _ :=
+    Adjunction.hasColimitsOfShape_of_equivalence (Action.functorCategoryEquivalence _ _).functor
+
 instance [HasColimits V] : HasColimits (Action V G) :=
   Adjunction.has_colimits_of_equivalence (Action.functorCategoryEquivalence _ _).functor
 
+/-- If `V` has colimits of shape `J`, so does `Action V G`.-/
+instance hasColimitsOfShape {J : Type w₁} [Category.{w₂} J]
+    [HasColimitsOfShape J V] : HasColimitsOfShape J (Action V G) :=
+  Adjunction.hasColimitsOfShape_of_equivalence (Action.functorCategoryEquivalence _ _).functor
+
 end Limits
+
+section Preservation
+
+variable {C : Type t₁} [Category.{t₂} C]
+
+/-- `F : C ⥤ SingleObj G ⥤ V` preserves the limit of some `K : J ⥤ C` if it does
+evaluated at `SingleObj.star G`.-/
+private def SingleObj.preservesLimit (F : C ⥤ SingleObj G ⥤ V)
+    {J : Type w₁} [Category.{w₂} J] (K : J ⥤ C)
+    (h : PreservesLimit K (F ⋙ (evaluation (SingleObj G) V).obj (SingleObj.star G))) :
+    PreservesLimit K F := by
+  apply preservesLimitOfEvaluation
+  intro _
+  exact h
+
+/-- `F : C ⥤ Action V G` preserves the limit of some `K : J ⥤ C` if
+if it does after postcomposing with the forgetful functor `Action V G ⥤ V`. -/
+def preservesLimitOfPreserves (F : C ⥤ Action V G) {J : Type w₁}
+    [Category.{w₂} J] (K : J ⥤ C)
+    (h : PreservesLimit K (F ⋙ Action.forget V G)) : PreservesLimit K F := by
+  let F' : C ⥤ SingleObj G ⥤ V := F ⋙ (Action.functorCategoryEquivalence V G).functor
+  have : PreservesLimit K F' := SingleObj.preservesLimit _ _ h
+  apply preservesLimitOfReflectsOfPreserves F (Action.functorCategoryEquivalence V G).functor
+
+/-- `F : C ⥤ Action V G` preserves limits of some shape `J`
+if it does after postcomposing with the forgetful functor `Action V G ⥤ V`. -/
+def preservesLimitsOfShapeOfPreserves (F : C ⥤ Action V G) {J : Type w₁}
+    [Category.{w₂} J] (h : PreservesLimitsOfShape J (F ⋙ Action.forget V G)) :
+    PreservesLimitsOfShape J F := by
+  constructor
+  intro K
+  apply Action.preservesLimitOfPreserves
+  exact PreservesLimitsOfShape.preservesLimit
+
+/-- `F : C ⥤ Action V G` preserves limits of some size
+if it does after postcomposing with the forgetful functor `Action V G ⥤ V`. -/
+def preservesLimitsOfSizeOfPreserves (F : C ⥤ Action V G)
+    (h : PreservesLimitsOfSize.{w₂, w₁} (F ⋙ Action.forget V G)) :
+    PreservesLimitsOfSize.{w₂, w₁} F := by
+  constructor
+  intro J _
+  apply Action.preservesLimitsOfShapeOfPreserves
+  exact PreservesLimitsOfSize.preservesLimitsOfShape
+
+/-- `F : C ⥤ SingleObj G ⥤ V` preserves the colimit of some `K : J ⥤ C` if it does
+evaluated at `SingleObj.star G`.-/
+private def SingleObj.preservesColimit (F : C ⥤ SingleObj G ⥤ V)
+    {J : Type w₁} [Category.{w₂} J] (K : J ⥤ C)
+    (h : PreservesColimit K (F ⋙ (evaluation (SingleObj G) V).obj (SingleObj.star G))) :
+    PreservesColimit K F := by
+  apply preservesColimitOfEvaluation
+  intro _
+  exact h
+
+/-- `F : C ⥤ Action V G` preserves the colimit of some `K : J ⥤ C` if
+if it does after postcomposing with the forgetful functor `Action V G ⥤ V`. -/
+def preservesColimitOfPreserves (F : C ⥤ Action V G) {J : Type w₁}
+    [Category.{w₂} J] (K : J ⥤ C)
+    (h : PreservesColimit K (F ⋙ Action.forget V G)) : PreservesColimit K F := by
+  let F' : C ⥤ SingleObj G ⥤ V := F ⋙ (Action.functorCategoryEquivalence V G).functor
+  have : PreservesColimit K F' := SingleObj.preservesColimit _ _ h
+  apply preservesColimitOfReflectsOfPreserves F (Action.functorCategoryEquivalence V G).functor
+
+/-- `F : C ⥤ Action V G` preserves colimits of some shape `J`
+if it does after postcomposing with the forgetful functor `Action V G ⥤ V`. -/
+def preservesColimitsOfShapeOfPreserves (F : C ⥤ Action V G) {J : Type w₁}
+    [Category.{w₂} J] (h : PreservesColimitsOfShape J (F ⋙ Action.forget V G)) :
+    PreservesColimitsOfShape J F := by
+  constructor
+  intro K
+  apply Action.preservesColimitOfPreserves
+  exact PreservesColimitsOfShape.preservesColimit
+
+/-- `F : C ⥤ Action V G` preserves colimits of some size
+if it does after postcomposing with the forgetful functor `Action V G ⥤ V`. -/
+def preservesColimitsOfSizeOfPreserves (F : C ⥤ Action V G)
+    (h : PreservesColimitsOfSize.{w₂, w₁} (F ⋙ Action.forget V G)) :
+    PreservesColimitsOfSize.{w₂, w₁} F := by
+  constructor
+  intro J _
+  apply Action.preservesColimitsOfShapeOfPreserves
+  exact PreservesColimitsOfSize.preservesColimitsOfShape
+
+end Preservation
+
+section Forget
+
+noncomputable instance {J : Type w₁} [Category.{w₂} J] [HasLimitsOfShape J V] :
+    PreservesLimitsOfShape J (Action.forget V G) := by
+  show PreservesLimitsOfShape J ((Action.functorCategoryEquivalence V G).functor ⋙
+    (evaluation (SingleObj G) V).obj (SingleObj.star G))
+  infer_instance
+
+noncomputable instance {J : Type w₁} [Category.{w₂} J] [HasColimitsOfShape J V] :
+    PreservesColimitsOfShape J (Action.forget V G) := by
+  show PreservesColimitsOfShape J ((Action.functorCategoryEquivalence V G).functor ⋙
+    (evaluation (SingleObj G) V).obj (SingleObj.star G))
+  infer_instance
+
+noncomputable instance [HasFiniteLimits V] : PreservesFiniteLimits (Action.forget V G) := by
+  show PreservesFiniteLimits ((Action.functorCategoryEquivalence V G).functor ⋙
+    (evaluation (SingleObj G) V).obj (SingleObj.star G))
+  have : PreservesFiniteLimits ((evaluation (SingleObj G) V).obj (SingleObj.star G)) := by
+    constructor
+    intro _ _ _
+    infer_instance
+  apply compPreservesFiniteLimits
+
+noncomputable instance [HasFiniteColimits V] : PreservesFiniteColimits (Action.forget V G) := by
+  show PreservesFiniteColimits ((Action.functorCategoryEquivalence V G).functor ⋙
+    (evaluation (SingleObj G) V).obj (SingleObj.star G))
+  have : PreservesFiniteColimits ((evaluation (SingleObj G) V).obj (SingleObj.star G)) := by
+    constructor
+    intro _ _ _
+    infer_instance
+  apply compPreservesFiniteColimits
+
+instance {J : Type w₁} [Category.{w₂} J] (F : J ⥤ Action V G) :
+    ReflectsLimit F (Action.forget V G) where
+  reflects h := by
+    apply isLimitOfReflects ((Action.functorCategoryEquivalence V G).functor)
+    exact evaluationJointlyReflectsLimits _ (fun _ => h)
+
+instance {J : Type w₁} [Category.{w₂} J] : ReflectsLimitsOfShape J (Action.forget V G) where
+
+instance : ReflectsLimits (Action.forget V G) where
+
+instance {J : Type w₁} [Category.{w₂} J] (F : J ⥤ Action V G) :
+    ReflectsColimit F (Action.forget V G) where
+  reflects h := by
+    apply isColimitOfReflects ((Action.functorCategoryEquivalence V G).functor)
+    exact evaluationJointlyReflectsColimits _ (fun _ => h)
+
+instance {J : Type w₁} [Category.{w₂} J] : ReflectsColimitsOfShape J (Action.forget V G) where
+
+instance : ReflectsColimits (Action.forget V G) where
+
+end Forget
 
 section HasZeroMorphisms
 

@@ -141,7 +141,7 @@ theorem card_subset_divisors_le_length_of_chain {q : Associates M} {n : ℕ}
       obtain ⟨i, hi⟩ := h₂.1 hr
       exact Finset.mem_image.2 ⟨i, Finset.mem_univ _, hi.symm⟩
     rw [← Finset.card_fin (n + 1)]
-    exact (Finset.card_le_of_subset fun x hx => mem_image x <| hm x hx).trans Finset.card_image_le
+    exact (Finset.card_le_card fun x hx => mem_image x <| hm x hx).trans Finset.card_image_le
 #align divisor_chain.card_subset_divisors_le_length_of_chain DivisorChain.card_subset_divisors_le_length_of_chain
 
 variable [UniqueFactorizationMonoid M]
@@ -194,7 +194,7 @@ theorem eq_pow_second_of_chain_of_has_chain {q : Associates M} {n : ℕ} (hn : n
       n + 1 = (Finset.univ : Finset (Fin (n + 1))).card := (Finset.card_fin _).symm
       _ = (Finset.univ.image c).card := (Finset.card_image_iff.mpr (h₁.injective.injOn _)).symm
       _ ≤ (Finset.univ.image fun m : Fin (i + 1) => c 1 ^ (m : ℕ)).card :=
-        (Finset.card_le_of_subset ?_)
+        (Finset.card_le_card ?_)
       _ ≤ (Finset.univ : Finset (Fin (i + 1))).card := Finset.card_image_le
       _ = i + 1 := Finset.card_fin _
     intro r hr

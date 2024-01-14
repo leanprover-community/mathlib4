@@ -236,20 +236,18 @@ open Topology
 
 variable {α : Type*}
 
-theorem continuousAt_clog {x : ℂ} (h : 0 < x.re ∨ x.im ≠ 0) : ContinuousAt log x := by
+theorem continuousAt_clog {x : ℂ} (h : x ∈ slitPlane) : ContinuousAt log x := by
   refine' ContinuousAt.add _ _
   · refine' continuous_ofReal.continuousAt.comp _
     refine' (Real.continuousAt_log _).comp Complex.continuous_abs.continuousAt
-    rw [Complex.abs.ne_zero_iff]
-    rintro rfl
-    simp at h
+    exact Complex.abs.ne_zero_iff.mpr <| slitPlane_ne_zero h
   · have h_cont_mul : Continuous fun x : ℂ => x * I := continuous_id'.mul continuous_const
     refine' h_cont_mul.continuousAt.comp (continuous_ofReal.continuousAt.comp _)
     exact continuousAt_arg h
 #align continuous_at_clog continuousAt_clog
 
 theorem _root_.Filter.Tendsto.clog {l : Filter α} {f : α → ℂ} {x : ℂ} (h : Tendsto f l (𝓝 x))
-    (hx : 0 < x.re ∨ x.im ≠ 0) : Tendsto (fun t => log (f t)) l (𝓝 <| log x) :=
+    (hx : x ∈ slitPlane) : Tendsto (fun t => log (f t)) l (𝓝 <| log x) :=
   (continuousAt_clog hx).tendsto.comp h
 #align filter.tendsto.clog Filter.Tendsto.clog
 
@@ -257,26 +255,26 @@ variable [TopologicalSpace α]
 
 nonrec
 theorem _root_.ContinuousAt.clog {f : α → ℂ} {x : α} (h₁ : ContinuousAt f x)
-    (h₂ : 0 < (f x).re ∨ (f x).im ≠ 0) : ContinuousAt (fun t => log (f t)) x :=
+    (h₂ : f x ∈ slitPlane) : ContinuousAt (fun t => log (f t)) x :=
   h₁.clog h₂
 #align continuous_at.clog ContinuousAt.clog
 
 nonrec
 theorem _root_.ContinuousWithinAt.clog {f : α → ℂ} {s : Set α} {x : α}
-    (h₁ : ContinuousWithinAt f s x) (h₂ : 0 < (f x).re ∨ (f x).im ≠ 0) :
+    (h₁ : ContinuousWithinAt f s x) (h₂ : f x ∈ slitPlane) :
     ContinuousWithinAt (fun t => log (f t)) s x :=
   h₁.clog h₂
 #align continuous_within_at.clog ContinuousWithinAt.clog
 
 nonrec
 theorem _root_.ContinuousOn.clog {f : α → ℂ} {s : Set α} (h₁ : ContinuousOn f s)
-    (h₂ : ∀ x ∈ s, 0 < (f x).re ∨ (f x).im ≠ 0) : ContinuousOn (fun t => log (f t)) s := fun x hx =>
+    (h₂ : ∀ x ∈ s, f x ∈ slitPlane) : ContinuousOn (fun t => log (f t)) s := fun x hx =>
   (h₁ x hx).clog (h₂ x hx)
 #align continuous_on.clog ContinuousOn.clog
 
 nonrec
 theorem _root_.Continuous.clog {f : α → ℂ} (h₁ : Continuous f)
-    (h₂ : ∀ x, 0 < (f x).re ∨ (f x).im ≠ 0) : Continuous fun t => log (f t) :=
+    (h₂ : ∀ x, f x ∈ slitPlane) : Continuous fun t => log (f t) :=
   continuous_iff_continuousAt.2 fun x => h₁.continuousAt.clog (h₂ x)
 #align continuous.clog Continuous.clog
 

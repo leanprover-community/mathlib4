@@ -203,10 +203,10 @@ theorem measure_mono_top (h : s₁ ⊆ s₂) (h₁ : μ s₁ = ∞) : μ s₂ = 
 #align measure_theory.measure_mono_top MeasureTheory.measure_mono_top
 
 @[simp, mono]
-theorem measure_le_measure_union_left : μ s ≤ μ (s ∪ t) := μ.mono $ subset_union_left s t
+theorem measure_le_measure_union_left : μ s ≤ μ (s ∪ t) := μ.mono <| subset_union_left s t
 
 @[simp, mono]
-theorem measure_le_measure_union_right : μ t ≤ μ (s ∪ t) := μ.mono $ subset_union_right s t
+theorem measure_le_measure_union_right : μ t ≤ μ (s ∪ t) := μ.mono <| subset_union_right s t
 
 /-- For every set there exists a measurable superset of the same measure. -/
 theorem exists_measurable_superset (μ : Measure α) (s : Set α) :
@@ -295,6 +295,9 @@ theorem measure_sUnion_null_iff {S : Set (Set α)} (hS : S.Countable) :
   μ.toOuterMeasure.sUnion_null_iff hS
 #align measure_theory.measure_sUnion_null_iff MeasureTheory.measure_sUnion_null_iff
 
+lemma measure_null_iff_singleton {s : Set α} (hs : s.Countable) : μ s = 0 ↔ ∀ x ∈ s, μ {x} = 0 := by
+  rw [← measure_biUnion_null_iff hs, biUnion_of_singleton]
+
 theorem measure_union_le (s₁ s₂ : Set α) : μ (s₁ ∪ s₂) ≤ μ s₁ + μ s₂ :=
   μ.toOuterMeasure.union _ _
 #align measure_theory.measure_union_le MeasureTheory.measure_union_le
@@ -360,13 +363,10 @@ theorem measure_inter_null_of_null_left {S : Set α} (T : Set α) (h : μ S = 0)
 
 /-! ### The almost everywhere filter -/
 
-
 /-- The “almost everywhere” filter of co-null sets. -/
-def Measure.ae {α} {m : MeasurableSpace α} (μ : Measure α) : Filter α where
-  sets := { s | μ sᶜ = 0 }
-  univ_sets := by simp
-  inter_sets hs ht := by simp only [compl_inter, mem_setOf_eq]; exact measure_union_null hs ht
-  sets_of_superset hs hst := measure_mono_null (Set.compl_subset_compl.2 hst) hs
+def Measure.ae {α : Type*} {_m : MeasurableSpace α} (μ : Measure α) : Filter α :=
+  ofCountableUnion (μ · = 0) (fun _S hSc ↦ (measure_sUnion_null_iff hSc).2) fun _t ht _s hs ↦
+    measure_mono_null hs ht
 #align measure_theory.measure.ae MeasureTheory.Measure.ae
 
 -- mathport name: «expr∀ᵐ ∂ , »
@@ -412,11 +412,8 @@ theorem ae_of_all {p : α → Prop} (μ : Measure α) : (∀ a, p a) → ∀ᵐ 
 -- ⟨fun s hs => let ⟨t, hst, htm, htμ⟩ := exists_measurable_superset_of_null hs;
 --   ⟨tᶜ, compl_mem_ae_iff.2 htμ, htm.compl, compl_subset_comm.1 hst⟩⟩
 
-instance instCountableInterFilter : CountableInterFilter μ.ae :=
-  ⟨by
-    intro S hSc hS
-    rw [mem_ae_iff, compl_sInter, sUnion_image]
-    exact (measure_biUnion_null_iff hSc).2 hS⟩
+instance instCountableInterFilter : CountableInterFilter μ.ae := by
+  unfold Measure.ae; infer_instance
 #align measure_theory.measure.ae.countable_Inter_filter MeasureTheory.instCountableInterFilter
 
 theorem ae_all_iff {ι : Sort*} [Countable ι] {p : α → ι → Prop} :
@@ -428,7 +425,11 @@ theorem all_ae_of {ι : Sort _} {p : α → ι → Prop} (hp : ∀ᵐ a ∂μ, �
     ∀ᵐ a ∂μ, p a i := by
   filter_upwards [hp] with a ha using ha i
 
-theorem ae_ball_iff {S : Set ι} (hS : S.Countable) {p : ∀ (_x : α), ∀ i ∈ S, Prop} :
+lemma ae_iff_of_countable [Countable α] {p : α → Prop} : (∀ᵐ x ∂μ, p x) ↔ ∀ x, μ {x} ≠ 0 → p x := by
+  rw [ae_iff, measure_null_iff_singleton]
+  exacts [forall_congr' fun _ ↦ not_imp_comm, Set.to_countable _]
+
+theorem ae_ball_iff {S : Set ι} (hS : S.Countable) {p : α → ∀ i ∈ S, Prop} :
     (∀ᵐ x ∂μ, ∀ i (hi : i ∈ S), p x i hi) ↔ ∀ i (hi : i ∈ S), ∀ᵐ x ∂μ, p x i hi :=
   eventually_countable_ball hS
 #align measure_theory.ae_ball_iff MeasureTheory.ae_ball_iff
@@ -561,9 +562,9 @@ theorem inter_ae_eq_empty_of_ae_eq_empty_right (h : t =ᵐ[μ] (∅ : Set α)) :
   rw [inter_empty]
 #align measure_theory.inter_ae_eq_empty_of_ae_eq_empty_right MeasureTheory.inter_ae_eq_empty_of_ae_eq_empty_right
 
-/-- Given a predicate on `β` and `set α` where both `α` and `β` are measurable spaces, if the
+/-- Given a predicate on `β` and `Set α` where both `α` and `β` are measurable spaces, if the
 predicate holds for almost every `x : β` and
-- `∅ : set α`
+- `∅ : Set α`
 - a family of sets generating the σ-algebra of `α`
 Moreover, if for almost every `x : β`, the predicate is closed under complements and countable
 disjoint unions, then the predicate holds for almost every `x : β` and all measurable sets of `α`.

@@ -184,7 +184,7 @@ theorem IsCompactElement.directed_sSup_lt_of_lt {α : Type*} [CompleteLattice α
   exact hxk.ne (hxk.le.antisymm hkx)
 #align complete_lattice.is_compact_element.directed_Sup_lt_of_lt CompleteLattice.IsCompactElement.directed_sSup_lt_of_lt
 
-theorem finset_sup_compact_of_compact {α β : Type*} [CompleteLattice α] {f : β → α} (s : Finset β)
+theorem isCompactElement_finsetSup {α β : Type*} [CompleteLattice α] {f : β → α} (s : Finset β)
     (h : ∀ x ∈ s, IsCompactElement (f x)) : IsCompactElement (s.sup f) := by
   classical
     rw [isCompactElement_iff_le_of_directed_sSup_le]
@@ -198,7 +198,7 @@ theorem finset_sup_compact_of_compact {α β : Type*} [CompleteLattice α] {f : 
     rw [isCompactElement_iff_le_of_directed_sSup_le] at h
     specialize h d hemp hdir (le_trans (Finset.le_sup hps) hsup)
     simpa only [exists_prop]
-#align complete_lattice.finset_sup_compact_of_compact CompleteLattice.finset_sup_compact_of_compact
+#align complete_lattice.finset_sup_compact_of_compact CompleteLattice.isCompactElement_finsetSup
 
 theorem WellFounded.isSupFiniteCompact (h : WellFounded ((· > ·) : α → α → Prop)) :
     IsSupFiniteCompact α := fun s => by
@@ -216,7 +216,7 @@ theorem WellFounded.isSupFiniteCompact (h : WellFounded ((· > ·) : α → α �
 theorem IsSupFiniteCompact.isSupClosedCompact (h : IsSupFiniteCompact α) :
     IsSupClosedCompact α := by
   intro s hne hsc; obtain ⟨t, ht₁, ht₂⟩ := h s; clear h
-  cases' t.eq_empty_or_nonempty with h h
+  rcases t.eq_empty_or_nonempty with h | h
   · subst h
     rw [Finset.sup_empty] at ht₂
     rw [ht₂]
@@ -263,7 +263,7 @@ theorem isSupFiniteCompact_iff_all_elements_compact :
 
 open List in
 theorem wellFounded_characterisations : List.TFAE
-    [WellFounded (( · > · ) : α → α → Prop),
+    [WellFounded ((· > ·) : α → α → Prop),
       IsSupFiniteCompact α, IsSupClosedCompact α, ∀ k : α, IsCompactElement k] := by
   tfae_have 1 → 2
   · exact WellFounded.isSupFiniteCompact α

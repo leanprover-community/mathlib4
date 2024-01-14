@@ -107,7 +107,7 @@ def whatsNew (old new : Environment) : CoreM MessageData := do
 
   if diffs.isEmpty then return "no new constants"
 
-  pure $ MessageData.joinSep diffs.toList "\n\n"
+  pure <| MessageData.joinSep diffs.toList "\n\n"
 
 /-- `whatsnew in $command` executes the command and then prints the
 declarations that were added to the environment. -/

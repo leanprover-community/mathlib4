@@ -288,9 +288,26 @@ end NormedLatticeField
 
 section Real
 
-variable [NormedAddCommGroup E] [NormedSpace ℝ E]
+theorem discreteTopology_pi_basisFun [Fintype ι] :
+    DiscreteTopology (span ℤ (Set.range (Pi.basisFun ℝ ι))) := by
+  refine discreteTopology_iff_isOpen_singleton_zero.mpr ⟨Metric.ball 0 1, Metric.isOpen_ball, ?_⟩
+  ext x
+  rw [Set.mem_preimage, mem_ball_zero_iff, pi_norm_lt_iff zero_lt_one, Set.mem_singleton_iff]
+  simp_rw [← coe_eq_zero, Function.funext_iff, Pi.zero_apply, Real.norm_eq_abs]
+  refine forall_congr' (fun i => ?_)
+  rsuffices ⟨y, hy⟩ : ∃ (y : ℤ), (y : ℝ) = (x : ι → ℝ) i
+  · rw [← hy, ← Int.cast_abs, ← Int.cast_one,  Int.cast_lt, Int.abs_lt_one_iff, Int.cast_eq_zero]
+  exact ((Pi.basisFun ℝ ι).mem_span_iff_repr_mem ℤ x).mp (SetLike.coe_mem x) i
 
-variable (b : Basis ι ℝ E)
+variable [NormedAddCommGroup E] [NormedSpace ℝ E] (b : Basis ι ℝ E)
+
+instance [Fintype ι] : DiscreteTopology (span ℤ (Set.range b)) := by
+  have h : Set.MapsTo b.equivFun (span ℤ (Set.range b)) (span ℤ (Set.range (Pi.basisFun ℝ ι))) := by
+    intro _ hx
+    rwa [SetLike.mem_coe, Basis.mem_span_iff_repr_mem] at hx ⊢
+  convert DiscreteTopology.of_continuous_injective ((continuous_equivFun_basis b).restrict h) ?_
+  · exact discreteTopology_pi_basisFun
+  · refine Subtype.map_injective _ (Basis.equivFun b).injective
 
 @[measurability]
 theorem fundamentalDomain_measurableSet [MeasurableSpace E] [OpensMeasurableSpace E] [Finite ι] :
@@ -371,7 +388,7 @@ theorem Zlattice.FG : AddSubgroup.FG L := by
       rw [← hs, ← h_span]
       exact span_mono (by simp only [Subtype.range_coe_subtype, Set.setOf_mem_eq, subset_rfl]))
     rw [show span ℤ s = span ℤ (Set.range b) by simp [Basis.coe_mk, Subtype.range_coe_subtype]]
-    have : Fintype s := Set.Finite.fintype h_lind.finite
+    have : Fintype s := h_lind.setFinite.fintype
     refine Set.Finite.of_finite_image (f := ((↑) : _ →  E) ∘ Zspan.quotientEquiv b) ?_
       (Function.Injective.injOn (Subtype.coe_injective.comp (Zspan.quotientEquiv b).injective) _)
     have : Set.Finite ((Zspan.fundamentalDomain b) ∩ L) :=
@@ -389,7 +406,7 @@ theorem Zlattice.FG : AddSubgroup.FG L := by
       exact span_le.mpr h_incl
   · -- `span ℤ s` is finitely generated because `s` is finite
     rw [ker_mkQ, inf_of_le_right (span_le.mpr h_incl)]
-    exact fg_span (LinearIndependent.finite h_lind)
+    exact fg_span (LinearIndependent.setFinite h_lind)
 
 theorem Zlattice.module_finite : Module.Finite ℤ L :=
   Module.Finite.iff_addGroup_fg.mpr ((AddGroup.fg_iff_addSubgroup_fg L).mpr (FG K hs))
@@ -401,7 +418,7 @@ theorem Zlattice.module_free : Module.Free ℤ L := by
   have : NoZeroSMulDivisors ℤ L := by
     change NoZeroSMulDivisors ℤ (AddSubgroup.toIntSubmodule L)
     exact noZeroSMulDivisors _
-  exact Module.free_of_finite_type_torsion_free'
+  infer_instance
 
 open FiniteDimensional
 
@@ -445,9 +462,9 @@ theorem Zlattice.rank : finrank ℤ L = finrank K E := by
       contrapose h
       rw [Finset.not_nonempty_iff_eq_empty, Set.toFinset_diff,
         Finset.sdiff_eq_empty_iff_subset] at h
-      replace h := Finset.card_le_of_subset h
+      replace h := Finset.card_le_card h
       rwa [not_lt, h_card, ← topEquiv.finrank_eq, ← h_spanE, ← ht_span,
-        finrank_span_set_eq_card _ ht_lin]
+        finrank_span_set_eq_card ht_lin]
     -- Assume that `e ∪ {v}` is not `ℤ`-linear independent then we get the contradiction
     suffices ¬ LinearIndependent ℤ (fun x : ↥(insert v (Set.range e)) => (x : E)) by
       contrapose! this
@@ -463,7 +480,7 @@ theorem Zlattice.rank : finrank ℤ L = finrank K E := by
     -- takes value into the finite set `fundamentalDomain e ∩ L`
     have h_mapsto : Set.MapsTo (fun n : ℤ => Zspan.fract e (n • v)) Set.univ
         (Metric.closedBall 0 (∑ i, ‖e i‖) ∩ (L : Set E)) := by
-      rw [Set.mapsTo_inter, Set.maps_univ_to, Set.maps_univ_to]
+      rw [Set.mapsTo_inter, Set.mapsTo_univ_iff, Set.mapsTo_univ_iff]
       refine ⟨fun _ =>  mem_closedBall_zero_iff.mpr (Zspan.norm_fract_le e _), fun _ => ?_⟩
       · change _ ∈ AddSubgroup.toIntSubmodule L
         rw [← h_spanL]
@@ -483,6 +500,6 @@ theorem Zlattice.rank : finrank ℤ L = finrank K E := by
   · -- To prove that `finrank K E ≤ finrank ℤ L`, we use the fact `b` generates `E` over `K`
     -- and thus `finrank K E ≤ card b = finrank ℤ L`
     rw [← topEquiv.finrank_eq, ← h_spanE]
-    convert finrank_span_le_card (K := K) (Set.range b)
+    convert finrank_span_le_card (R := K) (Set.range b)
 
 end Zlattice

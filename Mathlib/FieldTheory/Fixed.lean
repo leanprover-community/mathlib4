@@ -144,7 +144,7 @@ theorem linearIndependent_smul_of_linearIndependent {s : Finset F} :
       (linearIndependent_iff'.1 (ih hs.1) s.attach (fun i => g • l i - l i) _ ⟨i, his⟩
           (mem_attach _ _) :
         _)
-  refine' (@sum_attach _ _ s _ fun i => (g • l i - l i) • MulAction.toFun G F i).trans _
+  refine' (sum_attach s fun i ↦ (g • l i - l i) • MulAction.toFun G F i).trans _
   ext g'; dsimp only
   conv_lhs =>
     rw [sum_apply]
@@ -172,22 +172,22 @@ variable [Fintype G] (x : F)
 
 /-- `minpoly G F x` is the minimal polynomial of `(x : F)` over `FixedPoints.subfield G F`. -/
 def minpoly : Polynomial (FixedPoints.subfield G F) :=
-  (prodXSubSmul G F x).toSubring (FixedPoints.subfield G F).toSubring fun _ hc g =>
+  (prodXSubSMul G F x).toSubring (FixedPoints.subfield G F).toSubring fun _ hc g =>
     let ⟨n, _, hn⟩ := Polynomial.mem_frange_iff.1 hc
-    hn.symm ▸ prodXSubSmul.coeff G F x g n
+    hn.symm ▸ prodXSubSMul.coeff G F x g n
 #align fixed_points.minpoly FixedPoints.minpoly
 
 namespace minpoly
 
 theorem monic : (minpoly G F x).Monic := by
   simp only [minpoly, Polynomial.monic_toSubring];
-  exact prodXSubSmul.monic G F x
+  exact prodXSubSMul.monic G F x
 #align fixed_points.minpoly.monic FixedPoints.minpoly.monic
 
 theorem eval₂ :
     Polynomial.eval₂ (Subring.subtype <| (FixedPoints.subfield G F).toSubring) x (minpoly G F x) =
       0 := by
-  rw [← prodXSubSmul.eval G F x, Polynomial.eval₂_eq_eval_map]
+  rw [← prodXSubSMul.eval G F x, Polynomial.eval₂_eq_eval_map]
   simp only [minpoly, Polynomial.map_toSubring]
 #align fixed_points.minpoly.eval₂ FixedPoints.minpoly.eval₂
 
@@ -210,7 +210,7 @@ theorem of_eval₂ (f : Polynomial (FixedPoints.subfield G F))
     (subfield G F).toSubring)) f = Polynomial.map
     ((IsInvariantSubring.subtypeHom G (subfield G F).toSubring)) f := rfl
   erw [← Polynomial.map_dvd_map' (Subfield.subtype <| FixedPoints.subfield G F), minpoly, this,
-    Polynomial.map_toSubring _ _, prodXSubSmul]
+    Polynomial.map_toSubring _ _, prodXSubSMul]
   refine'
     Fintype.prod_dvd_of_coprime
       (Polynomial.pairwise_coprime_X_sub_C <| MulAction.injective_ofQuotientStabilizer G x) fun y =>
@@ -268,8 +268,7 @@ theorem rank_le_card : Module.rank (FixedPoints.subfield G F) F ≤ Fintype.card
   rank_le fun s hs => by
     simpa only [rank_fun', Cardinal.mk_coe_finset, Finset.coe_sort_coe, Cardinal.lift_natCast,
       Cardinal.natCast_le] using
-      cardinal_lift_le_rank_of_linearIndependent'
-        (linearIndependent_smul_of_linearIndependent G F hs)
+      (linearIndependent_smul_of_linearIndependent G F hs).cardinal_lift_le_rank
 #align fixed_points.rank_le_card FixedPoints.rank_le_card
 
 end Fintype
@@ -283,12 +282,12 @@ instance normal : Normal (FixedPoints.subfield G F) F :=
     (Polynomial.splits_id_iff_splits _).1 <| by
       cases nonempty_fintype G
       rw [← minpoly_eq_minpoly, minpoly, coe_algebraMap, ← Subfield.toSubring_subtype_eq_subtype,
-        Polynomial.map_toSubring _ (subfield G F).toSubring, prodXSubSmul]
+        Polynomial.map_toSubring _ (subfield G F).toSubring, prodXSubSMul]
       exact Polynomial.splits_prod _ fun _ _ => Polynomial.splits_X_sub_C _⟩
 #align fixed_points.normal FixedPoints.normal
 
 instance separable : IsSeparable (FixedPoints.subfield G F) F :=
-  ⟨isIntegral G F, fun x => by
+  ⟨fun x => by
     cases nonempty_fintype G
     -- this was a plain rw when we were using unbundled subrings
     erw [← minpoly_eq_minpoly, ← Polynomial.separable_map (FixedPoints.subfield G F).subtype,
@@ -315,15 +314,15 @@ theorem linearIndependent_toLinearMap (R : Type u) (A : Type v) (B : Type w) [Co
     LinearIndependent B (AlgHom.toLinearMap : (A →ₐ[R] B) → A →ₗ[R] B) :=
   have : LinearIndependent B (LinearMap.ltoFun R A B ∘ AlgHom.toLinearMap) :=
     ((linearIndependent_monoidHom A B).comp ((↑) : (A →ₐ[R] B) → A →* B) fun _ _ hfg =>
-        AlgHom.ext <| fun _ => FunLike.ext_iff.1 hfg _ :
+        AlgHom.ext fun _ => FunLike.ext_iff.1 hfg _ :
       _)
   this.of_comp _
 #align linear_independent_to_linear_map linearIndependent_toLinearMap
 
 theorem cardinal_mk_algHom (K : Type u) (V : Type v) (W : Type w) [Field K] [Field V] [Algebra K V]
-    [FiniteDimensional K V] [Field W] [Algebra K W] [FiniteDimensional K W] :
+    [FiniteDimensional K V] [Field W] [Algebra K W] :
     Cardinal.mk (V →ₐ[K] W) ≤ finrank W (V →ₗ[K] W) :=
-  cardinal_mk_le_finrank_of_linearIndependent <| linearIndependent_toLinearMap K V W
+  (linearIndependent_toLinearMap K V W).cardinal_mk_le_finrank
 #align cardinal_mk_alg_hom cardinal_mk_algHom
 
 noncomputable instance AlgEquiv.fintype (K : Type u) (V : Type v) [Field K] [Field V] [Algebra K V]
@@ -333,7 +332,7 @@ noncomputable instance AlgEquiv.fintype (K : Type u) (V : Type v) [Field K] [Fie
 
 theorem finrank_algHom (K : Type u) (V : Type v) [Field K] [Field V] [Algebra K V]
     [FiniteDimensional K V] : Fintype.card (V →ₐ[K] V) ≤ finrank V (V →ₗ[K] V) :=
-  fintype_card_le_finrank_of_linearIndependent <| linearIndependent_toLinearMap K V V
+  (linearIndependent_toLinearMap K V V).fintype_card_le_finrank
 #align finrank_alg_hom finrank_algHom
 
 namespace FixedPoints
@@ -346,7 +345,7 @@ theorem finrank_eq_card (G : Type u) (F : Type v) [Group G] [Field F] [Fintype G
       Fintype.card G ≤ Fintype.card (F →ₐ[FixedPoints.subfield G F] F) :=
         Fintype.card_le_of_injective _ (MulSemiringAction.toAlgHom_injective _ F)
       _ ≤ finrank F (F →ₗ[FixedPoints.subfield G F] F) := (finrank_algHom (subfield G F) F)
-      _ = finrank (FixedPoints.subfield G F) F := finrank_linear_map' _ _ _
+      _ = finrank (FixedPoints.subfield G F) F := finrank_linearMap_self _ _ _
 #align fixed_points.finrank_eq_card FixedPoints.finrank_eq_card
 
 /-- `MulSemiringAction.toAlgHom` is bijective. -/
@@ -360,7 +359,7 @@ theorem toAlgHom_bijective (G : Type u) (F : Type v) [Group G] [Field F] [Finite
   · apply le_antisymm
     · exact Fintype.card_le_of_injective _ (MulSemiringAction.toAlgHom_injective _ F)
     · rw [← finrank_eq_card G F]
-      exact LE.le.trans_eq (finrank_algHom _ F) (finrank_linear_map' _ _ _)
+      exact LE.le.trans_eq (finrank_algHom _ F) (finrank_linearMap_self _ _ _)
 #align fixed_points.to_alg_hom_bijective FixedPoints.toAlgHom_bijective
 
 /-- Bijection between G and algebra homomorphisms that fix the fixed points -/

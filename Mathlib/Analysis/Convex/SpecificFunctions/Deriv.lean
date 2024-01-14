@@ -38,9 +38,8 @@ open scoped BigOperators NNReal
 theorem strictConvexOn_pow {n : ℕ} (hn : 2 ≤ n) : StrictConvexOn ℝ (Ici 0) fun x : ℝ => x ^ n := by
   apply StrictMonoOn.strictConvexOn_of_deriv (convex_Ici _) (continuousOn_pow _)
   rw [deriv_pow', interior_Ici]
-  exact fun x (hx : 0 < x) y hy hxy =>
-    mul_lt_mul_of_pos_left (pow_lt_pow_of_lt_left hxy hx.le <| Nat.sub_pos_of_lt hn)
-      (Nat.cast_pos.2 <| zero_lt_two.trans_le hn)
+  exact fun x (hx : 0 < x) y _ hxy => mul_lt_mul_of_pos_left
+    (pow_lt_pow_left hxy hx.le <| Nat.sub_ne_zero_of_lt hn) (by positivity)
 #align strict_convex_on_pow strictConvexOn_pow
 
 /-- `x^n`, `n : ℕ` is strictly convex on the whole real line whenever `n ≠ 0` is even. -/
@@ -61,7 +60,7 @@ theorem Finset.prod_nonneg_of_card_nonpos_even {α β : Type*} [LinearOrderedCom
       Finset.prod_nonneg fun x _ => by
         split_ifs with hx
         · simp [hx]
-        simp at hx ⊢
+        simp? at hx ⊢ says simp only [not_le, one_mul] at hx ⊢
         exact le_of_lt hx
     _ = _ := by
       rw [Finset.prod_mul_distrib, Finset.prod_ite, Finset.prod_const_one, mul_one,
@@ -77,7 +76,7 @@ theorem int_prod_range_nonneg (m : ℤ) (n : ℕ) (hn : Even n) :
   rw [← two_mul, Nat.succ_eq_add_one, mul_add, mul_one, ← one_add_one_eq_two, ← add_assoc,
     Finset.prod_range_succ, Finset.prod_range_succ, mul_assoc]
   refine' mul_nonneg ihn _; generalize (1 + 1) * n = k
-  cases' le_or_lt m k with hmk hmk
+  rcases le_or_lt m k with hmk | hmk
   · have : m ≤ k + 1 := hmk.trans (lt_add_one (k : ℤ)).le
     convert mul_nonneg_of_nonpos_of_nonpos (sub_nonpos_of_le hmk) _
     convert sub_nonpos_of_le this
@@ -136,7 +135,7 @@ theorem deriv_sqrt_mul_log' :
 theorem deriv2_sqrt_mul_log (x : ℝ) :
     deriv^[2] (fun x => sqrt x * log x) x = -log x / (4 * sqrt x ^ 3) := by
   simp only [Nat.iterate, deriv_sqrt_mul_log']
-  cases' le_or_lt x 0 with hx hx
+  rcases le_or_lt x 0 with hx | hx
   · rw [sqrt_eq_zero_of_nonpos hx, zero_pow zero_lt_three, mul_zero, div_zero]
     refine' HasDerivWithinAt.deriv_eq_zero _ (uniqueDiffOn_Iic 0 x hx)
     refine' (hasDerivWithinAt_const _ _ 0).congr_of_mem (fun x hx => _) hx

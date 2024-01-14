@@ -84,7 +84,7 @@ theorem terminates_parallel.aux :
       exacts [⟨a', rfl⟩, ⟨a, rfl⟩]
     · cases' IH m with a' e
       simp only [parallel.aux2, rmap, List.foldr_cons]
-      simp [parallel.aux2] at e
+      simp? [parallel.aux2] at e says simp only [parallel.aux2, rmap] at e
       rw [e]
       exact ⟨a', rfl⟩
   · intro s IH l S m
@@ -237,7 +237,7 @@ theorem exists_of_mem_parallel {S : WSeq (Computation α)} {a} (h : a ∈ parall
           apply ret_mem
         · intro a' h
           rcases h with ⟨d, dm, ad⟩
-          simp at dm
+          simp? at dm says simp only [List.mem_cons] at dm
           cases' dm with e dl
           · rw [e] at ad
             refine' ⟨c, List.mem_cons_self _ _, _⟩

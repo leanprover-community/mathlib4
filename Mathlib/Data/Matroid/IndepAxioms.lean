@@ -44,7 +44,7 @@ made essentially invisible by the simplifier when working with `M`.
 Because of this setup, we don't define any API for `IndepMatroid`, as it would be
 a redundant copy of the existing API for `Matroid.Indep`.
 (In particular, one could define a natural equivalence `e : IndepMatroid α ≃ Matroid α`
-with `e.toFun = IndepMatroid.toMatroid`, but this would be pointless, as there is no need
+with `e.toFun = IndepMatroid.matroid`, but this would be pointless, as there is no need
 for the inverse of `e`).
 
 ## Main definitions
@@ -127,7 +127,7 @@ attribute [pp_dot] Indep E
     have hfB' : f ∉ B := by (intro hfB; obtain rfl := hf.2 hfB; exact he.2 hf.1)
 
     refine' ⟨f, ⟨hf.1, hfB'⟩, by_contra (fun hnot ↦ _)⟩
-    obtain ⟨x,hxB, hind⟩ :=  M.indep_aug hfB hnot ⟨hB, hBmax⟩
+    obtain ⟨x,hxB, hind⟩ := M.indep_aug hfB hnot ⟨hB, hBmax⟩
     simp only [mem_diff, mem_insert_iff, mem_singleton_iff, not_or, not_and, not_not] at hxB
     obtain rfl := hxB.2.2 hxB.1
     rw [insert_comm, insert_diff_singleton, insert_eq_of_mem he.1] at hind
@@ -199,10 +199,10 @@ attribute [pp_dot] Indep E
     · have hchoose : ∀ (b : ↑(B₀ \ I)), ∃ Ib, Ib ⊆ I ∧ Ib.Finite ∧ ¬Indep (insert (b : α) Ib)
       · rintro ⟨b, hb⟩; exact htofin I b hI (hcon b ⟨hB₀B hb.1, hb.2⟩)
       choose! f hf using hchoose
-      have _ := finite_coe_iff.2 (hB₀fin.diff I)
+      have := (hB₀fin.diff I).to_subtype
       refine ⟨iUnion f ∪ (B₀ ∩ I),
         union_subset (iUnion_subset (fun i ↦ (hf i).1)) (inter_subset_right _ _),
-        (finite_iUnion <| fun i ↦ (hf i).2.1).union (hB₀fin.subset (inter_subset_left _ _)),
+        (finite_iUnion fun i ↦ (hf i).2.1).union (hB₀fin.subset (inter_subset_left _ _)),
         fun x ⟨hxB₀, hxn⟩ hi ↦ ?_⟩
       have hxI : x ∉ I := fun hxI ↦ hxn <| Or.inr ⟨hxB₀, hxI⟩
       refine (hf ⟨x, ⟨hxB₀, hxI⟩⟩).2.2 (indep_subset hi <| insert_subset_insert ?_)
@@ -290,7 +290,7 @@ theorem _root_.Matroid.existsMaximalSubsetProperty_of_bdd {P : Set α → Prop}
   refine' ⟨Y, hY, fun J ⟨hJ, hIJ, hJX⟩ (hYJ : Y ⊆ J) ↦ (_ : J ⊆ Y)⟩
   have hJfin := finite_of_encard_le_coe (hP J hJ)
   refine' (eq_of_subset_of_ncard_le hYJ _ hJfin).symm.subset
-  rw [hY' J ⟨hJ, hIJ, hJX⟩ (ncard_le_of_subset hYJ hJfin)]
+  rw [hY' J ⟨hJ, hIJ, hJX⟩ (ncard_le_ncard hYJ hJfin)]
 
 /-- If there is an absolute upper bound on the size of an independent set, then the maximality axiom
   isn't needed to define a matroid by independent sets. -/
@@ -382,7 +382,7 @@ protected def ofFinite {E : Set α} (hE : E.Finite) (Indep : Set α → Prop)
         (hE.subset (subset_ground hI)).cast_ncard_eq] )
     (indep_bdd := ⟨E.ncard, fun I hI ↦ by
       rw [hE.cast_ncard_eq]
-      exact encard_le_of_subset <| subset_ground hI ⟩)
+      exact encard_le_card <| subset_ground hI ⟩)
     (subset_ground := subset_ground)
 
 @[simp] theorem ofFinite_E {E : Set α} hE Indep indep_empty indep_subset indep_aug subset_ground :

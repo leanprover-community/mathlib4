@@ -85,9 +85,6 @@ any `U : M → Set M` such that `∀ x ∈ s, U x ∈ 𝓝 x` there exists a `Sm
 subordinate to `U`. Then we use this fact to prove a version of the Whitney embedding theorem: any
 compact real manifold can be embedded into `ℝ^n` for large enough `n`.  -/
 
-set_option autoImplicit true
-
-
 variable (ι M)
 
 /-- We say that a collection of `SmoothBumpFunction`s is a `SmoothBumpCovering` of a set `s` if
@@ -634,7 +631,7 @@ lemma IsOpen.exists_msmooth_support_eq_aux {s : Set H} (hs : IsOpen s) :
 
 /-- Given an open set in a finite-dimensional real manifold, there exists a nonnegative smooth
 function with support equal to `s`. -/
-theorem IsOpen.exists_msmooth_support_eq (hs : IsOpen s) :
+theorem IsOpen.exists_msmooth_support_eq {s : Set M} (hs : IsOpen s) :
     ∃ f : M → ℝ, f.support = s ∧ Smooth I 𝓘(ℝ) f ∧ ∀ x, 0 ≤ f x := by
   rcases SmoothPartitionOfUnity.exists_isSubordinate_chartAt_source I M with ⟨f, hf⟩
   have A : ∀ (c : M), ∃ g : H → ℝ,
@@ -642,7 +639,7 @@ theorem IsOpen.exists_msmooth_support_eq (hs : IsOpen s) :
       Smooth I 𝓘(ℝ) g ∧ Set.range g ⊆ Set.Icc 0 1 := by
     intro i
     apply IsOpen.exists_msmooth_support_eq_aux
-    exact LocalHomeomorph.isOpen_inter_preimage_symm _ hs
+    exact PartialHomeomorph.isOpen_inter_preimage_symm _ hs
   choose g g_supp g_diff hg using A
   have h'g : ∀ c x, 0 ≤ g c x := fun c x ↦ (hg c (mem_range_self (f := g c) x)).1
   have h''g : ∀ c x, 0 ≤ f c x * g c (chartAt H c x) :=
@@ -701,7 +698,7 @@ theorem exists_msmooth_support_eq_eq_one_iff
         apply lt_of_le_of_ne (g_pos x) (Ne.symm ?_)
         rw [← mem_support, g_supp]
         contrapose! xs
-        simp at xs
+        simp? at xs says simp only [mem_compl_iff, not_not] at xs
         exact h.trans f_supp.symm.subset xs
       linarith [f_pos x]
   refine ⟨fun x ↦ f x / (f x + g x), ?_, ?_, ?_, ?_⟩
