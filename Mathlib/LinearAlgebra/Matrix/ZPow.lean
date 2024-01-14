@@ -86,9 +86,8 @@ theorem one_zpow : ∀ n : ℤ, (1 : M) ^ n = 1
 theorem zero_zpow : ∀ z : ℤ, z ≠ 0 → (0 : M) ^ z = 0
   | (n : ℕ), h => by
     rw [zpow_ofNat, zero_pow]
-    refine' lt_of_le_of_ne n.zero_le (Ne.symm _)
-    simpa using h
-  | -[n+1], _ => by simp [zero_pow n.zero_lt_succ]
+    exact mod_cast h
+  | -[n+1], _ => by simp [zero_pow n.succ_ne_zero]
 #align matrix.zero_zpow Matrix.zero_zpow
 
 theorem zero_zpow_eq (n : ℤ) : (0 : M) ^ n = if n = 0 then 1 else 0 := by
