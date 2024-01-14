@@ -600,8 +600,7 @@ open haar
 -/
 
 
-variable [TopologicalSpace G] [TopologicalGroup G]
-[MeasurableSpace G] [BorelSpace G]
+variable [TopologicalSpace G] [TopologicalGroup G] [MeasurableSpace G] [BorelSpace G]
 
 -- Porting note: Even in `noncomputable section`, a definition with `to_additive` require
 --               `noncomputable` to generate an additive definition.

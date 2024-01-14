@@ -319,7 +319,7 @@ lemma measure_isMulLeftInvariant_eq_smul_of_ne_top [LocallyCompactSpace G]
     (μ' μ : Measure G) [IsFiniteMeasureOnCompacts μ] [IsFiniteMeasureOnCompacts μ']
     [IsMulLeftInvariant μ] [IsMulLeftInvariant μ'] [IsOpenPosMeasure μ]
     [InnerRegularCompactLTTop μ] [InnerRegularCompactLTTop μ'] {s : Set G}
-    (hs : μ s ≠ ∞) (h's : μ' s ≠ ∞) : μ' s = haarScalarFactor μ' μ • μ s :=  by
+    (hs : μ s ≠ ∞) (h's : μ' s ≠ ∞) : μ' s = haarScalarFactor μ' μ • μ s := by
   /- We know that the measures integrate in the same way continuous compactly supported functions,
   up to the factor `c = haarScalarFactor μ' μ`. -/
   let c := haarScalarFactor μ' μ
