@@ -92,6 +92,11 @@ namespace standardSimplex
 
 open Finset Opposite SimplexCategory
 
+@[simp]
+lemma map_id (n : SimplexCategory) :
+    (SSet.standardSimplex.map (SimplexCategory.Hom.mk OrderHom.id : n ⟶ n)) = 𝟙 _ :=
+  CategoryTheory.Functor.map_id _ _
+
 /-- Simplices of the standard simplex identify to morphisms in `SimplexCategory`. -/
 def objEquiv (n : SimplexCategory) (m : SimplexCategoryᵒᵖ) :
     (standardSimplex.{u}.obj n).obj m ≃ (m.unop ⟶ n) :=
@@ -401,10 +406,6 @@ set_option linter.uppercaseLean3 false in
 
 namespace Augmented
 
--- porting note: added to ease the automation of the proofs in the definition
--- of `standardSimplex`
-attribute [local simp] SSet.standardSimplex
-
 -- porting note: an instance of `Subsingleton (⊤_ (Type u))` was added in
 -- `CategoryTheory.Limits.Types` to ease the automation in this definition
 /-- The functor which sends `[n]` to the simplicial set `Δ[n]` equipped by
@@ -418,16 +419,6 @@ noncomputable def standardSimplex : SimplexCategory ⥤ SSet.Augmented.{u} where
   map θ :=
     { left := SSet.standardSimplex.map θ
       right := terminal.from _ }
-  map_id n := by
-    ext1
-    · dsimp
-      erw [yoneda.map_id, uliftFunctor.map_id]
-      rfl
-    · aesop_cat
-  map_comp _ _ := by
-    ext1
-    · rfl
-    · aesop_cat
 set_option linter.uppercaseLean3 false in
 #align sSet.augmented.standard_simplex SSet.Augmented.standardSimplex
 
