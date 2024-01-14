@@ -121,6 +121,10 @@ def mapSubmodule : Submodule R[X] <| AEval R M a :=
     m ∈ mapSubmodule a hp ↔ (of R M a).symm m ∈ p :=
   ⟨fun ⟨_, hm, hm'⟩ ↦ hm'.symm ▸ hm, fun hm ↦ ⟨(of R M a).symm m, hm, rfl⟩⟩
 
+@[simp] lemma mapSubmodule_comapSubmodule (h := comapSubmodule_le_comap a) :
+    mapSubmodule a (p := comapSubmodule R M a q) h = q := by
+  ext; simp
+
 @[simp] lemma comapSubmodule_mapSubmodule :
     comapSubmodule R M a (mapSubmodule a hp) = p := by
   ext; simp
