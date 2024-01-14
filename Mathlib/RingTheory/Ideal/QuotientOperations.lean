@@ -291,7 +291,7 @@ variable [Algebra R₁ A] [Algebra R₂ A]
 
 /-- The `R₁`-algebra structure on `A/I` for an `R₁`-algebra `A` -/
 instance Quotient.algebra {I : Ideal A} : Algebra R₁ (A ⧸ I) :=
-  { toRingHom :=  (Ideal.Quotient.mk I).comp (algebraMap R₁ A)
+  { toRingHom := (Ideal.Quotient.mk I).comp (algebraMap R₁ A)
     smul_def' := fun _ x =>
       Quotient.inductionOn' x fun _ =>
         ((Quotient.mk I).congr_arg <| Algebra.smul_def _ _).trans (RingHom.map_mul _ _ _)
