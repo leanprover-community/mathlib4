@@ -830,8 +830,15 @@ Evaluating a section `s` of `(Spec A⁰_f)(V)` on `φ y` where `y ∈ φ⁻¹(V)
 def eval : AlgebraicGeometry.StructureSheaf.Localizations (A⁰_ f) (φ ⟨y, _mem_pbo y⟩) :=
   s.1 ⟨φ ⟨y, _mem_pbo y⟩, _mem_V y⟩
 
+/--
+choose an arbitrary numerator for `s (φ y)` where `y ∈ φ⁻¹(V)`.
+-/
 abbrev eval_num : A⁰_ f := eval s y |>.exists_rep.choose.1
 
+
+/--
+choose an arbitrary denominator for `s (φ y)` where `y ∈ φ⁻¹(V)`.
+-/
 abbrev eval_den : A⁰_ f := eval s y |>.exists_rep.choose.2.1
 
 lemma eval_den_not_mem : eval_den s y ∉ (φ ⟨y, _mem_pbo y⟩).asIdeal :=
@@ -865,6 +872,19 @@ lemma eval_eq_num_div_den :
         show eval_den s y ∈ (φ ⟨y, _⟩).asIdeal.primeCompl from eval_den_not_mem s y⟩ :=
   eval s y |>.exists_rep.choose_spec.symm
 
+/--
+Let `y ∈ φ⁻¹(V)`.
+Write `s (φ y) = a / b` where `a b : A⁰_ f`; write `a` as `n_a / m_a` and `b` as `n_b / m_b` where
+`n_a, m_a` have degree `d_a` and `n_b, m_b` have degree `d_b`. Then
+```
+n_a * m_b
+---------
+n_b * m_a
+```
+is a homogeneous fraction in the ring `A⁰_ y`.
+
+We will use this to build ring homomorphism between `(Spec A⁰_f)(V)` and `(φ _* Proj|D(f))(V)`.
+-/
 abbrev α : HomogeneousLocalization.AtPrime 𝒜 y.1.asHomogeneousIdeal.toIdeal :=
   Quotient.mk''
   { deg := (eval_num s y).deg + (eval_den s y).deg
@@ -975,11 +995,14 @@ example : true := rfl
 
 namespace isLocallyFraction
 
+/--
+Given an open set `V ⊆ Spec A⁰_f`, `φ⁻¹ V` is an open set in `Proj 𝒜`
+-/
 abbrev U (V' : Opens (Spec.T (A⁰_ f))) : Opens Proj.T where
   carrier := {x | ∃ x' ∈ φ ⁻¹' V'.1, x = x'.1}
   is_open' := by
-    have ho1 := Homeomorph.isOpen_preimage (h := homeoOfIso (projIsoSpecTopComponent hm.out f_deg.out))
-      |>.mpr V'.2
+    have ho1 := Homeomorph.isOpen_preimage
+      (h := homeoOfIso (projIsoSpecTopComponent hm.out f_deg.out)) |>.mpr V'.2
     rw [isOpen_induced_iff] at ho1
     obtain ⟨o, ho1, (eq : _ = φ ⁻¹' V'.1)⟩ := ho1
     simp_rw [← eq]
@@ -988,6 +1011,9 @@ abbrev U (V' : Opens (Spec.T (A⁰_ f))) : Opens Proj.T where
     · rintro ⟨x, hx, rfl⟩; exact ⟨hx, x.2⟩
     · rintro ⟨h1, h2⟩; exact ⟨⟨z, h2⟩, h1, rfl⟩
 
+/--
+If `V' ⊆ V ⊆ Spec A⁰_f`, then `φ⁻¹ V' ⊆ φ⁻¹ V`.
+-/
 def U.LE {V' : Opens (Spec.T (A⁰_ f))} (le : V' ⟶ V.unop) :
     (U (m := m) V') ⟶
     ((@Opens.openEmbedding Proj.T (pbo f)).isOpenMap.functor.op.obj <|
@@ -1048,6 +1074,10 @@ lemma α_isLocallyFraction : isLocallyFraction 𝒜 |>.pred (α (m := m) s) := b
     ring_nf at eq1 ⊢
     exact eq1
 
+/--
+The ring homomorphism between` (Spec A⁰_ f)(V)` and `(φ _* (Proj| (pbo f))(V)` defined by sending
+a section `s` to `α s`. See also `ProjIsoSpecSheafComponent.FromSpec.α`.
+-/
 def ringHom :
     (Spec (A⁰_ f)).presheaf.obj V ⟶ (φ _* (Proj| (pbo f)).presheaf).obj V where
   toFun s := ⟨α s, α_isLocallyFraction s⟩
@@ -1058,6 +1088,10 @@ def ringHom :
 
 end FromSpec
 
+/--
+The ring homomorphism between` (Spec A⁰_ f)(V)` and `(φ _* (Proj| (pbo f))(V)` defined by sending
+a section `s` to `α s` is natural with respect to open sets of `Spec A⁰_f`.
+-/
 def fromSpec {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m) :
     (Spec (A⁰_ f)).presheaf ⟶
     (projIsoSpecTopComponent hm f_deg).hom  _* (Proj| (pbo f)).presheaf where
