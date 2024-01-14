@@ -97,7 +97,7 @@ def comapSubmodule :
   (Submodule.orderIsoMapComap (of R M a)).symm.toCompleteLatticeHom.comp <|
     Submodule.restrictScalarsLatticeHom R[X] R (AEval R M a)
 
-@[simp] lemma mem_comapSubmodule q {x : M} :
+@[simp] lemma mem_comapSubmodule {x : M} :
     x ∈ comapSubmodule R M a q ↔ of R M a x ∈ q :=
   Iff.rfl
 
