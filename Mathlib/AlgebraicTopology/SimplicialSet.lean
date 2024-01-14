@@ -147,7 +147,7 @@ set_option linter.uppercaseLean3 false in
 #align sSet.boundary SSet.boundary
 
 -- mathport name: sSet.boundary
-scoped[Simplicial] notation "∂Δ[" n "]" => SSet.boundary n
+scoped[Simplicial] notation3 "∂Δ[" n "]" => SSet.boundary n
 
 /-- The inclusion of the boundary of the `n`-th standard simplex into that standard simplex. -/
 def boundaryInclusion (n : ℕ) : ∂Δ[n] ⟶ Δ[n] where app m (α : { α : Δ[n].obj m // _ }) := α
@@ -265,6 +265,29 @@ def primitiveTriangle {n : ℕ} (i : Fin (n+4))
     simp only [h₀.ne', not_false_eq_true, true_and]
     intro j
     fin_cases j <;> simp [Fin.ext_iff, hk0]
+
+/-- The `j`th subface of the `i`-th horn. -/
+@[simps]
+def face {n : ℕ} (i j : Fin (n+2)) (h : j ≠ i) : Λ[n+1, i] _[n] := by
+  refine ⟨SimplexCategory.δ j, ?_⟩
+  simpa [← Set.univ_subset_iff, Set.subset_def, asOrderHom, SimplexCategory.δ, not_or]
+
+/-- Two morphisms from a horn are equal if they are equal on all suitable faces. -/
+protected
+lemma hom_ext {n : ℕ} {i : Fin (n+2)} {S : SSet} (σ₁ σ₂ : Λ[n+1, i] ⟶ S)
+    (h : ∀ (j) (h : j ≠ i), σ₁.app _ (face i j h) = σ₂.app _ (face i j h)) :
+    σ₁ = σ₂ := by
+  apply NatTrans.ext; apply funext; apply Opposite.rec; apply SimplexCategory.rec
+  intro m; ext f
+  obtain ⟨j, hji, hfj⟩ : ∃ j, ¬j = i ∧ ∀ k, f.1.toOrderHom k ≠ j := by
+    simpa [← Set.univ_subset_iff, Set.subset_def, asOrderHom, not_or] using f.2
+  have H : f = (Λ[n+1, i].map (factor_δ f.1 j).op) (face i j hji) := by
+    apply Subtype.ext
+    exact (factor_δ_spec f.1 j hfj).symm
+  have H₁ := congrFun (σ₁.naturality (factor_δ f.1 j).op) (face i j hji)
+  have H₂ := congrFun (σ₂.naturality (factor_δ f.1 j).op) (face i j hji)
+  dsimp at H₁ H₂
+  erw [H, H₁, H₂, h _ hji]
 
 end horn
 
