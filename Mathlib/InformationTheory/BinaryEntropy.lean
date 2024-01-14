@@ -73,8 +73,7 @@ lemma h2_gt_0 {p : ℝ} (pge0 : 0 < p) (ple1 : p < 1) : 0 < h₂ p := by
     rw [this]
     refine LT.lt.le (Real.mul_pos ?_ ?_)
     linarith
-    have := log_neg pge0 ple1
-    linarith
+    linarith [log_neg pge0 ple1]
   · have fac1 : 0 < 1 - p := by linarith
     have fac2 : log (1 - p) < 0 := log_neg fac1 (by linarith)
     exact Linarith.mul_neg fac2 fac1
@@ -185,8 +184,8 @@ lemma deriv_log_one_sub {x : ℝ} (hh : x ≠ 1): deriv (fun p ↦ log (1 - p)) 
     DifferentiableAt ℝ (fun p ↦ log (c - p)) x := by
   apply DifferentiableAt.log
   apply DifferentiableAt.sub
-  simp
-  simp
+  apply differentiableAt_const
+  apply differentiableAt_id'
   exact sub_ne_zero.mpr (id (Ne.symm h))
 
 -- TODO don't need assumptions
@@ -209,23 +208,23 @@ lemma deriv_h₂' {x : ℝ} (h: x ≠ 0) (hh : x ≠ 1) :
       _ = -log x + log (1 - x) := by
         field_simp [sub_ne_zero.mpr hh.symm]
         ring
-    simp
+    apply differentiable_1_minusp
     exact sub_ne_zero.mpr hh.symm
-    simp
+    apply differentiableAt_id'
     exact differentiableAt_log_const_neg hh
   · exact differentiableAt_log_const_neg hh
   · apply DifferentiableAt.mul
-    simp
+    apply differentiableAt_id'
     apply DifferentiableAt.log
     exact differentiable_1_minusp x
     exact sub_ne_zero.mpr hh.symm
   · apply DifferentiableAt.neg
     apply DifferentiableAt.mul
-    simp
+    exact differentiableAt_id'
     apply DifferentiableAt.div_const
     exact differentiableAt_log h
   · apply DifferentiableAt.mul
-    simp
+    apply differentiable_1_minusp
     apply DifferentiableAt.div_const
     exact differentiableAt_log_const_neg hh
 
@@ -248,12 +247,12 @@ lemma hasDerivAt_h₂ {x : ℝ} (xne0: x ≠ 0) (gne1 : x ≠ 1) :
     exact differentiableAt_id'
     apply DifferentiableAt.mul
     apply DifferentiableAt.sub
-    simp
+    apply differentiableAt_const
     exact differentiableAt_id'
     apply DifferentiableAt.div_const
     apply DifferentiableAt.log
     apply DifferentiableAt.sub
-    simp
+    apply differentiableAt_const
     exact differentiableAt_id'
     exact sub_ne_zero.mpr gne1.symm
   convert hasDerivAt_deriv_iff.mpr diffAtStuff using 1
@@ -301,12 +300,13 @@ lemma h2_strictMono : StrictMonoOn h₂ (Set.Icc 0 (1/2)) := by
 
 open Filter Topology
 
+/-- Thanks to Andrew Yang for golfing! TODO proper attribution? -/
 protected lemma the_calculation {x : ℝ} (hx : x ≠ 0) (h2 : x ≠ 1) :
     -1 / (1 - x) / log 2 - x⁻¹ / log 2 = -1 / (x * (1 - x) * log 2) := by
   apply neg_injective
   simp only [neg_div, neg_sub, sub_neg_eq_add, neg_neg, ← add_div, ← one_div]
   rw [← div_div, div_add_div _ _ hx (sub_ne_zero.mpr h2.symm)]
-  simp
+  simp only [one_mul, mul_one, sub_add_cancel, one_div, mul_inv_rev]
 
 lemma deriv2_h₂ {x : ℝ} (h : x ≠ 0) (hh : 1 ≠ x) : deriv^[2] h₂ x = -1/(x*(1-x)*log 2) := by
   simp only [Function.iterate_succ, Function.iterate_zero, Function.comp.left_id,
@@ -317,7 +317,7 @@ lemma deriv2_h₂ {x : ℝ} (h : x ≠ 0) (hh : 1 ≠ x) : deriv^[2] h₂ x = -1
     unfold log₂ logb
     · repeat rw [deriv_div_const]
       repeat rw [deriv.log]
-      simp
+      simp only [deriv_one_minus, deriv_id'', one_div]
       have : log 2 ≠ 0 := by norm_num
       exact Entropy.the_calculation h hh.symm
       exact differentiableAt_id'
