@@ -505,6 +505,56 @@ instance isPurelyInseparable_iSup {ι : Type*} {t : ι → IntermediateField F E
   rw [← adjoin_self F (t i), isPurelyInseparable_adjoin_iff_pow_mem F E q] at h
   exact h x hi
 
+-- TODO: move to suitable location
+variable {F E} in
+theorem extendScalars_adjoin {K : IntermediateField F E} {S : Set E} (h : K ≤ adjoin F S) :
+    extendScalars h = adjoin K S := restrictScalars_injective F <| by
+  rw [extendScalars_restrictScalars, restrictScalars_adjoin]
+  exact le_antisymm (adjoin.mono F S _ <| Set.subset_union_right _ S) <| adjoin_le_iff.2 <|
+    Set.union_subset h (subset_adjoin F S)
+
+/-- If `F` is a field of exponential characteristic `q`, `F(S) / F` is separable, then
+`F(S) = F(S ^ (q ^ n))` for any natural number `n`. -/
+theorem adjoin_eq_adjoin_pow_expChar_pow_of_isSeparable (S : Set E) [IsSeparable F (adjoin F S)]
+    (q : ℕ) [ExpChar F q] (n : ℕ) : adjoin F S = adjoin F ((fun x ↦ x ^ q ^ n) '' S) := by
+  set L := adjoin F S
+  set M := adjoin F ((fun x ↦ x ^ q ^ n) '' S)
+  have hi : M ≤ L := by
+    rw [adjoin_le_iff]
+    rintro _ ⟨y, hy, rfl⟩
+    exact pow_mem (subset_adjoin F S hy) _
+  letI := (inclusion hi).toAlgebra
+  letI : Module M L := Algebra.toModule
+  letI : SMul M L := Algebra.toSMul
+  haveI : IsScalarTower F M L := IsScalarTower.of_algebraMap_eq (congrFun rfl)
+  haveI : IsSeparable M (extendScalars hi) := isSeparable_tower_top_of_isSeparable F M L
+  haveI : IsPurelyInseparable M (extendScalars hi) := by
+    haveI := expChar_of_injective_algebraMap (algebraMap F M).injective q
+    rw [extendScalars_adjoin hi, isPurelyInseparable_adjoin_iff_pow_mem M _ q]
+    exact fun x hx ↦ ⟨n, ⟨x ^ q ^ n, subset_adjoin F _ ⟨x, hx, rfl⟩⟩, rfl⟩
+  simpa only [extendScalars_restrictScalars, restrictScalars_bot_eq_self] using congr_arg
+    (restrictScalars F) (extendScalars hi).eq_bot_of_isPurelyInseparable_of_isSeparable
+
+/-- If `E / F` is a separable field extension of exponential characteristic `q`, then
+`F(S) = F(S ^ (q ^ n))` for any subset `S` of `E` and any natural number `n`. -/
+theorem adjoin_eq_adjoin_pow_expChar_pow_of_isSeparable' [IsSeparable F E] (S : Set E)
+    (q : ℕ) [ExpChar F q] (n : ℕ) : adjoin F S = adjoin F ((fun x ↦ x ^ q ^ n) '' S) :=
+  haveI := isSeparable_tower_bot_of_isSeparable F (adjoin F S) E
+  adjoin_eq_adjoin_pow_expChar_pow_of_isSeparable F E S q n
+
+-- TODO: prove the converse when `F(S) / F` is finite
+/-- If `F` is a field of exponential characteristic `q`, `F(S) / F` is separable, then
+`F(S) = F(S ^ q)`. -/
+theorem adjoin_eq_adjoin_pow_expChar_of_isSeparable (S : Set E) [IsSeparable F (adjoin F S)]
+    (q : ℕ) [ExpChar F q] : adjoin F S = adjoin F ((fun x ↦ x ^ q) '' S) :=
+  pow_one q ▸ adjoin_eq_adjoin_pow_expChar_pow_of_isSeparable F E S q 1
+
+/-- If `E / F` is a separable field extension of exponential characteristic `q`, then
+`F(S) = F(S ^ q)` for any subset `S` of `E`. -/
+theorem adjoin_eq_adjoin_pow_expChar_of_isSeparable' [IsSeparable F E] (S : Set E)
+    (q : ℕ) [ExpChar F q] : adjoin F S = adjoin F ((fun x ↦ x ^ q) '' S) :=
+  pow_one q ▸ adjoin_eq_adjoin_pow_expChar_pow_of_isSeparable' F E S q 1
+
 end IntermediateField
 
 variable {F E} in
