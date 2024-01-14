@@ -92,6 +92,7 @@ lemma lhom_ext ⦃f : (Λ[R]^n) M →ₗ[R] N⦄ ⦃g : (Λ[R]^n) M →ₗ[R] N�
 
 variable {R}
 
+/-- Auxiliary construction for the definition of `ExteriorPower.liftAlternating`.-/
 def liftAlternating_aux : (AlternatingMap R M N (Fin n)) →ₗ[R]
     ((i : ℕ) → AlternatingMap R M N (Fin i)) :=
   LinearMap.pi (fun i ↦ if h : i = n then by rw [h]; exact LinearMap.id else 0)
@@ -161,7 +162,6 @@ def liftAlternatingEquiv : AlternatingMap R M N (Fin n) ≃ₗ[R] (Λ[R]^n) M �
   (by ext _; simp only [LinearMap.coe_comp, LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply,
         liftAlternating_comp_ιMulti, LinearMap.id_coe, id_eq])
 
-@[simp]
 lemma liftAlternatingEquiv_apply (f :AlternatingMap R M N (Fin n)) (x : (Λ[R]^n) M) :
     ExteriorPower.liftAlternatingEquiv R n f x = ExteriorPower.liftAlternating n f x := rfl
 
@@ -310,7 +310,6 @@ lemma linearFormOfFamily_apply (f : (_ : Fin n) → (M →ₗ[R] R)) (x : (Λ[R]
   unfold linearFormOfFamily
   simp only [LinearMap.coe_comp, Function.comp_apply]
 
-@[simp]
 lemma linearFormOfFamily_apply_ιMulti (f : (_ : Fin n) → (M →ₗ[R] R)) (m : Fin n → M) :
     linearFormOfFamily R n f (ιMulti R n m) =
     ∑ σ : Equiv.Perm (Fin n), Equiv.Perm.sign σ • ∏ i, f i (m (σ i)) := by
@@ -331,7 +330,6 @@ lemma linearFormOfFamily_comp_map (f : (_ : Fin n) → (M →ₗ[R] R)) (p : N �
     linearFormOfFamily_apply, toTensorPower_apply_ιMulti, map_sum, LinearMap.map_smul_of_tower,
     TensorPower.linearFormOfFamily_apply_tprod]
 
-@[simp]
 lemma linearFormOfFamily_comp_map_apply (f : (_ : Fin n) → (M →ₗ[R] R))
     (p : N →ₗ[R] M) (x : (Λ[R]^n) N) :
     (linearFormOfFamily R n f) (map n p x) =

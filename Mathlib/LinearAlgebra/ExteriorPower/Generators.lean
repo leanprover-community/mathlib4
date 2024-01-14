@@ -24,7 +24,7 @@ namespace ExteriorPower
 /-! Finiteness of the exterior power.-/
 
 /-- The `n`th exterior power of a finite module is a finite module.-/
-def Finite [Module.Finite R M]: Module.Finite R ((Λ[R]^n) M) :=
+theorem Finite [Module.Finite R M]: Module.Finite R ((Λ[R]^n) M) :=
   Module.Finite.mk ((Submodule.fg_top _).mpr (Submodule.FG.pow (by
   rw [LinearMap.range_eq_map]; exact Submodule.FG.map _  (Module.finite_def.mp inferInstance)) _ ))
 
