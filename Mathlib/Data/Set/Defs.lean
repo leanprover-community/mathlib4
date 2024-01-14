@@ -66,6 +66,15 @@ def imageFactorization (f : α → β) (s : Set α) : s → f '' s := fun p =>
   ⟨f p.1, mem_image_of_mem f p.2⟩
 #align set.image_factorization Set.imageFactorization
 
+/-- `kernImage f s` is the set of `y` such that `f ⁻¹ y ⊆ s`. -/
+def kernImage (f : α → β) (s : Set α) : Set β :=
+  { y | ∀ ⦃x⦄, f x = y → x ∈ s }
+#align set.kern_image Set.kernImage
+
+lemma subset_kernImage_iff {s : Set β} {t : Set α} {f : α → β} : s ⊆ kernImage f t ↔ f ⁻¹' s ⊆ t :=
+  ⟨fun h _ hx ↦ h hx rfl,
+    fun h _ hx y hy ↦ h (show f y ∈ s from hy.symm ▸ hx)⟩
+
 section Range
 
 variable {ι : Sort*} {f : ι → α}
