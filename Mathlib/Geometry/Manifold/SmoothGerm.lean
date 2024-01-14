@@ -35,11 +35,11 @@ instance Filter.Germ.orderedCommRing' {α : Type*} (l : Filter α) (R : Type*) [
   { Filter.Germ.partialOrder, inferInstanceAs (CommRing (Germ l R)) with
     add_le_add_left := by
       rintro ⟨a⟩ ⟨b⟩ hab ⟨c⟩
-      exact Eventually.mono hab fun x hx => add_le_add_left hx _
-    zero_le_one := eventually_of_forall fun _ => zero_le_one
+      exact Eventually.mono hab fun x hx ↦ add_le_add_left hx _
+    zero_le_one := eventually_of_forall fun _ ↦ zero_le_one
     mul_nonneg := by
       rintro ⟨a⟩ ⟨b⟩ ha hb
-      exact Eventually.mono (ha.and hb) fun x hx => mul_nonneg hx.1 hx.2 }
+      exact Eventually.mono (ha.and hb) fun x hx ↦ mul_nonneg hx.1 hx.2 }
 
 @[to_additive (attr := simp)]
 theorem Germ.coe_prod {α : Type*} (l : Filter α) (R : Type*) [CommMonoid R] {ι} (f : ι → α → R)
@@ -61,7 +61,7 @@ def smoothGerm (x : N) : Subring (Germ (𝓝 x) ℝ) :=
   (RingHom.germOfContMDiffMap I x).range
 
 instance (x : N) : Coe C^∞⟮I, N; 𝓘(ℝ), ℝ⟯ (smoothGerm I x) :=
-  ⟨fun f => ⟨(f : N → ℝ), ⟨f, rfl⟩⟩⟩
+  ⟨fun f ↦ ⟨(f : N → ℝ), ⟨f, rfl⟩⟩⟩
 
 @[simp]
 theorem smoothGerm.coe_coe (f : C^∞⟮I, N; 𝓘(ℝ), ℝ⟯) (x : N) :
@@ -165,15 +165,15 @@ def Filter.Germ.valueₛₗ {F} [AddCommMonoid F] [Module ℝ F] (x : N) :
     Germ (𝓝 x) F →ₛₗ[smoothGerm.valueRingHom IG x] F :=
   { Filter.Germ.valueAddHom with
     toFun := Filter.Germ.value
-    map_smul' := fun φ ψ => (φ : Germ (𝓝 x) ℝ).value_smul ψ }
+    map_smul' := fun φ ψ ↦ (φ : Germ (𝓝 x) ℝ).value_smul ψ }
 
 variable (I)
 
 protected def Filter.Germ.ContMDiffAt' {x : M} (φ : Germ (𝓝 x) N) (n : ℕ∞) : Prop :=
-  Quotient.liftOn' φ (fun f => ContMDiffAt I IG n f x) fun f g h =>
+  Quotient.liftOn' φ (fun f ↦ ContMDiffAt I IG n f x) fun f g h ↦
     propext <| by
       constructor
-      all_goals refine' fun H => H.congr_of_eventuallyEq _
+      all_goals refine fun H ↦ H.congr_of_eventuallyEq ?_
       exacts [h.symm, h]
 
 /-- The predicate selecting germs of `cont_mdiff_at` functions.
@@ -185,8 +185,8 @@ protected nonrec def Filter.Germ.ContMDiffAt {x : M} (φ : Germ (𝓝 x) F) (n :
 nonrec def Filter.Germ.mfderiv {x : M} (φ : Germ (𝓝 x) N) :
     TangentSpace I x →L[ℝ] TangentSpace IG φ.value :=
   @Quotient.hrecOn _ (germSetoid (𝓝 x) N)
-    (fun φ : Germ (𝓝 x) N => TangentSpace I x →L[ℝ] TangentSpace IG φ.value) φ
-    (fun f => mfderiv I IG f x) fun _f _g hfg => heq_of_eq (EventuallyEq.mfderiv_eq hfg : _)
+    (fun φ : Germ (𝓝 x) N ↦ TangentSpace I x →L[ℝ] TangentSpace IG φ.value) φ
+    (fun f ↦ mfderiv I IG f x) fun _f _g hfg ↦ heq_of_eq (EventuallyEq.mfderiv_eq hfg : _)
 
 variable {I}
 
@@ -195,11 +195,11 @@ theorem smoothGerm.contMDiffAt {x : M} (φ : smoothGerm I x) {n : ℕ∞} :
 
 protected nonrec theorem Filter.Germ.ContMDiffAt.add {x : M} {φ ψ : Germ (𝓝 x) F} {n : ℕ∞} :
     φ.ContMDiffAt I n → ψ.ContMDiffAt I n → (φ + ψ).ContMDiffAt I n :=
-  Germ.inductionOn φ fun _f hf => Germ.inductionOn ψ fun _g hg => hf.add hg
+  Germ.inductionOn φ fun _f hf ↦ Germ.inductionOn ψ fun _g hg ↦ hf.add hg
 
 protected nonrec theorem Filter.Germ.ContMDiffAt.smul {x : M} {φ : Germ (𝓝 x) ℝ} {ψ : Germ (𝓝 x) F}
     {n : ℕ∞} : φ.ContMDiffAt I n → ψ.ContMDiffAt I n → (φ • ψ).ContMDiffAt I n :=
-  Germ.inductionOn φ fun _f hf => Germ.inductionOn ψ fun _g hg => hf.smul hg
+  Germ.inductionOn φ fun _f hf ↦ Germ.inductionOn ψ fun _g hg ↦ hf.smul hg
 
 theorem Filter.Germ.ContMDiffAt.sum {x : M} {ι} {s : Finset ι} {n : ℕ∞} {f : ι → Germ (𝓝 x) F}
     (h : ∀ i ∈ s, (f i).ContMDiffAt I n) : (∑ i in s, f i).ContMDiffAt I n := by
@@ -256,12 +256,12 @@ open Function
 
 -- TODO: generalize the next def?
 def Filter.Germ.ContMDiffAtProd {x : M₁} (φ : Germ (𝓝 x) (M₂ → F)) (n : ℕ∞) : Prop :=
-  Quotient.liftOn' φ (fun f => ∀ y : M₂, ContMDiffAt (I₁.prod I₂) 𝓘(ℝ, F) n (uncurry f) (x, y))
-    fun f g h => propext <| by
+  Quotient.liftOn' φ (fun f ↦ ∀ y : M₂, ContMDiffAt (I₁.prod I₂) 𝓘(ℝ, F) n (uncurry f) (x, y))
+    fun f g h ↦ propext <| by
         change {x' | f x' = g x'} ∈ 𝓝 x at h
         constructor
         all_goals
-          refine' fun H y => (H y).congr_of_eventuallyEq _
+          refine fun H y ↦ (H y).congr_of_eventuallyEq ?_
           clear H
           replace h : {x' | f x' = g x'} ×ˢ (univ : Set M₂) ∈ 𝓝 x ×ˢ 𝓝 y := prod_mem_prod h univ_mem
           rw [← nhds_prod_eq] at h
@@ -293,16 +293,16 @@ variable {I₁ I₂}
 
 theorem Filter.Germ.ContMDiffAtProd.add {x : M₁} {φ ψ : Germ (𝓝 x) <| M₂ → F} {n : ℕ∞} :
     φ.ContMDiffAtProd I₁ I₂ n → ψ.ContMDiffAtProd I₁ I₂ n → (φ + ψ).ContMDiffAtProd I₁ I₂ n :=
-  Germ.inductionOn φ fun _f hf => Germ.inductionOn ψ fun _g hg y => (hf y).add (hg y)
+  Germ.inductionOn φ fun _f hf ↦ Germ.inductionOn ψ fun _g hg y ↦ (hf y).add (hg y)
 
 theorem Filter.Germ.ContMDiffAtProd.smul {x : M₁} {φ : Germ (𝓝 x) <| M₂ → ℝ}
     {ψ : Germ (𝓝 x) <| M₂ → F} {n : ℕ∞} :
     φ.ContMDiffAtProd I₁ I₂ n → ψ.ContMDiffAtProd I₁ I₂ n → (φ • ψ).ContMDiffAtProd I₁ I₂ n :=
-  Germ.inductionOn φ fun _f hf => Germ.inductionOn ψ fun _g hg y => (hf y).smul (hg y)
+  Germ.inductionOn φ fun _f hf ↦ Germ.inductionOn ψ fun _g hg y ↦ (hf y).smul (hg y)
 
 theorem Filter.Germ.ContMDiffAt.smul_prod {x : M₁} {φ : Germ (𝓝 x) ℝ} {ψ : Germ (𝓝 x) (M₂ → F)}
     {n : ℕ∞} : φ.ContMDiffAt I₁ n → ψ.ContMDiffAtProd I₁ I₂ n → (φ • ψ).ContMDiffAtProd I₁ I₂ n :=
-  Germ.inductionOn φ fun _f hf => Germ.inductionOn ψ fun _g hg y =>
+  Germ.inductionOn φ fun _f hf ↦ Germ.inductionOn ψ fun _g hg y ↦
     .smul (.comp _ hf contMDiffAt_fst) (hg y)
 
 theorem Filter.Germ.ContMDiffAtProd.sum {x : M₁} {ι} {s : Finset ι} {n : ℕ∞}
