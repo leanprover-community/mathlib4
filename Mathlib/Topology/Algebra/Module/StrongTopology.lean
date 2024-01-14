@@ -175,7 +175,7 @@ theorem strongTopology.uniformContinuousConstSMul (M : Type*)
     [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
     [UniformSpace F] [UniformAddGroup F] [UniformContinuousConstSMul M F] (𝔖 : Set (Set E)) :
     @UniformContinuousConstSMul M (E →SL[σ] F) (strongUniformity σ F 𝔖) _ :=
-  letI := strongUniformity σ F 𝔖
+  let _ := strongUniformity σ F 𝔖
   (strongUniformity.uniformEmbedding_coeFn σ F 𝔖).toUniformInducing.uniformContinuousConstSMul
     fun _ _ ↦ rfl
 
@@ -183,11 +183,11 @@ theorem strongTopology.continuousConstSMul (M : Type*)
     [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
     [TopologicalSpace F] [TopologicalAddGroup F] [ContinuousConstSMul M F] (𝔖 : Set (Set E)) :
     @ContinuousConstSMul M (E →SL[σ] F) (strongTopology σ F 𝔖) _ :=
-  letI := TopologicalAddGroup.toUniformSpace F
-  haveI : UniformAddGroup F := comm_topologicalAddGroup_is_uniform
-  letI := strongUniformity σ F 𝔖
-  haveI := uniformContinuousConstSMul_of_continuousConstSMul M F
-  haveI := strongTopology.uniformContinuousConstSMul σ F M 𝔖
+  let _ := TopologicalAddGroup.toUniformSpace F
+  have _ : UniformAddGroup F := comm_topologicalAddGroup_is_uniform
+  let _ := strongUniformity σ F 𝔖
+  have _ := uniformContinuousConstSMul_of_continuousConstSMul M F
+  have _ := strongTopology.uniformContinuousConstSMul σ F M 𝔖
   inferInstance
 
 end General
