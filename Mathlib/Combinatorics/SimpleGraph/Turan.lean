@@ -62,9 +62,8 @@ theorem turanGraph_cliqueFree : (turanGraph n r).CliqueFree (r + 1) := by
   rw [not_isEmpty_iff] at h
   obtain ⟨f, ha⟩ := h
   simp only [turanGraph, top_adj] at ha
-  have := @exists_ne_map_eq_of_card_lt_of_maps_to (Fin (r + 1)) (Fin r) univ univ (by simp)
-    (fun x ↦ ⟨(f x).1 % r, Nat.mod_lt _ hr⟩) (by simp)
-  obtain ⟨x, _, y, _, d, c⟩ := this
+  obtain ⟨x, y, d, c⟩ := Fintype.exists_ne_map_eq_of_card_lt (fun x : Fin (r + 1) ↦
+    (⟨(f x).1 % r, Nat.mod_lt _ hr⟩ : Fin r)) (by simp)
   simp only [Fin.mk.injEq] at c
   exact absurd c ((@ha x y).mpr d)
 
