@@ -156,12 +156,10 @@ theorem trailingDegree_mul : (p * q).trailingDegree = p.trailingDegree + q.trail
 @[simp]
 theorem natDegree_pow (p : R[X]) (n : ℕ) : natDegree (p ^ n) = n * natDegree p := by
   classical
-  exact if hp0 : p = 0 then
-    if hn0 : n = 0 then by simp [hp0, hn0]
-    else by rw [hp0, zero_pow (Nat.pos_of_ne_zero hn0)]; simp
-  else
-    natDegree_pow'
-      (by rw [← leadingCoeff_pow, Ne.def, leadingCoeff_eq_zero]; exact pow_ne_zero _ hp0)
+  obtain rfl | hp := eq_or_ne p 0
+  · obtain rfl | hn := eq_or_ne n 0 <;> simp [*]
+  exact natDegree_pow' $ by
+    rw [← leadingCoeff_pow, Ne.def, leadingCoeff_eq_zero]; exact pow_ne_zero _ hp
 #align polynomial.nat_degree_pow Polynomial.natDegree_pow
 
 theorem degree_le_mul_left (p : R[X]) (hq : q ≠ 0) : degree p ≤ degree (p * q) := by
