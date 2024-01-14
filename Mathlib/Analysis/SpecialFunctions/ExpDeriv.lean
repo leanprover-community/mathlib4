@@ -5,6 +5,7 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne
 -/
 import Mathlib.Analysis.Complex.RealDeriv
 import Mathlib.Analysis.Calculus.ContDiff.IsROrC
+import Mathlib.Analysis.Calculus.IteratedDeriv
 
 #align_import analysis.special_functions.exp_deriv from "leanprover-community/mathlib"@"6a5c85000ab93fe5dcfdf620676f614ba8e18c26"
 
@@ -24,6 +25,8 @@ noncomputable section
 open Filter Asymptotics Set Function
 
 open scoped Classical Topology
+
+/-! ## `Complex.exp` -/
 
 namespace Complex
 
@@ -174,6 +177,20 @@ theorem ContDiffWithinAt.cexp {n} (hf : ContDiffWithinAt 𝕜 n f s x) :
 
 end
 
+theorem iteratedDeriv_cexp_const_mul (n : ℕ) (c : ℂ) :
+    (iteratedDeriv n fun s : ℂ => Complex.exp (c * s)) = fun s => c ^ n * Complex.exp (c * s) := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    funext x
+    rw [pow_succ, iteratedDeriv_succ, ih, deriv_const_mul_field,
+      deriv_cexp (differentiableAt_id'.const_mul _), deriv_const_mul _ differentiableAt_id',
+      deriv_id'']
+    ring
+
+
+/-! ## `Real.exp` -/
+
 namespace Real
 
 variable {x y z : ℝ}
@@ -319,3 +336,14 @@ theorem fderiv_exp (hc : DifferentiableAt ℝ f x) :
 #align fderiv_exp fderiv_exp
 
 end
+
+theorem iteratedDeriv_exp_const_mul (n : ℕ) (c : ℝ) :
+    (iteratedDeriv n fun s => Real.exp (c * s)) = fun s => c ^ n * Real.exp (c * s) := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    funext x
+    rw [pow_succ, iteratedDeriv_succ, ih, deriv_const_mul_field,
+      deriv_exp (differentiableAt_id'.const_mul _), deriv_const_mul _ differentiableAt_id',
+      deriv_id'']
+    ring
