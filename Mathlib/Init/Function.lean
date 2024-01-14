@@ -14,7 +14,6 @@ import Mathlib.Tactic.Eqns
 # General operations on functions
 -/
 
-
 universe u₁ u₂ u₃ u₄ u₅
 
 namespace Function
@@ -82,13 +81,21 @@ infixl:2 " on " => onFun
 -- porting note: removed, it was never used
 -- notation f " -[" op "]- " g => combine f op g
 
-theorem left_id (f : α → β) : id ∘ f = f :=
-  rfl
-#align function.left_id Function.left_id
+@[simp, mfld_simps]
+theorem id_comp (f : α → β) : id ∘ f = f := rfl
+#align function.left_id Function.id_comp
+#align function.comp.left_id Function.id_comp
 
-theorem right_id (f : α → β) : f ∘ id = f :=
-  rfl
-#align function.right_id Function.right_id
+@[deprecated] alias left_id := id_comp -- Deprecated since 14 January 2014
+@[deprecated] alias comp.left_id := id_comp -- Deprecated since 14 January 2014
+
+@[simp, mfld_simps]
+theorem comp_id (f : α → β) : f ∘ id = f := rfl
+#align function.right_id Function.comp_id
+#align function.comp.right_id Function.comp_id
+
+@[deprecated] alias right_id := comp_id -- Deprecated since 14 January 2014
+@[deprecated] alias comp.right_id := comp_id -- Deprecated since 14 January 2014
 
 #align function.comp_app Function.comp_apply
 
@@ -96,19 +103,13 @@ theorem comp.assoc (f : φ → δ) (g : β → φ) (h : α → β) : (f ∘ g) �
   rfl
 #align function.comp.assoc Function.comp.assoc
 
-@[simp, mfld_simps]
-theorem comp.left_id (f : α → β) : id ∘ f = f :=
-  rfl
-#align function.comp.left_id Function.comp.left_id
+@[simp] theorem const_comp {γ : Sort*} (f : α → β) (c : γ) : const β c ∘ f = const α c := rfl
+#align function.const_comp Function.const_comp
 
-@[simp, mfld_simps]
-theorem comp.right_id (f : α → β) : f ∘ id = f :=
-  rfl
-#align function.comp.right_id Function.comp.right_id
+@[simp] theorem comp_const (f : β → φ) (b : β) : f ∘ const α b = const α (f b) := rfl
+#align function.comp_const_right Function.comp_const
 
-theorem comp_const_right (f : β → φ) (b : β) : f ∘ const α b = const α (f b) :=
-  rfl
-#align function.comp_const_right Function.comp_const_right
+@[deprecated] alias comp_const_right := comp_const -- Deprecated since 14 January 2014
 
 /-- A function `f : α → β` is called injective if `f x = f y` implies `x = y`. -/
 def Injective (f : α → β) : Prop :=
