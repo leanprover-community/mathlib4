@@ -126,7 +126,7 @@ lemma span_top_of_span_top {I : Type*} [LinearOrder I] {v : I → M}
 `Λ[R]^n M`. This is a variant of `ExteriorPower.span_top_of_span_top` where we
 work in the exterior power and not the exterior algebra.-/
 lemma span_top_of_span_top' {I : Type*} [LinearOrder I]
-{v : I → M} (hv : Submodule.span R (Set.range v) = ⊤) :
+    {v : I → M} (hv : Submodule.span R (Set.range v) = ⊤) :
     Submodule.span R  (Set.range (ιMulti_family R n v)) = ⊤ := by
   rw [eq_top_iff]
   intro ⟨u, hu⟩ _
@@ -143,7 +143,7 @@ range of `ExteriorPower.ιMult_family R n v`, i.e. of the family of `n`-fold ext
 of elements of `v`, is the image of the map of exterior powers induced by the inclusion of
 the span of `v` into `M`.-/
 lemma span_of_span {I : Type*} [LinearOrder I] (v : I → M) :
-LinearMap.range (map n (Submodule.subtype (Submodule.span R (Set.range v)))) =
+    LinearMap.range (map n (Submodule.subtype (Submodule.span R (Set.range v)))) =
     Submodule.span R (Set.range (ιMulti_family R n v)) := by
   conv_lhs => rw [LinearMap.range_eq_map]
   rw [← (span_top_of_span_top' (I := I) (R := R) (v := fun i =>
