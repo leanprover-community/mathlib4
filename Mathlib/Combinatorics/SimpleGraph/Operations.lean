@@ -16,7 +16,8 @@ we also prove theorems about the number of edges in the modified graphs.
 
 * `G.replaceVertex s t` is `G` with `t` replaced by a copy of `s`,
   removing the `s-t` edge if present.
-* `G.addEdge s t` is `G` with the `s-t` edge added, if that is a valid edge.
+* `edge s t` is the graph with a single `s-t` edge. Adding this edge to a graph `G` is then
+  `G ⊔ edge s t`.
 -/
 
 
@@ -124,31 +125,40 @@ end ReplaceVertex
 
 section AddEdge
 
-/-- Given a vertex pair, add the corresponding edge to the graph's edge set if not present. -/
-def addEdge : SimpleGraph V where
-  Adj v w := G.Adj v w ∨ s ≠ t ∧ (s = v ∧ t = w ∨ s = w ∧ t = v)
-  symm v w := by simp_rw [adj_comm]; (conv_lhs => arg 2; arg 2; rw [or_comm]); exact id
+/-- The graph with a single `s-t` edge. It is empty iff `s = t`. -/
+def edge : SimpleGraph V := fromEdgeSet {s(s, t)}
+
+instance : Fintype (edge s t).edgeSet := by rw [edge]; infer_instance
+
+lemma edge_self_eq_bot : edge s s = ⊥ := by
+  ext a b
+  rw [edge, fromEdgeSet_adj, Set.mem_singleton_iff, Sym2.eq_iff, or_self, bot_adj, iff_false,
+    not_and, and_imp, not_ne_iff]
+  exact fun j k ↦ j.trans k.symm
 
 @[simp]
-lemma addEdge_self : G.addEdge s s = G := by ext; simp [addEdge]
+lemma sup_edge_self : G ⊔ edge s s = G := by
+  rw [edge_self_eq_bot, sup_of_le_left bot_le]
 
 variable {s t}
 
-lemma addEdge_of_adj (h : G.Adj s t) : G.addEdge s t = G := by
-  ext
-  simp only [addEdge, ne_eq, G.ne_of_adj h, not_false_eq_true, true_and, or_iff_left_iff_imp]
-  rintro (_ | _) <;> simp_all [adj_comm]
+lemma edge_edgeSet_of_ne (h : s ≠ t): (edge s t).edgeSet = {s(s, t)} := by
+  rwa [edge, edgeSet_fromEdgeSet, sdiff_eq_left, Set.disjoint_singleton_left, Set.mem_setOf_eq,
+    Sym2.isDiag_iff_proj_eq]
+
+lemma sup_edge_of_adj (h : G.Adj s t) : G ⊔ edge s t = G := by
+  rwa [sup_eq_left, ← edgeSet_subset_edgeSet, edge_edgeSet_of_ne h.ne, Set.singleton_subset_iff,
+    mem_edgeSet]
 
 variable [Fintype V] [DecidableRel G.Adj]
 
-instance : DecidableRel (G.addEdge s t).Adj := by unfold addEdge; infer_instance
+theorem edgeFinset_sup_edge (hn : ¬G.Adj s t) (h : s ≠ t) :
+    (G ⊔ edge s t).edgeFinset = G.edgeFinset.cons s(s, t) (by simp_all) := by
+  rw [edgeFinset_sup, cons_eq_insert, insert_eq, union_comm]
+  congr; simp_rw [edgeFinset, edge_edgeSet_of_ne h]; rfl
 
-theorem edgeFinset_addEdge (hn : ¬G.Adj s t) (h : s ≠ t) :
-    (G.addEdge s t).edgeFinset = G.edgeFinset.cons s(s, t) (by simp_all) := by
-  ext e; refine' e.inductionOn _; unfold addEdge; aesop
-
-theorem card_edgeFinset_addEdge (hn : ¬G.Adj s t) (h : s ≠ t) :
-    (G.addEdge s t).edgeFinset.card = G.edgeFinset.card + 1 := by
-  rw [G.edgeFinset_addEdge hn h, card_cons]
+theorem card_edgeFinset_sup_edge (hn : ¬G.Adj s t) (h : s ≠ t) :
+    (G ⊔ edge s t).edgeFinset.card = G.edgeFinset.card + 1 := by
+  rw [G.edgeFinset_sup_edge hn h, card_cons]
 
 end AddEdge
