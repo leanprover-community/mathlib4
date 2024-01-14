@@ -1993,7 +1993,7 @@ lemma exists_is_open_mem_uniformity_of_forall_mem_eq
     have B : {z | (g x, g z) ∈ t} ∈ 𝓝 x := (hg x hx).preimage_mem_nhds (mem_nhds_left (g x) ht)
     rcases _root_.mem_nhds_iff.1 (inter_mem A B) with ⟨u, hu, u_open, xu⟩
     refine ⟨u, u_open, xu, fun y hy ↦ ?_⟩
-    have I1 : (f y, f x) ∈ t :=  (htsymm.mk_mem_comm).2 (hu hy).1
+    have I1 : (f y, f x) ∈ t := (htsymm.mk_mem_comm).2 (hu hy).1
     have I2 : (g x, g y) ∈ t := (hu hy).2
     rw [hfg hx] at I1
     exact htr (prod_mk_mem_compRel I1 I2)
