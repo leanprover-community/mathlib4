@@ -1710,12 +1710,11 @@ section NhdsSet
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f : Filter X}
   {s : Set X} {t : Set Y} {x : X}
 
-theorem Filter.nhdsSet_prod_le_prod : 𝓝ˢ (s ×ˢ t) ≤ 𝓝ˢ s ×ˢ 𝓝ˢ t := by
-  apply sSup_le _
-  rintro f ⟨⟨x, y⟩, ⟨hx, hy⟩, rfl⟩ U hU
-  simp only [mem_nhdsSet_iff_forall, nhds_prod_eq, mem_prod_iff] at *
-  rcases hU with ⟨V, V_in, W, W_in, hVW⟩
-  exact ⟨V, V_in x hx, W, W_in y hy, hVW⟩
+/-- The product of a neighborhood of `s` and a neighborhood of `t` is a neighborhood of `s ×ˢ t`,
+formulated in terms of a filter inequality. -/
+theorem nhdsSet_prod_le (s : Set X) (t : Set Y) : 𝓝ˢ (s ×ˢ t) ≤ 𝓝ˢ s ×ˢ 𝓝ˢ t :=
+  ((hasBasis_nhdsSet _).prod (hasBasis_nhdsSet _)).ge_iff.2 fun (_u, _v) ⟨⟨huo, hsu⟩, hvo, htv⟩ ↦
+    (huo.prod hvo).mem_nhdsSet.2 <| prod_mono hsu htv
 
 theorem Filter.eventually_nhdsSet_prod_iff {p : X × Y → Prop} :
     (∀ᶠ q in 𝓝ˢ (s ×ˢ t), p q) ↔
@@ -1727,6 +1726,6 @@ theorem Filter.eventually_nhdsSet_prod_iff {p : X × Y → Prop} :
 theorem Filter.Eventually.prod_nhdsSet {p : X × Y → Prop} {pa : X → Prop} {pb : Y → Prop}
     (hp : ∀ {x : X}, pa x → ∀ {y : Y}, pb y → p (x, y)) (hs : ∀ᶠ x in 𝓝ˢ s, pa x)
     (ht : ∀ᶠ y in 𝓝ˢ t, pb y) : ∀ᶠ q in 𝓝ˢ (s ×ˢ t), p q :=
-  Filter.nhdsSet_prod_le_prod (mem_of_superset (prod_mem_prod hs ht) fun _ ⟨hx, hy⟩ ↦ hp hx hy)
+  nhdsSet_prod_le _ _ (mem_of_superset (prod_mem_prod hs ht) fun _ ⟨hx, hy⟩ ↦ hp hx hy)
 
 end NhdsSet

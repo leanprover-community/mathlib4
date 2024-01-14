@@ -178,12 +178,6 @@ lemma Continuous.tendsto_nhdsSet_nhds
   rw [← nhdsSet_singleton]
   exact h.tendsto_nhdsSet h'
 
-theorem IsOpen.forall_near_mem_of_subset {s t : Set X} (h : IsOpen s) (ht : t ⊆ s) :
-    ∀ᶠ x in 𝓝ˢ t, x ∈ s := by
-  apply Eventually.filter_mono (nhdsSet_mono ht)
-  rw [h.nhdsSet_eq, eventually_principal]
-  exact fun x => id
-
 /- In the next lemma, the inequality cannot be improved to an equality. For instance,
 if `X` has two elements and the coarse topology and s and t are distinct singletons then
 𝓝ˢ (s ∩ t) = ⊥ while 𝓝ˢ s ⊓ 𝓝ˢ t = ⊤ and those are different. -/
@@ -209,10 +203,6 @@ theorem Filter.Eventually.eventually_nhdsSet {p : X → Prop} (h : ∀ᶠ y in �
     ∀ᶠ y in 𝓝ˢ s, ∀ᶠ x in 𝓝 y, p x :=
   eventually_nhdsSet_iff.mpr fun x x_in => (eventually_nhdsSet_iff.mp h x x_in).eventually_nhds
 
-@[deprecated Filter.Eventually.self_of_nhdsSet]
-theorem Filter.Eventually.on_set {p : X → Prop} (h : ∀ᶠ y in 𝓝ˢ s, p y) : ∀ x ∈ s, p x :=
-  h.self_of_nhdsSet
-
 theorem Filter.Eventually.union_nhdsSet {p : X → Prop} :
     (∀ᶠ x in 𝓝ˢ (s ∪ t), p x) ↔ (∀ᶠ x in 𝓝ˢ s, p x) ∧ ∀ᶠ x in 𝓝ˢ t, p x := by
   rw [nhdsSet_union, eventually_sup]
@@ -231,11 +221,11 @@ theorem sSup_iUnion {α : Type*} {ι : Sort*} (t : ι → Set (Filter α)) :
 theorem nhdsSet_iUnion {ι : Sort*} (s : ι → Set X) : 𝓝ˢ (⋃ i, s i) = ⨆ i, 𝓝ˢ (s i) := by
   simp only [nhdsSet, image_iUnion,  sSup_iUnion]
 
-theorem eventually_nhdsSet_iUnion₂ {X ι : Type*} [TopologicalSpace X] {p : ι → Prop}
+theorem eventually_nhdsSet_iUnion₂ {X : Type*} {ι : Sort*} [TopologicalSpace X] {p : ι → Prop}
     {s : ι → Set X} {P : X → Prop} :
     (∀ᶠ x in 𝓝ˢ (⋃ (i) (_ : p i), s i), P x) ↔ ∀ i, p i → ∀ᶠ x in 𝓝ˢ (s i), P x := by
   simp only [nhdsSet_iUnion, eventually_iSup]
 
-theorem eventually_nhdsSet_iUnion {X ι : Type*} [TopologicalSpace X] {s : ι → Set X}
+theorem eventually_nhdsSet_iUnion {X : Type*} {ι : Sort*} [TopologicalSpace X] {s : ι → Set X}
     {P : X → Prop} : (∀ᶠ x in 𝓝ˢ (⋃ i, s i), P x) ↔ ∀ i, ∀ᶠ x in 𝓝ˢ (s i), P x := by
   simp only [nhdsSet_iUnion, eventually_iSup]
