@@ -55,7 +55,7 @@ This file expands on the development in the core library.
   provided that `n = m`, see also `Equiv.finCongr`;
 * `Fin.castAddEmb m` : `Fin.castAdd` as an `OrderEmbedding`, embed `Fin n` into `Fin (n+m)`;
 * `Fin.castSuccEmb` : `Fin.castSucc` as an `OrderEmbedding`, embed `Fin n` into `Fin (n+1)`;
-* `Fin.succAboveEmb p` : `Fin.auccAbove` as an `OrderEmbedding`, embed `Fin n` into `Fin (n + 1)`
+* `Fin.succAboveEmb p` : `Fin.succAbove` as an `OrderEmbedding`, embed `Fin n` into `Fin (n + 1)`
   with a hole around `p`;
 * `Fin.addNatEmb m i` : `Fin.addNat` as an `OrderEmbedding`, add `m` on `i` on the right,
   generalizes `Fin.succ`;
@@ -769,7 +769,7 @@ This one instead uses a `NeZero n` typeclass hypothesis.
 -/
 @[simp]
 theorem le_zero_iff' {n : ℕ} [NeZero n] {k : Fin n} : k ≤ 0 ↔ k = 0 :=
-  ⟨fun h => Fin.eq_of_veq $ by rw [Nat.eq_zero_of_le_zero h]; rfl, by rintro rfl; exact le_refl _⟩
+  ⟨fun h => Fin.eq_of_veq <| by rw [Nat.eq_zero_of_le_zero h]; rfl, by rintro rfl; exact le_refl _⟩
 #align fin.le_zero_iff Fin.le_zero_iff'
 
 #align fin.succ_succ_ne_one Fin.succ_succ_ne_one
@@ -1385,7 +1385,7 @@ theorem strictMono_succAbove (p : Fin (n + 1)) : StrictMono (succAbove p) :=
     (castSucc_lt_succ i).le
 #align fin.succ_above_aux Fin.strictMono_succAbove
 
-/--  `Fin.auccAbove` as an `OrderEmbedding`, `succAboveEmb p i` embeds `Fin n` into `Fin (n + 1)`
+/--  `Fin.succAbove` as an `OrderEmbedding`, `succAboveEmb p i` embeds `Fin n` into `Fin (n + 1)`
 with a hole around `p`. -/
 @[simps! apply toEmbedding]
 def succAboveEmb (p : Fin (n + 1)) : Fin n ↪o Fin (n + 1) :=

@@ -154,7 +154,7 @@ An attribute that stores all the declarations that needs their arguments reorder
 applying `@[to_additive]`. It is applied automatically by the `(reorder := ...)` syntax of
 `to_additive`, and should not usually be added manually.
 -/
-initialize reorderAttr : NameMapExtension (List $ List Nat) ←
+initialize reorderAttr : NameMapExtension (List <| List Nat) ←
   registerNameMapAttribute {
     name := `to_additive_reorder
     descr := "\
@@ -591,7 +591,7 @@ partial def transformDeclAux
     | _ => panic! "unreachable"
   if isNoncomputable env src then
     addDecl trgDecl.toDeclaration!
-    setEnv $ addNoncomputable (← getEnv) tgt
+    setEnv <| addNoncomputable (← getEnv) tgt
   else
     addAndCompile trgDecl.toDeclaration!
   -- now add declaration ranges so jump-to-definition works
@@ -601,7 +601,7 @@ partial def transformDeclAux
     range := ← getDeclarationRange (← getRef)
     selectionRange := ← getDeclarationRange cfg.ref }
   if isProtected (← getEnv) src then
-    setEnv $ addProtected (← getEnv) tgt
+    setEnv <| addProtected (← getEnv) tgt
 
 /-- Copy the instance attribute in a `to_additive`
 
@@ -723,6 +723,7 @@ def nameDict : String → List String
   | "pow"         => ["nsmul"]
   | "npow"        => ["nsmul"]
   | "zpow"        => ["zsmul"]
+  | "mabs"        => ["abs"]
   | "monoid"      => ["add", "Monoid"]
   | "submonoid"   => ["add", "Submonoid"]
   | "group"       => ["add", "Group"]
@@ -815,6 +816,8 @@ def fixAbbreviation : List String → List String
                                       => "function" :: "_" :: "semiconj" :: fixAbbreviation s
   | "function" :: "_" :: "add" :: "Commute" :: s
                                       => "function" :: "_" :: "commute" :: fixAbbreviation s
+  | "zero" :: "Le" :: "Part" :: s         => "posPart" :: fixAbbreviation s
+  | "le" :: "Zero" :: "Part" :: s         => "negPart" :: fixAbbreviation s
   | x :: s                            => x :: fixAbbreviation s
   | []                                => []
 

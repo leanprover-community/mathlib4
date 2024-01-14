@@ -70,7 +70,7 @@ theorem integrableOn_Ioi_rpow_of_lt {a : ℝ} (ha : a < -1) {c : ℝ} (hc : 0 < 
     apply Tendsto.div_const
     simpa only [neg_neg] using tendsto_rpow_neg_atTop (by linarith : 0 < -(a + 1))
   exact
-    integrableOn_Ioi_deriv_of_nonneg' hd (fun t ht => rpow_nonneg_of_nonneg (hc.trans ht).le a) ht
+    integrableOn_Ioi_deriv_of_nonneg' hd (fun t ht => rpow_nonneg (hc.trans ht).le a) ht
 #align integrable_on_Ioi_rpow_of_lt integrableOn_Ioi_rpow_of_lt
 
 theorem integrableOn_Ioi_rpow_iff {s t : ℝ} (ht : 0 < t) :
