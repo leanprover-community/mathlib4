@@ -93,7 +93,7 @@ lemma lhom_ext ⦃f : (Λ[R]^n) M →ₗ[R] N⦄ ⦃g : (Λ[R]^n) M →ₗ[R] N�
 variable {R}
 
 def liftAlternating_aux : (AlternatingMap R M N (Fin n)) →ₗ[R]
-((i : ℕ) → AlternatingMap R M N (Fin i)) :=
+    ((i : ℕ) → AlternatingMap R M N (Fin i)) :=
   LinearMap.pi (fun i ↦ if h : i = n then by rw [h]; exact LinearMap.id else 0)
 
 /-- The linear map from `n`-fold alternating maps from `M` to `N` to linear maps from
@@ -163,11 +163,11 @@ def liftAlternatingEquiv : AlternatingMap R M N (Fin n) ≃ₗ[R] (Λ[R]^n) M �
 
 @[simp]
 lemma liftAlternatingEquiv_apply (f :AlternatingMap R M N (Fin n)) (x : (Λ[R]^n) M) :
-  ExteriorPower.liftAlternatingEquiv R n f x = ExteriorPower.liftAlternating n f x := rfl
+    ExteriorPower.liftAlternatingEquiv R n f x = ExteriorPower.liftAlternating n f x := rfl
 
 @[simp]
 lemma liftAlternatingEquiv_symm_apply (F : (Λ[R]^n) M →ₗ[R] N) (m : Fin n → M) :
-  (ExteriorPower.liftAlternatingEquiv R n).symm F m = F.compAlternatingMap (ιMulti R n) m := rfl
+    (ExteriorPower.liftAlternatingEquiv R n).symm F m = F.compAlternatingMap (ιMulti R n) m := rfl
 
 /-! Functoriality of the exterior powers.-/
 
@@ -179,7 +179,7 @@ def map (f : M →ₗ[R] N) : (Λ[R]^n) M →ₗ[R] (Λ[R]^n) N := by
   intro x hx
   rw [← ιMulti_span_fixedDegree] at hx ⊢
   have hx := Set.mem_image_of_mem (ExteriorAlgebra.map f) hx
-  rw [← Submodule.map_coe, LinearMap.map_span, ←Set.range_comp] at hx
+  rw [← Submodule.map_coe, LinearMap.map_span, ← Set.range_comp] at hx
   erw [← (LinearMap.coe_compAlternatingMap (ExteriorAlgebra.map f).toLinearMap
     (ExteriorAlgebra.ιMulti R n))] at hx
   rw [ExteriorAlgebra.map_comp_ιMulti, AlternatingMap.coe_compLinearMap] at hx
@@ -361,7 +361,7 @@ lemma _root_.Submodule.map_subtype (P Q : Submodule R M) (hPQ : P ≤ Q) :
 -/
 
 lemma sum_range_map (f : N →ₗ[R] M) (f' : N' →ₗ[R] M) (f'' : N''→ₗ[R] M)
-  (hf : ∃ (g : N →ₗ[R] N''), f''.comp g = f) (hf' : ∃ (g' : N' →ₗ[R] N''), f''.comp g' = f') :
+    (hf : ∃ (g : N →ₗ[R] N''), f''.comp g = f) (hf' : ∃ (g' : N' →ₗ[R] N''), f''.comp g' = f') :
     LinearMap.range (map n f) ⊔ LinearMap.range (map n f') ≤ LinearMap.range (map n f'') := by
   let ⟨g, hg⟩ := hf
   let ⟨g', hg'⟩ := hf'

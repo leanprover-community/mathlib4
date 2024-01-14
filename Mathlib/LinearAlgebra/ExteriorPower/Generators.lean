@@ -6,7 +6,7 @@ Authors: Sophie Morel
 import Mathlib.LinearAlgebra.ExteriorPower.Basic
 import Mathlib.Order.Extension.Well
 
-/- Add description.-/
+/-! Add description.-/
 
 universe u v uM uN uN' uN'' uE uF
 
@@ -127,7 +127,7 @@ lemma span_top_of_span_top {I : Type*} [LinearOrder I] {v : I → M}
 work in the exterior power and not the exterior algebra.-/
 lemma span_top_of_span_top' {I : Type*} [LinearOrder I]
 {v : I → M} (hv : Submodule.span R (Set.range v) = ⊤) :
-Submodule.span R  (Set.range (ιMulti_family R n v)) = ⊤ := by
+    Submodule.span R  (Set.range (ιMulti_family R n v)) = ⊤ := by
   rw [eq_top_iff]
   intro ⟨u, hu⟩ _
   rw [← span_top_of_span_top R n hv, ιMulti_family_coe,
@@ -144,7 +144,7 @@ of elements of `v`, is the image of the map of exterior powers induced by the in
 the span of `v` into `M`.-/
 lemma span_of_span {I : Type*} [LinearOrder I] (v : I → M) :
 LinearMap.range (map n (Submodule.subtype (Submodule.span R (Set.range v)))) =
-  Submodule.span R (Set.range (ιMulti_family R n v)) := by
+    Submodule.span R (Set.range (ιMulti_family R n v)) := by
   conv_lhs => rw [LinearMap.range_eq_map]
   rw [← (span_top_of_span_top' (I := I) (R := R) (v := fun i =>
     ⟨v i, by apply Submodule.subset_span; simp only [Set.mem_range, exists_apply_eq_apply]⟩)),
@@ -184,13 +184,14 @@ lemma linearFormOfBasis_apply_ιMulti {I : Type*} [LinearOrder I] (b : Basis I R
 of cardinality `n`. If we apply the linear form on `Λ[R]^n M` defined by `b` and `s`
 to the exterior product of the `b i` for `i ∈ s`, then we get `1`.-/
 lemma linearFormOfBasis_apply_diag {I : Type*} [LinearOrder I] (b : Basis I R M)
-{s : Finset I} (hs : Finset.card s = n) :
+    {s : Finset I} (hs : Finset.card s = n) :
     linearFormOfBasis R n b hs (ιMulti_family R n b ⟨s, hs⟩) = 1 := by
   unfold ιMulti_family
   simp only [Finset.coe_orderIsoOfFin_apply, linearFormOfBasis_apply_ιMulti]
   have hzero : ∀ (σ : Equiv.Perm (Fin n)), σ ∈ Finset.univ → ¬σ ∈ ({Equiv.refl (Fin n)} :
-    Finset (Equiv.Perm (Fin n))) → TensorPower.linearFormOfFamily R n (fun i => b.coord (Finset.orderIsoOfFin s hs i))
-    (Equiv.Perm.sign σ • ⨂ₜ[R] (i : Fin n), b ((Finset.orderIsoOfFin s hs) (σ i))) = 0 := by
+    Finset (Equiv.Perm (Fin n))) → TensorPower.linearFormOfFamily R n
+    (fun i => b.coord (Finset.orderIsoOfFin s hs i)) (Equiv.Perm.sign σ • ⨂ₜ[R] (i : Fin n),
+    b ((Finset.orderIsoOfFin s hs) (σ i))) = 0 := by
     intro σ _ hσ
     simp only [Finset.mem_singleton] at hσ
     erw [LinearMap.map_smul]
@@ -213,7 +214,7 @@ lemma linearFormOfBasis_apply_diag {I : Type*} [LinearOrder I] (b : Basis I R M)
     TensorPower.linearFormOfFamily_apply_tprod, Basis.coord_apply, Basis.repr_self, ne_eq,
     RelEmbedding.inj, Finset.sum_singleton, Equiv.Perm.sign_refl, Equiv.refl_apply,
     Finsupp.single_eq_same, Finset.prod_const_one, one_smul] at heq ⊢
-  rw [←heq]
+  rw [← heq]
 
 lemma linearFormOfBasis_apply_nondiag_aux {I : Type*} [LinearOrder I] {s t : Finset I}
     (hs : Finset.card s = n) (ht : Finset.card t = n) (hst : s ≠ t) (σ : Equiv.Perm (Fin n)) :
@@ -225,7 +226,7 @@ lemma linearFormOfBasis_apply_nondiag_aux {I : Type*} [LinearOrder I] {s t : Fin
   · intro a has
     set b := Finset.orderIsoOfFin t ht (σ ((Finset.orderIsoOfFin s hs).symm ⟨a, has⟩))
     have heq : a = b.1 := by
-      rw [←habs]
+      rw [← habs]
       simp only [OrderIso.apply_symm_apply]
     rw [heq]
     exact b.2
