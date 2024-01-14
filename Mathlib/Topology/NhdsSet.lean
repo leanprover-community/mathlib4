@@ -211,15 +211,8 @@ theorem Filter.Eventually.union {p : X → Prop} (hs : ∀ᶠ x in 𝓝ˢ s, p x
     ∀ᶠ x in 𝓝ˢ (s ∪ t), p x :=
   Filter.Eventually.union_nhdsSet.mpr ⟨hs, ht⟩
 
--- xxx: is there a better place for this lemma? can the proof be golfed?
-theorem sSup_iUnion {α : Type*} {ι : Sort*} (t : ι → Set (Filter α)) :
-    sSup (⋃ i, t i) = ⨆ i, sSup (t i) := by
-  ext
-  simp only [mem_sSup, mem_iUnion, forall_exists_index, mem_iSup]
-  exact ⟨fun a i f h ↦ a f i h, fun a f i h ↦ a i f h⟩
-
 theorem nhdsSet_iUnion {ι : Sort*} (s : ι → Set X) : 𝓝ˢ (⋃ i, s i) = ⨆ i, 𝓝ˢ (s i) := by
-  simp only [nhdsSet, image_iUnion,  sSup_iUnion]
+  simp only [nhdsSet, image_iUnion, sSup_iUnion (β := Filter X)]
 
 theorem eventually_nhdsSet_iUnion₂ {X : Type*} {ι : Sort*} [TopologicalSpace X] {p : ι → Prop}
     {s : ι → Set X} {P : X → Prop} :

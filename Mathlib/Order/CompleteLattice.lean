@@ -569,12 +569,6 @@ theorem sSup_insert {a : α} {s : Set α} : sSup (insert a s) = a ⊔ sSup s :=
   ((isLUB_sSup s).insert a).sSup_eq
 #align Sup_insert sSup_insert
 
-theorem sup_sSup {s : Set α} {a : α} :
-    a ⊔ sSup s = sSup (s ∪ {a}) := by simp only [Set.union_singleton, sSup_insert]
-
-theorem sSup_sup {s : Set α} {a : α} :
-    sSup s ⊔ a = sSup (s ∪ {a}) := by simp only [sup_sSup, sup_comm]
-
 @[simp]
 theorem sInf_insert {a : α} {s : Set α} : sInf (insert a s) = a ⊓ sInf s :=
   ((isGLB_sInf s).insert a).sInf_eq
