@@ -8,8 +8,6 @@ set_option autoImplicit true
 -- You can get timing information (very useful if tweaking the search algorithm!) using
 -- set_option profiler true
 
-/- FIXME: tests are flaky after #9409
-
 /-- info: Try this: rw [@List.length_append, Nat.add_comm] -/
 #guard_msgs in
 example (xs ys : List α) : (xs ++ ys).length = ys.length + xs.length := by
@@ -55,5 +53,3 @@ example (n : Nat) : makeSingleton n = [0] := by
   · simp only [makeSingleton]
   · -- At one point, this failed with: unknown free variable '_uniq.62770'
     rw_search
-
--/

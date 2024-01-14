@@ -86,4 +86,13 @@ lemma negOnePow_eq_iff (n₁ n₂ : ℤ) :
       Int.even_iff_not_odd, Int.even_iff_not_odd]
     tauto
 
+@[simp]
+lemma negOnePow_mul_self (n : ℤ) : (n * n).negOnePow = n.negOnePow := by
+  suffices Even (n * (n - 1)) by
+    simpa [mul_sub, mul_one, negOnePow_eq_iff] using this
+  rw [even_mul]
+  by_cases h : Even (n - 1)
+  · exact Or.inr h
+  · exact Or.inl (by simpa using Int.even_add_one.2 h)
+
 end Int
