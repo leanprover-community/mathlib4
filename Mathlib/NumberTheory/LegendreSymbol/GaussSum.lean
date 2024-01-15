@@ -200,7 +200,7 @@ theorem Char.card_pow_char_pow {χ : MulChar R R'} (hχ : IsQuadratic χ) (ψ : 
     (hg : gaussSum χ ψ ^ 2 = χ (-1) * Fintype.card R) :
     (χ (-1) * Fintype.card R) ^ (p ^ n / 2) = χ ((p : R) ^ n) := by
   have : gaussSum χ ψ ≠ 0 := by
-    intro hf; rw [hf, zero_pow (by norm_num : 0 < 2), eq_comm, mul_eq_zero] at hg
+    intro hf; rw [hf, zero_pow two_ne_zero, eq_comm, mul_eq_zero] at hg
     exact not_isUnit_prime_of_dvd_card p
         ((CharP.cast_eq_zero_iff R' p _).mp <| hg.resolve_left (isUnit_one.neg.map χ).ne_zero) hp
   rw [← hg]; apply mul_right_cancel₀ this

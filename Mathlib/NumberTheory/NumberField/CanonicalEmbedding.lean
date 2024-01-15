@@ -134,7 +134,7 @@ noncomputable def latticeBasis [NumberField K] :
     let N := Algebra.embeddingsMatrixReindex ℚ ℂ (fun i => integralBasis K (e i))
       RingHom.equivRatAlgHom
     rw [show M = N.transpose by { ext:2; rfl }]
-    rw [Matrix.det_transpose, ← @pow_ne_zero_iff ℂ _ _ _ 2 (by norm_num)]
+    rw [Matrix.det_transpose, ← pow_ne_zero_iff two_ne_zero]
     convert (map_ne_zero_iff _ (algebraMap ℚ ℂ).injective).mpr
       (Algebra.discr_not_zero_of_basis ℚ (integralBasis K))
     rw [← Algebra.discr_reindex ℚ (integralBasis K) e.symm]
