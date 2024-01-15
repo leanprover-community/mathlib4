@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2019 Michael Howes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Michael Howes
+Authors: Michael Howes, Newell Jensen
 -/
 import Mathlib.GroupTheory.FreeGroup.Basic
 import Mathlib.GroupTheory.QuotientGroup
@@ -94,13 +94,26 @@ theorem ext {φ ψ : PresentedGroup rels →* G} (hx : ∀ (x : α), φ (.of x) 
   ext
   apply hx
 
+variable {β : Type*}
+
 /-- Presented groups of isomorphic types are isomorphic. -/
-def equivPresentedGroup {β : Type*} (e : α ≃ β) :
+def equivPresentedGroup (rels : Set (FreeGroup α)) (e : α ≃ β) :
     PresentedGroup rels ≃* PresentedGroup ((FreeGroup.freeGroupCongr e) '' rels) :=
   QuotientGroup.congr (Subgroup.normalClosure rels)
     (Subgroup.normalClosure ((FreeGroup.freeGroupCongr e)'' rels)) (FreeGroup.freeGroupCongr e)
     (Subgroup.map_normalClosure rels (FreeGroup.freeGroupCongr e).toMonoidHom
       (FreeGroup.freeGroupCongr e).surjective)
+
+theorem equivPresentedGroup_apply_of (x : α) (rels : Set (FreeGroup α)) (e : α ≃ β) :
+    equivPresentedGroup rels e (PresentedGroup.of x) =
+    PresentedGroup.of (rels := (FreeGroup.freeGroupCongr e) '' rels) (e x) := by
+  rfl
+
+theorem equivPresentedGroup_symm_apply_of (x : α) (rels : Set (FreeGroup α)) (e : α ≃ β) :
+    (equivPresentedGroup rels e).symm
+      (PresentedGroup.of (rels := ((FreeGroup.freeGroupCongr e) '' rels)) (e x)) =
+    PresentedGroup.of (rels := rels) (e.symm (e x)) := by
+  rfl
 
 end ToGroup
 
