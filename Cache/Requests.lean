@@ -87,6 +87,7 @@ def downloadFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool
     let failed ← if parallel then
       IO.FS.writeFile IO.CURLCFG (← mkGetConfigContent hashMap)
       let args := #["--request", "GET", "--parallel", "--fail", "--silent",
+          "--retry", "5", -- there seem to be some intermittent failures
           "--write-out", "%{json}\n", "--config", IO.CURLCFG.toString]
       let (_, success, failed, done) ←
           IO.runCurlStreaming args (← IO.monoMsNow, 0, 0, 0) fun a line => do
@@ -194,17 +195,17 @@ def putFiles (fileNames : Array String) (overwrite : Bool) (token : String) : IO
   if size > 0 then
     IO.FS.writeFile IO.CURLCFG (← mkPutConfigContent fileNames token)
     IO.println s!"Attempting to upload {size} file(s)"
+    let args := #[
+      "--retry", "5", -- there seem to be some intermittent failures
+      "-X", "PUT", "--parallel", "-K", IO.CURLCFG.toString]
     if useFROCache then
       -- TODO: reimplement using HEAD requests?
       let _ := overwrite
-      discard <| IO.runCurl #["--aws-sigv4", "aws:amz:auto:s3", "--user", token,
-        "-X", "PUT", "--parallel", "-K", IO.CURLCFG.toString]
+      IO.runCurl (#["--aws-sigv4", "aws:amz:auto:s3", "--user", token] ++ args)
     else if overwrite then
-      discard <| IO.runCurl #["-H", "x-ms-blob-type: BlockBlob",
-        "-X", "PUT", "--parallel", "-K", IO.CURLCFG.toString]
+      IO.runCurl (#["-H", "x-ms-blob-type: BlockBlob"] ++ args)
     else
-      discard <| IO.runCurl #["-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *",
-        "-X", "PUT", "--parallel", "-K", IO.CURLCFG.toString]
+      IO.runCurl (#["-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *"] ++ args)
     IO.FS.removeFile IO.CURLCFG
   else IO.println "No files to upload"
 
