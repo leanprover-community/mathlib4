@@ -65,7 +65,10 @@ class LieGroup {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [Topolo
   smooth_inv : Smooth I I fun a : G => a⁻¹
 #align lie_group LieGroup
 
-section LieGroup
+/-! Let `f : M → G` be `C^n` or smooth functions into a smooth Lie group, then `f` is point-wise
+  invertible with smooth inverse `f`. If `f` and `g` are two such functions, the quotient
+  `f / g` (i.e., the point-wise product of `f` and the point-wise inverse of `g` is also smooth. -/
+section Division
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H] {E : Type*}
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H} {F : Type*}
@@ -209,9 +212,10 @@ nonrec theorem Smooth.div {f g : M → G} (hf : Smooth I' I f) (hg : Smooth I' I
 #align smooth.div Smooth.div
 #align smooth.sub Smooth.sub
 
-end LieGroup
+end Division
 
-section ProdLieGroup
+-- binary product of Lie groups
+section Product
 
 -- Instance of product group
 @[to_additive]
@@ -223,7 +227,7 @@ instance {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalS
     [Group G'] [LieGroup I' G'] : LieGroup (I.prod I') (G × G') :=
   { SmoothMul.prod _ _ _ _ with smooth_inv := smooth_fst.inv.prod_mk smooth_snd.inv }
 
-end ProdLieGroup
+end Product
 
 /-! ### Normed spaces are Lie groups -/
 
