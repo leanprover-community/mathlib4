@@ -13,8 +13,8 @@ TODO
 
 ## Main definitions
 
- * `StandardLP` defines a linear program in the standard form.
- * `StandardLP.Admits` tells if given vector is an admissible solution to given standard LP.
+ * `StandardLP` defines a linear program in the standard form $ \max cᵀx, A x ≤ b, x ≥ 0 $.
+ * `StandardLP.IsSolution` tells if given vector is a solution satisfying given standard LP.
 
 -/
 
