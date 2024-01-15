@@ -179,8 +179,7 @@ theorem two_nsmul_lie_lmul_lmul_add_eq_lie_lmul_lmul_add (a b : A) :
 #align two_nsmul_lie_lmul_lmul_add_eq_lie_lmul_lmul_add two_nsmul_lie_lmul_lmul_add_eq_lie_lmul_lmul_add
 
 -- Porting note: the monolithic `calc`-based proof of `two_nsmul_lie_lmul_lmul_add_add_eq_zero`
--- has had four auxiliary parts `aux{0,1,2,3}` split off from it. Even with this splitting
--- `aux1` and `aux2` still need a (small) increase in `maxHeartbeats` to avoid timeouts.
+-- has had four auxiliary parts `aux{0,1,2,3}` split off from it.
 private theorem aux0 {a b c : A} : ⁅L (a + b + c), L ((a + b + c) * (a + b + c))⁆ =
     ⁅L a + L b + L c, L (a * a) + L (b * b) + L (c * c) +
     2 • L (a * b) + 2 • L (c * a) + 2 • L (b * c)⁆ := by
