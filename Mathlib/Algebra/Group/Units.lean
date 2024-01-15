@@ -702,6 +702,13 @@ lemma IsUnit.exists_left_inv [Monoid M] {a : M} (h : IsUnit a) : ∃ b, b * a = 
 #align is_unit.pow IsUnit.pow
 #align is_add_unit.nsmul IsAddUnit.nsmul
 
+theorem units_eq_one [Unique Mˣ] (u : Mˣ) : u = 1 :=
+  Subsingleton.elim u 1
+#align units_eq_one units_eq_one
+
+@[to_additive] lemma isUnit_iff_eq_one [Unique Mˣ] {x : M} : IsUnit x ↔ x = 1 :=
+  ⟨fun ⟨u, hu⟩ ↦ by rw [← hu, Subsingleton.elim u 1, Units.val_one], fun h ↦ h ▸ isUnit_one⟩
+
 end Monoid
 
 @[to_additive]
@@ -849,6 +856,20 @@ protected theorem mul_left_injective (h : IsUnit b) : Injective (· * b) :=
   fun _ _ => h.mul_right_cancel
 #align is_unit.mul_left_injective IsUnit.mul_left_injective
 #align is_add_unit.add_left_injective IsAddUnit.add_left_injective
+
+@[to_additive]
+theorem isUnit_iff_mulLeft_bijective {a : M} :
+    IsUnit a ↔ Function.Bijective (a * ·) :=
+  ⟨fun h ↦ ⟨h.mul_right_injective, fun y ↦ ⟨h.unit⁻¹ * y, by simp [← mul_assoc]⟩⟩, fun h ↦
+    ⟨⟨a, _, (h.2 1).choose_spec, h.1
+      (by simpa [mul_assoc] using congr_arg (· * a) (h.2 1).choose_spec)⟩, rfl⟩⟩
+
+@[to_additive]
+theorem isUnit_iff_mulRight_bijective {a : M} :
+    IsUnit a ↔ Function.Bijective (· * a) :=
+  ⟨fun h ↦ ⟨h.mul_left_injective, fun y ↦ ⟨y * h.unit⁻¹, by simp [mul_assoc]⟩⟩,
+    fun h ↦ ⟨⟨a, _, h.1 (by simpa [mul_assoc] using congr_arg (a * ·) (h.2 1).choose_spec),
+      (h.2 1).choose_spec⟩, rfl⟩⟩
 
 end Monoid
 
