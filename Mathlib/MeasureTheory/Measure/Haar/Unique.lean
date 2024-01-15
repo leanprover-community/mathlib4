@@ -379,6 +379,43 @@ lemma haarScalarFactor_pos_of_isOpenPosMeasure (μ' μ : Measure G) [IsFiniteMea
   simp only [H, zero_smul, integral_zero_measure] at this
   linarith
 
+section
+
+variable {α : Type*} [TopologicalSpace α] {_ : MeasurableSpace α}
+
+def locallyPosSubset (s : Set α) (μ : Measure α) : Set α :=
+  {x | x ∈ s ∧ ∀ n ∈ 𝓝[s] x, 0 < μ n}
+
+lemma locallyPosSubset_subset (s : Set α) (μ : Measure α) : locallyPosSubset s μ ⊆ s :=
+  fun _x hx ↦ hx.1
+
+protected lemma MeasurableSet.locallyPosSubset [OpensMeasurableSpace α] {s : Set α} {μ : Measure α}
+    (hs : MeasurableSet s) : MeasurableSet (locallyPosSubset s μ) := by
+  let u := {x | ∃ n ∈ 𝓝[s] x, μ n = 0}
+  have u_open : IsOpen u := by
+    rw [isOpen_iff_mem_nhds]
+    intro x ⟨n, ns, hx⟩
+    rcases mem_nhdsWithin_iff_exists_mem_nhds_inter.1 ns with ⟨v, vx, hv⟩
+    rcases mem_nhds_iff.1 vx with ⟨w, wv, w_open, xw⟩
+    have A : w ⊆ u := by
+      intro y yw
+      refine ⟨s ∩ w, inter_mem_nhdsWithin _ (w_open.mem_nhds yw), measure_mono_null ?_ hx⟩
+      rw [inter_comm]
+      exact (inter_subset_inter_left _ wv).trans hv
+    have B : w ∈ 𝓝 x := w_open.mem_nhds xw
+    exact mem_of_superset B A
+  have : locallyPosSubset s μ = s \ u := by
+    ext x; simp [locallyPosSubset, zero_lt_iff]
+  rw [this]
+  exact hs.diff u_open.measurableSet
+
+lemma ae_eq_setOf_measure_nhdsWithin_pos {α : Type*} [TopologicalSpace α] [MeasurableSpace α]
+    (μ : Measure α) [InnerRegular μ] (s : Set α) (hs : MeasurableSet s) :
+    s =ᵐ[μ] locallyPosSubset s μ := by sorry
+
+#exit
+
+
 /-- **Uniqueness of left-invariant measures**: Given two left-invariant measures which are finite on
 compacts and inner regular for finite measure sets with respect to compact sets,
 they coincide in the following sense: they give the same value to finite measure sets,
