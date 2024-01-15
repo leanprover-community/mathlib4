@@ -381,7 +381,7 @@ def kernelIsoOfEq {f g : X ⟶ Y} [HasKernel f] [HasKernel g] (h : f = g) : kern
 @[simp]
 theorem kernelIsoOfEq_refl {h : f = f} : kernelIsoOfEq h = Iso.refl (kernel f) := by
   ext
-  simp [kernelIsoOfEq, eq_mpr_eq_cast]
+  simp [kernelIsoOfEq]
 #align category_theory.limits.kernel_iso_of_eq_refl CategoryTheory.Limits.kernelIsoOfEq_refl
 
 /- Porting note: induction on Eq is trying instantiate another g...-/
@@ -414,7 +414,7 @@ theorem lift_comp_kernelIsoOfEq_inv {Z} {f g : X ⟶ Y} [HasKernel f] [HasKernel
 @[simp]
 theorem kernelIsoOfEq_trans {f g h : X ⟶ Y} [HasKernel f] [HasKernel g] [HasKernel h] (w₁ : f = g)
     (w₂ : g = h) : kernelIsoOfEq w₁ ≪≫ kernelIsoOfEq w₂ = kernelIsoOfEq (w₁.trans w₂) := by
-  cases w₁; cases w₂; ext; simp [kernelIsoOfEq, eq_mpr_eq_cast]
+  cases w₁; cases w₂; ext; simp [kernelIsoOfEq]
 #align category_theory.limits.kernel_iso_of_eq_trans CategoryTheory.Limits.kernelIsoOfEq_trans
 
 variable {f}
@@ -884,7 +884,7 @@ def cokernelIsoOfEq {f g : X ⟶ Y} [HasCokernel f] [HasCokernel g] (h : f = g) 
 
 @[simp]
 theorem cokernelIsoOfEq_refl {h : f = f} : cokernelIsoOfEq h = Iso.refl (cokernel f) := by
-  ext; simp [cokernelIsoOfEq, eq_mpr_eq_cast]
+  ext; simp [cokernelIsoOfEq]
 #align category_theory.limits.cokernel_iso_of_eq_refl CategoryTheory.Limits.cokernelIsoOfEq_refl
 
 @[reassoc (attr := simp)]
@@ -917,7 +917,7 @@ theorem cokernelIsoOfEq_inv_comp_desc {Z} {f g : X ⟶ Y} [HasCokernel f] [HasCo
 theorem cokernelIsoOfEq_trans {f g h : X ⟶ Y} [HasCokernel f] [HasCokernel g] [HasCokernel h]
     (w₁ : f = g) (w₂ : g = h) :
     cokernelIsoOfEq w₁ ≪≫ cokernelIsoOfEq w₂ = cokernelIsoOfEq (w₁.trans w₂) := by
-  cases w₁; cases w₂; ext; simp [cokernelIsoOfEq, eq_mpr_eq_cast]
+  cases w₁; cases w₂; ext; simp [cokernelIsoOfEq]
 #align category_theory.limits.cokernel_iso_of_eq_trans CategoryTheory.Limits.cokernelIsoOfEq_trans
 
 variable {f}

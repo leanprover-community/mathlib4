@@ -1055,7 +1055,7 @@ theorem one_lt_ncard (hs : s.Finite := by toFinite_tac) :
 #align set.one_lt_ncard Set.one_lt_ncard
 
 theorem one_lt_ncard_iff (hs : s.Finite := by toFinite_tac) :
-    1 < s.ncard ↔ ∃ a b, a ∈ s ∧ b ∈ s ∧ a ≠ b :=   by
+    1 < s.ncard ↔ ∃ a b, a ∈ s ∧ b ∈ s ∧ a ≠ b := by
   rw [one_lt_ncard hs]
   simp only [exists_prop, exists_and_left]
 #align set.one_lt_ncard_iff Set.one_lt_ncard_iff
