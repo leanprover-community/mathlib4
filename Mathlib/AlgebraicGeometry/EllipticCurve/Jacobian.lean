@@ -77,7 +77,7 @@ lemma smul_fin3 {R : Type u} [CommRing R] (P : Fin 3 → R) (u : Rˣ) :
   rfl
 
 lemma smul_fin3_ext {R : Type u} [CommRing R] (P : Fin 3 → R) (u : Rˣ) :
-    (u • P) 0 = u ^ 2 * P x ∧ (u • P) 1 = u ^ 3 * P y ∧ (u • P) 2 = u * P z :=
+    (u • P) x = u ^ 2 * P x ∧ (u • P) y = u ^ 3 * P y ∧ (u • P) z = u * P z :=
   ⟨rfl, rfl, rfl⟩
 
 private instance {R : Type u} [CommRing R] : MulAction Rˣ <| Fin 3 → R where
