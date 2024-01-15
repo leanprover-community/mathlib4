@@ -20,7 +20,7 @@ embedding `e : M → H`, then `e` is smooth.
 chain rule, manifolds, higher derivative
 
 -/
-open Set Function Filter ChartedSpace SmoothManifoldWithCorners
+open Set Filter Function
 
 open scoped Topology Manifold
 
@@ -343,8 +343,8 @@ theorem contMDiffWithinAt_of_not_mem_mulTSupport {f : M → M'} [One M'] {x : M}
 
 /-- `f` is continuously differentiable at each point outside of its `mulTSupport`. -/
 @[to_additive contMDiffAt_of_not_mem]
-theorem contMDiffAt_of_not_mem_mulTSupport {f : M → M'} [One M'] {x : M} (hx : x ∉ mulTSupport f) (n : ℕ∞) :
-    ContMDiffAt I I' n f x :=
+theorem contMDiffAt_of_not_mem_mulTSupport {f : M → M'} [One M'] {x : M}
+    (hx : x ∉ mulTSupport f) (n : ℕ∞) : ContMDiffAt I I' n f x :=
   contMDiffWithinAt_of_not_mem_mulTSupport hx n univ
 
 
