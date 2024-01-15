@@ -325,15 +325,6 @@ theorem smoothWithinAt_one [One M'] : SmoothWithinAt I I' (1 : M → M') s x :=
 
 end id
 
---theorem eventuallyEq_one_nhds {X Y : Type*} [TopologicalSpace X] [One Y] {x : X} {f : X → Y} :
---    f =ᶠ[𝓝 x] 1 ↔ x ∉ closure (mulSupport f) := by
---  rw [← mem_compl_iff, ← interior_compl, mem_interior_iff_mem_nhds]
---  have : f =ᶠ[𝓝 x] 1 ↔ {x | f x = 1} ∈ 𝓝 x := by
---    rw [EventuallyEq, eventually_iff]
---    simp only [Pi.one_apply]
---  rw [this]
---  simp_rw [← Function.compl_mulSupport (f := f)]
-
 /-- `f` is continuously differentiable if it is cont. differentiable at each `x ∈ tsupport f`. -/
 @[to_additive "`f` is continuously differentiable if it is continuously
 differentiable at each `x ∈ tsupport f`."]

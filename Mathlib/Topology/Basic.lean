@@ -1667,13 +1667,6 @@ theorem ContinuousAt.preimage_mem_nhds {f : α → β} {x : α} {t : Set β} (h 
   h ht
 #align continuous_at.preimage_mem_nhds ContinuousAt.preimage_mem_nhds
 
-theorem eventuallyEq_zero_nhds {M₀} [Zero M₀] {a : α} {f : α → M₀} :
-    f =ᶠ[𝓝 a] 0 ↔ a ∉ closure (Function.support f) := by
-  rw [← mem_compl_iff, ← interior_compl, mem_interior_iff_mem_nhds, Function.compl_support,
-    EventuallyEq, eventually_iff]
-  simp only [Pi.zero_apply]
-#align eventually_eq_zero_nhds eventuallyEq_zero_nhds
-
 theorem ClusterPt.map {x : α} {la : Filter α} {lb : Filter β} (H : ClusterPt x la) {f : α → β}
     (hfc : ContinuousAt f x) (hf : Tendsto f la lb) : ClusterPt (f x) lb :=
   (NeBot.map H f).mono <| hfc.tendsto.inf hf
