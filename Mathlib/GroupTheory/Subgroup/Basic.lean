@@ -207,6 +207,7 @@ end InvMemClass
 
 namespace SubgroupClass
 
+-- deprecated since 15 January 2024
 @[to_additive (attr := deprecated)] alias coe_inv := InvMemClass.coe_inv
 
 -- Here we assume H, K, and L are subgroups, but in fact any one of them
