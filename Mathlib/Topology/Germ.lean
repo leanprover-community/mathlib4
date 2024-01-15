@@ -3,11 +3,9 @@ Copyright (c) 2023 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Order.Filter.Germ
-import Mathlib.Topology.Algebra.Ring.Basic
-import Mathlib.Analysis.Calculus.FDeriv.Basic
+import Mathlib.Analysis.NormedSpace.Basic
 import Mathlib.Algebra.Order.Hom.Ring
-import Mathlib.Topology.NhdsSet
+import Mathlib.Order.Filter.Germ
 
 /-! # Germs of functions between topological spaces
 
@@ -197,4 +195,3 @@ theorem eq_of_germ_isConstant_on {s : Set X}
   rintro ⟨x, hx⟩
   have : ContinuousAt ((↑) : s → X) ⟨x, hx⟩ := continuousAt_subtype_val
   exact this (h x hx)
-#lint
