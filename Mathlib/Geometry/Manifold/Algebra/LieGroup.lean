@@ -364,48 +364,54 @@ theorem Smooth.div₀ (hf : Smooth I' I f) (hg : Smooth I' I g) (h₀ : ∀ x, g
 
 end Div
 
-/-! Differentiability of finite sums of functions `M → G` into an abelian Lie group `G` -/
-section FiniteSum
+/-! Differentiability of finite point-wise sums and products of functions `M → G`
+ into an abelian Lie group `G` -/
+section FiniteSumProduct
 open Function
 open scoped BigOperators
 
 -- let `M` be a smooth manifold over `(E,H)`
--- let `G` be an abelian additive Lie group modeled on `(E', H')`
+-- let `G` be an abelian Lie group modeled on `(E', H')`
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
   {I : ModelWithCorners 𝕜 E H} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   {E' H' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] [TopologicalSpace H']
   {I' : ModelWithCorners 𝕜 E' H'}
-  {G : Type*} [AddCommGroup G] [TopologicalSpace G] [ChartedSpace H' G] [LieAddGroup I' G]
+  {G : Type*} [CommGroup G] [TopologicalSpace G] [ChartedSpace H' G] [LieGroup I' G]
 variable {ι : Type*} {J : Finset ι} {f : ι → M → G} {n : ℕ∞} {s : Set M} {x₀ : M}
 
-theorem ContMDiffWithinAt.sum (h : ∀ i ∈ J, ContMDiffWithinAt I I' n (f i) s x₀) :
-    ContMDiffWithinAt I I' n (fun x ↦ ∑ i in J, f i x) s x₀ := by
+@[to_additive]
+theorem ContMDiffWithinAt.prod (h : ∀ i ∈ J, ContMDiffWithinAt I I' n (f i) s x₀) :
+    ContMDiffWithinAt I I' n (fun x ↦ ∏ i in J, f i x) s x₀ := by
   classical
   induction' J using Finset.induction_on with i K iK IH
   · simp [contMDiffWithinAt_const]
-  · simp only [iK, Finset.sum_insert, not_false_iff]
-    exact (h _ (Finset.mem_insert_self i K)).add (IH fun j hj ↦ h _ <| Finset.mem_insert_of_mem hj)
+  · simp only [iK, Finset.prod_insert, not_false_iff]
+    exact (h _ (Finset.mem_insert_self i K)).mul (IH fun j hj ↦ h _ <| Finset.mem_insert_of_mem hj)
 
-theorem ContMDiffAt.sum (h : ∀ i ∈ J, ContMDiffAt I I' n (f i) x₀) :
-    ContMDiffAt I I' n (fun x ↦ ∑ i in J, f i x) x₀ := by
+@[to_additive]
+theorem ContMDiffAt.prod (h : ∀ i ∈ J, ContMDiffAt I I' n (f i) x₀) :
+    ContMDiffAt I I' n (fun x ↦ ∏ i in J, f i x) x₀ := by
   simp only [← contMDiffWithinAt_univ] at *
-  exact ContMDiffWithinAt.sum h
+  exact ContMDiffWithinAt.prod h
 
-theorem ContMDiff.sum (h : ∀ i ∈ J, ContMDiff I I' n (f i)) :
-    ContMDiff I I' n fun x ↦ ∑ i in J, f i x :=
-  fun x ↦ ContMDiffAt.sum fun j hj ↦ h j hj x
+@[to_additive]
+theorem ContMDiff.prod (h : ∀ i ∈ J, ContMDiff I I' n (f i)) :
+    ContMDiff I I' n fun x ↦ ∏ i in J, f i x :=
+  fun x ↦ ContMDiffAt.prod fun j hj ↦ h j hj x
 
-theorem contMDiffWithinAt_finsum (lf : LocallyFinite fun i ↦ support <| f i) {x₀ : M}
+@[to_additive]
+theorem contMDiffWithinAt_finprod (lf : LocallyFinite fun i ↦ mulSupport <| f i) {x₀ : M}
     (h : ∀ i, ContMDiffWithinAt I I' n (f i) s x₀) :
-    ContMDiffWithinAt I I' n (fun x ↦ ∑ᶠ i, f i x) s x₀ :=
-  let ⟨_I, hI⟩ := finsum_eventually_eq_sum lf x₀
-  (ContMDiffWithinAt.sum fun i _hi ↦ h i).congr_of_eventuallyEq
+    ContMDiffWithinAt I I' n (fun x ↦ ∏ᶠ i, f i x) s x₀ :=
+  let ⟨_I, hI⟩ := finprod_eventually_eq_prod lf x₀
+  (ContMDiffWithinAt.prod fun i _hi ↦ h i).congr_of_eventuallyEq
     (eventually_nhdsWithin_of_eventually_nhds hI) hI.self_of_nhds
 
-theorem contMDiffAt_finsum
-    (lf : LocallyFinite fun i ↦ support <| f i) (h : ∀ i, ContMDiffAt I I' n (f i) x₀) :
-    ContMDiffAt I I' n (fun x ↦ ∑ᶠ i, f i x) x₀ :=
-  contMDiffWithinAt_finsum lf h
+@[to_additive]
+theorem contMDiffAt_finprod
+    (lf : LocallyFinite fun i ↦ mulSupport <| f i) (h : ∀ i, ContMDiffAt I I' n (f i) x₀) :
+    ContMDiffAt I I' n (fun x ↦ ∏ᶠ i, f i x) x₀ :=
+  contMDiffWithinAt_finprod lf h
 
-end FiniteSum
+end FiniteSumProduct
