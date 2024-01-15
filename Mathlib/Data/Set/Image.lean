@@ -329,17 +329,6 @@ theorem image_subset {a b : Set α} (f : α → β) (h : a ⊆ b) : f '' a ⊆ f
   exact fun x => fun ⟨w, h1, h2⟩ => ⟨w, h h1, h2⟩
 #align set.image_subset Set.image_subset
 
-theorem subset_image_iff {t : Set β} :
-    t ⊆ f '' s ↔ ∃ u, u ⊆ s ∧ f '' u = t := by
-  refine ⟨fun h ↦ ?_, fun ⟨u, hu, hu'⟩ ↦ hu'.symm ▸ image_mono hu⟩
-  choose g hg hg' using h
-  refine ⟨(fun x ↦ g x.property : t → α) '' univ, ?_, le_antisymm (fun y hy ↦ ?_) (fun y hy ↦ ?_)⟩
-  · rintro - ⟨⟨x, hx⟩, -, rfl⟩; exact hg hx
-  · obtain ⟨-, ⟨⟨z, hz⟩, -, rfl⟩, rfl⟩ := hy
-    simpa only [hg' hz] using hz
-  · simp only [mem_image, mem_univ, true_and, Subtype.exists]
-    exact ⟨g hy, ⟨y, hy, rfl⟩, hg' hy⟩
-
 /-- `Set.image` is monotone. See `Set.image_subset` for the statement in terms of `⊆`. -/
 lemma monotone_image {f : α → β} : Monotone (image f) := fun _ _ => image_subset _
 #align set.monotone_image Set.monotone_image
@@ -606,6 +595,12 @@ theorem image_eq_image {f : α → β} (hf : Injective f) : f '' s = f '' t ↔ 
     (Iff.intro fun eq => eq ▸ rfl) fun eq => by
       rw [← preimage_image_eq s hf, ← preimage_image_eq t hf, eq]
 #align set.image_eq_image Set.image_eq_image
+
+theorem subset_image_iff {t : Set β} :
+    t ⊆ f '' s ↔ ∃ u, u ⊆ s ∧ f '' u = t := by
+  refine ⟨fun h ↦ ⟨f ⁻¹' t ∩ s, inter_subset_right _ _, ?_⟩,
+    fun ⟨u, hu, hu'⟩ ↦ hu'.symm ▸ image_mono hu⟩
+  rwa [image_preimage_inter, inter_eq_left]
 
 theorem image_subset_image_iff {f : α → β} (hf : Injective f) : f '' s ⊆ f '' t ↔ s ⊆ t := by
   refine' Iff.symm <| (Iff.intro (image_subset f)) fun h => _
