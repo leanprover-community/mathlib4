@@ -31,24 +31,19 @@ the complements of `MulAction.fixedBy` and `AddAction.fixedBy` respectively.
 namespace MulAction
 open Pointwise
 
-universe u v
-variable {α : Type v}
-variable {G : Type u} [Group G] [MulAction G α]
-variable {M : Type u} [Monoid M] [MulAction M α]
+variable {α : Type*}
+variable {G : Type*} [Group G] [MulAction G α]
+variable {M : Type*} [Monoid M] [MulAction M α]
 
 
 section FixedPoints
 
 variable (α) in
 /-- In a multiplicative group action, the points fixed by `g` are also fixed by `g⁻¹` -/
-@[to_additive "In an additive group action, the points fixed by `g` are also fixed by `g⁻¹`"]
-theorem fixedBy_eq_fixedBy_inv (g : G) : fixedBy α g = fixedBy α g⁻¹ := by
+@[to_additive (attr := simp) "In an additive group action, the points fixed by `g` are also fixed by `g⁻¹`"]
+theorem fixedBy_inv_eq_fixedBy (g : G) : fixedBy α g⁻¹ = fixedBy α g := by
   ext x
-  repeat rw [mem_fixedBy]
-  constructor
-  all_goals (intro gx_eq_x; nth_rw 1 [← gx_eq_x])
-  · exact inv_smul_smul g x
-  · rw [← mul_smul, mul_right_inv, one_smul]
+  rw [mem_fixedBy, mem_fixedBy, inv_smul_eq_iff, eq_comm]
 
 @[to_additive]
 theorem smul_mem_fixedBy_iff_mem_fixedBy {a : α} {g : G} :
@@ -58,17 +53,15 @@ theorem smul_mem_fixedBy_iff_mem_fixedBy {a : α} {g : G} :
 
 theorem minimalPeriod_eq_one_of_fixedBy {a : α} {g : G} (a_in_fixedBy : a ∈ fixedBy α g) :
     Function.minimalPeriod (fun x => g • x) a = 1 := by
-  rw [Function.minimalPeriod_eq_one_iff_isFixedPt]
-  exact a_in_fixedBy
+  rwa [Function.minimalPeriod_eq_one_iff_isFixedPt]
 
 section AddAction.minimalPeriod_eq_one_of_fixedBy
-variable {G : Type u} [AddGroup G] [AddAction G α]
+variable {G : Type*} [AddGroup G] [AddAction G α]
 
 theorem _root_.AddAction.minimalPeriod_eq_one_of_fixedBy {a : α} {g : G}
     (a_in_fixedBy : a ∈ AddAction.fixedBy α g) :
     Function.minimalPeriod (fun x => g +ᵥ x) a = 1 := by
-  rw [Function.minimalPeriod_eq_one_iff_isFixedPt]
-  exact a_in_fixedBy
+  rwa [Function.minimalPeriod_eq_one_iff_isFixedPt]
 
 end AddAction.minimalPeriod_eq_one_of_fixedBy
 
@@ -81,17 +74,13 @@ theorem fixedBy_subset_fixedBy_zpow (g : G) (j : ℤ) :
     fixedBy α g ⊆ fixedBy α (g ^ j) := by
   intro a a_in_fixedBy
   rw [mem_fixedBy, zpow_smul_eq_iff_minimalPeriod_dvd,
-    minimalPeriod_eq_one_of_fixedBy a_in_fixedBy]
-  rw [Nat.cast_one]
+    minimalPeriod_eq_one_of_fixedBy a_in_fixedBy, Nat.cast_one]
   exact one_dvd j
 
 variable (M α) in
 @[to_additive (attr := simp)]
-theorem fixedBy_one_eq_univ :
-    fixedBy α (1 : M) = Set.univ := by
-  ext a
-  rw [mem_fixedBy, one_smul]
-  exact ⟨fun _ => Set.mem_univ a, fun _ => rfl⟩
+theorem fixedBy_one_eq_univ : fixedBy α (1 : M) = Set.univ :=
+  Set.eq_univ_iff_forall.mpr (fun a => one_smul M a)
 
 variable (α) in
 @[to_additive]
@@ -149,7 +138,7 @@ variable (α)
 @[to_additive "In an additive group action, the points moved by `g` are also moved by `g⁻¹`"]
 theorem movedBy_eq_movedBy_inv (g : G) : movedBy α g = movedBy α g⁻¹ := by
   repeat rw [movedBy_eq_compl_fixedBy]
-  rw [fixedBy_eq_fixedBy_inv]
+  rw [fixedBy_inv_eq_fixedBy]
 
 variable {α}
 
@@ -191,7 +180,7 @@ theorem movedBy_conj (g h : G) :
   rw [Set.preimage_compl, fixedBy_conj]
 
 @[to_additive]
-theorem movedBy_conj' {g h : G} :
+theorem smul_movedBy {g h : G} :
     h • movedBy α g = movedBy α (h * g * h⁻¹) := by
   rw [movedBy_conj, Set.preimage_smul, inv_inv]
 
@@ -248,48 +237,50 @@ section Commute
 If two group elements `g` and `h` commute, then `g` fixes `h • x` (resp. `h +ᵥ x`)
 if and only if `g` fixes `x`.
 
-This can be extended to the more general statement that `g` fixes `h^j • x` (resp. `(j • h) +ᵥ x`)
-if and only if `g` fixes `x`.
+In other words, if `Commute g h`, then `fixedBy α g ∈ fixedBy (Set α) h` and
+`movedBy α g ∈ fixedBy (Set α) h`.
 -/
 
 /--
-If `g` and `h` commute, then `g` fixes `h^j • x` iff `g` fixes `x`.
+If `g` and `h` commute, then `g` fixes `h • x` iff `g` fixes `x`.
+This is equivalent to say that the set `fixedBy α g` is fixed by `h`.
+-/
+@[to_additive "If `g` and `h` commute, then `g` fixes `h +ᵥ x` iff `g` fixes `x`.
+This is equivalent to say that the set `fixedBy α g` is fixed by `h`.
+"]
+theorem fixedBy_mem_fixedBy_of_commute {g h : G} (comm: Commute g h) :
+    (fixedBy α g) ∈ fixedBy (Set α) h := by
+  ext x
+  rw [Set.mem_smul_set_iff_inv_smul_mem, mem_fixedBy, ← mul_smul, comm.inv_right, mul_smul,
+    smul_left_cancel_iff]
+  rfl
+
+/--
+If `g` and `h` commute, then `g` fixes `(h^j) • x` iff `g` fixes `x`.
 -/
 @[to_additive "If `g` and `h` commute, then `g` fixes `(j • h) +ᵥ x` iff `g` fixes `x`."]
-theorem smul_zpow_mem_fixedBy_of_commute {g h : G} (comm : Commute g h) (x : α) (j : ℤ):
-    x ∈ fixedBy α g ↔ h^j • x ∈ fixedBy α g := by
-  suffices ∀ x : α, ∀ h : G, Commute g h → x ∈ fixedBy α g → h^j • x ∈ fixedBy α g by
-    refine ⟨this x h comm, fun hx_in_fixedBy => ?x_in_fixedBy⟩
-    have h₁ : x = h⁻¹^j • h^j • x := by rw [← mul_smul, inv_zpow', zpow_neg, mul_left_inv, one_smul]
-    rw [h₁]
-    exact this _ _ comm.inv_right hx_in_fixedBy
-  intro x h comm x_in_fixedBy
-  rw [mem_fixedBy, ← mul_smul]
-  rw [Commute.zpow_right comm j]
-  rw [mul_smul, smul_left_cancel_iff]
-  exact x_in_fixedBy
+theorem smul_zpow_fixedBy_eq_of_commute {g h : G} (comm : Commute g h) (j : ℤ):
+    h^j • fixedBy α g = fixedBy α g :=
+  fixedBy_subset_fixedBy_zpow (Set α) h j (fixedBy_mem_fixedBy_of_commute comm)
+
+/--
+If `g` and `h` commute, then `g` moves `h • x` iff `g` moves `x`.
+This is equivalent to say that the set `movedBy α g` is fixed by `h`.
+-/
+@[to_additive "If `g` and `h` commute, then `g` moves `h +ᵥ x` iff `g` moves `x`.
+This is equivalent to say that the set `movedBy α g` is fixed by `h`."]
+theorem movedBy_mem_fixedBy_of_commute {g h : G} (comm: Commute g h) :
+    (movedBy α g) ∈ fixedBy (Set α) h := by
+  rw [mem_fixedBy, movedBy_eq_compl_fixedBy, Set.compl_eq_univ_diff, Set.smul_set_sdiff,
+    Set.smul_set_univ, fixedBy_mem_fixedBy_of_commute comm]
 
 /--
 If `g` and `h` commute, then `g` moves `h^j • x` iff `g` moves `x`.
 -/
 @[to_additive "If `g` and `h` commute, then `g` moves `(j • h) +ᵥ x` iff `g` moves `x`."]
-theorem smul_zpow_mem_movedBy_of_commute {g h : G} (comm : Commute g h) (a : α) (j : ℤ):
-    a ∈ movedBy α g ↔ h^j • a ∈ movedBy α g := by
-  repeat rw [movedBy_eq_compl_fixedBy]
-  repeat rw [Set.mem_compl_iff]
-  rw [smul_zpow_mem_fixedBy_of_commute comm]
-
-@[to_additive]
-theorem movedBy_eq_smul_zpow_movedBy_of_commute {g h : G} (comm : Commute g h) (j : ℤ):
-    movedBy α g = (fun a => h^j • a) ⁻¹' movedBy α g := by
-  ext a
-  rw [Set.mem_preimage, smul_zpow_mem_movedBy_of_commute comm]
-
-@[to_additive]
-theorem movedBy_eq_smul_movedBy_of_commute {g h : G} (comm : Commute g h):
-    movedBy α g = (fun a => h • a) ⁻¹' movedBy α g := by
-  nth_rw 1 [movedBy_eq_smul_zpow_movedBy_of_commute comm 1]
-  rw [zpow_one]
+theorem smul_zpow_movedBy_eq_of_commute {g h : G} (comm : Commute g h) (j : ℤ):
+    h ^ j • movedBy α g = movedBy α g :=
+  fixedBy_subset_fixedBy_zpow (Set α) h j (movedBy_mem_fixedBy_of_commute comm)
 
 end Commute
 
@@ -319,12 +310,11 @@ If the image of the `movedBy α g` set by the multiplicative action of `h: G`
 is disjoint from `movedBy α g`, then `g` and `h` cannot commute.
 -/
 theorem not_commute_of_disjoint_movedBy_preimage {g h : G} (ne_one : g ≠ 1)
-    (disjoint : Disjoint (movedBy α g) ((fun a => h • a) ⁻¹' movedBy α g)) : ¬Commute g h := by
-  intro h₁
-  apply ne_one
-  nth_rw 1 [movedBy_eq_smul_movedBy_of_commute h₁] at disjoint
-  rw [disjoint_self, Set.bot_eq_empty, Set.preimage_smul, Set.smul_set_eq_empty] at disjoint
-  rwa [movedBy_empty_iff_eq_one] at disjoint
+    (disjoint : Disjoint (movedBy α g) (h • movedBy α g)) : ¬Commute g h := by
+  intro comm
+  rw [movedBy_mem_fixedBy_of_commute comm, disjoint_self, Set.bot_eq_empty,
+    movedBy_empty_iff_eq_one] at disjoint
+  exact ne_one disjoint
 
 end Faithful
 
