@@ -71,6 +71,8 @@ variable {S : Type w} [Star R] [SetLike S R] [hS : StarMemClass S R] (s : S)
 instance instStar : Star s where
   star r := ⟨star (r : R), star_mem r.prop⟩
 
+@[simp] lemma coe_star (x : s) : star x = star (x : R) := rfl
+
 end StarMemClass
 
 /-- Typeclass for a star operation with is involutive.
