@@ -8,6 +8,7 @@ import Mathlib.Tactic.Tauto
 import Mathlib.Tactic.ByContra
 import Mathlib.Util.Delaborators
 import Mathlib.Data.Set.Defs
+import Mathlib.Init.ZeroOne
 
 #align_import data.set.basic from "leanprover-community/mathlib"@"001ffdc42920050657fd45bd2b8bfbec8eaaeb29"
 
