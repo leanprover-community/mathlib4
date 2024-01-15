@@ -263,6 +263,11 @@ jobs:
           lake exe graph
           rm import_graph.dot
 
+      - name: verify `lake exe shake` works
+        # Later, we may want to make output from `shake` a CI error?
+        run: |
+          lake exe shake
+
       - name: test mathlib
         id: test
         run: |
