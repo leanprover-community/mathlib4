@@ -7,6 +7,7 @@ import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.Module.ULift
 import Mathlib.LinearAlgebra.Basic
 import Mathlib.RingTheory.Subring.Basic
+import Mathlib.Algebra.Module.Submodule.RestrictScalars
 
 #align_import algebra.algebra.basic from "leanprover-community/mathlib"@"36b8aa61ea7c05727161f96a0532897bd72aedab"
 
