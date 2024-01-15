@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Nicolò Cavalleri
 -/
 import Mathlib.Algebra.Algebra.Pi
-import Mathlib.Algebra.Order.LatticeGroup
 import Mathlib.Algebra.Periodic
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.Star.StarAlgHom
@@ -336,9 +335,9 @@ instance [LocallyCompactSpace α] [Mul β] [ContinuousMul β] : ContinuousMul C(
   ⟨by
     refine' continuous_of_continuous_uncurry _ _
     have h1 : Continuous fun x : (C(α, β) × C(α, β)) × α => x.fst.fst x.snd :=
-      continuous_eval'.comp (continuous_fst.prod_map continuous_id)
+      continuous_eval.comp (continuous_fst.prod_map continuous_id)
     have h2 : Continuous fun x : (C(α, β) × C(α, β)) × α => x.fst.snd x.snd :=
-      continuous_eval'.comp (continuous_snd.prod_map continuous_id)
+      continuous_eval.comp (continuous_snd.prod_map continuous_id)
     exact h1.mul h2⟩
 
 /-- Coercion to a function as a `MonoidHom`. Similar to `MonoidHom.coeFn`. -/
@@ -561,9 +560,8 @@ attribute [local ext] Subtype.eq
 
 section ModuleStructure
 
--- Porting note: Is "Semiodule" a typo of "Semimodule" or "Submodule"?
 /-!
-### Semiodule structure
+### Module structure
 
 In this section we show that continuous functions valued in a topological module `M` over a
 topological semiring `R` inherit the structure of a module.
@@ -603,7 +601,7 @@ instance instSMul [SMul R M] [ContinuousConstSMul R M] : SMul R C(α, M) :=
 @[to_additive]
 instance [LocallyCompactSpace α] [SMul R M] [ContinuousConstSMul R M] :
     ContinuousConstSMul R C(α, M) :=
-  ⟨fun γ => continuous_of_continuous_uncurry _ (continuous_eval'.const_smul γ)⟩
+  ⟨fun γ => continuous_of_continuous_uncurry _ (continuous_eval.const_smul γ)⟩
 
 @[to_additive]
 instance [LocallyCompactSpace α] [TopologicalSpace R] [SMul R M] [ContinuousSMul R M] :
@@ -611,7 +609,7 @@ instance [LocallyCompactSpace α] [TopologicalSpace R] [SMul R M] [ContinuousSMu
   ⟨by
     refine' continuous_of_continuous_uncurry _ _
     have h : Continuous fun x : (R × C(α, M)) × α => x.fst.snd x.snd :=
-      continuous_eval'.comp (continuous_snd.prod_map continuous_id)
+      continuous_eval.comp (continuous_snd.prod_map continuous_id)
     exact (continuous_fst.comp continuous_fst).smul h⟩
 
 @[to_additive (attr := simp, norm_cast)]
@@ -931,6 +929,12 @@ instance instCovariantClass_mul_le_right [PartialOrder β] [Mul β] [ContinuousM
   CovariantClass C(α, β) C(α, β) (Function.swap (· * ·)) (· ≤ ·) :=
 ⟨fun _ _ _ hg₁₂ x => mul_le_mul_right' (hg₁₂ x) _⟩
 
+variable [Group β] [TopologicalGroup β] [Lattice β] [TopologicalLattice β]
+
+@[to_additive (attr := simp, norm_cast)] lemma coe_mabs (f : C(α, β)) : ⇑|f|ₘ = |⇑f|ₘ := rfl
+@[to_additive (attr := simp)] lemma mabs_apply (f : C(α, β)) (x : α) : |f|ₘ x = |f x|ₘ := rfl
+#align continuous_map.abs_apply ContinuousMap.abs_apply
+
 end Lattice
 
 /-!
@@ -969,6 +973,9 @@ theorem star_apply (f : C(α, β)) (x : α) : star f x = star (f x) :=
   rfl
 #align continuous_map.star_apply ContinuousMap.star_apply
 
+instance instTrivialStar [TrivialStar β] : TrivialStar C(α, β) where
+  star_trivial _ := ext fun _ => star_trivial _
+
 end Star
 
 instance [InvolutiveStar β] [ContinuousStar β] : InvolutiveStar C(α, β) where
@@ -992,12 +999,11 @@ instance [Star R] [Star β] [SMul R β] [StarModule R β] [ContinuousStar β]
 
 end StarStructure
 
+section Precomposition
+
 variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
-
 variable (𝕜 : Type*) [CommSemiring 𝕜]
-
-variable (A : Type*) [TopologicalSpace A] [Semiring A] [TopologicalSemiring A] [StarRing A]
-
+variable (A : Type*) [TopologicalSpace A] [Semiring A] [TopologicalSemiring A] [Star A]
 variable [ContinuousStar A] [Algebra 𝕜 A]
 
 /-- The functorial map taking `f : C(X, Y)` to `C(Y, A) →⋆ₐ[𝕜] C(X, A)` given by pre-composition
@@ -1028,7 +1034,46 @@ theorem compStarAlgHom'_comp (g : C(Y, Z)) (f : C(X, Y)) :
   StarAlgHom.ext fun _ => ContinuousMap.ext fun _ => rfl
 #align continuous_map.comp_star_alg_hom'_comp ContinuousMap.compStarAlgHom'_comp
 
+end Precomposition
+
+section Postcomposition
+
+variable (X : Type*) {𝕜 A B C : Type*} [TopologicalSpace X] [CommSemiring 𝕜]
+variable [TopologicalSpace A] [Semiring A] [TopologicalSemiring A] [Star A]
+variable [ContinuousStar A] [Algebra 𝕜 A]
+variable [TopologicalSpace B] [Semiring B] [TopologicalSemiring B] [Star B]
+variable [ContinuousStar B] [Algebra 𝕜 B]
+variable [TopologicalSpace C] [Semiring C] [TopologicalSemiring C] [Star C]
+variable [ContinuousStar C] [Algebra 𝕜 C]
+
+/-- Post-composition with a continuous star algebra homomorphism is a star algebra homomorphism
+between spaces of continuous maps. -/
+@[simps]
+def compStarAlgHom (φ : A →⋆ₐ[𝕜] B) (hφ : Continuous φ) :
+    C(X, A) →⋆ₐ[𝕜] C(X, B) where
+  toFun f := (⟨φ, hφ⟩ : C(A, B)).comp f
+  map_one' := ext fun _ => map_one φ
+  map_mul' f g := ext fun x => map_mul φ (f x) (g x)
+  map_zero' := ext fun _ => map_zero φ
+  map_add' f g := ext fun x => map_add φ (f x) (g x)
+  commutes' r := ext fun _x => AlgHomClass.commutes φ r
+  map_star' f := ext fun x => map_star φ (f x)
+
+/-- `ContinuousMap.compStarAlgHom` sends the identity `StarAlgHom` on `A` to the identity
+`StarAlgHom` on `C(X, A)`. -/
+lemma compStarAlgHom_id : compStarAlgHom X (.id 𝕜 A) continuous_id = .id 𝕜 C(X, A) := rfl
+
+/-- `ContinuousMap.compStarAlgHom` is functorial. -/
+lemma compStarAlgHom_comp (φ : A →⋆ₐ[𝕜] B) (ψ : B →⋆ₐ[𝕜] C) (hφ : Continuous φ)
+    (hψ : Continuous ψ) : compStarAlgHom X (ψ.comp φ) (hψ.comp hφ) =
+      (compStarAlgHom X ψ hψ).comp (compStarAlgHom X φ hφ) :=
+  rfl
+
+end Postcomposition
+
 section Periodicity
+
+variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 
 /-! ### Summing translates of a function -/
 

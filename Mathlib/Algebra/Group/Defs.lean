@@ -7,6 +7,7 @@ import Mathlib.Init.ZeroOne
 import Mathlib.Init.Data.Int.Basic
 import Mathlib.Logic.Function.Basic
 import Mathlib.Tactic.Basic
+import Mathlib.Init.ZeroOne
 
 #align_import algebra.group.defs from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 
@@ -998,6 +999,10 @@ theorem zpow_ofNat (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
 #align zpow_of_nat zpow_ofNat
 #align of_nat_zsmul ofNat_zsmul
 
+@[to_additive (attr := simp, norm_cast) coe_nat_zsmul]
+lemma zpow_coe_nat (a : G) (n : ℕ) : a ^ (Nat.cast n : ℤ) = a ^ n := zpow_ofNat ..
+#align coe_nat_zsmul coe_nat_zsmul
+
 theorem zpow_negSucc (a : G) (n : ℕ) : a ^ (Int.negSucc n) = (a ^ (n + 1))⁻¹ := by
   rw [← zpow_ofNat]
   exact DivInvMonoid.zpow_neg' n a
@@ -1262,6 +1267,16 @@ instance (priority := 100) CommGroup.toCancelCommMonoid : CancelCommMonoid G :=
 @[to_additive]
 instance (priority := 100) CommGroup.toDivisionCommMonoid : DivisionCommMonoid G :=
   { ‹CommGroup G›, Group.toDivisionMonoid with }
+
+@[to_additive (attr := simp)] lemma inv_mul_cancel_comm (a b : G) : a⁻¹ * b * a = b := by
+  rw [mul_comm, mul_inv_cancel_left]
+#align inv_mul_cancel_comm inv_mul_cancel_comm
+#align neg_add_cancel_comm neg_add_cancel_comm
+
+@[to_additive (attr := simp)] lemma inv_mul_cancel_comm_assoc (a b : G) : a⁻¹ * (b * a) = b := by
+  rw [mul_comm, mul_inv_cancel_right]
+#align inv_mul_cancel_comm_assoc inv_mul_cancel_comm_assoc
+#align neg_add_cancel_comm_assoc neg_add_cancel_comm_assoc
 
 end CommGroup
 

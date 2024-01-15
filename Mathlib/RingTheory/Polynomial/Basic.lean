@@ -636,7 +636,7 @@ theorem mem_leadingCoeffNth (n : ℕ) (x) :
     mem_degreeLE]
   constructor
   · rintro ⟨p, ⟨hpdeg, hpI⟩, rfl⟩
-    cases' lt_or_eq_of_le hpdeg with hpdeg hpdeg
+    rcases lt_or_eq_of_le hpdeg with hpdeg | hpdeg
     · refine' ⟨0, I.zero_mem, bot_le, _⟩
       rw [leadingCoeff_zero, eq_comm]
       exact coeff_eq_zero_of_degree_lt hpdeg
@@ -979,7 +979,7 @@ protected theorem Polynomial.isNoetherianRing [inst : IsNoetherianRing R] : IsNo
         intro p hp
         generalize hn : p.natDegree = k
         induction' k using Nat.strong_induction_on with k ih generalizing p
-        cases' le_or_lt k N with h h
+        rcases le_or_lt k N with h | h
         · subst k
           refine' hs2 ⟨Polynomial.mem_degreeLE.2
             (le_trans Polynomial.degree_le_natDegree <| WithBot.coe_le_coe.2 h), hp⟩
