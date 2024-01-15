@@ -27,9 +27,7 @@ The proof follows the proof of Carathéodory's theorem for convex hulls closely.
 
 universe u
 
-open Set Finset
-
-open BigOperators
+open Set Finset BigOperators
 
 variable {𝕜 : Type*} {E : Type u} [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
 local notation3 "𝕜≥0" => {c : 𝕜 // 0 ≤ c}
