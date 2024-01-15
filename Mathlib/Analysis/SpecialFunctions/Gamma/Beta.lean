@@ -459,7 +459,7 @@ theorem Gamma_ne_zero {s : ℂ} (hs : ∀ m : ℕ, s ≠ -m) : Gamma s ≠ 0 := 
       rw [Complex.sin_ne_zero_iff]
       intro k
       apply_fun im
-      rw [ofReal_mul_im, ← ofReal_int_cast, ← ofReal_mul, ofReal_im]
+      rw [im_ofReal_mul, ← ofReal_int_cast, ← ofReal_mul, ofReal_im]
       exact mul_ne_zero Real.pi_pos.ne' h_im
     have A := div_ne_zero (ofReal_ne_zero.mpr Real.pi_pos.ne') this
     rw [← Complex.Gamma_mul_Gamma_one_sub s, mul_ne_zero_iff] at A
