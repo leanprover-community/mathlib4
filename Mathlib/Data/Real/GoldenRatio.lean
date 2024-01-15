@@ -127,7 +127,6 @@ theorem two_gt_gold : 2 > φ := by
   have h₁ : 3 = Real.sqrt 9 := by rw [← h₀, sqrt_sq]; linarith
   have h₂ : Real.sqrt 5 < Real.sqrt 9 := by rw [sqrt_lt_sqrt_iff_of_pos]; repeat linarith
   linarith
-#align two_gt_gold two_gt_gold
 
 theorem goldConj_neg : ψ < 0 := by
   linarith [one_sub_goldConj, one_lt_gold]
@@ -252,7 +251,6 @@ theorem fib_golden_conj_exp (n : ℕ) : Nat.fib (n + 1) - φ * Nat.fib n = ψ ^ 
   ring_nf
   have nz : sqrt 5 ≠ 0 := by norm_num
   rw [← (mul_inv_cancel nz).symm, one_mul]
-#align fib_golden_conj_exp fib_golden_conj_exp
 
 /-- Relationship between the Fibonacci Sequence, Golden Ratio and its exponents --/
 theorem fib_golden_exp' (n : ℕ) : φ * Nat.fib (n + 1) + Nat.fib n = φ ^ (n + 1) := by
@@ -268,4 +266,3 @@ theorem fib_golden_exp' (n : ℕ) : φ * Nat.fib (n + 1) + Nat.fib n = φ ^ (n +
       _ = φ * φ ^ (n + 1) := by rw [add_comm, ih]
       _ = φ ^ (n + 2) := by rw [← pow_succ]
     linarith
-#align fib_golden_exp' fib_golden_exp'
