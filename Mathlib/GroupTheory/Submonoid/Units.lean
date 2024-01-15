@@ -65,7 +65,8 @@ lemma Subgroup.ofUnits_mono : Monotone (Subgroup.ofUnits (M := M)) :=
   fun _ _ hST _ ⟨x, hx, hy⟩ => ⟨x, hST hx, hy⟩
 
 @[to_additive (attr := simp)]
-lemma Subgroup.units_ofUnits_eq (S : Subgroup Mˣ) : S.ofUnits.units = S := Subgroup.ext (fun _ =>
+lemma Subgroup.units_ofUnits_eq (S : Subgroup Mˣ) : S.ofUnits.units = S :=
+  Subgroup.ext (fun _ =>
   ⟨fun ⟨⟨_, hm, he⟩, _⟩ => (Units.ext he) ▸ hm, fun hm => ⟨⟨_, hm, rfl⟩, _, S.inv_mem hm, rfl⟩⟩)
 
 /-- A Galois coinsertion exists between the coercion from a subgroup of units to a submonoid and
@@ -106,19 +107,19 @@ lemma inv_val_mem_of_mem_units (S : Submonoid M) {x : Mˣ} (h : x ∈ S.units) :
 
 @[to_additive]
 lemma coe_inv_val_mul_coe_val (S : Submonoid M) {x : Sˣ} :
-    ((x⁻¹ : Sˣ) : M) * ((x : Sˣ) : M) = 1 := congrArg ((↑) : S → M) (inv_mul _)
+    ((x⁻¹ : Sˣ) : M) * ((x : Sˣ) : M) = 1 := S.subtype.congr_arg x.inv_mul
 
 @[to_additive]
 lemma coe_val_mul_coe_inv_val (S : Submonoid M) {x : Sˣ} :
-    ((x : Sˣ) : M) * ((x⁻¹ : Sˣ) : M) = 1 := congrArg ((↑) : S → M) (mul_inv _)
+    ((x : Sˣ) : M) * ((x⁻¹ : Sˣ) : M) = 1 := S.subtype.congr_arg x.mul_inv
 
 @[to_additive]
 lemma mk_inv_mul_mk_eq_one (S : Submonoid M) {x : Mˣ} (h : x ∈ S.units) :
-    (⟨_, h.2⟩ : S) * ⟨_, h.1⟩ = 1 := Subtype.ext (inv_mul _)
+    (⟨_, h.2⟩ : S) * ⟨_, h.1⟩ = 1 := Subtype.ext x.inv_mul
 
 @[to_additive]
 lemma mk_mul_mk_inv_eq_one (S : Submonoid M) {x : Mˣ} (h : x ∈ S.units) :
-    (⟨_, h.1⟩ : S) * ⟨_, h.2⟩ = 1 := Subtype.ext (mul_inv _)
+    (⟨_, h.1⟩ : S) * ⟨_, h.2⟩ = 1 := Subtype.ext x.mul_inv
 
 @[to_additive]
 lemma mul_mem_units (S : Submonoid M) {x y : Mˣ} (h₁ : x ∈ S.units) (h₂ : y ∈ S.units):
@@ -134,7 +135,7 @@ lemma inv_mem_units_iff (S : Submonoid M) {x : Mˣ} : x⁻¹ ∈ S.units ↔ x �
 @[to_additive " The equivalence between the additive subgroup of additive units of
 `S` and the type of additive units of `S`. "]
 def unitsEquivUnitsType (S : Submonoid M) : S.units ≃* Sˣ where
-  toFun := fun x => ⟨⟨_, x.2.1⟩, ⟨_, x.2.2⟩, S.mk_mul_mk_inv_eq_one x.2, S.mk_inv_mul_mk_eq_one x.2⟩
+  toFun := fun ⟨_, h⟩ => ⟨⟨_, h.1⟩, ⟨_, h.2⟩, S.mk_mul_mk_inv_eq_one h, S.mk_inv_mul_mk_eq_one h⟩
   invFun := fun x => ⟨⟨_, _, S.coe_val_mul_coe_inv_val, S.coe_inv_val_mul_coe_val⟩, ⟨x.1.2, x.2.2⟩⟩
   left_inv := fun _ => rfl
   right_inv := fun _ => rfl
@@ -253,8 +254,8 @@ noncomputable def ofUnitsEquivType (S : Subgroup Mˣ) : S.ofUnits ≃* S where
   toFun := fun x => ⟨S.unit_of_mem_ofUnits x.2, S.unit_of_mem_ofUnits_spec_mem⟩
   invFun := fun x => ⟨x.1, ⟨x.1, x.2, rfl⟩⟩
   left_inv := fun _ => rfl
-  right_inv := fun _ => Subtype.ext <| Units.ext <| rfl
-  map_mul' := fun _ _ => Subtype.ext <| Units.ext <| rfl
+  right_inv := fun _ => Subtype.ext (Units.ext rfl)
+  map_mul' := fun _ _ => Subtype.ext (Units.ext rfl)
 
 @[to_additive (attr := simp)]
 lemma ofUnits_bot : (⊥ : Subgroup Mˣ).ofUnits = ⊥ := ofUnits_units_gc.l_bot
