@@ -268,7 +268,7 @@ theorem map'_comp {M₁ M₂ M₃ : ModuleCat.{v} R} (l₁₂ : M₁ ⟶ M₂) (
     induction' x using TensorProduct.induction_on with _ _ x y ihx ihy
     · rfl
     · rfl
-    · rw [map_add, map_add, ihx, ihy] -- Porting note: simp again failing where rw succeeds
+    · simp only [(map_add), ihx, ihy] -- Porting note: simp again failing where rw succeeds
 #align category_theory.Module.extend_scalars.map'_comp ModuleCat.ExtendScalars.map'_comp
 
 end ExtendScalars
@@ -420,8 +420,6 @@ namespace RestrictionCoextensionAdj
 
 variable {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S)
 
--- Porting note: too much time
-set_option maxHeartbeats 500000 in
 /-- Given `R`-module X and `S`-module Y, any `g : (restrictScalars f).obj Y ⟶ X`
 corresponds to `Y ⟶ (coextendScalars f).obj X` by sending `y ↦ (s ↦ g (s • y))`
 -/
@@ -430,7 +428,7 @@ def HomEquiv.fromRestriction {X : ModuleCat R} {Y : ModuleCat S}
     (g : (restrictScalars f).obj Y ⟶ X) : Y ⟶ (coextendScalars f).obj X where
   toFun := fun y : Y =>
     { toFun := fun s : S => g <| (s • y : Y)
-      map_add' := fun s1 s2 : S => by simp only [add_smul]; rw [LinearMap.map_add]
+      map_add' := fun s1 s2 : S => by simp only [add_smul, (map_add)]
       map_smul' := fun r (s : S) => by
         -- Porting note: dsimp clears out some rw's but less eager to apply others with Lean 4
         dsimp
@@ -440,14 +438,14 @@ def HomEquiv.fromRestriction {X : ModuleCat R} {Y : ModuleCat S}
   map_add' := fun y1 y2 : Y =>
     LinearMap.ext fun s : S => by
       -- Porting note: double dsimp seems odd
-      dsimp
-      rw [LinearMap.add_apply, LinearMap.coe_mk, LinearMap.coe_mk]
+      dsimp only
+      rw [LinearMap.add_apply]
       dsimp
       rw [smul_add, map_add]
   map_smul' := fun (s : S) (y : Y) => LinearMap.ext fun t : S => by
       -- Porting note: used to be simp [mul_smul]
-      rw [RingHom.id_apply, LinearMap.coe_mk, ModuleCat.CoextendScalars.smul_apply',
-        LinearMap.coe_mk]
+      dsimp only [RingHom.id_apply, LinearMap.coe_mk]
+      rw [ModuleCat.CoextendScalars.smul_apply']
       dsimp
       rw [mul_smul]
 #align category_theory.Module.restriction_coextension_adj.hom_equiv.from_restriction ModuleCat.RestrictionCoextensionAdj.HomEquiv.fromRestriction
