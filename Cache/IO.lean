@@ -155,13 +155,14 @@ where
       loop h (← processLine a line)
 
 /-- Runs a terminal command and retrieves its output -/
-def runCmd (cmd : String) (args : Array String) (throwFailure := true) : IO String := do
+def runCmd (cmd : String) (args : Array String) (throwFailure stderrAsErr := true) : IO String := do
   let out ← IO.Process.output { cmd := cmd, args := args }
-  if out.exitCode != 0 && throwFailure then throw <| IO.userError out.stderr
+  if (out.exitCode != 0 || stderrAsErr && !out.stderr.isEmpty) && throwFailure then
+    throw <| IO.userError s!"failure in {cmd} {args}:\n{out.stderr}"
   else return out.stdout
 
 def runCurl (args : Array String) (throwFailure := true) : IO String := do
-  runCmd (← getCurl) args throwFailure
+  runCmd (← getCurl) (#["--no-progress-meter"] ++ args) throwFailure
 
 def validateCurl : IO Bool := do
   if (← CURLBIN.pathExists) then return true
@@ -178,7 +179,7 @@ def validateCurl : IO Bool := do
       if kernel == "Linux" && arch ∈ ["x86_64", "aarch64"] then
         IO.println s!"curl is too old; downloading more recent version"
         IO.FS.createDirAll IO.CACHEDIR
-        let _ ← runCmd "curl" #[
+        let _ ← runCmd "curl" (stderrAsErr := false) #[
           s!"https://github.com/leanprover-community/static-curl/releases/download/v{CURLVERSION}/curl-{arch}-linux-static",
           "-L", "-o", CURLBIN.toString]
         let _ ← runCmd "chmod" #["u+x", CURLBIN.toString]
@@ -224,7 +225,7 @@ def validateLeanTar : IO Unit := do
   IO.println s!"installing leantar {LEANTARVERSION}"
   IO.FS.createDirAll IO.CACHEDIR
   let ext := if win then "zip" else "tar.gz"
-  let _ ← runCmd "curl" #[
+  let _ ← runCmd "curl" (stderrAsErr := false) #[
     s!"https://github.com/digama0/leangz/releases/download/v{LEANTARVERSION}/leantar-v{LEANTARVERSION}-{target}.{ext}",
     "-L", "-o", s!"{LEANTARBIN}.{ext}"]
   let _ ← runCmd "tar" #["-xf", s!"{LEANTARBIN}.{ext}",

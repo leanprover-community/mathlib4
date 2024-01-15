@@ -197,14 +197,14 @@ def putFiles (fileNames : Array String) (overwrite : Bool) (token : String) : IO
     if useFROCache then
       -- TODO: reimplement using HEAD requests?
       let _ := overwrite
-      discard <| IO.runCurl #["-s", "-X", "PUT", "--aws-sigv4", "aws:amz:auto:s3", "--user", token,
-        "--parallel", "-K", IO.CURLCFG.toString]
+      discard <| IO.runCurl #["--aws-sigv4", "aws:amz:auto:s3", "--user", token,
+        "-X", "PUT", "--parallel", "-K", IO.CURLCFG.toString]
     else if overwrite then
-      discard <| IO.runCurl #["-s", "-X", "PUT", "-H", "x-ms-blob-type: BlockBlob", "--parallel",
-        "-K", IO.CURLCFG.toString]
+      discard <| IO.runCurl #["-H", "x-ms-blob-type: BlockBlob",
+        "-X", "PUT", "--parallel", "-K", IO.CURLCFG.toString]
     else
-      discard <| IO.runCurl #["-s", "-X", "PUT", "-H", "x-ms-blob-type: BlockBlob",
-        "-H", "If-None-Match: *", "--parallel", "-K", IO.CURLCFG.toString]
+      discard <| IO.runCurl #["-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *",
+        "-X", "PUT", "--parallel", "-K", IO.CURLCFG.toString]
     IO.FS.removeFile IO.CURLCFG
   else IO.println "No files to upload"
 
@@ -230,8 +230,8 @@ def commit (hashMap : IO.HashMap) (overwrite : Bool) (token : String) : IO Unit 
   if useFROCache then
     -- TODO: reimplement using HEAD requests?
     let _ := overwrite
-    discard <| IO.runCurl <| #["-T", path.toString, "--aws-sigv4", "aws:amz:auto:s3",
-      "--user", token, s!"{UPLOAD_URL}/c/{hash}"]
+    discard <| IO.runCurl #["-T", path.toString,
+      "--aws-sigv4", "aws:amz:auto:s3", "--user", token, s!"{UPLOAD_URL}/c/{hash}"]
   else
     let params := if overwrite
       then #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob"]
