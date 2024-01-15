@@ -84,7 +84,7 @@ instance : HasCompl (Set α) := ⟨fun s ↦ {x | x ∉ s}⟩
 @[simp] theorem mem_compl_iff (s : Set α) (x : α) : x ∈ sᶜ ↔ x ∉ s := Iff.rfl
 #align set.mem_compl_iff Set.mem_compl_iff
 
-instance : SDiff (Set α) := ⟨fun s t => { x | x ∈ s ∧ x ∉ t }⟩
+instance : SDiff (Set α) := ⟨fun s t => {x | x ∈ s ∧ x ∉ t}⟩
 
 theorem diff_eq (s t : Set α) : s \ t = s ∩ tᶜ := rfl
 #align set.diff_eq Set.diff_eq
@@ -102,14 +102,14 @@ theorem mem_diff_of_mem {s t : Set α} {x : α} (h1 : x ∈ s) (h2 : x ∉ t) : 
 -- you'll then need to create additional instances (and possibly prove lemmas about them).
 -- The first error should appear below at `monotoneOn_iff_monotone`.
 /-- Given the set `s`, `Elem s` is the `Type` of element of `s`. -/
-@[coe, reducible] def Elem (s : Set α) : Type u := { x // x ∈ s }
+@[coe, reducible] def Elem (s : Set α) : Type u := {x // x ∈ s}
 
 /-- Coercion from a set to the corresponding subtype. -/
 instance : CoeSort (Set α) (Type u) := ⟨Elem⟩
 
 /-- The preimage of `s : Set β` by `f : α → β`, written `f ⁻¹' s`,
   is the set of `x : α` such that `f x ∈ s`. -/
-def preimage (f : α → β) (s : Set β) : Set α := { x | f x ∈ s }
+def preimage (f : α → β) (s : Set β) : Set α := {x | f x ∈ s}
 #align set.preimage Set.preimage
 
 /-- `f ⁻¹' t` denotes the preimage of `t : Set β` under the function `f : α → β`. -/
@@ -138,8 +138,7 @@ def imageFactorization (f : α → β) (s : Set α) : s → f '' s := fun p =>
 #align set.image_factorization Set.imageFactorization
 
 /-- `kernImage f s` is the set of `y` such that `f ⁻¹ y ⊆ s`. -/
-def kernImage (f : α → β) (s : Set α) : Set β :=
-  { y | ∀ ⦃x⦄, f x = y → x ∈ s }
+def kernImage (f : α → β) (s : Set α) : Set β := {y | ∀ ⦃x⦄, f x = y → x ∈ s}
 #align set.kern_image Set.kernImage
 
 lemma subset_kernImage_iff {s : Set β} {t : Set α} {f : α → β} : s ⊆ kernImage f t ↔ f ⁻¹' s ⊆ t :=
@@ -154,8 +153,7 @@ variable {ι : Sort*} {f : ι → α}
 
 This function is more flexible than `f '' univ`, as the image requires that the domain is in Type
 and not an arbitrary Sort. -/
-def range (f : ι → α) : Set α :=
-  { x | ∃ y, f y = x }
+def range (f : ι → α) : Set α := {x | ∃ y, f y = x}
 #align set.range Set.range
 
 @[simp] theorem mem_range {x : α} : x ∈ range f ↔ ∃ y, f y = x := Iff.rfl
@@ -189,8 +187,7 @@ theorem comp_rangeSplitting (f : α → β) : f ∘ rangeSplitting f = Subtype.v
 section Prod
 
 /-- The cartesian product `Set.prod s t` is the set of `(a, b)` such that `a ∈ s` and `b ∈ t`. -/
-def prod (s : Set α) (t : Set β) : Set (α × β) :=
-  { p | p.1 ∈ s ∧ p.2 ∈ t }
+def prod (s : Set α) (t : Set β) : Set (α × β) := {p | p.1 ∈ s ∧ p.2 ∈ t}
 #align set.prod Set.prod
 
 @[default_instance]
@@ -221,8 +218,7 @@ end Prod
 section Diagonal
 
 /-- `diagonal α` is the set of `α × α` consisting of all pairs of the form `(a, a)`. -/
-def diagonal (α : Type*) : Set (α × α) :=
-  { p | p.1 = p.2 }
+def diagonal (α : Type*) : Set (α × α) := {p | p.1 = p.2}
 #align set.diagonal Set.diagonal
 
 theorem mem_diagonal (x : α) : (x, x) ∈ diagonal α := rfl
@@ -232,8 +228,7 @@ theorem mem_diagonal (x : α) : (x, x) ∈ diagonal α := rfl
 #align set.mem_diagonal_iff Set.mem_diagonal_iff
 
 /-- The off-diagonal of a set `s` is the set of pairs `(a, b)` with `a, b ∈ s` and `a ≠ b`. -/
-def offDiag (s : Set α) : Set (α × α) :=
-  { x | x.1 ∈ s ∧ x.2 ∈ s ∧ x.1 ≠ x.2 }
+def offDiag (s : Set α) : Set (α × α) := {x | x.1 ∈ s ∧ x.2 ∈ s ∧ x.1 ≠ x.2}
 #align set.off_diag Set.offDiag
 
 @[simp]
@@ -250,8 +245,7 @@ variable {ι : Type*} {α : ι → Type*}
 /-- Given an index set `ι` and a family of sets `t : Π i, Set (α i)`, `pi s t`
 is the set of dependent functions `f : Πa, π a` such that `f a` belongs to `t a`
 whenever `a ∈ s`. -/
-def pi (s : Set ι) (t : ∀ i, Set (α i)) : Set (∀ i, α i) :=
-  { f | ∀ i ∈ s, f i ∈ t i }
+def pi (s : Set ι) (t : ∀ i, Set (α i)) : Set (∀ i, α i) := {f | ∀ i ∈ s, f i ∈ t i}
 #align set.pi Set.pi
 
 variable {s : Set ι} {t : ∀ i, Set (α i)} {f : ∀ i, α i}
@@ -265,13 +259,11 @@ theorem mem_univ_pi : f ∈ pi univ t ↔ ∀ i, f i ∈ t i := by simp
 end Pi
 
 /-- Two functions `f₁ f₂ : α → β` are equal on `s` if `f₁ x = f₂ x` for all `x ∈ s`. -/
-def EqOn (f₁ f₂ : α → β) (s : Set α) : Prop :=
-  ∀ ⦃x⦄, x ∈ s → f₁ x = f₂ x
+def EqOn (f₁ f₂ : α → β) (s : Set α) : Prop := ∀ ⦃x⦄, x ∈ s → f₁ x = f₂ x
 #align set.eq_on Set.EqOn
 
 /-- `MapsTo f a b` means that the image of `a` is contained in `b`. -/
-def MapsTo (f : α → β) (s : Set α) (t : Set β) : Prop :=
-  ∀ ⦃x⦄, x ∈ s → f x ∈ t
+def MapsTo (f : α → β) (s : Set α) (t : Set β) : Prop := ∀ ⦃x⦄, x ∈ s → f x ∈ t
 #align set.maps_to Set.MapsTo
 
 theorem mapsTo_image (f : α → β) (s : Set α) : MapsTo f s (f '' s) := fun _ ↦ mem_image_of_mem f
@@ -302,24 +294,20 @@ def InjOn (f : α → β) (s : Set α) : Prop :=
 def graphOn (f : α → β) (s : Set α) : Set (α × β) := (fun x ↦ (x, f x)) '' s
 
 /-- `f` is surjective from `a` to `b` if `b` is contained in the image of `a`. -/
-def SurjOn (f : α → β) (s : Set α) (t : Set β) : Prop :=
-  t ⊆ f '' s
+def SurjOn (f : α → β) (s : Set α) (t : Set β) : Prop := t ⊆ f '' s
 #align set.surj_on Set.SurjOn
 
 /-- `f` is bijective from `s` to `t` if `f` is injective on `s` and `f '' s = t`. -/
-def BijOn (f : α → β) (s : Set α) (t : Set β) : Prop :=
-  MapsTo f s t ∧ InjOn f s ∧ SurjOn f s t
+def BijOn (f : α → β) (s : Set α) (t : Set β) : Prop := MapsTo f s t ∧ InjOn f s ∧ SurjOn f s t
 #align set.bij_on Set.BijOn
 
 /-- `g` is a left inverse to `f` on `a` means that `g (f x) = x` for all `x ∈ a`. -/
-def LeftInvOn (f' : β → α) (f : α → β) (s : Set α) : Prop :=
-  ∀ ⦃x⦄, x ∈ s → f' (f x) = x
+def LeftInvOn (f' : β → α) (f : α → β) (s : Set α) : Prop := ∀ ⦃x⦄, x ∈ s → f' (f x) = x
 #align set.left_inv_on Set.LeftInvOn
 
 /-- `g` is a right inverse to `f` on `b` if `f (g x) = x` for all `x ∈ b`. -/
 @[reducible]
-def RightInvOn (f' : β → α) (f : α → β) (t : Set β) : Prop :=
-  LeftInvOn f f' t
+def RightInvOn (f' : β → α) (f : α → β) (t : Set β) : Prop := LeftInvOn f f' t
 #align set.right_inv_on Set.RightInvOn
 
 /-- `g` is an inverse to `f` viewed as a map from `a` to `b` -/
@@ -331,8 +319,7 @@ section image2
 
 /-- The image of a binary function `f : α → β → γ` as a function `Set α → Set β → Set γ`.
 Mathematically this should be thought of as the image of the corresponding function `α × β → γ`.-/
-def image2 (f : α → β → γ) (s : Set α) (t : Set β) : Set γ :=
-  { c | ∃ a ∈ s, ∃ b ∈ t, f a b = c }
+def image2 (f : α → β → γ) (s : Set α) (t : Set β) : Set γ := {c | ∃ a ∈ s, ∃ b ∈ t, f a b = c}
 #align set.image2 Set.image2
 
 variable {f : α → β → γ} {s : Set α} {t : Set β} {a : α} {b : β} {c : γ}
