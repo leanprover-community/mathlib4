@@ -39,11 +39,11 @@ def dcomp {β : α → Sort u₂} {φ : ∀ {x : α}, β x → Sort u₃} (f : �
 
 infixr:80 " ∘' " => Function.dcomp
 
-@[reducible]
+@[reducible, deprecated] -- Deprecated since 13 January 2024
 def compRight (f : β → β → β) (g : α → β) : β → α → β := fun b a => f b (g a)
 #align function.comp_right Function.compRight
 
-@[reducible]
+@[reducible, deprecated] -- Deprecated since 13 January 2024
 def compLeft (f : β → β → β) (g : α → β) : α → β → β := fun a b => f (g a) b
 #align function.comp_left Function.compLeft
 
@@ -54,13 +54,16 @@ from `β` to `α`. -/
 def onFun (f : β → β → φ) (g : α → β) : α → α → φ := fun x y => f (g x) (g y)
 #align function.on_fun Function.onFun
 
+@[inherit_doc onFun]
+infixl:2 " on " => onFun
+
 /-- Given functions `f : α → β → φ`, `g : α → β → δ` and a binary operator `op : φ → δ → ζ`,
 produce a function `α → β → ζ` that applies `f` and `g` on each argument and then applies
 `op` to the results.
 -/
 -- Porting note: the ζ variable was originally constrained to `Sort u₁`, but this seems to
 -- have been an oversight.
-@[reducible]
+@[reducible, deprecated] -- Deprecated since 13 January 2024
 def combine (f : α → β → φ) (op : φ → δ → ζ) (g : α → β → δ) : α → β → ζ := fun x y =>
   op (f x y) (g x y)
 #align function.combine Function.combine
@@ -71,13 +74,10 @@ def combine (f : α → β → φ) (op : φ → δ → ζ) (g : α → β → δ
 def swap {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : ∀ y x, φ x y := fun y x => f x y
 #align function.swap Function.swap
 
-@[reducible]
+@[reducible, deprecated] -- Deprecated since 13 January 2024
 def app {β : α → Sort u₂} (f : ∀ x, β x) (x : α) : β x :=
   f x
 #align function.app Function.app
-
-@[inherit_doc onFun]
-infixl:2 " on " => onFun
 
 -- porting note: removed, it was never used
 -- notation f " -[" op "]- " g => combine f op g
