@@ -1103,7 +1103,7 @@ section equivMapOfInjective
 
 variable (f : A →ₐ[R] B)
 
-theorem map_eq : S.map f = (f.comp S.val).range := by
+theorem range_comp_val : (f.comp S.val).range = S.map f := by
   rw [AlgHom.range_comp, range_val]
 
 variable (hf : Function.Injective f)
@@ -1111,7 +1111,7 @@ variable (hf : Function.Injective f)
 /-- A subalgebra is isomorphic to its image under an injective `AlgHom` -/
 noncomputable def equivMapOfInjective : S ≃ₐ[R] S.map f :=
   (AlgEquiv.ofInjective (f.comp S.val) (hf.comp Subtype.val_injective)).trans
-    (equivOfEq _ _ (map_eq S f).symm)
+    (equivOfEq _ _ (range_comp_val S f))
 
 @[simp]
 theorem coe_equivMapOfInjective_apply (x : S) : ↑(equivMapOfInjective S f hf x) = f x := rfl
