@@ -40,7 +40,8 @@ section FixedPoints
 
 variable (α) in
 /-- In a multiplicative group action, the points fixed by `g` are also fixed by `g⁻¹` -/
-@[to_additive (attr := simp) "In an additive group action, the points fixed by `g` are also fixed by `g⁻¹`"]
+@[to_additive (attr := simp)
+  "In an additive group action, the points fixed by `g` are also fixed by `g⁻¹`"]
 theorem fixedBy_inv_eq_fixedBy (g : G) : fixedBy α g⁻¹ = fixedBy α g := by
   ext x
   rw [mem_fixedBy, mem_fixedBy, inv_smul_eq_iff, eq_comm]
