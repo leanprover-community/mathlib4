@@ -78,6 +78,9 @@ This file contains basics about the purely inseparable extension of fields.
 - `finSepDegree_mul_finInsepDegree`: the (finite) separable degree multiply by the (finite)
   inseparable degree is equal to the (finite) field extension degree.
 
+- `Field.lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic`: the (infinite) separable degree
+  satisfies the tower law.
+
 ## Tags
 
 separable degree, degree, separable closure, purely inseparable
@@ -90,8 +93,10 @@ separable degree, degree, separable closure, purely inseparable
   fields must be purely inseparable extensions. Need to use the fact that `Emb F E` is infintie
   when `E / F` is (purely) transcendental.
 
-- Prove that the (infinite) separable degree and the (infinite) inseparable degree are
-  multiplicative. For the latter one, linearly disjoint argument is needed.
+- Restate some intermediate result in terms of linearly disjoint.
+
+- Prove that the (infinite) inseparable degree satisfies the tower law. Probably linearly disjoint
+  argument is needed.
 
 -/
 
@@ -557,6 +562,146 @@ theorem adjoin_eq_adjoin_pow_expChar_of_isSeparable' [IsSeparable F E] (S : Set 
 
 end IntermediateField
 
+-- -- unused
+-- -- TODO: move to suitable location
+-- theorem ExpChar.injective_pow_expChar_pow (q : ℕ) [hF : ExpChar F q] (n : ℕ) :
+--     Function.Injective (fun x : F ↦ x ^ q ^ n) := by
+--   cases' hF with _ _ hprime _
+--   · simpa only [one_pow, pow_one] using Function.injective_id
+--   haveI := Fact.mk hprime
+--   simpa only [← iterate_frobenius] using (frobenius_inj F q).iterate n
+
+-- -- unused
+-- -- TODO: move to suitable location
+-- theorem ExpChar.injective_pow_expChar (q : ℕ) [hF : ExpChar F q] :
+--     Function.Injective (fun x : F ↦ x ^ q) := by
+--   simpa only [pow_one] using ExpChar.injective_pow_expChar_pow F q 1
+
+-- TODO: move to suitable location
+theorem sum_pow_char_pow {R : Type*} [CommSemiring R] (p : ℕ) [Fact p.Prime] (n : ℕ) [CharP R p]
+    {ι : Type*} (s : Finset ι) (f : ι → R) :
+    (s.sum fun i ↦ f i) ^ p ^ n = s.sum fun i ↦ f i ^ p ^ n := by
+  induction' n with n ih
+  · simp_rw [pow_zero, pow_one]
+  simp_rw [pow_succ', pow_mul, ih, sum_pow_char]
+
+-- TODO: add more similar results for `ExpChar`
+-- TODO: move to suitable location
+theorem sum_pow_expChar_pow {R : Type*} [CommSemiring R] (q : ℕ) (n : ℕ) [h : ExpChar R q]
+    {ι : Type*} (s : Finset ι) (f : ι → R) :
+    (s.sum fun i ↦ f i) ^ q ^ n = s.sum fun i ↦ f i ^ q ^ n := by
+  cases' h with _ _ hprime _
+  · simp_rw [one_pow, pow_one]
+  haveI := Fact.mk hprime
+  exact sum_pow_char_pow q n s f
+
+variable {F E} in
+/-- If `E / F` is a separable extension of exponential characteristic `q`, if `{ u_i }` is a family
+of elements of `E` which `F`-linearly spans `E`, then `{ u_i ^ (q ^ n) }` also `F`-linearly spans
+`E` for any natural number `n`. -/
+theorem Field.span_map_pow_expChar_pow_eq_top_of_isSeparable (q : ℕ) [hF : ExpChar F q] (n : ℕ)
+    [IsSeparable F E] {ι : Type*} {v : ι → E} (h : Submodule.span F (Set.range v) = ⊤) :
+    Submodule.span F (Set.range ((fun x ↦ x ^ q ^ n) ∘ v)) = ⊤ := by
+  cases' id hF with _ _ hprime _
+  · simpa only [one_pow, pow_one]
+  haveI := Fact.mk hprime
+  haveI := charP_of_injective_algebraMap (algebraMap F E).injective q
+  have halg := IsSeparable.isAlgebraic F E
+  have := congr(Subalgebra.toSubmodule $(adjoin_univ F E).toSubalgebra)
+  rw [adjoin_eq_adjoin_pow_expChar_pow_of_isSeparable' F E _ q n, Set.image_univ] at this
+  set S := Set.range fun x : E ↦ x ^ q ^ n
+  have hS : Submonoid.closure S = S := by
+    let f : E →* E := {
+      toFun := (frobenius E q)^[n]
+      map_one' := MonoidHom.iterate_map_one _ n
+      map_mul' := fun x y ↦ iterate_map_mul _ n x y
+    }
+    simpa only [← iterate_frobenius] using congr_arg SetLike.coe (MonoidHom.mrange f).closure_eq
+  rw [adjoin_algebraic_toSubalgebra (fun x _ ↦ halg x), Algebra.adjoin_eq_span, hS,
+    top_toSubalgebra, Algebra.top_toSubmodule] at this
+  apply top_unique
+  rw [← this, Submodule.span_le]
+  rintro _ ⟨y, rfl⟩
+  have hy : y ∈ (⊤ : Submodule F E) := trivial
+  rw [← h] at hy
+  erw [Finsupp.mem_span_range_iff_exists_finsupp] at hy ⊢
+  obtain ⟨c, hy⟩ := hy
+  use c.mapRange (fun x ↦ x ^ q ^ n) (zero_pow (expChar_pow_pos F q n))
+  rw [Finsupp.sum_mapRange_index (fun _ ↦ by exact zero_smul _ _)]
+  simp_rw [← hy, Finsupp.sum, sum_pow_char_pow, Function.comp_apply,
+    Algebra.smul_def, mul_pow, map_pow]
+
+variable {F E} in
+/-- If `E / F` is a finite separable extension of exponential characteristic `q`, if `{ u_i }` is a
+family of elements of `E` which is `F`-linearly independent, then `{ u_i ^ (q ^ n) }` is also
+`F`-linearly independent for any natural number `n`. A special case of
+`LinearIndependent.map_pow_expChar_pow_of_isSeparable`
+and is an intermediate result used to prove it. -/
+theorem LinearIndependent.map_pow_expChar_pow_of_fd_isSeparable (q : ℕ) [ExpChar F q]
+    (n : ℕ) [FiniteDimensional F E] [IsSeparable F E] {ι : Type*} {v : ι → E}
+    (h : LinearIndependent F v) : LinearIndependent F ((fun x ↦ x ^ q ^ n) ∘ v) := by
+  have h' := h.coe_range
+  let ι' := h'.extend (Set.subset_univ (Set.range v))
+  let b : Basis ι' F E := Basis.extend h'
+  letI : Fintype ι' := fintypeBasisIndex b
+  have H := linearIndependent_of_top_le_span_of_card_eq_finrank
+    (span_map_pow_expChar_pow_eq_top_of_isSeparable q n b.span_eq).ge
+    (finrank_eq_card_basis b).symm
+  let f (i : ι) : ι' := ⟨v i, h'.subset_extend _ ⟨i, rfl⟩⟩
+  convert H.comp f fun _ _ heq ↦ h.injective (by simpa only [Subtype.mk.injEq] using heq)
+  ext i
+  simp_rw [Function.comp_apply, Basis.extend_apply_self]
+
+-- TODO: move to suitable location
+lemma linearIndependent_iff_finset_linearIndependent {ι R M : Type*} {v : ι → M}
+    [Semiring R] [AddCommMonoid M] [Module R M] :
+    LinearIndependent R v ↔ ∀ (s : Finset ι), LinearIndependent R (v ∘ (Subtype.val : s → ι)) :=
+  ⟨fun H _ ↦ H.comp _ Subtype.val_injective, fun H ↦ linearIndependent_iff'.2 fun s g hg i hi ↦
+    Fintype.linearIndependent_iff.1 (H s) (g ∘ Subtype.val)
+      (hg ▸ Finset.sum_attach s fun j ↦ g j • v j) ⟨i, hi⟩⟩
+
+variable {F E} in
+/-- If `E / F` is a separable extension of exponential characteristic `q`, if `{ u_i }` is a
+family of elements of `E` which is `F`-linearly independent, then `{ u_i ^ (q ^ n) }` is also
+`F`-linearly independent for any natural number `n`. -/
+theorem LinearIndependent.map_pow_expChar_pow_of_isSeparable (q : ℕ) [ExpChar F q]
+    (n : ℕ) [IsSeparable F E] {ι : Type*} {v : ι → E}
+    (h : LinearIndependent F v) : LinearIndependent F ((fun x ↦ x ^ q ^ n) ∘ v) := by
+  have halg := IsSeparable.isAlgebraic F E
+  rw [linearIndependent_iff_finset_linearIndependent] at h ⊢
+  intro s
+  let E' := adjoin F (s.image v : Set E)
+  haveI : FiniteDimensional F E' := finiteDimensional_adjoin fun x _ ↦ (halg x).isIntegral
+  haveI : IsSeparable F E' := isSeparable_tower_bot_of_isSeparable F E' E
+  let v' (i : s) : E' := ⟨v i.1, subset_adjoin F _ (Finset.mem_image.2 ⟨i.1, i.2, rfl⟩)⟩
+  have h' : LinearIndependent F v' := (h s).of_comp E'.val.toLinearMap
+  exact (h'.map_pow_expChar_pow_of_fd_isSeparable q n).map'
+    E'.val.toLinearMap (LinearMap.ker_eq_bot_of_injective E'.val.injective)
+
+variable {F E} in
+/-- If `E / F` is a field extension of exponential characteristic `q`, if `{ u_i }` is a
+family of separable elements of `E` which is `F`-linearly independent, then `{ u_i ^ (q ^ n) }`
+is also `F`-linearly independent for any natural number `n`. -/
+theorem LinearIndependent.map_pow_expChar_pow_of_separable (q : ℕ) [ExpChar F q]
+    (n : ℕ) {ι : Type*} {v : ι → E} (hsep : ∀ i : ι, (minpoly F (v i)).Separable)
+    (h : LinearIndependent F v) : LinearIndependent F ((fun x ↦ x ^ q ^ n) ∘ v) := by
+  let E' := adjoin F (Set.range v)
+  haveI : IsSeparable F E' := (isSeparable_adjoin_iff_separable F _).2 <| by
+    rintro _ ⟨y, rfl⟩; exact hsep y
+  let v' (i : ι) : E' := ⟨v i, subset_adjoin F _ ⟨i, rfl⟩⟩
+  have h' : LinearIndependent F v' := h.of_comp E'.val.toLinearMap
+  exact (h'.map_pow_expChar_pow_of_isSeparable q n).map'
+    E'.val.toLinearMap (LinearMap.ker_eq_bot_of_injective E'.val.injective)
+
+variable {F E} in
+/-- If `E / F` is a separable extension of exponential characteristic `q`, if `{ u_i }` is an
+`F`-basis of `E`, then `{ u_i ^ (q ^ n) }` is also an `F`-basis of `E`
+for any natural number `n`. -/
+def Basis.mapPowExpCharPowOfIsSeparable (q : ℕ) [ExpChar F q] (n : ℕ)
+    [IsSeparable F E] {ι : Type*} (b : Basis ι F E) : Basis ι F E :=
+  Basis.mk (b.linearIndependent.map_pow_expChar_pow_of_isSeparable q n)
+    (span_map_pow_expChar_pow_eq_top_of_isSeparable q n b.span_eq).ge
+
 variable {F E} in
 /-- If `E / F` is an algebraic extension, `F` is separably closed,
 then `E` is also separably closed. -/
@@ -697,9 +842,61 @@ section TowerLaw
 
 variable [Algebra E K] [IsScalarTower F E K]
 
+variable {F K} in
+/-- If `K / E / F` is a field extension tower such that `E / F` is purely inseparable,
+if `{ u_i }` is a family of separable elements of `K` which is `F`-linearly independent,
+then it is also `E`-linearly independent. -/
+theorem LinearIndependent.map_of_isPurelyInseparable_of_separable [IsPurelyInseparable F E]
+    {ι : Type*} {v : ι → K} (hsep : ∀ i : ι, (minpoly F (v i)).Separable)
+    (h : LinearIndependent F v) : LinearIndependent E v := by
+  obtain ⟨q, _⟩ := ExpChar.exists F
+  haveI := expChar_of_injective_algebraMap (algebraMap F K).injective q
+  rw [linearIndependent_iff]
+  intro l hl
+  obtain ⟨f, hf⟩ := Classical.axiom_of_choice fun i : ι ↦
+    (isPurelyInseparable_iff_pow_mem F q).1 (by assumption) (l i)
+  obtain ⟨n, hn⟩ := (Finset.image f l.support).exists_le
+  replace hf (i : ι) : l i ^ q ^ n ∈ (algebraMap F E).range := by
+    by_cases hs : i ∈ l.support
+    · obtain ⟨y, hy⟩ := hf i
+      exact ⟨y ^ q ^ (n - f i), by rw [map_pow, hy, ← pow_mul, ← pow_add,
+        Nat.add_sub_of_le (hn (f i) (Finset.mem_image.2 ⟨i, hs, rfl⟩))]⟩
+    exact ⟨0, by rw [map_zero, Finsupp.not_mem_support_iff.1 hs, zero_pow (expChar_pow_pos F q n)]⟩
+  obtain ⟨lF, hlF⟩ := Classical.axiom_of_choice hf
+  let lF' (i : ι) : F := if i ∈ l.support then lF i else 0
+  let lF₀ := Finsupp.onFinset l.support lF' fun i ↦ by
+    contrapose!
+    intro hs
+    simp only [hs, ite_false]
+  replace h := linearIndependent_iff.1 (h.map_pow_expChar_pow_of_separable q n hsep) lF₀ <| by
+    replace hl := congr($hl ^ q ^ n)
+    rw [Finsupp.total_apply, Finsupp.sum, sum_pow_expChar_pow,
+      zero_pow (expChar_pow_pos F q n)] at hl
+    rw [← hl, Finsupp.total_apply, Finsupp.onFinset_sum _ (fun _ ↦ by exact zero_smul _ _)]
+    refine Finset.sum_congr rfl ?_
+    intro i hs
+    simp_rw [hs, ite_true, Algebra.smul_def, mul_pow, IsScalarTower.algebraMap_apply F E K, hlF,
+      map_pow, Function.comp_apply]
+  replace hlF (i : ι) : (algebraMap F E) (lF' i) = l i ^ q ^ n := by
+    by_cases hs : i ∈ l.support
+    · simp only [hs, ite_true, hlF i]
+    simp only [hs, ite_false, map_zero, Finsupp.not_mem_support_iff.1 hs,
+      zero_pow (expChar_pow_pos F q n)]
+  ext i
+  by_cases hs : i ∈ l.support
+  · replace h := congr($h i)
+    rw [Finsupp.onFinset_apply] at h
+    have := (hlF i).symm
+    erw [h, map_zero, pow_eq_zero_iff (expChar_pow_pos F q n)] at this
+    exact this
+  rw [Finsupp.not_mem_support_iff.1 hs]
+  rfl
+
 -- TODO: move to suitable location
 -- NOTE: In fact it only requires `F`, `E`, `K` to be `CommSemiring`.
 variable {F K} in
+/-- If `K / E / F` is a ring extension tower, `L` is a subalgebra of `K / F` which is generated by
+`S` as an `F`-module, then `E[L]` is generated by `S` as an `E`-module. -/
 lemma Subalgebra.adjoin_eq_span_of_eq_span (L : Subalgebra F K) {S : Set K}
     (h : Subalgebra.toSubmodule L = Submodule.span F S) :
     Subalgebra.toSubmodule (Algebra.adjoin E (L : Set K)) = Submodule.span E S := by
@@ -715,6 +912,8 @@ lemma Subalgebra.adjoin_eq_span_of_eq_span (L : Subalgebra F K) {S : Set K}
 -- TODO: move to suitable location
 -- NOTE: In fact it only requires `F`, `E`, `K` to be `CommSemiring`.
 variable {F K} in
+/-- If `K / E / F` is a ring extension tower, `L` is a subalgebra of `K / F`,
+then `E[L]` is generated by any basis of `L / F` as an `E`-module. -/
 lemma Subalgebra.adjoin_eq_span_basis (L : Subalgebra F K) {ι : Type*}
     (bL : Basis ι F L) : Subalgebra.toSubmodule (Algebra.adjoin E (L : Set K)) =
     Submodule.span E (Set.range fun i : ι ↦ (bL i).1) := by
@@ -725,6 +924,8 @@ lemma Subalgebra.adjoin_eq_span_basis (L : Subalgebra F K) {ι : Type*}
 -- TODO: move to suitable location
 -- NOTE: In fact it only requires `F` be `Field`, others be `CommRing`.
 variable {F K} in
+/-- If `K / E / F` is a ring extension tower, `L` is a subalgebra of `K / F`,
+then `[E[L] : E] ≤ [L : F]`. -/
 lemma Subalgebra.adjoin_rank_le (L : Subalgebra F K) :
     Module.rank E (Algebra.adjoin E (L : Set K)) ≤ Module.rank F L := by
   obtain ⟨ι, ⟨bL⟩⟩ := Basis.exists_basis F L
@@ -735,15 +936,16 @@ lemma Subalgebra.adjoin_rank_le (L : Subalgebra F K) :
 -- TODO: move to suitable location
 -- TODO: In fact it only requires either `L / F` or `E / F` is algebraic
 variable {F K} in
+/-- If `K / E / F` is a field extension tower, `L` is an intermediate field of `K / F`
+which is algebraic over `F`, then `[E(L) : E] ≤ [L : F]`. A corollary of
+`Subalgebra.adjoin_rank_le` since in this case `E(L) = E[L]`. -/
 lemma IntermediateField.adjoin_rank_le_of_isAlgebraic (L : IntermediateField F K)
     (halg : Algebra.IsAlgebraic F L) :
     Module.rank E (adjoin E (L : Set K)) ≤ Module.rank F L := by
-  change Module.rank E (adjoin E (L.toSubalgebra : Set K)).toSubalgebra ≤ _
-  have : _ ≤ Module.rank F L := L.toSubalgebra.adjoin_rank_le E
   have : ∀ x ∈ (L.toSubalgebra : Set K), IsAlgebraic E x := fun x hx ↦
     IsAlgebraic.tower_top E (isAlgebraic_iff.1 (halg ⟨x, hx⟩))
-  -- rw [adjoin_algebraic_toSubalgebra this]
-  sorry
+  simpa only [(Subalgebra.equivOfEq _ _ (adjoin_algebraic_toSubalgebra this)).symm.toLinearEquiv
+    |>.rank_eq] using L.toSubalgebra.adjoin_rank_le E
 
 namespace Field
 
@@ -754,14 +956,28 @@ intermediate result used to prove it. -/
 lemma sepDegree_eq_of_isPurelyInseparable_of_isSeparable
     [IsPurelyInseparable F E] [IsSeparable E K] :
     sepDegree F K = Module.rank E K := by
-  sorry
+  let S := separableClosure F K
+  have h := S.adjoin_rank_le_of_isAlgebraic E (IsSeparable.isAlgebraic _ _)
+  rw [separableClosure.adjoin_eq_of_isPurelyInseparable_of_isSeparable F E K, rank_top'] at h
+  obtain ⟨ι, ⟨b⟩⟩ := Basis.exists_basis F S
+  exact h.antisymm' (b.mk_eq_rank'' ▸ (b.linearIndependent.map' S.val.toLinearMap
+    (LinearMap.ker_eq_bot_of_injective S.val.injective) |>.map_of_isPurelyInseparable_of_separable E
+      (fun i ↦ by simpa only [minpoly_eq] using IsSeparable.separable F (b i)) |>.cardinal_le_rank))
 
+/-- If `K / E / F` is a field extension tower, such that `E / F` is separable,
+then $[E:F] [K:E]_s = [K:F]_s$.
+It is a special case of `Field.lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic`, and is an
+intermediate result used to prove it. -/
 lemma lift_rank_mul_lift_sepDegree_of_isSeparable [IsSeparable F E] :
     Cardinal.lift.{w} (Module.rank F E) * Cardinal.lift.{v} (sepDegree E K) =
     Cardinal.lift.{v} (sepDegree F K) := by
   rw [sepDegree, sepDegree, separableClosure.eq_restrictScalars_of_isSeparable F E K]
   exact lift_rank_mul_lift_rank F E (separableClosure E K)
 
+/-- If `K / E / F` is a field extension tower, such that `E / F` is purely inseparable,
+then $[K:F]_s = [K:E]_s$.
+It is a special case of `Field.lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic`, and is an
+intermediate result used to prove it. -/
 lemma sepDegree_eq_of_isPurelyInseparable [IsPurelyInseparable F E] :
     sepDegree F K = sepDegree E K := by
   convert sepDegree_eq_of_isPurelyInseparable_of_isSeparable F E (separableClosure E K)
@@ -780,28 +996,6 @@ theorem lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic
   have h := lift_rank_mul_lift_sepDegree_of_isSeparable F (separableClosure F E) K
   haveI := separableClosure.isPurelyInseparable F E halg
   rwa [sepDegree_eq_of_isPurelyInseparable (separableClosure F E) E K] at h
-
-  -- let S := separableClosure F E
-  -- let SF := separableClosure F K
-  -- let SE := separableClosure E K
-  -- have h1 : adjoin E SF = SE := separableClosure.adjoin_eq_of_isAlgebraic F E K halg
-  -- let S' := S.map (IsScalarTower.toAlgHom F E K)
-  -- let i' := (IsScalarTower.toAlgHom F E K).comp S.val
-  -- have hS' : i'.fieldRange = S' := toSubalgebra_injective <| by
-  --   rw [toSubalgebra_map, AlgHom.fieldRange_toSubalgebra, AlgHom.range_comp, range_val]
-  -- let i := (AlgEquiv.ofInjective i' i'.injective).trans (equivOfEq hS')
-  -- have h2 : S' ≤ SF := separableClosure.map_le_of_algHom _
-  -- letI : Algebra S' SF := (inclusion h2).toAlgebra
-  -- letI : Module S' SF := Algebra.toModule
-  -- letI : SMul S' SF := Algebra.toSMul
-  -- haveI : IsScalarTower F S' SF := SMul.comp.isScalarTower id
-  -- have h3 := congr_arg Cardinal.lift.{v} (rank_mul_rank F S' SF)
-  -- rw [Cardinal.lift_mul, ← i.toLinearEquiv.lift_rank_eq] at h3
-  -- convert h3
-  -- change Module.rank E SE = _
-  -- haveI : IsPurelyInseparable S E := separableClosure.isPurelyInseparable F E halg
-  -- rw [← sepDegree_eq_of_isPurelyInseparable_of_isSeparable S E SE]
-  -- sorry
 
 end Field
 
