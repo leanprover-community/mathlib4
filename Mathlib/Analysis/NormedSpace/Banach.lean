@@ -355,8 +355,10 @@ end LinearEquiv
 
 namespace ContinuousLinearMap
 
-noncomputable def ContinuousLinearEquiv.ofInjectiveOfIsClosed
-    [CompleteSpace E] (f : E →L[𝕜] F) (hinj : Injective f) (hclo : IsClosed (range f)) :
+variable [CompleteSpace E]
+
+noncomputable def toContinuousLinearEquivOfInjectiveOfIsClosed
+    (f : E →L[𝕜] F) (hinj : Injective f) (hclo : IsClosed (range f)) :
     E ≃L[𝕜] LinearMap.range f :=
   haveI cs : CompleteSpace (LinearMap.range f) := by
     apply IsClosed.completeSpace_coe
@@ -365,6 +367,12 @@ noncomputable def ContinuousLinearEquiv.ofInjectiveOfIsClosed
   @LinearEquiv.toContinuousLinearEquivOfContinuous _ _ _ _ _ _ _ _ cs _
     (LinearEquiv.ofInjective f.toLinearMap hinj) <|
     (f.continuous.codRestrict fun x ↦ LinearMap.mem_range_self f x).congr fun _ ↦ rfl
+
+@[simp]
+theorem toContinuousLinearEquivOfInjectiveOfIsClosed_apply
+    (f : E →L[𝕜] F) (hinj : Injective f) (hclo : IsClosed (range f)) (x : E) :
+    f.toContinuousLinearEquivOfInjectiveOfIsClosed hinj hclo x = f x :=
+  rfl
 
 end ContinuousLinearMap
 
