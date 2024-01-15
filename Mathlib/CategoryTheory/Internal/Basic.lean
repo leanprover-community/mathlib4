@@ -1,4 +1,6 @@
 import Mathlib.CategoryTheory.ConcreteCategory.Operation
+import Mathlib.CategoryTheory.ConcreteCategory.Basic
+import Mathlib.Algebra.Category.GroupCat.Basic
 
 universe v₁ v₂ u₁ u₂
 

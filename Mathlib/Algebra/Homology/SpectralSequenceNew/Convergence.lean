@@ -30,6 +30,7 @@ structure ConvergenceStripes where
 
 variable {α}
 
+@[simps]
 def cohomologicalStripes : ConvergenceStripes (ℤ × ℤ) (fun (_ : ℤ) => ℤ) where
   stripe pq := pq.1 + pq.2
   position n i := ⟨n + 1 - i, i - 1⟩
