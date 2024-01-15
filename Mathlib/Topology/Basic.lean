@@ -553,7 +553,8 @@ theorem Finset.closure_biUnion {ι : Type*} (s : Finset ι) (f : ι → Set α) 
 #align finset.closure_bUnion Finset.closure_biUnion
 
 @[simp]
-theorem closure_iUnion_of_finite [Finite ι] (f : ι → Set α) : closure (⋃ i, f i) = ⋃ i, closure (f i) := by
+theorem closure_iUnion_of_finite [Finite ι] (f : ι → Set α) :
+    closure (⋃ i, f i) = ⋃ i, closure (f i) := by
   rw [← sUnion_range, (finite_range _).closure_sUnion, biUnion_range]
 #align closure_Union closure_iUnion_of_finite
 
