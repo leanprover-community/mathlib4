@@ -325,14 +325,26 @@ theorem smoothWithinAt_one [One M'] : SmoothWithinAt I I' (1 : M → M') s x :=
 
 end id
 
+-- no good home for this lemma yet, #find_home suggests this file
+theorem eventuallyEq_one_nhds {X Y : Type*} [TopologicalSpace X] [One Y] {x : X} {f : X → Y} :
+    f =ᶠ[𝓝 x] 1 ↔ x ∉ closure (mulSupport f) := by
+  rw [← mem_compl_iff, ← interior_compl, mem_interior_iff_mem_nhds]
+  have : f =ᶠ[𝓝 x] 1 ↔ {x | f x = 1} ∈ 𝓝 x := by
+    rw [EventuallyEq, eventually_iff]
+    simp only [Pi.one_apply]
+  rw [this]
+  simp_rw [← Function.compl_mulSupport (f := f)]
+
 /-- `f` is continuously differentiable if it is cont. differentiable at each `x ∈ tsupport f`. -/
-theorem contMDiff_of_support [Zero M'] {f : M → M'}
-    (hf : ∀ x ∈ tsupport f, ContMDiffAt I I' n f x) : ContMDiff I I' n f := by
+--@[to_additive contMDiff_of_support "`f` is continuously differentiable if it is continuously
+--  differentiable at each `x ∈ tsupport f`."]
+theorem contMDiff_of_mulTSupport [One M'] {f : M → M'}
+    (hf : ∀ x ∈ mulTSupport f, ContMDiffAt I I' n f x) : ContMDiff I I' n f := by
   intro x
-  by_cases hx : x ∈ tsupport f
+  by_cases hx : x ∈ mulTSupport f
   · exact hf x hx
-  · exact ContMDiffAt.congr_of_eventuallyEq contMDiffAt_const (eventuallyEq_zero_nhds.2 hx)
-#align cont_mdiff_of_support contMDiff_of_support
+  · exact ContMDiffAt.congr_of_eventuallyEq contMDiffAt_const (eventuallyEq_one_nhds.2 hx)
+--#align cont_mdiff_of_support contMDiff_of_support
 
 @[to_additive contMDiffWithinAt_of_not_mem]
 theorem contMDiffWithinAt_of_not_mem_mulTSupport {f : M → M'} [One M'] {x : M}
