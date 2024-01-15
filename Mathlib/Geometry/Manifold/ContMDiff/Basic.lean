@@ -341,24 +341,27 @@ theorem smoothWithinAt_one [One M'] : SmoothWithinAt I I' (1 : M → M') s x :=
 end id
 
 /-- `f` is continuously differentiable if it is cont. differentiable at each `x ∈ tsupport f`. -/
-theorem contMDiff_of_support {f : M → F} (hf : ∀ x ∈ tsupport f, ContMDiffAt I 𝓘(𝕜, F) n f x) :
-    ContMDiff I 𝓘(𝕜, F) n f := by
+theorem contMDiff_of_support {f : M → M'} [One M'] (hf : ∀ x ∈ mulTSupport f, ContMDiffAt I I' n f x) :
+    ContMDiff I I' n f := by
   intro x
-  by_cases hx : x ∈ tsupport f
+  by_cases hx : x ∈ mulTSupport f
   · exact hf x hx
-  · exact ContMDiffAt.congr_of_eventuallyEq contMDiffAt_const (eventuallyEq_zero_nhds.2 hx)
+  · exact ContMDiffAt.congr_of_eventuallyEq contMDiffAt_const
+      (not_mem_mulTSupport_iff_eventuallyEq.mp hx)
 #align cont_mdiff_of_support contMDiff_of_support
 
-theorem contMDiffWithinAt_of_not_mem {f : M → F} {x : M} (hx : x ∉ tsupport f) (n : ℕ∞)
-    (s : Set M) : ContMDiffWithinAt I 𝓘(𝕜, F) n f s x :=
-  contMDiffWithinAt_const.congr_of_eventuallyEq
-    (eventually_nhdsWithin_of_eventually_nhds <| not_mem_tsupport_iff_eventuallyEq.mp hx)
-    (image_eq_zero_of_nmem_tsupport hx)
+@[to_additive]
+theorem contMDiffWithinAt_of_not_mem_mulTSupport {f : M → M'} [One M'] {x : M}
+    (hx : x ∉ mulTSupport f) (n : ℕ∞) (s : Set M) : ContMDiffWithinAt I I' n f s x := by
+  apply contMDiffWithinAt_const.congr_of_eventuallyEq
+    (eventually_nhdsWithin_of_eventually_nhds <| not_mem_mulTSupport_iff_eventuallyEq.mp hx)
+    (image_eq_one_of_nmem_mulTSupport hx)
 
-/-- `f` is continuously differentiable at each point outside of its `tsupport`. -/
-theorem contMDiffAt_of_not_mem {f : M → F} {x : M} (hx : x ∉ tsupport f) (n : ℕ∞) :
-    ContMDiffAt I 𝓘(𝕜, F) n f x :=
-  contMDiffWithinAt_of_not_mem hx n univ
+/-- `f` is continuously differentiable at each point outside of its `mulTSupport`. -/
+@[to_additive]
+theorem contMDiffAt_of_not_mem_mulTSupport {f : M → F} [One F] {x : M} (hx : x ∉ mulTSupport f)
+    (n : ℕ∞) : ContMDiffAt I 𝓘(𝕜, F) n f x :=
+  contMDiffWithinAt_of_not_mem_mulTSupport hx n univ
 
 /-! ### The inclusion map from one open set to another is smooth -/
 
@@ -382,7 +385,7 @@ theorem ContMDiff.extend_one [T2Space M] [One M'] {n : ℕ∞} {U : Opens M} {f 
       (supp.mulTSupport_extend_one_subset continuous_subtype_val h)⟩ : U) by rfl,
       ← contMdiffAt_subtype_iff, ← comp_def, extend_comp Subtype.val_injective]
     exact diff.contMDiffAt
-  · exact contMDiffAt_const.congr_of_eventuallyEq (not_mem_mulTSupport_iff_eventuallyEq.mp h)
+  · exact contMDiffAt_of_not_mem_mulTSupport h
 
 theorem contMDiff_inclusion {n : ℕ∞} {U V : Opens M} (h : U ≤ V) :
     ContMDiff I I n (Set.inclusion h : U → V) := by
