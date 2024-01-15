@@ -373,16 +373,16 @@ theorem contMdiffAt_subtype_iff {n : ℕ∞} {U : Opens M} {f : M → M'} {x : U
 theorem contMDiff_subtype_val {n : ℕ∞} {U : Opens M} : ContMDiff I I n (Subtype.val : U → M) :=
   fun _ ↦ contMdiffAt_subtype_iff.mpr contMDiffAt_id
 
-@[to_additive]
+-- TODO uncomment! @[to_additive]
 theorem ContMDiff.extend_one [T2Space M] [One M'] {n : ℕ∞} {U : Opens M} {f : U → M'}
     (supp : HasCompactMulSupport f) (diff : ContMDiff I I' n f) :
     ContMDiff I I' n (Subtype.val.extend f 1) := fun x ↦ by
-  by_cases h : x ∈ mulTSupport (Subtype.val.extend f 1)
-  · rw [show x = ↑(⟨x, Subtype.coe_image_subset _ _
-      (supp.mulTSupport_extend_one_subset continuous_subtype_val h)⟩ : U) by rfl,
-      ← contMdiffAt_subtype_iff, ← comp_def, extend_comp Subtype.val_injective]
-    exact diff.contMDiffAt
-  · exact contMDiffAt_of_not_mem_mulTSupport h n
+  apply contMDiff_of_mulTSupport
+  intro x h
+  rw [show x = ↑(⟨x, Subtype.coe_image_subset _ _
+     (supp.mulTSupport_extend_one_subset continuous_subtype_val h)⟩ : U) by rfl,
+     ← contMdiffAt_subtype_iff, ← comp_def, extend_comp Subtype.val_injective]
+  exact diff.contMDiffAt
 
 theorem contMDiff_inclusion {n : ℕ∞} {U V : Opens M} (h : U ≤ V) :
     ContMDiff I I n (Set.inclusion h : U → V) := by
@@ -401,7 +401,7 @@ theorem smooth_subtype_iff {U : Opens M} {f : M → M'} {x : U} :
 
 theorem smooth_subtype_val {U : Opens M} : Smooth I I (Subtype.val : U → M) := contMDiff_subtype_val
 
-@[to_additive]
+-- TODO uncomment @[to_additive]
 theorem Smooth.extend_one [T2Space M] [One M'] {U : Opens M} {f : U → M'}
     (supp : HasCompactMulSupport f) (diff : Smooth I I' f) :
     Smooth I I' (Subtype.val.extend f 1) := ContMDiff.extend_one supp diff
