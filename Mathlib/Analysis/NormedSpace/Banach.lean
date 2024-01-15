@@ -353,6 +353,21 @@ theorem coeFn_toContinuousLinearEquivOfContinuous_symm (e : E ≃ₗ[𝕜] F) (h
 
 end LinearEquiv
 
+namespace ContinuousLinearMap
+
+noncomputable def ContinuousLinearEquiv.ofInjectiveOfIsClosed
+    [CompleteSpace E] (f : E →L[𝕜] F) (hinj : Injective f) (hclo : IsClosed (range f)) :
+    E ≃L[𝕜] LinearMap.range f :=
+  haveI cs : CompleteSpace (LinearMap.range f) := by
+    apply IsClosed.completeSpace_coe
+    rw [LinearMap.range_coe]
+    exact hclo
+  @LinearEquiv.toContinuousLinearEquivOfContinuous _ _ _ _ _ _ _ _ cs _
+    (LinearEquiv.ofInjective f.toLinearMap hinj) <|
+    (f.continuous.codRestrict fun x ↦ LinearMap.mem_range_self f x).congr fun _ ↦ rfl
+
+end ContinuousLinearMap
+
 namespace ContinuousLinearEquiv
 
 variable [CompleteSpace E]
