@@ -318,7 +318,7 @@ structure StronglyConvergesToInDegree (n : σ) (X : C) where
   exists_isIso' : ∃ (j : α n), IsIso ((filtration' ⋙ MonoOver.forget _).obj j).hom
   π' (i : α n) (pq : ι) (hpq : s.position n i = pq) :
     ((filtration' ⋙ MonoOver.forget _ ⋙ Over.forget _).obj (WithBot.some i)) ⟶ E.pageInfinity pq
-  epi_π' (i : α n) (pq : ι) (hpq : s.position n i = pq) : Epi (π' i pq hpq)
+  epi_π' (i : α n) (pq : ι) (hpq : s.position n i = pq) : Epi (π' i pq hpq) := by infer_instance
   comp_π' (i : WithBot (α n)) (j : α n) (hij : s.pred n j = i) (pq : ι) (hpq : s.position n j = pq) :
     (filtration' ⋙ MonoOver.forget X ⋙ Over.forget X).map
       (homOfLE (show i ≤ WithBot.some j by

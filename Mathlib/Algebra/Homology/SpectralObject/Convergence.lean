@@ -192,14 +192,22 @@ lemma hasPageInfinityAt_of_convergesInDegree (pq : κ)
 
 namespace ConvergesAt
 
-variable (data) (s)
+variable
+  (n' : ℤ) (hn' : n' = hdata.deg n)
+  (i : α n) (i₂ : ι) (hi₂ : i₂ = data.i₂ (s.position n i)) (pq : κ)
+  (hpq : s.position n i = pq)
 
-noncomputable def π (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂)
-    (i : α n) :
-    X.abutmentFiltration n₁ (data.i₂ (s.position n i)) ⟶
-    X.pageInfinity n₀ n₁ n₂ hn₁ hn₂ _ _ (data.le₁₂ (s.position n i)) :=
-  X.abutmentFiltrationToPageInfinity n₀ n₁ n₂ hn₁ hn₂ _ _
-    (data.le₁₂ (s.position n i))
+noncomputable def π : X.abutmentFiltration n' i₂ ⟶ (X.spectralSequence data).pageInfinity pq :=
+  X.abutmentFiltrationToPageInfinity (n' - 1) n' (n' + 1) (by simp) (by simp) (data.i₁ (s.position n i)) i₂
+    (by simpa only [hi₂] using data.le₁₂ (s.position n i)) ≫ Iso.inv (by
+        have := X.hasPageInfinityAt_of_convergesInDegree hdata n pq (by
+          rw [← hpq, s.stripe_position])
+        apply X.spectralSequencePageInfinityIso
+        · rw [hn', ← hpq, hdata.deg_position n i]
+        · rw [hpq]
+        · rw [← hpq, hi₂])
+
+instance : Epi (π X hdata n n' hn' i i₂ hi₂ pq hpq) := epi_comp _ _
 
 end ConvergesAt
 
@@ -211,20 +219,10 @@ end ConvergesAt
   filtration' := hdata.mapWithBotFunctor n ⋙ X.abutmentFiltrationFunctor (hdata.deg n)
   exists_isZero' := sorry
   exists_isIso' := sorry
-  π' i pq hpq := X.abutmentFiltrationToPageInfinity (hdata.deg n - 1)
-    (hdata.deg n) (hdata.deg n + 1) (by simp) (by simp) _ _
-      (data.le₁₂ (s.position n i)) ≫ Iso.inv (by
-        have := X.hasPageInfinityAt_of_convergesInDegree hdata n pq (by
-          rw [← hpq, s.stripe_position])
-        apply X.spectralSequencePageInfinityIso
-        all_goals simp only [← hpq, hdata.deg_position n i])
-  epi_π' i pq hpq := epi_comp _ _
+  π' i pq hpq := ConvergesAt.π X hdata n _ rfl i _ rfl pq hpq
+  epi_π' i pq hpq := by infer_instance
   comp_π' i j hij pq hpq := by
     dsimp [MonoOver.forget]
-    have pf := data.le₁₂ (s.position n j)
-    have pif := X.abutmentFiltrationMap_abutmentFiltrationToPageInfinity
-      (hdata.deg n - 1) (hdata.deg n) (hdata.deg n + 1) (by simp) (by simp) _ _ (data.le₁₂ (s.position n j))
-    dsimp [SpectralSequenceMkData.CompatibleWithConvergenceStripes.mapWithBot]
     sorry
   exact_π' := sorry-/
 
