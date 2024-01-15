@@ -580,7 +580,7 @@ theorem tendsto_factorial_div_pow_self_atTop :
             mul_le_of_le_one_left (inv_nonneg.mpr <| mod_cast hn.le) (prod_le_one _ _) <;>
           intro x hx <;>
         rw [Finset.mem_range] at hx
-      · refine' mul_nonneg _ (inv_nonneg.mpr _) <;> norm_cast <;> linarith
+      · positivity
       · refine' (div_le_one <| mod_cast hn).mpr _
         norm_cast
         linarith)
