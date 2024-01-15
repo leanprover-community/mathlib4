@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Anatole Dedecker
 -/
 import Mathlib.Analysis.Seminorm
+import Mathlib.Data.Real.Sqrt
 import Mathlib.Topology.Algebra.Equicontinuity
 import Mathlib.Topology.MetricSpace.Equicontinuity
 import Mathlib.Topology.Algebra.FilterBasis
