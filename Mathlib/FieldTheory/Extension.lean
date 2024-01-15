@@ -3,6 +3,7 @@ Copyright (c) 2020 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
+import Mathlib.Data.Fintype.Order
 import Mathlib.FieldTheory.Adjoin
 
 /-!
@@ -91,8 +92,19 @@ theorem Lifts.exists_upper_bound (c : Set (Lifts F E K)) (hc : IsChain (· ≤ �
     ∃ ub, ∀ a ∈ c, a ≤ ub := ⟨_, Lifts.le_union c hc⟩
 #align intermediate_field.lifts.exists_upper_bound IntermediateField.Lifts.exists_upper_bound
 
-theorem Lifts.exists_upper_bound_isExtendible (he : ∀ σ ∈ c, σ.IsExtendible) :
-    (Lifts.union c hc).IsExtendible := by
+theorem Lifts.exists_upper_bound_isExtendible (alg : Algebra.IsAlgebraic F E)
+    [Nonempty c] (he : ∀ σ ∈ c, σ.IsExtendible) :
+    (Lifts.union c hc).IsExtendible := fun L' h' ↦ by
+  let σ := Lifts.union c hc
+  let L := σ.carrier
+  let b := Module.Free.chooseBasis L L'
+  let S := Set.range (L'.val ∘ b)
+  let Ω := adjoin F S →ₐ[F] K
+  have : ∃ ω : Ω, ∀ π : c, ∃ θ ≥ π.1, ⟨_, ω⟩ ≤ θ
+  · by_contra!; choose π hπ using this
+    have := finiteDimensional_adjoin (K := F) (S := S) fun _ _ ↦ (alg _).isIntegral
+    have := hc.directed.finite_le π
+    sorry
   sorry
 
 end Chain
