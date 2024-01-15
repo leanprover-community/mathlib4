@@ -3,11 +3,9 @@ Copyright (c) 2023 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Order.Filter.Germ
-import Mathlib.Topology.Algebra.Ring.Basic
-import Mathlib.Analysis.Calculus.FDeriv.Basic
+import Mathlib.Analysis.NormedSpace.Basic
 import Mathlib.Algebra.Order.Hom.Ring
-import Mathlib.Topology.NhdsSet
+import Mathlib.Order.Filter.Germ
 
 /-! # Germs of functions between topological spaces
 
@@ -17,15 +15,16 @@ with respect to the neighbourhood filter `𝓝 x`.
 ## Main definitions and results
 * `Filter.Germ.value φ f`: value associated to the germ `φ` at a point `x`, w.r.t. the neighbourhood
 filter at `x`. This is the common value of all representatives of `φ` at `x`.
-* `Filter.Germ.valueOrderRingHom`: the map `Germ (𝓝 x) E → E` as a monotone ring homeomorphism
+* `Filter.Germ.valueOrderRingHom` and friends: the map `Germ (𝓝 x) E → E` is a
+monoid homomorphism, 𝕜-module homomorphism, ring homomorphism, monotone ring homeomorphism
 
 * `RestrictGermPredicate`: given a predicate on germs `P : Π x : X, germ (𝓝 x) Y → Prop` and
 `A : set X`, build a new predicate on germs `restrict_germ_predicate P A` such that
 `(∀ x, restrict_germ_predicate P A x f) ↔ ∀ᶠ x near A, P x f`;
 `forall_restrict_germ_predicate_iff` is this equivalence.
 
-* `Filter.Germ.slice{Left,Right}`: map the germ at `p=(x,y) ∈ X × Y` to the corresponding germ at
-`x ∈ X` resp. `y ∈ Y`, respectively.
+* `Filter.Germ.sliceLeft,sliceRight`: map the germ of functions `X × Y → Z` at `p=(x,y) ∈ X × Y` to
+the corresponding germ of functions `X → Z` at `x ∈ X` resp. `Y → Z` at `y ∈ Y`..
 * `eq_of_germ_isConstant`: if each germ of `f : X → Y` is constant and `X` is pre-connected,
 `f` is constant.
 -/
@@ -50,30 +49,35 @@ theorem value_smul {α β : Type*} [SMul α β] (φ : Germ (𝓝 x) α)
     (ψ : Germ (𝓝 x) β) : (φ • ψ).value = φ.value • ψ.value :=
   Germ.inductionOn φ fun _ ↦ Germ.inductionOn ψ fun _ ↦ rfl
 
-@[to_additive]
-def valueMulHom {X E : Type*} [Monoid E] [TopologicalSpace X] {x : X} : Germ (𝓝 x) E →* E
-    where
+/-- The map `Germ (𝓝 x) E → E` as a monoid homeomorphism -/
+@[to_additive "The map `Germ (𝓝 x) E → E` as an additive monoid homeomorphism"]
+def valueMulHom {X E : Type*} [Monoid E] [TopologicalSpace X] {x : X} : Germ (𝓝 x) E →* E where
   toFun := Filter.Germ.value
   map_one' := rfl
   map_mul' φ ψ := Germ.inductionOn φ fun _ ↦ Germ.inductionOn ψ fun _ ↦ rfl
 
+/-- The map `Germ (𝓝 x) E → E` into a `𝕜`-module `E` as a `𝕜`-linear map -/
 def valueₗ {X 𝕜 E : Type*} [Semiring 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace X]
     {x : X} : Germ (𝓝 x) E →ₗ[𝕜] E :=
   { Filter.Germ.valueAddHom with map_smul' := fun _ φ ↦ Germ.inductionOn φ fun _ ↦ rfl }
 
+/-- The map `Germ (𝓝 x) E → E` as a ring homeomorphism -/
 def valueRingHom {X E : Type*} [Semiring E] [TopologicalSpace X] {x : X} : Germ (𝓝 x) E →+* E :=
   { Filter.Germ.valueMulHom, Filter.Germ.valueAddHom with }
 
+/-- The map `Germ (𝓝 x) E → E` as a monotone ring homeomorphism -/
 def valueOrderRingHom {X E : Type*} [OrderedSemiring E] [TopologicalSpace X] {x : X} :
-    Germ (𝓝 x) E →+*o E :=
-  { Filter.Germ.valueRingHom with
-    monotone' := fun φ ψ ↦
-      Germ.inductionOn φ fun _ ↦ Germ.inductionOn ψ fun _ h ↦ h.self_of_nhds }
-
-def _root_.Subring.orderedSubtype {R} [OrderedRing R] (s : Subring R) : s →+*o R :=
-  { s.subtype with monotone' := fun _ _ h ↦ h }
+    Germ (𝓝 x) E →+*o E where
+  __ := Filter.Germ.valueRingHom
+  monotone' := fun φ ψ ↦
+  Germ.inductionOn φ fun _ ↦ Germ.inductionOn ψ fun _ h ↦ h.self_of_nhds
 
 end Filter.Germ
+
+/-- The inclusion `S → R` of a subring, as an ordered ring homomorphism. -/
+-- xxx: OrderedRing has no morphisms, OrderedRingHom no subtypes -> which file is a good place?
+def _root_.Subring.orderedSubtype {R} [OrderedRing R] (s : Subring R) : s →+*o R :=
+  { s.subtype with monotone' := fun _ _ h ↦ h }
 
 section RestrictGermPredicate
 /-- Given a predicate on germs `P : Π x : X, germ (𝓝 x) Y → Prop` and `A : set X`,
@@ -93,8 +97,7 @@ def RestrictGermPredicate (P : ∀ x : X, Germ (𝓝 x) Y → Prop)
 theorem Filter.Eventually.germ_congr
     {P : Germ (𝓝 x) Y → Prop} (hf : P f) (h : ∀ᶠ z in 𝓝 x, g z = f z) : P g := by
   convert hf using 1
-  apply Quotient.sound
-  exact h
+  exact Germ.coe_eq.mpr h
 
 theorem Filter.Eventually.germ_congr_set
     {P : ∀ x : X, Germ (𝓝 x) Y → Prop} (hf : ∀ᶠ x in 𝓝ˢ A, P x f)
@@ -123,31 +126,29 @@ theorem forall_restrictGermPredicate_of_forall
   forall_restrictGermPredicate_iff.mpr (eventually_of_forall h)
 end RestrictGermPredicate
 
-theorem Filter.EventuallyEq.comp_fun {α β γ : Type*} {f g : β → γ} {l : Filter α} {l' : Filter β}
-    (h : f =ᶠ[l'] g) {φ : α → β} (hφ : Tendsto φ l l') : f ∘ φ =ᶠ[l] g ∘ φ :=
-  hφ h
-
-theorem Filter.Tendsto.congr_germ {α β γ : Type*} {f g : β → γ} {l : Filter α} {l' : Filter β}
-    (h : f =ᶠ[l'] g) {φ : α → β} (hφ : Tendsto φ l l') : (f ∘ φ : Germ l γ) = g ∘ φ :=
-  @Quotient.sound _ (l.germSetoid γ) _ _ (hφ h)
-
-def Filter.Germ.sliceLeft [TopologicalSpace Y] {p : X × Y} (P : Germ (𝓝 p) Z) : Germ (𝓝 p.1) Z :=
+namespace Filter.Germ
+/-- Map the germ at of functions `X × Y → Z` at `p=(x,y) ∈ X × Y` to the corresponding germ
+  of functions `X → Z` at `x ∈ X` -/
+def sliceLeft [TopologicalSpace Y] {p : X × Y} (P : Germ (𝓝 p) Z) : Germ (𝓝 p.1) Z :=
   P.compTendsto (Prod.mk · p.2) (Continuous.Prod.mk_left p.2).continuousAt
 
 @[simp]
-theorem Filter.Germ.sliceLeft_coe [TopologicalSpace Y] {y : Y} (f : X × Y → Z) :
+theorem sliceLeft_coe [TopologicalSpace Y] {y : Y} (f : X × Y → Z) :
     (↑f : Germ (𝓝 (x, y)) Z).sliceLeft = fun x' ↦ f (x', y) :=
   rfl
 
-def Filter.Germ.sliceRight [TopologicalSpace Y] {p : X × Y} (P : Germ (𝓝 p) Z) : Germ (𝓝 p.2) Z :=
+/-- Map the germ at of functions `X × Y → Z` at `p=(x,y) ∈ X × Y` to the corresponding germ
+  of functions `Y → Z` at `y ∈ Y` -/
+def sliceRight [TopologicalSpace Y] {p : X × Y} (P : Germ (𝓝 p) Z) : Germ (𝓝 p.2) Z :=
   P.compTendsto (Prod.mk p.1) (Continuous.Prod.mk p.1).continuousAt
 
 @[simp]
-theorem Filter.Germ.sliceRight_coe [TopologicalSpace Y] {y : Y} (f : X × Y → Z) :
+theorem sliceRight_coe [TopologicalSpace Y] {y : Y} (f : X × Y → Z) :
     (↑f : Germ (𝓝 (x, y)) Z).sliceRight = fun y' ↦ f (x, y') :=
   rfl
 
-def Filter.Germ.IsConstant (P : Germ (𝓝 x) Y) : Prop :=
+/-- The germ of functions `X → Y` at `x ∈ X` is constant w.r.t. the neighbourhood filter `𝓝 x`. -/
+def IsConstant (P : Germ (𝓝 x) Y) : Prop :=
   P.liftOn (fun f ↦ ∀ᶠ x' in 𝓝 x, f x' = f x) <| by
     suffices : ∀ f g : X → Y, f =ᶠ[𝓝 x] g → (∀ᶠ x' in 𝓝 x, f x' = f x) → ∀ᶠ x' in 𝓝 x, g x' = g x
     exact fun f g hfg ↦ propext ⟨fun h ↦ this f g hfg h, fun h ↦ this g f hfg.symm h⟩
@@ -155,12 +156,14 @@ def Filter.Germ.IsConstant (P : Germ (𝓝 x) Y) : Prop :=
     refine (hf.and hfg).mono fun x' hx' ↦ ?_
     rw [← hx'.2, hx'.1, hfg.eq_of_nhds]
 
-theorem Filter.Germ.isConstant_coe {y} (h : ∀ x', f x' = y) : (↑f : Germ (𝓝 x) Y).IsConstant :=
+theorem isConstant_coe {y} (h : ∀ x', f x' = y) : (↑f : Germ (𝓝 x) Y).IsConstant :=
   eventually_of_forall fun x' ↦ by rw [h, h]
 
 @[simp]
-theorem Filter.Germ.isConstant_coe_const {y : Y} : (fun _ : X ↦ y : Germ (𝓝 x) Y).IsConstant :=
+theorem isConstant_coe_const {y : Y} : (fun _ : X ↦ y : Germ (𝓝 x) Y).IsConstant :=
   eventually_of_forall fun _ ↦ rfl
+
+end Filter.Germ
 
 theorem eq_of_germ_isConstant [PreconnectedSpace X]
     (h : ∀ x : X, (f : Germ (𝓝 x) Y).IsConstant) (x x' : X) : f x = f x' := by

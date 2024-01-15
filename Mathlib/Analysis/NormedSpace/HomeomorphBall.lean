@@ -6,6 +6,7 @@ Authors: Yury Kudryashov, Oliver Nash
 import Mathlib.Topology.PartialHomeomorph
 import Mathlib.Analysis.NormedSpace.AddTorsor
 import Mathlib.Analysis.NormedSpace.Pointwise
+import Mathlib.Data.Real.Sqrt
 
 #align_import analysis.normed_space.basic from "leanprover-community/mathlib"@"bc91ed7093bf098d253401e69df601fc33dde156"
 

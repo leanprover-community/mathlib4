@@ -257,6 +257,11 @@ theorem compTendsto'_coe (f : Germ l β) {lc : Filter γ} {g : γ → α} (hg : 
     f.compTendsto' _ hg.germ_tendsto = f.compTendsto g hg :=
   rfl
 #align filter.germ.comp_tendsto'_coe Filter.Germ.compTendsto'_coe
+
+theorem Filter.Tendsto.congr_germ {f g : β → γ} {l : Filter α} {l' : Filter β} (h : f =ᶠ[l'] g)
+    {φ : α → β} (hφ : Tendsto φ l l') : (f ∘ φ : Germ l γ) = g ∘ φ :=
+  @Quotient.sound _ (l.germSetoid γ) _ _ (hφ h)
+
 @[simp, norm_cast]
 theorem const_inj [NeBot l] {a b : β} : (↑a : Germ l β) = ↑b ↔ a = b :=
   coe_eq.trans const_eventuallyEq
