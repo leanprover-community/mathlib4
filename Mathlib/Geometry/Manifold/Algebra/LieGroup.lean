@@ -21,10 +21,10 @@ groups here are not necessarily finite dimensional.
 ## Main definitions and statements
 
 * `LieAddGroup I G` : a Lie additive group where `G` is a manifold on the model with corners `I`.
-* `LieGroup I G`     : a Lie multiplicative group where `G` is a manifold on the model with
-                        corners `I`.
+* `LieGroup I G` : a Lie multiplicative group where `G` is a manifold on the model with corners `I`.
 * `normedSpaceLieAddGroup` : a normed vector space over a nontrivially normed field
-                                 is an additive Lie group.
+  is an additive Lie group.
+
 
 ## Implementation notes
 
