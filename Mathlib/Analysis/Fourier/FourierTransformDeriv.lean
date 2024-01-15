@@ -148,6 +148,36 @@ theorem hasFDerivAt_fourier [CompleteSpace E] [MeasurableSpace V] [BorelSpace V]
 
 end VectorFourier
 
+section inner
+
+variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MeasurableSpace V]
+  [BorelSpace V] [FiniteDimensional ℝ V] [CompleteSpace E]
+
+/-- Notation for the Fourier transform on a real inner product space -/
+abbrev integralFourier (f : V → E) :=
+  VectorFourier.fourierIntegral fourierChar (volume : Measure V) (innerₛₗ ℝ) f
+
+/-- The Fréchet derivative of the Fourier transform of `f` is the Fourier transform of
+    `fun v ↦ ((-2 * π * I) • f v) ⊗ (innerSL ℝ v)`. -/
+theorem InnerProductSpace.hasFDerivAt_fourier {f : V → E} (hf_int : Integrable f)
+    (hvf_int : Integrable (fun v ↦ ‖v‖ * ‖f v‖)) (x : V) :
+    HasFDerivAt (integralFourier f) (integralFourier (fun v ↦
+      ((ContinuousLinearMap.toSpanSingleton ℝ (-(2 * π * I) • f v)) ∘L (innerSL ℝ) v)) x) x := by
+  convert VectorFourier.hasFDerivAt_fourier (innerSL ℝ) hf_int hvf_int x
+  simp_rw [integralFourier, VectorFourier.fourierIntegral, ← integral_smul (-2 * ↑π * I : ℂ)]
+  congr 1 with v w
+  let p : ℂ := ↑(fourierChar (Multiplicative.ofAdd (-((innerₛₗ ℝ) v) x)))
+  change (p • (ContinuousLinearMap.toSpanSingleton ℝ (-(2 * ↑π * I) • f v)).comp
+    (innerSL ℝ v)) w = ((-2 * ↑π * I) • p • VectorFourier.mul_L (innerSL ℝ) f v) w
+  rw [smul_comm _ p, ContinuousLinearMap.smul_apply, ContinuousLinearMap.comp_apply,
+    ContinuousLinearMap.smul_apply]
+  congr 1
+  rw [ContinuousLinearMap.toSpanSingleton_apply, smul_comm, ContinuousLinearMap.smul_apply,
+    neg_mul, neg_mul]
+  rfl
+
+end inner
+
 section scalar
 
 open VectorFourier
