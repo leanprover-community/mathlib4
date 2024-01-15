@@ -106,7 +106,7 @@ theorem epi_of_epi_of_epi_of_mono'
       ← R₂.map'_comp 1 2 3, hR₂', comp_zero, comp_zero]
   obtain ⟨A₂, π₂, _, f₁, h₃⟩ := (hR₁.exact 0).exact_up_to_refinements _ h₂
   dsimp at f₁ h₃
-  have h₄ : (π₂ ≫ π₁ ≫ g₁ - f₁ ≫ app' φ 1) ≫ R₂.map' 1 2 = 0 := by
+  have h₄ : (π₂ ≫ π₁ ≫ g₁ - f₁ ≫ app' φ 1 _) ≫ R₂.map' 1 2 = 0 := by
     rw [sub_comp, assoc, assoc, assoc, ← NatTrans.naturality, ← reassoc_of% h₃, h₁, sub_self]
   obtain ⟨A₃, π₃, _, g₀, h₅⟩ := (hR₂.exact 0).exact_up_to_refinements _ h₄
   dsimp at g₀ h₅

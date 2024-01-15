@@ -172,7 +172,7 @@ theorem integrable_mul_exp_neg_mul_sq {b : ℝ} (hb : 0 < b) :
 
 theorem norm_cexp_neg_mul_sq (b : ℂ) (x : ℝ) :
     ‖Complex.exp (-b * (x : ℂ) ^ 2)‖ = exp (-b.re * x ^ 2) := by
-  rw [Complex.norm_eq_abs, Complex.abs_exp, ← ofReal_pow, mul_comm (-b) _, ofReal_mul_re, neg_re,
+  rw [Complex.norm_eq_abs, Complex.abs_exp, ← ofReal_pow, mul_comm (-b) _, re_ofReal_mul, neg_re,
     mul_comm]
 #align norm_cexp_neg_mul_sq norm_cexp_neg_mul_sq
 
@@ -580,7 +580,7 @@ theorem _root_.fourier_transform_gaussian_pi (hb : 0 < b.re) :
       (1 : ℂ) / b ^ (1 / 2 : ℂ) * cexp (-π / b * (t : ℂ) ^ 2) := by
   ext1 t
   simp_rw [fourierIntegral_eq_integral_exp_smul, smul_eq_mul]
-  have h1 : 0 < re (π * b) := by rw [ofReal_mul_re]; exact mul_pos pi_pos hb
+  have h1 : 0 < re (π * b) := by rw [re_ofReal_mul]; exact mul_pos pi_pos hb
   have h2 : b ≠ 0 := by contrapose! hb; rw [hb, zero_re]
   convert _root_.fourier_transform_gaussian h1 (-2 * π * t) using 1
   · congr 1 with x : 1
@@ -637,10 +637,10 @@ theorem Complex.tsum_exp_neg_mul_int_sq {a : ℂ} (ha : 0 < a.re) :
       (1 : ℂ) / a ^ (1 / 2 : ℂ) * ∑' n : ℤ, cexp (-π / a * (n : ℂ) ^ 2) := by
   let f := fun x : ℝ => cexp (-π * a * (x : ℂ) ^ 2)
   have h1 : 0 < (↑π * a).re := by
-    rw [ofReal_mul_re]
+    rw [re_ofReal_mul]
     exact mul_pos pi_pos ha
   have h2 : 0 < (↑π / a).re := by
-    rw [div_eq_mul_inv, ofReal_mul_re, inv_re]
+    rw [div_eq_mul_inv, re_ofReal_mul, inv_re]
     refine' mul_pos pi_pos (div_pos ha <| normSq_pos.mpr _)
     contrapose! ha
     rw [ha, zero_re]

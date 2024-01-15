@@ -114,7 +114,6 @@ instance (priority := 75) toCommRing {R} [CommRing R] [SetLike S R] [SubringClas
 -- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
 /-- A subring of a domain is a domain. -/
 instance (priority := 75) {R} [Ring R] [IsDomain R] [SetLike S R] [SubringClass S R] : IsDomain s :=
-  have := SubsemiringClass.noZeroDivisors (s := s) -- porting note: todo: fails without `have`
   NoZeroDivisors.to_isDomain _
 
 -- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
