@@ -1061,9 +1061,19 @@ theorem le_cod {f g : M ≃ₚ[L] N} : f ≤ g → f.sub_cod ≤ g.sub_cod := by
   rw [←this, ←eq_fun]
   simp only [coeSubtype, coe_inclusion, Function.comp_apply, SetLike.coe_mem]
 
-theorem le_eq_inclusion {f g : M ≃ₚ[L] N} (h : f ≤ g) :
+@[simp]
+theorem subtype_equiv_inclusion {f g : M ≃ₚ[L] N} (h : f ≤ g) :
   subtype _ ∘ g.equiv ∘ (Substructure.inclusion (le_dom h)) = subtype _ ∘ f.equiv := by
   let ⟨_, eq⟩ := h; exact eq
+
+@[simp]
+theorem equiv_inclusion {f g : M ≃ₚ[L] N} (h : f ≤ g) (x : f.sub_dom) :
+  g.equiv (Substructure.inclusion (le_dom h) x) = Substructure.inclusion (le_cod h) (f.equiv x) := by
+  apply (subtype _).inj'
+  change (subtype _ ∘ g.equiv ∘ (inclusion _)) x = _
+  rw [subtype_equiv_inclusion]
+  rfl
+  assumption
 
 theorem le_trans (f g h : M ≃ₚ[L] N) : f ≤ g → g ≤ h → f ≤ h := by
   rintro ⟨le_fg, eq_fg⟩ ⟨le_gh, eq_gh⟩
@@ -1079,7 +1089,8 @@ nonrec theorem le_antisymm (f g : M ≃ₚ[L] N) : f ≤ g → g ≤ f → f = g
   let ⟨dom_f, cod_f, equiv_f⟩ := f
   cases le_antisymm (le_dom le_fg) (le_dom le_gf)
   cases le_antisymm (le_cod le_fg) (le_cod le_gf)
-  cases FunLike.coe_injective' ((subtype g.sub_cod).inj'.comp_left (le_eq_inclusion le_fg)).symm
+  cases FunLike.coe_injective' ((subtype g.sub_cod).inj'.comp_left
+    (subtype_equiv_inclusion le_fg)).symm
   rfl
 
 instance : PartialOrder (M ≃ₚ[L] N) := {
@@ -1087,6 +1098,10 @@ instance : PartialOrder (M ≃ₚ[L] N) := {
   le_trans := le_trans
   le_antisymm := le_antisymm
 }
+
+theorem monotone_dom : Monotone (fun f : M ≃ₚ[L] N ↦ f.sub_dom) := fun _ _ ↦ le_dom
+
+theorem monotone_cod : Monotone (fun f : M ≃ₚ[L] N ↦ f.sub_cod) := fun _ _ ↦ le_cod
 
 noncomputable def dom_restrict (f : M ≃ₚ[L] N) {A : L.Substructure M} : A ≤ f.sub_dom → M ≃ₚ[L] N := by
   intro A_le_dom
@@ -1102,7 +1117,7 @@ theorem dom_restrict_le (f : M ≃ₚ[L] N) {A : L.Substructure M} (h : A ≤ f.
 
 theorem le_dom_restrict (f g : M ≃ₚ[L] N) {A : L.Substructure M} (hf : f.sub_dom ≤ A)
   (hg : A ≤ g.sub_dom) (hfg : f ≤ g) : f ≤ dom_restrict g hg :=
-  ⟨hf, by rw [←(le_eq_inclusion hfg)]; rfl⟩
+  ⟨hf, by rw [←(subtype_equiv_inclusion hfg)]; rfl⟩
 
 end SubEquivalence
 

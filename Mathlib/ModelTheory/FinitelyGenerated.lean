@@ -331,6 +331,7 @@ theorem cg_embedding [M_cg : Structure.CG L M] [Nonempty (M ≃ₚ[L] N)] :
   (∀ f : (M ≃ₚ[L] N), ∀ f_fg : f.sub_dom.FG, ∀ m : M, ∃ g : (M ≃ₚ[L] N), f ≤ g ∧ m ∈ g.sub_dom)
   → Nonempty (M ↪[L] N) := by
   intro H
+  sorry
 
 end SubEquivalence
 

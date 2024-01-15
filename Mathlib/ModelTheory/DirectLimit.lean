@@ -19,7 +19,7 @@ This file constructs the direct limit of a directed system of first-order embedd
 -/
 
 
-universe v w u₁ u₂
+universe v w w' u₁ u₂
 
 open FirstOrder
 
@@ -399,6 +399,35 @@ lemma range_lift : (lift L ι G f g Hg).toHom.range = ⨆ i, (g i).toHom.range :
   simp_rw [Hom.range_eq_map, Substructure.map_map]
   rfl
 
+variable (L ι G f)
+
+variable (G' : ι → Type w') [∀ i, L.Structure (G' i)]
+
+variable (f' : ∀ i j, i ≤ j → G' i ↪[L] G' j)
+
+variable (g : ∀ i, G i ≃[L] G' i)
+
+variable (H_commutating : ∀ i j hij x, g j (f i j hij x) = f' i j hij (g i x))
+
+variable [DirectedSystem G' fun i j h => f' i j h]
+
+/-- The isomorphism between limits of isomorphic systems. -/
+noncomputable def equiv_lift : DirectLimit G f ≃[L] DirectLimit G' f' := by {
+  let U i : G i ↪[L] DirectLimit G' f' := (of L _ G' f' i).comp (g i).toEmbedding
+  let F : DirectLimit G f ↪[L] DirectLimit G' f' := lift L _ G f U (by
+    intro _ _ _ _
+    simp only [Embedding.comp_apply, Equiv.coe_toEmbedding, H_commutating, of_f])
+  have surj_f : Function.Surjective F := by
+    intro x
+    rcases x with ⟨i, pre_x⟩
+    use of L _ G f i ((g i).symm pre_x)
+    simp only [lift_of, Embedding.comp_apply, Equiv.coe_toEmbedding, Equiv.apply_symm_apply]
+    rfl
+  exact ⟨Equiv.ofBijective F ⟨F.injective, surj_f⟩, F.map_fun', F.map_rel'⟩
+}
+
+variable {L ι G f}
+
 /-- The direct limit of countably many countably generated structures is countably generated. -/
 theorem cg {ι : Type*} [Encodable ι] [Preorder ι] [IsDirected ι (· ≤ ·)] [Nonempty ι]
     {G : ι → Type w} [∀ i, L.Structure (G i)] (f : ∀ i j, i ≤ j → G i ↪[L] G j)
@@ -429,7 +458,7 @@ end DirectLimit
 section Substructure
 
 variable [Nonempty ι] [IsDirected ι (· ≤ ·)]
-variable {M : Type*} [L.Structure M] (S : ι →o L.Substructure M)
+variable {M N : Type*} [L.Structure M] [L.Structure N] (S : ι →o L.Substructure M)
 
 instance : DirectedSystem (fun i ↦ S i) (fun _ _ h ↦ Substructure.inclusion (S.monotone h)) where
   map_self' := fun _ _ _ ↦ rfl
@@ -454,6 +483,49 @@ noncomputable def Equiv_iSup :
   exact (liftInclusion S).equivRange
 
 end DirectLimit
+
+section SubEquivalence
+
+variable [Nonempty ι] [IsDirected ι (· ≤ ·)]
+variable (S : ι →o M ≃ₚ[L] N)
+
+instance : DirectedSystem (fun i ↦ (S i).sub_dom) (fun _ _ h ↦
+  Substructure.inclusion (Substructure.SubEquivalence.le_dom (S.monotone h))) where
+  map_self' := fun _ _ _ ↦ rfl
+  map_map' := fun _ _ _ ↦ rfl
+
+instance : DirectedSystem (fun i ↦ (S i).sub_cod) (fun _ _ h ↦
+  Substructure.inclusion (Substructure.SubEquivalence.le_cod (S.monotone h))) where
+  map_self' := fun _ _ _ ↦ rfl
+  map_map' := fun _ _ _ ↦ rfl
+
+noncomputable def subEquiv_lift : M ≃ₚ[L] N := {
+  sub_dom := iSup (fun i ↦ (S i).sub_dom)
+  sub_cod := iSup (fun i ↦ (S i).sub_cod)
+  equiv := by
+    refine (DirectLimit.Equiv_iSup {
+      toFun := (fun i ↦ (S i).sub_cod)
+      monotone' := Substructure.SubEquivalence.monotone_cod.comp S.monotone
+    }).comp ((?_ : _ ≃[L] _).comp (DirectLimit.Equiv_iSup {
+      toFun := (fun i ↦ (S i).sub_dom)
+      monotone' := Substructure.SubEquivalence.monotone_dom.comp S.monotone
+    }).symm)
+    exact DirectLimit.equiv_lift L ι (fun i ↦ (S i).sub_dom)
+      (fun _ _ hij ↦ Substructure.inclusion (Substructure.SubEquivalence.le_dom (S.monotone hij)))
+      (fun i ↦ (S i).sub_cod)
+      (fun _ _ hij ↦ Substructure.inclusion (Substructure.SubEquivalence.le_cod (S.monotone hij)))
+      (fun i ↦ (S i).equiv)
+      (fun _ _ hij _ ↦ Substructure.SubEquivalence.equiv_inclusion (S.monotone hij) _)
+  }
+
+@[simp]
+theorem subEquiv_lift_dom : (subEquiv_lift S).sub_dom = iSup (fun x ↦ (S x).sub_dom) := refl _
+
+@[simp]
+theorem subEquiv_lift_cod : (subEquiv_lift S).sub_cod = iSup (fun x ↦ (S x).sub_cod) := refl _
+
+
+end SubEquivalence
 
 end Substructure
 
