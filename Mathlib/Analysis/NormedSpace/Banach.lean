@@ -360,12 +360,11 @@ variable [CompleteSpace E]
 noncomputable def toContinuousLinearEquivOfInjectiveOfIsClosed
     (f : E →L[𝕜] F) (hinj : Injective f) (hclo : IsClosed (range f)) :
     E ≃L[𝕜] LinearMap.range f :=
-  haveI cs : CompleteSpace (LinearMap.range f) := by
+  have cs : CompleteSpace (LinearMap.range f) := by
     apply IsClosed.completeSpace_coe
     rw [LinearMap.range_coe]
     exact hclo
-  @LinearEquiv.toContinuousLinearEquivOfContinuous _ _ _ _ _ _ _ _ cs _
-    (LinearEquiv.ofInjective f.toLinearMap hinj) <|
+  LinearEquiv.toContinuousLinearEquivOfContinuous (LinearEquiv.ofInjective f.toLinearMap hinj) <|
     (f.continuous.codRestrict fun x ↦ LinearMap.mem_range_self f x).congr fun _ ↦ rfl
 
 @[simp]
