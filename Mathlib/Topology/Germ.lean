@@ -52,9 +52,8 @@ theorem value_smul {α β : Type*} [SMul α β] (φ : Germ (𝓝 x) α)
   Germ.inductionOn φ fun _ ↦ Germ.inductionOn ψ fun _ ↦ rfl
 
 /-- The map `Germ (𝓝 x) E → E` as a monoid homeomorphism -/
-@[to_additive]
-def valueMulHom {X E : Type*} [Monoid E] [TopologicalSpace X] {x : X} : Germ (𝓝 x) E →* E
-    where
+@[to_additive "The map `Germ (𝓝 x) E → E` as an additive monoid homeomorphism"]
+def valueMulHom {X E : Type*} [Monoid E] [TopologicalSpace X] {x : X} : Germ (𝓝 x) E →* E where
   toFun := Filter.Germ.value
   map_one' := rfl
   map_mul' φ ψ := Germ.inductionOn φ fun _ ↦ Germ.inductionOn ψ fun _ ↦ rfl
@@ -70,10 +69,10 @@ def valueRingHom {X E : Type*} [Semiring E] [TopologicalSpace X] {x : X} : Germ 
 
 /-- The map `Germ (𝓝 x) E → E` as a monotone ring homeomorphism -/
 def valueOrderRingHom {X E : Type*} [OrderedSemiring E] [TopologicalSpace X] {x : X} :
-    Germ (𝓝 x) E →+*o E :=
-  { Filter.Germ.valueRingHom with
-    monotone' := fun φ ψ ↦
-      Germ.inductionOn φ fun _ ↦ Germ.inductionOn ψ fun _ h ↦ h.self_of_nhds }
+    Germ (𝓝 x) E →+*o E where
+  __ := Filter.Germ.valueRingHom
+  monotone' := fun φ ψ ↦
+  Germ.inductionOn φ fun _ ↦ Germ.inductionOn ψ fun _ h ↦ h.self_of_nhds
 
 end Filter.Germ
 
@@ -100,8 +99,7 @@ def RestrictGermPredicate (P : ∀ x : X, Germ (𝓝 x) Y → Prop)
 theorem Filter.Eventually.germ_congr
     {P : Germ (𝓝 x) Y → Prop} (hf : P f) (h : ∀ᶠ z in 𝓝 x, g z = f z) : P g := by
   convert hf using 1
-  apply Quotient.sound
-  exact h
+  exact Germ.coe_eq.mpr h
 
 theorem Filter.Eventually.germ_congr_set
     {P : ∀ x : X, Germ (𝓝 x) Y → Prop} (hf : ∀ᶠ x in 𝓝ˢ A, P x f)
@@ -190,4 +188,3 @@ theorem eq_of_germ_isConstant_on {s : Set X}
   rintro ⟨x, hx⟩
   have : ContinuousAt ((↑) : s → X) ⟨x, hx⟩ := continuousAt_subtype_val
   exact this (h x hx)
-#lint
