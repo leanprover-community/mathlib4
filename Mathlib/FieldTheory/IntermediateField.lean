@@ -460,7 +460,7 @@ theorem gc_map_comap (f :L →ₐ[K] L') : GaloisConnection (map f) (comap f) :=
   fun _ _ ↦ map_le_iff_le_comap
 
 /-- Given an equivalence `e : L ≃ₐ[K] L'` of `K`-field extensions and an intermediate
-field `E` of `L/K`, `intermediate_field_equiv_map e E` is the induced equivalence
+field `E` of `L/K`, `intermediateFieldMap e E` is the induced equivalence
 between `E` and `E.map e` -/
 def intermediateFieldMap (e : L ≃ₐ[K] L') (E : IntermediateField K L) : E ≃ₐ[K] E.map e.toAlgHom :=
   e.subalgebraMap E.toSubalgebra

@@ -315,6 +315,24 @@ theorem _root_.AlgEquiv.fieldRange_eq_top (f : E ≃ₐ[F] K) :
 
 end Lattice
 
+section equivMap
+
+variable {F : Type*} [Field F] {E : Type*} [Field E] [Algebra F E]
+  {K : Type*} [Field K] [Algebra F K] (L : IntermediateField F E) (f : E →ₐ[F] K)
+
+theorem fieldRange_comp_val : (f.comp L.val).fieldRange = L.map f := toSubalgebra_injective <| by
+  rw [toSubalgebra_map, AlgHom.fieldRange_toSubalgebra, AlgHom.range_comp, range_val]
+
+/-- An intermediate field is isomorphic to its image under an `AlgHom`
+(which is automatically injective) -/
+noncomputable def equivMap : L ≃ₐ[F] L.map f :=
+  (AlgEquiv.ofInjective _ (f.comp L.val).injective).trans (equivOfEq (fieldRange_comp_val L f))
+
+@[simp]
+theorem coe_equivMap_apply (x : L) : ↑(equivMap L f x) = f x := rfl
+
+end equivMap
+
 section AdjoinDef
 
 variable (F : Type*) [Field F] {E : Type*} [Field E] [Algebra F E] (S : Set E)
