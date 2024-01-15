@@ -140,28 +140,29 @@ theorem Filter.Tendsto.congr_germ {α β γ : Type*} {f g : β → γ} {l : Filt
   @Quotient.sound _ (l.germSetoid γ) _ _ (hφ h)
 #find_home Filter.Tendsto.congr_germ -- Order-Filter-Germ
 
+namespace Filter.Germ
 /-- Map the germ at of functions `X × Y → Z` at `p=(x,y) ∈ X × Y` to the corresponding germ
   of functions `X → Z` at `x ∈ X` -/
-def Filter.Germ.sliceLeft [TopologicalSpace Y] {p : X × Y} (P : Germ (𝓝 p) Z) : Germ (𝓝 p.1) Z :=
+def sliceLeft [TopologicalSpace Y] {p : X × Y} (P : Germ (𝓝 p) Z) : Germ (𝓝 p.1) Z :=
   P.compTendsto (Prod.mk · p.2) (Continuous.Prod.mk_left p.2).continuousAt
 
 @[simp]
-theorem Filter.Germ.sliceLeft_coe [TopologicalSpace Y] {y : Y} (f : X × Y → Z) :
+theorem sliceLeft_coe [TopologicalSpace Y] {y : Y} (f : X × Y → Z) :
     (↑f : Germ (𝓝 (x, y)) Z).sliceLeft = fun x' ↦ f (x', y) :=
   rfl
 
 /-- Map the germ at of functions `X × Y → Z` at `p=(x,y) ∈ X × Y` to the corresponding germ
   of functions `Y → Z` at `y ∈ Y` -/
-def Filter.Germ.sliceRight [TopologicalSpace Y] {p : X × Y} (P : Germ (𝓝 p) Z) : Germ (𝓝 p.2) Z :=
+def sliceRight [TopologicalSpace Y] {p : X × Y} (P : Germ (𝓝 p) Z) : Germ (𝓝 p.2) Z :=
   P.compTendsto (Prod.mk p.1) (Continuous.Prod.mk p.1).continuousAt
 
 @[simp]
-theorem Filter.Germ.sliceRight_coe [TopologicalSpace Y] {y : Y} (f : X × Y → Z) :
+theorem sliceRight_coe [TopologicalSpace Y] {y : Y} (f : X × Y → Z) :
     (↑f : Germ (𝓝 (x, y)) Z).sliceRight = fun y' ↦ f (x, y') :=
   rfl
 
 /-- The germ of functions `X → Y` at `x ∈ X` is constant w.r.t. the neighbourhood filter `𝓝 x`. -/
-def Filter.Germ.IsConstant (P : Germ (𝓝 x) Y) : Prop :=
+def IsConstant (P : Germ (𝓝 x) Y) : Prop :=
   P.liftOn (fun f ↦ ∀ᶠ x' in 𝓝 x, f x' = f x) <| by
     suffices : ∀ f g : X → Y, f =ᶠ[𝓝 x] g → (∀ᶠ x' in 𝓝 x, f x' = f x) → ∀ᶠ x' in 𝓝 x, g x' = g x
     exact fun f g hfg ↦ propext ⟨fun h ↦ this f g hfg h, fun h ↦ this g f hfg.symm h⟩
@@ -169,12 +170,14 @@ def Filter.Germ.IsConstant (P : Germ (𝓝 x) Y) : Prop :=
     refine (hf.and hfg).mono fun x' hx' ↦ ?_
     rw [← hx'.2, hx'.1, hfg.eq_of_nhds]
 
-theorem Filter.Germ.isConstant_coe {y} (h : ∀ x', f x' = y) : (↑f : Germ (𝓝 x) Y).IsConstant :=
+theorem isConstant_coe {y} (h : ∀ x', f x' = y) : (↑f : Germ (𝓝 x) Y).IsConstant :=
   eventually_of_forall fun x' ↦ by rw [h, h]
 
 @[simp]
-theorem Filter.Germ.isConstant_coe_const {y : Y} : (fun _ : X ↦ y : Germ (𝓝 x) Y).IsConstant :=
+theorem isConstant_coe_const {y : Y} : (fun _ : X ↦ y : Germ (𝓝 x) Y).IsConstant :=
   eventually_of_forall fun _ ↦ rfl
+
+end Filter.Germ
 
 theorem eq_of_germ_isConstant [PreconnectedSpace X]
     (h : ∀ x : X, (f : Germ (𝓝 x) Y).IsConstant) (x x' : X) : f x = f x' := by
