@@ -78,7 +78,8 @@ section
 
 variable (I)
 
-@[to_additive]
+/-- In a Lie group, inversion is a smooth map. -/
+@[to_additive "In an additive Lie group, inversion is a smooth map."]
 theorem smooth_inv : Smooth I I fun x : G => x⁻¹ :=
   LieGroup.smooth_inv
 #align smooth_inv smooth_inv
@@ -228,6 +229,7 @@ instance normedSpaceLieAddGroup {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E
   smooth_neg := contDiff_neg.contMDiff
 #align normed_space_lie_add_group normedSpaceLieAddGroup
 
+/-! Inversion is smooth at all non-zero points. -/
 section HasSmoothInv
 
 -- See note [Design choices about smooth algebraic structures]
