@@ -357,3 +357,44 @@ theorem Smooth.div₀ (hf : Smooth I' I f) (hg : Smooth I' I g) (h₀ : ∀ x, g
   ContMDiff.div₀ hf hg h₀
 
 end Div
+
+section New
+open scoped Topology Filter Manifold BigOperators
+open Function
+
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*}
+  [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {M : Type*} [TopologicalSpace M]
+  [ChartedSpace H M] {s : Set M} {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {ι : Type*} {J : Finset ι} {f : ι → M → F} {n : ℕ∞} {s : Set M} {x₀ : M}
+
+theorem ContMDiffWithinAt.sum (h : ∀ i ∈ J, ContMDiffWithinAt I 𝓘(𝕜, F) n (f i) s x₀) :
+    ContMDiffWithinAt I 𝓘(𝕜, F) n (fun x => ∑ i in J, f i x) s x₀ := by
+  classical
+  induction' J using Finset.induction_on with i K iK IH
+  · simp [contMDiffWithinAt_const]
+  · simp only [iK, Finset.sum_insert, not_false_iff]
+    exact (h _ (Finset.mem_insert_self i K)).add (IH fun j hj => h _ <| Finset.mem_insert_of_mem hj)
+
+theorem ContMDiffAt.sum (h : ∀ i ∈ J, ContMDiffAt I 𝓘(𝕜, F) n (f i) x₀) :
+    ContMDiffAt I 𝓘(𝕜, F) n (fun x => ∑ i in J, f i x) x₀ := by
+  simp only [← contMDiffWithinAt_univ] at *
+  exact ContMDiffWithinAt.sum h
+
+theorem ContMDiff.sum (h : ∀ i ∈ J, ContMDiff I 𝓘(𝕜, F) n (f i)) :
+    ContMDiff I 𝓘(𝕜, F) n fun x => ∑ i in J, f i x :=
+  fun x => ContMDiffAt.sum fun j hj => h j hj x
+
+theorem contMDiffWithinAt_finsum (lf : LocallyFinite fun i => support <| f i) {x₀ : M}
+    (h : ∀ i, ContMDiffWithinAt I 𝓘(𝕜, F) n (f i) s x₀) :
+    ContMDiffWithinAt I 𝓘(𝕜, F) n (fun x => ∑ᶠ i, f i x) s x₀ :=
+  let ⟨_I, hI⟩ := finsum_eventually_eq_sum lf x₀
+  ContMDiffWithinAt.congr_of_eventuallyEq (ContMDiffWithinAt.sum fun i _hi => h i)
+    (eventually_nhdsWithin_of_eventually_nhds hI) hI.self_of_nhds
+
+theorem contMDiffAt_finsum
+    (lf : LocallyFinite fun i => support <| f i) (h : ∀ i, ContMDiffAt I 𝓘(𝕜, F) n (f i) x₀) :
+    ContMDiffAt I 𝓘(𝕜, F) n (fun x => ∑ᶠ i, f i x) x₀ :=
+  contMDiffWithinAt_finsum lf h
+
+end New
