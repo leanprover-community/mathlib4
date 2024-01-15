@@ -1721,7 +1721,7 @@ theorem Filter.eventually_nhdsSet_prod_iff {p : X × Y → Prop} :
       ∀ x ∈ s, ∀ y ∈ t,
           ∃ pa : X → Prop, (∀ᶠ x' in 𝓝 x, pa x') ∧ ∃ pb : Y → Prop, (∀ᶠ y' in 𝓝 y, pb y') ∧
             ∀ {x : X}, pa x → ∀ {y : Y}, pb y → p (x, y) :=
-  by simp_rw [eventually_nhdsSet_iff, Set.forall_prod_set, nhds_prod_eq, eventually_prod_iff]
+  by simp_rw [eventually_nhdsSet_iff_forall, Set.forall_prod_set, nhds_prod_eq, eventually_prod_iff]
 
 theorem Filter.Eventually.prod_nhdsSet {p : X × Y → Prop} {pa : X → Prop} {pb : Y → Prop}
     (hp : ∀ {x : X}, pa x → ∀ {y : Y}, pb y → p (x, y)) (hs : ∀ᶠ x in 𝓝ˢ s, pa x)
