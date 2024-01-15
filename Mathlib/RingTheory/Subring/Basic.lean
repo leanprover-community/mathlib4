@@ -559,6 +559,9 @@ def topEquiv : (⊤ : Subring R) ≃+* R :=
   Subsemiring.topEquiv
 #align subring.top_equiv Subring.topEquiv
 
+theorem card_top (R) [Ring R] [Fintype R] : Fintype.card (⊤ : Subring R) = Fintype.card R :=
+  Fintype.card_congr topEquiv.toEquiv
+
 /-! ## comap -/
 
 
@@ -1383,10 +1386,8 @@ protected theorem InClosure.recOn {C : R → Prop} {x : R} (hx : x ∈ closure s
     exact ha this (ih HL.2)
   replace HL := HL.1
   clear ih tl
-  -- Porting note: was `rsuffices` instead of `obtain` + `rotate_left`
-  obtain ⟨L, HL', HP | HP⟩ :
+  rsuffices ⟨L, HL', HP | HP⟩ :
     ∃ L : List R, (∀ x ∈ L, x ∈ s) ∧ (List.prod hd = List.prod L ∨ List.prod hd = -List.prod L)
-  rotate_left
   · rw [HP]
     clear HP HL hd
     induction' L with hd tl ih

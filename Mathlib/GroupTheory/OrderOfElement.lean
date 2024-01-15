@@ -351,6 +351,11 @@ theorem orderOf_injective {H : Type*} [Monoid H] (f : G →* H) (hf : Function.I
 #align order_of_injective orderOf_injective
 #align add_order_of_injective addOrderOf_injective
 
+@[to_additive]
+theorem Function.Injective.isOfFinOrder_iff [Monoid H] {f : G →* H} (hf : Injective f) :
+    IsOfFinOrder (f x) ↔ IsOfFinOrder x := by
+  rw [← orderOf_pos_iff, orderOf_injective f hf x, ← orderOf_pos_iff]
+
 @[to_additive (attr := norm_cast, simp)]
 theorem orderOf_submonoid {H : Submonoid G} (y : H) : orderOf (y : G) = orderOf y :=
   orderOf_injective H.subtype Subtype.coe_injective y

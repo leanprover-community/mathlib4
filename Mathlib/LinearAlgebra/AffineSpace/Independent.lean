@@ -78,7 +78,7 @@ theorem affineIndependent_iff_of_fintype [Fintype ι] (p : ι → P) :
   · exact fun h w hw hs i => h Finset.univ w hw hs i (Finset.mem_univ _)
   · intro h s w hw hs i hi
     rw [Finset.weightedVSub_indicator_subset _ _ (Finset.subset_univ s)] at hs
-    rw [Set.sum_indicator_subset _ (Finset.subset_univ s)] at hw
+    rw [← Finset.sum_indicator_subset _ (Finset.subset_univ s)] at hw
     replace h := h ((↑s : Set ι).indicator w) hw hs i
     simpa [hi] using h
 #align affine_independent_iff_of_fintype affineIndependent_iff_of_fintype
@@ -191,8 +191,8 @@ theorem affineIndependent_iff_indicator_eq_of_affineCombination_eq (p : ι → P
       ext i
       by_cases hi : i ∈ s1 ∪ s2
       · rw [← sub_eq_zero]
-        rw [Set.sum_indicator_subset _ (Finset.subset_union_left s1 s2)] at hw1
-        rw [Set.sum_indicator_subset _ (Finset.subset_union_right s1 s2)] at hw2
+        rw [← Finset.sum_indicator_subset _ (Finset.subset_union_left s1 s2)] at hw1
+        rw [← Finset.sum_indicator_subset _ (Finset.subset_union_right s1 s2)] at hw2
         have hws : (∑ i in s1 ∪ s2, (Set.indicator (↑s1) w1 - Set.indicator (↑s2) w2) i) = 0 := by
           simp [hw1, hw2]
         rw [Finset.affineCombination_indicator_subset _ _ (Finset.subset_union_left s1 s2),
@@ -242,9 +242,9 @@ theorem affineIndependent_iff_eq_of_fintype_affineCombination_eq [Fintype ι] (p
     simpa only [Set.indicator_univ, Finset.coe_univ] using h _ _ w1 w2 hw1 hw2 hweq
   · intro h s1 s2 w1 w2 hw1 hw2 hweq
     have hw1' : (∑ i, (s1 : Set ι).indicator w1 i) = 1 := by
-      rwa [Set.sum_indicator_subset _ (Finset.subset_univ s1)] at hw1
+      rwa [Finset.sum_indicator_subset _ (Finset.subset_univ s1)]
     have hw2' : (∑ i, (s2 : Set ι).indicator w2 i) = 1 := by
-      rwa [Set.sum_indicator_subset _ (Finset.subset_univ s2)] at hw2
+      rwa [Finset.sum_indicator_subset _ (Finset.subset_univ s2)]
     rw [Finset.affineCombination_indicator_subset w1 p (Finset.subset_univ s1),
       Finset.affineCombination_indicator_subset w2 p (Finset.subset_univ s2)] at hweq
     exact h _ _ hw1' hw2' hweq

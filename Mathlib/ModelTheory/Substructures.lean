@@ -3,6 +3,7 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
+import Mathlib.Data.Fintype.Order
 import Mathlib.Order.Closure
 import Mathlib.ModelTheory.Semantics
 import Mathlib.ModelTheory.Encoding
@@ -392,15 +393,30 @@ theorem closure_union (s t : Set M) : closure L (s ∪ t) = closure L s ⊔ clos
   (Substructure.gi L M).gc.l_sup
 #align first_order.language.substructure.closure_union FirstOrder.Language.Substructure.closure_union
 
-theorem closure_unionᵢ {ι} (s : ι → Set M) : closure L (⋃ i, s i) = ⨆ i, closure L (s i) :=
+theorem closure_iUnion {ι} (s : ι → Set M) : closure L (⋃ i, s i) = ⨆ i, closure L (s i) :=
   (Substructure.gi L M).gc.l_iSup
-#align first_order.language.substructure.closure_Union FirstOrder.Language.Substructure.closure_unionᵢ
+#align first_order.language.substructure.closure_Union FirstOrder.Language.Substructure.closure_iUnion
 
 instance small_bot : Small.{u} (⊥ : L.Substructure M) := by
   rw [← closure_empty]
   haveI : Small.{u} (∅ : Set M) := small_subsingleton _
   exact Substructure.small_closure
 #align first_order.language.substructure.small_bot FirstOrder.Language.Substructure.small_bot
+
+theorem iSup_eq_closure {ι : Sort*} (S : ι → L.Substructure M) :
+    ⨆ i, S i = closure L (⋃ i, (S i : Set M)) := by simp_rw [closure_iUnion, closure_eq]
+
+-- This proof uses the fact that `Substructure.closure` is finitary.
+theorem mem_iSup_of_directed {ι : Type*} [hι : Nonempty ι] {S : ι → L.Substructure M}
+    (hS : Directed (· ≤ ·) S) {x : M} :
+    x ∈ (iSup S : L.Substructure M) ↔ ∃ i, x ∈ S i := by
+  refine ⟨?_, fun ⟨i, hi⟩ ↦ le_iSup S i hi⟩
+  suffices x ∈ closure L (⋃ i, (S i : Set M)) → ∃ i, x ∈ S i by
+    simpa only [closure_iUnion, closure_eq (S _)] using this
+  refine fun hx ↦ closure_induction hx (fun _ ↦ mem_iUnion.1) (fun f v hC ↦ ?_)
+  simp_rw [Set.mem_setOf] at *
+  have ⟨i, hi⟩ := hS.fintype_le (fun i ↦ Classical.choose (hC i))
+  refine ⟨i, (S i).fun_mem f v (fun j ↦ hi j (Classical.choose_spec (hC j)))⟩
 
 /-!
 ### `comap` and `map`

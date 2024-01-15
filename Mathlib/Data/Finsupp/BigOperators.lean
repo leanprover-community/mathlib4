@@ -107,7 +107,7 @@ theorem Multiset.support_sum_eq [AddCommMonoid M] (s : Multiset (ι →₀ M))
       simp only [quot_mk_to_coe'', coe_map, sup_coe, ge_iff_le, Finset.le_eq_subset,
         Finset.sup_eq_union, Finset.bot_eq_empty, List.foldr_map]
   · simp only [Multiset.quot_mk_to_coe'', Multiset.coe_map, Multiset.coe_eq_coe] at hl
-    exact hl.symm.pairwise hd fun _ _ h ↦ _root_.Disjoint.symm h
+    exact hl.symm.pairwise hd fun h ↦ _root_.Disjoint.symm h
 #align multiset.support_sum_eq Multiset.support_sum_eq
 
 theorem Finset.support_sum_eq [AddCommMonoid M] (s : Finset (ι →₀ M))

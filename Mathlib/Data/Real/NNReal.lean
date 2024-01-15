@@ -6,7 +6,6 @@ Authors: Johan Commelin
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.BigOperators.Ring
-import Mathlib.Algebra.IndicatorFunction
 import Mathlib.Algebra.Order.Field.Canonical.Basic
 import Mathlib.Algebra.Order.Nonneg.Field
 import Mathlib.Algebra.Order.Nonneg.Floor
@@ -277,6 +276,18 @@ instance {A : Type*} [Semiring A] [Algebra ℝ A] : Algebra ℝ≥0 A where
   commutes' r x := by simp [Algebra.commutes]
   smul_def' r x := by simp [← Algebra.smul_def (r : ℝ) x, smul_def]
   toRingHom := (algebraMap ℝ A).comp (toRealHom : ℝ≥0 →+* ℝ)
+
+instance : StarRing ℝ≥0 where
+  star := id
+  star_involutive _ := rfl
+  star_mul := mul_comm
+  star_add _ _ := rfl
+
+instance : TrivialStar ℝ≥0 where
+  star_trivial _ := rfl
+
+instance : StarModule ℝ≥0 ℝ where
+  star_smul := by simp only [star_trivial, eq_self_iff_true, forall_const]
 
 -- verify that the above produces instances we might care about
 example : Algebra ℝ≥0 ℝ := by infer_instance

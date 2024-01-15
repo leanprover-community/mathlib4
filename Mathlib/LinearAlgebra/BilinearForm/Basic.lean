@@ -61,6 +61,8 @@ structure BilinForm (R : Type*) (M : Type*) [Semiring R] [AddCommMonoid M] [Modu
 
 variable {R : Type*} {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
 
+variable {S : Type*} [CommSemiring S] [Algebra S R] [Module S M] [IsScalarTower S R M]
+
 variable {R₁ : Type*} {M₁ : Type*} [Ring R₁] [AddCommGroup M₁] [Module R₁ M₁]
 
 variable {R₂ : Type*} {M₂ : Type*} [CommSemiring R₂] [AddCommMonoid M₂] [Module R₂ M₂]
@@ -136,6 +138,14 @@ theorem sub_left (x y z : M₁) : B₁ (x - y) z = B₁ x z - B₁ y z := by
 theorem sub_right (x y z : M₁) : B₁ x (y - z) = B₁ x y - B₁ x z := by
   rw [sub_eq_add_neg, sub_eq_add_neg, add_right, neg_right]
 #align bilin_form.sub_right BilinForm.sub_right
+
+@[simp]
+lemma smul_left_of_tower (r : S) (x y : M) : B (r • x) y = r • B x y := by
+  rw [← IsScalarTower.algebraMap_smul R r, smul_left, Algebra.smul_def]
+
+@[simp]
+lemma smul_right_of_tower (r : S) (x y : M) : B x (r • y) = r • B x y := by
+  rw [← IsScalarTower.algebraMap_smul R r, smul_right, Algebra.smul_def]
 
 variable {D : BilinForm R M} {D₁ : BilinForm R₁ M₁}
 

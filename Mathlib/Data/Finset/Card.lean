@@ -308,6 +308,8 @@ theorem card_lt_card (h : s ⊂ t) : s.card < t.card :=
   card_lt_of_lt <| val_lt_iff.2 h
 #align finset.card_lt_card Finset.card_lt_card
 
+lemma card_strictMono : StrictMono (card : Finset α → ℕ) := fun _ _ ↦ card_lt_card
+
 theorem card_eq_of_bijective (f : ∀ i, i < n → α) (hf : ∀ a ∈ s, ∃ i, ∃ h : i < n, f i h = a)
     (hf' : ∀ (i) (h : i < n), f i h ∈ s)
     (f_inj : ∀ (i j) (hi : i < n) (hj : j < n), f i hi = f j hj → i = j) : s.card = n := by
@@ -676,16 +678,6 @@ theorem card_eq_three : s.card = 3 ↔ ∃ x y z, x ≠ y ∧ x ≠ z ∧ y ≠ 
     simp only [xy, xz, yz, mem_insert, card_insert_of_not_mem, not_false_iff, mem_singleton,
       or_self_iff, card_singleton]
 #align finset.card_eq_three Finset.card_eq_three
-
-lemma covby_iff_card_sdiff_eq_one : t ⋖ s ↔ t ⊆ s ∧ (s \ t).card = 1 := by
-  rw [covby_iff_exists_insert]
-  constructor
-  · rintro ⟨a, ha, rfl⟩
-    simp [*]
-  · simp_rw [card_eq_one]
-    rintro ⟨hts, a, ha⟩
-    refine ⟨a, (mem_sdiff.1 $ superset_of_eq ha $ mem_singleton_self _).2, ?_⟩
-    rw [insert_eq, ← ha, sdiff_union_of_subset hts]
 
 end DecidableEq
 

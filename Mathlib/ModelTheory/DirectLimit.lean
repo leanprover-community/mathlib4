@@ -3,7 +3,6 @@ Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Data.Fintype.Order
 import Mathlib.Algebra.DirectLimit
 import Mathlib.ModelTheory.Quotients
 import Mathlib.ModelTheory.FinitelyGenerated
@@ -336,6 +335,10 @@ protected theorem inductionOn {C : DirectLimit G f → Prop} (z : DirectLimit G 
   h ▸ ih i x
 #align first_order.language.direct_limit.induction_on FirstOrder.Language.DirectLimit.inductionOn
 
+theorem iSup_range_of_eq_top : ⨆ i, (of L ι G f i).toHom.range = ⊤ :=
+  eq_top_iff.2 (fun x _ ↦ DirectLimit.inductionOn x
+    (fun i _ ↦ le_iSup (fun i ↦ Hom.range (Embedding.toHom (of L ι G f i))) i (mem_range_self _)))
+
 variable {P : Type u₁} [L.Structure P] (g : ∀ i, G i ↪[L] P)
 
 variable (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
@@ -390,6 +393,12 @@ theorem lift_unique (F : DirectLimit G f ↪[L] P) (x) :
   DirectLimit.inductionOn x fun i x => by rw [lift_of]; rfl
 #align first_order.language.direct_limit.lift_unique FirstOrder.Language.DirectLimit.lift_unique
 
+lemma range_lift : (lift L ι G f g Hg).toHom.range = ⨆ i, (g i).toHom.range := by
+  simp_rw [Hom.range_eq_map]
+  rw [← iSup_range_of_eq_top, Substructure.map_iSup]
+  simp_rw [Hom.range_eq_map, Substructure.map_map]
+  rfl
+
 /-- The direct limit of countably many countably generated structures is countably generated. -/
 theorem cg {ι : Type*} [Encodable ι] [Preorder ι] [IsDirected ι (· ≤ ·)] [Nonempty ι]
     {G : ι → Type w} [∀ i, L.Structure (G i)] (f : ∀ i j, i ≤ j → G i ↪[L] G j)
@@ -397,7 +406,7 @@ theorem cg {ι : Type*} [Encodable ι] [Preorder ι] [IsDirected ι (· ≤ ·)]
     Structure.CG L (DirectLimit G f) := by
   refine' ⟨⟨⋃ i, DirectLimit.of L ι G f i '' Classical.choose (h i).out, _, _⟩⟩
   · exact Set.countable_iUnion fun i => Set.Countable.image (Classical.choose_spec (h i).out).1 _
-  · rw [eq_top_iff, Substructure.closure_unionᵢ]
+  · rw [eq_top_iff, Substructure.closure_iUnion]
     simp_rw [← Embedding.coe_toHom, Substructure.closure_image]
     rw [le_iSup_iff]
     intro S hS x _
@@ -416,6 +425,37 @@ instance cg' {ι : Type*} [Encodable ι] [Preorder ι] [IsDirected ι (· ≤ ·
 #align first_order.language.direct_limit.cg' FirstOrder.Language.DirectLimit.cg'
 
 end DirectLimit
+
+section Substructure
+
+variable [Nonempty ι] [IsDirected ι (· ≤ ·)]
+variable {M : Type*} [L.Structure M] (S : ι →o L.Substructure M)
+
+instance : DirectedSystem (fun i ↦ S i) (fun _ _ h ↦ Substructure.inclusion (S.monotone h)) where
+  map_self' := fun _ _ _ ↦ rfl
+  map_map' := fun _ _ _ ↦ rfl
+
+namespace DirectLimit
+
+/-- The map from a direct limit of a system of substructures of `M` into `M`. -/
+def liftInclusion :
+    DirectLimit (fun i ↦ S i) (fun _ _ h ↦ Substructure.inclusion (S.monotone h)) ↪[L] M :=
+  DirectLimit.lift L ι (fun i ↦ S i) (fun _ _ h ↦ Substructure.inclusion (S.monotone h))
+    (fun _ ↦ Substructure.subtype _) (fun _ _ _ _ ↦ rfl)
+
+lemma rangeLiftInclusion : (liftInclusion S).toHom.range = ⨆ i, S i := by
+  simp_rw [liftInclusion, range_lift, Substructure.range_subtype]
+
+/-- The isomorphism between a direct limit of a system of substructures and their union. -/
+noncomputable def Equiv_iSup :
+    DirectLimit (fun i ↦ S i) (fun _ _ h ↦ Substructure.inclusion (S.monotone h)) ≃[L]
+    (iSup S : L.Substructure M) := by
+  rw [← rangeLiftInclusion]
+  exact (liftInclusion S).equivRange
+
+end DirectLimit
+
+end Substructure
 
 end Language
 

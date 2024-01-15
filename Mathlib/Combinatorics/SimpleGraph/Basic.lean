@@ -1796,13 +1796,13 @@ theorem Adj.card_commonNeighbors_lt_degree {G : SimpleGraph V} [DecidableRel G.A
   rw [Finset.ssubset_iff]
   use w
   constructor
+  · rw [Set.mem_toFinset]
+    apply not_mem_commonNeighbors_right
   · rw [Finset.insert_subset_iff]
     constructor
     · simpa
     · rw [neighborFinset, Set.toFinset_subset_toFinset]
       exact G.commonNeighbors_subset_neighborSet_left _ _
-  · rw [Set.mem_toFinset]
-    apply not_mem_commonNeighbors_right
 #align simple_graph.adj.card_common_neighbors_lt_degree SimpleGraph.Adj.card_commonNeighbors_lt_degree
 
 theorem card_commonNeighbors_top [DecidableEq V] {v w : V} (h : v ≠ w) :

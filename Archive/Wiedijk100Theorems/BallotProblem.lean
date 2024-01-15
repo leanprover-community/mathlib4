@@ -72,6 +72,7 @@ def countedSequence (p q : ℕ) : Set (List ℤ) :=
   {l | l.count 1 = p ∧ l.count (-1) = q ∧ ∀ x ∈ l, x = (1 : ℤ) ∨ x = -1}
 #align ballot.counted_sequence Ballot.countedSequence
 
+open scoped List in
 /-- An alternative definition of `countedSequence` that uses `List.Perm`. -/
 theorem mem_countedSequence_iff_perm {p q l} :
     l ∈ countedSequence p q ↔ l ~ List.replicate p (1 : ℤ) ++ List.replicate q (-1) := by

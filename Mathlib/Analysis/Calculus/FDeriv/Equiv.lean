@@ -16,8 +16,10 @@ see the module docstring of `Analysis/Calculus/FDeriv/Basic.lean`.
 
 This file contains the usual formulas (and existence assertions) for the derivative of
 continuous linear equivalences.
--/
 
+We also prove the usual formula for the derivative of the inverse function, assuming it exists.
+The inverse function theorem is in `Mathlib/Analysis/Calculus/InverseFunctionTheorem/FDeriv.lean`.
+-/
 
 open Filter Asymptotics ContinuousLinearMap Set Metric
 
@@ -393,10 +395,8 @@ theorem HasFDerivAt.of_local_left_inverse {f : E → F} {f' : E ≃L[𝕜] F} {g
     simp
   refine' this.trans_isLittleO _
   clear this
-  refine'
-    ((hf.comp_tendsto hg).symm.congr' (hfg.mono _) (eventually_of_forall fun _ => rfl)).trans_isBigO
-      _
-  · rintro p hp
+  refine ((hf.comp_tendsto hg).symm.congr' (hfg.mono ?_) .rfl).trans_isBigO ?_
+  · intro p hp
     simp [hp, hfg.self_of_nhds]
   · refine' ((hf.isBigO_sub_rev f'.antilipschitz).comp_tendsto hg).congr'
       (eventually_of_forall fun _ => rfl) (hfg.mono _)
@@ -410,22 +410,22 @@ the derivative `f'⁻¹` at `a`.
 
 This is one of the easy parts of the inverse function theorem: it assumes that we already have
 an inverse function. -/
-theorem LocalHomeomorph.hasStrictFDerivAt_symm (f : LocalHomeomorph E F) {f' : E ≃L[𝕜] F} {a : F}
-    (ha : a ∈ f.target) (htff' : HasStrictFDerivAt f (f' : E →L[𝕜] F) (f.symm a)) :
+theorem PartialHomeomorph.hasStrictFDerivAt_symm (f : PartialHomeomorph E F) {f' : E ≃L[𝕜] F}
+    {a : F} (ha : a ∈ f.target) (htff' : HasStrictFDerivAt f (f' : E →L[𝕜] F) (f.symm a)) :
     HasStrictFDerivAt f.symm (f'.symm : F →L[𝕜] E) a :=
   htff'.of_local_left_inverse (f.symm.continuousAt ha) (f.eventually_right_inverse ha)
-#align local_homeomorph.has_strict_fderiv_at_symm LocalHomeomorph.hasStrictFDerivAt_symm
+#align local_homeomorph.has_strict_fderiv_at_symm PartialHomeomorph.hasStrictFDerivAt_symm
 
 /-- If `f` is a local homeomorphism defined on a neighbourhood of `f.symm a`, and `f` has an
 invertible derivative `f'` at `f.symm a`, then `f.symm` has the derivative `f'⁻¹` at `a`.
 
 This is one of the easy parts of the inverse function theorem: it assumes that we already have
 an inverse function. -/
-theorem LocalHomeomorph.hasFDerivAt_symm (f : LocalHomeomorph E F) {f' : E ≃L[𝕜] F} {a : F}
+theorem PartialHomeomorph.hasFDerivAt_symm (f : PartialHomeomorph E F) {f' : E ≃L[𝕜] F} {a : F}
     (ha : a ∈ f.target) (htff' : HasFDerivAt f (f' : E →L[𝕜] F) (f.symm a)) :
     HasFDerivAt f.symm (f'.symm : F →L[𝕜] E) a :=
   htff'.of_local_left_inverse (f.symm.continuousAt ha) (f.eventually_right_inverse ha)
-#align local_homeomorph.has_fderiv_at_symm LocalHomeomorph.hasFDerivAt_symm
+#align local_homeomorph.has_fderiv_at_symm PartialHomeomorph.hasFDerivAt_symm
 
 theorem HasFDerivWithinAt.eventually_ne (h : HasFDerivWithinAt f f' s x)
     (hf' : ∃ C, ∀ z, ‖z‖ ≤ C * ‖f' z‖) : ∀ᶠ z in 𝓝[s \ {x}] x, f z ≠ f x := by

@@ -71,7 +71,7 @@ theorem map₂_span_span (f : M →ₗ[R] N →ₗ[R] P) (s : Set M) (t : Set N)
     exact subset_span ⟨_, _, ‹_›, ‹_›, rfl⟩
     all_goals intros; simp only [*, add_mem, smul_mem, zero_mem, _root_.map_zero, map_add,
                                  LinearMap.zero_apply, LinearMap.add_apply, LinearMap.smul_apply,
-                                 SMulHomClass.map_smul]
+                                 map_smul]
   · rw [span_le]
     rintro _ ⟨a, b, ha, hb, rfl⟩
     exact apply_mem_map₂ _ (subset_span ha) (subset_span hb)

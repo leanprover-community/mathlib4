@@ -1492,7 +1492,7 @@ theorem EventuallyEq.refl (l : Filter α) (f : α → β) : f =ᶠ[l] f :=
   eventually_of_forall fun _ => rfl
 #align filter.eventually_eq.refl Filter.EventuallyEq.refl
 
-theorem EventuallyEq.rfl {l : Filter α} {f : α → β} : f =ᶠ[l] f :=
+protected theorem EventuallyEq.rfl {l : Filter α} {f : α → β} : f =ᶠ[l] f :=
   EventuallyEq.refl l f
 #align filter.eventually_eq.rfl Filter.EventuallyEq.rfl
 

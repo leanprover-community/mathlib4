@@ -64,7 +64,7 @@ set_option autoImplicit true
 
 assert_not_exists mfderiv
 
-open Bundle Set LocalHomeomorph
+open Bundle Set PartialHomeomorph
 
 open Function (id_def)
 
@@ -85,15 +85,15 @@ variable [TopologicalSpace F] [TopologicalSpace (TotalSpace F E)] [∀ x, Topolo
 /-- A fiber bundle `E` over a base `B` with model fiber `F` is naturally a charted space modelled on
 `B × F`. -/
 instance FiberBundle.chartedSpace' : ChartedSpace (B × F) (TotalSpace F E) where
-  atlas := (fun e : Trivialization F (π F E) => e.toLocalHomeomorph) '' trivializationAtlas F E
-  chartAt x := (trivializationAt F E x.proj).toLocalHomeomorph
+  atlas := (fun e : Trivialization F (π F E) => e.toPartialHomeomorph) '' trivializationAtlas F E
+  chartAt x := (trivializationAt F E x.proj).toPartialHomeomorph
   mem_chart_source x :=
     (trivializationAt F E x.proj).mem_source.mpr (mem_baseSet_trivializationAt F E x.proj)
   chart_mem_atlas _ := mem_image_of_mem _ (trivialization_mem_atlas F E _)
 #align fiber_bundle.charted_space FiberBundle.chartedSpace'
 
 theorem FiberBundle.chartedSpace'_chartAt (x : TotalSpace F E) :
-    chartAt (B × F) x = (trivializationAt F E x.proj).toLocalHomeomorph :=
+    chartAt (B × F) x = (trivializationAt F E x.proj).toPartialHomeomorph :=
   rfl
 
 /- Porting note: In Lean 3, the next instance was inside a section with locally reducible
@@ -110,8 +110,8 @@ instance FiberBundle.chartedSpace : ChartedSpace (ModelProd HB F) (TotalSpace F 
 
 theorem FiberBundle.chartedSpace_chartAt (x : TotalSpace F E) :
     chartAt (ModelProd HB F) x =
-      (trivializationAt F E x.proj).toLocalHomeomorph ≫ₕ
-        (chartAt HB x.proj).prod (LocalHomeomorph.refl F) := by
+      (trivializationAt F E x.proj).toPartialHomeomorph ≫ₕ
+        (chartAt HB x.proj).prod (PartialHomeomorph.refl F) := by
   dsimp only [chartAt_comp, prodChartedSpace_chartAt, FiberBundle.chartedSpace'_chartAt,
     chartAt_self_eq]
   rw [Trivialization.coe_coe, Trivialization.coe_fst' _ (mem_baseSet_trivializationAt F E x.proj)]
@@ -140,19 +140,19 @@ variable [TopologicalSpace B] [ChartedSpace HB B] [FiberBundle F E]
 
 protected theorem FiberBundle.extChartAt (x : TotalSpace F E) :
     extChartAt (IB.prod 𝓘(𝕜, F)) x =
-      (trivializationAt F E x.proj).toLocalEquiv ≫
-        (extChartAt IB x.proj).prod (LocalEquiv.refl F) := by
+      (trivializationAt F E x.proj).toPartialEquiv ≫
+        (extChartAt IB x.proj).prod (PartialEquiv.refl F) := by
   simp_rw [extChartAt, FiberBundle.chartedSpace_chartAt, extend]
-  simp only [LocalEquiv.trans_assoc, mfld_simps]
+  simp only [PartialEquiv.trans_assoc, mfld_simps]
   -- porting note: should not be needed
-  rw [LocalEquiv.prod_trans, LocalEquiv.refl_trans]
+  rw [PartialEquiv.prod_trans, PartialEquiv.refl_trans]
 #align fiber_bundle.ext_chart_at FiberBundle.extChartAt
 
 protected theorem FiberBundle.extChartAt_target (x : TotalSpace F E) :
     (extChartAt (IB.prod 𝓘(𝕜, F)) x).target =
       ((extChartAt IB x.proj).target ∩
         (extChartAt IB x.proj).symm ⁻¹' (trivializationAt F E x.proj).baseSet) ×ˢ univ := by
-  rw [FiberBundle.extChartAt, LocalEquiv.trans_target, Trivialization.target_eq, inter_prod]
+  rw [FiberBundle.extChartAt, PartialEquiv.trans_target, Trivialization.target_eq, inter_prod]
   rfl
 
 theorem FiberBundle.writtenInExtChartAt_trivializationAt {x : TotalSpace F E} {y}
@@ -164,7 +164,7 @@ theorem FiberBundle.writtenInExtChartAt_trivializationAt {x : TotalSpace F E} {y
 theorem FiberBundle.writtenInExtChartAt_trivializationAt_symm {x : TotalSpace F E} {y}
     (hy : y ∈ (extChartAt (IB.prod 𝓘(𝕜, F)) x).target) :
     writtenInExtChartAt (IB.prod 𝓘(𝕜, F)) (IB.prod 𝓘(𝕜, F)) (trivializationAt F E x.proj x)
-      (trivializationAt F E x.proj).toLocalHomeomorph.symm y = y :=
+      (trivializationAt F E x.proj).toPartialHomeomorph.symm y = y :=
   writtenInExtChartAt_chartAt_symm_comp _ _ hy
 
 /-! ### Smoothness of maps in/out fiber bundles
@@ -185,15 +185,15 @@ theorem contMDiffWithinAt_totalSpace (f : M → TotalSpace F E) {s : Set M} {x�
   simp (config := { singlePass := true }) only [contMDiffWithinAt_iff_target]
   rw [and_and_and_comm, ← FiberBundle.continuousWithinAt_totalSpace, and_congr_right_iff]
   intro hf
-  simp_rw [modelWithCornersSelf_prod, FiberBundle.extChartAt, Function.comp, LocalEquiv.trans_apply,
-    LocalEquiv.prod_coe, LocalEquiv.refl_coe, extChartAt_self_apply, modelWithCornersSelf_coe,
-    id_def]
+  simp_rw [modelWithCornersSelf_prod, FiberBundle.extChartAt, Function.comp,
+    PartialEquiv.trans_apply, PartialEquiv.prod_coe, PartialEquiv.refl_coe, extChartAt_self_apply,
+    modelWithCornersSelf_coe, id_def]
   refine (contMDiffWithinAt_prod_iff _).trans (and_congr ?_ Iff.rfl)
   have h1 : (fun x => (f x).proj) ⁻¹' (trivializationAt F E (f x₀).proj).baseSet ∈ 𝓝[s] x₀ :=
     ((FiberBundle.continuous_proj F E).continuousWithinAt.comp hf (mapsTo_image f s))
       ((Trivialization.open_baseSet _).mem_nhds (mem_baseSet_trivializationAt F E _))
   refine EventuallyEq.contMDiffWithinAt_iff (eventually_of_mem h1 fun x hx => ?_) ?_
-  · simp_rw [Function.comp, LocalHomeomorph.coe_coe, Trivialization.coe_coe]
+  · simp_rw [Function.comp, PartialHomeomorph.coe_coe, Trivialization.coe_coe]
     rw [Trivialization.coe_fst']
     exact hx
   · simp only [mfld_simps]
@@ -431,7 +431,7 @@ variable (IB e e')
 
 theorem Trivialization.contMDiffOn_symm_trans :
     ContMDiffOn (IB.prod 𝓘(𝕜, F)) (IB.prod 𝓘(𝕜, F)) n
-      (e.toLocalHomeomorph.symm ≫ₕ e'.toLocalHomeomorph) (e.target ∩ e'.target) := by
+      (e.toPartialHomeomorph.symm ≫ₕ e'.toPartialHomeomorph) (e.target ∩ e'.target) := by
   have Hmaps : MapsTo Prod.fst (e.target ∩ e'.target) (e.baseSet ∩ e'.baseSet) := fun x hx ↦
     ⟨e.mem_target.1 hx.1, e'.mem_target.1 hx.2⟩
   rw [mapsTo_inter] at Hmaps
@@ -440,7 +440,7 @@ theorem Trivialization.contMDiffOn_symm_trans :
     (contMDiffOn_fst.coordChange contMDiffOn_snd Hmaps.1 Hmaps.2)).congr ?_
   rintro ⟨b, x⟩ hb
   refine Prod.ext ?_ rfl
-  · have : (e.toLocalHomeomorph.symm (b, x)).1 ∈ e'.baseSet
+  · have : (e.toPartialHomeomorph.symm (b, x)).1 ∈ e'.baseSet
     · simp_all only [Trivialization.mem_target, mfld_simps]
     exact (e'.coe_fst' this).trans (e.proj_symm_apply hb.1)
 
@@ -478,9 +478,9 @@ instance SmoothFiberwiseLinear.hasGroupoid :
     rw [mem_smoothFiberwiseLinear_iff]
     refine' ⟨_, _, e.open_baseSet.inter e'.open_baseSet, smoothOn_coordChangeL IB e e',
       smoothOn_symm_coordChangeL IB e e', _⟩
-    refine LocalHomeomorph.eqOnSourceSetoid.symm ⟨?_, ?_⟩
-    · simp only [e.symm_trans_source_eq e', FiberwiseLinear.localHomeomorph, trans_toLocalEquiv,
-        symm_toLocalEquiv]
+    refine PartialHomeomorph.eqOnSourceSetoid.symm ⟨?_, ?_⟩
+    · simp only [e.symm_trans_source_eq e', FiberwiseLinear.localHomeomorph, trans_toPartialEquiv,
+        symm_toPartialEquiv]
     · rintro ⟨b, v⟩ hb
       exact (e.apply_symm_apply_eq_coordChangeL e' hb.1 v).symm
 #align smooth_fiberwise_linear.has_groupoid SmoothFiberwiseLinear.hasGroupoid
@@ -566,8 +566,8 @@ theorem Trivialization.smoothOn (e : Trivialization F (π F E)) [MemTrivializati
   exact (this.1.prod_mk this.2).congr fun x hx ↦ (e.mk_proj_snd hx).symm
 
 theorem Trivialization.smoothOn_symm (e : Trivialization F (π F E)) [MemTrivializationAtlas e] :
-    SmoothOn (IB.prod 𝓘(𝕜, F)) (IB.prod 𝓘(𝕜, F)) e.toLocalHomeomorph.symm e.target := by
-  rw [e.smoothOn_iff IB e.toLocalHomeomorph.symm_mapsTo]
+    SmoothOn (IB.prod 𝓘(𝕜, F)) (IB.prod 𝓘(𝕜, F)) e.toPartialHomeomorph.symm e.target := by
+  rw [e.smoothOn_iff IB e.toPartialHomeomorph.symm_mapsTo]
   refine ⟨smoothOn_fst.congr fun x hx ↦ e.proj_symm_apply hx, smoothOn_snd.congr fun x hx ↦ ?_⟩
   rw [e.apply_symm_apply hx]
 

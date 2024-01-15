@@ -486,18 +486,16 @@ protected noncomputable def image {α β} (f : α → β) (s : Set α) (H : Inje
 #align equiv.set.image Equiv.Set.image
 #align equiv.set.image_apply Equiv.Set.image_apply
 
-@[simp, nolint simpNF]  -- see std4#365 for the simpNF issue
+@[simp]
 protected theorem image_symm_apply {α β} (f : α → β) (s : Set α) (H : Injective f) (x : α)
-    (h : x ∈ s) : (Set.image f s H).symm ⟨f x, ⟨x, ⟨h, rfl⟩⟩⟩ = ⟨x, h⟩ := by
-  apply (Set.image f s H).injective
-  simp [(Set.image f s H).apply_symm_apply]
+    (h : f x ∈ f '' s) : (Set.image f s H).symm ⟨f x, h⟩ = ⟨x, H.mem_set_image.1 h⟩ :=
+  (Equiv.symm_apply_eq _).2 rfl
 #align equiv.set.image_symm_apply Equiv.Set.image_symm_apply
 
 theorem image_symm_preimage {α β} {f : α → β} (hf : Injective f) (u s : Set α) :
     (fun x => (Set.image f s hf).symm x : f '' s → α) ⁻¹' u = Subtype.val ⁻¹' (f '' u) := by
   ext ⟨b, a, has, rfl⟩
-  have : ∀ h : ∃ a', a' ∈ s ∧ a' = a, Classical.choose h = a := fun h => (Classical.choose_spec h).2
-  simp [Equiv.Set.image, Equiv.Set.imageOfInjOn, hf.eq_iff, this]
+  simp [hf.eq_iff]
 #align equiv.set.image_symm_preimage Equiv.Set.image_symm_preimage
 
 /-- If `α` is equivalent to `β`, then `Set α` is equivalent to `Set β`. -/
