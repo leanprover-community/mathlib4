@@ -57,7 +57,6 @@ theorem StandardLP.weakDuality {P : StandardLP m n K}
   rw [dotProduct_comm (P.Aᵀ.mulVec y), dotProduct_mulVec, vecMul_transpose] at hcxy
   exact hcxy.trans hxyb
 
-theorem StandardLP.strongDuality {P : StandardLP m n K}
+proof_wanted StandardLP.strongDuality {P : StandardLP m n K}
     (hP : P.Admissible) (hD : P.dual.Admissible) :
-    ∃ v : K, P.Reaches v ∧ P.dual.Reaches v := by
-  sorry
+    ∃ v : K, P.Reaches v ∧ P.dual.Reaches v
