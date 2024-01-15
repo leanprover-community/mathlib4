@@ -69,6 +69,9 @@ lemma of_aeval_smul (f : R[X]) (m : M) : of R M a (aeval a f • m) = f • of R
 @[simp] lemma of_symm_smul (f : R[X]) (m : AEval R M a) :
     (of R M a).symm (f • m) = aeval a f • (of R M a).symm m := rfl
 
+@[simp] lemma C_smul (t : R) (m : AEval R M a) : C t • m = t • m :=
+  (of R M a).symm.injective <| by simp
+
 lemma X_smul_of (m : M) : (X : R[X]) • (of R M a m) = of R M a (a • m) := by
   rw [← of_aeval_smul, aeval_X]
 
@@ -79,8 +82,7 @@ lemma of_symm_X_smul (m : AEval R M a) :
 instance instIsScalarTowerOrigPolynomial : IsScalarTower R R[X] <| AEval R M a where
   smul_assoc r f m := by
     apply (of R M a).symm.injective
-    rw [of_symm_smul, map_smul, smul_assoc]
-    rfl
+    rw [of_symm_smul, map_smul, smul_assoc, map_smul, of_symm_smul]
 
 instance instFinitePolynomial [Finite R M] : Finite R[X] <| AEval R M a :=
   Finite.of_restrictScalars_finite R _ _
@@ -95,7 +97,7 @@ variable (R M) in
 def comapSubmodule :
     CompleteLatticeHom (Submodule R[X] <| AEval R M a) (Submodule R M) :=
   (Submodule.orderIsoMapComap (of R M a)).symm.toCompleteLatticeHom.comp <|
-    Submodule.restrictScalarsLatticeHom R[X] R (AEval R M a)
+    Submodule.restrictScalarsLatticeHom R R[X] (AEval R M a)
 
 @[simp] lemma mem_comapSubmodule {x : M} :
     x ∈ comapSubmodule R M a q ↔ of R M a x ∈ q :=
