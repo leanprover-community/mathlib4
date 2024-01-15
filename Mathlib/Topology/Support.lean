@@ -123,7 +123,6 @@ theorem not_mem_mulTSupport_iff_eventuallyEq : x ∉ mulTSupport f ↔ f =ᶠ[�
     ← disjoint_iff_inter_eq_empty, disjoint_mulSupport_iff, eventuallyEq_iff_exists_mem]
 #align not_mem_mul_tsupport_iff_eventually_eq not_mem_mulTSupport_iff_eventuallyEq
 #align not_mem_tsupport_iff_eventually_eq not_mem_tsupport_iff_eventuallyEq
-#align eventually_eq_zero_nhds not_mem_mulTSupport_iff_eventuallyEq
 
 @[to_additive]
 theorem continuous_of_mulTSupport [TopologicalSpace β] {f : α → β}
