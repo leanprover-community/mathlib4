@@ -288,7 +288,7 @@ theorem evenToNeg_ι (Q' : QuadraticForm R M) (h : Q' = -Q) (m₁ m₂ : M) :
   even.lift_ι _ _ m₁ m₂
 #align clifford_algebra.even_to_neg_ι CliffordAlgebra.evenToNeg_ι
 
-set_option synthInstance.maxHeartbeats 300000 in
+set_option synthInstance.maxHeartbeats 30000 in
 theorem evenToNeg_comp_evenToNeg (Q' : QuadraticForm R M) (h : Q' = -Q) (h' : Q = -Q') :
     (evenToNeg Q' Q h').comp (evenToNeg Q Q' h) = AlgHom.id R _ := by
   ext m₁ m₂ : 4

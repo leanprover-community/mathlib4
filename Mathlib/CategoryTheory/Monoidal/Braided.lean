@@ -475,7 +475,6 @@ theorem tensor_associativity_aux (W X Y Z : C) :
   slice_rhs 3 5 => rw [← tensor_comp, ← tensor_comp, ← hexagon_reverse, tensor_comp, tensor_comp]
 #align category_theory.tensor_associativity_aux CategoryTheory.tensor_associativity_aux
 
-set_option maxHeartbeats 400000 in
 theorem tensor_associativity (X₁ X₂ Y₁ Y₂ Z₁ Z₂ : C) :
     (tensor_μ C (X₁, X₂) (Y₁, Y₂) ⊗ 𝟙 (Z₁ ⊗ Z₂)) ≫
         tensor_μ C (X₁ ⊗ Y₁, X₂ ⊗ Y₂) (Z₁, Z₂) ≫ ((α_ X₁ Y₁ Z₁).hom ⊗ (α_ X₂ Y₂ Z₂).hom) =
@@ -624,7 +623,6 @@ theorem associator_monoidal_aux (W X Y Z : C) :
   simp
 #align category_theory.associator_monoidal_aux CategoryTheory.associator_monoidal_aux
 
-set_option maxHeartbeats 400000 in
 theorem associator_monoidal (X₁ X₂ X₃ Y₁ Y₂ Y₃ : C) :
     tensor_μ C (X₁ ⊗ X₂, X₃) (Y₁ ⊗ Y₂, Y₃) ≫
         (tensor_μ C (X₁, X₂) (Y₁, Y₂) ⊗ 𝟙 (X₃ ⊗ Y₃)) ≫ (α_ (X₁ ⊗ Y₁) (X₂ ⊗ Y₂) (X₃ ⊗ Y₃)).hom =

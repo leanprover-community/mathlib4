@@ -352,7 +352,6 @@ theorem diagonalHomEquiv_apply (f : Rep.ofMulAction k G (Fin (n + 1) → G) ⟶ 
 set_option linter.uppercaseLean3 false in
 #align Rep.diagonal_hom_equiv_apply Rep.diagonalHomEquiv_apply
 
-set_option maxHeartbeats 400000 in
 /-- Given a `k`-linear `G`-representation `A`, `diagonalHomEquiv` is a `k`-linear isomorphism of
 the set of representation morphisms `Hom(k[Gⁿ⁺¹], A)` with `Fun(Gⁿ, A)`. This lemma says that the
 inverse map sends a function `f : Gⁿ → A` to the representation morphism sending

@@ -962,7 +962,6 @@ variable (M₁ : Type u₁) [SeminormedAddCommGroup M₁] [NormedSpace 𝕜 M₁
 
 variable {Eₗ} (𝕜)
 
-set_option maxHeartbeats 400000 in
 /-- `ContinuousLinearMap.prodMap` as a continuous linear map. -/
 def prodMapL : (M₁ →L[𝕜] M₂) × (M₃ →L[𝕜] M₄) →L[𝕜] M₁ × M₃ →L[𝕜] M₂ × M₄ :=
   ContinuousLinearMap.copy

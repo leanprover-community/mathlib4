@@ -419,7 +419,6 @@ theorem two_lt_q (p' : ℕ) : 2 < q (p' + 2) := by
     exact Nat.two_not_dvd_two_mul_sub_one (Nat.one_le_two_pow _)
 #align lucas_lehmer.two_lt_q LucasLehmer.two_lt_q
 
-set_option maxHeartbeats 400000 in
 theorem ω_pow_formula (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
     ∃ k : ℤ,
       (ω : X (q (p' + 2))) ^ 2 ^ (p' + 1) =
@@ -517,7 +516,6 @@ export LucasLehmer (LucasLehmerTest lucasLehmerResidue)
 
 open LucasLehmer
 
-set_option maxHeartbeats 400000 in
 theorem lucas_lehmer_sufficiency (p : ℕ) (w : 1 < p) : LucasLehmerTest p → (mersenne p).Prime := by
   let p' := p - 2
   have z : p = p' + 2 := (tsub_eq_iff_eq_add_of_le w.nat_succ_le).mp rfl

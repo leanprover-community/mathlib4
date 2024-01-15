@@ -207,7 +207,6 @@ end MonoidalCategory
 
 open MonoidalCategory
 
-set_option maxHeartbeats 400000 in
 instance monoidalCategory : MonoidalCategory (ModuleCat.{u} R) := MonoidalCategory.ofTensorHom
   (tensor_id := fun M N ↦ tensor_id M N)
   (tensor_comp := fun f g h ↦ MonoidalCategory.tensor_comp f g h)
