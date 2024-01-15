@@ -84,8 +84,6 @@ instance : HasCompl (Set α) := ⟨fun s ↦ {x | x ∉ s}⟩
 @[simp] theorem mem_compl_iff (s : Set α) (x : α) : x ∈ sᶜ ↔ x ∉ s := Iff.rfl
 #align set.mem_compl_iff Set.mem_compl_iff
 
-instance : SDiff (Set α) := ⟨fun s t => {x | x ∈ s ∧ x ∉ t}⟩
-
 theorem diff_eq (s t : Set α) : s \ t = s ∩ tᶜ := rfl
 #align set.diff_eq Set.diff_eq
 
