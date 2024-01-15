@@ -357,6 +357,8 @@ namespace ContinuousLinearMap
 
 variable [CompleteSpace E]
 
+/-- An injective continuous linear map with a closed range defines a continuous linear equivalence
+between its domain and its range. -/
 noncomputable def toContinuousLinearEquivOfInjectiveOfIsClosed
     (f : E →L[𝕜] F) (hinj : Injective f) (hclo : IsClosed (range f)) :
     E ≃L[𝕜] LinearMap.range f :=
