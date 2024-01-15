@@ -1020,8 +1020,8 @@ variable (L) (M) (N)
 /-- An equivalence between substructures -/
 structure SubEquivalence  where
   sub_dom : L.Substructure M
-  sub_codom : L.Substructure N
-  equiv : sub_dom ≃[L] sub_codom
+  sub_cod : L.Substructure N
+  equiv : sub_dom ≃[L] sub_cod
 
 @[inherit_doc]
 scoped[FirstOrder] notation:25 M " ≃ₚ[" L "] " N => FirstOrder.Language.SubEquivalence L M N
@@ -1035,30 +1035,35 @@ variable {L} {M} {N}
 instance : LE (M ≃ₚ[L] N) := ⟨fun f g ↦ ∃h : f.sub_dom ≤ g.sub_dom,
   subtype _ ∘ g.equiv ∘ (Substructure.inclusion h) = subtype _ ∘ f.equiv⟩
 
-theorem le_implies_le_image {f g : M ≃ₚ[L] N} : f ≤ g → f.sub_codom ≤ g.sub_codom := by
-  rintro ⟨h_le_dom, eq_fun⟩ n hn
+theorem le_dom {f g : M ≃ₚ[L] N} : f ≤ g → f.sub_dom ≤ g.sub_dom := fun ⟨le, _⟩ ↦ le
+
+theorem le_cod {f g : M ≃ₚ[L] N} : f ≤ g → f.sub_cod ≤ g.sub_cod := by
+  rintro ⟨_, eq_fun⟩ n hn
   let m := f.equiv.symm ⟨n, hn⟩
   have  : (subtype _ ∘ f.equiv) m = n := by simp only [coeSubtype, Function.comp_apply,
     Equiv.apply_symm_apply]
   rw [←this, ←eq_fun]
   simp only [coeSubtype, coe_inclusion, Function.comp_apply, SetLike.coe_mem]
 
+theorem le_eq_inclusion {f g : M ≃ₚ[L] N} (h : f ≤ g) :
+  subtype _ ∘ g.equiv ∘ (Substructure.inclusion (le_dom h)) = subtype _ ∘ f.equiv := by
+  let ⟨_, eq⟩ := h; exact eq
+
 theorem le_trans (f g h : M ≃ₚ[L] N) : f ≤ g → g ≤ h → f ≤ h := by
   rintro ⟨le_fg, eq_fg⟩ ⟨le_gh, eq_gh⟩
   refine ⟨le_fg.trans le_gh, ?_⟩
-  rw [←eq_fg, ←Function.comp.assoc (g := g.equiv), ←eq_gh, Function.comp.assoc, Function.comp.assoc]
-  simp only [coeSubtype, coe_inclusion, Set.inclusion_comp_inclusion]
+  rw [←eq_fg, ←Function.comp.assoc (g := g.equiv), ←eq_gh]
+  rfl
 
 nonrec theorem le_refl (f : M ≃ₚ[L] N) : f ≤ f :=
   ⟨le_refl _, by rw [coe_inclusion, Set.inclusion_eq_id, Function.comp.right_id]⟩
 
 nonrec theorem le_antisymm (f g : M ≃ₚ[L] N) : f ≤ g → g ≤ f → f = g := by
-  rintro ⟨le_dom_fg, eq_fg⟩ ⟨le_dom_gf, eq_gf⟩
-  rcases f with ⟨dom_f, codom_f, equiv_f⟩
-  cases le_antisymm le_dom_fg le_dom_gf
-  cases le_antisymm (le_implies_le_image ⟨le_dom_fg, eq_fg⟩) (le_implies_le_image ⟨le_dom_gf, eq_gf⟩)
-  simp [Set.inclusion_eq_id] at eq_fg
-  cases FunLike.coe_injective' ((subtype g.sub_codom).inj'.comp_left eq_fg).symm
+  intro le_fg le_gf
+  let ⟨dom_f, cod_f, equiv_f⟩ := f
+  cases le_antisymm (le_dom le_fg) (le_dom le_gf)
+  cases le_antisymm (le_cod le_fg) (le_cod le_gf)
+  cases FunLike.coe_injective' ((subtype g.sub_cod).inj'.comp_left (le_eq_inclusion le_fg)).symm
   rfl
 
 instance : PartialOrder (M ≃ₚ[L] N) := {
@@ -1067,6 +1072,21 @@ instance : PartialOrder (M ≃ₚ[L] N) := {
   le_antisymm := le_antisymm
 }
 
+noncomputable def dom_restrict (f : M ≃ₚ[L] N) {A : L.Substructure M} : A ≤ f.sub_dom → M ≃ₚ[L] N := by
+  intro A_le_dom
+  let g := (subtype _).comp (f.equiv.toEmbedding.comp (A.inclusion A_le_dom))
+  exact {
+    sub_dom := A
+    sub_cod := g.toHom.range
+    equiv := g.equivRange
+  }
+
+theorem dom_restrict_le (f : M ≃ₚ[L] N) {A : L.Substructure M} (h : A ≤ f.sub_dom) :
+  dom_restrict f h ≤ f := ⟨h, refl _⟩
+
+theorem le_dom_restrict (f g : M ≃ₚ[L] N) {A : L.Substructure M} (hf : f.sub_dom ≤ A)
+  (hg : A ≤ g.sub_dom) (hfg : f ≤ g) : f ≤ dom_restrict g hg :=
+  ⟨hf, by rw [←(le_eq_inclusion hfg)]; rfl⟩
 
 end SubEquivalence
 

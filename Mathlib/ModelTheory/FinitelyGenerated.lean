@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
 import Mathlib.ModelTheory.Substructures
+import Mathlib.Order.Ideal
 
 #align_import model_theory.finitely_generated from "leanprover-community/mathlib"@"0602c59878ff3d5f71dea69c2d32ccf2e93e5398"
 
@@ -291,6 +292,49 @@ theorem Substructure.cg_iff_structure_cg (S : L.Substructure M) : S.CG ↔ Struc
     exact h
 set_option linter.uppercaseLean3 false in
 #align first_order.language.substructure.cg_iff_Structure_cg FirstOrder.Language.Substructure.cg_iff_structure_cg
+
+namespace Substructure
+
+namespace SubEquivalence
+
+variable (M) (N : Type*) [L.Structure N] (L)
+
+def FiniteEquiv := {f : M ≃ₚ[L] N // f.sub_dom.FG}
+
+instance : PartialOrder (FiniteEquiv L M N) := Subtype.partialOrder _
+
+variable {M} {N} {L}
+
+noncomputable def definedAtLeft
+  (h : ∀ f : (M ≃ₚ[L] N), ∀ _ : f.sub_dom.FG, ∀ m : M, ∃ g : (M ≃ₚ[L] N), f ≤ g ∧ m ∈ g.sub_dom)
+  (m : M) : Order.Cofinal (FiniteEquiv L M N) where
+  carrier := {f | m ∈ f.val.sub_dom}
+  mem_gt := by
+    intro f
+    rcases h f.val f.2 m with ⟨g, f_le_g, m_in_dom⟩
+    have closure_le_dom : (closure L (f.val.sub_dom ∪ {m})) ≤ g.sub_dom := by
+      rw [closure_le, union_subset_iff]
+      exact ⟨le_dom f_le_g, singleton_subset_iff.2 m_in_dom⟩
+    have closure_fg : (closure L (f.val.sub_dom ∪ {m})).FG := by
+      rw [closure_union, closure_eq]
+      exact FG.sup f.property (fg_closure_singleton _)
+    use ⟨dom_restrict g closure_le_dom, closure_fg⟩
+    constructor
+    . simp only [union_singleton]
+      exact subset_closure <| mem_insert_iff.2 <| Or.inl <| refl m
+    . apply le_dom_restrict
+      rw [closure_union]
+      simp only [closure_eq, ge_iff_le, closure_le, singleton_subset_iff, le_sup_left]
+      exact f_le_g
+
+theorem cg_embedding [M_cg : Structure.CG L M] [Nonempty (M ≃ₚ[L] N)] :
+  (∀ f : (M ≃ₚ[L] N), ∀ f_fg : f.sub_dom.FG, ∀ m : M, ∃ g : (M ≃ₚ[L] N), f ≤ g ∧ m ∈ g.sub_dom)
+  → Nonempty (M ↪[L] N) := by
+  intro H
+
+end SubEquivalence
+
+end Substructure
 
 end Language
 
