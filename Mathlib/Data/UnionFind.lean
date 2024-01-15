@@ -3,9 +3,7 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Tactic.Basic
-import Std.Tactic.Simpa
-import Mathlib.Data.Array.Basic
+import Mathlib.Init.Data.Nat.Lemmas
 
 set_option autoImplicit true
 

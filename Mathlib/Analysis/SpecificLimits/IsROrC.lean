@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Généreux, Patrick Massot
 -/
 import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.Analysis.Complex.ReImTopology
+import Mathlib.Data.IsROrC.Basic
 
 /-!
 # A collection of specific limit computations for `IsROrC`

@@ -7,6 +7,7 @@ import Mathlib.Order.Filter.SmallSets
 import Mathlib.Tactic.Monotonicity
 import Mathlib.Topology.Compactness.Compact
 import Mathlib.Topology.NhdsSet
+import Mathlib.Algebra.Group.Defs
 
 #align_import topology.uniform_space.basic from "leanprover-community/mathlib"@"195fcd60ff2bfe392543bceb0ec2adcdb472db4c"
 

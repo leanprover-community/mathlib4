@@ -9,7 +9,6 @@ import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Order.Monoid.Lemmas
 import Mathlib.Init.Data.Int.Order
 import Mathlib.Algebra.Order.ZeroLEOne
-import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Data.Nat.Cast.Order
 
 /-!

@@ -7,7 +7,6 @@ The integers, with addition, multiplication, and subtraction.
 -/
 import Mathlib.Mathport.Rename
 import Mathlib.Init.Data.Nat.Notation
-import Mathlib.Init.ZeroOne
 import Std.Data.Int.Lemmas
 
 open Nat

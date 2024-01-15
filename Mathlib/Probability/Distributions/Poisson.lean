@@ -7,6 +7,7 @@ Authors: Josha Dekker
 import Mathlib.Analysis.NormedSpace.Exponential
 import Mathlib.Analysis.SpecialFunctions.Exponential
 import Mathlib.Probability.Notation
+import Mathlib.Probability.ProbabilityMassFunction.Basic
 
 /-! # Poisson distributions over ℕ
 

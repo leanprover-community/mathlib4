@@ -6,6 +6,7 @@ Authors: Kevin Buzzard, Johan Commelin, Patrick Massot
 import Mathlib.Algebra.Order.WithZero
 import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.Tactic.TFAE
+import Mathlib.Algebra.GroupPower.Order
 
 #align_import ring_theory.valuation.basic from "leanprover-community/mathlib"@"2196ab363eb097c008d4497125e0dde23fb36db2"
 

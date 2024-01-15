@@ -6,6 +6,7 @@ Authors: Kevin Kappelmann
 import Mathlib.Algebra.ContinuedFractions.Computation.CorrectnessTerminating
 import Mathlib.Data.Nat.Fib.Basic
 import Mathlib.Tactic.Monotonicity
+import Mathlib.Algebra.GroupPower.Order
 import Std.Tactic.SolveByElim
 
 #align_import algebra.continued_fractions.computation.approximations from "leanprover-community/mathlib"@"a7e36e48519ab281320c4d192da6a7b348ce40ad"
