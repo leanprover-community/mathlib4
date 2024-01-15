@@ -325,26 +325,29 @@ theorem smoothWithinAt_one [One M'] : SmoothWithinAt I I' (1 : M → M') s x :=
 
 end id
 
--- no good home for this lemma yet, #find_home suggests this file
-theorem eventuallyEq_one_nhds {X Y : Type*} [TopologicalSpace X] [One Y] {x : X} {f : X → Y} :
-    f =ᶠ[𝓝 x] 1 ↔ x ∉ closure (mulSupport f) := by
-  rw [← mem_compl_iff, ← interior_compl, mem_interior_iff_mem_nhds]
-  have : f =ᶠ[𝓝 x] 1 ↔ {x | f x = 1} ∈ 𝓝 x := by
-    rw [EventuallyEq, eventually_iff]
-    simp only [Pi.one_apply]
-  rw [this]
-  simp_rw [← Function.compl_mulSupport (f := f)]
+--theorem eventuallyEq_one_nhds {X Y : Type*} [TopologicalSpace X] [One Y] {x : X} {f : X → Y} :
+--    f =ᶠ[𝓝 x] 1 ↔ x ∉ closure (mulSupport f) := by
+--  rw [← mem_compl_iff, ← interior_compl, mem_interior_iff_mem_nhds]
+--  have : f =ᶠ[𝓝 x] 1 ↔ {x | f x = 1} ∈ 𝓝 x := by
+--    rw [EventuallyEq, eventually_iff]
+--    simp only [Pi.one_apply]
+--  rw [this]
+--  simp_rw [← Function.compl_mulSupport (f := f)]
 
 /-- `f` is continuously differentiable if it is cont. differentiable at each `x ∈ tsupport f`. -/
---@[to_additive contMDiff_of_support "`f` is continuously differentiable if it is continuously
---  differentiable at each `x ∈ tsupport f`."]
+@[to_additive "`f` is continuously differentiable if it is continuously
+differentiable at each `x ∈ tsupport f`."]
 theorem contMDiff_of_mulTSupport [One M'] {f : M → M'}
     (hf : ∀ x ∈ mulTSupport f, ContMDiffAt I I' n f x) : ContMDiff I I' n f := by
   intro x
   by_cases hx : x ∈ mulTSupport f
   · exact hf x hx
-  · exact ContMDiffAt.congr_of_eventuallyEq contMDiffAt_const (eventuallyEq_one_nhds.2 hx)
---#align cont_mdiff_of_support contMDiff_of_support
+  · exact ContMDiffAt.congr_of_eventuallyEq contMDiffAt_const
+      (not_mem_mulTSupport_iff_eventuallyEq.1 hx)
+#align cont_mdiff_of_support contMDiff_of_tsupport
+
+-- deprecated since 15 January 2024
+@[deprecated] alias contMDiff_of_support := contMDiff_of_tsupport
 
 @[to_additive contMDiffWithinAt_of_not_mem]
 theorem contMDiffWithinAt_of_not_mem_mulTSupport {f : M → M'} [One M'] {x : M}
@@ -373,15 +376,14 @@ theorem contMdiffAt_subtype_iff {n : ℕ∞} {U : Opens M} {f : M → M'} {x : U
 theorem contMDiff_subtype_val {n : ℕ∞} {U : Opens M} : ContMDiff I I n (Subtype.val : U → M) :=
   fun _ ↦ contMdiffAt_subtype_iff.mpr contMDiffAt_id
 
--- TODO uncomment! @[to_additive]
+@[to_additive]
 theorem ContMDiff.extend_one [T2Space M] [One M'] {n : ℕ∞} {U : Opens M} {f : U → M'}
     (supp : HasCompactMulSupport f) (diff : ContMDiff I I' n f) :
     ContMDiff I I' n (Subtype.val.extend f 1) := fun x ↦ by
-  apply contMDiff_of_mulTSupport
-  intro x h
-  rw [show x = ↑(⟨x, Subtype.coe_image_subset _ _
-     (supp.mulTSupport_extend_one_subset continuous_subtype_val h)⟩ : U) by rfl,
-     ← contMdiffAt_subtype_iff, ← comp_def, extend_comp Subtype.val_injective]
+  refine contMDiff_of_mulTSupport (fun x h ↦ ?_) _
+  lift x to U using Subtype.coe_image_subset _ _
+    (supp.mulTSupport_extend_one_subset continuous_subtype_val h)
+  rw [← contMdiffAt_subtype_iff, ← comp_def, extend_comp Subtype.val_injective]
   exact diff.contMDiffAt
 
 theorem contMDiff_inclusion {n : ℕ∞} {U V : Opens M} (h : U ≤ V) :
@@ -399,7 +401,7 @@ theorem smooth_subtype_iff {U : Opens M} {f : M → M'} {x : U} :
 
 theorem smooth_subtype_val {U : Opens M} : Smooth I I (Subtype.val : U → M) := contMDiff_subtype_val
 
--- TODO uncomment @[to_additive]
+@[to_additive]
 theorem Smooth.extend_one [T2Space M] [One M'] {U : Opens M} {f : U → M'}
     (supp : HasCompactMulSupport f) (diff : Smooth I I' f) : Smooth I I' (Subtype.val.extend f 1) :=
   ContMDiff.extend_one supp diff

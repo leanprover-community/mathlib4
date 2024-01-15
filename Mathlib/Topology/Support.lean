@@ -125,6 +125,9 @@ theorem not_mem_mulTSupport_iff_eventuallyEq : x ∉ mulTSupport f ↔ f =ᶠ[�
 #align not_mem_tsupport_iff_eventually_eq not_mem_tsupport_iff_eventuallyEq
 
 @[to_additive]
+lemma eventuallyEq_one_nhds
+
+@[to_additive]
 theorem continuous_of_mulTSupport [TopologicalSpace β] {f : α → β}
     (hf : ∀ x ∈ mulTSupport f, ContinuousAt f x) : Continuous f :=
   continuous_iff_continuousAt.2 fun x => (em _).elim (hf x) fun hx =>
