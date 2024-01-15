@@ -5,7 +5,7 @@ Authors: Winston Yin
 -/
 import Mathlib.Analysis.ODE.PicardLindelof
 import Mathlib.Geometry.Manifold.InteriorBoundary
-import Mathlib.Geometry.Manifold.MFDeriv.Basic
+import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 
 /-!
 # Integral curves of vector fields on a manifold
