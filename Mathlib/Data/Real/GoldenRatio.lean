@@ -121,7 +121,7 @@ theorem one_lt_gold : 1 < φ := by
   simp [← sq, gold_pos, zero_lt_one, - div_pow] -- Porting note: Added `- div_pow`
 #align one_lt_gold one_lt_gold
 
-theorem two_gt_gold : 2 > φ := by
+theorem two_gt_gold : φ < 2 := by
   rw [goldenRatio]
   have h₀ : 3 ^ 2 = (9 : ℝ) := by norm_num
   have h₁ : 3 = Real.sqrt 9 := by rw [← h₀, sqrt_sq]; linarith
