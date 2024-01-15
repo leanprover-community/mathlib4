@@ -73,12 +73,12 @@ def valueOrderRingHom {X E : Type*} [OrderedSemiring E] [TopologicalSpace X] {x 
     monotone' := fun φ ψ ↦
       Germ.inductionOn φ fun _ ↦ Germ.inductionOn ψ fun _ h ↦ h.self_of_nhds }
 
+end Filter.Germ
+
 /-- The inclusion `S → R` of a subring, as an ordered ring homomorphism. -/
+-- xxx: OrderedRing has no morphisms, OrderedRingHom no subtypes -> which file is a good place?
 def _root_.Subring.orderedSubtype {R} [OrderedRing R] (s : Subring R) : s →+*o R :=
   { s.subtype with monotone' := fun _ _ h ↦ h }
-#find_home Subring.orderedSubtype
-
-end Filter.Germ
 
 section RestrictGermPredicate
 /-- Given a predicate on germs `P : Π x : X, germ (𝓝 x) Y → Prop` and `A : set X`,
@@ -127,16 +127,6 @@ theorem forall_restrictGermPredicate_of_forall
     ∀ x, RestrictGermPredicate P A x f :=
   forall_restrictGermPredicate_iff.mpr (eventually_of_forall h)
 end RestrictGermPredicate
-
-theorem Filter.EventuallyEq.comp_fun {α β γ : Type*} {f g : β → γ} {l : Filter α} {l' : Filter β}
-    (h : f =ᶠ[l'] g) {φ : α → β} (hφ : Tendsto φ l l') : f ∘ φ =ᶠ[l] g ∘ φ :=
-  hφ h
-#find_home Filter.EventuallyEq.comp_fun -- Order-Filter-Basic
-
-theorem Filter.Tendsto.congr_germ {α β γ : Type*} {f g : β → γ} {l : Filter α} {l' : Filter β}
-    (h : f =ᶠ[l'] g) {φ : α → β} (hφ : Tendsto φ l l') : (f ∘ φ : Germ l γ) = g ∘ φ :=
-  @Quotient.sound _ (l.germSetoid γ) _ _ (hφ h)
-#find_home Filter.Tendsto.congr_germ -- Order-Filter-Germ
 
 namespace Filter.Germ
 /-- Map the germ at of functions `X × Y → Z` at `p=(x,y) ∈ X × Y` to the corresponding germ
