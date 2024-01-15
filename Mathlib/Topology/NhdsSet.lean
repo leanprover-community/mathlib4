@@ -196,12 +196,10 @@ variable (s) in
 theorem IsClosed.nhdsSet_le_sup' (h : IsClosed t) :
     𝓝ˢ s ≤ 𝓝ˢ (t ∩ s) ⊔ 𝓟 (tᶜ) := by rw [Set.inter_comm]; exact h.nhdsSet_le_sup s
 
-theorem eventually_nhdsSet_iff {p : X → Prop} : (∀ᶠ x in 𝓝ˢ s, p x) ↔ ∀ x ∈ s, ∀ᶠ y in 𝓝 x, p y :=
-  by rw [nhdsSet, eventually_sSup, Set.ball_image_iff]
-
 theorem Filter.Eventually.eventually_nhdsSet {p : X → Prop} (h : ∀ᶠ y in 𝓝ˢ s, p y) :
     ∀ᶠ y in 𝓝ˢ s, ∀ᶠ x in 𝓝 y, p x :=
-  eventually_nhdsSet_iff.mpr fun x x_in => (eventually_nhdsSet_iff.mp h x x_in).eventually_nhds
+  eventually_nhdsSet_iff_forall.mpr fun x x_in ↦
+    (eventually_nhdsSet_iff_forall.mp h x x_in).eventually_nhds
 
 theorem Filter.Eventually.union_nhdsSet {p : X → Prop} :
     (∀ᶠ x in 𝓝ˢ (s ∪ t), p x) ↔ (∀ᶠ x in 𝓝ˢ s, p x) ∧ ∀ᶠ x in 𝓝ˢ t, p x := by

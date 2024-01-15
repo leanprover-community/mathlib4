@@ -2382,9 +2382,7 @@ theorem iInf_iUnion (s : ι → Set α) (f : α → β) : ⨅ a ∈ ⋃ i, s i, 
 #align infi_Union iInf_iUnion
 
 theorem sSup_iUnion (t : ι → Set β) : sSup (⋃ i, t i) = ⨆ i, sSup (t i) := by
-  refine eq_of_forall_ge_iff fun _x => ?_
-  simp only [sSup_le_iff, mem_iUnion, forall_exists_index, iSup_le_iff]
-  exact ⟨fun a i b h ↦ a b i h, fun a b i h ↦ a i b h⟩
+  simp_rw [sSup_eq_iSup, iSup_iUnion]
 
 theorem sSup_sUnion (s : Set (Set β)) : sSup (⋃₀ s) = ⨆ t ∈ s, sSup t := by
   simp only [sUnion_eq_biUnion, sSup_eq_iSup, iSup_iUnion]
