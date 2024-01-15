@@ -40,9 +40,12 @@ theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition
 
 theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition'
     {A : Type (u+1)} [Category.{u} A] (G : A ⥤ Type u)
-    [HasLimits A] [PreservesLimits G] [ReflectsIsomorphisms G] (F : LightProfinite.{u}ᵒᵖ ⥤ A) :
+    [h : HasLimits A] [PreservesLimits G] [ReflectsIsomorphisms G] (F : LightProfinite.{u}ᵒᵖ ⥤ A) :
     Presheaf.IsSheaf (coherentTopology LightProfinite) F ↔
     Nonempty (PreservesFiniteProducts (F ⋙ G)) ∧ EqualizerCondition (F ⋙ G) := by
+  -- haveI : HasLimitsOfSize.{u, u+1} A := sorry (false in general)
+  -- have : PreservesLimitsOfSize.{u, u + 1} G := sorry
+  -- rw [Presheaf.isSheaf_iff_isSheaf_comp (s := G)]
   let J := coherentTopology LightProfinite
   have h₂ := Presheaf.isSheaf_of_isSheaf_comp J (F ⋙ G) uliftFunctor.{u+1}
   -- have h₂' := Presheaf.isSheaf_of_isSheaf_comp J F (G ⋙ uliftFunctor.{u+1})

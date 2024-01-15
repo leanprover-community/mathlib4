@@ -760,4 +760,61 @@ def effectiveEpiFamilyStructOfEquivalence : EffectiveEpiFamilyStruct (fun a ↦ 
 
 end Equivalence
 
+section CompIso
+
+variable {B B' : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) [EffectiveEpiFamily X π]
+  (i : B ⟶ B') [IsIso i]
+
+theorem effectiveEpiFamilyStructCompIso_aux
+    {W : C} (e : (a : α) → X a ⟶ W)
+    (h : ∀ {Z : C} (a₁ a₂ : α) (g₁ : Z ⟶ X a₁) (g₂ : Z ⟶ X a₂),
+      g₁ ≫ π a₁ ≫ i = g₂ ≫ π a₂ ≫ i → g₁ ≫ e a₁ = g₂ ≫ e a₂)
+    {Z : C} (a₁ a₂ : α) (g₁ : Z ⟶ X a₁) (g₂ : Z ⟶ X a₂) (hg : g₁ ≫ π a₁ = g₂ ≫ π a₂) :
+    g₁ ≫ e a₁ = g₂ ≫ e a₂ := by
+  apply h
+  rw [← Category.assoc, hg]
+  simp
+
+noncomputable
+def effectiveEpiFamilyStructCompIso : EffectiveEpiFamilyStruct X (fun a ↦ π a ≫ i) where
+  desc e h := inv i ≫ EffectiveEpiFamily.desc X π e (effectiveEpiFamilyStructCompIso_aux X π i e h)
+  fac _ _ _ := by simp
+  uniq e h m hm := by
+    simp only [Category.assoc] at hm
+    simp [← EffectiveEpiFamily.uniq X π e
+      (effectiveEpiFamilyStructCompIso_aux X π i e h) (i ≫ m) hm]
+
+instance : EffectiveEpiFamily X (fun a ↦ π a ≫ i) := ⟨⟨effectiveEpiFamilyStructCompIso X π i⟩⟩
+
+end CompIso
+
+section IsoComp
+
+variable {B : C} {α : Type*} (X Y : α → C) (π : (a : α) → (X a ⟶ B)) [EffectiveEpiFamily X π]
+  (i : (a : α) → Y a ⟶ X a) [∀ a, IsIso (i a)]
+
+theorem effectiveEpiFamilyStructIsoComp_aux {W : C} (e : (a : α) → Y a ⟶ W)
+    (h : ∀ {Z : C} (a₁ a₂ : α) (g₁ : Z ⟶ Y a₁) (g₂ : Z ⟶ Y a₂),
+      g₁ ≫ i a₁ ≫ π a₁ = g₂ ≫ i a₂ ≫ π a₂ → g₁ ≫ e a₁ = g₂ ≫ e a₂)
+    {Z : C} (a₁ a₂ : α) (g₁ : Z ⟶ X a₁) (g₂ : Z ⟶ X a₂) (hg : g₁ ≫ π a₁ = g₂ ≫ π a₂) :
+    g₁ ≫ (fun a ↦ inv (i a) ≫ e a) a₁ = g₂ ≫ (fun a ↦ inv (i a) ≫ e a) a₂ := by
+  simp only [← Category.assoc]
+  apply h
+  simp [hg]
+
+noncomputable
+def effectiveEpiFamilyStructIsoComp : EffectiveEpiFamilyStruct Y (fun a ↦ i a ≫ π a) where
+  desc e h := EffectiveEpiFamily.desc X π (fun a ↦ inv (i a) ≫ e a)
+    (effectiveEpiFamilyStructIsoComp_aux X Y π i e h)
+  fac _ _ _ := by simp
+  uniq e h m hm := by
+    simp only [Category.assoc] at hm
+    simp [← EffectiveEpiFamily.uniq X π (fun a ↦ inv (i a) ≫ e a)
+      (effectiveEpiFamilyStructIsoComp_aux X Y π i e h) m fun a ↦ by simpa using hm a]
+
+instance effectiveEpiFamilyIsoComp : EffectiveEpiFamily Y (fun a ↦ i a ≫ π a) :=
+  ⟨⟨effectiveEpiFamilyStructIsoComp X Y π i⟩⟩
+
+end IsoComp
+
 end CategoryTheory
