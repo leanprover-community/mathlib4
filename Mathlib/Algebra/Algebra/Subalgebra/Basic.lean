@@ -360,7 +360,8 @@ section
 /-! `Subalgebra`s inherit structure from their `Submodule` coercions. -/
 
 
-instance module' [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] : Module R' S :=
+instance (priority := low) module' [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] :
+    Module R' S :=
   S.toSubmodule.module'
 #align subalgebra.module' Subalgebra.module'
 
@@ -744,7 +745,7 @@ noncomputable def ofInjectiveField {E F : Type*} [DivisionRing E] [Semiring F] [
 #align alg_equiv.of_injective_field AlgEquiv.ofInjectiveField
 
 /-- Given an equivalence `e : A ≃ₐ[R] B` of `R`-algebras and a subalgebra `S` of `A`,
-`subalgebra_map` is the induced equivalence between `S` and `S.map e` -/
+`subalgebraMap` is the induced equivalence between `S` and `S.map e` -/
 @[simps!]
 def subalgebraMap (e : A ≃ₐ[R] B) (S : Subalgebra R A) : S ≃ₐ[R] S.map (e : A →ₐ[R] B) :=
   { e.toRingEquiv.subsemiringMap S.toSubsemiring with
@@ -1098,6 +1099,25 @@ theorem equivOfEq_rfl (S : Subalgebra R A) : equivOfEq S S rfl = AlgEquiv.refl :
 theorem equivOfEq_trans (S T U : Subalgebra R A) (hST : S = T) (hTU : T = U) :
     (equivOfEq S T hST).trans (equivOfEq T U hTU) = equivOfEq S U (hST.trans hTU) := rfl
 #align subalgebra.equiv_of_eq_trans Subalgebra.equivOfEq_trans
+
+section equivMapOfInjective
+
+variable (f : A →ₐ[R] B)
+
+theorem range_comp_val : (f.comp S.val).range = S.map f := by
+  rw [AlgHom.range_comp, range_val]
+
+variable (hf : Function.Injective f)
+
+/-- A subalgebra is isomorphic to its image under an injective `AlgHom` -/
+noncomputable def equivMapOfInjective : S ≃ₐ[R] S.map f :=
+  (AlgEquiv.ofInjective (f.comp S.val) (hf.comp Subtype.val_injective)).trans
+    (equivOfEq _ _ (range_comp_val S f))
+
+@[simp]
+theorem coe_equivMapOfInjective_apply (x : S) : ↑(equivMapOfInjective S f hf x) = f x := rfl
+
+end equivMapOfInjective
 
 section Prod
 

@@ -388,7 +388,7 @@ theorem HasFiniteIntegral.max_zero {f : α → ℝ} (hf : HasFiniteIntegral f μ
 
 theorem HasFiniteIntegral.min_zero {f : α → ℝ} (hf : HasFiniteIntegral f μ) :
     HasFiniteIntegral (fun a => min (f a) 0) μ :=
-  hf.mono <| eventually_of_forall fun x => by simpa [abs_le] using neg_abs_le_self _
+  hf.mono <| eventually_of_forall fun x => by simpa [abs_le] using neg_abs_le _
 #align measure_theory.has_finite_integral.min_zero MeasureTheory.HasFiniteIntegral.min_zero
 
 end PosPart
@@ -849,7 +849,7 @@ lemma Integrable.measure_le_lt_top {f : α → ℝ} (hf : Integrable f μ) {c : 
   refine lt_of_le_of_lt (measure_mono ?_) (hf.measure_norm_ge_lt_top (show 0 < -c by linarith))
   intro x hx
   simp only [Real.norm_eq_abs, Set.mem_setOf_eq] at hx ⊢
-  exact (show -c ≤ - f x by linarith).trans (neg_le_abs_self _)
+  exact (show -c ≤ - f x by linarith).trans (neg_le_abs _)
 
 /-- If `f` is `ℝ`-valued and integrable, then for any `c > 0` the set `{x | f x > c}` has finite
 measure. -/
