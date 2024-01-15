@@ -403,36 +403,6 @@ theorem set_integral_eq_integral_of_forall_compl_eq_zero (h : ∀ x, x ∉ s →
   set_integral_eq_integral_of_ae_compl_eq_zero (eventually_of_forall h)
 #align measure_theory.set_integral_eq_integral_of_forall_compl_eq_zero MeasureTheory.set_integral_eq_integral_of_forall_compl_eq_zero
 
-lemma ae_restrict_eq_const_iff_ae_eq_const_of_mem {E : Type*} [MeasurableSpace E]
-    [MeasurableSingletonClass E] {f : α → E} (c : E) {s : Set α}
-    (f_mble : NullMeasurable f (μ.restrict s)) :
-    f =ᵐ[Measure.restrict μ s] (fun _ ↦ c) ↔ ∀ᵐ x ∂μ, x ∈ s → f x = c := by
-  simp only [Measure.ae, MeasurableSet.compl_iff, EventuallyEq, Filter.Eventually,
-             Pi.zero_apply, Filter.mem_mk, mem_setOf_eq]
-  rw [Measure.restrict_apply₀]
-  · constructor <;> intro h <;> rw [← h] <;> congr <;> ext x <;> aesop
-  · apply NullMeasurableSet.compl
-    convert f_mble (MeasurableSet.singleton c)
-
-lemma ae_restrict_eq_const_iff_ae_eq_const_of_mem' {E : Type*} (c : E) (f : α → E) {s : Set α}
-    (s_mble : MeasurableSet s) :
-    f =ᵐ[Measure.restrict μ s] (fun _ ↦ c) ↔ ∀ᵐ x ∂μ, x ∈ s → f x = c := by
-  simp only [Measure.ae, MeasurableSet.compl_iff, EventuallyEq, Filter.Eventually,
-             Pi.zero_apply, Filter.mem_mk, mem_setOf_eq]
-  rw [Measure.restrict_apply_eq_zero']
-  · constructor <;> intro h <;> rw [← h] <;> congr <;> ext x <;> aesop
-  · exact s_mble
-
-/-- If a function equals zero almost everywhere w.r.t. restriction of the measure to `sᶜ`, then its
-integral on `s` coincides with its integral on the whole space. -/
-lemma set_integral_eq_integral_of_ae_restrict_eq_zero (hs : f =ᵐ[μ.restrict sᶜ] 0) :
-    ∫ ω in s, f ω ∂μ = ∫ ω, f ω ∂μ := by
-  borelize E
-  refine set_integral_eq_integral_of_ae_compl_eq_zero ?_
-  have f_mble : NullMeasurable f (μ.restrict sᶜ) :=
-    NullMeasurable.congr measurable_const.nullMeasurable hs.symm
-  simpa only [mem_compl_iff] using (ae_restrict_eq_const_iff_ae_eq_const_of_mem 0 f_mble).mp hs
-
 theorem set_integral_neg_eq_set_integral_nonpos [LinearOrder E] {f : α → E}
     (hf : AEStronglyMeasurable f μ) :
     ∫ x in {x | f x < 0}, f x ∂μ = ∫ x in {x | f x ≤ 0}, f x ∂μ := by
@@ -1179,8 +1149,8 @@ theorem integral_comp_comm' (L : E →L[𝕜] F) {K} (hL : AntilipschitzWith K L
   by_cases h : Integrable φ μ
   · exact integral_comp_comm L h
   have : ¬Integrable (fun a => L (φ a)) μ := by
-    erw [LipschitzWith.integrable_comp_iff_of_antilipschitz L.lipschitz hL L.map_zero]
-    assumption
+    rwa [← Function.comp_def,
+      LipschitzWith.integrable_comp_iff_of_antilipschitz L.lipschitz hL L.map_zero]
   simp [integral_undef, h, this]
 #align continuous_linear_map.integral_comp_comm' ContinuousLinearMap.integral_comp_comm'
 
@@ -1372,6 +1342,11 @@ theorem set_integral_withDensity_eq_set_integral_smul₀ {f : α → ℝ≥0} {s
     ∫ a in s, g a ∂μ.withDensity (fun x => f x) = ∫ a in s, f a • g a ∂μ := by
   rw [restrict_withDensity hs, integral_withDensity_eq_integral_smul₀ hf]
 #align set_integral_with_density_eq_set_integral_smul₀ set_integral_withDensity_eq_set_integral_smul₀
+
+theorem set_integral_withDensity_eq_set_integral_smul₀' [SFinite μ] {f : α → ℝ≥0} (s : Set α)
+    (hf : AEMeasurable f (μ.restrict s)) (g : α → E)  :
+    ∫ a in s, g a ∂μ.withDensity (fun x => f x) = ∫ a in s, f a • g a ∂μ := by
+  rw [restrict_withDensity' s, integral_withDensity_eq_integral_smul₀ hf]
 
 end
 

@@ -133,7 +133,7 @@ theorem card_le_mul_sum {x k : ℕ} : (card (U x k) : ℝ) ≤ x * ∑ p in P x 
   calc
     (card (Finset.biUnion P N) : ℝ) ≤ ∑ p in P, (card (N p) : ℝ) := by assumption_mod_cast
     _ ≤ ∑ p in P, x * (1 / (p : ℝ)) := (sum_le_sum fun p _ => ?_)
-    _ = x * ∑ p in P, 1 / (p : ℝ) := mul_sum.symm
+    _ = x * ∑ p in P, 1 / (p : ℝ) := by rw [mul_sum]
   simp only [mul_one_div, Nat.card_multiples, Nat.cast_div_le]
 #align theorems_100.card_le_mul_sum Theorems100.card_le_mul_sum
 
@@ -161,14 +161,14 @@ theorem card_le_two_pow {x k : ℕ} :
       exact
         ⟨p.pred, (Nat.pred_lt (Nat.Prime.ne_zero hp.1)).trans_le ((hmp p) hp),
           Nat.succ_pred_eq_of_pos (Nat.Prime.pos hp.1)⟩
-    · simp [Nat.prod_factors m.succ_ne_zero, m.succ_sub_one]
+    · simp [Nat.prod_factors m.succ_ne_zero, m.add_one_sub_one]
   -- The number of elements of `M x k` with `e + 1` squarefree is bounded by the number of subsets
   -- of `[1, k]`.
   calc
-    card M₁ ≤ card (image f K) := card_le_of_subset h
+    card M₁ ≤ card (image f K) := card_le_card h
     _ ≤ card K := card_image_le
     _ ≤ 2 ^ card (image Nat.succ (range k)) := by simp only [card_powerset]; rfl
-    _ ≤ 2 ^ card (range k) := (pow_le_pow one_le_two card_image_le)
+    _ ≤ 2 ^ card (range k) := (pow_le_pow_right one_le_two card_image_le)
     _ = 2 ^ k := by rw [card_range k]
 #align theorems_100.card_le_two_pow Theorems100.card_le_two_pow
 
@@ -191,7 +191,7 @@ theorem card_le_two_pow_mul_sqrt {x k : ℕ} : card (M x k) ≤ 2 ^ k * Nat.sqrt
     obtain ⟨a, b, hab₁, hab₂⟩ := Nat.sq_mul_squarefree_of_pos' hm'
     obtain ⟨ham, hbm⟩ := Dvd.intro_left _ hab₁, Dvd.intro _ hab₁
     refine'
-      ⟨a, b, ⟨⟨⟨_, fun p hp => _⟩, hab₂⟩, ⟨_, fun p hp => _⟩⟩, by simp_rw [hab₁, m.succ_sub_one]⟩
+      ⟨a, b, ⟨⟨⟨_, fun p hp => _⟩, hab₂⟩, ⟨_, fun p hp => _⟩⟩, by simp_rw [hab₁, m.add_one_sub_one]⟩
     · exact (Nat.succ_le_succ_iff.mp (Nat.le_of_dvd hm' ham)).trans_lt hm.1
     · exact hm.2 p ⟨hp.1, hp.2.trans ham⟩
     · calc
@@ -200,9 +200,9 @@ theorem card_le_two_pow_mul_sqrt {x k : ℕ} : card (M x k) ≤ 2 ^ k * Nat.sqrt
         _ ≤ x.sqrt := Nat.sqrt_le_sqrt (Nat.succ_le_iff.mpr hm.1)
     · exact hm.2 p ⟨hp.1, hp.2.trans (Nat.dvd_of_pow_dvd one_le_two hbm)⟩
   have h2 : card M₂ ≤ Nat.sqrt x := by
-    rw [← card_range (Nat.sqrt x)]; apply card_le_of_subset; simp [M]
+    rw [← card_range (Nat.sqrt x)]; apply card_le_card; simp [M]
   calc
-    card (M x k) ≤ card (image f K) := card_le_of_subset h1
+    card (M x k) ≤ card (image f K) := card_le_card h1
     _ ≤ card K := card_image_le
     _ = card M₁ * card M₂ := (card_product M₁ M₂)
     _ ≤ 2 ^ k * x.sqrt := mul_le_mul' card_le_two_pow h2

@@ -438,7 +438,7 @@ theorem digits_append_digits {b m n : ℕ} (hb : 0 < b) :
   rw [← ofDigits_digits_append_digits]
   refine' (digits_ofDigits b hb _ (fun l hl => _) (fun h_append => _)).symm
   · rcases (List.mem_append.mp hl) with (h | h) <;> exact digits_lt_base hb h
-  · by_cases digits b m = []
+  · by_cases h : digits b m = []
     · simp only [h, List.append_nil] at h_append ⊢
       exact getLast_digit_ne_zero b <| digits_ne_nil_iff_ne_zero.mp h_append
     · exact (List.getLast_append' _ _ h) ▸
@@ -448,7 +448,7 @@ theorem digits_len_le_digits_len_succ (b n : ℕ) :
     (digits b n).length ≤ (digits b (n + 1)).length := by
   rcases Decidable.eq_or_ne n 0 with (rfl | hn)
   · simp
-  cases' le_or_lt b 1 with hb hb
+  rcases le_or_lt b 1 with hb | hb
   · interval_cases b <;> simp_arith [digits_zero_succ', hn]
   simpa [digits_len, hb, hn] using log_mono_right (le_succ _)
 #align nat.digits_len_le_digits_len_succ Nat.digits_len_le_digits_len_succ
@@ -526,7 +526,7 @@ lemma ofDigits_div_pow_eq_ofDigits_drop
   induction' i with i hi
   · simp
   · rw [Nat.pow_succ, ← Nat.div_div_eq_div_mul, hi, ofDigits_div_eq_ofDigits_tail hpos
-      (List.drop i digits) <| fun x hx ↦ w₁ x <| List.mem_of_mem_drop hx, ← List.drop_one,
+      (List.drop i digits) fun x hx ↦ w₁ x <| List.mem_of_mem_drop hx, ← List.drop_one,
       List.drop_drop, add_comm]
 
 /-- Dividing `n` by `p^i` is like truncating the first `i` digits of `n` in base `p`.
@@ -556,10 +556,10 @@ theorem sub_one_mul_sum_div_pow_eq_sub_sum_digits
         have w₂' := fun (h : tl ≠ []) ↦ (List.getLast_cons h) ▸ h_ne_zero
         have ih := ih (w₂' h') w₁'
         simp only [self_div_pow_eq_ofDigits_drop _ _ h, digits_ofDigits p h tl w₁' w₂',
-          ←Nat.one_add] at ih
+          ← Nat.one_add] at ih
         have := sum_singleton (fun x ↦ ofDigits p <| tl.drop x) tl.length
         rw [← Ico_succ_singleton, List.drop_length, ofDigits] at this
-        have h₁ : 1 ≤ tl.length :=  List.length_pos.mpr h'
+        have h₁ : 1 ≤ tl.length := List.length_pos.mpr h'
         rw [← sum_range_add_sum_Ico _ <| h₁, ← add_zero (∑ x in Ico _ _, ofDigits p (tl.drop x)),
             ← this, sum_Ico_consecutive _  h₁ <| le_succ tl.length, ← sum_Ico_add _ 0 tl.length 1,
             Ico_zero_eq_range, mul_add, mul_add, ih, range_one, sum_singleton, List.drop, ofDigits,

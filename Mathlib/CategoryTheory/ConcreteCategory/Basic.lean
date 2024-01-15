@@ -212,6 +212,15 @@ def forget₂ (C : Type u) (D : Type u') [Category.{v} C] [ConcreteCategory.{w} 
   HasForget₂.forget₂
 #align category_theory.forget₂ CategoryTheory.forget₂
 
+attribute [local instance] ConcreteCategory.funLike ConcreteCategory.hasCoeToSort
+
+lemma forget₂_comp_apply {C : Type u} {D : Type u'} [Category.{v} C] [ConcreteCategory.{w} C]
+    [Category.{v'} D] [ConcreteCategory.{w} D] [HasForget₂ C D] {X Y Z : C}
+    (f : X ⟶ Y) (g : Y ⟶ Z) (x : (forget₂ C D).obj X) :
+    ((forget₂ C D).map (f ≫ g) x) =
+      (forget₂ C D).map g ((forget₂ C D).map f x) := by
+  rw [Functor.map_comp, comp_apply]
+
 instance forget₂_faithful (C : Type u) (D : Type u') [Category.{v} C] [ConcreteCategory.{w} C]
     [Category.{v'} D] [ConcreteCategory.{w} D] [HasForget₂ C D] : Faithful (forget₂ C D) :=
   HasForget₂.forget_comp.faithful_of_comp

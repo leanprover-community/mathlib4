@@ -7,6 +7,7 @@ import Mathlib.Data.List.Lattice
 import Mathlib.Data.List.Pairwise
 import Mathlib.Data.List.Forall2
 import Mathlib.Data.Set.Pairwise.Basic
+import Mathlib.Init.Data.Fin.Basic
 
 #align_import data.list.nodup from "leanprover-community/mathlib"@"c227d107bbada5d0d9d20287e3282c0a7f1651a0"
 
@@ -143,7 +144,7 @@ theorem Nodup.ne_singleton_iff {l : List α} (h : Nodup l) (x : α) :
     · rw [← Ne.def, hl] at hx
       rcases hx with (rfl | ⟨y, hy, hx⟩)
       · simp
-      · suffices ∃ (y : α) (_ : y ∈ hd :: tl), y ≠ x by simpa [ne_nil_of_mem hy]
+      · suffices ∃ y ∈ hd :: tl, y ≠ x by simpa [ne_nil_of_mem hy]
         exact ⟨y, mem_cons_of_mem _ hy, hx⟩
 #align list.nodup.ne_singleton_iff List.Nodup.ne_singleton_iff
 

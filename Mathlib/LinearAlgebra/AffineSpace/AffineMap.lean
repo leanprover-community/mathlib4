@@ -65,7 +65,7 @@ instance AffineMap.funLike (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*} (P
     where
   coe := AffineMap.toFun
   coe_injective' := fun ⟨f, f_linear, f_add⟩ ⟨g, g_linear, g_add⟩ => fun (h : f = g) => by
-    cases' (AddTorsor.Nonempty : Nonempty P1) with p
+    cases' (AddTorsor.nonempty : Nonempty P1) with p
     congr with v
     apply vadd_right_cancel (f p)
     erw [← f_add, h, ← g_add]
@@ -198,7 +198,7 @@ theorem linear_eq_zero_iff_exists_const (f : P1 →ᵃ[k] P2) :
 #align affine_map.linear_eq_zero_iff_exists_const AffineMap.linear_eq_zero_iff_exists_const
 
 instance nonempty : Nonempty (P1 →ᵃ[k] P2) :=
-  (AddTorsor.Nonempty : Nonempty P2).elim fun p => ⟨const k P1 p⟩
+  (AddTorsor.nonempty : Nonempty P2).map <| const k P1
 #align affine_map.nonempty AffineMap.nonempty
 
 /-- Construct an affine map by verifying the relation between the map and its linear part at one
@@ -673,7 +673,7 @@ theorem image_uIcc {k : Type*} [LinearOrderedField k] (f : k →ᵃ[k] k) (a b :
 
 section
 
-variable {ι : Type*} {V : ∀ _ : ι, Type*} {P : ∀ _ : ι, Type*} [∀ i, AddCommGroup (V i)]
+variable {ι : Type*} {V : ι → Type*} {P : ι → Type*} [∀ i, AddCommGroup (V i)]
   [∀ i, Module k (V i)] [∀ i, AddTorsor (V i) (P i)]
 
 /-- Evaluation at a point as an affine map. -/

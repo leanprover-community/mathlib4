@@ -182,7 +182,7 @@ theorem realize_varsToConstants [L[[α]].Structure M] [(lhomWithConstants L α).
   induction' t with ab n f ts ih
   · cases' ab with a b
     --Porting note: both cases were `simp [Language.con]`
-    · simp [Language.con, realize, constantMap, funMap_eq_coe_constants]
+    · simp [Language.con, realize, funMap_eq_coe_constants]
     · simp [realize, constantMap]
   · simp only [realize, constantsOn, mk₂_Functions, ih]
     --Porting note: below lemma does not work with simp for some reason
@@ -281,7 +281,7 @@ theorem realize_top : (⊤ : L.BoundedFormula α l).Realize v xs ↔ True := by 
 
 @[simp]
 theorem realize_inf : (φ ⊓ ψ).Realize v xs ↔ φ.Realize v xs ∧ ψ.Realize v xs := by
-  simp [Inf.inf, Realize]; tauto
+  simp [Inf.inf, Realize]
 #align first_order.language.bounded_formula.realize_inf FirstOrder.Language.BoundedFormula.realize_inf
 
 @[simp]
@@ -524,7 +524,7 @@ theorem realize_toPrenexImpRight {φ ψ : L.BoundedFormula α n} (hφ : IsQF φ)
     refine' ⟨_, fun h' => _⟩
     · rintro ⟨a, ha⟩ h
       exact ⟨a, ha h⟩
-    · by_cases φ.Realize v xs
+    · by_cases h : φ.Realize v xs
       · obtain ⟨a, ha⟩ := h' h
         exact ⟨a, fun _ => ha⟩
       · inhabit M
@@ -544,7 +544,7 @@ theorem realize_toPrenexImp {φ ψ : L.BoundedFormula α n} (hφ : IsPrenex φ) 
     refine' ⟨_, fun h' => _⟩
     · rintro ⟨a, ha⟩ h
       exact ha (h a)
-    · by_cases ψ.Realize v xs
+    · by_cases h : ψ.Realize v xs
       · inhabit M
         exact ⟨default, fun _h'' => h⟩
       · obtain ⟨a, ha⟩ := not_forall.1 (h ∘ h')

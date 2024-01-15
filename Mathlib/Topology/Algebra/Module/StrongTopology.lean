@@ -110,10 +110,9 @@ theorem strongTopology.embedding_coeFn [UniformSpace F] [UniformAddGroup F] (�
 theorem strongUniformity.uniformAddGroup [UniformSpace F] [UniformAddGroup F] (𝔖 : Set (Set E)) :
     @UniformAddGroup (E →SL[σ] F) (strongUniformity σ F 𝔖) _ := by
   letI : UniformSpace (E →SL[σ] F) := strongUniformity σ F 𝔖
-  rw [strongUniformity, UniformSpace.replaceTopology_eq]
   let φ : (E →SL[σ] F) →+ E →ᵤ[𝔖] F :=
     ⟨⟨(FunLike.coe : (E →SL[σ] F) → E →ᵤ[𝔖] F), rfl⟩, fun _ _ => rfl⟩
-  exact uniformAddGroup_comap φ
+  exact (strongUniformity.uniformEmbedding_coeFn _ _ _).uniformAddGroup φ
 #align continuous_linear_map.strong_uniformity.uniform_add_group ContinuousLinearMap.strongUniformity.uniformAddGroup
 
 theorem strongTopology.topologicalAddGroup [TopologicalSpace F] [TopologicalAddGroup F]
@@ -172,6 +171,25 @@ theorem strongTopology.hasBasis_nhds_zero [TopologicalSpace F] [TopologicalAddGr
   strongTopology.hasBasis_nhds_zero_of_basis σ F 𝔖 h𝔖₁ h𝔖₂ (𝓝 0).basis_sets
 #align continuous_linear_map.strong_topology.has_basis_nhds_zero ContinuousLinearMap.strongTopology.hasBasis_nhds_zero
 
+theorem strongTopology.uniformContinuousConstSMul (M : Type*)
+    [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
+    [UniformSpace F] [UniformAddGroup F] [UniformContinuousConstSMul M F] (𝔖 : Set (Set E)) :
+    @UniformContinuousConstSMul M (E →SL[σ] F) (strongUniformity σ F 𝔖) _ :=
+  let _ := strongUniformity σ F 𝔖
+  (strongUniformity.uniformEmbedding_coeFn σ F 𝔖).toUniformInducing.uniformContinuousConstSMul
+    fun _ _ ↦ rfl
+
+theorem strongTopology.continuousConstSMul (M : Type*)
+    [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
+    [TopologicalSpace F] [TopologicalAddGroup F] [ContinuousConstSMul M F] (𝔖 : Set (Set E)) :
+    @ContinuousConstSMul M (E →SL[σ] F) (strongTopology σ F 𝔖) _ :=
+  let _ := TopologicalAddGroup.toUniformSpace F
+  have _ : UniformAddGroup F := comm_topologicalAddGroup_is_uniform
+  let _ := strongUniformity σ F 𝔖
+  have _ := uniformContinuousConstSMul_of_continuousConstSMul M F
+  have _ := strongTopology.uniformContinuousConstSMul σ F M 𝔖
+  inferInstance
+
 end General
 
 section BoundedSets
@@ -224,6 +242,17 @@ protected theorem hasBasis_nhds_zero [TopologicalSpace F] [TopologicalAddGroup F
       fun SV => { f : E →SL[σ] F | ∀ x ∈ SV.1, f x ∈ SV.2 } :=
   ContinuousLinearMap.hasBasis_nhds_zero_of_basis (𝓝 0).basis_sets
 #align continuous_linear_map.has_basis_nhds_zero ContinuousLinearMap.hasBasis_nhds_zero
+
+instance uniformContinuousConstSMul
+    {M : Type*} [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
+    [UniformSpace F] [UniformAddGroup F] [UniformContinuousConstSMul M F] :
+    UniformContinuousConstSMul M (E →SL[σ] F) :=
+  strongTopology.uniformContinuousConstSMul σ F _ _
+
+instance continuousConstSMul {M : Type*} [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
+    [TopologicalSpace F] [TopologicalAddGroup F] [ContinuousConstSMul M F] :
+    ContinuousConstSMul M (E →SL[σ] F) :=
+  strongTopology.continuousConstSMul σ F _ _
 
 variable (G) [TopologicalSpace F] [TopologicalSpace G]
 

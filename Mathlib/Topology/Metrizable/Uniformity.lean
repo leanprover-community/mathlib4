@@ -128,7 +128,7 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
   subst n
   set L := zipWith d (x::l) (l ++ [y])
   have hL_len : length L = length l + 1 := by simp
-  cases' eq_or_ne (d x y) 0 with hd₀ hd₀
+  rcases eq_or_ne (d x y) 0 with hd₀ | hd₀
   · simp only [hd₀, zero_le]
   rsuffices ⟨z, z', hxz, hzz', hz'y⟩ : ∃ z z' : X, d x z ≤ L.sum ∧ d z z' ≤ L.sum ∧ d z' y ≤ L.sum
   · exact (hd x z z' y).trans (mul_le_mul_left' (max_le hxz (max_le hzz' hz'y)) _)
@@ -226,7 +226,7 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type*) [UniformSpace X
     intro x y n
     dsimp only []
     split_ifs with h
-    · rw [(strictAnti_pow hr.1 hr.2).le_iff_le, Nat.find_le_iff]
+    · rw [(pow_right_strictAnti hr.1 hr.2).le_iff_le, Nat.find_le_iff]
       exact ⟨fun ⟨m, hmn, hm⟩ hn => hm (hB.antitone hmn hn), fun h => ⟨n, le_rfl, h⟩⟩
     · push_neg at h
       simp only [h, not_true, (pow_pos hr.1 _).not_le]

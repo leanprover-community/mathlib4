@@ -46,7 +46,7 @@ open Matrix
 
 section AuxToLinearMap
 
-variable [CommSemiring R] [CommSemiring R₁] [CommSemiring R₂]
+variable [CommSemiring R] [Semiring R₁] [Semiring R₂]
 
 variable [Fintype n] [Fintype m]
 
@@ -83,7 +83,7 @@ section AuxToMatrix
 
 section CommSemiring
 
-variable [CommSemiring R] [CommSemiring R₁] [CommSemiring R₂]
+variable [CommSemiring R] [Semiring R₁] [Semiring R₂]
 
 variable [AddCommMonoid M₁] [Module R₁ M₁] [AddCommMonoid M₂] [Module R₂ M₂]
 
@@ -110,7 +110,7 @@ end CommSemiring
 
 section CommRing
 
-variable [CommRing R] [CommRing R₁] [CommRing R₂]
+variable [CommSemiring R] [Semiring R₁] [Semiring R₂]
 
 variable [AddCommMonoid M₁] [Module R₁ M₁] [AddCommMonoid M₂] [Module R₂ M₂]
 
@@ -149,7 +149,7 @@ This section deals with the conversion between matrices and sesquilinear forms o
 -/
 
 
-variable [CommRing R] [CommRing R₁] [CommRing R₂]
+variable [CommSemiring R] [Semiring R₁] [Semiring R₂]
 
 variable [Fintype n] [Fintype m]
 
@@ -345,7 +345,7 @@ a module with a fixed basis.
 -/
 
 
-variable [CommRing R]
+variable [CommSemiring R]
 
 variable [AddCommMonoid M₁] [Module R M₁] [AddCommMonoid M₂] [Module R M₂]
 
@@ -530,7 +530,7 @@ variable (J J₂ : Matrix n n R) (J' : Matrix n' n' R)
 
 variable (A : Matrix n' n R) (A' : Matrix n n' R)
 
-variable (A₁ : Matrix n n R)
+variable (A₁ A₂ : Matrix n n R)
 
 /-- The condition for the matrices `A`, `A'` to be an adjoint pair with respect to the square
 matrices `J`, `J₃`. -/
@@ -589,13 +589,13 @@ theorem isAdjointPair_toLinearMap₂ :
 #align is_adjoint_pair_to_linear_map₂ isAdjointPair_toLinearMap₂
 
 theorem Matrix.isAdjointPair_equiv (P : Matrix n n R) (h : IsUnit P) :
-    (Pᵀ * J * P).IsAdjointPair (Pᵀ * J * P) A₁ A₁ ↔
-      J.IsAdjointPair J (P * A₁ * P⁻¹) (P * A₁ * P⁻¹) := by
+    (Pᵀ * J * P).IsAdjointPair (Pᵀ * J * P) A₁ A₂ ↔
+      J.IsAdjointPair J (P * A₁ * P⁻¹) (P * A₂ * P⁻¹) := by
   have h' : IsUnit P.det := P.isUnit_iff_isUnit_det.mp h
   let u := P.nonsingInvUnit h'
   let v := Pᵀ.nonsingInvUnit (P.isUnit_det_transpose h')
   let x := A₁ᵀ * Pᵀ * J
-  let y := J * P * A₁
+  let y := J * P * A₂
   -- TODO(mathlib4#6607): fix elaboration so `val` isn't needed
   suffices x * u.val = v.val * y ↔ (v⁻¹).val * x = y * (u⁻¹).val by
     dsimp only [Matrix.IsAdjointPair]
@@ -603,9 +603,9 @@ theorem Matrix.isAdjointPair_equiv (P : Matrix n n R) (h : IsUnit P) :
     simp only [← mul_assoc, P.transpose_nonsing_inv]
     -- porting note: the previous proof used `conv` and was causing timeouts, so we use `convert`
     convert this using 2
-    · rw [mul_assoc, mul_assoc, ←mul_assoc J]
+    · rw [mul_assoc, mul_assoc, ← mul_assoc J]
       rfl
-    · rw [mul_assoc, mul_assoc, ←mul_assoc _ _ J]
+    · rw [mul_assoc, mul_assoc, ← mul_assoc _ _ J]
       rfl
   rw [Units.eq_mul_inv_iff_mul_eq]
   conv_rhs => rw [mul_assoc]

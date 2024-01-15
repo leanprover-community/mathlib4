@@ -191,7 +191,7 @@ theorem geom_sum₂_mul [CommRing α] (x y : α) (n : ℕ) :
 
 theorem Commute.sub_dvd_pow_sub_pow [Ring α] {x y : α} (h : Commute x y) (n : ℕ) :
     x - y ∣ x ^ n - y ^ n :=
-  Dvd.intro _ $ h.mul_geom_sum₂ _
+  Dvd.intro _ <| h.mul_geom_sum₂ _
 
 theorem sub_dvd_pow_sub_pow [CommRing α] (x y : α) (n : ℕ) : x - y ∣ x ^ n - y ^ n :=
   (Commute.all x y).sub_dvd_pow_sub_pow n
@@ -208,10 +208,10 @@ theorem sub_one_dvd_pow_sub_one [Ring α] (x : α) (n : ℕ) :
   exact (Commute.one_right x).sub_dvd_pow_sub_pow n
 
 theorem nat_sub_dvd_pow_sub_pow (x y n : ℕ) : x - y ∣ x ^ n - y ^ n := by
-  cases' le_or_lt y x with h h
-  · have : y ^ n ≤ x ^ n := Nat.pow_le_pow_of_le_left h _
+  rcases le_or_lt y x with h | h
+  · have : y ^ n ≤ x ^ n := Nat.pow_le_pow_left h _
     exact mod_cast sub_dvd_pow_sub_pow (x : ℤ) (↑y) n
-  · have : x ^ n ≤ y ^ n := Nat.pow_le_pow_of_le_left h.le _
+  · have : x ^ n ≤ y ^ n := Nat.pow_le_pow_left h.le _
     exact (Nat.sub_eq_zero_of_le this).symm ▸ dvd_zero (x - y)
 #align nat_sub_dvd_pow_sub_pow nat_sub_dvd_pow_sub_pow
 
@@ -584,3 +584,22 @@ theorem geom_sum_neg_iff [LinearOrderedRing α] (hn : n ≠ 0) :
 #align geom_sum_neg_iff geom_sum_neg_iff
 
 end Order
+
+variable {m n : ℕ} {s : Finset ℕ}
+
+/-- If all the elements of a finset of naturals are less than `n`, then the sum of their powers of
+`m ≥ 2` is less than `m ^ n`. -/
+lemma Nat.geomSum_eq (hm : 2 ≤ m) (n : ℕ) :
+    ∑ k in range n, m ^ k = (m ^ n - 1) / (m - 1) := by
+  refine (Nat.div_eq_of_eq_mul_left (tsub_pos_iff_lt.2 hm) <| tsub_eq_of_eq_add ?_).symm
+  simpa only [tsub_add_cancel_of_le (one_le_two.trans hm), eq_comm] using geom_sum_mul_add (m - 1) n
+
+/-- If all the elements of a finset of naturals are less than `n`, then the sum of their powers of
+`m ≥ 2` is less than `m ^ n`. -/
+lemma Nat.geomSum_lt (hm : 2 ≤ m) (hs : ∀ k ∈ s, k < n) : ∑ k in s, m ^ k < m ^ n :=
+  calc
+    ∑ k in s, m ^ k ≤ ∑ k in range n, m ^ k := sum_le_sum_of_subset fun k hk ↦
+      mem_range.2 <| hs _ hk
+    _ = (m ^ n - 1) / (m - 1) := Nat.geomSum_eq hm _
+    _ ≤ m ^ n - 1 := Nat.div_le_self _ _
+    _ < m ^ n := tsub_lt_self (by positivity) zero_lt_one

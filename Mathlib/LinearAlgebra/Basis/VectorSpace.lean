@@ -180,7 +180,7 @@ theorem nonzero_span_atom (v : V) (hv : v ≠ 0) : IsAtom (span K {v} : Submodul
 /-- The atoms of the lattice of submodules of a module over a division ring are the
 submodules equal to the span of a nonzero element of the module. -/
 theorem atom_iff_nonzero_span (W : Submodule K V) :
-    IsAtom W ↔ ∃ (v : V) (_ : v ≠ 0), W = span K {v} := by
+    IsAtom W ↔ ∃ v ≠ 0, W = span K {v} := by
   refine' ⟨fun h => _, fun h => _⟩
   · cases' h with hbot h
     rcases (Submodule.ne_bot_iff W).1 hbot with ⟨v, ⟨hW, hv⟩⟩
@@ -211,7 +211,7 @@ theorem LinearMap.exists_leftInverse_of_injective (f : V →ₗ[K] V') (hf_inj :
   have hB₀ : _ := hB.linearIndependent.to_subtype_range
   have : LinearIndependent K (fun x => x : f '' B → V') := by
     have h₁ : LinearIndependent K ((↑) : ↥(f '' Set.range (Basis.ofVectorSpace K V)) → V') :=
-      @LinearIndependent.image_subtype _ _ _ _ _ _ _ _ _ f hB₀ (show Disjoint _ _ by simp [hf_inj])
+      LinearIndependent.image_subtype (f := f) hB₀ (show Disjoint _ _ by simp [hf_inj])
     rwa [Basis.range_ofVectorSpace K V] at h₁
   let C := this.extend (subset_univ _)
   have BC := this.subset_extend (subset_univ _)

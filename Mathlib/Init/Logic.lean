@@ -13,7 +13,6 @@ import Mathlib.Tactic.Relation.Symm
 import Mathlib.Mathport.Attributes
 import Mathlib.Mathport.Rename
 import Mathlib.Tactic.Relation.Trans
-import Mathlib.Util.Imports
 import Mathlib.Tactic.ProjectionNotation
 
 set_option autoImplicit true
@@ -39,8 +38,6 @@ set_option autoImplicit true
 /- Eq -/
 
 alias proof_irrel := proofIrrel
-alias congr_fun := congrFun
-alias congr_arg := congrArg
 
 @[deprecated] theorem trans_rel_left {α : Sort u} {a b c : α}
     (r : α → α → Prop) (h₁ : r a b) (h₂ : b = c) : r a c := h₂ ▸ h₁
@@ -84,6 +81,9 @@ theorem eq_rec_compose {α β φ : Sort u} :
     ∀ (p₁ : β = φ) (p₂ : α = β) (a : α),
       (Eq.recOn p₁ (Eq.recOn p₂ a : β) : φ) = Eq.recOn (Eq.trans p₂ p₁) a
   | rfl, rfl, _ => rfl
+
+theorem heq_prop {P Q : Prop} (p : P) (q : Q) : HEq p q :=
+  Subsingleton.helim (propext <| iff_of_true p q) _ _
 
 /- and -/
 
@@ -265,7 +265,7 @@ theorem ExistsUnique.unique {α : Sort u} {p : α → Prop}
 
 -- @[congr]
 theorem exists_unique_congr {p q : α → Prop} (h : ∀ a, p a ↔ q a) : (∃! a, p a) ↔ ∃! a, q a :=
-  exists_congr fun _ ↦ and_congr (h _) $ forall_congr' fun _ ↦ imp_congr_left (h _)
+  exists_congr fun _ ↦ and_congr (h _) <| forall_congr' fun _ ↦ imp_congr_left (h _)
 
 /- decidable -/
 

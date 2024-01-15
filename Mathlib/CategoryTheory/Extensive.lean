@@ -80,24 +80,24 @@ attribute [instance] PreservesPullbacksOfInclusions.preservesPullbackInl
 and binary coproducts are universal. -/
 class FinitaryPreExtensive (C : Type u) [Category.{v} C] : Prop where
   [hasFiniteCoproducts : HasFiniteCoproducts C]
-  [HasPullbacksOfInclusions : HasPullbacksOfInclusions C]
+  [hasPullbacksOfInclusions : HasPullbacksOfInclusions C]
   /-- In a finitary extensive category, all coproducts are van Kampen-/
   universal' : ∀ {X Y : C} (c : BinaryCofan X Y), IsColimit c → IsUniversalColimit c
 
 attribute [instance] FinitaryPreExtensive.hasFiniteCoproducts
-attribute [instance] FinitaryPreExtensive.HasPullbacksOfInclusions
+attribute [instance] FinitaryPreExtensive.hasPullbacksOfInclusions
 
 /-- A category is (finitary) extensive if it has finite coproducts,
 and binary coproducts are van Kampen. -/
 class FinitaryExtensive (C : Type u) [Category.{v} C] : Prop where
   [hasFiniteCoproducts : HasFiniteCoproducts C]
-  [HasPullbacksOfInclusions : HasPullbacksOfInclusions C]
+  [hasPullbacksOfInclusions : HasPullbacksOfInclusions C]
   /-- In a finitary extensive category, all coproducts are van Kampen-/
   van_kampen' : ∀ {X Y : C} (c : BinaryCofan X Y), IsColimit c → IsVanKampenColimit c
 #align category_theory.finitary_extensive CategoryTheory.FinitaryExtensive
 
 attribute [instance] FinitaryExtensive.hasFiniteCoproducts
-attribute [instance] FinitaryExtensive.HasPullbacksOfInclusions
+attribute [instance] FinitaryExtensive.hasPullbacksOfInclusions
 
 theorem FinitaryExtensive.vanKampen [FinitaryExtensive C] {F : Discrete WalkingPair ⥤ C}
     (c : Cocone F) (hc : IsColimit c) : IsVanKampenColimit c := by
@@ -310,7 +310,7 @@ noncomputable def finitaryExtensiveTopCatAux (Z : TopCat.{u})
       (fun h => s.inl <| eX.symm ⟨x, h⟩) fun h => s.inr <| eY.symm ⟨x, (this x).resolve_left h⟩, _⟩
     rw [continuous_iff_continuousAt]
     intro x
-    by_cases f x = Sum.inl PUnit.unit
+    by_cases h : f x = Sum.inl PUnit.unit
     · revert h x
       apply (IsOpen.continuousOn_iff _).mp
       · rw [continuousOn_iff_continuous_restrict]
@@ -434,7 +434,7 @@ theorem finitaryExtensive_of_reflective
       · rintro ⟨⟨⟩⟩ ⟨j⟩ ⟨⟨rfl : _ = j⟩⟩ <;> simp
     rw [this]
     rintro Z ⟨_|_⟩ f <;> dsimp <;> infer_instance
-  refine ((FinitaryExtensive.vanKampen _ (colimit.isColimit $ pair X Y ⋙ _)).map_reflective
+  refine ((FinitaryExtensive.vanKampen _ (colimit.isColimit <| pair X Y ⋙ _)).map_reflective
     adj).of_iso (IsColimit.uniqueUpToIso ?_ ?_)
   · exact isColimitOfPreserves Gl (colimit.isColimit _)
   · exact (IsColimit.precomposeHomEquiv _ _).symm hc
@@ -553,7 +553,7 @@ lemma FinitaryPreExtensive.hasPullbacks_of_is_coproduct [FinitaryPreExtensive C]
   let e : ∐ f ≅ f i ⨿ (∐ fun j : ({i}ᶜ : Set ι) ↦ f j) :=
   { hom := Sigma.desc (fun j ↦ if h : j = i then eqToHom (congr_arg f h) ≫ coprod.inl else
       Sigma.ι (fun j : ({i}ᶜ : Set ι) ↦ f j) ⟨j, h⟩ ≫ coprod.inr)
-    inv := coprod.desc (Sigma.ι f i) (Sigma.desc <| fun j ↦ Sigma.ι f j)
+    inv := coprod.desc (Sigma.ι f i) (Sigma.desc fun j ↦ Sigma.ι f j)
     hom_inv_id := by aesop_cat
     inv_hom_id := by
       ext j
@@ -612,7 +612,7 @@ lemma FinitaryPreExtensive.sigma_desc_iso [FinitaryPreExtensive C] {α : Type} [
     simp [coproductIsCoproduct]
   refine (FinitaryPreExtensive.isUniversal_finiteCoproducts this
     (Cofan.mk _ ((fun _ ↦ pullback.fst) : (a : α) → pullback f (π a) ⟶ _))
-    (Discrete.natTrans <| fun i ↦ pullback.snd) f ?_
+    (Discrete.natTrans fun i ↦ pullback.snd) f ?_
     (NatTrans.equifibered_of_discrete _) ?_).some
   · ext
     simp [pullback.condition]

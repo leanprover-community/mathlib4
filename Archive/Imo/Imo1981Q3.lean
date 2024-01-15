@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Lacker
 -/
 import Mathlib.Data.Int.Lemmas
-import Mathlib.Data.Nat.Fib
+import Mathlib.Data.Nat.Fib.Basic
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.LinearCombination
 
@@ -207,5 +207,5 @@ theorem imo1981_q3 : IsGreatest (specifiedSet 1981) 3524578 := by
   apply this
   · decide
   · decide
-  · norm_num [ProblemPredicate_iff]; decide
+  · norm_num [problemPredicate_iff]; decide
 #align imo1981_q3 imo1981_q3

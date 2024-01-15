@@ -11,6 +11,7 @@ import Mathlib.MeasureTheory.Group.Integral
 import Mathlib.MeasureTheory.Integral.SetIntegral
 import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
 import Mathlib.Topology.EMetricSpace.Paracompact
+import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 #align_import analysis.fourier.riemann_lebesgue_lemma from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
@@ -259,7 +260,7 @@ via dual space. **Do not use** -- it is only a stepping stone to
 `tendsto_integral_exp_smul_cocompact` where the inner-product-space structure isn't required. -/
 theorem tendsto_integral_exp_smul_cocompact_of_inner_product (μ : Measure V) [μ.IsAddHaarMeasure] :
     Tendsto (fun w : V →L[ℝ] ℝ => ∫ v, e[-w v] • f v ∂μ) (cocompact (V →L[ℝ] ℝ)) (𝓝 0) := by
-  obtain ⟨C, _, _, hC⟩ := μ.isAddHaarMeasure_eq_smul_isAddHaarMeasure volume
+  obtain ⟨C, _, _, hC⟩ := μ.isAddHaarMeasure_eq_smul volume
   rw [hC]
   simp_rw [integral_smul_measure]
   rw [← (smul_zero _ : C.toReal • (0 : E) = 0)]

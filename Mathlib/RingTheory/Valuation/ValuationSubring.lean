@@ -113,12 +113,12 @@ instance : Inhabited (ValuationSubring K) :=
 
 instance : ValuationRing A where
   cond' a b := by
-    by_cases (b : K) = 0
+    by_cases h : (b : K) = 0
     · use 0
       left
       ext
       simp [h]
-    by_cases (a : K) = 0
+    by_cases h : (a : K) = 0
     · use 0; right
       ext
       simp [h]
@@ -149,7 +149,7 @@ instance : IsFractionRing A K where
   map_units' := fun ⟨y, hy⟩ =>
     (Units.mk0 (y : K) fun c => nonZeroDivisors.ne_zero hy <| Subtype.ext c).isUnit
   surj' z := by
-    by_cases z = 0; · use (0, 1); simp [h]
+    by_cases h : z = 0; · use (0, 1); simp [h]
     cases' A.mem_or_inv_mem z with hh hh
     · use (⟨z, hh⟩, 1); simp
     · refine ⟨⟨1, ⟨⟨_, hh⟩, ?_⟩⟩, mul_inv_cancel h⟩
@@ -422,7 +422,7 @@ def valuationSubring : ValuationSubring K :=
   { v.integer with
     mem_or_inv_mem' := by
       intro x
-      cases' le_or_lt (v x) 1 with h h
+      rcases le_or_lt (v x) 1 with h | h
       · left; exact h
       · right; change v x⁻¹ ≤ 1
         rw [map_inv₀ v, ← inv_one, inv_le_inv₀]
@@ -762,7 +762,7 @@ def unitsModPrincipalUnitsEquivResidueFieldUnits :
     (QuotientGroup.quotientKerEquivOfSurjective _ A.surjective_unitGroupToResidueFieldUnits)
 #align valuation_subring.units_mod_principal_units_equiv_residue_field_units ValuationSubring.unitsModPrincipalUnitsEquivResidueFieldUnits
 
--- Porting note: Lean needs to be reminded of this instance
+/-- Porting note: Lean needs to be reminded of this instance -/
 local instance : MulOneClass ({ x // x ∈ unitGroup A } ⧸
   Subgroup.comap (Subgroup.subtype (unitGroup A)) (principalUnitGroup A)) := inferInstance
 

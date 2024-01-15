@@ -3,6 +3,7 @@ Copyright (c) 2022 Antoine Labelle. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Labelle
 -/
+import Mathlib.Algebra.Group.Equiv.TypeTags
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Module.LinearMap
 import Mathlib.Algebra.MonoidAlgebra.Basic
@@ -268,7 +269,7 @@ variable (k : Type*) [CommSemiring k] (G : Type*) [Monoid G] (H : Type*) [MulAct
 
 /-- A `G`-action on `H` induces a representation `G →* End(k[H])` in the natural way. -/
 noncomputable def ofMulAction : Representation k G (H →₀ k) where
-  toFun g := Finsupp.lmapDomain k k ((· • ·) g)
+  toFun g := Finsupp.lmapDomain k k (g • ·)
   map_one' := by
     ext x y
     dsimp
@@ -280,7 +281,7 @@ noncomputable def ofMulAction : Representation k G (H →₀ k) where
 
 variable {k G H}
 
-theorem ofMulAction_def (g : G) : ofMulAction k G H g = Finsupp.lmapDomain k k ((· • ·) g) :=
+theorem ofMulAction_def (g : G) : ofMulAction k G H g = Finsupp.lmapDomain k k (g • ·) :=
   rfl
 #align representation.of_mul_action_def Representation.ofMulAction_def
 
@@ -290,7 +291,39 @@ theorem ofMulAction_single (g : G) (x : H) (r : k) :
 #align representation.of_mul_action_single Representation.ofMulAction_single
 
 end MulAction
+section DistribMulAction
 
+variable (k G A : Type*) [CommSemiring k] [Monoid G] [AddCommGroup A] [Module k A]
+  [DistribMulAction G A] [SMulCommClass G k A]
+
+/-- Turns a `k`-module `A` with a compatible `DistribMulAction` of a monoid `G` into a
+`k`-linear `G`-representation on `A`. -/
+def ofDistribMulAction : Representation k G A where
+  toFun := fun m =>
+    { DistribMulAction.toAddMonoidEnd G A m with
+      map_smul' := smul_comm _ }
+  map_one' := by ext; exact one_smul _ _
+  map_mul' := by intros; ext; exact mul_smul _ _ _
+
+variable {k G A}
+
+@[simp] theorem ofDistribMulAction_apply_apply (g : G) (a : A) :
+    ofDistribMulAction k G A g a = g • a := rfl
+
+end DistribMulAction
+section MulDistribMulAction
+variable (M G : Type*) [Monoid M] [CommGroup G] [MulDistribMulAction M G]
+
+/-- Turns a `CommGroup` `G` with a `MulDistribMulAction` of a monoid `M` into a
+`ℤ`-linear `M`-representation on `Additive G`. -/
+def ofMulDistribMulAction : Representation ℤ M (Additive G) :=
+  (addMonoidEndRingEquivInt (Additive G) : AddMonoid.End (Additive G) →* _).comp
+    ((monoidEndToAdditive G : _ →* _).comp (MulDistribMulAction.toMonoidEnd M G))
+
+@[simp] theorem ofMulDistribMulAction_apply_apply (g : M) (a : G) :
+    ofMulDistribMulAction M G g a = g • a := rfl
+
+end MulDistribMulAction
 section Group
 
 variable {k G V : Type*} [CommSemiring k] [Group G] [AddCommMonoid V] [Module k V]
@@ -303,7 +336,7 @@ theorem ofMulAction_apply {H : Type*} [MulAction G H] (g : G) (f : H →₀ k) (
   conv_lhs => rw [← smul_inv_smul g h]
   let h' := g⁻¹ • h
   change ofMulAction k G H g f (g • h') = f h'
-  have hg : Function.Injective ((· • ·) g : H → H) := by
+  have hg : Function.Injective (g • · : H → H) := by
     intro h₁ h₂
     simp
   simp only [ofMulAction_def, Finsupp.lmapDomain_apply, Finsupp.mapDomain_apply, hg]
@@ -328,7 +361,7 @@ theorem ofMulAction_self_smul_eq_mul (x : MonoidAlgebra k G) (y : (ofMulAction k
     (fun x y hx hy => by simp only [hx, hy, add_mul, add_smul]) fun r x hx => by
     show asAlgebraHom (ofMulAction k G G) _ _ = _  -- Porting note: was simpa [← hx]
     simp only [map_smul, smul_apply, Algebra.smul_mul_assoc]
-    rw [←hx]
+    rw [← hx]
     rfl
 #align representation.of_mul_action_self_smul_eq_mul Representation.ofMulAction_self_smul_eq_mul
 

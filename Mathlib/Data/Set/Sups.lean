@@ -170,7 +170,7 @@ theorem sups_inter_subset_right : s ⊻ (t₁ ∩ t₂) ⊆ s ⊻ t₁ ∩ s ⊻
 #align set.sups_inter_subset_right Set.sups_inter_subset_right
 
 lemma image_sups (f : F) (s t : Set α) : f '' (s ⊻ t) = f '' s ⊻ f '' t :=
-  image_image2_distrib $ map_sup f
+  image_image2_distrib <| map_sup f
 
 lemma subset_sups_self : s ⊆ s ⊻ s := λ _a ha ↦ mem_sups.2 ⟨_, ha, _, ha, sup_idem⟩
 lemma sups_subset_self : s ⊻ s ⊆ s ↔ SupClosed s := sups_subset_iff
@@ -261,7 +261,7 @@ theorem image_subset_infs_left : b ∈ t → (fun a => a ⊓ b) '' s ⊆ s ⊼ t
   image_subset_image2_left
 #align set.image_subset_infs_left Set.image_subset_infs_left
 
-theorem image_subset_infs_right : a ∈ s → (· ⊓ ·) a '' t ⊆ s ⊼ t :=
+theorem image_subset_infs_right : a ∈ s → (a ⊓ ·) '' t ⊆ s ⊼ t :=
   image_subset_image2_right
 #align set.image_subset_infs_right Set.image_subset_infs_right
 
@@ -337,7 +337,7 @@ theorem infs_inter_subset_right : s ⊼ (t₁ ∩ t₂) ⊆ s ⊼ t₁ ∩ s ⊼
 #align set.infs_inter_subset_right Set.infs_inter_subset_right
 
 lemma image_infs (f : F) (s t : Set α) : f '' (s ⊼ t) = f '' s ⊼ f '' t :=
-  image_image2_distrib $ map_inf f
+  image_image2_distrib <| map_inf f
 
 lemma subset_infs_self : s ⊆ s ⊼ s := λ _a ha ↦ mem_infs.2 ⟨_, ha, _, ha, inf_idem⟩
 lemma infs_self_subset : s ⊼ s ⊆ s ↔ InfClosed s := infs_subset_iff
@@ -350,7 +350,7 @@ lemma sep_infs_le (s t : Set α) (a : α) :
 
 variable (s t u)
 
-theorem iUnion_image_inf_left : ⋃ a ∈ s, (· ⊓ ·) a '' t = s ⊼ t :=
+theorem iUnion_image_inf_left : ⋃ a ∈ s, (a ⊓ ·) '' t = s ⊼ t :=
   iUnion_image_left _
 #align set.Union_image_inf_left Set.iUnion_image_inf_left
 

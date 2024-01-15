@@ -643,7 +643,7 @@ instance : SMul R (GroupSeminorm E) :=
         simp only [← smul_one_smul ℝ≥0 r (_ : ℝ), NNReal.smul_def, smul_eq_mul, map_one_eq_zero p,
           mul_zero]
       mul_le' := fun _ _ => by
-        simp only [← smul_one_smul ℝ≥0 r (_ : ℝ), NNReal.smul_def, smul_eq_mul, ←mul_add]
+        simp only [← smul_one_smul ℝ≥0 r (_ : ℝ), NNReal.smul_def, smul_eq_mul, ← mul_add]
         gcongr
         apply map_mul_le_add
       inv' := fun x => by simp_rw [map_inv_eq_map p] }⟩

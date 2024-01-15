@@ -99,6 +99,13 @@ def addMonoidHomLequivInt {A B : Type*} (R : Type*) [Semiring R] [AddCommGroup A
   right_inv := by intro f; ext; rfl
 #align add_monoid_hom_lequiv_int addMonoidHomLequivInt
 
+/-- Ring equivalence between additive group endomorphisms of an `AddCommGroup` `A` and
+`ℤ`-module endomorphisms of `A.` -/
+@[simps] def addMonoidEndRingEquivInt (A : Type*) [AddCommGroup A] :
+    AddMonoid.End A ≃+* Module.End ℤ A :=
+  { addMonoidHomLequivInt (B := A) ℤ with
+    map_mul' := fun _ _ => rfl }
+
 /-! ### Properties of linear maps -/
 
 
@@ -211,7 +218,7 @@ def eqLocus (f g : F) : Submodule R M :=
   { (f : M →+ M₂).eqLocusM g with
     carrier := { x | f x = g x }
     smul_mem' := fun {r} {x} (hx : _ = _) => show _ = _ by
-      simpa only [map_smulₛₗ] using congr_arg ((· • ·) (τ₁₂ r)) hx }
+      simpa only [map_smulₛₗ] using congr_arg (τ₁₂ r • ·) hx }
 #align linear_map.eq_locus LinearMap.eqLocus
 
 @[simp]
@@ -332,7 +339,7 @@ theorem disjoint_ker {f : F} {p : Submodule R M} :
 #align linear_map.disjoint_ker LinearMap.disjoint_ker
 
 theorem ker_eq_bot' {f : F} : ker f = ⊥ ↔ ∀ m, f m = 0 → m = 0 := by
-  simpa [disjoint_iff_inf_le] using @disjoint_ker _ _ _ _ _ _ _ _ _ _ _ _ _ f ⊤
+  simpa [disjoint_iff_inf_le] using disjoint_ker (f := f) (p := ⊤)
 #align linear_map.ker_eq_bot' LinearMap.ker_eq_bot'
 
 theorem ker_eq_bot_of_inverse {τ₂₁ : R₂ →+* R} [RingHomInvPair τ₁₂ τ₂₁] {f : M →ₛₗ[τ₁₂] M₂}
@@ -482,7 +489,7 @@ theorem injOn_of_disjoint_ker {p : Submodule R M} {s : Set M} (h : s ⊆ p)
 variable (F)
 
 theorem _root_.LinearMapClass.ker_eq_bot : ker f = ⊥ ↔ Injective f := by
-  simpa [disjoint_iff_inf_le] using @disjoint_ker' _ _ _ _ _ _ _ _ _ _ _ _ _ f ⊤
+  simpa [disjoint_iff_inf_le] using disjoint_ker' (f := f) (p := ⊤)
 #align linear_map_class.ker_eq_bot LinearMapClass.ker_eq_bot
 
 variable {F}
@@ -651,7 +658,7 @@ theorem range_inclusion (p q : Submodule R M) (h : p ≤ q) :
 
 @[simp]
 theorem map_subtype_range_inclusion {p p' : Submodule R M} (h : p ≤ p') :
-    map p'.subtype (range $ inclusion h) = p := by simp [range_inclusion, map_comap_eq, h]
+    map p'.subtype (range <| inclusion h) = p := by simp [range_inclusion, map_comap_eq, h]
 #align submodule.map_subtype_range_of_le Submodule.map_subtype_range_inclusion
 
 theorem disjoint_iff_comap_eq_bot {p q : Submodule R M} : Disjoint p q ↔ comap p.subtype q = ⊥ := by
@@ -665,7 +672,7 @@ def MapSubtype.relIso : Submodule R p ≃o { p' : Submodule R M // p' ≤ p } wh
   invFun q := comap p.subtype q
   left_inv p' := comap_map_eq_of_injective (by exact Subtype.val_injective) p'
   right_inv := fun ⟨q, hq⟩ => Subtype.ext_val <| by simp [map_comap_subtype p, inf_of_le_right hq]
-  map_rel_iff' {p₁ p₂} := Subtype.coe_le_coe.symm.trans $ by
+  map_rel_iff' {p₁ p₂} := Subtype.coe_le_coe.symm.trans <| by
     dsimp
     rw [map_le_iff_le_comap,
       comap_map_eq_of_injective (show Injective p.subtype from Subtype.coe_injective) p₂]
@@ -674,7 +681,7 @@ def MapSubtype.relIso : Submodule R p ≃o { p' : Submodule R M // p' ≤ p } wh
 /-- If `p ⊆ M` is a submodule, the ordering of submodules of `p` is embedded in the ordering of
 submodules of `M`. -/
 def MapSubtype.orderEmbedding : Submodule R p ↪o Submodule R M :=
-  (RelIso.toRelEmbedding <| MapSubtype.relIso p).trans $
+  (RelIso.toRelEmbedding <| MapSubtype.relIso p).trans <|
     Subtype.relEmbedding (X := Submodule R M) (fun p p' ↦ p ≤ p') _
 #align submodule.map_subtype.order_embedding Submodule.MapSubtype.orderEmbedding
 
@@ -732,7 +739,7 @@ def submoduleImage {M' : Type*} [AddCommMonoid M'] [Module R M'] {O : Submodule 
 @[simp]
 theorem mem_submoduleImage {M' : Type*} [AddCommMonoid M'] [Module R M'] {O : Submodule R M}
     {ϕ : O →ₗ[R] M'} {N : Submodule R M} {x : M'} :
-    x ∈ ϕ.submoduleImage N ↔ ∃ (y : _) (yO : y ∈ O) (_ : y ∈ N), ϕ ⟨y, yO⟩ = x := by
+    x ∈ ϕ.submoduleImage N ↔ ∃ (y : _) (yO : y ∈ O), y ∈ N ∧ ϕ ⟨y, yO⟩ = x := by
   refine' Submodule.mem_map.trans ⟨_, _⟩ <;> simp_rw [Submodule.mem_comap]
   · rintro ⟨⟨y, yO⟩, yN : y ∈ N, h⟩
     exact ⟨y, yO, yN, h⟩
@@ -1338,6 +1345,19 @@ theorem conj_id (e : M ≃ₗ[R] M₂) : e.conj LinearMap.id = LinearMap.id := b
   ext
   simp [conj_apply]
 #align linear_equiv.conj_id LinearEquiv.conj_id
+
+variable (M) in
+/-- An `R`-linear isomorphism between two `R`-modules `M₂` and `M₃` induces an `S`-linear
+isomorphism between `M₂ →ₗ[R] M` and `M₃ →ₗ[R] M`, if `M` is both an `R`-module and an
+`S`-module and their actions commute. -/
+def congrLeft {R} (S) [Semiring R] [Semiring S] [Module R M₂] [Module R M₃] [Module R M]
+    [Module S M] [SMulCommClass R S M] (e : M₂ ≃ₗ[R] M₃) : (M₂ →ₗ[R] M) ≃ₗ[S] (M₃ →ₗ[R] M) where
+  toFun f := f.comp e.symm.toLinearMap
+  invFun f := f.comp e.toLinearMap
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+  left_inv f := by dsimp only; apply FunLike.ext; exact (congr_arg f <| e.left_inv ·)
+  right_inv f := by dsimp only; apply FunLike.ext; exact (congr_arg f <| e.right_inv ·)
 
 end CommSemiring
 

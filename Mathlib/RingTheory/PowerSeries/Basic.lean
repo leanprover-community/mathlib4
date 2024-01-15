@@ -298,27 +298,8 @@ protected theorem mul_assoc (φ₁ φ₂ φ₃ : MvPowerSeries σ R) : φ₁ * �
   ext1 n
   classical
   simp only [coeff_mul, Finset.sum_mul, Finset.mul_sum, Finset.sum_sigma']
-  refine' Finset.sum_bij (fun p _ => ⟨(p.2.1, p.2.2 + p.1.2), (p.2.2, p.1.2)⟩) _ _ _ _ <;>
-    simp only [mem_antidiagonal, Finset.mem_sigma, heq_iff_eq, Prod.mk.inj_iff, and_imp,
-      exists_prop]
-  · rintro ⟨⟨i, j⟩, ⟨k, l⟩⟩
-    dsimp only
-    rintro rfl rfl
-    simp [add_assoc]
-  · rintro ⟨⟨a, b⟩, ⟨c, d⟩⟩
-    dsimp only
-    rintro rfl rfl
-    apply mul_assoc
-  · rintro ⟨⟨a, b⟩, ⟨c, d⟩⟩ ⟨⟨i, j⟩, ⟨k, l⟩⟩
-    dsimp only
-    rintro rfl rfl - rfl
-    simp only [Sigma.mk.inj_iff, Prod.mk.injEq, heq_iff_eq, and_imp]
-    rintro rfl - rfl rfl
-    simp only [and_self]
-  · rintro ⟨⟨i, j⟩, ⟨k, l⟩⟩
-    dsimp only
-    rintro rfl rfl
-    refine' ⟨⟨(i + k, l), (i, k)⟩, _, _⟩ <;> simp [add_assoc]
+  apply Finset.sum_nbij' (fun ⟨⟨_i, j⟩, ⟨k, l⟩⟩ ↦ ⟨(k, l + j), (l, j)⟩)
+    (fun ⟨⟨i, _j⟩, ⟨k, l⟩⟩ ↦ ⟨(i + k, l), (i, k)⟩) <;> aesop (add simp [add_assoc, mul_assoc])
 #align mv_power_series.mul_assoc MvPowerSeries.mul_assoc
 
 instance : Semiring (MvPowerSeries σ R) :=
@@ -1901,7 +1882,7 @@ theorem natDegree_trunc_lt (f : R⟦X⟧) (n) : (trunc (n + 1) f).natDegree < n 
   intros
   rw [coeff_trunc]
   split_ifs with h
-  · rw [lt_succ, ←not_lt] at h
+  · rw [lt_succ, ← not_lt] at h
     contradiction
   · rfl
 
@@ -1912,7 +1893,7 @@ theorem degree_trunc_lt (f : R⟦X⟧) (n) : (trunc n f).degree < n := by
   intros
   rw [coeff_trunc]
   split_ifs with h
-  · rw [←not_le] at h
+  · rw [← not_le] at h
     contradiction
   · rfl
 
@@ -1975,35 +1956,21 @@ theorem coeff_inv_aux (n : ℕ) (a : R) (φ : R⟦X⟧) :
   split_ifs; · rfl
   congr 1
   symm
-  apply Finset.sum_bij fun (p : ℕ × ℕ) _h => (single () p.1, single () p.2)
-  · rintro ⟨i, j⟩ hij
-    rw [mem_antidiagonal] at hij
-    rw [mem_antidiagonal, ← Finsupp.single_add, hij]
+  apply Finset.sum_nbij' (fun (a, b) ↦ (single () a, single () b))
+    fun (f, g) ↦ (f (), g ())
+  · aesop
+  · aesop
+  · aesop
+  · aesop
   · rintro ⟨i, j⟩ _hij
-    by_cases H : j < n
-    · rw [if_pos H, if_pos]
-      · rfl
-      constructor
-      · rintro ⟨⟩
-        simpa [Finsupp.single_eq_same] using le_of_lt H
-      · intro hh
-        rw [lt_iff_not_ge] at H
-        apply H
-        simpa [Finsupp.single_eq_same] using hh ()
-    · rw [if_neg H, if_neg]
-      rintro ⟨_h₁, h₂⟩
-      apply h₂
-      rintro ⟨⟩
-      simpa [Finsupp.single_eq_same] using not_lt.1 H
-  · rintro ⟨i, j⟩ ⟨k, l⟩ _hij _hkl
-    simpa only [Prod.mk.inj_iff, Finsupp.unique_single_eq_iff] using id
-  · rintro ⟨f, g⟩ hfg
-    refine' ⟨(f (), g ()), _, _⟩
-    · rw [mem_antidiagonal] at hfg
-      rw [mem_antidiagonal, ← Finsupp.add_apply, hfg, Finsupp.single_eq_same]
-    · rw [Prod.mk.inj_iff]
-      dsimp
-      exact ⟨Finsupp.unique_single f, Finsupp.unique_single g⟩
+    obtain H | H := le_or_lt n j
+    · aesop
+    rw [if_pos H, if_pos]
+    · rfl
+    refine ⟨?_, fun hh ↦ H.not_le ?_⟩
+    · rintro ⟨⟩
+      simpa [Finsupp.single_eq_same] using le_of_lt H
+    · simpa [Finsupp.single_eq_same] using hh ()
 #align power_series.coeff_inv_aux PowerSeries.coeff_inv_aux
 
 /-- A formal power series is invertible if the constant coefficient is invertible.-/
@@ -2363,10 +2330,9 @@ theorem coeff_order (h : (order φ).Dom) : coeff R (φ.order.get h) φ ≠ 0 := 
 then the order of the power series is less than or equal to `n`.-/
 theorem order_le (n : ℕ) (h : coeff R n φ ≠ 0) : order φ ≤ n := by
   classical
-  have _ :  ∃ n, coeff R n φ ≠ 0 := Exists.intro n h
   rw [order, dif_neg]
-  · simp only [PartENat.coe_le_coe, Nat.find_le_iff]
-    exact ⟨n, le_rfl, h⟩
+  · simp only [PartENat.coe_le_coe]
+    exact Nat.find_le h
   · exact exists_coeff_ne_zero_iff_ne_zero.mp ⟨n, h⟩
 #align power_series.order_le PowerSeries.order_le
 
@@ -2760,8 +2726,8 @@ theorem coe_pow (n : ℕ) : ((φ ^ n : R[X]) : PowerSeries R) = (φ : PowerSerie
 #align polynomial.coe_pow Polynomial.coe_pow
 
 theorem eval₂_C_X_eq_coe : φ.eval₂ (PowerSeries.C R) PowerSeries.X = ↑φ := by
-  nth_rw 2 [←eval₂_C_X (p := φ)]
-  rw [←coeToPowerSeries.ringHom_apply, eval₂_eq_sum_range, eval₂_eq_sum_range, map_sum]
+  nth_rw 2 [← eval₂_C_X (p := φ)]
+  rw [← coeToPowerSeries.ringHom_apply, eval₂_eq_sum_range, eval₂_eq_sum_range, map_sum]
   apply Finset.sum_congr rfl
   intros
   rw [map_mul, map_pow, coeToPowerSeries.ringHom_apply,
@@ -2864,10 +2830,10 @@ theorem trunc_trunc_mul_trunc {n} (f g : R⟦X⟧) :
   | zero =>
     rw [pow_zero, pow_zero]
   | succ a ih =>
-    rw [pow_succ, pow_succ, trunc_trunc_mul, ←trunc_trunc_mul_trunc, ih, trunc_trunc_mul_trunc]
+    rw [pow_succ, pow_succ, trunc_trunc_mul, ← trunc_trunc_mul_trunc, ih, trunc_trunc_mul_trunc]
 
 theorem trunc_coe_eq_self {n} {f : R[X]} (hn : natDegree f < n) : trunc n (f : R⟦X⟧) = f := by
-  rw [←Polynomial.coe_inj]
+  rw [← Polynomial.coe_inj]
   ext m
   rw [coeff_coe, coeff_trunc]
   split
@@ -2888,7 +2854,7 @@ from the truncations of `f` and `g`.-/
 theorem coeff_mul_eq_coeff_trunc_mul_trunc₂ {n a b} (f g) (ha : n < a) (hb : n < b) :
     coeff R n (f * g) = coeff R n (trunc a f * trunc b g) := by
   symm
-  rw [←coeff_coe_trunc_of_lt n.lt_succ_self, ←trunc_trunc_mul_trunc, trunc_trunc_of_le f ha,
+  rw [← coeff_coe_trunc_of_lt n.lt_succ_self, ← trunc_trunc_mul_trunc, trunc_trunc_of_le f ha,
     trunc_trunc_of_le g hb, trunc_trunc_mul_trunc, coeff_coe_trunc_of_lt n.lt_succ_self]
 
 theorem coeff_mul_eq_coeff_trunc_mul_trunc {d n} (f g) (h : d < n) :

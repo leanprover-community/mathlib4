@@ -123,7 +123,7 @@ theorem lt_card_le_iff_apply_le_of_monotone [PartialOrder α] [DecidableRel (α 
     j < Fintype.card {i // f i ≤ a} ↔ f j ≤ a := by
   suffices h1 : ∀ k : Fin m, (k < Fintype.card {i // f i ≤ a}) → f k ≤ a
   · refine ⟨h1 j, fun h ↦ ?_⟩
-    by_contra' hc
+    by_contra! hc
     let p : Fin m → Prop := fun x ↦ f x ≤ a
     let q : Fin m → Prop := fun x ↦ x < Fintype.card {i // f i ≤ a}
     let q' : {i // f i ≤ a} → Prop := fun x ↦ q x

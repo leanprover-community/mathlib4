@@ -26,13 +26,17 @@ open scoped NumberField BigOperators
 
 open Finset NumberField Algebra FiniteDimensional
 
-section rat
+section Rat
 
-theorem Algebra.coe_norm_int {K : Type*} [Field K] [NumberField K] (x : 𝓞 K) :
-    Algebra.norm ℤ x = Algebra.norm ℚ (x : K) :=
+variable {K : Type*} [Field K] [NumberField K] (x : 𝓞 K)
+
+theorem Algebra.coe_norm_int : (Algebra.norm ℤ x : ℚ) = Algebra.norm ℚ (x : K) :=
   (Algebra.norm_localization (R := ℤ) (Rₘ := ℚ) (S := 𝓞 K) (Sₘ := K) (nonZeroDivisors ℤ) x).symm
 
-end rat
+theorem Algebra.coe_trace_int : (Algebra.trace ℤ _ x : ℚ) = Algebra.trace ℚ K x :=
+  (Algebra.trace_localization (R := ℤ) (Rₘ := ℚ) (S := 𝓞 K) (Sₘ := K) (nonZeroDivisors ℤ) x).symm
+
+end Rat
 
 namespace RingOfIntegers
 
@@ -97,6 +101,7 @@ theorem norm_norm [IsSeparable K L] [Algebra F L] [IsSeparable F L] [FiniteDimen
 
 variable {F}
 
+set_option synthInstance.maxHeartbeats 60000 in
 theorem isUnit_norm [CharZero K] {x : 𝓞 F} : IsUnit (norm K x) ↔ IsUnit x := by
   letI : Algebra K (AlgebraicClosure K) := AlgebraicClosure.instAlgebra K
   let L := normalClosure K F (AlgebraicClosure F)

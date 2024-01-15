@@ -409,7 +409,7 @@ theorem addOrderOf_eq_pos_iff {u : AddCircle p} {n : ℕ} (h : 0 < n) :
   have he : (↑(↑((a % n).toNat) / ↑n * p) : AddCircle p) = k
   · convert congr_arg (QuotientAddGroup.mk : 𝕜 → (AddCircle p)) ha using 1
     rw [coe_add, ← Int.cast_ofNat, han, zsmul_eq_mul, mul_div_right_comm, eq_comm, add_left_eq_self,
-      ←zsmul_eq_mul, coe_zsmul, coe_period, smul_zero]
+      ← zsmul_eq_mul, coe_zsmul, coe_period, smul_zero]
   refine' ⟨(a % n).toNat, _, _, he⟩
   · rw [← Int.ofNat_lt, han]
     exact Int.emod_lt_of_pos _ (Int.ofNat_lt.2 h)
@@ -484,7 +484,7 @@ end LinearOrderedField
 
 variable (p : ℝ)
 
-instance pathConnectedSpace : PathConnectedSpace $ AddCircle p :=
+instance pathConnectedSpace : PathConnectedSpace <| AddCircle p :=
   (inferInstance : PathConnectedSpace (Quotient _))
 
 /-- The "additive circle" `ℝ ⧸ (ℤ ∙ p)` is compact. -/
@@ -570,7 +570,7 @@ theorem equivIccQuot_comp_mk_eq_toIocMod :
       Quot.mk _ ⟨toIocMod hp.out a x, Ioc_subset_Icc_self <| toIocMod_mem_Ioc _ _ x⟩ := by
   rw [equivIccQuot_comp_mk_eq_toIcoMod]
   funext x
-  by_cases a ≡ x [PMOD p]
+  by_cases h : a ≡ x [PMOD p]
   · simp_rw [(modEq_iff_toIcoMod_eq_left hp.out).1 h, (modEq_iff_toIocMod_eq_right hp.out).1 h]
     exact Quot.sound EndpointIdent.mk
   · simp_rw [(not_modEq_iff_toIcoMod_eq_toIocMod hp.out).1 h]

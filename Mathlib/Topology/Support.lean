@@ -3,7 +3,9 @@ Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Patrick Massot
 -/
+import Mathlib.Algebra.Module.Basic
 import Mathlib.Topology.Separation
+import Mathlib.Algebra.Group.Defs
 
 #align_import topology.support from "leanprover-community/mathlib"@"d90e4e186f1d18e375dcd4e5b5f6364b01cb3e46"
 
@@ -80,7 +82,7 @@ theorem range_subset_insert_image_mulTSupport (f : X → α) :
 @[to_additive]
 theorem range_eq_image_mulTSupport_or (f : X → α) :
     range f = f '' mulTSupport f ∨ range f = insert 1 (f '' mulTSupport f) :=
-  (wcovby_insert _ _).eq_or_eq (image_subset_range _ _) (range_subset_insert_image_mulTSupport f)
+  (wcovBy_insert _ _).eq_or_eq (image_subset_range _ _) (range_subset_insert_image_mulTSupport f)
 #align range_eq_image_mul_tsupport_or range_eq_image_mulTSupport_or
 #align range_eq_image_tsupport_or range_eq_image_tsupport_or
 
@@ -100,6 +102,13 @@ theorem tsupport_smul_subset_left {M α} [TopologicalSpace X] [Zero M] [Zero α]
     (f : X → M) (g : X → α) : (tsupport fun x => f x • g x) ⊆ tsupport f :=
   closure_mono <| support_smul_subset_left f g
 #align tsupport_smul_subset_left tsupport_smul_subset_left
+
+@[to_additive]
+theorem mulTSupport_mul [TopologicalSpace X] [Monoid α] {f g : X → α} :
+    (mulTSupport fun x ↦ f x * g x) ⊆ mulTSupport f ∪ mulTSupport g :=
+  closure_minimal
+    ((mulSupport_mul f g).trans (union_subset_union (subset_mulTSupport _) (subset_mulTSupport _)))
+    (isClosed_closure.union isClosed_closure)
 
 section
 
@@ -196,8 +205,8 @@ theorem isCompact_range_of_mulSupport_subset_isCompact [TopologicalSpace β]
 
 @[to_additive]
 theorem HasCompactMulSupport.isCompact_range [TopologicalSpace β] (h : HasCompactMulSupport f)
-    (hf : Continuous f) : IsCompact (range f) := by
-  apply isCompact_range_of_mulSupport_subset_isCompact hf h (subset_mulTSupport f)
+    (hf : Continuous f) : IsCompact (range f) :=
+  isCompact_range_of_mulSupport_subset_isCompact hf h (subset_mulTSupport f)
 #align has_compact_mul_support.is_compact_range HasCompactMulSupport.isCompact_range
 #align has_compact_support.is_compact_range HasCompactSupport.isCompact_range
 
@@ -247,6 +256,40 @@ theorem HasCompactMulSupport.comp₂_left (hf : HasCompactMulSupport f)
   filter_upwards [hf, hf₂] using fun x hx hx₂ => by simp_rw [hx, hx₂, Pi.one_apply, hm]
 #align has_compact_mul_support.comp₂_left HasCompactMulSupport.comp₂_left
 #align has_compact_support.comp₂_left HasCompactSupport.comp₂_left
+
+namespace HasCompactMulSupport
+
+variable [T2Space α'] (hf : HasCompactMulSupport f) {g : α → α'} (cont : Continuous g)
+
+@[to_additive]
+theorem mulTSupport_extend_one_subset :
+    mulTSupport (g.extend f 1) ⊆ g '' mulTSupport f :=
+  (hf.image cont).isClosed.closure_subset_iff.mpr <|
+    mulSupport_extend_one_subset.trans (image_subset g subset_closure)
+
+@[to_additive]
+theorem extend_one : HasCompactMulSupport (g.extend f 1) :=
+  HasCompactMulSupport.of_mulSupport_subset_isCompact (hf.image cont)
+    (subset_closure.trans <| hf.mulTSupport_extend_one_subset cont)
+
+@[to_additive]
+theorem mulTSupport_extend_one (inj : g.Injective) :
+    mulTSupport (g.extend f 1) = g '' mulTSupport f :=
+  (hf.mulTSupport_extend_one_subset cont).antisymm <|
+    (image_closure_subset_closure_image cont).trans
+      (closure_mono (mulSupport_extend_one inj).superset)
+
+@[to_additive]
+theorem continuous_extend_one [TopologicalSpace β] {U : Set α'} (hU : IsOpen U) {f : U → β}
+    (cont : Continuous f) (supp : HasCompactMulSupport f) :
+    Continuous (Subtype.val.extend f 1) :=
+  continuous_of_mulTSupport fun x h ↦ by
+    rw [show x = ↑(⟨x, Subtype.coe_image_subset _ _
+      (supp.mulTSupport_extend_one_subset continuous_subtype_val h)⟩ : U) by rfl,
+      ← (hU.openEmbedding_subtype_val).continuousAt_iff, extend_comp Subtype.val_injective]
+    exact cont.continuousAt
+
+end HasCompactMulSupport
 
 end
 

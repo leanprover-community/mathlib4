@@ -7,6 +7,7 @@ import Mathlib.Algebra.Category.ModuleCat.Free
 import Mathlib.Topology.Category.Profinite.CofilteredLimit
 import Mathlib.Topology.Category.Profinite.Product
 import Mathlib.Topology.LocallyConstant.Algebra
+import Mathlib.Init.Data.Bool.Lemmas
 
 /-!
 
@@ -677,8 +678,8 @@ theorem fin_comap_jointlySurjective
     (hC : IsClosed C)
     (f : LocallyConstant C ℤ) : ∃ (s : Finset I)
     (g : LocallyConstant (π C (· ∈ s)) ℤ), f = g.comap (ProjRestrict C (· ∈ s)) := by
-  obtain ⟨J, g, h⟩ := @Profinite.exists_locallyConstant (Finset I)ᵒᵖ _ _ _
-    (spanCone hC.isCompact) _
+  obtain ⟨J, g, h⟩ := @Profinite.exists_locallyConstant.{0, u, u} (Finset I)ᵒᵖ _ _ _
+    (spanCone hC.isCompact) ℤ
     (spanCone_isLimit hC.isCompact) f
   exact ⟨(Opposite.unop J), g, h⟩
 
@@ -1367,13 +1368,11 @@ theorem succ_mono : CategoryTheory.Mono (ModuleCat.ofHom (πs C o)) := by
   exact injective_πs _ _
 
 theorem succ_exact :
-    CategoryTheory.Exact (ModuleCat.ofHom (πs C o)) (ModuleCat.ofHom (Linear_CC' C hsC ho)) := by
-  rw [ModuleCat.exact_iff]
-  ext f
-  rw [LinearMap.mem_ker, LinearMap.mem_range]
-  refine ⟨fun ⟨y, hy⟩ ↦ ?_, fun hf ↦ ?_⟩
-  · simpa only [ModuleCat.ofHom, ← hy] using CC_comp_zero _ _ _ y
-  · exact CC_exact _ hC _ ho hf
+    (ShortComplex.mk (ModuleCat.ofHom (πs C o)) (ModuleCat.ofHom (Linear_CC' C hsC ho))
+    (by ext; apply CC_comp_zero)).Exact := by
+  rw [ShortComplex.moduleCat_exact_iff]
+  intro f
+  exact CC_exact C hC hsC ho
 
 end ExactSequence
 
@@ -1639,7 +1638,7 @@ theorem maxTail_isGood (l : MaxProducts C ho)
     rw [Products.max_eq_o_cons_tail ho p hp.1 hp.2.1]
     rfl
   have hse := succ_exact C hC hsC ho
-  rw [ModuleCat.exact_iff] at hse
+  rw [ShortComplex.moduleCat_exact_iff_range_eq_ker] at hse
   dsimp [ModuleCat.ofHom] at hse
 
   -- Rewrite `this` using exact sequence manipulations to conclude that a term is in the range of
@@ -1754,8 +1753,8 @@ theorem GoodProducts.linearIndependentAux (μ : Ordinal) : P I μ := by
   have ho' : o < Ordinal.type (·<· : I → I → Prop) :=
     lt_of_lt_of_le (Order.lt_succ _) ho
   rw [linearIndependent_iff_sum C hsC ho']
-  refine ModuleCat.linearIndependent_leftExact ?_ ?_ (succ_mono C o) (succ_exact C hC hsC ho')
-      (square_commutes C ho')
+  refine' ModuleCat.linearIndependent_leftExact (succ_exact C hC hsC ho') ?_ ?_ (succ_mono C o)
+    (square_commutes C ho')
   · exact h (le_of_lt ho') (π C (ord I · < o)) (isClosed_proj C o hC) (contained_proj C o)
   · exact linearIndependent_comp_of_eval C hC hsC ho' (span (π C (ord I · < o))
       (isClosed_proj C o hC)) (h (le_of_lt ho') (C' C ho') (isClosed_C' C hC ho')
@@ -1814,7 +1813,7 @@ theorem Nobeling.embedding : ClosedEmbedding (Nobeling.ι S) := by
       simp only [Set.mem_preimage, Set.mem_singleton_iff, decide_eq_true_eq]
   · intro a b h
     by_contra hn
-    obtain ⟨C, hC, hh⟩ := exists_clopen_of_totally_separated hn
+    obtain ⟨C, hC, hh⟩ := exists_isClopen_of_totally_separated hn
     apply hh.2 ∘ of_decide_eq_true
     dsimp (config := { unfoldPartialApp := true }) [ι] at h
     rw [← congr_fun h ⟨C, hC⟩]

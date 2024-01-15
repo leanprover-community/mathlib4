@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
 import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
-import Mathlib.RingTheory.Discriminant
+import Mathlib.NumberTheory.NumberField.Discriminant
 
 #align_import number_theory.cyclotomic.discriminant from "leanprover-community/mathlib"@"3e068ece210655b7b9a9477c3aff38a492400aa1"
 
@@ -70,7 +70,7 @@ theorem discr_prime_pow_ne_two [IsCyclotomicExtension {p ^ (k + 1)} K L] [hp : F
   haveI se : IsSeparable K L := (isGalois (p ^ (k + 1)) K L).to_isSeparable
   rw [discr_powerBasis_eq_norm, finrank L hirr, hζ.powerBasis_gen _, ←
     hζ.minpoly_eq_cyclotomic_of_irreducible hirr, PNat.pow_coe,
-    totient_prime_pow hp.out (succ_pos k), succ_sub_one]
+    totient_prime_pow hp.out (succ_pos k), Nat.add_one_sub_one]
   have coe_two : ((2 : ℕ+) : ℕ) = 2 := rfl
   have hp2 : p = 2 → k ≠ 0 := by
     rintro rfl rfl
@@ -159,22 +159,32 @@ theorem discr_prime_pow [hcycl : IsCyclotomicExtension {p ^ k} K L] [hp : Fact (
         replace hk :=
           eq_of_prime_pow_eq (prime_iff.1 hp.out) (prime_iff.1 Nat.prime_two) (succ_pos _) hk
         rwa [coe_two, PNat.coe_inj] at hk
-      rw [hp, ← PNat.coe_inj, PNat.pow_coe] at hk
+      subst hp
+      rw [← PNat.coe_inj, PNat.pow_coe] at hk
       nth_rw 2 [← pow_one 2] at hk
       replace hk := Nat.pow_right_injective rfl.le hk
       rw [add_left_eq_self] at hk
-      rw [hp, hk] at hζ; norm_num at hζ; rw [← coe_two] at hζ
-      rw [coe_basis, powerBasis_gen]; simp only [hp, hk]; norm_num
-      -- Porting note: the goal at this point is `(discr K fun i ↦ ζ ^ ↑i) = 1`.
-      -- This `simp_rw` is needed so the next `rw` can rewrite the type of `i` from
-      -- `Fin (natDegree (minpoly K ζ))` to `Fin 1`
+      subst hk
+      rw [← Nat.one_eq_succ_zero, pow_one] at hζ hcycl
+      have : natDegree (minpoly K ζ) = 1 := by
+        rw [hζ.eq_neg_one_of_two_right, show (-1 : L) = algebraMap K L (-1) by simp,
+          minpoly.eq_X_sub_C_of_algebraMap_inj _ (NoZeroSMulDivisors.algebraMap_injective K L)]
+        exact natDegree_X_sub_C (-1)
+      rcases Fin.equiv_iff_eq.2 this with ⟨e⟩
+      rw [← Algebra.discr_reindex K (hζ.powerBasis K).basis e, coe_basis, powerBasis_gen]; norm_num
       simp_rw [hζ.eq_neg_one_of_two_right, show (-1 : L) = algebraMap K L (-1) by simp]
-      rw [hζ.eq_neg_one_of_two_right, show (-1 : L) = algebraMap K L (-1) by simp,
-        minpoly.eq_X_sub_C_of_algebraMap_inj _ (algebraMap K L).injective, natDegree_X_sub_C]
-      simp only [discr, traceMatrix_apply, Matrix.det_unique, Fin.default_eq_zero, Fin.val_zero,
-        _root_.pow_zero, traceForm_apply, mul_one]
-      rw [← (algebraMap K L).map_one, trace_algebraMap, finrank _ hirr, hp, hk]; norm_num
-      simp [← coe_two, Even.neg_pow (by decide : Even (1 / 2))]
+      convert_to (discr K fun i : Fin 1 ↦ (algebraMap K L) (-1) ^ ↑i) = _
+      · congr
+        ext i
+        simp only [map_neg, map_one, Function.comp_apply, Fin.coe_fin_one, _root_.pow_zero]
+        suffices (e.symm i : ℕ) = 0 by simp [this]
+        rw [← Nat.lt_one_iff]
+        convert (e.symm i).2
+        rw [this]
+      · simp only [discr, traceMatrix_apply, Matrix.det_unique, Fin.default_eq_zero, Fin.val_zero,
+          _root_.pow_zero, traceForm_apply, mul_one]
+        rw [← (algebraMap K L).map_one, trace_algebraMap, finrank _ hirr]; norm_num
+        simp [← coe_two, Even.neg_pow (by decide : Even (1 / 2))]
     · exact discr_prime_pow_ne_two hζ hirr hk
 #align is_cyclotomic_extension.discr_prime_pow IsCyclotomicExtension.discr_prime_pow
 

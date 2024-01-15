@@ -186,7 +186,7 @@ instance {S : Type*} [Semiring S] [SMul S R] [SMul Sᵐᵒᵖ R] [Module S M] [M
     [IsScalarTower S R M] [IsScalarTower Sᵐᵒᵖ R M] [IsCentralScalar S M] : IsCentralScalar S N :=
   N.toSubmodule.isCentralScalar
 
-instance : LieModule R L N where
+instance instLieModule : LieModule R L N where
   lie_smul := by intro t x y; apply SetCoe.ext; apply lie_smul
   smul_lie := by intro t x y; apply SetCoe.ext; apply smul_lie
 
@@ -367,13 +367,13 @@ theorem bot_coe : ((⊥ : LieSubmodule R L M) : Set M) = {0} :=
 #align lie_submodule.bot_coe LieSubmodule.bot_coe
 
 @[simp]
-theorem coeSubmodule_eq_bot_iff : (N : Submodule R M) = ⊥ ↔ N = ⊥ := by
-  rw [← coe_toSubmodule_eq_iff]; rfl
-
-@[simp]
 theorem bot_coeSubmodule : ((⊥ : LieSubmodule R L M) : Submodule R M) = ⊥ :=
   rfl
 #align lie_submodule.bot_coe_submodule LieSubmodule.bot_coeSubmodule
+
+@[simp]
+theorem coeSubmodule_eq_bot_iff : (N : Submodule R M) = ⊥ ↔ N = ⊥ := by
+  rw [← coe_toSubmodule_eq_iff, bot_coeSubmodule]
 
 @[simp]
 theorem mem_bot (x : M) : x ∈ (⊥ : LieSubmodule R L M) ↔ x = 0 :=
@@ -389,13 +389,13 @@ theorem top_coe : ((⊤ : LieSubmodule R L M) : Set M) = univ :=
 #align lie_submodule.top_coe LieSubmodule.top_coe
 
 @[simp]
-theorem coeSubmodule_eq_top_iff : (N : Submodule R M) = ⊤ ↔ N = ⊤ := by
-  rw [← coe_toSubmodule_eq_iff]; rfl
-
-@[simp]
 theorem top_coeSubmodule : ((⊤ : LieSubmodule R L M) : Submodule R M) = ⊤ :=
   rfl
 #align lie_submodule.top_coe_submodule LieSubmodule.top_coeSubmodule
+
+@[simp]
+theorem coeSubmodule_eq_top_iff : (N : Submodule R M) = ⊤ ↔ N = ⊤ := by
+  rw [← coe_toSubmodule_eq_iff, top_coeSubmodule]
 
 @[simp]
 theorem mem_top (x : M) : x ∈ (⊤ : LieSubmodule R L M) :=
@@ -545,6 +545,14 @@ theorem codisjoint_iff_coe_toSubmodule :
     Codisjoint N N' ↔ Codisjoint (N : Submodule R M) (N' : Submodule R M) := by
   rw [codisjoint_iff, codisjoint_iff, ← coe_toSubmodule_eq_iff, sup_coe_toSubmodule,
     top_coeSubmodule, ← codisjoint_iff]
+
+theorem independent_iff_coe_toSubmodule {ι : Type*} {N : ι → LieSubmodule R L M} :
+    CompleteLattice.Independent N ↔ CompleteLattice.Independent fun i ↦ (N i : Submodule R M) := by
+  simp [CompleteLattice.independent_def, disjoint_iff_coe_toSubmodule]
+
+theorem iSup_eq_top_iff_coe_toSubmodule {ι : Type*} {N : ι → LieSubmodule R L M} :
+    ⨆ i, N i = ⊤ ↔ ⨆ i, (N i : Submodule R M) = ⊤ := by
+  rw [← iSup_coe_toSubmodule, ← top_coeSubmodule (L := L), coe_toSubmodule_eq_iff]
 
 instance : AddCommMonoid (LieSubmodule R L M) where
   add := (· ⊔ ·)

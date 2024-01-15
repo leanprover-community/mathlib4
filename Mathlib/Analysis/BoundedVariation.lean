@@ -107,7 +107,7 @@ theorem sum_le (f : α → E) {s : Set α} (n : ℕ) {u : ℕ → α} (hu : Mono
 theorem sum_le_of_monotoneOn_Icc (f : α → E) {s : Set α} {m n : ℕ} {u : ℕ → α}
     (hu : MonotoneOn u (Icc m n)) (us : ∀ i ∈ Icc m n, u i ∈ s) :
     (∑ i in Finset.Ico m n, edist (f (u (i + 1))) (f (u i))) ≤ eVariationOn f s := by
-  cases' le_total n m with hnm hmn
+  rcases le_total n m with hnm | hmn
   · simp [Finset.Ico_eq_empty_of_le hnm]
   let π := projIcc m n hmn
   let v i := u (π i)
@@ -530,7 +530,7 @@ theorem comp_le_of_antitoneOn (f : α → E) {s : Set α} {t : Set β} (φ : β 
   rintro ⟨n, u, hu, ut⟩
   rw [← Finset.sum_range_reflect]
   refine' (Finset.sum_congr rfl fun x hx => _).trans_le <| le_iSup_of_le
-    ⟨n, fun i => φ (u <| n - i), fun x y xy => hφ (ut _) (ut _) (hu <| Nat.sub_le_sub_left n xy),
+    ⟨n, fun i => φ (u <| n - i), fun x y xy => hφ (ut _) (ut _) (hu <| Nat.sub_le_sub_left xy n),
       fun i => φst (ut _)⟩
     le_rfl
   dsimp only [Subtype.coe_mk]

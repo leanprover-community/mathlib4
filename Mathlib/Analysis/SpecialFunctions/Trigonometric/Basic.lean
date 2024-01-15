@@ -164,17 +164,6 @@ theorem pi_pos : 0 < π :=
   lt_of_lt_of_le (by norm_num) two_le_pi
 #align real.pi_pos Real.pi_pos
 
-namespace Mathlib.Meta.Positivity
-open Lean.Meta Qq
-
-/-- Extension for the `positivity` tactic: `π` is always positive. -/
-@[positivity π]
-def evalExp : Mathlib.Meta.Positivity.PositivityExt where eval {_ _} _ _ _ := do
-  pure (.positive (q(Real.pi_pos) : Lean.Expr))
-
-end Mathlib.Meta.Positivity
-
-
 theorem pi_ne_zero : π ≠ 0 :=
   ne_of_gt pi_pos
 #align real.pi_ne_zero Real.pi_ne_zero
@@ -187,6 +176,16 @@ theorem two_pi_pos : 0 < 2 * π := by linarith [pi_pos]
 #align real.two_pi_pos Real.two_pi_pos
 
 end Real
+
+namespace Mathlib.Meta.Positivity
+open Lean.Meta Qq
+
+/-- Extension for the `positivity` tactic: `π` is always positive. -/
+@[positivity Real.pi]
+def evalRealPi : Mathlib.Meta.Positivity.PositivityExt where eval {_ _} _ _ _ := do
+  pure (.positive (q(Real.pi_pos) : Lean.Expr))
+
+end Mathlib.Meta.Positivity
 
 namespace NNReal
 
@@ -1399,7 +1398,7 @@ $$\left|exp^{a\left(e^{z}+e^{-z}\right)}\right| \le e^{a\cos b \exp^{|re z|}}.$$
 theorem abs_exp_mul_exp_add_exp_neg_le_of_abs_im_le {a b : ℝ} (ha : a ≤ 0) {z : ℂ} (hz : |z.im| ≤ b)
     (hb : b ≤ π / 2) :
     abs (exp (a * (exp z + exp (-z)))) ≤ Real.exp (a * Real.cos b * Real.exp |z.re|) := by
-  simp only [abs_exp, Real.exp_le_exp, ofReal_mul_re, add_re, exp_re, neg_im, Real.cos_neg, ←
+  simp only [abs_exp, Real.exp_le_exp, re_ofReal_mul, add_re, exp_re, neg_im, Real.cos_neg, ←
     add_mul, mul_assoc, mul_comm (Real.cos b), neg_re, ← Real.cos_abs z.im]
   have : Real.exp |z.re| ≤ Real.exp z.re + Real.exp (-z.re) :=
     apply_abs_le_add_of_nonneg (fun x => (Real.exp_pos x).le) z.re

@@ -324,9 +324,7 @@ def prodPseudoEMetricAux [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
         (edist f.fst h.fst ^ p.toReal + edist f.snd h.snd ^ p.toReal) ^ (1 / p.toReal) ≤
             ((edist f.fst g.fst + edist g.fst h.fst) ^ p.toReal +
               (edist f.snd g.snd + edist g.snd h.snd) ^ p.toReal) ^ (1 / p.toReal) := by
-          apply ENNReal.rpow_le_rpow _ (one_div_nonneg.2 <| zero_le_one.trans hp)
-          exact add_le_add (ENNReal.rpow_le_rpow (edist_triangle _ _ _) (zero_le_one.trans hp))
-            (ENNReal.rpow_le_rpow (edist_triangle _ _ _) (zero_le_one.trans hp))
+          gcongr <;> apply edist_triangle
         _ ≤
             (edist f.fst g.fst ^ p.toReal + edist f.snd g.snd ^ p.toReal) ^ (1 / p.toReal) +
               (edist g.fst h.fst ^ p.toReal + edist g.snd h.snd ^ p.toReal) ^ (1 / p.toReal) := by
@@ -404,13 +402,13 @@ theorem prod_lipschitzWith_equiv_aux [PseudoEMetricSpace α] [PseudoEMetricSpace
         edist x.fst y.fst ≤ (edist x.fst y.fst ^ p.toReal) ^ (1 / p.toReal) := by
           simp only [← ENNReal.rpow_mul, cancel, ENNReal.rpow_one, le_refl]
         _ ≤ (edist x.fst y.fst ^ p.toReal + edist x.snd y.snd ^ p.toReal) ^ (1 / p.toReal) := by
-          apply ENNReal.rpow_le_rpow _ (by positivity)
+          gcongr
           simp only [self_le_add_right]
     · calc
         edist x.snd y.snd ≤ (edist x.snd y.snd ^ p.toReal) ^ (1 / p.toReal) := by
           simp only [← ENNReal.rpow_mul, cancel, ENNReal.rpow_one, le_refl]
         _ ≤ (edist x.fst y.fst ^ p.toReal + edist x.snd y.snd ^ p.toReal) ^ (1 / p.toReal) := by
-          apply ENNReal.rpow_le_rpow _ (by positivity)
+          gcongr
           simp only [self_le_add_left]
 
 theorem prod_antilipschitzWith_equiv_aux [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
@@ -427,11 +425,7 @@ theorem prod_antilipschitzWith_equiv_aux [PseudoEMetricSpace α] [PseudoEMetricS
       (edist x.fst y.fst ^ p.toReal + edist x.snd y.snd ^ p.toReal) ^ (1 / p.toReal) ≤
           (edist (WithLp.equiv p _ x) (WithLp.equiv p _ y) ^ p.toReal +
           edist (WithLp.equiv p _ x) (WithLp.equiv p _ y) ^ p.toReal) ^ (1 / p.toReal) := by
-        refine ENNReal.rpow_le_rpow (add_le_add ?_ ?_) nonneg
-        · refine ENNReal.rpow_le_rpow ?_ (le_of_lt pos)
-          simp [edist]
-        · refine ENNReal.rpow_le_rpow ?_ (le_of_lt pos)
-          simp [edist]
+        gcongr <;> simp [edist]
       _ = (2 ^ (1 / p.toReal) : ℝ≥0) * edist (WithLp.equiv p _ x) (WithLp.equiv p _ y) := by
         simp only [← two_mul, ENNReal.mul_rpow_of_nonneg _ _ nonneg, ← ENNReal.rpow_mul, cancel,
           ENNReal.rpow_one, ← ENNReal.coe_rpow_of_nonneg _ nonneg, coe_ofNat]
@@ -751,7 +745,7 @@ instance instProdNormedSpace : NormedSpace 𝕜 (WithLp p (α × β)) where
       have smul_snd : (c • f).snd = c • f.snd := rfl
       simp only [prod_norm_eq_add (zero_lt_one.trans_le hp), norm_smul, Real.mul_rpow,
         norm_nonneg, smul_fst, smul_snd]
-      rw [← mul_add, mul_rpow (rpow_nonneg_of_nonneg (norm_nonneg _) _),
+      rw [← mul_add, mul_rpow (rpow_nonneg (norm_nonneg _) _),
         ← rpow_mul (norm_nonneg _), this, Real.rpow_one]
       positivity
 

@@ -97,14 +97,14 @@ theorem toPGame_moveLeft {o : Ordinal} (i) :
     o.toPGame.moveLeft (toLeftMovesToPGame i) = i.val.toPGame := by simp
 #align ordinal.to_pgame_move_left Ordinal.toPGame_moveLeft
 
-/-- `0.to_pgame` has the same moves as `0`. -/
-noncomputable def zeroToPgameRelabelling : toPGame 0 ≡r 0 :=
+/-- `0.toPGame` has the same moves as `0`. -/
+noncomputable def zeroToPGameRelabelling : toPGame 0 ≡r 0 :=
   Relabelling.isEmpty _
-#align ordinal.zero_to_pgame_relabelling Ordinal.zeroToPgameRelabelling
+#align ordinal.zero_to_pgame_relabelling Ordinal.zeroToPGameRelabelling
 
-noncomputable instance uniqueOneToPgameLeftMoves : Unique (toPGame 1).LeftMoves :=
+noncomputable instance uniqueOneToPGameLeftMoves : Unique (toPGame 1).LeftMoves :=
   (Equiv.cast <| toPGame_leftMoves 1).unique
-#align ordinal.unique_one_to_pgame_left_moves Ordinal.uniqueOneToPgameLeftMoves
+#align ordinal.unique_one_to_pgame_left_moves Ordinal.uniqueOneToPGameLeftMoves
 
 @[simp]
 theorem one_toPGame_leftMoves_default_eq :
@@ -121,10 +121,10 @@ theorem to_leftMoves_one_toPGame_symm (i) :
 theorem one_toPGame_moveLeft (x) : (toPGame 1).moveLeft x = toPGame 0 := by simp
 #align ordinal.one_to_pgame_move_left Ordinal.one_toPGame_moveLeft
 
-/-- `1.to_pgame` has the same moves as `1`. -/
+/-- `1.toPGame` has the same moves as `1`. -/
 noncomputable def oneToPGameRelabelling : toPGame 1 ≡r 1 :=
   ⟨Equiv.equivOfUnique _ _, Equiv.equivOfIsEmpty _ _, fun i => by
-    simpa using zeroToPgameRelabelling, isEmptyElim⟩
+    simpa using zeroToPGameRelabelling, isEmptyElim⟩
 #align ordinal.one_to_pgame_relabelling Ordinal.oneToPGameRelabelling
 
 theorem toPGame_lf {a b : Ordinal} (h : a < b) : a.toPGame ⧏ b.toPGame := by
@@ -142,7 +142,7 @@ theorem toPGame_lt {a b : Ordinal} (h : a < b) : a.toPGame < b.toPGame :=
 #align ordinal.to_pgame_lt Ordinal.toPGame_lt
 
 theorem toPGame_nonneg (a : Ordinal) : 0 ≤ a.toPGame :=
-  zeroToPgameRelabelling.ge.trans <| toPGame_le <| Ordinal.zero_le a
+  zeroToPGameRelabelling.ge.trans <| toPGame_le <| Ordinal.zero_le a
 #align ordinal.to_pgame_nonneg Ordinal.toPGame_nonneg
 
 @[simp]
