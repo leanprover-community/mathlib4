@@ -355,28 +355,29 @@ theorem interior_interior {s : Set α} : interior (interior s) = interior s :=
 
 @[simp]
 theorem interior_inter {s t : Set α} : interior (s ∩ t) = interior s ∩ interior t :=
-  Subset.antisymm
-    (subset_inter (interior_mono <| inter_subset_left s t)
-      (interior_mono <| inter_subset_right s t))
-    (interior_maximal (inter_subset_inter interior_subset interior_subset) <|
-      IsOpen.inter isOpen_interior isOpen_interior)
+  (Monotone.map_inf_le (fun _ _ ↦ interior_mono) s t).antisymm <|
+    interior_maximal (inter_subset_inter interior_subset interior_subset) <|
+      isOpen_interior.inter isOpen_interior
 #align interior_inter interior_inter
+
+theorem Set.Finite.interior_biInter {ι : Type*} {s : Set ι} (hs : s.Finite) (f : ι → Set α) :
+    interior (⋂ i ∈ s, f i) = ⋂ i ∈ s, interior (f i) :=
+  hs.induction_on (by simp) <| by intros; simp [*]
+
+theorem Set.Finite.interior_sInter {S : Set (Set α)} (hS : S.Finite) :
+    interior (⋂₀ S) = ⋂ s ∈ S, interior s := by
+  rw [sInter_eq_biInter, hS.interior_biInter]
 
 @[simp]
 theorem Finset.interior_iInter {ι : Type*} (s : Finset ι) (f : ι → Set α) :
-    interior (⋂ i ∈ s, f i) = ⋂ i ∈ s, interior (f i) := by
-  classical
-    refine' s.induction_on (by simp) _
-    intro i s _ h₂
-    simp [h₂]
+    interior (⋂ i ∈ s, f i) = ⋂ i ∈ s, interior (f i) :=
+  s.finite_toSet.interior_biInter f
 #align finset.interior_Inter Finset.interior_iInter
 
--- todo: generalize to `ι : Sort*`
 @[simp]
-theorem interior_iInter_of_finite {ι : Type*} [Finite ι] (f : ι → Set α) :
+theorem interior_iInter_of_finite [Finite ι] (f : ι → Set α) :
     interior (⋂ i, f i) = ⋂ i, interior (f i) := by
-  cases nonempty_fintype ι
-  convert Finset.univ.interior_iInter f <;> simp
+  rw [← sInter_range, (finite_range f).interior_sInter, biInter_range]
 #align interior_Inter interior_iInter_of_finite
 
 theorem interior_union_isClosed_of_interior_empty {s t : Set α} (h₁ : IsClosed s)
@@ -527,38 +528,41 @@ theorem closure_closure {s : Set α} : closure (closure s) = closure s :=
   isClosed_closure.closure_eq
 #align closure_closure closure_closure
 
-@[simp]
-theorem closure_union {s t : Set α} : closure (s ∪ t) = closure s ∪ closure t :=
-  Subset.antisymm
-    (closure_minimal (union_subset_union subset_closure subset_closure) <|
-      IsClosed.union isClosed_closure isClosed_closure)
-    ((monotone_closure α).le_map_sup s t)
-#align closure_union closure_union
-
-@[simp]
-theorem Finset.closure_biUnion {ι : Type*} (s : Finset ι) (f : ι → Set α) :
-    closure (⋃ i ∈ s, f i) = ⋃ i ∈ s, closure (f i) := by
-  classical
-    refine' s.induction_on (by simp) _
-    intro i s _ h₂
-    simp [h₂]
-#align finset.closure_bUnion Finset.closure_biUnion
-
-@[simp]
-theorem closure_iUnion_of_finite {ι : Type*} [Finite ι] (f : ι → Set α) :
-    closure (⋃ i, f i) = ⋃ i, closure (f i) := by
-  cases nonempty_fintype ι
-  convert Finset.univ.closure_biUnion f <;> simp
-#align closure_Union closure_iUnion_of_finite
-
-theorem interior_subset_closure {s : Set α} : interior s ⊆ closure s :=
-  Subset.trans interior_subset subset_closure
-#align interior_subset_closure interior_subset_closure
-
 theorem closure_eq_compl_interior_compl {s : Set α} : closure s = (interior sᶜ)ᶜ := by
   rw [interior, closure, compl_sUnion, compl_image_set_of]
   simp only [compl_subset_compl, isOpen_compl_iff]
 #align closure_eq_compl_interior_compl closure_eq_compl_interior_compl
+
+@[simp]
+theorem closure_union {s t : Set α} : closure (s ∪ t) = closure s ∪ closure t := by
+  simp [closure_eq_compl_interior_compl, compl_inter]
+#align closure_union closure_union
+
+theorem Set.Finite.closure_biUnion {ι : Type*} {s : Set ι} (hs : s.Finite) (f : ι → Set α) :
+    closure (⋃ i ∈ s, f i) = ⋃ i ∈ s, closure (f i) := by
+  simp [closure_eq_compl_interior_compl, hs.interior_biInter]
+
+theorem Set.Finite.closure_sUnion {S : Set (Set α)} (hS : S.Finite) :
+    closure (⋃₀ S) = ⋃ s ∈ S, closure s := by
+  rw [sUnion_eq_biUnion, hS.closure_biUnion]
+
+@[simp]
+theorem Finset.closure_biUnion {ι : Type*} (s : Finset ι) (f : ι → Set α) :
+    closure (⋃ i ∈ s, f i) = ⋃ i ∈ s, closure (f i) :=
+  s.finite_toSet.closure_biUnion f
+#align finset.closure_bUnion Finset.closure_biUnion
+
+@[simp]
+theorem closure_iUnion [Finite ι] (f : ι → Set α) : closure (⋃ i, f i) = ⋃ i, closure (f i) := by
+  rw [← sUnion_range, (finite_range _).closure_sUnion, biUnion_range]
+#align closure_Union closure_iUnion
+
+@[deprecated] -- Deprecated since 14 January 2024
+alias closure_iUnion_of_finite := closure_iUnion
+
+theorem interior_subset_closure {s : Set α} : interior s ⊆ closure s :=
+  Subset.trans interior_subset subset_closure
+#align interior_subset_closure interior_subset_closure
 
 @[simp]
 theorem interior_compl {s : Set α} : interior sᶜ = (closure s)ᶜ := by
