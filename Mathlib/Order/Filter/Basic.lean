@@ -1535,6 +1535,7 @@ theorem EventuallyEq.prod_mk {l} {f f' : α → β} (hf : f =ᶠ[l] f') {g g' : 
       simp only [*]
 #align filter.eventually_eq.prod_mk Filter.EventuallyEq.prod_mk
 
+-- See `EventuallyEq.comp_fun` further below for the other order.
 theorem EventuallyEq.fun_comp {f g : α → β} {l : Filter α} (H : f =ᶠ[l] g) (h : β → γ) :
     h ∘ f =ᶠ[l] h ∘ g :=
   H.mono fun _ hx => congr_arg h hx
@@ -3345,6 +3346,10 @@ theorem Set.MapsTo.tendsto {α β} {s : Set α} {t : Set β} {f : α → β} (h 
     Filter.Tendsto f (𝓟 s) (𝓟 t) :=
   Filter.tendsto_principal_principal.2 h
 #align set.maps_to.tendsto Set.MapsTo.tendsto
+
+theorem Filter.EventuallyEq.comp_fun {f g : β → γ} (h : f =ᶠ[l'] g)
+    {φ : α → β} (hφ : Tendsto φ l l') : f ∘ φ =ᶠ[l] g ∘ φ :=
+  hφ h
 
 namespace Filter
 
