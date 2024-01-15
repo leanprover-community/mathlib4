@@ -195,17 +195,17 @@ def putFiles (fileNames : Array String) (overwrite : Bool) (token : String) : IO
   if size > 0 then
     IO.FS.writeFile IO.CURLCFG (← mkPutConfigContent fileNames token)
     IO.println s!"Attempting to upload {size} file(s)"
-    let args := #[
-      "--retry", "5", -- there seem to be some intermittent failures
-      "-X", "PUT", "--parallel", "-K", IO.CURLCFG.toString]
-    if useFROCache then
+    let args := if useFROCache then
       -- TODO: reimplement using HEAD requests?
       let _ := overwrite
-      IO.runCurl (#["--aws-sigv4", "aws:amz:auto:s3", "--user", token] ++ args)
+      #["--aws-sigv4", "aws:amz:auto:s3", "--user", token]
     else if overwrite then
-      IO.runCurl (#["-H", "x-ms-blob-type: BlockBlob"] ++ args)
+      #["-H", "x-ms-blob-type: BlockBlob"]
     else
-      IO.runCurl (#["-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *"] ++ args)
+      #["-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *"]
+    _ ← IO.runCurl (stderrAsErr := false) (args ++ #[
+      "--retry", "5", -- there seem to be some intermittent failures
+      "-X", "PUT", "--parallel", "-K", IO.CURLCFG.toString])
     IO.FS.removeFile IO.CURLCFG
   else IO.println "No files to upload"
 

@@ -159,10 +159,12 @@ def runCmd (cmd : String) (args : Array String) (throwFailure stderrAsErr := tru
   let out ← IO.Process.output { cmd := cmd, args := args }
   if (out.exitCode != 0 || stderrAsErr && !out.stderr.isEmpty) && throwFailure then
     throw <| IO.userError s!"failure in {cmd} {args}:\n{out.stderr}"
-  else return out.stdout
+  else if !out.stderr.isEmpty then
+    IO.eprintln out.stderr
+  return out.stdout
 
-def runCurl (args : Array String) (throwFailure := true) : IO String := do
-  runCmd (← getCurl) (#["--no-progress-meter"] ++ args) throwFailure
+def runCurl (args : Array String) (throwFailure stderrAsErr := true) : IO String := do
+  runCmd (← getCurl) (#["--no-progress-meter"] ++ args) throwFailure stderrAsErr
 
 def validateCurl : IO Bool := do
   if (← CURLBIN.pathExists) then return true
