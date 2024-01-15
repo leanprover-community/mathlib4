@@ -241,7 +241,7 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 lemma eval_polynomialX_zero : (W.polynomialX.eval 0).eval 0 = -W.a₄ := by
-  simp only [← C_0, eval_polynomialX, zero_add, zero_sub, mul_zero, zero_pow zero_lt_two]
+  simp only [← C_0, eval_polynomialX, zero_add, zero_sub, mul_zero, zero_pow two_ne_zero]
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.eval_polynomial_X_zero WeierstrassCurve.Affine.eval_polynomialX_zero
 
