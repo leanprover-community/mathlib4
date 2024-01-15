@@ -389,11 +389,9 @@ theorem contMDiff_inclusion {n : ℕ∞} {U V : Opens M} (h : U ≤ V) :
   rintro ⟨x, hx : x ∈ U⟩
   apply (contDiffWithinAt_localInvariantProp I I n).liftProp_inclusion
   intro y
-  dsimp [ContDiffWithinAtProp]
+  dsimp only [ContDiffWithinAtProp, comp.left_id, preimage_univ]
   rw [Set.univ_inter]
-  refine' contDiffWithinAt_id.congr _ _
-  · exact I.rightInvOn
-  · exact congr_arg I (I.left_inv y)
+  exact contDiffWithinAt_id.congr I.rightInvOn (congr_arg I (I.left_inv y))
 #align cont_mdiff_inclusion contMDiff_inclusion
 
 theorem smooth_subtype_iff {U : Opens M} {f : M → M'} {x : U} :
@@ -403,8 +401,8 @@ theorem smooth_subtype_val {U : Opens M} : Smooth I I (Subtype.val : U → M) :=
 
 -- TODO uncomment @[to_additive]
 theorem Smooth.extend_one [T2Space M] [One M'] {U : Opens M} {f : U → M'}
-    (supp : HasCompactMulSupport f) (diff : Smooth I I' f) :
-    Smooth I I' (Subtype.val.extend f 1) := ContMDiff.extend_one supp diff
+    (supp : HasCompactMulSupport f) (diff : Smooth I I' f) : Smooth I I' (Subtype.val.extend f 1) :=
+  ContMDiff.extend_one supp diff
 
 theorem smooth_inclusion {U V : Opens M} (h : U ≤ V) : Smooth I I (Set.inclusion h : U → V) :=
   contMDiff_inclusion h
