@@ -329,6 +329,17 @@ theorem image_subset {a b : Set α} (f : α → β) (h : a ⊆ b) : f '' a ⊆ f
   exact fun x => fun ⟨w, h1, h2⟩ => ⟨w, h h1, h2⟩
 #align set.image_subset Set.image_subset
 
+theorem subset_image_iff {t : Set β} :
+    t ⊆ f '' s ↔ ∃ u, u ⊆ s ∧ f '' u = t := by
+  refine ⟨fun h ↦ ?_, fun ⟨u, hu, hu'⟩ ↦ hu'.symm ▸ image_mono hu⟩
+  choose g hg hg' using h
+  refine ⟨(fun x ↦ g x.property : t → α) '' univ, ?_, le_antisymm (fun y hy ↦ ?_) (fun y hy ↦ ?_)⟩
+  · rintro - ⟨⟨x, hx⟩, -, rfl⟩; exact hg hx
+  · obtain ⟨-, ⟨⟨z, hz⟩, -, rfl⟩, rfl⟩ := hy
+    simpa only [hg' hz] using hz
+  · simp only [mem_image, mem_univ, true_and, Subtype.exists]
+    exact ⟨g hy, ⟨y, hy, rfl⟩, hg' hy⟩
+
 /-- `Set.image` is monotone. See `Set.image_subset` for the statement in terms of `⊆`. -/
 lemma monotone_image {f : α → β} : Monotone (image f) := fun _ _ => image_subset _
 #align set.monotone_image Set.monotone_image
