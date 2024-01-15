@@ -31,14 +31,14 @@ structure StandardLP (m n K : Type) [Fintype m] [Fintype n] [LinearOrderedField 
 
 variable {m n K : Type} [Fintype m] [Fintype n] [LinearOrderedField K]
 
-def StandardLP.Admits (P : StandardLP m n K) (x : n → K) : Prop :=
+def StandardLP.IsSolution (P : StandardLP m n K) (x : n → K) : Prop :=
   P.A.mulVec x ≤ P.b ∧ 0 ≤ x
 
-def StandardLP.Admissible (P : StandardLP m n K) : Prop :=
-  ∃ x : n → K, P.Admits x
+def StandardLP.IsFeasible (P : StandardLP m n K) : Prop :=
+  ∃ x : n → K, P.IsSolution x
 
 def StandardLP.Reaches (P : StandardLP m n K) (v : K) : Prop :=
-  ∃ x : n → K, P.Admits x ∧ P.c ⬝ᵥ x = v
+  ∃ x : n → K, P.IsSolution x ∧ P.c ⬝ᵥ x = v
 
 def StandardLP.dual (P : StandardLP m n K) : StandardLP n m K :=
   ⟨-P.Aᵀ, -P.c, P.b⟩
@@ -58,5 +58,5 @@ theorem StandardLP.weakDuality {P : StandardLP m n K}
   exact hcxy.trans hxyb
 
 proof_wanted StandardLP.strongDuality {P : StandardLP m n K}
-    (hP : P.Admissible) (hD : P.dual.Admissible) :
+    (hP : P.IsFeasible) (hD : P.dual.IsFeasible) :
     ∃ v : K, P.Reaches v ∧ P.dual.Reaches v
