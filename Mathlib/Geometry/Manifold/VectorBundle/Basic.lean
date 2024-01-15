@@ -324,18 +324,18 @@ theorem contMDiffOn_symm_coordChangeL :
   (smoothOn_symm_coordChangeL IB e e').of_le le_top
 
 variable {e e'}
-set_option autoImplicit true
 
-theorem contMDiffAt_coordChangeL (h : x ∈ e.baseSet) (h' : x ∈ e'.baseSet) :
+theorem contMDiffAt_coordChangeL {x : B} (h : x ∈ e.baseSet) (h' : x ∈ e'.baseSet) :
     ContMDiffAt IB 𝓘(𝕜, F →L[𝕜] F) n (fun b : B => (e.coordChangeL 𝕜 e' b : F →L[𝕜] F)) x :=
   (contMDiffOn_coordChangeL IB e e').contMDiffAt <|
     (e.open_baseSet.inter e'.open_baseSet).mem_nhds ⟨h, h'⟩
 
-theorem smoothAt_coordChangeL (h : x ∈ e.baseSet) (h' : x ∈ e'.baseSet) :
+theorem smoothAt_coordChangeL {x : B} (h : x ∈ e.baseSet) (h' : x ∈ e'.baseSet) :
     SmoothAt IB 𝓘(𝕜, F →L[𝕜] F) (fun b : B => (e.coordChangeL 𝕜 e' b : F →L[𝕜] F)) x :=
   contMDiffAt_coordChangeL IB h h'
 
 variable {IB}
+variable {s : Set M} {x : M}
 
 protected theorem ContMDiffWithinAt.coordChangeL {f : M → B}
     (hf : ContMDiffWithinAt IM IB n f s x) (he : f x ∈ e.baseSet) (he' : f x ∈ e'.baseSet) :
