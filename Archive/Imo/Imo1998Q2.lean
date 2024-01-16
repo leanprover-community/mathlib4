@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.Algebra.BigOperators.Order
-import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Int.Parity
+import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.Tactic.NoncommRing
 
 #align_import imo.imo1998_q2 from "leanprover-community/mathlib"@"308826471968962c6b59c7ff82a22757386603e3"

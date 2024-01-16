@@ -7,9 +7,7 @@ import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Commute.Basic
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Data.Int.Defs
-import Mathlib.Tactic.Cases
-import Mathlib.Tactic.Conv
-import Mathlib.Tactic.Convert
+import Mathlib.Tactic.Common
 
 #align_import algebra.group_power.basic from "leanprover-community/mathlib"@"9b2660e1b25419042c8da10bf411aa3c67f14383"
 

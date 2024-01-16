@@ -31,10 +31,6 @@ def FreeMonoid (α) := List α
 
 namespace FreeMonoid
 
--- Porting note: TODO. Check this is still needed
-@[to_additive]
-instance [DecidableEq α] : DecidableEq (FreeMonoid α) := instDecidableEqList
-
 /-- The identity equivalence between `FreeMonoid α` and `List α`. -/
 @[to_additive "The identity equivalence between `FreeAddMonoid α` and `List α`."]
 def toList : FreeMonoid α ≃ List α := Equiv.refl _

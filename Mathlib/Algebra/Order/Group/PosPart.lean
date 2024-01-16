@@ -27,10 +27,10 @@ lattice ordered group.
 
 ## Notations
 
-* `a⁺ᵐ = a ⊔ 1`: The *positive component* of an element `a` of a lattice ordered group
-* `a⁻ᵐ = (-a) ⊔ 1`: The *negative component* of an element `a` of a lattice ordered group
-* `a⁺ = a ⊔ 0`: The *positive component* of an element `a` of a lattice ordered group
-* `a⁻ = (-a) ⊔ 0`: The *negative component* of an element `a` of a lattice ordered group
+* `a⁺ᵐ = a ⊔ 1`: *Positive component* of an element `a` of a multiplicative lattice ordered group
+* `a⁻ᵐ = a⁻¹ ⊔ 1`: *Negative component* of an element `a` of a multiplicative lattice ordered group
+* `a⁺ = a ⊔ 0`: *Positive component* of an element `a` of a lattice ordered group
+* `a⁻ = (-a) ⊔ 0`: *Negative component* of an element `a` of a lattice ordered group
 
 ## References
 
