@@ -45,7 +45,6 @@ If a lemma deals with the intersection of a set with either source or target of 
 then it should use `e.source ∩ s` or `e.target ∩ t`, not `s ∩ e.source` or `t ∩ e.target`.
 -/
 
-
 open Function Set Filter Topology
 
 variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*} [TopologicalSpace α]
@@ -67,6 +66,7 @@ variable (e : PartialHomeomorph α β)
 
 /- Basic properties; inverse (symm instance) -/
 section Basic
+
 /-- Coercion of a partial homeomorphisms to a function. We don't use `e.toFun` because it is
 actually `e.toPartialEquiv.toFun`, so `simp` will apply lemmas about `toPartialEquiv`.
 While we may want to switch to this behavior later, doing it mid-port will break a lot of proofs. -/
@@ -201,6 +201,7 @@ protected theorem bijOn : BijOn e e.source e.target :=
 protected theorem surjOn : SurjOn e e.source e.target :=
   e.bijOn.surjOn
 #align local_homeomorph.surj_on PartialHomeomorph.surjOn
+
 end Basic
 
 /-- Interpret a `Homeomorph` as a `PartialHomeomorph` by restricting it
@@ -695,6 +696,7 @@ theorem preimage_frontier (s : Set β) :
     e.source ∩ e ⁻¹' frontier s = e.source ∩ frontier (e ⁻¹' s) :=
   (IsImage.of_preimage_eq rfl).frontier.preimage_eq
 #align local_homeomorph.preimage_frontier PartialHomeomorph.preimage_frontier
+
 end IsImage
 
 /-- A `PartialEquiv` with continuous open forward map and open source is a `PartialHomeomorph`. -/
@@ -821,7 +823,9 @@ end ofSet
 
 /- `trans`: composition of two partial homeomorphisms -/
 section trans
+
 variable (e' : PartialHomeomorph β γ)
+
 /-- Composition of two partial homeomorphisms when the target of the first and the source of
 the second coincide. -/
 @[simps! apply symm_apply toPartialEquiv, simps! (config := .lemmasOnly) source target]
@@ -942,6 +946,7 @@ theorem restr_trans (s : Set α) : (e.restr s).trans e' = (e.trans e').restr s :
   toPartialEquiv_injective <|
     PartialEquiv.restr_trans e.toPartialEquiv e'.toPartialEquiv (interior s)
 #align local_homeomorph.restr_trans PartialHomeomorph.restr_trans
+
 end trans
 
 /- `EqOnSource`: equivalence on their source -/
@@ -1362,6 +1367,7 @@ theorem trans_transPartialHomeomorph (e : α ≃ₜ β) (e' : β ≃ₜ γ) (f''
 end Homeomorph
 
 section OpenEmbedding
+
 namespace OpenEmbedding
 
 variable (f : α → β) (h : OpenEmbedding f)
@@ -1391,8 +1397,6 @@ end OpenEmbedding
 /- inclusion of an open set in a topological space -/
 section openInclusion
 namespace TopologicalSpace.Opens
-
-open TopologicalSpace
 
 variable (s : Opens α) [Nonempty s]
 
@@ -1451,6 +1455,7 @@ theorem trans_transHomeomorph (e : PartialHomeomorph α β) (e' : PartialHomeomo
     (f'' : γ ≃ₜ δ) :
     (e.trans e').transHomeomorph f'' = e.trans (e'.transHomeomorph f'') := by
   simp only [transHomeomorph_eq_trans, trans_assoc, Homeomorph.trans_toPartialHomeomorph]
+
 end transHomeomorph
 
 /- `subtypeRestr`: restriction to a subtype -/
@@ -1535,6 +1540,7 @@ theorem subtypeRestr_symm_eqOn_of_le {U V : Opens α} [Nonempty U] [Nonempty V] 
     show _ = U.partialHomeomorphSubtypeCoe _
     rw [U.partialHomeomorphSubtypeCoe.right_inv hy.2]
 #align local_homeomorph.subtype_restr_symm_eq_on_of_le PartialHomeomorph.subtypeRestr_symm_eqOn_of_le
+
 end subtypeRestr
 
 end PartialHomeomorph
