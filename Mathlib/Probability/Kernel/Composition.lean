@@ -565,7 +565,7 @@ section MapComap
 /-! ### map, comap -/
 
 
-variable {γ : Type*} {mγ : MeasurableSpace γ} {f : β → γ} {g : γ → α}
+variable {γ δ : Type*} {mγ : MeasurableSpace γ} {mδ : MeasurableSpace δ} {f : β → γ} {g : γ → α}
 
 /-- The pushforward of a kernel along a measurable function.
 We include measurability in the assumptions instead of using junk values
@@ -676,6 +676,12 @@ instance IsSFiniteKernel.comap (κ : kernel α β) [IsSFiniteKernel κ] (hg : Me
   ⟨⟨fun n => kernel.comap (seq κ n) g hg, inferInstance, (sum_comap_seq κ hg).symm⟩⟩
 #align probability_theory.kernel.is_s_finite_kernel.comap ProbabilityTheory.kernel.IsSFiniteKernel.comap
 
+lemma comap_map_comm (κ : kernel β γ) {f : α → β} {g : γ → δ}
+    (hf : Measurable f) (hg : Measurable g) :
+    comap (map κ g hg) f hf = map (comap κ f hf) g hg := by
+  ext x s _
+  rw [comap_apply, map_apply, map_apply, comap_apply]
+
 end MapComap
 
 open scoped ProbabilityTheory
@@ -689,6 +695,10 @@ def prodMkLeft (γ : Type*) [MeasurableSpace γ] (κ : kernel α β) : kernel (�
   comap κ Prod.snd measurable_snd
 #align probability_theory.kernel.prod_mk_left ProbabilityTheory.kernel.prodMkLeft
 
+/-- Define a `kernel (α × γ) β` from a `kernel α β` by taking the comap of the projection. -/
+def prodMkRight (γ : Type*) [MeasurableSpace γ] (κ : kernel α β) : kernel (α × γ) β :=
+  comap κ Prod.fst measurable_fst
+
 variable {γ : Type*} {mγ : MeasurableSpace γ} {f : β → γ} {g : γ → α}
 
 @[simp]
@@ -696,31 +706,60 @@ theorem prodMkLeft_apply (κ : kernel α β) (ca : γ × α) : prodMkLeft γ κ 
   rfl
 #align probability_theory.kernel.prod_mk_left_apply ProbabilityTheory.kernel.prodMkLeft_apply
 
+@[simp]
+theorem prodMkRight_apply (κ : kernel α β) (ca : α × γ) : prodMkRight γ κ ca = κ ca.fst := rfl
+
 theorem prodMkLeft_apply' (κ : kernel α β) (ca : γ × α) (s : Set β) :
     prodMkLeft γ κ ca s = κ ca.snd s :=
   rfl
 #align probability_theory.kernel.prod_mk_left_apply' ProbabilityTheory.kernel.prodMkLeft_apply'
 
+theorem prodMkRight_apply' (κ : kernel α β) (ca : α × γ) (s : Set β) :
+    prodMkRight γ κ ca s = κ ca.fst s := rfl
+
 @[simp]
 lemma prodMkLeft_zero : kernel.prodMkLeft α (0 : kernel β γ) = 0 := by
-  ext x s _; simp [kernel.prodMkLeft_apply']
+  ext x s _; simp
+
+@[simp]
+lemma prodMkRight_zero : kernel.prodMkRight α (0 : kernel β γ) = 0 := by
+  ext x s _; simp
 
 theorem lintegral_prodMkLeft (κ : kernel α β) (ca : γ × α) (g : β → ℝ≥0∞) :
-    ∫⁻ b, g b ∂prodMkLeft γ κ ca = ∫⁻ b, g b ∂κ ca.snd :=
-  rfl
+    ∫⁻ b, g b ∂prodMkLeft γ κ ca = ∫⁻ b, g b ∂κ ca.snd := rfl
 #align probability_theory.kernel.lintegral_prod_mk_left ProbabilityTheory.kernel.lintegral_prodMkLeft
+
+theorem lintegral_prodMkRight (κ : kernel α β) (ca : α × γ) (g : β → ℝ≥0∞) :
+    ∫⁻ b, g b ∂prodMkRight γ κ ca = ∫⁻ b, g b ∂κ ca.fst := rfl
 
 instance IsMarkovKernel.prodMkLeft (κ : kernel α β) [IsMarkovKernel κ] :
     IsMarkovKernel (prodMkLeft γ κ) := by rw [kernel.prodMkLeft]; infer_instance
 #align probability_theory.kernel.is_markov_kernel.prod_mk_left ProbabilityTheory.kernel.IsMarkovKernel.prodMkLeft
 
+instance IsMarkovKernel.prodMkRight (κ : kernel α β) [IsMarkovKernel κ] :
+    IsMarkovKernel (prodMkRight γ κ) := by rw [kernel.prodMkRight]; infer_instance
+
 instance IsFiniteKernel.prodMkLeft (κ : kernel α β) [IsFiniteKernel κ] :
     IsFiniteKernel (prodMkLeft γ κ) := by rw [kernel.prodMkLeft]; infer_instance
 #align probability_theory.kernel.is_finite_kernel.prod_mk_left ProbabilityTheory.kernel.IsFiniteKernel.prodMkLeft
 
+instance IsFiniteKernel.prodMkRight (κ : kernel α β) [IsFiniteKernel κ] :
+    IsFiniteKernel (prodMkRight γ κ) := by rw [kernel.prodMkRight]; infer_instance
+
 instance IsSFiniteKernel.prodMkLeft (κ : kernel α β) [IsSFiniteKernel κ] :
     IsSFiniteKernel (prodMkLeft γ κ) := by rw [kernel.prodMkLeft]; infer_instance
 #align probability_theory.kernel.is_s_finite_kernel.prod_mk_left ProbabilityTheory.kernel.IsSFiniteKernel.prodMkLeft
+
+instance IsSFiniteKernel.prodMkRight (κ : kernel α β) [IsSFiniteKernel κ] :
+    IsSFiniteKernel (prodMkRight γ κ) := by rw [kernel.prodMkRight]; infer_instance
+
+lemma map_prodMkLeft (γ : Type*) [MeasurableSpace γ] (κ : kernel α β)
+    {f : β → δ} (hf : Measurable f) :
+    map (prodMkLeft γ κ) f hf = prodMkLeft γ (map κ f hf) := rfl
+
+lemma map_prodMkRight (κ : kernel α β) (γ : Type*) [MeasurableSpace γ]
+    {f : β → δ} (hf : Measurable f) :
+    map (prodMkRight γ κ) f hf = prodMkRight γ (map κ f hf) := rfl
 
 /-- Define a `kernel (β × α) γ` from a `kernel (α × β) γ` by taking the comap of `Prod.swap`. -/
 def swapLeft (κ : kernel (α × β) γ) : kernel (β × α) γ :=
@@ -751,6 +790,12 @@ instance IsFiniteKernel.swapLeft (κ : kernel (α × β) γ) [IsFiniteKernel κ]
 instance IsSFiniteKernel.swapLeft (κ : kernel (α × β) γ) [IsSFiniteKernel κ] :
     IsSFiniteKernel (swapLeft κ) := by rw [kernel.swapLeft]; infer_instance
 #align probability_theory.kernel.is_s_finite_kernel.swap_left ProbabilityTheory.kernel.IsSFiniteKernel.swapLeft
+
+@[simp] lemma swapLeft_prodMkLeft (κ : kernel α β) (γ : Type*) [MeasurableSpace γ] :
+    swapLeft (prodMkLeft γ κ) = prodMkRight γ κ := rfl
+
+@[simp] lemma swapLeft_prodMkRight (κ : kernel α β) (γ : Type*) [MeasurableSpace γ] :
+    swapLeft (prodMkRight γ κ) = prodMkLeft γ κ := rfl
 
 /-- Define a `kernel α (γ × β)` from a `kernel α (β × γ)` by taking the map of `Prod.swap`. -/
 noncomputable def swapRight (κ : kernel α (β × γ)) : kernel α (γ × β) :=
@@ -838,6 +883,12 @@ lemma fst_compProd (κ : kernel α β) (η : kernel (α × β) γ) [IsSFiniteKer
   simp_rw [this]
   rw [lintegral_indicator_const hs, one_mul]
 
+lemma fst_prodMkLeft (δ : Type*) [MeasurableSpace δ] (κ : kernel α (β × γ)) :
+    fst (prodMkLeft δ κ) = prodMkLeft δ (fst κ) := rfl
+
+lemma fst_prodMkRight (κ : kernel α (β × γ)) (δ : Type*) [MeasurableSpace δ] :
+    fst (prodMkRight δ κ) = prodMkRight δ (fst κ) := rfl
+
 /-- Define a `kernel α γ` from a `kernel α (β × γ)` by taking the map of the second projection. -/
 noncomputable def snd (κ : kernel α (β × γ)) : kernel α γ :=
   map κ Prod.snd measurable_snd
@@ -878,6 +929,12 @@ lemma snd_map_prod (κ : kernel α β) {f : β → γ} {g : β → δ}
   rw [snd_apply' _ _ hs, map_apply', map_apply' _ _ _ hs]
   · rfl
   · exact measurable_snd hs
+
+lemma snd_prodMkLeft (δ : Type*) [MeasurableSpace δ] (κ : kernel α (β × γ)) :
+    snd (prodMkLeft δ κ) = prodMkLeft δ (snd κ) := rfl
+
+lemma snd_prodMkRight (κ : kernel α (β × γ)) (δ : Type*) [MeasurableSpace δ] :
+    snd (prodMkRight δ κ) = prodMkRight δ (snd κ) := rfl
 
 @[simp]
 lemma fst_swapRight (κ : kernel α (β × γ)) : fst (swapRight κ) = snd κ := by
@@ -982,11 +1039,23 @@ noncomputable def prod (κ : kernel α β) (η : kernel α γ) : kernel α (β �
 
 scoped[ProbabilityTheory] infixl:100 " ×ₖ " => ProbabilityTheory.kernel.prod
 
-theorem prod_apply (κ : kernel α β) [IsSFiniteKernel κ] (η : kernel α γ) [IsSFiniteKernel η] (a : α)
-    {s : Set (β × γ)} (hs : MeasurableSet s) :
+theorem prod_apply' (κ : kernel α β) [IsSFiniteKernel κ] (η : kernel α γ) [IsSFiniteKernel η]
+    (a : α) {s : Set (β × γ)} (hs : MeasurableSet s) :
     (κ ×ₖ η) a s = ∫⁻ b : β, (η a) {c : γ | (b, c) ∈ s} ∂κ a := by
   simp_rw [prod, compProd_apply _ _ _ hs, swapLeft_apply _ _, prodMkLeft_apply, Prod.swap_prod_mk]
-#align probability_theory.kernel.prod_apply ProbabilityTheory.kernel.prod_apply
+#align probability_theory.kernel.prod_apply ProbabilityTheory.kernel.prod_apply'
+
+lemma prod_apply (κ : kernel α β) [IsSFiniteKernel κ] (η : kernel α γ) [IsSFiniteKernel η]
+    (a : α) :
+    (κ ×ₖ η) a = (κ a).prod (η a) := by
+  ext s hs
+  rw [prod_apply' _ _ _ hs, Measure.prod_apply hs]
+  rfl
+
+lemma prod_const (μ : Measure α) [SFinite μ] (ν : Measure β) [SFinite ν] :
+    const α μ ×ₖ const α ν = const α (μ.prod ν) := by
+  ext x
+  rw [const_apply, prod_apply, const_apply, const_apply]
 
 theorem lintegral_prod (κ : kernel α β) [IsSFiniteKernel κ] (η : kernel α γ) [IsSFiniteKernel η]
     (a : α) {g : β × γ → ℝ≥0∞} (hg : Measurable g) :
@@ -1005,6 +1074,14 @@ instance IsFiniteKernel.prod (κ : kernel α β) [IsFiniteKernel κ] (η : kerne
 instance IsSFiniteKernel.prod (κ : kernel α β) (η : kernel α γ) :
     IsSFiniteKernel (κ ×ₖ η) := by rw [kernel.prod]; infer_instance
 #align probability_theory.kernel.is_s_finite_kernel.prod ProbabilityTheory.kernel.IsSFiniteKernel.prod
+
+@[simp] lemma fst_prod (κ : kernel α β) [IsSFiniteKernel κ] (η : kernel α γ) [IsMarkovKernel η] :
+    fst (κ ×ₖ η) = κ := by
+  rw [prod]; simp
+
+@[simp] lemma snd_prod (κ : kernel α β) [IsMarkovKernel κ] (η : kernel α γ) [IsSFiniteKernel η] :
+    snd (κ ×ₖ η) = η := by
+  ext x; simp [snd_apply, prod_apply]
 
 end Prod
 
