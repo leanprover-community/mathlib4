@@ -289,7 +289,7 @@ theorem smul_apply (f : R[X]) (g : PolynomialModule R M) (n : ℕ) :
 noncomputable def equivPolynomialSelf : PolynomialModule R R ≃ₗ[R[X]] R[X] :=
   { (Polynomial.toFinsuppIso R).symm with
     map_smul' := fun r x => by
-      dsimp
+      dsimp [-EquivLike.coe_symm_coe]
       rw [← RingEquiv.coe_toEquiv_symm, RingEquiv.coe_toEquiv]
       induction' x using induction_linear with _ _ hp hq n a
       · rw [smul_zero, map_zero, mul_zero]

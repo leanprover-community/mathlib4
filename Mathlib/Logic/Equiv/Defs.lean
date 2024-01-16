@@ -169,7 +169,7 @@ def Simps.symm_apply (e : α ≃ β) : β → α := e.symm
 initialize_simps_projections Equiv (toFun → apply, invFun → symm_apply)
 
 @[simp, norm_cast]
-theorem EquivLike.coe_symm_coe {F} [EquivLike F α β] (e : F) :
+theorem _root_.EquivLike.coe_symm_coe {F} [EquivLike F α β] (e : F) :
     ((e : α ≃ β).symm : β → α) = EquivLike.inv e := rfl
 
 -- Porting note:
