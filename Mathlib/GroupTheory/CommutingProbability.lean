@@ -165,9 +165,7 @@ def reciprocalFactors (n : ℕ) : List ℕ :=
     3 :: reciprocalFactors (n / 2)
   else
     n % 4 * n :: reciprocalFactors (n / 4 + 1)
-decreasing_by
-  simp_wf
-  first | exact div_two_lt h0 | exact div_four_lt h0 h1
+decreasing_by simp_wf; omega
 
 @[simp] lemma reciprocalFactors_zero : reciprocalFactors 0 = [0] := rfl
 

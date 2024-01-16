@@ -172,8 +172,9 @@ def treesOfNumNodesEq : ℕ → Finset (Tree Unit)
   -- Porting note: Add this to satisfy the linter.
   decreasing_by
       simp_wf
-      try exact Nat.lt_succ_of_le (fst_le ijh.2)
-      try exact Nat.lt_succ_of_le (snd_le ijh.2)
+      have := fst_le ijh.2
+      have := snd_le ijh.2
+      omega
 #align tree.trees_of_num_nodes_eq Tree.treesOfNumNodesEq
 
 @[simp]

@@ -769,7 +769,7 @@ def evaln : ℕ → Code → ℕ → Option ℕ
       else
         evaln k (rfind' cf) (Nat.pair a (m + 1))
   termination_by evaln k c => (k, c)
-  decreasing_by { decreasing_with simp (config := { arith := true }) [Zero.zero]; done }
+  decreasing_by { decreasing_with (dsimp; omega) }
 #align nat.partrec.code.evaln Nat.Partrec.Code.evaln
 
 theorem evaln_bound : ∀ {k c n x}, x ∈ evaln k c n → n < k
