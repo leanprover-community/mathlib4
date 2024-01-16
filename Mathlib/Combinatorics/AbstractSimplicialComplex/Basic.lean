@@ -5,12 +5,7 @@ Authors: Sophie Morel
 
 Adapted from the Lean3 file of Shing Tak Lam.
 -/
-import Mathlib.Data.Finset.Basic
-import Mathlib.Data.Set.Finite
-import Mathlib.Data.ENat.Basic
-import Mathlib.Data.Set.Lattice
 import Mathlib.Data.ENat.Lattice
-import Mathlib.Data.Nat.PartENat
 
 /-!
 # Abstract Simplicial Complex
