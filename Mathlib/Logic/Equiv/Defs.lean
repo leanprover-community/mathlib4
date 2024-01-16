@@ -168,6 +168,10 @@ def Simps.symm_apply (e : α ≃ β) : β → α := e.symm
 
 initialize_simps_projections Equiv (toFun → apply, invFun → symm_apply)
 
+@[simp, norm_cast]
+theorem EquivLike.coe_symm_coe {F} [EquivLike F α β] (e : F) :
+  ((e : α ≃ β).symm : β → α) = EquivLike.inv e := rfl
+
 -- Porting note:
 -- Added these lemmas as restatements of `left_inv` and `right_inv`,
 -- which use the coercions.
