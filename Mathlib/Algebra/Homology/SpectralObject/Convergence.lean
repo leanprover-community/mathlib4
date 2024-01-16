@@ -5,6 +5,10 @@ namespace CategoryTheory
 
 open Category ComposableArrows Limits
 
+lemma Option.by_cases {α : Type*} (x : Option α) :
+    x = none ∨ ∃ (a : α), x = some a := by
+  cases x <;> tauto
+
 namespace Abelian
 
 variable {C ι κ : Type*} [Category C] [Abelian C] [Preorder ι] [OrderBot ι] [OrderTop ι]
@@ -128,6 +132,10 @@ structure CompatibleWithConvergenceStripes where
   deg_stripe (pq : κ) : deg (s.stripe pq) = data.deg pq := by aesop
   i₂_monotone (n : σ) (i j : α n) (hij : i ≤ j) :
     data.i₂ (s.position n i) ≤ data.i₂ (s.position n j)
+  hi₁_bot (n : σ) (j : α n) (hj : s.pred n j = ⊥) :
+    data.i₁ (s.position n j) = ⊥
+  hi₁_some (n : σ) (j : α n) (i : α n) (hi : s.pred n j = WithBot.some i) :
+    data.i₁ (s.position n j) = data.i₂ (s.position n i)
 
 namespace CompatibleWithConvergenceStripes
 
@@ -144,6 +152,22 @@ def mapWithBot (_ : data.CompatibleWithConvergenceStripes s) (n : σ) : WithBot 
   | none => ⊥
   | some i => data.i₂ (s.position n i) -- or i₁ ??
 
+@[simp]
+lemma mapWithBot_none (n : σ):
+    hdata.mapWithBot n none = ⊥ := rfl
+
+@[simp]
+lemma mapWithBot_bot (n : σ):
+    hdata.mapWithBot n ⊥ = ⊥ := rfl
+
+@[simp]
+lemma mapWithBot_some (n : σ) (i : α n):
+    hdata.mapWithBot n (some i) = data.i₂ (s.position n i) := rfl
+
+@[simp]
+lemma mapWithBot_some' (n : σ) (i : α n):
+    hdata.mapWithBot n (WithBot.some i) = data.i₂ (s.position n i) := rfl
+
 lemma mapWithBot_monotone (n : σ) : Monotone (hdata.mapWithBot n) := by
   rintro i j hij
   obtain _ | i := i
@@ -158,6 +182,12 @@ lemma mapWithBot_monotone (n : σ) : Monotone (hdata.mapWithBot n) := by
 abbrev mapWithBotFunctor (n : σ) : WithBot (α n) ⥤ ι :=
   Monotone.functor (hdata.mapWithBot_monotone n)
 
+lemma mapWithBot_pred (n : σ) (j : α n) :
+    hdata.mapWithBot n (s.pred n j) = data.i₁ (s.position n j) := by
+  obtain h | ⟨i, h⟩ := Option.by_cases (s.pred n j)
+  · rw [h, mapWithBot_none, hdata.hi₁_bot n j h]
+  · rw [h, mapWithBot_some, hdata.hi₁_some n j _ h]
+
 end CompatibleWithConvergenceStripes
 
 end SpectralSequenceMkData
@@ -168,13 +198,28 @@ def mkDataE₂CohomologicalCompatibility :
       SpectralSequence.cohomologicalStripes where
   deg n := n
   i₂_monotone n i j hij := by simpa using hij
+  hi₁_bot n j hj := by simp at hj
+  hi₁_some n j i hi := by
+    obtain rfl : i = j - 1 := by
+      rw [← WithBot.coe_eq_coe]
+      exact hi.symm
+    simp
 
-@[simps]
+/-@[simps]
 def mkDataE₂CohomologicalNatCompatibility :
     mkDataE₂CohomologicalNat.CompatibleWithConvergenceStripes
       CohomologicalSpectralSequenceNat.stripes where
   deg n := n
   i₂_monotone n i j hij := by simpa using hij
+  hi₁_bot := by
+    rintro n ⟨j, hj⟩ h
+    dsimp at h ⊢
+    sorry
+  hi₁_some := by
+    rintro n ⟨_|j, hj⟩ ⟨i, hi⟩ h
+    · sorry -- wrong => the condition `CompatibleWithConvergenceStripes` may have to be weakened?
+    · obtain rfl : j = i := by simpa using h
+      rfl-/
 
 variable {data s}
 variable (hdata : data.CompatibleWithConvergenceStripes s)
@@ -191,6 +236,8 @@ lemma hasPageInfinityAt_of_convergesInDegree (pq : κ)
   hX.stationnaryAt pq hpq
 
 namespace ConvergesAt
+
+section
 
 variable
   (n' : ℤ) (hn' : n' = hdata.deg n)
@@ -209,6 +256,52 @@ noncomputable def π : X.abutmentFiltration n' i₂ ⟶ (X.spectralSequence data
 
 instance : Epi (π X hdata n n' hn' i i₂ hi₂ pq hpq) := epi_comp _ _
 
+end
+
+section
+
+variable (n' : ℤ) (hn' : n' = hdata.deg n)
+  (i : WithBot (α n)) (j : α n) (i₂ j₂ : ι) (hi₂ : i₂ = hdata.mapWithBot n i) (hj₂ : j₂ = data.i₂ (s.position n j)) (hij : s.pred n j = i)
+  (pq : κ) (hpq : s.position n j = pq)
+
+noncomputable def composableArrows : ComposableArrows C 2 :=
+  mk₂ (X.abutmentFiltrationMap n' i₂ j₂ (by
+    rw [hi₂, hj₂]
+    obtain _|i := i
+    · apply bot_le
+    · apply hdata.i₂_monotone
+      rw [← WithBot.coe_le_coe]
+      simpa only [hij] using s.pred_le n j)) (π X hdata n n' hn' j j₂ hj₂ pq hpq)
+
+noncomputable def iso :
+    (composableArrows X hdata n n' hn' i j i₂ j₂ hi₂ hj₂ hij pq hpq) ≅
+      (X.abutmentFiltrationShortComplex (n' - 1) n' (n' + 1) (by simp) (by simp) i₂ j₂ (by
+      rw [hi₂, hj₂]
+      obtain _|i := i
+      · apply bot_le
+      · apply hdata.i₂_monotone
+        rw [← WithBot.coe_le_coe]
+        simpa only [hij] using s.pred_le n j)).toComposableArrows :=
+  isoMk₂ (Iso.refl _) (Iso.refl _) (by
+    have := X.hasPageInfinityAt_of_convergesInDegree hdata n pq (by
+      rw [← hpq, s.stripe_position])
+    dsimp [composableArrows]
+    apply X.spectralSequencePageInfinityIso
+    · rw [hn', ← hpq, hdata.deg_position n j]
+    · rw [hi₂, ← hij, ← hpq, hdata.mapWithBot_pred n j]
+    · rw [hj₂, ← hpq]) (by simp [composableArrows]) (by
+        dsimp [composableArrows, π]
+        obtain rfl : i₂ = data.i₁ (s.position n j) := by
+          rw [hi₂, ← hij, hdata.mapWithBot_pred n j]
+        simp)
+
+lemma composableArrows_exact :
+    (composableArrows X hdata n n' hn' i j i₂ j₂ hi₂ hj₂ hij pq hpq).Exact :=
+  ComposableArrows.exact_of_iso (iso X hdata n n' hn' i j i₂ j₂ hi₂ hj₂ hij pq hpq).symm
+    ((X.abutmentFiltrationShortComplex_shortExact _ _ _ _ _ _ _ _).exact.exact_toComposableArrows)
+
+end
+
 end ConvergesAt
 
 /-noncomputable def convergesAt :
@@ -217,14 +310,16 @@ end ConvergesAt
     have := X.hasPageInfinityAt_of_convergesInDegree hdata n pq hpq
     infer_instance
   filtration' := hdata.mapWithBotFunctor n ⋙ X.abutmentFiltrationFunctor (hdata.deg n)
-  exists_isZero' := sorry
+  exists_isZero' := by
+    have I : α n := sorry
+    refine' ⟨I, _⟩
+    dsimp [abutmentFiltration]
+    sorry
   exists_isIso' := sorry
   π' i pq hpq := ConvergesAt.π X hdata n _ rfl i _ rfl pq hpq
   epi_π' i pq hpq := by infer_instance
-  comp_π' i j hij pq hpq := by
-    dsimp [MonoOver.forget]
-    sorry
-  exact_π' := sorry-/
+  comp_π' i j hij pq hpq := (ConvergesAt.composableArrows_exact X hdata n _ rfl i j _ _ rfl rfl hij pq hpq).toIsComplex.zero 0
+  exact_π' i j hij pq hpq := (ConvergesAt.composableArrows_exact X hdata n _ rfl i j _ _ rfl rfl hij pq hpq).exact 0-/
 
 end SpectralObject
 
