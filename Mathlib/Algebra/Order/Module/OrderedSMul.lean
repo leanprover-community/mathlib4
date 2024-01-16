@@ -45,8 +45,6 @@ This file is now mostly useless. We should try deleting `OrderedSMul`
 ordered module, ordered scalar, ordered smul, ordered action, ordered vector space
 -/
 
-open LatticeOrderedCommGroup
-
 /-- The ordered scalar product property is when an ordered additive commutative monoid
 with a partial order has a scalar multiplication which is compatible with the order.
 -/
