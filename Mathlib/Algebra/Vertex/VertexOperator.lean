@@ -77,7 +77,9 @@ theorem coeff_eq_ncoef (A : VertexOperator R V)
 `A(n)`.  We choose a notation that looks like the TeX input. -/
 scoped[VertexAlg] notation A "_{" n "}" => ncoef A n
 
-noncomputable def VertexOperator_from_coeff (f : ℤ → Module.End R V)
+/-- Given an endomorphism-valued formal power series satisfying a pointwise bounded-pole condition,
+we produce a vertex operator. -/
+noncomputable def VertexOperatorFromCoeff (f : ℤ → Module.End R V)
     (hf : ∀(x : V), ∃(n : ℤ), ∀(m : ℤ), m < n → (f m) x = 0) : VertexOperator R V where
   toFun := fun x => LaurentSeries.LaurentFromSuppBddBelow
     (fun n => (f n) x) (Exists.choose (hf x)) (Exists.choose_spec (hf x))
@@ -209,7 +211,8 @@ theorem hasseDeriv_apply_one (k : ℕ) (hk : 0 < k) : hasseDeriv k (1 : VertexOp
   exact rfl
 
 theorem hasseDeriv_comp_coeff (k l : ℕ) (A : VertexOperator R V) (x : V) (n : ℤ) :
-    HahnSeries.coeff ((hasseDeriv k (hasseDeriv l A)) x) n = HahnSeries.coeff ((Nat.choose (k + l) k • hasseDeriv (k + l) A) x) n := by
+    HahnSeries.coeff ((hasseDeriv k (hasseDeriv l A)) x) n =
+    HahnSeries.coeff ((Nat.choose (k + l) k • hasseDeriv (k + l) A) x) n := by
   rw [hasseDeriv, hasseDeriv]
   simp only [LinearMap.coe_mk, AddHom.coe_mk, Pi.smul_apply]
   rw [@LaurentSeries.hasseDeriv_comp' R]
@@ -256,7 +259,9 @@ noncomputable def res_prod_left_coeff (A B : VertexOperator R V) (m k : ℤ) : M
   map_add' := by
     intro x y
     simp only [map_add, smul_add]
-    have h : min (Int.toNat (-k - HahnSeries.order (B x + B y))) (Int.toNat (-k - HahnSeries.order (B x))) ≤ Int.toNat (-k - HahnSeries.order (B x + B y)) := by
+    have h : min (Int.toNat (-k - HahnSeries.order (B x + B y))) (min (Int.toNat
+        (-k - HahnSeries.order (B x))) min (Int.toNat (-k - HahnSeries.order (B x)))) ≤
+        Int.toNat (-k - HahnSeries.order (B x + B y)) := by
       refine Nat.min_le_left ?_ ?_
     rw [Finset.eventually_constant_sum ?_ ?_]
 
