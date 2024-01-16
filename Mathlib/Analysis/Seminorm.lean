@@ -792,14 +792,14 @@ theorem closedBall_antitone {p q : Seminorm 𝕜 E} (h : q ≤ p) :
 
 theorem ball_add_ball_subset (p : Seminorm 𝕜 E) (r₁ r₂ : ℝ) (x₁ x₂ : E) :
     p.ball (x₁ : E) r₁ + p.ball (x₂ : E) r₂ ⊆ p.ball (x₁ + x₂) (r₁ + r₂) := by
-  rintro x ⟨y₁, y₂, hy₁, hy₂, rfl⟩
+  rintro x ⟨y₁, hy₁, y₂, hy₂, rfl⟩
   rw [mem_ball, add_sub_add_comm]
   exact (map_add_le_add p _ _).trans_lt (add_lt_add hy₁ hy₂)
 #align seminorm.ball_add_ball_subset Seminorm.ball_add_ball_subset
 
 theorem closedBall_add_closedBall_subset (p : Seminorm 𝕜 E) (r₁ r₂ : ℝ) (x₁ x₂ : E) :
     p.closedBall (x₁ : E) r₁ + p.closedBall (x₂ : E) r₂ ⊆ p.closedBall (x₁ + x₂) (r₁ + r₂) := by
-  rintro x ⟨y₁, y₂, hy₁, hy₂, rfl⟩
+  rintro x ⟨y₁, hy₁, y₂, hy₂, rfl⟩
   rw [mem_closedBall, add_sub_add_comm]
   exact (map_add_le_add p _ _).trans (add_le_add hy₁ hy₂)
 #align seminorm.closed_ball_add_closed_ball_subset Seminorm.closedBall_add_closedBall_subset

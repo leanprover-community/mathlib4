@@ -192,7 +192,7 @@ theorem coeSort_toFinset : ↥hs.toFinset = ↥s := by
 /-- The identity map, bundled as an equivalence between the subtypes of `s : Set α` and of
 `h.toFinset : Finset α`, where `h` is a proof of finiteness of `s`. -/
 @[simps!] def subtypeEquivToFinset : {x // x ∈ s} ≃ {x // x ∈ hs.toFinset} :=
-  (Equiv.refl α).subtypeEquiv <| fun _ ↦ hs.mem_toFinset.symm
+  (Equiv.refl α).subtypeEquiv fun _ ↦ hs.mem_toFinset.symm
 
 variable {hs}
 
@@ -286,11 +286,6 @@ protected theorem toFinset_compl [DecidableEq α] [Fintype α] (hs : s.Finite) (
   simp
 #align set.finite.to_finset_compl Set.Finite.toFinset_compl
 
--- porting note: was `@[simp]`, now `simp` can prove it
-protected theorem toFinset_empty (h : (∅ : Set α).Finite) : h.toFinset = ∅ :=
-  toFinite_toFinset _
-#align set.finite.to_finset_empty Set.Finite.toFinset_empty
-
 protected theorem toFinset_univ [Fintype α] (h : (Set.univ : Set α).Finite) :
     h.toFinset = Finset.univ := by
   simp
@@ -300,6 +295,10 @@ protected theorem toFinset_univ [Fintype α] (h : (Set.univ : Set α).Finite) :
 protected theorem toFinset_eq_empty {h : s.Finite} : h.toFinset = ∅ ↔ s = ∅ :=
   @toFinset_eq_empty _ _ h.fintype
 #align set.finite.to_finset_eq_empty Set.Finite.toFinset_eq_empty
+
+protected theorem toFinset_empty (h : (∅ : Set α).Finite) : h.toFinset = ∅ := by
+  simp
+#align set.finite.to_finset_empty Set.Finite.toFinset_empty
 
 @[simp]
 protected theorem toFinset_eq_univ [Fintype α] {h : s.Finite} :
@@ -786,6 +785,10 @@ theorem Finite.subset {s : Set α} (hs : s.Finite) {t : Set α} (ht : t ⊆ s) :
   apply toFinite
 #align set.finite.subset Set.Finite.subset
 
+protected lemma Infinite.mono {s t : Set α} (h : s ⊆ t) : s.Infinite → t.Infinite :=
+  mt fun ht ↦ ht.subset h
+#align set.infinite.mono Set.Infinite.mono
+
 theorem Finite.diff {s : Set α} (hs : s.Finite) (t : Set α) : (s \ t).Finite := by
   cases hs
   apply toFinite
@@ -889,7 +892,7 @@ lemma Finite.of_surjOn {s : Set α} {t : Set β} (f : α → β) (hf : SurjOn f 
     t.Finite := (hs.image _).subset hf
 
 theorem Finite.dependent_image {s : Set α} (hs : s.Finite) (F : ∀ i ∈ s, β) :
-    { y : β | ∃ (x : _) (hx : x ∈ s), y = F x hx }.Finite := by
+    {y : β | ∃ x hx, F x hx = y}.Finite := by
   cases hs
   simpa [range, eq_comm] using finite_range fun x : s => F x x.2
 #align set.finite.dependent_image Set.Finite.dependent_image
@@ -906,25 +909,33 @@ theorem Finite.of_finite_image {s : Set α} {f : α → β} (h : (f '' s).Finite
         Subtype.eq <| hi a.2 b.2 <| Subtype.ext_iff_val.1 eq⟩
 #align set.finite.of_finite_image Set.Finite.of_finite_image
 
-theorem finite_of_finite_preimage {f : α → β} {s : Set β} (h : (f ⁻¹' s).Finite)
-    (hs : s ⊆ range f) : s.Finite := by
+section preimage
+variable {f : α → β} {s : Set β}
+
+theorem finite_of_finite_preimage (h : (f ⁻¹' s).Finite) (hs : s ⊆ range f) : s.Finite := by
   rw [← image_preimage_eq_of_subset hs]
   exact Finite.image f h
 #align set.finite_of_finite_preimage Set.finite_of_finite_preimage
 
-theorem Finite.of_preimage {f : α → β} {s : Set β} (h : (f ⁻¹' s).Finite) (hf : Surjective f) :
-    s.Finite :=
+theorem Finite.of_preimage (h : (f ⁻¹' s).Finite) (hf : Surjective f) : s.Finite :=
   hf.image_preimage s ▸ h.image _
 #align set.finite.of_preimage Set.Finite.of_preimage
 
-theorem Finite.preimage {s : Set β} {f : α → β} (I : Set.InjOn f (f ⁻¹' s)) (h : s.Finite) :
-    (f ⁻¹' s).Finite :=
+theorem Finite.preimage (I : Set.InjOn f (f ⁻¹' s)) (h : s.Finite) : (f ⁻¹' s).Finite :=
   (h.subset (image_preimage_subset f s)).of_finite_image I
 #align set.finite.preimage Set.Finite.preimage
+
+protected lemma Infinite.preimage (hs : s.Infinite) (hf : s ⊆ range f) : (f ⁻¹' s).Infinite :=
+  fun h ↦ hs $ finite_of_finite_preimage h hf
+
+lemma Infinite.preimage' (hs : (s ∩ range f).Infinite) : (f ⁻¹' s).Infinite :=
+  (hs.preimage $ inter_subset_right _ _).mono $ preimage_mono $ inter_subset_left _ _
 
 theorem Finite.preimage_embedding {s : Set β} (f : α ↪ β) (h : s.Finite) : (f ⁻¹' s).Finite :=
   h.preimage fun _ _ _ _ h' => f.injective h'
 #align set.finite.preimage_embedding Set.Finite.preimage_embedding
+
+end preimage
 
 theorem finite_lt_nat (n : ℕ) : Set.Finite { i | i < n } :=
   toFinite _
@@ -1237,9 +1248,8 @@ theorem empty_card : Fintype.card (∅ : Set α) = 0 :=
   rfl
 #align set.empty_card Set.empty_card
 
-@[simp]
 theorem empty_card' {h : Fintype.{u} (∅ : Set α)} : @Fintype.card (∅ : Set α) h = 0 :=
-  Eq.trans (by congr; exact Subsingleton.elim _ _) empty_card
+  by simp
 #align set.empty_card' Set.empty_card'
 
 theorem card_fintypeInsertOfNotMem {a : α} (s : Set α) [Fintype s] (h : a ∉ s) :
@@ -1280,10 +1290,10 @@ theorem card_lt_card {s t : Set α} [Fintype s] [Fintype t] (h : s ⊂ t) :
     fun hst => (ssubset_iff_subset_ne.1 h).2 (eq_of_inclusion_surjective hst)
 #align set.card_lt_card Set.card_lt_card
 
-theorem card_le_of_subset {s t : Set α} [Fintype s] [Fintype t] (hsub : s ⊆ t) :
+theorem card_le_card {s t : Set α} [Fintype s] [Fintype t] (hsub : s ⊆ t) :
     Fintype.card s ≤ Fintype.card t :=
   Fintype.card_le_of_injective (Set.inclusion hsub) (Set.inclusion_injective hsub)
-#align set.card_le_of_subset Set.card_le_of_subset
+#align set.card_le_card Set.card_le_card
 
 theorem eq_of_subset_of_card_le {s t : Set α} [Fintype s] [Fintype t] (hsub : s ⊆ t)
     (hcard : Fintype.card t ≤ Fintype.card s) : s = t :=
@@ -1362,10 +1372,6 @@ theorem Finite.infinite_compl [Infinite α] {s : Set α} (hs : s.Finite) : sᶜ.
   Set.infinite_univ (by simpa using hs.union h)
 #align set.finite.infinite_compl Set.Finite.infinite_compl
 
-protected theorem Infinite.mono {s t : Set α} (h : s ⊆ t) : s.Infinite → t.Infinite :=
-  mt fun ht => ht.subset h
-#align set.infinite.mono Set.Infinite.mono
-
 theorem Infinite.diff {s t : Set α} (hs : s.Infinite) (ht : t.Finite) : (s \ t).Infinite := fun h =>
   hs <| h.of_diff ht
 #align set.infinite.diff Set.Infinite.diff
@@ -1413,6 +1419,12 @@ theorem infinite_image2 (hfs : ∀ b ∈ t, InjOn (fun a => f a b) s) (hft : ∀
     · exact hs.image2_left hb (hfs _ hb)
     · exact ht.image2_right ha (hft _ ha)
 #align set.infinite_image2 Set.infinite_image2
+
+lemma finite_image2 (hfs : ∀ b ∈ t, InjOn (f · b) s) (hft : ∀ a ∈ s, InjOn (f a) t) :
+    (image2 f s t).Finite ↔ s.Finite ∧ t.Finite ∨ s = ∅ ∨ t = ∅ := by
+  rw [← not_infinite, infinite_image2 hfs hft]
+  simp [not_or, -not_and, not_and_or, not_nonempty_iff_eq_empty]
+  aesop
 
 end Image2
 
@@ -1485,7 +1497,7 @@ theorem Infinite.exists_lt_map_eq_of_mapsTo [LinearOrder α] {s : Set α} {t : S
 
 theorem Finite.exists_lt_map_eq_of_forall_mem [LinearOrder α] [Infinite α] {t : Set β} {f : α → β}
     (hf : ∀ a, f a ∈ t) (ht : t.Finite) : ∃ a b, a < b ∧ f a = f b := by
-  rw [← maps_univ_to] at hf
+  rw [← mapsTo_univ_iff] at hf
   obtain ⟨a, -, b, -, h⟩ := infinite_univ.exists_lt_map_eq_of_mapsTo hf ht
   exact ⟨a, b, h⟩
 #align set.finite.exists_lt_map_eq_of_forall_mem Set.Finite.exists_lt_map_eq_of_forall_mem
@@ -1622,7 +1634,7 @@ theorem Finite.exists_maximal_wrt [PartialOrder β] (f : α → β) (s : Set α)
   induction s, h using Set.Finite.dinduction_on with
   | H0 => exact absurd hs not_nonempty_empty
   | @H1 a s his _ ih =>
-    cases' s.eq_empty_or_nonempty with h h
+    rcases s.eq_empty_or_nonempty with h | h
     · use a
       simp [h]
     rcases ih h with ⟨b, hb, ih⟩

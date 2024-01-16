@@ -124,12 +124,12 @@ theorem max_eq_zero_iff : max m n = 0 ↔ m = 0 ∧ n = 0 := max_eq_bot
 
 theorem add_eq_max_iff : m + n = max m n ↔ m = 0 ∨ n = 0 := by
   rw [← min_eq_zero_iff]
-  cases' le_total m n with H H <;> simp [H]
+  rcases le_total m n with H | H <;> simp [H]
 #align nat.add_eq_max_iff Nat.add_eq_max_iff
 
 theorem add_eq_min_iff : m + n = min m n ↔ m = 0 ∧ n = 0 := by
   rw [← max_eq_zero_iff]
-  cases' le_total m n with H H <;> simp [H]
+  rcases le_total m n with H | H <;> simp [H]
 #align nat.add_eq_min_iff Nat.add_eq_min_iff
 
 theorem one_le_of_lt (h : n < m) : 1 ≤ m :=
@@ -244,11 +244,11 @@ theorem lt_of_lt_pred (h : m < n - 1) : m < n :=
 #align nat.lt_of_lt_pred Nat.lt_of_lt_pred
 
 theorem le_or_le_of_add_eq_add_pred (h : k + l = m + n - 1) : m ≤ k ∨ n ≤ l := by
-  cases' le_or_lt m k with h' h' <;> [left; right]
+  rcases le_or_lt m k with h' | h' <;> [left; right]
   · exact h'
   · replace h' := add_lt_add_right h' l
     rw [h] at h'
-    cases' n.eq_zero_or_pos with hn hn
+    rcases n.eq_zero_or_pos with hn | hn
     · rw [hn]
       exact zero_le l
     rw [n.add_sub_assoc (Nat.succ_le_of_lt hn), add_lt_add_iff_left] at h'

@@ -272,7 +272,7 @@ theorem stateEq_implies_write_eq {t : Register} {ζ₁ ζ₂ : State} (h : ζ₁
   constructor; · exact h.1
   intro r hr
   have hr : r ≤ t := Register.le_of_lt_succ hr
-  cases' lt_or_eq_of_le hr with hr hr
+  rcases lt_or_eq_of_le hr with hr | hr
   · cases' h with _ h
     specialize h r hr
     simp_all
@@ -303,23 +303,21 @@ theorem write_eq_implies_stateEq {t : Register} {v : Word} {ζ₁ ζ₂ : State}
 
 Unlike Theorem 1 in the paper, both `map` and the assumption on `t` are explicit.
 -/
-theorem compiler_correctness :
-    ∀ (map : Identifier → Register) (e : Expr) (ξ : Identifier → Word) (η : State) (t : Register),
-      (∀ x, read (loc x map) η = ξ x) →
-        (∀ x, loc x map < t) → outcome (compile map e t) η ≃[t] { η with ac := value e ξ } := by
-  intro map e ξ η t hmap ht
-  revert η t
-  induction e <;> intro η t hmap ht
+theorem compiler_correctness
+    (map : Identifier → Register) (e : Expr) (ξ : Identifier → Word) (η : State) (t : Register)
+    (hmap : ∀ x, read (loc x map) η = ξ x) (ht : ∀ x, loc x map < t) :
+    outcome (compile map e t) η ≃[t] { η with ac := value e ξ } := by
+  induction e generalizing η t with
   -- 5.I
-  case const => simp [StateEq, step]; rfl
+  | const => simp [StateEq, step]; rfl
   -- 5.II
-  case var =>
+  | var =>
     simp [hmap, StateEq, step] -- Porting note: was `finish [hmap, StateEq, step]`
     constructor
     · simp_all only [read, loc]
     · rfl
   -- 5.III
-  case sum =>
+  | sum =>
     rename_i e_s₁ e_s₂ e_ih_s₁ e_ih_s₂
     simp
     generalize value e_s₁ ξ = ν₁ at e_ih_s₁ ⊢

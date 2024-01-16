@@ -1177,7 +1177,7 @@ In this case we have `Sup ∅ = ⊥`, so we can drop some `Nonempty`/`Set.Nonemp
 
 section ConditionallyCompleteLinearOrderBot
 
-variable [ConditionallyCompleteLinearOrderBot α]
+variable [ConditionallyCompleteLinearOrderBot α] {s : Set α} {f : ι → α} {a : α}
 
 @[simp]
 theorem csSup_empty : (sSup ∅ : α) = ⊥ :=
@@ -1223,20 +1223,20 @@ theorem le_ciSup_iff' {s : ι → α} {a : α} (h : BddAbove (range s)) :
 
 theorem le_csInf_iff'' {s : Set α} {a : α} (ne : s.Nonempty) :
     a ≤ sInf s ↔ ∀ b : α, b ∈ s → a ≤ b :=
-  le_csInf_iff ⟨⊥, fun _ _ => bot_le⟩ ne
+  le_csInf_iff (OrderBot.bddBelow _) ne
 #align le_cInf_iff'' le_csInf_iff''
 
 theorem le_ciInf_iff' [Nonempty ι] {f : ι → α} {a : α} : a ≤ iInf f ↔ ∀ i, a ≤ f i :=
-  le_ciInf_iff ⟨⊥, fun _ _ => bot_le⟩
+  le_ciInf_iff (OrderBot.bddBelow _)
 #align le_cinfi_iff' le_ciInf_iff'
 
-theorem csInf_le' {s : Set α} {a : α} (h : a ∈ s) : sInf s ≤ a :=
-  csInf_le ⟨⊥, fun _ _ => bot_le⟩ h
+theorem csInf_le' (h : a ∈ s) : sInf s ≤ a := csInf_le (OrderBot.bddBelow _) h
 #align cInf_le' csInf_le'
 
-theorem ciInf_le' (f : ι → α) (i : ι) : iInf f ≤ f i :=
-  ciInf_le ⟨⊥, fun _ _ => bot_le⟩ _
+theorem ciInf_le' (f : ι → α) (i : ι) : iInf f ≤ f i := ciInf_le (OrderBot.bddBelow _) _
 #align cinfi_le' ciInf_le'
+
+lemma ciInf_le_of_le' (c : ι) : f c ≤ a → iInf f ≤ a := ciInf_le_of_le (OrderBot.bddBelow _) _
 
 theorem exists_lt_of_lt_csSup' {s : Set α} {a : α} (h : a < sSup s) : ∃ b ∈ s, a < b := by
   contrapose! h
@@ -1313,7 +1313,7 @@ theorem isLUB_sSup' {β : Type*} [ConditionallyCompleteLattice β] {s : Set (Wit
 
 -- Porting note: in mathlib3 `dsimp only [sSup]` was not needed, we used `show IsLUB ∅ (ite _ _ _)`
 theorem isLUB_sSup (s : Set (WithTop α)) : IsLUB s (sSup s) := by
-  cases' s.eq_empty_or_nonempty with hs hs
+  rcases s.eq_empty_or_nonempty with hs | hs
   · rw [hs]
     dsimp only [sSup]
     show IsLUB ∅ _
@@ -1648,7 +1648,7 @@ noncomputable instance WithTop.WithBot.completeLattice {α : Type*}
   { instInfSet, instSupSet, boundedOrder, lattice with
     le_sSup := fun S a haS => (WithTop.isLUB_sSup' ⟨a, haS⟩).1 haS
     sSup_le := fun S a ha => by
-      cases' S.eq_empty_or_nonempty with h h
+      rcases S.eq_empty_or_nonempty with h | h
       · show ite _ _ _ ≤ a
         split_ifs with h₁ h₂
         · rw [h] at h₁

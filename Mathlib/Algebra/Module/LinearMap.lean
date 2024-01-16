@@ -645,10 +645,10 @@ protected theorem map_sub (x y : M) : f (x - y) = f x - f y :=
 instance CompatibleSMul.intModule {S : Type*} [Semiring S] [Module S M] [Module S M₂] :
     CompatibleSMul M M₂ ℤ S :=
   ⟨fun fₗ c x ↦ by
-    induction c using Int.induction_on
-    case hz => simp
-    case hp n ih => simp [add_smul, ih]
-    case hn n ih => simp [sub_smul, ih]⟩
+    induction c using Int.induction_on with
+    | hz => simp
+    | hp n ih => simp [add_smul, ih]
+    | hn n ih => simp [sub_smul, ih]⟩
 #align linear_map.compatible_smul.int_module LinearMap.CompatibleSMul.intModule
 
 instance CompatibleSMul.units {R S : Type*} [Monoid R] [MulAction R M] [MulAction R M₂]

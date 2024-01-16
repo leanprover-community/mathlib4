@@ -32,7 +32,7 @@ This file defines the order of an element of a finite group. For a finite group 
 order of an element
 -/
 
-open Function Nat Pointwise Subgroup Submonoid
+open Function Fintype Nat Pointwise Subgroup Submonoid
 
 variable {G H A α β : Type*}
 
@@ -84,6 +84,11 @@ theorem not_isOfFinOrder_of_injective_pow {x : G} (h : Injective fun n : ℕ => 
   exact irrefl 0 hn_pos
 #align not_is_of_fin_order_of_injective_pow not_isOfFinOrder_of_injective_pow
 #align not_is_of_fin_add_order_of_injective_nsmul not_isOfFinAddOrder_of_injective_nsmul
+
+lemma IsOfFinOrder.pow {n : ℕ} : IsOfFinOrder a → IsOfFinOrder (a ^ n) := by
+  simp_rw [isOfFinOrder_iff_pow_eq_one]
+  rintro ⟨m, hm, ha⟩
+  exact ⟨m, hm, by simp [pow_right_comm _ n, ha]⟩
 
 /-- Elements of finite order are of finite order in submonoids.-/
 @[to_additive "Elements of finite order are of finite order in submonoids."]
@@ -283,7 +288,7 @@ protected lemma IsOfFinOrder.mem_powers_iff_mem_range_orderOf [DecidableEq G]
 @[to_additive IsOfFinAddOrder.powers_eq_image_range_orderOf]
 protected lemma IsOfFinOrder.powers_eq_image_range_orderOf [DecidableEq G] (hx : IsOfFinOrder x) :
     (Submonoid.powers x : Set G) = (Finset.range (orderOf x)).image (x ^ ·) :=
-  Set.ext $ fun _ ↦ hx.mem_powers_iff_mem_range_orderOf
+  Set.ext fun _ ↦ hx.mem_powers_iff_mem_range_orderOf
 
 @[to_additive]
 theorem pow_eq_one_iff_modEq : x ^ n = 1 ↔ n ≡ 0 [MOD orderOf x] := by
@@ -1040,18 +1045,19 @@ theorem Subgroup.pow_index_mem {G : Type*} [Group G] (H : Subgroup G) [Normal H]
 #align subgroup.pow_index_mem Subgroup.pow_index_mem
 #align add_subgroup.nsmul_index_mem AddSubgroup.nsmul_index_mem
 
-@[to_additive]
-theorem pow_eq_mod_card (n : ℕ) : x ^ n = x ^ (n % Fintype.card G) := by
-  rw [← pow_mod_orderOf, ← Nat.mod_mod_of_dvd n orderOf_dvd_card, pow_mod_orderOf]
-#align pow_eq_mod_card pow_eq_mod_card
-#align nsmul_eq_mod_card nsmul_eq_mod_card
 
-@[to_additive]
-theorem zpow_eq_mod_card (n : ℤ) : x ^ n = x ^ (n % Fintype.card G : ℤ) := by
-  rw [← zpow_mod_orderOf, ← Int.emod_emod_of_dvd n (Int.coe_nat_dvd.2 orderOf_dvd_card),
+@[to_additive (attr := simp) mod_card_nsmul]
+lemma pow_mod_card (a : G) (n : ℕ) : a ^ (n % card G) = a ^ n := by
+  rw [eq_comm, ← pow_mod_orderOf, ← Nat.mod_mod_of_dvd n orderOf_dvd_card, pow_mod_orderOf]
+#align pow_eq_mod_card pow_mod_card
+#align nsmul_eq_mod_card mod_card_nsmul
+
+@[to_additive (attr := simp) mod_card_zsmul]
+theorem zpow_mod_card (n : ℤ) : x ^ (n % Fintype.card G : ℤ) = x ^ n := by
+  rw [eq_comm, ← zpow_mod_orderOf, ← Int.emod_emod_of_dvd n (Int.coe_nat_dvd.2 orderOf_dvd_card),
     zpow_mod_orderOf]
-#align zpow_eq_mod_card zpow_eq_mod_card
-#align zsmul_eq_mod_card zsmul_eq_mod_card
+#align zpow_eq_mod_card zpow_mod_card
+#align zsmul_eq_mod_card mod_card_zsmul
 
 /-- If `gcd(|G|,n)=1` then the `n`th power map is a bijection -/
 @[to_additive (attr := simps) "If `gcd(|G|,n)=1` then the smul by `n` is a bijection"]
@@ -1084,6 +1090,10 @@ theorem powCoprime_inv {G : Type*} [Group G] (h : (Nat.card G).Coprime n) {g : G
   inv_pow g n
 #align pow_coprime_inv powCoprime_inv
 #align nsmul_coprime_neg nsmulCoprime_neg
+
+@[to_additive Nat.Coprime.nsmul_right_bijective]
+lemma Nat.Coprime.pow_left_bijective (hn : (Nat.card G).Coprime n) : Bijective (· ^ n : G → G) :=
+  (powCoprime hn).bijective
 
 @[to_additive add_inf_eq_bot_of_coprime]
 theorem inf_eq_bot_of_coprime {G : Type*} [Group G] {H K : Subgroup G} [Fintype H] [Fintype K]
@@ -1164,9 +1174,22 @@ def powCardSubgroup {G : Type*} [Group G] [Fintype G] (S : Set G) (hS : S.Nonemp
 
 end PowIsSubgroup
 
+section LinearOrderedSemiring
+variable [LinearOrderedSemiring G] {a : G}
+
+protected lemma IsOfFinOrder.eq_one (ha₀ : 0 ≤ a) (ha : IsOfFinOrder a) : a = 1 := by
+  obtain ⟨n, hn, ha⟩ := ha.exists_pow_eq_one
+  exact (pow_eq_one_iff_of_nonneg ha₀ hn.ne').1 ha
+
+end LinearOrderedSemiring
+
 section LinearOrderedRing
 
-variable [LinearOrderedRing G] {x : G}
+variable [LinearOrderedRing G] {a x : G}
+
+protected lemma IsOfFinOrder.eq_neg_one (ha₀ : a ≤ 0) (ha : IsOfFinOrder a) : a = -1 :=
+  (sq_eq_one_iff.1 $ ha.pow.eq_one $ sq_nonneg a).resolve_left $ by
+    rintro rfl; exact one_pos.not_le ha₀
 
 theorem orderOf_abs_ne_one (h : |x| ≠ 1) : orderOf x = 0 := by
   rw [orderOf_eq_zero_iff']

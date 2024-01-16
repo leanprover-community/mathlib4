@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Group.Defs
-import Mathlib.Algebra.Order.Module
+import Mathlib.Algebra.Order.Module.OrderedSMul
 import Mathlib.Algebra.Order.Monoid.MinMax
 import Mathlib.Order.Monotone.Monovary
 
@@ -86,10 +86,10 @@ lemma antivaryOn_inv_right : AntivaryOn f g⁻¹ s ↔ MonovaryOn f g s := by
     AntivaryOn (f₁ / f₂) g s := fun _i hi _j hj hij ↦ div_le_div'' (h₁ hi hj hij) (h₂ hi hj hij)
 
 @[to_additive] lemma MonovaryOn.pow_left (hfg : MonovaryOn f g s) (n : ℕ) :
-    MonovaryOn (f ^ n) g s := fun _i hi _j hj hij ↦ pow_le_pow_of_le_left' (hfg hi hj hij) _
+    MonovaryOn (f ^ n) g s := fun _i hi _j hj hij ↦ pow_le_pow_left' (hfg hi hj hij) _
 
 @[to_additive] lemma AntivaryOn.pow_left (hfg : AntivaryOn f g s) (n : ℕ) :
-    AntivaryOn (f ^ n) g s := fun _i hi _j hj hij ↦ pow_le_pow_of_le_left' (hfg hi hj hij) _
+    AntivaryOn (f ^ n) g s := fun _i hi _j hj hij ↦ pow_le_pow_left' (hfg hi hj hij) _
 
 @[to_additive]
 lemma Monovary.mul_left (h₁ : Monovary f₁ g) (h₂ : Monovary f₂ g) : Monovary (f₁ * f₂) g :=
@@ -108,10 +108,10 @@ lemma Antivary.div_left (h₁ : Antivary f₁ g) (h₂ : Monovary f₂ g) : Anti
   fun _i _j hij ↦ div_le_div'' (h₁ hij) (h₂ hij)
 
 @[to_additive] lemma Monovary.pow_left (hfg : Monovary f g) (n : ℕ) : Monovary (f ^ n) g :=
-  fun _i _j hij ↦ pow_le_pow_of_le_left' (hfg hij) _
+  fun _i _j hij ↦ pow_le_pow_left' (hfg hij) _
 
 @[to_additive] lemma Antivary.pow_left (hfg : Antivary f g) (n : ℕ) : Antivary (f ^ n) g :=
-  fun _i _j hij ↦ pow_le_pow_of_le_left' (hfg hij) _
+  fun _i _j hij ↦ pow_le_pow_left' (hfg hij) _
 
 end OrderedCommGroup
 
@@ -136,32 +136,32 @@ variable [OrderedCommGroup α] [LinearOrderedCommGroup β] {s : Set ι} {f f₁ 
   fun _i hi _j hj hij ↦ (lt_or_lt_of_div_lt_div hij).elim (h₁ hi hj) $ h₂ hj hi
 
 @[to_additive] lemma MonovaryOn.pow_right (hfg : MonovaryOn f g s) (n : ℕ) :
-    MonovaryOn f (g ^ n) s := fun _i hi _j hj hij ↦ hfg hi hj $ lt_of_pow_lt_pow' _ hij
+    MonovaryOn f (g ^ n) s := fun _i hi _j hj hij ↦ hfg hi hj $ lt_of_pow_lt_pow_left' _ hij
 
 @[to_additive] lemma AntivaryOn.pow_right (hfg : AntivaryOn f g s) (n : ℕ) :
-    AntivaryOn f (g ^ n) s := fun _i hi _j hj hij ↦ hfg hi hj $ lt_of_pow_lt_pow' _ hij
+    AntivaryOn f (g ^ n) s := fun _i hi _j hj hij ↦ hfg hi hj $ lt_of_pow_lt_pow_left' _ hij
 
 @[to_additive] lemma Monovary.mul_right (h₁ : Monovary f g₁) (h₂ : Monovary f g₂) :
     Monovary f (g₁ * g₂) :=
-  fun _i _j hij ↦ (lt_or_lt_of_mul_lt_mul hij).elim (fun h ↦ h₁ h) $ fun h ↦ h₂ h
+  fun _i _j hij ↦ (lt_or_lt_of_mul_lt_mul hij).elim (fun h ↦ h₁ h) fun h ↦ h₂ h
 
 @[to_additive] lemma Antivary.mul_right (h₁ : Antivary f g₁) (h₂ : Antivary f g₂) :
     Antivary f (g₁ * g₂) :=
-  fun _i _j hij ↦ (lt_or_lt_of_mul_lt_mul hij).elim (fun h ↦ h₁ h) $ fun h ↦ h₂ h
+  fun _i _j hij ↦ (lt_or_lt_of_mul_lt_mul hij).elim (fun h ↦ h₁ h) fun h ↦ h₂ h
 
 @[to_additive] lemma Monovary.div_right (h₁ : Monovary f g₁) (h₂ : Antivary f g₂) :
     Monovary f (g₁ / g₂) :=
-  fun _i _j hij ↦ (lt_or_lt_of_div_lt_div hij).elim (fun h ↦ h₁ h) $ fun h ↦ h₂ h
+  fun _i _j hij ↦ (lt_or_lt_of_div_lt_div hij).elim (fun h ↦ h₁ h) fun h ↦ h₂ h
 
 @[to_additive] lemma Antivary.div_right (h₁ : Antivary f g₁) (h₂ : Monovary f g₂) :
     Antivary f (g₁ / g₂) :=
-  fun _i _j hij ↦ (lt_or_lt_of_div_lt_div hij).elim (fun h ↦ h₁ h) $ fun h ↦ h₂ h
+  fun _i _j hij ↦ (lt_or_lt_of_div_lt_div hij).elim (fun h ↦ h₁ h) fun h ↦ h₂ h
 
 @[to_additive] lemma Monovary.pow_right (hfg : Monovary f g) (n : ℕ) : Monovary f (g ^ n) :=
-  fun _i _j hij ↦ hfg $ lt_of_pow_lt_pow' _ hij
+  fun _i _j hij ↦ hfg $ lt_of_pow_lt_pow_left' _ hij
 
 @[to_additive] lemma Antivary.pow_right (hfg : Antivary f g) (n : ℕ) : Antivary f (g ^ n) :=
-  fun _i _j hij ↦ hfg $ lt_of_pow_lt_pow' _ hij
+  fun _i _j hij ↦ hfg $ lt_of_pow_lt_pow_left' _ hij
 
 end LinearOrderedCommGroup
 
@@ -178,11 +178,11 @@ lemma AntivaryOn.mul_left₀ (hf₁ : ∀ i ∈ s, 0 ≤ f₁ i) (hf₂ : ∀ i 
 
 lemma MonovaryOn.pow_left₀ (hf : ∀ i ∈ s, 0 ≤ f i) (hfg : MonovaryOn f g s) (n : ℕ) :
     MonovaryOn (f ^ n) g s :=
-  fun _i hi _j hj hij ↦ pow_le_pow_of_le_left (hf _ hi) (hfg hi hj hij) _
+  fun _i hi _j hj hij ↦ pow_le_pow_left (hf _ hi) (hfg hi hj hij) _
 
 lemma AntivaryOn.pow_left₀ (hf : ∀ i ∈ s, 0 ≤ f i) (hfg : AntivaryOn f g s) (n : ℕ) :
     AntivaryOn (f ^ n) g s :=
-  fun _i hi _j hj hij ↦ pow_le_pow_of_le_left (hf _ hj) (hfg hi hj hij) _
+  fun _i hi _j hj hij ↦ pow_le_pow_left (hf _ hj) (hfg hi hj hij) _
 
 lemma Monovary.mul_left₀ (hf₁ : 0 ≤ f₁) (hf₂ : 0 ≤ f₂) (h₁ : Monovary f₁ g) (h₂ : Monovary f₂ g) :
     Monovary (f₁ * f₂) g := fun _i _j hij ↦ mul_le_mul (h₁ hij) (h₂ hij) (hf₂ _) (hf₁ _)
@@ -191,10 +191,10 @@ lemma Antivary.mul_left₀ (hf₁ : 0 ≤ f₁) (hf₂ : 0 ≤ f₂) (h₁ : Ant
     Antivary (f₁ * f₂) g := fun _i _j hij ↦ mul_le_mul (h₁ hij) (h₂ hij) (hf₂ _) (hf₁ _)
 
 lemma Monovary.pow_left₀ (hf : 0 ≤ f) (hfg : Monovary f g) (n : ℕ) : Monovary (f ^ n) g :=
-  fun _i _j hij ↦ pow_le_pow_of_le_left (hf _) (hfg hij) _
+  fun _i _j hij ↦ pow_le_pow_left (hf _) (hfg hij) _
 
 lemma Antivary.pow_left₀ (hf : 0 ≤ f) (hfg : Antivary f g) (n : ℕ) : Antivary (f ^ n) g :=
-  fun _i _j hij ↦ pow_le_pow_of_le_left (hf _) (hfg hij) _
+  fun _i _j hij ↦ pow_le_pow_left (hf _) (hfg hij) _
 
 end OrderedSemiring
 
@@ -345,7 +345,7 @@ monovary_toDual_right.symm.trans $ by rw [monovary_iff_forall_smul_nonneg]; rfl
 lemma monovaryOn_iff_smul_rearrangement :
     MonovaryOn f g s ↔
       ∀ ⦃i⦄, i ∈ s → ∀ ⦃j⦄, j ∈ s → f i • g j + f j • g i ≤ f i • g i + f j • g j :=
-  monovaryOn_iff_forall_smul_nonneg.trans $ forall₄_congr $ fun i _ j _ ↦ by
+  monovaryOn_iff_forall_smul_nonneg.trans $ forall₄_congr fun i _ j _ ↦ by
     simp [smul_sub, sub_smul, ← add_sub_right_comm, le_sub_iff_add_le, add_comm (f i • g i),
       add_comm (f i • g j)]
 

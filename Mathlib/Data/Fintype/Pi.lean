@@ -20,7 +20,7 @@ open Finset
 
 namespace Fintype
 
-variable [DecidableEq α] [Fintype α] {δ : α → Type*}
+variable [DecidableEq α] [Fintype α] {γ δ : α → Type*} {s : ∀ a, Finset (γ a)}
 
 /-- Given for all `a : α` a finset `t a` of `δ a`, then one can define the
 finset `Fintype.piFinset t` of all functions taking values in `t a` for all `a`. This is the
@@ -60,6 +60,13 @@ theorem piFinset_empty [Nonempty α] : piFinset (fun _ => ∅ : ∀ i, Finset (�
   eq_empty_of_forall_not_mem fun _ => by simp
 #align fintype.pi_finset_empty Fintype.piFinset_empty
 
+@[simp] lemma piFinset_nonempty : (piFinset s).Nonempty ↔ ∀ a, (s a).Nonempty := by
+  simp [Finset.Nonempty, Classical.skolem]
+
+@[simp]
+lemma piFinset_of_isEmpty [IsEmpty α] (s : ∀ a, Finset (γ a)) : piFinset s = univ :=
+  eq_univ_of_forall fun _ ↦ by simp
+
 @[simp]
 theorem piFinset_singleton (f : ∀ i, δ i) : piFinset (fun i => {f i} : ∀ i, Finset (δ i)) = {f} :=
   ext fun _ => by simp only [Function.funext_iff, Fintype.mem_piFinset, mem_singleton]
@@ -76,6 +83,23 @@ theorem piFinset_disjoint_of_disjoint (t₁ t₂ : ∀ a, Finset (δ a)) {a : α
     disjoint_iff_ne.1 h (f₁ a) (mem_piFinset.1 hf₁ a) (f₂ a) (mem_piFinset.1 hf₂ a)
       (congr_fun eq₁₂ a)
 #align fintype.pi_finset_disjoint_of_disjoint Fintype.piFinset_disjoint_of_disjoint
+
+lemma piFinset_image [∀ a, DecidableEq (δ a)] (f : ∀ a, γ a → δ a) (s : ∀ a, Finset (γ a)) :
+    piFinset (fun a ↦ (s a).image (f a)) = (piFinset s).image fun b a ↦ f _ (b a) := by
+  ext; simp only [mem_piFinset, mem_image, Classical.skolem, forall_and, Function.funext_iff]
+
+lemma eval_image_piFinset_subset (t : ∀ a, Finset (δ a)) (a : α) [DecidableEq (δ a)] :
+    ((piFinset t).image fun f ↦ f a) ⊆ t a := image_subset_iff.2 fun _x hx ↦ mem_piFinset.1 hx _
+
+lemma eval_image_piFinset (t : ∀ a, Finset (δ a)) (a : α) [DecidableEq (δ a)]
+    (ht : ∀ b, a ≠ b → (t b).Nonempty) : ((piFinset t).image fun f ↦ f a) = t a := by
+  refine (eval_image_piFinset_subset _ _).antisymm fun x h ↦ mem_image.2 ?_
+  choose f hf using ht
+  exact ⟨fun b ↦ if h : a = b then h ▸ x else f _ h, by aesop, by simp⟩
+
+lemma filter_piFinset_of_not_mem [∀ a, DecidableEq (δ a)] (t : ∀ a, Finset (δ a)) (a : α)
+    (x : δ a) (hx : x ∉ t a) : (piFinset t).filter (· a = x) = ∅ := by
+  simp only [filter_eq_empty_iff, mem_piFinset]; rintro f hf rfl; exact hx (hf _)
 
 end Fintype
 

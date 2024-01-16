@@ -275,8 +275,8 @@ elab_rules : tactic | `(tactic| apply? $[using $[$required],*]?) => do
   exact? (← getRef) required false
 
 elab tk:"library_search" : tactic => do
-  logWarning ("`library_search` has been renamed to `apply?`" ++
-    " (or `exact?` if you only want solutions closing the goal)")
+  logWarning "`library_search` has been renamed to `apply?` \
+    (or `exact?` if you only want solutions closing the goal)"
   exact? tk none false
 
 open Elab Term in

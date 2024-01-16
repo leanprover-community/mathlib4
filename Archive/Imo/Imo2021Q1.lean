@@ -82,7 +82,7 @@ theorem exists_triplet_summing_to_squares (n : ℕ) (hn : 100 ≤ n) :
 theorem exists_finset_3_le_card_with_pairs_summing_to_squares (n : ℕ) (hn : 100 ≤ n) :
     ∃ B : Finset ℕ,
       2 * 1 + 1 ≤ B.card ∧
-      (∀ (a) (_ : a ∈ B) (b) (_ : b ∈ B), a ≠ b → ∃ k, a + b = k ^ 2) ∧
+      (∀ a ∈ B, ∀ b ∈ B, a ≠ b → ∃ k, a + b = k ^ 2) ∧
       ∀ c ∈ B, n ≤ c ∧ c ≤ 2 * n := by
   obtain ⟨a, b, c, hna, hab, hbc, hcn, h₁, h₂, h₃⟩ := exists_triplet_summing_to_squares n hn
   refine' ⟨{a, b, c}, _, _, _⟩
@@ -110,9 +110,9 @@ end Imo2021Q1
 open Imo2021Q1
 
 theorem imo2021_q1 :
-    ∀ n : ℕ, 100 ≤ n → ∀ (A) (_ : A ⊆ Finset.Icc n (2 * n)),
-    (∃ (a : _) (_ : a ∈ A) (b : _) (_ : b ∈ A), a ≠ b ∧ ∃ k : ℕ, a + b = k ^ 2) ∨
-    ∃ (a : _) (_ : a ∈ Finset.Icc n (2 * n) \ A) (b : _) (_ : b ∈ Finset.Icc n (2 * n) \ A),
+    ∀ n : ℕ, 100 ≤ n → ∀ A ⊆ Finset.Icc n (2 * n),
+    (∃ a ∈ A, ∃ b ∈ A, a ≠ b ∧ ∃ k : ℕ, a + b = k ^ 2) ∨
+    ∃ a ∈ Finset.Icc n (2 * n) \ A, ∃ b ∈ Finset.Icc n (2 * n) \ A,
       a ≠ b ∧ ∃ k : ℕ, a + b = k ^ 2 := by
   intro n hn A hA
   -- For each n ∈ ℕ such that 100 ≤ n, there exists a pairwise unequal triplet {a, b, c} ⊆ [n, 2n]

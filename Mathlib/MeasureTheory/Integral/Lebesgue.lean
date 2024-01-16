@@ -175,7 +175,7 @@ variable (μ)
 integral. -/
 theorem exists_measurable_le_lintegral_eq (f : α → ℝ≥0∞) :
     ∃ g : α → ℝ≥0∞, Measurable g ∧ g ≤ f ∧ ∫⁻ a, f a ∂μ = ∫⁻ a, g a ∂μ := by
-  cases' eq_or_ne (∫⁻ a, f a ∂μ) 0 with h₀ h₀
+  rcases eq_or_ne (∫⁻ a, f a ∂μ) 0 with h₀ | h₀
   · exact ⟨0, measurable_zero, zero_le f, h₀.trans lintegral_zero.symm⟩
   rcases exists_seq_strictMono_tendsto' h₀.bot_lt with ⟨L, _, hLf, hL_tendsto⟩
   have : ∀ n, ∃ g : α → ℝ≥0∞, Measurable g ∧ g ≤ f ∧ L n < ∫⁻ a, g a ∂μ := by
@@ -347,7 +347,6 @@ theorem lintegral_iSup {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurable (
     ∫⁻ a, ⨆ n, f n a ∂μ = ⨆ n, ∫⁻ a, f n a ∂μ := by
   set c : ℝ≥0 → ℝ≥0∞ := (↑)
   set F := fun a : α => ⨆ n, f n a
-  have _ : Measurable F := measurable_iSup hf
   refine' le_antisymm _ (iSup_lintegral_le _)
   rw [lintegral_eq_nnreal]
   refine' iSup_le fun s => iSup_le fun hsf => _

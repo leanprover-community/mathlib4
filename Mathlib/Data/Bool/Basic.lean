@@ -47,8 +47,8 @@ theorem of_decide_iff {p : Prop} [Decidable p] : decide p ↔ p :=
   coe_decide p
 #align bool.of_to_bool_iff Bool.of_decide_iff
 
-#align bool.tt_eq_to_bool_iff Bool.true_eq_decide_iff
-#align bool.ff_eq_to_bool_iff Bool.false_eq_decide_iff
+#align bool.tt_eq_to_bool_iff true_eq_decide_iff
+#align bool.ff_eq_to_bool_iff false_eq_decide_iff
 
 theorem decide_not (p : Prop) [Decidable p] : (decide ¬p) = !(decide p) := by
   by_cases p <;> simp [*]

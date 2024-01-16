@@ -165,10 +165,10 @@ theorem card_le_two_pow {x k : ℕ} :
   -- The number of elements of `M x k` with `e + 1` squarefree is bounded by the number of subsets
   -- of `[1, k]`.
   calc
-    card M₁ ≤ card (image f K) := card_le_of_subset h
+    card M₁ ≤ card (image f K) := card_le_card h
     _ ≤ card K := card_image_le
     _ ≤ 2 ^ card (image Nat.succ (range k)) := by simp only [card_powerset]; rfl
-    _ ≤ 2 ^ card (range k) := (pow_le_pow one_le_two card_image_le)
+    _ ≤ 2 ^ card (range k) := (pow_le_pow_right one_le_two card_image_le)
     _ = 2 ^ k := by rw [card_range k]
 #align theorems_100.card_le_two_pow Theorems100.card_le_two_pow
 
@@ -200,9 +200,9 @@ theorem card_le_two_pow_mul_sqrt {x k : ℕ} : card (M x k) ≤ 2 ^ k * Nat.sqrt
         _ ≤ x.sqrt := Nat.sqrt_le_sqrt (Nat.succ_le_iff.mpr hm.1)
     · exact hm.2 p ⟨hp.1, hp.2.trans (Nat.dvd_of_pow_dvd one_le_two hbm)⟩
   have h2 : card M₂ ≤ Nat.sqrt x := by
-    rw [← card_range (Nat.sqrt x)]; apply card_le_of_subset; simp [M]
+    rw [← card_range (Nat.sqrt x)]; apply card_le_card; simp [M]
   calc
-    card (M x k) ≤ card (image f K) := card_le_of_subset h1
+    card (M x k) ≤ card (image f K) := card_le_card h1
     _ ≤ card K := card_image_le
     _ = card M₁ * card M₂ := (card_product M₁ M₂)
     _ ≤ 2 ^ k * x.sqrt := mul_le_mul' card_le_two_pow h2

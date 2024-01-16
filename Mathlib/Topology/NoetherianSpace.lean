@@ -45,7 +45,7 @@ variable (α β : Type*) [TopologicalSpace α] [TopologicalSpace β]
 namespace TopologicalSpace
 
 /-- Type class for noetherian spaces. It is defined to be spaces whose open sets satisfies ACC. -/
-@[mk_iff noetherianSpace_iff]
+@[mk_iff]
 class NoetherianSpace : Prop where
   wellFounded_opens : WellFounded ((· > ·) : Opens α → Opens α → Prop)
 #align topological_space.noetherian_space TopologicalSpace.NoetherianSpace
@@ -121,7 +121,7 @@ instance {α} : NoetherianSpace (CofiniteTopology α) := by
 
 theorem noetherianSpace_of_surjective [NoetherianSpace α] (f : α → β) (hf : Continuous f)
     (hf' : Function.Surjective f) : NoetherianSpace β :=
-  noetherianSpace_iff_isCompact.2 $ (Set.image_surjective.mpr hf').forall.2 $ fun s =>
+  noetherianSpace_iff_isCompact.2 $ (Set.image_surjective.mpr hf').forall.2 fun s =>
     (NoetherianSpace.isCompact s).image hf
 #align topological_space.noetherian_space_of_surjective TopologicalSpace.noetherianSpace_of_surjective
 

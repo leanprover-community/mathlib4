@@ -110,11 +110,10 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
     · exact hT
   let g : ℕ → E → ℝ := fun n => (g0 n).1
   have g_s : ∀ n, support (g n) ⊆ s := fun n => (g0 n).2.1
-  have s_g : ∀ x ∈ s, ∃ n, x ∈ support (g n) := by
-    intro x hx
+  have s_g : ∀ x ∈ s, ∃ n, x ∈ support (g n) := fun x hx ↦ by
     rw [← hT] at hx
-    obtain ⟨i, iT, hi⟩ : ∃ (i : ι) (_ : i ∈ T), x ∈ support (i : E → ℝ) := by
-      simpa only [mem_iUnion] using hx
+    obtain ⟨i, iT, hi⟩ : ∃ i ∈ T, x ∈ support (i : E → ℝ) := by
+      simpa only [mem_iUnion, exists_prop] using hx
     rw [hg, mem_range] at iT
     rcases iT with ⟨n, hn⟩
     rw [← hn] at hi

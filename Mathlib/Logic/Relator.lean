@@ -80,7 +80,7 @@ lemma RightTotal.rel_forall (h : RightTotal R) :
 
 lemma LeftTotal.rel_exists (h : LeftTotal R) :
     ((R ⇒ (· → ·)) ⇒ (· → ·)) (fun p => ∃i, p i) (fun q => ∃i, q i) :=
-  fun _ _ Hrel ⟨a, pa⟩ => (h a).imp $ fun _ Rab => Hrel Rab pa
+  fun _ _ Hrel ⟨a, pa⟩ => (h a).imp fun _ Rab => Hrel Rab pa
 #align relator.left_total.rel_exists Relator.LeftTotal.rel_exists
 
 lemma BiTotal.rel_forall (h : BiTotal R) :
@@ -93,8 +93,8 @@ lemma BiTotal.rel_forall (h : BiTotal R) :
 lemma BiTotal.rel_exists (h : BiTotal R) :
     ((R ⇒ Iff) ⇒ Iff) (fun p => ∃i, p i) (fun q => ∃i, q i) :=
   fun _ _ Hrel =>
-    ⟨fun ⟨a, pa⟩ => (h.left a).imp $ fun _ Rab => (Hrel Rab).1 pa,
-      fun ⟨b, qb⟩ => (h.right b).imp $ fun _ Rab => (Hrel Rab).2 qb⟩
+    ⟨fun ⟨a, pa⟩ => (h.left a).imp fun _ Rab => (Hrel Rab).1 pa,
+      fun ⟨b, qb⟩ => (h.right b).imp fun _ Rab => (Hrel Rab).2 qb⟩
 #align relator.bi_total.rel_exists Relator.BiTotal.rel_exists
 
 lemma left_unique_of_rel_eq {eq' : β → β → Prop} (he : (R ⇒ (R ⇒ Iff)) Eq eq') : LeftUnique R :=

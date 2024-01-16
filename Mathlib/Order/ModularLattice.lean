@@ -265,7 +265,7 @@ theorem wellFounded_lt_exact_sequence {β γ : Type*} [PartialOrder β] [Preorde
         simp only [Prod.lex_def, lt_iff_le_not_le, ← gci.l_le_l_iff, ← gi.u_le_u_iff, hf, hg,
           le_antisymm_iff]
         simp only [gci.l_le_l_iff, gi.u_le_u_iff, ← lt_iff_le_not_le, ← le_antisymm_iff]
-        cases' lt_or_eq_of_le (inf_le_inf_right K (le_of_lt hAB)) with h h
+        rcases lt_or_eq_of_le (inf_le_inf_right K (le_of_lt hAB)) with h | h
         · exact Or.inl h
         · exact Or.inr ⟨h, sup_lt_sup_of_lt_of_inf_le_inf hAB (le_of_eq h.symm)⟩)
     (InvImage.wf _ (h₁.prod_lex h₂))

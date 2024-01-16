@@ -166,7 +166,7 @@ To avoid adding the same nonnegativity facts many times, it is a global preproce
 def natToInt : GlobalBranchingPreprocessor where
   name := "move nats to ints"
   transform g l := do
-    let l ← l.mapM $ fun h => do
+    let l ← l.mapM fun h => do
       let t ← whnfR (← instantiateMVars (← inferType h))
       if isNatProp t then
         let (some (h', t'), _) ← Term.TermElabM.run' (run_for g (zifyProof none h t))
@@ -352,7 +352,7 @@ def nlinarithExtras : GlobalPreprocessor where
         let ⟨ine, _⟩ ← parseCompAndExpr tp
         pure (ine, e)
       catch _ => pure (Ineq.lt, e))
-    let products ← with_comps.mapDiagM $ fun (⟨posa, a⟩ : Ineq × Expr) ⟨posb, b⟩ =>
+    let products ← with_comps.mapDiagM fun (⟨posa, a⟩ : Ineq × Expr) ⟨posb, b⟩ =>
       try
         (some <$> match posa, posb with
           | Ineq.eq, _ => mkAppM ``zero_mul_eq #[a, b]

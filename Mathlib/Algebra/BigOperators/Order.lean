@@ -5,9 +5,10 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.Order.AbsoluteValue
 import Mathlib.Algebra.Order.Ring.WithTop
-import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Data.Fintype.Card
 import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.Ring
 
 #align_import algebra.big_operators.order from "leanprover-community/mathlib"@"65a1391a0106c9204fe45bc73a039f056558cb83"
 
@@ -191,13 +192,11 @@ theorem prod_eq_one_iff_of_one_le' :
 #align finset.prod_eq_one_iff_of_one_le' Finset.prod_eq_one_iff_of_one_le'
 #align finset.sum_eq_zero_iff_of_nonneg Finset.sum_eq_zero_iff_of_nonneg
 
-@[to_additive existing sum_eq_zero_iff_of_nonneg]
+@[to_additive sum_eq_zero_iff_of_nonpos]
 theorem prod_eq_one_iff_of_le_one' :
     (∀ i ∈ s, f i ≤ 1) → ((∏ i in s, f i) = 1 ↔ ∀ i ∈ s, f i = 1) :=
   @prod_eq_one_iff_of_one_le' _ Nᵒᵈ _ _ _
 #align finset.prod_eq_one_iff_of_le_one' Finset.prod_eq_one_iff_of_le_one'
--- Porting note: there is no align for the additive version since it aligns to the
--- same one as the previous lemma
 
 @[to_additive single_le_sum]
 theorem single_le_prod' (hf : ∀ i ∈ s, 1 ≤ f i) {a} (h : a ∈ s) : f a ≤ ∏ x in s, f x :=
@@ -242,7 +241,7 @@ variable {ι' : Type*} [DecidableEq ι']
 -- Porting note: Mathport warning: expanding binder collection (y «expr ∉ » t)
 @[to_additive sum_fiberwise_le_sum_of_sum_fiber_nonneg]
 theorem prod_fiberwise_le_prod_of_one_le_prod_fiber' {t : Finset ι'} {g : ι → ι'} {f : ι → N}
-    (h : ∀ (y) (_ : y ∉ t), (1 : N) ≤ ∏ x in s.filter fun x ↦ g x = y, f x) :
+    (h : ∀ y ∉ t, (1 : N) ≤ ∏ x in s.filter fun x ↦ g x = y, f x) :
     (∏ y in t, ∏ x in s.filter fun x ↦ g x = y, f x) ≤ ∏ x in s, f x :=
   calc
     (∏ y in t, ∏ x in s.filter fun x ↦ g x = y, f x) ≤
@@ -256,7 +255,7 @@ theorem prod_fiberwise_le_prod_of_one_le_prod_fiber' {t : Finset ι'} {g : ι �
 -- Porting note: Mathport warning: expanding binder collection (y «expr ∉ » t)
 @[to_additive sum_le_sum_fiberwise_of_sum_fiber_nonpos]
 theorem prod_le_prod_fiberwise_of_prod_fiber_le_one' {t : Finset ι'} {g : ι → ι'} {f : ι → N}
-    (h : ∀ (y) (_ : y ∉ t), ∏ x in s.filter fun x ↦ g x = y, f x ≤ 1) :
+    (h : ∀ y ∉ t, ∏ x in s.filter fun x ↦ g x = y, f x ≤ 1) :
     ∏ x in s, f x ≤ ∏ y in t, ∏ x in s.filter fun x ↦ g x = y, f x :=
   @prod_fiberwise_le_prod_of_one_le_prod_fiber' _ Nᵒᵈ _ _ _ _ _ _ _ h
 #align finset.prod_le_prod_fiberwise_of_prod_fiber_le_one' Finset.prod_le_prod_fiberwise_of_prod_fiber_le_one'
@@ -385,7 +384,7 @@ theorem card_le_card_biUnion_add_card_fiber {s : Finset ι} {f : ι → Finset �
     add_le_add_right
       ((card_le_card_biUnion (hs.subset <| filter_subset _ _) fun i hi ↦
             nonempty_of_ne_empty <| (mem_filter.1 hi).2).trans <|
-        card_le_of_subset <| biUnion_subset_biUnion_of_subset_left _ <| filter_subset _ _)
+        card_le_card <| biUnion_subset_biUnion_of_subset_left _ <| filter_subset _ _)
       _
 #align finset.card_le_card_bUnion_add_card_fiber Finset.card_le_card_biUnion_add_card_fiber
 
@@ -685,6 +684,28 @@ theorem prod_lt_prod_of_nonempty (hf : ∀ i ∈ s, 0 < f i) (hfg : ∀ i ∈ s,
 
 end StrictOrderedCommSemiring
 
+section LinearOrderedCommSemiring
+variable [LinearOrderedCommSemiring α] [ExistsAddOfLE α]
+
+lemma sum_mul_sq_le_sq_mul_sq (s : Finset ι) (f g : ι → α) :
+    (∑ i in s, f i * g i) ^ 2 ≤ (∑ i in s, f i ^ 2) * ∑ i in s, g i ^ 2 := by
+  nontriviality α
+  obtain h' | h' := (sum_nonneg fun _ _ ↦ sq_nonneg $ g _).eq_or_lt
+  · have h'' : ∀ i ∈ s, g i = 0 := fun i hi ↦ by
+      simpa using (sum_eq_zero_iff_of_nonneg fun i _ ↦ sq_nonneg (g i)).1 h'.symm i hi
+    rw [← h', sum_congr rfl (show ∀ i ∈ s, f i * g i = 0 from fun i hi ↦ by simp [h'' i hi])]
+    simp
+  refine le_of_mul_le_mul_of_pos_left
+    (le_of_add_le_add_left (a := (∑ i in s, g i ^ 2) * (∑ j in s, f j * g j) ^ 2) ?_) h'
+  calc
+    _ = ∑ i in s, 2 * (f i * ∑ j in s, g j ^ 2) * (g i * ∑ j in s, f j * g j) := by
+        simp_rw [mul_assoc (2 : α), mul_mul_mul_comm, ← mul_sum, ← sum_mul]; ring
+    _ ≤ ∑ i in s, ((f i * ∑ j in s, g j ^ 2) ^ 2 + (g i * ∑ j in s, f j * g j) ^ 2) :=
+        sum_le_sum fun i _ ↦ two_mul_le_add_sq (f i * ∑ j in s, g j ^ 2) (g i * ∑ j in s, f j * g j)
+    _ = _ := by simp_rw [sum_add_distrib, mul_pow, ← sum_mul]; ring
+
+end LinearOrderedCommSemiring
+
 section CanonicallyOrderedCommSemiring
 
 variable [CanonicallyOrderedCommSemiring R] {f g h : ι → R} {s : Finset ι} {i : ι}
@@ -730,6 +751,14 @@ lemma one_le_prod (hf : 1 ≤ f) : 1 ≤ ∏ i, f i := Finset.one_le_prod' λ _ 
 
 @[to_additive] lemma prod_le_one (hf : f ≤ 1) : ∏ i, f i ≤ 1 := Finset.prod_le_one' λ _ _ ↦ hf _
 
+@[to_additive]
+lemma prod_eq_one_iff_of_one_le (hf : 1 ≤ f) : ∏ i, f i = 1 ↔ f = 1 :=
+  (Finset.prod_eq_one_iff_of_one_le' fun i _ ↦ hf i).trans $ by simp [Function.funext_iff]
+
+@[to_additive]
+lemma prod_eq_one_iff_of_le_one (hf : f ≤ 1) : ∏ i, f i = 1 ↔ f = 1 :=
+  (Finset.prod_eq_one_iff_of_le_one' fun i _ ↦ hf i).trans $ by simp [Function.funext_iff]
+
 end OrderedCommMonoid
 
 section OrderedCancelCommMonoid
@@ -758,16 +787,6 @@ lemma one_lt_prod_iff_of_one_le (hf : 1 ≤ f) : 1 < ∏ i, f i ↔ 1 < f := by
 @[to_additive]
 lemma prod_lt_one_iff_of_le_one (hf : f ≤ 1) : ∏ i, f i < 1 ↔ f < 1 := by
   obtain rfl | hf := hf.eq_or_lt <;> simp [*, prod_lt_one]
-
-@[to_additive]
-lemma prod_eq_one_iff_of_one_le (hf : 1 ≤ f) : ∏ i, f i = 1 ↔ f = 1 := by
-  simpa only [(one_le_prod hf).not_gt_iff_eq, hf.not_gt_iff_eq]
-    using (one_lt_prod_iff_of_one_le hf).not
-
-@[to_additive]
-lemma prod_eq_one_iff_of_le_one (hf : f ≤ 1) : ∏ i, f i = 1 ↔ f = 1 := by
-  simpa only [(prod_le_one hf).not_gt_iff_eq, hf.not_gt_iff_eq, eq_comm]
-    using (prod_lt_one_iff_of_le_one hf).not
 
 end OrderedCancelCommMonoid
 end Fintype

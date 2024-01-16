@@ -110,7 +110,7 @@ theorem eq_of_perm_of_sorted [IsAntisymm α r] {l₁ l₂ : List α} (p : l₁ ~
     change a :: u₂ ++ v₂ = u₂ ++ ([a] ++ v₂)
     rw [← append_assoc]
     congr
-    have : ∀ (x : α) (_ : x ∈ u₂), x = a := fun x m =>
+    have : ∀ x ∈ u₂, x = a := fun x m =>
       antisymm ((pairwise_append.1 s₂).2.2 _ m a (mem_cons_self _ _)) (h₁ _ (by simp [m]))
     rw [(@eq_replicate _ a (length u₂ + 1) (a :: u₂)).2,
           (@eq_replicate _ a (length u₂ + 1) (u₂ ++ [a])).2] <;>
@@ -268,7 +268,7 @@ variable {r}
 
 /-- If `l` is already `List.Sorted` with respect to `r`, then `insertionSort` does not change
 it. -/
-theorem Sorted.insertionSort_eq : ∀ {l : List α} (_ : Sorted r l), insertionSort r l = l
+theorem Sorted.insertionSort_eq : ∀ {l : List α}, Sorted r l → insertionSort r l = l
   | [], _ => rfl
   | [a], _ => rfl
   | a :: b :: l, h => by
@@ -432,7 +432,7 @@ theorem Sorted.merge : ∀ {l l' : List α}, Sorted r l → Sorted r l' → Sort
   | a :: l, [], h₁, _ => by simpa [List.merge] using h₁
   | a :: l, b :: l', h₁, h₂ => by
     by_cases h : a ≼ b
-    · suffices ∀ (b' : α) (_ : b' ∈ List.merge r l (b :: l')), r a b' by
+    · suffices ∀ b' ∈ List.merge r l (b :: l'), r a b' by
         simpa [List.merge, h, h₁.of_cons.merge h₂]
       intro b' bm
       rcases show b' = b ∨ b' ∈ l ∨ b' ∈ l' by
@@ -442,7 +442,7 @@ theorem Sorted.merge : ∀ {l l' : List α}, Sorted r l → Sorted r l' → Sort
         assumption
       · exact rel_of_sorted_cons h₁ _ bl
       · exact _root_.trans h (rel_of_sorted_cons h₂ _ bl')
-    · suffices ∀ (b' : α) (_ : b' ∈ List.merge r (a :: l) l'), r b b' by
+    · suffices ∀ b' ∈ List.merge r (a :: l) l', r b b' by
         simpa [List.merge, h, h₁.merge h₂.of_cons]
       intro b' bm
       have ba : b ≼ a := (total_of r _ _).resolve_left h

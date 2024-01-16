@@ -247,15 +247,15 @@ subalgebra is just the reverse of the representation. -/
 theorem coe_toEven_reverse_involute (x : CliffordAlgebra Q) :
     ↑(toEven Q (reverse (involute x))) =
       reverse (Q := Q' Q) (toEven Q x : CliffordAlgebra (Q' Q)) := by
-  induction x using CliffordAlgebra.induction
-  case h_grade0 r => simp only [AlgHom.commutes, Subalgebra.coe_algebraMap, reverse.commutes]
-  case h_grade1 m =>
+  induction x using CliffordAlgebra.induction with
+  | h_grade0 r => simp only [AlgHom.commutes, Subalgebra.coe_algebraMap, reverse.commutes]
+  | h_grade1 m =>
     -- porting note: added `letI`
     letI : SubtractionMonoid (even (Q' Q)) := AddGroup.toSubtractionMonoid
     simp only [involute_ι, Subalgebra.coe_neg, toEven_ι, reverse.map_mul, reverse_v, reverse_e0,
       reverse_ι, neg_e0_mul_v, map_neg]
-  case h_mul x y hx hy => simp only [map_mul, Subalgebra.coe_mul, reverse.map_mul, hx, hy]
-  case h_add x y hx hy => simp only [map_add, Subalgebra.coe_add, hx, hy]
+  | h_mul x y hx hy => simp only [map_mul, Subalgebra.coe_mul, reverse.map_mul, hx, hy]
+  | h_add x y hx hy => simp only [map_add, Subalgebra.coe_add, hx, hy]
 #align clifford_algebra.coe_to_even_reverse_involute CliffordAlgebra.coe_toEven_reverse_involute
 
 /-! ### Constructions needed for `CliffordAlgebra.evenEquivEvenNeg` -/

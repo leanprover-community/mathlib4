@@ -28,8 +28,8 @@ namespace Multiset
 variable {s t : Multiset α} {a : α}
 
 @[simp] lemma covby_cons (s : Multiset α) (a : α) : s ⋖ a ::ₘ s :=
-  ⟨lt_cons_self _ _, fun t hst hts ↦ (covby_succ _).2 (card_lt_of_lt hst) $ by
-    simpa using card_lt_of_lt hts⟩
+  ⟨lt_cons_self _ _, fun t hst hts ↦ (covby_succ _).2 (card_lt_card hst) $ by
+    simpa using card_lt_card hts⟩
 
 lemma _root_.Covby.exists_multiset_cons (h : s ⋖ t) : ∃ a, a ::ₘ s = t :=
   (lt_iff_cons_le.1 h.lt).imp fun _a ha ↦ ha.eq_of_not_lt $ h.2 $ lt_cons_self _ _

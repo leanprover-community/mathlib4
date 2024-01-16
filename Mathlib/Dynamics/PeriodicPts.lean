@@ -114,7 +114,7 @@ theorem right_of_add (hn : IsPeriodicPt f (n + m) x) (hm : IsPeriodicPt f n x) :
 
 protected theorem sub (hm : IsPeriodicPt f m x) (hn : IsPeriodicPt f n x) :
     IsPeriodicPt f (m - n) x := by
-  cases' le_total n m with h h
+  rcases le_total n m with h | h
   · refine' left_of_add _ hn
     rwa [tsub_add_cancel_of_le h]
   · rw [tsub_eq_zero_iff_le.mpr h]

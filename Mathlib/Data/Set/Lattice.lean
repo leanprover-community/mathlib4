@@ -3,6 +3,7 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Logic.Pairwise
 import Mathlib.Order.CompleteBooleanAlgebra
 import Mathlib.Order.Directed
 import Mathlib.Order.GaloisConnection
@@ -129,7 +130,7 @@ def iUnion_delab : Delab := whenPPOption Lean.getPPNotation do
   let ppTypes ← getPPOption getPPFunBinderTypes
   let stx ← SubExpr.withAppArg do
     let dom ← SubExpr.withBindingDomain delab
-    withBindingBodyUnusedName $ fun x => do
+    withBindingBodyUnusedName fun x => do
       let x : TSyntax `ident := .mk x
       let body ← delab
       if prop && !dep then
@@ -157,7 +158,7 @@ def sInter_delab : Delab := whenPPOption Lean.getPPNotation do
   let ppTypes ← getPPOption getPPFunBinderTypes
   let stx ← SubExpr.withAppArg do
     let dom ← SubExpr.withBindingDomain delab
-    withBindingBodyUnusedName $ fun x => do
+    withBindingBodyUnusedName fun x => do
       let x : TSyntax `ident := .mk x
       let body ← delab
       if prop && !dep then
@@ -1683,7 +1684,7 @@ theorem InjOn.image_iInter_eq [Nonempty ι] {s : ι → Set α} {f : α → β} 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i hi) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i hi) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i hi) -/
-theorem InjOn.image_biInter_eq {p : ι → Prop} {s : ∀ (i) (_ : p i), Set α} (hp : ∃ i, p i)
+theorem InjOn.image_biInter_eq {p : ι → Prop} {s : ∀ i, p i → Set α} (hp : ∃ i, p i)
     {f : α → β} (h : InjOn f (⋃ (i) (hi), s i hi)) :
     (f '' ⋂ (i) (hi), s i hi) = ⋂ (i) (hi), f '' s i hi := by
   simp only [iInter, iInf_subtype']
@@ -2080,8 +2081,7 @@ section Seq
 
 /-- Given a set `s` of functions `α → β` and `t : Set α`, `seq s t` is the union of `f '' t` over
 all `f ∈ s`. -/
-def seq (s : Set (α → β)) (t : Set α) : Set β :=
-  { b | ∃ f ∈ s, ∃ a ∈ t, (f : α → β) a = b }
+def seq (s : Set (α → β)) (t : Set α) : Set β := image2 (fun f ↦ f) s t
 #align set.seq Set.seq
 
 @[simp]
@@ -2090,39 +2090,39 @@ theorem mem_seq_iff {s : Set (α → β)} {t : Set α} {b : β} :
   Iff.rfl
 #align set.mem_seq_iff Set.mem_seq_iff
 
-lemma seq_eq_image2 (s : Set (α → β)) (t : Set α) : seq s t = image2 (fun f a ↦ f a) s t := by
-  ext; simp
+lemma seq_eq_image2 (s : Set (α → β)) (t : Set α) : seq s t = image2 (fun f a ↦ f a) s t := rfl
 
 theorem seq_def {s : Set (α → β)} {t : Set α} : seq s t = ⋃ f ∈ s, f '' t := by
   rw [seq_eq_image2, iUnion_image_left]
 #align set.seq_def Set.seq_def
 
 theorem seq_subset {s : Set (α → β)} {t : Set α} {u : Set β} :
-    seq s t ⊆ u ↔ ∀ f ∈ s, ∀ a ∈ t, (f : α → β) a ∈ u := by
-  rw [seq_eq_image2, image2_subset_iff]
+    seq s t ⊆ u ↔ ∀ f ∈ s, ∀ a ∈ t, (f : α → β) a ∈ u :=
+  image2_subset_iff
 #align set.seq_subset Set.seq_subset
 
 @[gcongr]
 theorem seq_mono {s₀ s₁ : Set (α → β)} {t₀ t₁ : Set α} (hs : s₀ ⊆ s₁) (ht : t₀ ⊆ t₁) :
-    seq s₀ t₀ ⊆ seq s₁ t₁ := fun _ ⟨f, hf, a, ha, eq⟩ => ⟨f, hs hf, a, ht ha, eq⟩
+    seq s₀ t₀ ⊆ seq s₁ t₁ := image2_subset hs ht
 #align set.seq_mono Set.seq_mono
 
-theorem singleton_seq {f : α → β} {t : Set α} : Set.seq ({f} : Set (α → β)) t = f '' t := by
-  rw [seq_eq_image2, image2_singleton_left]
+theorem singleton_seq {f : α → β} {t : Set α} : Set.seq ({f} : Set (α → β)) t = f '' t :=
+  image2_singleton_left
 #align set.singleton_seq Set.singleton_seq
 
-theorem seq_singleton {s : Set (α → β)} {a : α} : Set.seq s {a} = (fun f : α → β => f a) '' s := by
-  rw [seq_eq_image2, image2_singleton_right]
+theorem seq_singleton {s : Set (α → β)} {a : α} : Set.seq s {a} = (fun f : α → β => f a) '' s :=
+  image2_singleton_right
 #align set.seq_singleton Set.seq_singleton
 
 theorem seq_seq {s : Set (β → γ)} {t : Set (α → β)} {u : Set α} :
     seq s (seq t u) = seq (seq ((· ∘ ·) '' s) t) u := by
-  simp only [seq_eq_image2, image2_image_left, image2_image2_left, image2_image2_right, comp_apply]
+  simp only [seq_eq_image2, image2_image_left]
+  exact .symm <| image2_assoc fun _ _ _ ↦ rfl
 #align set.seq_seq Set.seq_seq
 
 theorem image_seq {f : β → γ} {s : Set (α → β)} {t : Set α} :
     f '' seq s t = seq ((f ∘ ·) '' s) t := by
-  rw [← singleton_seq, ← singleton_seq, seq_seq, image_singleton]
+  simp only [seq, image_image2, image2_image_left, comp_apply]
 #align set.image_seq Set.image_seq
 
 theorem prod_eq_seq {s : Set α} {t : Set β} : s ×ˢ t = (Prod.mk '' s).seq t := by
@@ -2309,24 +2309,25 @@ theorem sigmaToiUnion_surjective : Surjective (sigmaToiUnion t)
     ⟨⟨a, b, hb⟩, rfl⟩
 #align set.sigma_to_Union_surjective Set.sigmaToiUnion_surjective
 
-theorem sigmaToiUnion_injective (h : ∀ i j, i ≠ j → Disjoint (t i) (t j)) :
+theorem sigmaToiUnion_injective (h : Pairwise fun i j => Disjoint (t i) (t j)) :
     Injective (sigmaToiUnion t)
   | ⟨a₁, b₁, h₁⟩, ⟨a₂, b₂, h₂⟩, eq =>
     have b_eq : b₁ = b₂ := congr_arg Subtype.val eq
     have a_eq : a₁ = a₂ :=
       by_contradiction fun ne =>
         have : b₁ ∈ t a₁ ∩ t a₂ := ⟨h₁, b_eq.symm ▸ h₂⟩
-        (h _ _ ne).le_bot this
+        (h ne).le_bot this
     Sigma.eq a_eq <| Subtype.eq <| by subst b_eq; subst a_eq; rfl
 #align set.sigma_to_Union_injective Set.sigmaToiUnion_injective
 
-theorem sigmaToiUnion_bijective (h : ∀ i j, i ≠ j → Disjoint (t i) (t j)) :
+theorem sigmaToiUnion_bijective (h : Pairwise fun i j => Disjoint (t i) (t j)) :
     Bijective (sigmaToiUnion t) :=
   ⟨sigmaToiUnion_injective t h, sigmaToiUnion_surjective t⟩
 #align set.sigma_to_Union_bijective Set.sigmaToiUnion_bijective
 
 /-- Equivalence between a disjoint union and a dependent sum. -/
-noncomputable def unionEqSigmaOfDisjoint {t : α → Set β} (h : ∀ i j, i ≠ j → Disjoint (t i) (t j)) :
+noncomputable def unionEqSigmaOfDisjoint {t : α → Set β}
+    (h : Pairwise fun i j => Disjoint (t i) (t j)) :
     (⋃ i, t i) ≃ Σi, t i :=
   (Equiv.ofBijective _ <| sigmaToiUnion_bijective t h).symm
 #align set.Union_eq_sigma_of_disjoint Set.unionEqSigmaOfDisjoint

@@ -849,13 +849,13 @@ theorem mk_mul_mk {x y : α} : Associates.mk x * Associates.mk y = Associates.mk
 instance instCommMonoid : CommMonoid (Associates α) where
   one := 1
   mul := (· * ·)
-  mul_one a' := Quotient.inductionOn a' <| fun a => show ⟦a * 1⟧ = ⟦a⟧ by simp
-  one_mul a' := Quotient.inductionOn a' <| fun a => show ⟦1 * a⟧ = ⟦a⟧ by simp
+  mul_one a' := Quotient.inductionOn a' fun a => show ⟦a * 1⟧ = ⟦a⟧ by simp
+  one_mul a' := Quotient.inductionOn a' fun a => show ⟦1 * a⟧ = ⟦a⟧ by simp
   mul_assoc a' b' c' :=
-    Quotient.inductionOn₃ a' b' c' <| fun a b c =>
+    Quotient.inductionOn₃ a' b' c' fun a b c =>
       show ⟦a * b * c⟧ = ⟦a * (b * c)⟧ by rw [mul_assoc]
   mul_comm a' b' :=
-    Quotient.inductionOn₂ a' b' <| fun a b => show ⟦a * b⟧ = ⟦b * a⟧ by rw [mul_comm]
+    Quotient.inductionOn₂ a' b' fun a b => show ⟦a * b⟧ = ⟦b * a⟧ by rw [mul_comm]
 
 instance instPreorder : Preorder (Associates α) where
   le := Dvd.dvd
@@ -890,7 +890,7 @@ theorem dvd_eq_le : ((· ∣ ·) : Associates α → Associates α → Prop) = (
 
 theorem mul_eq_one_iff {x y : Associates α} : x * y = 1 ↔ x = 1 ∧ y = 1 :=
   Iff.intro
-    (Quotient.inductionOn₂ x y <| fun a b h =>
+    (Quotient.inductionOn₂ x y fun a b h =>
       have : a * b ~ᵤ 1 := Quotient.exact h
       ⟨Quotient.sound <| associated_one_of_associated_mul_one this,
         Quotient.sound <| associated_one_of_associated_mul_one <| by rwa [mul_comm] at this⟩)
@@ -1143,25 +1143,23 @@ theorem one_or_eq_of_le_of_prime : ∀ p m : Associates α, Prime p → m ≤ p 
     rw [r]
     match h m d dvd_rfl' with
     | Or.inl h' =>
-      by_cases h : m = 0
-      case pos =>
+      if h : m = 0 then
         simp [h, zero_mul]
-      case neg =>
+      else
         rw [r] at h'
         have : m * d ≤ m * 1 := by simpa using h'
         have : d ≤ 1 := Associates.le_of_mul_le_mul_left m d 1 ‹m ≠ 0› this
         have : d = 1 := bot_unique this
         simp [this]
     | Or.inr h' =>
-        by_cases h : d = 0
-        case pos =>
-          rw [r] at hp0
-          have : m * d = 0 := by rw [h]; simp
-          contradiction
-        case neg =>
-          rw [r] at h'
-          have : d * m ≤ d * 1 := by simpa [mul_comm] using h'
-          exact Or.inl <| bot_unique <| Associates.le_of_mul_le_mul_left d m 1 ‹d ≠ 0› this
+      if h : d = 0 then
+        rw [r] at hp0
+        have : m * d = 0 := by rw [h]; simp
+        contradiction
+      else
+        rw [r] at h'
+        have : d * m ≤ d * 1 := by simpa [mul_comm] using h'
+        exact Or.inl <| bot_unique <| Associates.le_of_mul_le_mul_left d m 1 ‹d ≠ 0› this
 #align associates.one_or_eq_of_le_of_prime Associates.one_or_eq_of_le_of_prime
 
 instance : CanonicallyOrderedCommMonoid (Associates α) where

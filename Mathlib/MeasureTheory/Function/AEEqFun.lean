@@ -220,7 +220,7 @@ open MeasureTheory.Measure (QuasiMeasurePreserving)
 See also `AEEqFun.compMeasurePreserving`. -/
 def compQuasiMeasurePreserving (g : β →ₘ[ν] γ) (f : α → β) (hf : QuasiMeasurePreserving f μ ν) :
     α →ₘ[μ] γ :=
-  Quotient.liftOn' g (fun g ↦ mk (g ∘ f) <| g.2.comp_quasiMeasurePreserving hf) <| fun _ _ h ↦
+  Quotient.liftOn' g (fun g ↦ mk (g ∘ f) <| g.2.comp_quasiMeasurePreserving hf) fun _ _ h ↦
     mk_eq_mk.2 <| h.comp_tendsto hf.tendsto_ae
 
 @[simp]

@@ -140,23 +140,18 @@ theorem prod_add [DecidableEq α] (f g : α → β) (s : Finset α) :
       prod_sum
     _ = ∑ t in s.powerset, (∏ a in t, f a) * ∏ a in s \ t, g a :=
       sum_bij'
-        (fun f _ => s.filter (fun a => ∀ h : a ∈ s, f a h))
-        (by simp)
-        (fun a _ => by
-          rw [prod_ite]
-          congr 1
-          exact prod_bij'
-            (fun a _ => a.1) (by simp) (by simp)
-            (fun a ha => ⟨a, (mem_filter.1 ha).1⟩) (fun a ha => by simp at ha; simp; tauto)
-            (by simp) (by simp)
-          exact prod_bij'
-            (fun a _ => a.1) (by simp) (by simp)
-            (fun a ha => ⟨a, (mem_sdiff.1 ha).1⟩) (fun a ha => by simp at ha; simp; tauto)
-            (by simp) (by simp))
+        (fun f _ ↦ s.filter fun a ↦ ∃ h : a ∈ s, f a h)
         (fun t _ a _ => a ∈ t)
+        (by simp)
         (by simp [Classical.em])
         (by simp_rw [mem_filter, Function.funext_iff, eq_iff_iff, mem_pi, mem_insert]; tauto)
         (by simp_rw [ext_iff, @mem_filter _ _ (id _), mem_powerset]; tauto)
+        (fun a _ ↦ by
+          simp only [prod_ite, filter_attach', prod_map, Function.Embedding.coeFn_mk,
+            Subtype.map_coe, id_eq, prod_attach, filter_congr_decidable]
+          congr 2 with x
+          simp only [mem_filter, mem_sdiff, not_and, not_exists, and_congr_right_iff]
+          tauto)
 #align finset.prod_add Finset.prod_add
 
 /-- `∏ i, (f i + g i) = (∏ i, f i) + ∑ i, g i * (∏ j < i, f j + g j) * (∏ j > i, f j)`. -/
@@ -227,7 +222,7 @@ variable {R : Type*} [CommRing R]
 theorem prod_range_cast_nat_sub (n k : ℕ) :
     ∏ i in range k, (n - i : R) = (∏ i in range k, (n - i) : ℕ) := by
   rw [prod_natCast]
-  cases' le_or_lt k n with hkn hnk
+  rcases le_or_lt k n with hkn | hnk
   · exact prod_congr rfl fun i hi => (Nat.cast_sub <| (mem_range.1 hi).le.trans hkn).symm
   · rw [← mem_range] at hnk
     rw [prod_eq_zero hnk, prod_eq_zero hnk] <;> simp

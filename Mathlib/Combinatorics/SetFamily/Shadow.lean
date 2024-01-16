@@ -164,7 +164,7 @@ lemma _root_.Set.Sized.shadow_iterate (h𝒜 : (𝒜 : Set (Finset α)).Sized r)
     (∂^[k] 𝒜 : Set (Finset α)).Sized (r - k) := by
   simp_rw [Set.Sized, mem_coe, mem_shadow_iterate_iff_exists_sdiff]
   rintro t ⟨s, hs, hts, rfl⟩
-  rw [card_sdiff hts, ← h𝒜 hs, Nat.sub_sub_self (card_le_of_subset hts)]
+  rw [card_sdiff hts, ← h𝒜 hs, Nat.sub_sub_self (card_le_card hts)]
 
 theorem sized_shadow_iff (h : ∅ ∉ 𝒜) :
     (∂ 𝒜 : Set (Finset α)).Sized r ↔ (𝒜 : Set (Finset α)).Sized (r + 1) := by

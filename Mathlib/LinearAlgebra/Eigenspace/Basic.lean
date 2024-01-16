@@ -358,7 +358,7 @@ lemma injOn_generalizedEigenspace [NoZeroSMulDivisors R M] (f : End R M) :
 theorem independent_generalizedEigenspace [NoZeroSMulDivisors R M] (f : End R M) :
     CompleteLattice.Independent (fun μ ↦ ⨆ k, f.generalizedEigenspace μ k) := by
   classical
-  suffices ∀ μ (s : Finset R) (_ : μ ∉ s), Disjoint (⨆ k, f.generalizedEigenspace μ k)
+  suffices ∀ μ (s : Finset R), μ ∉ s → Disjoint (⨆ k, f.generalizedEigenspace μ k)
       (s.sup fun μ ↦ ⨆ k, f.generalizedEigenspace μ k) by
     simp_rw [CompleteLattice.independent_iff_supIndep_of_injOn f.injOn_generalizedEigenspace,
       Finset.supIndep_iff_disjoint_erase]
@@ -397,7 +397,7 @@ theorem independent_generalizedEigenspace [NoZeroSMulDivisors R M] (f : End R M)
 any eigenspace has trivial intersection with the span of all the other eigenspaces. -/
 theorem eigenspaces_independent [NoZeroSMulDivisors R M] (f : End R M) :
     CompleteLattice.Independent f.eigenspace :=
-  f.independent_generalizedEigenspace.mono <| fun μ ↦ le_iSup (generalizedEigenspace f μ) 1
+  f.independent_generalizedEigenspace.mono fun μ ↦ le_iSup (generalizedEigenspace f μ) 1
 
 /-- Eigenvectors corresponding to distinct eigenvalues of a linear operator are linearly
     independent. (Lemma 5.10 of [axler2015])

@@ -67,7 +67,7 @@ def IsPell : ℤ√d → Prop
 #align pell.is_pell Pell.IsPell
 
 theorem isPell_norm : ∀ {b : ℤ√d}, IsPell b ↔ b * star b = 1
-  | ⟨x, y⟩ => by simp [Zsqrtd.ext, IsPell, mul_comm]; ring_nf
+  | ⟨x, y⟩ => by simp [Zsqrtd.ext_iff, IsPell, mul_comm]; ring_nf
 #align pell.is_pell_norm Pell.isPell_norm
 
 theorem isPell_iff_mem_unitary : ∀ {b : ℤ√d}, IsPell b ↔ b ∈ unitary (ℤ√d)
@@ -217,7 +217,7 @@ theorem isPell_nat {x y : ℕ} : IsPell (⟨x, y⟩ : ℤ√(d a1)) ↔ x * x - 
 #align pell.is_pell_nat Pell.isPell_nat
 
 @[simp]
-theorem pellZd_succ (n : ℕ) : pellZd a1 (n + 1) = pellZd a1 n * ⟨a, 1⟩ := by simp [Zsqrtd.ext]
+theorem pellZd_succ (n : ℕ) : pellZd a1 (n + 1) = pellZd a1 n * ⟨a, 1⟩ := by ext <;> simp
 #align pell.pell_zd_succ Pell.pellZd_succ
 
 theorem isPell_one : IsPell (⟨a, 1⟩ : ℤ√(d a1)) :=
@@ -511,9 +511,7 @@ theorem pellZd_succ_succ (n) :
     change (⟨_, _⟩ : ℤ√(d a1)) = ⟨_, _⟩
     rw [dz_val]
     dsimp [az]
-    rw [Zsqrtd.ext]
-    dsimp
-    constructor <;> ring_nf
+    ext <;> dsimp <;> ring_nf
   simpa [mul_add, mul_comm, mul_left_comm, add_comm] using congr_arg (· * pellZd a1 n) this
 #align pell.pell_zd_succ_succ Pell.pellZd_succ_succ
 
@@ -696,7 +694,7 @@ theorem eq_of_xn_modEq_lem3 {i n} (npos : 0 < n) :
             show 2 * n - (n + 1) = n - 1 by
               rw [two_mul, tsub_add_eq_tsub_tsub, add_tsub_cancel_right]]
           refine' lt_sub_left_of_add_lt (Int.ofNat_lt_ofNat_of_lt _)
-          cases' lt_or_eq_of_le <| Nat.le_of_succ_le_succ ij with lin ein
+          rcases lt_or_eq_of_le <| Nat.le_of_succ_le_succ ij with lin | ein
           · rw [Nat.mod_eq_of_lt (strictMono_x _ lin)]
             have ll : xn a1 (n - 1) + xn a1 (n - 1) ≤ xn a1 n := by
               rw [← two_mul, mul_comm,
@@ -708,7 +706,7 @@ theorem eq_of_xn_modEq_lem3 {i n} (npos : 0 < n) :
               apply Nat.le_of_succ_le_succ
               rw [npm]
               exact lin
-            cases' lt_or_eq_of_le il with ill ile
+            rcases lt_or_eq_of_le il with ill | ile
             · exact lt_of_lt_of_le (Nat.add_lt_add_left (strictMono_x a1 ill) _) ll
             · rw [ile]
               apply lt_of_le_of_ne ll
@@ -965,7 +963,7 @@ theorem eq_pow_of_pell {m n k} :
       refine' eq_pow_of_pell_lem hn.ne' hk.ne' _
       calc
         n ^ k ≤ n ^ w := Nat.pow_le_pow_of_le_right hn kw
-        _ < (w + 1) ^ w := (Nat.pow_lt_pow_of_lt_left (Nat.lt_succ_of_le nw) wpos)
+        _ < (w + 1) ^ w := (Nat.pow_lt_pow_left (Nat.lt_succ_of_le nw) wpos.ne')
         _ ≤ a := xn_ge_a_pow w1 w
     lift (2 * a * n - n * n - 1 : ℤ) to ℕ using (Nat.cast_nonneg _).trans nt.le with t te
     have tm : x ≡ y * (a - n) + n ^ k [MOD t] := by
@@ -995,7 +993,7 @@ theorem eq_pow_of_pell {m n k} :
     have hnka : n ^ k < xn hw1 j
     calc
       n ^ k ≤ n ^ j := Nat.pow_le_pow_of_le_right hn0 (le_trans kw wj)
-      _ < (w + 1) ^ j := (Nat.pow_lt_pow_of_lt_left (Nat.lt_succ_of_le nw) hj0)
+      _ < (w + 1) ^ j := (Nat.pow_lt_pow_left (Nat.lt_succ_of_le nw) hj0.ne')
       _ ≤ xn hw1 j := xn_ge_a_pow hw1 j
     have nt : (↑(n ^ k) : ℤ) < 2 * xn hw1 j * n - n * n - 1 :=
       eq_pow_of_pell_lem hn0.ne' hk0.ne' hnka

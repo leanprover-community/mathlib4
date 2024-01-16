@@ -71,7 +71,7 @@ theorem lt_of_sum_four_squares_eq_mul {a b c d k m : ℕ}
     2 ^ 2 * (k * ↑m) = ∑ i : Fin 4, (2 * ![a, b, c, d] i) ^ 2 := by
       simp [← h, Fin.sum_univ_succ, mul_add, mul_pow, add_assoc]
     _ < ∑ _i : Fin 4, m ^ 2 := Finset.sum_lt_sum_of_nonempty Finset.univ_nonempty fun i _ ↦ by
-      refine pow_lt_pow_of_lt_left ?_ (zero_le _) two_pos
+      refine pow_lt_pow_left ?_ (zero_le _) two_ne_zero
       fin_cases i <;> assumption
     _ = 2 ^ 2 * (m * m) := by simp; ring
 
@@ -161,7 +161,7 @@ protected theorem Prime.sum_four_squares {p : ℕ} (hp : p.Prime) :
   by_cases hm : 2 ∣ m
   · -- If `m` is an even number, then `(m / 2) * p` can be represented as a sum of four squares
     rcases hm with ⟨m, rfl⟩
-    rw [zero_lt_mul_left two_pos] at hm₀
+    rw [mul_pos_iff_of_pos_left two_pos] at hm₀
     have hm₂ : m < 2 * m := by simpa [two_mul]
     apply_fun (Nat.cast : ℕ → ℤ) at habcd
     push_cast [mul_assoc] at habcd

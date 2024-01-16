@@ -295,7 +295,7 @@ theorem mem_supported {s : Set α} (p : α →₀ M) : p ∈ supported M R s ↔
 #align finsupp.mem_supported Finsupp.mem_supported
 
 theorem mem_supported' {s : Set α} (p : α →₀ M) :
-    p ∈ supported M R s ↔ ∀ (x) (_ : x ∉ s), p x = 0 := by
+    p ∈ supported M R s ↔ ∀ x ∉ s, p x = 0 := by
   haveI := Classical.decPred fun x : α => x ∈ s; simp [mem_supported, Set.subset_def, not_imp_comm]
 #align finsupp.mem_supported' Finsupp.mem_supported'
 
@@ -590,7 +590,7 @@ theorem lmapDomain_supported (f : α → α') (s : Set α) :
 #align finsupp.lmap_domain_supported Finsupp.lmapDomain_supported
 
 theorem lmapDomain_disjoint_ker (f : α → α') {s : Set α}
-    (H : ∀ (a) (_ : a ∈ s) (b) (_ : b ∈ s), f a = f b → a = b) :
+    (H : ∀ a ∈ s, ∀ b ∈ s, f a = f b → a = b) :
     Disjoint (supported M R s) (ker (lmapDomain M R f)) := by
   rw [disjoint_iff_inf_le]
   rintro l ⟨h₁, h₂⟩

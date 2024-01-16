@@ -145,18 +145,17 @@ theorem perm_comp_perm : (Perm ∘r Perm : List α → List α → Prop) = Perm 
 
 theorem perm_comp_forall₂ {l u v} (hlu : Perm l u) (huv : Forall₂ r u v) :
     (Forall₂ r ∘r Perm) l v := by
-  induction hlu generalizing v
-  case nil => cases huv; exact ⟨[], Forall₂.nil, Perm.nil⟩
-  case cons a l u _hlu ih =>
+  induction hlu generalizing v with
+  | nil => cases huv; exact ⟨[], Forall₂.nil, Perm.nil⟩
+  | cons u _hlu ih =>
     cases' huv with _ b _ v hab huv'
     rcases ih huv' with ⟨l₂, h₁₂, h₂₃⟩
     exact ⟨b :: l₂, Forall₂.cons hab h₁₂, h₂₃.cons _⟩
-  case swap a₁ a₂ h₂₃ =>
+  | swap a₁ a₂ h₂₃ =>
     cases' huv with _ b₁ _ l₂ h₁ hr₂₃
     cases' hr₂₃ with _ b₂ _ l₂ h₂ h₁₂
     exact ⟨b₂ :: b₁ :: l₂, Forall₂.cons h₂ (Forall₂.cons h₁ h₁₂), Perm.swap _ _ _⟩
-  case
-    trans la₁ la₂ la₃ _ _ ih₁ ih₂ =>
+  | trans _ _ ih₁ ih₂ =>
     rcases ih₂ huv with ⟨lb₂, hab₂, h₂₃⟩
     rcases ih₁ hab₂ with ⟨lb₁, hab₁, h₁₂⟩
     exact ⟨lb₁, hab₁, Perm.trans h₁₂ h₂₃⟩
@@ -267,11 +266,11 @@ theorem Perm.foldl_eq {f : β → α → β} {l₁ l₂ : List α} (rcomm : Righ
 theorem Perm.foldr_eq {f : α → β → β} {l₁ l₂ : List α} (lcomm : LeftCommutative f) (p : l₁ ~ l₂) :
     ∀ b, foldr f b l₁ = foldr f b l₂ := by
   intro b
-  induction p using Perm.recOnSwap' generalizing b
-  case nil => rfl
-  case cons r  => simp; rw [r b]
-  case swap' r => simp; rw [lcomm, r b]
-  case trans r₁ r₂ => exact Eq.trans (r₁ b) (r₂ b)
+  induction p using Perm.recOnSwap' generalizing b with
+  | nil => rfl
+  | cons _ _ r  => simp; rw [r b]
+  | swap' _ _ _ r => simp; rw [lcomm, r b]
+  | trans _ _ r₁ r₂ => exact Eq.trans (r₁ b) (r₂ b)
 #align list.perm.foldr_eq List.Perm.foldr_eq
 
 #align list.perm.rec_heq List.Perm.rec_heq
@@ -358,16 +357,16 @@ alias ⟨subperm.of_cons, subperm.cons⟩ := subperm_cons
 theorem cons_subperm_of_mem {a : α} {l₁ l₂ : List α} (d₁ : Nodup l₁) (h₁ : a ∉ l₁) (h₂ : a ∈ l₂)
     (s : l₁ <+~ l₂) : a :: l₁ <+~ l₂ := by
   rcases s with ⟨l, p, s⟩
-  induction s generalizing l₁
-  case slnil => cases h₂
-  case cons r₁ r₂ b s' ih =>
-    simp? at h₂ says simp only [Bool.not_eq_true, mem_cons] at h₂
+  induction s generalizing l₁ with
+  | slnil => cases h₂
+  | @cons r₁ r₂ b s' ih =>
+    simp? at h₂ says simp only [mem_cons] at h₂
     cases' h₂ with e m
     · subst b
       exact ⟨a :: r₁, p.cons a, s'.cons₂ _⟩
     · rcases ih d₁ h₁ m p with ⟨t, p', s'⟩
       exact ⟨t, p', s'.cons _⟩
-  case cons₂ r₁ r₂ b _ ih =>
+  | @cons₂ r₁ r₂ b _ ih =>
     have bm : b ∈ l₁ := p.subset <| mem_cons_self _ _
     have am : a ∈ r₂ := by
       simp only [find?, mem_cons] at h₂
@@ -503,9 +502,9 @@ theorem Perm.dedup {l₁ l₂ : List α} (p : l₁ ~ l₂) : dedup l₁ ~ dedup 
 
 theorem Perm.inter_append {l t₁ t₂ : List α} (h : Disjoint t₁ t₂) :
     l ∩ (t₁ ++ t₂) ~ l ∩ t₁ ++ l ∩ t₂ := by
-  induction l
-  case nil => simp
-  case cons x xs l_ih =>
+  induction l with
+  | nil => simp
+  | cons x xs l_ih =>
     by_cases h₁ : x ∈ t₁
     · have h₂ : x ∉ t₂ := h h₁
       simp [*]

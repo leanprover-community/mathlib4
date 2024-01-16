@@ -187,7 +187,7 @@ theorem snorm'_zero (hp0_lt : 0 < q) : snorm' (0 : α → F) q μ = 0 := by simp
 
 @[simp]
 theorem snorm'_zero' (hq0_ne : q ≠ 0) (hμ : μ ≠ 0) : snorm' (0 : α → F) q μ = 0 := by
-  cases' le_or_lt 0 q with hq0 hq_neg
+  rcases le_or_lt 0 q with hq0 | hq_neg
   · exact snorm'_zero (lt_of_le_of_ne hq0 hq0_ne.symm)
   · simp [snorm', ENNReal.rpow_eq_zero_iff, hμ, hq_neg]
 #align measure_theory.snorm'_zero' MeasureTheory.snorm'_zero'
@@ -1135,7 +1135,7 @@ theorem snorm_le_snorm_of_exponent_le {p q : ℝ≥0∞} (hpq : p ≤ q) [IsProb
 theorem snorm'_lt_top_of_snorm'_lt_top_of_exponent_le {p q : ℝ} [IsFiniteMeasure μ] {f : α → E}
     (hf : AEStronglyMeasurable f μ) (hfq_lt_top : snorm' f q μ < ∞) (hp_nonneg : 0 ≤ p)
     (hpq : p ≤ q) : snorm' f p μ < ∞ := by
-  cases' le_or_lt p 0 with hp_nonpos hp_pos
+  rcases le_or_lt p 0 with hp_nonpos | hp_pos
   · rw [le_antisymm hp_nonpos hp_nonneg]
     simp
   have hq_pos : 0 < q := lt_of_lt_of_le hp_pos hpq
@@ -1574,7 +1574,7 @@ theorem snorm'_const_smul {f : α → F} (c : 𝕜) (hq_pos : 0 < q) :
   · simp [snorm', hq_pos]
   refine' le_antisymm (snorm'_const_smul_le _ _ hq_pos) _
   have : snorm' _ q μ ≤ _ := snorm'_const_smul_le c⁻¹ (c • f) hq_pos
-  rwa [inv_smul_smul₀ hc, nnnorm_inv, ENNReal.le_inv_smul_iff (nnnorm_ne_zero_iff.mpr hc)] at this
+  rwa [inv_smul_smul₀ hc, nnnorm_inv, le_inv_smul_iff_of_pos (nnnorm_pos.2 hc)] at this
 #align measure_theory.snorm'_const_smul MeasureTheory.snorm'_const_smul
 
 theorem snormEssSup_const_smul (c : 𝕜) (f : α → F) :
@@ -1588,7 +1588,7 @@ theorem snorm_const_smul (c : 𝕜) (f : α → F) :
   · simp
   refine' le_antisymm (snorm_const_smul_le _ _) _
   have : snorm _ p μ ≤ _ := snorm_const_smul_le c⁻¹ (c • f)
-  rwa [inv_smul_smul₀ hc, nnnorm_inv, ENNReal.le_inv_smul_iff (nnnorm_ne_zero_iff.mpr hc)] at this
+  rwa [inv_smul_smul₀ hc, nnnorm_inv, le_inv_smul_iff_of_pos (nnnorm_pos.2 hc)] at this
 #align measure_theory.snorm_const_smul MeasureTheory.snorm_const_smul
 
 end NormedSpace

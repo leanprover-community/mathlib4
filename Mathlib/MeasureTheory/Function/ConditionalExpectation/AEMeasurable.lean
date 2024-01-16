@@ -691,7 +691,7 @@ theorem Memℒp.induction_stronglyMeasurable (hm : m ≤ m0) (hp_ne_top : p ≠ 
         P f → P g → P (f + g))
     (h_closed : IsClosed {f : lpMeas F ℝ m p μ | P f})
     (h_ae : ∀ ⦃f g⦄, f =ᵐ[μ] g → Memℒp f p μ → P f → P g) :
-    ∀ ⦃f : α → F⦄ (_ : Memℒp f p μ) (_ : AEStronglyMeasurable' m f μ), P f := by
+    ∀ ⦃f : α → F⦄, Memℒp f p μ → AEStronglyMeasurable' m f μ → P f := by
   intro f hf hfm
   let f_Lp := hf.toLp f
   have hfm_Lp : AEStronglyMeasurable' m f_Lp μ := hfm.congr hf.coeFn_toLp.symm

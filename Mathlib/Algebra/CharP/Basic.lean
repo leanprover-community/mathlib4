@@ -103,7 +103,7 @@ For instance, endowing `{0, 1}` with addition given by `max` (i.e. `1` is absorb
 `CharZero {0, 1}` does not hold and yet `CharP {0, 1} 0` does.
 This example is formalized in `Counterexamples/CharPZeroNeCharZero.lean`.
 -/
-@[mk_iff charP_iff]
+@[mk_iff]
 class CharP [AddMonoidWithOne R] (p : ℕ) : Prop where
   cast_eq_zero_iff' : ∀ x : ℕ, (x : R) = 0 ↔ p ∣ x
 #align char_p CharP
@@ -739,3 +739,11 @@ theorem charZero_iff_forall_prime_ne_zero
     exact CharP.charP_to_charZero R
 
 end CharZero
+
+namespace Fin
+
+instance charP (n : ℕ) : CharP (Fin (n + 1)) (n + 1) where
+    cast_eq_zero_iff' := by
+      simp [Fin.eq_iff_veq, Nat.dvd_iff_mod_eq_zero]
+
+end Fin

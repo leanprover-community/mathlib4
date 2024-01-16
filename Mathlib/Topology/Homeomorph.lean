@@ -598,7 +598,7 @@ end
 @[simps! apply toEquiv]
 def piCongrLeft {ι ι' : Type*} {Y : ι' → Type*} [∀ j, TopologicalSpace (Y j)]
     (e : ι ≃ ι') : (∀ i, Y (e i)) ≃ₜ ∀ j, Y j where
-  continuous_toFun := continuous_pi <| e.forall_congr_left.mp <| fun i ↦ by
+  continuous_toFun := continuous_pi <| e.forall_congr_left.mp fun i ↦ by
     simpa only [Equiv.toFun_as_coe, Equiv.piCongrLeft_apply_apply] using continuous_apply i
   continuous_invFun := Pi.continuous_precomp' e
   toEquiv := Equiv.piCongrLeft _ e

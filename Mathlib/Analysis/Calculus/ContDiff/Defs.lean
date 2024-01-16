@@ -180,7 +180,10 @@ variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type uE} [NormedAdd
 
 /-- `HasFTaylorSeriesUpToOn n f p s` registers the fact that `p 0 = f` and `p (m+1)` is a
 derivative of `p m` for `m < n`, and is continuous for `m ≤ n`. This is a predicate analogous to
-`HasFDerivWithinAt` but for higher order derivatives. -/
+`HasFDerivWithinAt` but for higher order derivatives.
+
+Notice that `p` does not sum up to `f` on the diagonal (`FormalMultilinearSeries.sum`), even if
+`f` is analytic and `n = ∞`: an additional `1/m!` factor on the `m`th term is necessary for that. -/
 structure HasFTaylorSeriesUpToOn (n : ℕ∞) (f : E → F) (p : E → FormalMultilinearSeries 𝕜 E F)
   (s : Set E) : Prop where
   zero_eq : ∀ x ∈ s, (p x 0).uncurry0 = f x
@@ -1218,12 +1221,15 @@ theorem ContDiffOn.continuousOn_fderiv_of_isOpen (h : ContDiffOn 𝕜 n f s) (hs
 
 /-- `HasFTaylorSeriesUpTo n f p` registers the fact that `p 0 = f` and `p (m+1)` is a
 derivative of `p m` for `m < n`, and is continuous for `m ≤ n`. This is a predicate analogous to
-`HasFDerivAt` but for higher order derivatives. -/
+`HasFDerivAt` but for higher order derivatives.
+
+Notice that `p` does not sum up to `f` on the diagonal (`FormalMultilinearSeries.sum`), even if
+`f` is analytic and `n = ∞`: an addition `1/m!` factor on the `m`th term is necessary for that. -/
 structure HasFTaylorSeriesUpTo (n : ℕ∞) (f : E → F) (p : E → FormalMultilinearSeries 𝕜 E F) :
   Prop where
   zero_eq : ∀ x, (p x 0).uncurry0 = f x
-  fderiv : ∀ (m : ℕ) (_ : (m : ℕ∞) < n), ∀ x, HasFDerivAt (fun y => p y m) (p x m.succ).curryLeft x
-  cont : ∀ (m : ℕ) (_ : (m : ℕ∞) ≤ n), Continuous fun x => p x m
+  fderiv : ∀ m : ℕ, (m : ℕ∞) < n → ∀ x, HasFDerivAt (fun y => p y m) (p x m.succ).curryLeft x
+  cont : ∀ m : ℕ, (m : ℕ∞) ≤ n → Continuous fun x => p x m
 #align has_ftaylor_series_up_to HasFTaylorSeriesUpTo
 
 theorem HasFTaylorSeriesUpTo.zero_eq' (h : HasFTaylorSeriesUpTo n f p) (x : E) :

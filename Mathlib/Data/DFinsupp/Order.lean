@@ -3,6 +3,7 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.Algebra.Order.Module.Defs
 import Mathlib.Data.DFinsupp.Basic
 
 #align_import data.dfinsupp.order from "leanprover-community/mathlib"@"1d29de43a5ba4662dd33b5cfeecfc2a27a5a8a29"
@@ -149,6 +150,42 @@ instance (α : ι → Type*) [∀ i, OrderedCancelAddCommMonoid (α i)] :
 instance [∀ i, OrderedAddCommMonoid (α i)] [∀ i, ContravariantClass (α i) (α i) (· + ·) (· ≤ ·)] :
     ContravariantClass (Π₀ i, α i) (Π₀ i, α i) (· + ·) (· ≤ ·) :=
   ⟨fun _ _ _ H i ↦ le_of_add_le_add_left (H i)⟩
+
+section Module
+variable {α : Type*} {β : ι → Type*} [Semiring α] [Preorder α] [∀ i, AddCommMonoid (β i)]
+  [∀ i, Preorder (β i)] [∀ i, Module α (β i)]
+
+instance instPosSMulMono [∀ i, PosSMulMono α (β i)] : PosSMulMono α (Π₀ i, β i) :=
+  PosSMulMono.lift _ coe_le_coe coe_smul
+
+instance instSMulPosMono [∀ i, SMulPosMono α (β i)] : SMulPosMono α (Π₀ i, β i) :=
+  SMulPosMono.lift _ coe_le_coe coe_smul coe_zero
+
+instance instPosSMulReflectLE [∀ i, PosSMulReflectLE α (β i)] : PosSMulReflectLE α (Π₀ i, β i) :=
+  PosSMulReflectLE.lift _ coe_le_coe coe_smul
+
+instance instSMulPosReflectLE [∀ i, SMulPosReflectLE α (β i)] : SMulPosReflectLE α (Π₀ i, β i) :=
+  SMulPosReflectLE.lift _ coe_le_coe coe_smul coe_zero
+
+end Module
+
+section Module
+variable {α : Type*} {β : ι → Type*} [Semiring α] [PartialOrder α] [∀ i, AddCommMonoid (β i)]
+  [∀ i, PartialOrder (β i)] [∀ i, Module α (β i)]
+
+instance instPosSMulStrictMono [∀ i, PosSMulStrictMono α (β i)] : PosSMulStrictMono α (Π₀ i, β i) :=
+  PosSMulStrictMono.lift _ coe_le_coe coe_smul
+
+instance instSMulPosStrictMono [∀ i, SMulPosStrictMono α (β i)] : SMulPosStrictMono α (Π₀ i, β i) :=
+  SMulPosStrictMono.lift _ coe_le_coe coe_smul coe_zero
+
+-- Note: There is no interesting instance for `PosSMulReflectLT α (Π₀ i, β i)` that's not already
+-- implied by the other instances
+
+instance instSMulPosReflectLT [∀ i, SMulPosReflectLT α (β i)] : SMulPosReflectLT α (Π₀ i, β i) :=
+  SMulPosReflectLT.lift _ coe_le_coe coe_smul coe_zero
+
+end Module
 
 section CanonicallyOrderedAddCommMonoid
 

@@ -713,7 +713,7 @@ theorem IsComplement'.card_mul [Fintype G] [Fintype H] [Fintype K] (h : IsComple
 theorem isComplement'_of_disjoint_and_mul_eq_univ (h1 : Disjoint H K)
     (h2 : ↑H * ↑K = (Set.univ : Set G)) : IsComplement' H K := by
   refine' ⟨mul_injective_of_disjoint h1, fun g => _⟩
-  obtain ⟨h, k, hh, hk, hg⟩ := Set.eq_univ_iff_forall.mp h2 g
+  obtain ⟨h, hh, k, hk, hg⟩ := Set.eq_univ_iff_forall.mp h2 g
   exact ⟨(⟨h, hh⟩, ⟨k, hk⟩), hg⟩
 #align subgroup.is_complement'_of_disjoint_and_mul_eq_univ Subgroup.isComplement'_of_disjoint_and_mul_eq_univ
 

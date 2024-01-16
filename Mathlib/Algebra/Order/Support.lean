@@ -91,7 +91,7 @@ lemma le_mulIndicator_apply (hfg : a ∈ s → y ≤ g a) (hf : a ∉ s → y �
 #align set.le_indicator_apply Set.le_indicator_apply
 
 @[to_additive]
-lemma le_mulIndicator (hfg : ∀ a ∈ s, f a ≤ g a) (hf : ∀ (a) (_ : a ∉ s), f a ≤ 1) :
+lemma le_mulIndicator (hfg : ∀ a ∈ s, f a ≤ g a) (hf : ∀ a ∉ s, f a ≤ 1) :
     f ≤ mulIndicator s g := fun _ ↦ le_mulIndicator_apply (hfg _) (hf _)
 #align set.le_mul_indicator Set.le_mulIndicator
 #align set.le_indicator Set.le_indicator
@@ -143,7 +143,7 @@ lemma mulIndicator_le_mulIndicator_of_subset (h : s ⊆ t) (hf : ∀ a, 1 ≤ f 
 #align set.indicator_le_indicator_of_subset Set.indicator_le_indicator_of_subset
 
 @[to_additive]
-lemma mulIndicator_le_self' (hf : ∀ (x) (_ : x ∉ s), 1 ≤ f x) : mulIndicator s f ≤ f :=
+lemma mulIndicator_le_self' (hf : ∀ x ∉ s, 1 ≤ f x) : mulIndicator s f ≤ f :=
   mulIndicator_le' (fun _ _ ↦ le_rfl) hf
 #align set.mul_indicator_le_self' Set.mulIndicator_le_self'
 #align set.indicator_le_self' Set.indicator_le_self'

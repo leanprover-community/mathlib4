@@ -432,7 +432,7 @@ variable [SeminormedAddCommGroup α] [SeminormedAddCommGroup β]
 theorem frobenius_nnnorm_def (A : Matrix m n α) :
     ‖A‖₊ = (∑ i, ∑ j, ‖A i j‖₊ ^ (2 : ℝ)) ^ (1 / 2 : ℝ) := by
   -- porting note: added, along with `WithLp.equiv_symm_pi_apply` below
-  change ‖(WithLp.equiv 2 _).symm <| fun i => (WithLp.equiv 2 _).symm <| fun j => A i j‖₊ = _
+  change ‖(WithLp.equiv 2 _).symm fun i => (WithLp.equiv 2 _).symm fun j => A i j‖₊ = _
   simp_rw [PiLp.nnnorm_eq_of_L2, NNReal.sq_sqrt, NNReal.sqrt_eq_rpow, NNReal.rpow_two,
     WithLp.equiv_symm_pi_apply]
 #align matrix.frobenius_nnnorm_def Matrix.frobenius_nnnorm_def
