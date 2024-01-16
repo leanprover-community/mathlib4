@@ -52,8 +52,9 @@ def struct {B X : Profinite.{u}} (π : X ⟶ B) (hπ : Function.Surjective π) :
     (by ext; exact hab)) a)
   uniq e h g hm := by
     suffices g = (QuotientMap.of_surjective_continuous hπ π.continuous).liftEquiv ⟨e,
-      fun a b hab ↦ DFunLike.congr_fun (h ⟨fun _ ↦ a, continuous_const⟩ ⟨fun _ ↦ b, continuous_const⟩
-      (by ext; exact hab)) a⟩ by assumption
+      fun a b hab ↦ DFunLike.congr_fun
+        (h ⟨fun _ ↦ a, continuous_const⟩ ⟨fun _ ↦ b, continuous_const⟩ (by ext; exact hab))
+        a⟩ by assumption
     rw [← Equiv.symm_apply_eq (QuotientMap.of_surjective_continuous hπ π.continuous).liftEquiv]
     ext
     simp only [QuotientMap.liftEquiv_symm_apply_coe, ContinuousMap.comp_apply, ← hm]

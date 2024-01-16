@@ -710,7 +710,8 @@ theorem one_apply (x : M₁) : (1 : M₁ →L[R₁] M₁) x = x :=
 #align continuous_linear_map.one_apply ContinuousLinearMap.one_apply
 
 instance [Nontrivial M₁] : Nontrivial (M₁ →L[R₁] M₁) :=
-  ⟨0, 1, fun e ↦ have ⟨x, hx⟩ := exists_ne (0 : M₁); hx (by simpa using DFunLike.congr_fun e.symm x)⟩
+  ⟨0, 1, fun e ↦
+    have ⟨x, hx⟩ := exists_ne (0 : M₁); hx (by simpa using DFunLike.congr_fun e.symm x)⟩
 
 section Add
 

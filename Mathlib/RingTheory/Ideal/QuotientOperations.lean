@@ -600,7 +600,8 @@ def quotientEquivAlg (I : Ideal A) (J : Ideal B) (f : A ≃ₐ[R₁] B) (hIJ : J
   { quotientEquiv I J (f : A ≃+* B) hIJ with
     commutes' := fun r => by
       -- Porting note: Needed to add the below lemma because Equivs coerce weird
-      have : ∀ (e : RingEquiv (A ⧸ I) (B ⧸ J)), Equiv.toFun e.toEquiv = DFunLike.coe e := fun _ ↦ rfl
+      have : ∀ (e : RingEquiv (A ⧸ I) (B ⧸ J)), Equiv.toFun e.toEquiv = DFunLike.coe e :=
+        fun _ ↦ rfl
       rw [this]
       simp only [quotientEquiv_apply, RingHom.toFun_eq_coe, quotientMap_algebraMap,
       RingEquiv.coe_toRingHom, AlgEquiv.coe_ringEquiv, AlgEquiv.commutes, Quotient.mk_algebraMap]}

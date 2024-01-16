@@ -92,7 +92,9 @@ instance toAddMonoidHomClass : AddMonoidHomClass (NormedAddGroupHom V₁ V₂) V
   map_add f := f.map_add'
   map_zero f := (AddMonoidHom.mk' f.toFun f.map_add').map_zero
 
-/-- Helper instance for when there are too many metavariables to apply `DFunLike.coeFun` directly. -/
+/--
+Helper instance for when there are too many metavariables to apply `DFunLike.coeFun` directly.
+-/
 instance coeFun : CoeFun (NormedAddGroupHom V₁ V₂) fun _ => V₁ → V₂ :=
   ⟨DFunLike.coe⟩
 

@@ -79,7 +79,8 @@ protected def basis {φ : ι → Type*} (b : ∀ i, Basis (φ i) R M) : Basis (�
             (b i).repr.symm (g.comapDomain _ (Set.injOn_of_injective sigma_mk_injective _))
           support := g.support.image Sigma.fst
           mem_support_toFun := fun i => by
-            rw [Ne.def, ← (b i).repr.injective.eq_iff, (b i).repr.apply_symm_apply, DFunLike.ext_iff]
+            rw [Ne.def, ← (b i).repr.injective.eq_iff, (b i).repr.apply_symm_apply,
+                DFunLike.ext_iff]
             simp only [exists_prop, LinearEquiv.map_zero, comapDomain_apply, zero_apply,
               exists_and_right, mem_support_iff, exists_eq_right, Sigma.exists, Finset.mem_image,
               not_forall] }
