@@ -1231,6 +1231,24 @@ theorem succ_castPred_eq_castPred_succ {a : Fin (n + 1)} (ha : a ≠ last n)
     (ha' := a.succ_ne_last_iff.mpr ha) :
     succ (a.castPred ha) = (succ a).castPred ha' := rfl
 
+theorem le_castPred_succ_iff {a b : Fin (n + 1)} (ha : succ a ≠ last (n + 1)) :
+    (succ a).castPred ha ≤ b ↔ a < b := by
+  rw [← castSucc_le_castSucc_iff, castSucc_castPred, succ_le_castSucc_iff]
+
+theorem lt_castPred_succ {a : Fin (n + 1)} (ha : succ a ≠ last (n + 1)) :
+    a < (succ a).castPred ha := by
+  rw [lt_iff_not_le, le_castPred_succ_iff]
+  exact lt_irrefl _
+
+theorem le_succ_castPred_iff {a b : Fin (n + 1)} (ha : a ≠ last n) :
+    succ (a.castPred ha) ≤ b ↔ a < b := by
+  rw [succ_castPred_eq_castPred_succ ha, le_castPred_succ_iff]
+
+theorem lt_succ_castPred {a : Fin (n + 1)} (ha : a ≠ last n) :
+    a < succ (a.castPred ha) := by
+  rw [lt_iff_not_le, le_succ_castPred_iff]
+  exact lt_irrefl _
+
 end CastPred
 
 section DivMod
@@ -1829,7 +1847,7 @@ theorem predAbove_last_castSucc {i : Fin (n + 1)} :
     predAbove (Fin.last n) (i.castSucc) = i := by
   rw [predAbove_below _ _ ((castSucc_le_castSucc_iff).mpr (le_last _)), castLT_castSucc]
 @[simp]
-theorem predAbove_last_of_ne_last {i : Fin (n + 2)} (hi : i ≠ last _):
+theorem predAbove_last_of_ne_last {i : Fin (n + 2)} (hi : i ≠ last (n + 1)):
     predAbove (Fin.last n) i = castPred i hi := by
   rw [← exists_castSucc_eq] at hi
   rcases hi with ⟨y, rfl⟩
