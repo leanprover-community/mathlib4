@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov
 -/
 import Mathlib.Algebra.Module.Submodule.LinearMap
 import Mathlib.Algebra.PUnitInstances
-import Mathlib.Order.Hom.CompleteLattice
 
 #align_import algebra.module.submodule.lattice from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 

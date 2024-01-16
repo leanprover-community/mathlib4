@@ -5,6 +5,7 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Andre
   Johannes Hölzl, Kevin Buzzard, Yury Kudryashov
 -/
 import Mathlib.Algebra.Module.Submodule.Lattice
+import Mathlib.Order.Hom.CompleteLattice
 
 /-!
 
