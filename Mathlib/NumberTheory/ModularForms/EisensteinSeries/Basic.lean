@@ -8,6 +8,18 @@ import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
 import Mathlib.Analysis.Normed.Field.InfiniteSum
 import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 
+/-!
+# Eisenstein Series
+
+## Main definitions
+
+* We define Eisenstein series of level `Γ(N)` for any `N : ℕ` and weight `k : ℤ` as the infinite sum
+  `∑' v : (Fin 2 → ℤ), (1 / (v 0 * z + v 1) ^ k)`, where `z : ℍ` and `v` ranges over all pairs of
+  coprime integers congruent to a fixed pair `(a, b)` modulo `N`.
+* We show that they define a slash invariant form of level `Γ(N)` and weight `k`.
+-/
+
+
 noncomputable section
 
 open ModularForm UpperHalfPlane Complex Matrix Classical Nat
@@ -60,8 +72,7 @@ theorem moebius_aux_lem (k : ℤ) (a b c d i1 i2 : ℂ) (z : ℍ) (h : c * z + d
 -- How the Eise function changes under the Moebius action
 theorem eise_Moebius (k : ℤ) (z : ℍ) (A : SL(2, ℤ)) (i : (Fin 2 → ℤ)) :
     eise k (A • z) i =
-      (A.1 1 0 * z.1 + A.1 1 1) ^ k * eise k z (moebiusEquiv A i) :=
-  by
+      (A.1 1 0 * z.1 + A.1 1 1) ^ k * eise k z (moebiusEquiv A i) := by
   simp only [eise, specialLinearGroup_apply, algebraMap_int_eq, eq_intCast, ofReal_int_cast,
     one_div, moebiusEquiv, Matrix.SpecialLinearGroup.transpose, EquivLike.coe_coe,
     Matrix.SpecialLinearGroup.toLin'_apply, Matrix.toLin'_apply', Matrix.mulVecLin_transpose,
