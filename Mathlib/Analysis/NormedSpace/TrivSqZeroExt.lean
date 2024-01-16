@@ -219,26 +219,36 @@ instance instL1NormedRing : NormedRing (tsze R M) where
     gcongr
     · exact norm_smul_le _ _
     refine (_root_.norm_smul_le _ _).trans ?_
-    rw [← add_zero (_ * _), mul_comm, MulOpposite.norm_op]
-    gcongr
-    positivity
+    rw [mul_comm, MulOpposite.norm_op]
+    exact le_add_of_nonneg_right <| by positivity
   __ : NormedAddCommGroup (tsze R M) := inferInstance
   __ : Ring (tsze R M) := inferInstance
-
-instance instL1NormedAlgebra : NormedAlgebra 𝕜 (tsze R M) where
-  norm_smul_le := _root_.norm_smul_le
 
 instance [NormOneClass R] : NormOneClass (tsze R M) where
   norm_one := by rw [norm_def, fst_one, snd_one, norm_zero, norm_one, add_zero]
 
 end Ring
 
+section Algebra
+
+variable [NormedField 𝕜] [NormedRing R] [NormedAddCommGroup M]
+variable [NormedAlgebra 𝕜 R] [NormedSpace 𝕜 M] [Module R M] [Module Rᵐᵒᵖ M]
+variable [BoundedSMul R M] [BoundedSMul Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
+variable [IsScalarTower 𝕜 R M] [IsScalarTower 𝕜 Rᵐᵒᵖ M]
+
+instance instL1NormedSpace : NormedSpace 𝕜 (tsze R M) :=
+  inferInstanceAs <| NormedSpace 𝕜 (WithLp 1 <| R × M)
+
+instance instL1NormedAlgebra : NormedAlgebra 𝕜 (tsze R M) where
+  norm_smul_le := _root_.norm_smul_le
+
+end Algebra
+
 section CommRing
 
-variable [NormedField 𝕜] [NormedCommRing R] [NormedAddCommGroup M]
-variable [NormedAlgebra 𝕜 R] [NormedSpace 𝕜 M] [Module R M] [Module Rᵐᵒᵖ M] [IsCentralScalar R M]
+variable [NormedCommRing R] [NormedAddCommGroup M]
+variable [Module R M] [Module Rᵐᵒᵖ M] [IsCentralScalar R M]
 variable [BoundedSMul R M]
-variable [IsScalarTower 𝕜 R M] [IsScalarTower 𝕜 Rᵐᵒᵖ M]
 
 instance instL1NormedCommRing : NormedCommRing (tsze R M) where
   __ : CommRing (tsze R M) := inferInstance
