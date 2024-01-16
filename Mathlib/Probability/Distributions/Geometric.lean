@@ -5,6 +5,7 @@ Authors: Josha Dekker
 -/
 
 import Mathlib.Probability.Notation
+import Mathlib.Probability.ProbabilityMassFunction.Basic
 
 /-! # Geometric distributions over ℕ
 
