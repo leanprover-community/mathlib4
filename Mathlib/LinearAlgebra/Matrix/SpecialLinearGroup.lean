@@ -124,6 +124,9 @@ instance : Pow (SpecialLinearGroup n R) ℕ where
 instance : Inhabited (SpecialLinearGroup n R) :=
   ⟨1⟩
 
+def transpose (A : Matrix.SpecialLinearGroup n R) :
+  Matrix.SpecialLinearGroup n R  := ⟨A.1.transpose, by rw [Matrix.det_transpose]; apply A.2⟩
+
 section CoeLemmas
 
 variable (A B : SpecialLinearGroup n R)
@@ -318,6 +321,50 @@ theorem fin_two_exists_eq_mk_of_apply_zero_one_eq_zero {R : Type*} [Field R] (g 
   refine' ⟨a, b, left_ne_zero_of_mul_eq_one had, _⟩
   simp_rw [eq_inv_of_mul_eq_one_right had, hg]
 #align matrix.special_linear_group.fin_two_exists_eq_mk_of_apply_zero_one_eq_zero Matrix.SpecialLinearGroup.fin_two_exists_eq_mk_of_apply_zero_one_eq_zero
+
+/--Send a pair of coprime to the matrix in `SL(2,ℤ)` that has those entries in the first col-/
+noncomputable
+def IsCoprimeToSL2Col (a b : R) (hab : IsCoprime a b) : SL(2, R) := by
+  let x := hab.choose
+  let y := hab.choose_spec.choose
+  let h:= hab.choose_spec.choose_spec
+  use !![a, -y; b, x]
+  simp only [Matrix.det_fin_two_of, neg_mul, sub_neg_eq_add]
+  rw [mul_comm]
+  exact h
+
+/--Send a pair of coprime to the matrix in `SL(2,ℤ)` that has those entries in the bottom row-/
+noncomputable
+def IsCoprimeToSL2Row (a b : R) (hab : IsCoprime a b) : SL(2, R) := by
+  let x := hab.choose
+  let y := hab.choose_spec.choose
+  let h:= hab.choose_spec.choose_spec
+  use !![ y, -x; a, b]
+  simp only [det_fin_two_of, neg_mul, sub_neg_eq_add]
+  rw [mul_comm, mul_comm, add_comm]
+  exact h
+
+lemma SL2_to_gcd_one_fst_col (A : SL(2, R)) : IsCoprime (A.1 0 0) (A.1 0 1) := by
+    refine ⟨ (A.1 1 1), -(A.1 1 0), ?_⟩
+    have T := Matrix.det_fin_two A.1
+    simp only [Matrix.SpecialLinearGroup.det_coe, neg_mul] at *
+    ring_nf
+    rw [mul_comm]
+    have : A.1 0 1 * A.1 1 0 = A.1 1 0 * A.1 0 1 := by apply mul_comm
+    rw [this] at T
+    exact T.symm
+
+/-- A vector of coprime entries multiplied by a matrix in `SL(2, R)` has coprime entries-/
+lemma SL2_gcd (a b : R) (hab : IsCoprime a b) (A : SL(2, R)) :
+  IsCoprime (Matrix.vecMul (![a,b]) A.1 0) (Matrix.vecMul (![a,b]) A.1 1) := by
+    let C := SpecialLinearGroup.transpose ((IsCoprimeToSL2Col a b hab)) * A
+    have := SL2_to_gcd_one_fst_col C
+    simp only [Matrix.SpecialLinearGroup.coe_mul] at this
+    rw [SpecialLinearGroup.transpose, IsCoprimeToSL2Col] at this
+    simp only [cons_transpose] at this
+    norm_cast at this
+
+
 
 end SpecialCases
 
