@@ -110,12 +110,9 @@ In the locale `Manifold`, we denote the composition of partial homeomorphisms wi
 composition of partial equivs with `≫`.
 -/
 
-set_option autoImplicit true
-
-
 noncomputable section
 
-open Classical Topology Filter
+open Topology
 
 universe u
 
@@ -802,7 +799,7 @@ instance prodChartedSpace (H : Type*) [TopologicalSpace H] (M : Type*) [Topologi
 section prodChartedSpace
 
 @[ext]
-theorem ModelProd.ext {x y : ModelProd α β} (h₁ : x.1 = y.1) (h₂ : x.2 = y.2) : x = y :=
+theorem ModelProd.ext {x y : ModelProd H H'} (h₁ : x.1 = y.1) (h₂ : x.2 = y.2) : x = y :=
   Prod.ext h₁ h₂
 
 variable [TopologicalSpace H] [TopologicalSpace M] [ChartedSpace H M] [TopologicalSpace H']

@@ -292,6 +292,22 @@ protected theorem UniformOnFun.hasBasis_nhds_one (𝔖 : Set <| Set α) (h𝔖�
 
 end Group
 
+section ConstSMul
+
+variable (M α X : Type*) [SMul M X] [UniformSpace X] [UniformContinuousConstSMul M X]
+
+instance UniformFun.uniformContinuousConstSMul :
+    UniformContinuousConstSMul M (α →ᵤ X) where
+  uniformContinuous_const_smul c := UniformFun.postcomp_uniformContinuous <|
+    uniformContinuous_const_smul c
+
+instance UniformFunOn.uniformContinuousConstSMul {𝔖 : Set (Set α)} :
+    UniformContinuousConstSMul M (α →ᵤ[𝔖] X) where
+  uniformContinuous_const_smul c := UniformOnFun.postcomp_uniformContinuous <|
+    uniformContinuous_const_smul c
+
+end ConstSMul
+
 section Module
 
 variable (𝕜 α E H : Type*) {hom : Type*} [NormedField 𝕜] [AddCommGroup H] [Module 𝕜 H]
