@@ -570,7 +570,7 @@ lemma AffineIndependent.convexHull_inter (hs : AffineIndependent R ((↑) : s �
     convexHull_mono inf_le_right).antisymm ?_
   simp_rw [Set.subset_def, mem_inter_iff, Set.inf_eq_inter, ← coe_inter, mem_convexHull']
   rintro x ⟨⟨w₁, h₁w₁, h₂w₁, h₃w₁⟩, w₂, -, h₂w₂, h₃w₂⟩
-  let w (x) : R := (if x ∈ t₁ then w₁ x else 0) - if x ∈ t₂ then w₂ x else 0
+  let w (x : E) : R := (if x ∈ t₁ then w₁ x else 0) - if x ∈ t₂ then w₂ x else 0
   have h₁w : ∑ i in s, w i = 0 := by simp [Finset.inter_eq_right.2, *]
   replace hs := hs.eq_zero_of_sum_eq_zero_subtype h₁w $ by
     simp only [sub_smul, zero_smul, ite_smul, Finset.sum_sub_distrib, ← Finset.sum_filter, h₃w₁,
