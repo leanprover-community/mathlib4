@@ -539,12 +539,10 @@ def contDiffPregroupoid : Pregroupoid H where
   comp {f g u v} hf hg _ _ _ := by
     have : I ∘ (g ∘ f) ∘ I.symm = (I ∘ g ∘ I.symm) ∘ I ∘ f ∘ I.symm := by ext x; simp
     simp only [this]
-    refine hg.comp (hf.mono ?_) ?_
-    · rintro x ⟨hx1, hx2⟩
-      exact ⟨hx1.1, hx2⟩
-    · rintro x ⟨hx1, _⟩
-      simp only [mfld_simps] at hx1 ⊢
-      exact hx1.2
+    refine hg.comp (hf.mono fun x ⟨hx1, hx2⟩ ↦ ⟨hx1.1, hx2⟩) ?_
+    rintro x ⟨hx1, _⟩
+    simp only [mfld_simps] at hx1 ⊢
+    exact hx1.2
   id_mem := by
     apply ContDiffOn.congr contDiff_id.contDiffOn
     rintro x ⟨_, hx2⟩
