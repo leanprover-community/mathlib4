@@ -1361,6 +1361,17 @@ theorem mem_spanSingleton_self (x : P) : x ∈ spanSingleton S x :=
   (mem_spanSingleton S).mpr ⟨1, one_smul _ _⟩
 #align fractional_ideal.mem_span_singleton_self FractionalIdeal.mem_spanSingleton_self
 
+/-- A version of `FractionalIdeal.den_mul_self_eq_num` in terms of fractional ideals. -/
+theorem den_mul_self_eq_num' (I : FractionalIdeal S P) :
+    spanSingleton S (algebraMap R P I.den) * I = I.num := by
+  apply coeToSubmodule_injective
+  dsimp only
+  rw [coe_mul, ← smul_eq_mul, coe_spanSingleton, smul_eq_mul, Submodule.span_singleton_mul]
+  convert I.den_mul_self_eq_num using 1
+  ext
+  erw [Set.mem_smul_set, Set.mem_smul_set]
+  simp [Algebra.smul_def]
+
 variable {S}
 
 @[simp]
@@ -1589,6 +1600,17 @@ theorem eq_spanSingleton_mul {x : P} {I J : FractionalIdeal S P} :
     I = spanSingleton _ x * J ↔ (∀ zI ∈ I, ∃ zJ ∈ J, x * zJ = zI) ∧ ∀ z ∈ J, x * z ∈ I := by
   simp only [le_antisymm_iff, le_spanSingleton_mul_iff, spanSingleton_mul_le_iff]
 #align fractional_ideal.eq_span_singleton_mul FractionalIdeal.eq_spanSingleton_mul
+
+theorem num_le (I : FractionalIdeal S P) :
+    (I.num : FractionalIdeal S P) ≤ I := by
+  rw [← I.den_mul_self_eq_num', spanSingleton_mul_le_iff]
+  intro _ h
+  rw [← Algebra.smul_def]
+  exact Submodule.smul_mem _ _ h
+
+theorem num_eq_zero_iff {I : FractionalIdeal R₁⁰ K} : I.num = 0 ↔ I = 0 :=
+  ⟨fun h ↦ zero_of_num_eq_bot zero_not_mem_nonZeroDivisors h,
+    fun h ↦ h ▸ num_zero_eq (IsFractionRing.injective R₁ K)⟩
 
 end PrincipalIdealRing
 

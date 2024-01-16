@@ -407,6 +407,9 @@ theorem absNorm_eq_zero_iff {I : Ideal S} : Ideal.absNorm I = 0 ↔ I = ⊥ := b
   · rintro rfl
     exact absNorm_bot
 
+theorem absNorm_ne_zero_of_nonZeroDivisors (I : (Ideal S)⁰) : Ideal.absNorm (I : Ideal S) ≠ 0 :=
+  Ideal.absNorm_eq_zero_iff.not.mpr <| nonZeroDivisors.coe_ne_zero _
+
 theorem irreducible_of_irreducible_absNorm {I : Ideal S} (hI : Irreducible (Ideal.absNorm I)) :
     Irreducible I :=
   irreducible_iff.mpr

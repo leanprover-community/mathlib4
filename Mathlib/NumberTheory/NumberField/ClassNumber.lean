@@ -54,24 +54,28 @@ theorem exists_ideal_in_class_of_norm_le (C : ClassGroup (𝓞 K)):
       Ideal.absNorm (I : Ideal (𝓞 K)) ≤ (4 / π) ^ NrComplexPlaces K *
         ((finrank ℚ K).factorial / (finrank ℚ K) ^ (finrank ℚ K) * Real.sqrt |discr K|) := by
   obtain ⟨J, hJ⟩ := ClassGroup.mk0_surjective C⁻¹
-  obtain ⟨a, h_nz, h_nm⟩ := exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr K J
-  obtain ⟨I₀, hI⟩ := Ideal.dvd_iff_le.mpr <|
-    (Ideal.span_singleton_le_iff_mem J).mpr (Submodule.coe_mem a)
+  obtain ⟨⟨_, a, ha, rfl⟩, h_nz, h_nm⟩ :=
+    exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr K (FractionalIdeal.mk0 K J)
+  obtain ⟨I₀, hI⟩ := Ideal.dvd_iff_le.mpr ((Ideal.span_singleton_le_iff_mem J).mpr (by convert ha))
   have : I₀ ≠ 0 := by
     contrapose! h_nz
     rw [h_nz, mul_zero, show 0 = (⊥ : Ideal (𝓞 K)) by rfl, Ideal.span_singleton_eq_bot] at hI
-    exact Submodule.coe_eq_zero.mp hI
+    simp only [FractionalIdeal.coe_mk0, hI, map_zero, Submodule.mk_eq_zero]
   let I := (⟨I₀, mem_nonZeroDivisors_iff_ne_zero.mpr this⟩ : (Ideal (𝓞 K))⁰)
   refine ⟨I, ?_, ?_⟩
   · suffices ClassGroup.mk0 I = (ClassGroup.mk0 J)⁻¹ by rw [this, hJ, inv_inv]
     rw [ClassGroup.mk0_eq_mk0_inv_iff]
-    exact ⟨a, by rwa [ne_eq, Submodule.coe_eq_zero.not], by rw [mul_comm, hI]⟩
-  · rw [← Algebra.coe_norm_int, ← Int.cast_abs, ← Int.cast_natAbs, ← Ideal.absNorm_span_singleton,
-      hI, map_mul, Nat.cast_mul, Rat.cast_mul, Rat.cast_coe_nat, Rat.cast_coe_nat,
-      show Ideal.absNorm I₀ = Ideal.absNorm (I : Ideal (𝓞 K)) by rfl, mul_div_assoc, mul_assoc,
-      mul_assoc] at h_nm
+    refine ⟨a, ?_, by rw [mul_comm, hI]⟩
+    sorry
+  · dsimp only at h_nm
+    rw [← FractionalIdeal.absNorm_span_singleton (𝓞 K), Algebra.linearMap_apply,
+      ← FractionalIdeal.coeIdeal_span_singleton, FractionalIdeal.coeIdeal_absNorm, hI, map_mul,
+      Nat.cast_mul, Rat.cast_mul, show Ideal.absNorm I₀ = Ideal.absNorm (I : Ideal (𝓞 K)) by rfl,
+      Rat.cast_coe_nat, Rat.cast_coe_nat] at h_nm
+    rw [FractionalIdeal.coe_mk0, FractionalIdeal.coeIdeal_absNorm, Rat.cast_coe_nat] at h_nm
+    rw [mul_div_assoc, mul_assoc, mul_assoc] at h_nm
     refine le_of_mul_le_mul_of_pos_left h_nm ?_
-    exact Nat.cast_pos.mpr <| Nat.pos_of_ne_zero <| ideal_absNorm_ne_zero K J
+    exact Nat.cast_pos.mpr <| Nat.pos_of_ne_zero <| Ideal.absNorm_ne_zero_of_nonZeroDivisors J
 
 theorem classNumber_eq_one_of_abs_discr_lt
     (h : |discr K| < (2 * (π / 4) ^ NrComplexPlaces K *
@@ -84,7 +88,8 @@ theorem classNumber_eq_one_of_abs_discr_lt
   refine ⟨1, fun C ↦ ?_⟩
   obtain ⟨I, rfl, hI⟩ := exists_ideal_in_class_of_norm_le C
   have : Ideal.absNorm I.1 = 1 := by
-    refine le_antisymm (Nat.lt_succ.mp ?_) (Nat.one_le_iff_ne_zero.mpr (ideal_absNorm_ne_zero K I))
+    refine le_antisymm (Nat.lt_succ.mp ?_) (Nat.one_le_iff_ne_zero.mpr
+      (Ideal.absNorm_ne_zero_of_nonZeroDivisors I))
     exact Nat.cast_lt.mp <| lt_of_le_of_lt hI h
   rw [ClassGroup.mk0_eq_one_iff, Ideal.absNorm_eq_one_iff.mp this]
   exact top_isPrincipal
