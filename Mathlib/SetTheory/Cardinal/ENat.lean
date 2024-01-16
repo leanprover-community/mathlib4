@@ -119,44 +119,6 @@ lemma ofENat_inj {m n : ℕ∞} : (m : Cardinal) = n ↔ m = n := ofENat_injecti
 @[simp] lemma ofENat_eq_lift {x : Cardinal.{v}} {m : ℕ∞} : m = lift.{u} x ↔ m = x := by
   rw [← lift_ofENat.{u, v}, lift_inj]
 
-@[simp] lemma ofENat_add_aleph0 : ∀ m : ℕ∞, m + ℵ₀ = ℵ₀
-  | (m : ℕ) => nat_add_aleph0 m
-  | ⊤ => aleph0_add_aleph0
-
-@[simp] lemma aleph0_add_ofENat (m : ℕ∞) : ℵ₀ + m = ℵ₀ := by rw [add_comm, ofENat_add_aleph0]
-
-@[simp, norm_cast]
-lemma ofENat_add : ∀ m n : ℕ∞, ofENat (m + n) = m + n
-  | (m : ℕ), (n : ℕ) => Nat.cast_add m n
-  | ⊤, _ => by simp
-  | _, ⊤ => by simp
-
-@[simp] lemma ofENat_mul_aleph0 {m : ℕ∞} (hm : m ≠ 0) : ↑m * ℵ₀ = ℵ₀ := by
-  induction m using ENat.recTopCoe with
-  | top => exact aleph0_mul_aleph0
-  | coe m => rw [ofENat_nat, nat_mul_aleph0 (mod_cast hm)]
-
-@[simp] lemma aleph0_mul_ofENat {m : ℕ∞} (hm : m ≠ 0) : ℵ₀ * m = ℵ₀ := by
-  rw [mul_comm, ofENat_mul_aleph0 hm]
-
-@[simp] lemma ofENat_mul (m n : ℕ∞) : ofENat (m * n) = m * n := by
-  have : ∀ a : ℕ∞, ofENat (a * ⊤) = a * ℵ₀ := fun a ↦ by
-    rcases eq_or_ne a 0 with rfl | ha <;> simp [*]
-  induction m using ENat.recTopCoe with
-  | top => rw [mul_comm, this, mul_comm, ofENat_top]
-  | coe m =>
-    induction n using ENat.recTopCoe with
-    | top => apply this
-    | coe n => norm_cast; norm_cast -- TODO: why has to be run twice?
-
-def ofENatHom : ℕ∞ →+*o Cardinal where
-  toFun := (↑)
-  map_one' := ofENat_one
-  map_mul' := ofENat_mul
-  map_zero' := ofENat_zero
-  map_add' := ofENat_add
-  monotone' := ofENat_mono
-
 @[simp]
 lemma range_ofENat : range ofENat = Iic ℵ₀ := by
   refine (range_subset_iff.2 ofENat_le_aleph0).antisymm fun x (hx : x ≤ ℵ₀) ↦ ?_
@@ -230,9 +192,54 @@ lemma enat_gc : GaloisConnection (↑) toENat := toENatAux_gc
 noncomputable def gciENat : GaloisCoinsertion (↑) toENat :=
   enat_gc.toGaloisCoinsertion fun n ↦ (toENat_ofENat n).le
 
-lemma toENat_injOn : InjOn toENat (Iic ℵ₀) :=
-  range_ofENat ▸ Injective.injOn_range <| by simp [injective_id]
+lemma toENat_strictMonoOn : StrictMonoOn toENat (Iic ℵ₀) := by
+  simp only [← range_ofENat, StrictMonoOn, forall_range_iff, toENat_ofENat, ofENat_lt_ofENat]
+  exact fun _ _ ↦ id
 
-lemma ofENat_toENat
+lemma toENat_injOn : InjOn toENat (Iic ℵ₀) := toENat_strictMonoOn.injOn
+
+@[simp] lemma ofENat_add_aleph0 : ∀ m : ℕ∞, m + ℵ₀ = ℵ₀
+  | (m : ℕ) => nat_add_aleph0 m
+  | ⊤ => aleph0_add_aleph0
+
+@[simp] lemma aleph0_add_ofENat (m : ℕ∞) : ℵ₀ + m = ℵ₀ := by rw [add_comm, ofENat_add_aleph0]
+
+@[simp, norm_cast]
+lemma ofENat_add : ∀ m n : ℕ∞, ofENat (m + n) = m + n
+  | (m : ℕ), (n : ℕ) => Nat.cast_add m n
+  | ⊤, _ => by simp
+  | _, ⊤ => by simp
+
+@[simp, norm_cast]
+lemma ofENat_add' (m n : ℕ∞) : ofENat (m + n) = m + n
+  | (m : ℕ), (n : ℕ) => Nat.cast_add m n
+  | ⊤, _ => by simp
+  | _, ⊤ => by simp
+
+@[simp] lemma ofENat_mul_aleph0 {m : ℕ∞} (hm : m ≠ 0) : ↑m * ℵ₀ = ℵ₀ := by
+  induction m using ENat.recTopCoe with
+  | top => exact aleph0_mul_aleph0
+  | coe m => rw [ofENat_nat, nat_mul_aleph0 (mod_cast hm)]
+
+@[simp] lemma aleph0_mul_ofENat {m : ℕ∞} (hm : m ≠ 0) : ℵ₀ * m = ℵ₀ := by
+  rw [mul_comm, ofENat_mul_aleph0 hm]
+
+@[simp] lemma ofENat_mul (m n : ℕ∞) : ofENat (m * n) = m * n := by
+  have : ∀ a : ℕ∞, ofENat (a * ⊤) = a * ℵ₀ := fun a ↦ by
+    rcases eq_or_ne a 0 with rfl | ha <;> simp [*]
+  induction m using ENat.recTopCoe with
+  | top => rw [mul_comm, this, mul_comm, ofENat_top]
+  | coe m =>
+    induction n using ENat.recTopCoe with
+    | top => apply this
+    | coe n => norm_cast; norm_cast -- TODO: why has to be run twice?
+
+def ofENatHom : ℕ∞ →+*o Cardinal where
+  toFun := (↑)
+  map_one' := ofENat_one
+  map_mul' := ofENat_mul
+  map_zero' := ofENat_zero
+  map_add' := ofENat_add
+  monotone' := ofENat_mono
 
 end Cardinal
