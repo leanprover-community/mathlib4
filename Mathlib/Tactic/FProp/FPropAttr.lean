@@ -13,11 +13,6 @@ open Lean Meta
 
 namespace Meta.FProp
 
-
-
-inductive AttrType | newFProp | lambdaRule | constRule
-
-
 def isLambdaRule (f : Expr) : Bool :=
   match f with
   | .lam _ _ xBody _ => 

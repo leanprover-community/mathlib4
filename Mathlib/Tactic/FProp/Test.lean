@@ -1,4 +1,3 @@
--- import Mathlib.Tactic.FProp.FPropTheorems
 import Mathlib.Tactic.FProp.Elab
 import Mathlib.Analysis.NormedSpace.ContinuousLinearMap
 
@@ -10,6 +9,7 @@ variable {α β γ} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpac
 
 
 set_option trace.Meta.Tactic.fprop.attr true
+
 
 @[fprop]
 def Cont (f : α → β) : Prop := Continuous f
@@ -60,6 +60,11 @@ by
   unfold Cont
   sorry
 
+-- @[fprop]
+-- theorem Cont_let' (f : α → β → γ) (g : α → β) (hf : Cont (fun (x,y) => f x y)) (hg : Cont g) : Cont (fun x => f x (g x)) := 
+-- by
+--   unfold Cont
+--   sorry
 
 @[fprop]
 theorem Cont_pi {ι} (f : α → ι → γ) (hf : ∀ i, Cont (fun x => f x i)) : Cont (fun x i => f x i) := 
@@ -93,9 +98,11 @@ by
 
 
 set_option trace.Meta.Tactic.fprop.step true 
+set_option trace.Meta.Tactic.fprop.unify true 
+set_option trace.Meta.Tactic.fprop.discharge true 
 
-example : Cont (fun x : α => x) := by (try fprop); sorry
-example (y : β) : Cont (fun x : α => y) := by (try fprop); sorry
+example : Cont (fun x : α => x) := by fprop
+example (y : β) : Cont (fun _ : α => y) := by fprop
 example (x : α) : Cont (fun f : α → β => f x) := by (try fprop); sorry
 example (x : α) : Cont (fun f : (x' : α) → E x' => f x) := by (try fprop); sorry
 example (f : β → γ) (g : α → β) (hf : Cont f) (hg : Cont g) : Cont (fun x => f (g x)) := by (try fprop); sorry

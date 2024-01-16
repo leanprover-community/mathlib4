@@ -23,6 +23,8 @@ namespace Meta.FProp
 initialize registerTraceClass `Meta.Tactic.fprop.attr
 initialize registerTraceClass `Meta.Tactic.fprop
 initialize registerTraceClass `Meta.Tactic.fprop.step
+initialize registerTraceClass `Meta.Tactic.fprop.unify
+initialize registerTraceClass `Meta.Tactic.fprop.discharge
 initialize registerTraceClass `Meta.Tactic.fprop.cache
 
 

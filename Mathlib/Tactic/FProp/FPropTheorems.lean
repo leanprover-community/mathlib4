@@ -20,22 +20,6 @@ open Lean Meta
 
 namespace Meta.FProp
 
-inductive Origin where
-  | decl (declName : Name)
-  | fvar (fvarId : FVarId)
-  -- | stx (id : Name) (ref : Syntax)
-  -- | other (name : Name)
-  deriving Inhabited, Repr
-
-def Origin.key : Origin → Name
-  | .decl declName => declName
-  | .fvar fvarId => fvarId.name
-  -- | .stx id _ => id
-  -- | .other name => name
-
-instance : BEq Origin := ⟨(·.key == ·.key)⟩
-instance : Hashable Origin := ⟨(hash ·.key)⟩
-
 structure FPropTheorem where
   fpropName   : Name
   keys        : Array RefinedDiscrTree.Key := #[]
