@@ -300,20 +300,16 @@ lemma h2_strictMono : StrictMonoOn h₂ (Set.Icc 0 (1/2)) := by
 
 open Filter Topology
 
-/-- Thanks to Andrew Yang for golfing! TODO proper attribution? -/
-protected lemma the_calculation {x : ℝ} (hx : x ≠ 0) (h2 : x ≠ 1) :
-    -1 / (1 - x) / log 2 - x⁻¹ / log 2 = -1 / (x * (1 - x) * log 2) := by
-  apply neg_injective
-  simp only [neg_div, neg_sub, sub_neg_eq_add, neg_neg, ← add_div, ← one_div]
-  rw [← div_div, div_add_div _ _ hx (sub_ne_zero.mpr h2.symm)]
-  simp only [one_mul, mul_one, sub_add_cancel, one_div, mul_inv_rev]
-
 lemma log2_ne_0 : log 2 ≠ 0 := by norm_num
 lemma log2_gt_0 : 0 < log 2 := by positivity
 
 /- Assumptions not needed
 (use junk value after proving that `¬DifferentiableAt` there) ?!-/
 lemma deriv2_h₂ {x : ℝ} (h : x ≠ 0) (hh : 1 ≠ x) : deriv^[2] h₂ x = -1 / (x * (1-x) * log 2) := by
+  have the_calculation {x : ℝ} (hx : x ≠ 0) (h2 : x ≠ 1) :
+      -1 / (1 - x) / log 2 - x⁻¹ / log 2 = -1 / (x * (1 - x) * log 2) := by
+    field_simp [sub_ne_zero.mpr h2.symm]
+    ring
   simp only [Function.iterate_succ, Function.iterate_zero, Function.comp.left_id,
     Function.comp_apply]
   suffices ∀ᶠ y in (𝓝 x), deriv (fun x ↦ h₂ x) y = log₂ (1 - y) - log₂ y by
@@ -323,7 +319,7 @@ lemma deriv2_h₂ {x : ℝ} (h : x ≠ 0) (hh : 1 ≠ x) : deriv^[2] h₂ x = -1
     · repeat rw [deriv_div_const]
       repeat rw [deriv.log]
       simp only [deriv_one_minus, deriv_id'', one_div]
-      exact Entropy.the_calculation h hh.symm
+      · exact the_calculation h hh.symm -- TODO just puting here the tactics used above doesn't work
       exact differentiableAt_id'
       exact h
       exact differentiable_1_minusp x
