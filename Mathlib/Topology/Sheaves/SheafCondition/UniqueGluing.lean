@@ -283,22 +283,22 @@ theorem objSupIsoProdEqLocus_inv_eq_iff {X : TopCat.{u}} (F : X.Sheaf CommRingCa
   constructor
   · rintro rfl
     rw [← TopCat.Sheaf.objSupIsoProdEqLocus_inv_fst, ← TopCat.Sheaf.objSupIsoProdEqLocus_inv_snd]
-    -- FIXME: why is this `rw` now needed?
+    -- `simp` doesn't see through the type equality of objects in `CommRingCat`, so use `rw`
     repeat rw [← comp_apply]
-    simp only [← comp_apply, ← Functor.map_comp, ← op_comp, Category.assoc, homOfLE_comp, and_self]
+    simp only [← Functor.map_comp, ← op_comp, Category.assoc, homOfLE_comp, and_self]
   · rintro ⟨e₁, e₂⟩
     refine' F.eq_of_locally_eq₂
       (homOfLE (inf_le_right : U ⊓ W ≤ W)) (homOfLE (inf_le_right : V ⊓ W ≤ W)) _ _ _ _ _
     · rw [← inf_sup_right]
       exact le_inf e le_rfl
     · rw [← e₁, ← TopCat.Sheaf.objSupIsoProdEqLocus_inv_fst]
-      -- FIXME: why is this `rw` now needed?
+      -- `simp` doesn't see through the type equality of objects in `CommRingCat`, so use `rw`
       repeat rw [← comp_apply]
-      simp only [← comp_apply, ← Functor.map_comp, ← op_comp, Category.assoc, homOfLE_comp]
+      simp only [← Functor.map_comp, ← op_comp, Category.assoc, homOfLE_comp]
     · rw [← e₂, ← TopCat.Sheaf.objSupIsoProdEqLocus_inv_snd]
-      -- FIXME: why is this `rw` now needed?
+      -- `simp` doesn't see through the type equality of objects in `CommRingCat`, so use `rw`
       repeat rw [← comp_apply]
-      simp only [← comp_apply, ← Functor.map_comp, ← op_comp, Category.assoc, homOfLE_comp]
+      simp only [← Functor.map_comp, ← op_comp, Category.assoc, homOfLE_comp]
 
 end Sheaf
 

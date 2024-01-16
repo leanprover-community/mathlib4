@@ -108,8 +108,7 @@ def grading.decompose : R × R →+ DirectSum Two fun i => grading R i where
         Option.casesOn i _ (fun (i_1 : Unit) => PUnit.casesOn i_1 _)) <;> rfl
   map_add' := by
     rintro ⟨a1, b1⟩ ⟨a2, b2⟩
-    -- HACK because `map_add` caused a timeout:
-    rw [add_add_add_comm, ← AddMonoidHom.map_add, ← AddMonoidHom.map_add]
+    rw [add_add_add_comm, ← map_add, ← map_add]
     dsimp only [Prod.mk_add_mk]
     simp_rw [add_sub_add_comm]
     congr

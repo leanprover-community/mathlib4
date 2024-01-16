@@ -108,7 +108,7 @@ def limitConeIsLimit (F : J ⥤ AlgebraCatMax.{v, w} R) : IsLimit (limitCone.{v,
       forget_map_eq_coe]
     -- This used to be as below but we need `erw` after leanprover/lean4#2644
     -- simp [forget_map_eq_coe, AlgHom.map_one, Functor.mapCone_π_app]
-    erw [AlgHom.map_one]
+    erw [map_one]
     rfl
   · intro x y
     apply Subtype.ext
@@ -117,7 +117,7 @@ def limitConeIsLimit (F : J ⥤ AlgebraCatMax.{v, w} R) : IsLimit (limitCone.{v,
       forget_map_eq_coe]
     -- This used to be as below, but we need `erw` after leanprover/lean4#2644
     -- simp [forget_map_eq_coe, AlgHom.map_mul, Functor.mapCone_π_app]
-    erw [AlgHom.map_mul]
+    erw [map_mul]
     rfl
   · simp only [Functor.comp_obj, Functor.mapCone_pt, Functor.mapCone_π_app,
       forget_map_eq_coe]
