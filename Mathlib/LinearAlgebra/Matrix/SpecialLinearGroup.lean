@@ -126,7 +126,7 @@ instance : Inhabited (SpecialLinearGroup n R) :=
 
 /--The transpose of a matrix in SLn-/
 def transpose (A : Matrix.SpecialLinearGroup n R) :
-    Matrix.SpecialLinearGroup n R  := ⟨A.1.transpose, by rw [Matrix.det_transpose]; apply A.2⟩
+  Matrix.SpecialLinearGroup n R  := ⟨A.1.transpose, by rw [Matrix.det_transpose]; apply A.2⟩
 
 section CoeLemmas
 
