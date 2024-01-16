@@ -17,14 +17,8 @@ instance {d : ℕ} : TopologicalSpace (ZMod d) := ⊥
 instance {d : ℕ} : DiscreteTopology (ZMod d) := { eq_bot := rfl }
 end ZMod
 
-@[continuity]
-lemma induced_top_cont_inv {n : ℕ} : @Continuous _ _ (TopologicalSpace.induced
-    (Units.coeHom (ZMod n)) inferInstance) _ (Units.inv : (ZMod n)ˣ → ZMod n) := by
-  convert continuous_of_discreteTopology
-  have : @Embedding _ _ (TopologicalSpace.induced
-    (Units.coeHom (ZMod n)) inferInstance) _ (Units.coeHom (ZMod n))
-  { refine' Function.Injective.embedding_induced (λ a b h => _)
-    simp only [Units.coeHom_apply, ← Units.ext_iff] at h
-    rw [h] }
-  refine' @Embedding.discreteTopology _ _ (TopologicalSpace.induced
-    (Units.coeHom (ZMod n)) inferInstance) _ _ _ this
+lemma embedding_coeHom (d : ℕ) : Embedding (Units.coeHom (ZMod d)) :=
+  Units.embedding_of_discreteTopology _ Units.ext
+
+lemma embedding_coe_inv (d : ℕ) : Embedding (fun u ↦ ↑u⁻¹ : (ZMod d)ˣ → (ZMod d)) :=
+  Units.embedding_coe_iff.mp (embedding_coeHom d)

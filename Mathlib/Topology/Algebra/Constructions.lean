@@ -180,32 +180,34 @@ theorem continuous_coe_inv : Continuous (fun u => ↑u⁻¹ : Mˣ → M) :=
 #align units.continuous_coe_inv Units.continuous_coe_inv
 #align add_units.continuous_coe_neg AddUnits.continuous_coe_neg
 
-lemma top_eq_if_cont_inv' {α : Type*} [TopologicalSpace α] [Monoid α]
-    (h : @Continuous _ _ (TopologicalSpace.induced (Units.coeHom α) inferInstance)
-  inferInstance (@Units.inv α _)) :
-  TopologicalSpace.induced (Units.coeHom α) inferInstance ≤ Units.instTopologicalSpaceUnits :=
-continuous_iff_le_induced.1 (by
-  -- if I replace this with refine or try to bring it into term mode, I get an incorrect typeclass
-  -- instance synthesized error
-  have h1 := @Continuous.comp _ _ _ (TopologicalSpace.induced ((Units.coeHom α)) inferInstance)
-    _ _ _ _ MulOpposite.continuous_op h
-  apply @Continuous.prod_mk _ _ _ _ _ (TopologicalSpace.induced ((Units.coeHom α)) inferInstance)
-    _ _ continuous_induced_dom h1)
+@[to_additive]
+protected lemma continuous_inv : Continuous (fun u ↦ u⁻¹ : Mˣ → Mˣ) := by
+  rw [Units.continuous_iff]
+  exact ⟨continuous_coe_inv, continuous_val⟩
 
-lemma top_eq_iff_cont_inv {α : Type*} [Monoid α] [TopologicalSpace α] :
-    TopologicalSpace.induced (Units.coeHom α) inferInstance = Units.instTopologicalSpaceUnits ↔
-    @Continuous _ _ (TopologicalSpace.induced (Units.coeHom α) inferInstance)
-      inferInstance (@Units.inv α _) := by
-  refine' ⟨λ h => _, λ h =>
-    le_antisymm (top_eq_if_cont_inv' h) (continuous_iff_le_induced.1 Units.continuous_val)⟩
-  rw [h]
-  have h1 : Prod.snd ∘ (Units.embedProduct α) = MulOpposite.op ∘ Units.val ∘ Units.instInv.inv
-  { ext
-    rw [Units.embedProduct]
-    simp only [Function.comp_apply, MonoidHom.coe_mk]
-    simp }
-  have h2 : Continuous (Prod.snd ∘ (Units.embedProduct α)) :=
-    Continuous.comp continuous_snd continuous_induced_dom
-  rw [h1] at h2
-  exact (Continuous.comp (@MulOpposite.continuous_unop α _) h2 : _)
+@[to_additive (attr := simps!)]
+protected def homeomorph_inv : Mˣ ≃ₜ Mˣ :=
+  { left_inv := fun _ ↦ rfl,
+    right_inv := fun _ ↦ rfl,
+    continuous_toFun := Units.continuous_inv,
+    continuous_invFun := Units.continuous_inv }
+
+lemma inducing_coe_iff : Inducing (coeHom M) ↔ Inducing (fun u ↦ ↑u⁻¹ : Mˣ → M) :=
+  ⟨fun h ↦ h.comp (Units.homeomorph_inv.inducing),
+   fun h ↦ h.comp (Units.homeomorph_inv.inducing)⟩
+
+lemma embedding_coe_iff : Embedding (coeHom M) ↔ Embedding (fun u ↦ ↑u⁻¹ : Mˣ → M) :=
+  ⟨fun h ↦ h.comp (Units.homeomorph_inv.embedding),
+   fun h ↦ h.comp (Units.homeomorph_inv.embedding)⟩
+
+-- move this close to `continuous_of_discreteTopology`?
+lemma embedding_of_discreteTopology {α β : Type _} [TopologicalSpace α] [TopologicalSpace β]
+    [DiscreteTopology α] [DiscreteTopology β] (f : α → β) (hf : f.Injective) : Embedding f := by
+  refine ⟨⟨?_⟩, hf⟩
+  ext s
+  constructor <;> intro
+  · rw [isOpen_induced_iff]
+    use f '' s
+    simp only [isOpen_discrete, hf, Set.preimage_image_eq, and_self]
+  · apply isOpen_discrete
 end Units
