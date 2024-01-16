@@ -151,9 +151,7 @@ theorem linearIndependent_of_isOrthoᵢ {B : V₁ →ₛₗ[I₁] V₁ →ₛₗ
       rw [isOrthoᵢ_def.1 hv₁ _ _ hij, smul_zero]
     simp_rw [B.map_sum₂, map_smulₛₗ₂, hsum] at this
     apply (map_eq_zero I₁).mp
-    exact Or.elim (smul_eq_zero.mp this)
-      (fun y ↦ by simpa using y)
-      (fun hfalse ↦ False.elim $ (hv₂ i) hfalse)
+    exact (smul_eq_zero.mp this).elim _root_.id (hv₂ i · |>.elim)
 set_option linter.uppercaseLean3 false in
 #align linear_map.linear_independent_of_is_Ortho LinearMap.linearIndependent_of_isOrthoᵢ
 
