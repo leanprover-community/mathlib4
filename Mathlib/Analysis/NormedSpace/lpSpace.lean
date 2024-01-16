@@ -55,8 +55,6 @@ say that `‖-f‖ = ‖f‖`, instead of the non-working `f.norm_neg`.
 
 -/
 
-set_option autoImplicit true
-
 noncomputable section
 
 open scoped NNReal ENNReal BigOperators Function
@@ -1222,6 +1220,7 @@ end lp
 section Lipschitz
 
 open ENNReal lp
+variable {ι : Type*}
 
 lemma LipschitzWith.uniformly_bounded [PseudoMetricSpace α] (g : α → ι → ℝ) {K : ℝ≥0}
     (hg : ∀ i, LipschitzWith K (g · i)) (a₀ : α) (hga₀b : Memℓp (g a₀) ∞) (a : α) :

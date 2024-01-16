@@ -145,9 +145,6 @@ function is analytic on the open ball.
 Cauchy-Goursat theorem, Cauchy integral formula
 -/
 
-set_option autoImplicit true
-
-
 open TopologicalSpace Set MeasureTheory intervalIntegral Metric Filter Function
 
 open scoped Interval Real NNReal ENNReal Topology BigOperators
@@ -607,7 +604,7 @@ theorem _root_.DifferentiableOn.analyticOn {s : Set ℂ} {f : ℂ → E} (hd : D
 
 /-- If `f : ℂ → E` is complex differentiable on some open set `s`, then it is continuously
 differentiable on `s`. -/
-protected theorem _root_.DifferentiableOn.contDiffOn {s : Set ℂ} {f : ℂ → E}
+protected theorem _root_.DifferentiableOn.contDiffOn {s : Set ℂ} {f : ℂ → E} {n : ℕ}
     (hd : DifferentiableOn ℂ f s) (hs : IsOpen s) : ContDiffOn ℂ n f s :=
   (hd.analyticOn hs).contDiffOn
 

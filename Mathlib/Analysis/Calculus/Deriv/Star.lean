@@ -16,9 +16,6 @@ operation. Note that these only apply when the field that the derivative is resp
 star operation; which as should be expected rules out `𝕜 = ℂ`.
 -/
 
-set_option autoImplicit true
-
-
 universe u v w
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
@@ -32,7 +29,7 @@ variable {f : 𝕜 → F}
 
 variable [StarRing 𝕜] [TrivialStar 𝕜] [StarAddMonoid F] [ContinuousStar F]
 
-variable [StarModule 𝕜 F]
+variable [StarModule 𝕜 F] {f' : F} {s : Set 𝕜} {x : 𝕜} {L : Filter 𝕜}
 
 protected nonrec theorem HasDerivAtFilter.star (h : HasDerivAtFilter f f' x L) :
     HasDerivAtFilter (fun x => star (f x)) (star f') x L := by

@@ -116,8 +116,6 @@ derivative, differentiable, Fréchet, calculus
 
 -/
 
-set_option autoImplicit true
-
 open Filter Asymptotics ContinuousLinearMap Set Metric
 
 open Topology Classical NNReal Filter Asymptotics ENNReal
@@ -1241,7 +1239,7 @@ theorem HasFDerivAt.of_nmem_tsupport (h : x ∉ tsupport f) :
     HasFDerivAt f (0 : E →L[𝕜] F) x :=
   (HasStrictFDerivAt.of_nmem_tsupport 𝕜 h).hasFDerivAt
 
-theorem HasFDerivWithinAt.of_not_mem_tsupport (h : x ∉ tsupport f) :
+theorem HasFDerivWithinAt.of_not_mem_tsupport {s : Set E} {x : E} (h : x ∉ tsupport f) :
     HasFDerivWithinAt f (0 : E →L[𝕜] F) s x :=
   (HasFDerivAt.of_nmem_tsupport 𝕜 h).hasFDerivWithinAt
 

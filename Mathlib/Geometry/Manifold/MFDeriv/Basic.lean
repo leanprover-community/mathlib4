@@ -93,9 +93,6 @@ the space of equivalence classes of smooth curves in the manifold.
 Derivative, manifold
 -/
 
-set_option autoImplicit true
-
-
 noncomputable section
 
 open scoped Classical Topology Manifold Bundle
@@ -665,6 +662,8 @@ theorem mdifferentiableAt_iff_of_mem_source {x' : M} {y : M'}
 /-! ### Deducing differentiability from smoothness -/
 
 -- porting note: moved from `ContMDiffMFDeriv`
+
+variable {n : ℕ∞}
 
 theorem ContMDiffWithinAt.mdifferentiableWithinAt (hf : ContMDiffWithinAt I I' n f s x)
     (hn : 1 ≤ n) : MDifferentiableWithinAt I I' f s x := by
@@ -2045,7 +2044,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCom
 
 /-- If `s` has the unique differential property at `x`, `f` is differentiable within `s` at x` and
 its derivative has Dense range, then `f '' s` has the Unique differential property at `f x`. -/
-theorem UniqueMDiffWithinAt.image_denseRange (hs : UniqueMDiffWithinAt I s x)
+theorem UniqueMDiffWithinAt.image_denseRange {x : M} (hs : UniqueMDiffWithinAt I s x)
     {f : M → M'} {f' : E →L[𝕜] E'} (hf : HasMFDerivWithinAt I I' f s x f')
     (hd : DenseRange f') : UniqueMDiffWithinAt I' (f '' s) (f x) := by
   /- Rewrite in coordinates, apply `HasFDerivWithinAt.uniqueDiffWithinAt`. -/
@@ -2073,8 +2072,9 @@ theorem UniqueMDiffOn.image_denseRange (hs : UniqueMDiffOn I s) {f : M → M'}
     UniqueMDiffOn I' (f '' s) :=
   hs.image_denseRange' (fun x hx ↦ (hf x hx).hasMFDerivWithinAt) hd
 
-protected theorem UniqueMDiffWithinAt.preimage_partialHomeomorph (hs : UniqueMDiffWithinAt I s x)
-    {e : PartialHomeomorph M M'} (he : e.MDifferentiable I I') (hx : x ∈ e.source) :
+protected theorem UniqueMDiffWithinAt.preimage_partialHomeomorph {x : M}
+    (hs : UniqueMDiffWithinAt I s x) {e : PartialHomeomorph M M'} (he : e.MDifferentiable I I')
+    (hx : x ∈ e.source) :
     UniqueMDiffWithinAt I' (e.target ∩ e.symm ⁻¹' s) (e x) := by
   rw [← e.image_source_inter_eq', inter_comm]
   exact (hs.inter (e.open_source.mem_nhds hx)).image_denseRange

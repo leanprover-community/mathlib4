@@ -38,9 +38,6 @@ For a real vector space,
 Minkowski functional, gauge
 -/
 
-set_option autoImplicit true
-
-
 open NormedField Set
 open scoped Pointwise Topology NNReal
 
@@ -58,7 +55,7 @@ def gauge (s : Set E) (x : E) : ℝ :=
   sInf { r : ℝ | 0 < r ∧ x ∈ r • s }
 #align gauge gauge
 
-variable {s t : Set E} {a : ℝ}
+variable {s t : Set E} {x : E} {a : ℝ}
 
 theorem gauge_def : gauge s x = sInf ({ r ∈ Set.Ioi (0 : ℝ) | x ∈ r • s }) :=
   rfl
