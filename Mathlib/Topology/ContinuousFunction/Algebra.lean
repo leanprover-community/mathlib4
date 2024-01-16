@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Nicolò Cavalleri
 -/
 import Mathlib.Algebra.Algebra.Pi
-import Mathlib.Algebra.Order.LatticeGroup
 import Mathlib.Algebra.Periodic
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.Star.StarAlgHom
@@ -561,9 +560,8 @@ attribute [local ext] Subtype.eq
 
 section ModuleStructure
 
--- Porting note: Is "Semiodule" a typo of "Semimodule" or "Submodule"?
 /-!
-### Semiodule structure
+### Module structure
 
 In this section we show that continuous functions valued in a topological module `M` over a
 topological semiring `R` inherit the structure of a module.
@@ -930,6 +928,12 @@ instance instCovariantClass_mul_le_right [PartialOrder β] [Mul β] [ContinuousM
   [CovariantClass β β (Function.swap (· * ·)) (· ≤ ·)] :
   CovariantClass C(α, β) C(α, β) (Function.swap (· * ·)) (· ≤ ·) :=
 ⟨fun _ _ _ hg₁₂ x => mul_le_mul_right' (hg₁₂ x) _⟩
+
+variable [Group β] [TopologicalGroup β] [Lattice β] [TopologicalLattice β]
+
+@[to_additive (attr := simp, norm_cast)] lemma coe_mabs (f : C(α, β)) : ⇑|f|ₘ = |⇑f|ₘ := rfl
+@[to_additive (attr := simp)] lemma mabs_apply (f : C(α, β)) (x : α) : |f|ₘ x = |f x|ₘ := rfl
+#align continuous_map.abs_apply ContinuousMap.abs_apply
 
 end Lattice
 

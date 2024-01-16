@@ -5,7 +5,7 @@ Authors: Jeremy Avigad, Robert Y. Lewis, Yury G. Kudryashov
 -/
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.Order.Monoid.OrderDual
-import Mathlib.Data.Nat.Basic
+import Mathlib.Data.Nat.Defs
 import Mathlib.Tactic.Monotonicity.Attr
 
 /-!
@@ -222,6 +222,7 @@ section CovariantLE
 
 variable [CovariantClass M M (· * ·) (· ≤ ·)]
 
+-- This generalises to lattices. See `pow_two_semiclosed`
 @[to_additive nsmul_nonneg_iff]
 theorem one_le_pow_iff {x : M} {n : ℕ} (hn : n ≠ 0) : 1 ≤ x ^ n ↔ 1 ≤ x :=
   ⟨le_imp_le_of_lt_imp_lt fun h => pow_lt_one' h hn, fun h => one_le_pow_of_one_le' h n⟩

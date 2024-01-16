@@ -429,18 +429,38 @@ class CompatibleSMul (R S : Type*) [Semiring S] [SMul R M] [Module S M] [SMul R 
 
 variable {M M₂}
 
-instance (priority := 100) IsScalarTower.compatibleSMul {R S : Type*} [Semiring S] [SMul R S]
-    [SMul R M] [Module S M] [IsScalarTower R S M] [SMul R M₂] [Module S M₂] [IsScalarTower R S M₂] :
+section
+
+variable {R S : Type*} [Semiring S] [SMul R M] [Module S M] [SMul R M₂] [Module S M₂]
+
+instance (priority := 100) IsScalarTower.compatibleSMul [SMul R S]
+    [IsScalarTower R S M] [IsScalarTower R S M₂] :
     CompatibleSMul M M₂ R S :=
   ⟨fun fₗ c x ↦ by rw [← smul_one_smul S c x, ← smul_one_smul S c (fₗ x), map_smul]⟩
 #align linear_map.is_scalar_tower.compatible_smul LinearMap.IsScalarTower.compatibleSMul
 
+instance IsScalarTower.compatibleSMul' [SMul R S] [IsScalarTower R S M] :
+    CompatibleSMul S M R S where
+  __ := IsScalarTower.smulHomClass R S M (S →ₗ[S] M)
+
 @[simp]
-theorem map_smul_of_tower {R S : Type*} [Semiring S] [SMul R M] [Module S M] [SMul R M₂]
-    [Module S M₂] [CompatibleSMul M M₂ R S] (fₗ : M →ₗ[S] M₂) (c : R) (x : M) :
+theorem map_smul_of_tower [CompatibleSMul M M₂ R S] (fₗ : M →ₗ[S] M₂) (c : R) (x : M) :
     fₗ (c • x) = c • fₗ x :=
   CompatibleSMul.map_smul fₗ c x
 #align linear_map.map_smul_of_tower LinearMap.map_smul_of_tower
+
+variable (R R) in
+theorem isScalarTower_of_injective [SMul R S] [CompatibleSMul M M₂ R S] [IsScalarTower R S M₂]
+    (f : M →ₗ[S] M₂) (hf : Function.Injective f) : IsScalarTower R S M where
+  smul_assoc r s _ := hf <| by rw [f.map_smul_of_tower r, map_smul, map_smul, smul_assoc]
+
+end
+
+variable (R) in
+theorem isLinearMap_of_compatibleSMul [Module S M] [Module S M₂] [CompatibleSMul M M₂ R S]
+    (f : M →ₗ[S] M₂) : IsLinearMap R f where
+  map_add := map_add f
+  map_smul := map_smul_of_tower f
 
 /-- convert a linear map to an additive map -/
 def toAddMonoidHom : M →+ M₃ where

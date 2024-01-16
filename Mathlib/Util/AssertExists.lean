@@ -3,7 +3,7 @@ Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Scott Morrison
 -/
-import Lean
+import Lean.Elab.Command
 
 /-!
 # User commands for assert the (non-)existence of declaration or instances.

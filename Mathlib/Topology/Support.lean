@@ -5,6 +5,7 @@ Authors: Floris van Doorn, Patrick Massot
 -/
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Topology.Separation
+import Mathlib.Algebra.Group.Defs
 
 #align_import topology.support from "leanprover-community/mathlib"@"d90e4e186f1d18e375dcd4e5b5f6364b01cb3e46"
 
@@ -81,7 +82,7 @@ theorem range_subset_insert_image_mulTSupport (f : X → α) :
 @[to_additive]
 theorem range_eq_image_mulTSupport_or (f : X → α) :
     range f = f '' mulTSupport f ∨ range f = insert 1 (f '' mulTSupport f) :=
-  (wcovby_insert _ _).eq_or_eq (image_subset_range _ _) (range_subset_insert_image_mulTSupport f)
+  (wcovBy_insert _ _).eq_or_eq (image_subset_range _ _) (range_subset_insert_image_mulTSupport f)
 #align range_eq_image_mul_tsupport_or range_eq_image_mulTSupport_or
 #align range_eq_image_tsupport_or range_eq_image_tsupport_or
 

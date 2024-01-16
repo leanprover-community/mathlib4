@@ -835,7 +835,7 @@ theorem singleton_repr (ι R : Type*) [Unique ι] [Semiring R] (x i) :
 
 theorem basis_singleton_iff {R M : Type*} [Ring R] [Nontrivial R] [AddCommGroup M] [Module R M]
     [NoZeroSMulDivisors R M] (ι : Type*) [Unique ι] :
-    Nonempty (Basis ι R M) ↔ ∃ (x : _) (_ : x ≠ 0), ∀ y : M, ∃ r : R, r • x = y := by
+    Nonempty (Basis ι R M) ↔ ∃ x ≠ 0, ∀ y : M, ∃ r : R, r • x = y := by
   constructor
   · rintro ⟨b⟩
     refine' ⟨b default, b.linearIndependent.ne_zero _, _⟩

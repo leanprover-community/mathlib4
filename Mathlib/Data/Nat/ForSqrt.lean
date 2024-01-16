@@ -90,7 +90,7 @@ lemma sqrt.lt_iter_succ_sq (n guess : ℕ) (hn : n < (guess + 1) * (guess + 1)) 
       show guess + n / guess + 2 = (guess + n / guess + 1) + 1 from rfl]
     have aux_lemma {a : ℕ} : a ≤ 2 * ((a + 1) / 2) := by
       rw [mul_comm]
-      exact (add_le_add_iff_right 2).1 $ succ_le_of_lt $ @lt_div_mul_add (a + 1) 2 zero_lt_two
+      exact (add_le_add_iff_right 2).1 <| succ_le_of_lt <| @lt_div_mul_add (a + 1) 2 zero_lt_two
     refine lt_of_lt_of_le ?_ (act_rel_act_of_rel _ aux_lemma)
     rw [add_assoc, mul_add]
     exact add_lt_add_left (lt_mul_div_succ _ (lt_of_le_of_lt (Nat.zero_le m) h)) _

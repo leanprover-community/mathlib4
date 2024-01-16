@@ -589,7 +589,7 @@ instance isNoetherian_of_isNoetherianRing_of_finite (R M : Type*)
     [Ring R] [AddCommGroup M] [Module R M] [IsNoetherianRing R] [Module.Finite R M] :
     IsNoetherian R M :=
   have : IsNoetherian R (⊤ : Submodule R M) :=
-    isNoetherian_of_fg_of_noetherian _ $ Module.finite_def.mp inferInstance
+    isNoetherian_of_fg_of_noetherian _ <| Module.finite_def.mp inferInstance
   isNoetherian_of_linearEquiv (LinearEquiv.ofTop (⊤ : Submodule R M) rfl)
 #align is_noetherian_of_fg_of_noetherian' isNoetherian_of_isNoetherianRing_of_finite
 

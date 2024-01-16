@@ -86,7 +86,7 @@ protected lemma isNilpotent_iff :
   simp only [Polynomial.isNilpotent_iff, coeff_reverse]
   refine' ⟨fun h i ↦ _, fun h i ↦ _⟩ <;> rcases le_or_lt i N with hi | hi
   · simpa [tsub_tsub_cancel_of_le hi] using h (N - i)
-  · simp [coeff_eq_zero_of_natDegree_lt $ lt_of_le_of_lt hN hi]
+  · simp [coeff_eq_zero_of_natDegree_lt <| lt_of_le_of_lt hN hi]
   · simpa [hi, revAt_le] using h (N - i)
   · simpa [revAt_eq_self_of_lt hi] using h i
 
@@ -140,7 +140,7 @@ theorem coeff_isUnit_isNilpotent_of_isUnit (hunit : IsUnit P) :
     have hcoeff : (f P).coeff n = 0 := by
       refine' coeff_eq_zero_of_degree_lt _
       rw [hPQ.1]
-      exact (@WithBot.coe_pos _ _ _ n).2 (Ne.bot_lt hn)
+      exact WithBot.coe_pos.2 hn.bot_lt
     rw [coe_mapRingHom, coeff_map, ← RingHom.mem_ker, Ideal.mk_ker] at hcoeff
     exact hcoeff
 
