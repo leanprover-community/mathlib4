@@ -83,7 +83,7 @@ def gammaMoebiusFun (N : ℕ) (a b : ℤ) (γ : Gamma N) (f : gammaSet N a b) : 
   simp only [Fin.sum_univ_two, Fin.cons_zero, Fin.cons_one]}
 
 lemma gammaMoebiusFun_eq_Moebequiv (N : ℕ) (a b : ℤ) (γ : Gamma N) (f : gammaSet N a b) :
-  (gammaMoebiusFun N a b γ f).1 = (moebiusEquiv γ.1 f.1) := by
+    (gammaMoebiusFun N a b γ f).1 = (moebiusEquiv γ.1 f.1) := by
   simp only [gammaMoebiusFun, moebiusEquiv, Matrix.SpecialLinearGroup.transpose, EquivLike.coe_coe,
     Matrix.SpecialLinearGroup.toLin'_apply, Matrix.toLin'_apply', Matrix.mulVecLin_transpose,
     Matrix.vecMulLinear_apply]
