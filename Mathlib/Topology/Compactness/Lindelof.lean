@@ -699,7 +699,8 @@ instance (priority := 100) SecondCountableTopology.to_HereditarilyLindelof
   use t, htc
   exact subset_of_subset_of_eq hcover (id htu.symm)
 
-instance (priority := 100) SecondCountableTopology.to_Lindelof [SecondCountableTopology X] : LindelofSpace X := by
+instance (priority := 100) SecondCountableTopology.to_Lindelof [SecondCountableTopology X] :
+    LindelofSpace X := by
   apply HereditarilyLindelof.to_Lindelof
 
 lemma eq_open_union_countable [HereditarilyLindelofSpace X] {ι : Type u} (U : ι → Set X)
