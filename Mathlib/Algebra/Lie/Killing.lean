@@ -54,7 +54,6 @@ variable (R K L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
   [Module.Free R M] [Module.Finite R M]
   [Field K] [LieAlgebra K L] [Module K M] [LieModule K L M] [FiniteDimensional K M]
 
-attribute [local instance] isNoetherian_of_isNoetherianRing_of_finite
 attribute [local instance] Module.free_of_finite_type_torsion_free'
 
 local notation "φ" => LieModule.toEndomorphism R L M

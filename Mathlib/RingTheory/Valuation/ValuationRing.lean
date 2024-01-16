@@ -126,7 +126,7 @@ protected theorem le_total (a b : ValueGroup A K) : a ≤ b ∨ b ≤ a := by
 
 -- Porting note: it is much faster to split the instance `LinearOrderedCommGroupWithZero`
 -- into two parts
-noncomputable instance : LinearOrder (ValueGroup A K) where
+noncomputable instance linearOrder : LinearOrder (ValueGroup A K) where
   le_refl := by rintro ⟨⟩; use 1; rw [one_smul]
   le_trans := by rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ ⟨e, rfl⟩ ⟨f, rfl⟩; use e * f; rw [mul_smul]
   le_antisymm := by
@@ -146,33 +146,34 @@ noncomputable instance : LinearOrder (ValueGroup A K) where
   decidableLE := by classical infer_instance
 
 noncomputable instance linearOrderedCommGroupWithZero :
-    LinearOrderedCommGroupWithZero (ValueGroup A K) where
-  mul_assoc := by rintro ⟨a⟩ ⟨b⟩ ⟨c⟩; apply Quotient.sound'; rw [mul_assoc]; apply Setoid.refl'
-  one_mul := by rintro ⟨a⟩; apply Quotient.sound'; rw [one_mul]; apply Setoid.refl'
-  mul_one := by rintro ⟨a⟩; apply Quotient.sound'; rw [mul_one]; apply Setoid.refl'
-  mul_comm := by rintro ⟨a⟩ ⟨b⟩; apply Quotient.sound'; rw [mul_comm]; apply Setoid.refl'
-  mul_le_mul_left := by
-    rintro ⟨a⟩ ⟨b⟩ ⟨c, rfl⟩ ⟨d⟩
-    use c; simp only [Algebra.smul_def]; ring
-  zero_mul := by rintro ⟨a⟩; apply Quotient.sound'; rw [zero_mul]; apply Setoid.refl'
-  mul_zero := by rintro ⟨a⟩; apply Quotient.sound'; rw [mul_zero]; apply Setoid.refl'
-  zero_le_one := ⟨0, by rw [zero_smul]⟩
-  exists_pair_ne := by
-    use 0, 1
-    intro c; obtain ⟨d, hd⟩ := Quotient.exact' c
-    apply_fun fun t => d⁻¹ • t at hd
-    simp only [inv_smul_smul, smul_zero, one_ne_zero] at hd
-  inv_zero := by apply Quotient.sound'; rw [inv_zero]; apply Setoid.refl'
-  mul_inv_cancel := by
-    rintro ⟨a⟩ ha
-    apply Quotient.sound'
-    use 1
-    simp only [one_smul, ne_eq]
-    apply (mul_inv_cancel _).symm
-    contrapose ha
-    simp only [Classical.not_not] at ha ⊢
-    rw [ha]
-    rfl
+    LinearOrderedCommGroupWithZero (ValueGroup A K) :=
+  { linearOrder .. with
+    mul_assoc := by rintro ⟨a⟩ ⟨b⟩ ⟨c⟩; apply Quotient.sound'; rw [mul_assoc]; apply Setoid.refl'
+    one_mul := by rintro ⟨a⟩; apply Quotient.sound'; rw [one_mul]; apply Setoid.refl'
+    mul_one := by rintro ⟨a⟩; apply Quotient.sound'; rw [mul_one]; apply Setoid.refl'
+    mul_comm := by rintro ⟨a⟩ ⟨b⟩; apply Quotient.sound'; rw [mul_comm]; apply Setoid.refl'
+    mul_le_mul_left := by
+      rintro ⟨a⟩ ⟨b⟩ ⟨c, rfl⟩ ⟨d⟩
+      use c; simp only [Algebra.smul_def]; ring
+    zero_mul := by rintro ⟨a⟩; apply Quotient.sound'; rw [zero_mul]; apply Setoid.refl'
+    mul_zero := by rintro ⟨a⟩; apply Quotient.sound'; rw [mul_zero]; apply Setoid.refl'
+    zero_le_one := ⟨0, by rw [zero_smul]⟩
+    exists_pair_ne := by
+      use 0, 1
+      intro c; obtain ⟨d, hd⟩ := Quotient.exact' c
+      apply_fun fun t => d⁻¹ • t at hd
+      simp only [inv_smul_smul, smul_zero, one_ne_zero] at hd
+    inv_zero := by apply Quotient.sound'; rw [inv_zero]; apply Setoid.refl'
+    mul_inv_cancel := by
+      rintro ⟨a⟩ ha
+      apply Quotient.sound'
+      use 1
+      simp only [one_smul, ne_eq]
+      apply (mul_inv_cancel _).symm
+      contrapose ha
+      simp only [Classical.not_not] at ha ⊢
+      rw [ha]
+      rfl }
 
 /-- Any valuation ring induces a valuation on its fraction field. -/
 def valuation : Valuation K (ValueGroup A K) where

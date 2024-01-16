@@ -351,6 +351,11 @@ theorem orderOf_injective {H : Type*} [Monoid H] (f : G →* H) (hf : Function.I
 #align order_of_injective orderOf_injective
 #align add_order_of_injective addOrderOf_injective
 
+@[to_additive]
+theorem Function.Injective.isOfFinOrder_iff [Monoid H] {f : G →* H} (hf : Injective f) :
+    IsOfFinOrder (f x) ↔ IsOfFinOrder x := by
+  rw [← orderOf_pos_iff, orderOf_injective f hf x, ← orderOf_pos_iff]
+
 @[to_additive (attr := norm_cast, simp)]
 theorem orderOf_submonoid {H : Submonoid G} (y : H) : orderOf (y : G) = orderOf y :=
   orderOf_injective H.subtype Subtype.coe_injective y
@@ -713,29 +718,29 @@ lemma IsOfFinOrder.mem_zpowers_iff_mem_range_orderOf [DecidableEq G] (hx : IsOfF
   hx.mem_powers_iff_mem_zpowers.symm.trans hx.mem_powers_iff_mem_range_orderOf
 
 /-- The equivalence between `Fin (orderOf x)` and `Subgroup.zpowers x`, sending `i` to `x ^ i`. -/
-@[to_additive finEquivZmultiples "The equivalence between `Fin (addOrderOf a)` and
+@[to_additive finEquivZMultiples "The equivalence between `Fin (addOrderOf a)` and
 `Subgroup.zmultiples a`, sending `i` to `i • a`."]
-noncomputable def finEquivZpowers (x : G) (hx : IsOfFinOrder x) :
+noncomputable def finEquivZPowers (x : G) (hx : IsOfFinOrder x) :
     Fin (orderOf x) ≃ (zpowers x : Set G) :=
   (finEquivPowers x hx).trans $ Equiv.Set.ofEq hx.powers_eq_zpowers
-#align fin_equiv_zpowers finEquivZpowers
-#align fin_equiv_zmultiples finEquivZmultiples
+#align fin_equiv_zpowers finEquivZPowers
+#align fin_equiv_zmultiples finEquivZMultiples
 
 -- This lemma has always been bad, but the linter only noticed after leaprover/lean4#2644.
-@[to_additive (attr := simp, nolint simpNF) finEquivZmultiples_apply]
-lemma finEquivZpowers_apply (hx) {n : Fin (orderOf x)} :
-    finEquivZpowers x hx n = ⟨x ^ (n : ℕ), n, zpow_ofNat x n⟩ := rfl
-#align fin_equiv_zpowers_apply finEquivZpowers_apply
-#align fin_equiv_zmultiples_apply finEquivZmultiples_apply
+@[to_additive (attr := simp, nolint simpNF) finEquivZMultiples_apply]
+lemma finEquivZPowers_apply (hx) {n : Fin (orderOf x)} :
+    finEquivZPowers x hx n = ⟨x ^ (n : ℕ), n, zpow_ofNat x n⟩ := rfl
+#align fin_equiv_zpowers_apply finEquivZPowers_apply
+#align fin_equiv_zmultiples_apply finEquivZMultiples_apply
 
  -- This lemma has always been bad, but the linter only noticed after leanprover/lean4#2644.
-@[to_additive (attr := simp, nolint simpNF) finEquivZmultiples_symm_apply]
-lemma finEquivZpowers_symm_apply (x : G) (hx) (n : ℕ) :
-    (finEquivZpowers x hx).symm ⟨x ^ n, ⟨n, by simp⟩⟩ =
+@[to_additive (attr := simp, nolint simpNF) finEquivZMultiples_symm_apply]
+lemma finEquivZPowers_symm_apply (x : G) (hx) (n : ℕ) :
+    (finEquivZPowers x hx).symm ⟨x ^ n, ⟨n, by simp⟩⟩ =
     ⟨n % orderOf x, Nat.mod_lt _ hx.orderOf_pos⟩ := by
-  rw [finEquivZpowers, Equiv.symm_trans_apply]; exact finEquivPowers_symm_apply x _ n
-#align fin_equiv_zpowers_symm_apply finEquivZpowers_symm_apply
-#align fin_equiv_zmultiples_symm_apply finEquivZmultiples_symm_apply
+  rw [finEquivZPowers, Equiv.symm_trans_apply]; exact finEquivPowers_symm_apply x _ n
+#align fin_equiv_zpowers_symm_apply finEquivZPowers_symm_apply
+#align fin_equiv_zmultiples_symm_apply finEquivZMultiples_symm_apply
 
 end Group
 
@@ -926,35 +931,35 @@ theorem injective_zpow_iff_not_isOfFinOrder : (Injective fun n : ℤ => x ^ n) �
 
 /-- The equivalence between `Subgroup.zpowers` of two elements `x, y` of the same order, mapping
   `x ^ i` to `y ^ i`. -/
-@[to_additive zmultiplesEquivZmultiples
+@[to_additive zmultiplesEquivZMultiples
   "The equivalence between `Subgroup.zmultiples` of two elements `a, b` of the same additive order,
   mapping `i • a` to `i • b`."]
-noncomputable def zpowersEquivZpowers (h : orderOf x = orderOf y) :
+noncomputable def zpowersEquivZPowers (h : orderOf x = orderOf y) :
     (Subgroup.zpowers x : Set G) ≃ (Subgroup.zpowers y : Set G) :=
-  (finEquivZpowers x $ isOfFinOrder_of_finite _).symm.trans $ (Fin.castIso h).toEquiv.trans $
-    finEquivZpowers y $ isOfFinOrder_of_finite _
-#align zpowers_equiv_zpowers zpowersEquivZpowers
-#align zmultiples_equiv_zmultiples zmultiplesEquivZmultiples
+  (finEquivZPowers x $ isOfFinOrder_of_finite _).symm.trans $ (Fin.castIso h).toEquiv.trans $
+    finEquivZPowers y $ isOfFinOrder_of_finite _
+#align zpowers_equiv_zpowers zpowersEquivZPowers
+#align zmultiples_equiv_zmultiples zmultiplesEquivZMultiples
 
 -- Porting note: the simpNF linter complains that simp can change the LHS to something
 -- that looks the same as the current LHS even with `pp.explicit`
 @[to_additive (attr := simp, nolint simpNF) zmultiples_equiv_zmultiples_apply]
-theorem zpowersEquivZpowers_apply (h : orderOf x = orderOf y) (n : ℕ) :
-    zpowersEquivZpowers h ⟨x ^ n, n, zpow_ofNat x n⟩ = ⟨y ^ n, n, zpow_ofNat y n⟩ := by
-  rw [zpowersEquivZpowers, Equiv.trans_apply, Equiv.trans_apply, finEquivZpowers_symm_apply, ←
-    Equiv.eq_symm_apply, finEquivZpowers_symm_apply]
+theorem zpowersEquivZPowers_apply (h : orderOf x = orderOf y) (n : ℕ) :
+    zpowersEquivZPowers h ⟨x ^ n, n, zpow_ofNat x n⟩ = ⟨y ^ n, n, zpow_ofNat y n⟩ := by
+  rw [zpowersEquivZPowers, Equiv.trans_apply, Equiv.trans_apply, finEquivZPowers_symm_apply, ←
+    Equiv.eq_symm_apply, finEquivZPowers_symm_apply]
   simp [h]
-#align zpowers_equiv_zpowers_apply zpowersEquivZpowers_apply
+#align zpowers_equiv_zpowers_apply zpowersEquivZPowers_apply
 #align zmultiples_equiv_zmultiples_apply zmultiples_equiv_zmultiples_apply
 
 end Finite
 
 variable [Fintype G] {x : G} {n : ℕ}
 
-/-- See also `Nat.card_addSubgroupZpowers`. -/
+/-- See also `Nat.card_addSubgroupZPowers`. -/
 @[to_additive Fintype.card_zmultiples "See also `Nat.card_subgroup`."]
 theorem Fintype.card_zpowers : Fintype.card (zpowers x) = orderOf x :=
-  (Fintype.card_eq.2 ⟨finEquivZpowers x $ isOfFinOrder_of_finite _⟩).symm.trans $
+  (Fintype.card_eq.2 ⟨finEquivZPowers x $ isOfFinOrder_of_finite _⟩).symm.trans $
     Fintype.card_fin (orderOf x)
 #align order_eq_card_zpowers Fintype.card_zpowers
 #align add_order_eq_card_zmultiples Fintype.card_zmultiples

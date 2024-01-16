@@ -81,25 +81,23 @@ theorem val_mul' {m n : ZMod 0} : (m * n).val = m.val * n.val :=
   Int.natAbs_mul m n
 #align zmod.val_mul' ZMod.val_mul'
 
+@[simp]
 theorem val_nat_cast {n : ℕ} (a : ℕ) : (a : ZMod n).val = a % n := by
   cases n
   · rw [Nat.mod_zero]
     exact Int.natAbs_ofNat a
-  rw [← Fin.ofNat_eq_val]
-  rfl
+  · apply Fin.val_nat_cast
 #align zmod.val_nat_cast ZMod.val_nat_cast
 
 theorem val_nat_cast_of_lt {n a : ℕ} (h : a < n) : (a : ZMod n).val = a := by
   rwa [val_nat_cast, Nat.mod_eq_of_lt]
 
 instance charP (n : ℕ) : CharP (ZMod n) n where
-    cast_eq_zero_iff' := by
-      intro k
-      cases' n with n
-      · simp [zero_dvd_iff, Int.coe_nat_eq_zero, Nat.zero_eq]
-      rw [Fin.eq_iff_veq]
-      show (k : ZMod (n + 1)).val = (0 : ZMod (n + 1)).val ↔ _
-      rw [val_nat_cast, val_zero, Nat.dvd_iff_mod_eq_zero]
+  cast_eq_zero_iff' := by
+    intro k
+    cases' n with n
+    · simp [zero_dvd_iff, Int.coe_nat_eq_zero, Nat.zero_eq]
+    · exact Fin.nat_cast_eq_zero
 
 @[simp]
 theorem addOrderOf_one (n : ℕ) : addOrderOf (1 : ZMod n) = n :=

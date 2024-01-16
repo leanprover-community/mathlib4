@@ -1774,7 +1774,8 @@ instance mem.decidable (x : α) (s : Ordset α) : Decidable (x ∈ s) :=
 #align ordset.mem.decidable Ordset.mem.decidable
 
 theorem pos_size_of_mem {x : α} {t : Ordset α} (h_mem : x ∈ t) : 0 < size t := by
-  simp [Membership.mem, mem] at h_mem
+  simp? [Membership.mem, mem] at h_mem says
+    simp only [Membership.mem, mem, Bool.decide_coe] at h_mem
   apply Ordnode.pos_size_of_mem t.property.sz h_mem
 #align ordset.pos_size_of_mem Ordset.pos_size_of_mem
 

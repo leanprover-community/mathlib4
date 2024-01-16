@@ -495,7 +495,8 @@ theorem map_prod_eq_map_prod_of_le [FreimanHomClass F A β n] (f : F) {s t : Mul
   obtain rfl | hm := m.eq_zero_or_pos
   · rw [card_eq_zero] at hs ht
     rw [hs, ht]
-  simp [← hs, card_pos_iff_exists_mem] at hm
+  simp? [← hs, card_pos_iff_exists_mem] at hm says
+    simp only [← hs, gt_iff_lt, card_pos_iff_exists_mem] at hm
   obtain ⟨a, ha⟩ := hm
   suffices
     ((s + Multiset.replicate (n - m) a).map f).prod =

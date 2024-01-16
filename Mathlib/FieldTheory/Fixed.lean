@@ -172,22 +172,22 @@ variable [Fintype G] (x : F)
 
 /-- `minpoly G F x` is the minimal polynomial of `(x : F)` over `FixedPoints.subfield G F`. -/
 def minpoly : Polynomial (FixedPoints.subfield G F) :=
-  (prodXSubSmul G F x).toSubring (FixedPoints.subfield G F).toSubring fun _ hc g =>
+  (prodXSubSMul G F x).toSubring (FixedPoints.subfield G F).toSubring fun _ hc g =>
     let ⟨n, _, hn⟩ := Polynomial.mem_frange_iff.1 hc
-    hn.symm ▸ prodXSubSmul.coeff G F x g n
+    hn.symm ▸ prodXSubSMul.coeff G F x g n
 #align fixed_points.minpoly FixedPoints.minpoly
 
 namespace minpoly
 
 theorem monic : (minpoly G F x).Monic := by
   simp only [minpoly, Polynomial.monic_toSubring];
-  exact prodXSubSmul.monic G F x
+  exact prodXSubSMul.monic G F x
 #align fixed_points.minpoly.monic FixedPoints.minpoly.monic
 
 theorem eval₂ :
     Polynomial.eval₂ (Subring.subtype <| (FixedPoints.subfield G F).toSubring) x (minpoly G F x) =
       0 := by
-  rw [← prodXSubSmul.eval G F x, Polynomial.eval₂_eq_eval_map]
+  rw [← prodXSubSMul.eval G F x, Polynomial.eval₂_eq_eval_map]
   simp only [minpoly, Polynomial.map_toSubring]
 #align fixed_points.minpoly.eval₂ FixedPoints.minpoly.eval₂
 
@@ -210,7 +210,7 @@ theorem of_eval₂ (f : Polynomial (FixedPoints.subfield G F))
     (subfield G F).toSubring)) f = Polynomial.map
     ((IsInvariantSubring.subtypeHom G (subfield G F).toSubring)) f := rfl
   erw [← Polynomial.map_dvd_map' (Subfield.subtype <| FixedPoints.subfield G F), minpoly, this,
-    Polynomial.map_toSubring _ _, prodXSubSmul]
+    Polynomial.map_toSubring _ _, prodXSubSMul]
   refine'
     Fintype.prod_dvd_of_coprime
       (Polynomial.pairwise_coprime_X_sub_C <| MulAction.injective_ofQuotientStabilizer G x) fun y =>
@@ -283,7 +283,7 @@ instance normal : Normal (FixedPoints.subfield G F) F :=
     (Polynomial.splits_id_iff_splits _).1 <| by
       cases nonempty_fintype G
       rw [← minpoly_eq_minpoly, minpoly, coe_algebraMap, ← Subfield.toSubring_subtype_eq_subtype,
-        Polynomial.map_toSubring _ (subfield G F).toSubring, prodXSubSmul]
+        Polynomial.map_toSubring _ (subfield G F).toSubring, prodXSubSMul]
       exact Polynomial.splits_prod _ fun _ _ => Polynomial.splits_X_sub_C _⟩
 #align fixed_points.normal FixedPoints.normal
 

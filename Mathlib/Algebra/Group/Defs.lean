@@ -25,7 +25,7 @@ The file does not contain any lemmas except for
 
 For basic lemmas about these classes see `Algebra.Group.Basic`.
 
-We also introduce notation classes `SMul` and `VAdd` for multiplicative and additive
+We also introduce notation classes `lul` and `VAdd` for multiplicative and additive
 actions and register the following instances:
 
 - `Pow M ℕ`, for monoids `M`, and `Pow G ℤ` for groups `G`;
@@ -138,6 +138,9 @@ attribute [to_additive existing (reorder := 1 2, 4 5) smul] Pow.pow
 @[to_additive (attr := default_instance)]
 instance instHSMul {α β} [SMul α β] : HSMul α β β where
   hSMul := SMul.smul
+
+@[to_additive]
+theorem SMul.smul_eq_hSMul {α β} [SMul α β] : (SMul.smul : α → β → β) = HSMul.hSMul := rfl
 
 attribute [to_additive existing (reorder := 1 2)] instHPow
 

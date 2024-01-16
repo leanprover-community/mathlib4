@@ -350,4 +350,11 @@ theorem map_id : map (@id α) = MonoidHom.id (FreeMonoid α) := hom_eq fun _ ↦
 #align free_monoid.map_id FreeMonoid.map_id
 #align free_add_monoid.map_id FreeAddMonoid.map_id
 
+/-- The only invertible element of the free monoid is 1; this instance enables `units_eq_one`. -/
+@[to_additive]
+instance uniqueUnits : Unique (FreeMonoid α)ˣ where
+  uniq u := Units.ext <| toList.injective <|
+    have : toList u.val ++ toList u.inv = [] := FunLike.congr_arg toList u.val_inv
+    (List.append_eq_nil.mp this).1
+
 end FreeMonoid

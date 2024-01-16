@@ -236,6 +236,21 @@ theorem _root_.Nat.Prime.exists_orderOf_eq_pow_factorization_exponent {p : ℕ} 
 #align nat.prime.exists_order_of_eq_pow_factorization_exponent Nat.Prime.exists_orderOf_eq_pow_factorization_exponent
 #align nat.prime.exists_order_of_eq_pow_padic_val_nat_add_exponent Nat.Prime.exists_addOrderOf_eq_pow_padic_val_nat_add_exponent
 
+/-- A nontrivial monoid has prime exponent `p` if and only if every non-identity element has
+order `p`. -/
+@[to_additive]
+lemma exponent_eq_prime_iff {G : Type*} [Monoid G] [Nontrivial G] {p : ℕ} (hp : p.Prime) :
+    Monoid.exponent G = p ↔ ∀ g : G, g ≠ 1 → orderOf g = p := by
+  refine ⟨fun hG g hg ↦ ?_, fun h ↦ dvd_antisymm ?_ ?_⟩
+  · rw [Ne.def, ← orderOf_eq_one_iff] at hg
+    exact Eq.symm <| (hp.dvd_iff_eq hg).mp <| hG ▸ Monoid.order_dvd_exponent g
+  · apply Monoid.exponent_dvd_of_forall_pow_eq_one G p fun g ↦ ?_
+    by_cases hg : g = 1
+    · simp [hg]
+    · simpa [h g hg] using pow_orderOf_eq_one g
+  · obtain ⟨g, hg⟩ := exists_ne (1 : G)
+    simpa [h g hg] using Monoid.order_dvd_exponent g
+
 variable {G}
 
 @[to_additive]
@@ -373,6 +388,23 @@ theorem exponent_eq_max'_orderOf [Fintype G] :
 end CancelCommMonoid
 
 end Monoid
+
+section Group
+
+@[to_additive AddGroup.one_lt_exponent]
+lemma Group.one_lt_exponent [Group G] [Finite G] [Nontrivial G] :
+    1 < Monoid.exponent G := by
+  let _inst := Fintype.ofFinite G
+  obtain ⟨g, hg⟩ := exists_ne (1 : G)
+  rw [← Monoid.lcm_order_eq_exponent]
+  have hg' : 2 ≤ orderOf g := Nat.lt_of_le_of_ne (orderOf_pos g) <| by
+    simpa [eq_comm, orderOf_eq_one_iff] using hg
+  refine hg'.trans <| Nat.le_of_dvd ?_ <| Finset.dvd_lcm (by simp)
+  rw [Nat.pos_iff_ne_zero, Ne.def, Finset.lcm_eq_zero_iff]
+  rintro ⟨x, -, hx⟩
+  exact (orderOf_pos x).ne' hx
+
+end Group
 
 section CommGroup
 

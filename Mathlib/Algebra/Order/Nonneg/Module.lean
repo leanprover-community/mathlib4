@@ -61,14 +61,14 @@ instance instSMulWithZero : SMulWithZero 𝕜≥0 𝕜' where
 
 end SMulWithZero
 
-section OrderedSmul
+section OrderedSMul
 
 variable [OrderedAddCommMonoid E] [SMulWithZero 𝕜 E] [hE : OrderedSMul 𝕜 E]
 
-instance instOrderedSmul : OrderedSMul 𝕜≥0 E :=
+instance instOrderedSMul : OrderedSMul 𝕜≥0 E :=
   ⟨hE.1, hE.2⟩
 
-end OrderedSmul
+end OrderedSMul
 
 section Module
 

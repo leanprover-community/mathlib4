@@ -10,18 +10,18 @@ import Mathlib.Data.Set.Prod
 /-!
 # N-ary images of sets
 
-This file defines `Set.image2`, the binary image of finsets. This is the finset version of
-`Set.image2`. This is mostly useful to define pointwise operations.
+This file defines `Set.image2`, the binary image of sets.
+This is mostly useful to define pointwise operations and `Set.seq`.
 
 ## Notes
 
-This file is very similar to the n-ary section of `Data.Set.Basic`, to `Order.Filter.NAry` and to
+This file is very similar to `Data.Finset.NAry`, to `Order.Filter.NAry`, and to
 `Data.Option.NAry`. Please keep them in sync.
 
-We do not define `Set.image3` as its only purpose would be to prove properties of `Set.image2`
-and `Set.image2` already fulfills this task.
+We also define `Set.image3`.
+Its only purpose is to prove properties of `Set.image2`,
+and it should be rarely used outside of this file.
 -/
-
 
 open Function
 
@@ -122,11 +122,7 @@ theorem image2_swap (s : Set α) (t : Set β) : image2 f s t = image2 (fun a b =
 variable {f}
 
 theorem image2_union_left : image2 f (s ∪ s') t = image2 f s t ∪ image2 f s' t := by
-  ext c
-  constructor
-  · rintro ⟨a, b, ha | ha, hb, rfl⟩ <;> [left; right] <;> exact ⟨_, _, ‹_›, ‹_›, rfl⟩
-  · rintro (⟨_, _, _, _, rfl⟩ | ⟨_, _, _, _, rfl⟩) <;> refine' ⟨_, _, _, ‹_›, rfl⟩ <;>
-      simp [mem_union, *]
+  simp_rw [← image_prod, union_prod, image_union]
 #align set.image2_union_left Set.image2_union_left
 
 theorem image2_union_right : image2 f s (t ∪ t') = image2 f s t ∪ image2 f s t' := by
@@ -181,14 +177,12 @@ theorem Subsingleton.image2 (hs : s.Subsingleton) (ht : t.Subsingleton) (f : α 
   rw [← image_prod]
   apply (hs.prod ht).image
 
-theorem image2_inter_subset_left : image2 f (s ∩ s') t ⊆ image2 f s t ∩ image2 f s' t := by
-  rintro _ ⟨a, b, ⟨h1a, h2a⟩, hb, rfl⟩
-  constructor <;> exact ⟨_, _, ‹_›, ‹_›, rfl⟩
+theorem image2_inter_subset_left : image2 f (s ∩ s') t ⊆ image2 f s t ∩ image2 f s' t :=
+  Monotone.map_inf_le (fun _ _ ↦ image2_subset_right) s s'
 #align set.image2_inter_subset_left Set.image2_inter_subset_left
 
-theorem image2_inter_subset_right : image2 f s (t ∩ t') ⊆ image2 f s t ∩ image2 f s t' := by
-  rintro _ ⟨a, b, ha, ⟨h1b, h2b⟩, rfl⟩
-  constructor <;> exact ⟨_, _, ‹_›, ‹_›, rfl⟩
+theorem image2_inter_subset_right : image2 f s (t ∩ t') ⊆ image2 f s t ∩ image2 f s t' :=
+  Monotone.map_inf_le (fun _ _ ↦ image2_subset_left) t t'
 #align set.image2_inter_subset_right Set.image2_inter_subset_right
 
 @[simp]
@@ -285,20 +279,12 @@ theorem image_image2 (f : α → β → γ) (g : γ → δ) :
 
 theorem image2_image_left (f : γ → β → δ) (g : α → γ) :
     image2 f (g '' s) t = image2 (fun a b => f (g a) b) s t := by
-  ext; constructor
-  · rintro ⟨_, b, ⟨a, ha, rfl⟩, hb, rfl⟩
-    refine' ⟨a, b, ha, hb, rfl⟩
-  · rintro ⟨a, b, ha, hb, rfl⟩
-    refine' ⟨_, b, ⟨a, ha, rfl⟩, hb, rfl⟩
+  ext; simp
 #align set.image2_image_left Set.image2_image_left
 
 theorem image2_image_right (f : α → γ → δ) (g : β → γ) :
     image2 f s (g '' t) = image2 (fun a b => f a (g b)) s t := by
-  ext; constructor
-  · rintro ⟨a, _, ha, ⟨b, hb, rfl⟩, rfl⟩
-    refine' ⟨a, b, ha, hb, rfl⟩
-  · rintro ⟨a, b, ha, hb, rfl⟩
-    refine' ⟨a, _, ha, ⟨b, hb, rfl⟩, rfl⟩
+  ext; simp
 #align set.image2_image_right Set.image2_image_right
 
 @[simp]

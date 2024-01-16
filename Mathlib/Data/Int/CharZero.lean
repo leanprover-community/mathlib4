@@ -3,6 +3,7 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Algebra.Function.Support
 import Mathlib.Data.Int.Cast.Field
 
 #align_import data.int.char_zero from "leanprover-community/mathlib"@"29cb56a7b35f72758b05a30490e1f10bd62c35c1"
@@ -12,10 +13,9 @@ import Mathlib.Data.Int.Cast.Field
 
 -/
 
+open Nat Set
 
-variable {α : Type*}
-
-open Nat
+variable {α β : Type*}
 
 namespace Int
 
@@ -72,3 +72,16 @@ theorem RingHom.injective_int {α : Type*} [NonAssocRing α] (f : ℤ →+* α) 
     Function.Injective f :=
   Subsingleton.elim (Int.castRingHom _) f ▸ Int.cast_injective
 #align ring_hom.injective_int RingHom.injective_int
+
+namespace Function
+variable [AddGroupWithOne β] [CharZero β] {n : ℤ}
+
+lemma support_int_cast (hn : n ≠ 0) : support (n : α → β) = univ :=
+  support_const $ Int.cast_ne_zero.2 hn
+#align function.support_int_cast Function.support_int_cast
+
+lemma mulSupport_int_cast (hn : n ≠ 1) : mulSupport (n : α → β) = univ :=
+  mulSupport_const $ Int.cast_ne_one.2 hn
+#align function.mul_support_int_cast Function.mulSupport_int_cast
+
+end Function
