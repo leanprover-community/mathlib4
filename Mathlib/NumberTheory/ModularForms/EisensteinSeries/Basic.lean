@@ -17,6 +17,10 @@ import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
   `∑' v : (Fin 2 → ℤ), (1 / (v 0 * z + v 1) ^ k)`, where `z : ℍ` and `v` ranges over all pairs of
   coprime integers congruent to a fixed pair `(a, b)` modulo `N`.
 * We show that they define a slash invariant form of level `Γ(N)` and weight `k`.
+
+## References
+ See Diamond and Shurman, A First Course in Modular Forms.
+
 -/
 
 
