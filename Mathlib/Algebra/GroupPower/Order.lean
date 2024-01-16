@@ -35,7 +35,7 @@ end CanonicallyOrderedCommSemiring
 
 section OrderedSemiring
 
-variable [OrderedSemiring R] {a x y : R} {n m : ℕ}
+variable [OrderedSemiring R] {a b x y : R} {n m : ℕ}
 
 theorem zero_pow_le_one : ∀ n : ℕ, (0 : R) ^ n ≤ 1
   | 0 => (pow_zero _).le
@@ -65,12 +65,12 @@ theorem pow_add_pow_le (hx : 0 ≤ x) (hy : 0 ≤ y) (hn : n ≠ 0) : x ^ n + y 
         exact mul_le_mul_of_nonneg_left (ih (Nat.succ_ne_zero k)) h2
 #align pow_add_pow_le pow_add_pow_le
 
-theorem pow_le_one : ∀ (n : ℕ) (_ : 0 ≤ a) (_ : a ≤ 1), a ^ n ≤ 1
+theorem pow_le_one : ∀ n : ℕ, 0 ≤ a → a ≤ 1 → a ^ n ≤ 1
   | 0, _, _ => (pow_zero a).le
   | n + 1, h₀, h₁ => (pow_succ' a n).le.trans (mul_le_one (pow_le_one n h₀ h₁) h₀ h₁)
 #align pow_le_one pow_le_one
 
-theorem pow_lt_one (h₀ : 0 ≤ a) (h₁ : a < 1) : ∀ {n : ℕ} (_ : n ≠ 0), a ^ n < 1
+theorem pow_lt_one (h₀ : 0 ≤ a) (h₁ : a < 1) : ∀ {n : ℕ}, n ≠ 0 → a ^ n < 1
   | 0, h => (h rfl).elim
   | n + 1, _ => by
     rw [pow_succ]
@@ -113,6 +113,11 @@ theorem one_lt_pow (ha : 1 < a) : ∀ {n : ℕ} (_ : n ≠ 0), 1 < a ^ n
     exact one_lt_mul_of_lt_of_le ha (one_le_pow_of_one_le ha.le _)
 #align one_lt_pow one_lt_pow
 
+lemma pow_add_pow_le' (ha : 0 ≤ a) (hb : 0 ≤ b) : a ^ n + b ^ n ≤ 2 * (a + b) ^ n := by
+  rw [two_mul]
+  exact add_le_add (pow_le_pow_left ha (le_add_of_nonneg_right hb) _)
+    (pow_le_pow_left hb (le_add_of_nonneg_left ha) _)
+
 end OrderedSemiring
 
 section StrictOrderedSemiring
@@ -126,7 +131,7 @@ theorem pow_lt_pow_left (h : x < y) (hx : 0 ≤ x) : ∀ {n : ℕ}, n ≠ 0 → 
       mul_lt_mul_of_le_of_le' (pow_le_pow_left hx h.le _) h (pow_pos (hx.trans_lt h) _) hx
 #align pow_lt_pow_of_lt_left pow_lt_pow_left
 
-/-- See also `pow_left_strictMonoOn`. -/
+/-- See also `pow_left_strictMono` and `Nat.pow_left_strictMono`. -/
 lemma pow_left_strictMonoOn (hn : n ≠ 0) : StrictMonoOn (· ^ n : R → R) (Set.Ici 0) :=
   fun _a ha _b _ hab ↦ pow_lt_pow_left hab ha hn
 #align strict_mono_on_pow pow_left_strictMonoOn
@@ -167,9 +172,7 @@ theorem pow_lt_self_of_lt_one (h₀ : 0 < a) (h₁ : a < 1) (hn : 1 < n) : a ^ n
   simpa only [pow_one] using pow_lt_pow_right_of_lt_one h₀ h₁ hn
 #align pow_lt_self_of_lt_one pow_lt_self_of_lt_one
 
-theorem sq_pos_of_pos (ha : 0 < a) : 0 < a ^ 2 := by
-  rw [sq]
-  exact mul_pos ha ha
+theorem sq_pos_of_pos (ha : 0 < a) : 0 < a ^ 2 := pow_pos ha _
 #align sq_pos_of_pos sq_pos_of_pos
 
 end StrictOrderedSemiring
@@ -297,10 +300,6 @@ theorem pow_bit0_nonneg (a : R) (n : ℕ) : 0 ≤ a ^ bit0 n := by
   exact mul_self_nonneg _
 #align pow_bit0_nonneg pow_bit0_nonneg
 
-theorem sq_nonneg (a : R) : 0 ≤ a ^ 2 :=
-  pow_bit0_nonneg a 1
-#align sq_nonneg sq_nonneg
-
 alias pow_two_nonneg := sq_nonneg
 #align pow_two_nonneg pow_two_nonneg
 
@@ -402,20 +401,6 @@ theorem pow_four_le_pow_two_of_pow_two_le {x y : R} (h : x ^ 2 ≤ y) : x ^ 4 �
 
 end LinearOrderedRing
 
-section LinearOrderedCommRing
-
-variable [LinearOrderedCommRing R]
-
-/-- Arithmetic mean-geometric mean (AM-GM) inequality for linearly ordered commutative rings. -/
-theorem two_mul_le_add_sq (a b : R) : 2 * a * b ≤ a ^ 2 + b ^ 2 :=
-  sub_nonneg.mp ((sub_add_eq_add_sub _ _ _).subst ((sub_sq a b).subst (sq_nonneg _)))
-#align two_mul_le_add_sq two_mul_le_add_sq
-
-alias two_mul_le_add_pow_two := two_mul_le_add_sq
-#align two_mul_le_add_pow_two two_mul_le_add_pow_two
-
-end LinearOrderedCommRing
-
 section LinearOrderedCommMonoidWithZero
 
 variable [LinearOrderedCommMonoidWithZero M] [NoZeroDivisors M] {a : M} {n : ℕ}
@@ -458,3 +443,27 @@ theorem map_sub_swap (x y : R) : f (x - y) = f (y - x) := by rw [← map_neg, ne
 #align monoid_hom.map_sub_swap MonoidHom.map_sub_swap
 
 end MonoidHom
+
+/-!
+### Deprecated lemmas
+
+Those lemmas have been deprecated on 2023-12-23.
+-/
+
+@[deprecated] alias pow_mono := pow_right_mono
+@[deprecated] alias pow_le_pow := pow_le_pow_right
+@[deprecated] alias pow_le_pow_of_le_left := pow_le_pow_left
+@[deprecated] alias pow_lt_pow_of_lt_left := pow_lt_pow_left
+@[deprecated] alias strictMonoOn_pow := pow_left_strictMonoOn
+@[deprecated] alias pow_strictMono_right := pow_right_strictMono
+@[deprecated] alias pow_lt_pow := pow_lt_pow_right
+@[deprecated] alias pow_lt_pow_iff := pow_lt_pow_iff_right
+@[deprecated] alias pow_le_pow_iff := pow_le_pow_iff_right
+@[deprecated] alias self_lt_pow := lt_self_pow
+@[deprecated] alias strictAnti_pow := pow_right_strictAnti
+@[deprecated] alias pow_lt_pow_iff_of_lt_one := pow_lt_pow_iff_right_of_lt_one
+@[deprecated] alias pow_lt_pow_of_lt_one := pow_lt_pow_right_of_lt_one
+@[deprecated] alias lt_of_pow_lt_pow := lt_of_pow_lt_pow_left
+@[deprecated] alias le_of_pow_le_pow := le_of_pow_le_pow_left
+@[deprecated] alias pow_lt_pow₀ := pow_lt_pow_right₀
+@[deprecated] alias self_le_pow := le_self_pow

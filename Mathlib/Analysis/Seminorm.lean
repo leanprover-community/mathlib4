@@ -35,9 +35,6 @@ For a module over a normed ring:
 seminorm, locally convex, LCTVS
 -/
 
-set_option autoImplicit true
-
-
 open NormedField Set Filter
 
 open scoped BigOperators NNReal Pointwise Topology Uniformity
@@ -792,14 +789,14 @@ theorem closedBall_antitone {p q : Seminorm 𝕜 E} (h : q ≤ p) :
 
 theorem ball_add_ball_subset (p : Seminorm 𝕜 E) (r₁ r₂ : ℝ) (x₁ x₂ : E) :
     p.ball (x₁ : E) r₁ + p.ball (x₂ : E) r₂ ⊆ p.ball (x₁ + x₂) (r₁ + r₂) := by
-  rintro x ⟨y₁, y₂, hy₁, hy₂, rfl⟩
+  rintro x ⟨y₁, hy₁, y₂, hy₂, rfl⟩
   rw [mem_ball, add_sub_add_comm]
   exact (map_add_le_add p _ _).trans_lt (add_lt_add hy₁ hy₂)
 #align seminorm.ball_add_ball_subset Seminorm.ball_add_ball_subset
 
 theorem closedBall_add_closedBall_subset (p : Seminorm 𝕜 E) (r₁ r₂ : ℝ) (x₁ x₂ : E) :
     p.closedBall (x₁ : E) r₁ + p.closedBall (x₂ : E) r₂ ⊆ p.closedBall (x₁ + x₂) (r₁ + r₂) := by
-  rintro x ⟨y₁, y₂, hy₁, hy₂, rfl⟩
+  rintro x ⟨y₁, hy₁, y₂, hy₂, rfl⟩
   rw [mem_closedBall, add_sub_add_comm]
   exact (map_add_le_add p _ _).trans (add_le_add hy₁ hy₂)
 #align seminorm.closed_ball_add_closed_ball_subset Seminorm.closedBall_add_closedBall_subset
@@ -966,7 +963,7 @@ theorem closedBall_smul_closedBall (p : Seminorm 𝕜 E) (r₁ r₂ : ℝ) :
 #align seminorm.closed_ball_smul_closed_ball Seminorm.closedBall_smul_closedBall
 
 -- Porting note: TODO: make that an `iff`
-theorem neg_mem_ball_zero (r : ℝ) (hx : x ∈ ball p 0 r) : -x ∈ ball p 0 r := by
+theorem neg_mem_ball_zero (r : ℝ) {x : E} (hx : x ∈ ball p 0 r) : -x ∈ ball p 0 r := by
   simpa only [mem_ball_zero, map_neg_eq_map] using hx
 #align seminorm.symmetric_ball_zero Seminorm.neg_mem_ball_zero
 
@@ -1374,7 +1371,7 @@ lemma bound_of_shell_sup (p : ι → Seminorm 𝕜 E) (s : Finset ι)
     q x ≤ (C • s.sup p) x := by
   rcases hx with ⟨j, hj, hjx⟩
   have : (s.sup p) x ≠ 0 :=
-    ne_of_gt ((hjx.symm.lt_of_le $ map_nonneg _ _).trans_le (le_finset_sup_apply hj))
+    ne_of_gt ((hjx.symm.lt_of_le <| map_nonneg _ _).trans_le (le_finset_sup_apply hj))
   refine (s.sup p).bound_of_shell_smul q ε_pos hc (fun y hle hlt ↦ ?_) this
   rcases exists_apply_eq_finset_sup p ⟨j, hj⟩ y with ⟨i, hi, hiy⟩
   rw [smul_apply, hiy]

@@ -304,9 +304,9 @@ theorem Int.exists_prime_and_dvd {n : ℤ} (hn : n.natAbs ≠ 1) : ∃ p, Prime 
 open UniqueFactorizationMonoid
 
 theorem Nat.factors_eq {n : ℕ} : normalizedFactors n = n.factors := by
-  cases n
-  case zero => simp
-  case succ n =>
+  cases n with
+  | zero => simp
+  | succ n =>
     rw [← Multiset.rel_eq, ← associated_eq_eq]
     apply UniqueFactorizationMonoid.factors_unique irreducible_of_normalized_factor _
     · rw [Multiset.coe_prod, Nat.prod_factors n.succ_ne_zero]

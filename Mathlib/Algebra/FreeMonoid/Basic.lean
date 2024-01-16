@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Yury Kudryashov
 -/
 import Mathlib.Data.List.BigOperators.Basic
+import Mathlib.GroupTheory.GroupAction.Defs
 
 #align_import algebra.free_monoid.basic from "leanprover-community/mathlib"@"657df4339ae6ceada048c8a2980fb10e393143ec"
 
@@ -29,10 +30,6 @@ def FreeMonoid (α) := List α
 #align free_add_monoid FreeAddMonoid
 
 namespace FreeMonoid
-
--- Porting note: TODO. Check this is still needed
-@[to_additive]
-instance [DecidableEq α] : DecidableEq (FreeMonoid α) := instDecidableEqList
 
 /-- The identity equivalence between `FreeMonoid α` and `List α`. -/
 @[to_additive "The identity equivalence between `FreeAddMonoid α` and `List α`."]

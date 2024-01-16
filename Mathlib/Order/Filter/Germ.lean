@@ -532,11 +532,11 @@ instance divInvMonoid [DivInvMonoid G] : DivInvMonoid (Germ l G) :=
   { monoid, inv, div with
     zpow := fun z f => f ^ z
     zpow_zero' := Quotient.ind' fun _ => congrArg ofFun <|
-      funext <| fun _ => DivInvMonoid.zpow_zero' _
+      funext fun _ => DivInvMonoid.zpow_zero' _
     zpow_succ' := fun _ => Quotient.ind' fun _ => congrArg ofFun <|
-      funext <| fun _ => DivInvMonoid.zpow_succ' ..
+      funext fun _ => DivInvMonoid.zpow_succ' ..
     zpow_neg' := fun _ => Quotient.ind' fun _ => congrArg ofFun <|
-      funext <| fun _ => DivInvMonoid.zpow_neg' ..
+      funext fun _ => DivInvMonoid.zpow_neg' ..
     div_eq_mul_inv := Quotient.ind₂' fun _ _ => congrArg ofFun <|
       div_eq_mul_inv .. }
 
@@ -855,7 +855,7 @@ instance existsMulOfLE [Mul β] [LE β] [ExistsMulOfLE β] : ExistsMulOfLE (Germ
   exists_mul_of_le {x y} := inductionOn₂ x y fun f g (h : f ≤ᶠ[l] g) ↦ by
     classical
     choose c hc using fun x (hx : f x ≤ g x) ↦ exists_mul_of_le hx
-    refine ⟨ofFun <| fun x ↦ if hx : f x ≤ g x then c x hx else f x, coe_eq.2 ?_⟩
+    refine ⟨ofFun fun x ↦ if hx : f x ≤ g x then c x hx else f x, coe_eq.2 ?_⟩
     filter_upwards [h] with x hx
     rw [dif_pos hx, hc]
 

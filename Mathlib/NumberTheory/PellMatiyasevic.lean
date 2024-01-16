@@ -7,6 +7,7 @@ import Mathlib.Algebra.Star.Unitary
 import Mathlib.Data.Nat.ModEq
 import Mathlib.NumberTheory.Zsqrtd.Basic
 import Mathlib.Tactic.Monotonicity
+import Mathlib.Algebra.GroupPower.Order
 
 #align_import number_theory.pell_matiyasevic from "leanprover-community/mathlib"@"795b501869b9fa7aa716d5fdadd00c03f983a605"
 
@@ -67,7 +68,7 @@ def IsPell : ℤ√d → Prop
 #align pell.is_pell Pell.IsPell
 
 theorem isPell_norm : ∀ {b : ℤ√d}, IsPell b ↔ b * star b = 1
-  | ⟨x, y⟩ => by simp [Zsqrtd.ext, IsPell, mul_comm]; ring_nf
+  | ⟨x, y⟩ => by simp [Zsqrtd.ext_iff, IsPell, mul_comm]; ring_nf
 #align pell.is_pell_norm Pell.isPell_norm
 
 theorem isPell_iff_mem_unitary : ∀ {b : ℤ√d}, IsPell b ↔ b ∈ unitary (ℤ√d)
@@ -217,7 +218,7 @@ theorem isPell_nat {x y : ℕ} : IsPell (⟨x, y⟩ : ℤ√(d a1)) ↔ x * x - 
 #align pell.is_pell_nat Pell.isPell_nat
 
 @[simp]
-theorem pellZd_succ (n : ℕ) : pellZd a1 (n + 1) = pellZd a1 n * ⟨a, 1⟩ := by simp [Zsqrtd.ext]
+theorem pellZd_succ (n : ℕ) : pellZd a1 (n + 1) = pellZd a1 n * ⟨a, 1⟩ := by ext <;> simp
 #align pell.pell_zd_succ Pell.pellZd_succ
 
 theorem isPell_one : IsPell (⟨a, 1⟩ : ℤ√(d a1)) :=
@@ -511,9 +512,7 @@ theorem pellZd_succ_succ (n) :
     change (⟨_, _⟩ : ℤ√(d a1)) = ⟨_, _⟩
     rw [dz_val]
     dsimp [az]
-    rw [Zsqrtd.ext]
-    dsimp
-    constructor <;> ring_nf
+    ext <;> dsimp <;> ring_nf
   simpa [mul_add, mul_comm, mul_left_comm, add_comm] using congr_arg (· * pellZd a1 n) this
 #align pell.pell_zd_succ_succ Pell.pellZd_succ_succ
 
@@ -696,7 +695,7 @@ theorem eq_of_xn_modEq_lem3 {i n} (npos : 0 < n) :
             show 2 * n - (n + 1) = n - 1 by
               rw [two_mul, tsub_add_eq_tsub_tsub, add_tsub_cancel_right]]
           refine' lt_sub_left_of_add_lt (Int.ofNat_lt_ofNat_of_lt _)
-          cases' lt_or_eq_of_le <| Nat.le_of_succ_le_succ ij with lin ein
+          rcases lt_or_eq_of_le <| Nat.le_of_succ_le_succ ij with lin | ein
           · rw [Nat.mod_eq_of_lt (strictMono_x _ lin)]
             have ll : xn a1 (n - 1) + xn a1 (n - 1) ≤ xn a1 n := by
               rw [← two_mul, mul_comm,
@@ -708,7 +707,7 @@ theorem eq_of_xn_modEq_lem3 {i n} (npos : 0 < n) :
               apply Nat.le_of_succ_le_succ
               rw [npm]
               exact lin
-            cases' lt_or_eq_of_le il with ill ile
+            rcases lt_or_eq_of_le il with ill | ile
             · exact lt_of_lt_of_le (Nat.add_lt_add_left (strictMono_x a1 ill) _) ll
             · rw [ile]
               apply lt_of_le_of_ne ll

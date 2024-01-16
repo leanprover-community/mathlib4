@@ -3,10 +3,7 @@ Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.LinearAlgebra.DirectSum.Finsupp
-import Mathlib.Logic.Small.Basic
-import Mathlib.LinearAlgebra.StdBasis
-import Mathlib.LinearAlgebra.FinsuppVectorSpace
+import Mathlib.Data.Finsupp.Fintype
 import Mathlib.LinearAlgebra.TensorProductBasis
 
 #align_import linear_algebra.free_module.basic from "leanprover-community/mathlib"@"4e7e7009099d4a88a750de710909b95487bf0124"
@@ -49,9 +46,6 @@ Note that if `M` does not fit in `w`, the reverse direction of this implication 
 `Module.Free.of_basis`. -/
 theorem Module.free_def [Small.{w,v} M] :
     Module.Free R M ↔ ∃ I : Type w, Nonempty (Basis I R M) :=
-  -- Porting note: this is required or Lean cannot solve universe constraints
-  -- The same error presents if inferInstance is called to solve `small`
-  have _small (s : Set M) : Small.{w} ↑s := small_of_injective (fun _ _ => (Subtype.val_inj).mp)
   ⟨fun h =>
     ⟨Shrink (Set.range h.exists_basis.some.2),
       ⟨(Basis.reindexRange h.exists_basis.some.2).reindex (equivShrink _)⟩⟩,
@@ -120,6 +114,9 @@ instance (priority := 100) noZeroSMulDivisors [NoZeroDivisors R] : NoZeroSMulDiv
 
 instance [Nontrivial M] : Nonempty (Module.Free.ChooseBasisIndex R M) :=
   (Module.Free.chooseBasis R M).index_nonempty
+
+theorem infinite [Infinite R] [Nontrivial M] : Infinite M :=
+  (Equiv.infinite_iff (chooseBasis R M).repr.toEquiv).mpr Finsupp.infinite_of_right
 
 variable {R M N}
 

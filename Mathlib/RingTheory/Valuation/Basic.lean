@@ -6,6 +6,7 @@ Authors: Kevin Buzzard, Johan Commelin, Patrick Massot
 import Mathlib.Algebra.Order.WithZero
 import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.Tactic.TFAE
+import Mathlib.Algebra.GroupPower.Order
 
 #align_import ring_theory.valuation.basic from "leanprover-community/mathlib"@"2196ab363eb097c008d4497125e0dde23fb36db2"
 
@@ -455,7 +456,7 @@ theorem isEquiv_iff_val_eq_one [LinearOrderedCommGroupWithZero Γ₀]
     intro x
     constructor
     · intro hx
-      cases' lt_or_eq_of_le hx with hx' hx'
+      rcases lt_or_eq_of_le hx with hx' | hx'
       · have : v (1 + x) = 1 := by
           rw [← v.map_one]
           apply map_add_eq_of_lt_left
@@ -467,7 +468,7 @@ theorem isEquiv_iff_val_eq_one [LinearOrderedCommGroupWithZero Γ₀]
       · rw [h] at hx'
         exact le_of_eq hx'
     · intro hx
-      cases' lt_or_eq_of_le hx with hx' hx'
+      rcases lt_or_eq_of_le hx with hx' | hx'
       · have : v' (1 + x) = 1 := by
           rw [← v'.map_one]
           apply map_add_eq_of_lt_left

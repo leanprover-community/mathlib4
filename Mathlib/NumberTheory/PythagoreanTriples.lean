@@ -9,6 +9,7 @@ import Mathlib.Tactic.Ring
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Data.Int.NatPrime
 import Mathlib.Data.ZMod.Basic
+import Mathlib.Algebra.GroupPower.Order
 
 #align_import number_theory.pythagorean_triples from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
@@ -638,7 +639,7 @@ theorem coprime_classification' {x y z : ℤ} (h : PythagoreanTriple x y z)
             Int.gcd m n = 1 ∧ (m % 2 = 0 ∧ n % 2 = 1 ∨ m % 2 = 1 ∧ n % 2 = 0) ∧ 0 ≤ m := by
   obtain ⟨m, n, ht1, ht2, ht3, ht4⟩ :=
     PythagoreanTriple.coprime_classification.mp (And.intro h h_coprime)
-  cases' le_or_lt 0 m with hm hm
+  rcases le_or_lt 0 m with hm | hm
   · use m, n
     cases' ht1 with h_odd h_even
     · apply And.intro h_odd.1

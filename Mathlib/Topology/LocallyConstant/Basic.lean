@@ -430,7 +430,7 @@ family of locally constant functions with values in β indexed by α. -/
 def unflip {X α β : Type*} [Finite α] [TopologicalSpace X] (f : α → LocallyConstant X β) :
     LocallyConstant X (α → β) where
   toFun x a := f a x
-  isLocallyConstant := IsLocallyConstant.iff_isOpen_fiber.2 <| fun g => by
+  isLocallyConstant := IsLocallyConstant.iff_isOpen_fiber.2 fun g => by
     have : (fun (x : X) (a : α) => f a x) ⁻¹' {g} = ⋂ a : α, f a ⁻¹' {g a} := by
       ext; simp [Function.funext_iff]
     rw [this]
@@ -486,7 +486,7 @@ theorem coe_comap_apply (f : X → Y) (g : LocallyConstant Y Z) (hf : Continuous
 @[simp]
 theorem comap_id : comap (@id X) = @id (LocallyConstant X Z) := by
   ext
-  simp only [continuous_id, id.def, Function.comp.right_id, coe_comap]
+  simp only [continuous_id, id.def, Function.comp_id, coe_comap]
 #align locally_constant.comap_id LocallyConstant.comap_id
 
 theorem comap_comp [TopologicalSpace Z] (f : X → Y) (g : Y → Z) (hf : Continuous f)

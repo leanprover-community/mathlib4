@@ -593,7 +593,7 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
   have Brec : (f fun i => ∑ j in B i, g i j) = ∑ r in piFinset B, f fun i => g i (r i) := by
     have : (∑ i, Finset.card (B i)) < ∑ i, Finset.card (A i) := by
       refine'
-        Finset.sum_lt_sum (fun i _ => Finset.card_le_of_subset (B_subset_A i))
+        Finset.sum_lt_sum (fun i _ => Finset.card_le_card (B_subset_A i))
           ⟨i₀, Finset.mem_univ _, _⟩
       have : {j₂} ⊆ A i₀ := by simp [hj₂]
       simp only [Finset.card_sdiff this, Function.update_same, Finset.card_singleton]
@@ -603,7 +603,7 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
   -- Express the inductive assumption for `C`
   have Crec : (f fun i => ∑ j in C i, g i j) = ∑ r in piFinset C, f fun i => g i (r i) := by
     have : (∑ i, Finset.card (C i)) < ∑ i, Finset.card (A i) :=
-      Finset.sum_lt_sum (fun i _ => Finset.card_le_of_subset (C_subset_A i))
+      Finset.sum_lt_sum (fun i _ => Finset.card_le_card (C_subset_A i))
         ⟨i₀, Finset.mem_univ _, by simp [hi₀]⟩
     rw [h] at this
     exact IH _ this C rfl

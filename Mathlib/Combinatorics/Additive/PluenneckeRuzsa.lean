@@ -7,6 +7,7 @@ import Mathlib.Combinatorics.DoubleCounting
 import Mathlib.Data.Finset.Pointwise
 import Mathlib.Data.Rat.NNRat
 import Mathlib.Tactic.GCongr
+import Mathlib.Algebra.GroupPower.Order
 
 #align_import combinatorics.additive.pluennecke_ruzsa from "leanprover-community/mathlib"@"4aab2abced69a9e579b1e6dc2856ed3db48e2cbd"
 
@@ -47,7 +48,7 @@ theorem card_div_mul_le_card_div_mul_card_div (A B C : Finset α) :
   refine' card_mul_le_card_mul (fun b ac ↦ ac.1 * ac.2 = b) (fun x hx ↦ _)
     fun x _ ↦ card_le_one_iff.2 fun hu hv ↦
       ((mem_bipartiteBelow _).1 hu).2.symm.trans ((mem_bipartiteBelow _).1 hv).2
-  obtain ⟨a, c, ha, hc, rfl⟩ := mem_div.1 hx
+  obtain ⟨a, ha, c, hc, rfl⟩ := mem_div.1 hx
   refine' card_le_card_of_inj_on (fun b ↦ (a / b, b / c)) (fun b hb ↦ _) fun b₁ _ b₂ _ h ↦ _
   · rw [mem_bipartiteAbove]
     exact ⟨mk_mem_product (div_mem_div ha hb) (div_mem_div hb hc), div_mul_div_cancel' _ _ _⟩
@@ -87,7 +88,7 @@ theorem card_mul_mul_le_card_mul_mul_card_div (A B C : Finset α) :
 
 @[to_additive]
 theorem mul_pluennecke_petridis (C : Finset α)
-    (hA : ∀ (A') (_ : A' ⊆ A), (A * B).card * A'.card ≤ (A' * B).card * A.card) :
+    (hA : ∀ A' ⊆ A, (A * B).card * A'.card ≤ (A' * B).card * A.card) :
     (A * B * C).card * A.card ≤ (A * B).card * (A * C).card := by
   induction' C using Finset.induction_on with x C _ ih
   · simp
@@ -105,7 +106,7 @@ theorem mul_pluennecke_petridis (C : Finset α)
   have h₃ : (A * B * C').card ≤ (A * B * C).card + (A * B).card - (A' * B).card := by
     rw [h₁]
     refine' (card_union_le _ _).trans_eq _
-    rw [card_sdiff h₂, ← add_tsub_assoc_of_le (card_le_of_subset h₂), card_mul_singleton,
+    rw [card_sdiff h₂, ← add_tsub_assoc_of_le (card_le_card h₂), card_mul_singleton,
       card_mul_singleton]
   refine' (mul_le_mul_right' h₃ _).trans _
   rw [tsub_mul, add_mul]
@@ -123,7 +124,7 @@ theorem mul_pluennecke_petridis (C : Finset α)
 @[to_additive]
 private theorem mul_aux (hA : A.Nonempty) (hAB : A ⊆ B)
     (h : ∀ A' ∈ B.powerset.erase ∅, ((A * C).card : ℚ≥0) / ↑A.card ≤ (A' * C).card / ↑A'.card) :
-    ∀ (A') (_ : A' ⊆ A), (A * C).card * A'.card ≤ (A' * C).card * A.card := by
+    ∀ A' ⊆ A, (A * C).card * A'.card ≤ (A' * C).card * A.card := by
   rintro A' hAA'
   obtain rfl | hA' := A'.eq_empty_or_nonempty
   · simp
@@ -150,7 +151,7 @@ theorem card_mul_mul_card_le_card_mul_mul_card_mul (A B C : Finset α) :
   rw [mul_div_right_comm, mul_comm _ B]
   refine' (cast_le.2 <| card_le_card_mul_left _ hU.1).trans _
   refine' le_trans _
-    (mul_le_mul (hUA _ hB') (cast_le.2 <| card_le_of_subset <| mul_subset_mul_right hU.2)
+    (mul_le_mul (hUA _ hB') (cast_le.2 <| card_le_card <| mul_subset_mul_right hU.2)
       (zero_le _) (zero_le _))
   rw [← mul_div_right_comm, ← mul_assoc]
   refine' (le_div_iff <| cast_pos.2 hU.1.card_pos).2 _
@@ -180,7 +181,7 @@ theorem card_div_mul_le_card_div_mul_card_mul (A B C : Finset α) :
 #align finset.card_div_mul_le_card_div_mul_card_mul Finset.card_div_mul_le_card_div_mul_card_mul
 
 theorem card_add_nsmul_le {α : Type*} [AddCommGroup α] [DecidableEq α] {A B : Finset α}
-    (hAB : ∀ (A') (_ : A' ⊆ A), (A + B).card * A'.card ≤ (A' + B).card * A.card) (n : ℕ) :
+    (hAB : ∀ A' ⊆ A, (A + B).card * A'.card ≤ (A' + B).card * A.card) (n : ℕ) :
     (A + n • B).card ≤ ((A + B).card / A.card : ℚ≥0) ^ n * A.card := by
   obtain rfl | hA := A.eq_empty_or_nonempty
   · simp
@@ -195,7 +196,7 @@ theorem card_add_nsmul_le {α : Type*} [AddCommGroup α] [DecidableEq α] {A B :
 #align finset.card_add_nsmul_le Finset.card_add_nsmul_le
 
 @[to_additive existing]
-theorem card_mul_pow_le (hAB : ∀ (A') (_ : A' ⊆ A), (A * B).card * A'.card ≤ (A' * B).card * A.card)
+theorem card_mul_pow_le (hAB : ∀ A' ⊆ A, (A * B).card * A'.card ≤ (A' * B).card * A.card)
     (n : ℕ) : (A * B ^ n).card ≤ ((A * B).card / A.card : ℚ≥0) ^ n * A.card := by
   obtain rfl | hA := A.eq_empty_or_nonempty
   · simp
@@ -229,7 +230,7 @@ theorem card_pow_div_pow_le (hA : A.Nonempty) (B : Finset α) (m n : ℕ) :
   rw [mul_mul_mul_comm, ← pow_add, ← mul_assoc]
   gcongr ((?_ ^ _) * Nat.cast ?_) * _
   · exact hCA _ hA'
-  · exact card_le_of_subset hC.2
+  · exact card_le_card hC.2
 #align finset.card_pow_div_pow_le Finset.card_pow_div_pow_le
 #align finset.card_nsmul_sub_nsmul_le Finset.card_nsmul_sub_nsmul_le
 

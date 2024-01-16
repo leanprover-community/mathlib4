@@ -241,8 +241,10 @@ theorem map_smul (r : R) (x : A₁) : e (r • x) = r • e x := by
   simp only [Algebra.smul_def, map_mul, commutes]
 #align alg_equiv.map_smul AlgEquiv.map_smul
 
-theorem map_sum {ι : Type*} (f : ι → A₁) (s : Finset ι) : e (∑ x in s, f x) = ∑ x in s, e (f x) :=
-  e.toAddEquiv.map_sum f s
+@[deprecated map_sum]
+nonrec theorem map_sum {ι : Type*} (f : ι → A₁) (s : Finset ι) :
+    e (∑ x in s, f x) = ∑ x in s, e (f x) :=
+  map_sum e f s
 #align alg_equiv.map_sum AlgEquiv.map_sum
 
 theorem map_finsupp_sum {α : Type*} [Zero α] {ι : Type*} (f : ι →₀ α) (g : ι → α → A₁) :

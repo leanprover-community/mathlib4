@@ -653,25 +653,31 @@ theorem exists_subgroup_card_pow_prime [Fintype G] (p : ℕ) {n : ℕ} [Fact p.P
   ⟨K, hK.1⟩
 #align sylow.exists_subgroup_card_pow_prime Sylow.exists_subgroup_card_pow_prime
 
-lemma exists_subgroup_card_pow_prime_of_le_card {m p : ℕ} (hp : p.Prime) (h : IsPGroup p G)
-    (hm : p ^ m ≤ Nat.card G) : ∃ H : Subgroup G, Nat.card H = p ^ m := by
+/-- A special case of **Sylow's first theorem**. If `G` is a `p`-group of size at least `p ^ n`
+then there is a subgroup of cardinality `p ^ n`. -/
+lemma exists_subgroup_card_pow_prime_of_le_card {n p : ℕ} (hp : p.Prime) (h : IsPGroup p G)
+    (hn : p ^ n ≤ Nat.card G) : ∃ H : Subgroup G, Nat.card H = p ^ n := by
   have : Fact p.Prime := ⟨hp⟩
-  have : Finite G := Nat.finite_of_card_ne_zero $ by linarith [Nat.one_le_pow m p hp.pos]
+  have : Finite G := Nat.finite_of_card_ne_zero <| by linarith [Nat.one_le_pow n p hp.pos]
   cases nonempty_fintype G
-  obtain ⟨n, hn⟩ := h.exists_card_eq
-  simp_rw [Nat.card_eq_fintype_card] at hn hm ⊢
+  obtain ⟨m, hm⟩ := h.exists_card_eq
+  simp_rw [Nat.card_eq_fintype_card] at hm hn ⊢
   refine exists_subgroup_card_pow_prime _ ?_
-  rw [hn] at hm ⊢
-  exact pow_dvd_pow _ $ (pow_le_pow_iff_right hp.one_lt).1 hm
+  rw [hm] at hn ⊢
+  exact pow_dvd_pow _ <| (pow_le_pow_iff_right hp.one_lt).1 hn
 
-lemma exists_subgroup_le_card_pow_prime_of_le_card {m p : ℕ} (hp : p.Prime) (h : IsPGroup p G)
-    {H : Subgroup G} (hm : p ^ m ≤ Nat.card H) : ∃ H' ≤ H, Nat.card H' = p ^ m := by
-  obtain ⟨H', H'card⟩ := exists_subgroup_card_pow_prime_of_le_card hp (h.to_subgroup H) hm
+/-- A special case of **Sylow's first theorem**. If `G` is a `p`-group and `H` a subgroup of size at
+least `p ^ n` then there is a subgroup of `H` of cardinality `p ^ n`. -/
+lemma exists_subgroup_le_card_pow_prime_of_le_card {n p : ℕ} (hp : p.Prime) (h : IsPGroup p G)
+    {H : Subgroup G} (hn : p ^ n ≤ Nat.card H) : ∃ H' ≤ H, Nat.card H' = p ^ n := by
+  obtain ⟨H', H'card⟩ := exists_subgroup_card_pow_prime_of_le_card hp (h.to_subgroup H) hn
   refine ⟨H'.map H.subtype, map_subtype_le _, ?_⟩
   rw [← H'card]
   let e : H' ≃* H'.map H.subtype := H'.equivMapOfInjective (Subgroup.subtype H) H.subtype_injective
   exact Nat.card_congr e.symm.toEquiv
 
+/-- A special case of **Sylow's first theorem**. If `G` is a `p`-group and `H` a subgroup of size at
+least `k` then there is a subgroup of `H` of cardinality between `k / p` and `k`. -/
 lemma exists_subgroup_le_card_le {k p : ℕ} (hp : p.Prime) (h : IsPGroup p G) {H : Subgroup G}
     (hk : k ≤ Nat.card H) (hk₀ : k ≠ 0) : ∃ H' ≤ H, Nat.card H' ≤ k ∧ k < p * Nat.card H' := by
   obtain ⟨m, hmk, hkm⟩ : ∃ s, p ^ s ≤ k ∧ k < p ^ (s + 1) :=

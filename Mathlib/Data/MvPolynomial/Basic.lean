@@ -71,14 +71,10 @@ polynomial, multivariate polynomial, multivariable polynomial
 
 set_option autoImplicit true
 
-
 noncomputable section
 
-open BigOperators
-
 open Set Function Finsupp AddMonoidAlgebra
-
-open BigOperators
+open scoped BigOperators Pointwise
 
 universe u v w x
 
@@ -508,10 +504,10 @@ theorem algHom_C (f : MvPolynomial σ R →ₐ[R] MvPolynomial σ R) (r : R) : f
 theorem adjoin_range_X : Algebra.adjoin R (range (X : σ → MvPolynomial σ R)) = ⊤ := by
   set S := Algebra.adjoin R (range (X : σ → MvPolynomial σ R))
   refine' top_unique fun p hp => _; clear hp
-  induction p using MvPolynomial.induction_on
-  case h_C => exact S.algebraMap_mem _
-  case h_add p q hp hq => exact S.add_mem hp hq
-  case h_X p i hp => exact S.mul_mem hp (Algebra.subset_adjoin <| mem_range_self _)
+  induction p using MvPolynomial.induction_on with
+  | h_C => exact S.algebraMap_mem _
+  | h_add p q hp hq => exact S.add_mem hp hq
+  | h_X p i hp => exact S.mul_mem hp (Algebra.subset_adjoin <| mem_range_self _)
 #align mv_polynomial.adjoin_range_X MvPolynomial.adjoin_range_X
 
 @[ext]
@@ -597,8 +593,8 @@ theorem sum_def {A} [AddCommMonoid A] {p : MvPolynomial σ R} {b : (σ →₀ �
 #align mv_polynomial.sum_def MvPolynomial.sum_def
 
 theorem support_mul [DecidableEq σ] (p q : MvPolynomial σ R) :
-    (p * q).support ⊆ p.support.biUnion fun a => q.support.biUnion fun b => {a + b} := by
-  convert AddMonoidAlgebra.support_mul p q
+    (p * q).support ⊆ p.support + q.support :=
+  AddMonoidAlgebra.support_mul p q
 #align mv_polynomial.support_mul MvPolynomial.support_mul
 
 @[ext]
@@ -772,23 +768,15 @@ theorem support_symmDiff_support_subset_support_add [DecidableEq σ] (p q : MvPo
 theorem coeff_mul_monomial' (m) (s : σ →₀ ℕ) (r : R) (p : MvPolynomial σ R) :
     coeff m (p * monomial s r) = if s ≤ m then coeff (m - s) p * r else 0 := by
   classical
-  obtain rfl | hr := eq_or_ne r 0
-  · simp only [monomial_zero, coeff_zero, mul_zero, ite_self]
-  haveI : Nontrivial R := nontrivial_of_ne _ _ hr
   split_ifs with h
   · conv_rhs => rw [← coeff_mul_monomial _ s]
     congr with t
     rw [tsub_add_cancel_of_le h]
-  · rw [← not_mem_support_iff]
-    intro hm
-    apply h
-    have H := support_mul _ _ hm
-    simp only [Finset.mem_biUnion] at H
-    rcases H with ⟨j, _hj, i', hi', H⟩
-    rw [support_monomial, if_neg hr, Finset.mem_singleton] at hi'
-    subst i'
-    rw [Finset.mem_singleton] at H
-    subst m
+  · contrapose! h
+    rw [← mem_support_iff] at h
+    obtain ⟨j, -, rfl⟩ : ∃ j ∈ support p, j + s = m := by
+      simpa [Finset.add_singleton]
+        using Finset.add_subset_add_left support_monomial_subset <| support_mul _ _ h
     exact le_add_left le_rfl
 #align mv_polynomial.coeff_mul_monomial' MvPolynomial.coeff_mul_monomial'
 
@@ -855,7 +843,7 @@ theorem C_dvd_iff_dvd_coeff (r : R) (φ : MvPolynomial σ R) : C r ∣ φ ↔ �
 
 @[simp] lemma isRegular_X : IsRegular (X n : MvPolynomial σ R) := by
   suffices : IsLeftRegular (X n : MvPolynomial σ R)
-  · exact ⟨this, this.right_of_commute $ Commute.all _⟩
+  · exact ⟨this, this.right_of_commute <| Commute.all _⟩
   intro P Q (hPQ : (X n) * P = (X n) * Q)
   ext i
   rw [← coeff_X_mul i n P, hPQ, coeff_X_mul i n Q]
