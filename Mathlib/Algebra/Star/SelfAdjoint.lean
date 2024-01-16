@@ -589,7 +589,7 @@ instance isStarNormal_one [MulOneClass R] [StarMul R] : IsStarNormal (1 : R) :=
 protected instance IsStarNormal.star [Mul R] [StarMul R] {x : R} [IsStarNormal x] :
     IsStarNormal (star x) :=
   ⟨show star (star x) * star x = star x * star (star x) by rw [star_star, star_comm_self']⟩
-#align is_star_normal_star_self isStarNormal_star
+#align is_star_normal_star_self IsStarNormal.star
 
 protected instance IsStarNormal.neg [Ring R] [StarAddMonoid R] {x : R} [IsStarNormal x] :
     IsStarNormal (-x) :=
