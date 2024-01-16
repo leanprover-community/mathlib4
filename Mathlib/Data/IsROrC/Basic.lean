@@ -1156,8 +1156,8 @@ lemma im_eq_zero (h : I = (0 : K)) (z : K) : im z = 0 := by
 
 /-- The natural isomorphism between `𝕜` satisfying `IsROrC 𝕜` and `ℝ` when `IsROrC.I = 0`. -/
 @[simps]
-def IsROrC.realRingEquiv {𝕜 : Type*} [IsROrC 𝕜] (h : I = (0 : 𝕜)) :
-    𝕜 ≃+* ℝ where
+def realRingEquiv (h : I = (0 : K)) :
+    K ≃+* ℝ where
   toFun := re
   invFun := (↑)
   left_inv x := by nth_rw 2 [← re_add_im x]; simp [h]
@@ -1165,15 +1165,12 @@ def IsROrC.realRingEquiv {𝕜 : Type*} [IsROrC 𝕜] (h : I = (0 : 𝕜)) :
   map_add' := map_add re
   map_mul' := by simp [im_eq_zero h]
 
-/-- The natural continuous `ℝ`-linear equivalence between `𝕜` satisfying `IsROrC 𝕜` and `ℝ` when
+/-- The natural `ℝ`-linear isometry equivalence between `𝕜` satisfying `IsROrC 𝕜` and `ℝ` when
 `IsROrC.I = 0`. -/
 @[simps]
-noncomputable
-def IsROrC.realContinuousLinearEquiv {𝕜 : Type*} [IsROrC 𝕜] (h : I = (0 : 𝕜)) :
-    𝕜 ≃L[ℝ] ℝ where
+noncomputable def realLinearIsometryEquiv (h : I = (0 : K)) : K ≃ₗᵢ[ℝ] ℝ where
   map_smul' := smul_re
-  continuous_toFun := continuous_re
-  continuous_invFun := continuous_ofReal
+  norm_map' z := by rw [← re_add_im z]; simp [- re_add_im, h]
   __ := realRingEquiv h
 
 end CaseSpecific

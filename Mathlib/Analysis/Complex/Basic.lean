@@ -463,16 +463,14 @@ def _root_.IsROrC.complexRingEquiv {𝕜 : Type*} [IsROrC 𝕜] (h : IsROrC.im (
   invFun x := re x + im x * IsROrC.I
   left_inv x := by simp
   right_inv x := by simp [h]
-  map_add' x y := by
-    simp only [map_add, ofReal_add]
-    ring
+  map_add' x y := by simp only [map_add, ofReal_add]; ring
   map_mul' x y := by
     simp only [IsROrC.mul_re, ofReal_sub, ofReal_mul, IsROrC.mul_im, ofReal_add]
     ring_nf
     rw [I_sq]
     ring
 
-/-- The natural continuous `ℝ`-linear equivalence between `𝕜` satisfying `IsROrC 𝕜` and `ℂ` when
+/-- The natural `ℝ`-linear isometry equivalence between `𝕜` satisfying `IsROrC 𝕜` and `ℂ` when
 `IsROrC.im IsROrC.I = 1`. -/
 @[simps]
 def _root_.IsROrC.complexLinearIsometryEquiv {𝕜 : Type*} [IsROrC 𝕜]
