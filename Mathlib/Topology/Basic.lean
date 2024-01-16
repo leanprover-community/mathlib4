@@ -7,6 +7,7 @@ import Mathlib.Algebra.Function.Support
 import Mathlib.Order.Filter.Lift
 import Mathlib.Order.Filter.Ultrafilter
 import Mathlib.Tactic.Continuity
+import Mathlib.Tactic.FProp
 
 #align_import topology.basic from "leanprover-community/mathlib"@"e354e865255654389cc46e6032160238df2e0f40"
 
@@ -1613,6 +1614,7 @@ open TopologicalSpace
 
 /-- A function between topological spaces is continuous if the preimage
   of every open set is open. Registered as a structure to make sure it is not unfolded by Lean. -/
+@[fprop]
 structure Continuous (f : α → β) : Prop where
   /-- The preimage of an open set under a continuous function is an open set. Use `IsOpen.preimage`
   instead. -/
@@ -1698,7 +1700,7 @@ theorem continuous_id : Continuous (id : α → α) :=
 #align continuous_id continuous_id
 
 -- This is needed due to reducibility issues with the `continuity` tactic.
-@[continuity]
+@[continuity, fprop]
 theorem continuous_id' : Continuous (fun (x : α) => x) := continuous_id
 
 theorem Continuous.comp {g : β → γ} {f : α → β} (hg : Continuous g) (hf : Continuous f) :
@@ -1707,7 +1709,7 @@ theorem Continuous.comp {g : β → γ} {f : α → β} (hg : Continuous g) (hf 
 #align continuous.comp Continuous.comp
 
 -- This is needed due to reducibility issues with the `continuity` tactic.
-@[continuity]
+@[continuity, fprop]
 theorem Continuous.comp' {g : β → γ} {f : α → β} (hg : Continuous g) (hf : Continuous f) :
     Continuous (fun x => g (f x)) := hg.comp hf
 
@@ -1750,7 +1752,7 @@ theorem continuousAt_const {x : α} {b : β} : ContinuousAt (fun _ : α => b) x 
   tendsto_const_nhds
 #align continuous_at_const continuousAt_const
 
-@[continuity]
+@[continuity, fprop]
 theorem continuous_const {b : β} : Continuous fun _ : α => b :=
   continuous_iff_continuousAt.mpr fun _ => continuousAt_const
 #align continuous_const continuous_const
