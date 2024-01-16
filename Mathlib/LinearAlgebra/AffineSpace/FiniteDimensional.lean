@@ -246,6 +246,7 @@ lemma AffineIndependent.card_le_card_of_subset_affineSpan {s t : Finset V}
   rw [AffineSubspace.affineSpan_coe, direction_affineSpan, direction_affineSpan,
     ← @Subtype.range_coe _ (s : Set V), ← @Subtype.range_coe _ (t : Set V)] at direction_le
   have finrank_le := add_le_add_right (Submodule.finrank_le_finrank_of_le direction_le) 1
+  -- We use `erw` to elide the difference between `↥s` and `↥(s : Set V)}`
   erw [hs.finrank_vectorSpan_add_one] at finrank_le
   simpa using finrank_le.trans <| finrank_vectorSpan_range_add_one_le _ _
 
@@ -265,6 +266,7 @@ lemma AffineIndependent.card_lt_card_of_affineSpan_lt_affineSpan {s t : Finset V
   rw [direction_affineSpan, direction_affineSpan,
     ← @Subtype.range_coe _ (s : Set V), ← @Subtype.range_coe _ (t : Set V)] at dir_lt
   have finrank_lt := add_lt_add_right (Submodule.finrank_lt_finrank_of_lt dir_lt) 1
+  -- We use `erw` to elide the difference between `↥s` and `↥(s : Set V)}`
   erw [hs.finrank_vectorSpan_add_one] at finrank_lt
   simpa using finrank_lt.trans_le <| finrank_vectorSpan_range_add_one_le _ _
 
