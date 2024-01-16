@@ -69,7 +69,7 @@ theorem iterate_succ_apply (n : ℕ) (x : α) : f^[n.succ] x = f^[n] (f x) :=
 
 @[simp]
 theorem iterate_id (n : ℕ) : (id : α → α)^[n] = id :=
-  Nat.recOn n rfl fun n ihn ↦ by rw [iterate_succ, ihn, comp.left_id]
+  Nat.recOn n rfl fun n ihn ↦ by rw [iterate_succ, ihn, id_comp]
 #align function.iterate_id Function.iterate_id
 
 theorem iterate_add (m : ℕ) : ∀ n : ℕ, f^[m + n] = f^[m] ∘ f^[n]
