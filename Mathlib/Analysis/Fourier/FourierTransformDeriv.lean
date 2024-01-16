@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: David Loeffler
+Authors: Alex Kontorovich, David Loeffler, Heather Macbeth
 -/
 import Mathlib.Analysis.Calculus.ParametricIntegral
 import Mathlib.Analysis.Fourier.AddCircle
@@ -24,42 +24,16 @@ open Real Complex MeasureTheory Filter TopologicalSpace
 
 open scoped FourierTransform Topology
 
-section bilinear_maps
-
-variable {𝕜 V W E : Type*} [NormedField 𝕜] [AddCommMonoid V] [TopologicalSpace V] [Module 𝕜 V]
-  [AddCommGroup W] [TopologicalSpace W] [Module 𝕜 W] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-
-/-- Send a continuous bilinear map to an abstract bilinear map (forgetting continuity). -/
-def ContinuousLinearMap.toLinearMap₂ (L : V →L[𝕜] W →L[𝕜] E) : V →ₗ[𝕜] W →ₗ[𝕜] E :=
-  (ContinuousLinearMap.coeLM 𝕜).comp L.toLinearMap
-
-end bilinear_maps
-
-section SmulRight
-
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-
-lemma aestronglyMeasurable_smulRight {X : Type*} [MeasurableSpace X] {μ : Measure X}
-    {A B : Type*} [NormedAddCommGroup A] [NormedSpace 𝕜 A] [NormedAddCommGroup B] [NormedSpace 𝕜 B]
-    {f : X → A →L[𝕜] 𝕜} {g : X → B}
-    (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) :
-    AEStronglyMeasurable (fun x : X ↦ (f x).smulRight (g x)) μ :=
-  (ContinuousLinearMap.smulRightL 𝕜 A B).continuous₂.comp_aestronglyMeasurable (hf.prod_mk hg)
-
-end SmulRight
-
 lemma Real.hasDerivAt_fourierChar (x : ℝ) :
-    HasDerivAt (fun y : ℝ ↦ fourierChar [y]) (2 * π * I * fourierChar [x]) x := by
-  convert hasDerivAt_fourier 1 1 x using 1
-  · ext1 y
-    rw [fourierChar_apply, fourier_coe_apply]
-    congr 1
+    HasDerivAt (fun y : ℝ ↦ (fourierChar (Multiplicative.ofAdd y) : ℂ))
+      (2 * π * I * (fourierChar (Multiplicative.ofAdd x) : ℂ)) x := by
+  have h1 (y : ℝ) : (fourierChar (Multiplicative.ofAdd y) : ℂ) =
+    fourier 1 (y : UnitAddCircle)
+  · rw [fourierChar_apply, fourier_coe_apply]
     push_cast
-    ring
-  · rw [Int.cast_one, ofReal_one, div_one, mul_one, fourierChar_apply, fourier_coe_apply]
-    congr 2
-    push_cast
-    ring
+    ring_nf
+  simpa only [h1, Int.cast_one, ofReal_one, div_one, mul_one]
+    using hasDerivAt_fourier 1 1 x
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
 
@@ -72,8 +46,7 @@ variable {V W : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
 `v → (w → -2 * π * I * L(v, w) • f v)`. -/
 def mul_L (v : V) : (W →L[ℝ] E) := -(2 * π * I) • (L v).smulRight (f v)
 
-/-- Alternate description of `VectorFourier.mulL` when `L` is the inner product form on a real
-inner product space. -/
+/-- Alternate description of `VectorFourier.mulL`. -/
 lemma mulL_eq_toSpanSingleton_comp : mul_L L f =
     fun v ↦ ((ContinuousLinearMap.toSpanSingleton ℝ (-(2 * π * I) • f v)) ∘L L v) := by
   ext v v'
@@ -111,8 +84,9 @@ lemma norm_fderiv_fourier_transform_integrand_right_le (v : V) (w : W) :
 
 variable {f}
 
-/-- Main theorem of this section: if both `f` and `λ x, ‖x‖ * f x` are integrable, then the
-Fourier transform of `f` is has a Frechet derivative (everwhere in its domain) and its derivative is
+set_option trace.profiler true in
+/-- Main theorem of this section: if both `f` and `x ↦ ‖x‖ * ‖f x‖` are integrable, then the
+Fourier transform of `f` has a Fréchet derivative (everywhere in its domain) and its derivative is
 the Fourier transform of `mul_L L f`. -/
 theorem hasFDerivAt_fourier [CompleteSpace E] [MeasurableSpace V] [BorelSpace V] {μ : Measure V}
     [SecondCountableTopologyEither V (W →L[ℝ] ℝ)]
@@ -134,7 +108,11 @@ theorem hasFDerivAt_fourier [CompleteSpace E] [MeasurableSpace V] [BorelSpace V]
     · refine (continuous_subtype_val.comp (continuous_fourierChar.comp ?_)).aestronglyMeasurable
       exact continuous_ofAdd.comp (L.continuous₂.comp (Continuous.Prod.mk_left w)).neg
     · apply AEStronglyMeasurable.const_smul'
-      exact aestronglyMeasurable_smulRight L.continuous.aestronglyMeasurable hf.1
+      have aux0 : Continuous fun p : (W →L[ℝ] ℝ) × E ↦ p.1.smulRight p.2 :=
+        (ContinuousLinearMap.smulRightL ℝ W E).continuous₂
+      have aux1 : AEStronglyMeasurable (fun v ↦ (L v, f v)) μ :=
+        L.continuous.aestronglyMeasurable.prod_mk hf.1
+      apply aux0.comp_aestronglyMeasurable aux1
   have h4 : (∀ᵐ v ∂μ, ∀ (w' : W), w' ∈ Metric.ball w 1 → ‖F' w' v‖ ≤ B v)
   · refine ae_of_all _ (fun v w' _ ↦ ?_)
     exact norm_fderiv_fourier_transform_integrand_right_le L f v w'
