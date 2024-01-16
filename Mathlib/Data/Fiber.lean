@@ -4,16 +4,17 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sina Hazratpour
 -/
 
-import Mathlib.Tactic
+import Mathlib.Tactic.Basic
 
-
+/-- Fiber of a map at a given point. -/
 @[simp]
 def Fib {C E : Type*} (P : E → C) (c : C) := {d : E // P d = c}
 
 
 namespace Fib
 variable {C E : Type*} {P : E → C} {c d : C}
-/- coercion from the fibre to the total category -/
+
+/-- Coercion from the fiber to the domain. -/
 instance  {c : C} : CoeOut (Fib P c) E where
   coe := fun x => x.1
 
@@ -34,16 +35,17 @@ lemma over (x : Fib P c) : P x = c := x.2
 @[simp]
 lemma over_eq (x y : Fib P c) : P x = P y := by simp [Fib.over]
 
-@[simps]
+@[simp]
 def tauto (e : E) : Fib P (P e) := ⟨e, rfl⟩
 
-/--Regarding an object of the total space as an object in the obj of its image.-/
+/-- Regarding an element of the domain as an element in the fibre of its image. -/
 instance instTautoFib (e : E) : CoeDep (E) (e) (Fib P (P e) ) where
   coe := tauto e
 
 @[simp]
 lemma tauto_over (e : E) : (tauto e : Fib P (P e)).1 = e := rfl
 
+/-- Rebase an element of in a fiber along an equality of the basepoints. -/
 @[simp]
 def eqRebase (e : Fib P c) (_ : c = d) : Fib P d := ⟨e.1, by simp_all only [over]⟩
 
@@ -55,6 +57,7 @@ lemma coe_tauto (e : Fib P c) : eqRebase (tauto e.1) (by simp [over]) =  e := by
 lemma coe_tauto' (e : Fib P c) : (tauto e.1) =   eqRebase e (by simp [over]) := by
   cases e; rfl
 
+/-- The total space of a map. -/
 @[ext]
 structure Total {C E : Type*} (P : E → C) where
 base : C
