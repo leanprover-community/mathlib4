@@ -6,6 +6,13 @@ Authors: Sina Hazratpour
 
 import Mathlib.Tactic.Basic
 
+/-!
+# A type for VM-erased data
+
+This files define the type `Fib` of fiber of a map at a given point and the type `Total` of the total space of a map.
+-/
+
+
 /-- Fiber of a map at a given point. -/
 @[simp]
 def Fib {C E : Type*} (P : E → C) (c : C) := {d : E // P d = c}
