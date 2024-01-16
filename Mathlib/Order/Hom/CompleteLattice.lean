@@ -218,6 +218,13 @@ instance (priority := 100) OrderIsoClass.toCompleteLatticeHomClass [CompleteLatt
   { OrderIsoClass.tosSupHomClass, OrderIsoClass.tosInfHomClass with }
 #align order_iso_class.to_complete_lattice_hom_class OrderIsoClass.toCompleteLatticeHomClass
 
+/-- Reinterpret an order isomorphism as a morphism of complete lattices. -/
+@[simps] def OrderIso.toCompleteLatticeHom [CompleteLattice α] [CompleteLattice β]
+    (f : OrderIso α β) : CompleteLatticeHom α β where
+  toFun := f
+  map_sInf' := sInfHomClass.map_sInf f
+  map_sSup' := sSupHomClass.map_sSup f
+
 instance [SupSet α] [SupSet β] [sSupHomClass F α β] : CoeTC F (sSupHom α β) :=
   ⟨fun f => ⟨f, map_sSup f⟩⟩
 
