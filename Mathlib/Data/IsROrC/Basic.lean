@@ -1156,8 +1156,7 @@ lemma im_eq_zero (h : I = (0 : K)) (z : K) : im z = 0 := by
 
 /-- The natural isomorphism between `𝕜` satisfying `IsROrC 𝕜` and `ℝ` when `IsROrC.I = 0`. -/
 @[simps]
-def realRingEquiv (h : I = (0 : K)) :
-    K ≃+* ℝ where
+def realRingEquiv (h : I = (0 : K)) : K ≃+* ℝ where
   toFun := re
   invFun := (↑)
   left_inv x := by nth_rw 2 [← re_add_im x]; simp [h]
