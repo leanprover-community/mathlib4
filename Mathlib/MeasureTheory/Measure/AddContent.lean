@@ -110,7 +110,7 @@ lemma addContent_union' (hs : s ∈ C) (ht : t ∈ C) (hst : s ∪ t ∈ C)(h_di
 section IsSetSemiring
 
 lemma addContent_eq_add_diffFinset₀_of_subset (hC : IsSetSemiring C)
-    (hs : s ∈ C) (hI : ↑I ⊆ C) (hI_ss : ⋃₀ ↑I ⊆ s)
+    (hs : s ∈ C) (hI : ↑I ⊆ C) (hI_ss : ∀ t ∈ I, t ⊆ s)
     (h_dis : PairwiseDisjoint (I : Set (Set α)) id) :
     m s = ∑ i in I, m i + ∑ i in hC.diffFinset₀ hs hI, m i := by
   classical
@@ -126,7 +126,7 @@ lemma addContent_eq_add_diffFinset₀_of_subset (hC : IsSetSemiring C)
 
 lemma sum_addContent_le_of_subset (hC : IsSetSemiring C)
     (h_ss : ↑I ⊆ C) (h_dis : PairwiseDisjoint (I : Set (Set α)) id)
-    (ht : t ∈ C) (hJt : ⋃₀ ↑I ⊆ t) :
+    (ht : t ∈ C) (hJt : ∀ s ∈ I, s ⊆ t) :
     ∑ u in I, m u ≤ m t := by
   classical
   rw [addContent_eq_add_diffFinset₀_of_subset hC ht h_ss hJt h_dis]
@@ -139,8 +139,7 @@ lemma addContent_mono (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C)
   · simpa only [sum_singleton] using h
   · rwa [singleton_subset_set_iff]
   · simp only [coe_singleton, pairwiseDisjoint_singleton]
-  · simp only [coe_singleton, sUnion_singleton]
-    exact hst
+  · simp [hst]
 
 end IsSetSemiring
 

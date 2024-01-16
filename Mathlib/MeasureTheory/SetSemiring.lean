@@ -265,12 +265,13 @@ lemma pairwiseDisjoint_union_diffFinset₀ (hC : IsSetSemiring C) (hs : s ∈ C)
     (hC.disjoint_sUnion_diffFinset₀ hs hI)
 
 lemma sUnion_union_sUnion_diffFinset₀_of_subset (hC : IsSetSemiring C) (hs : s ∈ C)
-    (hI : ↑I ⊆ C) (hI_ss : ⋃₀ ↑I ⊆ s) :
+    (hI : ↑I ⊆ C) (hI_ss : ∀ t ∈ I, t ⊆ s) :
     ⋃₀ I ∪ ⋃₀ hC.diffFinset₀ hs hI = s := by
-  conv_rhs => rw [← union_diff_cancel hI_ss, hC.diff_sUnion_eq_sUnion_diffFinset₀ hs hI]
+  conv_rhs => rw [← union_diff_cancel (Set.sUnion_subset hI_ss : ⋃₀ ↑I ⊆ s),
+    hC.diff_sUnion_eq_sUnion_diffFinset₀ hs hI]
 
 lemma sUnion_union_diffFinset₀_of_subset (hC : IsSetSemiring C) (hs : s ∈ C)
-    (hI : ↑I ⊆ C) (hI_ss : ⋃₀ ↑I ⊆ s) [DecidableEq (Set α)] :
+    (hI : ↑I ⊆ C) (hI_ss : ∀ t ∈ I, t ⊆ s) [DecidableEq (Set α)] :
     ⋃₀ ↑(I ∪ hC.diffFinset₀ hs hI) = s := by
   conv_rhs => rw [← sUnion_union_sUnion_diffFinset₀_of_subset hC hs hI hI_ss]
   simp_rw [coe_union]
