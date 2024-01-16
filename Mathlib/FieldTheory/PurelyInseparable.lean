@@ -936,19 +936,10 @@ lemma Subalgebra.adjoin_rank_le {F : Type*} (E : Type*) {K : Type*}
   exact rank_span_le _ |>.trans Cardinal.mk_range_le
 
 -- TODO: move to suitable location
-variable {F K} in
-/-- If `K / E / F` is a field extension tower, `L` is an intermediate field of `K / F`, such that
-`L / F` is algebraic, then `E(L) = E[L]`. -/
-lemma IntermediateField.adjoin_eq_algebra_adjoin_of_isAlgebraic₁
-    (L : IntermediateField F K) (halg : Algebra.IsAlgebraic F L) :
-    (adjoin E (L : Set K)).toSubalgebra = Algebra.adjoin E (L : Set K) :=
-  adjoin_algebraic_toSubalgebra fun x h ↦ IsAlgebraic.tower_top E (isAlgebraic_iff.1 (halg ⟨x, h⟩))
-
--- TODO: move to suitable location
 /-- If `E / L / F` and `E / L' / F` are two ring extension towers, `L ≃ₐ[F] L'` is an isomorphism
 compatible with `E / L` and `E / L'`, then for any subset `S` of `E`, `L[S]` and `L'[S]` are
 equal as subalgebras of `E / F`. -/
-lemma Algebra.restrictScalars_adjoin_eq_of_algEquiv
+lemma Algebra.restrictScalars_adjoin_of_algEquiv
     {F E L L' : Type*} [CommRing F] [CommRing L] [CommRing L'] [Ring E]
     [Algebra F L] [Algebra L E] [Algebra F L'] [Algebra L' E] [Algebra F E]
     [IsScalarTower F L E] [IsScalarTower F L' E] (i : L ≃ₐ[F] L')
@@ -966,7 +957,7 @@ lemma Algebra.restrictScalars_adjoin_eq_of_algEquiv
 /-- If `E / L / F` and `E / L' / F` are two field extension towers, `L ≃ₐ[F] L'` is an isomorphism
 compatible with `E / L` and `E / L'`, then for any subset `S` of `E`, `L(S)` and `L'(S)` are
 equal as intermediate fields of `E / F`. -/
-lemma IntermediateField.restrictScalars_adjoin_eq_of_algEquiv
+lemma IntermediateField.restrictScalars_adjoin_of_algEquiv
     {F E L L' : Type*} [Field F] [Field L] [Field L'] [Field E]
     [Algebra F L] [Algebra L E] [Algebra F L'] [Algebra L' E] [Algebra F E]
     [IsScalarTower F L E] [IsScalarTower F L' E] (i : L ≃ₐ[F] L')
@@ -980,44 +971,47 @@ lemma IntermediateField.restrictScalars_adjoin_eq_of_algEquiv
   exact ⟨fun ⟨y, h⟩ ↦ ⟨i y, by rw [← h, hi]; rfl⟩,
     fun ⟨y, h⟩ ↦ ⟨i.symm y, by rw [← h, hi, Function.comp_apply, AlgEquiv.apply_symm_apply]⟩⟩
 
+-- TODO: move to suitable location (???)
+theorem Algebra.restrictScalars_adjoin (F : Type*) [CommSemiring F] {E : Type*} [CommSemiring E]
+    [Algebra F E] (K : Subalgebra F E) (S : Set E) :
+    (Algebra.adjoin K S).restrictScalars F = Algebra.adjoin F (K ∪ S) := by
+  rw [← Algebra.adjoin_eq K, ← Algebra.adjoin_union_eq_adjoin_adjoin, Algebra.adjoin_eq]
+
 -- TODO: move to suitable location
 variable {F K} in
-/-- If `K / E / F` is a field extension tower, `L` is an intermediate field of `K / F`, such that
-`E / F` is algebraic, then `E(L) = E[L]`. -/
-lemma IntermediateField.adjoin_eq_algebra_adjoin_of_isAlgebraic₂
-    (L : IntermediateField F K) (halg : Algebra.IsAlgebraic F E) :
-    (adjoin E (L : Set K)).toSubalgebra = Algebra.adjoin E (L : Set K) := by
-  let i := IsScalarTower.toAlgHom F E K
-  let E' := i.fieldRange
-  let i' : E ≃ₐ[F] E' := AlgEquiv.ofInjectiveField i
-  have hi : algebraMap E K = (algebraMap E' K) ∘ i' := by ext x; rfl
-  have halg' := i'.isAlgebraic halg
-  apply_fun _ using Subalgebra.restrictScalars_injective F
-  have h1 : (adjoin E (L : Set K)).toSubalgebra.restrictScalars F =
-      (adjoin E' (L : Set K)).toSubalgebra.restrictScalars F :=
-    congr($(restrictScalars_adjoin_eq_of_algEquiv i' hi (L : Set K)).toSubalgebra)
-  have h2 : (Algebra.adjoin E (L : Set K)).restrictScalars F = (Algebra.adjoin (Algebra.adjoin F
-      (E'.toSubalgebra : Set K)) (L.toSubalgebra : Set K)).restrictScalars F := by
-    rw [Algebra.adjoin_eq]
-    exact Algebra.restrictScalars_adjoin_eq_of_algEquiv i' hi (L : Set K)
-  rw [h1, h2, ← Algebra.adjoin_union_eq_adjoin_adjoin, Set.union_comm,
-    Algebra.adjoin_union_eq_adjoin_adjoin, Algebra.adjoin_eq]
-  change _ = Subalgebra.restrictScalars F (Algebra.adjoin L (E' : Set K))
-  rw [← congr($(E'.adjoin_eq_algebra_adjoin_of_isAlgebraic₁ L halg').restrictScalars F),
-    ← restrictScalars_toSubalgebra, ← restrictScalars_toSubalgebra]
-  have h3 : (adjoin E' (L : Set K)).restrictScalars F =
-      (adjoin (adjoin F (E' : Set K)) (L : Set K)).restrictScalars F := by rw [adjoin_self]
-  rw [h3, adjoin_adjoin_comm, adjoin_self]
+/-- The compositum of two intermediate fields is equal to the compositum of them
+as subalgebras, if one of them is algebraic over the base field. -/
+lemma IntermediateField.sup_toSubalgebra_of_isAlgebraic (E L : IntermediateField F K)
+    (halg : Algebra.IsAlgebraic F L ∨ Algebra.IsAlgebraic F E) :
+    (E ⊔ L).toSubalgebra = E.toSubalgebra ⊔ L.toSubalgebra := by
+  wlog h' : Algebra.IsAlgebraic F L generalizing E L with H
+  · have := H L E halg.symm (halg.resolve_left h')
+    rwa [sup_comm (a := E), sup_comm (a := E.toSubalgebra)]
+  have : (adjoin E (L : Set K)).toSubalgebra = _ :=
+    adjoin_algebraic_toSubalgebra fun x h ↦ IsAlgebraic.tower_top E (isAlgebraic_iff.1 (h' ⟨x, h⟩))
+  apply_fun Subalgebra.restrictScalars F at this
+  erw [← restrictScalars_toSubalgebra, restrictScalars_adjoin,
+    Algebra.restrictScalars_adjoin] at this
+  exact this
 
 -- TODO: move to suitable location
 variable {F K} in
 /-- If `K / E / F` is a field extension tower, `L` is an intermediate field of `K / F`, such that
 either `L / F` or `E / F` is algebraic, then `E(L) = E[L]`. -/
-lemma IntermediateField.adjoin_eq_algebra_adjoin_of_isAlgebraic (L : IntermediateField F K)
+lemma IntermediateField.adjoin_toSubalgebra_of_isAlgebraic (L : IntermediateField F K)
     (halg : Algebra.IsAlgebraic F L ∨ Algebra.IsAlgebraic F E) :
-    (adjoin E (L : Set K)).toSubalgebra = Algebra.adjoin E (L : Set K) :=
-  halg.elim (L.adjoin_eq_algebra_adjoin_of_isAlgebraic₁ E)
-    (L.adjoin_eq_algebra_adjoin_of_isAlgebraic₂ E)
+    (adjoin E (L : Set K)).toSubalgebra = Algebra.adjoin E (L : Set K) := by
+  let i := IsScalarTower.toAlgHom F E K
+  let E' := i.fieldRange
+  let i' : E ≃ₐ[F] E' := AlgEquiv.ofInjectiveField i
+  have hi : algebraMap E K = (algebraMap E' K) ∘ i' := by ext x; rfl
+  have halg' : Algebra.IsAlgebraic F L ∨ Algebra.IsAlgebraic F E' :=
+    halg.elim Or.inl (Or.inr ∘ i'.isAlgebraic)
+  apply_fun _ using Subalgebra.restrictScalars_injective F
+  erw [← restrictScalars_toSubalgebra, restrictScalars_adjoin_of_algEquiv i' hi,
+    Algebra.restrictScalars_adjoin_of_algEquiv i' hi, restrictScalars_adjoin,
+    Algebra.restrictScalars_adjoin]
+  exact E'.sup_toSubalgebra_of_isAlgebraic L halg'
 
 -- TODO: move to suitable location
 variable {F K} in
@@ -1029,7 +1023,7 @@ lemma IntermediateField.adjoin_rank_le_of_isAlgebraic (L : IntermediateField F K
     Module.rank E (adjoin E (L : Set K)) ≤ Module.rank F L := by
   have h : (adjoin E (L.toSubalgebra : Set K)).toSubalgebra =
       Algebra.adjoin E (L.toSubalgebra : Set K) :=
-    L.adjoin_eq_algebra_adjoin_of_isAlgebraic E halg
+    L.adjoin_toSubalgebra_of_isAlgebraic E halg
   have := L.toSubalgebra.adjoin_rank_le E
   rwa [(Subalgebra.equivOfEq _ _ h).symm.toLinearEquiv.rank_eq] at this
 
