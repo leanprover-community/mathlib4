@@ -184,6 +184,7 @@ theorem separableClosure.eq_bot_of_isPurelyInseparable [IsPurelyInseparable F E]
     separableClosure F E = ⊥ :=
   bot_unique fun x h ↦ IsPurelyInseparable.inseparable F x (mem_separableClosure_iff.1 h)
 
+variable {F E} in
 /-- If `E / F` is an algebraic extension, then the (relative) separable closure of `E / F` is
 equal to `F` if and only if `E / F` is purely inseparable. -/
 theorem separableClosure.eq_bot_iff (halg : Algebra.IsAlgebraic F E) :
@@ -200,7 +201,7 @@ variable {E}
 /-- A field extension `E / F` of exponential characteristic `q` is purely inseparable
 if and only if for every element `x` of `E`, there exists a natural number `n` such that
 `x ^ (q ^ n)` is contained in `F`. -/
-theorem isPurelyInseparable_iff_pow_mem (q : ℕ) [hF : ExpChar F q] :
+theorem isPurelyInseparable_iff_pow_mem (q : ℕ) [ExpChar F q] :
     IsPurelyInseparable F E ↔ ∀ x : E, ∃ n : ℕ, x ^ q ^ n ∈ (algebraMap F E).range := by
   rw [isPurelyInseparable_iff]
   refine ⟨fun h x ↦ ?_, fun h x ↦ ?_⟩
@@ -731,18 +732,14 @@ theorem isSepClosed_iff_isPurelyInseparable_algebraicClosure [IsAlgClosure F E] 
     IsSepClosed F ↔ IsPurelyInseparable F E := by
   refine ⟨fun _ ↦ Normal.isAlgebraic'.isPurelyInseparable_of_isSepClosed, fun H ↦ ?_⟩
   haveI := IsAlgClosure.alg_closed F (K := E)
-  rwa [← separableClosure.eq_bot_iff F E Normal.isAlgebraic',
+  rwa [← separableClosure.eq_bot_iff Normal.isAlgebraic',
     IsSepClosed.separableClosure_eq_bot_iff] at H
 
 /-- If `E / F` is a separable extension, `E` is perfect, then `F` is also prefect. -/
 theorem perfectField_of_isSeparable_of_perfectField_top [IsSeparable F E] [PerfectField E] :
     PerfectField F := by
-  obtain ⟨p, hchar⟩ := CharP.exists F
-  by_cases hp : p = 0
-  · haveI := (CharP.charP_zero_iff_charZero F).1 (hp ▸ hchar)
-    exact PerfectField.ofCharZero F
-  haveI := NeZero.mk hp
-  haveI := CharP.char_is_prime_of_pos F p
+  obtain _ | ⟨p, _, _⟩ := CharP.exists' F
+  · exact PerfectField.ofCharZero F
   haveI := charP_of_injective_algebraMap' F E p
   haveI := PerfectField.toPerfectRing E p
   haveI := PerfectRing.ofSurjective F p fun x ↦ by
