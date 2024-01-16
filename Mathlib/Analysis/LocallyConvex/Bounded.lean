@@ -256,6 +256,7 @@ theorem TotallyBounded.isVonNBounded {s : Set E} (hs : TotallyBounded s) :
   have hx_fstsnd : x.fst + x.snd ⊆ U := add_subset_iff.mpr fun z1 hz1 z2 hz2 ↦
     h'' <| mk_mem_prod hz1 hz2
   refine fun y _ => Absorbs.mono_left ?_ hx_fstsnd
+  -- TODO: with dot notation, Lean timeouts on the next line. Why?
   exact Absorbent.vadd_absorbs (absorbent_nhds_zero hx.1.1) hx.2.2.absorbs_self
 #align totally_bounded.is_vonN_bounded TotallyBounded.isVonNBounded
 
