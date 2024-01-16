@@ -68,9 +68,6 @@ initialize fpropTheoremsExt : FPropTheoremsExt ←
 open RefinedDiscrTree in
 def mkFPropTheoremFromConst (declName : Name) (prio : Nat) : MetaM FPropTheorem := do
   let info ← getConstInfo declName
-  let .some proof := info.value?
-    | throwError "invalud fprop theorem `{declName}`"
-
   let (_,_,b) ← forallMetaTelescope info.type
 
   let .some (decl,_) ← getFProp? b
@@ -80,7 +77,7 @@ def mkFPropTheoremFromConst (declName : Name) (prio : Nat) : MetaM FPropTheorem 
     fpropName := decl.fpropName
     keys := ← mkPath b
     levelParams := info.levelParams.toArray
-    proof := proof
+    proof := (mkConst declName (info.levelParams.map fun l => .param l))
     priority := prio
     origin := .decl declName
   }

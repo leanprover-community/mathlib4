@@ -160,12 +160,13 @@ def tryTheoremCore (xs : Array Expr) (bis : Array BinderInfo) (val : Expr) (type
     return none
 
 
-def tryTheorem? (e : Expr) (thmProof : Expr) (thmId : Origin)
+def tryTheorem? (e : Expr) (thm : FPropTheorem)
   (discharge? : Expr → MetaM (Option Expr)) (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do
   withNewMCtxDepth do
-    let type ← instantiateMVars (← inferType thmProof)
+    let thmProof ← thm.getProof
+    let type ← inferType thmProof
     let (xs, bis, type) ← forallMetaTelescope type
-    tryTheoremCore xs bis thmProof type e thmId discharge? fprop
+    tryTheoremCore xs bis thmProof type e thm.origin discharge? fprop
 
 
 def tryLocalTheorems (fpropDecl : FPropDecl) (e : Expr)
@@ -181,8 +182,16 @@ def tryLocalTheorems (fpropDecl : FPropDecl) (e : Expr)
         | continue
       if fpropDecl'.fpropName ≠ fpropDecl.fpropName then
         continue
+
+      let thm : FPropTheorem := {
+        fpropName := fpropDecl'.fpropName
+        keys := #[]
+        levelParams := #[]
+        proof := var.toExpr
+        origin := .fvar var.fvarId 
+      }
       
-      let .some r ← tryTheorem? e var.toExpr (.fvar var.fvarId) fpropDecl.discharger fprop
+      let .some r ← tryTheorem? e thm fpropDecl.discharger fprop
         | continue
 
       trace[Meta.Tactic.fprop.apply] "local hypothesis {← ppExpr (.fvar var.fvarId)}"
@@ -200,7 +209,7 @@ def applyIdRule (fpropDecl : FPropDecl) (e X : Expr)
   let .id id_X := thm.thrmArgs | return none
   
   let proof ← thm.getProof
-  let type ← instantiateMVars (← inferType proof)
+  let type ← inferType proof
   let (xs, bis, type) ← forallMetaTelescope type
 
   xs[id_X]!.mvarId!.assignIfDefeq X
@@ -218,7 +227,7 @@ def applyConstRule (fpropDecl : FPropDecl) (e X y : Expr)
   let .const id_X id_y := thm.thrmArgs | return none
   
   let proof ← thm.getProof
-  let type ← instantiateMVars (← inferType proof)
+  let type ← inferType proof
   let (xs, bis, type) ← forallMetaTelescope type
 
   xs[id_X]!.mvarId!.assignIfDefeq X
@@ -235,7 +244,7 @@ def applyProjRule (fpropDecl : FPropDecl) (e x Y : Expr)
   let .proj id_x id_Y := thm.thrmArgs | return none
   
   let proof ← thm.getProof
-  let type ← instantiateMVars (← inferType proof)
+  let type ← inferType proof
   let (xs, bis, type) ← forallMetaTelescope type
 
   xs[id_x]!.mvarId!.assignIfDefeq x
@@ -252,7 +261,7 @@ def applyProjDepRule (fpropDecl : FPropDecl) (e x Y : Expr)
   let .projDep id_x id_Y := thm.thrmArgs | return none
   
   let proof ← thm.getProof
-  let type ← instantiateMVars (← inferType proof)
+  let type ← inferType proof
   let (xs, bis, type) ← forallMetaTelescope type
 
   xs[id_x]!.mvarId!.assignIfDefeq x
@@ -269,7 +278,7 @@ def applyCompRule (fpropDecl : FPropDecl) (e f g : Expr)
   let .comp id_f id_g := thm.thrmArgs | return none
   
   let proof ← thm.getProof
-  let type ← instantiateMVars (← inferType proof)
+  let type ← inferType proof
   let mut (xs, bis, type) ← forallMetaTelescope type
 
   xs[id_f]!.mvarId!.assignIfDefeq f
@@ -286,7 +295,7 @@ def applyLetRule (fpropDecl : FPropDecl) (e f g : Expr)
   let .letE id_f id_g := thm.thrmArgs | return none
   
   let proof ← thm.getProof
-  let type ← instantiateMVars (← inferType proof)
+  let type ← inferType proof
   let (xs, bis, type) ← forallMetaTelescope type
 
   xs[id_f]!.mvarId!.assignIfDefeq f
@@ -303,7 +312,7 @@ def applyPiRule (fpropDecl : FPropDecl) (e f : Expr)
   let .pi id_f := thm.thrmArgs | return none
   
   let proof ← thm.getProof
-  let type ← instantiateMVars (← inferType proof)
+  let type ← inferType proof
   let (xs, bis, type) ← forallMetaTelescope type
 
   xs[id_f]!.mvarId!.assignIfDefeq f
@@ -380,7 +389,7 @@ def constAppCase (fpropDecl : FPropDecl) (e : Expr) (f : Expr) (fprop : Expr →
   if candidates.size ≠ 0 then
 
     for c in candidates do
-      if let .some r ← tryTheorem? e (← c.getProof) c.origin fpropDecl.discharger fprop then
+      if let .some r ← tryTheorem? e c fpropDecl.discharger fprop then
         return r
 
     trace[Meta.Tactic.fprop.step] "no theorem matched"

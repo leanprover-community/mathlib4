@@ -4,7 +4,7 @@ import Mathlib.Analysis.NormedSpace.ContinuousLinearMap
 open Mathlib Meta FProp
 
 
-variable {α β γ : Type} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
+variable {α β γ : Type _} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
   {E : α → Type _} [∀ x, TopologicalSpace (E x)]
 
 
@@ -110,11 +110,6 @@ theorem Cont_snd (self : α → β×γ) (hself : Cont self)
   : Cont fun x => (self x).2 := by unfold Cont; continuity
 
 
--- set_option trace.Meta.Tactic.fprop.step true 
--- set_option trace.Meta.Tactic.fprop.cache true 
--- set_option trace.Meta.Tactic.fprop.unify true 
--- set_option trace.Meta.Tactic.fprop.discharge true 
--- set_option trace.Meta.Tactic.fprop.apply true 
 
 set_option profiler true 
 set_option profiler.threshold 10
@@ -128,7 +123,14 @@ example (f : α → β → γ) (g : α → β) (hf : Cont (fun (x,y) => f x y)) 
 example (f : α → β → γ) (g : α → β) (hf : Cont (fun (x,y) => f x y)) (hg : Cont g) : Cont (fun x => let y := g x; f x y) := by fprop
 example {ι} (f : α → ι → γ) (hf : ∀ i, Cont (fun x => f x i)) : Cont (fun x i => f x i) := by fprop
 
-example (x y : α → X) (hx : Cont x) (hy : Cont y) : Cont (fun w => x w + y w) := by fprop
+-- set_option trace.Meta.Tactic.fprop.step true 
+-- set_option trace.Meta.Tactic.fprop.cache true 
+-- set_option trace.Meta.Tactic.fprop.unify true 
+-- set_option trace.Meta.Tactic.fprop.discharge true 
+-- set_option trace.Meta.Tactic.fprop.apply true 
+-- set_option trace.Meta.isDefEq true in
+example (x y : α → ℝ) (hx : Cont x) (hy : Cont y) : Cont (fun w => x w + y w) := by fprop
+
 example (c : X) : Cont (fun x : X => c + x) := by fprop
 example (c : X) : Cont (fun x : X => x + c) := by fprop
 
