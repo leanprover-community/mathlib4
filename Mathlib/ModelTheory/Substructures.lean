@@ -946,6 +946,11 @@ theorem codRestrict_apply (p : L.Substructure N) (f : M ↪[L] N) {h} (x : M) :
 #align first_order.language.embedding.cod_restrict_apply FirstOrder.Language.Embedding.codRestrict_apply
 
 @[simp]
+theorem codRestrict_apply' (p : L.Substructure N) (f : M ↪[L] N) {h} (x : M) :
+    codRestrict p f h x = ⟨f x, h x⟩ :=
+  rfl
+
+@[simp]
 theorem comp_codRestrict (f : M ↪[L] N) (g : N ↪[L] P) (p : L.Substructure P) (h : ∀ b, g b ∈ p) :
     ((codRestrict p g h).comp f : M ↪[L] p) = codRestrict p (g.comp f) fun _ => h _ :=
   ext fun _ => rfl
@@ -1066,7 +1071,6 @@ theorem subtype_equiv_inclusion {f g : M ≃ₚ[L] N} (h : f ≤ g) :
   subtype _ ∘ g.equiv ∘ (Substructure.inclusion (le_dom h)) = subtype _ ∘ f.equiv := by
   let ⟨_, eq⟩ := h; exact eq
 
-@[simp]
 theorem equiv_inclusion {f g : M ≃ₚ[L] N} (h : f ≤ g) (x : f.sub_dom) :
   g.equiv (Substructure.inclusion (le_dom h) x) = Substructure.inclusion (le_cod h) (f.equiv x) := by
   apply (subtype _).inj'

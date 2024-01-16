@@ -426,6 +426,10 @@ noncomputable def equiv_lift : DirectLimit G f ≃[L] DirectLimit G' f' := by {
   exact ⟨Equiv.ofBijective F ⟨F.injective, surj_f⟩, F.map_fun', F.map_rel'⟩
 }
 
+@[simp]
+theorem equiv_lift_of {i : ι} (x : G i) : equiv_lift L ι G f G' f' g H_commutating (of L ι G f i x)
+  = of L ι G' f' i (g i x) := refl _
+
 variable {L ι G f}
 
 /-- The direct limit of countably many countably generated structures is countably generated. -/
@@ -472,6 +476,11 @@ def liftInclusion :
   DirectLimit.lift L ι (fun i ↦ S i) (fun _ _ h ↦ Substructure.inclusion (S.monotone h))
     (fun _ ↦ Substructure.subtype _) (fun _ _ _ _ ↦ rfl)
 
+@[simp]
+theorem liftInclusion_of {i : ι} (x : S i) :
+  (liftInclusion S) (of L ι _ (fun _ _ h ↦ Substructure.inclusion (S.monotone h)) i x)
+  = Substructure.subtype (S i) x := refl _
+
 lemma rangeLiftInclusion : (liftInclusion S).toHom.range = ⨆ i, S i := by
   simp_rw [liftInclusion, range_lift, Substructure.range_subtype]
 
@@ -479,8 +488,30 @@ lemma rangeLiftInclusion : (liftInclusion S).toHom.range = ⨆ i, S i := by
 noncomputable def Equiv_iSup :
     DirectLimit (fun i ↦ S i) (fun _ _ h ↦ Substructure.inclusion (S.monotone h)) ≃[L]
     (iSup S : L.Substructure M) := by
-  rw [← rangeLiftInclusion]
-  exact (liftInclusion S).equivRange
+  have liftInclusion_in_sup : ∀ x, liftInclusion S x ∈ (⨆ i, S i) := by
+    simp only [← rangeLiftInclusion, Hom.mem_range, Embedding.coe_toHom]
+    intro x ; use x
+  let F := Embedding.codRestrict (⨆ i, S i) _ liftInclusion_in_sup
+  have F_surj : Function.Surjective F := by
+    rintro ⟨m, hm⟩
+    rw [←rangeLiftInclusion, Hom.mem_range] at hm
+    rcases hm with ⟨a, _⟩; use a
+    simpa only [Embedding.codRestrict_apply', Subtype.mk.injEq]
+  exact ⟨Equiv.ofBijective F ⟨F.injective, F_surj⟩, F.map_fun', F.map_rel'⟩
+
+@[simp]
+theorem Equiv_isup_of {i : ι} (x : S i) :
+  Equiv_iSup S (of L ι _ (fun _ _ h ↦ Substructure.inclusion (S.monotone h)) i x)
+  = Substructure.inclusion (le_iSup _ _) x :=
+  rfl
+
+@[simp]
+theorem Equiv_isup_symm_inclusion {i : ι} (x : S i) :
+  (Equiv_iSup S).symm (Substructure.inclusion (le_iSup _ _) x)
+  = of L ι _ (fun _ _ h ↦ Substructure.inclusion (S.monotone h)) i x := by
+  apply (Equiv_iSup S).injective
+  simp only [Equiv.apply_symm_apply]
+  rfl
 
 end DirectLimit
 
@@ -499,7 +530,7 @@ instance : DirectedSystem (fun i ↦ (S i).sub_cod) (fun _ _ h ↦
   map_self' := fun _ _ _ ↦ rfl
   map_map' := fun _ _ _ ↦ rfl
 
-noncomputable def subEquiv_lift : M ≃ₚ[L] N := {
+noncomputable def subEquiv_limit : M ≃ₚ[L] N := {
   sub_dom := iSup (fun i ↦ (S i).sub_dom)
   sub_cod := iSup (fun i ↦ (S i).sub_cod)
   equiv := by
@@ -519,10 +550,33 @@ noncomputable def subEquiv_lift : M ≃ₚ[L] N := {
   }
 
 @[simp]
-theorem subEquiv_lift_dom : (subEquiv_lift S).sub_dom = iSup (fun x ↦ (S x).sub_dom) := refl _
+theorem subEquiv_limit_dom : (subEquiv_limit S).sub_dom = iSup (fun x ↦ (S x).sub_dom) := rfl
 
 @[simp]
-theorem subEquiv_lift_cod : (subEquiv_lift S).sub_cod = iSup (fun x ↦ (S x).sub_cod) := refl _
+theorem subEquiv_limit_cod : (subEquiv_limit S).sub_cod = iSup (fun x ↦ (S x).sub_cod) := rfl
+
+theorem le_subEquiv_limit : ∀ i, S i ≤ subEquiv_limit S := by
+  intro i
+  refine ⟨by simp; apply le_iSup (f := fun i ↦ (S i).sub_dom), ?_⟩
+  unfold subEquiv_limit
+  ext x
+  simp only [OrderHom.coe_mk, Function.comp_apply, Equiv.comp_apply]
+  refine DirectLimit.Equiv_isup_symm_inclusion
+    { toFun := fun i ↦ (S i).sub_dom
+      monotone' := Substructure.SubEquivalence.monotone_dom.comp S.monotone} x ▸ ?_
+  refine DirectLimit.equiv_lift_of L ι (fun i ↦ (S i).sub_dom)
+        (fun _ _ hij ↦ Substructure.inclusion (Substructure.SubEquivalence.le_dom (S.monotone hij)))
+      (fun i ↦ (S i).sub_cod)
+      (fun _ _ hij ↦ Substructure.inclusion (Substructure.SubEquivalence.le_cod (S.monotone hij)))
+      (fun i ↦ (S i).equiv)
+      (fun _ _ hij _ ↦ Substructure.SubEquivalence.equiv_inclusion (S.monotone hij) _)
+      x ▸ ?_
+  rw [DirectLimit.equiv_lift_of]
+  refine DirectLimit.Equiv_isup_of
+    { toFun := fun i ↦ (S i).sub_cod
+      monotone' := Substructure.SubEquivalence.monotone_cod.comp S.monotone} ((S i).equiv x) ▸ ?_
+  rw [DirectLimit.Equiv_isup_of]
+  rfl
 
 
 end SubEquivalence
