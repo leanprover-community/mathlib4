@@ -84,7 +84,6 @@ lemma norm_fderiv_fourier_transform_integrand_right_le (v : V) (w : W) :
 
 variable {f}
 
-set_option trace.profiler true in
 /-- Main theorem of this section: if both `f` and `x ↦ ‖x‖ * ‖f x‖` are integrable, then the
 Fourier transform of `f` has a Fréchet derivative (everywhere in its domain) and its derivative is
 the Fourier transform of `mul_L L f`. -/
