@@ -679,7 +679,7 @@ theorem eq_σ_comp_of_not_injective {n : ℕ} {Δ' : SimplexCategory} (θ : mk (
   apply le_antisymm
   · exact θ.toOrderHom.monotone (le_of_lt (Fin.castSucc_lt_succ _))
   · rw [Fin.castSucc_castPred, h₁]
-    exact θ.toOrderHom.monotone ((Fin.le_succ_castPred_iff _).mpr h₂)
+    exact θ.toOrderHom.monotone ((Fin.succ_castPred_le_iff _).mpr h₂)
 #align simplex_category.eq_σ_comp_of_not_injective SimplexCategory.eq_σ_comp_of_not_injective
 
 theorem eq_comp_δ_of_not_surjective' {n : ℕ} {Δ : SimplexCategory} (θ : Δ ⟶ mk (n + 1))
