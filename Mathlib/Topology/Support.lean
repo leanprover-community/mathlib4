@@ -110,6 +110,18 @@ theorem mulTSupport_mul [TopologicalSpace X] [Monoid α] {f g : X → α} :
     ((mulSupport_mul f g).trans (union_subset_union (subset_mulTSupport _) (subset_mulTSupport _)))
     (isClosed_closure.union isClosed_closure)
 
+theorem tsupport_smul_left [TopologicalSpace X] [Semiring R] [AddCommMonoid M] [Module R M]
+    [NoZeroSMulDivisors R M] (f : X → R) (g : X → M) : tsupport (f • g) ⊆ tsupport f := by
+  apply closure_mono
+  erw [support_smul]
+  exact inter_subset_left _ _
+
+theorem tsupport_smul_right [TopologicalSpace X] [Semiring R] [AddCommMonoid M] [Module R M]
+    [NoZeroSMulDivisors R M] (f : X → R) (g : X → M) : tsupport (f • g) ⊆ tsupport g := by
+  apply closure_mono
+  erw [support_smul]
+  exact inter_subset_right _ _
+
 section
 
 variable [TopologicalSpace α] [TopologicalSpace α']
