@@ -5,11 +5,29 @@ Authors: Adam Topaz
 -/
 import Mathlib.FieldTheory.IsSepClosed
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
+import Mathlib.FieldTheory.AbsoluteGaloisGroup
+import Mathlib
 
-variable (K : Type*) [Field K]
+variable (k K : Type*) [Field k] [Field K] [Algebra k K]
 
 theorem exists_isPrimitiveRoot_of_isSepClosed {n : ℕ} [IsSepClosed K] [NeZero (n : K)] :
     ∃ (ξ : K), IsPrimitiveRoot ξ n := by
   apply exists_isPrimitiveRoot_of_splits_cyclotomic
   apply IsSepClosed.splits_domain (Polynomial.cyclotomic n K)
   apply Polynomial.separable_cyclotomic
+
+noncomputable
+def cyclotomicCharacter (n : ℕ+) [IsSepClosure k K] [NeZero (n : K)] :
+    (K ≃ₐ[k] K) →* (ZMod n)ˣ :=
+  letI : IsSepClosed K := IsSepClosure.sep_closed k
+  IsPrimitiveRoot.autToPow k (exists_isPrimitiveRoot_of_isSepClosed K).choose_spec
+
+lemma cyclotomicCharacter_spec (n : ℕ+) [IsSepClosure k K] [NeZero (n : K)]
+    (ξ : Kˣ) (hξ : ξ ∈ rootsOfUnity n K) (σ : (K ≃ₐ[k] K)) :
+    ξ ^ (cyclotomicCharacter k K n σ : ZMod n).val = σ ξ := sorry
+
+lemma cyclotomicCharacter_unique (n : ℕ+) [IsSepClosure k K] [NeZero (n : K)]
+    (χ : (K ≃ₐ[k] K) →* (ZMod n)ˣ)
+    (hχ : ∀ (σ : (K ≃ₐ[k] K)) (ξ : Kˣ)
+    (hξ : ξ ∈ rootsOfUnity n K), ξ ^ (χ σ : ZMod n).val = σ ξ) :
+    χ = cyclotomicCharacter k K n := sorry
