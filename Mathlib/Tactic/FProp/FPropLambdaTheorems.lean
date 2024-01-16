@@ -46,9 +46,23 @@ def LambdaTheoremArgs.type (t : LambdaTheoremArgs) : LambdaTheoremType :=
 structure LambdaTheorem where
   fpropName : Name
   thrmName : Name
+  levelParams : Array Name
   proof : Expr
   thrmArgs : LambdaTheoremArgs
   deriving Inhabited, BEq
+
+/-- Returns `proof` with fresh universe metavariables -/
+def LambdaTheorem.getProof (fpropThm : LambdaTheorem) : MetaM Expr := do
+  if fpropThm.proof.isConst && fpropThm.levelParams.isEmpty then
+    let info ← getConstInfo fpropThm.proof.constName!
+    if info.levelParams.isEmpty then
+      return fpropThm.proof
+    else
+      return fpropThm.proof.updateConst! (← info.levelParams.mapM (fun _ => mkFreshLevelMVar))
+  else
+    let us ← fpropThm.levelParams.mapM fun _ => mkFreshLevelMVar
+    return fpropThm.proof.instantiateLevelParamsArray fpropThm.levelParams us
+
 
 structure LambdaTheorems where
   theorems : HashMap (Name × LambdaTheoremType) LambdaTheorem := {}
@@ -117,8 +131,6 @@ def detectLambdaTheoremArgs (f : Expr) (xs : Array Expr) : Option LambdaTheoremA
 def addLambdaTheorem (declName : Name) : MetaM Unit := do
 
   let info ← getConstInfo declName
-  let .some proof := info.value?
-    | throwError "invalid theorem {declName}"
 
   forallTelescope info.type fun xs b => do
 
@@ -131,7 +143,8 @@ def addLambdaTheorem (declName : Name) : MetaM Unit := do
     let thrm : LambdaTheorem := {
       fpropName := decl.fpropName
       thrmName := declName
-      proof := proof
+      levelParams := info.levelParams.toArray
+      proof := (.const declName (info.levelParams.map fun l => .param l))
       thrmArgs := thrmArgs
     }
 
