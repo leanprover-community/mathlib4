@@ -253,7 +253,6 @@ def toLinearMap [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) : M₁ i →ₗ[R]
 #align multilinear_map.to_linear_map MultilinearMap.toLinearMap
 #align multilinear_map.to_linear_map_to_add_hom_apply MultilinearMap.toLinearMap_apply
 
-
 /-- The cartesian product of two multilinear maps, as a multilinear map. -/
 @[simps]
 def prod (f : MultilinearMap R M₁ M₂) (g : MultilinearMap R M₁ M₃) : MultilinearMap R M₁ (M₂ × M₃)
