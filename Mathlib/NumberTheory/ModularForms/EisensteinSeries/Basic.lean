@@ -29,7 +29,7 @@ lemma gammaSet_mem (N : ℕ) (a b : ℤ ) (f : (Fin 2) → ℤ ) : f ∈ gammaSe
   rfl
 
 lemma gammaSet_mem_iff (N : ℕ) (a b c d : ℤ) (v : (gammaSet N a b)) : v.1 ∈ gammaSet N c d ↔
-  (a : ZMod N) = c ∧ (b : ZMod N) = d := by
+    (a : ZMod N) = c ∧ (b : ZMod N) = d := by
   simp only [gammaSet_mem', v.2.1, v.2.2.1, v.2.2.2, and_true]
 
 lemma gammaSet_one_eq (a b c d : ℤ ) : gammaSet 1 a b = gammaSet 1 c d := by
