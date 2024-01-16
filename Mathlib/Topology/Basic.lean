@@ -1672,6 +1672,8 @@ theorem ContinuousAt.preimage_mem_nhds {f : α → β} {x : α} {t : Set β} (h 
   h ht
 #align continuous_at.preimage_mem_nhds ContinuousAt.preimage_mem_nhds
 
+/-- Deprecated, please use `not_mem_tsupport_iff_eventuallyEq` instead. -/
+@[deprecated] -- 15 January 2024
 theorem eventuallyEq_zero_nhds {M₀} [Zero M₀] {a : α} {f : α → M₀} :
     f =ᶠ[𝓝 a] 0 ↔ a ∉ closure (Function.support f) := by
   rw [← mem_compl_iff, ← interior_compl, mem_interior_iff_mem_nhds, Function.compl_support,
