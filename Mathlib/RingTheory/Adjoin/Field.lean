@@ -108,3 +108,15 @@ theorem IsIntegral.minpoly_splits_tower_top [Algebra K L] [IsScalarTower R K L]
     Splits (algebraMap K L) (minpoly K x) := by
   rw [IsScalarTower.algebraMap_eq R K L] at h
   exact int.minpoly_splits_tower_top' h
+
+/-- If `K / E / F` is a ring extension tower, `L` is a subalgebra of `K / F`,
+then `[E[L] : E] ≤ [L : F]`. -/
+lemma Subalgebra.adjoin_rank_le {F : Type*} (E : Type*) {K : Type*}
+    [Field F] [CommRing E] [StrongRankCondition E] [CommRing K]
+    [Algebra F E] [Algebra E K] [Algebra F K] [IsScalarTower F E K]
+    (L : Subalgebra F K) :
+    Module.rank E (Algebra.adjoin E (L : Set K)) ≤ Module.rank F L := by
+  obtain ⟨ι, ⟨bL⟩⟩ := Basis.exists_basis F L
+  change Module.rank E (Subalgebra.toSubmodule (Algebra.adjoin E (L : Set K))) ≤ _
+  rw [L.adjoin_eq_span_basis E bL, ← bL.mk_eq_rank'']
+  exact rank_span_le _ |>.trans Cardinal.mk_range_le

@@ -484,6 +484,31 @@ theorem restrictScalars_adjoin (K : IntermediateField F E) (S : Set E) :
     restrictScalars F (adjoin K S) = adjoin F (K ∪ S) := by
   rw [← adjoin_self _ K, adjoin_adjoin_left, adjoin_self _ K]
 
+variable {F} in
+theorem extendScalars_adjoin {K : IntermediateField F E} {S : Set E} (h : K ≤ adjoin F S) :
+    extendScalars h = adjoin K S := restrictScalars_injective F <| by
+  rw [extendScalars_restrictScalars, restrictScalars_adjoin]
+  exact le_antisymm (adjoin.mono F S _ <| Set.subset_union_right _ S) <| adjoin_le_iff.2 <|
+    Set.union_subset h (subset_adjoin F S)
+
+variable {F} in
+/-- If `E / L / F` and `E / L' / F` are two field extension towers, `L ≃ₐ[F] L'` is an isomorphism
+compatible with `E / L` and `E / L'`, then for any subset `S` of `E`, `L(S)` and `L'(S)` are
+equal as intermediate fields of `E / F`. -/
+theorem restrictScalars_adjoin_of_algEquiv
+    {L L' : Type*} [Field L] [Field L']
+    [Algebra F L] [Algebra L E] [Algebra F L'] [Algebra L' E]
+    [IsScalarTower F L E] [IsScalarTower F L' E] (i : L ≃ₐ[F] L')
+    (hi : algebraMap L E = (algebraMap L' E) ∘ i) (S : Set E) :
+    (adjoin L S).restrictScalars F = (adjoin L' S).restrictScalars F := by
+  apply_fun toSubfield using (fun K K' h ↦ by
+    ext x; change x ∈ K.toSubfield ↔ x ∈ K'.toSubfield; rw [h])
+  change Subfield.closure _ = Subfield.closure _
+  congr
+  ext x
+  exact ⟨fun ⟨y, h⟩ ↦ ⟨i y, by rw [← h, hi]; rfl⟩,
+    fun ⟨y, h⟩ ↦ ⟨i.symm y, by rw [← h, hi, Function.comp_apply, AlgEquiv.apply_symm_apply]⟩⟩
+
 theorem algebra_adjoin_le_adjoin : Algebra.adjoin F S ≤ (adjoin F S).toSubalgebra :=
   Algebra.adjoin_le (subset_adjoin _ _)
 #align intermediate_field.algebra_adjoin_le_adjoin IntermediateField.algebra_adjoin_le_adjoin
@@ -648,28 +673,29 @@ theorem le_sup_toSubalgebra : E1.toSubalgebra ⊔ E2.toSubalgebra ≤ (E1 ⊔ E2
   sup_le (show E1 ≤ E1 ⊔ E2 from le_sup_left) (show E2 ≤ E1 ⊔ E2 from le_sup_right)
 #align intermediate_field.le_sup_to_subalgebra IntermediateField.le_sup_toSubalgebra
 
-theorem sup_toSubalgebra [h1 : FiniteDimensional K E1] [h2 : FiniteDimensional K E2] :
+/-- The compositum of two intermediate fields is equal to the compositum of them
+as subalgebras, if one of them is algebraic over the base field. -/
+theorem sup_toSubalgebra_of_isAlgebraic
+    (halg : Algebra.IsAlgebraic K E1 ∨ Algebra.IsAlgebraic K E2) :
     (E1 ⊔ E2).toSubalgebra = E1.toSubalgebra ⊔ E2.toSubalgebra := by
-  let S1 := E1.toSubalgebra
-  let S2 := E2.toSubalgebra
-  refine'
-    le_antisymm
-      (show _ ≤ (S1 ⊔ S2).toIntermediateField _ from
-        sup_le (show S1 ≤ _ from le_sup_left) (show S2 ≤ _ from le_sup_right))
-      (le_sup_toSubalgebra E1 E2)
-  suffices IsField (S1 ⊔ S2 : Subalgebra K L) by
-    intro x hx
-    by_cases hx' : (⟨x, hx⟩ : (S1 ⊔ S2 : Subalgebra K L)) = 0
-    · rw [← Subtype.coe_mk x, hx', Subalgebra.coe_zero, inv_zero]
-      exact (S1 ⊔ S2).zero_mem
-    · obtain ⟨y, h⟩ := this.mul_inv_cancel hx'
-      exact (congr_arg (· ∈ S1 ⊔ S2) <| eq_inv_of_mul_eq_one_right <| Subtype.ext_iff.mp h).mp y.2
-  exact
-    isField_of_isIntegral_of_isField'
-      (Algebra.isIntegral_sup.mpr
-        ⟨Algebra.IsIntegral.of_finite K E1, Algebra.IsIntegral.of_finite K E2⟩)
-      (Field.toIsField K)
+  wlog h' : Algebra.IsAlgebraic K E2 generalizing E1 E2 with H
+  · have := H E2 E1 halg.symm (halg.resolve_right h')
+    rwa [sup_comm (a := E1), sup_comm (a := E1.toSubalgebra)]
+  have : (adjoin E1 (E2 : Set L)).toSubalgebra = _ :=
+    adjoin_algebraic_toSubalgebra fun x h ↦ IsAlgebraic.tower_top E1 (isAlgebraic_iff.1 (h' ⟨x, h⟩))
+  apply_fun Subalgebra.restrictScalars K at this
+  erw [← restrictScalars_toSubalgebra, restrictScalars_adjoin,
+    Algebra.restrictScalars_adjoin] at this
+  exact this
+
+theorem sup_toSubalgebra [FiniteDimensional K E1] :
+    (E1 ⊔ E2).toSubalgebra = E1.toSubalgebra ⊔ E2.toSubalgebra :=
+  E1.sup_toSubalgebra_of_isAlgebraic E2 (Or.inl (Algebra.IsAlgebraic.of_finite K _))
 #align intermediate_field.sup_to_subalgebra IntermediateField.sup_toSubalgebra
+
+theorem sup_toSubalgebra' [FiniteDimensional K E2] :
+    (E1 ⊔ E2).toSubalgebra = E1.toSubalgebra ⊔ E2.toSubalgebra :=
+  E1.sup_toSubalgebra_of_isAlgebraic E2 (Or.inr (Algebra.IsAlgebraic.of_finite K _))
 
 instance finiteDimensional_sup [h1 : FiniteDimensional K E1] [h2 : FiniteDimensional K E2] :
     FiniteDimensional K (E1 ⊔ E2 : IntermediateField K L) := by
@@ -748,6 +774,43 @@ theorem isSplittingField_iSup {p : ι → K[X]}
 #align intermediate_field.is_splitting_field_supr IntermediateField.isSplittingField_iSup
 
 end Supremum
+
+section Tower
+
+variable (E)
+
+variable {K : Type*} [Field K] [Algebra F K] [Algebra E K] [IsScalarTower F E K]
+
+/-- If `K / E / F` is a field extension tower, `L` is an intermediate field of `K / F`, such that
+either `L / F` or `E / F` is algebraic, then `E(L) = E[L]`. -/
+theorem adjoin_toSubalgebra_of_isAlgebraic (L : IntermediateField F K)
+    (halg : Algebra.IsAlgebraic F E ∨ Algebra.IsAlgebraic F L) :
+    (adjoin E (L : Set K)).toSubalgebra = Algebra.adjoin E (L : Set K) := by
+  let i := IsScalarTower.toAlgHom F E K
+  let E' := i.fieldRange
+  let i' : E ≃ₐ[F] E' := AlgEquiv.ofInjectiveField i
+  have hi : algebraMap E K = (algebraMap E' K) ∘ i' := by ext x; rfl
+  have halg' : Algebra.IsAlgebraic F E' ∨ Algebra.IsAlgebraic F L :=
+    halg.elim (Or.inl ∘ i'.isAlgebraic) Or.inr
+  apply_fun _ using Subalgebra.restrictScalars_injective F
+  erw [← restrictScalars_toSubalgebra, restrictScalars_adjoin_of_algEquiv i' hi,
+    Algebra.restrictScalars_adjoin_of_algEquiv i' hi, restrictScalars_adjoin,
+    Algebra.restrictScalars_adjoin]
+  exact E'.sup_toSubalgebra_of_isAlgebraic L halg'
+
+/-- If `K / E / F` is a field extension tower, `L` is an intermediate field of `K / F`, such that
+either `L / F` or `E / F` is algebraic, then `[E(L) : E] ≤ [L : F]`. A corollary of
+`Subalgebra.adjoin_rank_le` since in this case `E(L) = E[L]`. -/
+theorem adjoin_rank_le_of_isAlgebraic (L : IntermediateField F K)
+    (halg : Algebra.IsAlgebraic F E ∨ Algebra.IsAlgebraic F L) :
+    Module.rank E (adjoin E (L : Set K)) ≤ Module.rank F L := by
+  have h : (adjoin E (L.toSubalgebra : Set K)).toSubalgebra =
+      Algebra.adjoin E (L.toSubalgebra : Set K) :=
+    L.adjoin_toSubalgebra_of_isAlgebraic E halg
+  have := L.toSubalgebra.adjoin_rank_le E
+  rwa [(Subalgebra.equivOfEq _ _ h).symm.toLinearEquiv.rank_eq] at this
+
+end Tower
 
 open Set CompleteLattice
 
