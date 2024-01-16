@@ -138,7 +138,7 @@ theorem span_rightExact {w : ι' → S.X₃} (hv : ⊤ ≤ span R (range v))
     simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, Sum.elim_comp_inr]
     rw [ModuleCat.epi_iff_surjective] at hE
     rw [← Function.comp.assoc, Function.RightInverse.comp_eq_id (Function.rightInverse_invFun hE),
-      Function.comp.left_id]
+      Function.id_comp]
 
 end Span
 
