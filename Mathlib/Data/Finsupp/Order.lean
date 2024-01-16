@@ -3,7 +3,8 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Aaron Anderson
 -/
-import Mathlib.Data.Finsupp.Defs
+import Mathlib.Algebra.Order.Module.Defs
+import Mathlib.Data.Finsupp.Basic
 
 #align_import data.finsupp.order from "leanprover-community/mathlib"@"1d29de43a5ba4662dd33b5cfeecfc2a27a5a8a29"
 
@@ -30,7 +31,7 @@ open BigOperators
 
 open Finset
 
-variable {ι α : Type*}
+variable {ι α β : Type*}
 
 namespace Finsupp
 
@@ -148,6 +149,39 @@ instance orderedCancelAddCommMonoid [OrderedCancelAddCommMonoid α] :
 instance contravariantClass [OrderedAddCommMonoid α] [ContravariantClass α α (· + ·) (· ≤ ·)] :
     ContravariantClass (ι →₀ α) (ι →₀ α) (· + ·) (· ≤ ·) :=
   ⟨fun _f _g _h H x => le_of_add_le_add_left <| H x⟩
+
+section SMulZeroClass
+variable [Zero α] [Preorder α] [Zero β] [Preorder β] [SMulZeroClass α β]
+
+instance instPosSMulMono [PosSMulMono α β] : PosSMulMono α (ι →₀ β) :=
+  PosSMulMono.lift _ coe_le_coe coe_smul
+
+instance instSMulPosMono [SMulPosMono α β] : SMulPosMono α (ι →₀ β) :=
+  SMulPosMono.lift _ coe_le_coe coe_smul coe_zero
+
+instance instPosSMulReflectLE [PosSMulReflectLE α β] : PosSMulReflectLE α (ι →₀ β) :=
+  PosSMulReflectLE.lift _ coe_le_coe coe_smul
+
+instance instSMulPosReflectLE [SMulPosReflectLE α β] : SMulPosReflectLE α (ι →₀ β) :=
+  SMulPosReflectLE.lift _ coe_le_coe coe_smul coe_zero
+
+end SMulZeroClass
+
+section SMulWithZero
+variable [Zero α] [PartialOrder α] [Zero β] [PartialOrder β] [SMulWithZero α β]
+
+instance instPosSMulStrictMono [PosSMulStrictMono α β] : PosSMulStrictMono α (ι →₀ β) :=
+  PosSMulStrictMono.lift _ coe_le_coe coe_smul
+
+instance instSMulPosStrictMono [SMulPosStrictMono α β] : SMulPosStrictMono α (ι →₀ β) :=
+  SMulPosStrictMono.lift _ coe_le_coe coe_smul coe_zero
+
+-- `PosSMulReflectLT α (ι →₀ β)` already follows from the other instances
+
+instance instSMulPosReflectLT [SMulPosReflectLT α β] : SMulPosReflectLT α (ι →₀ β) :=
+  SMulPosReflectLT.lift _ coe_le_coe coe_smul coe_zero
+
+end SMulWithZero
 
 section CanonicallyOrderedAddCommMonoid
 

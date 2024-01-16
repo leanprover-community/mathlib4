@@ -237,7 +237,7 @@ theorem diag_eq_of_commute_stdBasisMatrix {i j : n} {M : Matrix n n α}
 
 /-- `M` is a scalar matrix if it commutes with every non-diagonal `stdBasisMatrix`. ​-/
 theorem mem_range_scalar_of_commute_stdBasisMatrix {M : Matrix n n α}
-    (hM : ∀ (i j : n), i ≠ j → Commute (stdBasisMatrix i j 1) M) :
+    (hM : Pairwise fun i j => Commute (stdBasisMatrix i j 1) M) :
     M ∈ Set.range (Matrix.scalar n) := by
   cases isEmpty_or_nonempty n
   · exact ⟨0, Subsingleton.elim _ _⟩
@@ -248,12 +248,12 @@ theorem mem_range_scalar_of_commute_stdBasisMatrix {M : Matrix n n α}
   · rw [diagonal_apply_eq]
     obtain rfl | hij := Decidable.eq_or_ne i j
     · rfl
-    · exact diag_eq_of_commute_stdBasisMatrix (hM _ _ hij)
+    · exact diag_eq_of_commute_stdBasisMatrix (hM hij)
   · push_neg at hkl
     rw [diagonal_apply_ne _ hkl]
     obtain rfl | hij := Decidable.eq_or_ne i j
-    · rw [col_eq_zero_of_commute_stdBasisMatrix (hM k i hkl.symm) hkl]
-    · rw [row_eq_zero_of_commute_stdBasisMatrix (hM i j hij) hkl.symm]
+    · rw [col_eq_zero_of_commute_stdBasisMatrix (hM hkl.symm) hkl]
+    · rw [row_eq_zero_of_commute_stdBasisMatrix (hM hij) hkl.symm]
 
 end Commute
 

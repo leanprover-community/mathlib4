@@ -58,4 +58,38 @@ protected theorem div_div_div_comm (hbc : Commute b c) (hbd : Commute b⁻¹ d) 
 
 end DivisionMonoid
 
+section Group
+variable [Group G] {a b : G}
+
+@[to_additive (attr := simp)]
+lemma inv_left_iff : Commute a⁻¹ b ↔ Commute a b := SemiconjBy.inv_symm_left_iff
+#align commute.inv_left_iff Commute.inv_left_iff
+#align add_commute.neg_left_iff AddCommute.neg_left_iff
+
+@[to_additive] alias ⟨_, inv_left⟩ := inv_left_iff
+#align commute.inv_left Commute.inv_left
+#align add_commute.neg_left AddCommute.neg_left
+
+@[to_additive (attr := simp)]
+lemma inv_right_iff : Commute a b⁻¹ ↔ Commute a b := SemiconjBy.inv_right_iff
+#align commute.inv_right_iff Commute.inv_right_iff
+#align add_commute.neg_right_iff AddCommute.neg_right_iff
+
+@[to_additive] alias ⟨_, inv_right⟩ := inv_right_iff
+#align commute.inv_right Commute.inv_right
+#align add_commute.neg_right AddCommute.neg_right
+
+@[to_additive]
+protected lemma inv_mul_cancel (h : Commute a b) : a⁻¹ * b * a = b := by
+  rw [h.inv_left.eq, inv_mul_cancel_right]
+#align commute.inv_mul_cancel Commute.inv_mul_cancel
+#align add_commute.neg_add_cancel AddCommute.neg_add_cancel
+
+@[to_additive]
+lemma inv_mul_cancel_assoc (h : Commute a b) : a⁻¹ * (b * a) = b := by
+  rw [← mul_assoc, h.inv_mul_cancel]
+#align commute.inv_mul_cancel_assoc Commute.inv_mul_cancel_assoc
+#align add_commute.neg_add_cancel_assoc AddCommute.neg_add_cancel_assoc
+
+end Group
 end Commute

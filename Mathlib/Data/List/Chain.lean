@@ -255,7 +255,7 @@ theorem Chain'.cons {x y l} (h₁ : R x y) (h₂ : Chain' R (y :: l)) : Chain' R
   chain'_cons.2 ⟨h₁, h₂⟩
 #align list.chain'.cons List.Chain'.cons
 
-theorem Chain'.tail : ∀ {l} (_ : Chain' R l), Chain' R l.tail
+theorem Chain'.tail : ∀ {l}, Chain' R l → Chain' R l.tail
   | [], _ => trivial
   | [_], _ => trivial
   | _ :: _ :: _, h => (chain'_cons.mp h).right
@@ -386,7 +386,7 @@ lemma chain'_join : ∀ {L : List (List α)}, [] ∉ L →
     rw [join, chain'_append, chain'_join hL.2, forall_mem_cons, chain'_cons]
     rw [mem_cons, not_or, ← Ne.def] at hL
     simp only [forall_mem_cons, and_assoc, join, head?_append_of_ne_nil _ hL.2.1.symm]
-    exact Iff.rfl.and (Iff.rfl.and $ Iff.rfl.and and_comm)
+    exact Iff.rfl.and (Iff.rfl.and <| Iff.rfl.and and_comm)
 
 /-- If `a` and `b` are related by the reflexive transitive closure of `r`, then there is an
 `r`-chain starting from `a` and ending on `b`.

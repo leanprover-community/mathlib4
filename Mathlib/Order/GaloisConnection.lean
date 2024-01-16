@@ -563,7 +563,7 @@ theorem l_iSup_u [CompleteLattice α] [CompleteLattice β] (gi : GaloisInsertion
 #align galois_insertion.l_supr_u GaloisInsertion.l_iSup_u
 
 theorem l_biSup_u [CompleteLattice α] [CompleteLattice β] (gi : GaloisInsertion l u) {ι : Sort x}
-    {p : ι → Prop} (f : ∀ (i) (_ : p i), β) : l (⨆ (i) (hi), u (f i hi)) = ⨆ (i) (hi), f i hi := by
+    {p : ι → Prop} (f : ∀ i, p i → β) : l (⨆ (i) (hi), u (f i hi)) = ⨆ (i) (hi), f i hi := by
   simp only [iSup_subtype', gi.l_iSup_u]
 #align galois_insertion.l_bsupr_u GaloisInsertion.l_biSup_u
 

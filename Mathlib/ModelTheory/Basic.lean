@@ -96,7 +96,7 @@ theorem lift_mk {i : ℕ} :
     Cardinal.lift.{v,u} #(Sequence₂ a₀ a₁ a₂ i)
       = #(Sequence₂ (ULift.{v,u} a₀) (ULift.{v,u} a₁) (ULift.{v,u} a₂) i) := by
   rcases i with (_ | _ | _ | i) <;>
-    simp only [Sequence₂, mk_uLift, mk_fintype, Fintype.card_of_isEmpty, Nat.cast_zero, lift_zero]
+    simp only [Sequence₂, mk_uLift, mk_fintype, Nat.cast_zero, lift_zero, Fintype.card_pempty]
 #align first_order.sequence₂.lift_mk FirstOrder.Sequence₂.lift_mk
 
 @[simp]
@@ -764,11 +764,11 @@ def symm (f : M ≃[L] N) : N ≃[L] M :=
       simp only [Equiv.toFun_as_coe]
       rw [Equiv.symm_apply_eq]
       refine' Eq.trans _ (f.map_fun' f' (f.toEquiv.symm ∘ x)).symm
-      rw [← Function.comp.assoc, Equiv.toFun_as_coe, Equiv.self_comp_symm, Function.comp.left_id]
+      rw [← Function.comp.assoc, Equiv.toFun_as_coe, Equiv.self_comp_symm, Function.id_comp]
     map_rel' := fun n r {x} => by
       simp only [Equiv.toFun_as_coe]
       refine' (f.map_rel' r (f.toEquiv.symm ∘ x)).symm.trans _
-      rw [← Function.comp.assoc, Equiv.toFun_as_coe, Equiv.self_comp_symm, Function.comp.left_id] }
+      rw [← Function.comp.assoc, Equiv.toFun_as_coe, Equiv.self_comp_symm, Function.id_comp] }
 #align first_order.language.equiv.symm FirstOrder.Language.Equiv.symm
 
 instance hasCoeToFun : CoeFun (M ≃[L] N) fun _ => M → N :=

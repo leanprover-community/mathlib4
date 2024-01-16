@@ -738,11 +738,10 @@ theorem OrthonormalBasis.toMatrix_orthonormalBasis_mem_unitary :
 unit length. -/
 @[simp]
 theorem OrthonormalBasis.det_to_matrix_orthonormalBasis : ‖a.toBasis.det b‖ = 1 := by
-  have : (normSq (a.toBasis.det b) : 𝕜) = 1 := by
-    simpa [IsROrC.mul_conj] using
-      (Matrix.det_of_mem_unitary (a.toMatrix_orthonormalBasis_mem_unitary b)).2
+  have := (Matrix.det_of_mem_unitary (a.toMatrix_orthonormalBasis_mem_unitary b)).2
+  rw [star_def, IsROrC.mul_conj] at this
   norm_cast at this
-  rwa [← sqrt_normSq_eq_norm, sqrt_eq_one]
+  rwa [pow_eq_one_iff_of_nonneg (norm_nonneg _) two_ne_zero] at this
 #align orthonormal_basis.det_to_matrix_orthonormal_basis OrthonormalBasis.det_to_matrix_orthonormalBasis
 
 end
@@ -805,7 +804,7 @@ theorem Orthonormal.exists_orthonormalBasis_extension (hv : Orthonormal 𝕜 ((�
     ∃ (u : Finset E) (b : OrthonormalBasis u 𝕜 E), v ⊆ u ∧ ⇑b = ((↑) : u → E) := by
   obtain ⟨u₀, hu₀s, hu₀, hu₀_max⟩ := exists_maximal_orthonormal hv
   rw [maximal_orthonormal_iff_orthogonalComplement_eq_bot hu₀] at hu₀_max
-  have hu₀_finite : u₀.Finite := hu₀.linearIndependent.finite
+  have hu₀_finite : u₀.Finite := hu₀.linearIndependent.setFinite
   let u : Finset E := hu₀_finite.toFinset
   let fu : ↥u ≃ ↥u₀ := hu₀_finite.subtypeEquivToFinset.symm
   have hu : Orthonormal 𝕜 ((↑) : u → E) := by simpa using hu₀.comp _ fu.injective
@@ -1034,6 +1033,11 @@ theorem toEuclideanLin_eq_toLin :
       Matrix.toLin (PiLp.basisFun _ _ _) (PiLp.basisFun _ _ _) :=
   rfl
 #align matrix.to_euclidean_lin_eq_to_lin Matrix.toEuclideanLin_eq_toLin
+
+open EuclideanSpace in
+lemma toEuclideanLin_eq_toLin_orthonormal :
+    toEuclideanLin = toLin (basisFun n 𝕜).toBasis (basisFun m 𝕜).toBasis :=
+  rfl
 
 end Matrix
 

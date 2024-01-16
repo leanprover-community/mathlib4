@@ -63,26 +63,15 @@ theorem bot_toAddSubmonoid : (⊥ : Submodule R M).toAddSubmonoid = ⊥ :=
   rfl
 #align submodule.bot_to_add_submonoid Submodule.bot_toAddSubmonoid
 
-section
-
-variable (R)
-
 @[simp]
-theorem restrictScalars_bot : restrictScalars S (⊥ : Submodule R M) = ⊥ :=
-  rfl
-#align submodule.restrict_scalars_bot Submodule.restrictScalars_bot
+lemma bot_toAddSubgroup {R M} [Ring R] [AddCommGroup M] [Module R M] :
+    (⊥ : Submodule R M).toAddSubgroup = ⊥ := rfl
 
+variable (R) in
 @[simp]
 theorem mem_bot {x : M} : x ∈ (⊥ : Submodule R M) ↔ x = 0 :=
   Set.mem_singleton_iff
 #align submodule.mem_bot Submodule.mem_bot
-
-end
-
-@[simp]
-theorem restrictScalars_eq_bot_iff {p : Submodule R M} : restrictScalars S p = ⊥ ↔ p = ⊥ := by
-  simp [SetLike.ext_iff]
-#align submodule.restrict_scalars_eq_bot_iff Submodule.restrictScalars_eq_bot_iff
 
 instance uniqueBot : Unique (⊥ : Submodule R M) :=
   ⟨inferInstance, fun x ↦ Subtype.ext <| (mem_bot R).1 x.mem⟩
@@ -163,25 +152,13 @@ theorem top_toAddSubmonoid : (⊤ : Submodule R M).toAddSubmonoid = ⊤ :=
 #align submodule.top_to_add_submonoid Submodule.top_toAddSubmonoid
 
 @[simp]
+lemma top_toAddSubgroup {R M} [Ring R] [AddCommGroup M] [Module R M] :
+    (⊤ : Submodule R M).toAddSubgroup = ⊤ := rfl
+
+@[simp]
 theorem mem_top {x : M} : x ∈ (⊤ : Submodule R M) :=
   trivial
 #align submodule.mem_top Submodule.mem_top
-
-section
-
-variable (R)
-
-@[simp]
-theorem restrictScalars_top : restrictScalars S (⊤ : Submodule R M) = ⊤ :=
-  rfl
-#align submodule.restrict_scalars_top Submodule.restrictScalars_top
-
-end
-
-@[simp]
-theorem restrictScalars_eq_top_iff {p : Submodule R M} : restrictScalars S p = ⊤ ↔ p = ⊤ := by
-  simp [SetLike.ext_iff]
-#align submodule.restrict_scalars_eq_top_iff Submodule.restrictScalars_eq_top_iff
 
 instance : OrderTop (Submodule R M) where
   top := ⊤
