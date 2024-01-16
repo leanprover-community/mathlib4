@@ -681,9 +681,8 @@ variable [Countable G] [Group G] [MulAction G α] [MeasurableSpace α] {μ : Mea
 
 @[to_additive MeasureTheory.IsAddFundamentalDomain.measure_addFundamentalFrontier]
 theorem measure_fundamentalFrontier : μ (fundamentalFrontier G s) = 0 := by
-  simpa only [fundamentalFrontier, iUnion₂_inter, measure_iUnion_null_iff', one_smul,
-    measure_iUnion_null_iff, inter_comm s, Function.onFun] using fun g (hg : g ≠ 1) =>
-    hs.aedisjoint hg
+  simpa only [fundamentalFrontier, iUnion₂_inter, one_smul, measure_iUnion_null_iff, inter_comm s,
+    Function.onFun] using fun g (hg : g ≠ 1) => hs.aedisjoint hg
 #align measure_theory.is_fundamental_domain.measure_fundamental_frontier MeasureTheory.IsFundamentalDomain.measure_fundamentalFrontier
 #align measure_theory.is_add_fundamental_domain.measure_add_fundamental_frontier MeasureTheory.IsAddFundamentalDomain.measure_addFundamentalFrontier
 
