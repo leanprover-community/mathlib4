@@ -61,10 +61,8 @@ theorem IsLindelof.compl_mem_sets (hs : IsLindelof s) {f : Filter X} [CountableI
 theorem IsLindelof.compl_mem_sets_of_nhdsWithin (hs : IsLindelof s) {f : Filter X}
     [CountableInterFilter f] (hf : ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, tᶜ ∈ f) : sᶜ ∈ f := by
   refine hs.compl_mem_sets fun x hx ↦ ?_
-  rcases hf x hx with ⟨t, ht, hst⟩
-  replace ht := mem_inf_principal.1 ht
-  apply mem_inf_of_inter ht hst
-  exact fun x ⟨h₁, h₂⟩ hs ↦ h₂ (h₁ hs)
+  rw [← disjoint_principal_right, disjoint_right_comm, (basis_sets _).disjoint_iff_left]
+  exact hf x hx
 
 /-- If `p : Set X → Prop` is stable under restriction and union, and each point `x`
   of a Lindelöf set `s` has a neighborhood `t` within `s` such that `p t`, then `p s` holds. -/
@@ -80,11 +78,10 @@ theorem IsLindelof.induction_on (hs : IsLindelof s) {p : Set X → Prop}
 /-- The intersection of a Lindelöf set and a closed set is a Lindelöf set. -/
 theorem IsLindelof.inter_right (hs : IsLindelof s) (ht : IsClosed t) : IsLindelof (s ∩ t) := by
   intro f hnf _ hstf
-  obtain ⟨x, hsx, hx⟩ : ∃ x ∈ s, ClusterPt x f :=
-    hs (le_trans hstf (le_principal_iff.2 (inter_subset_left _ _)))
-  have : x ∈ t := ht.mem_of_nhdsWithin_neBot <|
-    hx.mono <| le_trans hstf (le_principal_iff.2 (inter_subset_right _ _))
-  exact ⟨x, ⟨hsx, this⟩, hx⟩
+  rw [← inf_principal, le_inf_iff] at hstf
+  obtain ⟨x, hsx, hx⟩ : ∃ x ∈ s, ClusterPt x f := hs hstf.1
+  have hxt : x ∈ t := ht.mem_of_nhdsWithin_neBot <| hx.mono hstf.2
+  exact ⟨x, ⟨hsx, hxt⟩, hx⟩
 
   /-- The intersection of a closed set and a Lindelöf set is a Lindelöf set. -/
 theorem IsLindelof.inter_left (ht : IsLindelof t) (hs : IsClosed s) : IsLindelof (s ∩ t) :=
@@ -121,14 +118,13 @@ theorem IsLindelof.image {f : X → Y} (hs : IsLindelof s) (hf : Continuous f) :
 a Lindelöf set `s` contains any open set that contains all clusterpoints of `s`. -/
 theorem IsLindelof.adherence_nhdset {f : Filter X} [CountableInterFilter f] (hs : IsLindelof s)
     (hf₂ : f ≤ 𝓟 s) (ht₁ : IsOpen t) (ht₂ : ∀ x ∈ s, ClusterPt x f → x ∈ t) : t ∈ f :=
-  Classical.by_cases mem_of_eq_bot fun (this : f ⊓ 𝓟 tᶜ ≠ ⊥) ↦
-  have hinf : CountableInterFilter (f ⊓ 𝓟 tᶜ) := countableInterFilter_inf _ _
-  let ⟨x, hx, (hfx : ClusterPt x <| f ⊓ 𝓟 tᶜ)⟩ := @hs _ ⟨this⟩ hinf <| inf_le_of_left_le hf₂
-  have : x ∈ t := ht₂ x hx hfx.of_inf_left
-  have : tᶜ ∩ t ∈ 𝓝[tᶜ] x := inter_mem_nhdsWithin _ (ht₁.mem_nhds this)
-  have A : 𝓝[tᶜ] x = ⊥ := empty_mem_iff_bot.1 <| compl_inter_self t ▸ this
-  have : 𝓝[tᶜ] x ≠ ⊥ := hfx.of_inf_right.ne
-  absurd A this
+  (eq_or_neBot _).casesOn mem_of_eq_bot fun _ ↦
+    let ⟨x, hx, hfx⟩ := @hs (f ⊓ 𝓟 tᶜ) _ _ <| inf_le_of_left_le hf₂
+    have : x ∈ t := ht₂ x hx hfx.of_inf_left
+    have : tᶜ ∩ t ∈ 𝓝[tᶜ] x := inter_mem_nhdsWithin _ (ht₁.mem_nhds this)
+    have A : 𝓝[tᶜ] x = ⊥ := empty_mem_iff_bot.1 <| compl_inter_self t ▸ this
+    have : 𝓝[tᶜ] x ≠ ⊥ := hfx.of_inf_right.ne
+    absurd A this
 
 /--For every open cover of a Lindelöf set, there exists a countable subcover. -/
 theorem IsLindelof.elim_countable_subcover {ι : Type v} (hs : IsLindelof s) (U : ι → Set X)
