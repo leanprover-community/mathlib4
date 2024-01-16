@@ -63,7 +63,7 @@ structure Ssyt (μ : YoungDiagram) where
 
 namespace Ssyt
 
-instance funLike {μ : YoungDiagram} : FunLike (Ssyt μ) ℕ fun _ ↦ ℕ → ℕ where
+instance funLike {μ : YoungDiagram} : DFunLike (Ssyt μ) ℕ fun _ ↦ ℕ → ℕ where
   coe := Ssyt.entry
   coe_injective' T T' h := by
     cases T
@@ -82,7 +82,7 @@ theorem to_fun_eq_coe {μ : YoungDiagram} {T : Ssyt μ} : T.entry = (T : ℕ →
 
 @[ext]
 theorem ext {μ : YoungDiagram} {T T' : Ssyt μ} (h : ∀ i j, T i j = T' i j) : T = T' :=
-  FunLike.ext T T' fun _ ↦ by
+  DFunLike.ext T T' fun _ ↦ by
     funext
     apply h
 #align ssyt.ext Ssyt.ext
@@ -105,7 +105,7 @@ theorem coe_copy {μ : YoungDiagram} (T : Ssyt μ) (entry' : ℕ → ℕ → ℕ
 
 theorem copy_eq {μ : YoungDiagram} (T : Ssyt μ) (entry' : ℕ → ℕ → ℕ) (h : entry' = T) :
     T.copy entry' h = T :=
-  FunLike.ext' h
+  DFunLike.ext' h
 #align ssyt.copy_eq Ssyt.copy_eq
 
 theorem row_weak {μ : YoungDiagram} (T : Ssyt μ) {i j1 j2 : ℕ} (hj : j1 < j2)

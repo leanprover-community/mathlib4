@@ -63,14 +63,14 @@ instance largeCategory : LargeCategory.{u} BddOrd where
 
 -- Porting note: added.
 -- see https://github.com/leanprover-community/mathlib4/issues/5017
-instance instFunLike (X Y : BddOrd) : FunLike (X ⟶ Y) X (fun _ => Y) :=
-  show FunLike (BoundedOrderHom X Y) X (fun _ => Y) from inferInstance
+instance instFunLike (X Y : BddOrd) : DFunLike (X ⟶ Y) X (fun _ => Y) :=
+  show DFunLike (BoundedOrderHom X Y) X (fun _ => Y) from inferInstance
 
 instance concreteCategory : ConcreteCategory BddOrd where
   forget :=
     { obj := (↥)
-      map := FunLike.coe }
-  forget_faithful := ⟨(FunLike.coe_injective ·)⟩
+      map := DFunLike.coe }
+  forget_faithful := ⟨(DFunLike.coe_injective ·)⟩
 #align BddOrd.concrete_category BddOrd.concreteCategory
 
 instance hasForgetToPartOrd : HasForget₂ BddOrd PartOrd where

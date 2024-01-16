@@ -48,7 +48,7 @@ noncomputable section
 
 /-- A free group basis `FreeGroupBasis ι G` is a structure recording the isomorphism between a
 group `G` and the free group over `ι`. One may think of such a basis as a function from `ι` to `G`
-(which is registered through a `FunLike` instance) together with the fact that the morphism induced
+(which is registered through a `DFunLike` instance) together with the fact that the morphism induced
 by this function from `FreeGroup ι` to `G` is an isomorphism. -/
 structure FreeGroupBasis (ι : Type*) (G : Type*) [Group G] where
   /-- `FreeGroupBasis.ofRepr` constructs a basis given an equivalence with a free group. -/
@@ -68,13 +68,13 @@ variable {ι ι' G H : Type*} [Group G] [Group H]
 
 /-- A free group basis for `G` over `ι` is associated to a map `ι → G` recording the images of
 the generators. -/
-instance funLike : FunLike (FreeGroupBasis ι G) ι (fun _ ↦ G) where
+instance funLike : DFunLike (FreeGroupBasis ι G) ι (fun _ ↦ G) where
   coe b := fun i ↦ b.repr.symm (FreeGroup.of i)
   coe_injective' := by
     rintro ⟨b⟩  ⟨b'⟩ hbb'
     have H : (b.symm : FreeGroup ι →* G) = (b'.symm : FreeGroup ι →* G) := by
       ext i; exact congr_fun hbb' i
-    have : b.symm = b'.symm := by ext x; exact FunLike.congr_fun H x
+    have : b.symm = b'.symm := by ext x; exact DFunLike.congr_fun H x
     rw [ofRepr.injEq, ← MulEquiv.symm_symm b, ← MulEquiv.symm_symm b', this]
 
 @[simp] lemma repr_apply_coe (b : FreeGroupBasis ι G) (i : ι) : b.repr (b i) = FreeGroup.of i := by

@@ -356,9 +356,9 @@ theorem repr_injective :
   cases g
   congr
 
--- Porting note: `CoeFun` → `FunLike`
+-- Porting note: `CoeFun` → `DFunLike`
 /-- `b i` is the `i`th basis vector. -/
-instance instFunLike : FunLike (OrthonormalBasis ι 𝕜 E) ι fun _ => E where
+instance instFunLike : DFunLike (OrthonormalBasis ι 𝕜 E) ι fun _ => E where
   coe b i := by classical exact b.repr.symm (EuclideanSpace.single i (1 : 𝕜))
   coe_injective' b b' h := repr_injective <| LinearIsometryEquiv.toLinearEquiv_injective <|
     LinearEquiv.symm_bijective.injective <| LinearEquiv.toLinearMap_injective <| by
@@ -380,7 +380,7 @@ instance instFunLike : FunLike (OrthonormalBasis ι 𝕜 E) ι fun _ => E where
 theorem coe_ofRepr [DecidableEq ι] (e : E ≃ₗᵢ[𝕜] EuclideanSpace 𝕜 ι) :
     ⇑(OrthonormalBasis.ofRepr e) = fun i => e.symm (EuclideanSpace.single i (1 : 𝕜)) := by
   -- Porting note: simplified with `congr!`
-  dsimp only [FunLike.coe]
+  dsimp only [DFunLike.coe]
   funext
   congr!
 #align orthonormal_basis.coe_of_repr OrthonormalBasis.coe_ofRepr
@@ -389,7 +389,7 @@ theorem coe_ofRepr [DecidableEq ι] (e : E ≃ₗᵢ[𝕜] EuclideanSpace 𝕜 �
 protected theorem repr_symm_single [DecidableEq ι] (b : OrthonormalBasis ι 𝕜 E) (i : ι) :
     b.repr.symm (EuclideanSpace.single i (1 : 𝕜)) = b i := by
   -- Porting note: simplified with `congr!`
-  dsimp only [FunLike.coe]
+  dsimp only [DFunLike.coe]
   congr!
 #align orthonormal_basis.repr_symm_single OrthonormalBasis.repr_symm_single
 

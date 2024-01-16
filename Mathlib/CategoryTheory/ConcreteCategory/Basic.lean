@@ -98,7 +98,7 @@ variable {C : Type u} [Category.{v} C] [ConcreteCategory.{w} C]
 #noalign category_theory.forget_obj_eq_coe
 
 @[reducible]
-def ConcreteCategory.funLike {X Y : C} : FunLike (X ⟶ Y) X (fun _ => Y) where
+def ConcreteCategory.funLike {X Y : C} : DFunLike (X ⟶ Y) X (fun _ => Y) where
   coe f := (forget C).map f
   coe_injective' _ _ h := (forget C).map_injective h
 attribute [local instance] ConcreteCategory.funLike

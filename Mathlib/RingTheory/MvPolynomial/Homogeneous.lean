@@ -276,7 +276,7 @@ theorem homogeneousComponent_zero : homogeneousComponent 0 φ = C (coeff 0 φ) :
   · simp only [coeff_homogeneousComponent, sum_eq_zero_iff, Finsupp.zero_apply, if_true, coeff_C,
       eq_self_iff_true, forall_true_iff]
   · rw [coeff_homogeneousComponent, if_neg, coeff_C, if_neg (Ne.symm hd)]
-    simp only [FunLike.ext_iff, Finsupp.zero_apply] at hd
+    simp only [DFunLike.ext_iff, Finsupp.zero_apply] at hd
     simp [hd]
 #align mv_polynomial.homogeneous_component_zero MvPolynomial.homogeneousComponent_zero
 

@@ -69,14 +69,14 @@ instance : LargeCategory.{u} SemilatSupCat where
 
 -- Porting note: added
 -- see https://github.com/leanprover-community/mathlib4/issues/5017
-instance instFunLike (X Y : SemilatSupCat) : FunLike (X ⟶ Y) X (fun _ => Y) :=
-  show FunLike (SupBotHom X Y) X (fun _ => Y) from inferInstance
+instance instFunLike (X Y : SemilatSupCat) : DFunLike (X ⟶ Y) X (fun _ => Y) :=
+  show DFunLike (SupBotHom X Y) X (fun _ => Y) from inferInstance
 
 instance : ConcreteCategory SemilatSupCat where
   forget :=
     { obj := SemilatSupCat.X
-      map := FunLike.coe }
-  forget_faithful := ⟨(FunLike.coe_injective ·)⟩
+      map := DFunLike.coe }
+  forget_faithful := ⟨(DFunLike.coe_injective ·)⟩
 
 instance hasForgetToPartOrd : HasForget₂ SemilatSupCat PartOrd where
   forget₂ :=
@@ -123,14 +123,14 @@ instance : LargeCategory.{u} SemilatInfCat where
   assoc _ _ _ := InfTopHom.comp_assoc _ _ _
 
 -- Porting note: added
-instance instFunLike (X Y : SemilatInfCat) : FunLike (X ⟶ Y) X (fun _ => Y) :=
-  show FunLike (InfTopHom X Y) X (fun _ => Y) from inferInstance
+instance instFunLike (X Y : SemilatInfCat) : DFunLike (X ⟶ Y) X (fun _ => Y) :=
+  show DFunLike (InfTopHom X Y) X (fun _ => Y) from inferInstance
 
 instance : ConcreteCategory SemilatInfCat where
   forget :=
     { obj := SemilatInfCat.X
-      map := FunLike.coe }
-  forget_faithful := ⟨(FunLike.coe_injective ·)⟩
+      map := DFunLike.coe }
+  forget_faithful := ⟨(DFunLike.coe_injective ·)⟩
 
 instance hasForgetToPartOrd : HasForget₂ SemilatInfCat PartOrd where
   forget₂ :=

@@ -107,7 +107,7 @@ theorem Basis.ofIsLocalizedModule_repr_apply (m : M) (i : ι) :
     ((b.ofIsLocalizedModule Rₛ S f).repr (f m)) i = algebraMap R Rₛ (b.repr m i) := by
   suffices ((b.ofIsLocalizedModule Rₛ S f).repr.toLinearMap.restrictScalars R) ∘ₗ f =
       Finsupp.mapRange.linearMap (Algebra.linearMap R Rₛ) ∘ₗ b.repr.toLinearMap by
-    exact FunLike.congr_fun (LinearMap.congr_fun this m) i
+    exact DFunLike.congr_fun (LinearMap.congr_fun this m) i
   refine Basis.ext b fun i ↦ ?_
   rw [LinearMap.coe_comp, Function.comp_apply, LinearMap.coe_restrictScalars,
     LinearEquiv.coe_coe, ← b.ofIsLocalizedModule_apply Rₛ S f, repr_self, LinearMap.coe_comp,

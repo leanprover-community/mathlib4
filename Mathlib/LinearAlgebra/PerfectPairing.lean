@@ -43,7 +43,7 @@ variable {R M N}
 
 namespace PerfectPairing
 
-instance instFunLike : FunLike (PerfectPairing R M N) M (fun _  ↦ N →ₗ[R] R) where
+instance instFunLike : DFunLike (PerfectPairing R M N) M (fun _  ↦ N →ₗ[R] R) where
   coe f := f.toLin
   coe_injective' x y h := by cases x; cases y; simpa using h
 

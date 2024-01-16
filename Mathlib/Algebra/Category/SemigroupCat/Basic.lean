@@ -51,7 +51,7 @@ namespace MagmaCat
 instance bundledHom : BundledHom @MulHom :=
   ⟨@MulHom.toFun, @MulHom.id, @MulHom.comp,
     --Porting note : was `@MulHom.coe_inj` which is deprecated
-    by intros; apply @FunLike.coe_injective, by aesop_cat, by aesop_cat⟩
+    by intros; apply @DFunLike.coe_injective, by aesop_cat, by aesop_cat⟩
 #align Magma.bundled_hom MagmaCat.bundledHom
 #align AddMagma.bundled_hom AddMagmaCat.bundledHom
 
@@ -98,7 +98,7 @@ theorem coe_of (R : Type u) [Mul R] : (MagmaCat.of R : Type u) = R :=
 
 @[to_additive (attr := simp)]
 lemma mulEquiv_coe_eq {X Y : Type _} [Mul X] [Mul Y] (e : X ≃* Y) :
-    (@FunLike.coe (MagmaCat.of X ⟶ MagmaCat.of Y) _ (fun _ => (forget MagmaCat).obj _)
+    (@DFunLike.coe (MagmaCat.of X ⟶ MagmaCat.of Y) _ (fun _ => (forget MagmaCat).obj _)
       ConcreteCategory.funLike (e : X →ₙ* Y) : X → Y) = ↑e :=
   rfl
 
@@ -183,7 +183,7 @@ theorem coe_of (R : Type u) [Semigroup R] : (SemigroupCat.of R : Type u) = R :=
 
 @[to_additive (attr := simp)]
 lemma mulEquiv_coe_eq {X Y : Type _} [Semigroup X] [Semigroup Y] (e : X ≃* Y) :
-    (@FunLike.coe (SemigroupCat.of X ⟶ SemigroupCat.of Y) _ (fun _ => (forget SemigroupCat).obj _)
+    (@DFunLike.coe (SemigroupCat.of X ⟶ SemigroupCat.of Y) _ (fun _ => (forget SemigroupCat).obj _)
       ConcreteCategory.funLike (e : X →ₙ* Y) : X → Y) = ↑e :=
   rfl
 
