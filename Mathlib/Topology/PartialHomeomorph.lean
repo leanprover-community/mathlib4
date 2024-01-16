@@ -829,7 +829,7 @@ protected def trans' (h : e.target = e'.source) : PartialHomeomorph α γ where
   toPartialEquiv := PartialEquiv.trans' e.toPartialEquiv e'.toPartialEquiv h
   open_source := e.open_source
   open_target := e'.open_target
-  continuousOn_toFun :=  e'.continuousOn.comp e.continuousOn <| h ▸ e.mapsTo
+  continuousOn_toFun := e'.continuousOn.comp e.continuousOn <| h ▸ e.mapsTo
   continuousOn_invFun := e.continuousOn_symm.comp e'.continuousOn_symm <| h.symm ▸ e'.symm_mapsTo
 #align local_homeomorph.trans' PartialHomeomorph.trans'
 

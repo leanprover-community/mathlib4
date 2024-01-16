@@ -48,9 +48,6 @@ Indeed, since trivializations only have meaning on their base sets (taking junk 
 type of linear trivializations is not even particularly well-behaved.
 -/
 
-set_option autoImplicit true
-
-
 open TopologicalSpace Filter Set Bundle Function
 
 open scoped Topology Classical Bundle
@@ -458,7 +455,7 @@ theorem image_preimage_eq_prod_univ {s : Set B} (hb : s ⊆ e.baseSet) :
     ⟨e.invFun p, mem_preimage.mpr ((e.proj_symm_apply hp').symm ▸ hp.1), e.apply_symm_apply hp'⟩
 #align trivialization.image_preimage_eq_prod_univ Trivialization.image_preimage_eq_prod_univ
 
-theorem tendsto_nhds_iff {l : Filter α} {f : α → Z} {z : Z} (hz : z ∈ e.source) :
+theorem tendsto_nhds_iff {α : Type*} {l : Filter α} {f : α → Z} {z : Z} (hz : z ∈ e.source) :
     Tendsto f l (𝓝 z) ↔
       Tendsto (proj ∘ f) l (𝓝 (proj z)) ∧ Tendsto (fun x ↦ (e (f x)).2) l (𝓝 (e z).2) := by
   rw [e.nhds_eq_comap_inf_principal hz, tendsto_inf, tendsto_comap_iff, Prod.tendsto_iff, coe_coe,

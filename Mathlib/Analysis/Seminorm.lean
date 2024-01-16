@@ -35,9 +35,6 @@ For a module over a normed ring:
 seminorm, locally convex, LCTVS
 -/
 
-set_option autoImplicit true
-
-
 open NormedField Set Filter
 
 open scoped BigOperators NNReal Pointwise Topology Uniformity
@@ -966,7 +963,7 @@ theorem closedBall_smul_closedBall (p : Seminorm 𝕜 E) (r₁ r₂ : ℝ) :
 #align seminorm.closed_ball_smul_closed_ball Seminorm.closedBall_smul_closedBall
 
 -- Porting note: TODO: make that an `iff`
-theorem neg_mem_ball_zero (r : ℝ) (hx : x ∈ ball p 0 r) : -x ∈ ball p 0 r := by
+theorem neg_mem_ball_zero (r : ℝ) {x : E} (hx : x ∈ ball p 0 r) : -x ∈ ball p 0 r := by
   simpa only [mem_ball_zero, map_neg_eq_map] using hx
 #align seminorm.symmetric_ball_zero Seminorm.neg_mem_ball_zero
 
