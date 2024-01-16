@@ -20,14 +20,29 @@ open Lean Meta
 
 namespace Meta.FProp
 
+
 structure FPropTheorem where
   fpropName   : Name
-  keys        : Array RefinedDiscrTree.Key := #[]
-  levelParams : Array Name := #[]
+  keys        : Array RefinedDiscrTree.Key
+  levelParams : Array Name
   proof       : Expr
   priority    : Nat  := eval_prio default
   origin      : Origin
   deriving Inhabited, BEq
+
+
+/-- Returns `proof` with fresh universe metavariables -/
+def FPropTheorem.getProof (fpropThm : FPropTheorem) : MetaM Expr := do
+  if fpropThm.proof.isConst && fpropThm.levelParams.isEmpty then
+    let info ← getConstInfo fpropThm.proof.constName!
+    if info.levelParams.isEmpty then
+      return fpropThm.proof
+    else
+      return fpropThm.proof.updateConst! (← info.levelParams.mapM (fun _ => mkFreshLevelMVar))
+  else
+    let us ← fpropThm.levelParams.mapM fun _ => mkFreshLevelMVar
+    return fpropThm.proof.instantiateLevelParamsArray fpropThm.levelParams us
+
 
 structure FPropTheorems where
   theorems     : RefinedDiscrTree FPropTheorem := {}
