@@ -511,23 +511,23 @@ end IsSetSemiring
 It is then also stable by intersection (see `IsSetRing.inter_mem`). -/
 structure IsSetRing (C : Set (Set α)) : Prop where
   empty_mem : ∅ ∈ C
-  union_mem : ∀ {s t}, s ∈ C → t ∈ C → s ∪ t ∈ C
-  diff_mem : ∀ {s t}, s ∈ C → t ∈ C → s \ t ∈ C
+  union_mem ⦃s t⦄ : s ∈ C → t ∈ C → s ∪ t ∈ C
+  diff_mem ⦃s t⦄ : s ∈ C → t ∈ C → s \ t ∈ C
 
 namespace IsSetRing
 
 lemma inter_mem (hC : IsSetRing C) (hs : s ∈ C) (ht : t ∈ C) : s ∩ t ∈ C := by
   rw [← diff_diff_right_self]; exact hC.diff_mem hs (hC.diff_mem hs ht)
 
-lemma isSetSemiring (hC : IsSetRing C) : IsSetSemiring C :=
-  { empty_mem := hC.empty_mem
-    inter_mem := fun s hs t ht ↦ hC.inter_mem hs ht
-    diff_eq_Union' := by
-      refine fun s hs t ht ↦ ⟨{s \ t}, ?_, ?_, ?_⟩
-      · simp only [coe_singleton, Set.singleton_subset_iff]
-        exact hC.diff_mem hs ht
-      · simp only [coe_singleton, pairwiseDisjoint_singleton]
-      · simp only [coe_singleton, sUnion_singleton] }
+lemma isSetSemiring (hC : IsSetRing C) : IsSetSemiring C where
+  empty_mem := hC.empty_mem
+  inter_mem := fun s hs t ht => hC.inter_mem hs ht
+  diff_eq_Union' := by
+    refine fun s hs t ht => ⟨{s \ t}, ?_, ?_, ?_⟩
+    · simp only [coe_singleton, Set.singleton_subset_iff]
+      exact hC.diff_mem hs ht
+    · simp only [coe_singleton, pairwiseDisjoint_singleton]
+    · simp only [coe_singleton, sUnion_singleton]
 
 lemma biUnion_mem {ι : Type*} (hC : IsSetRing C) {s : ι → Set α}
     (S : Finset ι) (hs : ∀ n ∈ S, s n ∈ C) :
@@ -566,6 +566,5 @@ lemma disjointed_mem (hC : IsSetRing C) {s : ℕ → Set α} (hs : ∀ n, s n �
   | succ n => rw [disjointed_succ]; exact hC.diff_mem (hs n.succ) (hC.partialSups_mem hs n)
 
 end IsSetRing
-
 
 end MeasureTheory

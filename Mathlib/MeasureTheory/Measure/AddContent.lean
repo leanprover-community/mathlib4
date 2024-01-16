@@ -16,25 +16,28 @@ such that `⋃₀ I ∈ C`, `m (⋃₀ I) = ∑ s ∈ I, m s`.
 Mathlib also has a definition of contents over compact sets: see `MeasureTheory.Content`.
 A `Content` is in particular an `AddContent` on the set of compact sets.
 
+TODO: refactor `Content` to use properties of `AddContent`.
+
 ## Main definitions
 
-* `AddContent C`: additive contents over the set of sets `C`.
+* `MeasureTheory.AddContent C`: additive contents over the set of sets `C`.
 
 ## Main statements
 
-Let `m` be an `AddContent C`. If `C` is a set sem-iring (`IsSetSemiring C`) we have the properties
+Let `m` be an `AddContent C`. If `C` is a set semi-ring (`IsSetSemiring C`) we have the properties
 
-* `AddContent.sum_le_of_subset`: if `I` is a finset of pairwise disjoint sets in `C` and `⋃₀ I ⊆ t`
-  for `t ∈ C`, then `∑ s in I, m s ≤ m t`.
-* `AddContent.mono`: if `s ⊆ t` for two sets in `C`, then `m s ≤ m t`.
-* `AddContent.union'`: if `s, t ∈ C` are disjoint and `s ∪ t ∈ C`, then `m (s ∪ t) = m s + m t`.
+* `MeasureTheory.AddContent.sum_le_of_subset`: if `I` is a finset of pairwise disjoint sets in `C`
+  and `⋃₀ I ⊆ t` for `t ∈ C`, then `∑ s in I, m s ≤ m t`.
+* `MeasureTheory.AddContent.mono`: if `s ⊆ t` for two sets in `C`, then `m s ≤ m t`.
+* `MeasureTheory.AddContent.union'`: if `s, t ∈ C` are disjoint and `s ∪ t ∈ C`,
+  then `m (s ∪ t) = m s + m t`.
   If `C` is a set ring (`IsSetRing`), then `AddContent.union` gives the same conclusion without the
   hypothesis `s ∪ t ∈ C` (since it is a consequence of `IsSetRing C`).
 
-If `C` is a set ring (`IsSetRing C`), we have, for `s, t ∈ C`,
+If `C` is a set ring (`MeasureTheory.IsSetRing C`), we have, for `s, t ∈ C`,
 
-* `AddContent.union_le`: `m (s ∪ t) ≤ m s + m t`
-* `AddContent.diff_le`: `m s - m t ≤ m (s \ t)`
+* `MeasureTheory.AddContent.union_le`: `m (s ∪ t) ≤ m s + m t`
+* `MeasureTheory.AddContent.le_sdiff`: `m s - m t ≤ m (s \ t)`
 
 ### σ-additive and σ-subadditive contents
 
@@ -67,13 +70,14 @@ structure AddContent (C : Set (Set α)) where
   /-- The value of the content on a set. -/
   toFun : Set α → ℝ≥0∞
   empty' : toFun ∅ = 0
-  add' : ∀ (I : Finset (Set α)) (_h_ss : ↑I ⊆ C) (_h_dis : PairwiseDisjoint (I : Set (Set α)) id)
-      (_h_mem : ⋃₀ ↑I ∈ C), toFun (⋃₀ I) = ∑ u in I, toFun u
+  sUnion_eq_sum' (I : Finset (Set α)) (_h_ss : ↑I ⊆ C)
+      (_h_dis : PairwiseDisjoint (I : Set (Set α)) id) (_h_mem : ⋃₀ ↑I ∈ C) :
+    toFun (⋃₀ I) = ∑ u in I, toFun u
 
 instance : Inhabited (AddContent C) :=
   ⟨{toFun := fun _ ↦ 0
     empty' := by simp
-    add' := by simp }⟩
+    sUnion_eq_sum' := by simp }⟩
 
 instance : FunLike (AddContent C) (Set α) (fun _ ↦ ℝ≥0∞) where
   coe := fun m s ↦ m.toFun s
@@ -85,28 +89,24 @@ instance : FunLike (AddContent C) (Set α) (fun _ ↦ ℝ≥0∞) where
 
 namespace AddContent
 
-@[ext] protected lemma ext {m m' : AddContent C} (h : ∀ s, m s = m' s) : m = m' := by
-  refine FunLike.coe_injective ?_
-  ext s
-  exact h s
+@[ext] protected lemma ext {m m' : AddContent C} (h : ∀ s, m s = m' s) : m = m' := FunLike.ext _ _ h
 
-protected lemma ext_iff (m m' : AddContent C) : m = m' ↔ ∀ s, m s = m' s :=
-  ⟨fun h s ↦ by rw [h], fun h ↦ AddContent.ext h⟩
+protected lemma ext_iff (m m' : AddContent C) : m = m' ↔ ∀ s, m s = m' s := FunLike.ext_iff
 
-@[simp] protected lemma empty {m : AddContent C} : m ∅ = 0 := m.empty'
+@[simp] protected lemma apply_empty {m : AddContent C} : m ∅ = 0 := m.empty'
 
-protected lemma add (m : AddContent C) (h_ss : ↑I ⊆ C)
+protected lemma sUnion_eq_sum (m : AddContent C) (h_ss : ↑I ⊆ C)
     (h_dis : PairwiseDisjoint (I : Set (Set α)) id) (h_mem : ⋃₀ ↑I ∈ C) :
     m (⋃₀ I) = ∑ u in I, m u :=
-  m.add' I h_ss h_dis h_mem
+  m.sUnion_eq_sum' I h_ss h_dis h_mem
 
 protected lemma union' (m : AddContent C) (hs : s ∈ C) (ht : t ∈ C) (hst : s ∪ t ∈ C)
     (h_dis : Disjoint s t) :
     m (s ∪ t) = m s + m t := by
   by_cases hs_empty : s = ∅
-  · simp only [hs_empty, Set.empty_union, m.empty, zero_add]
+  · simp only [hs_empty, Set.empty_union, m.apply_empty, zero_add]
   classical
-  have h := m.add (I := {s, t}) ?_ ?_ ?_
+  have h := m.sUnion_eq_sum (I := {s, t}) ?_ ?_ ?_
   rotate_left
   · simp only [coe_pair, Set.insert_subset_iff, hs, ht, Set.singleton_subset_iff, and_self_iff]
   · simp only [coe_pair, Set.pairwiseDisjoint_insert, pairwiseDisjoint_singleton,
@@ -130,7 +130,7 @@ lemma eq_add_diffFinset₀_of_subset (m : AddContent C) (hC : IsSetSemiring C)
     m s = ∑ i in I, m i + ∑ i in hC.diffFinset₀ hs hI, m i := by
   classical
   conv_lhs => rw [← hC.sUnion_union_diffFinset₀_of_subset hs hI hI_ss]
-  rw [m.add]
+  rw [m.sUnion_eq_sum]
   · rw [sum_union]
     exact hC.disjoint_diffFinset₀ hs hI
   · rw [coe_union]
@@ -248,7 +248,7 @@ protected lemma biUnion_le {ι : Type*} (m : AddContent C) (hC : IsSetRing C) {s
     refine (m.union_le hC hs.1 (hC.biUnion_mem S hs.2)).trans ?_
     exact add_le_add le_rfl (h hs.2)
 
-protected lemma diff_le (m : AddContent C) (hC : IsSetRing C) (hs : s ∈ C) (ht : t ∈ C) :
+protected lemma le_sdiff (m : AddContent C) (hC : IsSetRing C) (hs : s ∈ C) (ht : t ∈ C) :
     m s - m t ≤ m (s \ t) := by
   conv_lhs => rw [← inter_union_diff s t]
   rw [m.union hC (hC.inter_mem hs ht) (hC.diff_mem hs ht) disjoint_inf_sdiff, add_comm]
