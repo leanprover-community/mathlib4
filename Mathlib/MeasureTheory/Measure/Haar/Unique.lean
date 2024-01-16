@@ -294,7 +294,8 @@ lemma measure_preimage_isMulLeftInvariant_eq_smul_of_hasCompactSupport
   /- This follows from the fact that the two measures integrate in the same way continuous
   functions, by approximating the indicator function of `f ⁻¹' {1}` by continuous functions
   (namely `vₙ ∘ f` where `vₙ` is equal to `1` at `1`, and `0` outside of a small neighborhood
-  `(1 - uₙ, 1 + uₙ)` where `uₙ` is a sequence tending to `0`). -/
+  `(1 - uₙ, 1 + uₙ)` where `uₙ` is a sequence tending to `0`).
+  We use `vₙ = thickenedIndicator uₙ {1}` to take advantage of existing lemmas. -/
   obtain ⟨u, -, u_mem, u_lim⟩ : ∃ u, StrictAnti u ∧ (∀ (n : ℕ), u n ∈ Ioo 0 1)
     ∧ Tendsto u atTop (𝓝 0) := exists_seq_strictAnti_tendsto' (zero_lt_one : (0 : ℝ) < 1)
   let v : ℕ → ℝ → ℝ := fun n x ↦ thickenedIndicator (u_mem n).1 ({1} : Set ℝ) x
@@ -378,43 +379,6 @@ lemma haarScalarFactor_pos_of_isOpenPosMeasure (μ' μ : Measure G) [IsFiniteMea
   have := integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport μ' μ g_cont g_comp
   simp only [H, zero_smul, integral_zero_measure] at this
   linarith
-
-section
-
-variable {α : Type*} [TopologicalSpace α] {_ : MeasurableSpace α}
-
-def locallyPosSubset (s : Set α) (μ : Measure α) : Set α :=
-  {x | x ∈ s ∧ ∀ n ∈ 𝓝[s] x, 0 < μ n}
-
-lemma locallyPosSubset_subset (s : Set α) (μ : Measure α) : locallyPosSubset s μ ⊆ s :=
-  fun _x hx ↦ hx.1
-
-protected lemma MeasurableSet.locallyPosSubset [OpensMeasurableSpace α] {s : Set α} {μ : Measure α}
-    (hs : MeasurableSet s) : MeasurableSet (locallyPosSubset s μ) := by
-  let u := {x | ∃ n ∈ 𝓝[s] x, μ n = 0}
-  have u_open : IsOpen u := by
-    rw [isOpen_iff_mem_nhds]
-    intro x ⟨n, ns, hx⟩
-    rcases mem_nhdsWithin_iff_exists_mem_nhds_inter.1 ns with ⟨v, vx, hv⟩
-    rcases mem_nhds_iff.1 vx with ⟨w, wv, w_open, xw⟩
-    have A : w ⊆ u := by
-      intro y yw
-      refine ⟨s ∩ w, inter_mem_nhdsWithin _ (w_open.mem_nhds yw), measure_mono_null ?_ hx⟩
-      rw [inter_comm]
-      exact (inter_subset_inter_left _ wv).trans hv
-    have B : w ∈ 𝓝 x := w_open.mem_nhds xw
-    exact mem_of_superset B A
-  have : locallyPosSubset s μ = s \ u := by
-    ext x; simp [locallyPosSubset, zero_lt_iff]
-  rw [this]
-  exact hs.diff u_open.measurableSet
-
-lemma ae_eq_setOf_measure_nhdsWithin_pos {α : Type*} [TopologicalSpace α] [MeasurableSpace α]
-    (μ : Measure α) [InnerRegular μ] (s : Set α) (hs : MeasurableSet s) :
-    s =ᵐ[μ] locallyPosSubset s μ := by sorry
-
-#exit
-
 
 /-- **Uniqueness of left-invariant measures**: Given two left-invariant measures which are finite on
 compacts and inner regular for finite measure sets with respect to compact sets,
