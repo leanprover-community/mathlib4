@@ -90,9 +90,8 @@ theorem gold_sub_goldConj : φ - ψ = Real.sqrt 5 := by
   ring
 #align gold_sub_gold_conj gold_sub_goldConj
 
-theorem gold_exp (n : ℕ) : φ ^ (n + 2) - φ ^ (n + 1) = φ ^ n := by
-  rw [goldenRatio]; ring_nf; norm_num; ring_nf
-#align gold_exp gold_exp
+theorem gold_pow_sub_gold_pow (n : ℕ) : φ ^ (n + 2) - φ ^ (n + 1) = φ ^ n := by
+  rw [goldenRatio]; ring_nf; norm_num; ring
 
 @[simp 1200]
 theorem gold_sq : φ ^ 2 = φ + 1 := by
@@ -121,12 +120,9 @@ theorem one_lt_gold : 1 < φ := by
   simp [← sq, gold_pos, zero_lt_one, - div_pow] -- Porting note: Added `- div_pow`
 #align one_lt_gold one_lt_gold
 
-theorem two_gt_gold : φ < 2 := by
-  rw [goldenRatio]
-  have h₀ : 3 ^ 2 = (9 : ℝ) := by norm_num
-  have h₁ : 3 = Real.sqrt 9 := by rw [← h₀, sqrt_sq]; linarith
-  have h₂ : Real.sqrt 5 < Real.sqrt 9 := by rw [sqrt_lt_sqrt_iff_of_pos]; repeat linarith
-  linarith
+theorem gold_lt_two : φ < 2 := by calc
+  (1 + sqrt 5) / 2 < (1 + 3) / 2 := by gcongr; rw [sqrt_lt'] <;> norm_num
+  _ = 2 := by norm_num
 
 theorem goldConj_neg : ψ < 0 := by
   linarith [one_sub_goldConj, one_lt_gold]
