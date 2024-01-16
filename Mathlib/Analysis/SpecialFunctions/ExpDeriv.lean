@@ -177,16 +177,10 @@ theorem ContDiffWithinAt.cexp {n} (hf : ContDiffWithinAt 𝕜 n f s x) :
 
 end
 
+open Complex in
 theorem iteratedDeriv_cexp_const_mul (n : ℕ) (c : ℂ) :
-    (iteratedDeriv n fun s : ℂ => Complex.exp (c * s)) = fun s => c ^ n * Complex.exp (c * s) := by
-  induction n with
-  | zero => simp
-  | succ n ih =>
-    funext x
-    rw [pow_succ, iteratedDeriv_succ, ih, deriv_const_mul_field,
-      deriv_cexp (differentiableAt_id'.const_mul _), deriv_const_mul _ differentiableAt_id',
-      deriv_id'']
-    ring
+    (iteratedDeriv n fun s : ℂ => exp (c * s)) = fun s => c ^ n * exp (c * s) := by
+  rw [iteratedDeriv_const_mul contDiff_exp, iteratedDeriv_eq_iterate, iter_deriv_exp]
 
 
 /-! ## `Real.exp` -/
@@ -337,13 +331,7 @@ theorem fderiv_exp (hc : DifferentiableAt ℝ f x) :
 
 end
 
+open Real in
 theorem iteratedDeriv_exp_const_mul (n : ℕ) (c : ℝ) :
-    (iteratedDeriv n fun s => Real.exp (c * s)) = fun s => c ^ n * Real.exp (c * s) := by
-  induction n with
-  | zero => simp
-  | succ n ih =>
-    funext x
-    rw [pow_succ, iteratedDeriv_succ, ih, deriv_const_mul_field,
-      deriv_exp (differentiableAt_id'.const_mul _), deriv_const_mul _ differentiableAt_id',
-      deriv_id'']
-    ring
+    (iteratedDeriv n fun s => exp (c * s)) = fun s => c ^ n * exp (c * s) := by
+  rw [iteratedDeriv_const_mul contDiff_exp, iteratedDeriv_eq_iterate, iter_deriv_exp]

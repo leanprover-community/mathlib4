@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Calculus.Deriv.Comp
+import Mathlib.Analysis.Calculus.Deriv.Mul
 import Mathlib.Analysis.Calculus.ContDiff.Defs
 
 #align_import analysis.calculus.iterated_deriv from "leanprover-community/mathlib"@"3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe"
@@ -304,3 +305,24 @@ derivative. -/
 theorem iteratedDeriv_succ' : iteratedDeriv (n + 1) f = iteratedDeriv n (deriv f) := by
   rw [iteratedDeriv_eq_iterate, iteratedDeriv_eq_iterate]; rfl
 #align iterated_deriv_succ' iteratedDeriv_succ'
+
+theorem iteratedDeriv_const_smul {n : ℕ} {f : 𝕜 → F} (h : ContDiff 𝕜 n f) (c : 𝕜) :
+    iteratedDeriv n (fun x => f (c * x)) = fun x => c ^ n • iteratedDeriv n f (c * x) := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    funext x
+    have h₀ : DifferentiableAt 𝕜 (iteratedDeriv n f) (c * x) :=
+      h.differentiable_iteratedDeriv n (Nat.cast_lt.mpr n.lt_succ_self) |>.differentiableAt
+    have h₁ : DifferentiableAt 𝕜 (fun x => iteratedDeriv n f (c * x)) x := by
+      rw [← Function.comp_def]
+      apply DifferentiableAt.comp
+      · exact h.differentiable_iteratedDeriv n (Nat.cast_lt.mpr n.lt_succ_self) |>.differentiableAt
+      · exact differentiableAt_id'.const_mul _
+    rw [iteratedDeriv_succ, ih h.of_succ, deriv_const_smul _ h₁, iteratedDeriv_succ,
+      ← Function.comp_def, deriv.scomp x h₀ (differentiableAt_id'.const_mul _),
+      deriv_const_mul _ differentiableAt_id', deriv_id'', smul_smul, mul_one, pow_succ']
+
+theorem iteratedDeriv_const_mul {n : ℕ} {f : 𝕜 → 𝕜} (h : ContDiff 𝕜 n f) (c : 𝕜) :
+    iteratedDeriv n (fun x => f (c * x)) = fun x => c ^ n * iteratedDeriv n f (c * x) := by
+  simpa only [smul_eq_mul] using iteratedDeriv_const_smul h c
