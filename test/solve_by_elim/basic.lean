@@ -8,7 +8,7 @@ import Mathlib.Init.Logic
 import Std.Tactic.RCases
 import Mathlib.Tactic.Constructor
 import Std.Tactic.PermuteGoals
-import Mathlib.Tactic.SolveByElim
+import Std.Tactic.SolveByElim
 import Std.Test.Internal.DummyLabelAttr
 
 set_option autoImplicit true

@@ -92,7 +92,7 @@ theorem real_main_inequality {x : ℝ} (n_large : (512 : ℝ) ≤ x) :
     rw [one_le_div] <;> norm_num1
     apply le_trans _ (le_mul_of_one_le_left _ _) <;> norm_num1
     apply Real.rpow_le_rpow <;> norm_num1
-    apply rpow_nonneg_of_nonneg; norm_num1
+    apply rpow_nonneg; norm_num1
     apply rpow_pos_of_pos; norm_num1
     apply hf' 18; norm_num1
     norm_num1

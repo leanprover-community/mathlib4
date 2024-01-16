@@ -340,7 +340,7 @@ theorem mul_le_mul_of_nonpos_left (h : b ≤ a) (hc : c ≤ 0) : c * a ≤ c * b
   refine le_of_add_le_add_right (a := d * b + d * a) ?_
   calc
     _ = d * b := by rw [add_left_comm, ← add_mul, ← hcd, zero_mul, add_zero]
-    _ ≤ d * a := mul_le_mul_of_nonneg_left h $ hcd.trans_le $ add_le_of_nonpos_left hc
+    _ ≤ d * a := mul_le_mul_of_nonneg_left h <| hcd.trans_le <| add_le_of_nonpos_left hc
     _ = _ := by rw [← add_assoc, ← add_mul, ← hcd, zero_mul, zero_add]
 #align mul_le_mul_of_nonpos_left mul_le_mul_of_nonpos_left
 
@@ -349,7 +349,7 @@ theorem mul_le_mul_of_nonpos_right (h : b ≤ a) (hc : c ≤ 0) : a * c ≤ b * 
   refine le_of_add_le_add_right (a := b * d + a * d) ?_
   calc
     _ = b * d := by rw [add_left_comm, ← mul_add, ← hcd, mul_zero, add_zero]
-    _ ≤ a * d := mul_le_mul_of_nonneg_right h $ hcd.trans_le $ add_le_of_nonpos_left hc
+    _ ≤ a * d := mul_le_mul_of_nonneg_right h <| hcd.trans_le <| add_le_of_nonpos_left hc
     _ = _ := by rw [← add_assoc, ← mul_add, ← hcd, mul_zero, zero_add]
 #align mul_le_mul_of_nonpos_right mul_le_mul_of_nonpos_right
 
@@ -651,7 +651,7 @@ theorem mul_lt_mul_of_neg_left (h : b < a) (hc : c < 0) : c * a < c * b := by
   refine (add_lt_add_iff_right (d * b + d * a)).1 ?_
   calc
     _ = d * b := by rw [add_left_comm, ← add_mul, ← hcd, zero_mul, add_zero]
-    _ < d * a := mul_lt_mul_of_pos_left h $ hcd.trans_lt $ add_lt_of_neg_left _ hc
+    _ < d * a := mul_lt_mul_of_pos_left h <| hcd.trans_lt <| add_lt_of_neg_left _ hc
     _ = _ := by rw [← add_assoc, ← add_mul, ← hcd, zero_mul, zero_add]
 #align mul_lt_mul_of_neg_left mul_lt_mul_of_neg_left
 
@@ -660,7 +660,7 @@ theorem mul_lt_mul_of_neg_right (h : b < a) (hc : c < 0) : a * c < b * c := by
   refine (add_lt_add_iff_right (b * d + a * d)).1 ?_
   calc
     _ = b * d := by rw [add_left_comm, ← mul_add, ← hcd, mul_zero, add_zero]
-    _ < a * d := mul_lt_mul_of_pos_right h $ hcd.trans_lt $ add_lt_of_neg_left _ hc
+    _ < a * d := mul_lt_mul_of_pos_right h <| hcd.trans_lt <| add_lt_of_neg_left _ hc
     _ = _ := by rw [← add_assoc, ← mul_add, ← hcd, mul_zero, zero_add]
 #align mul_lt_mul_of_neg_right mul_lt_mul_of_neg_right
 
@@ -1189,7 +1189,7 @@ lemma sq_nonneg (a : α) : 0 ≤ a ^ 2 := by
   · exact pow_nonneg ha _
   obtain ⟨b, hab⟩ := exists_add_of_le ha
   calc
-    0 ≤ b ^ 2 := pow_nonneg (not_lt.1 fun hb ↦ hab.not_gt $ add_neg_of_nonpos_of_neg ha hb) _
+    0 ≤ b ^ 2 := pow_nonneg (not_lt.1 fun hb ↦ hab.not_gt <| add_neg_of_nonpos_of_neg ha hb) _
     _ = a ^ 2 := add_left_injective (a * b) ?_
   calc
     b ^ 2 + a * b = (a + b) * b := by rw [add_comm, sq, add_mul]
@@ -1288,12 +1288,13 @@ lemma mul_nonpos_iff_neg_imp_nonneg : a * b ≤ 0 ↔ (a < 0 → 0 ≤ b) ∧ (0
 lemma neg_one_lt_zero : -1 < (0 : α) := neg_lt_zero.2 zero_lt_one
 #align neg_one_lt_zero neg_one_lt_zero
 
-lemma sub_one_lt (a : α) : a - 1 < a := sub_lt_iff_lt_add.2 $ lt_add_one a
+lemma sub_one_lt (a : α) : a - 1 < a := sub_lt_iff_lt_add.2 <| lt_add_one a
 #align sub_one_lt sub_one_lt
 
 lemma mul_self_le_mul_self_of_le_of_neg_le (h₁ : a ≤ b) (h₂ : -a ≤ b) : a * a ≤ b * b :=
   (le_total 0 a).elim (mul_self_le_mul_self · h₁) fun h ↦
-    (neg_mul_neg a a).symm.trans_le $ mul_le_mul h₂ h₂ (neg_nonneg.2 h) $ (neg_nonneg.2 h).trans h₂
+    (neg_mul_neg a a).symm.trans_le <|
+      mul_le_mul h₂ h₂ (neg_nonneg.2 h) <| (neg_nonneg.2 h).trans h₂
 #align mul_self_le_mul_self_of_le_of_neg_le mul_self_le_mul_self_of_le_of_neg_le
 
 end LinearOrderedRing
