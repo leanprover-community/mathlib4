@@ -325,7 +325,7 @@ theorem smoothWithinAt_one [One M'] : SmoothWithinAt I I' (1 : M → M') s x :=
 
 end id
 
-/-- `f` is continuously differentiable if it is cont. differentiable at 
+/-- `f` is continuously differentiable if it is cont. differentiable at
 each `x ∈ mulTSupport f`. -/
 @[to_additive "`f` is continuously differentiable if it is continuously
 differentiable at each `x ∈ tsupport f`."]
