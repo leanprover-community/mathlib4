@@ -826,7 +826,6 @@ end
 
 end Semiring
 
-
 end MultilinearMap
 
 namespace LinearMap
