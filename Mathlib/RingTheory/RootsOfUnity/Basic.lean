@@ -1068,8 +1068,33 @@ theorem autToPow_spec (f : S ≃ₐ[R] S) : μ ^ (hμ.autToPow R f : ZMod n).val
 theorem autToPow_unique
     (χ : (S ≃ₐ[R] S) →* (ZMod n)ˣ)
     (hχ : ∀ σ : S ≃ₐ[R] S, μ^(χ σ : ZMod n).val = σ μ) :
-    χ = hμ.autToPow R :=
-  sorry
+    χ = hμ.autToPow R := by
+  let μ' := hμ.toRootsOfUnity
+  have ho : orderOf μ' = n := by
+    rw [hμ.eq_orderOf, ← hμ.val_toRootsOfUnity_coe, orderOf_units, Subgroup.orderOf_coe]
+  ext σ : 2
+  have := map_rootsOfUnity_eq_pow_self σ.toAlgHom μ'
+  let k := this.choose
+  let hk := this.choose_spec
+  show _ = ↑k
+  specialize hχ σ
+  dsimp at hk
+  rw [hk] at hχ
+  change _ = μ^k at hχ
+  let k' : ℕ := (χ σ : ZMod n).val
+  have : k' ≡ k [MOD n] := by
+    have : μ' ^ k' = μ' ^ k := by
+      ext : 2
+      push_cast
+      exact hχ
+    rw [pow_eq_pow_iff_modEq] at this
+    convert this
+    exact id ho.symm
+  have : (χ σ : ZMod n) = k' := (ZMod.nat_cast_zmod_val (n := n) ↑(χ σ)).symm
+  rw [this]
+  rw [ZMod.eq_iff_modEq_nat]
+  assumption
+
 
 end Automorphisms
 
