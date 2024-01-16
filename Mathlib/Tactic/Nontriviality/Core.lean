@@ -6,14 +6,14 @@ Authors: Sébastien Gouëzel, Mario Carneiro
 import Qq.MetaM
 import Mathlib.Logic.Nontrivial.Basic
 import Mathlib.Tactic.Attr.Core
-import Mathlib.Tactic.SolveByElim
+import Std.Tactic.SolveByElim
 
 /-! # The `nontriviality` tactic. -/
 
 set_option autoImplicit true
 
 namespace Mathlib.Tactic.Nontriviality
-open Lean Elab Meta Tactic Qq
+open Lean Elab Meta Tactic Qq Std.Tactic
 
 theorem subsingleton_or_nontrivial_elim {p : Prop} {α : Type u}
     (h₁ : Subsingleton α → p) (h₂ : Nontrivial α → p) : p :=

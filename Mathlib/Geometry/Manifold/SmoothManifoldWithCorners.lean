@@ -357,7 +357,7 @@ protected theorem locallyCompactSpace [LocallyCompactSpace E] (I : ModelWithCorn
       fun s => I.symm '' (s ∩ range I) := fun x ↦ by
     rw [← I.symm_map_nhdsWithin_range]
     exact ((compact_basis_nhds (I x)).inf_principal _).map _
-  refine' locallyCompactSpace_of_hasBasis this _
+  refine' .of_hasBasis this _
   rintro x s ⟨-, hsc⟩
   exact (hsc.inter_right I.closed_range).image I.continuous_symm
 #align model_with_corners.locally_compact ModelWithCorners.locallyCompactSpace
@@ -478,7 +478,9 @@ end ModelWithCornersProd
 
 section Boundaryless
 
-/-- Property ensuring that the model with corners `I` defines manifolds without boundary. -/
+/-- Property ensuring that the model with corners `I` defines manifolds without boundary. This
+  differs from the more general `BoundarylessManifold`, which requires every point on the manifold
+  to be an interior point.  -/
 class ModelWithCorners.Boundaryless {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
     (I : ModelWithCorners 𝕜 E H) : Prop where
@@ -617,7 +619,7 @@ the `C^n` groupoid. -/
 theorem symm_trans_mem_contDiffGroupoid (e : PartialHomeomorph M H) :
     e.symm.trans e ∈ contDiffGroupoid n I :=
   haveI : e.symm.trans e ≈ PartialHomeomorph.ofSet e.target e.open_target :=
-    PartialHomeomorph.trans_symm_self _
+    PartialHomeomorph.symm_trans_self _
   StructureGroupoid.eq_on_source _ (ofSet_mem_contDiffGroupoid n I e.open_target) this
 #align symm_trans_mem_cont_diff_groupoid symm_trans_mem_contDiffGroupoid
 
@@ -709,7 +711,7 @@ def analyticGroupoid : StructureGroupoid H :=
             (f := (1 : E →L[𝕜] E)) (fun x _ => (1 : E →L[𝕜] E).analyticAt x)
             (fun z hz => (I.right_inv (interior_subset hz)).symm)
         · intro x hx
-          simp only [left_id, comp_apply, preimage_univ, univ_inter, mem_image] at hx
+          simp only [id_comp, comp_apply, preimage_univ, univ_inter, mem_image] at hx
           rcases hx with ⟨y, hy⟩
           rw [← hy.right, I.right_inv (interior_subset hy.left)]
           exact hy.left
@@ -753,7 +755,7 @@ theorem ofSet_mem_analyticGroupoid {s : Set H} (hs : IsOpen s) :
   apply mem_groupoid_of_pregroupoid.mpr
   suffices h : AnalyticOn 𝕜 (I ∘ I.symm) (I.symm ⁻¹' s ∩ interior (range I)) ∧
       (I.symm ⁻¹' s ∩ interior (range I)).image (I ∘ I.symm) ⊆ interior (range I)
-  · simp only [PartialHomeomorph.ofSet_apply, left_id, PartialHomeomorph.ofSet_toPartialEquiv,
+  · simp only [PartialHomeomorph.ofSet_apply, id_comp, PartialHomeomorph.ofSet_toPartialEquiv,
       PartialEquiv.ofSet_source, h, comp_apply, mem_range, image_subset_iff, true_and,
       PartialHomeomorph.ofSet_symm, PartialEquiv.ofSet_target, and_self]
     intro x hx
@@ -763,7 +765,7 @@ theorem ofSet_mem_analyticGroupoid {s : Set H} (hs : IsOpen s) :
   apply And.intro
   · have : AnalyticOn 𝕜 (1 : E →L[𝕜] E) (univ : Set E) := (fun x _ => (1 : E →L[𝕜] E).analyticAt x)
     exact (this.mono (subset_univ (s.preimage (I.symm) ∩ interior (range I)))).congr
-      (IsOpen.inter (hs.preimage I.continuous_symm) isOpen_interior)
+      ((hs.preimage I.continuous_symm).inter isOpen_interior)
       fun z hz => (I.right_inv (interior_subset hz.right)).symm
   · intro x hx
     simp only [comp_apply, mem_image] at hx
@@ -776,7 +778,7 @@ the analytic groupoid. -/
 theorem symm_trans_mem_analyticGroupoid (e : PartialHomeomorph M H) :
     e.symm.trans e ∈ analyticGroupoid I :=
   haveI : e.symm.trans e ≈ PartialHomeomorph.ofSet e.target e.open_target :=
-    PartialHomeomorph.trans_symm_self _
+    PartialHomeomorph.symm_trans_self _
   StructureGroupoid.eq_on_source _ (ofSet_mem_analyticGroupoid I e.open_target) this
 
 /-- The analytic groupoid is closed under restriction. -/

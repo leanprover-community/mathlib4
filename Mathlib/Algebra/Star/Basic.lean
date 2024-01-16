@@ -71,6 +71,8 @@ variable {S : Type w} [Star R] [SetLike S R] [hS : StarMemClass S R] (s : S)
 instance instStar : Star s where
   star r := ⟨star (r : R), star_mem r.prop⟩
 
+@[simp] lemma coe_star (x : s) : star x = star (x : R) := rfl
+
 end StarMemClass
 
 /-- Typeclass for a star operation with is involutive.
@@ -351,10 +353,12 @@ theorem star_ratCast [DivisionRing R] [StarRing R] (r : ℚ) : star (r : R) = r 
 
 end
 
+section CommSemiring
+variable [CommSemiring R] [StarRing R]
+
 /-- `star` as a ring automorphism, for commutative `R`. -/
 @[simps apply]
-def starRingAut [CommSemiring R] [StarRing R] : RingAut R :=
-  { starAddEquiv, starMulAut (R := R) with toFun := star }
+def starRingAut : RingAut R := { starAddEquiv, starMulAut (R := R) with toFun := star }
 #align star_ring_aut starRingAut
 #align star_ring_aut_apply starRingAut_apply
 
@@ -367,8 +371,7 @@ Note that this is the preferred form (over `starRingAut`, available under the sa
 because the notation `E →ₗ⋆[R] F` for an `R`-conjugate-linear map (short for
 `E →ₛₗ[starRingEnd R] F`) does not pretty-print if there is a coercion involved, as would be the
 case for `(↑starRingAut : R →* R)`. -/
-def starRingEnd [CommSemiring R] [StarRing R] : R →+* R :=
-  @starRingAut R _ _
+def starRingEnd : R →+* R := @starRingAut R _ _
 #align star_ring_end starRingEnd
 
 variable {R}
@@ -379,8 +382,7 @@ scoped[ComplexConjugate] notation "conj" => starRingEnd _
 /-- This is not a simp lemma, since we usually want simp to keep `starRingEnd` bundled.
  For example, for complex conjugation, we don't want simp to turn `conj x`
  into the bare function `star x` automatically since most lemmas are about `conj x`. -/
-theorem starRingEnd_apply [CommSemiring R] [StarRing R] {x : R} : starRingEnd R x = star x :=
-  rfl
+theorem starRingEnd_apply (x : R) : starRingEnd R x = star x := rfl
 #align star_ring_end_apply starRingEnd_apply
 
 /- Porting note: removed `simp` attribute due to report by linter:
@@ -391,13 +393,10 @@ One of the lemmas above could be a duplicate.
 If that's not the case try reordering lemmas or adding @[priority].
  -/
 -- @[simp]
-theorem starRingEnd_self_apply [CommSemiring R] [StarRing R] (x : R) :
-    starRingEnd R (starRingEnd R x) = x :=
-  star_star x
+theorem starRingEnd_self_apply (x : R) : starRingEnd R (starRingEnd R x) = x := star_star x
 #align star_ring_end_self_apply starRingEnd_self_apply
 
-instance RingHom.involutiveStar {S : Type*} [NonAssocSemiring S] [CommSemiring R] [StarRing R] :
-    InvolutiveStar (S →+* R) where
+instance RingHom.involutiveStar {S : Type*} [NonAssocSemiring S] : InvolutiveStar (S →+* R) where
   toStar := { star := fun f => RingHom.comp (starRingEnd R) f }
   star_involutive := by
     intro
@@ -405,14 +404,12 @@ instance RingHom.involutiveStar {S : Type*} [NonAssocSemiring S] [CommSemiring R
     simp only [RingHom.coe_comp, Function.comp_apply, starRingEnd_self_apply]
 #align ring_hom.has_involutive_star RingHom.involutiveStar
 
-theorem RingHom.star_def {S : Type*} [NonAssocSemiring S] [CommSemiring R] [StarRing R]
-    (f : S →+* R) : Star.star f = RingHom.comp (starRingEnd R) f :=
-  rfl
+theorem RingHom.star_def {S : Type*} [NonAssocSemiring S] (f : S →+* R) :
+    Star.star f = RingHom.comp (starRingEnd R) f := rfl
 #align ring_hom.star_def RingHom.star_def
 
-theorem RingHom.star_apply {S : Type*} [NonAssocSemiring S] [CommSemiring R] [StarRing R]
-    (f : S →+* R) (s : S) : star f s = star (f s) :=
-  rfl
+theorem RingHom.star_apply {S : Type*} [NonAssocSemiring S] (f : S →+* R) (s : S) :
+    star f s = star (f s) := rfl
 #align ring_hom.star_apply RingHom.star_apply
 
 -- A more convenient name for complex conjugation
@@ -422,6 +419,12 @@ alias Complex.conj_conj := starRingEnd_self_apply
 alias IsROrC.conj_conj := starRingEnd_self_apply
 set_option linter.uppercaseLean3 false in
 #align is_R_or_C.conj_conj IsROrC.conj_conj
+
+open scoped ComplexConjugate
+
+@[simp] lemma conj_trivial [TrivialStar R] (a : R) : conj a = a := star_trivial _
+
+end CommSemiring
 
 @[simp]
 theorem star_inv' [DivisionSemiring R] [StarRing R] (x : R) : star x⁻¹ = (star x)⁻¹ :=
@@ -466,6 +469,11 @@ def starRingOfComm {R : Type*} [CommSemiring R] : StarRing R :=
     star_add := fun _ _ => rfl }
 #align star_ring_of_comm starRingOfComm
 
+instance Nat.instStarRing : StarRing ℕ := starRingOfComm
+instance Rat.instStarRing : StarRing ℚ := starRingOfComm
+instance Nat.instTrivialStar : TrivialStar ℕ := ⟨fun _ ↦ rfl⟩
+instance Rat.instTrivialStar : TrivialStar ℚ := ⟨fun _ ↦ rfl⟩
+
 /-- A star module `A` over a star ring `R` is a module which is a star add monoid,
 and the two star structures are compatible in the sense
 `star (r • a) = star r • star a`.
@@ -491,6 +499,9 @@ attribute [simp] star_smul
 instance StarMul.toStarModule [CommMonoid R] [StarMul R] : StarModule R R :=
   ⟨star_mul'⟩
 #align star_semigroup.to_star_module StarMul.toStarModule
+
+instance StarAddMonoid.toStarModuleNat {α} [AddCommMonoid α] [StarAddMonoid α] : StarModule ℕ α :=
+  ⟨fun n a ↦ by rw [star_nsmul, star_trivial n]⟩
 
 namespace RingHomInvPair
 
