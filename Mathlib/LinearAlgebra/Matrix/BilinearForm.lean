@@ -134,7 +134,11 @@ theorem Matrix.toBilin'Aux_eq (M : Matrix n n R₂) : Matrix.toBilin'Aux M = Mat
 #align matrix.to_bilin'_aux_eq Matrix.toBilin'Aux_eq
 
 theorem Matrix.toBilin'_apply (M : Matrix n n R₂) (x y : n → R₂) :
-    Matrix.toBilin' M x y = ∑ i, ∑ j, x i * M i j * y j := Matrix.toLinearMap₂'_apply _ _ _
+    Matrix.toBilin' M x y = ∑ i, ∑ j, (x i * M i j) * y j := by
+    conv_rhs => {
+      apply Finset.sum_congr rfl fun i  _ => Finset.sum_congr rfl fun j _ => by
+          rw [mul_assoc, mul_comm (M i j),  ←smul_eq_mul, ←smul_eq_mul]
+    }
 #align matrix.to_bilin'_apply Matrix.toBilin'_apply
 
 theorem Matrix.toBilin'_apply' (M : Matrix n n R₂) (v w : n → R₂) :
@@ -251,8 +255,11 @@ theorem BilinForm.toMatrix_apply (B : BilinForm R₂ M₂) (i j : n) :
 
 @[simp]
 theorem Matrix.toBilin_apply (M : Matrix n n R₂) (x y : M₂) :
-    Matrix.toBilin b M x y = ∑ i, ∑ j, b.repr x i * M i j * b.repr y j :=
-  Matrix.toLinearMap₂_apply _ _ _ _ _
+    Matrix.toBilin b M x y = ∑ i, ∑ j, b.repr x i * M i j * b.repr y j := by
+    conv_rhs => {
+      apply Finset.sum_congr rfl fun i  _ => Finset.sum_congr rfl fun j _ => by
+          rw [mul_assoc, mul_comm (M i j),  ←smul_eq_mul, ←smul_eq_mul]
+    }
 #align matrix.to_bilin_apply Matrix.toBilin_apply
 
 -- Not a `simp` lemma since `BilinForm.toMatrix` needs an extra argument

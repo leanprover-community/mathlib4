@@ -292,7 +292,8 @@ theorem PosSemidef.dotProduct_mulVec_zero_iff [DecidableEq n]
 theorem PosSemidef.toLinearMap₂'_zero_iff [DecidableEq n]
     {A : Matrix n n 𝕜} (hA : PosSemidef A) (x : n → 𝕜) :
     Matrix.toLinearMap₂' A (star x) x = 0 ↔ Matrix.toLin' A x = 0 := by
-  simpa only [toLinearMap₂'_apply', toLin'_apply] using hA.dotProduct_mulVec_zero_iff x
+    simpa [toLinearMap₂'_apply', toLin'_apply, ScalarMatrix.mulVec_eq_Matrix_mulVec]
+      using hA.dotProduct_mulVec_zero_iff x
 
 /-!
 ## Positive definite matrices
