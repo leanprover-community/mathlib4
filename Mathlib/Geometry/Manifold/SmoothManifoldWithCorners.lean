@@ -531,9 +531,9 @@ variable (n)
 
 /-- Given a model with corners `(E, H)`, we define the pregroupoid of `C^n` transformations of `H`
 as the maps that are `C^n` when read in `E` through `I`. -/
-def contDiffPregroupoid : Pregroupoid H := {
-  property := fun f s => ContDiffOn 𝕜 n (I ∘ f ∘ I.symm) (I.symm ⁻¹' s ∩ range I)
-  comp := fun {f g u v} hf hg _ _ _ => by
+def contDiffPregroupoid : Pregroupoid H where
+  property f s := ContDiffOn 𝕜 n (I ∘ f ∘ I.symm) (I.symm ⁻¹' s ∩ range I)
+  comp {f g u v} hf hg _ _ _ := by
     have : I ∘ (g ∘ f) ∘ I.symm = (I ∘ g ∘ I.symm) ∘ I ∘ f ∘ I.symm := by ext x; simp
     simp only [this]
     refine hg.comp (hf.mono ?_) ?_
@@ -548,7 +548,7 @@ def contDiffPregroupoid : Pregroupoid H := {
     rcases mem_range.1 hx2 with ⟨y, hy⟩
     rw [← hy]
     simp only [mfld_simps]
-  locality := fun {f u} _ H => by
+  locality {f u} _ H := by
     apply contDiffOn_of_locally_contDiffOn
     rintro y ⟨hy1, hy2⟩
     rcases mem_range.1 hy2 with ⟨x, hx⟩
@@ -561,14 +561,13 @@ def contDiffPregroupoid : Pregroupoid H := {
       rw [inter_comm]
     rw [this] at hv
     exact ⟨I.symm ⁻¹' v, v_open.preimage I.continuous_symm, by simpa, hv⟩
-  congr := fun {f g u} _ fg hf => by
+  congr {f g u} _ fg hf := by
     apply hf.congr
     rintro y ⟨hy1, hy2⟩
     rcases mem_range.1 hy2 with ⟨x, hx⟩
     rw [← hx] at hy1 ⊢
     simp only [mfld_simps] at hy1 ⊢
     rw [fg _ hy1]
-}
 
 /-- Given a model with corners `(E, H)`, we define the groupoid of invertible `C^n` transformations
   of `H` as the invertible maps that are `C^n` when read in `E` through `I`. -/
