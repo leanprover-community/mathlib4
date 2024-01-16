@@ -574,19 +574,24 @@ theorem map_mul [Mul β] [Mul γ] {g : β → γ} (hg : ∀ x y, g (x * y) = g x
 
 variable {K : Type*}
 
+@[to_additive]
 instance instSMul [SMul K β] : SMul K (α →ₛ β) :=
   ⟨fun k f => f.map (k • ·)⟩
 #align measure_theory.simple_func.has_smul MeasureTheory.SimpleFunc.instSMul
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem coe_smul [SMul K β] (c : K) (f : α →ₛ β) : ⇑(c • f) = c • ⇑f :=
   rfl
 #align measure_theory.simple_func.coe_smul MeasureTheory.SimpleFunc.coe_smul
 
+@[to_additive (attr := simp)]
 theorem smul_apply [SMul K β] (k : K) (f : α →ₛ β) (a : α) : (k • f) a = k • f a :=
   rfl
 #align measure_theory.simple_func.smul_apply MeasureTheory.SimpleFunc.smul_apply
 
+instance hasNatSMul [AddMonoid β] : SMul ℕ (α →ₛ β) := inferInstance
+
+@[to_additive existing hasNatSMul]
 instance hasNatPow [Monoid β] : Pow (α →ₛ β) ℕ :=
   ⟨fun f n => f.map (· ^ n)⟩
 #align measure_theory.simple_func.has_nat_pow MeasureTheory.SimpleFunc.hasNatPow
