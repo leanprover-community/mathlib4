@@ -350,7 +350,7 @@ protected theorem CliqueFree.addEdge (h : G.CliqueFree n) (v w) :
     have ib : w ≠ f (x.succAbove b) :=
       (hx ▸ f.apply_eq_iff_eq x (x.succAbove b)).ne.mpr (x.succAbove_ne b).symm
     simp only [addEdge, ia, ib, and_false, false_and, or_false] at hs
-    rw [hs, Fin.succAbove_right_inj]
+    rw [hs, Fin.succAbove_inj]
   · use ⟨f ∘ Fin.succEmbedding n, (f.2.of_comp_iff _).mpr (RelEmbedding.injective _)⟩
     intro a b
     simp only [Fin.val_succEmbedding, Embedding.coeFn_mk, comp_apply, top_adj]
