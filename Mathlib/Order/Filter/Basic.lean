@@ -1252,6 +1252,10 @@ theorem eventually_principal {a : Set α} {p : α → Prop} : (∀ᶠ x in 𝓟 
   Iff.rfl
 #align filter.eventually_principal Filter.eventually_principal
 
+theorem Eventually.forall_mem {α : Type*} {f : Filter α} {s : Set α} {P : α → Prop}
+    (hP : ∀ᶠ x in f, P x) (hf : 𝓟 s ≤ f) : ∀ x ∈ s, P x :=
+  Filter.eventually_principal.mp (hP.filter_mono hf)
+
 theorem eventually_inf {f g : Filter α} {p : α → Prop} :
     (∀ᶠ x in f ⊓ g, p x) ↔ ∃ s ∈ f, ∃ t ∈ g, ∀ x ∈ s ∩ t, p x :=
   mem_inf_iff_superset
