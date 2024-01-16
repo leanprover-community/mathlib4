@@ -35,6 +35,8 @@ groups here are not necessarily finite dimensional.
   for smoothness of inversion at `0`), similar results hold for point-wise division.
 * `normedSpaceLieAddGroup` : a normed vector space over a nontrivially normed field
   is an additive Lie group.
+* `Instances/UnitsOfNormedAlgebra` shows that the group of units of a complete normed `𝕜`-algebra
+  is a multiplicative Lie group.
 
 ## Implementation notes
 
