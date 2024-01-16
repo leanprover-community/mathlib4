@@ -86,19 +86,23 @@ instance : Inhabited SSet :=
 
 section Product
 
+/-- `Prod X Y` is the explicit binary product of simplicial sets `X` and `Y`. -/
 def Prod (X Y : SSet) : SSet where
   obj n := X.obj n × Y.obj n
   map f a := (X.map f a.1, Y.map f a.2)
 
+/-- The first projection of `Prod X Y`, onto X. -/
 @[simp]
 def Prod.fst {X Y : SSet} : (Prod X Y) ⟶ X where
   app _ a := a.1
 
+/-- The second projection of `Prod X Y`, onto Y. -/
 @[simp]
 def Prod.snd {X Y : SSet} : (Prod X Y) ⟶ Y where
   app _ a := a.2
 
-@[simps! pt]
+/-- The binary fan whose point is `Prod X Y`. -/
+@[simps!]
 def binaryProductCone (X Y : SSet.{0}) : BinaryFan X Y :=
   BinaryFan.mk (Prod.fst) (Prod.snd)
 
@@ -110,6 +114,7 @@ theorem binaryProductCone_fst (X Y : SSet) : (binaryProductCone X Y).fst = Prod.
 theorem binaryProductCone_snd (X Y : SSet) : (binaryProductCone X Y).snd = Prod.snd :=
   rfl
 
+/-- `Prod X Y` is a limit cone. -/
 @[simps]
 def binaryProductLimit (X Y : SSet) : IsLimit (binaryProductCone X Y) where
   lift (s : BinaryFan X Y) := {
@@ -117,16 +122,17 @@ def binaryProductLimit (X Y : SSet) : IsLimit (binaryProductCone X Y) where
     naturality := fun j k g => by
       ext a
       simp [FunctorToTypes.naturality]
-      congr
   }
   fac _ j := Discrete.recOn j fun j => WalkingPair.casesOn j rfl rfl
   uniq s t ht := by
     simp only [← ht ⟨WalkingPair.right⟩, ← ht ⟨WalkingPair.left⟩]
     congr
 
+/-- `Prod X Y` is a binary product for `X` and `Y`. -/
 def binaryProductLimitCone (X Y : SSet) : Limits.LimitCone (pair X Y) :=
   ⟨_, binaryProductLimit X Y⟩
 
+/-- The categorical binary product of simplicial sets is `Prod X Y`. -/
 noncomputable def binaryProductIso (X Y : SSet) : X ⨯ Y ≅ Prod X Y :=
   limit.isoLimitCone (binaryProductLimitCone X Y)
 
