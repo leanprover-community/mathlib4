@@ -675,12 +675,6 @@ theorem IsCompact.nhdsSet_prod_eq {t : Set Y} (hs : IsCompact s) (ht : IsCompact
   simp_rw [hs.nhdsSet_prod_eq_biSup, ht.prod_nhdsSet_eq_biSup, nhdsSet, sSup_image, biSup_prod,
     nhds_prod_eq]
 
-/-- The product of a neighborhood of `s` and a neighborhood of `t` is a neighborhood of `s ×ˢ t`,
-formulated in terms of a filter inequality. -/
-theorem nhdsSet_prod_le (s : Set X) (t : Set Y) : 𝓝ˢ (s ×ˢ t) ≤ 𝓝ˢ s ×ˢ 𝓝ˢ t :=
-  ((hasBasis_nhdsSet _).prod (hasBasis_nhdsSet _)).ge_iff.2 fun (_u, _v) ⟨⟨huo, hsu⟩, hvo, htv⟩ ↦
-    (huo.prod hvo).mem_nhdsSet.2 <| prod_mono hsu htv
-
 /-- If `s` and `t` are compact sets and `n` is an open neighborhood of `s × t`, then there exist
 open neighborhoods `u ⊇ s` and `v ⊇ t` such that `u × v ⊆ n`.
 
