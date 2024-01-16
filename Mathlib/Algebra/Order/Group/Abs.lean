@@ -502,5 +502,27 @@ theorem max_zero_add_max_neg_zero_eq_abs_self (a : α) : max a 0 + max (-a) 0 = 
 
 end LinearOrderedAddCommGroup
 
+namespace LatticeOrderedAddCommGroup
+variable [Lattice α] [AddCommGroup α] {s t : Set α}
+
+/-- A set `s` in a lattice ordered group is *solid* if for all `x ∈ s` and all `y ∈ α` such that
+`|y| ≤ |x|`, then `y ∈ s`. -/
+def IsSolid (s : Set α) : Prop := ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, |y| ≤ |x| → y ∈ s
+#align lattice_ordered_add_comm_group.is_solid LatticeOrderedAddCommGroup.IsSolid
+
+/-- The solid closure of a subset `s` is the smallest superset of `s` that is solid. -/
+def solidClosure (s : Set α) : Set α := {y | ∃ x ∈ s, |y| ≤ |x|}
+#align lattice_ordered_add_comm_group.solid_closure LatticeOrderedAddCommGroup.solidClosure
+
+lemma isSolid_solidClosure (s : Set α) : IsSolid (solidClosure s) :=
+  fun _ ⟨y, hy, hxy⟩ _ hzx ↦ ⟨y, hy, hzx.trans hxy⟩
+#align lattice_ordered_add_comm_group.is_solid_solid_closure LatticeOrderedAddCommGroup.isSolid_solidClosure
+
+lemma solidClosure_min (hst : s ⊆ t) (ht : IsSolid t) : solidClosure s ⊆ t :=
+  fun _ ⟨_, hy, hxy⟩ ↦ ht (hst hy) hxy
+#align lattice_ordered_add_comm_group.solid_closure_min LatticeOrderedAddCommGroup.solidClosure_min
+
+end LatticeOrderedAddCommGroup
+
 @[deprecated] alias neg_le_abs_self := neg_le_abs
 @[deprecated] alias neg_abs_le_self := neg_abs_le

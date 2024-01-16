@@ -1591,7 +1591,7 @@ variable [TopologicalSpace α]
 /-- The nonnegative part of a bounded continuous `ℝ`-valued function as a bounded
 continuous `ℝ≥0`-valued function. -/
 def nnrealPart (f : α →ᵇ ℝ) : α →ᵇ ℝ≥0 :=
-  BoundedContinuousFunction.comp _ (show LipschitzWith 1 Real.toNNReal from lipschitzWith_pos) f
+  BoundedContinuousFunction.comp _ (show LipschitzWith 1 Real.toNNReal from lipschitzWith_posPart) f
 #align bounded_continuous_function.nnreal_part BoundedContinuousFunction.nnrealPart
 
 @[simp]
