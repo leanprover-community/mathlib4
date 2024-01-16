@@ -126,8 +126,8 @@ def eisensteinLevelNSIF (N : ℕ) (k a b : ℤ) : SlashInvariantForm (Gamma N) k
     intro A
     ext1 x
     simp_rw [slash_action_eq'_iff, EisensteinLevelNtsum, UpperHalfPlane.subgroup_to_sl_moeb,
-      UpperHalfPlane.sl_moeb, ←(Equiv.tsum_eq (gammaMoebiusEquiv N a b A) (fun v => eise k x v)),
-      ←tsum_mul_left]
+      UpperHalfPlane.sl_moeb, ← (Equiv.tsum_eq (gammaMoebiusEquiv N a b A) (fun v => eise k x v)),
+      ← tsum_mul_left]
     apply tsum_congr
     intro v
     have := eise_Moebius k x A v
