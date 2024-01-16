@@ -389,7 +389,7 @@ section Metric
 
 open Metric Set
 
-variable [MetricSpace β] [Zero β] [NDFunLike F α β] [ZeroAtInftyContinuousMapClass F α β]
+variable [PseudoMetricSpace β] [Zero β] [NDFunLike F α β] [ZeroAtInftyContinuousMapClass F α β]
 
 protected theorem bounded (f : F) : ∃ C, ∀ x y : α, dist ((f : α → β) x) (f y) ≤ C := by
   obtain ⟨K : Set α, hK₁, hK₂⟩ := mem_cocompact.mp
@@ -437,8 +437,14 @@ end
 variable {C : ℝ} {f g : C₀(α, β)}
 
 /-- The type of continuous functions vanishing at infinity, with the uniform distance induced by the
+inclusion `ZeroAtInftyContinuousMap.toBCF`, is a pseudo-metric space. -/
+noncomputable instance instPseudoMetricSpace : PseudoMetricSpace C₀(α, β) :=
+  PseudoMetricSpace.induced toBCF inferInstance
+
+/-- The type of continuous functions vanishing at infinity, with the uniform distance induced by the
 inclusion `ZeroAtInftyContinuousMap.toBCF`, is a metric space. -/
-noncomputable instance instMetricSpace : MetricSpace C₀(α, β) :=
+noncomputable instance instMetricSpace {β : Type*} [MetricSpace β] [Zero β] :
+    MetricSpace C₀(α, β) :=
   MetricSpace.induced _ (toBCF_injective α β) inferInstance
 
 @[simp]
@@ -494,11 +500,16 @@ field `𝕜` whenever `β` is as well.
 
 section NormedSpace
 
-variable [NormedAddCommGroup β] {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 β]
+noncomputable instance instSeminormedAddCommGroup [SeminormedAddCommGroup β] :
+    SeminormedAddCommGroup C₀(α, β) :=
+  SeminormedAddCommGroup.induced _ _ (⟨⟨toBCF, rfl⟩, fun _ _ => rfl⟩ : C₀(α, β) →+ α →ᵇ β)
 
-noncomputable instance instNormedAddCommGroup : NormedAddCommGroup C₀(α, β) :=
-  NormedAddCommGroup.induced C₀(α, β) (α →ᵇ β) (⟨⟨toBCF, rfl⟩, fun _ _ => rfl⟩ : C₀(α, β) →+ α →ᵇ β)
+noncomputable instance instNormedAddCommGroup [NormedAddCommGroup β] :
+    NormedAddCommGroup C₀(α, β) :=
+  NormedAddCommGroup.induced _ _ (⟨⟨toBCF, rfl⟩, fun _ _ => rfl⟩ : C₀(α, β) →+ α →ᵇ β)
     (toBCF_injective α β)
+
+variable [SeminormedAddCommGroup β] {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 β]
 
 @[simp]
 theorem norm_toBCF_eq_norm {f : C₀(α, β)} : ‖f.toBCF‖ = ‖f‖ :=
@@ -511,11 +522,23 @@ end NormedSpace
 
 section NormedRing
 
-variable [NonUnitalNormedRing β]
-
-noncomputable instance instNonUnitalNormedRing : NonUnitalNormedRing C₀(α, β) :=
-  { ZeroAtInftyContinuousMap.instNonUnitalRing, ZeroAtInftyContinuousMap.instNormedAddCommGroup with
+noncomputable instance instNonUnitalSeminormedRing [NonUnitalSeminormedRing β] :
+    NonUnitalSeminormedRing C₀(α, β) :=
+  { instNonUnitalRing, instSeminormedAddCommGroup with
     norm_mul := fun f g => norm_mul_le f.toBCF g.toBCF }
+
+noncomputable instance instNonUnitalNormedRing [NonUnitalNormedRing β] :
+    NonUnitalNormedRing C₀(α, β) :=
+  { instNonUnitalRing, instNormedAddCommGroup with
+    norm_mul := fun f g => norm_mul_le f.toBCF g.toBCF }
+
+noncomputable instance instNonUnitalSeminormedCommRing [NonUnitalSeminormedCommRing β] :
+    NonUnitalSeminormedCommRing C₀(α, β) :=
+  { instNonUnitalSeminormedRing, instNonUnitalCommRing with }
+
+noncomputable instance instNonUnitalNormedCommRing [NonUnitalNormedCommRing β] :
+    NonUnitalNormedCommRing C₀(α, β) :=
+  { instNonUnitalNormedRing, instNonUnitalCommRing with }
 
 end NormedRing
 

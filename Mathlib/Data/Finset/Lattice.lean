@@ -306,7 +306,7 @@ theorem sup_set_eq_biUnion (s : Finset α) (f : α → Set β) : s.sup f = ⋃ x
 
 theorem sup_eq_sSup_image [CompleteLattice β] (s : Finset α) (f : α → β) :
     s.sup f = sSup (f '' s) :=
-  by classical rw [← Finset.coe_image, ← sup_id_eq_sSup, sup_image, Function.comp.left_id]
+  by classical rw [← Finset.coe_image, ← sup_id_eq_sSup, sup_image, Function.id_comp]
 #align finset.sup_eq_Sup_image Finset.sup_eq_sSup_image
 
 /-! ### inf -/
