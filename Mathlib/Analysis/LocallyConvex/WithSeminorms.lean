@@ -511,7 +511,7 @@ variable [TopologicalSpace E]
 
 theorem WithSeminorms.isVonNBounded_iff_finset_seminorm_bounded {s : Set E} (hp : WithSeminorms p) :
     Bornology.IsVonNBounded 𝕜 s ↔ ∀ I : Finset ι, ∃ r > 0, ∀ x ∈ s, I.sup p x < r := by
-  rw [hp.hasBasis.isVonNBounded_basis_iff]
+  rw [hp.hasBasis.isVonNBounded_iff]
   constructor
   · intro h I
     simp only [id.def] at h

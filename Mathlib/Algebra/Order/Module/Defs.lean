@@ -1091,7 +1091,7 @@ lemma PosSMulMono.lift [PosSMulMono α γ] : PosSMulMono α β where
   elim a ha b₁ b₂ hb := by simp only [← hf, smul] at *; exact smul_le_smul_of_nonneg_left hb ha
 
 lemma PosSMulStrictMono.lift [PosSMulStrictMono α γ] : PosSMulStrictMono α β where
-  elim a ha b₁ b₂ hb :=  by
+  elim a ha b₁ b₂ hb := by
     simp only [← lt_iff_lt_of_le_iff_le' hf hf, smul] at *; exact smul_lt_smul_of_pos_left hb ha
 
 lemma PosSMulReflectLE.lift [PosSMulReflectLE α γ] : PosSMulReflectLE α β where
