@@ -17,6 +17,8 @@ In this file we introduce typeclasses and definitions for lattice operations.
 * `Sup`: type class for the `⊔` notation
 * `Inf`: type class for the `⊓` notation
 * `HasCompl`: type class for the `ᶜ` notation
+* `Top`: type class for the `⊤` notation
+* `Bot`: type class for the `⊥` notation
 
 ## Notations
 

@@ -33,13 +33,6 @@ Heyting algebras are the order theoretic equivalent of cartesian-closed categori
 * `CoheytingAlgebra`: Co-Heyting algebra.
 * `BiheytingAlgebra`: bi-Heyting algebra.
 
-## Notation
-
-* `⇨`: Heyting implication
-* `\`: Difference
-* `￢`: Heyting negation
-* `ᶜ`: (Pseudo-)complement
-
 ## References
 
 * [Francis Borceux, *Handbook of Categorical Algebra III*][borceux-vol3]
