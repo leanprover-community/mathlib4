@@ -314,7 +314,7 @@ variable [SmoothManifoldWithCorners I M] {I}
 
 /-- A smooth bump function is infinitely smooth. -/
 protected theorem smooth : Smooth I 𝓘(ℝ) f := by
-  refine' contMDiff_of_support fun x hx => _
+  refine contMDiff_of_tsupport fun x hx => ?_
   have : x ∈ (chartAt H c).source := f.tsupport_subset_chartAt_source hx
   refine ContMDiffAt.congr_of_eventuallyEq ?_ <| f.eqOn_source.eventuallyEq_of_mem <|
     (chartAt H c).open_source.mem_nhds this
