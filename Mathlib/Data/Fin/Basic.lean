@@ -1811,10 +1811,9 @@ theorem predAbove_zero {i : Fin (n + 2)} (hi : i ≠ 0) : predAbove 0 i = i.pred
   exact pos_iff_ne_zero.mpr hi
 #align fin.pred_above_zero Fin.predAbove_zero
 
-theorem predAbove_below (p : Fin (n + 1)) (i : Fin (n + 2)) (h : i ≤ castSucc p) :
+theorem predAbove_below (p : Fin n) (i : Fin (n + 1)) (h : i ≤ castSucc p) :
     p.predAbove i = i.castLT (h.trans_lt (castSucc_lt_last _)) := by
-  have : i ≤ castSucc (last n) := h.trans p.le_last
-  simp [predAbove, h.not_lt, this.not_lt]
+  simp [predAbove, h.not_lt]
 #align fin.pred_above_below Fin.predAbove_below
 
 theorem predAbove_above (p : Fin n) (i : Fin (n + 1)) (h : castSucc p < i) :
