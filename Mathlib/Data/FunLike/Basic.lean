@@ -57,7 +57,8 @@ Continuing the example above:
 ```
 /-- `MyHomClass F A B` states that `F` is a type of `MyClass.op`-preserving morphisms.
 You should extend this class when you extend `MyHom`. -/
-class MyHomClass (F A B : Type*) [MyClass A] [MyClass B] [FunLike F A (fun _ => B)] : Prop :=
+class MyHomClass (F: Type*) (A B : outParam Type*) [MyClass A] [MyClass B]
+  [NDFunLike F A B] : Prop :=
 (map_op : ∀ (f : F) (x y : A), f (MyClass.op x y) = MyClass.op (f x) (f y))
 
 @[simp] lemma map_op {F A B : Type*} [MyClass A] [MyClass B] [MyHomClass F A B]
@@ -81,7 +82,8 @@ structure CoolerHom (A B : Type*) [CoolClass A] [CoolClass B]
   extends MyHom A B :=
 (map_cool' : toFun CoolClass.cool = CoolClass.cool)
 
-class CoolerHomClass (F A B : Type*) [CoolClass A] [CoolClass B] [FunLike F A (fun _ => B)]
+class CoolerHomClass (F : Type*) (A B : outParam Type*) [CoolClass A] [CoolClass B]
+  [NDFunLike F A B]
   extends MyHomClass F A B :=
 (map_cool : ∀ (f : F), f CoolClass.cool = CoolClass.cool)
 
