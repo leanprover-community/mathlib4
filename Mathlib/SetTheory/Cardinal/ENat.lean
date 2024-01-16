@@ -8,6 +8,23 @@ import Mathlib.Algebra.Order.Hom.Ring
 
 /-!
 # Conversion between `Cardinal` and `ℕ∞`
+
+In this file we define a coercion `Cardinal.ofENat : ℕ∞ → Cardinal`
+and a projection `Cardinal.toENat : Cardinal →+*o ℕ∞`.
+We also prove basic theorems about these definitons.
+
+## Implementation notes
+
+We define `Cardinal.ofENat` as a function instead of a bundled homomorphism
+so that we can use it as a coercion and delaborate its application to `↑n`.
+
+We define `Cardinal.toENat` as a bundled homomorphism
+so that we can use all the theorems about homomorphisms without specializing them to this function.
+Since it is not registered as a coercion, the argument about delaboration does not apply.
+
+## Keywords
+
+set theory, cardinals, extended natural numbers
 -/
 
 open Function Set
@@ -15,8 +32,10 @@ universe u v
 
 namespace Cardinal
 
-@[coe]
-def ofENat : ℕ∞ → Cardinal
+/-- Coercion `ℕ∞ → Cardinal`. It sends natural numbers to natural numbers and `⊤` to `ℵ₀`.
+
+See also `Cardinal.ofENatHom` for a bundled homomorphism version. -/
+@[coe] def ofENat : ℕ∞ → Cardinal
   | (n : ℕ) => n
   | ⊤ => ℵ₀
 
@@ -130,6 +149,7 @@ lemma range_ofENat : range ofENat = Iic ℵ₀ := by
 instance : CanLift Cardinal ℕ∞ (↑) (· ≤ ℵ₀) where
   prf x := (Set.ext_iff.1 range_ofENat x).2
 
+/-- Unbundled version of `Cardinal.toENat`. -/
 noncomputable def toENatAux : Cardinal.{u} → ℕ∞ := extend Nat.cast Nat.cast fun _ ↦ ⊤
 
 lemma toENatAux_nat (n : ℕ) : toENatAux n = n := Nat.cast_injective.extend_apply ..
@@ -156,6 +176,9 @@ lemma toENatAux_eq_nat {x : Cardinal} {n : ℕ} : toENatAux x = n ↔ x = n := b
 
 lemma toENatAux_eq_zero {x : Cardinal} : toENatAux x = 0 ↔ x = 0 := toENatAux_eq_nat
 
+/-- Projection from cardinals to `ℕ∞`. Sends all infinite cardinals to `⊤`.
+
+We define this function as a bundled monotone ring homomorphism. -/
 noncomputable def toENat : Cardinal.{u} →+*o ℕ∞ where
   toFun := toENatAux
   map_one' := toENatAux_nat 1
@@ -184,11 +207,15 @@ noncomputable def toENat : Cardinal.{u} →+*o ℕ∞ where
   map_zero' := toENatAux_zero
   monotone' := toENatAux_gc.monotone_u
 
+/-- The coercion `Cardinal.ofENat` and the projection `Cardinal.toENat` form a Galois connection.
+See also `Cardinal.gciENat`. -/
 lemma enat_gc : GaloisConnection (↑) toENat := toENatAux_gc
 
 @[simp] lemma toENat_ofENat (n : ℕ∞) : toENat n = n := toENatAux_ofENat n
 @[simp] lemma toENat_comp_ofENat : toENat ∘ (↑) = id := funext toENat_ofENat
 
+/-- The coercion `Cardinal.ofENat` and the projection `Cardinal.toENat`
+form a Galois coinsertion. -/
 noncomputable def gciENat : GaloisCoinsertion (↑) toENat :=
   enat_gc.toGaloisCoinsertion fun n ↦ (toENat_ofENat n).le
 
@@ -237,6 +264,7 @@ lemma ofENat_add (m n : ℕ∞) : ofENat (m + n) = m + n := by apply toENat_injO
   toENat_injOn (by simp)
     (aleph0_mul_aleph0 ▸ mul_le_mul' (ofENat_le_aleph0 _) (ofENat_le_aleph0 _)) (by simp)
 
+/-- The coercion `Cardinal.ofENat` as a bundled homomorphism. -/
 def ofENatHom : ℕ∞ →+*o Cardinal where
   toFun := (↑)
   map_one' := ofENat_one
