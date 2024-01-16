@@ -498,6 +498,7 @@ import Mathlib.Algebra.Tropical.BigOperators
 import Mathlib.Algebra.Tropical.Lattice
 import Mathlib.Algebra.Vertex.Basic
 import Mathlib.Algebra.Vertex.Defs
+import Mathlib.Algebra.Vertex.VertexOperator
 import Mathlib.AlgebraicGeometry.AffineScheme
 import Mathlib.AlgebraicGeometry.EllipticCurve.Affine
 import Mathlib.AlgebraicGeometry.EllipticCurve.Group
@@ -1884,6 +1885,7 @@ import Mathlib.Data.Polynomial.Mirror
 import Mathlib.Data.Polynomial.Module
 import Mathlib.Data.Polynomial.Monic
 import Mathlib.Data.Polynomial.Monomial
+import Mathlib.Data.Polynomial.Nusmeval
 import Mathlib.Data.Polynomial.PartialFractions
 import Mathlib.Data.Polynomial.Reverse
 import Mathlib.Data.Polynomial.RingDivision

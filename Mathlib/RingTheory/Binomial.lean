@@ -187,11 +187,11 @@ instance Int.instBinomialRing : BinomialRing ℤ where
   factorial_nsmul_multichoose r k := by
     cases r with
     | ofNat n =>
-      simp only [nsmul_eq_mul, Int.ofNat_eq_coe, Int.ofNat_mul_out]
+      simp only [multichoose, nsmul_eq_mul, Int.ofNat_eq_coe, Int.ofNat_mul_out]
       rw [← Nat.descFactorial_eq_factorial_mul_choose, @smeval_at_nat_cast,
         smeval_eq_eval (ascPochhammer ℕ k) n, ascPochhammer_nat_eq_descFactorial]
     | negSucc n =>
-      rw [nsmul_eq_mul, mul_comm, mul_assoc, ← Nat.cast_mul, mul_comm _ (k.factorial),
+      rw [multichoose, nsmul_eq_mul, mul_comm, mul_assoc, ← Nat.cast_mul, mul_comm _ (k.factorial),
         ← Nat.descFactorial_eq_factorial_mul_choose, ← descPochhammer_int_eq_descFactorial,
         ascPochhammer_smeval_eq_eval, ← Int.neg_ofNat_succ,
         ascPochhammer_eval_neg_eq_descPochhammer]

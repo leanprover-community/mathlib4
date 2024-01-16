@@ -91,12 +91,12 @@ section NonUnital
 variable [CommRing R] [AddCommGroup V] [NonAssocNonUnitalVertexAlgebra R V]
 
 theorem associativity_left (a b c : V) (s t : ℤ) : Borcherds_sum_1 R a b c 0 s t =
-    index (Y R (index (Y R a) t b)) s c := by
+    ncoef (Y R (ncoef (Y R a) t b)) s c := by
   unfold Borcherds_sum_1
   cases h : (Int.toNat (-t - order R a b)) with
     | zero =>
       rw [Finset.range_zero, Finset.sum_empty]
-      rw [index_zero_if_neg_order_leq R a b t (Int.toNat_sub_eq_zero_leq.mp h), LinearMap.map_zero]
+      rw [ncoef_zero_if_neg_order_leq R a b t (Int.toNat_sub_eq_zero_leq.mp h), LinearMap.map_zero]
       exact rfl
     | succ n =>
       rw [Finset.eventually_constant_sum ?_ (Nat.one_le_iff_ne_zero.mpr
@@ -108,9 +108,9 @@ theorem associativity_left (a b c : V) (s t : ℤ) : Borcherds_sum_1 R a b c 0 s
 
 theorem associativity_right (a b c : V) (s t : ℤ) : Borcherds_sum_2 R a b c 0 s t +
     Borcherds_sum_3 R a b c 0 s t = Finset.sum (Finset.range (Int.toNat (-s - order R b c)))
-    (fun i ↦ (-1)^i • (Ring.choose (t : ℤ) i) • index (Y R a) (t-i) (index (Y R b) (s+i) c)) +
+    (fun i ↦ (-1)^i • (Ring.choose (t : ℤ) i) • ncoef (Y R a) (t-i) (ncoef (Y R b) (s+i) c)) +
     Finset.sum (Finset.range (Int.toNat (- order R a c))) (fun i ↦ (-1: ℤˣ)^(t+i+1) •
-    (Ring.choose t i) • index (Y R b) (s+t-i) (index (Y R a) i c)) := by
+    (Ring.choose t i) • ncoef (Y R b) (s+t-i) (ncoef (Y R a) i c)) := by
   unfold Borcherds_sum_2 Borcherds_sum_3
   simp only [neg_zero, zero_sub, zero_add]
 
@@ -121,12 +121,12 @@ theorem Borcherds_id_at_zero_iff_associativity (a b c : V) (s t : ℤ) :
   exact Eq.congr rfl rfl
 
 theorem commutator_right_2 (a b c : V) (r s : ℤ) : Borcherds_sum_2 R a b c r s 0 =
-    index (Y R a) r (index (Y R b) s c) := by
+    ncoef (Y R a) r (ncoef (Y R b) s c) := by
   unfold Borcherds_sum_2
   cases h : (Int.toNat (-s - order R b c)) with
   | zero =>
     rw [Finset.range_zero, Finset.sum_empty]
-    rw [index_zero_if_neg_order_leq R b c s (Int.toNat_sub_eq_zero_leq.mp h), LinearMap.map_zero]
+    rw [ncoef_zero_if_neg_order_leq R b c s (Int.toNat_sub_eq_zero_leq.mp h), LinearMap.map_zero]
   | succ n =>
     rw [Finset.eventually_constant_sum ?_ (Nat.one_le_iff_ne_zero.mpr
         (Nat.succ_ne_zero n)), Finset.sum_range_one, add_zero, Ring.choose_zero_right (0 : ℤ),
@@ -136,11 +136,11 @@ theorem commutator_right_2 (a b c : V) (r s : ℤ) : Borcherds_sum_2 R a b c r s
       zero_smul, smul_zero]
 
 theorem commutator_right_3 (a b c : V) (r s : ℤ) : Borcherds_sum_3 R a b c r s 0 =
-    -index (Y R b) s (index (Y R a) r c) := by
+    -ncoef (Y R b) s (ncoef (Y R a) r c) := by
   unfold Borcherds_sum_3
   cases h : (Int.toNat (-r - order R a c)) with
   | zero =>
-    rw [Finset.range_zero, Finset.sum_empty, index_zero_if_neg_order_leq R a c r
+    rw [Finset.range_zero, Finset.sum_empty, ncoef_zero_if_neg_order_leq R a c r
       (Int.toNat_sub_eq_zero_leq.mp h), LinearMap.map_zero, neg_zero]
   | succ n =>
     rw [Finset.eventually_constant_sum ?_ (Nat.one_le_iff_ne_zero.mpr (Nat.succ_ne_zero n)),
@@ -170,7 +170,7 @@ theorem locality_left_eq_Borcherds_sum_2 (a b c : V) (r s: ℤ) :
     (-1) ^ m.2 • Nat.choose (Int.toNat (-s - order R b c)) m.2 •
     (coeff (Y R a) (-r - 1 - m.1)) ((coeff (Y R b) (-s - 1 - m.2)) c)) =
     Borcherds_sum_2 R a b c r s (Int.toNat (-s - order R b c)) := by
-  unfold Borcherds_sum_2 index
+  unfold Borcherds_sum_2 ncoef
   rw [Finset.Nat.antidiagonal_eq_map']
   simp_all only [Finset.sum_map, Function.Embedding.coeFn_mk, neg_sub, neg_add_rev]
   rw [Finset.eventually_constant_sum ?_ (Nat.le_succ (Int.toNat (-s - order R b c)))]
@@ -193,7 +193,7 @@ theorem locality_right_eq_Borcherds_sum_3 (a b c : V) (r s: ℤ) : Finset.sum (F
     (Int.toNat (-r - order R a c))) (fun m => -(-1)^(m.2) • (Nat.choose (Int.toNat
     (-r - order R a c)) m.2) • coeff (Y R b) (-s - 1 - m.2) (coeff (Y R a) (-r - 1 - m.1) c)) =
     Borcherds_sum_3 R a b c r s (Int.toNat (-r - order R a c)) := by
-  unfold Borcherds_sum_3 index
+  unfold Borcherds_sum_3 ncoef
   rw [Finset.Nat.antidiagonal_eq_map]
   simp_all only [Finset.sum_map, Function.Embedding.coeFn_mk, neg_sub, neg_add_rev]
   rw [Finset.eventually_constant_sum ?_ (Nat.le_succ (Int.toNat (-r - order R a c)))]
