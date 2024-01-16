@@ -33,6 +33,9 @@ groups here are not necessarily finite dimensional.
   is smooth at all points at which `f` doesn't vanish.
   ``ContMDiff.div₀` and variants: if also `SmoothMul N` (i.e., `N` is a Lie group except possibly
   for smoothness of inversion at `0`), similar results hold for point-wise division.
+* `ContMDiff.prod`, `ContMDiff.sum`: finite products resp. sums of differentiable maps `M → G`
+  into an abelian (multiplicative resp. additive) Lie group are differentiable.
+
 * `normedSpaceLieAddGroup` : a normed vector space over a nontrivially normed field
   is an additive Lie group.
 * `Instances/UnitsOfNormedAlgebra` shows that the group of units of a complete normed `𝕜`-algebra
@@ -375,3 +378,65 @@ theorem Smooth.div₀ (hf : Smooth I' I f) (hg : Smooth I' I g) (h₀ : ∀ x, g
   ContMDiff.div₀ hf hg h₀
 
 end Div
+
+/-! ### Differentiability of finite point-wise sums and products
+
+  Finite point-wise products of functions `M → G` into an abelian multiplicative
+  Lie group `G` are differentiable. -/
+section FiniteSumProduct
+open Function
+open scoped BigOperators
+
+-- let `M` be a smooth manifold over `(E,H)`
+-- let `G` be an abelian Lie group modeled on `(E', H')`
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
+  {I : ModelWithCorners 𝕜 E H} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+  {E' H' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] [TopologicalSpace H']
+  {I' : ModelWithCorners 𝕜 E' H'}
+  {G : Type*} [CommGroup G] [TopologicalSpace G] [ChartedSpace H' G] [LieGroup I' G]
+variable {ι : Type*} {J : Finset ι} {f : ι → M → G} {n : ℕ∞} {s : Set M} {x₀ : M}
+
+@[to_additive]
+theorem ContMDiffWithinAt.prod (h : ∀ i ∈ J, ContMDiffWithinAt I I' n (f i) s x₀) :
+    ContMDiffWithinAt I I' n (fun x ↦ ∏ i in J, f i x) s x₀ := by
+  classical
+  induction' J using Finset.induction_on with i K iK IH
+  · simp [contMDiffWithinAt_const]
+  · simp only [iK, Finset.prod_insert, not_false_iff]
+    exact (h _ (Finset.mem_insert_self i K)).mul (IH fun j hj ↦ h _ <| Finset.mem_insert_of_mem hj)
+
+@[to_additive]
+theorem ContMDiffAt.prod (h : ∀ i ∈ J, ContMDiffAt I I' n (f i) x₀) :
+    ContMDiffAt I I' n (fun x ↦ ∏ i in J, f i x) x₀ := by
+  simp only [← contMDiffWithinAt_univ] at *
+  exact ContMDiffWithinAt.prod h
+
+@[to_additive]
+theorem ContMDiff.prod (h : ∀ i ∈ J, ContMDiff I I' n (f i)) :
+    ContMDiff I I' n fun x ↦ ∏ i in J, f i x :=
+  fun x ↦ ContMDiffAt.prod fun j hj ↦ h j hj x
+
+@[to_additive]
+theorem contMDiffWithinAt_finprod (lf : LocallyFinite fun i ↦ mulSupport <| f i) {x₀ : M}
+    (h : ∀ i, ContMDiffWithinAt I I' n (f i) s x₀) :
+    ContMDiffWithinAt I I' n (fun x ↦ ∏ᶠ i, f i x) s x₀ :=
+  let ⟨_I, hI⟩ := finprod_eventually_eq_prod lf x₀
+  (ContMDiffWithinAt.prod fun i _hi ↦ h i).congr_of_eventuallyEq
+    (eventually_nhdsWithin_of_eventually_nhds hI) hI.self_of_nhds
+
+@[to_additive]
+theorem contMDiffAt_finprod
+    (lf : LocallyFinite fun i ↦ mulSupport <| f i) (h : ∀ i, ContMDiffAt I I' n (f i) x₀) :
+    ContMDiffAt I I' n (fun x ↦ ∏ᶠ i, f i x) x₀ :=
+  contMDiffWithinAt_finprod lf h
+
+@[to_additive]
+theorem smoothAt_finprod
+    (lf : LocallyFinite fun i ↦ mulSupport <| f i) (h : ∀ i, SmoothAt I I' (f i) x₀) :
+    SmoothAt I I' (fun x ↦ ∏ᶠ i, f i x) x₀ :=
+  contMDiffWithinAt_finprod lf h
+
+-- See `Algebra/Monoid.lean` for `contMDiff_finprod` and `smooth_finprod`.
+
+end FiniteSumProduct
