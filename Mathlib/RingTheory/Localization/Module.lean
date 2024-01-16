@@ -93,9 +93,8 @@ variable {M Mₛ : Type*} [AddCommGroup M] [AddCommGroup Mₛ] [Module R M] [Mod
 
 /-- If `M` has an `R`-basis, then localizing `M` at `S` has a basis over `R` localized at `S`. -/
 noncomputable def Basis.ofIsLocalizedModule : Basis ι Rₛ Mₛ :=
-  Basis.mk
-    (b.linearIndependent.of_isLocalizedModule Rₛ S f)
-    (by rw [Set.range_comp, span_eq_top_of_isLocalizedModule Rₛ S _ b.span_eq])
+  .mk (b.linearIndependent.of_isLocalizedModule Rₛ S f) <| by
+    rw [Set.range_comp, span_eq_top_of_isLocalizedModule Rₛ S _ b.span_eq]
 
 @[simp]
 theorem Basis.ofIsLocalizedModule_apply (i : ι) : b.ofIsLocalizedModule Rₛ S f i = f (b i) := by
