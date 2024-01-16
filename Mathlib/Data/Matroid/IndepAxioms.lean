@@ -127,7 +127,7 @@ attribute [pp_dot] Indep E
     have hfB' : f ∉ B := by (intro hfB; obtain rfl := hf.2 hfB; exact he.2 hf.1)
 
     refine' ⟨f, ⟨hf.1, hfB'⟩, by_contra (fun hnot ↦ _)⟩
-    obtain ⟨x,hxB, hind⟩ :=  M.indep_aug hfB hnot ⟨hB, hBmax⟩
+    obtain ⟨x,hxB, hind⟩ := M.indep_aug hfB hnot ⟨hB, hBmax⟩
     simp only [mem_diff, mem_insert_iff, mem_singleton_iff, not_or, not_and, not_not] at hxB
     obtain rfl := hxB.2.2 hxB.1
     rw [insert_comm, insert_diff_singleton, insert_eq_of_mem he.1] at hind

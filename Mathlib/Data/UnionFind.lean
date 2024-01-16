@@ -3,9 +3,7 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Tactic.Basic
-import Std.Tactic.Simpa
-import Mathlib.Data.Array.Basic
+import Mathlib.Init.Data.Nat.Lemmas
 
 set_option autoImplicit true
 
@@ -149,7 +147,7 @@ theorem setParent {arr : Array (UFNode α)} {n} {m : UFModel n} (hm : m.Models a
   ⟨hm.1.set
       (fun k (h : (k:ℕ) ≠ i) ↦ by simp [UFModel.setParent, h.symm])
       (fun _ ↦ by simp [UFModel.setParent, hp]),
-    hm.2.set (fun _ _ ↦ rfl) (fun _ ↦ hrk.trans $ hm.2.get_eq ..)⟩
+    hm.2.set (fun _ _ ↦ rfl) (fun _ ↦ hrk.trans <| hm.2.get_eq ..)⟩
 
 end UFModel.Models
 
@@ -189,7 +187,7 @@ def rankMax (self : UnionFind α) := (rankMaxAux self self.size).1 + 1
 
 theorem lt_rankMax' (self : UnionFind α) (i : Fin self.size) :
     (self.arr.get i).rank < self.rankMax :=
-  Nat.lt_succ.2 $ (rankMaxAux self self.size).2 _ i.2 _
+  Nat.lt_succ.2 <| (rankMaxAux self self.size).2 _ i.2 _
 
 theorem lt_rankMax (self : UnionFind α) (i : Nat) : self.rank i < self.rankMax := by
   simp [rank]; split; {apply lt_rankMax'}; apply Nat.succ_pos

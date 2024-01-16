@@ -281,7 +281,7 @@ lemma isMeagre_of_isSigmaCompact_null [T2Space X] (h₁s : IsSigmaCompact s) (h�
   have h (n : ℕ) : IsNowhereDense (K n) := by
     have : μ (K n) = 0 := measure_mono_null (hcover ▸ subset_iUnion K n) h₂s
     exact isNowhereDense_of_isClosed_null (hcompact n).isClosed this
-  rw [meagre_iff_countable_union_isNowhereDense]
+  rw [isMeagre_iff_countable_union_isNowhereDense]
   exact ⟨range K, fun t ⟨n, hn⟩ ↦ hn ▸ h n, countable_range K, hcover.symm.subset⟩
 
 end MeasureZero
