@@ -2297,11 +2297,24 @@ theorem predAbove_zero_succ {i : Fin (n + 1)} : predAbove 0 (i.succ) = i := pred
 theorem succ_predAbove_zero {j : Fin (n + 2)} (h : j ≠ 0) : succ (predAbove 0 j) = j :=
   succ_predAbove_zero' h
 @[simp]
+<<<<<<< HEAD
 theorem predAbove_zero_of_ne_zero {i : Fin (n + 2)} (hi : i ≠ 0) :
     predAbove 0 i = i.pred hi := by
   rw [← exists_succ_eq] at hi
   rcases hi with ⟨y, rfl⟩
   exact predAbove_zero_succ
+=======
+theorem predAbove_zero {i : Fin (n + 2)} (hi : i ≠ 0) : predAbove 0 i = i.pred hi := by
+  dsimp [predAbove]
+  rw [dif_pos]
+  exact pos_iff_ne_zero.mpr hi
+#align fin.pred_above_zero Fin.predAbove_zero
+
+theorem predAbove_below (p : Fin n) (i : Fin (n + 1)) (h : i ≤ castSucc p) :
+    p.predAbove i = i.castLT (h.trans_lt (castSucc_lt_last _)) := by
+  simp [predAbove, h.not_lt]
+#align fin.pred_above_below Fin.predAbove_below
+>>>>>>> Fix lint
 
 theorem predAbove_zero : predAbove (0 : Fin (n + 1)) i = if hi : i = 0 then 0 else i.pred hi := by
   split_ifs with hi
