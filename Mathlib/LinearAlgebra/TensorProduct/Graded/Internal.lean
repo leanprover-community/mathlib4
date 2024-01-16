@@ -158,8 +158,7 @@ instance : Mul (𝒜 ᵍ⊗[R] ℬ) where mul x y := mulHom 𝒜 ℬ x y
 
 theorem mul_def (x y : 𝒜 ᵍ⊗[R] ℬ) : x * y = mulHom 𝒜 ℬ x y := rfl
 
--- HACK
--- @[simp, nolint simpNF]
+-- Before #8386 this was `@[simp]` but it times out when we try to apply it.
 theorem auxEquiv_mul (x y : 𝒜 ᵍ⊗[R] ℬ) :
     auxEquiv R 𝒜 ℬ (x * y) = gradedMul R (𝒜 ·) (ℬ ·) (auxEquiv R 𝒜 ℬ x) (auxEquiv R 𝒜 ℬ y) :=
   LinearEquiv.eq_symm_apply _ |>.mp rfl
@@ -192,16 +191,12 @@ theorem tmul_coe_mul_coe_tmul {j₁ i₂ : ι} (a₁ : A) (b₁ : ℬ j₁) (a�
   rw [tmul_of_gradedMul_of_tmul]
   simp_rw [lof_eq_of R]
   rw [LinearEquiv.symm_symm]
-  -- HACK
-  letI : SMulHomClass (A ⊗[R] B ≃ₗ[R] 𝒜 ᵍ⊗[R] ℬ) R (A ⊗[R] B) (𝒜 ᵍ⊗[R] ℬ) :=
-    DistribMulActionHomClass.toSMulHomClass
-  rw [@Units.smul_def _ _ (_) (_), zsmul_eq_smul_cast R]
-  erw [LinearMap.map_smul, LinearMap.map_smul]
-  rw [← zsmul_eq_smul_cast R, ← @Units.smul_def _ _ (_) (_)]
-  erw [congr_symm_tmul]
+  -- Note: #8386 had to specialize `map_smul` to `LinearEquiv.map_smul`
+  rw [@Units.smul_def _ _ (_) (_), zsmul_eq_smul_cast R, LinearEquiv.map_smul, map_smul,
+    ← zsmul_eq_smul_cast R, ← @Units.smul_def _ _ (_) (_)]
+  rw [congr_symm_tmul]
   dsimp
   simp_rw [decompose_symm_mul, decompose_symm_of, Equiv.symm_apply_apply]
-  congr!
 
 /-- A special case for when `b₁` has grade 0. -/
 theorem tmul_zero_coe_mul_coe_tmul {i₂ : ι} (a₁ : A) (b₁ : ℬ 0) (a₂ : 𝒜 i₂) (b₂ : B) :
