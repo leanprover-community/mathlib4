@@ -54,14 +54,14 @@ structure AddContent (C : Set (Set α)) where
   /-- The value of the content on a set. -/
   toFun : Set α → ℝ≥0∞
   empty' : toFun ∅ = 0
-  add' (I : Finset (Set α)) (_h_ss : ↑I ⊆ C) (_h_dis : PairwiseDisjoint (I : Set (Set α)) id)
-      (_h_mem : ⋃₀ ↑I ∈ C) :
+  sUnion_eq_sum' (I : Finset (Set α)) (_h_ss : ↑I ⊆ C)
+      (_h_dis : PairwiseDisjoint (I : Set (Set α)) id) (_h_mem : ⋃₀ ↑I ∈ C) :
     toFun (⋃₀ I) = ∑ u in I, toFun u
 
 instance : Inhabited (AddContent C) :=
   ⟨{toFun := fun _ => 0
     empty' := by simp
-    add' := by simp }⟩
+    sUnion_eq_sum' := by simp }⟩
 
 instance : FunLike (AddContent C) (Set α) (fun _ ↦ ℝ≥0∞) where
   coe := fun m s ↦ m.toFun s
@@ -73,28 +73,24 @@ instance : FunLike (AddContent C) (Set α) (fun _ ↦ ℝ≥0∞) where
 
 namespace AddContent
 
-@[ext] protected lemma ext {m m' : AddContent C} (h : ∀ s, m s = m' s) : m = m' := by
-  refine FunLike.coe_injective ?_
-  ext s
-  exact h s
+@[ext] protected lemma ext {m m' : AddContent C} (h : ∀ s, m s = m' s) : m = m' := FunLike.ext _ _ h
 
-protected lemma ext_iff (m m' : AddContent C) : m = m' ↔ ∀ s, m s = m' s :=
-  ⟨fun h s ↦ by rw [h], fun h ↦ AddContent.ext h⟩
+protected lemma ext_iff (m m' : AddContent C) : m = m' ↔ ∀ s, m s = m' s := FunLike.ext_iff
 
-@[simp] protected lemma empty {m : AddContent C} : m ∅ = 0 := m.empty'
+@[simp] protected lemma apply_empty {m : AddContent C} : m ∅ = 0 := m.empty'
 
-protected lemma add (m : AddContent C) (h_ss : ↑I ⊆ C)
+protected lemma sUnion_eq_sum (m : AddContent C) (h_ss : ↑I ⊆ C)
     (h_dis : PairwiseDisjoint (I : Set (Set α)) id) (h_mem : ⋃₀ ↑I ∈ C) :
     m (⋃₀ I) = ∑ u in I, m u :=
-  m.add' I h_ss h_dis h_mem
+  m.sUnion_eq_sum' I h_ss h_dis h_mem
 
 protected lemma union' (m : AddContent C) (hs : s ∈ C) (ht : t ∈ C) (hst : s ∪ t ∈ C)
     (h_dis : Disjoint s t) :
     m (s ∪ t) = m s + m t := by
   by_cases hs_empty : s = ∅
-  · simp only [hs_empty, Set.empty_union, m.empty, zero_add]
+  · simp only [hs_empty, Set.empty_union, m.apply_empty, zero_add]
   classical
-  have h := m.add (I := {s, t}) ?_ ?_ ?_
+  have h := m.sUnion_eq_sum (I := {s, t}) ?_ ?_ ?_
   rotate_left
   · simp only [coe_pair, Set.insert_subset_iff, hs, ht, Set.singleton_subset_iff, and_self_iff]
   · simp only [coe_pair, Set.pairwiseDisjoint_insert, pairwiseDisjoint_singleton,
@@ -118,7 +114,7 @@ lemma eq_add_diffFinset₀_of_subset (m : AddContent C) (hC : IsSetSemiring C)
     m s = ∑ i in I, m i + ∑ i in hC.diffFinset₀ hs hI, m i := by
   classical
   conv_lhs => rw [← hC.sUnion_union_diffFinset₀_of_subset hs hI hI_ss]
-  rw [m.add]
+  rw [m.sUnion_eq_sum]
   · rw [sum_union]
     exact hC.disjoint_diffFinset₀ hs hI
   · rw [coe_union]
