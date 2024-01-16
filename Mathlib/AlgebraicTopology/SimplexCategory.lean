@@ -574,6 +574,7 @@ theorem eq_σ_comp_of_not_injective {n : ℕ} {Δ' : SimplexCategory} (θ : mk (
       · exfalso
         exact h₂ h'.symm
   rcases hθ₂ with ⟨x, y, ⟨h₁, h₂⟩⟩
+<<<<<<< HEAD
   cases' x using Fin.lastCases with x
   · exact (not_top_lt h₂).elim
   · use x
@@ -583,6 +584,14 @@ theorem eq_σ_comp_of_not_injective {n : ℕ} {Δ' : SimplexCategory} (θ : mk (
     · exact θ.toOrderHom.monotone (le_of_lt (Fin.castSucc_lt_succ x))
     · rw [h₁]
       exact θ.toOrderHom.monotone h₂
+=======
+  use x.castPred ((Fin.le_last _).trans_lt' h₂).ne
+  apply eq_σ_comp_of_not_injective'
+  apply le_antisymm
+  · exact θ.toOrderHom.monotone (le_of_lt (Fin.castSucc_lt_succ _))
+  · rw [Fin.castSucc_castPred, h₁]
+    exact θ.toOrderHom.monotone ((Fin.le_succ_castPred_iff _).mpr h₂)
+>>>>>>> Correct lemma name
 #align simplex_category.eq_σ_comp_of_not_injective SimplexCategory.eq_σ_comp_of_not_injective
 
 theorem eq_comp_δ_of_not_surjective' {n : ℕ} {Δ : SimplexCategory} (θ : Δ ⟶ mk (n + 1))
