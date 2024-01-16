@@ -624,7 +624,6 @@ theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : mk 
   · -- This was not needed before leanprover/lean4#2644
     dsimp
     rw [Fin.predAbove_below i x h']
-    --have eq := Fin.castSucc_castPred (gt_of_gt_of_ge (Fin.castSucc_lt_last i) h')
     dsimp [δ]
     erw [Fin.succAbove_below _ _ _]
     swap
