@@ -3,6 +3,8 @@ Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Reid Barton, Simon Hudon, Thomas Murrills, Mario Carneiro
 -/
+import Qq
+import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Util.AtomM
 import Mathlib.Data.List.TFAE
 
@@ -131,15 +133,14 @@ partial def proveChain (i : ℕ) (is : List ℕ) (P : Q(Prop)) (l : Q(List Prop)
     let p ← proveImpl hyps atoms i i' P P'
     return q(Chain.cons $p $cl')
 
-set_option linter.deprecated false in
-/-- Attempt to prove `ilast' P' l → P` given an explicit list `l`. -/
-partial def proveILast'Impl (i i' : ℕ) (is : List ℕ) (P P' : Q(Prop)) (l : Q(List Prop)) :
-    MetaM Q(ilast' $P' $l → $P) := do
+/-- Attempt to prove `getLastD l P' → P` given an explicit list `l`. -/
+partial def proveGetLastDImpl (i i' : ℕ) (is : List ℕ) (P P' : Q(Prop)) (l : Q(List Prop)) :
+    MetaM Q(getLastD $l $P' → $P) := do
   match l with
   | ~q([]) => proveImpl hyps atoms i' i P' P
   | ~q($P'' :: $l') =>
     let i'' :: is' := is | unreachable!
-    proveILast'Impl i i'' is' P P'' l'
+    proveGetLastDImpl i i'' is' P P'' l'
 
 /-- Attempt to prove a statement of the form `TFAE [P₁, P₂, ...]`. -/
 def proveTFAE (is : List ℕ) (l : Q(List Prop)) : MetaM Q(TFAE $l) := do
@@ -149,7 +150,7 @@ def proveTFAE (is : List ℕ) (l : Q(List Prop)) : MetaM Q(TFAE $l) := do
   | ~q($P :: $P' :: $l') =>
     let i :: i' :: is' := is | unreachable!
     let c ← proveChain hyps atoms i (i'::is') P q($P' :: $l')
-    let il ← proveILast'Impl hyps atoms i i' is' P P' l'
+    let il ← proveGetLastDImpl hyps atoms i i' is' P P' l'
     return q(tfae_of_cycle $c $il)
 
 /-! # `tfae_have` components -/
