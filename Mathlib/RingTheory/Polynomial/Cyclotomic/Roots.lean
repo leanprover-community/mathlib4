@@ -185,6 +185,23 @@ theorem _root_.IsPrimitiveRoot.minpoly_eq_cyclotomic_of_irreducible {K : Type*} 
   rwa [aeval_def, eval₂_eq_eval_map, map_cyclotomic, ← IsRoot.def, isRoot_cyclotomic_iff]
 #align is_primitive_root.minpoly_eq_cyclotomic_of_irreducible IsPrimitiveRoot.minpoly_eq_cyclotomic_of_irreducible
 
+theorem separable_cyclotomic {K : Type*} [Field K] [NeZero (n : K)] :
+    (cyclotomic n K).Separable := by
+  refine Polynomial.Separable.of_dvd ?_ <| Polynomial.cyclotomic.dvd_X_pow_sub_one n K
+  rw [Polynomial.X_pow_sub_one_separable_iff]
+  exact NeZero.natCast_ne n K
+
+theorem _root_.exists_isPrimitiveRoot_of_splits_cyclotomic
+    {K : Type*} [Field K] [NeZero (n : K)]
+    (splits : (cyclotomic n K).Splits (RingHom.id _)) :
+    ∃ ξ : K, IsPrimitiveRoot ξ n := by
+  obtain ⟨ξ,h⟩ := exists_root_of_splits _ splits <| by
+    suffices 0 < degree (cyclotomic n K) from ne_of_gt this
+    apply Polynomial.degree_cyclotomic_pos
+    exact NeZero.pos_of_neZero_natCast K
+  refine ⟨ξ, ?_⟩
+  rwa [← isRoot_cyclotomic_iff]
+
 /-- `cyclotomic n ℤ` is the minimal polynomial of a primitive `n`-th root of unity `μ`. -/
 theorem cyclotomic_eq_minpoly {n : ℕ} {K : Type*} [Field K] {μ : K} (h : IsPrimitiveRoot μ n)
     (hpos : 0 < n) [CharZero K] : cyclotomic n ℤ = minpoly ℤ μ := by
