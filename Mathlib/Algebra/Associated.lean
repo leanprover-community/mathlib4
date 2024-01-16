@@ -706,10 +706,6 @@ section UniqueUnits
 
 variable [Monoid α] [Unique αˣ]
 
-theorem units_eq_one (u : αˣ) : u = 1 :=
-  Subsingleton.elim u 1
-#align units_eq_one units_eq_one
-
 theorem associated_iff_eq {x y : α} : x ~ᵤ y ↔ x = y := by
   constructor
   · rintro ⟨c, rfl⟩
