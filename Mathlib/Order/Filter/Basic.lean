@@ -2434,6 +2434,9 @@ theorem map_comap_of_surjective {f : α → β} (hf : Surjective f) (l : Filter 
   map_comap_of_mem <| by simp only [hf.range_eq, univ_mem]
 #align filter.map_comap_of_surjective Filter.map_comap_of_surjective
 
+theorem comap_injective {f : α → β} (hf : Surjective f) : Injective (comap f) :=
+  LeftInverse.injective <| map_comap_of_surjective hf
+
 theorem _root_.Function.Surjective.filter_map_top {f : α → β} (hf : Surjective f) : map f ⊤ = ⊤ :=
   (congr_arg _ comap_top).symm.trans <| map_comap_of_surjective hf ⊤
 #align function.surjective.filter_map_top Function.Surjective.filter_map_top
