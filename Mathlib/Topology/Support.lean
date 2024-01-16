@@ -133,8 +133,16 @@ theorem continuous_of_mulTSupport [TopologicalSpace β] {f : α → β}
 #align continuous_of_mul_tsupport continuous_of_mulTSupport
 #align continuous_of_tsupport continuous_of_tsupport
 
+end
+
 /-! ## Functions with compact support -/
 section CompactSupport
+variable [TopologicalSpace α] [TopologicalSpace α']
+
+variable [One β] [One γ] [One δ]
+
+variable {g : β → γ} {f : α → β} {f₂ : α → γ} {m : β → γ → δ} {x : α}
+
 /-- A function `f` *has compact multiplicative support* or is *compactly supported* if the closure
 of the multiplicative support of `f` is compact. In a T₂ space this is equivalent to `f` being equal
 to `1` outside a compact set. -/
@@ -293,8 +301,6 @@ theorem continuous_extend_one [TopologicalSpace β] {U : Set α'} (hU : IsOpen U
 end HasCompactMulSupport
 
 end CompactSupport
-
-end
 
 section Monoid
 
