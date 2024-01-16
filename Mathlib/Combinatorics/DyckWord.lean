@@ -66,11 +66,9 @@ theorem isBalanced_iff_isBalanced' : p.IsBalanced ↔ p.IsBalanced' := by
 instance : DecidablePred IsBalanced := fun _ ↦
   decidable_of_iff (_ ∧ _) isBalanced_iff_isBalanced'.symm
 
-variable (p)
-
 section Decomp
 
-variable (bal : p.IsBalanced) (hl : p ≠ [])
+variable (p) (bal : p.IsBalanced) (hl : p ≠ [])
 
 lemma head_U : p.head hl = U := by
   cases' p with ph pt; · contradiction
@@ -81,20 +79,16 @@ lemma head_U : p.head hl = U := by
   simp only [ite_true, ite_false] at this
   contradiction
 
-variable {p}
-
 lemma length_even : ∃ k, p.length = 2 * k := by
   use p.count U
   rw [← count_U_add_count_D_eq_length, bal.1, two_mul]
 
-variable (p)
-
 /-- Index of the first return of a `DyckPath` to zero. -/
 def firstReturn : ℕ :=
   (range p.length).findIdx (fun i ↦ (p.take (i + 1)).count U = (p.take (i + 1)).count D)
-/-- The left part of the Dyck path decomposition. -/
+/-- The left part of the Dyck word decomposition. -/
 def leftPart : DyckPath := (p.take p.firstReturn).tail
-/-- The right part of the Dyck path decomposition. -/
+/-- The right part of the Dyck word decomposition. -/
 def rightPart : DyckPath := p.drop (p.firstReturn + 1)
 
 lemma firstReturn_lt_length : p.firstReturn < p.length := by
@@ -262,11 +256,10 @@ def treeEquivToFun (st : { p : DyckPath // p.IsBalanced }) : Tree Unit :=
   if e : st.1.length = 0 then nil else by
     obtain ⟨p, bal⟩ := st
     simp only [length_eq_zero] at e
-    have bl := p.leftPart_isBalanced bal e
-    have br := p.rightPart_isBalanced bal e
     have := p.leftPart_length_lt bal e
     have := p.rightPart_length_lt bal e
-    exact treeEquivToFun ⟨p.leftPart, bl⟩ △ treeEquivToFun ⟨p.rightPart, br⟩
+    exact treeEquivToFun ⟨_, p.leftPart_isBalanced bal e⟩ △
+      treeEquivToFun ⟨_, p.rightPart_isBalanced bal e⟩
 termination_by _ => st.1.length
 
 /-- Convert a binary rooted tree to a Dyck path (that it is balanced is shown in
@@ -360,8 +353,8 @@ theorem length_eq_two_mul_iff_numNodes_eq {n : ℕ} (st : { p : DyckPath // p.Is
   dsimp only at j ⊢
   have bl := p.leftPart_isBalanced bal j
   have br := p.rightPart_isBalanced bal j
-  obtain ⟨sl, le⟩ := length_even bl
-  obtain ⟨sr, re⟩ := length_even br
+  obtain ⟨sl, le⟩ := p.leftPart.length_even bl
+  obtain ⟨sr, re⟩ := p.rightPart.length_even br
   conv_lhs =>
     rw [p.eq_U_leftPart_D_rightPart bal j, length_append, length_append, length_append,
       length_singleton, length_singleton, le, re,
