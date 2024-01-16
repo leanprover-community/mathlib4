@@ -44,19 +44,18 @@ def nerve.mk (n : ℕ)
 def nerve.δ_mk_mor (n : ℕ)
     (obj : Fin (n+2) → C) (mor : ∀ (i : Fin (n+1)), obj i.castSucc ⟶ obj i.succ)
     (j : Fin (n+2)) (k : Fin n) :
-    obj (Fin.succAbove j k.castSucc) ⟶ obj (Fin.succAbove j k.succ) :=
-  if hkj : k.val + 1 < j.val
-  then by
+    obj (Fin.succAbove j k.castSucc) ⟶ obj (Fin.succAbove j k.succ) := by
+  refine ltByCases (k.val + 1) j.val ?lt ?eq ?gt <;> intro hkj
+  case lt =>
     refine eqToHom (congrArg _ ?_) ≫ mor k.castSucc ≫ eqToHom (congrArg _ ?_)
-    · have : k.val < j.val := by linarith only [hkj]
+    · have : k.val < j.val := by omega
       simp [Fin.succAbove, this]
     · ext; simp [Fin.succAbove, hkj]
-  else if hkj' : k.val + 1 = j.val
-  then by
+  case eq =>
     refine eqToHom (congrArg _ ?_) ≫ mor k.castSucc ≫ mor k.succ ≫ eqToHom (congrArg _ ?_)
-    · simp [Fin.succAbove, hkj'.symm]
-    · simp [Fin.succAbove, hkj'.symm]
-  else by
+    · simp [Fin.succAbove, hkj.symm]
+    · simp [Fin.succAbove, hkj.symm]
+  case gt =>
     refine eqToHom (congrArg _ ?_) ≫ mor k.succ ≫ eqToHom (congrArg _ ?_)
     · have : ¬ k.val < j.val := by omega
       ext; simp [Fin.succAbove, this]
