@@ -18,20 +18,23 @@ Note that, since a manifold here is not second-countable and Hausdorff a Lie gro
 guaranteed to be second-countable (even though it can be proved it is Hausdorff). Note also that Lie
 groups here are not necessarily finite dimensional.
 
-## Main definitions and statements
+## Main definitions
 
 * `LieAddGroup I G` : a Lie additive group where `G` is a manifold on the model with corners `I`.
 * `LieGroup I G` : a Lie multiplicative group where `G` is a manifold on the model with corners `I`.
-* `normedSpaceLieAddGroup` : a normed vector space over a nontrivially normed field
-  is an additive Lie group.
+* `SmoothInv₀`: typeclass for smooth manifolds with `0` and `Inv` such that inversion is a smooth
+  map at each non-zero point. This includes complete normed fields and (multiplicative) Lie groups.
+
+
+## Main results
 * `ContMDiff.inv`, `ContMDiff.div` and variants: point-wise inversion and division of maps `M → G`
   is smooth
-* `SmoothInv₀`: typeclass for smooth manifolds with `0` and `Inv` such that inversion is a smooth
-  map at each non-zero point. This includes complete normed fields and Lie groups.
 * `ContMDiff.inv₀` and variants: if `SmoothInv₀ N`, point-wise inversion of smooth maps `f : M → N`
   is smooth at all points at which `f` doesn't vanish.
   ``ContMDiff.div₀` and variants: if also `SmoothMul N` (i.e., `N` is a Lie group except possibly
   for smoothness of inversion at `0`), similar results hold for point-wise division.
+* `normedSpaceLieAddGroup` : a normed vector space over a nontrivially normed field
+  is an additive Lie group.
 
 ## Implementation notes
 
@@ -52,7 +55,7 @@ noncomputable section
 open scoped Manifold
 
 -- See note [Design choices about smooth algebraic structures]
-/-- A Lie (additive) group is a group and a smooth manifold at the same time in which
+/-- An additive Lie group is a group and a smooth manifold at the same time in which
 the addition and negation operations are smooth. -/
 class LieAddGroup {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] (I : ModelWithCorners 𝕜 E H) (G : Type*)
@@ -62,7 +65,7 @@ class LieAddGroup {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [Top
 #align lie_add_group LieAddGroup
 
 -- See note [Design choices about smooth algebraic structures]
-/-- A Lie group is a group and a smooth manifold at the same time in which
+/-- A (multiplicative) Lie group is a group and a smooth manifold at the same time in which
 the multiplication and inverse operations are smooth. -/
 @[to_additive]
 class LieGroup {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
@@ -249,7 +252,7 @@ instance normedSpaceLieAddGroup {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E
 /-! ## Smooth manifolds with smooth inversion away from zero
 
 Typeclass for smooth manifolds with `0` and `Inv` such that inversion is smooth at all non-zero
-points. (This includes Lie groups, but also complete normed semifields.)
+points. (This includes multiplicative Lie groups, but also complete normed semifields.)
 Point-wise inversion is smooth when the function/denominator is non-zero. -/
 section SmoothInv₀
 
