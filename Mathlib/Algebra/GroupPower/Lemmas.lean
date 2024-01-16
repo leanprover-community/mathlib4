@@ -3,14 +3,8 @@ Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis
 -/
-import Mathlib.Algebra.Invertible.Basic
-import Mathlib.Data.Nat.Cast.Basic
-import Mathlib.Algebra.GroupPower.Ring
-import Mathlib.Algebra.Order.Monoid.WithTop
 import Mathlib.Data.Nat.Pow
 import Mathlib.Data.Int.Cast.Lemmas
-import Mathlib.Algebra.Group.Opposite
-import Mathlib.GroupTheory.GroupAction.Ring
 
 #align_import algebra.group_power.lemmas from "leanprover-community/mathlib"@"a07d750983b94c530ab69a726862c2ab6802b38c"
 
@@ -27,184 +21,6 @@ universe u v w x y z u₁ u₂
 
 variable {α : Type*} {M : Type u} {N : Type v} {G : Type w} {H : Type x} {A : Type y} {B : Type z}
   {R : Type u₁} {S : Type u₂}
-
-/-!
-### (Additive) monoid
--/
-
-section DivisionMonoid
-
-variable [DivisionMonoid α]
-
--- Note that `mul_zsmul` and `zpow_mul` have the primes swapped
--- when additivised since their argument order,
--- and therefore the more "natural" choice of lemma, is reversed.
-@[to_additive mul_zsmul']
-theorem zpow_mul (a : α) : ∀ m n : ℤ, a ^ (m * n) = (a ^ m) ^ n
-  | (m : ℕ), (n : ℕ) => by
-    rw [zpow_ofNat, zpow_ofNat, ← pow_mul, ← zpow_ofNat]
-    rfl
-  | (m : ℕ), -[n+1] => by
-    rw [zpow_ofNat, zpow_negSucc, ← pow_mul, ofNat_mul_negSucc, zpow_neg, inv_inj, ← zpow_ofNat]
-  | -[m+1], (n : ℕ) => by
-    rw [zpow_ofNat, zpow_negSucc, ← inv_pow, ← pow_mul, negSucc_mul_ofNat, zpow_neg, inv_pow,
-      inv_inj, ← zpow_ofNat]
-  | -[m+1], -[n+1] => by
-    rw [zpow_negSucc, zpow_negSucc, negSucc_mul_negSucc, inv_pow, inv_inv, ← pow_mul, ←
-      zpow_ofNat]
-    rfl
-#align zpow_mul zpow_mul
-#align mul_zsmul' mul_zsmul'
-
-@[to_additive mul_zsmul]
-theorem zpow_mul' (a : α) (m n : ℤ) : a ^ (m * n) = (a ^ n) ^ m := by rw [mul_comm, zpow_mul]
-#align zpow_mul' zpow_mul'
-#align mul_zsmul mul_zsmul
-
-section bit0
-
-set_option linter.deprecated false
-
-@[to_additive bit0_zsmul]
-theorem zpow_bit0 (a : α) : ∀ n : ℤ, a ^ bit0 n = a ^ n * a ^ n
-  | (n : ℕ) => by simp only [zpow_ofNat, ← Int.ofNat_bit0, pow_bit0]
-  | -[n+1] => by
-    simp only [zpow_negSucc, <-mul_inv_rev, <-pow_bit0]
-    rw [negSucc_eq, bit0_neg, zpow_neg]
-    norm_cast
-#align zpow_bit0 zpow_bit0
-#align bit0_zsmul bit0_zsmul
-
-@[to_additive bit0_zsmul']
-theorem zpow_bit0' (a : α) (n : ℤ) : a ^ bit0 n = (a * a) ^ n :=
-  (zpow_bit0 a n).trans ((Commute.refl a).mul_zpow n).symm
-#align zpow_bit0' zpow_bit0'
-#align bit0_zsmul' bit0_zsmul'
-
-@[simp]
-theorem zpow_bit0_neg [HasDistribNeg α] (x : α) (n : ℤ) : (-x) ^ bit0 n = x ^ bit0 n := by
-  rw [zpow_bit0', zpow_bit0', neg_mul_neg]
-#align zpow_bit0_neg zpow_bit0_neg
-
-end bit0
-
-end DivisionMonoid
-
-section Group
-
-variable [Group G]
-
-@[to_additive add_one_zsmul]
-theorem zpow_add_one (a : G) : ∀ n : ℤ, a ^ (n + 1) = a ^ n * a
-  | (n : ℕ) => by simp only [← Int.ofNat_succ, zpow_ofNat, pow_succ']
-  | -[0+1] => by erw [zpow_zero, zpow_negSucc, pow_one, mul_left_inv]
-  | -[n + 1+1] => by
-    rw [zpow_negSucc, pow_succ, mul_inv_rev, inv_mul_cancel_right]
-    rw [Int.negSucc_eq, neg_add, add_assoc, neg_add_self, add_zero]
-    exact zpow_negSucc _ _
-#align zpow_add_one zpow_add_one
-#align add_one_zsmul add_one_zsmul
-
-@[to_additive sub_one_zsmul]
-theorem zpow_sub_one (a : G) (n : ℤ) : a ^ (n - 1) = a ^ n * a⁻¹ :=
-  calc
-    a ^ (n - 1) = a ^ (n - 1) * a * a⁻¹ := (mul_inv_cancel_right _ _).symm
-    _ = a ^ n * a⁻¹ := by rw [← zpow_add_one, sub_add_cancel]
-#align zpow_sub_one zpow_sub_one
-#align sub_one_zsmul sub_one_zsmul
-
-@[to_additive add_zsmul]
-theorem zpow_add (a : G) (m n : ℤ) : a ^ (m + n) = a ^ m * a ^ n := by
-  induction n using Int.induction_on with
-  | hz => simp
-  | hp n ihn => simp only [← add_assoc, zpow_add_one, ihn, mul_assoc]
-  | hn n ihn => rw [zpow_sub_one, ← mul_assoc, ← ihn, ← zpow_sub_one, add_sub_assoc]
-#align zpow_add zpow_add
-#align add_zsmul add_zsmul
-
-@[to_additive add_zsmul_self]
-theorem mul_self_zpow (b : G) (m : ℤ) : b * b ^ m = b ^ (m + 1) := by
-  conv_lhs =>
-    congr
-    rw [← zpow_one b]
-  rw [← zpow_add, add_comm]
-#align mul_self_zpow mul_self_zpow
-#align add_zsmul_self add_zsmul_self
-
-@[to_additive add_self_zsmul]
-theorem mul_zpow_self (b : G) (m : ℤ) : b ^ m * b = b ^ (m + 1) := by
-  conv_lhs =>
-    congr
-    · skip
-    rw [← zpow_one b]
-  rw [← zpow_add, add_comm]
-#align mul_zpow_self mul_zpow_self
-#align add_self_zsmul add_self_zsmul
-
-@[to_additive sub_zsmul]
-theorem zpow_sub (a : G) (m n : ℤ) : a ^ (m - n) = a ^ m * (a ^ n)⁻¹ := by
-  rw [sub_eq_add_neg, zpow_add, zpow_neg]
-#align zpow_sub zpow_sub
-#align sub_zsmul sub_zsmul
-
-@[to_additive one_add_zsmul]
-theorem zpow_one_add (a : G) (i : ℤ) : a ^ (1 + i) = a * a ^ i := by rw [zpow_add, zpow_one]
-#align zpow_one_add zpow_one_add
-#align one_add_zsmul one_add_zsmul
-
-@[to_additive]
-theorem zpow_mul_comm (a : G) (i j : ℤ) : a ^ i * a ^ j = a ^ j * a ^ i :=
-  (Commute.refl _).zpow_zpow _ _
-#align zpow_mul_comm zpow_mul_comm
-#align zsmul_add_comm zsmul_add_comm
-
-section bit1
-
-set_option linter.deprecated false
-
-@[to_additive bit1_zsmul]
-theorem zpow_bit1 (a : G) (n : ℤ) : a ^ bit1 n = a ^ n * a ^ n * a := by
-  rw [bit1, zpow_add, zpow_bit0, zpow_one]
-#align zpow_bit1 zpow_bit1
-#align bit1_zsmul bit1_zsmul
-
-end bit1
-
-/-- To show a property of all powers of `g` it suffices to show it is closed under multiplication
-by `g` and `g⁻¹` on the left. For subgroups generated by more than one element, see
-`Subgroup.closure_induction_left`. -/
-@[to_additive "To show a property of all multiples of `g` it suffices to show it is closed under
-addition by `g` and `-g` on the left. For additive subgroups generated by more than one element, see
-`AddSubgroup.closure_induction_left`."]
-theorem zpow_induction_left {g : G} {P : G → Prop} (h_one : P (1 : G))
-    (h_mul : ∀ a, P a → P (g * a)) (h_inv : ∀ a, P a → P (g⁻¹ * a)) (n : ℤ) : P (g ^ n) := by
-  induction' n using Int.induction_on with n ih n ih
-  · rwa [zpow_zero]
-  · rw [add_comm, zpow_add, zpow_one]
-    exact h_mul _ ih
-  · rw [sub_eq_add_neg, add_comm, zpow_add, zpow_neg_one]
-    exact h_inv _ ih
-#align zpow_induction_left zpow_induction_left
-#align zsmul_induction_left zsmul_induction_left
-
-/-- To show a property of all powers of `g` it suffices to show it is closed under multiplication
-by `g` and `g⁻¹` on the right. For subgroups generated by more than one element, see
-`Subgroup.closure_induction_right`. -/
-@[to_additive "To show a property of all multiples of `g` it suffices to show it is closed under
-addition by `g` and `-g` on the right. For additive subgroups generated by more than one element,
-see `AddSubgroup.closure_induction_right`."]
-theorem zpow_induction_right {g : G} {P : G → Prop} (h_one : P (1 : G))
-    (h_mul : ∀ a, P a → P (a * g)) (h_inv : ∀ a, P a → P (a * g⁻¹)) (n : ℤ) : P (g ^ n) := by
-  induction' n using Int.induction_on with n ih n ih
-  · rwa [zpow_zero]
-  · rw [zpow_add_one]
-    exact h_mul _ ih
-  · rw [zpow_sub_one]
-    exact h_inv _ ih
-#align zpow_induction_right zpow_induction_right
-#align zsmul_induction_right zsmul_induction_right
-
-end Group
 
 /-!
 ### `zpow`/`zsmul` and an order
@@ -427,10 +243,6 @@ theorem Int.cast_mul_eq_zsmul_cast [AddCommGroupWithOne α] :
   Int.inductionOn' m 0 (by simp) (fun k _ ih n => by simp [add_mul, add_zsmul, ih]) fun k _ ih n =>
     by simp [sub_mul, sub_zsmul, ih, ← sub_eq_add_neg]
 #align int.cast_mul_eq_zsmul_cast Int.cast_mul_eq_zsmul_cast
-
-theorem neg_one_pow_eq_pow_mod_two [Ring R] {n : ℕ} : (-1 : R) ^ n = (-1) ^ (n % 2) := by
-  rw [← Nat.mod_add_div n 2, pow_add, pow_mul]; simp [sq]
-#align neg_one_pow_eq_pow_mod_two neg_one_pow_eq_pow_mod_two
 
 section OrderedSemiring
 

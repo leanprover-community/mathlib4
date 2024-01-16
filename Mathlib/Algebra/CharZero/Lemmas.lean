@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Function.Support
-import Mathlib.Algebra.GroupPower.Lemmas
+import Mathlib.Algebra.Order.Monoid.WithTop
 import Mathlib.Data.Nat.Cast.Field
 
 #align_import algebra.char_zero.lemmas from "leanprover-community/mathlib"@"acee671f47b8e7972a1eb6f4eed74b4b3abce829"

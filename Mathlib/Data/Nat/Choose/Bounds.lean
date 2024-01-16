@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Eric Rodriguez
 -/
 import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Ring.CharZero
+import Mathlib.Data.Nat.Cast.Order
 import Mathlib.Data.Nat.Choose.Basic
 import Mathlib.Algebra.Order.Ring.CharZero
 import Mathlib.Data.Nat.Cast.Order
