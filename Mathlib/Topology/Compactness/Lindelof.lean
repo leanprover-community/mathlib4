@@ -502,8 +502,9 @@ theorem IsClosed.isLindelof [LindelofSpace X] (h : IsClosed s) : IsLindelof s :=
 theorem IsCompact.isLindelof (hs : IsCompact s) :
     IsLindelof s := by tauto
 
-/-- A compact space `X` is Lindelöf. SHOULD THIS BE AN INSTANCE? -/
-instance [CompactSpace X] : LindelofSpace X := { isLindelof_univ := isCompact_univ.isLindelof}
+/-- A compact space `X` is Lindelöf. -/
+instance (priority := 100) [CompactSpace X] : LindelofSpace X :=
+  { isLindelof_univ := isCompact_univ.isLindelof}
 
 /-- `X` is a non-Lindelöf topological space if it is not a Lindelöf space. -/
 class NonLindelofSpace (X : Type*) [TopologicalSpace X] : Prop where
@@ -540,8 +541,9 @@ theorem Filter.coLindelof_neBot_iff : NeBot (Filter.coLindelof X) ↔ NonLindelo
 theorem not_LindelofSpace_iff : ¬LindelofSpace X ↔ NonLindelofSpace X :=
   ⟨fun h₁ => ⟨fun h₂ => h₁ ⟨h₂⟩⟩, fun ⟨h₁⟩ ⟨h₂⟩ => h₁ h₂⟩
 
-/-- A compact space `X` is Lindelöf. SHOULD THIS BE AN INSTANCE? -/
-instance [CompactSpace X] : LindelofSpace X := { isLindelof_univ := isCompact_univ.isLindelof}
+/-- A compact space `X` is Lindelöf.  -/
+instance (priority := 100) [CompactSpace X] : LindelofSpace X :=
+  { isLindelof_univ := isCompact_univ.isLindelof}
 
 theorem countable_of_Lindelof_of_discrete [LindelofSpace X] [DiscreteTopology X] : Countable X :=
   countable_univ_iff.mp isLindelof_univ.countable_of_discrete
@@ -678,7 +680,8 @@ lemma IsHereditarilyLindelof.isLindelof_subset (hs : IsHereditarilyLindelof s) (
 lemma IsHereditarilyLindelof.isLindelof (hs : IsHereditarilyLindelof s) :
     IsLindelof s := hs.isLindelof_subset Subset.rfl
 
-instance HereditarilyLindelof.to_Lindelof [HereditarilyLindelofSpace X] : LindelofSpace X := by
+instance (priority := 100) HereditarilyLindelof.to_Lindelof [HereditarilyLindelofSpace X] :
+    LindelofSpace X := by
   refine { isLindelof_univ := ?isLindelof_univ }
   apply HereditarilyLindelofSpace.isHereditarilyLindelof_univ
   exact univ_subset_iff.mpr rfl
@@ -700,7 +703,7 @@ instance (priority := 100) SecondCountableTopology.to_HereditarilyLindelof
   use t, htc
   exact subset_of_subset_of_eq hcover (id htu.symm)
 
-instance SecondCountableTopology.to_Lindelof [SecondCountableTopology X] : LindelofSpace X := by
+instance (priority := 100) SecondCountableTopology.to_Lindelof [SecondCountableTopology X] : LindelofSpace X := by
   apply HereditarilyLindelof.to_Lindelof
 
 lemma eq_open_union_countable [HereditarilyLindelofSpace X] {ι : Type u} (U : ι → Set X)
