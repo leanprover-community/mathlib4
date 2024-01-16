@@ -813,9 +813,7 @@ theorem IsOrthoᵢ.separatingLeft_of_not_isOrtho_basis_self [NoZeroSMulDivisors 
   specialize hB (v i)
   simp_rw [Basis.repr_symm_apply, Finsupp.total_apply, Finsupp.sum, map_sum₂, map_smulₛₗ₂] at hB
   rw [Finset.sum_eq_single i] at hB
-  · exact Or.elim (smul_eq_zero.mp hB)
-      (fun y ↦ by simpa using y)
-      (fun hfalse ↦ False.elim $ (h i) hfalse)
+  · exact (smul_eq_zero.mp hB).elim _root_.id (h i).elim
   · intro j _hj hij
     replace hij : B (v j) (v i) = 0 := hO hij
     rw [hij, RingHom.id_apply, smul_zero]
