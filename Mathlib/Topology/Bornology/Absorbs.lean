@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Jean Lo, Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jean Lo,Yury Kudryashov
+Authors: Jean Lo, Yury Kudryashov
 -/
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Topology.Bornology.Constructions
@@ -66,6 +66,9 @@ variable {M α : Type*} [Bornology M] [SMul M α] {s s₁ s₂ t t₁ t₂ : Set
 protected lemma empty : Absorbs M s ∅ := by simp [Absorbs]
 #align absorbs_empty Absorbs.empty
 
+@[deprecated] -- Deprecated since 16 January 2024
+alias _root_.absorbs_empty := Absorbs.empty
+
 protected lemma eventually (h : Absorbs M s t) : ∀ᶠ a in cobounded M, t ⊆ a • s := h
 
 @[simp] lemma of_boundedSpace [BoundedSpace M] : Absorbs M s t := by simp [Absorbs]
@@ -113,6 +116,9 @@ lemma _root_.Set.Finite.absorbs_biUnion {ι : Type*} {t : ι → Set α} {I : Se
 
 protected alias ⟨_, biUnion⟩ := Set.Finite.absorbs_biUnion
 
+@[deprecated] -- Deprecated since 16 January 2024
+alias _root_.Set.Finite.absorbs_iUnion := Set.Finite.absorbs_biUnion
+
 @[simp]
 lemma _root_.absorbs_biUnion_finset {ι : Type*} {t : ι → Set α} {I : Finset ι} :
     Absorbs M s (⋃ i ∈ I, t i) ↔ ∀ i ∈ I, Absorbs M s (t i) :=
@@ -120,6 +126,9 @@ lemma _root_.absorbs_biUnion_finset {ι : Type*} {t : ι → Set α} {I : Finset
 #align absorbs_Union_finset absorbs_biUnion_finset
 
 protected alias ⟨_, biUnion_finset⟩ := absorbs_biUnion_finset
+
+@[deprecated] -- Deprecated since 16 January 2024
+alias _root_.absorbs_iUnion_finset := absorbs_biUnion_finset
 
 end SMul
 
@@ -212,9 +221,12 @@ section SMul
 
 variable {M α : Type*} [Bornology M] [SMul M α] {s t : Set α}
 
-protected theorem subset (ht : Absorbent M s) (hsub : s ⊆ t) : Absorbent M t := fun x ↦
+protected theorem mono (ht : Absorbent M s) (hsub : s ⊆ t) : Absorbent M t := fun x ↦
   (ht x).mono_left hsub
-#align absorbent.subset Absorbent.subset
+#align absorbent.subset Absorbent.mono
+
+@[deprecated] -- Deprecated since 16 January 2024
+protected alias subset := Absorbent.mono
 
 theorem _root_.absorbent_iff_forall_absorbs_singleton : Absorbent M s ↔ ∀ x, Absorbs M s {x} := .rfl
 #align absorbent_iff_forall_absorbs_singleton absorbent_iff_forall_absorbs_singleton
