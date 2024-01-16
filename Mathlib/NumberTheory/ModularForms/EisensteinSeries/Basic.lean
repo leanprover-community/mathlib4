@@ -89,7 +89,7 @@ lemma gammaMoebiusFun_eq_Moebequiv (N : ℕ) (a b : ℤ) (γ : Gamma N) (f : gam
     Matrix.vecMulLinear_apply]
 
 lemma gamma_left_inv (N : ℕ) (a b : ℤ ) (γ : Gamma N) (v : gammaSet N a b) :
-  gammaMoebiusFun N a b γ⁻¹ (gammaMoebiusFun N a b γ v) = v := by
+    gammaMoebiusFun N a b γ⁻¹ (gammaMoebiusFun N a b γ v) = v := by
   simp_rw [gammaMoebiusFun, Matrix.vecMul_vecMul]
   apply Subtype.ext
   simp only [InvMemClass.coe_inv, SpecialLinearGroup.coe_inv, mul_adjugate,
