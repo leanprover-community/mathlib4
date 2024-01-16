@@ -423,7 +423,7 @@ protected theorem Nonempty.image (h : s.Nonempty) (f : α → β) : (s.image f).
 
 alias ⟨Nonempty.of_image, _⟩ := image_nonempty
 
-@[deprecated] -- Since 29 December 2023
+@[deprecated image_nonempty] -- Since 29 December 2023
 theorem Nonempty.image_iff (f : α → β) : (s.image f).Nonempty ↔ s.Nonempty :=
   image_nonempty
 
