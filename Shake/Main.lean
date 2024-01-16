@@ -268,6 +268,8 @@ structure Args where
   fix : Bool := false
   /-- `--update`: update the config file -/
   update : Bool := false
+  /-- `--global`: with `--update`, add imports to `ignoreImport` instead of `ignore` -/
+  global : Bool := false
   /-- `--cfg FILE`: choose a custom location for the config file -/
   cfg : Option String := none
   /-- `<MODULE>..`: the list of root modules to check -/
@@ -301,6 +303,7 @@ def main (args : List String) : IO Unit := do
     | "--no-downstream" :: rest => parseArgs { args with downstream := false } rest
     | "--fix" :: rest => parseArgs { args with fix := true } rest
     | "--update" :: rest => parseArgs { args with update := true } rest
+    | "--global" :: rest => parseArgs { args with global := true } rest
     | "--cfg" :: cfg :: rest => parseArgs { args with cfg := cfg } rest
     | "--" :: rest => { args with mods := args.mods ++ rest.map (·.toName) }
     | other :: rest => parseArgs { args with mods := args.mods.push other.toName } rest
@@ -350,7 +353,9 @@ def main (args : List String) : IO Unit := do
   -- Run the calculation of the `needs` array in parallel
   let needs := s.mods.mapIdx fun i mod =>
     if args.downstream || noIgnore i then
-      some <| Task.spawn fun _ => calcNeeds s.constToIdx mod
+      some <| Task.spawn fun _ =>
+        -- remove the module from its own `needs`
+        (calcNeeds s.constToIdx mod ||| (1 <<< i.1)) ^^^ (1 <<< i.1)
     else
       none
   if args.downstream then
@@ -367,17 +372,36 @@ def main (args : List String) : IO Unit := do
   -- Write the config file
   if args.update then
     if let some cfgFile := cfgFile then
-      let mut map := cfg.ignore?.getD {}
+      let mut ignore := cfg.ignore?.getD {}
+      let ignoreImport := cfg.ignoreImport?.getD {}
+      let mut ignoreImportSet : NameSet := ignoreImport.foldl .insert {}
       -- if `args.fix` is true then we assume the errors will be fixed after,
       -- so it's just reformatting the existing file
       if !args.fix then
-        map := edits.fold (init := map) fun ignore mod (remove, _) =>
-          let ns := (ignore.findD mod #[]).foldl (init := remove) (·.insert ·)
-          if ns.isEmpty then ignore.erase mod else ignore.insert mod (ns.toArray.qsort Name.lt)
+        if args.global then
+          -- in global mode all the edits are added to `ignoreImport`
+          ignoreImportSet := edits.fold (init := ignoreImportSet)
+            (fun ignore _ (remove, _) => ignore.union remove)
+        else
+          -- in local mode all the edits are added to `ignore`
+          ignore := edits.fold (init := ignore) fun ignore mod (remove, _) =>
+            let ns := (ignore.findD mod #[]).foldl (init := remove) (·.insert ·)
+            if ns.isEmpty then ignore.erase mod else
+              ignore.insert mod ns.toArray
+      -- If an entry is in `ignoreAll`, the `ignore` key is redundant
+      for i in cfg.ignoreAll?.getD {} do
+        if ignore.contains i then
+          ignore := ignore.erase i
+      -- If an entry is in `ignoreImport`, the `ignore` value is redundant
+      ignore := ignore.fold (init := {}) fun ignore mod ns =>
+        let ns := ns.filter (!ignoreImportSet.contains ·)
+        if ns.isEmpty then ignore else ignore.insert mod (ns.qsort (·.toString < ·.toString))
+      -- Sort the lists alphabetically
+      let ignoreImport := (ignoreImportSet.toArray.qsort (·.toString < ·.toString)).toList
       let cfg : ShakeCfg := {
         ignoreAll? := cfg.ignoreAll?.filter (!·.isEmpty)
-        ignoreImport? := cfg.ignoreImport?.filter (!·.isEmpty)
-        ignore? := (some map).filter (!·.isEmpty)
+        ignoreImport? := (some ignoreImport).filter (!·.isEmpty)
+        ignore? := (some ignore).filter (!·.isEmpty)
       }
       IO.FS.writeFile cfgFile <| toJson cfg |>.pretty
 
