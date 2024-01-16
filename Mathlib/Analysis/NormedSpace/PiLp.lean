@@ -560,6 +560,12 @@ theorem nnnorm_eq_ciSup {β : ι → Type*} [∀ i, SeminormedAddCommGroup (β i
   simp [NNReal.coe_iSup, norm_eq_ciSup]
 #align pi_Lp.nnnorm_eq_csupr PiLp.nnnorm_eq_ciSup
 
+theorem nnnorm_equiv {β : ι → Type*} [∀ i, SeminormedAddCommGroup (β i)] (f : PiLp ∞ β) :
+    ‖WithLp.equiv ⊤ _ f‖₊ = ‖f‖₊ := by
+  rw [nnnorm_eq_ciSup, Pi.nnnorm_def]
+  dsimp
+  rw [Finset]
+
 theorem norm_eq_of_nat {p : ℝ≥0∞} [Fact (1 ≤ p)] {β : ι → Type*}
     [∀ i, SeminormedAddCommGroup (β i)] (n : ℕ) (h : p = n) (f : PiLp p β) :
     ‖f‖ = (∑ i, ‖f i‖ ^ n) ^ (1 / (n : ℝ)) := by
@@ -607,6 +613,24 @@ theorem nndist_eq_of_L2 {β : ι → Type*} [∀ i, SeminormedAddCommGroup (β i
 theorem edist_eq_of_L2 {β : ι → Type*} [∀ i, SeminormedAddCommGroup (β i)] (x y : PiLp 2 β) :
     edist x y = (∑ i, edist (x i) (y i) ^ 2) ^ (1 / 2 : ℝ) := by simp [PiLp.edist_eq_sum]
 #align pi_Lp.edist_eq_of_L2 PiLp.edist_eq_of_L2
+
+/-- The product of finitely many normed spaces is a normed space, with the `L^p` norm. -/
+instance instboundedSMul [NormedRing 𝕜] [∀ i, SeminormedAddCommGroup (β i)] [∀ i, Module 𝕜 (β i)]
+    [∀ i, BoundedSMul 𝕜 (β i)] :
+    BoundedSMul 𝕜 (PiLp p β) :=
+  .of_norm_smul_le fun c f => by
+      rcases p.dichotomy with (rfl | hp)
+      · suffices ‖c • f‖₊ ≤ ‖c‖₊ * ‖f‖₊ from mod_cast NNReal.coe_mono this
+        rw [nnnorm_eq_ciSup, nnnorm_eq_ciSup, ←Finset.sup_univ_eq_ciSup]
+        convert nnnorm_smul_le c (WithLp.equiv ∞ (∀ i, β i) f)
+      · have : p.toReal * (1 / p.toReal) = 1 := mul_div_cancel' 1 (zero_lt_one.trans_le hp).ne'
+        -- Porting note: added to replace Pi.smul_apply
+        have smul_apply : ∀ i : ι, (c • f) i = c • (f i) := fun i => rfl
+        simp only [norm_eq_sum (zero_lt_one.trans_le hp), norm_smul, Real.mul_rpow, norm_nonneg, ←
+          Finset.mul_sum, smul_apply]
+        rw [mul_rpow (rpow_nonneg (norm_nonneg _) _), ← rpow_mul (norm_nonneg _), this,
+          Real.rpow_one]
+        exact Finset.sum_nonneg fun i _ => rpow_nonneg (norm_nonneg _) _ }
 
 variable [NormedField 𝕜] [NormedField 𝕜']
 

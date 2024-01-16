@@ -16,7 +16,7 @@ import Mathlib.Data.Set.Finite
 
 open Set
 
-variable {α β γ : Type*}
+variable {ι α β γ : Type*}
 
 section ConditionallyCompleteLattice
 
@@ -74,6 +74,16 @@ theorem Set.Finite.lt_cInf_iff (hs : s.Finite) (h : s.Nonempty) : a < sInf s ↔
 #align set.finite.lt_cInf_iff Set.Finite.lt_cInf_iff
 
 end ConditionallyCompleteLinearOrder
+
+section ConditionallyCompleteLinearOrderBot
+variable [ConditionallyCompleteLinearOrderBot α]
+
+lemma Finset.sup_univ_eq_ciSup [Fintype ι] (f : ι → α) : univ.sup f = ⨆ i, f i :=
+  le_antisymm
+    (Finset.sup_le fun _ _ => le_ciSup (finite_range _).bddAbove _)
+    (ciSup_le' fun _ => Finset.le_sup (mem_univ _))
+
+end ConditionallyCompleteLinearOrderBot
 
 /-!
 ### Relation between `Sup` / `Inf` and `Finset.sup'` / `Finset.inf'`
