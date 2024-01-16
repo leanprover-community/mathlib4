@@ -302,6 +302,8 @@ end HasCompactMulSupport
 
 end CompactSupport
 
+/-! ## Functions with compact support: algebraic operations -/
+section CompactSupport2
 section Monoid
 
 variable [TopologicalSpace α] [Monoid β]
@@ -364,6 +366,8 @@ theorem HasCompactSupport.mul_left (hf : HasCompactSupport f') : HasCompactSuppo
 #align has_compact_support.mul_left HasCompactSupport.mul_left
 
 end MulZeroClass
+
+end CompactSupport2
 
 namespace LocallyFinite
 
