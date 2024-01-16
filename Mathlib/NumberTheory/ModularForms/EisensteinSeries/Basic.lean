@@ -97,7 +97,7 @@ lemma gamma_left_inv (N : ℕ) (a b : ℤ ) (γ : Gamma N) (v : gammaSet N a b) 
 
 
 lemma gamma_right_inv (N : ℕ) (a b : ℤ ) (γ : Gamma N) (v : gammaSet N a b) :
-  gammaMoebiusFun N a b γ (gammaMoebiusFun N a b γ⁻¹ v) = v := by
+    gammaMoebiusFun N a b γ (gammaMoebiusFun N a b γ⁻¹ v) = v := by
   simp only [gammaMoebiusFun, InvMemClass.coe_inv, Matrix.SpecialLinearGroup.coe_inv,
     Matrix.vecMul_vecMul]
   apply Subtype.ext
