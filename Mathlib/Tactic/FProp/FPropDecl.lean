@@ -25,7 +25,7 @@ structure FPropDecl where
   /-- argument index of a function this function property talks about. For example, this would be 4 for `@Continuous α β _ _ f` -/
   funArgId : Nat
   /-- Custom discharger for this function property. -/
-  discharger : Option Syntax
+  dischargeStx? : Option Syntax
   deriving Inhabited, BEq
 
 structure FPropDecls where
@@ -44,7 +44,7 @@ initialize fpropDeclsExt : FPropDeclsExt ←
 
 
 
-def addFPropDecl (declName : Name) (discharger : Option Syntax) : MetaM Unit := do
+def addFPropDecl (declName : Name) (dischargeStx? : Option Syntax) : MetaM Unit := do
 
   let info ← getConstInfo declName
 
@@ -70,7 +70,7 @@ def addFPropDecl (declName : Name) (discharger : Option Syntax) : MetaM Unit := 
     fpropName := declName
     path := path
     funArgId := funArgId
-    discharger := discharger
+    dischargeStx? := dischargeStx?
   }
 
   modifyEnv fun env => fpropDeclsExt.addEntry env decl
@@ -95,6 +95,7 @@ def getFProp? (e : Expr) : MetaM (Option (FPropDecl × Expr)) := do
 
   return (decl,f)
 
+def isFProp (e : Expr) : MetaM Bool := do return (← getFProp? e).isSome
 
 /-- Returns function property declaration from `e = P f`. -/
 def getFPropDecl? (e : Expr) : MetaM (Option FPropDecl) := do
@@ -109,3 +110,36 @@ def getFPropFun? (e : Expr) : MetaM (Option Expr) := do
   | .some (_,f) => return f
   | .none => return none
 
+
+
+
+
+open Elab Term in
+def tacticToDischarge (tacticCode : Syntax) : Expr → MetaM (Option Expr) := fun e => do
+    let mvar ← mkFreshExprSyntheticOpaqueMVar e `simp.discharger
+    let runTac? : TermElabM (Option Expr) :=
+      try
+        /- We must only save messages and info tree changes. Recall that `simp` uses temporary metavariables (`withNewMCtxDepth`).
+           So, we must not save references to them at `Term.State`. -/
+        withoutModifyingStateWithInfoAndMessages do
+          instantiateMVarDeclMVars mvar.mvarId!
+
+          let _ ←
+            withSynthesize (mayPostpone := false) do Tactic.run mvar.mvarId! (Tactic.evalTactic tacticCode *> Tactic.pruneSolvedGoals)
+
+          let result ← instantiateMVars mvar
+          if result.hasExprMVar then
+            return none
+          else
+            return some result
+      catch _ =>
+        return none
+    let (result?, _) ← runTac?.run {} {} 
+    
+    return result?
+
+
+def FPropDecl.discharger (fpropDecl : FPropDecl) (e : Expr) : MetaM (Option Expr) := do
+    let .some stx := fpropDecl.dischargeStx?
+      | return none
+    tacticToDischarge stx e

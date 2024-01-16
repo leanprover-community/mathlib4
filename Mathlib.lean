@@ -3355,6 +3355,15 @@ import Mathlib.Tactic.ExtendDoc
 import Mathlib.Tactic.ExtractGoal
 import Mathlib.Tactic.ExtractLets
 import Mathlib.Tactic.FBinop
+import Mathlib.Tactic.FProp.Core
+import Mathlib.Tactic.FProp.Elab
+import Mathlib.Tactic.FProp.FPropAttr
+import Mathlib.Tactic.FProp.FPropDecl
+import Mathlib.Tactic.FProp.FPropLambdaTheorems
+import Mathlib.Tactic.FProp.FPropTheorems
+import Mathlib.Tactic.FProp.FPropTypes
+import Mathlib.Tactic.FProp.RefinedDiscrTree
+import Mathlib.Tactic.FProp.StateList
 import Mathlib.Tactic.FailIfNoProgress
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.FinCases

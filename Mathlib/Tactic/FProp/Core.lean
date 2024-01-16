@@ -39,6 +39,202 @@ def _root_.Lean.Expr.setArg (e : Expr) (i : Nat) (x : Expr) (n := e.getAppNumArg
   e.modArg (fun _ => x) i n
 
 
+----------------------------------------------------------------------------------------------------
+
+
+def synthesizeInstance (thmId : Origin) (x type : Expr) : MetaM Bool := do
+  match (← trySynthInstance type) with
+  | LOption.some val =>
+    if (← withReducibleAndInstances <| isDefEq x val) then
+      return true
+    else
+      trace[Meta.Tactic.fprop.discharge] "{← ppOrigin thmId}, failed to assign instance{indentExpr type}\nsythesized value{indentExpr val}\nis not definitionally equal to{indentExpr x}"
+      return false
+  | _ =>
+    trace[Meta.Tactic.fprop.discharge] "{← ppOrigin thmId}, failed to synthesize instance{indentExpr type}"
+    return false
+
+
+/-- Synthesize arguments `xs` either with typeclass synthesis, with fprop or with discharger.
+If succesfull it returns list of subgoals that should be presented to the user.
+If fails it returns `none`. -/
+def synthesizeArgs (thmId : Origin) (xs : Array Expr) (bis : Array BinderInfo) 
+  (discharge? : Expr → MetaM (Option Expr)) (fprop : Expr → FPropM (Option Result)) 
+  : FPropM (Option (List MVarId)) := do
+  let mut subgoals : List MVarId := []
+  for x in xs, bi in bis do
+    let type ← inferType x
+    if bi.isInstImplicit then
+      unless (← synthesizeInstance thmId x type) do
+        return .none
+    else if (← instantiateMVars x).isMVar then
+
+      -- try type class
+      if (← isClass? type).isSome then
+        if (← synthesizeInstance thmId x type) then
+          continue
+
+      -- try function property
+      if (← isFProp type.getForallBody) then
+        if let .some ⟨proof, subgoals'⟩ ← fprop (← instantiateMVars type) then
+          subgoals := subgoals ++ subgoals'
+          if (← isDefEq x proof) then
+            continue
+          else do
+            trace[Meta.Tactic.fprop.discharge] "{← ppOrigin thmId}, failed to assign proof{indentExpr type}"
+            return none
+
+      -- try discharger
+      if (← isProp type) then
+        if let .some proof ← discharge? type then
+          if (← isDefEq x proof) then
+            continue 
+          else do
+            trace[Meta.Tactic.fprop.discharge] "{← ppOrigin thmId}, failed to assign proof{indentExpr type}"
+            return none
+
+      trace[Meta.Tactic.fprop.discharge] "{← ppOrigin thmId}, failed to discharge hypotheses{indentExpr type}"
+      return none
+
+  return .some subgoals
+
+
+def tryTheoremCore (xs : Array Expr) (bis : Array BinderInfo) (val : Expr) (type : Expr) (e : Expr) (thmId : Origin) 
+  (discharge? : Expr → MetaM (Option Expr)) (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do
+  if (← isDefEq type e) then
+    let .some subgoals ← synthesizeArgs thmId xs bis discharge? fprop | return none
+    let proof ← instantiateMVars (mkAppN val xs)
+
+    -- TODO: check that the only mvars in proof are subgoals
+    if subgoals.length == 0 && (← hasAssignableMVar proof) then 
+      trace[Meta.Tactic.fprop.apply] "{← ppOrigin thmId}, has unassigned metavariables after unification"
+      return none
+
+    trace[Meta.Tactic.fprop.apply] "{← ppOrigin thmId}, \n{e}"
+    return .some { proof := proof, subgoals := subgoals}
+  else
+    trace[Meta.Tactic.fprop.unify] "failed to unify {← ppOrigin thmId}\n{type}\nwith\n{e}"
+    return none
+
+
+def tryTheorem? (e : Expr) (thmProof : Expr) (thmId : Origin)
+  (discharge? : Expr → MetaM (Option Expr)) (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do
+  withNewMCtxDepth do
+    let type ← instantiateMVars (← inferType thmProof)
+    let (xs, bis, type) ← forallMetaTelescope type
+    tryTheoremCore xs bis thmProof type e thmId discharge? fprop
+
+
+def applyIdRule (fpropDecl : FPropDecl) (e X : Expr) 
+  (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do 
+
+  let ext := fpropLambdaTheoremsExt.getState (← getEnv)
+  let .some thm := ext.theorems.find? (fpropDecl.fpropName, .id) 
+    | return none
+  let .id id_X := thm.thrmArgs | return none
+  
+  let type ← instantiateMVars (← inferType thm.proof)
+  let (xs, bis, type) ← forallMetaTelescope type
+
+  xs[id_X]!.mvarId!.assign X
+
+  tryTheoremCore xs bis thm.proof type e (.decl thm.thrmName) fpropDecl.discharger fprop
+
+
+def applyConstRule (fpropDecl : FPropDecl) (e X y : Expr) 
+  (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do 
+
+  let ext := fpropLambdaTheoremsExt.getState (← getEnv)
+  let .some thm := ext.theorems.find? (fpropDecl.fpropName, .const) | return none
+  let .const id_X id_y := thm.thrmArgs | return none
+  
+  let type ← instantiateMVars (← inferType thm.proof)
+  let (xs, bis, type) ← forallMetaTelescope type
+
+  xs[id_X]!.mvarId!.assign X
+  xs[id_y]!.mvarId!.assign y
+
+  tryTheoremCore xs bis thm.proof type e (.decl thm.thrmName) fpropDecl.discharger fprop
+
+
+def applyProjRule (fpropDecl : FPropDecl) (e x Y : Expr) 
+  (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do 
+
+  let ext := fpropLambdaTheoremsExt.getState (← getEnv)
+  let .some thm := ext.theorems.find? (fpropDecl.fpropName, .proj) | return none
+  let .proj id_x id_Y := thm.thrmArgs | return none
+  
+  let type ← instantiateMVars (← inferType thm.proof)
+  let (xs, bis, type) ← forallMetaTelescope type
+
+  xs[id_x]!.mvarId!.assign x
+  xs[id_Y]!.mvarId!.assign Y
+
+  tryTheoremCore xs bis thm.proof type e (.decl thm.thrmName) fpropDecl.discharger fprop
+
+
+def applyProjDepRule (fpropDecl : FPropDecl) (e x Y : Expr)
+  (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do 
+
+  let ext := fpropLambdaTheoremsExt.getState (← getEnv)
+  let .some thm := ext.theorems.find? (fpropDecl.fpropName, .projDep) | return none
+  let .projDep id_x id_Y := thm.thrmArgs | return none
+  
+  let type ← instantiateMVars (← inferType thm.proof)
+  let (xs, bis, type) ← forallMetaTelescope type
+
+  xs[id_x]!.mvarId!.assign x
+  xs[id_Y]!.mvarId!.assign Y
+
+  tryTheoremCore xs bis thm.proof type e (.decl thm.thrmName) fpropDecl.discharger fprop
+
+
+def applyCompRule (fpropDecl : FPropDecl) (e f g : Expr)
+  (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do 
+
+  let ext := fpropLambdaTheoremsExt.getState (← getEnv)
+  let .some thm := ext.theorems.find? (fpropDecl.fpropName, .comp) | return none
+  let .comp id_f id_g := thm.thrmArgs | return none
+  
+  let type ← instantiateMVars (← inferType thm.proof)
+  let (xs, bis, type) ← forallMetaTelescope type
+
+  xs[id_f]!.mvarId!.assign f
+  xs[id_g]!.mvarId!.assign g
+
+  tryTheoremCore xs bis thm.proof type e (.decl thm.thrmName) fpropDecl.discharger fprop
+
+
+def applyLetRule (fpropDecl : FPropDecl) (e f g : Expr) 
+  (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do 
+
+  let ext := fpropLambdaTheoremsExt.getState (← getEnv)
+  let .some thm := ext.theorems.find? (fpropDecl.fpropName, .letE) | return none
+  let .letE id_f id_g := thm.thrmArgs | return none
+  
+  let type ← instantiateMVars (← inferType thm.proof)
+  let (xs, bis, type) ← forallMetaTelescope type
+
+  xs[id_f]!.mvarId!.assign f
+  xs[id_g]!.mvarId!.assign g
+
+  tryTheoremCore xs bis thm.proof type e (.decl thm.thrmName) fpropDecl.discharger fprop
+
+
+def applyPiRule (fpropDecl : FPropDecl) (e f : Expr)
+  (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do 
+
+  let ext := fpropLambdaTheoremsExt.getState (← getEnv)
+  let .some thm := ext.theorems.find? (fpropDecl.fpropName, .pi) | return none
+  let .pi id_f := thm.thrmArgs | return none
+  
+  let type ← instantiateMVars (← inferType thm.proof)
+  let (xs, bis, type) ← forallMetaTelescope type
+
+  xs[id_f]!.mvarId!.assign f
+
+  tryTheoremCore xs bis thm.proof type e (.decl thm.thrmName) fpropDecl.discharger fprop
+
 
 def letCase (decl : FPropDecl) (e : Expr) (f : Expr) (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do
   return none
@@ -89,7 +285,7 @@ mutual
 
   partial def main (e : Expr) : FPropM (Option Result) := do
 
-    let .some (decl, f) ← getFProp? e
+    let .some (fpropDecl, f) ← getFProp? e
       | return none
 
     let f := f.consumeMData
@@ -97,7 +293,7 @@ mutual
     match f with
     | .letE .. => letTelescope f fun xs b => do 
       trace[Meta.Tactic.fprop.step] "case `P (let x := ..; f)`\n{← ppExpr e}"
-      let e' := e.setArg decl.funArgId b
+      let e' := e.setArg fpropDecl.funArgId b
       fprop (← mkLambdaFVars xs e')
 
     | .lam xName xType xBody xBi => 
@@ -105,22 +301,22 @@ mutual
       match xBody.consumeMData.headBeta.consumeMData with
       | (.bvar 0) => 
         trace[Meta.Tactic.fprop.step] "case `P (fun x => x)\n{← ppExpr e}"
-        applyIdRule decl e xType
+        applyIdRule fpropDecl e xType fprop
 
       | .letE .. => 
         trace[Meta.Tactic.fprop.step] "case `P (fun x => let y := ..; ..)\n{← ppExpr e}"
-        letCase decl e f fprop
+        letCase fpropDecl e f fprop
 
       | .lam  .. => 
         trace[Meta.Tactic.fprop.step] "case `P (fun x y => f x y)`\n{← ppExpr e}"
-        applyPiRule decl e f
+        applyPiRule fpropDecl e f fprop
 
       | .mvar .. => fprop (← instantiateMVars e)
 
       | xBody => do
         if !(xBody.hasLooseBVar 0) then
           trace[Meta.Tactic.fprop.step] "case `P (fun x => y)`\n{← ppExpr e}"
-          applyConstRule decl e xType xBody
+          applyConstRule fpropDecl e xType xBody fprop
         else 
           let f' := Expr.lam xName xType xBody xBi
           let g := xBody.getAppFn
@@ -128,21 +324,21 @@ mutual
           match g with 
           | .fvar .. => 
             trace[Meta.Tactic.fprop.step] "case `P (fun x => f x)` where `f` is free variable\n{← ppExpr e}"
-            fvarAppCase decl e f' fprop
+            fvarAppCase fpropDecl e f' fprop
           | .bvar .. => 
             trace[Meta.Tactic.fprop.step] "case `P (fun f => f x)`\n{← ppExpr e}"
-            bvarAppCase decl e f' fprop
+            bvarAppCase fpropDecl e f' fprop
           | .mvar .. => 
             fprop (← instantiateMVars e)
           | .proj .. => do
             trace[Meta.Tactic.fprop.step] "case `P (fun x => x.#)`\n{← ppExpr e}"
-            constAppCase decl e f' fprop
+            constAppCase fpropDecl e f' fprop
           | .const .. =>
-            trace[Meta.Tactic.fprop.step] "case `P (fun x => f x)` where `f` is declared function\n{← ppExpr e}"
-            constAppCase decl e f' fprop
+            trace[Meta.Tactic.fprop.step] "case `P (fun x => f x)` where `f` is fpropDeclared function\n{← ppExpr e}"
+            constAppCase fpropDecl e f' fprop
           | _ => 
             trace[Meta.Tactic.fprop.step] "unknown case, app function {← ppExpr g} has constructor: {g.ctorName} \n{← ppExpr e}\n"
-            constAppCase decl e f' fprop
+            constAppCase fpropDecl e f' fprop
 
     | .mvar _ => do
       fprop (← instantiateMVars e)
@@ -150,6 +346,6 @@ mutual
     | f => do
       let f' ← etaExpand f
       trace[Meta.Tactic.fprop.step] "eta expanding function in\n{← ppExpr e}"
-      fprop (e.setArg decl.funArgId f')
+      fprop (e.setArg fpropDecl.funArgId f')
 
 end

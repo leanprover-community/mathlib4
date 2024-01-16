@@ -11,7 +11,13 @@ open Lean Meta
 namespace Meta.FProp
 
 inductive LambdaTheoremArgs 
-  | id (X : Nat) | const (X y : Nat) | proj (x Y : Nat) | projDep (x Y : Nat) | comp (f g : Nat) | letE (f g : Nat) | pi (f : Nat)
+  | id (X : Nat) 
+  | const (X y : Nat) 
+  | proj (x Y : Nat) 
+  | projDep (x Y : Nat) 
+  | comp (f g : Nat) 
+  | letE (f g : Nat) 
+  | pi (f : Nat)
   deriving Inhabited, BEq, Repr, Hashable
 
 inductive LambdaTheoremType 
@@ -20,13 +26,13 @@ inductive LambdaTheoremType
 
 def LambdaTheoremArgs.type (t : LambdaTheoremArgs) : LambdaTheoremType :=
   match t with
-  | .id _ => .id
-  | .const _ _ => .const
-  | .proj _ _ => .proj
-  | .projDep _ _ => .projDep
-  | .comp _ _ => .comp
-  | .letE _ _ => .letE
-  | .pi _ => .pi
+  | .id .. => .id
+  | .const .. => .const
+  | .proj .. => .proj
+  | .projDep .. => .projDep
+  | .comp .. => .comp
+  | .letE .. => .letE
+  | .pi .. => .pi
 
 
 /- Custom rule for proving function property of `fun x : X => x`, #[X] -/
@@ -136,11 +142,3 @@ def addLambdaTheorem (declName : Name) : MetaM Unit := do
 
 def getLambdaTheorem (fpropName : Name) (type : LambdaTheoremType) : CoreM (Option LambdaTheorem) := do
   return (fpropLambdaTheoremsExt.getState (← getEnv)).theorems.find? (fpropName,type)
-
-def applyIdRule (decl : FPropDecl) (e X : Expr) : FPropM (Option Result) := do return none
-def applyConstRule (decl : FPropDecl) (e X y : Expr) : FPropM (Option Result) := do return none
-def applyProjRule (decl : FPropDecl) (e x Y : Expr) : FPropM (Option Result) := do return none
-def applyProjDepRule (decl : FPropDecl) (e x Y : Expr) : FPropM (Option Result) := do return none
-def applyCompRule (decl : FPropDecl) (e f g : Expr) : FPropM (Option Result) := do return none
-def applyLetRule (decl : FPropDecl) (e f g : Expr) : FPropM (Option Result) := do return none
-def applyPiRule (decl : FPropDecl) (e f : Expr) : FPropM (Option Result) := do return none
