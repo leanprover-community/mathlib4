@@ -337,6 +337,7 @@ import Mathlib.Algebra.Module.Submodule.LinearMap
 import Mathlib.Algebra.Module.Submodule.Localization
 import Mathlib.Algebra.Module.Submodule.Map
 import Mathlib.Algebra.Module.Submodule.Pointwise
+import Mathlib.Algebra.Module.Submodule.RestrictScalars
 import Mathlib.Algebra.Module.Torsion
 import Mathlib.Algebra.Module.ULift
 import Mathlib.Algebra.Module.Zlattice
@@ -3008,6 +3009,7 @@ import Mathlib.Probability.Density
 import Mathlib.Probability.Distributions.Exponential
 import Mathlib.Probability.Distributions.Gamma
 import Mathlib.Probability.Distributions.Gaussian
+import Mathlib.Probability.Distributions.Geometric
 import Mathlib.Probability.Distributions.Poisson
 import Mathlib.Probability.IdentDistrib
 import Mathlib.Probability.Independence.Basic

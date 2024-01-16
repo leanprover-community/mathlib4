@@ -1252,6 +1252,10 @@ theorem eventually_principal {a : Set α} {p : α → Prop} : (∀ᶠ x in 𝓟 
   Iff.rfl
 #align filter.eventually_principal Filter.eventually_principal
 
+theorem Eventually.forall_mem {α : Type*} {f : Filter α} {s : Set α} {P : α → Prop}
+    (hP : ∀ᶠ x in f, P x) (hf : 𝓟 s ≤ f) : ∀ x ∈ s, P x :=
+  Filter.eventually_principal.mp (hP.filter_mono hf)
+
 theorem eventually_inf {f g : Filter α} {p : α → Prop} :
     (∀ᶠ x in f ⊓ g, p x) ↔ ∃ s ∈ f, ∃ t ∈ g, ∀ x ∈ s ∩ t, p x :=
   mem_inf_iff_superset
@@ -1548,6 +1552,12 @@ theorem EventuallyEq.mul [Mul β] {f f' g g' : α → β} {l : Filter α} (h : f
 #align filter.eventually_eq.mul Filter.EventuallyEq.mul
 #align filter.eventually_eq.add Filter.EventuallyEq.add
 
+@[to_additive const_smul]
+theorem EventuallyEq.pow_const {γ} [Pow β γ] {f g : α → β} {l : Filter α} (h : f =ᶠ[l] g) (c : γ):
+    (fun x => f x ^ c) =ᶠ[l] fun x => g x ^ c :=
+  h.fun_comp (· ^ c)
+#align filter.eventually_eq.const_smul Filter.EventuallyEq.const_smul
+
 @[to_additive]
 theorem EventuallyEq.inv [Inv β] {f g : α → β} {l : Filter α} (h : f =ᶠ[l] g) :
     (fun x => (f x)⁻¹) =ᶠ[l] fun x => (g x)⁻¹ :=
@@ -1562,11 +1572,7 @@ theorem EventuallyEq.div [Div β] {f f' g g' : α → β} {l : Filter α} (h : f
 #align filter.eventually_eq.div Filter.EventuallyEq.div
 #align filter.eventually_eq.sub Filter.EventuallyEq.sub
 
-@[to_additive]
-theorem EventuallyEq.const_smul {𝕜} [SMul 𝕜 β] {l : Filter α} {f g : α → β} (h : f =ᶠ[l] g)
-    (c : 𝕜) : (fun x => c • f x) =ᶠ[l] fun x => c • g x :=
-  h.fun_comp fun x => c • x
-#align filter.eventually_eq.const_smul Filter.EventuallyEq.const_smul
+attribute [to_additive] EventuallyEq.const_smul
 #align filter.eventually_eq.const_vadd Filter.EventuallyEq.const_vadd
 
 @[to_additive]
