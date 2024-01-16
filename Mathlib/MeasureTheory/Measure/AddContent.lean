@@ -28,7 +28,7 @@ Let `m` be an `AddContent C`. If `C` is a set semi-ring (`IsSetSemiring C`) we h
 * `MeasureTheory.sum_addContent_le_of_subset`: if `I` is a finset of pairwise disjoint sets in `C`
   and `⋃₀ I ⊆ t` for `t ∈ C`, then `∑ s in I, m s ≤ m t`.
 * `MeasureTheory.addContent_mono`: if `s ⊆ t` for two sets in `C`, then `m s ≤ m t`.
-* `MeasureTheory.AaddContent_union'`: if `s, t ∈ C` are disjoint and `s ∪ t ∈ C`,
+* `MeasureTheory.addContent_union'`: if `s, t ∈ C` are disjoint and `s ∪ t ∈ C`,
   then `m (s ∪ t) = m s + m t`.
   If `C` is a set ring (`IsSetRing`), then `addContent_union` gives the same conclusion without the
   hypothesis `s ∪ t ∈ C` (since it is a consequence of `IsSetRing C`).
