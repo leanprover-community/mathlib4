@@ -711,7 +711,7 @@ def analyticGroupoid : StructureGroupoid H :=
             (f := (1 : E →L[𝕜] E)) (fun x _ => (1 : E →L[𝕜] E).analyticAt x)
             (fun z hz => (I.right_inv (interior_subset hz)).symm)
         · intro x hx
-          simp only [left_id, comp_apply, preimage_univ, univ_inter, mem_image] at hx
+          simp only [id_comp, comp_apply, preimage_univ, univ_inter, mem_image] at hx
           rcases hx with ⟨y, hy⟩
           rw [← hy.right, I.right_inv (interior_subset hy.left)]
           exact hy.left
@@ -755,7 +755,7 @@ theorem ofSet_mem_analyticGroupoid {s : Set H} (hs : IsOpen s) :
   apply mem_groupoid_of_pregroupoid.mpr
   suffices h : AnalyticOn 𝕜 (I ∘ I.symm) (I.symm ⁻¹' s ∩ interior (range I)) ∧
       (I.symm ⁻¹' s ∩ interior (range I)).image (I ∘ I.symm) ⊆ interior (range I)
-  · simp only [PartialHomeomorph.ofSet_apply, left_id, PartialHomeomorph.ofSet_toPartialEquiv,
+  · simp only [PartialHomeomorph.ofSet_apply, id_comp, PartialHomeomorph.ofSet_toPartialEquiv,
       PartialEquiv.ofSet_source, h, comp_apply, mem_range, image_subset_iff, true_and,
       PartialHomeomorph.ofSet_symm, PartialEquiv.ofSet_target, and_self]
     intro x hx
@@ -765,7 +765,7 @@ theorem ofSet_mem_analyticGroupoid {s : Set H} (hs : IsOpen s) :
   apply And.intro
   · have : AnalyticOn 𝕜 (1 : E →L[𝕜] E) (univ : Set E) := (fun x _ => (1 : E →L[𝕜] E).analyticAt x)
     exact (this.mono (subset_univ (s.preimage (I.symm) ∩ interior (range I)))).congr
-      (IsOpen.inter (hs.preimage I.continuous_symm) isOpen_interior)
+      ((hs.preimage I.continuous_symm).inter isOpen_interior)
       fun z hz => (I.right_inv (interior_subset hz.right)).symm
   · intro x hx
     simp only [comp_apply, mem_image] at hx

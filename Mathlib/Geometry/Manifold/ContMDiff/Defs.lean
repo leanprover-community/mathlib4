@@ -124,7 +124,8 @@ theorem contDiffWithinAt_localInvariantProp (n : ℕ∞) :
     symm
     apply contDiffWithinAt_inter
     have : u ∈ 𝓝 (I.symm (I x)) := by
-      rw [ModelWithCorners.left_inv]; exact IsOpen.mem_nhds u_open xu
+      rw [ModelWithCorners.left_inv]
+      exact u_open.mem_nhds xu
     apply ContinuousAt.preimage_mem_nhds I.continuous_symm.continuousAt this
   right_invariance' := by
     intro s x f e he hx h
@@ -165,7 +166,7 @@ theorem contDiffWithinAtProp_mono_of_mem (n : ℕ∞) ⦃s x t⦄ ⦃f : H → H
 #align cont_diff_within_at_prop_mono_of_mem contDiffWithinAtProp_mono_of_mem
 
 theorem contDiffWithinAtProp_id (x : H) : ContDiffWithinAtProp I I n id univ x := by
-  simp only [ContDiffWithinAtProp._eq_1, comp.left_id, preimage_univ, univ_inter]
+  simp only [ContDiffWithinAtProp, id_comp, preimage_univ, univ_inter]
   have : ContDiffWithinAt 𝕜 n id (range I) (I x) := contDiff_id.contDiffAt.contDiffWithinAt
   refine this.congr (fun y hy => ?_) ?_
   · simp only [ModelWithCorners.right_inv I hy, mfld_simps]
@@ -361,7 +362,7 @@ theorem contMDiffWithinAt_iff_target :
       and_iff_left_of_imp <| (continuousAt_extChartAt _ _).comp_continuousWithinAt
   simp_rw [cont, ContDiffWithinAtProp, extChartAt, PartialHomeomorph.extend, PartialEquiv.coe_trans,
     ModelWithCorners.toPartialEquiv_coe, PartialHomeomorph.coe_coe, modelWithCornersSelf_coe,
-    chartAt_self_eq, PartialHomeomorph.refl_apply, comp.left_id]
+    chartAt_self_eq, PartialHomeomorph.refl_apply, id_comp]
   rfl
 #align cont_mdiff_within_at_iff_target contMDiffWithinAt_iff_target
 

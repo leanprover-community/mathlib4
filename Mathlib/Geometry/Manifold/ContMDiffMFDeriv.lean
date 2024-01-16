@@ -3,7 +3,7 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
-import Mathlib.Geometry.Manifold.MFDeriv
+import Mathlib.Geometry.Manifold.MFDeriv.Basic
 import Mathlib.Geometry.Manifold.ContMDiffMap
 
 #align_import geometry.manifold.cont_mdiff_mfderiv from "leanprover-community/mathlib"@"e473c3198bb41f68560cab68a0529c854b618833"
@@ -59,7 +59,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {s s₁ t : Set M} {x : M} {m n : ℕ∞}
 
 -- Porting note: section about deducing differentiability from smoothness moved to
--- `Geometry.Manifold.MFDeriv`
+-- `Geometry.Manifold.MFDeriv.Basic`
 
 /-! ### The derivative of a smooth function is smooth -/
 
@@ -381,7 +381,7 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin (hf : ContMDiffOn I I' n f s) (
   suffices h : ContMDiffOn I.tangent I'.tangent m (tangentMapWithin I I' f s) s'_lift
   · refine' ⟨π E (TangentSpace I) ⁻¹' (o ∩ l.source), _, _, _⟩
     show IsOpen (π E (TangentSpace I) ⁻¹' (o ∩ l.source));
-    exact (IsOpen.inter o_open l.open_source).preimage (FiberBundle.continuous_proj E _)
+    exact (o_open.inter l.open_source).preimage (FiberBundle.continuous_proj E _)
     show p ∈ π E (TangentSpace I) ⁻¹' (o ∩ l.source)
     · simp
       have : p.proj ∈ f ⁻¹' r.source ∩ s := by simp [hp]
