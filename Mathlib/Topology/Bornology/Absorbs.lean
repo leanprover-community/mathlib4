@@ -208,6 +208,8 @@ end AddGroup
 
 namespace Absorbent
 
+section SMul
+
 variable {M α : Type*} [Bornology M] [SMul M α] {s t : Set α}
 
 protected theorem subset (ht : Absorbent M s) (hsub : s ⊆ t) : Absorbent M t := fun x ↦
@@ -224,8 +226,15 @@ protected theorem absorbs (hs : Absorbent M s) {x : α} : Absorbs M s {x} := hs 
 
 theorem absorbs_finite (hs : Absorbent M s) (ht : t.Finite) : Absorbs M s t := by
   rw [← Set.biUnion_of_singleton t]
-  exact ht.absorbs_biUnion.mpr fun _ _ => hs.absorbs
+  exact .biUnion ht fun _ _ => hs.absorbs
 #align absorbent.absorbs_finite Absorbent.absorbs_finite
+
+end SMul
+
+theorem vadd_absorbs {M E : Type*} [Bornology M] [AddZeroClass E] [DistribSMul M E]
+    {s₁ s₂ t : Set E} {x : E} (h₁ : Absorbent M s₁) (h₂ : Absorbs M s₂ t) :
+    Absorbs M (s₁ + s₂) (x +ᵥ t) := by
+  rw [← singleton_vadd]; exact (h₁ x).add h₂
 
 end Absorbent
 
