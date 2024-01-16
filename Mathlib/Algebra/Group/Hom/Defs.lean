@@ -202,7 +202,7 @@ instance OneHom.oneHomClass : OneHomClass (OneHom M N) M N where
 variable [NDFunLike F M N]
 
 @[to_additive (attr := simp)]
-theorem map_one  [OneHomClass F M N] (f : F) : f 1 = 1 :=
+theorem map_one [OneHomClass F M N] (f : F) : f 1 = 1 :=
   OneHomClass.map_one f
 #align map_one map_one
 #align map_zero map_zero

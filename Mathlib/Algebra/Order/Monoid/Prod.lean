@@ -50,7 +50,8 @@ instance orderedCommMonoid [OrderedCommMonoid α]
     OrderedCommMonoid (α ×ₗ β) where
   mul_le_mul_left _ _ hxy z := ((le_iff _ _).1 hxy).elim
     (fun hxy => left _ _ <| mul_lt_mul_left' hxy _)
-    -- Note: the `congr_arg` used to be `rw [hxy.1]` before #8386 (why?)
+    -- Note: the `congr_arg` used to be `rw [hxy.1]` before #8386
+    -- but the definition of `Mul.mul` got unfolded differently.
     (fun hxy => (le_iff _ _).2 <| Or.inr ⟨congr_arg (z.1 * ·) hxy.1, mul_le_mul_left' hxy.2 _⟩)
 
 @[to_additive]

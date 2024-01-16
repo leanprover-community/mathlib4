@@ -67,6 +67,7 @@ add_decl_doc NonUnitalStarAlgHom.toNonUnitalAlgHom
 /-- `NonUnitalStarAlgHomClass F R A B` asserts `F` is a type of bundled non-unital ⋆-algebra
 homomorphisms from `A` to `B`. -/
 class NonUnitalStarAlgHomClass (F : Type*) (R A B : outParam Type*)
+  -- These instances are `outParam`s for efficiency.
   {_ : outParam <| Monoid R} [Star A] [Star B]
   {_ : outParam <| NonUnitalNonAssocSemiring A} {_ : outParam <| NonUnitalNonAssocSemiring B}
   [DistribMulAction R A] [DistribMulAction R B] [NDFunLike F A B] [NonUnitalAlgHomClass F R A B]

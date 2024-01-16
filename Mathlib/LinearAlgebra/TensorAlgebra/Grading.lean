@@ -61,7 +61,6 @@ instance gradedAlgebra :
       -- (the extra typeclass search seems to have pushed this already slow proof over the edge)
       rw [AlgHom.map_add, ihx, ihy, ← AddMonoidHom.map_add]
       rfl
-      -- rw [AlgHom.map_add, ihx, ihy, ← map_add]; rfl
     | hmul m hm i x hx ih =>
       obtain ⟨_, rfl⟩ := hm
       rw [AlgHom.map_mul, ih, lift_ι_apply, GradedAlgebra.ι_apply R M, DirectSum.of_mul_of]

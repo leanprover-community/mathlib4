@@ -222,13 +222,6 @@ instance : NDFunLike (α →o β) α β where
 instance : OrderHomClass (α →o β) α β where
   map_rel f _ _ h := f.monotone' h
 
-/-
--- Should be superceded by the direct NDFunLike instance
-/-- Helper instance for when there's too many metavariables to apply the coercion via `FunLike`
-directly. -/
-instance : CoeFun (α →o β) fun _ => α → β :=
-  ⟨FunLike.coe⟩
--/
 
 @[simp] theorem coe_mk (f : α → β) (hf : Monotone f) : ⇑(mk f hf) = f := rfl
 #align order_hom.coe_fun_mk OrderHom.coe_mk
