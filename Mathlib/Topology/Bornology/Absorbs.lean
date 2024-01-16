@@ -9,7 +9,7 @@ import Mathlib.Topology.Bornology.Constructions
 #align_import analysis.locally_convex.basic from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
-# Definitions of `Absorbs` and `Absorbent`
+# Absorption of sets
 
 Let `M` act on `α`, let `A` and `B` be sets in `α`.
 We say that `A` *absorbs* `B` if for sufficiently large `a : M`, we have `B ⊆ a • A`.
