@@ -106,7 +106,7 @@ theorem tsupport_smul_subset_left {M α} [TopologicalSpace X] [Zero M] [Zero α]
 theorem tsupport_smul_subset_right {M α} [TopologicalSpace X] [Zero M] [Zero α] [SMulWithZero M α]
     [SMulZeroClass (X → M) α]
     (f : X → M) (g : X → α) : (tsupport fun x => f x • g x) ⊆ tsupport g := by
-  apply closure_mono --<| (support_smul_subset_right f)
+  apply closure_mono --<| (support_smul_subset_right f g)
   have : (fun x ↦ f x • g x) = f • g := rfl
   rw [this]
   apply support_smul_subset_right f g
