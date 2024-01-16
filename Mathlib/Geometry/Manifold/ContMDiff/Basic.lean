@@ -383,7 +383,7 @@ theorem contMDiff_inclusion {n : ℕ∞} {U V : Opens M} (h : U ≤ V) :
   rintro ⟨x, hx : x ∈ U⟩
   apply (contDiffWithinAt_localInvariantProp I I n).liftProp_inclusion
   intro y
-  dsimp only [ContDiffWithinAtProp, comp.left_id, preimage_univ]
+  dsimp only [ContDiffWithinAtProp, id_comp, preimage_univ]
   rw [Set.univ_inter]
   exact contDiffWithinAt_id.congr I.rightInvOn (congr_arg I (I.left_inv y))
 #align cont_mdiff_inclusion contMDiff_inclusion
