@@ -304,7 +304,7 @@ lemma isSetSemiring (hC : IsSetRing C) : IsSetSemiring C where
 
 lemma biUnion_mem {ι : Type*} (hC : IsSetRing C) {s : ι → Set α}
     (S : Finset ι) (hs : ∀ n ∈ S, s n ∈ C) :
-    (⋃ i ∈ S, s i) ∈ C := by
+    ⋃ i ∈ S, s i ∈ C := by
   classical
   revert hs
   refine Finset.induction ?_ ?_ S
@@ -316,7 +316,7 @@ lemma biUnion_mem {ι : Type*} (hC : IsSetRing C) {s : ι → Set α}
 
 lemma biInter_mem {ι : Type*} (hC : IsSetRing C) {s : ι → Set α}
     (S : Finset ι) (hS : S.Nonempty) (hs : ∀ n ∈ S, s n ∈ C) :
-    (⋂ i ∈ S, s i) ∈ C := by
+    ⋂ i ∈ S, s i ∈ C := by
   classical
   revert hs
   refine hS.cons_induction ?_ ?_
