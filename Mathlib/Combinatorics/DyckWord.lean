@@ -11,7 +11,7 @@ import Mathlib.Data.List.Indexes
 
 ## Main definitions
 
-* `DyckPath`: a list of `Step`s, each of which may only be `U`p or `D`own.
+* `DyckPath`: a list of `U`p or `D`own `Step`s.
 * `IsBalanced`: the property defining Dyck words. Translating `U` and `D` to `(` and `)`,
   the resulting brackets are balanced.
 
@@ -20,7 +20,7 @@ import Mathlib.Data.List.Indexes
 * `treeEquiv`: equivalence between Dyck words and rooted binary trees.
 * `finiteTreeEquiv`: equivalence between Dyck words of length `2 * n` and rooted binary trees
   with `n` internal nodes.
-* `treesOfNodesEq_card_eq_catalan`: there are `catalan n` Dyck words of length `2 * n`.
+* `dyckPath_isBalanced_card_eq_catalan`: there are `catalan n` Dyck words of length `2 * n`.
 -/
 
 
@@ -193,14 +193,14 @@ theorem rightPart_length_lt : p.rightPart.length < p.length := by
 
 theorem rightPart_isBalanced : p.rightPart.IsBalanced := by
   have h1 := bal.1
+  rw [← p.take_append_drop (p.firstReturn + 1), count_append, count_append,
+    p.count_U_eq_count_D_of_firstReturn bal hl, add_right_inj] at h1
+  refine' ⟨h1, fun i ↦ _⟩
   have h2 := bal.2
   have ceq : (↑[U] ++ p.leftPart ++ ↑[D]).count U = (↑[U] ++ p.leftPart ++ ↑[D]).count D := by
     iterate 4 rw [count_append]
     simp only [(p.leftPart_isBalanced bal hl).1, count_singleton', ite_true, ite_false]
     omega
-  rw [p.eq_U_leftPart_D_rightPart bal hl, count_append _ _ p.rightPart,
-    count_append _ _ p.rightPart, ceq, add_right_inj] at h1
-  refine' ⟨h1, fun i ↦ _⟩
   rw [p.eq_U_leftPart_D_rightPart bal hl] at h2
   conv at h2 => intro i; rw [take_append_eq_append_take]
   replace h2 := h2 (i + (↑[U] ++ p.leftPart ++ ↑[D]).length)
