@@ -340,14 +340,25 @@ theorem smoothWithinAt_one [One M'] : SmoothWithinAt I I' (1 : M → M') s x :=
 
 end id
 
+/-- `f` is continuously differentiable if it is cont. differentiable at each `x ∈ tsupport f`. -/
 theorem contMDiff_of_support {f : M → F} (hf : ∀ x ∈ tsupport f, ContMDiffAt I 𝓘(𝕜, F) n f x) :
     ContMDiff I 𝓘(𝕜, F) n f := by
   intro x
   by_cases hx : x ∈ tsupport f
   · exact hf x hx
-  · refine' ContMDiffAt.congr_of_eventuallyEq _ (eventuallyEq_zero_nhds.2 hx)
-    exact contMDiffAt_const
+  · exact ContMDiffAt.congr_of_eventuallyEq contMDiffAt_const (eventuallyEq_zero_nhds.2 hx)
 #align cont_mdiff_of_support contMDiff_of_support
+
+theorem contMDiffWithinAt_of_not_mem {f : M → F} {x : M} (hx : x ∉ tsupport f) (n : ℕ∞)
+    (s : Set M) : ContMDiffWithinAt I 𝓘(𝕜, F) n f s x :=
+  contMDiffWithinAt_const.congr_of_eventuallyEq
+    (eventually_nhdsWithin_of_eventually_nhds <| not_mem_tsupport_iff_eventuallyEq.mp hx)
+    (image_eq_zero_of_nmem_tsupport hx)
+
+/-- `f` is continuously differentiable at each point outside of its `tsupport`. -/
+theorem contMDiffAt_of_not_mem {f : M → F} {x : M} (hx : x ∉ tsupport f) (n : ℕ∞) :
+    ContMDiffAt I 𝓘(𝕜, F) n f x :=
+  contMDiffWithinAt_of_not_mem hx n univ
 
 /-! ### The inclusion map from one open set to another is smooth -/
 

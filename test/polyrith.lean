@@ -37,14 +37,14 @@ A full test suite is provided at the bottom of the file.
 --     fail!"expected final output: {expected_out}\nbut produced: {out}"
 
 -- meta def format_string_list (input : list string) : format :=
--- "[" ++ (format.join $ (input.map (λ s, ("\"" : format) ++ format.of_string s ++ "\"")).intersperse ("," ++ format.line)) ++ "]"
+-- "[" ++ (format.join <| (input.map (λ s, ("\"" : format) ++ format.of_string s ++ "\"")).intersperse ("," ++ format.line)) ++ "]"
 
 -- setup_tactic_parser
 
 -- meta def tactic.interactive.test_polyrith (restr : parse (tk "only")?)
 --   (hyps : parse pexpr_list?)
 --   (sage_out : string) (expected_args : list string) (expected_out : string) : tactic unit := do
---   some sage_out ← return $ json.parse sage_out,
+--   some sage_out ← return <| json.parse sage_out,
 --   tactic.test_polyrith restr.is_some (hyps.get_or_else []) sage_out expected_args expected_out
 
 -- meta def tactic.interactive.test_sage_output (restr : parse (tk "only")?)
@@ -86,7 +86,7 @@ A full test suite is provided at the bottom of the file.
 --   let argstring := format_string_list args,
 --   let onl := if restr.is_some then "only " else "",
 --   let hyps := if hyps = [] then "" else to_string hyps,
---   let trf := format.nest 2 $ format!"test_polyrith {onl}{hyps} \n\"{sage_out}\"\n{argstring}\n\"{out}\"",
+--   let trf := format.nest 2 <| format!"test_polyrith {onl}{hyps} \n\"{sage_out}\"\n{argstring}\n\"{out}\"",
 --   trace!"Try this: {trf}"
 
 

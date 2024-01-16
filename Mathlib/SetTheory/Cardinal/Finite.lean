@@ -79,13 +79,13 @@ theorem card_congr (f : α ≃ β) : Nat.card α = Nat.card β :=
 
 lemma card_le_card_of_injective {α : Type u} {β : Type v} [Finite β] (f : α → β)
     (hf : Injective f) : Nat.card α ≤ Nat.card β := by
-  simpa using toNat_le_of_le_of_lt_aleph0 (by simp [lt_aleph0_of_finite]) $
-    mk_le_of_injective (α := ULift.{max u v} α) (β := ULift.{max u v} β) $ ULift.map_injective.2 hf
+  simpa using toNat_le_of_le_of_lt_aleph0 (by simp [lt_aleph0_of_finite]) <|
+    mk_le_of_injective (α := ULift.{max u v} α) (β := ULift.{max u v} β) <| ULift.map_injective.2 hf
 
 lemma card_le_card_of_surjective {α : Type u} {β : Type v} [Finite α] (f : α → β)
     (hf : Surjective f) : Nat.card β ≤ Nat.card α := by
-  simpa using toNat_le_of_le_of_lt_aleph0 (by simp [lt_aleph0_of_finite]) $ mk_le_of_surjective
-    (α := ULift.{max u v} α) (β := ULift.{max u v} β) $ ULift.map_surjective.2 hf
+  simpa using toNat_le_of_le_of_lt_aleph0 (by simp [lt_aleph0_of_finite]) <| mk_le_of_surjective
+    (α := ULift.{max u v} α) (β := ULift.{max u v} β) <| ULift.map_surjective.2 hf
 
 theorem card_eq_of_bijective (f : α → β) (hf : Function.Bijective f) : Nat.card α = Nat.card β :=
   card_congr (Equiv.ofBijective f hf)
@@ -116,7 +116,7 @@ lemma card_image_of_injOn (hf : s.InjOn f) : Nat.card (f '' s) = Nat.card s := b
     simp [Nat.card_eq_zero_of_infinite]
 
 lemma card_image_of_injective (hf : Injective f) (s : Set α) :
-    Nat.card (f '' s) = Nat.card s := card_image_of_injOn $ hf.injOn _
+    Nat.card (f '' s) = Nat.card s := card_image_of_injOn <| hf.injOn _
 
 lemma card_image_equiv (e : α ≃ β) : Nat.card (e '' s) = Nat.card s :=
     Nat.card_congr (e.image s).symm

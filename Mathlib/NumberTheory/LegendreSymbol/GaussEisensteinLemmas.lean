@@ -126,7 +126,7 @@ private theorem eisenstein_lemma_aux₁ (p : ℕ) [Fact p.Prime] [hp2 : Fact (p 
     _ = (∑ x in Ico 1 (p / 2).succ, ((a * x : ℕ) : ZMod p).val : ℕ) +
         (∑ x in Ico 1 (p / 2).succ, a * x / p : ℕ) := by
       simp only [val_nat_cast]
-      simp [sum_add_distrib, mul_sum.symm, Nat.cast_add, Nat.cast_mul, Nat.cast_sum, hp2]
+      simp [sum_add_distrib, ← mul_sum, Nat.cast_add, Nat.cast_mul, Nat.cast_sum, hp2]
     _ = _ :=
       congr_arg₂ (· + ·)
         (calc
@@ -148,7 +148,7 @@ theorem eisenstein_lemma_aux (p : ℕ) [Fact p.Prime] [Fact (p % 2 = 1)] {a : �
       ∑ x in Ico 1 (p / 2).succ, x * a / p [MOD 2] :=
   have ha2 : (a : ZMod 2) = (1 : ℕ) := (eq_iff_modEq_nat _).2 ha2
   (eq_iff_modEq_nat 2).1 <| sub_eq_zero.1 <| by
-    simpa [add_left_comm, sub_eq_add_neg, Finset.mul_sum.symm, mul_comm, ha2, Nat.cast_sum,
+    simpa [add_left_comm, sub_eq_add_neg, ← mul_sum, mul_comm, ha2, Nat.cast_sum,
       add_neg_eq_iff_eq_add.symm, neg_eq_self_mod_two, add_assoc] using
       Eq.symm (eisenstein_lemma_aux₁ p hap)
 #align zmod.eisenstein_lemma_aux ZMod.eisenstein_lemma_aux
