@@ -9,7 +9,7 @@ import Mathlib.Tactic.Basic
 /-!
 # Fiber
 
-This files define the type `Fib` of the fiber of a map at a given point as well as the type `Total` of the total space of a map.
+This files define the type `Fib` of the fiber of a map at a given point.
 -/
 
 
