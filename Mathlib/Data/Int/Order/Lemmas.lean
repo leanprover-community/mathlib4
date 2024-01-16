@@ -4,20 +4,19 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
 import Mathlib.Data.Int.Order.Basic
-import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Data.Nat.Pow
 
 #align_import data.int.order.lemmas from "leanprover-community/mathlib"@"fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e"
 
 /-!
 # Further lemmas about the integers
+
 The distinction between this file and `Data.Int.Order.Basic` is not particularly clear.
 They are separated by now to minimize the porting requirements for tactics during the transition to
-mathlib4. After `data.rat.order` has been ported, please feel free to reorganize these two files.
+mathlib4. Now that `Data.Rat.Order` has been ported, please feel free to reorganize these two files.
 -/
 
-
-open Nat
+open Function Nat
 
 namespace Int
 
@@ -50,6 +49,12 @@ theorem dvd_div_of_mul_dvd {a b c : ℤ} (h : a * b ∣ c) : b ∣ c / a := by
   refine' ⟨d, _⟩
   rw [mul_assoc, Int.mul_ediv_cancel_left _ ha]
 #align int.dvd_div_of_mul_dvd Int.dvd_div_of_mul_dvd
+
+lemma pow_right_injective (h : 1 < a.natAbs) : Injective ((a ^ ·) : ℕ → ℤ) := by
+  refine (?_ : Injective (natAbs ∘ (a ^ · : ℕ → ℤ))).of_comp
+  convert Nat.pow_right_injective h using 2
+  rw [Function.comp_apply, natAbs_pow]
+#align int.pow_right_injective Int.pow_right_injective
 
 /-! ### units -/
 
