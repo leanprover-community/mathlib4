@@ -129,7 +129,8 @@ def getPackageDirs : IO PackageDirs := do
     ("Std", LAKEPACKAGESDIR / "std"),
     ("Cli", LAKEPACKAGESDIR / "Cli"),
     ("ProofWidgets", LAKEPACKAGESDIR / "proofwidgets"),
-    ("Qq", LAKEPACKAGESDIR / "Qq")
+    ("Qq", LAKEPACKAGESDIR / "Qq"),
+    ("ImportGraph", LAKEPACKAGESDIR / "importGraph")
   ]
 
 initialize pkgDirs : PackageDirs ← getPackageDirs

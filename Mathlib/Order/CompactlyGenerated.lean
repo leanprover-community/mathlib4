@@ -189,7 +189,7 @@ theorem isCompactElement_finsetSup {α β : Type*} [CompleteLattice α] {f : β 
   classical
     rw [isCompactElement_iff_le_of_directed_sSup_le]
     intro d hemp hdir hsup
-    rw [← Function.comp.left_id f]
+    rw [← Function.id_comp f]
     rw [← Finset.sup_image]
     apply Finset.sup_le_of_le_directed d hemp hdir
     rintro x hx

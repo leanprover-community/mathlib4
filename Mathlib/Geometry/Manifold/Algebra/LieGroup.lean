@@ -52,9 +52,6 @@ so the definition does not apply. Hence the definition should be more general, a
 `I : ModelWithCorners 𝕜 E H`.
 -/
 
-set_option autoImplicit true
-
-
 noncomputable section
 
 open scoped Manifold
@@ -296,7 +293,7 @@ theorem hasContinuousInv₀_of_hasSmoothInv₀ : HasContinuousInv₀ G :=
 theorem SmoothOn_inv₀ : SmoothOn I I (Inv.inv : G → G) {0}ᶜ := fun _x hx =>
   (smoothAt_inv₀ I hx).smoothWithinAt
 
-variable {I}
+variable {I} {s : Set M} {a : M}
 
 theorem ContMDiffWithinAt.inv₀ (hf : ContMDiffWithinAt I' I n f s a) (ha : f a ≠ 0) :
     ContMDiffWithinAt I' I n (fun x => (f x)⁻¹) s a :=
@@ -343,7 +340,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalS
   [TopologicalSpace G] [ChartedSpace H G] [GroupWithZero G] [SmoothInv₀ I G] [SmoothMul I G]
   {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
   {I' : ModelWithCorners 𝕜 E' H'} {M : Type*} [TopologicalSpace M] [ChartedSpace H' M]
-  {f g : M → G}
+  {f g : M → G} {s : Set M} {a : M} {n : ℕ∞}
 
 theorem ContMDiffWithinAt.div₀
     (hf : ContMDiffWithinAt I' I n f s a) (hg : ContMDiffWithinAt I' I n g s a) (h₀ : g a ≠ 0) :
