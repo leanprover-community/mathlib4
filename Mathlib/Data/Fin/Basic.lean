@@ -1179,7 +1179,6 @@ theorem pred_le_iff {i : Fin (n + 1)} (hi : i ≠ 0) : pred i hi ≤ j ↔ i ≤
 theorem le_pred_iff {i : Fin (n + 1)} (hi : i ≠ 0) : j ≤ pred i hi ↔ succ j ≤ i := by
   rw [← succ_le_succ_iff, succ_pred]
 
-/- Move this somewhere. Not original. -/
 theorem castSucc_pred_eq_pred_castSucc {a : Fin (n + 1)} (ha : a ≠ 0)
     (ha' := a.castSucc_ne_zero_iff.mpr ha) :
     castSucc (a.pred ha) = (castSucc a).pred ha' := rfl
@@ -1189,9 +1188,8 @@ end Pred
 
 section CastPred
 
-/-- TODO -/
-
-@[inline] def castPred (i : Fin (n + 1)) (h : i ≠ last _) : Fin n := ⟨i, val_lt_last h⟩
+/-- `castPred i` sends `i : Fin (n + 1)` to `Fin n` as long as i ≠ last n. -/
+@[inline] def castPred (i : Fin (n + 1)) (h : i ≠ last n) : Fin n := castLT i (val_lt_last h)
 #align fin.cast_pred Fin.castPred
 
 @[simp]
@@ -2697,6 +2695,7 @@ lemma predAbove_comp {i j : Fin n} (h : i ≤ j) :
   funext (fun _ => predAbove_predAbove_castSucc_eq_predAbove_predAbove_succ h)
 
 @[simp]
+<<<<<<< HEAD
 theorem succAbove_succAbove_predAbove_succAbove {p : Fin n} {j : Fin (n + 1)} :
     succAbove (succAbove j p) (predAbove p (succAbove j p)) = succAbove (succAbove j p) p := by
   rcases castSucc_lt_or_lt_succ p j with (h | h)
@@ -2777,6 +2776,25 @@ theorem predAbove_of_succAbove_castSucc (p : Fin n) (i : Fin n) :
 theorem predAbove_of_succAbove_succ (p : Fin n) (i : Fin n) :
     p.predAbove (p.succ.succAbove i) = i := by
   rw [← succAbove_castSucc_self, predAbove_succAbove_succAbove]
+=======
+theorem succ_predAbove_succ {n : ℕ} (a : Fin n) (b : Fin (n + 1)) :
+    a.succ.predAbove b.succ = (a.predAbove b).succ := by
+  obtain h₁ | h₂ := lt_or_le (castSucc a) b
+  · rw [Fin.predAbove_above _ _ h₁, Fin.succ_pred, Fin.predAbove_above, Fin.pred_succ]
+    simpa only [lt_iff_val_lt_val, coe_castSucc, val_succ, add_lt_add_iff_right] using
+      h₁
+  · cases' n with n
+    · exfalso
+      exact not_lt_zero' a.is_lt
+    · rw [Fin.predAbove_below a b h₂,
+        Fin.predAbove_below a.succ b.succ
+          (by
+            simpa only [le_iff_val_le_val, val_succ, coe_castSucc, add_le_add_iff_right]
+              using h₂)]
+      ext
+      simp only [val_last, coe_castLT, val_succ]
+#align fin.succ_pred_above_succ Fin.succ_predAbove_succ
+>>>>>>> Redefinition of castPred
 
 end PredAbove
 
