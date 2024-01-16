@@ -289,8 +289,8 @@ the properties of a cdf for all `a : α`. We finally extend to `ℝ`. -/
 satisfies the properties of a cdf (monotone with limit 0 at -∞ and 1 at +∞, right-continuous).
 
 We define this function on `ℚ` and not `ℝ` because `ℚ` is countable, which allows us to prove
-properties of the form `∀ᵐ a ∂ρ.fst, ∀ q, P (pre_cdf q a)`, instead of the weaker
-`∀ q, ∀ᵐ a ∂ρ.fst, P (pre_cdf q a)`. -/
+properties of the form `∀ᵐ a ∂ρ.fst, ∀ q, P (preCDF q a)`, instead of the weaker
+`∀ q, ∀ᵐ a ∂ρ.fst, P (preCDF q a)`. -/
 noncomputable def preCDF (ρ : Measure (α × ℝ)) (r : ℚ) : α → ℝ≥0∞ :=
   Measure.rnDeriv (ρ.IicSnd r) ρ.fst
 #align probability_theory.pre_cdf ProbabilityTheory.preCDF
@@ -873,8 +873,8 @@ theorem set_lintegral_condCDF_rat (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ
 
 theorem set_lintegral_condCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (x : ℝ) {s : Set α}
     (hs : MeasurableSet s) : ∫⁻ a in s, ENNReal.ofReal (condCDF ρ a x) ∂ρ.fst = ρ (s ×ˢ Iic x) := by
-  -- We have the result for `x : ℚ` thanks to `set_lintegral_cond_cdf_rat`. We use the equality
-  -- `cond_cdf ρ a x = ⨅ r : {r' : ℚ // x < r'}, cond_cdf ρ a r` and a monotone convergence
+  -- We have the result for `x : ℚ` thanks to `set_lintegral_condCDF_rat`. We use the equality
+  -- `condCDF ρ a x = ⨅ r : {r' : ℚ // x < r'}, condCDF ρ a r` and a monotone convergence
   -- argument to extend it to the reals.
   by_cases hρ_zero : ρ.fst.restrict s = 0
   · rw [hρ_zero, lintegral_zero_measure]
