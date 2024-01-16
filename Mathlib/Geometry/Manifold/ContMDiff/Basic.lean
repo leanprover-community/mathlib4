@@ -20,7 +20,7 @@ embedding `e : M → H`, then `e` is smooth.
 chain rule, manifolds, higher derivative
 
 -/
-open Set Function Filter ChartedSpace SmoothManifoldWithCorners
+open Set Filter Function
 
 open scoped Topology Manifold
 
@@ -39,21 +39,6 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E'' : Type*}
   [NormedAddCommGroup E''] [NormedSpace 𝕜 E''] {H'' : Type*} [TopologicalSpace H'']
   {I'' : ModelWithCorners 𝕜 E'' H''} {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H'' M'']
-  -- declare a smooth manifold `N` over the pair `(F, G)`.
-  {F : Type*}
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type*} [TopologicalSpace G]
-  {J : ModelWithCorners 𝕜 F G} {N : Type*} [TopologicalSpace N] [ChartedSpace G N]
-  [SmoothManifoldWithCorners J N]
-  -- declare a smooth manifold `N'` over the pair `(F', G')`.
-  {F' : Type*}
-  [NormedAddCommGroup F'] [NormedSpace 𝕜 F'] {G' : Type*} [TopologicalSpace G']
-  {J' : ModelWithCorners 𝕜 F' G'} {N' : Type*} [TopologicalSpace N'] [ChartedSpace G' N']
-  [SmoothManifoldWithCorners J' N']
-  -- F₁, F₂, F₃, F₄ are normed spaces
-  {F₁ : Type*}
-  [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] {F₂ : Type*} [NormedAddCommGroup F₂]
-  [NormedSpace 𝕜 F₂] {F₃ : Type*} [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃] {F₄ : Type*}
-  [NormedAddCommGroup F₄] [NormedSpace 𝕜 F₄]
   -- declare functions, sets, points and smoothness indices
   {e : PartialHomeomorph M H}
   {e' : PartialHomeomorph M' H'} {f f₁ : M → M'} {s s₁ t : Set M} {x : M} {m n : ℕ∞}
@@ -340,25 +325,35 @@ theorem smoothWithinAt_one [One M'] : SmoothWithinAt I I' (1 : M → M') s x :=
 
 end id
 
-/-- `f` is continuously differentiable if it is cont. differentiable at each `x ∈ tsupport f`. -/
-theorem contMDiff_of_support {f : M → F} (hf : ∀ x ∈ tsupport f, ContMDiffAt I 𝓘(𝕜, F) n f x) :
-    ContMDiff I 𝓘(𝕜, F) n f := by
+/-- `f` is continuously differentiable if it is cont. differentiable at
+each `x ∈ mulTSupport f`. -/
+@[to_additive "`f` is continuously differentiable if it is continuously
+differentiable at each `x ∈ tsupport f`."]
+theorem contMDiff_of_mulTSupport [One M'] {f : M → M'}
+    (hf : ∀ x ∈ mulTSupport f, ContMDiffAt I I' n f x) : ContMDiff I I' n f := by
   intro x
-  by_cases hx : x ∈ tsupport f
+  by_cases hx : x ∈ mulTSupport f
   · exact hf x hx
-  · exact ContMDiffAt.congr_of_eventuallyEq contMDiffAt_const (eventuallyEq_zero_nhds.2 hx)
-#align cont_mdiff_of_support contMDiff_of_support
+  · exact ContMDiffAt.congr_of_eventuallyEq contMDiffAt_const
+      (not_mem_mulTSupport_iff_eventuallyEq.1 hx)
+#align cont_mdiff_of_support contMDiff_of_tsupport
 
-theorem contMDiffWithinAt_of_not_mem {f : M → F} {x : M} (hx : x ∉ tsupport f) (n : ℕ∞)
-    (s : Set M) : ContMDiffWithinAt I 𝓘(𝕜, F) n f s x :=
-  contMDiffWithinAt_const.congr_of_eventuallyEq
-    (eventually_nhdsWithin_of_eventually_nhds <| not_mem_tsupport_iff_eventuallyEq.mp hx)
-    (image_eq_zero_of_nmem_tsupport hx)
+-- deprecated since 15 January 2024
+@[deprecated] alias contMDiff_of_support := contMDiff_of_tsupport
 
-/-- `f` is continuously differentiable at each point outside of its `tsupport`. -/
-theorem contMDiffAt_of_not_mem {f : M → F} {x : M} (hx : x ∉ tsupport f) (n : ℕ∞) :
-    ContMDiffAt I 𝓘(𝕜, F) n f x :=
-  contMDiffWithinAt_of_not_mem hx n univ
+@[to_additive contMDiffWithinAt_of_not_mem]
+theorem contMDiffWithinAt_of_not_mem_mulTSupport {f : M → M'} [One M'] {x : M}
+    (hx : x ∉ mulTSupport f) (n : ℕ∞) (s : Set M) : ContMDiffWithinAt I I' n f s x := by
+  apply contMDiffWithinAt_const.congr_of_eventuallyEq
+    (eventually_nhdsWithin_of_eventually_nhds <| not_mem_mulTSupport_iff_eventuallyEq.mp hx)
+    (image_eq_one_of_nmem_mulTSupport hx)
+
+/-- `f` is continuously differentiable at each point outside of its `mulTSupport`. -/
+@[to_additive contMDiffAt_of_not_mem]
+theorem contMDiffAt_of_not_mem_mulTSupport {f : M → M'} [One M'] {x : M}
+    (hx : x ∉ mulTSupport f) (n : ℕ∞) : ContMDiffAt I I' n f x :=
+  contMDiffWithinAt_of_not_mem_mulTSupport hx n univ
+
 
 /-! ### The inclusion map from one open set to another is smooth -/
 
@@ -377,23 +372,20 @@ theorem contMDiff_subtype_val {n : ℕ∞} {U : Opens M} : ContMDiff I I n (Subt
 theorem ContMDiff.extend_one [T2Space M] [One M'] {n : ℕ∞} {U : Opens M} {f : U → M'}
     (supp : HasCompactMulSupport f) (diff : ContMDiff I I' n f) :
     ContMDiff I I' n (Subtype.val.extend f 1) := fun x ↦ by
-  by_cases h : x ∈ mulTSupport (Subtype.val.extend f 1)
-  · rw [show x = ↑(⟨x, Subtype.coe_image_subset _ _
-      (supp.mulTSupport_extend_one_subset continuous_subtype_val h)⟩ : U) by rfl,
-      ← contMdiffAt_subtype_iff, ← comp_def, extend_comp Subtype.val_injective]
-    exact diff.contMDiffAt
-  · exact contMDiffAt_const.congr_of_eventuallyEq (not_mem_mulTSupport_iff_eventuallyEq.mp h)
+  refine contMDiff_of_mulTSupport (fun x h ↦ ?_) _
+  lift x to U using Subtype.coe_image_subset _ _
+    (supp.mulTSupport_extend_one_subset continuous_subtype_val h)
+  rw [← contMdiffAt_subtype_iff, ← comp_def, extend_comp Subtype.val_injective]
+  exact diff.contMDiffAt
 
 theorem contMDiff_inclusion {n : ℕ∞} {U V : Opens M} (h : U ≤ V) :
     ContMDiff I I n (Set.inclusion h : U → V) := by
   rintro ⟨x, hx : x ∈ U⟩
   apply (contDiffWithinAt_localInvariantProp I I n).liftProp_inclusion
   intro y
-  dsimp [ContDiffWithinAtProp]
+  dsimp only [ContDiffWithinAtProp, id_comp, preimage_univ]
   rw [Set.univ_inter]
-  refine' contDiffWithinAt_id.congr _ _
-  · exact I.rightInvOn
-  · exact congr_arg I (I.left_inv y)
+  exact contDiffWithinAt_id.congr I.rightInvOn (congr_arg I (I.left_inv y))
 #align cont_mdiff_inclusion contMDiff_inclusion
 
 theorem smooth_subtype_iff {U : Opens M} {f : M → M'} {x : U} :
@@ -403,8 +395,8 @@ theorem smooth_subtype_val {U : Opens M} : Smooth I I (Subtype.val : U → M) :=
 
 @[to_additive]
 theorem Smooth.extend_one [T2Space M] [One M'] {U : Opens M} {f : U → M'}
-    (supp : HasCompactMulSupport f) (diff : Smooth I I' f) :
-    Smooth I I' (Subtype.val.extend f 1) := ContMDiff.extend_one supp diff
+    (supp : HasCompactMulSupport f) (diff : Smooth I I' f) : Smooth I I' (Subtype.val.extend f 1) :=
+  ContMDiff.extend_one supp diff
 
 theorem smooth_inclusion {U V : Opens M} (h : U ≤ V) : Smooth I I (Set.inclusion h : U → V) :=
   contMDiff_inclusion h

@@ -185,7 +185,7 @@ theorem sum_nonneg (x : M) : 0 ≤ ∑ᶠ i, f i x :=
 
 theorem contMDiff_smul {g : M → F} {i} (hg : ∀ x ∈ tsupport (f i), ContMDiffAt I 𝓘(ℝ, F) n g x) :
     ContMDiff I 𝓘(ℝ, F) n fun x => f i x • g x :=
-  contMDiff_of_support fun x hx =>
+  contMDiff_of_tsupport fun x hx =>
     ((f i).contMDiff.contMDiffAt.of_le le_top).smul <| hg x <| tsupport_smul_subset_left _ _ hx
 #align smooth_partition_of_unity.cont_mdiff_smul SmoothPartitionOfUnity.contMDiff_smul
 
