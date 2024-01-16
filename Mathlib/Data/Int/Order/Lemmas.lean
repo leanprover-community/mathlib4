@@ -50,9 +50,8 @@ theorem dvd_div_of_mul_dvd {a b c : ℤ} (h : a * b ∣ c) : b ∣ c / a := by
   rw [mul_assoc, Int.mul_ediv_cancel_left _ ha]
 #align int.dvd_div_of_mul_dvd Int.dvd_div_of_mul_dvd
 
-lemma pow_right_injective {x : ℤ} (h : 1 < x.natAbs) : Injective ((x ^ ·) : ℕ → ℤ) := by
-  suffices Function.Injective (natAbs ∘ (x ^ · : ℕ → ℤ)) by
-    exact Function.Injective.of_comp this
+lemma pow_right_injective (h : 1 < a.natAbs) : Injective ((a ^ ·) : ℕ → ℤ) := by
+  refine (?_ : Injective (natAbs ∘ (a ^ · : ℕ → ℤ))).of_comp
   convert Nat.pow_right_injective h using 2
   rw [Function.comp_apply, natAbs_pow]
 #align int.pow_right_injective Int.pow_right_injective

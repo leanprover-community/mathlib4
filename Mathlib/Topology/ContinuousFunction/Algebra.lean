@@ -177,22 +177,22 @@ attribute [simp] pow_comp
 /-! ### `inv` and `neg` -/
 
 @[to_additive]
-instance [Group β] [TopologicalGroup β] : Inv C(α, β) where inv f := ⟨f⁻¹, f.continuous.inv⟩
+instance [Inv β] [ContinuousInv β] : Inv C(α, β) where inv f := ⟨f⁻¹, f.continuous.inv⟩
 
 @[to_additive (attr := simp)]
-theorem coe_inv [Group β] [TopologicalGroup β] (f : C(α, β)) : ⇑f⁻¹ = (⇑f)⁻¹ :=
+theorem coe_inv [Inv β] [ContinuousInv β] (f : C(α, β)) : ⇑f⁻¹ = (⇑f)⁻¹ :=
   rfl
 #align continuous_map.coe_inv ContinuousMap.coe_inv
 #align continuous_map.coe_neg ContinuousMap.coe_neg
 
 @[to_additive (attr := simp)]
-theorem inv_apply [Group β] [TopologicalGroup β] (f : C(α, β)) (x : α) : f⁻¹ x = (f x)⁻¹ :=
+theorem inv_apply [Inv β] [ContinuousInv β] (f : C(α, β)) (x : α) : f⁻¹ x = (f x)⁻¹ :=
   rfl
 #align continuous_map.inv_apply ContinuousMap.inv_apply
 #align continuous_map.neg_apply ContinuousMap.neg_apply
 
 @[to_additive (attr := simp)]
-theorem inv_comp [Group γ] [TopologicalGroup γ] (f : C(β, γ)) (g : C(α, β)) :
+theorem inv_comp [Inv γ] [ContinuousInv γ] (f : C(β, γ)) (g : C(α, β)) :
     f⁻¹.comp g = (f.comp g)⁻¹ :=
   rfl
 #align continuous_map.inv_comp ContinuousMap.inv_comp
