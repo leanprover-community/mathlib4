@@ -37,6 +37,14 @@ lemma cyclotomicCharacter_spec (n : ℕ+) [IsSepClosure k K] [NeZero (n : K)]
 
 lemma cyclotomicCharacter_unique (n : ℕ+) [IsSepClosure k K] [NeZero (n : K)]
     (χ : (K ≃ₐ[k] K) →* (ZMod n)ˣ)
-    (hχ : ∀ (σ : (K ≃ₐ[k] K)) (ξ : Kˣ)
-    (hξ : ξ ∈ rootsOfUnity n K), ξ ^ (χ σ : ZMod n).val = σ ξ) :
-    χ = cyclotomicCharacter k K n := sorry
+    (hχ : ∀ (ξ : Kˣ) (_ : ξ ∈ rootsOfUnity n K) (σ : (K ≃ₐ[k] K)),
+      ξ ^ (χ σ : ZMod n).val = σ ξ) :
+    χ = cyclotomicCharacter k K n := by
+  letI : IsSepClosed K := IsSepClosure.sep_closed k
+  let hζ := exists_isPrimitiveRoot_of_isSepClosed K n |>.choose_spec
+  let ζ' : Kˣ := hζ.toRootsOfUnity.val
+  have hζ' : IsPrimitiveRoot ζ' n := IsPrimitiveRoot.coe_units_iff.mp hζ
+  apply IsPrimitiveRoot.autToPow_unique
+  intro σ
+  apply hχ ζ'
+  exact IsPrimitiveRoot.mem_rootsOfUnity hζ'

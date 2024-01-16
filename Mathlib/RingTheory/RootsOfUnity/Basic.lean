@@ -1065,6 +1065,12 @@ theorem autToPow_spec (f : S ≃ₐ[R] S) : μ ^ (hμ.autToPow R f : ZMod n).val
   exact Nat.mod_modEq _ _
 #align is_primitive_root.aut_to_pow_spec IsPrimitiveRoot.autToPow_spec
 
+theorem autToPow_unique
+    (χ : (S ≃ₐ[R] S) →* (ZMod n)ˣ)
+    (hχ : ∀ σ : S ≃ₐ[R] S, μ^(χ σ : ZMod n).val = σ μ) :
+    χ = hμ.autToPow R :=
+  sorry
+
 end Automorphisms
 
 end IsPrimitiveRoot
