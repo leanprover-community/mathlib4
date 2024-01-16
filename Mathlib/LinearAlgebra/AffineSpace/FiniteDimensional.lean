@@ -254,7 +254,7 @@ open Finset in
 another finset, then its cardinality is strictly less than the cardinality of that finset. -/
 lemma AffineIndependent.card_lt_card_of_affineSpan_lt_affineSpan {s t : Finset V}
     (hs : AffineIndependent k ((↑) : s → V))
-   (hst : affineSpan k (s : Set V) < affineSpan k (t : Set V)) : s.card < t.card := by
+    (hst : affineSpan k (s : Set V) < affineSpan k (t : Set V)) : s.card < t.card := by
   obtain rfl | hs' := s.eq_empty_or_nonempty
   · simpa [card_pos] using hst
   obtain rfl | ht' := t.eq_empty_or_nonempty
