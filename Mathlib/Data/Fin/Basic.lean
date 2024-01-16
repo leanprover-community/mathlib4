@@ -1251,7 +1251,7 @@ theorem rev_castPred (h : i ≠ last n) (h' := rev_ne_iff.mpr ((rev_zero _).symm
 
 theorem succ_castPred_eq_castPred_succ {a : Fin (n + 1)} (ha : a ≠ last n)
     (ha' := a.succ_ne_last_iff.mpr ha) :
-    succ (a.castPred ha) = (succ a).castPred (ha') := rfl
+    succ (a.castPred ha) = (succ a).castPred ha' := rfl
 
 theorem le_castPred_succ_iff {a b : Fin (n + 1)} (ha : succ a ≠ last (n + 1)) :
     (succ a).castPred ha ≤ b ↔ a < b := by
