@@ -1,6 +1,5 @@
--- Lean4 version
 /-
-Copyright (c) 2022 Sophie Morel· All rights reserved.
+Copyright (c) 2024 Sophie Morel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sophie Morel
 
@@ -16,33 +15,34 @@ import Mathlib.Data.Nat.PartENat
 /-!
 # Abstract Simplicial Complex
 
-In this file, we define abstract simplicial complexes over a type `α`· An abstract simplicial
+In this file, we define abstract simplicial complexes over a type `α`. An abstract simplicial
 complex is collection of nonempty finsets of α (called "faces") which is closed under inclusion.
 
-We do not require all elements of α to be vertices, because it is convenient in examples to be
-able to define an abstract simplicial complex on a bigger set· With out definition of a
-morphism of simplicial complexes, every abstract simplicial complex K on a type α is isomorphic
-to an abstract simplicial complex on the type of vertices of K.
+We do not require all elements of `α` to be vertices, because it is convenient in examples to be
+able to define an abstract simplicial complex on a bigger type. With our definition of a
+morphism of simplicial complexes, every abstract simplicial complex `K` on a type `α` is isomorphic
+to an abstract simplicial complex on the type of vertices of `K`.
 
 ## Simplicial maps
 
-We chose to model a simplicial map from K to L as a pair of maps: "vertex_map" from the vertices
-of K to vertices of L, and "face_map" from faces of K to faces of K· These maps must satisfy two
-obvious compatibility conditions· Of course the map on vertices determines the map of faces, but
-this made the manipulation of the category of simplicial complexes simpler.
+We chose to model a simplicial map from `K` to `L` as a pair of maps: `vertex_map` from the
+vertices of `K` to the vertices of `L`, and `face_map` from the faces of `K` to the faces of `L`.
+These maps must satisfy two obvious compatibility conditions. Of course the map on vertices
+determines the map of faces, but this made the manipulation of the category of simplicial
+complexes simpler.
 
-We also do not require vertex_map to be defined at elements of α (if K is a simplicial complex on α)
-that are not vertices· This avoids a localization step when we define the category of simplicial
-complexes (i.e· we do not need to identify two simplicial maps that agree on vertices), and it
-also avoids trouble when defining maps between empty simplicial complexes.P
+We also do not require vertex_map to be defined at elements of `α` (if `K` is a simplicial complex
+on `α`) that are not vertices. This avoids a localization step when we define the category of
+simplicial complexes (i.e. we do not need to identify two simplicial maps that agree on vertices),
+and it also avoids trouble when defining maps between empty simplicial complexes.
 
 ## Main definitions
 
 * `AbstractSimplicialComplex α`: An abstract simplicial complex with vertices in `α`.
 * `AbstractSimplicialComplex.vertices`: The zero dimensional faces of a simplicial complex.
 * `AbstractSimplicialComplex.facets`: The maximal faces of a simplicial complex.
-* `SimplicialMap K L`: Simplicial maps from a simplicial complex `K` to another
-  simplicial complex `L`.
+* `SimplicialMap K L`: Simplicial maps from a simplicial complex `K` to another simplicial
+complex `L`.
 
 ## Notation
 
@@ -61,7 +61,9 @@ open Finset
 
 universe u v w
 
-variable (α : Type u)
+variable {α : Type u} {β : Type v} {γ : Type w}
+
+variable (α)
 
 /-- Definition of an abstract simplicial complex.-/
 @[ext]
@@ -70,9 +72,9 @@ structure AbstractSimplicialComplex :=
   (nonempty_of_mem : ∀ {s : Finset α}, s ∈ faces → s.Nonempty)
   (down_closed : ∀ {s t : Finset α}, s ∈ faces → t ⊆ s → t.Nonempty → t ∈ faces)
 
-namespace AbstractSimplicialComplex
-
 variable {α}
+
+namespace AbstractSimplicialComplex
 
 instance : Membership (Finset α) (AbstractSimplicialComplex α) := ⟨fun s K => s ∈ K.faces⟩
 
@@ -416,121 +418,95 @@ def link [DecidableEq α] (s : Finset α) : AbstractSimplicialComplex α :=
 
 end AbstractSimplicialComplex
 
+/-! Simpliciap maps.-/
+
 open AbstractSimplicialComplex
 
-/- We allowed simplicial complexes on a set bigger than the set of vertices because it was convenient· To define simplicial maps, we restrict
-ourselves to the set of vertices (so the forgetful functor from simplicial complexes to sets will send K to K.vertices)· This spares us a
-localization when defining the catgeory of abstract simplicial complexes.-/
+variable {K : AbstractSimplicialComplex α} {L : AbstractSimplicialComplex β}
+  {M : AbstractSimplicialComplex γ}
 
-/- A simplicial map from K to L is a pair of maps (vertex_map: K.vertices → L.vertices, face_map : K.faces → L.faces),
-with the obvious compatibility conditions.
--/
+variable (K L)
+
+/-- A simplicial map from `K` to `L` is a pair of maps, `vertex_map : K.vertices → L.vertices` and
+`face_map : K.faces → L.faces`, with the obvious compatibility conditions.-/
 @[ext]
-structure SimplicialMap {α : Type u} {β : Type v} (K : AbstractSimplicialComplex α) (L : AbstractSimplicialComplex β) :=
-(vertex_map : K.vertices → L.vertices)
-(face_map : K.faces → L.faces)
-(compatibility_vertex_face : ∀ (a : K.vertices), face_map ⟨{a.1}, a.2⟩ = ⟨{(vertex_map a).1}, (vertex_map a).2⟩)
-(compatibility_face_vertex : ∀ (s : K.faces) (b : β), b ∈ (face_map s).1 ↔ (∃ (a : α) (has : a ∈ s.1),
-  (vertex_map ⟨a, face_subset_vertices K s has⟩).1 = b))
+structure SimplicialMap :=
+  (vertex_map : K.vertices → L.vertices)
+  (face_map : K.faces → L.faces)
+  (vertex_face : ∀ (a : K.vertices),
+    face_map ⟨{a.1}, a.2⟩ = ⟨{(vertex_map a).1}, (vertex_map a).2⟩)
+  (face_vertex : ∀ (s : K.faces) (b : β),
+    b ∈ (face_map s).1 ↔ (∃ (a : α) (has : a ∈ s.1),
+    (vertex_map ⟨a, face_subset_vertices K s has⟩).1 = b))
 
+notation:100 K:100 " →ₛ " L:100 => SimplicialMap K L
 
-
-
-notation:100 K:100 " →ₛ " L:100 => SimplicialMap K L  --not sure how to choose the parsing precedence
+variable {K L}
 
 namespace SimplicialMap
 
-variable {α : Type u} {β : Type v} {γ : Type w}
-variable {K : AbstractSimplicialComplex α} {L : AbstractSimplicialComplex β} {M : AbstractSimplicialComplex γ}
-
-/- Two simplicial maps with the same vertex_map are equal.-/
+/-- Two simplicial maps with the same `vertex_map` (i.e. that are equal on vertices) are equal.-/
 @[simp]
-lemma ext_vertex  (f g : SimplicialMap K L) :
-f.vertex_map = g.vertex_map → f = g := by
-  intro heq
-  ext s a
-  · rw [heq]
-  · rw [f.compatibility_face_vertex, g.compatibility_face_vertex, heq]
+lemma ext_vertex  (f g : SimplicialMap K L) : f.vertex_map = g.vertex_map → f = g :=
+  fun heq ↦ SimplicialMap.ext _ _ heq (by ext s a; rw [f.face_vertex, g.face_vertex, heq])
 
-/- If f is a map from α to β such that, for every face s of K, f(s) is a face of L, then f defines a simplicial map
-from K to L.-/
-noncomputable def SimplicialMapofMap (f : α → β) (hf : ∀ (s : Finset α), s ∈ K.faces → Finset.image f s ∈ L.faces) :
-K →ₛ L
+/-- If `f` is a map from `α` to `β` such that, for every face `s` of `K`, `f s` is a face of `L`,
+then `f` defines a simplicial map from `K` to `L`.-/
+noncomputable def ofMap [DecidableEq β] {f : α → β}
+    (hf : ∀ (s : Finset α), s ∈ K.faces → Finset.image f s ∈ L.faces) : K →ₛ L
     where
-  vertex_map := by
-    intro ⟨a, hav⟩
-    refine ⟨f a, ?_⟩
-    rw [mem_vertices] at hav ⊢
-    exact hf {a} hav
-  face_map := fun s => ⟨Finset.image f s, hf s.1 s.2⟩
-  compatibility_vertex_face := fun _ => by simp only [Finset.image_singleton]
-  compatibility_face_vertex := fun _ _ => by simp only [Finset.mem_image, exists_prop]
+  vertex_map a := ⟨f a.1, hf {a.1} ((K.mem_vertices _).mp a.2)⟩
+  face_map s := ⟨Finset.image f s, hf s.1 s.2⟩
+  vertex_face _ := by simp only [Finset.image_singleton]
+  face_vertex _ _ := by simp only [Finset.mem_image, exists_prop]
 
-/- Calculation of the vertex_map of the simplicial map in the previous definition: it is the restriction of f.-/
-lemma SimplicialMapofMap.vertex_map (f : α → β) (hf : ∀ (s : Finset α), s ∈ K.faces → Finset.image f s ∈ L.faces) (a : K.vertices) :
-((SimplicialMapofMap f hf).vertex_map a).1 = f a.1 := by
-  unfold SimplicialMapofMap
+/-- If `f` is a map from `α` to `β` such that, for every face `s` of `K`, `f s` is a face of `L`,
+then the `vertex_map` of the simplicial map defined by `f` (cf. `SimplicialMap.ofMap`) is the
+restriction of `f` to the set of vertices of `K`.-/
+lemma ofMap_vertex_map [DecidableEq β] {f : α → β}
+    (hf : ∀ (s : Finset α), s ∈ K.faces → Finset.image f s ∈ L.faces) (a : K.vertices) :
+    ((ofMap hf).vertex_map a).1 = f a.1 := by
+  unfold ofMap
   simp only
 
+/-- If `f` is any map from a type `α` to a type `β`, it defines a simplicial map between the
+maximal abstract simplicial complexes on `α` and `β`.-/
+noncomputable def mapTop [DecidableEq β] (f : α → β) :
+    SimplicialMap (⊤ : AbstractSimplicialComplex α) (⊤ : AbstractSimplicialComplex β) where
+  vertex_map a := ⟨f a.1, by simp only [vertices_top, Set.top_eq_univ, Set.mem_univ]⟩
+  face_map s := ⟨Finset.image f s.1, (faces_top _).mp ((image_nonempty (f := f)).mpr
+                 ((faces_top _).mpr s.2))⟩
+  vertex_face _ := by simp only [Finset.image_singleton]
+  face_vertex _ := by simp only [mem_image, exists_prop, implies_true]
 
-/- If f is any map from a type α to a type β, it defines a simplicial map between the corresponding infinite simplices.-/
-
-noncomputable def MapSimplex (f : α → β) : SimplicialMap (Simplex α) (Simplex β) :=
-{
-vertex_map := fun ⟨a, _⟩ => by refine ⟨f a, ?_⟩
-                               rw [vertices_Simplex]
-                               simp only [Set.top_eq_univ, Set.mem_univ]
-face_map := by
-  intro ⟨s, hsf⟩
-  refine ⟨Finset.image f s, ?_⟩
-  rw [← faces_Simplex] at hsf ⊢
-  simp only [Finset.Nonempty.image_iff, hsf]
-compatibility_vertex_face := fun _ => by simp only [Finset.image_singleton]
-compatibility_face_vertex := fun _ _ => by simp only [Finset.mem_image, exists_prop]
-}
-
-
-/- Composition of simplicial maps: we compose vertex_map and face_map in the obvious way.-/
-def comp (g : L →ₛ M) (f : K →ₛ L) : K →ₛ M :=
-{ vertex_map := g.vertex_map ∘ f.vertex_map,
-  face_map := g.face_map ∘ f.face_map,
-  compatibility_vertex_face := by
-    intro a
-    simp only [Function.comp_apply]
-    rw [f.compatibility_vertex_face a, g.compatibility_vertex_face (f.vertex_map a)]
-  compatibility_face_vertex := by
-    intro s c
-    simp only [Function.comp_apply]
-    rw [g.compatibility_face_vertex]
-    simp_rw [f.compatibility_face_vertex]
+/-- Composition of simplicial maps: we compose `vertex_map` and `face_map` in the obvious way.-/
+def comp (g : L →ₛ M) (f : K →ₛ L) : K →ₛ M where
+  vertex_map := g.vertex_map ∘ f.vertex_map
+  face_map := g.face_map ∘ f.face_map
+  vertex_face a := by
+    simp only [Function.comp_apply, f.vertex_face a, g.vertex_face (f.vertex_map a)]
+  face_vertex s c := by
+    simp only [Function.comp_apply, g.face_vertex, f.face_vertex]
     constructor
-    · intro hc
-      match hc with
-      | ⟨b, ⟨a, has, hab⟩, hbc⟩ =>
-        exists a; exists has
-        have hav : a ∈ K.vertices := face_subset_vertices K s has
-        have hbv : b ∈ L.vertices := by rw [← hab]; exact (f.vertex_map ⟨a, hav⟩).2
-        have hab' : f.vertex_map ⟨a, hav⟩ = ⟨b, hbv⟩ := by rw [← SetCoe.ext_iff]; simp only [hab]
-        rw [hab', hbc]
-    · intro hc
-      match hc with
-      | ⟨a, has, hac⟩ =>
-        set b := f.vertex_map ⟨a, face_subset_vertices K s has⟩
-        exists b.1
-        simp only [Subtype.coe_eta, exists_prop]
-        constructor
-        · exists a; exists has
-        · simp only [hac]
-}
+    · intro ⟨b, ⟨a, has, hab⟩, hbc⟩
+      existsi a, has
+      have hav : a ∈ K.vertices := face_subset_vertices K s has
+      have hbv : b ∈ L.vertices := by rw [← hab]; exact (f.vertex_map ⟨a, hav⟩).2
+      have hab' : f.vertex_map ⟨a, hav⟩ = ⟨b, hbv⟩ := by rw [← SetCoe.ext_iff]; simp only [hab]
+      rw [hab', hbc]
+    · intro ⟨a, has, hac⟩
+      existsi (f.vertex_map ⟨a, face_subset_vertices K s has⟩).1
+      simp only [Subtype.coe_eta, exists_prop]
+      exact ⟨⟨a, has, by simp only⟩, by simp only [hac]⟩
 
+variable (K)
 
-/- The identity as a simplicial map.-/
-noncomputable def id (K : AbstractSimplicialComplex α) : K →ₛ K :=
-{ vertex_map := fun a => a
-  face_map := fun s => s
-  compatibility_vertex_face := fun _ => by simp only
-  compatibility_face_vertex := fun _ _ => by simp only [exists_prop, exists_eq_right]
-}
+/-- The identity as a simplicial map.-/
+noncomputable def id : K →ₛ K where
+  vertex_map a := a
+  face_map s := s
+  vertex_face _ := by simp only
+  face_vertex _ _ := by simp only [exists_prop, exists_eq_right]
 
 /- The identity of α defines the identity of the infinite simplex on α.-/
 lemma MapSimplex.id : MapSimplex (fun x => x) = SimplicialMap.id (Simplex α) := by
