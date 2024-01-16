@@ -764,7 +764,7 @@ end
 
 section
 
-/-! If `{a // P a}` is a subtype of `ι` and if we fix an element `z` of `(i : {a // P a}) → M₁ i`,
+/-! If `{a // P a}` is a subtype of `ι` and if we fix an element `z` of `(i : {a // ¬ P a}) → M₁ i`,
 then a multilinear map on `M₁` defines a multilinear map on the restriction of `M₁` to
 `{a // P a}`, by fixing the arguments out of `{a // P a}` equal to the values of `z`.-/
 
