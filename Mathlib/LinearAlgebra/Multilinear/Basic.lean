@@ -788,7 +788,11 @@ lemma domDomRestrict_aux [DecidableEq ι] (P : ι → Prop) [DecidablePred P]
 /-- Given a multilinear map `f` on `(i : ι) → M i`, a (decidable) predicate `P` on `ι` and
 an element `z` of `(i : {a // ¬ P a}) → M₁ i`, construct a multilinear map on
 `(i : {a // P a}) → M₁ i)` whose value at `x` is `f` evaluated at the vector with `i`th coordinate
-`x i` if `P i` and `z i` otherwise.-/
+`x i` if `P i` and `z i` otherwise.
+
+The naming is similar to `MultilinearMap.domDomCongr`: here we are applying the restriction to the
+domain of the domain.
+-/
 def domDomRestrict [DecidableEq ι] (f : MultilinearMap R M₁ M₂) (P : ι → Prop) [DecidablePred P]
     (z : (i : {a : ι // ¬ P a}) → M₁ i) :
     MultilinearMap R (fun (i : {a : ι // P a}) => M₁ i) M₂ where
