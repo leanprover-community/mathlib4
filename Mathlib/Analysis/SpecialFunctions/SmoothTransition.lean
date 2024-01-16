@@ -64,7 +64,7 @@ theorem nonneg (x : ℝ) : 0 ≤ expNegInvGlue x := by
 #align exp_neg_inv_glue.nonneg expNegInvGlue.nonneg
 
 -- porting note: new lemma
-@[simp] theorem zero_iff_nonpos {x : ℝ }: expNegInvGlue x = 0 ↔ x ≤ 0 :=
+@[simp] theorem zero_iff_nonpos {x : ℝ} : expNegInvGlue x = 0 ↔ x ≤ 0 :=
   ⟨fun h ↦ not_lt.mp fun h' ↦ (pos_of_pos h').ne' h, zero_of_nonpos⟩
 
 /-!
