@@ -486,7 +486,7 @@ theorem coe_comap_apply (f : X → Y) (g : LocallyConstant Y Z) (hf : Continuous
 @[simp]
 theorem comap_id : comap (@id X) = @id (LocallyConstant X Z) := by
   ext
-  simp only [continuous_id, id.def, Function.comp.right_id, coe_comap]
+  simp only [continuous_id, id.def, Function.comp_id, coe_comap]
 #align locally_constant.comap_id LocallyConstant.comap_id
 
 theorem comap_comp [TopologicalSpace Z] (f : X → Y) (g : Y → Z) (hf : Continuous f)

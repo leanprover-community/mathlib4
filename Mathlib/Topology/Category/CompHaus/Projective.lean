@@ -54,7 +54,7 @@ instance projective_ultrafilter (X : Type*) : Projective (of <| Ultrafilter X)
     let g'' : ContinuousMap Y Z := g
     have : g'' ∘ g' = id := hg'.comp_eq_id
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-    erw [comp.assoc, ultrafilter_extend_extends, ← comp.assoc, this, comp.left_id]
+    erw [comp.assoc, ultrafilter_extend_extends, ← comp.assoc, this, id_comp]
 set_option linter.uppercaseLean3 false in
 #align CompHaus.projective_ultrafilter CompHaus.projective_ultrafilter
 

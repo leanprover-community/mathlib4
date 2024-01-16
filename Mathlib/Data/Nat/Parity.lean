@@ -305,7 +305,7 @@ theorem iterate_bit0 (hf : Involutive f) (n : ℕ) : f^[bit0 n] = id := by
 #align function.involutive.iterate_bit0 Function.Involutive.iterate_bit0
 
 theorem iterate_bit1 (hf : Involutive f) (n : ℕ) : f^[bit1 n] = f := by
-  rw [bit1, ← succ_eq_add_one, iterate_succ, hf.iterate_bit0, comp.left_id]
+  rw [bit1, ← succ_eq_add_one, iterate_succ, hf.iterate_bit0, id_comp]
 #align function.involutive.iterate_bit1 Function.Involutive.iterate_bit1
 
 end
@@ -320,7 +320,7 @@ theorem iterate_even (hf : Involutive f) (hn : Even n) : f^[n] = id := by
 
 theorem iterate_odd (hf : Involutive f) (hn : Odd n) : f^[n] = f := by
   rcases hn with ⟨m, rfl⟩
-  rw [iterate_add, hf.iterate_two_mul, comp.left_id, iterate_one]
+  rw [iterate_add, hf.iterate_two_mul, id_comp, iterate_one]
 #align function.involutive.iterate_odd Function.Involutive.iterate_odd
 
 theorem iterate_eq_self (hf : Involutive f) (hne : f ≠ id) : f^[n] = f ↔ Odd n :=

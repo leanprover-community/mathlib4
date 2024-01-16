@@ -185,7 +185,7 @@ theorem eq_sort_iff :
 
 /-- The permutation that sorts `f` is the identity if and only if `f` is monotone. -/
 theorem sort_eq_refl_iff_monotone : sort f = Equiv.refl _ ↔ Monotone f := by
-  rw [eq_comm, eq_sort_iff, Equiv.coe_refl, Function.comp.right_id]
+  rw [eq_comm, eq_sort_iff, Equiv.coe_refl, Function.comp_id]
   simp only [id.def, and_iff_left_iff_imp]
   exact fun _ _ _ hij _ => hij
 #align tuple.sort_eq_refl_iff_monotone Tuple.sort_eq_refl_iff_monotone

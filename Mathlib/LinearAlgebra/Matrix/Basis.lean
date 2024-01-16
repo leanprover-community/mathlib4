@@ -177,10 +177,9 @@ variable [Fintype ι'] [Fintype κ] [Fintype κ']
 @[simp]
 theorem basis_toMatrix_mul_linearMap_toMatrix [DecidableEq ι'] :
     c.toMatrix c' * LinearMap.toMatrix b' c' f = LinearMap.toMatrix b' c f :=
-  (Matrix.toLin b' c).injective
-    (by
-      haveI := Classical.decEq κ'
-      rw [toLin_toMatrix, toLin_mul b' c' c, toLin_toMatrix, c.toLin_toMatrix, id_comp])
+  (Matrix.toLin b' c).injective <| by
+    haveI := Classical.decEq κ'
+    rw [toLin_toMatrix, toLin_mul b' c' c, toLin_toMatrix, c.toLin_toMatrix, LinearMap.id_comp]
 #align basis_to_matrix_mul_linear_map_to_matrix basis_toMatrix_mul_linearMap_toMatrix
 
 variable [Fintype ι]
@@ -188,8 +187,8 @@ variable [Fintype ι]
 @[simp]
 theorem linearMap_toMatrix_mul_basis_toMatrix [DecidableEq ι] [DecidableEq ι'] :
     LinearMap.toMatrix b' c' f * b'.toMatrix b = LinearMap.toMatrix b c' f :=
-  (Matrix.toLin b c').injective
-    (by rw [toLin_toMatrix, toLin_mul b b' c', toLin_toMatrix, b'.toLin_toMatrix, comp_id])
+  (Matrix.toLin b c').injective <| by
+    rw [toLin_toMatrix, toLin_mul b b' c', toLin_toMatrix, b'.toLin_toMatrix, LinearMap.comp_id]
 #align linear_map_to_matrix_mul_basis_to_matrix linearMap_toMatrix_mul_basis_toMatrix
 
 theorem basis_toMatrix_mul_linearMap_toMatrix_mul_basis_toMatrix [DecidableEq ι] [DecidableEq ι'] :
