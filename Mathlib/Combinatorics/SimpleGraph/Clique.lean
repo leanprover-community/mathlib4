@@ -282,7 +282,7 @@ theorem CliqueFree.anti (h : G ≤ H) : H.CliqueFree n → G.CliqueFree n :=
 #align simple_graph.clique_free.anti SimpleGraph.CliqueFree.anti
 
 /-- If a graph is cliquefree, any graph that embeds into it is also cliquefree. -/
-theorem CliqueFree.map {H : SimpleGraph β} (f : H ↪g G) : G.CliqueFree n → H.CliqueFree n := by
+theorem CliqueFree.comap {H : SimpleGraph β} (f : H ↪g G) : G.CliqueFree n → H.CliqueFree n := by
   intro h; contrapose h
   exact not_cliqueFree_of_top_embedding <| f.comp (topEmbeddingOfNotCliqueFree h)
 
