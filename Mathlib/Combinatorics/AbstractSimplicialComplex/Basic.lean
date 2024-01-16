@@ -68,8 +68,11 @@ variable (α)
 /-- Definition of an abstract simplicial complex.-/
 @[ext]
 structure AbstractSimplicialComplex :=
+/-- The set of faces; these are finsets of `α`.-/
   (faces : Set (Finset α))
+/-- Every face is nonempty.-/
   (nonempty_of_mem : ∀ {s : Finset α}, s ∈ faces → s.Nonempty)
+/-- A nonempty subset of a face is a face.-/
   (down_closed : ∀ {s t : Finset α}, s ∈ faces → t ⊆ s → t.Nonempty → t ∈ faces)
 
 variable {α}
@@ -431,7 +434,9 @@ variable (K L)
 `face_map : K.faces → L.faces`, with the obvious compatibility conditions.-/
 @[ext]
 structure SimplicialMap :=
+/-- The map on vertices.-/
   (vertex_map : K.vertices → L.vertices)
+/-- The map on faces.-/
   (face_map : K.faces → L.faces)
   (vertex_face : ∀ (a : K.vertices),
     face_map ⟨{a.1}, a.2⟩ = ⟨{(vertex_map a).1}, (vertex_map a).2⟩)
@@ -439,6 +444,7 @@ structure SimplicialMap :=
     b ∈ (face_map s).1 ↔ (∃ (a : α) (has : a ∈ s.1),
     (vertex_map ⟨a, face_subset_vertices K s has⟩).1 = b))
 
+@[inherit_doc]
 notation:100 K:100 " →ₛ " L:100 => SimplicialMap K L
 
 variable {K L}
@@ -446,9 +452,9 @@ variable {K L}
 namespace SimplicialMap
 
 /-- Two simplicial maps with the same `vertex_map` (i.e. that are equal on vertices) are equal.-/
-@[simp]
-lemma ext_vertex  (f g : SimplicialMap K L) : f.vertex_map = g.vertex_map → f = g :=
-  fun heq ↦ SimplicialMap.ext _ _ heq (by ext s a; rw [f.face_vertex, g.face_vertex, heq])
+@[ext]
+lemma ext_vertex {f g : SimplicialMap K L} (heq : f.vertex_map = g.vertex_map) : f = g :=
+  SimplicialMap.ext _ _ heq (by ext s a; rw [f.face_vertex, g.face_vertex, heq])
 
 /-- If `f` is a map from `α` to `β` such that, for every face `s` of `K`, `f s` is a face of `L`,
 then `f` defines a simplicial map from `K` to `L`.-/
@@ -520,7 +526,7 @@ lemma ofMap_id [DecidableEq α] :
 (using `SimplicialMap.mapTop`) preserves composition.-/
 lemma MapSimplex.comp [DecidableEq β] [DecidableEq γ] (f : α → β) (g : β → γ) :
     (mapTop g).comp (mapTop f) = mapTop (g ∘ f) :=
-  SimplicialMap.ext_vertex _ _
+  SimplicialMap.ext_vertex
     (funext (fun _ ↦ by unfold mapTop SimplicialMap.comp; simp only [Function.comp_apply]))
 
 end SimplicialMap
