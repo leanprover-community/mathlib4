@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
 import Mathlib.NumberTheory.NumberField.Basic
-import Mathlib.LinearAlgebra.FreeModule.PID
 import Mathlib.RingTheory.FractionalIdeal.Norm
 
 /-!
@@ -17,7 +16,6 @@ Prove some results on the fractional ideals of number fields.
 
   * `NumberField.basisOfFractionalIdeal`: A `ℚ`-basis of `K` that spans `I` over `ℤ` where `I` is
   a fractional ideal of a number field `K`.
-  
 -/
 
 variable (K : Type*) [Field K] [NumberField K]
@@ -70,7 +68,7 @@ instance (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
   exists_of_eq h :=
     ⟨1, by rwa [one_smul, one_smul, ← (Submodule.injective_subtype I.1.coeToSubmodule).eq_iff]⟩
 
-/-- A basis of `K` that spans `I` over `ℤ`. -/
+/-- A `ℚ`-basis of `K` that spans `I` over `ℤ`. -/
 noncomputable def basisOfFractionalIdeal (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
     Basis (Free.ChooseBasisIndex ℤ I) ℚ K :=
   (fractionalIdealBasis K I.1).ofIsLocalizedModule ℚ ℤ⁰
