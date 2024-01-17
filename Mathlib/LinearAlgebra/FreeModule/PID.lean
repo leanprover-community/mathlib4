@@ -684,18 +684,6 @@ theorem Ideal.smithCoeffs_ne_zero (b : Basis ι R S) (I : Ideal S) (hI : I ≠ �
 -- porting note: can be inferred in Lean 4 so no longer necessary
 #noalign has_quotient.quotient.module
 
-instance [Module.Free R S] [Module.Finite R S] (I : Ideal S) : Module.Free R I := by
-  by_cases hI : I = ⊥
-  · have : Subsingleton I := Submodule.subsingleton_iff_eq_bot.mpr hI
-    exact Module.Free.of_subsingleton R I
-  · exact Module.Free.of_basis (I.selfBasis (Module.Free.chooseBasis R S) hI)
-
-instance [Module.Free R S] [Module.Finite R S] (I : Ideal S) : Module.Finite R I := by
-  by_cases hI : I = ⊥
-  · have : Subsingleton I := Submodule.subsingleton_iff_eq_bot.mpr hI
-    exact Module.IsNoetherian.finite R I
-  · exact Module.Finite.of_basis (I.selfBasis (Module.Free.chooseBasis R S) hI)
-
 end Ideal
 
 end SmithNormal

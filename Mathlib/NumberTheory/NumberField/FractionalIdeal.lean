@@ -9,11 +9,15 @@ import Mathlib.RingTheory.FractionalIdeal.Norm
 
 /-!
 
-# Ideals and fractional ideals of number fields
+# Fractional ideals of number fields
 
+Prove some results on the fractional ideals of number fields.
 
 ## Main definitions and results
 
+  * `NumberField.basisOfFractionalIdeal`: A `ℚ`-basis of `K` that spans `I` over `ℤ` where `I` is
+  a fractional ideal of a number field `K`.
+  
 -/
 
 variable (K : Type*) [Field K] [NumberField K]
@@ -26,8 +30,8 @@ section Basis
 
 open Module
 
-attribute [local instance 2000] inst_ringOfIntegersAlgebra Algebra.toSMul Algebra.toModule
-  Submodule.module
+-- This is necessary to avoid some timeouts
+attribute [local instance 2000] Submodule.module
 
 instance (I : FractionalIdeal (𝓞 K)⁰ K) : Module.Free ℤ I := by
   refine Free.of_equiv (LinearEquiv.restrictScalars ℤ (I.equivNum ?_)).symm
