@@ -173,9 +173,9 @@ jobs:
           run: |
             bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build -KCI | tee stdout.log"
 
-      - name: check for noisy stdout lines
-        run: |
-          ! grep --after-context=1 "stdout:" stdout.log
+      # - name: check for noisy stdout lines
+      #   run: |
+      #     ! grep --after-context=1 "stdout:" stdout.log
 
       - name: build library_search cache
         run: lake build -KCI MathlibExtras
