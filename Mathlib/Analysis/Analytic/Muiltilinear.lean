@@ -121,11 +121,11 @@ lemma toFormalMultilinearSeries_hasSum [LinearOrder ι] (f : ContinuousMultiline
                         (Nat.lt_succ_self _) hn), zero_apply])
 
 def hasFiniteFPowerSeriesAtOrigin [LinearOrder ι] (f : ContinuousMultilinearMap 𝕜 E F) :
-    HasFiniteFPowerSeriesOnBall f f.toFormalMultilinearSeries 0  (Fintype.card ι) ⊤ where
+    HasFiniteFPowerSeriesOnBall f f.toFormalMultilinearSeries 0  (Fintype.card ι).succ ⊤ where
   r_le := by rw [toFormalMultilinearSeries_radius]
   r_pos := zero_lt_top
-  hasSum := fun _ => by rw [zero_add]; exact f.toFormalMultilinearSeries_hasSum _
-  finite := sorry
+  hasSum _ := by rw [zero_add]; exact f.toFormalMultilinearSeries_hasSum _
+  finite _ h := f.toFormalMultilinearSeries_support h
 
 lemma cPolynomialAt (f : ContinuousMultilinearMap 𝕜 E F) (x : (i : ι) → E i) :
     CPolynomialAt 𝕜 f x := by
@@ -133,16 +133,14 @@ lemma cPolynomialAt (f : ContinuousMultilinearMap 𝕜 E F) (x : (i : ι) → E 
   exact HasFiniteFPowerSeriesOnBall.cPolynomialAt_of_mem f.hasFiniteFPowerSeriesAtOrigin
     (by simp only [emetric_ball_top, Set.mem_univ])
 
-
-#exit
-lemma analyticOn (f : ContinuousMultilinearMap 𝕜 E F) :
-    AnalyticOn 𝕜 f ⊤ :=
-  fun x _ ↦ f.analyticAt x
+lemma cPolyomialOn (f : ContinuousMultilinearMap 𝕜 E F) :
+    CPolynomialOn 𝕜 f ⊤ :=
+  fun x _ ↦ f.cPolynomialAt x
 
 lemma contDiffAt (f : ContinuousMultilinearMap 𝕜 E F) (x : (i : ι) → E i) {n : ℕ∞} :
-    ContDiffAt 𝕜 n f x := AnalyticAt.contDiffAt (f.analyticAt x)
+    ContDiffAt 𝕜 n f x := CPolynomialAt.contDiffAt (f.cPolynomialAt x)
 
-lemma cOS [LinearOrder ι] (f : ContinuousMultilinearMap 𝕜 E F) {k l : ℕ}
+lemma changeOriginSeries_support [LinearOrder ι] (f : ContinuousMultilinearMap 𝕜 E F) {k l : ℕ}
     (h : k + l ≠ Fintype.card ι) :
     f.toFormalMultilinearSeries.changeOriginSeries k l = 0 := by
   unfold FormalMultilinearSeries.changeOriginSeries
@@ -150,11 +148,11 @@ lemma cOS [LinearOrder ι] (f : ContinuousMultilinearMap 𝕜 E F) {k l : ℕ}
     rw [FormalMultilinearSeries.changeOriginSeriesTerm, AddEquivClass.map_eq_zero_iff]
     simp only [toFormalMultilinearSeries, h, dite_false])
 
-lemma fderiv_eq (f : ContinuousMultilinearMap 𝕜 E F) (x : (i : ι) → E i) :
+lemma fderiv_eq [DecidableEq ι] (f : ContinuousMultilinearMap 𝕜 E F) (x : (i : ι) → E i) :
     _root_.fderiv 𝕜 f x = f.fderiv x := by
   letI : LinearOrder ι := WellFounded.wellOrderExtension emptyWf.wf
   ext y
-  have := f.hasFPowerSeriesAtOrigin.changeOrigin (y := x) (r := ⊤) (by simp only [coe_lt_top])
+  have := f.hasFiniteFPowerSeriesAtOrigin.changeOrigin (y := x) (r := ⊤) (by simp only [coe_lt_top])
   rw [zero_add] at this
   rw [this.hasFPowerSeriesAt.fderiv_eq, fderiv_apply]
   unfold FormalMultilinearSeries.changeOrigin FormalMultilinearSeries.sum
@@ -163,8 +161,7 @@ lemma fderiv_eq (f : ContinuousMultilinearMap 𝕜 E F) (x : (i : ι) → E i) :
     by_cases he : IsEmpty ι
     · simp only [univ_eq_empty, sum_empty]
       letI := he
-      rw [Fintype.card_eq_zero, Nat.zero_sub, cOS, ContinuousMultilinearMap.zero_apply,
-        ContinuousMultilinearMap.zero_apply]
+      rw [Fintype.card_eq_zero, Nat.zero_sub, changeOriginSeries_support, zero_apply, zero_apply]
       rw [Fintype.card_eq_zero, add_zero]
       exact Nat.one_ne_zero
     · unfold FormalMultilinearSeries.changeOriginSeries
@@ -184,19 +181,16 @@ lemma fderiv_eq (f : ContinuousMultilinearMap 𝕜 E F) (x : (i : ι) → E i) :
         refine ⟨Finset.univ.erase (Fintype.equivFinOfCardEq hcard i), ?_⟩
         simp only [mem_univ, not_true_eq_false, card_erase_of_mem, card_fin, ge_iff_le,
           add_le_iff_nonpos_right, nonpos_iff_eq_zero, tsub_eq_zero_iff_le, add_tsub_cancel_left]
-      rw [Finset.sum_bij I (fun _ _ ↦ Finset.mem_univ _)]
-      · intro _ _ _ _
-        simp only [mem_univ, not_true_eq_false, Subtype.mk.injEq,
-          Finset.erase_inj _ (Finset.mem_univ _), Equiv.apply_eq_iff_eq, imp_self]
+      rw [Finset.sum_bij I (fun _ _ ↦ Finset.mem_univ _) (fun _ _ _ _ ↦ by
+          simp only [mem_univ, not_true_eq_false, Subtype.mk.injEq,
+          Finset.erase_inj _ (Finset.mem_univ _), Equiv.apply_eq_iff_eq, imp_self])]
       · intro ⟨s, hs⟩ _
         have h : sᶜ.card = 1 := by
           rw [Finset.card_compl, hs]
           simp only [ge_iff_le, Fintype.card_fin, add_le_iff_nonpos_left, nonpos_iff_eq_zero,
             add_tsub_cancel_right]
-        rw [Finset.card_eq_one] at h
-        obtain ⟨a, ha⟩ := h
-        existsi (Fintype.equivFinOfCardEq hcard).symm a
-        existsi Finset.mem_univ _
+        obtain ⟨a, ha⟩ := Finset.card_eq_one.mp h
+        existsi ((Fintype.equivFinOfCardEq hcard).symm a), Finset.mem_univ _
         simp only [mem_univ, not_true_eq_false, Equiv.apply_symm_apply, Subtype.mk.injEq]
         rw [Finset.erase_eq, ← ha]
         simp only [sdiff_compl, ge_iff_le, le_eq_subset, subset_univ, inf_of_le_right]
@@ -208,16 +202,14 @@ lemma fderiv_eq (f : ContinuousMultilinearMap 𝕜 E F) (x : (i : ι) → E i) :
         ext j
         by_cases hj : j = i
         · rw [hj, Function.update_same, Function.update_same]
-        · have hne : Fintype.equivFinOfCardEq hcard j ≠ Fintype.equivFinOfCardEq hcard i := by
-            rw [ne_eq, Equiv.apply_eq_iff_eq]
-            exact hj
-          rw [Function.update_noteq hne, Function.update_noteq hj]
+        · rw [Function.update_noteq hj, Function.update_noteq]
+          rw [ne_eq, Equiv.apply_eq_iff_eq]
+          exact hj
   · intro m hm
-    rw [cOS f (k := 1) (l := m), ContinuousMultilinearMap.zero_apply]
-    by_contra habs
-    rw [← Nat.succ_eq_one_add] at habs
-    apply_fun Nat.pred at habs
-    rw [Nat.pred_succ, Nat.pred_eq_sub_one] at habs
-    exact hm habs
+    rw [f.changeOriginSeries_support (k := 1) (l := m), zero_apply]
+    exact fun h ↦ by
+      apply_fun Nat.pred at h
+      rw [← Nat.succ_eq_one_add, Nat.pred_succ, Nat.pred_eq_sub_one] at h
+      exact hm h
 
 end ContinuousMultilinearMap
