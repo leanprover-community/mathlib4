@@ -199,9 +199,8 @@ section NormedSpace
 
 attribute [local instance] Matrix.seminormedAddCommGroup
 
-protected def boundedSMul [SeminormedRing R] [SeminormedAddCommGroup α]
-  [Module R α] [BoundedSMul R α] :
-    BoundedSMul R (Matrix m n α) :=
+protected def boundedSMul [SeminormedRing R] [SeminormedAddCommGroup α] [Module R α]
+    [BoundedSMul R α] : BoundedSMul R (Matrix m n α) :=
   Pi.instBoundedSMul
 
 variable [NormedField R] [SeminormedAddCommGroup α] [NormedSpace R α]
