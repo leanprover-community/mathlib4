@@ -782,9 +782,4 @@ theorem tangentMap_comp (hg : MDifferentiable I' I'' g) (hf : MDifferentiable I 
   ext p : 1; exact tangentMap_comp_at _ (hg _) (hf _)
 #align tangent_map_comp tangentMap_comp
 
-lemma mfderiv_chartAt_eq_tangentCoordChange {x y : M} (hsrc : x ∈ (chartAt H y).source) :
-    mfderiv I I (chartAt H y) x = tangentCoordChange I x y x := by
-  have := mdifferentiableAt_atlas I (ChartedSpace.chart_mem_atlas _) (extChartAt_source I y ▸ hsrc)
-  simp [mfderiv, if_pos this, Function.comp.assoc]
-
 end DerivativesProperties
