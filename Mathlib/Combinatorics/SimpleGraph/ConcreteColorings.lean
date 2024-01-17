@@ -7,6 +7,7 @@ import Mathlib.Combinatorics.SimpleGraph.Coloring
 import Mathlib.Combinatorics.SimpleGraph.Hasse
 import Mathlib.Data.Nat.Parity
 import Mathlib.Order.OmegaCompletePartialOrder
+import Mathlib.Order.OmegaCompletePartialOrder
 
 /-!
 # Concrete colorings of common graphs

@@ -7,6 +7,7 @@ import Mathlib.Data.Multiset.Basic
 import Mathlib.Data.Vector.Basic
 import Mathlib.Data.Setoid.Basic
 import Mathlib.Tactic.ApplyFun
+import Mathlib.Logic.Nontrivial.Basic
 
 #align_import data.sym.basic from "leanprover-community/mathlib"@"509de852e1de55e1efa8eacfa11df0823f26f226"
 

@@ -6,6 +6,7 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Eric Wieser, 
 import Mathlib.Data.Finset.Antidiagonal
 import Mathlib.Data.Finsupp.Defs
 import Mathlib.Data.Finsupp.Basic
+import Mathlib.Data.Finsupp.Basic
 
 /-!
 # Partial HasAntidiagonal for functions with finite support

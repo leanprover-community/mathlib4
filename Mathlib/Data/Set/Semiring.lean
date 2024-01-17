@@ -5,6 +5,7 @@ Authors: Floris van Doorn
 -/
 import Mathlib.Algebra.Order.Kleene
 import Mathlib.Data.Set.Pointwise.Basic
+import Mathlib.Algebra.Order.Ring.Canonical
 
 #align_import data.set.semiring from "leanprover-community/mathlib"@"62e8311c791f02c47451bf14aa2501048e7c2f33"
 

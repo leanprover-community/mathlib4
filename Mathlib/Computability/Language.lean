@@ -9,6 +9,7 @@ import Mathlib.Data.List.Join
 import Mathlib.Data.Set.Lattice
 import Mathlib.Tactic.DeriveFintype
 import Mathlib.Data.Fintype.Sum
+import Mathlib.Algebra.Order.Ring.Canonical
 
 #align_import computability.language from "leanprover-community/mathlib"@"a239cd3e7ac2c7cde36c913808f9d40c411344f6"
 

@@ -5,6 +5,7 @@ Authors: Benjamin Davidson
 -/
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.ArctanDeriv
 import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
+import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 
 #align_import data.real.pi.leibniz from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
