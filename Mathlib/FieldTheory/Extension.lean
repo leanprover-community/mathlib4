@@ -59,10 +59,19 @@ noncomputable instance : OrderBot (Lifts F E K) where
 noncomputable instance : Inhabited (Lifts F E K) :=
   ⟨⊥⟩
 
+theorem Lifts.le_of_carrier_le_iSup {ι} (ρ : ι → Lifts F E K) (σ τ : Lifts F E K)
+    (hσ : ∀ i, ρ i ≤ σ) (hτ : ∀ i, ρ i ≤ τ) (carrier_le : σ.carrier ≤ ⨆ i, (ρ i).carrier) :
+    σ ≤ τ :=
+  have le := carrier_le.trans (iSup_le fun i ↦ (hτ i).1)
+  have : (⊤ : IntermediateField F σ.carrier) ≤ ⨆ i, (inclusion (hσ i).1).fieldRange := by
+    sorry
+  ⟨le, suffices τ.emb.comp (inclusion le) = σ.emb by sorry
+    sorry⟩
+
 /-- `σ : L →ₐ[F] K` is an extendible lift ("extendible pair" in [Isaacs]) if for every
 intermediate field `M` that is finite-dimensional over `L`, `σ` extends to some `M →ₐ[F] K`. -/
-def Lifts.IsExtendible (σ : Lifts F E K) : Prop := ∀ M : IntermediateField σ.carrier E,
-  FiniteDimensional σ.carrier M → ∃ τ ≥ σ, M.restrictScalars F ≤ τ.carrier
+def Lifts.IsExtendible (σ : Lifts F E K) : Prop :=
+  ∀ M : IntermediateField σ.carrier E, M.FG → ∃ τ ≥ σ, τ.carrier = M.restrictScalars F
 
 section Chain
 variable (c : Set (Lifts F E K)) (hc : IsChain (· ≤ ·) c)
@@ -93,18 +102,54 @@ theorem Lifts.exists_upper_bound (c : Set (Lifts F E K)) (hc : IsChain (· ≤ �
 #align intermediate_field.lifts.exists_upper_bound IntermediateField.Lifts.exists_upper_bound
 
 theorem Lifts.exists_upper_bound_isExtendible (alg : Algebra.IsAlgebraic F E)
-    [Nonempty c] (he : ∀ σ ∈ c, σ.IsExtendible) :
-    (Lifts.union c hc).IsExtendible := fun L' h' ↦ by
+    [Nonempty c] (hext : ∀ σ ∈ c, σ.IsExtendible) :
+    (Lifts.union c hc).IsExtendible := fun L' ⟨S, hS⟩ ↦ by
   let σ := Lifts.union c hc
-  let L := σ.carrier
-  let b := Module.Free.chooseBasis L L'
-  let S := Set.range (L'.val ∘ b)
-  let Ω := adjoin F S →ₐ[F] K
-  have : ∃ ω : Ω, ∀ π : c, ∃ θ ≥ π.1, ⟨_, ω⟩ ≤ θ
+  let Ω := adjoin F (S : Set E) →ₐ[F] K
+  obtain ⟨ω, hω⟩ : ∃ ω : Ω, ∀ π : c, ∃ θ ≥ π.1, ⟨_, ω⟩ ≤ θ ∧ θ.carrier = adjoin F (π.1.carrier ∪ S)
   · by_contra!; choose π hπ using this
     have := finiteDimensional_adjoin (K := F) (S := S) fun _ _ ↦ (alg _).isIntegral
-    have := hc.directed.finite_le π
-    sorry
+    obtain ⟨π', hπ'⟩ := hc.directed.finite_le π
+    obtain ⟨θ, hθπ, hθ⟩ := hext _ π'.2 _ (fg_adjoin_finset S)
+    rw [restrictScalars_adjoin] at hθ
+    -- restrict θ' to `adjoin F S`
+    let θ' := θ.emb.comp (inclusion <| (adjoin.mono _ _ _ fun _ ↦ (.inr ·)).trans_eq hθ.symm)
+    have : adjoin F ((π θ').1.carrier ∪ S) ≤ θ.carrier :=
+      (adjoin.mono _ _ _ <| Set.union_subset_union_left _ (hπ' _).1).trans_eq hθ.symm
+    exact hπ θ' ⟨_, θ.emb.comp (inclusion this)⟩
+      ⟨(Set.subset_union_left _ _).trans (subset_adjoin _ _), ((hπ' _).trans hθπ).2⟩
+      ⟨adjoin.mono _ _ _ fun _ ↦ (.inr ·), fun _ ↦ rfl⟩ rfl
+  choose θ ge hθ eq using hω
+  simp_rw [← toSubalgebra_injective.eq_iff, adjoin_algebraic_toSubalgebra fun _ _ ↦ alg _] at eq
+  have : IsChain (· ≤ ·) (Set.range θ) := by
+    rintro _ ⟨π₁, rfl⟩ _ ⟨π₂, rfl⟩ -
+    wlog h : π₁ ≤ π₂ generalizing π₁ π₂
+    · exact (this _ _ <| (hc.total π₁.2 π₂.2).resolve_left h).symm
+    refine .inl ⟨toSubalgebra_le_toSubalgebra.mp ?_, (Equiv.Set.ofEq <| SetLike.ext'_iff.mp <| eq _)
+      |>.forall_congr_left'.mpr <| Algebra.adjoin_induction' ?_ ?_ ?_ ?_⟩
+    · rw [eq, eq]; exact Algebra.adjoin_mono (Set.union_subset_union_left _ h.1)
+    · rintro x (hx|hx)
+      · apply h.2
+    simp
+    --sorry
+    --intro; simp; apply h.2 --simp
+
+    --have : ∀ x, x ∈ (θ' π₁).carrier ↔ x ∈ Algebra.adjoin π₁.1.carrier (S : Set E) --F (π₁.1.carrier ∪ (S : Set E))
+    · sorry
+    --.forall_congr_left'
+    /-simp_rw [this]
+    simp_rw [restrictScalars_adjoin] at hx
+    rw [mem_restrictScalars, ← mem_toSubalgebra, adjoin_algebraic_toSubalgebra] at hx
+    have := adjoin_induction π₁.1.carrier hx
+    refine adjoin_induction _ hx ?_ ?_ ?_ ?_ ?_ ?_ -/
+  have : Lifts.union c hc ≤ Lifts.union _ this := ⟨fun x hx ↦ ?_, ?_⟩
+  · sorry
+  · rw [Lifts.union]
+  refine ⟨Lifts.union _ this, ?_, fun x hx ↦ ?_⟩
+  · sorry
+  · rw [mem_restrictScalars, ← hS] at hx
+
+
   sorry
 
 end Chain
