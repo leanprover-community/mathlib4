@@ -1412,6 +1412,7 @@ import Mathlib.CategoryTheory.Triangulated.Orthogonal
 import Mathlib.CategoryTheory.Triangulated.Pretriangulated
 import Mathlib.CategoryTheory.Triangulated.Rotate
 import Mathlib.CategoryTheory.Triangulated.SpectralObject
+import Mathlib.CategoryTheory.Triangulated.SpectralObjectNew
 import Mathlib.CategoryTheory.Triangulated.Subcategory
 import Mathlib.CategoryTheory.Triangulated.TStructure.AbelianSubcategory
 import Mathlib.CategoryTheory.Triangulated.TStructure.AbstractSpectralObject
