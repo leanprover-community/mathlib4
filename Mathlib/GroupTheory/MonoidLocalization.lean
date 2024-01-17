@@ -584,21 +584,20 @@ theorem surj (f : LocalizationMap S N) (z : N) : ∃ x : M × S, z * f.toMap x.2
 #align submonoid.localization_map.surj Submonoid.LocalizationMap.surj
 #align add_submonoid.localization_map.surj AddSubmonoid.LocalizationMap.surj
 
-/-- Given a localization map `f : M →* N`, and `z w : N`, have `z' w' :M` and `d : S`
-such that `f z' * (f d)⁻¹ = z` and `f w' * (f d)⁻¹ = w`. -/
+/-- Given a localization map `f : M →* N`, and `z w : N`, there exist `z' w' : M` and `d : S`
+such that `f z' / f d = z` and `f w' / f d = w`. -/
 @[to_additive
-    "Given a localization map `f : M →+ N`, and `z w : N`, have `z' w' :M` and `d : S`
+    "Given a localization map `f : M →+ N`, and `z w : N`, there exist `z' w' : M` and `d : S`
 such that `f z' - f d = z` and `f w' - f d = w`."]
 theorem surj₂ (f : LocalizationMap S N) (z w : N) : ∃ z' w' : M, ∃ d : S,
     (z * f.toMap d = f.toMap z') ∧  (w * f.toMap d = f.toMap w') := by
-  let ⟨a , ha⟩ := surj f z
-  let ⟨b , hb⟩ := surj f w
-  use a.1*b.2 , a.2*b.1 , a.2*b.2
-  constructor
-  · simp_rw [@mul_def, @MonoidHom.map_mul, ← ha]
-    exact (mul_assoc z ((toMap f) ↑a.2) ((toMap f) ↑b.2)).symm
-  · simp_rw [@mul_def, @MonoidHom.map_mul, ← hb]
-    exact mul_left_comm w ((toMap f) ↑a.2) ((toMap f) ↑b.2)
+  let ⟨a, ha⟩ := surj f z
+  let ⟨b, hb⟩ := surj f w
+  refine ⟨a.1 * b.2 , a.2 * b.1 , a.2 * b.2, ?_, ?_⟩
+  · simp_rw [mul_def, map_mul, ← ha]
+    exact (mul_assoc z _ _).symm
+  · simp_rw [mul_def, map_mul, ← hb]
+    exact mul_left_comm w _ _
 
 @[to_additive]
 theorem eq_iff_exists (f : LocalizationMap S N) {x y} :
@@ -1273,30 +1272,24 @@ theorem map_map {A : Type*} [CommMonoid A] {U : Submonoid A} {R} [CommMonoid R]
 #align submonoid.localization_map.map_map Submonoid.LocalizationMap.map_map
 #align add_submonoid.localization_map.map_map AddSubmonoid.LocalizationMap.map_map
 
-/-- Given an injective `CommMonoid` homomorphism `g : M →* P`, and a Submonoid `S ⊆ M`,
-the induced Monoid homomorphism from the Localization of `M` at `S` to the
-Localization of `P` at `g S`, is injective.
+/-- Given an injective `CommMonoid` homomorphism `g : M →* P`, and a submonoid `S ⊆ M`,
+the induced monoid homomorphism from the localization of `M` at `S` to the
+localization of `P` at `g S`, is injective.
 -/
 @[to_additive "Given an injective `AddCommMonoid` homomorphism `g : M →+ P`, and a
-Submonoid `S ⊆ M`, the induced AddMonoid homomorphism from the Localization of `M` at `S`
-to the Localization of `P` at `g S`, is injective. "]
-theorem map_injective_of_injective (hg : Injective g)
-    (k : LocalizationMap (S.map g) Q) :
+submonoid `S ⊆ M`, the induced monoid homomorphism from the localization of `M` at `S`
+to the localization of `P` at `g S`, is injective. "]
+theorem map_injective_of_injective (hg : Injective g) (k : LocalizationMap (S.map g) Q) :
     Injective (map f (apply_coe_mem_map g S) k) := fun z w hizw ↦ by
   set i := map f (apply_coe_mem_map g S) k
   have ifkg (a : M) : i (f.toMap a) = k.toMap (g a) := map_eq f (apply_coe_mem_map g S) a
   let ⟨z', w', x, hxz, hxw⟩ := surj₂ f z w
-  rw [(eq_mk'_iff_mul_eq f).mpr hxz, (eq_mk'_iff_mul_eq f).mpr hxw, eq_of_same]
-  let ⟨d, hd⟩ : ∃ d : S.map g, d * g z' = d * g w' := by
-    have eqz := congrArg i hxz
-    rw [map_mul, ifkg, ifkg] at eqz
-    have eqw := congrArg i hxw
-    rw [map_mul, ifkg, ifkg] at eqw
-    rw [hizw.symm, eqz] at eqw
-    exact exists_of_eq k (g z') (g w') (id eqw)
-  let ⟨c, hc⟩ := (Set.exists_image_iff g S _).mp (exists_apply_eq_apply' Subtype.val d)
-  simp_rw [hc, ← map_mul] at hd
-  exact ⟨c, hg hd⟩
+  have : k.toMap (g z') = k.toMap (g w')
+  · rw [← ifkg, ← ifkg, ← hxz, ← hxw, map_mul, map_mul, hizw]
+  obtain ⟨⟨_, c, hc, rfl⟩, eq⟩ := k.exists_of_eq _ _ this
+  simp_rw [← map_mul, hg.eq_iff] at eq
+  rw [← (f.map_units x).mul_left_inj, hxz, hxw, f.eq_iff_exists]
+  exact ⟨⟨c, hc⟩, eq⟩
 
 section AwayMap
 

@@ -174,7 +174,7 @@ theorem toLocalizationMap_toMap_apply (x) : (toLocalizationMap M S).toMap x = al
 #align is_localization.to_localization_map_to_map_apply IsLocalization.toLocalizationMap_toMap_apply
 
 theorem surj₂ : ∀ z w : S, ∃ z' w' : R, ∃ d : M,
-    ( z * algebraMap R S d = algebraMap R S z') ∧ ( w * algebraMap R S d = algebraMap R S w'):=
+    (z * algebraMap R S d = algebraMap R S z') ∧ (w * algebraMap R S d = algebraMap R S w') :=
   (toLocalizationMap M S).surj₂
 
 end
@@ -794,8 +794,9 @@ section
 
 variable (M S) (Q : Type*) [CommSemiring Q] [Algebra P Q]
 
+/-- Injectivity of a map descends to the map induced on localizations. -/
 theorem map_injective_of_injective (h : Function.Injective g) [IsLocalization (M.map g) Q] :
-    Function.Injective (map Q g (Submonoid.le_comap_map M) : S → Q) :=
+    Function.Injective (map Q g M.le_comap_map : S → Q) :=
   (toLocalizationMap M S).map_injective_of_injective h (toLocalizationMap (M.map g) Q)
 
 end
