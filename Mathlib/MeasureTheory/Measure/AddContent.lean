@@ -67,6 +67,12 @@ instance ENNReal.instSMulPosMono : SMulPosMono ℕ ℝ≥0∞ := by
   simp only [nsmul_eq_mul]
   gcongr
 
+instance ENNReal.instPosSMulMono : PosSMulMono ℕ ℝ≥0∞ := by
+  constructor
+  intro b _ n m hnm
+  simp only [nsmul_eq_mul]
+  gcongr
+
 namespace MeasureTheory
 
 variable {α : Type*} {C : Set (Set α)} {s t : Set α} {I : Finset (Set α)}
