@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomas Skrivan
 -/
 import Lean
+import Std.Data.Nat.Lemmas
 
 namespace Mathlib
 open Lean Meta
@@ -28,7 +29,7 @@ def joinl [Inhabited β] (xs : Array α) (map : α → β) (op : β → β → �
 def joinrM [Monad m] [Inhabited β] (xs : Array α) (map : α → m β) (op : β → β → m β) : m β := do
   if h : 0 < xs.size then
     let n := xs.size - 1
-    have : n < xs.size := by sorry
+    have : n < xs.size := by apply Nat.sub_one_lt_of_le h (by simp)
     xs[0:n].foldrM (init:=(← map xs[n])) λ x acc => do op (← map x) acc 
   else
     pure default
