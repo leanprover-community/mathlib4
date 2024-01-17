@@ -18,7 +18,7 @@ instance {d : ℕ} : DiscreteTopology (ZMod d) := { eq_bot := rfl }
 end ZMod
 
 lemma embedding_coeHom (d : ℕ) : Embedding (Units.coeHom (ZMod d)) :=
-  Units.embedding_of_discreteTopology _ Units.ext
+  embedding_of_discreteTopology _ Units.ext
 
 lemma embedding_coe_inv (d : ℕ) : Embedding (fun u ↦ ↑u⁻¹ : (ZMod d)ˣ → (ZMod d)) :=
   Units.embedding_coe_iff.mp (embedding_coeHom d)
