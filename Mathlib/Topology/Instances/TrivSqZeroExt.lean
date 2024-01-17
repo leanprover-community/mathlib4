@@ -34,22 +34,15 @@ local notation "tsze" => TrivSqZeroExt
 
 namespace TrivSqZeroExt
 
-instance instTopologicalSpace [TopologicalSpace R] [TopologicalSpace M] :
-    TopologicalSpace (tsze R M) :=
-  TopologicalSpace.induced fst ‹_› ⊓ TopologicalSpace.induced snd ‹_›
-
-instance [TopologicalSpace R] [TopologicalSpace M] [T2Space R] [T2Space M] : T2Space (tsze R M) :=
-  Prod.t2Space
-
-instance instUniformSpace [UniformSpace R] [UniformSpace M] : UniformSpace (tsze R M) where
-  toTopologicalSpace := instTopologicalSpace
-  __ := instUniformSpaceProd
-
-instance [UniformSpace R] [UniformSpace M] [CompleteSpace R] [CompleteSpace M] :
-    CompleteSpace (tsze R M) :=
-  inferInstanceAs <| CompleteSpace (R × M)
+section Topology
 
 variable [TopologicalSpace R] [TopologicalSpace M]
+
+instance instTopologicalSpace : TopologicalSpace (tsze R M) :=
+  TopologicalSpace.induced fst ‹_› ⊓ TopologicalSpace.induced snd ‹_›
+
+instance [T2Space R] [T2Space M] : T2Space (tsze R M) :=
+  Prod.t2Space
 
 theorem nhds_def (x : tsze R M) : nhds x = (nhds x.fst).prod (nhds x.snd) := by
   cases x
@@ -171,5 +164,43 @@ theorem hasSum_snd [AddCommMonoid R] [AddCommMonoid M] {f : α → tsze R M} {a 
     (h : HasSum f a) : HasSum (fun x ↦ snd (f x)) (snd a) :=
   h.map (⟨⟨snd, snd_zero⟩, snd_add⟩ : tsze R M →+ M) continuous_snd
 #align triv_sq_zero_ext.has_sum_snd TrivSqZeroExt.hasSum_snd
+
+end Topology
+
+section Uniformity
+variable [UniformSpace R] [UniformSpace M]
+
+instance instUniformSpace: UniformSpace (tsze R M) where
+  toTopologicalSpace := instTopologicalSpace
+  __ := instUniformSpaceProd
+
+instance [CompleteSpace R] [CompleteSpace M] : CompleteSpace (tsze R M) :=
+  inferInstanceAs <| CompleteSpace (R × M)
+
+instance [AddGroup R] [AddGroup M] [UniformAddGroup R] [UniformAddGroup M] :
+    UniformAddGroup (tsze R M) :=
+  inferInstanceAs <| UniformAddGroup (R × M)
+
+open Uniformity
+
+theorem uniformity_def :
+    𝓤 (tsze R M) =
+      ((𝓤 R).comap fun p : tsze R M × tsze R M => (p.1.fst, p.2.fst)) ⊓
+        (𝓤 M).comap fun p : tsze R M × tsze R M => (p.1.snd, p.2.snd) :=
+  rfl
+
+nonrec theorem uniformContinuous_fst : UniformContinuous (fst : tsze R M → R) :=
+  uniformContinuous_fst
+
+nonrec theorem uniformContinuous_snd : UniformContinuous (snd : tsze R M → M) :=
+  uniformContinuous_snd
+
+theorem uniformContinuous_inl [Zero M] : UniformContinuous (inl : R → tsze R M) :=
+  uniformContinuous_id.prod_mk uniformContinuous_const
+
+theorem uniformContinuous_inr [Zero R] : UniformContinuous (inr : M → tsze R M) :=
+  uniformContinuous_const.prod_mk uniformContinuous_id
+
+end Uniformity
 
 end TrivSqZeroExt
