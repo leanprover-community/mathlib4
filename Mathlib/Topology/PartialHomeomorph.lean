@@ -1130,7 +1130,8 @@ noncomputable def disjoint_iUnion {I : Type _} [Nonempty I]
   have opn_src : IsOpen (⋃ i, (h i).source) := isOpen_iUnion fun i => (h i).open_source
   have opn_tgt : IsOpen (⋃ i, (h i).target) := isOpen_iUnion fun i => (h i).open_target
   refine
-    ⟨PartialEquiv.disjoint_iUnion (fun i => (h i).toPartialEquiv) disj₁ disj₂, opn_src, opn_tgt, ?_, ?_⟩
+    ⟨PartialEquiv.disjoint_iUnion (fun i => (h i).toPartialEquiv) disj₁ disj₂,
+      opn_src, opn_tgt, ?_, ?_⟩
   · simp only [PartialEquiv.disjoint_iUnion, opn_src.continuousOn_iff, Set.mem_iUnion]
     rintro x ⟨i, hx⟩
     refine ((h i).continuousAt hx).congr
