@@ -73,13 +73,19 @@ theorem mul_ne_mul_left (a : G) {b c : G} : b * a ≠ c * a ↔ b ≠ c :=
 end IsRightCancelMul
 
 section Semigroup
+variable [Semigroup α]
+
+@[to_additive]
+instance Semigroup.to_isAssociative : IsAssociative α (· * ·) := ⟨mul_assoc⟩
+#align semigroup.to_is_associative Semigroup.to_isAssociative
+#align add_semigroup.to_is_associative AddSemigroup.to_isAssociative
 
 /-- Composing two multiplications on the left by `y` then `x`
 is equal to a multiplication on the left by `x * y`.
 -/
 @[to_additive (attr := simp) "Composing two additions on the left by `y` then `x`
 is equal to an addition on the left by `x + y`."]
-theorem comp_mul_left [Semigroup α] (x y : α) : (x * ·) ∘ (y * ·) = (x * y * ·) := by
+theorem comp_mul_left (x y : α) : (x * ·) ∘ (y * ·) = (x * y * ·) := by
   ext z
   simp [mul_assoc]
 #align comp_mul_left comp_mul_left
@@ -90,13 +96,18 @@ is equal to a multiplication on the right by `y * x`.
 -/
 @[to_additive (attr := simp) "Composing two additions on the right by `y` and `x`
 is equal to an addition on the right by `y + x`."]
-theorem comp_mul_right [Semigroup α] (x y : α) : (· * x) ∘ (· * y) = (· * (y * x)) := by
+theorem comp_mul_right (x y : α) : (· * x) ∘ (· * y) = (· * (y * x)) := by
   ext z
   simp [mul_assoc]
 #align comp_mul_right comp_mul_right
 #align comp_add_right comp_add_right
 
 end Semigroup
+
+@[to_additive]
+instance CommMagma.to_isCommutative [CommMagma G] : IsCommutative G (· * ·) := ⟨mul_comm⟩
+#align comm_semigroup.to_is_commutative CommMagma.to_isCommutative
+#align add_comm_semigroup.to_is_commutative AddCommMagma.to_isCommutative
 
 section MulOneClass
 
