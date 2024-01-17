@@ -1509,6 +1509,7 @@ import Mathlib.Data.DList.Defs
 import Mathlib.Data.DList.Instances
 import Mathlib.Data.ENat.Basic
 import Mathlib.Data.ENat.Lattice
+import Mathlib.Data.ENNReal.Basic
 import Mathlib.Data.Equiv.Functor
 import Mathlib.Data.Erased
 import Mathlib.Data.FP.Basic
@@ -1934,7 +1935,6 @@ import Mathlib.Data.Real.Cardinality
 import Mathlib.Data.Real.CauSeq
 import Mathlib.Data.Real.CauSeqCompletion
 import Mathlib.Data.Real.ConjugateExponents
-import Mathlib.Data.Real.ENNReal
 import Mathlib.Data.Real.ENatENNReal
 import Mathlib.Data.Real.EReal
 import Mathlib.Data.Real.GoldenRatio
