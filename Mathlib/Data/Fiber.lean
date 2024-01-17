@@ -57,7 +57,7 @@ lemma tauto_over (e : E) : (tauto e : Fiber P (P e)).1 = e := rfl
 def cast (e : Fiber P c) (eq : c = d) : Fiber P d := ⟨e.1, by simp_all only [over]⟩
 
 @[simp]
-theorem coe_eqRebase (e : Fiber P c) (eq : c = d) : (cast e eq : E) = e.1 := rfl
+theorem coe_cast (e : Fiber P c) (eq : c = d) : (cast e eq : E) = e.1 := rfl
 
 @[simp]
 lemma cast_coe_tauto (e : Fiber P c) : cast (tauto e.1) (by simp [over]) =  e := by
