@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
-import Mathlib.LinearAlgebra.FreeModule.Basic
+import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 
 #align_import linear_algebra.free_module.pid from "leanprover-community/mathlib"@"d87199d51218d36a0a42c66c82d147b5a7ff87b3"
 
@@ -412,6 +412,13 @@ instance Module.free_of_finite_type_torsion_free' [Module.Finite R M] [NoZeroSMu
   obtain ⟨n, b⟩ : Σn, Basis (Fin n) R M := Module.basisOfFiniteTypeTorsionFree'
   exact Module.Free.of_basis b
 #align module.free_of_finite_type_torsion_free' Module.free_of_finite_type_torsion_free'
+
+instance {S : Type*} [CommRing S] [Algebra R S] {I : Ideal S} [hI₁ : Module.Finite R I]
+    [hI₂ : NoZeroSMulDivisors R I] : Module.Free R I := by
+  have : Module.Finite R (restrictScalars R I) := hI₁
+  have : NoZeroSMulDivisors R (restrictScalars R I) := hI₂
+  change Module.Free R (restrictScalars R I)
+  exact Module.free_of_finite_type_torsion_free'
 
 theorem Module.free_iff_noZeroSMulDivisors [Module.Finite R M] :
     Module.Free R M ↔ NoZeroSMulDivisors R M :=
