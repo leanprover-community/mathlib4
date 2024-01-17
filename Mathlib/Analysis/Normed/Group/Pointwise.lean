@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yaël Dillies
 -/
 import Mathlib.Analysis.Normed.Group.Basic
-import Mathlib.Topology.MetricSpace.HausdorffDistance
+import Mathlib.Topology.MetricSpace.HausdorffDistance.Basic
 import Mathlib.Topology.MetricSpace.IsometricSMul
 
 #align_import analysis.normed.group.pointwise from "leanprover-community/mathlib"@"c8f305514e0d47dfaa710f5a52f0d21b588e6328"

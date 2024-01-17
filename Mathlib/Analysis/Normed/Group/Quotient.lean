@@ -6,7 +6,7 @@ Authors: Patrick Massot, Riccardo Brasca
 import Mathlib.Analysis.NormedSpace.Basic
 import Mathlib.Analysis.Normed.Group.Hom
 import Mathlib.RingTheory.Ideal.QuotientOperations
-import Mathlib.Topology.MetricSpace.HausdorffDistance
+import Mathlib.Topology.MetricSpace.HausdorffDistance.Basic
 
 #align_import analysis.normed.group.quotient from "leanprover-community/mathlib"@"2196ab363eb097c008d4497125e0dde23fb36db2"
 

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.Topology.MetricSpace.HausdorffDistance
+import Mathlib.Topology.MetricSpace.HausdorffDistance.Basic
 import Mathlib.Topology.Sets.Compacts
 
 #align_import topology.metric_space.closeds from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"

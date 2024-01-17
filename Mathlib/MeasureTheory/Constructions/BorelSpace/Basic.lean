@@ -10,7 +10,7 @@ import Mathlib.MeasureTheory.Lattice
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
 import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Topology.Instances.EReal
-import Mathlib.Topology.MetricSpace.HausdorffDistance
+import Mathlib.Topology.MetricSpace.HausdorffDistance.Basic
 import Mathlib.Topology.GDelta
 import Mathlib.Topology.Order.Lattice
 import Mathlib.Topology.Semicontinuous
