@@ -632,12 +632,12 @@ instance instboundedSMul [NormedRing 𝕜] [∀ i, SeminormedAddCommGroup (β i)
     BoundedSMul 𝕜 (PiLp p β) :=
   .of_nnnorm_smul_le fun c f => by
     rcases p.dichotomy with (rfl | hp)
-    · rw [←nnnorm_equiv, ←nnnorm_equiv, WithLp.equiv_smul]
+    · rw [← nnnorm_equiv, ← nnnorm_equiv, WithLp.equiv_smul]
       exact nnnorm_smul_le c (WithLp.equiv ∞ (∀ i, β i) f)
     · have hp0 : 0 < p.toReal := zero_lt_one.trans_le hp
       have hpt : p ≠ ⊤ := p.toReal_pos_iff_ne_top.mp hp0
       rw [nnnorm_eq_sum hpt, nnnorm_eq_sum hpt, NNReal.rpow_one_div_le_iff hp0, NNReal.mul_rpow,
-        ←NNReal.rpow_mul, div_mul_cancel 1 hp0.ne', NNReal.rpow_one, Finset.mul_sum]
+        ← NNReal.rpow_mul, div_mul_cancel 1 hp0.ne', NNReal.rpow_one, Finset.mul_sum]
       -- Porting note: added to replace Pi.smul_apply
       have smul_apply : ∀ i : ι, (c • f) i = c • (f i) := fun i => rfl
       simp_rw [←NNReal.mul_rpow, smul_apply]
@@ -686,17 +686,9 @@ theorem neg_apply : (-x) i = -x i :=
 equivalence. -/
 def equivₗᵢ : PiLp ∞ β ≃ₗᵢ[𝕜] ∀ i, β i :=
   { WithLp.equiv ∞ (∀ i, β i) with
-    map_add' := fun f g => rfl
-    map_smul' := fun c f => rfl
-    norm_map' := fun f => by
-      suffices (Finset.univ.sup fun i => ‖f i‖₊) = ⨆ i, ‖f i‖₊ by
-        simpa only [NNReal.coe_iSup] using congr_arg ((↑) : ℝ≥0 → ℝ) this
-      refine'
-        antisymm (Finset.sup_le fun i _ => le_ciSup (Finite.bddAbove_range fun i => ‖f i‖₊) _) _
-      cases isEmpty_or_nonempty ι
-      · simp only [ciSup_of_empty, Finset.univ_eq_empty, Finset.sup_empty, le_rfl]
-      · -- Porting note: `Finset.le_sup` needed some helps
-        exact ciSup_le fun i => Finset.le_sup (f := fun k => ‖f k‖₊) (Finset.mem_univ i) }
+    map_add' := fun _f _g => rfl
+    map_smul' := fun _c _f => rfl
+    norm_map' := norm_equiv }
 #align pi_Lp.equivₗᵢ PiLp.equivₗᵢ
 
 variable {ι' : Type*}
