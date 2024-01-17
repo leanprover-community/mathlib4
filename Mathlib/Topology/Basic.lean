@@ -554,7 +554,7 @@ theorem closure_inter_open_nonempty_iff (h : IsOpen t) :
 #align closure_inter_open_nonempty_iff closure_inter_open_nonempty_iff
 
 @[simp]
-lemma IsOpen.closure_interior_closure_eq_closure {s : Set X} (s_open : IsOpen s) :
+theorem IsOpen.closure_interior_closure_eq_closure {s : Set X} (s_open : IsOpen s) :
     closure (interior (closure s)) = closure s := by
   apply subset_antisymm
   · nth_rw 2 [← closure_closure (s := s)]
@@ -564,10 +564,31 @@ lemma IsOpen.closure_interior_closure_eq_closure {s : Set X} (s_open : IsOpen s)
     nth_rw 1 [← IsOpen.interior_eq s_open]
     exact interior_mono subset_closure
 
-lemma IsOpen.subset_interior_closure {s : Set X} (s_open : IsOpen s) :
+theorem IsOpen.subset_interior_closure {s : Set X} (s_open : IsOpen s) :
     s ⊆ interior (closure s) := by
   nth_rw 1 [← IsOpen.interior_eq s_open]
   exact interior_mono subset_closure
+
+theorem IsOpen.interior_closure_disjoint_left {s t : Set X} (t_open : IsOpen t)
+    (disj : Disjoint s t) : Disjoint (interior (closure s)) t := by
+  apply Set.disjoint_of_subset_left interior_subset
+  exact disj.closure_left t_open
+
+theorem IsOpen.interior_closure_disjoint_left_iff {s t : Set X} (s_open : IsOpen s)
+    (t_open : IsOpen t) : Disjoint (interior (closure s)) t ↔ Disjoint s t := by
+  refine ⟨fun h => ?disj, t_open.interior_closure_disjoint_left⟩
+  apply Set.disjoint_of_subset_left subset_closure
+  rw [← s_open.closure_interior_closure_eq_closure]
+  exact h.closure_left t_open
+
+/--
+If `s` and `t` are open, then `s` is disjoint from `t` iff `interior (closure s)` is disjoint from
+`interior (closure t)`.
+-/
+theorem IsOpen.interior_closure_disjoint_iff {s t : Set X} (s_open : IsOpen s) (t_open : IsOpen t) :
+    Disjoint (interior (closure s)) (interior (closure t)) ↔ Disjoint s t := by
+  rw [IsOpen.interior_closure_disjoint_left_iff s_open isOpen_interior, disjoint_comm,
+    IsOpen.interior_closure_disjoint_left_iff t_open s_open, disjoint_comm]
 
 theorem Filter.le_lift'_closure (l : Filter X) : l ≤ l.lift' closure :=
   le_lift'.2 fun _ h => mem_of_superset h subset_closure

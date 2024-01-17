@@ -965,6 +965,24 @@ theorem smul_set_univ : a • (univ : Set β) = univ :=
 #align set.smul_set_univ Set.smul_set_univ
 #align set.vadd_set_univ Set.vadd_set_univ
 
+@[to_additive]
+theorem smul_set_compl : a • sᶜ = (a • s)ᶜ := by
+  rw [Set.compl_eq_univ_diff, smul_set_sdiff, smul_set_univ, Set.compl_eq_univ_diff]
+
+/--
+If `s` and `t` are disjoint, then `g • s` and `g • t` are disjoint.
+-/
+@[to_additive "If `s` and `t` are disjoint, then `g +ᵥ s` and `g +ᵥ t` are disjoint."]
+theorem smul_set_disjoint {s t : Set β} (g : α) :
+    Disjoint s t ↔ Disjoint (g • s) (g • t) := by
+  suffices ∀ s t : Set β, ∀ g : α, Disjoint s t → Disjoint (g • s) (g • t) by
+    refine ⟨fun disj => this s t g disj, fun disj => ?disj_of_smul⟩
+    have res := this _ _ g⁻¹ disj
+    rwa [inv_smul_smul, inv_smul_smul] at res
+  intro s t g disj
+  rwa [Set.disjoint_iff_inter_eq_empty, ← smul_set_inter, smul_set_eq_empty,
+    ← Set.disjoint_iff_inter_eq_empty]
+
 @[to_additive (attr := simp)]
 theorem smul_univ {s : Set α} (hs : s.Nonempty) : s • (univ : Set β) = univ :=
   let ⟨a, ha⟩ := hs
