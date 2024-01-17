@@ -92,8 +92,26 @@ lemma isEverywherePos_everywherePosSubset_of_measure_ne_top [InnerRegularCompact
     (hs : MeasurableSet s) (h's : μ s ≠ ∞) :
     μ.IsEverywherePos (μ.everywherePosSubset s) := sorry
 
+open Pointwise
+
+#check IsCompact.exists_mapClusterPt
+
 lemma IsEverywherePos.IsGdelta {G : Type*} [Group G] [TopologicalSpace G] [TopologicalGroup G]
     [MeasurableSpace G] [OpensMeasurableSpace G] {μ : Measure G}
     [IsMulLeftInvariant μ] [IsFiniteMeasureOnCompacts μ] [InnerRegularCompactLTTop μ] {k : Set G}
-    (h : μ.IsEverywherePos k) (hk : IsCompact k) (h'k : IsClosed k) :
-    IsGδ k := by sorry
+    (h : μ.IsEverywherePos k) (hk : IsCompact k) :
+    IsGδ k := by
+  obtain ⟨u, -, u_mem, u_lim⟩ : ∃ u, StrictAnti u ∧ (∀ (n : ℕ), u n ∈ Ioo 0 1)
+    ∧ Tendsto u atTop (𝓝 0) := exists_seq_strictAnti_tendsto' (zero_lt_one : (0 : ℝ≥0∞) < 1)
+  have : ∀ n, ∃ (W : Set G), IsOpen W ∧ 1 ∈ W ∧ ∀ g ∈ W * W, μ ((g • k) \ k) ≤ u n := sorry
+  choose W W_open mem_W hW using this
+  let V n := ⋂ i ∈ Finset.range (n+1), W i
+  suffices ⋂ n, V n * k ⊆ k by
+    have : k = ⋂ n, V n * k := by
+      apply Subset.antisymm (subset_iInter_iff.2 (fun n ↦ ?_)) this
+      exact subset_mul_right k (by simp [mem_W])
+    rw [this]
+    refine isGδ_iInter_of_isOpen (fun n ↦ ?_)
+    exact IsOpen.mul_right (isOpen_biInter_finset (fun i hi ↦ W_open i))
+  intro x hx
+  choose v hv y hy hvy using mem_iInter.1 hx
