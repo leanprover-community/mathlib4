@@ -41,6 +41,16 @@ instance :
     Epi (X.imageπ n f₁ f₂ f₁₂ h₁₂) :=
   (ShortComplex.exact_iff_epi_kernel_lift _).1 (X.exact₂ n f₁ f₂ f₁₂ h₁₂)
 
+lemma isZero_image (h : IsZero ((X.H n).obj (mk₁ f₁))) :
+    IsZero (X.image n f₁ f₂ f₁₂ h₁₂) := by
+  rw [IsZero.iff_id_eq_zero, ← cancel_epi (X.imageπ n f₁ f₂ f₁₂ h₁₂)]
+  apply h.eq_of_src
+
+lemma isIso_imageι (h : IsZero ((X.H n).obj (mk₁ f₂))) :
+    IsIso (X.imageι n f₁ f₂ f₁₂ h₁₂) := by
+  apply KernelFork.IsLimit.isIso_ι _ (kernelIsKernel ((X.H n).map (twoδ₁Toδ₀ f₁ f₂ f₁₂ h₁₂)))
+  apply h.eq_of_tgt
+
 section
 
 variable {A : C} (x : A ⟶ (X.H n).obj (mk₁ f₁₂))

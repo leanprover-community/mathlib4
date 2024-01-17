@@ -150,7 +150,7 @@ lemma deg_position (n : σ) (i : α n) :
 @[nolint unusedArguments]
 def mapWithBot (_ : data.CompatibleWithConvergenceStripes s) (n : σ) : WithBot (α n) → ι
   | none => ⊥
-  | some i => data.i₂ (s.position n i) -- or i₁ ??
+  | some i => data.i₂ (s.position n i)
 
 @[simp]
 lemma mapWithBot_none (n : σ):
@@ -227,13 +227,38 @@ variable (hdata : data.CompatibleWithConvergenceStripes s)
 
 class ConvergesInDegree (n : σ) : Prop where
   stationnaryAt (pq : κ) (hpq : s.stripe pq = n) : X.StationaryAt data pq := by infer_instance
-  test : hdata = hdata
+  isZero₁ : ∃ (i : α n), ∀ (j : α n) (_ : s.pred n i = WithBot.some j),
+    IsZero ((X.H (hdata.deg n)).obj (mk₁ (homOfLE' ⊥ (data.i₂ (s.position n j)) bot_le)))
+  isZero₂ : ∃ (i : α n),
+    IsZero ((X.H (hdata.deg n)).obj (mk₁ (homOfLE' (data.i₂ (s.position n i)) ⊤ le_top)))
 
 variable (n : σ) [hX : X.ConvergesInDegree hdata n]
 
 lemma hasPageInfinityAt_of_convergesInDegree (pq : κ)
     (hpq : s.stripe pq = n) : X.StationaryAt data pq :=
   hX.stationnaryAt pq hpq
+
+lemma isZero₁_of_convergesInDegree :
+    ∃ (i : α n),
+      IsZero ((X.H (hdata.deg n)).obj (mk₁ (homOfLE' ⊥ (hdata.mapWithBot n (s.pred n i)) bot_le))) := by
+  obtain ⟨i, hi⟩ := hX.isZero₁
+  refine' ⟨i, _⟩
+  obtain h | ⟨j, h⟩ := Option.by_cases (s.pred n i)
+  · have : IsZero ((X.H (hdata.deg n)).obj (mk₁ (homOfLE' ⊥ ⊥ bot_le))) := by
+      apply X.isZero_H_obj_of_isIso
+      change IsIso (𝟙 _)
+      infer_instance
+    convert this
+    rw [h]
+    rfl
+  · convert hi j h
+    rw [h]
+    rfl
+
+lemma isZero₂_of_convergesInDegree :
+    ∃ (i : α n),
+      IsZero ((X.H (hdata.deg n)).obj (mk₁ (homOfLE' (data.i₂ (s.position n i)) ⊤ le_top))) :=
+  hX.isZero₂
 
 namespace ConvergesAt
 
@@ -304,22 +329,22 @@ end
 
 end ConvergesAt
 
-/-noncomputable def convergesAt :
+noncomputable def convergesAt :
     (X.spectralSequence data).StronglyConvergesToInDegree s n (X.abutment (hdata.deg n)) where
   hasPageInfinityAt pq hpq := by
     have := X.hasPageInfinityAt_of_convergesInDegree hdata n pq hpq
     infer_instance
   filtration' := hdata.mapWithBotFunctor n ⋙ X.abutmentFiltrationFunctor (hdata.deg n)
   exists_isZero' := by
-    have I : α n := sorry
-    refine' ⟨I, _⟩
-    dsimp [abutmentFiltration]
-    sorry
-  exists_isIso' := sorry
+    obtain ⟨i, hi⟩ := X.isZero₁_of_convergesInDegree hdata n
+    exact ⟨i, X.isZero_image _ _ _ _ _ hi⟩
+  exists_isIso' := by
+    obtain ⟨i, hi⟩ := X.isZero₂_of_convergesInDegree hdata n
+    exact ⟨i, X.isIso_imageι _ _ _ _ _ hi⟩
   π' i pq hpq := ConvergesAt.π X hdata n _ rfl i _ rfl pq hpq
   epi_π' i pq hpq := by infer_instance
   comp_π' i j hij pq hpq := (ConvergesAt.composableArrows_exact X hdata n _ rfl i j _ _ rfl rfl hij pq hpq).toIsComplex.zero 0
-  exact_π' i j hij pq hpq := (ConvergesAt.composableArrows_exact X hdata n _ rfl i j _ _ rfl rfl hij pq hpq).exact 0-/
+  exact_π' i j hij pq hpq := (ConvergesAt.composableArrows_exact X hdata n _ rfl i j _ _ rfl rfl hij pq hpq).exact 0
 
 end SpectralObject
 
