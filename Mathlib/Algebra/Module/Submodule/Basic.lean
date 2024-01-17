@@ -382,70 +382,6 @@ theorem vadd_def [VAdd M α] (g : p) (m : α) : g +ᵥ m = (g : M) +ᵥ m :=
 
 end AddAction
 
-section RestrictScalars
-
-variable (S) [Semiring S] [Module S M] [Module R M] [SMul S R] [IsScalarTower S R M]
-
-/-- `V.restrict_scalars S` is the `S`-submodule of the `S`-module given by restriction of scalars,
-corresponding to `V`, an `R`-submodule of the original `R`-module.
--/
-def restrictScalars (V : Submodule R M) : Submodule S M where
-  carrier := V
-  zero_mem' := V.zero_mem
-  smul_mem' c _ h := V.smul_of_tower_mem c h
-  add_mem' hx hy := V.add_mem hx hy
-#align submodule.restrict_scalars Submodule.restrictScalars
-
-@[simp]
-theorem coe_restrictScalars (V : Submodule R M) : (V.restrictScalars S : Set M) = V :=
-  rfl
-#align submodule.coe_restrict_scalars Submodule.coe_restrictScalars
-
-@[simp]
-theorem restrictScalars_mem (V : Submodule R M) (m : M) : m ∈ V.restrictScalars S ↔ m ∈ V :=
-  Iff.refl _
-#align submodule.restrict_scalars_mem Submodule.restrictScalars_mem
-
-@[simp]
-theorem restrictScalars_self (V : Submodule R M) : V.restrictScalars R = V :=
-  SetLike.coe_injective rfl
-#align submodule.restrict_scalars_self Submodule.restrictScalars_self
-
-variable (R M)
-
-theorem restrictScalars_injective :
-    Function.Injective (restrictScalars S : Submodule R M → Submodule S M) := fun _ _ h =>
-  ext <| Set.ext_iff.1 (SetLike.ext'_iff.1 h : _)
-#align submodule.restrict_scalars_injective Submodule.restrictScalars_injective
-
-@[simp]
-theorem restrictScalars_inj {V₁ V₂ : Submodule R M} :
-    restrictScalars S V₁ = restrictScalars S V₂ ↔ V₁ = V₂ :=
-  (restrictScalars_injective S _ _).eq_iff
-#align submodule.restrict_scalars_inj Submodule.restrictScalars_inj
-
-/-- Even though `p.restrictScalars S` has type `Submodule S M`, it is still an `R`-module. -/
-instance restrictScalars.origModule (p : Submodule R M) : Module R (p.restrictScalars S) :=
-  (by infer_instance : Module R p)
-#align submodule.restrict_scalars.orig_module Submodule.restrictScalars.origModule
-
-instance restrictScalars.isScalarTower (p : Submodule R M) :
-    IsScalarTower S R (p.restrictScalars S) where
-  smul_assoc r s x := Subtype.ext <| smul_assoc r s (x : M)
-#align submodule.restrict_scalars.is_scalar_tower Submodule.restrictScalars.isScalarTower
-
-/-- `restrictScalars S` is an embedding of the lattice of `R`-submodules into
-the lattice of `S`-submodules. -/
-@[simps]
-def restrictScalarsEmbedding : Submodule R M ↪o Submodule S M where
-  toFun := restrictScalars S
-  inj' := restrictScalars_injective S R M
-  map_rel_iff' := by simp [SetLike.le_def]
-#align submodule.restrict_scalars_embedding Submodule.restrictScalarsEmbedding
-#align submodule.restrict_scalars_embedding_apply Submodule.restrictScalarsEmbedding_apply
-
-end RestrictScalars
-
 end AddCommMonoid
 
 section AddCommGroup
@@ -521,7 +457,7 @@ protected theorem add_mem_iff_right : x ∈ p → (x + y ∈ p ↔ y ∈ p) :=
 #align submodule.add_mem_iff_right Submodule.add_mem_iff_right
 
 protected theorem coe_neg (x : p) : ((-x : p) : M) = -x :=
-  AddSubgroupClass.coe_neg _
+  NegMemClass.coe_neg _
 #align submodule.coe_neg Submodule.coe_neg
 
 protected theorem coe_sub (x y : p) : (↑(x - y) : M) = ↑x - ↑y :=

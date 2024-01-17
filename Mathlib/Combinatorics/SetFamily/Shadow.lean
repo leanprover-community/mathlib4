@@ -101,12 +101,12 @@ theorem erase_mem_shadow (hs : s ∈ 𝒜) (ha : a ∈ s) : erase s a ∈ ∂ �
 
 See also `Finset.mem_shadow_iff_exists_mem_card_add_one`. -/
 lemma mem_shadow_iff_exists_sdiff : t ∈ ∂ 𝒜 ↔ ∃ s ∈ 𝒜, t ⊆ s ∧ (s \ t).card = 1 := by
-  simp_rw [mem_shadow_iff, ← covby_iff_card_sdiff_eq_one, covby_iff_exists_erase]
+  simp_rw [mem_shadow_iff, ← covBy_iff_card_sdiff_eq_one, covBy_iff_exists_erase]
 
 /-- `t` is in the shadow of `𝒜` iff we can add an element to it so that the resulting finset is in
 `𝒜`. -/
 lemma mem_shadow_iff_insert_mem : t ∈ ∂ 𝒜 ↔ ∃ a, a ∉ t ∧ insert a t ∈ 𝒜 := by
-  simp_rw [mem_shadow_iff_exists_sdiff, ← covby_iff_card_sdiff_eq_one, covby_iff_exists_insert]
+  simp_rw [mem_shadow_iff_exists_sdiff, ← covBy_iff_card_sdiff_eq_one, covBy_iff_exists_insert]
   aesop
 #align finset.mem_shadow_iff_insert_mem Finset.mem_shadow_iff_insert_mem
 
@@ -223,12 +223,12 @@ theorem insert_mem_upShadow (hs : s ∈ 𝒜) (ha : a ∉ s) : insert a s ∈ �
 
 See also `Finset.mem_upShadow_iff_exists_mem_card_add_one`. -/
 lemma mem_upShadow_iff_exists_sdiff : t ∈ ∂⁺ 𝒜 ↔ ∃ s ∈ 𝒜, s ⊆ t ∧ (t \ s).card = 1 := by
-  simp_rw [mem_upShadow_iff, ← covby_iff_card_sdiff_eq_one, covby_iff_exists_insert]
+  simp_rw [mem_upShadow_iff, ← covBy_iff_card_sdiff_eq_one, covBy_iff_exists_insert]
 
 /-- `t` is in the upper shadow of `𝒜` iff we can remove an element from it so that the resulting
 finset is in `𝒜`. -/
 lemma mem_upShadow_iff_erase_mem : t ∈ ∂⁺ 𝒜 ↔ ∃ a, a ∈ t ∧ erase t a ∈ 𝒜 := by
-  simp_rw [mem_upShadow_iff_exists_sdiff, ← covby_iff_card_sdiff_eq_one, covby_iff_exists_erase]
+  simp_rw [mem_upShadow_iff_exists_sdiff, ← covBy_iff_card_sdiff_eq_one, covBy_iff_exists_erase]
   aesop
 #align finset.mem_up_shadow_iff_erase_mem Finset.mem_upShadow_iff_erase_mem
 

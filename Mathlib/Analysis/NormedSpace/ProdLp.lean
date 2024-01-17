@@ -624,6 +624,23 @@ theorem prod_nnnorm_eq_sup (f : WithLp ∞ (α × β)) : ‖f‖₊ = ‖f.fst�
   ext
   norm_cast
 
+@[simp] theorem prod_nnnorm_equiv (f : WithLp ∞ (α × β)) :
+    ‖WithLp.equiv ⊤ _ f‖₊ = ‖f‖₊ := by
+  rw [prod_nnnorm_eq_sup, Prod.nnnorm_def', _root_.sup_eq_max]
+  rfl
+
+@[simp] theorem prod_nnnorm_equiv_symm (f : α × β) :
+    ‖(WithLp.equiv ⊤ _).symm f‖₊ = ‖f‖₊ :=
+  (prod_nnnorm_equiv _).symm
+
+@[simp] theorem prod_norm_equiv (f : WithLp ∞ (α × β)) :
+    ‖WithLp.equiv ⊤ _ f‖ = ‖f‖ :=
+  congr_arg NNReal.toReal <| prod_nnnorm_equiv f
+
+@[simp] theorem prod_norm_equiv_symm (f : α × β) :
+    ‖(WithLp.equiv ⊤ _).symm f‖ = ‖f‖ :=
+  (prod_norm_equiv _).symm
+
 theorem prod_norm_eq_of_L2 (x : WithLp 2 (α × β)) :
     ‖x‖ = Real.sqrt (‖x.fst‖ ^ 2 + ‖x.snd‖ ^ 2) := by
   rw [prod_norm_eq_of_nat 2 (by norm_cast) _, Real.sqrt_eq_rpow]
@@ -729,25 +746,22 @@ theorem edist_equiv_symm_snd (y₁ y₂ : β) :
 
 end Single
 
-section NormedSpace
+section BoundedSMul
+variable [SeminormedRing 𝕜] [Module 𝕜 α] [Module 𝕜 β] [BoundedSMul 𝕜 α] [BoundedSMul 𝕜 β]
 
-variable [NormedField 𝕜] [NormedSpace 𝕜 α] [NormedSpace 𝕜 β]
-
-/-- The product of two normed spaces is a normed space, with the `L^p` norm. -/
-instance instProdNormedSpace : NormedSpace 𝕜 (WithLp p (α × β)) where
-  norm_smul_le c f := by
+instance instProdBoundedSMul : BoundedSMul 𝕜 (WithLp p (α × β)) :=
+  .of_nnnorm_smul_le fun c f => by
     rcases p.dichotomy with (rfl | hp)
-    · suffices ‖c • f‖₊ = ‖c‖₊ * ‖f‖₊ from mod_cast NNReal.coe_mono this.le
-      simp only [prod_nnnorm_eq_sup, NNReal.mul_sup, ← nnnorm_smul]
-      rfl
-    · have : p.toReal * (1 / p.toReal) = 1 := mul_div_cancel' 1 (zero_lt_one.trans_le hp).ne'
-      have smul_fst : (c • f).fst = c • f.fst := rfl
-      have smul_snd : (c • f).snd = c • f.snd := rfl
-      simp only [prod_norm_eq_add (zero_lt_one.trans_le hp), norm_smul, Real.mul_rpow,
-        norm_nonneg, smul_fst, smul_snd]
-      rw [← mul_add, mul_rpow (rpow_nonneg (norm_nonneg _) _),
-        ← rpow_mul (norm_nonneg _), this, Real.rpow_one]
-      positivity
+    · simp only [← prod_nnnorm_equiv, WithLp.equiv_smul]
+      exact norm_smul_le _ _
+    · have hp0 : 0 < p.toReal := zero_lt_one.trans_le hp
+      have hpt : p ≠ ⊤ := p.toReal_pos_iff_ne_top.mp hp0
+      rw [prod_nnnorm_eq_add hpt, prod_nnnorm_eq_add hpt, NNReal.rpow_one_div_le_iff hp0,
+        NNReal.mul_rpow, ← NNReal.rpow_mul, div_mul_cancel 1 hp0.ne', NNReal.rpow_one, mul_add,
+        ← NNReal.mul_rpow, ← NNReal.mul_rpow]
+      exact add_le_add
+        (NNReal.rpow_le_rpow (nnnorm_smul_le _ _) hp0.le)
+        (NNReal.rpow_le_rpow (nnnorm_smul_le _ _) hp0.le)
 
 variable {𝕜 p α β}
 
@@ -755,9 +769,18 @@ variable {𝕜 p α β}
 equivalence. -/
 def prodEquivₗᵢ : WithLp ∞ (α × β) ≃ₗᵢ[𝕜] α × β where
   __ := WithLp.equiv ∞ (α × β)
-  map_add' f g := rfl
-  map_smul' c f := rfl
-  norm_map' f := by simp [Norm.norm]
+  map_add' _f _g := rfl
+  map_smul' _c _f := rfl
+  norm_map' := prod_norm_equiv
+
+end BoundedSMul
+
+section NormedSpace
+
+/-- The product of two normed spaces is a normed space, with the `L^p` norm. -/
+instance instProdNormedSpace [NormedField 𝕜] [NormedSpace 𝕜 α] [NormedSpace 𝕜 β] :
+    NormedSpace 𝕜 (WithLp p (α × β)) where
+  norm_smul_le := norm_smul_le
 
 end NormedSpace
 
