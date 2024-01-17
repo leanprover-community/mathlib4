@@ -562,9 +562,13 @@ theorem nnnorm_eq_ciSup {β : ι → Type*} [∀ i, SeminormedAddCommGroup (β i
 
 theorem nnnorm_equiv {β : ι → Type*} [∀ i, SeminormedAddCommGroup (β i)] (f : PiLp ∞ β) :
     ‖WithLp.equiv ⊤ _ f‖₊ = ‖f‖₊ := by
-  rw [nnnorm_eq_ciSup, Pi.nnnorm_def]
-  dsimp
-  rw [Finset]
+  rw [nnnorm_eq_ciSup, Pi.nnnorm_def, Finset.sup_univ_eq_ciSup]
+  dsimp only [WithLp.equiv_pi_apply]
+
+
+theorem norm_equiv {β : ι → Type*} [∀ i, SeminormedAddCommGroup (β i)] (f : PiLp ∞ β) :
+    ‖WithLp.equiv ⊤ _ f‖ = ‖f‖ :=
+  NNReal.eq <| nnnorm_equiv _
 
 theorem norm_eq_of_nat {p : ℝ≥0∞} [Fact (1 ≤ p)] {β : ι → Type*}
     [∀ i, SeminormedAddCommGroup (β i)] (n : ℕ) (h : p = n) (f : PiLp p β) :
