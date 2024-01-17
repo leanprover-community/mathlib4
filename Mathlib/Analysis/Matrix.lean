@@ -245,7 +245,6 @@ protected def linftyOpNormedAddCommGroup [NormedAddCommGroup α] :
   (by infer_instance : NormedAddCommGroup (m → PiLp 1 fun j : n => α))
 #align matrix.linfty_op_normed_add_comm_group Matrix.linftyOpNormedAddCommGroup
 
-
 @[local instance]
 protected def linftyOpBoundedSMul
     [SeminormedRing R] [SeminormedAddCommGroup α] [Module R α] [BoundedSMul R α] :
