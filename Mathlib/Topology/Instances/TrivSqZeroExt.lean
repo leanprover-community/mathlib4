@@ -41,7 +41,7 @@ instance instTopologicalSpace [TopologicalSpace R] [TopologicalSpace M] :
 instance [TopologicalSpace R] [TopologicalSpace M] [T2Space R] [T2Space M] : T2Space (tsze R M) :=
   Prod.t2Space
 
-instance [UniformSpace R] [UniformSpace M] : UniformSpace (tsze R M) where
+instance instUniformSpace [UniformSpace R] [UniformSpace M] : UniformSpace (tsze R M) where
   toTopologicalSpace := instTopologicalSpace
   __ := instUniformSpaceProd
 
