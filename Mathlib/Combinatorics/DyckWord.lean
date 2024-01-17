@@ -24,6 +24,8 @@ import Mathlib.Data.List.Indexes
 -/
 
 
+open List
+
 namespace DyckPath
 
 /-- A `Step` is either `U` or `D`, corresponding to `(` and `)` respectively. -/
@@ -32,30 +34,32 @@ inductive Step
   | D : Step
   deriving Inhabited, DecidableEq
 
-/-- A `DyckPath` is a `List` of `Step`s. -/
+/-- A Dyck path is a list of `Step`s. -/
 abbrev _root_.DyckPath := List Step
 
-open Step List
+open Step
+
+section Defs
+
+variable (p : DyckPath)
 
 lemma step_cases (s : Step) : s = U ∨ s = D := by cases' s <;> tauto
-
-variable {p : DyckPath}
 
 lemma count_U_add_count_D_eq_length : p.count U + p.count D = p.length := by
   symm; convert p.length_eq_countP_add_countP (· == U)
   rw [count]; congr!; rename_i s
   cases' s <;> simp
 
-/-- A `DyckPath` is balanced if its running `U`-count always exceeds its running `D`-count
+/-- A Dyck path is balanced if its running `D`-count never exceeds its running `U`-count
 and both counts are equal at the end. -/
-def IsBalanced (p : DyckPath) : Prop :=
+def IsBalanced : Prop :=
   p.count U = p.count D ∧ ∀ i, (p.take i).count D ≤ (p.take i).count U
 
-/-- Computable version of `IsBalanced`. -/
-def IsBalanced' (p : DyckPath) : Prop :=
+/-- Decidable version of `IsBalanced`. -/
+def IsBalanced' : Prop :=
   p.count U = p.count D ∧ ∀ i < p.length, (p.take i).count D ≤ (p.take i).count U
 
-theorem isBalanced_iff_isBalanced' : p.IsBalanced ↔ p.IsBalanced' := by
+lemma isBalanced_iff_isBalanced' : p.IsBalanced ↔ p.IsBalanced' := by
   constructor <;> (intro ⟨h1, h2⟩; refine' ⟨h1, _⟩)
   · intro i _; exact h2 i
   · intro i
@@ -64,186 +68,217 @@ theorem isBalanced_iff_isBalanced' : p.IsBalanced ↔ p.IsBalanced' := by
     · rw [take_all_of_le hi]; exact h1.symm.le
 
 instance : DecidablePred IsBalanced := fun _ ↦
-  decidable_of_iff (_ ∧ _) isBalanced_iff_isBalanced'.symm
+  decidable_of_iff (_ ∧ _) (isBalanced_iff_isBalanced' _).symm
 
-section Decomp
+end Defs
 
-variable (p) (bal : p.IsBalanced) (hl : p ≠ [])
+section Lemmas
 
-lemma head_U : p.head hl = U := by
-  cases' p with ph pt; · contradiction
-  by_contra f
-  replace f := (step_cases ph).resolve_left f
-  have := bal.2 1
-  rw [take_cons, take_zero, f, count_singleton', count_singleton'] at this
-  simp only [ite_true, ite_false] at this
-  contradiction
+variable {p : DyckPath} (bp : p.IsBalanced)
 
-lemma length_even : ∃ k, p.length = 2 * k := by
+lemma IsBalanced.length_even : Even p.length := by
   use p.count U
-  rw [← count_U_add_count_D_eq_length, bal.1, two_mul]
+  rw [← count_U_add_count_D_eq_length, bp.1]
 
-/-- Index of the first return of a `DyckPath` to zero. -/
-def firstReturn : ℕ :=
+/-- If `x` and `y` are balanced Dyck paths then so is `xy`. -/
+lemma IsBalanced.append {q : DyckPath} (bq : q.IsBalanced) : (p ++ q).IsBalanced := by
+  simp only [IsBalanced, take_append_eq_append_take, count_append]
+  exact ⟨by rw [bp.1, bq.1], fun _ ↦ add_le_add (bp.2 _) (bq.2 _)⟩
+
+/-- If `x` is a balanced Dyck path then so is `(x)`. -/
+lemma IsBalanced.nest : (↑[U] ++ p ++ ↑[D]).IsBalanced := by
+  simp only [IsBalanced, take_append_eq_append_take, count_append]
+  refine' ⟨by rw [bp.1]; omega, fun i ↦ _⟩
+  rw [← add_rotate (count D _), ← add_rotate (count U _)]
+  apply add_le_add _ (bp.2 _)
+  cases' i.eq_zero_or_pos with hi hi; · simp [hi]
+  simp_rw [take_all_of_le (show [U].length ≤ i by rwa [length_singleton]),
+    count_singleton', ite_true, ite_false, add_comm _ 0]
+  exact add_le_add (zero_le _) ((count_le_length _ _).trans (by simp))
+
+/-- A balanced Dyck path is split into two parts. If one part is balanced, so is the other. -/
+lemma IsBalanced.split (i : ℕ) : IsBalanced (p.take i) ↔ IsBalanced (p.drop i) := by
+  rw [IsBalanced, ← p.take_append_drop i] at bp
+  simp_rw [take_append_eq_append_take, count_append] at bp
+  obtain ⟨b1, b2⟩ := bp
+  constructor <;> intro bh
+  · refine' ⟨by rw [bh.1] at b1; omega, fun j ↦ _⟩
+    replace b2 := b2 (j + (p.take i).length)
+    rwa [take_all_of_le (by omega), bh.1, add_le_add_iff_left, Nat.add_sub_cancel] at b2
+  · refine' ⟨by rw [bh.1] at b1; omega, fun j ↦ _⟩
+    cases' le_or_gt (p.take i).length j with hj hj
+    · rw [take_all_of_le hj]; rw [bh.1] at b1; omega
+    · replace b2 := b2 j
+      simp_rw [show j - (p.take i).length = 0 by omega, take_zero, count_nil, add_zero] at b2
+      exact b2
+
+/-- If `p.take i` satisfies the equality part of `IsBalanced`, it also satisfies the other part
+and is balanced itself. -/
+lemma IsBalanced.from_take {i : ℕ} (h : (p.take i).count U = (p.take i).count D) :
+    IsBalanced (p.take i) := ⟨h, fun j ↦ by rw [take_take]; apply bp.2⟩
+
+variable (np : p ≠ [])
+
+/-- The first element of a nonempty balanced Dyck path is `U`. -/
+lemma IsBalanced.head_U : p.head np = U := by
+  cases' p with h _; · tauto
+  by_contra f; simpa [(step_cases h).resolve_left f] using bp.2 1
+
+/-- The last element of a nonempty balanced Dyck path is `D`. -/
+lemma IsBalanced.getLast_D : p.getLast np = D := by
+  by_contra f; have s := bp.1
+  rw [← dropLast_append_getLast np, (step_cases _).resolve_right f] at s
+  simp_rw [dropLast_eq_take, count_append, count_singleton', ite_true, ite_false] at s
+  have t := bp.2 p.length.pred; omega
+
+private lemma denest_aux : p.take 1 = [p.head np] ∧ p.dropLast.take 1 = [p.head np] ∧
+    p.length.pred = p.length.pred.pred + 1 := by
+  cases' p with _ q; · tauto
+  cases' q
+  · replace bp := bp.length_even; norm_num [even_iff_two_dvd] at bp
+  · refine' ⟨_, _, _⟩
+    · rw [take_cons, take_zero, head_cons]
+    · rw [dropLast_cons₂, take_cons, take_zero, head_cons]
+    · rfl
+
+lemma append_tail_dropLast_append : p = [U] ++ tail (dropLast p) ++ [D] := by
+  nth_rw 1 [← p.dropLast_append_getLast np, ← p.dropLast.take_append_drop 1]
+  rw [bp.getLast_D, drop_one, (denest_aux bp np).2.1, bp.head_U]
+
+/-- If the inequality part of `IsBalanced` is strict in the interior of a nonempty
+balanced Dyck path, the interior is itself balanced. -/
+lemma IsBalanced.denest
+    (h : ∀ i (_ : 0 < i ∧ i < p.length), (p.take i).count D < (p.take i).count U) :
+    IsBalanced p.dropLast.tail := by
+  obtain ⟨l1, _, l3⟩ := denest_aux bp np
+  constructor
+  · replace bp := (append_tail_dropLast_append bp np) ▸ bp.1
+    simp_rw [count_append, count_singleton', ite_true, ite_false] at bp; omega
+  · intro i
+    rw [← drop_one, ← drop_take, dropLast_eq_take, take_take]
+    have ub : min (1 + i) p.length.pred < p.length :=
+      (min_le_right _ p.length.pred).trans_lt (Nat.pred_lt ((length_pos.mpr np).ne'))
+    have lb : 0 < min (1 + i) p.length.pred := by
+      rw [l3, add_comm, min_add_add_right]; omega
+    have eq := h _ ⟨lb, ub⟩
+    set j := min (1 + i) p.length.pred
+    rw [← (p.take j).take_append_drop 1, count_append, count_append, take_take,
+      min_eq_left (by omega), l1, bp.head_U] at eq
+    simp only [count_singleton', ite_true, ite_false] at eq; omega
+
+end Lemmas
+
+section FirstReturn
+
+/-- Index of the first return of a Dyck path to zero. -/
+def firstReturn (p : DyckPath) : ℕ :=
   (range p.length).findIdx (fun i ↦ (p.take (i + 1)).count U = (p.take (i + 1)).count D)
-/-- The left part of the Dyck word decomposition. -/
-def leftPart : DyckPath := (p.take p.firstReturn).tail
-/-- The right part of the Dyck word decomposition. -/
-def rightPart : DyckPath := p.drop (p.firstReturn + 1)
+
+variable {p : DyckPath} (bp : p.IsBalanced) (np : p ≠ [])
 
 lemma firstReturn_lt_length : p.firstReturn < p.length := by
+  have lp := length_pos_of_ne_nil np
   rw [← length_range p.length]
   apply findIdx_lt_length_of_exists
   simp only [mem_range, decide_eq_true_eq]
   use p.length - 1
-  have := length_pos_of_ne_nil hl
-  refine' ⟨by omega, _⟩
-  rw [show p.length - 1 + 1 = p.length by omega, take_all_of_le (le_refl _)]
-  exact bal.1
+  exact ⟨by omega, by rw [Nat.sub_add_cancel lp, take_all_of_le (le_refl _), bp.1]⟩
+
+lemma take_firstReturn_isBalanced : IsBalanced (p.take (p.firstReturn + 1)) := by
+  have := findIdx_get (w := (length_range p.length).symm ▸ firstReturn_lt_length bp np)
+  simp only [get_range, decide_eq_true_eq] at this
+  exact bp.from_take this
+
+lemma firstReturn_pos : 0 < p.firstReturn := by
+  have lp := length_pos_of_ne_nil np
+  by_contra f
+  replace f : p.firstReturn = 0 := by omega
+  have := (take_firstReturn_isBalanced bp np).length_even
+  rw [length_take, min_eq_left (by omega), f] at this
+  norm_num [even_iff_two_dvd] at this
+
+lemma take_firstReturn_ne_nil : p.take (p.firstReturn + 1) ≠ [] := by
+  rw [← length_pos, length_take]; exact lt_min (by omega) (length_pos.mpr np)
+
+theorem take_firstReturn_eq_dropLast :
+    p.take p.firstReturn = (p.take (p.firstReturn + 1)).dropLast := by
+  rw [dropLast_eq_take, take_take, length_take, take_eq_take]
+  nth_rw 2 [← Nat.succ_pred_eq_of_pos (length_pos_of_ne_nil np)]
+  rw [min_add_add_right, Nat.pred_succ, min_eq_left (Nat.le_pred_of_lt
+    (firstReturn_lt_length bp np)), min_eq_left_of_lt (Nat.lt_succ_self _)]
+
+end FirstReturn
+
+section Decomp
+
+/-- The left part of the Dyck word decomposition. -/
+def leftPart (p : DyckPath) : DyckPath := (p.take p.firstReturn).tail
+/-- The right part of the Dyck word decomposition. -/
+def rightPart (p : DyckPath) : DyckPath := p.drop (p.firstReturn + 1)
+
+variable {p : DyckPath} (bp : p.IsBalanced) (np : p ≠ [])
 
 lemma count_U_eq_count_D_of_firstReturn :
     (p.take (p.firstReturn + 1)).count U = (p.take (p.firstReturn + 1)).count D := by
-  have := findIdx_get (w := (length_range p.length).symm ▸ p.firstReturn_lt_length bal hl)
+  have := findIdx_get (w := (length_range p.length).symm ▸ firstReturn_lt_length bp np)
   simpa only [get_range, decide_eq_true_eq]
 
-lemma count_D_lt_count_U_of_lt_firstReturn : ∀ i < p.firstReturn,
-    (p.take (i + 1)).count D < (p.take (i + 1)).count U := fun i hi ↦ by
-  have ne := not_of_lt_findIdx hi
-  simp only [get_range, decide_eq_true_eq, ← ne_eq] at ne
-  have lt := bal.2 (i + 1)
-  exact lt_of_le_of_ne lt ne.symm
-
-/-- The `p.firstReturn`-th element of a balanced `DyckPath` is `D`. -/
-lemma get_firstReturn_eq_D : p.get ⟨p.firstReturn, p.firstReturn_lt_length bal hl⟩ = D := by
-  have eq := p.count_U_eq_count_D_of_firstReturn bal hl
-  have le := bal.2 p.firstReturn
-  have frl := p.firstReturn_lt_length bal hl
-  simp_rw [take_succ, get?_eq_get frl, Option.to_list_some, count_append, count_singleton'] at eq
-  by_contra f
-  replace f := (step_cases (p.get ⟨_, frl⟩)).resolve_right f
-  simp_rw [f, ite_true, ite_false] at eq
-  omega
-
-lemma firstReturn_pos : 0 < p.firstReturn := by
-  by_contra f
-  rw [not_lt, nonpos_iff_eq_zero] at f
-  have eqD := p.get_firstReturn_eq_D bal hl
-  have eqU := p.head_U bal hl
-  cases' p with hd tl; · tauto
-  simp_rw [f, List.get] at eqD
-  rw [head_cons, eqD] at eqU
-  contradiction
-
-lemma take_eq_U_cons_tail {i : ℕ} (hi : 0 < i) : p.take i = U :: (p.take i).tail := by
-  have tip := (@take_eq_nil_iff _ p i).not.symm
-  simp_rw [not_or, ← ne_eq] at tip
-  replace tip := tip.mp ⟨hl, hi.ne'⟩
-  convert (cons_head!_tail tip).symm
-  have := head!_append (p.drop i) tip
-  rw [take_append_drop] at this
-  rw [← this, ← p.head_U bal hl]
-  cases' p with hd tl; · tauto
-  rw [head_cons, head!_cons]
-
-lemma take_tail_comm {i : ℕ} : (p.take (i + 1)).tail = p.tail.take i := by
-  cases' p; · contradiction
-  rw [take_cons_succ, tail_cons, tail_cons]
-
-lemma take_tail_take_of_lt {i j : ℕ} (hij : i < j) : (p.take j).tail.take i = p.tail.take i := by
-  cases' p with hd tl; · simp only [take_nil, tail_nil]
-  induction' j, hij using Nat.le_induction with j hij _
-  · rw [take_cons, tail_cons, take_take, min_self, tail_cons]
-  · rw [take_cons, tail_cons, take_take, tail_cons, min_eq_left (by omega)]
-
 theorem leftPart_isBalanced : p.leftPart.IsBalanced := by
-  have eq := p.count_U_eq_count_D_of_firstReturn bal hl
-  have frl := p.firstReturn_lt_length bal hl
-  rw [take_succ, get?_eq_get frl, Option.to_list_some, count_append, count_append,
-    p.get_firstReturn_eq_D bal hl, p.take_eq_U_cons_tail bal hl (p.firstReturn_pos bal hl)] at eq
-  simp only [count_cons, count_nil, ite_true, ite_false, zero_add, add_zero, add_left_inj] at eq
-  refine' ⟨eq, fun i ↦ _⟩
-  have lt := p.count_D_lt_count_U_of_lt_firstReturn bal
-  unfold leftPart
-  cases' lt_or_ge i p.firstReturn with e e
-  · replace lt := lt i e
-    rw [p.take_eq_U_cons_tail bal hl (by omega)] at lt
-    simp only [count_cons, ite_true, ite_false, add_zero, Nat.lt_add_one_iff,
-      p.take_tail_comm bal hl] at lt
-    rw [p.take_tail_take_of_lt bal hl e]
-    exact lt
-  · rw [take_all_of_le, eq]
-    rw [length_tail, length_take, min_eq_left (p.firstReturn_lt_length bal hl).le]
-    omega
+  have := firstReturn_lt_length bp np
+  rw [leftPart, take_firstReturn_eq_dropLast bp np]
+  apply (bp.from_take (count_U_eq_count_D_of_firstReturn bp np)).denest
+    (take_firstReturn_ne_nil np)
+  intro i hi
+  rw [length_take, min_eq_left (by omega)] at hi
+  rw [take_take, min_eq_left_of_lt hi.2]
+  have ne := not_of_lt_findIdx (show i - 1 < p.firstReturn by omega)
+  rw [get_range, decide_eq_true_eq, ← ne_eq, Nat.sub_add_cancel hi.1] at ne
+  exact lt_of_le_of_ne (bp.2 i) ne.symm
+
+theorem rightPart_isBalanced : p.rightPart.IsBalanced :=
+  (bp.split _).mp <| bp.from_take (count_U_eq_count_D_of_firstReturn bp np)
 
 theorem eq_U_leftPart_D_rightPart : p = ↑[U] ++ p.leftPart ++ ↑[D] ++ p.rightPart := by
   nth_rw 1 [← p.take_append_drop (p.firstReturn + 1)]; congr
-  rw [take_succ, get?_eq_get (p.firstReturn_lt_length bal hl), Option.to_list_some,
-    p.get_firstReturn_eq_D bal hl]; congr
-  rw [p.take_eq_U_cons_tail bal hl (p.firstReturn_pos bal hl), singleton_append]; rfl
+  rw [leftPart, take_firstReturn_eq_dropLast bp np]
+  exact append_tail_dropLast_append (take_firstReturn_isBalanced bp np) (take_firstReturn_ne_nil np)
 
 theorem leftPart_length_lt : p.leftPart.length < p.length := by
-  conv_rhs => rw [p.eq_U_leftPart_D_rightPart bal hl]
-  rw [length_append, length_append, length_append, length_singleton, length_singleton]
-  omega
+  conv_rhs => rw [eq_U_leftPart_D_rightPart bp np]
+  simp_rw [length_append, length_singleton]; omega
 
 theorem rightPart_length_lt : p.rightPart.length < p.length := by
-  conv_rhs => rw [p.eq_U_leftPart_D_rightPart bal hl]
-  rw [length_append, length_append, length_append, length_singleton, length_singleton]
-  omega
+  conv_rhs => rw [eq_U_leftPart_D_rightPart bp np]
+  simp_rw [length_append, length_singleton]; omega
 
-theorem rightPart_isBalanced : p.rightPart.IsBalanced := by
-  have h1 := bal.1
-  rw [← p.take_append_drop (p.firstReturn + 1), count_append, count_append,
-    p.count_U_eq_count_D_of_firstReturn bal hl, add_right_inj] at h1
-  refine' ⟨h1, fun i ↦ _⟩
-  have h2 := bal.2
-  have ceq : (↑[U] ++ p.leftPart ++ ↑[D]).count U = (↑[U] ++ p.leftPart ++ ↑[D]).count D := by
-    iterate 4 rw [count_append]
-    simp only [(p.leftPart_isBalanced bal hl).1, count_singleton', ite_true, ite_false]
-    omega
-  rw [p.eq_U_leftPart_D_rightPart bal hl] at h2
-  conv at h2 => intro i; rw [take_append_eq_append_take]
-  replace h2 := h2 (i + (↑[U] ++ p.leftPart ++ ↑[D]).length)
-  rw [take_all_of_le (Nat.le_add_left _ _), Nat.add_sub_cancel,
-    count_append _ _ (p.rightPart.take i), count_append _ _ (p.rightPart.take i), ceq] at h2
-  exact Nat.add_le_add_iff_left.mp h2
-
-variable {p} {q : DyckPath}
+variable {q : DyckPath}
 
 theorem compose_firstReturn : (↑[U] ++ p ++ ↑[D] ++ q).firstReturn = p.length + 1 := by
-  rw [firstReturn]
-  apply eq_findIdx_of_not
-  pick_goal 3
-  · rw [length_range, length_append, length_append, length_append, length_singleton,
-      length_singleton]; omega
+  rw [firstReturn]; apply eq_findIdx_of_not
+  pick_goal 3; · simp_rw [length_range, length_append, length_singleton]; omega
+  all_goals simp only [get_range, decide_eq_true_eq]
   · intro j hji
-    simp only [get_range, decide_eq_true_eq]
-    rw [append_assoc, take_append_eq_append_take]
-    have l1 : j + 1 - (↑[U] ++ p).length = 0 := by rw [length_append, length_singleton]; omega
-    rw [l1, take_zero, append_nil, singleton_append, take_cons, count_cons, count_cons]
-    simp only [ite_true, ite_false, add_zero]
-    have := bal.2 j; omega
-  · simp only [get_range, decide_eq_true_eq]
-    rw [take_append_eq_append_take, length_append, length_append, length_singleton,
-      length_singleton, show p.length + 1 + 1 - (1 + p.length + 1) = 0 by omega, take_zero,
-      append_nil, take_all_of_le]
-    iterate 4 rw [count_append]
-    simp_rw [count_singleton', ite_true, ite_false, bal.1]; omega
-    rw [length_append, length_append, length_singleton, length_singleton]; omega
+    simp_rw [append_assoc _ _ [D], singleton_append, take_append_eq_append_take, length_cons,
+      length_append, show j + 1 - (p.length + [D].length).succ = 0 by omega, take_zero,
+      append_nil, take_cons, count_cons, ite_true, ite_false, take_append_eq_append_take,
+      show j - p.length = 0 by omega, take_zero, append_nil]
+    have := bp.2 j; omega
+  · simp_rw [take_append_eq_append_take (l₂ := q), length_append, length_singleton,
+      show p.length + 1 + 1 - (1 + p.length + 1) = 0 by omega, take_zero, append_nil]
+    rw [take_all_of_le, bp.nest.1]; simp_rw [length_append, length_singleton]; omega
 
 theorem compose_leftPart_eq_leftPart : (↑[U] ++ p ++ ↑[D] ++ q).leftPart = p := by
-  rw [leftPart, compose_firstReturn bal, append_assoc, take_append_eq_append_take,
+  rw [leftPart, compose_firstReturn bp, append_assoc, take_append_eq_append_take,
     length_append, length_singleton, show p.length + 1 - (1 + p.length) = 0 by omega, take_zero,
     append_nil, take_append_eq_append_take, length_singleton, Nat.add_sub_cancel,
     take_all_of_le (by rw [length_singleton]; omega), take_all_of_le (le_refl _), singleton_append,
     tail_cons]
 
 theorem compose_rightPart_eq_rightPart : (↑[U] ++ p ++ ↑[D] ++ q).rightPart = q := by
-  rw [rightPart, compose_firstReturn bal, drop_append_eq_append_drop, length_append, length_append,
+  rw [rightPart, compose_firstReturn bp, drop_append_eq_append_drop, length_append, length_append,
     length_singleton, length_singleton, show p.length + 1 + 1 - (1 + p.length + 1) = 0 by omega,
     drop_zero, drop_eq_nil_of_le, nil_append]
-  rw [length_append, length_append, length_singleton, length_singleton]
-  omega
+  simp_rw [length_append, length_singleton]; omega
 
 end Decomp
 
@@ -254,12 +289,12 @@ open Tree
 /-- Convert a balanced Dyck path to a binary rooted tree. -/
 def treeEquivToFun (st : { p : DyckPath // p.IsBalanced }) : Tree Unit :=
   if e : st.1.length = 0 then nil else by
-    obtain ⟨p, bal⟩ := st
+    obtain ⟨p, bp⟩ := st
     simp only [length_eq_zero] at e
-    have := p.leftPart_length_lt bal e
-    have := p.rightPart_length_lt bal e
-    exact treeEquivToFun ⟨_, p.leftPart_isBalanced bal e⟩ △
-      treeEquivToFun ⟨_, p.rightPart_isBalanced bal e⟩
+    have := leftPart_length_lt bp e
+    have := rightPart_length_lt bp e
+    exact treeEquivToFun ⟨_, leftPart_isBalanced bp e⟩ △
+      treeEquivToFun ⟨_, rightPart_isBalanced bp e⟩
 termination_by _ => st.1.length
 
 /-- Convert a binary rooted tree to a Dyck path (that it is balanced is shown in
@@ -272,27 +307,7 @@ def treeEquivInvFun' (tr : Tree Unit) : DyckPath :=
 theorem isBalanced_treeEquivInvFun' (tr : Tree Unit) : (treeEquivInvFun' tr).IsBalanced := by
   induction' tr with _ l r bl br
   · rw [treeEquivInvFun']; decide
-  · rw [treeEquivInvFun']; constructor
-    · iterate 6 rw [count_append]
-      simp_rw [bl.1, br.1, count_singleton']; omega
-    · intro i
-      iterate 3 rw [take_append_eq_append_take]
-      iterate 6 rw [count_append]
-      apply add_le_add _ (br.2 _)
-      conv_lhs => rw [← add_rotate]
-      conv_rhs => rw [← add_rotate]
-      apply add_le_add _ (bl.2 _)
-      cases' (i - (↑[U] ++ treeEquivInvFun' l).length).eq_zero_or_pos with k k
-      · simp_rw [k, take_zero, count_nil, zero_add]
-        cases' i.eq_zero_or_pos with l l
-        · rw [l, take_zero, count_nil, count_nil]
-        · rw [take_all_of_le (by rw [length_singleton]; exact l),
-            count_singleton', count_singleton']
-          simp only [ite_true, ite_false, zero_le]
-      · rw [take_all_of_le (by rw [length_singleton]; exact k),
-          take_all_of_le (by rw [length_singleton]; omega)]
-        simp only [count_singleton', ite_true, ite_false]
-        omega
+  · rw [treeEquivInvFun']; exact bl.nest.append br
 
 /-- Convert a binary rooted tree to a balanced Dyck path. -/
 def treeEquivInvFun (tr : Tree Unit) : { p : DyckPath // p.IsBalanced } :=
@@ -308,10 +323,10 @@ theorem treeEquiv_left_inv (st) {n : ℕ} (hl : st.1.length = n) :
   rw [treeEquivToFun, Subtype.mk.injEq]
   simp_rw [(length_pos.mpr j).ne', dite_false, treeEquivInvFun, treeEquivInvFun']
   let p := st.1
-  let bal := st.2
-  change _ = p; rw [p.eq_U_leftPart_D_rightPart bal j]
-  have tl := ih _ (hl ▸ p.leftPart_length_lt bal j) ⟨_, p.leftPart_isBalanced bal j⟩ rfl
-  have tr := ih _ (hl ▸ p.rightPart_length_lt bal j) ⟨_, p.rightPart_isBalanced bal j⟩ rfl
+  let bp := st.2
+  change _ = p; rw [p.eq_U_leftPart_D_rightPart bp j]
+  have tl := ih _ (hl ▸ leftPart_length_lt bp j) ⟨_, leftPart_isBalanced bp j⟩ rfl
+  have tr := ih _ (hl ▸ rightPart_length_lt bp j) ⟨_, rightPart_isBalanced bp j⟩ rfl
   rw [treeEquivInvFun, Subtype.mk.injEq] at tl tr
   congr
 
@@ -349,14 +364,15 @@ theorem length_eq_two_mul_iff_numNodes_eq {n : ℕ} (st : { p : DyckPath // p.Is
     simp only [this, dite_true, numNodes]; omega
   rw [treeEquiv, Equiv.coe_fn_mk, treeEquivToFun]
   simp_rw [(length_pos.mpr j).ne', dite_false, numNodes]
-  obtain ⟨p, bal⟩ := st
+  obtain ⟨p, bp⟩ := st
   dsimp only at j ⊢
-  have bl := p.leftPart_isBalanced bal j
-  have br := p.rightPart_isBalanced bal j
-  obtain ⟨sl, le⟩ := p.leftPart.length_even bl
-  obtain ⟨sr, re⟩ := p.rightPart.length_even br
+  have bl := leftPart_isBalanced bp j
+  have br := rightPart_isBalanced bp j
+  obtain ⟨sl, le⟩ := bl.length_even
+  obtain ⟨sr, re⟩ := br.length_even
+  rw [← two_mul] at le re
   conv_lhs =>
-    rw [p.eq_U_leftPart_D_rightPart bal j, length_append, length_append, length_append,
+    rw [eq_U_leftPart_D_rightPart bp j, length_append, length_append, length_append,
       length_singleton, length_singleton, le, re,
       show 1 + 2 * sl + 1 + 2 * sr = 2 * (sl + sr + 1) by omega]
   constructor <;> intro h
@@ -384,12 +400,12 @@ theorem length_eq_two_mul_iff_numNodes_eq {n : ℕ} (st : { p : DyckPath // p.Is
 rooted binary trees with `n` internal nodes. -/
 def finiteTreeEquiv (n : ℕ) :
     { p : DyckPath // p.IsBalanced ∧ p.length = 2 * n } ≃ treesOfNumNodesEq n where
-  toFun := fun ⟨p, ⟨bal, len⟩⟩ ↦
-    ⟨treeEquiv ⟨p, bal⟩, by rw [mem_treesOfNumNodesEq, ← length_eq_two_mul_iff_numNodes_eq, len]⟩
+  toFun := fun ⟨p, ⟨bp, len⟩⟩ ↦
+    ⟨treeEquiv ⟨p, bp⟩, by rw [mem_treesOfNumNodesEq, ← length_eq_two_mul_iff_numNodes_eq, len]⟩
   invFun := fun ⟨tr, sz⟩ ↦
     ⟨(treeEquiv.symm tr).1, ⟨(treeEquiv.symm tr).2, by rwa [length_eq_two_mul_iff_numNodes_eq,
       ← mem_treesOfNumNodesEq, Equiv.apply_symm_apply]⟩⟩
-  left_inv := fun ⟨p, ⟨bal, len⟩⟩ ↦ by simp only [Equiv.symm_apply_apply]
+  left_inv := fun ⟨p, ⟨bp, len⟩⟩ ↦ by simp only [Equiv.symm_apply_apply]
   right_inv := fun ⟨tr, sz⟩ ↦ by simp only [Subtype.coe_eta, Equiv.apply_symm_apply]
 
 instance instFintypeDyckWords {n : ℕ} :
