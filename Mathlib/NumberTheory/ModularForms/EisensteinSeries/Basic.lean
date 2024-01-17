@@ -111,7 +111,6 @@ lemma gamma_left_inv (N : ℕ) (a b : ℤ ) (γ : Gamma N) (v : gammaSet N a b) 
   simp only [InvMemClass.coe_inv, SpecialLinearGroup.coe_inv, mul_adjugate,
     SpecialLinearGroup.det_coe, one_smul, vecMul_one]
 
-
 lemma gamma_right_inv (N : ℕ) (a b : ℤ ) (γ : Gamma N) (v : gammaSet N a b) :
     gammaMoebiusFun N a b γ (gammaMoebiusFun N a b γ⁻¹ v) = v := by
   simp only [gammaMoebiusFun, InvMemClass.coe_inv, Matrix.SpecialLinearGroup.coe_inv,
