@@ -212,7 +212,11 @@ def applyIdRule (fpropDecl : FPropDecl) (e X : Expr)
   let type ← inferType proof
   let (xs, bis, type) ← forallMetaTelescope type
 
-  xs[id_X]!.mvarId!.assignIfDefeq X
+  try 
+    xs[id_X]!.mvarId!.assignIfDefeq X
+  catch _ =>
+    trace[Meta.Tactic.fprop.discharge] "failed to use `{thm.thrmName}` on `{← ppExpr e}`"
+    return none
 
   tryTheoremCore xs bis proof type e (.decl thm.thrmName) fpropDecl.discharger fprop
 
@@ -230,8 +234,13 @@ def applyConstRule (fpropDecl : FPropDecl) (e X y : Expr)
   let type ← inferType proof
   let (xs, bis, type) ← forallMetaTelescope type
 
-  xs[id_X]!.mvarId!.assignIfDefeq X
-  xs[id_y]!.mvarId!.assignIfDefeq y
+  try
+    xs[id_X]!.mvarId!.assignIfDefeq X
+    xs[id_y]!.mvarId!.assignIfDefeq y
+  catch _ =>
+    trace[Meta.Tactic.fprop.discharge] "failed to use `{thm.thrmName}` on `{← ppExpr e}`"
+    return none
+
 
   tryTheoremCore xs bis proof type e (.decl thm.thrmName) fpropDecl.discharger fprop
 
@@ -253,8 +262,12 @@ def applyProjRule (fpropDecl : FPropDecl) (e x XY : Expr)
       let type ← inferType proof
       let (xs, bis, type) ← forallMetaTelescope type
 
-      xs[id_x]!.mvarId!.assignIfDefeq x
-      xs[id_Y]!.mvarId!.assignIfDefeq Y
+      try
+        xs[id_x]!.mvarId!.assignIfDefeq x
+        xs[id_Y]!.mvarId!.assignIfDefeq Y
+      catch _ =>
+        trace[Meta.Tactic.fprop.discharge] "failed to use `{thm.thrmName}` on `{← ppExpr e}`"
+        return none
 
       return ← tryTheoremCore xs bis proof type e (.decl thm.thrmName) fpropDecl.discharger fprop
 
@@ -262,15 +275,22 @@ def applyProjRule (fpropDecl : FPropDecl) (e x XY : Expr)
   -- can also handle non-dependent cases if non-dependent theorem is not available
   let Y := Expr.lam n X Y default
 
-  let .some thm := ext.theorems.find? (fpropDecl.fpropName, .projDep) | return none
+  let .some thm := ext.theorems.find? (fpropDecl.fpropName, .projDep) 
+    | trace[Meta.Tactic.fprop.step] "missing proj rule(`P fun f => f x`) for function property `{fpropDecl.fpropName}`"
+      return none
   let .projDep id_x id_Y := thm.thrmArgs | return none
   
   let proof ← thm.getProof
   let type ← inferType proof
   let (xs, bis, type) ← forallMetaTelescope type
 
-  xs[id_x]!.mvarId!.assignIfDefeq x
-  xs[id_Y]!.mvarId!.assignIfDefeq Y
+  try 
+    xs[id_x]!.mvarId!.assignIfDefeq x
+    xs[id_Y]!.mvarId!.assignIfDefeq Y
+  catch _ =>
+    trace[Meta.Tactic.fprop.discharge] "failed to use `{thm.thrmName}` on `{← ppExpr e}`"
+    return none
+
 
   tryTheoremCore xs bis proof type e (.decl thm.thrmName) fpropDecl.discharger fprop
 
@@ -286,8 +306,13 @@ def applyCompRule (fpropDecl : FPropDecl) (e f g : Expr)
   let type ← inferType proof
   let mut (xs, bis, type) ← forallMetaTelescope type
 
-  xs[id_f]!.mvarId!.assignIfDefeq f
-  xs[id_g]!.mvarId!.assignIfDefeq g
+  try
+    xs[id_f]!.mvarId!.assignIfDefeq f
+    xs[id_g]!.mvarId!.assignIfDefeq g
+  catch _ =>
+    trace[Meta.Tactic.fprop.discharge] "failed to use `{thm.thrmName}` on `{← ppExpr e}`"
+    return none
+
 
   tryTheoremCore xs bis proof type e (.decl thm.thrmName) fpropDecl.discharger fprop
 
@@ -303,8 +328,13 @@ def applyLetRule (fpropDecl : FPropDecl) (e f g : Expr)
   let type ← inferType proof
   let (xs, bis, type) ← forallMetaTelescope type
 
-  xs[id_f]!.mvarId!.assignIfDefeq f
-  xs[id_g]!.mvarId!.assignIfDefeq g
+  try
+    xs[id_f]!.mvarId!.assignIfDefeq f
+    xs[id_g]!.mvarId!.assignIfDefeq g
+  catch _ =>
+    trace[Meta.Tactic.fprop.discharge] "failed to use `{thm.thrmName}` on `{← ppExpr e}`"
+    return none
+
 
   tryTheoremCore xs bis proof type e (.decl thm.thrmName) fpropDecl.discharger fprop
 
@@ -320,7 +350,11 @@ def applyPiRule (fpropDecl : FPropDecl) (e f : Expr)
   let type ← inferType proof
   let (xs, bis, type) ← forallMetaTelescope type
 
-  xs[id_f]!.mvarId!.assignIfDefeq f
+  try
+    xs[id_f]!.mvarId!.assignIfDefeq f
+  catch _ =>
+    trace[Meta.Tactic.fprop.discharge] "failed to use `{thm.thrmName}` on `{← ppExpr e}`"
+    return none
 
   tryTheoremCore xs bis proof type e (.decl thm.thrmName) fpropDecl.discharger fprop
 
@@ -364,7 +398,6 @@ def letCase (fpropDecl : FPropDecl) (e : Expr) (f : Expr) (fprop : Expr → FPro
   -- return none
 
 def bvarAppCase (fpropDecl : FPropDecl) (e : Expr) (f : Expr) (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do
-
   let .lam n t (.app g x) bi := f
     | -- this case might not even be possible on the uses of `bvarAppCase`
       trace[Meta.Tactic.fprop.step] "fprop can handle function like {← ppExpr f}"
@@ -376,7 +409,7 @@ def bvarAppCase (fpropDecl : FPropDecl) (e : Expr) (f : Expr) (fprop : Expr → 
     return none
   
   if g == .bvar 0 then
-    applyProjRule fpropDecl e x (← inferType g) fprop
+    applyProjRule fpropDecl e x t fprop
   else
     let g := .lam n t g bi
     let gType ← inferType g
@@ -386,8 +419,6 @@ def bvarAppCase (fpropDecl : FPropDecl) (e : Expr) (f : Expr) (fprop : Expr → 
 
     let h := .lam n fType ((Expr.bvar 0).app x) bi
     applyCompRule fpropDecl e h g fprop
-
-  return none
 
 def fvarAppCase (fpropDecl : FPropDecl) (e : Expr) (f : Expr) (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do
 
