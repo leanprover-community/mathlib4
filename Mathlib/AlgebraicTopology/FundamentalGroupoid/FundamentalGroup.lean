@@ -3,6 +3,7 @@ Copyright (c) 2021 Mark Lavrentyev. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mark Lavrentyev
 -/
+import Mathlib.CategoryTheory.Conj
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.Topology.Connected.PathConnected
@@ -65,18 +66,18 @@ def fundamentalGroupMulEquivOfPathConnected [PathConnectedSpace X] :
 #align fundamental_group.fundamental_group_mul_equiv_of_path_connected FundamentalGroup.fundamentalGroupMulEquivOfPathConnected
 
 /-- An element of the fundamental group as an arrow in the fundamental groupoid. -/
-abbrev toArrow {X : TopCat} {x : X} (p : FundamentalGroup X x) :
+abbrev toArrow {x : X} (p : FundamentalGroup X x) :
     FundamentalGroupoid.mk x ⟶ FundamentalGroupoid.mk x :=
   p.hom
 #align fundamental_group.to_arrow FundamentalGroup.toArrow
 
 /-- An element of the fundamental group as a quotient of homotopic paths. -/
-abbrev toPath {X : TopCat} {x : X} (p : FundamentalGroup X x) : Path.Homotopic.Quotient x x :=
+abbrev toPath {x : X} (p : FundamentalGroup X x) : Path.Homotopic.Quotient x x :=
   toArrow p
 #align fundamental_group.to_path FundamentalGroup.toPath
 
 /-- An element of the fundamental group, constructed from an arrow in the fundamental groupoid. -/
-abbrev fromArrow {X : TopCat} {x : X}
+abbrev fromArrow {x : X}
     (p : FundamentalGroupoid.mk x ⟶ FundamentalGroupoid.mk x) :
     FundamentalGroup X x where
   hom := p
@@ -84,8 +85,23 @@ abbrev fromArrow {X : TopCat} {x : X}
 #align fundamental_group.from_arrow FundamentalGroup.fromArrow
 
 /-- An element of the fundamental group, constructed from a quotient of homotopic paths. -/
-abbrev fromPath {X : TopCat} {x : X} (p : Path.Homotopic.Quotient x x) : FundamentalGroup X x :=
+abbrev fromPath {x : X} (p : Path.Homotopic.Quotient x x) : FundamentalGroup X x :=
   fromArrow p
 #align fundamental_group.from_path FundamentalGroup.fromPath
+
+/-- The homomorphism between fundamental groups induced by a continuous map. -/
+@[simps!] def map (f : C(X, Y)) (x : X) : FundamentalGroup X x →* FundamentalGroup Y (f x) :=
+  (FundamentalGroupoid.map f).mapAut (FundamentalGroupoid.mk x)
+
+variable (f : C(X, Y)) {x : X} {y : Y} (h : f x = y)
+
+def mapOfEq : FundamentalGroup X x →* FundamentalGroup Y y :=
+  (eqToIso <| congr_arg FundamentalGroupoid.mk h).conjAut.toMonoidHom.comp (map f x)
+
+theorem mapOfEq_apply (p : Path x x) :
+    mapOfEq f h (fromPath ⟦p⟧) = fromPath ⟦(p.map f.continuous).cast h.symm h.symm⟧ := by
+  erw [mapOfEq, MonoidHom.comp_apply]
+  simp [Iso.conjAut]
+  sorry
 
 end FundamentalGroup
