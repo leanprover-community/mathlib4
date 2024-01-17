@@ -554,30 +554,29 @@ theorem nnnorm_eq_sum {p : ℝ≥0∞} [Fact (1 ≤ p)] {β : ι → Type*} (hp 
   simp [NNReal.coe_sum, norm_eq_sum (p.toReal_pos_iff_ne_top.mpr hp)]
 #align pi_Lp.nnnorm_eq_sum PiLp.nnnorm_eq_sum
 
-theorem nnnorm_eq_ciSup {β : ι → Type*} [∀ i, SeminormedAddCommGroup (β i)] (f : PiLp ∞ β) :
-    ‖f‖₊ = ⨆ i, ‖f i‖₊ := by
+section Linfty
+variable {β}
+variable [∀ i, SeminormedAddCommGroup (β i)]
+
+theorem nnnorm_eq_ciSup (f : PiLp ∞ β) : ‖f‖₊ = ⨆ i, ‖f i‖₊ := by
   ext
   simp [NNReal.coe_iSup, norm_eq_ciSup]
 #align pi_Lp.nnnorm_eq_csupr PiLp.nnnorm_eq_ciSup
 
-@[simp] theorem nnnorm_equiv {β : ι → Type*} [∀ i, SeminormedAddCommGroup (β i)] (f : PiLp ∞ β) :
-    ‖WithLp.equiv ⊤ _ f‖₊ = ‖f‖₊ := by
+@[simp] theorem nnnorm_equiv (f : PiLp ∞ β) : ‖WithLp.equiv ⊤ _ f‖₊ = ‖f‖₊ := by
   rw [nnnorm_eq_ciSup, Pi.nnnorm_def, Finset.sup_univ_eq_ciSup]
   dsimp only [WithLp.equiv_pi_apply]
 
-@[simp] theorem nnnorm_equiv_symm {β : ι → Type*} [∀ i, SeminormedAddCommGroup (β i)]
-    (f : ∀ i, β i) :
-    ‖(WithLp.equiv ⊤ _).symm f‖₊ = ‖f‖₊ :=
+@[simp] theorem nnnorm_equiv_symm (f : ∀ i, β i) : ‖(WithLp.equiv ⊤ _).symm f‖₊ = ‖f‖₊ :=
   (nnnorm_equiv _).symm
 
-@[simp] theorem norm_equiv {β : ι → Type*} [∀ i, SeminormedAddCommGroup (β i)] (f : PiLp ∞ β) :
-    ‖WithLp.equiv ⊤ _ f‖ = ‖f‖ :=
+@[simp] theorem norm_equiv (f : PiLp ∞ β) : ‖WithLp.equiv ⊤ _ f‖ = ‖f‖ :=
   congr_arg NNReal.toReal <| nnnorm_equiv f
 
-@[simp] theorem norm_equiv_symm {β : ι → Type*} [∀ i, SeminormedAddCommGroup (β i)]
-    (f : ∀ i, β i) :
-    ‖(WithLp.equiv ⊤ _).symm f‖ = ‖f‖ :=
+@[simp] theorem norm_equiv_symm (f : ∀ i, β i) : ‖(WithLp.equiv ⊤ _).symm f‖ = ‖f‖ :=
   (norm_equiv _).symm
+
+end Linfty
 
 theorem norm_eq_of_nat {p : ℝ≥0∞} [Fact (1 ≤ p)] {β : ι → Type*}
     [∀ i, SeminormedAddCommGroup (β i)] (n : ℕ) (h : p = n) (f : PiLp p β) :
