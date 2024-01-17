@@ -1662,6 +1662,27 @@ theorem IsLUB.of_image [Preorder α] [Preorder β] {f : α → β} (hf : ∀ {x 
     hf.1 <| hx.2 <| Monotone.mem_upperBounds_image (fun _ _ => hf.2) hy⟩
 #align is_lub.of_image IsLUB.of_image
 
+lemma BddAbove.range_mono [Preorder β] {f : α → β} (g : α → β) (h : ∀ a, f a ≤ g a)
+    (hbdd : BddAbove (range g)) : BddAbove (range f) := by
+  obtain ⟨C, hC⟩ := hbdd
+  use C
+  rintro - ⟨x, rfl⟩
+  exact (h x).trans (hC <| mem_range_self x)
+
+lemma BddBelow.range_mono [Preorder β] (f : α → β) {g : α → β} (h : ∀ a, f a ≤ g a)
+    (hbdd : BddBelow (range f)) : BddBelow (range g) :=
+  BddAbove.range_mono (β := βᵒᵈ) f h hbdd
+
+lemma BddAbove.range_comp {γ : Type*} [Preorder β] [Preorder γ] {f : α → β} {g : β → γ}
+    (hf : BddAbove (range f)) (hg : Monotone g) : BddAbove (range (fun x => g (f x))) := by
+  change BddAbove (range (g ∘ f))
+  simpa only [Set.range_comp] using hg.map_bddAbove hf
+
+lemma BddBelow.range_comp {γ : Type*} [Preorder β] [Preorder γ] {f : α → β} {g : β → γ}
+    (hf : BddBelow (range f)) (hg : Monotone g) : BddBelow (range (fun x => g (f x))) := by
+  change BddBelow (range (g ∘ f))
+  simpa only [Set.range_comp] using hg.map_bddBelow hf
+
 section ScottContinuous
 variable [Preorder α] [Preorder β] {f : α → β} {a : α}
 
