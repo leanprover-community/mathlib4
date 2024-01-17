@@ -18,7 +18,7 @@ ideal of `R` and `I.den` an element of `R⁰` such that `I.den • I = I.num`.
 ## Main definitions and results
 
  * `FractionalIdeal.absNorm`: the norm as a zero preserving morphism with values in `ℚ`.
- * `FractionalIdea.absNorm_eq'`: the value of the norm does not depend on the choice of
+ * `FractionalIdeal.absNorm_eq'`: the value of the norm does not depend on the choice of
    `I.num` and `I.den`.
  * `FractionalIdeal.abs_det_basis_change`: the norm is given by the determinant
     of the basis change matrix.
@@ -82,12 +82,11 @@ theorem absNorm_eq' {I : FractionalIdeal R⁰ K} (a : R⁰) (I₀ : Ideal R)
   rw [absNorm, ← absNorm_div_norm_eq_absNorm_div_norm a I₀ h, MonoidWithZeroHom.coe_mk,
     ZeroHom.coe_mk]
 
-theorem coeIdeal_absNorm (I₀ : Ideal R) :
-    absNorm (I₀ : FractionalIdeal R⁰ K) = Ideal.absNorm I₀ := by
-  rw [absNorm_eq' 1 I₀ (by rw [one_smul]; rfl), OneMemClass.coe_one, _root_.map_one, abs_one,
-    Int.cast_one, _root_.div_one]
+theorem absNorm_nonneg (I : FractionalIdeal R⁰ K) : 0 ≤ absNorm I := by dsimp [absNorm]; positivity
 
 theorem absNorm_bot : absNorm (⊥ : FractionalIdeal R⁰ K) = 0 := absNorm.map_zero'
+
+theorem absNorm_one : absNorm (1 : FractionalIdeal R⁰ K) = 1 := by convert absNorm.map_one'
 
 theorem absNorm_eq_zero_iff [NoZeroDivisors K] {I : FractionalIdeal R⁰ K} :
     absNorm I = 0 ↔ I = 0 := by
@@ -95,6 +94,11 @@ theorem absNorm_eq_zero_iff [NoZeroDivisors K] {I : FractionalIdeal R⁰ K} :
   rw [absNorm_eq, div_eq_zero_iff] at h
   refine Ideal.absNorm_eq_zero_iff.mp <| Nat.cast_eq_zero.mp <| h.resolve_right ?_
   simpa [Algebra.norm_eq_zero_iff] using nonZeroDivisors.coe_ne_zero _
+
+theorem coeIdeal_absNorm (I₀ : Ideal R) :
+    absNorm (I₀ : FractionalIdeal R⁰ K) = Ideal.absNorm I₀ := by
+  rw [absNorm_eq' 1 I₀ (by rw [one_smul]; rfl), OneMemClass.coe_one, _root_.map_one, abs_one,
+    Int.cast_one, _root_.div_one]
 
 section IsLocalization
 
@@ -124,6 +128,7 @@ theorem abs_det_basis_change [NoZeroDivisors K] {ι : Type*} [Fintype ι]
     rw [ne_eq, abs_eq_zero, IsFractionRing.to_map_eq_zero_iff, Algebra.norm_eq_zero_iff_of_basis b]
     exact nonZeroDivisors.coe_ne_zero _)]
 
+variable (R) in
 @[simp]
 theorem absNorm_span_singleton [Module.Finite ℚ K] (x : K) :
     absNorm (spanSingleton R⁰ x) = |(Algebra.norm ℚ x)| := by

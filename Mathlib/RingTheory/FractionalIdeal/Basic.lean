@@ -1361,6 +1361,17 @@ theorem mem_spanSingleton_self (x : P) : x ∈ spanSingleton S x :=
   (mem_spanSingleton S).mpr ⟨1, one_smul _ _⟩
 #align fractional_ideal.mem_span_singleton_self FractionalIdeal.mem_spanSingleton_self
 
+/-- A version of `FractionalIdeal.den_mul_self_eq_num` in terms of fractional ideals. -/
+theorem den_mul_self_eq_num' (I : FractionalIdeal S P) :
+    spanSingleton S (algebraMap R P I.den) * I = I.num := by
+  apply coeToSubmodule_injective
+  dsimp only
+  rw [coe_mul, ← smul_eq_mul, coe_spanSingleton, smul_eq_mul, Submodule.span_singleton_mul]
+  convert I.den_mul_self_eq_num using 1
+  ext
+  erw [Set.mem_smul_set, Set.mem_smul_set]
+  simp [Algebra.smul_def]
+
 variable {S}
 
 @[simp]
