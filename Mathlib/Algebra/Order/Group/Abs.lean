@@ -3,225 +3,328 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.Algebra.Abs
-import Mathlib.Algebra.Order.Group.OrderIso
-import Mathlib.Order.MinMax
+import Mathlib.Algebra.Order.Group.Lattice
 
 #align_import algebra.order.group.abs from "leanprover-community/mathlib"@"2196ab363eb097c008d4497125e0dde23fb36db2"
 
 /-!
-# Absolute values in ordered groups.
+# Absolute values in ordered groups
+
+The absolute value of an element in a group which is also a lattice is its supremum with its
+negation. This generalizes the usual absolute value on real numbers (`|x| = max x (-x)`).
+
+## Notations
+
+- `|a|`: The *absolute value* of an element `a` of an additive lattice ordered group
+- `|a|ₘ`: The *absolute value* of an element `a` of a multiplicative lattice ordered group
 -/
-
-
-variable {α : Type*}
 
 open Function
 
-section CovariantAddLe
+variable {α : Type*}
 
-section Neg
+section Lattice
+variable [Lattice α]
 
--- see Note [lower instance priority]
-/-- `abs a` is the absolute value of `a`. -/
-@[to_additive "`abs a` is the absolute value of `a`"]
-instance (priority := 100) Inv.toHasAbs [Inv α] [Sup α] : Abs α :=
-  ⟨fun a => a ⊔ a⁻¹⟩
-#align has_inv.to_has_abs Inv.toHasAbs
-#align has_neg.to_has_abs Neg.toHasAbs
+section Group
+variable [Group α] {a b : α}
 
-@[to_additive]
-theorem abs_eq_sup_inv [Inv α] [Sup α] (a : α) : |a| = a ⊔ a⁻¹ :=
-  rfl
-#align abs_eq_sup_inv abs_eq_sup_inv
-#align abs_eq_sup_neg abs_eq_sup_neg
+#noalign has_inv.to_has_abs
+#noalign has_neg.to_has_abs
 
-variable [Neg α] [LinearOrder α] {a b : α}
+/-- `mabs a` is the absolute value of `a`. -/
+@[to_additive "`abs a` is the absolute value of `a`"] def mabs (a : α) : α := a ⊔ a⁻¹
+#align has_abs.abs abs
 
-theorem abs_eq_max_neg : abs a = max a (-a) :=
-  rfl
-#align abs_eq_max_neg abs_eq_max_neg
+#align abs_eq_sup_inv mabs
+#align abs_eq_sup_neg abs
 
-theorem abs_choice (x : α) : |x| = x ∨ |x| = -x :=
-  max_choice _ _
-#align abs_choice abs_choice
+@[inherit_doc mabs]
+macro:max atomic("|" noWs) a:term noWs "|ₘ" : term => `(mabs $a)
 
-theorem abs_le' : |a| ≤ b ↔ a ≤ b ∧ -a ≤ b :=
-  max_le_iff
+@[inherit_doc abs]
+macro:max atomic("|" noWs) a:term noWs "|" : term => `(abs $a)
+
+/-- Unexpander for the notation `|a|ₘ` for `mabs a`.
+Tries to add discretionary parentheses in unparseable cases. -/
+@[app_unexpander abs]
+def mabs.unexpander : Lean.PrettyPrinter.Unexpander
+  | `($_ $a) =>
+    match a with
+    | `(|$_|ₘ) | `(-$_) => `(|($a)|ₘ)
+    | _ => `(|$a|ₘ)
+  | _ => throw ()
+
+/-- Unexpander for the notation `|a|` for `abs a`.
+Tries to add discretionary parentheses in unparseable cases. -/
+@[app_unexpander abs]
+def abs.unexpander : Lean.PrettyPrinter.Unexpander
+  | `($_ $a) =>
+    match a with
+    | `(|$_|) | `(-$_) => `(|($a)|)
+    | _ => `(|$a|)
+  | _ => throw ()
+
+@[to_additive] lemma mabs_le' : |a|ₘ ≤ b ↔ a ≤ b ∧ a⁻¹ ≤ b := sup_le_iff
 #align abs_le' abs_le'
 
-theorem le_abs : a ≤ |b| ↔ a ≤ b ∨ a ≤ -b :=
-  le_max_iff
-#align le_abs le_abs
-
-theorem le_abs_self (a : α) : a ≤ |a| :=
-  le_max_left _ _
+@[to_additive] lemma le_mabs_self (a : α) : a ≤ |a|ₘ := le_sup_left
 #align le_abs_self le_abs_self
+#align lattice_ordered_comm_group.le_mabs le_mabs_self
+#align lattice_ordered_comm_group.le_abs le_abs_self
 
-theorem neg_le_abs_self (a : α) : -a ≤ |a| :=
-  le_max_right _ _
-#align neg_le_abs_self neg_le_abs_self
+@[to_additive] lemma inv_le_mabs (a : α) : a⁻¹ ≤ |a|ₘ := le_sup_right
+#align neg_le_abs_self neg_le_abs
+#align lattice_ordered_comm_group.inv_le_abs inv_le_mabs
+#align lattice_ordered_comm_group.neg_le_abs neg_le_abs
 
-theorem lt_abs : a < |b| ↔ a < b ∨ a < -b :=
-  lt_max_iff
-#align lt_abs lt_abs
-
-theorem abs_le_abs (h₀ : a ≤ b) (h₁ : -a ≤ b) : |a| ≤ |b| :=
-  (abs_le'.2 ⟨h₀, h₁⟩).trans (le_abs_self b)
+@[to_additive] lemma mabs_le_mabs (h₀ : a ≤ b) (h₁ : a⁻¹ ≤ b) : |a|ₘ ≤ |b|ₘ :=
+  (mabs_le'.2 ⟨h₀, h₁⟩).trans (le_mabs_self b)
 #align abs_le_abs abs_le_abs
 
-theorem abs_by_cases (P : α → Prop) {a : α} (h1 : P a) (h2 : P (-a)) : P |a| :=
+@[to_additive (attr := simp)] lemma mabs_inv (a : α) : |a⁻¹|ₘ = |a|ₘ := by simp [mabs, sup_comm]
+#align abs_neg abs_neg
+
+@[to_additive] lemma mabs_div_comm (a b : α) : |a / b|ₘ = |b / a|ₘ := by rw [← mabs_inv, inv_div]
+#align abs_sub_comm abs_sub_comm
+
+variable [CovariantClass α α (· * ·) (· ≤ ·)]
+
+@[to_additive] lemma mabs_of_one_le (h : 1 ≤ a) : |a|ₘ = a :=
+  sup_eq_left.2 <| (inv_le_one'.2 h).trans h
+#align abs_of_nonneg abs_of_nonneg
+#align lattice_ordered_comm_group.mabs_of_one_le mabs_of_one_le
+#align lattice_ordered_comm_group.abs_of_nonneg abs_of_nonneg
+
+@[to_additive] lemma mabs_of_one_lt (h : 1 < a) : |a|ₘ = a := mabs_of_one_le h.le
+#align abs_of_pos abs_of_pos
+
+@[to_additive] lemma mabs_of_le_one (h : a ≤ 1) : |a|ₘ = a⁻¹ :=
+  sup_eq_right.2 <| h.trans (one_le_inv'.2 h)
+#align abs_of_nonpos abs_of_nonpos
+
+@[to_additive] lemma mabs_of_lt_one (h : a < 1) : |a|ₘ = a⁻¹ := mabs_of_le_one h.le
+#align abs_of_neg abs_of_neg
+
+@[to_additive] lemma mabs_le_mabs_of_one_le (ha : 1 ≤ a) (hab : a ≤ b) : |a|ₘ ≤ |b|ₘ := by
+  rwa [mabs_of_one_le ha, mabs_of_one_le (ha.trans hab)]
+#align abs_le_abs_of_nonneg abs_le_abs_of_nonneg
+
+attribute [gcongr] abs_le_abs_of_nonneg
+
+@[to_additive (attr := simp)] lemma mabs_one : |(1 : α)|ₘ = 1 := mabs_of_one_le le_rfl
+#align abs_zero abs_zero
+
+variable [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
+
+@[to_additive (attr := simp) abs_nonneg] lemma one_le_mabs (a : α) : 1 ≤ |a|ₘ := by
+  apply pow_two_semiclosed _
+  rw [mabs, pow_two, mul_sup,  sup_mul, ← pow_two, mul_left_inv, sup_comm, ← sup_assoc]
+  apply le_sup_right
+#align abs_nonneg abs_nonneg
+
+@[to_additive (attr := simp)] lemma mabs_mabs (a : α) : |(|a|ₘ)|ₘ = |a|ₘ :=
+  mabs_of_one_le <| one_le_mabs a
+#align abs_abs abs_abs
+#align lattice_ordered_comm_group.mabs_mabs mabs_mabs
+#align lattice_ordered_comm_group.abs_abs abs_abs
+
+end Group
+
+section CommGroup
+variable [CommGroup α] [CovariantClass α α (· * ·) (· ≤ ·)] {a b : α}
+
+-- Banasiak Proposition 2.12, Zaanen 2nd lecture
+/-- The absolute value satisfies the triangle inequality. -/
+@[to_additive "The absolute value satisfies the triangle inequality."]
+lemma mabs_mul_le (a b : α) : |a * b|ₘ ≤ |a|ₘ * |b|ₘ := by
+  apply sup_le
+  · exact mul_le_mul' (le_mabs_self a) (le_mabs_self b)
+  · rw [mul_inv]
+    exact mul_le_mul' (inv_le_mabs _) (inv_le_mabs _)
+#align lattice_ordered_comm_group.mabs_mul_le mabs_mul_le
+#align lattice_ordered_comm_group.abs_add_le abs_add_le
+
+@[to_additive]
+lemma mabs_mabs_div_mabs_le (a b : α) : |(|a|ₘ / |b|ₘ)|ₘ ≤ |a / b|ₘ := by
+  rw [mabs, sup_le_iff]
+  constructor
+  · apply div_le_iff_le_mul.2
+    convert mabs_mul_le (a / b) b
+    rw [div_mul_cancel']
+  · rw [div_eq_mul_inv, mul_inv_rev, inv_inv, mul_inv_le_iff_le_mul, mabs_div_comm]
+    convert mabs_mul_le (b / a) a
+    · rw [div_mul_cancel']
+#align lattice_ordered_comm_group.abs_abs_div_abs_le mabs_mabs_div_mabs_le
+#align lattice_ordered_comm_group.abs_abs_sub_abs_le abs_abs_sub_abs_le
+
+@[to_additive] lemma sup_div_inf_eq_mabs_div (a b : α) : (a ⊔ b) / (a ⊓ b) = |b / a|ₘ := by
+  simp_rw [sup_div, div_inf, div_self', sup_comm, sup_sup_sup_comm, sup_idem]
+  rw [← inv_div, sup_comm (b := _ / _), ← mabs, sup_eq_left]
+  exact one_le_mabs _
+#align lattice_ordered_comm_group.sup_div_inf_eq_abs_div sup_div_inf_eq_mabs_div
+#align lattice_ordered_comm_group.sup_sub_inf_eq_abs_sub sup_sub_inf_eq_abs_sub
+
+@[to_additive two_nsmul_sup_eq_add_add_abs_sub]
+lemma sup_sq_eq_mul_mul_mabs_div (a b : α) : (a ⊔ b) ^ 2 = a * b * |b / a|ₘ := by
+  rw [← inf_mul_sup a b, ← sup_div_inf_eq_mabs_div, div_eq_mul_inv, ← mul_assoc, mul_comm,
+     mul_assoc, ← pow_two, inv_mul_cancel_left]
+#align lattice_ordered_comm_group.sup_sq_eq_mul_mul_abs_div sup_sq_eq_mul_mul_mabs_div
+#align lattice_ordered_comm_group.two_sup_eq_add_add_abs_sub two_nsmul_sup_eq_add_add_abs_sub
+
+@[to_additive two_nsmul_inf_eq_add_sub_abs_sub]
+lemma inf_sq_eq_mul_div_mabs_div (a b : α) : (a ⊓ b) ^ 2 = a * b / |b / a|ₘ := by
+  rw [← inf_mul_sup a b, ← sup_div_inf_eq_mabs_div, div_eq_mul_inv, div_eq_mul_inv, mul_inv_rev,
+    inv_inv, mul_assoc, mul_inv_cancel_comm_assoc, ← pow_two]
+#align lattice_ordered_comm_group.inf_sq_eq_mul_div_abs_div inf_sq_eq_mul_div_mabs_div
+#align lattice_ordered_comm_group.two_inf_eq_add_sub_abs_sub two_nsmul_inf_eq_add_sub_abs_sub
+
+-- See, e.g. Zaanen, Lectures on Riesz Spaces
+-- 3rd lecture
+@[to_additive]
+lemma mabs_div_sup_mul_mabs_div_inf [CovariantClass α α (· * ·) (· ≤ ·)] (a b c : α) :
+    |(a ⊔ c) / (b ⊔ c)|ₘ * |(a ⊓ c) / (b ⊓ c)|ₘ = |a / b|ₘ := by
+  letI : DistribLattice α := CommGroup.toDistribLattice α
+  calc
+    |(a ⊔ c) / (b ⊔ c)|ₘ * |(a ⊓ c) / (b ⊓ c)|ₘ =
+        (b ⊔ c ⊔ (a ⊔ c)) / ((b ⊔ c) ⊓ (a ⊔ c)) * |(a ⊓ c) / (b ⊓ c)|ₘ := by
+        rw [sup_div_inf_eq_mabs_div]
+    _ = (b ⊔ c ⊔ (a ⊔ c)) / ((b ⊔ c) ⊓ (a ⊔ c)) * ((b ⊓ c ⊔ a ⊓ c) / (b ⊓ c ⊓ (a ⊓ c))) := by
+        rw [sup_div_inf_eq_mabs_div (b ⊓ c) (a ⊓ c)]
+    _ = (b ⊔ a ⊔ c) / (b ⊓ a ⊔ c) * (((b ⊔ a) ⊓ c) / (b ⊓ a ⊓ c)) := by
+        rw [← sup_inf_right, ← inf_sup_right, sup_assoc, @sup_comm _ _ c (a ⊔ c), sup_right_idem,
+          sup_assoc, inf_assoc, @inf_comm _ _ c (a ⊓ c), inf_right_idem, inf_assoc]
+    _ = (b ⊔ a ⊔ c) * ((b ⊔ a) ⊓ c) / ((b ⊓ a ⊔ c) * (b ⊓ a ⊓ c)) := by rw [div_mul_div_comm]
+    _ = (b ⊔ a) * c / ((b ⊓ a) * c) := by
+        rw [mul_comm, inf_mul_sup, mul_comm (b ⊓ a ⊔ c), inf_mul_sup]
+    _ = (b ⊔ a) / (b ⊓ a) := by
+        rw [div_eq_mul_inv, mul_inv_rev, mul_assoc, mul_inv_cancel_left, ← div_eq_mul_inv]
+    _ = |a / b|ₘ := by rw [sup_div_inf_eq_mabs_div]
+#align lattice_ordered_comm_group.abs_div_sup_mul_abs_div_inf mabs_div_sup_mul_mabs_div_inf
+#align lattice_ordered_comm_group.abs_sub_sup_add_abs_sub_inf abs_sub_sup_add_abs_sub_inf
+
+@[to_additive] lemma mabs_sup_div_sup_le_mabs (a b c : α) : |(a ⊔ c) / (b ⊔ c)|ₘ ≤ |a / b|ₘ := by
+  apply le_of_mul_le_of_one_le_left _ (one_le_mabs _); rw [mabs_div_sup_mul_mabs_div_inf]
+#align lattice_ordered_comm_group.mabs_sup_div_sup_le_mabs mabs_sup_div_sup_le_mabs
+#align lattice_ordered_comm_group.abs_sup_sub_sup_le_abs abs_sup_sub_sup_le_abs
+
+@[to_additive] lemma mabs_inf_div_inf_le_mabs (a b c : α) : |(a ⊓ c) / (b ⊓ c)|ₘ ≤ |a / b|ₘ := by
+  apply le_of_mul_le_of_one_le_right _ (one_le_mabs _); rw [mabs_div_sup_mul_mabs_div_inf]
+#align lattice_ordered_comm_group.mabs_inf_div_inf_le_mabs mabs_inf_div_inf_le_mabs
+#align lattice_ordered_comm_group.abs_inf_sub_inf_le_abs abs_inf_sub_inf_le_abs
+
+-- Commutative case, Zaanen, 3rd lecture
+-- For the non-commutative case, see Birkhoff Theorem 19 (27)
+@[to_additive Birkhoff_inequalities]
+lemma m_Birkhoff_inequalities (a b c : α) :
+    |(a ⊔ c) / (b ⊔ c)|ₘ ⊔ |(a ⊓ c) / (b ⊓ c)|ₘ ≤ |a / b|ₘ :=
+  sup_le (mabs_sup_div_sup_le_mabs a b c) (mabs_inf_div_inf_le_mabs a b c)
+set_option linter.uppercaseLean3 false in
+#align lattice_ordered_comm_group.m_Birkhoff_inequalities m_Birkhoff_inequalities
+set_option linter.uppercaseLean3 false in
+#align lattice_ordered_comm_group.Birkhoff_inequalities Birkhoff_inequalities
+
+end CommGroup
+end Lattice
+
+section LinearOrder
+variable [Group α] [LinearOrder α] {a b : α}
+
+@[to_additive] lemma mabs_choice (x : α) : |x|ₘ = x ∨ |x|ₘ = x⁻¹ := max_choice _ _
+#align abs_choice abs_choice
+
+@[to_additive] lemma le_mabs : a ≤ |b|ₘ ↔ a ≤ b ∨ a ≤ b⁻¹ := le_max_iff
+#align le_abs le_abs
+
+@[to_additive] lemma mabs_eq_max_inv : |a|ₘ = max a a⁻¹ := rfl
+#align abs_eq_max_neg abs_eq_max_neg
+
+@[to_additive] lemma lt_mabs : a < |b|ₘ ↔ a < b ∨ a < b⁻¹ := lt_max_iff
+#align lt_abs lt_abs
+
+@[to_additive] lemma mabs_by_cases (P : α → Prop) (h1 : P a) (h2 : P a⁻¹) : P |a|ₘ :=
   sup_ind _ _ h1 h2
 #align abs_by_cases abs_by_cases
 
-end Neg
-
-section AddGroup
-
-variable [AddGroup α] [LinearOrder α]
-
-@[simp]
-theorem abs_neg (a : α) : |(-a)| = |a| := by rw [abs_eq_max_neg, max_comm, neg_neg, abs_eq_max_neg]
-#align abs_neg abs_neg
-
-theorem eq_or_eq_neg_of_abs_eq {a b : α} (h : |a| = b) : a = b ∨ a = -b := by
-  simpa only [← h, eq_comm (a := |a|), neg_eq_iff_eq_neg] using abs_choice a
+@[to_additive] lemma eq_or_eq_inv_of_mabs_eq (h : |a|ₘ = b) : a = b ∨ a = b⁻¹ := by
+  simpa only [← h, eq_comm (a := |a|ₘ), inv_eq_iff_eq_inv] using mabs_choice a
 #align eq_or_eq_neg_of_abs_eq eq_or_eq_neg_of_abs_eq
 
-theorem abs_eq_abs {a b : α} : |a| = |b| ↔ a = b ∨ a = -b := by
-  refine' ⟨fun h => _, fun h => _⟩
-  · obtain rfl | rfl := eq_or_eq_neg_of_abs_eq h <;>
-      simpa only [neg_eq_iff_eq_neg (a := |b|), neg_inj, or_comm] using abs_choice b
-  · cases' h with h h <;>
-    simp [h, abs_neg]
+@[to_additive] lemma mabs_eq_mabs : |a|ₘ = |b|ₘ ↔ a = b ∨ a = b⁻¹ := by
+  refine' ⟨fun h ↦ ?_, by rintro (h | h) <;> simp [h, abs_neg]⟩
+  obtain rfl | rfl := eq_or_eq_inv_of_mabs_eq h <;>
+    simpa only [inv_eq_iff_eq_inv (a := |b|ₘ), inv_inj, or_comm] using mabs_choice b
 #align abs_eq_abs abs_eq_abs
 
-theorem abs_sub_comm (a b : α) : |a - b| = |b - a| :=
-  calc
-    |a - b| = |(-(b - a))| := congr_arg _ (neg_sub b a).symm
-    _ = |b - a| := abs_neg (b - a)
-#align abs_sub_comm abs_sub_comm
+variable [CovariantClass α α (· * ·) (· ≤ ·)] {a b c : α}
 
-variable [CovariantClass α α (· + ·) (· ≤ ·)] {a b c : α}
-
-theorem abs_of_nonneg (h : 0 ≤ a) : |a| = a :=
-  max_eq_left <| (neg_nonpos.2 h).trans h
-#align abs_of_nonneg abs_of_nonneg
-
-theorem abs_of_pos (h : 0 < a) : |a| = a :=
-  abs_of_nonneg h.le
-#align abs_of_pos abs_of_pos
-
-theorem abs_of_nonpos (h : a ≤ 0) : |a| = -a :=
-  max_eq_right <| h.trans (neg_nonneg.2 h)
-#align abs_of_nonpos abs_of_nonpos
-
-theorem abs_of_neg (h : a < 0) : |a| = -a :=
-  abs_of_nonpos h.le
-#align abs_of_neg abs_of_neg
-
-@[gcongr]
-theorem abs_le_abs_of_nonneg (ha : 0 ≤ a) (hab : a ≤ b) : |a| ≤ |b| := by
-  rwa [abs_of_nonneg ha, abs_of_nonneg (ha.trans hab)]
-#align abs_le_abs_of_nonneg abs_le_abs_of_nonneg
-
-@[simp]
-theorem abs_zero : |0| = (0 : α) :=
-  abs_of_nonneg le_rfl
-#align abs_zero abs_zero
-
-@[simp]
-theorem abs_pos : 0 < |a| ↔ a ≠ 0 := by
-  rcases lt_trichotomy a 0 with (ha | rfl | ha)
-  · simp [abs_of_neg ha, neg_pos, ha.ne, ha]
+@[to_additive (attr := simp) abs_pos] lemma one_lt_mabs : 1 < |a|ₘ ↔ a ≠ 1 := by
+  obtain ha | rfl | ha := lt_trichotomy a 1
+  · simp [mabs_of_lt_one ha, neg_pos, ha.ne, ha]
   · simp
-  · simp [abs_of_pos ha, ha, ha.ne.symm]
+  · simp [mabs_of_one_lt ha, ha, ha.ne']
 #align abs_pos abs_pos
 
-theorem abs_pos_of_pos (h : 0 < a) : 0 < |a| :=
-  abs_pos.2 h.ne.symm
+@[to_additive abs_pos_of_pos] lemma one_lt_mabs_pos_of_one_lt (h : 1 < a) : 1 < |a|ₘ :=
+  one_lt_mabs.2 h.ne'
 #align abs_pos_of_pos abs_pos_of_pos
 
-theorem abs_pos_of_neg (h : a < 0) : 0 < |a| :=
-  abs_pos.2 h.ne
+@[to_additive abs_pos_of_neg] lemma one_lt_mabs_of_lt_one (h : a < 1) : 1 < |a|ₘ :=
+  one_lt_mabs.2 h.ne
 #align abs_pos_of_neg abs_pos_of_neg
 
-theorem neg_abs_le_self (a : α) : -|a| ≤ a := by
-  rcases le_total 0 a with h | h
-  · calc
-      -|a| = -a := congr_arg Neg.neg (abs_of_nonneg h)
-      _ ≤ 0 := neg_nonpos.mpr h
-      _ ≤ a := h
-  · calc
-      -|a| = - -a := congr_arg Neg.neg (abs_of_nonpos h)
-      _ ≤ a := (neg_neg a).le
-#align neg_abs_le_self neg_abs_le_self
+@[to_additive] lemma inv_mabs_le (a : α) : |a|ₘ⁻¹ ≤ a := by
+  obtain h | h := le_total 1 a
+  · simpa [mabs_of_one_le h] using (inv_le_one'.2 h).trans h
+  · simp [mabs_of_le_one h]
+#align neg_abs_le_self neg_abs_le
 
-theorem add_abs_nonneg (a : α) : 0 ≤ a + |a| := by
-  rw [← add_right_neg a]
-  apply add_le_add_left
-  exact neg_le_abs_self a
+@[to_additive add_abs_nonneg] lemma one_le_mul_mabs (a : α) : 1 ≤ a * |a|ₘ := by
+  rw [← mul_right_inv a]; exact mul_le_mul_left' (inv_le_mabs a) _
 #align add_abs_nonneg add_abs_nonneg
 
-theorem neg_abs_le_neg (a : α) : -|a| ≤ -a := by simpa using neg_abs_le_self (-a)
+@[to_additive] lemma inv_mabs_le_inv (a : α) : |a|ₘ⁻¹ ≤ a⁻¹ := by simpa using inv_mabs_le a⁻¹
 #align neg_abs_le_neg neg_abs_le_neg
 
-@[simp]
-theorem abs_nonneg (a : α) : 0 ≤ |a| :=
-  (le_total 0 a).elim (fun h => h.trans (le_abs_self a)) fun h =>
-    (neg_nonneg.2 h).trans <| neg_le_abs_self a
-#align abs_nonneg abs_nonneg
+variable [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
 
-@[simp]
-theorem abs_abs (a : α) : |(|a|)| = |a| :=
-  abs_of_nonneg <| abs_nonneg a
-#align abs_abs abs_abs
+@[to_additive] lemma mabs_ne_one : |a|ₘ ≠ 1 ↔ a ≠ 1 :=
+  (one_le_mabs a).gt_iff_ne.symm.trans one_lt_mabs
 
-@[simp]
-theorem abs_eq_zero : |a| = 0 ↔ a = 0 :=
-  Decidable.not_iff_not.1 <| ne_comm.trans <| (abs_nonneg a).lt_iff_ne.symm.trans abs_pos
+@[to_additive (attr := simp)] lemma mabs_eq_one : |a|ₘ = 1 ↔ a = 1 := not_iff_not.1 mabs_ne_one
 #align abs_eq_zero abs_eq_zero
 
-@[simp]
-theorem abs_nonpos_iff {a : α} : |a| ≤ 0 ↔ a = 0 :=
-  (abs_nonneg a).le_iff_eq.trans abs_eq_zero
+@[to_additive (attr := simp) abs_nonpos_iff] lemma mabs_le_one : |a|ₘ ≤ 1 ↔ a = 1 :=
+  (one_le_mabs a).le_iff_eq.trans mabs_eq_one
 #align abs_nonpos_iff abs_nonpos_iff
 
-variable [CovariantClass α α (swap (· + ·)) (· ≤ ·)]
-
-theorem abs_le_abs_of_nonpos (ha : a ≤ 0) (hab : b ≤ a) : |a| ≤ |b| := by
-  rw [abs_of_nonpos ha, abs_of_nonpos (hab.trans ha)]
-  exact neg_le_neg_iff.mpr hab
+@[to_additive] lemma mabs_le_mabs_of_le_one (ha : a ≤ 1) (hab : b ≤ a) : |a|ₘ ≤ |b|ₘ := by
+  rw [mabs_of_le_one ha, mabs_of_le_one (hab.trans ha)]; exact inv_le_inv_iff.mpr hab
 #align abs_le_abs_of_nonpos abs_le_abs_of_nonpos
 
-theorem abs_lt : |a| < b ↔ -b < a ∧ a < b :=
-  max_lt_iff.trans <| and_comm.trans <| by rw [neg_lt]
+@[to_additive] lemma mabs_lt : |a|ₘ < b ↔ b⁻¹ < a ∧ a < b :=
+  max_lt_iff.trans <| and_comm.trans <| by rw [inv_lt']
 #align abs_lt abs_lt
 
-theorem neg_lt_of_abs_lt (h : |a| < b) : -b < a :=
-  (abs_lt.mp h).1
+@[to_additive] lemma inv_lt_of_mabs_lt (h : |a|ₘ < b) : b⁻¹ < a := (mabs_lt.mp h).1
 #align neg_lt_of_abs_lt neg_lt_of_abs_lt
 
-theorem lt_of_abs_lt (h : |a| < b) : a < b :=
-  (abs_lt.mp h).2
+@[to_additive] lemma lt_of_mabs_lt : |a|ₘ < b → a < b := (le_mabs_self _).trans_lt
 #align lt_of_abs_lt lt_of_abs_lt
 
-theorem max_sub_min_eq_abs' (a b : α) : max a b - min a b = |a - b| := by
+@[to_additive] lemma max_div_min_eq_mabs' (a b : α) : max a b / min a b = |a / b|ₘ := by
   rcases le_total a b with ab | ba
-  · rw [max_eq_right ab, min_eq_left ab, abs_of_nonpos, neg_sub]
-    rwa [sub_nonpos]
-  · rw [max_eq_left ba, min_eq_right ba, abs_of_nonneg]
-    rwa [sub_nonneg]
+  · rw [max_eq_right ab, min_eq_left ab, mabs_of_le_one, inv_div]
+    rwa [div_le_one']
+  · rw [max_eq_left ba, min_eq_right ba, mabs_of_one_le]
+    rwa [one_le_div']
 #align max_sub_min_eq_abs' max_sub_min_eq_abs'
 
-theorem max_sub_min_eq_abs (a b : α) : max a b - min a b = |b - a| := by
-  rw [abs_sub_comm]
-  exact max_sub_min_eq_abs' _ _
+@[to_additive] lemma max_div_min_eq_mabs (a b : α) : max a b / min a b = |b / a|ₘ := by
+  rw [mabs_div_comm, max_div_min_eq_mabs']
 #align max_sub_min_eq_abs max_sub_min_eq_abs
 
-end AddGroup
-
-end CovariantAddLe
+end LinearOrder
 
 section LinearOrderedAddCommGroup
 
@@ -267,7 +370,7 @@ theorem apply_abs_le_mul_of_one_le {β : Type*} [MulOneClass β] [Preorder β]
 theorem abs_add (a b : α) : |a + b| ≤ |a| + |b| :=
   abs_le.2
     ⟨(neg_add |a| |b|).symm ▸
-        add_le_add ((@neg_le α ..).2 <| neg_le_abs_self _) ((@neg_le α ..).2 <| neg_le_abs_self _),
+        add_le_add ((@neg_le α ..).2 <| neg_le_abs _) ((@neg_le α ..).2 <| neg_le_abs _),
       add_le_add (le_abs_self _) (le_abs_self _)⟩
 #align abs_add abs_add
 
@@ -323,7 +426,7 @@ theorem abs_eq (hb : 0 ≤ b) : |a| = b ↔ a = b ∨ a = -b := by
 theorem abs_le_max_abs_abs (hab : a ≤ b) (hbc : b ≤ c) : |b| ≤ max |a| |c| :=
   abs_le'.2
     ⟨by simp [hbc.trans (le_abs_self c)], by
-      simp [((@neg_le_neg_iff α ..).mpr hab).trans (neg_le_abs_self a)]⟩
+      simp [((@neg_le_neg_iff α ..).mpr hab).trans (neg_le_abs a)]⟩
 #align abs_le_max_abs_abs abs_le_max_abs_abs
 
 theorem min_abs_abs_le_abs_max : min |a| |b| ≤ |max a b| :=
@@ -347,7 +450,7 @@ theorem abs_min_le_max_abs_abs : |min a b| ≤ max |a| |b| :=
 #align abs_min_le_max_abs_abs abs_min_le_max_abs_abs
 
 theorem eq_of_abs_sub_eq_zero {a b : α} (h : |a - b| = 0) : a = b :=
-  sub_eq_zero.1 <| abs_eq_zero.1 h
+  sub_eq_zero.1 <| (abs_eq_zero (α := α)).1 h
 #align eq_of_abs_sub_eq_zero eq_of_abs_sub_eq_zero
 
 theorem abs_sub_le (a b c : α) : |a - c| ≤ |a - b| + |b - c| :=
@@ -398,3 +501,28 @@ theorem max_zero_add_max_neg_zero_eq_abs_self (a : α) : max a 0 + max (-a) 0 = 
 #align max_zero_add_max_neg_zero_eq_abs_self max_zero_add_max_neg_zero_eq_abs_self
 
 end LinearOrderedAddCommGroup
+
+namespace LatticeOrderedAddCommGroup
+variable [Lattice α] [AddCommGroup α] {s t : Set α}
+
+/-- A set `s` in a lattice ordered group is *solid* if for all `x ∈ s` and all `y ∈ α` such that
+`|y| ≤ |x|`, then `y ∈ s`. -/
+def IsSolid (s : Set α) : Prop := ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, |y| ≤ |x| → y ∈ s
+#align lattice_ordered_add_comm_group.is_solid LatticeOrderedAddCommGroup.IsSolid
+
+/-- The solid closure of a subset `s` is the smallest superset of `s` that is solid. -/
+def solidClosure (s : Set α) : Set α := {y | ∃ x ∈ s, |y| ≤ |x|}
+#align lattice_ordered_add_comm_group.solid_closure LatticeOrderedAddCommGroup.solidClosure
+
+lemma isSolid_solidClosure (s : Set α) : IsSolid (solidClosure s) :=
+  fun _ ⟨y, hy, hxy⟩ _ hzx ↦ ⟨y, hy, hzx.trans hxy⟩
+#align lattice_ordered_add_comm_group.is_solid_solid_closure LatticeOrderedAddCommGroup.isSolid_solidClosure
+
+lemma solidClosure_min (hst : s ⊆ t) (ht : IsSolid t) : solidClosure s ⊆ t :=
+  fun _ ⟨_, hy, hxy⟩ ↦ ht (hst hy) hxy
+#align lattice_ordered_add_comm_group.solid_closure_min LatticeOrderedAddCommGroup.solidClosure_min
+
+end LatticeOrderedAddCommGroup
+
+@[deprecated] alias neg_le_abs_self := neg_le_abs
+@[deprecated] alias neg_abs_le_self := neg_abs_le
