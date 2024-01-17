@@ -75,7 +75,6 @@ theorem sup'_eq_csSup_image (s : Finset ι) (H : s.Nonempty) (f : ι → α) :
 #align finset.sup'_eq_cSup_image Finset.sup'_eq_csSup_image
 #align finset.nonempty.sup'_eq_cSup_image Finset.sup'_eq_csSup_image
 
-
 theorem inf'_eq_csInf_image (s : Finset ι) (H : s.Nonempty) (f : ι → α) :
     s.inf' H f = sInf (f '' s) :=
   sup'_eq_csSup_image (α := αᵒᵈ) _ H _
