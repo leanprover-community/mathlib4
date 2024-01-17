@@ -1976,11 +1976,13 @@ variable {u v : α → 𝕜}
 /-- If `‖φ‖` is eventually bounded by `c`, and `u =ᶠ[l] φ * v`, then we have `IsBigOWith c u v l`.
     This does not require any assumptions on `c`, which is why we keep this version along with
     `IsBigOWith_iff_exists_eq_mul`. -/
-theorem isBigOWith_of_eq_mul (φ : α → 𝕜) (hφ : ∀ᶠ x in l, ‖φ x‖ ≤ c) (h : u =ᶠ[l] φ * v) :
+theorem isBigOWith_of_eq_mul {u v : α → R} (φ : α → R) (hφ : ∀ᶠ x in l, ‖φ x‖ ≤ c)
+    (h : u =ᶠ[l] φ * v) :
     IsBigOWith c l u v := by
   simp only [IsBigOWith_def]
   refine' h.symm.rw (fun x a => ‖a‖ ≤ c * ‖v x‖) (hφ.mono fun x hx => _)
-  simp only [norm_mul, Pi.mul_apply]
+  simp only [Pi.mul_apply]
+  refine (norm_mul_le _ _).trans ?_
   gcongr
 #align asymptotics.is_O_with_of_eq_mul Asymptotics.isBigOWith_of_eq_mul
 
