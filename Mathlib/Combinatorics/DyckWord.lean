@@ -9,11 +9,19 @@ import Mathlib.Data.List.Indexes
 /-!
 # Dyck words
 
+A Dyck word is a sequence consisting of an equal number `n` of symbols of two types such that
+for all prefixes one symbol occurs at least as many times as the other.
+If the symbols are `(` and `)` the latter restriction is equivalent to balanced brackets;
+if they are `U = (1, 1)` and `D = (1, -1)` the sequence is a lattice path from `(0, 0)` to `(0, 2n)`
+and the restriction requires the path to never go below the x-axis.
+
+This file defines Dyck words and constructs their bijection with rooted binary trees,
+one consequence being that the number of Dyck words with length `2n` is `catalan n`.
+
 ## Main definitions
 
-* `DyckPath`: a list of `U`p or `D`own `Step`s.
-* `IsBalanced`: the property defining Dyck words. Translating `U` and `D` to `(` and `)`,
-  the resulting brackets are balanced.
+* `DyckPath`: a list of `U` and `D` steps without any restrictions.
+* `IsBalanced`: the property defining Dyck words.
 
 ## Main results
 
@@ -21,6 +29,11 @@ import Mathlib.Data.List.Indexes
 * `finiteTreeEquiv`: equivalence between Dyck words of length `2 * n` and rooted binary trees
   with `n` internal nodes.
 * `dyckPath_isBalanced_card_eq_catalan`: there are `catalan n` Dyck words of length `2 * n`.
+
+## Implementation notes
+
+While any two-valued type could have been used for `Step`, a new enumerated type has been created
+here to emphasise that the definition of a Dyck word does not depend on that underlying type.
 -/
 
 
