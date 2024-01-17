@@ -35,6 +35,7 @@ namespace EisensteinSeries
 /--Subtype of functions valued in pars of coprime integers congruent to `a,b`.-/
 def gammaSet (N : ℕ) (a b : ℤ ) := {f : (Fin 2) → ℤ | (f 0 : ZMod N) = a ∧ (f 1 : ZMod N) = b ∧
   IsCoprime (f 0) (f 1)}
+  
 @[simp]
 lemma gammaSet_mem' (N : ℕ) (a b : ℤ ) (f : (Fin 2) → ℤ ) : f ∈ gammaSet N a b ↔
     (f 0 : ZMod N) = a ∧ (f 1 : ZMod N) = b ∧ IsCoprime (f 0) (f 1) := by rfl
