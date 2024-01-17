@@ -188,7 +188,7 @@ lemma addContent_le_sum_of_subset_sUnion (hC : IsSetSemiring C)
     rintro u hu rfl
     exact hC.inter_mem _ ht _ (h_ss hu)
   · rwa [← ht_eq]
-  refine (Finset.sum_image_le J _ m fun _ _ ↦ zero_le _).trans ?_
+  refine (Finset.sum_image_le_of_nonneg fun _ _ ↦ zero_le _).trans ?_
   refine sum_le_sum fun u hu ↦ ?_
   exact addContent_mono hC (hC.inter_mem _ ht _ (h_ss hu)) (h_ss hu) (inter_subset_right _ _)
 
@@ -202,7 +202,7 @@ theorem addContent_iUnion_eq_tsum_of_disjoint_of_addContent_iUnion_le (hC : IsSe
   refine le_antisymm (m_subadd f hf hf_Union hf_disj) ?_
   refine tsum_le_of_sum_le ENNReal.summable fun I ↦ ?_
   classical
-  rw [← Finset.sum_image_of_disjoint m addContent_empty f _ (hf_disj.pairwiseDisjoint _)]
+  rw [← Finset.sum_image_of_disjoint addContent_empty (hf_disj.pairwiseDisjoint _)]
   refine sum_addContent_le_of_subset hC (I := I.image f) ?_ ?_ ?_ ?_
   · simp only [coe_image, Set.image_subset_iff]
     refine (subset_preimage_image f I).trans (preimage_mono ?_)
@@ -289,7 +289,7 @@ theorem tendsto_atTop_addContent_iUnion_of_addContent_iUnion_eq_tsum (hC : IsSet
       have hij : i ≠ j := by intro h_eq; rw [h_eq] at hst; exact hst rfl
       exact disjoint_disjointed f hij
     · rw [← h1]; exact hf n
-    rw [sum_image_of_disjoint m addContent_empty g _ ((disjoint_disjointed f).pairwiseDisjoint _)]
+    rw [sum_image_of_disjoint addContent_empty ((disjoint_disjointed f).pairwiseDisjoint _)]
   simp_rw [h]
   change Tendsto (fun n ↦ (fun k ↦ ∑ i in range k, m (g i)) (n + 1)) atTop (𝓝 (∑' i, m (g i)))
   rw [tendsto_add_atTop_iff_nat (f := (fun k ↦ ∑ i in range k, m (g i))) 1]
@@ -321,7 +321,7 @@ theorem addContent_iUnion_le_of_addContent_iUnion_eq_tsum (hC : IsSetRing C)
     exact hf i
   · rw [← partialSups_eq_sUnion_image]
     exact hC.partialSups_mem hf n
-  · exact Finset.sum_image_le _ _ _ fun _ _ ↦ zero_le _
+  · exact Finset.sum_image_le_of_nonneg fun _ _ ↦ zero_le _
 
 end IsSetRing
 

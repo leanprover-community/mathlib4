@@ -1291,6 +1291,27 @@ lemma mulSupport_prod (s : Finset ι) (f : ι → α → β) :
 #align function.mul_support_prod Finset.mulSupport_prod
 #align function.support_sum Finset.support_sum
 
+@[to_additive]
+lemma prod_image_of_disjoint [PartialOrder α] [OrderBot α] [DecidableEq α]
+    (hg_bot : g ⊥ = 1) {f : ι → α} {I : Finset ι} (hf_disj : (I : Set ι).PairwiseDisjoint f) :
+    ∏ s in I.image f, g s = ∏ i in I, g (f i) := by
+  rw [prod_image']
+  intro n hnI
+  by_cases hfn : f n = ⊥
+  · simp only [hfn, hg_bot]
+    refine (prod_eq_one fun i hi ↦ ?_).symm
+    rw [mem_filter] at hi
+    rw [hi.2, hg_bot]
+  · classical
+    suffices filter (fun j ↦ f j = f n) I = filter (fun j ↦ j = n) I by
+      simp only [this, prod_filter, prod_ite_eq', if_pos hnI]
+    refine filter_congr (fun j hj ↦ ?_)
+    refine ⟨fun h ↦ ?_, fun h ↦ by rw [h]⟩
+    by_contra hij
+    have h_dis : Disjoint (f j) (f n) := hf_disj hj hnI hij
+    rw [h] at h_dis
+    exact hfn (disjoint_self.mp h_dis)
+
 section indicator
 open Set
 variable {κ : Type*}

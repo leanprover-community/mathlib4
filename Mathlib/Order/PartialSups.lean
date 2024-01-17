@@ -104,6 +104,9 @@ theorem partialSups_mono : Monotone (partialSups : (ℕ → α) → ℕ →o α)
   partialSups_le_iff.2 fun k hk ↦ (h k).trans (le_partialSups_of_le _ hk)
 #align partial_sups_mono partialSups_mono
 
+lemma monotone_partialSups (f : ℕ → α) : Monotone fun n ↦ partialSups f n :=
+  fun n _ hnm ↦ partialSups_le f n _ (fun _ hm'n ↦ le_partialSups_of_le _ (hm'n.trans hnm))
+
 /-- `partialSups` forms a Galois insertion with the coercion from monotone functions to functions.
 -/
 def partialSups.gi : GaloisInsertion (partialSups : (ℕ → α) → ℕ →o α) (↑) where
@@ -194,5 +197,17 @@ theorem iSup_eq_iSup_of_partialSups_eq_partialSups {f g : ℕ → α}
     (h : partialSups f = partialSups g) : ⨆ n, f n = ⨆ n, g n := by
   simp_rw [← iSup_partialSups_eq f, ← iSup_partialSups_eq g, h]
 #align supr_eq_supr_of_partial_sups_eq_partial_sups iSup_eq_iSup_of_partialSups_eq_partialSups
+
+lemma partialSups_eq_sUnion_image [DecidableEq (Set α)] (s : ℕ → Set α) (n : ℕ) :
+    partialSups s n = ⋃₀ ↑((Finset.range (n + 1)).image s) := by
+  ext
+  simp only [partialSups_eq_biSup, Set.iSup_eq_iUnion, Set.mem_sUnion, Set.mem_iUnion, exists_prop,
+    Finset.mem_coe, Finset.mem_image, Finset.mem_range, exists_exists_and_eq_and, Nat.lt_succ_iff]
+
+lemma partialSups_eq_biUnion_range {α : Type*} (s : ℕ → Set α) (n : ℕ) :
+    partialSups s n = ⋃ i ∈ Finset.range (n + 1), s i := by
+  ext a
+  simp only [Set.le_eq_subset, partialSups_eq_biSup, Set.iSup_eq_iUnion, Set.mem_iUnion,
+    exists_prop, Finset.mem_range, Nat.lt_succ]
 
 end CompleteLattice

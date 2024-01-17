@@ -46,78 +46,17 @@ open Finset Set
 open scoped ENNReal BigOperators
 
 -- TODO: move this
-lemma monotone_partialSups {α : Type*} [SemilatticeSup α] (f : ℕ → α) :
-    Monotone fun n ↦ partialSups f n :=
-  fun n _ hnm ↦ partialSups_le f n _ (fun _ hm'n ↦ le_partialSups_of_le _ (hm'n.trans hnm))
-
--- TODO: move this
-lemma partialSups_eq_sUnion_image {α : Type*} [DecidableEq (Set α)] (s : ℕ → Set α) (n : ℕ) :
-    partialSups s n = ⋃₀ ↑(Finset.image s (range (n + 1))) := by
-  ext
-  simp only [partialSups_eq_biSup, iSup_eq_iUnion, Set.mem_sUnion, mem_iUnion, exists_prop, mem_coe,
-  Finset.mem_image, Finset.mem_range, exists_exists_and_eq_and, Nat.lt_succ_iff]
-
--- TODO: move this
-lemma partialSups_eq_biUnion_range {α : Type*} (s : ℕ → Set α) (n : ℕ) :
-    partialSups s n = ⋃ i ∈ Finset.range (n + 1), s i := by
-  ext a
-  simp only [Set.le_eq_subset, partialSups_eq_biSup, iSup_eq_iUnion, mem_iUnion, exists_prop,
-    Finset.mem_range, Nat.lt_succ]
-
-lemma Finset.sUnion_disjUnion {α β : Type*} {f : α → Finset (Set β)} (I : Finset α)
-    (hf : (I : Set α).PairwiseDisjoint f) :
-    ⋃₀ (I.disjiUnion f hf : Set (Set β)) = ⋃ a ∈ I, ⋃₀ ↑(f a) := by
-  ext1 b
-  simp only [mem_sUnion, mem_iUnion, mem_coe, exists_prop, mem_disjiUnion]
-  constructor
-  · rintro ⟨t, ⟨a, haI, hatf⟩, hbt⟩
-    exact ⟨a, haI, t, hatf, hbt⟩
-  · rintro ⟨a, haI, t, hatf, hbt⟩
-    exact ⟨t, ⟨a, haI, hatf⟩, hbt⟩
-
--- TODO: move this
-lemma Finset.sum_image_of_disjoint {α ι : Type*} [PartialOrder α] [OrderBot α] [DecidableEq α]
-    (m : α → ℝ≥0∞) (m_bot : m ⊥ = 0)
-    (f : ι → α) (I : Finset ι) (hf_disj : (I : Set ι).PairwiseDisjoint f) :
-    ∑ s in image f I, m s = ∑ i in I, m (f i) := by
-  rw [sum_image']
-  intro n hnI
-  by_cases hfn : f n = ⊥
-  · simp only [hfn, m_bot]
-    refine (sum_eq_zero fun i hi ↦ ?_).symm
-    rw [mem_filter] at hi
-    rw [hi.2, m_bot]
-  · classical
-    have : filter (fun j ↦ f j = f n) I = filter (fun j ↦ j = n) I := by
-      ext j
-      simp only [mem_filter, and_congr_right_iff]
-      intro hj
-      refine ⟨fun h ↦ ?_, fun h ↦ by rw [h]⟩
-      by_contra hij
-      have h_dis : Disjoint (f j) (f n) := hf_disj hj hnI hij
-      rw [h] at h_dis
-      simp only [disjoint_self] at h_dis
-      exact hfn h_dis
-    simp_rw [this]
-    simp only [sum_filter, sum_ite_eq', if_pos hnI]
-
--- TODO: move this
-lemma Finset.sum_image_le {ι α β : Type*} [DecidableEq α] [OrderedSemiring β] (J : Finset ι)
-    (g : ι → α) (f : α → β) (hf : ∀ u ∈ J.image g, 0 ≤ f u) :
+lemma Finset.sum_image_le_of_nonneg {ι α β : Type*} [DecidableEq α]
+    [OrderedAddCommMonoid β] [SMulPosMono ℕ β]
+    {J : Finset ι} {g : ι → α} {f : α → β} (hf : ∀ u ∈ J.image g, 0 ≤ f u) :
     ∑ u in J.image g, f u ≤ ∑ u in J, f (g u) := by
   rw [sum_comp f g]
   refine sum_le_sum fun a hag => ?_
-  let hag' := hag
-  rw [Finset.mem_image] at hag'
-  obtain ⟨i, hi, hig⟩ := hag'
-  suffices 1 ≤ (J.filter (fun j => g j = a)).card by
-    conv_lhs => rw [← one_smul ℕ (f a)]
-    simp_rw [nsmul_eq_mul]
-    exact mul_le_mul (Nat.mono_cast this) le_rfl (hf a hag) (Nat.cast_nonneg _)
-  rw [Nat.succ_le_iff, card_pos]
-  refine ⟨i, ?_⟩
-  rw [mem_filter]
-  exact ⟨hi, hig⟩
+  obtain ⟨i, hi, hig⟩ := Finset.mem_image.mp hag
+  conv_lhs => rw [← one_smul ℕ (f a)]
+  refine smul_le_smul_of_nonneg_right ?_ (hf a hag)
+  rw [Nat.one_le_iff_ne_zero, ← Nat.pos_iff_ne_zero, card_pos]
+  exact ⟨i, mem_filter.mpr ⟨hi, hig⟩⟩
 
 namespace MeasureTheory
 
@@ -501,7 +440,7 @@ lemma allDiffFinset₀_subset (hC : IsSetSemiring C) (J : Finset (Set α)) (hJ :
 
 lemma sUnion_allDiffFinset₀ (hC : IsSetSemiring C) (J : Finset (Set α)) (hJ : ↑J ⊆ C) :
     ⋃₀ (hC.allDiffFinset₀ J hJ : Set (Set α)) = ⋃₀ J := by
-  simp only [allDiffFinset₀, Finset.sUnion_disjUnion, Finset.mem_univ, iUnion_true,
+  simp only [allDiffFinset₀, Finset.sUnion_disjiUnion, Finset.mem_univ, iUnion_true,
     iUnion_sUnion_indexedDiffFinset₀]
 
 end AllDiffFinset₀
