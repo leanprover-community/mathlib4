@@ -120,7 +120,7 @@ instead of linearly increasing the work per `MyHom`-related declaration.
 -- attribute [instance, priority 10] coe_fn_trans
 
 /-- The class `DFunLike F α β` expresses that terms of type `F` have an
-injective coercion to functions from `α` to `β`.
+injective coercion to (dependent) functions from `α` to `β`.
 
 This typeclass is used in the definition of the homomorphism typeclasses,
 such as `ZeroHomClass`, `MulHomClass`, `MonoidHomClass`, ....
