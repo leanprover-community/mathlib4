@@ -1,0 +1,28 @@
+{"ignoreImport":
+ ["Init",
+  "Lean",
+  "Mathlib.Mathport.Rename",
+  "Mathlib.Init.Data.Nat.Notation",
+  "Mathlib.Data.Rat.Init",
+  "Mathlib.Probability.Notation",
+  "Mathlib.AlgebraicTopology.DoldKan.Notations",
+  "Mathlib.Tactic.Ring"],
+ "ignore":
+ {"Mathlib.Tactic.SetLike": ["Aesop"],
+  "Mathlib.Tactic.NoncommRing": ["Mathlib.Tactic.Abel"],
+  "Mathlib.Tactic.Measurability": ["Mathlib.Tactic.Measurability.Init"],
+  "Mathlib.Tactic.HaveI": ["Std.Tactic.HaveI"],
+  "Mathlib.Tactic.Contrapose": ["Mathlib.Tactic.PushNeg"],
+  "Mathlib.Tactic.Continuity": ["Mathlib.Tactic.Continuity.Init"],
+  "Mathlib.Tactic.Attr.Register": ["Lean.Meta.Tactic.Simp.SimpTheorems"],
+  "Mathlib.Tactic.Attr.Core": ["Mathlib.Tactic.Attr.Register"],
+  "Mathlib.Probability.Notation":
+  ["Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic",
+   "Mathlib.MeasureTheory.Decomposition.Lebesgue"],
+  "Mathlib.LinearAlgebra.AffineSpace.Basic": ["Mathlib.Algebra.AddTorsor"],
+  "Mathlib.Init.Data.Nat.GCD": ["Std.Data.Nat.Gcd"],
+  "Mathlib.Data.Rat.Init": ["Std.Data.Rat.Basic"],
+  "Mathlib.Data.Array.Basic": ["Std.Tactic.Alias"],
+  "Mathlib.Control.Monad.Basic": ["Mathlib.Init.Control.Lawful"],
+  "Mathlib.AlgebraicTopology.DoldKan.Notations":
+  ["Mathlib.AlgebraicTopology.AlternatingFaceMapComplex"]}}
