@@ -624,21 +624,16 @@ theorem prod_nnnorm_eq_sup (f : WithLp ∞ (α × β)) : ‖f‖₊ = ‖f.fst�
   ext
   norm_cast
 
-@[simp] theorem prod_nnnorm_equiv (f : WithLp ∞ (α × β)) :
-    ‖WithLp.equiv ⊤ _ f‖₊ = ‖f‖₊ := by
-  rw [prod_nnnorm_eq_sup, Prod.nnnorm_def', _root_.sup_eq_max]
-  rfl
+@[simp] theorem prod_nnnorm_equiv (f : WithLp ∞ (α × β)) : ‖WithLp.equiv ⊤ _ f‖₊ = ‖f‖₊ := by
+  rw [prod_nnnorm_eq_sup, Prod.nnnorm_def', _root_.sup_eq_max, equiv_fst, equiv_snd]
 
-@[simp] theorem prod_nnnorm_equiv_symm (f : α × β) :
-    ‖(WithLp.equiv ⊤ _).symm f‖₊ = ‖f‖₊ :=
+@[simp] theorem prod_nnnorm_equiv_symm (f : α × β) : ‖(WithLp.equiv ⊤ _).symm f‖₊ = ‖f‖₊ :=
   (prod_nnnorm_equiv _).symm
 
-@[simp] theorem prod_norm_equiv (f : WithLp ∞ (α × β)) :
-    ‖WithLp.equiv ⊤ _ f‖ = ‖f‖ :=
+@[simp] theorem prod_norm_equiv (f : WithLp ∞ (α × β)) : ‖WithLp.equiv ⊤ _ f‖ = ‖f‖ :=
   congr_arg NNReal.toReal <| prod_nnnorm_equiv f
 
-@[simp] theorem prod_norm_equiv_symm (f : α × β) :
-    ‖(WithLp.equiv ⊤ _).symm f‖ = ‖f‖ :=
+@[simp] theorem prod_norm_equiv_symm (f : α × β) : ‖(WithLp.equiv ⊤ _).symm f‖ = ‖f‖ :=
   (prod_norm_equiv _).symm
 
 theorem prod_norm_eq_of_L2 (x : WithLp 2 (α × β)) :
