@@ -23,7 +23,7 @@ open Complex Real Asymptotics Filter Topology
 open scoped Real BigOperators
 
 /-- The two-variable Jacobi theta function,
-`θ z τ = ∑' (n : ℤ), cexp (2 * π * I * n * z +  π * I * n ^ 2 * τ)`.
+`θ z τ = ∑' (n : ℤ), cexp (2 * π * I * n * z + π * I * n ^ 2 * τ)`.
 
 The sum is only convergent for `0 < im τ`; we are implictly extending it by 0 for other values of
 `τ`. -/
