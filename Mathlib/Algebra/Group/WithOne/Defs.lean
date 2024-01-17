@@ -401,7 +401,7 @@ instance semiring [Semiring α] : Semiring (WithZero α) :=
 
 end WithZero
 
--- Check that we haven't need to import all the basic lemmas about groups,
+-- Check that we haven't needed to import all the basic lemmas about groups,
 -- by asserting a random sample don't exist here:
 assert_not_exists inv_involutive
 assert_not_exists div_right_inj

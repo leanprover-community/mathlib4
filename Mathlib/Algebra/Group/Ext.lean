@@ -27,6 +27,8 @@ former uses `HMul.hMul` which is the canonical spelling.
 monoid, group, extensionality
 -/
 
+open Function
+
 universe u
 
 @[to_additive (attr := ext)]
@@ -153,8 +155,8 @@ theorem DivInvMonoid.ext {M : Type*} ⦃m₁ m₂ : DivInvMonoid M⦄
 #align sub_neg_monoid.ext SubNegMonoid.ext
 
 @[to_additive]
-theorem Group.toDivInvMonoid_injective {G : Type*} :
-    Function.Injective (@Group.toDivInvMonoid G) := by rintro ⟨⟩ ⟨⟩ ⟨⟩; rfl
+lemma Group.toDivInvMonoid_injective {G : Type*} : Injective (@Group.toDivInvMonoid G) := by
+  rintro ⟨⟩ ⟨⟩ ⟨⟩; rfl
 #align group.to_div_inv_monoid_injective Group.toDivInvMonoid_injective
 #align add_group.to_sub_neg_add_monoid_injective AddGroup.toSubNegAddMonoid_injective
 
@@ -172,7 +174,7 @@ theorem Group.ext {G : Type*} ⦃g₁ g₂ : Group G⦄ (h_mul : g₁.mul = g₂
 #align add_group.ext AddGroup.ext
 
 @[to_additive]
-theorem CommGroup.toGroup_injective {G : Type u} : Function.Injective (@CommGroup.toGroup G) := by
+lemma CommGroup.toGroup_injective {G : Type*} : Injective (@CommGroup.toGroup G) := by
   rintro ⟨⟩ ⟨⟩ ⟨⟩; rfl
 #align comm_group.to_group_injective CommGroup.toGroup_injective
 #align add_comm_group.to_add_group_injective AddCommGroup.toAddGroup_injective

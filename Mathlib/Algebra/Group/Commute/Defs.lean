@@ -3,9 +3,9 @@ Copyright (c) 2019 Neil Strickland. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Neil Strickland, Yury Kudryashov
 -/
-import Mathlib.Init.Algebra.Classes
 import Mathlib.Algebra.Group.Semiconj.Defs
 import Mathlib.Data.Nat.Defs
+import Mathlib.Init.Algebra.Classes
 
 #align_import algebra.group.commute from "leanprover-community/mathlib"@"05101c3df9d9cfe9430edc205860c79b6d660102"
 
