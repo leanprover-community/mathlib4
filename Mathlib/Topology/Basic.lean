@@ -553,6 +553,22 @@ theorem closure_inter_open_nonempty_iff (h : IsOpen t) :
     h.mono <| inf_le_inf_right t subset_closure⟩
 #align closure_inter_open_nonempty_iff closure_inter_open_nonempty_iff
 
+@[simp]
+lemma IsOpen.closure_interior_closure_eq_closure {s : Set X} (s_open : IsOpen s) :
+    closure (interior (closure s)) = closure s := by
+  apply subset_antisymm
+  · nth_rw 2 [← closure_closure (s := s)]
+    apply closure_mono
+    exact interior_subset
+  · apply closure_mono
+    nth_rw 1 [← IsOpen.interior_eq s_open]
+    exact interior_mono subset_closure
+
+lemma IsOpen.subset_interior_closure {s : Set X} (s_open : IsOpen s) :
+    s ⊆ interior (closure s) := by
+  nth_rw 1 [← IsOpen.interior_eq s_open]
+  exact interior_mono subset_closure
+
 theorem Filter.le_lift'_closure (l : Filter X) : l ≤ l.lift' closure :=
   le_lift'.2 fun _ h => mem_of_superset h subset_closure
 #align filter.le_lift'_closure Filter.le_lift'_closure
@@ -1370,6 +1386,21 @@ theorem IsOpen.inter_closure (h : IsOpen s) : s ∩ closure t ⊆ closure (s ∩
 theorem IsOpen.closure_inter (h : IsOpen t) : closure s ∩ t ⊆ closure (s ∩ t) := by
   simpa only [inter_comm t] using h.inter_closure
 #align is_open.closure_inter IsOpen.closure_inter
+
+/--
+The extension of `IsOpen.inter_closure` to the interior of the closure of a set.
+
+Used in proving that `fun s => (closure s)ᶜ` distributes with the intersection of regular open
+sets.
+-/
+lemma IsOpen.inter_interior_closure (s_open : IsOpen s) :
+    s ∩ interior (closure t) ⊆ interior (closure (s ∩ t)) := by
+  have res := interior_mono (IsOpen.inter_closure s_open (t := t))
+  rw [← Set.compl_subset_compl, ← closure_compl (s := s ∩ closure t), Set.compl_inter,
+    ← Set.compl_subset_compl, ← interior_compl] at res
+  simp only [closure_compl, compl_compl, Set.compl_union, interior_inter,
+    s_open.interior_eq] at res
+  assumption
 
 theorem Dense.open_subset_closure_inter (hs : Dense s) (ht : IsOpen t) :
     t ⊆ closure (t ∩ s) :=
