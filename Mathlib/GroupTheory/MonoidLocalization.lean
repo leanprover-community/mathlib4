@@ -1935,7 +1935,7 @@ theorem leftCancelMulZero_of_le_isLeftRegular
           ← mul_assoc w, ← mul_assoc w, mul_comm w]
       _ = a * z * g b.2 * (g x.2 * g y.2) := by rw [hazw]
       _ = a * g b.2 * (z * g x.2 * g y.2) := by
-        rw[mul_assoc a, mul_comm z, ← mul_assoc a, mul_assoc, mul_assoc z]
+        rw [mul_assoc a, mul_comm z, ← mul_assoc a, mul_assoc, mul_assoc z]
       _ = g b.1 * g (y.2 * x.1) := by rw [hx, hb, mul_comm (g x.1), ← map_mul g]
       _ = g (b.1 * (y.2 * x.1)):= by rw [← map_mul g]
  -- The hypothesis `h` gives that `f` (so, `g`) is injective, and we can cancel out `b.1`.
@@ -1945,11 +1945,14 @@ theorem leftCancelMulZero_of_le_isLeftRegular
 /-- Given a Localization map `f : M →*₀ N` for a Submonoid `S ⊆ M`,
 if `M` is a cancellative monoid with zero, and all elements of `S` are
 regular, then N is a cancellative monoid with zero.  -/
-theorem isLeftRegular_of_le_IsCancelMulZero (f : LocalizationWithZeroMap S N)
-    [IsCancelMulZero M] (h : ∀ ⦃x⦄, x ∈ S → IsRegular x): IsCancelMulZero N := by
-  have:IsLeftCancelMulZero N:=
+theorem isLeftRegular_of_le_isCancelMulZero (f : LocalizationWithZeroMap S N)
+    [IsCancelMulZero M] (h : ∀ ⦃x⦄, x ∈ S → IsRegular x) : IsCancelMulZero N := by
+  have : IsLeftCancelMulZero N :=
     leftCancelMulZero_of_le_isLeftRegular f (fun x h' => (h h').left)
   exact IsLeftCancelMulZero.to_isCancelMulZero
+
+@[deprecated isLeftRegular_of_le_isCancelMulZero] -- 2024-01-16
+alias isLeftRegular_of_le_IsCancelMulZero := isLeftRegular_of_le_isCancelMulZero
 
 end LocalizationWithZeroMap
 

@@ -81,10 +81,10 @@ instance Nat.instBinomialRing : BinomialRing ℕ where
     ascPochhammer_nat_eq_descFactorial]
 
 /-- The multichoose function for integers. -/
-def Int.multichoose (n : ℤ) (k : ℕ) : ℤ := by
-  cases n with
-  | ofNat n => use ((Nat.choose (n + k - 1) k) : ℤ)
-  | negSucc n => use (-1) ^ k * Nat.choose n.succ k
+def Int.multichoose (n : ℤ) (k : ℕ) : ℤ :=
+  match n with
+  | ofNat n => (Nat.choose (n + k - 1) k : ℤ)
+  | negSucc n => (-1) ^ k * Nat.choose n.succ k
 
 instance Int.instBinomialRing : BinomialRing ℤ where
   nsmul_right_injective n hn r s hrs := Int.eq_of_mul_eq_mul_left (Int.ofNat_ne_zero.mpr hn) hrs

@@ -57,10 +57,7 @@ private lemma binomial_sum_eq (h : n < m) :
   have h₁ := le_of_lt_succ h₁
   have h₂ := h₁.trans_lt h
   have h₃ := h₂.le
-  have hi₄ : (i + 1 : ℚ) ≠ 0 := by
-    have := (@cast_ne_zero ℚ _ _ _).mpr (succ_ne_zero i)
-    push_cast at this
-    exact this
+  have hi₄ : (i + 1 : ℚ) ≠ 0 := i.cast_add_one_ne_zero
   have := congr_arg ((↑) : ℕ → ℚ) (choose_succ_right_eq m i)
   push_cast at this
   dsimp [hf]
@@ -82,9 +79,8 @@ private lemma Fintype.sum_div_mul_card_choose_card :
       card α / ((card α - x) * (card α).choose x)
   · intros n s hs
     rw [mem_powersetCard_univ.1 hs]
-  simp_rw [sum_congr rfl this, sum_const, card_powersetCard, card_univ]
-  simp
-  simp_rw [mul_div, mul_comm, ← mul_div]
+  simp_rw [sum_congr rfl this, sum_const, card_powersetCard, card_univ, nsmul_eq_mul, mul_div,
+    mul_comm, ← mul_div]
   rw [← mul_sum, ← mul_inv_cancel (cast_ne_zero.mpr card_ne_zero : (card α : ℚ) ≠ 0), ← mul_add,
     add_comm _ ((card α)⁻¹ : ℚ), ← sum_insert (f := fun x : ℕ ↦ (x⁻¹ : ℚ)) not_mem_range_self,
     ← range_succ]
@@ -203,7 +199,9 @@ lemma truncatedInf_le : truncatedInf s a ≤ a := by
 @[simp] lemma truncatedInf_empty (a : α) : truncatedInf ∅ a = ⊥ := truncatedInf_of_not_mem $ by simp
 
 @[simp] lemma truncatedInf_singleton (b a : α) : truncatedInf {b} a = if b ≤ a then b else ⊥ := by
-  simp [truncatedInf]; split_ifs <;> simp [*]
+  simp only [truncatedInf, coe_singleton, upperClosure_singleton, UpperSet.mem_Ici_iff,
+    filter_congr_decidable, id_eq]
+  split_ifs <;> simp [*]
 
 lemma map_truncatedInf (e : α ≃o β) (s : Finset α) (a : α) :
     e (truncatedInf s a) = truncatedInf (s.map e.toEquiv.toEmbedding) (e a) := by
@@ -211,10 +209,7 @@ lemma map_truncatedInf (e : α ≃o β) (s : Finset α) (a : α) :
   simp_rw [truncatedInf, apply_dite e, map_finset_inf', map_bot, this]
   congr with h
   simp only [filter_map, Function.comp, Equiv.coe_toEmbedding, RelIso.coe_fn_toEquiv,
-    OrderIso.le_iff_le, id.def]
-  rw [inf'_map]
-  -- TODO: Why can't `simp` use `Finset.inf'_map`?
-  simp only [Equiv.coe_toEmbedding, RelIso.coe_fn_toEquiv, Function.comp_apply]
+    OrderIso.le_iff_le, id.def, inf'_map]
 
 variable [DecidableEq α]
 
@@ -264,14 +259,14 @@ lemma truncatedSup_infs (hs : a ∈ lowerClosure s) (ht : a ∈ lowerClosure t) 
   simp only [truncatedSup_of_mem, hs, ht, infs_aux.2 ⟨hs, ht⟩, sup'_inf_sup', filter_infs_le]
   simp_rw [← image_inf_product]
   rw [sup'_image]
-  rfl
+  simp [Function.uncurry_def]
 
 lemma truncatedInf_sups (hs : a ∈ upperClosure s) (ht : a ∈ upperClosure t) :
     truncatedInf (s ⊻ t) a = truncatedInf s a ⊔ truncatedInf t a := by
   simp only [truncatedInf_of_mem, hs, ht, sups_aux.2 ⟨hs, ht⟩, inf'_sup_inf', filter_sups_le]
   simp_rw [← image_sup_product]
   rw [inf'_image]
-  rfl
+  simp [Function.uncurry_def]
 
 lemma truncatedSup_infs_of_not_mem (ha : a ∉ lowerClosure s ⊓ lowerClosure t) :
     truncatedSup (s ⊼ t) a = ⊤ :=
