@@ -5,8 +5,7 @@ Authors: Kalle Kytölä
 -/
 import Mathlib.Data.Real.ENNReal
 import Mathlib.Topology.ContinuousFunction.Bounded
-import Mathlib.Topology.MetricSpace.HausdorffDistance.Basic
-import Mathlib.Order.Filter.IndicatorFunction
+import Mathlib.Topology.MetricSpace.HausdorffDistance.Thickening
 
 #align_import topology.metric_space.thickened_indicator from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
