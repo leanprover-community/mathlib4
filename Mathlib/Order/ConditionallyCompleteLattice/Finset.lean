@@ -66,6 +66,8 @@ non-empty. As a result, we can translate between the two.
 -/
 
 namespace Finset
+
+section ConditionallyCompleteLattice
 variable [ConditionallyCompleteLattice α]
 
 theorem sup'_eq_csSup_image (s : Finset ι) (H : s.Nonempty) (f : ι → α) :
@@ -96,5 +98,17 @@ lemma sup'_univ_eq_ciSup (f : ι → α) : univ.sup' univ_nonempty f = ⨆ i, f 
 
 lemma inf'_univ_eq_ciInf (f : ι → α) : univ.inf' univ_nonempty f = ⨅ i, f i := by
   simp [inf'_eq_csInf_image, iInf]
+
+end ConditionallyCompleteLattice
+
+section ConditionallyCompleteLinearOrderBot
+variable [ConditionallyCompleteLinearOrderBot α]
+
+lemma sup_univ_eq_ciSup [Fintype ι] (f : ι → α) : univ.sup f = ⨆ i, f i :=
+  le_antisymm
+    (Finset.sup_le fun _ _ => le_ciSup (finite_range _).bddAbove _)
+    (ciSup_le' fun _ => Finset.le_sup (mem_univ _))
+
+end ConditionallyCompleteLinearOrderBot
 
 end Finset
