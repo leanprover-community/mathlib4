@@ -1791,36 +1791,43 @@ end SMulConst
 
 section SMul
 
-variable [NormedSpace 𝕜 E'] [NormedSpace 𝕜' F'] {k₁ : α → 𝕜} {k₂ : α → 𝕜'}
+variable [Module R E'] [BoundedSMul R E'] [NormedSpace 𝕜' F'] {k₁ : α → R} {k₂ : α → 𝕜'}
 
 theorem IsBigOWith.smul (h₁ : IsBigOWith c l k₁ k₂) (h₂ : IsBigOWith c' l f' g') :
     IsBigOWith (c * c') l (fun x => k₁ x • f' x) fun x => k₂ x • g' x := by
-  refine' ((h₁.norm_norm.mul h₂.norm_norm).congr rfl _ _).of_norm_norm <;>
-    · intros; simp only [norm_smul]
+  simp only [IsBigOWith_def] at *
+  filter_upwards [h₁, h₂] with _ hx₁ hx₂
+  apply le_trans (norm_smul_le _ _)
+  convert mul_le_mul hx₁ hx₂ (norm_nonneg _) (le_trans (norm_nonneg _) hx₁) using 1
+  rw [norm_smul, mul_mul_mul_comm]
 #align asymptotics.is_O_with.smul Asymptotics.IsBigOWith.smul
 
 theorem IsBigO.smul (h₁ : k₁ =O[l] k₂) (h₂ : f' =O[l] g') :
     (fun x => k₁ x • f' x) =O[l] fun x => k₂ x • g' x := by
-  refine' ((h₁.norm_norm.mul h₂.norm_norm).congr _ _).of_norm_norm <;>
-    · intros; simp only [norm_smul]
+  obtain ⟨c₁, h₁⟩ := h₁.isBigOWith
+  obtain ⟨c₂, h₂⟩ := h₂.isBigOWith
+  exact (h₁.smul h₂).isBigO
 #align asymptotics.is_O.smul Asymptotics.IsBigO.smul
 
 theorem IsBigO.smul_isLittleO (h₁ : k₁ =O[l] k₂) (h₂ : f' =o[l] g') :
     (fun x => k₁ x • f' x) =o[l] fun x => k₂ x • g' x := by
-  refine' ((h₁.norm_norm.mul_isLittleO h₂.norm_norm).congr _ _).of_norm_norm <;>
-    · intros; simp only [norm_smul]
+  simp only [IsLittleO_def] at *
+  intro c cpos
+  rcases h₁.exists_pos with ⟨c', c'pos, hc'⟩
+  exact (hc'.smul (h₂ (div_pos cpos c'pos))).congr_const (mul_div_cancel' _ (ne_of_gt c'pos))
 #align asymptotics.is_O.smul_is_o Asymptotics.IsBigO.smul_isLittleO
 
 theorem IsLittleO.smul_isBigO (h₁ : k₁ =o[l] k₂) (h₂ : f' =O[l] g') :
     (fun x => k₁ x • f' x) =o[l] fun x => k₂ x • g' x := by
-  refine' ((h₁.norm_norm.mul_isBigO h₂.norm_norm).congr _ _).of_norm_norm <;>
-    · intros; simp only [norm_smul]
+  simp only [IsLittleO_def] at *
+  intro c cpos
+  rcases h₂.exists_pos with ⟨c', c'pos, hc'⟩
+  exact ((h₁ (div_pos cpos c'pos)).smul hc').congr_const (div_mul_cancel _ (ne_of_gt c'pos))
 #align asymptotics.is_o.smul_is_O Asymptotics.IsLittleO.smul_isBigO
 
 theorem IsLittleO.smul (h₁ : k₁ =o[l] k₂) (h₂ : f' =o[l] g') :
-    (fun x => k₁ x • f' x) =o[l] fun x => k₂ x • g' x := by
-  refine' ((h₁.norm_norm.mul h₂.norm_norm).congr _ _).of_norm_norm <;>
-    · intros; simp only [norm_smul]
+    (fun x => k₁ x • f' x) =o[l] fun x => k₂ x • g' x :=
+  h₁.smul_isBigO h₂.isBigO
 #align asymptotics.is_o.smul Asymptotics.IsLittleO.smul
 
 end SMul
