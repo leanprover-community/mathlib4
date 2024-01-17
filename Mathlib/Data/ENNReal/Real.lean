@@ -9,6 +9,10 @@ import Mathlib.Data.ENNReal.Inv
 # Coercion between real and extended non-negative real numbers
 
 TODO write main docstring
+
+- relation to iSup and iInf
+- positivity extension for `ENNReal.toReal`
+
 -/
 
 open Set BigOperators NNReal ENNReal
@@ -496,4 +500,175 @@ theorem ofReal_prod_of_nonneg {α : Type*} {s : Finset α} {f : α → ℝ} (hf 
 
 end Real
 
+section iInf
+
+variable {ι : Sort*} {f g : ι → ℝ≥0∞}
+variable {a b c d : ℝ≥0∞} {r p q : ℝ≥0}
+
+theorem toNNReal_iInf (hf : ∀ i, f i ≠ ∞) : (iInf f).toNNReal = ⨅ i, (f i).toNNReal := by
+  cases isEmpty_or_nonempty ι
+  · rw [iInf_of_empty, top_toNNReal, NNReal.iInf_empty]
+  · lift f to ι → ℝ≥0 using hf
+    simp_rw [← coe_iInf, toNNReal_coe]
+#align ennreal.to_nnreal_infi ENNReal.toNNReal_iInf
+
+theorem toNNReal_sInf (s : Set ℝ≥0∞) (hs : ∀ r ∈ s, r ≠ ∞) :
+    (sInf s).toNNReal = sInf (ENNReal.toNNReal '' s) := by
+  have hf : ∀ i, ((↑) : s → ℝ≥0∞) i ≠ ∞ := fun ⟨r, rs⟩ => hs r rs
+  -- porting note: `← sInf_image'` had to be replaced by `← image_eq_range` as the lemmas are used
+  -- in a different order.
+  simpa only [← sInf_range, ← image_eq_range, Subtype.range_coe_subtype] using (toNNReal_iInf hf)
+#align ennreal.to_nnreal_Inf ENNReal.toNNReal_sInf
+
+theorem toNNReal_iSup (hf : ∀ i, f i ≠ ∞) : (iSup f).toNNReal = ⨆ i, (f i).toNNReal := by
+  lift f to ι → ℝ≥0 using hf
+  simp_rw [toNNReal_coe]
+  by_cases h : BddAbove (range f)
+  · rw [← coe_iSup h, toNNReal_coe]
+  · rw [NNReal.iSup_of_not_bddAbove h, iSup_coe_eq_top.2 h, top_toNNReal]
+#align ennreal.to_nnreal_supr ENNReal.toNNReal_iSup
+
+theorem toNNReal_sSup (s : Set ℝ≥0∞) (hs : ∀ r ∈ s, r ≠ ∞) :
+    (sSup s).toNNReal = sSup (ENNReal.toNNReal '' s) := by
+  have hf : ∀ i, ((↑) : s → ℝ≥0∞) i ≠ ∞ := fun ⟨r, rs⟩ => hs r rs
+  -- porting note: `← sSup_image'` had to be replaced by `← image_eq_range` as the lemmas are used
+  -- in a different order.
+  simpa only [← sSup_range, ← image_eq_range, Subtype.range_coe_subtype] using (toNNReal_iSup hf)
+#align ennreal.to_nnreal_Sup ENNReal.toNNReal_sSup
+
+theorem toReal_iInf (hf : ∀ i, f i ≠ ∞) : (iInf f).toReal = ⨅ i, (f i).toReal := by
+  simp only [ENNReal.toReal, toNNReal_iInf hf, NNReal.coe_iInf]
+#align ennreal.to_real_infi ENNReal.toReal_iInf
+
+theorem toReal_sInf (s : Set ℝ≥0∞) (hf : ∀ r ∈ s, r ≠ ∞) :
+    (sInf s).toReal = sInf (ENNReal.toReal '' s) := by
+  simp only [ENNReal.toReal, toNNReal_sInf s hf, NNReal.coe_sInf, Set.image_image]
+#align ennreal.to_real_Inf ENNReal.toReal_sInf
+
+theorem toReal_iSup (hf : ∀ i, f i ≠ ∞) : (iSup f).toReal = ⨆ i, (f i).toReal := by
+  simp only [ENNReal.toReal, toNNReal_iSup hf, NNReal.coe_iSup]
+#align ennreal.to_real_supr ENNReal.toReal_iSup
+
+theorem toReal_sSup (s : Set ℝ≥0∞) (hf : ∀ r ∈ s, r ≠ ∞) :
+    (sSup s).toReal = sSup (ENNReal.toReal '' s) := by
+  simp only [ENNReal.toReal, toNNReal_sSup s hf, NNReal.coe_sSup, Set.image_image]
+#align ennreal.to_real_Sup ENNReal.toReal_sSup
+
+theorem iInf_add : iInf f + a = ⨅ i, f i + a :=
+  le_antisymm (le_iInf fun _ => add_le_add (iInf_le _ _) <| le_rfl)
+    (tsub_le_iff_right.1 <| le_iInf fun _ => tsub_le_iff_right.2 <| iInf_le _ _)
+#align ennreal.infi_add ENNReal.iInf_add
+
+theorem iSup_sub : (⨆ i, f i) - a = ⨆ i, f i - a :=
+  le_antisymm (tsub_le_iff_right.2 <| iSup_le fun i => tsub_le_iff_right.1 <| le_iSup (f · - a) i)
+    (iSup_le fun _ => tsub_le_tsub (le_iSup _ _) (le_refl a))
+#align ennreal.supr_sub ENNReal.iSup_sub
+
+theorem sub_iInf : (a - ⨅ i, f i) = ⨆ i, a - f i := by
+  refine' eq_of_forall_ge_iff fun c => _
+  rw [tsub_le_iff_right, add_comm, iInf_add]
+  simp [tsub_le_iff_right, sub_eq_add_neg, add_comm]
+#align ennreal.sub_infi ENNReal.sub_iInf
+
+theorem sInf_add {s : Set ℝ≥0∞} : sInf s + a = ⨅ b ∈ s, b + a := by simp [sInf_eq_iInf, iInf_add]
+#align ennreal.Inf_add ENNReal.sInf_add
+
+theorem add_iInf {a : ℝ≥0∞} : a + iInf f = ⨅ b, a + f b := by
+  rw [add_comm, iInf_add]; simp [add_comm]
+#align ennreal.add_infi ENNReal.add_iInf
+
+theorem iInf_add_iInf (h : ∀ i j, ∃ k, f k + g k ≤ f i + g j) : iInf f + iInf g = ⨅ a, f a + g a :=
+  suffices ⨅ a, f a + g a ≤ iInf f + iInf g from
+    le_antisymm (le_iInf fun a => add_le_add (iInf_le _ _) (iInf_le _ _)) this
+  calc
+    ⨅ a, f a + g a ≤ ⨅ (a) (a'), f a + g a' :=
+      le_iInf₂ fun a a' => let ⟨k, h⟩ := h a a'; iInf_le_of_le k h
+    _ = iInf f + iInf g := by simp_rw [iInf_add, add_iInf]
+#align ennreal.infi_add_infi ENNReal.iInf_add_iInf
+
+theorem iInf_sum {α : Type*} {f : ι → α → ℝ≥0∞} {s : Finset α} [Nonempty ι]
+    (h : ∀ (t : Finset α) (i j : ι), ∃ k, ∀ a ∈ t, f k a ≤ f i a ∧ f k a ≤ f j a) :
+    ⨅ i, ∑ a in s, f i a = ∑ a in s, ⨅ i, f i a := by
+  induction' s using Finset.cons_induction_on with a s ha ih
+  · simp only [Finset.sum_empty, ciInf_const]
+  · simp only [Finset.sum_cons, ← ih]
+    refine (iInf_add_iInf fun i j => ?_).symm
+    refine (h (Finset.cons a s ha) i j).imp fun k hk => ?_
+    rw [Finset.forall_mem_cons] at hk
+    exact add_le_add hk.1.1 (Finset.sum_le_sum fun a ha => (hk.2 a ha).2)
+#align ennreal.infi_sum ENNReal.iInf_sum
+
+/-- If `x ≠ 0` and `x ≠ ∞`, then right multiplication by `x` maps infimum to infimum.
+See also `ENNReal.iInf_mul` that assumes `[Nonempty ι]` but does not require `x ≠ 0`. -/
+theorem iInf_mul_of_ne {ι} {f : ι → ℝ≥0∞} {x : ℝ≥0∞} (h0 : x ≠ 0) (h : x ≠ ∞) :
+    iInf f * x = ⨅ i, f i * x :=
+  le_antisymm mul_right_mono.map_iInf_le
+    ((ENNReal.div_le_iff_le_mul (Or.inl h0) <| Or.inl h).mp <|
+      le_iInf fun _ => (ENNReal.div_le_iff_le_mul (Or.inl h0) <| Or.inl h).mpr <| iInf_le _ _)
+#align ennreal.infi_mul_of_ne ENNReal.iInf_mul_of_ne
+
+/-- If `x ≠ ∞`, then right multiplication by `x` maps infimum over a nonempty type to infimum. See
+also `ENNReal.iInf_mul_of_ne` that assumes `x ≠ 0` but does not require `[Nonempty ι]`. -/
+theorem iInf_mul {ι} [Nonempty ι] {f : ι → ℝ≥0∞} {x : ℝ≥0∞} (h : x ≠ ∞) :
+    iInf f * x = ⨅ i, f i * x := by
+  by_cases h0 : x = 0
+  · simp only [h0, mul_zero, iInf_const]
+  · exact iInf_mul_of_ne h0 h
+#align ennreal.infi_mul ENNReal.iInf_mul
+
+/-- If `x ≠ ∞`, then left multiplication by `x` maps infimum over a nonempty type to infimum. See
+also `ENNReal.mul_iInf_of_ne` that assumes `x ≠ 0` but does not require `[Nonempty ι]`. -/
+theorem mul_iInf {ι} [Nonempty ι] {f : ι → ℝ≥0∞} {x : ℝ≥0∞} (h : x ≠ ∞) :
+    x * iInf f = ⨅ i, x * f i := by simpa only [mul_comm] using iInf_mul h
+#align ennreal.mul_infi ENNReal.mul_iInf
+
+/-- If `x ≠ 0` and `x ≠ ∞`, then left multiplication by `x` maps infimum to infimum.
+See also `ENNReal.mul_iInf` that assumes `[Nonempty ι]` but does not require `x ≠ 0`. -/
+theorem mul_iInf_of_ne {ι} {f : ι → ℝ≥0∞} {x : ℝ≥0∞} (h0 : x ≠ 0) (h : x ≠ ∞) :
+    x * iInf f = ⨅ i, x * f i := by simpa only [mul_comm] using iInf_mul_of_ne h0 h
+#align ennreal.mul_infi_of_ne ENNReal.mul_iInf_of_ne
+
+/-! `supr_mul`, `mul_supr` and variants are in `Topology.Instances.ENNReal`. -/
+
+end iInf
+
+section iSup
+
+@[simp]
+theorem iSup_eq_zero {ι : Sort*} {f : ι → ℝ≥0∞} : ⨆ i, f i = 0 ↔ ∀ i, f i = 0 :=
+  iSup_eq_bot
+#align ennreal.supr_eq_zero ENNReal.iSup_eq_zero
+
+@[simp]
+theorem iSup_zero_eq_zero {ι : Sort*} : ⨆ _ : ι, (0 : ℝ≥0∞) = 0 := by simp
+#align ennreal.supr_zero_eq_zero ENNReal.iSup_zero_eq_zero
+
+theorem sup_eq_zero {a b : ℝ≥0∞} : a ⊔ b = 0 ↔ a = 0 ∧ b = 0 :=
+  sup_eq_bot_iff
+#align ennreal.sup_eq_zero ENNReal.sup_eq_zero
+
+theorem iSup_coe_nat : ⨆ n : ℕ, (n : ℝ≥0∞) = ∞ :=
+  (iSup_eq_top _).2 fun _b hb => ENNReal.exists_nat_gt (lt_top_iff_ne_top.1 hb)
+#align ennreal.supr_coe_nat ENNReal.iSup_coe_nat
+
+end iSup
+
 end ENNReal
+
+namespace Mathlib.Meta.Positivity
+
+open Lean Meta Qq
+
+/-- Extension for the `positivity` tactic: `ENNReal.toReal`. -/
+@[positivity ENNReal.ofReal _]
+def evalENNRealOfReal : PositivityExt where eval {_ _} _zα _pα e := do
+  let (.app (f : Q(Real → ENNReal)) (a : Q(Real))) ← whnfR e | throwError "not ENNReal.ofReal"
+  guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(ENNReal.ofReal)
+  let zα' ← synthInstanceQ (q(Zero Real) : Q(Type))
+  let pα' ← synthInstanceQ (q(PartialOrder Real) : Q(Type))
+  let ra ← core zα' pα' a
+  assertInstancesCommute
+  match ra with
+  | .positive pa => pure (.positive (q(Iff.mpr (@ENNReal.ofReal_pos $a) $pa) : Expr))
+  | _ => pure .none
+end Mathlib.Meta.Positivity
