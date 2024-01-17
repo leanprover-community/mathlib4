@@ -185,7 +185,8 @@ protected lemma continuous_inv : Continuous (fun u ↦ u⁻¹ : Mˣ → Mˣ) := 
   rw [Units.continuous_iff]
   exact ⟨continuous_coe_inv, continuous_val⟩
 
-@[to_additive (attr := simps!)]
+/-- The inversion map on `Units` is a homeomorphism. -/
+@[to_additive (attr := simps!) "The negation map on `AddUnits` is a homeomorphism."]
 protected def homeomorph_inv : Mˣ ≃ₜ Mˣ :=
   { left_inv := fun _ ↦ rfl,
     right_inv := fun _ ↦ rfl,
@@ -199,15 +200,4 @@ lemma inducing_coe_iff : Inducing (coeHom M) ↔ Inducing (fun u ↦ ↑u⁻¹ :
 lemma embedding_coe_iff : Embedding (coeHom M) ↔ Embedding (fun u ↦ ↑u⁻¹ : Mˣ → M) :=
   ⟨fun h ↦ h.comp (Units.homeomorph_inv.embedding),
    fun h ↦ h.comp (Units.homeomorph_inv.embedding)⟩
-
--- move this close to `continuous_of_discreteTopology`?
-lemma embedding_of_discreteTopology {α β : Type _} [TopologicalSpace α] [TopologicalSpace β]
-    [DiscreteTopology α] [DiscreteTopology β] (f : α → β) (hf : f.Injective) : Embedding f := by
-  refine ⟨⟨?_⟩, hf⟩
-  ext s
-  constructor <;> intro
-  · rw [isOpen_induced_iff]
-    use f '' s
-    simp only [isOpen_discrete, hf, Set.preimage_image_eq, and_self]
-  · apply isOpen_discrete
 end Units
