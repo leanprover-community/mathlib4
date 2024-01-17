@@ -57,12 +57,7 @@ formulated only for the case `𝕜 = ℝ`.
 convex, strictly convex
 -/
 
-set_option autoImplicit true
-
-
-open Set Metric
-
-open Convex Pointwise
+open Convex Pointwise Set Metric
 
 /-- A *strictly convex space* is a normed space where the closed balls are strictly convex. We only
 require balls of positive radius with center at the origin to be strictly convex in the definition,
