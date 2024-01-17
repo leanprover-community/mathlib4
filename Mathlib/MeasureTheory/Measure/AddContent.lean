@@ -15,8 +15,6 @@ such that `⋃₀ I ∈ C`, `m (⋃₀ I) = ∑ s ∈ I, m s`.
 Mathlib also has a definition of contents over compact sets: see `MeasureTheory.Content`.
 A `Content` is in particular an `AddContent` on the set of compact sets.
 
-TODO: refactor `Content` to use properties of `AddContent`.
-
 ## Main definitions
 
 * `MeasureTheory.AddContent C`: additive contents over the set of sets `C`.
@@ -86,7 +84,7 @@ lemma addContent_sUnion (h_ss : ↑I ⊆ C)
     m (⋃₀ I) = ∑ u in I, m u :=
   m.sUnion' I h_ss h_dis h_mem
 
-lemma addContent_union' (hs : s ∈ C) (ht : t ∈ C) (hst : s ∪ t ∈ C)(h_dis : Disjoint s t) :
+lemma addContent_union' (hs : s ∈ C) (ht : t ∈ C) (hst : s ∪ t ∈ C) (h_dis : Disjoint s t) :
     m (s ∪ t) = m s + m t := by
   by_cases hs_empty : s = ∅
   · simp only [hs_empty, Set.empty_union, addContent_empty, zero_add]
@@ -161,11 +159,9 @@ lemma addContent_biUnion_le {ι : Type*} (hC : IsSetRing C) {s : ι → Set α}
     {S : Finset ι} (hs : ∀ n ∈ S, s n ∈ C) :
     m (⋃ i ∈ S, s i) ≤ ∑ i in S, m (s i) := by
   classical
-  revert hs
-  refine Finset.induction ?_ ?_ S
+  induction' S using Finset.induction with i S hiS h hs
   · simp
-  · intro i S hiS h hs
-    rw [Finset.sum_insert hiS]
+  · rw [Finset.sum_insert hiS]
     simp_rw [← Finset.mem_coe, Finset.coe_insert, Set.biUnion_insert]
     simp only [Finset.mem_insert, forall_eq_or_imp] at hs
     refine (addContent_union_le hC hs.1 (hC.biUnion_mem S hs.2)).trans ?_
