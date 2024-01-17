@@ -593,7 +593,7 @@ theorem surj₂ (f : LocalizationMap S N) (z w : N) : ∃ z' w' : M, ∃ d : S,
     (z * f.toMap d = f.toMap z') ∧  (w * f.toMap d = f.toMap w') := by
   let ⟨a, ha⟩ := surj f z
   let ⟨b, hb⟩ := surj f w
-  refine ⟨a.1 * b.2 , a.2 * b.1 , a.2 * b.2, ?_, ?_⟩
+  refine ⟨a.1 * b.2, a.2 * b.1, a.2 * b.2, ?_, ?_⟩
   · simp_rw [mul_def, map_mul, ← ha]
     exact (mul_assoc z _ _).symm
   · simp_rw [mul_def, map_mul, ← hb]
