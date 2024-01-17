@@ -74,7 +74,7 @@ theorem moebius_aux_lem (k : ℤ) (a b c d i1 i2 : ℂ) (z : ℍ) (h : c * z + d
   ring_nf
   field_simp
 
--- How the Eise function changes under the Moebius action
+/-- How the `eise` function changes under the Moebius action -/
 theorem eise_Moebius (k : ℤ) (z : ℍ) (A : SL(2, ℤ)) (i : (Fin 2 → ℤ)) :
     eise k (A • z) i =
       (A.1 1 0 * z.1 + A.1 1 1) ^ k * eise k z (moebiusEquiv A i) := by
