@@ -201,28 +201,19 @@ theorem beta_aux (a b : ℕ) :
       ∫ x : I, ((a ! : ℝ)⁻¹ • (x.val : ℝ) ^ a) * (b ! : ℝ)⁻¹ • (1 - x.val : ℝ)^ b :=
   sorry
 
-theorem _root_.MeasureTheory.AEStronglyMeasurable.pow_const
-    {α : Type u_1} {β : Type u_2}
-    {_ : MeasurableSpace α} {μ : MeasureTheory.Measure α} [TopologicalSpace β]
-    {f : α → β} [Monoid β] [ContinuousMul β] (hf : MeasureTheory.AEStronglyMeasurable f μ) (n : ℕ) :
-      MeasureTheory.AEStronglyMeasurable (f ^ n) μ :=
-  let s : Submonoid (α → β) :=
-    {carrier := { f | MeasureTheory.AEStronglyMeasurable f μ}
-     mul_mem' := MeasureTheory.AEStronglyMeasurable.mul
-     one_mem' := MeasureTheory.stronglyMeasurable_const.aestronglyMeasurable}
-  pow_mem (show f ∈ s from hf) n
-
+set_option maxHeartbeats 400000 in
 /-- If `exp R x.fst` converges to `e` then `(exp R x).snd` converges to `e • x.snd`. -/
 theorem hasSum_snd_expSeries' {R M} [NormedRing R] [NormedAddCommGroup M]
     [NormedAlgebra ℝ R] [NormOneClass R] [Module R M] [BoundedSMul R M] [Module Rᵐᵒᵖ M]
     [BoundedSMul Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M] [NormedSpace ℝ M]
     [IsScalarTower ℝ R M] [IsScalarTower ℝ Rᵐᵒᵖ M]
-    [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M] [CompleteSpace M] (x : tsze R M)
+    [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M] [CompleteSpace M]
+    [FiniteDimensional ℝ M] (x : tsze R M)
     {e : Set.Icc 0 (1 : ℝ) → R}
     (h : ∀ t, HasSum (fun n => expSeries ℝ R n fun _ => t.val • x.fst) (e t)) :
     HasSum (fun n => snd (expSeries ℝ (tsze R M) n fun _ => x))
       (∫ t : I, e t • MulOpposite.op (e (unitInterval.symm t)) • x.snd) := by
-  replace h : ∀ t : I, HasSum _ _ := fun t =>
+  have h2 : ∀ t : I, HasSum _ _ := fun t =>
     (h t).smul ((h (unitInterval.symm t)).op.smul_const x.snd) sorry
   simp_rw [expSeries_apply_eq] at *
   conv =>
@@ -245,11 +236,13 @@ theorem hasSum_snd_expSeries' {R M} [NormedRing R] [NormedAddCommGroup M]
         (((Nat.factorial n : ℝ)⁻¹ * (‖1 - a.val‖ ^ n * ‖fst x‖ ^ n)) * ‖snd x‖)
   case h_lim =>
     filter_upwards
-    exact h
+    exact h2
   · intro n
-    refine .smul (.const_smul (.pow_const (.smul_const ?_ _) _) _) (.smul ?_ ?_)
-    · sorry
-    · sorry
+    refine .smul (.const_smul (.pow (.smul_const ?_ _) _) _) (.smul ?_ ?_)
+    · measurability
+    · refine (MulOpposite.continuous_op).comp_aestronglyMeasurable
+        (.const_smul (.pow (.smul_const ?_ _) _) _)
+      measurability
     · exact MeasureTheory.stronglyMeasurable_const.aestronglyMeasurable
   · intro ⟨m, n⟩
     dsimp
@@ -274,9 +267,8 @@ theorem hasSum_snd_expSeries' {R M} [NormedRing R] [NormedAddCommGroup M]
         gcongr
         refine (_root_.norm_smul_le _ _).trans ?_
         gcongr
-        sorry
+        rw [MulOpposite.norm_op]
   · sorry
   · sorry
-
 
 end TrivSqZeroExt
