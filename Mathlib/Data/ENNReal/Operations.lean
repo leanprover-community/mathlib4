@@ -6,11 +6,14 @@ Authors: Johannes Hölzl, Yury Kudryashov
 import Mathlib.Data.ENNReal.Basic
 
 /-!
-# Arithmetic operations of extended non-negative real numbers
+# Properties of addition, multiplication and subtraction on extended non-negative real numbers
 
-addition, subtraction,
-TODO: find a better name for this file? add main definitions and results!
+In this file we prove elementary properties of algebraic operations on `ℝ≥0∞`, including addition,
+multiplication, natural powers and truncated subtraction, as well as how these interact with the
+order structure o `ℝ≥0∞`. Notably exlcuded from this list are inversion and division, the
+definitions and properties of which can be found in `Data.ENNReal.Inv`.
 
+Note: the definitions of the operations included in this file can be found in `Data.ENNReal.Basic`.
 -/
 
 open Set BigOperators NNReal ENNReal
