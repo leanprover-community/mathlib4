@@ -3,7 +3,7 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
-import Mathlib.Geometry.Manifold.MFDeriv.Basic
+import Mathlib.Geometry.Manifold.MFDeriv.UniqueDifferential
 import Mathlib.Geometry.Manifold.ContMDiffMap
 
 #align_import geometry.manifold.cont_mdiff_mfderiv from "leanprover-community/mathlib"@"e473c3198bb41f68560cab68a0529c854b618833"
@@ -490,7 +490,8 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin (hf : ContMDiffOn I I' n f s) (
         tangentMapWithin I' I' r r.source (tangentMapWithin I I' f s' q) =
           tangentMap I' I' r (tangentMapWithin I I' f s' q) := by
         apply tangentMapWithin_eq_tangentMap
-        · apply IsOpen.uniqueMDiffWithinAt _ r.open_source; simp [hq]
+        · apply r.open_source.uniqueMDiffWithinAt _
+          simp [hq]
         · exact mdifferentiableAt_atlas I' (chart_mem_atlas H' (f p.proj)) hq.1.1
       have : f p.proj = (tangentMapWithin I I' f s p).1 := rfl
       rw [A]

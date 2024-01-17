@@ -154,6 +154,12 @@ theorem IsOpen.union (h₁ : IsOpen s₁) (h₂ : IsOpen s₂) : IsOpen (s₁ �
   rw [union_eq_iUnion]; exact isOpen_iUnion (Bool.forall_bool.2 ⟨h₂, h₁⟩)
 #align is_open.union IsOpen.union
 
+lemma isOpen_iff_of_cover {ι : Type*} {f : ι → Set α} (ho : ∀ i, IsOpen (f i))
+    (hU : (⋃ i, f i) = univ) : IsOpen s ↔ ∀ i, IsOpen (f i ∩ s) := by
+  refine ⟨fun h i ↦ (ho i).inter h, fun h ↦ ?_⟩
+  rw [← s.inter_univ, inter_comm, ← hU, iUnion_inter]
+  exact isOpen_iUnion fun i ↦ h i
+
 @[simp] theorem isOpen_empty : IsOpen (∅ : Set α) := by
   rw [← sUnion_empty]; exact isOpen_sUnion fun a => False.elim
 #align is_open_empty isOpen_empty
@@ -1666,6 +1672,8 @@ theorem ContinuousAt.preimage_mem_nhds {f : α → β} {x : α} {t : Set β} (h 
   h ht
 #align continuous_at.preimage_mem_nhds ContinuousAt.preimage_mem_nhds
 
+/-- Deprecated, please use `not_mem_tsupport_iff_eventuallyEq` instead. -/
+@[deprecated] -- 15 January 2024
 theorem eventuallyEq_zero_nhds {M₀} [Zero M₀] {a : α} {f : α → M₀} :
     f =ᶠ[𝓝 a] 0 ↔ a ∉ closure (Function.support f) := by
   rw [← mem_compl_iff, ← interior_compl, mem_interior_iff_mem_nhds, Function.compl_support,
