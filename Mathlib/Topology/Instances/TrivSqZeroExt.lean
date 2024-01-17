@@ -185,8 +185,7 @@ open Uniformity
 
 theorem uniformity_def :
     𝓤 (tsze R M) =
-      ((𝓤 R).comap fun p : tsze R M × tsze R M => (p.1.fst, p.2.fst)) ⊓
-        (𝓤 M).comap fun p : tsze R M × tsze R M => (p.1.snd, p.2.snd) :=
+      ((𝓤 R).comap fun p => (p.1.fst, p.2.fst)) ⊓ ((𝓤 M).comap fun p => (p.1.snd, p.2.snd)) :=
   rfl
 
 nonrec theorem uniformContinuous_fst : UniformContinuous (fst : tsze R M → R) :=
