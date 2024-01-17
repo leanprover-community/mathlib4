@@ -860,7 +860,7 @@ theorem mk'_cancel (a : M) (b c : S) :
   mk'_eq_of_eq' f (by rw [Submonoid.coe_mul, mul_comm (b:M), mul_assoc])
 
 @[to_additive]
-theorem eq_of_same {a b} {d : S} :
+theorem mk'_eq_of_same {a b} {d : S} :
     f.mk' a d = f.mk' b d ↔ ∃ c : S, c * a = c * b := by
   rw [mk'_eq_iff_eq', map_mul, map_mul, ← eq_iff_exists f]
   exact (map_units f d).mul_left_inj
