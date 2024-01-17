@@ -13,7 +13,15 @@ import Mathlib.Topology.Instances.TrivSqZeroExt
 /-!
 # Results on `TrivSqZeroExt R M` related to the norm
 
-For now, this file contains results about `exp` for this type.
+This file contains results about `exp` for `TrivSqZeroExt`.
+
+It also contains a definition of the $ℓ^1$ norm,
+which defines $\|r + m\| \coloneqq \|r\| + \|m\|$ to 
+This is not particularly canonical,
+but is sufficient to provide a `NormedAlgebra` instance,
+and thus enables `exp_add_of_commute` to be used on `TrivSqZeroExt`.
+If the non-canonicity becomes problematic in future,
+we could keep the collection of instances behind an `open scoped`.
 
 ## Main results
 
@@ -21,7 +29,7 @@ For now, this file contains results about `exp` for this type.
 * `TrivSqZeroExt.snd_exp`
 * `TrivSqZeroExt.exp_inl`
 * `TrivSqZeroExt.exp_inr`
-* The L1 norm on `TrivSqZeroExt`:
+* The $ℓ^1$ norm on `TrivSqZeroExt`:
   * `TrivSqZeroExt.instL1SeminormedAddCommGroup`
   * `TrivSqZeroExt.instL1SeminormedRing`
   * `TrivSqZeroExt.instL1SeminormedCommRing`
@@ -36,7 +44,7 @@ For now, this file contains results about `exp` for this type.
 
 * Generalize more of these results to non-commutative `R`. In principle, under sufficient conditions
   we should expect
- `(exp 𝕜 x).snd = ∫ t in 0..1, exp 𝕜 (t • x.fst) • op (exp 𝕜 ((1 - t) • x.fst)) • x.snd`
+  `(exp 𝕜 x).snd = ∫ t in 0..1, exp 𝕜 (t • x.fst) • op (exp 𝕜 ((1 - t) • x.fst)) • x.snd`
   ([Physics.SE](https://physics.stackexchange.com/a/41671/185147), and
   https://link.springer.com/chapter/10.1007/978-3-540-44953-9_2).
 
@@ -187,9 +195,6 @@ end Topology
 
 /-!
 ### The $ℓ^1$ norm on the trivial square zero extension
-
-This is not particularly canonical, but is sufficient to obtain a normed algebra, and thus
-to use `exp_add_of_commute`.
 -/
 
 noncomputable section Seminormed
