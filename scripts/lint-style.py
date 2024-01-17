@@ -51,6 +51,7 @@ ERR_TWS = 15 # trailing whitespace
 ERR_CLN = 16 # line starts with a colon
 ERR_IND = 17 # second line not correctly indented
 ERR_ARR = 18 # space after "←"
+ERR_NUM_LIN = 19 # file is too large
 
 exceptions = []
 
@@ -74,6 +75,8 @@ with SCRIPTS_DIR.joinpath("style-exceptions.txt").open(encoding="utf-8") as f:
             exceptions += [(ERR_AUT, path)]
         if errno == "ERR_TAC":
             exceptions += [(ERR_TAC, path)]
+        if errno == "ERR_NUM_LIN":
+            exceptions += [(ERR_NUM_LIN, path)]
 
 new_exceptions = False
 
@@ -377,6 +380,10 @@ def lint(path, fix=False):
             format_errors(errs)
 
         if not import_only_check(newlines, path):
+            if len(lines) > 1500:
+                if (ERR_NUM_LIN, path.resolve()) not in exceptions:
+                    new_exceptions = True
+                    output_message(path, 0, "ERR_NUM_LIN", f"file contains {len(lines)} lines, try to split it up")
             errs, newlines = regular_check(newlines, path)
             format_errors(errs)
             errs, newlines = banned_import_check(newlines, path)
