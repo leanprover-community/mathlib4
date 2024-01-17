@@ -33,8 +33,8 @@ theorem decide_False {h} : @decide False h = false :=
 @[simp]
 theorem decide_coe (b : Bool) {h} : @decide b h = b := by
   cases b
-  · exact decide_eq_false $ λ j => by cases j
-  · exact decide_eq_true $ rfl
+  · exact decide_eq_false <| λ j => by cases j
+  · exact decide_eq_true <| rfl
 #align bool.to_bool_coe Bool.decide_coe
 
 theorem coe_decide (p : Prop) [d : Decidable p] : decide p ↔ p :=

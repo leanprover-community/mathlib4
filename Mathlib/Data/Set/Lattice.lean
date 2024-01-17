@@ -374,7 +374,7 @@ theorem nonempty_of_union_eq_top_of_nonempty {ι : Type*} (t : Set ι) (s : ι �
 theorem nonempty_of_nonempty_iUnion
     {s : ι → Set α} (h_Union : (⋃ i, s i).Nonempty) : Nonempty ι := by
   obtain ⟨x, hx⟩ := h_Union
-  exact ⟨Classical.choose $ mem_iUnion.mp hx⟩
+  exact ⟨Classical.choose <| mem_iUnion.mp hx⟩
 
 theorem nonempty_of_nonempty_iUnion_eq_univ
     {s : ι → Set α} [Nonempty α] (h_Union : ⋃ i, s i = univ) : Nonempty ι :=
@@ -592,11 +592,11 @@ lemma iInter_const (s : Set β) : ⋂ _ : ι, s = s := iInf_const
 #align set.Inter_const Set.iInter_const
 
 lemma iUnion_eq_const (hf : ∀ i, f i = s) : ⋃ i, f i = s :=
-  (iUnion_congr hf).trans $ iUnion_const _
+  (iUnion_congr hf).trans <| iUnion_const _
 #align set.Union_eq_const Set.iUnion_eq_const
 
 lemma iInter_eq_const (hf : ∀ i, f i = s) : ⋂ i, f i = s :=
-  (iInter_congr hf).trans $ iInter_const _
+  (iInter_congr hf).trans <| iInter_const _
 #align set.Inter_eq_const Set.iInter_eq_const
 
 end Nonempty
@@ -1435,7 +1435,7 @@ alias sUnion_mono := sUnion_subset_sUnion
 #align set.sUnion_mono Set.sUnion_mono
 
 theorem iUnion_subset_iUnion_const {s : Set α} (h : ι → ι₂) : ⋃ _ : ι, s ⊆ ⋃ _ : ι₂, s :=
-  @iSup_const_mono (Set α) ι ι₂ _ s h
+  iSup_const_mono (α := Set α) h
 #align set.Union_subset_Union_const Set.iUnion_subset_iUnion_const
 
 @[simp]
@@ -2378,15 +2378,18 @@ theorem iSup_iUnion (s : ι → Set α) (f : α → β) : ⨆ a ∈ ⋃ i, s i, 
 #align supr_Union iSup_iUnion
 
 theorem iInf_iUnion (s : ι → Set α) (f : α → β) : ⨅ a ∈ ⋃ i, s i, f a = ⨅ (i) (a ∈ s i), f a :=
-  @iSup_iUnion α βᵒᵈ _ _ s f
+  iSup_iUnion (β := βᵒᵈ) s f
 #align infi_Union iInf_iUnion
+
+theorem sSup_iUnion (t : ι → Set β) : sSup (⋃ i, t i) = ⨆ i, sSup (t i) := by
+  simp_rw [sSup_eq_iSup, iSup_iUnion]
 
 theorem sSup_sUnion (s : Set (Set β)) : sSup (⋃₀ s) = ⨆ t ∈ s, sSup t := by
   simp only [sUnion_eq_biUnion, sSup_eq_iSup, iSup_iUnion]
 #align Sup_sUnion sSup_sUnion
 
 theorem sInf_sUnion (s : Set (Set β)) : sInf (⋃₀ s) = ⨅ t ∈ s, sInf t :=
-  @sSup_sUnion βᵒᵈ _ _
+  sSup_sUnion (β := βᵒᵈ) s
 #align Inf_sUnion sInf_sUnion
 
 lemma iSup_sUnion (S : Set (Set α)) (f : α → β) :

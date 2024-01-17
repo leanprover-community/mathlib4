@@ -174,7 +174,7 @@ lemma IsComplement.mul_eq (h : IsComplement S T) : S * T = univ :=
 
 @[to_additive AddSubgroup.IsComplement.card_mul_card]
 lemma IsComplement.card_mul_card (h : IsComplement S T) : Nat.card S * Nat.card T = Nat.card G :=
-  (Nat.card_prod _ _).symm.trans $ Nat.card_congr $ Equiv.ofBijective _ h
+  (Nat.card_prod _ _).symm.trans <| Nat.card_congr <| Equiv.ofBijective _ h
 
 @[to_additive]
 theorem isComplement'_top_bot : IsComplement' (⊤ : Subgroup G) ⊥ :=
@@ -301,7 +301,7 @@ theorem range_mem_leftTransversals {f : G ⧸ H → G} (hf : ∀ q, ↑(f q) = q
     Set.range f ∈ leftTransversals (H : Set G) :=
   mem_leftTransversals_iff_bijective.mpr
     ⟨by rintro ⟨-, q₁, rfl⟩ ⟨-, q₂, rfl⟩ h
-        exact Subtype.ext $ congr_arg f $ ((hf q₁).symm.trans h).trans (hf q₂),
+        exact Subtype.ext <| congr_arg f <| ((hf q₁).symm.trans h).trans (hf q₂),
       fun q => ⟨⟨f q, q, rfl⟩, hf q⟩⟩
 #align subgroup.range_mem_left_transversals Subgroup.range_mem_leftTransversals
 #align add_subgroup.range_mem_left_transversals AddSubgroup.range_mem_leftTransversals
@@ -311,7 +311,7 @@ theorem range_mem_rightTransversals {f : Quotient (QuotientGroup.rightRel H) →
     (hf : ∀ q, Quotient.mk'' (f q) = q) : Set.range f ∈ rightTransversals (H : Set G) :=
   mem_rightTransversals_iff_bijective.mpr
     ⟨by rintro ⟨-, q₁, rfl⟩ ⟨-, q₂, rfl⟩ h
-        exact Subtype.ext $ congr_arg f $ ((hf q₁).symm.trans h).trans (hf q₂),
+        exact Subtype.ext <| congr_arg f <| ((hf q₁).symm.trans h).trans (hf q₂),
       fun q => ⟨⟨f q, q, rfl⟩, hf q⟩⟩
 #align subgroup.range_mem_right_transversals Subgroup.range_mem_rightTransversals
 #align add_subgroup.range_mem_right_transversals AddSubgroup.range_mem_rightTransversals
@@ -357,7 +357,7 @@ lemma exists_left_transversal_of_le {H' H : Subgroup G} (h : H' ≤ H) :
     simp [Set.ext_iff]
   · rw [← cmem.card_mul_card]
     refine congr_arg₂ (· * ·) ?_ ?_ <;>
-      exact Nat.card_congr (Equiv.Set.image _ _ $ subtype_injective H).symm
+      exact Nat.card_congr (Equiv.Set.image _ _ <| subtype_injective H).symm
 
 /-- Given two subgroups `H' ⊆ H`, there exists a right transversal to `H'` inside `H`. -/
 @[to_additive "Given two subgroups `H' ⊆ H`, there exists a transversal to `H'` inside `H`"]
@@ -374,7 +374,7 @@ lemma exists_right_transversal_of_le {H' H : Subgroup G} (h : H' ≤ H) :
   · have : Nat.card H'' * Nat.card S = Nat.card H := cmem.card_mul_card
     rw [← this]
     refine congr_arg₂ (· * ·) ?_ ?_ <;>
-      exact Nat.card_congr (Equiv.Set.image _ _ $ subtype_injective H).symm
+      exact Nat.card_congr (Equiv.Set.image _ _ <| subtype_injective H).symm
 
 namespace IsComplement
 
@@ -645,7 +645,7 @@ noncomputable instance : MulAction F (leftTransversals (H : Set G)) where
 @[to_additive]
 theorem smul_toFun (f : F) (T : leftTransversals (H : Set G)) (g : G) :
     (f • (toFun T.2 g : G)) = toFun (f • T).2 (f • g) :=
-  Subtype.ext_iff.mp $ @ExistsUnique.unique (↥(f • (T : Set G))) (fun s => (↑s)⁻¹ * f • g ∈ H)
+  Subtype.ext_iff.mp <| @ExistsUnique.unique (↥(f • (T : Set G))) (fun s => (↑s)⁻¹ * f • g ∈ H)
     (mem_leftTransversals_iff_existsUnique_inv_mul_mem.mp (f • T).2 (f • g))
     ⟨f • (toFun T.2 g : G), Set.smul_mem_smul_set (Subtype.coe_prop _)⟩ (toFun (f • T).2 (f • g))
     (QuotientAction.inv_mul_mem f (inv_toFun_mul_mem T.2 g)) (inv_toFun_mul_mem (f • T).2 (f • g))

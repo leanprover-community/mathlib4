@@ -426,7 +426,7 @@ private theorem abs_pos_of_ne_zero {α : Type*} [AddGroup α] [LinearOrder α]
 /-- The `positivity` extension which identifies expressions of the form `|a|`. -/
 @[positivity |(_ : α)|]
 def evalAbs : PositivityExt where eval {u} (α : Q(Type u)) zα pα (e : Q($α)) := do
-  let ~q(@Abs.abs _ (_) $a) := e | throwError "not |·|"
+  let ~q(@abs _ (_) (_) $a) := e | throwError "not |·|"
   try
     match ← core zα pα a with
     | .positive pa =>
@@ -540,5 +540,5 @@ def evalFactorial : PositivityExt where eval {_ _} _ _ (e : Q(ℕ)) := do
 /-- Extension for Nat.ascFactorial. -/
 @[positivity Nat.ascFactorial _ _]
 def evalAscFactorial : PositivityExt where eval {_ _} _ _ (e : Q(ℕ)) := do
-  let ~q(Nat.ascFactorial $n $k) := e | throwError "failed to match Nat.ascFactorial"
+  let ~q(Nat.ascFactorial ($n + 1) $k) := e | throwError "failed to match Nat.ascFactorial"
   pure (.positive (q(Nat.ascFactorial_pos $n $k) : Expr))
