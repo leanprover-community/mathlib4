@@ -752,13 +752,13 @@ variable [SeminormedCommRing 𝕜] [Module 𝕜 α] [Module 𝕜 β] [BoundedSMu
 instance instProdBoundedSMul : BoundedSMul 𝕜 (WithLp p (α × β)) :=
   .of_nnnorm_smul_le fun c f => by
     rcases p.dichotomy with (rfl | hp)
-    · simp only [←prod_nnnorm_equiv, WithLp.equiv_smul]
+    · simp only [← prod_nnnorm_equiv, WithLp.equiv_smul]
       exact norm_smul_le _ _
     · have hp0 : 0 < p.toReal := zero_lt_one.trans_le hp
       have hpt : p ≠ ⊤ := p.toReal_pos_iff_ne_top.mp hp0
       rw [prod_nnnorm_eq_add hpt, prod_nnnorm_eq_add hpt, NNReal.rpow_one_div_le_iff hp0,
         NNReal.mul_rpow, ← NNReal.rpow_mul, div_mul_cancel 1 hp0.ne', NNReal.rpow_one, mul_add,
-        ←NNReal.mul_rpow, ←NNReal.mul_rpow]
+        ← NNReal.mul_rpow, ← NNReal.mul_rpow]
       exact add_le_add
         (NNReal.rpow_le_rpow (nnnorm_smul_le _ _) hp0.le)
         (NNReal.rpow_le_rpow (nnnorm_smul_le _ _) hp0.le)
