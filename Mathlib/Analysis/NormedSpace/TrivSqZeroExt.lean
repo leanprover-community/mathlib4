@@ -6,6 +6,7 @@ Authors: Eric Wieser
 import Mathlib.Analysis.NormedSpace.Basic
 import Mathlib.Analysis.NormedSpace.Exponential
 import Mathlib.Topology.Instances.TrivSqZeroExt
+import Mathlib.MeasureTheory.Integral.IntervalIntegral
 
 #align_import analysis.normed_space.triv_sq_zero_ext from "leanprover-community/mathlib"@"88a563b158f59f2983cfad685664da95502e8cdd"
 
@@ -196,15 +197,15 @@ noncomputable instance : MeasureTheory.MeasureSpace I where
 
 open Nat in
 theorem beta_aux (a b : ℕ) :
-  ((a + b + 1)! : ℝ)⁻¹ =
+    ((a + b + 1)! : ℝ)⁻¹ =
       ∫ x : I, ((a ! : ℝ)⁻¹ • (x.val : ℝ) ^ a) * (b ! : ℝ)⁻¹ • (1 - x.val : ℝ)^ b :=
   sorry
 
 theorem _root_.MeasureTheory.AEStronglyMeasurable.pow_const
-  {α : Type u_1} {β : Type u_2}
-  {_ : MeasurableSpace α} {μ : MeasureTheory.Measure α} [TopologicalSpace β]
-  {f : α → β} [Monoid β] [ContinuousMul β] (hf : MeasureTheory.AEStronglyMeasurable f μ) (n : ℕ) :
-    MeasureTheory.AEStronglyMeasurable (f ^ n) μ :=
+    {α : Type u_1} {β : Type u_2}
+    {_ : MeasurableSpace α} {μ : MeasureTheory.Measure α} [TopologicalSpace β]
+    {f : α → β} [Monoid β] [ContinuousMul β] (hf : MeasureTheory.AEStronglyMeasurable f μ) (n : ℕ) :
+      MeasureTheory.AEStronglyMeasurable (f ^ n) μ :=
   let s : Submonoid (α → β) :=
     {carrier := { f | MeasureTheory.AEStronglyMeasurable f μ}
      mul_mem' := MeasureTheory.AEStronglyMeasurable.mul
