@@ -323,7 +323,7 @@ theorem fin_two_exists_eq_mk_of_apply_zero_one_eq_zero {R : Type*} [Field R] (g 
   simp_rw [eq_inv_of_mul_eq_one_right had, hg]
 #align matrix.special_linear_group.fin_two_exists_eq_mk_of_apply_zero_one_eq_zero Matrix.SpecialLinearGroup.fin_two_exists_eq_mk_of_apply_zero_one_eq_zero
 
-/--Send a pair of coprime to the matrix in `SL(2,ℤ)` that has those entries in the first col-/
+/--Send a pair of coprime integers to the matrix in `SL(2,ℤ)` that has those entries in the first column-/
 noncomputable
 def IsCoprimeToSL2Col (a b : R) (hab : IsCoprime a b) : SL(2, R) := by
   let x := hab.choose
