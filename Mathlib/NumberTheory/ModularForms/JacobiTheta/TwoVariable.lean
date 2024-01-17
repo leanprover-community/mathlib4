@@ -125,7 +125,7 @@ theorem jacobiTheta₂_functional_equation (z : ℂ) {τ : ℂ} (hτ : 0 < im τ
       congr 2 with n : 1; congr 1
       field_simp [I_ne_zero]
       ring_nf
-      simp_rw [I_sq, I_pow_4]
+      simp_rw [I_sq, I_pow_four]
       ring_nf
     _ = _ := by
       congr 3
