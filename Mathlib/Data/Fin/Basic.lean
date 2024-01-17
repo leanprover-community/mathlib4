@@ -1555,7 +1555,7 @@ section SuccAbove
 
 /-- `succAbove p i` embeds `Fin n` into `Fin (n + 1)` with a hole around `p`. -/
 def succAbove (p : Fin (n + 1)) (i : Fin n) : Fin (n + 1) :=
-  if i.1 < p.1 then castSucc i else succ i
+  if castSucc i < p then i.castSucc else i.succ
 
 theorem strictMono_succAbove (p : Fin (n + 1)) : StrictMono (succAbove p) :=
   (castSuccEmb : Fin n ↪o _).strictMono.ite (succEmbedding n).strictMono
@@ -1613,7 +1613,7 @@ theorem succAbove_last_apply (i : Fin n) : succAbove (Fin.last n) i = castSucc i
 /-- Embedding `i : Fin n` into `Fin (n + 1)` with a hole around `p : Fin (n + 1)`
 embeds `i` by `succ` when the resulting `p < i.succ`. -/
 theorem succAbove_above (p : Fin (n + 1)) (i : Fin n) (h : p ≤ castSucc i) :
-    p.succAbove i = i.succ := by simp [le_iff_val_le_val] at h; simp [succAbove, h.not_lt]
+    p.succAbove i = i.succ := if_neg h.not_lt
 #align fin.succ_above_above Fin.succAbove_above
 
 /-- Embedding `i : Fin n` into `Fin (n + 1)` is always about some hole `p`. -/
