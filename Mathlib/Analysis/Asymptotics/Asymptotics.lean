@@ -1732,23 +1732,28 @@ theorem IsLittleO.inv_rev {f : α → 𝕜} {g : α → 𝕜'} (h : f =o[l] g)
 
 section SMulConst
 
-variable [NormedSpace 𝕜 E']
+variable [Module R E'] [BoundedSMul R E']
 
-theorem IsBigOWith.const_smul_left (h : IsBigOWith c l f' g) (c' : 𝕜) :
+theorem IsBigOWith.const_smul_self (c' : R) :
+    IsBigOWith (‖c'‖) l (fun x => c' • f' x) f' :=
+  isBigOWith_of_le' _ fun _ => norm_smul_le _ _
+
+theorem IsBigO.const_smul_self (c' : R) : (fun x => c' • f' x) =O[l] f' :=
+  (IsBigOWith.const_smul_self _).isBigO
+
+theorem IsBigOWith.const_smul_left (h : IsBigOWith c l f' g) (c' : R) :
     IsBigOWith (‖c'‖ * c) l (fun x => c' • f' x) g :=
-  IsBigOWith.of_norm_left <| by
-    simpa only [norm_smul, _root_.norm_norm] using h.norm_left.const_mul_left ‖c'‖
-    -- porting note: probably `Asymptotics.IsBigO.norm_norm` and `Asymptotics.IsLittleO.norm_norm`
-    -- should be protected.
-#align asymptotics.is_O_with.const_smul_left Asymptotics.IsBigOWith.const_smul_left
+  .trans (.const_smul_self _) h (norm_nonneg _)
 
-theorem IsBigO.const_smul_left (h : f' =O[l] g) (c : 𝕜) : (c • f') =O[l] g :=
+theorem IsBigO.const_smul_left (h : f' =O[l] g) (c : R) : (c • f') =O[l] g :=
   let ⟨_b, hb⟩ := h.isBigOWith
   (hb.const_smul_left _).isBigO
 #align asymptotics.is_O.const_smul_left Asymptotics.IsBigO.const_smul_left
 
+variable [NormedSpace 𝕜 E']
+
 theorem IsLittleO.const_smul_left (h : f' =o[l] g) (c : 𝕜) : (c • f') =o[l] g :=
-  IsLittleO.of_norm_left <| by simpa only [← norm_smul] using h.norm_left.const_mul_left ‖c‖
+  (IsBigO.const_smul_self _).trans_isLittleO h
 #align asymptotics.is_o.const_smul_left Asymptotics.IsLittleO.const_smul_left
 
 theorem isBigO_const_smul_left {c : 𝕜} (hc : c ≠ 0) : (fun x => c • f' x) =O[l] g ↔ f' =O[l] g := by
