@@ -5,6 +5,9 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Data.ENat.Basic
 import Mathlib.Data.ENNReal.Basic
+import Mathlib.Data.ENNReal.Inv
+import Mathlib.Data.ENNReal.Operations
+import Mathlib.Data.ENNReal.Real
 
 #align_import data.real.enat_ennreal from "leanprover-community/mathlib"@"53b216bcc1146df1c4a0a86877890ea9f1f01589"
 

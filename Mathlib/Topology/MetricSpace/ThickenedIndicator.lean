@@ -4,6 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
 import Mathlib.Data.ENNReal.Basic
+import Mathlib.Data.ENNReal.Inv
+import Mathlib.Data.ENNReal.Operations
+import Mathlib.Data.ENNReal.Real
 import Mathlib.Topology.ContinuousFunction.Bounded
 import Mathlib.Topology.MetricSpace.HausdorffDistance
 import Mathlib.Order.Filter.IndicatorFunction
