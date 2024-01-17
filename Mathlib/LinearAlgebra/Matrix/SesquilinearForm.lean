@@ -10,6 +10,9 @@ import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
 import Mathlib.LinearAlgebra.SesquilinearForm
 
+--set_option trace.Meta.synthInstance.instances true
+set_option profiler true
+
 #align_import linear_algebra.matrix.sesquilinear_form from "leanprover-community/mathlib"@"84582d2872fb47c0c17eec7382dc097c9ec7137a"
 
 /-!
@@ -623,7 +626,7 @@ theorem Matrix.isAdjointPair_equiv (P : Matrix n n R) (h : IsUnit P) :
 /-- The submodule of pair-self-adjoint matrices with respect to bilinear forms corresponding to
 given matrices `J`, `J₂`. -/
 def pairSelfAdjointMatricesSubmodule : Submodule R (Matrix n n R) :=
-  (isPairSelfAdjointSubmodule (Matrix.toLinearMap₂' J) (Matrix.toLinearMap₂' J₂)).map
+  (isPairSelfAdjointSubmodule (R := R) (Matrix.toLinearMap₂' J) (Matrix.toLinearMap₂' J₂)).map
     ((LinearMap.toMatrix' : ((n → R) →ₗ[R] n → R) ≃ₗ[R] Matrix n n R) :
       ((n → R) →ₗ[R] n → R) →ₗ[R] Matrix n n R)
 #align pair_self_adjoint_matrices_submodule pairSelfAdjointMatricesSubmodule
