@@ -421,13 +421,13 @@ theorem rev_ne_iff {i j : Fin n} : rev i ≠ j ↔ i ≠ rev j := rev_eq_iff.not
 #align fin.last_val Fin.val_last
 #align fin.le_last Fin.le_last
 
-instance : BoundedOrder (Fin (n + 1)) where
-  top := last n
-  le_top := le_last
+instance [NeZero n] : BoundedOrder (Fin n) where
+  top := rev 0
+  le_top i := Nat.le_pred_of_lt i.is_lt
   bot := 0
-  bot_le := zero_le
+  bot_le := Fin.zero_le'
 
-instance : Lattice (Fin (n + 1)) :=
+instance : Lattice (Fin n) :=
   LinearOrder.toLattice
 
 #align fin.last_pos Fin.last_pos
@@ -437,13 +437,15 @@ theorem last_pos' [NeZero n] : 0 < last n := NeZero.pos n
 
 theorem one_lt_last [NeZero n] : 1 < last (n + 1) := (lt_add_iff_pos_left 1).mpr (NeZero.pos n)
 
-theorem top_eq_last (n : ℕ) : ⊤ = Fin.last n :=
+theorem top_eq_last (n : ℕ) : ⊤ = last n :=
   rfl
 #align fin.top_eq_last Fin.top_eq_last
 
-theorem bot_eq_zero (n : ℕ) : ⊥ = (0 : Fin (n + 1)) :=
+theorem bot_eq_zero (n : ℕ) [NeZero n] : ⊥ = (0 : Fin n) :=
   rfl
 #align fin.bot_eq_zero Fin.bot_eq_zero
+
+theorem bot_eq_top_of_fin_one : (⊥ : Fin 1) = (⊤ : Fin 1) := rfl
 
 section
 
@@ -529,6 +531,12 @@ theorem nontrivial_iff_two_le : Nontrivial (Fin n) ↔ 2 ≤ n := by
   simp [← Nat.one_eq_succ_zero, Fin.nontrivial, not_nontrivial, Nat.succ_le_iff]
 -- porting note: here and in the next lemma, had to use `← Nat.one_eq_succ_zero`.
 #align fin.nontrivial_iff_two_le Fin.nontrivial_iff_two_le
+
+theorem bot_ne_top : (⊥ : Fin (n + 2)) ≠ ⊤ := _root_.bot_ne_top
+
+theorem bot_ne_top_iff_two_le [NeZero n] : (⊥ : Fin n) ≠ ⊤ ↔ 2 ≤ n := by
+  rw [← nontrivial_iff_two_le]
+  exact ⟨fun h => ⟨⊥, ⊤, h⟩ , fun h => haveI := h ; _root_.bot_ne_top⟩
 
 #align fin.subsingleton_iff_le_one Fin.subsingleton_iff_le_one
 
