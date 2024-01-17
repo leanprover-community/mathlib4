@@ -621,6 +621,10 @@ theorem _root_.IsClosed.not_mem_iff_infDist_pos (h : IsClosed s) (hs : s.Nonempt
   simp [h.mem_iff_infDist_zero hs, infDist_nonneg.gt_iff_ne]
 #align is_closed.not_mem_iff_inf_dist_pos IsClosed.not_mem_iff_infDist_pos
 
+theorem infDist_pos_iff_not_mem_closure [PseudoMetricSpace α] (hs : s.Nonempty) :
+    0 < infDist x s ↔ x ∉ closure s := by
+  rw [isClosed_closure.not_mem_iff_infDist_pos hs.closure, infDist_closure]
+
 -- porting note: new lemma
 theorem continuousAt_inv_infDist_pt (h : x ∉ closure s) :
     ContinuousAt (fun x ↦ (infDist x s)⁻¹) x := by
