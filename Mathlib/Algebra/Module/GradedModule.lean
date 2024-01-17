@@ -247,4 +247,21 @@ def linearEquiv [DecidableEq ιA] [DecidableEq ιM] [GradedRing 𝓐] [DirectSum
   rfl
 #align graded_module.linear_equiv GradedModule.linearEquiv
 
+/--
+The projection map of an internally graded module.
+-/
+@[simps]
+def proj [DecidableEq ιM] [Decomposition 𝓜]  (i : ιM) : M →+ M where
+  toFun m := decompose 𝓜 m i
+  map_zero' := by simp
+  map_add' := by simp
+
+/--
+For each `a : A`, `GradedRing.homogeneousComponents 𝒜 a` is the collection of the
+homogeneous components of `a`, which is a finite subset of `A`.
+-/
+def homogeneousComponents [DecidableEq ιM] [Decomposition 𝓜] [DecidableEq M] (a : M) : Finset M :=
+    (decompose 𝓜 a).support.image (decompose 𝓜 a ·)
+
+
 end GradedModule

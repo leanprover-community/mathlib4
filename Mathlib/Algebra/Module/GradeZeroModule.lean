@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fangming Li, Jujian Zhang
 -/
 import Mathlib.Algebra.Module.GradedModule
+import Mathlib.RingTheory.Finiteness
 
 /-!
 # The i-th grade of a graded module over a graded semiring.
@@ -49,3 +50,12 @@ instance GradeZero.module_at_i (i : ιM) : Module (𝒜 0) (ℳ i) :=
     refine' zero_smul A ↑x }
 
 end DirectSum
+
+section
+
+variable [Module.Finite A M]
+
+instance (i : ιM) : Module.Finite (𝒜 0) (ℳ i) := by
+sorry
+
+end
