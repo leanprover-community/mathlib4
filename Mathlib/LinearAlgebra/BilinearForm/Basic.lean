@@ -149,7 +149,7 @@ lemma smul_right_of_tower (r : S) (x y : M) : B x (r • y) = r • B x y := by
 
 variable {D : BilinForm R M} {D₁ : BilinForm R₁ M₁}
 
--- TODO: instantiate `DFunLike`
+-- TODO: instantiate `FunLike`
 theorem coe_injective : Function.Injective ((↑) : BilinForm R M → M → M → R) := fun B D h => by
   cases B
   cases D
