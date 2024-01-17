@@ -734,7 +734,7 @@ set_option linter.uppercaseLean3 false in
 #align complex.I_sq Complex.I_sq
 
 @[simp]
-theorem I_pow_4 : I ^ 4 = 1 := by rw [(by norm_num : 4 = 2 * 2), pow_mul, I_sq, neg_one_sq]
+theorem I_pow_four : I ^ 4 = 1 := by rw [(by norm_num : 4 = 2 * 2), pow_mul, I_sq, neg_one_sq]
 
 @[simp]
 theorem sub_re (z w : ℂ) : (z - w).re = z.re - w.re :=
