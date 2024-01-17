@@ -131,28 +131,38 @@ instead of linearly increasing the work per `MyEmbedding`-related declaration.
 /-- The class `EmbeddingLike F α β` expresses that terms of type `F` have an
 injective coercion to injective functions `α ↪ β`.
 -/
-class EmbeddingLike (F : Sort*) (α β : outParam (Sort*)) extends FunLike F α fun _ ↦ β where
+class EmbeddingLike (F : Sort*) (α β : outParam (Sort*)) [CoeFun F (fun _ ↦ α → β)] extends
+  FunLike F α fun _ ↦ β where
   /-- The coercion to functions must produce injective functions. -/
-  injective' : ∀ f : F, Function.Injective (coe f)
+  injective : ∀ f : F, Function.Injective f
 #align embedding_like EmbeddingLike
+#align embedding_like.injective EmbeddingLike.injective
 
 namespace EmbeddingLike
 
-variable {F α β γ : Sort*} [i : EmbeddingLike F α β]
+variable {F α β γ : Sort*}
 
-protected theorem injective (f : F) : Function.Injective f :=
-  injective' f
-#align embedding_like.injective EmbeddingLike.injective
+section
+
+variable? [EmbeddingLike F α β] => [CoeFun F fun x ↦ α → β] [i : EmbeddingLike F α β]
 
 @[simp]
 theorem apply_eq_iff_eq (f : F) {x y : α} : f x = f y ↔ x = y :=
   (EmbeddingLike.injective f).eq_iff
 #align embedding_like.apply_eq_iff_eq EmbeddingLike.apply_eq_iff_eq
 
+end
+
+section
+
+variable? [EmbeddingLike F β γ] => [CoeFun F fun x ↦ β → γ] [EmbeddingLike F β γ]
+
 @[simp]
-theorem comp_injective {F : Sort*} [EmbeddingLike F β γ] (f : α → β) (e : F) :
+theorem comp_injective (f : α → β) (e : F) :
     Function.Injective (e ∘ f) ↔ Function.Injective f :=
   (EmbeddingLike.injective e).of_comp_iff f
 #align embedding_like.comp_injective EmbeddingLike.comp_injective
+
+end
 
 end EmbeddingLike

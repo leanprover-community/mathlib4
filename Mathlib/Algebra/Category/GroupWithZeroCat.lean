@@ -58,7 +58,7 @@ instance {M N : GroupWithZeroCat} : FunLike (M ⟶ N) M (fun _ => N) :=
     cases f
     cases g
     congr
-    apply FunLike.coe_injective'
+    apply FunLike.coe_injective
     exact h⟩
 
 -- porting note: added

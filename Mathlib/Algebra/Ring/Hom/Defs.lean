@@ -107,7 +107,7 @@ instance : NonUnitalRingHomClass (α →ₙ+* β) α β where
     cases f
     cases g
     congr
-    apply FunLike.coe_injective'
+    apply FunLike.coe_injective
     exact h
   map_add := NonUnitalRingHom.map_add'
   map_zero := NonUnitalRingHom.map_zero'
@@ -419,7 +419,7 @@ instance instRingHomClass : RingHomClass (α →+* β) α β where
     cases f
     cases g
     congr
-    apply FunLike.coe_injective'
+    apply FunLike.coe_injective
     exact h
   map_add := RingHom.map_add'
   map_zero := RingHom.map_zero'

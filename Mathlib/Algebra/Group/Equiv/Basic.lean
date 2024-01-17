@@ -128,7 +128,7 @@ variable (F)
 @[to_additive]
 instance (priority := 100) instMulHomClass (F : Type*)
     [Mul M] [Mul N] [h : MulEquivClass F M N] : MulHomClass F M N :=
-  { h with coe := h.coe, coe_injective' := FunLike.coe_injective' }
+  { h with coe := h.coe, coe_injective' := FunLike.coe_injective }
 
 -- See note [lower instance priority]
 @[to_additive]
