@@ -17,8 +17,17 @@ import Mathlib.Algebra.GroupPower.Order
 We define `ENNReal = ℝ≥0∞ := WithTop ℝ≥0` to be the type of extended nonnegative real numbers,
 i.e., the interval `[0, +∞]`. This type is used as the codomain of a `MeasureTheory.Measure`,
 and of the extended distance `edist` in an `EMetricSpace`.
-In this file we define some algebraic operations and a linear order on `ℝ≥0∞`
-and prove basic properties of these operations, order, and conversions to/from `ℝ`, `ℝ≥0`, and `ℕ`.
+
+In this file we set up many of the instances on `ℝ≥0∞`, and provide relationships between `ℝ≥0∞` and
+`ℝ≥0`, and between `ℝ≥0∞` and `ℝ`. In particular, we provide a coercion from `ℝ≥0` to `ℝ≥0∞` as well
+as functions `ENNReal.toNNReal`, `ENNReal.ofReal` and `ENNReal.toReal`, all of which take the value
+zero wherever they cannot be the identity. Also included is the relationship between `ℝ≥0∞` and `ℕ`.
+The interaction of these functions, especially `ENNReal.ofReal` and `ENNReal.toReal`, with the
+algebraic and lattice structure can be found in `Data.ENNReal.Real`
+
+This file proves many of the order properties of `ℝ≥0∞`, with the exception of the ways those relate
+to the algebraic structure, which are included in `Data.ENNReal.Operations`. The definition and
+properties of the inversion and division are included in `Data.ENNReal.Inv`.
 
 ## Main definitions
 
@@ -37,11 +46,6 @@ and prove basic properties of these operations, order, and conversions to/from `
   - `a - b` is defined as the minimal `d` such that `a ≤ d + b`; this way we have
     `↑p - ↑q = ↑(p - q)`, `∞ - ↑p = ∞`, `↑p - ∞ = ∞ - ∞ = 0`; note that there is no negation, only
     subtraction;
-
-  - `a⁻¹` is defined as `Inf {b | 1 ≤ a * b}`. This way we have `(↑p)⁻¹ = ↑(p⁻¹)` for
-    `p : ℝ≥0`, `p ≠ 0`, `0⁻¹ = ∞`, and `∞⁻¹ = 0`.
-
-  - `a / b` is defined as `a * b⁻¹`.
 
   The addition and multiplication defined this way together with `0 = ↑0` and `1 = ↑1` turn
   `ℝ≥0∞` into a canonically ordered commutative semiring of characteristic zero.
@@ -69,7 +73,7 @@ context, or if we have `(f : α → ℝ≥0∞) (hf : ∀ x, f x ≠ ∞)`.
 ## Notations
 
 * `ℝ≥0∞`: the type of the extended nonnegative real numbers;
-* `ℝ≥0`: the type of nonnegative real numbers `[0, ∞)`; defined in `data.real.nnreal`;
+* `ℝ≥0`: the type of nonnegative real numbers `[0, ∞)`; defined in `Data.Real.NNReal`;
 * `∞`: a localized notation in `ℝ≥0∞` for `⊤ : ℝ≥0∞`.
 
 -/
