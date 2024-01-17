@@ -356,7 +356,7 @@ lemma SL2_to_gcd_one_fst_col (A : SL(2, R)) : IsCoprime (A.1 0 0) (A.1 0 1) := b
     exact T.symm
 
 /-- A vector of coprime entries multiplied by a matrix in `SL(2, R)` has coprime entries-/
-lemma SL2_gcd (a b : R) (hab : IsCoprime a b) (A : SL(2, R)) :
+lemma SL2_gcd {a b : R} (hab : IsCoprime a b) (A : SL(2, R)) :
     IsCoprime (Matrix.vecMul (![a,b]) A.1 0) (Matrix.vecMul (![a,b]) A.1 1) := by
     let C := SpecialLinearGroup.transpose ((IsCoprimeToSL2Col a b hab)) * A
     have := SL2_to_gcd_one_fst_col C
