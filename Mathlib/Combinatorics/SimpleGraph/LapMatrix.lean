@@ -161,9 +161,9 @@ lemma lapMatrix_ker_basis_aux_well_defined {G : SimpleGraph V} [DecidableRel G.A
   · rfl
 
 /-- Given a connected component `c` of a graph `G`, `lapMatrix_ker_basis_aux c` is the map
-  `V → ℝ` which is `1` on the vertices in `c` and `0` elsewhere.
-  The family of these maps indexed by the connected components of `G` proves to be a basis
-  of the kernel of `lapMatrix G R` -/
+`V → ℝ` which is `1` on the vertices in `c` and `0` elsewhere.
+The family of these maps indexed by the connected components of `G` proves to be a basis
+of the kernel of `lapMatrix G R` -/
 def lapMatrix_ker_basis_aux (c : G.ConnectedComponent) :
     LinearMap.ker (Matrix.toLin' (G.lapMatrix ℝ)) :=
   ⟨fun i ↦ if G.connectedComponentMk i = c then (1 : ℝ)  else 0,
