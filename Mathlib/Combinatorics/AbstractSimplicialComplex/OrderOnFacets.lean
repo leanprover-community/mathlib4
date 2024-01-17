@@ -5,21 +5,27 @@ universe u
 
 variable {α : Type u} {K : AbstractSimplicialComplex α}
 
-/-! We want to study shelling orders on abstract simplicial complexes. Roughly, a shelling order is a well-order on the facets of K such that,
-if you add the facets according to the order, you will control the homotopy type of the complex that you are building. They don't always exist,
-and when they do it has nice consequences for the topology of K. In this file we will introduce the complex of "old facets": if r is a partial
-order on K.facets and s is a facet of K, then the corresponding complex of old faces is the set of faces of s that are containing in some facet
-t < s (for the order r), i.e. the faces that would have been added before s when constructed the complex. -/
+/-! We want to study shelling orders on abstract simplicial complexes. Roughly, a shelling order
+is a well-order on the facets of `K` such that, if you add the facets according to the order,
+you will control the homotopy type of the complex that you are building. They don't always exist,
+and when they do it has nice consequences for the topology of `K`. In this file we will introduce
+the complex of "old facets": if `r` is a partial order on `K.facets` and `s` is a facet of `K`,
+then the corresponding complex of old faces is the set of faces of `s` that are contained in
+some facet `t < s` (for the order `r`), i.e. the faces that would have been added before `s` when
+the complex is constructed facets by facets followed the order `r`.-/
 
 namespace AbstractSimplicialComplex
 
-/--Definition of the subcomplex of old faces (determined by a partial order r on facets and a facet s).-/
-@[reducible] def OldFaces (r : PartialOrder K.facets) (s : K.facets) : AbstractSimplicialComplex α :=
-subcomplexGenerated (subcomplexGenerated K (Set.image (fun (s : K.facets) => (s.1 : Finset α)) (@Set.Iio K.facets
-(@PartialOrder.toPreorder _ r) s))) {s.1}
+/-- If `r` is a partial order on the facets of an abstract simplicial complex `K` and `s` is a
+facet of `K`, then the complex of old faces is the subcomplex of `K` whose faces are faces
+of `s` that are also faces of a facets smaller than `s` for tge order `r`.-/
+@[reducible] def oldFaces (r : PartialOrder K.facets) (s : K.facets) :
+    AbstractSimplicialComplex α :=
+  subcomplexGenerated (subcomplexGenerated K (Set.image (fun (s : K.facets) => (s.1 : Finset α))
+  (@Set.Iio K.facets (@PartialOrder.toPreorder _ r) s))) {s.1}
 
-lemma OldFaces_mem (r : PartialOrder K.facets) (s : K.facets) (t : Finset α) : t ∈ OldFaces r s ↔ t ∈ K.faces ∧ t ⊆ s.1 ∧ ∃ (u : K.facets),
-r.lt u s ∧ t ⊆ u.1 := by
+lemma faces_oldFaces (r : PartialOrder K.facets) (s : K.facets) (t : Finset α) :
+    t ∈ oldFaces r s ↔ t ∈ K.faces ∧ t ≤ s.1 ∧ ∃ (u : K.facets), r.lt u s ∧ t ≤ u.1 := by
   erw [faces_subcomplexGenerated, faces_subcomplexGenerated]
   constructor
   . intro ht
