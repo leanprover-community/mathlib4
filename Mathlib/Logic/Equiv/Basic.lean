@@ -1658,7 +1658,7 @@ theorem swap_eq_update (i j : α) : (Equiv.swap i j : α → α) = update (updat
 
 theorem comp_swap_eq_update (i j : α) (f : α → β) :
     f ∘ Equiv.swap i j = update (update f j (f i)) i (f j) := by
-  rw [swap_eq_update, comp_update, comp_update, comp.right_id]
+  rw [swap_eq_update, comp_update, comp_update, comp_id]
 #align equiv.comp_swap_eq_update Equiv.comp_swap_eq_update
 
 @[simp]
@@ -1719,7 +1719,7 @@ theorem sumCongr_swap_refl {α β : Sort _} [DecidableEq α] [DecidableEq β] (i
     Equiv.Perm.sumCongr (Equiv.swap i j) (Equiv.refl β) = Equiv.swap (Sum.inl i) (Sum.inl j) := by
   ext x
   cases x
-  · simp only [Equiv.sumCongr_apply, Sum.map, coe_refl, comp.right_id, Sum.elim_inl, comp_apply,
+  · simp only [Equiv.sumCongr_apply, Sum.map, coe_refl, comp_id, Sum.elim_inl, comp_apply,
       swap_apply_def, Sum.inl.injEq]
     split_ifs <;> rfl
   · simp [Sum.map, swap_apply_of_ne_of_ne]
@@ -1732,7 +1732,7 @@ theorem sumCongr_refl_swap {α β : Sort _} [DecidableEq α] [DecidableEq β] (i
   cases x
   · simp [Sum.map, swap_apply_of_ne_of_ne]
 
-  · simp only [Equiv.sumCongr_apply, Sum.map, coe_refl, comp.right_id, Sum.elim_inr, comp_apply,
+  · simp only [Equiv.sumCongr_apply, Sum.map, coe_refl, comp_id, Sum.elim_inr, comp_apply,
       swap_apply_def, Sum.inr.injEq]
     split_ifs <;> rfl
 #align equiv.perm.sum_congr_refl_swap Equiv.Perm.sumCongr_refl_swap
