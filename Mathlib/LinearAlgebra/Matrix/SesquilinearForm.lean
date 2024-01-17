@@ -10,8 +10,6 @@ import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
 import Mathlib.LinearAlgebra.SesquilinearForm
 
---set_option trace.Meta.synthInstance.instances true
-
 #align_import linear_algebra.matrix.sesquilinear_form from "leanprover-community/mathlib"@"84582d2872fb47c0c17eec7382dc097c9ec7137a"
 
 /-!
