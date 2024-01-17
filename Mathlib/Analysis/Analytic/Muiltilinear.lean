@@ -4,6 +4,7 @@ import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Order.Extension.Well
 import Mathlib.Analysis.Calculus.FDeriv.Analytic
 import Mathlib.Analysis.NormedSpace.Multilinear.Curry
+import Mathlib.Analysis.Analytic.CPolynomial
 
 open ContinuousLinearMap Metric
 open Topology NNReal Asymptotics ENNReal
@@ -17,6 +18,24 @@ variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] {ι : Type uι} [Fintype
 
 namespace MultilinearMap
 
+open ContinuousMultilinearMap in
+lemma domDomRestrict_bound [DecidableEq ι] (f : ContinuousMultilinearMap 𝕜 E F) (P : ι → Prop)
+    [DecidablePred P] [DecidableEq {a // P a}]
+    (z : (i : {a : ι // ¬ P a}) → E i) (x : (i : {a // P a}) → E i) :
+    ‖f.domDomRestrict P z x‖ ≤ ‖f‖  * (∏ i, ‖z i‖) * (∏ i, ‖x i‖) := by
+  rw [domDomRestrict_apply, mul_assoc, mul_comm (∏ i, ‖z i‖)]
+  refine le_trans (le_op_norm _ _) (mul_le_mul_of_nonneg_left ?_ (norm_nonneg _))
+  set f : ι → ℝ := fun i ↦ if h : P i then ‖x ⟨i, h⟩‖ else ‖z ⟨i, h⟩‖
+  rw [prod_congr rfl (g := f)
+    (fun i _ ↦ by by_cases h : P i; all_goals (simp only [h, dite_true, dite_false]))]
+  rw [prod_congr rfl (g := fun (i : {a // P a}) ↦ f i.1), ← prod_subtype (filter P univ)
+    (fun _ ↦ by simp only [mem_filter, mem_univ, true_and]),
+    prod_congr rfl (g := fun (i : {a // ¬ P a}) ↦ f i.1), ← prod_subtype
+    (filter (fun a ↦ ¬ P a) univ) (fun _ ↦ by simp only [mem_filter, mem_univ, true_and])]
+  · rw [← compl_filter, prod_mul_prod_compl]
+  · exact fun i _ ↦ by simp only [i.2, dite_false]
+  · exact fun i _ ↦ by simp only [i.2, dite_true]
+
 lemma linearDeriv_bound [DecidableEq ι] (f : ContinuousMultilinearMap 𝕜 E F) (x y : (i : ι) → E i) :
     ‖f.linearDeriv x y‖ ≤ ‖f‖ * (∑ i, (∏ j in univ.erase i, ‖x j‖)) * ‖y‖ := by
   rw [linearDeriv_apply, mul_sum, sum_mul]
@@ -29,63 +48,44 @@ lemma linearDeriv_bound [DecidableEq ι] (f : ContinuousMultilinearMap 𝕜 E F)
     prod_erase_mul univ _ (Finset.mem_univ _)]
   apply ContinuousMultilinearMap.le_op_norm
 
-open ContinuousMultilinearMap in
-lemma domDomRestrict_bound [DecidableEq ι] (P : ι → Prop) [DecidablePred P]
-    [DecidableEq {a // P a}] (f : ContinuousMultilinearMap 𝕜 E F)
-    (x : (i : {a // P a}) → E i) (z : (i : {a : ι // ¬ P a}) → E i) :
-    ‖f.domDomRestrict P z x‖ ≤ ‖f‖ * (∏ i, ‖x i‖) * (∏ i, ‖z i‖) := by
-  rw [domDomRestrict_apply, mul_assoc]
-  refine le_trans (le_op_norm _ _) (mul_le_mul_of_nonneg_left ?_ (norm_nonneg _))
-  conv_lhs => rw [Finset.prod_congr rfl
-    (g := fun i ↦ if h : P i then ‖x ⟨i, h⟩‖ else ‖z ⟨i, h⟩‖) (fun i _ ↦ by sorry),
-    prod_dite, Finset.prod_attach]
-  simp_rw [← Finset.compl_filter]
-  rw [← (prod_compl_mul_prod {a // P a})]
-  refine mul_le_mul ?_ ?_ (prod_nonneg (fun _ _ => norm_nonneg _))
-    (prod_nonneg (fun _ _ => norm_nonneg _))
-  all_goals (rw [← prod_coe_sort]; apply prod_le_prod (fun _ _ => norm_nonneg _))
-  · exact fun ⟨i, hi⟩ _ ↦ by rw [mem_compl] at hi; simp only [mem_coe, hi, dite_false, le_refl]
-  · exact fun i _ => by simp only [mem_coe, coe_mem, dite_true]; rfl
-
 end MultilinearMap
 
 namespace ContinuousMultilinearMap
 
-noncomputable def domDomRestrict (f : ContinuousMultilinearMap 𝕜 E F) (s : Finset ι)
-    (x : (i : ↑↑sᶜ) → E i) : ContinuousMultilinearMap 𝕜 (fun (i : s) => E i) F :=
-  MultilinearMap.mkContinuous (f.toMultilinearMap.domDomRestrict s
-  (fun ⟨i, hi⟩ => x ⟨i, mem_compl.mpr (Set.not_mem_of_mem_compl hi)⟩))
-  (‖f‖ * (∏ i, ‖x i‖)) (MultilinearMap.domDomRestrict_bound f s x)
+noncomputable def domDomRestrict [DecidableEq ι] (f : ContinuousMultilinearMap 𝕜 E F)
+    (P : ι → Prop) [DecidablePred P] [DecidableEq {a // P a}] (z : (i : {a : ι // ¬ P a}) → E i) :
+    ContinuousMultilinearMap 𝕜 (fun (i : {a // P a}) => E i) F :=
+  MultilinearMap.mkContinuous (f.toMultilinearMap.domDomRestrict P z)
+  (‖f‖ * (∏ i, ‖z i‖)) (MultilinearMap.domDomRestrict_bound f P z)
 
 @[simp]
-lemma domDomRestrict_apply (f : ContinuousMultilinearMap 𝕜 E F) (s : Finset ι)
-    (x : (i : ↑↑sᶜ) → E i) (z : (i : s) → E i) :
-    f.domDomRestrict s x z = f (fun i => if h : i ∈ s then z ⟨i, h⟩ else
-    x ⟨i, Finset.mem_compl.mpr h⟩) := rfl
+lemma domDomRestrict_apply [DecidableEq ι] (f : ContinuousMultilinearMap 𝕜 E F)
+    (P : ι → Prop) [DecidablePred P] [DecidableEq {a // P a}]
+    (z : (i : {a : ι // ¬ P a}) → E i) (x : (i : {a // P a}) → E i) :
+  f.domDomRestrict P z x = f (fun i => if h : P i then x ⟨i, h⟩ else z ⟨i, h⟩) := rfl
 
-lemma domDomRestrict_norm_le (f : ContinuousMultilinearMap 𝕜 E F) (s : Finset ι)
-    (x : (i : ↑↑sᶜ) → E i) : ‖f.domDomRestrict s x‖ ≤ ‖f‖ * (∏ i, ‖x i‖) :=
+lemma domDomRestrict_norm_le [DecidableEq ι] (f : ContinuousMultilinearMap 𝕜 E F)
+    (P : ι → Prop) [DecidablePred P] [DecidableEq {a // P a}] (z : (i : {a : ι // ¬ P a}) → E i) :
+    ‖f.domDomRestrict P z‖ ≤ ‖f‖ * (∏ i, ‖z i‖) :=
   ContinuousMultilinearMap.op_norm_le_bound _ (mul_nonneg (norm_nonneg _) (prod_nonneg
-  (fun _ _ ↦ norm_nonneg _))) (fun z ↦ MultilinearMap.domDomRestrict_bound f s x z)
+  (fun _ _ ↦ norm_nonneg _))) (MultilinearMap.domDomRestrict_bound f P z)
 
-open Finset in
-noncomputable def fderiv (f : ContinuousMultilinearMap 𝕜 E F) (x : (i : ι) → E i) :
+noncomputable def fderiv [DecidableEq ι] (f : ContinuousMultilinearMap 𝕜 E F) (x : (i : ι) → E i) :
     ((i : ι) → E i) →L[𝕜] F :=
   LinearMap.mkContinuous (f.toMultilinearMap.linearDeriv x)
   (‖f‖ * ∑ i, (∏ j in univ.erase i, ‖x j‖)) (fun y ↦ MultilinearMap.linearDeriv_bound f x y)
 
 @[simp]
-lemma fderiv_apply (f : ContinuousMultilinearMap 𝕜 E F) (x y : (i : ι) → E i) :
+lemma fderiv_apply [DecidableEq ι] (f : ContinuousMultilinearMap 𝕜 E F) (x y : (i : ι) → E i) :
     f.fderiv x y = ∑ i, f (Function.update x i (y i)) := by
   simp only [fderiv, mem_univ, not_true_eq_false, LinearMap.mkContinuous_apply,
     MultilinearMap.linearDeriv_apply, coe_coe]
 
-lemma fderiv_norm_le (f : ContinuousMultilinearMap 𝕜 E F) (x : (i : ι) → E i) :
+lemma fderiv_norm_le [DecidableEq ι] (f : ContinuousMultilinearMap 𝕜 E F) (x : (i : ι) → E i) :
     ‖f.fderiv x‖ ≤ ‖f‖ * ∑ i, (∏ j in univ.erase i, ‖x j‖) :=
   ContinuousLinearMap.op_norm_le_bound _ (mul_nonneg (norm_nonneg _) (sum_nonneg (fun _ _ ↦
   (prod_nonneg (fun _ _ ↦ norm_nonneg _))))) (fun z ↦ MultilinearMap.linearDeriv_bound f x z)
 
-open Finset in
 noncomputable def toFormalMultilinearSeries [LinearOrder ι]
     (f : ContinuousMultilinearMap 𝕜 E F) : FormalMultilinearSeries 𝕜 ((i : ι) → E i) F :=
   fun n ↦ if h : n = Fintype.card ι then
@@ -120,20 +120,21 @@ lemma toFormalMultilinearSeries_hasSum [LinearOrder ι] (f : ContinuousMultiline
                    rw [f.toFormalMultilinearSeries_support (lt_of_lt_of_le
                         (Nat.lt_succ_self _) hn), zero_apply])
 
-def hasFPowerSeriesAtOrigin [LinearOrder ι] (f : ContinuousMultilinearMap 𝕜 E F) :
-    HasFPowerSeriesOnBall f f.toFormalMultilinearSeries 0 ⊤  where
+def hasFiniteFPowerSeriesAtOrigin [LinearOrder ι] (f : ContinuousMultilinearMap 𝕜 E F) :
+    HasFiniteFPowerSeriesOnBall f f.toFormalMultilinearSeries 0  (Fintype.card ι) ⊤ where
   r_le := by rw [toFormalMultilinearSeries_radius]
   r_pos := zero_lt_top
   hasSum := fun _ => by rw [zero_add]; exact f.toFormalMultilinearSeries_hasSum _
+  finite := sorry
 
-variable [CompleteSpace F]
-
-lemma analyticAt (f : ContinuousMultilinearMap 𝕜 E F) (x : (i : ι) → E i) :
-    AnalyticAt 𝕜 f x := by
+lemma cPolynomialAt (f : ContinuousMultilinearMap 𝕜 E F) (x : (i : ι) → E i) :
+    CPolynomialAt 𝕜 f x := by
   letI : LinearOrder ι := WellFounded.wellOrderExtension emptyWf.wf
-  exact HasFPowerSeriesOnBall.analyticAt_of_mem f.hasFPowerSeriesAtOrigin
+  exact HasFiniteFPowerSeriesOnBall.cPolynomialAt_of_mem f.hasFiniteFPowerSeriesAtOrigin
     (by simp only [emetric_ball_top, Set.mem_univ])
 
+
+#exit
 lemma analyticOn (f : ContinuousMultilinearMap 𝕜 E F) :
     AnalyticOn 𝕜 f ⊤ :=
   fun x _ ↦ f.analyticAt x
