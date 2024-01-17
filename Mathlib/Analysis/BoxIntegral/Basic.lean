@@ -6,6 +6,7 @@ Authors: Yury Kudryashov
 import Mathlib.Analysis.BoxIntegral.Partition.Filter
 import Mathlib.Analysis.BoxIntegral.Partition.Measure
 import Mathlib.Topology.UniformSpace.Compact
+import Mathlib.Init.Data.Bool.Lemmas
 
 #align_import analysis.box_integral.basic from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
@@ -767,7 +768,7 @@ theorem HasIntegral.of_bRiemann_eq_false_of_forall_isLittleO (hl : l.bRiemann = 
     · rintro b -
       rw [← Nat.cast_two, ← Nat.cast_pow, ← nsmul_eq_mul]
       refine' nsmul_le_nsmul_left (hεs0 _).le _
-      refine' (Finset.card_le_of_subset _).trans ((hπδ.isHenstock hlH).card_filter_tag_eq_le b)
+      refine' (Finset.card_le_card _).trans ((hπδ.isHenstock hlH).card_filter_tag_eq_le b)
       exact filter_subset_filter _ (filter_subset _ _)
     · rw [Finset.coe_image, Set.image_subset_iff]
       exact fun J hJ => (Finset.mem_filter.1 hJ).2

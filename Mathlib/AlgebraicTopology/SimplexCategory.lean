@@ -85,7 +85,7 @@ theorem mk_len (n : SimplexCategory) : ([n.len] : SimplexCategory) = n :=
 #align simplex_category.mk_len SimplexCategory.mk_len
 
 /-- A recursor for `SimplexCategory`. Use it as `induction Δ using SimplexCategory.rec`. -/
-protected def rec {F : ∀ _ : SimplexCategory, Sort*} (h : ∀ n : ℕ, F [n]) : ∀ X, F X := fun n =>
+protected def rec {F : SimplexCategory → Sort*} (h : ∀ n : ℕ, F [n]) : ∀ X, F X := fun n =>
   h n.len
 #align simplex_category.rec SimplexCategory.rec
 
@@ -223,7 +223,7 @@ theorem δ_comp_δ {n} {i j : Fin (n + 2)} (H : i ≤ j) :
 
 theorem δ_comp_δ' {n} {i : Fin (n + 2)} {j : Fin (n + 3)} (H : Fin.castSucc i < j) :
     δ i ≫ δ j =
-      δ (j.pred <| fun (hj : j = 0) => by simp [hj, Fin.not_lt_zero] at H) ≫
+      δ (j.pred fun (hj : j = 0) => by simp [hj, Fin.not_lt_zero] at H) ≫
         δ (Fin.castSucc i) := by
   rw [← δ_comp_δ]
   · rw [Fin.succ_pred]
@@ -326,7 +326,7 @@ theorem δ_comp_σ_of_gt {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : Fin.castSu
 @[reassoc]
 theorem δ_comp_σ_of_gt' {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : j.succ < i) :
     δ i ≫ σ j = σ (j.castLT ((add_lt_add_iff_right 1).mp (lt_of_lt_of_le H i.is_le))) ≫
-      δ (i.pred <| fun (hi : i = 0) => by simp only [Fin.not_lt_zero, hi] at H) := by
+      δ (i.pred fun (hi : i = 0) => by simp only [Fin.not_lt_zero, hi] at H) := by
   rw [← δ_comp_σ_of_gt]
   · simp
   · rw [Fin.castSucc_castLT, ← Fin.succ_lt_succ_iff, Fin.succ_pred]
@@ -348,6 +348,32 @@ theorem σ_comp_σ {n} {i j : Fin (n + 1)} (H : i ≤ j) :
   all_goals try linarith
   all_goals cases k <;> simp at *; linarith
 #align simplex_category.σ_comp_σ SimplexCategory.σ_comp_σ
+
+/--
+If `f : [m] ⟶ [n+1]` is a morphism and `j` is not in the range of `f`,
+then `factor_δ f j` is a morphism `[m] ⟶ [n]` such that
+`factor_δ f j ≫ δ j = f` (as witnessed by `factor_δ_spec`).
+-/
+def factor_δ {m n : ℕ} (f : ([m] : SimplexCategory) ⟶ [n+1]) (j : Fin (n+2)) :
+    ([m] : SimplexCategory) ⟶ [n] :=
+  f ≫ σ (Fin.predAbove 0 j)
+
+open Fin in
+lemma factor_δ_spec {m n : ℕ} (f : ([m] : SimplexCategory) ⟶ [n+1]) (j : Fin (n+2))
+    (hj : ∀ (k : Fin (m+1)), f.toOrderHom k ≠ j) :
+    factor_δ f j ≫ δ j = f := by
+  apply Hom.ext
+  ext k : 2
+  specialize hj k
+  rw [Ne.def, ext_iff] at hj
+  dsimp [factor_δ, δ, σ, succAbove, predAbove]
+  split <;> rename_i h0j
+  all_goals
+  · split <;> rename_i hjk <;>
+    simp only [← val_fin_lt,
+      coe_castSucc, coe_pred, coe_castLT, succ_pred, castSucc_castLT] at h0j hjk ⊢
+    · rw [if_neg]; omega
+    · rw [if_pos]; omega
 
 end Generators
 
@@ -517,7 +543,8 @@ instance {n : ℕ} {i : Fin (n + 1)} : Epi (σ i) := by
     -- This was not needed before leanprover/lean4#2644
     dsimp
     rw [Fin.predAbove_below i b (by simpa only [Fin.coe_eq_castSucc] using h)]
-    simp only [len_mk, Fin.coe_eq_castSucc, Fin.castPred_castSucc]
+    simp only [len_mk, Fin.coe_eq_castSucc]
+    rfl
   · use b.succ
     -- This was not needed before leanprover/lean4#2644
     dsimp
@@ -597,12 +624,11 @@ theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : mk 
   · -- This was not needed before leanprover/lean4#2644
     dsimp
     rw [Fin.predAbove_below i x h']
-    have eq := Fin.castSucc_castPred (gt_of_gt_of_ge (Fin.castSucc_lt_last i) h')
     dsimp [δ]
-    erw [Fin.succAbove_below i.succ x.castPred _]
+    erw [Fin.succAbove_below _ _ _]
     swap
-    · rwa [eq, ← Fin.le_castSucc_iff]
-    rw [eq]
+    · exact (Fin.castSucc_lt_succ_iff.mpr h')
+    rfl
   · simp only [not_le] at h'
     let y := x.pred <| by rintro (rfl : x = 0); simp at h'
     have hy : x = y.succ := (Fin.succ_pred x _).symm
@@ -647,22 +673,18 @@ theorem eq_σ_comp_of_not_injective {n : ℕ} {Δ' : SimplexCategory} (θ : mk (
       · exfalso
         exact h₂ h'.symm
   rcases hθ₂ with ⟨x, y, ⟨h₁, h₂⟩⟩
-  let z := x.castPred
-  use z
-  rw [← show Fin.castSucc z = x from
-    Fin.castSucc_castPred (lt_of_lt_of_le h₂ (Fin.le_last y))] at h₁ h₂
+  use x.castPred ((Fin.le_last _).trans_lt' h₂).ne
   apply eq_σ_comp_of_not_injective'
-  rw [Fin.castSucc_lt_iff_succ_le] at h₂
   apply le_antisymm
-  · exact θ.toOrderHom.monotone (le_of_lt (Fin.castSucc_lt_succ z))
-  · rw [h₁]
-    exact θ.toOrderHom.monotone h₂
+  · exact θ.toOrderHom.monotone (le_of_lt (Fin.castSucc_lt_succ _))
+  · rw [Fin.castSucc_castPred, h₁]
+    exact θ.toOrderHom.monotone ((Fin.succ_castPred_le_iff _).mpr h₂)
 #align simplex_category.eq_σ_comp_of_not_injective SimplexCategory.eq_σ_comp_of_not_injective
 
 theorem eq_comp_δ_of_not_surjective' {n : ℕ} {Δ : SimplexCategory} (θ : Δ ⟶ mk (n + 1))
     (i : Fin (n + 2)) (hi : ∀ x, θ.toOrderHom x ≠ i) : ∃ θ' : Δ ⟶ mk n, θ = θ' ≫ δ i := by
   by_cases h : i < Fin.last (n + 1)
-  · use θ ≫ σ (Fin.castPred i)
+  · use θ ≫ σ (Fin.castPred i h.ne)
     ext1
     ext1
     ext1 x
@@ -673,23 +695,18 @@ theorem eq_comp_δ_of_not_surjective' {n : ℕ} {Δ : SimplexCategory} (θ : Δ 
       -- This was not needed before leanprover/lean4#2644
       dsimp
       -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-      erw [Fin.predAbove_below (Fin.castPred i) (θ.toOrderHom x)
-          (by simpa [Fin.castSucc_castPred h] using h')]
+      erw [Fin.predAbove_below _ _ (by exact h')]
       dsimp [δ]
       erw [Fin.succAbove_below i]
       swap
-      · simp only [Fin.lt_iff_val_lt_val, Fin.coe_castSucc]
-        exact
-          lt_of_le_of_lt (Fin.coe_castPred_le_self _)
-            (Fin.lt_iff_val_lt_val.mp ((Ne.le_iff_lt (hi x)).mp h'))
-      rw [Fin.castSucc_castPred]
-      apply lt_of_le_of_lt h' h
+      · rw [(hi x).le_iff_lt] at h'
+        exact h'
+      rfl
     · simp only [not_le] at h'
       -- The next three tactics used to be a simp only call before leanprover/lean4#2644
       rw [σ, mkHom, Hom.toOrderHom_mk, OrderHom.coe_mk, OrderHom.coe_mk]
       erw [OrderHom.coe_mk]
-      erw [Fin.predAbove_above (Fin.castPred i) (θ.toOrderHom x)
-          (by simpa only [Fin.castSucc_castPred h] using h')]
+      erw [Fin.predAbove_above _ _ (by exact h')]
       dsimp [δ]
       rw [Fin.succAbove_above i _]
       -- This was not needed before leanprover/lean4#2644
@@ -699,11 +716,12 @@ theorem eq_comp_δ_of_not_surjective' {n : ℕ} {Δ : SimplexCategory} (θ : Δ 
         Nat.le_sub_one_of_lt (Fin.lt_iff_val_lt_val.mp h')
   · obtain rfl := le_antisymm (Fin.le_last i) (not_lt.mp h)
     use θ ≫ σ (Fin.last _)
-    ext x : 4
+    ext x : 3
     dsimp [δ, σ]
-    dsimp only [Fin.castPred]
-    rw [Fin.predAbove_last, Fin.succAbove_last, Fin.castSucc_castPred]
-    exact (Ne.le_iff_lt (hi x)).mp (Fin.le_last _)
+    simp_rw [Fin.succAbove_last, Fin.predAbove_last_apply]
+    split_ifs with h
+    · exact ((hi x) h).elim
+    · rfl
 #align simplex_category.eq_comp_δ_of_not_surjective' SimplexCategory.eq_comp_δ_of_not_surjective'
 
 theorem eq_comp_δ_of_not_surjective {n : ℕ} {Δ : SimplexCategory} (θ : Δ ⟶ mk (n + 1))

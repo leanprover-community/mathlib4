@@ -140,10 +140,10 @@ instance : Inhabited (GroupFilterBasis G) := ⟨by
     simp⟩
 
 @[to_additive]
-theorem prod_subset_self (B : GroupFilterBasis G) {U : Set G} (h : U ∈ B) : U ⊆ U * U :=
-  fun x x_in ↦ ⟨1, x, one h, x_in, one_mul x⟩
-#align group_filter_basis.prod_subset_self GroupFilterBasis.prod_subset_self
-#align add_group_filter_basis.sum_subset_self AddGroupFilterBasis.sum_subset_self
+theorem subset_mul_self (B : GroupFilterBasis G) {U : Set G} (h : U ∈ B) : U ⊆ U * U :=
+  fun x x_in ↦ ⟨1, one h, x, x_in, one_mul x⟩
+#align group_filter_basis.prod_subset_self GroupFilterBasis.subset_mul_self
+#align add_group_filter_basis.sum_subset_self AddGroupFilterBasis.subset_add_self
 
 /-- The neighborhood function of a `GroupFilterBasis`. -/
 @[to_additive "The neighborhood function of an `AddGroupFilterBasis`."]
@@ -190,7 +190,7 @@ theorem nhds_eq (B : GroupFilterBasis G) {x₀ : G} : @nhds G B.topology x₀ = 
     use (fun y ↦ x * y) '' W, image_mem_map (FilterBasis.mem_filter_of_mem _ W_in)
     constructor
     · rw [image_subset_iff] at H ⊢
-      exact ((B.prod_subset_self W_in).trans hW).trans H
+      exact ((B.subset_mul_self W_in).trans hW).trans H
     · rintro y ⟨t, tW, rfl⟩
       rw [(B.hasBasis _).mem_iff]
       use W, W_in
@@ -372,7 +372,7 @@ instance [DiscreteTopology R] : Inhabited (ModuleFilterBasis R M) :=
       smul' := by
         rintro U (rfl : U ∈ {{(0 : M)}})
         use univ, univ_mem, {0}, rfl
-        rintro a ⟨x, m, -, rfl, rfl⟩
+        rintro a ⟨x, -, m, rfl, rfl⟩
         simp only [smul_zero, mem_singleton_iff]
       smul_left' := by
         rintro x₀ U (h : U ∈ {{(0 : M)}})

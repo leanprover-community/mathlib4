@@ -11,7 +11,7 @@ import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
 /-!
 # Polar coordinates
 
-We define polar coordinates, as a local homeomorphism in `ℝ^2` between `ℝ^2 - (-∞, 0]` and
+We define polar coordinates, as a partial homeomorphism in `ℝ^2` between `ℝ^2 - (-∞, 0]` and
 `(0, +∞) × (-π, π)`. Its inverse is given by `(r, θ) ↦ (r cos θ, r sin θ)`.
 
 It satisfies the following change of variables formula (see `integral_comp_polarCoord_symm`):
@@ -25,7 +25,7 @@ open Real Set MeasureTheory
 
 open scoped Real Topology
 
-/-- The polar coordinates local homeomorphism in `ℝ^2`, mapping `(r cos θ, r sin θ)` to `(r, θ)`.
+/-- The polar coordinates partial homeomorphism in `ℝ^2`, mapping `(r cos θ, r sin θ)` to `(r, θ)`.
 It is a homeomorphism between `ℝ^2 - (-∞, 0]` and `(0, +∞) × (-π, π)`. -/
 @[simps]
 def polarCoord : PartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
@@ -158,7 +158,7 @@ namespace Complex
 
 open scoped Real
 
-/-- The polar coordinates local homeomorphism in `ℂ`, mapping `r (cos θ + I * sin θ)` to `(r, θ)`.
+/-- The polar coordinates partial homeomorphism in `ℂ`, mapping `r (cos θ + I * sin θ)` to `(r, θ)`.
 It is a homeomorphism between `ℂ - ℝ≤0` and `(0, +∞) × (-π, π)`. -/
 protected noncomputable def polarCoord : PartialHomeomorph ℂ (ℝ × ℝ) :=
   equivRealProdClm.toHomeomorph.transPartialHomeomorph polarCoord

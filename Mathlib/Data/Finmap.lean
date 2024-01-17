@@ -332,7 +332,7 @@ that `(lookup a).isSome ↔ a ∈ keys`. -/
 def keysLookupEquiv :
     Finmap β ≃ { f : Finset α × (∀ a, Option (β a)) // ∀ i, (f.2 i).isSome ↔ i ∈ f.1 } where
   toFun s := ⟨(s.keys, fun i => s.lookup i), fun _ => lookup_isSome⟩
-  invFun f := mk (f.1.1.sigma <| fun i => (f.1.2 i).toFinset).val <| by
+  invFun f := mk (f.1.1.sigma fun i => (f.1.2 i).toFinset).val <| by
     refine Multiset.nodup_keys.1 ((Finset.nodup _).map_on ?_)
     simp only [Finset.mem_val, Finset.mem_sigma, Option.mem_toFinset, Option.mem_def]
     rintro ⟨i, x⟩ ⟨_, hx⟩ ⟨j, y⟩ ⟨_, hy⟩ (rfl : i = j)
@@ -347,13 +347,13 @@ def keysLookupEquiv :
 @[simp] lemma keysLookupEquiv_symm_apply_keys :
     ∀ f : {f : Finset α × (∀ a, Option (β a)) // ∀ i, (f.2 i).isSome ↔ i ∈ f.1},
       (keysLookupEquiv.symm f).keys = f.1.1 :=
-  keysLookupEquiv.surjective.forall.2 $ fun _ => by
+  keysLookupEquiv.surjective.forall.2 fun _ => by
     simp only [Equiv.symm_apply_apply, keysLookupEquiv_apply_coe_fst]
 
 @[simp] lemma keysLookupEquiv_symm_apply_lookup :
     ∀ (f : {f : Finset α × (∀ a, Option (β a)) // ∀ i, (f.2 i).isSome ↔ i ∈ f.1}) a,
       (keysLookupEquiv.symm f).lookup a = f.1.2 a :=
-  keysLookupEquiv.surjective.forall.2 $ fun _ _ => by
+  keysLookupEquiv.surjective.forall.2 fun _ _ => by
     simp only [Equiv.symm_apply_apply, keysLookupEquiv_apply_coe_snd]
 
 /-! ### replace -/

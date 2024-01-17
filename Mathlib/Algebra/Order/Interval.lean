@@ -42,10 +42,6 @@ variable [Preorder α] [One α]
 instance : One (NonemptyInterval α) :=
   ⟨NonemptyInterval.pure 1⟩
 
-@[to_additive]
-instance : One (Interval α) :=
-  ⟨Interval.pure 1⟩
-
 namespace NonemptyInterval
 
 @[to_additive (attr := simp) toProd_zero]
@@ -89,15 +85,11 @@ theorem pure_one : pure (1 : α) = 1 :=
 #align interval.pure_one Interval.pure_one
 #align interval.pure_zero Interval.pure_zero
 
-@[to_additive (attr := simp)]
-theorem one_ne_bot : (1 : Interval α) ≠ ⊥ :=
-  pure_ne_bot
+@[to_additive] lemma one_ne_bot : (1 : Interval α) ≠ ⊥ := pure_ne_bot
 #align interval.one_ne_bot Interval.one_ne_bot
 #align interval.zero_ne_bot Interval.zero_ne_bot
 
-@[to_additive (attr := simp)]
-theorem bot_ne_one : (⊥ : Interval α) ≠ 1 :=
-  bot_ne_pure
+@[to_additive] lemma bot_ne_one : (⊥ : Interval α) ≠ 1 := bot_ne_pure
 #align interval.bot_ne_one Interval.bot_ne_one
 #align interval.bot_ne_zero Interval.bot_ne_zero
 
@@ -288,11 +280,9 @@ instance Interval.mulOneClass [OrderedCommMonoid α] : MulOneClass (Interval α)
   mul := (· * ·)
   one := 1
   one_mul s :=
-    (Option.map₂_coe_left _ _ _).trans <| by
-      simp_rw [NonemptyInterval.pure_one, one_mul, ← id_def, Option.map_id, id]
+    (Option.map₂_coe_left _ _ _).trans <| by simp_rw [one_mul, ← id_def, Option.map_id, id]
   mul_one s :=
-    (Option.map₂_coe_right _ _ _).trans <| by
-      simp_rw [NonemptyInterval.pure_one, mul_one, ← id_def, Option.map_id, id]
+    (Option.map₂_coe_right _ _ _).trans <| by simp_rw [mul_one, ← id_def, Option.map_id, id]
 
 @[to_additive]
 instance Interval.commMonoid [OrderedCommMonoid α] : CommMonoid (Interval α) :=

@@ -89,7 +89,7 @@ theorem finite_classes_ker {α β : Type*} [Finite β] (f : α → β) : (Setoid
 theorem card_classes_ker_le {α β : Type*} [Fintype β] (f : α → β)
     [Fintype (Setoid.ker f).classes] : Fintype.card (Setoid.ker f).classes ≤ Fintype.card β := by
   classical exact
-      le_trans (Set.card_le_of_subset (classes_ker_subset_fiber_set f)) (Fintype.card_range_le _)
+      le_trans (Set.card_le_card (classes_ker_subset_fiber_set f)) (Fintype.card_range_le _)
 #align setoid.card_classes_ker_le Setoid.card_classes_ker_le
 
 /-- Two equivalence relations are equal iff all their equivalence classes are equal. -/

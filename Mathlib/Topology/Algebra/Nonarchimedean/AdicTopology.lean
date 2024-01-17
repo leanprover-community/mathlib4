@@ -70,7 +70,7 @@ theorem adic_basis (I : Ideal R) : SubmodulesRingBasis fun n : ℕ => (I ^ n •
         simpa only [smul_top_eq_map, Algebra.id.map_eq_id, map_id] using this
       intro n
       use n
-      rintro a ⟨x, b, _hx, hb, rfl⟩
+      rintro a ⟨x, _hx, b, hb, rfl⟩
       exact (I ^ n).smul_mem x hb }
 #align ideal.adic_basis Ideal.adic_basis
 

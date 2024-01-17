@@ -802,7 +802,7 @@ theorem tendsto_translation_number' (x : ℝ) :
 
 theorem translationNumber_mono : Monotone τ := fun f g h =>
   le_of_tendsto_of_tendsto' f.tendsto_translation_number₀ g.tendsto_translation_number₀ fun n =>
-    div_le_div_of_le_of_nonneg (pow_mono h n 0) n.cast_nonneg
+    div_le_div_of_le n.cast_nonneg (pow_mono h n 0)
 #align circle_deg1_lift.translation_number_mono CircleDeg1Lift.translationNumber_mono
 
 theorem translationNumber_translate (x : ℝ) : τ (translate <| Multiplicative.ofAdd x) = x :=

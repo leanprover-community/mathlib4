@@ -56,7 +56,7 @@ section Inducing
 /-- A function `f : X → Y` between topological spaces is inducing if the topology on `X` is induced
 by the topology on `Y` through `f`, meaning that a set `s : Set X` is open iff it is the preimage
 under `f` of some open set `t : Set Y`. -/
-@[mk_iff inducing_iff]
+@[mk_iff]
 structure Inducing [tX : TopologicalSpace X] [tY : TopologicalSpace Y] (f : X → Y) : Prop where
   /-- The topology on the domain is equal to the induced topology. -/
   induced : tX = tY.induced f
@@ -120,8 +120,8 @@ theorem image_mem_nhdsWithin (hf : Inducing f) {x : X} {s : Set X} (hs : s ∈ �
   hf.map_nhds_eq x ▸ image_mem_map hs
 #align inducing.image_mem_nhds_within Inducing.image_mem_nhdsWithin
 
-theorem tendsto_nhds_iff {f : ι → Y} {a : Filter ι} {y : Y} (hg : Inducing g) :
-    Tendsto f a (𝓝 y) ↔ Tendsto (g ∘ f) a (𝓝 (g y)) := by
+theorem tendsto_nhds_iff {f : ι → Y} {l : Filter ι} {y : Y} (hg : Inducing g) :
+    Tendsto f l (𝓝 y) ↔ Tendsto (g ∘ f) l (𝓝 (g y)) := by
   rw [hg.nhds_eq_comap, tendsto_comap_iff]
 #align inducing.tendsto_nhds_iff Inducing.tendsto_nhds_iff
 
@@ -191,7 +191,7 @@ section Embedding
 
 /-- A function between topological spaces is an embedding if it is injective,
   and for all `s : Set X`, `s` is open iff it is the preimage of an open set. -/
-@[mk_iff embedding_iff]
+@[mk_iff]
 structure Embedding [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y) extends
   Inducing f : Prop where
   /-- A topological embedding is injective. -/
@@ -241,8 +241,8 @@ theorem Embedding.map_nhds_of_mem (hf : Embedding f) (x : X) (h : range f ∈ �
   hf.1.map_nhds_of_mem x h
 #align embedding.map_nhds_of_mem Embedding.map_nhds_of_mem
 
-theorem Embedding.tendsto_nhds_iff {f : ι → Y} {a : Filter ι} {y : Y}
-    (hg : Embedding g) : Tendsto f a (𝓝 y) ↔ Tendsto (g ∘ f) a (𝓝 (g y)) :=
+theorem Embedding.tendsto_nhds_iff {f : ι → Y} {l : Filter ι} {y : Y}
+    (hg : Embedding g) : Tendsto f l (𝓝 y) ↔ Tendsto (g ∘ f) l (𝓝 (g y)) :=
   hg.toInducing.tendsto_nhds_iff
 #align embedding.tendsto_nhds_iff Embedding.tendsto_nhds_iff
 
@@ -570,7 +570,7 @@ section OpenEmbedding
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
 /-- An open embedding is an embedding with open image. -/
-@[mk_iff openEmbedding_iff]
+@[mk_iff]
 structure OpenEmbedding (f : X → Y) extends Embedding f : Prop where
   /-- The range of an open embedding is an open set. -/
   open_range : IsOpen <| range f
@@ -593,8 +593,8 @@ theorem OpenEmbedding.open_iff_image_open (hf : OpenEmbedding f) {s : Set X} :
     apply preimage_image_eq _ hf.inj⟩
 #align open_embedding.open_iff_image_open OpenEmbedding.open_iff_image_open
 
-theorem OpenEmbedding.tendsto_nhds_iff {f : ι → Y} {a : Filter ι} {y : Y} (hg : OpenEmbedding g) :
-    Tendsto f a (𝓝 y) ↔ Tendsto (g ∘ f) a (𝓝 (g y)) :=
+theorem OpenEmbedding.tendsto_nhds_iff {f : ι → Y} {l : Filter ι} {y : Y} (hg : OpenEmbedding g) :
+    Tendsto f l (𝓝 y) ↔ Tendsto (g ∘ f) l (𝓝 (g y)) :=
   hg.toEmbedding.tendsto_nhds_iff
 #align open_embedding.tendsto_nhds_iff OpenEmbedding.tendsto_nhds_iff
 
@@ -680,7 +680,7 @@ section ClosedEmbedding
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
 /-- A closed embedding is an embedding with closed image. -/
-@[mk_iff closedEmbedding_iff]
+@[mk_iff]
 structure ClosedEmbedding (f : X → Y) extends Embedding f : Prop where
   /-- The range of a closed embedding is a closed set. -/
   closed_range : IsClosed <| range f
@@ -689,8 +689,8 @@ structure ClosedEmbedding (f : X → Y) extends Embedding f : Prop where
 
 namespace ClosedEmbedding
 
-theorem tendsto_nhds_iff {g : ι → X} {a : Filter ι} {x : X} (hf : ClosedEmbedding f) :
-    Tendsto g a (𝓝 x) ↔ Tendsto (f ∘ g) a (𝓝 (f x)) :=
+theorem tendsto_nhds_iff {g : ι → X} {l : Filter ι} {x : X} (hf : ClosedEmbedding f) :
+    Tendsto g l (𝓝 x) ↔ Tendsto (f ∘ g) l (𝓝 (f x)) :=
   hf.toEmbedding.tendsto_nhds_iff
 #align closed_embedding.tendsto_nhds_iff ClosedEmbedding.tendsto_nhds_iff
 

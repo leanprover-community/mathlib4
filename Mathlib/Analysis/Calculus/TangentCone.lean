@@ -56,7 +56,7 @@ The main role of this property is to ensure that the differential within `s` at 
 hence this name. The uniqueness it asserts is proved in `UniqueDiffWithinAt.eq` in `Fderiv.Basic`.
 To avoid pathologies in dimension 0, we also require that `x` belongs to the closure of `s` (which
 is automatic when `E` is not `0`-dimensional). -/
-@[mk_iff uniqueDiffWithinAt_iff]
+@[mk_iff]
 structure UniqueDiffWithinAt (s : Set E) (x : E) : Prop where
   dense_tangentCone : Dense (Submodule.span 𝕜 (tangentConeAt 𝕜 s x) : Set E)
   mem_closure : x ∈ closure s
@@ -184,7 +184,7 @@ theorem subset_tangentCone_prod_right {t : Set F} {y : F} (hs : x ∈ closure s)
 /-- The tangent cone of a product contains the tangent cone of each factor. -/
 theorem mapsTo_tangentCone_pi {ι : Type*} [DecidableEq ι] {E : ι → Type*}
     [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)] {s : ∀ i, Set (E i)} {x : ∀ i, E i}
-    {i : ι} (hi : ∀ (j) (_ : j ≠ i), x j ∈ closure (s j)) :
+    {i : ι} (hi : ∀ j ≠ i, x j ∈ closure (s j)) :
     MapsTo (LinearMap.single i : E i →ₗ[𝕜] ∀ j, E j) (tangentConeAt 𝕜 (s i) (x i))
       (tangentConeAt 𝕜 (Set.pi univ s) x) := by
   rintro w ⟨c, d, hd, hc, hy⟩

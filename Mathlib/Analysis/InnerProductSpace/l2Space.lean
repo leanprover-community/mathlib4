@@ -415,16 +415,15 @@ instance {ι : Type*} : Inhabited (HilbertBasis ι 𝕜 ℓ²(ι, 𝕜)) :=
 instance instCoeFun : CoeFun (HilbertBasis ι 𝕜 E) fun _ => ι → E where
   coe b i := b.repr.symm (lp.single 2 i (1 : 𝕜))
 
-@[simp]
+-- This is a bad `@[simp]` lemma: the RHS is a coercion containing the LHS.
 protected theorem repr_symm_single (b : HilbertBasis ι 𝕜 E) (i : ι) :
     b.repr.symm (lp.single 2 i (1 : 𝕜)) = b i :=
   rfl
 #align hilbert_basis.repr_symm_single HilbertBasis.repr_symm_single
 
--- porting note: removed `@[simp]` because `simp` can prove this
 protected theorem repr_self (b : HilbertBasis ι 𝕜 E) (i : ι) :
     b.repr (b i) = lp.single 2 i (1 : 𝕜) := by
-  simp
+  simp only [LinearIsometryEquiv.apply_symm_apply]
 #align hilbert_basis.repr_self HilbertBasis.repr_self
 
 protected theorem repr_apply_apply (b : HilbertBasis ι 𝕜 E) (v : E) (i : ι) :

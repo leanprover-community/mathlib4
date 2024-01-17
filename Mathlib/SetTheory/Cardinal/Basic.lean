@@ -1013,20 +1013,23 @@ protected theorem iSup_of_empty {ι} (f : ι → Cardinal) [IsEmpty ι] : iSup f
 #align cardinal.supr_of_empty Cardinal.iSup_of_empty
 
 lemma exists_eq_of_iSup_eq_of_not_isSuccLimit
-    {ι : Type u} (f : ι → Cardinal.{max u v}) (ω : Cardinal.{max u v})
+    {ι : Type u} (f : ι → Cardinal.{v}) (ω : Cardinal.{v})
     (hω : ¬ Order.IsSuccLimit ω)
     (h : ⨆ i : ι, f i = ω) : ∃ i, f i = ω :=
-  IsLUB.exists_of_not_isSuccLimit (h ▸ isLUB_csSup' (bddAbove_range.{u, v} f)) hω
+  (Classical.em <| BddAbove <| range f).elim
+    (fun hf ↦ IsLUB.exists_of_not_isSuccLimit (h ▸ isLUB_csSup' hf) hω) fun hf ↦ by
+      rw [iSup, csSup_of_not_bddAbove hf, csSup_empty] at h
+      exact (hω <| h ▸ Order.isSuccLimit_bot).elim
 
 lemma exists_eq_of_iSup_eq_of_not_isLimit
-    {ι : Type u} [hι : Nonempty ι] (f : ι → Cardinal.{max u v}) (ω : Cardinal.{max u v})
-    (hω : ¬ ω.IsLimit)
+    {ι : Type u} [hι : Nonempty ι] (f : ι → Cardinal.{v}) (hf : BddAbove (range f))
+    (ω : Cardinal.{v}) (hω : ¬ ω.IsLimit)
     (h : ⨆ i : ι, f i = ω) : ∃ i, f i = ω := by
   refine (not_and_or.mp hω).elim (fun e ↦ ⟨hι.some, ?_⟩)
     (Cardinal.exists_eq_of_iSup_eq_of_not_isSuccLimit.{u, v} f ω · h)
   cases not_not.mp e
   rw [← le_zero_iff] at h ⊢
-  exact (le_ciSup (Cardinal.bddAbove_range.{u, v} f) _).trans h
+  exact (le_ciSup hf _).trans h
 
 -- Portin note: simpNF is not happy with universe levels.
 @[simp, nolint simpNF]
@@ -1475,9 +1478,9 @@ theorem IsLimit.aleph0_le {c : Cardinal} (h : IsLimit c) : ℵ₀ ≤ c := by
   rcases lt_aleph0.1 h' with ⟨n, rfl⟩
   exact not_isLimit_natCast n h
 
-lemma exists_eq_natCast_of_iSup_eq {ι : Type u} [Nonempty ι] (f : ι → Cardinal.{max u v})
-    (n : ℕ) (h : ⨆ i, f i = n) : ∃ i, f i = n :=
-  exists_eq_of_iSup_eq_of_not_isLimit.{u, v} f _ (not_isLimit_natCast n) h
+lemma exists_eq_natCast_of_iSup_eq {ι : Type u} [Nonempty ι] (f : ι → Cardinal.{v})
+    (hf : BddAbove (range f)) (n : ℕ) (h : ⨆ i, f i = n) : ∃ i, f i = n :=
+  exists_eq_of_iSup_eq_of_not_isLimit.{u, v} f hf _ (not_isLimit_natCast n) h
 
 @[simp]
 theorem range_natCast : range ((↑) : ℕ → Cardinal) = Iio ℵ₀ :=

@@ -326,7 +326,7 @@ theorem addHaar_image_le_mul_of_det_lt (A : E →L[ℝ] E) {m : ℝ≥0}
     intro x r xs r0
     have K : f '' (s ∩ closedBall x r) ⊆ A '' closedBall 0 r + closedBall (f x) (ε * r) := by
       rintro y ⟨z, ⟨zs, zr⟩, rfl⟩
-      apply Set.mem_add.2 ⟨A (z - x), f z - f x - A (z - x) + f x, _, _, _⟩
+      apply Set.mem_add.2 ⟨A (z - x), _, f z - f x - A (z - x) + f x, _, _⟩
       · apply mem_image_of_mem
         simpa only [dist_eq_norm, mem_closedBall, mem_closedBall_zero_iff, sub_zero] using zr
       · rw [mem_closedBall_iff_norm, add_sub_cancel]
