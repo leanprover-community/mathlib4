@@ -34,12 +34,10 @@ simp only [@Subtype.coe_eta]
 
 lemma coe_inj (x y : Fiber P c) : (x : E) = y ↔ x = y := Subtype.coe_inj
 
-@[simp]
 lemma over (x : Fiber P c) : P x = c := x.2
 
-@[simp]
 lemma over_eq (x y : Fiber P c) : P x = P y := by
-simp [Fiber.over]
+simp only [Fiber.over]
 
 /-- A tautological construction of an element in the fiber of the image of a domain element. -/
 @[simp]
