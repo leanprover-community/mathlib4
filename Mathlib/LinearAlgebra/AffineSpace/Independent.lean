@@ -614,7 +614,7 @@ theorem exists_affineIndependent (s : Set P) :
   rw [linearIndependent_set_iff_affineIndependent_vadd_union_singleton k hb₀ p] at hb₃
   refine' ⟨{p} ∪ Equiv.vaddConst p '' b, _, _, hb₃⟩
   · apply Set.union_subset (Set.singleton_subset_iff.mpr hp)
-    rwa [← (Equiv.vaddConst p).subset_image' b s]
+    rwa [← (Equiv.vaddConst p).subset_symm_image_iff b s]
   · rw [Equiv.coe_vaddConst_symm, ← vectorSpan_eq_span_vsub_set_right k hp] at hb₂
     apply AffineSubspace.ext_of_direction_eq
     · have : Submodule.span k b = Submodule.span k (insert 0 b) := by simp

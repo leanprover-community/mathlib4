@@ -162,6 +162,18 @@ theorem map_subset_map {s₁ s₂ : Finset α} : s₁.map f ⊆ s₂.map f ↔ s
    fun h => by simp [subset_def, Multiset.map_subset_map h]⟩
 #align finset.map_subset_map Finset.map_subset_map
 
+/-- The `Finset` version of `Equiv.subset_symm_image_iff`. -/
+theorem subset_symm_map_iff {t : Finset β} {f : α ≃ β} : s ⊆ t.map f.symm ↔ s.map f ⊆ t := by
+  constructor <;> intro h x hx
+  · simp only [mem_map_equiv, Equiv.symm_symm] at hx
+    simpa using h hx
+  · simp only [mem_map_equiv]
+    exact h (by simp [hx])
+
+/-- The `Finset` version of `Equiv.symm_image_subset_iff`. -/
+theorem symm_map_subset_iff {t : Finset β} {f : α ≃ β} : t.map f.symm ⊆ s ↔ t ⊆ s.map f := by
+  simp only [← subset_symm_map_iff, Equiv.symm_symm]
+
 /-- Associate to an embedding `f` from `α` to `β` the order embedding that maps a finset to its
 image under `f`. -/
 def mapEmbedding (f : α ↪ β) : Finset α ↪o Finset β :=
