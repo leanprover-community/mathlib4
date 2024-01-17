@@ -33,7 +33,7 @@ variable {V α : Type*} (α) [Fintype V] [DecidableEq V] (G : SimpleGraph V) [De
 def SimpleGraph.degMatrix [AddMonoidWithOne α] : Matrix V V α := Matrix.diagonal (G.degree ·)
 
 /-- `lapMatrix G R` is the matrix `L = D - A` where `D`is the degree
-  and `A` the adjacency matrix of `G`. -/
+and `A` the adjacency matrix of `G`. -/
 def SimpleGraph.lapMatrix [AddGroupWithOne α] : Matrix V V α := G.degMatrix α - G.adjMatrix α
 
 variable {α}
