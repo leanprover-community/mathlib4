@@ -245,7 +245,7 @@ set_option linter.uppercaseLean3 false in
 #align ODE_solution_unique_of_mem_set ODE_solution_unique_of_mem_set
 
 /-- There exists only one solution of an ODE \(\dot x=v(t, x)\) in a set `s ⊆ ℝ × E` with
-a given initial value provided that RHS is Lipschitz continuous in `x` within `s`,
+a given initial value provided that the RHS is Lipschitz continuous in `x` within `s`,
 and we consider only solutions included in `s`.
 
 This version shows uniqueness in a half-open interval `Ico a b`, where `a` is the initial time. -/
@@ -263,7 +263,7 @@ theorem ODE_solution_unique_of_mem_set_Ico {v : ℝ → E → E} {s : ℝ → Se
     (fun _ ht' ↦ hgs _ (hss ht')) ha ⟨ht.1, le_refl _⟩
 
 /-- There exists only one solution of an ODE \(\dot x=v(t, x)\) in a set `s ⊆ ℝ × E` with
-a given initial value provided that RHS is Lipschitz continuous in `x` within `s`,
+a given initial value provided that the RHS is Lipschitz continuous in `x` within `s`,
 and we consider only solutions included in `s`.
 
 This version shows uniqueness in an open interval `Ioo a b` that contains the initial time `t₀`. -/
@@ -309,7 +309,7 @@ theorem ODE_solution_unique_of_mem_set_Ioo {v : ℝ → E → E} {s : ℝ → Se
       (fun _ ht' => hgs _ <| (hss ht')) ha
 
 /-- There exists only one solution of an ODE \(\dot x=v(t, x)\) with
-a given initial value provided that RHS is Lipschitz continuous in `x`. -/
+a given initial value provided that the RHS is Lipschitz continuous in `x`. -/
 theorem ODE_solution_unique {v : ℝ → E → E} {K : ℝ≥0} (hv : ∀ t, LipschitzWith K (v t))
     {f g : ℝ → E} {a b : ℝ} (hf : ContinuousOn f (Icc a b))
     (hf' : ∀ t ∈ Ico a b, HasDerivWithinAt f (v t (f t)) (Ici t) t) (hg : ContinuousOn g (Icc a b))
