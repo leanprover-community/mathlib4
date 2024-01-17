@@ -166,14 +166,32 @@ open Pointwise
 topological group, then it is a Gδ set. This is nontrivial, as there is no second-countability or
 metrizability assumption in the statement, so a general compact closed set has no reason to be
 a countable intersection of open sets. -/
-lemma IsEverywherePos.IsGdelta {G : Type*} [Group G] [TopologicalSpace G] [TopologicalGroup G]
-    [MeasurableSpace G] [BorelSpace G] {μ : Measure G}
+@[to_additive]
+lemma IsEverywherePos.IsGdelta_of_isMulLeftInvariant
+    {G : Type*} [Group G] [TopologicalSpace G] [TopologicalGroup G]
+    [LocallyCompactSpace G] [MeasurableSpace G] [BorelSpace G] {μ : Measure G}
     [IsMulLeftInvariant μ] [IsFiniteMeasureOnCompacts μ] [InnerRegularCompactLTTop μ] {k : Set G}
     (h : μ.IsEverywherePos k) (hk : IsCompact k) (h'k : IsClosed k) :
     IsGδ k := by
+  /- Consider a decreasing sequence of open neighborhoods `Vₙ` of the identity, such that `g k \ k`
+  has small measure for all `g ∈ Vₙ`. We claim that `k = ⋂ Vₙ k`, which proves
+  the lemma as the sets on the right are open. The inclusion `⊆` is trivial.
+  Let us show the converse. Take `x` in the intersection. For each `n`, write `x = vₙ yₙ` with
+  `vₙ ∈ Vₙ` and `yₙ ∈ k`. Let `z ∈ k` be a cluster value of `yₙ`, by compactness. As multiplication
+  by `vₙ = x yₙ⁻¹ ∈ Vₙ` changes the measure of `k` by very little, passing to the limit we get
+  `μ (x z⁻¹ k \ k) = 0`. By invariance of the measure, `μ (k \ z x⁻¹ k) = 0`.
+  Assume `x ∉ k`. Then `z ∈ k \ z x⁻¹ k`. Even more, this set is a neighborhood of `z` within `k`
+  (as `z x⁻¹ k` is closed), and it has zero measure. This contradicts the fact that `k` has
+  positive measure around the point `z`. -/
   obtain ⟨u, -, u_mem, u_lim⟩ : ∃ u, StrictAnti u ∧ (∀ (n : ℕ), u n ∈ Ioo 0 1)
     ∧ Tendsto u atTop (𝓝 0) := exists_seq_strictAnti_tendsto' (zero_lt_one : (0 : ℝ≥0∞) < 1)
-  have : ∀ n, ∃ (W : Set G), IsOpen W ∧ 1 ∈ W ∧ ∀ g ∈ W * W, μ ((g • k) \ k) ≤ u n := sorry
+  have : ∀ n, ∃ (W : Set G), IsOpen W ∧ 1 ∈ W ∧ ∀ g ∈ W * W, μ ((g • k) \ k) ≤ u n := by
+    intro n
+    obtain ⟨V, V_mem, hV⟩ : ∃ V ∈ 𝓝 1, ∀ g ∈ V, μ (g • k \ k) < u n :=
+      exists_nhds_measure_smul_diff_lt (μ := μ) hk h'k (u_mem n).1.ne'
+    obtain ⟨W, W_open, hW1, hW⟩ : ∃ W, IsOpen W ∧ 1 ∈ W ∧ W * W ⊆ V :=
+      exists_open_nhds_one_mul_subset V_mem
+    exact ⟨W, W_open, hW1, fun g hg ↦ (hV g (hW hg)).le⟩
   choose W W_open mem_W hW using this
   let V n := ⋂ i ∈ Finset.range n, W i
   suffices ⋂ n, V n * k ⊆ k by
@@ -182,7 +200,7 @@ lemma IsEverywherePos.IsGdelta {G : Type*} [Group G] [TopologicalSpace G] [Topol
       exact subset_mul_right k (by simp [mem_W])
     rw [this]
     refine isGδ_iInter_of_isOpen (fun n ↦ ?_)
-    exact IsOpen.mul_right (isOpen_biInter_finset (fun i hi ↦ W_open i))
+    exact IsOpen.mul_right (isOpen_biInter_finset (fun i _hi ↦ W_open i))
   intro x hx
   choose v hv y hy hvy using mem_iInter.1 hx
   obtain ⟨z, zk, hz⟩ : ∃ z ∈ k, MapClusterPt z atTop y := hk.exists_mapClusterPt (by simp [hy])
@@ -197,7 +215,7 @@ lemma IsEverywherePos.IsGdelta {G : Type*} [Group G] [TopologicalSpace G] [Topol
     exact I J
   have B : μ (((x * z ⁻¹) • k) \ k) = 0 :=
     le_antisymm (ge_of_tendsto u_lim (eventually_of_forall A)) bot_le
-  have C : μ (k \ ((z * x⁻¹) • k)) = 0 := by
+  have C : μ (k \ (z * x⁻¹) • k) = 0 := by
     have : μ ((z * x⁻¹) • (((x * z ⁻¹) • k) \ k)) = 0 := by rwa [measure_smul]
     convert this using 2
     rw [smul_set_sdiff, smul_smul]
