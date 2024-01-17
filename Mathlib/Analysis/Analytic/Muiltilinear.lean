@@ -52,34 +52,58 @@ end MultilinearMap
 
 namespace ContinuousMultilinearMap
 
-noncomputable def domDomRestrict [DecidableEq ι] (f : ContinuousMultilinearMap 𝕜 E F)
+@[simps! toMultilinearMap apply]
+nonrec def domDomRestrict [DecidableEq ι] (f : ContinuousMultilinearMap 𝕜 E F)
     (P : ι → Prop) [DecidablePred P] [DecidableEq {a // P a}] (z : (i : {a : ι // ¬ P a}) → E i) :
-    ContinuousMultilinearMap 𝕜 (fun (i : {a // P a}) => E i) F :=
-  MultilinearMap.mkContinuous (f.toMultilinearMap.domDomRestrict P z)
-  (‖f‖ * (∏ i, ‖z i‖)) (MultilinearMap.domDomRestrict_bound f P z)
+    ContinuousMultilinearMap 𝕜 (fun (i : {a // P a}) => E i) F where
+  toMultilinearMap := f.domDomRestrict P z
+  cont := by
+    refine f.cont.comp (continuous_pi (fun i ↦ ?_))
+    by_cases h : P i
+    all_goals (simp only [h, dite_true, dite_false])
+    · exact continuous_apply _
+    · exact continuous_const
+
+noncomputable def fderiv [DecidableEq ι] (f : ContinuousMultilinearMap 𝕜 E F) (x : (i : ι) → E i) :
+    ((i : ι) → E i) →L[𝕜] F where
+  toLinearMap := f.toMultilinearMap.linearDeriv x
+  cont := by
+    refine Continuous.congr (f := fun y ↦ ∑ i : ι, f (Function.update x i (y i)))
+      (continuous_finset_sum univ (fun i _ ↦ f.cont.comp (continuous_pi (fun j ↦ ?_))))
+      (fun _ ↦ by simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom,
+        MultilinearMap.linearDeriv_apply, coe_coe])
+    by_cases h : j = i
+    · exact Continuous.congr (f := fun a ↦ a j) (continuous_apply _)
+        (fun _ ↦ by rw [h, Function.update_same])
+    · exact Continuous.congr (f := fun _ ↦ x j) continuous_const
+        (fun _ ↦ by rw [Function.update_noteq h])
 
 @[simp]
-lemma domDomRestrict_apply [DecidableEq ι] (f : ContinuousMultilinearMap 𝕜 E F)
-    (P : ι → Prop) [DecidablePred P] [DecidableEq {a // P a}]
-    (z : (i : {a : ι // ¬ P a}) → E i) (x : (i : {a // P a}) → E i) :
-  f.domDomRestrict P z x = f (fun i => if h : P i then x ⟨i, h⟩ else z ⟨i, h⟩) := rfl
+lemma fderiv_apply [DecidableEq ι] (f : ContinuousMultilinearMap 𝕜 E F) (x y : (i : ι) → E i) :
+    f.fderiv x y = ∑ i, f (Function.update x i (y i)) := by
+  unfold fderiv
+  simp only [coe_mk', MultilinearMap.linearDeriv_apply, coe_coe]
+
+example [DecidableEq ι] (f : ContinuousMultilinearMap 𝕜 E F) :
+    Continuous (fun x ↦ f.fderiv x) := by
+  refine Continuous.congr (f := fun x ↦ ∑ i : ι, ContinuousLinearMap.comp
+    (ContinuousMultilinearMap.toContinuousLinearMap f x i) (ContinuousLinearMap.proj i)) ?_ ?_
+  · refine continuous_finset_sum univ (fun i _ ↦ ?_)
+    refine Continuous.congr (f := (precomp F (proj i)) ∘ (fun x ↦ (f.toContinuousLinearMap x i)))
+      ?_ (fun _ ↦ by simp only [Function.comp_apply, precomp_toFun])
+    apply Continuous.comp
+    · exact ContinuousLinearMap.continuous _
+    ·
+  --  refine Continuous.congr (f := fun x ↦ (fun a ↦ f (Function.update x i a))) ?_ ?_
+  · intro x; ext y
+    simp only [coe_sum', coe_comp', Finset.sum_apply, Function.comp_apply, proj_apply, fderiv_apply]
+    congr
 
 lemma domDomRestrict_norm_le [DecidableEq ι] (f : ContinuousMultilinearMap 𝕜 E F)
     (P : ι → Prop) [DecidablePred P] [DecidableEq {a // P a}] (z : (i : {a : ι // ¬ P a}) → E i) :
     ‖f.domDomRestrict P z‖ ≤ ‖f‖ * (∏ i, ‖z i‖) :=
   ContinuousMultilinearMap.op_norm_le_bound _ (mul_nonneg (norm_nonneg _) (prod_nonneg
   (fun _ _ ↦ norm_nonneg _))) (MultilinearMap.domDomRestrict_bound f P z)
-
-noncomputable def fderiv [DecidableEq ι] (f : ContinuousMultilinearMap 𝕜 E F) (x : (i : ι) → E i) :
-    ((i : ι) → E i) →L[𝕜] F :=
-  LinearMap.mkContinuous (f.toMultilinearMap.linearDeriv x)
-  (‖f‖ * ∑ i, (∏ j in univ.erase i, ‖x j‖)) (fun y ↦ MultilinearMap.linearDeriv_bound f x y)
-
-@[simp]
-lemma fderiv_apply [DecidableEq ι] (f : ContinuousMultilinearMap 𝕜 E F) (x y : (i : ι) → E i) :
-    f.fderiv x y = ∑ i, f (Function.update x i (y i)) := by
-  simp only [fderiv, mem_univ, not_true_eq_false, LinearMap.mkContinuous_apply,
-    MultilinearMap.linearDeriv_apply, coe_coe]
 
 lemma fderiv_norm_le [DecidableEq ι] (f : ContinuousMultilinearMap 𝕜 E F) (x : (i : ι) → E i) :
     ‖f.fderiv x‖ ≤ ‖f‖ * ∑ i, (∏ j in univ.erase i, ‖x j‖) :=
