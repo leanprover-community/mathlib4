@@ -536,7 +536,7 @@ theorem bot_ne_top : (⊥ : Fin (n + 2)) ≠ ⊤ := _root_.bot_ne_top
 
 theorem bot_ne_top_iff_two_le [NeZero n] : (⊥ : Fin n) ≠ ⊤ ↔ 2 ≤ n := by
   rw [← nontrivial_iff_two_le]
-  exact ⟨fun h => ⟨⊥, ⊤, h⟩ , fun h => haveI := h ; _root_.bot_ne_top⟩
+  exact ⟨fun h => ⟨⊥, ⊤, h⟩ , fun h => haveI := h; _root_.bot_ne_top⟩
 
 #align fin.subsingleton_iff_le_one Fin.subsingleton_iff_le_one
 
