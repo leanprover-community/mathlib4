@@ -13,13 +13,13 @@ import Mathlib.Topology.Instances.TrivSqZeroExt
 /-!
 # Results on `TrivSqZeroExt R M` related to the norm
 
-This file contains results about `exp` for `TrivSqZeroExt`.
+This file contains results about `NormedSpace.exp` for `TrivSqZeroExt`.
 
 It also contains a definition of the $ℓ^1$ norm,
 which defines $\|r + m\| \coloneqq \|r\| + \|m\|$ to 
 This is not particularly canonical,
 but is sufficient to provide a `NormedAlgebra` instance,
-and thus enables `exp_add_of_commute` to be used on `TrivSqZeroExt`.
+and thus enables `NormedSpace.exp_add_of_commute` to be used on `TrivSqZeroExt`.
 If the non-canonicity becomes problematic in future,
 we could keep the collection of instances behind an `open scoped`.
 
