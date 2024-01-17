@@ -7,7 +7,9 @@
   "Mathlib.Algebra.Invertible.Defs",
   "Mathlib.AlgebraicGeometry.Restrict",
   "Mathlib.AlgebraicTopology.DoldKan.Notations",
+  "Mathlib.CategoryTheory.Category.Init",
   "Mathlib.Combinatorics.SimpleGraph.Init",
+  "Mathlib.Control.Traversable.Lemmas",
   "Mathlib.Data.Matrix.Notation",
   "Mathlib.Data.Matroid.Init",
   "Mathlib.Data.Rat.Init",
@@ -79,6 +81,7 @@
   "Mathlib.Tactic.Lift",
   "Mathlib.Tactic.LiftLets",
   "Mathlib.Tactic.Linarith",
+  "Mathlib.Tactic.Linarith.Frontend",
   "Mathlib.Tactic.Linarith.Lemmas",
   "Mathlib.Tactic.LinearCombination",
   "Mathlib.Tactic.Measurability",
@@ -190,8 +193,6 @@
   ["Lean.Elab.BuiltinNotation", "Lean.Elab.BuiltinTerm"],
   "Std.Classes.SetNotation": ["Std.Util.ExtendedBinder"],
   "Mathlib.Topology.Sheaves.Forget": ["Mathlib.Algebra.Category.Ring.Limits"],
-  "Mathlib.Topology.Gluing":
-  ["Mathlib.CategoryTheory.ConcreteCategory.Elementwise"],
   "Mathlib.Topology.Category.UniformSpace":
   ["Mathlib.CategoryTheory.Monad.Limits"],
   "Mathlib.Topology.Algebra.Nonarchimedean.AdicTopology":
@@ -203,7 +204,6 @@
   "Mathlib.Tactic.TermCongr": ["Mathlib.Logic.Basic"],
   "Mathlib.Tactic.Tauto": ["Mathlib.Logic.Basic"],
   "Mathlib.Tactic.TFAE": ["Mathlib.Data.List.TFAE"],
-  "Mathlib.Tactic.Rewrites": ["Mathlib.Lean.Meta"],
   "Mathlib.Tactic.ReduceModChar":
   ["Mathlib.Data.ZMod.Basic", "Mathlib.RingTheory.Polynomial.Basic"],
   "Mathlib.Tactic.ProxyType": ["Mathlib.Logic.Equiv.Defs"],
@@ -223,7 +223,6 @@
   "Mathlib.Tactic.Group": ["Mathlib.Algebra.Group.Commutator"],
   "Mathlib.Tactic.GCongr.Core": ["Mathlib.Init.Order.Defs"],
   "Mathlib.Tactic.FinCases": ["Mathlib.Data.Fintype.Basic"],
-  "Mathlib.Tactic.DeriveTraversable": ["Mathlib.Control.Traversable.Lemmas"],
   "Mathlib.Tactic.DeriveFintype":
   ["Mathlib.Data.Fintype.Basic",
    "Mathlib.Data.Fintype.Sigma",
@@ -237,15 +236,11 @@
   "Mathlib.Tactic.Basic": ["Std"],
   "Mathlib.Tactic.Attr.Register": ["Lean.Meta.Tactic.Simp.SimpTheorems"],
   "Mathlib.RingTheory.PolynomialAlgebra": ["Mathlib.Data.Matrix.DMatrix"],
-  "Mathlib.RingTheory.Polynomial.Cyclotomic.Basic":
-  ["Mathlib.FieldTheory.Separable"],
   "Mathlib.RingTheory.MvPolynomial.Homogeneous":
   ["Mathlib.Algebra.DirectSum.Internal"],
   "Mathlib.Probability.Notation":
   ["Mathlib.MeasureTheory.Decomposition.Lebesgue",
    "Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic"],
-  "Mathlib.Probability.Distributions.Exponential":
-  ["Mathlib.Analysis.SpecialFunctions.Gaussian"],
   "Mathlib.Order.Filter.Basic": ["Mathlib.Control.Traversable.Instances"],
   "Mathlib.MeasureTheory.Measure.Regular":
   ["Mathlib.Topology.Metrizable.Urysohn"],
@@ -255,42 +250,26 @@
   "Mathlib.LinearAlgebra.AffineSpace.Basic": ["Mathlib.Algebra.AddTorsor"],
   "Mathlib.Lean.Expr.ExtraRecognizers": ["Mathlib.Data.Set.Basic"],
   "Mathlib.Init.Data.Nat.GCD": ["Std.Data.Nat.Gcd"],
-  "Mathlib.Init.Data.Nat.Bitwise": ["Mathlib.Init.Data.Bool.Lemmas"],
   "Mathlib.Init.Core": ["Std.Classes.Dvd"],
   "Mathlib.Geometry.Manifold.Sheaf.Smooth":
   ["Mathlib.CategoryTheory.Sites.Whiskering"],
   "Mathlib.Data.Vector.Basic": ["Mathlib.Control.Applicative"],
-  "Mathlib.Data.Real.Pi.Leibniz":
-  ["Mathlib.Analysis.SpecialFunctions.Pow.Continuity"],
   "Mathlib.Data.Rat.Init": ["Std.Data.Rat.Basic"],
-  "Mathlib.Data.Nat.Sqrt": ["Mathlib.Data.Nat.Size"],
-  "Mathlib.Data.Nat.PSub": ["Mathlib.Data.Option.Basic"],
-  "Mathlib.Data.Multiset.Range": ["Mathlib.Data.List.Range"],
   "Mathlib.Data.Multiset.Bind": ["Mathlib.GroupTheory.GroupAction.Defs"],
   "Mathlib.Data.List.EditDistance.Defs": ["Mathlib.Data.Nat.Basic"],
   "Mathlib.Data.List.Basic": ["Mathlib.Init.Core"],
-  "Mathlib.Data.Finset.PiAntidiagonal": ["Mathlib.Data.Finsupp.Interval"],
   "Mathlib.Control.Traversable.Instances": ["Mathlib.Control.Applicative"],
-  "Mathlib.Control.Traversable.Equiv": ["Mathlib.Control.Traversable.Lemmas"],
   "Mathlib.Control.Monad.Basic": ["Mathlib.Init.Control.Lawful"],
   "Mathlib.Control.Basic": ["Mathlib.Init.Function"],
-  "Mathlib.Combinatorics.SimpleGraph.ConcreteColorings":
-  ["Mathlib.Data.ZMod.Basic"],
   "Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits":
   ["Mathlib.CategoryTheory.Limits.Shapes.Pullbacks"],
-  "Mathlib.CategoryTheory.Category.Basic":
-  ["Mathlib.CategoryTheory.Category.Init"],
   "Mathlib.Analysis.Complex.UpperHalfPlane.Basic":
   ["Mathlib.Data.Fintype.Parity"],
   "Mathlib.AlgebraicTopology.DoldKan.Notations":
   ["Mathlib.AlgebraicTopology.AlternatingFaceMapComplex"],
-  "Mathlib.Algebra.Tropical.Basic": ["Mathlib.Algebra.Order.Hom.Basic"],
   "Mathlib.Algebra.Ring.CentroidHom": ["Mathlib.Algebra.Algebra.Basic"],
-  "Mathlib.Algebra.QuadraticDiscriminant": ["Mathlib.Tactic.Linarith.Frontend"],
   "Mathlib.Algebra.Order.Ring.Defs":
   ["Mathlib.Algebra.Order.Monoid.WithZero.Defs"],
-  "Mathlib.Algebra.Order.Monoid.ToMulBot": ["Mathlib.Algebra.Order.WithZero"],
-  "Mathlib.Algebra.Order.Kleene": ["Mathlib.Algebra.Order.Ring.Canonical"],
   "Mathlib.Algebra.Module.LinearMap": ["Mathlib.Algebra.Star.Basic"],
   "Mathlib.Algebra.Homology.ModuleCat": ["Mathlib.Algebra.Homology.Homotopy"],
   "Mathlib.Algebra.Category.Ring.Basic":

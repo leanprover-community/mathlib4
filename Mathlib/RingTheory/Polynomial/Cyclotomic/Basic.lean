@@ -9,7 +9,6 @@ import Mathlib.RingTheory.RootsOfUnity.Complex
 import Mathlib.Data.Polynomial.Lifts
 import Mathlib.Data.Polynomial.Splits
 import Mathlib.FieldTheory.RatFunc
-import Mathlib.FieldTheory.Separable
 import Mathlib.NumberTheory.ArithmeticFunction
 import Mathlib.RingTheory.RootsOfUnity.Basic
 

@@ -6,7 +6,6 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 import Mathlib.Init.Data.List.Instances
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.List.Defs
-import Mathlib.Init.Core
 import Std.Data.List.Lemmas
 import Mathlib.Tactic.Common
 import Mathlib.Logic.Basic

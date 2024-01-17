@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Benjamin Davidson
 -/
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.ArctanDeriv
-import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 
 #align_import data.real.pi.leibniz from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
