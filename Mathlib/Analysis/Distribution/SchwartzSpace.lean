@@ -92,10 +92,10 @@ open SchwartzSpace
 -- porting note: removed
 -- instance : Coe 𝓢(E, F) (E → F) := ⟨toFun⟩
 
-instance instFunLike : DFunLike 𝓢(E, F) E fun _ => F where
+instance instDFunLike : DFunLike 𝓢(E, F) E fun _ => F where
   coe f := f.toFun
   coe_injective' f g h := by cases f; cases g; congr
-#align schwartz_map.fun_like SchwartzMap.instFunLike
+#align schwartz_map.fun_like SchwartzMap.instDFunLike
 
 /-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`. -/
 instance instCoeFun : CoeFun 𝓢(E, F) fun _ => E → F :=

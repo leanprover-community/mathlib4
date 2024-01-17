@@ -358,7 +358,7 @@ theorem repr_injective :
 
 -- Porting note: `CoeFun` → `DFunLike`
 /-- `b i` is the `i`th basis vector. -/
-instance instFunLike : DFunLike (OrthonormalBasis ι 𝕜 E) ι fun _ => E where
+instance instDFunLike : DFunLike (OrthonormalBasis ι 𝕜 E) ι fun _ => E where
   coe b i := by classical exact b.repr.symm (EuclideanSpace.single i (1 : 𝕜))
   coe_injective' b b' h := repr_injective <| LinearIsometryEquiv.toLinearEquiv_injective <|
     LinearEquiv.symm_bijective.injective <| LinearEquiv.toLinearMap_injective <| by

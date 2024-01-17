@@ -219,7 +219,7 @@ instance semilinearMapClass : SemilinearMapClass (M →ₛₗ[σ] M₃) σ M M�
 #noalign LinearMap.has_coe_to_fun
 
 -- Porting note: adding this instance prevents a timeout in `ext_ring_op`
-instance instFunLike {σ : R →+* S} : DFunLike (M →ₛₗ[σ] M₃) M (λ _ ↦ M₃) :=
+instance instDFunLike {σ : R →+* S} : DFunLike (M →ₛₗ[σ] M₃) M (λ _ ↦ M₃) :=
   { AddHomClass.toDFunLike with }
 
 /-- The `DistribMulActionHom` underlying a `LinearMap`. -/
