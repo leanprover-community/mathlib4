@@ -91,7 +91,7 @@ def gammaMoebiusFun (N : ℕ) (a b : ℤ) (γ : Gamma N) (f : gammaSet N a b) : 
   have hγ := (Gamma_mem N _).1 γ.2
   rw [hγ.1, hγ.2.2.1, hγ.2.2.2, hγ.2.1, f.2.1, f.2.2.1]
   simp only [mul_one, mul_zero, add_zero, zero_add, true_and]
-  have := Matrix.SpecialLinearGroup.SL2_gcd (f.1 0) (f.1 1) f.2.2.2 γ
+  have := Matrix.SpecialLinearGroup.SL2_gcd f.2.2.2 γ
   convert this
   repeat{
   simp_rw [Matrix.vecMul, Matrix.dotProduct, Matrix.vecCons]
