@@ -462,51 +462,49 @@ theorem det_basisOfFractionalIdeal_eq_norm
     (e : (ChooseBasisIndex ℤ (𝓞 K)) ≃ (ChooseBasisIndex ℤ I)) :
     |Basis.det (latticeBasis K) ((mixedEmbedding K ∘ (basisOfFractionalIdeal K I) ∘ e))| =
       FractionalIdeal.absNorm I.1 := by
-  sorry
-  -- have : Basis.det (latticeBasis K) ((mixedEmbedding K ∘ (idealBasis K I) ∘ e)) =
-  --     (algebraMap ℚ ℝ) ((Basis.det (integralBasis K)) ((idealBasis K I) ∘ e)) := by
-  --   rw [Basis.det_apply, Basis.det_apply, RingHom.map_det]
-  --   congr
-  --   ext i j
-  --   simp_rw [RingHom.mapMatrix_apply, Matrix.map_apply, Basis.toMatrix_apply, Function.comp_apply]
-  --   exact latticeBasis_repr_apply K _ i
-  -- rw [this, eq_ratCast, ← Rat.cast_abs, ← Equiv.symm_symm e, ← Basis.coe_reindex,
-  --   det_idealBasis_eq_ideal_absNorm K I e, Rat.cast_coe_nat]
+  suffices Basis.det (latticeBasis K) ((mixedEmbedding K ∘ (basisOfFractionalIdeal K I) ∘ e)) =
+      (algebraMap ℚ ℝ) ((Basis.det (integralBasis K)) ((basisOfFractionalIdeal K I) ∘ e)) by
+    rw [this, eq_ratCast, ← Rat.cast_abs, ← Equiv.symm_symm e, ← Basis.coe_reindex,
+      det_basisOfFractionalIdeal_eq_absNorm K I e]
+  rw [Basis.det_apply, Basis.det_apply, RingHom.map_det]
+  congr
+  ext i j
+  simp_rw [RingHom.mapMatrix_apply, Matrix.map_apply, Basis.toMatrix_apply, Function.comp_apply]
+  exact latticeBasis_repr_apply K _ i
 
-/-- A `ℝ`-basis of `ℝ^r₁ × ℂ^r₂` that is also a `ℤ`-basis of the image of the ideal `I`. -/
+/-- A `ℝ`-basis of `ℝ^r₁ × ℂ^r₂` that is also a `ℤ`-basis of the image of the fractional
+ideal `I`. -/
 def fractionalIdealLatticeBasis :
     Basis (ChooseBasisIndex ℤ I) ℝ (E K) := by
-  sorry
-  -- let e : (ChooseBasisIndex ℤ (𝓞 K)) ≃ (ChooseBasisIndex ℤ I) := by
-  --   refine Fintype.equivOfCardEq ?_
-  --   rw [← finrank_eq_card_chooseBasisIndex, ← finrank_eq_card_chooseBasisIndex, ideal_rank_eq]
-  -- refine Basis.reindex ?_ e
-  -- suffices IsUnit ((latticeBasis K).det ((mixedEmbedding K) ∘ (idealBasis K I) ∘ e)) by
-  --   rw [← is_basis_iff_det] at this
-  --   exact Basis.mk this.1 (by rw [this.2])
-  -- rw [isUnit_iff_ne_zero, ne_eq, ← abs_eq_zero.not, det_idealBasis_eq_norm, Nat.cast_eq_zero,
-  --   ← ne_eq]
-  -- exact ideal_absNorm_ne_zero K I
+  let e : (ChooseBasisIndex ℤ (𝓞 K)) ≃ (ChooseBasisIndex ℤ I) := by
+    refine Fintype.equivOfCardEq ?_
+    rw [← finrank_eq_card_chooseBasisIndex, ← finrank_eq_card_chooseBasisIndex,
+      fractionalIdeal_rank]
+  refine Basis.reindex ?_ e
+  suffices IsUnit ((latticeBasis K).det ((mixedEmbedding K) ∘ (basisOfFractionalIdeal K I) ∘ e)) by
+    rw [← is_basis_iff_det] at this
+    exact Basis.mk this.1 (by rw [this.2])
+  rw [isUnit_iff_ne_zero, ne_eq, ← abs_eq_zero.not, det_basisOfFractionalIdeal_eq_norm,
+    Rat.cast_eq_zero, FractionalIdeal.absNorm_eq_zero_iff]
+  exact Units.ne_zero I
 
 @[simp]
 theorem fractionalIdealLatticeBasis_apply (i : ChooseBasisIndex ℤ I) :
     fractionalIdealLatticeBasis K I i = (mixedEmbedding K) (basisOfFractionalIdeal K I i) := by
-  sorry
---  simp only [idealLatticeBasis, Basis.coe_reindex, Basis.coe_mk, Function.comp_apply,
---    Equiv.apply_symm_apply]
+  simp only [fractionalIdealLatticeBasis, Basis.coe_reindex, Basis.coe_mk, Function.comp_apply,
+    Equiv.apply_symm_apply]
 
 theorem mem_span_fractionalIdealLatticeBasis (x : (E K)) :
     x ∈ Submodule.span ℤ (Set.range (fractionalIdealLatticeBasis K I)) ↔
       x ∈ mixedEmbedding K '' I := by
-  sorry
-  -- rw [show Set.range (idealLatticeBasis K I) =
-  --     (mixedEmbedding K).toIntAlgHom.toLinearMap '' (Set.range (idealBasis K I)) by
-  --   rw [← Set.range_comp]
-  --   exact congr_arg Set.range (funext (fun i ↦ idealLatticeBasis_apply K I i))]
-  -- rw [← Submodule.map_span, ← SetLike.mem_coe, Submodule.map_coe]
-  -- rw [show Submodule.span ℤ (Set.range (idealBasis K I)) = algebraMap (𝓞 K) K '' (I : Ideal (𝓞 K))
-  --   by ext; exact mem_span_idealBasis K I]
-  -- rfl
+  rw [show Set.range (fractionalIdealLatticeBasis K I) =
+        (mixedEmbedding K).toIntAlgHom.toLinearMap '' (Set.range (basisOfFractionalIdeal K I)) by
+      rw [← Set.range_comp]
+      exact congr_arg Set.range (funext (fun i ↦ fractionalIdealLatticeBasis_apply K I i))]
+  rw [← Submodule.map_span, ← SetLike.mem_coe, Submodule.map_coe]
+  rw [show Submodule.span ℤ (Set.range (basisOfFractionalIdeal K I)) = (I : Set K) by
+        ext; erw [mem_span_basisOfFractionalIdeal]]
+  rfl
 
 end integerLattice
 
@@ -824,18 +822,19 @@ variable [NumberField K] (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ)
 noncomputable def minkowskiBound : ℝ≥0∞ :=
   volume (fundamentalDomain (fractionalIdealLatticeBasis K I)) * (2 : ℝ≥0∞) ^ (finrank ℝ (E K))
 
-theorem volume_fundamentalDomain_idealLatticeBasis_eq :
+theorem volume_fundamentalDomain_fractionalIdealLatticeBasis :
     volume (fundamentalDomain (fractionalIdealLatticeBasis K I)) =
-      ‖FractionalIdeal.absNorm I.1‖₊ *  volume (fundamentalDomain (latticeBasis K)) := by
-  sorry
-  -- let e : (Module.Free.ChooseBasisIndex ℤ I) ≃ (Module.Free.ChooseBasisIndex ℤ (𝓞 K)) := by
-  --   refine Fintype.equivOfCardEq ?_
-  --   rw [← finrank_eq_card_chooseBasisIndex, ← finrank_eq_card_chooseBasisIndex, ideal_rank_eq]
-  -- rw [← fundamentalDomain_reindex (idealLatticeBasis K I) e,
-  --   measure_fundamentalDomain ((idealLatticeBasis K I).reindex e), show
-  --   (Basis.reindex (idealLatticeBasis K I) e) = (mixedEmbedding K) ∘ (idealBasis K I) ∘
-  --   e.symm by ext1; simp only [Basis.coe_reindex, Function.comp_apply, idealLatticeBasis_apply],
-  --   det_idealBasis_eq_norm, ENNReal.ofReal_coe_nat]
+      .ofReal (FractionalIdeal.absNorm I.1) *  volume (fundamentalDomain (latticeBasis K)) := by
+  let e : (Module.Free.ChooseBasisIndex ℤ I) ≃ (Module.Free.ChooseBasisIndex ℤ (𝓞 K)) := by
+    refine Fintype.equivOfCardEq ?_
+    rw [← finrank_eq_card_chooseBasisIndex, ← finrank_eq_card_chooseBasisIndex,
+      fractionalIdeal_rank]
+  rw [← fundamentalDomain_reindex (fractionalIdealLatticeBasis K I) e,
+    measure_fundamentalDomain ((fractionalIdealLatticeBasis K I).reindex e)]
+  rw [show (fractionalIdealLatticeBasis K I).reindex e = (mixedEmbedding K) ∘
+      (basisOfFractionalIdeal K I) ∘ e.symm by
+    ext1; simp only [Basis.coe_reindex, Function.comp_apply, fractionalIdealLatticeBasis_apply]]
+  rw [mixedEmbedding.det_basisOfFractionalIdeal_eq_norm]
 
 theorem minkowskiBound_lt_top : minkowskiBound K I < ⊤ := by
   refine ENNReal.mul_lt_top ?_ ?_
@@ -855,78 +854,67 @@ points `x` such that `‖x w‖ < f w` for all infinite places `w` (see `convexB
 the computation of this volume), then there exists a nonzero algebraic number `a` in `I` such
 that `w a < f w` for all infinite places `w`. -/
 theorem exists_ne_zero_mem_ideal_lt (h : minkowskiBound K I < volume (convexBodyLT K f)) :
-    ∃ a ∈ I.1, a ≠ 0 ∧ ∀ w : InfinitePlace K, w a < f w := by
-  sorry
-  -- have h_fund := Zspan.isAddFundamentalDomain (idealLatticeBasis K I) volume
-  -- have : Countable (span ℤ (Set.range (idealLatticeBasis K I))).toAddSubgroup := by
-  --   change Countable (span ℤ (Set.range (idealLatticeBasis K I)) : Set (E K))
-  --   infer_instance
-  -- obtain ⟨⟨x, hx⟩, h_nzr, h_mem⟩ := exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure
-  --   h_fund (convexBodyLT_symmetric K f) (convexBodyLT_convex K f) h
-  -- rw [mem_toAddSubgroup, mem_span_idealLatticeBasis] at hx
-  -- obtain ⟨_, ⟨a, ha, rfl⟩, rfl⟩ := hx
-  -- refine ⟨a, ha, ?_, (convexBodyLT_mem K f).mp h_mem⟩
-  -- rw [ne_eq, AddSubgroup.mk_eq_zero_iff, map_eq_zero, ← ne_eq] at h_nzr
-  -- exact Subtype.ne_of_val_ne h_nzr
+    ∃ a ∈ (I : FractionalIdeal (𝓞 K)⁰ K), a ≠ 0 ∧ ∀ w : InfinitePlace K, w a < f w := by
+  have h_fund := Zspan.isAddFundamentalDomain (fractionalIdealLatticeBasis K I) volume
+  have : Countable (span ℤ (Set.range (fractionalIdealLatticeBasis K I))).toAddSubgroup := by
+    change Countable (span ℤ (Set.range (fractionalIdealLatticeBasis K I)) : Set (E K))
+    infer_instance
+  obtain ⟨⟨x, hx⟩, h_nz, h_mem⟩ := exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure
+    h_fund (convexBodyLT_symmetric K f) (convexBodyLT_convex K f) h
+  rw [mem_toAddSubgroup, mem_span_fractionalIdealLatticeBasis] at hx
+  obtain ⟨a, ha, rfl⟩ := hx
+  exact ⟨a, ha, by simpa using h_nz, (convexBodyLT_mem K f).mp h_mem⟩
 
 /-- A version of `exists_ne_zero_mem_ideal_lt` for the ring of integers of `K`. -/
 theorem exists_ne_zero_mem_ringOfIntegers_lt (h : minkowskiBound K 1 < volume (convexBodyLT K f)) :
     ∃ (a : 𝓞 K), a ≠ 0 ∧ ∀ w : InfinitePlace K, w a < f w := by
   obtain ⟨_, h_mem, h_nz, h_bd⟩ := exists_ne_zero_mem_ideal_lt K 1 h
-  rw [Units.val_one] at h_mem
-  rw [FractionalIdeal.mem_one_iff] at h_mem
-  obtain ⟨a, rfl⟩ := h_mem
-  refine ⟨a, ?_, fun w ↦ h_bd w⟩
-  · sorry
+  obtain ⟨a, rfl⟩ := (FractionalIdeal.mem_one_iff _).mp h_mem
+  exact ⟨a, ne_zero_of_map h_nz, fun w ↦ h_bd w⟩
 
 theorem exists_ne_zero_mem_ideal_of_norm_le {B : ℝ}
     (h : (minkowskiBound K I) ≤ volume (convexBodySum K B)) :
-    ∃ a ∈ I.1, a ≠ 0 ∧
+    ∃ a ∈ (I : FractionalIdeal (𝓞 K)⁰ K), a ≠ 0 ∧
       |Algebra.norm ℚ (a:K)| ≤ (B / (finrank ℚ K)) ^ (finrank ℚ K) := by
-  sorry
-  -- have hB : 0 ≤ B := by
-  --   contrapose! h
-  --   rw [convexBodySum_volume_eq_zero_of_le_zero K (le_of_lt h)]
-  --   exact minkowskiBound_pos K I
-  -- -- Some inequalities that will be useful later on
-  -- have h1 : 0 < (finrank ℚ K : ℝ)⁻¹ := inv_pos.mpr (Nat.cast_pos.mpr finrank_pos)
-  -- have h2 : 0 ≤ B / (finrank ℚ K) := div_nonneg hB (Nat.cast_nonneg _)
-  -- have h_fund := Zspan.isAddFundamentalDomain (idealLatticeBasis K I) volume
-  -- have : Countable (span ℤ (Set.range (idealLatticeBasis K I))).toAddSubgroup := by
-  --   change Countable (span ℤ (Set.range (idealLatticeBasis K I)): Set (E K))
-  --   infer_instance
-  -- have : DiscreteTopology (span ℤ (Set.range (idealLatticeBasis K I))).toAddSubgroup := by
-  --   change DiscreteTopology (span ℤ (Set.range (idealLatticeBasis K I)): Set (E K))
-  --   infer_instance
-  -- obtain ⟨⟨x, hx⟩, h_nzr, h_mem⟩ := exists_ne_zero_mem_lattice_of_measure_mul_two_pow_le_measure
-  --     h_fund (fun _ ↦ convexBodySum_symmetric K B) (convexBodySum_convex K B)
-  --     (convexBodySum_compact K B) h
-  -- rw [mem_toAddSubgroup, mem_span_idealLatticeBasis] at hx
-  -- obtain ⟨_, ⟨a, ha, rfl⟩, rfl⟩ := hx
-  -- refine ⟨a, ha, ?_, ?_⟩
-  -- · rw [ne_eq, AddSubgroup.mk_eq_zero_iff, map_eq_zero, ← ne_eq] at h_nzr
-  --   exact Subtype.ne_of_val_ne h_nzr
-  -- · rw [← rpow_nat_cast, ← rpow_le_rpow_iff (by simp only [Rat.cast_abs, abs_nonneg])
-  --     (rpow_nonneg h2 _) h1, ← rpow_mul h2,  mul_inv_cancel (Nat.cast_ne_zero.mpr
-  --     (ne_of_gt finrank_pos)), rpow_one, le_div_iff' (Nat.cast_pos.mpr finrank_pos)]
-  --   refine le_trans ?_ ((convexBodySum_mem K B).mp h_mem)
-  --   rw [← le_div_iff' (Nat.cast_pos.mpr finrank_pos), ← sum_mult_eq, Nat.cast_sum]
-  --   refine le_trans ?_ (geom_mean_le_arith_mean Finset.univ _ _ (fun _ _ => Nat.cast_nonneg _)
-  --     ?_ (fun _ _ => AbsoluteValue.nonneg _ _))
-  --   · simp_rw [← prod_eq_abs_norm, rpow_nat_cast]
-  --     exact le_of_eq rfl
-  --   · rw [← Nat.cast_sum, sum_mult_eq, Nat.cast_pos]
-  --     exact finrank_pos
+  have hB : 0 ≤ B := by
+    contrapose! h
+    rw [convexBodySum_volume_eq_zero_of_le_zero K (le_of_lt h)]
+    exact minkowskiBound_pos K I
+  -- Some inequalities that will be useful later on
+  have h1 : 0 < (finrank ℚ K : ℝ)⁻¹ := inv_pos.mpr (Nat.cast_pos.mpr finrank_pos)
+  have h2 : 0 ≤ B / (finrank ℚ K) := div_nonneg hB (Nat.cast_nonneg _)
+  have h_fund := Zspan.isAddFundamentalDomain (fractionalIdealLatticeBasis K I) volume
+  have : Countable (span ℤ (Set.range (fractionalIdealLatticeBasis K I))).toAddSubgroup := by
+    change Countable (span ℤ (Set.range (fractionalIdealLatticeBasis K I)): Set (E K))
+    infer_instance
+  have : DiscreteTopology
+      (span ℤ (Set.range (fractionalIdealLatticeBasis K I))).toAddSubgroup := by
+    change DiscreteTopology (span ℤ (Set.range (fractionalIdealLatticeBasis K I)): Set (E K))
+    infer_instance
+  obtain ⟨⟨x, hx⟩, h_nz, h_mem⟩ := exists_ne_zero_mem_lattice_of_measure_mul_two_pow_le_measure
+      h_fund (fun _ ↦ convexBodySum_symmetric K B) (convexBodySum_convex K B)
+      (convexBodySum_compact K B) h
+  rw [mem_toAddSubgroup, mem_span_fractionalIdealLatticeBasis] at hx
+  obtain ⟨a, ha, rfl⟩ := hx
+  refine ⟨a, ha, by simpa using h_nz, ?_⟩
+  rw [← rpow_nat_cast, ← rpow_le_rpow_iff (by simp only [Rat.cast_abs, abs_nonneg])
+      (rpow_nonneg h2 _) h1, ← rpow_mul h2,  mul_inv_cancel (Nat.cast_ne_zero.mpr
+      (ne_of_gt finrank_pos)), rpow_one, le_div_iff' (Nat.cast_pos.mpr finrank_pos)]
+  refine le_trans ?_ ((convexBodySum_mem K B).mp h_mem)
+  rw [← le_div_iff' (Nat.cast_pos.mpr finrank_pos), ← sum_mult_eq, Nat.cast_sum]
+  refine le_trans ?_ (geom_mean_le_arith_mean Finset.univ _ _ (fun _ _ => Nat.cast_nonneg _)
+    ?_ (fun _ _ => AbsoluteValue.nonneg _ _))
+  · simp_rw [← prod_eq_abs_norm, rpow_nat_cast]
+    exact le_of_eq rfl
+  · rw [← Nat.cast_sum, sum_mult_eq, Nat.cast_pos]
+    exact finrank_pos
 
 theorem exists_ne_zero_mem_ringOfIntegers_of_norm_le {B : ℝ}
     (h : (minkowskiBound K 1) ≤ volume (convexBodySum K B)) :
     ∃ (a : 𝓞 K), a ≠ 0 ∧ |Algebra.norm ℚ (a:K)| ≤ (B / (finrank ℚ K)) ^ (finrank ℚ K) := by
   obtain ⟨_, h_mem, h_nz, h_bd⟩ := exists_ne_zero_mem_ideal_of_norm_le K 1 h
-  rw [Units.val_one] at h_mem
-  rw [FractionalIdeal.mem_one_iff] at h_mem
-  obtain ⟨a, rfl⟩ := h_mem
-  refine ⟨a, ?_, h_bd⟩
-  · sorry
+  obtain ⟨a, rfl⟩ := (FractionalIdeal.mem_one_iff _).mp h_mem
+  exact ⟨a, ne_zero_of_map h_nz, h_bd⟩
 
 end minkowski
 
