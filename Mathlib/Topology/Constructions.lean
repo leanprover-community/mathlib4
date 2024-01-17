@@ -331,14 +331,13 @@ theorem continuous_fst : Continuous (@Prod.fst α β) :=
 #align continuous_fst continuous_fst
 
 /-- Postcomposing `f` with `Prod.fst` is continuous -/
-@[fprop]
 theorem Continuous.fst {f : α → β × γ} (hf : Continuous f) : Continuous fun a : α => (f a).1 :=
   continuous_fst.comp hf
 #align continuous.fst Continuous.fst
 
 /-- Precomposing `f` with `Prod.fst` is continuous -/
-theorem Continuous.fst' {f : α → γ} (hf : Continuous f) : Continuous fun x : α × β => f x.fst := by fprop
-  -- hf.comp continuous_fst
+theorem Continuous.fst' {f : α → γ} (hf : Continuous f) : Continuous fun x : α × β => f x.fst :=
+  hf.comp continuous_fst
 #align continuous.fst' Continuous.fst'
 
 theorem continuousAt_fst {p : α × β} : ContinuousAt Prod.fst p :=
@@ -369,14 +368,13 @@ theorem continuous_snd : Continuous (@Prod.snd α β) :=
 #align continuous_snd continuous_snd
 
 /-- Postcomposing `f` with `Prod.snd` is continuous -/
-@[fprop]
 theorem Continuous.snd {f : α → β × γ} (hf : Continuous f) : Continuous fun a : α => (f a).2 :=
   continuous_snd.comp hf
 #align continuous.snd Continuous.snd
 
 /-- Precomposing `f` with `Prod.snd` is continuous -/
-theorem Continuous.snd' {f : β → γ} (hf : Continuous f) : Continuous fun x : α × β => f x.snd := by fprop
-  -- hf.comp continuous_snd
+theorem Continuous.snd' {f : β → γ} (hf : Continuous f) : Continuous fun x : α × β => f x.snd :=
+  hf.comp continuous_snd
 #align continuous.snd' Continuous.snd'
 
 theorem continuousAt_snd {p : α × β} : ContinuousAt Prod.snd p :=
@@ -401,20 +399,20 @@ theorem ContinuousAt.snd'' {f : β → γ} {x : α × β} (hf : ContinuousAt f x
   hf.comp continuousAt_snd
 #align continuous_at.snd'' ContinuousAt.snd''
 
-@[continuity, fprop]
+@[continuity]
 theorem Continuous.prod_mk {f : γ → α} {g : γ → β} (hf : Continuous f) (hg : Continuous g) :
     Continuous fun x => (f x, g x) :=
   continuous_prod_mk.2 ⟨hf, hg⟩
 #align continuous.prod_mk Continuous.prod_mk
 
-@[continuity, fprop]
+@[continuity]
 theorem Continuous.Prod.mk (a : α) : Continuous fun b : β => (a, b) :=
   continuous_const.prod_mk continuous_id
 #align continuous.prod.mk Continuous.Prod.mk
 
 @[continuity]
-theorem Continuous.Prod.mk_left (b : β) : Continuous fun a : α => (a, b) := by fprop
-  -- continuous_id.prod_mk continuous_const
+theorem Continuous.Prod.mk_left (b : β) : Continuous fun a : α => (a, b) :=
+  continuous_id.prod_mk continuous_const
 #align continuous.prod.mk_left Continuous.Prod.mk_left
 
 /-- If `f x y` is continuous in `x` for all `y ∈ s`,
@@ -424,26 +422,26 @@ lemma IsClosed.setOf_mapsTo {f : α → β → γ} {s : Set β} {t : Set γ} (ht
   simpa only [MapsTo, setOf_forall] using isClosed_biInter fun y hy ↦ ht.preimage (hf y hy)
 
 theorem Continuous.comp₂ {g : α × β → γ} (hg : Continuous g) {e : δ → α} (he : Continuous e)
-    {f : δ → β} (hf : Continuous f) : Continuous fun x => g (e x, f x) := by fprop
-  -- hg.comp <| he.prod_mk hf
+    {f : δ → β} (hf : Continuous f) : Continuous fun x => g (e x, f x) :=
+  hg.comp <| he.prod_mk hf
 #align continuous.comp₂ Continuous.comp₂
 
 theorem Continuous.comp₃ {g : α × β × γ → ε} (hg : Continuous g) {e : δ → α} (he : Continuous e)
     {f : δ → β} (hf : Continuous f) {k : δ → γ} (hk : Continuous k) :
-    Continuous fun x => g (e x, f x, k x) := by fprop
-  -- hg.comp₂ he <| hf.prod_mk hk
+    Continuous fun x => g (e x, f x, k x) :=
+  hg.comp₂ he <| hf.prod_mk hk
 #align continuous.comp₃ Continuous.comp₃
 
 theorem Continuous.comp₄ {g : α × β × γ × ζ → ε} (hg : Continuous g) {e : δ → α} (he : Continuous e)
     {f : δ → β} (hf : Continuous f) {k : δ → γ} (hk : Continuous k) {l : δ → ζ}
-    (hl : Continuous l) : Continuous fun x => g (e x, f x, k x, l x) := by fprop
-  -- hg.comp₃ he hf <| hk.prod_mk hl
+    (hl : Continuous l) : Continuous fun x => g (e x, f x, k x, l x) :=
+  hg.comp₃ he hf <| hk.prod_mk hl
 #align continuous.comp₄ Continuous.comp₄
 
 @[continuity]
 theorem Continuous.prod_map {f : γ → α} {g : δ → β} (hf : Continuous f) (hg : Continuous g) :
-    Continuous fun x : γ × δ => (f x.1, g x.2) := by fprop
-  -- hf.fst'.prod_mk hg.snd'
+    Continuous fun x : γ × δ => (f x.1, g x.2) :=
+  hf.fst'.prod_mk hg.snd'
 #align continuous.prod_map Continuous.prod_map
 
 /-- A version of `continuous_inf_dom_left` for binary functions -/
@@ -496,8 +494,8 @@ theorem Filter.Eventually.prod_mk_nhds {pa : α → Prop} {a} (ha : ∀ᶠ x in 
   (ha.prod_inl_nhds b).and (hb.prod_inr_nhds a)
 #align filter.eventually.prod_mk_nhds Filter.Eventually.prod_mk_nhds
 
-theorem continuous_swap : Continuous (Prod.swap : α × β → β × α) := by unfold Prod.swap; fprop
-  -- continuous_snd.prod_mk continuous_fst
+theorem continuous_swap : Continuous (Prod.swap : α × β → β × α) :=
+  continuous_snd.prod_mk continuous_fst
 #align continuous_swap continuous_swap
 
 lemma isClosedMap_swap : IsClosedMap (Prod.swap : α × β → β × α) := fun s hs ↦ by
@@ -514,8 +512,8 @@ theorem continuous_uncurry_right {f : α → β → γ} (b : β) (h : Continuous
   h.comp (Continuous.Prod.mk_left _)
 #align continuous_uncurry_right continuous_uncurry_right
 
-theorem continuous_curry {g : α × β → γ} (a : α) (h : Continuous g) : Continuous (curry g a) := by unfold curry; fprop
-  -- continuous_uncurry_left a h
+theorem continuous_curry {g : α × β → γ} (a : α) (h : Continuous g) : Continuous (curry g a) :=
+  continuous_uncurry_left a h
 #align continuous_curry continuous_curry
 
 theorem IsOpen.prod {s : Set α} {t : Set β} (hs : IsOpen s) (ht : IsOpen t) : IsOpen (s ×ˢ t) :=
