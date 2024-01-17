@@ -37,14 +37,16 @@ initialize registerTraceClass `Meta.Tactic.fprop.cache
 -- initialize registerTraceClass `Meta.Tactic.fprop.apply
 
 
-
+/-- -/
 structure Config where
   -- config
 
+/-- -/
 structure State where
   /-- Simp's cache is used as the `fprop` tactic is designed to be used inside of simp and utilize its cache -/
   cache        : Simp.Cache := {}
 
+/-- -/
 abbrev FPropM := ReaderT FProp.Config $ StateRefT FProp.State MetaM
 
 /-- Result of `fprop`, it is a proof of function property `P f` and list of 

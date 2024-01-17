@@ -13,6 +13,7 @@ namespace Meta.FProp
 
 open Lean.Parser.Tactic
 
+/-- -/
 elab (name := fpropTac) "fprop" : tactic => do
   let goal ← getMainGoal
   goal.withContext do

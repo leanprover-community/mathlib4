@@ -63,6 +63,7 @@ def _root_.Lean.Expr.swapBVars (e : Expr) (i j : Nat) : Expr :=
 
 ----------------------------------------------------------------------------------------------------
 
+/-- -/
 def unfoldFunHeadRec? (e : Expr) : MetaM (Option Expr) := do
   lambdaLetTelescope e fun xs b => do
     if let .some b' ← reduceRecMatcher? b then
@@ -70,7 +71,7 @@ def unfoldFunHeadRec? (e : Expr) : MetaM (Option Expr) := do
       return .some (← mkLambdaFVars xs b')
     return none
 
-
+/-- -/
 def unfoldFunHead? (e : Expr) : MetaM (Option Expr) := do
   lambdaLetTelescope e fun xs b => do
     if let .some b' ← withTransparency .instances <| unfoldDefinition? b then
@@ -82,7 +83,7 @@ def unfoldFunHead? (e : Expr) : MetaM (Option Expr) := do
 
     return none
 
-
+/-- -/
 def synthesizeInstance (thmId : Origin) (x type : Expr) : MetaM Bool := do
   match (← trySynthInstance type) with
   | LOption.some val =>
@@ -139,7 +140,7 @@ def synthesizeArgs (thmId : Origin) (xs : Array Expr) (bis : Array BinderInfo)
 
   return .some subgoals
 
-
+/-- -/
 def tryTheoremCore (xs : Array Expr) (bis : Array BinderInfo) (val : Expr) (type : Expr) (e : Expr) (thmId : Origin) 
   (discharge? : Expr → MetaM (Option Expr)) (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do
   if (← isDefEq type e) then
@@ -159,7 +160,7 @@ def tryTheoremCore (xs : Array Expr) (bis : Array BinderInfo) (val : Expr) (type
     trace[Meta.Tactic.fprop.unify] "failed to unify {← ppOrigin thmId}\n{type}\nwith\n{e}"
     return none
 
-
+/-- -/
 def tryTheorem? (e : Expr) (thm : FPropTheorem)
   (discharge? : Expr → MetaM (Option Expr)) (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do
   withNewMCtxDepth do
@@ -168,7 +169,7 @@ def tryTheorem? (e : Expr) (thm : FPropTheorem)
     let (xs, bis, type) ← forallMetaTelescope type
     tryTheoremCore xs bis thmProof type e thm.origin discharge? fprop
 
-
+/-- -/
 def tryLocalTheorems (fpropDecl : FPropDecl) (e : Expr)
   (fprop : Expr → FPropM (Option Result))
   : FPropM (Option Result) := do 
@@ -200,6 +201,7 @@ def tryLocalTheorems (fpropDecl : FPropDecl) (e : Expr)
   trace[Meta.Tactic.fprop.discharge] "no local hypothesis {← ppExpr e}"
   return none
 
+/-- -/
 def applyIdRule (fpropDecl : FPropDecl) (e X : Expr) 
   (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do 
 
@@ -223,6 +225,7 @@ def applyIdRule (fpropDecl : FPropDecl) (e X : Expr)
 
 -- TODO: try normal theorems if there is no const theorem 
 --       this is usefull for proving `IsLinearMap fun x => 0` which is a special case of constant rule
+/-- -/
 def applyConstRule (fpropDecl : FPropDecl) (e X y : Expr) 
   (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do 
 
@@ -244,7 +247,7 @@ def applyConstRule (fpropDecl : FPropDecl) (e X y : Expr)
 
   tryTheoremCore xs bis proof type e (.decl thm.thrmName) fpropDecl.discharger fprop
 
-
+/-- -/
 def applyProjRule (fpropDecl : FPropDecl) (e x XY : Expr) 
   (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do 
 
@@ -294,7 +297,7 @@ def applyProjRule (fpropDecl : FPropDecl) (e x XY : Expr)
 
   tryTheoremCore xs bis proof type e (.decl thm.thrmName) fpropDecl.discharger fprop
 
-
+/-- -/
 def applyCompRule (fpropDecl : FPropDecl) (e f g : Expr)
   (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do 
 
@@ -316,7 +319,7 @@ def applyCompRule (fpropDecl : FPropDecl) (e f g : Expr)
 
   tryTheoremCore xs bis proof type e (.decl thm.thrmName) fpropDecl.discharger fprop
 
-
+/-- -/
 def applyLetRule (fpropDecl : FPropDecl) (e f g : Expr) 
   (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do 
 
@@ -338,7 +341,7 @@ def applyLetRule (fpropDecl : FPropDecl) (e f g : Expr)
 
   tryTheoremCore xs bis proof type e (.decl thm.thrmName) fpropDecl.discharger fprop
 
-
+/-- -/
 def applyPiRule (fpropDecl : FPropDecl) (e f : Expr)
   (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do 
 
@@ -358,7 +361,7 @@ def applyPiRule (fpropDecl : FPropDecl) (e f : Expr)
 
   tryTheoremCore xs bis proof type e (.decl thm.thrmName) fpropDecl.discharger fprop
 
-
+/-- -/
 def letCase (fpropDecl : FPropDecl) (e : Expr) (f : Expr) (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do
   match f with
   | .lam xName xType (.letE yName yType yValue yBody _) xBi => do
@@ -397,6 +400,7 @@ def letCase (fpropDecl : FPropDecl) (e : Expr) (f : Expr) (fprop : Expr → FPro
   | _ => throwError "expected expression of the form `fun x => lam y := ..; ..`"
   -- return none
 
+/-- -/
 def bvarAppCase (fpropDecl : FPropDecl) (e : Expr) (f : Expr) (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do
   let .lam n t (.app g x) bi := f
     | -- this case might not even be possible on the uses of `bvarAppCase`
@@ -420,6 +424,7 @@ def bvarAppCase (fpropDecl : FPropDecl) (e : Expr) (f : Expr) (fprop : Expr → 
     let h := .lam n fType ((Expr.bvar 0).app x) bi
     applyCompRule fpropDecl e h g fprop
 
+/-- -/
 def fvarAppCase (fpropDecl : FPropDecl) (e : Expr) (f : Expr) (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do
 
   let (f', g') ← splitLambdaToComp f
@@ -432,6 +437,7 @@ def fvarAppCase (fpropDecl : FPropDecl) (e : Expr) (f : Expr) (fprop : Expr → 
     trace[Meta.Tactic.fprop.step] "decomposed into `({← ppExpr f'}) ∘ ({← ppExpr g'})`"
     applyCompRule fpropDecl e f' g' fprop
   
+/-- -/
 def constAppCase (fpropDecl : FPropDecl) (e : Expr) (f : Expr) (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do
 
   if let .some f' ← unfoldFunHeadRec? f then
@@ -462,12 +468,14 @@ def constAppCase (fpropDecl : FPropDecl) (e : Expr) (f : Expr) (fprop : Expr →
     
 
 -- cache if there are no subgoals
+/-- -/
 def maybeCache (e : Expr) (r : Result) : FPropM (Option Result) := do -- return proof?
   if r.subgoals.length = 0 then
     modify (fun s => { s with cache := s.cache.insert e { expr := q(True), proof? := r.proof} })
   return r
 
-mutual 
+mutual
+  /-- -/ 
   partial def fprop (e : Expr) : FPropM (Option Result) := do
 
     -- check cache
@@ -495,7 +503,7 @@ mutual
           | return none
         maybeCache e r
         
-
+  /-- -/
   partial def main (e : Expr) : FPropM (Option Result) := do
 
     let .some (fpropDecl, f) ← getFProp? e

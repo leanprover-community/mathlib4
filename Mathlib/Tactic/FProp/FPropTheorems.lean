@@ -20,7 +20,7 @@ open Lean Meta
 
 namespace Meta.FProp
 
-
+/-- -/
 structure FPropTheorem where
   fpropName   : Name
   keys        : Array RefinedDiscrTree.Key
@@ -43,15 +43,17 @@ def FPropTheorem.getProof (fpropThm : FPropTheorem) : MetaM Expr := do
     let us ← fpropThm.levelParams.mapM fun _ => mkFreshLevelMVar
     return fpropThm.proof.instantiateLevelParamsArray fpropThm.levelParams us
 
-
+/-- -/
 structure FPropTheorems where
   theorems     : RefinedDiscrTree FPropTheorem := {}
   deriving Inhabited
 
 --- 
 
+/-- -/
 abbrev FPropTheoremsExt := SimpleScopedEnvExtension FPropTheorem FPropTheorems
 
+/-- -/
 def FPropTheoremsExt.getTheorems (ext : FPropTheoremsExt) : CoreM FPropTheorems := do
   modifyEnv fun env => ext.modifyState env fun a => a
   return ext.getState (← getEnv)
@@ -66,6 +68,7 @@ initialize fpropTheoremsExt : FPropTheoremsExt ←
 ---
 
 open RefinedDiscrTree in
+/-- -/
 def mkFPropTheoremFromConst (declName : Name) (prio : Nat) : MetaM FPropTheorem := do
   let info ← getConstInfo declName
   let (_,_,b) ← forallMetaTelescope info.type
@@ -82,11 +85,13 @@ def mkFPropTheoremFromConst (declName : Name) (prio : Nat) : MetaM FPropTheorem 
     origin := .decl declName
   }
 
+/-- -/
 def FPropTheoremsExt.addTheorem (ext : FPropTheoremsExt) (declName : Name) 
   (attrKind : AttributeKind) (prio : Nat) : MetaM Unit := do
   let thrm ← mkFPropTheoremFromConst declName prio
   ext.add thrm attrKind
 
+/-- -/
 def addTheorem (declName : Name) (attrKind : AttributeKind) (prio : Nat) 
   : MetaM Unit := do
   let thrm ← mkFPropTheoremFromConst declName prio

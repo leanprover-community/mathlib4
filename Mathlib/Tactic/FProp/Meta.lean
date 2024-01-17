@@ -13,15 +13,18 @@ namespace Meta.FProp
 
 set_option autoImplicit true
 
+/-- -/
 def joinlM [Monad m] [Inhabited β] (xs : Array α) (map : α → m β) (op : β → β → m β) : m β := do
   if h : 0 < xs.size then
     xs[1:].foldlM (init:=(← map xs[0])) λ acc x => do op acc (← map x)
   else
     pure default
 
+/-- -/
 def joinl [Inhabited β] (xs : Array α) (map : α → β) (op : β → β → β) : β := Id.run do
   joinlM xs map op
 
+/-- -/
 def joinrM [Monad m] [Inhabited β] (xs : Array α) (map : α → m β) (op : β → β → m β) : m β := do
   if h : 0 < xs.size then
     let n := xs.size - 1
@@ -30,10 +33,11 @@ def joinrM [Monad m] [Inhabited β] (xs : Array α) (map : α → m β) (op : β
   else
     pure default
 
+/-- -/
 def joinr [Inhabited β] (xs : Array α) (map : α → β) (op : β → β → β) : β := Id.run do
   joinrM xs map op
 
-
+/-- -/
 def mkAppFoldrM (const : Name) (xs : Array Expr) : MetaM Expr := do
   if xs.size = 0 then
     return default
@@ -44,6 +48,7 @@ def mkAppFoldrM (const : Name) (xs : Array Expr) : MetaM Expr := do
       λ x p =>
         mkAppM const #[x,p]
 
+/-- -/
 def mkAppFoldlM (const : Name) (xs : Array Expr) : MetaM Expr := do
   if xs.size = 0 then
     return default
@@ -77,11 +82,13 @@ def mkProdProj (x : Expr) (i : Nat) (n : Nat) (fst := ``Prod.fst) (snd := ``Prod
   | 0, _ => mkAppM fst #[x]
   | i'+1, n'+1 => mkProdProj (← withTransparency .all <| mkAppM snd #[x]) i' n'
 
+/-- -/
 def mkProdSplitElem (xs : Expr) (n : Nat) (fst := ``Prod.fst) (snd := ``Prod.snd) : MetaM (Array Expr) := 
   (Array.mkArray n 0)
     |>.mapIdx (λ i _ => i.1)
     |>.mapM (λ i => mkProdProj xs i n fst snd)
 
+/-- -/
 def mkUncurryFun (n : Nat) (f : Expr) (mk := ``Prod.mk) (fst := ``Prod.fst) (snd := ``Prod.snd) : MetaM Expr := do
   if n ≤ 1 then
     return f

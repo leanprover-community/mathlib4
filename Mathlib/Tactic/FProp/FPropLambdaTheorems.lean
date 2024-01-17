@@ -10,6 +10,7 @@ open Lean Meta
 
 namespace Meta.FProp
 
+/-- -/
 inductive LambdaTheoremArgs 
   | id (X : Nat) 
   | const (X y : Nat) 
@@ -20,10 +21,12 @@ inductive LambdaTheoremArgs
   | pi (f : Nat)
   deriving Inhabited, BEq, Repr, Hashable
 
+/-- -/
 inductive LambdaTheoremType 
   | id  | const | proj| projDep | comp  | letE  | pi
   deriving Inhabited, BEq, Repr, Hashable
 
+/-- -/
 def LambdaTheoremArgs.type (t : LambdaTheoremArgs) : LambdaTheoremType :=
   match t with
   | .id .. => .id
@@ -43,6 +46,7 @@ def LambdaTheoremArgs.type (t : LambdaTheoremArgs) : LambdaTheoremType :=
 /- Custom rule for proving function property of `fun x => let y := g x; f x y`, #[f,g] -/
 /- Custom rule for proving function property of `fun x y => f x y`, #[f]. This should reduce the goal to `∀ y, P (fun x => f x y)`.-/
 -- TODO: explain what is going on here
+/-- -/
 structure LambdaTheorem where
   fpropName : Name
   thrmName : Name
@@ -63,13 +67,15 @@ def LambdaTheorem.getProof (fpropThm : LambdaTheorem) : MetaM Expr := do
     let us ← fpropThm.levelParams.mapM fun _ => mkFreshLevelMVar
     return fpropThm.proof.instantiateLevelParamsArray fpropThm.levelParams us
 
-
+/-- -/
 structure LambdaTheorems where
   theorems : HashMap (Name × LambdaTheoremType) LambdaTheorem := {}
   deriving Inhabited
 
+/-- -/
 abbrev FPropLambdaTheoremsExt := SimpleScopedEnvExtension LambdaTheorem LambdaTheorems
 
+/-- -/
 initialize fpropLambdaTheoremsExt : FPropLambdaTheoremsExt ←
   registerSimpleScopedEnvExtension {
     name := by exact decl_name%
@@ -84,6 +90,7 @@ initialize fpropLambdaTheoremsExt : FPropLambdaTheoremsExt ←
 
 set_option linter.unusedVariables false in
 open Qq in
+/-- -/
 def detectLambdaTheoremArgs (f : Expr) (xs : Array Expr) : Option LambdaTheoremArgs := do
   
   match f with
@@ -127,7 +134,7 @@ def detectLambdaTheoremArgs (f : Expr) (xs : Array Expr) : Option LambdaTheoremA
     | _ => none
   | _ => none
 
-
+/-- -/
 def addLambdaTheorem (declName : Name) : MetaM Unit := do
 
   let info ← getConstInfo declName
@@ -152,6 +159,6 @@ def addLambdaTheorem (declName : Name) : MetaM Unit := do
 
     trace[Meta.Tactic.fprop.attr] "added lambda theorem `{declName}` of function property `{decl.fpropName}`, theorem type `{repr thrmArgs.type}`"
 
-
+/-- -/
 def getLambdaTheorem (fpropName : Name) (type : LambdaTheoremType) : CoreM (Option LambdaTheorem) := do
   return (fpropLambdaTheoremsExt.getState (← getEnv)).theorems.find? (fpropName,type)
