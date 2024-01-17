@@ -1,0 +1,364 @@
+/-
+Copyright (c) 2017 Johannes Hölzl. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johannes Hölzl, Yury Kudryashov
+-/
+import Mathlib.Data.ENNReal.Basic
+
+/-!
+# Arithmetic operations of extended non-negative real numbers
+
+addition, subtraction,
+TODO: find a better name for this file? add main definitions and results!
+
+-/
+
+open Set BigOperators NNReal ENNReal
+
+namespace ENNReal
+
+variable {a b c d : ℝ≥0∞} {r p q : ℝ≥0}
+
+section Mul
+
+-- porting note: todo: generalize to `WithTop`
+@[mono, gcongr]
+theorem mul_lt_mul (ac : a < c) (bd : b < d) : a * b < c * d := by
+  rcases lt_iff_exists_nnreal_btwn.1 ac with ⟨a', aa', a'c⟩
+  lift a to ℝ≥0 using ne_top_of_lt aa'
+  rcases lt_iff_exists_nnreal_btwn.1 bd with ⟨b', bb', b'd⟩
+  lift b to ℝ≥0 using ne_top_of_lt bb'
+  norm_cast at *
+  calc
+    ↑(a * b) < ↑(a' * b') := coe_lt_coe.2 (mul_lt_mul₀ aa' bb')
+    _ = ↑a' * ↑b' := coe_mul
+    _ ≤ c * d := mul_le_mul' a'c.le b'd.le
+#align ennreal.mul_lt_mul ENNReal.mul_lt_mul
+
+-- TODO: generalize to `CovariantClass α α (· * ·) (· ≤ ·)`
+theorem mul_left_mono : Monotone (a * ·) := fun _ _ => mul_le_mul' le_rfl
+#align ennreal.mul_left_mono ENNReal.mul_left_mono
+
+-- TODO: generalize to `CovariantClass α α (swap (· * ·)) (· ≤ ·)`
+theorem mul_right_mono : Monotone (· * a) := fun _ _ h => mul_le_mul' h le_rfl
+#align ennreal.mul_right_mono ENNReal.mul_right_mono
+
+-- porting note: todo: generalize to `WithTop`
+theorem pow_strictMono : ∀ {n : ℕ}, n ≠ 0 → StrictMono fun x : ℝ≥0∞ => x ^ n
+  | 0, h => absurd rfl h
+  | 1, _ => by simpa only [pow_one] using strictMono_id
+  | (n + 1 + 1), _ => fun x y h => mul_lt_mul h (pow_strictMono n.succ_ne_zero h)
+#align ennreal.pow_strict_mono ENNReal.pow_strictMono
+
+@[gcongr] protected theorem pow_lt_pow_left (h : a < b) {n : ℕ} (hn : n ≠ 0) :
+    a ^ n < b ^ n :=
+  ENNReal.pow_strictMono hn h
+
+theorem max_mul : max a b * c = max (a * c) (b * c) := mul_right_mono.map_max
+#align ennreal.max_mul ENNReal.max_mul
+
+theorem mul_max : a * max b c = max (a * b) (a * c) := mul_left_mono.map_max
+#align ennreal.mul_max ENNReal.mul_max
+
+-- porting note: todo: generalize to `WithTop`
+theorem mul_left_strictMono (h0 : a ≠ 0) (hinf : a ≠ ∞) : StrictMono (a * ·) := by
+  lift a to ℝ≥0 using hinf
+  rw [coe_ne_zero] at h0
+  intro x y h
+  contrapose! h
+  simpa only [← mul_assoc, ← coe_mul, inv_mul_cancel h0, coe_one, one_mul]
+    using mul_le_mul_left' h (↑a⁻¹)
+#align ennreal.mul_left_strict_mono ENNReal.mul_left_strictMono
+
+@[gcongr] protected theorem mul_lt_mul_left' (h0 : a ≠ 0) (hinf : a ≠ ⊤) (bc : b < c) :
+    a * b < a * c :=
+  ENNReal.mul_left_strictMono h0 hinf bc
+
+@[gcongr] protected theorem mul_lt_mul_right' (h0 : a ≠ 0) (hinf : a ≠ ⊤) (bc : b < c) :
+    b * a < c * a :=
+  mul_comm b a ▸ mul_comm c a ▸ ENNReal.mul_left_strictMono h0 hinf bc
+
+-- porting note: todo: generalize to `WithTop`
+theorem mul_eq_mul_left (h0 : a ≠ 0) (hinf : a ≠ ∞) : a * b = a * c ↔ b = c :=
+  (mul_left_strictMono h0 hinf).injective.eq_iff
+#align ennreal.mul_eq_mul_left ENNReal.mul_eq_mul_left
+
+-- porting note: todo: generalize to `WithTop`
+theorem mul_eq_mul_right : c ≠ 0 → c ≠ ∞ → (a * c = b * c ↔ a = b) :=
+  mul_comm c a ▸ mul_comm c b ▸ mul_eq_mul_left
+#align ennreal.mul_eq_mul_right ENNReal.mul_eq_mul_right
+
+-- porting note: todo: generalize to `WithTop`
+theorem mul_le_mul_left (h0 : a ≠ 0) (hinf : a ≠ ∞) : (a * b ≤ a * c ↔ b ≤ c) :=
+  (mul_left_strictMono h0 hinf).le_iff_le
+#align ennreal.mul_le_mul_left ENNReal.mul_le_mul_left
+
+-- porting note: todo: generalize to `WithTop`
+theorem mul_le_mul_right : c ≠ 0 → c ≠ ∞ → (a * c ≤ b * c ↔ a ≤ b) :=
+  mul_comm c a ▸ mul_comm c b ▸ mul_le_mul_left
+#align ennreal.mul_le_mul_right ENNReal.mul_le_mul_right
+
+-- porting note: todo: generalize to `WithTop`
+theorem mul_lt_mul_left (h0 : a ≠ 0) (hinf : a ≠ ∞) : (a * b < a * c ↔ b < c) :=
+  (mul_left_strictMono h0 hinf).lt_iff_lt
+#align ennreal.mul_lt_mul_left ENNReal.mul_lt_mul_left
+
+-- porting note: todo: generalize to `WithTop`
+theorem mul_lt_mul_right : c ≠ 0 → c ≠ ∞ → (a * c < b * c ↔ a < b) :=
+  mul_comm c a ▸ mul_comm c b ▸ mul_lt_mul_left
+#align ennreal.mul_lt_mul_right ENNReal.mul_lt_mul_right
+
+end Mul
+
+section Cancel
+
+-- porting note: todo: generalize to `WithTop`
+/-- An element `a` is `AddLECancellable` if `a + b ≤ a + c` implies `b ≤ c` for all `b` and `c`.
+  This is true in `ℝ≥0∞` for all elements except `∞`. -/
+theorem addLECancellable_iff_ne {a : ℝ≥0∞} : AddLECancellable a ↔ a ≠ ∞ := by
+  constructor
+  · rintro h rfl
+    refine' zero_lt_one.not_le (h _)
+    simp
+  · rintro h b c hbc
+    apply ENNReal.le_of_add_le_add_left h hbc
+#align ennreal.add_le_cancellable_iff_ne ENNReal.addLECancellable_iff_ne
+
+/-- This lemma has an abbreviated name because it is used frequently. -/
+theorem cancel_of_ne {a : ℝ≥0∞} (h : a ≠ ∞) : AddLECancellable a :=
+  addLECancellable_iff_ne.mpr h
+#align ennreal.cancel_of_ne ENNReal.cancel_of_ne
+
+/-- This lemma has an abbreviated name because it is used frequently. -/
+theorem cancel_of_lt {a : ℝ≥0∞} (h : a < ∞) : AddLECancellable a :=
+  cancel_of_ne h.ne
+#align ennreal.cancel_of_lt ENNReal.cancel_of_lt
+
+/-- This lemma has an abbreviated name because it is used frequently. -/
+theorem cancel_of_lt' {a b : ℝ≥0∞} (h : a < b) : AddLECancellable a :=
+  cancel_of_ne h.ne_top
+#align ennreal.cancel_of_lt' ENNReal.cancel_of_lt'
+
+/-- This lemma has an abbreviated name because it is used frequently. -/
+theorem cancel_coe {a : ℝ≥0} : AddLECancellable (a : ℝ≥0∞) :=
+  cancel_of_ne coe_ne_top
+#align ennreal.cancel_coe ENNReal.cancel_coe
+
+theorem add_right_inj (h : a ≠ ∞) : a + b = a + c ↔ b = c :=
+  (cancel_of_ne h).inj
+#align ennreal.add_right_inj ENNReal.add_right_inj
+
+theorem add_left_inj (h : a ≠ ∞) : b + a = c + a ↔ b = c :=
+  (cancel_of_ne h).inj_left
+#align ennreal.add_left_inj ENNReal.add_left_inj
+
+end Cancel
+
+section Sub
+
+theorem sub_eq_sInf {a b : ℝ≥0∞} : a - b = sInf { d | a ≤ d + b } :=
+  le_antisymm (le_sInf fun _ h => tsub_le_iff_right.mpr h) <| sInf_le <| mem_setOf.2 le_tsub_add
+#align ennreal.sub_eq_Inf ENNReal.sub_eq_sInf
+
+/-- This is a special case of `WithTop.coe_sub` in the `ENNReal` namespace -/
+@[simp] theorem coe_sub : (↑(r - p) : ℝ≥0∞) = ↑r - ↑p := WithTop.coe_sub
+#align ennreal.coe_sub ENNReal.coe_sub
+
+/-- This is a special case of `WithTop.top_sub_coe` in the `ENNReal` namespace -/
+@[simp] theorem top_sub_coe : ∞ - ↑r = ∞ := WithTop.top_sub_coe
+#align ennreal.top_sub_coe ENNReal.top_sub_coe
+
+/-- This is a special case of `WithTop.sub_top` in the `ENNReal` namespace -/
+theorem sub_top : a - ∞ = 0 := WithTop.sub_top
+#align ennreal.sub_top ENNReal.sub_top
+
+-- porting note: added `@[simp]`
+@[simp] theorem sub_eq_top_iff : a - b = ∞ ↔ a = ∞ ∧ b ≠ ∞ := WithTop.sub_eq_top_iff
+#align ennreal.sub_eq_top_iff ENNReal.sub_eq_top_iff
+
+theorem sub_ne_top (ha : a ≠ ∞) : a - b ≠ ∞ := mt sub_eq_top_iff.mp <| mt And.left ha
+#align ennreal.sub_ne_top ENNReal.sub_ne_top
+
+@[simp, norm_cast]
+theorem nat_cast_sub (m n : ℕ) : ↑(m - n) = (m - n : ℝ≥0∞) := by
+  rw [← coe_nat, Nat.cast_tsub, coe_sub, coe_nat, coe_nat]
+#align ennreal.nat_cast_sub ENNReal.nat_cast_sub
+
+protected theorem sub_eq_of_eq_add (hb : b ≠ ∞) : a = c + b → a - b = c :=
+  (cancel_of_ne hb).tsub_eq_of_eq_add
+#align ennreal.sub_eq_of_eq_add ENNReal.sub_eq_of_eq_add
+
+protected theorem eq_sub_of_add_eq (hc : c ≠ ∞) : a + c = b → a = b - c :=
+  (cancel_of_ne hc).eq_tsub_of_add_eq
+#align ennreal.eq_sub_of_add_eq ENNReal.eq_sub_of_add_eq
+
+protected theorem sub_eq_of_eq_add_rev (hb : b ≠ ∞) : a = b + c → a - b = c :=
+  (cancel_of_ne hb).tsub_eq_of_eq_add_rev
+#align ennreal.sub_eq_of_eq_add_rev ENNReal.sub_eq_of_eq_add_rev
+
+theorem sub_eq_of_add_eq (hb : b ≠ ∞) (hc : a + b = c) : c - b = a :=
+  ENNReal.sub_eq_of_eq_add hb hc.symm
+#align ennreal.sub_eq_of_add_eq ENNReal.sub_eq_of_add_eq
+
+@[simp]
+protected theorem add_sub_cancel_left (ha : a ≠ ∞) : a + b - a = b :=
+  (cancel_of_ne ha).add_tsub_cancel_left
+#align ennreal.add_sub_cancel_left ENNReal.add_sub_cancel_left
+
+@[simp]
+protected theorem add_sub_cancel_right (hb : b ≠ ∞) : a + b - b = a :=
+  (cancel_of_ne hb).add_tsub_cancel_right
+#align ennreal.add_sub_cancel_right ENNReal.add_sub_cancel_right
+
+protected theorem lt_add_of_sub_lt_left (h : a ≠ ∞ ∨ b ≠ ∞) : a - b < c → a < b + c := by
+  obtain rfl | hb := eq_or_ne b ∞
+  · rw [top_add, lt_top_iff_ne_top]
+    exact fun _ => h.resolve_right (Classical.not_not.2 rfl)
+  · exact (cancel_of_ne hb).lt_add_of_tsub_lt_left
+#align ennreal.lt_add_of_sub_lt_left ENNReal.lt_add_of_sub_lt_left
+
+protected theorem lt_add_of_sub_lt_right (h : a ≠ ∞ ∨ c ≠ ∞) : a - c < b → a < b + c :=
+  add_comm c b ▸ ENNReal.lt_add_of_sub_lt_left h
+#align ennreal.lt_add_of_sub_lt_right ENNReal.lt_add_of_sub_lt_right
+
+theorem le_sub_of_add_le_left (ha : a ≠ ∞) : a + b ≤ c → b ≤ c - a :=
+  (cancel_of_ne ha).le_tsub_of_add_le_left
+#align ennreal.le_sub_of_add_le_left ENNReal.le_sub_of_add_le_left
+
+theorem le_sub_of_add_le_right (hb : b ≠ ∞) : a + b ≤ c → a ≤ c - b :=
+  (cancel_of_ne hb).le_tsub_of_add_le_right
+#align ennreal.le_sub_of_add_le_right ENNReal.le_sub_of_add_le_right
+
+protected theorem sub_lt_of_lt_add (hac : c ≤ a) (h : a < b + c) : a - c < b :=
+  ((cancel_of_lt' <| hac.trans_lt h).tsub_lt_iff_right hac).mpr h
+#align ennreal.sub_lt_of_lt_add ENNReal.sub_lt_of_lt_add
+
+protected theorem sub_lt_iff_lt_right (hb : b ≠ ∞) (hab : b ≤ a) : a - b < c ↔ a < c + b :=
+  (cancel_of_ne hb).tsub_lt_iff_right hab
+#align ennreal.sub_lt_iff_lt_right ENNReal.sub_lt_iff_lt_right
+
+protected theorem sub_lt_self (ha : a ≠ ∞) (ha₀ : a ≠ 0) (hb : b ≠ 0) : a - b < a :=
+  (cancel_of_ne ha).tsub_lt_self (pos_iff_ne_zero.2 ha₀) (pos_iff_ne_zero.2 hb)
+#align ennreal.sub_lt_self ENNReal.sub_lt_self
+
+protected theorem sub_lt_self_iff (ha : a ≠ ∞) : a - b < a ↔ 0 < a ∧ 0 < b :=
+  (cancel_of_ne ha).tsub_lt_self_iff
+#align ennreal.sub_lt_self_iff ENNReal.sub_lt_self_iff
+
+theorem sub_lt_of_sub_lt (h₂ : c ≤ a) (h₃ : a ≠ ∞ ∨ b ≠ ∞) (h₁ : a - b < c) : a - c < b :=
+  ENNReal.sub_lt_of_lt_add h₂ (add_comm c b ▸ ENNReal.lt_add_of_sub_lt_right h₃ h₁)
+#align ennreal.sub_lt_of_sub_lt ENNReal.sub_lt_of_sub_lt
+
+theorem sub_sub_cancel (h : a ≠ ∞) (h2 : b ≤ a) : a - (a - b) = b :=
+  (cancel_of_ne <| sub_ne_top h).tsub_tsub_cancel_of_le h2
+#align ennreal.sub_sub_cancel ENNReal.sub_sub_cancel
+
+theorem sub_right_inj {a b c : ℝ≥0∞} (ha : a ≠ ∞) (hb : b ≤ a) (hc : c ≤ a) :
+    a - b = a - c ↔ b = c :=
+  (cancel_of_ne ha).tsub_right_inj (cancel_of_ne <| ne_top_of_le_ne_top ha hb)
+    (cancel_of_ne <| ne_top_of_le_ne_top ha hc) hb hc
+#align ennreal.sub_right_inj ENNReal.sub_right_inj
+
+theorem sub_mul (h : 0 < b → b < a → c ≠ ∞) : (a - b) * c = a * c - b * c := by
+  rcases le_or_lt a b with hab | hab; · simp [hab, mul_right_mono hab]
+  rcases eq_or_lt_of_le (zero_le b) with (rfl | hb); · simp
+  exact (cancel_of_ne <| mul_ne_top hab.ne_top (h hb hab)).tsub_mul
+#align ennreal.sub_mul ENNReal.sub_mul
+
+theorem mul_sub (h : 0 < c → c < b → a ≠ ∞) : a * (b - c) = a * b - a * c := by
+  simp only [mul_comm a]
+  exact sub_mul h
+#align ennreal.mul_sub ENNReal.mul_sub
+
+end Sub
+
+section Sum
+
+open Finset
+
+variable {α : Type*}
+
+/-- A product of finite numbers is still finite -/
+theorem prod_lt_top {s : Finset α} {f : α → ℝ≥0∞} (h : ∀ a ∈ s, f a ≠ ∞) : ∏ a in s, f a < ∞ :=
+  WithTop.prod_lt_top h
+#align ennreal.prod_lt_top ENNReal.prod_lt_top
+
+/-- A sum of finite numbers is still finite -/
+theorem sum_lt_top {s : Finset α} {f : α → ℝ≥0∞} (h : ∀ a ∈ s, f a ≠ ∞) : ∑ a in s, f a < ∞ :=
+  WithTop.sum_lt_top h
+#align ennreal.sum_lt_top ENNReal.sum_lt_top
+
+/-- A sum of finite numbers is still finite -/
+theorem sum_lt_top_iff {s : Finset α} {f : α → ℝ≥0∞} : ∑ a in s, f a < ∞ ↔ ∀ a ∈ s, f a < ∞ :=
+  WithTop.sum_lt_top_iff
+#align ennreal.sum_lt_top_iff ENNReal.sum_lt_top_iff
+
+/-- A sum of numbers is infinite iff one of them is infinite -/
+theorem sum_eq_top_iff {s : Finset α} {f : α → ℝ≥0∞} : ∑ x in s, f x = ∞ ↔ ∃ a ∈ s, f a = ∞ :=
+  WithTop.sum_eq_top_iff
+#align ennreal.sum_eq_top_iff ENNReal.sum_eq_top_iff
+
+theorem lt_top_of_sum_ne_top {s : Finset α} {f : α → ℝ≥0∞} (h : ∑ x in s, f x ≠ ∞) {a : α}
+    (ha : a ∈ s) : f a < ∞ :=
+  sum_lt_top_iff.1 h.lt_top a ha
+#align ennreal.lt_top_of_sum_ne_top ENNReal.lt_top_of_sum_ne_top
+
+/-- Seeing `ℝ≥0∞` as `ℝ≥0` does not change their sum, unless one of the `ℝ≥0∞` is
+infinity -/
+theorem toNNReal_sum {s : Finset α} {f : α → ℝ≥0∞} (hf : ∀ a ∈ s, f a ≠ ∞) :
+    ENNReal.toNNReal (∑ a in s, f a) = ∑ a in s, ENNReal.toNNReal (f a) := by
+  rw [← coe_eq_coe, coe_toNNReal, coe_finset_sum, sum_congr rfl]
+  · intro x hx
+    exact (coe_toNNReal (hf x hx)).symm
+  · exact (sum_lt_top hf).ne
+#align ennreal.to_nnreal_sum ENNReal.toNNReal_sum
+
+/-- seeing `ℝ≥0∞` as `Real` does not change their sum, unless one of the `ℝ≥0∞` is infinity -/
+theorem toReal_sum {s : Finset α} {f : α → ℝ≥0∞} (hf : ∀ a ∈ s, f a ≠ ∞) :
+    ENNReal.toReal (∑ a in s, f a) = ∑ a in s, ENNReal.toReal (f a) := by
+  rw [ENNReal.toReal, toNNReal_sum hf, NNReal.coe_sum]
+  rfl
+#align ennreal.to_real_sum ENNReal.toReal_sum
+
+theorem ofReal_sum_of_nonneg {s : Finset α} {f : α → ℝ} (hf : ∀ i, i ∈ s → 0 ≤ f i) :
+    ENNReal.ofReal (∑ i in s, f i) = ∑ i in s, ENNReal.ofReal (f i) := by
+  simp_rw [ENNReal.ofReal, ← coe_finset_sum, coe_eq_coe]
+  exact Real.toNNReal_sum_of_nonneg hf
+#align ennreal.of_real_sum_of_nonneg ENNReal.ofReal_sum_of_nonneg
+
+theorem sum_lt_sum_of_nonempty {s : Finset α} (hs : s.Nonempty) {f g : α → ℝ≥0∞}
+    (Hlt : ∀ i ∈ s, f i < g i) : ∑ i in s, f i < ∑ i in s, g i := by
+  induction' hs using Finset.Nonempty.cons_induction with a a s as _ IH
+  · simp [Hlt _ (Finset.mem_singleton_self _)]
+  · simp only [as, Finset.sum_cons, not_false_iff]
+    exact
+      ENNReal.add_lt_add (Hlt _ (Finset.mem_cons_self _ _))
+        (IH fun i hi => Hlt _ (Finset.mem_cons.2 <| Or.inr hi))
+#align ennreal.sum_lt_sum_of_nonempty ENNReal.sum_lt_sum_of_nonempty
+
+theorem exists_le_of_sum_le {s : Finset α} (hs : s.Nonempty) {f g : α → ℝ≥0∞}
+    (Hle : ∑ i in s, f i ≤ ∑ i in s, g i) : ∃ i ∈ s, f i ≤ g i := by
+  contrapose! Hle
+  apply ENNReal.sum_lt_sum_of_nonempty hs Hle
+#align ennreal.exists_le_of_sum_le ENNReal.exists_le_of_sum_le
+
+end Sum
+
+section Interval
+
+variable {x y z : ℝ≥0∞} {ε ε₁ ε₂ : ℝ≥0∞} {s : Set ℝ≥0∞}
+
+protected theorem Ico_eq_Iio : Ico 0 y = Iio y :=
+  Ico_bot
+#align ennreal.Ico_eq_Iio ENNReal.Ico_eq_Iio
+
+theorem mem_Iio_self_add : x ≠ ∞ → ε ≠ 0 → x ∈ Iio (x + ε) := fun xt ε0 => lt_add_right xt ε0
+#align ennreal.mem_Iio_self_add ENNReal.mem_Iio_self_add
+
+theorem mem_Ioo_self_sub_add : x ≠ ∞ → x ≠ 0 → ε₁ ≠ 0 → ε₂ ≠ 0 → x ∈ Ioo (x - ε₁) (x + ε₂) :=
+  fun xt x0 ε0 ε0' => ⟨ENNReal.sub_lt_self xt x0 ε0, lt_add_right xt ε0'⟩
+#align ennreal.mem_Ioo_self_sub_add ENNReal.mem_Ioo_self_sub_add
+
+end Interval
+
+end ENNReal
