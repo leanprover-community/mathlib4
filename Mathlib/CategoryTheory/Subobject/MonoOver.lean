@@ -190,11 +190,11 @@ theorem lift_obj_arrow {Y : D} (F : Over Y ⥤ Over X)
 are equivalent to monomorphisms over the source of `f`.
 -/
 def slice {A : C} {f : Over A}
-  (h₁ : ∀ (g : MonoOver f),
-    Mono ((Over.iteratedSliceEquiv f).functor.obj ((forget f).obj g)).hom)
-  (h₂ : ∀ (g : MonoOver f.left),
-    Mono ((Over.iteratedSliceEquiv f).inverse.obj ((forget f.left).obj g)).hom) :
-  MonoOver f ≌ MonoOver f.left where
+    (h₁ : ∀ (g : MonoOver f),
+      Mono ((Over.iteratedSliceEquiv f).functor.obj ((forget f).obj g)).hom)
+    (h₂ : ∀ (g : MonoOver f.left),
+      Mono ((Over.iteratedSliceEquiv f).inverse.obj ((forget f.left).obj g)).hom) :
+    MonoOver f ≌ MonoOver f.left where
   functor := MonoOver.lift f.iteratedSliceEquiv.functor h₁
   inverse := MonoOver.lift f.iteratedSliceEquiv.inverse h₂
   unitIso :=
@@ -257,10 +257,14 @@ def mapComp (f : X ⟶ Y) (g : Y ⟶ Z) [Mono f] [Mono g] : map (f ≫ g) ≅ ma
   liftIso _ _ (Over.mapComp _ _) ≪≫ (liftComp _ _ _ _).symm
 #align category_theory.mono_over.map_comp CategoryTheory.MonoOver.mapComp
 
+variable (X)
+
 /-- `MonoOver.map` preserves the identity (up to a natural isomorphism). -/
 def mapId : map (𝟙 X) ≅ 𝟭 _ :=
-  liftIso _ _ Over.mapId ≪≫ liftId
+  liftIso _ _ (Over.mapId X) ≪≫ liftId
 #align category_theory.mono_over.map_id CategoryTheory.MonoOver.mapId
+
+variable {X}
 
 @[simp]
 theorem map_obj_left (f : X ⟶ Y) [Mono f] (g : MonoOver X) : ((map f).obj g : C) = g.obj.left :=
@@ -288,8 +292,8 @@ instance faithful_map (f : X ⟶ Y) [Mono f] : Faithful (map f) where
 def mapIso {A B : C} (e : A ≅ B) : MonoOver A ≌ MonoOver B where
   functor := map e.hom
   inverse := map e.inv
-  unitIso := ((mapComp _ _).symm ≪≫ eqToIso (by simp) ≪≫ mapId).symm
-  counitIso := (mapComp _ _).symm ≪≫ eqToIso (by simp) ≪≫ mapId
+  unitIso := ((mapComp _ _).symm ≪≫ eqToIso (by simp) ≪≫ (mapId _)).symm
+  counitIso := (mapComp _ _).symm ≪≫ eqToIso (by simp) ≪≫ (mapId _)
 #align category_theory.mono_over.map_iso CategoryTheory.MonoOver.mapIso
 
 section
@@ -420,7 +424,7 @@ section Exists
 variable [HasImages C]
 
 /-- In the case where `f` is not a monomorphism but `C` has images,
-we can still take the "forward map" under it, which agrees with `mono_over.map f`.
+we can still take the "forward map" under it, which agrees with `MonoOver.map f`.
 -/
 def «exists» (f : X ⟶ Y) : MonoOver X ⥤ MonoOver Y :=
   forget _ ⋙ Over.map f ⋙ image
@@ -434,8 +438,8 @@ instance faithful_exists (f : X ⟶ Y) : Faithful («exists» f) where
 def existsIsoMap (f : X ⟶ Y) [Mono f] : «exists» f ≅ map f :=
   NatIso.ofComponents (by
     intro Z
-    suffices : (forget _).obj ((«exists» f).obj Z) ≅ (forget _).obj ((map f).obj Z)
-    apply (forget _).preimageIso this
+    suffices (forget _).obj ((«exists» f).obj Z) ≅ (forget _).obj ((map f).obj Z) by
+      apply (forget _).preimageIso this
     apply Over.isoMk _ _
     apply imageMonoIsoSource (Z.arrow ≫ f)
     apply imageMonoIsoSource_hom_self)

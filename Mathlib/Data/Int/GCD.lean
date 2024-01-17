@@ -3,10 +3,10 @@ Copyright (c) 2018 Guy Leroy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sangwoo Jo (aka Jason), Guy Leroy, Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.Nat.GCD.Basic
-import Mathlib.Algebra.GroupPower.Lemmas
+import Mathlib.Algebra.GroupWithZero.Power
 import Mathlib.Algebra.Ring.Regular
 import Mathlib.Data.Int.Dvd.Basic
+import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Order.Bounds.Basic
 
 #align_import data.int.gcd from "leanprover-community/mathlib"@"47a1a73351de8dd6c8d3d32b569c8e434b03ca47"
@@ -51,7 +51,7 @@ def xgcdAux : ℕ → ℤ → ℤ → ℕ → ℤ → ℤ → ℕ × ℤ × ℤ
 theorem xgcdAux_zero : xgcdAux 0 s t r' s' t' = (r', s', t') := rfl
 
 theorem xgcdAux_succ : xgcdAux (succ k) s t r' s' t' =
-  xgcdAux (r' % succ k) (s' - (r' / succ k) * s) (t' - (r' / succ k) * t) (succ k) s t := rfl
+    xgcdAux (r' % succ k) (s' - (r' / succ k) * s) (t' - (r' / succ k) * t) (succ k) s t := rfl
 
 @[simp]
 theorem xgcd_zero_left {s t r' s' t'} : xgcdAux 0 s t r' s' t' = (r', s', t') := by simp [xgcdAux]
@@ -114,7 +114,7 @@ theorem gcdB_zero_right {s : ℕ} (h : s ≠ 0) : gcdB s 0 = 0 := by
 @[simp]
 theorem xgcdAux_fst (x y) : ∀ s t s' t', (xgcdAux x s t y s' t').1 = gcd x y :=
   gcd.induction x y (by simp) fun x y h IH s t s' t' => by
-    simp [xgcdAux_rec, h, IH]
+    simp only [h, xgcdAux_rec, IH]
     rw [← gcd_rec]
 #align nat.xgcd_aux_fst Nat.xgcdAux_fst
 
@@ -167,7 +167,7 @@ theorem exists_mul_emod_eq_gcd {k n : ℕ} (hk : gcd n k < k) : ∃ m, n * m % k
     ← Int.mul_emod]
 #align nat.exists_mul_mod_eq_gcd Nat.exists_mul_emod_eq_gcd
 
-theorem exists_mul_emod_eq_one_of_coprime {k n : ℕ} (hkn : coprime n k) (hk : 1 < k) :
+theorem exists_mul_emod_eq_one_of_coprime {k n : ℕ} (hkn : Coprime n k) (hk : 1 < k) :
     ∃ m, n * m % k = 1 :=
   Exists.recOn (exists_mul_emod_eq_gcd (lt_of_le_of_lt (le_of_eq hkn) hk)) fun m hm ↦
     ⟨m, hm.trans hkn⟩
@@ -310,11 +310,11 @@ theorem gcd_mul_right (i j k : ℤ) : gcd (i * j) (k * j) = gcd i k * natAbs j :
 #align int.gcd_mul_right Int.gcd_mul_right
 
 theorem gcd_pos_of_ne_zero_left {i : ℤ} (j : ℤ) (hi : i ≠ 0) : 0 < gcd i j :=
-  Nat.gcd_pos_of_pos_left _ $ natAbs_pos.2 hi
+  Nat.gcd_pos_of_pos_left _ <| natAbs_pos.2 hi
 #align int.gcd_pos_of_ne_zero_left Int.gcd_pos_of_ne_zero_left
 
 theorem gcd_pos_of_ne_zero_right (i : ℤ) {j : ℤ} (hj : j ≠ 0) : 0 < gcd i j :=
-  Nat.gcd_pos_of_pos_right _ $ natAbs_pos.2 hj
+  Nat.gcd_pos_of_pos_right _ <| natAbs_pos.2 hj
 #align int.gcd_pos_of_ne_zero_right Int.gcd_pos_of_ne_zero_right
 
 theorem gcd_eq_zero_iff {i j : ℤ} : gcd i j = 0 ↔ i = 0 ∧ j = 0 := by
@@ -499,6 +499,12 @@ theorem lcm_dvd {i j k : ℤ} : i ∣ k → j ∣ k → (lcm i j : ℤ) ∣ k :=
   exact coe_nat_dvd_left.mpr (Nat.lcm_dvd (natAbs_dvd_natAbs.mpr hi) (natAbs_dvd_natAbs.mpr hj))
 #align int.lcm_dvd Int.lcm_dvd
 
+theorem lcm_mul_left {m n k : ℤ} : (m * n).lcm (m * k) = natAbs m * n.lcm k := by
+  simp_rw [Int.lcm, natAbs_mul, Nat.lcm_mul_left]
+
+theorem lcm_mul_right {m n k : ℤ} : (m * n).lcm (k * n) = m.lcm k * natAbs n := by
+  simp_rw [Int.lcm, natAbs_mul, Nat.lcm_mul_right]
+
 end Int
 
 @[to_additive gcd_nsmul_eq_zero]
@@ -511,3 +517,38 @@ theorem pow_gcd_eq_one {M : Type*} [Monoid M] (x : M) {m n : ℕ} (hm : x ^ m = 
   simp only [Nat.gcd_eq_gcd_ab, zpow_add, zpow_mul, hm, hn, one_zpow, one_mul]
 #align pow_gcd_eq_one pow_gcd_eq_one
 #align gcd_nsmul_eq_zero gcd_nsmul_eq_zero
+
+variable {α : Type*}
+
+section GroupWithZero
+variable [GroupWithZero α] {a b : α} {m n : ℕ}
+
+protected lemma Commute.pow_eq_pow_iff_of_coprime (hab : Commute a b) (hmn : m.Coprime n) :
+    a ^ m = b ^ n ↔ ∃ c, a = c ^ n ∧ b = c ^ m := by
+  refine ⟨fun h ↦ ?_, by rintro ⟨c, rfl, rfl⟩; rw [← pow_mul, ← pow_mul']⟩
+  by_cases m = 0; · aesop
+  by_cases n = 0; · aesop
+  by_cases hb : b = 0; exact ⟨0, by aesop⟩
+  by_cases ha : a = 0; exact ⟨0, by have := h.symm; aesop⟩
+  refine ⟨a ^ Nat.gcdB m n * b ^ Nat.gcdA m n, ?_, ?_⟩
+  all_goals
+    refine (pow_one _).symm.trans ?_
+    conv_lhs => rw [← zpow_ofNat, ← hmn, Nat.gcd_eq_gcd_ab]
+    simp only [zpow_add₀ ha, zpow_add₀ hb, ← zpow_ofNat, (hab.zpow_zpow₀ _ _).mul_zpow, ← zpow_mul,
+      mul_comm (Nat.gcdB m n), mul_comm (Nat.gcdA m n)]
+    simp only [zpow_mul, zpow_ofNat, h]
+    exact ((Commute.pow_pow (by aesop) _ _).zpow_zpow₀ _ _).symm
+
+end GroupWithZero
+
+section CommGroupWithZero
+variable [CommGroupWithZero α] {a b : α} {m n : ℕ}
+
+lemma pow_eq_pow_iff_of_coprime (hmn : m.Coprime n) : a ^ m = b ^ n ↔ ∃ c, a = c ^ n ∧ b = c ^ m :=
+  (Commute.all _ _).pow_eq_pow_iff_of_coprime hmn
+
+lemma pow_mem_range_pow_of_coprime (hmn : m.Coprime n) (a : α) :
+    a ^ m ∈ Set.range (· ^ n : α → α) ↔ a ∈ Set.range (· ^ n : α → α) := by
+  simp [pow_eq_pow_iff_of_coprime hmn.symm]; aesop
+
+end CommGroupWithZero

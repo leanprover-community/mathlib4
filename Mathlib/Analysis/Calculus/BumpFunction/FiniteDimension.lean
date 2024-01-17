@@ -27,7 +27,7 @@ the indicator function of `closedBall 0 1` with a function as above with `s = ba
 noncomputable section
 
 open Set Metric TopologicalSpace Function Asymptotics MeasureTheory FiniteDimensional
-  ContinuousLinearMap Filter MeasureTheory.Measure
+  ContinuousLinearMap Filter MeasureTheory.Measure Bornology
 
 open scoped Pointwise Topology NNReal BigOperators Convolution
 
@@ -59,10 +59,9 @@ theorem exists_smooth_tsupport_subset {s : Set E} {x : E} (hs : s ∈ 𝓝 x) :
     rw [tsupport, ← Euclidean.closure_ball _ d_pos.ne']
     exact closure_mono f_supp
   refine' ⟨f, f_tsupp.trans hd, _, _, _, _⟩
-  · refine' isCompact_of_isClosed_bounded isClosed_closure _
-    have : Bounded (Euclidean.closedBall x d) := Euclidean.isCompact_closedBall.bounded
-    apply this.mono _
-    refine' (IsClosed.closure_subset_iff Euclidean.isClosed_closedBall).2 _
+  · refine' isCompact_of_isClosed_isBounded isClosed_closure _
+    have : IsBounded (Euclidean.closedBall x d) := Euclidean.isCompact_closedBall.isBounded
+    refine this.subset (Euclidean.isClosed_closedBall.closure_subset_iff.2 ?_)
     exact f_supp.trans Euclidean.ball_subset_closedBall
   · apply c.contDiff.comp
     exact ContinuousLinearEquiv.contDiff _
@@ -111,11 +110,10 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
     · exact hT
   let g : ℕ → E → ℝ := fun n => (g0 n).1
   have g_s : ∀ n, support (g n) ⊆ s := fun n => (g0 n).2.1
-  have s_g : ∀ x ∈ s, ∃ n, x ∈ support (g n) := by
-    intro x hx
+  have s_g : ∀ x ∈ s, ∃ n, x ∈ support (g n) := fun x hx ↦ by
     rw [← hT] at hx
-    obtain ⟨i, iT, hi⟩ : ∃ (i : ι) (_ : i ∈ T), x ∈ support (i : E → ℝ) := by
-      simpa only [mem_iUnion] using hx
+    obtain ⟨i, iT, hi⟩ : ∃ i ∈ T, x ∈ support (i : E → ℝ) := by
+      simpa only [mem_iUnion, exists_prop] using hx
     rw [hg, mem_range] at iT
     rcases iT with ⟨n, hn⟩
     rw [← hn] at hi
@@ -139,7 +137,6 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
       exact ⟨R, fun x => hR (mem_range_self _)⟩
     choose R hR using this
     let M := max (((Finset.range (n + 1)).image R).max' (by simp)) 1
-    have M_pos : 0 < M := zero_lt_one.trans_le (le_max_right _ _)
     have δnpos : 0 < δ n := δpos n
     have IR : ∀ i ≤ n, R i ≤ M := by
       intro i hi
@@ -157,11 +154,10 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
       _ = M⁻¹ * δ n * ‖iteratedFDeriv ℝ i (g n) x‖ := by
         rw [norm_smul, Real.norm_of_nonneg]; positivity
       _ ≤ M⁻¹ * δ n * M := (mul_le_mul_of_nonneg_left ((hR i x).trans (IR i hi)) (by positivity))
-      _ = δ n := by field_simp [M_pos.ne']
+      _ = δ n := by field_simp
   choose r rpos hr using this
-  have S : ∀ x, Summable fun n => (r n • g n) x := by
-    intro x
-    refine' summable_of_nnnorm_bounded _ δc.summable fun n => _
+  have S : ∀ x, Summable fun n => (r n • g n) x := fun x ↦ by
+    refine' .of_nnnorm_bounded _ δc.summable fun n => _
     rw [← NNReal.coe_le_coe, coe_nnnorm]
     simpa only [norm_iteratedFDeriv_zero] using hr n 0 (zero_le n) x
   refine' ⟨fun x => ∑' n, (r n • g n) x, _, _, _⟩
@@ -328,7 +324,7 @@ variable (E)
 theorem w_integral {D : ℝ} (Dpos : 0 < D) : ∫ x : E, w D x ∂μ = 1 := by
   simp_rw [w, integral_smul]
   rw [integral_comp_inv_smul_of_nonneg μ (u : E → ℝ) Dpos.le, abs_of_nonneg Dpos.le, mul_comm]
-  field_simp [Dpos.ne', (u_int_pos E).ne']
+  field_simp [(u_int_pos E).ne']
 #align exists_cont_diff_bump_base.W_integral ExistsContDiffBumpBase.w_integral
 
 theorem w_support {D : ℝ} (Dpos : 0 < D) : support (w D : E → ℝ) = ball 0 D := by
@@ -487,7 +483,7 @@ theorem y_smooth : ContDiffOn ℝ ⊤ (uncurry y) (Ioo (0 : ℝ) 1 ×ˢ (univ : 
           ne_of_gt (mul_pos (u_int_pos E) (pow_pos (abs_pos_of_pos hx.1.1) (finrank ℝ E)))
       apply ContDiffOn.pow
       simp_rw [← Real.norm_eq_abs]
-      apply @ContDiffOn.norm ℝ
+      apply ContDiffOn.norm ℝ
       · exact contDiffOn_fst
       · intro x hx; exact ne_of_gt hx.1.1
     · apply (u_smooth E).comp_contDiffOn
@@ -555,9 +551,8 @@ instance (priority := 100) {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E
         simp only [norm_smul, inv_div, mem_closedBall_zero_iff, Real.norm_eq_abs, abs_div, abs_two,
           abs_of_nonneg A.le]
         calc
-          2 / (R + 1) * ‖x‖ ≤ 2 / (R + 1) * 1 :=
-            mul_le_mul_of_nonneg_left hx (div_nonneg zero_le_two A.le)
-          _ = 1 - (R - 1) / (R + 1) := by field_simp [A.ne']; ring
+          2 / (R + 1) * ‖x‖ ≤ 2 / (R + 1) := mul_le_of_le_one_right (by positivity) hx
+          _ = 1 - (R - 1) / (R + 1) := by field_simp; ring
       support := fun R hR => by
         have A : 0 < (R + 1) / 2 := by linarith
         have A' : 0 < R + 1 := by linarith
@@ -565,8 +560,7 @@ instance (priority := 100) {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E
         simp only [hR, if_true, support_comp_inv_smul₀ A.ne', y_support _ (IR R hR) C,
           _root_.smul_ball A.ne', Real.norm_of_nonneg A.le, smul_zero]
         refine' congr (congr_arg ball (Eq.refl 0)) _
-        field_simp [A'.ne']
-        ring }
+        field_simp; ring }
 
 end ExistsContDiffBumpBase
 

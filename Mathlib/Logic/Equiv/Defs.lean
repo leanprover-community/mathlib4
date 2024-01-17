@@ -7,6 +7,8 @@ import Mathlib.Data.FunLike.Equiv
 import Mathlib.Data.Quot
 import Mathlib.Init.Data.Bool.Lemmas
 import Mathlib.Logic.Unique
+import Mathlib.Tactic.Substs
+import Mathlib.Tactic.Conv
 
 #align_import logic.equiv.defs from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 
@@ -62,12 +64,13 @@ variable {α : Sort u} {β : Sort v} {γ : Sort w}
 
 /-- `α ≃ β` is the type of functions from `α → β` with a two-sided inverse. -/
 structure Equiv (α : Sort*) (β : Sort _) where
-  toFun : α → β
-  invFun : β → α
-  left_inv : LeftInverse invFun toFun
-  right_inv : RightInverse invFun toFun
+  protected toFun : α → β
+  protected invFun : β → α
+  protected left_inv : LeftInverse invFun toFun
+  protected right_inv : RightInverse invFun toFun
 #align equiv Equiv
 
+@[inherit_doc]
 infixl:25 " ≃ " => Equiv
 
 /-- Turn an element of a type `F` satisfying `EquivLike F α β` into an actual
@@ -92,16 +95,20 @@ def Equiv.Perm (α : Sort*) :=
 namespace Equiv
 
 instance : EquivLike (α ≃ β) α β where
-  coe := toFun
-  inv := invFun
-  left_inv := left_inv
-  right_inv := right_inv
+  coe := Equiv.toFun
+  inv := Equiv.invFun
+  left_inv := Equiv.left_inv
+  right_inv := Equiv.right_inv
   coe_injective' e₁ e₂ h₁ h₂ := by cases e₁; cases e₂; congr
 
 /-- Helper instance when inference gets stuck on following the normal chain
 `EquivLike → EmbeddingLike → FunLike → CoeFun`. -/
 instance : FunLike (α ≃ β) α (fun _ => β) :=
   EmbeddingLike.toFunLike
+
+@[simp, norm_cast]
+lemma _root_.EquivLike.coe_coe {F} [EquivLike F α β] (e : F) :
+    ((e : α ≃ β) : α → β) = e := rfl
 
 @[simp] theorem coe_fn_mk (f : α → β) (g l r) : (Equiv.mk f g l r : α → β) = f :=
   rfl
@@ -182,12 +189,6 @@ instance : Trans Equiv Equiv Equiv where
 -- the coercion from `e` to a function is now `FunLike.coe` not `e.toFun`
 @[simp, mfld_simps] theorem toFun_as_coe (e : α ≃ β) : e.toFun = e := rfl
 #align equiv.to_fun_as_coe Equiv.toFun_as_coe
-
--- porting note: `simp` should prove this using `toFun_as_coe`, but it doesn't.
--- This might be a bug in `simp` -- see https://github.com/leanprover/lean4/issues/1937
--- If this issue is fixed then the simp linter probably will start complaining, and
--- this theorem can be deleted hopefully without breaking any `simp` proofs.
-@[simp] theorem toFun_as_coe_apply (e : α ≃ β) (x : α) : e.toFun x = e x := rfl
 
 @[simp, mfld_simps] theorem invFun_as_coe (e : α ≃ β) : e.invFun = e.symm := rfl
 #align equiv.inv_fun_as_coe Equiv.invFun_as_coe
@@ -332,6 +333,9 @@ theorem eq_symm_apply {α β} (e : α ≃ β) {x y} : y = e.symm x ↔ e y = x :
 
 @[simp] theorem symm_symm (e : α ≃ β) : e.symm.symm = e := by cases e; rfl
 #align equiv.symm_symm Equiv.symm_symm
+
+theorem symm_bijective : Function.Bijective (Equiv.symm : (α ≃ β) → β ≃ α) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
 @[simp] theorem trans_refl (e : α ≃ β) : e.trans (Equiv.refl β) = e := by cases e; rfl
 #align equiv.trans_refl Equiv.trans_refl
@@ -487,14 +491,14 @@ def propEquivPUnit {p : Prop} (h : p) : p ≃ PUnit.{0} := @equivPUnit p <| uniq
 #align equiv.prop_equiv_punit Equiv.propEquivPUnit
 
 /-- `ULift α` is equivalent to `α`. -/
-@[simps (config := { fullyApplied := false }) apply]
+@[simps (config := .asFn) apply]
 protected def ulift {α : Type v} : ULift.{u} α ≃ α :=
   ⟨ULift.down, ULift.up, ULift.up_down, ULift.down_up.{v, u}⟩
 #align equiv.ulift Equiv.ulift
 #align equiv.ulift_apply Equiv.ulift_apply
 
 /-- `PLift α` is equivalent to `α`. -/
-@[simps (config := { fullyApplied := false }) apply]
+@[simps (config := .asFn) apply]
 protected def plift : PLift α ≃ α := ⟨PLift.down, PLift.up, PLift.up_down, PLift.down_up⟩
 #align equiv.plift Equiv.plift
 #align equiv.plift_apply Equiv.plift_apply
@@ -617,20 +621,17 @@ def arrowPUnitEquivPUnit (α : Sort*) : (α → PUnit.{v}) ≃ PUnit.{w} :=
   ⟨fun _ => .unit, fun _ _ => .unit, fun _ => rfl, fun _ => rfl⟩
 #align equiv.arrow_punit_equiv_punit Equiv.arrowPUnitEquivPUnit
 
-/-- If `α` is `Subsingleton` and `a : α`, then the type of dependent functions `Π (i : α), β i`
-is equivalent to `β a`. -/
-@[simps] def piSubsingleton (β : α → Sort*) [Subsingleton α] (a : α) : (∀ a', β a') ≃ β a where
-  toFun := eval a
-  invFun x b := cast (congr_arg β <| Subsingleton.elim a b) x
-  left_inv _ := funext fun b => by rw [Subsingleton.elim b a]; rfl
-  right_inv _ := rfl
-#align equiv.Pi_subsingleton_apply Equiv.piSubsingleton_apply
-#align equiv.Pi_subsingleton_symm_apply Equiv.piSubsingleton_symm_apply
-#align equiv.Pi_subsingleton Equiv.piSubsingleton
+/-- The equivalence `(∀ i, β i) ≃ β ⋆` when the domain of `β` only contains `⋆` -/
+@[simps (config := .asFn)]
+def piUnique [Unique α] (β : α → Sort*) : (∀ i, β i) ≃ β default where
+  toFun f := f default
+  invFun := uniqueElim
+  left_inv f := by ext i; cases Unique.eq_default i; rfl
+  right_inv x := rfl
 
 /-- If `α` has a unique term, then the type of function `α → β` is equivalent to `β`. -/
-@[simps! (config := { fullyApplied := false }) apply]
-def funUnique (α β) [Unique.{u} α] : (α → β) ≃ β := piSubsingleton _ default
+@[simps! (config := .asFn) apply symm_apply]
+def funUnique (α β) [Unique.{u} α] : (α → β) ≃ β := piUnique _
 #align equiv.fun_unique Equiv.funUnique
 #align equiv.fun_unique_apply Equiv.funUnique_apply
 
@@ -916,6 +917,27 @@ protected theorem exists_congr_left {α β} (f : α ≃ β) {p : α → Prop} :
     (∃ a, p a) ↔ ∃ b, p (f.symm b) :=
   ⟨fun ⟨a, h⟩ => ⟨f a, by simpa using h⟩, fun ⟨b, h⟩ => ⟨_, h⟩⟩
 #align equiv.exists_congr_left Equiv.exists_congr_left
+
+/-- If `f` is a bijective function, then its domain is equivalent to its codomain. -/
+@[simps apply]
+noncomputable def ofBijective (f : α → β) (hf : Bijective f) : α ≃ β where
+  toFun := f
+  invFun := surjInv hf.surjective
+  left_inv := leftInverse_surjInv hf
+  right_inv := rightInverse_surjInv _
+#align equiv.of_bijective Equiv.ofBijective
+#align equiv.of_bijective_apply Equiv.ofBijective_apply
+
+lemma ofBijective_apply_symm_apply (f : α → β) (hf : Bijective f) (x : β) :
+    f ((ofBijective f hf).symm x) = x :=
+  (ofBijective f hf).apply_symm_apply x
+#align equiv.of_bijective_apply_symm_apply Equiv.ofBijective_apply_symm_apply
+
+@[simp]
+lemma ofBijective_symm_apply_apply (f : α → β) (hf : Bijective f) (x : α) :
+    (ofBijective f hf).symm (f x) = x :=
+  (ofBijective f hf).symm_apply_apply x
+#align equiv.of_bijective_symm_apply_apply Equiv.ofBijective_symm_apply_apply
 
 end Equiv
 

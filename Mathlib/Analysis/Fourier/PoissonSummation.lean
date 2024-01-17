@@ -131,31 +131,17 @@ variable {E : Type*} [NormedAddCommGroup E]
 /-- If `f` is `O(x ^ (-b))` at infinity, then so is the function
 `λ x, ‖f.restrict (Icc (x + R) (x + S))‖` for any fixed `R` and `S`. -/
 theorem isBigO_norm_Icc_restrict_atTop {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
-    (hf : IsBigO atTop f fun x : ℝ => |x| ^ (-b)) (R S : ℝ) :
-    IsBigO atTop (fun x : ℝ => ‖f.restrict (Icc (x + R) (x + S))‖) fun x : ℝ => |x| ^ (-b) := by
+    (hf : f =O[atTop] fun x : ℝ => |x| ^ (-b)) (R S : ℝ) :
+    (fun x : ℝ => ‖f.restrict (Icc (x + R) (x + S))‖) =O[atTop] fun x : ℝ => |x| ^ (-b) := by
   -- First establish an explicit estimate on decay of inverse powers.
   -- This is logically independent of the rest of the proof, but of no mathematical interest in
   -- itself, so it is proved using `async` rather than being formulated as a separate lemma.
-  have claim :
-    ∀ x : ℝ, max 0 (-2 * R) < x → ∀ y : ℝ, x + R ≤ y → y ^ (-b) ≤ (1 / 2) ^ (-b) * x ^ (-b) := by
-    intro x hx y hy
+  have claim : ∀ x : ℝ, max 0 (-2 * R) < x → ∀ y : ℝ, x + R ≤ y →
+      y ^ (-b) ≤ (1 / 2) ^ (-b) * x ^ (-b) := fun x hx y hy ↦ by
     rw [max_lt_iff] at hx
-    have hxR : 0 < x + R := by
-      rcases le_or_lt 0 R with (h | h)
-      · exact add_pos_of_pos_of_nonneg hx.1 h
-      · rw [← sub_lt_iff_lt_add, zero_sub]
-        refine' lt_trans _ hx.2
-        rwa [neg_mul, neg_lt_neg_iff, two_mul, add_lt_iff_neg_left]
-    have hy' : 0 < y := hxR.trans_le hy
-    have : y ^ (-b) ≤ (x + R) ^ (-b) := by
-      rw [rpow_neg hy'.le, rpow_neg hxR.le,
-        inv_le_inv (rpow_pos_of_pos hy' _) (rpow_pos_of_pos hxR _)]
-      exact rpow_le_rpow hxR.le hy hb.le
-    refine' this.trans _
-    rw [← mul_rpow one_half_pos.le hx.1.le, rpow_neg (mul_pos one_half_pos hx.1).le,
-      rpow_neg hxR.le]
-    refine' inv_le_inv_of_le (rpow_pos_of_pos (mul_pos one_half_pos hx.1) _) _
-    exact rpow_le_rpow (mul_pos one_half_pos hx.1).le (by linarith) hb.le
+    obtain ⟨hx1, hx2⟩ := hx
+    rw [← mul_rpow] <;> try positivity
+    apply rpow_le_rpow_of_nonpos <;> linarith
   -- Now the main proof.
   obtain ⟨c, hc, hc'⟩ := hf.exists_pos
   simp only [IsBigO, IsBigOWith, eventually_atTop] at hc' ⊢
@@ -164,9 +150,7 @@ theorem isBigO_norm_Icc_restrict_atTop {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
   rw [ge_iff_le, max_le_iff] at hx
   have hx' : max 0 (-2 * R) < x := by linarith
   rw [max_lt_iff] at hx'
-  rw [norm_norm,
-    ContinuousMap.norm_le _
-      (mul_nonneg (mul_nonneg hc.le <| rpow_nonneg_of_nonneg one_half_pos.le _) (norm_nonneg _))]
+  rw [norm_norm, ContinuousMap.norm_le _ (by positivity)]
   refine' fun y => (hd y.1 (by linarith [hx.1, y.2.1])).trans _
   have A : ∀ x : ℝ, 0 ≤ |x| ^ (-b) := fun x => by positivity
   rw [mul_assoc, mul_le_mul_left hc, norm_of_nonneg (A _), norm_of_nonneg (A _)]
@@ -177,9 +161,9 @@ set_option linter.uppercaseLean3 false in
 #align is_O_norm_Icc_restrict_at_top isBigO_norm_Icc_restrict_atTop
 
 theorem isBigO_norm_Icc_restrict_atBot {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
-    (hf : IsBigO atBot f fun x : ℝ => |x| ^ (-b)) (R S : ℝ) :
-    IsBigO atBot (fun x : ℝ => ‖f.restrict (Icc (x + R) (x + S))‖) fun x : ℝ => |x| ^ (-b) := by
-  have h1 : IsBigO atTop (f.comp (ContinuousMap.mk _ continuous_neg)) fun x : ℝ => |x| ^ (-b) := by
+    (hf : f =O[atBot] fun x : ℝ => |x| ^ (-b)) (R S : ℝ) :
+    (fun x : ℝ => ‖f.restrict (Icc (x + R) (x + S))‖) =O[atBot] fun x : ℝ => |x| ^ (-b) := by
+  have h1 : (f.comp (ContinuousMap.mk _ continuous_neg)) =O[atTop] fun x : ℝ => |x| ^ (-b) := by
     convert hf.comp_tendsto tendsto_neg_atTop_atBot using 1
     ext1 x; simp only [Function.comp_apply, abs_neg]
   have h2 := (isBigO_norm_Icc_restrict_atTop hb h1 (-S) (-R)).comp_tendsto tendsto_neg_atBot_atTop
@@ -199,13 +183,11 @@ set_option linter.uppercaseLean3 false in
 #align is_O_norm_Icc_restrict_at_bot isBigO_norm_Icc_restrict_atBot
 
 theorem isBigO_norm_restrict_cocompact (f : C(ℝ, E)) {b : ℝ} (hb : 0 < b)
-    (hf : IsBigO (cocompact ℝ) f fun x : ℝ => |x| ^ (-b)) (K : Compacts ℝ) :
-    IsBigO (cocompact ℝ) (fun x => ‖(f.comp (ContinuousMap.addRight x)).restrict K‖) fun x =>
-      |x| ^ (-b) := by
-  obtain ⟨r, hr⟩ := K.isCompact.bounded.subset_ball 0
+    (hf : f =O[cocompact ℝ] fun x : ℝ => |x| ^ (-b)) (K : Compacts ℝ) :
+    (fun x => ‖(f.comp (ContinuousMap.addRight x)).restrict K‖) =O[cocompact ℝ] (|·| ^ (-b)) := by
+  obtain ⟨r, hr⟩ := K.isCompact.isBounded.subset_closedBall 0
   rw [closedBall_eq_Icc, zero_add, zero_sub] at hr
-  have :
-    ∀ x : ℝ,
+  have : ∀ x : ℝ,
       ‖(f.comp (ContinuousMap.addRight x)).restrict K‖ ≤ ‖f.restrict (Icc (x - r) (x + r))‖ := by
     intro x
     rw [ContinuousMap.norm_le _ (norm_nonneg _)]
@@ -225,7 +207,7 @@ set_option linter.uppercaseLean3 false in
 /-- **Poisson's summation formula**, assuming that `f` decays as
 `|x| ^ (-b)` for some `1 < b` and its Fourier transform is summable. -/
 theorem Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay_of_summable {f : ℝ → ℂ} (hc : Continuous f)
-    {b : ℝ} (hb : 1 < b) (hf : IsBigO (cocompact ℝ) f fun x : ℝ => |x| ^ (-b))
+    {b : ℝ} (hb : 1 < b) (hf : f =O[cocompact ℝ] fun x : ℝ => |x| ^ (-b))
     (hFf : Summable fun n : ℤ => 𝓕 f n) : ∑' n : ℤ, f n = (∑' n : ℤ, 𝓕 f n) :=
   Real.tsum_eq_tsum_fourierIntegral
     (fun K =>
@@ -240,8 +222,8 @@ theorem Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay_of_summable {f : ℝ →
 `|x| ^ (-b)` for some `1 < b`. (This is the one-dimensional case of Corollary VII.2.6 of Stein and
 Weiss, *Introduction to Fourier analysis on Euclidean spaces*.) -/
 theorem Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay {f : ℝ → ℂ} (hc : Continuous f) {b : ℝ}
-    (hb : 1 < b) (hf : IsBigO (cocompact ℝ) f fun x : ℝ => |x| ^ (-b))
-    (hFf : IsBigO (cocompact ℝ) (𝓕 f) fun x : ℝ => |x| ^ (-b)) :
+    (hb : 1 < b) (hf : f =O[cocompact ℝ] (|·| ^ (-b)))
+    (hFf : (𝓕 f) =O[cocompact ℝ] (|·| ^ (-b))) :
     ∑' n : ℤ, f n = ∑' n : ℤ, 𝓕 f n :=
   Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay_of_summable hc hb hf
     (summable_of_isBigO (Real.summable_abs_int_rpow hb) (hFf.comp_tendsto Int.tendsto_coe_cofinite))

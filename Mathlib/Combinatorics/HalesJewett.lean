@@ -214,8 +214,9 @@ theorem diagonal_apply {α ι} [Nonempty ι] (x : α) : Line.diagonal α ι x = 
   simp_rw [Line.diagonal, Option.getD_none]
 #align combinatorics.line.diagonal_apply Combinatorics.Line.diagonal_apply
 
-/-- The Hales-Jewett theorem. This version has a restriction on universe levels which is necessary
-for the proof. See `exists_mono_in_high_dimension` for a fully universe-polymorphic version. -/
+/-- The **Hales-Jewett theorem**. This version has a restriction on universe levels which is
+necessary for the proof. See `exists_mono_in_high_dimension` for a fully universe-polymorphic
+version. -/
 private theorem exists_mono_in_high_dimension' :
     ∀ (α : Type u) [Finite α] (κ : Type max v u) [Finite κ],
       ∃ (ι : Type) (_ : Fintype ι), ∀ C : (ι → α) → κ, ∃ l : Line α ι, l.IsMono C :=
@@ -254,10 +255,10 @@ private theorem exists_mono_in_high_dimension' :
       ∀ r : ℕ,
         ∃ (ι : Type) (_ : Fintype ι),
           ∀ C : (ι → Option α) → κ,
-            (∃ s : ColorFocused C, Multiset.card s.lines = r) ∨ ∃ l, IsMono C l
-    -- Given the key claim, we simply take `r = |κ| + 1`. We cannot have this many distinct colors
-    -- so we must be in the second case, where there is a monochromatic line.
-    · obtain ⟨ι, _inst, hι⟩ := key (Fintype.card κ + 1)
+            (∃ s : ColorFocused C, Multiset.card s.lines = r) ∨ ∃ l, IsMono C l by
+      -- Given the key claim, we simply take `r = |κ| + 1`. We cannot have this many distinct colors
+      -- so we must be in the second case, where there is a monochromatic line.
+      obtain ⟨ι, _inst, hι⟩ := key (Fintype.card κ + 1)
       refine' ⟨ι, _inst, fun C => (hι C).resolve_left _⟩
       rintro ⟨s, sr⟩
       apply Nat.not_succ_le_self (Fintype.card κ)
@@ -343,7 +344,7 @@ theorem exists_mono_homothetic_copy {M κ : Type*} [AddCommMonoid M] (S : Finset
   obtain ⟨ι, _inst, hι⟩ := Line.exists_mono_in_high_dimension S κ
   specialize hι fun v => C <| ∑ i, v i
   obtain ⟨l, c, hl⟩ := hι
-  set s : Finset ι := Finset.univ.filter (fun i => l.idxFun i = none ) with hs
+  set s : Finset ι := Finset.univ.filter (fun i => l.idxFun i = none) with hs
   refine'
     ⟨s.card, Finset.card_pos.mpr ⟨l.proper.choose, _⟩, ∑ i in sᶜ, ((l.idxFun i).map _).getD 0,
       c, _⟩

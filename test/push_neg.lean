@@ -5,8 +5,9 @@ Author: Alice Laroche, Frédéric Dupuis, Jireh Loreaux
 -/
 
 import Mathlib.Tactic.PushNeg
-import Mathlib.Init.Algebra.Order
+import Mathlib.Init.Order.Defs
 
+private axiom test_sorry : ∀ {α}, α
 set_option autoImplicit true
 variable {α β : Type} [LinearOrder β] {p q : Prop} {p' q' : α → Prop}
 
@@ -28,7 +29,7 @@ example : (∀(x : α), ¬ p' x) → ¬ ∃(x : α), p' x := by
   guard_target = ∀ (x : α), ¬p' x
   exact h
 
-example : (¬ ∀(x : α), p' x) → (∃(x : α), ¬ p' x) :=by
+example : (¬ ∀(x : α), p' x) → (∃(x : α), ¬ p' x) := by
   intro h
   push_neg at h
   guard_hyp h : ∃ (x : α), ¬p' x
@@ -101,7 +102,7 @@ example (h : p → ¬ q) : ¬ (p ∧ q) := by
 example (a : β) : ¬ ∀ x : β, x < a → ∃ y : β, (y < a) ∧ ∀ z : β, x = z := by
   push_neg
   guard_target = ∃ x, x < a ∧ ∀ (y : β), y < a → ∃ z, x ≠ z
-  sorry
+  exact test_sorry
 
 example {α} [Preorder α] (m n : α) (h : ¬(∃ k : α, m ≤ k)) (h₂ : m ≤ n) : m ≤ n := by
   push_neg at h
@@ -116,12 +117,20 @@ example {α} [Preorder α] (m n : α) (h : ¬(∃ k : α, m < k)) (h₂ : m ≤ 
 example (r : LinearOrder α) (s : Preorder α) (a b : α) : ¬(s.lt a b → r.lt a b) := by
   push_neg
   guard_target = s.lt a b ∧ r.le b a
-  sorry
+  exact test_sorry
 
 example (r : LinearOrder α) (s : Preorder α) (a b : α) : ¬(r.lt a b → s.lt a b) := by
   push_neg
   guard_target = r.lt a b ∧ ¬ s.lt a b
-  sorry
+  exact test_sorry
+
+-- check that `push_neg` does not expand `let` definitions
+example (h : p ∧ q) : ¬¬(p ∧ q) := by
+  let r := p ∧ q
+  change ¬¬r
+  push_neg
+  guard_target =ₛ r
+  exact h
 
 section use_distrib
 set_option push_neg.use_distrib true
@@ -146,3 +155,40 @@ end use_distrib
 example (a : α) (o : Option α) (h : ¬∀ hs, o.get hs ≠ a) : ∃ hs, o.get hs = a := by
   push_neg at h
   exact h
+
+example (s : Set α) (h : ¬s.Nonempty) : s = ∅ := by
+  push_neg at h
+  exact h
+
+example (s : Set α) (h : ¬ s = ∅) : s.Nonempty := by
+  push_neg at h
+  exact h
+
+example (s : Set α) (h : s ≠ ∅) : s.Nonempty := by
+  push_neg at h
+  exact h
+
+example (s : Set α) (h : ∅ ≠ s) : s.Nonempty := by
+  push_neg at h
+  exact h
+
+namespace no_proj
+
+structure G (V : Type) where
+  Adj : V → V → Prop
+
+def g : G Nat where
+  Adj a b := (a ≠ b) ∧ ((a ∣ b) ∨ (b ∣ a))
+
+example {p q : Nat} : ¬ g.Adj p q := by
+  rw [g]
+  guard_target =ₛ ¬ G.Adj { Adj := fun a b => (a ≠ b) ∧ ((a ∣ b) ∨ (b ∣ a)) } p q
+  push_neg
+  guard_target =ₛ ¬ G.Adj { Adj := fun a b => (a ≠ b) ∧ ((a ∣ b) ∨ (b ∣ a)) } p q
+  dsimp only
+  guard_target =ₛ ¬ ((p ≠ q) ∧ ((p ∣ q) ∨ (q ∣ p)))
+  push_neg
+  guard_target =ₛ p ≠ q → ¬p ∣ q ∧ ¬q ∣ p
+  exact test_sorry
+
+end no_proj

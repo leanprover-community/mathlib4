@@ -104,17 +104,39 @@ def limitConeIsLimit (F : J ⥤ AlgebraCatMax.{v, w} R) : IsLimit (limitCone.{v,
   · -- Porting note: we could add a custom `ext` lemma here.
     apply Subtype.ext
     ext j
-    simp [forget_map_eq_coe, AlgHom.map_one, Functor.mapCone_π_app]
+    simp only [Functor.comp_obj, Functor.mapCone_pt, Functor.mapCone_π_app,
+      forget_map_eq_coe]
+    -- This used to be as below but we need `erw` after leanprover/lean4#2644
+    -- simp [forget_map_eq_coe, AlgHom.map_one, Functor.mapCone_π_app]
+    erw [map_one]
     rfl
   · intro x y
     apply Subtype.ext
     ext j
-    simp [forget_map_eq_coe, AlgHom.map_mul, Functor.mapCone_π_app]
+    simp only [Functor.comp_obj, Functor.mapCone_pt, Functor.mapCone_π_app,
+      forget_map_eq_coe]
+    -- This used to be as below, but we need `erw` after leanprover/lean4#2644
+    -- simp [forget_map_eq_coe, AlgHom.map_mul, Functor.mapCone_π_app]
+    erw [map_mul]
     rfl
-  · simp [forget_map_eq_coe, AlgHom.map_zero, Functor.mapCone_π_app]
+  · simp only [Functor.comp_obj, Functor.mapCone_pt, Functor.mapCone_π_app,
+      forget_map_eq_coe]
+    -- The below `simp` was enough before leanprover/lean4#2644
+    -- simp [forget_map_eq_coe, AlgHom.map_zero, Functor.mapCone_π_app]
+    apply Subtype.ext
+    dsimp
+    funext u
+    erw [map_zero]
     rfl
   · intro x y
-    simp [forget_map_eq_coe, AlgHom.map_add, Functor.mapCone_π_app]
+    simp only [Functor.comp_obj, Functor.mapCone_pt, Functor.mapCone_π_app,
+      forget_map_eq_coe]
+    -- The below `simp` was enough before leanprover/lean4#2644
+    -- simp [forget_map_eq_coe, AlgHom.map_add, Functor.mapCone_π_app]
+    apply Subtype.ext
+    dsimp
+    funext u
+    erw [map_add]
     rfl
   · intro r
     apply Subtype.ext
@@ -159,12 +181,12 @@ instance forget₂RingPreservesLimits : PreservesLimits (forget₂ (AlgebraCat R
 /-- The forgetful functor from R-algebras to R-modules preserves all limits.
 -/
 instance forget₂ModulePreservesLimitsOfSize : PreservesLimitsOfSize.{v, v}
-    (forget₂ (AlgebraCatMax.{v, w} R) (ModuleCat.ModuleCatMax.{v, w} R)) where
+    (forget₂ (AlgebraCatMax.{v, w} R) (ModuleCatMax.{v, w} R)) where
   preservesLimitsOfShape :=
     { preservesLimit :=
         preservesLimitOfPreservesLimitCone (limitConeIsLimit _)
           (ModuleCat.HasLimits.limitConeIsLimit
-            (_ ⋙ forget₂ (AlgebraCatMax.{v, w} R) (ModuleCat.ModuleCatMax.{v, w} R))) }
+            (_ ⋙ forget₂ (AlgebraCatMax.{v, w} R) (ModuleCatMax.{v, w} R))) }
 #align Algebra.forget₂_Module_preserves_limits_of_size AlgebraCat.forget₂ModulePreservesLimitsOfSize
 
 instance forget₂ModulePreservesLimits :

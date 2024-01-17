@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 import Mathlib.Logic.Function.Basic
-import Mathlib.Tactic.NormCast
+import Mathlib.Util.CompileInductive
 
 #align_import data.fun_like.basic from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
 
@@ -146,7 +146,8 @@ namespace FunLike
 
 variable {F α β} [i : FunLike F α β]
 
-instance (priority := 100) hasCoeToFun : CoeFun F fun _ ↦ ∀ a : α, β a where coe := FunLike.coe
+instance (priority := 100) hasCoeToFun : CoeFun F (fun _ ↦ ∀ a : α, β a) where
+  coe := @FunLike.coe _ _ β _ -- need to make explicit to beta reduce for non-dependent functions
 
 #eval Lean.Elab.Command.liftTermElabM do
   Std.Tactic.Coe.registerCoercion ``FunLike.coe
@@ -195,7 +196,7 @@ theorem exists_ne {f g : F} (h : f ≠ g) : ∃ x, f x ≠ g x :=
 
 /-- This is not an instance to avoid slowing down every single `Subsingleton` typeclass search.-/
 lemma subsingleton_cod [∀ a, Subsingleton (β a)] : Subsingleton F :=
-  ⟨fun _ _ ↦ coe_injective $ Subsingleton.elim _ _⟩
+  ⟨fun _ _ ↦ coe_injective <| Subsingleton.elim _ _⟩
 #align fun_like.subsingleton_cod FunLike.subsingleton_cod
 
 end FunLike

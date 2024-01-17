@@ -6,7 +6,7 @@ Authors: Yury Kudryashov
 import Mathlib.Topology.MetricSpace.Lipschitz
 import Mathlib.Topology.UniformSpace.CompleteSeparated
 
-#align_import topology.metric_space.antilipschitz from "leanprover-community/mathlib"@"97f079b7e89566de3a1143f887713667328c38ba"
+#align_import topology.metric_space.antilipschitz from "leanprover-community/mathlib"@"c8f305514e0d47dfaa710f5a52f0d21b588e6328"
 
 /-!
 # Antilipschitz functions
@@ -54,8 +54,8 @@ theorem antilipschitzWith_iff_le_mul_nndist :
   norm_cast
 #align antilipschitz_with_iff_le_mul_nndist antilipschitzWith_iff_le_mul_nndist
 
-alias antilipschitzWith_iff_le_mul_nndist ↔
-  AntilipschitzWith.le_mul_nndist AntilipschitzWith.of_le_mul_nndist
+alias ⟨AntilipschitzWith.le_mul_nndist, AntilipschitzWith.of_le_mul_nndist⟩ :=
+  antilipschitzWith_iff_le_mul_nndist
 #align antilipschitz_with.le_mul_nndist AntilipschitzWith.le_mul_nndist
 #align antilipschitz_with.of_le_mul_nndist AntilipschitzWith.of_le_mul_nndist
 
@@ -65,8 +65,8 @@ theorem antilipschitzWith_iff_le_mul_dist :
   norm_cast
 #align antilipschitz_with_iff_le_mul_dist antilipschitzWith_iff_le_mul_dist
 
-alias antilipschitzWith_iff_le_mul_dist ↔
-  AntilipschitzWith.le_mul_dist AntilipschitzWith.of_le_mul_dist
+alias ⟨AntilipschitzWith.le_mul_dist, AntilipschitzWith.of_le_mul_dist⟩ :=
+  antilipschitzWith_iff_le_mul_dist
 #align antilipschitz_with.le_mul_dist AntilipschitzWith.le_mul_dist
 #align antilipschitz_with.of_le_mul_dist AntilipschitzWith.of_le_mul_dist
 
@@ -78,7 +78,7 @@ theorem mul_le_nndist (hf : AntilipschitzWith K f) (x y : α) :
 #align antilipschitz_with.mul_le_nndist AntilipschitzWith.mul_le_nndist
 
 theorem mul_le_dist (hf : AntilipschitzWith K f) (x y : α) :
-    (K⁻¹ * dist x y : ℝ) ≤ dist (f x) (f y) := by exact_mod_cast hf.mul_le_nndist x y
+    (K⁻¹ * dist x y : ℝ) ≤ dist (f x) (f y) := mod_cast hf.mul_le_nndist x y
 #align antilipschitz_with.mul_le_dist AntilipschitzWith.mul_le_dist
 
 end AntilipschitzWith
@@ -218,19 +218,17 @@ namespace AntilipschitzWith
 
 open Metric
 
-variable [PseudoMetricSpace α] [PseudoMetricSpace β] {K : ℝ≥0} {f : α → β}
+variable [PseudoMetricSpace α] [PseudoMetricSpace β] [PseudoMetricSpace γ]
+variable {K : ℝ≥0} {f : α → β}
 
-theorem bounded_preimage (hf : AntilipschitzWith K f) {s : Set β} (hs : Bounded s) :
-    Bounded (f ⁻¹' s) :=
-  Exists.intro (K * diam s) fun x hx y hy =>
-    calc
-      dist x y ≤ K * dist (f x) (f y) := hf.le_mul_dist x y
-      _ ≤ K * diam s := by gcongr; exact dist_le_diam_of_mem hs hx hy
-#align antilipschitz_with.bounded_preimage AntilipschitzWith.bounded_preimage
+theorem isBounded_preimage (hf : AntilipschitzWith K f) {s : Set β} (hs : IsBounded s) :
+    IsBounded (f ⁻¹' s) :=
+  isBounded_iff_ediam_ne_top.2 <| ne_top_of_le_ne_top
+    (ENNReal.mul_ne_top ENNReal.coe_ne_top hs.ediam_ne_top) (hf.ediam_preimage_le _)
+#align antilipschitz_with.bounded_preimage AntilipschitzWith.isBounded_preimage
 
 theorem tendsto_cobounded (hf : AntilipschitzWith K f) : Tendsto f (cobounded α) (cobounded β) :=
-  compl_surjective.forall.2 fun s (hs : IsBounded s) =>
-    Metric.isBounded_iff.2 <| hf.bounded_preimage <| Metric.isBounded_iff.1 hs
+  compl_surjective.forall.2 fun _ ↦ hf.isBounded_preimage
 #align antilipschitz_with.tendsto_cobounded AntilipschitzWith.tendsto_cobounded
 
 /-- The image of a proper space under an expanding onto map is proper. -/
@@ -240,11 +238,30 @@ protected theorem properSpace {α : Type*} [MetricSpace α] {K : ℝ≥0} {f : �
   refine ⟨fun x₀ r => ?_⟩
   let K := f ⁻¹' closedBall x₀ r
   have A : IsClosed K := isClosed_ball.preimage f_cont
-  have B : Bounded K := hK.bounded_preimage bounded_closedBall
+  have B : IsBounded K := hK.isBounded_preimage isBounded_closedBall
   have : IsCompact K := isCompact_iff_isClosed_bounded.2 ⟨A, B⟩
   convert this.image f_cont
   exact (hf.image_preimage _).symm
 #align antilipschitz_with.proper_space AntilipschitzWith.properSpace
+
+theorem isBounded_of_image2_left (f : α → β → γ) {K₁ : ℝ≥0}
+    (hf : ∀ b, AntilipschitzWith K₁ fun a => f a b) {s : Set α} {t : Set β}
+    (hst : IsBounded (Set.image2 f s t)) : IsBounded s ∨ IsBounded t := by
+  contrapose! hst
+  obtain ⟨b, hb⟩ : t.Nonempty := nonempty_of_not_isBounded hst.2
+  have : ¬IsBounded (Set.image2 f s {b}) := by
+    intro h
+    apply hst.1
+    rw [Set.image2_singleton_right] at h
+    replace h := (hf b).isBounded_preimage h
+    refine' h.subset (subset_preimage_image _ _)
+  exact mt (IsBounded.subset · (image2_subset subset_rfl (singleton_subset_iff.mpr hb))) this
+#align antilipschitz_with.bounded_of_image2_left AntilipschitzWith.isBounded_of_image2_left
+
+theorem isBounded_of_image2_right {f : α → β → γ} {K₂ : ℝ≥0} (hf : ∀ a, AntilipschitzWith K₂ (f a))
+    {s : Set α} {t : Set β} (hst : IsBounded (Set.image2 f s t)) : IsBounded s ∨ IsBounded t :=
+  Or.symm <| isBounded_of_image2_left (flip f) hf <| image2_swap f s t ▸ hst
+#align antilipschitz_with.bounded_of_image2_right AntilipschitzWith.isBounded_of_image2_right
 
 end AntilipschitzWith
 

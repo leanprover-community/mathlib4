@@ -23,7 +23,7 @@ and the actions
 
 which matches the action of `Set.mulActionSet`.
 
-These are all available in the `pointwise` locale.
+These are all available in the `Pointwise` locale.
 
 Additionally, it provides various degrees of monoid structure:
 * `AddSubmonoid.one`
@@ -57,9 +57,8 @@ namespace Submonoid
 variable {s t u : Set M}
 
 @[to_additive]
-theorem mul_subset {S : Submonoid M} (hs : s ⊆ S) (ht : t ⊆ S) : s * t ⊆ S := by
-  rintro _ ⟨p, q, hp, hq, rfl⟩
-  exact Submonoid.mul_mem _ (hs hp) (ht hq)
+theorem mul_subset {S : Submonoid M} (hs : s ⊆ S) (ht : t ⊆ S) : s * t ⊆ S :=
+  mul_subset_iff.2 fun _x hx _y hy ↦ mul_mem (hs hx) (ht hy)
 #align submonoid.mul_subset Submonoid.mul_subset
 #align add_submonoid.add_subset AddSubmonoid.add_subset
 
@@ -72,28 +71,28 @@ theorem mul_subset_closure (hs : s ⊆ u) (ht : t ⊆ u) : s * t ⊆ Submonoid.c
 @[to_additive]
 theorem coe_mul_self_eq (s : Submonoid M) : (s : Set M) * s = s := by
   ext x
-  refine' ⟨_, fun h => ⟨x, 1, h, s.one_mem, mul_one x⟩⟩
-  rintro ⟨a, b, ha, hb, rfl⟩
+  refine' ⟨_, fun h => ⟨x, h, 1, s.one_mem, mul_one x⟩⟩
+  rintro ⟨a, ha, b, hb, rfl⟩
   exact s.mul_mem ha hb
 #align submonoid.coe_mul_self_eq Submonoid.coe_mul_self_eq
 #align add_submonoid.coe_add_self_eq AddSubmonoid.coe_add_self_eq
 
 @[to_additive]
 theorem closure_mul_le (S T : Set M) : closure (S * T) ≤ closure S ⊔ closure T :=
-  sInf_le fun _x ⟨_s, _t, hs, ht, hx⟩ => hx ▸
+  sInf_le fun _x ⟨_s, hs, _t, ht, hx⟩ => hx ▸
     (closure S ⊔ closure T).mul_mem (SetLike.le_def.mp le_sup_left <| subset_closure hs)
       (SetLike.le_def.mp le_sup_right <| subset_closure ht)
 #align submonoid.closure_mul_le Submonoid.closure_mul_le
 #align add_submonoid.closure_add_le AddSubmonoid.closure_add_le
 
 @[to_additive]
-theorem sup_eq_closure (H K : Submonoid M) : H ⊔ K = closure ((H : Set M) * (K : Set M)) :=
+theorem sup_eq_closure_mul (H K : Submonoid M) : H ⊔ K = closure ((H : Set M) * (K : Set M)) :=
   le_antisymm
-    (sup_le (fun h hh => subset_closure ⟨h, 1, hh, K.one_mem, mul_one h⟩) fun k hk =>
-      subset_closure ⟨1, k, H.one_mem, hk, one_mul k⟩)
+    (sup_le (fun h hh => subset_closure ⟨h, hh, 1, K.one_mem, mul_one h⟩) fun k hk =>
+      subset_closure ⟨1, H.one_mem, k, hk, one_mul k⟩)
     ((closure_mul_le _ _).trans <| by rw [closure_eq, closure_eq])
-#align submonoid.sup_eq_closure Submonoid.sup_eq_closure
-#align add_submonoid.sup_eq_closure AddSubmonoid.sup_eq_closure
+#align submonoid.sup_eq_closure Submonoid.sup_eq_closure_mul
+#align add_submonoid.sup_eq_closure AddSubmonoid.sup_eq_closure_add
 
 @[to_additive]
 theorem pow_smul_mem_closure_smul {N : Type*} [CommMonoid N] [MulAction M N] [IsScalarTower M N N]
@@ -558,7 +557,7 @@ theorem closure_mul_closure (S T : Set R) : closure S * closure T = closure (S *
     change a' * b' ∈ closure (S * T)
     exact subset_closure (Set.mul_mem_mul ha' hb')
   · rw [closure_le]
-    rintro _ ⟨a, b, ha, hb, rfl⟩
+    rintro _ ⟨a, ha, b, hb, rfl⟩
     exact mul_mem_mul (subset_closure ha) (subset_closure hb)
 #align add_submonoid.closure_mul_closure AddSubmonoid.closure_mul_closure
 
@@ -593,9 +592,8 @@ theorem mul_le_mul_right {M N P : AddSubmonoid R} (h : N ≤ P) : M * N ≤ M * 
 #align add_submonoid.mul_le_mul_right AddSubmonoid.mul_le_mul_right
 
 theorem mul_subset_mul {M N : AddSubmonoid R} :
-    (↑M : Set R) * (↑N : Set R) ⊆ (↑(M * N) : Set R) := by
-  rintro _ ⟨i, j, hi, hj, rfl⟩
-  exact mul_mem_mul hi hj
+    (↑M : Set R) * (↑N : Set R) ⊆ (↑(M * N) : Set R) :=
+  mul_subset_iff.2 fun _i hi _j hj ↦ mul_mem_mul hi hj
 #align add_submonoid.mul_subset_mul AddSubmonoid.mul_subset_mul
 
 end NonUnitalNonAssocSemiring
@@ -609,7 +607,6 @@ variable [NonUnitalNonAssocRing R]
 This is available as an instance in the `Pointwise` locale. -/
 protected def hasDistribNeg : HasDistribNeg (AddSubmonoid R) :=
   { AddSubmonoid.involutiveNeg with
-    neg := Neg.neg
     neg_mul := fun x y => by
       refine'
           le_antisymm (mul_le.2 fun m hm n hn => _)
@@ -671,9 +668,7 @@ variable [Semiring R]
 
 /-- Monoid structure on additive submonoids of a semiring. -/
 protected def monoid : Monoid (AddSubmonoid R) :=
-  { AddSubmonoid.semigroup, AddSubmonoid.mulOneClass with
-    one := 1
-    mul := (· * ·) }
+  { AddSubmonoid.semigroup, AddSubmonoid.mulOneClass with }
 scoped[Pointwise] attribute [instance] AddSubmonoid.monoid
 
 theorem closure_pow (s : Set R) : ∀ n : ℕ, closure s ^ n = closure (s ^ n)
@@ -681,8 +676,9 @@ theorem closure_pow (s : Set R) : ∀ n : ℕ, closure s ^ n = closure (s ^ n)
   | n + 1 => by rw [pow_succ, pow_succ, closure_pow s n, closure_mul_closure]
 #align add_submonoid.closure_pow AddSubmonoid.closure_pow
 
-theorem pow_eq_closure_pow_set (s : AddSubmonoid R) (n : ℕ) : s ^ n = closure ((s : Set R) ^ n) :=
-  by rw [← closure_pow, closure_eq]
+theorem pow_eq_closure_pow_set (s : AddSubmonoid R) (n : ℕ) :
+    s ^ n = closure ((s : Set R) ^ n) := by
+  rw [← closure_pow, closure_eq]
 #align add_submonoid.pow_eq_closure_pow_set AddSubmonoid.pow_eq_closure_pow_set
 
 theorem pow_subset_pow {s : AddSubmonoid R} {n : ℕ} : (↑s : Set R) ^ n ⊆ ↑(s ^ n) :=
@@ -693,17 +689,17 @@ end Semiring
 
 end AddSubmonoid
 
-namespace Set.IsPwo
+namespace Set.IsPWO
 
 variable [OrderedCancelCommMonoid α] {s : Set α}
 
 @[to_additive]
-theorem submonoid_closure (hpos : ∀ x : α, x ∈ s → 1 ≤ x) (h : s.IsPwo) :
-    IsPwo (Submonoid.closure s : Set α) := by
+theorem submonoid_closure (hpos : ∀ x : α, x ∈ s → 1 ≤ x) (h : s.IsPWO) :
+    IsPWO (Submonoid.closure s : Set α) := by
   rw [Submonoid.closure_eq_image_prod]
   refine' (h.partiallyWellOrderedOn_sublistForall₂ (· ≤ ·)).image_of_monotone_on _
   exact fun l1 _ l2 hl2 h12 => h12.prod_le_prod' fun x hx => hpos x <| hl2 x hx
-#align set.is_pwo.submonoid_closure Set.IsPwo.submonoid_closure
-#align set.is_pwo.add_submonoid_closure Set.IsPwo.addSubmonoid_closure
+#align set.is_pwo.submonoid_closure Set.IsPWO.submonoid_closure
+#align set.is_pwo.add_submonoid_closure Set.IsPWO.addSubmonoid_closure
 
-end Set.IsPwo
+end Set.IsPWO

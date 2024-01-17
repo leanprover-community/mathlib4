@@ -72,6 +72,7 @@ def countedSequence (p q : ℕ) : Set (List ℤ) :=
   {l | l.count 1 = p ∧ l.count (-1) = q ∧ ∀ x ∈ l, x = (1 : ℤ) ∨ x = -1}
 #align ballot.counted_sequence Ballot.countedSequence
 
+open scoped List in
 /-- An alternative definition of `countedSequence` that uses `List.Perm`. -/
 theorem mem_countedSequence_iff_perm {p q l} :
     l ∈ countedSequence p q ↔ l ~ List.replicate p (1 : ℤ) ++ List.replicate q (-1) := by
@@ -173,7 +174,7 @@ theorem countedSequence_nonempty : ∀ p q : ℕ, (countedSequence p q).Nonempty
   | 0, q => by simp
   | p + 1, 0 => by simp
   | p + 1, q + 1 => by
-    rw [counted_succ_succ, union_nonempty, nonempty_image_iff]
+    rw [counted_succ_succ, union_nonempty, image_nonempty]
     exact Or.inl (countedSequence_nonempty _ _)
 #align ballot.counted_sequence_nonempty Ballot.countedSequence_nonempty
 
@@ -221,14 +222,16 @@ theorem first_vote_pos :
     simp [ENNReal.div_self _ _]
   | 0, q + 1, _ => by
     rw [counted_left_zero, condCount_singleton]
-    simp
+    simp only [List.replicate, Nat.add_eq, add_zero, mem_setOf_eq, List.headI_cons, Nat.cast_zero,
+      ENNReal.zero_div, ite_eq_right_iff]
+    decide
   | p + 1, q + 1, _ => by
     simp_rw [counted_succ_succ]
     rw [← condCount_disjoint_union ((countedSequence_finite _ _).image _)
         ((countedSequence_finite _ _).image _) (disjoint_bits _ _),
       ← counted_succ_succ,
       condCount_eq_one_of ((countedSequence_finite p (q + 1)).image _)
-        (nonempty_image_iff.2 (countedSequence_nonempty _ _))]
+        ((countedSequence_nonempty _ _).image _)]
     · have : List.cons (-1) '' countedSequence (p + 1) q ∩ {l : List ℤ | l.headI = 1} = ∅ := by
         ext
         simp only [mem_inter_iff, mem_image, mem_setOf_eq, mem_empty_iff_false, iff_false_iff,
@@ -238,7 +241,7 @@ theorem first_vote_pos :
       have hint :
         countedSequence (p + 1) (q + 1) ∩ List.cons 1 '' countedSequence p (q + 1) =
           List.cons 1 '' countedSequence p (q + 1) := by
-        rw [inter_eq_right_iff_subset, counted_succ_succ]
+        rw [inter_eq_right, counted_succ_succ]
         exact subset_union_left _ _
       rw [(condCount_eq_zero_iff <| (countedSequence_finite _ _).image _).2 this, condCount,
         cond_apply _ list_int_measurableSet, hint, count_injective_image List.cons_injective,
@@ -252,7 +255,7 @@ theorem first_vote_pos :
     · simp
 #align ballot.first_vote_pos Ballot.first_vote_pos
 
-theorem headI_mem_of_nonempty {α : Type _} [Inhabited α] : ∀ {l : List α} (_ : l ≠ []), l.headI ∈ l
+theorem headI_mem_of_nonempty {α : Type*} [Inhabited α] : ∀ {l : List α} (_ : l ≠ []), l.headI ∈ l
   | [], h => (h rfl).elim
   | x::l, _ => List.mem_cons_self x l
 #align ballot.head_mem_of_nonempty Ballot.headI_mem_of_nonempty

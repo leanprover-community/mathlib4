@@ -4,10 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Init.Core
-import Mathlib.Init.Data.Prod
 import Mathlib.Init.Function
 import Mathlib.Logic.Function.Basic
-import Mathlib.Tactic.Common
+import Mathlib.Tactic.Inhabit
 
 #align_import data.prod.basic from "leanprover-community/mathlib"@"d07245fd37786daa997af4f1a73a49fa3b748408"
 
@@ -15,6 +14,7 @@ import Mathlib.Tactic.Common
 # Extra facts about `Prod`
 
 This file defines `Prod.swap : α × β → β × α` and proves various simple lemmas about `Prod`.
+It also defines better delaborators for product projections.
 -/
 
 set_option autoImplicit true
@@ -27,6 +27,10 @@ theorem Prod_map (f : α → γ) (g : β → δ) (p : α × β) : Prod.map f g p
 #align prod_map Prod_map
 
 namespace Prod
+
+@[simp]
+theorem mk.eta : ∀ {p : α × β}, (p.1, p.2) = p
+  | (_, _) => rfl
 
 @[simp]
 theorem «forall» {p : α × β → Prop} : (∀ x, p x) ↔ ∀ a b, p (a, b) :=
@@ -118,12 +122,9 @@ lemma mk_inj_right : (a₁, b) = (a₂, b) ↔ a₁ = a₂ := (mk.inj_right _).e
 #align prod.mk_inj_right Prod.mk_inj_right
 
 theorem ext_iff {p q : α × β} : p = q ↔ p.1 = q.1 ∧ p.2 = q.2 := by
-  rw [← @mk.eta _ _ p, ← @mk.eta _ _ q, mk.inj_iff]
+  rw [mk.inj_iff]
 #align prod.ext_iff Prod.ext_iff
 
-@[ext]
-theorem ext {α β} {p q : α × β} (h₁ : p.1 = q.1) (h₂ : p.2 = q.2) : p = q :=
-  ext_iff.2 ⟨h₁, h₂⟩
 #align prod.ext Prod.ext
 
 theorem map_def {f : α → γ} {g : β → δ} : Prod.map f g = fun p : α × β ↦ (f p.1, g p.2) :=
@@ -225,12 +226,6 @@ theorem snd_eq_iff : ∀ {p : α × β} {x : β}, p.2 = x ↔ p = (p.1, x)
 
 variable {r : α → α → Prop} {s : β → β → Prop} {x y : α × β}
 
-theorem lex_def (r : α → α → Prop) (s : β → β → Prop) {p q : α × β} :
-    Prod.Lex r s p q ↔ r p.1 q.1 ∨ p.1 = q.1 ∧ s p.2 q.2 :=
-  ⟨fun h ↦ by cases h <;> simp [*], fun h ↦
-    match p, q, h with
-    | (a, b), (c, d), Or.inl h => Lex.left _ _ h
-    | (a, b), (c, d), Or.inr ⟨e, h⟩ => by subst e; exact Lex.right _ h⟩
 #align prod.lex_def Prod.lex_def
 
 lemma lex_iff : Prod.Lex r s x y ↔ r x.1 y.1 ∨ x.1 = y.1 ∧ s x.2 y.2 := lex_def _ _
@@ -302,7 +297,7 @@ instance IsTrichotomous [IsTrichotomous α r] [IsTrichotomous β s] :
   obtain hij | rfl | hji := trichotomous_of r i j
   { exact Or.inl (Lex.left _ _ hij) }
   { exact (trichotomous_of (s) a b).imp3 (Lex.right _) (congr_arg _) (Lex.right _) }
-  { exact Or.inr (Or.inr $ Lex.left _ _ hji) }⟩
+  { exact Or.inr (Or.inr <| Lex.left _ _ hji) }⟩
 
 end Prod
 
@@ -411,3 +406,31 @@ theorem map_involutive [Nonempty α] [Nonempty β] {f : α → α} {g : β → �
 #align prod.map_involutive Prod.map_involutive
 
 end Prod
+
+section delaborators
+open Lean PrettyPrinter Delaborator
+
+/-- Delaborator for simple product projections. -/
+@[delab app.Prod.fst, delab app.Prod.snd]
+def delabProdProjs : Delab := do
+  let #[_, _, _] := (← SubExpr.getExpr).getAppArgs | failure
+  let stx ← delabProjectionApp
+  match stx with
+  | `($(x).fst) => `($(x).1)
+  | `($(x).snd) => `($(x).2)
+  | _ => failure
+
+/-- Delaborator for product first projection when the projection is a function
+that is then applied. -/
+@[app_unexpander Prod.fst]
+def unexpandProdFst : Lean.PrettyPrinter.Unexpander
+  | `($(_) $p $xs*) => `($p.1 $xs*)
+  | _ => throw ()
+
+/-- Delaborator for product second projection when the projection is a function
+that is then applied. -/
+@[app_unexpander Prod.snd]
+def unexpandProdSnd : Lean.PrettyPrinter.Unexpander
+  | `($(_) $p $xs*) => `($p.2 $xs*)
+  | _ => throw ()
+end delaborators

@@ -105,12 +105,12 @@ namespace approxOrderOf
 variable {A : Type*} [SeminormedCommGroup A] {a : A} {m n : ℕ} (δ : ℝ)
 
 @[to_additive]
-theorem image_pow_subset_of_coprime (hm : 0 < m) (hmn : n.coprime m) :
+theorem image_pow_subset_of_coprime (hm : 0 < m) (hmn : n.Coprime m) :
     (fun (y : A) => y ^ m) '' approxOrderOf A n δ ⊆ approxOrderOf A n (m * δ) := by
   rintro - ⟨a, ha, rfl⟩
   obtain ⟨b, hb, hab⟩ := mem_approxOrderOf_iff.mp ha
   replace hb : b ^ m ∈ {u : A | orderOf u = n} := by
-    rw [← hb] at hmn ⊢; exact orderOf_pow_coprime hmn
+    rw [← hb] at hmn ⊢; exact hmn.orderOf_pow
   apply ball_subset_thickening hb ((m : ℝ) • δ)
   convert pow_mem_ball hm hab using 1
   simp only [nsmul_eq_mul, Algebra.id.smul_eq_mul]
@@ -131,7 +131,7 @@ theorem image_pow_subset (n : ℕ) (hm : 0 < m) :
 #align approx_add_order_of.image_nsmul_subset approxAddOrderOf.image_nsmul_subset
 
 @[to_additive]
-theorem smul_subset_of_coprime (han : (orderOf a).coprime n) :
+theorem smul_subset_of_coprime (han : (orderOf a).Coprime n) :
     a • approxOrderOf A n δ ⊆ approxOrderOf A (orderOf a * n) δ := by
   simp_rw [approxOrderOf, thickening_eq_biUnion_ball, ← image_smul, image_iUnion₂, image_smul,
     smul_ball'', smul_eq_mul, mem_setOf_eq]
@@ -287,7 +287,7 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
         (Nat.cast_pos.mpr hp.pos) _ hδ
     refine' (SupHom.apply_blimsup_le (sSupHom.setImage f)).trans (mono_blimsup _)
     rintro n ⟨hn, h_div, h_ndiv⟩
-    have h_cop : (addOrderOf x).coprime (n / p) := by
+    have h_cop : (addOrderOf x).Coprime (n / p) := by
       obtain ⟨q, rfl⟩ := h_div
       rw [hu₀, Subtype.coe_mk, hp.coprime_iff_not_dvd, q.mul_div_cancel_left hp.pos]
       exact fun contra => h_ndiv (mul_dvd_mul_left p contra)
@@ -315,7 +315,7 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
   · replace h : ∀ p : Nat.Primes, (u p +ᵥ E : Set _) =ᵐ[μ] E
     · intro p
       replace hE₂ : E =ᵐ[μ] C p := hE₂ p (h p)
-      have h_qmp : MeasureTheory.Measure.QuasiMeasurePreserving ((· +ᵥ ·) (-u p)) μ μ :=
+      have h_qmp : Measure.QuasiMeasurePreserving (-u p +ᵥ ·) μ μ :=
         (measurePreserving_vadd _ μ).quasiMeasurePreserving
       refine' (h_qmp.vadd_ae_eq_of_ae_eq (u p) hE₂).trans (ae_eq_trans _ hE₂.symm)
       rw [hC]
@@ -357,7 +357,7 @@ lemma _root_.NormedAddCommGroup.exists_norm_nsmul_le {A : Type*}
   by_contra h
   apply hn.ne'
   have h' : ⋃ j, B j = univ := by
-    rw [← (isClosed_iUnion hB).measure_eq_univ_iff_eq (μ := μ)]
+    rw [← (isClosed_iUnion_of_finite hB).measure_eq_univ_iff_eq (μ := μ)]
     refine' le_antisymm (μ.mono (subset_univ _)) _
     simp_rw [measure_iUnion h (fun _ ↦ measurableSet_closedBall), tsum_fintype,
       μ.addHaar_closedBall_center, Finset.sum_const, Finset.card_univ, Nat.card_fintypeIcc,
@@ -366,7 +366,7 @@ lemma _root_.NormedAddCommGroup.exists_norm_nsmul_le {A : Type*}
   replace hδ : 0 ≤ δ/2 := by
     by_contra contra
     suffices : μ (closedBall 0 (δ/2)) = 0
-    · apply isOpen_univ.measure_ne_zero μ univ_nonempty $ le_zero_iff.mp $ le_trans hδ _
+    · apply isOpen_univ.measure_ne_zero μ univ_nonempty <| le_zero_iff.mp <| le_trans hδ _
       simp [this]
     rw [not_le, ← closedBall_eq_empty (x := (0 : A))] at contra
     simp [contra]
@@ -380,7 +380,7 @@ lemma exists_norm_nsmul_le (ξ : 𝕊) {n : ℕ} (hn : 0 < n) :
     ∃ j ∈ Icc 1 n, ‖j • ξ‖ ≤ T / ↑(n + 1) := by
   apply NormedAddCommGroup.exists_norm_nsmul_le (μ := volume) ξ hn
   rw [AddCircle.measure_univ, volume_closedBall, ← ENNReal.ofReal_nsmul,
-    mul_div_cancel' _ two_ne_zero, min_eq_right (div_le_self hT.out.le $ by simp), nsmul_eq_mul,
+    mul_div_cancel' _ two_ne_zero, min_eq_right (div_le_self hT.out.le <| by simp), nsmul_eq_mul,
     mul_div_cancel' _ (Nat.cast_ne_zero.mpr n.succ_ne_zero)]
 
 end AddCircle

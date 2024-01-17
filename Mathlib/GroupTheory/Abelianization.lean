@@ -100,6 +100,8 @@ instance commGroup : CommGroup (Abelianization G) :=
 instance : Inhabited (Abelianization G) :=
   ⟨1⟩
 
+instance [Unique G] : Unique (Abelianization G) := Quotient.instUniqueQuotient _
+
 instance [Fintype G] [DecidablePred (· ∈ commutator G)] : Fintype (Abelianization G) :=
   QuotientGroup.fintype (commutator G)
 

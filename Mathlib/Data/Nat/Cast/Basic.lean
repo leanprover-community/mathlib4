@@ -3,13 +3,11 @@ Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.CharZero.Defs
-import Mathlib.Algebra.GroupWithZero.Commute
-import Mathlib.Algebra.Hom.Ring
-import Mathlib.Algebra.Order.Group.Abs
-import Mathlib.Algebra.Ring.Commute
-import Mathlib.Data.Nat.Order.Basic
-import Mathlib.Algebra.Group.Opposite
+import Mathlib.Algebra.Divisibility.Basic
+import Mathlib.Algebra.Group.Equiv.Basic
+import Mathlib.Algebra.Group.TypeTags
+import Mathlib.Algebra.Ring.Hom.Defs
+import Mathlib.Data.Nat.Basic
 
 #align_import data.nat.cast.basic from "leanprover-community/mathlib"@"acebd8d49928f6ed8920e502a6c90674e75bd441"
 
@@ -29,6 +27,8 @@ the natural numbers into an additive monoid with a one (`Nat.cast`).
 -- where `simp [map_zero]` should suffice. (Similarly for `map_one`.)
 -- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/simp.20regression.20with.20MonoidHomClass
 
+open Additive Multiplicative
+
 variable {α β : Type*}
 
 namespace Nat
@@ -46,164 +46,50 @@ theorem coe_castAddMonoidHom [AddMonoidWithOne α] : (castAddMonoidHom α : ℕ 
   rfl
 #align nat.coe_cast_add_monoid_hom Nat.coe_castAddMonoidHom
 
-@[simp, norm_cast]
-theorem cast_mul [NonAssocSemiring α] (m n : ℕ) : ((m * n : ℕ) : α) = m * n := by
+section NonAssocSemiring
+variable [NonAssocSemiring α]
+
+@[simp, norm_cast] lemma cast_mul (m n : ℕ) : ((m * n : ℕ) : α) = m * n := by
   induction n <;> simp [mul_succ, mul_add, *]
 #align nat.cast_mul Nat.cast_mul
 
+variable (α) in
 /-- `Nat.cast : ℕ → α` as a `RingHom` -/
-def castRingHom (α : Type*) [NonAssocSemiring α] : ℕ →+* α :=
+def castRingHom : ℕ →+* α :=
   { castAddMonoidHom α with toFun := Nat.cast, map_one' := cast_one, map_mul' := cast_mul }
 #align nat.cast_ring_hom Nat.castRingHom
 
-@[simp]
-theorem coe_castRingHom [NonAssocSemiring α] : (castRingHom α : ℕ → α) = Nat.cast :=
-  rfl
+@[simp, norm_cast] lemma coe_castRingHom : (castRingHom α : ℕ → α) = Nat.cast := rfl
 #align nat.coe_cast_ring_hom Nat.coe_castRingHom
 
-theorem cast_commute [NonAssocSemiring α] (n : ℕ) (x : α) : Commute (n : α) x := by
-  induction n with
-  | zero => rw [Nat.cast_zero]; exact Commute.zero_left x
-  | succ n ihn => rw [Nat.cast_succ]; exact ihn.add_left (Commute.one_left x)
-#align nat.cast_commute Nat.cast_commute
+lemma _root_.nsmul_eq_mul' (a : α) (n : ℕ) : n • a = a * n := by
+  induction' n with n ih <;> [rw [zero_nsmul, Nat.cast_zero, mul_zero];
+    rw [succ_nsmul', ih, Nat.cast_succ, mul_add, mul_one]]
+#align nsmul_eq_mul' nsmul_eq_mul'
 
-theorem _root_.Commute.ofNat_left [NonAssocSemiring α] (n : ℕ) [n.AtLeastTwo] (x : α) :
-    Commute (OfNat.ofNat n) x :=
-  n.cast_commute x
+@[simp] lemma _root_.nsmul_eq_mul (n : ℕ) (a : α) : n • a = n * a := by
+  induction' n with n ih <;> [rw [zero_nsmul, Nat.cast_zero, zero_mul];
+    rw [succ_nsmul', ih, Nat.cast_succ, add_mul, one_mul]]
+#align nsmul_eq_mul nsmul_eq_mul
 
-theorem cast_comm [NonAssocSemiring α] (n : ℕ) (x : α) : (n : α) * x = x * n :=
-  (cast_commute n x).eq
-#align nat.cast_comm Nat.cast_comm
+end NonAssocSemiring
 
-theorem commute_cast [NonAssocSemiring α] (x : α) (n : ℕ) : Commute x n :=
-  (n.cast_commute x).symm
-#align nat.commute_cast Nat.commute_cast
-
-theorem _root_.Commute.ofNat_right [NonAssocSemiring α] (x : α) (n : ℕ) [n.AtLeastTwo] :
-    Commute x (OfNat.ofNat n) :=
-  n.commute_cast x
-
-section OrderedSemiring
-/- Note: even though the section indicates `OrderedSemiring`, which is the common use case,
-we use a generic collection of instances so that it applies in other settings (e.g., in a
-`StarOrderedRing`, or the `selfAdjoint` or `StarOrderedRing.positive` parts thereof). -/
-
-variable [AddCommMonoidWithOne α] [PartialOrder α]
-variable [CovariantClass α α (· + ·) (· ≤ ·)] [ZeroLEOneClass α]
-
-@[mono]
-theorem mono_cast : Monotone (Nat.cast : ℕ → α) :=
-  monotone_nat_of_le_succ fun n ↦ by
-    rw [Nat.cast_succ]; exact le_add_of_nonneg_right zero_le_one
-#align nat.mono_cast Nat.mono_cast
-
-@[simp low]
-theorem cast_nonneg' (n : ℕ) : 0 ≤ (n : α) :=
-  @Nat.cast_zero α _ ▸ mono_cast (Nat.zero_le n)
-
--- without this more specific version Lean often chokes
-@[simp]
-theorem cast_nonneg {α} [OrderedSemiring α] (n : ℕ) : 0 ≤ (n : α) :=
-  cast_nonneg' n
-#align nat.cast_nonneg Nat.cast_nonneg
-
-section Nontrivial
-
-variable [NeZero (1 : α)]
-
-theorem cast_add_one_pos (n : ℕ) : 0 < (n : α) + 1 :=
-  zero_lt_one.trans_le <| le_add_of_nonneg_left n.cast_nonneg'
-#align nat.cast_add_one_pos Nat.cast_add_one_pos
-
-@[simp low]
-theorem cast_pos' {n : ℕ} : (0 : α) < n ↔ 0 < n := by cases n <;> simp [cast_add_one_pos]
-
--- without this more specific version Lean often chokes
-@[simp]
-theorem cast_pos {α} [OrderedSemiring α] [Nontrivial α] {n : ℕ} : (0 : α) < n ↔ 0 < n := cast_pos'
-#align nat.cast_pos Nat.cast_pos
-
-end Nontrivial
-
-variable [CharZero α] {m n : ℕ}
-
-theorem strictMono_cast : StrictMono (Nat.cast : ℕ → α) :=
-  mono_cast.strictMono_of_injective cast_injective
-#align nat.strict_mono_cast Nat.strictMono_cast
-
-/-- `Nat.cast : ℕ → α` as an `OrderEmbedding` -/
-@[simps! (config := { fullyApplied := false })]
-def castOrderEmbedding : ℕ ↪o α :=
-  OrderEmbedding.ofStrictMono Nat.cast Nat.strictMono_cast
-#align nat.cast_order_embedding Nat.castOrderEmbedding
-#align nat.cast_order_embedding_apply Nat.castOrderEmbedding_apply
+section Semiring
+variable [Semiring α] {m n : ℕ}
 
 @[simp, norm_cast]
-theorem cast_le : (m : α) ≤ n ↔ m ≤ n :=
-  strictMono_cast.le_iff_le
-#align nat.cast_le Nat.cast_le
+lemma cast_pow (m : ℕ) : ∀ n : ℕ, ↑(m ^ n) = (m ^ n : α)
+  | 0 => by simp
+  | n + 1 => by rw [_root_.pow_succ', _root_.pow_succ', cast_mul, cast_pow m n]
+#align nat.cast_pow Nat.cast_pow
 
-@[simp, norm_cast, mono]
-theorem cast_lt : (m : α) < n ↔ m < n :=
-  strictMono_cast.lt_iff_lt
-#align nat.cast_lt Nat.cast_lt
-
-@[simp, norm_cast]
-theorem one_lt_cast : 1 < (n : α) ↔ 1 < n := by rw [← cast_one, cast_lt]
-#align nat.one_lt_cast Nat.one_lt_cast
-
-@[simp, norm_cast]
-theorem one_le_cast : 1 ≤ (n : α) ↔ 1 ≤ n := by rw [← cast_one, cast_le]
-#align nat.one_le_cast Nat.one_le_cast
-
-@[simp, norm_cast]
-theorem cast_lt_one : (n : α) < 1 ↔ n = 0 := by
-  rw [← cast_one, cast_lt, lt_succ_iff, ← bot_eq_zero, le_bot_iff]
-#align nat.cast_lt_one Nat.cast_lt_one
-
-@[simp, norm_cast]
-theorem cast_le_one : (n : α) ≤ 1 ↔ n ≤ 1 := by rw [← cast_one, cast_le]
-#align nat.cast_le_one Nat.cast_le_one
-
-end OrderedSemiring
-
-/-- A version of `Nat.cast_sub` that works for `ℝ≥0` and `ℚ≥0`. Note that this proof doesn't work
-for `ℕ∞` and `ℝ≥0∞`, so we use type-specific lemmas for these types. -/
-@[simp, norm_cast]
-theorem cast_tsub [CanonicallyOrderedCommSemiring α] [Sub α] [OrderedSub α]
-    [ContravariantClass α α (· + ·) (· ≤ ·)] (m n : ℕ) : ↑(m - n) = (m - n : α) := by
-  cases' le_total m n with h h
-  · rw [tsub_eq_zero_of_le h, cast_zero, tsub_eq_zero_of_le]
-    exact mono_cast h
-  · rcases le_iff_exists_add'.mp h with ⟨m, rfl⟩
-    rw [add_tsub_cancel_right, cast_add, add_tsub_cancel_right]
-#align nat.cast_tsub Nat.cast_tsub
-
-@[simp, norm_cast]
-theorem cast_min [LinearOrderedSemiring α] {a b : ℕ} : ((min a b : ℕ) : α) = min (a : α) b :=
-  (@mono_cast α _).map_min
-#align nat.cast_min Nat.cast_min
-
-@[simp, norm_cast]
-theorem cast_max [LinearOrderedSemiring α] {a b : ℕ} : ((max a b : ℕ) : α) = max (a : α) b :=
-  (@mono_cast α _).map_max
-#align nat.cast_max Nat.cast_max
-
-@[simp, norm_cast]
-theorem abs_cast [LinearOrderedRing α] (a : ℕ) : |(a : α)| = a :=
-  abs_of_nonneg (cast_nonneg a)
-#align nat.abs_cast Nat.abs_cast
-
-theorem coe_nat_dvd [Semiring α] {m n : ℕ} (h : m ∣ n) : (m : α) ∣ (n : α) :=
-  map_dvd (Nat.castRingHom α) h
+lemma coe_nat_dvd (h : m ∣ n) : (m : α) ∣ (n : α) := map_dvd (Nat.castRingHom α) h
 #align nat.coe_nat_dvd Nat.coe_nat_dvd
 
-alias coe_nat_dvd ← _root_.Dvd.dvd.natCast
+alias _root_.Dvd.dvd.natCast := coe_nat_dvd
 
+end Semiring
 end Nat
-
-instance [AddMonoidWithOne α] [CharZero α] : Nontrivial α where exists_pair_ne :=
-  ⟨1, 0, (Nat.cast_one (R := α) ▸ Nat.cast_ne_zero.2 (by decide))⟩
 
 section AddMonoidHomClass
 
@@ -237,6 +123,14 @@ theorem map_natCast' {A} [AddMonoidWithOne A] [AddMonoidHomClass F A B] (f : F) 
   | n + 1 => by
     rw [Nat.cast_add, map_add, Nat.cast_add, map_natCast' f h n, Nat.cast_one, h, Nat.cast_one]
 #align map_nat_cast' map_natCast'
+
+@[simp] lemma nsmul_one {A} [AddMonoidWithOne A] : ∀ n : ℕ, n • (1 : A) = n := by
+  let f : ℕ →+ A :=
+  { toFun := fun n ↦ n • (1 : A)
+    map_zero' := zero_nsmul _
+    map_add' := add_nsmul _ }
+  exact eq_natCast' f $ by simp
+#align nsmul_one nsmul_one
 
 end AddMonoidHomClass
 
@@ -275,6 +169,7 @@ theorem map_natCast [RingHomClass F R S] (f : F) : ∀ n : ℕ, f (n : R) = n :=
 #align map_nat_cast map_natCast
 
 --Porting note: new theorem
+-- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem map_ofNat [RingHomClass F R S] (f : F) (n : ℕ) [Nat.AtLeastTwo n] :
     (f (no_index (OfNat.ofNat n)) : S) = OfNat.ofNat n :=
@@ -283,11 +178,6 @@ theorem map_ofNat [RingHomClass F R S] (f : F) (n : ℕ) [Nat.AtLeastTwo n] :
 theorem ext_nat [RingHomClass F ℕ R] (f g : F) : f = g :=
   ext_nat' f g <| by simp only [map_one f, map_one g]
 #align ext_nat ext_nat
-
-theorem NeZero.nat_of_injective {n : ℕ} [h : NeZero (n : R)] [RingHomClass F R S] {f : F}
-    (hf : Function.Injective f) : NeZero (n : S) :=
-  ⟨fun h ↦ NeZero.natCast_ne n R <| hf <| by simpa only [map_natCast, map_zero f] ⟩
-#align ne_zero.nat_of_injective NeZero.nat_of_injective
 
 theorem NeZero.nat_of_neZero {R S} [Semiring R] [Semiring S] {F} [RingHomClass F R S] (f : F)
     {n : ℕ} [hn : NeZero (n : S)] : NeZero (n : R) :=
@@ -321,6 +211,92 @@ instance Nat.uniqueRingHom {R : Type*} [NonAssocSemiring R] : Unique (ℕ →+* 
   default := Nat.castRingHom R
   uniq := RingHom.eq_natCast'
 
+section Monoid
+variable (α) [Monoid α] [AddMonoid α]
+
+/-- Additive homomorphisms from `ℕ` are defined by the image of `1`. -/
+def multiplesHom : α ≃ (ℕ →+ α) where
+  toFun x :=
+  { toFun := fun n ↦ n • x
+    map_zero' := zero_nsmul x
+    map_add' := fun _ _ ↦ add_nsmul _ _ _ }
+  invFun f := f 1
+  left_inv := one_nsmul
+  right_inv f := AddMonoidHom.ext_nat <| one_nsmul (f 1)
+#align multiples_hom multiplesHom
+
+/-- Monoid homomorphisms from `Multiplicative ℕ` are defined by the image
+of `Multiplicative.ofAdd 1`. -/
+@[to_additive existing multiplesHom]
+def powersHom : α ≃ (Multiplicative ℕ →* α) :=
+  Additive.ofMul.trans <| (multiplesHom _).trans <| AddMonoidHom.toMultiplicative''
+
+variable {α}
+
+-- TODO: can `to_additive` generate the following lemmas automatically?
+
+lemma multiplesHom_apply (x : α) (n : ℕ) : multiplesHom α x n = n • x := rfl
+#align multiples_hom_apply multiplesHom_apply
+
+@[to_additive existing (attr := simp) multiplesHom_apply]
+lemma powersHom_apply (x : α) (n : Multiplicative ℕ) :
+    powersHom α x n = x ^ Multiplicative.toAdd n := rfl
+#align powers_hom_apply powersHom_apply
+
+lemma multiplesHom_symm_apply (f : ℕ →+ α) : (multiplesHom α).symm f = f 1 := rfl
+#align multiples_hom_symm_apply multiplesHom_symm_apply
+
+@[to_additive existing (attr := simp) multiplesHom_symm_apply]
+lemma powersHom_symm_apply (f : Multiplicative ℕ →* α) :
+    (powersHom α).symm f = f (Multiplicative.ofAdd 1) := rfl
+#align powers_hom_symm_apply powersHom_symm_apply
+
+lemma MonoidHom.apply_mnat (f : Multiplicative ℕ →* α) (n : Multiplicative ℕ) :
+    f n = f (Multiplicative.ofAdd 1) ^ (Multiplicative.toAdd n) := by
+  rw [← powersHom_symm_apply, ← powersHom_apply, Equiv.apply_symm_apply]
+#align monoid_hom.apply_mnat MonoidHom.apply_mnat
+
+@[ext]
+lemma MonoidHom.ext_mnat ⦃f g : Multiplicative ℕ →* α⦄
+    (h : f (Multiplicative.ofAdd 1) = g (Multiplicative.ofAdd 1)) : f = g :=
+  MonoidHom.ext fun n ↦ by rw [f.apply_mnat, g.apply_mnat, h]
+#align monoid_hom.ext_mnat MonoidHom.ext_mnat
+
+lemma AddMonoidHom.apply_nat (f : ℕ →+ α) (n : ℕ) : f n = n • f 1 := by
+  rw [← multiplesHom_symm_apply, ← multiplesHom_apply, Equiv.apply_symm_apply]
+#align add_monoid_hom.apply_nat AddMonoidHom.apply_nat
+
+end Monoid
+
+section CommMonoid
+variable (α) [CommMonoid α] [AddCommMonoid α]
+
+/-- If `α` is commutative, `multiplesHom` is an additive equivalence. -/
+def multiplesAddHom : α ≃+ (ℕ →+ α) :=
+  { multiplesHom α with map_add' := fun a b ↦ AddMonoidHom.ext fun n ↦ by simp [nsmul_add] }
+#align multiples_add_hom multiplesAddHom
+
+/-- If `α` is commutative, `powersHom` is a multiplicative equivalence. -/
+def powersMulHom : α ≃* (Multiplicative ℕ →* α) :=
+  { powersHom α with map_mul' := fun a b ↦ MonoidHom.ext fun n ↦ by simp [mul_pow] }
+#align powers_mul_hom powersMulHom
+
+@[simp] lemma multiplesAddHom_apply (x : α) (n : ℕ) : multiplesAddHom α x n = n • x := rfl
+#align multiples_add_hom_apply multiplesAddHom_apply
+
+@[simp]
+lemma powersMulHom_apply (x : α) (n : Multiplicative ℕ) : powersMulHom α x n = x ^ toAdd n := rfl
+#align powers_mul_hom_apply powersMulHom_apply
+
+@[simp] lemma multiplesAddHom_symm_apply (f : ℕ →+ α) : (multiplesAddHom α).symm f = f 1 := rfl
+#align multiples_add_hom_symm_apply multiplesAddHom_symm_apply
+
+@[simp] lemma powersMulHom_symm_apply (f : Multiplicative ℕ →* α) :
+    (powersMulHom α).symm f = f (ofAdd 1) := rfl
+#align powers_mul_hom_symm_apply powersMulHom_symm_apply
+
+end CommMonoid
+
 namespace Pi
 
 variable {π : α → Type*} [∀ a, NatCast (π a)]
@@ -345,51 +321,14 @@ end Pi
 
 theorem Sum.elim_natCast_natCast {α β γ : Type*} [NatCast γ] (n : ℕ) :
     Sum.elim (n : α → γ) (n : β → γ) = n :=
-  @Sum.elim_lam_const_lam_const α β γ n
+  Sum.elim_lam_const_lam_const (γ := γ) n
 #align sum.elim_nat_cast_nat_cast Sum.elim_natCast_natCast
 
-/-! ### Order dual -/
-
-
-open OrderDual
-
-instance [h : NatCast α] : NatCast αᵒᵈ :=
-  h
-
-instance [h : AddMonoidWithOne α] : AddMonoidWithOne αᵒᵈ :=
-  h
-
-instance [h : AddCommMonoidWithOne α] : AddCommMonoidWithOne αᵒᵈ :=
-  h
-
-@[simp]
-theorem toDual_natCast [NatCast α] (n : ℕ) : toDual (n : α) = n :=
-  rfl
-#align to_dual_nat_cast toDual_natCast
-
-@[simp]
-theorem ofDual_natCast [NatCast α] (n : ℕ) : (ofDual n : α) = n :=
-  rfl
-#align of_dual_nat_cast ofDual_natCast
-
-/-! ### Lexicographic order -/
-
-
-instance [h : NatCast α] : NatCast (Lex α) :=
-  h
-
-instance [h : AddMonoidWithOne α] : AddMonoidWithOne (Lex α) :=
-  h
-
-instance [h : AddCommMonoidWithOne α] : AddCommMonoidWithOne (Lex α) :=
-  h
-
-@[simp]
-theorem toLex_natCast [NatCast α] (n : ℕ) : toLex (n : α) = n :=
-  rfl
-#align to_lex_nat_cast toLex_natCast
-
-@[simp]
-theorem ofLex_natCast [NatCast α] (n : ℕ) : (ofLex n : α) = n :=
-  rfl
-#align of_lex_nat_cast ofLex_natCast
+-- Guard against import creep regression.
+assert_not_exists OrderedCommGroup
+assert_not_exists CharZero
+assert_not_exists Commute.zero_right
+assert_not_exists Commute.add_right
+assert_not_exists abs_eq_max_neg
+assert_not_exists natCast_ne
+assert_not_exists MulOpposite.natCast

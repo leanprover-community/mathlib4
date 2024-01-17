@@ -13,7 +13,7 @@ import Mathlib.Topology.Algebra.Module.Basic
 
 variable {ι R R₂ M M₂ : Type*}
 
-section SmulConst
+section SMulConst
 
 variable [Semiring R] [TopologicalSpace R] [TopologicalSpace M] [AddCommMonoid M] [Module R M]
   [ContinuousSMul R M] {f : ι → R}
@@ -30,7 +30,7 @@ theorem tsum_smul_const [T2Space M] (hf : Summable f) (a : M) : ∑' z, f z • 
   (hf.hasSum.smul_const _).tsum_eq
 #align tsum_smul_const tsum_smul_const
 
-end SmulConst
+end SMulConst
 
 section HasSum
 
@@ -46,7 +46,7 @@ protected theorem ContinuousLinearMap.hasSum {f : ι → M} (φ : M →SL[σ] M�
   simpa only using hf.map φ.toLinearMap.toAddMonoidHom φ.continuous
 #align continuous_linear_map.has_sum ContinuousLinearMap.hasSum
 
-alias ContinuousLinearMap.hasSum ← HasSum.mapL
+alias HasSum.mapL := ContinuousLinearMap.hasSum
 set_option linter.uppercaseLean3 false in
 #align has_sum.mapL HasSum.mapL
 
@@ -55,7 +55,7 @@ protected theorem ContinuousLinearMap.summable {f : ι → M} (φ : M →SL[σ] 
   (hf.hasSum.mapL φ).summable
 #align continuous_linear_map.summable ContinuousLinearMap.summable
 
-alias ContinuousLinearMap.summable ← Summable.mapL
+alias Summable.mapL := ContinuousLinearMap.summable
 set_option linter.uppercaseLean3 false in
 #align summable.mapL Summable.mapL
 

@@ -3,8 +3,8 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Johan Commelin, Patrick Massot
 -/
-import Mathlib.Algebra.Hom.Equiv.Units.GroupWithZero
 import Mathlib.Algebra.GroupWithZero.InjSurj
+import Mathlib.Algebra.GroupWithZero.Units.Equiv
 import Mathlib.Algebra.Order.Group.Units
 import Mathlib.Algebra.Order.Monoid.Basic
 import Mathlib.Algebra.Order.Monoid.WithZero.Defs
@@ -55,7 +55,7 @@ instance instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual
 instance [LinearOrderedAddCommGroupWithTop α] :
     LinearOrderedCommGroupWithZero (Multiplicative αᵒᵈ) :=
   { Multiplicative.divInvMonoid, instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual,
-    instNontrivialMultiplicative with
+    Multiplicative.instNontrivial with
     inv_zero := @LinearOrderedAddCommGroupWithTop.neg_top _ (_)
     mul_inv_cancel := @LinearOrderedAddCommGroupWithTop.add_neg_cancel _ (_) }
 
@@ -208,16 +208,12 @@ theorem mul_lt_right₀ (c : α) (h : a < b) (hc : c ≠ 0) : a * c < b * c := b
 theorem inv_lt_inv₀ (ha : a ≠ 0) (hb : b ≠ 0) : a⁻¹ < b⁻¹ ↔ b < a :=
   show (Units.mk0 a ha)⁻¹ < (Units.mk0 b hb)⁻¹ ↔ Units.mk0 b hb < Units.mk0 a ha from
     have : CovariantClass αˣ αˣ (· * ·) (· < ·) :=
-      LeftCancelSemigroup.covariant_mul_lt_of_covariant_mul_le αˣ
+      IsLeftCancelMul.covariant_mul_lt_of_covariant_mul_le αˣ
     inv_lt_inv_iff
 #align inv_lt_inv₀ inv_lt_inv₀
 
 theorem inv_le_inv₀ (ha : a ≠ 0) (hb : b ≠ 0) : a⁻¹ ≤ b⁻¹ ↔ b ≤ a :=
   show (Units.mk0 a ha)⁻¹ ≤ (Units.mk0 b hb)⁻¹ ↔ Units.mk0 b hb ≤ Units.mk0 a ha from
-    have : CovariantClass αˣ αˣ (Function.swap (· * ·)) (· ≤ ·) :=
-      OrderedCommMonoid.to_covariantClass_right αˣ
-    have : CovariantClass αˣ αˣ (· * ·) (· ≤ ·) :=
-      OrderedCommGroup.to_covariantClass_left_le αˣ
     inv_le_inv_iff
 #align inv_le_inv₀ inv_le_inv₀
 
@@ -287,6 +283,6 @@ theorem OrderIso.mulRight₀'_symm {a : α} (ha : a ≠ 0) :
 
 instance : LinearOrderedAddCommGroupWithTop (Additive αᵒᵈ) :=
   { Additive.subNegMonoid, instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual,
-    instNontrivialAdditive with
+    Additive.instNontrivial with
     neg_top := @inv_zero _ (_)
     add_neg_cancel := fun a ha ↦ mul_inv_cancel (id ha : Additive.toMul a ≠ 0) }

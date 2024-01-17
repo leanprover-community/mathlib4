@@ -3,7 +3,8 @@ Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Logic.Equiv.Basic
+import Mathlib.Logic.Equiv.Defs
+import Mathlib.Tactic.Cases
 
 #align_import data.finite.defs from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
 
@@ -134,6 +135,6 @@ protected theorem Infinite.false [Finite α] (_ : Infinite α) : False :=
   @Infinite.not_finite α ‹_› ‹_›
 #align infinite.false Infinite.false
 
-alias not_infinite_iff_finite ↔ Finite.of_not_infinite Finite.not_infinite
+alias ⟨Finite.of_not_infinite, Finite.not_infinite⟩ := not_infinite_iff_finite
 #align finite.of_not_infinite Finite.of_not_infinite
 #align finite.not_infinite Finite.not_infinite

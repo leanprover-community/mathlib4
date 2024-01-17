@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Calculus.Deriv.Comp
-import Mathlib.Analysis.Calculus.ContDiffDef
+import Mathlib.Analysis.Calculus.ContDiff.Defs
 
 #align_import analysis.calculus.iterated_deriv from "leanprover-community/mathlib"@"3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe"
 
@@ -94,7 +94,7 @@ theorem iteratedFDerivWithin_eq_equiv_comp :
     iteratedFDerivWithin 𝕜 n f s =
       ContinuousMultilinearMap.piFieldEquiv 𝕜 (Fin n) F ∘ iteratedDerivWithin n f s := by
   rw [iteratedDerivWithin_eq_equiv_comp, ← Function.comp.assoc, LinearIsometryEquiv.self_comp_symm,
-    Function.left_id]
+    Function.id_comp]
 #align iterated_fderiv_within_eq_equiv_comp iteratedFDerivWithin_eq_equiv_comp
 
 /-- The `n`-th Fréchet derivative applied to a vector `(m 0, ..., m (n-1))` is the derivative
@@ -230,7 +230,7 @@ iterated derivative. -/
 theorem iteratedFDeriv_eq_equiv_comp : iteratedFDeriv 𝕜 n f =
     ContinuousMultilinearMap.piFieldEquiv 𝕜 (Fin n) F ∘ iteratedDeriv n f := by
   rw [iteratedDeriv_eq_equiv_comp, ← Function.comp.assoc, LinearIsometryEquiv.self_comp_symm,
-    Function.left_id]
+    Function.id_comp]
 #align iterated_fderiv_eq_equiv_comp iteratedFDeriv_eq_equiv_comp
 
 /-- The `n`-th Fréchet derivative applied to a vector `(m 0, ..., m (n-1))` is the derivative

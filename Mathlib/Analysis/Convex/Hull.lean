@@ -40,12 +40,8 @@ variable (𝕜)
 variable [AddCommMonoid E] [AddCommMonoid F] [Module 𝕜 E] [Module 𝕜 F]
 
 /-- The convex hull of a set `s` is the minimal convex set that includes `s`. -/
-def convexHull : ClosureOperator (Set E) :=
-  ClosureOperator.mk₃ (fun s => ⋂ (t : Set E) (_ : s ⊆ t) (_ : Convex 𝕜 t), t) (Convex 𝕜)
-    (fun _ =>
-      Set.subset_iInter fun _ => Set.subset_iInter fun hst => Set.subset_iInter fun _ => hst)
-    (fun _ => convex_iInter fun _ => convex_iInter fun _ => convex_iInter id) fun _ t hst ht =>
-    Set.iInter_subset_of_subset t <| Set.iInter_subset_of_subset hst <| Set.iInter_subset _ ht
+@[simps! isClosed]
+def convexHull : ClosureOperator (Set E) := .ofCompletePred (Convex 𝕜) fun _ ↦ convex_sInter
 #align convex_hull convexHull
 
 variable (s : Set E)
@@ -54,13 +50,11 @@ theorem subset_convexHull : s ⊆ convexHull 𝕜 s :=
   (convexHull 𝕜).le_closure s
 #align subset_convex_hull subset_convexHull
 
-theorem convex_convexHull : Convex 𝕜 (convexHull 𝕜 s) :=
-  ClosureOperator.closure_mem_mk₃ s
+theorem convex_convexHull : Convex 𝕜 (convexHull 𝕜 s) := (convexHull 𝕜).isClosed_closure s
 #align convex_convex_hull convex_convexHull
 
-theorem convexHull_eq_iInter : convexHull 𝕜 s =
-    ⋂ (t : Set E) (_ : s ⊆ t) (_ : Convex 𝕜 t), t :=
-  rfl
+theorem convexHull_eq_iInter : convexHull 𝕜 s = ⋂ (t : Set E) (_ : s ⊆ t) (_ : Convex 𝕜 t), t := by
+  simp [convexHull, iInter_subtype, iInter_and]
 #align convex_hull_eq_Inter convexHull_eq_iInter
 
 variable {𝕜 s} {t : Set E} {x y : E}
@@ -69,12 +63,11 @@ theorem mem_convexHull_iff : x ∈ convexHull 𝕜 s ↔ ∀ t, s ⊆ t → Conv
   simp_rw [convexHull_eq_iInter, mem_iInter]
 #align mem_convex_hull_iff mem_convexHull_iff
 
-theorem convexHull_min (hst : s ⊆ t) (ht : Convex 𝕜 t) : convexHull 𝕜 s ⊆ t :=
-  ClosureOperator.closure_le_mk₃_iff (show s ≤ t from hst) ht
+theorem convexHull_min : s ⊆ t → Convex 𝕜 t → convexHull 𝕜 s ⊆ t := (convexHull 𝕜).closure_min
 #align convex_hull_min convexHull_min
 
 theorem Convex.convexHull_subset_iff (ht : Convex 𝕜 t) : convexHull 𝕜 s ⊆ t ↔ s ⊆ t :=
-  ⟨(subset_convexHull _ _).trans, fun h => convexHull_min h ht⟩
+  (show (convexHull 𝕜).IsClosed t from ht).closure_le_iff
 #align convex.convex_hull_subset_iff Convex.convexHull_subset_iff
 
 @[mono]
@@ -82,8 +75,9 @@ theorem convexHull_mono (hst : s ⊆ t) : convexHull 𝕜 s ⊆ convexHull 𝕜 
   (convexHull 𝕜).monotone hst
 #align convex_hull_mono convexHull_mono
 
-theorem Convex.convexHull_eq (hs : Convex 𝕜 s) : convexHull 𝕜 s = s :=
-  ClosureOperator.mem_mk₃_closed hs
+lemma convexHull_eq_self : convexHull 𝕜 s = s ↔ Convex 𝕜 s := (convexHull 𝕜).isClosed_iff.symm
+
+alias ⟨_, Convex.convexHull_eq⟩ := convexHull_eq_self
 #align convex.convex_hull_eq Convex.convexHull_eq
 
 @[simp]
@@ -112,11 +106,7 @@ theorem convexHull_nonempty_iff : (convexHull 𝕜 s).Nonempty ↔ s.Nonempty :=
   exact not_congr convexHull_empty_iff
 #align convex_hull_nonempty_iff convexHull_nonempty_iff
 
--- Porting note: `alias` cannot be protected.
---alias convexHull_nonempty_iff ↔ _ Set.Nonempty.convexHull
---attribute [protected] Set.Nonempty.convexHull
-protected theorem Set.Nonempty.convexHull (h : s.Nonempty) : (convexHull 𝕜 s).Nonempty :=
-convexHull_nonempty_iff.2 h
+protected alias ⟨_, Set.Nonempty.convexHull⟩ := convexHull_nonempty_iff
 #align set.nonempty.convex_hull Set.Nonempty.convexHull
 
 theorem segment_subset_convexHull (hx : x ∈ s) (hy : y ∈ s) : segment 𝕜 x y ⊆ convexHull 𝕜 s :=

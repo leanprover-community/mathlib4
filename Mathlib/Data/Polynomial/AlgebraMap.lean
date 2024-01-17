@@ -27,15 +27,12 @@ namespace Polynomial
 
 universe u v w z
 
-variable {R : Type u} {S : Type v} {T : Type w} {A : Type z} {A' B' : Type*} {a b : R} {n : ℕ}
-
-variable [CommSemiring A'] [Semiring B']
+variable {R : Type u} {S : Type v} {T : Type w} {A : Type z} {A' B : Type*} {a b : R} {n : ℕ}
 
 section CommSemiring
 
-variable [CommSemiring R] {p q r : R[X]}
-
-variable [Semiring A] [Algebra R A]
+variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+variable {p q r : R[X]}
 
 /-- Note that this instance also provides `Algebra R R[X]`. -/
 instance algebraOfAlgebra : Algebra R A[X]
@@ -78,23 +75,28 @@ theorem C_eq_algebraMap (r : R) : C r = algebraMap R R[X] r :=
 set_option linter.uppercaseLean3 false in
 #align polynomial.C_eq_algebra_map Polynomial.C_eq_algebraMap
 
--- porting note: removed `variable` because of redundant binder update annotation
+/-- `Polynomial.C` as an `AlgHom`. -/
+@[simps! apply]
+def CAlgHom : A →ₐ[R] A[X] where
+  toRingHom := C
+  commutes' _ := rfl
 
 /-- Extensionality lemma for algebra maps out of `A'[X]` over a smaller base ring than `A'`
 -/
 @[ext 1100]
-theorem algHom_ext' [Algebra R A'] [Algebra R B'] {f g : A'[X] →ₐ[R] B'}
-    (h₁ : f.comp (IsScalarTower.toAlgHom R A' A'[X]) = g.comp (IsScalarTower.toAlgHom R A' A'[X]))
-    (h₂ : f X = g X) : f = g :=
-  AlgHom.coe_ringHom_injective (Polynomial.ringHom_ext' (congr_arg AlgHom.toRingHom h₁) h₂)
+theorem algHom_ext' {f g : A[X] →ₐ[R] B}
+    (hC : f.comp CAlgHom = g.comp CAlgHom)
+    (hX : f X = g X) : f = g :=
+  AlgHom.coe_ringHom_injective (ringHom_ext' (congr_arg AlgHom.toRingHom hC) hX)
 #align polynomial.alg_hom_ext' Polynomial.algHom_ext'
 
 variable (R)
 
-/-- Algebra isomorphism between `R[X]` and `AddMonoidAlgebra R ℕ`. This is just an
+open AddMonoidAlgebra in
+/-- Algebra isomorphism between `R[X]` and `R[ℕ]`. This is just an
 implementation detail, but it can be useful to transfer results from `Finsupp` to polynomials. -/
 @[simps!]
-def toFinsuppIsoAlg : R[X] ≃ₐ[R] AddMonoidAlgebra R ℕ :=
+def toFinsuppIsoAlg : R[X] ≃ₐ[R] R[ℕ] :=
   { toFinsuppIso R with
     commutes' := fun r => by
       dsimp
@@ -150,21 +152,24 @@ end CommSemiring
 
 section aeval
 
-variable [CommSemiring R] {p q : R[X]}
+variable [CommSemiring R] [Semiring A] [CommSemiring A'] [Semiring B]
+variable [Algebra R A] [Algebra R A'] [Algebra R B]
+variable {p q : R[X]} (x : A)
 
-variable [Semiring A] [Algebra R A]
+/-- `Polynomial.eval₂` as an `AlgHom` for noncommutative algebras.
 
-variable {B : Type*} [Semiring B] [Algebra R B]
-
-variable (x : A)
+This is `Polynomial.eval₂RingHom'` for `AlgHom`s. -/
+@[simps!]
+def eval₂AlgHom' (f : A →ₐ[R] B) (b : B) (hf : ∀ a, Commute (f a) b) : A[X] →ₐ[R] B where
+  toRingHom := eval₂RingHom' f b hf
+  commutes' _ := (eval₂_C _ _).trans (f.commutes _)
 
 /-- Given a valuation `x` of the variable in an `R`-algebra `A`, `aeval R A x` is
 the unique `R`-algebra homomorphism from `R[X]` to `A` sending `X` to `x`.
 
 This is a stronger variant of the linear map `Polynomial.leval`. -/
 def aeval : R[X] →ₐ[R] A :=
-  { eval₂RingHom' (algebraMap R A) x fun _a => Algebra.commutes _ _ with
-    commutes' := fun _r => eval₂_C _ _ }
+  eval₂AlgHom' (Algebra.ofId _ _) x (Algebra.commutes · _)
 #align polynomial.aeval Polynomial.aeval
 
 -- porting note: removed `variable` due to redundant binder annotation update
@@ -179,8 +184,9 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.adjoin_X Polynomial.adjoin_X
 
 @[ext 1200]
-theorem algHom_ext {f g : R[X] →ₐ[R] A} (h : f X = g X) : f = g :=
-  AlgHom.ext_of_adjoin_eq_top adjoin_X fun _p hp => (Set.mem_singleton_iff.1 hp).symm ▸ h
+theorem algHom_ext {f g : R[X] →ₐ[R] B} (hX : f X = g X) :
+    f = g :=
+  algHom_ext' (Subsingleton.elim _ _) hX
 #align polynomial.alg_hom_ext Polynomial.algHom_ext
 
 theorem aeval_def (p : R[X]) : aeval x p = eval₂ (algebraMap R A) x p :=
@@ -251,10 +257,25 @@ theorem aeval_mul : aeval x (p * q) = aeval x p * aeval x q :=
   AlgHom.map_mul _ _ _
 #align polynomial.aeval_mul Polynomial.aeval_mul
 
+theorem comp_eq_aeval : p.comp q = aeval q p := rfl
+
 theorem aeval_comp {A : Type*} [CommSemiring A] [Algebra R A] (x : A) :
     aeval x (p.comp q) = aeval (aeval x q) p :=
   eval₂_comp (algebraMap R A)
 #align polynomial.aeval_comp Polynomial.aeval_comp
+
+/-- Two polynomials `p` and `q` such that `p(q(X))=X` and `q(p(X))=X`
+  induces an automorphism of the polynomial algebra. -/
+@[simps!]
+def algEquivOfCompEqX (p q : R[X]) (hpq : p.comp q = X) (hqp : q.comp p = X) : R[X] ≃ₐ[R] R[X] := by
+  refine AlgEquiv.ofAlgHom (aeval p) (aeval q) ?_ ?_ <;>
+    exact AlgHom.ext fun _ ↦ by simp [← comp_eq_aeval, comp_assoc, hpq, hqp]
+
+/-- The automorphism of the polynomial algebra given by `p(X) ↦ p(X+t)`,
+  with inverse `p(X) ↦ p(X-t)`. -/
+@[simps!]
+def algEquivAevalXAddC {R} [CommRing R] (t : R) : R[X] ≃ₐ[R] R[X] :=
+  algEquivOfCompEqX (X + C t) (X - C t) (by simp) (by simp)
 
 theorem aeval_algHom (f : A →ₐ[R] B) (x : A) : aeval (f x) = f.comp (aeval x) :=
   algHom_ext <| by simp only [aeval_X, AlgHom.comp_apply]
@@ -380,12 +401,12 @@ section CommSemiring
 
 section aevalTower
 
-variable [CommSemiring S] [Algebra S R] [Algebra S A'] [Algebra S B']
+variable [CommSemiring S] [Algebra S R] [Algebra S A'] [Algebra S B]
 
 /-- Version of `aeval` for defining algebra homs out of `R[X]` over a smaller base ring
   than `R`. -/
 def aevalTower (f : R →ₐ[S] A') (x : A') : R[X] →ₐ[S] A' :=
-  { eval₂RingHom (↑f) x with commutes' := fun r => by simp [algebraMap_apply] }
+  eval₂AlgHom' f x fun _ => Commute.all _ _
 #align polynomial.aeval_tower Polynomial.aevalTower
 
 variable (g : R →ₐ[S] A') (y : A')
@@ -448,7 +469,7 @@ section CommRing
 variable [CommRing S] {f : R →+* S}
 
 theorem dvd_term_of_dvd_eval_of_dvd_terms {z p : S} {f : S[X]} (i : ℕ) (dvd_eval : p ∣ f.eval z)
-    (dvd_terms : ∀ (j) (_ : j ≠ i), p ∣ f.coeff j * z ^ j) : p ∣ f.coeff i * z ^ i := by
+    (dvd_terms : ∀ j ≠ i, p ∣ f.coeff j * z ^ j) : p ∣ f.coeff i * z ^ i := by
   by_cases hi : i ∈ f.support
   · rw [eval, eval₂_eq_sum, sum_def] at dvd_eval
     rw [← Finset.insert_erase hi, Finset.sum_insert (Finset.not_mem_erase _ _)] at dvd_eval
@@ -462,7 +483,7 @@ theorem dvd_term_of_dvd_eval_of_dvd_terms {z p : S} {f : S[X]} (i : ℕ) (dvd_ev
 #align polynomial.dvd_term_of_dvd_eval_of_dvd_terms Polynomial.dvd_term_of_dvd_eval_of_dvd_terms
 
 theorem dvd_term_of_isRoot_of_dvd_terms {r p : S} {f : S[X]} (i : ℕ) (hr : f.IsRoot r)
-    (h : ∀ (j) (_ : j ≠ i), p ∣ f.coeff j * r ^ j) : p ∣ f.coeff i * r ^ i :=
+    (h : ∀ j ≠ i, p ∣ f.coeff j * r ^ j) : p ∣ f.coeff i * r ^ i :=
   dvd_term_of_dvd_eval_of_dvd_terms i (Eq.symm hr ▸ dvd_zero p) h
 #align polynomial.dvd_term_of_is_root_of_dvd_terms Polynomial.dvd_term_of_isRoot_of_dvd_terms
 
@@ -510,7 +531,31 @@ end Ring
 theorem aeval_endomorphism {M : Type*} [CommRing R] [AddCommGroup M] [Module R M] (f : M →ₗ[R] M)
     (v : M) (p : R[X]) : aeval f p v = p.sum fun n b => b • (f ^ n) v := by
   rw [aeval_def, eval₂_eq_sum]
-  exact (LinearMap.applyₗ v).map_sum
+  exact map_sum (LinearMap.applyₗ v) _ _
 #align polynomial.aeval_endomorphism Polynomial.aeval_endomorphism
+
+section StableSubmodule
+
+variable {M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
+  {q : Submodule R M} {m : M} (hm : m ∈ q) (p : R[X])
+
+lemma aeval_apply_smul_mem_of_le_comap'
+    [Semiring A] [Algebra R A] [Module A M] [IsScalarTower R A M] (a : A)
+    (hq : q ≤ q.comap (Algebra.lsmul R R M a)) :
+    aeval a p • m ∈ q := by
+  refine p.induction_on (M := fun f ↦ aeval a f • m ∈ q) (by simpa) (fun f₁ f₂ h₁ h₂ ↦ ?_)
+    (fun n t hmq ↦ ?_)
+  · simp_rw [map_add, add_smul]
+    exact Submodule.add_mem q h₁ h₂
+  · dsimp only at hmq ⊢
+    rw [pow_succ, mul_left_comm, map_mul, aeval_X, mul_smul]
+    rw [← q.map_le_iff_le_comap] at hq
+    exact hq ⟨_, hmq, rfl⟩
+
+lemma aeval_apply_smul_mem_of_le_comap (f : Module.End R M) (hq : q ≤ q.comap f) :
+    aeval f p m ∈ q :=
+  aeval_apply_smul_mem_of_le_comap' hm p f hq
+
+end StableSubmodule
 
 end Polynomial

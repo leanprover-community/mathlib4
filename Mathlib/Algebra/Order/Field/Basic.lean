@@ -51,7 +51,7 @@ theorem inv_pos : 0 < a⁻¹ ↔ 0 < a :=
   fun a ha => flip lt_of_mul_lt_mul_left ha.le <| by simp [ne_of_gt ha, zero_lt_one]
 #align inv_pos inv_pos
 
-alias inv_pos ↔ _ inv_pos_of_pos
+alias ⟨_, inv_pos_of_pos⟩ := inv_pos
 #align inv_pos_of_pos inv_pos_of_pos
 
 @[simp]
@@ -59,7 +59,7 @@ theorem inv_nonneg : 0 ≤ a⁻¹ ↔ 0 ≤ a := by
   simp only [le_iff_eq_or_lt, inv_pos, zero_eq_inv]
 #align inv_nonneg inv_nonneg
 
-alias inv_nonneg ↔ _ inv_nonneg_of_nonneg
+alias ⟨_, inv_nonneg_of_nonneg⟩ := inv_nonneg
 #align inv_nonneg_of_nonneg inv_nonneg_of_nonneg
 
 @[simp]
@@ -228,7 +228,7 @@ theorem inv_pos_lt_iff_one_lt_mul' (ha : 0 < a) : a⁻¹ < b ↔ 1 < a * b := by
 /-- One direction of `div_le_iff` where `b` is allowed to be `0` (but `c` must be nonnegative) -/
 theorem div_le_of_nonneg_of_le_mul (hb : 0 ≤ b) (hc : 0 ≤ c) (h : a ≤ c * b) : a / b ≤ c := by
   rcases eq_or_lt_of_le hb with (rfl | hb')
-  simp [hc]
+  simp only [div_zero, hc]
   rwa [div_le_iff hb']
 #align div_le_of_nonneg_of_le_mul div_le_of_nonneg_of_le_mul
 
@@ -315,7 +315,7 @@ theorem inv_lt_one_iff_of_pos (h₀ : 0 < a) : a⁻¹ < 1 ↔ 1 < a :=
 #align inv_lt_one_iff_of_pos inv_lt_one_iff_of_pos
 
 theorem inv_lt_one_iff : a⁻¹ < 1 ↔ a ≤ 0 ∨ 1 < a := by
-  cases' le_or_lt a 0 with ha ha
+  rcases le_or_lt a 0 with ha | ha
   · simp [ha, (inv_nonpos.2 ha).trans_lt zero_lt_one]
   · simp only [ha.not_le, false_or_iff, inv_lt_one_iff_of_pos ha]
 #align inv_lt_one_iff inv_lt_one_iff
@@ -351,6 +351,7 @@ theorem div_le_div_of_le_left (ha : 0 ≤ a) (hc : 0 < c) (h : c ≤ b) : a / b 
   exact mul_le_mul_of_nonneg_left ((inv_le_inv (hc.trans_le h) hc).mpr h) ha
 #align div_le_div_of_le_left div_le_div_of_le_left
 
+@[deprecated div_le_div_of_le]
 theorem div_le_div_of_le_of_nonneg (hab : a ≤ b) (hc : 0 ≤ c) : a / c ≤ b / c :=
   div_le_div_of_le hc hab
 #align div_le_div_of_le_of_nonneg div_le_div_of_le_of_nonneg
@@ -519,13 +520,13 @@ theorem half_lt_self_iff : a / 2 < a ↔ 0 < a := by
   rw [div_lt_iff (zero_lt_two' α), mul_two, lt_add_iff_pos_left]
 #align half_lt_self_iff half_lt_self_iff
 
-alias half_le_self_iff ↔ _ half_le_self
+alias ⟨_, half_le_self⟩ := half_le_self_iff
 #align half_le_self half_le_self
 
-alias half_lt_self_iff ↔ _ half_lt_self
+alias ⟨_, half_lt_self⟩ := half_lt_self_iff
 #align half_lt_self half_lt_self
 
-alias half_lt_self ← div_two_lt_of_pos
+alias div_two_lt_of_pos := half_lt_self
 #align div_two_lt_of_pos div_two_lt_of_pos
 
 theorem one_half_lt_one : (1 / 2 : α) < 1 :=
@@ -613,13 +614,14 @@ theorem one_div_strictAntiOn : StrictAntiOn (fun x : α => 1 / x) (Set.Ioi 0) :=
 
 theorem one_div_pow_le_one_div_pow_of_le (a1 : 1 ≤ a) {m n : ℕ} (mn : m ≤ n) :
     1 / a ^ n ≤ 1 / a ^ m := by
-  refine' (one_div_le_one_div _ _).mpr (pow_le_pow a1 mn) <;>
+  refine' (one_div_le_one_div _ _).mpr (pow_le_pow_right a1 mn) <;>
     exact pow_pos (zero_lt_one.trans_le a1) _
 #align one_div_pow_le_one_div_pow_of_le one_div_pow_le_one_div_pow_of_le
 
 theorem one_div_pow_lt_one_div_pow_of_lt (a1 : 1 < a) {m n : ℕ} (mn : m < n) :
     1 / a ^ n < 1 / a ^ m := by
-  refine' (one_div_lt_one_div _ _).mpr (pow_lt_pow a1 mn) <;> exact pow_pos (zero_lt_one.trans a1) _
+  refine (one_div_lt_one_div ?_ ?_).2 (pow_lt_pow_right a1 mn) <;>
+    exact pow_pos (zero_lt_one.trans a1) _
 #align one_div_pow_lt_one_div_pow_of_lt one_div_pow_lt_one_div_pow_of_lt
 
 theorem one_div_pow_anti (a1 : 1 ≤ a) : Antitone fun n : ℕ => 1 / a ^ n := fun _ _ =>
@@ -922,11 +924,11 @@ theorem sub_one_div_inv_le_two (a2 : 2 ≤ a) : (1 - 1 / a)⁻¹ ≤ 2 := by
   -- Take inverses on both sides to obtain `2⁻¹ ≤ 1 - 1 / a`
   refine' (inv_le_inv_of_le (inv_pos.2 <| zero_lt_two' α) _).trans_eq (inv_inv (2 : α))
   -- move `1 / a` to the left and `2⁻¹` to the right.
-  rw [le_sub_iff_add_le, add_comm, ←le_sub_iff_add_le]
+  rw [le_sub_iff_add_le, add_comm, ← le_sub_iff_add_le]
   -- take inverses on both sides and use the assumption `2 ≤ a`.
   convert (one_div a).le.trans (inv_le_inv_of_le zero_lt_two a2) using 1
   -- show `1 - 1 / 2 = 1 / 2`.
-  rw [sub_eq_iff_eq_add, ←two_mul, mul_inv_cancel two_ne_zero]
+  rw [sub_eq_iff_eq_add, ← two_mul, mul_inv_cancel two_ne_zero]
 #align sub_one_div_inv_le_two sub_one_div_inv_le_two
 
 /-! ### Results about `IsLUB` -/
@@ -960,12 +962,12 @@ theorem mul_sub_mul_div_mul_nonpos_iff (hc : c ≠ 0) (hd : d ≠ 0) :
   rw [mul_comm b c, ← div_sub_div _ _ hc hd, sub_nonpos]
 #align mul_sub_mul_div_mul_nonpos_iff mul_sub_mul_div_mul_nonpos_iff
 
-alias mul_sub_mul_div_mul_neg_iff ↔ div_lt_div_of_mul_sub_mul_div_neg mul_sub_mul_div_mul_neg
+alias ⟨div_lt_div_of_mul_sub_mul_div_neg, mul_sub_mul_div_mul_neg⟩ := mul_sub_mul_div_mul_neg_iff
 #align mul_sub_mul_div_mul_neg mul_sub_mul_div_mul_neg
 #align div_lt_div_of_mul_sub_mul_div_neg div_lt_div_of_mul_sub_mul_div_neg
 
-alias mul_sub_mul_div_mul_nonpos_iff ↔
-  div_le_div_of_mul_sub_mul_div_nonpos mul_sub_mul_div_mul_nonpos
+alias ⟨div_le_div_of_mul_sub_mul_div_nonpos, mul_sub_mul_div_mul_nonpos⟩ :=
+  mul_sub_mul_div_mul_nonpos_iff
 #align div_le_div_of_mul_sub_mul_div_nonpos div_le_div_of_mul_sub_mul_div_nonpos
 #align mul_sub_mul_div_mul_nonpos mul_sub_mul_div_mul_nonpos
 

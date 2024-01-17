@@ -3,15 +3,12 @@ manually ported from
 https://github.com/leanprover-community/mathlib/blob/4f4a1c875d0baa92ab5d92f3fb1bb258ad9f3e5b/test/matrix.lean
 -/
 import Mathlib.Data.Matrix.Notation
--- import linear_algebra.Matrix.determinant
 import Mathlib.GroupTheory.Perm.Fin
--- import Mathlib.Tactic.NormSwap
+import Mathlib.LinearAlgebra.Matrix.Determinant
 import Qq
 import Std.Tactic.GuardExpr
 
 open Qq
-
--- TODO: uncomment above imports when they are ported
 
 variable {α β : Type} [Semiring α] [Ring β]
 
@@ -136,30 +133,29 @@ example {a b c d e f g h : α} : ![a, b, c, d, e, f, g, h] 37 = f := by simp
 example {a b c d e f g h : α} : ![a, b, c, d, e, f, g, h] 99 = d := by simp
 -/
 
--- TODO: uncomment snd update `try this` when porting `Matrix.det`
-/-
 example {α : Type _} [CommRing α] {a b c d : α} :
     Matrix.det !![a, b; c, d] = a * d - b * c := by
-  simp [Matrix.det_succ_row_zero, Fin.sum_univ_succ]
-  /-
-  Try this: simp only [det_succ_row_zero, Fin.sum_univ_succ, neg_mul, mul_one,
-  Fin.default_eq_zero, Fin.coe_zero, one_mul, cons_val_one, Fin.coe_succ, univ_unique,
-  submatrix_apply, pow_one, Fin.zero_succ_above, Fin.succ_succ_above_zero, finset.sum_singleton,
-  cons_val_zero, cons_val_succ, det_fin_zero, pow_zero]
-  -/
+  simp? [Matrix.det_succ_row_zero, Fin.sum_univ_succ] says
+    simp only [det_succ_row_zero, of_apply, cons_val', empty_val',
+      cons_val_fin_one, cons_val_zero, det_unique, Fin.default_eq_zero, submatrix_apply,
+      Fin.succ_zero_eq_one, cons_val_one, head_fin_const, Fin.sum_univ_succ, Fin.val_zero,
+      pow_zero, one_mul, Fin.zero_succAbove, head_cons, Finset.univ_unique,
+      Fin.val_succ, Fin.coe_fin_one, zero_add, pow_one, cons_val_succ, neg_mul,
+      Fin.succ_succAbove_zero, Finset.sum_const, Finset.card_singleton, smul_neg, one_smul]
   ring
 
 example {α : Type _} [CommRing α] {a b c d e f g h i : α} :
     Matrix.det !![a, b, c; d, e, f; g, h, i] =
       a * e * i - a * f * h - b * d * i + b * f * g + c * d * h - c * e * g := by
-  simp [Matrix.det_succ_row_zero, Fin.sum_univ_succ]
-  /-
-  Try this: simp only [det_succ_row_zero, Fin.sum_univ_succ, neg_mul, cons_append,
-  mul_one, Fin.default_eq_zero, Fin.coe_zero, cons_vec_bit0_eq_alt0, one_mul, cons_val_one,
-  cons_vec_alt0, Fin.succ_succ_above_one, Fin.coe_succ, univ_unique, submatrix_apply, pow_one,
-  Fin.zero_succ_above, Fin.succ_zero_eq_one, Fin.succ_succ_above_zero, nat.neg_one_sq,
-  finset.sum_singleton, cons_val_zero, cons_val_succ, det_fin_zero, head_cons, pow_zero]
-   -/
+  simp? [Matrix.det_succ_row_zero, Fin.sum_univ_succ] says
+    simp only [det_succ_row_zero, of_apply, cons_val', empty_val',
+      cons_val_fin_one, cons_val_zero, submatrix_apply, Fin.succ_zero_eq_one, cons_val_one,
+      head_cons, submatrix_submatrix, det_unique, Fin.default_eq_zero, Function.comp_apply,
+      Fin.succ_one_eq_two, cons_val_two, tail_cons, head_fin_const, Fin.sum_univ_succ, Fin.val_zero,
+      pow_zero, one_mul, Fin.zero_succAbove, Finset.univ_unique, Fin.val_succ, Fin.coe_fin_one,
+      zero_add, pow_one, neg_mul, Fin.succ_succAbove_zero, Finset.sum_neg_distrib,
+      Finset.sum_singleton, cons_val_succ, Fin.succ_succAbove_one, even_add_self, Even.neg_pow,
+      one_pow, Finset.sum_const, Finset.card_singleton, one_smul]
   ring
--/
+
 end Matrix

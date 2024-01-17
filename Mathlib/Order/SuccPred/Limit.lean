@@ -43,12 +43,12 @@ def IsSuccLimit (a : α) : Prop :=
   ∀ b, ¬b ⋖ a
 #align order.is_succ_limit Order.IsSuccLimit
 
-theorem not_isSuccLimit_iff_exists_covby (a : α) : ¬IsSuccLimit a ↔ ∃ b, b ⋖ a := by
+theorem not_isSuccLimit_iff_exists_covBy (a : α) : ¬IsSuccLimit a ↔ ∃ b, b ⋖ a := by
   simp [IsSuccLimit]
-#align order.not_is_succ_limit_iff_exists_covby Order.not_isSuccLimit_iff_exists_covby
+#align order.not_is_succ_limit_iff_exists_covby Order.not_isSuccLimit_iff_exists_covBy
 
 @[simp]
-theorem isSuccLimit_of_dense [DenselyOrdered α] (a : α) : IsSuccLimit a := fun _ => not_covby
+theorem isSuccLimit_of_dense [DenselyOrdered α] (a : α) : IsSuccLimit a := fun _ => not_covBy
 #align order.is_succ_limit_of_dense Order.isSuccLimit_of_dense
 
 end LT
@@ -69,7 +69,7 @@ variable [SuccOrder α]
 
 protected theorem IsSuccLimit.isMax (h : IsSuccLimit (succ a)) : IsMax a := by
   by_contra H
-  exact h a (covby_succ_of_not_isMax H)
+  exact h a (covBy_succ_of_not_isMax H)
 #align order.is_succ_limit.is_max Order.IsSuccLimit.isMax
 
 theorem not_isSuccLimit_succ_of_not_isMax (ha : ¬IsMax a) : ¬IsSuccLimit (succ a) := by
@@ -120,14 +120,14 @@ section PartialOrder
 variable [PartialOrder α] [SuccOrder α] {a b : α} {C : α → Sort*}
 
 theorem isSuccLimit_of_succ_ne (h : ∀ b, succ b ≠ a) : IsSuccLimit a := fun b hba =>
-  h b (Covby.succ_eq hba)
+  h b (CovBy.succ_eq hba)
 #align order.is_succ_limit_of_succ_ne Order.isSuccLimit_of_succ_ne
 
 theorem not_isSuccLimit_iff : ¬IsSuccLimit a ↔ ∃ b, ¬IsMax b ∧ succ b = a := by
-  rw [not_isSuccLimit_iff_exists_covby]
-  refine' exists_congr fun b => ⟨fun hba => ⟨hba.lt.not_isMax, (Covby.succ_eq hba)⟩, _⟩
+  rw [not_isSuccLimit_iff_exists_covBy]
+  refine' exists_congr fun b => ⟨fun hba => ⟨hba.lt.not_isMax, (CovBy.succ_eq hba)⟩, _⟩
   rintro ⟨h, rfl⟩
-  exact covby_succ_of_not_isMax h
+  exact covBy_succ_of_not_isMax h
 #align order.not_is_succ_limit_iff Order.not_isSuccLimit_iff
 
 /-- See `not_isSuccLimit_iff` for a version that states that `a` is a successor of a value other
@@ -138,7 +138,7 @@ theorem mem_range_succ_of_not_isSuccLimit (h : ¬IsSuccLimit a) : a ∈ range (@
 #align order.mem_range_succ_of_not_is_succ_limit Order.mem_range_succ_of_not_isSuccLimit
 
 theorem isSuccLimit_of_succ_lt (H : ∀ a < b, succ a < b) : IsSuccLimit b := fun a hab =>
-  (H a hab.lt).ne (Covby.succ_eq hab)
+  (H a hab.lt).ne (CovBy.succ_eq hab)
 #align order.is_succ_limit_of_succ_lt Order.isSuccLimit_of_succ_lt
 
 theorem IsSuccLimit.succ_lt (hb : IsSuccLimit b) (ha : a < b) : succ a < b := by
@@ -245,11 +245,11 @@ def IsPredLimit (a : α) : Prop :=
   ∀ b, ¬a ⋖ b
 #align order.is_pred_limit Order.IsPredLimit
 
-theorem not_isPredLimit_iff_exists_covby (a : α) : ¬IsPredLimit a ↔ ∃ b, a ⋖ b := by
+theorem not_isPredLimit_iff_exists_covBy (a : α) : ¬IsPredLimit a ↔ ∃ b, a ⋖ b := by
   simp [IsPredLimit]
-#align order.not_is_pred_limit_iff_exists_covby Order.not_isPredLimit_iff_exists_covby
+#align order.not_is_pred_limit_iff_exists_covby Order.not_isPredLimit_iff_exists_covBy
 
-theorem isPredLimit_of_dense [DenselyOrdered α] (a : α) : IsPredLimit a := fun _ => not_covby
+theorem isPredLimit_of_dense [DenselyOrdered α] (a : α) : IsPredLimit a := fun _ => not_covBy
 #align order.is_pred_limit_of_dense Order.isPredLimit_of_dense
 
 @[simp]
@@ -262,10 +262,10 @@ theorem isPredLimit_toDual_iff : IsPredLimit (toDual a) ↔ IsSuccLimit a := by
   simp [IsSuccLimit, IsPredLimit]
 #align order.is_pred_limit_to_dual_iff Order.isPredLimit_toDual_iff
 
-alias isSuccLimit_toDual_iff ↔ _ isPredLimit.dual
+alias ⟨_, isPredLimit.dual⟩ := isSuccLimit_toDual_iff
 #align order.is_pred_limit.dual Order.isPredLimit.dual
 
-alias isPredLimit_toDual_iff ↔ _ isSuccLimit.dual
+alias ⟨_, isSuccLimit.dual⟩ := isPredLimit_toDual_iff
 #align order.is_succ_limit.dual Order.isSuccLimit.dual
 
 end LT
@@ -286,7 +286,7 @@ variable [PredOrder α]
 
 protected theorem IsPredLimit.isMin (h : IsPredLimit (pred a)) : IsMin a := by
   by_contra H
-  exact h a (pred_covby_of_not_isMin H)
+  exact h a (pred_covBy_of_not_isMin H)
 #align order.is_pred_limit.is_min Order.IsPredLimit.isMin
 
 theorem not_isPredLimit_pred_of_not_isMin (ha : ¬IsMin a) : ¬IsPredLimit (pred a) := by
@@ -334,7 +334,7 @@ section PartialOrder
 variable [PartialOrder α] [PredOrder α] {a b : α} {C : α → Sort*}
 
 theorem isPredLimit_of_pred_ne (h : ∀ b, pred b ≠ a) : IsPredLimit a := fun b hba =>
-  h b (Covby.pred_eq hba)
+  h b (CovBy.pred_eq hba)
 #align order.is_pred_limit_of_pred_ne Order.isPredLimit_of_pred_ne
 
 theorem not_isPredLimit_iff : ¬IsPredLimit a ↔ ∃ b, ¬IsMin b ∧ pred b = a := by
@@ -350,7 +350,7 @@ theorem mem_range_pred_of_not_isPredLimit (h : ¬IsPredLimit a) : a ∈ range (@
 #align order.mem_range_pred_of_not_is_pred_limit Order.mem_range_pred_of_not_isPredLimit
 
 theorem isPredLimit_of_pred_lt (H : ∀ a > b, pred a < b) : IsPredLimit b := fun a hab =>
-  (H a hab.lt).ne (Covby.pred_eq hab)
+  (H a hab.lt).ne (CovBy.pred_eq hab)
 #align order.is_pred_limit_of_pred_lt Order.isPredLimit_of_pred_lt
 
 theorem IsPredLimit.lt_pred (h : IsPredLimit a) : a < b → a < pred b :=

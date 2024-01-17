@@ -113,7 +113,7 @@ open Matrix
 /-- This holds for all integral domains (see `Matrix.exists_mulVec_eq_zero_iff`),
 not just fields, but it's easier to prove it for the field of fractions first. -/
 theorem exists_mulVec_eq_zero_iff_aux {K : Type*} [DecidableEq n] [Field K] {M : Matrix n n K} :
-    (∃ (v : _) (_ : v ≠ 0), M.mulVec v = 0) ↔ M.det = 0 := by
+    (∃ v ≠ 0, M.mulVec v = 0) ↔ M.det = 0 := by
   constructor
   · rintro ⟨v, hv, mul_eq⟩
     contrapose! hv
@@ -135,8 +135,8 @@ theorem exists_mulVec_eq_zero_iff_aux {K : Type*} [DecidableEq n] [Field K] {M :
 
 theorem exists_mulVec_eq_zero_iff' {A : Type*} (K : Type*) [DecidableEq n] [CommRing A]
     [Nontrivial A] [Field K] [Algebra A K] [IsFractionRing A K] {M : Matrix n n A} :
-    (∃ (v : _) (_ : v ≠ 0), M.mulVec v = 0) ↔ M.det = 0 := by
-  have : (∃ (v : _) (_ : v ≠ 0), mulVec ((algebraMap A K).mapMatrix M) v = 0) ↔ _ :=
+    (∃ v ≠ 0, M.mulVec v = 0) ↔ M.det = 0 := by
+  have : (∃ v ≠ 0, mulVec ((algebraMap A K).mapMatrix M) v = 0) ↔ _ :=
     exists_mulVec_eq_zero_iff_aux
   rw [← RingHom.map_det, IsFractionRing.to_map_eq_zero_iff] at this
   refine' Iff.trans _ this; constructor <;> rintro ⟨v, hv, mul_eq⟩
@@ -169,19 +169,19 @@ theorem exists_mulVec_eq_zero_iff' {A : Type*} (K : Type*) [DecidableEq n] [Comm
 #align matrix.exists_mul_vec_eq_zero_iff' Matrix.exists_mulVec_eq_zero_iff'
 
 theorem exists_mulVec_eq_zero_iff {A : Type*} [DecidableEq n] [CommRing A] [IsDomain A]
-    {M : Matrix n n A} : (∃ (v : _) (_ : v ≠ 0), M.mulVec v = 0) ↔ M.det = 0 :=
+    {M : Matrix n n A} : (∃ v ≠ 0, M.mulVec v = 0) ↔ M.det = 0 :=
   exists_mulVec_eq_zero_iff' (FractionRing A)
 #align matrix.exists_mul_vec_eq_zero_iff Matrix.exists_mulVec_eq_zero_iff
 
 theorem exists_vecMul_eq_zero_iff {A : Type*} [DecidableEq n] [CommRing A] [IsDomain A]
-    {M : Matrix n n A} : (∃ (v : _) (_ : v ≠ 0), M.vecMul v = 0) ↔ M.det = 0 := by
+    {M : Matrix n n A} : (∃ v ≠ 0, M.vecMul v = 0) ↔ M.det = 0 := by
   simpa only [← M.det_transpose, ← mulVec_transpose] using exists_mulVec_eq_zero_iff
 #align matrix.exists_vec_mul_eq_zero_iff Matrix.exists_vecMul_eq_zero_iff
 
 theorem nondegenerate_iff_det_ne_zero {A : Type*} [DecidableEq n] [CommRing A] [IsDomain A]
     {M : Matrix n n A} : Nondegenerate M ↔ M.det ≠ 0 := by
-  refine' Iff.trans _ (not_iff_not.mpr exists_vecMul_eq_zero_iff)
-  simp only [not_exists]
+  rw [ne_eq, ← exists_vecMul_eq_zero_iff]
+  push_neg
   constructor
   · intro hM v hv hMv
     obtain ⟨w, hwMv⟩ := hM.exists_not_ortho_of_ne_zero hv
@@ -191,7 +191,7 @@ theorem nondegenerate_iff_det_ne_zero {A : Type*} [DecidableEq n] [CommRing A] [
     simpa only [dotProduct_mulVec, dotProduct_single, mul_one] using hv (Pi.single i 1)
 #align matrix.nondegenerate_iff_det_ne_zero Matrix.nondegenerate_iff_det_ne_zero
 
-alias nondegenerate_iff_det_ne_zero ↔ Nondegenerate.det_ne_zero Nondegenerate.of_det_ne_zero
+alias ⟨Nondegenerate.det_ne_zero, Nondegenerate.of_det_ne_zero⟩ := nondegenerate_iff_det_ne_zero
 #align matrix.nondegenerate.det_ne_zero Matrix.Nondegenerate.det_ne_zero
 #align matrix.nondegenerate.of_det_ne_zero Matrix.Nondegenerate.of_det_ne_zero
 
@@ -206,7 +206,7 @@ open BigOperators
 /-- A matrix whose nondiagonal entries are negative with the sum of the entries of each
 column positive has nonzero determinant. -/
 lemma det_ne_zero_of_sum_col_pos [DecidableEq n] {S : Type*} [LinearOrderedCommRing S]
-    {A : Matrix n n S} (h1 : ∀ i j, i ≠ j → A i j < 0) (h2 : ∀ j, 0 < ∑ i, A i j) :
+    {A : Matrix n n S} (h1 : Pairwise fun i j => A i j < 0) (h2 : ∀ j, 0 < ∑ i, A i j) :
     A.det ≠ 0 := by
   cases isEmpty_or_nonempty n
   · simp
@@ -229,17 +229,17 @@ lemma det_ne_zero_of_sum_col_pos [DecidableEq n] {S : Type*} [LinearOrderedCommR
       refine Finset.sum_le_sum (fun i hi => ?_)
       by_cases h : i = j₀
       · rw [h]
-      · exact (mul_le_mul_right_of_neg (h1 i j₀ h)).mpr (h_j₀ ▸ Finset.le_sup' v hi)
+      · exact (mul_le_mul_right_of_neg (h1 h)).mpr (h_j₀ ▸ Finset.le_sup' v hi)
 
 /-- A matrix whose nondiagonal entries are negative with the sum of the entries of each
 row positive has nonzero determinant. -/
 lemma det_ne_zero_of_sum_row_pos [DecidableEq n] {S : Type*} [LinearOrderedCommRing S]
-    {A : Matrix n n S} (h1 : ∀ i j, i ≠ j → A i j < 0) (h2 : ∀ i, 0 < ∑ j, A i j) :
+    {A : Matrix n n S} (h1 : Pairwise fun i j => A i j < 0) (h2 : ∀ i, 0 < ∑ j, A i j) :
     A.det ≠ 0 := by
   rw [← Matrix.det_transpose]
   refine det_ne_zero_of_sum_col_pos ?_ ?_
   · simp_rw [Matrix.transpose_apply]
-    exact fun i j h => h1 j i h.symm
+    exact fun i j h => h1 h.symm
   · simp_rw [Matrix.transpose_apply]
     exact h2
 

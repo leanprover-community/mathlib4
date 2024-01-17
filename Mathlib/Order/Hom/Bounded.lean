@@ -120,7 +120,7 @@ instance (priority := 100) OrderIsoClass.toTopHomClass [LE α] [OrderTop α]
 -- See note [lower instance priority]
 instance (priority := 100) OrderIsoClass.toBotHomClass [LE α] [OrderBot α]
     [PartialOrder β] [OrderBot β] [OrderIsoClass F α β] : BotHomClass F α β :=
-  { --⟨λ f, le_bot_iff.1 $ (le_map_inv_iff f).1 bot_le⟩
+  { --⟨λ f, le_bot_iff.1 <| (le_map_inv_iff f).1 bot_le⟩
     show OrderHomClass F α β from inferInstance with
     map_bot := fun f => le_bot_iff.1 <| (le_map_inv_iff f).1 bot_le }
 #align order_iso_class.to_bot_hom_class OrderIsoClass.toBotHomClass
@@ -280,11 +280,13 @@ theorem id_comp (f : TopHom α β) : (TopHom.id β).comp f = f :=
   TopHom.ext fun _ => rfl
 #align top_hom.id_comp TopHom.id_comp
 
+@[simp]
 theorem cancel_right {g₁ g₂ : TopHom β γ} {f : TopHom α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => TopHom.ext <| hf.forall.2 <| FunLike.ext_iff.1 h, congr_arg (fun g => comp g f)⟩
 #align top_hom.cancel_right TopHom.cancel_right
 
+@[simp]
 theorem cancel_left {g : TopHom β γ} {f₁ f₂ : TopHom α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => TopHom.ext fun a => hg <| by rw [← TopHom.comp_apply, h, TopHom.comp_apply],
@@ -470,11 +472,13 @@ theorem id_comp (f : BotHom α β) : (BotHom.id β).comp f = f :=
   BotHom.ext fun _ => rfl
 #align bot_hom.id_comp BotHom.id_comp
 
+@[simp]
 theorem cancel_right {g₁ g₂ : BotHom β γ} {f : BotHom α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => BotHom.ext <| hf.forall.2 <| FunLike.ext_iff.1 h, congr_arg (comp · f)⟩
 #align bot_hom.cancel_right BotHom.cancel_right
 
+@[simp]
 theorem cancel_left {g : BotHom β γ} {f₁ f₂ : BotHom α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => BotHom.ext fun a => hg <| by rw [← BotHom.comp_apply, h, BotHom.comp_apply],
@@ -684,12 +688,14 @@ theorem id_comp (f : BoundedOrderHom α β) : (BoundedOrderHom.id β).comp f = f
   BoundedOrderHom.ext fun _ => rfl
 #align bounded_order_hom.id_comp BoundedOrderHom.id_comp
 
+@[simp]
 theorem cancel_right {g₁ g₂ : BoundedOrderHom β γ} {f : BoundedOrderHom α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => BoundedOrderHom.ext <| hf.forall.2 <| FunLike.ext_iff.1 h,
    congr_arg (fun g => comp g f)⟩
 #align bounded_order_hom.cancel_right BoundedOrderHom.cancel_right
 
+@[simp]
 theorem cancel_left {g : BoundedOrderHom β γ} {f₁ f₂ : BoundedOrderHom α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h =>

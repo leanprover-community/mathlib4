@@ -1,55 +1,73 @@
 /-
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
+Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov, Yaël Dillies
 -/
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.BigOperators.Order
-import Mathlib.Algebra.IndicatorFunction
-import Mathlib.Topology.Algebra.Group.Basic
+import Mathlib.Algebra.Order.Support
 import Mathlib.Order.LiminfLimsup
 import Mathlib.Order.Filter.Archimedean
 import Mathlib.Order.Filter.CountableInter
+import Mathlib.Topology.Algebra.Group.Basic
 import Mathlib.Topology.Order.Basic
 
-#align_import topology.algebra.order.liminf_limsup from "leanprover-community/mathlib"@"52932b3a083d4142e78a15dc928084a22fea9ba0"
+#align_import topology.algebra.order.liminf_limsup from "leanprover-community/mathlib"@"ce64cd319bb6b3e82f31c2d38e79080d377be451"
 
 /-!
 # Lemmas about liminf and limsup in an order topology.
+
+## Main declarations
+
+* `BoundedLENhdsClass`: Typeclass stating that neighborhoods are eventually bounded above.
+* `BoundedGENhdsClass`: Typeclass stating that neighborhoods are eventually bounded below.
+
+## Implementation notes
+
+The same lemmas are true in `ℝ`, `ℝ × ℝ`, `ι → ℝ`, `EuclideanSpace ι ℝ`. To avoid code
+duplication, we provide an ad hoc axiomatisation of the properties we need.
 -/
 
 
 open Filter TopologicalSpace
 
-open Topology Classical
+open scoped Topology Classical
 
 universe u v
 
-variable {α : Type u} {β : Type v}
+variable {ι α β R S : Type*} {π : ι → Type*}
 
-section LiminfLimsup
+/-- Ad hoc typeclass stating that neighborhoods are eventually bounded above. -/
+class BoundedLENhdsClass (α : Type*) [Preorder α] [TopologicalSpace α] : Prop where
+  isBounded_le_nhds (a : α) : (𝓝 a).IsBounded (· ≤ ·)
+#align bounded_le_nhds_class BoundedLENhdsClass
 
-section OrderClosedTopology
+/-- Ad hoc typeclass stating that neighborhoods are eventually bounded below. -/
+class BoundedGENhdsClass (α : Type*) [Preorder α] [TopologicalSpace α] : Prop where
+  isBounded_ge_nhds (a : α) : (𝓝 a).IsBounded (· ≥ ·)
+#align bounded_ge_nhds_class BoundedGENhdsClass
 
-variable [SemilatticeSup α] [TopologicalSpace α] [OrderTopology α]
+section Preorder
+variable [Preorder α] [Preorder β] [TopologicalSpace α] [TopologicalSpace β]
+
+section BoundedLENhdsClass
+variable [BoundedLENhdsClass α] [BoundedLENhdsClass β] {f : Filter ι} {u : ι → α} {a : α}
 
 theorem isBounded_le_nhds (a : α) : (𝓝 a).IsBounded (· ≤ ·) :=
-  (isTop_or_exists_gt a).elim (fun h ↦ ⟨a, eventually_of_forall h⟩) fun ⟨b, hb⟩ ↦
-    ⟨b, ge_mem_nhds hb⟩
+  BoundedLENhdsClass.isBounded_le_nhds _
 #align is_bounded_le_nhds isBounded_le_nhds
 
-theorem Filter.Tendsto.isBoundedUnder_le {f : Filter β} {u : β → α} {a : α}
-    (h : Tendsto u f (𝓝 a)) : f.IsBoundedUnder (· ≤ ·) u :=
+theorem Filter.Tendsto.isBoundedUnder_le (h : Tendsto u f (𝓝 a)) : f.IsBoundedUnder (· ≤ ·) u :=
   (isBounded_le_nhds a).mono h
 #align filter.tendsto.is_bounded_under_le Filter.Tendsto.isBoundedUnder_le
 
-theorem Filter.Tendsto.bddAbove_range_of_cofinite {u : β → α} {a : α}
+theorem Filter.Tendsto.bddAbove_range_of_cofinite [IsDirected α (· ≤ ·)]
     (h : Tendsto u cofinite (𝓝 a)) : BddAbove (Set.range u) :=
   h.isBoundedUnder_le.bddAbove_range_of_cofinite
 #align filter.tendsto.bdd_above_range_of_cofinite Filter.Tendsto.bddAbove_range_of_cofinite
 
-theorem Filter.Tendsto.bddAbove_range {u : ℕ → α} {a : α} (h : Tendsto u atTop (𝓝 a)) :
-    BddAbove (Set.range u) :=
+theorem Filter.Tendsto.bddAbove_range [IsDirected α (· ≤ ·)] {u : ℕ → α}
+    (h : Tendsto u atTop (𝓝 a)) : BddAbove (Set.range u) :=
   h.isBoundedUnder_le.bddAbove_range
 #align filter.tendsto.bdd_above_range Filter.Tendsto.bddAbove_range
 
@@ -57,48 +75,47 @@ theorem isCobounded_ge_nhds (a : α) : (𝓝 a).IsCobounded (· ≥ ·) :=
   (isBounded_le_nhds a).isCobounded_flip
 #align is_cobounded_ge_nhds isCobounded_ge_nhds
 
-theorem Filter.Tendsto.isCoboundedUnder_ge {f : Filter β} {u : β → α} {a : α} [NeBot f]
-    (h : Tendsto u f (𝓝 a)) : f.IsCoboundedUnder (· ≥ ·) u :=
+theorem Filter.Tendsto.isCoboundedUnder_ge [NeBot f] (h : Tendsto u f (𝓝 a)) :
+    f.IsCoboundedUnder (· ≥ ·) u :=
   h.isBoundedUnder_le.isCobounded_flip
 #align filter.tendsto.is_cobounded_under_ge Filter.Tendsto.isCoboundedUnder_ge
 
-theorem isBounded_le_atBot (α : Type*) [hα : Nonempty α] [Preorder α] :
-    (atBot : Filter α).IsBounded (· ≤ ·) :=
-  isBounded_iff.2 ⟨Set.Iic hα.some, mem_atBot _, hα.some, fun _ hx ↦ hx⟩
-#align is_bounded_le_at_bot isBounded_le_atBot
+instance : BoundedGENhdsClass αᵒᵈ := ⟨@isBounded_le_nhds α _ _ _⟩
 
-theorem Filter.Tendsto.isBoundedUnder_le_atBot {α : Type*} [Nonempty α] [Preorder α] {f : Filter β}
-    {u : β → α} (h : Tendsto u f atBot) : f.IsBoundedUnder (· ≤ ·) u :=
-  (isBounded_le_atBot α).mono h
-#align filter.tendsto.is_bounded_under_le_at_bot Filter.Tendsto.isBoundedUnder_le_atBot
+instance Prod.instBoundedLENhdsClass : BoundedLENhdsClass (α × β) := by
+  refine ⟨fun x ↦ ?_⟩
+  obtain ⟨a, ha⟩ := isBounded_le_nhds x.1
+  obtain ⟨b, hb⟩ := isBounded_le_nhds x.2
+  rw [← @Prod.mk.eta _ _ x, nhds_prod_eq]
+  exact ⟨(a, b), ha.prod_mk hb⟩
 
-theorem bddAbove_range_of_tendsto_atTop_atBot {α : Type*} [Nonempty α] [SemilatticeSup α]
-    {u : ℕ → α} (hx : Tendsto u atTop atBot) : BddAbove (Set.range u) :=
-  (Filter.Tendsto.isBoundedUnder_le_atBot hx).bddAbove_range
-#align bdd_above_range_of_tendsto_at_top_at_bot bddAbove_range_of_tendsto_atTop_atBot
+instance Pi.instBoundedLENhdsClass [Finite ι] [∀ i, Preorder (π i)] [∀ i, TopologicalSpace (π i)]
+    [∀ i, BoundedLENhdsClass (π i)] : BoundedLENhdsClass (∀ i, π i) := by
+  refine' ⟨fun x ↦ _⟩
+  rw [nhds_pi]
+  choose f hf using fun i ↦ isBounded_le_nhds (x i)
+  exact ⟨f, eventually_pi hf⟩
 
-end OrderClosedTopology
+end BoundedLENhdsClass
 
-section OrderClosedTopology
-
-variable [SemilatticeInf α] [TopologicalSpace α] [OrderTopology α]
+section BoundedGENhdsClass
+variable [BoundedGENhdsClass α] [BoundedGENhdsClass β] {f : Filter ι} {u : ι → α} {a : α}
 
 theorem isBounded_ge_nhds (a : α) : (𝓝 a).IsBounded (· ≥ ·) :=
-  isBounded_le_nhds (α := αᵒᵈ) a
+  BoundedGENhdsClass.isBounded_ge_nhds _
 #align is_bounded_ge_nhds isBounded_ge_nhds
 
-theorem Filter.Tendsto.isBoundedUnder_ge {f : Filter β} {u : β → α} {a : α}
-    (h : Tendsto u f (𝓝 a)) : f.IsBoundedUnder (· ≥ ·) u :=
+theorem Filter.Tendsto.isBoundedUnder_ge (h : Tendsto u f (𝓝 a)) : f.IsBoundedUnder (· ≥ ·) u :=
   (isBounded_ge_nhds a).mono h
 #align filter.tendsto.is_bounded_under_ge Filter.Tendsto.isBoundedUnder_ge
 
-theorem Filter.Tendsto.bddBelow_range_of_cofinite {u : β → α} {a : α}
+theorem Filter.Tendsto.bddBelow_range_of_cofinite [IsDirected α (· ≥ ·)]
     (h : Tendsto u cofinite (𝓝 a)) : BddBelow (Set.range u) :=
   h.isBoundedUnder_ge.bddBelow_range_of_cofinite
 #align filter.tendsto.bdd_below_range_of_cofinite Filter.Tendsto.bddBelow_range_of_cofinite
 
-theorem Filter.Tendsto.bddBelow_range {u : ℕ → α} {a : α} (h : Tendsto u atTop (𝓝 a)) :
-    BddBelow (Set.range u) :=
+theorem Filter.Tendsto.bddBelow_range [IsDirected α (· ≥ ·)] {u : ℕ → α}
+    (h : Tendsto u atTop (𝓝 a)) : BddBelow (Set.range u) :=
   h.isBoundedUnder_ge.bddBelow_range
 #align filter.tendsto.bdd_below_range Filter.Tendsto.bddBelow_range
 
@@ -106,46 +123,54 @@ theorem isCobounded_le_nhds (a : α) : (𝓝 a).IsCobounded (· ≤ ·) :=
   (isBounded_ge_nhds a).isCobounded_flip
 #align is_cobounded_le_nhds isCobounded_le_nhds
 
-theorem Filter.Tendsto.isCoboundedUnder_le {f : Filter β} {u : β → α} {a : α} [NeBot f]
-    (h : Tendsto u f (𝓝 a)) : f.IsCoboundedUnder (· ≤ ·) u :=
+theorem Filter.Tendsto.isCoboundedUnder_le [NeBot f] (h : Tendsto u f (𝓝 a)) :
+    f.IsCoboundedUnder (· ≤ ·) u :=
   h.isBoundedUnder_ge.isCobounded_flip
 #align filter.tendsto.is_cobounded_under_le Filter.Tendsto.isCoboundedUnder_le
 
-theorem isBounded_ge_atTop (α : Type*) [Nonempty α] [Preorder α] :
-    (atTop : Filter α).IsBounded (· ≥ ·) :=
-  isBounded_le_atBot αᵒᵈ
-#align is_bounded_ge_at_top isBounded_ge_atTop
+instance : BoundedLENhdsClass αᵒᵈ := ⟨@isBounded_ge_nhds α _ _ _⟩
 
-theorem Filter.Tendsto.isBoundedUnder_ge_atTop {α : Type*} [Nonempty α] [Preorder α] {f : Filter β}
-    {u : β → α} (h : Tendsto u f atTop) : f.IsBoundedUnder (· ≥ ·) u :=
-  (isBounded_ge_atTop α).mono h
-#align filter.tendsto.is_bounded_under_ge_at_top Filter.Tendsto.isBoundedUnder_ge_atTop
+instance Prod.instBoundedGENhdsClass : BoundedGENhdsClass (α × β) :=
+  ⟨(Prod.instBoundedLENhdsClass (α := αᵒᵈ) (β := βᵒᵈ)).isBounded_le_nhds⟩
 
-theorem bddBelow_range_of_tendsto_atTop_atTop {α : Type*} [Nonempty α] [SemilatticeInf α]
-    {u : ℕ → α} (hx : Tendsto u atTop atTop) : BddBelow (Set.range u) :=
-  (Filter.Tendsto.isBoundedUnder_ge_atTop hx).bddBelow_range
-#align bdd_below_range_of_tendsto_at_top_at_top bddBelow_range_of_tendsto_atTop_atTop
+instance Pi.instBoundedGENhdsClass [Finite ι] [∀ i, Preorder (π i)] [∀ i, TopologicalSpace (π i)]
+    [∀ i, BoundedGENhdsClass (π i)] : BoundedGENhdsClass (∀ i, π i) :=
+  ⟨(Pi.instBoundedLENhdsClass (π := fun i ↦ (π i)ᵒᵈ)).isBounded_le_nhds⟩
 
-end OrderClosedTopology
+end BoundedGENhdsClass
+
+-- See note [lower instance priority]
+instance (priority := 100) OrderTop.to_BoundedLENhdsClass [OrderTop α] : BoundedLENhdsClass α :=
+  ⟨fun _a ↦ isBounded_le_of_top⟩
+#align order_top.to_bounded_le_nhds_class OrderTop.to_BoundedLENhdsClass
+
+-- See note [lower instance priority]
+instance (priority := 100) OrderBot.to_BoundedGENhdsClass [OrderBot α] : BoundedGENhdsClass α :=
+  ⟨fun _a ↦ isBounded_ge_of_bot⟩
+#align order_bot.to_bounded_ge_nhds_class OrderBot.to_BoundedGENhdsClass
+
+-- See note [lower instance priority]
+instance (priority := 100) OrderTopology.to_BoundedLENhdsClass [IsDirected α (· ≤ ·)]
+    [OrderTopology α] : BoundedLENhdsClass α :=
+  ⟨fun a ↦
+    ((isTop_or_exists_gt a).elim fun h ↦ ⟨a, eventually_of_forall h⟩) <|
+      Exists.imp fun _b ↦ ge_mem_nhds⟩
+#align order_topology.to_bounded_le_nhds_class OrderTopology.to_BoundedLENhdsClass
+
+-- See note [lower instance priority]
+instance (priority := 100) OrderTopology.to_BoundedGENhdsClass [IsDirected α (· ≥ ·)]
+    [OrderTopology α] : BoundedGENhdsClass α :=
+  ⟨fun a ↦ ((isBot_or_exists_lt a).elim fun h ↦ ⟨a, eventually_of_forall h⟩) <|
+    Exists.imp fun _b ↦ le_mem_nhds⟩
+#align order_topology.to_bounded_ge_nhds_class OrderTopology.to_BoundedGENhdsClass
+
+end Preorder
+
+section LiminfLimsup
 
 section ConditionallyCompleteLinearOrder
 
-variable [ConditionallyCompleteLinearOrder α]
-
-theorem lt_mem_sets_of_limsSup_lt {f : Filter α} {b} (h : f.IsBounded (· ≤ ·)) (l : f.limsSup < b) :
-    ∀ᶠ a in f, a < b :=
-  let ⟨_, (h : ∀ᶠ a in f, a ≤ _), hcb⟩ := exists_lt_of_csInf_lt h l
-  mem_of_superset h fun _ hac ↦ lt_of_le_of_lt hac hcb
-set_option linter.uppercaseLean3 false in
-#align lt_mem_sets_of_Limsup_lt lt_mem_sets_of_limsSup_lt
-
-theorem gt_mem_sets_of_limsInf_gt :
-    ∀ {f : Filter α} {b}, f.IsBounded (· ≥ ·) → b < f.limsInf → ∀ᶠ a in f, b < a :=
-  @lt_mem_sets_of_limsSup_lt αᵒᵈ _
-set_option linter.uppercaseLean3 false in
-#align gt_mem_sets_of_Liminf_gt gt_mem_sets_of_limsInf_gt
-
-variable [TopologicalSpace α] [OrderTopology α]
+variable [ConditionallyCompleteLinearOrder α] [TopologicalSpace α] [OrderTopology α]
 
 /-- If the liminf and the limsup of a filter coincide, then this filter converges to
 their common value, at least if the filter is eventually bounded above and below. -/
@@ -238,7 +263,7 @@ theorem tendsto_of_no_upcrossings [DenselyOrdered α] {f : Filter β} {u : β �
   · exact ⟨sInf ∅, tendsto_bot⟩
   refine' ⟨limsup u f, _⟩
   apply tendsto_of_le_liminf_of_limsup_le _ le_rfl h h'
-  by_contra' hlt
+  by_contra! hlt
   obtain ⟨a, ⟨⟨la, au⟩, as⟩⟩ : ∃ a, (f.liminf u < a ∧ a < f.limsup u) ∧ a ∈ s :=
     dense_iff_inter_open.1 hs (Set.Ioo (f.liminf u) (f.limsup u)) isOpen_Ioo
       (Set.nonempty_Ioo.2 hlt)
@@ -303,7 +328,7 @@ end LiminfLimsup
 
 section Monotone
 
-variable {ι R S : Type*} {F : Filter ι} [NeBot F]
+variable {F : Filter ι} [NeBot F]
   [ConditionallyCompleteLinearOrder R] [TopologicalSpace R] [OrderTopology R]
   [ConditionallyCompleteLinearOrder S] [TopologicalSpace S] [OrderTopology S]
 
@@ -332,13 +357,13 @@ theorem Antitone.map_limsSup_of_continuousAt {F : Filter R} [NeBot F] {f : R →
       have B : ∃ᶠ n in F, F.limsSup ≤ n := by
         apply (frequently_lt_of_lt_limsSup cobdd c_lt).mono
         intro x hx
-        by_contra'
+        by_contra!
         have : (Set.Ioo c F.limsSup).Nonempty := ⟨x, ⟨hx, this⟩⟩
         simp only [hc, Set.not_nonempty_empty] at this
       apply liminf_le_of_frequently_le _ (bdd_above.isBoundedUnder f_decr)
       exact (B.mono fun x hx ↦ f_decr hx)
     push_neg at h'
-    by_contra' H
+    by_contra! H
     have not_bot : ¬ IsBot F.limsSup := fun maybe_bot ↦
       lt_irrefl (F.liminf f) <| lt_of_le_of_lt
         (liminf_le_of_frequently_le (frequently_of_forall (fun r ↦ f_decr (maybe_bot r)))
@@ -348,7 +373,7 @@ theorem Antitone.map_limsSup_of_continuousAt {F : Filter R} [NeBot F] {f : R →
       simpa [IsBot] using not_bot
     obtain ⟨m, l_m, m_lt⟩ : (Set.Ioo l F.limsSup).Nonempty := by
       contrapose! h'
-      refine' ⟨l, l_lt, by rwa [Set.not_nonempty_iff_eq_empty] at h'⟩
+      exact ⟨l, l_lt, h'⟩
     have B : F.liminf f ≤ f m := by
       apply liminf_le_of_frequently_le _ _
       · apply (frequently_lt_of_lt_limsSup cobdd m_lt).mono
@@ -444,7 +469,7 @@ open Topology
 
 open Filter Set
 
-variable {ι : Type*} {R : Type*} [CompleteLinearOrder R] [TopologicalSpace R] [OrderTopology R]
+variable [CompleteLinearOrder R] [TopologicalSpace R] [OrderTopology R]
 
 theorem iInf_eq_of_forall_le_of_tendsto {x : R} {as : ι → R} (x_le : ∀ i, x ≤ as i) {F : Filter ι}
     [Filter.NeBot F] (as_lim : Filter.Tendsto as F (𝓝 x)) : ⨅ i, as i = x := by
@@ -457,7 +482,7 @@ theorem iSup_eq_of_forall_le_of_tendsto {x : R} {as : ι → R} (le_x : ∀ i, a
   iInf_eq_of_forall_le_of_tendsto (R := Rᵒᵈ) le_x as_lim
 #align supr_eq_of_forall_le_of_tendsto iSup_eq_of_forall_le_of_tendsto
 
-theorem iUnion_Ici_eq_Ioi_of_lt_of_tendsto {ι : Type*} (x : R) {as : ι → R} (x_lt : ∀ i, x < as i)
+theorem iUnion_Ici_eq_Ioi_of_lt_of_tendsto (x : R) {as : ι → R} (x_lt : ∀ i, x < as i)
     {F : Filter ι} [Filter.NeBot F] (as_lim : Filter.Tendsto as F (𝓝 x)) :
     ⋃ i : ι, Ici (as i) = Ioi x := by
   have obs : x ∉ range as := by
@@ -471,7 +496,7 @@ theorem iUnion_Ici_eq_Ioi_of_lt_of_tendsto {ι : Type*} (x : R) {as : ι → R} 
   exact iUnion_Ici_eq_Ioi_iInf obs
 #align Union_Ici_eq_Ioi_of_lt_of_tendsto iUnion_Ici_eq_Ioi_of_lt_of_tendsto
 
-theorem iUnion_Iic_eq_Iio_of_lt_of_tendsto {ι : Type*} (x : R) {as : ι → R} (lt_x : ∀ i, as i < x)
+theorem iUnion_Iic_eq_Iio_of_lt_of_tendsto (x : R) {as : ι → R} (lt_x : ∀ i, as i < x)
     {F : Filter ι} [Filter.NeBot F] (as_lim : Filter.Tendsto as F (𝓝 x)) :
     ⋃ i : ι, Iic (as i) = Iio x :=
   iUnion_Ici_eq_Ioi_of_lt_of_tendsto (R := Rᵒᵈ) x lt_x as_lim
@@ -494,7 +519,7 @@ theorem limsup_eq_tendsto_sum_indicator_nat_atTop (s : ℕ → Set α) :
     refine' tendsto_atTop_atTop_of_monotone' (fun n m hnm ↦ Finset.sum_mono_set_of_nonneg
       (fun i ↦ Set.indicator_nonneg (fun _ _ ↦ zero_le_one) _) (Finset.range_mono hnm)) _
     rintro ⟨i, h⟩
-    simp only [mem_upperBounds, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff'] at h
+    simp only [mem_upperBounds, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff] at h
     induction' i with k hk
     · obtain ⟨j, hj₁, hj₂⟩ := hω 1
       refine' not_lt.2 (h <| j + 1)
@@ -521,8 +546,7 @@ theorem limsup_eq_tendsto_sum_indicator_nat_atTop (s : ℕ → Set α) :
       exact zero_lt_one
   · rintro hω i
     rw [Set.mem_setOf_eq, tendsto_atTop_atTop] at hω
-    by_contra hcon
-    push_neg at hcon
+    by_contra! hcon
     obtain ⟨j, h⟩ := hω (i + 1)
     have : (∑ k in Finset.range j, (s (k + 1)).indicator 1 ω) ≤ i := by
       have hle : ∀ j ≤ i, (∑ k in Finset.range j, (s (k + 1)).indicator 1 ω) ≤ i := by
@@ -557,10 +581,7 @@ theorem limsup_eq_tendsto_sum_indicator_atTop (R : Type*) [StrictOrderedSemiring
 end Indicator
 
 section LiminfLimsupAddSub
-
-set_option autoImplicit true
-
-variable {R : Type*} [ConditionallyCompleteLinearOrder R] [TopologicalSpace R] [OrderTopology R]
+variable [ConditionallyCompleteLinearOrder R] [TopologicalSpace R] [OrderTopology R]
 
 /-- `liminf (c + xᵢ) = c + liminf xᵢ`. -/
 lemma limsup_const_add (F : Filter ι) [NeBot F] [Add R] [ContinuousAdd R]

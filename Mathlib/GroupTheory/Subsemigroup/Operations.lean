@@ -109,11 +109,11 @@ theorem Subsemigroup.toAddSubsemigroup_closure (S : Set M) :
 
 theorem AddSubsemigroup.toSubsemigroup'_closure (S : Set (Additive M)) :
     AddSubsemigroup.toSubsemigroup' (AddSubsemigroup.closure S) =
-      Subsemigroup.closure (Multiplicative.ofAdd ⁻¹' S) :=
+      Subsemigroup.closure (Additive.ofMul ⁻¹' S) :=
   le_antisymm
     (AddSubsemigroup.toSubsemigroup'.le_symm_apply.1 <|
       AddSubsemigroup.closure_le.2 (Subsemigroup.subset_closure (M := M)))
-    (Subsemigroup.closure_le.2 $ AddSubsemigroup.subset_closure (M := Additive M))
+    (Subsemigroup.closure_le.2 <| AddSubsemigroup.subset_closure (M := Additive M))
 #align add_subsemigroup.to_subsemigroup'_closure AddSubsemigroup.toSubsemigroup'_closure
 
 end
@@ -150,17 +150,17 @@ theorem AddSubsemigroup.toSubsemigroup_closure (S : Set A) :
       Subsemigroup.closure (Multiplicative.toAdd ⁻¹' S) :=
   le_antisymm
     (AddSubsemigroup.toSubsemigroup.to_galoisConnection.l_le <|
-      AddSubsemigroup.closure_le.2 $ Subsemigroup.subset_closure (M := Multiplicative A))
-    (Subsemigroup.closure_le.2 $ AddSubsemigroup.subset_closure (M := A))
+      AddSubsemigroup.closure_le.2 <| Subsemigroup.subset_closure (M := Multiplicative A))
+    (Subsemigroup.closure_le.2 <| AddSubsemigroup.subset_closure (M := A))
 #align add_subsemigroup.to_subsemigroup_closure AddSubsemigroup.toSubsemigroup_closure
 
 theorem Subsemigroup.toAddSubsemigroup'_closure (S : Set (Multiplicative A)) :
     Subsemigroup.toAddSubsemigroup' (Subsemigroup.closure S) =
-    AddSubsemigroup.closure (Additive.ofMul ⁻¹' S) :=
+      AddSubsemigroup.closure (Multiplicative.ofAdd ⁻¹' S) :=
   le_antisymm
     (Subsemigroup.toAddSubsemigroup'.to_galoisConnection.l_le <|
-      Subsemigroup.closure_le.2 $ AddSubsemigroup.subset_closure (M := A))
-    (AddSubsemigroup.closure_le.2 $ Subsemigroup.subset_closure (M := Multiplicative A))
+      Subsemigroup.closure_le.2 <| AddSubsemigroup.subset_closure (M := A))
+    (AddSubsemigroup.closure_le.2 <| Subsemigroup.subset_closure (M := Multiplicative A))
 #align subsemigroup.to_add_subsemigroup'_closure Subsemigroup.toAddSubsemigroup'_closure
 
 end
@@ -568,8 +568,8 @@ instance toCommSemigroup {M} [CommSemigroup M] {A : Type*} [SetLike A M] [MulMem
 /-- The natural semigroup hom from a subsemigroup of semigroup `M` to `M`. -/
 @[to_additive "The natural semigroup hom from an `AddSubsemigroup` of
 `AddSubsemigroup` `M` to `M`."]
-def subtype : S' →ₙ* M :=
-  ⟨Subtype.val, fun _ _ => rfl⟩
+def subtype : S' →ₙ* M where
+  toFun := Subtype.val; map_mul' := fun _ _ => rfl
 #align mul_mem_class.subtype MulMemClass.subtype
 #align add_mem_class.subtype AddMemClass.subtype
 

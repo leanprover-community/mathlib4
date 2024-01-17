@@ -1,0 +1,68 @@
+name: Post to zulip if the nightly-testing branch is failing.
+
+on:
+  workflow_run:
+    workflows: ["continuous integration"]
+    types:
+      - completed
+
+jobs:
+  handle_failure:
+    if: ${{ github.event.workflow_run.conclusion == 'failure' && github.event.workflow_run.head_branch == 'nightly-testing' }}
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Send message on Zulip
+      uses: zulip/github-actions-zulip/send-message@v1
+      with:
+        api-key: ${{ secrets.ZULIP_API_KEY }}
+        email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+        organization-url: 'https://leanprover.zulipchat.com'
+        to: 'mathlib reviewers'
+        type: 'stream'
+        topic: 'CI failure on the nightly-testing branch'
+        content: |
+          The latest CI for branch#nightly-testing has [failed](https://github.com/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}).
+
+  handle_success:
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'nightly-testing' }}
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      with:
+        ref: nightly-testing # checkout nightly-testing branch
+        fetch-depth: 0 # checkout all branches so that we can push from `nightly-testing` to `nightly-testing-YYYY-MM-DD`
+        token: ${{ secrets.NIGHTLY_TESTING }}
+    - name: Update the nightly-testing-YYYY-MM-DD branch
+      run: |
+        toolchain=$(<lean-toolchain)
+        if [[ $toolchain =~ leanprover/lean4:nightly-([a-zA-Z0-9_-]+) ]]; then
+          version=${BASH_REMATCH[1]}
+          echo "NIGHTLY=$version" >> $GITHUB_ENV
+          git push origin refs/heads/nightly-testing:refs/heads/nightly-testing-$version
+        else
+          echo "Error: The file lean-toolchain does not contain the expected pattern."
+          exit 1
+        fi
+
+    # Next, we'll update the `nightly-with-mathlib` branch at Lean.
+    - name: Cleanup workspace
+      run: |
+        sudo rm -rf *
+    # Checkout the Lean repository on 'nightly-with-mathlib'
+    - name: Checkout Lean repository
+      uses: actions/checkout@v3
+      with:
+        repository: leanprover/lean4
+        token: ${{ secrets.LEAN_PR_TESTING }}
+        ref: nightly-with-mathlib
+    # Merge the relevant nightly.
+    - name: Fetch tags from 'lean4-nightly', and merge relevant nightly into 'nightly-with-mathlib'
+      run: |
+        git remote add nightly https://github.com/leanprover/lean4-nightly.git
+        git fetch nightly --tags
+        # Note: old jobs may run out of order, but it is safe to merge an older `nightly-YYYY-MM-DD`.
+        git merge nightly-${NIGHTLY} --strategy-option ours --allow-unrelated-histories || true
+        git push origin

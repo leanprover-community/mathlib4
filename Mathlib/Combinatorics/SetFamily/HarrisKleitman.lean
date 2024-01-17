@@ -59,18 +59,19 @@ theorem IsLowerSet.le_card_inter_finset' (h𝒜 : IsLowerSet (𝒜 : Set (Finset
   induction' s using Finset.induction with a s hs ih generalizing 𝒜 ℬ
   · simp_rw [subset_empty, ← subset_singleton_iff', subset_singleton_iff] at h𝒜s hℬs
     obtain rfl | rfl := h𝒜s
-    · simp only [card_empty, empty_inter, mul_zero, zero_mul]
+    · simp only [card_empty, zero_mul, empty_inter, mul_zero, le_refl]
     obtain rfl | rfl := hℬs
-    · simp only [card_empty, inter_empty, mul_zero, zero_mul]
-    · simp only [card_empty, pow_zero, inter_singleton_of_mem, mem_singleton, card_singleton]
+    · simp only [card_empty, inter_empty, mul_zero, zero_mul, le_refl]
+    · simp only [card_empty, pow_zero, inter_singleton_of_mem, mem_singleton, card_singleton,
+        le_refl]
   rw [card_insert_of_not_mem hs, ← card_memberSubfamily_add_card_nonMemberSubfamily a 𝒜, ←
     card_memberSubfamily_add_card_nonMemberSubfamily a ℬ, add_mul, mul_add, mul_add,
     add_comm (_ * _), add_add_add_comm]
   refine'
     (add_le_add_right
           (mul_add_mul_le_mul_add_mul
-              (card_le_of_subset h𝒜.memberSubfamily_subset_nonMemberSubfamily) <|
-            card_le_of_subset hℬ.memberSubfamily_subset_nonMemberSubfamily)
+              (card_le_card h𝒜.memberSubfamily_subset_nonMemberSubfamily) <|
+            card_le_card hℬ.memberSubfamily_subset_nonMemberSubfamily)
           _).trans
       _
   rw [← two_mul, pow_succ, mul_assoc]
@@ -95,8 +96,8 @@ variable [Fintype α]
 
 /-- **Harris-Kleitman inequality**: Any two lower sets of finsets correlate. -/
 theorem IsLowerSet.le_card_inter_finset (h𝒜 : IsLowerSet (𝒜 : Set (Finset α)))
-    (hℬ : IsLowerSet (ℬ : Set (Finset α))) : 𝒜.card * ℬ.card ≤ 2 ^ Fintype.card α * (𝒜 ∩ ℬ).card
-    := h𝒜.le_card_inter_finset' hℬ (fun _ _ => subset_univ _) fun _ _ => subset_univ _
+    (hℬ : IsLowerSet (ℬ : Set (Finset α))) : 𝒜.card * ℬ.card ≤ 2 ^ Fintype.card α * (𝒜 ∩ ℬ).card :=
+h𝒜.le_card_inter_finset' hℬ (fun _ _ => subset_univ _) fun _ _ => subset_univ _
 #align is_lower_set.le_card_inter_finset IsLowerSet.le_card_inter_finset
 
 /-- **Harris-Kleitman inequality**: Upper sets and lower sets of finsets anticorrelate. -/
@@ -127,7 +128,7 @@ theorem IsUpperSet.le_card_inter_finset (h𝒜 : IsUpperSet (𝒜 : Set (Finset 
   rwa [card_compl, Fintype.card_finset, tsub_mul, le_tsub_iff_le_tsub, ← mul_tsub, ←
     card_sdiff (inter_subset_right _ _), sdiff_inter_self_right, sdiff_compl,
     _root_.inf_comm] at this
-  · exact mul_le_mul_left' (card_le_of_subset <| inter_subset_right _ _) _
+  · exact mul_le_mul_left' (card_le_card <| inter_subset_right _ _) _
   · rw [← Fintype.card_finset]
     exact mul_le_mul_right' (card_le_univ _) _
 #align is_upper_set.le_card_inter_finset IsUpperSet.le_card_inter_finset

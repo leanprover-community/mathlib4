@@ -3,7 +3,9 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Gabriel Ebner
 -/
+import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Data.Int.Cast.Defs
+import Mathlib.Data.Int.Defs
 import Mathlib.Algebra.Group.Basic
 
 #align_import data.int.cast.basic from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
@@ -48,7 +50,7 @@ namespace Int
 
 variable {R : Type u} [AddGroupWithOne R]
 
-@[simp, norm_cast]
+@[simp, norm_cast squash]
 theorem cast_negSucc (n : ℕ) : (-[n+1] : R) = -(n + 1 : ℕ) :=
   AddGroupWithOne.intCast_negSucc n
 #align int.cast_neg_succ_of_nat Int.cast_negSuccₓ
@@ -67,6 +69,7 @@ theorem cast_ofNat (n : ℕ) : ((n : ℤ) : R) = n :=
 -- expected `n` to be implicit, and `HasLiftT`
 #align int.cast_of_nat Int.cast_ofNatₓ
 
+-- See note [no_index around OfNat.ofNat]
 @[simp, norm_cast]
 theorem int_cast_ofNat (n : ℕ) [n.AtLeastTwo] :
     ((no_index (OfNat.ofNat n) : ℤ) : R) = OfNat.ofNat n := by
@@ -105,7 +108,7 @@ theorem cast_negOfNat (n : ℕ) : ((negOfNat n : ℤ) : R) = -n := by simp [Int.
 
 @[simp, norm_cast]
 theorem cast_add : ∀ m n, ((m + n : ℤ) : R) = m + n
-  | (m : ℕ), (n : ℕ) => by simp [← Int.ofNat_add, Nat.cast_add]
+  | (m : ℕ), (n : ℕ) => by simp [-Int.natCast_add, ← Int.ofNat_add]
   | (m : ℕ), -[n+1] => by erw [cast_subNatNat, cast_ofNat, cast_negSucc, sub_eq_add_neg]
   | -[m+1], (n : ℕ) => by
     erw [cast_subNatNat, cast_ofNat, cast_negSucc, sub_eq_iff_eq_add, add_assoc,
@@ -125,16 +128,6 @@ theorem cast_sub (m n) : ((m - n : ℤ) : R) = m - n := by
 
 section deprecated
 set_option linter.deprecated false
-
-@[norm_cast, deprecated]
-theorem ofNat_bit0 (n : ℕ) : (↑(bit0 n) : ℤ) = bit0 ↑n :=
-  rfl
-#align int.coe_nat_bit0 Int.ofNat_bit0
-
-@[norm_cast, deprecated]
-theorem ofNat_bit1 (n : ℕ) : (↑(bit1 n) : ℤ) = bit1 ↑n :=
-  rfl
-#align int.coe_nat_bit1 Int.ofNat_bit1
 
 @[norm_cast, deprecated]
 theorem cast_bit0 (n : ℤ) : ((bit0 n : ℤ) : R) = bit0 (n : R) :=

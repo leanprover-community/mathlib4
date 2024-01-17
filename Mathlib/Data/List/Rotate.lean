@@ -143,7 +143,7 @@ theorem rotate_eq_drop_append_take {l : List α} {n : ℕ} :
 
 theorem rotate_eq_drop_append_take_mod {l : List α} {n : ℕ} :
     l.rotate n = l.drop (n % l.length) ++ l.take (n % l.length) := by
-  cases' l.length.zero_le.eq_or_lt with hl hl
+  rcases l.length.zero_le.eq_or_lt with hl | hl
   · simp [eq_nil_of_length_eq_zero hl.symm]
   rw [← rotate_eq_drop_append_take (n.mod_lt hl).le, rotate_mod]
 #align list.rotate_eq_drop_append_take_mod List.rotate_eq_drop_append_take_mod
@@ -243,8 +243,8 @@ theorem get?_rotate {l : List α} {n m : ℕ} (hml : m < l.length) :
     · congr 1
       rw [length_drop] at hm
       have hm' := tsub_le_iff_left.1 hm
-      have : n % length l + m - length l < length l
-      · rw [tsub_lt_iff_left hm']
+      have : n % length l + m - length l < length l := by
+        rw [tsub_lt_iff_left hm']
         exact Nat.add_lt_add hlt hml
       conv_rhs => rw [add_comm m, ← mod_add_mod, mod_eq_sub_mod hm', mod_eq_of_lt this]
       rw [← add_right_inj l.length, ← add_tsub_assoc_of_le, add_tsub_tsub_cancel,
@@ -336,9 +336,9 @@ theorem rotate_eq_rotate {l l' : List α} {n : ℕ} : l.rotate n = l'.rotate n �
 theorem rotate_eq_iff {l l' : List α} {n : ℕ} :
     l.rotate n = l' ↔ l = l'.rotate (l'.length - n % l'.length) := by
   rw [← @rotate_eq_rotate _ l _ n, rotate_rotate, ← rotate_mod l', add_mod]
-  cases' l'.length.zero_le.eq_or_lt with hl hl
+  rcases l'.length.zero_le.eq_or_lt with hl | hl
   · rw [eq_nil_of_length_eq_zero hl.symm, rotate_nil, rotate_eq_nil_iff]
-  · cases' (Nat.zero_le (n % l'.length)).eq_or_lt with hn hn
+  · rcases (Nat.zero_le (n % l'.length)).eq_or_lt with hn | hn
     · simp [← hn]
     · rw [mod_eq_of_lt (tsub_lt_self hl hn), tsub_add_cancel_of_le, mod_self, rotate_zero]
       exact (Nat.mod_lt _ hl).le
@@ -395,7 +395,7 @@ theorem Nodup.rotate_eq_self_iff {l : List α} (hl : l.Nodup) {n : ℕ} :
     l.rotate n = l ↔ n % l.length = 0 ∨ l = [] := by
   constructor
   · intro h
-    cases' l.length.zero_le.eq_or_lt with hl' hl'
+    rcases l.length.zero_le.eq_or_lt with hl' | hl'
     · simp [← length_eq_zero, ← hl']
     left
     rw [nodup_iff_nthLe_inj] at hl
@@ -445,7 +445,7 @@ theorem IsRotated.symm (h : l ~r l') : l' ~r l := by
   · exists 0
   · use (hd :: tl).length * n - n
     rw [rotate_rotate, add_tsub_cancel_of_le, rotate_length_mul]
-    exact Nat.le_mul_of_pos_left (by simp)
+    exact Nat.le_mul_of_pos_left _ (by simp)
 #align list.is_rotated.symm List.IsRotated.symm
 
 theorem isRotated_comm : l ~r l' ↔ l' ~r l :=

@@ -157,7 +157,7 @@ theorem innerContent_mono ⦃U V : Set G⦄ (hU : IsOpen U) (hV : IsOpen V) (h2 
 theorem innerContent_exists_compact {U : Opens G} (hU : μ.innerContent U ≠ ∞) {ε : ℝ≥0}
     (hε : ε ≠ 0) : ∃ K : Compacts G, (K : Set G) ⊆ U ∧ μ.innerContent U ≤ μ K + ε := by
   have h'ε := ENNReal.coe_ne_zero.2 hε
-  cases' le_or_lt (μ.innerContent U) ε with h h
+  rcases le_or_lt (μ.innerContent U) ε with h | h
   · exact ⟨⊥, empty_subset _, le_add_left h⟩
   have h₂ := ENNReal.sub_lt_self hU h.ne_bot h'ε
   conv at h₂ => rhs; rw [innerContent]
@@ -305,7 +305,8 @@ theorem outerMeasure_preimage (f : G ≃ₜ G) (h : ∀ ⦃K : Compacts G⦄, μ
   convert μ.innerContent_comap f h ⟨s, hs⟩
 #align measure_theory.content.outer_measure_preimage MeasureTheory.Content.outerMeasure_preimage
 
-theorem outerMeasure_lt_top_of_isCompact [LocallyCompactSpace G] {K : Set G} (hK : IsCompact K) :
+theorem outerMeasure_lt_top_of_isCompact [WeaklyLocallyCompactSpace G]
+    {K : Set G} (hK : IsCompact K) :
     μ.outerMeasure K < ∞ := by
   rcases exists_compact_superset hK with ⟨F, h1F, h2F⟩
   calc
@@ -385,7 +386,7 @@ theorem measure_apply {s : Set G} (hs : MeasurableSet s) : μ.measure s = μ.out
 #align measure_theory.content.measure_apply MeasureTheory.Content.measure_apply
 
 /-- In a locally compact space, any measure constructed from a content is regular. -/
-instance regular [LocallyCompactSpace G] : μ.measure.Regular := by
+instance regular [WeaklyLocallyCompactSpace G] : μ.measure.Regular := by
   have : μ.measure.OuterRegular := by
     refine' ⟨fun A hA r (hr : _ < _) => _⟩
     rw [μ.measure_apply hA, outerMeasure_eq_iInf] at hr

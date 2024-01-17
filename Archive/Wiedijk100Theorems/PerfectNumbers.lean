@@ -39,8 +39,8 @@ namespace Nat
 open Nat.ArithmeticFunction Finset
 
 theorem sigma_two_pow_eq_mersenne_succ (k : ℕ) : σ 1 (2 ^ k) = mersenne (k + 1) := by
-  simp [sigma_one_apply, mersenne, Nat.prime_two, show 2 = 1 + 1 from rfl,
-    ← geom_sum_mul_add 1 (k + 1)]
+  simp_rw [sigma_one_apply, mersenne, show 2 = 1 + 1 from rfl, ← geom_sum_mul_add 1 (k + 1)]
+  norm_num
 #align theorems_100.nat.sigma_two_pow_eq_mersenne_succ Theorems100.Nat.sigma_two_pow_eq_mersenne_succ
 
 /-- Euclid's theorem that Mersenne primes induce perfect numbers -/
@@ -88,7 +88,7 @@ theorem eq_two_pow_mul_prime_mersenne_of_even_perfect {n : ℕ} (ev : Even n) (p
   rw [Nat.perfect_iff_sum_divisors_eq_two_mul hpos, ← sigma_one_apply,
     isMultiplicative_sigma.map_mul_of_coprime (Nat.prime_two.coprime_pow_of_not_dvd hm).symm,
     sigma_two_pow_eq_mersenne_succ, ← mul_assoc, ← pow_succ] at perf
-  rcases Nat.coprime.dvd_of_dvd_mul_left
+  rcases Nat.Coprime.dvd_of_dvd_mul_left
       (Nat.prime_two.coprime_pow_of_not_dvd (odd_mersenne_succ _)) (Dvd.intro _ perf) with
     ⟨j, rfl⟩
   rw [← mul_assoc, mul_comm _ (mersenne _), mul_assoc] at perf
@@ -115,7 +115,7 @@ theorem eq_two_pow_mul_prime_mersenne_of_even_perfect {n : ℕ} (ev : Even n) (p
       | .succ k =>
         apply ne_of_lt _ jcon2
         rw [mersenne, ← Nat.pred_eq_sub_one, Nat.lt_pred_iff, ← pow_one (Nat.succ 1)]
-        apply pow_lt_pow (Nat.lt_succ_self 1) (Nat.succ_lt_succ (Nat.succ_pos k))
+        apply pow_lt_pow_right (Nat.lt_succ_self 1) (Nat.succ_lt_succ (Nat.succ_pos k))
     contrapose! hm
     simp [hm]
 #align theorems_100.nat.eq_two_pow_mul_prime_mersenne_of_even_perfect Theorems100.Nat.eq_two_pow_mul_prime_mersenne_of_even_perfect

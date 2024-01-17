@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
 import Mathlib.Algebra.Algebra.Equiv
+import Mathlib.Algebra.Algebra.NonUnitalHom
 import Mathlib.Algebra.Algebra.Prod
-import Mathlib.Algebra.Hom.NonUnitalAlg
 import Mathlib.Algebra.Star.Prod
 
 #align_import algebra.star.star_alg_hom from "leanprover-community/mathlib"@"35882ddc66524b6980532a123a4ad4166db34c81"
@@ -135,7 +135,7 @@ initialize_simps_projections NonUnitalStarAlgHom
 
 @[simp]
 protected theorem coe_coe {F : Type*} [NonUnitalStarAlgHomClass F R A B] (f : F) :
-  ⇑(f : A →⋆ₙₐ[R] B) = f := rfl
+    ⇑(f : A →⋆ₙₐ[R] B) = f := rfl
 #align non_unital_star_alg_hom.coe_coe NonUnitalStarAlgHom.coe_coe
 
 @[simp]
@@ -185,7 +185,7 @@ theorem coe_mk' (f : A →ₙₐ[R] B) (h) :
 -- porting note: doesn't align with Mathlib 3 because `NonUnitalStarAlgHom.mk` has a new signature
 @[simp]
 theorem mk_coe (f : A →⋆ₙₐ[R] B) (h₁ h₂ h₃ h₄ h₅) :
-  (⟨⟨⟨⟨f, h₁⟩, h₂, h₃⟩, h₄⟩, h₅⟩ : A →⋆ₙₐ[R] B) = f := by
+    (⟨⟨⟨⟨f, h₁⟩, h₂, h₃⟩, h₄⟩, h₅⟩ : A →⋆ₙₐ[R] B) = f := by
   ext
   rfl
 #align non_unital_star_alg_hom.mk_coe NonUnitalStarAlgHom.mk_coeₓ
@@ -450,6 +450,14 @@ theorem coe_id : ⇑(StarAlgHom.id R A) = id :=
   rfl
 #align star_alg_hom.coe_id StarAlgHom.coe_id
 
+/-- `algebraMap R A` as a `StarAlgHom` when `A` is a star algebra over `R`. -/
+@[simps]
+def ofId (R A : Type*) [CommSemiring R] [StarRing R] [Semiring A] [StarMul A]
+    [Algebra R A] [StarModule R A] : R →⋆ₐ[R] A :=
+  { Algebra.ofId R A with
+    toFun := algebraMap R A
+    map_star' := by simp [Algebra.algebraMap_eq_smul_one] }
+
 end
 
 instance : Inhabited (A →⋆ₐ[R] A) :=
@@ -512,7 +520,7 @@ end Unital
 
 /-! ### Operations on the product type
 
-Note that this is copied from [`Algebra/Hom/NonUnitalAlg`](NonUnitalAlg). -/
+Note that this is copied from [`Algebra.Hom.NonUnitalAlg`](../Hom/NonUnitalAlg). -/
 
 
 namespace NonUnitalStarAlgHom
@@ -867,7 +875,7 @@ theorem symm_symm (e : A ≃⋆ₐ[R] B) : e.symm.symm = e := by
 #align star_alg_equiv.symm_symm StarAlgEquiv.symm_symm
 
 theorem symm_bijective : Function.Bijective (symm : (A ≃⋆ₐ[R] B) → B ≃⋆ₐ[R] A) :=
-  Equiv.bijective ⟨symm, symm, symm_symm, symm_symm⟩
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 #align star_alg_equiv.symm_bijective StarAlgEquiv.symm_bijective
 
 -- porting note: doesn't align with Mathlib 3 because `StarAlgEquiv.mk` has a new signature

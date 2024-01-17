@@ -153,7 +153,7 @@ theorem coe_toAddMonoidHom : ⇑f.toAddMonoidHom = f :=
 
 theorem toAddMonoidHom_injective :
     Function.Injective (@NormedAddGroupHom.toAddMonoidHom V₁ V₂ _ _) := fun f g h =>
-  coe_inj <| by rw [←coe_toAddMonoidHom f, ←coe_toAddMonoidHom g, h]
+  coe_inj <| by rw [← coe_toAddMonoidHom f, ← coe_toAddMonoidHom g, h]
 #align normed_add_group_hom.to_add_monoid_hom_injective NormedAddGroupHom.toAddMonoidHom_injective
 
 @[simp]
@@ -315,10 +315,10 @@ theorem mkNormedAddGroupHom_norm_le' (f : V₁ →+ V₂) {C : ℝ} (h : ∀ x, 
     (h x).trans <| by gcongr; apply le_max_left
 #align normed_add_group_hom.mk_normed_add_group_hom_norm_le' NormedAddGroupHom.mkNormedAddGroupHom_norm_le'
 
-alias mkNormedAddGroupHom_norm_le ← _root_.AddMonoidHom.mkNormedAddGroupHom_norm_le
+alias _root_.AddMonoidHom.mkNormedAddGroupHom_norm_le := mkNormedAddGroupHom_norm_le
 #align add_monoid_hom.mk_normed_add_group_hom_norm_le AddMonoidHom.mkNormedAddGroupHom_norm_le
 
-alias mkNormedAddGroupHom_norm_le' ← _root_.AddMonoidHom.mkNormedAddGroupHom_norm_le'
+alias _root_.AddMonoidHom.mkNormedAddGroupHom_norm_le' := mkNormedAddGroupHom_norm_le'
 #align add_monoid_hom.mk_normed_add_group_hom_norm_le' AddMonoidHom.mkNormedAddGroupHom_norm_le'
 
 /-! ### Addition of normed group homs -/
@@ -619,7 +619,7 @@ def coeAddHom : NormedAddGroupHom V₁ V₂ →+ V₁ → V₂ where
 @[simp]
 theorem coe_sum {ι : Type*} (s : Finset ι) (f : ι → NormedAddGroupHom V₁ V₂) :
     ⇑(∑ i in s, f i) = ∑ i in s, (f i : V₁ → V₂) :=
-  (coeAddHom : _ →+ V₁ → V₂).map_sum f s
+  map_sum coeAddHom f s
 #align normed_add_group_hom.coe_sum NormedAddGroupHom.coe_sum
 
 theorem sum_apply {ι : Type*} (s : Finset ι) (f : ι → NormedAddGroupHom V₁ V₂) (v : V₁) :
@@ -747,7 +747,7 @@ theorem mem_ker (v : V₁) : v ∈ f.ker ↔ f v = 0 := by
     the corestriction of `f` to the kernel of `g`. -/
 @[simps]
 def ker.lift (h : g.comp f = 0) : NormedAddGroupHom V₁ g.ker where
-  toFun v := ⟨f v, by rw [g.mem_ker, ←comp_apply g f, h, zero_apply]⟩
+  toFun v := ⟨f v, by rw [g.mem_ker, ← comp_apply g f, h, zero_apply]⟩
   map_add' v w := by simp only [map_add, AddSubmonoid.mk_add_mk]
   bound' := f.bound'
 #align normed_add_group_hom.ker.lift NormedAddGroupHom.ker.lift

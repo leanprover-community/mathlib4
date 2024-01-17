@@ -354,7 +354,7 @@ instance instRing : Ring 𝓜(𝕜, A) :=
     (fun _x _n => Prod.ext rfl <| MulOpposite.op_smul _ _)
     (fun _x _n => Prod.ext rfl <| MulOpposite.op_pow _ _) (fun _ => rfl) fun _ => rfl
 
-/-- The canonical map `double_centralizer.to_prod` as an additive group homomorphism. -/
+/-- The canonical map `DoubleCentralizer.toProd` as an additive group homomorphism. -/
 @[simps]
 def toProdHom : 𝓜(𝕜, A) →+ (A →L[𝕜] A) × (A →L[𝕜] A) where
   toFun := toProd
@@ -519,7 +519,7 @@ noncomputable def coeHom [StarRing 𝕜] [StarRing A] [StarModule 𝕜 A] [Norme
   map_smul' _ _ := ext _ _ _ _ <| Prod.ext (map_smul _ _ _) (map_smul _ _ _)
   map_zero' := ext _ _ _ _ <| Prod.ext (map_zero _) (map_zero _)
   map_add' _ _ := ext _ _ _ _ <| Prod.ext (map_add _ _ _) (map_add _ _ _)
-  map_mul' _ _ :=  ext _ _ _ _ <| Prod.ext
+  map_mul' _ _ := ext _ _ _ _ <| Prod.ext
     (ContinuousLinearMap.ext fun _ => (mul_assoc _ _ _))
     (ContinuousLinearMap.ext fun _ => (mul_assoc _ _ _).symm)
   map_star' _ := ext _ _ _ _ <| Prod.ext
@@ -691,7 +691,7 @@ instance instCstarRing : CstarRing 𝓜(𝕜, A) where
           _ ≤ ‖a‖₊ * ‖a‖₊ := by simp only [mul_one, nnnorm_fst, le_rfl]
       rw [← nnnorm_snd]
       simp only [mul_snd, ← sSup_closed_unit_ball_eq_nnnorm, star_snd, mul_apply]
-      simp only [← @_root_.op_nnnorm_mul 𝕜 A]
+      simp only [← @op_nnnorm_mul_apply 𝕜 _ A]
       simp only [← sSup_closed_unit_ball_eq_nnnorm, mul_apply']
       refine' csSup_eq_of_forall_le_of_forall_lt_exists_gt (hball.image _) _ fun r hr => _
       · rintro - ⟨x, hx, rfl⟩
@@ -709,7 +709,7 @@ instance instCstarRing : CstarRing 𝓜(𝕜, A) where
           rintro - ⟨y, hy, rfl⟩
           exact key (star x) y ((nnnorm_star x).trans_le hx') (mem_closedBall_zero_iff.1 hy)
         · simpa only [a.central, star_star, CstarRing.nnnorm_star_mul_self, NNReal.sq_sqrt, ← sq]
-            using pow_lt_pow_of_lt_left hxr zero_le' two_pos
+            using pow_lt_pow_left hxr zero_le' two_ne_zero
 
 end DenselyNormed
 

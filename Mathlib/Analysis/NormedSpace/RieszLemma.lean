@@ -51,7 +51,7 @@ theorem riesz_lemma {F : Subspace 𝕜 E} (hFc : IsClosed (F : Set E)) (hF : ∃
         hx ((hFc.mem_iff_infDist_zero hFn).2 heq.symm)
     let r' := max r 2⁻¹
     have hr' : r' < 1 := by
-      simp [hr]
+      simp only [ge_iff_le, max_lt_iff, hr, true_and]
       norm_num
     have hlt : 0 < r' := lt_of_lt_of_le (by norm_num) (le_max_right r 2⁻¹)
     have hdlt : d < d / r' := (lt_div_iff hlt).mpr ((mul_lt_iff_lt_one_right hdp).2 hr')
@@ -101,15 +101,15 @@ theorem riesz_lemma_of_norm_lt {c : 𝕜} (hc : 1 < ‖c‖) {R : ℝ} (hR : ‖
     1 = ‖c‖ / R * (R / ‖c‖) := by field_simp [Rpos.ne', (zero_lt_one.trans hc).ne']
     _ ≤ ‖c‖ / R * ‖d • x‖ := by gcongr
     _ = ‖d‖ * (‖c‖ / R * ‖x‖) := by
-      simp [norm_smul]
+      simp only [norm_smul]
       ring
     _ ≤ ‖d‖ * ‖x - y'‖ := by gcongr; exact hx y' (by simp [Submodule.smul_mem _ _ hy])
-    _ = ‖d • x - y‖ := by rw [yy', ←smul_sub, norm_smul]
+    _ = ‖d • x - y‖ := by rw [yy', ← smul_sub, norm_smul]
 #align riesz_lemma_of_norm_lt riesz_lemma_of_norm_lt
 
 theorem Metric.closedBall_infDist_compl_subset_closure {x : F} {s : Set F} (hx : x ∈ s) :
     closedBall x (infDist x sᶜ) ⊆ closure s := by
-  cases' eq_or_ne (infDist x sᶜ) 0 with h₀ h₀
+  rcases eq_or_ne (infDist x sᶜ) 0 with h₀ | h₀
   · rw [h₀, closedBall_zero']
     exact closure_mono (singleton_subset_iff.2 hx)
   · rw [← closure_ball x h₀]

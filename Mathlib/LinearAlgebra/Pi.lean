@@ -3,8 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Eric Wieser
 -/
+import Mathlib.GroupTheory.GroupAction.BigOperators
 import Mathlib.LinearAlgebra.Basic
-import Mathlib.Logic.Equiv.Fin
 
 #align_import linear_algebra.pi from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
@@ -104,6 +104,11 @@ theorem iInf_ker_proj : (⨅ i, ker (proj i : ((i : ι) → φ i) →ₗ[R] φ i
       simp only [mem_iInf, mem_ker, proj_apply] at h
       exact (mem_bot _).2 (funext fun i => h i)
 #align linear_map.infi_ker_proj LinearMap.iInf_ker_proj
+
+instance CompatibleSMul.pi (R S M N ι : Type*) [Semiring S]
+    [AddCommMonoid M] [AddCommMonoid N] [SMul R M] [SMul R N] [Module S M] [Module S N]
+    [LinearMap.CompatibleSMul M N R S] : LinearMap.CompatibleSMul M (ι → N) R S where
+  map_smul f r m := by ext i; apply ((LinearMap.proj i).comp f).map_smul_of_tower
 
 /-- Linear map between the function spaces `I → M₂` and `I → M₃`, induced by a linear map `f`
 between `M₂` and `M₃`. -/
@@ -249,6 +254,15 @@ theorem update_apply (f : (i : ι) → M₂ →ₗ[R] φ i) (c : M₂) (i j : ι
 #align linear_map.update_apply LinearMap.update_apply
 
 end
+
+/-- A linear map `f` applied to `x : ι → R` can be computed using the image under `f` of elements
+of the canonical basis. -/
+theorem pi_apply_eq_sum_univ [Fintype ι] [DecidableEq ι] (f : (ι → R) →ₗ[R] M₂) (x : ι → R) :
+    f x = ∑ i, x i • f fun j => if i = j then 1 else 0 := by
+  conv_lhs => rw [pi_eq_sum_univ x, map_sum]
+  refine Finset.sum_congr rfl (fun _ _ => ?_)
+  rw [map_smul]
+#align linear_map.pi_apply_eq_sum_univ LinearMap.pi_apply_eq_sum_univ
 
 end LinearMap
 
@@ -468,9 +482,7 @@ theorem sumArrowLequivProdArrow_symm_apply_inr {α β} (f : α → M) (g : β �
 #align linear_equiv.sum_arrow_lequiv_prod_arrow_symm_apply_inr LinearEquiv.sumArrowLequivProdArrow_symm_apply_inr
 
 /-- If `ι` has a unique element, then `ι → M` is linearly equivalent to `M`. -/
-@[simps (config :=
-      { simpRhs := true
-        fullyApplied := false }) symm_apply]
+@[simps (config := { simpRhs := true, fullyApplied := false }) symm_apply]
 def funUnique (ι R M : Type*) [Unique ι] [Semiring R] [AddCommMonoid M] [Module R M] :
     (ι → M) ≃ₗ[R] M :=
   { Equiv.funUnique ι M with
@@ -487,9 +499,7 @@ theorem funUnique_apply (ι R M : Type*) [Unique ι] [Semiring R] [AddCommMonoid
 variable (R M)
 
 /-- Linear equivalence between dependent functions `(i : Fin 2) → M i` and `M 0 × M 1`. -/
-@[simps (config :=
-      { simpRhs := true
-        fullyApplied := false }) symm_apply]
+@[simps (config := { simpRhs := true, fullyApplied := false }) symm_apply]
 def piFinTwo (M : Fin 2 → Type v)
     [(i : Fin 2) → AddCommMonoid (M i)] [(i : Fin 2) → Module R (M i)] :
     ((i : Fin 2) → M i) ≃ₗ[R] M 0 × M 1 :=
@@ -530,7 +540,7 @@ end Extend
 /-! ### Bundled versions of `Matrix.vecCons` and `Matrix.vecEmpty`
 
 The idea of these definitions is to be able to define a map as `x ↦ ![f₁ x, f₂ x, f₃ x]`, where
-`f₁ f₂ f₃` are already linear maps, as `f₁.vecCons $ f₂.vecCons $ f₃.vecCons $ vecEmpty`.
+`f₁ f₂ f₃` are already linear maps, as `f₁.vecCons <| f₂.vecCons <| f₃.vecCons <| vecEmpty`.
 
 While the same thing could be achieved using `LinearMap.pi ![f₁, f₂, f₃]`, this is not
 definitionally equal to the result using `LinearMap.vecCons`, as `Fin.cases` and function

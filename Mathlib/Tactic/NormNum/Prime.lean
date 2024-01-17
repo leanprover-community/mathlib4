@@ -50,7 +50,7 @@ def MinFacHelper (n k : ℕ) : Prop :=
 
 theorem MinFacHelper.one_lt {n k : ℕ} (h : MinFacHelper n k) : 1 < n := by
   have : 2 < minFac n := h.1.trans_le h.2.2
-  rcases eq_zero_or_pos n with rfl|h
+  obtain rfl | h := n.eq_zero_or_pos
   · contradiction
   rcases (succ_le_of_lt h).eq_or_lt with rfl|h
   · contradiction
@@ -66,17 +66,17 @@ theorem minFacHelper_0 (n : ℕ)
   · exact h
 
 theorem minFacHelper_1 {n k k' : ℕ} (e : k + 2 = k') (h : MinFacHelper n k)
-  (np : minFac n ≠ k) : MinFacHelper n k' := by
+    (np : minFac n ≠ k) : MinFacHelper n k' := by
   rw [← e]
-  refine ⟨Nat.lt_add_right _ _ _ h.1, ?_, ?_⟩
+  refine ⟨Nat.lt_add_right _ h.1, ?_, ?_⟩
   · rw [add_mod, mod_self, add_zero, mod_mod]
     exact h.2.1
   rcases h.2.2.eq_or_lt with rfl|h2
   · exact (np rfl).elim
   rcases (succ_le_of_lt h2).eq_or_lt with h2|h2
   · refine ((h.1.trans_le h.2.2).ne ?_).elim
-    have h3 : 2 ∣ minFac n
-    · rw [Nat.dvd_iff_mod_eq_zero, ← h2, succ_eq_add_one, add_mod, h.2.1]
+    have h3 : 2 ∣ minFac n := by
+      rw [Nat.dvd_iff_mod_eq_zero, ← h2, succ_eq_add_one, add_mod, h.2.1]
       norm_num
     rw [dvd_prime <| minFac_prime h.one_lt.ne'] at h3
     norm_num at h3

@@ -313,7 +313,7 @@ variable {G : Type*} [Group G] [DistribMulAction G M]
 when `G = Rˣ` -/
 instance {R : Type*} : MulAction G (RayVector R M)
     where
-  smul r := Subtype.map ((· • ·) r) fun _ => (smul_ne_zero_iff_ne _).2
+  smul r := Subtype.map (r • ·) fun _ => (smul_ne_zero_iff_ne _).2
   mul_smul a b _ := Subtype.ext <| mul_smul a b _
   one_smul _ := Subtype.ext <| one_smul _ _
 
@@ -323,7 +323,7 @@ variable [SMulCommClass R G M]
 `G = Rˣ` -/
 instance : MulAction G (Module.Ray R M)
     where
-  smul r := Quotient.map ((· • ·) r) fun _ _ h => h.smul _
+  smul r := Quotient.map (r • ·) fun _ _ h => h.smul _
   mul_smul a b := Quotient.ind fun _ => congr_arg Quotient.mk' <| mul_smul a b _
   one_smul := Quotient.ind fun _ => congr_arg Quotient.mk' <| one_smul _ _
 
@@ -396,7 +396,7 @@ theorem sameRay_neg_iff : SameRay R (-x) (-y) ↔ SameRay R x y := by
   simp only [SameRay, neg_eq_zero, smul_neg, neg_inj]
 #align same_ray_neg_iff sameRay_neg_iff
 
-alias sameRay_neg_iff ↔ SameRay.of_neg SameRay.neg
+alias ⟨SameRay.of_neg, SameRay.neg⟩ := sameRay_neg_iff
 #align same_ray.of_neg SameRay.of_neg
 #align same_ray.neg SameRay.neg
 
@@ -507,7 +507,7 @@ variable {M : Type*} [AddCommGroup M] [Module R M]
 
 -- Porting note: Needed to add coercion ↥ below
 /-- `SameRay` follows from membership of `MulAction.orbit` for the `Units.posSubgroup`. -/
-theorem sameRay_of_mem_orbit {v₁ v₂ : M} (h : v₁ ∈ MulAction.orbit (↥Units.posSubgroup R) v₂) :
+theorem sameRay_of_mem_orbit {v₁ v₂ : M} (h : v₁ ∈ MulAction.orbit ↥(Units.posSubgroup R) v₂) :
     SameRay R v₁ v₂ := by
   rcases h with ⟨⟨r, hr : 0 < r.1⟩, rfl : r • v₂ = v₁⟩
   exact SameRay.sameRay_pos_smul_left _ hr

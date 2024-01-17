@@ -50,19 +50,19 @@ theorem isometry_iff_dist_eq [PseudoMetricSpace α] [PseudoMetricSpace β] {f : 
 #align isometry_iff_dist_eq isometry_iff_dist_eq
 
 /-- An isometry preserves distances. -/
-alias isometry_iff_dist_eq ↔ Isometry.dist_eq _
+alias ⟨Isometry.dist_eq, _⟩ := isometry_iff_dist_eq
 #align isometry.dist_eq Isometry.dist_eq
 
 /-- A map that preserves distances is an isometry -/
-alias isometry_iff_dist_eq ↔ _ Isometry.of_dist_eq
+alias ⟨_, Isometry.of_dist_eq⟩ := isometry_iff_dist_eq
 #align isometry.of_dist_eq Isometry.of_dist_eq
 
 /-- An isometry preserves non-negative distances. -/
-alias isometry_iff_nndist_eq ↔ Isometry.nndist_eq _
+alias ⟨Isometry.nndist_eq, _⟩ := isometry_iff_nndist_eq
 #align isometry.nndist_eq Isometry.nndist_eq
 
 /-- A map that preserves non-negative distances is an isometry. -/
-alias isometry_iff_nndist_eq ↔ _ Isometry.of_nndist_eq
+alias ⟨_, Isometry.of_nndist_eq⟩ := isometry_iff_nndist_eq
 #align isometry.of_nndist_eq Isometry.of_nndist_eq
 
 namespace Isometry
@@ -289,8 +289,8 @@ theorem Embedding.to_isometry {α β} [TopologicalSpace α] [MetricSpace β] {f 
 -- such a bijection need not exist
 /-- `α` and `β` are isometric if there is an isometric bijection between them. -/
 -- porting note: was @[nolint has_nonempty_instance]
-structure IsometryEquiv (α β : Type _) [PseudoEMetricSpace α] [PseudoEMetricSpace β] extends
-  α ≃ β where
+structure IsometryEquiv (α : Type u) (β : Type v) [PseudoEMetricSpace α] [PseudoEMetricSpace β]
+    extends α ≃ β where
   isometry_toFun : Isometry toFun
 #align isometry_equiv IsometryEquiv
 
@@ -419,6 +419,9 @@ initialize_simps_projections IsometryEquiv (toEquiv_toFun → apply, toEquiv_inv
 @[simp]
 theorem symm_symm (h : α ≃ᵢ β) : h.symm.symm = h := rfl
 #align isometry_equiv.symm_symm IsometryEquiv.symm_symm
+
+theorem symm_bijective : Bijective (IsometryEquiv.symm : (α ≃ᵢ β) → β ≃ᵢ α) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
 @[simp]
 theorem apply_symm_apply (h : α ≃ᵢ β) (y : β) : h (h.symm y) = y :=

@@ -141,7 +141,7 @@ def restrictMonoidHom (G : Type*) [Monoid G] [TopologicalSpace G] [ChartedSpace 
     [SmoothMul I' G] {U V : Opens N} (h : U ≤ V) : C^∞⟮I, V; I', G⟯ →* C^∞⟮I, U; I', G⟯ where
   toFun f := ⟨f ∘ Set.inclusion h, f.smooth.comp (smooth_inclusion h)⟩
   map_one' := rfl
-  map_mul' _ _:= rfl
+  map_mul' _ _ := rfl
 #align smooth_map.restrict_monoid_hom SmoothMap.restrictMonoidHom
 #align smooth_map.restrict_add_monoid_hom SmoothMap.restrictAddMonoidHom
 
@@ -262,17 +262,17 @@ end RingStructure
 section ModuleStructure
 
 /-!
-### Semiodule stucture
+### Semimodule stucture
 
 In this section we show that smooth functions valued in a vector space `M` over a normed
 field `𝕜` inherit a vector space structure.
 -/
 
 
-instance hasSmul {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] :
+instance instSMul {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] :
     SMul 𝕜 C^∞⟮I, N; 𝓘(𝕜, V), V⟯ :=
   ⟨fun r f => ⟨r • ⇑f, smooth_const.smul f.smooth⟩⟩
-#align smooth_map.has_smul SmoothMap.hasSmul
+#align smooth_map.has_smul SmoothMap.instSMul
 
 @[simp]
 theorem coe_smul {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] (r : 𝕜)
@@ -355,10 +355,10 @@ If `V` is a module over `𝕜`, then we show that the space of smooth functions 
 is naturally a vector space over the ring of smooth functions from `N` to `𝕜`. -/
 
 
-instance instSmul' {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] :
+instance instSMul' {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] :
     SMul C^∞⟮I, N; 𝕜⟯ C^∞⟮I, N; 𝓘(𝕜, V), V⟯ :=
   ⟨fun f g => ⟨fun x => f x • g x, Smooth.smul f.2 g.2⟩⟩
-#align smooth_map.has_smul' SmoothMap.instSmul'
+#align smooth_map.has_smul' SmoothMap.instSMul'
 
 @[simp]
 theorem smul_comp' {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] (f : C^∞⟮I'', N'; 𝕜⟯)

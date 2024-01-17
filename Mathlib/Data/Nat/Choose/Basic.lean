@@ -127,7 +127,7 @@ theorem choose_mul_factorial_mul_factorial : ∀ {n k}, k ≤ n → choose n k *
   | 0, _, hk => by simp [Nat.eq_zero_of_le_zero hk]
   | n + 1, 0, _ => by simp
   | n + 1, succ k, hk => by
-    cases' lt_or_eq_of_le hk with hk₁ hk₁
+    rcases lt_or_eq_of_le hk with hk₁ | hk₁
     · have h : choose n k * k.succ ! * (n - k)! = (k + 1) * n ! := by
         rw [← choose_mul_factorial_mul_factorial (le_of_succ_le_succ hk)]
         simp [factorial_succ, mul_comm, mul_left_comm, mul_assoc]
@@ -183,8 +183,8 @@ theorem factorial_mul_factorial_dvd_factorial {n k : ℕ} (hk : k ≤ n) : k ! *
 #align nat.factorial_mul_factorial_dvd_factorial Nat.factorial_mul_factorial_dvd_factorial
 
 theorem factorial_mul_factorial_dvd_factorial_add (i j : ℕ) : i ! * j ! ∣ (i + j)! := by
-  suffices : i ! * (i + j - i) ! ∣ (i + j)!
-  · rwa [add_tsub_cancel_left i j] at this
+  suffices i ! * (i + j - i) ! ∣ (i + j)! by
+    rwa [add_tsub_cancel_left i j] at this
   exact factorial_mul_factorial_dvd_factorial (Nat.le_add_right _ _)
 #align nat.factorial_mul_factorial_dvd_factorial_add Nat.factorial_mul_factorial_dvd_factorial_add
 
@@ -195,8 +195,8 @@ theorem choose_symm {n k : ℕ} (hk : k ≤ n) : choose n (n - k) = choose n k :
 #align nat.choose_symm Nat.choose_symm
 
 theorem choose_symm_of_eq_add {n a b : ℕ} (h : n = a + b) : Nat.choose n a = Nat.choose n b := by
-  suffices : choose n (n - b) = choose n b
-  · rw [h, add_tsub_cancel_right] at this; rwa [h]
+  suffices choose n (n - b) = choose n b by
+    rw [h, add_tsub_cancel_right] at this; rwa [h]
   exact choose_symm (h ▸ le_add_left _ _)
 #align nat.choose_symm_of_eq_add Nat.choose_symm_of_eq_add
 
@@ -210,8 +210,8 @@ theorem choose_symm_half (m : ℕ) : choose (2 * m + 1) (m + 1) = choose (2 * m 
 #align nat.choose_symm_half Nat.choose_symm_half
 
 theorem choose_succ_right_eq (n k : ℕ) : choose n (k + 1) * (k + 1) = choose n k * (n - k) := by
-  have e : (n + 1) * choose n k = choose n k * (k + 1) + choose n (k + 1) * (k + 1)
-  rw [← right_distrib, ← choose_succ_succ, succ_mul_choose_eq]
+  have e : (n + 1) * choose n k = choose n k * (k + 1) + choose n (k + 1) * (k + 1) := by
+    rw [← right_distrib, ← choose_succ_succ, succ_mul_choose_eq]
   rw [← tsub_eq_of_eq_add_rev e, mul_comm, ← mul_tsub, add_tsub_add_eq_tsub_right]
 #align nat.choose_succ_right_eq Nat.choose_succ_right_eq
 
@@ -233,24 +233,39 @@ theorem choose_mul_succ_eq (n k : ℕ) : n.choose k * (n + 1) = (n + 1).choose k
 #align nat.choose_mul_succ_eq Nat.choose_mul_succ_eq
 
 theorem ascFactorial_eq_factorial_mul_choose (n k : ℕ) :
-    n.ascFactorial k = k ! * (n + k).choose k := by
+    (n + 1).ascFactorial k = k ! * (n + k).choose k := by
   rw [mul_comm]
   apply mul_right_cancel₀ (factorial_ne_zero (n + k - k))
-  rw [choose_mul_factorial_mul_factorial, add_tsub_cancel_right, ← factorial_mul_ascFactorial,
-    mul_comm]
-  exact Nat.le_add_left k n
+  rw [choose_mul_factorial_mul_factorial <| Nat.le_add_left k n, add_tsub_cancel_right,
+    ← factorial_mul_ascFactorial, mul_comm]
 #align nat.asc_factorial_eq_factorial_mul_choose Nat.ascFactorial_eq_factorial_mul_choose
 
+theorem ascFactorial_eq_factorial_mul_choose' (n k : ℕ) :
+    n.ascFactorial k = k ! * (n + k - 1).choose k := by
+  cases hn : n
+  cases hk : k
+  rw [ascFactorial_zero, choose_zero_right, factorial_zero, mul_one]
+  simp only [zero_ascFactorial, zero_eq, zero_add, ge_iff_le, succ_sub_succ_eq_sub,
+    nonpos_iff_eq_zero, tsub_zero, choose_succ_self, mul_zero]
+  rw [ascFactorial_eq_factorial_mul_choose]
+  simp only [ge_iff_le, succ_add_sub_one]
+
 theorem factorial_dvd_ascFactorial (n k : ℕ) : k ! ∣ n.ascFactorial k :=
-  ⟨(n + k).choose k, ascFactorial_eq_factorial_mul_choose _ _⟩
+  ⟨(n + k - 1).choose k, ascFactorial_eq_factorial_mul_choose' _ _⟩
 #align nat.factorial_dvd_asc_factorial Nat.factorial_dvd_ascFactorial
 
 theorem choose_eq_asc_factorial_div_factorial (n k : ℕ) :
-    (n + k).choose k = n.ascFactorial k / k ! := by
+    (n + k).choose k = (n + 1).ascFactorial k / k ! := by
   apply mul_left_cancel₀ (factorial_ne_zero k)
   rw [← ascFactorial_eq_factorial_mul_choose]
   exact (Nat.mul_div_cancel' <| factorial_dvd_ascFactorial _ _).symm
 #align nat.choose_eq_asc_factorial_div_factorial Nat.choose_eq_asc_factorial_div_factorial
+
+theorem choose_eq_asc_factorial_div_factorial' (n k : ℕ) :
+    (n + k - 1).choose k = n.ascFactorial k / k ! := by
+  apply mul_left_cancel₀ (factorial_ne_zero k)
+  rw [← ascFactorial_eq_factorial_mul_choose']
+  exact (Nat.mul_div_cancel' <| factorial_dvd_ascFactorial _ _).symm
 
 theorem descFactorial_eq_factorial_mul_choose (n k : ℕ) : n.descFactorial k = k ! * n.choose k := by
   obtain h | h := Nat.lt_or_ge n k
@@ -303,7 +318,7 @@ private theorem choose_le_middle_of_le_half_left {n r : ℕ} (hr : r ≤ n / 2) 
 /-- `choose n r` is maximised when `r` is `n/2`. -/
 theorem choose_le_middle (r n : ℕ) : choose n r ≤ choose n (n / 2) := by
   cases' le_or_gt r n with b b
-  · cases' le_or_lt r (n / 2) with a h
+  · rcases le_or_lt r (n / 2) with a | h
     · apply choose_le_middle_of_le_half_left a
     · rw [← choose_symm b]
       apply choose_le_middle_of_le_half_left

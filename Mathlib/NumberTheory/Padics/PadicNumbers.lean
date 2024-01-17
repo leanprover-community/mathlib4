@@ -3,6 +3,7 @@ Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
+import Mathlib.RingTheory.Valuation.Basic
 import Mathlib.NumberTheory.Padics.PadicNorm
 import Mathlib.Analysis.Normed.Field.Basic
 
@@ -233,8 +234,8 @@ theorem norm_eq_pow_val {f : PadicSeq p} (hf : ¬f ≈ 0) : f.norm = (p : ℚ) ^
 theorem val_eq_iff_norm_eq {f g : PadicSeq p} (hf : ¬f ≈ 0) (hg : ¬g ≈ 0) :
     f.valuation = g.valuation ↔ f.norm = g.norm := by
   rw [norm_eq_pow_val hf, norm_eq_pow_val hg, ← neg_inj, zpow_inj]
-  · exact_mod_cast (Fact.out : p.Prime).pos
-  · exact_mod_cast (Fact.out : p.Prime).ne_one
+  · exact mod_cast (Fact.out : p.Prime).pos
+  · exact mod_cast (Fact.out : p.Prime).ne_one
 #align padic_seq.val_eq_iff_norm_eq PadicSeq.val_eq_iff_norm_eq
 
 end Valuation
@@ -576,7 +577,7 @@ def padicNormE {p : ℕ} [hp : Fact p.Prime] : AbsoluteValue ℚ_[p] ℚ where
   toFun := Quotient.lift PadicSeq.norm <| @PadicSeq.norm_equiv _ _
   map_mul' q r := Quotient.inductionOn₂ q r <| PadicSeq.norm_mul
   nonneg' q := Quotient.inductionOn q <| PadicSeq.norm_nonneg
-  eq_zero' q := Quotient.inductionOn q <| fun r ↦ by
+  eq_zero' q := Quotient.inductionOn q fun r ↦ by
     rw [Padic.zero_def, Quotient.eq]
     exact PadicSeq.norm_zero_iff r
   add_le' q r := by
@@ -601,12 +602,11 @@ theorem defn (f : PadicSeq p) {ε : ℚ} (hε : 0 < ε) :
     ∃ N, ∀ i ≥ N, padicNormE (Padic.mk f - f i : ℚ_[p]) < ε := by
   dsimp [padicNormE]
   change ∃ N, ∀ i ≥ N, (f - const _ (f i)).norm < ε
-  by_contra' h
+  by_contra! h
   cases' cauchy₂ f hε with N hN
   rcases h N with ⟨i, hi, hge⟩
-  have hne : ¬f - const (padicNorm p) (f i) ≈ 0 := by
-    intro h
-    unfold PadicSeq.norm at hge; split_ifs at hge
+  have hne : ¬f - const (padicNorm p) (f i) ≈ 0 := fun h ↦ by
+    rw [PadicSeq.norm, dif_pos h] at hge
     exact not_lt_of_ge hge hε
   unfold PadicSeq.norm at hge; split_ifs at hge; exact not_le_of_gt hε hge
   apply not_le_of_gt _ hge
@@ -656,7 +656,7 @@ variable {p : ℕ} [Fact p.Prime] (f : CauSeq _ (@padicNormE p _))
 
 theorem rat_dense' (q : ℚ_[p]) {ε : ℚ} (hε : 0 < ε) : ∃ r : ℚ, padicNormE (q - r : ℚ_[p]) < ε :=
   Quotient.inductionOn q fun q' ↦
-    have : ∃ N, ∀ (m) (_ : m ≥ N) (n) (_ : n ≥ N), padicNorm p (q' m - q' n) < ε := cauchy₂ _ hε
+    have : ∃ N, ∀ m ≥ N, ∀ n ≥ N, padicNorm p (q' m - q' n) < ε := cauchy₂ _ hε
     let ⟨N, hN⟩ := this
     ⟨q' N, by
       dsimp [padicNormE]
@@ -678,7 +678,7 @@ theorem rat_dense' (q : ℚ_[p]) {ε : ℚ} (hε : 0 < ε) : ∃ r : ℚ, padicN
 open Classical
 
 private theorem div_nat_pos (n : ℕ) : 0 < 1 / (n + 1 : ℚ) :=
-  div_pos zero_lt_one (by exact_mod_cast succ_pos _)
+  div_pos zero_lt_one (mod_cast succ_pos _)
 
 /-- `limSeq f`, for `f` a Cauchy sequence of `p`-adic numbers, is a sequence of rationals with the
 same limit point as `f`. -/
@@ -690,10 +690,10 @@ theorem exi_rat_seq_conv {ε : ℚ} (hε : 0 < ε) :
     ∃ N, ∀ i ≥ N, padicNormE (f i - (limSeq f i : ℚ_[p]) : ℚ_[p]) < ε := by
   refine' (exists_nat_gt (1 / ε)).imp fun N hN i hi ↦ _
   have h := Classical.choose_spec (rat_dense' (f i) (div_nat_pos i))
-  refine' lt_of_lt_of_le h ((div_le_iff' <| by exact_mod_cast succ_pos _).mpr _)
+  refine' lt_of_lt_of_le h ((div_le_iff' <| mod_cast succ_pos _).mpr _)
   rw [right_distrib]
   apply le_add_of_le_of_nonneg
-  · exact (div_le_iff hε).mp (le_trans (le_of_lt hN) (by exact_mod_cast hi))
+  · exact (div_le_iff hε).mp (le_trans (le_of_lt hN) (mod_cast hi))
   · apply le_of_lt
     simpa
 #align padic.exi_rat_seq_conv Padic.exi_rat_seq_conv
@@ -708,10 +708,10 @@ theorem exi_rat_seq_conv_cauchy : IsCauSeq (padicNorm p) (limSeq f) := fun ε h�
     padicNormE (limSeq f j - f (max N N2) + (f (max N N2) - limSeq f (max N N2)) : ℚ_[p]) < ε by
     ring_nf at this ⊢
     rw [← padicNormE.eq_padic_norm']
-    exact_mod_cast this
+    exact mod_cast this
   · apply lt_of_le_of_lt
     · apply padicNormE.add_le
-    · rw [←add_thirds ε]
+    · rw [← add_thirds ε]
       apply _root_.add_lt_add
       · suffices padicNormE (limSeq f j - f j + (f j - f (max N N2)) : ℚ_[p]) < ε / 3 + ε / 3 by
           simpa only [sub_add_sub_cancel]
@@ -719,10 +719,10 @@ theorem exi_rat_seq_conv_cauchy : IsCauSeq (padicNorm p) (limSeq f) := fun ε h�
         · apply padicNormE.add_le
         · apply _root_.add_lt_add
           · rw [padicNormE.map_sub]
-            apply_mod_cast hN j
+            apply mod_cast hN j
             exact le_of_max_le_left hj
           · exact hN2 _ (le_of_max_le_right hj) _ (le_max_right _ _)
-      · apply_mod_cast hN (max N N2)
+      · apply mod_cast hN (max N N2)
         apply le_max_left
 #align padic.exi_rat_seq_conv_cauchy Padic.exi_rat_seq_conv_cauchy
 
@@ -768,12 +768,12 @@ instance metricSpace : MetricSpace ℚ_[p] where
   dist_comm x y := by simp [dist, ← padicNormE.map_neg (x - y : ℚ_[p])]
   dist_triangle x y z := by
     dsimp [dist]
-    exact_mod_cast padicNormE.sub_le x y z
+    exact mod_cast padicNormE.sub_le x y z
   eq_of_dist_eq_zero := by
     dsimp [dist]; intro _ _ h
     apply eq_of_sub_eq_zero
     apply padicNormE.eq_zero.1
-    exact_mod_cast h
+    exact mod_cast h
   -- Porting note: added because autoparam was not ported
   edist_dist := by intros; exact (ENNReal.ofReal_eq_coe_nnreal _).symm
 
@@ -819,13 +819,13 @@ protected theorem is_norm (q : ℚ_[p]) : ↑(padicNormE q) = ‖q‖ := rfl
 
 theorem nonarchimedean (q r : ℚ_[p]) : ‖q + r‖ ≤ max ‖q‖ ‖r‖ := by
   dsimp [norm]
-  exact_mod_cast nonarchimedean' _ _
+  exact mod_cast nonarchimedean' _ _
 #align padic_norm_e.nonarchimedean padicNormE.nonarchimedean
 
 theorem add_eq_max_of_ne {q r : ℚ_[p]} (h : ‖q‖ ≠ ‖r‖) : ‖q + r‖ = max ‖q‖ ‖r‖ := by
   dsimp [norm] at h ⊢
-  have : padicNormE q ≠ padicNormE r := by exact_mod_cast h
-  exact_mod_cast add_eq_max_of_ne' this
+  have : padicNormE q ≠ padicNormE r := mod_cast h
+  exact mod_cast add_eq_max_of_ne' this
 #align padic_norm_e.add_eq_max_of_ne padicNormE.add_eq_max_of_ne
 
 @[simp]
@@ -845,7 +845,7 @@ theorem norm_p : ‖(p : ℚ_[p])‖ = (p : ℝ)⁻¹ := by
 theorem norm_p_lt_one : ‖(p : ℚ_[p])‖ < 1 := by
   rw [norm_p]
   apply inv_lt_one
-  exact_mod_cast hp.1.one_lt
+  exact mod_cast hp.1.one_lt
 #align padic_norm_e.norm_p_lt_one padicNormE.norm_p_lt_one
 
 -- Porting note : Linter thinks this is a duplicate simp lemma, so `priority` is assigned
@@ -865,7 +865,7 @@ instance : NontriviallyNormedField ℚ_[p] :=
     non_trivial :=
       ⟨p⁻¹, by
         rw [norm_inv, norm_p, inv_inv]
-        exact_mod_cast hp.1.one_lt⟩ }
+        exact mod_cast hp.1.one_lt⟩ }
 
 protected theorem image {q : ℚ_[p]} : q ≠ 0 → ∃ n : ℤ, ‖q‖ = ↑((p : ℚ) ^ (-n)) :=
   Quotient.inductionOn q fun f hf ↦
@@ -896,7 +896,7 @@ theorem norm_rat_le_one : ∀ {q : ℚ} (_ : ¬p ∣ q.den), ‖(q : ℚ_[p])‖
   | ⟨n, d, hn, hd⟩ => fun hq : ¬p ∣ d ↦
     if hnz : n = 0 then by
       have : (⟨n, d, hn, hd⟩ : ℚ) = 0 := Rat.zero_iff_num_zero.mpr hnz
-      rw [this]; norm_num
+      norm_num [this]
     else by
       have hnz' : (⟨n, d, hn, hd⟩ : ℚ) ≠ 0 := mt Rat.zero_iff_num_zero.1 hnz
       rw [padicNormE.eq_padicNorm]
@@ -924,7 +924,7 @@ theorem norm_int_lt_one_iff_dvd (k : ℤ) : ‖(k : ℚ_[p])‖ < 1 ↔ ↑p ∣
     calc
       ‖(k : ℚ_[p])‖ = ‖((k : ℚ) : ℚ_[p])‖ := by norm_cast
       _ = padicNorm p k := (padicNormE.eq_padicNorm _)
-      _ = 1 := by exact_mod_cast (int_eq_one_iff k).mpr h
+      _ = 1 := mod_cast (int_eq_one_iff k).mpr h
   · rintro ⟨x, rfl⟩
     push_cast
     rw [padicNormE.mul]
@@ -934,7 +934,7 @@ theorem norm_int_lt_one_iff_dvd (k : ℤ) : ‖(k : ℚ_[p])‖ < 1 ↔ ↑p ∣
       _ < 1 := by
         rw [mul_one, padicNormE.norm_p]
         apply inv_lt_one
-        exact_mod_cast hp.1.one_lt
+        exact mod_cast hp.1.one_lt
 #align padic_norm_e.norm_int_lt_one_iff_dvd padicNormE.norm_int_lt_one_iff_dvd
 
 theorem norm_int_le_pow_iff_dvd (k : ℤ) (n : ℕ) :
@@ -968,9 +968,9 @@ variable {p : ℕ} [hp : Fact p.Prime]
 instance complete : CauSeq.IsComplete ℚ_[p] norm where
   isComplete := fun f => by
     have cau_seq_norm_e : IsCauSeq padicNormE f := fun ε hε => by
-      have h := isCauSeq f ε (by exact_mod_cast hε)
+      have h := isCauSeq f ε (mod_cast hε)
       dsimp [norm] at h
-      exact_mod_cast h
+      exact mod_cast h
     -- Porting note: Padic.complete' works with `f i - q`, but the goal needs `q - f i`,
     -- using `rewrite [padicNormE.map_sub]` causes time out, so a separate lemma is created
     cases' Padic.complete'' ⟨f, cau_seq_norm_e⟩ with q hq
@@ -985,7 +985,7 @@ instance complete : CauSeq.IsComplete ℚ_[p] norm where
     change norm (f i - q) < ε
     refine lt_trans ?_ hε'.2
     dsimp [norm]
-    exact_mod_cast h
+    exact mod_cast h
 #align padic.complete Padic.complete
 
 theorem padicNormE_lim_le {f : CauSeq ℚ_[p] norm} {a : ℝ} (ha : 0 < a) (hf : ∀ i, ‖f i‖ ≤ a) :
@@ -993,7 +993,7 @@ theorem padicNormE_lim_le {f : CauSeq ℚ_[p] norm} {a : ℝ} (ha : 0 < a) (hf :
   -- Porting note: `Setoid.symm` cannot work out which `Setoid` to use, so instead swap the order
   -- now, I use a rewrite to swap it later
   obtain ⟨N, hN⟩ := (CauSeq.equiv_lim f) _ ha
-  rw [←sub_add_cancel f.lim (f N)]
+  rw [← sub_add_cancel f.lim (f N)]
   refine le_trans (padicNormE.nonarchimedean _ _) ?_
   rw [norm_sub_rev]
   exact max_le (le_of_lt (hN _ le_rfl)) (hf _)
@@ -1063,9 +1063,9 @@ theorem norm_eq_pow_val {x : ℚ_[p]} : x ≠ 0 → ‖x‖ = (p : ℝ) ^ (-x.va
 
 @[simp]
 theorem valuation_p : valuation (p : ℚ_[p]) = 1 := by
-  have h : (1 : ℝ) < p := by exact_mod_cast (Fact.out : p.Prime).one_lt
+  have h : (1 : ℝ) < p := mod_cast (Fact.out : p.Prime).one_lt
   refine' neg_injective ((zpow_strictMono h).injective <| (norm_eq_pow_val _).symm.trans _)
-  · exact_mod_cast (Fact.out : p.Prime).ne_zero
+  · exact mod_cast (Fact.out : p.Prime).ne_zero
   · simp
 #align padic.valuation_p Padic.valuation_p
 
@@ -1167,7 +1167,7 @@ theorem norm_le_pow_iff_norm_lt_pow_add_one (x : ℚ_[p]) (n : ℤ) :
   by_cases hx0 : x = 0
   · simp [hx0, norm_zero, aux, le_of_lt (aux _)]
   rw [norm_eq_pow_val hx0]
-  have h1p : 1 < (p : ℝ) := by exact_mod_cast hp.1.one_lt
+  have h1p : 1 < (p : ℝ) := mod_cast hp.1.one_lt
   have H := zpow_strictMono h1p
   rw [H.le_iff_le, H.lt_iff_lt, Int.lt_add_one_iff]
 #align padic.norm_le_pow_iff_norm_lt_pow_add_one Padic.norm_le_pow_iff_norm_lt_pow_add_one

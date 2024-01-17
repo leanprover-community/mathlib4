@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shing Tak Lam
 -/
 import Mathlib.Topology.Homotopy.Basic
-import Mathlib.Topology.PathConnected
+import Mathlib.Topology.Connected.PathConnected
 import Mathlib.Analysis.Convex.Basic
 
 #align_import topology.homotopy.path from "leanprover-community/mathlib"@"bb9d1c5085e0b7ea619806a68c5021927cecb2a6"
@@ -117,6 +117,9 @@ theorem symm_symm (F : Homotopy p₀ p₁) : F.symm.symm = F :=
   ContinuousMap.HomotopyRel.symm_symm F
 #align path.homotopy.symm_symm Path.Homotopy.symm_symm
 
+theorem symm_bijective : Function.Bijective (Homotopy.symm : Homotopy p₀ p₁ → Homotopy p₁ p₀) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
+
 /--
 Given `Homotopy p₀ p₁` and `Homotopy p₁ p₂`, we can define a `Homotopy p₀ p₂` by putting the first
 homotopy on `[0, 1/2]` and the second on `[1/2, 1]`.
@@ -161,16 +164,14 @@ def hcomp (F : Homotopy p₀ q₀) (G : Homotopy p₁ q₁) : Homotopy (p₀.tra
     if (x.2 : ℝ) ≤ 1 / 2 then (F.eval x.1).extend (2 * x.2) else (G.eval x.1).extend (2 * x.2 - 1)
   continuous_toFun := continuous_if_le (continuous_induced_dom.comp continuous_snd) continuous_const
     (F.toHomotopy.continuous.comp (by continuity)).continuousOn
-    (G.toHomotopy.continuous.comp (by continuity)).continuousOn fun x hx => by rw [hx]; norm_num
+    (G.toHomotopy.continuous.comp (by continuity)).continuousOn fun x hx => by norm_num [hx]
   map_zero_left x := by simp [Path.trans]
   map_one_left x := by simp [Path.trans]
   prop' x t ht := by
     cases' ht with ht ht
-    · rw [ht]
-      norm_num
+    · norm_num [ht]
     · rw [Set.mem_singleton_iff] at ht
-      rw [ht]
-      norm_num
+      norm_num [ht]
 #align path.homotopy.hcomp Path.Homotopy.hcomp
 
 theorem hcomp_apply (F : Homotopy p₀ q₀) (G : Homotopy p₁ q₁) (x : I × I) :
@@ -203,10 +204,10 @@ def reparam (p : Path x₀ x₁) (f : I → I) (hf : Continuous f) (hf₀ : f 0 
   prop' t x hx := by
     cases' hx with hx hx
     · rw [hx]
-      simp [hf₀] -- Porting note: Originally `norm_num [hf₀]`
+      simp [hf₀]
     · rw [Set.mem_singleton_iff] at hx
       rw [hx]
-      simp [hf₁] -- Porting note: Originally `norm_num [hf₀]`
+      simp [hf₁]
   continuous_toFun := by
     -- Porting note: was `continuity` in auto-param
     refine continuous_const.path_eval ?_

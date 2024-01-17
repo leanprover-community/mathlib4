@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Nicolò Cavalleri
 -/
 import Mathlib.Algebra.Algebra.Pi
-import Mathlib.Algebra.Order.LatticeGroup
 import Mathlib.Algebra.Periodic
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.Star.StarAlgHom
@@ -55,7 +54,8 @@ variable {α : Type*} {β : Type*} {γ : Type*}
 
 variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
 
--- ### "mul" and "add"
+/-! ### `mul` and `add` -/
+
 @[to_additive]
 instance instMul [Mul β] [ContinuousMul β] : Mul C(α, β) :=
   ⟨fun f g => ⟨f * g, continuous_mul.comp (f.continuous.prod_mk g.continuous : _)⟩⟩
@@ -81,7 +81,8 @@ theorem mul_comp [Mul γ] [ContinuousMul γ] (f₁ f₂ : C(β, γ)) (g : C(α, 
 #align continuous_map.mul_comp ContinuousMap.mul_comp
 #align continuous_map.add_comp ContinuousMap.add_comp
 
--- ### "one"
+/-! ### `one` -/
+
 @[to_additive]
 instance [One β] : One C(α, β) :=
   ⟨const α 1⟩
@@ -104,7 +105,8 @@ theorem one_comp [One γ] (g : C(α, β)) : (1 : C(β, γ)).comp g = 1 :=
 #align continuous_map.one_comp ContinuousMap.one_comp
 #align continuous_map.zero_comp ContinuousMap.zero_comp
 
--- ### "nat_cast"
+/-! ### `Nat.cast` -/
+
 instance [NatCast β] : NatCast C(α, β) :=
   ⟨fun n => ContinuousMap.const _ n⟩
 
@@ -118,7 +120,8 @@ theorem nat_cast_apply [NatCast β] (n : ℕ) (x : α) : (n : C(α, β)) x = n :
   rfl
 #align continuous_map.nat_cast_apply ContinuousMap.nat_cast_apply
 
--- ### "int_cast"
+/-! ### `Int.cast` -/
+
 instance [IntCast β] : IntCast C(α, β) :=
   ⟨fun n => ContinuousMap.const _ n⟩
 
@@ -132,7 +135,8 @@ theorem int_cast_apply [IntCast β] (n : ℤ) (x : α) : (n : C(α, β)) x = n :
   rfl
 #align continuous_map.int_cast_apply ContinuousMap.int_cast_apply
 
--- ### "nsmul" and "pow"
+/-! ### `nsmul` and `pow` -/
+
 instance instNSMul [AddMonoid β] [ContinuousAdd β] : SMul ℕ C(α, β) :=
   ⟨fun n f => ⟨n • ⇑f, f.continuous.nsmul n⟩⟩
 #align continuous_map.has_nsmul ContinuousMap.instNSMul
@@ -169,30 +173,32 @@ theorem pow_comp [Monoid γ] [ContinuousMul γ] (f : C(β, γ)) (n : ℕ) (g : C
 -- don't make `nsmul_comp` simp as the linter complains it's redundant WRT `smul_comp`
 attribute [simp] pow_comp
 
--- ### "inv" and "neg"
+/-! ### `inv` and `neg` -/
+
 @[to_additive]
-instance [Group β] [TopologicalGroup β] : Inv C(α, β) where inv f := ⟨f⁻¹, f.continuous.inv⟩
+instance [Inv β] [ContinuousInv β] : Inv C(α, β) where inv f := ⟨f⁻¹, f.continuous.inv⟩
 
 @[to_additive (attr := simp)]
-theorem coe_inv [Group β] [TopologicalGroup β] (f : C(α, β)) : ⇑f⁻¹ = (⇑f)⁻¹ :=
+theorem coe_inv [Inv β] [ContinuousInv β] (f : C(α, β)) : ⇑f⁻¹ = (⇑f)⁻¹ :=
   rfl
 #align continuous_map.coe_inv ContinuousMap.coe_inv
 #align continuous_map.coe_neg ContinuousMap.coe_neg
 
 @[to_additive (attr := simp)]
-theorem inv_apply [Group β] [TopologicalGroup β] (f : C(α, β)) (x : α) : f⁻¹ x = (f x)⁻¹ :=
+theorem inv_apply [Inv β] [ContinuousInv β] (f : C(α, β)) (x : α) : f⁻¹ x = (f x)⁻¹ :=
   rfl
 #align continuous_map.inv_apply ContinuousMap.inv_apply
 #align continuous_map.neg_apply ContinuousMap.neg_apply
 
 @[to_additive (attr := simp)]
-theorem inv_comp [Group γ] [TopologicalGroup γ] (f : C(β, γ)) (g : C(α, β)) :
+theorem inv_comp [Inv γ] [ContinuousInv γ] (f : C(β, γ)) (g : C(α, β)) :
     f⁻¹.comp g = (f.comp g)⁻¹ :=
   rfl
 #align continuous_map.inv_comp ContinuousMap.inv_comp
 #align continuous_map.neg_comp ContinuousMap.neg_comp
 
--- ### "div" and "sub"
+/-! ### `div` and `sub` -/
+
 @[to_additive]
 instance [Div β] [ContinuousDiv β] : Div C(α, β) where
   div f g := ⟨f / g, f.continuous.div' g.continuous⟩
@@ -216,7 +222,8 @@ theorem div_comp [Div γ] [ContinuousDiv γ] (f g : C(β, γ)) (h : C(α, β)) :
 #align continuous_map.div_comp ContinuousMap.div_comp
 #align continuous_map.sub_comp ContinuousMap.sub_comp
 
--- ### "zpow" and "zsmul"
+/-! ### `zpow` and `zsmul` -/
+
 instance instZSMul [AddGroup β] [TopologicalAddGroup β] : SMul ℤ C(α, β) where
   smul z f := ⟨z • ⇑f, f.continuous.zsmul z⟩
 #align continuous_map.has_zsmul ContinuousMap.instZSMul
@@ -328,9 +335,9 @@ instance [LocallyCompactSpace α] [Mul β] [ContinuousMul β] : ContinuousMul C(
   ⟨by
     refine' continuous_of_continuous_uncurry _ _
     have h1 : Continuous fun x : (C(α, β) × C(α, β)) × α => x.fst.fst x.snd :=
-      continuous_eval'.comp (continuous_fst.prod_map continuous_id)
+      continuous_eval.comp (continuous_fst.prod_map continuous_id)
     have h2 : Continuous fun x : (C(α, β) × C(α, β)) × α => x.fst.snd x.snd :=
-      continuous_eval'.comp (continuous_snd.prod_map continuous_id)
+      continuous_eval.comp (continuous_snd.prod_map continuous_id)
     exact h1.mul h2⟩
 
 /-- Coercion to a function as a `MonoidHom`. Similar to `MonoidHom.coeFn`. -/
@@ -377,7 +384,7 @@ open BigOperators
 @[to_additive (attr := simp)]
 theorem coe_prod [CommMonoid β] [ContinuousMul β] {ι : Type*} (s : Finset ι) (f : ι → C(α, β)) :
     ⇑(∏ i in s, f i) = ∏ i in s, (f i : α → β) :=
-  (coeFnMonoidHom : C(α, β) →* _).map_prod f s
+  map_prod coeFnMonoidHom f s
 #align continuous_map.coe_prod ContinuousMap.coe_prod
 #align continuous_map.coe_sum ContinuousMap.coe_sum
 
@@ -553,9 +560,8 @@ attribute [local ext] Subtype.eq
 
 section ModuleStructure
 
--- Porting note: Is "Semiodule" a typo of "Semimodule" or "Submodule"?
 /-!
-### Semiodule structure
+### Module structure
 
 In this section we show that continuous functions valued in a topological module `M` over a
 topological semiring `R` inherit the structure of a module.
@@ -595,7 +601,7 @@ instance instSMul [SMul R M] [ContinuousConstSMul R M] : SMul R C(α, M) :=
 @[to_additive]
 instance [LocallyCompactSpace α] [SMul R M] [ContinuousConstSMul R M] :
     ContinuousConstSMul R C(α, M) :=
-  ⟨fun γ => continuous_of_continuous_uncurry _ (continuous_eval'.const_smul γ)⟩
+  ⟨fun γ => continuous_of_continuous_uncurry _ (continuous_eval.const_smul γ)⟩
 
 @[to_additive]
 instance [LocallyCompactSpace α] [TopologicalSpace R] [SMul R M] [ContinuousSMul R M] :
@@ -603,7 +609,7 @@ instance [LocallyCompactSpace α] [TopologicalSpace R] [SMul R M] [ContinuousSMu
   ⟨by
     refine' continuous_of_continuous_uncurry _ _
     have h : Continuous fun x : (R × C(α, M)) × α => x.fst.snd x.snd :=
-      continuous_eval'.comp (continuous_snd.prod_map continuous_id)
+      continuous_eval.comp (continuous_snd.prod_map continuous_id)
     exact (continuous_fst.comp continuous_fst).smul h⟩
 
 @[to_additive (attr := simp, norm_cast)]
@@ -856,7 +862,7 @@ instance ContinuousMap.subsingleton_subalgebra (α : Type*) [TopologicalSpace α
         ext x'
         simp only [mul_one, Algebra.id.smul_eq_mul, algebraMap_apply]
         congr
-        simp
+        simp [eq_iff_true_of_subsingleton]
       rw [h]
       simp only [Subalgebra.algebraMap_mem]⟩
 #align continuous_map.subsingleton_subalgebra ContinuousMap.subsingleton_subalgebra
@@ -912,16 +918,22 @@ variable {β : Type*} [TopologicalSpace β]
 /-! `C(α, β)`is a lattice ordered group -/
 
 @[to_additive]
-instance covariant_class_mul_le_left [PartialOrder β] [Mul β] [ContinuousMul β]
+instance instCovariantClass_mul_le_left [PartialOrder β] [Mul β] [ContinuousMul β]
   [CovariantClass β β (· * ·) (· ≤ ·)] :
   CovariantClass C(α, β) C(α, β) (· * ·) (· ≤ ·) :=
 ⟨fun _ _ _ hg₁₂ x => mul_le_mul_left' (hg₁₂ x) _⟩
 
 @[to_additive]
-instance covariant_class_mul_le_right [PartialOrder β] [Mul β] [ContinuousMul β]
+instance instCovariantClass_mul_le_right [PartialOrder β] [Mul β] [ContinuousMul β]
   [CovariantClass β β (Function.swap (· * ·)) (· ≤ ·)] :
   CovariantClass C(α, β) C(α, β) (Function.swap (· * ·)) (· ≤ ·) :=
 ⟨fun _ _ _ hg₁₂ x => mul_le_mul_right' (hg₁₂ x) _⟩
+
+variable [Group β] [TopologicalGroup β] [Lattice β] [TopologicalLattice β]
+
+@[to_additive (attr := simp, norm_cast)] lemma coe_mabs (f : C(α, β)) : ⇑|f|ₘ = |⇑f|ₘ := rfl
+@[to_additive (attr := simp)] lemma mabs_apply (f : C(α, β)) (x : α) : |f|ₘ x = |f x|ₘ := rfl
+#align continuous_map.abs_apply ContinuousMap.abs_apply
 
 end Lattice
 
@@ -961,6 +973,9 @@ theorem star_apply (f : C(α, β)) (x : α) : star f x = star (f x) :=
   rfl
 #align continuous_map.star_apply ContinuousMap.star_apply
 
+instance instTrivialStar [TrivialStar β] : TrivialStar C(α, β) where
+  star_trivial _ := ext fun _ => star_trivial _
+
 end Star
 
 instance [InvolutiveStar β] [ContinuousStar β] : InvolutiveStar C(α, β) where
@@ -970,13 +985,13 @@ instance starAddMonoid [AddMonoid β] [ContinuousAdd β] [StarAddMonoid β] [Con
     StarAddMonoid C(α, β) where
   star_add _ _ := ext fun _ => star_add _ _
 
-instance starSemigroup [Semigroup β] [ContinuousMul β] [StarSemigroup β] [ContinuousStar β] :
-    StarSemigroup C(α, β) where
+instance starMul [Mul β] [ContinuousMul β] [StarMul β] [ContinuousStar β] :
+    StarMul C(α, β) where
   star_mul _ _ := ext fun _ => star_mul _ _
 
-instance [NonUnitalSemiring β] [TopologicalSemiring β] [StarRing β] [ContinuousStar β] :
+instance [NonUnitalNonAssocSemiring β] [TopologicalSemiring β] [StarRing β] [ContinuousStar β] :
     StarRing C(α, β) :=
-  { ContinuousMap.starAddMonoid, ContinuousMap.starSemigroup with }
+  { ContinuousMap.starAddMonoid, ContinuousMap.starMul with }
 
 instance [Star R] [Star β] [SMul R β] [StarModule R β] [ContinuousStar β]
     [ContinuousConstSMul R β] : StarModule R C(α, β) where
@@ -984,12 +999,11 @@ instance [Star R] [Star β] [SMul R β] [StarModule R β] [ContinuousStar β]
 
 end StarStructure
 
+section Precomposition
+
 variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
-
 variable (𝕜 : Type*) [CommSemiring 𝕜]
-
-variable (A : Type*) [TopologicalSpace A] [Semiring A] [TopologicalSemiring A] [StarRing A]
-
+variable (A : Type*) [TopologicalSpace A] [Semiring A] [TopologicalSemiring A] [Star A]
 variable [ContinuousStar A] [Algebra 𝕜 A]
 
 /-- The functorial map taking `f : C(X, Y)` to `C(Y, A) →⋆ₐ[𝕜] C(X, A)` given by pre-composition
@@ -1020,7 +1034,46 @@ theorem compStarAlgHom'_comp (g : C(Y, Z)) (f : C(X, Y)) :
   StarAlgHom.ext fun _ => ContinuousMap.ext fun _ => rfl
 #align continuous_map.comp_star_alg_hom'_comp ContinuousMap.compStarAlgHom'_comp
 
+end Precomposition
+
+section Postcomposition
+
+variable (X : Type*) {𝕜 A B C : Type*} [TopologicalSpace X] [CommSemiring 𝕜]
+variable [TopologicalSpace A] [Semiring A] [TopologicalSemiring A] [Star A]
+variable [ContinuousStar A] [Algebra 𝕜 A]
+variable [TopologicalSpace B] [Semiring B] [TopologicalSemiring B] [Star B]
+variable [ContinuousStar B] [Algebra 𝕜 B]
+variable [TopologicalSpace C] [Semiring C] [TopologicalSemiring C] [Star C]
+variable [ContinuousStar C] [Algebra 𝕜 C]
+
+/-- Post-composition with a continuous star algebra homomorphism is a star algebra homomorphism
+between spaces of continuous maps. -/
+@[simps]
+def compStarAlgHom (φ : A →⋆ₐ[𝕜] B) (hφ : Continuous φ) :
+    C(X, A) →⋆ₐ[𝕜] C(X, B) where
+  toFun f := (⟨φ, hφ⟩ : C(A, B)).comp f
+  map_one' := ext fun _ => map_one φ
+  map_mul' f g := ext fun x => map_mul φ (f x) (g x)
+  map_zero' := ext fun _ => map_zero φ
+  map_add' f g := ext fun x => map_add φ (f x) (g x)
+  commutes' r := ext fun _x => AlgHomClass.commutes φ r
+  map_star' f := ext fun x => map_star φ (f x)
+
+/-- `ContinuousMap.compStarAlgHom` sends the identity `StarAlgHom` on `A` to the identity
+`StarAlgHom` on `C(X, A)`. -/
+lemma compStarAlgHom_id : compStarAlgHom X (.id 𝕜 A) continuous_id = .id 𝕜 C(X, A) := rfl
+
+/-- `ContinuousMap.compStarAlgHom` is functorial. -/
+lemma compStarAlgHom_comp (φ : A →⋆ₐ[𝕜] B) (ψ : B →⋆ₐ[𝕜] C) (hφ : Continuous φ)
+    (hψ : Continuous ψ) : compStarAlgHom X (ψ.comp φ) (hψ.comp hφ) =
+      (compStarAlgHom X ψ hψ).comp (compStarAlgHom X φ hφ) :=
+  rfl
+
+end Postcomposition
+
 section Periodicity
+
+variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 
 /-! ### Summing translates of a function -/
 
@@ -1034,10 +1087,10 @@ theorem periodic_tsum_comp_add_zsmul [AddCommGroup X] [TopologicalAddGroup X] [A
   by_cases h : Summable fun n : ℤ => f.comp (ContinuousMap.addRight (n • p))
   · convert congr_arg (fun f : C(X, Y) => f x) ((Equiv.addRight (1 : ℤ)).tsum_eq _) using 1
     -- Porting note: in mathlib3 the proof from here was:
-    -- simp_rw [←tsum_apply h, ←tsum_apply ((equiv.add_right (1 : ℤ)).summable_iff.mpr h),
+    -- simp_rw [← tsum_apply h, ← tsum_apply ((equiv.add_right (1 : ℤ)).summable_iff.mpr h),
     --   equiv.coe_add_right, comp_apply, coe_add_right, add_one_zsmul, add_comm (_ • p) p,
-    --   ←add_assoc]
-    -- However now the second `←tsum_apply` doesn't fire unless we use `erw`.
+    --   ← add_assoc]
+    -- However now the second `← tsum_apply` doesn't fire unless we use `erw`.
     simp_rw [← tsum_apply h]
     erw [← tsum_apply ((Equiv.addRight (1 : ℤ)).summable_iff.mpr h)]
     simp [coe_addRight, add_one_zsmul, add_comm (_ • p) p, ← add_assoc]

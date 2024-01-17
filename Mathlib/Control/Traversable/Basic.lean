@@ -91,14 +91,14 @@ instance : CoeFun (ApplicativeTransformation F G) fun _ => ∀ {α}, F α → G 
 
 variable {F G}
 
-@[simp]
+-- This cannot be a `simp` lemma, as the RHS is a coercion which contains `η.app`.
 theorem app_eq_coe (η : ApplicativeTransformation F G) : η.app = η :=
   rfl
 #align applicative_transformation.app_eq_coe ApplicativeTransformation.app_eq_coe
 
 @[simp]
 theorem coe_mk (f : ∀ α : Type u, F α → G α) (pp ps) :
-  (ApplicativeTransformation.mk f @pp @ps) = f :=
+    (ApplicativeTransformation.mk f @pp @ps) = f :=
   rfl
 #align applicative_transformation.coe_mk ApplicativeTransformation.coe_mk
 
@@ -277,10 +277,10 @@ section
 variable {F : Type u → Type v} [Applicative F]
 
 instance : Traversable Option :=
-  ⟨@Option.traverse⟩
+  ⟨Option.traverse⟩
 
 instance : Traversable List :=
-  ⟨@List.traverse⟩
+  ⟨List.traverse⟩
 
 end
 

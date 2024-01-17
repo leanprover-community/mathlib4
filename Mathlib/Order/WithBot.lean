@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
+import Mathlib.Logic.Nontrivial.Basic
 import Mathlib.Order.BoundedOrder
 import Mathlib.Data.Option.NAry
+import Mathlib.Tactic.Lift
 
 #align_import order.with_bot from "leanprover-community/mathlib"@"0111834459f5d7400215223ea95ae38a1265a907"
 
@@ -55,7 +57,7 @@ instance nontrivial [Nonempty α] : Nontrivial (WithBot α) :=
 
 open Function
 
-theorem coe_injective : Injective (fun (a : α) => (a : WithBot α)) :=
+theorem coe_injective : Injective ((↑) : α → WithBot α) :=
   Option.some_injective _
 #align with_bot.coe_injective WithBot.coe_injective
 
@@ -196,8 +198,8 @@ instance (priority := 10) le : LE (WithBot α) :=
   ⟨fun o₁ o₂ : Option α => ∀ a ∈ o₁, ∃ b ∈ o₂, a ≤ b⟩
 
 @[simp]
-theorem some_le_some : @LE.le (WithBot α) _ (Option.some a) (Option.some b) ↔ a ≤ b :=
-  by simp [LE.le]
+theorem some_le_some : @LE.le (WithBot α) _ (Option.some a) (Option.some b) ↔ a ≤ b := by
+  simp [LE.le]
 #align with_bot.some_le_some WithBot.some_le_some
 
 @[simp, norm_cast]
@@ -224,6 +226,12 @@ theorem not_coe_le_bot (a : α) : ¬(a : WithBot α) ≤ ⊥ := fun h =>
   let ⟨_, hb, _⟩ := h _ rfl
   Option.not_mem_none _ hb
 #align with_bot.not_coe_le_bot WithBot.not_coe_le_bot
+
+/-- There is a general version `le_bot_iff`, but this lemma does not require a `PartialOrder`. -/
+@[simp]
+protected theorem le_bot_iff : ∀ {a : WithBot α}, a ≤ ⊥ ↔ a = ⊥
+  | (a : α) => by simp [not_coe_le_bot _]
+  | ⊥ => by simp
 
 theorem coe_le : ∀ {o : Option α}, b ∈ o → ((a : WithBot α) ≤ o ↔ a ≤ b)
   | _, rfl => coe_le_coe
@@ -356,7 +364,7 @@ theorem monotone_map_iff [Preorder α] [Preorder β] {f : α → β} :
   monotone_iff.trans <| by simp [Monotone]
 #align with_bot.monotone_map_iff WithBot.monotone_map_iff
 
-alias monotone_map_iff ↔ _ _root_.Monotone.withBot_map
+alias ⟨_, _root_.Monotone.withBot_map⟩ := monotone_map_iff
 #align monotone.with_bot_map Monotone.withBot_map
 
 theorem strictMono_iff [Preorder α] [Preorder β] {f : WithBot α → β} :
@@ -377,7 +385,7 @@ theorem strictMono_map_iff [Preorder α] [Preorder β] {f : α → β} :
   strictMono_iff.trans <| by simp [StrictMono, bot_lt_coe]
 #align with_bot.strict_mono_map_iff WithBot.strictMono_map_iff
 
-alias strictMono_map_iff ↔ _ _root_.StrictMono.withBot_map
+alias ⟨_, _root_.StrictMono.withBot_map⟩ := strictMono_map_iff
 #align strict_mono.with_bot_map StrictMono.withBot_map
 
 theorem map_le_iff [Preorder α] [Preorder β] (f : α → β) (mono_iff : ∀ {a b}, f a ≤ f b ↔ a ≤ b) :
@@ -392,16 +400,18 @@ theorem le_coe_unbot' [Preorder α] : ∀ (a : WithBot α) (b : α), a ≤ a.unb
   | ⊥, _ => bot_le
 #align with_bot.le_coe_unbot' WithBot.le_coe_unbot'
 
-theorem unbot'_bot_le_iff [LE α] [OrderBot α] {a : WithBot α} {b : α} :
-    a.unbot' ⊥ ≤ b ↔ a ≤ b := by
-  cases a <;> simp [none_eq_bot, some_eq_coe]
-#align with_bot.unbot'_bot_le_iff WithBot.unbot'_bot_le_iff
-
-theorem unbot'_lt_iff [LT α] {a : WithBot α} {b c : α} (ha : a ≠ ⊥) : a.unbot' b < c ↔ a < c := by
+theorem unbot'_le_iff [LE α] {a : WithBot α} {b c : α} (h : a = ⊥ → b ≤ c) :
+    a.unbot' b ≤ c ↔ a ≤ c := by
   cases a
-  · exact (ha rfl).elim
-  · rw [some_eq_coe, unbot'_coe, coe_lt_coe]
-#align with_bot.unbot'_lt_iff WithBot.unbot'_lt_iff
+  · simpa using h rfl
+  · simp [some_eq_coe]
+#align with_bot.unbot'_bot_le_iff WithBot.unbot'_le_iff
+
+theorem unbot'_lt_iff [LT α] {a : WithBot α} {b c : α} (h : a = ⊥ → b < c) :
+    a.unbot' b < c ↔ a < c := by
+  cases a
+  · simpa [bot_lt_coe] using h rfl
+  · simp [some_eq_coe]
 
 instance semilatticeSup [SemilatticeSup α] : SemilatticeSup (WithBot α) :=
   { WithBot.partialOrder, @WithBot.orderBot α _ with
@@ -497,17 +507,17 @@ theorem coe_max [LinearOrder α] (x y : α) : ((max x y : α) : WithBot α) = ma
   rfl
 #align with_bot.coe_max WithBot.coe_max
 
-theorem wellFounded_lt [LT α] (h : @WellFounded α (· < ·)) :
-    @WellFounded (WithBot α) (· < ·) :=
+instance instWellFoundedLT [LT α] [WellFoundedLT α] : WellFoundedLT (WithBot α) where
+  wf :=
   have not_lt_bot : ∀ a : WithBot α, ¬ a < ⊥ := (fun.)
   have acc_bot := ⟨_, by simp [not_lt_bot]⟩
   .intro fun
     | ⊥ => acc_bot
-    | (a : α) => (h.1 a).rec fun a _ ih =>
+    | (a : α) => (wellFounded_lt.1 a).rec fun a _ ih =>
       .intro _ fun
         | ⊥, _ => acc_bot
         | (b : α), hlt => ih _ (some_lt_some.1 hlt)
-#align with_bot.well_founded_lt WithBot.wellFounded_lt
+#align with_bot.well_founded_lt WithBot.instWellFoundedLT
 
 instance denselyOrdered [LT α] [DenselyOrdered α] [NoMinOrder α] : DenselyOrdered (WithBot α) :=
   ⟨fun a b =>
@@ -583,6 +593,15 @@ instance inhabited : Inhabited (WithTop α) :=
 
 instance nontrivial [Nonempty α] : Nontrivial (WithTop α) :=
   Option.nontrivial
+
+open Function
+
+theorem coe_injective : Injective ((↑) : α → WithTop α) :=
+  Option.some_injective _
+
+@[norm_cast]
+theorem coe_inj : (a : WithTop α) = b ↔ a = b :=
+  Option.some_inj
 
 protected theorem «forall» {p : WithTop α → Prop} : (∀ x, p x) ↔ p ⊤ ∧ ∀ x : α, p x :=
   Option.forall
@@ -852,6 +871,12 @@ theorem not_top_le_coe (a : α) : ¬(⊤ : WithTop α) ≤ ↑a :=
   WithBot.not_coe_le_bot (toDual a)
 #align with_top.not_top_le_coe WithTop.not_top_le_coe
 
+/-- There is a general version `top_le_iff`, but this lemma does not require a `PartialOrder`. -/
+@[simp]
+protected theorem top_le_iff : ∀ {a : WithTop α}, ⊤ ≤ a ↔ a = ⊤
+  | (a : α) => by simp [not_top_le_coe _]
+  | ⊤ => by simp
+
 theorem le_coe : ∀ {o : Option α}, a ∈ o → (@LE.le (WithTop α) _ o b ↔ a ≤ b)
   | _, rfl => coe_le_coe
 #align with_top.le_coe WithTop.le_coe
@@ -868,7 +893,7 @@ protected theorem _root_.IsMin.withTop (h : IsMin a) : IsMin (a : WithTop α) :=
   -- defeq to is_max_to_dual_iff.mp (is_max.with_bot _), but that breaks API boundary
   intro _ hb
   rw [← toDual_le_toDual_iff] at hb
-  simpa [toDual_le_iff] using (IsMax.withBot h : IsMax (toDual a : WithBot αᵒᵈ)) hb
+  simpa [toDual_le_iff] using h.toDual.withBot hb
 #align is_min.with_top IsMin.withTop
 
 theorem untop_le_iff {a : WithTop α} {b : α} (h : a ≠ ⊤) :
@@ -1137,7 +1162,7 @@ theorem monotone_map_iff [Preorder α] [Preorder β] {f : α → β} :
   monotone_iff.trans <| by simp [Monotone]
 #align with_top.monotone_map_iff WithTop.monotone_map_iff
 
-alias monotone_map_iff ↔ _ _root_.Monotone.withTop_map
+alias ⟨_, _root_.Monotone.withTop_map⟩ := monotone_map_iff
 #align monotone.with_top_map Monotone.withTop_map
 
 theorem strictMono_iff [Preorder α] [Preorder β] {f : WithTop α → β} :
@@ -1158,7 +1183,7 @@ theorem strictMono_map_iff [Preorder α] [Preorder β] {f : α → β} :
   strictMono_iff.trans <| by simp [StrictMono, coe_lt_top]
 #align with_top.strict_mono_map_iff WithTop.strictMono_map_iff
 
-alias strictMono_map_iff ↔ _ _root_.StrictMono.withTop_map
+alias ⟨_, _root_.StrictMono.withTop_map⟩ := strictMono_map_iff
 #align strict_mono.with_top_map StrictMono.withTop_map
 
 theorem map_le_iff [Preorder α] [Preorder β] (f : α → β) (a b : WithTop α)
@@ -1167,6 +1192,22 @@ theorem map_le_iff [Preorder α] [Preorder β] (f : α → β) (a b : WithTop α
   erw [← toDual_le_toDual_iff, toDual_map, toDual_map, WithBot.map_le_iff, toDual_le_toDual_iff]
   simp [mono_iff]
 #align with_top.map_le_iff WithTop.map_le_iff
+
+theorem coe_untop'_le [Preorder α] : ∀ (a : WithTop α) (b : α), a.untop' b ≤ a
+  | (a : α), _ => le_rfl
+  | ⊤, _ => le_top
+
+theorem le_untop'_iff [LE α] {a : WithTop α} {b c : α} (h : a = ⊤ → c ≤ b) :
+    c ≤ a.untop' b ↔ c ≤ a := by
+  cases a
+  · simpa using h rfl
+  · simp [some_eq_coe]
+
+theorem lt_untop'_iff [LT α] {a : WithTop α} {b c : α} (h : a = ⊤ → c < b) :
+    c < a.untop' b ↔ c < a := by
+  cases a
+  · simpa [none_eq_top, coe_lt_top] using h rfl
+  · simp [some_eq_coe]
 
 instance semilatticeInf [SemilatticeInf α] : SemilatticeInf (WithTop α) :=
   { WithTop.partialOrder with
@@ -1253,11 +1294,11 @@ theorem coe_max [LinearOrder α] (x y : α) : (↑(max x y) : WithTop α) = max 
   rfl
 #align with_top.coe_max WithTop.coe_max
 
-theorem wellFounded_lt [LT α] (h : @WellFounded α (· < ·)) :
-    @WellFounded (WithTop α) (· < ·) :=
+instance instWellFoundedLT [LT α] [WellFoundedLT α] : WellFoundedLT (WithTop α) where
+  wf :=
   have not_top_lt : ∀ a : WithTop α, ¬ ⊤ < a := (fun.)
   have acc_some (a : α) : Acc ((· < ·) : WithTop α → WithTop α → Prop) a :=
-    (h.1 a).rec fun _ _ ih =>
+    (wellFounded_lt.1 a).rec fun _ _ ih =>
       .intro _ fun
         | (b : α), hlt => ih _ (some_lt_some.1 hlt)
         | ⊤, hlt => nomatch not_top_lt _ hlt
@@ -1266,39 +1307,33 @@ theorem wellFounded_lt [LT α] (h : @WellFounded α (· < ·)) :
     | ⊤ => .intro _ fun
       | (b : α), _ => acc_some b
       | ⊤, hlt => nomatch not_top_lt _ hlt
-#align with_top.well_founded_lt WithTop.wellFounded_lt
+#align with_top.well_founded_lt WithTop.instWellFoundedLT
 
 open OrderDual
 
-theorem wellFounded_gt [LT α] (h : @WellFounded α (· > ·)) :
-    @WellFounded (WithTop α) (· > ·) :=
-  ⟨fun a => by
-    -- ideally, use rel_hom_class.acc, but that is defined later
-    have : Acc (· < ·) (WithTop.toDual a) := WellFounded.apply (WithBot.wellFounded_lt
-      (by convert h using 1)) _
+instance instWellFoundedGT [LT α] [WellFoundedGT α] : WellFoundedGT (WithTop α) where
+  wf := ⟨fun a => by
+    -- ideally, use RelHomClass.acc, but that is defined later
+    have : Acc (· < ·) (WithTop.toDual a) := wellFounded_lt.apply _
     revert this
     generalize ha : WithBot.toDual a = b
     intro ac
-    dsimp at ac
     induction' ac with _ H IH generalizing a
     subst ha
     exact ⟨_, fun a' h => IH (WithTop.toDual a') (toDual_lt_toDual.mpr h) _ rfl⟩⟩
-#align with_top.well_founded_gt WithTop.wellFounded_gt
+#align with_top.well_founded_gt WithTop.instWellFoundedGT
 
-theorem _root_.WithBot.wellFounded_gt [LT α] (h : @WellFounded α (· > ·)) :
-    @WellFounded (WithBot α) (· > ·) :=
-  ⟨fun a => by
-    -- ideally, use rel_hom_class.acc, but that is defined later
-    have : Acc (· < ·) (WithBot.toDual a) :=
-      WellFounded.apply (WithTop.wellFounded_lt (by convert h using 1)) _
+instance _root_.WithBot.instWellFoundedGT [LT α] [WellFoundedGT α] : WellFoundedGT (WithBot α) where
+  wf := ⟨fun a => by
+    -- ideally, use RelHomClass.acc, but that is defined later
+    have : Acc (· < ·) (WithBot.toDual a) := wellFounded_lt.apply _
     revert this
     generalize ha : WithBot.toDual a = b
     intro ac
-    dsimp at ac
     induction' ac with _ H IH generalizing a
     subst ha
     exact ⟨_, fun a' h => IH (WithBot.toDual a') (toDual_lt_toDual.mpr h) _ rfl⟩⟩
-#align with_bot.well_founded_gt WithBot.wellFounded_gt
+#align with_bot.well_founded_gt WithBot.instWellFoundedGT
 
 instance trichotomous.lt [Preorder α] [IsTrichotomous α (· < ·)] :
     IsTrichotomous (WithTop α) (· < ·) :=
@@ -1310,8 +1345,7 @@ instance trichotomous.lt [Preorder α] [IsTrichotomous α (· < ·)] :
     · simpa [some_eq_coe, IsTrichotomous, coe_eq_coe] using @trichotomous α (· < ·) _ a b⟩
 #align with_top.trichotomous.lt WithTop.trichotomous.lt
 
-instance IsWellOrder.lt [Preorder α] [h : IsWellOrder α (· < ·)] :
-    IsWellOrder (WithTop α) (· < ·) where wf := wellFounded_lt h.wf
+instance IsWellOrder.lt [Preorder α] [IsWellOrder α (· < ·)] : IsWellOrder (WithTop α) (· < ·) where
 #align with_top.is_well_order.lt WithTop.IsWellOrder.lt
 
 instance trichotomous.gt [Preorder α] [IsTrichotomous α (· > ·)] :
@@ -1324,8 +1358,7 @@ instance trichotomous.gt [Preorder α] [IsTrichotomous α (· > ·)] :
     · simpa [some_eq_coe, IsTrichotomous, coe_eq_coe] using @trichotomous α (· > ·) _ a b⟩
 #align with_top.trichotomous.gt WithTop.trichotomous.gt
 
-instance IsWellOrder.gt [Preorder α] [h : IsWellOrder α (· > ·)] :
-    IsWellOrder (WithTop α) (· > ·) where wf := wellFounded_gt h.wf
+instance IsWellOrder.gt [Preorder α] [IsWellOrder α (· > ·)] : IsWellOrder (WithTop α) (· > ·) where
 #align with_top.is_well_order.gt WithTop.IsWellOrder.gt
 
 instance _root_.WithBot.trichotomous.lt [Preorder α] [h : IsTrichotomous α (· < ·)] :
@@ -1333,9 +1366,8 @@ instance _root_.WithBot.trichotomous.lt [Preorder α] [h : IsTrichotomous α (·
   @WithTop.trichotomous.gt αᵒᵈ _ h
 #align with_bot.trichotomous.lt WithBot.trichotomous.lt
 
-instance _root_.WithBot.isWellOrder.lt [Preorder α] [h : IsWellOrder α (· < ·)] :
-    IsWellOrder (WithBot α) (· < ·) :=
-  @WithTop.IsWellOrder.gt αᵒᵈ _ h
+instance _root_.WithBot.isWellOrder.lt [Preorder α] [IsWellOrder α (· < ·)] :
+    IsWellOrder (WithBot α) (· < ·) where
 #align with_bot.is_well_order.lt WithBot.isWellOrder.lt
 
 instance _root_.WithBot.trichotomous.gt [Preorder α] [h : IsTrichotomous α (· > ·)] :

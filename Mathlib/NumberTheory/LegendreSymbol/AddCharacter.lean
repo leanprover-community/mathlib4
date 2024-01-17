@@ -95,16 +95,12 @@ def toMonoidHom : AddChar R R' → Multiplicative R →* R' :=
 
 open Multiplicative
 
--- Porting note: added.
-@[coe]
-def toFun (ψ : AddChar R R') (x : R) : R' := ψ.toMonoidHom (ofAdd x)
-
 /-- Define coercion to a function so that it includes the move from `R` to `Multiplicative R`.
 After we have proved the API lemmas below, we don't need to worry about writing `ofAdd a`
 when we want to apply an additive character. -/
-instance hasCoeToFun : CoeFun (AddChar R R') fun _ => R → R' where
-  coe := toFun
-#align add_char.has_coe_to_fun AddChar.hasCoeToFun
+instance instFunLike : FunLike (AddChar R R') R fun _ ↦ R' :=
+  inferInstanceAs (FunLike (Multiplicative R →* R') R fun _ ↦ R')
+#noalign add_char.has_coe_to_fun
 
 theorem coe_to_fun_apply (ψ : AddChar R R') (a : R) : ψ a = ψ.toMonoidHom (ofAdd a) :=
   rfl
@@ -118,9 +114,8 @@ theorem mul_apply (ψ φ : AddChar R R') (a : R) : (ψ * φ) a = ψ a * φ a :=
 @[simp]
 theorem one_apply (a : R) : (1 : AddChar R R') a = 1 := rfl
 
-instance monoidHomClass : MonoidHomClass (AddChar R R') (Multiplicative R) R' :=
-  MonoidHom.monoidHomClass
-#align add_char.monoid_hom_class AddChar.monoidHomClass
+-- this instance was a bad idea and conflicted with `instFunLike` above
+#noalign add_char.monoid_hom_class
 
 -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5229): added.
 @[ext]
@@ -453,7 +448,7 @@ theorem sum_mulShift [DecidableEq R] [IsDomain R'] {ψ : AddChar R R'} (b : R)
     rfl
   · -- case `b ≠ 0`
     simp_rw [mul_comm]
-    exact_mod_cast sum_eq_zero_of_isNontrivial (hψ b h)
+    exact mod_cast sum_eq_zero_of_isNontrivial (hψ b h)
 #align add_char.sum_mul_shift AddChar.sum_mulShift
 
 end Additive

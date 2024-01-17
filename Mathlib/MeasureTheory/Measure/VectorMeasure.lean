@@ -3,7 +3,7 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.MeasureTheory.Measure.MeasureSpace
+import Mathlib.MeasureTheory.Measure.Typeclasses
 import Mathlib.Analysis.Complex.Basic
 
 #align_import measure_theory.measure.vector_measure from "leanprover-community/mathlib"@"70a4f2197832bceab57d7f41379b2592d1110570"
@@ -54,7 +54,7 @@ variable {α β : Type*} {m : MeasurableSpace α}
 /-- A vector measure on a measurable space `α` is a σ-additive `M`-valued function (for some `M`
 an add monoid) such that the empty set and non-measurable sets are mapped to zero. -/
 structure VectorMeasure (α : Type*) [MeasurableSpace α] (M : Type*) [AddCommMonoid M]
-  [TopologicalSpace M] where
+    [TopologicalSpace M] where
   measureOf' : Set α → M
   empty' : measureOf' ∅ = 0
   not_measurable' ⦃i : Set α⦄ : ¬MeasurableSet i → measureOf' i = 0
@@ -412,24 +412,9 @@ def toSignedMeasure (μ : Measure α) [hμ : IsFiniteMeasure μ] : SignedMeasure
   empty' := by simp [μ.empty]
   not_measurable' _ hi := if_neg hi
   m_iUnion' f hf₁ hf₂ := by
-    simp only
-    rw [μ.m_iUnion hf₁ hf₂, ENNReal.tsum_toReal_eq, if_pos (MeasurableSet.iUnion hf₁),
-      Summable.hasSum_iff]
-    · congr
-      ext n
-      rw [if_pos (hf₁ n)]
-    · refine' @summable_of_nonneg_of_le _ (ENNReal.toReal ∘ μ ∘ f) _ _ _ _
-      · intro
-        split_ifs
-        exacts [ENNReal.toReal_nonneg, le_rfl]
-      · intro
-        split_ifs
-        exacts [le_rfl, ENNReal.toReal_nonneg]
-      exact summable_measure_toReal hf₁ hf₂
-    · intro a ha
-      apply ne_of_lt hμ.measure_univ_lt_top
-      rw [eq_top_iff, ← ha]
-      exact measure_mono (Set.subset_univ _)
+    simp only [*, MeasurableSet.iUnion hf₁, if_true, measure_iUnion hf₂ hf₁]
+    rw [ENNReal.tsum_toReal_eq]
+    exacts [(summable_measure_toReal hf₁ hf₂).hasSum, fun _ ↦ measure_ne_top _ _]
 #align measure_theory.measure.to_signed_measure MeasureTheory.Measure.toSignedMeasure
 
 theorem toSignedMeasure_apply_measurable {μ : Measure α} [IsFiniteMeasure μ] {i : Set α}
@@ -536,6 +521,17 @@ theorem ennrealToMeasure_apply {m : MeasurableSpace α} {v : VectorMeasure α �
   rw [ennrealToMeasure, ofMeasurable_apply _ hs]
 #align measure_theory.vector_measure.ennreal_to_measure_apply MeasureTheory.VectorMeasure.ennrealToMeasure_apply
 
+@[simp]
+theorem _root_.MeasureTheory.Measure.toENNRealVectorMeasure_ennrealToMeasure
+    (μ : VectorMeasure α ℝ≥0∞) :
+    toENNRealVectorMeasure (ennrealToMeasure μ) = μ := ext fun s hs => by
+  rw [toENNRealVectorMeasure_apply_measurable hs, ennrealToMeasure_apply hs]
+
+@[simp]
+theorem ennrealToMeasure_toENNRealVectorMeasure (μ : Measure α) :
+    ennrealToMeasure (toENNRealVectorMeasure μ) = μ := Measure.ext fun s hs => by
+  rw [ennrealToMeasure_apply hs, toENNRealVectorMeasure_apply_measurable hs]
+
 /-- The equiv between `VectorMeasure α ℝ≥0∞` and `Measure α` formed by
 `MeasureTheory.VectorMeasure.ennrealToMeasure` and
 `MeasureTheory.Measure.toENNRealVectorMeasure`. -/
@@ -543,10 +539,8 @@ theorem ennrealToMeasure_apply {m : MeasurableSpace α} {v : VectorMeasure α �
 def equivMeasure [MeasurableSpace α] : VectorMeasure α ℝ≥0∞ ≃ Measure α where
   toFun := ennrealToMeasure
   invFun := toENNRealVectorMeasure
-  left_inv _ := ext fun s hs => by
-    rw [toENNRealVectorMeasure_apply_measurable hs, ennrealToMeasure_apply hs]
-  right_inv _ := Measure.ext fun s hs => by
-    rw [ennrealToMeasure_apply hs, toENNRealVectorMeasure_apply_measurable hs]
+  left_inv := toENNRealVectorMeasure_ennrealToMeasure
+  right_inv := ennrealToMeasure_toENNRealVectorMeasure
 #align measure_theory.vector_measure.equiv_measure MeasureTheory.VectorMeasure.equivMeasure
 
 end
@@ -698,7 +692,7 @@ theorem restrict_apply {i : Set α} (hi : MeasurableSet i) {j : Set α} (hj : Me
 
 theorem restrict_eq_self {i : Set α} (hi : MeasurableSet i) {j : Set α} (hj : MeasurableSet j)
     (hij : j ⊆ i) : v.restrict i j = v j := by
-  rw [restrict_apply v hi hj, Set.inter_eq_left_iff_subset.2 hij]
+  rw [restrict_apply v hi hj, Set.inter_eq_left.2 hij]
 #align measure_theory.vector_measure.restrict_eq_self MeasureTheory.VectorMeasure.restrict_eq_self
 
 @[simp]
@@ -716,8 +710,7 @@ theorem restrict_univ : v.restrict Set.univ = v :=
 theorem restrict_zero {i : Set α} : (0 : VectorMeasure α M).restrict i = 0 := by
   by_cases hi : MeasurableSet i
   · ext j hj
-    rw [restrict_apply 0 hi hj]
-    rfl
+    rw [restrict_apply 0 hi hj, zero_apply, zero_apply]
   · exact dif_neg hi
 #align measure_theory.vector_measure.restrict_zero MeasureTheory.VectorMeasure.restrict_zero
 
@@ -936,7 +929,7 @@ theorem restrict_le_restrict_iUnion {f : ℕ → Set α} (hf₁ : ∀ n, Measura
     (hf₂ : ∀ n, v ≤[f n] w) : v ≤[⋃ n, f n] w := by
   refine' restrict_le_restrict_of_subset_le v w fun a ha₁ ha₂ => _
   have ha₃ : ⋃ n, a ∩ disjointed f n = a := by
-    rwa [← Set.inter_iUnion, iUnion_disjointed, Set.inter_eq_left_iff_subset]
+    rwa [← Set.inter_iUnion, iUnion_disjointed, Set.inter_eq_left]
   have ha₄ : Pairwise (Disjoint on fun n => a ∩ disjointed f n) :=
     (disjoint_disjointed _).mono fun i j => Disjoint.mono inf_le_right inf_le_right
   rw [← ha₃, v.of_disjoint_iUnion_nat _ ha₄, w.of_disjoint_iUnion_nat _ ha₄]
@@ -1163,10 +1156,9 @@ to use. This is equivalent to the definition which requires measurability. To pr
 `MutuallySingular` with the measurability condition, use
 `MeasureTheory.VectorMeasure.MutuallySingular.mk`. -/
 def MutuallySingular (v : VectorMeasure α M) (w : VectorMeasure α N) : Prop :=
-  ∃ s : Set α, MeasurableSet s ∧ (∀ (t) (_ : t ⊆ s), v t = 0) ∧ ∀ (t) (_ : t ⊆ sᶜ), w t = 0
+  ∃ s : Set α, MeasurableSet s ∧ (∀ t ⊆ s, v t = 0) ∧ ∀ t ⊆ sᶜ, w t = 0
 #align measure_theory.vector_measure.mutually_singular MeasureTheory.VectorMeasure.MutuallySingular
 
--- mathport name: vector_measure.mutually_singular
 @[inherit_doc VectorMeasure.MutuallySingular]
 scoped[MeasureTheory] infixl:60 " ⟂ᵥ " => MeasureTheory.VectorMeasure.MutuallySingular
 
@@ -1174,8 +1166,8 @@ namespace MutuallySingular
 
 variable {v v₁ v₂ : VectorMeasure α M} {w w₁ w₂ : VectorMeasure α N}
 
-theorem mk (s : Set α) (hs : MeasurableSet s) (h₁ : ∀ (t) (_ : t ⊆ s), MeasurableSet t → v t = 0)
-    (h₂ : ∀ (t) (_ : t ⊆ sᶜ), MeasurableSet t → w t = 0) : v ⟂ᵥ w := by
+theorem mk (s : Set α) (hs : MeasurableSet s) (h₁ : ∀ t ⊆ s, MeasurableSet t → v t = 0)
+    (h₂ : ∀ t ⊆ sᶜ, MeasurableSet t → w t = 0) : v ⟂ᵥ w := by
   refine' ⟨s, hs, fun t hst => _, fun t hst => _⟩ <;> by_cases ht : MeasurableSet t
   · exact h₁ t hst ht
   · exact not_measurable v ht
