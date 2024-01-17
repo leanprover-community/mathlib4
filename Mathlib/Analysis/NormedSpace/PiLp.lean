@@ -627,8 +627,8 @@ theorem edist_eq_of_L2 {β : ι → Type*} [∀ i, SeminormedAddCommGroup (β i)
     edist x y = (∑ i, edist (x i) (y i) ^ 2) ^ (1 / 2 : ℝ) := by simp [PiLp.edist_eq_sum]
 #align pi_Lp.edist_eq_of_L2 PiLp.edist_eq_of_L2
 
-instance instboundedSMul [SeminormedRing 𝕜] [∀ i, SeminormedAddCommGroup (β i)] [∀ i, Module 𝕜 (β i)]
-    [∀ i, BoundedSMul 𝕜 (β i)] :
+instance instboundedSMul [SeminormedRing 𝕜] [∀ i, SeminormedAddCommGroup (β i)]
+    [∀ i, Module 𝕜 (β i)] [∀ i, BoundedSMul 𝕜 (β i)] :
     BoundedSMul 𝕜 (PiLp p β) :=
   .of_nnnorm_smul_le fun c f => by
     rcases p.dichotomy with (rfl | hp)
