@@ -1862,6 +1862,12 @@ theorem _root_.ContinuousOn.isSeparable_image [TopologicalSpace β] {f : α → 
   exact (isSeparable_univ_iff.2 hs.separableSpace).image hf.restrict
 #align continuous_on.is_separable_image ContinuousOn.isSeparable_image
 
+/-- A compact set is separable. -/
+theorem _root_.IsCompact.isSeparable {s : Set α} (hs : IsCompact s) : IsSeparable s :=
+  haveI : CompactSpace s := isCompact_iff_compactSpace.mp hs
+  isSeparable_of_separableSpace_subtype s
+#align is_compact.is_separable IsCompact.isSeparable
+
 end Metric
 
 section Pi
@@ -2174,11 +2180,6 @@ theorem exists_lt_subset_ball (hs : IsClosed s) (h : s ⊆ ball x r) : ∃ r' < 
 #align exists_lt_subset_ball exists_lt_subset_ball
 
 end ProperSpace
-
-theorem IsCompact.isSeparable {s : Set α} (hs : IsCompact s) : IsSeparable s :=
-  haveI : CompactSpace s := isCompact_iff_compactSpace.mp hs
-  isSeparable_of_separableSpace_subtype s
-#align is_compact.is_separable IsCompact.isSeparable
 
 namespace Metric
 
