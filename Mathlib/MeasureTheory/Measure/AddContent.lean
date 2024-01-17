@@ -46,13 +46,14 @@ sets `s : ℕ → Set α` in `C`, `m (⋃ i, s i) = ∑' i, m (s i)`.
 We say that an additive content is σ-subadditive on `C` if for all sequences of sets of `C` (not
 necessarily disjoint) `s : ℕ → Set α`, `m (⋃ i, s i) ≤ ∑' i, m (s i)`.
 
-* `AddContent.iUnion_eq_tsum_of_disjoint_of_iUnion_le`: if an `AddContent` is σ-subadditive on
-  a semi-ring of sets, then it is σ-additive.
-* `AddContent.iUnion_le_of_iUnion_eq_tsum`: if an `AddContent` is σ-additive on a ring of sets,
-  then it is σ-subadditive.
+* `MeasureTheory.addContent_iUnion_eq_tsum_of_disjoint_of_addContent_iUnion_le`: if an `AddContent`
+  is σ-subadditive on a semi-ring of sets, then it is σ-additive.
+* `MeasureTheory.addContent_iUnion_le_of_addContent_iUnion_eq_tsum`: if an `AddContent` is
+  σ-additive on a ring of sets, then it is σ-subadditive.
 
-* `AddContent.tendsto_atTop_iUnion_of_iUnion_eq_tsum`: if an additive content is σ-additive on a
-  ring of sets, then the content of a monotone sequence of sets tends to the content of the union.
+* `MeasureTheory.tendsto_atTop_addContent_iUnion_of_addContent_iUnion_eq_tsum`: if an additive
+  content is σ-additive on a ring of sets, then the content of a monotone sequence of sets tends to
+  the content of the union.
 
 -/
 
@@ -148,8 +149,7 @@ lemma sum_addContent_le_of_subset (hC : IsSetSemiring C)
   rw [addContent_eq_add_diffFinset₀_of_subset hC ht h_ss hJt h_dis]
   exact le_add_right le_rfl
 
-lemma addContent_mono (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C)
-    (hst : s ⊆ t) :
+lemma addContent_mono (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C) (hst : s ⊆ t) :
     m s ≤ m t := by
   have h := sum_addContent_le_of_subset (m := m) hC (I := {s}) ?_ ?_ ht ?_
   · simpa only [sum_singleton] using h
@@ -157,7 +157,7 @@ lemma addContent_mono (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C)
   · simp only [coe_singleton, pairwiseDisjoint_singleton]
   · simp [hst]
 
-lemma sUnion_le_sum (m : AddContent C) (hC : IsSetSemiring C)
+lemma addContent_sUnion_le_sum (hC : IsSetSemiring C)
     (J : Finset (Set α)) (h_ss : ↑J ⊆ C) (h_mem : ⋃₀ ↑J ∈ C) :
     m (⋃₀ ↑J) ≤ ∑ u in J, m u := by
   classical
@@ -173,7 +173,7 @@ lemma sUnion_le_sum (m : AddContent C) (hC : IsSetSemiring C)
   · exact ordered_mem' h_ss i
   · exact Set.sUnion_subset_iff.mp (hC.sUnion_indexedDiffFinset₀_subset J h_ss i)
 
-lemma le_sum_of_subset_sUnion (m : AddContent C) (hC : IsSetSemiring C)
+lemma addContent_le_sum_of_subset_sUnion (hC : IsSetSemiring C)
     (J : Finset (Set α)) (h_ss : ↑J ⊆ C) (ht : t ∈ C) (htJ : t ⊆ ⋃₀ ↑J) :
     m t ≤ ∑ u in J, m u := by
   classical
@@ -182,7 +182,7 @@ lemma le_sum_of_subset_sUnion (m : AddContent C) (hC : IsSetSemiring C)
     rw [coe_image, sUnion_image, ← inter_iUnion₂, inter_eq_self_of_subset_left]
     rwa [← sUnion_eq_biUnion]
   rw [ht_eq]
-  refine' (sUnion_le_sum m hC Jt _ _).trans _
+  refine' (addContent_sUnion_le_sum hC Jt _ _).trans _
   · intro s
     simp only [coe_image, Set.mem_image, mem_coe, forall_exists_index, and_imp]
     rintro u hu rfl
@@ -193,7 +193,7 @@ lemma le_sum_of_subset_sUnion (m : AddContent C) (hC : IsSetSemiring C)
   exact addContent_mono hC (hC.inter_mem _ ht _ (h_ss hu)) (h_ss hu) (inter_subset_right _ _)
 
 /-- If an `AddContent` is σ-subadditive on a semi-ring of sets, then it is σ-additive. -/
-theorem iUnion_eq_tsum_of_disjoint_of_iUnion_le (m : AddContent C) (hC : IsSetSemiring C)
+theorem addContent_iUnion_eq_tsum_of_disjoint_of_addContent_iUnion_le (hC : IsSetSemiring C)
     (m_subadd : ∀ (f : ℕ → Set α) (hf : ∀ i, f i ∈ C) (hf_Union : ⋃ i, f i ∈ C)
       (_hf_disj : Pairwise (Disjoint on f)), m (⋃ i, f i) ≤ ∑' i, m (f i))
     (f : ℕ → Set α) (hf : ∀ i, f i ∈ C) (hf_Union : (⋃ i, f i) ∈ C)
@@ -259,7 +259,7 @@ lemma le_addContent_diff (m : AddContent C) (hC : IsSetRing C) (hs : s ∈ C) (h
 
 /-- If an additive content is σ-additive on a set ring, then the content of a monotone sequence of
 sets tends to the content of the union. -/
-theorem tendsto_atTop_iUnion_of_iUnion_eq_tsum (m : AddContent C) (hC : IsSetRing C)
+theorem tendsto_atTop_addContent_iUnion_of_addContent_iUnion_eq_tsum (hC : IsSetRing C)
     (m_add : ∀ (f : ℕ → Set α) (hf : ∀ i, f i ∈ C) (hf_Union : (⋃ i, f i) ∈ C)
         (_hf_disj : Pairwise (Disjoint on f)), m (⋃ i, f i) = ∑' i, m (f i))
     (f : ℕ → Set α) (hf_mono : Monotone f) (hf : ∀ i, f i ∈ C) (hf_Union : ⋃ i, f i ∈ C) :
@@ -296,7 +296,7 @@ theorem tendsto_atTop_iUnion_of_iUnion_eq_tsum (m : AddContent C) (hC : IsSetRin
   exact ENNReal.tendsto_nat_tsum _
 
 /-- If an additive content is σ-additive on a set ring, then it is σ-subadditive. -/
-theorem iUnion_le_of_iUnion_eq_tsum (m : AddContent C) (hC : IsSetRing C)
+theorem addContent_iUnion_le_of_addContent_iUnion_eq_tsum (hC : IsSetRing C)
     (m_add : ∀ (f : ℕ → Set α) (hf : ∀ i, f i ∈ C) (hf_Union : (⋃ i, f i) ∈ C)
       (_hf_disj : Pairwise (Disjoint on f)), m (⋃ i, f i) = ∑' i, m (f i))
     (f : ℕ → Set α) (hf : ∀ i, f i ∈ C) (hf_Union : ⋃ i, f i ∈ C) :
@@ -304,7 +304,7 @@ theorem iUnion_le_of_iUnion_eq_tsum (m : AddContent C) (hC : IsSetRing C)
   classical
   have h_tendsto : Tendsto (fun n ↦ m (partialSups f n)) atTop (𝓝 (m (⋃ i, f i))) := by
     rw [← iSup_eq_iUnion, ← iSup_partialSups_eq]
-    refine tendsto_atTop_iUnion_of_iUnion_eq_tsum m hC m_add (partialSups f)
+    refine tendsto_atTop_addContent_iUnion_of_addContent_iUnion_eq_tsum hC m_add (partialSups f)
       (monotone_partialSups f) (hC.partialSups_mem hf) ?_
     rwa [← iSup_eq_iUnion, iSup_partialSups_eq]
   have h_tendsto' :
@@ -313,7 +313,7 @@ theorem iUnion_le_of_iUnion_eq_tsum (m : AddContent C) (hC : IsSetRing C)
     exact ENNReal.tendsto_nat_tsum _
   refine le_of_tendsto_of_tendsto' h_tendsto h_tendsto' fun n ↦ ?_
   rw [partialSups_eq_sUnion_image]
-  refine (le_sum_of_subset_sUnion m hC.isSetSemiring
+  refine (addContent_le_sum_of_subset_sUnion hC.isSetSemiring
     ((Finset.range (n + 1)).image f) ?_ ?_ subset_rfl).trans ?_
   · intro s
     rw [mem_coe, Finset.mem_image]
