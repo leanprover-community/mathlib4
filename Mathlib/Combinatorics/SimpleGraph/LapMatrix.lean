@@ -65,8 +65,8 @@ theorem sum_adj_eq_degree [AddCommMonoidWithOne α] (i : V) :
   rw [sum_boole, Set.toFinset_setOf]
 
 /-- Let $L$ be the graph Laplacian and let $x \in \mathbb{R}$, then
- $$x^{\top} L x = \sum_{i \sim j} (x_{i}-x_{j})^{2}$$
- where $\sim$ denotes the adjacency relation -/
+$$x^{\top} L x = \sum_{i \sim j} (x_{i}-x_{j})^{2}$$
+where $\sim$ denotes the adjacency relation -/
 theorem lapMatrix_toLinearMap₂' [Field α] [CharZero α] (x : V → α) :
     toLinearMap₂' (G.lapMatrix α) x x =
     (∑ i : V, ∑ j : V, if G.Adj i j then (x i - x j)^2 else 0) / 2 := by
