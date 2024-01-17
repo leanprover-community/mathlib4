@@ -243,3 +243,47 @@ theorem ExpChar.neg_one_pow_expChar_pow [Ring R] (q n : ℕ) [hR : ExpChar R q] 
   cases' hR with _ _ hprime _
   · simp only [one_pow, pow_one]
   haveI := Fact.mk hprime; exact CharP.neg_one_pow_char_pow R q n
+
+section BigOperators
+
+open BigOperators
+
+variable {R}
+
+variable [CommSemiring R] (q : ℕ) [hR : ExpChar R q] (n : ℕ)
+
+theorem list_sum_pow_expChar (l : List R) : l.sum ^ q = (l.map (· ^ q : R → R)).sum := by
+  cases' hR with _ _ hprime _
+  · simp_rw [pow_one, List.map_id']
+  haveI := Fact.mk hprime; exact list_sum_pow_char q l
+
+theorem multiset_sum_pow_expChar (s : Multiset R) : s.sum ^ q = (s.map (· ^ q : R → R)).sum := by
+  cases' hR with _ _ hprime _
+  · simp_rw [pow_one, Multiset.map_id']
+  haveI := Fact.mk hprime; exact multiset_sum_pow_char q s
+
+theorem sum_pow_expChar {ι : Type*} (s : Finset ι) (f : ι → R) :
+    (∑ i in s, f i) ^ q = ∑ i in s, f i ^ q := by
+  cases' hR with _ _ hprime _
+  · simp_rw [pow_one]
+  haveI := Fact.mk hprime; exact sum_pow_char q s f
+
+theorem list_sum_pow_expChar_pow (l : List R) :
+    l.sum ^ q ^ n = (l.map (· ^ q ^ n : R → R)).sum := by
+  cases' hR with _ _ hprime _
+  · simp_rw [one_pow, pow_one, List.map_id']
+  haveI := Fact.mk hprime; exact list_sum_pow_char_pow q n l
+
+theorem multiset_sum_pow_expChar_pow (s : Multiset R) :
+    s.sum ^ q ^ n = (s.map (· ^ q ^ n : R → R)).sum := by
+  cases' hR with _ _ hprime _
+  · simp_rw [one_pow, pow_one, Multiset.map_id']
+  haveI := Fact.mk hprime; exact multiset_sum_pow_char_pow q n s
+
+theorem sum_pow_expChar_pow {ι : Type*} (s : Finset ι) (f : ι → R) :
+    (∑ i in s, f i) ^ q ^ n = ∑ i in s, f i ^ q ^ n := by
+  cases' hR with _ _ hprime _
+  · simp_rw [one_pow, pow_one]
+  haveI := Fact.mk hprime; exact sum_pow_char_pow q n s f
+
+end BigOperators
