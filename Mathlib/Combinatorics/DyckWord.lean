@@ -301,9 +301,8 @@ open Tree
 
 /-- Convert a balanced Dyck path to a binary rooted tree. -/
 def treeEquivToFun (st : { p : DyckPath // p.IsBalanced }) : Tree Unit :=
-  if e : st.1.length = 0 then nil else by
+  if e : st.1 = [] then nil else by
     obtain ⟨p, bp⟩ := st
-    simp only [length_eq_zero] at e
     have := leftPart_length_lt bp e
     have := rightPart_length_lt bp e
     exact treeEquivToFun ⟨_, leftPart_isBalanced bp e⟩ △
@@ -332,9 +331,9 @@ theorem treeEquiv_left_inv (st) {n : ℕ} (hl : st.1.length = n) :
   induction' n using Nat.strongInductionOn with n ih generalizing st
   cases' eq_or_ne st.1 [] with j j
   · rw [treeEquivToFun, Subtype.mk.injEq]
-    simp_rw [length_eq_zero.mpr j, dite_true, treeEquivInvFun, treeEquivInvFun', j]
+    simp_rw [j, dite_true, treeEquivInvFun, treeEquivInvFun']
   rw [treeEquivToFun, Subtype.mk.injEq]
-  simp_rw [(length_pos.mpr j).ne', dite_false, treeEquivInvFun, treeEquivInvFun']
+  simp_rw [j, dite_false, treeEquivInvFun, treeEquivInvFun']
   let p := st.1
   let bp := st.2
   change _ = p; rw [p.eq_U_leftPart_D_rightPart bp j]
@@ -350,9 +349,8 @@ theorem treeEquiv_right_inv (tr) : treeEquivToFun (treeEquivInvFun tr) = tr := b
     rw [treeEquivToFun]; simp
   simp_rw [treeEquivInvFun, treeEquivInvFun']
   rw [treeEquivToFun]
-  have ln : (↑[U] ++ treeEquivInvFun' l ++ ↑[D] ++ treeEquivInvFun' r).length ≠ 0 := by
-    rw [length_append, length_append, length_append, length_singleton, length_singleton]; omega
-  simp_rw [ln, dite_false, node.injEq, true_and]
+  have pp : (↑[U] ++ treeEquivInvFun' l ++ ↑[D] ++ treeEquivInvFun' r) ≠ [] := by simp
+  simp_rw [pp, dite_false, node.injEq, true_and]
   rw [treeEquivInvFun] at ttl ttr
   simp_rw [compose_leftPart_eq_leftPart (isBalanced_treeEquivInvFun' _),
     compose_rightPart_eq_rightPart (isBalanced_treeEquivInvFun' _)]
@@ -370,13 +368,10 @@ theorem length_eq_two_mul_iff_numNodes_eq {n : ℕ} (st : { p : DyckPath // p.Is
     st.1.length = 2 * n ↔ (treeEquiv st).numNodes = n := by
   induction' n using Nat.strongInductionOn with n ih generalizing st
   cases' eq_or_ne st.1 [] with j j
-  · rw [j, length_nil, zero_eq_mul]; norm_num
-    rw [treeEquiv, Equiv.coe_fn_mk, treeEquivToFun]
-    have := congrArg List.length j
-    rw [length_nil] at this
-    simp only [this, dite_true, numNodes]; omega
+  · rw [j, length_nil, zero_eq_mul, treeEquiv, Equiv.coe_fn_mk, treeEquivToFun]
+    simp_rw [j, dite_true, numNodes]; tauto
   rw [treeEquiv, Equiv.coe_fn_mk, treeEquivToFun]
-  simp_rw [(length_pos.mpr j).ne', dite_false, numNodes]
+  simp_rw [j, dite_false, numNodes]
   obtain ⟨p, bp⟩ := st
   dsimp only at j ⊢
   have bl := leftPart_isBalanced bp j
@@ -392,10 +387,7 @@ theorem length_eq_two_mul_iff_numNodes_eq {n : ℕ} (st : { p : DyckPath // p.Is
   · have tl := (ih sl (by omega) ⟨_, bl⟩).mp le
     have tr := (ih sr (by omega) ⟨_, br⟩).mp re
     dsimp only [treeEquiv, Equiv.coe_fn_mk] at tl tr
-    rw [tl, tr]
-    rw [mul_eq_mul_left_iff] at h
-    simp only [show ¬2 = 0 by omega, or_false] at h
-    exact h
+    rw [tl, tr]; exact mul_left_cancel₀ two_ne_zero h
   · set wl := Subtype.mk _ bl
     set wr := Subtype.mk _ br
     have ntwl_lt : (treeEquivToFun wl).numNodes < n := by omega
@@ -405,9 +397,7 @@ theorem length_eq_two_mul_iff_numNodes_eq {n : ℕ} (st : { p : DyckPath // p.Is
     simp only [treeEquiv, Equiv.coe_fn_mk, iff_true] at el er
     rw [le, Nat.mul_left_cancel_iff zero_lt_two] at el
     rw [re, Nat.mul_left_cancel_iff zero_lt_two] at er
-    rw [← el, ← er] at h
-    rw [mul_eq_mul_left_iff]
-    simpa only [show ¬2 = 0 by omega, or_false]
+    rw [← el, ← er] at h; omega
 
 /-- Equivalence between Dyck words of length `2 * n` and
 rooted binary trees with `n` internal nodes. -/
