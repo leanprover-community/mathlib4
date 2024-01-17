@@ -1,9 +1,8 @@
 /-
-Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
+Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
+Authors: Sébastien Gouëzel
 -/
--- TODO: update this, check blame for the real author of *this* part!
 import Mathlib.Topology.MetricSpace.PseudoMetric
 
 /-! ## Proper spaces
