@@ -747,7 +747,7 @@ theorem edist_equiv_symm_snd (y₁ y₂ : β) :
 end Single
 
 section BoundedSMul
-variable [SeminormedCommRing 𝕜] [Module 𝕜 α] [Module 𝕜 β] [BoundedSMul 𝕜 α] [BoundedSMul 𝕜 β]
+variable [SeminormedRing 𝕜] [Module 𝕜 α] [Module 𝕜 β] [BoundedSMul 𝕜 α] [BoundedSMul 𝕜 β]
 
 instance instProdBoundedSMul : BoundedSMul 𝕜 (WithLp p (α × β)) :=
   .of_nnnorm_smul_le fun c f => by
