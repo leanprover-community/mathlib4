@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kenny Lau, Robert Y. Lewis
 -/
 import Mathlib.Algebra.Group.Defs
+import Mathlib.Init.Algebra.Classes
 
 #align_import group_theory.eckmann_hilton from "leanprover-community/mathlib"@"41cf0cc2f528dd40a8f2db167ea4fb37b8fde7f3"
 
