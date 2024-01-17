@@ -359,20 +359,20 @@ variable [CompleteSpace E]
 
 /-- An injective continuous linear map with a closed range defines a continuous linear equivalence
 between its domain and its range. -/
-noncomputable def rangeEquiv (f : E →L[𝕜] F) (hinj : Injective f) (hclo : IsClosed (range f)) :
+noncomputable def equivRange (f : E →L[𝕜] F) (hinj : Injective f) (hclo : IsClosed (range f)) :
     E ≃L[𝕜] LinearMap.range f :=
   have : CompleteSpace (LinearMap.range f) := hclo.completeSpace_coe
   LinearEquiv.toContinuousLinearEquivOfContinuous (LinearEquiv.ofInjective f.toLinearMap hinj) <|
     (f.continuous.codRestrict fun x ↦ LinearMap.mem_range_self f x).congr fun _ ↦ rfl
 
 @[simp]
-theorem rangeEquiv_eq (f : E →L[𝕜] F) (hinj : Injective f) (hclo : IsClosed (range f)) :
-    f.rangeEquiv hinj hclo = f.rangeRestrict :=
+theorem coe_linearMap_equivRange (f : E →L[𝕜] F) (hinj : Injective f) (hclo : IsClosed (range f)) :
+    f.equivRange hinj hclo = f.rangeRestrict :=
   rfl
 
 @[simp]
-theorem coe_rangeEquiv (f : E →L[𝕜] F) (hinj : Injective f) (hclo : IsClosed (range f)) :
-    (f.rangeEquiv hinj hclo : E → LinearMap.range f) = f.rangeRestrict :=
+theorem coe_equivRange (f : E →L[𝕜] F) (hinj : Injective f) (hclo : IsClosed (range f)) :
+    (f.equivRange hinj hclo : E → LinearMap.range f) = f.rangeRestrict :=
   rfl
 
 end ContinuousLinearMap
