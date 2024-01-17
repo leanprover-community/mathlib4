@@ -182,7 +182,7 @@ lemma addContent_le_sum_of_subset_sUnion (hC : IsSetSemiring C)
     rw [coe_image, sUnion_image, ← inter_iUnion₂, inter_eq_self_of_subset_left]
     rwa [← sUnion_eq_biUnion]
   rw [ht_eq]
-  refine' (addContent_sUnion_le_sum hC Jt _ _).trans _
+  refine (addContent_sUnion_le_sum hC Jt ?_ ?_).trans ?_
   · intro s
     simp only [coe_image, Set.mem_image, mem_coe, forall_exists_index, and_imp]
     rintro u hu rfl
