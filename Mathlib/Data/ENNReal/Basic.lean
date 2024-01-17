@@ -506,7 +506,7 @@ def ofNNRealHom : ℝ≥0 →+* ℝ≥0∞ where
 #align ennreal.coe_of_nnreal_hom ENNReal.coe_ofNNRealHom
 
 -- TODO: generalize some of these (and subsequent lemmas about `smul`) to `WithTop α`
-section Actions
+section Actions -- This section can be moved into a different file
 
 /-- A `MulAction` over `ℝ≥0∞` restricts to a `MulAction` over `ℝ≥0`. -/
 noncomputable instance {M : Type*} [MulAction ℝ≥0∞ M] : MulAction ℝ≥0 M :=
@@ -561,6 +561,9 @@ theorem coe_indicator {α} (s : Set α) (f : α → ℝ≥0) (a : α) :
     ((s.indicator f a : ℝ≥0) : ℝ≥0∞) = s.indicator (fun x => ↑(f x)) a :=
   (ofNNRealHom : ℝ≥0 →+ ℝ≥0∞).map_indicator _ _ _
 #align ennreal.coe_indicator ENNReal.coe_indicator
+
+section OperationsAndInfty -- This can *almost* be moved from this file except it breaks `add_lt_add`
+  -- but `add_lt_add` could just be moved with these.
 
 @[simp, norm_cast]
 theorem coe_pow (n : ℕ) : (↑(r ^ n) : ℝ≥0∞) = (r : ℝ≥0∞) ^ n :=
@@ -689,6 +692,7 @@ theorem coe_finset_prod {s : Finset α} {f : α → ℝ≥0} : ↑(∏ a in s, f
   ofNNRealHom.map_prod f s
 #align ennreal.coe_finset_prod ENNReal.coe_finset_prod
 
+end OperationsAndInfty
 section Order
 
 theorem bot_eq_zero : (⊥ : ℝ≥0∞) = 0 := rfl
@@ -785,6 +789,8 @@ theorem max_zero_right : max a 0 = a :=
 @[simp] theorem sup_eq_max : a ⊔ b = max a b := rfl
 #align ennreal.sup_eq_max ENNReal.sup_eq_max
 
+section OperationsAndOrder
+
 protected theorem pow_pos : 0 < a → ∀ n : ℕ, 0 < a ^ n :=
   CanonicallyOrderedCommSemiring.pow_pos
 #align ennreal.pow_pos ENNReal.pow_pos
@@ -843,6 +849,8 @@ instance contravariantClass_add_lt : ContravariantClass ℝ≥0∞ ℝ≥0∞ (�
 theorem lt_add_right (ha : a ≠ ∞) (hb : b ≠ 0) : a < a + b := by
   rwa [← pos_iff_ne_zero, ← ENNReal.add_lt_add_iff_left ha, add_zero] at hb
 #align ennreal.lt_add_right ENNReal.lt_add_right
+
+end OperationsAndOrder
 
 -- porting note: moved `le_of_forall_pos_le_add` down
 
