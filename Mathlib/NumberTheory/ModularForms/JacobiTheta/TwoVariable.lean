@@ -41,7 +41,7 @@ lemma jacobiTheta₂_term_bound {S T : ℝ} (hT : 0 < T) {z τ : ℂ}
     mul_comm T]
   refine add_le_add (mul_le_mul le_rfl hτ hT.le (sq_nonneg _)) ?_
   rw [← mul_neg, mul_assoc, mul_assoc, mul_le_mul_left two_pos, mul_comm, neg_mul, ← mul_neg]
-  refine le_trans ?_ (neg_abs_le_self _)
+  refine le_trans ?_ (neg_abs_le _)
   rw [mul_neg, neg_le_neg_iff, abs_mul, Int.cast_abs]
   exact mul_le_mul_of_nonneg_left hz (abs_nonneg _)
 
