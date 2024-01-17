@@ -94,18 +94,16 @@ lemma isEverywherePos_everywherePosSubset_of_measure_ne_top [InnerRegularCompact
 
 open Pointwise
 
-#check IsCompact.exists_mapClusterPt
-
 lemma IsEverywherePos.IsGdelta {G : Type*} [Group G] [TopologicalSpace G] [TopologicalGroup G]
-    [MeasurableSpace G] [OpensMeasurableSpace G] {μ : Measure G}
+    [MeasurableSpace G] [BorelSpace G] {μ : Measure G}
     [IsMulLeftInvariant μ] [IsFiniteMeasureOnCompacts μ] [InnerRegularCompactLTTop μ] {k : Set G}
-    (h : μ.IsEverywherePos k) (hk : IsCompact k) :
+    (h : μ.IsEverywherePos k) (hk : IsCompact k) (h'k : IsClosed k) :
     IsGδ k := by
   obtain ⟨u, -, u_mem, u_lim⟩ : ∃ u, StrictAnti u ∧ (∀ (n : ℕ), u n ∈ Ioo 0 1)
     ∧ Tendsto u atTop (𝓝 0) := exists_seq_strictAnti_tendsto' (zero_lt_one : (0 : ℝ≥0∞) < 1)
   have : ∀ n, ∃ (W : Set G), IsOpen W ∧ 1 ∈ W ∧ ∀ g ∈ W * W, μ ((g • k) \ k) ≤ u n := sorry
   choose W W_open mem_W hW using this
-  let V n := ⋂ i ∈ Finset.range (n+1), W i
+  let V n := ⋂ i ∈ Finset.range n, W i
   suffices ⋂ n, V n * k ⊆ k by
     have : k = ⋂ n, V n * k := by
       apply Subset.antisymm (subset_iInter_iff.2 (fun n ↦ ?_)) this
@@ -115,3 +113,30 @@ lemma IsEverywherePos.IsGdelta {G : Type*} [Group G] [TopologicalSpace G] [Topol
     exact IsOpen.mul_right (isOpen_biInter_finset (fun i hi ↦ W_open i))
   intro x hx
   choose v hv y hy hvy using mem_iInter.1 hx
+  obtain ⟨z, zk, hz⟩ : ∃ z ∈ k, MapClusterPt z atTop y := hk.exists_mapClusterPt (by simp [hy])
+  have A n : μ (((x * z ⁻¹) • k) \ k) ≤ u n := by
+    apply hW
+    have : W n * {z} ∈ 𝓝 z := (IsOpen.mul_right (W_open n)).mem_nhds (by simp [mem_W])
+    obtain ⟨i, hi, ni⟩ : ∃ i, y i ∈ W n * {z} ∧ n < i :=
+      (((mapClusterPt_iff _ _ _).1 hz _ this).and_eventually (eventually_gt_atTop n)).exists
+    refine ⟨x * (y i) ⁻¹, ?_, y i * z⁻¹, by simpa using hi, by group⟩
+    have I : V i ⊆ W n := iInter₂_subset n (by simp [ni])
+    have J : x * (y i) ⁻¹ ∈ V i := by simpa [← hvy i] using hv i
+    exact I J
+  have B : μ (((x * z ⁻¹) • k) \ k) = 0 :=
+    le_antisymm (ge_of_tendsto u_lim (eventually_of_forall A)) bot_le
+  have C : μ (k \ ((z * x⁻¹) • k)) = 0 := by
+    have : μ ((z * x⁻¹) • (((x * z ⁻¹) • k) \ k)) = 0 := by rwa [measure_smul]
+    convert this using 2
+    rw [smul_set_sdiff, smul_smul]
+    group
+    simp
+  by_contra H
+  have : k ∩ ((z * x⁻¹) • k)ᶜ ∈ 𝓝[k] z := by
+    apply inter_mem_nhdsWithin k
+    apply IsOpen.mem_nhds (by simpa using h'k.smul _)
+    simp only [mem_compl_iff]
+    contrapose! H
+    simpa [mem_smul_set_iff_inv_smul_mem] using H
+  have : 0 < μ (k \ ((z * x⁻¹) • k)) := h z zk _ this
+  exact lt_irrefl _ (C.le.trans_lt this)
