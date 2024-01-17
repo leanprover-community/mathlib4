@@ -236,27 +236,32 @@ def applyConstRule (fpropDecl : FPropDecl) (e X y : Expr)
   tryTheoremCore xs bis proof type e (.decl thm.thrmName) fpropDecl.discharger fprop
 
 
-def applyProjRule (fpropDecl : FPropDecl) (e x Y : Expr) 
+def applyProjRule (fpropDecl : FPropDecl) (e x XY : Expr) 
   (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do 
 
   let ext := fpropLambdaTheoremsExt.getState (← getEnv)
-  let .some thm := ext.theorems.find? (fpropDecl.fpropName, .proj) | return none
-  let .proj id_x id_Y := thm.thrmArgs | return none
-  
-  let proof ← thm.getProof
-  let type ← inferType proof
-  let (xs, bis, type) ← forallMetaTelescope type
 
-  xs[id_x]!.mvarId!.assignIfDefeq x
-  xs[id_Y]!.mvarId!.assignIfDefeq Y
+  let .forallE n X Y _ := XY | return none
 
-  tryTheoremCore xs bis proof type e (.decl thm.thrmName) fpropDecl.discharger fprop
+  -- non dependent case 
+  if ¬(Y.hasLooseBVars) then
+    if let .some thm := ext.theorems.find? (fpropDecl.fpropName, .proj) then
 
+      let .proj id_x id_Y := thm.thrmArgs | return none
 
-def applyProjDepRule (fpropDecl : FPropDecl) (e x Y : Expr)
-  (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do 
+      let proof ← thm.getProof
+      let type ← inferType proof
+      let (xs, bis, type) ← forallMetaTelescope type
 
-  let ext := fpropLambdaTheoremsExt.getState (← getEnv)
+      xs[id_x]!.mvarId!.assignIfDefeq x
+      xs[id_Y]!.mvarId!.assignIfDefeq Y
+
+      return ← tryTheoremCore xs bis proof type e (.decl thm.thrmName) fpropDecl.discharger fprop
+
+  -- dependent case
+  -- can also handle non-dependent cases if non-dependent theorem is not available
+  let Y := Expr.lam n X Y default
+
   let .some thm := ext.theorems.find? (fpropDecl.fpropName, .projDep) | return none
   let .projDep id_x id_Y := thm.thrmArgs | return none
   
@@ -359,6 +364,29 @@ def letCase (fpropDecl : FPropDecl) (e : Expr) (f : Expr) (fprop : Expr → FPro
   -- return none
 
 def bvarAppCase (fpropDecl : FPropDecl) (e : Expr) (f : Expr) (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do
+
+  let .lam n t (.app g x) bi := f
+    | -- this case might not even be possible on the uses of `bvarAppCase`
+      trace[Meta.Tactic.fprop.step] "fprop can handle function like {← ppExpr f}"
+      return none
+
+  if x.hasLooseBVars then
+    -- this case might not even be possible on the uses of `bvarAppCase`
+    trace[Meta.Tactic.fprop.step] "fprop can handle function like {← ppExpr f}"
+    return none
+  
+  if g == .bvar 0 then
+    applyProjRule fpropDecl e x (← inferType g) fprop
+  else
+    let g := .lam n t g bi
+    let gType ← inferType g
+    let .some (_,fType) := gType.arrow?
+      | trace[Meta.Tactic.fprop.step] "fprop can't handle dependent functions of type {← ppExpr gType} appearing in {← ppExpr f}"
+        return none
+
+    let h := .lam n fType ((Expr.bvar 0).app x) bi
+    applyCompRule fpropDecl e h g fprop
+
   return none
 
 def fvarAppCase (fpropDecl : FPropDecl) (e : Expr) (f : Expr) (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do
@@ -496,6 +524,3 @@ mutual
       fprop (e.setArg fpropDecl.funArgId f')
 
 end
-
-
-
