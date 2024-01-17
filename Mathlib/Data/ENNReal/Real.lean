@@ -6,13 +6,22 @@ Authors: Johannes Hölzl, Yury Kudryashov
 import Mathlib.Data.ENNReal.Inv
 
 /-!
-# Coercion between real and extended non-negative real numbers
+# Maps between real and extended non-negative real numbers
 
-TODO write main docstring
+This file focuses on the functions `ENNReal.toReal : ℝ≥0∞ → ℝ` and `ENNReal.ofReal : ℝ → ℝ≥0∞` which
+were defined in `Data.ENNReal.Basic`. It collects all the basic results of the interactions between
+these functions and the algebraic and lattice operations, although a few may appear in earlier
+files.
 
-- relation to iSup and iInf
-- positivity extension for `ENNReal.toReal`
+This file provides a `positivity` extension for `ENNReal.ofReal`.
 
+# Main theorems
+
+  - `trichotomy (p : ℝ≥0∞) : p = 0 ∨ p = ∞ ∨ 0 < p.toReal`: often used for `WithLp` and `lp`
+  - `dichotomy (p : ℝ≥0∞) [Fact (1 ≤ p)] : p = ∞ ∨ 1 ≤ p.toReal`: often used for `WithLp` and `lp`
+  - `toNNReal_iInf` through `toReal_sSup`: these declarations allow for easy conversions between
+    indexed or set infima and suprema in `ℝ`, `ℝ≥0` and `ℝ≥0∞`. This is especially useful because
+    `ℝ≥0∞` is a complete lattice.
 -/
 
 open Set BigOperators NNReal ENNReal
@@ -659,7 +668,7 @@ namespace Mathlib.Meta.Positivity
 
 open Lean Meta Qq
 
-/-- Extension for the `positivity` tactic: `ENNReal.toReal`. -/
+/-- Extension for the `positivity` tactic: `ENNReal.ofReal`. -/
 @[positivity ENNReal.ofReal _]
 def evalENNRealOfReal : PositivityExt where eval {_ _} _zα _pα e := do
   let (.app (f : Q(Real → ENNReal)) (a : Q(Real))) ← whnfR e | throwError "not ENNReal.ofReal"
