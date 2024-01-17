@@ -684,13 +684,6 @@ instance [Module.Free R S] [Module.Finite R S] (I : Ideal S) :
     exact Module.Free.of_subsingleton R I
   · exact Module.Free.of_basis (I.selfBasis (Module.Free.chooseBasis R S) hI)
 
-instance [Module.Free R S] [Module.Finite R S] (I : Ideal S) :
-    Module.Finite R I := by
-  by_cases hI : I = ⊥
-  · have : Subsingleton I := Submodule.subsingleton_iff_eq_bot.mpr hI
-    exact Module.IsNoetherian.finite R I
-  · exact Module.Finite.of_basis (I.selfBasis (Module.Free.chooseBasis R S) hI)
-
 end Ideal
 
 end SmithNormal
