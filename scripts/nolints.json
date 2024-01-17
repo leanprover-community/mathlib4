@@ -1037,7 +1037,7 @@
  ["docBlame", "StrictWeakOrder.Equiv"],
  ["docBlame", "StrictWeakOrder.«term_≈[_]_»"],
  ["docBlame", "Structomorph.mem_groupoid"],
- ["docBlame", "StructureGroupoid.eq_on_source'"],
+ ["docBlame", "StructureGroupoid.mem_of_eqOnSource'"],
  ["docBlame", "StructureGroupoid.id_mem'"],
  ["docBlame", "StructureGroupoid.locality'"],
  ["docBlame", "StructureGroupoid.members"],
