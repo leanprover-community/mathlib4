@@ -8,6 +8,7 @@ import Mathlib.Data.Int.Basic
 import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.Order.Ring.CharZero
+import Mathlib.Tactic.LibrarySearch
 
 #align_import data.int.order.basic from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
@@ -117,13 +118,9 @@ theorem le_sub_one_iff {a b : ℤ} : a ≤ b - 1 ↔ a < b :=
 #align int.le_sub_one_iff Int.le_sub_one_iff
 
 @[simp]
-theorem abs_lt_one_iff {a : ℤ} : |a| < 1 ↔ a = 0 :=
-  ⟨fun a0 => by
-    let ⟨hn, hp⟩ := abs_lt.mp a0
-    rw [← zero_add 1, lt_add_one_iff] at hp
-    -- Defeq abuse: `hn : -1 < a` but should be `hn : 0 λ a`.
-    exact hp.antisymm hn,
-    fun a0 => (abs_eq_zero.mpr a0).le.trans_lt zero_lt_one⟩
+theorem abs_lt_one_iff {a : ℤ} : |a| < 1 ↔ a = 0 := by
+  simp only [Int.abs_eq_natAbs]
+  constructor <;> (intros; omega)
 #align int.abs_lt_one_iff Int.abs_lt_one_iff
 
 theorem abs_le_one_iff {a : ℤ} : |a| ≤ 1 ↔ a = 0 ∨ a = 1 ∨ a = -1 := by
@@ -285,10 +282,7 @@ attribute [local simp] Int.zero_emod
 #align int.mod_eq_mod_iff_mod_sub_eq_zero Int.emod_eq_emod_iff_emod_sub_eq_zero
 
 @[simp]
-theorem neg_emod_two (i : ℤ) : -i % 2 = i % 2 := by
-  apply Int.emod_eq_emod_iff_emod_sub_eq_zero.mpr
-  convert Int.mul_emod_right 2 (-i) using 2
-  rw [two_mul, sub_eq_add_neg]
+theorem neg_emod_two (i : ℤ) : -i % 2 = i % 2 := by omega
 #align int.neg_mod_two Int.neg_emod_two
 
 /-! ### properties of `/` and `%` -/
@@ -312,19 +306,7 @@ theorem abs_ediv_le_abs : ∀ a b : ℤ, |a / b| ≤ |a| :=
 
 #align int.div_le_self Int.ediv_le_self
 
-theorem emod_two_eq_zero_or_one (n : ℤ) : n % 2 = 0 ∨ n % 2 = 1 :=
-  have h : n % 2 < 2 := abs_of_nonneg (show 0 ≤ (2 : ℤ) by decide) ▸ Int.emod_lt _ (by decide)
-  have h₁ : 0 ≤ n % 2 := Int.emod_nonneg _ (by decide)
-  match n % 2, h, h₁ with
-  | (0 : ℕ), _ ,_ => Or.inl rfl
-  | (1 : ℕ), _ ,_ => Or.inr rfl
-  -- Porting note: this used to be `=> absurd h (by decide)`
-  -- see https://github.com/leanprover-community/mathlib4/issues/994
-  | (k + 2 : ℕ), h₁, _ => False.elim (h₁.not_le (by
-    rw [Nat.cast_add]
-    exact (le_add_iff_nonneg_left 2).2 (NonNeg.mk k)))
-  -- Porting note: this used to be `=> absurd h₁ (by decide)`
-  | -[a+1], _, h₁ => by cases h₁
+theorem emod_two_eq_zero_or_one (n : ℤ) : n % 2 = 0 ∨ n % 2 = 1 := by omega
 #align int.mod_two_eq_zero_or_one Int.emod_two_eq_zero_or_one
 
 /-! ### dvd -/

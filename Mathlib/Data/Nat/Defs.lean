@@ -92,8 +92,7 @@ alias ⟨of_le_succ, _⟩ := le_succ_iff
 lemma lt_succ_iff_lt_or_eq : m < n.succ ↔ m < n ∨ m = n := lt_succ_iff.trans Nat.le_iff_lt_or_eq
 #align nat.lt_succ_iff_lt_or_eq Nat.lt_succ_iff_lt_or_eq
 
-lemma eq_of_lt_succ_of_not_lt (hmn : m < n + 1) (h : ¬ m < n) : m = n :=
-  (lt_succ_iff_lt_or_eq.1 hmn).resolve_left h
+lemma eq_of_lt_succ_of_not_lt (hmn : m < n + 1) (h : ¬ m < n) : m = n := by omega
 #align nat.eq_of_lt_succ_of_not_lt Nat.eq_of_lt_succ_of_not_lt
 
 lemma eq_of_le_of_lt_succ (h₁ : n ≤ m) (h₂ : m < n + 1) : m = n :=
@@ -187,7 +186,7 @@ lemma two_lt_of_ne : ∀ {n}, n ≠ 0 → n ≠ 1 → n ≠ 2 → 2 < n
   | 1, _, h, _ => (h rfl).elim
   | 2, _, _, h => (h rfl).elim
   -- Porting note: was `by decide`
-  | n + 3, _, _, _ => le_add_left 3 n
+  | n + 3, _, _, _ => by omega
 #align nat.two_lt_of_ne Nat.two_lt_of_ne
 
 /-! ### `pred` -/
@@ -237,9 +236,7 @@ lemma exists_eq_add_of_lt (h : m < n) : ∃ k : ℕ, n = m + k + 1 :=
 -- Moved to core
 #align nat.eq_of_mul_eq_mul_right Nat.eq_of_mul_eq_mul_right
 
-lemma two_mul_ne_two_mul_add_one : 2 * n ≠ 2 * m + 1 :=
-  mt (congr_arg (· % 2))
-    (by rw [Nat.add_comm, add_mul_mod_self_left, mul_mod_right, mod_eq_of_lt] <;> simp)
+lemma two_mul_ne_two_mul_add_one : 2 * n ≠ 2 * m + 1 := by omega
 #align nat.two_mul_ne_two_mul_add_one Nat.two_mul_ne_two_mul_add_one
 
 -- TODO: Replace `Nat.mul_right_cancel_iff` with `Nat.mul_left_inj`

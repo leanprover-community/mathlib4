@@ -24,7 +24,7 @@ variable {m n : ℤ}
 
 @[simp]
 theorem emod_two_ne_one : ¬n % 2 = 1 ↔ n % 2 = 0 := by
-  cases' emod_two_eq_zero_or_one n with h h <;> simp [h]
+  constructor <;> (intros; omega)
 #align int.mod_two_ne_one Int.emod_two_ne_one
 
 @[simp]
@@ -33,17 +33,15 @@ theorem one_emod_two : (1 : Int) % 2 = 1 := rfl
 -- `EuclideanDomain.mod_eq_zero` uses (2 ∣ n) as normal form
 @[local simp]
 theorem emod_two_ne_zero : ¬n % 2 = 0 ↔ n % 2 = 1 := by
-  cases' emod_two_eq_zero_or_one n with h h <;> simp [h]
+  constructor <;> (intros; omega)
 #align int.mod_two_ne_zero Int.emod_two_ne_zero
 
 theorem even_iff : Even n ↔ n % 2 = 0 :=
-  ⟨fun ⟨m, hm⟩ => by simp [← two_mul, hm],
-    fun h => ⟨n / 2, (emod_add_ediv n 2).symm.trans (by simp [← two_mul, h])⟩⟩
+  ⟨fun ⟨m, hm⟩ => by omega, fun h => ⟨n / 2, by omega⟩⟩
 #align int.even_iff Int.even_iff
 
 theorem odd_iff : Odd n ↔ n % 2 = 1 :=
-  ⟨fun ⟨m, hm⟩ => (by rw [hm, add_emod]; norm_num),
-    fun h => ⟨n / 2, (emod_add_ediv n 2).symm.trans (by rw [h]; abel)⟩⟩
+  ⟨fun ⟨m, hm⟩ => (by omega), fun h => ⟨n / 2, by omega⟩⟩
 #align int.odd_iff Int.odd_iff
 
 theorem not_even_iff : ¬Even n ↔ n % 2 = 1 := by rw [even_iff, emod_two_ne_zero]
@@ -232,24 +230,11 @@ theorem four_dvd_add_or_sub_of_odd {a b : ℤ} (ha : Odd a) (hb : Odd b) :
     4 ∣ a + b ∨ 4 ∣ a - b := by
   obtain ⟨m, rfl⟩ := ha
   obtain ⟨n, rfl⟩ := hb
-  obtain h | h := Int.even_or_odd (m + n)
-  · right
-    rw [Int.even_add, ← Int.even_sub] at h
-    obtain ⟨k, hk⟩ := h
-    convert dvd_mul_right 4 k using 1
-    rw [eq_add_of_sub_eq hk, mul_add, add_assoc, add_sub_cancel, ← two_mul, ← mul_assoc]
-    rfl
-  · left
-    obtain ⟨k, hk⟩ := h
-    convert dvd_mul_right 4 (k + 1) using 1
-    rw [eq_sub_of_add_eq hk, add_right_comm, ← add_sub, mul_add, mul_sub, add_assoc, add_assoc,
-      sub_add, add_assoc, ← sub_sub (2 * n), sub_self, zero_sub, sub_neg_eq_add, ← mul_assoc,
-      mul_add]
-    rfl
+  omega
 #align int.four_dvd_add_or_sub_of_odd Int.four_dvd_add_or_sub_of_odd
 
 theorem two_mul_ediv_two_of_even : Even n → 2 * (n / 2) = n :=
-  fun h => Int.mul_ediv_cancel' (even_iff_two_dvd.mp h)
+  fun ⟨n, h⟩ => by omega
 #align int.two_mul_div_two_of_even Int.two_mul_ediv_two_of_even
 
 theorem ediv_two_mul_two_of_even : Even n → n / 2 * 2 = n :=
@@ -258,9 +243,7 @@ theorem ediv_two_mul_two_of_even : Even n → n / 2 * 2 = n :=
 
 theorem two_mul_ediv_two_add_one_of_odd : Odd n → 2 * (n / 2) + 1 = n := by
   rintro ⟨c, rfl⟩
-  rw [mul_comm]
-  convert Int.ediv_add_emod' (2 * c + 1) 2
-  simp [Int.add_emod]
+  omega
 #align int.two_mul_div_two_add_one_of_odd Int.two_mul_ediv_two_add_one_of_odd
 
 theorem ediv_two_mul_two_add_one_of_odd : Odd n → n / 2 * 2 + 1 = n := by
