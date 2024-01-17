@@ -28,12 +28,15 @@ structure FPropDecl where
   dischargeStx? : Option Syntax
   deriving Inhabited, BEq
 
+/-- -/
 structure FPropDecls where
   decls : DiscrTree FPropDecl := {}
   deriving Inhabited
 
+/-- -/
 abbrev FPropDeclsExt := SimpleScopedEnvExtension FPropDecl FPropDecls
 
+/-- -/
 initialize fpropDeclsExt : FPropDeclsExt ←
   registerSimpleScopedEnvExtension {
     name := by exact decl_name%
@@ -42,8 +45,7 @@ initialize fpropDeclsExt : FPropDeclsExt ←
       {d with decls := d.decls.insertCore e.path e {}}
   }
 
-
-
+/-- -/
 def addFPropDecl (declName : Name) (dischargeStx? : Option Syntax) : MetaM Unit := do
 
   let info ← getConstInfo declName
@@ -78,7 +80,7 @@ def addFPropDecl (declName : Name) (dischargeStx? : Option Syntax) : MetaM Unit 
   trace[Meta.Tactic.fprop.attr] "added new function property `{declName}`\nlook up pattern is `{path}`"
 
   
-
+/-- -/
 def getFProp? (e : Expr) : MetaM (Option (FPropDecl × Expr)) := do
   let ext := fpropDeclsExt.getState (← getEnv)
 
@@ -95,6 +97,7 @@ def getFProp? (e : Expr) : MetaM (Option (FPropDecl × Expr)) := do
 
   return (decl,f)
 
+/-- -/
 def isFProp (e : Expr) : MetaM Bool := do return (← getFProp? e).isSome
 
 /-- Returns function property declaration from `e = P f`. -/
@@ -115,6 +118,7 @@ def getFPropFun? (e : Expr) : MetaM (Option Expr) := do
 
 
 open Elab Term in
+/-- -/
 def tacticToDischarge (tacticCode : Syntax) : Expr → MetaM (Option Expr) := fun e => do
     let mvar ← mkFreshExprSyntheticOpaqueMVar e `simp.discharger
     let runTac? : TermElabM (Option Expr) :=
@@ -138,7 +142,7 @@ def tacticToDischarge (tacticCode : Syntax) : Expr → MetaM (Option Expr) := fu
     
     return result?
 
-
+/-- -/
 def FPropDecl.discharger (fpropDecl : FPropDecl) (e : Expr) : MetaM (Option Expr) := do
     let .some stx := fpropDecl.dischargeStx?
       | return none

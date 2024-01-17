@@ -13,6 +13,7 @@ open Lean Meta
 
 namespace Meta.FProp
 
+/-- -/
 def isLambdaRule (f : Expr) : Bool :=
   match f with
   | .lam _ _ xBody _ => 
@@ -25,6 +26,7 @@ def isLambdaRule (f : Expr) : Bool :=
   | _ => true
 
 open Lean Qq Meta Elab Term in
+/-- -/
 initialize fpropAttr : TagAttribute ←
   registerTagAttribute
     `fprop
