@@ -346,6 +346,18 @@ noncomputable def convergesAt :
   comp_π' i j hij pq hpq := (ConvergesAt.composableArrows_exact X hdata n _ rfl i j _ _ rfl rfl hij pq hpq).toIsComplex.zero 0
   exact_π' i j hij pq hpq := (ConvergesAt.composableArrows_exact X hdata n _ rfl i j _ _ rfl rfl hij pq hpq).exact 0
 
+instance (X : SpectralObject C ℤt) [X.IsFirstQuadrant] (n : ℤ) :
+    X.ConvergesInDegree mkDataE₂CohomologicalCompatibility n where
+  isZero₁ := ⟨1, fun j hj => by
+    apply isZero₁_of_isFirstQuadrant
+    obtain rfl : j = 0 := by
+      erw [Option.some.injEq] at hj
+      linarith
+    simp⟩
+  isZero₂ := ⟨n + 1, by
+      apply isZero₂_of_isFirstQuadrant
+      simp⟩
+
 end SpectralObject
 
 end Abelian

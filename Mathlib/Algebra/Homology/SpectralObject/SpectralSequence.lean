@@ -152,6 +152,95 @@ def mkDataE₂CohomologicalNat :
     congr 1
     linarith
 
+lemma _root_.Fin.clamp_le_clamp {a b : ℕ} (h : a ≤ b) (m : ℕ) :
+    Fin.clamp a m ≤ Fin.clamp b m := by
+  rw [Fin.le_iff_val_le_val]
+  exact min_le_min_right m h
+
+def mkDataE₂CohomologicalFin (l : ℕ) :
+    SpectralSequenceMkData (Fin (l + 1))
+    (fun r => ComplexShape.spectralSequenceFin l ⟨r, 1 - r⟩) 2 where
+  deg pq := pq.1 + pq.2.1
+  i₀ r hr pq := ⟨(pq.2.1 - (r - 2)).toNat, by
+    by_cases h : 0 ≤ pq.2.1 - (r - 2)
+    · simp only [Int.toNat_lt h, Nat.cast_add, Nat.cast_one]
+      linarith [pq.2.2]
+    · refine' lt_of_le_of_lt (le_of_eq _) (show 0 < l + 1 by linarith)
+      rw [Int.toNat_eq_zero]
+      linarith⟩
+  i₁ pq := pq.2.castSucc
+  i₂ pq := pq.2.succ
+  i₃ r hr pq := Fin.clamp (pq.2.1 + (r - 1)).toNat _
+  le₀₁ r hr pq := by simpa [Fin.le_iff_val_le_val] using hr
+  le₁₂ pq := by simp [Fin.le_iff_val_le_val]
+  le₂₃ r hr pq := by
+    dsimp
+    simp only [Fin.le_iff_val_le_val, Fin.val_succ, Fin.coe_clamp, ge_iff_le, Int.toNat_le,
+      le_min_iff]
+    constructor
+    · rw [Int.le_toNat (by linarith)]
+      simp only [Nat.cast_add, Nat.cast_one, add_le_add_iff_left]
+      linarith
+    · linarith [pq.2.2]
+  hc r _ := by
+    rintro ⟨a₁, ⟨a₂, _⟩⟩ ⟨b₁, ⟨b₂, _⟩⟩ ⟨h₁, h₂⟩
+    dsimp at h₁ h₂ ⊢
+    linarith
+  hc₀₂ r hr := by
+    rintro ⟨a₁, ⟨a₂, _⟩⟩ ⟨b₁, ⟨b₂, _⟩⟩ ⟨h₁, h₂⟩
+    ext
+    rw [← Int.ofNat_inj]
+    dsimp at h₁ h₂ ⊢
+    simp only [sub_nonneg, tsub_le_iff_right, Nat.cast_add, Nat.cast_one]
+    rw [Int.toNat_of_nonneg (by linarith)]
+    linarith
+  hc₁₃ r hr := by
+    rintro ⟨a₁, ⟨a₂, _⟩⟩ ⟨b₁, ⟨b₂, _⟩⟩ ⟨h₁, h₂⟩
+    rw [Fin.ext_iff]
+    dsimp at h₁ h₂ ⊢
+    have : b₂ + (r - 1) = a₂ := by linarith
+    rw [this]
+    simp only [Int.toNat_ofNat]
+    apply le_antisymm
+    · simp only [le_min_iff, le_refl, true_and]
+      linarith
+    · exact Nat.min_le_left a₂ l
+  antitone_i₀ r r' hr hrr' := by
+    rintro ⟨a, ⟨a', _⟩⟩
+    dsimp
+    rw [Fin.mk_le_mk]
+    apply Int.toNat_le_toNat
+    linarith
+  monotone_i₃ r r' hr hrr' := by
+    rintro ⟨a, ⟨a', _⟩⟩
+    dsimp
+    rw [Fin.mk_le_mk]
+    apply Fin.clamp_le_clamp
+    apply Int.toNat_le_toNat
+    linarith
+  i₀_prev' r hr := by
+    rintro ⟨a, ⟨a', _⟩⟩ ⟨b, ⟨b', _⟩⟩ ⟨h₁, h₂⟩
+    ext
+    dsimp at h₁ h₂ ⊢
+    rw [← Int.ofNat_inj]
+    rw [Int.toNat_of_nonneg (by linarith)]
+    linarith
+  i₃_next' r hr := by
+    rintro ⟨a, ⟨a', _⟩⟩ ⟨b, ⟨b', _⟩⟩ ⟨h₁, h₂⟩
+    ext
+    dsimp at h₁ h₂ ⊢
+    apply le_antisymm
+    · refine' (min_le_left _ _).trans _
+      rw [← Int.ofNat_le, Int.toNat_of_nonneg (by linarith)]
+      simp only [Nat.cast_add, Nat.cast_one]
+      linarith
+    · simp only [le_min_iff]
+      constructor
+      · rw [← Int.ofNat_le, Int.toNat_of_nonneg (by linarith),
+          Nat.cast_add, Nat.cast_one]
+        linarith
+      · linarith
+
 variable {ι c r₀}
 
 section

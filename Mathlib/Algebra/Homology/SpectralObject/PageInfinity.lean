@@ -626,6 +626,24 @@ instance (pq : ℕ × ℕ) : Y.StationaryAt mkDataE₂CohomologicalNat pq where
       simp only [Nat.cast_add, Nat.cast_one, ℤt.mk_lt_mk_iff]
       linarith⟩
 
+instance (pq : ℤ × ℤ) : Y.StationaryAt mkDataE₂Cohomological pq where
+  exists_isZero₀ := by
+    obtain ⟨k, hk⟩ : ∃ (k : ℕ), pq.2 ≤ k := ⟨_, Int.self_le_toNat pq.2⟩
+    refine' ⟨k, fun i j hij hj => by
+      apply isZero₁_of_isFirstQuadrant
+      refine' hj.trans _
+      dsimp
+      simp only [ℤt.mk_le_mk_iff]
+      linarith⟩
+  exists_isZero₃ := by
+    obtain ⟨k, hk⟩ : ∃ (k : ℕ), pq.1 ≤ k := ⟨_, Int.self_le_toNat pq.1⟩
+    refine' ⟨k, fun i j hij hi => by
+      apply isZero₂_of_isFirstQuadrant
+      refine' lt_of_lt_of_le _ hi
+      dsimp
+      simp only [ℤt.mk_lt_mk_iff, sub_lt_sub_iff_right]
+      linarith⟩
+
 end
 
 end SpectralObject

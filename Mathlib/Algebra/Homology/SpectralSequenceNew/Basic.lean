@@ -27,6 +27,15 @@ instance (u : ℤ × ℤ) : DecidableRel (spectralSequenceNat u).Rel := fun a b 
 lemma spectralSequenceNat_rel_iff (u : ℤ × ℤ) (a b : ℕ × ℕ) :
     (spectralSequenceNat u).Rel a b ↔ a.1 + u.1 = b.1 ∧ a.2 + u.2 = b.2 := by rfl
 
+def spectralSequenceFin (l : ℕ) (u : ℤ × ℤ) : ComplexShape (ℤ × Fin l) where
+  Rel a b := a.1 + u.1 = b.1 ∧ a.2.1 + u.2 = b.2.1
+  next_eq := by
+    rintro ⟨a₁, ⟨a₂, _⟩⟩ ⟨b₁, ⟨b₂, _⟩⟩⟨b₁', ⟨b₂', _⟩⟩ ⟨h₁, h₂⟩ ⟨h₃, h₄⟩
+    ext <;> linarith
+  prev_eq := by
+    rintro ⟨a₁, ⟨a₂, _⟩⟩ ⟨a₁', ⟨a₂', _⟩⟩⟨b₁, ⟨b₂, _⟩⟩ ⟨h₁, h₂⟩ ⟨h₃, h₄⟩
+    ext <;> linarith
+
 end ComplexShape
 
 namespace CategoryTheory
@@ -375,5 +384,11 @@ abbrev CohomologicalSpectralSequenceNat :=
 
 abbrev E₂CohomologicalSpectralSequenceNat :=
   CohomologicalSpectralSequenceNat C 2
+
+abbrev CohomologicalSpectralSequenceFin (l : ℕ) :=
+  SpectralSequence C (fun r => ComplexShape.spectralSequenceFin l ⟨r, 1 - r⟩)
+
+abbrev E₂CohomologicalSpectralSequenceFin (l : ℕ) :=
+  CohomologicalSpectralSequenceFin C 2 l
 
 end CategoryTheory
