@@ -366,13 +366,13 @@ noncomputable def rangeEquiv (f : E →L[𝕜] F) (hinj : Injective f) (hclo : I
     (f.continuous.codRestrict fun x ↦ LinearMap.mem_range_self f x).congr fun _ ↦ rfl
 
 @[simp]
-theorem rangeEquiv_apply (f : E →L[𝕜] F) (hinj : Injective f) (hclo : IsClosed (range f)) (x : E) :
-    f.rangeEquiv hinj hclo x = f x :=
+theorem rangeEquiv_eq (f : E →L[𝕜] F) (hinj : Injective f) (hclo : IsClosed (range f)) :
+    f.rangeEquiv hinj hclo = f.rangeRestrict :=
   rfl
 
 @[simp]
-theorem rangeEquiv_eq (f : E →L[𝕜] F) (hinj : Injective f) (hclo : IsClosed (range f)) :
-    (f.rangeEquiv hinj hclo).toContinuousLinearMap = f.rangeRestrict :=
+theorem coe_rangeEquiv (f : E →L[𝕜] F) (hinj : Injective f) (hclo : IsClosed (range f)) :
+    (f.rangeEquiv hinj hclo : E → LinearMap.range f) = f.rangeRestrict :=
   rfl
 
 end ContinuousLinearMap
