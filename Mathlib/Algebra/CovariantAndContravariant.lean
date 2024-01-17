@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.Group.Classes
 import Mathlib.Order.Basic
 import Mathlib.Order.Monotone.Basic
 
