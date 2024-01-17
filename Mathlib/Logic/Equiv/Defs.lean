@@ -918,6 +918,27 @@ protected theorem exists_congr_left {α β} (f : α ≃ β) {p : α → Prop} :
   ⟨fun ⟨a, h⟩ => ⟨f a, by simpa using h⟩, fun ⟨b, h⟩ => ⟨_, h⟩⟩
 #align equiv.exists_congr_left Equiv.exists_congr_left
 
+/-- If `f` is a bijective function, then its domain is equivalent to its codomain. -/
+@[simps apply]
+noncomputable def ofBijective (f : α → β) (hf : Bijective f) : α ≃ β where
+  toFun := f
+  invFun := surjInv hf.surjective
+  left_inv := leftInverse_surjInv hf
+  right_inv := rightInverse_surjInv _
+#align equiv.of_bijective Equiv.ofBijective
+#align equiv.of_bijective_apply Equiv.ofBijective_apply
+
+lemma ofBijective_apply_symm_apply (f : α → β) (hf : Bijective f) (x : β) :
+    f ((ofBijective f hf).symm x) = x :=
+  (ofBijective f hf).apply_symm_apply x
+#align equiv.of_bijective_apply_symm_apply Equiv.ofBijective_apply_symm_apply
+
+@[simp]
+lemma ofBijective_symm_apply_apply (f : α → β) (hf : Bijective f) (x : α) :
+    (ofBijective f hf).symm (f x) = x :=
+  (ofBijective f hf).symm_apply_apply x
+#align equiv.of_bijective_symm_apply_apply Equiv.ofBijective_symm_apply_apply
+
 end Equiv
 
 namespace Quot

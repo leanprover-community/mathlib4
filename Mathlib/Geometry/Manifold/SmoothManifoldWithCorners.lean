@@ -119,9 +119,6 @@ derivative will be `mfderiv I I' f`, instead of the more natural notations `Tang
 real and complex manifolds).
 -/
 
-set_option autoImplicit true
-
-
 noncomputable section
 
 universe u v w u' v' w'
@@ -357,7 +354,7 @@ protected theorem locallyCompactSpace [LocallyCompactSpace E] (I : ModelWithCorn
       fun s => I.symm '' (s ∩ range I) := fun x ↦ by
     rw [← I.symm_map_nhdsWithin_range]
     exact ((compact_basis_nhds (I x)).inf_principal _).map _
-  refine' locallyCompactSpace_of_hasBasis this _
+  refine' .of_hasBasis this _
   rintro x s ⟨-, hsc⟩
   exact (hsc.inter_right I.closed_range).image I.continuous_symm
 #align model_with_corners.locally_compact ModelWithCorners.locallyCompactSpace
@@ -478,7 +475,9 @@ end ModelWithCornersProd
 
 section Boundaryless
 
-/-- Property ensuring that the model with corners `I` defines manifolds without boundary. -/
+/-- Property ensuring that the model with corners `I` defines manifolds without boundary. This
+  differs from the more general `BoundarylessManifold`, which requires every point on the manifold
+  to be an interior point.  -/
 class ModelWithCorners.Boundaryless {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
     (I : ModelWithCorners 𝕜 E H) : Prop where
@@ -530,46 +529,48 @@ variable {m n : ℕ∞} {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*
 
 variable (n)
 
-/-- Given a model with corners `(E, H)`, we define the groupoid of `C^n` transformations of `H` as
-the maps that are `C^n` when read in `E` through `I`. -/
+/-- Given a model with corners `(E, H)`, we define the pregroupoid of `C^n` transformations of `H`
+as the maps that are `C^n` when read in `E` through `I`. -/
+def contDiffPregroupoid : Pregroupoid H where
+  property f s := ContDiffOn 𝕜 n (I ∘ f ∘ I.symm) (I.symm ⁻¹' s ∩ range I)
+  comp {f g u v} hf hg _ _ _ := by
+    have : I ∘ (g ∘ f) ∘ I.symm = (I ∘ g ∘ I.symm) ∘ I ∘ f ∘ I.symm := by ext x; simp
+    simp only [this]
+    refine hg.comp (hf.mono fun x ⟨hx1, hx2⟩ ↦ ⟨hx1.1, hx2⟩) ?_
+    rintro x ⟨hx1, _⟩
+    simp only [mfld_simps] at hx1 ⊢
+    exact hx1.2
+  id_mem := by
+    apply ContDiffOn.congr contDiff_id.contDiffOn
+    rintro x ⟨_, hx2⟩
+    rcases mem_range.1 hx2 with ⟨y, hy⟩
+    rw [← hy]
+    simp only [mfld_simps]
+  locality {f u} _ H := by
+    apply contDiffOn_of_locally_contDiffOn
+    rintro y ⟨hy1, hy2⟩
+    rcases mem_range.1 hy2 with ⟨x, hx⟩
+    rw [← hx] at hy1 ⊢
+    simp only [mfld_simps] at hy1 ⊢
+    rcases H x hy1 with ⟨v, v_open, xv, hv⟩
+    have : I.symm ⁻¹' (u ∩ v) ∩ range I = I.symm ⁻¹' u ∩ range I ∩ I.symm ⁻¹' v := by
+      rw [preimage_inter, inter_assoc, inter_assoc]
+      congr 1
+      rw [inter_comm]
+    rw [this] at hv
+    exact ⟨I.symm ⁻¹' v, v_open.preimage I.continuous_symm, by simpa, hv⟩
+  congr {f g u} _ fg hf := by
+    apply hf.congr
+    rintro y ⟨hy1, hy2⟩
+    rcases mem_range.1 hy2 with ⟨x, hx⟩
+    rw [← hx] at hy1 ⊢
+    simp only [mfld_simps] at hy1 ⊢
+    rw [fg _ hy1]
+
+/-- Given a model with corners `(E, H)`, we define the groupoid of invertible `C^n` transformations
+  of `H` as the invertible maps that are `C^n` when read in `E` through `I`. -/
 def contDiffGroupoid : StructureGroupoid H :=
-  Pregroupoid.groupoid
-    { property := fun f s => ContDiffOn 𝕜 n (I ∘ f ∘ I.symm) (I.symm ⁻¹' s ∩ range I)
-      comp := fun {f g u v} hf hg _ _ _ => by
-        have : I ∘ (g ∘ f) ∘ I.symm = (I ∘ g ∘ I.symm) ∘ I ∘ f ∘ I.symm := by ext x; simp
-        simp only [this]
-        refine hg.comp (hf.mono ?_) ?_
-        · rintro x ⟨hx1, hx2⟩
-          exact ⟨hx1.1, hx2⟩
-        · rintro x ⟨hx1, _⟩
-          simp only [mfld_simps] at hx1 ⊢
-          exact hx1.2
-      id_mem := by
-        apply ContDiffOn.congr contDiff_id.contDiffOn
-        rintro x ⟨_, hx2⟩
-        rcases mem_range.1 hx2 with ⟨y, hy⟩
-        rw [← hy]
-        simp only [mfld_simps]
-      locality := fun {f u} _ H => by
-        apply contDiffOn_of_locally_contDiffOn
-        rintro y ⟨hy1, hy2⟩
-        rcases mem_range.1 hy2 with ⟨x, hx⟩
-        rw [← hx] at hy1 ⊢
-        simp only [mfld_simps] at hy1 ⊢
-        rcases H x hy1 with ⟨v, v_open, xv, hv⟩
-        have : I.symm ⁻¹' (u ∩ v) ∩ range I = I.symm ⁻¹' u ∩ range I ∩ I.symm ⁻¹' v := by
-          rw [preimage_inter, inter_assoc, inter_assoc]
-          congr 1
-          rw [inter_comm]
-        rw [this] at hv
-        exact ⟨I.symm ⁻¹' v, v_open.preimage I.continuous_symm, by simpa, hv⟩
-      congr := fun {f g u} _ fg hf => by
-        apply hf.congr
-        rintro y ⟨hy1, hy2⟩
-        rcases mem_range.1 hy2 with ⟨x, hx⟩
-        rw [← hx] at hy1 ⊢
-        simp only [mfld_simps] at hy1 ⊢
-        rw [fg _ hy1] }
+  Pregroupoid.groupoid (contDiffPregroupoid n I)
 #align cont_diff_groupoid contDiffGroupoid
 
 variable {n}
@@ -591,7 +592,7 @@ theorem contDiffGroupoid_zero_eq : contDiffGroupoid 0 I = continuousGroupoid H :
   -- we have to check that every partial homeomorphism belongs to `contDiffGroupoid 0 I`,
   -- by unfolding its definition
   change u ∈ contDiffGroupoid 0 I
-  rw [contDiffGroupoid, mem_groupoid_of_pregroupoid]
+  rw [contDiffGroupoid, mem_groupoid_of_pregroupoid, contDiffPregroupoid]
   simp only [contDiffOn_zero]
   constructor
   · refine' I.continuous.comp_continuousOn (u.continuousOn.comp I.continuousOn_symm _)
@@ -607,7 +608,7 @@ theorem ofSet_mem_contDiffGroupoid {s : Set H} (hs : IsOpen s) :
     PartialHomeomorph.ofSet s hs ∈ contDiffGroupoid n I := by
   rw [contDiffGroupoid, mem_groupoid_of_pregroupoid]
   suffices h : ContDiffOn 𝕜 n (I ∘ I.symm) (I.symm ⁻¹' s ∩ range I)
-  · simp [h]
+  · simp [h, contDiffPregroupoid]
   have : ContDiffOn 𝕜 n id (univ : Set E) := contDiff_id.contDiffOn
   exact this.congr_mono (fun x hx => I.right_inv hx.2) (subset_univ _)
 #align of_set_mem_cont_diff_groupoid ofSet_mem_contDiffGroupoid
@@ -617,7 +618,7 @@ the `C^n` groupoid. -/
 theorem symm_trans_mem_contDiffGroupoid (e : PartialHomeomorph M H) :
     e.symm.trans e ∈ contDiffGroupoid n I :=
   haveI : e.symm.trans e ≈ PartialHomeomorph.ofSet e.target e.open_target :=
-    PartialHomeomorph.trans_symm_self _
+    PartialHomeomorph.symm_trans_self _
   StructureGroupoid.eq_on_source _ (ofSet_mem_contDiffGroupoid n I e.open_target) this
 #align symm_trans_mem_cont_diff_groupoid symm_trans_mem_contDiffGroupoid
 
@@ -630,7 +631,8 @@ theorem contDiffGroupoid_prod {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCor
   cases' he with he he_symm
   cases' he' with he' he'_symm
   simp only at he he_symm he' he'_symm
-  constructor <;> simp only [PartialEquiv.prod_source, PartialHomeomorph.prod_toPartialEquiv]
+  constructor <;> simp only [PartialEquiv.prod_source, PartialHomeomorph.prod_toPartialEquiv,
+    contDiffPregroupoid]
   · have h3 := ContDiffOn.prod_map he he'
     rw [← I.image_eq, ← I'.image_eq, prod_image_image_eq] at h3
     rw [← (I.prod I').image_eq]
@@ -709,7 +711,7 @@ def analyticGroupoid : StructureGroupoid H :=
             (f := (1 : E →L[𝕜] E)) (fun x _ => (1 : E →L[𝕜] E).analyticAt x)
             (fun z hz => (I.right_inv (interior_subset hz)).symm)
         · intro x hx
-          simp only [left_id, comp_apply, preimage_univ, univ_inter, mem_image] at hx
+          simp only [id_comp, comp_apply, preimage_univ, univ_inter, mem_image] at hx
           rcases hx with ⟨y, hy⟩
           rw [← hy.right, I.right_inv (interior_subset hy.left)]
           exact hy.left
@@ -753,7 +755,7 @@ theorem ofSet_mem_analyticGroupoid {s : Set H} (hs : IsOpen s) :
   apply mem_groupoid_of_pregroupoid.mpr
   suffices h : AnalyticOn 𝕜 (I ∘ I.symm) (I.symm ⁻¹' s ∩ interior (range I)) ∧
       (I.symm ⁻¹' s ∩ interior (range I)).image (I ∘ I.symm) ⊆ interior (range I)
-  · simp only [PartialHomeomorph.ofSet_apply, left_id, PartialHomeomorph.ofSet_toPartialEquiv,
+  · simp only [PartialHomeomorph.ofSet_apply, id_comp, PartialHomeomorph.ofSet_toPartialEquiv,
       PartialEquiv.ofSet_source, h, comp_apply, mem_range, image_subset_iff, true_and,
       PartialHomeomorph.ofSet_symm, PartialEquiv.ofSet_target, and_self]
     intro x hx
@@ -763,7 +765,7 @@ theorem ofSet_mem_analyticGroupoid {s : Set H} (hs : IsOpen s) :
   apply And.intro
   · have : AnalyticOn 𝕜 (1 : E →L[𝕜] E) (univ : Set E) := (fun x _ => (1 : E →L[𝕜] E).analyticAt x)
     exact (this.mono (subset_univ (s.preimage (I.symm) ∩ interior (range I)))).congr
-      (IsOpen.inter (hs.preimage I.continuous_symm) isOpen_interior)
+      ((hs.preimage I.continuous_symm).inter isOpen_interior)
       fun z hz => (I.right_inv (interior_subset hz.right)).symm
   · intro x hx
     simp only [comp_apply, mem_image] at hx
@@ -776,7 +778,7 @@ the analytic groupoid. -/
 theorem symm_trans_mem_analyticGroupoid (e : PartialHomeomorph M H) :
     e.symm.trans e ∈ analyticGroupoid I :=
   haveI : e.symm.trans e ≈ PartialHomeomorph.ofSet e.target e.open_target :=
-    PartialHomeomorph.trans_symm_self _
+    PartialHomeomorph.symm_trans_self _
   StructureGroupoid.eq_on_source _ (ofSet_mem_analyticGroupoid I e.open_target) this
 
 /-- The analytic groupoid is closed under restriction. -/
@@ -802,7 +804,7 @@ theorem mem_analyticGroupoid_of_boundaryless [CompleteSpace E] [I.Boundaryless]
   · intro he
     apply And.intro
     all_goals apply mem_groupoid_of_pregroupoid.mpr; simp only [I.image_eq, I.range_eq_univ,
-      interior_univ, subset_univ, and_true] at he ⊢
+      interior_univ, subset_univ, and_true, contDiffPregroupoid] at he ⊢
     · exact ⟨he.left.contDiffOn, he.right.contDiffOn⟩
     · exact he
 
@@ -1113,8 +1115,8 @@ theorem map_extend_symm_nhdsWithin_range {y : M} (hy : y ∈ f.source) :
   rw [← nhdsWithin_univ, ← map_extend_symm_nhdsWithin f I hy, preimage_univ, univ_inter]
 #align local_homeomorph.map_extend_symm_nhds_within_range PartialHomeomorph.map_extend_symm_nhdsWithin_range
 
-theorem tendsto_extend_comp_iff {l : Filter α} {g : α → M} (hg : ∀ᶠ z in l, g z ∈ f.source)
-    (hy : y ∈ f.source) :
+theorem tendsto_extend_comp_iff {α : Type*} {l : Filter α} {g : α → M}
+    (hg : ∀ᶠ z in l, g z ∈ f.source) {y : M} (hy : y ∈ f.source) :
     Tendsto (f.extend I ∘ g) l (𝓝 (f.extend I y)) ↔ Tendsto g l (𝓝 y) := by
   refine ⟨fun h u hu ↦ mem_map.2 ?_, (continuousAt_extend _ _ hy).tendsto.comp⟩
   have := (f.continuousAt_extend_symm I hy).tendsto.comp h
@@ -1123,7 +1125,7 @@ theorem tendsto_extend_comp_iff {l : Filter α} {g : α → M} (hg : ∀ᶠ z in
   simpa only [(· ∘ ·), extend_left_inv _ _ hz, mem_preimage] using hzu
 
 -- there is no definition `writtenInExtend` but we already use some made-up names in this file
-theorem continuousWithinAt_writtenInExtend_iff {f' : PartialHomeomorph M' H'} {g : M → M'}
+theorem continuousWithinAt_writtenInExtend_iff {f' : PartialHomeomorph M' H'} {g : M → M'} {y : M}
     (hy : y ∈ f.source) (hgy : g y ∈ f'.source) (hmaps : MapsTo g s f'.source) :
     ContinuousWithinAt (f'.extend I' ∘ g ∘ (f.extend I).symm)
       ((f.extend I).symm ⁻¹' s ∩ range I) (f.extend I y) ↔ ContinuousWithinAt g s y := by

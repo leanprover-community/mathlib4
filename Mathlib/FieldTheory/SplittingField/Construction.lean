@@ -110,7 +110,7 @@ It constructs the type, proves that is a field and algebra over the base field.
 
 Uses recursion on the degree.
 -/
-def SplittingFieldAuxAux (n : ℕ) : ∀ {K : Type u} [Field K], ∀ _ : K[X],
+def SplittingFieldAuxAux (n : ℕ) : ∀ {K : Type u} [Field K], K[X] →
     Σ (L : Type u) (_ : Field L), Algebra K L :=
   -- Porting note: added motive
   Nat.recOn (motive := fun (_x : ℕ) => ∀ {K : Type u} [_inst_4 : Field K], K[X] →

@@ -35,9 +35,6 @@ For a module over a normed ring:
 seminorm, locally convex, LCTVS
 -/
 
-set_option autoImplicit true
-
-
 open NormedField Set Filter
 
 open scoped BigOperators NNReal Pointwise Topology Uniformity
@@ -966,7 +963,7 @@ theorem closedBall_smul_closedBall (p : Seminorm 𝕜 E) (r₁ r₂ : ℝ) :
 #align seminorm.closed_ball_smul_closed_ball Seminorm.closedBall_smul_closedBall
 
 -- Porting note: TODO: make that an `iff`
-theorem neg_mem_ball_zero (r : ℝ) (hx : x ∈ ball p 0 r) : -x ∈ ball p 0 r := by
+theorem neg_mem_ball_zero (r : ℝ) {x : E} (hx : x ∈ ball p 0 r) : -x ∈ ball p 0 r := by
   simpa only [mem_ball_zero, map_neg_eq_map] using hx
 #align seminorm.symmetric_ball_zero Seminorm.neg_mem_ball_zero
 
@@ -1039,7 +1036,7 @@ theorem smul_closedBall_zero {p : Seminorm 𝕜 E} {k : 𝕜} {r : ℝ} (hk : 0 
 theorem ball_zero_absorbs_ball_zero (p : Seminorm 𝕜 E) {r₁ r₂ : ℝ} (hr₁ : 0 < r₁) :
     Absorbs 𝕜 (p.ball 0 r₁) (p.ball 0 r₂) := by
   rcases exists_pos_lt_mul hr₁ r₂ with ⟨r, hr₀, hr⟩
-  refine' ⟨r, hr₀, fun a ha x hx => _⟩
+  refine .of_norm ⟨r, fun a ha x hx => ?_⟩
   rw [smul_ball_zero (norm_pos_iff.1 <| hr₀.trans_le ha), p.mem_ball_zero]
   rw [p.mem_ball_zero] at hx
   exact hx.trans (hr.trans_le <| by gcongr)
@@ -1374,7 +1371,7 @@ lemma bound_of_shell_sup (p : ι → Seminorm 𝕜 E) (s : Finset ι)
     q x ≤ (C • s.sup p) x := by
   rcases hx with ⟨j, hj, hjx⟩
   have : (s.sup p) x ≠ 0 :=
-    ne_of_gt ((hjx.symm.lt_of_le $ map_nonneg _ _).trans_le (le_finset_sup_apply hj))
+    ne_of_gt ((hjx.symm.lt_of_le <| map_nonneg _ _).trans_le (le_finset_sup_apply hj))
   refine (s.sup p).bound_of_shell_smul q ε_pos hc (fun y hle hlt ↦ ?_) this
   rcases exists_apply_eq_finset_sup p ⟨j, hj⟩ y with ⟨i, hi, hiy⟩
   rw [smul_apply, hiy]
@@ -1391,12 +1388,12 @@ lemma bddAbove_of_absorbent {p : ι → Seminorm 𝕜 E} {s : Set E} (hs : Absor
     BddAbove (range p) := by
   rw [Seminorm.bddAbove_range_iff]
   intro x
-  rcases hs x with ⟨r, hr, hrx⟩
+  rcases (hs x).exists_pos with ⟨r, hr, hrx⟩
   rcases exists_lt_norm 𝕜 r with ⟨k, hk⟩
   have hk0 : k ≠ 0 := norm_pos_iff.mp (hr.trans hk)
   have : k⁻¹ • x ∈ s := by
     rw [← mem_smul_set_iff_inv_smul_mem₀ hk0]
-    exact hrx k hk.le
+    exact hrx k hk.le rfl
   rcases h (k⁻¹ • x) this with ⟨M, hM⟩
   refine ⟨‖k‖ * M, forall_range_iff.mpr fun i ↦ ?_⟩
   have := (forall_range_iff.mp hM) i

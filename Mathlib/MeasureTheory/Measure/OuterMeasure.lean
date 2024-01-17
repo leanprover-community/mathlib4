@@ -91,6 +91,7 @@ theorem empty' (m : OuterMeasure α) : m ∅ = 0 :=
   m.empty
 #align measure_theory.outer_measure.empty' MeasureTheory.OuterMeasure.empty'
 
+@[gcongr]
 theorem mono' (m : OuterMeasure α) {s₁ s₂} (h : s₁ ⊆ s₂) : m s₁ ≤ m s₂ :=
   m.mono h
 #align measure_theory.outer_measure.mono' MeasureTheory.OuterMeasure.mono'
@@ -109,35 +110,31 @@ protected theorem iUnion (m : OuterMeasure α) {β} [Countable β] (s : β → S
   rel_iSup_tsum m m.empty (· ≤ ·) m.iUnion_nat s
 #align measure_theory.outer_measure.Union MeasureTheory.OuterMeasure.iUnion
 
-theorem iUnion_null [Countable β] (m : OuterMeasure α) {s : β → Set α} (h : ∀ i, m (s i) = 0) :
-    m (⋃ i, s i) = 0 := by simpa [h] using m.iUnion s
-#align measure_theory.outer_measure.Union_null MeasureTheory.OuterMeasure.iUnion_null
-
-@[simp]
-theorem iUnion_null_iff [Countable β] (m : OuterMeasure α) {s : β → Set α} :
-    m (⋃ i, s i) = 0 ↔ ∀ i, m (s i) = 0 :=
-  ⟨fun h _ => m.mono_null (subset_iUnion _ _) h, m.iUnion_null⟩
-#align measure_theory.outer_measure.Union_null_iff MeasureTheory.OuterMeasure.iUnion_null_iff
-
-/-- A version of `iUnion_null_iff` for unions indexed by Props.
-TODO: in the long run it would be better to combine this with `iUnion_null_iff` by
-generalising to `Sort`. -/
-@[simp]
-theorem iUnion_null_iff' (m : OuterMeasure α) {ι : Prop} {s : ι → Set α} :
-    m (⋃ i, s i) = 0 ↔ ∀ i, m (s i) = 0 :=
-    ⟨ fun h i => mono_null m (subset_iUnion s i) h,
-      by by_cases i : ι <;> simp [i]⟩
-#align measure_theory.outer_measure.Union_null_iff' MeasureTheory.OuterMeasure.iUnion_null_iff'
-
 theorem biUnion_null_iff (m : OuterMeasure α) {s : Set β} (hs : s.Countable) {t : β → Set α} :
     m (⋃ i ∈ s, t i) = 0 ↔ ∀ i ∈ s, m (t i) = 0 := by
-  haveI := hs.toEncodable
-  rw [biUnion_eq_iUnion, iUnion_null_iff, SetCoe.forall']
+  refine ⟨fun h i hi ↦ m.mono_null (subset_biUnion_of_mem hi) h, fun h ↦ ?_⟩
+  have _ := hs.toEncodable
+  simpa [h] using m.iUnion fun x : s ↦ t x
 #align measure_theory.outer_measure.bUnion_null_iff MeasureTheory.OuterMeasure.biUnion_null_iff
 
 theorem sUnion_null_iff (m : OuterMeasure α) {S : Set (Set α)} (hS : S.Countable) :
     m (⋃₀ S) = 0 ↔ ∀ s ∈ S, m s = 0 := by rw [sUnion_eq_biUnion, m.biUnion_null_iff hS]
 #align measure_theory.outer_measure.sUnion_null_iff MeasureTheory.OuterMeasure.sUnion_null_iff
+
+@[simp]
+theorem iUnion_null_iff {ι : Sort*} [Countable ι] (m : OuterMeasure α) {s : ι → Set α} :
+    m (⋃ i, s i) = 0 ↔ ∀ i, m (s i) = 0 := by
+  rw [← sUnion_range, m.sUnion_null_iff (countable_range s), forall_range_iff]
+#align measure_theory.outer_measure.Union_null_iff MeasureTheory.OuterMeasure.iUnion_null_iff
+
+alias ⟨_, iUnion_null⟩ := iUnion_null_iff
+#align measure_theory.outer_measure.Union_null MeasureTheory.OuterMeasure.iUnion_null
+
+@[deprecated] -- Deprecated since 14 January 2024
+theorem iUnion_null_iff' (m : OuterMeasure α) {ι : Prop} {s : ι → Set α} :
+    m (⋃ i, s i) = 0 ↔ ∀ i, m (s i) = 0 :=
+  m.iUnion_null_iff
+#align measure_theory.outer_measure.Union_null_iff' MeasureTheory.OuterMeasure.iUnion_null_iff'
 
 protected theorem iUnion_finset (m : OuterMeasure α) (s : β → Set α) (t : Finset β) :
     m (⋃ i ∈ t, s i) ≤ ∑ i in t, m (s i) :=
@@ -188,8 +185,8 @@ theorem iUnion_of_tendsto_zero {ι} (m : OuterMeasure α) {s : ι → Set α} (l
 /-- If `s : ℕ → Set α` is a monotone sequence of sets such that `∑' k, m (s (k + 1) \ s k) ≠ ∞`,
 then `m (⋃ n, s n) = ⨆ n, m (s n)`. -/
 theorem iUnion_nat_of_monotone_of_tsum_ne_top (m : OuterMeasure α) {s : ℕ → Set α}
-    (h_mono : ∀ n, s n ⊆ s (n + 1)) (h0 : (∑' k, m (s (k + 1) \ s k)) ≠ ∞)
-    [∀ i:ℕ, DecidablePred (· ∈ s i)] : m (⋃ n, s n) = ⨆ n, m (s n) := by
+    (h_mono : ∀ n, s n ⊆ s (n + 1)) (h0 : (∑' k, m (s (k + 1) \ s k)) ≠ ∞) :
+    m (⋃ n, s n) = ⨆ n, m (s n) := by
   refine' m.iUnion_of_tendsto_zero atTop _
   refine' tendsto_nhds_bot_mono' (ENNReal.tendsto_sum_nat_add _ h0) fun n => _
   refine' (m.mono _).trans (m.iUnion _)
@@ -427,7 +424,7 @@ theorem smul_iSup [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] {�
 
 end Supremum
 
-@[mono]
+@[mono, gcongr]
 theorem mono'' {m₁ m₂ : OuterMeasure α} {s₁ s₂ : Set α} (hm : m₁ ≤ m₂) (hs : s₁ ⊆ s₂) :
     m₁ s₁ ≤ m₂ s₂ :=
   (hm s₁).trans (m₂.mono hs)
@@ -901,7 +898,7 @@ theorem comap_boundedBy {β} (f : β → α)
     exact (@H ⟨s, hs⟩ ⟨t, ht⟩ hst).trans (le_iSup (fun _ : t.Nonempty => m t) ht)
   · dsimp only [boundedBy]
     congr with s : 1
-    rw [nonempty_image_iff]
+    rw [image_nonempty]
 #align measure_theory.outer_measure.comap_bounded_by MeasureTheory.OuterMeasure.comap_boundedBy
 
 /-- If `m u = ∞` for any set `u` that has nonempty intersection both with `s` and `t`, then

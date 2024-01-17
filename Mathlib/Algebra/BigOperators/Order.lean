@@ -690,7 +690,7 @@ variable [LinearOrderedCommSemiring α] [ExistsAddOfLE α]
 lemma sum_mul_sq_le_sq_mul_sq (s : Finset ι) (f g : ι → α) :
     (∑ i in s, f i * g i) ^ 2 ≤ (∑ i in s, f i ^ 2) * ∑ i in s, g i ^ 2 := by
   nontriviality α
-  obtain h' | h' := (sum_nonneg fun _ _ ↦ sq_nonneg $ g _).eq_or_lt
+  obtain h' | h' := (sum_nonneg fun _ _ ↦ sq_nonneg <| g _).eq_or_lt
   · have h'' : ∀ i ∈ s, g i = 0 := fun i hi ↦ by
       simpa using (sum_eq_zero_iff_of_nonneg fun i _ ↦ sq_nonneg (g i)).1 h'.symm i hi
     rw [← h', sum_congr rfl (show ∀ i ∈ s, f i * g i = 0 from fun i hi ↦ by simp [h'' i hi])]
@@ -753,11 +753,11 @@ lemma one_le_prod (hf : 1 ≤ f) : 1 ≤ ∏ i, f i := Finset.one_le_prod' λ _ 
 
 @[to_additive]
 lemma prod_eq_one_iff_of_one_le (hf : 1 ≤ f) : ∏ i, f i = 1 ↔ f = 1 :=
-  (Finset.prod_eq_one_iff_of_one_le' fun i _ ↦ hf i).trans $ by simp [Function.funext_iff]
+  (Finset.prod_eq_one_iff_of_one_le' fun i _ ↦ hf i).trans <| by simp [Function.funext_iff]
 
 @[to_additive]
 lemma prod_eq_one_iff_of_le_one (hf : f ≤ 1) : ∏ i, f i = 1 ↔ f = 1 :=
-  (Finset.prod_eq_one_iff_of_le_one' fun i _ ↦ hf i).trans $ by simp [Function.funext_iff]
+  (Finset.prod_eq_one_iff_of_le_one' fun i _ ↦ hf i).trans <| by simp [Function.funext_iff]
 
 end OrderedCommMonoid
 
@@ -774,11 +774,11 @@ theorem prod_strictMono' : StrictMono fun f : ι → M ↦ ∏ x, f x :=
 
 @[to_additive sum_pos]
 lemma one_lt_prod (hf : 1 < f) : 1 < ∏ i, f i :=
-  Finset.one_lt_prod' (λ _ _ ↦ hf.le _) $ by simpa using (Pi.lt_def.1 hf).2
+  Finset.one_lt_prod' (λ _ _ ↦ hf.le _) <| by simpa using (Pi.lt_def.1 hf).2
 
 @[to_additive]
 lemma prod_lt_one (hf : f < 1) : ∏ i, f i < 1 :=
-  Finset.prod_lt_one' (λ _ _ ↦ hf.le _) $ by simpa using (Pi.lt_def.1 hf).2
+  Finset.prod_lt_one' (λ _ _ ↦ hf.le _) <| by simpa using (Pi.lt_def.1 hf).2
 
 @[to_additive sum_pos_iff_of_nonneg]
 lemma one_lt_prod_iff_of_one_le (hf : 1 ≤ f) : 1 < ∏ i, f i ↔ 1 < f := by

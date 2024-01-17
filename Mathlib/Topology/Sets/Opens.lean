@@ -264,7 +264,7 @@ theorem openEmbedding' (U : Opens α) : OpenEmbedding (Subtype.val : U → α) :
   U.isOpen.openEmbedding_subtype_val
 
 theorem openEmbedding_of_le {U V : Opens α} (i : U ≤ V) :
-    OpenEmbedding (Set.inclusion $ SetLike.coe_subset_coe.2 i) :=
+    OpenEmbedding (Set.inclusion <| SetLike.coe_subset_coe.2 i) :=
   { toEmbedding := embedding_inclusion i
     open_range := by
       rw [Set.range_inclusion i]
