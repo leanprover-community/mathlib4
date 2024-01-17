@@ -6,7 +6,7 @@ Authors: Winston Yin
 import Mathlib.Analysis.ODE.Gronwall
 import Mathlib.Analysis.ODE.PicardLindelof
 import Mathlib.Geometry.Manifold.InteriorBoundary
-import Mathlib.Geometry.Manifold.MFDeriv.Basic
+import Mathlib.Geometry.Manifold.MFDeriv.Atlas
 
 /-!
 # Integral curves of vector fields on a manifold
@@ -143,7 +143,7 @@ lemma isIntegralCurveOn_iff_isIntegralCurveAt (hs : IsOpen s) :
 lemma IsIntegralCurveOn.hasDerivAt (hγ : IsIntegralCurveOn γ v s) {t : ℝ} (ht : t ∈ s)
     (hsrc : γ t ∈ (extChartAt I (γ t₀)).source) :
     HasDerivAt ((extChartAt I (γ t₀)) ∘ γ)
-      ((tangentCoordChange I (γ t) (γ t₀) (γ t)) (v (γ t))) t := by
+      (tangentCoordChange I (γ t) (γ t₀) (γ t) (v (γ t))) t := by
   -- turn `HasDerivAt` into comp of `HasMFDerivAt`
   have hsrc := extChartAt_source I (γ t₀) ▸ hsrc
   rw [hasDerivAt_iff_hasFDerivAt, ← hasMFDerivAt_iff_hasFDerivAt]
@@ -220,7 +220,7 @@ lemma IsIntegralCurveOn.comp_mul (hγ : IsIntegralCurveOn γ v s) (a : ℝ) :
   simp only [mfld_simps, hasFDerivWithinAt_univ]
   exact HasFDerivAt.mul_const' (hasFDerivAt_id _) _
 
-lemma isIntegralCurvOn_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
+lemma isIntegralCurveOn_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
     IsIntegralCurveOn γ v s ↔ IsIntegralCurveOn (γ ∘ (· * a)) (a • v) { t | t * a ∈ s } := by
   refine ⟨fun hγ ↦ hγ.comp_mul a, fun hγ ↦ ?_⟩
   convert hγ.comp_mul a⁻¹

@@ -596,6 +596,12 @@ theorem image_eq_image {f : α → β} (hf : Injective f) : f '' s = f '' t ↔ 
       rw [← preimage_image_eq s hf, ← preimage_image_eq t hf, eq]
 #align set.image_eq_image Set.image_eq_image
 
+theorem subset_image_iff {t : Set β} :
+    t ⊆ f '' s ↔ ∃ u, u ⊆ s ∧ f '' u = t := by
+  refine ⟨fun h ↦ ⟨f ⁻¹' t ∩ s, inter_subset_right _ _, ?_⟩,
+    fun ⟨u, hu, hu'⟩ ↦ hu'.symm ▸ image_mono hu⟩
+  rwa [image_preimage_inter, inter_eq_left]
+
 theorem image_subset_image_iff {f : α → β} (hf : Injective f) : f '' s ⊆ f '' t ↔ s ⊆ t := by
   refine' Iff.symm <| (Iff.intro (image_subset f)) fun h => _
   rw [← preimage_image_eq s hf, ← preimage_image_eq t hf]
