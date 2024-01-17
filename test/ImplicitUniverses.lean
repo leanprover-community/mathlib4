@@ -1,4 +1,4 @@
-import Mathlib.Tactic.Basic
+import Mathlib.Tactic.TypeStar
 import Mathlib.Tactic.SuccessIfFailWithMsg
 
 private axiom test_sorry : ∀ {α}, α

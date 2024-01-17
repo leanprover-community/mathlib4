@@ -3,7 +3,7 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
-import Mathlib.Geometry.Manifold.MFDeriv
+import Mathlib.Geometry.Manifold.MFDeriv.UniqueDifferential
 import Mathlib.Geometry.Manifold.ContMDiffMap
 
 #align_import geometry.manifold.cont_mdiff_mfderiv from "leanprover-community/mathlib"@"e473c3198bb41f68560cab68a0529c854b618833"
@@ -59,7 +59,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {s s₁ t : Set M} {x : M} {m n : ℕ∞}
 
 -- Porting note: section about deducing differentiability from smoothness moved to
--- `Geometry.Manifold.MFDeriv`
+-- `Geometry.Manifold.MFDeriv.Basic`
 
 /-! ### The derivative of a smooth function is smooth -/
 

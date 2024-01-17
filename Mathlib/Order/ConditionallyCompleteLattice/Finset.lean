@@ -16,24 +16,7 @@ import Mathlib.Data.Set.Finite
 
 open Set
 
-variable {α β γ : Type*}
-
-section ConditionallyCompleteLattice
-
-variable [ConditionallyCompleteLattice α] {s t : Set α} {a b : α}
-
-theorem Finset.Nonempty.sup'_eq_cSup_image {s : Finset β} (hs : s.Nonempty) (f : β → α) :
-    s.sup' hs f = sSup (f '' s) :=
-  eq_of_forall_ge_iff fun a => by
-    simp [csSup_le_iff (s.finite_toSet.image f).bddAbove (hs.to_set.image f)]
-#align finset.nonempty.sup'_eq_cSup_image Finset.Nonempty.sup'_eq_cSup_image
-
-theorem Finset.Nonempty.sup'_id_eq_cSup {s : Finset α} (hs : s.Nonempty) :
-    s.sup' hs id = sSup s := by
-  rw [hs.sup'_eq_cSup_image, Set.image_id]
-#align finset.nonempty.sup'_id_eq_cSup Finset.Nonempty.sup'_id_eq_cSup
-
-end ConditionallyCompleteLattice
+variable {ι α β γ : Type*}
 
 section ConditionallyCompleteLinearOrder
 
@@ -76,34 +59,31 @@ theorem Set.Finite.lt_cInf_iff (hs : s.Finite) (h : s.Nonempty) : a < sInf s ↔
 end ConditionallyCompleteLinearOrder
 
 /-!
-### Relation between `Sup` / `Inf` and `Finset.sup'` / `Finset.inf'`
+### Relation between `sSup` / `sInf` and `Finset.sup'` / `Finset.inf'`
 
 Like the `Sup` of a `ConditionallyCompleteLattice`, `Finset.sup'` also requires the set to be
 non-empty. As a result, we can translate between the two.
 -/
 
-
 namespace Finset
-variable {ι : Type*} [ConditionallyCompleteLattice α]
+variable [ConditionallyCompleteLattice α]
 
-theorem sup'_eq_csSup_image (s : Finset ι) (H) (f : ι → α) : s.sup' H f = sSup (f '' s) := by
-  apply le_antisymm
-  · refine' Finset.sup'_le _ _ fun a ha => _
-    refine' le_csSup ⟨s.sup' H f, _⟩ ⟨a, ha, rfl⟩
-    rintro i ⟨j, hj, rfl⟩
-    exact Finset.le_sup' _ hj
-  · apply csSup_le ((coe_nonempty.mpr H).image _)
-    rintro _ ⟨a, ha, rfl⟩
-    exact Finset.le_sup' _ ha
+theorem sup'_eq_csSup_image (s : Finset ι) (H : s.Nonempty) (f : ι → α) :
+    s.sup' H f = sSup (f '' s) :=
+  eq_of_forall_ge_iff fun a => by
+    simp [csSup_le_iff (s.finite_toSet.image f).bddAbove (H.to_set.image f)]
 #align finset.sup'_eq_cSup_image Finset.sup'_eq_csSup_image
+#align finset.nonempty.sup'_eq_cSup_image Finset.sup'_eq_csSup_image
 
-theorem inf'_eq_csInf_image (s : Finset ι) (hs) (f : ι → α) : s.inf' hs f = sInf (f '' s) :=
-  sup'_eq_csSup_image (α := αᵒᵈ) _ hs _
+theorem inf'_eq_csInf_image (s : Finset ι) (H : s.Nonempty) (f : ι → α) :
+    s.inf' H f = sInf (f '' s) :=
+  sup'_eq_csSup_image (α := αᵒᵈ) _ H _
 #align finset.inf'_eq_cInf_image Finset.inf'_eq_csInf_image
 
 theorem sup'_id_eq_csSup (s : Finset α) (hs) : s.sup' hs id = sSup s := by
   rw [sup'_eq_csSup_image s hs, Set.image_id]
 #align finset.sup'_id_eq_cSup Finset.sup'_id_eq_csSup
+#align finset.nonempty.sup'_id_eq_cSup Finset.sup'_id_eq_csSup
 
 theorem inf'_id_eq_csInf (s : Finset α) (hs) : s.inf' hs id = sInf s :=
   sup'_id_eq_csSup (α := αᵒᵈ) _ hs

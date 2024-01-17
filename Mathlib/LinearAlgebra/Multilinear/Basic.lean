@@ -8,6 +8,7 @@ import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Fintype.Sort
 import Mathlib.Data.List.FinRange
+import Mathlib.LinearAlgebra.Pi
 
 #align_import linear_algebra.multilinear.basic from "leanprover-community/mathlib"@"78fdf68dcd2fdb3fe64c0dd6f88926a49418a6ea"
 
@@ -760,6 +761,68 @@ theorem domDomCongr_eq_iff (σ : ι₁ ≃ ι₂) (f g : MultilinearMap R (fun _
 
 end
 
+/-! If `{a // P a}` is a subtype of `ι` and if we fix an element `z` of `(i : {a // ¬ P a}) → M₁ i`,
+then a multilinear map on `M₁` defines a multilinear map on the restriction of `M₁` to
+`{a // P a}`, by fixing the arguments out of `{a // P a}` equal to the values of `z`.-/
+
+lemma domDomRestrict_aux [DecidableEq ι] (P : ι → Prop) [DecidablePred P]
+    [DecidableEq {a // P a}]
+    (x : (i : {a // P a}) → M₁ i) (z : (i : {a // ¬ P a}) → M₁ i) (i : {a : ι // P a})
+    (c : M₁ i) : (fun j ↦ if h : P j then Function.update x i c ⟨j, h⟩ else z ⟨j, h⟩) =
+    Function.update (fun j => if h : P j then x ⟨j, h⟩ else z ⟨j, h⟩) i c := by
+  ext j
+  by_cases h : j = i
+  · rw [h, Function.update_same]
+    simp only [i.2, update_same, dite_true]
+  · rw [Function.update_noteq h]
+    by_cases h' : P j
+    · simp only [h', ne_eq, Subtype.mk.injEq, dite_true]
+      have h'' : ¬ ⟨j, h'⟩ = i :=
+        fun he => by apply_fun (fun x => x.1) at he; exact h he
+      rw [Function.update_noteq h'']
+    · simp only [h', ne_eq, Subtype.mk.injEq, dite_false]
+
+/-- Given a multilinear map `f` on `(i : ι) → M i`, a (decidable) predicate `P` on `ι` and
+an element `z` of `(i : {a // ¬ P a}) → M₁ i`, construct a multilinear map on
+`(i : {a // P a}) → M₁ i)` whose value at `x` is `f` evaluated at the vector with `i`th coordinate
+`x i` if `P i` and `z i` otherwise.
+
+The naming is similar to `MultilinearMap.domDomCongr`: here we are applying the restriction to the
+domain of the domain.
+-/
+def domDomRestrict [DecidableEq ι] (f : MultilinearMap R M₁ M₂) (P : ι → Prop) [DecidablePred P]
+    (z : (i : {a : ι // ¬ P a}) → M₁ i) :
+    MultilinearMap R (fun (i : {a : ι // P a}) => M₁ i) M₂ where
+  toFun x := f (fun j ↦ if h : P j then x ⟨j, h⟩ else z ⟨j, h⟩)
+  map_add' x i a b := by
+    simp only
+    repeat (rw [domDomRestrict_aux])
+    simp only [MultilinearMap.map_add]
+  map_smul' z i c a := by
+    simp only
+    repeat (rw [domDomRestrict_aux])
+    simp only [MultilinearMap.map_smul]
+
+@[simp]
+lemma domDomRestrict_apply [DecidableEq ι] (f : MultilinearMap R M₁ M₂) (P : ι → Prop)
+    [DecidablePred P] (x : (i : {a // P a}) → M₁ i) (z : (i : {a // ¬ P a}) → M₁ i) :
+    f.domDomRestrict P z x = f (fun j => if h : P j then x ⟨j, h⟩ else z ⟨j, h⟩) := rfl
+
+-- TODO: Should add a ref here when available.
+/-- The "derivative" of a multilinear map, as a linear map from `(i : ι) → M₁ i` to `M₂`.
+For continuous multilinear maps, this will indeed be the derivative.-/
+def linearDeriv [DecidableEq ι] [Fintype ι] (f : MultilinearMap R M₁ M₂)
+    (x : (i : ι) → M₁ i) : ((i : ι) → M₁ i) →ₗ[R] M₂ :=
+  ∑ i : ι, (f.toLinearMap x i).comp (LinearMap.proj i)
+
+@[simp]
+lemma linearDeriv_apply [DecidableEq ι] [Fintype ι] (f : MultilinearMap R M₁ M₂)
+    (x y : (i : ι) → M₁ i) :
+    f.linearDeriv x y = ∑ i, f (update x i (y i)) := by
+  unfold linearDeriv
+  simp only [LinearMap.coeFn_sum, LinearMap.coe_comp, LinearMap.coe_proj, Finset.sum_apply,
+    Function.comp_apply, Function.eval, toLinearMap_apply]
+
 end Semiring
 
 end MultilinearMap
@@ -1193,6 +1256,70 @@ theorem map_sub [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) (x y : M₁ i) :
     f (update m i (x - y)) = f (update m i x) - f (update m i y) := by
   rw [sub_eq_add_neg, sub_eq_add_neg, MultilinearMap.map_add, map_neg]
 #align multilinear_map.map_sub MultilinearMap.map_sub
+
+lemma map_update [DecidableEq ι] (x : (i : ι) → M₁ i) (i : ι) (v : M₁ i)  :
+    f (update x i v) = f x - f (update x i (x i - v)) := by
+  rw [map_sub, update_eq_self, sub_sub_cancel]
+
+open Finset in
+lemma map_sub_map_piecewise [LinearOrder ι] (a b : (i : ι) → M₁ i) (s : Finset ι) :
+    f a - f (s.piecewise b a) =
+    ∑ i in s, f (fun j ↦ if j ∈ s → j < i then a j else if i = j then a j - b j else b j) := by
+  refine s.induction_on_min ?_ fun k s hk ih ↦ ?_
+  · rw [Finset.piecewise_empty, sum_empty, sub_self]
+  rw [Finset.piecewise_insert, map_update, ← sub_add, ih,
+      add_comm, sum_insert (lt_irrefl _ <| hk k ·)]
+  simp_rw [s.mem_insert]
+  congr 1
+  · congr; ext i; split_ifs with h₁ h₂
+    · rw [update_noteq, Finset.piecewise_eq_of_not_mem]
+      · exact fun h ↦ (hk i h).not_lt (h₁ <| .inr h)
+      · exact fun h ↦ (h₁ <| .inl h).ne h
+    · cases h₂
+      rw [update_same, s.piecewise_eq_of_not_mem _ _ (lt_irrefl _ <| hk k ·)]
+    · push_neg at h₁
+      rw [update_noteq (Ne.symm h₂), s.piecewise_eq_of_mem _ _ (h₁.1.resolve_left <| Ne.symm h₂)]
+  · apply sum_congr rfl; intro i hi; congr; ext j; congr 1; apply propext
+    simp_rw [imp_iff_not_or, not_or]; apply or_congr_left'
+    intro h; rw [and_iff_right]; rintro rfl; exact h (hk i hi)
+
+/-- This calculates the differences between the values of a multilinear map at
+two arguments that differ on a finset `s` of `ι`. It requires a
+linear order on `ι` in order to express the result.-/
+lemma map_piecewise_sub_map_piecewise [LinearOrder ι] (a b v : (i : ι) → M₁ i) (s : Finset ι) :
+    f (s.piecewise a v) - f (s.piecewise b v) = ∑ i in s, f
+      fun j ↦ if j ∈ s then if j < i then a j else if j = i then a j - b j else b j else v j := by
+  rw [← s.piecewise_idem_right b a, map_sub_map_piecewise]
+  refine Finset.sum_congr rfl fun i hi ↦ congr_arg f <| funext fun j ↦ ?_
+  by_cases hjs : j ∈ s
+  · rw [if_pos hjs]; by_cases hji : j < i
+    · rw [if_pos fun _ ↦ hji, if_pos hji, s.piecewise_eq_of_mem _ _ hjs]
+    rw [if_neg (not_imp.mpr ⟨hjs, hji⟩), if_neg hji]
+    obtain rfl | hij := eq_or_ne i j
+    · rw [if_pos rfl, if_pos rfl, s.piecewise_eq_of_mem _ _ hi]
+    · rw [if_neg hij, if_neg hij.symm]
+  · rw [if_neg hjs, if_pos fun h ↦ (hjs h).elim, s.piecewise_eq_of_not_mem _ _ hjs]
+
+open Finset in
+lemma map_add_eq_map_add_linearDeriv_add [DecidableEq ι] [Fintype ι] (x h : (i : ι) → M₁ i) :
+    f (x + h) = f x + f.linearDeriv x h +
+      ∑ s in univ.powerset.filter (2 ≤ ·.card), f (s.piecewise h x) := by
+  rw [add_comm, map_add_univ, ← Finset.powerset_univ,
+      ← sum_filter_add_sum_filter_not _ (2 ≤ ·.card)]
+  simp_rw [not_le, Nat.lt_succ, le_iff_lt_or_eq (b := 1), Nat.lt_one_iff, filter_or,
+    ← powersetCard_eq_filter, sum_union (univ.pairwise_disjoint_powersetCard zero_ne_one),
+    powersetCard_zero, powersetCard_one, sum_singleton, Finset.piecewise_empty, sum_map,
+    Function.Embedding.coeFn_mk, Finset.piecewise_singleton, linearDeriv_apply, add_comm]
+
+open Finset in
+/-- This expresses the difference between the values of a multilinear map
+at two points "close to `x`" in terms of the "derivative" of the multilinear map at `x`
+and of "second-order" terms.-/
+lemma map_add_sub_map_add_sub_linearDeriv [DecidableEq ι] [Fintype ι] (x h h' : (i : ι) → M₁ i) :
+    f (x + h) - f (x + h') - f.linearDeriv x (h - h') =
+    ∑ s in univ.powerset.filter (2 ≤ ·.card), (f (s.piecewise h x) - f (s.piecewise h' x)) := by
+  simp_rw [map_add_eq_map_add_linearDeriv_add, add_assoc, add_sub_add_comm, sub_self, zero_add,
+    ← LinearMap.map_sub, add_sub_cancel', sum_sub_distrib]
 
 end AddCommGroup
 
