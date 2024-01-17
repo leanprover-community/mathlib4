@@ -70,13 +70,13 @@ theorem ringExpChar.eq (q : ℕ) [h : ExpChar R q] : ringExpChar R = q := by
 
 @[simp]
 theorem ringExpChar.eq_one (R : Type*) [NonAssocSemiring R] [CharZero R] : ringExpChar R = 1 := by
-  rw [ringExpChar, ringChar.eq_zero]; rfl
+  rw [ringExpChar, ringChar.eq_zero, max_eq_right zero_le_one]
 
 /-- The exponential characteristic is one if the characteristic is zero. -/
 theorem expChar_one_of_char_zero (q : ℕ) [hp : CharP R 0] [hq : ExpChar R q] : q = 1 := by
   cases' hq with q hq_one hq_prime hq_hchar
   · rfl
-  · exact False.elim (lt_irrefl _ ((hp.eq R hq_hchar).symm ▸ hq_prime : (0 : ℕ).Prime).pos)
+  · exact False.elim <| hq_prime.ne_zero <| hq_hchar.eq R hp
 #align exp_char_one_of_char_zero expChar_one_of_char_zero
 
 /-- The characteristic equals the exponential characteristic iff the former is prime. -/

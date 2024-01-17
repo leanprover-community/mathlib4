@@ -919,20 +919,23 @@ variable {β : Type*} [TopologicalSpace β]
 
 @[to_additive]
 instance instCovariantClass_mul_le_left [PartialOrder β] [Mul β] [ContinuousMul β]
-  [CovariantClass β β (· * ·) (· ≤ ·)] :
-  CovariantClass C(α, β) C(α, β) (· * ·) (· ≤ ·) :=
-⟨fun _ _ _ hg₁₂ x => mul_le_mul_left' (hg₁₂ x) _⟩
+    [CovariantClass β β (· * ·) (· ≤ ·)] :
+    CovariantClass C(α, β) C(α, β) (· * ·) (· ≤ ·) :=
+  ⟨fun _ _ _ hg₁₂ x => mul_le_mul_left' (hg₁₂ x) _⟩
 
 @[to_additive]
 instance instCovariantClass_mul_le_right [PartialOrder β] [Mul β] [ContinuousMul β]
-  [CovariantClass β β (Function.swap (· * ·)) (· ≤ ·)] :
-  CovariantClass C(α, β) C(α, β) (Function.swap (· * ·)) (· ≤ ·) :=
-⟨fun _ _ _ hg₁₂ x => mul_le_mul_right' (hg₁₂ x) _⟩
+    [CovariantClass β β (Function.swap (· * ·)) (· ≤ ·)] :
+    CovariantClass C(α, β) C(α, β) (Function.swap (· * ·)) (· ≤ ·) :=
+  ⟨fun _ _ _ hg₁₂ x => mul_le_mul_right' (hg₁₂ x) _⟩
 
 variable [Group β] [TopologicalGroup β] [Lattice β] [TopologicalLattice β]
 
-@[to_additive (attr := simp, norm_cast)] lemma coe_mabs (f : C(α, β)) : ⇑|f|ₘ = |⇑f|ₘ := rfl
-@[to_additive (attr := simp)] lemma mabs_apply (f : C(α, β)) (x : α) : |f|ₘ x = |f x|ₘ := rfl
+@[to_additive (attr := simp, norm_cast)]
+lemma coe_mabs (f : C(α, β)) : ⇑|f|ₘ = |⇑f|ₘ := rfl
+
+@[to_additive (attr := simp)]
+lemma mabs_apply (f : C(α, β)) (x : α) : |f|ₘ x = |f x|ₘ := rfl
 #align continuous_map.abs_apply ContinuousMap.abs_apply
 
 end Lattice
