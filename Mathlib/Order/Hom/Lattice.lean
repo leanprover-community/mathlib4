@@ -339,7 +339,7 @@ instance : SupHomClass (SupHom α β) α β where
   coe_injective' f g h := by cases f; cases g; congr
   map_sup := SupHom.map_sup'
 
-/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
+/-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`
 directly. -/
 -- porting note: replaced `CoeFun` with `DFunLike` so that we use `DFunLike.coe` instead of `toFun`
 instance : DFunLike (SupHom α β) α fun _ => β :=
@@ -527,7 +527,7 @@ instance : InfHomClass (InfHom α β) α β where
   coe_injective' f g h := by cases f; cases g; congr
   map_inf := InfHom.map_inf'
 
-/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
+/-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`
 directly. -/
 instance : DFunLike (InfHom α β) α fun _ => β :=
   InfHomClass.toDFunLike
@@ -879,7 +879,7 @@ instance : InfTopHomClass (InfTopHom α β) α β
   map_inf f := f.map_inf'
   map_top f := f.map_top'
 
-/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
+/-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`
 directly. -/
 instance : DFunLike (InfTopHom α β) α fun _ => β :=
   InfHomClass.toDFunLike
@@ -1028,7 +1028,7 @@ instance : LatticeHomClass (LatticeHom α β) α β
   map_sup f := f.map_sup'
   map_inf f := f.map_inf'
 
-/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
+/-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`
 directly. -/
 instance : DFunLike (LatticeHom α β) α fun _ => β :=
   SupHomClass.toDFunLike

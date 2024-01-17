@@ -115,7 +115,7 @@ instance : NonUnitalRingHomClass (α →ₙ+* β) α β where
 
 -- Porting note:
 -- These helper instances are unhelpful in Lean 4, so omitting:
--- /-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
+-- /-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`
 -- directly. -/
 -- instance : CoeFun (α →ₙ+* β) fun _ => α → β :=
 --   ⟨fun f => f.toFun⟩
@@ -428,7 +428,7 @@ instance instRingHomClass : RingHomClass (α →+* β) α β where
 
 -- Porting note:
 -- These helper instances are unhelpful in Lean 4, so omitting:
--- /-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
+-- /-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`
 -- directly.
 -- -/
 -- instance : CoeFun (α →+* β) fun _ => α → β :=

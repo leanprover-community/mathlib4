@@ -256,7 +256,7 @@ instance : sSupHomClass (sSupHom α β) α β
   map_sSup := sSupHom.map_sSup'
 
 -- Porting note: We do not want CoeFun for this in lean 4
--- /-- Helper instance for when there's too many metavariables to apply `funLike.has_coe_toFun`
+-- /-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`
 -- directly. -/
 -- instance : CoeFun (sSupHom α β) fun _ => α → β :=
 --   DFunLike.hasCoeToFun

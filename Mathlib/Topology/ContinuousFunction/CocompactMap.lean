@@ -84,7 +84,7 @@ instance : CocompactMapClass (CocompactMap α β) α β where
   cocompact_tendsto f := f.cocompact_tendsto'
 
 /- Porting note: not needed anymore
-/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
+/-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`
 directly. -/
 instance : CoeFun (CocompactMap α β) fun _ => α → β :=
   DFunLike.hasCoeToFun-/

@@ -86,7 +86,7 @@ instance toContinuousMapClass : ContinuousMapClass C(α, β) α β where
   map_continuous := ContinuousMap.continuous_toFun
 
 /- Porting note: Probably not needed anymore
-/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
+/-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`
 directly. -/
 instance : CoeFun C(α, β) fun _ => α → β :=
   DFunLike.hasCoeToFun-/

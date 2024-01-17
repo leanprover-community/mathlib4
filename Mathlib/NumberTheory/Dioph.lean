@@ -103,7 +103,7 @@ instance funLike : DFunLike (Poly α) (α → ℕ) fun _ => ℤ :=
 #align poly.fun_like Poly.funLike
 
 -- Porting note: This instance is not necessary anymore
--- /-- Helper instance for when there are too many metavariables to apply `fun_like.has_coe_to_fun`
+-- /-- Helper instance for when there are too many metavariables to apply `DFunLike.hasCoeToFun`
 -- directly. -/
 -- instance : CoeFun (Poly α) fun _ => (α → ℕ) → ℤ := DFunLike.hasCoeToFun
 

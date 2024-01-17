@@ -167,7 +167,7 @@ instance freimanHomClass : FreimanHomClass (A →*[n] β) A β n where
 #align add_freiman_hom.freiman_hom_class AddFreimanHom.addFreimanHomClass
 
 -- porting note: not helpful in lean4
--- /-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
+-- /-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`
 -- directly. -/
 -- @[to_additive
 --       "Helper instance for when there's too many metavariables to apply
