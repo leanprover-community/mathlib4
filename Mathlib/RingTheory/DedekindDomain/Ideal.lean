@@ -8,7 +8,7 @@ import Mathlib.AlgebraicGeometry.PrimeSpectrum.Maximal
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Noetherian
 import Mathlib.Order.Hom.Basic
 import Mathlib.RingTheory.DedekindDomain.Basic
-import Mathlib.RingTheory.FractionalIdeal
+import Mathlib.RingTheory.FractionalIdeal.Basic
 import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.RingTheory.ChainOfDivisors
 
