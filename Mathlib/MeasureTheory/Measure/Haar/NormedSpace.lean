@@ -5,6 +5,7 @@ Authors: Floris van Doorn, Sébastien Gouëzel
 -/
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 import Mathlib.MeasureTheory.Integral.Bochner
+import Mathlib.Analysis.NormedSpace.FiniteDimension
 
 #align_import measure_theory.measure.haar.normed_space from "leanprover-community/mathlib"@"b84aee748341da06a6d78491367e2c0e9f15e8a5"
 

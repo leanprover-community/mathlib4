@@ -7,6 +7,7 @@ import Mathlib.Data.MvPolynomial.Equiv
 import Mathlib.Data.MvPolynomial.CommRing
 import Mathlib.Logic.Equiv.Functor
 import Mathlib.RingTheory.FreeRing
+import Mathlib.GroupTheory.Subgroup.MulOpposite
 
 #align_import ring_theory.free_comm_ring from "leanprover-community/mathlib"@"62c0a4ef1441edb463095ea02a06e87f3dfe135c"
 

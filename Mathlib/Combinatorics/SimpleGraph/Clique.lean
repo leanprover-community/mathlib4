@@ -7,6 +7,7 @@ import Mathlib.Combinatorics.SimpleGraph.Maps
 import Mathlib.Combinatorics.SimpleGraph.Operations
 import Mathlib.Data.Finset.Pairwise
 import Mathlib.Data.Finset.Preimage
+import Mathlib.Algebra.Order.WithZero
 
 #align_import combinatorics.simple_graph.clique from "leanprover-community/mathlib"@"3365b20c2ffa7c35e47e5209b89ba9abdddf3ffe"
 

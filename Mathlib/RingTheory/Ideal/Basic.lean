@@ -6,6 +6,7 @@ Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 import Mathlib.Tactic.FinCases
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.LinearAlgebra.Finsupp
+import Mathlib.Data.Finsupp.Defs
 
 #align_import ring_theory.ideal.basic from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 

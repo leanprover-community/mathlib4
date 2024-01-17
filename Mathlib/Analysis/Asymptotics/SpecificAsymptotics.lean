@@ -5,6 +5,7 @@ Authors: Anatole Dedecker
 -/
 import Mathlib.Analysis.Normed.Order.Basic
 import Mathlib.Analysis.Asymptotics.Asymptotics
+import Mathlib.Analysis.NormedSpace.Basic
 
 #align_import analysis.asymptotics.specific_asymptotics from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 

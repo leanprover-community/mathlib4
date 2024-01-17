@@ -7,6 +7,7 @@ import Mathlib.Control.Functor.Multivariate
 import Mathlib.Data.PFunctor.Multivariate.Basic
 import Mathlib.Data.PFunctor.Multivariate.M
 import Mathlib.Data.QPF.Multivariate.Basic
+import Mathlib.Lean.Expr.Basic
 
 #align_import data.qpf.multivariate.constructions.cofix from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 

@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel, Johannes Hölzl, Rémy Degenne
 -/
 import Mathlib.Order.Filter.Cofinite
 import Mathlib.Order.Hom.CompleteLattice
+import Mathlib.Algebra.Order.WithZero
 
 #align_import order.liminf_limsup from "leanprover-community/mathlib"@"ffde2d8a6e689149e44fd95fa862c23a57f8c780"
 

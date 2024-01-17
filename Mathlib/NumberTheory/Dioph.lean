@@ -7,6 +7,7 @@ import Mathlib.Data.Fin.Fin2
 import Mathlib.Data.PFun
 import Mathlib.Data.Vector3
 import Mathlib.NumberTheory.PellMatiyasevic
+import Mathlib.Data.List.Defs
 
 #align_import number_theory.dioph from "leanprover-community/mathlib"@"a66d07e27d5b5b8ac1147cacfe353478e5c14002"
 

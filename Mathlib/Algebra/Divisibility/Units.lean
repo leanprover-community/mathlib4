@@ -6,6 +6,7 @@ Neil Strickland, Aaron Anderson
 -/
 import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Group.Units
+import Std.Classes.Dvd
 
 #align_import algebra.divisibility.units from "leanprover-community/mathlib"@"e574b1a4e891376b0ef974b926da39e05da12a06"
 

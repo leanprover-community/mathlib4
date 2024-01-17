@@ -8,6 +8,7 @@ import Mathlib.Algebra.Order.Module.OrderedSMul
 import Mathlib.LinearAlgebra.AffineSpace.Midpoint
 import Mathlib.LinearAlgebra.Ray
 import Mathlib.Tactic.GCongr
+import Mathlib.Data.Set.Pointwise.SMul
 
 #align_import analysis.convex.segment from "leanprover-community/mathlib"@"c5773405394e073885e2a144c9ca14637e8eb963"
 

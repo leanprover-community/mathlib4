@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
 import Mathlib.Topology.MetricSpace.PseudoMetric
+import Mathlib.Data.Countable.Basic
+import Mathlib.Logic.Encodable.Basic
 
 #align_import topology.metric_space.basic from "leanprover-community/mathlib"@"c8f305514e0d47dfaa710f5a52f0d21b588e6328"
 

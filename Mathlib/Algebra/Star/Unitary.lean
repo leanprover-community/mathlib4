@@ -5,6 +5,7 @@ Authors: Shing Tak Lam, Frédéric Dupuis
 -/
 import Mathlib.Algebra.Star.Basic
 import Mathlib.GroupTheory.Submonoid.Operations
+import Mathlib.Algebra.GroupWithZero.Basic
 
 #align_import algebra.star.unitary from "leanprover-community/mathlib"@"247a102b14f3cebfee126293341af5f6bed00237"
 

@@ -6,7 +6,8 @@ Authors: Siddhartha Prasad, Yaël Dillies
 import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Algebra.Ring.Pi
 import Mathlib.Algebra.Ring.Prod
-import Mathlib.Order.Hom.CompleteLattice
+import Mathlib.Algebra.Ring.InjSurj
+import Mathlib.Tactic.Monotonicity.Attr
 
 #align_import algebra.order.kleene from "leanprover-community/mathlib"@"98e83c3d541c77cdb7da20d79611a780ff8e7d90"
 

@@ -7,6 +7,7 @@ import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.Algebra.Algebra.NonUnitalHom
 import Mathlib.Algebra.Algebra.Prod
 import Mathlib.Algebra.Star.Prod
+import Mathlib.Algebra.Star.Basic
 
 #align_import algebra.star.star_alg_hom from "leanprover-community/mathlib"@"35882ddc66524b6980532a123a4ad4166db34c81"
 

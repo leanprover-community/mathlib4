@@ -5,7 +5,7 @@ Authors: Scott Morrison, Mario Carneiro
 -/
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.FinCases
-import Mathlib.Data.Set.Intervals.Basic
+import Mathlib.Lean.Expr.Basic
 
 /-!
 # Case bash on variables in finite intervals

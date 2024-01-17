@@ -3,10 +3,10 @@ Copyright (c) 2021 Aaron Anderson, Jesse Michael Han, Floris van Doorn. All righ
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jesse Michael Han, Floris van Doorn
 -/
-import Mathlib.Data.List.ProdSigma
 import Mathlib.Data.Set.Prod
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.ModelTheory.LanguageMap
+import Mathlib.Data.List.Defs
 
 #align_import model_theory.syntax from "leanprover-community/mathlib"@"d565b3df44619c1498326936be16f1a935df0728"
 

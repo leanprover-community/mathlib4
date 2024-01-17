@@ -7,6 +7,7 @@ import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.GroupTheory.MonoidLocalization
 import Mathlib.RingTheory.Ideal.Basic
+import Mathlib.GroupTheory.GroupAction.Ring
 
 #align_import ring_theory.localization.basic from "leanprover-community/mathlib"@"b69c9a770ecf37eb21f7b8cf4fa00de3b62694ec"
 

@@ -5,6 +5,7 @@ Authors: Oliver Nash
 -/
 import Mathlib.Algebra.Lie.Basic
 import Mathlib.RingTheory.Noetherian
+import Mathlib.Init.Logic
 
 #align_import algebra.lie.subalgebra from "leanprover-community/mathlib"@"6d584f1709bedbed9175bd9350df46599bdd7213"
 

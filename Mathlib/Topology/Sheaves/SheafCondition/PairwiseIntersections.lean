@@ -9,6 +9,7 @@ import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.Category.Pairwise
 import Mathlib.CategoryTheory.Limits.Constructions.BinaryProducts
 import Mathlib.Algebra.Category.Ring.Constructions
+import Mathlib.Algebra.Category.Ring.Basic
 
 #align_import topology.sheaves.sheaf_condition.pairwise_intersections from "leanprover-community/mathlib"@"8a318021995877a44630c898d0b2bc376fceef3b"
 

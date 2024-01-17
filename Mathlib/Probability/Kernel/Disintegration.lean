@@ -6,6 +6,7 @@ Authors: Rémy Degenne, Kexing Ying
 import Mathlib.Probability.Kernel.CondCdf
 import Mathlib.MeasureTheory.Constructions.Polish
 import Mathlib.Probability.Kernel.MeasureCompProd
+import Mathlib.Probability.Kernel.Composition
 
 #align_import probability.kernel.disintegration from "leanprover-community/mathlib"@"6315581f5650ffa2fbdbbbedc41243c8d7070981"
 

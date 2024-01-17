@@ -10,6 +10,7 @@ import Mathlib.Data.Finset.Sups
 import Mathlib.Order.Hom.Lattice
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Ring
+import Mathlib.Data.Rat.Order
 
 /-!
 # The Ahlswede-Zhang identity

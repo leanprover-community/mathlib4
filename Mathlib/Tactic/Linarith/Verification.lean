@@ -7,6 +7,7 @@ Authors: Robert Y. Lewis
 import Mathlib.Tactic.Linarith.Elimination
 import Mathlib.Tactic.Linarith.Parsing
 import Mathlib.Util.Qq
+import Std.Data.List.Basic
 
 /-!
 # Deriving a proof of false

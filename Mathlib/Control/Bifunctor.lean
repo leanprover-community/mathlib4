@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
 import Mathlib.Control.Functor
-import Mathlib.Data.Sum.Basic
 import Mathlib.Tactic.Common
+import Mathlib.Logic.Function.Basic
 
 #align_import control.bifunctor from "leanprover-community/mathlib"@"dc1525fb3ef6eb4348fb1749c302d8abc303d34a"
 

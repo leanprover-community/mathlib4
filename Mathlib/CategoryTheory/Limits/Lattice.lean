@@ -4,11 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Justus Springer
 -/
 import Mathlib.Order.CompleteLattice
-import Mathlib.Data.Fintype.Lattice
 import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.Limits.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
+import Mathlib.Data.Finset.Lattice
+import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 
 #align_import category_theory.limits.lattice from "leanprover-community/mathlib"@"c3019c79074b0619edb4b27553a91b2e82242395"
 

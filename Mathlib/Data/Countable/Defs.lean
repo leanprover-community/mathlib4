@@ -5,8 +5,9 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Data.Finite.Defs
 import Mathlib.Init.Data.Fin.Basic
-import Mathlib.Logic.Equiv.Basic
 import Mathlib.Tactic.Common
+import Mathlib.Data.Subtype
+import Mathlib.Data.Bool.Basic
 
 #align_import data.countable.defs from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
 

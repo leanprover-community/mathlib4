@@ -8,6 +8,7 @@ import Mathlib.Algebra.Order.Archimedean
 import Mathlib.GroupTheory.Coset
 import Mathlib.GroupTheory.Subgroup.ZPowers
 import Mathlib.GroupTheory.Submonoid.Membership
+import Mathlib.Algebra.Module.Basic
 
 #align_import algebra.periodic from "leanprover-community/mathlib"@"30413fc89f202a090a54d78e540963ed3de0056e"
 

@@ -10,6 +10,8 @@ import Mathlib.Algebra.GCDMonoid.Finset
 import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.Peel
+import Mathlib.Order.ConditionallyCompleteLattice.Finset
+import Mathlib.Data.Nat.GCD.Basic
 
 #align_import group_theory.exponent from "leanprover-community/mathlib"@"52fa514ec337dd970d71d8de8d0fd68b455a1e54"
 

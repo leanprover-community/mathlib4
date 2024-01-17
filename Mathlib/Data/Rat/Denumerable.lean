@@ -5,6 +5,7 @@ Authors: Chris Hughes
 -/
 import Mathlib.SetTheory.Cardinal.Basic
 import Mathlib.Data.Rat.Order
+import Mathlib.Data.Rat.Order
 
 #align_import data.rat.denumerable from "leanprover-community/mathlib"@"dde670c9a3f503647fd5bfdf1037bad526d3397a"
 

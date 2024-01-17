@@ -4,17 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Lean.Elab.Command
-import Lean.Elab.Quotation
 import Std.Tactic.Ext
 import Std.Tactic.RCases
-import Std.Tactic.Where
-import Mathlib.Data.Matrix.Notation
-import Mathlib.Logic.Equiv.PartialEquiv
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-import Mathlib.Order.Filter.Basic
-import Mathlib.RingTheory.WittVector.Basic
-import Mathlib.RingTheory.WittVector.IsPoly
-import Mathlib.SetTheory.Game.PGame
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.ApplyCongr
 import Mathlib.Tactic.ApplyFun
@@ -96,6 +87,7 @@ import Mathlib.Tactic.Zify
 import Mathlib.Util.Syntax
 import Mathlib.Util.WithWeakNamespace
 import Mathlib.Mathport.Notation
+import Lean.Elab.Command
 
 -- To fix upstream:
 -- * bracketedExplicitBinders doesn't support optional types

@@ -6,6 +6,7 @@ Authors: Leonardo de Moura
 
 import Mathlib.Init.Data.Int.Order
 import Mathlib.Init.ZeroOne
+import Mathlib.Init.Data.Int.Basic
 
 #align_import init.data.int.comp_lemmas from "leanprover-community/lean"@"4a03bdeb31b3688c31d02d7ff8e0ff2e5d6174db"
 

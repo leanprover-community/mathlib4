@@ -15,6 +15,8 @@ import Mathlib.Algebra.Star.Module
 import Mathlib.Algebra.Star.Pi
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.GroupTheory.GroupAction.BigOperators
+import Mathlib.Algebra.BigOperators.Pi
+import Mathlib.GroupTheory.GroupAction.Pi
 
 #align_import data.matrix.basic from "leanprover-community/mathlib"@"eba5bb3155cab51d80af00e8d7d69fa271b1302b"
 

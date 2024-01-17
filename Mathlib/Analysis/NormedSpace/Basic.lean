@@ -7,8 +7,8 @@ import Mathlib.Algebra.Algebra.Pi
 import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Analysis.Normed.MulAction
-import Mathlib.Data.Real.Sqrt
 import Mathlib.Topology.Algebra.Module.Basic
+import Mathlib.Algebra.Module.Prod
 
 #align_import analysis.normed_space.basic from "leanprover-community/mathlib"@"bc91ed7093bf098d253401e69df601fc33dde156"
 

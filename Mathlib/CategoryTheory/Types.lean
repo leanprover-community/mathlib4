@@ -8,6 +8,7 @@ import Mathlib.CategoryTheory.Functor.FullyFaithful
 import Mathlib.Logic.Equiv.Basic
 import Mathlib.Data.Set.Basic
 import Mathlib.Tactic.PPWithUniv
+import Mathlib.Data.Subtype
 
 #align_import category_theory.types from "leanprover-community/mathlib"@"48085f140e684306f9e7da907cd5932056d1aded"
 

@@ -6,6 +6,7 @@ Authors: Johan Commelin
 import Mathlib.RingTheory.FiniteType
 import Mathlib.RingTheory.MvPolynomial.Tower
 import Mathlib.RingTheory.Ideal.QuotientOperations
+import Mathlib.RingTheory.Ideal.QuotientOperations
 
 #align_import ring_theory.finite_presentation from "leanprover-community/mathlib"@"da420a8c6dd5bdfb85c4ced85c34388f633bc6ff"
 

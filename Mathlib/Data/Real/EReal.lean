@@ -6,6 +6,7 @@ Authors: Kevin Buzzard
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Real.ENNReal
 import Mathlib.Data.Sign
+import Mathlib.Algebra.Order.Monoid.OrderDual
 
 #align_import data.real.ereal from "leanprover-community/mathlib"@"2196ab363eb097c008d4497125e0dde23fb36db2"
 

@@ -9,6 +9,7 @@ import Mathlib.Data.ULift
 import Mathlib.Order.Bounds.Basic
 import Mathlib.Order.Hom.Basic
 import Mathlib.Mathport.Notation
+import Mathlib.Init.Data.Bool.Lemmas
 
 #align_import order.complete_lattice from "leanprover-community/mathlib"@"5709b0d8725255e76f47debca6400c07b5c2d8e6"
 

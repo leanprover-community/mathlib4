@@ -3,8 +3,8 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Scott Morrison, Chris Hughes, Anne Baanen
 -/
-import Mathlib.LinearAlgebra.Dimension.Finite
 import Mathlib.Algebra.Module.Torsion
+import Mathlib.LinearAlgebra.Dimension.Free
 
 #align_import linear_algebra.dimension from "leanprover-community/mathlib"@"47a5f8186becdbc826190ced4312f8199f9db6a5"
 

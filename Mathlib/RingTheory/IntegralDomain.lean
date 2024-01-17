@@ -6,6 +6,7 @@ Authors: Johan Commelin, Chris Hughes
 import Mathlib.Data.Polynomial.RingDivision
 import Mathlib.GroupTheory.SpecificGroups.Cyclic
 import Mathlib.Algebra.GeomSum
+import Mathlib.Data.List.Defs
 
 #align_import ring_theory.integral_domain from "leanprover-community/mathlib"@"6e70e0d419bf686784937d64ed4bfde866ff229e"
 

@@ -8,6 +8,7 @@ import Mathlib.Data.Complex.Cardinality
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.FieldTheory.Tower
 import Mathlib.Algebra.CharP.Invertible
+import Mathlib.Algebra.Module.Prod
 
 #align_import data.complex.module from "leanprover-community/mathlib"@"c7bce2818663f456335892ddbdd1809f111a5b72"
 

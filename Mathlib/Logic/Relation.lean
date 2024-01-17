@@ -11,6 +11,7 @@ import Mathlib.Tactic.Cases
 import Mathlib.Tactic.Use
 import Mathlib.Tactic.MkIffOfInductiveProp
 import Mathlib.Tactic.SimpRw
+import Mathlib.Init.Logic
 
 #align_import logic.relation from "leanprover-community/mathlib"@"3365b20c2ffa7c35e47e5209b89ba9abdddf3ffe"
 

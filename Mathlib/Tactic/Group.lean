@@ -6,6 +6,7 @@ Authors: Thomas Browning, Patrick Massot
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.FailIfNoProgress
 import Mathlib.Algebra.Group.Commutator
+import Mathlib.Algebra.GroupPower.Lemmas
 
 #align_import tactic.group from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 

@@ -5,6 +5,8 @@ Authors: Scott Morrison, Heather Macbeth
 -/
 import Mathlib.Topology.ContinuousFunction.Weierstrass
 import Mathlib.Data.IsROrC.Basic
+import Mathlib.Topology.Algebra.StarSubalgebra
+import Mathlib.Topology.Algebra.Order.Group
 
 #align_import topology.continuous_function.stone_weierstrass from "leanprover-community/mathlib"@"16e59248c0ebafabd5d071b1cd41743eb8698ffb"
 

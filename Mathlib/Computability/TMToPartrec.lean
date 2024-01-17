@@ -7,6 +7,8 @@ import Mathlib.Computability.Halting
 import Mathlib.Computability.TuringMachine
 import Mathlib.Data.Num.Lemmas
 import Mathlib.Tactic.DeriveFintype
+import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Vector.Basic
 
 #align_import computability.tm_to_partrec from "leanprover-community/mathlib"@"6155d4351090a6fad236e3d2e4e0e4e7342668e8"
 

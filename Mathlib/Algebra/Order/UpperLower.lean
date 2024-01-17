@@ -6,6 +6,7 @@ Authors: Yaël Dillies
 import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Order.UpperLower.Basic
+import Mathlib.Algebra.Order.Group.Instances
 
 #align_import algebra.order.upper_lower from "leanprover-community/mathlib"@"c0c52abb75074ed8b73a948341f50521fbf43b4c"
 /-!

@@ -5,6 +5,7 @@ Authors: Johan Commelin, Kenny Lau
 -/
 import Mathlib.Algebra.GeomSum
 import Mathlib.RingTheory.Ideal.Quotient
+import Mathlib.Data.Nat.Cast.Basic
 
 #align_import number_theory.basic from "leanprover-community/mathlib"@"168ad7fc5d8173ad38be9767a22d50b8ecf1cd00"
 

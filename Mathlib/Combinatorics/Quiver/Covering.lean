@@ -8,6 +8,7 @@ import Mathlib.Combinatorics.Quiver.Symmetric
 import Mathlib.Data.Sigma.Basic
 import Mathlib.Logic.Equiv.Basic
 import Mathlib.Tactic.Common
+import Mathlib.Data.Sum.Basic
 
 #align_import combinatorics.quiver.covering from "leanprover-community/mathlib"@"188a411e916e1119e502dbe35b8b475716362401"
 

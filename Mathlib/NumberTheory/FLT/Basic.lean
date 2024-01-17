@@ -7,6 +7,9 @@ import Mathlib.Data.Nat.Parity
 import Mathlib.Data.Rat.Defs
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.TFAE
+import Mathlib.Data.Int.CharZero
+import Mathlib.Data.List.TFAE
+import Mathlib.Data.Rat.Order
 
 /-!
 # Statement of Fermat's Last Theorem

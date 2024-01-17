@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.GroupTheory.GroupAction.Opposite
+import Mathlib.Algebra.Group.Opposite
 
 #align_import algebra.hom.iterate from "leanprover-community/mathlib"@"792a2a264169d64986541c6f8f7e3bbb6acb6295"
 

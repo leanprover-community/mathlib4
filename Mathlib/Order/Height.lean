@@ -6,6 +6,7 @@ Authors: Andrew Yang
 import Mathlib.Data.ENat.Lattice
 import Mathlib.Order.OrderIsoNat
 import Mathlib.Tactic.TFAE
+import Mathlib.Data.List.TFAE
 
 #align_import order.height from "leanprover-community/mathlib"@"bf27744463e9620ca4e4ebe951fe83530ae6949b"
 

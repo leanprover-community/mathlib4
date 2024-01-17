@@ -7,6 +7,7 @@ Authors: Frédéric Dupuis
 import Mathlib.Computability.AkraBazzi.GrowsPolynomially
 import Mathlib.Analysis.Calculus.MeanValue
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
+import Mathlib.Analysis.Calculus.Deriv.Inv
 
 /-!
 # Divide-and-conquer recurrences and the Akra-Bazzi theorem

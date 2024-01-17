@@ -3,8 +3,8 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.MonoidAlgebra.Division
 import Mathlib.RingTheory.Ideal.Basic
+import Mathlib.Algebra.MonoidAlgebra.Basic
 
 #align_import algebra.monoid_algebra.ideal from "leanprover-community/mathlib"@"72c366d0475675f1309d3027d3d7d47ee4423951"
 

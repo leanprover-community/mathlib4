@@ -9,6 +9,7 @@ import Mathlib.Algebra.Ring.Regular
 import Mathlib.Data.Int.Dvd.Basic
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Order.Bounds.Basic
+import Mathlib.Algebra.GroupWithZero.Basic
 
 #align_import data.int.gcd from "leanprover-community/mathlib"@"47a1a73351de8dd6c8d3d32b569c8e434b03ca47"
 

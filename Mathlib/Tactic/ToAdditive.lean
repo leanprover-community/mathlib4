@@ -19,6 +19,7 @@ import Std.Tactic.Relation.Symm -- just to copy the attribute
 import Mathlib.Tactic.Relation.Trans -- just to copy the attribute
 import Mathlib.Tactic.Eqns -- just to copy the attribute
 import Mathlib.Tactic.Simps.Basic
+import Mathlib.Lean.Expr.Basic
 
 /-!
 # The `@[to_additive]` attribute.

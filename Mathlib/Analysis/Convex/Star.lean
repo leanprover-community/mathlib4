@@ -5,6 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Analysis.Convex.Segment
 import Mathlib.Tactic.GCongr
+import Mathlib.Algebra.Order.Group.Instances
 
 #align_import analysis.convex.star from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 

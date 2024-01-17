@@ -8,6 +8,7 @@ import Mathlib.Algebra.Algebra.NonUnitalHom
 import Mathlib.Algebra.Star.Module
 import Mathlib.Algebra.Star.StarAlgHom
 import Mathlib.LinearAlgebra.Prod
+import Mathlib.Algebra.Module.Prod
 
 #align_import algebra.algebra.unitization from "leanprover-community/mathlib"@"8f66240cab125b938b327d3850169d490cfbcdd8"
 

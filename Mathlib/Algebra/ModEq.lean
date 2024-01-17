@@ -5,6 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Data.Int.ModEq
 import Mathlib.GroupTheory.QuotientGroup
+import Mathlib.Algebra.Module.Basic
 
 #align_import algebra.modeq from "leanprover-community/mathlib"@"a07d750983b94c530ab69a726862c2ab6802b38c"
 

@@ -5,6 +5,7 @@ Authors: Heather Macbeth
 -/
 import Mathlib.Analysis.Calculus.ContDiff.IsROrC
 import Mathlib.Analysis.Calculus.InverseFunctionTheorem.FDeriv
+import Mathlib.Analysis.Calculus.ContDiff.Basic
 
 /-!
 # Inverse function theorem, smooth case

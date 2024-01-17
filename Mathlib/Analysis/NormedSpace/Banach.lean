@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel
 import Mathlib.Topology.MetricSpace.Baire
 import Mathlib.Analysis.NormedSpace.OperatorNorm
 import Mathlib.Analysis.NormedSpace.AffineIsometry
+import Mathlib.Topology.Instances.ENNReal
 
 #align_import analysis.normed_space.banach from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 

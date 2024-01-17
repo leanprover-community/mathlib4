@@ -6,6 +6,7 @@ Authors: Mantas Bakšys, Yaël Dillies
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.Order.Rearrangement
 import Mathlib.GroupTheory.Perm.Cycle.Basic
+import Mathlib.Algebra.GroupPower.Order
 
 #align_import algebra.order.chebyshev from "leanprover-community/mathlib"@"b7399344324326918d65d0c74e9571e3a8cb9199"
 

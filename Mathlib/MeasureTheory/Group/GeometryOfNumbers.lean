@@ -6,6 +6,7 @@ Authors: Alex J. Best
 import Mathlib.Analysis.Convex.Body
 import Mathlib.Analysis.Convex.Measure
 import Mathlib.MeasureTheory.Group.FundamentalDomain
+import Mathlib.GroupTheory.Subgroup.Actions
 
 #align_import measure_theory.group.geometry_of_numbers from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 

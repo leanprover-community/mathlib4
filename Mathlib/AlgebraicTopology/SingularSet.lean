@@ -6,6 +6,7 @@ Authors: Johan Commelin, Scott Morrison, Adam Topaz
 import Mathlib.AlgebraicTopology.SimplicialSet
 import Mathlib.AlgebraicTopology.TopologicalSimplex
 import Mathlib.Topology.Category.TopCat.Limits.Basic
+import Mathlib.CategoryTheory.Limits.Presheaf
 
 /-!
 # The singular simplicial set of a topological space and geometric realization of a simplicial set

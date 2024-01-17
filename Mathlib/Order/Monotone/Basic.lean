@@ -9,6 +9,7 @@ import Mathlib.Order.Compare
 import Mathlib.Order.Max
 import Mathlib.Order.RelClasses
 import Mathlib.Tactic.Choose
+import Mathlib.Logic.Function.Basic
 
 #align_import order.monotone.basic from "leanprover-community/mathlib"@"554bb38de8ded0dafe93b7f18f0bfee6ef77dc5d"
 

@@ -5,6 +5,7 @@ Authors: Adam Topaz, Bryan Gin-ge Chen, Yaël Dillies
 -/
 import Mathlib.Order.BooleanAlgebra
 import Mathlib.Logic.Equiv.Basic
+import Mathlib.Init.Logic
 
 #align_import order.symm_diff from "leanprover-community/mathlib"@"6eb334bd8f3433d5b08ba156b8ec3e6af47e1904"
 

@@ -5,6 +5,7 @@ Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 -/
 import Mathlib.Analysis.Calculus.FDeriv.Linear
 import Mathlib.Analysis.Calculus.FDeriv.Comp
+import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 
 #align_import analysis.calculus.fderiv.equiv from "leanprover-community/mathlib"@"e3fb84046afd187b710170887195d50bada934ee"
 

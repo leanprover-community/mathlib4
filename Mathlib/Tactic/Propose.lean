@@ -6,11 +6,11 @@ Authors: Scott Morrison
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Lean.Meta
 import Mathlib.Lean.Meta.Basic
-import Mathlib.Lean.Meta.DiscrTree
 import Std.Util.Cache
 import Mathlib.Tactic.Core
 import Std.Tactic.SolveByElim
 import Mathlib.Tactic.TryThis
+import Std.Lean.Meta.DiscrTree
 
 /-!
 # Propose

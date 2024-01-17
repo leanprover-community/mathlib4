@@ -8,6 +8,8 @@ import Mathlib.Algebra.Order.Sub.WithTop
 import Mathlib.Data.Set.Intervals.WithBotTop
 import Mathlib.Tactic.GCongr.Core
 import Mathlib.Algebra.GroupPower.Order
+import Mathlib.Algebra.GroupPower.Order
+import Mathlib.Algebra.Order.Monoid.WithTop
 
 #align_import data.real.ennreal from "leanprover-community/mathlib"@"c14c8fcde993801fca8946b0d80131a1a81d1520"
 

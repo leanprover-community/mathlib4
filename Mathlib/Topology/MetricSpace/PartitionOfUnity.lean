@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Topology.EMetricSpace.Paracompact
 import Mathlib.Analysis.Convex.PartitionOfUnity
+import Mathlib.Topology.Instances.ENNReal
 
 #align_import topology.metric_space.partition_of_unity from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 

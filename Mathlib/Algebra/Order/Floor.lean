@@ -8,11 +8,12 @@ import Mathlib.Data.Int.Lemmas
 import Mathlib.Data.Int.CharZero
 import Mathlib.Data.Set.Intervals.Group
 import Mathlib.Data.Set.Lattice
-import Mathlib.Init.Meta.WellFoundedTactics
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Positivity
 import Mathlib.Init.Data.Nat.Lemmas
+import Mathlib.Data.Int.CharZero
+import Mathlib.Algebra.Order.Field.Defs
 
 #align_import algebra.order.floor from "leanprover-community/mathlib"@"afdb43429311b885a7988ea15d0bac2aac80f69c"
 

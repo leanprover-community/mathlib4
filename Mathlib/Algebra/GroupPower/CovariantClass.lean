@@ -7,6 +7,7 @@ import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Data.Nat.Defs
 import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Init.Function
 
 /-!
 # Lemmas about the interaction of power operations with order in terms of CovariantClass

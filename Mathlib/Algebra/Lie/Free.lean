@@ -7,6 +7,7 @@ import Mathlib.Algebra.FreeNonUnitalNonAssocAlgebra
 import Mathlib.Algebra.Lie.NonUnitalNonAssocAlgebra
 import Mathlib.Algebra.Lie.UniversalEnveloping
 import Mathlib.GroupTheory.GroupAction.Ring
+import Mathlib.Algebra.Free
 
 #align_import algebra.lie.free from "leanprover-community/mathlib"@"841ac1a3d9162bf51c6327812ecb6e5e71883ac4"
 

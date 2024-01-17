@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Johannes Hölzl, Simon Hudon, Kenny Lau
 import Mathlib.Data.Multiset.Bind
 import Mathlib.Control.Traversable.Lemmas
 import Mathlib.Control.Traversable.Instances
+import Mathlib.Control.Applicative
 
 #align_import data.multiset.functor from "leanprover-community/mathlib"@"1f0096e6caa61e9c849ec2adbd227e960e9dff58"
 

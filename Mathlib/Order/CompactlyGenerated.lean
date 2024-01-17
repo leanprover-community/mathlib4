@@ -13,6 +13,7 @@ import Mathlib.Data.Finset.Order
 import Mathlib.Data.Set.Intervals.OrderIso
 import Mathlib.Data.Finite.Set
 import Mathlib.Tactic.TFAE
+import Mathlib.Data.List.TFAE
 
 #align_import order.compactly_generated from "leanprover-community/mathlib"@"c813ed7de0f5115f956239124e9b30f3a621966f"
 

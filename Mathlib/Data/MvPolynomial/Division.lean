@@ -5,6 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.MonoidAlgebra.Division
 import Mathlib.Data.MvPolynomial.Basic
+import Mathlib.Data.Finsupp.Order
 
 #align_import data.mv_polynomial.division from "leanprover-community/mathlib"@"72c366d0475675f1309d3027d3d7d47ee4423951"
 

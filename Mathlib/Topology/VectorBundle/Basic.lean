@@ -5,6 +5,7 @@ Authors: Nicolò Cavalleri, Sebastien Gouezel, Heather Macbeth, Patrick Massot, 
 -/
 import Mathlib.Analysis.NormedSpace.BoundedLinearMaps
 import Mathlib.Topology.FiberBundle.Basic
+import Mathlib.Algebra.Module.Basic
 
 #align_import topology.vector_bundle.basic from "leanprover-community/mathlib"@"e473c3198bb41f68560cab68a0529c854b618833"
 

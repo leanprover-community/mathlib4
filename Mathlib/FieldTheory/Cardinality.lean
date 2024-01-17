@@ -11,6 +11,7 @@ import Mathlib.FieldTheory.Finite.GaloisField
 import Mathlib.Logic.Equiv.TransferInstance
 import Mathlib.RingTheory.Localization.Cardinality
 import Mathlib.SetTheory.Cardinal.Divisibility
+import Mathlib.Algebra.Ring.ULift
 
 #align_import field_theory.cardinality from "leanprover-community/mathlib"@"0723536a0522d24fc2f159a096fb3304bef77472"
 

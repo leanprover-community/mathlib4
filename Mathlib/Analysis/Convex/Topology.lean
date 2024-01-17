@@ -8,6 +8,7 @@ import Mathlib.Analysis.Convex.Strict
 import Mathlib.Topology.Connected.PathConnected
 import Mathlib.Topology.Algebra.Affine
 import Mathlib.Topology.Algebra.Module.Basic
+import Mathlib.Topology.Algebra.Order.Group
 
 #align_import analysis.convex.topology from "leanprover-community/mathlib"@"0e3aacdc98d25e0afe035c452d876d28cbffaa7e"
 

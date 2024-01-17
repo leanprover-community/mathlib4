@@ -7,6 +7,7 @@ import Mathlib.Data.Finset.LocallyFinite
 import Mathlib.Data.Fintype.Order
 import Mathlib.Order.Irreducible
 import Mathlib.Order.UpperLower.Basic
+import Mathlib.Data.Fintype.Card
 
 /-!
 # Birkhoff's representation theorem

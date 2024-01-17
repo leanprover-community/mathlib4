@@ -9,6 +9,7 @@ import Mathlib.Algebra.SMulWithZero
 import Mathlib.GroupTheory.GroupAction.Group
 import Mathlib.GroupTheory.GroupAction.Pi
 import Mathlib.Tactic.Abel
+import Mathlib.Algebra.Order.Field.Defs
 
 #align_import algebra.module.basic from "leanprover-community/mathlib"@"30413fc89f202a090a54d78e540963ed3de0056e"
 

@@ -6,6 +6,7 @@ Authors: Johan Commelin
 
 import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Group.Prod
+import Std.Classes.Dvd
 
 /-!
 # Lemmas about the divisibility relation in product (semi)groups

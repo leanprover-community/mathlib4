@@ -6,6 +6,7 @@ Authors: Jeremy Avigad, Mario Carneiro, Simon Hudon
 import Mathlib.Data.Fin.Fin2
 import Mathlib.Logic.Function.Basic
 import Mathlib.Tactic.Common
+import Mathlib.Data.Subtype
 
 #align_import data.typevec from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 

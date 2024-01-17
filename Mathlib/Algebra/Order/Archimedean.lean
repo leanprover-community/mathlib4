@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Int.LeastGreatest
 import Mathlib.Data.Rat.Floor
+import Mathlib.Algebra.Order.Field.Power
 
 #align_import algebra.order.archimedean from "leanprover-community/mathlib"@"6f413f3f7330b94c92a5a27488fdc74e6d483a78"
 

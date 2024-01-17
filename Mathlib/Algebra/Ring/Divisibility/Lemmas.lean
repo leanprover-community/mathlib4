@@ -6,6 +6,7 @@ Authors: Oliver Nash
 import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.GroupTheory.GroupAction.Ring
+import Mathlib.GroupTheory.GroupAction.Ring
 
 /-!
 # Lemmas about divisibility in rings

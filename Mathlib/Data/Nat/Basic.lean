@@ -7,8 +7,6 @@ import Mathlib.Algebra.Group.TypeTags
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.Ring.Defs
-import Mathlib.Data.Nat.Defs
-import Mathlib.Order.Basic
 
 #align_import data.nat.basic from "leanprover-community/mathlib"@"bd835ef554f37ef9b804f0903089211f89cb370b"
 

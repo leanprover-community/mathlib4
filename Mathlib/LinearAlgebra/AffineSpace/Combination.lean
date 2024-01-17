@@ -9,6 +9,7 @@ import Mathlib.LinearAlgebra.AffineSpace.AffineMap
 import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.Tactic.FinCases
+import Mathlib.Data.Fintype.Basic
 
 #align_import linear_algebra.affine_space.combination from "leanprover-community/mathlib"@"2de9c37fa71dde2f1c6feff19876dd6a7b1519f0"
 

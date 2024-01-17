@@ -7,6 +7,8 @@ import Mathlib.MeasureTheory.Constructions.Prod.Integral
 import Mathlib.MeasureTheory.Group.Integral
 import Mathlib.Topology.UrysohnsLemma
 import Mathlib.MeasureTheory.Measure.Haar.Basic
+import Mathlib.GroupTheory.Divisible
+import Mathlib.Topology.Metrizable.Urysohn
 
 /-!
 # Uniqueness of Haar measure in locally compact groups

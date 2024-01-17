@@ -6,6 +6,7 @@ Authors: Yury Kudryashov
 import Mathlib.Logic.Equiv.Nat
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.Data.Countable.Defs
+import Mathlib.Logic.Equiv.Basic
 
 #align_import data.countable.basic from "leanprover-community/mathlib"@"1f0096e6caa61e9c849ec2adbd227e960e9dff58"
 

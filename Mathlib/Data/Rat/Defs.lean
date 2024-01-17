@@ -8,6 +8,7 @@ import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Algebra.GroupWithZero.Basic
+import Mathlib.Order.Basic
 
 #align_import data.rat.defs from "leanprover-community/mathlib"@"18a5306c091183ac90884daa9373fa3b178e8607"
 

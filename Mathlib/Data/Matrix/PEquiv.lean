@@ -5,6 +5,7 @@ Authors: Chris Hughes
 -/
 import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.PEquiv
+import Mathlib.Init.Logic
 
 #align_import data.matrix.pequiv from "leanprover-community/mathlib"@"3e068ece210655b7b9a9477c3aff38a492400aa1"
 

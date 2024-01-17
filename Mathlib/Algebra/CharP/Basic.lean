@@ -9,6 +9,8 @@ import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Data.Nat.Cast.Prod
 import Mathlib.Algebra.Group.ULift
 import Mathlib.GroupTheory.OrderOfElement
+import Mathlib.Algebra.Module.Basic
+import Mathlib.Data.Fintype.Basic
 
 #align_import algebra.char_p.basic from "leanprover-community/mathlib"@"47a1a73351de8dd6c8d3d32b569c8e434b03ca47"
 

@@ -5,6 +5,7 @@ Authors: Kyle Miller, Pim Otte
 -/
 import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Data.Nat.Factorial.Basic
 
 #align_import data.nat.factorial.big_operators from "leanprover-community/mathlib"@"1126441d6bccf98c81214a0780c73d499f6721fe"
 

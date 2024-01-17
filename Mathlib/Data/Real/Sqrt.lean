@@ -7,6 +7,7 @@ import Mathlib.Algebra.Star.Order
 import Mathlib.Topology.Algebra.Order.MonotoneContinuity
 import Mathlib.Topology.Instances.NNReal
 import Mathlib.Tactic.Positivity
+import Mathlib.Init.Logic
 
 #align_import data.real.sqrt from "leanprover-community/mathlib"@"31c24aa72e7b3e5ed97a8412470e904f82b81004"
 

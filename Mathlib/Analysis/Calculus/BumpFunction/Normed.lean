@@ -6,6 +6,7 @@ Authors: Floris van Doorn
 import Mathlib.Analysis.Calculus.BumpFunction.Basic
 import Mathlib.MeasureTheory.Integral.SetIntegral
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
+import Mathlib.Analysis.NormedSpace.FiniteDimension
 
 #align_import analysis.calculus.bump_function_inner from "leanprover-community/mathlib"@"3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe"
 

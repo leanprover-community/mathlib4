@@ -8,6 +8,7 @@ import Mathlib.Data.Finset.Pointwise
 import Mathlib.Data.Rat.NNRat
 import Mathlib.Tactic.GCongr
 import Mathlib.Algebra.GroupPower.Order
+import Mathlib.Algebra.GroupPower.Order
 
 #align_import combinatorics.additive.pluennecke_ruzsa from "leanprover-community/mathlib"@"4aab2abced69a9e579b1e6dc2856ed3db48e2cbd"
 

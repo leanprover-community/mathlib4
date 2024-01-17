@@ -5,6 +5,7 @@ Authors: Tim Baumann, Stephen Morgan, Scott Morrison, Floris van Doorn
 -/
 import Mathlib.CategoryTheory.Functor.Category
 import Mathlib.CategoryTheory.Iso
+import Mathlib.Logic.Basic
 
 #align_import category_theory.natural_isomorphism from "leanprover-community/mathlib"@"6eb334bd8f3433d5b08ba156b8ec3e6af47e1904"
 

@@ -10,6 +10,8 @@ import Mathlib.Data.Int.ModEq
 import Mathlib.GroupTheory.Perm.List
 import Mathlib.GroupTheory.Perm.Sign
 import Mathlib.Logic.Equiv.Fintype
+import Mathlib.Algebra.Module.Basic
+import Mathlib.Data.List.Perm
 
 #align_import group_theory.perm.cycle.basic from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 

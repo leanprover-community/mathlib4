@@ -6,6 +6,7 @@ Authors: Joseph Myers, Manuel Candales
 import Mathlib.Analysis.InnerProductSpace.Projection
 import Mathlib.Geometry.Euclidean.PerpBisector
 import Mathlib.Algebra.QuadraticDiscriminant
+import Mathlib.Analysis.NormedSpace.AffineIsometry
 
 #align_import geometry.euclidean.basic from "leanprover-community/mathlib"@"2de9c37fa71dde2f1c6feff19876dd6a7b1519f0"
 

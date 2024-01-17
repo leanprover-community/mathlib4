@@ -9,6 +9,7 @@ import Mathlib.Algebra.Group.Units.Hom
 import Mathlib.Algebra.GroupWithZero.Commute
 import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.GroupTheory.GroupAction.Units
+import Mathlib.Logic.Basic
 
 #align_import algebra.group_with_zero.units.lemmas from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 

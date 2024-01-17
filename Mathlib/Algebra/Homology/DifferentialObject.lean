@@ -5,6 +5,7 @@ Authors: Scott Morrison
 -/
 import Mathlib.Algebra.Homology.HomologicalComplex
 import Mathlib.CategoryTheory.DifferentialObject
+import Mathlib.Data.Int.Basic
 
 #align_import algebra.homology.differential_object from "leanprover-community/mathlib"@"b535c2d5d996acd9b0554b76395d9c920e186f4f"
 

@@ -5,8 +5,8 @@ Authors: Aaron Anderson
 -/
 import Mathlib.Algebra.Squarefree
 import Mathlib.Data.Nat.Factorization.PrimePow
-import Mathlib.Data.Nat.PrimeNormNum
 import Mathlib.RingTheory.Int.Basic
+import Mathlib.Data.Nat.Factors
 
 #align_import data.nat.squarefree from "leanprover-community/mathlib"@"3c1368cac4abd5a5cbe44317ba7e87379d51ed88"
 

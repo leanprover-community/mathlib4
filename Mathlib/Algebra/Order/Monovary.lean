@@ -7,6 +7,7 @@ import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Module.OrderedSMul
 import Mathlib.Algebra.Order.Monoid.MinMax
 import Mathlib.Order.Monotone.Monovary
+import Mathlib.Algebra.Order.Group.Instances
 
 /-!
 # Monovarying functions and algebraic operations

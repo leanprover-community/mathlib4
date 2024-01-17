@@ -8,8 +8,8 @@ import Mathlib.Analysis.NormedSpace.Basic
 import Mathlib.Analysis.NormedSpace.LinearIsometry
 import Mathlib.Algebra.Star.SelfAdjoint
 import Mathlib.Algebra.Star.Unitary
-import Mathlib.Topology.Algebra.StarSubalgebra
 import Mathlib.Topology.Algebra.Module.Star
+import Mathlib.Algebra.Star.Subalgebra
 
 #align_import analysis.normed_space.star.basic from "leanprover-community/mathlib"@"aa6669832974f87406a3d9d70fc5707a60546207"
 

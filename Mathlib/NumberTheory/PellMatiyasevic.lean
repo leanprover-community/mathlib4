@@ -8,6 +8,7 @@ import Mathlib.Data.Nat.ModEq
 import Mathlib.NumberTheory.Zsqrtd.Basic
 import Mathlib.Tactic.Monotonicity
 import Mathlib.Algebra.GroupPower.Order
+import Mathlib.Algebra.GroupPower.Order
 
 #align_import number_theory.pell_matiyasevic from "leanprover-community/mathlib"@"795b501869b9fa7aa716d5fdadd00c03f983a605"
 

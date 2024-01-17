@@ -6,6 +6,7 @@ Authors: Hanting Zhang
 -/
 import Mathlib.Topology.MetricSpace.Antilipschitz
 import Mathlib.Data.FunLike.Basic
+import Mathlib.Topology.MetricSpace.Lipschitz
 
 #align_import topology.metric_space.dilation from "leanprover-community/mathlib"@"93f880918cb51905fd51b76add8273cbc27718ab"
 

@@ -9,6 +9,7 @@ import Mathlib.Topology.Bornology.Hom
 import Mathlib.Topology.EMetricSpace.Lipschitz
 import Mathlib.Topology.MetricSpace.Basic
 import Mathlib.Topology.MetricSpace.Bounded
+import Mathlib.Topology.MetricSpace.Basic
 
 #align_import topology.metric_space.lipschitz from "leanprover-community/mathlib"@"c8f305514e0d47dfaa710f5a52f0d21b588e6328"
 

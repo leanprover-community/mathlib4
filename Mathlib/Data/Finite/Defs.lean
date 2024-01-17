@@ -5,6 +5,7 @@ Authors: Kyle Miller
 -/
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Tactic.Cases
+import Mathlib.Logic.Basic
 
 #align_import data.finite.defs from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
 

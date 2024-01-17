@@ -3,9 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Scott Morrison
 -/
-import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Data.Set.Finite
 import Mathlib.GroupTheory.Submonoid.Basic
+import Mathlib.Algebra.Function.Indicator
 
 #align_import data.finsupp.defs from "leanprover-community/mathlib"@"842328d9df7e96fd90fc424e115679c15fb23a71"
 
@@ -85,8 +85,6 @@ This file is a `noncomputable theory` and uses classical logic throughout.
 noncomputable section
 
 open Finset Function
-
-open BigOperators
 
 variable {α β γ ι M M' N P G H R S : Type*}
 

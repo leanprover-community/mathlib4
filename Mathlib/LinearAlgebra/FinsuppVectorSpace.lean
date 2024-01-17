@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.LinearAlgebra.DFinsupp
 import Mathlib.LinearAlgebra.StdBasis
+import Mathlib.Init.Logic
 
 #align_import linear_algebra.finsupp_vector_space from "leanprover-community/mathlib"@"59628387770d82eb6f6dd7b7107308aa2509ec95"
 

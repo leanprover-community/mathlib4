@@ -6,6 +6,7 @@ Authors: Louis Carlin, Mario Carneiro
 import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Ring.Defs
+import Mathlib.Logic.Basic
 
 #align_import algebra.euclidean_domain.defs from "leanprover-community/mathlib"@"ee7b9f9a9ac2a8d9f04ea39bbfe6b1a3be053b38"
 

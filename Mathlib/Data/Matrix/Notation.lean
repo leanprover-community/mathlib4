@@ -7,6 +7,7 @@ import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Matrix.RowCol
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Tactic.FinCases
+import Mathlib.Data.Fintype.Basic
 
 #align_import data.matrix.notation from "leanprover-community/mathlib"@"a99f85220eaf38f14f94e04699943e185a5e1d1a"
 

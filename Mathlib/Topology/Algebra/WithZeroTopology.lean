@@ -6,6 +6,7 @@ Authors: Patrick Massot
 import Mathlib.Algebra.Order.WithZero
 import Mathlib.Topology.Algebra.GroupWithZero
 import Mathlib.Topology.Order.Basic
+import Mathlib.Algebra.Order.WithZero
 
 #align_import topology.algebra.with_zero_topology from "leanprover-community/mathlib"@"3e0c4d76b6ebe9dfafb67d16f7286d2731ed6064"
 

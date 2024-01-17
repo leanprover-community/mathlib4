@@ -5,6 +5,7 @@ Authors: David Loeffler, Geoffrey Irving
 -/
 import Mathlib.Analysis.Analytic.Composition
 import Mathlib.Analysis.Analytic.Linear
+import Mathlib.Analysis.Analytic.Composition
 
 /-!
 # Various ways to combine analytic functions

@@ -9,6 +9,7 @@ import Mathlib.Algebra.Category.Ring.Limits
 import Mathlib.Topology.Sheaves.LocalPredicate
 import Mathlib.RingTheory.Localization.AtPrime
 import Mathlib.RingTheory.Subring.Basic
+import Mathlib.Order.Hom.CompleteLattice
 
 #align_import algebraic_geometry.structure_sheaf from "leanprover-community/mathlib"@"5dc6092d09e5e489106865241986f7f2ad28d4c8"
 

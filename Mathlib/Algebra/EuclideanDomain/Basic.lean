@@ -8,6 +8,7 @@ import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Algebra.Ring.Regular
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Ring.Basic
+import Mathlib.Algebra.GroupWithZero.Basic
 
 #align_import algebra.euclidean_domain.basic from "leanprover-community/mathlib"@"bf9bbbcf0c1c1ead18280b0d010e417b10abb1b6"
 

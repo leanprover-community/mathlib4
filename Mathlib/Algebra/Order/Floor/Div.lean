@@ -7,6 +7,8 @@ import Mathlib.Algebra.Order.Module.Defs
 import Mathlib.Data.Finsupp.Order
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Order.GaloisConnection
+import Mathlib.Algebra.Order.Pi
+import Mathlib.GroupTheory.GroupAction.Pi
 
 /-!
 # Flooring, ceiling division

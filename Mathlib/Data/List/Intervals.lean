@@ -6,6 +6,7 @@ Authors: Scott Morrison
 import Mathlib.Data.List.Lattice
 import Mathlib.Data.List.Range
 import Mathlib.Data.Bool.Basic
+import Mathlib.Data.List.Lattice
 
 #align_import data.list.intervals from "leanprover-community/mathlib"@"7b78d1776212a91ecc94cf601f83bdcc46b04213"
 /-!

@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Logic.Function.Basic
-import Mathlib.Logic.Relation
 import Mathlib.Init.Set
 import Mathlib.Tactic.Common
+import Mathlib.Logic.Function.Basic
 
 #align_import logic.pairwise from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 

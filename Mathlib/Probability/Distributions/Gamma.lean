@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Josha Dekker
 -/
 
-import Mathlib.Analysis.SpecialFunctions.Gaussian
 import Mathlib.Probability.Notation
 import Mathlib.Probability.Cdf
 import Mathlib.Analysis.SpecialFunctions.Gamma.Basic

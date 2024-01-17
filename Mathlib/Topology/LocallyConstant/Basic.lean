@@ -6,6 +6,7 @@ Authors: Johan Commelin
 import Mathlib.Algebra.Function.Indicator
 import Mathlib.Tactic.FinCases
 import Mathlib.Topology.ContinuousFunction.Basic
+import Mathlib.Data.Fintype.Basic
 
 #align_import topology.locally_constant.basic from "leanprover-community/mathlib"@"0a0ec35061ed9960bf0e7ffb0335f44447b58977"
 

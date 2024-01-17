@@ -9,6 +9,7 @@ import Mathlib.LinearAlgebra.Charpoly.Basic
 import Mathlib.FieldTheory.Galois
 import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 import Mathlib.RingTheory.Norm
+import Mathlib.FieldTheory.Separable
 /-!
 # Kummer Extensions
 

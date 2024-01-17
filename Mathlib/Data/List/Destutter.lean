@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez, Eric Wieser
 -/
 import Mathlib.Data.List.Chain
+import Mathlib.Data.List.Defs
 
 #align_import data.list.destutter from "leanprover-community/mathlib"@"7b78d1776212a91ecc94cf601f83bdcc46b04213"
 

@@ -7,6 +7,7 @@ import Mathlib.Order.Category.Lat
 import Mathlib.Order.Hom.CompleteLattice
 import Mathlib.Topology.Category.CompHaus.Basic
 import Mathlib.Topology.Sets.Opens
+import Mathlib.Order.Hom.CompleteLattice
 
 #align_import order.category.Frm from "leanprover-community/mathlib"@"e8ac6315bcfcbaf2d19a046719c3b553206dac75"
 

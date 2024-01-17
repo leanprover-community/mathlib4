@@ -7,6 +7,7 @@ Authors: Jujian Zhang, Fangming Li
 import Mathlib.Order.RelSeries
 import Mathlib.Order.WithBot
 import Mathlib.Data.Nat.Lattice
+import Mathlib.Algebra.Order.Monoid.WithTop
 
 /-!
 # Krull dimension of a preordered set

@@ -11,6 +11,7 @@ import Mathlib.Algebra.Category.GroupCat.ZModuleEquivalence
 import Mathlib.Algebra.Category.ModuleCat.Abelian
 import Mathlib.CategoryTheory.Abelian.FunctorCategory
 import Mathlib.CategoryTheory.Limits.ConcreteCategory
+import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 
 #align_import algebra.category.Group.abelian from "leanprover-community/mathlib"@"f7baecbb54bd0f24f228576f97b1752fc3c9b318"
 

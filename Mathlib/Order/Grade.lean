@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies, Violeta Hernández Palacios. All rights reserv
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Violeta Hernández Palacios, Grayson Burton, Vladimir Ivanov
 -/
-import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Int.SuccPred
+import Mathlib.Order.Cover
+import Mathlib.Data.Fin.Basic
+import Mathlib.Data.Int.Order.Basic
 
 #align_import order.grade from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
@@ -56,7 +58,7 @@ Instead, we define graded orders by their grade function, without talking about 
 * [Richard Stanley, *Enumerative Combinatorics*][stanley2012]
 -/
 
-open Finset Nat OrderDual
+open Nat OrderDual
 
 variable {𝕆 ℙ α β : Type*}
 

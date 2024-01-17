@@ -6,6 +6,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Ne
 import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Ring.Defs
+import Std.Classes.Dvd
 
 #align_import algebra.ring.divisibility from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 

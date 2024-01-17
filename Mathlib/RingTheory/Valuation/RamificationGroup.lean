@@ -5,6 +5,7 @@ Authors: Michail Karatarakis
 -/
 import Mathlib.RingTheory.Ideal.LocalRing
 import Mathlib.RingTheory.Valuation.ValuationSubring
+import Mathlib.GroupTheory.Subgroup.Actions
 
 #align_import ring_theory.valuation.ramification_group from "leanprover-community/mathlib"@"88b76e4c78d85d9ac31d991aa05ff22c09da889b"
 

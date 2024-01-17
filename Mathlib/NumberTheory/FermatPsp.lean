@@ -5,6 +5,7 @@ Authors: Niels Voss
 -/
 import Mathlib.FieldTheory.Finite.Basic
 import Mathlib.Order.Filter.Cofinite
+import Mathlib.Data.Nat.Order.Lemmas
 
 #align_import number_theory.fermat_psp from "leanprover-community/mathlib"@"c0439b4877c24a117bfdd9e32faf62eee9b115eb"
 

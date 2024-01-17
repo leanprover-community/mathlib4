@@ -6,6 +6,7 @@ Authors: Andrew Yang
 import Mathlib.CategoryTheory.Functor.Flat
 import Mathlib.CategoryTheory.Sites.Sheaf
 import Mathlib.Tactic.ApplyFun
+import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 
 #align_import category_theory.sites.cover_preserving from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 /-!

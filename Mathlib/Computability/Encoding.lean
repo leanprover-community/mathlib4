@@ -6,6 +6,7 @@ Authors: Pim Spelier, Daan van Gent
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Num.Lemmas
 import Mathlib.SetTheory.Cardinal.Ordinal
+import Mathlib.Data.Option.Basic
 
 #align_import computability.encoding from "leanprover-community/mathlib"@"b6395b3a5acd655b16385fa0cdbf1961d6c34b3e"
 

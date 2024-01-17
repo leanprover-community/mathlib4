@@ -7,6 +7,7 @@ import Mathlib.Analysis.Complex.Liouville
 import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.Analysis.Calculus.Deriv.Polynomial
 import Mathlib.Topology.Algebra.Polynomial
+import Mathlib.Algebra.CharZero.Infinite
 
 #align_import analysis.complex.polynomial from "leanprover-community/mathlib"@"17ef379e997badd73e5eabb4d38f11919ab3c4b3"
 

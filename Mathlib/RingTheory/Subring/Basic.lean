@@ -5,6 +5,7 @@ Authors: Ashvni Narayanan
 -/
 import Mathlib.GroupTheory.Subgroup.Basic
 import Mathlib.RingTheory.Subsemiring.Basic
+import Mathlib.Data.Int.Cast.Lemmas
 
 #align_import ring_theory.subring.basic from "leanprover-community/mathlib"@"b915e9392ecb2a861e1e766f0e1df6ac481188ca"
 

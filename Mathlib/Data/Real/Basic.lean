@@ -3,9 +3,9 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Algebra.Bounds
 import Mathlib.Algebra.Star.Basic
 import Mathlib.Data.Real.CauSeqCompletion
+import Mathlib.Data.Rat.Order
 
 #align_import data.real.basic from "leanprover-community/mathlib"@"cb42593171ba005beaaf4549fcfe0dece9ada4c9"
 
@@ -27,8 +27,6 @@ assert_not_exists Finset
 assert_not_exists Module
 assert_not_exists Submonoid
 assert_not_exists FloorRing
-
-open Pointwise
 
 /-- The type `ℝ` of real numbers constructed as equivalence classes of Cauchy sequences of rational
 numbers. -/

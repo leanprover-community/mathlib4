@@ -5,6 +5,7 @@ Authors: Kevin Buzzard, Scott Morrison, Jakob von Raumer
 -/
 import Mathlib.CategoryTheory.Closed.Monoidal
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
+import Mathlib.CategoryTheory.Linear.Yoneda
 
 #align_import algebra.category.Module.monoidal.closed from "leanprover-community/mathlib"@"74403a3b2551b0970855e14ef5e8fd0d6af1bfc2"
 

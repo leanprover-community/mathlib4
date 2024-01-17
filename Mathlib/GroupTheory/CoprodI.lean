@@ -7,8 +7,8 @@ import Mathlib.Algebra.FreeMonoid.Basic
 import Mathlib.GroupTheory.Congruence
 import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
 import Mathlib.Data.List.Chain
-import Mathlib.SetTheory.Cardinal.Ordinal
 import Mathlib.Data.Set.Pointwise.SMul
+import Mathlib.SetTheory.Cardinal.Basic
 
 #align_import group_theory.free_product from "leanprover-community/mathlib"@"9114ddffa023340c9ec86965e00cdd6fe26fcdf6"
 

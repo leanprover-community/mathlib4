@@ -7,6 +7,7 @@ import Mathlib.Data.Finset.Card
 import Mathlib.Data.Set.Finite
 import Mathlib.Order.Atoms
 import Mathlib.Order.Grade
+import Mathlib.Data.Finset.Basic
 
 /-!
 # Finsets and multisets form a graded order

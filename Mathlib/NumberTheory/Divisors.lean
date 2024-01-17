@@ -6,6 +6,7 @@ Authors: Aaron Anderson
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Data.Nat.Interval
 import Mathlib.Data.Nat.Factors
+import Mathlib.Algebra.GroupPower.Order
 
 #align_import number_theory.divisors from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 

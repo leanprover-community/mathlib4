@@ -6,6 +6,7 @@ Authors: Eric Wieser, Frédéric Dupuis
 import Mathlib.Algebra.Star.SelfAdjoint
 import Mathlib.Algebra.Module.Equiv
 import Mathlib.LinearAlgebra.Prod
+import Mathlib.Algebra.Star.Basic
 
 #align_import algebra.star.module from "leanprover-community/mathlib"@"aa6669832974f87406a3d9d70fc5707a60546207"
 

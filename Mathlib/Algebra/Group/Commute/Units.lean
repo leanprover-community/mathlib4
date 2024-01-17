@@ -5,6 +5,7 @@ Authors: Neil Strickland, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Algebra.Group.Semiconj.Units
+import Std.Data.Nat.Init.Lemmas
 
 #align_import algebra.group.commute from "leanprover-community/mathlib"@"05101c3df9d9cfe9430edc205860c79b6d660102"
 

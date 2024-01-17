@@ -5,6 +5,7 @@ Authors: Moritz Doll, Mario Carneiro, Robert Y. Lewis, Patrick Massot
 -/
 import Mathlib.Tactic.Qify
 import Mathlib.Data.Real.Basic
+import Mathlib.Data.Rat.Cast.Order
 
 /-!
 # `rify` tactic

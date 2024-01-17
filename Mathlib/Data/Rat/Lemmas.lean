@@ -9,6 +9,8 @@ import Mathlib.Data.Int.Div
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Tactic.Replace
 import Mathlib.Data.PNat.Defs
+import Mathlib.Algebra.GroupWithZero.Basic
+import Mathlib.Data.Nat.Cast.Defs
 
 #align_import data.rat.lemmas from "leanprover-community/mathlib"@"550b58538991c8977703fdeb7c9d51a5aa27df11"
 

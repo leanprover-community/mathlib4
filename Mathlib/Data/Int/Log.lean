@@ -6,6 +6,7 @@ Authors: Eric Wieser
 import Mathlib.Algebra.Order.Floor
 import Mathlib.Algebra.Order.Field.Power
 import Mathlib.Data.Nat.Log
+import Mathlib.Algebra.Order.Field.Power
 
 #align_import data.int.log from "leanprover-community/mathlib"@"1f0096e6caa61e9c849ec2adbd227e960e9dff58"
 

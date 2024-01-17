@@ -8,6 +8,7 @@ import Mathlib.CategoryTheory.EqToHom
 import Mathlib.CategoryTheory.Functor.Const
 import Mathlib.Tactic.FinCases
 import Std.Tactic.Omega
+import Mathlib.Data.Fintype.Basic
 
 /-!
 # Composable arrows

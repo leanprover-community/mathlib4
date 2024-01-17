@@ -7,6 +7,7 @@ import Mathlib.Algebra.Homology.Exact
 import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
+import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 
 #align_import category_theory.preadditive.projective from "leanprover-community/mathlib"@"3974a774a707e2e06046a14c0eaef4654584fada"
 

@@ -5,6 +5,7 @@ Authors: Yakov Pechersky
 -/
 import Mathlib.Data.Finsupp.Defs
 import Mathlib.Data.Finset.Pairwise
+import Mathlib.Algebra.BigOperators.Basic
 
 #align_import data.finsupp.big_operators from "leanprover-community/mathlib"@"59694bd07f0a39c5beccba34bd9f413a160782bf"
 

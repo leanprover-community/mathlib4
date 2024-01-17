@@ -8,6 +8,7 @@ import Mathlib.Data.Num.Basic
 import Mathlib.Order.Basic
 import Mathlib.Init.Data.Ordering.Basic
 import Mathlib.Util.CompileInductive
+import Mathlib.Init.Order.LinearOrder
 
 #align_import data.tree from "leanprover-community/mathlib"@"ed989ff568099019c6533a4d94b27d852a5710d8"
 

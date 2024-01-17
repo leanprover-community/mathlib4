@@ -8,6 +8,7 @@ import Mathlib.Algebra.EuclideanDomain.Instances
 import Mathlib.Data.Rat.Cast.Order
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Ring
+import Mathlib.Data.Rat.Cast.Order
 
 #align_import data.rat.floor from "leanprover-community/mathlib"@"e1bccd6e40ae78370f01659715d3c948716e3b7e"
 

@@ -7,6 +7,7 @@ import Mathlib.LinearAlgebra.Span
 import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.RingTheory.Ideal.QuotientOperations
 import Mathlib.RingTheory.Noetherian
+import Mathlib.Init.Logic
 
 #align_import ring_theory.ideal.associated_prime from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 

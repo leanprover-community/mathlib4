@@ -7,7 +7,6 @@ import Mathlib.Algebra.BigOperators.Multiset.Lemmas
 import Mathlib.Algebra.Function.Indicator
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.Pi
-import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.Ring.Opposite
 import Mathlib.Data.Finset.Powerset
 import Mathlib.Data.Finset.Sigma
@@ -15,6 +14,9 @@ import Mathlib.Data.Finset.Sum
 import Mathlib.Data.Fintype.Pi
 import Mathlib.Data.Multiset.Powerset
 import Mathlib.Data.Set.Pairwise.Basic
+import Mathlib.Algebra.Group.Opposite
+import Mathlib.GroupTheory.GroupAction.Defs
+import Mathlib.Data.Int.Cast.Lemmas
 
 #align_import algebra.big_operators.basic from "leanprover-community/mathlib"@"65a1391a0106c9204fe45bc73a039f056558cb83"
 

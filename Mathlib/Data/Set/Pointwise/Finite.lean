@@ -5,6 +5,7 @@ Authors: Johan Commelin, Floris van Doorn
 -/
 import Mathlib.Data.Set.Finite
 import Mathlib.Data.Set.Pointwise.SMul
+import Mathlib.GroupTheory.GroupAction.Defs
 
 #align_import data.set.pointwise.finite from "leanprover-community/mathlib"@"c941bb9426d62e266612b6d99e6c9fc93e7a1d07"
 

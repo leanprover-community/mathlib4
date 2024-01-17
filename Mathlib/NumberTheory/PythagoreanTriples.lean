@@ -10,6 +10,7 @@ import Mathlib.Tactic.FieldSimp
 import Mathlib.Data.Int.NatPrime
 import Mathlib.Data.ZMod.Basic
 import Mathlib.Algebra.GroupPower.Order
+import Mathlib.Algebra.GroupPower.Order
 
 #align_import number_theory.pythagorean_triples from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 

@@ -13,6 +13,7 @@ import Mathlib.Lean.Meta
 import Mathlib.Tactic.TryThis
 import Mathlib.Control.Basic
 import Std.Tactic.SolveByElim
+import Mathlib.Lean.Expr.Basic
 
 /-!
 # The `rewrites` tactic.

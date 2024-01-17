@@ -6,6 +6,7 @@ Authors: Yakov Pechersky
 import Mathlib.Data.List.Cycle
 import Mathlib.GroupTheory.Perm.Cycle.Type
 import Mathlib.GroupTheory.Perm.List
+import Mathlib.Data.Multiset.Sort
 
 #align_import group_theory.perm.cycle.concrete from "leanprover-community/mathlib"@"00638177efd1b2534fc5269363ebf42a7871df9a"
 

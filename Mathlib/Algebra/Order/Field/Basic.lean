@@ -8,6 +8,7 @@ import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Data.Int.Cast.Basic
+import Mathlib.Init.Logic
 
 #align_import algebra.order.field.basic from "leanprover-community/mathlib"@"84771a9f5f0bd5e5d6218811556508ddf476dcbd"
 

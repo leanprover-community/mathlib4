@@ -9,6 +9,7 @@ import Mathlib.Logic.Nontrivial.Defs
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.PushNeg
 import Mathlib.Tactic.Use
+import Std.Logic
 
 #align_import data.nat.basic from "leanprover-community/mathlib"@"bd835ef554f37ef9b804f0903089211f89cb370b"
 
