@@ -1785,7 +1785,8 @@ end SMulConst
 
 section SMul
 
-variable [Module R E'] [BoundedSMul R E'] [Module 𝕜' F'] [BoundedSMul 𝕜' F'] {k₁ : α → R} {k₂ : α → 𝕜'}
+variable [Module R E'] [BoundedSMul R E'] [Module 𝕜' F'] [BoundedSMul 𝕜' F']
+variable {k₁ : α → R} {k₂ : α → 𝕜'}
 
 theorem IsBigOWith.smul (h₁ : IsBigOWith c l k₁ k₂) (h₂ : IsBigOWith c' l f' g') :
     IsBigOWith (c * c') l (fun x => k₁ x • f' x) fun x => k₂ x • g' x := by
