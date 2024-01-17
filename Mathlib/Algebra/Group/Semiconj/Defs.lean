@@ -6,6 +6,7 @@ Authors: Yury Kudryashov
 Some proofs and docs came from `algebra/commute` (c) Neil Strickland
 -/
 import Mathlib.Algebra.Group.Defs
+import Mathlib.Init.Logic
 import Mathlib.Tactic.Cases
 
 #align_import algebra.group.semiconj from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
