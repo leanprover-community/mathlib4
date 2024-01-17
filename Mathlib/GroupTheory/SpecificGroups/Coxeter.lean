@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2023 Newell Jensen. All rights reserved.
+Copyright (c) 2024 Newell Jensen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Newell Jensen
 -/
@@ -19,11 +19,11 @@ presentation corresponding to a Coxeter matrix which is registered in a Coxeter 
 
 The finite Coxeter groups are classified as the four infinite families:
 
-* Aₙ, Bₙ, Dₙ, I₂ₘ
+* `Aₙ, Bₙ, Dₙ, I₂ₘ`
 
 And the six exceptional systems:
 
-* E₆, E₇, E₈, F₄, H₃, H₄
+* `E₆, E₇, E₈, F₄, G₂, H₃, H₄`
 
 ## Main definitions
 
@@ -33,6 +33,17 @@ And the six exceptional systems:
 * `CoxeterSystem` : A structure recording the isomorphism between a group `W` and the group
   presentation corresponding to a Coxeter matrix, i.e. `Matrix.CoxeterGroup M`.
 * `IsCoxeterGroup` : A group is a Coxeter group if it is registered in a Coxeter system.
+* `CoxeterMatrix.Aₙ`
+* `CoxeterMatrix.Bₙ`
+* `CoxeterMatrix.Dₙ`
+* `CoxeterMatrix.I₂ₘ`
+* `CoxeterMatrix.E₆`
+* `CoxeterMatrix.E₇`
+* `CoxeterMatrix.E₈`
+* `CoxeterMatrix.F₄`
+* `CoxeterMatrix.G₂`
+* `CoxeterMatrix.H₃`
+* `CoxeterMatrix.H₄`
 
 ## References
 
@@ -90,6 +101,10 @@ def of (b : B) : Matrix.CoxeterGroup M := by
   unfold Matrix.CoxeterGroup
   exact PresentedGroup.of b
 
+@[simp]
+lemma of_apply (b : B) : of M b = PresentedGroup.of (rels := Relations.toSet M) b :=
+  rfl
+
 end CoxeterGroup
 
 /-- A Coxeter system `CoxeterSystem W` is a structure recording the isomorphism between
@@ -140,7 +155,8 @@ instance funLike : FunLike (CoxeterSystem M W) B (fun _ => W) where
 def ofCoxeterGroup (X : Type*) (D : Matrix X X ℕ) : CoxeterSystem D (CoxeterGroup D) :=
   ofMulEquiv (MulEquiv.refl _)
 
-@[simp] lemma ofCoxeterGroup_apply {X : Type*} (D : Matrix X X ℕ) (x : X) :
+@[simp]
+lemma ofCoxeterGroup_apply {X : Type*} (D : Matrix X X ℕ) (x : X) :
     CoxeterSystem.ofCoxeterGroup X D x = CoxeterGroup.of D x :=
   rfl
 
@@ -162,7 +178,7 @@ lemma map_relations_eq_reindex_relations (e : B ≃ B') :
     use ((FreeGroup.freeGroupCongr e).symm hb')
     exact ⟨by use (e.symm b1'); use (e.symm b2'); aesop, by aesop⟩
 
-/-- Coxeter groups of isomorphic types types are isomorphic. -/
+/-- Coxeter groups of isomorphic types are isomorphic. -/
 def equivCoxeterGroup (e : B ≃ B') : CoxeterGroup M ≃* CoxeterGroup (reindex e e M) := by
   simp [CoxeterGroup]
   have := PresentedGroup.equivPresentedGroup (rels := CoxeterGroup.Relations.toSet M) e
@@ -174,9 +190,10 @@ protected def reindex (cs : CoxeterSystem M W) (e : B ≃ B') :
   ofMulEquiv (cs.mulEquiv.trans (equivCoxeterGroup e))
 
 @[simp]
-lemma reindex_apply (cs : CoxeterSystem M W) (e : B ≃ B') (b : B') :
-    cs.reindex e b = cs (e.symm b) :=
-  rfl
+lemma reindex_apply (cs : CoxeterSystem M W) (e : B ≃ B') (b' : B') :
+    cs.reindex e b' = cs (e.symm b') :=
+  -- rfl -- This used to work...
+  sorry
 
 /-- Pushing a Coxeter system through a group isomorphism. -/
 protected def map (cs : CoxeterSystem M W) (e : W ≃* H) : CoxeterSystem M H :=
@@ -186,6 +203,8 @@ protected def map (cs : CoxeterSystem M W) (e : W ≃* H) : CoxeterSystem M H :=
 lemma map_apply (cs : CoxeterSystem M W) (e : W ≃* H) (x : B) : cs.map e x = e (cs x) :=
   rfl
 
+-- I don't think this is true in general.
+-- Maybe there is a way using some word reductions similar to FreeGroup?
 lemma presentedGroup.of_injective :
     Function.Injective (PresentedGroup.of (rels := CoxeterGroup.Relations.toSet M)) := by
   sorry
