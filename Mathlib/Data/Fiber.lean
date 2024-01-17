@@ -41,7 +41,7 @@ lemma over (x : Fiber P c) : P x = c := x.2
 lemma over_eq (x y : Fiber P c) : P x = P y := by
 simp [Fiber.over]
 
-/-- Given an element of the domain of the map, `tauto` tautologically constructs en element in the fiber of the image of the domain element. -/
+/-- A tautological construction of an element in the fiber of the image of a domain element. -/
 @[simp]
 def tauto (e : E) : Fiber P (P e) := ⟨e, rfl⟩
 
@@ -52,7 +52,7 @@ coe := tauto e
 @[simp]
 lemma tauto_over (e : E) : (tauto e : Fiber P (P e)).1 = e := rfl
 
-/-- Rebase an element of in a fiber along an equality of the basepoints. -/
+/-- Cast an element of a fiber along an equality of the basepoints. -/
 @[simp]
 def cast (e : Fiber P c) (eq : c = d) : Fiber P d := ⟨e.1, by simp_all only [over]⟩
 
