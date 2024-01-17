@@ -23,14 +23,12 @@ namespace Fiber
 variable {C E : Type*} {P : E → C} {c d : C}
 
 /-- Coercion from the fiber to the domain. -/
-instance  {c : C} : CoeOut (Fiber P c) E where
+instance {c : C} : CoeOut (Fiber P c) E where
 coe := fun x => x.1
 
-@[simp]
-lemma coe_mk (e : E) (h : P e = c) : ( (⟨e, h⟩ : Fiber P c) : E) = e := rfl
+lemma coe_mk {e : E} (h : P e = c) : ((⟨e, h⟩ : Fiber P c) : E) = e :=  by simp only [@Subtype.coe_eta]
 
-@[simp]
-lemma mk_coe (x : Fiber P c) : ⟨x.1, x.2⟩  = x := rfl
+lemma mk_coe {x : Fiber P c} : ⟨x.1, x.2⟩  = x := by simp only [@Subtype.coe_eta]
 
 lemma coe_inj (x y : Fiber P c) : (x : E) = y ↔ x = y := Subtype.coe_inj
 
@@ -56,21 +54,20 @@ lemma tauto_over (e : E) : (tauto e : Fiber P (P e)).1 = e := rfl
 @[simp]
 def cast (e : Fiber P c) (eq : c = d) : Fiber P d := ⟨e.1, by simp_all only [over]⟩
 
-@[simp]
-theorem coe_cast (e : Fiber P c) (eq : c = d) : (cast e eq : E) = e.1 := rfl
+theorem coe_cast (e : Fiber P c) (eq : c = d) : (cast e eq : E) = e.1 := by rfl
 
-@[simp]
 lemma cast_coe_tauto (e : Fiber P c) : cast (tauto e.1) (by simp [over]) =  e := by
 simp
 
-@[simp]
 lemma cast_coe_tauto' (e : Fiber P c) : (tauto e.1) = cast e (by simp [over]) := by
-cases e; rfl
+simp
 
 /-- The total space of a map. -/
 @[ext]
 structure Total {C E : Type*} (P : E → C) where
+/-- The base object in `C` -/
 base : C
+/-- The object in the fiber of the base object. -/
 fiber : Fiber P base
 
 end Fiber
