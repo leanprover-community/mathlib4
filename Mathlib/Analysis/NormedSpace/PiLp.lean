@@ -644,8 +644,8 @@ instance instboundedSMul [SeminormedRing 𝕜] [∀ i, SeminormedAddCommGroup (�
       exact Finset.sum_le_sum fun i _ => NNReal.rpow_le_rpow (nnnorm_smul_le _ _) hp0.le
 
 /-- The product of finitely many normed spaces is a normed space, with the `L^p` norm. -/
-instance normedSpace [NormedField 𝕜] [∀ i, SeminormedAddCommGroup (β i)] [∀ i, NormedSpace 𝕜 (β i)] :
-    NormedSpace 𝕜 (PiLp p β) where
+instance normedSpace [NormedField 𝕜] [∀ i, SeminormedAddCommGroup (β i)]
+    [∀ i, NormedSpace 𝕜 (β i)] : NormedSpace 𝕜 (PiLp p β) where
   norm_smul_le := norm_smul_le
 #align pi_Lp.normed_space PiLp.normedSpace
 
