@@ -143,7 +143,7 @@ lemma isIntegralCurveOn_iff_isIntegralCurveAt (hs : IsOpen s) :
 lemma IsIntegralCurveOn.hasDerivAt (hγ : IsIntegralCurveOn γ v s) {t : ℝ} (ht : t ∈ s)
     (hsrc : γ t ∈ (extChartAt I (γ t₀)).source) :
     HasDerivAt ((extChartAt I (γ t₀)) ∘ γ)
-      ((tangentCoordChange I (γ t) (γ t₀) (γ t)) (v (γ t))) t := by
+      (tangentCoordChange I (γ t) (γ t₀) (γ t) (v (γ t))) t := by
   -- turn `HasDerivAt` into comp of `HasMFDerivAt`
   have hsrc := extChartAt_source I (γ t₀) ▸ hsrc
   rw [hasDerivAt_iff_hasFDerivAt, ← hasMFDerivAt_iff_hasFDerivAt]

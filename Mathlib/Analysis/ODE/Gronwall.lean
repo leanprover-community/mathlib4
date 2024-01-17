@@ -278,7 +278,7 @@ theorem ODE_solution_unique_of_mem_set_Ioo {v : ℝ → E → E} {s : ℝ → Se
   apply EqOn.union
   · -- case `t ≤ t₀`: show `fun t ↦ f_or_g (-t)` solves `-v (-t)` within `s (-t)` by composition,
     -- so we can use the `Ico` version of the uniqueness lemma backwards in time
-    have hv' (t) : LipschitzOnWith K (Neg.neg ∘ (v (-t))) (s (-t)) := by
+    have hv' t : LipschitzOnWith K (Neg.neg ∘ (v (-t))) (s (-t)) := by
       rw [← one_mul K]
       exact LipschitzWith.id.neg.comp_lipschitzOnWith (hv _)
     have : EqOn (f ∘ Neg.neg) (g ∘ Neg.neg) (Ico (-t₀) (-a)) := by
