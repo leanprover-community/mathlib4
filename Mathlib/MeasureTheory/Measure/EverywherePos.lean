@@ -11,11 +11,26 @@ import Mathlib.MeasureTheory.Measure.Haar.Basic
 /-!
 # Everywhere positive sets in measure spaces
 
-A set `s` in a topological space with a measure `μ` is *completely positive*
-(also called *self-supporting*) if any neighborhood `n` of any point of `s`
-satisfies `μ (s ∩ n) > 0`.
+A set `s` in a topological space with a measure `μ` is *everywhere positive* (also called
+*self-supporting*) if any neighborhood `n` of any point of `s` satisfies `μ (s ∩ n) > 0`.
 
+## Main definitions and results
 
+* `μ.IsEverywherePos s` registers that, for any point in `s`, all its neighborhoods have positive
+  measure inside `s`.
+* `μ.everywherePosSubset s` is the subset of `s` made of those points all of whose neighborhoods
+  have positive measure inside `s`.
+* `everywherePosSubset_ae_eq` shows that `s` and `μ.everywherePosSubset s` coincide almost
+  everywhere if `μ` is inner regular and `s` is measurable.
+* `isEverywherePos_everywherePosSubset` shows that `μ.everywherePosSubset s` satisfies the property
+  `μ.IsEverywherePos` if `μ` is inner regular and `s` is measurable.
+
+The latter two statements have also versions when `μ` is inner regular for finite measure sets,
+assuming additionally that `s` has finite measure.
+
+* `IsEverywherePos.IsGdelta` proves that an everywhere positive compact closed set is a Gδ set,
+  in a topological group with a left-invariant measure. This is a nontrivial statement, used
+  crucially in the study of the uniqueness of Haar measures.
 -/
 
 open scoped Topology ENNReal
@@ -36,9 +51,10 @@ neighborhoods have positive measure inside the set. -/
 @[pp_dot] def everywherePosSubset (μ : Measure α) (s : Set α) : Set α :=
   {x | x ∈ s ∧ ∀ n ∈ 𝓝[s] x, 0 < μ n}
 
-lemma everywherePosSubset_subset (s : Set α) (μ : Measure α) : μ.everywherePosSubset s ⊆ s :=
+lemma everywherePosSubset_subset (μ : Measure α) (s : Set α) : μ.everywherePosSubset s ⊆ s :=
   fun _x hx ↦ hx.1
 
+/-- The everywhere positive subset of a set is obtained by removing an open set. -/
 lemma exists_isOpen_everywherePosSubset_eq_diff (μ : Measure α) (s : Set α) :
     ∃ u, IsOpen u ∧ μ.everywherePosSubset s = s \ u := by
   refine ⟨{x | ∃ n ∈ 𝓝[s] x, μ n = 0}, ?_, by ext x; simp [everywherePosSubset, zero_lt_iff]⟩
@@ -75,24 +91,80 @@ protected lemma _root_.IsCompact.everywherePosSubset (hs : IsClosed s) :
   rw [hu]
   exact hs.sdiff u_open
 
+/-- Any compact set contained in `s \ μ.everywherePosSubset s` has zero measure. -/
 lemma measure_eq_zero_of_subset_diff_everywherePosSubset
-    (hk : IsCompact k) (h'k : k ⊆ s \ μ.everywherePosSubset s) : μ k = 0 := by sorry
+    (hk : IsCompact k) (h'k : k ⊆ s \ μ.everywherePosSubset s) : μ k = 0 := by
+  apply hk.induction_on (p := fun t ↦ μ t = 0)
+  · exact measure_empty
+  · exact fun s t hst ht ↦ measure_mono_null hst ht
+  · exact fun s t hs ht ↦ measure_union_null hs ht
+  · intro x hx
+    obtain ⟨u, ux, hu⟩ : ∃ u ∈ 𝓝[s] x, μ u = 0 :=
+      by simpa [everywherePosSubset, (h'k hx).1] using (h'k hx).2
+    exact ⟨u, nhdsWithin_mono x (h'k.trans (diff_subset _ _)) ux, hu⟩
 
-lemma everywherePosSubset_ae_eq [InnerRegular μ] (hs : MeasurableSet s) :
-    μ.everywherePosSubset s =ᵐ[μ] s := by sorry
+/-- In a space with an inner regular measure, any measurable set coincides almost everywhere with
+its everywhere positive subset. -/
+lemma everywherePosSubset_ae_eq [OpensMeasurableSpace α] [InnerRegular μ] (hs : MeasurableSet s) :
+    μ.everywherePosSubset s =ᵐ[μ] s := by
+  simp only [ae_eq_set, diff_eq_empty.mpr (everywherePosSubset_subset μ s), OuterMeasure.empty',
+    true_and, (hs.diff hs.everywherePosSubset).measure_eq_iSup_isCompact, ENNReal.iSup_eq_zero]
+  intro k hk h'k
+  exact measure_eq_zero_of_subset_diff_everywherePosSubset h'k hk
 
-lemma everywherePosSubset_ae_eq_of_measure_ne_top [InnerRegularCompactLTTop μ]
-    (hs : MeasurableSet s) (h's : μ s ≠ ∞) :
-    μ.everywherePosSubset s =ᵐ[μ] s := by sorry
+/-- In a space with an inner regular measure for finite measure sets, any measurable set of finite
+measure coincides almost everywhere with its everywhere positive subset. -/
+lemma everywherePosSubset_ae_eq_of_measure_ne_top
+    [OpensMeasurableSpace α] [InnerRegularCompactLTTop μ] (hs : MeasurableSet s) (h's : μ s ≠ ∞) :
+    μ.everywherePosSubset s =ᵐ[μ] s := by
+  have A : μ (s \ μ.everywherePosSubset s) ≠ ∞ :=
+    ((measure_mono (diff_subset _ _ )).trans_lt h's.lt_top).ne
+  simp only [ae_eq_set, diff_eq_empty.mpr (everywherePosSubset_subset μ s), OuterMeasure.empty',
+    true_and, (hs.diff hs.everywherePosSubset).measure_eq_iSup_isCompact_of_ne_top A,
+    ENNReal.iSup_eq_zero]
+  intro k hk h'k
+  exact measure_eq_zero_of_subset_diff_everywherePosSubset h'k hk
 
-lemma isEverywherePos_everywherePosSubset [InnerRegular μ] (hs : MeasurableSet s) :
-    μ.IsEverywherePos (μ.everywherePosSubset s) := sorry
+/-- In a space with an inner regular measure, the everywhere positive subset of a measurable set
+is itself everywhere positive. This is not obvious as `μ.everywherePosSubset s` is defined as
+the points whose neighborhoods intersect `s` along positive measure subsets, but this does not
+say they also intersect `μ.everywherePosSubset s` along positive measure subsets. -/
+lemma isEverywherePos_everywherePosSubset
+    [OpensMeasurableSpace α] [InnerRegular μ] (hs : MeasurableSet s) :
+    μ.IsEverywherePos (μ.everywherePosSubset s) := by
+  intro x hx n hn
+  rcases mem_nhdsWithin_iff_exists_mem_nhds_inter.1 hn with ⟨u, u_mem, hu⟩
+  have A : 0 < μ (u ∩ s) := by
+    have : u ∩ s ∈ 𝓝[s] x := by rw [inter_comm]; exact inter_mem_nhdsWithin s u_mem
+    exact hx.2 _ this
+  have B : (u ∩ μ.everywherePosSubset s : Set α) =ᵐ[μ] (u ∩ s : Set α) :=
+    ae_eq_set_inter (ae_eq_refl _) (everywherePosSubset_ae_eq hs)
+  rw [← B.measure_eq] at A
+  exact A.trans_le (measure_mono hu)
 
-lemma isEverywherePos_everywherePosSubset_of_measure_ne_top [InnerRegularCompactLTTop μ]
-    (hs : MeasurableSet s) (h's : μ s ≠ ∞) :
-    μ.IsEverywherePos (μ.everywherePosSubset s) := sorry
+/-- In a space with an inner regular measure for finite measure sets, the everywhere positive subset
+of a measurable set of finite measure is itself everywhere positive. This is not obvious as
+`μ.everywherePosSubset s` is defined as the points whose neighborhoods intersect `s` along positive
+measure subsets, but this does not say they also intersect `μ.everywherePosSubset s` along positive
+measure subsets.-/
+lemma isEverywherePos_everywherePosSubset_of_measure_ne_top
+    [OpensMeasurableSpace α] [InnerRegularCompactLTTop μ] (hs : MeasurableSet s) (h's : μ s ≠ ∞) :
+    μ.IsEverywherePos (μ.everywherePosSubset s) := by
+  intro x hx n hn
+  rcases mem_nhdsWithin_iff_exists_mem_nhds_inter.1 hn with ⟨u, u_mem, hu⟩
+  have A : 0 < μ (u ∩ s) := by
+    have : u ∩ s ∈ 𝓝[s] x := by rw [inter_comm]; exact inter_mem_nhdsWithin s u_mem
+    exact hx.2 _ this
+  have B : (u ∩ μ.everywherePosSubset s : Set α) =ᵐ[μ] (u ∩ s : Set α) :=
+    ae_eq_set_inter (ae_eq_refl _) (everywherePosSubset_ae_eq_of_measure_ne_top hs h's)
+  rw [← B.measure_eq] at A
+  exact A.trans_le (measure_mono hu)
 
-lemma IsEverywherePos.IsGdelta {G : Type*} [Group G] [TopologicalSpace G] [TopologicalGroup G]
+/-- If a compact closed set is everywhere positive with respect to a left-invariant measure on a
+topological group, then it is a Gδ set. This is nontrivial, as there is no second-countability or
+metrizability assumption in the statement, so a general compact closed set has no reason to be
+a countable intersection of open sets. -/
+theorem IsEverywherePos.IsGdelta {G : Type*} [Group G] [TopologicalSpace G] [TopologicalGroup G]
     [MeasurableSpace G] [OpensMeasurableSpace G] {μ : Measure G}
     [IsMulLeftInvariant μ] [IsFiniteMeasureOnCompacts μ] [InnerRegularCompactLTTop μ] {k : Set G}
     (h : μ.IsEverywherePos k) (hk : IsCompact k) (h'k : IsClosed k) :
