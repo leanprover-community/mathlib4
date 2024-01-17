@@ -5,6 +5,7 @@ Authors: Anne Baanen
 -/
 import Mathlib.Algebra.Order.EuclideanAbsoluteValue
 import Mathlib.Data.Polynomial.FieldDivision
+import Mathlib.Algebra.GroupPower.Order
 
 #align_import data.polynomial.degree.card_pow_degree from "leanprover-community/mathlib"@"85d9f2189d9489f9983c0d01536575b0233bd305"
 

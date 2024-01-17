@@ -309,7 +309,7 @@ use outside this file. -/
 theorem iSup_edist_ne_top_aux {ι : Type*} [Finite ι] {α : ι → Type*}
     [∀ i, PseudoMetricSpace (α i)] (f g : PiLp ∞ α) : (⨆ i, edist (f i) (g i)) ≠ ⊤ := by
   cases nonempty_fintype ι
-  obtain ⟨M, hM⟩ := Fintype.exists_le fun i => (⟨dist (f i) (g i), dist_nonneg⟩ : ℝ≥0)
+  obtain ⟨M, hM⟩ := Finite.exists_le fun i => (⟨dist (f i) (g i), dist_nonneg⟩ : ℝ≥0)
   refine' ne_of_lt ((iSup_le fun i => _).trans_lt (@ENNReal.coe_lt_top M))
   simp only [edist, PseudoMetricSpace.edist_dist, ENNReal.ofReal_eq_coe_nnreal dist_nonneg]
   exact mod_cast hM i
@@ -353,7 +353,7 @@ def pseudoMetricAux : PseudoMetricSpace (PiLp p α) :=
               rw [PseudoMetricSpace.edist_dist]
               -- Porting note: `le_ciSup` needed some help
               exact ENNReal.ofReal_le_ofReal
-                (le_ciSup (Fintype.bddAbove_range (fun k => dist (f k) (g k))) i)
+                (le_ciSup (Finite.bddAbove_range (fun k => dist (f k) (g k))) i)
     · have A : ∀ i, edist (f i) (g i) ^ p.toReal ≠ ⊤ := fun i =>
         ENNReal.rpow_ne_top_of_nonneg (zero_le_one.trans h) (edist_ne_top _ _)
       simp only [edist_eq_sum (zero_lt_one.trans_le h), dist_edist, ENNReal.toReal_rpow,
@@ -672,7 +672,7 @@ def equivₗᵢ : PiLp ∞ β ≃ₗᵢ[𝕜] ∀ i, β i :=
       suffices (Finset.univ.sup fun i => ‖f i‖₊) = ⨆ i, ‖f i‖₊ by
         simpa only [NNReal.coe_iSup] using congr_arg ((↑) : ℝ≥0 → ℝ) this
       refine'
-        antisymm (Finset.sup_le fun i _ => le_ciSup (Fintype.bddAbove_range fun i => ‖f i‖₊) _) _
+        antisymm (Finset.sup_le fun i _ => le_ciSup (Finite.bddAbove_range fun i => ‖f i‖₊) _) _
       cases isEmpty_or_nonempty ι
       · simp only [ciSup_of_empty, Finset.univ_eq_empty, Finset.sup_empty, le_rfl]
       · -- Porting note: `Finset.le_sup` needed some helps
