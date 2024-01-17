@@ -445,23 +445,21 @@ theorem sum_pow_char {ι : Type*} (s : Finset ι) (f : ι → R) :
 variable (n : ℕ)
 
 theorem list_sum_pow_char_pow (l : List R) : l.sum ^ p ^ n = (l.map (· ^ p ^ n : R → R)).sum := by
-  induction' n with n ih
-  · simp_rw [pow_zero, pow_one, List.map_id']
-  simp_rw [pow_succ', pow_mul, ih, list_sum_pow_char, List.map_map]
-  rfl
+  induction n
+  case zero => simp_rw [pow_zero, pow_one, List.map_id']
+  case succ n ih => simp_rw [pow_succ', pow_mul, ih, list_sum_pow_char, List.map_map]; rfl
 
 theorem multiset_sum_pow_char_pow (s : Multiset R) :
     s.sum ^ p ^ n = (s.map (· ^ p ^ n : R → R)).sum := by
-  induction' n with n ih
-  · simp_rw [pow_zero, pow_one, Multiset.map_id']
-  simp_rw [pow_succ', pow_mul, ih, multiset_sum_pow_char, Multiset.map_map]
-  rfl
+  induction n
+  case zero => simp_rw [pow_zero, pow_one, Multiset.map_id']
+  case succ n ih => simp_rw [pow_succ', pow_mul, ih, multiset_sum_pow_char, Multiset.map_map]; rfl
 
 theorem sum_pow_char_pow {ι : Type*} (s : Finset ι) (f : ι → R) :
     (∑ i in s, f i) ^ p ^ n = ∑ i in s, f i ^ p ^ n := by
-  induction' n with n ih
-  · simp_rw [pow_zero, pow_one]
-  simp_rw [pow_succ', pow_mul, ih, sum_pow_char]
+  induction n
+  case zero => simp_rw [pow_zero, pow_one]
+  case succ n ih => simp_rw [pow_succ', pow_mul, ih, sum_pow_char]
 
 end CommSemiring
 
