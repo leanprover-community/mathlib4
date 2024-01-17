@@ -98,9 +98,9 @@ namespace Poly
 
 section
 
-instance funLike : DFunLike (Poly α) (α → ℕ) fun _ => ℤ :=
+instance instDFunLike : DFunLike (Poly α) (α → ℕ) fun _ => ℤ :=
   ⟨Subtype.val, Subtype.val_injective⟩
-#align poly.fun_like Poly.funLike
+#align poly.fun_like Poly.instDFunLike
 
 -- Porting note: This instance is not necessary anymore
 -- /-- Helper instance for when there are too many metavariables to apply `DFunLike.hasCoeToFun`

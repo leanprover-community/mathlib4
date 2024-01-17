@@ -59,7 +59,7 @@ structure AffineMap (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*} (P2 : Typ
 induces a corresponding linear map from `V1` to `V2`. -/
 notation:25 P1 " →ᵃ[" k:25 "] " P2:0 => AffineMap k P1 P2
 
-instance AffineMap.funLike (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*} (P2 : Type*)
+instance AffineMap.instDFunLike (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*} (P2 : Type*)
     [Ring k] [AddCommGroup V1] [Module k V1] [AffineSpace V1 P1] [AddCommGroup V2] [Module k V2]
     [AffineSpace V2 P2] : DFunLike (P1 →ᵃ[k] P2) P1 fun _ => P2
     where
@@ -69,7 +69,7 @@ instance AffineMap.funLike (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*} (P
     congr with v
     apply vadd_right_cancel (f p)
     erw [← f_add, h, ← g_add]
-#align affine_map.fun_like AffineMap.funLike
+#align affine_map.fun_like AffineMap.instDFunLike
 
 instance AffineMap.hasCoeToFun (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*} (P2 : Type*)
     [Ring k] [AddCommGroup V1] [Module k V1] [AffineSpace V1 P1] [AddCommGroup V2] [Module k V2]

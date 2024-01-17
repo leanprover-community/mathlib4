@@ -154,11 +154,11 @@ theorem map_mul_map_eq_map_mul_map [FreimanHomClass F A β 2] (f : F) (ha : a �
 namespace FreimanHom
 
 @[to_additive]
-instance funLike : DFunLike (A →*[n] β) α fun _ => β where
+instance instDFunLike : DFunLike (A →*[n] β) α fun _ => β where
   coe := toFun
   coe_injective' f g h := by cases f; cases g; congr
-#align freiman_hom.fun_like FreimanHom.funLike
-#align add_freiman_hom.fun_like AddFreimanHom.funLike
+#align freiman_hom.fun_like FreimanHom.instDFunLike
+#align add_freiman_hom.fun_like AddFreimanHom.instDFunLike
 
 @[to_additive addFreimanHomClass]
 instance freimanHomClass : FreimanHomClass (A →*[n] β) A β n where

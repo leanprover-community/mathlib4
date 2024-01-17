@@ -48,10 +48,10 @@ namespace ContMDiffMap
 
 variable {I} {I'} {M} {M'} {n}
 
-instance funLike : DFunLike C^n⟮I, M; I', M'⟯ M fun _ => M' where
+instance instDFunLike : DFunLike C^n⟮I, M; I', M'⟯ M fun _ => M' where
   coe := Subtype.val
   coe_injective' := Subtype.coe_injective
-#align cont_mdiff_map.fun_like ContMDiffMap.funLike
+#align cont_mdiff_map.fun_like ContMDiffMap.instDFunLike
 
 protected theorem contMDiff (f : C^n⟮I, M; I', M'⟯) : ContMDiff I I' n f :=
   f.prop
@@ -65,7 +65,7 @@ protected theorem smooth (f : C^∞⟮I, M; I', M'⟯) : Smooth I I' f :=
 -- instance : Coe C^n⟮I, M; I', M'⟯ C(M, M') :=
 --   ⟨fun f => ⟨f, f.contMDiff.continuous⟩⟩
 
-attribute [to_additive_ignore_args 21] ContMDiffMap ContMDiffMap.funLike
+attribute [to_additive_ignore_args 21] ContMDiffMap ContMDiffMap.instDFunLike
 
 variable {f g : C^n⟮I, M; I', M'⟯}
 
