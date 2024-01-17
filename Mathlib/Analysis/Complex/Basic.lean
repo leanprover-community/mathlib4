@@ -9,7 +9,6 @@ import Mathlib.Data.Complex.Exponential
 import Mathlib.Data.IsROrC.Basic
 import Mathlib.Topology.Algebra.InfiniteSum.Module
 import Mathlib.Topology.Instances.RealVectorSpace
-import Mathlib.Data.Complex.Module
 
 #align_import analysis.complex.basic from "leanprover-community/mathlib"@"3f655f5297b030a87d641ad4e825af8d9679eb0b"
 

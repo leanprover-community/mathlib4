@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Yury Kudriashov, Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Module.OrderedSMul
+import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Analysis.Convex.Star
 import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace
-import Mathlib.Algebra.Order.Monoid.OrderDual
 
 #align_import analysis.convex.basic from "leanprover-community/mathlib"@"92bd7b1ffeb306a89f450bee126ddd8a284c259d"
 

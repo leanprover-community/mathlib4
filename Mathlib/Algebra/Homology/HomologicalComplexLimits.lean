@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.HomologicalComplex
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
-import Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
+import Mathlib.CategoryTheory.Limits.Preserves.Finite
 
 /-!
 # Limits and colimits in the category of homological complexes

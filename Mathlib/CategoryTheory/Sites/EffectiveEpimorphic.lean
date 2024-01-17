@@ -5,10 +5,10 @@ Authors: Adam Topaz
 -/
 
 import Mathlib.CategoryTheory.Sites.Sieves
-import Mathlib.Tactic.ApplyFun
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
+import Mathlib.Tactic.ApplyFun
 
 /-!
 

@@ -8,10 +8,10 @@ import Mathlib.Algebra.BigOperators.NatAntidiagonal
 import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Data.Nat.Choose.Central
-import Mathlib.Data.Tree
-import Mathlib.Tactic.FieldSimp
 import Mathlib.Data.Int.CharZero
 import Mathlib.Data.Rat.Order
+import Mathlib.Data.Tree
+import Mathlib.Tactic.FieldSimp
 
 #align_import combinatorics.catalan from "leanprover-community/mathlib"@"26b40791e4a5772a4e53d0e28e4df092119dc7da"
 

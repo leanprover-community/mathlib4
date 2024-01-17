@@ -9,8 +9,8 @@ import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 import Mathlib.CategoryTheory.Preadditive.LeftExact
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.Algebra.Homology.Exact
-import Mathlib.Tactic.TFAE
 import Mathlib.Data.List.TFAE
+import Mathlib.Tactic.TFAE
 
 #align_import category_theory.abelian.exact from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 

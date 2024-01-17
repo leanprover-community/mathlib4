@@ -7,7 +7,6 @@ import Mathlib.Algebra.Algebra.Unitization
 import Mathlib.Algebra.Star.NonUnitalSubalgebra
 import Mathlib.Algebra.Star.Subalgebra
 import Mathlib.GroupTheory.GroupAction.Ring
-import Mathlib.GroupTheory.GroupAction.Ring
 
 /-!
 # Relating unital and non-unital substructures

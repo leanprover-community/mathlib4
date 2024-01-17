@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Shift.Opposite
 import Mathlib.CategoryTheory.Shift.Pullback
-import Mathlib.Tactic.Linarith
 import Mathlib.CategoryTheory.Triangulated.Pretriangulated
+import Mathlib.Tactic.Linarith
 
 /-!
 # The (pre)triangulated structure on the opposite category

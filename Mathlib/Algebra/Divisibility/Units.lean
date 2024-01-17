@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Amelia Livingston, Yury Kudryashov,
 Neil Strickland, Aaron Anderson
 -/
+import Std.Classes.Dvd
 import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Group.Units
-import Std.Classes.Dvd
 
 #align_import algebra.divisibility.units from "leanprover-community/mathlib"@"e574b1a4e891376b0ef974b926da39e05da12a06"
 

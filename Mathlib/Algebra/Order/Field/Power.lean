@@ -5,11 +5,11 @@ Authors: Robert Lewis, Leonardo de Moura, Mario Carneiro, Floris van Doorn
 -/
 import Mathlib.Algebra.Parity
 import Mathlib.Algebra.CharZero.Lemmas
+import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.GroupWithZero.Power
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Ring.Pow
 import Mathlib.Data.Int.Bitwise
-import Mathlib.Algebra.GroupPower.Lemmas
 
 #align_import algebra.order.field.power from "leanprover-community/mathlib"@"acb3d204d4ee883eb686f45d486a2a6811a01329"
 

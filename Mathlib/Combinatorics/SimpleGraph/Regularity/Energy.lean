@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Combinatorics.SimpleGraph.Density
 import Mathlib.Data.Rat.BigOperators
-import Mathlib.Algebra.GroupPower.Order
 
 #align_import combinatorics.simple_graph.regularity.energy from "leanprover-community/mathlib"@"bf7ef0e83e5b7e6c1169e97f055e58a2e4e9d52d"
 

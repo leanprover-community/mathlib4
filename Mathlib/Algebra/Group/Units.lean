@@ -6,10 +6,9 @@ Authors: Kenny Lau, Mario Carneiro, Johannes Hölzl, Chris Hughes, Jens Wagemake
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Logic.Unique
+import Mathlib.Logic.Function.Basic
 import Mathlib.Tactic.Nontriviality
 import Mathlib.Tactic.Lift
-import Mathlib.Tactic.Nontriviality
-import Mathlib.Logic.Function.Basic
 
 #align_import algebra.group.units from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 

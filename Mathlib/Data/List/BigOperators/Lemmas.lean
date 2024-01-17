@@ -9,13 +9,12 @@ import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.GroupWithZero.Commute
 import Mathlib.Algebra.GroupWithZero.Divisibility
+import Mathlib.Algebra.Opposites
+import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Algebra.Ring.Commute
 import Mathlib.Data.Int.Units
-import Mathlib.Algebra.Opposites
-import Mathlib.Algebra.Order.Monoid.OrderDual
-import Mathlib.Algebra.Ring.Divisibility.Basic
 
 #align_import data.list.big_operators.lemmas from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 

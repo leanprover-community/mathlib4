@@ -5,8 +5,8 @@ Authors: Jireh Loreaux
 -/
 import Mathlib.Algebra.Algebra.NonUnitalHom
 import Mathlib.Data.Set.UnionLift
-import Mathlib.RingTheory.NonUnitalSubring.Basic
 import Mathlib.LinearAlgebra.Span
+import Mathlib.RingTheory.NonUnitalSubring.Basic
 
 /-!
 # Non-unital Subalgebras over Commutative Semirings

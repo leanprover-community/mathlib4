@@ -175,7 +175,7 @@
   "Std.Util.LibraryNote",
   "Std.Util.ProofWanted",
   "Std.Util.TermUnsafe"],
- "ignoreAll": ["Std.Tactic.Basic"],
+ "ignoreAll": ["Std.Tactic.Basic", "Mathlib.Mathport.Syntax"],
  "ignore":
  {"Std.Tactic.OpenPrivate": ["Lean.Parser.Module"],
   "Std.Tactic.Omega.OmegaM": ["Std.Tactic.Omega.Int"],

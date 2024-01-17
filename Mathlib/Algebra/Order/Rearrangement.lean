@@ -5,11 +5,11 @@ Authors: Mantas Bakšys
 -/
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Algebra.Order.Module.OrderedSMul
+import Mathlib.Algebra.Order.Group.Instances
 import Mathlib.Data.Prod.Lex
 import Mathlib.GroupTheory.Perm.Support
 import Mathlib.Order.Monotone.Monovary
 import Mathlib.Tactic.Abel
-import Mathlib.Algebra.Order.Group.Instances
 
 #align_import algebra.order.rearrangement from "leanprover-community/mathlib"@"b3f25363ae62cb169e72cd6b8b1ac97bacf21ca7"
 

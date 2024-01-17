@@ -3,9 +3,9 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Tactic.Positivity.Core
 import Mathlib.Algebra.Order.Module.Synonym
 import Mathlib.Algebra.Order.Ring.Lemmas
+import Mathlib.Tactic.Positivity.Core
 
 /-!
 # Monotonicity of scalar multiplication by positive elements

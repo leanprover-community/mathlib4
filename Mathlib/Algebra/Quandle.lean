@@ -5,9 +5,9 @@ Authors: Kyle Miller
 -/
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.Aut
+import Mathlib.Algebra.Opposites
 import Mathlib.Data.ZMod.Defs
 import Mathlib.Tactic.Ring
-import Mathlib.Algebra.Opposites
 
 #align_import algebra.quandle from "leanprover-community/mathlib"@"28aa996fc6fb4317f0083c4e6daf79878d81be33"
 /-!

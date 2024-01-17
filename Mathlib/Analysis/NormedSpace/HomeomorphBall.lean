@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Oliver Nash
 -/
 import Mathlib.Topology.PartialHomeomorph
+import Mathlib.Analysis.Normed.Group.AddTorsor
 import Mathlib.Analysis.NormedSpace.Pointwise
 import Mathlib.Data.Real.Sqrt
-import Mathlib.Analysis.Normed.Group.AddTorsor
 
 #align_import analysis.normed_space.basic from "leanprover-community/mathlib"@"bc91ed7093bf098d253401e69df601fc33dde156"
 

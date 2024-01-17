@@ -3,9 +3,8 @@ Copyright (c) 2023 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
-
-import Mathlib.Analysis.NormedSpace.ProdLp
 import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.Analysis.NormedSpace.ProdLp
 
 /-!
 # `L²` inner product space structure on products of inner product spaces

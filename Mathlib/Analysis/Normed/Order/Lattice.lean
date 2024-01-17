@@ -6,7 +6,6 @@ Authors: Christopher Hoskin
 import Mathlib.Algebra.Order.Group.PosPart
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Topology.Order.Lattice
-import Mathlib.Algebra.Order.Group.PosPart
 
 #align_import analysis.normed.order.lattice from "leanprover-community/mathlib"@"5dc275ec639221ca4d5f56938eb966f6ad9bc89f"
 

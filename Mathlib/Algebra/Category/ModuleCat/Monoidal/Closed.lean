@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Scott Morrison, Jakob von Raumer
 -/
 import Mathlib.CategoryTheory.Closed.Monoidal
-import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
 import Mathlib.CategoryTheory.Linear.Yoneda
+import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
 
 #align_import algebra.category.Module.monoidal.closed from "leanprover-community/mathlib"@"74403a3b2551b0970855e14ef5e8fd0d6af1bfc2"
 

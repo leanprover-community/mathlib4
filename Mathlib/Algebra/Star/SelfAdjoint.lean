@@ -3,10 +3,10 @@ Copyright (c) 2021 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
-import Mathlib.Algebra.Star.Pi
-import Mathlib.GroupTheory.Subgroup.Basic
 import Mathlib.Init.Data.Subtype.Basic
 import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Star.Pi
+import Mathlib.GroupTheory.Subgroup.Basic
 
 #align_import algebra.star.self_adjoint from "leanprover-community/mathlib"@"a6ece35404f60597c651689c1b46ead86de5ac1b"
 

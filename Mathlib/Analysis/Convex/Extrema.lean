@@ -3,10 +3,10 @@ Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
+import Mathlib.Algebra.Order.Group.Instances
 import Mathlib.Analysis.Convex.Function
 import Mathlib.Topology.Algebra.Affine
 import Mathlib.Topology.MetricSpace.PseudoMetric
-import Mathlib.Algebra.Order.Group.Instances
 
 #align_import analysis.convex.extrema from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 

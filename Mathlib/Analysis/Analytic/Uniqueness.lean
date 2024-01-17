@@ -6,7 +6,6 @@ Authors: Sébastien Gouëzel
 import Mathlib.Analysis.Analytic.Linear
 import Mathlib.Analysis.Analytic.Composition
 import Mathlib.Analysis.NormedSpace.Completion
-import Mathlib.Analysis.Analytic.Composition
 
 #align_import analysis.analytic.uniqueness from "leanprover-community/mathlib"@"a3209ddf94136d36e5e5c624b10b2a347cc9d090"
 

@@ -5,10 +5,10 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Algebra.Group.Units
-import Mathlib.Tactic.Nontriviality
-import Mathlib.Util.AssertExists
-import Mathlib.Tactic.Contrapose
 import Mathlib.Logic.Basic
+import Mathlib.Tactic.Nontriviality
+import Mathlib.Tactic.Contrapose
+import Mathlib.Util.AssertExists
 
 #align_import algebra.group_with_zero.units.basic from "leanprover-community/mathlib"@"df5e9937a06fdd349fc60106f54b84d47b1434f0"
 

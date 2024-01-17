@@ -7,8 +7,8 @@ Authors: Scott Carnahan
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.Group.Prod
-import Mathlib.GroupTheory.GroupAction.Prod
 import Mathlib.Algebra.Group.Pi
+import Mathlib.GroupTheory.GroupAction.Prod
 import Mathlib.Data.Int.Basic
 import Mathlib.Data.Nat.Cast.Basic
 

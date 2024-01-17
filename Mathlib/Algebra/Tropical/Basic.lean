@@ -3,16 +3,12 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
+import Mathlib.Algebra.GroupPower.CovariantClass
+import Mathlib.Algebra.Order.Monoid.WithTop
 import Mathlib.Algebra.SMulWithZero
 import Mathlib.Order.Hom.Basic
 import Mathlib.Data.Nat.Order.Basic
-import Mathlib.Algebra.GroupPower.CovariantClass
-import Mathlib.Algebra.Order.Monoid.WithTop
-import Mathlib.Algebra.GroupPower.CovariantClass
 import Mathlib.Data.Nat.Units
-import Mathlib.Order.Hom.Basic
-import Mathlib.Algebra.Order.Monoid.WithTop
-import Mathlib.Data.Nat.Order.Basic
 
 #align_import algebra.tropical.basic from "leanprover-community/mathlib"@"9116dd6709f303dcf781632e15fdef382b0fc579"
 

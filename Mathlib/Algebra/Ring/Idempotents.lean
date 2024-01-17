@@ -5,9 +5,9 @@ Authors: Christopher Hoskin
 -/
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.Ring.Defs
+import Mathlib.Data.Subtype
 import Mathlib.Order.Basic
 import Mathlib.Tactic.Conv
-import Mathlib.Data.Subtype
 
 #align_import algebra.ring.idempotents from "leanprover-community/mathlib"@"655994e298904d7e5bbd1e18c95defd7b543eb94"
 

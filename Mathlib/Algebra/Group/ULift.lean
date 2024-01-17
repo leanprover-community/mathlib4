@@ -7,7 +7,6 @@ import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.GroupWithZero.InjSurj
 import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Logic.Nontrivial.Basic
-import Mathlib.Logic.Nontrivial.Basic
 
 #align_import algebra.group.ulift from "leanprover-community/mathlib"@"564bcc44d2b394a50c0cd6340c14a6b02a50a99a"
 

@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Eric Wieser
 -/
 import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.GroupTheory.GroupAction.BigOperators
 import Mathlib.LinearAlgebra.Prod
-import Mathlib.Algebra.BigOperators.Pi
 
 #align_import algebra.triv_sq_zero_ext from "leanprover-community/mathlib"@"ce7e9d53d4bbc38065db3b595cd5bd73c323bc1d"
 

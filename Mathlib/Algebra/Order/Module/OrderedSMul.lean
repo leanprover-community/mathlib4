@@ -3,6 +3,7 @@ Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
+import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.Order.Module.Defs
@@ -10,8 +11,6 @@ import Mathlib.Algebra.Order.Monoid.Prod
 import Mathlib.Algebra.Order.Pi
 import Mathlib.Tactic.GCongr.Core
 import Mathlib.Tactic.Positivity
-import Mathlib.Algebra.Module.Basic
-import Mathlib.Algebra.Order.Pi
 
 #align_import algebra.order.smul from "leanprover-community/mathlib"@"3ba15165bd6927679be7c22d6091a87337e3cd0c"
 

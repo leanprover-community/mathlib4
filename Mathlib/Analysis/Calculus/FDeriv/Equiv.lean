@@ -3,9 +3,9 @@ Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 -/
+import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 import Mathlib.Analysis.Calculus.FDeriv.Linear
 import Mathlib.Analysis.Calculus.FDeriv.Comp
-import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 
 #align_import analysis.calculus.fderiv.equiv from "leanprover-community/mathlib"@"e3fb84046afd187b710170887195d50bada934ee"
 

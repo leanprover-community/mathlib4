@@ -3,10 +3,10 @@ Copyright (c) 2021 Henry Swanson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henry Swanson
 -/
+import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Combinatorics.Derangements.Basic
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Tactic.Ring
-import Mathlib.Algebra.BigOperators.Ring
 
 #align_import combinatorics.derangements.finite from "leanprover-community/mathlib"@"c3019c79074b0619edb4b27553a91b2e82242395"
 

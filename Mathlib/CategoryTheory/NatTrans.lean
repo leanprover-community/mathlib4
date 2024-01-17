@@ -3,8 +3,8 @@ Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tim Baumann, Stephen Morgan, Scott Morrison, Floris van Doorn
 -/
-import Mathlib.Tactic.CategoryTheory.Reassoc
 import Mathlib.CategoryTheory.Functor.Basic
+import Mathlib.Tactic.CategoryTheory.Reassoc
 
 #align_import category_theory.natural_transformation from "leanprover-community/mathlib"@"8350c34a64b9bc3fc64335df8006bffcadc7baa6"
 

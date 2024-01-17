@@ -3,13 +3,13 @@ Copyright (c) 2020 Kevin Buzzard, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Bhavik Mehta
 -/
+import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Yoneda
 import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 import Mathlib.CategoryTheory.Sites.SheafOfTypes
 import Mathlib.CategoryTheory.Sites.EqualizerSheafCondition
-import Mathlib.Algebra.GroupPower.Lemmas
 
 #align_import category_theory.sites.sheaf from "leanprover-community/mathlib"@"2efd2423f8d25fa57cf7a179f5d8652ab4d0df44"
 

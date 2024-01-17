@@ -3,10 +3,10 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Frédéric Dupuis, Heather Macbeth
 -/
+import Mathlib.Algebra.Module.Prod
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Topology.Algebra.Module.Basic
 import Mathlib.LinearAlgebra.Basis
-import Mathlib.Algebra.Module.Prod
 
 #align_import analysis.normed_space.linear_isometry from "leanprover-community/mathlib"@"4601791ea62fea875b488dafc4e6dede19e8363f"
 
