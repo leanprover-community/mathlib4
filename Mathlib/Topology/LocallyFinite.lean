@@ -39,6 +39,14 @@ theorem point_finite (hf : LocallyFinite f) (x : X) : { b | x ∈ f b }.Finite :
   ht.subset fun _b hb => ⟨x, hb, mem_of_mem_nhds hxt⟩
 #align locally_finite.point_finite LocallyFinite.point_finite
 
+@[to_additive]
+theorem exists_finset_mulSupport_eq {M : Type*} [CommMonoid M] {ρ : ι → X → M}
+    (hρ : LocallyFinite fun i ↦ mulSupport <| ρ i) (x₀ : X) :
+    ∃ I : Finset ι, (mulSupport fun i ↦ ρ i x₀) = I := by
+  use (hρ.point_finite x₀).toFinset
+  rw [Finite.coe_toFinset]
+  exact rfl
+
 protected theorem subset (hf : LocallyFinite f) (hg : ∀ i, g i ⊆ f i) : LocallyFinite g := fun a =>
   let ⟨t, ht₁, ht₂⟩ := hf a
   ⟨t, ht₁, ht₂.subset fun i hi => hi.mono <| inter_subset_inter (hg i) Subset.rfl⟩
@@ -233,3 +241,10 @@ theorem LocallyFinite.option_elim' (hf : LocallyFinite f) (s : Set X) :
     LocallyFinite (Option.elim' s f) :=
   locallyFinite_option.2 hf
 #align locally_finite.option_elim LocallyFinite.option_elim'
+
+theorem LocallyFinite.eventually_subset {s : ι → Set X}
+    (hs : LocallyFinite s) (hs' : ∀ i, IsClosed (s i)) (x : X) :
+    ∀ᶠ y in 𝓝 x, {i | y ∈ s i} ⊆ {i | x ∈ s i} := by
+  filter_upwards [hs.iInter_compl_mem_nhds hs' x] with y hy i hi
+  simp only [mem_iInter, mem_compl_iff] at hy
+  exact not_imp_not.mp (hy i) hi
