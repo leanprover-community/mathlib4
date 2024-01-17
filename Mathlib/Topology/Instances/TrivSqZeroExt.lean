@@ -170,7 +170,7 @@ end Topology
 section Uniformity
 variable [UniformSpace R] [UniformSpace M]
 
-instance instUniformSpace: UniformSpace (tsze R M) where
+instance instUniformSpace : UniformSpace (tsze R M) where
   toTopologicalSpace := instTopologicalSpace
   __ := instUniformSpaceProd
 
