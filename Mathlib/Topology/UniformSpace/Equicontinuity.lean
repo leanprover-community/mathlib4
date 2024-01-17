@@ -441,7 +441,7 @@ theorem UniformInducing.uniformEquicontinuous_iff {F : ι → β → α} {u : α
 
 /-- A version of `EquicontinuousAt.closure` applicable to subsets of types which embed continuously
 into `X → α` with the product topology. It turns out we don't need any other condition on the
-embedding than continuity, but in practice this will mostly be applied to `FunLike` types where
+embedding than continuity, but in practice this will mostly be applied to `DFunLike` types where
 the coercion is injective. -/
 theorem EquicontinuousAt.closure' {A : Set Y} {u : Y → X → α} {x₀ : X}
     (hA : EquicontinuousAt (u ∘ (↑) : A → X → α) x₀) (hu : Continuous u) :
@@ -473,7 +473,7 @@ theorem Filter.Tendsto.continuousAt_of_equicontinuousAt {l : Filter ι} [l.NeBot
 
 /-- A version of `Equicontinuous.closure` applicable to subsets of types which embed continuously
 into `X → α` with the product topology. It turns out we don't need any other condition on the
-embedding than continuity, but in practice this will mostly be applied to `FunLike` types where
+embedding than continuity, but in practice this will mostly be applied to `DFunLike` types where
 the coercion is injective. -/
 theorem Equicontinuous.closure' {A : Set Y} {u : Y → X → α}
     (hA : Equicontinuous (u ∘ (↑) : A → X → α)) (hu : Continuous u) :
@@ -495,7 +495,7 @@ theorem Filter.Tendsto.continuous_of_equicontinuousAt {l : Filter ι} [l.NeBot] 
 
 /-- A version of `UniformEquicontinuous.closure` applicable to subsets of types which embed
 continuously into `β → α` with the product topology. It turns out we don't need any other condition
-on the embedding than continuity, but in practice this will mostly be applied to `FunLike` types
+on the embedding than continuity, but in practice this will mostly be applied to `DFunLike` types
 where the coercion is injective. -/
 theorem UniformEquicontinuous.closure' {A : Set Y} {u : Y → β → α}
     (hA : UniformEquicontinuous (u ∘ (↑) : A → β → α)) (hu : Continuous u) :

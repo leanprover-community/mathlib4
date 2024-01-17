@@ -88,15 +88,15 @@ section Zero
 variable [Zero R]
 
 --  porting note: used to be `CoeFun`
-instance : FunLike (ArithmeticFunction R) ℕ fun _ ↦ R :=
-  inferInstanceAs (FunLike (ZeroHom ℕ R) ℕ fun _ ↦ R)
+instance : DFunLike (ArithmeticFunction R) ℕ fun _ ↦ R :=
+  inferInstanceAs (DFunLike (ZeroHom ℕ R) ℕ fun _ ↦ R)
 
 @[simp]
 theorem toFun_eq (f : ArithmeticFunction R) : f.toFun = f := rfl
 #align nat.arithmetic_function.to_fun_eq Nat.ArithmeticFunction.toFun_eq
 
 @[simp]
-theorem coe_mk (f : ℕ → R) (hf) : @FunLike.coe (ArithmeticFunction R) _ _ _
+theorem coe_mk (f : ℕ → R) (hf) : @DFunLike.coe (ArithmeticFunction R) _ _ _
     (ZeroHom.mk f hf) = f := rfl
 
 @[simp]
@@ -105,7 +105,7 @@ theorem map_zero {f : ArithmeticFunction R} : f 0 = 0 :=
 #align nat.arithmetic_function.map_zero Nat.ArithmeticFunction.map_zero
 
 theorem coe_inj {f g : ArithmeticFunction R} : (f : ℕ → R) = g ↔ f = g :=
-  FunLike.coe_fn_eq
+  DFunLike.coe_fn_eq
 #align nat.arithmetic_function.coe_inj Nat.ArithmeticFunction.coe_inj
 
 @[simp]
@@ -119,7 +119,7 @@ theorem ext ⦃f g : ArithmeticFunction R⦄ (h : ∀ x, f x = g x) : f = g :=
 #align nat.arithmetic_function.ext Nat.ArithmeticFunction.ext
 
 theorem ext_iff {f g : ArithmeticFunction R} : f = g ↔ ∀ x, f x = g x :=
-  FunLike.ext_iff
+  DFunLike.ext_iff
 #align nat.arithmetic_function.ext_iff Nat.ArithmeticFunction.ext_iff
 
 section One

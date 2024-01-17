@@ -333,7 +333,7 @@ theorem exists_forall_mem_restrict_eq_of_closed {s : Set Y} (f : s →ᵇ ℝ) (
   rcases exists_extension_forall_mem_of_closedEmbedding f hf hne
       (closedEmbedding_subtype_val hs) with
     ⟨g, hg, hgf⟩
-  exact ⟨g, hg, FunLike.coe_injective hgf⟩
+  exact ⟨g, hg, DFunLike.coe_injective hgf⟩
 #align bounded_continuous_function.exists_forall_mem_restrict_eq_of_closed BoundedContinuousFunction.exists_forall_mem_restrict_eq_of_closed
 
 end BoundedContinuousFunction

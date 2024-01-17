@@ -805,7 +805,7 @@ lemma map_comp_comm_eq (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
 
 lemma map_comm (f : M →ₗ[R] P) (g : N →ₗ[R] Q) (x : N ⊗[R] M):
     map f g (TensorProduct.comm R N M x) = TensorProduct.comm R Q P (map g f x) :=
-  FunLike.congr_fun (map_comp_comm_eq _ _) _
+  DFunLike.congr_fun (map_comp_comm_eq _ _) _
 
 /-- Given linear maps `f : M → Q`, `g : N → S`, and `h : P → T`, if we identify `(M ⊗ N) ⊗ P`
 with `M ⊗ (N ⊗ P)` and `(Q ⊗ S) ⊗ T` with `Q ⊗ (S ⊗ T)`, then this lemma states that
@@ -818,7 +818,7 @@ lemma map_map_comp_assoc_eq (f : M →ₗ[R] Q) (g : N →ₗ[R] S) (h : P →�
 lemma map_map_assoc (f : M →ₗ[R] Q) (g : N →ₗ[R] S) (h : P →ₗ[R] T) (x : (M ⊗[R] N) ⊗[R] P) :
     map f (map g h) (TensorProduct.assoc R M N P x) =
       TensorProduct.assoc R Q S T (map (map f g) h x) :=
-  FunLike.congr_fun (map_map_comp_assoc_eq _ _ _) _
+  DFunLike.congr_fun (map_map_comp_assoc_eq _ _ _) _
 
 /-- Given linear maps `f : M → Q`, `g : N → S`, and `h : P → T`, if we identify `M ⊗ (N ⊗ P)`
 with `(M ⊗ N) ⊗ P` and `Q ⊗ (S ⊗ T)` with `(Q ⊗ S) ⊗ T`, then this lemma states that
@@ -831,7 +831,7 @@ lemma map_map_comp_assoc_symm_eq (f : M →ₗ[R] Q) (g : N →ₗ[R] S) (h : P 
 lemma map_map_assoc_symm (f : M →ₗ[R] Q) (g : N →ₗ[R] S) (h : P →ₗ[R] T) (x : M ⊗[R] (N ⊗[R] P)) :
     map (map f g) h ((TensorProduct.assoc R M N P).symm x) =
       (TensorProduct.assoc R Q S T).symm (map f (map g h) x) :=
-  FunLike.congr_fun (map_map_comp_assoc_symm_eq _ _ _) _
+  DFunLike.congr_fun (map_map_comp_assoc_symm_eq _ _ _) _
 
 theorem map_range_eq_span_tmul (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
     range (map f g) = Submodule.span R { t | ∃ m n, f m ⊗ₜ g n = t } := by

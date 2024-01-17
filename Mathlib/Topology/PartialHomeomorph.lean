@@ -71,7 +71,7 @@ While we may want to switch to this behavior later, doing it mid-port will break
 @[coe] def toFun' : α → β := e.toFun
 
 /-- Coercion of a `PartialHomeomorph` to function.
-Note that a `PartialHomeomorph` is not `FunLike`. -/
+Note that a `PartialHomeomorph` is not `DFunLike`. -/
 instance : CoeFun (PartialHomeomorph α β) fun _ => α → β :=
   ⟨fun e => e.toFun'⟩
 

@@ -449,7 +449,7 @@ theorem independent_of_dfinsupp_lsum_injective (p : ι → Submodule R N)
     lsum ℕ (M := fun i ↦ ↥(p i)) (fun i => (p i).subtype) (erase i v) =
       lsum ℕ (M := fun i ↦ ↥(p i)) (fun i => (p i).subtype) (single i x)
   · simpa only [lsum_single] using hv
-  have := FunLike.ext_iff.mp (h hv) i
+  have := DFunLike.ext_iff.mp (h hv) i
   simpa [eq_comm] using this
 #align complete_lattice.independent_of_dfinsupp_lsum_injective CompleteLattice.independent_of_dfinsupp_lsum_injective
 

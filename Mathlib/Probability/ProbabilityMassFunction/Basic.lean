@@ -46,18 +46,18 @@ def PMF.{u} (α : Type u) : Type u :=
 
 namespace PMF
 
-instance funLike : FunLike (PMF α) α fun _ => ℝ≥0∞ where
+instance instDFunLike : DFunLike (PMF α) α fun _ => ℝ≥0∞ where
   coe p a := p.1 a
   coe_injective' _ _ h := Subtype.eq h
-#align pmf.fun_like PMF.funLike
+#align pmf.fun_like PMF.instDFunLike
 
 @[ext]
 protected theorem ext {p q : PMF α} (h : ∀ x, p x = q x) : p = q :=
-  FunLike.ext p q h
+  DFunLike.ext p q h
 #align pmf.ext PMF.ext
 
 theorem ext_iff {p q : PMF α} : p = q ↔ ∀ x, p x = q x :=
-  FunLike.ext_iff
+  DFunLike.ext_iff
 #align pmf.ext_iff PMF.ext_iff
 
 theorem hasSum_coe_one (p : PMF α) : HasSum p 1 :=

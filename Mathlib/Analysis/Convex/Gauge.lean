@@ -519,7 +519,7 @@ protected theorem Seminorm.gauge_ball (p : Seminorm ℝ E) : gauge (p.ball 0 1) 
 theorem Seminorm.gaugeSeminorm_ball (p : Seminorm ℝ E) :
     gaugeSeminorm (p.balanced_ball_zero 1) (p.convex_ball 0 1) (p.absorbent_ball_zero zero_lt_one) =
       p :=
-  FunLike.coe_injective p.gauge_ball
+  DFunLike.coe_injective p.gauge_ball
 #align seminorm.gauge_seminorm_ball Seminorm.gaugeSeminorm_ball
 
 end AddCommGroup

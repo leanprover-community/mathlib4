@@ -220,10 +220,10 @@ instance : OrderHomClass (α →o β) α β where
   coe_injective' f g h := by cases f; cases g; congr
   map_rel f _ _ h := f.monotone' h
 
-/-- Helper instance for when there's too many metavariables to apply the coercion via `FunLike`
+/-- Helper instance for when there's too many metavariables to apply the coercion via `DFunLike`
 directly. -/
 instance : CoeFun (α →o β) fun _ => α → β :=
-  ⟨FunLike.coe⟩
+  ⟨DFunLike.coe⟩
 
 @[simp] theorem coe_mk (f : α → β) (hf : Monotone f) : ⇑(mk f hf) = f := rfl
 #align order_hom.coe_fun_mk OrderHom.coe_mk
@@ -240,7 +240,7 @@ protected theorem mono (f : α →o β) : Monotone f :=
 projection directly instead. -/
 def Simps.coe (f : α →o β) : α → β := f
 
-/- Porting note: TODO: all other FunLike classes use `apply` instead of `coe`
+/- Porting note: TODO: all other DFunLike classes use `apply` instead of `coe`
 for the projection names. Maybe we should change this. -/
 initialize_simps_projections OrderHom (toFun → coe)
 
@@ -250,7 +250,7 @@ initialize_simps_projections OrderHom (toFun → coe)
 -- See library note [partially-applied ext lemmas]
 @[ext]
 theorem ext (f g : α →o β) (h : (f : α → β) = g) : f = g :=
-  FunLike.coe_injective h
+  DFunLike.coe_injective h
 #align order_hom.ext OrderHom.ext
 
 @[simp] theorem coe_eq (f : α →o β) : OrderHomClass.toOrderHom f = f := rfl
@@ -276,7 +276,7 @@ theorem coe_copy (f : α →o β) (f' : α → β) (h : f' = f) : (f.copy f' h) 
 #align order_hom.coe_copy OrderHom.coe_copy
 
 theorem copy_eq (f : α →o β) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
-  FunLike.ext' h
+  DFunLike.ext' h
 #align order_hom.copy_eq OrderHom.copy_eq
 
 /-- The identity function as bundled monotone function. -/
@@ -802,7 +802,7 @@ theorem toFun_eq_coe {f : α ≃o β} : f.toFun = f :=
 -- See note [partially-applied ext lemmas]
 @[ext]
 theorem ext {f g : α ≃o β} (h : (f : α → β) = g) : f = g :=
-  FunLike.coe_injective h
+  DFunLike.coe_injective h
 #align order_iso.ext OrderIso.ext
 
 /-- Reinterpret an order isomorphism as an order embedding. -/
@@ -1093,8 +1093,8 @@ def ofHomInv {F G : Type*} [OrderHomClass F α β] [OrderHomClass G β α] (f : 
     α ≃o β where
   toFun := f
   invFun := g
-  left_inv := FunLike.congr_fun h₂
-  right_inv := FunLike.congr_fun h₁
+  left_inv := DFunLike.congr_fun h₂
+  right_inv := DFunLike.congr_fun h₁
   map_rel_iff' := @fun a b =>
     ⟨fun h => by
       replace h := map_rel g h

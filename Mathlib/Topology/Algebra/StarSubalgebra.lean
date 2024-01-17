@@ -151,7 +151,7 @@ theorem _root_.StarAlgHom.ext_topologicalClosure [T2Space B] {S : StarSubalgebra
     (h :
       φ.comp (inclusion (le_topologicalClosure S)) = ψ.comp (inclusion (le_topologicalClosure S))) :
     φ = ψ := by
-  rw [FunLike.ext'_iff]
+  rw [DFunLike.ext'_iff]
   have : Dense (Set.range <| inclusion (le_topologicalClosure S)) := by
     refine' embedding_subtype_val.toInducing.dense_iff.2 fun x => _
     convert show ↑x ∈ closure (S : Set A) from x.prop
@@ -163,7 +163,7 @@ theorem _root_.StarAlgHom.ext_topologicalClosure [T2Space B] {S : StarSubalgebra
           exact y.prop, fun hy => ⟨⟨y, hy⟩, rfl⟩⟩
   refine' Continuous.ext_on this hφ hψ _
   rintro _ ⟨x, rfl⟩
-  simpa only using FunLike.congr_fun h x
+  simpa only using DFunLike.congr_fun h x
 #align star_alg_hom.ext_topological_closure StarAlgHom.ext_topologicalClosure
 
 theorem _root_.StarAlgHomClass.ext_topologicalClosure [T2Space B] {F : Type*}
@@ -175,7 +175,7 @@ theorem _root_.StarAlgHomClass.ext_topologicalClosure [T2Space B] {F : Type*}
   have : (φ : S.topologicalClosure →⋆ₐ[R] B) = (ψ : S.topologicalClosure →⋆ₐ[R] B) := by
     refine StarAlgHom.ext_topologicalClosure (R := R) (A := A) (B := B) hφ hψ (StarAlgHom.ext ?_)
     simpa only [StarAlgHom.coe_comp, StarAlgHom.coe_coe] using h
-  rw [FunLike.ext'_iff, ← StarAlgHom.coe_coe]
+  rw [DFunLike.ext'_iff, ← StarAlgHom.coe_coe]
   apply congrArg _ this
 #align star_alg_hom_class.ext_topological_closure StarAlgHomClass.ext_topologicalClosure
 

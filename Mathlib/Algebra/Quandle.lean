@@ -358,7 +358,7 @@ namespace ShelfHom
 
 variable {S₁ : Type*} {S₂ : Type*} {S₃ : Type*} [Shelf S₁] [Shelf S₂] [Shelf S₃]
 
-instance : FunLike (S₁ →◃ S₂) S₁ fun _ => S₂ where
+instance : DFunLike (S₁ →◃ S₂) S₁ fun _ => S₂ where
   coe := toFun
   coe_injective' | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
 

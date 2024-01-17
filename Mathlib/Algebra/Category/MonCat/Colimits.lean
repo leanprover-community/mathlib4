@@ -254,7 +254,7 @@ def colimitIsColimit : IsColimit (colimitCocone F) where
     · rw [quot_one, map_one]
       rfl
     · rw [quot_mul, map_mul, hx, hy]
-      dsimp [descMorphism, FunLike.coe, descFun]
+      dsimp [descMorphism, DFunLike.coe, descFun]
       simp only [← quot_mul, descFunLift]
 set_option linter.uppercaseLean3 false in
 #align Mon.colimits.colimit_is_colimit MonCat.Colimits.colimitIsColimit

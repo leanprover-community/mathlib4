@@ -253,7 +253,7 @@ theorem coeFn_sum {ι : Type*} (t : Finset ι) (f : ι → M →ₛₗ[σ₁₂]
     ⇑(∑ i in t, f i) = ∑ i in t, (f i : M → M₂) :=
   _root_.map_sum
     (show AddMonoidHom (M →ₛₗ[σ₁₂] M₂) (M → M₂)
-      from { toFun := FunLike.coe,
+      from { toFun := DFunLike.coe,
              map_zero' := rfl
              map_add' := fun _ _ => rfl }) _ _
 #align linear_map.coe_fn_sum LinearMap.coeFn_sum

@@ -216,7 +216,7 @@ noncomputable def Algebra.IsAlgebraic.algHomEmbeddingOfSplits (alg : IsAlgebraic
   { toFun := (φ.comp <| inclusion <| normalClosure_le_iSup_adjoin alg).comp ∘
       (normalClosure.algHomEquiv F K L').symm
     inj' := fun _ _ h ↦ (normalClosure.algHomEquiv F K L').symm.injective <| by
-      rw [FunLike.ext'_iff] at h ⊢
+      rw [DFunLike.ext'_iff] at h ⊢
       exact (φ.comp _).injective.comp_left h }
 
 namespace IntermediateField

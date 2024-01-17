@@ -57,12 +57,12 @@ variable [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜] [Conti
 /-- Elements of the character space are continuous linear maps. -/
 instance instContinuousLinearMapClass : ContinuousLinearMapClass (characterSpace 𝕜 A) 𝕜 A 𝕜 where
   coe φ := ((φ : WeakDual 𝕜 A) : A → 𝕜)
-  coe_injective' φ ψ h := by ext1; apply FunLike.ext; exact congr_fun h
+  coe_injective' φ ψ h := by ext1; apply DFunLike.ext; exact congr_fun h
   map_smulₛₗ φ := (φ : WeakDual 𝕜 A).map_smul
   map_add φ := (φ : WeakDual 𝕜 A).map_add
   map_continuous φ := (φ : WeakDual 𝕜 A).cont
 
--- porting note: moved because Lean 4 doesn't see the `FunLike` instance on `characterSpace 𝕜 A`
+-- porting note: moved because Lean 4 doesn't see the `DFunLike` instance on `characterSpace 𝕜 A`
 -- until the `ContinuousLinearMapClass` instance is declared
 @[simp, norm_cast]
 protected theorem coe_coe (φ : characterSpace 𝕜 A) : ⇑(φ : WeakDual 𝕜 A) = (φ : A → 𝕜) :=
@@ -71,7 +71,7 @@ protected theorem coe_coe (φ : characterSpace 𝕜 A) : ⇑(φ : WeakDual 𝕜 
 
 @[ext]
 theorem ext {φ ψ : characterSpace 𝕜 A} (h : ∀ x, φ x = ψ x) : φ = ψ :=
-  FunLike.ext _ _ h
+  DFunLike.ext _ _ h
 #align weak_dual.character_space.ext WeakDual.CharacterSpace.ext
 
 /-- An element of the character space, as a continuous linear map. -/

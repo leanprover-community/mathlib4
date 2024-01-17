@@ -64,9 +64,9 @@ noncomputable def kernel (α β : Type*) [MeasurableSpace α] [MeasurableSpace �
   add_mem' hf hg := Measurable.add hf hg
 #align probability_theory.kernel ProbabilityTheory.kernel
 
--- Porting note: using `FunLike` instead of `CoeFun` to use `FunLike.coe`
+-- Porting note: using `DFunLike` instead of `CoeFun` to use `DFunLike.coe`
 instance {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
-    FunLike (kernel α β) α fun _ => Measure β where
+    DFunLike (kernel α β) α fun _ => Measure β where
   coe := Subtype.val
   coe_injective' := Subtype.val_injective
 
@@ -177,10 +177,10 @@ instance (priority := 100) IsMarkovKernel.isFiniteKernel [IsMarkovKernel κ] :
 namespace kernel
 
 @[ext]
-theorem ext {η : kernel α β} (h : ∀ a, κ a = η a) : κ = η := FunLike.ext _ _ h
+theorem ext {η : kernel α β} (h : ∀ a, κ a = η a) : κ = η := DFunLike.ext _ _ h
 #align probability_theory.kernel.ext ProbabilityTheory.kernel.ext
 
-theorem ext_iff {η : kernel α β} : κ = η ↔ ∀ a, κ a = η a := FunLike.ext_iff
+theorem ext_iff {η : kernel α β} : κ = η ↔ ∀ a, κ a = η a := DFunLike.ext_iff
 #align probability_theory.kernel.ext_iff ProbabilityTheory.kernel.ext_iff
 
 theorem ext_iff' {η : kernel α β} :

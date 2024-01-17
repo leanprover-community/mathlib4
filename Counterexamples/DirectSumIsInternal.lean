@@ -87,7 +87,7 @@ theorem withSign.not_injective :
     intro h
     -- porting note: `DFinsupp.singleAddHom_apply` doesn't work so we have to unfold
     dsimp [DirectSum.lof_eq_of, DirectSum.of, DFinsupp.singleAddHom] at h
-    replace h := FunLike.congr_fun h 1
+    replace h := DFunLike.congr_fun h 1
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [DFinsupp.zero_apply, DFinsupp.add_apply, DFinsupp.single_eq_same,
       DFinsupp.single_eq_of_ne UnitsInt.one_ne_neg_one.symm, add_zero, Subtype.ext_iff,

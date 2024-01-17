@@ -64,7 +64,7 @@ theorem subobject_ofLE_as_imageToKernel (w : f ≫ g = 0) (h) :
   rfl
 #align subobject_of_le_as_image_to_kernel subobject_ofLE_as_imageToKernel
 
-attribute [local instance] ConcreteCategory.funLike
+attribute [local instance] ConcreteCategory.instDFunLike
 
 -- porting note: removed elementwise attribute which does not seem to be helpful here
 -- a more suitable lemma is added below
@@ -303,7 +303,7 @@ theorem homology'.π_map (p : α.right = β.left) :
 
 section
 
-attribute [local instance] ConcreteCategory.funLike
+attribute [local instance] ConcreteCategory.instDFunLike
 
 @[simp]
 lemma homology'.π_map_apply [ConcreteCategory.{w} V] (p : α.right = β.left)

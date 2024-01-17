@@ -47,13 +47,13 @@ lemma le_def : f ≤ g ↔ ∀ i, f i ≤ g i := Iff.rfl
 
 /-- The order on `DFinsupp`s over a partial order embeds into the order on functions -/
 def orderEmbeddingToFun : (Π₀ i, α i) ↪o ∀ i, α i where
-  toFun := FunLike.coe
-  inj' := FunLike.coe_injective
+  toFun := DFunLike.coe
+  inj' := DFunLike.coe_injective
   map_rel_iff' := by rfl
 #align dfinsupp.order_embedding_to_fun DFinsupp.orderEmbeddingToFun
 
 @[simp, norm_cast]
-lemma coe_orderEmbeddingToFun : ⇑(orderEmbeddingToFun (α := α)) = FunLike.coe := rfl
+lemma coe_orderEmbeddingToFun : ⇑(orderEmbeddingToFun (α := α)) = DFunLike.coe := rfl
 
 -- Porting note: we added implicit arguments here in #3414.
 theorem orderEmbeddingToFun_apply {f : Π₀ i, α i} {i : ι} :
@@ -205,7 +205,7 @@ protected theorem bot_eq_zero : (⊥ : Π₀ i, α i) = 0 :=
 
 @[simp]
 theorem add_eq_zero_iff (f g : Π₀ i, α i) : f + g = 0 ↔ f = 0 ∧ g = 0 := by
-  simp [FunLike.ext_iff, forall_and]
+  simp [DFunLike.ext_iff, forall_and]
 #align dfinsupp.add_eq_zero_iff DFinsupp.add_eq_zero_iff
 
 section LE

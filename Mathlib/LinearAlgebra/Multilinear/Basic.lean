@@ -107,8 +107,8 @@ variable [Semiring R] [∀ i, AddCommMonoid (M i)] [∀ i, AddCommMonoid (M₁ i
   [AddCommMonoid M₃] [AddCommMonoid M'] [∀ i, Module R (M i)] [∀ i, Module R (M₁ i)] [Module R M₂]
   [Module R M₃] [Module R M'] (f f' : MultilinearMap R M₁ M₂)
 
--- Porting note: Replaced CoeFun with FunLike instance
-instance : FunLike (MultilinearMap R M₁ M₂) (∀ i, M₁ i) (fun _ ↦ M₂) where
+-- Porting note: Replaced CoeFun with DFunLike instance
+instance : DFunLike (MultilinearMap R M₁ M₂) (∀ i, M₁ i) (fun _ ↦ M₂) where
   coe f := f.toFun
   coe_injective' := fun f g h ↦ by cases f; cases g; cases h; rfl
 
@@ -125,29 +125,29 @@ theorem coe_mk (f : (∀ i, M₁ i) → M₂) (h₁ h₂) : ⇑(⟨f, h₁, h₂
 #align multilinear_map.coe_mk MultilinearMap.coe_mk
 
 theorem congr_fun {f g : MultilinearMap R M₁ M₂} (h : f = g) (x : ∀ i, M₁ i) : f x = g x :=
-  FunLike.congr_fun h x
+  DFunLike.congr_fun h x
 #align multilinear_map.congr_fun MultilinearMap.congr_fun
 
 nonrec theorem congr_arg (f : MultilinearMap R M₁ M₂) {x y : ∀ i, M₁ i} (h : x = y) : f x = f y :=
-  FunLike.congr_arg f h
+  DFunLike.congr_arg f h
 #align multilinear_map.congr_arg MultilinearMap.congr_arg
 
 theorem coe_injective : Injective ((↑) : MultilinearMap R M₁ M₂ → (∀ i, M₁ i) → M₂) :=
-  FunLike.coe_injective
+  DFunLike.coe_injective
 #align multilinear_map.coe_injective MultilinearMap.coe_injective
 
 @[norm_cast] -- Porting note: Removed simp attribute, simp can prove this
 theorem coe_inj {f g : MultilinearMap R M₁ M₂} : (f : (∀ i, M₁ i) → M₂) = g ↔ f = g :=
-  FunLike.coe_fn_eq
+  DFunLike.coe_fn_eq
 #align multilinear_map.coe_inj MultilinearMap.coe_inj
 
 @[ext]
 theorem ext {f f' : MultilinearMap R M₁ M₂} (H : ∀ x, f x = f' x) : f = f' :=
-  FunLike.ext _ _ H
+  DFunLike.ext _ _ H
 #align multilinear_map.ext MultilinearMap.ext
 
 theorem ext_iff {f g : MultilinearMap R M₁ M₂} : f = g ↔ ∀ x, f x = g x :=
-  FunLike.ext_iff
+  DFunLike.ext_iff
 #align multilinear_map.ext_iff MultilinearMap.ext_iff
 
 @[simp]
@@ -232,7 +232,7 @@ instance addCommMonoid : AddCommMonoid (MultilinearMap R M₁ M₂) :=
 
 /-- Coercion of a multilinear map to a function as an additive monoid homomorphism. -/
 @[simps] def coeAddMonoidHom : MultilinearMap R M₁ M₂ →+ (((i : ι) → M₁ i) → M₂) where
-  toFun := FunLike.coe; map_zero' := rfl; map_add' _ _ := rfl
+  toFun := DFunLike.coe; map_zero' := rfl; map_add' _ _ := rfl
 
 @[simp]
 theorem coe_sum {α : Type*} (f : α → MultilinearMap R M₁ M₂) (s : Finset α) :
@@ -309,7 +309,7 @@ def constOfIsEmpty [IsEmpty ι] (m : M₂) : MultilinearMap R M₁ M₂ where
 
 end
 
--- Porting note: Included `FunLike.coe` to avoid strange CoeFun instance for Equiv
+-- Porting note: Included `DFunLike.coe` to avoid strange CoeFun instance for Equiv
 /-- Given a multilinear map `f` on `n` variables (parameterized by `Fin n`) and a subset `s` of `k`
 of these variables, one gets a new multilinear map on `Fin k` by varying these variables, and fixing
 the other ones equal to a given value `z`. It is denoted by `f.restr s hk z`, where `hk` is a
@@ -317,18 +317,18 @@ proof that the cardinality of `s` is `k`. The implicit identification between `F
 we use is the canonical (increasing) bijection. -/
 def restr {k n : ℕ} (f : MultilinearMap R (fun _ : Fin n => M') M₂) (s : Finset (Fin n))
     (hk : s.card = k) (z : M') : MultilinearMap R (fun _ : Fin k => M') M₂ where
-  toFun v := f fun j => if h : j ∈ s then v ((FunLike.coe (s.orderIsoOfFin hk).symm) ⟨j, h⟩) else z
+  toFun v := f fun j => if h : j ∈ s then v ((DFunLike.coe (s.orderIsoOfFin hk).symm) ⟨j, h⟩) else z
   /- Porting note: The proofs of the following two lemmas used to only use `erw` followed by `simp`,
   but it seems `erw` no longer unfolds or unifies well enough to work without more help. -/
   map_add' v i x y := by
-    have : FunLike.coe (s.orderIsoOfFin hk).symm = (s.orderIsoOfFin hk).toEquiv.symm := rfl
+    have : DFunLike.coe (s.orderIsoOfFin hk).symm = (s.orderIsoOfFin hk).toEquiv.symm := rfl
     simp only [this]
     erw [dite_comp_equiv_update (s.orderIsoOfFin hk).toEquiv,
       dite_comp_equiv_update (s.orderIsoOfFin hk).toEquiv,
       dite_comp_equiv_update (s.orderIsoOfFin hk).toEquiv]
     simp
   map_smul' v i c x := by
-    have : FunLike.coe (s.orderIsoOfFin hk).symm = (s.orderIsoOfFin hk).toEquiv.symm := rfl
+    have : DFunLike.coe (s.orderIsoOfFin hk).symm = (s.orderIsoOfFin hk).toEquiv.symm := rfl
     simp only [this]
     erw [dite_comp_equiv_update (s.orderIsoOfFin hk).toEquiv,
       dite_comp_equiv_update (s.orderIsoOfFin hk).toEquiv]

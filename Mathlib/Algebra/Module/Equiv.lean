@@ -123,7 +123,7 @@ instance (priority := 100) [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
   [s : SemilinearEquivClass F σ M M₂] : SemilinearMapClass F σ M M₂ :=
   { s with
     coe := (s.coe : F → M → M₂)
-    coe_injective' := @FunLike.coe_injective F _ _ _ }
+    coe_injective' := @DFunLike.coe_injective F _ _ _ }
 
 end SemilinearEquivClass
 
@@ -173,7 +173,7 @@ theorem toLinearMap_inj {e₁ e₂ : M ≃ₛₗ[σ] M₂} : (↑e₁ : M →ₛ
 
 instance : SemilinearEquivClass (M ≃ₛₗ[σ] M₂) σ M M₂ where
   inv := LinearEquiv.invFun
-  coe_injective' _ _ h _ := toLinearMap_injective (FunLike.coe_injective h)
+  coe_injective' _ _ h _ := toLinearMap_injective (DFunLike.coe_injective h)
   left_inv := LinearEquiv.left_inv
   right_inv := LinearEquiv.right_inv
   map_add := (·.map_add') --map_add' Porting note: TODO why did I need to change this?
@@ -186,7 +186,7 @@ theorem coe_mk {to_fun inv_fun map_add map_smul left_inv right_inv} :
 #align linear_equiv.coe_mk LinearEquiv.coe_mk
 
 theorem coe_injective : @Injective (M ≃ₛₗ[σ] M₂) (M → M₂) CoeFun.coe :=
-  FunLike.coe_injective
+  DFunLike.coe_injective
 #align linear_equiv.coe_injective LinearEquiv.coe_injective
 
 end
@@ -232,19 +232,19 @@ variable {e e'}
 
 @[ext]
 theorem ext (h : ∀ x, e x = e' x) : e = e' :=
-  FunLike.ext _ _ h
+  DFunLike.ext _ _ h
 #align linear_equiv.ext LinearEquiv.ext
 
 theorem ext_iff : e = e' ↔ ∀ x, e x = e' x :=
-  FunLike.ext_iff
+  DFunLike.ext_iff
 #align linear_equiv.ext_iff LinearEquiv.ext_iff
 
 protected theorem congr_arg {x x'} : x = x' → e x = e x' :=
-  FunLike.congr_arg e
+  DFunLike.congr_arg e
 #align linear_equiv.congr_arg LinearEquiv.congr_arg
 
 protected theorem congr_fun (h : e = e') (x : M) : e x = e' x :=
-  FunLike.congr_fun h x
+  DFunLike.congr_fun h x
 #align linear_equiv.congr_fun LinearEquiv.congr_fun
 
 end
@@ -837,7 +837,7 @@ theorem toNatLinearEquiv_toAddEquiv : ↑e.toNatLinearEquiv = e := by
 @[simp]
 theorem _root_.LinearEquiv.toAddEquiv_toNatLinearEquiv (e : M ≃ₗ[ℕ] M₂) :
     AddEquiv.toNatLinearEquiv ↑e = e :=
-  FunLike.coe_injective rfl
+  DFunLike.coe_injective rfl
 #align linear_equiv.to_add_equiv_to_nat_linear_equiv LinearEquiv.toAddEquiv_toNatLinearEquiv
 
 @[simp]
@@ -884,7 +884,7 @@ theorem toIntLinearEquiv_toAddEquiv : ↑e.toIntLinearEquiv = e := by
 @[simp]
 theorem _root_.LinearEquiv.toAddEquiv_toIntLinearEquiv (e : M ≃ₗ[ℤ] M₂) :
     AddEquiv.toIntLinearEquiv (e : M ≃+ M₂) = e :=
-  FunLike.coe_injective rfl
+  DFunLike.coe_injective rfl
 #align linear_equiv.to_add_equiv_to_int_linear_equiv LinearEquiv.toAddEquiv_toIntLinearEquiv
 
 @[simp]

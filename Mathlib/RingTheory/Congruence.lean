@@ -72,9 +72,9 @@ section Basic
 
 variable [Add R] [Mul R] (c : RingCon R)
 
---Porting note: upgrade to `FunLike`
+--Porting note: upgrade to `DFunLike`
 /-- A coercion from a congruence relation to its underlying binary relation. -/
-instance : FunLike (RingCon R) R fun _ => R → Prop :=
+instance : DFunLike (RingCon R) R fun _ => R → Prop :=
   { coe := fun c => c.r,
     coe_injective' := fun x y h => by
       rcases x with ⟨⟨x, _⟩, _⟩
@@ -119,7 +119,7 @@ theorem rel_mk {s : Con R} {h a b} : RingCon.mk s h a b ↔ s a b :=
   Iff.rfl
 
 /-- The map sending a congruence relation to its underlying binary relation is injective. -/
-theorem ext' {c d : RingCon R} (H : ⇑c = ⇑d) : c = d := FunLike.coe_injective H
+theorem ext' {c d : RingCon R} (H : ⇑c = ⇑d) : c = d := DFunLike.coe_injective H
 
 /-- Extensionality rule for congruence relations. -/
 theorem ext {c d : RingCon R} (H : ∀ x y, c x y ↔ d x y) : c = d :=

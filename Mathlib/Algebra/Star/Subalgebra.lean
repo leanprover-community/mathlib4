@@ -750,7 +750,7 @@ theorem adjoin_le_equalizer {s : Set A} (h : s.EqOn f g) : adjoin R s ≤ StarAl
 #align star_alg_hom.adjoin_le_equalizer StarAlgHom.adjoin_le_equalizer
 
 theorem ext_of_adjoin_eq_top {s : Set A} (h : adjoin R s = ⊤) ⦃f g : F⦄ (hs : s.EqOn f g) : f = g :=
-  FunLike.ext f g fun _x => StarAlgHom.adjoin_le_equalizer f g hs <| h.symm ▸ trivial
+  DFunLike.ext f g fun _x => StarAlgHom.adjoin_le_equalizer f g hs <| h.symm ▸ trivial
 #align star_alg_hom.ext_of_adjoin_eq_top StarAlgHom.ext_of_adjoin_eq_top
 
 theorem map_adjoin [StarModule R B] (f : A →⋆ₐ[R] B) (s : Set A) :
@@ -761,7 +761,7 @@ theorem map_adjoin [StarModule R B] (f : A →⋆ₐ[R] B) (s : Set A) :
 
 theorem ext_adjoin {s : Set A} [StarAlgHomClass F R (adjoin R s) B] {f g : F}
     (h : ∀ x : adjoin R s, (x : A) ∈ s → f x = g x) : f = g := by
-  refine' FunLike.ext f g fun a =>
+  refine' DFunLike.ext f g fun a =>
     adjoin_induction' (p := fun y => f y = g y) a (fun x hx => _) (fun r => _)
     (fun x y hx hy => _) (fun x y hx hy => _) fun x hx => _
   · exact h ⟨x, subset_adjoin R s hx⟩ hx
@@ -838,7 +838,7 @@ def StarAlgHom.restrictScalars (f : A →⋆ₐ[S] B) : A →⋆ₐ[R] B where
 theorem StarAlgHom.restrictScalars_injective :
     Function.Injective (StarAlgHom.restrictScalars R : (A →⋆ₐ[S] B) → A →⋆ₐ[R] B) :=
   fun f g h => StarAlgHom.ext fun x =>
-    show f.restrictScalars R x = g.restrictScalars R x from FunLike.congr_fun h x
+    show f.restrictScalars R x = g.restrictScalars R x from DFunLike.congr_fun h x
 
 @[simps]
 def StarAlgEquiv.restrictScalars (f : A ≃⋆ₐ[S] B) : A ≃⋆ₐ[R] B :=
@@ -849,6 +849,6 @@ def StarAlgEquiv.restrictScalars (f : A ≃⋆ₐ[S] B) : A ≃⋆ₐ[R] B :=
 theorem StarAlgEquiv.restrictScalars_injective :
     Function.Injective (StarAlgEquiv.restrictScalars R : (A ≃⋆ₐ[S] B) → A ≃⋆ₐ[R] B) :=
   fun f g h => StarAlgEquiv.ext fun x =>
-    show f.restrictScalars R x = g.restrictScalars R x from FunLike.congr_fun h x
+    show f.restrictScalars R x = g.restrictScalars R x from DFunLike.congr_fun h x
 
 end RestrictScalars

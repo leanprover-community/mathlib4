@@ -289,7 +289,7 @@ instance : Inhabited (SmoothMonoidMorphism I I' G G') :=
 @[to_additive]
 instance : MonoidHomClass (SmoothMonoidMorphism I I' G G') G G' where
   coe a := a.toFun
-  coe_injective' f g h := by cases f; cases g; congr; exact FunLike.ext' h
+  coe_injective' f g h := by cases f; cases g; congr; exact DFunLike.ext' h
   map_one f := f.map_one
   map_mul f := f.map_mul
 

@@ -62,12 +62,12 @@ theorem toDerivation_injective :
 
 instance : LinearMapClass (LeftInvariantDerivation I G) 𝕜 C^∞⟮I, G; 𝕜⟯ C^∞⟮I, G; 𝕜⟯ where
   coe f := f.toDerivation
-  coe_injective' _ _ h := toDerivation_injective <| FunLike.ext' h
+  coe_injective' _ _ h := toDerivation_injective <| DFunLike.ext' h
   map_add f := map_add f.1
   map_smulₛₗ f := map_smul f.1.1
 
 instance : CoeFun (LeftInvariantDerivation I G) fun _ => C^∞⟮I, G; 𝕜⟯ → C^∞⟮I, G; 𝕜⟯ :=
-  ⟨FunLike.coe⟩
+  ⟨DFunLike.coe⟩
 
 variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {x : M} {r : 𝕜}
   {X Y : LeftInvariantDerivation I G} {f f' : C^∞⟮I, G; 𝕜⟯}
@@ -82,12 +82,12 @@ theorem toFun_eq_coe : X.toFun = ⇑X :=
 #noalign left_invariant_derivation.to_derivation_eq_coe
 
 theorem coe_injective :
-    @Function.Injective (LeftInvariantDerivation I G) (_ → C^∞⟮I, G; 𝕜⟯) FunLike.coe :=
-  FunLike.coe_injective
+    @Function.Injective (LeftInvariantDerivation I G) (_ → C^∞⟮I, G; 𝕜⟯) DFunLike.coe :=
+  DFunLike.coe_injective
 #align left_invariant_derivation.coe_injective LeftInvariantDerivation.coe_injective
 
 @[ext]
-theorem ext (h : ∀ f, X f = Y f) : X = Y := FunLike.ext _ _ h
+theorem ext (h : ∀ f, X f = Y f) : X = Y := DFunLike.ext _ _ h
 #align left_invariant_derivation.ext LeftInvariantDerivation.ext
 
 variable (X Y f)
@@ -215,7 +215,7 @@ variable (I G)
 /-- The coercion to function is a monoid homomorphism. -/
 @[simps]
 def coeFnAddMonoidHom : LeftInvariantDerivation I G →+ C^∞⟮I, G; 𝕜⟯ → C^∞⟮I, G; 𝕜⟯ :=
-  ⟨⟨FunLike.coe, coe_zero⟩, coe_add⟩
+  ⟨⟨DFunLike.coe, coe_zero⟩, coe_add⟩
 #align left_invariant_derivation.coe_fn_add_monoid_hom LeftInvariantDerivation.coeFnAddMonoidHom
 
 variable {I G}

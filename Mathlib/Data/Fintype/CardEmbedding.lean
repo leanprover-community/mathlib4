@@ -42,7 +42,7 @@ theorem card_embedding_eq {α β : Type*} [Fintype α] [Fintype β] [emb : Finty
   · letI := Fintype.ofEquiv _ e.symm
     rw [← card_congr (Equiv.embeddingCongr e (Equiv.refl β)), ih, card_congr e]
   · rw [card_pempty, Nat.descFactorial_zero, card_eq_one_iff]
-    exact ⟨Embedding.ofIsEmpty, fun x ↦ FunLike.ext _ _ isEmptyElim⟩
+    exact ⟨Embedding.ofIsEmpty, fun x ↦ DFunLike.ext _ _ isEmptyElim⟩
   · classical
     dsimp only at ih
     rw [card_option, Nat.descFactorial_succ, card_congr (Embedding.optionEmbeddingEquiv γ β),

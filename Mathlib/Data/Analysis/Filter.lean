@@ -53,7 +53,7 @@ instance : CoeFun (CFilter α σ) fun _ ↦ σ → α :=
   ⟨CFilter.f⟩
 
 /- Porting note: Due to the CoeFun instance, the lhs of this lemma has a variable (f) as its head
-symbol (simpnf linter problem). Replacing it with a FunLike instance would not be mathematically
+symbol (simpnf linter problem). Replacing it with a DFunLike instance would not be mathematically
 meaningful here, since the coercion to f cannot be injective, hence need to remove @[simp]. -/
 -- @[simp]
 theorem coe_mk (f pt inf h₁ h₂ a) : (@CFilter.mk α σ _ f pt inf h₁ h₂) a = f a :=

@@ -218,7 +218,7 @@ def pullback.lift {X Y Z W : Stonean} (f : X ⟶ Z) {i : Y ⟶ Z} (hi : OpenEmbe
   toFun := fun z => ⟨a z, by
     simp only [Set.mem_preimage]
     use (b z)
-    exact congr_fun (FunLike.ext'_iff.mp w.symm) z⟩
+    exact congr_fun (DFunLike.ext'_iff.mp w.symm) z⟩
   continuous_toFun := by
     apply Continuous.subtype_mk
     exact a.continuous
@@ -248,7 +248,7 @@ lemma pullback.lift_snd {X Y Z W : Stonean} (f : X ⟶ Z) {i : Y ⟶ Z} (hi : Op
     pullback.lift f hi a b w ≫ Stonean.pullback.snd f hi = b := by
   congr
   ext z
-  have := congr_fun (FunLike.ext'_iff.mp w.symm) z
+  have := congr_fun (DFunLike.ext'_iff.mp w.symm) z
   have h : i (b z) = f (a z) := this
   suffices : b z = (Homeomorph.ofEmbedding i hi.toEmbedding).symm (⟨f (a z), by rw [← h]; simp⟩)
   · exact this.symm

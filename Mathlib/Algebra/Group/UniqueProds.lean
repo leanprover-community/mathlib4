@@ -472,11 +472,11 @@ end UniqueProds
 instance {ι} (G : ι → Type*) [∀ i, AddZeroClass (G i)] [∀ i, UniqueSums (G i)] :
     UniqueSums (Π₀ i, G i) :=
   UniqueSums.addHom_image_of_injective
-    DFinsupp.coeFnAddMonoidHom.toAddHom FunLike.coe_injective inferInstance
+    DFinsupp.coeFnAddMonoidHom.toAddHom DFunLike.coe_injective inferInstance
 
 instance {ι G} [AddZeroClass G] [UniqueSums G] : UniqueSums (ι →₀ G) :=
   UniqueSums.addHom_image_of_injective
-    Finsupp.coeFnAddHom.toAddHom FunLike.coe_injective inferInstance
+    Finsupp.coeFnAddHom.toAddHom DFunLike.coe_injective inferInstance
 
 namespace TwoUniqueProds
 
@@ -611,11 +611,11 @@ end TwoUniqueProds
 instance {ι} (G : ι → Type*) [∀ i, AddZeroClass (G i)] [∀ i, TwoUniqueSums (G i)] :
     TwoUniqueSums (Π₀ i, G i) :=
   TwoUniqueSums.addHom_image_of_injective
-    DFinsupp.coeFnAddMonoidHom.toAddHom FunLike.coe_injective inferInstance
+    DFinsupp.coeFnAddMonoidHom.toAddHom DFunLike.coe_injective inferInstance
 
 instance {ι G} [AddZeroClass G] [TwoUniqueSums G] : TwoUniqueSums (ι →₀ G) :=
   TwoUniqueSums.addHom_image_of_injective
-    Finsupp.coeFnAddHom.toAddHom FunLike.coe_injective inferInstance
+    Finsupp.coeFnAddHom.toAddHom DFunLike.coe_injective inferInstance
 
 /-- Any `ℚ`-vector space has `TwoUniqueSums`, because it is isomorphic to some
   `(Basis.ofVectorSpaceIndex ℚ G) →₀ ℚ` by choosing a basis, and `ℚ` already has

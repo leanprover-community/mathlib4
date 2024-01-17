@@ -117,7 +117,7 @@ theorem toBaseChange_comp_involute (Q : QuadraticForm R V) :
 theorem toBaseChange_involute (Q : QuadraticForm R V) (x : CliffordAlgebra (Q.baseChange A)) :
     toBaseChange A Q (involute x) =
       TensorProduct.map LinearMap.id (involute.toLinearMap) (toBaseChange A Q x) :=
-  FunLike.congr_fun (toBaseChange_comp_involute A Q) x
+  DFunLike.congr_fun (toBaseChange_comp_involute A Q) x
 
 open MulOpposite
 
@@ -141,7 +141,7 @@ theorem toBaseChange_comp_reverseOp (Q : QuadraticForm R V) :
 theorem toBaseChange_reverse (Q : QuadraticForm R V) (x : CliffordAlgebra (Q.baseChange A)) :
     toBaseChange A Q (reverse x) =
       TensorProduct.map LinearMap.id reverse (toBaseChange A Q x) := by
-  have := FunLike.congr_fun (toBaseChange_comp_reverseOp A Q) x
+  have := DFunLike.congr_fun (toBaseChange_comp_reverseOp A Q) x
   refine (congr_arg unop this).trans ?_; clear this
   refine (LinearMap.congr_fun (TensorProduct.AlgebraTensorModule.map_comp _ _ _ _).symm _).trans ?_
   rw [reverse, ← AlgEquiv.toLinearMap, ← AlgEquiv.toLinearEquiv_toLinearMap,

@@ -278,7 +278,7 @@ namespace NumberField.InfinitePlace
 
 open NumberField
 
-instance {K : Type*} [Field K] : FunLike (InfinitePlace K) K (fun _ => ℝ) :=
+instance {K : Type*} [Field K] : DFunLike (InfinitePlace K) K (fun _ => ℝ) :=
 { coe := fun w x => w.1 x
   coe_injective' := fun _ _ h => Subtype.eq (AbsoluteValue.ext fun x => congr_fun h x)}
 
@@ -308,7 +308,7 @@ theorem mk_embedding (w : InfinitePlace K) : mk (embedding w) = w := Subtype.ext
 
 @[simp]
 theorem mk_conjugate_eq (φ : K →+* ℂ) : mk (ComplexEmbedding.conjugate φ) = mk φ := by
-  refine FunLike.ext _ _ (fun x => ?_)
+  refine DFunLike.ext _ _ (fun x => ?_)
   rw [apply, apply, ComplexEmbedding.conjugate_coe_eq, Complex.abs_conj]
 #align number_field.infinite_place.mk_conjugate_eq NumberField.InfinitePlace.mk_conjugate_eq
 

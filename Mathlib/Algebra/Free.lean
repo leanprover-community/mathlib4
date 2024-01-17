@@ -81,7 +81,7 @@ def recOnMul {C : FreeMagma α → Sort l} (x) (ih1 : ∀ x, C (of x))
 
 @[to_additive (attr := ext 1100)]
 theorem hom_ext {β : Type v} [Mul β] {f g : FreeMagma α →ₙ* β} (h : f ∘ of = g ∘ of) : f = g :=
-  (FunLike.ext _ _) fun x ↦ recOnMul x (congr_fun h) <| by intros; simp only [map_mul, *]
+  (DFunLike.ext _ _) fun x ↦ recOnMul x (congr_fun h) <| by intros; simp only [map_mul, *]
 #align free_magma.hom_ext FreeMagma.hom_ext
 
 end FreeMagma
@@ -390,7 +390,7 @@ variable {β : Type v} [Semigroup β] (f : α →ₙ* β)
 
 @[to_additive (attr := ext 1100)]
 theorem hom_ext {f g : AssocQuotient α →ₙ* β} (h : f.comp of = g.comp of) : f = g :=
-  (FunLike.ext _ _) fun x => AssocQuotient.induction_on x <| FunLike.congr_fun h
+  (DFunLike.ext _ _) fun x => AssocQuotient.induction_on x <| DFunLike.congr_fun h
 #align magma.assoc_quotient.hom_ext Magma.AssocQuotient.hom_ext
 
 /-- Lifts a magma homomorphism `α → β` to a semigroup homomorphism `Magma.AssocQuotient α → β`
@@ -403,8 +403,8 @@ def lift : (α →ₙ* β) ≃ (AssocQuotient α →ₙ* β) where
       Quot.liftOn x f <| by rintro a b (⟨c, d, e⟩ | ⟨c, d, e, f⟩) <;> simp only [map_mul, mul_assoc]
     map_mul' := fun x y ↦ Quot.induction_on₂ x y (map_mul f) }
   invFun f := f.comp of
-  left_inv f := (FunLike.ext _ _) fun x ↦ rfl
-  right_inv f := hom_ext <| (FunLike.ext _ _) fun x ↦ rfl
+  left_inv f := (DFunLike.ext _ _) fun x ↦ rfl
+  right_inv f := hom_ext <| (DFunLike.ext _ _) fun x ↦ rfl
 #align magma.assoc_quotient.lift Magma.AssocQuotient.lift
 
 @[to_additive (attr := simp)]
@@ -511,7 +511,7 @@ protected def recOnMul {C : FreeSemigroup α → Sort l} (x) (ih1 : ∀ x, C (of
 
 @[to_additive (attr := ext 1100)]
 theorem hom_ext {β : Type v} [Mul β] {f g : FreeSemigroup α →ₙ* β} (h : f ∘ of = g ∘ of) : f = g :=
-  (FunLike.ext _ _) fun x ↦
+  (DFunLike.ext _ _) fun x ↦
     FreeSemigroup.recOnMul x (congr_fun h) fun x y hx hy ↦ by simp only [map_mul, *]
 #align free_semigroup.hom_ext FreeSemigroup.hom_ext
 
@@ -731,7 +731,7 @@ theorem toFreeSemigroup_comp_map (f : α → β) :
 @[to_additive]
 theorem toFreeSemigroup_map (f : α → β) (x : FreeMagma α) :
     toFreeSemigroup (map f x) = FreeSemigroup.map f (toFreeSemigroup x) :=
-  FunLike.congr_fun (toFreeSemigroup_comp_map f) x
+  DFunLike.congr_fun (toFreeSemigroup_comp_map f) x
 #align free_magma.to_free_semigroup_map FreeMagma.toFreeSemigroup_map
 
 @[to_additive (attr := simp)]

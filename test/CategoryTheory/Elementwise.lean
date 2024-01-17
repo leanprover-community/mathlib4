@@ -10,7 +10,7 @@ open CategoryTheory
 set_option linter.existingAttributeWarning false in
 attribute [simp] Iso.hom_inv_id Iso.inv_hom_id IsIso.hom_inv_id IsIso.inv_hom_id
 
-attribute [local instance] ConcreteCategory.funLike ConcreteCategory.hasCoeToSort
+attribute [local instance] ConcreteCategory.instDFunLike ConcreteCategory.hasCoeToSort
 
 @[elementwise]
 theorem ex1 [Category C] [ConcreteCategory C] (X : C) (f g h : X ⟶ X) (h' : g ≫ h = h ≫ g) :

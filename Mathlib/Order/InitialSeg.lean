@@ -75,7 +75,7 @@ instance : EmbeddingLike (r ≼i s) α β :=
     injective' := fun f => f.inj' }
 
 @[ext] lemma ext {f g : r ≼i s} (h : ∀ x, f x = g x) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align initial_seg.ext InitialSeg.ext
 
 @[simp]

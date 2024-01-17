@@ -34,7 +34,7 @@ instance : EmbeddingLike (MyEmbedding A B) A B :=
 /-- Helper instance for when there's too many metavariables to `EmbeddingLike.coe` directly. -/
 instance : CoeFun (MyEmbedding A B) (λ _, A → B) := ⟨MyEmbedding.toFun⟩
 
-@[ext] theorem ext {f g : MyEmbedding A B} (h : ∀ x, f x = g x) : f = g := FunLike.ext f g h
+@[ext] theorem ext {f g : MyEmbedding A B} (h : ∀ x, f x = g x) : f = g := DFunLike.ext f g h
 
 /-- Copy of a `MyEmbedding` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
@@ -131,7 +131,7 @@ instead of linearly increasing the work per `MyEmbedding`-related declaration.
 /-- The class `EmbeddingLike F α β` expresses that terms of type `F` have an
 injective coercion to injective functions `α ↪ β`.
 -/
-class EmbeddingLike (F : Sort*) (α β : outParam (Sort*)) extends FunLike F α fun _ ↦ β where
+class EmbeddingLike (F : Sort*) (α β : outParam (Sort*)) extends DFunLike F α fun _ ↦ β where
   /-- The coercion to functions must produce injective functions. -/
   injective' : ∀ f : F, Function.Injective (coe f)
 #align embedding_like EmbeddingLike

@@ -221,7 +221,7 @@ def twoHeadsArgs (e : Expr) : Name × Name × Sum Name Name × List Bool := Id.r
     | some 1 => .inl `one
     | some _ => .inl `many
     | none => match pol.getAppFnArgs with
-      | (``FunLike.coe, #[_, _, _, _, polFun, _]) =>
+      | (``DFunLike.coe, #[_, _, _, _, polFun, _]) =>
         let na := polFun.getAppFn.constName
         if na ∈ [``Polynomial.monomial, ``Polynomial.C] then
           .inr na

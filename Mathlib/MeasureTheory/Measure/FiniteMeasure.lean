@@ -571,7 +571,7 @@ lemma injective_toWeakDualBCNN :
   intro μ ν hμν
   apply ext_of_forall_lintegral_eq
   intro f
-  have key := congr_fun (congrArg FunLike.coe hμν) f
+  have key := congr_fun (congrArg DFunLike.coe hμν) f
   apply (ENNReal.toNNReal_eq_toNNReal_iff' ?_ ?_).mp key
   · exact (lintegral_lt_top_of_nnreal μ f).ne
   · exact (lintegral_lt_top_of_nnreal ν f).ne

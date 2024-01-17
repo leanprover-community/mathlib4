@@ -175,7 +175,7 @@ theorem exists_algHom_adjoin_of_splits_of_aeval : ∃ φ : adjoin F S →ₐ[F] 
   rw [isAlgebraic_iff_isIntegral, isIntegral_iff] at ix
   obtain ⟨φ, hφ⟩ := exists_algHom_adjoin_of_splits hK ((algHomAdjoinIntegralEquiv F ix).symm
     ⟨y, mem_aroots.mpr ⟨minpoly.ne_zero ix, hy⟩⟩) (adjoin_simple_le_iff.mpr hx)
-  exact ⟨φ, (FunLike.congr_fun hφ <| AdjoinSimple.gen F x).trans <|
+  exact ⟨φ, (DFunLike.congr_fun hφ <| AdjoinSimple.gen F x).trans <|
     algHomAdjoinIntegralEquiv_symm_apply_gen F ix _⟩
 
 theorem exists_algHom_of_adjoin_splits_of_aeval : ∃ φ : E →ₐ[F] K, φ x = y :=

@@ -46,7 +46,7 @@ namespace SmoothSupportedOn
 
 variable {n : ℕ∞} {s : Set E}
 
-instance : FunLike (SmoothSupportedOn 𝕜 E F n s) E (fun _ ↦ F) where
+instance : DFunLike (SmoothSupportedOn 𝕜 E F n s) E (fun _ ↦ F) where
   coe := Subtype.val
   coe_injective' := Subtype.coe_injective
 

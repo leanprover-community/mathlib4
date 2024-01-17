@@ -802,7 +802,7 @@ theorem Products.lt_nil_empty : { m : Products I | m < Products.nil } = ∅ := b
 instance {α : Type*} [TopologicalSpace α] [Inhabited α] : Nontrivial (LocallyConstant α ℤ) := by
   refine ⟨0, 1, fun h ↦ ?_⟩
   apply @zero_ne_one ℤ
-  exact FunLike.congr_fun h default
+  exact DFunLike.congr_fun h default
 
 theorem Products.isGood_nil : Products.isGood ({fun _ ↦ false} : Set (I → Bool)) Products.nil := by
   intro h
