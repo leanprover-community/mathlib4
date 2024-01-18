@@ -1708,7 +1708,7 @@ theorem IsCompact.closure_subset_of_isOpen [hX : T2OrLocallyCompactRegularSpace 
       exact ⟨F, nhdsWithin_le_nhds F_mem, F, Subset.rfl, F_closed, Fu⟩
   exact (closure_minimal sF F_closed).trans Fu
 
-theorem isCompact_isCompact_isClosed_separated [hX : T2OrLocallyCompactRegularSpace X]
+theorem separatedNhds_of_isCompact_isCompact_isClosed [hX : T2OrLocallyCompactRegularSpace X]
     {s t : Set X} (hs : IsCompact s) (ht : IsCompact t) (h't : IsClosed t)
     (hst : Disjoint s t) : SeparatedNhds s t := by
   rcases hX.out with h'|⟨-, h'⟩
