@@ -40,37 +40,6 @@ variable {α : Type u} {β : Type v} {γ δ : Type*}
 
 /-! ### Top, bottom element -/
 
-
-/-- Typeclass for the `⊤` (`\top`) notation -/
-@[notation_class, ext]
-class Top (α : Type u) where
-  /-- The top (`⊤`, `\top`) element -/
-  top : α
-#align has_top Top
-
-/-- Typeclass for the `⊥` (`\bot`) notation -/
-@[notation_class, ext]
-class Bot (α : Type u) where
-  /-- The bot (`⊥`, `\bot`) element -/
-  bot : α
-#align has_bot Bot
-
-/-- The top (`⊤`, `\top`) element -/
-notation "⊤" => Top.top
-
-/-- The bot (`⊥`, `\bot`) element -/
-notation "⊥" => Bot.bot
-
-instance (priority := 100) top_nonempty (α : Type u) [Top α] : Nonempty α :=
-  ⟨⊤⟩
-#align has_top_nonempty top_nonempty
-
-instance (priority := 100) bot_nonempty (α : Type u) [Bot α] : Nonempty α :=
-  ⟨⊥⟩
-#align has_bot_nonempty bot_nonempty
-
-attribute [match_pattern] Bot.bot Top.top
-
 /-- An order is an `OrderTop` if it has a greatest element.
 We state this using a data mixin, holding the value of `⊤` and the greatest element constraint. -/
 class OrderTop (α : Type u) [LE α] extends Top α where
