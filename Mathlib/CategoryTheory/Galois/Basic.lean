@@ -146,7 +146,7 @@ instance : Faithful F where
     intro f g h
     have : IsIso (equalizer.ι (F.map f) (F.map g)) := equalizer.ι_of_eq h
     have : IsIso (F.map (equalizer.ι f g)) := by
-      rw [←equalizerComparison_comp_π f g F]
+      rw [← equalizerComparison_comp_π f g F]
       exact IsIso.comp_isIso
     have : IsIso (equalizer.ι f g) := isIso_of_reflects_iso _ F
     exact eq_of_epi_equalizer
@@ -172,7 +172,8 @@ private lemma Types.initial_iff_empty (X : Type w) : Nonempty (IsInitial X) ↔ 
   · intro h
     exact ⟨IsInitial.ofIso Types.isInitialPunit <| Equiv.toIso <| Equiv.equivOfIsEmpty PEmpty X⟩
 
-private lemma FintypeCat.initial_iff_empty (X : FintypeCat.{w}) : Nonempty (IsInitial X) ↔ IsEmpty X := by
+private lemma FintypeCat.initial_iff_empty (X : FintypeCat.{w}) :
+    Nonempty (IsInitial X) ↔ IsEmpty X := by
   rw [IsInitial.isInitial_iff_obj FintypeCat.incl, Types.initial_iff_empty]
   rfl
 
