@@ -1953,10 +1953,31 @@ namespace Units
 open MulOpposite (continuous_op continuous_unop)
 
 variable [Monoid α] [TopologicalSpace α] [Monoid β] [TopologicalSpace β]
-
 @[to_additive]
-instance [ContinuousMul α] : TopologicalGroup αˣ where
+instance : ContinuousInv αˣ where
   continuous_inv := Units.continuous_iff.2 <| ⟨continuous_coe_inv, continuous_val⟩
+
+/-- The inversion map on `Units` is a homeomorphism. -/
+@[to_additive (attr := simps!) "The negation map on `AddUnits` is a homeomorphism."]
+protected def homeomorph_inv : αˣ ≃ₜ αˣ where
+  left_inv _ := rfl
+  right_inv _ := rfl
+  continuous_toFun := continuous_inv
+  continuous_invFun := continuous_inv
+
+lemma inducing_val_inv_iff : Inducing (fun u ↦ ↑u⁻¹ : αˣ → α) ↔ Inducing ((↑) : αˣ → α) :=
+  ⟨fun h ↦ h.comp (Units.homeomorph_inv.inducing),
+   fun h ↦ h.comp (Units.homeomorph_inv.inducing)⟩
+
+lemma embedding_coe_iff : Embedding (coeHom α) ↔ Embedding (fun u ↦ ↑u⁻¹ : αˣ → α) :=
+  ⟨fun h ↦ h.comp (Units.homeomorph_inv.embedding),
+   fun h ↦ h.comp (Units.homeomorph_inv.embedding)⟩
+
+lemma embedding_units_coe [Group G] [TopologicalSpace G] [DiscreteTopology G] [TopologicalGroup G] :
+  Embedding ((↑) : Gˣ → G) := Embedding.of_discreteTopology _ Units.ext
+
+lemma embedding_coe_inv [Group G] [TopologicalSpace G] [DiscreteTopology G] [TopologicalGroup G] :
+  Embedding (fun u ↦ ↑u⁻¹ : Gˣ → G) := Units.embedding_coe_iff.mp embedding_units_coe
 
 /-- The topological group isomorphism between the units of a product of two monoids, and the product
 of the units of each monoid. -/

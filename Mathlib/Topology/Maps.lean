@@ -268,8 +268,14 @@ theorem Embedding.discreteTopology {X Y : Type*} [TopologicalSpace X] [Topologic
 end Embedding
 
 lemma Embedding.of_discreteTopology {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
-    [DiscreteTopology α] [DiscreteTopology β] (f : α → β) (hf : f.Injective) : Embedding f :=
-    ⟨inducing_of_discreteTopology , hf⟩
+    [DiscreteTopology α] [DiscreteTopology β] (f : α → β) (hf : f.Injective) : Embedding f := by
+  refine' ⟨⟨_⟩, hf⟩
+  ext s
+  constructor <;> intro
+  · rw [isOpen_induced_iff]
+    use f '' s
+    simp only [isOpen_discrete, hf, Set.preimage_image_eq, and_self]
+  · apply isOpen_discrete
 
 /-- A function between topological spaces is a quotient map if it is surjective,
   and for all `s : Set β`, `s` is open iff its preimage is an open set. -/

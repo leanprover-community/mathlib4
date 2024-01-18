@@ -179,25 +179,4 @@ theorem continuous_coe_inv : Continuous (fun u => ↑u⁻¹ : Mˣ → M) :=
   (Units.continuous_iff.1 continuous_id).2
 #align units.continuous_coe_inv Units.continuous_coe_inv
 #align add_units.continuous_coe_neg AddUnits.continuous_coe_neg
-
-@[to_additive]
-protected lemma continuous_inv : Continuous (fun u ↦ u⁻¹ : Mˣ → Mˣ) := by
-  rw [Units.continuous_iff]
-  exact ⟨continuous_coe_inv, continuous_val⟩
-
-/-- The inversion map on `Units` is a homeomorphism. -/
-@[to_additive (attr := simps!) "The negation map on `AddUnits` is a homeomorphism."]
-protected def homeomorph_inv : Mˣ ≃ₜ Mˣ where
-  left_inv _ := rfl
-  right_inv _ := rfl
-  continuous_toFun := Units.continuous_inv
-  continuous_invFun := Units.continuous_inv
-
-lemma inducing_val_inv_iff : Inducing (fun u ↦ ↑u⁻¹ : Mˣ → M) ↔ Inducing ((↑) : Mˣ → M) :=
-  ⟨fun h ↦ h.comp (Units.homeomorph_inv.inducing),
-   fun h ↦ h.comp (Units.homeomorph_inv.inducing)⟩
-
-lemma embedding_coe_iff : Embedding (coeHom M) ↔ Embedding (fun u ↦ ↑u⁻¹ : Mˣ → M) :=
-  ⟨fun h ↦ h.comp (Units.homeomorph_inv.embedding),
-   fun h ↦ h.comp (Units.homeomorph_inv.embedding)⟩
 end Units
