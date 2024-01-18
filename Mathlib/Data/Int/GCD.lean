@@ -273,23 +273,10 @@ theorem gcd_zero_left (i : ℤ) : gcd 0 i = natAbs i := by simp [gcd]
 theorem gcd_zero_right (i : ℤ) : gcd i 0 = natAbs i := by simp [gcd]
 #align int.gcd_zero_right Int.gcd_zero_right
 
-@[simp]
-theorem gcd_one_left (i : ℤ) : gcd 1 i = 1 :=
-  Nat.gcd_one_left _
-#align int.gcd_one_left Int.gcd_one_left
-
-@[simp]
-theorem gcd_one_right (i : ℤ) : gcd i 1 = 1 :=
-  Nat.gcd_one_right _
-#align int.gcd_one_right Int.gcd_one_right
-
-@[simp]
-theorem gcd_neg_right {x y : ℤ} : gcd x (-y) = gcd x y := by rw [Int.gcd, Int.gcd, natAbs_neg]
-#align int.gcd_neg_right Int.gcd_neg_right
-
-@[simp]
-theorem gcd_neg_left {x y : ℤ} : gcd (-x) y = gcd x y := by rw [Int.gcd, Int.gcd, natAbs_neg]
-#align int.gcd_neg_left Int.gcd_neg_left
+#align int.gcd_one_left Int.one_gcd
+#align int.gcd_one_right Int.gcd_one
+#align int.gcd_neg_right Int.gcd_neg
+#align int.gcd_neg_left Int.neg_gcd
 
 theorem gcd_mul_left (i j k : ℤ) : gcd (i * j) (i * k) = natAbs i * gcd j k := by
   rw [Int.gcd, Int.gcd, natAbs_mul, natAbs_mul]
