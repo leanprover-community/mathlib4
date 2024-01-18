@@ -155,7 +155,7 @@ See `ZMod.castHom` for a bundled version. -/
 
 
 @[simp]
-theorem cast_zero : (cast 0 : R) = 0 := by
+theorem cast_zero : (cast (0 : ZMod n) : R) = 0 := by
   delta ZMod.cast
   cases n
   · exact Int.cast_zero
