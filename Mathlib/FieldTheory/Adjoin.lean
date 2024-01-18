@@ -695,23 +695,25 @@ theorem sup_toSubalgebra_of_isAlgebraic
   halg.elim (sup_toSubalgebra_of_isAlgebraic_left E1 E2)
     (sup_toSubalgebra_of_isAlgebraic_right E1 E2)
 
-theorem sup_toSubalgebra [FiniteDimensional K E1] :
+theorem sup_toSubalgebra_of_left [FiniteDimensional K E1] :
     (E1 ⊔ E2).toSubalgebra = E1.toSubalgebra ⊔ E2.toSubalgebra :=
   sup_toSubalgebra_of_isAlgebraic_left E1 E2 (Algebra.IsAlgebraic.of_finite K _)
-#align intermediate_field.sup_to_subalgebra IntermediateField.sup_toSubalgebra
+#align intermediate_field.sup_to_subalgebra IntermediateField.sup_toSubalgebra_of_left
+
+@[deprecated] alias sup_toSubalgebra := sup_toSubalgebra_of_left
 
 theorem sup_toSubalgebra_of_right [FiniteDimensional K E2] :
     (E1 ⊔ E2).toSubalgebra = E1.toSubalgebra ⊔ E2.toSubalgebra :=
   sup_toSubalgebra_of_isAlgebraic_right E1 E2 (Algebra.IsAlgebraic.of_finite K _)
 
-instance finiteDimensional_sup [h1 : FiniteDimensional K E1] [h2 : FiniteDimensional K E2] :
+instance finiteDimensional_sup [FiniteDimensional K E1] [FiniteDimensional K E2] :
     FiniteDimensional K (E1 ⊔ E2 : IntermediateField K L) := by
   let g := Algebra.TensorProduct.productMap E1.val E2.val
   suffices g.range = (E1 ⊔ E2).toSubalgebra by
     have h : FiniteDimensional K (Subalgebra.toSubmodule g.range) :=
       g.toLinearMap.finiteDimensional_range
     rwa [this] at h
-  rw [Algebra.TensorProduct.productMap_range, E1.range_val, E2.range_val, sup_toSubalgebra]
+  rw [Algebra.TensorProduct.productMap_range, E1.range_val, E2.range_val, sup_toSubalgebra_of_left]
 #align intermediate_field.finite_dimensional_sup IntermediateField.finiteDimensional_sup
 
 variable {ι : Type*} {t : ι → IntermediateField K L}
@@ -797,13 +799,11 @@ theorem adjoin_toSubalgebra_of_isAlgebraic (L : IntermediateField F K)
   let E' := i.fieldRange
   let i' : E ≃ₐ[F] E' := AlgEquiv.ofInjectiveField i
   have hi : algebraMap E K = (algebraMap E' K) ∘ i' := by ext x; rfl
-  have halg' : Algebra.IsAlgebraic F E' ∨ Algebra.IsAlgebraic F L :=
-    halg.elim (Or.inl ∘ i'.isAlgebraic) Or.inr
   apply_fun _ using Subalgebra.restrictScalars_injective F
   erw [← restrictScalars_toSubalgebra, restrictScalars_adjoin_of_algEquiv i' hi,
     Algebra.restrictScalars_adjoin_of_algEquiv i' hi, restrictScalars_adjoin,
     Algebra.restrictScalars_adjoin]
-  exact E'.sup_toSubalgebra_of_isAlgebraic L halg'
+  exact E'.sup_toSubalgebra_of_isAlgebraic L (halg.imp i'.isAlgebraic id)
 
 theorem adjoin_toSubalgebra_of_isAlgebraic_left (L : IntermediateField F K)
     (halg : Algebra.IsAlgebraic F E) :
