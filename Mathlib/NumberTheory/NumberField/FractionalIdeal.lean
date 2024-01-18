@@ -16,6 +16,9 @@ Prove some results on the fractional ideals of number fields.
 
   * `NumberField.basisOfFractionalIdeal`: A `ℚ`-basis of `K` that spans `I` over `ℤ` where `I` is
   a fractional ideal of a number field `K`.
+  * `NumberField.det_basisOfFractionalIdeal_eq_absNorm`: for `I` a fractional ideal of a number
+  field `K`, the absolute value of the determinant of `basisOfFractionalIdeal` over
+  `integralBasis` is the absolute norm of `I`.
 -/
 
 variable (K : Type*) [Field K] [NumberField K]
@@ -28,7 +31,7 @@ section Basis
 
 open Module
 
--- This is necessary to avoid some timeouts
+-- This is necessary to avoid several timeouts
 attribute [local instance 2000] Submodule.module
 
 instance (I : FractionalIdeal (𝓞 K)⁰ K) : Module.Free ℤ I := by
@@ -39,10 +42,6 @@ instance (I : FractionalIdeal (𝓞 K)⁰ K) : Module.Finite ℤ I := by
   refine Module.Finite.of_surjective
     (LinearEquiv.restrictScalars ℤ (I.equivNum ?_)).symm.toLinearMap (LinearEquiv.surjective _)
   exact nonZeroDivisors.coe_ne_zero I.den
-
-/-- A `ℤ`-basis of a fractional ideal. -/
-noncomputable def fractionalIdealBasis (I : FractionalIdeal (𝓞 K)⁰ K) :
-    Basis (Free.ChooseBasisIndex ℤ I) ℤ I := Free.chooseBasis ℤ I
 
 instance (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
     IsLocalizedModule ℤ⁰ ((Submodule.subtype (I : Submodule (𝓞 K) K)).restrictScalars ℤ) where
@@ -67,6 +66,10 @@ instance (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
       ring
   exists_of_eq h :=
     ⟨1, by rwa [one_smul, one_smul, ← (Submodule.injective_subtype I.1.coeToSubmodule).eq_iff]⟩
+
+/-- A `ℤ`-basis of a fractional ideal. -/
+noncomputable def fractionalIdealBasis (I : FractionalIdeal (𝓞 K)⁰ K) :
+    Basis (Free.ChooseBasisIndex ℤ I) ℤ I := Free.chooseBasis ℤ I
 
 /-- A `ℚ`-basis of `K` that spans `I` over `ℤ`. -/
 noncomputable def basisOfFractionalIdeal (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
