@@ -163,6 +163,13 @@ instance [UniformSpace β] [Group β] [UniformGroup β] : UniformGroup (α × β
         (uniformContinuous_snd.comp uniformContinuous_snd))⟩
 
 @[to_additive]
+instance Pi.instUniformGroup {ι : Type*} {G : ι → Type*} [∀ i, UniformSpace (G i)]
+    [∀ i, Group (G i)] [∀ i, UniformGroup (G i)] : UniformGroup (∀ i, G i) where
+  uniformContinuous_div := uniformContinuous_pi.mpr fun i ↦
+    (uniformContinuous_proj G i).comp uniformContinuous_fst |>.div <|
+      (uniformContinuous_proj G i).comp uniformContinuous_snd
+
+@[to_additive]
 theorem uniformity_translate_mul (a : α) : ((𝓤 α).map fun x : α × α => (x.1 * a, x.2 * a)) = 𝓤 α :=
   le_antisymm (uniformContinuous_id.mul uniformContinuous_const)
     (calc

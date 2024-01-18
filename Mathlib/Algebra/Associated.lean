@@ -3,8 +3,6 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker
 -/
-import Mathlib.Algebra.Divisibility.Basic
-import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.Parity
 
 #align_import algebra.associated from "leanprover-community/mathlib"@"2f3994e1b117b1e1da49bcfb67334f33460c3ce4"
@@ -306,7 +304,7 @@ variable [CommMonoid α] {a : α}
 theorem Irreducible.not_square (ha : Irreducible a) : ¬IsSquare a := by
   rw [isSquare_iff_exists_sq]
   rintro ⟨b, rfl⟩
-  exact not_irreducible_pow one_lt_two.ne' ha
+  exact not_irreducible_pow (by decide) ha
 #align irreducible.not_square Irreducible.not_square
 
 theorem IsSquare.not_irreducible (ha : IsSquare a) : ¬Irreducible a := fun h => h.not_square ha
@@ -707,10 +705,6 @@ theorem Associated.of_pow_associated_of_prime' [CancelCommMonoidWithZero α] {p�
 section UniqueUnits
 
 variable [Monoid α] [Unique αˣ]
-
-theorem units_eq_one (u : αˣ) : u = 1 :=
-  Subsingleton.elim u 1
-#align units_eq_one units_eq_one
 
 theorem associated_iff_eq {x y : α} : x ~ᵤ y ↔ x = y := by
   constructor

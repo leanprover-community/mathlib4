@@ -102,23 +102,23 @@ theorem Ioo_eq_finset_map :
 
 theorem uIcc_eq_finset_map :
     uIcc a b = (range (max a b + 1 - min a b).toNat).map
-      (Nat.castEmbedding.trans <| addLeftEmbedding $ min a b) := rfl
+      (Nat.castEmbedding.trans <| addLeftEmbedding <| min a b) := rfl
 #align int.uIcc_eq_finset_map Int.uIcc_eq_finset_map
 
 @[simp]
-theorem card_Icc : (Icc a b).card = (b + 1 - a).toNat := (card_map _).trans $ card_range _
+theorem card_Icc : (Icc a b).card = (b + 1 - a).toNat := (card_map _).trans <| card_range _
 #align int.card_Icc Int.card_Icc
 
 @[simp]
-theorem card_Ico : (Ico a b).card = (b - a).toNat := (card_map _).trans $ card_range _
+theorem card_Ico : (Ico a b).card = (b - a).toNat := (card_map _).trans <| card_range _
 #align int.card_Ico Int.card_Ico
 
 @[simp]
-theorem card_Ioc : (Ioc a b).card = (b - a).toNat := (card_map _).trans $ card_range _
+theorem card_Ioc : (Ioc a b).card = (b - a).toNat := (card_map _).trans <| card_range _
 #align int.card_Ioc Int.card_Ioc
 
 @[simp]
-theorem card_Ioo : (Ioo a b).card = (b - a - 1).toNat := (card_map _).trans $ card_range _
+theorem card_Ioo : (Ioo a b).card = (b - a - 1).toNat := (card_map _).trans <| card_range _
 #align int.card_Ioo Int.card_Ioo
 
 @[simp]

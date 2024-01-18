@@ -541,7 +541,7 @@ def comp : QPF (Functor.Comp F₂ F₁) where
     conv =>
       rhs
       rw [← abs_repr x]
-    cases' h : repr x with a f
+    cases' repr x with a f
     dsimp
     congr with x
     cases' h' : repr (f x) with b g

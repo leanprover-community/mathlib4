@@ -695,7 +695,8 @@ theorem smn :
   ⟨curry, Primrec₂.to_comp curry_prim, eval_curry⟩
 #align nat.partrec.code.smn Nat.Partrec.Code.smn
 
-/-- A function is partial recursive if and only if there is a code implementing it. -/
+/-- A function is partial recursive if and only if there is a code implementing it. Therefore,
+`eval` is a **universal partial recursive function**. -/
 theorem exists_code {f : ℕ →. ℕ} : Nat.Partrec f ↔ ∃ c : Code, eval c = f := by
   refine ⟨fun h => ?_, ?_⟩
   · induction h with
@@ -769,7 +770,7 @@ def evaln : ℕ → Code → ℕ → Option ℕ
       else
         evaln k (rfind' cf) (Nat.pair a (m + 1))
   termination_by evaln k c => (k, c)
-  decreasing_by { decreasing_with simp (config := { arith := true }) [Zero.zero]; done }
+  decreasing_by { decreasing_with (dsimp; omega) }
 #align nat.partrec.code.evaln Nat.Partrec.Code.evaln
 
 theorem evaln_bound : ∀ {k c n x}, x ∈ evaln k c n → n < k
@@ -812,7 +813,8 @@ theorem evaln_mono : ∀ {k₁ k₂ c n x}, k₁ ≤ k₂ → x ∈ evaln k₁ c
       · exact fun y h₁ h₂ => ⟨y, evaln_mono hl' h₁, hg _ _ h₂⟩
     · -- rfind' cf
       simp? [Bind.bind] at h ⊢ says
-        simp only [unpaired, bind, pair_unpair, Option.mem_def, Option.bind_eq_some] at h ⊢
+        simp only [unpaired, bind, pair_unpair, Option.pure_def, Option.mem_def,
+          Option.bind_eq_some] at h ⊢
       refine' h.imp fun x => And.imp (hf _ _) _
       by_cases x0 : x = 0 <;> simp [x0]
       exact evaln_mono hl'
@@ -844,8 +846,7 @@ theorem evaln_sound : ∀ {k c n x}, x ∈ evaln k c n → x ∈ eval c n
       rcases h with ⟨m, h₁, h₂⟩
       by_cases m0 : m = 0 <;> simp [m0] at h₂
       · exact
-          ⟨0, ⟨by simpa [m0] using hf _ _ h₁, fun {m} => (Nat.not_lt_zero _).elim⟩, by
-            injection h₂ with h₂; simp [h₂]⟩
+          ⟨0, ⟨by simpa [m0] using hf _ _ h₁, fun {m} => (Nat.not_lt_zero _).elim⟩, by simp [h₂]⟩
       · have := evaln_sound h₂
         simp [eval] at this
         rcases this with ⟨y, ⟨hy₁, hy₂⟩, rfl⟩
@@ -908,7 +909,7 @@ theorem evaln_complete {c n x} : x ∈ eval c n ↔ ∃ k, x ∈ evaln k c n := 
     induction' y with y IH generalizing m <;> simp [evaln, Bind.bind]
     · simp at hy₁
       rcases hf hy₁ with ⟨k, hk⟩
-      exact ⟨_, Nat.le_of_lt_succ <| evaln_bound hk, _, hk, by simp; rfl⟩
+      exact ⟨_, Nat.le_of_lt_succ <| evaln_bound hk, _, hk, by simp⟩
     · rcases hy₂ (Nat.succ_pos _) with ⟨a, ha, a0⟩
       rcases hf ha with ⟨k₁, hk₁⟩
       rcases IH m.succ (by simpa [Nat.succ_eq_add_one, add_comm, add_left_comm] using hy₁)
