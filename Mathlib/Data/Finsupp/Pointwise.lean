@@ -122,16 +122,6 @@ end Finsupp
 
 lemma Finset.nsmul_inf' [LinearOrderedAddCommMonoid β] {s : Finset α}
     (hs : s.Nonempty) (f : α → β) (n : ℕ) :
-    s.inf' hs (fun a => n • f a) = n • s.inf' hs f := by
-  if nz : n = 0 then
-    simp_all
-  else
-    obtain ⟨d, hd, hfd⟩ := Finset.exists_mem_eq_inf' hs f
-    obtain ⟨dₙ, hnₙ, hfdₙ⟩ := Finset.exists_mem_eq_inf' hs (fun a => n • f a)
-    have key : n • f dₙ = n • f d
-    · apply eq_of_ge_of_not_gt
-      · rw [← hfd]
-        exact nsmul_le_nsmul_right (Finset.inf'_le f hnₙ) n
-      · rw [not_lt, ← hfdₙ]
-        exact Finset.inf'_le (fun a => n • f a) hd
-    rw [hfd, hfdₙ, key]
+    s.inf' hs (fun a => n • f a) = n • s.inf' hs f :=
+  let ns : InfHom β β := { toFun := (n • ·), map_inf' := fun _ _ => (nsmul_right_mono n).map_min }
+  (map_finset_inf' ns hs _).symm
