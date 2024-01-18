@@ -226,7 +226,7 @@ theorem Submodule.homogeneous_span (s : Set M) (h : ∀ x ∈ s, Homogeneous ℳ
   rintro i r hr
   rw [mem_span_set] at hr
   obtain ⟨c, hc, rfl⟩ := hr
-  rw [ Finsupp.sum, decompose_sum, DFinsupp.finset_sum_apply, AddSubmonoidClass.coe_finset_sum]
+  rw [Finsupp.sum, decompose_sum, DFinsupp.finset_sum_apply, AddSubmonoidClass.coe_finset_sum]
   refine' Submodule.sum_mem _ _
   rintro z hz1
   apply Submodule.smul_homogeneous_element_mem_of_mem (𝒜 := 𝒜) (ℳ := ℳ)
@@ -396,7 +396,7 @@ theorem sInf {ℐ : Set (Submodule A M)} (h : ∀ I ∈ ℐ, I.IsHomogeneous ℳ
 
 end Submodule.IsHomogeneous
 
-namespace Submodule.IsHomogeneous
+namespace Ideal.IsHomogeneous
 
 theorem bot : Ideal.IsHomogeneous 𝒜 ⊥ := Submodule.IsHomogeneous.bot 𝒜
 #align ideal.is_homogeneous.bot Ideal.IsHomogeneous.bot
@@ -440,7 +440,7 @@ theorem sInf {ℐ : Set (Ideal A)} (h : ∀ I ∈ ℐ, I.IsHomogeneous 𝒜) :
     (sInf ℐ).IsHomogeneous 𝒜 := Submodule.IsHomogeneous.sInf h
 #align ideal.is_homogeneous.Inf Submodule.IsHomogeneous.sInf
 
-end Submodule.IsHomogeneous
+end Ideal.IsHomogeneous
 
 variable {𝒜 ℳ}
 
@@ -557,7 +557,7 @@ instance : Inhabited (HomogeneousSubmodule A ℳ) where default := ⊥
 
 end HomogeneousSubmodule
 
-namespace HomogeneousSubmodule
+namespace HomogeneousIdeal
 
 instance : PartialOrder (HomogeneousSubmodule A ℳ) :=
   SetLike.instPartialOrder
@@ -659,7 +659,7 @@ theorem toIdeal_add (I J : HomogeneousIdeal 𝒜) : (I + J).toIdeal = I.toIdeal 
 
 instance : Inhabited (HomogeneousSubmodule A ℳ) where default := ⊥
 
-end HomogeneousSubmodule
+end HomogeneousIdeal
 
 end Semiring
 
@@ -954,111 +954,44 @@ theorem HomogeneousIdeal.toIdeal_irrelevant :
 end IrrelevantIdeal
 
 
-section HomogeneousSpanningSet
+section HomogeneouslyFG
 
-variable [Semiring A] [AddCommMonoid M] [Module A M]
-variable [DecidableEq ιA] [DecidableEq ιM] [AddMonoid ιA]
-variable [SetLike σA A] [AddSubmonoidClass σA A]
-variable (𝒜 : ιA → σA) (ℳ : ιM → σM) [SetLike σM M] [AddSubmonoidClass σM M] [Decomposition ℳ] [GradedRing 𝒜]
-variable {I : HomogeneousSubmodule A ℳ} (hI : I.toSubmodule.FG)
+variable [Semiring A] [Module A M]
+variable [AddMonoid ιA] [AddSubmonoidClass σA A] [GradedRing 𝒜]
+variable {p : HomogeneousSubmodule A ℳ} (hp : p.toSubmodule.FG)
 
-namespace HomogeneousSubmodule
+def Submodule.homogeneously_FG (p : Submodule A M) : Prop :=
+∃ (s : Finset M), (∀ m ∈ s, Homogeneous ℳ m) ∧ p = Submodule.span A s
 
-lemma _root_.Submodule.FG.decompose_mem_toSubmodule_of_mem_spanningSet (i : ιM) (a : M) :
-    a ∈ hI.spanningSet → (decompose ℳ a i : M) ∈ I.toSubmodule :=
-  fun ha ↦ I.isHomogeneous i <| show a ∈ I.toSubmodule by
-    rw [← hI.spanningSet_span_eq]; exact Submodule.subset_span ha
+example : p.toSubmodule.FG ↔ p.toSubmodule.homogeneously_FG ℳ := by
+  classical
+  fconstructor
+  · rintro ⟨s, hs⟩
+    rw [← hs]
+    refine ⟨s.sup (GradedModule.homogeneousComponents ℳ), fun m hs ↦ ?_, ?_⟩
+    · rw [Finset.mem_sup] at hs
+      rcases hs with ⟨v, -, hv⟩
+      exact GradedModule.homogeneous_of_mem_homogeneousComponents ℳ hv
+    · refine le_antisymm ?_ ?_ <;>
+      rw [Submodule.span_le]
+      · intro x hx
+        rw [← sum_support_decompose ℳ x]
+        refine Submodule.sum_mem _ fun i hi ↦ Submodule.subset_span ?_
+        simp only [Finset.mem_coe, Finset.mem_sup]
+        refine ⟨x, hx, ?_⟩
+        simp only [GradedModule.homogeneousComponents, Finset.mem_image, DFinsupp.mem_support_toFun,
+          ne_eq] at hi ⊢
+        exact ⟨i, hi, rfl⟩
+      · intro x hx
+        simp only [Finset.mem_coe, Finset.mem_sup] at hx
+        rcases hx with ⟨v, hv1, hv2⟩
+        simp only [GradedModule.homogeneousComponents, Finset.mem_image, DFinsupp.mem_support_toFun,
+          ne_eq, mem_coe] at hv2 ⊢
+        rcases hv2 with ⟨i, _, rfl⟩
+        rw [hs]
+        exact p.2 _ <| hs ▸ Submodule.subset_span hv1
+  · rintro ⟨s, _, hs1⟩
+    rw [hs1]
+    exact ⟨s, rfl⟩
 
-variable [DecidableEq M]
-
-/--
-A finite subset of `A` which spans the finitely generated ideal `I.toSubmodule` and only
-contains homogeneous elements.
--/
-noncomputable def _root_.Submodule.FG.homogeneousSpanningSet : Finset M :=
-  Finset.sup hI.spanningSet (GradedModule.homogeneousComponents ℳ)
-
--- lemma FG.homogeneousSpanningSet_def :
---     hI.homogeneousSpanningSet ℳ =
---     Finset.sup hI.spanningSet (GradedModule.homogeneousComponents ℳ) := rfl
-
--- lemma FG.mem_homogeneousSubmonoid_of_mem_homogeneousSpanningSet (a : A)
---     (ha : a ∈ FG.homogeneousSpanningSet 𝒜 I hI) : a ∈ SetLike.homogeneousSubmonoid 𝒜 := by
---   rw [homogeneousSpanningSet, Finset.mem_sup] at ha
---   exact GradedRing.mem_homogeneousSubmonoid_of_mem_homogeneousComponents 𝒜
---     ha.choose a ha.choose_spec.2
-
-lemma _root_.Submodule.FG.ne_zero_of_mem_homogeneousSpanningSet (a : M) (ha : a ∈ hI.homogeneousSpanningSet ℳ) :
-    a ≠ 0 := by
-  rw [Submodule.FG.homogeneousSpanningSet, Finset.mem_sup] at ha
-  rcases ha with ⟨s, _, hsa⟩
-  rw [GradedModule.homogeneousComponents, Finset.mem_image] at hsa
-  rcases hsa with ⟨i, hi1, hi2⟩
-  rw [DFinsupp.mem_support_iff] at hi1
-  rw [← hi2]
-  simp only [ne_eq, ZeroMemClass.coe_eq_zero]
-  exact hi1
-
-lemma _root_.Submodule.FG.exists_of_mem_homogeneousSpanningSet (a : M) (ha : a ∈ hI.homogeneousSpanningSet ℳ) :
-    ∃ (s : hI.spanningSet) (i : ιM), DirectSum.decompose ℳ s i = a := by
-  rw [Submodule.FG.homogeneousSpanningSet] at ha
-  have : ∃ (s : hI.spanningSet), a ∈ GradedModule.homogeneousComponents ℳ (s : M) := by
-    rw [Finset.mem_sup] at ha
-    exact ⟨⟨ha.choose, ha.choose_spec.1⟩, ha.choose_spec.2⟩
-  simp_rw [GradedModule.homogeneousComponents, Finset.mem_image] at this
-  rcases this with ⟨s, i, _, hsi⟩
-  exact ⟨s, i, hsi⟩
-
-lemma _root_.Submodule.FG.mem_homogeneousSpanningSet_of_ne_zero_and_eq_decompose (a s : M) (i : ιM)
-    (hs : s ∈ hI.spanningSet) (ha1 : a ≠ 0)
-    (ha2 : a = DirectSum.decompose ℳ s i) :
-    a ∈ hI.homogeneousSpanningSet ℳ := by
-  rw [Submodule.FG.homogeneousSpanningSet, Finset.mem_sup]
-  exact ⟨s, hs, by
-    rw [GradedModule.homogeneousComponents, Finset.mem_image]
-    exact ⟨i, by
-      rw [DFinsupp.mem_support_iff]
-      exact ⟨by subst ha2; exact Subtype.ne_of_val_ne ha1, id ha2.symm⟩⟩⟩
-
-lemma _root_.Submodule.FG.mem_homogeneousSpanningSet_iff (a : M) :
-    a ∈ hI.homogeneousSpanningSet  ↔
-    a ≠ 0 ∧ ∃ (s : M) (i : ιM), s ∈ hI.spanningSet ∧ a = DirectSum.decompose ℳ s i :=
-  ⟨λ ha ↦ ⟨hI.ne_zero_of_mem_homogeneousSpanningSet ℳ a ha, by
-  rcases hI.exists_of_mem_homogeneousSpanningSet ℳ a ha with ⟨s, i, hasi⟩;
-  exact ⟨s, i, Finset.coe_mem s, id hasi.symm⟩⟩, λ ha ↦ by
-  rcases ha with ⟨hane0, s, i, hs, hasi⟩;
-  exact hI.mem_homogeneousSpanningSet_of_ne_zero_and_eq_decompose ℳ a s i hs hane0 hasi⟩
-
-lemma _root_.Submodule.FG.decompose_mem_homogeneousSpanningSet_of_mem_spanningSet
-    (a : M) (i : ιM) (ha : a ∈ hI.spanningSet)
-    (hi : i ∈ (DirectSum.decompose ℳ a).support):
-    (DirectSum.decompose ℳ a i : M) ∈ hI.homogeneousSpanningSet ℳ := by
-  rw [hI.mem_homogeneousSpanningSet_iff]
-  rw [DFinsupp.mem_support_iff] at hi
-  exact ⟨by simp only [ne_eq, ZeroMemClass.coe_eq_zero]; exact hi, by use a, i⟩
-
-lemma _root_.Submodule.FG.toSubmodule_le_homogeneousSpanningSet_span :
-    I.toSubmodule ≤ Submodule.span A hI.homogeneousSpanningSet := by
-  rw [← hI.spanningSet_span_eq, Submodule.span_le]
-  exact (λ s hs ↦ by
-    rw [← DirectSum.sum_support_decompose ℳ s]
-    exact Submodule.sum_mem _ fun i hi ↦ Submodule.subset_span <|
-      hI.decompose_mem_homogeneousSpanningSet_of_mem_spanningSet _ _ _ hs hi)
-
-lemma _root_.Submodule.FG.homogeneousSpanningSet_span_le_toSubmodule :
-    Submodule.span A (hI.homogeneousSpanningSet ℳ) ≤ I.toSubmodule := by
-  rw [Submodule.span_le]
-  intro x hx
-  exact (show ∀ (x : M), x ∈ hI.homogeneousSpanningSet ℳ → x ∈ I.toSubmodule by
-    intro x hx; rw [hI.mem_homogeneousSpanningSet_iff] at hx;
-    rcases hx with ⟨_, s, i, hs, hxsi⟩; rw [hxsi];
-    exact hI.decompose_mem_toSubmodule_of_mem_spanningSet ℳ i s hs) x hx
-
-lemma FG.homogeneousSpanningSet_span_eq_toSubmodule :
-    Submodule.span A (hI.homogeneousSpanningSet ℳ) = I.toSubmodule :=
-  le_antisymm (hI.homogeneousSpanningSet_span_le_toSubmodule _)
-    (hI.toSubmodule_le_homogeneousSpanningSet_span _)
-
-end HomogeneousSubmodule
-
-end HomogeneousSpanningSet
+end HomogeneouslyFG

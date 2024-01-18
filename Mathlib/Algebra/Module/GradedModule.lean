@@ -7,6 +7,7 @@ import Mathlib.RingTheory.GradedAlgebra.Basic
 import Mathlib.Algebra.GradedMulAction
 import Mathlib.Algebra.DirectSum.Decomposition
 import Mathlib.Algebra.Module.BigOperators
+import Mathlib.Algebra.GradedMonoid
 
 #align_import algebra.module.graded_module from "leanprover-community/mathlib"@"59cdeb0da2480abbc235b7e611ccd9a7e5603d7c"
 
@@ -262,5 +263,10 @@ homogeneous components of `a`, which is a finite subset of `M`.
 -/
 def homogeneousComponents [DecidableEq ιM] [Decomposition 𝓜] [DecidableEq M] (a : M) : Finset M :=
     (decompose 𝓜 a).support.image (decompose 𝓜 a ·)
+
+lemma homogeneous_of_mem_homogeneousComponents [DecidableEq ιM] [Decomposition 𝓜] [DecidableEq M]
+    {a b : M} (hb : b ∈ homogeneousComponents 𝓜 a) : SetLike.Homogeneous 𝓜 b := by
+  change b ∈ (decompose 𝓜 a).support.image _ at hb
+  aesop
 
 end GradedModule
