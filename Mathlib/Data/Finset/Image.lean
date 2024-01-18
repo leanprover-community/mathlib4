@@ -423,7 +423,7 @@ protected theorem Nonempty.image (h : s.Nonempty) (f : α → β) : (s.image f).
 
 alias ⟨Nonempty.of_image, _⟩ := image_nonempty
 
-@[deprecated] -- Since 29 December 2023
+@[deprecated image_nonempty] -- Since 29 December 2023
 theorem Nonempty.image_iff (f : α → β) : (s.image f).Nonempty ↔ s.Nonempty :=
   image_nonempty
 
@@ -818,6 +818,8 @@ theorem fin_map {n} {s : Finset ℕ} : (s.fin n).map Fin.valEmbedding = s.filter
   simp [Finset.fin, Finset.map_map]
 #align finset.fin_map Finset.fin_map
 
+/-- If a `Finset` is a subset of the image of a `Set` under `f`,
+then it is equal to the `Finset.image` of a `Finset` subset of that `Set`. -/
 theorem subset_image_iff [DecidableEq β] {s : Set α} {t : Finset β} {f : α → β} :
     ↑t ⊆ f '' s ↔ ∃ s' : Finset α, ↑s' ⊆ s ∧ s'.image f = t := by
   constructor; swap

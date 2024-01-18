@@ -404,7 +404,7 @@ agrees with the usual group-theoretical kernel.
 def kernelIsoKer {G H : AddCommGroupCat.{u}} (f : G ⟶ H) :
     kernel f ≅ AddCommGroupCat.of f.ker where
   hom :=
-    { toFun := fun g => ⟨kernel.ι f g, FunLike.congr_fun (kernel.condition f) g⟩
+    { toFun := fun g => ⟨kernel.ι f g, DFunLike.congr_fun (kernel.condition f) g⟩
       map_zero' := by
         refine Subtype.ext ?_
         simp [(AddSubgroup.coe_zero _).symm]
@@ -415,7 +415,7 @@ def kernelIsoKer {G H : AddCommGroupCat.{u}} (f : G ⟶ H) :
         simp }
   inv := kernel.lift f (AddSubgroup.subtype f.ker) <| by
     -- porting note : used to be `tidy`, but `aesop` can't do it
-    refine FunLike.ext _ _ ?_
+    refine DFunLike.ext _ _ ?_
     rintro ⟨x, (hx : f _ = 0)⟩
     exact hx
   hom_inv_id := by
@@ -425,7 +425,7 @@ def kernelIsoKer {G H : AddCommGroupCat.{u}} (f : G ⟶ H) :
     ext x
     dsimp
     generalize_proofs _ h1 h2
-    erw [FunLike.congr_fun (kernel.lift_ι f _ h1) ⟨_, h2⟩]
+    erw [DFunLike.congr_fun (kernel.lift_ι f _ h1) ⟨_, h2⟩]
     rfl
   inv_hom_id := by
     apply AddCommGroupCat.ext
@@ -434,7 +434,7 @@ def kernelIsoKer {G H : AddCommGroupCat.{u}} (f : G ⟶ H) :
     refine Subtype.ext ?_
     simp only [ZeroHom.coe_mk, Function.comp_apply, id_eq]
     generalize_proofs _ h1 h2
-    erw [FunLike.congr_fun (kernel.lift_ι f _ h1) ⟨_, mem⟩]
+    erw [DFunLike.congr_fun (kernel.lift_ι f _ h1) ⟨_, mem⟩]
     rfl
 set_option linter.uppercaseLean3 false in
 #align AddCommGroup.kernel_iso_ker AddCommGroupCat.kernelIsoKer

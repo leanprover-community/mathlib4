@@ -6,6 +6,7 @@ Authors: Kevin Buzzard, Johan Commelin, Patrick Massot
 import Mathlib.Algebra.Order.WithZero
 import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.Tactic.TFAE
+import Mathlib.Algebra.GroupPower.Order
 
 #align_import ring_theory.valuation.basic from "leanprover-community/mathlib"@"2196ab363eb097c008d4497125e0dde23fb36db2"
 
@@ -55,7 +56,7 @@ In the `DiscreteValuation` locale:
 
 ## TODO
 
-If ever someone extends `Valuation`, we should fully comply to the `FunLike` by migrating the
+If ever someone extends `Valuation`, we should fully comply to the `DFunLike` by migrating the
 boilerplate lemmas to `ValuationClass`.
 -/
 
@@ -127,10 +128,10 @@ instance : ValuationClass (Valuation R Γ₀) R Γ₀ where
   map_add_le_max f := f.map_add_le_max'
 
 -- porting note: is this still helpful? Let's find out!!
-/- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`
+/- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`
 directly. -/
 -- instance : CoeFun (Valuation R Γ₀) fun _ => R → Γ₀ :=
-  -- FunLike.hasCoeToFun
+  -- DFunLike.hasCoeToFun
 
 theorem toFun_eq_coe (v : Valuation R Γ₀) : v.toFun = v := rfl
 #align valuation.to_fun_eq_coe Valuation.toFun_eq_coe
@@ -141,7 +142,7 @@ theorem toMonoidWithZeroHom_coe_eq_coe (v : Valuation R Γ₀) :
 
 @[ext]
 theorem ext {v₁ v₂ : Valuation R Γ₀} (h : ∀ r, v₁ r = v₂ r) : v₁ = v₂ :=
-  FunLike.ext _ _ h
+  DFunLike.ext _ _ h
 #align valuation.ext Valuation.ext
 
 variable (v : Valuation R Γ₀) {x y z : R}
@@ -212,10 +213,10 @@ theorem map_pow : ∀ (x) (n : ℕ), v (x ^ n) = v x ^ n :=
   v.toMonoidWithZeroHom.toMonoidHom.map_pow
 #align valuation.map_pow Valuation.map_pow
 
-/-- Deprecated. Use `FunLike.ext_iff`. -/
--- @[deprecated] Porting note: using `FunLike.ext_iff` is not viable below for now
+/-- Deprecated. Use `DFunLike.ext_iff`. -/
+-- @[deprecated] Porting note: using `DFunLike.ext_iff` is not viable below for now
 theorem ext_iff {v₁ v₂ : Valuation R Γ₀} : v₁ = v₂ ↔ ∀ r, v₁ r = v₂ r :=
-  FunLike.ext_iff
+  DFunLike.ext_iff
 #align valuation.ext_iff Valuation.ext_iff
 
 -- The following definition is not an instance, because we have more than one `v` on a given `R`.
@@ -613,7 +614,7 @@ section Monoid
 
 /-- A valuation is coerced to the underlying function `R → Γ₀`. -/
 instance (R) (Γ₀) [Ring R] [LinearOrderedAddCommMonoidWithTop Γ₀] :
-    FunLike (AddValuation R Γ₀) R fun _ => Γ₀ where
+    DFunLike (AddValuation R Γ₀) R fun _ => Γ₀ where
   coe v := v.toMonoidWithZeroHom.toFun
   coe_injective' f g := by cases f; cases g; simp (config := {contextual := true})
 
