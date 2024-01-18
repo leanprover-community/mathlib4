@@ -393,7 +393,7 @@ def lint(path, fix=False):
                 if is_too_long:
                     new_exceptions = True
                     # add up to 200 lines of slack, so simple PRs don't trigger this right away
-                    watermark = 100* int(len(lines) / 100) + 200
+                    watermark = len(lines) // 100 * 100 + 200
                     output_message(path, 1, "ERR_NUM_LIN", f"{watermark} file contains {len(lines)} lines, try to split it up")
             errs, newlines = regular_check(newlines, path)
             format_errors(errs)
