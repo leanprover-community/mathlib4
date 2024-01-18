@@ -1420,6 +1420,7 @@ import Mathlib.CategoryTheory.Triangulated.TStructure.AbstractSpectralObject
 import Mathlib.CategoryTheory.Triangulated.TStructure.Basic
 import Mathlib.CategoryTheory.Triangulated.TStructure.Homology
 import Mathlib.CategoryTheory.Triangulated.TStructure.RightTExact
+import Mathlib.CategoryTheory.Triangulated.TStructure.Shift
 import Mathlib.CategoryTheory.Triangulated.TStructure.TExact
 import Mathlib.CategoryTheory.Triangulated.TStructure.Trunc
 import Mathlib.CategoryTheory.Triangulated.TriangleShift

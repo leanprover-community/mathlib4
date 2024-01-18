@@ -1,4 +1,5 @@
 import Mathlib.CategoryTheory.Triangulated.TStructure.TExact
+import Mathlib.CategoryTheory.Triangulated.TStructure.Shift
 import Mathlib.CategoryTheory.Triangulated.TStructure.AbelianSubcategory
 import Mathlib.CategoryTheory.Limits.FullSubcategory
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
@@ -1086,22 +1087,20 @@ section
 
 variable [t.HasHeart] [t.HasHomology₀] [(homology₀ t).ShiftSequence  ℤ]
 
-/-def homology'ιHeart'IsoHomoloyιHeart (q : ℤ) :
-    t.homology' q ⋙ t.ιHeart' ≅ t.homology q ⋙ t.ιHeart := by
-  refine' _ ≪≫ isoWhiskerLeft _ t.homology₀ιHeart.symm ≪≫
+noncomputable def homology'ιHeart'IsoHomoloyιHeart (q : ℤ) :
+    t.homology' q ⋙ t.ιHeart' ≅ t.homology q ⋙ t.ιHeart :=
+  t.shiftTruncGELE q 0 q 0 q (add_zero q) (add_zero q) ≪≫ isoWhiskerLeft _ t.homology₀ιHeart.symm ≪≫
     (Functor.associator _ _ _).symm ≪≫
     isoWhiskerRight (isoWhiskerLeft _ (t.homology₀.isoShiftZero ℤ).symm ≪≫ t.homology₀.shiftIso q 0 q (by simp)) _
-  dsimp [homology']
-  sorry-/
 
 variable (X : C) (q q' : ℤ) (hqq' : q + 1 = q')
 
-/-noncomputable def shiftSpectralObjectω₁IsoHomologyιHeart :
+noncomputable def shiftSpectralObjectω₁IsoHomologyιHeart :
     ((spectralObject t X).ω₁ ⋙ shiftFunctor C q).obj
         (ComposableArrows.mk₁ (homOfLE (by simp; linarith) : ℤt.mk q ⟶ ℤt.mk q')) ≅
       (t.homology q ⋙ ιHeart t).obj X :=
   t.shiftSpectralObjectω₁IsoHomologyιHeart' X q q' hqq' ≪≫
-    (t.homology'ιHeart'IsoHomoloyιHeart q).app X-/
+    (t.homology'ιHeart'IsoHomoloyιHeart q).app X
 
 end
 

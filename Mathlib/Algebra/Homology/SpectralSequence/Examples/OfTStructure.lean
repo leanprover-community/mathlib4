@@ -66,19 +66,13 @@ noncomputable def spectralSequence : E₂CohomologicalSpectralSequence A :=
 
 variable [t.HasHeart] [HasHomology₀ t] [Functor.ShiftSequence (homology₀ t) ℤ]
 
--- cf TStructure.Homology
-/-noncomputable def spectralSequenceE₂Iso (pq : ℤ × ℤ) :
+noncomputable def spectralSequenceE₂Iso (pq : ℤ × ℤ) :
     ((t.spectralSequence X H).page 2).X pq ≅
       (t.homology pq.2 ⋙ t.ιHeart ⋙ H.shift pq.1).obj X :=
   ((t.spectralObject X).mapHomologicalFunctor H).spectralSequenceFirstPageXIso
       mkDataE₂Cohomological pq _ rfl _ _ rfl rfl ≪≫
     (H.shiftIso _ _ _ (add_comm pq.2 pq.1)).symm.app _ ≪≫
-    (H.shift pq.1).mapIso (by
-      dsimp
-      have pif := t.shiftSpectralObjectω₁IsoHomologyιHeart' X pq.2 _ rfl
-      refine' pif ≪≫ _
-      dsimp at pif
-      sorry)-/
+    (H.shift pq.1).mapIso (t.shiftSpectralObjectω₁IsoHomologyιHeart X pq.2 _ rfl)
 
 noncomputable def spectralSequenceStronglyConvergesTo [t.IsGE X 0] (n : ℤ) :
     (t.spectralSequence X H).StronglyConvergesToInDegree
