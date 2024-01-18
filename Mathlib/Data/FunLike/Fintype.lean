@@ -73,7 +73,7 @@ Non-dependent version of `DFunLike.finite` that might be easier to infer.
 Can't be an instance because it can cause infinite loops.
 -/
 theorem FunLike.finite [Finite α] [Finite γ] : Finite G :=
-  FunLike.finite G
+  DFunLike.finite G
 #align fun_like.finite' FunLike.finite
 
 end Sort'
