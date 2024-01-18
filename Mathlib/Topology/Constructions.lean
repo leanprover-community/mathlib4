@@ -1705,3 +1705,27 @@ theorem IsClosed.trans (hγ : IsClosed γ) (hβ : IsClosed β) : IsClosed (γ : 
   convert IsClosed.inter hδ hβ
 
 end Monad
+
+section NhdsSet
+variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f : Filter X}
+  {s : Set X} {t : Set Y} {x : X}
+
+/-- The product of a neighborhood of `s` and a neighborhood of `t` is a neighborhood of `s ×ˢ t`,
+formulated in terms of a filter inequality. -/
+theorem nhdsSet_prod_le (s : Set X) (t : Set Y) : 𝓝ˢ (s ×ˢ t) ≤ 𝓝ˢ s ×ˢ 𝓝ˢ t :=
+  ((hasBasis_nhdsSet _).prod (hasBasis_nhdsSet _)).ge_iff.2 fun (_u, _v) ⟨⟨huo, hsu⟩, hvo, htv⟩ ↦
+    (huo.prod hvo).mem_nhdsSet.2 <| prod_mono hsu htv
+
+theorem Filter.eventually_nhdsSet_prod_iff {p : X × Y → Prop} :
+    (∀ᶠ q in 𝓝ˢ (s ×ˢ t), p q) ↔
+      ∀ x ∈ s, ∀ y ∈ t,
+          ∃ pa : X → Prop, (∀ᶠ x' in 𝓝 x, pa x') ∧ ∃ pb : Y → Prop, (∀ᶠ y' in 𝓝 y, pb y') ∧
+            ∀ {x : X}, pa x → ∀ {y : Y}, pb y → p (x, y) :=
+  by simp_rw [eventually_nhdsSet_iff_forall, Set.forall_prod_set, nhds_prod_eq, eventually_prod_iff]
+
+theorem Filter.Eventually.prod_nhdsSet {p : X × Y → Prop} {pa : X → Prop} {pb : Y → Prop}
+    (hp : ∀ {x : X}, pa x → ∀ {y : Y}, pb y → p (x, y)) (hs : ∀ᶠ x in 𝓝ˢ s, pa x)
+    (ht : ∀ᶠ y in 𝓝ˢ t, pb y) : ∀ᶠ q in 𝓝ˢ (s ×ˢ t), p q :=
+  nhdsSet_prod_le _ _ (mem_of_superset (prod_mem_prod hs ht) fun _ ⟨hx, hy⟩ ↦ hp hx hy)
+
+end NhdsSet

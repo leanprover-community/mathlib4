@@ -1689,7 +1689,7 @@ theorem RegularSpace.ofT2SpaceOrRegularSpace
     [LocallyCompactSpace X] [h : T2OrLocallyCompactRegularSpace X] : RegularSpace X := by
   rcases h.out with h'|⟨-, h'⟩ <;> infer_instance
 
-/-- In a space which is T2 or locally compac regular, if a compact set `s` is contained in an
+/-- In a space which is T2 or locally compact regular, if a compact set `s` is contained in an
 open set `u`, then its closure is also contained in `u`. -/
 theorem IsCompact.closure_subset_of_isOpen [hX : T2OrLocallyCompactRegularSpace X]
     {s : Set X} (hs : IsCompact s) {u : Set X} (hu : IsOpen u) (h : s ⊆ u) :
@@ -1708,7 +1708,7 @@ theorem IsCompact.closure_subset_of_isOpen [hX : T2OrLocallyCompactRegularSpace 
       exact ⟨F, nhdsWithin_le_nhds F_mem, F, Subset.rfl, F_closed, Fu⟩
   exact (closure_minimal sF F_closed).trans Fu
 
-theorem isCompact_isCompact_isClosed_separated [hX : T2OrLocallyCompactRegularSpace X]
+theorem separatedNhds_of_isCompact_isCompact_isClosed [hX : T2OrLocallyCompactRegularSpace X]
     {s t : Set X} (hs : IsCompact s) (ht : IsCompact t) (h't : IsClosed t)
     (hst : Disjoint s t) : SeparatedNhds s t := by
   rcases hX.out with h'|⟨-, h'⟩

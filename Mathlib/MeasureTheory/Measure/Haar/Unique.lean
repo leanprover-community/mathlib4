@@ -417,7 +417,7 @@ lemma haarScalarFactor_eq_one_of_isProbabilityMeasure [LocallyCompactSpace G]
   simpa [eq_comm] using this
 
 /-- An invariant σ-finite measure is absolutely continuous with respect to a Haar measure in a
-second countable grop. -/
+second countable group. -/
 @[to_additive
 "An invariant measure is absolutely continuous with respect to an additive Haar measure. "]
 theorem absolutelyContinuous_isHaarMeasure [LocallyCompactSpace G]
