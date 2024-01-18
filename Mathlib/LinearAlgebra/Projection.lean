@@ -370,10 +370,10 @@ open Submodule
 /--
 A linear endomorphism of a module `E` is a projection onto a submodule `p` if it sends every element
 of `E` to `p` and fixes every element of `p`.
-The definition allow more generally any `FunLike` type and not just linear maps, so that it can be
+The definition allow more generally any `DFunLike` type and not just linear maps, so that it can be
 used for example with `ContinuousLinearMap` or `Matrix`.
 -/
-structure IsProj {F : Type*} [FunLike F M fun _ => M] (f : F) : Prop where
+structure IsProj {F : Type*} [DFunLike F M fun _ => M] (f : F) : Prop where
   map_mem : ∀ x, f x ∈ m
   map_id : ∀ x ∈ m, f x = x
 #align linear_map.is_proj LinearMap.IsProj

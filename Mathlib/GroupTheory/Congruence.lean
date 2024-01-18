@@ -118,10 +118,10 @@ variable [Mul M] [Mul N] [Mul P] (c : Con M)
 instance : Inhabited (Con M) :=
   ⟨conGen EmptyRelation⟩
 
---Porting note: upgraded to FunLike
+--Porting note: upgraded to DFunLike
 /-- A coercion from a congruence relation to its underlying binary relation. -/
 @[to_additive "A coercion from an additive congruence relation to its underlying binary relation."]
-instance : FunLike (Con M) M (fun _ => M → Prop) where
+instance : DFunLike (Con M) M (fun _ => M → Prop) where
   coe c := c.r
   coe_injective' := fun x y h => by
     rcases x with ⟨⟨x, _⟩, _⟩
@@ -178,7 +178,7 @@ variable {c}
 /-- The map sending a congruence relation to its underlying binary relation is injective. -/
 @[to_additive "The map sending an additive congruence relation to its underlying binary relation
 is injective."]
-theorem ext' {c d : Con M} (H : ⇑c = ⇑d) : c = d := FunLike.coe_injective H
+theorem ext' {c d : Con M} (H : ⇑c = ⇑d) : c = d := DFunLike.coe_injective H
 #align con.ext' Con.ext'
 #align add_con.ext' AddCon.ext'
 
@@ -207,7 +207,7 @@ theorem ext_iff {c d : Con M} : (∀ x y, c x y ↔ d x y) ↔ c = d :=
 /-- Two congruence relations are equal iff their underlying binary relations are equal. -/
 @[to_additive "Two additive congruence relations are equal iff their underlying binary relations
 are equal."]
-theorem coe_inj {c d : Con M} : ⇑c = ⇑d ↔ c = d := FunLike.coe_injective.eq_iff
+theorem coe_inj {c d : Con M} : ⇑c = ⇑d ↔ c = d := DFunLike.coe_injective.eq_iff
 #align con.ext'_iff Con.coe_inj
 #align add_con.ext'_iff AddCon.coe_inj
 
@@ -606,7 +606,7 @@ variable (M)
     binary relations on `M`. -/
 @[to_additive "There is a Galois insertion of additive congruence relations on a type with
 an addition `M` into binary relations on `M`."]
-protected def gi : @GaloisInsertion (M → M → Prop) (Con M) _ _ conGen FunLike.coe
+protected def gi : @GaloisInsertion (M → M → Prop) (Con M) _ _ conGen DFunLike.coe
     where
   choice r _ := conGen r
   gc _ c := ⟨fun H _ _ h => H <| ConGen.Rel.of _ _ h, @fun H => conGen_of_con c ▸ conGen_mono H⟩
@@ -950,7 +950,7 @@ are equal if they are equal on elements that are coercions from the `AddMonoid`.
 theorem lift_funext (f g : c.Quotient →* P) (h : ∀ a : M, f a = g a) : f = g := by
   rw [← lift_apply_mk' f, ← lift_apply_mk' g]
   congr 1
-  exact FunLike.ext_iff.2 h
+  exact DFunLike.ext_iff.2 h
 #align con.lift_funext Con.lift_funext
 #align add_con.lift_funext AddCon.lift_funext
 

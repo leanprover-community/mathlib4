@@ -568,7 +568,7 @@ theorem ext_iff {f g : LocalizationMap S N} : f = g ↔ ∀ x, f.toMap x = g.toM
 
 @[to_additive]
 theorem toMap_injective : Function.Injective (@LocalizationMap.toMap _ _ S N _) :=
-  fun _ _ h ↦ ext <| FunLike.ext_iff.1 h
+  fun _ _ h ↦ ext <| DFunLike.ext_iff.1 h
 #align submonoid.localization_map.to_map_injective Submonoid.LocalizationMap.toMap_injective
 #align add_submonoid.localization_map.to_map_injective AddSubmonoid.LocalizationMap.toMap_injective
 
@@ -1061,7 +1061,7 @@ theorem lift_unique {j : N →* P} (hj : ∀ x, j (f.toMap x) = g x) : f.lift hg
 
 @[to_additive (attr := simp)]
 theorem lift_id (x) : f.lift f.map_units x = x :=
-  FunLike.ext_iff.1 (f.lift_of_comp <| MonoidHom.id N) x
+  DFunLike.ext_iff.1 (f.lift_of_comp <| MonoidHom.id N) x
 #align submonoid.localization_map.lift_id Submonoid.LocalizationMap.lift_id
 #align add_submonoid.localization_map.lift_id AddSubmonoid.LocalizationMap.lift_id
 
@@ -1460,7 +1460,7 @@ theorem mulEquivOfLocalizations_right_inv_apply {k : LocalizationMap S P} {x} :
 @[to_additive]
 theorem mulEquivOfLocalizations_left_inv (k : N ≃* P) :
     f.mulEquivOfLocalizations (f.ofMulEquivOfLocalizations k) = k :=
-  FunLike.ext _ _ fun x ↦ FunLike.ext_iff.1 (f.lift_of_comp k.toMonoidHom) x
+  DFunLike.ext _ _ fun x ↦ DFunLike.ext_iff.1 (f.lift_of_comp k.toMonoidHom) x
 #align submonoid.localization_map.mul_equiv_of_localizations_left_inv Submonoid.LocalizationMap.mulEquivOfLocalizations_left_inv
 #align add_submonoid.localization_map.add_equiv_of_localizations_left_neg AddSubmonoid.LocalizationMap.addEquivOfLocalizations_left_neg
 
@@ -1935,7 +1935,7 @@ theorem leftCancelMulZero_of_le_isLeftRegular
           ← mul_assoc w, ← mul_assoc w, mul_comm w]
       _ = a * z * g b.2 * (g x.2 * g y.2) := by rw [hazw]
       _ = a * g b.2 * (z * g x.2 * g y.2) := by
-        rw[mul_assoc a, mul_comm z, ← mul_assoc a, mul_assoc, mul_assoc z]
+        rw [mul_assoc a, mul_comm z, ← mul_assoc a, mul_assoc, mul_assoc z]
       _ = g b.1 * g (y.2 * x.1) := by rw [hx, hb, mul_comm (g x.1), ← map_mul g]
       _ = g (b.1 * (y.2 * x.1)):= by rw [← map_mul g]
  -- The hypothesis `h` gives that `f` (so, `g`) is injective, and we can cancel out `b.1`.
@@ -1945,11 +1945,14 @@ theorem leftCancelMulZero_of_le_isLeftRegular
 /-- Given a Localization map `f : M →*₀ N` for a Submonoid `S ⊆ M`,
 if `M` is a cancellative monoid with zero, and all elements of `S` are
 regular, then N is a cancellative monoid with zero.  -/
-theorem isLeftRegular_of_le_IsCancelMulZero (f : LocalizationWithZeroMap S N)
-    [IsCancelMulZero M] (h : ∀ ⦃x⦄, x ∈ S → IsRegular x): IsCancelMulZero N := by
-  have:IsLeftCancelMulZero N:=
+theorem isLeftRegular_of_le_isCancelMulZero (f : LocalizationWithZeroMap S N)
+    [IsCancelMulZero M] (h : ∀ ⦃x⦄, x ∈ S → IsRegular x) : IsCancelMulZero N := by
+  have : IsLeftCancelMulZero N :=
     leftCancelMulZero_of_le_isLeftRegular f (fun x h' => (h h').left)
   exact IsLeftCancelMulZero.to_isCancelMulZero
+
+@[deprecated isLeftRegular_of_le_isCancelMulZero] -- 2024-01-16
+alias isLeftRegular_of_le_IsCancelMulZero := isLeftRegular_of_le_isCancelMulZero
 
 end LocalizationWithZeroMap
 

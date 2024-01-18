@@ -170,7 +170,7 @@ theorem polynomialFunctions.comap_compRightAlgHom_iccHomeoI (a b : ℝ) (h : a <
   ext f
   fconstructor
   · rintro ⟨p, ⟨-, w⟩⟩
-    rw [FunLike.ext_iff] at w
+    rw [DFunLike.ext_iff] at w
     dsimp at w
     let q := p.comp ((b - a)⁻¹ • Polynomial.X + Polynomial.C (-a * (b - a)⁻¹))
     refine' ⟨q, ⟨_, _⟩⟩

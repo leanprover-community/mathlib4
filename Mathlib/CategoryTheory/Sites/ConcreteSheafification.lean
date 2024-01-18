@@ -37,7 +37,7 @@ section
 
 variable [ConcreteCategory.{max v u} D]
 
-attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.funLike
+attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instDFunLike
 
 -- porting note: removed @[nolint has_nonempty_instance]
 /-- A concrete version of the multiequalizer, to be used below. -/
@@ -52,7 +52,7 @@ namespace Meq
 
 variable [ConcreteCategory.{max v u} D]
 
-attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.funLike
+attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instDFunLike
 
 instance {X} (P : Cᵒᵖ ⥤ D) (S : J.Cover X) :
     CoeFun (Meq P S) fun _ => ∀ I : S.Arrow, P.obj (op I.Y) :=
@@ -145,7 +145,7 @@ namespace Plus
 
 variable [ConcreteCategory.{max v u} D]
 
-attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.funLike
+attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instDFunLike
 
 variable [PreservesLimits (forget D)]
 

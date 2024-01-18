@@ -673,7 +673,7 @@ theorem coeff_ofFinsupp (p) : coeff (⟨p⟩ : R[X]) = p := by rw [coeff]
 theorem coeff_injective : Injective (coeff : R[X] → ℕ → R) := by
   rintro ⟨p⟩ ⟨q⟩
   -- Porting note: `ofFinsupp.injEq` is required.
-  simp only [coeff, FunLike.coe_fn_eq, imp_self, ofFinsupp.injEq]
+  simp only [coeff, DFunLike.coe_fn_eq, imp_self, ofFinsupp.injEq]
 #align polynomial.coeff_injective Polynomial.coeff_injective
 
 @[simp]
@@ -825,9 +825,9 @@ theorem forall_eq_iff_forall_eq : (∀ f g : R[X], f = g) ↔ ∀ a b : R, a = b
 theorem ext_iff {p q : R[X]} : p = q ↔ ∀ n, coeff p n = coeff q n := by
   rcases p with ⟨⟩
   rcases q with ⟨⟩
-  -- Porting note: Was `simp [coeff, FunLike.ext_iff]`
+  -- Porting note: Was `simp [coeff, DFunLike.ext_iff]`
   simp only [ofFinsupp.injEq, coeff._eq_1]
-  exact FunLike.ext_iff (F := ℕ →₀ R)
+  exact DFunLike.ext_iff (F := ℕ →₀ R)
 #align polynomial.ext_iff Polynomial.ext_iff
 
 @[ext]
@@ -856,7 +856,7 @@ theorem addHom_ext {M : Type*} [AddMonoid M] {f g : R[X] →+ M}
 @[ext high]
 theorem addHom_ext' {M : Type*} [AddMonoid M] {f g : R[X] →+ M}
     (h : ∀ n, f.comp (monomial n).toAddMonoidHom = g.comp (monomial n).toAddMonoidHom) : f = g :=
-  addHom_ext fun n => FunLike.congr_fun (h n)
+  addHom_ext fun n => DFunLike.congr_fun (h n)
 #align polynomial.add_hom_ext' Polynomial.addHom_ext'
 
 @[ext high]

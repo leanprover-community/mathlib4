@@ -1368,7 +1368,7 @@ instance instEquivLike : EquivLike (α ≃ᵐ β) α β where
   inv e := e.toEquiv.symm
   left_inv e := e.toEquiv.left_inv
   right_inv e := e.toEquiv.right_inv
-  coe_injective' _ _ he _ := toEquiv_injective <| FunLike.ext' he
+  coe_injective' _ _ he _ := toEquiv_injective <| DFunLike.ext' he
 
 @[simp]
 theorem coe_toEquiv (e : α ≃ᵐ β) : (e.toEquiv : α → β) = e :=
@@ -1429,7 +1429,7 @@ def Simps.symm_apply (h : α ≃ᵐ β) : β → α := h.symm
 
 initialize_simps_projections MeasurableEquiv (toFun → apply, invFun → symm_apply)
 
-@[ext] theorem ext {e₁ e₂ : α ≃ᵐ β} (h : (e₁ : α → β) = e₂) : e₁ = e₂ := FunLike.ext' h
+@[ext] theorem ext {e₁ e₂ : α ≃ᵐ β} (h : (e₁ : α → β) = e₂) : e₁ = e₂ := DFunLike.ext' h
 #align measurable_equiv.ext MeasurableEquiv.ext
 
 @[simp]
