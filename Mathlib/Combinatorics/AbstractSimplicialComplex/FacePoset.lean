@@ -10,7 +10,7 @@ variable {α : Type u} {β : Type v}
 
 variable {K : AbstractSimplicialComplex α} {L : AbstractSimplicialComplex β}
 
-namespace AbstractSimplicialComplex
+open Finset
 
 variable (K)
 
@@ -32,48 +32,91 @@ noncomputable def toOrderHom_faces (f : K →ₛ L) : OrderHom K.faces L.faces w
 
 end SimplicialMap
 
+/-! Finset `α` is a `LocallyFiniteOrder` and a `LocallyFiniteOrderBot`.-/
+--TODO : move this to another file.
+
+namespace Finset
+
+/-- If `s` is a finset of `α`, then the interval `Set.Iic s` in `Finset α` is finite.-/
+lemma Iic_finite (s : Finset α) : (Set.Iic s).Finite := by
+  rw [← Set.finite_coe_iff]
+  apply Finite.of_injective (fun (t : Set.Iic s) => ({a : s | a.1 ∈ t.1} : Set s))
+  intro t u htu
+  simp only at htu
+  revert htu
+  rw [← SetCoe.ext_iff, le_antisymm_iff (a := t.1), imp_and]
+  constructor
+  rw [eq_comm]
+  all_goals (intro heq a ha)
+  set a' := (⟨a, Set.mem_Iic.mp t.2 ha⟩ : {a : α | a ∈ s})
+  swap
+  set a' := (⟨a, Set.mem_Iic.mp u.2 ha⟩ : {a : α | a ∈ s})
+  all_goals
+  rw [Set.ext_iff] at heq
+  have : a = a'.1 := by simp only
+  erw [this, heq a']
+  exact ha
+
+/-- of `s` and `t` are finsets of `α`, then the closed interval `Set.Icc s t` in `Finset α`
+is finite.-/
+lemma Icc_finite (s t : Finset α) : (Set.Icc s t).Finite :=
+  Set.Finite.subset (Iic_finite t) (by rw [Set.subset_def]; simp only [ge_iff_le, gt_iff_lt,
+  Set.mem_Icc, Set.mem_Iic, and_imp, imp_self, implies_true, Subtype.forall, forall_const])
+
+/- `LocallyFiniteOrderBot` instance on `Finset α`.-/
+noncomputable instance instLocallyFiniteOrderBot [DecidableEq α]:
+    LocallyFiniteOrderBot (Finset α) :=
+  LocallyFiniteOrderTop.ofIic (Finset α) (fun s => Set.Finite.toFinset (Iic_finite s))
+  (fun a s => by simp only [Set.Finite.mem_toFinset, Set.mem_Iic])
+
+/- `LocallyFiniteOrder` instance on `Finset α`.-/
+noncomputable instance instLocallyFiniteOrder [DecidableEq α]: LocallyFiniteOrder (Finset α) :=
+  LocallyFiniteOrder.ofIcc (Finset α) (fun s t => Set.Finite.toFinset (Icc_finite s t))
+  (fun a s t => by simp only [ge_iff_le, gt_iff_lt, Set.Finite.mem_toFinset, Set.mem_Icc])
+
+end Finset
 
 /-! The face poset of an abstract simplicial complex is a `LocallyFiniteOrder` and a
 `LocallyFiniteOrderBot`.-/
 
+namespace AbstractSimplicalComplex
+
+/-- If `s` is a finset of `α`, then the intersection of the interval `Set.Iic s` in `Finset α`
+and of the set of faces of `K` is finite.-/
+lemma FinsetIic_finite (s : Finset α) : {u : K.faces | u ≤ s}.Finite := by
+  refine Set.Finite.of_finite_image (f := fun u ↦ u.1) (Set.Finite.subset (Finset.Iic_finite s)
+    ?_) (fun _ _ _ _ ↦ by rw [← SetCoe.ext_iff]; simp only [imp_self])
+  intro u
+  simp only [le_eq_subset, Set.mem_image, Set.mem_setOf_eq, Subtype.exists, exists_and_left,
+    exists_prop, exists_eq_right_right, Set.mem_Iic, and_imp]
+  exact fun h _ ↦ h
+
+/-- If `s` and `t` are finsets of `α`, then the intersection of the interval `Set.Icc s t`
+in `Finset α` and of the set of faces of `K` is finite.-/
+lemma FinsetIcc_finite (s t : Finset α) : {u : K.faces | s ≤ u ∧ u ≤ t}.Finite :=
+  Set.Finite.subset (FinsetIic_finite K t)
+    (fun _ ↦ by simp only [le_eq_subset, Set.mem_setOf_eq, and_imp, imp_self, implies_true])
+
 /-- Left-infinite right-closed intervals of the face poset of an abstract simplicial complex
 are finite.-/
-lemma finite_facePosetIic (s : K.faces) : (Set.Iic s).Finite := by
-  rw [← Set.finite_coe_iff]
-  refine Finite.of_injective (fun (t : Set.Iic s) => ({a : s.1 | a.1 ∈ t.1.1} : Set ↑s))
-    (fun t u htu ↦ ?_)
-  simp only at htu
-  simp only [← SetCoe.ext_iff]
-  wlog h : t.1.1 ≤ u.1.1
-  · obtain ⟨a, ha⟩ := Set.not_subset.mp h
-    simp only [Finset.mem_val] at ha
-    have ha' : a ∈ s.1 := Set.mem_Iic.mp t.2 ha.1
-    change (⟨a, ha'⟩ : s.1) ∈ {a | a.1 ∈ t.1.1} ∧ ¬ (⟨a, ha'⟩ : s.1) ∈ {a | a.1 ∈ u.1.1} at ha
-    rw [htu] at ha
-    simp only [Set.mem_setOf_eq, and_not_self] at ha
-  · refine le_antisymm h ?_
-    intro a ha
-    have hau : ⟨a, u.2 ha⟩ ∈ {a : s.1| a.1 ∈ u.1.1} := by
-      simp only [Finset.setOf_mem, Finset.coe_sort_coe, Set.mem_setOf_eq]
-      exact ha
-    rw [← htu] at hau
-    exact hau
+lemma Iic_finite (s : K.faces) : (Set.Iic s).Finite := by
+  rw [← Set.Iic_def]
+  exact FinsetIic_finite K s.1
 
 /-- Closed intervals of the face poset of an abstract simplicial complex are finite.-/
-lemma finite_facePosetIcc (s t : K.faces) : (Set.Icc s t).Finite :=
-  Set.Finite.subset (finite_facePosetIic K t)
-  (by rw [Set.subset_def]; simp only [ge_iff_le, gt_iff_lt, Set.mem_Icc, Set.mem_Iic, and_imp,
-    imp_self, implies_true, Subtype.forall, forall_const])
+lemma Icc_finite (s t : K.faces) : (Set.Icc s t).Finite := by
+  rw [← Set.Icc_def]
+  exact FinsetIcc_finite K s.1 t.1
 
 /-- `LocallyFiniteOrderBot` instance on the face poset of an abstract simplicial complex.-/
-noncomputable instance FacePosetLFB [DecidableEq α] : LocallyFiniteOrderBot (K.faces) :=
-  LocallyFiniteOrderTop.ofIic K.faces (fun s => Set.Finite.toFinset (finite_facePosetIic K s))
+noncomputable instance instLocallyFiniteOrderBot [DecidableEq α] :
+    LocallyFiniteOrderBot (K.faces) :=
+  LocallyFiniteOrderTop.ofIic K.faces (fun s => Set.Finite.toFinset (Iic_finite K s))
   (fun a s => by simp only [Set.Finite.mem_toFinset, Set.mem_Iic])
 
 /-- `LocallyFiniteOrder` instance on the face poset of an abstract simplicial complex.-/
-noncomputable instance FacePosetLF [DecidableEq α] : LocallyFiniteOrder (K.faces) :=
-  LocallyFiniteOrder.ofIcc K.faces (fun s t => Set.Finite.toFinset (finite_facePosetIcc K s t))
-  (fun a s t => by simp only [ge_iff_le, gt_iff_lt, Set.Finite.mem_toFinset, Set.mem_Icc])
+noncomputable instance instLocallyFiniteOrder [DecidableEq α] : LocallyFiniteOrder (K.faces) :=
+  LocallyFiniteOrder.ofFiniteIcc (Icc_finite K)
 
 -- TODO : move the next two lemmas somewhere else.
 /-- If an order ideal has a maximal element, then this element generates the ideal.-/

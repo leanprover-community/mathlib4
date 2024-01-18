@@ -28,64 +28,56 @@ lemma faces_oldFaces (r : PartialOrder K.facets) (s : K.facets) (t : Finset α) 
     t ∈ oldFaces r s ↔ t ∈ K.faces ∧ t ≤ s.1 ∧ ∃ (u : K.facets), r.lt u s ∧ t ≤ u.1 := by
   erw [faces_subcomplexGenerated, faces_subcomplexGenerated]
   constructor
-  . intro ht
-    rw [and_iff_right ht.1.1]
-    match ht.2 with
-    | ⟨⟨u,hu1⟩,hu2⟩ => rw [Set.mem_singleton_iff] at hu1
-                       simp_rw [hu1] at hu2
-                       rw [and_iff_right hu2]
-                       match ht.1.2 with
-                       | ⟨⟨u,hu1⟩, hu2⟩ => rw [Set.mem_image] at hu1
-                                           cases hu1 with
-                                           | intro v hv => exists v
-                                                           erw [and_iff_right hv.1]
-                                                           simp_rw [←hv.2] at hu2
-                                                           exact hu2
-  . intro ht
+  · intro ⟨⟨ht, ⟨⟨u, ⟨x, ⟨hxs, hxu⟩⟩⟩, htu⟩⟩, ⟨⟨v, hvs⟩, htv⟩⟩
+    rw [and_iff_right ht]
+    simp_rw [Set.mem_singleton_iff.mp hvs] at htv
+    erw [and_iff_right htv]
+    existsi x
+    rw [@Set.mem_Iio _ r.toPreorder] at hxs
+    rw [and_iff_right hxs]
+    simp only at hxu
+    rw [hxu]
+    exact htu
+  · intro ⟨ht, hts, ⟨u, ⟨hus, htu⟩⟩⟩
     constructor
-    . rw [and_iff_right ht.1]
-      match ht.2.2 with
-      | ⟨u, hu⟩ => exists ⟨u, by rw [Set.mem_image]; exact ⟨u, ⟨hu.1, rfl⟩⟩⟩; exact hu.2
-    . exists ⟨s, Set.mem_singleton _⟩
-      exact ht.2.1
+    · rw [and_iff_right ht]
+      simp only [Subtype.exists, Set.mem_image, exists_and_right, exists_eq_right, exists_prop]
+      existsi u.1, ⟨u.2, (@Set.mem_Iio _ r.toPreorder _ _).mpr hus⟩
+      exact htu
+    · simp only [Subtype.exists, Set.mem_singleton_iff, exists_prop, exists_eq_left]
+      exact hts
 
-/- Sanity check: the complex of old faces is included in the boundary of s.-/
-lemma OldFaces_included_in_boundary (r : PartialOrder K.facets) (s : K.facets) : OldFaces r s ≤ Boundary ⟨s.1, facets_subset s.2⟩ := by
+/-- For a `r` a partial order on the facets of `K` and `s` a facet of `K`, the complex of old
+faces `oldFaces r s` is included in the boundary of s.-/
+lemma oldFaces_included_in_boundaryFace (r : PartialOrder K.facets) (s : K.facets) :
+    oldFaces r s ≤ boundaryFace ⟨s.1, facets_subset s.2⟩ := by
   intro t ht
-  have htof := (OldFaces_mem r s t).mp ht
-  rw [Boundary_mem ⟨s.1, facets_subset s.2⟩ t]
+  rw [faces_boundaryFace ⟨s.1, facets_subset s.2⟩ t]
   simp only [Subtype.mk_le_mk, Finset.le_eq_subset, ne_eq, Subtype.mk.injEq]
-  rw [and_iff_right htof.2.1, and_iff_right htof.1]
+  have htof := (faces_oldFaces r s t).mp ht
+  erw [and_iff_right htof.2.1, and_iff_right (K.nonempty_of_mem htof.1)]
   by_contra heq
   rw [heq] at htof
-  match htof.2.2 with
-  | ⟨⟨u,huf⟩,hu⟩ => have hsf := s.2
-                    rw [mem_facets_iff] at hsf
-                    have hneq := @ne_of_lt _ (@PartialOrder.toPreorder _ r ) _ _ hu.1
-                    rw [ne_eq, ←SetCoe.ext_iff] at hneq
-                    exact hneq (Eq.symm (hsf.2 (facets_subset huf) hu.2))
+  obtain ⟨⟨u,huf⟩,hu⟩ := htof.2.2
+  have hneq := @ne_of_lt _ r.toPreorder _ _ hu.1
+  rw [ne_eq, ← SetCoe.ext_iff] at hneq
+  exact hneq (Eq.symm (((K.mem_facets_iff s.1).mp s.2).2 (facets_subset huf) hu.2))
 
+/-- For a `r` a partial order on the facets of `K` and `s` a facet of `K`, the complex of old
+faces `oldFaces r s` is finite.-/
+lemma finite_oldFaces (r : PartialOrder K.facets) (s : K.facets) : FiniteComplex (oldFaces r s) :=
+  finite_isLowerSet (oldFaces_included_in_boundaryFace r s)
+  (finite_boundaryFace ⟨s.1, facets_subset s.2⟩)
 
-/- Corollary: the complex of old faces is finite. -/
-lemma OldFacesFinite (r : PartialOrder K.facets) (s : K.facets) : FiniteComplex (OldFaces r s) :=
-Finite_IsLowerSet (OldFaces_included_in_boundary r s) (BoundaryFinite ⟨s.1, facets_subset s.2⟩)
-
-/- Other corollary: if the complex of old faces is nonempty, then s has cardinality at least 2.-/
-lemma OldFacesNonempty_implies_not_vertex (r : PartialOrder K.facets) (s : K.facets) (hne : (OldFaces r s).faces.Nonempty) :
-2 ≤ Finset.card s.1 := by
-  match hne with
-  | ⟨t, htf⟩ => have htb := (OldFaces_included_in_boundary r s) htf
-                rw [Boundary_mem] at htb
-                change _ ∧ t ⊆ s.1 ∧ t ≠ s.1 at htb
-                rw [←Finset.ssubset_iff_subset_ne] at htb
-                have hlt := Finset.card_lt_card htb.2
-                apply Nat.succ_le_of_lt
-                apply lt_of_le_of_lt ?_ hlt
-                apply Nat.succ_le_of_lt
-                rw [Nat.pos_iff_ne_zero]
-                exact face_card_nonzero htf
-
-
-
+open Nat in
+/-- Let `r` be a partial order on the facets of `K` and `s` be a facet of `K`. If the complex of
+old faces `oldFaces r s` is nonempty, then `s` has cardinality at least `2`.-/
+lemma not_vertex_of_nonempty_oldFaces (r : PartialOrder K.facets) (s : K.facets)
+    (hne : (oldFaces r s).faces.Nonempty) : 2 ≤ Finset.card s.1 := by
+  obtain ⟨t, htf⟩ := hne
+  have htb := (faces_boundaryFace _ t).mp ((oldFaces_included_in_boundaryFace r s) htf)
+  rw [and_comm (a := t.Nonempty), ← and_assoc, ← Finset.ssubset_iff_subset_ne] at htb
+  exact succ_le_of_lt (lt_of_le_of_lt (succ_le_of_lt (pos_iff_ne_zero.mpr (face_card_nonzero htf)))
+    (Finset.card_lt_card htb.1))
 
 end AbstractSimplicialComplex

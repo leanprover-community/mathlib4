@@ -374,7 +374,7 @@ noncomputable def dimension : ENat :=
 variable {K}
 
 /-- A finite abstract simplicial complex has finite dimension.-/
-lemma Finite_implies_finite_dimension (hfin : FiniteComplex K) : dimension K ≠ ⊤ := by
+lemma finite_implies_finite_dimension (hfin : FiniteComplex K) : dimension K ≠ ⊤ := by
   rw [← WithTop.lt_top_iff_ne_top]
   set n := Finset.sup (Set.Finite.toFinset (@Set.toFinite _ _ hfin)) (fun s => (Finset.card s))
   have hboun : dimension K ≤ ↑n := by
