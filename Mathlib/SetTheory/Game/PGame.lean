@@ -1663,7 +1663,7 @@ theorem neg_add_le {x y : PGame} : -(x + y) ≤ -x + -y :=
 def addCommRelabelling : ∀ x y : PGame.{u}, x + y ≡r y + x
   | mk xl xr xL xR, mk yl yr yL yR => by
     refine' ⟨Equiv.sumComm _ _, Equiv.sumComm _ _, _, _⟩ <;> rintro (_ | _) <;>
-      · dsimp [leftMoves_add, rightMoves_add]
+      · dsimp
         apply addCommRelabelling
 termination_by x y => (x, y)
 #align pgame.add_comm_relabelling SetTheory.PGame.addCommRelabelling
