@@ -1,4 +1,4 @@
-import Mathlib.Algebra.Homology.SpectralSequenceNew.LowDegreesExactSequence
+import Mathlib.Algebra.Homology.SpectralSequence.LowDegreesExactSequence
 import Mathlib.Algebra.Homology.SpectralObject.SpectralSequence
 
 namespace CategoryTheory

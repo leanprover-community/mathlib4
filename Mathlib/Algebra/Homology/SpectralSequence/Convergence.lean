@@ -1,4 +1,4 @@
-import Mathlib.Algebra.Homology.SpectralSequenceNew.PageInfinity
+import Mathlib.Algebra.Homology.SpectralSequence.PageInfinity
 import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 
 universe w₁ w₂ w₃ v u

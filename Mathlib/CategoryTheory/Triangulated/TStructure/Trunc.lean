@@ -1,6 +1,6 @@
 import Mathlib.CategoryTheory.Triangulated.TStructure.Basic
 import Mathlib.CategoryTheory.Triangulated.TStructure.AbstractSpectralObject
-import Mathlib.Algebra.Homology.SpectralSequenceNew.ZTilde
+import Mathlib.Algebra.Homology.SpectralSequence.ZTilde
 
 namespace CategoryTheory
 
@@ -1577,7 +1577,7 @@ instance : t.abstractSpectralObject.IsCompatible where
   truncLTι_compatibility' := t.truncLTι_compatibility
 
 @[simps!]
-noncomputable def spectralObject (X : C) : SpectralObjectNew C ℤt :=
+noncomputable def spectralObject (X : C) : SpectralObject C ℤt :=
   t.abstractSpectralObject.spectralObject X
 
 noncomputable def shiftSpectralObjectω₁IsoHomologyιHeart' (X : C) (q q' : ℤ) (hq' : q + 1 = q') :

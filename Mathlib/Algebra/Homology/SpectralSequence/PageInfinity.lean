@@ -1,4 +1,4 @@
-import Mathlib.Algebra.Homology.SpectralSequenceNew.Basic
+import Mathlib.Algebra.Homology.SpectralSequence.Basic
 
 lemma Set.has_min_of_ℤ (S : Set ℤ) (hS : S.Nonempty) (m₀ : ℤ)
     (hm₀ : ∀ (x : ℤ) (_ : x ∈ S), m₀ ≤ x) :

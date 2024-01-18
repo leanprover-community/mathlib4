@@ -14,17 +14,17 @@ variable (C ι : Type _) [Category C] [Category ι] [HasZeroObject C]
 
 namespace Triangulated
 
-structure SpectralObjectNew where
+structure SpectralObject where
   ω₁ : ComposableArrows ι 1 ⥤ C
   δ' : functorArrows ι 1 2 2 ⋙ ω₁ ⟶ functorArrows ι 0 1 2 ⋙ ω₁ ⋙ shiftFunctor C (1 : ℤ)
   distinguished' (D : ComposableArrows ι 2) :
     Triangle.mk (ω₁.map ((mapFunctorArrows ι 0 1 0 2 2).app D))
       (ω₁.map ((mapFunctorArrows ι 0 2 1 2 2).app D)) (δ'.app D) ∈ distTriang C
 
-namespace SpectralObjectNew
+namespace SpectralObject
 
 variable {C ι}
-variable (X : SpectralObjectNew C ι)
+variable (X : SpectralObject C ι)
 
 section
 
@@ -123,12 +123,12 @@ lemma mapHomologicalFunctor_δ (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) {i j k : 
 end
 
 noncomputable def mapTriangulatedFunctor (F : C ⥤ D) [F.CommShift ℤ] [F.IsTriangulated] :
-    SpectralObjectNew D ι where
+    SpectralObject D ι where
   ω₁ := X.ω₁ ⋙ F
   δ' := whiskerRight X.δ' F ≫
       whiskerLeft (functorArrows ι 0 1 2 ⋙ X.ω₁) (F.commShiftIso (1 : ℤ)).hom
   distinguished' D := F.map_distinguished _ (X.distinguished' D)
 
-end SpectralObjectNew
+end SpectralObject
 
 end Triangulated

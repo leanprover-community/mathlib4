@@ -1,6 +1,6 @@
 import Mathlib.Algebra.Homology.SpectralObject.Homology
-import Mathlib.Algebra.Homology.SpectralSequenceNew.Basic
-import Mathlib.Algebra.Homology.SpectralSequenceNew.ZTilde
+import Mathlib.Algebra.Homology.SpectralSequence.Basic
+import Mathlib.Algebra.Homology.SpectralSequence.ZTilde
 
 namespace ComplexShape
 

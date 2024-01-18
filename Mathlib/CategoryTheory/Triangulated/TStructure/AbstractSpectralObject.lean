@@ -1,4 +1,4 @@
-import Mathlib.CategoryTheory.Triangulated.SpectralObjectNew
+import Mathlib.CategoryTheory.Triangulated.SpectralObject
 
 open CategoryTheory Category Limits Pretriangulated
 
@@ -333,7 +333,7 @@ lemma triangle_distinguished (D : Arrow₂ ι) (X : C) :
 set_option maxHeartbeats 800000 in
 @[simps]
 noncomputable def spectralObject (X : C) :
-    SpectralObjectNew C ι where
+    SpectralObject C ι where
   ω₁ :=
     { obj := fun D => (F.truncGELT.obj (Arrow.mk (D.map' 0 1))).obj X
       map := fun {D₁ D₂} f => (F.truncGELT.map

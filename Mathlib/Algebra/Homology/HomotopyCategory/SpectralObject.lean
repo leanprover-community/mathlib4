@@ -1,5 +1,5 @@
 import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
-import Mathlib.CategoryTheory.Triangulated.SpectralObjectNew
+import Mathlib.CategoryTheory.Triangulated.SpectralObject
 
 open CategoryTheory Category Limits Triangulated
 
@@ -19,7 +19,7 @@ noncomputable def composableArrowsFunctor : ComposableArrows (CochainComplex C �
 
 set_option maxHeartbeats 400000 in
 noncomputable def spectralObjectMappingCone :
-    SpectralObjectNew (HomotopyCategory C (ComplexShape.up ℤ)) (CochainComplex C ℤ) where
+    SpectralObject (HomotopyCategory C (ComplexShape.up ℤ)) (CochainComplex C ℤ) where
   ω₁ := composableArrowsFunctor C ⋙ HomotopyCategory.quotient _ _
   δ' :=
     { app := fun D => ((HomotopyCategory.quotient C (ComplexShape.up ℤ)).mapTriangle.obj (mappingConeCompTriangle (D.map' 0 1) (D.map' 1 2))).mor₃

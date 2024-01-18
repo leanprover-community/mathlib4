@@ -1,4 +1,4 @@
-import Mathlib.Algebra.Homology.SpectralSequenceNew.Convergence
+import Mathlib.Algebra.Homology.SpectralSequence.Convergence
 import Mathlib.Algebra.Homology.ConnectShortExact
 import Mathlib.Tactic.FinCases
 
