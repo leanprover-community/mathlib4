@@ -23,7 +23,7 @@ namespace Meta.FProp
 /-- -/
 structure FPropTheorem where
   fpropName   : Name
-  keys        : Array RefinedDiscrTree.Key
+  keys        : List RefinedDiscrTree.DTExpr
   levelParams : Array Name
   proof       : Expr
   priority    : Nat  := eval_prio default
@@ -62,7 +62,7 @@ initialize fpropTheoremsExt : FPropTheoremsExt ←
   registerSimpleScopedEnvExtension {
     name     := by exact decl_name%
     initial  := {}
-    addEntry := fun d e => {d with theorems := d.theorems.insertInRefinedDiscrTree e.keys e}
+    addEntry := fun d e => {d with theorems := e.keys.foldl (RefinedDiscrTree.insertDTExpr · · e) d.theorems}
   }
 
 ---
@@ -78,7 +78,7 @@ def mkFPropTheoremFromConst (declName : Name) (prio : Nat) : MetaM FPropTheorem 
 
   return {
     fpropName := decl.fpropName
-    keys := ← mkPath b
+    keys := ← mkDTExprs b
     levelParams := info.levelParams.toArray
     proof := (mkConst declName (info.levelParams.map fun l => .param l))
     priority := prio
