@@ -435,17 +435,22 @@ def main (args : List String) : IO Unit := do
       -- Calculate the edit result
       let mut pos : String.Pos := 0
       let mut out : String := ""
+      let mut seen : NameSet := {}
       for stx in header[1].getArgs do
-        if remove.contains stx[2].getId then
+        let mod := stx[2].getId
+        if remove.contains mod || seen.contains mod then
           out := out ++ text.extract pos stx.getPos?.get!
           -- We use the end position of the syntax, but include whitespace up to the first newline
           pos := text.findAux (· == '\n') text.endPos stx.getTailPos?.get! + ⟨1⟩
+        seen := seen.insert mod
       -- the insertion point for `add` is the first newline after the imports
       let insertion := header.getTailPos?.getD parserState.pos
       let insertion := text.findAux (· == '\n') text.endPos insertion + ⟨1⟩
       out := out ++ text.extract pos insertion
       for mod in add do
-        out := out ++ s!"import {mod}\n"
+        if !seen.contains mod then
+          seen := seen.insert mod
+          out := out ++ s!"import {mod}\n"
       out := out ++ text.extract insertion text.endPos
 
       IO.FS.writeFile path out
