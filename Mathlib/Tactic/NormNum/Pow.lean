@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Thomas Murrills
 -/
 import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Algebra.GroupPower.Lemmas
+import Mathlib.Algebra.GroupPower.Ring
+import Mathlib.Data.Int.Cast.Lemmas
 
 /-!
 ## `norm_num` plugin for `^`.

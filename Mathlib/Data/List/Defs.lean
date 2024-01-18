@@ -5,7 +5,6 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 -/
 import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Control.Functor
-import Mathlib.Logic.Basic
 import Mathlib.Data.SProd
 import Mathlib.Util.CompileInductive
 import Std.Tactic.Lint.Basic

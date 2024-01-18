@@ -5,7 +5,6 @@ Authors: Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Parity
 import Mathlib.Data.Int.Order.Basic
-import Mathlib.Data.Nat.Size
 import Mathlib.Data.Nat.ForSqrt
 
 #align_import data.nat.sqrt from "leanprover-community/mathlib"@"ba2245edf0c8bb155f1569fd9b9492a9b384cde6"

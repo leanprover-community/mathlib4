@@ -6,7 +6,7 @@ Authors: Patrick Massot, Johannes Hölzl
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.GroupTheory.OrderOfElement
-import Mathlib.Topology.Instances.ENNReal
+import Mathlib.Topology.Instances.NNReal
 import Mathlib.Topology.MetricSpace.DilationEquiv
 
 #align_import analysis.normed.field.basic from "leanprover-community/mathlib"@"f06058e64b7e8397234455038f3f8aec83aaba5a"

@@ -3,16 +3,17 @@ Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Std.Util.Pickle
 import Std.Data.MLList.Heartbeats
 import Std.Tactic.Relation.Rfl
-import Mathlib.Data.MLList.Dedup
-import Mathlib.Lean.Meta.DiscrTree
+import Std.Tactic.SolveByElim
+import Std.Util.Pickle
 import Std.Util.Cache
+import Mathlib.Control.Basic
+import Mathlib.Data.MLList.Dedup
+import Mathlib.Lean.Expr.Basic
+import Mathlib.Lean.Meta.DiscrTree
 import Mathlib.Lean.Meta
 import Mathlib.Tactic.TryThis
-import Mathlib.Control.Basic
-import Std.Tactic.SolveByElim
 
 /-!
 # The `rewrites` tactic.

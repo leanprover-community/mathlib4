@@ -3,11 +3,9 @@ Copyright (c) 2023 Antoine Chambert-Loir and María Inés de Frutos-Fernández. 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Eric Wieser, Bhavik Mehta
 -/
-
 import Mathlib.Data.Finset.Antidiagonal
-import Mathlib.Data.Finsupp.Antidiagonal
 import Mathlib.Data.Finsupp.Defs
-import Mathlib.Data.Finsupp.Interval
+import Mathlib.Data.Finsupp.Basic
 
 /-!
 # Partial HasAntidiagonal for functions with finite support

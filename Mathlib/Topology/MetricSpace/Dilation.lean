@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Dilations of emetric and metric spaces
 Authors: Hanting Zhang
 -/
+import Mathlib.Topology.MetricSpace.Lipschitz
 import Mathlib.Topology.MetricSpace.Antilipschitz
 import Mathlib.Data.FunLike.Basic
 

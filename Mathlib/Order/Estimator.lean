@@ -7,7 +7,6 @@ import Mathlib.Order.RelClasses
 import Mathlib.Data.Set.Image
 import Mathlib.Order.Hom.Basic
 import Mathlib.Lean.Thunk
-import Mathlib.Data.Prod.Lex
 
 /-!
 # Improvable lower bounds.

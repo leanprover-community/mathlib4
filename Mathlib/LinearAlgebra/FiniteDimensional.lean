@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.FieldTheory.Finiteness
+import Mathlib.LinearAlgebra.Dimension.DivisionRing
 
 #align_import linear_algebra.finite_dimensional from "leanprover-community/mathlib"@"e95e4f92c8f8da3c7f693c3ec948bcf9b6683f51"
 

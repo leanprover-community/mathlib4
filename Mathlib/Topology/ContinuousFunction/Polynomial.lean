@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Topology.Algebra.Polynomial
-import Mathlib.Topology.Algebra.StarSubalgebra
 import Mathlib.Topology.ContinuousFunction.Algebra
 import Mathlib.Topology.UnitInterval
+import Mathlib.Algebra.Star.Subalgebra
 
 #align_import topology.continuous_function.polynomial from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
 

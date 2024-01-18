@@ -6,7 +6,7 @@ Authors: Iván Renison
 import Mathlib.Combinatorics.SimpleGraph.Coloring
 import Mathlib.Combinatorics.SimpleGraph.Hasse
 import Mathlib.Data.Nat.Parity
-import Mathlib.Data.ZMod.Basic
+import Mathlib.Order.OmegaCompletePartialOrder
 
 /-!
 # Concrete colorings of common graphs

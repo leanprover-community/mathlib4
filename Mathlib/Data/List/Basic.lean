@@ -6,9 +6,9 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 import Mathlib.Init.Data.List.Instances
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.List.Defs
-import Mathlib.Init.Core
 import Std.Data.List.Lemmas
 import Mathlib.Tactic.Common
+import Mathlib.Init.Data.List.Lemmas
 
 #align_import data.list.basic from "leanprover-community/mathlib"@"65a1391a0106c9204fe45bc73a039f056558cb83"
 

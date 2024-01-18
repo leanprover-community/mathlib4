@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov, Rémy Degenne
 -/
 import Mathlib.Data.Set.Intervals.Basic
-import Mathlib.Data.Set.Pairwise.Basic
 import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.GroupPower.Lemmas
+import Mathlib.Logic.Pairwise
 
 #align_import data.set.intervals.group from "leanprover-community/mathlib"@"c227d107bbada5d0d9d20287e3282c0a7f1651a0"
 

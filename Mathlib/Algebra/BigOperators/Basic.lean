@@ -7,12 +7,12 @@ import Mathlib.Algebra.BigOperators.Multiset.Lemmas
 import Mathlib.Algebra.Function.Indicator
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.Pi
-import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.Ring.Opposite
 import Mathlib.Data.Finset.Powerset
 import Mathlib.Data.Finset.Sigma
 import Mathlib.Data.Finset.Sum
 import Mathlib.Data.Fintype.Pi
+import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.Data.Multiset.Powerset
 import Mathlib.Data.Set.Pairwise.Basic
 

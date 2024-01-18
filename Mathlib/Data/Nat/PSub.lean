@@ -3,9 +3,10 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Option.Basic
 import Mathlib.Algebra.Group.Basic
+import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Data.Nat.Basic
+import Mathlib.Data.Option.Basic
 
 #align_import data.nat.psub from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
 
