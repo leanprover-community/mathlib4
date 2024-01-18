@@ -2249,7 +2249,6 @@ theorem zpow_eq_ofSubtype_subtypePerm_iff
       exact fun hx' ↦ hx (hc (support_zpow_le _ _ hx'))
       exact hx
 
-
 theorem cycle_zpow_mem_support_iff {g : Perm α}
     (hg : g.IsCycle) {n : ℤ} {x : α} (hx : g x ≠ x) :
     (g ^ n) x = x ↔ n % g.support.card = 0 := by
