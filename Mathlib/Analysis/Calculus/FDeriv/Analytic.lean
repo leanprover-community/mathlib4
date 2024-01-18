@@ -423,4 +423,22 @@ protected theorem hasFDerivAt [DecidableEq ι] (x : ∀ i, M₁ i) :
   convert f.hasFiniteFPowerSeriesOnBall.hasFDerivAt (y := x) ENNReal.coe_lt_top
   rw [zero_add]
 
+lemma cPolynomialAt (f : ContinuousMultilinearMap R M₁ M₂) (x : (i : ι) → M₁ i) :
+    CPolynomialAt R f x :=
+  HasFiniteFPowerSeriesOnBall.cPolynomialAt_of_mem f.hasFiniteFPowerSeriesOnBall
+    (by simp only [Metric.emetric_ball_top, Set.mem_univ])
+
+lemma cPolyomialOn (f : ContinuousMultilinearMap R M₁ M₂) : CPolynomialOn R f ⊤ :=
+  fun x _ ↦ f.cPolynomialAt x
+
+lemma contDiffAt (f : ContinuousMultilinearMap R M₁ M₂) {n : ℕ∞} (x : (i : ι) → M₁ i) :
+    ContDiffAt R n f x := CPolynomialAt.contDiffAt (f.cPolynomialAt x)
+
+lemma contDiffOn (f : ContinuousMultilinearMap R M₁ M₂) {n : ℕ∞}
+    (s : Set ((i : ι) → M₁ i)) : ContDiffOn R n f s :=
+  CPolynomialOn.contDiffOn (fun x _ ↦ f.cPolynomialAt x)
+
+lemma contDiff (f : ContinuousMultilinearMap R M₁ M₂) {n : ℕ∞} :
+    ContDiff R n f := contDiff_iff_contDiffAt.mpr f.contDiffAt
+
 end ContinuousMultilinearMap
