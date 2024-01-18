@@ -294,3 +294,47 @@ theorem CPolynomialOn.iterated_deriv (h : CPolynomialOn 𝕜 f s) (n : ℕ) :
   · simpa only [Function.iterate_succ', Function.comp_apply] using IH.deriv
 
 end deriv
+
+namespace ContinuousMultilinearMap
+
+variable {R : Type*} {ι : Type*} {M₁ : ι → Type*} {M₂ : Type*} [Ring R]
+  [(i : ι) → AddCommGroup (M₁ i)] [AddCommGroup M₂] [(i : ι) → Module R (M₁ i)] [Module R M₂]
+  [(i : ι) → TopologicalSpace (M₁ i)] [(i : ι) → TopologicalAddGroup (M₁ i)]
+  [(i : ι) → ContinuousConstSMul R (M₁ i)] [TopologicalSpace M₂] [TopologicalAddGroup M₂]
+  [ContinuousConstSMul R M₂] [Fintype ι] (f : ContinuousMultilinearMap R M₁ M₂)
+
+/-- This is the nth term of a formal multilinear series corresponding to the multilinear map `f`.
+We use a linear order on ι to identify all finsets of `ι` of cardinality `n` to `Fin n`.-/
+noncomputable def toFormalMultilinearSeries : FormalMultilinearSeries R (∀ i, M₁ i) M₂ :=
+  fun n ↦ if h : Fintype.card ι = n then
+    (f.compContinuousLinearMap ContinuousLinearMap.proj).domDomCongr (Fintype.equivFinOfCardEq h)
+  else 0
+
+open scoped BigOperators
+
+def linearDeriv [DecidableEq ι] (x : (i : ι) → M₁ i) : ((i : ι) → M₁ i) →L[R] M₂ :=
+  ∑ i : ι, (f.toContinuousLinearMap x i).comp (.proj i)
+
+variable (R : Type*) {ι : Type*} (M₁ : ι → Type*) (M₂ : Type*) [NontriviallyNormedField R]
+  [(i : ι) → NormedAddCommGroup (M₁ i)] [NormedAddCommGroup M₂] [(i : ι) → NormedSpace R (M₁ i)]
+  [NormedSpace R M₂] [Fintype ι] (f : ContinuousMultilinearMap R M₁ M₂)
+
+open FormalMultilinearSeries
+
+protected theorem hasFiniteFPowerSeriesOnBall :
+    HasFiniteFPowerSeriesOnBall f f.toFormalMultilinearSeries 0 (Fintype.card ι + 1) ⊤ :=
+  .mk' (fun m hm ↦ dif_neg (Nat.succ_le_iff.mp hm).ne) ENNReal.zero_lt_top fun y _ ↦ by
+    rw [Finset.sum_eq_single_of_mem _ (Finset.self_mem_range_succ _), zero_add]
+    · rw [toFormalMultilinearSeries, dif_pos rfl]; rfl
+    · intro m _ ne; rw [toFormalMultilinearSeries, dif_neg ne.symm]; rfl
+
+theorem changeOrigin_toFormalMultilinearSeries [DecidableEq ι] (x : ∀ i, M₁ i) :
+    continuousMultilinearCurryFin1 R (∀ i, M₁ i) M₂ (f.toFormalMultilinearSeries.changeOrigin x 1) =
+    f.linearDeriv x := by
+  sorry
+
+protected theorem hasFDerivAt [DecidableEq ι] (x : ∀ i, M₁ i) :
+    HasFDerivAt f (f.linearDeriv x) x := by
+  sorry
+
+end ContinuousMultilinearMap

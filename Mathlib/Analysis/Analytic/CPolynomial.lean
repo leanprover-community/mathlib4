@@ -57,6 +57,16 @@ structure HasFiniteFPowerSeriesOnBall (f : E → F) (p : FormalMultilinearSeries
     (n : ℕ) (r : ℝ≥0∞) extends HasFPowerSeriesOnBall f p x r : Prop where
   finite : ∀ (m : ℕ), n ≤ m → p m = 0
 
+theorem HasFiniteFPowerSeriesOnBall.mk' {f : E → F} {p : FormalMultilinearSeries 𝕜 E F} {x : E}
+    {n : ℕ} {r : ℝ≥0∞} (finite : ∀ (m : ℕ), n ≤ m → p m = 0) (pos : 0 < r)
+    (sum_eq : ∀ y ∈ EMetric.ball 0 r, (∑ i in Finset.range n, p i fun _ ↦ y) = f (x + y)) :
+    HasFiniteFPowerSeriesOnBall f p x n r where
+  r_le := p.radius_eq_top_of_eventually_eq_zero (Filter.eventually_atTop.mpr ⟨n, finite⟩) ▸ le_top
+  r_pos := pos
+  hasSum hy := sum_eq _ hy ▸ hasSum_sum_of_ne_finset_zero fun m hm ↦ by
+    rw [Finset.mem_range, not_lt] at hm; rw [finite m hm]; rfl
+  finite := finite
+
 /-- Given a function `f : E → F`, a formal multilinear series `p` and `n : ℕ`, we say that
 `f` has `p` as a finite power series around `x` if `f (x + y) = ∑' pₙ yⁿ` for all `y` in a
 neighborhood of `0`and `pₙ = 0` for `n ≤ m`.-/
