@@ -81,7 +81,6 @@ instance [NonUnitalNonAssocSemiring α] [CentroidHomClass F α] : CoeTC F (Centr
 
 /-! ### Centroid homomorphisms -/
 
-
 namespace CentroidHom
 
 section NonUnitalNonAssocSemiring
@@ -514,18 +513,19 @@ def centerToCentroid : NonUnitalSubsemiring.center α →ₙ+* CentroidHom α wh
     ext a
     exact (((Set.mem_center_iff _).mp z₁.prop).left_assoc z₂ a).symm
 
-lemma centerToCentroid_apply (z : { x // x ∈ NonUnitalSubsemiring.center α }) (a : α) :
+lemma centerToCentroid_apply (z : NonUnitalSubsemiring.center α) (a : α) :
     (centerToCentroid z) a = z * a := rfl
 
-lemma center_iff_op_centroid (a : α) :
-    a ∈ NonUnitalSubsemiring.center α ↔ L a = R a ∧ (L a) ∈ Set.range CentroidHom.toEnd := by
+lemma _root_.NonUnitalNonAssocSemiring.mem_center_iff (a : α) :
+    a ∈ NonUnitalSubsemiring.center α ↔ R a = L a ∧ (L a) ∈ RingHom.rangeS (toEndRingHom α) := by
   constructor
-  · exact fun ha ↦ ⟨AddMonoidHom.ext <| IsMulCentral.comm ha, ⟨centerToCentroid ⟨a, ha⟩, rfl⟩⟩
+  · exact fun ha ↦ ⟨AddMonoidHom.ext <| fun _ => (IsMulCentral.comm ha _).symm,
+      ⟨centerToCentroid ⟨a, ha⟩, rfl⟩⟩
   · rintro ⟨hc, ⟨T, hT⟩⟩
     have e1 (d : α) : T d = a * d := congr($hT d)
-    have e2 (d : α) : T d = d * a := congr($(hT.trans hc) d)
+    have e2 (d : α) : T d = d * a := congr($(hT.trans hc.symm) d)
     constructor
-    case comm => exact (congr($hc ·))
+    case comm => exact (congr($hc.symm ·))
     case left_assoc => simpa [e1] using (map_mul_right T · ·)
     case mid_assoc => exact fun b c ↦ by simpa [e1 c, e2 b] using
       (map_mul_right T b c).symm.trans <| map_mul_left T b c
@@ -533,12 +533,29 @@ lemma center_iff_op_centroid (a : α) :
 
 end NonUnitalNonAssocSemiring
 
+section NonUnitalNonAssocCommSemiring
+
+variable [NonUnitalNonAssocCommSemiring α]
+
+/-
+Left and right multiplication coincide as α is commutative
+-/
+local notation "L" => AddMonoid.End.mulLeft
+
+lemma _root_.NonUnitalNonAssocCommSemiring.mem_center_iff (a : α) :
+    a ∈ NonUnitalSubsemiring.center α ↔ ∀ b : α, Commute (L b) (L a) := by
+  rw [NonUnitalNonAssocSemiring.mem_center_iff, CentroidHom.centroid_eq_centralizer_mulLeftRight,
+    Subsemiring.mem_centralizer_iff, AddMonoid.End.mulRight_eq_mulLeft, Set.union_self]
+  aesop
+
+end NonUnitalNonAssocCommSemiring
+
 section NonAssocSemiring
 
 variable [NonAssocSemiring α]
 
 /-- The canonical isomorphism from the center of a (non-associative) semiring onto its centroid. -/
-def centerIsoCentroid : NonUnitalSubsemiring.center α ≃+* CentroidHom α :=
+def centerIsoCentroid : Subsemiring.center α ≃+* CentroidHom α :=
   { centerToCentroid with
     invFun := fun T ↦
       ⟨T 1, by refine ⟨?_, ?_, ?_, ?_⟩; all_goals simp [← map_mul_left, ← map_mul_right]⟩
