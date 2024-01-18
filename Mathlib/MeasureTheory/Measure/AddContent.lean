@@ -61,7 +61,7 @@ instance : Inhabited (AddContent C) :=
     empty' := by simp
     sUnion' := by simp }⟩
 
-instance : FunLike (AddContent C) (Set α) (fun _ ↦ ℝ≥0∞) where
+instance : DFunLike (AddContent C) (Set α) (fun _ ↦ ℝ≥0∞) where
   coe := fun m s ↦ m.toFun s
   coe_injective' := by
     intro m m' h
@@ -72,10 +72,10 @@ instance : FunLike (AddContent C) (Set α) (fun _ ↦ ℝ≥0∞) where
 variable {m m' : AddContent C}
 
 @[ext] protected lemma AddContent.ext (h : ∀ s, m s = m' s) : m = m' :=
-  FunLike.ext _ _ h
+  DFunLike.ext _ _ h
 
 protected lemma AddContent.ext_iff (m m' : AddContent C) : m = m' ↔ ∀ s, m s = m' s :=
-  FunLike.ext_iff
+  DFunLike.ext_iff
 
 @[simp] lemma addContent_empty : m ∅ = 0 := m.empty'
 
