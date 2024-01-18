@@ -1,4 +1,4 @@
-import Mathlib.CategoryTheory.Triangulated.TStructure.Trunc
+/-import Mathlib.CategoryTheory.Triangulated.TStructure.Trunc
 import Mathlib.Algebra.Homology.SpectralSequence.Construction
 
 open CategoryTheory Category Limits Pretriangulated Triangulated ZeroObject Preadditive
@@ -75,3 +75,4 @@ end TStructure
 end Triangulated
 
 end CategoryTheory
+-/

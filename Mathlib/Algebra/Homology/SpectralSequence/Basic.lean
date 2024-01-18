@@ -1,4 +1,4 @@
-import Mathlib.Algebra.Homology.ShortComplex.Refinements
+/-import Mathlib.Algebra.Homology.ShortComplex.Refinements
 import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 import Mathlib.CategoryTheory.Subobject.Lattice
 import Mathlib.Tactic.Linarith
@@ -885,3 +885,5 @@ lemma isZero_pageInfinity_of_isFirstQuadrant (pq : ℤ × ℤ)
 end IsFirstQuadrant
 
 end CohomologicalSpectralSequence
+
+-/

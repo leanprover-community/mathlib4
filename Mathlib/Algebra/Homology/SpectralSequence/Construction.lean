@@ -1,4 +1,4 @@
-import Mathlib.Algebra.Homology.SpectralSequence.Basic
+/-import Mathlib.Algebra.Homology.SpectralSequence.Basic
 import Mathlib.Algebra.Homology.SpectralSequence.SpectralObject
 import Mathlib.Algebra.Homology.SpectralSequence.ZTilde
 
@@ -328,3 +328,5 @@ end SpectralObject
 end Abelian
 
 end CategoryTheory
+
+-/

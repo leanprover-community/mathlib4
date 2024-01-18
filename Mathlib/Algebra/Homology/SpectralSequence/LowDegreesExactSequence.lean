@@ -1,4 +1,4 @@
-import Mathlib.Algebra.Homology.SpectralSequence.Basic
+/-import Mathlib.Algebra.Homology.SpectralSequence.Basic
 import Mathlib.Algebra.Homology.ShortComplex.ShortComplexFour
 import Mathlib.Algebra.Homology.ShortComplex.ShortComplexFive
 
@@ -224,3 +224,4 @@ lemma lowDegreesShortComplex₅_exact [E.HasPage 2] :
 end
 
 end CohomologicalSpectralSequence
+-/

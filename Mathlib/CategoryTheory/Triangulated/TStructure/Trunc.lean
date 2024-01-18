@@ -1,6 +1,6 @@
 import Mathlib.CategoryTheory.Triangulated.TStructure.Basic
 import Mathlib.CategoryTheory.Triangulated.TStructure.AbstractSpectralObject
-import Mathlib.Algebra.Homology.SpectralSequence.ZTilde
+import Mathlib.Algebra.Homology.SpectralSequenceNew.ZTilde
 
 namespace CategoryTheory
 
@@ -1577,11 +1577,12 @@ instance : t.abstractSpectralObject.IsCompatible where
   truncLTι_compatibility' := t.truncLTι_compatibility
 
 @[simps!]
-noncomputable def spectralObject (X : C) : SpectralObject C ℤt :=
+noncomputable def spectralObject (X : C) : SpectralObjectNew C ℤt :=
   t.abstractSpectralObject.spectralObject X
 
-noncomputable def shiftSpectralObjectω₁IsoHomologyιHeart (X : C) (q q' : ℤ) (hq' : q + 1 = q') :
-    ((t.spectralObject X).ω₁ ⋙ shiftFunctor C q).obj (ιℤt.mapArrow.obj (Arrow.mkOfLE q q')) ≅
+noncomputable def shiftSpectralObjectω₁IsoHomologyιHeart' (X : C) (q q' : ℤ) (hq' : q + 1 = q') :
+    ((t.spectralObject X).ω₁ ⋙ shiftFunctor C q).obj
+      (ComposableArrows.mk₁ (homOfLE (by simp; linarith) : ℤt.mk q ⟶ ℤt.mk q')) ≅
       (t.homology' q ⋙ t.ιHeart').obj X :=
   (shiftFunctor C q).mapIso ((t.truncGELEIsoTruncGELT q q q' hq').symm.app X) ≪≫
     (t.homologyCompιHeart' q).symm.app X

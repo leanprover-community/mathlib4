@@ -1,6 +1,5 @@
-import Mathlib.CategoryTheory.Triangulated.Triangulated
+/-import Mathlib.CategoryTheory.Triangulated.Triangulated
 import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
-import Mathlib.Algebra.Homology.SpectralSequence.SpectralObject
 
 namespace CategoryTheory
 
@@ -68,3 +67,5 @@ end SpectralObject
 end Triangulated
 
 end CategoryTheory
+
+-/

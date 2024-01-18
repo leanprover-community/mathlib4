@@ -1,4 +1,4 @@
-import Mathlib.Algebra.Homology.ShortComplex.Images
+/-import Mathlib.Algebra.Homology.ShortComplex.Images
 import Mathlib.Algebra.Homology.ShortComplex.ShortComplexFour
 import Mathlib.CategoryTheory.Abelian.FunctorCategory
 import Mathlib.CategoryTheory.ArrowSeven
@@ -1853,3 +1853,4 @@ end SpectralObject
 end Abelian
 
 end CategoryTheory
+-/

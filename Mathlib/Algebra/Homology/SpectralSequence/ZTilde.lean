@@ -1,4 +1,4 @@
-import Mathlib.CategoryTheory.Category.Preorder
+/-import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 open CategoryTheory Limits
@@ -111,3 +111,4 @@ lemma top_le_iff (a : ℤt) : ⊤ ≤ a ↔ a = ⊤ := by
     exact le_refl _
 
 end ℤt
+-/

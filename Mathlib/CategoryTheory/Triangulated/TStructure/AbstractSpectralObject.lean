@@ -1,4 +1,4 @@
-import Mathlib.CategoryTheory.Triangulated.SpectralObject
+import Mathlib.CategoryTheory.Triangulated.SpectralObjectNew
 
 open CategoryTheory Category Limits Pretriangulated
 
@@ -330,12 +330,42 @@ lemma triangle_distinguished (D : Arrow₂ ι) (X : C) :
   isomorphic_distinguished _ (F.triangleLTGEPrecompTruncGELT_distinguished D X) _
     (((F.triangleIsoTriangleLTGEPrecompTruncGELT).app D).app X)
 
+set_option maxHeartbeats 800000 in
 @[simps]
 noncomputable def spectralObject (X : C) :
-    SpectralObject C ι where
-  ω₁ := ((whiskeringRight (Arrow ι) _ _).obj ((evaluation C C).obj X)).obj F.truncGELT
-  δ := whiskerRight F.truncGELTδ ((evaluation C C).obj X)
-  distinguished' D := F.triangle_distinguished D X
+    SpectralObjectNew C ι where
+  ω₁ :=
+    { obj := fun D => (F.truncGELT.obj (Arrow.mk (D.map' 0 1))).obj X
+      map := fun {D₁ D₂} f => (F.truncGELT.map
+        { left := by exact ComposableArrows.app' f 0
+          right := by exact ComposableArrows.app' f 1 }).app X
+      map_id := fun D => by
+        change ((F.truncGELT).map (𝟙 (Arrow.mk (D.map' 0 1)))).app X = _
+        simp
+      map_comp := fun {D₁ D₂ d₃} f g => by
+        dsimp
+        conv_rhs =>
+          rw [← NatTrans.comp_app, ← Functor.map_comp] }
+  δ' :=
+    { app := fun D => (F.truncGELTδ.app (Arrow₂.mk (D.map' 0 1) (D.map' 1 2))).app X
+      naturality := fun {D₁ D₂} f => by
+        dsimp
+        let φ : Arrow₂.mk (D₁.map' 0 1) (D₁.map' 1 2) ⟶
+            Arrow₂.mk (D₂.map' 0 1) (D₂.map' 1 2) :=
+          { τ₀ := f.app 0
+            τ₁ := f.app 1
+            τ₂ := f.app 2 }
+        exact congr_app (F.truncGELTδ.naturality φ) X }
+  distinguished' D := by
+    obtain ⟨_, _, _, f, g, rfl⟩ := ComposableArrows.mk₂_surjective D
+    exact F.triangle_distinguished (Arrow₂.mk f g) X
+
+--@[simps]
+--noncomputable def spectralObject (X : C) :
+--    SpectralObject C ι where
+--  ω₁ := ((whiskeringRight (Arrow ι) _ _).obj ((evaluation C C).obj X)).obj F.truncGELT
+--  δ := whiskerRight F.truncGELTδ ((evaluation C C).obj X)
+--  distinguished' D := F.triangle_distinguished D X
 
 end AbstractSpectralObject
 

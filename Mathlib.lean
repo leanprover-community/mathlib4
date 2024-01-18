@@ -329,6 +329,7 @@ import Mathlib.Algebra.Homology.SpectralSequence.SpectralObject
 import Mathlib.Algebra.Homology.SpectralSequence.ZTilde
 import Mathlib.Algebra.Homology.SpectralSequenceNew.Basic
 import Mathlib.Algebra.Homology.SpectralSequenceNew.Convergence
+import Mathlib.Algebra.Homology.SpectralSequenceNew.Examples.OfTStructure
 import Mathlib.Algebra.Homology.SpectralSequenceNew.LowDegreesExactSequence
 import Mathlib.Algebra.Homology.SpectralSequenceNew.PageInfinity
 import Mathlib.Algebra.Homology.SpectralSequenceNew.ZTilde

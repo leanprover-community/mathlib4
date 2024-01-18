@@ -1,4 +1,4 @@
-import Mathlib.Algebra.Homology.SpectralSequence.Examples.OfTStructure
+/-import Mathlib.Algebra.Homology.SpectralSequence.Examples.OfTStructure
 import Mathlib.Algebra.Homology.DerivedCategory.TStructure
 
 open CategoryTheory Triangulated DerivedCategory DerivedCategory.TStructure
@@ -35,3 +35,5 @@ noncomputable def grothendieckSpectralSequenceStronglyConvergesTo :
       (fun n => (singleFunctor A 0 ⋙ F ⋙ G ⋙ homologyFunctor C n).obj X) :=
   TStructure.spectralSequenceStronglyConvergesTo t (F.obj ((singleFunctor A 0).obj X))
     (G ⋙ DerivedCategory.homologyFunctor C 0)
+
+-/

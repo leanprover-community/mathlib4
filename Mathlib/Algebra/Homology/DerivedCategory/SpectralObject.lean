@@ -8,7 +8,7 @@ variable (C : Type _) [Category C] [Abelian C] [HasDerivedCategory C]
 namespace DerivedCategory
 
 noncomputable def spectralObjectMappingCone :
-    SpectralObject (DerivedCategory C) (CochainComplex C ℤ) :=
+    SpectralObjectNew (DerivedCategory C) (CochainComplex C ℤ) :=
     (HomotopyCategory.spectralObjectMappingCone C).mapTriangulatedFunctor Qh
 
 end DerivedCategory
