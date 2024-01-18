@@ -65,8 +65,8 @@ instance {X Y : GroupCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe (f : X →* Y) := f
 
 @[to_additive]
-instance DFunLike_instance (X Y : GroupCat) : DFunLike (X ⟶ Y) X (fun _ => Y) :=
-  show DFunLike (X →* Y) X (fun _ => Y) from inferInstance
+instance FunLike_instance (X Y : GroupCat) : FunLike (X ⟶ Y) X Y :=
+  show FunLike (X →* Y) X Y from inferInstance
 
 -- porting note: added
 @[to_additive (attr := simp)]
@@ -214,8 +214,8 @@ instance {X Y : CommGroupCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe (f : X →* Y) := f
 
 @[to_additive]
-instance DFunLike_instance (X Y : CommGroupCat) : DFunLike (X ⟶ Y) X (fun _ => Y) :=
-  show DFunLike (X →* Y) X (fun _ => Y) from inferInstance
+instance FunLike_instance (X Y : CommGroupCat) : FunLike (X ⟶ Y) X (fun _ => Y) :=
+  show FunLike (X →* Y) X Y from inferInstance
 
 -- porting note: added
 @[to_additive (attr := simp)]

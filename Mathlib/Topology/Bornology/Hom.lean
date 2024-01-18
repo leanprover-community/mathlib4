@@ -44,7 +44,7 @@ section
 
 You should extend this class when you extend `LocallyBoundedMap`. -/
 class LocallyBoundedMapClass (F : Type*) (α β : outParam <| Type*) [Bornology α]
-    [Bornology β] extends DFunLike F α fun _ => β where
+    [Bornology β] extends FunLike F α β where
   /-- The pullback of the `Bornology.cobounded` filter under the function is contained in the
   cobounded filter. Equivalently, the function maps bounded sets to bounded sets. -/
   comap_cobounded_le (f : F) : (cobounded β).comap f ≤ cobounded α

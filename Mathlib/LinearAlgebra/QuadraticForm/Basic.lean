@@ -153,7 +153,7 @@ variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 variable {Q Q' : QuadraticForm R M}
 
-instance instDFunLike : DFunLike (QuadraticForm R M) M fun _ => R where
+instance instFunLike : FunLike (QuadraticForm R M) M R where
   coe := toFun
   coe_injective' x y h := by cases x; cases y; congr
 #align quadratic_form.fun_like QuadraticForm.instDFunLike
