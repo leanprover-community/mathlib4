@@ -3,6 +3,7 @@ Copyright (c) 2021 Hunter Monroe. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hunter Monroe, Kyle Miller, Alena Gusakov
 -/
+import Mathlib.Init.Core
 import Mathlib.Combinatorics.SimpleGraph.Maps
 
 #align_import combinatorics.simple_graph.subgraph from "leanprover-community/mathlib"@"c6ef6387ede9983aee397d442974e61f89dfd87b"
