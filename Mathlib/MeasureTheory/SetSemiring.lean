@@ -5,7 +5,7 @@ Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
 import Mathlib.Data.Nat.Lattice
 import Mathlib.Data.Set.Pairwise.Lattice
-import Mathlib.Data.Real.ENNReal
+import Mathlib.Data.ENNReal.Basic
 import Mathlib.MeasureTheory.PiSystem
 
 /-! # Semirings and rings of sets

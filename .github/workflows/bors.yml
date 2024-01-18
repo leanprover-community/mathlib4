@@ -161,13 +161,23 @@ jobs:
           lean --version
           lake --version
 
+      - name: build cache
+        run: |
+          lake build cache
+
+      - name: prune ProofWidgets .lake
+        run: |
+          # The ProofWidgets release contains not just the `.js` (which we need in order to build)
+          # but also `.oleans`, which may have been built with the wrong toolchain.
+          # This removes them.
+          # See discussion at https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/nightly-testing/near/411225235
+          rm -rf .lake/packages/proofwidgets/.lake/build/lib
+          rm -rf .lake/packages/proofwidgets/.lake/build/ir
+
       - name: get cache
         run: |
           lake exe cache clean
-          # We've been seeing many failures at this step recently because of network errors.
-          # As a band-aid, we try twice.
-          # The 'sleep 1' is small pause to let the network recover.
-          lake exe cache get || (sleep 1; lake exe cache get)
+          lake exe cache get
 
       - name: build mathlib
         id: build
@@ -190,9 +200,9 @@ jobs:
           # run this in CI if it gets an incorrect lake hash for existing cache files somehow
           # lake exe cache pack! || true
           lake exe cache commit || true
-          # try twice in case of network errors
-          lake exe cache put || (sleep 1; lake exe cache put) || true
+          lake exe cache put || true
         env:
+          MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
           MATHLIB_CACHE_S3_TOKEN: ${{ secrets.MATHLIB_CACHE_S3_TOKEN }}
 
       - name: check the cache
@@ -215,19 +225,20 @@ jobs:
           # it should be possible to determine whether they need to be built without actually
           # storing and transferring oleans over the network.
           # Hopefully a future re-implementation of `cache` will obviate the present need for this hack.
-          # We retry twice in case of network errors.
-          lake exe cache get Archive.lean || (sleep 1; lake exe cache get Archive.lean)
+          lake exe cache get Archive.lean
           lake build Archive
-          lake exe cache put Archive.lean || (sleep 1; lake exe cache put Archive.lean)
+          lake exe cache put Archive.lean
         env:
+          MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
           MATHLIB_CACHE_S3_TOKEN: ${{ secrets.MATHLIB_CACHE_S3_TOKEN }}
 
       - name: build counterexamples
         run: |
-          lake exe cache get Counterexamples.lean || (sleep 1; lake exe cache get Counterexamples.lean)
+          lake exe cache get Counterexamples.lean
           lake build Counterexamples
-          lake exe cache put Counterexamples.lean || (sleep 1; lake exe cache put Counterexamples.lean)
+          lake exe cache put Counterexamples.lean
         env:
+          MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
           MATHLIB_CACHE_S3_TOKEN: ${{ secrets.MATHLIB_CACHE_S3_TOKEN }}
 
       - name: check declarations in db files
@@ -239,6 +250,11 @@ jobs:
         run: |
           lake exe graph
           rm import_graph.dot
+
+      - name: verify `lake exe shake` works
+        # Later, we may want to make output from `shake` a CI error?
+        run: |
+          lake exe shake
 
       - name: test mathlib
         id: test

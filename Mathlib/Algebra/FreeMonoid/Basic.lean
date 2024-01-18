@@ -31,10 +31,6 @@ def FreeMonoid (α) := List α
 
 namespace FreeMonoid
 
--- Porting note: TODO. Check this is still needed
-@[to_additive]
-instance [DecidableEq α] : DecidableEq (FreeMonoid α) := instDecidableEqList
-
 /-- The identity equivalence between `FreeMonoid α` and `List α`. -/
 @[to_additive "The identity equivalence between `FreeAddMonoid α` and `List α`."]
 def toList : FreeMonoid α ≃ List α := Equiv.refl _
@@ -275,7 +271,7 @@ theorem comp_lift (g : M →* N) (f : α → M) : g.comp (lift f) = lift (g ∘ 
 
 @[to_additive]
 theorem hom_map_lift (g : M →* N) (f : α → M) (x : FreeMonoid α) : g (lift f x) = lift (g ∘ f) x :=
-  FunLike.ext_iff.1 (comp_lift g f) x
+  DFunLike.ext_iff.1 (comp_lift g f) x
 #align free_monoid.hom_map_lift FreeMonoid.hom_map_lift
 #align free_add_monoid.hom_map_lift FreeAddMonoid.hom_map_lift
 
@@ -355,7 +351,7 @@ theorem map_id : map (@id α) = MonoidHom.id (FreeMonoid α) := hom_eq fun _ ↦
 @[to_additive]
 instance uniqueUnits : Unique (FreeMonoid α)ˣ where
   uniq u := Units.ext <| toList.injective <|
-    have : toList u.val ++ toList u.inv = [] := FunLike.congr_arg toList u.val_inv
+    have : toList u.val ++ toList u.inv = [] := DFunLike.congr_arg toList u.val_inv
     (List.append_eq_nil.mp this).1
 
 end FreeMonoid

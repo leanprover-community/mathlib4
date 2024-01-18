@@ -15,7 +15,6 @@ then `C ⥤ D` is also preadditive.
 
 -/
 
-
 open BigOperators
 
 namespace CategoryTheory
@@ -37,30 +36,37 @@ instance functorCategoryPreadditive : Preadditive (C ⥤ D)
         apply add_assoc
       zero_add := by
         intros
+        dsimp
         ext
         apply zero_add
       add_zero := by
         intros
+        dsimp
         ext
         apply add_zero
       add_comm := by
         intros
+        dsimp
         ext
         apply add_comm
       sub_eq_add_neg := by
         intros
+        dsimp
         ext
         apply sub_eq_add_neg
       add_left_neg := by
         intros
+        dsimp
         ext
         apply add_left_neg }
   add_comp := by
     intros
+    dsimp
     ext
     apply add_comp
   comp_add := by
     intros
+    dsimp
     ext
     apply comp_add
 #align category_theory.functor_category_preadditive CategoryTheory.functorCategoryPreadditive

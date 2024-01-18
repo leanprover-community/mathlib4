@@ -67,14 +67,14 @@ variable [Ring k] [Module k V] (b : AffineBasis ι k P) {s : Finset ι} {i j : �
 instance : Inhabited (AffineBasis PUnit k PUnit) :=
   ⟨⟨id, affineIndependent_of_subsingleton k id, by simp⟩⟩
 
-instance funLike : FunLike (AffineBasis ι k P) ι fun _ => P where
+instance instDFunLike : DFunLike (AffineBasis ι k P) ι fun _ => P where
   coe := AffineBasis.toFun
   coe_injective' f g h := by cases f; cases g; congr
-#align affine_basis.fun_like AffineBasis.funLike
+#align affine_basis.fun_like AffineBasis.instDFunLike
 
 @[ext]
 theorem ext {b₁ b₂ : AffineBasis ι k P} (h : (b₁ : ι → P) = b₂) : b₁ = b₂ :=
-  FunLike.coe_injective h
+  DFunLike.coe_injective h
 #align affine_basis.ext AffineBasis.ext
 
 theorem ind : AffineIndependent k b :=
@@ -309,7 +309,7 @@ theorem coord_apply_centroid [CharZero k] (b : AffineBasis ι k P) {s : Finset �
 #align affine_basis.coord_apply_centroid AffineBasis.coord_apply_centroid
 
 theorem exists_affine_subbasis {t : Set P} (ht : affineSpan k t = ⊤) :
-    ∃ (s : _) (_ : s ⊆ t) (b : AffineBasis (↥s) k P), ⇑b = ((↑) : s → P) := by
+    ∃ s ⊆ t, ∃ b : AffineBasis s k P, ⇑b = ((↑) : s → P) := by
   obtain ⟨s, hst, h_tot, h_ind⟩ := exists_affineIndependent k V t
   refine' ⟨s, hst, ⟨(↑), h_ind, _⟩, rfl⟩
   rw [Subtype.range_coe, h_tot, ht]
