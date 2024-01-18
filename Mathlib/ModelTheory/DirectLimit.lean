@@ -530,6 +530,7 @@ instance : DirectedSystem (fun i ↦ (S i).sub_cod) (fun _ _ h ↦
   map_self' := fun _ _ _ ↦ rfl
   map_map' := fun _ _ _ ↦ rfl
 
+/-- The limit of a directed system of subequivalences.-/
 noncomputable def subEquiv_limit : M ≃ₚ[L] N := {
   sub_dom := iSup (fun i ↦ (S i).sub_dom)
   sub_cod := iSup (fun i ↦ (S i).sub_cod)
@@ -555,6 +556,7 @@ theorem subEquiv_limit_dom : (subEquiv_limit S).sub_dom = iSup (fun x ↦ (S x).
 @[simp]
 theorem subEquiv_limit_cod : (subEquiv_limit S).sub_cod = iSup (fun x ↦ (S x).sub_cod) := rfl
 
+-- the proof is a hack right now, I didn't know how to handle subtle differences in proof terms that prevented me from just using equalities proved previously
 theorem le_subEquiv_limit : ∀ i, S i ≤ subEquiv_limit S := by
   intro i
   refine ⟨by simp; apply le_iSup (f := fun i ↦ (S i).sub_dom), ?_⟩
@@ -578,6 +580,65 @@ theorem le_subEquiv_limit : ∀ i, S i ≤ subEquiv_limit S := by
   rw [DirectLimit.Equiv_isup_of]
   rfl
 
+
+variable (M) (N) (L)
+
+/-- The type of equivalences between finitely generated substructures. -/
+def FiniteEquiv := {f : M ≃ₚ[L] N // f.sub_dom.FG}
+
+instance : PartialOrder (FiniteEquiv L M N) := Subtype.partialOrder _
+
+instance FiniteEquivToSubEquiv : Coe (FiniteEquiv L M N) (M ≃ₚ[L] N) := {coe := Subtype.val}
+
+variable {M} {N} {L}
+
+theorem FiniteEquiv.subtype_val_monotone : Monotone (Subtype.val : FiniteEquiv L M N → M ≃ₚ[L] N) :=
+  fun _ _ h ↦ Subtype.coe_le_coe.2 h
+
+noncomputable def definedAtLeft
+  (h : ∀ f : (M ≃ₚ[L] N), ∀ _ : f.sub_dom.FG, ∀ m : M, ∃ g : (M ≃ₚ[L] N), f ≤ g ∧ m ∈ g.sub_dom)
+  (m : M) : Order.Cofinal (FiniteEquiv L M N) where
+  carrier := {f | m ∈ f.val.sub_dom}
+  mem_gt := by
+    intro f
+    rcases h f.val f.2 m with ⟨g, f_le_g, m_in_dom⟩
+    have closure_le_dom : (Substructure.closure L (f.val.sub_dom ∪ {m})) ≤ g.sub_dom := by
+      rw [Substructure.closure_le, union_subset_iff]
+      exact ⟨Substructure.SubEquivalence.le_dom f_le_g, singleton_subset_iff.2 m_in_dom⟩
+    have closure_fg : (Substructure.closure L (f.val.sub_dom ∪ {m})).FG := by
+      rw [Substructure.closure_union, Substructure.closure_eq]
+      exact Substructure.FG.sup f.property (Substructure.fg_closure_singleton _)
+    use ⟨Substructure.SubEquivalence.dom_restrict g closure_le_dom, closure_fg⟩
+    constructor
+    . simp only [union_singleton]
+      exact Substructure.subset_closure <| mem_insert_iff.2 <| Or.inl <| refl m
+    . apply Substructure.SubEquivalence.le_dom_restrict
+      rw [Substructure.closure_union]
+      simp only [Substructure.closure_eq, ge_iff_le,
+        Substructure.closure_le, singleton_subset_iff, le_sup_left]
+      exact f_le_g
+
+theorem cg_embedding [M_cg : Structure.CG L M] (h : (M ≃ₚ[L] N)) (h_fg : h.sub_dom.FG) :
+  (∀ f : M ≃ₚ[L] N, ∀ _ : f.sub_dom.FG, ∀ m : M, ∃ g : (M ≃ₚ[L] N), f ≤ g ∧ m ∈ g.sub_dom)
+  → ∃ f : M ↪[L] N, h ≤ f.toSubEquivalence := by
+  intro H
+  rcases M_cg with ⟨X, _, X_gen⟩
+  have _ : Countable (↑X : Type _) := by simpa only [countable_coe_iff]
+  have _ : Encodable (↑X : Type _) := Encodable.ofCountable _
+  let D : X → Order.Cofinal (FiniteEquiv L M N) := fun x ↦ definedAtLeft H x
+  let S : ℕ →o M ≃ₚ[L] N :=
+    ⟨Subtype.val ∘ (Order.sequenceOfCofinals ⟨h, h_fg⟩ D),
+      FiniteEquiv.subtype_val_monotone.comp (Order.sequenceOfCofinals.monotone _ _)⟩
+  let F := subEquiv_limit S
+  have contains_X : X ⊆ F.sub_dom := by
+    intro x hx
+    have := Order.sequenceOfCofinals.encode_mem ⟨h, h_fg⟩ D ⟨x, hx⟩
+    exact Substructure.SubEquivalence.le_dom
+      (le_subEquiv_limit S (Encodable.encode (⟨x, hx⟩ : X) + 1)) this
+  have isTop : F.sub_dom = ⊤ := by rwa [←top_le_iff, ←X_gen, Substructure.closure_le]
+  refine ⟨Substructure.SubEquivalence.dom_top_toEmbedding isTop, ?_⟩
+  convert (le_subEquiv_limit S 0)
+  apply Embedding.toSubEquivalence_toEmbedding
 
 end SubEquivalence
 
