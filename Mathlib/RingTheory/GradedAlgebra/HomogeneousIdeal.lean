@@ -22,16 +22,19 @@ operations on them.
 
 For any `p : Submodule A M`:
 * `Submodule.IsHomogeneous ℳ p`: The property that a submodule is closed under `GradedModule.proj`.
-* `HomogeneousSubmodule A ℳ`: The structure extending submodules which satisfy `Submodule.IsHomogeneous`.
+* `HomogeneousSubmodule A ℳ`: The structure extending submodules which satisfy
+  `Submodule.IsHomogeneous`.
 * `Submodule.homogeneousCore p 𝒜 ℳ`: The largest homogeneous submodule smaller than `p`.
 * `Submodule.homogeneousHull I 𝒜 ℳ`: The smallest homogeneous ideal larger than `p`.
 
 ## Main statements
 
-* `HomogeneousSubmodule.completeLattice`: `Submodule.IsHomogeneous` is preserved by `⊥`, `⊤`, `⊔`, `⊓`,
-  `⨆`, `⨅`, and so the subtype of homogeneous ideals inherits a complete lattice structure.
-* `Submodule.homogeneousCore.gi`: `Submodule.homogeneousCore` forms a galois insertion with coercion.
-* `Submodule.homogeneousHull.gi`: `Submodule.homogeneousHull` forms a galois insertion with coercion.
+* `HomogeneousSubmodule.completeLattice`: `Submodule.IsHomogeneous` is preserved by `⊥`, `⊤`, `⊔`,
+  `⊓`, `⨆`, `⨅`, and so the subtype of homogeneous ideals inherits a complete lattice structure.
+* `Submodule.homogeneousCore.gi`: `Submodule.homogeneousCore` forms a galois insertion with
+  coercion.
+* `Submodule.homogeneousHull.gi`: `Submodule.homogeneousHull` forms a galois insertion with
+  coercion.
 
 ## Implementation notes
 
@@ -299,7 +302,8 @@ lemma HomogeneousIdeal.toIdeal_homogeneousCore_eq_self (I : HomogeneousIdeal �
 
 variable (𝒜 I)
 
-theorem Submodule.IsHomogeneous.iff_eq : p.IsHomogeneous ℳ ↔ (p.homogeneousCore 𝒜 ℳ).toSubmodule = p :=
+theorem Submodule.IsHomogeneous.iff_eq :
+    p.IsHomogeneous ℳ ↔ (p.homogeneousCore 𝒜 ℳ).toSubmodule = p :=
   ⟨fun hI => hI.toSubmodule_homogeneousCore_eq_self, fun hI => hI ▸ (p.homogeneousCore 𝒜 ℳ).2⟩
 
 lemma Ideal.IsHomogeneous.iff_eq : I.IsHomogeneous 𝒜 ↔ (I.homogeneousCore 𝒜).toIdeal = I :=
@@ -459,7 +463,8 @@ instance : Inf (HomogeneousSubmodule A ℳ) :=
 
 set_option synthInstance.checkSynthOrder false in
 instance supSet : SupSet (HomogeneousSubmodule A ℳ) :=
-  ⟨fun S => ⟨⨆ s ∈ S, toSubmodule s, Submodule.IsHomogeneous.iSup₂ (𝒜 := 𝒜) fun s _ => s.isHomogeneous⟩⟩
+  ⟨fun S => ⟨⨆ s ∈ S, toSubmodule s, Submodule.IsHomogeneous.iSup₂ (𝒜 := 𝒜)
+    fun s _ => s.isHomogeneous⟩⟩
 
 instance : InfSet (HomogeneousSubmodule A ℳ) :=
   ⟨fun S => ⟨⨅ s ∈ S, toSubmodule s, Submodule.IsHomogeneous.iInf₂ fun s _ => s.isHomogeneous⟩⟩
@@ -536,8 +541,8 @@ theorem eq_bot_iff (I : HomogeneousSubmodule A ℳ) : I = ⊥ ↔ I.toSubmodule 
 
 set_option synthInstance.checkSynthOrder false in
 instance completeLattice : CompleteLattice (HomogeneousSubmodule A ℳ) :=
-  toSubmodule_injective.completeLattice _ toSubmodule_sup toSubmodule_inf toSubmodule_sSup toSubmodule_sInf toSubmodule_top
-    toSubmodule_bot
+  toSubmodule_injective.completeLattice _ toSubmodule_sup toSubmodule_inf toSubmodule_sSup
+    toSubmodule_sInf toSubmodule_top toSubmodule_bot
 
 set_option synthInstance.checkSynthOrder false in
 instance : Add (HomogeneousSubmodule A ℳ) :=
