@@ -326,8 +326,10 @@ lemma hom_ext {n : ℕ} {i : Fin (n+2)} {S : SSet} (σ₁ σ₂ : Λ[n+1, i] ⟶
   dsimp at H₁ H₂
   erw [H, H₁, H₂, h _ hji]
 
-/-- Constructor for horns from suitable faces, and conditions between faces.-/
-lemma range_include01_exclude2 {X : SimplexCategory} {i : Fin 4} ( α : Λ[3,i].obj (op X))
+namespace HomMk₃
+
+variable {i : Fin 4}
+lemma range_include01_exclude2 {X : SimplexCategoryᵒᵖ } ( α : Λ[3,i].obj X)
     (include_0 : ¬∀ k, α.val.down.toOrderHom k ≠ (δ i).toOrderHom  0)
     (include_1 : ¬∀ k, α.val.down.toOrderHom k ≠ (δ i).toOrderHom  1 ) :
     ∀ k,  α.val.down.toOrderHom k ≠ (δ i).toOrderHom  2 := by
@@ -341,7 +343,9 @@ lemma range_include01_exclude2 {X : SimplexCategory} {i : Fin 4} ( α : Λ[3,i].
   all_goals fin_cases i
   all_goals tauto
 
-lemma σ_comp_σ_predAbove₃ {i : Fin 4} {i1 i2 : Fin 3} (h : i1< i2) :
+variable {i1 i2 : Fin 3} (i1_lt_i2: i1 < i2)
+
+lemma degeneracy_relation :
     (σ (Fin.predAbove 0 ((δ i).toOrderHom i2))
     ≫ σ (Fin.predAbove 0 (Fin.predAbove 2 ((δ i).toOrderHom i1))) )
     = σ ( (Fin.predAbove 0 ((δ i).toOrderHom i1)))
@@ -357,14 +361,16 @@ lemma σ_comp_σ_predAbove₃ {i : Fin 4} {i1 i2 : Fin 3} (h : i1< i2) :
     all_goals fin_cases x
     all_goals rfl
   all_goals {
-      rw [Fin.lt_def] at h
-      simp at h
+      rw [Fin.lt_def] at i1_lt_i2
+      simp at i1_lt_i2
     }
-lemma hom_mk₃_fac1  { X Y : SimplexCategoryᵒᵖ } {i : Fin 4} {i1 i2 : Fin 3}
-    {α: Λ[3,i].obj X} {φ: ([len Y.unop]: SimplexCategory)⟶ [len X.unop]}
-    (i1_lt_i2: i1 < i2)
-    (exclude_i1 :  ∀ k, (φ ≫ α.val.down).toOrderHom k ≠ (δ i).toOrderHom i1)
-    (exclude_i2 :  ∀ k, (φ ≫ α.val.down).toOrderHom k ≠ (δ i).toOrderHom i2):
+
+variable {X Y :SimplexCategoryᵒᵖ}
+variable {α : Λ[3,i].obj X } {φ: ([len Y.unop]: SimplexCategory)⟶ [len X.unop]}
+variable (exclude_i1 :  ∀ k, (φ ≫ α.val.down).toOrderHom k ≠ (δ i).toOrderHom i1)
+variable (exclude_i2 :  ∀ k, (φ ≫ α.val.down).toOrderHom k ≠ (δ i).toOrderHom i2)
+
+lemma factorization_of_φ_comp_α_i1:
     (factor_δ (factor_δ (φ ≫ α.val.down) ((δ i).toOrderHom i1))
     (Fin.predAbove 0 ((δ i).toOrderHom i2))) ≫ δ (Fin.predAbove 0 ((δ i).toOrderHom i2))
     = factor_δ (φ ≫ α.val.down) ((δ i).toOrderHom i1) := by
@@ -392,11 +398,7 @@ lemma hom_mk₃_fac1  { X Y : SimplexCategoryᵒᵖ } {i : Fin 4} {i1 i2 : Fin 3
     simp at i1_lt_i2
   }
 
-lemma hom_mk₃_fac2 { X Y : SimplexCategoryᵒᵖ } {i : Fin 4} {i1 i2 : Fin 3}
-    {α: Λ[3,i].obj X} {φ: ([len Y.unop]: SimplexCategory)⟶ [len X.unop]}
-    (i1_lt_i2: i1 < i2)
-    (exclude_i1 :  ∀ k, (φ ≫ α.val.down).toOrderHom k ≠ (δ i).toOrderHom i1)
-    (exclude_i2 :  ∀ k, (φ ≫ α.val.down).toOrderHom k ≠ (δ i).toOrderHom i2):
+lemma factorization_of_φ_comp_α_i2:
     (factor_δ (factor_δ (φ ≫ α.val.down) ((δ i).toOrderHom i2))
     (Fin.predAbove 2 ((δ i).toOrderHom i1)))≫ δ (Fin.predAbove 2 ((δ i).toOrderHom i1))
     = (factor_δ (φ ≫ α.val.down) ((δ i).toOrderHom i2)) := by
@@ -424,36 +426,33 @@ lemma hom_mk₃_fac2 { X Y : SimplexCategoryᵒᵖ } {i : Fin 4} {i1 i2 : Fin 3}
       simp at i1_lt_i2
     }
 
-lemma nat_i1_le_i2 {S : SSet} { X Y : SimplexCategoryᵒᵖ } {i1 i2 : Fin 3}
-    (φ': X⟶ Y) (α: Λ[3,i].obj X)
-    (face_map : Fin (3) →  S _[2])
+lemma naturality_lt {S : SSet}
+    {face_map : Fin (3) →  S _[2]}
     (hface : (i1 : Fin (3))→ (i2 : Fin (3)) → (i1< i2) →
     S.map (δ (Fin.predAbove 0 ((δ i).toOrderHom i2))).op (face_map i1)
-    = S.map (δ (Fin.predAbove 2 ((δ i).toOrderHom i1))).op (face_map i2) )
-    (i1_lt_i2: i1 < i2)
-    (exclude_i1 :  ∀ k, (φ'.unop ≫ α.val.down).toOrderHom k ≠ (δ i).toOrderHom i1)
-    (exclude_i2 :  ∀ k, (φ'.unop ≫ α.val.down).toOrderHom k ≠ (δ i).toOrderHom i2):
-    S.map ( ((Λ[3, i].map φ' α).val.down) ≫ σ  ( Fin.predAbove 0 ((δ i).toOrderHom i1))).op
-    (face_map i1) = S.map φ' (S.map ( (α.val.down)≫  σ (Fin.predAbove 0 ((δ i).toOrderHom i2))).op
+    = S.map (δ (Fin.predAbove 2 ((δ i).toOrderHom i1))).op (face_map i2) ):
+    S.map ( ((Λ[3, i].map φ.op α).val.down) ≫ σ  ( Fin.predAbove 0 ((δ i).toOrderHom i1))).op
+    (face_map i1)=S.map φ.op (S.map ( (α.val.down)≫  σ (Fin.predAbove 0 ((δ i).toOrderHom i2))).op
     (face_map i2))  := by
   let α' :([(unop X).len]: SimplexCategory)⟶  [3]:= α.val.down
-  let φ:([(unop Y).len]: SimplexCategory)⟶  [(unop X).len]:= φ'.unop
   change S.map (factor_δ (φ ≫ α.val.down) ((δ i).toOrderHom i1)).op (face_map i1)
              = (S.map (factor_δ α' ((δ i).toOrderHom i2)).op ≫ S.map φ.op) (face_map i2)
   rw [← S.map_comp, ← op_comp]
   change S.map (factor_δ (φ ≫ α.val.down) ((δ i).toOrderHom i1)).op (face_map i1)
             = (S.map (factor_δ (φ ≫ α.val.down) ((δ i).toOrderHom i2)).op ) (face_map i2)
-  rw [← (hom_mk₃_fac1 i1_lt_i2 exclude_i1 exclude_i2)]
-  rw [← (hom_mk₃_fac2 i1_lt_i2 exclude_i1 exclude_i2)]
+  rw [← (factorization_of_φ_comp_α_i1 i1_lt_i2 exclude_i1 exclude_i2)]
+  rw [← (factorization_of_φ_comp_α_i2 i1_lt_i2 exclude_i1 exclude_i2)]
   rw [op_comp,S.map_comp,op_comp,S.map_comp,types_comp_apply,types_comp_apply]
   rw [(hface i1 i2 i1_lt_i2)]
   change _ = S.map ((φ ≫ α.val.down)≫(σ (Fin.predAbove 0 ((δ i).toOrderHom i2))
                 ≫ σ (Fin.predAbove 0 (Fin.predAbove 2 ((δ i).toOrderHom i1))) ) ).op _
-  rw [σ_comp_σ_predAbove₃ i1_lt_i2]
+  rw [degeneracy_relation i1_lt_i2]
   rfl
+end HomMk₃
 
-
-def Mk₃ {S : SSet}  (i: Fin 4)  (face_map : Fin (3) →  S _[2])
+/-- The horn `Λ[3,i]⟶ S` constructed from the image of the appropriate to 2-simplies and
+the appropriate compatiblity conditions on their faces. -/
+def homMk₃ {S : SSet}  (i: Fin 4)  (face_map : Fin (3) →  S _[2])
     (hface : (i1 : Fin (3))→ (i2 : Fin (3)) → (i1< i2) →
     S.map (δ (Fin.predAbove 0 ((δ i).toOrderHom i2))).op (face_map i1)
     =S.map (δ (Fin.predAbove 2 ((δ i).toOrderHom i1))).op (face_map i2) ) : Λ[3,i]⟶ S where
@@ -481,15 +480,15 @@ def Mk₃ {S : SSet}  (i: Fin 4)  (face_map : Fin (3) →  S _[2])
      case h.inr.inr.inr.inl =>
         exact False.elim (h2 (fun k => h3 (φ'.unop.toOrderHom k)))
      all_goals
-        apply nat_i1_le_i2 φ' α face_map hface
+        apply HomMk₃.naturality_lt
         · rw [Fin.lt_def]
           simp
         · assumption
-        · try exact fun k => (range_include01_exclude2 α h2 h3) (φ'.unop.toOrderHom k)
+        · try exact fun k => (HomMk₃.range_include01_exclude2 α h2 h3) (φ'.unop.toOrderHom k)
           try exact fun k => h3 (φ'.unop.toOrderHom k)
           try rename_i  h4;
-          try exact fun k => (range_include01_exclude2 α h4 h3) (φ'.unop.toOrderHom k)
-
+          try exact fun k => (HomMk₃.range_include01_exclude2 α h4 h3) (φ'.unop.toOrderHom k)
+        · exact hface
 
 end horn
 
