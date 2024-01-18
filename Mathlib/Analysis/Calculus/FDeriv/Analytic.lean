@@ -309,7 +309,7 @@ variable {R : Type*} {ι : Type*} {M₁ : ι → Type*} {M₂ : Type*} [Ring R]
 FormalMultilinearSeries by choosing an arbitrary identification `ι ≃ Fin (Fintype.card ι)`. -/
 noncomputable def toFormalMultilinearSeries : FormalMultilinearSeries R (∀ i, M₁ i) M₂ :=
   fun n ↦ if h : Fintype.card ι = n then
-    (f.compContinuousLinearMap ContinuousLinearMap.proj).domDomCongr (Fintype.equivFinOfCardEq h)
+    (f.compContinuousLinearMap .proj).domDomCongr (Fintype.equivFinOfCardEq h)
   else 0
 
 open scoped BigOperators
@@ -325,8 +325,8 @@ lemma linearDeriv_apply [DecidableEq ι] (f : ContinuousMultilinearMap R M₁ M�
     f.linearDeriv x y = ∑ i, f (Function.update x i (y i)) := by
   unfold linearDeriv toContinuousLinearMap
   simp only [ContinuousLinearMap.coe_sum', ContinuousLinearMap.coe_comp',
-    ContinuousLinearMap.coe_mk', LinearMap.coe_mk, LinearMap.coe_toAddHom, Finset.sum_apply,
-    Function.comp_apply, ContinuousLinearMap.proj_apply, MultilinearMap.toLinearMap_apply, coe_coe]
+    ContinuousLinearMap.coe_mk', LinearMap.coe_mk, LinearMap.coe_toAddHom, Finset.sum_apply]
+  rfl
 
 variable {R : Type*} {ι : Type*} {M₁ : ι → Type*} {M₂ : Type*} [NontriviallyNormedField R]
   [(i : ι) → NormedAddCommGroup (M₁ i)] [NormedAddCommGroup M₂] [(i : ι) → NormedSpace R (M₁ i)]
@@ -343,79 +343,47 @@ protected theorem hasFiniteFPowerSeriesOnBall :
 
 theorem changeOriginSeries_support (f : ContinuousMultilinearMap R M₁ M₂) {k l : ℕ}
     (h : k + l ≠ Fintype.card ι) :
-    f.toFormalMultilinearSeries.changeOriginSeries k l = 0 := by
-  unfold FormalMultilinearSeries.changeOriginSeries
-  exact Finset.sum_eq_zero (fun _ _ ↦ by
+    f.toFormalMultilinearSeries.changeOriginSeries k l = 0 :=
+  Finset.sum_eq_zero fun _ _ ↦ by
     rw [FormalMultilinearSeries.changeOriginSeriesTerm, AddEquivClass.map_eq_zero_iff]
-    simp only [toFormalMultilinearSeries, Ne.symm h, dite_false])
+    simp only [toFormalMultilinearSeries, h.symm, dite_false]
 
 open Finset in
 theorem changeOrigin_toFormalMultilinearSeries [DecidableEq ι] (x : ∀ i, M₁ i) :
     continuousMultilinearCurryFin1 R (∀ i, M₁ i) M₂ (f.toFormalMultilinearSeries.changeOrigin x 1) =
     f.linearDeriv x := by
   ext y
-  simp only [continuousMultilinearCurryFin1_apply, linearDeriv_apply]
-  rw [FormalMultilinearSeries.changeOrigin, FormalMultilinearSeries.sum,
-    tsum_eq_single (Fintype.card ι - 1)]
-  · by_cases he : IsEmpty ι
-    · simp only [univ_eq_empty, sum_empty]
-      letI := he
-      rw [Fintype.card_eq_zero, Nat.zero_sub, changeOriginSeries_support, zero_apply, zero_apply]
-      rw [Fintype.card_eq_zero, add_zero]
-      exact Nat.one_ne_zero
-    · have heq : Fin.snoc 0 y = (fun _ : Fin (0 + 1) ↦ y) := by
-        ext _ _
-        unfold Fin.snoc
-        simp only [Fin.coe_fin_one, lt_self_iff_false, Fin.castSucc_castLT, Pi.zero_apply,
-          cast_eq, dite_eq_ite, ite_false]
-      rw [FormalMultilinearSeries.changeOriginSeries, ContinuousMultilinearMap.sum_apply,
-        ContinuousMultilinearMap.sum_apply, heq]
-      have hcard : Fintype.card ι = 1 + (Fintype.card ι - 1) := by
-        letI := not_isEmpty_iff.mp he
-        rw [← Nat.succ_eq_one_add, ← Nat.pred_eq_sub_one, Nat.succ_pred Fintype.card_ne_zero]
-      set I : (i : ι) → i ∈ Finset.univ → {s : Finset (Fin (1 + (Fintype.card ι - 1))) //
-          s.card = Fintype.card ι - 1} := by
-        intro i _
-        refine ⟨Finset.univ.erase (Fintype.equivFinOfCardEq hcard i), ?_⟩
-        simp only [mem_univ, card_erase_of_mem, card_fin, add_tsub_cancel_left]
-      rw [sum_bij I (fun _ _ ↦ mem_univ _) (fun _ _ _ _ ↦ by
-          simp only [mem_univ, not_true_eq_false, Subtype.mk.injEq,
-          erase_inj _ (mem_univ _), Equiv.apply_eq_iff_eq, imp_self])]
-      · intro ⟨s, hs⟩ _
-        have h : sᶜ.card = 1 := by
-          rw [Finset.card_compl, hs]
-          simp only [ge_iff_le, Fintype.card_fin, add_le_iff_nonpos_left, nonpos_iff_eq_zero,
-            add_tsub_cancel_right]
-        obtain ⟨a, ha⟩ := Finset.card_eq_one.mp h
-        existsi ((Fintype.equivFinOfCardEq hcard).symm a), Finset.mem_univ _
-        simp only [mem_univ, not_true_eq_false, Equiv.apply_symm_apply, Subtype.mk.injEq]
-        rw [Finset.erase_eq, ← ha]
-        simp only [sdiff_compl, ge_iff_le, le_eq_subset, subset_univ, inf_of_le_right]
-      · intro i _
-        rw [FormalMultilinearSeries.changeOriginSeriesTerm_apply, toFormalMultilinearSeries]
-        simp_rw [eq_true hcard]
-        rw [dite_true]
-        simp only [piecewise_erase_univ, domDomCongr_apply, compContinuousLinearMap_apply,
-          ContinuousLinearMap.proj_apply]
-        congr
-        ext j
-        by_cases hj : j = i
-        · rw [hj, Function.update_same, Function.update_same]
-        · rw [Function.update_noteq hj, Function.update_noteq]
-          rw [ne_eq, Equiv.apply_eq_iff_eq]
-          exact hj
-  · intro m hm
-    have h' : Fintype.card ι ≠ 1 + m := fun h ↦ by
-      apply_fun Nat.pred at h
-      rw [← Nat.succ_eq_one_add, Nat.pred_succ, Nat.pred_eq_sub_one] at h
-      exact hm (Eq.symm h)
-    rw [FormalMultilinearSeries.changeOriginSeries, sum_apply]
-    apply Finset.sum_eq_zero
-    intro ⟨s, hs⟩ _
-    rw [FormalMultilinearSeries.changeOriginSeriesTerm, toFormalMultilinearSeries]
-    simp only [h', dite_false]
-    erw [LinearMap.map_zero]
-    rw [ContinuousMultilinearMap.zero_apply]
+  rw [continuousMultilinearCurryFin1_apply, linearDeriv_apply,
+      changeOrigin, FormalMultilinearSeries.sum]
+  cases he : isEmpty_or_nonempty ι
+  · have (l) : 1 + l ≠ Fintype.card ι := by
+      rw [add_comm, Fintype.card_eq_zero]; exact Nat.succ_ne_zero _
+    simp_rw [Fintype.sum_empty, changeOriginSeries_support _ (this _), zero_apply _, tsum_zero]; rfl
+  rw [tsum_eq_single (Fintype.card ι - 1), changeOriginSeries]
+  · have heq : Fin.snoc 0 y = fun _ : Fin 1 ↦ y := by
+      ext; rw [Fin.snoc, dif_neg (Nat.not_lt_zero _)]; rfl
+    rw [sum_apply, ContinuousMultilinearMap.sum_apply, heq]
+    simp_rw [changeOriginSeriesTerm_apply]
+    refine (Fintype.sum_bijective (?_ ∘ Fintype.equivFinOfCardEq (Nat.add_sub_of_le
+      Fintype.card_pos).symm) (.comp ?_ <| Equiv.bijective _) _ _ fun i ↦ ?_).symm
+    · exact (⟨{·}ᶜ, by
+        rw [card_compl, Fintype.card_fin, card_singleton, Nat.add_sub_cancel_left]⟩)
+    · use fun _ _ ↦ (singleton_injective <| compl_injective <| Subtype.ext_iff.mp ·)
+      intro ⟨s, hs⟩
+      have h : sᶜ.card = 1 := by rw [card_compl, hs, Fintype.card_fin, Nat.add_sub_cancel]
+      obtain ⟨a, ha⟩ := card_eq_one.mp h
+      refine ⟨a, Subtype.ext (compl_eq_comm.mp ha)⟩
+    rw [Function.comp_apply, Subtype.coe_mk, compl_singleton, piecewise_erase_univ,
+      toFormalMultilinearSeries, dif_pos (Nat.add_sub_of_le Fintype.card_pos).symm]
+    simp_rw [domDomCongr_apply, compContinuousLinearMap_apply, ContinuousLinearMap.proj_apply,
+      Function.update_apply, (Equiv.injective _).eq_iff, ite_apply]
+    congr; ext j
+    obtain rfl | hj := eq_or_ne j i
+    · rw [Function.update_same, if_pos rfl]
+    · rw [Function.update_noteq hj, if_neg hj]
+  intro m hm
+  rw [Ne, eq_tsub_iff_add_eq_of_le (by exact Fintype.card_pos), add_comm] at hm
+  rw [f.changeOriginSeries_support hm, zero_apply]
 
 protected theorem hasFDerivAt [DecidableEq ι] (x : ∀ i, M₁ i) :
     HasFDerivAt f (f.linearDeriv x) x := by
