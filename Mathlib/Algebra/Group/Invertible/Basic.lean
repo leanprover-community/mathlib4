@@ -41,6 +41,20 @@ def Units.invertible [Monoid α] (u : αˣ) :
 theorem invOf_units [Monoid α] (u : αˣ) [Invertible (u : α)] : ⅟ (u : α) = ↑u⁻¹ :=
   invOf_eq_right_inv u.mul_inv
 
+instance [Monoid α] {n : ℕ} [n.AtLeastTwo] [OfNat α n] [Invertible (OfNat.ofNat n : α)] :
+    OfNat αˣ n :=
+  ⟨unitOfInvertible (OfNat.ofNat n)⟩
+
+@[simp]
+theorem Units.ofNat_val [Monoid α] {n : ℕ} [n.AtLeastTwo] [OfNat α n]
+    [Invertible (OfNat.ofNat n : α)] : ((no_index (OfNat.ofNat n : αˣ)) : α) = OfNat.ofNat n :=
+  rfl
+
+@[simp]
+theorem Units.ofNat_inv_val [Monoid α] {n : ℕ} [n.AtLeastTwo] [OfNat α n]
+    [Invertible (OfNat.ofNat n : α)] : (no_index (OfNat.ofNat n : αˣ))⁻¹.1 = ⅟ (OfNat.ofNat n) :=
+  rfl
+
 theorem IsUnit.nonempty_invertible [Monoid α] {a : α} (h : IsUnit a) : Nonempty (Invertible a) :=
   let ⟨x, hx⟩ := h
   ⟨x.invertible.copy _ hx.symm⟩
