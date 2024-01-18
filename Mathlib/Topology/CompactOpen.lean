@@ -85,6 +85,11 @@ theorem compactOpen_eq : @compactOpen X Y _ _ =
     .generateFrom (Set.image2 CompactOpen.gen {s | IsCompact s} {t | IsOpen t}) :=
   congr_arg TopologicalSpace.generateFrom <| Set.ext fun _ ↦ by simp [eq_comm]
 
+/-- Definition of `ContinuousMap.compactOpen` in terms of `Set.image2` and `Set.MapsTo`. -/
+theorem compactOpen_eq_mapsTo : @compactOpen X Y _ _ =
+    .generateFrom (Set.image2 (fun K U ↦ {f | MapsTo f K U}) {K | IsCompact K} {U | IsOpen U}) := by
+  simp only [mapsTo', compactOpen_eq]; rfl
+
 protected theorem isOpen_gen {s : Set X} (hs : IsCompact s) {u : Set Y} (hu : IsOpen u) :
     IsOpen (CompactOpen.gen s u) :=
   TopologicalSpace.GenerateOpen.basic _ (by dsimp [mem_setOf_eq]; tauto)
@@ -92,7 +97,7 @@ protected theorem isOpen_gen {s : Set X} (hs : IsCompact s) {u : Set Y} (hu : Is
 
 lemma isOpen_setOf_mapsTo (hK : IsCompact K) (hU : IsOpen U) :
     IsOpen {f : C(X, Y) | MapsTo f K U} := by
-  simpa only [mapsTo'] using ContinuousMap.isOpen_gen hK hU
+  rw [compactOpen_eq_mapsTo]; exact .basic _ (mem_image2_of_mem hK hU)
 
 lemma eventually_mapsTo {f : C(X, Y)} (hK : IsCompact K) (hU : IsOpen U) (h : MapsTo f K U) :
     ∀ᶠ g : C(X, Y) in 𝓝 f, MapsTo g K U :=
@@ -101,7 +106,7 @@ lemma eventually_mapsTo {f : C(X, Y)} (hK : IsCompact K) (hU : IsOpen U) (h : Ma
 lemma tendsto_nhds_compactOpen {l : Filter α} {f : α → C(Y, Z)} {g : C(Y, Z)} :
     Tendsto f l (𝓝 g) ↔
       ∀ K, IsCompact K → ∀ U, IsOpen U → MapsTo g K U → ∀ᶠ a in l, MapsTo (f a) K U := by
-  simp_rw [compactOpen_eq, tendsto_nhds_generateFrom_iff, forall_image2_iff, mapsTo']; rfl
+  simp_rw [compactOpen_eq_mapsTo, tendsto_nhds_generateFrom_iff, forall_image2_iff]; rfl
 
 lemma continuous_compactOpen {f : X → C(Y, Z)} :
     Continuous f ↔ ∀ K, IsCompact K → ∀ U, IsOpen U → IsOpen {x | MapsTo (f x) K U} := by
@@ -111,43 +116,26 @@ section Functorial
 
 variable (g : C(Y, Z))
 
-private theorem preimage_gen {s : Set X} {u : Set Z} :
-    ContinuousMap.comp g ⁻¹' CompactOpen.gen s u = CompactOpen.gen s (g ⁻¹' u) := by
-  ext ⟨f, _⟩
-  change g ∘ f '' s ⊆ u ↔ f '' s ⊆ g ⁻¹' u
-  rw [image_comp, image_subset_iff]
-
-/-- C(X, -) is a functor. -/
-theorem continuous_comp : Continuous (ContinuousMap.comp g : C(X, Y) → C(X, Z)) :=
-  continuous_generateFrom_iff.2 fun m ⟨s, hs, u, hu, hm⟩ => by
-    rw [hm, preimage_gen g]; exact ContinuousMap.isOpen_gen hs (hu.preimage g.2)
+/-- `C(X, ·)` is a functor. -/
+theorem continuous_comp : Continuous (g.comp : C(X, Y) → C(X, Z)) :=
+  continuous_compactOpen.2 fun _K hK _U hU ↦ isOpen_setOf_mapsTo hK (hU.preimage g.2)
 #align continuous_map.continuous_comp ContinuousMap.continuous_comp
 
-/-- If `g : C(Y, Z)` is a topology inducing map, then the composition
-`ContinuousMap.comp g : C(X, Y) → C(X, Z)` is a topology inducing map too. -/
+/-- If `g : C(Y, Z)` is a topology inducing map,
+then the composition `ContinuousMap.comp g : C(X, Y) → C(X, Z)` is a topology inducing map too. -/
 theorem inducing_comp (hg : Inducing g) : Inducing (g.comp : C(X, Y) → C(X, Z)) where
-  induced := by
-    simp only [compactOpen_eq, induced_generateFrom_eq, image_image2, preimage_gen,
-      hg.setOf_isOpen, image2_image_right]
+  induced := by simp only [compactOpen_eq_mapsTo, induced_generateFrom_eq, image_image2,
+    hg.setOf_isOpen, image2_image_right]; rfl
 
 /-- If `g : C(Y, Z)` is a topological embedding, then the composition
 `ContinuousMap.comp g : C(X, Y) → C(X, Z)` is an embedding too. -/
 theorem embedding_comp (hg : Embedding g) : Embedding (g.comp : C(X, Y) → C(X, Z)) :=
   ⟨inducing_comp g hg.1, fun _ _ ↦ (cancel_left hg.2).1⟩
 
-variable (f : C(X, Y))
-
-private theorem image_gen {s : Set X} (_ : IsCompact s) {u : Set Z} (_ : IsOpen u) :
-    (fun g : C(Y, Z) => g.comp f) ⁻¹' CompactOpen.gen s u = CompactOpen.gen (f '' s) u := by
-  ext ⟨g, _⟩
-  change g ∘ f '' s ⊆ u ↔ g '' (f '' s) ⊆ u
-  rw [Set.image_comp]
-
-/-- C(-, Z) is a functor. -/
-theorem continuous_comp_left : Continuous (fun g => g.comp f : C(Y, Z) → C(X, Z)) :=
-  continuous_generateFrom_iff.2 fun m ⟨s, hs, u, hu, hm⟩ => by
-    rw [hm, image_gen f hs hu]
-    exact ContinuousMap.isOpen_gen (hs.image f.2) hu
+/-- `C(·, Z)` is a functor. -/
+theorem continuous_comp_left (f : C(X, Y)) : Continuous (fun g => g.comp f : C(Y, Z) → C(X, Z)) :=
+  continuous_compactOpen.2 fun K hK U hU ↦ by
+    simpa only [mapsTo_image_iff] using isOpen_setOf_mapsTo (hK.image f.2) hU
 #align continuous_map.continuous_comp_left ContinuousMap.continuous_comp_left
 
 /-- Composition is a continuous map from `C(X, Y) × C(Y, Z)` to `C(X, Z)`, provided that `Y` is
@@ -193,11 +181,8 @@ theorem continuous_eval [LocallyCompactPair X Y] : Continuous fun p : C(X, Y) ×
 Porting note: merged `continuous_eval_const` with `continuous_eval_const'` removing unneeded
 assumptions. -/
 @[continuity]
-theorem continuous_eval_const (x : X) :
-    Continuous fun f : C(X, Y) => f x := by
-  refine continuous_def.2 fun U hU ↦ ?_
-  convert ContinuousMap.isOpen_gen (isCompact_singleton (x := x)) hU using 1
-  ext; simp [CompactOpen.gen]
+theorem continuous_eval_const (a : X) : Continuous fun f : C(X, Y) => f a :=
+  continuous_def.2 fun U hU ↦ by simpa using isOpen_setOf_mapsTo (isCompact_singleton (x := a)) hU
 #align continuous_map.continuous_eval_const' ContinuousMap.continuous_eval_const
 #align continuous_map.continuous_eval_const ContinuousMap.continuous_eval_const
 
@@ -231,16 +216,16 @@ end Ev
 
 section InfInduced
 
+/-- For any subset `s` of `X`, the restriction of continuous functions to `s` is continuous
+as a function from `C(X, Y)` to `C(s, Y)` with their respective compact-open topologies. -/
+theorem continuous_restrict (s : Set X) : Continuous fun F : C(X, Y) => F.restrict s :=
+  continuous_comp_left <| restrict s <| .id X
+#align continuous_map.continuous_restrict ContinuousMap.continuous_restrict
+
 theorem compactOpen_le_induced (s : Set X) :
     (ContinuousMap.compactOpen : TopologicalSpace C(X, Y)) ≤
-      TopologicalSpace.induced (ContinuousMap.restrict s) ContinuousMap.compactOpen := by
-  simp only [induced_generateFrom_eq, ContinuousMap.compactOpen]
-  apply TopologicalSpace.generateFrom_anti
-  rintro b ⟨a, ⟨c, hc, u, hu, rfl⟩, rfl⟩
-  refine' ⟨(↑) '' c, hc.image continuous_subtype_val, u, hu, _⟩
-  ext f
-  simp only [CompactOpen.gen, mem_setOf_eq, mem_preimage, ContinuousMap.coe_restrict]
-  rw [image_comp f ((↑) : s → X)]
+      .induced (restrict s) ContinuousMap.compactOpen :=
+  (continuous_restrict s).le_induced
 #align continuous_map.compact_open_le_induced ContinuousMap.compactOpen_le_induced
 
 /-- The compact-open topology on `C(X, Y)` is equal to the infimum of the compact-open topologies
@@ -263,13 +248,6 @@ theorem compactOpen_eq_sInf_induced :
   rw [image_comp f ((↑) : s → X)]
   simp
 #align continuous_map.compact_open_eq_Inf_induced ContinuousMap.compactOpen_eq_sInf_induced
-
-/-- For any subset `s` of `X`, the restriction of continuous functions to `s` is continuous as a
-function from `C(X, Y)` to `C(s, Y)` with their respective compact-open topologies. -/
-theorem continuous_restrict (s : Set X) : Continuous fun F : C(X, Y) => F.restrict s := by
-  rw [continuous_iff_le_induced]
-  exact compactOpen_le_induced s
-#align continuous_map.continuous_restrict ContinuousMap.continuous_restrict
 
 theorem nhds_compactOpen_eq_sInf_nhds_induced (f : C(X, Y)) :
     𝓝 f = ⨅ (s) (hs : IsCompact s), (𝓝 (f.restrict s)).comap (ContinuousMap.restrict s) := by
