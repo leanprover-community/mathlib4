@@ -187,13 +187,13 @@ protected lemma continuous_inv : Continuous (fun u ↦ u⁻¹ : Mˣ → Mˣ) := 
 
 /-- The inversion map on `Units` is a homeomorphism. -/
 @[to_additive (attr := simps!) "The negation map on `AddUnits` is a homeomorphism."]
-protected def homeomorph_inv : Mˣ ≃ₜ Mˣ :=
-  { left_inv := fun _ ↦ rfl,
-    right_inv := fun _ ↦ rfl,
-    continuous_toFun := Units.continuous_inv,
-    continuous_invFun := Units.continuous_inv }
+protected def homeomorph_inv : Mˣ ≃ₜ Mˣ where
+  left_inv _ := rfl
+  right_inv _ := rfl
+  continuous_toFun := Units.continuous_inv
+  continuous_invFun := Units.continuous_inv
 
-lemma inducing_coe_iff : Inducing (coeHom M) ↔ Inducing (fun u ↦ ↑u⁻¹ : Mˣ → M) :=
+lemma inducing_val_inv_iff : Inducing (fun u ↦ ↑u⁻¹ : Mˣ → M) ↔ Inducing ((↑) : Mˣ → M) :=
   ⟨fun h ↦ h.comp (Units.homeomorph_inv.inducing),
    fun h ↦ h.comp (Units.homeomorph_inv.inducing)⟩
 
