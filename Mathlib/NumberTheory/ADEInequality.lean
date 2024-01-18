@@ -9,7 +9,6 @@ import Mathlib.Data.Rat.Order
 import Mathlib.Data.PNat.Basic
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.IntervalCases
-import Mathlib.Data.Rat.Order
 
 #align_import number_theory.ADE_inequality from "leanprover-community/mathlib"@"0a0ec35061ed9960bf0e7ffb0335f44447b58977"
 

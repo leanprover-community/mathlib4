@@ -6,7 +6,6 @@ Authors: Scott Morrison
 import Std.Data.HashMap.WF
 import Mathlib.Lean.Name
 import Mathlib.Lean.Expr.Basic
-import Mathlib.Lean.Expr.Basic
 
 /-!
 # Commands `#long_names` and `#long_instances`

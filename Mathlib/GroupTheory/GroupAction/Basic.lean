@@ -9,7 +9,6 @@ import Mathlib.GroupTheory.GroupAction.Group
 import Mathlib.Data.Setoid.Basic
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.GroupTheory.Subgroup.Basic
-import Mathlib.GroupTheory.GroupAction.Defs
 
 #align_import group_theory.group_action.basic from "leanprover-community/mathlib"@"d30d31261cdb4d2f5e612eabc3c4bf45556350d5"
 

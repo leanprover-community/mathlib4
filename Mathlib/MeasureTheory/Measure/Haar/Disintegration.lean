@@ -6,7 +6,6 @@ Authors: Sébastien Gouëzel
 import Mathlib.MeasureTheory.Measure.Haar.Basic
 import Mathlib.Analysis.NormedSpace.FiniteDimension
 import Mathlib.MeasureTheory.Measure.Haar.Unique
-import Mathlib.Analysis.NormedSpace.FiniteDimension
 
 /-!
 # Pushing a Haar measure by a linear map

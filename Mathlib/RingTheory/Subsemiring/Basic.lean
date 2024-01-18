@@ -12,7 +12,6 @@ import Mathlib.Data.Set.Finite
 import Mathlib.GroupTheory.Submonoid.Centralizer
 import Mathlib.GroupTheory.Submonoid.Membership
 import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
-import Mathlib.Algebra.Module.Basic
 
 #align_import ring_theory.subsemiring.basic from "leanprover-community/mathlib"@"b915e9392ecb2a861e1e766f0e1df6ac481188ca"
 

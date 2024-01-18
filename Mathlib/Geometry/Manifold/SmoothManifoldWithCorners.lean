@@ -8,7 +8,6 @@ import Mathlib.Analysis.Analytic.Composition
 import Mathlib.Analysis.Analytic.Linear
 import Mathlib.Analysis.Calculus.FDeriv.Analytic
 import Mathlib.Geometry.Manifold.ChartedSpace
-import Mathlib.Analysis.Analytic.Composition
 import Mathlib.Analysis.NormedSpace.FiniteDimension
 import Mathlib.Analysis.Calculus.ContDiff.Basic
 

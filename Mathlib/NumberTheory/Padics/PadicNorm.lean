@@ -5,7 +5,6 @@ Authors: Robert Y. Lewis
 -/
 import Mathlib.Algebra.Order.Field.Power
 import Mathlib.NumberTheory.Padics.PadicVal
-import Mathlib.Algebra.Order.Field.Power
 
 #align_import number_theory.padics.padic_norm from "leanprover-community/mathlib"@"92ca63f0fb391a9ca5f22d2409a6080e786d99f7"
 

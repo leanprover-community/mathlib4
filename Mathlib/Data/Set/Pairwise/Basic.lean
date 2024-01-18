@@ -7,7 +7,6 @@ import Mathlib.Data.Set.Function
 import Mathlib.Logic.Relation
 import Mathlib.Logic.Pairwise
 import Mathlib.Data.Subtype
-import Mathlib.Logic.Relation
 
 #align_import data.set.pairwise.basic from "leanprover-community/mathlib"@"c4c2ed622f43768eff32608d4a0f8a6cec1c047d"
 

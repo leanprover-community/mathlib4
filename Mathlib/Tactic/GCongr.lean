@@ -6,7 +6,6 @@ Authors: Mario Carneiro, Heather Macbeth
 import Mathlib.Algebra.Order.Field.Power
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.GCongr.Core
-import Mathlib.Algebra.Order.Field.Power
 
 /-! # Setup for the `gcongr` tactic
 

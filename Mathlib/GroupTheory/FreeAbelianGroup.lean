@@ -7,7 +7,6 @@ import Mathlib.Algebra.Group.Pi
 import Mathlib.GroupTheory.FreeGroup.Basic
 import Mathlib.GroupTheory.Abelianization
 import Mathlib.Algebra.Module.Basic
-import Mathlib.Algebra.Module.Basic
 
 #align_import group_theory.free_abelian_group from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 

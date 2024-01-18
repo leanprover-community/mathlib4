@@ -15,7 +15,6 @@ import Mathlib.Data.Set.Semiring
 import Mathlib.Data.Set.Pointwise.BigOperators
 import Mathlib.GroupTheory.GroupAction.SubMulAction.Pointwise
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-import Mathlib.Algebra.Algebra.Equiv
 
 #align_import algebra.algebra.operations from "leanprover-community/mathlib"@"27b54c47c3137250a521aa64e9f1db90be5f6a26"
 

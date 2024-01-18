@@ -6,7 +6,6 @@ Authors: Scott Morrison, Yaël Dillies
 import Mathlib.Order.Cover
 import Mathlib.Order.LocallyFinite
 import Mathlib.Data.Set.Intervals.Monoid
-import Mathlib.Order.Cover
 
 #align_import data.finset.locally_finite from "leanprover-community/mathlib"@"442a83d738cb208d3600056c489be16900ba701d"
 

@@ -9,7 +9,6 @@ import Mathlib.MeasureTheory.Function.LocallyIntegrable
 import Mathlib.Order.Filter.IndicatorFunction
 import Mathlib.Topology.MetricSpace.ThickenedIndicator
 import Mathlib.Topology.ContinuousFunction.Compact
-import Mathlib.Order.Filter.IndicatorFunction
 
 #align_import measure_theory.integral.set_integral from "leanprover-community/mathlib"@"24e0c85412ff6adbeca08022c25ba4876eedf37a"
 

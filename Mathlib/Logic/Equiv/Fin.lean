@@ -6,7 +6,6 @@ Authors: Kenny Lau
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Logic.Equiv.Defs
-import Mathlib.Data.Int.Order.Basic
 
 #align_import logic.equiv.fin from "leanprover-community/mathlib"@"bd835ef554f37ef9b804f0903089211f89cb370b"
 

@@ -7,7 +7,6 @@ import Mathlib.Algebra.Module.Basic
 import Mathlib.Data.SetLike.Basic
 import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.GroupTheory.GroupAction.Hom
-import Mathlib.Algebra.Module.Basic
 
 #align_import group_theory.group_action.sub_mul_action from "leanprover-community/mathlib"@"feb99064803fd3108e37c18b0f77d0a8344677a3"
 

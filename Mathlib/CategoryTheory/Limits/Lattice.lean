@@ -9,7 +9,6 @@ import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.Limits.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
-import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 
 #align_import category_theory.limits.lattice from "leanprover-community/mathlib"@"c3019c79074b0619edb4b27553a91b2e82242395"
 

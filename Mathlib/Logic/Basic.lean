@@ -9,7 +9,6 @@ import Mathlib.Init.Algebra.Classes
 import Mathlib.Tactic.Basic
 import Std.Util.LibraryNote
 import Std.Tactic.Lint.Basic
-import Mathlib.Init.Logic
 
 #align_import logic.basic from "leanprover-community/mathlib"@"3365b20c2ffa7c35e47e5209b89ba9abdddf3ffe"
 

@@ -7,7 +7,6 @@ import Mathlib.Algebra.Group.Commutator
 import Mathlib.Data.Bracket
 import Mathlib.GroupTheory.Subgroup.Finite
 import Mathlib.Tactic.Group
-import Mathlib.Algebra.Group.Commutator
 
 #align_import group_theory.commutator from "leanprover-community/mathlib"@"4be589053caf347b899a494da75410deb55fb3ef"
 

@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Sean Leather
 -/
 import Mathlib.Data.List.Range
 import Mathlib.Data.List.Perm
-import Mathlib.Data.List.Range
 
 #align_import data.list.sigma from "leanprover-community/mathlib"@"f808feb6c18afddb25e66a71d317643cf7fb5fbb"
 

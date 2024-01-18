@@ -7,7 +7,6 @@ import Mathlib.Analysis.InnerProductSpace.Projection
 import Mathlib.Analysis.NormedSpace.PiLp
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.UnitaryGroup
-import Mathlib.LinearAlgebra.FiniteDimensional
 
 #align_import analysis.inner_product_space.pi_L2 from "leanprover-community/mathlib"@"13bce9a6b6c44f6b4c91ac1c1d2a816e2533d395"
 

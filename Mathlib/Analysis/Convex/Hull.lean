@@ -5,7 +5,6 @@ Authors: Yury Kudriashov, Yaël Dillies
 -/
 import Mathlib.Analysis.Convex.Basic
 import Mathlib.Order.Closure
-import Mathlib.Order.Closure
 
 #align_import analysis.convex.hull from "leanprover-community/mathlib"@"92bd7b1ffeb306a89f450bee126ddd8a284c259d"
 
