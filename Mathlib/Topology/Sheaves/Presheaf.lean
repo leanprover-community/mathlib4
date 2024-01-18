@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Mario Carneiro, Reid Barton, Andrew Yang
 -/
 import Mathlib.CategoryTheory.Limits.KanExtension
-import Mathlib.CategoryTheory.Adjunction.Opposites
 import Mathlib.Topology.Category.TopCat.Opens
+import Mathlib.CategoryTheory.Adjunction.Opposites
 import Mathlib.Topology.Sheaves.Init
 
 #align_import topology.sheaves.presheaf from "leanprover-community/mathlib"@"5dc6092d09e5e489106865241986f7f2ad28d4c8"

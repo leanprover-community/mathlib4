@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.SetTheory.Cardinal.CountableCover
+import Mathlib.SetTheory.Cardinal.Continuum
 import Mathlib.Analysis.SpecificLimits.Normed
 import Mathlib.Topology.Perfect
-import Mathlib.SetTheory.Cardinal.Continuum
 
 /-!
 # Cardinality of open subsets of vector spaces

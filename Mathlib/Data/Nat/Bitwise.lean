@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Alex Keizer
 -/
 import Mathlib.Data.List.Basic
-import Mathlib.Tactic.Set
 import Mathlib.Data.Nat.Bits
 import Mathlib.Data.Nat.Pow
+import Mathlib.Tactic.Set
 
 #align_import data.nat.bitwise from "leanprover-community/mathlib"@"6afc9b06856ad973f6a2619e3e8a0a8d537a58f2"
 

@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parth Shastri, Gabriel Ebner, Mario Carneiro
 -/
 import Lean.Compiler.CSimpAttr
-import Mathlib.Tactic.RunCmd
 import Lean.Meta.RecursorInfo
 import Lean.Meta.Tactic.Subst
+import Mathlib.Tactic.RunCmd
 
 /-!
 # Define the `compile_inductive%` command.

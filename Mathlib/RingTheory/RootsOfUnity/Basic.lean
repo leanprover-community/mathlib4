@@ -4,13 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.CharP.Two
+import Mathlib.Algebra.CharP.Reduced
 import Mathlib.Algebra.NeZero
 import Mathlib.Data.Polynomial.RingDivision
 import Mathlib.GroupTheory.SpecificGroups.Cyclic
 import Mathlib.NumberTheory.Divisors
 import Mathlib.RingTheory.IntegralDomain
 import Mathlib.Tactic.Zify
-import Mathlib.Algebra.CharP.Reduced
 
 #align_import ring_theory.roots_of_unity.basic from "leanprover-community/mathlib"@"7fdeecc0d03cd40f7a165e6cf00a4d2286db599f"
 
