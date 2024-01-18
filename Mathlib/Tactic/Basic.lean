@@ -23,19 +23,6 @@ syntax (name := «variables») "variables" (ppSpace bracketedBinder)* : command
     elabVariable (← `(variable%$pos $binders*))
   | _ => throwUnsupportedSyntax
 
-/-- `lemma` means the same as `theorem`. It is used to denote "less important" theorems -/
-syntax (name := lemma) declModifiers
-  group("lemma " declId ppIndent(declSig) declVal) : command
-
-/-- Implementation of the `lemma` command, by macro expansion to `theorem`. -/
-@[macro «lemma»] def expandLemma : Macro := fun stx =>
-  -- Not using a macro match, to be more resilient against changes to `lemma`.
-  -- This implementation ensures that any future changes to `theorem` are reflected in `lemma`
-  let stx := stx.modifyArg 1 fun stx =>
-    let stx := stx.modifyArg 0 (mkAtomFrom · "theorem" (canonical := true))
-    stx.setKind ``Parser.Command.theorem
-  pure <| stx.setKind ``Parser.Command.declaration
-
 /-- The syntax `variable (X Y ... Z : Sort*)` creates a new distinct implicit universe variable
 for each variable in the sequence. -/
 elab "Sort*" : term => do
