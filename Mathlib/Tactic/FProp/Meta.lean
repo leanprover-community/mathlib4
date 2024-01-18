@@ -5,6 +5,9 @@ Authors: Tomas Skrivan
 -/
 import Lean
 import Std.Data.Nat.Lemmas
+import Mathlib.Tactic.FProp.ArraySet
+
+import Qq
 
 namespace Mathlib
 open Lean Meta
@@ -103,6 +106,61 @@ def mkUncurryFun (n : Nat) (f : Expr) (mk := ``Prod.mk) (fst := ``Prod.fst) (snd
     withLocalDecl xProdName default xProdType λ xProd => do
       let xs' ← mkProdSplitElem xProd n fst snd
       mkLambdaFVars #[xProd] (← mkAppM' f xs').headBeta
+
+
+
+
+/--
+  Split lambda function into composition by specifying over which auguments in the lambda body this split should be done.
+ -/
+def splitLambdaToCompOverArgs (e : Expr) (argIds : ArraySet Nat) : MetaM (Option (Expr × Expr)) := do
+  match e with 
+  | .lam name _ _ _ => 
+    let e ← instantiateMVars e
+    lambdaTelescope e λ xs b => do
+      let x := xs[0]!
+      let b := b.instantiate1 x
+
+      let mut fn := b.getAppFn
+      let mut args := b.getAppArgs
+
+      let mut lctx ← getLCtx
+      let instances ← getLocalInstances
+
+      let mut yVals : Array Expr := #[]
+      let mut yVars : Array Expr := #[]
+
+      let xIds := xs.map fun x => x.fvarId!
+      let xIds' := xIds[1:].toArray
+      
+      for argId in argIds.toArray do
+        let yVal := args[argId]!
+
+        -- abstract over trailing arguments
+        let xs'' := xIds'.filterMap (fun xId => if yVal.containsFVar xId then .some (Expr.fvar xId) else .none)
+        let yVal' ← mkLambdaFVars xs'' yVal
+        let yId ← withLCtx lctx instances mkFreshFVarId
+        lctx := lctx.mkLocalDecl yId (name.appendAfter (toString argId)) (← inferType yVal')
+        let yVar := Expr.fvar yId
+        yVars := yVars.push yVar
+        yVals := yVals.push yVal'
+        args := args.set! argId (mkAppN yVar xs'')
+
+      let g  ← mkLambdaFVars #[x] (← mkProdElem yVals)
+      let f ← withLCtx lctx instances do
+        (mkLambdaFVars (yVars ++ xs[1:]) (mkAppN fn args)) 
+        >>= 
+        mkUncurryFun yVars.size
+
+      -- `f` should not contain `x` and `g` should not contain `xs[1:]` 
+      -- if they do then the split is unsuccessful
+      if f.containsFVar xIds[0]! then
+        return none
+
+      return (f, g)
+    
+  | _ => return none
+
 
 /-- Takes lambda function `fun x => b` and splits it into composition of two functions. 
 

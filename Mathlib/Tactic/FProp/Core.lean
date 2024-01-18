@@ -8,6 +8,7 @@ import Qq
 import Std.Tactic.Exact
 import Mathlib.Tactic.FProp.FPropAttr
 import Mathlib.Tactic.FProp.Meta
+import Mathlib.Tactic.FProp.ArraySet
 
 namespace Mathlib
 open Lean Meta Qq
@@ -170,38 +171,6 @@ def tryTheorem? (e : Expr) (thm : FPropTheorem)
     tryTheoremCore xs bis thmProof type e thm.origin discharge? fprop
 
 /-- -/
-def tryLocalTheorems (fpropDecl : FPropDecl) (e : Expr)
-  (fprop : Expr → FPropM (Option Result))
-  : FPropM (Option Result) := do 
-
-  let lctx ← getLCtx
-  for var in lctx do
-    let type ← instantiateMVars var.type
-    
-    if (var.kind ≠ Lean.LocalDeclKind.auxDecl) then
-      let .some (fpropDecl', _) ← getFProp? type.getForallBody 
-        | continue
-      if fpropDecl'.fpropName ≠ fpropDecl.fpropName then
-        continue
-
-      let thm : FPropTheorem := {
-        fpropName := fpropDecl'.fpropName
-        keys := []
-        levelParams := #[]
-        proof := var.toExpr
-        origin := .fvar var.fvarId 
-      }
-      
-      let .some r ← tryTheorem? e thm fpropDecl.discharger fprop
-        | continue
-
-      trace[Meta.Tactic.fprop.apply] "local hypothesis {← ppExpr (.fvar var.fvarId)}"
-      return .some r
-
-  trace[Meta.Tactic.fprop.discharge] "no local hypothesis {← ppExpr e}"
-  return none
-
-/-- -/
 def applyIdRule (fpropDecl : FPropDecl) (e X : Expr) 
   (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do 
 
@@ -361,6 +330,135 @@ def applyPiRule (fpropDecl : FPropDecl) (e f : Expr)
 
   tryTheoremCore xs bis proof type e (.decl thm.thrmName) fpropDecl.discharger fprop
 
+
+/-- Determina if `e` is talking about a free variable and about which arguments.
+
+For example: 
+ - for `Continuous f` this function returns fvar id of `f` and `#[0]`
+ - for `Continuous fun x => f x y` this function returns fvar id of `f` and `#[1]`
+ - for `Continuous fun (x,y) => f x y` this function returns fvar id of `f` and `#[0,1]`
+ - for `Continuous fun xy => f xy.1 xy.2` this function returns fvar id of `f` and `#[0,1]`
+
+This function is assuming:
+ - that `e` is taling about function property `fpropDecl`
+ - the function `f` in `e` can't be expressed as composition of two non-trivial functions 
+   this means that `f == (← splitLambdaToComp f).1` is true -/
+def isFVarFProp (fpropDecl : FPropDecl) (e : Expr) : MetaM (Option (FVarId × ArraySet Nat)) := do
+
+  forallTelescope e fun _ e => do
+
+  let f := e.getArg! fpropDecl.funArgId
+  let f := (← unfoldFunHead? f).getD f
+
+  trace[Meta.Tactic.fprop.step] "looking at {← ppExpr f}"
+  match (← whnf f) with
+  | .fvar fvarId => return (fvarId, #[0].toArraySet)
+  | .lam _ _ b _ => 
+    match b.getAppFn with
+    | .fvar fvarId => 
+      let args := b.getAppArgs
+      -- we do not check the exact form of arguments as we assume `f == (← splitLambdaToComp f).1`
+      -- thus checking for loose bvar should be enough
+      let ids := args
+        |>.mapIdx (fun i arg => if arg.hasLooseBVars then some i.1 else none)
+        |>.filterMap id
+        |>.toArraySet
+      return (fvarId, ids)
+    | _ => return none
+  | _ => return none
+
+
+def proveFVarFPropFromLocalTheorems (fpropDecl : FPropDecl) (e : Expr) (fvarId : FVarId) (args : ArraySet Nat)
+  (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do
+
+  let lctx ← getLCtx
+  for var in lctx do
+    let type ← instantiateMVars var.type
+
+    if (var.kind ≠ Lean.LocalDeclKind.auxDecl) then
+
+      let .some (fpropDecl', _) ← getFProp? type.getForallBody 
+        | continue
+      if fpropDecl'.fpropName ≠ fpropDecl.fpropName then
+        continue
+
+      trace[Meta.Tactic.fprop.step] "found potentially applicable local theorem {← ppExpr type}"
+
+      let .some (fvarId', args') ← isFVarFProp fpropDecl type
+        | trace[Meta.Tactic.fprop.step] "not fvar fprop"
+          continue
+      if fvarId != fvarId' then
+        trace[Meta.Tactic.fprop.step] "incorrect fvar"
+        continue
+
+      trace[Meta.Tactic.fprop.step] "is applicable"
+
+      -- this local theorem should be directly applicable to e
+      if args = args' then
+
+        let thm : FPropTheorem := {
+          fpropName := fpropDecl'.fpropName
+          keys := []
+          levelParams := #[]
+          proof := var.toExpr
+          origin := .fvar var.fvarId 
+        }
+
+        let .some r ← tryTheorem? e thm fpropDecl.discharger fprop
+          | continue
+
+        trace[Meta.Tactic.fprop.apply] "local hypothesis {← ppExpr (.fvar var.fvarId)}"
+        return .some r
+
+      if args ⊆ args' then
+
+        trace[Meta.Tactic.fprop.step] "found local theorem which talks about more argument than necessary {← ppExpr type} {args} {args'}"
+
+        let f := e.getArg! fpropDecl.funArgId
+
+        let .some (f', g') ← splitLambdaToCompOverArgs f args'
+          | continue
+
+        trace[Meta.Tactic.fprop.step] "goal split at `{←ppExpr f'} ∘ {← ppExpr g'}`"
+
+        return ← applyCompRule fpropDecl e f' g' fprop
+
+  trace[Meta.Tactic.fprop.discharge] "no applicable local hypothesis for {← ppExpr e}"
+  return none
+  
+
+/-- -/
+def tryLocalTheorems (fpropDecl : FPropDecl) (e : Expr)
+  (fprop : Expr → FPropM (Option Result))
+  : FPropM (Option Result) := do 
+
+  let lctx ← getLCtx
+  for var in lctx do
+    let type ← instantiateMVars var.type
+    
+    if (var.kind ≠ Lean.LocalDeclKind.auxDecl) then
+      let .some (fpropDecl', _) ← getFProp? type.getForallBody 
+        | continue
+      if fpropDecl'.fpropName ≠ fpropDecl.fpropName then
+        continue
+
+      let thm : FPropTheorem := {
+        fpropName := fpropDecl'.fpropName
+        keys := []
+        levelParams := #[]
+        proof := var.toExpr
+        origin := .fvar var.fvarId 
+      }
+      
+      let .some r ← tryTheorem? e thm fpropDecl.discharger fprop
+        | continue
+
+      trace[Meta.Tactic.fprop.apply] "local hypothesis {← ppExpr (.fvar var.fvarId)}"
+      return .some r
+
+  trace[Meta.Tactic.fprop.discharge] "no local hypothesis {← ppExpr e}"
+  return none
+
 /-- -/
 def letCase (fpropDecl : FPropDecl) (e : Expr) (f : Expr) (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do
   match f with
@@ -432,7 +530,10 @@ def fvarAppCase (fpropDecl : FPropDecl) (e : Expr) (f : Expr) (fprop : Expr → 
   -- trivial case, this prevents an infinite loop
   if (← isDefEq f' f) then      
     trace[Meta.Tactic.fprop.step] "fvar app case: trivial"
-    return ← tryLocalTheorems fpropDecl e fprop
+    let .some (fvarId, args) ← isFVarFProp fpropDecl e
+      | trace[Meta.Tactic.fprop.step] "fvar app case: unexpected goal {← ppExpr e}"
+        return none
+    return ← proveFVarFPropFromLocalTheorems fpropDecl e fvarId args fprop
   else
     trace[Meta.Tactic.fprop.step] "decomposed into `({← ppExpr f'}) ∘ ({← ppExpr g'})`"
     applyCompRule fpropDecl e f' g' fprop
