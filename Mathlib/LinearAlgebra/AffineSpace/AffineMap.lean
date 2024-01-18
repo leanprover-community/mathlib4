@@ -69,7 +69,7 @@ instance AffineMap.instFunLike (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*
     congr with v
     apply vadd_right_cancel (f p)
     erw [← f_add, h, ← g_add]
-#align affine_map.fun_like AffineMap.instDFunLike
+#align affine_map.fun_like AffineMap.instFunLike
 
 instance AffineMap.hasCoeToFun (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*} (P2 : Type*)
     [Ring k] [AddCommGroup V1] [Module k V1] [AffineSpace V1 P1] [AddCommGroup V2] [Module k V2]

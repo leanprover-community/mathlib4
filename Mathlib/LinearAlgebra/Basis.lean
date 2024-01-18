@@ -123,7 +123,7 @@ instance instFunLike : FunLike (Basis ι R M) ι M where
   coe b i := b.repr.symm (Finsupp.single i 1)
   coe_injective' f g h := repr_injective <| LinearEquiv.symm_bijective.injective <|
     LinearEquiv.toLinearMap_injective <| by ext; exact congr_fun h _
-#align basis.fun_like Basis.instDFunLike
+#align basis.fun_like Basis.instFunLike
 
 @[simp]
 theorem coe_ofRepr (e : M ≃ₗ[R] ι →₀ R) : ⇑(ofRepr e) = fun i => e.symm (Finsupp.single i 1) :=
