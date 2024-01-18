@@ -1528,8 +1528,7 @@ theorem mk_le_aleph0 [Countable α] : #α ≤ ℵ₀ :=
 
 -- Porting note : simp can prove this
 -- @[simp]
-theorem le_aleph0_iff_set_countable {s : Set α} : #s ≤ ℵ₀ ↔ s.Countable := by
-  rw [mk_le_aleph0_iff, countable_coe_iff]
+theorem le_aleph0_iff_set_countable {s : Set α} : #s ≤ ℵ₀ ↔ s.Countable := mk_le_aleph0_iff
 #align cardinal.le_aleph_0_iff_set_countable Cardinal.le_aleph0_iff_set_countable
 
 alias ⟨_, _root_.Set.Countable.le_aleph0⟩ := le_aleph0_iff_set_countable
