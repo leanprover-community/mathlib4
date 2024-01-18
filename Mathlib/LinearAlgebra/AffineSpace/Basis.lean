@@ -70,7 +70,7 @@ instance : Inhabited (AffineBasis PUnit k PUnit) :=
 instance instFunLike : FunLike (AffineBasis ι k P) ι P where
   coe := AffineBasis.toFun
   coe_injective' f g h := by cases f; cases g; congr
-#align affine_basis.fun_like AffineBasis.instDFunLike
+#align affine_basis.fun_like AffineBasis.instFunLike
 
 @[ext]
 theorem ext {b₁ b₂ : AffineBasis ι k P} (h : (b₁ : ι → P) = b₂) : b₁ = b₂ :=
