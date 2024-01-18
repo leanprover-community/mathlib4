@@ -5,7 +5,6 @@ Authors: David Loeffler
 -/
 import Mathlib.NumberTheory.ModularForms.JacobiTheta.Basic
 import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
-import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
 
 #align_import number_theory.modular_forms.jacobi_theta.manifold from "leanprover-community/mathlib"@"57f9349f2fe19d2de7207e99b0341808d977cdcf"
 

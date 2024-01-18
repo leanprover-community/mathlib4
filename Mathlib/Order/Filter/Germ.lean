@@ -5,7 +5,6 @@ Authors: Yury G. Kudryashov, Abhimanyu Pallavi Sudhir
 -/
 import Mathlib.Order.Filter.Basic
 import Mathlib.Algebra.Module.Pi
-import Mathlib.GroupTheory.GroupAction.Defs
 
 #align_import order.filter.germ from "leanprover-community/mathlib"@"1f0096e6caa61e9c849ec2adbd227e960e9dff58"
 

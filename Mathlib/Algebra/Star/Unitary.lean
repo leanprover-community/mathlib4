@@ -3,7 +3,6 @@ Copyright (c) 2022 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shing Tak Lam, Frédéric Dupuis
 -/
-import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Algebra.Star.Basic
 import Mathlib.GroupTheory.Submonoid.Operations
 

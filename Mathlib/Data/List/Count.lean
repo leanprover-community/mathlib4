@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
 import Mathlib.Data.List.BigOperators.Basic
-import Std.Data.List.Count
 
 #align_import data.list.count from "leanprover-community/mathlib"@"65a1391a0106c9204fe45bc73a039f056558cb83"
 

@@ -9,7 +9,6 @@ import Mathlib.Order.Antichain
 import Mathlib.Order.OrderIsoNat
 import Mathlib.Order.WellFounded
 import Mathlib.Tactic.TFAE
-import Mathlib.Data.List.TFAE
 
 #align_import order.well_founded_set from "leanprover-community/mathlib"@"2c84c2c5496117349007d97104e7bbb471381592"
 

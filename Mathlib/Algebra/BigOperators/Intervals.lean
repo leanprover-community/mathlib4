@@ -7,7 +7,6 @@ import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Data.Nat.Interval
 import Mathlib.Tactic.Linarith
-import Mathlib.Data.Nat.Factorial.Basic
 
 #align_import algebra.big_operators.intervals from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 

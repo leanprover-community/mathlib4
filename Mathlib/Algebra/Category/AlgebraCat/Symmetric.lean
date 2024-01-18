@@ -5,7 +5,6 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Category.AlgebraCat.Monoidal
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
-import Mathlib.CategoryTheory.Monoidal.Braided
 
 /-!
 # The monoidal structure on `AlgebraCat` is symmetric.

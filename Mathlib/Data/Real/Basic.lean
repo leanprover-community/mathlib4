@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Floris van Doorn
 -/
 import Mathlib.Algebra.Star.Basic
 import Mathlib.Data.Real.CauSeqCompletion
-import Mathlib.Data.Rat.Order
 
 #align_import data.real.basic from "leanprover-community/mathlib"@"cb42593171ba005beaaf4549fcfe0dece9ada4c9"
 

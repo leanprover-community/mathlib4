@@ -8,8 +8,6 @@ import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.List.Defs
 import Std.Data.List.Lemmas
 import Mathlib.Tactic.Common
-import Mathlib.Logic.Basic
-import Mathlib.Init.Data.Bool.Lemmas
 import Mathlib.Init.Data.List.Lemmas
 
 #align_import data.list.basic from "leanprover-community/mathlib"@"65a1391a0106c9204fe45bc73a039f056558cb83"

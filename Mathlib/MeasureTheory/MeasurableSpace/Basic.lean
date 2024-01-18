@@ -12,7 +12,6 @@ import Mathlib.Order.Filter.SmallSets
 import Mathlib.Order.Filter.CountableSeparatingOn
 import Mathlib.Order.LiminfLimsup
 import Mathlib.Data.Set.UnionLift
-import Mathlib.Data.Countable.Basic
 
 #align_import measure_theory.measurable_space from "leanprover-community/mathlib"@"001ffdc42920050657fd45bd2b8bfbec8eaaeb29"
 

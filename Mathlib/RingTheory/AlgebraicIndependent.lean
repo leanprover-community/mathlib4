@@ -9,7 +9,6 @@ import Mathlib.RingTheory.MvPolynomial.Basic
 import Mathlib.Data.MvPolynomial.Supported
 import Mathlib.RingTheory.Algebraic
 import Mathlib.Data.MvPolynomial.Equiv
-import Mathlib.Data.MvPolynomial.CommRing
 
 #align_import ring_theory.algebraic_independent from "leanprover-community/mathlib"@"949dc57e616a621462062668c9f39e4e17b64b69"
 

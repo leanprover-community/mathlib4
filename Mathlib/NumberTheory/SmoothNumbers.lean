@@ -5,7 +5,6 @@ Authors: Michael Stoll
 -/
 import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Data.Nat.Squarefree
-import Mathlib.Data.List.Perm
 
 /-!
 # Smooth numbers

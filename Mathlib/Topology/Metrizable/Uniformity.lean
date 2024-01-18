@@ -5,7 +5,6 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Topology.Metrizable.Basic
 import Mathlib.Data.Nat.Lattice
-import Mathlib.Data.List.Perm
 
 #align_import topology.metric_space.metrizable_uniformity from "leanprover-community/mathlib"@"195fcd60ff2bfe392543bceb0ec2adcdb472db4c"
 

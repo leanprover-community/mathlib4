@@ -8,7 +8,6 @@ import Mathlib.Algebra.Order.Group.InjSurj
 import Mathlib.GroupTheory.Submonoid.Centralizer
 import Mathlib.Order.Atoms
 import Mathlib.Tactic.ApplyFun
-import Mathlib.Logic.Nontrivial.Basic
 
 #align_import group_theory.subgroup.basic from "leanprover-community/mathlib"@"4be589053caf347b899a494da75410deb55fb3ef"
 

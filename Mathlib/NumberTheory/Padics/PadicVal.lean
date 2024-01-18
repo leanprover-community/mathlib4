@@ -9,7 +9,6 @@ import Mathlib.Data.Nat.Digits
 import Mathlib.Data.Nat.MaxPowDiv
 import Mathlib.Data.Nat.Multiplicity
 import Mathlib.Tactic.IntervalCases
-import Mathlib.Data.Nat.Pow
 
 #align_import number_theory.padics.padic_val from "leanprover-community/mathlib"@"60fa54e778c9e85d930efae172435f42fb0d71f7"
 

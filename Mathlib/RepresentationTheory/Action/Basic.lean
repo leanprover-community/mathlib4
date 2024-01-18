@@ -10,7 +10,6 @@ import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Conj
 import Mathlib.Data.Fin.Basic
-import Mathlib.GroupTheory.GroupAction.Pi
 
 #align_import representation_theory.Action from "leanprover-community/mathlib"@"95a87616d63b3cb49d3fe678d416fbe9c4217bf4"
 

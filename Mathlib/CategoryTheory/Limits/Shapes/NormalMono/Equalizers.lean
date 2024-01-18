@@ -5,7 +5,6 @@ Authors: Markus Himmel
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.NormalMono.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
-import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 
 #align_import category_theory.limits.shapes.normal_mono.equalizers from "leanprover-community/mathlib"@"3a061790136d13594ec10c7c90d202335ac5d854"
 

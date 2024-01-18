@@ -8,7 +8,6 @@ import Mathlib.Data.Int.CharZero
 import Mathlib.Data.Nat.Bitwise
 import Mathlib.Data.Nat.PSub
 import Mathlib.Data.Nat.Size
-import Mathlib.Data.Int.Order.Basic
 
 #align_import data.num.lemmas from "leanprover-community/mathlib"@"2196ab363eb097c008d4497125e0dde23fb36db2"
 

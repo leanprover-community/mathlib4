@@ -6,7 +6,6 @@ Authors: Mario Carneiro, Floris van Doorn
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Order.RelIso.Set
 import Mathlib.Order.WellFounded
-import Mathlib.Logic.Basic
 
 #align_import order.initial_seg from "leanprover-community/mathlib"@"8ea5598db6caeddde6cb734aa179cc2408dbd345"
 /-!

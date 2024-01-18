@@ -5,7 +5,6 @@ Authors: Kyle Miller
 -/
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.Aut
-import Mathlib.Algebra.Opposites
 import Mathlib.Data.ZMod.Defs
 import Mathlib.Tactic.Ring
 

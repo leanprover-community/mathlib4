@@ -9,8 +9,6 @@ import Mathlib.Data.Set.Pointwise.Finite
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Data.Set.Pointwise.ListOfFn
 import Mathlib.SetTheory.Cardinal.Finite
-import Mathlib.GroupTheory.GroupAction.Pi
-import Mathlib.Algebra.Order.Monoid.WithTop
 
 #align_import data.finset.pointwise from "leanprover-community/mathlib"@"eba7871095e834365616b5e43c8c7bb0b37058d0"
 

@@ -6,7 +6,6 @@ Authors: Alex Kontorovich, Heather Macbeth
 import Mathlib.MeasureTheory.Measure.Haar.Basic
 import Mathlib.MeasureTheory.Group.FundamentalDomain
 import Mathlib.Algebra.Group.Opposite
-import Mathlib.GroupTheory.Subgroup.Actions
 
 #align_import measure_theory.measure.haar.quotient from "leanprover-community/mathlib"@"3b52265189f3fb43aa631edffce5d060fafaf82f"
 

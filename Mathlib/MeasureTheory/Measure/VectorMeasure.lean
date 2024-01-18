@@ -5,7 +5,6 @@ Authors: Kexing Ying
 -/
 import Mathlib.MeasureTheory.Measure.Typeclasses
 import Mathlib.Analysis.Complex.Basic
-import Mathlib.Topology.Instances.ENNReal
 
 #align_import measure_theory.measure.vector_measure from "leanprover-community/mathlib"@"70a4f2197832bceab57d7f41379b2592d1110570"
 

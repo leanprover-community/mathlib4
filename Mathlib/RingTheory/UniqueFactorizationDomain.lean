@@ -8,7 +8,6 @@ import Mathlib.Algebra.GCDMonoid.Basic
 import Mathlib.Data.Finsupp.Multiset
 import Mathlib.RingTheory.Noetherian
 import Mathlib.RingTheory.Multiplicity
-import Mathlib.Init.Logic
 
 #align_import ring_theory.unique_factorization_domain from "leanprover-community/mathlib"@"570e9f4877079b3a923135b3027ac3be8695ab8c"
 

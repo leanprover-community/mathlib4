@@ -9,7 +9,6 @@ import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.GroupWithZero.Commute
 import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Algebra.Opposites
 import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Algebra.Ring.Divisibility.Basic

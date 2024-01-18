@@ -6,7 +6,6 @@ Authors: Eric Wieser
 import Mathlib.Algebra.TrivSqZeroExt
 import Mathlib.Topology.Algebra.InfiniteSum.Basic
 import Mathlib.Topology.Algebra.Module.Basic
-import Mathlib.Algebra.Module.Prod
 
 #align_import topology.instances.triv_sq_zero_ext from "leanprover-community/mathlib"@"b8d2eaa69d69ce8f03179a5cda774fc0cde984e4"
 

@@ -3,7 +3,6 @@ Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Haitao Zhang
 -/
-import Std.Logic
 import Mathlib.Tactic.Basic
 import Mathlib.Mathport.Rename
 import Mathlib.Tactic.Attr.Register

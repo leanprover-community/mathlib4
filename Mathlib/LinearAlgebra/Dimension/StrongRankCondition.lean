@@ -5,7 +5,6 @@ Authors: Scott Morrison
 -/
 import Mathlib.LinearAlgebra.Dimension.Finrank
 import Mathlib.LinearAlgebra.InvariantBasisNumber
-import Mathlib.SetTheory.Cardinal.Ordinal
 
 #align_import linear_algebra.dimension from "leanprover-community/mathlib"@"47a5f8186becdbc826190ced4312f8199f9db6a5"
 

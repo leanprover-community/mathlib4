@@ -5,7 +5,6 @@ Authors: Eric Rodriguez
 -/
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Algebra.Order.WithZero
 
 #align_import data.sign from "leanprover-community/mathlib"@"2445c98ae4b87eabebdde552593519b9b6dc350c"
 /-!

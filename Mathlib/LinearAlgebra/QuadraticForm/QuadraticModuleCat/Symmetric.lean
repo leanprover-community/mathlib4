@@ -5,7 +5,6 @@ Authors: Eric Wieser
 -/
 import Mathlib.LinearAlgebra.QuadraticForm.QuadraticModuleCat.Monoidal
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
-import Mathlib.CategoryTheory.Monoidal.Braided
 
 /-!
 # The monoidal structure on `QuadraticModuleCat` is symmetric.

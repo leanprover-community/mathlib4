@@ -9,7 +9,6 @@ import Mathlib.Order.Disjoint
 import Mathlib.Order.WithBot
 import Mathlib.Tactic.Monotonicity.Attr
 import Mathlib.Util.AssertExists
-import Mathlib.Logic.Basic
 
 #align_import order.hom.basic from "leanprover-community/mathlib"@"62a5626868683c104774de8d85b9855234ac807c"
 

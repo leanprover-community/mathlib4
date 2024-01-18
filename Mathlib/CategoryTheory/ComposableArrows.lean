@@ -7,7 +7,6 @@ import Std.Tactic.Omega
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.EqToHom
 import Mathlib.CategoryTheory.Functor.Const
-import Mathlib.Data.Fintype.Basic
 import Mathlib.Tactic.FinCases
 
 /-!

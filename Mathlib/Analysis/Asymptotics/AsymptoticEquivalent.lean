@@ -6,7 +6,6 @@ Authors: Anatole Dedecker
 import Mathlib.Analysis.Asymptotics.Asymptotics
 import Mathlib.Analysis.Asymptotics.Theta
 import Mathlib.Analysis.Normed.Order.Basic
-import Mathlib.Analysis.NormedSpace.Basic
 
 #align_import analysis.asymptotics.asymptotic_equivalent from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 

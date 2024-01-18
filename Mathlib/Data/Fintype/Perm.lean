@@ -6,8 +6,6 @@ Authors: Mario Carneiro
 import Mathlib.Data.Fintype.Card
 import Mathlib.GroupTheory.Perm.Basic
 import Mathlib.Tactic.Ring
-import Mathlib.Data.List.Join
-import Mathlib.Data.Nat.Factorial.Basic
 
 #align_import data.fintype.perm from "leanprover-community/mathlib"@"509de852e1de55e1efa8eacfa11df0823f26f226"
 

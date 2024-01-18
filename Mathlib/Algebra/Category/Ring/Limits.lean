@@ -7,7 +7,6 @@ import Mathlib.Algebra.Ring.Pi
 import Mathlib.Algebra.Category.Ring.Basic
 import Mathlib.Algebra.Category.GroupCat.Limits
 import Mathlib.RingTheory.Subring.Basic
-import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
 
 #align_import algebra.category.Ring.limits from "leanprover-community/mathlib"@"c43486ecf2a5a17479a32ce09e4818924145e90e"
 

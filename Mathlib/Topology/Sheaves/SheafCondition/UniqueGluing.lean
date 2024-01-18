@@ -6,7 +6,6 @@ Authors: Justus Springer
 import Mathlib.Topology.Sheaves.Forget
 import Mathlib.Topology.Sheaves.SheafCondition.PairwiseIntersections
 import Mathlib.CategoryTheory.Limits.Shapes.Types
-import Mathlib.Algebra.Category.Ring.Limits
 
 #align_import topology.sheaves.sheaf_condition.unique_gluing from "leanprover-community/mathlib"@"5dc6092d09e5e489106865241986f7f2ad28d4c8"
 

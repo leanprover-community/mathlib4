@@ -5,7 +5,6 @@ Authors: Simon Hudon, Patrick Massot, Eric Wieser
 -/
 import Mathlib.Algebra.Group.Prod
 import Mathlib.GroupTheory.GroupAction.Defs
-import Mathlib.Init.Logic
 
 #align_import group_theory.group_action.prod from "leanprover-community/mathlib"@"aba57d4d3dae35460225919dcd82fe91355162f9"
 

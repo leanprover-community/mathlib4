@@ -6,7 +6,6 @@ Authors: Gabriel Moise, Yaël Dillies, Kyle Miller
 import Mathlib.Combinatorics.SimpleGraph.Basic
 import Mathlib.Data.Finset.Sym
 import Mathlib.Data.Matrix.Basic
-import Mathlib.Init.Logic
 
 #align_import combinatorics.simple_graph.inc_matrix from "leanprover-community/mathlib"@"bb168510ef455e9280a152e7f31673cabd3d7496"
 

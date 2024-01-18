@@ -9,7 +9,6 @@ import Mathlib.Data.Nat.Factorial.BigOperators
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Data.Finset.Sym
 import Mathlib.Data.Finsupp.Multiset
-import Mathlib.Data.Finsupp.Defs
 
 #align_import data.nat.choose.multinomial from "leanprover-community/mathlib"@"2738d2ca56cbc63be80c3bd48e9ed90ad94e947d"
 

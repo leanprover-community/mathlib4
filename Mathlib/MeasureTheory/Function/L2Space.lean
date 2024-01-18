@@ -6,7 +6,6 @@ Authors: Rémy Degenne
 import Mathlib.Data.IsROrC.Lemmas
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Inner
 import Mathlib.MeasureTheory.Integral.SetIntegral
-import Mathlib.Analysis.NormedSpace.FiniteDimension
 
 #align_import measure_theory.function.l2_space from "leanprover-community/mathlib"@"83a66c8775fa14ee5180c85cab98e970956401ad"
 

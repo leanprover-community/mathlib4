@@ -5,7 +5,6 @@ Authors: Scott Morrison, Mario Carneiro, Reid Barton, Andrew Yang
 -/
 import Mathlib.CategoryTheory.Limits.KanExtension
 import Mathlib.CategoryTheory.Adjunction.Opposites
-import Mathlib.CategoryTheory.Elementwise
 import Mathlib.Topology.Category.TopCat.Opens
 import Mathlib.Topology.Sheaves.Init
 

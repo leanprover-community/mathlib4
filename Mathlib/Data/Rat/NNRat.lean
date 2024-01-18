@@ -7,7 +7,6 @@ import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.Order.Nonneg.Field
 import Mathlib.Algebra.Order.Nonneg.Floor
-import Mathlib.Algebra.Order.WithZero
 
 #align_import data.rat.nnrat from "leanprover-community/mathlib"@"b3f4f007a962e3787aa0f3b5c7942a1317f7d88e"
 

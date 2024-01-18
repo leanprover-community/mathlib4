@@ -5,7 +5,6 @@ Authors: Christopher Hoskin
 -/
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.Ring.Defs
-import Mathlib.Data.Subtype
 import Mathlib.Order.Basic
 import Mathlib.Tactic.Conv
 

@@ -13,7 +13,6 @@ import Mathlib.Data.Real.Pointwise
 import Mathlib.Order.ConditionallyCompleteLattice.Group
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.GCongr.Core
-import Mathlib.Algebra.Star.Basic
 
 #align_import data.real.nnreal from "leanprover-community/mathlib"@"de29c328903507bb7aff506af9135f4bdaf1849c"
 

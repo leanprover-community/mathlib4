@@ -5,7 +5,6 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Logic.Equiv.List
 import Mathlib.Logic.Function.Iterate
-import Mathlib.Data.List.Defs
 
 #align_import computability.primrec from "leanprover-community/mathlib"@"2738d2ca56cbc63be80c3bd48e9ed90ad94e947d"
 

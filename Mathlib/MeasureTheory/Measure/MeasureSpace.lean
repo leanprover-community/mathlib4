@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Mario Carneiro
 import Mathlib.MeasureTheory.Measure.NullMeasurable
 import Mathlib.MeasureTheory.MeasurableSpace.Basic
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
-import Mathlib.Order.Hom.CompleteLattice
 
 #align_import measure_theory.measure.measure_space from "leanprover-community/mathlib"@"343e80208d29d2d15f8050b929aa50fe4ce71b55"
 

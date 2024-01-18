@@ -7,7 +7,6 @@ import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Data.Finset.Sups
-import Mathlib.Data.Rat.Order
 import Mathlib.Order.Hom.Lattice
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Ring

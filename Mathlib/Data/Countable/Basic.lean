@@ -3,7 +3,6 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Logic.Equiv.Basic
 import Mathlib.Logic.Equiv.Nat
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.Data.Countable.Defs

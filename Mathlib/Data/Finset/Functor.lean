@@ -6,7 +6,6 @@ Authors: Yaël Dillies, Scott Morrison
 import Mathlib.Data.Finset.Lattice
 import Mathlib.Data.Finset.NAry
 import Mathlib.Data.Multiset.Functor
-import Mathlib.Control.Applicative
 
 #align_import data.finset.functor from "leanprover-community/mathlib"@"bcfa726826abd57587355b4b5b7e78ad6527b7e4"
 

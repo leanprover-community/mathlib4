@@ -10,7 +10,6 @@ import Std.Util.Cache
 import Mathlib.Tactic.Core
 import Std.Tactic.SolveByElim
 import Mathlib.Tactic.TryThis
-import Std.Lean.Meta.DiscrTree
 
 /-!
 # Propose

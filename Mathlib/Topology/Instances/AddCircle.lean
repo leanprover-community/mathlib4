@@ -11,7 +11,6 @@ import Mathlib.Algebra.Order.Floor
 import Mathlib.Algebra.Order.ToIntervalMod
 import Mathlib.Topology.Instances.Real
 import Mathlib.Topology.Connected.PathConnected
-import Mathlib.GroupTheory.Subgroup.MulOpposite
 
 #align_import topology.instances.add_circle from "leanprover-community/mathlib"@"213b0cff7bc5ab6696ee07cceec80829ce42efec"
 

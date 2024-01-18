@@ -6,7 +6,6 @@ Authors: Mario Carneiro, Floris van Doorn
 import Mathlib.Data.Real.Basic
 import Mathlib.Algebra.Order.Archimedean
 import Mathlib.Algebra.Bounds
-import Mathlib.Data.Rat.Cast.CharZero
 
 #align_import data.real.basic from "leanprover-community/mathlib"@"cb42593171ba005beaaf4549fcfe0dece9ada4c9"
 

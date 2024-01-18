@@ -7,7 +7,6 @@ import Mathlib.Data.Finsupp.Multiset
 import Mathlib.Order.Bounded
 import Mathlib.SetTheory.Ordinal.Principal
 import Mathlib.Tactic.Linarith
-import Mathlib.Data.Set.Countable
 
 #align_import set_theory.cardinal.ordinal from "leanprover-community/mathlib"@"7c2ce0c2da15516b4e65d0c9e254bb6dc93abd1f"
 

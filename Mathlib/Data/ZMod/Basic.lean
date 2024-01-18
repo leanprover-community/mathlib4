@@ -8,7 +8,6 @@ import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.Data.Fintype.Units
 import Mathlib.Data.Nat.Parity
 import Mathlib.Tactic.FinCases
-import Mathlib.Data.Set.Intervals.Basic
 
 #align_import data.zmod.basic from "leanprover-community/mathlib"@"74ad1c88c77e799d2fea62801d1dbbd698cff1b7"
 

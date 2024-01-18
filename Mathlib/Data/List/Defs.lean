@@ -9,7 +9,6 @@ import Mathlib.Data.SProd
 import Mathlib.Util.CompileInductive
 import Std.Tactic.Lint.Basic
 import Std.Data.RBMap.Basic
-import Std.Data.List.Basic
 
 #align_import data.list.defs from "leanprover-community/mathlib"@"d2d8742b0c21426362a9dacebc6005db895ca963"
 

@@ -5,7 +5,6 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Topology.Constructions
 import Mathlib.Topology.Algebra.Monoid
-import Mathlib.Control.Traversable.Instances
 
 #align_import topology.list from "leanprover-community/mathlib"@"48085f140e684306f9e7da907cd5932056d1aded"
 

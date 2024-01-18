@@ -8,7 +8,6 @@ import Mathlib.NumberTheory.NumberField.CanonicalEmbedding
 import Mathlib.NumberTheory.NumberField.Norm
 import Mathlib.RingTheory.Ideal.Norm
 import Mathlib.RingTheory.RootsOfUnity.Basic
-import Mathlib.FieldTheory.Separable
 
 #align_import number_theory.number_field.units from "leanprover-community/mathlib"@"00f91228655eecdcd3ac97a7fd8dbcb139fe990a"
 

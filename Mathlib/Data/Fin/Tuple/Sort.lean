@@ -8,7 +8,6 @@ import Mathlib.Data.List.FinRange
 import Mathlib.Data.Prod.Lex
 import Mathlib.GroupTheory.Perm.Basic
 import Mathlib.Data.Fin.Interval
-import Mathlib.Data.List.Defs
 
 #align_import data.fin.tuple.sort from "leanprover-community/mathlib"@"8631e2d5ea77f6c13054d9151d82b83069680cb1"
 

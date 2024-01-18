@@ -8,7 +8,6 @@ import Mathlib.Init.Order.Defs
 import Mathlib.Order.Monotone.Basic
 import Mathlib.Order.ULift
 import Mathlib.Tactic.GCongr.Core
-import Mathlib.Init.Order.LinearOrder
 
 #align_import order.lattice from "leanprover-community/mathlib"@"3ba15165bd6927679be7c22d6091a87337e3cd0c"
 

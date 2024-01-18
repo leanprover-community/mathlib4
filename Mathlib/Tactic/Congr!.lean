@@ -7,7 +7,6 @@ import Mathlib.Lean.Meta.CongrTheorems
 import Mathlib.Tactic.Relation.Rfl
 import Std.Logic
 import Std.Tactic.RCases
-import Mathlib.Lean.Meta
 
 /-!
 # The `congr!` tactic

@@ -14,8 +14,6 @@ import Mathlib.Order.SuccPred.CompleteLinearOrder
 import Mathlib.SetTheory.Cardinal.SchroederBernstein
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.PPWithUniv
-import Mathlib.Algebra.BigOperators.Basic
-import Mathlib.Data.Fintype.Powerset
 
 #align_import set_theory.cardinal.basic from "leanprover-community/mathlib"@"3ff3f2d6a3118b8711063de7111a0d77a53219a8"
 

@@ -8,8 +8,6 @@ import Mathlib.Algebra.BigOperators.NatAntidiagonal
 import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Data.Nat.Choose.Central
-import Mathlib.Data.Int.CharZero
-import Mathlib.Data.Rat.Order
 import Mathlib.Data.Tree
 import Mathlib.Tactic.FieldSimp
 

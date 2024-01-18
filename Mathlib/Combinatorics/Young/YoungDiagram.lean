@@ -5,7 +5,6 @@ Authors: Jake Levinson
 -/
 import Mathlib.Order.UpperLower.Basic
 import Mathlib.Data.Finset.Preimage
-import Mathlib.Algebra.Order.WithZero
 
 #align_import combinatorics.young.young_diagram from "leanprover-community/mathlib"@"59694bd07f0a39c5beccba34bd9f413a160782bf"
 

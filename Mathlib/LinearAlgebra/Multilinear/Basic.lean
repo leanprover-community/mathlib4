@@ -9,8 +9,6 @@ import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Fintype.Sort
 import Mathlib.Data.List.FinRange
 import Mathlib.Algebra.BigOperators.Pi
-import Mathlib.Data.Fintype.Powerset
-import Mathlib.GroupTheory.GroupAction.Pi
 
 #align_import linear_algebra.multilinear.basic from "leanprover-community/mathlib"@"78fdf68dcd2fdb3fe64c0dd6f88926a49418a6ea"
 

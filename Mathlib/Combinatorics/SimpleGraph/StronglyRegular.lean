@@ -7,7 +7,6 @@ import Mathlib.Combinatorics.DoubleCounting
 import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
 import Mathlib.Combinatorics.SimpleGraph.Basic
 import Mathlib.Data.Set.Finite
-import Mathlib.Init.Logic
 
 #align_import combinatorics.simple_graph.strongly_regular from "leanprover-community/mathlib"@"2b35fc7bea4640cb75e477e83f32fbd538920822"
 

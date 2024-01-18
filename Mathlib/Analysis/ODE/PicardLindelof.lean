@@ -5,7 +5,6 @@ Authors: Yury G. Kudryashov, Winston Yin
 -/
 import Mathlib.Analysis.SpecialFunctions.Integrals
 import Mathlib.Topology.MetricSpace.Contracting
-import Mathlib.Topology.Algebra.Order.Group
 
 #align_import analysis.ODE.picard_lindelof from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 

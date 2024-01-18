@@ -8,7 +8,6 @@ import Mathlib.Topology.Category.Stonean.EffectiveEpi
 import Mathlib.Condensed.Basic
 import Mathlib.CategoryTheory.Sites.DenseSubsite
 import Mathlib.CategoryTheory.Sites.InducedTopology
-import Mathlib.CategoryTheory.Sites.Coherent
 /-!
 # Sheaves on CompHaus are equivalent to sheaves on Stonean
 

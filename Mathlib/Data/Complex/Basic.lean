@@ -5,7 +5,6 @@ Authors: Kevin Buzzard, Mario Carneiro
 -/
 import Mathlib.Data.Real.Basic
 import Mathlib.Algebra.GroupWithZero.Bitwise
-import Mathlib.Algebra.GroupPower.Lemmas
 
 #align_import data.complex.basic from "leanprover-community/mathlib"@"31c24aa72e7b3e5ed97a8412470e904f82b81004"
 

@@ -10,7 +10,6 @@ import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Data.Finsupp.Fin
 import Mathlib.GroupTheory.Submonoid.Membership
-import Mathlib.Algebra.BigOperators.Basic
 
 #align_import algebra.big_operators.finsupp from "leanprover-community/mathlib"@"842328d9df7e96fd90fc424e115679c15fb23a71"
 

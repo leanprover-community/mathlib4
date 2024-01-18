@@ -6,7 +6,6 @@ Authors: Kenny Lau, Patrick Massot
 import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.RingTheory.Ideal.Quotient
 import Mathlib.Algebra.Ring.Fin
-import Mathlib.Algebra.Ring.Prod
 
 #align_import ring_theory.ideal.quotient_operations from "leanprover-community/mathlib"@"b88d81c84530450a8989e918608e5960f015e6c8"
 

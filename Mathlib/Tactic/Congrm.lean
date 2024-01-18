@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Gabriel Ebner, Damiano Testa, Kyle Miller
 -/
 import Mathlib.Tactic.TermCongr
-import Mathlib.Lean.Meta
 
 /-!
 # The `congrm` tactic

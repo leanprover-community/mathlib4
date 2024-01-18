@@ -3,13 +3,11 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Joey van Langen, Casper Putz
 -/
-import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Int.ModEq
 import Mathlib.Data.Nat.Multiplicity
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Data.Nat.Cast.Prod
 import Mathlib.Algebra.Group.ULift
-import Mathlib.Algebra.Module.Basic
 import Mathlib.GroupTheory.OrderOfElement
 
 #align_import algebra.char_p.basic from "leanprover-community/mathlib"@"47a1a73351de8dd6c8d3d32b569c8e434b03ca47"

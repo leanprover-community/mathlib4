@@ -8,7 +8,6 @@ import Mathlib.LinearAlgebra.BilinearMap
 import Mathlib.LinearAlgebra.AffineSpace.Basic
 import Mathlib.LinearAlgebra.Pi
 import Mathlib.LinearAlgebra.Prod
-import Mathlib.Algebra.AddTorsor
 
 #align_import linear_algebra.affine_space.affine_map from "leanprover-community/mathlib"@"bd1fc183335ea95a9519a1630bcf901fe9326d83"
 

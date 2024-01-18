@@ -6,7 +6,6 @@ Authors: Yaël Dillies
 import Mathlib.Order.CompleteLattice
 import Mathlib.Order.Cover
 import Mathlib.Order.Iterate
-import Std.Data.Nat.Init.Lemmas
 
 #align_import order.succ_pred.basic from "leanprover-community/mathlib"@"0111834459f5d7400215223ea95ae38a1265a907"
 

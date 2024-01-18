@@ -9,7 +9,6 @@ import Mathlib.Tactic.CancelDenoms.Core
 import Std.Data.RBMap.Basic
 import Mathlib.Data.HashMap
 import Mathlib.Control.Basic
-import Std.Data.List.Basic
 
 /-!
 # Linarith preprocessing

@@ -7,7 +7,6 @@ import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.Ring.Opposite
 import Mathlib.GroupTheory.GroupAction.Opposite
 import Mathlib.GroupTheory.GroupAction.Prod
-import Mathlib.Algebra.GroupWithZero.Basic
 
 #align_import algebra.smul_with_zero from "leanprover-community/mathlib"@"966e0cf0685c9cedf8a3283ac69eef4d5f2eaca2"
 

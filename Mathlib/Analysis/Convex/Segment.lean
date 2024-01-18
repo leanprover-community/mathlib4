@@ -5,7 +5,6 @@ Authors: Alexander Bentkamp, Yury Kudryashov, Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Invertible
 import Mathlib.Algebra.Order.Module.OrderedSMul
-import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.LinearAlgebra.AffineSpace.Midpoint
 import Mathlib.LinearAlgebra.Ray
 import Mathlib.Tactic.GCongr

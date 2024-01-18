@@ -5,7 +5,6 @@ Authors: Riccardo Brasca
 -/
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Basic
 import Mathlib.RingTheory.RootsOfUnity.Minpoly
-import Mathlib.FieldTheory.Separable
 
 #align_import ring_theory.polynomial.cyclotomic.roots from "leanprover-community/mathlib"@"7fdeecc0d03cd40f7a165e6cf00a4d2286db599f"
 

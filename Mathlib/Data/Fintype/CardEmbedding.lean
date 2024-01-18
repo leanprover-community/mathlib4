@@ -6,7 +6,6 @@ Authors: Eric Rodriguez
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Logic.Equiv.Embedding
 import Mathlib.Logic.Embedding.Set
-import Mathlib.Data.Nat.Factorial.Basic
 
 #align_import data.fintype.card_embedding from "leanprover-community/mathlib"@"98e83c3d541c77cdb7da20d79611a780ff8e7d90"
 

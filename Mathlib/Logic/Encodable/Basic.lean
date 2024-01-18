@@ -9,8 +9,6 @@ import Mathlib.Order.Directed
 import Mathlib.Data.Countable.Defs
 import Mathlib.Order.RelIso.Basic
 import Mathlib.Data.Fin.Basic
-import Mathlib.Logic.Equiv.Basic
-import Mathlib.Data.Nat.Cast.Defs
 
 #align_import logic.encodable.basic from "leanprover-community/mathlib"@"7c523cb78f4153682c2929e3006c863bfef463d0"
 

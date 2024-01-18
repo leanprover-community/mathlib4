@@ -7,7 +7,6 @@ import Mathlib.CategoryTheory.Yoneda
 import Mathlib.Topology.Sheaves.Presheaf
 import Mathlib.Topology.Category.TopCommRingCat
 import Mathlib.Topology.ContinuousFunction.Algebra
-import Mathlib.Algebra.Category.Ring.Basic
 
 #align_import topology.sheaves.presheaf_of_functions from "leanprover-community/mathlib"@"5dc6092d09e5e489106865241986f7f2ad28d4c8"
 

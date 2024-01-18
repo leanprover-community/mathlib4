@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Thomas Murrills
 -/
 import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Algebra.GroupPower.Ring
-import Mathlib.Algebra.Invertible.Basic
 import Mathlib.Data.Int.Cast.Lemmas
 
 /-!

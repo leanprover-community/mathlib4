@@ -6,8 +6,6 @@ Authors: Floris van Doorn, Patrick Massot
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Topology.Separation
 import Mathlib.Algebra.Group.Defs
-import Mathlib.Order.Cover
-import Mathlib.GroupTheory.GroupAction.Pi
 
 #align_import topology.support from "leanprover-community/mathlib"@"d90e4e186f1d18e375dcd4e5b5f6364b01cb3e46"
 

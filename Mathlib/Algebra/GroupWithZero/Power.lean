@@ -6,7 +6,6 @@ Authors: Johan Commelin
 import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Data.Int.Order.Basic
-import Mathlib.Init.Logic
 
 #align_import algebra.group_with_zero.power from "leanprover-community/mathlib"@"46a64b5b4268c594af770c44d9e502afc6a515cb"
 

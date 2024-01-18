@@ -5,7 +5,6 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Order.Hom.Bounded
 import Mathlib.Order.SymmDiff
-import Mathlib.Order.WithBot
 
 #align_import order.hom.lattice from "leanprover-community/mathlib"@"7581030920af3dcb241d1df0e36f6ec8289dd6be"
 

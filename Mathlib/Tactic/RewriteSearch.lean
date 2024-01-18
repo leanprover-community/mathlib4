@@ -6,7 +6,6 @@ Authors: Scott Morrison
 import Mathlib.Data.List.EditDistance.Estimator
 import Mathlib.Data.MLList.BestFirst
 import Mathlib.Data.Nat.Interval
-import Mathlib.Data.Nat.Basic
 
 /-!
 # The `rw_search` tactic

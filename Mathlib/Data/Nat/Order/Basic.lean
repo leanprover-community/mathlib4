@@ -6,8 +6,6 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Data.Nat.Basic
 import Mathlib.Init.Data.Nat.Bitwise
-import Mathlib.Data.Nat.Defs
-import Mathlib.Algebra.Order.Monoid.WithZero.Defs
 
 #align_import data.nat.order.basic from "leanprover-community/mathlib"@"3ed3f98a1e836241990d3d308f1577e434977130"
 

@@ -7,7 +7,6 @@ import Mathlib.Algebra.Ring.Hom.Basic
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.Nat.Cast.Commute
 import Mathlib.Data.Nat.Cast.Order
-import Mathlib.Data.Nat.Cast.Basic
 
 #align_import data.int.cast.lemmas from "leanprover-community/mathlib"@"acebd8d49928f6ed8920e502a6c90674e75bd441"
 

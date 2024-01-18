@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.GroupTheory.QuotientGroup
-import Mathlib.Algebra.Module.Basic
 
 #align_import algebra.char_zero.quotient from "leanprover-community/mathlib"@"d90e4e186f1d18e375dcd4e5b5f6364b01cb3e46"
 

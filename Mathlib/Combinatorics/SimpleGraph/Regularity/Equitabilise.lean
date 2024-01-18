@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Order.Partition.Equipartition
-import Mathlib.Algebra.Order.WithZero
 
 #align_import combinatorics.simple_graph.regularity.equitabilise from "leanprover-community/mathlib"@"bf7ef0e83e5b7e6c1169e97f055e58a2e4e9d52d"
 

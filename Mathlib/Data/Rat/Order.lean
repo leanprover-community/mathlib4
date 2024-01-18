@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Mario Carneiro
 import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Data.Rat.Basic
 import Mathlib.Data.Int.Cast.Lemmas
-import Mathlib.Init.Data.Bool.Lemmas
 
 #align_import data.rat.order from "leanprover-community/mathlib"@"a59dad53320b73ef180174aae867addd707ef00e"
 

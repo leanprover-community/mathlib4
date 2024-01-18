@@ -6,7 +6,6 @@ Authors: Eric Wieser, Frédéric Dupuis
 import Mathlib.Algebra.Star.Module
 import Mathlib.Topology.Algebra.Module.Basic
 import Mathlib.Topology.Algebra.Star
-import Mathlib.Algebra.Module.Prod
 
 #align_import topology.algebra.module.star from "leanprover-community/mathlib"@"ad84a13c884fd19e286fb7abb36f4b9ba7e2f615"
 

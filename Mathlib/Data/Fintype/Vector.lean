@@ -5,7 +5,6 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Fintype.Pi
 import Mathlib.Data.Sym.Basic
-import Mathlib.Data.Vector.Basic
 
 #align_import data.fintype.vector from "leanprover-community/mathlib"@"1126441d6bccf98c81214a0780c73d499f6721fe"
 

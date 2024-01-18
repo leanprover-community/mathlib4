@@ -5,7 +5,6 @@ Authors: Andrew Yang, Yury G. Kudryashov
 -/
 import Mathlib.Tactic.TFAE
 import Mathlib.Topology.ContinuousOn
-import Mathlib.Data.List.TFAE
 
 #align_import topology.inseparable from "leanprover-community/mathlib"@"bcfa726826abd57587355b4b5b7e78ad6527b7e4"
 

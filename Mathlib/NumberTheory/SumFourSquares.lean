@@ -7,7 +7,6 @@ import Mathlib.Data.ZMod.Basic
 import Mathlib.FieldTheory.Finite.Basic
 import Mathlib.Data.Int.Parity
 import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Data.Nat.Order.Lemmas
 
 #align_import number_theory.sum_four_squares from "leanprover-community/mathlib"@"bd9851ca476957ea4549eb19b40e7b5ade9428cc"
 

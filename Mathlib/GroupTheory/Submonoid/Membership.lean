@@ -7,7 +7,6 @@ Amelia Livingston, Yury Kudryashov
 import Mathlib.Algebra.FreeMonoid.Basic
 import Mathlib.Data.Finset.NoncommProd
 import Mathlib.GroupTheory.Submonoid.Operations
-import Mathlib.Algebra.GroupPower.Lemmas
 
 #align_import group_theory.submonoid.membership from "leanprover-community/mathlib"@"e655e4ea5c6d02854696f97494997ba4c31be802"
 

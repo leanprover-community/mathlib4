@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Kenny Lau
 -/
 import Mathlib.Data.List.BigOperators.Basic
 import Mathlib.Algebra.Order.Monoid.MinMax
-import Mathlib.Data.List.Defs
 
 #align_import data.list.zip from "leanprover-community/mathlib"@"134625f523e737f650a6ea7f0c82a6177e45e622"
 

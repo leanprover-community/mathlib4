@@ -6,7 +6,6 @@ Authors: Yaël Dillies, Eric Wieser
 import Mathlib.Algebra.Order.Module.OrderedSMul
 import Mathlib.Algebra.Order.Module.Pointwise
 import Mathlib.Data.Real.Archimedean
-import Mathlib.Data.Set.Pointwise.SMul
 
 #align_import data.real.pointwise from "leanprover-community/mathlib"@"dde670c9a3f503647fd5bfdf1037bad526d3397a"
 

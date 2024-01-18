@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Data.Finite.Defs
-import Mathlib.Data.Subtype
 import Mathlib.Data.Bool.Basic
 import Mathlib.Init.Data.Fin.Basic
 import Mathlib.Tactic.Common

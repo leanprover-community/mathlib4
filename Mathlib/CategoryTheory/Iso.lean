@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tim Baumann, Stephen Morgan, Scott Morrison, Floris van Doorn
 -/
 import Mathlib.Tactic.CategoryTheory.Reassoc
-import Mathlib.CategoryTheory.Functor.Basic
 
 #align_import category_theory.isomorphism from "leanprover-community/mathlib"@"8350c34a64b9bc3fc64335df8006bffcadc7baa6"
 

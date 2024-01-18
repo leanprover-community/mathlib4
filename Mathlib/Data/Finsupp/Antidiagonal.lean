@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Yury Kudryashov
 import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Data.Finsupp.Multiset
 import Mathlib.Data.Multiset.Antidiagonal
-import Mathlib.Data.Finsupp.Defs
 
 #align_import data.finsupp.antidiagonal from "leanprover-community/mathlib"@"0a0ec35061ed9960bf0e7ffb0335f44447b58977"
 
