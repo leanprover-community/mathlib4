@@ -297,14 +297,16 @@ end deriv
 
 namespace ContinuousMultilinearMap
 
+--TODO: move to appropriate place
+
 variable {R : Type*} {ι : Type*} {M₁ : ι → Type*} {M₂ : Type*} [Ring R]
   [(i : ι) → AddCommGroup (M₁ i)] [AddCommGroup M₂] [(i : ι) → Module R (M₁ i)] [Module R M₂]
   [(i : ι) → TopologicalSpace (M₁ i)] [(i : ι) → TopologicalAddGroup (M₁ i)]
   [(i : ι) → ContinuousConstSMul R (M₁ i)] [TopologicalSpace M₂] [TopologicalAddGroup M₂]
   [ContinuousConstSMul R M₂] [Fintype ι] (f : ContinuousMultilinearMap R M₁ M₂)
 
-/-- This is the nth term of a formal multilinear series corresponding to the multilinear map `f`.
-We use a linear order on ι to identify all finsets of `ι` of cardinality `n` to `Fin n`.-/
+/-- Realize a ContinuousMultilinearMap on `∀ i : ι, M₁ i` as the evaluation of a
+FormalMultilinearSeries by choosing an arbitrary identification `ι ≃ Fin (Fintype.card ι)`. -/
 noncomputable def toFormalMultilinearSeries : FormalMultilinearSeries R (∀ i, M₁ i) M₂ :=
   fun n ↦ if h : Fintype.card ι = n then
     (f.compContinuousLinearMap ContinuousLinearMap.proj).domDomCongr (Fintype.equivFinOfCardEq h)
@@ -312,6 +314,8 @@ noncomputable def toFormalMultilinearSeries : FormalMultilinearSeries R (∀ i, 
 
 open scoped BigOperators
 
+/-- The derivative of a continuous multilinear map, as a continuous linear map
+from `∀ i, M₁ i` to `M₂`; see `ContinuousMultilinearMap.hasFDerivAt`. -/
 def linearDeriv [DecidableEq ι] (x : (i : ι) → M₁ i) : ((i : ι) → M₁ i) →L[R] M₂ :=
   ∑ i : ι, (f.toContinuousLinearMap x i).comp (.proj i)
 
