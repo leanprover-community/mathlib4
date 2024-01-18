@@ -94,7 +94,7 @@ def HomogeneousIdeal.toIdeal (I : HomogeneousIdeal 𝒜) : Ideal A :=
   I.toSubmodule
 #align homogeneous_ideal.to_ideal HomogeneousIdeal.toIdeal
 
-lemma HomogeneousIdeal.isHomogeneous (I : HomogeneousIdeal 𝒜) : I.toIdeal.IsHomogeneous 𝒜 := I.2
+theorem HomogeneousIdeal.isHomogeneous (I : HomogeneousIdeal 𝒜) : I.toIdeal.IsHomogeneous 𝒜 := I.2
 #align homogeneous_ideal.is_homogeneous HomogeneousIdeal.isHomogeneous
 
 theorem HomogeneousSubmodule.isHomogeneous (I : HomogeneousSubmodule A ℳ) :
@@ -106,7 +106,7 @@ theorem HomogeneousSubmodule.toSubmodule_injective :
       (HomogeneousSubmodule.toSubmodule : HomogeneousSubmodule A ℳ→ Submodule A M) :=
   fun ⟨x, hx⟩ ⟨y, hy⟩ => fun (h : x = y) => by simp [h]
 
-lemma HomogeneousIdeal.toIdeal_injective :
+theorem HomogeneousIdeal.toIdeal_injective :
     Function.Injective (HomogeneousIdeal.toIdeal : HomogeneousIdeal 𝒜 → Ideal A) :=
   HomogeneousSubmodule.toSubmodule_injective
 #align homogeneous_ideal.to_ideal_injective HomogeneousIdeal.toIdeal_injective
@@ -124,7 +124,7 @@ theorem HomogeneousSubmodule.ext
   HomogeneousSubmodule.toSubmodule_injective h
 
 @[ext]
-lemma HomogeneousIdeal.ext
+theorem HomogeneousIdeal.ext
     {I J : HomogeneousIdeal 𝒜} (h : I.toIdeal = J.toIdeal) : I = J :=
   HomogeneousSubmodule.ext h
 #align homogeneous_ideal.ext HomogeneousIdeal.ext
@@ -135,7 +135,7 @@ theorem HomogeneousSubmodule.mem_iff {I : HomogeneousSubmodule A ℳ} {x : M} :
   Iff.rfl
 
 @[simp]
-lemma HomogeneousIdeal.mem_iff {I : HomogeneousIdeal 𝒜} {x : A} :
+theorem HomogeneousIdeal.mem_iff {I : HomogeneousIdeal 𝒜} {x : A} :
     x ∈ I.toIdeal ↔ x ∈ I :=
   Iff.rfl
 #align homogeneous_ideal.mem_iff HomogeneousIdeal.mem_iff
@@ -162,14 +162,14 @@ def Ideal.homogeneousCore' (I : Ideal A) : Ideal A :=
 theorem Submodule.homogeneousCore'_mono : Monotone (Submodule.homogeneousCore' (A := A) ℳ) :=
   fun _ _ I_le_J => Submodule.span_mono <| Set.image_subset _ fun _ => @I_le_J _
 
-lemma Ideal.homogeneousCore'_mono : Monotone (Ideal.homogeneousCore' 𝒜) :=
+theorem Ideal.homogeneousCore'_mono : Monotone (Ideal.homogeneousCore' 𝒜) :=
   Submodule.homogeneousCore'_mono 𝒜
 #align ideal.homogeneous_core'_mono Ideal.homogeneousCore'_mono
 
 theorem Submodule.homogeneousCore'_le : p.homogeneousCore' ℳ ≤ p :=
   Submodule.span_le.2 <| image_preimage_subset _ _
 
-lemma Ideal.homogeneousCore'_le : I.homogeneousCore' 𝒜 ≤ I :=
+theorem Ideal.homogeneousCore'_le : I.homogeneousCore' 𝒜 ≤ I :=
   Submodule.homogeneousCore'_le 𝒜 I
 #align ideal.homogeneous_core'_le Submodule.homogeneousCore'_le
 
@@ -188,7 +188,7 @@ theorem Submodule.isHomogeneous_iff_forall_subset :
     p.IsHomogeneous ℳ ↔ ∀ i, (p : Set M) ⊆ GradedModule.proj ℳ i ⁻¹' (p : Set M) :=
   Iff.rfl
 
-lemma Ideal.isHomogeneous_iff_forall_subset :
+theorem Ideal.isHomogeneous_iff_forall_subset :
     I.IsHomogeneous 𝒜 ↔ ∀ i, (I : Set A) ⊆ GradedRing.proj 𝒜 i ⁻¹' (I : Set A) :=
   Iff.rfl
 #align ideal.is_homogeneous_iff_forall_subset Ideal.isHomogeneous_iff_forall_subset
@@ -197,7 +197,7 @@ theorem Submodule.isHomogeneous_iff_subset_iInter :
     p.IsHomogeneous ℳ ↔ (p : Set M) ⊆ ⋂ i, GradedModule.proj ℳ i ⁻¹' ↑p :=
   subset_iInter_iff.symm
 
-lemma Ideal.isHomogeneous_iff_subset_iInter :
+theorem Ideal.isHomogeneous_iff_subset_iInter :
     I.IsHomogeneous 𝒜 ↔ (I : Set A) ⊆ ⋂ i, GradedRing.proj 𝒜 i ⁻¹' ↑I :=
   subset_iInter_iff.symm
 #align ideal.is_homogeneous_iff_subset_Inter Ideal.isHomogeneous_iff_subset_iInter
@@ -216,7 +216,7 @@ theorem Submodule.smul_homogeneous_element_mem_of_mem {p : Submodule A M} (r : A
   · exact Submodule.smul_mem _ _ hx₂
   · exact p.zero_mem
 
-lemma Ideal.mul_homogeneous_element_mem_of_mem {I : Ideal A} (r x : A)
+theorem Ideal.mul_homogeneous_element_mem_of_mem {I : Ideal A} (r x : A)
     (hx₁ : Homogeneous 𝒜 x) (hx₂ : x ∈ I) (j : ιA) : GradedRing.proj 𝒜 j (r * x) ∈ I :=
   Submodule.smul_homogeneous_element_mem_of_mem 𝒜 𝒜 r x hx₁ hx₂ j
 #align ideal.mul_homogeneous_element_mem_of_mem Ideal.mul_homogeneous_element_mem_of_mem
@@ -233,7 +233,7 @@ theorem Submodule.homogeneous_span (s : Set M) (h : ∀ x ∈ s, Homogeneous ℳ
   · exact h _ (hc hz1)
   · exact Submodule.subset_span (hc hz1)
 
-lemma Ideal.homogeneous_span (s : Set A) (h : ∀ x ∈ s, Homogeneous 𝒜 x) :
+theorem Ideal.homogeneous_span (s : Set A) (h : ∀ x ∈ s, Homogeneous 𝒜 x) :
     (Ideal.span s).IsHomogeneous 𝒜 :=
   Submodule.homogeneous_span 𝒜 𝒜 s h
 #align ideal.is_homogeneous_span Ideal.homogeneous_span
@@ -252,14 +252,14 @@ def Ideal.homogeneousCore : HomogeneousIdeal 𝒜 := Submodule.homogeneousCore �
 theorem Submodule.homogeneousCore_mono : Monotone (Submodule.homogeneousCore 𝒜 ℳ) :=
   Submodule.homogeneousCore'_mono ℳ
 
-lemma Ideal.homogeneousCore_mono : Monotone (Ideal.homogeneousCore 𝒜) :=
+theorem Ideal.homogeneousCore_mono : Monotone (Ideal.homogeneousCore 𝒜) :=
   Ideal.homogeneousCore'_mono 𝒜
 #align ideal.homogeneous_core_mono Ideal.homogeneousCore_mono
 
 theorem Submodule.toSubmodule_homogeneousCore_le : (p.homogeneousCore 𝒜 ℳ).toSubmodule ≤ p :=
   Submodule.homogeneousCore'_le ℳ p
 
-lemma Ideal.toIdeal_homogeneousCore_le : (I.homogeneousCore 𝒜).toIdeal ≤ I :=
+theorem Ideal.toIdeal_homogeneousCore_le : (I.homogeneousCore 𝒜).toIdeal ≤ I :=
   Ideal.homogeneousCore'_le 𝒜 I
 #align ideal.to_ideal_homogeneous_core_le Ideal.toIdeal_homogeneousCore_le
 
@@ -270,7 +270,7 @@ theorem Submodule.mem_homogeneousCore_of_homogeneous_of_mem {x : M} (h : Homogen
   Submodule.subset_span ⟨⟨x, h⟩, hmem, rfl⟩
 
 variable {𝒜}
-lemma Ideal.mem_homogeneousCore_of_homogeneous_of_mem {x : A} (h : Homogeneous 𝒜 x) (hmem : x ∈ I) :
+theorem Ideal.mem_homogeneousCore_of_homogeneous_of_mem {x : A} (h : Homogeneous 𝒜 x) (hmem : x ∈ I) :
     x ∈ I.homogeneousCore 𝒜 :=
   Submodule.mem_homogeneousCore_of_homogeneous_of_mem 𝒜 I h hmem
 #align ideal.mem_homogeneous_core_of_is_homogeneous_of_mem Ideal.mem_homogeneousCore_of_homogeneous_of_mem
@@ -283,7 +283,7 @@ theorem Submodule.IsHomogeneous.toSubmodule_homogeneousCore_eq_self (h : p.IsHom
   rw [← DirectSum.sum_support_decompose ℳ x]
   exact Submodule.sum_mem _ fun j _ => Submodule.subset_span ⟨⟨_, homogeneous_coe _⟩, h _ hx, rfl⟩
 
-lemma Ideal.IsHomogeneous.toIdeal_homogeneousCore_eq_self (h : I.IsHomogeneous 𝒜) :
+theorem Ideal.IsHomogeneous.toIdeal_homogeneousCore_eq_self (h : I.IsHomogeneous 𝒜) :
     (I.homogeneousCore 𝒜).toIdeal = I :=
   Submodule.IsHomogeneous.toSubmodule_homogeneousCore_eq_self I h
 #align ideal.is_homogeneous.to_ideal_homogeneous_core_eq_self Ideal.IsHomogeneous.toIdeal_homogeneousCore_eq_self
@@ -295,7 +295,7 @@ theorem HomogeneousSubmodule.toSubmodule_homogeneousCore_eq_self (p : Homogeneou
   convert Submodule.IsHomogeneous.toSubmodule_homogeneousCore_eq_self _ p.isHomogeneous
 
 @[simp]
-lemma HomogeneousIdeal.toIdeal_homogeneousCore_eq_self (I : HomogeneousIdeal 𝒜) :
+theorem HomogeneousIdeal.toIdeal_homogeneousCore_eq_self (I : HomogeneousIdeal 𝒜) :
     I.toIdeal.homogeneousCore 𝒜 = I :=
   HomogeneousSubmodule.toSubmodule_homogeneousCore_eq_self I
 #align homogeneous_ideal.to_ideal_homogeneous_core_eq_self HomogeneousIdeal.toIdeal_homogeneousCore_eq_self
@@ -306,7 +306,7 @@ theorem Submodule.IsHomogeneous.iff_eq :
     p.IsHomogeneous ℳ ↔ (p.homogeneousCore 𝒜 ℳ).toSubmodule = p :=
   ⟨fun hI => hI.toSubmodule_homogeneousCore_eq_self, fun hI => hI ▸ (p.homogeneousCore 𝒜 ℳ).2⟩
 
-lemma Ideal.IsHomogeneous.iff_eq : I.IsHomogeneous 𝒜 ↔ (I.homogeneousCore 𝒜).toIdeal = I :=
+theorem Ideal.IsHomogeneous.iff_eq : I.IsHomogeneous 𝒜 ↔ (I.homogeneousCore 𝒜).toIdeal = I :=
   Submodule.IsHomogeneous.iff_eq 𝒜 I
 #align ideal.is_homogeneous.iff_eq Ideal.IsHomogeneous.iff_eq
 
@@ -670,7 +670,7 @@ variable [CommSemiring A] [Module A M]
 
 variable [AddMonoid ιA] [SetLike σA A] [AddSubmonoidClass σA A] [GradedRing 𝒜]
 
--- In general, submodules cannot be multiplied, so this lemma is not generalized
+-- In general, submodules cannot be multiplied, so this theorem is not generalized
 theorem Ideal.IsHomogeneous.mul {I J : Ideal A} (HI : I.IsHomogeneous 𝒜) (HJ : J.IsHomogeneous 𝒜) :
     (I * J).IsHomogeneous 𝒜 := by
   rw [Ideal.IsHomogeneous.iff_exists 𝒜] at HI HJ ⊢
@@ -740,7 +740,7 @@ theorem Submodule.homogeneousCore_eq_sSup :
     p.homogeneousCore 𝒜 ℳ = sSup { q : HomogeneousSubmodule A ℳ | q.toSubmodule ≤ p } :=
   Eq.symm <| IsLUB.sSup_eq <| (Submodule.homogeneousCore.gc 𝒜 ℳ).isGreatest_u.isLUB
 
-lemma Ideal.homogeneousCore_eq_sSup :
+theorem Ideal.homogeneousCore_eq_sSup :
     I.homogeneousCore 𝒜 = sSup { J : HomogeneousIdeal 𝒜 | J.toIdeal ≤ I } :=
   Submodule.homogeneousCore_eq_sSup 𝒜 𝒜 I
 #align ideal.homogeneous_core_eq_Sup Ideal.homogeneousCore_eq_sSup
