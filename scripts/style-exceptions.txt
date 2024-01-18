@@ -1,130 +1,66 @@
-Mathlib/Algebra/Ring/Basic.lean : line 0 : ERR_COP : Malformed or missing copyright header
-Mathlib/Algebra/Ring/Basic.lean : line 1 : ERR_COP : Malformed or missing copyright header
-Mathlib/Algebra/Ring/Basic.lean : line 12 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Algebra/Ring/Basic.lean : line 2 : ERR_COP : Malformed or missing copyright header
-Mathlib/Algebra/Ring/Basic.lean : line 3 : ERR_COP : Malformed or missing copyright header
-Mathlib/Algebra/Ring/Basic.lean : line 4 : ERR_COP : Malformed or missing copyright header
-Mathlib/Algebra/Ring/Basic.lean : line 5 : ERR_COP : Malformed or missing copyright header
-Mathlib/Algebra/Ring/Basic.lean : line 7 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/Array/Basic.lean : line 0 : ERR_COP : Malformed or missing copyright header
 Mathlib/Data/Array/Basic.lean : line 1 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/Array/Basic.lean : line 2 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/Array/Basic.lean : line 4 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/Array/Basic.lean : line 4 : ERR_MOD : Module docstring missing, or too late
+Mathlib/Data/Array/Basic.lean : line 1 : ERR_COP : Malformed or missing copyright header
+Mathlib/Data/Array/Basic.lean : line 3 : ERR_COP : Malformed or missing copyright header
+Mathlib/Data/Array/Basic.lean : line 3 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Data/BinaryHeap.lean : line 8 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Data/ByteArray.lean : line 0 : ERR_COP : Malformed or missing copyright header
+Mathlib/Data/ByteArray.lean : line 1 : ERR_COP : Malformed or missing copyright header
 Mathlib/Data/ByteArray.lean : line 1 : ERR_COP : Malformed or missing copyright header
 Mathlib/Data/ByteArray.lean : line 2 : ERR_COP : Malformed or missing copyright header
 Mathlib/Data/ByteArray.lean : line 3 : ERR_COP : Malformed or missing copyright header
 Mathlib/Data/ByteArray.lean : line 5 : ERR_COP : Malformed or missing copyright header
 Mathlib/Data/ByteArray.lean : line 5 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Data/Fin/Basic.lean : line 0 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/Fin/Basic.lean : line 1 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/Fin/Basic.lean : line 2 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/Fin/Basic.lean : line 3 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/Fin/Basic.lean : line 4 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/Fin/Basic.lean : line 5 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/Fin/Basic.lean : line 7 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/Fin/Basic.lean : line 7 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Data/Int/Basic.lean : line 235 : ERR_LIN : Line has more than 100 characters
-Mathlib/Data/Int/Basic.lean : line 263 : ERR_LIN : Line has more than 100 characters
-Mathlib/Data/Int/Basic.lean : line 269 : ERR_LIN : Line has more than 100 characters
-Mathlib/Data/Int/Basic.lean : line 283 : ERR_LIN : Line has more than 100 characters
-Mathlib/Data/Int/Basic.lean : line 286 : ERR_LIN : Line has more than 100 characters
-Mathlib/Data/List/Basic.lean : line 0 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/List/Basic.lean : line 1 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/List/Basic.lean : line 10 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/List/Basic.lean : line 10 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Data/List/Basic.lean : line 2 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/List/Basic.lean : line 3 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/List/Basic.lean : line 4 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/List/Basic.lean : line 5 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/List/Basic.lean : line 6 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/List/Basic.lean : line 7 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/List/Basic.lean : line 8 : ERR_COP : Malformed or missing copyright header
 Mathlib/Data/List/Card.lean : line 1 : ERR_COP : Malformed or missing copyright header
 Mathlib/Data/List/Card.lean : line 12 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Data/Nat/Basic.lean : line 0 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/Nat/Basic.lean : line 1 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/Nat/Basic.lean : line 2 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/Nat/Basic.lean : line 3 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/Nat/Basic.lean : line 4 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/Nat/Basic.lean : line 5 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/Nat/Basic.lean : line 6 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/Nat/Basic.lean : line 8 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/Nat/Basic.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Data/QPF/Multivariate/Basic.lean : line 75 : ERR_LIN : Line has more than 100 characters
-Mathlib/Data/String/Defs.lean : line 0 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/String/Defs.lean : line 1 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/String/Defs.lean : line 3 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/String/Defs.lean : line 3 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Data/String/Lemmas.lean : line 0 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/String/Lemmas.lean : line 1 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/String/Lemmas.lean : line 2 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/String/Lemmas.lean : line 4 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/String/Lemmas.lean : line 4 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Data/UInt.lean : line 0 : ERR_COP : Malformed or missing copyright header
+Mathlib/Data/String/Lemmas.lean : line 9 : ERR_MOD : Module docstring missing, or too late
+Mathlib/Data/UInt.lean : line 1 : ERR_COP : Malformed or missing copyright header
 Mathlib/Data/UInt.lean : line 1 : ERR_COP : Malformed or missing copyright header
 Mathlib/Data/UInt.lean : line 2 : ERR_COP : Malformed or missing copyright header
 Mathlib/Data/UInt.lean : line 3 : ERR_COP : Malformed or missing copyright header
 Mathlib/Data/UInt.lean : line 4 : ERR_COP : Malformed or missing copyright header
 Mathlib/Data/UInt.lean : line 5 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/UInt.lean : line 7 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/UInt.lean : line 7 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Data/UnionFind.lean : line 10 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Init/Algebra/Functions.lean : line 9 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Init/Data/Int/Basic.lean : line 13 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Init/Data/Nat/Basic.lean : line 7 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Init/Data/Nat/Lemmas.lean : line 10 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Init/Function.lean : line 7 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Init/Logic.lean : line 16 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Init/Meta/WellFoundedTactics.lean : line 11 : ERR_MOD : Module docstring missing, or too late
+Mathlib/Data/UInt.lean : line 6 : ERR_COP : Malformed or missing copyright header
+Mathlib/Data/UInt.lean : line 8 : ERR_COP : Malformed or missing copyright header
+Mathlib/Data/UInt.lean : line 8 : ERR_MOD : Module docstring missing, or too late
+Mathlib/Data/UnionFind.lean : line 8 : ERR_MOD : Module docstring missing, or too late
+Mathlib/Init/Data/Int/Basic.lean : line 12 : ERR_MOD : Module docstring missing, or too late
+Mathlib/Init/Data/Nat/Basic.lean : line 10 : ERR_MOD : Module docstring missing, or too late
+Mathlib/Init/Data/Nat/Lemmas.lean : line 12 : ERR_MOD : Module docstring missing, or too late
+Mathlib/Init/Logic.lean : line 18 : ERR_MOD : Module docstring missing, or too late
+Mathlib/Init/Meta/WellFoundedTactics.lean : line 13 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Lean/Exception.lean : line 1 : ERR_COP : Malformed or missing copyright header
 Mathlib/Lean/Exception.lean : line 4 : ERR_AUT : Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'
-Mathlib/Lean/Exception.lean : line 7 : ERR_MOD : Module docstring missing, or too late
+Mathlib/Lean/Exception.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Lean/Expr/ReplaceRec.lean : line 12 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Lean/LocalContext.lean : line 8 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Logic/Equiv/PartialEquiv.lean : line 1 : ERR_COP : Malformed or missing copyright header
-Mathlib/Logic/Equiv/PartialEquiv.lean : line 12 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Logic/Equiv/PartialEquiv.lean : line 4 : ERR_AUT : Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'
-Mathlib/Logic/Equiv/MfldSimpsAttr.lean : line 1 : ERR_COP : Malformed or missing copyright header
-Mathlib/Logic/Equiv/MfldSimpsAttr.lean : line 4 : ERR_AUT : Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'
-Mathlib/Logic/Equiv/MfldSimpsAttr.lean : line 9 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Mathport/Attributes.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Mathport/Rename.lean : line 9 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Mathport/Syntax.lean : line 74 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Tactic/Abstract.lean : line 8 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Tactic/ApplyWith.lean : line 0 : ERR_COP : Malformed or missing copyright header
+Mathlib/Tactic/ApplyWith.lean : line 1 : ERR_COP : Malformed or missing copyright header
 Mathlib/Tactic/ApplyWith.lean : line 1 : ERR_COP : Malformed or missing copyright header
 Mathlib/Tactic/ApplyWith.lean : line 2 : ERR_COP : Malformed or missing copyright header
-Mathlib/Tactic/ApplyWith.lean : line 4 : ERR_COP : Malformed or missing copyright header
-Mathlib/Tactic/ApplyWith.lean : line 4 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Tactic/Basic.lean : line 11 : ERR_MOD : Module docstring missing, or too late
+Mathlib/Tactic/ApplyWith.lean : line 3 : ERR_COP : Malformed or missing copyright header
+Mathlib/Tactic/ApplyWith.lean : line 5 : ERR_COP : Malformed or missing copyright header
+Mathlib/Tactic/ApplyWith.lean : line 5 : ERR_MOD : Module docstring missing, or too late
+Mathlib/Tactic/Basic.lean : line 13 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/ByContra.lean : line 1 : ERR_COP : Malformed or missing copyright header
 Mathlib/Tactic/ByContra.lean : line 4 : ERR_AUT : Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'
-Mathlib/Tactic/ByContra.lean : line 9 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Tactic/ClearExcept.lean : line 9 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Tactic/Coe.lean : line 9 : ERR_MOD : Module docstring missing, or too late
+Mathlib/Tactic/ByContra.lean : line 8 : ERR_MOD : Module docstring missing, or too late
+Mathlib/Tactic/ClearExcept.lean : line 8 : ERR_MOD : Module docstring missing, or too late
+Mathlib/Tactic/Coe.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/Constructor.lean : line 9 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Tactic/Core.lean : line 10 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Tactic/Existsi.lean : line 9 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Tactic/Expect.lean : line 9 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Tactic/Have.lean : line 10 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Tactic/LeftRight.lean : line 9 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Tactic/NormCast/Tactic.lean : line 13 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Tactic/PrintPrefix.lean : line 9 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Tactic/PushNeg.lean : line 13 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Tactic/Recover.lean : line 10 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Tactic/Rename.lean : line 9 : ERR_MOD : Module docstring missing, or too late
+Mathlib/Tactic/Existsi.lean : line 7 : ERR_MOD : Module docstring missing, or too late
+Mathlib/Tactic/PushNeg.lean : line 14 : ERR_MOD : Module docstring missing, or too late
+Mathlib/Tactic/Recover.lean : line 9 : ERR_MOD : Module docstring missing, or too late
+Mathlib/Tactic/Rename.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/RenameBVar.lean : line 10 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/Replace.lean : line 9 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/Set.lean : line 4 : ERR_AUT : Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'
-Mathlib/Tactic/Set.lean : line 9 : ERR_MOD : Module docstring missing, or too late
+Mathlib/Tactic/Set.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/SimpRw.lean : line 9 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/Substs.lean : line 1 : ERR_COP : Malformed or missing copyright header
 Mathlib/Tactic/Substs.lean : line 4 : ERR_AUT : Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'
 Mathlib/Tactic/Substs.lean : line 8 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Tactic/TypeCheck.lean : line 0 : ERR_COP : Malformed or missing copyright header
+Mathlib/Tactic/TypeCheck.lean : line 1 : ERR_COP : Malformed or missing copyright header
 Mathlib/Tactic/TypeCheck.lean : line 1 : ERR_COP : Malformed or missing copyright header
 Mathlib/Tactic/TypeCheck.lean : line 3 : ERR_COP : Malformed or missing copyright header
 Mathlib/Tactic/TypeCheck.lean : line 3 : ERR_MOD : Module docstring missing, or too late
