@@ -4,10 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard
 -/
 import Mathlib.Data.Real.Basic
-import Mathlib.Data.ENNReal.Basic
-import Mathlib.Data.ENNReal.Inv
-import Mathlib.Data.ENNReal.Operations
-import Mathlib.Data.ENNReal.Real
+import Mathlib.Data.Real.ENNReal
 import Mathlib.Data.Sign
 
 #align_import data.real.ereal from "leanprover-community/mathlib"@"2196ab363eb097c008d4497125e0dde23fb36db2"
