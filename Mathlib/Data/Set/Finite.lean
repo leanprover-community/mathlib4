@@ -1211,17 +1211,13 @@ theorem Finite.dinduction_on {C : ∀ s : Set α, s.Finite → Prop} (s : Set α
 theorem Finite.induction_to {C : Set α → Prop} {S : Set α} (h : S.Finite)
     (S0 : Set α) (hS0 : S0 ⊆ S) (H0 : C S0) (H1 : ∀ s ⊂ S, C s → ∃ a ∈ S \ s, C (insert a s)) :
     C S := by
-  let M := {T : Set α // T ⊆ S}
   have : Finite S := Finite.to_subtype h
-  have : Finite M := Finite.of_equiv (Set S) (Equiv.Set.powerset S).symm
-  let P : M → Prop := C ∘ Subtype.val
-  change P ⟨S, le_rfl⟩
-  replace H0 : P ⟨S0, hS0⟩ := H0
-  refine' Finite.to_wellFoundedGT.wf.induction_bot' (fun s hs hs' ↦ _) H0
+  have : Finite {T : Set α // T ⊆ S} := Finite.of_equiv (Set S) (Equiv.Set.powerset S).symm
+  rw [← Subtype.coe_mk (p := (· ⊆ S)) _ le_rfl]
+  rw [← Subtype.coe_mk (p := (· ⊆ S)) _ hS0] at H0
+  refine Finite.to_wellFoundedGT.wf.induction_bot' (fun s hs hs' ↦ ?_) H0
   obtain ⟨a, ⟨ha1, ha2⟩, ha'⟩ := H1 s (ssubset_of_ne_of_subset hs s.2) hs'
-  rw [show insert a s.1 = Subtype.val (⟨insert a s.1, insert_subset ha1 s.2⟩ : M) from rfl] at ha'
-  refine' ⟨_, Set.ssubset_insert _, ha'⟩
-  exact ha2
+  exact ⟨⟨insert a s.1, insert_subset ha1 s.2⟩, Set.ssubset_insert ha2, ha'⟩
 
 /-- Induction up to `univ`. -/
 theorem Finite.induction_to_univ [Finite α] {C : Set α → Prop} (S0 : Set α)
