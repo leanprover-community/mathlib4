@@ -33,7 +33,7 @@ universe w v u
 
 namespace CategoryTheory.Limits.Concrete
 
-attribute [local instance] ConcreteCategory.funLike ConcreteCategory.hasCoeToSort
+attribute [local instance] ConcreteCategory.instDFunLike ConcreteCategory.hasCoeToSort
 
 variable {C : Type u} [Category.{v} C]
 

@@ -80,7 +80,7 @@ instance concreteCategory : ConcreteCategory.{v} (QuadraticModuleCat.{v} R) wher
     { obj := fun M => M
       map := @fun M N f => f.toIsometry }
   forget_faithful :=
-    { map_injective := @fun M N => FunLike.coe_injective.comp <| Hom.toIsometry_injective _ _ }
+    { map_injective := @fun M N => DFunLike.coe_injective.comp <| Hom.toIsometry_injective _ _ }
 
 instance hasForgetToModule : HasForget₂ (QuadraticModuleCat R) (ModuleCat R) where
   forget₂ :=
@@ -107,8 +107,8 @@ variable {Q₁ : QuadraticForm R X} {Q₂ : QuadraticForm R Y} {Q₃ : Quadratic
 def ofIso (e : Q₁.IsometryEquiv Q₂) : QuadraticModuleCat.of Q₁ ≅ QuadraticModuleCat.of Q₂ where
   hom := ⟨e.toIsometry⟩
   inv := ⟨e.symm.toIsometry⟩
-  hom_inv_id := Hom.ext _ _ <| FunLike.ext _ _ e.left_inv
-  inv_hom_id := Hom.ext _ _ <| FunLike.ext _ _ e.right_inv
+  hom_inv_id := Hom.ext _ _ <| DFunLike.ext _ _ e.left_inv
+  inv_hom_id := Hom.ext _ _ <| DFunLike.ext _ _ e.right_inv
 
 @[simp] theorem ofIso_refl : ofIso (IsometryEquiv.refl Q₁) = .refl _ :=
   rfl

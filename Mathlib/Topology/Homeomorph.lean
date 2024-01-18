@@ -61,9 +61,9 @@ instance : EquivLike (X ≃ₜ Y) X Y where
   inv := fun h => h.toEquiv.symm
   left_inv := fun h => h.left_inv
   right_inv := fun h => h.right_inv
-  coe_injective' := fun _ _ H _ => toEquiv_injective <| FunLike.ext' H
+  coe_injective' := fun _ _ H _ => toEquiv_injective <| DFunLike.ext' H
 
-instance : CoeFun (X ≃ₜ Y) fun _ ↦ X → Y := ⟨FunLike.coe⟩
+instance : CoeFun (X ≃ₜ Y) fun _ ↦ X → Y := ⟨DFunLike.coe⟩
 
 @[simp] theorem homeomorph_mk_coe (a : X ≃ Y) (b c) : (Homeomorph.mk a b c : X → Y) = a :=
   rfl
@@ -106,7 +106,7 @@ theorem coe_symm_toEquiv (h : X ≃ₜ Y) : ⇑h.toEquiv.symm = h.symm :=
 
 @[ext]
 theorem ext {h h' : X ≃ₜ Y} (H : ∀ x, h x = h' x) : h = h' :=
-  FunLike.ext _ _ H
+  DFunLike.ext _ _ H
 #align homeomorph.ext Homeomorph.ext
 
 /-- Identity map as a homeomorphism. -/
@@ -233,6 +233,9 @@ theorem image_preimage (h : X ≃ₜ Y) (s : Set Y) : h '' (h ⁻¹' s) = s :=
 theorem preimage_image (h : X ≃ₜ Y) (s : Set X) : h ⁻¹' (h '' s) = s :=
   h.toEquiv.preimage_image s
 #align homeomorph.preimage_image Homeomorph.preimage_image
+
+lemma image_compl (h : X ≃ₜ Y) (s : Set X) : h '' (sᶜ) = (h '' s)ᶜ :=
+  h.toEquiv.image_compl s
 
 protected theorem inducing (h : X ≃ₜ Y) : Inducing h :=
   inducing_of_inducing_compose h.continuous h.symm.continuous <| by
@@ -427,6 +430,11 @@ theorem map_nhds_eq (h : X ≃ₜ Y) (x : X) : map h (𝓝 x) = 𝓝 (h x) :=
   h.embedding.map_nhds_of_mem _ (by simp)
 #align homeomorph.map_nhds_eq Homeomorph.map_nhds_eq
 
+@[simp]
+theorem map_punctured_nhds_eq (h : X ≃ₜ Y) (x : X) : map h (𝓝[≠] x) = 𝓝[≠] (h x) := by
+  convert h.embedding.map_nhdsWithin_eq ({x}ᶜ) x
+  rw [h.image_compl, Set.image_singleton]
+
 theorem symm_map_nhds_eq (h : X ≃ₜ Y) (x : X) : map h.symm (𝓝 (h x)) = 𝓝 x := by
   rw [h.symm.map_nhds_eq, h.symm_apply_apply]
 #align homeomorph.symm_map_nhds_eq Homeomorph.symm_map_nhds_eq
@@ -497,7 +505,7 @@ theorem comp_continuousWithinAt_iff (h : X ≃ₜ Y) (f : Z → X) (s : Set Z) (
 theorem comp_isOpenMap_iff (h : X ≃ₜ Y) {f : Z → X} : IsOpenMap (h ∘ f) ↔ IsOpenMap f := by
   refine' ⟨_, fun hf => h.isOpenMap.comp hf⟩
   intro hf
-  rw [← Function.comp.left_id f, ← h.symm_comp_self, Function.comp.assoc]
+  rw [← Function.id_comp f, ← h.symm_comp_self, Function.comp.assoc]
   exact h.symm.isOpenMap.comp hf
 #align homeomorph.comp_is_open_map_iff Homeomorph.comp_isOpenMap_iff
 
@@ -505,7 +513,7 @@ theorem comp_isOpenMap_iff (h : X ≃ₜ Y) {f : Z → X} : IsOpenMap (h ∘ f) 
 theorem comp_isOpenMap_iff' (h : X ≃ₜ Y) {f : Y → Z} : IsOpenMap (f ∘ h) ↔ IsOpenMap f := by
   refine' ⟨_, fun hf => hf.comp h.isOpenMap⟩
   intro hf
-  rw [← Function.comp.right_id f, ← h.self_comp_symm, ← Function.comp.assoc]
+  rw [← Function.comp_id f, ← h.self_comp_symm, ← Function.comp.assoc]
   exact hf.comp h.symm.isOpenMap
 #align homeomorph.comp_is_open_map_iff' Homeomorph.comp_isOpenMap_iff'
 
