@@ -973,8 +973,8 @@ end CommSemiRing
 
 end PrimeSpectrum
 
-section CommRing
-variable [CommRing R]
+section CommSemiring
+variable [CommSemiring R]
 
 open PrimeSpectrum in
 /--
@@ -1024,7 +1024,7 @@ lemma zeroLocus_ideal_mem_irreducibleComponents {I : Ideal R} :
 
 end PrimeSpectrum
 
-end CommRing
+end CommSemiring
 
 namespace LocalRing
 
