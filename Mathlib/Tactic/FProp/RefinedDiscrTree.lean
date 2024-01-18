@@ -795,7 +795,7 @@ If `allowRootStar := false`, then we don't allow `e` or the matched key in `d`
 to be a star pattern. -/
 partial def getMatchWithScore (d : RefinedDiscrTree α) (e : Expr) (unify : Bool)
     (config : WhnfCoreConfig) (allowRootStar : Bool := false) : MetaM (Array (Array α × Nat)) := do
-  let e ← mkDTExpr e
+  let e ← mkDTExpr e config
   return (·.qsort (·.2 > ·.2)) <| (do
     match ← GetUnify.exactMatch e d.root.find? with
     | .inr _ =>

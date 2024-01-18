@@ -186,7 +186,7 @@ def tryLocalTheorems (fpropDecl : FPropDecl) (e : Expr)
 
       let thm : FPropTheorem := {
         fpropName := fpropDecl'.fpropName
-        keys := #[]
+        keys := []
         levelParams := #[]
         proof := var.toExpr
         origin := .fvar var.fvarId 
@@ -446,8 +446,11 @@ def constAppCase (fpropDecl : FPropDecl) (e : Expr) (f : Expr) (fprop : Expr →
   trace[Meta.Tactic.fprop.step] "case `P (fun x => f x)` where `f` is declared function\n{← ppExpr e}"
 
   let ext := fpropTheoremsExt.getState (← getEnv)
-  let candidates ← ext.theorems.getMatchWithScore e false { iota := false, beta:=false, zeta := false }
+  let candidates ← ext.theorems.getMatchWithScore e false { iota := false, zeta := false }
   let candidates := candidates.map (·.1) |>.flatten
+
+  let path := (← RefinedDiscrTree.mkDTExpr e { iota := false, zeta := false }).flatten
+  trace[Meta.Tactic.fprop.step] "looking up candidates for: {path}"
 
   trace[Meta.Tactic.fprop.step] "candidate theorems: {← candidates.mapM fun c => ppOrigin c.origin}"
 
