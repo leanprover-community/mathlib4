@@ -131,8 +131,9 @@ theorem mem_fixingSubgroup_iff_subset_fixedBy {s : Set α} {m : M} :
   simp only [mem_fixedBy]
 
 theorem mem_fixingSubgroup_compl_iff_movedBy_subset {s : Set α} {m : M} :
-    m ∈ fixingSubgroup M sᶜ ↔ movedBy α m ⊆ s := by
-  rw [mem_fixingSubgroup_iff_subset_fixedBy, fixedBy_eq_compl_movedBy, Set.compl_subset_compl]
+    m ∈ fixingSubgroup M sᶜ ↔ (fixedBy α m)ᶜ ⊆ s := by
+  rw [mem_fixingSubgroup_iff_subset_fixedBy]
+  exact Set.compl_subset_comm
 
 variable (α)
 
@@ -182,6 +183,6 @@ theorem orbit_fixingSubgroup_compl_subset {s : Set α}
   let ⟨⟨g, g_fixing⟩, g_eq⟩ := MulAction.mem_orbit_iff.mp b_in_orbit
   rw [Submonoid.mk_smul] at g_eq
   rw [mem_fixingSubgroup_compl_iff_movedBy_subset] at g_fixing
-  rwa [← g_eq, smul_mem_of_movedBy_subset g_fixing]
+  rwa [← g_eq, ← smul_mem_of_set_mem_fixedBy (set_mem_fixedBy_of_movedBy_subset g_fixing)]
 
 end Group
