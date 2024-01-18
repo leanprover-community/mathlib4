@@ -1974,10 +1974,10 @@ lemma embedding_coe_iff : Embedding (coeHom α) ↔ Embedding (fun u ↦ ↑u⁻
    fun h ↦ h.comp (Units.homeomorph_inv.embedding)⟩
 
 lemma embedding_units_coe [Group G] [TopologicalSpace G] [DiscreteTopology G] [TopologicalGroup G] :
-  Embedding ((↑) : Gˣ → G) := Embedding.of_discreteTopology _ Units.ext
+    Embedding ((↑) : Gˣ → G) := Embedding.of_discreteTopology _ Units.ext
 
 lemma embedding_coe_inv [Group G] [TopologicalSpace G] [DiscreteTopology G] [TopologicalGroup G] :
-  Embedding (fun u ↦ ↑u⁻¹ : Gˣ → G) := Units.embedding_coe_iff.mp embedding_units_coe
+    Embedding (fun u ↦ ↑u⁻¹ : Gˣ → G) := Units.embedding_coe_iff.mp embedding_units_coe
 
 /-- The topological group isomorphism between the units of a product of two monoids, and the product
 of the units of each monoid. -/

@@ -2014,7 +2014,6 @@ import Mathlib.Data.ZMod.IntUnitsPower
 import Mathlib.Data.ZMod.Module
 import Mathlib.Data.ZMod.Parity
 import Mathlib.Data.ZMod.Quotient
-import Mathlib.Data.ZMod.Topology
 import Mathlib.Data.ZMod.Units
 import Mathlib.Deprecated.Group
 import Mathlib.Deprecated.Ring
@@ -3602,6 +3601,7 @@ import Mathlib.Topology.Instances.Real
 import Mathlib.Topology.Instances.RealVectorSpace
 import Mathlib.Topology.Instances.Sign
 import Mathlib.Topology.Instances.TrivSqZeroExt
+import Mathlib.Topology.Instances.ZMod
 import Mathlib.Topology.Irreducible
 import Mathlib.Topology.IsLocalHomeomorph
 import Mathlib.Topology.List
