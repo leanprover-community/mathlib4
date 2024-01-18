@@ -990,7 +990,8 @@ theorem cycleOf_zpow_apply_self (f : Perm α) (x : α) :
   intro z
   induction z with
   | ofNat z => exact cycleOf_pow_apply_self f x z
-  | negSucc => rw [zpow_negSucc, ← inv_pow, cycleOf_inv, zpow_negSucc, ← inv_pow, cycleOf_pow_apply_self]
+  | negSucc => rw [zpow_negSucc, ← inv_pow, cycleOf_inv, zpow_negSucc,
+      ← inv_pow, cycleOf_pow_apply_self]
 #align equiv.perm.cycle_of_zpow_apply_self Equiv.Perm.cycleOf_zpow_apply_self
 
 theorem SameCycle.cycleOf_apply : SameCycle f x y → cycleOf f x y = f y :=
