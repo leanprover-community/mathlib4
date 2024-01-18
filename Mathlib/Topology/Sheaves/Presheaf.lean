@@ -69,7 +69,7 @@ lemma ext {P Q : Presheaf C X} {f g : P ⟶ Q} (w : ∀ U : Opens X, f.app (op U
   apply w
 
 attribute [local instance] CategoryTheory.ConcreteCategory.hasCoeToSort
-  CategoryTheory.ConcreteCategory.funLike
+  CategoryTheory.ConcreteCategory.instDFunLike
 
 /-- attribute `sheaf_restrict` to mark lemmas related to restricting sheaves -/
 macro "sheaf_restrict" : attr =>

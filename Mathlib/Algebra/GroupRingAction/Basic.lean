@@ -3,8 +3,8 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+import Mathlib.Algebra.Ring.Equiv
 import Mathlib.GroupTheory.GroupAction.Group
 
 #align_import algebra.group_ring_action.basic from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"

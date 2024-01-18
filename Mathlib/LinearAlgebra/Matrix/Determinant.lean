@@ -659,7 +659,7 @@ theorem det_fromBlocks_zero₂₁ (A : Matrix m m R) (B : Matrix m n R) (D : Mat
       dsimp only
       intro h
       have h2 : ∀ x, Perm.sumCongr σ₁.fst σ₁.snd x = Perm.sumCongr σ₂.fst σ₂.snd x :=
-        FunLike.congr_fun h
+        DFunLike.congr_fun h
       simp only [Sum.map_inr, Sum.map_inl, Perm.sumCongr_apply, Sum.forall, Sum.inl.injEq,
         Sum.inr.injEq] at h2
       ext x

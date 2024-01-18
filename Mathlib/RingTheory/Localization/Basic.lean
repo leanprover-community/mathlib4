@@ -538,12 +538,12 @@ theorem lift_eq_iff {x y : R × M} :
 
 @[simp]
 theorem lift_comp : (lift hg).comp (algebraMap R S) = g :=
-  RingHom.ext <| (FunLike.ext_iff (F := MonoidHom _ _)).1 <| (toLocalizationMap M S).lift_comp _
+  RingHom.ext <| (DFunLike.ext_iff (F := MonoidHom _ _)).1 <| (toLocalizationMap M S).lift_comp _
 #align is_localization.lift_comp IsLocalization.lift_comp
 
 @[simp]
 theorem lift_of_comp (j : S →+* P) : lift (isUnit_comp M j) = j :=
-  RingHom.ext <| (FunLike.ext_iff (F := MonoidHom _ _)).1 <|
+  RingHom.ext <| (DFunLike.ext_iff (F := MonoidHom _ _)).1 <|
     (toLocalizationMap M S).lift_of_comp j.toMonoidHom
 #align is_localization.lift_of_comp IsLocalization.lift_of_comp
 
@@ -552,7 +552,7 @@ variable (M)
 /-- See note [partially-applied ext lemmas] -/
 theorem monoidHom_ext ⦃j k : S →* P⦄
     (h : j.comp (algebraMap R S : R →* S) = k.comp (algebraMap R S)) : j = k :=
-  Submonoid.LocalizationMap.epic_of_localizationMap (toLocalizationMap M S) <| FunLike.congr_fun h
+  Submonoid.LocalizationMap.epic_of_localizationMap (toLocalizationMap M S) <| DFunLike.congr_fun h
 #align is_localization.monoid_hom_ext IsLocalization.monoidHom_ext
 
 /-- See note [partially-applied ext lemmas] -/
@@ -586,7 +586,7 @@ variable {M}
 
 theorem lift_unique {j : S →+* P} (hj : ∀ x, j ((algebraMap R S) x) = g x) : lift hg = j :=
   RingHom.ext <|
-    (FunLike.ext_iff (F := MonoidHom _ _)).1 <|
+    (DFunLike.ext_iff (F := MonoidHom _ _)).1 <|
       Submonoid.LocalizationMap.lift_unique (toLocalizationMap M S) (g := g.toMonoidHom) hg
         (j := j.toMonoidHom) hj
 #align is_localization.lift_unique IsLocalization.lift_unique
@@ -1419,7 +1419,7 @@ theorem IsLocalization.algebraMap_apply_eq_map_map_submonoid (x) :
     algebraMap Rₘ Sₘ x =
       map Sₘ (algebraMap R S)
         (show _ ≤ (Algebra.algebraMapSubmonoid S M).comap _ from M.le_comap_map) x :=
-  FunLike.congr_fun (IsLocalization.algebraMap_eq_map_map_submonoid _ _ _ _) x
+  DFunLike.congr_fun (IsLocalization.algebraMap_eq_map_map_submonoid _ _ _ _) x
 #align is_localization.algebra_map_apply_eq_map_map_submonoid IsLocalization.algebraMap_apply_eq_map_map_submonoid
 
 theorem IsLocalization.lift_algebraMap_eq_algebraMap :

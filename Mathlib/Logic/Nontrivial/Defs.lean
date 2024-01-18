@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Init.Logic
 import Mathlib.Init.Function
+import Mathlib.Tactic.TypeStar
 
 #align_import logic.nontrivial from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 

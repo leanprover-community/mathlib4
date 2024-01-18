@@ -36,9 +36,6 @@ For a module over a normed ring:
 seminorm, locally convex, LCTVS
 -/
 
-set_option autoImplicit true
-
-
 open NormedField Set Filter
 
 open scoped BigOperators NNReal Pointwise Topology Uniformity
@@ -130,13 +127,13 @@ instance instSeminormClass : SeminormClass (Seminorm 𝕜 E) 𝕜 E where
   map_smul_eq_mul f := f.smul'
 #align seminorm.seminorm_class Seminorm.instSeminormClass
 
-/-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`. -/
+/-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`. -/
 instance instCoeFun : CoeFun (Seminorm 𝕜 E) fun _ => E → ℝ :=
-  FunLike.hasCoeToFun
+  DFunLike.hasCoeToFun
 
 @[ext]
 theorem ext {p q : Seminorm 𝕜 E} (h : ∀ x, (p : E → ℝ) x = q x) : p = q :=
-  FunLike.ext p q h
+  DFunLike.ext p q h
 #align seminorm.ext Seminorm.ext
 
 instance instZero : Zero (Seminorm 𝕜 E) :=
@@ -199,14 +196,14 @@ theorem add_apply (p q : Seminorm 𝕜 E) (x : E) : (p + q) x = p x + q x :=
 #align seminorm.add_apply Seminorm.add_apply
 
 instance instAddMonoid : AddMonoid (Seminorm 𝕜 E) :=
-  FunLike.coe_injective.addMonoid _ rfl coe_add fun _ _ => by rfl
+  DFunLike.coe_injective.addMonoid _ rfl coe_add fun _ _ => by rfl
 
 instance instOrderedCancelAddCommMonoid : OrderedCancelAddCommMonoid (Seminorm 𝕜 E) :=
-  FunLike.coe_injective.orderedCancelAddCommMonoid _ rfl coe_add fun _ _ => rfl
+  DFunLike.coe_injective.orderedCancelAddCommMonoid _ rfl coe_add fun _ _ => rfl
 
 instance instMulAction [Monoid R] [MulAction R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] :
     MulAction R (Seminorm 𝕜 E) :=
-  FunLike.coe_injective.mulAction _ (by intros; rfl)
+  DFunLike.coe_injective.mulAction _ (by intros; rfl)
 
 variable (𝕜 E)
 
@@ -219,7 +216,7 @@ def coeFnAddMonoidHom : AddMonoidHom (Seminorm 𝕜 E) (E → ℝ) where
 #align seminorm.coe_fn_add_monoid_hom Seminorm.coeFnAddMonoidHom
 
 theorem coeFnAddMonoidHom_injective : Function.Injective (coeFnAddMonoidHom 𝕜 E) :=
-  show @Function.Injective (Seminorm 𝕜 E) (E → ℝ) (↑) from FunLike.coe_injective
+  show @Function.Injective (Seminorm 𝕜 E) (E → ℝ) (↑) from DFunLike.coe_injective
 #align seminorm.coe_fn_add_monoid_hom_injective Seminorm.coeFnAddMonoidHom_injective
 
 variable {𝕜 E}
@@ -258,7 +255,7 @@ theorem smul_sup [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] (r 
 #align seminorm.smul_sup Seminorm.smul_sup
 
 instance instPartialOrder : PartialOrder (Seminorm 𝕜 E) :=
-  PartialOrder.lift _ FunLike.coe_injective
+  PartialOrder.lift _ DFunLike.coe_injective
 
 @[simp, norm_cast]
 theorem coe_le_coe {p q : Seminorm 𝕜 E} : (p : E → ℝ) ≤ q ↔ p ≤ q :=
@@ -279,7 +276,7 @@ theorem lt_def {p q : Seminorm 𝕜 E} : p < q ↔ p ≤ q ∧ ∃ x, p x < q x 
 #align seminorm.lt_def Seminorm.lt_def
 
 instance instSemilatticeSup : SemilatticeSup (Seminorm 𝕜 E) :=
-  Function.Injective.semilatticeSup _ FunLike.coe_injective coe_sup
+  Function.Injective.semilatticeSup _ DFunLike.coe_injective coe_sup
 
 end SMul
 
@@ -967,7 +964,7 @@ theorem closedBall_smul_closedBall (p : Seminorm 𝕜 E) (r₁ r₂ : ℝ) :
 #align seminorm.closed_ball_smul_closed_ball Seminorm.closedBall_smul_closedBall
 
 -- Porting note: TODO: make that an `iff`
-theorem neg_mem_ball_zero (r : ℝ) (hx : x ∈ ball p 0 r) : -x ∈ ball p 0 r := by
+theorem neg_mem_ball_zero (r : ℝ) {x : E} (hx : x ∈ ball p 0 r) : -x ∈ ball p 0 r := by
   simpa only [mem_ball_zero, map_neg_eq_map] using hx
 #align seminorm.symmetric_ball_zero Seminorm.neg_mem_ball_zero
 
@@ -1040,7 +1037,7 @@ theorem smul_closedBall_zero {p : Seminorm 𝕜 E} {k : 𝕜} {r : ℝ} (hk : 0 
 theorem ball_zero_absorbs_ball_zero (p : Seminorm 𝕜 E) {r₁ r₂ : ℝ} (hr₁ : 0 < r₁) :
     Absorbs 𝕜 (p.ball 0 r₁) (p.ball 0 r₂) := by
   rcases exists_pos_lt_mul hr₁ r₂ with ⟨r, hr₀, hr⟩
-  refine' ⟨r, hr₀, fun a ha x hx => _⟩
+  refine .of_norm ⟨r, fun a ha x hx => ?_⟩
   rw [smul_ball_zero (norm_pos_iff.1 <| hr₀.trans_le ha), p.mem_ball_zero]
   rw [p.mem_ball_zero] at hx
   exact hx.trans (hr.trans_le <| by gcongr)
@@ -1392,12 +1389,12 @@ lemma bddAbove_of_absorbent {p : ι → Seminorm 𝕜 E} {s : Set E} (hs : Absor
     BddAbove (range p) := by
   rw [Seminorm.bddAbove_range_iff]
   intro x
-  rcases hs x with ⟨r, hr, hrx⟩
+  rcases (hs x).exists_pos with ⟨r, hr, hrx⟩
   rcases exists_lt_norm 𝕜 r with ⟨k, hk⟩
   have hk0 : k ≠ 0 := norm_pos_iff.mp (hr.trans hk)
   have : k⁻¹ • x ∈ s := by
     rw [← mem_smul_set_iff_inv_smul_mem₀ hk0]
-    exact hrx k hk.le
+    exact hrx k hk.le rfl
   rcases h (k⁻¹ • x) this with ⟨M, hM⟩
   refine ⟨‖k‖ * M, forall_range_iff.mpr fun i ↦ ?_⟩
   have := (forall_range_iff.mp hM) i

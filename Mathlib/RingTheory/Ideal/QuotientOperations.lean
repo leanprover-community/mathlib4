@@ -54,8 +54,7 @@ theorem lift_injective_of_ker_le_ideal (I : Ideal R) {f : R →+* S} (H : ∀ a 
 
 /-- The induced map from the quotient by the kernel is injective. -/
 theorem kerLift_injective [Semiring S] (f : R →+* S) : Function.Injective (kerLift f) :=
-  lift_injective_of_ker_le_ideal (ker f)
-    (fun a => by simp only [mem_ker, imp_self]) (Eq.le rfl)
+  lift_injective_of_ker_le_ideal (ker f) (fun a => by simp only [mem_ker, imp_self]) le_rfl
 #align ring_hom.ker_lift_injective RingHom.kerLift_injective
 
 
@@ -601,7 +600,8 @@ def quotientEquivAlg (I : Ideal A) (J : Ideal B) (f : A ≃ₐ[R₁] B) (hIJ : J
   { quotientEquiv I J (f : A ≃+* B) hIJ with
     commutes' := fun r => by
       -- Porting note: Needed to add the below lemma because Equivs coerce weird
-      have : ∀ (e : RingEquiv (A ⧸ I) (B ⧸ J)), Equiv.toFun e.toEquiv = FunLike.coe e := fun _ ↦ rfl
+      have : ∀ (e : RingEquiv (A ⧸ I) (B ⧸ J)), Equiv.toFun e.toEquiv = DFunLike.coe e :=
+        fun _ ↦ rfl
       rw [this]
       simp only [quotientEquiv_apply, RingHom.toFun_eq_coe, quotientMap_algebraMap,
       RingEquiv.coe_toRingHom, AlgEquiv.coe_ringEquiv, AlgEquiv.commutes, Quotient.mk_algebraMap]}

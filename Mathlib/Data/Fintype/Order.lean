@@ -197,35 +197,50 @@ noncomputable instance Bool.completeAtomicBooleanAlgebra : CompleteAtomicBoolean
 /-! ### Directed Orders -/
 
 
-variable {α : Type*}
+variable {α : Type*} {r : α → α → Prop} [IsTrans α r] {β γ : Type*} [Nonempty γ] {f : γ → α}
+  [Finite β] (D : Directed r f)
 
-theorem Directed.fintype_le {r : α → α → Prop} [IsTrans α r] {β γ : Type*} [Nonempty γ] {f : γ → α}
-    [Fintype β] (D : Directed r f) (g : β → γ) : ∃ z, ∀ i, r (f (g i)) (f z) := by
+theorem Directed.finite_set_le {s : Set γ} (hs : s.Finite) : ∃ z, ∀ i ∈ s, r (f i) (f z) := by
+  convert D.finset_le hs.toFinset; rw [Set.Finite.mem_toFinset]
+
+theorem Directed.finite_le (g : β → γ) : ∃ z, ∀ i, r (f (g i)) (f z) := by
   classical
-    obtain ⟨z, hz⟩ := D.finset_le (Finset.image g Finset.univ)
-    exact ⟨z, fun i => hz (g i) (Finset.mem_image_of_mem g (Finset.mem_univ i))⟩
-#align directed.fintype_le Directed.fintype_le
+    obtain ⟨z, hz⟩ := D.finite_set_le (Set.finite_range g)
+    exact ⟨z, fun i => hz (g i) ⟨i, rfl⟩⟩
+#align directed.fintype_le Directed.finite_le
 
-theorem Fintype.exists_le [Nonempty α] [Preorder α] [IsDirected α (· ≤ ·)] {β : Type*} [Fintype β]
-    (f : β → α) : ∃ M, ∀ i, f i ≤ M :=
-  directed_id.fintype_le _
-#align fintype.exists_le Fintype.exists_le
+variable [Nonempty α] [Preorder α]
 
-theorem Fintype.exists_ge [Nonempty α] [Preorder α] [IsDirected α (· ≥ ·)] {β : Type*} [Fintype β]
-    (f : β → α) : ∃ M, ∀ i, M ≤ f i :=
-  directed_id.fintype_le (r := (· ≥ ·)) _
+theorem Finite.exists_le [IsDirected α (· ≤ ·)] (f : β → α) : ∃ M, ∀ i, f i ≤ M :=
+  directed_id.finite_le _
+#align fintype.exists_le Finite.exists_le
 
-theorem Fintype.bddAbove_range [Nonempty α] [Preorder α] [IsDirected α (· ≤ ·)] {β : Type*}
-    [Fintype β] (f : β → α) : BddAbove (Set.range f) := by
-  obtain ⟨M, hM⟩ := Fintype.exists_le f
+theorem Finite.exists_ge [IsDirected α (· ≥ ·)] (f : β → α) : ∃ M, ∀ i, M ≤ f i :=
+  directed_id.finite_le (r := (· ≥ ·)) _
+
+theorem Set.Finite.exists_le [IsDirected α (· ≤ ·)] {s : Set α} (hs : s.Finite) :
+    ∃ M, ∀ i ∈ s, i ≤ M :=
+  directed_id.finite_set_le hs
+
+theorem Set.Finite.exists_ge [IsDirected α (· ≥ ·)] {s : Set α} (hs : s.Finite) :
+    ∃ M, ∀ i ∈ s, M ≤ i :=
+  directed_id.finite_set_le (r := (· ≥ ·)) hs
+
+theorem Finite.bddAbove_range [IsDirected α (· ≤ ·)] (f : β → α) : BddAbove (Set.range f) := by
+  obtain ⟨M, hM⟩ := Finite.exists_le f
   refine' ⟨M, fun a ha => _⟩
   obtain ⟨b, rfl⟩ := ha
   exact hM b
-#align fintype.bdd_above_range Fintype.bddAbove_range
+#align fintype.bdd_above_range Finite.bddAbove_range
 
-theorem Fintype.bddBelow_range [Nonempty α] [Preorder α] [IsDirected α (· ≥ ·)] {β : Type*}
-    [Fintype β] (f : β → α) : BddBelow (Set.range f) := by
-  obtain ⟨M, hM⟩ := Fintype.exists_ge f
+theorem Finite.bddBelow_range [IsDirected α (· ≥ ·)] (f : β → α) : BddBelow (Set.range f) := by
+  obtain ⟨M, hM⟩ := Finite.exists_ge f
   refine' ⟨M, fun a ha => _⟩
   obtain ⟨b, rfl⟩ := ha
   exact hM b
+
+@[deprecated] alias Directed.fintype_le := Directed.finite_le
+@[deprecated] alias Fintype.exists_le := Finite.exists_le
+@[deprecated] alias Fintype.exists_ge := Finite.exists_ge
+@[deprecated] alias Fintype.bddAbove_range := Finite.bddAbove_range
+@[deprecated] alias Fintype.bddBelow_range := Finite.bddBelow_range

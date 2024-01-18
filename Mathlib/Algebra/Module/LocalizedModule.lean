@@ -740,9 +740,9 @@ instance localizedModuleIsLocalizedModule : IsLocalizedModule S (LocalizedModule
     where
   map_units s :=
     ⟨⟨algebraMap R (Module.End R (LocalizedModule S M)) s, LocalizedModule.divBy s,
-        FunLike.ext _ _ <| LocalizedModule.mul_by_divBy s,
-        FunLike.ext _ _ <| LocalizedModule.divBy_mul_by s⟩,
-      FunLike.ext _ _ fun p =>
+        DFunLike.ext _ _ <| LocalizedModule.mul_by_divBy s,
+        DFunLike.ext _ _ <| LocalizedModule.divBy_mul_by s⟩,
+      DFunLike.ext _ _ fun p =>
         p.induction_on <| by
           intros
           rfl⟩

@@ -64,7 +64,7 @@ lemma rank_eq_zero_iff :
     rintro ⟨i : s⟩
     obtain ⟨a, ha, ha'⟩ := h i
     apply ha
-    simpa using FunLike.congr_fun (linearIndependent_iff.mp hs (Finsupp.single i a) (by simpa)) i
+    simpa using DFunLike.congr_fun (linearIndependent_iff.mp hs (Finsupp.single i a) (by simpa)) i
 
 variable [Nontrivial R]
 

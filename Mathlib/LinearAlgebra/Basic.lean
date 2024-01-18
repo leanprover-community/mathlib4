@@ -232,7 +232,7 @@ theorem eqLocus_toAddSubmonoid (f g : F) :
 
 @[simp]
 theorem eqLocus_eq_top {f g : F} : eqLocus f g = ⊤ ↔ f = g := by
-  simp [SetLike.ext_iff, FunLike.ext_iff]
+  simp [SetLike.ext_iff, DFunLike.ext_iff]
 
 @[simp]
 theorem eqLocus_same (f : F) : eqLocus f f = ⊤ := eqLocus_eq_top.2 rfl
@@ -247,7 +247,7 @@ theorem eqOn_sup {f g : F} {S T : Submodule R M} (hS : Set.EqOn f g S) (hT : Set
 
 theorem ext_on_codisjoint {f g : F} {S T : Submodule R M} (hST : Codisjoint S T)
     (hS : Set.EqOn f g S) (hT : Set.EqOn f g T) : f = g :=
-  FunLike.ext _ _ fun _ ↦ eqOn_sup hS hT <| hST.eq_top.symm ▸ trivial
+  DFunLike.ext _ _ fun _ ↦ eqOn_sup hS hT <| hST.eq_top.symm ▸ trivial
 
 end
 
@@ -1355,8 +1355,8 @@ def congrLeft {R} (S) [Semiring R] [Semiring S] [Module R M₂] [Module R M₃] 
   invFun f := f.comp e.toLinearMap
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
-  left_inv f := by dsimp only; apply FunLike.ext; exact (congr_arg f <| e.left_inv ·)
-  right_inv f := by dsimp only; apply FunLike.ext; exact (congr_arg f <| e.right_inv ·)
+  left_inv f := by dsimp only; apply DFunLike.ext; exact (congr_arg f <| e.left_inv ·)
+  right_inv f := by dsimp only; apply DFunLike.ext; exact (congr_arg f <| e.right_inv ·)
 
 end CommSemiring
 

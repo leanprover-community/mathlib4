@@ -38,16 +38,6 @@ theorem const_def {y : β} : (fun _ : α ↦ y) = const α y :=
   rfl
 #align function.const_def Function.const_def
 
-@[simp]
-theorem const_comp {f : α → β} {c : γ} : const β c ∘ f = const α c :=
-  rfl
-#align function.const_comp Function.const_comp
-
-@[simp]
-theorem comp_const {f : β → γ} {b : β} : f ∘ const α b = const α (f b) :=
-  rfl
-#align function.comp_const Function.comp_const
-
 theorem const_injective [Nonempty α] : Injective (const α : β → α → β) := fun y₁ y₂ h ↦
   let ⟨x⟩ := ‹Nonempty α›
   congr_fun h x
@@ -163,14 +153,13 @@ lemma Injective.dite (p : α → Prop) [DecidablePred p]
     {f : {a : α // p a} → β} {f' : {a : α // ¬ p a} → β}
     (hf : Injective f) (hf' : Injective f')
     (im_disj : ∀ {x x' : α} {hx : p x} {hx' : ¬ p x'}, f ⟨x, hx⟩ ≠ f' ⟨x', hx'⟩) :
-  Function.Injective (λ x => if h : p x then f ⟨x, h⟩ else f' ⟨x, h⟩) :=
-by intros x₁ x₂ h
-   dsimp only at h
-   by_cases h₁ : p x₁ <;> by_cases h₂ : p x₂
-   · rw [dif_pos h₁, dif_pos h₂] at h; injection (hf h)
-   · rw [dif_pos h₁, dif_neg h₂] at h; exact (im_disj h).elim
-   · rw [dif_neg h₁, dif_pos h₂] at h; exact (im_disj h.symm).elim
-   · rw [dif_neg h₁, dif_neg h₂] at h; injection (hf' h)
+    Function.Injective (λ x => if h : p x then f ⟨x, h⟩ else f' ⟨x, h⟩) := fun x₁ x₂ h => by
+ dsimp only at h
+ by_cases h₁ : p x₁ <;> by_cases h₂ : p x₂
+ · rw [dif_pos h₁, dif_pos h₂] at h; injection (hf h)
+ · rw [dif_pos h₁, dif_neg h₂] at h; exact (im_disj h).elim
+ · rw [dif_neg h₁, dif_pos h₂] at h; exact (im_disj h.symm).elim
+ · rw [dif_neg h₁, dif_neg h₂] at h; injection (hf' h)
 #align function.injective.dite Function.Injective.dite
 
 theorem Surjective.of_comp {g : γ → α} (S : Surjective (f ∘ g)) : Surjective f := fun y ↦
@@ -401,8 +390,8 @@ theorem RightInverse.leftInverse_of_injective {f : α → β} {g : β → α} :
 theorem LeftInverse.eq_rightInverse {f : α → β} {g₁ g₂ : β → α} (h₁ : LeftInverse g₁ f)
     (h₂ : RightInverse g₂ f) : g₁ = g₂ :=
   calc
-    g₁ = g₁ ∘ f ∘ g₂ := by rw [h₂.comp_eq_id, comp.right_id]
-     _ = g₂ := by rw [← comp.assoc, h₁.comp_eq_id, comp.left_id]
+    g₁ = g₁ ∘ f ∘ g₂ := by rw [h₂.comp_eq_id, comp_id]
+     _ = g₂ := by rw [← comp.assoc, h₁.comp_eq_id, id_comp]
 #align function.left_inverse.eq_right_inverse Function.LeftInverse.eq_rightInverse
 
 attribute [local instance] Classical.propDecidable
@@ -803,7 +792,7 @@ theorem Injective.surjective_comp_right [Nonempty γ] (hf : Injective f) :
 theorem Bijective.comp_right (hf : Bijective f) : Bijective fun g : β → γ ↦ g ∘ f :=
   ⟨hf.surjective.injective_comp_right, fun g ↦
     ⟨g ∘ surjInv hf.surjective,
-     by simp only [comp.assoc g _ f, (leftInverse_surjInv hf).comp_eq_id, comp.right_id]⟩⟩
+     by simp only [comp.assoc g _ f, (leftInverse_surjInv hf).comp_eq_id, comp_id]⟩⟩
 #align function.bijective.comp_right Function.Bijective.comp_right
 
 end Extend

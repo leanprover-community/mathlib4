@@ -105,8 +105,8 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 lemma RingEquiv_coe_eq {X Y : Type _} [Semiring X] [Semiring Y] (e : X ≃+* Y) :
-    (@FunLike.coe (SemiRingCat.of X ⟶ SemiRingCat.of Y) _ (fun _ => (forget SemiRingCat).obj _)
-      ConcreteCategory.funLike (e : X →+* Y) : X → Y) = ↑e :=
+    (@DFunLike.coe (SemiRingCat.of X ⟶ SemiRingCat.of Y) _ (fun _ => (forget SemiRingCat).obj _)
+      ConcreteCategory.instDFunLike (e : X →+* Y) : X → Y) = ↑e :=
   rfl
 
 instance : Inhabited SemiRingCat :=
@@ -244,8 +244,8 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 lemma RingEquiv_coe_eq {X Y : Type _} [Ring X] [Ring Y] (e : X ≃+* Y) :
-    (@FunLike.coe (RingCat.of X ⟶ RingCat.of Y) _ (fun _ => (forget RingCat).obj _)
-      ConcreteCategory.funLike (e : X →+* Y) : X → Y) = ↑e :=
+    (@DFunLike.coe (RingCat.of X ⟶ RingCat.of Y) _ (fun _ => (forget RingCat).obj _)
+      ConcreteCategory.instDFunLike (e : X →+* Y) : X → Y) = ↑e :=
   rfl
 
 instance hasForgetToSemiRingCat : HasForget₂ RingCat SemiRingCat :=
@@ -327,9 +327,9 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 lemma RingEquiv_coe_eq {X Y : Type _} [CommSemiring X] [CommSemiring Y] (e : X ≃+* Y) :
-    (@FunLike.coe (CommSemiRingCat.of X ⟶ CommSemiRingCat.of Y) _
+    (@DFunLike.coe (CommSemiRingCat.of X ⟶ CommSemiRingCat.of Y) _
       (fun _ => (forget CommSemiRingCat).obj _)
-      ConcreteCategory.funLike (e : X →+* Y) : X → Y) = ↑e :=
+      ConcreteCategory.instDFunLike (e : X →+* Y) : X → Y) = ↑e :=
   rfl
 
 -- Porting note: I think this is now redundant.
@@ -443,8 +443,8 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 lemma RingEquiv_coe_eq {X Y : Type _} [CommRing X] [CommRing Y] (e : X ≃+* Y) :
-    (@FunLike.coe (CommRingCat.of X ⟶ CommRingCat.of Y) _ (fun _ => (forget CommRingCat).obj _)
-      ConcreteCategory.funLike (e : X →+* Y) : X → Y) = ↑e :=
+    (@DFunLike.coe (CommRingCat.of X ⟶ CommRingCat.of Y) _ (fun _ => (forget CommRingCat).obj _)
+      ConcreteCategory.instDFunLike (e : X →+* Y) : X → Y) = ↑e :=
   rfl
 
 -- Porting note: I think this is now redundant.

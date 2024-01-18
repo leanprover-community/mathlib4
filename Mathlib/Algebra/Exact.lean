@@ -60,7 +60,7 @@ lemma LinearMap.exact_iff : Exact f g ↔ LinearMap.ker g = LinearMap.range f :=
   Iff.symm <| SetLike.ext_iff
 
 lemma Exact.linearMap_comp_eq_zero (h : Exact f g) : g.comp f = 0 :=
-  FunLike.coe_injective h.comp_eq_zero
+  DFunLike.coe_injective h.comp_eq_zero
 
 end LinearMap
 
