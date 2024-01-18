@@ -325,6 +325,132 @@ lemma hom_ext {n : ℕ} {i : Fin (n+2)} {S : SSet} (σ₁ σ₂ : Λ[n+1, i] ⟶
   have H₂ := congrFun (σ₂.naturality (factor_δ f' j).op) (face i j hji)
   dsimp at H₁ H₂
   erw [H, H₁, H₂, h _ hji]
+/-- Constructor for horns from suitable faces, and conditions between faces.-/
+
+lemma range_include01_exclude2 {X : SimplexCategory} (i : Fin 4) ( α : Λ[3,i].obj (op X))  (h1 : ¬∀ k, (Hom.toOrderHom α.val.down) k ≠ ((δ i).toOrderHom  0))  (h2 : ¬∀ k, (Hom.toOrderHom α.val.down) k ≠ ((δ i).toOrderHom  1) ) : ∀ k, (Hom.toOrderHom α.val.down) k ≠ ((δ i).toOrderHom  2) := by
+  let hα :=  (α.prop)∘Set.eq_univ_iff_forall.mpr
+  simp only [ne_eq, Set.union_singleton, Set.mem_insert_iff, Set.mem_range, imp_false,
+    not_forall, not_or, not_exists] at hα
+  obtain ⟨x1,hx1⟩ :=  hα
+  intro x
+  by_contra hXp
+  fin_cases x1
+  all_goals fin_cases i
+  all_goals tauto
+
+lemma σ_comp_σ_predAbove₃ (i : Fin 4) (i1 i2 : Fin 3) (h : i1< i2) : (σ (Fin.predAbove 0 ((δ i).toOrderHom i2))≫ σ (Fin.predAbove 0 (Fin.predAbove 2 ((δ i).toOrderHom i1))) ) = σ ( (Fin.predAbove 0 ((δ i).toOrderHom i1)))≫ σ (Fin.predAbove 0 (Fin.predAbove 0 ((δ i).toOrderHom i2)))  := by
+  apply Hom.ext'
+  rw [← DFunLike.coe_fn_eq]
+  rw [← OrderHom.toFun_eq_coe]
+  fin_cases i1
+  all_goals fin_cases i2
+  case  a.head.tail.head | a.head.tail.tail.head | a.tail.head.tail.tail.head =>
+    funext x
+    fin_cases i
+    all_goals fin_cases x
+    all_goals rfl
+  all_goals {
+      rw [Fin.lt_def] at h
+      simp at h
+  }
+lemma hom_mk₃_fac1  { X Y : SimplexCategoryᵒᵖ } (i : Fin 4) (i1 i2 : Fin 3) (i1_lt_i2: i1 < i2) (α: Λ[3,i].obj X) (φ: ([len Y.unop]: SimplexCategory)⟶ [len X.unop]) (range_φα_excludei1 :  ∀ k, (Hom.toOrderHom (φ ≫ α.val.down)) k ≠ (Hom.toOrderHom (δ i)) i1) (range_φα_excludei2 :  ∀ k, (Hom.toOrderHom (φ ≫ α.val.down)) k ≠ (Hom.toOrderHom (δ i)) i2) : (factor_δ (factor_δ (φ ≫ α.val.down) ((δ i).toOrderHom i1)) (Fin.predAbove 0 ((δ i).toOrderHom i2))) ≫ δ (Fin.predAbove 0 ((δ i).toOrderHom i2))=factor_δ (φ ≫ α.val.down) ((δ i).toOrderHom i1) := by
+      fin_cases i1
+      all_goals fin_cases i2
+      case' head.tail.head           => let i1':Fin 3 := 0
+      case' head.tail.tail.head      => let i1':Fin 3 := 0
+      case' tail.head.tail.tail.head => let i1':Fin 3 := 1
+      case head.tail.head | head.tail.tail.head | tail.head.tail.tail.head =>
+        let hα :=  (α.prop)∘Set.eq_univ_iff_forall.mpr
+        simp only [ne_eq, Set.union_singleton, Set.mem_insert_iff, Set.mem_range, imp_false,
+        not_forall, not_or, not_exists] at hα
+        obtain ⟨x1,hx1⟩ :=  hα
+        apply factor_δ_spec
+        intro x
+        by_contra hXp
+        apply (congrArg ((δ ((δ i).toOrderHom i1')).toOrderHom )) at hXp
+        change  ((factor_δ (φ ≫ α.val.down) ((δ i).toOrderHom i1'))≫δ ((δ i).toOrderHom i1') ).toOrderHom x = _ at hXp
+        rw [(factor_δ_spec (φ ≫ α.val.down) ((δ i).toOrderHom i1') range_φα_excludei1 )] at hXp
+        fin_cases x1
+        all_goals fin_cases i
+        all_goals tauto
+      all_goals {
+        rw [Fin.lt_def] at i1_lt_i2
+        simp at i1_lt_i2
+      }
+
+lemma hom_mk₃_fac2  { X Y : SimplexCategoryᵒᵖ } (i : Fin 4) (i1 i2 : Fin 3) (i1_lt_i2: i1 < i2) (α: Λ[3,i].obj X) (φ: ([len Y.unop]: SimplexCategory)⟶ [len X.unop]) (range_φα_excludei1 :  ∀ k, (Hom.toOrderHom (φ ≫ α.val.down)) k ≠ (Hom.toOrderHom (δ i)) i1) (range_φα_excludei2 :  ∀ k, (Hom.toOrderHom (φ ≫ α.val.down)) k ≠ (Hom.toOrderHom (δ i)) i2) :(factor_δ (factor_δ (φ ≫ α.val.down) ((δ i).toOrderHom i2)) (Fin.predAbove 2 ((δ i).toOrderHom i1)))≫ δ (Fin.predAbove 2 ((δ i).toOrderHom i1))= (factor_δ (φ ≫ α.val.down) ((δ i).toOrderHom i2)) := by
+      fin_cases i1
+      all_goals fin_cases i2
+      case' head.tail.head           => let i2':Fin 3 := 1
+      case' head.tail.tail.head      => let i2':Fin 3 := 2
+      case' tail.head.tail.tail.head => let i2':Fin 3 := 2
+      case head.tail.head | head.tail.tail.head | tail.head.tail.tail.head =>
+          let hα :=  (α.prop)∘Set.eq_univ_iff_forall.mpr
+          simp only [ne_eq, Set.union_singleton, Set.mem_insert_iff, Set.mem_range, imp_false,
+          not_forall, not_or, not_exists] at hα
+          obtain ⟨x1,hx1⟩ :=  hα
+          apply factor_δ_spec
+          intro x
+          by_contra hXp
+          apply (congrArg ((δ ((δ i).toOrderHom i2')).toOrderHom )) at hXp
+          change  ((factor_δ (φ ≫ α.val.down) ((δ i).toOrderHom i2'))≫δ ((δ i).toOrderHom i2') ).toOrderHom x = _ at hXp
+          rw [factor_δ_spec (φ ≫ α.val.down) ((δ i).toOrderHom i2')  range_φα_excludei2] at hXp
+          fin_cases x1
+          all_goals fin_cases i
+          all_goals tauto
+      all_goals {
+          rw [Fin.lt_def] at i1_lt_i2
+          simp at i1_lt_i2
+        }
+lemma nat_i1_le_i2 {S : SSet} { X Y : SimplexCategoryᵒᵖ } (φ': X⟶ Y) (α: Λ[3,i].obj X)  (face_map : Fin (3) →  S _[2])  (hface : (i1 : Fin (3))→ (i2 : Fin (3)) → (i1< i2)→  ( S.map (δ (Fin.predAbove 0 ((δ i).toOrderHom i2))).op (face_map i1)=S.map (δ (Fin.predAbove 2 ((δ i).toOrderHom i1))).op (face_map i2)) ) (i1 i2 : Fin 3)   (i1_lt_i2: i1 < i2) (range_φα_excludei1 :  ∀ k, (Hom.toOrderHom (φ'.unop ≫ α.val.down)) k ≠ (Hom.toOrderHom (δ i)) i1) (range_φα_excludei2 :  ∀ k, (Hom.toOrderHom (φ'.unop ≫ α.val.down)) k ≠ (Hom.toOrderHom (δ i)) i2) : S.map ( ((Λ[3, i].map φ' α).val.down) ≫σ  ( Fin.predAbove 0 ((Hom.toOrderHom (δ i)) i1))).op (face_map i1) = S.map φ' (S.map ( (α.val.down)≫  σ (Fin.predAbove 0 ((Hom.toOrderHom (δ i)) i2))).op (face_map i2))  := by
+  let α' :([(unop X).len]: SimplexCategory)⟶  [3]:= α.val.down
+  let φ:([(unop Y).len]: SimplexCategory)⟶  [(unop X).len]:= φ'.unop
+  change S.map (factor_δ (φ ≫ α.val.down) ((δ i).toOrderHom i1)).op (face_map i1) =(S.map (factor_δ α' ((δ i).toOrderHom i2)).op ≫ S.map φ.op) (face_map i2)
+  rw [← S.map_comp, ← op_comp]
+  change S.map (factor_δ (φ ≫ α.val.down) ((δ i).toOrderHom i1)).op (face_map i1) =(S.map (factor_δ (φ ≫ α.val.down) ((δ i).toOrderHom i2)).op ) (face_map i2)
+  rw [← (hom_mk₃_fac1 i i1 i2 i1_lt_i2 α φ range_φα_excludei1 range_φα_excludei2)]
+  rw [← (hom_mk₃_fac2 i i1 i2 i1_lt_i2 α φ range_φα_excludei1 range_φα_excludei2)]
+  rw [op_comp,S.map_comp,op_comp,S.map_comp,types_comp_apply,types_comp_apply]
+  rw [(hface i1 i2 i1_lt_i2)]
+  change _ = S.map ((φ ≫ α.val.down)≫(σ (Fin.predAbove 0 ((δ i).toOrderHom i2))≫ σ (Fin.predAbove 0 (Fin.predAbove 2 ((δ i).toOrderHom i1))) ) ).op _
+  rw [σ_comp_σ_predAbove₃ i i1 i2 i1_lt_i2]
+  rfl
+
+
+def hom_mk₃ {S : SSet}  (i: Fin 4)  (face_map : Fin (3) →  S _[2])  (hface : (i1 : Fin (3))→ (i2 : Fin (3)) → (i1< i2)→  ( S.map (δ (Fin.predAbove 0 ((δ i).toOrderHom i2))).op (face_map i1)=S.map (δ (Fin.predAbove 2 ((δ i).toOrderHom i1))).op (face_map i2)) ) : Λ[3,i]⟶ S where
+  app X α := by
+    let α' :([(unop X).len]: SimplexCategory)⟶  [3]:= α.val.down
+    let id: Fin 3:= if ∀ k, α.1.down.toOrderHom k ≠  (δ i).toOrderHom 0 then 0
+                    else
+                      if ∀ k, α.1.down.toOrderHom k ≠ (δ i).toOrderHom 1 then 1
+                      else 2
+    exact S.map (factor_δ α'  ((δ i).toOrderHom  id)).op (face_map id)
+  naturality X Y φ' := by
+     funext α
+     simp only [mk_len, op_unop, len_mk, types_comp_apply]
+     split
+     all_goals split
+     all_goals rename_i h1 h2
+     all_goals try split
+     all_goals try split
+     case h.inl.inl | h.inr.inl.inr.inl | h.inr.inr.inr.inr  =>
+         rw  [← (types_comp_apply (S.map _) (S.map _)),← S.map_comp]
+         rfl
+     all_goals rename_i h3
+     case h.inr.inl.inl | h.inr.inr.inl  =>
+         exact False.elim (h1 (fun k => h3 (φ'.unop.toOrderHom k)))
+     case h.inr.inr.inr.inl =>
+        exact False.elim (h2 (fun k => h3 (φ'.unop.toOrderHom k)))
+     all_goals
+        apply nat_i1_le_i2 φ' α face_map hface
+        · rw [Fin.lt_def]
+          simp
+        · assumption
+        · try exact fun k => (range_include01_exclude2 i α h2 h3) (φ'.unop.toOrderHom k)
+          try exact fun k => h3 (φ'.unop.toOrderHom k)
+          try rename_i  h4;
+          try exact fun k => (range_include01_exclude2 i α h4 h3) (φ'.unop.toOrderHom k)
+
 
 end horn
 
