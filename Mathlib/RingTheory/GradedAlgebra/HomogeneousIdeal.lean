@@ -270,7 +270,8 @@ theorem Submodule.mem_homogeneousCore_of_homogeneous_of_mem {x : M} (h : Homogen
   Submodule.subset_span ⟨⟨x, h⟩, hmem, rfl⟩
 
 variable {𝒜}
-theorem Ideal.mem_homogeneousCore_of_homogeneous_of_mem {x : A} (h : Homogeneous 𝒜 x) (hmem : x ∈ I) :
+theorem Ideal.mem_homogeneousCore_of_homogeneous_of_mem
+    {x : A} (h : Homogeneous 𝒜 x) (hmem : x ∈ I) :
     x ∈ I.homogeneousCore 𝒜 :=
   Submodule.mem_homogeneousCore_of_homogeneous_of_mem 𝒜 I h hmem
 #align ideal.mem_homogeneous_core_of_is_homogeneous_of_mem Ideal.mem_homogeneousCore_of_homogeneous_of_mem
