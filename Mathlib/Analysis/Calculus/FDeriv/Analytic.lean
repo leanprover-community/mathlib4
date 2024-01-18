@@ -324,7 +324,7 @@ lemma linearDeriv_apply [DecidableEq ι] (f : ContinuousMultilinearMap R M₁ M�
     ContinuousLinearMap.coe_mk', LinearMap.coe_mk, LinearMap.coe_toAddHom, Finset.sum_apply,
     Function.comp_apply, ContinuousLinearMap.proj_apply, MultilinearMap.toLinearMap_apply, coe_coe]
 
-variable (R : Type*) {ι : Type*} (M₁ : ι → Type*) (M₂ : Type*) [NontriviallyNormedField R]
+variable {R : Type*} {ι : Type*} {M₁ : ι → Type*} {M₂ : Type*} [NontriviallyNormedField R]
   [(i : ι) → NormedAddCommGroup (M₁ i)] [NormedAddCommGroup M₂] [(i : ι) → NormedSpace R (M₁ i)]
   [NormedSpace R M₂] [Fintype ι] (f : ContinuousMultilinearMap R M₁ M₂)
 
@@ -415,6 +415,8 @@ theorem changeOrigin_toFormalMultilinearSeries [DecidableEq ι] (x : ∀ i, M₁
 
 protected theorem hasFDerivAt [DecidableEq ι] (x : ∀ i, M₁ i) :
     HasFDerivAt f (f.linearDeriv x) x := by
-  sorry
+  rw [← changeOrigin_toFormalMultilinearSeries]
+  convert f.hasFiniteFPowerSeriesOnBall.hasFDerivAt (y := x) ENNReal.coe_lt_top
+  rw [zero_add]
 
 end ContinuousMultilinearMap
