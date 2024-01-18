@@ -5,7 +5,7 @@ Authors: Leonardo de Moura, Jeremy Avigad
 -/
 import Std.Data.Nat.Lemmas
 import Mathlib.Init.Data.Nat.Basic
-import Mathlib.Init.Order.LinearOrder
+import Mathlib.Init.Order.Defs
 
 #align_import init.data.nat.lemmas from "leanprover-community/lean"@"38b59111b2b4e6c572582b27e8937e92fc70ac02"
 

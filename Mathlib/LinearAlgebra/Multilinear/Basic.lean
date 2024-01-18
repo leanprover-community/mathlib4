@@ -8,7 +8,7 @@ import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Fintype.Sort
 import Mathlib.Data.List.FinRange
-import Mathlib.LinearAlgebra.Pi
+import Mathlib.Algebra.BigOperators.Pi
 
 #align_import linear_algebra.multilinear.basic from "leanprover-community/mathlib"@"78fdf68dcd2fdb3fe64c0dd6f88926a49418a6ea"
 

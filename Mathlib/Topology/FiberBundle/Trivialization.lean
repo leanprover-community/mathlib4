@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Data.Bundle
-import Mathlib.Topology.Algebra.Order.Field
 import Mathlib.Topology.PartialHomeomorph
+import Mathlib.Topology.Order.Basic
 
 #align_import topology.fiber_bundle.trivialization from "leanprover-community/mathlib"@"e473c3198bb41f68560cab68a0529c854b618833"
 

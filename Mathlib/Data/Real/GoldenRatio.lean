@@ -5,10 +5,10 @@ Authors: Anatole Dedecker, Alexey Soloyev, Junyan Xu
 -/
 import Mathlib.Data.Real.Irrational
 import Mathlib.Data.Nat.Fib.Basic
-import Mathlib.Data.Nat.PrimeNormNum
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Algebra.LinearRecurrence
 import Mathlib.Tactic.NormNum.NatFib
+import Mathlib.Tactic.NormNum.Prime
 
 #align_import data.real.golden_ratio from "leanprover-community/mathlib"@"2196ab363eb097c008d4497125e0dde23fb36db2"
 

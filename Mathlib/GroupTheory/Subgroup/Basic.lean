@@ -4,11 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
 import Mathlib.Algebra.Group.Conj
-import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Order.Group.InjSurj
-import Mathlib.Data.Countable.Basic
 import Mathlib.GroupTheory.Submonoid.Centralizer
-import Mathlib.Logic.Encodable.Basic
 import Mathlib.Order.Atoms
 import Mathlib.Tactic.ApplyFun
 

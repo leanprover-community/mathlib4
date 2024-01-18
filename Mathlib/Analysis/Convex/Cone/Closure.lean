@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Apurva Nakade
 -/
 import Mathlib.Analysis.Convex.Cone.Pointed
-import Mathlib.Analysis.InnerProductSpace.Adjoint
 
 /-!
 # Closure of cones
