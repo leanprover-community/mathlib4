@@ -441,9 +441,10 @@ theorem isCycle_swap_mul_aux₁ {α : Type*} [DecidableEq α] :
     ∀ (n : ℕ) {b x : α} {f : Perm α} (_ : (swap x (f x) * f) b ≠ b) (_ : (f ^ n) (f x) = b),
       ∃ i : ℤ, ((swap x (f x) * f) ^ i) (f x) = b := by
   intro n
-  induction' n with n hn
-  · exact fun _ h => ⟨0, h⟩
-  · intro b x f hb h
+  induction n with
+  | zero => exact fun _ h => ⟨0, h⟩
+  | succ n hn =>
+    intro b x f hb h
     exact if hfbx : f x = b then ⟨0, hfbx⟩
       else
         have : f b ≠ b ∧ b ≠ x := ne_and_ne_of_swap_mul_apply_ne_self hb
@@ -462,9 +463,10 @@ theorem isCycle_swap_mul_aux₂ {α : Type*} [DecidableEq α] :
     ∀ (n : ℤ) {b x : α} {f : Perm α} (_ : (swap x (f x) * f) b ≠ b) (_ : (f ^ n) (f x) = b),
       ∃ i : ℤ, ((swap x (f x) * f) ^ i) (f x) = b := by
   intro n
-  induction' n with n n
-  · exact isCycle_swap_mul_aux₁ n
-  · intro b x f hb h
+  induction n with
+  | ofNat n => exact isCycle_swap_mul_aux₁ n
+  | negSucc n =>
+    intro b x f hb h
     exact if hfbx' : f x = b then ⟨0, hfbx'⟩
       else
         have : f b ≠ b ∧ b ≠ x := ne_and_ne_of_swap_mul_apply_ne_self hb
@@ -975,9 +977,10 @@ theorem cycleOf_inv (f : Perm α) (x : α) : (cycleOf f x)⁻¹ = cycleOf f⁻¹
 @[simp]
 theorem cycleOf_pow_apply_self (f : Perm α) (x : α) : ∀ n : ℕ, (cycleOf f x ^ n) x = (f ^ n) x := by
   intro n
-  induction' n with n hn
-  · rfl
-  · rw [pow_succ, mul_apply, cycleOf_apply, hn, if_pos, pow_succ, mul_apply]
+  induction n with
+  | zero => rfl
+  | succ n hn =>
+    rw [pow_succ, mul_apply, cycleOf_apply, hn, if_pos, pow_succ, mul_apply]
     exact ⟨n, rfl⟩
 #align equiv.perm.cycle_of_pow_apply_self Equiv.Perm.cycleOf_pow_apply_self
 
@@ -985,9 +988,9 @@ theorem cycleOf_pow_apply_self (f : Perm α) (x : α) : ∀ n : ℕ, (cycleOf f 
 theorem cycleOf_zpow_apply_self (f : Perm α) (x : α) :
     ∀ n : ℤ, (cycleOf f x ^ n) x = (f ^ n) x := by
   intro z
-  induction' z with z hz
-  · exact cycleOf_pow_apply_self f x z
-  · rw [zpow_negSucc, ← inv_pow, cycleOf_inv, zpow_negSucc, ← inv_pow, cycleOf_pow_apply_self]
+  induction z with
+  | ofNat z => exact cycleOf_pow_apply_self f x z
+  | negSucc => rw [zpow_negSucc, ← inv_pow, cycleOf_inv, zpow_negSucc, ← inv_pow, cycleOf_pow_apply_self]
 #align equiv.perm.cycle_of_zpow_apply_self Equiv.Perm.cycleOf_zpow_apply_self
 
 theorem SameCycle.cycleOf_apply : SameCycle f x y → cycleOf f x y = f y :=
@@ -1520,15 +1523,15 @@ theorem cycle_is_cycleOf {f c : Equiv.Perm α} {a : α} (ha : a ∈ c.support)
 #align equiv.perm.cycle_is_cycle_of Equiv.Perm.cycle_is_cycleOf
 
 theorem eq_cycleOf_of_mem_cycleFactorsFinset_iff
-    (g c : Perm α) (hc : c ∈ g.cycleFactorsFinset) (x : α) :
+    {g c : Perm α} (hc : c ∈ g.cycleFactorsFinset) (x : α) :
     c = g.cycleOf x ↔ x ∈ c.support := by
   refine ⟨?_, (cycle_is_cycleOf · hc)⟩
   rintro rfl
   rw [mem_support, cycleOf_apply_self, Ne.def, ← cycleOf_eq_one_iff]
   exact (mem_cycleFactorsFinset_iff.mp hc).left.ne_one
 
-/-- A permutation `c` is a cycle of `g` iff `k * c * k⁻¹` is a cycle of `k * g * k⁻¹` -/
-theorem mem_cycleFactorsFinset_conj (g k c : Perm α) :
+/-- `k * c * k⁻¹` is a cycle of `k * g * k⁻¹` iff the permutation `c` is a cycle of `g` -/
+theorem mem_cycleFactorsFinset_conj_iff {g c : Perm α} (k : Perm α) :
     k * c * k⁻¹ ∈ (k * g * k⁻¹).cycleFactorsFinset ↔ c ∈ g.cycleFactorsFinset := by
   suffices imp_lemma : ∀ {g k c : Perm α},
       c ∈ g.cycleFactorsFinset → k * c * k⁻¹ ∈ (k * g * k⁻¹).cycleFactorsFinset by
@@ -1552,7 +1555,7 @@ theorem mem_cycleFactorsFinset_conj (g k c : Perm α) :
 /- NB. The converse of the next theorem is false. Commuting with every cycle of `g`
   means that we belong to the kernel of the action of `Equiv.Perm α` on `g.cycleFactorsFinset` -/
 /-- If a permutation commutes with every cycle of `g`, then it commutes with `g` -/
-theorem commute_of_mem_cycleFactorsFinset_commute (k g : Perm α)
+theorem commute_of_mem_cycleFactorsFinset_commute {k g : Perm α}
     (hk : ∀ c ∈ g.cycleFactorsFinset, Commute k c) :
     Commute k g := by
   rw [← cycleFactorsFinset_noncommProd g (cycleFactorsFinset_mem_commute g)]
@@ -1630,9 +1633,10 @@ theorem cycle_induction_on [Finite β] (P : Perm β → Prop) (σ : Perm β) (ba
       let x := σ.truncCycleFactors.out
       exact (congr_arg P x.2.1).mp (this x.1 x.2.2.1 x.2.2.2)
   intro l
-  induction' l with σ l ih
-  · exact fun _ _ => base_one
-  · intro h1 h2
+  induction l with
+  | nil => exact fun _ _ => base_one
+  | cons σ l ih =>
+    intro h1 h2
     rw [List.prod_cons]
     exact
       induction_disjoint σ l.prod (disjoint_prod_right _ (List.pairwise_cons.mp h2).1)
@@ -1709,17 +1713,21 @@ theorem closure_cycle_adjacent_swap {σ : Perm α} (h1 : IsCycle σ) (h2 : σ.su
   have h4 : swap x (σ x) ∈ H := subset_closure (Set.mem_insert_of_mem _ (Set.mem_singleton _))
   have step1 : ∀ n : ℕ, swap ((σ ^ n) x) ((σ ^ (n + 1) : Perm α) x) ∈ H := by
     intro n
-    induction' n with n ih
-    · exact subset_closure (Set.mem_insert_of_mem _ (Set.mem_singleton _))
-    · convert H.mul_mem (H.mul_mem h3 ih) (H.inv_mem h3)
+    induction n with
+    | zero =>
+      exact subset_closure (Set.mem_insert_of_mem _ (Set.mem_singleton _))
+    | succ n ih =>
+      convert H.mul_mem (H.mul_mem h3 ih) (H.inv_mem h3)
       simp_rw [mul_swap_eq_swap_mul, mul_inv_cancel_right, pow_succ]
       rfl
   have step2 : ∀ n : ℕ, swap x ((σ ^ n) x) ∈ H := by
     intro n
-    induction' n with n ih
-    · simp only [Nat.zero_eq, pow_zero, coe_one, id_eq, swap_self, Set.mem_singleton_iff]
+    induction n with
+    | zero =>
+      simp only [Nat.zero_eq, pow_zero, coe_one, id_eq, swap_self, Set.mem_singleton_iff]
       convert H.one_mem
-    · by_cases h5 : x = (σ ^ n) x
+    | succ n ih =>
+      by_cases h5 : x = (σ ^ n) x
       · rw [pow_succ, mul_apply, ← h5]
         exact h4
       by_cases h6 : x = (σ ^ (n + 1) : Perm α) x
@@ -2072,33 +2080,34 @@ theorem _root_.Finset.sum_mul_sum_eq_sum_perm (hσ : σ.IsCycleOn s) (f g : ι �
 
 end Finset
 
-theorem subtypePerm_apply_pow_of_mem (g : Perm α) (s : Finset α)
-    (hs : ∀ x : α, x ∈ s ↔ g x ∈ s) (n : ℕ) (x : α) (hx : x ∈ s) :
+theorem subtypePerm_apply_pow_of_mem {g : Perm α} {s : Finset α}
+    (hs : ∀ x : α, x ∈ s ↔ g x ∈ s) {n : ℕ} {x : α} (hx : x ∈ s) :
     ((g.subtypePerm hs ^ n) (⟨x, hx⟩ : s) : α) = (g ^ n) x := by
   revert x
-  induction' n with n hrec
-  · -- zero case
+  induction n with
+  | zero => -- zero case
     intro x hx
     simp only [pow_zero, coe_one, id.def, Subtype.coe_mk]
-  · -- induction case
+  | succ n hrec => -- induction case
     intro x hx
     simp only [pow_succ', coe_mul, Function.comp_apply]
     apply hrec
 
-theorem subtypePerm_apply_zpow_of_mem (g : Perm α) (s : Finset α)
-    (hs : ∀ x : α, x ∈ s ↔ g x ∈ s) (i : ℤ) (x : α) (hx : x ∈ s) :
+theorem subtypePerm_apply_zpow_of_mem {g : Perm α} {s : Finset α}
+    (hs : ∀ x : α, x ∈ s ↔ g x ∈ s) {i : ℤ} {x : α} (hx : x ∈ s) :
     ((g.subtypePerm hs ^ i) (⟨x, hx⟩ : s) : α) = (g ^ i) x := by
-  induction' i with i i
-  -- nat case
-  apply subtypePerm_apply_pow_of_mem
-  -- neg_succ case
-  simp only [zpow_negSucc]
-  apply Equiv.injective (g ^ (i + 1))
-  simp only [apply_inv_self]
-  rw [← subtypePerm_apply_pow_of_mem g s hs, Finset.mk_coe, apply_inv_self, Subtype.coe_mk]
-  apply Finset.coe_mem
+  induction i with
+  | ofNat i => -- nat case
+    apply subtypePerm_apply_pow_of_mem
+  | negSucc i => -- neg_succ case
+    simp only [zpow_negSucc]
+    apply Equiv.injective (g ^ (i + 1))
+    simp only [apply_inv_self]
+    rw [← subtypePerm_apply_pow_of_mem hs, Finset.mk_coe, apply_inv_self, Subtype.coe_mk]
+    apply Finset.coe_mem
 
 variable [Fintype α]
+
 /-- Restrict a permutation to its support -/
 def subtypePermOfSupport (c : Perm α) : Perm c.support :=
   subtypePerm c fun _ : α => apply_mem_support.symm
