@@ -11,6 +11,20 @@ import Mathlib.Logic.Equiv.List
 
 /-!
 # Countable sets
+
+In this file we define `Set.Countable s` as an abbreviation for `Countable s`
+and prove basic properties of this definition.
+Since the definition is reducible,
+Lean can automatically convert between `Set.Countable s` and `Countable s` in most cases,
+including typeclass search.
+The main reason we use an abbreviation is to enable dot notation.
+
+Note that this definition does not provide a computable encoding.
+For a noncomputable conversion to `Encodable s`, use `Set.Countable.nonempty_encodable`.
+
+## Keywords
+
+sets, countable set
 -/
 
 noncomputable section
@@ -23,23 +37,22 @@ variable {α : Type u} {β : Type v} {γ : Type w} {ι : Sort x}
 
 namespace Set
 
-/-- A set is countable if there exists an encoding of the set into the natural numbers.
-An encoding is an injection with a partial inverse, which can be viewed as a
-constructive analogue of countability. (For the most part, theorems about
-`Countable` will be classical and `Encodable` will be constructive.)
+/-- A set `s`  is countable if the corresponding subtype is countable,
+i.e., there exists an injective map `f : s → ℕ`.
+
+Note that this is an abbreviation, so `hs : Set.Countable s` in the proof context
+is the same as an instance `Countable s`.
+For a constructive version, see `Encodable`.
 -/
-protected def Countable (s : Set α) : Prop :=
-  Nonempty (Encodable s)
+protected abbrev Countable (s : Set α) : Prop := Countable s
 #align set.countable Set.Countable
 
 @[simp]
-theorem countable_coe_iff {s : Set α} : Countable s ↔ s.Countable :=
-  Encodable.nonempty_encodable.symm
+theorem countable_coe_iff {s : Set α} : Countable s ↔ s.Countable := .rfl
 #align set.countable_coe_iff Set.countable_coe_iff
 
 /-- Prove `Set.Countable` from a `Countable` instance on the subtype. -/
-theorem to_countable (s : Set α) [Countable s] : s.Countable :=
-  countable_coe_iff.mp ‹_›
+theorem to_countable (s : Set α) [Countable s] : s.Countable := ‹_›
 #align set.to_countable Set.to_countable
 
 /-- Restate `Set.Countable` as a `Countable` instance. -/
@@ -49,7 +62,7 @@ alias ⟨_root_.Countable.to_set, Countable.to_subtype⟩ := countable_coe_iff
 
 protected theorem countable_iff_exists_injective {s : Set α} :
     s.Countable ↔ ∃ f : s → ℕ, Injective f :=
-  countable_coe_iff.symm.trans (countable_iff_exists_injective s)
+  countable_iff_exists_injective s
 #align set.countable_iff_exists_injective Set.countable_iff_exists_injective
 
 /-- A set `s : Set α` is countable if and only if there exists a function `α → ℕ` injective
@@ -58,9 +71,14 @@ theorem countable_iff_exists_injOn {s : Set α} : s.Countable ↔ ∃ f : α →
   Set.countable_iff_exists_injective.trans exists_injOn_iff_injective.symm
 #align set.countable_iff_exists_inj_on Set.countable_iff_exists_injOn
 
+theorem countable_iff_nonempty_encodable {s : Set α} : s.Countable ↔ Nonempty (Encodable s) :=
+  Encodable.nonempty_encodable.symm
+
+alias ⟨Countable.nonempty_encodable, _⟩ := countable_iff_nonempty_encodable
+
 /-- Convert `Set.Countable s` to `Encodable s` (noncomputable). -/
-protected def Countable.toEncodable {s : Set α} : s.Countable → Encodable s :=
-  Classical.choice
+protected def Countable.toEncodable {s : Set α} (hs : s.Countable) : Encodable s :=
+  Classical.choice hs.nonempty_encodable
 #align set.countable.to_encodable Set.Countable.toEncodable
 
 section Enumerate
@@ -82,8 +100,9 @@ theorem subset_range_enumerate {s : Set α} (h : s.Countable) (default : α) :
 
 end Enumerate
 
-theorem Countable.mono {s₁ s₂ : Set α} (h : s₁ ⊆ s₂) : s₂.Countable → s₁.Countable
-  | ⟨H⟩ => ⟨@ofInj _ _ H _ (embeddingOfSubset _ _ h).2⟩
+set_option linter.unusedVariables false in -- TODO: false positive
+theorem Countable.mono {s₁ s₂ : Set α} (h : s₁ ⊆ s₂) (hs : s₂.Countable) : s₁.Countable :=
+  (inclusion_injective h).countable
 #align set.countable.mono Set.Countable.mono
 
 theorem countable_range [Countable ι] (f : ι → β) : (range f).Countable :=
@@ -103,7 +122,7 @@ natural numbers onto the subtype induced by the set.
 -/
 protected theorem countable_iff_exists_surjective {s : Set α} (hs : s.Nonempty) :
     s.Countable ↔ ∃ f : ℕ → s, Surjective f :=
-  countable_coe_iff.symm.trans <| @countable_iff_exists_surjective s hs.to_subtype
+  @countable_iff_exists_surjective s hs.to_subtype
 #align set.countable_iff_exists_surjective Set.countable_iff_exists_surjective
 
 alias ⟨Countable.exists_surjective, _⟩ := Set.countable_iff_exists_surjective
@@ -133,14 +152,14 @@ theorem Countable.exists_eq_range {s : Set α} (hc : s.Countable) (hs : s.Nonemp
 
 theorem Countable.image {s : Set α} (hs : s.Countable) (f : α → β) : (f '' s).Countable := by
   rw [image_eq_range]
-  haveI := hs.to_subtype
   apply countable_range
 #align set.countable.image Set.Countable.image
 
+set_option linter.unusedVariables false in -- TODO: false positive
 theorem MapsTo.countable_of_injOn {s : Set α} {t : Set β} {f : α → β} (hf : MapsTo f s t)
     (hf' : InjOn f s) (ht : t.Countable) : s.Countable :=
   have : Injective (hf.restrict f s t) := (injOn_iff_injective.1 hf').codRestrict _
-  ⟨@Encodable.ofInj _ _ ht.toEncodable _ this⟩
+  this.countable
 #align set.maps_to.countable_of_inj_on Set.MapsTo.countable_of_injOn
 
 theorem Countable.preimage_of_injOn {s : Set β} (hs : s.Countable) {f : α → β}
@@ -184,7 +203,6 @@ theorem countable_of_injective_of_countable_image {s : Set α} {f : α → β} (
 
 theorem countable_iUnion {t : ι → Set α} [Countable ι] (ht : ∀ i, (t i).Countable) :
     (⋃ i, t i).Countable := by
-  haveI := fun a => (ht a).to_subtype
   rw [iUnion_eq_range_psigma]
   apply countable_range
 #align set.countable_Union Set.countable_iUnion
@@ -197,12 +215,11 @@ theorem countable_iUnion_iff [Countable ι] {t : ι → Set α} :
 
 theorem Countable.biUnion_iff {s : Set α} {t : ∀ a ∈ s, Set β} (hs : s.Countable) :
     (⋃ a ∈ s, t a ‹_›).Countable ↔ ∀ a (ha : a ∈ s), (t a ha).Countable := by
-  haveI := hs.to_subtype
   rw [biUnion_eq_iUnion, countable_iUnion_iff, SetCoe.forall']
 #align set.countable.bUnion_iff Set.Countable.biUnion_iff
 
 theorem Countable.sUnion_iff {s : Set (Set α)} (hs : s.Countable) :
-    (⋃₀ s).Countable ↔ ∀ a ∈ s, (a : _).Countable := by rw [sUnion_eq_biUnion, hs.biUnion_iff]
+    (⋃₀ s).Countable ↔ ∀ a ∈ s, a.Countable := by rw [sUnion_eq_biUnion, hs.biUnion_iff]
 #align set.countable.sUnion_iff Set.Countable.sUnion_iff
 
 alias ⟨_, Countable.biUnion⟩ := Countable.biUnion_iff
@@ -232,8 +249,8 @@ protected theorem Countable.insert {s : Set α} (a : α) (h : s.Countable) : (in
   countable_insert.2 h
 #align set.countable.insert Set.Countable.insert
 
-theorem Finite.countable {s : Set α} : s.Finite → s.Countable
-  | ⟨_⟩ => Trunc.nonempty (Fintype.truncEncodable s)
+theorem Finite.countable {s : Set α} (hs : s.Finite) : s.Countable :=
+  have := hs.to_subtype; inferInstance
 #align set.finite.countable Set.Finite.countable
 
 @[nontriviality]
@@ -256,7 +273,6 @@ theorem countable_isBot (α : Type*) [PartialOrder α] : { x : α | IsBot x }.Co
 /-- The set of finite subsets of a countable set is countable. -/
 theorem countable_setOf_finite_subset {s : Set α} (hs : s.Countable) :
     { t | Set.Finite t ∧ t ⊆ s }.Countable := by
-  haveI := hs.to_subtype
   refine' Countable.mono _ (countable_range fun t : Finset s => Subtype.val '' (t : Set s))
   rintro t ⟨ht, hts⟩
   lift t to Set s using hts
@@ -264,9 +280,9 @@ theorem countable_setOf_finite_subset {s : Set α} (hs : s.Countable) :
   exact mem_range_self _
 #align set.countable_set_of_finite_subset Set.countable_setOf_finite_subset
 
+set_option linter.unusedVariables false in -- TODO: false positive
 theorem countable_univ_pi {π : α → Type*} [Finite α] {s : ∀ a, Set (π a)}
     (hs : ∀ a, (s a).Countable) : (pi univ s).Countable :=
-  haveI := fun a => (hs a).to_subtype
   (Countable.of_equiv _ (Equiv.Set.univPi s).symm).to_set
 #align set.countable_univ_pi Set.countable_univ_pi
 
@@ -275,11 +291,10 @@ theorem countable_pi {π : α → Type*} [Finite α] {s : ∀ a, Set (π a)} (hs
   simpa only [← mem_univ_pi] using countable_univ_pi hs
 #align set.countable_pi Set.countable_pi
 
+set_option linter.unusedVariables false in -- TODO: false positive
 protected theorem Countable.prod {s : Set α} {t : Set β} (hs : s.Countable) (ht : t.Countable) :
-    Set.Countable (s ×ˢ t) := by
-  haveI : Countable s := hs.to_subtype
-  haveI : Countable t := ht.to_subtype
-  exact (Countable.of_equiv _ <| (Equiv.Set.prod _ _).symm).to_set
+    Set.Countable (s ×ˢ t) :=
+  Countable.of_equiv _ <| (Equiv.Set.prod _ _).symm
 #align set.countable.prod Set.Countable.prod
 
 theorem Countable.image2 {s : Set α} {t : Set β} (hs : s.Countable) (ht : t.Countable)

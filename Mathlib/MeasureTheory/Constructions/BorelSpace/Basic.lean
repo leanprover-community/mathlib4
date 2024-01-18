@@ -138,7 +138,7 @@ theorem borel_eq_generateFrom_Iio : borel α = .generateFrom (range Iio) := by
       · exact (H _).compl
       simp [Set.ext_iff, ha']
     · rcases isOpen_iUnion_countable (fun a' : { a' : α // a < a' } => { b | a'.1 < b }) fun a' =>
-          isOpen_lt' _ with ⟨v, ⟨hv⟩, vu⟩
+          isOpen_lt' _ with ⟨v, hv, vu⟩
       simp? [Set.ext_iff] at vu says
         simp only [Set.ext_iff, mem_iUnion, mem_setOf_eq, exists_prop, Subtype.exists,
           exists_and_right] at vu
@@ -1499,7 +1499,7 @@ theorem measurable_liminf' {ι ι'} {f : ι → δ → α} {v : Filter ι} (hf :
   which are not bounded above or below. A slightly more complicated expression for the liminf,
   valid in general, is given in `Filter.HasBasis.liminf_eq_ite`. This expression, built from
   `if ... then ... else` and infs and sups, can be readily checked to be measurable. -/
-  have : Countable (Subtype p) := Encodable.nonempty_encodable.1 hv.countable
+  have : Countable (Subtype p) := hv.countable
   rcases isEmpty_or_nonempty (Subtype p) with hp|hp
   · simp [hv.liminf_eq_sSup_iUnion_iInter]
   by_cases H : ∃ (j : Subtype p), s j = ∅

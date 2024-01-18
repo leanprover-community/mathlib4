@@ -414,8 +414,8 @@ theorem separableSpace_iff_countable [DiscreteTopology α] : SeparableSpace α �
 theorem _root_.Set.PairwiseDisjoint.countable_of_isOpen [SeparableSpace α] {ι : Type*}
     {s : ι → Set α} {a : Set ι} (h : a.PairwiseDisjoint s) (ha : ∀ i ∈ a, IsOpen (s i))
     (h'a : ∀ i ∈ a, (s i).Nonempty) : a.Countable := by
-  rcases exists_countable_dense α with ⟨u, ⟨u_encodable⟩, u_dense⟩
-  have : ∀ i : a, ∃ y, y ∈ s i ∩ u := fun i =>
+  rcases exists_countable_dense α with ⟨u, u_countable, u_dense⟩
+  have : ∀ i : a, (s i ∩ u).Nonempty := fun i =>
     dense_iff_inter_open.1 u_dense (s i) (ha i i.2) (h'a i i.2)
   choose f hfs hfu using this
   lift f to a → u using hfu
@@ -423,7 +423,7 @@ theorem _root_.Set.PairwiseDisjoint.countable_of_isOpen [SeparableSpace α] {ι 
     refine' injective_iff_pairwise_ne.mpr
       ((h.subtype _ _).mono fun i j hij hfij => hij.le_bot ⟨hfs i, _⟩)
     simp only [congr_arg Subtype.val hfij, hfs j]
-  exact ⟨@Encodable.ofInj _ _ u_encodable f f_inj⟩
+  exact f_inj.countable
 #align set.pairwise_disjoint.countable_of_is_open Set.PairwiseDisjoint.countable_of_isOpen
 
 /-- In a separable space, a family of disjoint sets with nonempty interiors is countable. -/
@@ -576,9 +576,9 @@ theorem isTopologicalBasis_singletons (α : Type*) [TopologicalSpace α] [Discre
 
 -- porting note: use `∃ t, t ⊆ s ∧ _` instead of `∃ t (_ : t ⊆ s), _`
 theorem Dense.exists_countable_dense_subset {α : Type*} [TopologicalSpace α] {s : Set α}
-    [SeparableSpace s] (hs : Dense s) : ∃ t, t ⊆ s ∧ t.Countable ∧ Dense t :=
+    [SeparableSpace s] (hs : Dense s) : ∃ t ⊆ s, t.Countable ∧ Dense t :=
   let ⟨t, htc, htd⟩ := exists_countable_dense s
-  ⟨(↑) '' t, image_subset_iff.2 fun _ _ => mem_preimage.2 <| Subtype.coe_prop _, htc.image (↑),
+  ⟨(↑) '' t, Subtype.coe_image_subset s t, htc.image Subtype.val,
     hs.denseRange_val.dense_image continuous_subtype_val htd⟩
 #align dense.exists_countable_dense_subset Dense.exists_countable_dense_subsetₓ
 
@@ -590,7 +590,7 @@ to `s`. For a dense subset containing neither bot nor top elements, see
 `Dense.exists_countable_dense_subset_no_bot_top`. -/
 theorem Dense.exists_countable_dense_subset_bot_top {α : Type*} [TopologicalSpace α]
     [PartialOrder α] {s : Set α} [SeparableSpace s] (hs : Dense s) :
-    ∃ t, t ⊆ s ∧ t.Countable ∧ Dense t ∧ (∀ x, IsBot x → x ∈ s → x ∈ t) ∧
+    ∃ t ⊆ s, t.Countable ∧ Dense t ∧ (∀ x, IsBot x → x ∈ s → x ∈ t) ∧
       ∀ x, IsTop x → x ∈ s → x ∈ t := by
   rcases hs.exists_countable_dense_subset with ⟨t, hts, htc, htd⟩
   refine' ⟨(t ∪ ({ x | IsBot x } ∪ { x | IsTop x })) ∩ s, _, _, _, _, _⟩
