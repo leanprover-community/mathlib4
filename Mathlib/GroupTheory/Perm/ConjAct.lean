@@ -41,7 +41,7 @@ theorem cycleFactorsFinset_conj (g k : Perm α) :
       Finset.map (MulAut.conj k).toEquiv.toEmbedding g.cycleFactorsFinset := by
   ext c
   rw [ConjAct.smul_def, ConjAct.ofConjAct_toConjAct]
-  rw [Finset.mem_map_equiv, ← mem_cycleFactorsFinset_conj g k]
+  rw [Finset.mem_map_equiv, ← mem_cycleFactorsFinset_conj_iff k⁻¹]
   simp only [MulEquiv.toEquiv_eq_coe, MulEquiv.coe_toEquiv_symm, MulAut.conj_symm_apply]
   group
 
@@ -50,7 +50,7 @@ theorem mem_cycleFactorsFinset_conj'
     (k : ConjAct (Perm α)) (g c : Perm α) :
     k • c ∈ (k • g).cycleFactorsFinset ↔ c ∈ g.cycleFactorsFinset := by
   simp only [ConjAct.smul_def]
-  apply mem_cycleFactorsFinset_conj
+  exact mem_cycleFactorsFinset_conj_iff k
 
 theorem cycleFactorsFinset_conj_eq
     (k : ConjAct (Perm α)) (g : Perm α) :
