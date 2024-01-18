@@ -3,10 +3,7 @@ Copyright (c) 2024 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Constructions.Prod.Integral
-import Mathlib.MeasureTheory.Group.Integral
-import Mathlib.Topology.UrysohnsLemma
-import Mathlib.MeasureTheory.Measure.Haar.Basic
+import Mathlib.MeasureTheory.Group.Measure
 
 /-!
 # Everywhere positive sets in measure spaces
@@ -179,7 +176,7 @@ lemma IsEverywherePos.IsGdelta_of_isMulLeftInvariant
   Let us show the converse. Take `x` in the intersection. For each `n`, write `x = vₙ yₙ` with
   `vₙ ∈ Vₙ` and `yₙ ∈ k`. Let `z ∈ k` be a cluster value of `yₙ`, by compactness. As multiplication
   by `vₙ = x yₙ⁻¹ ∈ Vₙ` changes the measure of `k` by very little, passing to the limit we get
-  `μ (x z⁻¹ k \ k) = 0`. By invariance of the measure, `μ (k \ z x⁻¹ k) = 0`.
+  `μ (x z⁻¹ k \ k) = 0`. By invariance of the measure under `z x ⁻¹`, we get `μ (k \ z x⁻¹ k) = 0`.
   Assume `x ∉ k`. Then `z ∈ k \ z x⁻¹ k`. Even more, this set is a neighborhood of `z` within `k`
   (as `z x⁻¹ k` is closed), and it has zero measure. This contradicts the fact that `k` has
   positive measure around the point `z`. -/

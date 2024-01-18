@@ -404,7 +404,7 @@ theorem measure_apply {s : Set G} (hs : MeasurableSet s) : μ.measure s = μ.out
 #align measure_theory.content.measure_apply MeasureTheory.Content.measure_apply
 
 instance outerRegular : μ.measure.OuterRegular := by
-  refine' ⟨fun A hA r (hr : _ < _) => _⟩
+  refine ⟨fun A hA r (hr : _ < _) ↦ ?_⟩
   rw [μ.measure_apply hA, outerMeasure_eq_iInf] at hr
   simp only [iInf_lt_iff] at hr
   rcases hr with ⟨U, hUo, hAU, hr⟩
