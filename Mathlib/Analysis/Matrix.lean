@@ -200,7 +200,7 @@ section NormedSpace
 attribute [local instance] Matrix.seminormedAddCommGroup
 
 /-- This applies to the sup norm of sup norm. -/
-protected def boundedSMul [SeminormedRing R] [SeminormedAddCommGroup α] [Module R α]
+protected theorem boundedSMul [SeminormedRing R] [SeminormedAddCommGroup α] [Module R α]
     [BoundedSMul R α] : BoundedSMul R (Matrix m n α) :=
   Pi.instBoundedSMul
 
@@ -248,7 +248,7 @@ protected def linftyOpNormedAddCommGroup [NormedAddCommGroup α] :
 
 /-- This applies to the sup norm of L1 norm. -/
 @[local instance]
-protected def linftyOpBoundedSMul
+protected theorem linftyOpBoundedSMul
     [SeminormedRing R] [SeminormedAddCommGroup α] [Module R α] [BoundedSMul R α] :
     BoundedSMul R (Matrix m n α) :=
   (by infer_instance : BoundedSMul R (m → PiLp 1 fun j : n => α))
@@ -502,7 +502,7 @@ def frobeniusNormedAddCommGroup [NormedAddCommGroup α] : NormedAddCommGroup (Ma
 
 /-- This applies to the frobenius norm. -/
 @[local instance]
-def frobeniusBoundedSMul [SeminormedRing R] [SeminormedAddCommGroup α] [Module R α]
+theorem frobeniusBoundedSMul [SeminormedRing R] [SeminormedAddCommGroup α] [Module R α]
     [BoundedSMul R α] :
     BoundedSMul R (Matrix m n α) :=
   (by infer_instance : BoundedSMul R (PiLp 2 fun i : m => PiLp 2 fun j : n => α))
