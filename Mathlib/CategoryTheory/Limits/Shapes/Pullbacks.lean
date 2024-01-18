@@ -616,7 +616,7 @@ theorem equalizer_ext (t : PullbackCone f g) {W : C} {k l : W ⟶ t.pt} (h₀ : 
     (h₁ : k ≫ snd t = l ≫ snd t) : ∀ j : WalkingCospan, k ≫ t.π.app j = l ≫ t.π.app j
   | some WalkingPair.left => h₀
   | some WalkingPair.right => h₁
-  | none => by rw [← t.w inl]; dsimp [h₀]; simp only [← Category.assoc, congrArg (· ≫ f) h₀]
+  | none => by rw [← t.w inl, reassoc_of% h₀]
 #align category_theory.limits.pullback_cone.equalizer_ext CategoryTheory.Limits.PullbackCone.equalizer_ext
 
 theorem IsLimit.hom_ext {t : PullbackCone f g} (ht : IsLimit t) {W : C} {k l : W ⟶ t.pt}

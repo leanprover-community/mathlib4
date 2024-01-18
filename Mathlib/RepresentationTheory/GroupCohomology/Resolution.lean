@@ -627,7 +627,7 @@ theorem forget₂ToModuleCatHomotopyEquiv_f_0_eq :
   simp only [HomologicalComplex.comp_f]
   dsimp
   convert Category.id_comp (X := (forget₂ToModuleCat k G).X 0) _
-  · dsimp only [HomotopyEquiv.ofIso, compForgetAugmentedIso, map_alternatingFaceMapComplex]
+  · dsimp only [HomotopyEquiv.ofIso, compForgetAugmentedIso]
     simp only [Iso.symm_hom, eqToIso.inv, HomologicalComplex.eqToHom_f, eqToHom_refl]
   trans (Finsupp.total _ _ _ fun _ => (1 : k)).comp ((ModuleCat.free k).map (terminal.from _))
   · dsimp
