@@ -94,8 +94,7 @@ def HomogeneousIdeal.toIdeal (I : HomogeneousIdeal 𝒜) : Ideal A :=
   I.toSubmodule
 #align homogeneous_ideal.to_ideal HomogeneousIdeal.toIdeal
 
-lemma HomogeneousIdeal.isHomogeneous (I : HomogeneousIdeal 𝒜) :
-  Ideal.IsHomogeneous 𝒜 I.toIdeal := I.2
+lemma HomogeneousIdeal.isHomogeneous (I : HomogeneousIdeal 𝒜) : I.toIdeal.IsHomogeneous 𝒜 := I.2
 #align homogeneous_ideal.is_homogeneous HomogeneousIdeal.isHomogeneous
 
 theorem HomogeneousSubmodule.isHomogeneous (I : HomogeneousSubmodule A ℳ) :
