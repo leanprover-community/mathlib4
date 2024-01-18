@@ -25,7 +25,7 @@ A set `s` in a topological space with a measure `μ` is *everywhere positive* (a
 The latter two statements have also versions when `μ` is inner regular for finite measure sets,
 assuming additionally that `s` has finite measure.
 
-* `IsEverywherePos.IsGdelta` proves that an everywhere positive compact closed set is a Gδ set,
+* `IsEverywherePos.IsGδ` proves that an everywhere positive compact closed set is a Gδ set,
   in a topological group with a left-invariant measure. This is a nontrivial statement, used
   crucially in the study of the uniqueness of Haar measures.
 -/
@@ -164,7 +164,7 @@ topological group, then it is a Gδ set. This is nontrivial, as there is no seco
 metrizability assumption in the statement, so a general compact closed set has no reason to be
 a countable intersection of open sets. -/
 @[to_additive]
-lemma IsEverywherePos.IsGdelta_of_isMulLeftInvariant
+lemma IsEverywherePos.isGδ_of_isMulLeftInvariant
     {G : Type*} [Group G] [TopologicalSpace G] [TopologicalGroup G]
     [LocallyCompactSpace G] [MeasurableSpace G] [BorelSpace G] {μ : Measure G}
     [IsMulLeftInvariant μ] [IsFiniteMeasureOnCompacts μ] [InnerRegularCompactLTTop μ] {k : Set G}
