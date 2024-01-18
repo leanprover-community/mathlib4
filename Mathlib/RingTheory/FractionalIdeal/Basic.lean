@@ -1601,6 +1601,17 @@ theorem eq_spanSingleton_mul {x : P} {I J : FractionalIdeal S P} :
   simp only [le_antisymm_iff, le_spanSingleton_mul_iff, spanSingleton_mul_le_iff]
 #align fractional_ideal.eq_span_singleton_mul FractionalIdeal.eq_spanSingleton_mul
 
+theorem num_le (I : FractionalIdeal S P) :
+    (I.num : FractionalIdeal S P) ≤ I := by
+  rw [← I.den_mul_self_eq_num', spanSingleton_mul_le_iff]
+  intro _ h
+  rw [← Algebra.smul_def]
+  exact Submodule.smul_mem _ _ h
+
+theorem num_eq_zero_iff {I : FractionalIdeal R₁⁰ K} : I.num = 0 ↔ I = 0 :=
+  ⟨fun h ↦ zero_of_num_eq_bot zero_not_mem_nonZeroDivisors h,
+    fun h ↦ h ▸ num_zero_eq (IsFractionRing.injective R₁ K)⟩
+
 end PrincipalIdealRing
 
 variable {R₁ : Type*} [CommRing R₁]
