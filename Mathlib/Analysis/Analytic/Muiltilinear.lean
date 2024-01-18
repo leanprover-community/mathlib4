@@ -84,6 +84,7 @@ lemma fderiv_apply [DecidableEq ι] (f : ContinuousMultilinearMap 𝕜 E F) (x y
   unfold fderiv
   simp only [coe_mk', MultilinearMap.linearDeriv_apply, coe_coe]
 
+-- Maybe not worth it.
 example [DecidableEq ι] (f : ContinuousMultilinearMap 𝕜 E F) :
     Continuous (fun x ↦ f.fderiv x) := by
   refine Continuous.congr (f := fun x ↦ ∑ i : ι, ContinuousLinearMap.comp
@@ -93,7 +94,7 @@ example [DecidableEq ι] (f : ContinuousMultilinearMap 𝕜 E F) :
       ?_ (fun _ ↦ by simp only [Function.comp_apply, precomp_toFun])
     apply Continuous.comp
     · exact ContinuousLinearMap.continuous _
-    ·
+    · sorry
   --  refine Continuous.congr (f := fun x ↦ (fun a ↦ f (Function.update x i a))) ?_ ?_
   · intro x; ext y
     simp only [coe_sum', coe_comp', Finset.sum_apply, Function.comp_apply, proj_apply, fderiv_apply]
