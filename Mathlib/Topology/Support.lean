@@ -369,9 +369,9 @@ end MulZeroClass
 
 end CompactSupport2
 
-namespace LocallyFinite
+section LocallyFinite
 
-variable {ι : Type*} {U : ι → Set X} [TopologicalSpace X] [One R]
+variable {ι : Type*} [TopologicalSpace X]
 
 -- porting note: todo: reformulate for any locally finite family of sets
 /-- If a family of functions `f` has locally-finite multiplicative support, subordinate to a family
@@ -380,7 +380,7 @@ of open sets, then for any point we can find a neighbourhood on which only finit
 @[to_additive " If a family of functions `f` has locally-finite support, subordinate to a family of
 open sets, then for any point we can find a neighbourhood on which only finitely-many members of `f`
 are non-zero. "]
-theorem exists_finset_nhd_mulSupport_subset {f : ι → X → R}
+theorem LocallyFinite.exists_finset_nhd_mulSupport_subset {U : ι → Set X} [One R] {f : ι → X → R}
     (hlf : LocallyFinite fun i => mulSupport (f i)) (hso : ∀ i, mulTSupport (f i) ⊆ U i)
     (ho : ∀ i, IsOpen (U i)) (x : X) :
     ∃ (is : Finset ι), ∃ n, n ∈ 𝓝 x ∧ (n ⊆ ⋂ i ∈ is, U i) ∧
@@ -410,5 +410,10 @@ theorem exists_finset_nhd_mulSupport_subset {f : ι → X → R}
       exact ⟨z, ⟨hi, hzn⟩⟩
 #align locally_finite.exists_finset_nhd_mul_support_subset LocallyFinite.exists_finset_nhd_mulSupport_subset
 #align locally_finite.exists_finset_nhd_support_subset LocallyFinite.exists_finset_nhd_support_subset
+
+@[to_additive]
+theorem locallyFinite_mulSupport_iff [CommMonoid M] {f : ι → X → M} :
+    (LocallyFinite fun i ↦ mulSupport <| f i) ↔ LocallyFinite fun i ↦ mulTSupport <| f i :=
+  ⟨LocallyFinite.closure, fun H ↦ H.subset fun _ ↦ subset_closure⟩
 
 end LocallyFinite
