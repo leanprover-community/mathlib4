@@ -13,30 +13,30 @@ import Mathlib.RingTheory.Finiteness
 #align_import ring_theory.graded_algebra.homogeneous_ideal from "leanprover-community/mathlib"@"4e861f25ba5ceef42ba0712d8ffeb32f38ad6441"
 
 /-!
-# Homogeneous ideals of a graded algebra
+# Homogeneous submodules of a graded module
 
-This file defines homogeneous ideals of `GradedRing 𝒜` where `𝒜 : ι → Submodule R A` and
+This file defines homogeneous submodule of a graded module `⨁ᵢ ℳᵢ` over graded ring `⨁ᵢ 𝒜ᵢ` and
 operations on them.
 
 ## Main definitions
 
-For any `I : Ideal A`:
-* `Ideal.IsHomogeneous 𝒜 I`: The property that an ideal is closed under `GradedRing.proj`.
-* `HomogeneousSubmodule A ℳ`: The structure extending ideals which satisfy `Ideal.IsHomogeneous`.
-* `Ideal.homogeneousCore I 𝒜`: The largest homogeneous ideal smaller than `I`.
-* `Ideal.homogeneousHull I 𝒜`: The smallest homogeneous ideal larger than `I`.
+For any `p : Submodule A M`:
+* `Submodule.IsHomogeneous ℳ p`: The property that a submodule is closed under `GradedModule.proj`.
+* `HomogeneousSubmodule A ℳ`: The structure extending submodules which satisfy `Submodule.IsHomogeneous`.
+* `Submodule.homogeneousCore p 𝒜 ℳ`: The largest homogeneous submodule smaller than `p`.
+* `Submodule.homogeneousHull I 𝒜 ℳ`: The smallest homogeneous ideal larger than `p`.
 
 ## Main statements
 
-* `HomogeneousSubmodule.completeLattice`: `Ideal.IsHomogeneous` is preserved by `⊥`, `⊤`, `⊔`, `⊓`,
+* `HomogeneousSubmodule.completeLattice`: `Submodule.IsHomogeneous` is preserved by `⊥`, `⊤`, `⊔`, `⊓`,
   `⨆`, `⨅`, and so the subtype of homogeneous ideals inherits a complete lattice structure.
-* `Ideal.homogeneousCore.gi`: `Ideal.homogeneousCore` forms a galois insertion with coercion.
-* `Ideal.homogeneousHull.gi`: `Ideal.homogeneousHull` forms a galois insertion with coercion.
+* `Submodule.homogeneousCore.gi`: `Submodule.homogeneousCore` forms a galois insertion with coercion.
+* `Submodule.homogeneousHull.gi`: `Submodule.homogeneousHull` forms a galois insertion with coercion.
 
 ## Implementation notes
 
 We introduce `Submodule.homogeneousCore'` earlier than might be expected so that we can get access
-to `Ideal.IsHomogeneous.iff_exists` as quickly as possible.
+to `Submodule.IsHomogeneous.iff_exists` as quickly as possible.
 
 ## Tags
 
