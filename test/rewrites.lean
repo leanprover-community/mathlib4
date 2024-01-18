@@ -1,3 +1,4 @@
+import Mathlib.Init.Core
 import Mathlib.Tactic.Rewrites
 import Mathlib.Data.Nat.Prime
 import Mathlib.CategoryTheory.Category.Basic

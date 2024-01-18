@@ -10,8 +10,8 @@ import Mathlib.Algebra.Ring.CompTypeclasses
 import Mathlib.Algebra.Field.Opposite
 import Mathlib.Algebra.Invertible.Defs
 import Mathlib.GroupTheory.GroupAction.Opposite
-import Mathlib.Data.SetLike.Basic
 import Mathlib.Data.Rat.Cast.Defs
+import Mathlib.Data.SetLike.Basic
 
 #align_import algebra.star.basic from "leanprover-community/mathlib"@"31c24aa72e7b3e5ed97a8412470e904f82b81004"
 
