@@ -1960,6 +1960,7 @@ import Mathlib.Data.Set.BoolIndicator
 import Mathlib.Data.Set.Card
 import Mathlib.Data.Set.Constructions
 import Mathlib.Data.Set.Countable
+import Mathlib.Data.Set.Defs
 import Mathlib.Data.Set.Enumerate
 import Mathlib.Data.Set.Equitable
 import Mathlib.Data.Set.Finite
@@ -2968,6 +2969,7 @@ import Mathlib.Order.Monotone.Extension
 import Mathlib.Order.Monotone.Monovary
 import Mathlib.Order.Monotone.Odd
 import Mathlib.Order.Monotone.Union
+import Mathlib.Order.Notation
 import Mathlib.Order.OmegaCompletePartialOrder
 import Mathlib.Order.OrdContinuous
 import Mathlib.Order.OrderIsoNat
@@ -3712,6 +3714,7 @@ import Mathlib.Topology.MetricSpace.MetricSeparated
 import Mathlib.Topology.MetricSpace.PartitionOfUnity
 import Mathlib.Topology.MetricSpace.PiNat
 import Mathlib.Topology.MetricSpace.Polish
+import Mathlib.Topology.MetricSpace.ProperSpace
 import Mathlib.Topology.MetricSpace.PseudoMetric
 import Mathlib.Topology.MetricSpace.ShrinkingLemma
 import Mathlib.Topology.MetricSpace.ThickenedIndicator

@@ -59,7 +59,7 @@ This file defines the predicate `SeparatedNhds`, and common separation axioms
 * `t2_iff_nhds`: A space is T₂ iff the neighbourhoods of distinct points generate the bottom filter.
 * `t2_iff_isClosed_diagonal`: A space is T₂ iff the `diagonal` of `X` (that is, the set of all
   points of the form `(a, a) : X × X`) is closed under the product topology.
-* `finset_disjoint_finset_opens_of_t2`: Any two disjoint finsets are `SeparatedNhds`.
+* `separatedNhds_of_finset_finset`: Any two disjoint finsets are `SeparatedNhds`.
 * Most topological constructions preserve Hausdorffness;
   these results are part of the typeclass inference system (e.g. `Embedding.t2Space`)
 * `Set.EqOn.closure`: If two functions are equal on some set `s`, they are equal on its closure.
@@ -842,7 +842,7 @@ theorem ConnectedSpace.infinite [ConnectedSpace X] [Nontrivial X] [T1Space X] : 
 #align connected_space.infinite ConnectedSpace.infinite
 
 /-- A non-trivial connected T1 space has no isolated points. -/
-instance ConnectedSpace.neBot_nhdsWithin_compl_of_nontrivial_of_t1space
+instance (priority := 100) ConnectedSpace.neBot_nhdsWithin_compl_of_nontrivial_of_t1space
     [ConnectedSpace X] [Nontrivial X] [T1Space X] (x : X) :
     NeBot (𝓝[≠] x) := by
   by_contra contra
@@ -1336,22 +1336,23 @@ theorem Function.LeftInverse.closedEmbedding [T2Space X] {f : X → Y} {g : Y �
   ⟨h.embedding hf hg, h.closed_range hf hg⟩
 #align function.left_inverse.closed_embedding Function.LeftInverse.closedEmbedding
 
-theorem isCompact_isCompact_separated [T2Space X] {s t : Set X} (hs : IsCompact s)
+theorem separatedNhds_of_isCompact_isCompact [T2Space X] {s t : Set X} (hs : IsCompact s)
     (ht : IsCompact t) (hst : Disjoint s t) : SeparatedNhds s t := by
   simp only [SeparatedNhds, prod_subset_compl_diagonal_iff_disjoint.symm] at hst ⊢
   exact generalized_tube_lemma hs ht isClosed_diagonal.isOpen_compl hst
-#align is_compact_is_compact_separated isCompact_isCompact_separated
+#align is_compact_is_compact_separated separatedNhds_of_isCompact_isCompact
 
 section SeparatedFinset
 
-theorem finset_disjoint_finset_opens_of_t2 [T2Space X] (s t : Finset X) (h : Disjoint s t) :
+theorem separatedNhds_of_finset_finset [T2Space X] (s t : Finset X) (h : Disjoint s t) :
     SeparatedNhds (s : Set X) t :=
-  isCompact_isCompact_separated s.finite_toSet.isCompact t.finite_toSet.isCompact <| mod_cast h
-#align finset_disjoint_finset_opens_of_t2 finset_disjoint_finset_opens_of_t2
+  separatedNhds_of_isCompact_isCompact s.finite_toSet.isCompact t.finite_toSet.isCompact
+    <| mod_cast h
+#align finset_disjoint_finset_opens_of_t2 separatedNhds_of_finset_finset
 
 theorem point_disjoint_finset_opens_of_t2 [T2Space X] {x : X} {s : Finset X} (h : x ∉ s) :
     SeparatedNhds ({x} : Set X) s :=
-  mod_cast finset_disjoint_finset_opens_of_t2 {x} s (Finset.disjoint_singleton_left.mpr h)
+  mod_cast separatedNhds_of_finset_finset {x} s (Finset.disjoint_singleton_left.mpr h)
 #align point_disjoint_finset_opens_of_t2 point_disjoint_finset_opens_of_t2
 
 end SeparatedFinset
@@ -1360,7 +1361,7 @@ end SeparatedFinset
 theorem IsCompact.isClosed [T2Space X] {s : Set X} (hs : IsCompact s) : IsClosed s :=
   isOpen_compl_iff.1 <| isOpen_iff_forall_mem_open.mpr fun x hx =>
     let ⟨u, v, _, vo, su, xv, uv⟩ :=
-      isCompact_isCompact_separated hs isCompact_singleton (disjoint_singleton_right.2 hx)
+      separatedNhds_of_isCompact_isCompact hs isCompact_singleton (disjoint_singleton_right.2 hx)
     ⟨v, (uv.mono_left <| show s ≤ u from su).subset_compl_left, vo, by simpa using xv⟩
 #align is_compact.is_closed IsCompact.isClosed
 
@@ -1429,7 +1430,7 @@ instance (priority := 900) [WeaklyLocallyCompactSpace X] [T2Space Y] : LocallyCo
     have hc : IsCompact (f '' K \ interior s) := (hKc.image hf).diff isOpen_interior
     have hd : Disjoint {f x} (f '' K \ interior s) := disjoint_singleton_left.2 fun h ↦
       h.2 <| mem_interior_iff_mem_nhds.2 hs
-    rcases isCompact_isCompact_separated isCompact_singleton hc hd
+    rcases separatedNhds_of_isCompact_isCompact isCompact_singleton hc hd
       with ⟨U, V, Uo, Vo, hxU, hV, hd⟩
     refine ⟨K \ f ⁻¹' V, diff_mem hKx ?_, hKc.diff <| Vo.preimage hf, fun y hy ↦ ?_⟩
     · filter_upwards [hf.continuousAt <| Uo.mem_nhds (hxU rfl)] with x hx
@@ -1526,7 +1527,7 @@ theorem RegularSpace.ofExistsMemNhdsIsClosedSubset
 #align regular_space.of_exists_mem_nhds_is_closed_subset RegularSpace.ofExistsMemNhdsIsClosedSubset
 
 /-- A locally compact T2 space is regular. -/
-instance [LocallyCompactSpace X] [T2Space X] : RegularSpace X := by
+instance (priority := 100) [LocallyCompactSpace X] [T2Space X] : RegularSpace X := by
   apply RegularSpace.ofExistsMemNhdsIsClosedSubset (fun x s hx ↦ ?_)
   rcases local_compact_nhds hx with ⟨k, kx, ks, hk⟩
   exact ⟨k, kx, hk.isClosed, ks⟩
@@ -1654,7 +1655,7 @@ instance {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i,
 
 /-- In a regular space, if a compact set and a closed set are disjoint, then they have disjoint
 neighborhoods. -/
-lemma isCompact_isClosed_separated [RegularSpace X] {s t : Set X}
+lemma separatedNhds_of_isCompact_isClosed [RegularSpace X] {s t : Set X}
     (hs : IsCompact s) (ht : IsClosed t) (hst : Disjoint s t) : SeparatedNhds s t := by
   apply hs.induction_on (p := fun u ↦ SeparatedNhds u t)
   · simp
@@ -1708,12 +1709,12 @@ theorem IsCompact.closure_subset_of_isOpen [hX : T2OrLocallyCompactRegularSpace 
       exact ⟨F, nhdsWithin_le_nhds F_mem, F, Subset.rfl, F_closed, Fu⟩
   exact (closure_minimal sF F_closed).trans Fu
 
-theorem isCompact_isCompact_isClosed_separated [hX : T2OrLocallyCompactRegularSpace X]
+theorem separatedNhds_of_isCompact_isCompact_isClosed [hX : T2OrLocallyCompactRegularSpace X]
     {s t : Set X} (hs : IsCompact s) (ht : IsCompact t) (h't : IsClosed t)
     (hst : Disjoint s t) : SeparatedNhds s t := by
   rcases hX.out with h'|⟨-, h'⟩
-  · exact isCompact_isCompact_separated hs ht hst
-  · exact isCompact_isClosed_separated hs h't hst
+  · exact separatedNhds_of_isCompact_isCompact hs ht hst
+  · exact separatedNhds_of_isCompact_isClosed hs h't hst
 
 protected theorem IsCompact.closure [hX : T2OrLocallyCompactRegularSpace X]
     {K : Set X} (hK : IsCompact K) : IsCompact (closure K) := by
@@ -1789,7 +1790,7 @@ theorem exists_open_with_compact_closure
 
 -- see Note [lower instance priority]
 /-- A weakly locally compact Hausdorff space is locally compact. -/
-instance WeaklyLocallyCompactSpace.locallyCompactSpace
+instance (priority := 80) WeaklyLocallyCompactSpace.locallyCompactSpace
     [WeaklyLocallyCompactSpace X] [hX : T2OrLocallyCompactRegularSpace X] :
     LocallyCompactSpace X := by
   rcases hX.out with h'X|⟨h'X, -⟩
@@ -1806,12 +1807,12 @@ theorem locally_compact_of_compact [T2Space X] [CompactSpace X] :
 #align locally_compact_of_compact locally_compact_of_compact
 
 /-- If a compact set is covered by two open sets, then we can cover it by two compact subsets. -/
-theorem IsCompact.binary_compact_cover [h : T2OrLocallyCompactRegularSpace X] {K U V : Set X}
+theorem IsCompact.binary_compact_cover [T2OrLocallyCompactRegularSpace X] {K U V : Set X}
     (hK : IsCompact K) (hU : IsOpen U) (hV : IsOpen V) (h2K : K ⊆ U ∪ V) :
     ∃ K₁ K₂ : Set X, IsCompact K₁ ∧ IsCompact K₂ ∧ K₁ ⊆ U ∧ K₂ ⊆ V ∧ K = K₁ ∪ K₂ := by
   have hK' : IsCompact (closure K) := hK.closure
   have : SeparatedNhds (closure K \ U) (closure K \ V) := by
-    apply isCompact_isCompact_isClosed_separated (hK'.diff hU) (hK'.diff hV)
+    apply separatedNhds_of_isCompact_isCompact_isClosed (hK'.diff hU) (hK'.diff hV)
       (isClosed_closure.sdiff hV)
     rw [disjoint_iff_inter_eq_empty, diff_inter_diff, diff_eq_empty]
     exact hK.closure_subset_of_isOpen (hU.union hV) h2K
@@ -2011,7 +2012,7 @@ instance (priority := 100) T4Space.t3Space [T4Space X] : T3Space X where
 
 instance (priority := 100) T4Space.of_compactSpace_t2Space [CompactSpace X] [T2Space X] :
     T4Space X where
-  normal _s _t hs ht := isCompact_isCompact_separated hs.isCompact ht.isCompact
+  normal _s _t hs ht := separatedNhds_of_isCompact_isCompact hs.isCompact ht.isCompact
 #align normal_of_compact_t2 T4Space.of_compactSpace_t2Space
 
 /-- If the codomain of a closed embedding is a T₄ space, then so is the domain. -/
@@ -2185,7 +2186,8 @@ theorem compact_t2_tot_disc_iff_tot_sep : TotallyDisconnectedSpace X ↔ Totally
 variable [TotallyDisconnectedSpace X]
 
 /-- A totally disconnected compact Hausdorff space is totally separated. -/
-instance : TotallySeparatedSpace X := compact_t2_tot_disc_iff_tot_sep.mp inferInstance
+instance (priority := 100) : TotallySeparatedSpace X :=
+  compact_t2_tot_disc_iff_tot_sep.mp inferInstance
 
 theorem nhds_basis_clopen (x : X) : (𝓝 x).HasBasis (fun s : Set X => x ∈ s ∧ IsClopen s) id :=
   ⟨fun U => by
