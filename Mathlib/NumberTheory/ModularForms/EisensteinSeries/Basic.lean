@@ -13,7 +13,10 @@ import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
 
 * We define Eisenstein series of level `Γ(N)` for any `N : ℕ` and weight `k : ℤ` as the infinite sum
   `∑' v : (Fin 2 → ℤ), (1 / (v 0 * z + v 1) ^ k)`, where `z : ℍ` and `v` ranges over all pairs of
-  coprime integers congruent to a fixed pair `(a, b)` modulo `N`.
+  coprime integers congruent to a fixed pair `(a, b)` modulo `N`. Note that by using `(Fin 2 → ℤ)`
+  instead of `ℤ × ℤ` we can state all of the required equivalences using matrices and vectors, which
+  makes working with them more convenient.
+
 * We show that they define a slash invariant form of level `Γ(N)` and weight `k`.
 
 ## References
