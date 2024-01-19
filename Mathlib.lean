@@ -3117,6 +3117,7 @@ import Mathlib.RingTheory.Fintype
 import Mathlib.RingTheory.Flat
 import Mathlib.RingTheory.FractionalIdeal.Basic
 import Mathlib.RingTheory.FractionalIdeal.Norm
+import Mathlib.RingTheory.FractionalIdeal.Operations
 import Mathlib.RingTheory.FreeCommRing
 import Mathlib.RingTheory.FreeRing
 import Mathlib.RingTheory.GradedAlgebra.Basic
