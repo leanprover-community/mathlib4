@@ -3,10 +3,11 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
+import Mathlib.Data.Nat.Lattice
 import Mathlib.Data.Set.Pairwise.Lattice
 import Mathlib.MeasureTheory.PiSystem
 
-/-! # Semirings of sets
+/-! # Semirings and rings of sets
 
 A semi-ring of sets `C` (in the sense of measure theory) is a family of sets containing `∅`,
 stable by intersection and such that for all `s, t ∈ C`, `t \ s` is equal to a disjoint union of
@@ -17,6 +18,8 @@ is an interval (possibly empty). The union of two intervals may not be an interv
 The set difference of two intervals may not be an interval, but it will be a disjoint union of
 two intervals.
 
+A ring of sets is a set of sets containing `∅`, stable by union, set difference and intersection.
+
 ## Main definitions
 
 * `MeasureTheory.IsSetSemiring C`: property of being a semi-ring of sets.
@@ -26,6 +29,8 @@ two intervals.
 * `MeasureTheory.IsSetSemiring.diffFinset₀ hs hI`: for `hs : s ∈ C` and a finset `I` of sets in `C`
   (with `hI : ↑I ⊆ C`), this is a `Finset` of pairwise disjoint sets such that
   `s \ ⋃₀ I = ⋃₀ hC.diffFinset₀ hs hI`.
+
+* `MeasureTheory.IsSetRing`: property of being a ring of sets.
 
 ## Main statements
 
@@ -257,12 +262,13 @@ lemma pairwiseDisjoint_union_diffFinset₀ (hC : IsSetSemiring C) (hs : s ∈ C)
     (hC.disjoint_sUnion_diffFinset₀ hs hI)
 
 lemma sUnion_union_sUnion_diffFinset₀_of_subset (hC : IsSetSemiring C) (hs : s ∈ C)
-    (hI : ↑I ⊆ C) (hI_ss : ⋃₀ ↑I ⊆ s) :
+    (hI : ↑I ⊆ C) (hI_ss : ∀ t ∈ I, t ⊆ s) :
     ⋃₀ I ∪ ⋃₀ hC.diffFinset₀ hs hI = s := by
-  conv_rhs => rw [← union_diff_cancel hI_ss, hC.diff_sUnion_eq_sUnion_diffFinset₀ hs hI]
+  conv_rhs => rw [← union_diff_cancel (Set.sUnion_subset hI_ss : ⋃₀ ↑I ⊆ s),
+    hC.diff_sUnion_eq_sUnion_diffFinset₀ hs hI]
 
 lemma sUnion_union_diffFinset₀_of_subset (hC : IsSetSemiring C) (hs : s ∈ C)
-    (hI : ↑I ⊆ C) (hI_ss : ⋃₀ ↑I ⊆ s) [DecidableEq (Set α)] :
+    (hI : ↑I ⊆ C) (hI_ss : ∀ t ∈ I, t ⊆ s) [DecidableEq (Set α)] :
     ⋃₀ ↑(I ∪ hC.diffFinset₀ hs hI) = s := by
   conv_rhs => rw [← sUnion_union_sUnion_diffFinset₀_of_subset hC hs hI hI_ss]
   simp_rw [coe_union]
@@ -271,5 +277,50 @@ lemma sUnion_union_diffFinset₀_of_subset (hC : IsSetSemiring C) (hs : s ∈ C)
 end diffFinset₀
 
 end IsSetSemiring
+
+/-- A ring of sets `C` is a family of sets containing `∅`, stable by union and set difference.
+It is then also stable by intersection (see `IsSetRing.inter_mem`). -/
+structure IsSetRing (C : Set (Set α)) : Prop where
+  empty_mem : ∅ ∈ C
+  union_mem ⦃s t⦄ : s ∈ C → t ∈ C → s ∪ t ∈ C
+  diff_mem ⦃s t⦄ : s ∈ C → t ∈ C → s \ t ∈ C
+
+namespace IsSetRing
+
+lemma inter_mem (hC : IsSetRing C) (hs : s ∈ C) (ht : t ∈ C) : s ∩ t ∈ C := by
+  rw [← diff_diff_right_self]; exact hC.diff_mem hs (hC.diff_mem hs ht)
+
+lemma isSetSemiring (hC : IsSetRing C) : IsSetSemiring C where
+  empty_mem := hC.empty_mem
+  inter_mem := fun s hs t ht => hC.inter_mem hs ht
+  diff_eq_Union' := by
+    refine fun s hs t ht => ⟨{s \ t}, ?_, ?_, ?_⟩
+    · simp only [coe_singleton, Set.singleton_subset_iff]
+      exact hC.diff_mem hs ht
+    · simp only [coe_singleton, pairwiseDisjoint_singleton]
+    · simp only [coe_singleton, sUnion_singleton]
+
+lemma biUnion_mem {ι : Type*} (hC : IsSetRing C) {s : ι → Set α}
+    (S : Finset ι) (hs : ∀ n ∈ S, s n ∈ C) :
+    ⋃ i ∈ S, s i ∈ C := by
+  classical
+  induction' S using Finset.induction with i S _ h hs
+  · simp [hC.empty_mem]
+  · simp_rw [← Finset.mem_coe, Finset.coe_insert, Set.biUnion_insert]
+    refine hC.union_mem (hs i (mem_insert_self i S)) ?_
+    exact h (fun n hnS ↦ hs n (mem_insert_of_mem hnS))
+
+lemma biInter_mem {ι : Type*} (hC : IsSetRing C) {s : ι → Set α}
+    (S : Finset ι) (hS : S.Nonempty) (hs : ∀ n ∈ S, s n ∈ C) :
+    ⋂ i ∈ S, s i ∈ C := by
+  classical
+  induction' hS using Finset.Nonempty.cons_induction with _ i S hiS _ h hs
+  · simpa using hs
+  · simp_rw [← Finset.mem_coe, Finset.coe_cons, Set.biInter_insert]
+    simp only [cons_eq_insert, Finset.mem_insert, forall_eq_or_imp] at hs
+    refine hC.inter_mem hs.1 ?_
+    exact h (fun n hnS ↦ hs.2 n hnS)
+
+end IsSetRing
 
 end MeasureTheory

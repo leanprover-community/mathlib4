@@ -747,7 +747,7 @@ theorem perm_permutations'Aux_comm (a b : α) (l : List α) :
 theorem Perm.permutations' {s t : List α} (p : s ~ t) : permutations' s ~ permutations' t := by
   induction' p with a s t _ IH a b l s t u _ _ IH₁ IH₂; · simp
   · exact IH.bind_right _
-  · dsimp [permutations']
+  · dsimp
     rw [bind_assoc, bind_assoc]
     apply Perm.bind_left
     intro l' _
