@@ -17,8 +17,8 @@ Prove some results on the fractional ideals of number fields.
   * `NumberField.basisOfFractionalIdeal`: A `ℚ`-basis of `K` that spans `I` over `ℤ` where `I` is
   a fractional ideal of a number field `K`.
   * `NumberField.det_basisOfFractionalIdeal_eq_absNorm`: for `I` a fractional ideal of a number
-  field `K`, the absolute value of the determinant of `basisOfFractionalIdeal` over
-  `integralBasis` is the absolute norm of `I`.
+  field `K`, the absolute value of the determinant of the base change from `integralBasis` to
+  `basisOfFractionalIdeal I` is equal to the norm of `I`.
 -/
 
 variable (K : Type*) [Field K] [NumberField K]
@@ -71,7 +71,7 @@ instance (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
 noncomputable def fractionalIdealBasis (I : FractionalIdeal (𝓞 K)⁰ K) :
     Basis (Free.ChooseBasisIndex ℤ I) ℤ I := Free.chooseBasis ℤ I
 
-/-- A `ℚ`-basis of `K` that spans `I` over `ℤ`, see mem_span_basisOfFractionalIdeal below.. -/
+/-- A `ℚ`-basis of `K` that spans `I` over `ℤ`, see `mem_span_basisOfFractionalIdeal` below. -/
 noncomputable def basisOfFractionalIdeal (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
     Basis (Free.ChooseBasisIndex ℤ I) ℚ K :=
   (fractionalIdealBasis K I.1).ofIsLocalizedModule ℚ ℤ⁰
@@ -99,6 +99,8 @@ section Norm
 
 open Module
 
+/-- The absolute value of the determinant of the base change from `integralBasis` to
+`basisOfFractionalIdeal I` is equal to the norm of `I`. -/
 theorem det_basisOfFractionalIdeal_eq_absNorm  (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ)
     (e : (Free.ChooseBasisIndex ℤ (𝓞 K)) ≃ (Free.ChooseBasisIndex ℤ I)) :
     |(integralBasis K).det ((basisOfFractionalIdeal K I).reindex e.symm)| =
