@@ -10,7 +10,6 @@ import Mathlib.Topology.Sets.Opens
 
 /-!
 # Partial homeomorphisms
-# Partial homeomorphisms
 
 This file defines homeomorphisms between open subsets of topological spaces. An element `e` of
 `PartialHomeomorph α β` is an extension of `PartialEquiv α β`, i.e., it is a pair of functions
@@ -1366,8 +1365,6 @@ theorem trans_transPartialHomeomorph (e : α ≃ₜ β) (e' : β ≃ₜ γ) (f''
 
 end Homeomorph
 
-section OpenEmbedding
-
 namespace OpenEmbedding
 
 variable (f : α → β) (h : OpenEmbedding f)
@@ -1392,10 +1389,8 @@ lemma toPartialHomeomorph_right_inv {x : β} (hx : x ∈ Set.range f) :
   rwa [toPartialHomeomorph_target]
 
 end OpenEmbedding
-end OpenEmbedding
 
 /- inclusion of an open set in a topological space -/
-section openInclusion
 namespace TopologicalSpace.Opens
 
 variable (s : Opens α) [Nonempty s]
@@ -1423,9 +1418,9 @@ theorem partialHomeomorphSubtypeCoe_target : s.partialHomeomorphSubtypeCoe.targe
 #align topological_space.opens.local_homeomorph_subtype_coe_target TopologicalSpace.Opens.partialHomeomorphSubtypeCoe_target
 
 end TopologicalSpace.Opens
-end openInclusion
 
 namespace PartialHomeomorph
+
 /- post-compose with a partial homeomorphism -/
 section transHomeomorph
 
