@@ -9,6 +9,7 @@ import Qq
 import Std.Tactic.GuardExpr
 
 open Qq
+
 variable {α β : Type} [Semiring α] [Ring β]
 
 namespace Matrix
