@@ -65,13 +65,13 @@ variable [ConcreteCategory.{w} C]
 
 /-- If `forget C` preserves terminals and `X` is terminal, then `(forget C).obj X` is a
 singleton. -/
-noncomputable instance [PreservesLimit (Functor.empty.{0} C) (forget C)] (X : C)
-    (h : IsTerminal X) : Unique ((forget C).obj X) :=
+noncomputable def uniqueOfTerminalOfPreserves [PreservesLimit (Functor.empty.{0} C) (forget C)]
+    (X : C) (h : IsTerminal X) : Unique ((forget C).obj X) :=
   Types.isTerminalEquivUnique ((forget C).obj X) <| IsTerminal.isTerminalObj (forget C) X h
 
 /-- If `forget C` reflects terminals and `(forget C).obj X` is a singleton, then `X` is terminal. -/
-noncomputable instance [ReflectsLimit (Functor.empty.{0} C) (forget C)] (X : C)
-    (h : Unique ((forget C).obj X)) : IsTerminal X :=
+noncomputable def terminalOfUniqueOfReflects [ReflectsLimit (Functor.empty.{0} C) (forget C)]
+    (X : C) (h : Unique ((forget C).obj X)) : IsTerminal X :=
   IsTerminal.isTerminalOfObj (forget C) X <| (Types.isTerminalEquivUnique ((forget C).obj X)).symm h
 
 /-- The equivalence `IsTerminal X ≃ Unique ((forget C).obj X)` if the forgetful functor

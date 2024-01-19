@@ -66,7 +66,6 @@ def IsTerminal.isTerminalIffObj [PreservesLimit (Functor.empty.{0} C) G]
   left_inv := by aesop_cat
   right_inv := by aesop_cat
 
-
 /-- Preserving the terminal object implies preserving all limits of the empty diagram. -/
 def preservesLimitsOfShapePemptyOfPreservesTerminal [PreservesLimit (Functor.empty.{0} C) G] :
     PreservesLimitsOfShape (Discrete PEmpty) G where
