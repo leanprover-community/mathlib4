@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hunter Monroe, Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.Basic
+import Mathlib.Data.FunLike.Fintype
 
 /-!
 # Maps between graphs

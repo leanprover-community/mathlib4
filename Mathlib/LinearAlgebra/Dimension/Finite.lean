@@ -3,10 +3,10 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Scott Morrison
 -/
-import Mathlib.LinearAlgebra.Dimension.Free
 import Mathlib.Algebra.Module.Torsion
 import Mathlib.SetTheory.Cardinal.Cofinality
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 
 
 #align_import linear_algebra.dimension from "leanprover-community/mathlib"@"47a5f8186becdbc826190ced4312f8199f9db6a5"

@@ -7,6 +7,7 @@ import Mathlib.Tactic.Positivity
 import Mathlib.Topology.Algebra.Order.Compact
 import Mathlib.Topology.EMetricSpace.Basic
 import Mathlib.Topology.Bornology.Constructions
+import Mathlib.Data.Set.Pointwise.Interval
 
 /-!
 ## Pseudo-metric spaces
