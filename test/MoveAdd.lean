@@ -1,4 +1,5 @@
 import Mathlib.Tactic.MoveAdd
+import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Data.Nat.Basic
 
 universe u

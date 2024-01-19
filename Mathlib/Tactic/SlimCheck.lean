@@ -5,7 +5,6 @@ Authors: Simon Hudon, Scott Morrison
 -/
 
 import Mathlib.Testing.SlimCheck.Testable
-import Mathlib.Data.List.Sort
 import Qq
 
 /-!

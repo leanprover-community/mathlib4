@@ -4,12 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
 import Lean.Meta.ExprLens
-
-import Std.Data.Nat.Init.Lemmas
-
 import ProofWidgets.Component.MakeEditLink
 import ProofWidgets.Component.OfRpcMethod -- needed in all files using this one.
-
 import Mathlib.Tactic.Widget.SelectInsertParamsClass
 
 /-! # Selection panel utilities

@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.MeasureTheory.Measure.Stieltjes
-import Mathlib.Probability.Kernel.Composition
 import Mathlib.MeasureTheory.Decomposition.RadonNikodym
+import Mathlib.MeasureTheory.Constructions.Prod.Basic
 
 #align_import probability.kernel.cond_cdf from "leanprover-community/mathlib"@"3b88f4005dc2e28d42f974cc1ce838f0dafb39b8"
 
@@ -45,7 +45,7 @@ The construction of the conditional cdf in this file follows the proof of Theore
 
 open MeasureTheory Set Filter TopologicalSpace
 
-open scoped NNReal ENNReal MeasureTheory Topology ProbabilityTheory
+open scoped NNReal ENNReal MeasureTheory Topology
 
 section AuxLemmasToBeMoved
 

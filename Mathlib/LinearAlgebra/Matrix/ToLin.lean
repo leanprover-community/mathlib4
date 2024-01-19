@@ -7,7 +7,6 @@ import Mathlib.Data.Matrix.Block
 import Mathlib.Data.Matrix.Notation
 import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.RingTheory.AlgebraTower
-import Mathlib.Algebra.Module.Algebra
 import Mathlib.Algebra.Algebra.Subalgebra.Tower
 
 #align_import linear_algebra.matrix.to_lin from "leanprover-community/mathlib"@"0e2aab2b0d521f060f62a14d2cf2e2c54e8491d6"

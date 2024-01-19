@@ -5,6 +5,7 @@ Authors: Johan Commelin, Scott Morrison, Adam Topaz
 -/
 import Mathlib.AlgebraicTopology.SimplicialSet
 import Mathlib.AlgebraicTopology.TopologicalSimplex
+import Mathlib.CategoryTheory.Limits.Presheaf
 import Mathlib.Topology.Category.TopCat.Limits.Basic
 
 /-!

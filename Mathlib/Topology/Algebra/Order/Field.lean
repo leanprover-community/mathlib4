@@ -6,6 +6,7 @@ Authors: Benjamin Davidson, Devon Tuma, Eric Rodriguez, Oliver Nash
 import Mathlib.Tactic.Positivity
 import Mathlib.Topology.Algebra.Order.Group
 import Mathlib.Topology.Algebra.Field
+import Mathlib.Data.Set.Pointwise.Interval
 
 #align_import topology.algebra.order.field from "leanprover-community/mathlib"@"9a59dcb7a2d06bf55da57b9030169219980660cd"
 

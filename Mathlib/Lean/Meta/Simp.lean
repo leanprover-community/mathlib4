@@ -5,7 +5,6 @@ Authors: Scott Morrison, Gabriel Ebner, Floris van Doorn
 -/
 import Std.Tactic.OpenPrivate
 import Std.Lean.Meta.DiscrTree
-import Std.Lean.Meta.Simp
 
 /-!
 # Helper functions for using the simplifier.

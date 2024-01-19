@@ -9,6 +9,7 @@ import Mathlib.Data.Int.Basic
 import Mathlib.Algebra.Invertible.Basic
 import Mathlib.Tactic.HaveI
 import Mathlib.Tactic.Clear!
+import Mathlib.Data.Nat.Cast.Basic
 
 /-!
 ## `norm_num` basic plugins

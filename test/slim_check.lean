@@ -1,7 +1,6 @@
 import Mathlib.Tactic.SlimCheck
 import Mathlib.Tactic.SuccessIfFailWithMsg
-import Mathlib.Data.Finsupp.Basic
-import Mathlib.Data.DFinsupp.Basic
+import Mathlib.Data.Finsupp.Notation
 import Mathlib.Testing.SlimCheck.Functions
 
 -- Porting note:

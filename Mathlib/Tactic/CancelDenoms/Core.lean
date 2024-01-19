@@ -3,10 +3,11 @@ Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
-import Mathlib.Tactic.NormNum.Core
 import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Util.SynthesizeUsing
 import Mathlib.Data.Tree
+import Mathlib.Logic.Basic
+import Mathlib.Tactic.NormNum.Core
+import Mathlib.Util.SynthesizeUsing
 import Mathlib.Util.Qq
 
 /-!

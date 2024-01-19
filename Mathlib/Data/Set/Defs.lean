@@ -5,9 +5,10 @@ Authors: Jeremy Avigad, Johannes Hölzl, Reid Barton, Scott Morrison, Patrick Ma
 Minchao Wu, Yury Kudryashov, Floris van Doorn
 -/
 import Std.Classes.SetNotation
-import Mathlib.Order.Basic
-import Mathlib.Util.CompileInductive
 import Mathlib.Data.SProd
+import Mathlib.Data.Subtype
+import Mathlib.Order.Notation
+import Mathlib.Util.CompileInductive
 
 /-!
 # Basic definitions about sets

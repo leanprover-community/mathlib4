@@ -5,6 +5,7 @@ Authors: Jeremy Avigad
 -/
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.Nat.Cast.Order
+import Mathlib.Algebra.Ring.Divisibility.Basic
 
 #align_import data.int.dvd.basic from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 

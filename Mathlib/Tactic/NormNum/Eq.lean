@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Tactic.NormNum.Inv
-import Mathlib.Algebra.Order.Invertible
 
 /-!
 # `norm_num` extension for equalities

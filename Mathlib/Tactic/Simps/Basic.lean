@@ -8,7 +8,6 @@ import Mathlib.Tactic.Simps.NotationClass
 import Std.Classes.Dvd
 import Std.Data.String.Basic
 import Std.Util.LibraryNote
-import Std.Data.List.Count
 import Mathlib.Lean.Expr.Basic
 
 /-!

@@ -8,6 +8,7 @@ import Mathlib.Topology.Category.Profinite.CofilteredLimit
 import Mathlib.Topology.Category.Profinite.Product
 import Mathlib.Topology.LocallyConstant.Algebra
 import Mathlib.Init.Data.Bool.Lemmas
+import Mathlib.Init.IteSimp
 
 /-!
 

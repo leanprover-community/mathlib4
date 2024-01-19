@@ -1,3 +1,4 @@
+import Mathlib.Init.Core
 import Mathlib.Data.Polynomial.Eval
 import Mathlib.Data.Polynomial.Inductions
 import Mathlib.Tactic.RewriteSearch

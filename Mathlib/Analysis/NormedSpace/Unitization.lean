@@ -6,6 +6,7 @@ Authors: Jireh Loreaux
 
 import Mathlib.Algebra.Algebra.Unitization
 import Mathlib.Analysis.NormedSpace.OperatorNorm
+import Mathlib.Topology.Bornology.Constructions
 
 /-!
 # Unitization norms

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Floris van Doorn
 -/
 import Mathlib.Algebra.Module.Basic
-import Mathlib.Data.Set.Pairwise.Lattice
+import Mathlib.Data.Set.Image
 import Mathlib.Data.Set.Pointwise.Basic
 
 #align_import data.set.pointwise.smul from "leanprover-community/mathlib"@"5e526d18cea33550268dcbbddcb822d5cde40654"

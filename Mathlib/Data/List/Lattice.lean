@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro,
 Scott Morrison
 -/
-import Mathlib.Data.List.Count
-import Mathlib.Data.List.Infix
+import Mathlib.Data.List.Basic
 import Mathlib.Algebra.Order.Monoid.MinMax
 
 #align_import data.list.lattice from "leanprover-community/mathlib"@"dd71334db81d0bd444af1ee339a29298bef40734"

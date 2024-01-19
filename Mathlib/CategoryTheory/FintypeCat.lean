@@ -6,7 +6,6 @@ Authors: Bhavik Mehta, Adam Topaz
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.CategoryTheory.FullSubcategory
 import Mathlib.CategoryTheory.Skeletal
-import Mathlib.CategoryTheory.Elementwise
 import Mathlib.Data.Fintype.Card
 
 #align_import category_theory.Fintype from "leanprover-community/mathlib"@"c3019c79074b0619edb4b27553a91b2e82242395"

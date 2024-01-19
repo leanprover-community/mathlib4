@@ -5,7 +5,6 @@ Authors: Patrick Massot, Simon Hudon, Alice Laroche, Frédéric Dupuis, Jireh Lo
 -/
 
 import Lean
-import Mathlib.Lean.Expr
 import Mathlib.Logic.Basic
 import Mathlib.Init.Order.Defs
 import Mathlib.Tactic.Conv

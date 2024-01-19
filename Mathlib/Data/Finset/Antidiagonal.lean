@@ -5,9 +5,8 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Bhavik Mehta,
 -/
 
 import Mathlib.Data.Finset.Basic
-import Mathlib.Data.Finsupp.Defs
-import Mathlib.Data.Finsupp.Interval
 import Mathlib.Algebra.Order.Sub.Defs
+import Mathlib.Order.LocallyFinite
 
 /-! # Antidiagonal with values in general types
 

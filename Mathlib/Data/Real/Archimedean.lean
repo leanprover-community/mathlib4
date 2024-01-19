@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn
 -/
 import Mathlib.Data.Real.Basic
+import Mathlib.Data.Set.Image
 import Mathlib.Algebra.Order.Archimedean
+import Mathlib.Algebra.Bounds
 
 #align_import data.real.basic from "leanprover-community/mathlib"@"cb42593171ba005beaaf4549fcfe0dece9ada4c9"
 

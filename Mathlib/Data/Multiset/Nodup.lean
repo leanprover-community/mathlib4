@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Data.List.Nodup
 import Mathlib.Data.Multiset.Bind
 import Mathlib.Data.Multiset.Range
+import Mathlib.Data.List.Range
 
 #align_import data.multiset.nodup from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 

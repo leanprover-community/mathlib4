@@ -5,7 +5,6 @@ Authors: Stephen Morgan, Scott Morrison, Johannes Hölzl
 -/
 import Mathlib.CategoryTheory.EpiMono
 import Mathlib.CategoryTheory.Functor.FullyFaithful
-import Mathlib.Logic.Equiv.Basic
 import Mathlib.Data.Set.Basic
 import Mathlib.Tactic.PPWithUniv
 

@@ -6,6 +6,7 @@ Authors: Rohan Mitta, Kevin Buzzard, Alistair Tucker, Johannes Hölzl, Yury Kudr
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Data.Setoid.Basic
 import Mathlib.Dynamics.FixedPoints.Topology
+import Mathlib.Topology.MetricSpace.Lipschitz
 
 #align_import topology.metric_space.contracting from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 

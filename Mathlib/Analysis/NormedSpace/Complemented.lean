@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.NormedSpace.Banach
-import Mathlib.Analysis.NormedSpace.FiniteDimension
+import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 #align_import analysis.normed_space.complemented from "leanprover-community/mathlib"@"3397560e65278e5f31acefcdea63138bd53d1cd4"
 

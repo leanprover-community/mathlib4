@@ -5,9 +5,10 @@ Authors: Jeremy Avigad
 -/
 
 import Mathlib.Data.Int.Basic
-import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.Order.Ring.CharZero
+import Mathlib.Algebra.Divisibility.Basic
+import Mathlib.Data.Int.Defs
 
 #align_import data.int.order.basic from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 

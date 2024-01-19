@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Geometry.Manifold.PartitionOfUnity
 import Mathlib.Geometry.Manifold.Metrizable
+import Mathlib.MeasureTheory.Function.AEEqOfIntegral
 
 /-!
 # Functions which vanish as distributions vanish as functions

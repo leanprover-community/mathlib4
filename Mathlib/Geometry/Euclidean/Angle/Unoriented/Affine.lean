@@ -5,6 +5,7 @@ Authors: Joseph Myers, Manuel Candales
 -/
 import Mathlib.Analysis.Convex.Between
 import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic
+import Mathlib.Analysis.NormedSpace.AffineIsometry
 
 #align_import geometry.euclidean.angle.unoriented.affine from "leanprover-community/mathlib"@"46b633fd842bef9469441c0209906f6dddd2b4f5"
 

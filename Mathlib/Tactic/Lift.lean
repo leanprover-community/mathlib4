@@ -3,8 +3,8 @@ Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Tactic.Cases
-import Mathlib.Init.Data.Int.Order
+import Mathlib.Tactic.Basic
+import Mathlib.Init.Data.Int.Basic
 
 /-!
 # lift tactic

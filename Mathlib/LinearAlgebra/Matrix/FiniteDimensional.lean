@@ -7,6 +7,7 @@ import Mathlib.Data.Matrix.Basic
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 import Mathlib.LinearAlgebra.Matrix.ToLin
+import Mathlib.Algebra.Module.Algebra
 
 #align_import linear_algebra.matrix.finite_dimensional from "leanprover-community/mathlib"@"b1c23399f01266afe392a0d8f71f599a0dad4f7b"
 
