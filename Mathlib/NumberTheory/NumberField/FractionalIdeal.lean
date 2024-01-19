@@ -71,7 +71,7 @@ instance (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
 noncomputable def fractionalIdealBasis (I : FractionalIdeal (𝓞 K)⁰ K) :
     Basis (Free.ChooseBasisIndex ℤ I) ℤ I := Free.chooseBasis ℤ I
 
-/-- A `ℚ`-basis of `K` that spans `I` over `ℤ`. -/
+/-- A `ℚ`-basis of `K` that spans `I` over `ℤ`, see mem_span_basisOfFractionalIdeal below.. -/
 noncomputable def basisOfFractionalIdeal (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
     Basis (Free.ChooseBasisIndex ℤ I) ℚ K :=
   (fractionalIdealBasis K I.1).ofIsLocalizedModule ℚ ℤ⁰
