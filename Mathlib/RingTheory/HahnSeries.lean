@@ -1380,7 +1380,7 @@ section AddCommMonoid
 
 variable [PartialOrder Γ] [AddCommMonoid R] {α : Type*}
 
-instance : FunLike (SummableFamily Γ R α) α fun _ => HahnSeries Γ R where
+instance : DFunLike (SummableFamily Γ R α) α fun _ => HahnSeries Γ R where
   coe := toFun
   coe_injective' | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
 
@@ -1394,12 +1394,12 @@ theorem finite_co_support (s : SummableFamily Γ R α) (g : Γ) :
 #align hahn_series.summable_family.finite_co_support HahnSeries.SummableFamily.finite_co_support
 
 theorem coe_injective : @Function.Injective (SummableFamily Γ R α) (α → HahnSeries Γ R) (⇑) :=
-  FunLike.coe_injective
+  DFunLike.coe_injective
 #align hahn_series.summable_family.coe_injective HahnSeries.SummableFamily.coe_injective
 
 @[ext]
 theorem ext {s t : SummableFamily Γ R α} (h : ∀ a : α, s a = t a) : s = t :=
-  FunLike.ext s t h
+  DFunLike.ext s t h
 #align hahn_series.summable_family.ext HahnSeries.SummableFamily.ext
 
 instance : Add (SummableFamily Γ R α) :=

@@ -71,7 +71,7 @@ While we may want to switch to this behavior later, doing it mid-port will break
 @[coe] def toFun' : α → β := e.toFun
 
 /-- Coercion of a `PartialHomeomorph` to function.
-Note that a `PartialHomeomorph` is not `FunLike`. -/
+Note that a `PartialHomeomorph` is not `DFunLike`. -/
 instance : CoeFun (PartialHomeomorph α β) fun _ => α → β :=
   ⟨fun e => e.toFun'⟩
 
@@ -240,10 +240,10 @@ theorem source_preimage_target : e.source ⊆ e ⁻¹' e.target :=
 #align local_homeomorph.source_preimage_target PartialHomeomorph.source_preimage_target
 
 @[deprecated toPartialEquiv_injective]
-theorem eq_of_localEquiv_eq {e e' : PartialHomeomorph α β}
+theorem eq_of_partialEquiv_eq {e e' : PartialHomeomorph α β}
     (h : e.toPartialEquiv = e'.toPartialEquiv) : e = e' :=
   toPartialEquiv_injective h
-#align local_homeomorph.eq_of_local_equiv_eq PartialHomeomorph.eq_of_localEquiv_eq
+#align local_homeomorph.eq_of_local_equiv_eq PartialHomeomorph.eq_of_partialEquiv_eq
 
 theorem eventually_left_inverse {x} (hx : x ∈ e.source) :
     ∀ᶠ y in 𝓝 x, e.symm (e y) = y :=
@@ -773,9 +773,9 @@ protected def refl (α : Type*) [TopologicalSpace α] : PartialHomeomorph α α 
 #align local_homeomorph.refl PartialHomeomorph.refl
 
 @[simp, mfld_simps]
-theorem refl_localEquiv : (PartialHomeomorph.refl α).toPartialEquiv = PartialEquiv.refl α :=
+theorem refl_partialEquiv : (PartialHomeomorph.refl α).toPartialEquiv = PartialEquiv.refl α :=
   rfl
-#align local_homeomorph.refl_local_equiv PartialHomeomorph.refl_localEquiv
+#align local_homeomorph.refl_local_equiv PartialHomeomorph.refl_partialEquiv
 
 @[simp, mfld_simps]
 theorem refl_symm : (PartialHomeomorph.refl α).symm = PartialHomeomorph.refl α :=

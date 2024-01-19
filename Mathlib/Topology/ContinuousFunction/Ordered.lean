@@ -53,7 +53,7 @@ instance sup : Sup C(α, β) where sup f g := { toFun := fun a ↦ f a ⊔ g a }
 #align continuous_map.sup_apply ContinuousMap.sup_apply
 
 instance semilatticeSup : SemilatticeSup C(α, β) :=
-  FunLike.coe_injective.semilatticeSup _ fun _ _ ↦ rfl
+  DFunLike.coe_injective.semilatticeSup _ fun _ _ ↦ rfl
 
 lemma sup'_apply {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C(α, β)) (a : α) :
     s.sup' H f a = s.sup' H fun i ↦ f i a :=
@@ -80,7 +80,7 @@ instance inf : Inf C(α, β) where inf f g := { toFun := fun a ↦ f a ⊓ g a }
 #align continuous_map.inf_apply ContinuousMap.inf_apply
 
 instance semilatticeInf : SemilatticeInf C(α, β) :=
-  FunLike.coe_injective.semilatticeInf _ fun _ _ ↦ rfl
+  DFunLike.coe_injective.semilatticeInf _ fun _ _ ↦ rfl
 
 lemma inf'_apply {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C(α, β)) (a : α) :
     s.inf' H f a = s.inf' H fun i ↦ f i a :=
@@ -95,7 +95,7 @@ lemma coe_inf' {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C(α, �
 end SemilatticeInf
 
 instance [Lattice β] [TopologicalLattice β] : Lattice C(α, β) :=
-  FunLike.coe_injective.lattice _ (fun _ _ ↦ rfl) fun _ _ ↦ rfl
+  DFunLike.coe_injective.lattice _ (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 -- TODO transfer this lattice structure to `BoundedContinuousFunction`
 

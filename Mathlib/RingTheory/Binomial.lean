@@ -176,10 +176,10 @@ theorem ascPochhammer_smeval_eq_eval {R : Type*} [Semiring R] (r : R) (k : ℕ) 
       mul_add, Nat.cast_comm]
 
 /-- The multichoose function for integers. -/
-def Int.multichoose (n : ℤ) (k : ℕ) : ℤ := by
-  cases n with
-  | ofNat n => use ((Nat.choose (n + k - 1) k) : ℤ)
-  | negSucc n => use (-1) ^ k * Nat.choose n.succ k
+def Int.multichoose (n : ℤ) (k : ℕ) : ℤ :=
+  match n with
+  | ofNat n => (Nat.choose (n + k - 1) k : ℤ)
+  | negSucc n => (-1) ^ k * Nat.choose n.succ k
 
 instance Int.instBinomialRing : BinomialRing ℤ where
   nsmul_right_injective n hn r s hrs := Int.eq_of_mul_eq_mul_left (Int.ofNat_ne_zero.mpr hn) hrs
