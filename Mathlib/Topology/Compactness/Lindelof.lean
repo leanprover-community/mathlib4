@@ -688,12 +688,12 @@ theorem HereditarilyLindelof_LindelofSets [HereditarilyLindelofSpace X] (s : Set
 instance (priority := 100) SecondCountableTopology.toHereditarilyLindelof
     [SecondCountableTopology X] : HereditarilyLindelofSpace X where
   isHereditarilyLindelof_univ := fun t _ _ ↦ by
-  apply isLindelof_iff_countable_subcover.mpr
-  intro ι U hι hcover
-  have := @isOpen_iUnion_countable X _ _ ι U hι
-  rcases this with ⟨t,⟨htc, htu⟩⟩
-  use t, htc
-  exact subset_of_subset_of_eq hcover (id htu.symm)
+    apply isLindelof_iff_countable_subcover.mpr
+    intro ι U hι hcover
+    have := @isOpen_iUnion_countable X _ _ ι U hι
+    rcases this with ⟨t,⟨htc, htu⟩⟩
+    use t, htc
+    exact subset_of_subset_of_eq hcover (id htu.symm)
 
 lemma eq_open_union_countable [HereditarilyLindelofSpace X] {ι : Type u} (U : ι → Set X)
     (h : ∀ i, IsOpen (U i)) : ∃ t : Set ι, t.Countable ∧ ⋃ i∈t, U i = ⋃ i, U i := by
