@@ -3,6 +3,8 @@ Copyright (c) 2017 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Kyle Miller, Damiano Testa
 -/
+import Lean.Elab.Tactic
+import Lean.Meta.Tactic.Cleanup
 import Std.Lean.Meta.Inaccessible
 
 /-!
