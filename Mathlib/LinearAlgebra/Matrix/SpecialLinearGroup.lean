@@ -374,16 +374,16 @@ lemma exists_SL2_row {a b : R} (hab : IsCoprime a b) (i : Fin 2):
 /-- A vector with coprime entries, right-multiplied by a matrix in `SL(2, R)`, has
 coprime entries. -/
 lemma vecMulSL {v : Fin 2 → R} (hab : IsCoprime (v 0) (v 1)) (A : SL(2, R)) :
-      IsCoprime (vecMul v A.1 0) (vecMul v A.1 1) := by
-    obtain ⟨g, hg⟩ := hab.exists_SL2_row 0
-    have : v = g 0 := funext fun t ↦ by { fin_cases t <;> tauto }
-    simpa only [this] using isCoprime_row (g * A) 0
+    IsCoprime (vecMul v A.1 0) (vecMul v A.1 1) := by
+  obtain ⟨g, hg⟩ := hab.exists_SL2_row 0
+  have : v = g 0 := funext fun t ↦ by { fin_cases t <;> tauto }
+  simpa only [this] using isCoprime_row (g * A) 0
 
 /-- A vector with coprime entries, left-multiplied by a matrix in `SL(2, R)`, has
 coprime entries. -/
 lemma mulVecSL {v : Fin 2 → R} (hab : IsCoprime (v 0) (v 1)) (A : SL(2, R)) :
-      IsCoprime (mulVec A.1 v 0) (mulVec A.1 v 1) := by
-    simpa only [← vecMul_transpose] using hab.vecMulSL A.transpose
+    IsCoprime (mulVec A.1 v 0) (mulVec A.1 v 1) := by
+  simpa only [← vecMul_transpose] using hab.vecMulSL A.transpose
 
 end IsCoprime
 
