@@ -113,3 +113,9 @@ lemma _root_.minimalPrimes.finite_of_isNoetherianRing : (minimalPrimes R).Finite
     |>.mpr NoetherianSpace.finite_irreducibleComponents
 
 end PrimeSpectrum
+
+/-- [Stacks: Lemma 00FR](https://stacks.math.columbia.edu/tag/00FR) -/
+lemma finite_minimalPrimes_of_noetherian (R : Type _) [CommRing R] [IsNoetherianRing R] :
+    (minimalPrimes R).Finite :=
+  (Equiv.set_finite_iff (PrimeSpectrum.minimalPrimesEquivIrreducibleComponents R)).mpr
+    TopologicalSpace.NoetherianSpace.finite_irreducibleComponents

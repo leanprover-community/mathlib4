@@ -1073,3 +1073,52 @@ theorem PrimeSpectrum.comap_residue (T : Type u) [CommRing T] [LocalRing T]
 #align local_ring.prime_spectrum.comap_residue LocalRing.PrimeSpectrum.comap_residue
 
 end LocalRing
+
+section MinimalPrimes
+
+namespace PrimeSpectrum
+
+variable {R}
+
+lemma zeroLocus_minimalPrime (p : PrimeSpectrum R)
+    (is_minimal : p.asIdeal ∈ minimalPrimes R) :
+    zeroLocus (p.asIdeal : Set R) ∈ irreducibleComponents (PrimeSpectrum R) :=
+  ⟨(isIrreducible_zeroLocus_iff_of_radical p.asIdeal p.2.isRadical).mpr p.2,
+    fun s (hs1 : IsIrreducible s) (hs2 : _ ≤ _)  ↦ by
+      simp only [Set.le_eq_subset]
+      rw [subset_zeroLocus_iff_subset_vanishingIdeal]
+      rw [isIrreducible_iff_vanishingIdeal_isPrime] at hs1
+      apply is_minimal.2 ⟨inferInstance, bot_le⟩
+      refine (vanishingIdeal_anti_mono hs2).trans <|
+        vanishingIdeal_zeroLocus_eq_radical p.asIdeal ▸ p.2.isRadical⟩
+
+lemma vanishingIdeal_irreducibleComponents (s : Set (PrimeSpectrum R))
+    (is_irreducibleComponent : s ∈ irreducibleComponents (PrimeSpectrum R)) :
+    vanishingIdeal s ∈ minimalPrimes R :=
+  ⟨⟨isIrreducible_iff_vanishingIdeal_isPrime.mp is_irreducibleComponent.1, bot_le⟩,
+    fun p ⟨hp1, hp2⟩ (hp3 : _ ≤ _) ↦ by
+      dsimp only
+      rw [← subset_zeroLocus_iff_le_vanishingIdeal] at hp3
+      refine (vanishingIdeal_anti_mono <| is_irreducibleComponent.2
+        ((isIrreducible_zeroLocus_iff_of_radical p hp1.isRadical).mpr hp1) hp3).trans <|
+        vanishingIdeal_zeroLocus_eq_radical p ▸ hp1.isRadical⟩
+
+variable (R)
+@[simps]
+def minimalPrimesEquivIrreducibleComponents :
+    minimalPrimes R ≃ irreducibleComponents (PrimeSpectrum R) where
+  toFun p := ⟨zeroLocus p.1, zeroLocus_minimalPrime ⟨p.1, p.2.1.1⟩ p.2⟩
+  invFun s := ⟨vanishingIdeal s, vanishingIdeal_irreducibleComponents _ s.2⟩
+  left_inv p := Subtype.ext <| by
+    dsimp only
+    rw [vanishingIdeal_zeroLocus_eq_radical]
+    exact le_antisymm p.2.1.1.isRadical <| Ideal.le_radical
+  right_inv s := Subtype.ext <| by
+    dsimp only
+    rw [zeroLocus_vanishingIdeal_eq_closure]
+    exact le_antisymm (closure_minimal (subset_refl _) <|
+      isClosed_of_mem_irreducibleComponents _ s.2) <| subset_closure
+
+end PrimeSpectrum
+
+end MinimalPrimes

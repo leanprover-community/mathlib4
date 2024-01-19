@@ -562,6 +562,19 @@ theorem mul_mem_right (h : a ∈ I) : a * b ∈ I :=
   mul_comm b a ▸ I.mul_mem_left b h
 #align ideal.mul_mem_right Ideal.mul_mem_right
 
+theorem prod_mem_of_mem {ι : Type*} {t : Finset ι} {f : ι → α} :
+    (∃ c ∈ t, f c ∈ I) → (∏ i in t, f i) ∈ I := by
+  classical
+  induction' t using Finset.induction_on with j t hj ih
+  · simp only [Finset.not_mem_empty, false_and, exists_false, Finset.prod_empty, IsEmpty.forall_iff]
+  · rintro ⟨c, hc1, hc2⟩
+    rw [Finset.mem_insert] at hc1
+    rcases hc1 with rfl|hc1 <;> rw [Finset.prod_insert hj]
+    · exact I.mul_mem_right _ hc2
+    · specialize ih ⟨c, hc1, hc2⟩
+      exact I.mul_mem_left _ ih
+
+
 variable {b}
 
 theorem pow_mem_of_mem (ha : a ∈ I) (n : ℕ) (hn : 0 < n) : a ^ n ∈ I :=
@@ -580,6 +593,24 @@ theorem IsPrime.pow_mem_iff_mem {I : Ideal α} (hI : I.IsPrime) {r : α} (n : �
     r ^ n ∈ I ↔ r ∈ I :=
   ⟨hI.mem_of_pow_mem n, fun hr => I.pow_mem_of_mem hr n hn⟩
 #align ideal.is_prime.pow_mem_iff_mem Ideal.IsPrime.pow_mem_iff_mem
+
+theorem IsPrime.prod_mem_iff_exists_mem {I : Ideal α} (hI : I.IsPrime)
+    {ι : Type*} {t : Finset ι} {f : ι → α} :
+    (∏ i in t, f i) ∈ I ↔ ∃ c ∈ t, f c ∈ I := by
+  fconstructor
+  · classical
+    induction' t using Finset.induction_on with j t hj ih
+    · intro rid
+      simp only [Finset.prod_empty] at rid
+      rw [← Ideal.eq_top_iff_one] at rid
+      exact (hI.1 rid).elim
+    · intro rid
+      rw [Finset.prod_insert hj] at rid
+      rcases hI.mem_or_mem rid with rid|rid
+      · exact ⟨j, Finset.mem_insert.mpr <| Or.intro_left _ rfl, rid⟩
+      · obtain ⟨c, hc1, hc2⟩ := ih rid
+        exact ⟨c, Finset.mem_insert.mpr <| Or.intro_right _ hc1, hc2⟩
+  · apply prod_mem_of_mem
 
 theorem pow_multiset_sum_mem_span_pow [DecidableEq α] (s : Multiset α) (n : ℕ) :
     s.sum ^ (Multiset.card s * n + 1) ∈
@@ -847,6 +878,36 @@ theorem bot_lt_of_maximal (M : Ideal R) [hm : M.IsMaximal] (non_field : ¬IsFiel
   rw [← this] at Ibot
   rwa [hm.1.2 I Ibot] at Itop
 #align ideal.bot_lt_of_maximal Ideal.bot_lt_of_maximal
+
+lemma Ideal.isPrime_of_maximally_disjoint [CommSemiring α] (S : Submonoid α) (I : Ideal α)
+    (disjoint : (I : Set α) ⊓ S = ∅)
+    (maximally_disjoint : ∀ (J : Ideal α), I < J → (J : Set α) ⊓ S ≠ ∅) :
+    I.IsPrime where
+  ne_top' := by
+    rintro rfl
+    simp only [Submodule.top_coe, ge_iff_le, le_eq_subset, subset_univ, inf_of_le_right] at disjoint
+    exact (mem_empty_iff_false _).mp <| disjoint ▸ SetLike.mem_coe.mpr S.one_mem
+  mem_or_mem' {x y} hxy := by
+    let Jx := I ⊔ Ideal.span {x}
+    let Jy := I ⊔ Ideal.span {y}
+    by_contra rid
+    push_neg at rid
+    have hx := (maximally_disjoint Jx) ⟨le_sup_left (α := Ideal α), fun r ↦ rid.1 <| r <|
+      le_sup_right (α := Ideal α) <| Submodule.mem_span_singleton_self _⟩
+    have hy := (maximally_disjoint Jy) ⟨le_sup_left (α := Ideal α), fun r ↦ rid.2 <| r <|
+      le_sup_right (α := Ideal α) <| Submodule.mem_span_singleton_self _⟩
+    rw [← Set.nonempty_iff_ne_empty, Set.nonempty_def] at hx hy
+    simp_rw [SetLike.mem_coe, inf_eq_inter, mem_inter_iff, SetLike.mem_coe, Submodule.mem_sup,
+      Ideal.mem_span_singleton] at hx hy
+    obtain ⟨s₁, ⟨i₁, hi₁, ⟨_, ⟨r₁, rfl⟩, hr₁'⟩⟩, hs₁⟩ := hx
+    obtain ⟨s₂, ⟨i₂, hi₂, ⟨_, ⟨r₂, rfl⟩, hr₂'⟩⟩, hs₂⟩ := hy
+    rw [eq_empty_iff_forall_not_mem] at disjoint
+    refine disjoint (s₁ * s₂) ⟨hr₁' ▸ hr₂' ▸ ?_, S.mul_mem hs₁ hs₂⟩
+    ring_nf
+    refine I.add_mem (I.add_mem (I.add_mem (I.mul_mem_left _ hi₂) (I.mul_mem_right _ <|
+      I.mul_mem_right _ hi₁)) <| I.mul_mem_left _ hi₂) <| ?_
+    rw [show x * r₁ * y * r₂ = (x * y) * (r₁ * r₂) by ring]
+    exact I.mul_mem_right _ hxy
 
 end Ideal
 
