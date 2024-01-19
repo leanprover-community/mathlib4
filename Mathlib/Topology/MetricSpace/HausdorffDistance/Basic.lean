@@ -26,7 +26,27 @@ This files introduces:
 * Versions of these notions on metric spaces, called respectively `Metric.infDist`
   and `Metric.hausdorffDist`
 
-TODO: add main results, tags etc.
+## Main results
+* `infEdist_closure`: the edistance to a set and its closure coincide
+* `EMetric.mem_closure_iff_infEdist_zero`: a point `x` belongs to the closure of `s` iff
+  `infEdist x s = 0`
+* `IsCompact.exists_infEdist_eq_edist`: if `s` is compact and non-empty, there exists a point `y`
+  which attains this edistance
+* `IsOpen.exists_iUnion_isClosed`: every open set `U` can be written as the increasing union
+  of countably many closed subsets of `U`
+
+* `hausdorffEdist_comm`: the Hausdorff edistance is symmetric
+* `hausdorffEdist_triangle`: the Hausdorff edistance satisfies the triangle inequality
+* ``hausdorffEdist_zero_iff_closure_eq_closure`: two sets have Hausdorff edistance zero
+  iff their closures coincide.
+* `hausdorffEdist_closure`: replacing a set by its closure does not change the Hausdorff edistance
+
+* versions of these notions on metric spaces
+* `hausdorffEdist_ne_top_of_nonempty_of_bounded`: if two sets in a metric space
+  are nonempty and bounded in a metric space, they are at finite Hausdorff edistance.
+
+## Tags
+metric space, Hausdorff distance
 -/
 
 
