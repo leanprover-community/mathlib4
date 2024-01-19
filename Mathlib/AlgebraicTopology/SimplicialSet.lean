@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin, Scott Morrison, Adam Topaz
+Authors: Johan Commelin, Scott Morrison, Adam Topaz, Joseph Tooby-Smith
 -/
 import Mathlib.AlgebraicTopology.SimplicialObject
 import Mathlib.CategoryTheory.Limits.Presheaf
@@ -394,6 +394,8 @@ lemma face'_factor {n : ℕ} (i: Fin (n+2)) (j: Fin (n+1)) : factor_δ (face'.{u
           exact δ_comp_σ_succ
         · exact δ_comp_σ_self
 
+
+
 namespace HomMk₃
 
 variable {i : Fin 4}
@@ -411,27 +413,9 @@ lemma range_include01_exclude2 {X : SimplexCategoryᵒᵖ } ( α : Λ[3,i].obj X
   all_goals fin_cases i
   all_goals tauto
 
+
+
 variable {i1 i2 : Fin 3} (i1_lt_i2: i1 < i2)
-
-lemma degeneracy_relation :
-    (σ (Fin.predAbove 0 ((δ i).toOrderHom i2))
-    ≫ σ (Fin.predAbove 0 (Fin.predAbove 2 ((δ i).toOrderHom i1))) )
-    = σ ( (Fin.predAbove 0 ((δ i).toOrderHom i1)))
-    ≫ σ (Fin.predAbove 0 (Fin.predAbove 0 ((δ i).toOrderHom i2))) := by
-  apply Hom.ext'
-  rw [← DFunLike.coe_fn_eq]
-  rw [← OrderHom.toFun_eq_coe]
-  fin_cases i1,i2
-  any_goals
-      rw [Fin.lt_def] at i1_lt_i2
-      simp at i1_lt_i2
-  all_goals
-    funext x
-    fin_cases i
-    all_goals fin_cases x
-    all_goals rfl
-
-
 variable {X Y :SimplexCategoryᵒᵖ}
 variable {α : Λ[3,i].obj X } {φ: ([len Y.unop]: SimplexCategory)⟶ [len X.unop]}
 variable (exclude_i1 :  ∀ k, (φ ≫ α.val.down).toOrderHom k ≠ (δ i).toOrderHom i1)
@@ -511,8 +495,16 @@ lemma naturality_lt {S : SSet}
   rw [(hface i1 i2 i1_lt_i2)]
   change _ = S.map ((φ ≫ α.val.down)≫(σ (Fin.predAbove 0 ((δ i).toOrderHom i2))
                 ≫ σ (Fin.predAbove 0 (Fin.predAbove 2 ((δ i).toOrderHom i1))) ) ).op _
-  rw [degeneracy_relation i1_lt_i2]
+  have dr :
+   (φ ≫ α.val.down)≫ (σ (Fin.predAbove 0 ((δ i).toOrderHom i2))
+    ≫ σ (Fin.predAbove 0 (Fin.predAbove 2 ((δ i).toOrderHom i1))) )
+    = (φ ≫ α.val.down)≫(σ ( (Fin.predAbove 0 ((δ i).toOrderHom i1)))
+    ≫ σ (Fin.predAbove 0 (Fin.predAbove 0 ((δ i).toOrderHom i2)))) := by
+        apply factor_δ_comp_lt
+        exact (Fin.strictMono_succAbove i i1_lt_i2)
+  rw [dr]
   rfl
+
 end HomMk₃
 
 /-- The horn `Λ[3,i]⟶ S` constructed from the image of the appropriate to 2-simplies and
@@ -612,6 +604,10 @@ lemma homMk₃_surjective {S:SSet} (i: Fin 4) (f : Λ[3,i] ⟶ S)   : ∃ (fa: F
       intro j h
       rw [face_eq_face' i j h]
       rw [homMk₃_face]
+
+
+
+
 end horn
 
 section Examples
