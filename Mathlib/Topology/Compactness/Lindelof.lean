@@ -677,31 +677,23 @@ lemma IsHereditarilyLindelof.isLindelof (hs : IsHereditarilyLindelof s) :
     IsLindelof s := hs.isLindelof_subset Subset.rfl
 
 instance (priority := 100) HereditarilyLindelof.to_Lindelof [HereditarilyLindelofSpace X] :
-    LindelofSpace X := by
-  refine { isLindelof_univ := ?isLindelof_univ }
-  apply HereditarilyLindelofSpace.isHereditarilyLindelof_univ
-  exact univ_subset_iff.mpr rfl
+    LindelofSpace X where
+  isLindelof_univ := HereditarilyLindelofSpace.isHereditarilyLindelof_univ.isLindelof
 
 theorem HereditarilyLindelof_LindelofSets [HereditarilyLindelofSpace X] (s : Set X):
     IsLindelof s := by
   apply HereditarilyLindelofSpace.isHereditarilyLindelof_univ
   exact subset_univ s
 
-instance (priority := 100) SecondCountableTopology.to_HereditarilyLindelof
-    [SecondCountableTopology X] : HereditarilyLindelofSpace X := by
-  refine { isHereditarilyLindelof_univ := ?isHereditarilyLindelof_univ }
-  unfold IsHereditarilyLindelof
-  intro t _ _
+instance (priority := 100) SecondCountableTopology.toHereditarilyLindelof
+    [SecondCountableTopology X] : HereditarilyLindelofSpace X where
+  isHereditarilyLindelof_univ := fun t _ _ ↦ by
   apply isLindelof_iff_countable_subcover.mpr
   intro ι U hι hcover
   have := @isOpen_iUnion_countable X _ _ ι U hι
   rcases this with ⟨t,⟨htc, htu⟩⟩
   use t, htc
   exact subset_of_subset_of_eq hcover (id htu.symm)
-
-instance (priority := 100) SecondCountableTopology.to_Lindelof [SecondCountableTopology X] :
-    LindelofSpace X := by
-  apply HereditarilyLindelof.to_Lindelof
 
 lemma eq_open_union_countable [HereditarilyLindelofSpace X] {ι : Type u} (U : ι → Set X)
     (h : ∀ i, IsOpen (U i)) : ∃ t : Set ι, t.Countable ∧ ⋃ i∈t, U i = ⋃ i, U i := by
