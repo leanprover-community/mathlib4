@@ -6,6 +6,7 @@ Authors: Tomas Skrivan
 import Lean
 import Qq
 import Std.Tactic.Exact
+-- import Mathlib.Logic.Function.Basic
 import Mathlib.Tactic.FProp.FPropAttr
 import Mathlib.Tactic.FProp.Meta
 import Mathlib.Tactic.FProp.ArraySet
@@ -141,11 +142,18 @@ def synthesizeArgs (thmId : Origin) (xs : Array Expr) (bis : Array BinderInfo)
 
   return .some subgoals
 
+
+private def ppOrigin' (origin : Origin) : MetaM String := do
+  match origin with
+  | .fvar id => return s!"{← ppExpr (.fvar id)} : {← ppExpr (← inferType (.fvar id))}"
+  | _ => pure (toString origin.key)
+
 /-- -/
 def tryTheoremCore (xs : Array Expr) (bis : Array BinderInfo) (val : Expr) (type : Expr) (e : Expr) (thmId : Origin) 
   (discharge? : Expr → MetaM (Option Expr)) (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do
+  withTraceNode `Meta.Tactic.fprop (fun r => return s!"[{ExceptToEmoji.toEmoji r}] appying: {← ppOrigin' thmId}") do
+
   if (← isDefEq type e) then
-    trace[Meta.Tactic.fprop.step] "applying theorem {← ppOrigin thmId}"
 
     let .some subgoals ← synthesizeArgs thmId xs bis discharge? fprop | return none
     let proof ← instantiateMVars (mkAppN val xs)
@@ -160,6 +168,7 @@ def tryTheoremCore (xs : Array Expr) (bis : Array BinderInfo) (val : Expr) (type
   else
     trace[Meta.Tactic.fprop.unify] "failed to unify {← ppOrigin thmId}\n{type}\nwith\n{e}"
     return none
+
 
 /-- -/
 def tryTheorem? (e : Expr) (thm : FPropTheorem)
@@ -251,7 +260,7 @@ def applyProjRule (fpropDecl : FPropDecl) (e x XY : Expr)
     | trace[Meta.Tactic.fprop.step] "missing proj rule(`P fun f => f x`) for function property `{fpropDecl.fpropName}`"
       return none
   let .projDep id_x id_Y := thm.thrmArgs | return none
-  
+
   let proof ← thm.getProof
   let type ← inferType proof
   let (xs, bis, type) ← forallMetaTelescope type
@@ -262,7 +271,6 @@ def applyProjRule (fpropDecl : FPropDecl) (e x XY : Expr)
   catch _ =>
     trace[Meta.Tactic.fprop.discharge] "failed to use `{thm.thrmName}` on `{← ppExpr e}`"
     return none
-
 
   tryTheoremCore xs bis proof type e (.decl thm.thrmName) fpropDecl.discharger fprop
 
@@ -307,7 +315,6 @@ def applyLetRule (fpropDecl : FPropDecl) (e f g : Expr)
     trace[Meta.Tactic.fprop.discharge] "failed to use `{thm.thrmName}` on `{← ppExpr e}`"
     return none
 
-
   tryTheoremCore xs bis proof type e (.decl thm.thrmName) fpropDecl.discharger fprop
 
 /-- -/
@@ -331,6 +338,32 @@ def applyPiRule (fpropDecl : FPropDecl) (e f : Expr)
   tryTheoremCore xs bis proof type e (.decl thm.thrmName) fpropDecl.discharger fprop
 
 
+/-- Changes the goal from `P fun x => f x₁ x₂ x₃` to `P fun x => f x₁ x₂`
+  TODO: be able to provide number of arguments -/
+def removeArgRule (fpropDecl : FPropDecl) (e f : Expr) (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do
+
+  lambdaTelescope f fun xs b => do
+    if xs.size ≠ 1 then 
+      throwError "fprop bug: can't remove arguments from {← ppExpr f}, not a lambda with one argument"
+
+    let xId := xs[0]!.fvarId!
+
+    let .app fn z := b 
+      | throwError "fprop bug: can't remove arguments from {← ppExpr f}, body not application"
+
+    if z.containsFVar xId then
+      throwError "fprop bug: can't remove argument from function {← ppExpr f}, last arg depends on the lambda argument"
+
+    let f' := .lam `f (← inferType fn) (.app (.bvar 0) z) default
+    let g' ← mkLambdaFVars xs fn
+    
+    applyCompRule fpropDecl e f' g' fprop
+
+
+-- /-- Is this a valid local fprop hypothesis about free variable? -/
+-- def isValidFVarHypothesis? (e : Expr) : MetaM (Option (FPropDecl × FVarFunInfo))
+
+
 /-- Determina if `e` is talking about a free variable and about which arguments.
 
 For example: 
@@ -343,16 +376,24 @@ This function is assuming:
  - that `e` is taling about function property `fpropDecl`
  - the function `f` in `e` can't be expressed as composition of two non-trivial functions 
    this means that `f == (← splitLambdaToComp f).1` is true -/
-def isFVarFProp (fpropDecl : FPropDecl) (e : Expr) : MetaM (Option (FVarId × ArraySet Nat)) := do
+def isFVarFProp (fpropDecl : FPropDecl) (e : Expr) : MetaM (Option (FVarId × ArraySet Nat × Nat)) := do
 
   forallTelescope e fun _ e => do
 
-  let f := e.getArg! fpropDecl.funArgId
+  let f := e.getArg! fpropDecl.funArgId |>.consumeMData
+
+  if f.isAppOfArity `Function.HasUncurry.uncurry 5 then
+    let f := f.appArg!
+    let .fvar fvarId := f
+      | return none
+    let type ← inferType f
+    -- this does not work for bundled morphisms
+    let n := type.forallArity
+    return .some (fvarId, Array.range n |>.toArraySet, n)
+
   let f := (← unfoldFunHead? f).getD f
 
-  trace[Meta.Tactic.fprop.step] "looking at {← ppExpr f}"
   match (← whnf f) with
-  | .fvar fvarId => return (fvarId, #[0].toArraySet)
   | .lam _ _ b _ => 
     match b.getAppFn with
     | .fvar fvarId => 
@@ -363,12 +404,16 @@ def isFVarFProp (fpropDecl : FPropDecl) (e : Expr) : MetaM (Option (FVarId × Ar
         |>.mapIdx (fun i arg => if arg.hasLooseBVars then some i.1 else none)
         |>.filterMap id
         |>.toArraySet
-      return (fvarId, ids)
+      return (fvarId, ids, args.size)
     | _ => return none
-  | _ => return none
+  | f => 
+    let n := f.getAppNumArgs'
+    match f.getAppFn' with
+    | .fvar fvarId =>  return (fvarId, #[n].toArraySet, n+1)
+    | _ => return none
 
 
-def proveFVarFPropFromLocalTheorems (fpropDecl : FPropDecl) (e : Expr) (fvarId : FVarId) (args : ArraySet Nat)
+def proveFVarFPropFromLocalTheorems (fpropDecl : FPropDecl) (e : Expr) (fvarId : FVarId) (args : ArraySet Nat) (numAppArgs : Nat)
   (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do
 
   let lctx ← getLCtx
@@ -384,7 +429,7 @@ def proveFVarFPropFromLocalTheorems (fpropDecl : FPropDecl) (e : Expr) (fvarId :
 
       trace[Meta.Tactic.fprop.step] "found potentially applicable local theorem {← ppExpr type}"
 
-      let .some (fvarId', args') ← isFVarFProp fpropDecl type
+      let .some (fvarId', args',numAppArgs') ← isFVarFProp fpropDecl type
         | trace[Meta.Tactic.fprop.step] "not fvar fprop"
           continue
       if fvarId != fvarId' then
@@ -394,7 +439,7 @@ def proveFVarFPropFromLocalTheorems (fpropDecl : FPropDecl) (e : Expr) (fvarId :
       trace[Meta.Tactic.fprop.step] "is applicable"
 
       -- this local theorem should be directly applicable to e
-      if args = args' then
+      if args = args' && numAppArgs = numAppArgs' then
 
         let thm : FPropTheorem := {
           fpropName := fpropDecl'.fpropName
@@ -412,16 +457,22 @@ def proveFVarFPropFromLocalTheorems (fpropDecl : FPropDecl) (e : Expr) (fvarId :
 
       if args ⊆ args' then
 
-        trace[Meta.Tactic.fprop.step] "found local theorem which talks about more argument than necessary {← ppExpr type} {args} {args'}"
+        trace[Meta.Tactic.fprop.step] "found local theorem which talks about more argument than necessary {← ppExpr type}"
 
-        let f := e.getArg! fpropDecl.funArgId
+        match compare numAppArgs numAppArgs' with
+        | .lt => 
+          return ← applyPiRule fpropDecl e (e.getArg! fpropDecl.funArgId) fprop
+        | .gt => 
+          return ← removeArgRule fpropDecl e (e.getArg! fpropDecl.funArgId) fprop
+        | .eq => 
+          let f := e.getArg! fpropDecl.funArgId
 
-        let .some (f', g') ← splitLambdaToCompOverArgs f args'
-          | continue
+          let .some (f', g') ← splitLambdaToCompOverArgs f args'
+            | continue
 
-        trace[Meta.Tactic.fprop.step] "goal split at `{←ppExpr f'} ∘ {← ppExpr g'}`"
+          trace[Meta.Tactic.fprop.step] "goal split at `{←ppExpr f'} ∘ {← ppExpr g'}`"
 
-        return ← applyCompRule fpropDecl e f' g' fprop
+          return ← applyCompRule fpropDecl e f' g' fprop
 
   trace[Meta.Tactic.fprop.discharge] "no applicable local hypothesis for {← ppExpr e}"
   return none
@@ -510,17 +561,20 @@ def bvarAppCase (fpropDecl : FPropDecl) (e : Expr) (f : Expr) (fprop : Expr → 
     trace[Meta.Tactic.fprop.step] "fprop can handle function like {← ppExpr f}"
     return none
   
-  if g == .bvar 0 then
+  match g with
+  | .bvar 0 => 
+    -- return none
     applyProjRule fpropDecl e x t fprop
-  else
-    let g := .lam n t g bi
-    let gType ← inferType g
-    let .some (_,fType) := gType.arrow?
-      | trace[Meta.Tactic.fprop.step] "fprop can't handle dependent functions of type {← ppExpr gType} appearing in {← ppExpr f}"
-        return none
+  | _ => 
+    removeArgRule fpropDecl e f fprop
+    -- let g := .lam n t g bi
+    -- let gType ← inferType g
+    -- let .some (_,fType) := gType.arrow?
+    --   | trace[Meta.Tactic.fprop.step] "fprop can't handle dependent functions of type {← ppExpr gType} appearing in {← ppExpr f}"
+    --     return none
 
-    let h := .lam n fType ((Expr.bvar 0).app x) bi
-    applyCompRule fpropDecl e h g fprop
+    -- let h := .lam n fType ((Expr.bvar 0).app x) bi
+    -- applyCompRule fpropDecl e h g fprop
 
 /-- -/
 def fvarAppCase (fpropDecl : FPropDecl) (e : Expr) (f : Expr) (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do
@@ -530,10 +584,10 @@ def fvarAppCase (fpropDecl : FPropDecl) (e : Expr) (f : Expr) (fprop : Expr → 
   -- trivial case, this prevents an infinite loop
   if (← isDefEq f' f) then      
     trace[Meta.Tactic.fprop.step] "fvar app case: trivial"
-    let .some (fvarId, args) ← isFVarFProp fpropDecl e
+    let .some (fvarId, args, n) ← isFVarFProp fpropDecl e
       | trace[Meta.Tactic.fprop.step] "fvar app case: unexpected goal {← ppExpr e}"
         return none
-    return ← proveFVarFPropFromLocalTheorems fpropDecl e fvarId args fprop
+    return ← proveFVarFPropFromLocalTheorems fpropDecl e fvarId args n fprop
   else
     trace[Meta.Tactic.fprop.step] "decomposed into `({← ppExpr f'}) ∘ ({← ppExpr g'})`"
     applyCompRule fpropDecl e f' g' fprop
@@ -613,11 +667,14 @@ mutual
     let .some (fpropDecl, f) ← getFProp? e
       | return none
 
-    let f := f.consumeMData
+    let f := f.consumeMData.eta
+    let e := e.setArg fpropDecl.funArgId f
+
+    withTraceNode `Meta.Tactic.fprop (fun r => do pure s!"[{ExceptToEmoji.toEmoji r}] {← ppExpr e}") do
 
     match f with
     | .letE .. => letTelescope f fun xs b => do 
-      trace[Meta.Tactic.fprop.step] "case `P (let x := ..; f)`\n{← ppExpr e}"
+      trace[Meta.Tactic.fprop.step] "Case `P (let x := ..; f)`\n{← ppExpr e}"
       let e' := e.setArg fpropDecl.funArgId b
       fprop (← mkLambdaFVars xs e')
 
@@ -645,6 +702,7 @@ mutual
         else 
           let f' := Expr.lam xName xType xBody xBi
           let g := xBody.getAppFn
+          let nargs := xBody.getAppNumArgs'
 
           match g with 
           | .fvar .. => 
@@ -655,15 +713,35 @@ mutual
             bvarAppCase fpropDecl e f' fprop
           | .mvar .. => 
             fprop (← instantiateMVars e)
-          | _ =>
-            constAppCase fpropDecl e f' fprop
+          | .const n _ => do
+            let arity ← constArity n
+            match compare arity nargs with
+            | .eq => constAppCase fpropDecl e f fprop
+            | .gt => applyPiRule fpropDecl e f fprop
+            | .lt => removeArgRule fpropDecl e f fprop
+          | .proj .. | .app .. => do
+            constAppCase fpropDecl e f fprop
+          | _ => 
+            trace[Meta.Tactic.fprop.step] "unknown case, ctor: {f.ctorName}\n{← ppExpr e}"
+            return none
 
     | .mvar _ => do
       fprop (← instantiateMVars e)
-
-    | f => do
-      let f' ← etaExpand f
-      trace[Meta.Tactic.fprop.step] "eta expanding function in\n{← ppExpr e}"
-      fprop (e.setArg fpropDecl.funArgId f')
+    | f => 
+      let fn := f.getAppFn
+      let nargs := f.getAppNumArgs'
+      match fn with 
+      | .fvar .. => do
+        fvarAppCase fpropDecl e f fprop
+      | .const n _ => do
+        match compare (← constArity n) (nargs+1) with
+        | .eq => constAppCase fpropDecl e f fprop
+        | .gt => applyPiRule fpropDecl e f fprop
+        | .lt => removeArgRule fpropDecl e f fprop
+      | .proj .. => do
+        constAppCase fpropDecl e f fprop
+      | _ => 
+        trace[Meta.Tactic.fprop.step] "unknown case, ctor: {f.ctorName}\n{← ppExpr e}"
+        return none
 
 end
