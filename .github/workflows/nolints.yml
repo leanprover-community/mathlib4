@@ -1,0 +1,64 @@
+name: update nolints
+
+on:
+  schedule:
+    - cron: "0 0 * * 0"
+
+jobs:
+  build:
+    name: Build, lint and update nolints
+    runs-on: ubuntu-latest
+    env:
+      # number of commits to check for olean cache
+      GIT_HISTORY_DEPTH: 20
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          repository: leanprover-community/mathlib
+          fetch-depth: ${{ env.GIT_HISTORY_DEPTH }}
+
+      - name: install elan
+        run: |
+          set -o pipefail
+          curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- --default-toolchain none -y
+          ~/.elan/bin/lean --version
+          echo "$HOME/.elan/bin" >> $GITHUB_PATH
+          echo "name=short_lean_version::$(~/.elan/bin/lean --run scripts/lean_version.lean)" >> $GITHUB_ENV
+
+      - name: install Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+
+      - name: try to find olean cache
+        run: ./scripts/fetch_olean_cache.sh
+
+      - name: leanpkg build
+        id: build
+        run: |
+          leanpkg configure
+          lean --json -T100000 --make src | python scripts/detect_errors.py
+
+      - name: lint
+        run: |
+          ./scripts/mk_all.sh
+          lean --run scripts/lint_mathlib.lean
+          mv nolints.txt scripts/nolints.txt
+          ./scripts/update-style-exceptions.sh
+          git diff
+
+      - name: configure git setup
+        run: |
+          git remote add origin-bot "https://leanprover-community-bot:${{ secrets.LCB_TOKEN }}@github.com/leanprover-community/mathlib.git"
+          git config user.email "leanprover.community@gmail.com"
+          git config user.name "leanprover-community-bot"
+
+          # By default, github actions overrides the credentials used to access any
+          # github url so that it uses the github-actions[bot] user.  We want to access
+          # github using a different username.
+          git config --unset http.https://github.com/.extraheader
+
+      - name: update nolints.txt
+        run: ./scripts/update_nolints.sh
+        env:
+          DEPLOY_GITHUB_TOKEN: ${{ secrets.LCB_TOKEN }}
