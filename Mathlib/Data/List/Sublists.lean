@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Nat.Choose.Basic
 import Mathlib.Data.List.Perm
+import Mathlib.Data.List.Range
 
 #align_import data.list.sublists from "leanprover-community/mathlib"@"ccad6d5093bd2f5c6ca621fc74674cce51355af6"
 

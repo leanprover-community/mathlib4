@@ -3,7 +3,8 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Adjoin.Tower
+import Mathlib.RingTheory.Finiteness
+import Mathlib.Data.Polynomial.AlgebraMap
 
 #align_import data.polynomial.module from "leanprover-community/mathlib"@"63417e01fbc711beaf25fa73b6edb395c0cfddd0"
 
@@ -202,8 +203,8 @@ namespace PolynomialModule
 noncomputable instance : Module S (PolynomialModule R M) :=
   Finsupp.module ℕ M
 
-instance instDFunLike : DFunLike (PolynomialModule R M) ℕ fun _ => M :=
-  Finsupp.instDFunLike
+instance instFunLike : FunLike (PolynomialModule R M) ℕ M :=
+  Finsupp.instFunLike
 
 instance : CoeFun (PolynomialModule R M) fun _ => ℕ → M :=
   Finsupp.coeFun
