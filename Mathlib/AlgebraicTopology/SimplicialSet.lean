@@ -341,7 +341,7 @@ def face' {n : ℕ} (i  : Fin (n+2)) (j: Fin (n+1)) : (Λ[n+1, i]: SSet) _[n] :=
 
 /-- Every `face` can be written as a `face'`.-/
 lemma face_eq_face' {n : ℕ} (i  : Fin (n+2)) (j: Fin (n+2)) (h: j≠i): face i j h
-=face' i (Fin.predAbove (Fin.predAbove 0 i) j) := by
+    =face' i (Fin.predAbove (Fin.predAbove 0 i) j) := by
   unfold face'
   congr
   change j = (Fin.succAbove i) (_)
@@ -612,8 +612,6 @@ lemma homMk₃_surjective {S:SSet} (i: Fin 4) (f : Λ[3,i] ⟶ S)   : ∃ (fa: F
       intro j h
       rw [face_eq_face' i j h]
       rw [homMk₃_face]
-
-
 end horn
 
 section Examples
