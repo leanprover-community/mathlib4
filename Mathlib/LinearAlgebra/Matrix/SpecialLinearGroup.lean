@@ -331,11 +331,11 @@ theorem fin_two_exists_eq_mk_of_apply_zero_one_eq_zero {R : Type*} [Field R] (g 
 #align matrix.special_linear_group.fin_two_exists_eq_mk_of_apply_zero_one_eq_zero Matrix.SpecialLinearGroup.fin_two_exists_eq_mk_of_apply_zero_one_eq_zero
 
 lemma isCoprime_row (A : SL(2, R)) (i : Fin 2): IsCoprime (A i 0) (A i 1) := by
-    refine match i with
-    | 0 => ⟨A 1 1, -(A 1 0), ?_⟩
-    | 1 => ⟨-(A 0 1), A 0 0, ?_⟩ <;>
-    · simp_rw [det_coe A ▸ det_fin_two A.1]
-      ring
+  refine match i with
+  | 0 => ⟨A 1 1, -(A 1 0), ?_⟩
+  | 1 => ⟨-(A 0 1), A 0 0, ?_⟩ <;>
+  · simp_rw [det_coe A ▸ det_fin_two A.1]
+    ring
 
 lemma isCoprime_col (A : SL(2, R)) (j : Fin 2): IsCoprime (A 0 j) (A 1 j) := by
     refine match j with
