@@ -230,15 +230,14 @@ section Neg
 theorem _root_.Int.cast_neg_nat (G : Type v) [AddGroupWithOne G] (m : ℕ) : -(m : G) = (-m : ℤ) := by
   rw [neg_eq_iff_add_eq_zero, Int.cast_neg, Int.cast_ofNat, add_right_neg]
 
-theorem smeval_at_neg_nat (S : Type v) [NonAssocRing S] [Pow S ℕ] [NatPowAssoc S] (q : ℕ[X])
+theorem smeval_at_neg_nat (S : Type v) [NonAssocRing S]  [Pow S ℕ] [NatPowAssoc S] (q : ℕ[X])
     (n : ℕ) : q.smeval (-(n : S)) = q.smeval (-n : ℤ) := by
     rw [smeval_eq_sum, smeval_eq_sum]
-    unfold smul_pow
-    simp only [sum_def, Int.cast_sum, Int.cast_mul, Int.cast_npow]
+    simp only [smul_pow, sum_def, Int.cast_sum, Int.cast_mul, Int.cast_npow]
     refine Finset.sum_congr rfl ?_
     intro k _
-    rw [Int.cast_neg_nat, ← @smul_one_mul, nsmul_one]
-    simp only [Int.cast_neg, Int.cast_ofNat, nsmul_eq_mul, Int.cast_mul, Int.cast_npow]
+    rw [Int.cast_neg_nat, nsmul_eq_mul, ← Int.cast_ofNat, ← Int.cast_npow, ← Int.cast_mul,
+      ← nsmul_eq_mul]
 
 theorem smeval_neg (R : Type u) {S : Type v} [NonAssocRing S] [Pow S ℕ] [Ring R]
     [Module R S] (x : S) (p : R[X]) : (-p).smeval x = - p.smeval x := by
