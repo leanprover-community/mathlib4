@@ -1,4 +1,5 @@
 import Mathlib.Combinatorics.Optimization.ValuedCSP
+import Mathlib.Algebra.Order.AbsoluteValue
 import Mathlib.Data.Rat.Order
 import Mathlib.Tactic.Positivity
 import Mathlib.Data.Fin.VecNotation
@@ -12,37 +13,37 @@ This file shows two simple examples of General-Valued Constraint Satisfaction Pr
 The first example is an optimization problem. The second example is a decision problem.
 -/
 
-def valuedCspTermOfUnary {D C : Type} [OrderedAddCommMonoid C]
-    {Γ : ValuedCsp D C} {ι : Type*} {f : D → C}
+def ValuedCSP.unaryTerm {D C : Type} [OrderedAddCommMonoid C]
+    {Γ : ValuedCSP D C} {ι : Type*} {f : D → C}
     (ok : ⟨1, Function.OfArity.uncurry f⟩ ∈ Γ) (i : ι) : Γ.Term ι :=
   ⟨1, Function.OfArity.uncurry f, ok, ![i]⟩
 
-def valuedCspTermOfBinary {D C : Type} [OrderedAddCommMonoid C]
-    {Γ : ValuedCsp D C} {ι : Type*} {f : D → D → C}
+def ValuedCSP.binaryTerm {D C : Type} [OrderedAddCommMonoid C]
+    {Γ : ValuedCSP D C} {ι : Type*} {f : D → D → C}
     (ok : ⟨2, Function.OfArity.uncurry f⟩ ∈ Γ) (i j : ι) : Γ.Term ι :=
   ⟨2, Function.OfArity.uncurry f, ok, ![i, j]⟩
 
 -- ## Example: minimize `|x| + |y|` where `x` and `y` are rational numbers
 
-private def absRat : (Fin 1 → ℚ) → ℚ := Function.OfArity.uncurry Abs.abs
+private def absRat : (Fin 1 → ℚ) → ℚ := Function.OfArity.uncurry abs
 
 private def exampleAbs : Σ (n : ℕ), (Fin n → ℚ) → ℚ := ⟨1, absRat⟩
 
-private def exampleFiniteValuedCsp : ValuedCsp ℚ ℚ := {exampleAbs}
+private def exampleFiniteValuedCSP : ValuedCSP ℚ ℚ := {exampleAbs}
 
-private lemma abs_in : ⟨1, absRat⟩ ∈ exampleFiniteValuedCsp := rfl
+private lemma abs_in : ⟨1, absRat⟩ ∈ exampleFiniteValuedCSP := rfl
 
-private def exampleFiniteValuedInstance : exampleFiniteValuedCsp.Instance (Fin 2) :=
-  Multiset.ofList [valuedCspTermOfUnary abs_in 0, valuedCspTermOfUnary abs_in 1]
+private def exampleFiniteValuedInstance : exampleFiniteValuedCSP.Instance (Fin 2) :=
+  Multiset.ofList [ValuedCSP.unaryTerm abs_in 0, ValuedCSP.unaryTerm abs_in 1]
 
 example : exampleFiniteValuedInstance.IsOptimumSolution ![(0 : ℚ), (0 : ℚ)] := by
-  unfold ValuedCsp.Instance.IsOptimumSolution
-  unfold exampleFiniteValuedCsp
+  unfold ValuedCSP.Instance.IsOptimumSolution
+  unfold exampleFiniteValuedCSP
   intro s
   convert_to 0 ≤ exampleFiniteValuedInstance.evalSolution s
-  rw [ValuedCsp.Instance.evalSolution, exampleFiniteValuedInstance]
+  rw [ValuedCSP.Instance.evalSolution, exampleFiniteValuedInstance]
   convert_to 0 ≤ |s 0| + |s 1|
-  · simp [valuedCspTermOfUnary, ValuedCsp.Term.evalSolution, Function.OfArity.uncurry]
+  · simp [ValuedCSP.unaryTerm, ValuedCSP.Term.evalSolution, Function.OfArity.uncurry]
   positivity
 
 -- ## Example: `B ≠ A ≠ C ≠ D ≠ B ≠ C` with three available labels (i.e., 3-coloring of K₄⁻)
@@ -68,24 +69,24 @@ private def beqBool : (Fin 2 → Fin 3) → Bool := Function.OfArity.uncurry BEq
 
 private def exampleEquality : Σ (n : ℕ), (Fin n → Fin 3) → Bool := ⟨2, beqBool⟩
 
-private def exampleCrispCsp : ValuedCsp (Fin 3) Bool := {exampleEquality}
+private def exampleCrispCsp : ValuedCSP (Fin 3) Bool := {exampleEquality}
 
 private lemma beq_in : ⟨2, beqBool⟩ ∈ exampleCrispCsp := rfl
 
 private def exampleTermAB : exampleCrispCsp.Term (Fin 4) :=
-  valuedCspTermOfBinary beq_in 0 1
+  ValuedCSP.binaryTerm beq_in 0 1
 
 private def exampleTermBC : exampleCrispCsp.Term (Fin 4) :=
-  valuedCspTermOfBinary beq_in 1 2
+  ValuedCSP.binaryTerm beq_in 1 2
 
 private def exampleTermCA : exampleCrispCsp.Term (Fin 4) :=
-  valuedCspTermOfBinary beq_in 2 0
+  ValuedCSP.binaryTerm beq_in 2 0
 
 private def exampleTermBD : exampleCrispCsp.Term (Fin 4) :=
-  valuedCspTermOfBinary beq_in 1 3
+  ValuedCSP.binaryTerm beq_in 1 3
 
 private def exampleTermCD : exampleCrispCsp.Term (Fin 4) :=
-  valuedCspTermOfBinary beq_in 2 3
+  ValuedCSP.binaryTerm beq_in 2 3
 
 private def exampleCrispCspInstance : exampleCrispCsp.Instance (Fin 4) :=
   Multiset.ofList [exampleTermAB, exampleTermBC, exampleTermCA, exampleTermBD, exampleTermCD]
@@ -124,49 +125,49 @@ example : exampleCrispCspInstance.IsOptimumSolution exampleSolutionCorrect5 :=
   fun _ => Bool.false_le _
 
 example : ¬exampleCrispCspInstance.IsOptimumSolution exampleSolutionIncorrect0 := by
-  unfold ValuedCsp.Instance.IsOptimumSolution
+  unfold ValuedCSP.Instance.IsOptimumSolution
   push_neg
   use exampleSolutionCorrect0
   rfl
 
 example : ¬exampleCrispCspInstance.IsOptimumSolution exampleSolutionIncorrect1 := by
-  unfold ValuedCsp.Instance.IsOptimumSolution
+  unfold ValuedCSP.Instance.IsOptimumSolution
   push_neg
   use exampleSolutionCorrect0
   rfl
 
 example : ¬exampleCrispCspInstance.IsOptimumSolution exampleSolutionIncorrect2 := by
-  unfold ValuedCsp.Instance.IsOptimumSolution
+  unfold ValuedCSP.Instance.IsOptimumSolution
   push_neg
   use exampleSolutionCorrect0
   rfl
 
 example : ¬exampleCrispCspInstance.IsOptimumSolution exampleSolutionIncorrect3 := by
-  unfold ValuedCsp.Instance.IsOptimumSolution
+  unfold ValuedCSP.Instance.IsOptimumSolution
   push_neg
   use exampleSolutionCorrect0
   rfl
 
 example : ¬exampleCrispCspInstance.IsOptimumSolution exampleSolutionIncorrect4 := by
-  unfold ValuedCsp.Instance.IsOptimumSolution
+  unfold ValuedCSP.Instance.IsOptimumSolution
   push_neg
   use exampleSolutionCorrect0
   rfl
 
 example : ¬exampleCrispCspInstance.IsOptimumSolution exampleSolutionIncorrect5 := by
-  unfold ValuedCsp.Instance.IsOptimumSolution
+  unfold ValuedCSP.Instance.IsOptimumSolution
   push_neg
   use exampleSolutionCorrect0
   rfl
 
 example : ¬exampleCrispCspInstance.IsOptimumSolution exampleSolutionIncorrect6 := by
-  unfold ValuedCsp.Instance.IsOptimumSolution
+  unfold ValuedCSP.Instance.IsOptimumSolution
   push_neg
   use exampleSolutionCorrect0
   rfl
 
 example : ¬exampleCrispCspInstance.IsOptimumSolution exampleSolutionIncorrect7 := by
-  unfold ValuedCsp.Instance.IsOptimumSolution
+  unfold ValuedCSP.Instance.IsOptimumSolution
   push_neg
   use exampleSolutionCorrect0
   rfl
