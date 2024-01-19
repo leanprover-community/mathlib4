@@ -5,11 +5,9 @@ Authors: Frédéric Dupuis
 -/
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Module.Prod
-import Mathlib.Algebra.Order.Group.PosPart
 import Mathlib.Algebra.Order.Module.Defs
 import Mathlib.Algebra.Order.Monoid.Prod
 import Mathlib.Algebra.Order.Pi
-import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Tactic.GCongr.Core
 import Mathlib.Tactic.Positivity
 

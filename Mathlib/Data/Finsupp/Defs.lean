@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Scott Morrison
 -/
-import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.Function.Indicator
 import Mathlib.Data.Set.Finite
 import Mathlib.GroupTheory.Submonoid.Basic
 
@@ -85,8 +85,6 @@ This file is a `noncomputable theory` and uses classical logic throughout.
 noncomputable section
 
 open Finset Function
-
-open BigOperators
 
 variable {α β γ ι M M' N P G H R S : Type*}
 
