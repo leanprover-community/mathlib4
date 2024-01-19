@@ -70,8 +70,8 @@ lemma vecMul_SL2_mem_gammaSet {v : Fin 2 → ℤ} (hv : v ∈ gammaSet N a) (γ 
 variable (a) in
 /-- The bijection between `GammaSets` given by multiplying by an element of `SL(2, ℤ)`. -/
 def gammaSetEquiv (γ : SL(2, ℤ)) : gammaSet N a ≃ gammaSet N (vecMul a γ) where
-  toFun := fun v ↦ ⟨vecMul v.1 γ, vecMul_SL2_mem_gammaSet v.2 γ⟩
-  invFun := fun v ↦ ⟨vecMul v.1 ↑(γ⁻¹), by
+  toFun v := ⟨vecMul v.1 γ, vecMul_SL2_mem_gammaSet v.2 γ⟩
+  invFun v := ⟨vecMul v.1 ↑(γ⁻¹), by
       have := vecMul_SL2_mem_gammaSet v.2 γ⁻¹
       rw [vecMul_vecMul, ← SpecialLinearGroup.coe_mul] at this
       simpa only [SpecialLinearGroup.map_apply_coe, RingHom.mapMatrix_apply, Int.coe_castRingHom,
