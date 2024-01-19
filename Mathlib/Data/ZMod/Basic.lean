@@ -262,7 +262,7 @@ theorem int_cast_cast (i : ZMod n) : ((cast i : ℤ) : R) = cast i :=
   congr_fun (int_cast_comp_cast R) i
 #align zmod.int_cast_cast ZMod.int_cast_cast
 
-theorem coe_add_eq_ite {n : ℕ} (a b : ZMod n) :
+theorem cast_add_eq_ite {n : ℕ} (a b : ZMod n) :
     (cast (a + b) : ℤ) =
       if (n : ℤ) ≤ cast a + cast b then (cast a + cast b - n : ℤ) else cast a + cast b := by
   cases' n with n
