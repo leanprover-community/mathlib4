@@ -666,7 +666,7 @@ open IsScalarTower (toAlgHom)
 theorem KaehlerDifferential.map_surjective_of_surjective
     (h : Function.Surjective (algebraMap A B)) :
     Function.Surjective (KaehlerDifferential.map R S A B) := by
-  rw [← LinearMap.range_eq_top, _root_.eq_top_iff, ← @Submodule.restrictScalars_top B A,
+  rw [← LinearMap.range_eq_top, _root_.eq_top_iff, ← @Submodule.restrictScalars_top A B,
     ← KaehlerDifferential.span_range_derivation, Submodule.restrictScalars_span _ _ h,
     Submodule.span_le]
   rintro _ ⟨x, rfl⟩
