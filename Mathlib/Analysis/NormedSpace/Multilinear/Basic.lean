@@ -1230,7 +1230,7 @@ namespace ContinuousMultilinearMap
 
 variable {𝕜 : Type u} {ι : Type v} {E : ι → Type wE} {G : Type wG} {G' : Type wG'} [Fintype ι]
   [NontriviallyNormedField 𝕜] [∀ i, SeminormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
-  [NormedAddCommGroup G] [NormedSpace 𝕜 G] [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
+  [NormedAddCommGroup G] [NormedSpace 𝕜 G] [SeminormedAddCommGroup G'] [NormedSpace 𝕜 G']
 
 variable (f : ContinuousMultilinearMap 𝕜 E G)
 
@@ -1248,7 +1248,7 @@ instance normedAddCommGroup : NormedAddCommGroup (ContinuousMultilinearMap 𝕜 
 /-- An alias of `ContinuousMultilinearMap.normedAddCommGroup` with non-dependent types to help
 typeclass search. -/
 instance normedAddCommGroup' :
-    NormedAddCommGroup (ContinuousMultilinearMap 𝕜 (fun _ : ι => G) G') :=
+    NormedAddCommGroup (ContinuousMultilinearMap 𝕜 (fun _ : ι => G') G) :=
   ContinuousMultilinearMap.normedAddCommGroup
 #align continuous_multilinear_map.normed_add_comm_group' ContinuousMultilinearMap.normedAddCommGroup'
 
@@ -1353,8 +1353,8 @@ end Norm
 
 section Norm
 
-/-! Results that are only true if the source and target spaces are `NormedAddCommGroup`s
-(and not just `SeminormedAddCommGroup`s).-/
+/-! Results that are only true if the source is a `NormedAddCommGroup` (and not just a
+`SeminormedAddCommGroup`).-/
 
 variable {𝕜 : Type u} {ι : Type v} {E : ι → Type wE} {G : Type wG} [Fintype ι]
   [NontriviallyNormedField 𝕜] [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
