@@ -119,9 +119,3 @@ instance pointwiseModule [Semiring β] : Module (α → β) (α →₀ β) :=
 #align finsupp.pointwise_module Finsupp.pointwiseModule
 
 end Finsupp
-
-lemma Finset.nsmul_inf' [LinearOrderedAddCommMonoid β] {s : Finset α}
-    (hs : s.Nonempty) (f : α → β) (n : ℕ) :
-    s.inf' hs (fun a => n • f a) = n • s.inf' hs f :=
-  let ns : InfHom β β := { toFun := (n • ·), map_inf' := fun _ _ => (nsmul_right_mono n).map_min }
-  (map_finset_inf' ns hs _).symm

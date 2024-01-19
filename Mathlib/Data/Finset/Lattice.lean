@@ -923,6 +923,12 @@ theorem _root_.map_finset_sup' [SemilatticeSup β] [SupHomClass F α β] (f : F)
   comp_sup'_eq_sup'_comp hs _ (map_sup f)
 #align map_finset_sup' map_finset_sup'
 
+lemma nsmul_sup' [LinearOrderedAddCommMonoid β] {s : Finset α}
+    (hs : s.Nonempty) (f : α → β) (n : ℕ) :
+    s.sup' hs (fun a => n • f a) = n • s.sup' hs f :=
+  let ns : SupHom β β := { toFun := (n • ·), map_sup' := fun _ _ => (nsmul_right_mono n).map_max }
+  (map_finset_sup' ns hs _).symm
+
 /-- To rewrite from right to left, use `Finset.sup'_comp_eq_image`. -/
 @[simp]
 theorem sup'_image [DecidableEq β] {s : Finset γ} {f : γ → β} (hs : (s.image f).Nonempty)
@@ -1087,6 +1093,12 @@ theorem _root_.map_finset_inf' [SemilatticeInf β] [InfHomClass F α β] (f : F)
     (g : ι → α) : f (s.inf' hs g) = s.inf' hs (f ∘ g) := by
   refine' hs.cons_induction _ _ <;> intros <;> simp [*]
 #align map_finset_inf' map_finset_inf'
+
+lemma nsmul_inf' [LinearOrderedAddCommMonoid β] {s : Finset α}
+    (hs : s.Nonempty) (f : α → β) (n : ℕ) :
+    s.inf' hs (fun a => n • f a) = n • s.inf' hs f :=
+  let ns : InfHom β β := { toFun := (n • ·), map_inf' := fun _ _ => (nsmul_right_mono n).map_min }
+  (map_finset_inf' ns hs _).symm
 
 /-- To rewrite from right to left, use `Finset.inf'_comp_eq_image`. -/
 @[simp]
