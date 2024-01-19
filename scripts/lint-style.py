@@ -51,6 +51,7 @@ ERR_TWS = 15 # trailing whitespace
 ERR_CLN = 16 # line starts with a colon
 ERR_IND = 17 # second line not correctly indented
 ERR_ARR = 18 # space after "←"
+ERR_NUM_LIN = 19 # file is too large
 
 exceptions = []
 
@@ -60,20 +61,22 @@ ROOT_DIR = SCRIPTS_DIR.parent
 
 with SCRIPTS_DIR.joinpath("style-exceptions.txt").open(encoding="utf-8") as f:
     for exline in f:
-        filename, _, _, _, _, errno, *_ = exline.split()
+        filename, _, _, _, _, errno, *extra = exline.split()
         path = ROOT_DIR / filename
         if errno == "ERR_COP":
-            exceptions += [(ERR_COP, path)]
+            exceptions += [(ERR_COP, path, None)]
         if errno == "ERR_MOD":
-            exceptions += [(ERR_MOD, path)]
+            exceptions += [(ERR_MOD, path, None)]
         if errno == "ERR_LIN":
-            exceptions += [(ERR_LIN, path)]
+            exceptions += [(ERR_LIN, path, None)]
         if errno == "ERR_OPT":
-            exceptions += [(ERR_OPT, path)]
+            exceptions += [(ERR_OPT, path, None)]
         if errno == "ERR_AUT":
-            exceptions += [(ERR_AUT, path)]
+            exceptions += [(ERR_AUT, path, None)]
         if errno == "ERR_TAC":
-            exceptions += [(ERR_TAC, path)]
+            exceptions += [(ERR_TAC, path, None)]
+        if errno == "ERR_NUM_LIN":
+            exceptions += [(ERR_NUM_LIN, path, extra[1])]
 
 new_exceptions = False
 
@@ -328,7 +331,7 @@ def output_message(path, line_nr, code, msg):
 def format_errors(errors):
     global new_exceptions
     for errno, line_nr, path in errors:
-        if (errno, path.resolve()) in exceptions:
+        if (errno, path.resolve(), None) in exceptions:
             continue
         new_exceptions = True
         if errno == ERR_COP:
@@ -377,6 +380,21 @@ def lint(path, fix=False):
             format_errors(errs)
 
         if not import_only_check(newlines, path):
+            # Check for too long files: either longer than 1500 lines, or not covered by an exception.
+            # Each exception contains a "watermark". If the file is longer than that, we also complain.
+            if len(lines) > 1500:
+                ex = [e for e in exceptions if e[1] == path.resolve()]
+                if ex:
+                    (_ERR_NUM, _path, watermark) = list(ex)[0]
+                    assert int(watermark) > 500 # protect against parse error
+                    is_too_long = len(lines) > int(watermark)
+                else:
+                    is_too_long = True
+                if is_too_long:
+                    new_exceptions = True
+                    # add up to 200 lines of slack, so simple PRs don't trigger this right away
+                    watermark = len(lines) // 100 * 100 + 200
+                    output_message(path, 1, "ERR_NUM_LIN", f"{watermark} file contains {len(lines)} lines, try to split it up")
             errs, newlines = regular_check(newlines, path)
             format_errors(errs)
             errs, newlines = banned_import_check(newlines, path)
