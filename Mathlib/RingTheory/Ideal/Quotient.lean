@@ -225,7 +225,8 @@ will have computable inverses (and `qsmul`, `rat_cast`) in some applications.
 See note [reducible non-instances]. -/
 @[reducible]
 protected noncomputable def field (I : Ideal R) [hI : I.IsMaximal] : Field (R ⧸ I) :=
-  { Quotient.commRing I, Quotient.groupWithZero I with }
+  { Quotient.groupWithZero I with
+      toCommRing := Quotient.commRing I }
 #align ideal.quotient.field Ideal.Quotient.field
 
 /-- If the quotient by an ideal is a field, then the ideal is maximal. -/
