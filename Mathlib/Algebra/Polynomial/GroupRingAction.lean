@@ -110,7 +110,7 @@ theorem prodXSubSMul.eval (x : R) : (prodXSubSMul G R x).eval x = 0 :=
 
 theorem prodXSubSMul.smul (x : R) (g : G) : g • prodXSubSMul G R x = prodXSubSMul G R x :=
   letI := Classical.decEq R
-  Finset.smul_prod.trans <|
+  Finset.smul_prod'.trans <|
     Fintype.prod_bijective _ (MulAction.bijective g) _ _ fun g' ↦ by
       rw [ofQuotientStabilizer_smul, smul_sub, Polynomial.smul_X, Polynomial.smul_C]
 #align prod_X_sub_smul.smul prodXSubSMul.smul

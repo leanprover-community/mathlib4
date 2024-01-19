@@ -2215,6 +2215,24 @@ theorem prod_int_mod (s : Finset α) (n : ℤ) (f : α → ℤ) :
   (Multiset.prod_int_mod _ _).trans <| by rw [Finset.prod, Multiset.map_map]; rfl
 #align finset.prod_int_mod Finset.prod_int_mod
 
+theorem smul_prod
+    [CommMonoid α] [Monoid β] [MulAction β α] [IsScalarTower β α α] [SMulCommClass β α α]
+    (s : Finset α) (b : β) (f : α → α) :
+    b ^ card s • ∏ x in s, f x = ∏ x in s, b • f x := by
+  have : Multiset.map (fun (x : α) ↦ b • f x) s.val =
+      Multiset.map (fun x ↦ b • x) (Multiset.map (fun x ↦ f x) s.val) := by
+    simp only [Multiset.map_map, Function.comp_apply]
+  simp_rw [prod_eq_multiset_prod, card_def, this, ← Multiset.smul_prod _ b, Multiset.card_map]
+
+theorem prod_smul
+    [CommMonoid α] [CommMonoid β] [MulAction β α] [IsScalarTower β α α] [SMulCommClass β α α]
+    (s : Finset α) (b : α → β) (f : α → α) :
+    ∏ i in s, b i • f i = (∏ i in s, b i) • ∏ i in s, f i := by
+  classical
+  induction s using Finset.cons_induction_on with
+  | h₁ =>  simp
+  | @h₂ j s hj ih => rw [prod_cons, ih, smul_mul_smul, ← prod_cons hj, ← prod_cons hj]
+
 end Finset
 
 namespace Fintype

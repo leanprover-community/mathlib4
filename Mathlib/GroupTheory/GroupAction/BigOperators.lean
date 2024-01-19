@@ -35,9 +35,9 @@ section
 
 variable [Monoid α] [Monoid β] [MulDistribMulAction α β]
 
-theorem List.smul_prod {r : α} {l : List β} : r • l.prod = (l.map (r • ·)).prod :=
+theorem List.smul_prod' {r : α} {l : List β} : r • l.prod = (l.map (r • ·)).prod :=
   (MulDistribMulAction.toMonoidHom β r).map_list_prod l
-#align list.smul_prod List.smul_prod
+#align list.smul_prod List.smul_prod'
 
 end
 
@@ -60,13 +60,13 @@ section
 
 variable [Monoid α] [CommMonoid β] [MulDistribMulAction α β]
 
-theorem Multiset.smul_prod {r : α} {s : Multiset β} : r • s.prod = (s.map (r • ·)).prod :=
+theorem Multiset.smul_prod' {r : α} {s : Multiset β} : r • s.prod = (s.map (r • ·)).prod :=
   (MulDistribMulAction.toMonoidHom β r).map_multiset_prod s
-#align multiset.smul_prod Multiset.smul_prod
+#align multiset.smul_prod Multiset.smul_prod'
 
-theorem Finset.smul_prod {r : α} {f : γ → β} {s : Finset γ} :
+theorem Finset.smul_prod' {r : α} {f : γ → β} {s : Finset γ} :
     (r • ∏ x in s, f x) = ∏ x in s, r • f x :=
   map_prod (MulDistribMulAction.toMonoidHom β r) f s
-#align finset.smul_prod Finset.smul_prod
+#align finset.smul_prod Finset.smul_prod'
 
 end

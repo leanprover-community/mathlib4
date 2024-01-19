@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 -/
 import Mathlib.Algebra.Opposites
-import Mathlib.Data.List.BigOperators.Defs
 import Mathlib.Data.Int.Order.Basic
+import Mathlib.Data.List.BigOperators.Defs
 import Mathlib.Data.List.Forall2
+import Mathlib.GroupTheory.GroupAction.Defs
 
 #align_import data.list.big_operators.basic from "leanprover-community/mathlib"@"6c5f73fd6f6cc83122788a80a27cdd54663609f4"
 
@@ -271,6 +272,13 @@ theorem _root_.Commute.list_prod_left (l : List M) (y : M) (h : ∀ x ∈ l, Com
   ((Commute.list_prod_right _ _) fun _ hx => (h _ hx).symm).symm
 #align commute.list_prod_left Commute.list_prod_left
 #align add_commute.list_sum_left AddCommute.list_sum_left
+
+@[to_additive]
+theorem smul_prod [MulAction M N] [IsScalarTower M N N] [SMulCommClass M N N] (l : List N) (m : M) :
+    m ^ l.length • l.prod = (l.map (m • ·)).prod := by
+  induction l with
+  | nil => simp
+  | cons head tail ih => simp [← ih, smul_mul_smul, pow_succ]
 
 @[to_additive sum_le_sum]
 theorem Forall₂.prod_le_prod' [Preorder M] [CovariantClass M M (Function.swap (· * ·)) (· ≤ ·)]
