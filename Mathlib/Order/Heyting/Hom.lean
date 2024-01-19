@@ -184,6 +184,8 @@ def BoundedLatticeHomClass.toBiheytingHomClass [BooleanAlgebra α] [BooleanAlgeb
 
 section HeytingAlgebra
 
+open scoped symmDiff
+
 variable [HeytingAlgebra α] [HeytingAlgebra β] [HeytingHomClass F α β] (f : F)
 
 @[simp]
@@ -198,6 +200,8 @@ theorem map_bihimp (a b : α) : f (a ⇔ b) = f a ⇔ f b := by simp_rw [bihimp,
 end HeytingAlgebra
 
 section CoheytingAlgebra
+
+open scoped symmDiff
 
 variable [CoheytingAlgebra α] [CoheytingAlgebra β] [CoheytingHomClass F α β] (f : F)
 
