@@ -53,6 +53,23 @@ def cohomologicalStripes : ConvergenceStripes (ℤ × ℤ) (fun (_ : ℤ) => ℤ
   discrete n (i j : ℤ) h := by
     linarith [show i - 1 < j from WithBot.some_lt_some.1 h]
 
+@[simps]
+def cohomomologicalStripesFin (l : ℕ) : ConvergenceStripes (ℤ × Fin l) (fun (_ : ℤ) => Fin l) where
+  stripe pq := pq.1 + pq.2.1
+  pred _ j := match j with
+    | ⟨0, _⟩   => none
+    | ⟨j+1, _⟩ => WithBot.some ⟨j, by linarith⟩
+  pred_lt n := by rintro ⟨_|i, _⟩ <;> simp
+  position n i := ⟨n - i.1, i⟩
+  discrete := by
+    rintro n ⟨_|i, hi⟩ ⟨j, hj⟩ h
+    · simp
+    · simp only [WithBot.coe_lt_coe, Fin.mk_lt_mk, Fin.mk_le_mk] at h ⊢
+      linarith
+  finite_segment _ _ _ := by
+    rw [Set.finite_def]
+    exact ⟨Fintype.ofInjective Subtype.val (by apply Subtype.ext)⟩
+
 variable {ι}
 
 namespace ConvergenceStripes

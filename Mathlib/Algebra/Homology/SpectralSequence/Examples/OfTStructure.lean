@@ -18,15 +18,27 @@ variable {D : Type _} [Category D]
 class VanishesOnGEOne (H : C ⥤ D) (t : TStructure C) where
   isZero' (X : C) (hX : t.IsGE X 1) : IsZero (H.obj X)
 
-variable (H : C ⥤ D) (t : TStructure C) [hH : H.VanishesOnGEOne t]
-  [H.ShiftSequence ℤ]
+class VanishesOnLESubOne (H : C ⥤ D) (t : TStructure C) where
+  isZero' (X : C) (hX : t.IsLE X (-1)) : IsZero (H.obj X)
 
-lemma isZero_shift_obj_of_vanishesOnGEOne (a b : ℤ) (h : a < b) (X : C)
+variable (H : C ⥤ D) (t : TStructure C)
+
+lemma isZero_shift_obj_of_vanishesOnGEOne
+    [hH : H.VanishesOnGEOne t] [H.ShiftSequence ℤ]
+    (a b : ℤ) (h : a < b) (X : C)
     [t.IsGE X b] : IsZero ((H.shift a).obj X) := by
   have : t.IsGE (X⟦a⟧) (b-a) := t.isGE_shift _ b a (b-a) (by linarith)
   exact IsZero.of_iso (hH.isZero' _ (t.isGE_of_GE _ 1 (b-a) (by linarith)))
     (((H.shiftIso a 0 a (add_zero a)).symm ≪≫
       isoWhiskerLeft (shiftFunctor C a) (H.isoShiftZero ℤ)).app X)
+
+lemma isZero_shift_obj_of_vanishesOnLESubOne
+    [hH : H.VanishesOnLESubOne t] [H.ShiftSequence ℤ]
+    (a b : ℤ) (h : a < b) (X : C)
+    [t.IsLE X a] : IsZero ((H.shift b).obj X) := by
+  have : t.IsLE (X⟦b⟧) (a-b) := t.isLE_shift _ a b (a-b) (by linarith)
+  exact IsZero.of_iso (hH.isZero' _ (t.isLE_of_LE (X⟦b⟧) (a - b) (-1) (by linarith)))
+    (((H.shiftIso b 0 b (add_zero b)).symm ≪≫ isoWhiskerLeft (shiftFunctor C b) (H.isoShiftZero ℤ)).app X)
 
 end Functor
 
@@ -34,10 +46,12 @@ namespace Triangulated
 
 namespace TStructure
 
+open Abelian.SpectralObject
+
+section
+
 variable (t : TStructure C) (X : C) (H : C ⥤ A) [H.PreservesZeroMorphisms] [H.IsHomological]
   [H.ShiftSequence ℤ] [H.VanishesOnGEOne t]
-
-open Abelian.SpectralObject
 
 instance [t.IsGE X 0] :
     ((t.spectralObject X).mapHomologicalFunctor H).IsFirstQuadrant where
@@ -79,6 +93,25 @@ noncomputable def spectralSequenceStronglyConvergesTo [t.IsGE X 0] (n : ℤ) :
       SpectralSequence.cohomologicalStripes n ((H.shift n).obj X) :=
   ((t.spectralObject X).mapHomologicalFunctor H).convergesAt
     mkDataE₂CohomologicalCompatibility n
+
+end
+
+section
+
+variable (t : TStructure C) (X : C) (H : C ⥤ A) [H.PreservesZeroMorphisms] [H.IsHomological]
+  [H.ShiftSequence ℤ] [H.VanishesOnLESubOne t]
+
+instance [t.IsLE X 0] :
+    ((t.spectralObject X).mapHomologicalFunctor H).IsThirdQuadrant where
+  isZero₁ i j hij hi n := by
+    refine IsZero.of_iso ?_ ((H.shift n).mapIso (t.isZero_truncGEt_obj_obj (((t.truncLTt).obj j).obj X) 0 i hi).isoZero)
+    rw [IsZero.iff_id_eq_zero, ← Functor.map_id, id_zero, Functor.map_zero]
+  isZero₂ i j hij n hj := by
+    dsimp
+    have := t.truncLTt_obj_obj_isLE (n - 1) j (by simpa using hj) X
+    exact H.isZero_shift_obj_of_vanishesOnLESubOne t (n - 1) n (by linarith) _
+
+end
 
 end TStructure
 

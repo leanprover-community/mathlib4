@@ -1058,6 +1058,97 @@ noncomputable abbrev E₂SpectralSequenceNat := Y.spectralSequence mkDataE₂Coh
 
 end
 
+section
+
+variable (Y : SpectralObject C ℤt)
+
+class IsThirdQuadrant where
+  isZero₁ (i j : ℤt) (hij : i ≤ j) (hi : ℤt.mk 0 < i) (n : ℤ) :
+    IsZero ((Y.H n).obj (mk₁ (homOfLE hij)))
+  isZero₂ (i j : ℤt) (hij : i ≤ j) (n : ℤ) (hj : j ≤ ℤt.mk n) :
+    IsZero ((Y.H n).obj (mk₁ (homOfLE hij)))
+
+variable [Y.IsThirdQuadrant]
+
+lemma isZero₁_of_isThirdQuadrant (i j : ℤt) (hij : i ≤ j) (hi : ℤt.mk 0 < i) (n : ℤ) :
+    IsZero ((Y.H n).obj (mk₁ (homOfLE hij))) :=
+  IsThirdQuadrant.isZero₁ i j hij hi n
+
+lemma isZero₂_of_isThirdQuadrant (i j : ℤt) (hij : i ≤ j) (n : ℤ) (hj : j ≤ ℤt.mk n) :
+    IsZero ((Y.H n).obj (mk₁ (homOfLE hij))) :=
+  IsThirdQuadrant.isZero₂ i j hij n hj
+
+@[simps!]
+def mkDataE₂HomologicalNat :
+    SpectralSequenceMkData ℤt
+    (fun r => ComplexShape.spectralSequenceNat ⟨-r, r - 1⟩) 2 where
+  deg pq := - pq.1 - pq.2
+  i₀ r hr pq := ℤt.mk (-pq.2 - r + 2)
+  i₁ pq := ℤt.mk (-pq.2)
+  i₂ pq := ℤt.mk (-pq.2 + 1)
+  i₃ r hr pq := ℤt.mk (-pq.2 + r - 1)
+  le₀₁ r hr pq := by dsimp; simp only [ℤt.mk_le_mk_iff]; linarith
+  le₁₂ pq := by dsimp; simp only [ℤt.mk_le_mk_iff]; linarith
+  le₂₃ r hr pq := by dsimp; simp only [ℤt.mk_le_mk_iff]; linarith
+  hc r _ pq pq' hpq := by
+    simp only [ComplexShape.spectralSequenceNat_rel_iff] at hpq
+    dsimp
+    linarith
+  hc₀₂ r hr pq pq' hpq := by
+    simp only [ComplexShape.spectralSequenceNat_rel_iff] at hpq
+    dsimp
+    congr 1
+    linarith
+  hc₁₃ r hr pq pq' hpq := by
+    simp only [ComplexShape.spectralSequenceNat_rel_iff] at hpq
+    dsimp
+    congr 1
+    linarith
+  antitone_i₀ r r' hrr' hr pq := by
+    dsimp
+    rw [ℤt.mk_le_mk_iff]
+    linarith
+  monotone_i₃ r r' hrr' hr pq := by
+    dsimp
+    rw [ℤt.mk_le_mk_iff]
+    linarith
+  i₀_prev' r hr pq pq' hpq := by
+    simp only [ComplexShape.spectralSequenceNat_rel_iff] at hpq
+    dsimp
+    congr 1
+    linarith
+  i₃_next' r hr pq pq' hpq := by
+    simp only [ComplexShape.spectralSequenceNat_rel_iff] at hpq
+    dsimp
+    congr 1
+    linarith
+
+instance : Y.HasSpectralSequence mkDataE₂HomologicalNat where
+  isZero_H_obj_mk₁_i₀_le := by
+    rintro r _ rfl hr ⟨p, q⟩ hpq n rfl
+    apply isZero₂_of_isThirdQuadrant
+    dsimp
+    simp only [ℤt.mk_le_mk_iff]
+    by_contra!
+    obtain ⟨p', hp'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ p - r by linarith)
+    obtain ⟨q', hq'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ q + r - 1 by linarith)
+    exact hpq ⟨p', q'⟩ (by
+      simp only [ComplexShape.spectralSequenceNat_rel_iff]
+      constructor <;> linarith)
+  isZero_H_obj_mk₁_i₃_le := by
+    rintro r _ rfl hr ⟨p, q⟩ hpq n rfl
+    apply isZero₁_of_isThirdQuadrant
+    dsimp
+    simp only [ℤt.mk_lt_mk_iff]
+    by_contra!
+    obtain ⟨p', hp'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ p + r by linarith)
+    obtain ⟨q', hq'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ q + 1 - r by linarith)
+    exact hpq ⟨p', q'⟩ (by
+      simp only [ComplexShape.spectralSequenceNat_rel_iff]
+      constructor <;> linarith)
+
+end
+
 end SpectralObject
 
 end Abelian

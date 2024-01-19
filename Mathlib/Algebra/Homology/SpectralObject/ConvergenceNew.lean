@@ -219,6 +219,61 @@ def mkDataE₂CohomologicalNatCompatibility :
     · obtain rfl : j = i := by simpa using h
       simp
 
+@[simps]
+def homologicalStripesNat :
+    SpectralSequence.ConvergenceStripes (ℕ × ℕ) (fun (n : ℕ) => Fin (n + 1)) where
+  stripe pq := pq.1 + pq.2
+  pred n := fun i => match i with
+    | 0 => ⊥
+    | ⟨j + 1, hj⟩ => WithBot.some ⟨j, by linarith⟩
+  pred_lt n i := by
+    obtain ⟨_ | _, _⟩ := i
+    · apply WithBot.bot_lt_coe
+    · simp
+  position n i := ⟨i.1, n - i.1⟩
+  stripe_position := by
+    rintro n ⟨i, hi⟩
+    exact Nat.add_sub_of_le (by linarith)
+  discrete := by
+    rintro n ⟨_ | i, hi⟩ ⟨j, hj⟩ h
+    · simp
+    · simp only [WithBot.coe_lt_coe, Fin.mk_lt_mk] at h
+      simp only [Fin.mk_le_mk]
+      linarith
+  finite_segment n i j := by
+    rw [Set.finite_def]
+    refine ⟨Fintype.ofInjective (fun x => (x : Fin (n + 1))) ?_⟩
+    intro x y h
+    ext1
+    simpa using h
+
+/-@[simps]
+def mkDataE₂HomologicalNatCompatibility :
+    mkDataE₂HomologicalNat.CompatibleWithConvergenceStripes
+      homologicalStripesNat where
+  deg n := -n
+  deg_stripe pq := by
+    dsimp
+    simp only [Nat.cast_add, neg_add_rev]
+    linarith
+  i₂_monotone := by
+    rintro n ⟨i, hi⟩ ⟨j, hj⟩ h
+    simp at h
+    dsimp
+    simp only [ℤt.mk_le_mk_iff]
+    linarith [Nat.add_sub_of_le (show i ≤ n by linarith),
+      Nat.add_sub_of_le (show j ≤ n by linarith)]
+  le₂₁ := by
+    rintro n ⟨i, hi⟩ ⟨j, hj⟩ h
+    obtain _|j := j
+    · dsimp
+      sorry -- this is wrong, so that we can not even assume this inequality
+    · obtain rfl : j = i := by simpa using h
+      dsimp
+      simp only [ℤt.mk_le_mk_iff]
+      linarith [Nat.add_sub_of_le (show j.succ ≤ n by linarith),
+        Nat.add_sub_of_le (show j ≤ n by linarith)]-/
+
 variable {data s}
 variable (hdata : data.CompatibleWithConvergenceStripes s)
   [X.HasSpectralSequence data]

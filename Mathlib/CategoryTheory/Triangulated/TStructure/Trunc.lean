@@ -1231,6 +1231,16 @@ lemma isZero_truncLTt_obj_obj (X : C) (n : ℤ) [t.IsGE X n] (j : ℤt) (hj : j 
     exact t.isGE_of_GE  _ _ _ hj
   · simp at hj
 
+lemma isZero_truncGEt_obj_obj (X : C) (n : ℤ) [t.IsLE X n] (j : ℤt) (hj : ℤt.mk n < j) :
+    IsZero ((t.truncGEt.obj j).obj X) := by
+  obtain (rfl|⟨j, rfl⟩|rfl) := j.three_cases
+  · simp at hj
+  · simp at hj
+    dsimp
+    rw [← t.isLE_iff_isZero_truncGE_obj (j - 1) j (by simp)]
+    exact t.isLE_of_LE X n (j - 1) (by linarith)
+  · apply Functor.zero_obj
+
 lemma truncGEt_obj_obj_isGE (n : ℤ) (i : ℤt) (h : ℤt.mk n ≤ i) (X : C) :
     t.IsGE ((t.truncGEt.obj i).obj X) n := by
   obtain (rfl|⟨i, rfl⟩|rfl) := i.three_cases
@@ -1242,6 +1252,16 @@ lemma truncGEt_obj_obj_isGE (n : ℤ) (i : ℤt) (h : ℤt.mk n ≤ i) (X : C) :
     apply t.isGE_of_isZero
     apply Functor.zero_obj
 
+lemma truncLTt_obj_obj_isLE (n : ℤ) (i : ℤt) (h : i ≤ ℤt.mk (n + 1)) (X : C) :
+    t.IsLE (((t.truncLTt.obj i)).obj X) n := by
+  obtain (rfl|⟨i, rfl⟩|rfl) := i.three_cases
+  · dsimp
+    apply t.isLE_of_isZero
+    apply Functor.zero_obj
+  · simp at h
+    dsimp
+    exact t.isLE_of_LE _ (i - 1) n (by linarith)
+  · simp at h
 
 noncomputable def homology'' (n : ℤ) : C ⥤ C := t.truncGELE n n ⋙ shiftFunctor C n
 
@@ -1617,6 +1637,50 @@ instance [IsTriangulated C] : t.minus.HasInducedTStructure t := by
   apply Subcategory.HasInducedTStructure.mk'
   rintro X ⟨a, _⟩ n
   exact ⟨⟨a, inferInstance⟩, ⟨a, inferInstance⟩⟩
+
+namespace TStructure
+
+instance (X : C) (n : ℤ) [t.IsLE X n] (i : ℤt) :
+    t.IsLE ((t.truncLTt.obj i).obj X) n := by
+  obtain rfl|⟨i, rfl⟩|rfl := ℤt.three_cases i
+  · apply isLE_of_isZero
+    simp
+  · dsimp
+    infer_instance
+  · dsimp
+    infer_instance
+
+instance [IsTriangulated C] (X : C) (n : ℤ) [t.IsGE X n] (i : ℤt) :
+    t.IsGE ((t.truncLTt.obj i).obj X) n := by
+  obtain rfl|⟨i, rfl⟩|rfl := ℤt.three_cases i
+  · apply isGE_of_isZero
+    simp
+  · dsimp
+    infer_instance
+  · dsimp
+    infer_instance
+
+instance [IsTriangulated C] (X : C) (n : ℤ) [t.IsLE X n] (i : ℤt) :
+    t.IsLE ((t.truncGEt.obj i).obj X) n := by
+  obtain rfl|⟨i, rfl⟩|rfl := ℤt.three_cases i
+  · dsimp
+    infer_instance
+  · dsimp
+    infer_instance
+  · apply isLE_of_isZero
+    simp
+
+instance (X : C) (n : ℤ) [t.IsGE X n] (i : ℤt) :
+    t.IsGE ((t.truncGEt.obj i).obj X) n := by
+  obtain rfl|⟨i, rfl⟩|rfl := ℤt.three_cases i
+  · dsimp
+    infer_instance
+  · dsimp
+    infer_instance
+  · apply isGE_of_isZero
+    simp
+
+end TStructure
 
 end Triangulated
 
