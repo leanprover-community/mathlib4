@@ -8,6 +8,7 @@ import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 import Mathlib.CategoryTheory.Limits.FintypeCat
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 import Mathlib.CategoryTheory.Limits.Shapes.Types
+import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
 import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
 import Mathlib.CategoryTheory.SingleObj
 
@@ -152,15 +153,16 @@ end FibreFunctor
 
 variable (F : C ⥤ FintypeCat.{w}) [FibreFunctor F]
 
-private lemma FintypeCat.initial_iff_empty (X : FintypeCat.{w}) :
-    Nonempty (IsInitial X) ↔ IsEmpty X := by
-  rw [(IsInitial.isInitialIffObj FintypeCat.incl X).nonempty_congr, Types.initial_iff_empty]
-  rfl
-
 /-- An object is initial if and only if its fibre is empty. -/
 lemma initial_iff_fibre_empty (X : C) : Nonempty (IsInitial X) ↔ IsEmpty (F.obj X) := by
   rw [(IsInitial.isInitialIffObj F X).nonempty_congr]
-  exact FintypeCat.initial_iff_empty (F.obj X)
+  haveI : PreservesFiniteColimits (forget FintypeCat) := by
+    show PreservesFiniteColimits FintypeCat.incl
+    infer_instance
+  haveI : ReflectsColimit (Functor.empty.{0} _) (forget FintypeCat) := by
+    show ReflectsColimit (Functor.empty.{0} _) FintypeCat.incl
+    infer_instance
+  exact Concrete.initial_iff_empty_of_preserves_of_reflects (F.obj X)
 
 /-- An object whose fibre is inhabited is not initial. -/
 lemma not_initial_of_inhabited {X : C} (x : F.obj X) (h : IsInitial X) : False :=
