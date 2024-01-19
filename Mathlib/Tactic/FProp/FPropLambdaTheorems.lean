@@ -91,48 +91,51 @@ initialize fpropLambdaTheoremsExt : FPropLambdaTheoremsExt ←
 set_option linter.unusedVariables false in
 open Qq in
 /-- -/
-def detectLambdaTheoremArgs (f : Expr) (xs : Array Expr) : Option LambdaTheoremArgs := do
+def detectLambdaTheoremArgs (f : Expr) (xs : Array Expr) : MetaM (Option LambdaTheoremArgs) := do
+
+  let f ← forallTelescope (← inferType f) fun xs b => 
+    mkLambdaFVars xs (mkAppN f xs).headBeta
   
   match f with
   | .lam xName xType xBody xBi => 
     match xBody with 
     | .bvar 0 => 
       -- fun x => x
-      let .some argId_X := xs.findIdx? (fun x => x == xType) | none
-      return .id argId_X
+      let .some argId_X := xs.findIdx? (fun x => x == xType) | return none
+      return .some (.id argId_X)
     | .fvar yId => 
       -- fun x => y
-      let .some argId_X := xs.findIdx? (fun x => x == xType) | none
-      let .some argId_y := xs.findIdx? (fun x => x == (.fvar yId)) | none
-      return .const argId_X argId_y
+      let .some argId_X := xs.findIdx? (fun x => x == xType) | return none
+      let .some argId_y := xs.findIdx? (fun x => x == (.fvar yId)) | return none
+      return .some (.const argId_X argId_y)
     | .app (.bvar 0) (.fvar xId) =>
       -- fun f => f x
       let fType := xType
-       let .some argId_x := xs.findIdx? (fun x => x == (.fvar xId)) | none
+       let .some argId_x := xs.findIdx? (fun x => x == (.fvar xId)) | return none
        match fType with
        | .forallE xName' xType' (.fvar yId) xBi' =>
-         let .some argId_Y := xs.findIdx? (fun x => x == (.fvar yId)) | none
-         return .proj argId_x argId_Y
+         let .some argId_Y := xs.findIdx? (fun x => x == (.fvar yId)) | return none
+         return .some <| .proj argId_x argId_Y
        | .forallE xName' xType' (.app (.fvar yId) (.bvar 0)) xBi' =>
-         let .some argId_Y := xs.findIdx? (fun x => x == (.fvar yId)) | none
-         return .projDep argId_x argId_Y
-       | _ => none
+         let .some argId_Y := xs.findIdx? (fun x => x == (.fvar yId)) | return none
+         return .some <| .projDep argId_x argId_Y
+       | _ => return none
     | .app (.fvar fId) (.app (.fvar gId) (.bvar 0)) => 
       -- fun x => f (g x)
-      let .some argId_f := xs.findIdx? (fun x => x == (.fvar fId)) | none
-      let .some argId_g := xs.findIdx? (fun x => x == (.fvar gId)) | none
-      return .comp argId_f argId_g
+      let .some argId_f := xs.findIdx? (fun x => x == (.fvar fId)) | return none
+      let .some argId_g := xs.findIdx? (fun x => x == (.fvar gId)) | return none
+      return .some <| .comp argId_f argId_g
     | .letE yName yType (.app (.fvar gId) (.bvar 0)) (.app (.app (.fvar fId) (.bvar 1)) (.bvar 0)) _ =>  
       -- fun x => let y := g x; f x y
-      let .some argId_f := xs.findIdx? (fun x => x == (.fvar fId)) | none
-      let .some argId_g := xs.findIdx? (fun x => x == (.fvar gId)) | none
-      return .letE argId_f argId_g
+      let .some argId_f := xs.findIdx? (fun x => x == (.fvar fId)) | return none
+      let .some argId_g := xs.findIdx? (fun x => x == (.fvar gId)) | return none
+      return .some <| .letE argId_f argId_g
     | .lam Name yType (.app (.app (.fvar fId) (.bvar 1)) (.bvar 0)) yBi =>
       -- fun x y => f x y
-      let .some argId_f := xs.findIdx? (fun x => x == (.fvar fId)) | none
-      return .pi argId_f
-    | _ => none
-  | _ => none
+      let .some argId_f := xs.findIdx? (fun x => x == (.fvar fId)) | return none
+      return .some <| .pi argId_f
+    | _ => return none
+  | _ => return none
 
 /-- -/
 def addLambdaTheorem (declName : Name) : MetaM Unit := do
@@ -144,7 +147,7 @@ def addLambdaTheorem (declName : Name) : MetaM Unit := do
     let .some (decl,f) ← getFProp? b
       | throwError "unrecognized function property, {← ppExpr b}"
 
-    let .some thrmArgs := detectLambdaTheoremArgs f xs
+    let .some thrmArgs ← detectLambdaTheoremArgs f xs
       | throwError "unrecognized lambda rule, {← ppExpr f}"
 
     let thrm : LambdaTheorem := {

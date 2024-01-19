@@ -22,8 +22,8 @@ def isLambdaRule (f : Expr) : Bool :=
       false
     else 
       true
-  | .const _ _ => false
-  | _ => true
+  | .fvar .. => true
+  | _ => false
 
 open Lean Qq Meta Elab Term in
 /-- -/
