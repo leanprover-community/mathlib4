@@ -57,7 +57,7 @@ def eq : KleisliCat m ≌ Kleisli (ofTypeMonad m) where
         funext t
         -- Porting note: missing tactic `unfold_projs`, using `change` instead.
         change _ = joinM (g <$> (f t))
-        simp only [joinM, seq_bind_eq, Function.comp.left_id]
+        simp only [joinM, seq_bind_eq, Function.id_comp]
         rfl }
   inverse :=
     { obj := fun X => X
@@ -75,7 +75,7 @@ def eq : KleisliCat m ≌ Kleisli (ofTypeMonad m) where
         dsimp
         -- Porting note: missing tactic `unfold_projs`, using `change` instead.
         change joinM (g <$> (f t)) = _
-        simp only [joinM, seq_bind_eq, Function.comp.left_id]
+        simp only [joinM, seq_bind_eq, Function.id_comp]
         rfl }
   unitIso := by
     refine' NatIso.ofComponents (fun X => Iso.refl X) fun f => _

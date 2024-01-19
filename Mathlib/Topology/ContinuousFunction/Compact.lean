@@ -232,7 +232,7 @@ theorem apply_le_norm (f : C(α, ℝ)) (x : α) : f x ≤ ‖f‖ :=
 #align continuous_map.apply_le_norm ContinuousMap.apply_le_norm
 
 theorem neg_norm_le_apply (f : C(α, ℝ)) (x : α) : -‖f‖ ≤ f x :=
-  le_trans (neg_le_neg (f.norm_coe_le_norm x)) (neg_le.mp (neg_le_abs_self (f x)))
+  le_trans (neg_le_neg (f.norm_coe_le_norm x)) (neg_le.mp (neg_le_abs (f x)))
 #align continuous_map.neg_norm_le_apply ContinuousMap.neg_norm_le_apply
 
 theorem norm_eq_iSup_norm : ‖f‖ = ⨆ x : α, ‖f x‖ :=

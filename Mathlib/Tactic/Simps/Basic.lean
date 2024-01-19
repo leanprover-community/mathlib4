@@ -303,10 +303,10 @@ This command specifies custom names and custom projections for the simp attribut
 
 Some common uses:
 * If you define a new homomorphism-like structure (like `MulHom`) you can just run
-  `initialize_simps_projections` after defining the `FunLike` instance (or instance that implies
-  a `FunLike` instance).
+  `initialize_simps_projections` after defining the `DFunLike` instance (or instance that implies
+  a `DFunLike` instance).
   ```
-    instance {mM : Mul M} {mN : Mul N} : FunLike (MulHom M N) M N := ...
+    instance {mM : Mul M} {mN : Mul N} : DFunLike (MulHom M N) M N := ...
     initialize_simps_projections MulHom (toFun → apply)
   ```
   This will generate `foo_apply` lemmas for each declaration `foo`.
@@ -323,7 +323,7 @@ Some common uses:
   In the first case, you can get both lemmas using `@[simps, simps (config := .asFn) coe]` and in
   the second case you can get both lemmas using `@[simps (config := .asFn), simps apply]`.
 * If you declare a new homomorphism-like structure (like `RelEmbedding`),
-  then `initialize_simps_projections` will automatically find any `FunLike` coercions
+  then `initialize_simps_projections` will automatically find any `DFunLike` coercions
   that will be used as the default projection for the `toFun` field.
   ```
     initialize_simps_projections relEmbedding (toFun → apply)
@@ -681,7 +681,7 @@ def findAutomaticProjectionsAux (str : Name) (proj : ParsedProjectionData) (args
 
 /-- Auxiliary function for `getRawProjections`.
 Find custom projections, automatically found by simps.
-These come from `FunLike` and `SetLike` instances. -/
+These come from `DFunLike` and `SetLike` instances. -/
 def findAutomaticProjections (str : Name) (projs : Array ParsedProjectionData) :
     CoreM (Array ParsedProjectionData) := do
   let strDecl ← getConstInfo str

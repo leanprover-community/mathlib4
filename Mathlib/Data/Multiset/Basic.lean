@@ -878,7 +878,7 @@ def strongDownwardInduction {p : Multiset α → Sort*} {n : ℕ}
   H s fun {t} ht _h =>
     strongDownwardInduction H t ht
 termination_by n - card s
-decreasing_by exact (tsub_lt_tsub_iff_left_of_le ht).2 (card_lt_card _h)
+decreasing_by simp_wf; have := (card_lt_card _h); omega
 -- Porting note: reorderd universes
 #align multiset.strong_downward_induction Multiset.strongDownwardInductionₓ
 
@@ -2728,7 +2728,7 @@ for more discussion.
 @[simp]
 theorem map_count_True_eq_filter_card (s : Multiset α) (p : α → Prop) [DecidablePred p] :
     (s.map p).count True = card (s.filter p) := by
-  simp only [count_eq_card_filter_eq, map_filter, card_map, Function.comp.left_id,
+  simp only [count_eq_card_filter_eq, map_filter, card_map, Function.id_comp,
     eq_true_eq_id, Function.comp_apply]
 #align multiset.map_count_true_eq_filter_card Multiset.map_count_True_eq_filter_card
 
