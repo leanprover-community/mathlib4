@@ -124,7 +124,7 @@ variable [NonUnitalNonAssocSemiring C] [DistribMulAction R C]
 -- instance : CoeFun (A →ₙₐ[R] B) fun _ => A → B :=
 --   ⟨toFun⟩
 
-instance : DFunLike (A →ₙₐ[R] B) A fun _ => B where
+instance : FunLike (A →ₙₐ[R] B) A B where
   coe f := f.toFun
   coe_injective' := by rintro ⟨⟨⟨f, _⟩, _⟩, _⟩ ⟨⟨⟨g, _⟩, _⟩, _⟩ h; congr
 

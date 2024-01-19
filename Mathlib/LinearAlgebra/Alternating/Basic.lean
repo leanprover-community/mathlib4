@@ -96,13 +96,13 @@ open Function
 
 section Coercions
 
-instance instDFunLike : DFunLike (M [Λ^ι]→ₗ[R] N) (ι → M) (fun _ => N) where
+instance instFunLike : FunLike (M [Λ^ι]→ₗ[R] N) (ι → M) N where
   coe f := f.toFun
   coe_injective' := fun f g h ↦ by
     rcases f with ⟨⟨_, _, _⟩, _⟩
     rcases g with ⟨⟨_, _, _⟩, _⟩
     congr
-#align alternating_map.fun_like AlternatingMap.instDFunLike
+#align alternating_map.fun_like AlternatingMap.instFunLike
 
 -- shortcut instance
 instance coeFun : CoeFun (M [Λ^ι]→ₗ[R] N) fun _ => (ι → M) → N :=

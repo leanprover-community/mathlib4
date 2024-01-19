@@ -122,6 +122,8 @@ instead of linearly increasing the work per `MyHom`-related declaration.
 /-- The class `DFunLike F α β` expresses that terms of type `F` have an
 injective coercion to (dependent) functions from `α` to `β`.
 
+For non-dependent functions you can also use the abbreviation `FunLike`.
+
 This typeclass is used in the definition of the homomorphism typeclasses,
 such as `ZeroHomClass`, `MulHomClass`, `MonoidHomClass`, ....
 -/
@@ -135,6 +137,14 @@ class DFunLike (F : Sort*) (α : outParam (Sort*)) (β : outParam <| α → Sort
 
 -- https://github.com/leanprover/lean4/issues/2096
 compile_def% DFunLike.coe
+
+/-- The class `FunLike F α β` (`Fun`ction-`Like`) expresses that terms of type `F`
+have an injective coercion to functions from `α` to `β`.
+`FunLike` is the non-dependent version of `DFunLike`.
+This typeclass is used in the definition of the homomorphism typeclasses,
+such as `ZeroHomClass`, `MulHomClass`, `MonoidHomClass`, ....
+-/
+abbrev FunLike F α β := DFunLike F α fun _ => β
 
 section Dependent
 
@@ -205,9 +215,9 @@ end Dependent
 
 section NonDependent
 
-/-! ### `DFunLike F α (λ _, β)` where `β` does not depend on `a : α` -/
+/-! ### `FunLike F α β` where `β` does not depend on `a : α` -/
 
-variable {F α β : Sort*} [i : DFunLike F α fun _ ↦ β]
+variable {F α β : Sort*} [i : FunLike F α β]
 
 namespace DFunLike
 

@@ -53,7 +53,7 @@ instance : LargeCategory.{u} GroupWithZeroCat where
   assoc _ _ _ := MonoidWithZeroHom.comp_assoc _ _ _
 
 -- porting note: was not necessary in mathlib
-instance {M N : GroupWithZeroCat} : DFunLike (M ⟶ N) M (fun _ => N) :=
+instance {M N : GroupWithZeroCat} : FunLike (M ⟶ N) M N :=
   ⟨fun f => f.toFun, fun f g h => by
     cases f
     cases g

@@ -46,10 +46,10 @@ def PMF.{u} (α : Type u) : Type u :=
 
 namespace PMF
 
-instance instDFunLike : DFunLike (PMF α) α fun _ => ℝ≥0∞ where
+instance instFunLike : FunLike (PMF α) α ℝ≥0∞ where
   coe p a := p.1 a
   coe_injective' _ _ h := Subtype.eq h
-#align pmf.fun_like PMF.instDFunLike
+#align pmf.fun_like PMF.instFunLike
 
 @[ext]
 protected theorem ext {p q : PMF α} (h : ∀ x, p x = q x) : p = q :=

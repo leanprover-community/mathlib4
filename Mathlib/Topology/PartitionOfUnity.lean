@@ -135,7 +135,7 @@ namespace PartitionOfUnity
 variable {E : Type*} [AddCommMonoid E] [SMulWithZero ℝ E] [TopologicalSpace E] [ContinuousSMul ℝ E]
   {s : Set X} (f : PartitionOfUnity ι X s)
 
-instance : DFunLike (PartitionOfUnity ι X s) ι fun _ ↦ C(X, ℝ) where
+instance : FunLike (PartitionOfUnity ι X s) ι C(X, ℝ) where
   coe := toFun
   coe_injective' := fun f g h ↦ by cases f; cases g; congr
 
@@ -281,7 +281,7 @@ namespace BumpCovering
 
 variable {s : Set X} (f : BumpCovering ι X s)
 
-instance : DFunLike (BumpCovering ι X s) ι fun _ ↦ C(X, ℝ) where
+instance : FunLike (BumpCovering ι X s) ι C(X, ℝ) where
   coe := toFun
   coe_injective' := fun f g h ↦ by cases f; cases g; congr
 

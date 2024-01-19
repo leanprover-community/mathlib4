@@ -33,7 +33,7 @@ class DilationEquivClass extends EquivLike F X Y where
   edist_eq' : ∀ f : F, ∃ r : ℝ≥0, r ≠ 0 ∧ ∀ x y : X, edist (f x) (f y) = r * edist x y
 
 instance (priority := 100) [DilationEquivClass F X Y] : DilationClass F X Y :=
-  { inferInstanceAs (DFunLike F X fun _ ↦ Y), ‹DilationEquivClass F X Y› with }
+  { inferInstanceAs (FunLike F X Y), ‹DilationEquivClass F X Y› with }
 
 end Class
 

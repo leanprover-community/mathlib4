@@ -121,7 +121,7 @@ section abelian
 variable {C : Type u} [Category.{v} C] [ConcreteCategory.{v} C] [HasForget₂ C Ab]
   [Abelian C] [(forget₂ C Ab).Additive] [(forget₂ C Ab).PreservesHomology]
 
-attribute [local instance] ConcreteCategory.instDFunLike ConcreteCategory.hasCoeToSort
+attribute [local instance] ConcreteCategory.instFunLike ConcreteCategory.hasCoeToSort
 
 namespace ShortComplex
 

@@ -65,7 +65,7 @@ variable {α : Type u} {β : Type v} {γ : Type w} {δ : Type x}
 
 open Function Option
 
-instance : DFunLike (α ≃. β) α fun _ => Option β :=
+instance : FunLike (α ≃. β) α (Option β) :=
   { coe := toFun
     coe_injective' := by
       rintro ⟨f₁, f₂, hf⟩ ⟨g₁, g₂, hg⟩ (rfl : f₁ = g₁)

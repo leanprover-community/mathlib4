@@ -147,7 +147,7 @@ instance : LargeCategory.{u} SemiNormedGroupCat₁ where
   comp {X Y Z} f g := ⟨g.1.comp f.1, g.2.comp f.2⟩
 
 -- Porting Note: Added
-instance instDFunLike (X Y : SemiNormedGroupCat₁) : DFunLike (X ⟶ Y) X (fun _ => Y) where
+instance instFunLike (X Y : SemiNormedGroupCat₁) : FunLike (X ⟶ Y) X Y where
   coe f := f.1.toFun
   coe_injective' _ _ h := Subtype.val_inj.mp (NormedAddGroupHom.coe_injective h)
 

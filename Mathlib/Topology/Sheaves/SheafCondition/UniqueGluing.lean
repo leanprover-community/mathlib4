@@ -50,7 +50,7 @@ namespace Presheaf
 
 section
 
-attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instDFunLike
+attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
 
 variable {X : TopCat.{x}} (F : Presheaf C X) {ι : Type x} (U : ι → Opens X)
 
@@ -152,7 +152,7 @@ end TypeValued
 
 section
 
-attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instDFunLike
+attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
 
 variable [HasLimits C] [ReflectsIsomorphisms (forget C)] [PreservesLimits (forget C)]
 
@@ -179,7 +179,7 @@ open CategoryTheory
 
 section
 
-attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instDFunLike
+attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
 
 variable [HasLimits C] [ReflectsIsomorphisms (ConcreteCategory.forget (C := C))]
 

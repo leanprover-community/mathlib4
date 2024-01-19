@@ -64,8 +64,8 @@ instance : LargeCategory.{u} BddLat where
   assoc _ _ _ := BoundedLatticeHom.comp_assoc _ _ _
 
 -- Porting note: added.
-instance instDFunLike (X Y : BddLat) : DFunLike (X ⟶ Y) X (fun _ => Y) :=
-  show DFunLike (BoundedLatticeHom X Y) X (fun _ => Y) from inferInstance
+instance instFunLike (X Y : BddLat) : FunLike (X ⟶ Y) X Y :=
+  show FunLike (BoundedLatticeHom X Y) X Y from inferInstance
 
 instance : ConcreteCategory BddLat where
   forget :=

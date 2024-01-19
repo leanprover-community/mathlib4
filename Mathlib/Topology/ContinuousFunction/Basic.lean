@@ -42,7 +42,7 @@ section
 
 You should extend this class when you extend `ContinuousMap`. -/
 class ContinuousMapClass (F : Type*) (α β : outParam <| Type*) [TopologicalSpace α]
-  [TopologicalSpace β] extends DFunLike F α fun _ => β where
+  [TopologicalSpace β] extends DFunLike F α (fun _ => β) where
   /-- Continuity -/
   map_continuous (f : F) : Continuous f
 #align continuous_map_class ContinuousMapClass

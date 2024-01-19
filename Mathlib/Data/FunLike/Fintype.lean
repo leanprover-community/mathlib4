@@ -31,7 +31,7 @@ They can't be instances themselves since they can cause loops.
 -- porting notes: `Type` is a reserved word, switched to `Type'`
 section Type'
 
-variable (F G : Type*) {α γ : Type*} {β : α → Type*} [DFunLike F α β] [DFunLike G α fun _ => γ]
+variable (F G : Type*) {α γ : Type*} {β : α → Type*} [DFunLike F α β] [FunLike G α γ]
 
 /-- All `DFunLike`s are finite if their domain and codomain are.
 
@@ -43,21 +43,21 @@ noncomputable def DFunLike.fintype [DecidableEq α] [Fintype α] [∀ i, Fintype
   Fintype.ofInjective _ DFunLike.coe_injective
 #align fun_like.fintype DFunLike.fintype
 
-/-- All `DFunLike`s are finite if their domain and codomain are.
+/-- All `FunLike`s are finite if their domain and codomain are.
 
 Non-dependent version of `DFunLike.fintype` that might be easier to infer.
-This is not an instance because specific `DFunLike` types might have a better-suited definition.
+This is not an instance because specific `FunLike` types might have a better-suited definition.
 -/
-noncomputable def DFunLike.fintype' [DecidableEq α] [Fintype α] [Fintype γ] : Fintype G :=
+noncomputable def FunLike.fintype [DecidableEq α] [Fintype α] [Fintype γ] : Fintype G :=
   DFunLike.fintype G
-#align fun_like.fintype' DFunLike.fintype'
+#align fun_like.fintype' FunLike.fintype
 
 end Type'
 
 -- porting notes: `Sort` is a reserved word, switched to `Sort'`
 section Sort'
 
-variable (F G : Sort*) {α γ : Sort*} {β : α → Sort*} [DFunLike F α β] [DFunLike G α fun _ => γ]
+variable (F G : Sort*) {α γ : Sort*} {β : α → Sort*} [DFunLike F α β] [FunLike G α γ]
 
 /-- All `DFunLike`s are finite if their domain and codomain are.
 
@@ -67,13 +67,13 @@ theorem DFunLike.finite [Finite α] [∀ i, Finite (β i)] : Finite F :=
   Finite.of_injective _ DFunLike.coe_injective
 #align fun_like.finite DFunLike.finite
 
-/-- All `DFunLike`s are finite if their domain and codomain are.
+/-- All `FunLike`s are finite if their domain and codomain are.
 
 Non-dependent version of `DFunLike.finite` that might be easier to infer.
 Can't be an instance because it can cause infinite loops.
 -/
-theorem DFunLike.finite' [Finite α] [Finite γ] : Finite G :=
+theorem FunLike.finite [Finite α] [Finite γ] : Finite G :=
   DFunLike.finite G
-#align fun_like.finite' DFunLike.finite'
+#align fun_like.finite' FunLike.finite
 
 end Sort'
