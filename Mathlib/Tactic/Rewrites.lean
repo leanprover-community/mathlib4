@@ -8,6 +8,7 @@ import Std.Tactic.Relation.Rfl
 import Std.Tactic.SolveByElim
 import Std.Util.Pickle
 import Std.Util.Cache
+import Mathlib.Init.Core
 import Mathlib.Control.Basic
 import Mathlib.Data.MLList.Dedup
 import Mathlib.Lean.Expr.Basic
