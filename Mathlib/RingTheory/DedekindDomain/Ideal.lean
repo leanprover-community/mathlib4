@@ -600,9 +600,9 @@ a computable alternative.
 -- Porting note: added noncomputable because otherwise it fails, so it seems that the goal
 -- is not achieved...
 noncomputable instance FractionalIdeal.cancelCommMonoidWithZero :
-    CancelCommMonoidWithZero (FractionalIdeal A⁰ K) :=
-  { @FractionalIdeal.commSemiring A _ A⁰ K _ _,  -- Project out the computable fields first.
-    (by infer_instance : CancelCommMonoidWithZero (FractionalIdeal A⁰ K)) with }
+    CancelCommMonoidWithZero (FractionalIdeal A⁰ K) := inferInstance
+  -- { @FractionalIdeal.commSemiring A _ A⁰ K _ _,  -- Project out the computable fields first.
+  --   (by infer_instance : CancelCommMonoidWithZero (FractionalIdeal A⁰ K)) with }
 #align fractional_ideal.cancel_comm_monoid_with_zero FractionalIdeal.cancelCommMonoidWithZero
 
 instance Ideal.cancelCommMonoidWithZero : CancelCommMonoidWithZero (Ideal A) :=
