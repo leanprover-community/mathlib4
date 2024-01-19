@@ -98,7 +98,7 @@ theorem coe_of (R : Type u) [Mul R] : (MagmaCat.of R : Type u) = R :=
 @[to_additive (attr := simp)]
 lemma mulEquiv_coe_eq {X Y : Type _} [Mul X] [Mul Y] (e : X ≃* Y) :
     (@DFunLike.coe (MagmaCat.of X ⟶ MagmaCat.of Y) _ (fun _ => (forget MagmaCat).obj _)
-      ConcreteCategory.instDFunLike (e : X →ₙ* Y) : X → Y) = ↑e :=
+      ConcreteCategory.instFunLike (e : X →ₙ* Y) : X → Y) = ↑e :=
   rfl
 
 /-- Typecheck a `MulHom` as a morphism in `MagmaCat`. -/
@@ -183,7 +183,7 @@ theorem coe_of (R : Type u) [Semigroup R] : (SemigroupCat.of R : Type u) = R :=
 @[to_additive (attr := simp)]
 lemma mulEquiv_coe_eq {X Y : Type _} [Semigroup X] [Semigroup Y] (e : X ≃* Y) :
     (@DFunLike.coe (SemigroupCat.of X ⟶ SemigroupCat.of Y) _ (fun _ => (forget SemigroupCat).obj _)
-      ConcreteCategory.instDFunLike (e : X →ₙ* Y) : X → Y) = ↑e :=
+      ConcreteCategory.instFunLike (e : X →ₙ* Y) : X → Y) = ↑e :=
   rfl
 
 /-- Typecheck a `MulHom` as a morphism in `SemigroupCat`. -/

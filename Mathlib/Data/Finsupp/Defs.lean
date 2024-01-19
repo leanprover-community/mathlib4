@@ -115,13 +115,13 @@ section Basic
 
 variable [Zero M]
 
-instance instDFunLike : DFunLike (α →₀ M) α fun _ => M :=
+instance instFunLike : FunLike (α →₀ M) α M :=
   ⟨toFun, by
     rintro ⟨s, f, hf⟩ ⟨t, g, hg⟩ (rfl : f = g)
     congr
     ext a
     exact (hf _).trans (hg _).symm⟩
-#align finsupp.fun_like Finsupp.instDFunLike
+#align finsupp.fun_like Finsupp.instFunLike
 
 /-- Helper instance for when there are too many metavariables to apply the `DFunLike` instance
 directly. -/

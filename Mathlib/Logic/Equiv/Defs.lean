@@ -103,8 +103,8 @@ instance : EquivLike (α ≃ β) α β where
   coe_injective' e₁ e₂ h₁ h₂ := by cases e₁; cases e₂; congr
 
 /-- Helper instance when inference gets stuck on following the normal chain
-`EquivLike → EmbeddingLike → DFunLike → CoeFun`. -/
-instance : DFunLike (α ≃ β) α (fun _ => β) :=
+`EquivLike → EmbeddingLike → FunLike → CoeFun`. -/
+instance : FunLike (α ≃ β) α β :=
   EmbeddingLike.toDFunLike
 
 @[simp, norm_cast]

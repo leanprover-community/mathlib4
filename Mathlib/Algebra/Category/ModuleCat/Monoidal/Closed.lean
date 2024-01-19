@@ -68,7 +68,7 @@ open MonoidalCategory
 -- porting note: `CoeFun` was replaced by `DFunLike`
 -- I can't seem to express the function coercion here without writing `@DFunLike.coe`.
 theorem monoidalClosed_curry {M N P : ModuleCat.{u} R} (f : M ⊗ N ⟶ P) (x : M) (y : N) :
-    @DFunLike.coe _ _ _ LinearMap.instDFunLike
+    @DFunLike.coe _ _ _ LinearMap.instFunLike
       ((MonoidalClosed.curry f : N →ₗ[R] M →ₗ[R] P) y) x = f (x ⊗ₜ[R] y) :=
   rfl
 set_option linter.uppercaseLean3 false in
@@ -78,7 +78,7 @@ set_option linter.uppercaseLean3 false in
 theorem monoidalClosed_uncurry
     {M N P : ModuleCat.{u} R} (f : N ⟶ M ⟶[ModuleCat.{u} R] P) (x : M) (y : N) :
     MonoidalClosed.uncurry f (x ⊗ₜ[R] y) =
-      @DFunLike.coe _ _ _ LinearMap.instDFunLike (f y) x :=
+      @DFunLike.coe _ _ _ LinearMap.instFunLike (f y) x :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Module.monoidal_closed_uncurry ModuleCat.monoidalClosed_uncurry

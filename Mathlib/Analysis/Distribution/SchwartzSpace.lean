@@ -6,7 +6,7 @@ Authors: Moritz Doll
 import Mathlib.Analysis.Calculus.Deriv.Add
 import Mathlib.Analysis.Calculus.Deriv.Mul
 import Mathlib.Analysis.Calculus.ContDiff.Bounds
-import Mathlib.Analysis.Calculus.IteratedDeriv
+import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Topology.Algebra.UniformFilterBasis
 import Mathlib.Topology.ContinuousFunction.Bounded
@@ -92,10 +92,10 @@ open SchwartzSpace
 -- porting note: removed
 -- instance : Coe 𝓢(E, F) (E → F) := ⟨toFun⟩
 
-instance instDFunLike : DFunLike 𝓢(E, F) E fun _ => F where
+instance instFunLike : FunLike 𝓢(E, F) E F where
   coe f := f.toFun
   coe_injective' f g h := by cases f; cases g; congr
-#align schwartz_map.fun_like SchwartzMap.instDFunLike
+#align schwartz_map.fun_like SchwartzMap.instFunLike
 
 /-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`. -/
 instance instCoeFun : CoeFun 𝓢(E, F) fun _ => E → F :=

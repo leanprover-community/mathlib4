@@ -1295,7 +1295,7 @@ def dualCopairing (W : Submodule R M) : W.dualAnnihilator →ₗ[R] M ⧸ W →�
 #align submodule.dual_copairing Submodule.dualCopairing
 
 -- Porting note: helper instance
-instance (W : Submodule R M) : DFunLike (W.dualAnnihilator) M fun _ => R :=
+instance (W : Submodule R M) : FunLike (W.dualAnnihilator) M R :=
   { coe := fun φ => φ.val,
     coe_injective' := fun φ ψ h => by
       ext
