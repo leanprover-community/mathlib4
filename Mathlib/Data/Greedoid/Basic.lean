@@ -2024,12 +2024,12 @@ theorem kernelClosureOperator_weak_exchange_property_over_rankFeasible
     simp [mem_kernelClosureOperator]
     constructor <;> intro h <;> let ⟨a, ha₁, ha₂, ha₃⟩ := h <;> clear h
     · have h₁₁ : ∀ b ∈ G.bases (insert y s), y ∈ b := by
-        intro _ hb
-        apply G.every_basis_contains_element_if_rank_insert_increases _ hb
+        intro _ h
+        apply G.every_basis_contains_element_if_rank_insert_increases _ h
         simp only [h₁, lt_add_iff_pos_right, zero_lt_one]
       have h₂₁ : ∀ b ∈ G.bases (insert z s), z ∈ b := by
-        intro _ hb
-        apply G.every_basis_contains_element_if_rank_insert_increases _ hb
+        intro _ h
+        apply G.every_basis_contains_element_if_rank_insert_increases _ h
         simp only [h₂, lt_add_iff_pos_right, zero_lt_one]
       sorry
     · sorry
