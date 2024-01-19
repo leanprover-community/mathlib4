@@ -76,6 +76,8 @@ open MeasureTheory
 
 section
 
+open scoped symmDiff
+
 @[simp, measurability]
 theorem MeasurableSet.empty [MeasurableSpace α] : MeasurableSet (∅ : Set α) :=
   MeasurableSpace.measurableSet_empty _

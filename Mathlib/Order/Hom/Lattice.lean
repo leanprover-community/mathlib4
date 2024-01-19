@@ -291,6 +291,7 @@ theorem map_sdiff' (a b : α) : f (a \ b) = f a \ f b := by
   rw [sdiff_eq, sdiff_eq, map_inf, map_compl']
 #align map_sdiff' map_sdiff'
 
+open scoped symmDiff in
 /-- Special case of `map_symmDiff` for boolean algebras. -/
 theorem map_symmDiff' (a b : α) : f (a ∆ b) = f a ∆ f b := by
   rw [symmDiff, symmDiff, map_sup, map_sdiff', map_sdiff']

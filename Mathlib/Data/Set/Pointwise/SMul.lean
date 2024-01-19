@@ -951,6 +951,7 @@ theorem smul_set_sdiff : a • (s \ t) = a • s \ a • t :=
 #align set.smul_set_sdiff Set.smul_set_sdiff
 #align set.vadd_set_sdiff Set.vadd_set_sdiff
 
+open scoped symmDiff in
 @[to_additive]
 theorem smul_set_symmDiff : a • s ∆ t = (a • s) ∆ (a • t) :=
   image_symmDiff (MulAction.injective a) _ _
@@ -1072,6 +1073,7 @@ theorem smul_set_sdiff₀ (ha : a ≠ 0) : a • (s \ t) = a • s \ a • t :=
   image_diff (MulAction.injective₀ ha) _ _
 #align set.smul_set_sdiff₀ Set.smul_set_sdiff₀
 
+open scoped symmDiff in
 theorem smul_set_symmDiff₀ (ha : a ≠ 0) : a • s ∆ t = (a • s) ∆ (a • t) :=
   image_symmDiff (MulAction.injective₀ ha) _ _
 #align set.smul_set_symm_diff₀ Set.smul_set_symmDiff₀

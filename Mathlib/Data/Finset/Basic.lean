@@ -2479,6 +2479,8 @@ end Sdiff
 
 section SymmDiff
 
+open scoped symmDiff
+
 variable [DecidableEq α] {s t : Finset α} {a b : α}
 
 theorem mem_symmDiff : a ∈ s ∆ t ↔ a ∈ s ∧ a ∉ t ∨ a ∈ t ∧ a ∉ s := by
