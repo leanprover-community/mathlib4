@@ -128,7 +128,7 @@ noncomputable instance : PreservesFiniteLimits F :=
   preservesFiniteLimitsOfPreservesTerminalAndPullbacks F
 
 /-- Fibre functors reflect monomorphisms. -/
-instance foo : ReflectsMonomorphisms F := ReflectsMonomorphisms.mk <| by
+instance : ReflectsMonomorphisms F := ReflectsMonomorphisms.mk <| by
   intro X Y f _
   haveI : IsIso (pullback.fst : pullback (F.map f) (F.map f) ⟶ F.obj X) :=
     fst_iso_of_mono_eq (F.map f)
@@ -162,7 +162,7 @@ lemma initial_iff_fibre_empty (X : C) : Nonempty (IsInitial X) ↔ IsEmpty (F.ob
   rw [(IsInitial.isInitialIffObj F X).nonempty_congr]
   exact FintypeCat.initial_iff_empty (F.obj X)
 
-/-- An object is not initial, if its fibre is inhabited. -/
+/-- An object whose fibre is inhabited is not initial. -/
 lemma not_initial_of_inhabited {X : C} (x : F.obj X) (h : IsInitial X) : False :=
   ((initial_iff_fibre_empty F X).mp ⟨h⟩).false x
 
