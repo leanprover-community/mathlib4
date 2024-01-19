@@ -67,8 +67,6 @@ def bihimp [Inf α] [HImp α] (a b : α) : α :=
   (b ⇨ a) ⊓ (a ⇨ b)
 #align bihimp bihimp
 
-/- This notation might conflict with the Laplacian once we have it. Feel free to put it in locale
-  `order` or `symmDiff` if that happens. -/
 /-- Notation for symmDiff -/
 scoped[symmDiff] infixl:100 " ∆ " => symmDiff
 
