@@ -6,9 +6,6 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Function.Indicator
 import Mathlib.Algebra.SMulWithZero
-import Mathlib.Data.Int.Units
-import Mathlib.Data.Rat.Defs
-import Mathlib.Data.Rat.Basic
 import Mathlib.GroupTheory.GroupAction.Group
 import Mathlib.GroupTheory.GroupAction.Pi
 import Mathlib.Tactic.Abel
@@ -334,7 +331,7 @@ def RingHom.toModule [Semiring R] [Semiring S] (f : R →+* S) : Module R S :=
 #align ring_hom.to_module RingHom.toModule
 
 /-- If the module action of `R` on `S` is compatible with multiplication on `S`, then
-`fun x => x • 1` is a ring homomorphism from `R` to `S`.
+`fun x ↦ x • 1` is a ring homomorphism from `R` to `S`.
 
 This is the `RingHom` version of `MonoidHom.smulOneHom`.
 
@@ -344,6 +341,15 @@ When `R` is commutative, usually `algebraMap` should be preferred. -/
   __ := MonoidHom.smulOneHom
   map_zero' := zero_smul R 1
   map_add' := (add_smul · · 1)
+
+/-- A homomorphism between semirings R and S can be equivalently specified by a R-module
+structure on S such that S/S/R is a scalar tower. -/
+def ringHomEquivModuleIsScalarTower [Semiring R] [Semiring S] :
+    (R →+* S) ≃ {_inst : Module R S // IsScalarTower R S S} where
+  toFun f := ⟨Module.compHom S f, SMul.comp.isScalarTower _⟩
+  invFun := fun ⟨_, _⟩ ↦ RingHom.smulOneHom
+  left_inv f := RingHom.ext fun r ↦ mul_one (f r)
+  right_inv := fun ⟨_, _⟩ ↦ Subtype.ext <| Module.ext _ _ <| funext₂ <| smul_one_smul S
 
 section AddCommMonoid
 
@@ -397,7 +403,7 @@ theorem zsmul_eq_smul_cast (n : ℤ) (b : M) : n • b = (n : R) • b :=
   have : (smulAddHom ℤ M).flip b = ((smulAddHom R M).flip b).comp (Int.castAddHom R) := by
     apply AddMonoidHom.ext_int
     simp
-  FunLike.congr_fun this n
+  DFunLike.congr_fun this n
 #align zsmul_eq_smul_cast zsmul_eq_smul_cast
 
 end
@@ -586,6 +592,13 @@ theorem smul_eq_zero : c • x = 0 ↔ c = 0 ∨ x = 0 :=
 theorem smul_ne_zero_iff : c • x ≠ 0 ↔ c ≠ 0 ∧ x ≠ 0 := by rw [Ne.def, smul_eq_zero, not_or]
 #align smul_ne_zero_iff smul_ne_zero_iff
 
+lemma smul_eq_zero_iff_left (hx : x ≠ 0) : c • x = 0 ↔ c = 0 := by simp [hx]
+lemma smul_eq_zero_iff_right (hc : c ≠ 0) : c • x = 0 ↔ x = 0 := by simp [hc]
+#align smul_eq_zero_iff_eq' smul_eq_zero_iff_right
+lemma smul_ne_zero_iff_left (hx : x ≠ 0) : c • x ≠ 0 ↔ c ≠ 0 := by simp [hx]
+lemma smul_ne_zero_iff_right (hc : c ≠ 0) : c • x ≠ 0 ↔ x ≠ 0 := by simp [hc]
+#align smul_ne_zero_iff_ne' smul_ne_zero_iff_right
+
 end SMulWithZero
 
 section Module
@@ -720,7 +733,7 @@ variable [GroupWithZero R] [AddMonoid M] [DistribMulAction R M]
 -- see note [lower instance priority]
 /-- This instance applies to `DivisionSemiring`s, in particular `NNReal` and `NNRat`. -/
 instance (priority := 100) GroupWithZero.toNoZeroSMulDivisors : NoZeroSMulDivisors R M :=
-  ⟨fun {_ _} h => or_iff_not_imp_left.2 fun hc => (smul_eq_zero_iff_eq' hc).1 h⟩
+  ⟨fun {a _} h ↦ or_iff_not_imp_left.2 fun ha ↦ (smul_eq_zero_iff_eq <| Units.mk0 a ha).1 h⟩
 #align group_with_zero.to_no_zero_smul_divisors GroupWithZero.toNoZeroSMulDivisors
 
 end GroupWithZero
@@ -751,7 +764,7 @@ theorem Int.smul_one_eq_coe {R : Type*} [Ring R] (m : ℤ) : m • (1 : R) = ↑
 namespace Function
 
 lemma support_smul_subset_left [Zero R] [Zero M] [SMulWithZero R M] (f : α → R) (g : α → M) :
-    support (f • g) ⊆ support f := fun x hfg hf ↦ hfg $ by rw [Pi.smul_apply', hf, zero_smul]
+    support (f • g) ⊆ support f := fun x hfg hf ↦ hfg <| by rw [Pi.smul_apply', hf, zero_smul]
 #align function.support_smul_subset_left Function.support_smul_subset_left
 
 lemma support_const_smul_of_ne_zero [Zero R] [Zero M] [SMulWithZero R M] [NoZeroSMulDivisors R M]
@@ -784,7 +797,7 @@ lemma indicator_smul_apply (s : Set α) (r : α → R) (f : α → M) (a : α) :
 
 lemma indicator_smul (s : Set α) (r : α → R) (f : α → M) :
     indicator s (fun a ↦ r a • f a) = fun a ↦ r a • indicator s f a :=
-  funext $ indicator_smul_apply s r f
+  funext <| indicator_smul_apply s r f
 #align set.indicator_smul Set.indicator_smul
 
 lemma indicator_const_smul_apply (s : Set α) (r : R) (f : α → M) (a : α) :
@@ -794,7 +807,7 @@ lemma indicator_const_smul_apply (s : Set α) (r : R) (f : α → M) (a : α) :
 
 lemma indicator_const_smul (s : Set α) (r : R) (f : α → M) :
     indicator s (r • f ·) = (r • indicator s f ·) :=
-  funext $ indicator_const_smul_apply s r f
+  funext <| indicator_const_smul_apply s r f
 #align set.indicator_const_smul Set.indicator_const_smul
 
 end SMulZeroClass
@@ -810,14 +823,14 @@ lemma indicator_smul_apply_left (s : Set α) (r : α → R) (f : α → M) (a : 
 
 lemma indicator_smul_left (s : Set α) (r : α → R) (f : α → M) :
     indicator s (fun a ↦ r a • f a) = fun a ↦ indicator s r a • f a :=
-  funext $ indicator_smul_apply_left _ _ _
+  funext <| indicator_smul_apply_left _ _ _
 
 lemma indicator_smul_const_apply (s : Set α) (r : α → R) (m : M) (a : α) :
     indicator s (r · • m) a = indicator s r a • m := indicator_smul_apply_left _ _ _ _
 
 lemma indicator_smul_const (s : Set α) (r : α → R) (m : M) :
     indicator s (r · • m) = (indicator s r · • m) :=
-  funext $ indicator_smul_const_apply _ _ _
+  funext <| indicator_smul_const_apply _ _ _
 
 end SMulWithZero
 end Set

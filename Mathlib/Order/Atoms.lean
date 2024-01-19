@@ -95,20 +95,20 @@ theorem IsAtom.le_iff (h : IsAtom a) : x ≤ a ↔ x = ⊥ ∨ x = a := by rw [l
 #align is_atom.le_iff IsAtom.le_iff
 
 lemma IsAtom.le_iff_eq (ha : IsAtom a) (hb : b ≠ ⊥) : b ≤ a ↔ b = a :=
-  ha.le_iff.trans $ or_iff_right hb
+  ha.le_iff.trans <| or_iff_right hb
 
 theorem IsAtom.Iic_eq (h : IsAtom a) : Set.Iic a = {⊥, a} :=
   Set.ext fun _ => h.le_iff
 #align is_atom.Iic_eq IsAtom.Iic_eq
 
 @[simp]
-theorem bot_covby_iff : ⊥ ⋖ a ↔ IsAtom a := by
-  simp only [Covby, bot_lt_iff_ne_bot, IsAtom, not_imp_not]
-#align bot_covby_iff bot_covby_iff
+theorem bot_covBy_iff : ⊥ ⋖ a ↔ IsAtom a := by
+  simp only [CovBy, bot_lt_iff_ne_bot, IsAtom, not_imp_not]
+#align bot_covby_iff bot_covBy_iff
 
-alias ⟨Covby.is_atom, IsAtom.bot_covby⟩ := bot_covby_iff
-#align covby.is_atom Covby.is_atom
-#align is_atom.bot_covby IsAtom.bot_covby
+alias ⟨CovBy.is_atom, IsAtom.bot_covBy⟩ := bot_covBy_iff
+#align covby.is_atom CovBy.is_atom
+#align is_atom.bot_covby IsAtom.bot_covBy
 
 end PartialOrder
 
@@ -192,13 +192,13 @@ theorem IsCoatom.Ici_eq (h : IsCoatom a) : Set.Ici a = {⊤, a} :=
 #align is_coatom.Ici_eq IsCoatom.Ici_eq
 
 @[simp]
-theorem covby_top_iff : a ⋖ ⊤ ↔ IsCoatom a :=
-  toDual_covby_toDual_iff.symm.trans bot_covby_iff
-#align covby_top_iff covby_top_iff
+theorem covBy_top_iff : a ⋖ ⊤ ↔ IsCoatom a :=
+  toDual_covBy_toDual_iff.symm.trans bot_covBy_iff
+#align covby_top_iff covBy_top_iff
 
-alias ⟨Covby.is_coatom, IsCoatom.covby_top⟩ := covby_top_iff
-#align covby.is_coatom Covby.is_coatom
-#align is_coatom.covby_top IsCoatom.covby_top
+alias ⟨CovBy.isCoatom, IsCoatom.covBy_top⟩ := covBy_top_iff
+#align covby.is_coatom CovBy.isCoatom
+#align is_coatom.covby_top IsCoatom.covBy_top
 
 end PartialOrder
 
@@ -214,23 +214,23 @@ variable [PartialOrder α] {a b : α}
 
 @[simp]
 theorem Set.Ici.isAtom_iff {b : Set.Ici a} : IsAtom b ↔ a ⋖ b := by
-  rw [← bot_covby_iff]
-  refine' (Set.OrdConnected.apply_covby_apply_iff (OrderEmbedding.subtype fun c => a ≤ c) _).symm
+  rw [← bot_covBy_iff]
+  refine' (Set.OrdConnected.apply_covBy_apply_iff (OrderEmbedding.subtype fun c => a ≤ c) _).symm
   simpa only [OrderEmbedding.subtype_apply, Subtype.range_coe_subtype] using Set.ordConnected_Ici
 #align set.Ici.is_atom_iff Set.Ici.isAtom_iff
 
 @[simp]
 theorem Set.Iic.isCoatom_iff {a : Set.Iic b} : IsCoatom a ↔ ↑a ⋖ b := by
-  rw [← covby_top_iff]
-  refine' (Set.OrdConnected.apply_covby_apply_iff (OrderEmbedding.subtype fun c => c ≤ b) _).symm
+  rw [← covBy_top_iff]
+  refine' (Set.OrdConnected.apply_covBy_apply_iff (OrderEmbedding.subtype fun c => c ≤ b) _).symm
   simpa only [OrderEmbedding.subtype_apply, Subtype.range_coe_subtype] using Set.ordConnected_Iic
 #align set.Iic.is_coatom_iff Set.Iic.isCoatom_iff
 
-theorem covby_iff_atom_Ici (h : a ≤ b) : a ⋖ b ↔ IsAtom (⟨b, h⟩ : Set.Ici a) := by simp
-#align covby_iff_atom_Ici covby_iff_atom_Ici
+theorem covBy_iff_atom_Ici (h : a ≤ b) : a ⋖ b ↔ IsAtom (⟨b, h⟩ : Set.Ici a) := by simp
+#align covby_iff_atom_Ici covBy_iff_atom_Ici
 
-theorem covby_iff_coatom_Iic (h : a ≤ b) : a ⋖ b ↔ IsCoatom (⟨a, h⟩ : Set.Iic b) := by simp
-#align covby_iff_coatom_Iic covby_iff_coatom_Iic
+theorem covBy_iff_coatom_Iic (h : a ≤ b) : a ⋖ b ↔ IsCoatom (⟨a, h⟩ : Set.Iic b) := by simp
+#align covby_iff_coatom_Iic covBy_iff_coatom_Iic
 
 end PartialOrder
 
@@ -583,9 +583,9 @@ theorem isCoatom_bot : IsCoatom (⊥ : α) :=
   isAtom_dual_iff_isCoatom.1 isAtom_top
 #align is_coatom_bot isCoatom_bot
 
-theorem bot_covby_top : (⊥ : α) ⋖ ⊤ :=
-  isAtom_top.bot_covby
-#align bot_covby_top bot_covby_top
+theorem bot_covBy_top : (⊥ : α) ⋖ ⊤ :=
+  isAtom_top.bot_covBy
+#align bot_covby_top bot_covBy_top
 
 end IsSimpleOrder
 
@@ -789,8 +789,8 @@ variable [PartialOrder α] [PartialOrder β]
 
 theorem isAtom_of_map_bot_of_image [OrderBot α] [OrderBot β] (f : β ↪o α) (hbot : f ⊥ = ⊥) {b : β}
     (hb : IsAtom (f b)) : IsAtom b := by
-  simp only [← bot_covby_iff] at hb ⊢
-  exact Covby.of_image f (hbot.symm ▸ hb)
+  simp only [← bot_covBy_iff] at hb ⊢
+  exact CovBy.of_image f (hbot.symm ▸ hb)
 #align order_embedding.is_atom_of_map_bot_of_image OrderEmbedding.isAtom_of_map_bot_of_image
 
 theorem isCoatom_of_map_top_of_image [OrderTop α] [OrderTop β] (f : β ↪o α) (htop : f ⊤ = ⊤)
