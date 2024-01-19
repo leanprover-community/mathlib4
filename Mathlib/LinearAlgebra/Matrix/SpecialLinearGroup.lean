@@ -323,54 +323,69 @@ theorem fin_two_exists_eq_mk_of_apply_zero_one_eq_zero {R : Type*} [Field R] (g 
   simp_rw [eq_inv_of_mul_eq_one_right had, hg]
 #align matrix.special_linear_group.fin_two_exists_eq_mk_of_apply_zero_one_eq_zero Matrix.SpecialLinearGroup.fin_two_exists_eq_mk_of_apply_zero_one_eq_zero
 
-/--Send a pair of coprime integers to the matrix in `SL(2,ℤ)` that has those entries in the
-first column-/
-noncomputable
-def IsCoprimeToSL2Col (a b : R) (hab : IsCoprime a b) : SL(2, R) := by
-  let x := hab.choose
-  let y := hab.choose_spec.choose
-  let h:= hab.choose_spec.choose_spec
-  use !![a, -y; b, x]
-  simp only [Matrix.det_fin_two_of, neg_mul, sub_neg_eq_add]
-  rw [mul_comm]
-  exact h
+lemma isCoprime_row (A : SL(2, R)) (i : Fin 2): IsCoprime (A i 0) (A i 1) := by
+    refine match i with
+    | 0 => ⟨A 1 1, -(A 1 0), ?_⟩
+    | 1 => ⟨-(A 0 1), A 0 0, ?_⟩ <;>
+    · simp_rw [det_coe A ▸ det_fin_two A.1]
+      ring
 
-/--Send a pair of coprime to the matrix in `SL(2,ℤ)` that has those entries in the bottom row-/
-noncomputable
-def IsCoprimeToSL2Row (a b : R) (hab : IsCoprime a b) : SL(2, R) := by
-  let x := hab.choose
-  let y := hab.choose_spec.choose
-  let h:= hab.choose_spec.choose_spec
-  use !![ y, -x; a, b]
-  simp only [det_fin_two_of, neg_mul, sub_neg_eq_add]
-  rw [mul_comm, mul_comm, add_comm]
-  exact h
-
-lemma SL2_to_gcd_one_fst_col (A : SL(2, R)) : IsCoprime (A.1 0 0) (A.1 0 1) := by
-    refine ⟨ (A.1 1 1), -(A.1 1 0), ?_⟩
-    have T := Matrix.det_fin_two A.1
-    simp only [Matrix.SpecialLinearGroup.det_coe, neg_mul] at *
-    ring_nf
-    rw [mul_comm]
-    have : A.1 0 1 * A.1 1 0 = A.1 1 0 * A.1 0 1 := by apply mul_comm
-    rw [this] at T
-    exact T.symm
-
-/-- A vector of coprime entries multiplied by a matrix in `SL(2, R)` has coprime entries-/
-lemma SL2_to_IsCoprime {a b : R} (hab : IsCoprime a b) (A : SL(2, R)) :
-    IsCoprime (Matrix.vecMul (![a,b]) A.1 0) (Matrix.vecMul (![a,b]) A.1 1) := by
-    let C := SpecialLinearGroup.transpose ((IsCoprimeToSL2Col a b hab)) * A
-    have := SL2_to_gcd_one_fst_col C
-    simp only [Matrix.SpecialLinearGroup.coe_mul] at this
-    rw [SpecialLinearGroup.transpose, IsCoprimeToSL2Col] at this
-    simp only [cons_transpose] at this
-    norm_cast at this
-
-
+lemma isCoprime_col (A : SL(2, R)) (j : Fin 2): IsCoprime (A 0 j) (A 1 j) := by
+    refine match j with
+    | 0 => ⟨A 1 1, -(A 0 1), ?_⟩
+    | 1 => ⟨-(A 1 0), A 0 0, ?_⟩ <;>
+    · simp_rw [det_coe A ▸ det_fin_two A.1]
+      ring
 
 end SpecialCases
 
 end SpecialLinearGroup
+
+end Matrix
+
+namespace IsCoprime
+
+open Matrix MatrixGroups SpecialLinearGroup
+
+variable {R : Type*} [CommRing R]
+
+/-- Given any pair of coprime elements of `R`, there exists a matrix in `SL(2, R)` having those
+entries as its left or right column. -/
+lemma exists_SL2_col {a b : R} (hab : IsCoprime a b) (j : Fin 2):
+    ∃ g : SL(2, R), g 0 j = a ∧ g 1 j = b := by
+  obtain ⟨u, v, h⟩ := hab
+  refine match j with
+  | 0 => ⟨⟨!![a, -v; b, u], ?_⟩, rfl, rfl⟩
+  | 1 => ⟨⟨!![v, a; -u, b], ?_⟩, rfl, rfl⟩ <;>
+  · rw [Matrix.det_fin_two_of, ← h]
+    ring
+
+/-- Given any pair of coprime elements of `R`, there exists a matrix in `SL(2, R)` having those
+entries as its top or bottom row. -/
+lemma exists_SL2_row {a b : R} (hab : IsCoprime a b) (i : Fin 2):
+    ∃ g : SL(2, R), g i 0 = a ∧ g i 1 = b := by
+  obtain ⟨u, v, h⟩ := hab
+  refine match i with
+  | 0 => ⟨⟨!![a, b; -v, u], ?_⟩, rfl, rfl⟩
+  | 1 => ⟨⟨!![v, -u; a, b], ?_⟩, rfl, rfl⟩ <;>
+  · rw [Matrix.det_fin_two_of, ← h]
+    ring
+
+/-- A vector with coprime entries, right-multiplied by a matrix in `SL(2, R)`, has
+coprime entries. -/
+lemma vecMulSL {v : Fin 2 → R} (hab : IsCoprime (v 0) (v 1)) (A : SL(2, R)) :
+      IsCoprime (vecMul v A.1 0) (vecMul v A.1 1) := by
+    obtain ⟨g, hg⟩ := hab.exists_SL2_row 0
+    have : v = g 0 := funext fun t ↦ by { fin_cases t <;> tauto }
+    simpa only [this] using isCoprime_row (g * A) 0
+
+/-- A vector with coprime entries, left-multiplied by a matrix in `SL(2, R)`, has
+coprime entries. -/
+lemma mulVecSL {v : Fin 2 → R} (hab : IsCoprime (v 0) (v 1)) (A : SL(2, R)) :
+      IsCoprime (mulVec A.1 v 0) (mulVec A.1 v 1) := by
+    simpa only [← vecMul_transpose] using hab.vecMulSL A.transpose
+
+end IsCoprime
 
 end Matrix
 
