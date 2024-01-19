@@ -447,7 +447,7 @@ theorem repeat_add {α : Type*} (a : Fin n → α) (m₁ m₂ : ℕ) : Fin.repea
 #align fin.repeat_add Fin.repeat_add
 
 theorem repeat_comp_rev {α} (a : Fin n → α) :
-  (Fin.repeat m a) ∘ Fin.rev = Fin.repeat m (a ∘ Fin.rev) := by
+    (Fin.repeat m a) ∘ Fin.rev = Fin.repeat m (a ∘ Fin.rev) := by
   ext ⟨j, h₁⟩
   simp [rev, modNat]
   congr
