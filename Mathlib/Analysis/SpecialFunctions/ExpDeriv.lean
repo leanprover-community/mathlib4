@@ -5,7 +5,7 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne
 -/
 import Mathlib.Analysis.Complex.RealDeriv
 import Mathlib.Analysis.Calculus.ContDiff.IsROrC
-import Mathlib.Analysis.Calculus.IteratedDeriv
+import Mathlib.Analysis.Calculus.IteratedDeriv.Basic
 
 #align_import analysis.special_functions.exp_deriv from "leanprover-community/mathlib"@"6a5c85000ab93fe5dcfdf620676f614ba8e18c26"
 
