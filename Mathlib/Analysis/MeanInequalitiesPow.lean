@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Sébastien Gouëzel, Rémy Degenne
 -/
 import Mathlib.Analysis.Convex.Jensen
+import Mathlib.Analysis.Convex.Mul
 import Mathlib.Analysis.Convex.SpecificFunctions.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 import Mathlib.Tactic.Positivity
@@ -104,9 +105,9 @@ theorem arith_mean_le_rpow_mean (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 ≤ w i)
   rw [← rpow_le_rpow_iff _ _ this, ← rpow_mul, one_div_mul_cancel (ne_of_gt this), rpow_one]
   exact rpow_arith_mean_le_arith_mean_rpow s w z hw hw' hz hp
   all_goals
-    apply_rules [sum_nonneg, rpow_nonneg_of_nonneg]
+    apply_rules [sum_nonneg, rpow_nonneg]
     intro i hi
-    apply_rules [mul_nonneg, rpow_nonneg_of_nonneg, hw i hi, hz i hi]
+    apply_rules [mul_nonneg, rpow_nonneg, hw i hi, hz i hi]
 #align real.arith_mean_le_rpow_mean Real.arith_mean_le_rpow_mean
 
 end Real

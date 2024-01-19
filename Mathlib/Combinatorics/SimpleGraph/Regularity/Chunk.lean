@@ -342,7 +342,7 @@ private theorem average_density_near_total_density [Nonempty α]
   suffices (G.edgeDensity (A.biUnion id) (B.biUnion id) : ℝ) -
       (∑ ab in A.product B, (G.edgeDensity ab.1 ab.2 : ℝ)) / (A.card * B.card) ≤ ε ^ 5 / 50 by
     apply this.trans
-    exact div_le_div_of_le_left (by sz_positivity) (by norm_num) (by norm_num)
+    gcongr <;> [sz_positivity; norm_num]
   rw [sub_le_iff_le_add, ← sub_le_iff_le_add']
   apply density_sub_eps_le_sum_density_div_card hPα hPε hA hB
 

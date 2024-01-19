@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Int.GCD
 import Mathlib.Data.Int.Order.Lemmas
+import Mathlib.Logic.Basic
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.GCongr.Core
 

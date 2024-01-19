@@ -535,7 +535,7 @@ theorem Associated.mul_right [CommMonoid α] {a b : α} (h : a ~ᵤ b) (c : α) 
 #align associated.mul_right Associated.mul_right
 
 theorem Associated.pow_pow [CommMonoid α] {a b : α} {n : ℕ} (h : a ~ᵤ b) : a ^ n ~ᵤ b ^ n := by
-  induction' n with n ih;
+  induction' n with n ih
   · simp [h]; rfl
   convert h.mul_mul ih <;> rw [pow_succ]
 #align associated.pow_pow Associated.pow_pow
@@ -705,10 +705,6 @@ theorem Associated.of_pow_associated_of_prime' [CancelCommMonoidWithZero α] {p�
 section UniqueUnits
 
 variable [Monoid α] [Unique αˣ]
-
-theorem units_eq_one (u : αˣ) : u = 1 :=
-  Subsingleton.elim u 1
-#align units_eq_one units_eq_one
 
 theorem associated_iff_eq {x y : α} : x ~ᵤ y ↔ x = y := by
   constructor
