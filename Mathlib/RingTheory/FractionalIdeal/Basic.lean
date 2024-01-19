@@ -26,7 +26,6 @@ Let `S` be a submonoid of an integral domain `R` and `P` the localization of `R`
 
   * `mul_left_mono` and `mul_right_mono` state that ideal multiplication is monotone
   * `mul_div_self_cancel_iff` states that `1 / I` is the inverse of `I` if one exists
-  * `isNoetherian` states that every fractional ideal of a noetherian integral domain is noetherian
 
 ## Implementation notes
 
