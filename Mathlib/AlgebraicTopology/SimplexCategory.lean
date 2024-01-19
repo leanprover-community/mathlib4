@@ -443,6 +443,7 @@ lemma factor_δ_comp_lt {n m : ℕ } (f : ([m] : SimplexCategory) ⟶ [n+2])
         have hl': 0< l':= by
             rw [Fin.lt_def] at hi2
             rw [Fin.eq_iff_veq,Fin.val_one] at hi22
+            rw [Fin.lt_def,Fin.val_zero, Fin.coe_pred, tsub_pos_iff_lt]
             contrapose! hi22
             exact Nat.le_antisymm hi22 hi2
         have h12: l' = Fin.succ (Fin.predAbove 0 l'):= by
