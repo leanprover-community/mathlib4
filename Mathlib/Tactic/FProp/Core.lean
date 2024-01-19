@@ -6,7 +6,6 @@ Authors: Tomas Skrivan
 import Lean
 import Qq
 import Std.Tactic.Exact
--- import Mathlib.Logic.Function.Basic
 import Mathlib.Tactic.FProp.FPropAttr
 import Mathlib.Tactic.FProp.Meta
 import Mathlib.Tactic.FProp.ArraySet
@@ -391,24 +390,24 @@ def isFVarFProp (fpropDecl : FPropDecl) (e : Expr) : MetaM (Option (FVarId × Ar
     let n := type.forallArity
     return .some (fvarId, Array.range n |>.toArraySet, n)
 
-  let f := (← unfoldFunHead? f).getD f
+  let f := (← unfoldFunHeadRec? f).getD f
 
   match (← whnf f) with
   | .lam _ _ b _ => 
-    match b.getAppFn with
+    match Mor.getAppFn b with
     | .fvar fvarId => 
-      let args := b.getAppArgs
+      let args := Mor.getAppArgs b
       -- we do not check the exact form of arguments as we assume `f == (← splitLambdaToComp f).1`
       -- thus checking for loose bvar should be enough
       let ids := args
-        |>.mapIdx (fun i arg => if arg.hasLooseBVars then some i.1 else none)
+        |>.mapIdx (fun i arg => if arg.expr.hasLooseBVars then some i.1 else none)
         |>.filterMap id
         |>.toArraySet
       return (fvarId, ids, args.size)
     | _ => return none
   | f => 
-    let n := f.getAppNumArgs'
-    match f.getAppFn' with
+    let n := Mor.getAppNumArgs f
+    match Mor.getAppFn f with
     | .fvar fvarId =>  return (fvarId, #[n].toArraySet, n+1)
     | _ => return none
 
@@ -467,7 +466,7 @@ def proveFVarFPropFromLocalTheorems (fpropDecl : FPropDecl) (e : Expr) (fvarId :
         | .eq => 
           let f := e.getArg! fpropDecl.funArgId
 
-          let .some (f', g') ← splitLambdaToCompOverArgs f args'
+          let .some (f', g') ← splitMorToCompOverArgs f args'
             | continue
 
           trace[Meta.Tactic.fprop.step] "goal split at `{←ppExpr f'} ∘ {← ppExpr g'}`"
@@ -579,7 +578,8 @@ def bvarAppCase (fpropDecl : FPropDecl) (e : Expr) (f : Expr) (fprop : Expr → 
 /-- -/
 def fvarAppCase (fpropDecl : FPropDecl) (e : Expr) (f : Expr) (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do
 
-  let (f', g') ← splitLambdaToComp f
+  let .some (f', g') ← splitMorToComp f
+    | throwError "fprop bug: failed to decompose {← ppExpr f}"
 
   -- trivial case, this prevents an infinite loop
   if (← isDefEq f' f) then      
@@ -668,6 +668,14 @@ mutual
       | return none
 
     let f := f.consumeMData.eta
+    -- eta expand if `f` is not lambda function
+    let f ← 
+      if f.isLambda 
+      then pure f
+      else do
+        let X := (← inferType f).bindingDomain!
+        pure (.lam `x X (f.app (.bvar 0)) default)
+    
     let e := e.setArg fpropDecl.funArgId f
 
     withTraceNode `Meta.Tactic.fprop (fun r => do pure s!"[{ExceptToEmoji.toEmoji r}] {← ppExpr e}") do
@@ -701,8 +709,8 @@ mutual
           applyConstRule fpropDecl e xType xBody fprop
         else 
           let f' := Expr.lam xName xType xBody xBi
-          let g := xBody.getAppFn
-          let nargs := xBody.getAppNumArgs'
+          let g := Mor.getAppFn xBody
+          let nargs := Mor.getAppNumArgs xBody
 
           match g with 
           | .fvar .. => 
@@ -714,7 +722,7 @@ mutual
           | .mvar .. => 
             fprop (← instantiateMVars e)
           | .const n _ => do
-            let arity ← constArity n
+            let arity ← Mor.constArity n
             match compare arity nargs with
             | .eq => constAppCase fpropDecl e f fprop
             | .gt => applyPiRule fpropDecl e f fprop
@@ -725,23 +733,24 @@ mutual
             trace[Meta.Tactic.fprop.step] "unknown case, ctor: {f.ctorName}\n{← ppExpr e}"
             return none
 
-    | .mvar _ => do
-      fprop (← instantiateMVars e)
-    | f => 
-      let fn := f.getAppFn
-      let nargs := f.getAppNumArgs'
-      match fn with 
-      | .fvar .. => do
-        fvarAppCase fpropDecl e f fprop
-      | .const n _ => do
-        match compare (← constArity n) (nargs+1) with
-        | .eq => constAppCase fpropDecl e f fprop
-        | .gt => applyPiRule fpropDecl e f fprop
-        | .lt => removeArgRule fpropDecl e f fprop
-      | .proj .. => do
-        constAppCase fpropDecl e f fprop
-      | _ => 
-        trace[Meta.Tactic.fprop.step] "unknown case, ctor: {f.ctorName}\n{← ppExpr e}"
-        return none
+    | _ => throwError "fprop bug: non-lambda case"
+    -- | .mvar _ => do
+    --   fprop (← instantiateMVars e)
+    -- | f => 
+    --   let fn := Mor.getAppFn f
+    --   let nargs := Mor.getAppNumArgs f
+    --   match fn with 
+    --   | .fvar .. => do
+    --     fvarAppCase fpropDecl e f fprop
+    --   | .const n _ => do
+    --     match compare (← constArity n) (nargs+1) with
+    --     | .eq => constAppCase fpropDecl e f fprop
+    --     | .gt => applyPiRule fpropDecl e f fprop
+    --     | .lt => removeArgRule fpropDecl e f fprop
+    --   | .proj .. => do
+    --     constAppCase fpropDecl e f fprop
+    --   | _ => 
+    --     trace[Meta.Tactic.fprop.step] "unknown case, ctor: {f.ctorName}\n{← ppExpr e}"
+    --     return none
 
 end
