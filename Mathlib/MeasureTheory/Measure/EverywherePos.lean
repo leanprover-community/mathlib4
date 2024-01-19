@@ -28,6 +28,10 @@ assuming additionally that `s` has finite measure.
 * `IsEverywherePos.IsGdelta` proves that an everywhere positive compact closed set is a Gδ set,
   in a topological group with a left-invariant measure. This is a nontrivial statement, used
   crucially in the study of the uniqueness of Haar measures.
+* `innerRegularWRT_preimage_one_hasCompactSupport_measure_ne_top`: for a Haar measure, any
+  finite measure compact set can be approximated from inside by level sets of continuous
+  compactly supported functions. This property is known as completion-regularity of Haar
+  measures.
 -/
 
 open scoped Topology ENNReal
@@ -82,11 +86,11 @@ protected lemma _root_.IsClosed.everywherePosSubset (hs : IsClosed s) :
   rw [hu]
   exact hs.sdiff u_open
 
-protected lemma _root_.IsCompact.everywherePosSubset (hs : IsClosed s) :
-    IsClosed (μ.everywherePosSubset s) := by
+protected lemma _root_.IsCompact.everywherePosSubset (hs : IsCompact s) :
+    IsCompact (μ.everywherePosSubset s) := by
   rcases exists_isOpen_everywherePosSubset_eq_diff μ s with ⟨u, u_open, hu⟩
   rw [hu]
-  exact hs.sdiff u_open
+  exact hs.diff u_open
 
 /-- Any compact set contained in `s \ μ.everywherePosSubset s` has zero measure. -/
 lemma measure_eq_zero_of_subset_diff_everywherePosSubset
@@ -157,6 +161,13 @@ lemma isEverywherePos_everywherePosSubset_of_measure_ne_top
   rw [← B.measure_eq] at A
   exact A.trans_le (measure_mono hu)
 
+
+section TopologicalGroup
+
+variable {G : Type*} [Group G] [TopologicalSpace G] [TopologicalGroup G]
+  [LocallyCompactSpace G] [MeasurableSpace G] [BorelSpace G] {μ : Measure G}
+  [IsMulLeftInvariant μ] [IsFiniteMeasureOnCompacts μ] [InnerRegularCompactLTTop μ]
+
 open Pointwise
 
 /-- If a compact closed set is everywhere positive with respect to a left-invariant measure on a
@@ -165,10 +176,7 @@ metrizability assumption in the statement, so a general compact closed set has n
 a countable intersection of open sets. -/
 @[to_additive]
 lemma IsEverywherePos.IsGdelta_of_isMulLeftInvariant
-    {G : Type*} [Group G] [TopologicalSpace G] [TopologicalGroup G]
-    [LocallyCompactSpace G] [MeasurableSpace G] [BorelSpace G] {μ : Measure G}
-    [IsMulLeftInvariant μ] [IsFiniteMeasureOnCompacts μ] [InnerRegularCompactLTTop μ] {k : Set G}
-    (h : μ.IsEverywherePos k) (hk : IsCompact k) (h'k : IsClosed k) :
+    {k : Set G} (h : μ.IsEverywherePos k) (hk : IsCompact k) (h'k : IsClosed k) :
     IsGδ k := by
   /- Consider a decreasing sequence of open neighborhoods `Vₙ` of the identity, such that `g k \ k`
   has small measure for all `g ∈ Vₙ`. We claim that `k = ⋂ Vₙ k`, which proves
@@ -227,3 +235,28 @@ lemma IsEverywherePos.IsGdelta_of_isMulLeftInvariant
     simpa [mem_smul_set_iff_inv_smul_mem] using H
   have : 0 < μ (k \ ((z * x⁻¹) • k)) := h z zk _ this
   exact lt_irrefl _ (C.le.trans_lt this)
+
+/-- ** Halmos' theorem: Haar measure is completion regular. ** More precisely, any finite measure
+set can be approximated from inside by a level set of a continuous function with compact support. -/
+@[to_additive innerRegularWRT_preimage_one_hasCompactSupport_measure_ne_top_of_addGroup]
+theorem innerRegularWRT_preimage_one_hasCompactSupport_measure_ne_top_of_group
+    [h : InnerRegularCompactLTTop μ] [LocallyCompactSpace G] :
+    InnerRegularWRT μ (fun s ↦ ∃ (f : G → ℝ), Continuous f ∧ HasCompactSupport f ∧ s = f ⁻¹' {1})
+    (fun s ↦ MeasurableSet s ∧ μ s ≠ ∞) := by
+  apply InnerRegularWRT.trans _ innerRegularWRT_isCompact_isClosed_measure_ne_top_of_group
+  intro K ⟨K_comp, K_closed⟩ r hr
+  let L := μ.everywherePosSubset K
+  have L_comp : IsCompact L := K_comp.everywherePosSubset
+  have L_closed : IsClosed L := K_closed.everywherePosSubset
+  refine ⟨L, everywherePosSubset_subset μ K, ?_, ?_⟩
+  · have : μ.IsEverywherePos L :=
+      isEverywherePos_everywherePosSubset_of_measure_ne_top K_closed.measurableSet
+      K_comp.measure_lt_top.ne
+    have : IsGδ (μ.everywherePosSubset K) := this.IsGdelta_of_isMulLeftInvariant L_comp L_closed
+    obtain ⟨⟨f, f_cont⟩, Lf, -, f_comp, -⟩ : ∃ f : C(G, ℝ), L = f ⁻¹' {1} ∧ EqOn f 0 ∅
+      ∧ HasCompactSupport f ∧ ∀ x, f x ∈ Icc (0 : ℝ) 1 := sorry
+    exact ⟨f, f_cont, f_comp, Lf⟩
+  · convert hr using 1
+    apply measure_congr
+    exact everywherePosSubset_ae_eq_of_measure_ne_top K_closed.measurableSet
+      K_comp.measure_lt_top.ne

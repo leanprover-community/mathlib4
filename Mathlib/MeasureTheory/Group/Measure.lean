@@ -782,6 +782,16 @@ lemma _root_.IsCompact.measure_closure_eq_of_group {k : Set G} (hk : IsCompact k
     μ (closure k) = μ k := by
   rw [← hk.mul_closure_one_eq_closure, measure_mul_closure_one]
 
+@[to_additive]
+lemma innerRegularWRT_isCompact_isClosed_measure_ne_top_of_group [LocallyCompactSpace G]
+    [h : InnerRegularCompactLTTop μ] :
+    InnerRegularWRT μ (fun s ↦ IsCompact s ∧ IsClosed s) (fun s ↦ MeasurableSet s ∧ μ s ≠ ∞) := by
+  intro s ⟨s_meas, μs⟩ r hr
+  rcases h.innerRegular ⟨s_meas, μs⟩ r hr with ⟨K, Ks, K_comp, hK⟩
+  refine ⟨closure K, ?_, ⟨K_comp.closure, isClosed_closure⟩, ?_⟩
+  · exact IsCompact.closure_subset_of_measurableSet_of_group K_comp s_meas Ks
+  · rwa [K_comp.measure_closure_eq_of_group]
+
 end TopologicalGroup
 
 section CommSemigroup

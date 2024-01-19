@@ -1253,6 +1253,10 @@ theorem mul_sub (h : 0 < c → c < b → a ≠ ∞) : a * (b - c) = a * b - a * 
   exact sub_mul h
 #align ennreal.mul_sub ENNReal.mul_sub
 
+theorem sub_le_sub_iff_left (h : c ≤ a) (h' : a ≠ ∞) :
+    (a - b ≤ a - c) ↔ c ≤ b :=
+  (cancel_of_ne h').tsub_le_tsub_iff_left (cancel_of_ne (ne_top_of_le_ne_top h' h)) h
+
 end Sub
 
 section Sum

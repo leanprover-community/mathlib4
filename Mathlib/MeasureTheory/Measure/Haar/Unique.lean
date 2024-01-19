@@ -7,6 +7,7 @@ import Mathlib.MeasureTheory.Constructions.Prod.Integral
 import Mathlib.MeasureTheory.Group.Integral
 import Mathlib.Topology.UrysohnsLemma
 import Mathlib.MeasureTheory.Measure.Haar.Basic
+import Mathlib.MeasureTheory.Measure.EverywherePos
 
 /-!
 # Uniqueness of Haar measure in locally compact groups
@@ -350,6 +351,72 @@ lemma measure_preimage_isMulLeftInvariant_eq_smul_of_hasCompactSupport
   have C : IsCompact (f ⁻¹' {1}) := h'f.isCompact_preimage hf isClosed_singleton (by simp)
   rw [ENNReal.toReal_eq_toReal C.measure_lt_top.ne C.measure_lt_top.ne] at J2
   simpa using J2
+
+/-- If an invariant measure is inner regular, then it gives less mass to sets with compact closure
+than any other invariant measure, up to the scalar `haarScalarFactor μ' μ`. -/
+@[to_additive smul_measure_isAddInvariant_le_of_isCompact_closure]
+lemma smul_measure_isMulInvariant_le_of_isCompact_closure [LocallyCompactSpace G]
+    (μ' μ : Measure G) [IsFiniteMeasureOnCompacts μ] [IsFiniteMeasureOnCompacts μ']
+    [IsMulLeftInvariant μ] [IsMulLeftInvariant μ'] [IsOpenPosMeasure μ] [InnerRegularCompactLTTop μ]
+    {s : Set G} (hs : MeasurableSet s) (h's : IsCompact (closure s)) :
+    haarScalarFactor μ' μ • μ s ≤ μ' s := by
+  apply le_of_forall_lt (fun r hr ↦ ?_)
+  let ν := haarScalarFactor μ' μ • μ
+  have : ν s ≠ ∞ := ((measure_mono subset_closure).trans_lt h's.measure_lt_top).ne
+  obtain ⟨-, hf, ⟨f, f_cont, f_comp, rfl⟩, νf⟩ :
+      ∃ K ⊆ s, (∃ f, Continuous f ∧ HasCompactSupport f ∧ K = f ⁻¹' {1}) ∧ r < ν K :=
+    innerRegularWRT_preimage_one_hasCompactSupport_measure_ne_top_of_group ⟨hs, this⟩ r
+      (by convert hr)
+  calc
+  r < ν (f ⁻¹' {1}) := νf
+  _ = μ' (f ⁻¹' {1}) :=
+    (measure_preimage_isMulLeftInvariant_eq_smul_of_hasCompactSupport _ _ f_cont f_comp).symm
+  _ ≤ μ' s := measure_mono hf
+
+/-- If an invariant measure is inner regular, then it gives the same mass to sets with compact
+closure as any other invariant measure, up to the scalar `haarScalarFactor μ' μ`. -/
+@[to_additive measure_isAddInvariant_eq_smul_of_isCompact_closure]
+lemma measure_isMulInvariant_eq_smul_of_isCompact_closure [LocallyCompactSpace G]
+    (μ' μ : Measure G) [IsFiniteMeasureOnCompacts μ] [IsFiniteMeasureOnCompacts μ']
+    [IsMulLeftInvariant μ] [IsMulLeftInvariant μ'] [IsOpenPosMeasure μ] [InnerRegularCompactLTTop μ]
+    {s : Set G} (hs : MeasurableSet s) (h's : IsCompact (closure s)) :
+    μ' s = haarScalarFactor μ' μ • μ s := by
+  apply le_antisymm ?_ (smul_measure_isMulInvariant_le_of_isCompact_closure μ' μ hs h's)
+  let ν := haarScalarFactor μ' μ • μ
+  change μ' s ≤ ν s
+  obtain ⟨⟨f, f_cont⟩, hf, -, f_comp, -⟩ : ∃ f : C(G, ℝ), EqOn f 1 (closure s) ∧ EqOn f 0 ∅
+      ∧ HasCompactSupport f ∧ ∀ x, f x ∈ Icc (0 : ℝ) 1 :=
+    exists_continuous_one_zero_of_isCompact h's isClosed_empty (disjoint_empty _)
+  let t := f ⁻¹' {1}
+  have t_closed : IsClosed t := isClosed_singleton.preimage f_cont
+  have t_comp : IsCompact t := f_comp.isCompact_preimage f_cont isClosed_singleton (by simp)
+  have st : s ⊆ t := (IsClosed.closure_subset_iff t_closed).mp hf
+  have A : ν (t \ s) ≤ μ' (t \ s) := by
+    apply smul_measure_isMulInvariant_le_of_isCompact_closure _ _ (t_closed.measurableSet.diff hs)
+    exact isCompact_closure_of_subset_compact t_comp (diff_subset t s)
+  have B : μ' t = ν t :=
+    measure_preimage_isMulLeftInvariant_eq_smul_of_hasCompactSupport _ _ f_cont f_comp
+  rw [measure_diff st hs, measure_diff st hs, B] at A; rotate_left
+  · exact ((measure_mono st).trans_lt t_comp.measure_lt_top).ne
+  · exact ((measure_mono st).trans_lt t_comp.measure_lt_top).ne
+  have : ν s ≤ ν t := sorry
+  have : μ' s ≤ ν t := sorry
+  have : ν t ≠ ∞ := sorry
+  have : ν t < ∞ := sorry
+
+
+
+
+#exit
+
+    sorry
+
+#exit
+
+
+
+
+#exit
 
 /-- The scalar factor between two left-invariant measures is non-zero when both measures are
 positive on open sets. -/
