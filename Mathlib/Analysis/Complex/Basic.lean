@@ -41,6 +41,7 @@ assert_not_exists Absorbs
 noncomputable section
 
 namespace Complex
+variable {z : ℂ}
 
 open ComplexConjugate Topology Filter
 
@@ -51,6 +52,8 @@ instance : Norm ℂ :=
 theorem norm_eq_abs (z : ℂ) : ‖z‖ = abs z :=
   rfl
 #align complex.norm_eq_abs Complex.norm_eq_abs
+
+lemma norm_I : ‖I‖ = 1 := abs_I
 
 theorem norm_exp_ofReal_mul_I (t : ℝ) : ‖exp (t * I)‖ = 1 := by
   simp only [norm_eq_abs, abs_exp_ofReal_mul_I]
@@ -356,7 +359,7 @@ theorem continuous_conj : Continuous (conj : ℂ → ℂ) :=
 conjugation. -/
 theorem ringHom_eq_id_or_conj_of_continuous {f : ℂ →+* ℂ} (hf : Continuous f) :
     f = RingHom.id ℂ ∨ f = conj := by
-  simpa only [FunLike.ext_iff] using real_algHom_eq_id_or_conj (AlgHom.mk' f (map_real_smul f hf))
+  simpa only [DFunLike.ext_iff] using real_algHom_eq_id_or_conj (AlgHom.mk' f (map_real_smul f hf))
 #align complex.ring_hom_eq_id_or_conj_of_continuous Complex.ringHom_eq_id_or_conj_of_continuous
 
 /-- Continuous linear equiv version of the conj function, from `ℂ` to `ℂ`. -/
@@ -435,6 +438,18 @@ theorem _root_.IsROrC.re_eq_complex_re : ⇑(IsROrC.re : ℂ →+ ℝ) = Complex
 theorem _root_.IsROrC.im_eq_complex_im : ⇑(IsROrC.im : ℂ →+ ℝ) = Complex.im :=
   rfl
 #align is_R_or_C.im_eq_complex_im IsROrC.im_eq_complex_im
+
+-- TODO: Replace `mul_conj` and `conj_mul` once `norm` has replaced `abs`
+lemma mul_conj' (z : ℂ) : z * conj z = ‖z‖ ^ 2 := IsROrC.mul_conj z
+lemma conj_mul' (z : ℂ) : conj z * z = ‖z‖ ^ 2 := IsROrC.conj_mul z
+
+lemma inv_eq_conj (hz : ‖z‖ = 1) : z⁻¹ = conj z := IsROrC.inv_eq_conj hz
+
+lemma exists_norm_eq_mul_self (z : ℂ) : ∃ c, ‖c‖ = 1 ∧ ‖z‖ = c * z :=
+  IsROrC.exists_norm_eq_mul_self _
+
+lemma exists_norm_mul_eq_self (z : ℂ) : ∃ c, ‖c‖ = 1 ∧ c * ‖z‖ = z :=
+  IsROrC.exists_norm_mul_eq_self _
 
 section ComplexOrder
 

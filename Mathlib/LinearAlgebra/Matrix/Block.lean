@@ -67,7 +67,7 @@ theorem blockTriangular_reindex_iff {b : n → α} {e : m ≃ n} :
   · convert h.submatrix
     simp only [reindex_apply, submatrix_submatrix, submatrix_id_id, Equiv.symm_comp_self]
   · convert h.submatrix
-    simp only [comp.assoc b e e.symm, Equiv.self_comp_symm, comp.right_id]
+    simp only [comp.assoc b e e.symm, Equiv.self_comp_symm, comp_id]
 #align matrix.block_triangular_reindex_iff Matrix.blockTriangular_reindex_iff
 
 protected theorem BlockTriangular.transpose :

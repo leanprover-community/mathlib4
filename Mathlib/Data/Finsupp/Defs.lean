@@ -117,15 +117,15 @@ section Basic
 
 variable [Zero M]
 
-instance funLike : FunLike (α →₀ M) α fun _ => M :=
+instance instDFunLike : DFunLike (α →₀ M) α fun _ => M :=
   ⟨toFun, by
     rintro ⟨s, f, hf⟩ ⟨t, g, hg⟩ (rfl : f = g)
     congr
     ext a
     exact (hf _).trans (hg _).symm⟩
-#align finsupp.fun_like Finsupp.funLike
+#align finsupp.fun_like Finsupp.instDFunLike
 
-/-- Helper instance for when there are too many metavariables to apply the `FunLike` instance
+/-- Helper instance for when there are too many metavariables to apply the `DFunLike` instance
 directly. -/
 instance coeFun : CoeFun (α →₀ M) fun _ => α → M :=
   inferInstance
@@ -133,29 +133,29 @@ instance coeFun : CoeFun (α →₀ M) fun _ => α → M :=
 
 @[ext]
 theorem ext {f g : α →₀ M} (h : ∀ a, f a = g a) : f = g :=
-  FunLike.ext _ _ h
+  DFunLike.ext _ _ h
 #align finsupp.ext Finsupp.ext
 
-@[deprecated FunLike.ext_iff]
+@[deprecated DFunLike.ext_iff]
 theorem ext_iff {f g : α →₀ M} : f = g ↔ ∀ a, f a = g a :=
-  FunLike.ext_iff
+  DFunLike.ext_iff
 #align finsupp.ext_iff Finsupp.ext_iff
 
-lemma ne_iff {f g : α →₀ M} : f ≠ g ↔ ∃ a, f a ≠ g a := FunLike.ne_iff
+lemma ne_iff {f g : α →₀ M} : f ≠ g ↔ ∃ a, f a ≠ g a := DFunLike.ne_iff
 
-@[deprecated FunLike.coe_fn_eq]
+@[deprecated DFunLike.coe_fn_eq]
 theorem coeFn_inj {f g : α →₀ M} : (f : α → M) = g ↔ f = g :=
-  FunLike.coe_fn_eq
+  DFunLike.coe_fn_eq
 #align finsupp.coe_fn_inj Finsupp.coeFn_inj
 
-@[deprecated FunLike.coe_injective]
+@[deprecated DFunLike.coe_injective]
 theorem coeFn_injective : @Function.Injective (α →₀ M) (α → M) (⇑) :=
-  FunLike.coe_injective
+  DFunLike.coe_injective
 #align finsupp.coe_fn_injective Finsupp.coeFn_injective
 
-@[deprecated FunLike.congr_fun]
+@[deprecated DFunLike.congr_fun]
 theorem congr_fun {f g : α →₀ M} (h : f = g) (a : α) : f a = g a :=
-  FunLike.congr_fun h _
+  DFunLike.congr_fun h _
 #align finsupp.congr_fun Finsupp.congr_fun
 
 @[simp, norm_cast]
@@ -198,7 +198,7 @@ theorem not_mem_support_iff {f : α →₀ M} {a} : a ∉ f.support ↔ f a = 0 
 #align finsupp.not_mem_support_iff Finsupp.not_mem_support_iff
 
 @[simp, norm_cast]
-theorem coe_eq_zero {f : α →₀ M} : (f : α → M) = 0 ↔ f = 0 := by rw [← coe_zero, FunLike.coe_fn_eq]
+theorem coe_eq_zero {f : α →₀ M} : (f : α → M) = 0 ↔ f = 0 := by rw [← coe_zero, DFunLike.coe_fn_eq]
 #align finsupp.coe_eq_zero Finsupp.coe_eq_zero
 
 theorem ext_iff' {f g : α →₀ M} : f = g ↔ f.support = g.support ∧ ∀ x ∈ f.support, f x = g x :=
@@ -340,7 +340,7 @@ theorem single_eq_pi_single [DecidableEq α] (a : α) (b : M) : ⇑(single a b) 
 
 @[simp]
 theorem single_zero (a : α) : (single a 0 : α →₀ M) = 0 :=
-  FunLike.coe_injective <| by
+  DFunLike.coe_injective <| by
     classical simpa only [single_eq_update, coe_zero] using Function.update_eq_self a (0 : α → M)
 #align finsupp.single_zero Finsupp.single_zero
 
@@ -404,7 +404,7 @@ theorem single_eq_single_iff (a₁ a₂ : α) (b₁ b₂ : M) :
     by_cases h : a₁ = a₂
     · refine' Or.inl ⟨h, _⟩
       rwa [h, (single_injective a₂).eq_iff] at eq
-    · rw [FunLike.ext_iff] at eq
+    · rw [DFunLike.ext_iff] at eq
       have h₁ := eq a₁
       have h₂ := eq a₂
       simp only [single_eq_same, single_eq_of_ne h, single_eq_of_ne (Ne.symm h)] at h₁ h₂
@@ -435,7 +435,7 @@ theorem support_single_disjoint {b' : M} (hb : b ≠ 0) (hb' : b' ≠ 0) {i j : 
 
 @[simp]
 theorem single_eq_zero : single a b = 0 ↔ b = 0 := by
-  simp [FunLike.ext_iff, single_eq_set_indicator]
+  simp [DFunLike.ext_iff, single_eq_set_indicator]
 #align finsupp.single_eq_zero Finsupp.single_eq_zero
 
 theorem single_swap (a₁ a₂ : α) (b : M) : single a₁ b a₂ = single a₂ b a₁ := by
@@ -610,12 +610,12 @@ theorem support_update_subset [DecidableEq α] [DecidableEq M] :
 theorem update_comm (f : α →₀ M) {a₁ a₂ : α} (h : a₁ ≠ a₂) (m₁ m₂ : M) :
     update (update f a₁ m₁) a₂ m₂ = update (update f a₂ m₂) a₁ m₁ :=
   letI := Classical.decEq α
-  FunLike.coe_injective <| Function.update_comm h _ _ _
+  DFunLike.coe_injective <| Function.update_comm h _ _ _
 
 @[simp] theorem update_idem (f : α →₀ M) (a : α) (b c : M) :
     update (update f a b) a c = update f a c :=
   letI := Classical.decEq α
-  FunLike.coe_injective <| Function.update_idem _ _ _
+  DFunLike.coe_injective <| Function.update_idem _ _ _
 
 end Update
 
@@ -905,7 +905,7 @@ theorem embDomain_notin_range (f : α ↪ β) (v : α →₀ M) (a : β) (h : a 
 #align finsupp.emb_domain_notin_range Finsupp.embDomain_notin_range
 
 theorem embDomain_injective (f : α ↪ β) : Function.Injective (embDomain f : (α →₀ M) → β →₀ M) :=
-  fun l₁ l₂ h => ext fun a => by simpa only [embDomain_apply] using FunLike.ext_iff.1 h (f a)
+  fun l₁ l₂ h => ext fun a => by simpa only [embDomain_apply] using DFunLike.ext_iff.1 h (f a)
 #align finsupp.emb_domain_injective Finsupp.embDomain_injective
 
 @[simp]
@@ -1045,14 +1045,27 @@ theorem single_add (a : α) (b₁ b₂ : M) : single a (b₁ + b₂) = single a 
 #align finsupp.single_add Finsupp.single_add
 
 instance addZeroClass : AddZeroClass (α →₀ M) :=
-  FunLike.coe_injective.addZeroClass _ coe_zero coe_add
+  DFunLike.coe_injective.addZeroClass _ coe_zero coe_add
 #align finsupp.add_zero_class Finsupp.addZeroClass
 
 instance instIsLeftCancelAdd [IsLeftCancelAdd M] : IsLeftCancelAdd (α →₀ M) where
-  add_left_cancel _ _ _ h := ext fun x => add_left_cancel <| FunLike.congr_fun h x
+  add_left_cancel _ _ _ h := ext fun x => add_left_cancel <| DFunLike.congr_fun h x
+
+/-- When ι is finite and M is an AddMonoid,
+  then Finsupp.equivFunOnFinite gives an AddEquiv -/
+noncomputable def addEquivFunOnFinite {ι : Type*} [Finite ι] :
+    (ι →₀ M) ≃+ (ι → M) where
+  __ := Finsupp.equivFunOnFinite
+  map_add' _ _ := rfl
+
+/-- AddEquiv between (ι →₀ M) and M, when ι has a unique element -/
+noncomputable def _root_.AddEquiv.finsuppUnique {ι : Type*} [Unique ι] :
+    (ι →₀ M) ≃+ M where
+  __ := Equiv.finsuppUnique
+  map_add' _ _ := rfl
 
 instance instIsRightCancelAdd [IsRightCancelAdd M] : IsRightCancelAdd (α →₀ M) where
-  add_right_cancel _ _ _ h := ext fun x => add_right_cancel <| FunLike.congr_fun h x
+  add_right_cancel _ _ _ h := ext fun x => add_right_cancel <| DFunLike.congr_fun h x
 
 instance instIsCancelAdd [IsCancelAdd M] : IsCancelAdd (α →₀ M) where
 
@@ -1191,18 +1204,18 @@ verify `f (single a 1) = g (single a 1)`. -/
 @[ext high]
 theorem addHom_ext' [AddZeroClass N] ⦃f g : (α →₀ M) →+ N⦄
     (H : ∀ x, f.comp (singleAddHom x) = g.comp (singleAddHom x)) : f = g :=
-  addHom_ext fun x => FunLike.congr_fun (H x)
+  addHom_ext fun x => DFunLike.congr_fun (H x)
 #align finsupp.add_hom_ext' Finsupp.addHom_ext'
 
 theorem mulHom_ext [MulOneClass N] ⦃f g : Multiplicative (α →₀ M) →* N⦄
     (H : ∀ x y, f (Multiplicative.ofAdd <| single x y) = g (Multiplicative.ofAdd <| single x y)) :
     f = g :=
   MonoidHom.ext <|
-    FunLike.congr_fun <| by
+    DFunLike.congr_fun <| by
       have := @addHom_ext α M (Additive N) _ _
         (MonoidHom.toAdditive'' f) (MonoidHom.toAdditive'' g) H
       ext
-      rw [FunLike.ext_iff] at this
+      rw [DFunLike.ext_iff] at this
       apply this
 #align finsupp.mul_hom_ext Finsupp.mulHom_ext
 
@@ -1211,7 +1224,7 @@ theorem mulHom_ext' [MulOneClass N] {f g : Multiplicative (α →₀ M) →* N}
     (H : ∀ x, f.comp (AddMonoidHom.toMultiplicative (singleAddHom x)) =
               g.comp (AddMonoidHom.toMultiplicative (singleAddHom x))) :
     f = g :=
-  mulHom_ext fun x => FunLike.congr_fun (H x)
+  mulHom_ext fun x => DFunLike.congr_fun (H x)
 #align finsupp.mul_hom_ext' Finsupp.mulHom_ext'
 
 theorem mapRange_add [AddZeroClass N] {f : M → N} {hf : f 0 = 0}
@@ -1258,14 +1271,14 @@ instance hasNatScalar : SMul ℕ (α →₀ M) :=
 #align finsupp.has_nat_scalar Finsupp.hasNatScalar
 
 instance addMonoid : AddMonoid (α →₀ M) :=
-  FunLike.coe_injective.addMonoid _ coe_zero coe_add fun _ _ => rfl
+  DFunLike.coe_injective.addMonoid _ coe_zero coe_add fun _ _ => rfl
 #align finsupp.add_monoid Finsupp.addMonoid
 
 end AddMonoid
 
 instance addCommMonoid [AddCommMonoid M] : AddCommMonoid (α →₀ M) :=
   --TODO: add reference to library note in PR #7432
-  { FunLike.coe_injective.addCommMonoid (↑) coe_zero coe_add (fun _ _ => rfl) with
+  { DFunLike.coe_injective.addCommMonoid (↑) coe_zero coe_add (fun _ _ => rfl) with
     toAddMonoid := Finsupp.addMonoid }
 #align finsupp.add_comm_monoid Finsupp.addCommMonoid
 
@@ -1321,14 +1334,14 @@ instance hasIntScalar [AddGroup G] : SMul ℤ (α →₀ G) :=
 
 instance addGroup [AddGroup G] : AddGroup (α →₀ G) :=
   --TODO: add reference to library note in PR #7432
-  { FunLike.coe_injective.addGroup (↑) coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl)
+  { DFunLike.coe_injective.addGroup (↑) coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl)
       fun _ _ => rfl with
     toAddMonoid := Finsupp.addMonoid }
 #align finsupp.add_group Finsupp.addGroup
 
 instance addCommGroup [AddCommGroup G] : AddCommGroup (α →₀ G) :=
   --TODO: add reference to library note in PR #7432
-  { FunLike.coe_injective.addCommGroup (↑) coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl)
+  { DFunLike.coe_injective.addCommGroup (↑) coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl)
       fun _ _ => rfl with
     toAddGroup := Finsupp.addGroup }
 #align finsupp.add_comm_group Finsupp.addCommGroup
@@ -1338,7 +1351,7 @@ theorem single_add_single_eq_single_add_single [AddCommMonoid M] {k l m n : α} 
     single k u + single l v = single m u + single n v ↔
       (k = m ∧ l = n) ∨ (u = v ∧ k = n ∧ l = m) ∨ (u + v = 0 ∧ k = l ∧ m = n) := by
   classical
-    simp_rw [FunLike.ext_iff, coe_add, single_eq_pi_single, ← funext_iff]
+    simp_rw [DFunLike.ext_iff, coe_add, single_eq_pi_single, ← funext_iff]
     exact Pi.single_add_single_eq_single_add_single hu hv
 #align finsupp.single_add_single_eq_single_add_single Finsupp.single_add_single_eq_single_add_single
 

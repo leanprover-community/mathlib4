@@ -5,7 +5,7 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Data.Nat.Basic
-import Mathlib.Data.Nat.Bits
+import Mathlib.Init.Data.Nat.Bitwise
 
 #align_import data.nat.order.basic from "leanprover-community/mathlib"@"3ed3f98a1e836241990d3d308f1577e434977130"
 
@@ -16,7 +16,9 @@ import Mathlib.Data.Nat.Bits
 We also have a variety of lemmas which have been deferred from `Data.Nat.Basic` because it is
 easier to prove them with this ordered semiring instance available.
 
-You may find that some theorems can be moved back to `Data.Nat.Basic` by modifying their proofs.
+### TODO
+
+Move most of the theorems to `Data.Nat.Defs` by modifying their proofs.
 -/
 
 
@@ -79,21 +81,6 @@ instance canonicallyLinearOrderedAddCommMonoid : CanonicallyLinearOrderedAddComm
 variable {m n k l : ℕ}
 
 /-! ### Equalities and inequalities involving zero and one -/
-
-theorem one_le_iff_ne_zero : 1 ≤ n ↔ n ≠ 0 :=
-  Nat.add_one_le_iff.trans pos_iff_ne_zero
-#align nat.one_le_iff_ne_zero Nat.one_le_iff_ne_zero
-
-theorem one_lt_iff_ne_zero_and_ne_one : ∀ {n : ℕ}, 1 < n ↔ n ≠ 0 ∧ n ≠ 1
-  | 0 => by decide
-  | 1 => by decide
-  | n + 2 => by simp
-#align nat.one_lt_iff_ne_zero_and_ne_one Nat.one_lt_iff_ne_zero_and_ne_one
-
-theorem le_one_iff_eq_zero_or_eq_one : ∀ {n : ℕ}, n ≤ 1 ↔ n = 0 ∨ n = 1
-  | 0 => by decide
-  | 1 => by decide
-  | n + 2 => by simp
 
 #align nat.mul_ne_zero Nat.mul_ne_zero
 
@@ -288,18 +275,10 @@ theorem le_mul_self : ∀ n : ℕ, n ≤ n * n
   | n + 1 => by simp
 #align nat.le_mul_self Nat.le_mul_self
 
-theorem le_mul_of_pos_left (h : 0 < n) : m ≤ n * m := by
-  conv =>
-    lhs
-    rw [← one_mul m]
-  exact mul_le_mul_of_nonneg_right h.nat_succ_le (zero_le _)
+-- Moved to Std
 #align nat.le_mul_of_pos_left Nat.le_mul_of_pos_left
 
-theorem le_mul_of_pos_right (h : 0 < n) : m ≤ m * n := by
-  conv =>
-    lhs
-    rw [← mul_one m]
-  exact mul_le_mul_of_nonneg_left h.nat_succ_le (zero_le _)
+-- Moved to Std
 #align nat.le_mul_of_pos_right Nat.le_mul_of_pos_right
 
 theorem mul_self_inj : m * m = n * n ↔ m = n :=
@@ -476,7 +455,7 @@ theorem not_dvd_of_pos_of_lt (h1 : 0 < n) (h2 : n < m) : ¬m ∣ n := by
   rintro ⟨k, rfl⟩
   rcases Nat.eq_zero_or_pos k with (rfl | hk)
   · exact lt_irrefl 0 h1
-  · exact not_lt.2 (le_mul_of_pos_right hk) h2
+  · exact not_lt.2 (Nat.le_mul_of_pos_right _ hk) h2
 #align nat.not_dvd_of_pos_of_lt Nat.not_dvd_of_pos_of_lt
 
 /-- If `m` and `n` are equal mod `k`, `m - n` is zero mod `k`. -/

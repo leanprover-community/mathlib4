@@ -852,57 +852,19 @@ theorem exists_disjoint_closedBall_covering_ae (μ : Measure α) [SigmaFinite μ
       (∀ x ∈ t, r x ∈ f x ∩ Ioo 0 (R x)) ∧ μ (s \ ⋃ x ∈ t, closedBall x (r x)) = 0 ∧
         t.PairwiseDisjoint fun x => closedBall x (r x) := by
   let g x := f x ∩ Ioo 0 (R x)
-  have hg : ∀ x ∈ s, ∀ δ > 0, (g x ∩ Ioo 0 δ).Nonempty := by
-    intro x hx δ δpos
+  have hg : ∀ x ∈ s, ∀ δ > 0, (g x ∩ Ioo 0 δ).Nonempty := fun x hx δ δpos ↦ by
     rcases hf x hx (min δ (R x)) (lt_min δpos (hR x hx)) with ⟨r, hr⟩
-    exact
-      ⟨r,
-        ⟨⟨hr.1, hr.2.1, hr.2.2.trans_le (min_le_right _ _)⟩,
-          ⟨hr.2.1, hr.2.2.trans_le (min_le_left _ _)⟩⟩⟩
+    exact ⟨r, ⟨⟨hr.1, hr.2.1, hr.2.2.trans_le (min_le_right _ _)⟩,
+      ⟨hr.2.1, hr.2.2.trans_le (min_le_left _ _)⟩⟩⟩
   rcases exists_disjoint_closedBall_covering_ae_aux μ g s hg with ⟨v, v_count, vs, vg, μv, v_disj⟩
-  let t := Prod.fst '' v
-  have : ∀ x ∈ t, ∃ r : ℝ, (x, r) ∈ v := by
-    intro x hx
-    rcases (mem_image _ _ _).1 hx with ⟨⟨p, q⟩, hp, rfl⟩
-    exact ⟨q, hp⟩
-  choose! r hr using this
-  have im_t : (fun x => (x, r x)) '' t = v := by
-    have I : ∀ p : α × ℝ, p ∈ v → 0 ≤ p.2 := fun p hp => (vg p hp).2.1.le
-    apply Subset.antisymm
-    · simp only [image_subset_iff]
-      rintro ⟨x, p⟩ hxp
-      simp only [mem_preimage]
-      exact hr _ (mem_image_of_mem _ hxp)
-    · rintro ⟨x, p⟩ hxp
-      have hxrx : (x, r x) ∈ v := hr _ (mem_image_of_mem _ hxp)
-      have : p = r x := by
-        by_contra h
-        have A : (x, p) ≠ (x, r x) := by
-          simpa only [true_and_iff, Prod.mk.inj_iff, eq_self_iff_true, Ne.def] using h
-        have H := v_disj hxp hxrx A
-        contrapose H
-        rw [not_disjoint_iff_nonempty_inter]
-        refine' ⟨x, by simp (config := { proj := false }) [I _ hxp, I _ hxrx]⟩
-      rw [this]
-      apply mem_image_of_mem
-      exact mem_image_of_mem _ hxp
-  refine' ⟨t, r, v_count.image _, _, _, _, _⟩
-  · intro x hx
-    rcases (mem_image _ _ _).1 hx with ⟨⟨p, q⟩, hp, rfl⟩
-    exact vs _ hp
-  · intro x hx
-    rcases (mem_image _ _ _).1 hx with ⟨⟨p, q⟩, _, rfl⟩
-    exact vg _ (hr _ hx)
-  · have :
-      ⋃ (x : α) (_ : x ∈ t), closedBall x (r x) =
-        ⋃ (p : α × ℝ) (_ : p ∈ (fun x => (x, r x)) '' t), closedBall p.1 p.2 :=
-      by conv_rhs => rw [biUnion_image]
-    rw [this, im_t]
-    exact μv
-  · have A : InjOn (fun x : α => (x, r x)) t := by
-      simp (config := { contextual := true }) only [InjOn, Prod.mk.inj_iff, imp_true_iff,
-        eq_self_iff_true]
-    rwa [← im_t, A.pairwiseDisjoint_image] at v_disj
+  obtain ⟨r, t, rfl⟩ : ∃ (r : α → ℝ) (t : Set α), v = graphOn r t := by
+    have I : ∀ p ∈ v, 0 ≤ p.2 := fun p hp => (vg p hp).2.1.le
+    rw [exists_eq_graphOn]
+    refine fun x hx y hy heq ↦ v_disj.eq hx hy <| not_disjoint_iff.2 ⟨x.1, ?_⟩
+    simp [*]
+  have hinj : InjOn (fun x ↦ (x, r x)) t := LeftInvOn.injOn (f₁' := Prod.fst) fun _ _ ↦ rfl
+  simp only [graphOn, ball_image_iff, biUnion_image, hinj.pairwiseDisjoint_image] at *
+  exact ⟨t, r, countable_of_injective_of_countable_image hinj v_count, vs, vg, μv, v_disj⟩
 #align besicovitch.exists_disjoint_closed_ball_covering_ae Besicovitch.exists_disjoint_closedBall_covering_ae
 
 /-- In a space with the Besicovitch property, any set `s` can be covered with balls whose measures
@@ -1082,10 +1044,10 @@ theorem exists_closedBall_covering_tsum_measure_le (μ : Measure α) [SigmaFinit
 forms a Vitali family. This is essentially a restatement of the measurable Besicovitch theorem. -/
 protected def vitaliFamily (μ : Measure α) [SigmaFinite μ] : VitaliFamily μ where
   setsAt x := (fun r : ℝ => closedBall x r) '' Ioi (0 : ℝ)
-  MeasurableSet' _ := ball_image_iff.2 fun _ _ ↦ isClosed_ball.measurableSet
+  measurableSet _ := ball_image_iff.2 fun _ _ ↦ isClosed_ball.measurableSet
   nonempty_interior _ := ball_image_iff.2 fun r rpos ↦
     (nonempty_ball.2 rpos).mono ball_subset_interior_closedBall
-  Nontrivial x ε εpos := ⟨closedBall x ε, mem_image_of_mem _ εpos, Subset.rfl⟩
+  nontrivial x ε εpos := ⟨closedBall x ε, mem_image_of_mem _ εpos, Subset.rfl⟩
   covering := by
     intro s f fsubset ffine
     let g : α → Set ℝ := fun x => {r | 0 < r ∧ closedBall x r ∈ f x}

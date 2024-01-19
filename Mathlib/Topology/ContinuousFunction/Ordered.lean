@@ -6,6 +6,7 @@ Authors: Scott Morrison, Shing Tak Lam
 import Mathlib.Topology.Algebra.Order.ProjIcc
 import Mathlib.Topology.Algebra.Order.Group
 import Mathlib.Topology.ContinuousFunction.Basic
+import Mathlib.Topology.Order.Lattice
 
 #align_import topology.continuous_function.ordered from "leanprover-community/mathlib"@"84dc0bd6619acaea625086d6f53cb35cdd554219"
 
@@ -21,32 +22,10 @@ variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
 
 namespace ContinuousMap
 
-section
-
-variable [LinearOrderedAddCommGroup β] [OrderTopology β]
-
-/-- The pointwise absolute value of a continuous function as a continuous function. -/
-def abs (f : C(α, β)) : C(α, β) where toFun x := |f x|
-#align continuous_map.abs ContinuousMap.abs
-
--- see Note [lower instance priority]
-instance (priority := 100) : Abs C(α, β) :=
-  ⟨fun f => abs f⟩
-
-@[simp]
-theorem abs_apply (f : C(α, β)) (x : α) : |f| x = |f x| :=
-  rfl
-#align continuous_map.abs_apply ContinuousMap.abs_apply
-
-end
-
 /-!
 We now set up the partial order and lattice structure (given by pointwise min and max)
 on continuous functions.
 -/
-
-
-section Lattice
 
 instance partialOrder [PartialOrder β] : PartialOrder C(α, β) :=
   PartialOrder.lift (fun f => f.toFun) (fun f g _ => by cases f; cases g; congr)
@@ -61,92 +40,64 @@ theorem lt_def [PartialOrder β] {f g : C(α, β)} : f < g ↔ (∀ a, f a ≤ g
   Pi.lt_def
 #align continuous_map.lt_def ContinuousMap.lt_def
 
-instance sup [LinearOrder β] [OrderClosedTopology β] : Sup C(α, β) where
-  sup f g := { toFun := fun a => max (f a) (g a) }
+section SemilatticeSup
+variable [SemilatticeSup β] [ContinuousSup β]
+
+instance sup : Sup C(α, β) where sup f g := { toFun := fun a ↦ f a ⊔ g a }
 #align continuous_map.has_sup ContinuousMap.sup
 
-@[simp, norm_cast]
-theorem sup_coe [LinearOrder β] [OrderClosedTopology β] (f g : C(α, β)) :
-    ((f ⊔ g : C(α, β)) : α → β) = (f ⊔ g : α → β) :=
-  rfl
-#align continuous_map.sup_coe ContinuousMap.sup_coe
+@[simp, norm_cast] lemma coe_sup (f g : C(α, β)) : ⇑(f ⊔ g) = ⇑f ⊔ g := rfl
+#align continuous_map.sup_coe ContinuousMap.coe_sup
 
-@[simp]
-theorem sup_apply [LinearOrder β] [OrderClosedTopology β] (f g : C(α, β)) (a : α) :
-    (f ⊔ g) a = max (f a) (g a) :=
-  rfl
+@[simp] lemma sup_apply (f g : C(α, β)) (a : α) : (f ⊔ g) a = f a ⊔ g a := rfl
 #align continuous_map.sup_apply ContinuousMap.sup_apply
 
-instance semilatticeSup [LinearOrder β] [OrderClosedTopology β] : SemilatticeSup C(α, β) :=
-  { ContinuousMap.partialOrder,
-    ContinuousMap.sup with
-    le_sup_left := fun f g => le_def.mpr (by simp [le_refl])
-    le_sup_right := fun f g => le_def.mpr (by simp [le_refl])
-    sup_le := fun f₁ f₂ g w₁ w₂ => le_def.mpr fun a => by simp [le_def.mp w₁ a, le_def.mp w₂ a] }
+instance semilatticeSup : SemilatticeSup C(α, β) :=
+  DFunLike.coe_injective.semilatticeSup _ fun _ _ ↦ rfl
 
-instance inf [LinearOrder β] [OrderClosedTopology β] : Inf C(α, β) where
-  inf f g := { toFun := fun a => min (f a) (g a) }
-#align continuous_map.has_inf ContinuousMap.inf
-
-@[simp, norm_cast]
-theorem inf_coe [LinearOrder β] [OrderClosedTopology β] (f g : C(α, β)) :
-    ((f ⊓ g : C(α, β)) : α → β) = (f ⊓ g : α → β) :=
-  rfl
-#align continuous_map.inf_coe ContinuousMap.inf_coe
-
-@[simp]
-theorem inf_apply [LinearOrder β] [OrderClosedTopology β] (f g : C(α, β)) (a : α) :
-    (f ⊓ g) a = min (f a) (g a) :=
-  rfl
-#align continuous_map.inf_apply ContinuousMap.inf_apply
-
-instance semilatticeInf [LinearOrder β] [OrderClosedTopology β] : SemilatticeInf C(α, β) :=
-  { ContinuousMap.partialOrder,
-    ContinuousMap.inf with
-    inf_le_left := fun f g => le_def.mpr (by simp [le_refl])
-    inf_le_right := fun f g => le_def.mpr (by simp [le_refl])
-    le_inf := fun f₁ f₂ g w₁ w₂ => le_def.mpr fun a => by simp [le_def.mp w₁ a, le_def.mp w₂ a] }
-
-instance [LinearOrder β] [OrderClosedTopology β] : Lattice C(α, β) :=
-  { ContinuousMap.semilatticeInf, ContinuousMap.semilatticeSup with }
-
--- TODO transfer this lattice structure to `BoundedContinuousFunction`
-section Sup'
-
-variable [LinearOrder γ] [OrderClosedTopology γ]
-
-theorem sup'_apply {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C(β, γ)) (b : β) :
-    s.sup' H f b = s.sup' H fun a => f a b :=
-  Finset.comp_sup'_eq_sup'_comp H (fun f : C(β, γ) => f b) fun _ _ => rfl
+lemma sup'_apply {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C(α, β)) (a : α) :
+    s.sup' H f a = s.sup' H fun i ↦ f i a :=
+  Finset.comp_sup'_eq_sup'_comp H (fun g : C(α, β) ↦ g a) fun _ _ ↦ rfl
 #align continuous_map.sup'_apply ContinuousMap.sup'_apply
 
 @[simp, norm_cast]
-theorem sup'_coe {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C(β, γ)) :
-    ((s.sup' H f : C(β, γ)) : β → γ) = s.sup' H fun a => (f a : β → γ) := by
-  ext
-  simp [sup'_apply]
-#align continuous_map.sup'_coe ContinuousMap.sup'_coe
+lemma coe_sup' {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C(α, β)) :
+    ⇑(s.sup' H f) = s.sup' H fun i ↦ ⇑(f i) := by ext; simp [sup'_apply]
+#align continuous_map.sup'_coe ContinuousMap.coe_sup'
 
-end Sup'
+end SemilatticeSup
 
-section Inf'
+section SemilatticeInf
+variable [SemilatticeInf β] [ContinuousInf β]
 
-variable [LinearOrder γ] [OrderClosedTopology γ]
+instance inf : Inf C(α, β) where inf f g := { toFun := fun a ↦ f a ⊓ g a }
+#align continuous_map.has_inf ContinuousMap.inf
 
-theorem inf'_apply {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C(β, γ)) (b : β) :
-    s.inf' H f b = s.inf' H fun a => f a b :=
-  @sup'_apply _ γᵒᵈ _ _ _ _ _ _ H f b
+@[simp, norm_cast] lemma coe_inf (f g : C(α, β)) : ⇑(f ⊓ g) = ⇑f ⊓ g := rfl
+#align continuous_map.inf_coe ContinuousMap.coe_inf
+
+@[simp] lemma inf_apply (f g : C(α, β)) (a : α) : (f ⊓ g) a = f a ⊓ g a := rfl
+#align continuous_map.inf_apply ContinuousMap.inf_apply
+
+instance semilatticeInf : SemilatticeInf C(α, β) :=
+  DFunLike.coe_injective.semilatticeInf _ fun _ _ ↦ rfl
+
+lemma inf'_apply {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C(α, β)) (a : α) :
+    s.inf' H f a = s.inf' H fun i ↦ f i a :=
+  Finset.comp_inf'_eq_inf'_comp H (fun g : C(α, β) ↦ g a) fun _ _ ↦ rfl
 #align continuous_map.inf'_apply ContinuousMap.inf'_apply
 
 @[simp, norm_cast]
-theorem inf'_coe {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C(β, γ)) :
-    ((s.inf' H f : C(β, γ)) : β → γ) = s.inf' H fun a => (f a : β → γ) :=
-  @sup'_coe _ γᵒᵈ _ _ _ _ _ _ H f
-#align continuous_map.inf'_coe ContinuousMap.inf'_coe
+lemma coe_inf' {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C(α, β)) :
+    ⇑(s.inf' H f) = s.inf' H fun i ↦ ⇑(f i) := by ext; simp [inf'_apply]
+#align continuous_map.inf'_coe ContinuousMap.coe_inf'
 
-end Inf'
+end SemilatticeInf
 
-end Lattice
+instance [Lattice β] [TopologicalLattice β] : Lattice C(α, β) :=
+  DFunLike.coe_injective.lattice _ (fun _ _ ↦ rfl) fun _ _ ↦ rfl
+
+-- TODO transfer this lattice structure to `BoundedContinuousFunction`
 
 section Extend
 
