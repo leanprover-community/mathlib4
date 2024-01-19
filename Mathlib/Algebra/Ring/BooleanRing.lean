@@ -40,6 +40,7 @@ purposes and because it is easier than dealing with
 boolean ring, boolean algebra
 -/
 
+open scoped symmDiff
 
 variable {α β γ : Type*}
 
