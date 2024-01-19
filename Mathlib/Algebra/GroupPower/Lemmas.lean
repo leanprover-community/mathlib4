@@ -3,7 +3,7 @@ Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis
 -/
-import Mathlib.Data.Int.Cast.Lemmas
+import Mathlib.Data.Nat.Order.Basic
 
 #align_import algebra.group_power.lemmas from "leanprover-community/mathlib"@"a07d750983b94c530ab69a726862c2ab6802b38c"
 
