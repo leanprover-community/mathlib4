@@ -172,7 +172,7 @@ theorem coeff_hermite_explicit :
       simp only
       -- Factor out (-1)'s.
       rw [mul_comm (↑k + _ : ℤ), sub_eq_add_neg]
-      nth_rw 4 [neg_eq_neg_one_mul]
+      nth_rw 3 [neg_eq_neg_one_mul]
       simp only [mul_assoc, ← mul_add, pow_succ]
       congr 2
       -- Factor out double factorials.
