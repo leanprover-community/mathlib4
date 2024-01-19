@@ -381,7 +381,6 @@ def domDomCongrEquiv {ι' : Type*} (e : ι ≃ ι') :
 
 section linearDeriv
 open scoped BigOperators
-
 variable [ContinuousAdd M₂] [DecidableEq ι] [Fintype ι] (x y : ∀ i, M₁ i)
 
 /-- The derivative of a continuous multilinear map, as a continuous linear map

@@ -297,9 +297,8 @@ end deriv
 
 namespace ContinuousMultilinearMap
 
-variable {R ι : Type*} {M₁ : ι → Type*} {M₂ : Type*} [NontriviallyNormedField R]
-  [∀ i, NormedAddCommGroup (M₁ i)] [NormedAddCommGroup M₂] [∀ i, NormedSpace R (M₁ i)]
-  [NormedSpace R M₂] [Fintype ι] (f : ContinuousMultilinearMap R M₁ M₂)
+variable {ι : Type*} {E : ι → Type*} [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
+  [Fintype ι] (f : ContinuousMultilinearMap 𝕜 E F)
 
 open FormalMultilinearSeries
 
@@ -316,11 +315,11 @@ theorem changeOriginSeries_support {k l : ℕ} (h : k + l ≠ Fintype.card ι) :
     rw [FormalMultilinearSeries.changeOriginSeriesTerm, AddEquivClass.map_eq_zero_iff]
     simp only [toFormalMultilinearSeries, h.symm, dite_false]
 
-variable {n : ℕ∞} (x : ∀ i, M₁ i)
+variable {n : ℕ∞} (x : ∀ i, E i)
 
 open Finset in
 theorem changeOrigin_toFormalMultilinearSeries [DecidableEq ι] :
-    continuousMultilinearCurryFin1 R (∀ i, M₁ i) M₂ (f.toFormalMultilinearSeries.changeOrigin x 1) =
+    continuousMultilinearCurryFin1 𝕜 (∀ i, E i) F (f.toFormalMultilinearSeries.changeOrigin x 1) =
     f.linearDeriv x := by
   ext y
   rw [continuousMultilinearCurryFin1_apply, linearDeriv_apply,
@@ -360,14 +359,14 @@ protected theorem hasFDerivAt [DecidableEq ι] : HasFDerivAt f (f.linearDeriv x)
   convert f.hasFiniteFPowerSeriesOnBall.hasFDerivAt (y := x) ENNReal.coe_lt_top
   rw [zero_add]
 
-lemma cPolynomialAt : CPolynomialAt R f x :=
+lemma cPolynomialAt : CPolynomialAt 𝕜 f x :=
   f.hasFiniteFPowerSeriesOnBall.cPolynomialAt_of_mem
     (by simp only [Metric.emetric_ball_top, Set.mem_univ])
 
-lemma cPolyomialOn : CPolynomialOn R f ⊤ := fun x _ ↦ f.cPolynomialAt x
+lemma cPolyomialOn : CPolynomialOn 𝕜 f ⊤ := fun x _ ↦ f.cPolynomialAt x
 
-lemma contDiffAt : ContDiffAt R n f x := (f.cPolynomialAt x).contDiffAt
+lemma contDiffAt : ContDiffAt 𝕜 n f x := (f.cPolynomialAt x).contDiffAt
 
-lemma contDiff : ContDiff R n f := contDiff_iff_contDiffAt.mpr f.contDiffAt
+lemma contDiff : ContDiff 𝕜 n f := contDiff_iff_contDiffAt.mpr f.contDiffAt
 
 end ContinuousMultilinearMap
