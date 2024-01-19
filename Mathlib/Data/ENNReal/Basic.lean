@@ -7,6 +7,7 @@ import Mathlib.Data.Real.NNReal
 import Mathlib.Algebra.Order.Sub.WithTop
 import Mathlib.Data.Set.Intervals.WithBotTop
 import Mathlib.Tactic.GCongr.Core
+import Mathlib.Algebra.GroupPower.Order
 
 #align_import data.real.ennreal from "leanprover-community/mathlib"@"c14c8fcde993801fca8946b0d80131a1a81d1520"
 
@@ -260,11 +261,13 @@ theorem forall_ne_top {p : ℝ≥0∞ → Prop} : (∀ a, a ≠ ∞ → p a) ↔
   Option.ball_ne_none
 #align ennreal.forall_ne_top ENNReal.forall_ne_top
 
+@[deprecated]
 theorem exists_ne_top' {p : ℝ≥0∞ → Prop} : (∃ (a : ℝ≥0∞) (_ : a ≠ ∞), p a) ↔ ∃ r : ℝ≥0, p r :=
   Option.bex_ne_none
 #align ennreal.exists_ne_top ENNReal.exists_ne_top'
 
-theorem exists_ne_top {p : ℝ≥0∞ → Prop} : (∃ a : ℝ≥0∞, a ≠ ∞ ∧ p a) ↔ ∃ r : ℝ≥0, p r := by
+set_option linter.deprecated false in
+theorem exists_ne_top {p : ℝ≥0∞ → Prop} : (∃ a ≠ ∞, p a) ↔ ∃ r : ℝ≥0, p r := by
   simp only [exists_ne_top', ← exists_prop]
 
 theorem toNNReal_eq_zero_iff (x : ℝ≥0∞) : x.toNNReal = 0 ↔ x = 0 ∨ x = ∞ :=
@@ -385,7 +388,7 @@ theorem coe_strictMono : StrictMono ofNNReal := fun _ _ => coe_lt_coe.2
 theorem coe_ne_zero : (r : ℝ≥0∞) ≠ 0 ↔ r ≠ 0 := not_congr coe_eq_coe
 #align ennreal.coe_ne_zero ENNReal.coe_ne_zero
 
-@[simp, norm_cast] theorem coe_add : ↑(r + p) = (r : ℝ≥0∞) + p := WithTop.coe_add
+@[simp, norm_cast] theorem coe_add : ↑(r + p) = (r : ℝ≥0∞) + p := WithTop.coe_add _ _
 #align ennreal.coe_add ENNReal.coe_add
 
 @[simp, norm_cast]

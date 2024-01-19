@@ -18,10 +18,6 @@ hyperbolic sine, hyperbolic cosine, and hyperbolic tangent functions.
 
 -/
 
-
-@[inherit_doc]
-local notation "abs'" => Abs.abs
-
 open IsAbsoluteValue
 
 open Classical BigOperators ComplexConjugate
@@ -331,7 +327,7 @@ open CauSeq
 namespace Complex
 
 theorem isCauSeq_abs_exp (z : ℂ) :
-    IsCauSeq Abs.abs fun n => ∑ m in range n, abs (z ^ m / m.factorial) :=
+    IsCauSeq _root_.abs fun n => ∑ m in range n, abs (z ^ m / m.factorial) :=
   let ⟨n, hn⟩ := exists_nat_gt (abs z)
   have hn0 : (0 : ℝ) < n := lt_of_le_of_lt (abs.nonneg _) hn
   series_ratio_test n (abs z / n) (div_nonneg (abs.nonneg _) (le_of_lt hn0))
@@ -553,7 +549,7 @@ theorem exp_conj : exp (conj x) = conj (exp x) := by
   dsimp [exp]
   rw [← lim_conj]
   refine' congr_arg CauSeq.lim (CauSeq.ext fun _ => _)
-  dsimp [exp', Function.comp_def, isCauSeq_conj, cauSeqConj]
+  dsimp [exp', Function.comp_def, cauSeqConj]
   rw [(starRingEnd _).map_sum]
   refine' sum_congr rfl fun n _ => _
   rw [map_div₀, map_pow, ← ofReal_nat_cast, conj_ofReal]
@@ -1453,7 +1449,7 @@ open IsAbsoluteValue Nat
 
 theorem sum_le_exp_of_nonneg {x : ℝ} (hx : 0 ≤ x) (n : ℕ) : ∑ i in range n, x ^ i / i ! ≤ exp x :=
   calc
-    ∑ i in range n, x ^ i / i ! ≤ lim (⟨_, isCauSeq_re (exp' x)⟩ : CauSeq ℝ Abs.abs) := by
+    ∑ i in range n, x ^ i / i ! ≤ lim (⟨_, isCauSeq_re (exp' x)⟩ : CauSeq ℝ abs) := by
       refine' le_lim (CauSeq.le_of_exists ⟨n, fun j hj => _⟩)
       simp only [exp', const_apply, re_sum]
       norm_cast
@@ -1592,7 +1588,7 @@ theorem sum_div_factorial_le {α : Type*} [LinearOrderedField α] (n j : ℕ) (h
       · rw [← Nat.cast_pow, ← Nat.cast_mul, Nat.cast_le, add_comm]
         exact Nat.factorial_mul_pow_le_factorial
     _ = (n.factorial : α)⁻¹ * ∑ m in range (j - n), (n.succ : α)⁻¹ ^ m := by
-      simp [mul_inv, mul_sum.symm, sum_mul.symm, mul_comm, inv_pow]
+      simp [mul_inv, ← mul_sum, ← sum_mul, mul_comm, inv_pow]
     _ = ((n.succ : α) - n.succ * (n.succ : α)⁻¹ ^ (j - n)) / (n.factorial * n) := by
       have h₁ : (n.succ : α) ≠ 1 :=
         @Nat.cast_one α _ ▸ mt Nat.cast_inj.1 (mt Nat.succ.inj (pos_iff_ne_zero.1 hn))
@@ -1631,7 +1627,7 @@ theorem exp_bound {x : ℂ} (hx : abs x ≤ 1) {n : ℕ} (hn : 0 < n) :
       · rw [abv_pow abs]
         exact pow_le_one _ (abs.nonneg _) hx
     _ = abs x ^ n * ∑ m in (range j).filter fun k => n ≤ k, (1 / m.factorial : ℝ) := by
-      simp [abs_mul, abv_pow abs, abs_div, mul_sum.symm]
+      simp [abs_mul, abv_pow abs, abs_div, ← mul_sum]
     _ ≤ abs x ^ n * (n.succ * (n.factorial * n : ℝ)⁻¹) := by
       gcongr
       exact sum_div_factorial_le _ _ hn
@@ -1719,7 +1715,7 @@ theorem exp_bound' {x : ℝ} (h1 : 0 ≤ x) (h2 : x ≤ 1) {n : ℕ} (hn : 0 < n
 #align real.exp_bound' Real.exp_bound'
 
 theorem abs_exp_sub_one_le {x : ℝ} (hx : |x| ≤ 1) : |exp x - 1| ≤ 2 * |x| := by
-  have : abs' x ≤ 1 := mod_cast hx
+  have : |x| ≤ 1 := mod_cast hx
   --Porting note: was
   --exact_mod_cast Complex.abs_exp_sub_one_le (x := x) this
   have := Complex.abs_exp_sub_one_le (x := x) (by simpa using this)
@@ -1775,7 +1771,7 @@ theorem exp_approx_succ {n} {x a₁ b₁ : ℝ} (m : ℕ) (e₁ : n + 1 = m) (a�
     |exp x - expNear n x a₁| ≤ |x| ^ n / n.factorial * b₁ := by
   refine' (abs_sub_le _ _ _).trans ((add_le_add_right h _).trans _)
   subst e₁; rw [expNear_succ, expNear_sub, abs_mul]
-  convert mul_le_mul_of_nonneg_left (a := abs' x ^ n / ↑(Nat.factorial n))
+  convert mul_le_mul_of_nonneg_left (a := |x| ^ n / ↑(Nat.factorial n))
       (le_sub_iff_add_le'.1 e) ?_ using 1
   · simp [mul_add, pow_succ', div_eq_mul_inv, abs_mul, abs_inv, ← pow_abs, mul_inv, Nat.factorial]
     ac_rfl

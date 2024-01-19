@@ -86,7 +86,7 @@ instance concreteCategory : ConcreteCategory.{u} (Bundled c)
 
 variable {hom}
 
-attribute [local instance] ConcreteCategory.funLike
+attribute [local instance] ConcreteCategory.instDFunLike
 
 /-- A version of `HasForget₂.mk'` for categories defined using `@BundledHom`. -/
 def mkHasForget₂ {d : Type u → Type u} {hom_d : ∀ ⦃α β : Type u⦄ (_ : d α) (_ : d β), Type u}

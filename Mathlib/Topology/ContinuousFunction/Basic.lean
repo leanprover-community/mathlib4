@@ -13,7 +13,7 @@ import Mathlib.Topology.Homeomorph
 
 In this file we define the type `ContinuousMap` of continuous bundled maps.
 
-We use the `FunLike` design, so each type of morphisms has a companion typeclass which is meant to
+We use the `DFunLike` design, so each type of morphisms has a companion typeclass which is meant to
 be satisfied by itself and all stricter types.
 -/
 
@@ -42,7 +42,7 @@ section
 
 You should extend this class when you extend `ContinuousMap`. -/
 class ContinuousMapClass (F : Type*) (α β : outParam <| Type*) [TopologicalSpace α]
-  [TopologicalSpace β] extends FunLike F α fun _ => β where
+  [TopologicalSpace β] extends DFunLike F α fun _ => β where
   /-- Continuity -/
   map_continuous (f : F) : Continuous f
 #align continuous_map_class ContinuousMapClass
@@ -86,17 +86,17 @@ instance toContinuousMapClass : ContinuousMapClass C(α, β) α β where
   map_continuous := ContinuousMap.continuous_toFun
 
 /- Porting note: Probably not needed anymore
-/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
+/-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`
 directly. -/
 instance : CoeFun C(α, β) fun _ => α → β :=
-  FunLike.hasCoeToFun-/
+  DFunLike.hasCoeToFun-/
 
 @[simp]
 theorem toFun_eq_coe {f : C(α, β)} : f.toFun = (f : α → β) :=
   rfl
 #align continuous_map.to_fun_eq_coe ContinuousMap.toFun_eq_coe
 
-instance : CanLift (α → β) C(α, β) FunLike.coe Continuous := ⟨fun f hf ↦ ⟨⟨f, hf⟩, rfl⟩⟩
+instance : CanLift (α → β) C(α, β) DFunLike.coe Continuous := ⟨fun f hf ↦ ⟨⟨f, hf⟩, rfl⟩⟩
 
 /-- See note [custom simps projection]. -/
 def Simps.apply (f : C(α, β)) : α → β := f
@@ -111,7 +111,7 @@ protected theorem coe_coe {F : Type*} [ContinuousMapClass F α β] (f : F) : ⇑
 
 @[ext]
 theorem ext {f g : C(α, β)} (h : ∀ a, f a = g a) : f = g :=
-  FunLike.ext _ _ h
+  DFunLike.ext _ _ h
 #align continuous_map.ext ContinuousMap.ext
 
 /-- Copy of a `ContinuousMap` with a new `toFun` equal to the old one. Useful to fix definitional
@@ -127,7 +127,7 @@ theorem coe_copy (f : C(α, β)) (f' : α → β) (h : f' = f) : ⇑(f.copy f' h
 #align continuous_map.coe_copy ContinuousMap.coe_copy
 
 theorem copy_eq (f : C(α, β)) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
-  FunLike.ext' h
+  DFunLike.ext' h
 #align continuous_map.copy_eq ContinuousMap.copy_eq
 
 variable {f g : C(α, β)}
@@ -147,12 +147,12 @@ protected theorem continuousAt (f : C(α, β)) (x : α) : ContinuousAt f x :=
   f.continuous.continuousAt
 #align continuous_map.continuous_at ContinuousMap.continuousAt
 
-/-- Deprecated. Use `FunLike.congr_fun` instead. -/
+/-- Deprecated. Use `DFunLike.congr_fun` instead. -/
 protected theorem congr_fun {f g : C(α, β)} (H : f = g) (x : α) : f x = g x :=
   H ▸ rfl
 #align continuous_map.congr_fun ContinuousMap.congr_fun
 
-/-- Deprecated. Use `FunLike.congr_arg` instead. -/
+/-- Deprecated. Use `DFunLike.congr_arg` instead. -/
 protected theorem congr_arg (f : C(α, β)) {x y : α} (h : x = y) : f x = f y :=
   h ▸ rfl
 #align continuous_map.congr_arg ContinuousMap.congr_arg
@@ -273,7 +273,7 @@ theorem comp_const (f : C(β, γ)) (b : β) : f.comp (const α b) = const α (f 
 @[simp]
 theorem cancel_right {f₁ f₂ : C(β, γ)} {g : C(α, β)} (hg : Surjective g) :
     f₁.comp g = f₂.comp g ↔ f₁ = f₂ :=
-  ⟨fun h => ext <| hg.forall.2 <| FunLike.ext_iff.1 h, congr_arg (ContinuousMap.comp · g)⟩
+  ⟨fun h => ext <| hg.forall.2 <| DFunLike.ext_iff.1 h, congr_arg (ContinuousMap.comp · g)⟩
 #align continuous_map.cancel_right ContinuousMap.cancel_right
 
 @[simp]
@@ -284,7 +284,7 @@ theorem cancel_left {f : C(β, γ)} {g₁ g₂ : C(α, β)} (hf : Injective f) :
 
 instance [Nonempty α] [Nontrivial β] : Nontrivial C(α, β) :=
   ⟨let ⟨b₁, b₂, hb⟩ := exists_pair_ne β
-  ⟨const _ b₁, const _ b₂, fun h => hb <| FunLike.congr_fun h <| Classical.arbitrary α⟩⟩
+  ⟨const _ b₁, const _ b₂, fun h => hb <| DFunLike.congr_fun h <| Classical.arbitrary α⟩⟩
 
 section Prod
 
@@ -427,8 +427,8 @@ theorem restrict_apply_mk (f : C(α, β)) (s : Set α) (x : α) (hx : x ∈ s) :
 
 theorem injective_restrict [T2Space β] {s : Set α} (hs : Dense s) :
     Injective (restrict s : C(α, β) → C(s, β)) := fun f g h ↦
-  FunLike.ext' <| f.continuous.ext_on hs g.continuous <| Set.restrict_eq_restrict_iff.1 <|
-    congr_arg FunLike.coe h
+  DFunLike.ext' <| f.continuous.ext_on hs g.continuous <| Set.restrict_eq_restrict_iff.1 <|
+    congr_arg DFunLike.coe h
 
 /-- The restriction of a continuous map to the preimage of a set. -/
 @[simps]

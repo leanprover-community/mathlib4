@@ -196,7 +196,12 @@ theorem _root_.Algebra.coe_lmul_eq_mul : ⇑(Algebra.lmul R A) = mul R A :=
 #align algebra.coe_lmul_eq_mul Algebra.coe_lmul_eq_mul
 
 theorem _root_.Algebra.lmul_injective : Function.Injective (Algebra.lmul R A) :=
-  fun a₁ a₂ h ↦ by simpa using FunLike.congr_fun h 1
+  fun a₁ a₂ h ↦ by simpa using DFunLike.congr_fun h 1
+
+theorem _root_.Algebra.lmul_isUnit_iff {x : A} :
+    IsUnit (Algebra.lmul R A x) ↔ IsUnit x := by
+  rw [Module.End_isUnit_iff, Iff.comm]
+  exact IsUnit.isUnit_iff_mulLeft_bijective
 
 @[simp]
 theorem mulLeft_eq_zero_iff (a : A) : mulLeft R a = 0 ↔ a = 0 := by

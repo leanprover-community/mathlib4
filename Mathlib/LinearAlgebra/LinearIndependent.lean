@@ -144,7 +144,7 @@ theorem linearIndependent_iff' :
               (fun j _hjs hji => by rw [Finsupp.lapply_apply, Finsupp.single_eq_of_ne hji])
               fun hnis => hnis.elim his
         _ = (∑ j in s, Finsupp.single j (g j)) i := (map_sum ..).symm
-        _ = 0 := FunLike.ext_iff.1 h i,
+        _ = 0 := DFunLike.ext_iff.1 h i,
       fun hf l hl =>
       Finsupp.ext fun i =>
         _root_.by_contradiction fun hni => hni <| hf _ _ hl _ <| Finsupp.mem_support_iff.2 hni⟩
@@ -328,7 +328,7 @@ theorem linearIndependent_of_subsingleton [Subsingleton R] : LinearIndependent R
 
 theorem linearIndependent_equiv (e : ι ≃ ι') {f : ι' → M} :
     LinearIndependent R (f ∘ e) ↔ LinearIndependent R f :=
-  ⟨fun h => Function.comp.right_id f ▸ e.self_comp_symm ▸ h.comp _ e.symm.injective, fun h =>
+  ⟨fun h => Function.comp_id f ▸ e.self_comp_symm ▸ h.comp _ e.symm.injective, fun h =>
     h.comp _ e.injective⟩
 #align linear_independent_equiv linearIndependent_equiv
 
@@ -1199,17 +1199,17 @@ theorem linearIndependent_monoidHom (G : Type*) [Monoid G] (L : Type*) [CommRing
 #align linear_independent_monoid_hom linearIndependent_monoidHom
 
 lemma linearIndependent_algHom_toLinearMap
-    (K L) [CommSemiring K] [CommRing L] [IsDomain L] [Algebra K L] :
-    LinearIndependent L (AlgHom.toLinearMap : (L →ₐ[K] L) → L →ₗ[K] L) := by
-  apply LinearIndependent.of_comp (LinearMap.ltoFun K L L)
-  exact (linearIndependent_monoidHom L L).comp
+    (K M L) [CommSemiring K] [Semiring M] [Algebra K M] [CommRing L] [IsDomain L] [Algebra K L] :
+    LinearIndependent L (AlgHom.toLinearMap : (M →ₐ[K] L) → M →ₗ[K] L) := by
+  apply LinearIndependent.of_comp (LinearMap.ltoFun K M L)
+  exact (linearIndependent_monoidHom M L).comp
     (RingHom.toMonoidHom ∘ AlgHom.toRingHom)
-    (fun _ _ e ↦ AlgHom.ext (FunLike.congr_fun e : _))
+    (fun _ _ e ↦ AlgHom.ext (DFunLike.congr_fun e : _))
 
-lemma linearIndependent_algHom_toLinearMap'
-    (K L) [CommRing K] [CommRing L] [IsDomain L] [Algebra K L] [NoZeroSMulDivisors K L] :
-    LinearIndependent K (AlgHom.toLinearMap : (L →ₐ[K] L) → L →ₗ[K] L) := by
-  apply (linearIndependent_algHom_toLinearMap K L).restrict_scalars
+lemma linearIndependent_algHom_toLinearMap' (K M L) [CommRing K]
+    [Semiring M] [Algebra K M] [CommRing L] [IsDomain L] [Algebra K L] [NoZeroSMulDivisors K L] :
+    LinearIndependent K (AlgHom.toLinearMap : (M →ₐ[K] L) → M →ₗ[K] L) := by
+  apply (linearIndependent_algHom_toLinearMap K M L).restrict_scalars
   simp_rw [Algebra.smul_def, mul_one]
   exact NoZeroSMulDivisors.algebraMap_injective K L
 
@@ -1396,7 +1396,7 @@ theorem linearIndependent_fin2 {f : Fin 2 → V} :
 #align linear_independent_fin2 linearIndependent_fin2
 
 theorem exists_linearIndependent_extension (hs : LinearIndependent K ((↑) : s → V)) (hst : s ⊆ t) :
-    ∃ (b : _) (_ : b ⊆ t), s ⊆ b ∧ t ⊆ span K b ∧ LinearIndependent K ((↑) : b → V) := by
+    ∃ b ⊆ t, s ⊆ b ∧ t ⊆ span K b ∧ LinearIndependent K ((↑) : b → V) := by
   -- Porting note: The placeholder should be solved before `rcases`.
   have := by
     refine zorn_subset_nonempty { b | b ⊆ t ∧ LinearIndependent K ((↑) : b → V) } ?_ _ ⟨hst, hs⟩
@@ -1416,7 +1416,7 @@ theorem exists_linearIndependent_extension (hs : LinearIndependent K ((↑) : s 
 variable (K t)
 
 theorem exists_linearIndependent :
-    ∃ (b : _) (_ : b ⊆ t), span K b = span K t ∧ LinearIndependent K ((↑) : b → V) := by
+    ∃ b ⊆ t, span K b = span K t ∧ LinearIndependent K ((↑) : b → V) := by
   obtain ⟨b, hb₁, -, hb₂, hb₃⟩ :=
     exists_linearIndependent_extension (linearIndependent_empty K V) (Set.empty_subset t)
   exact ⟨b, hb₁, (span_eq_of_le _ hb₂ (Submodule.span_mono hb₁)).symm, hb₃⟩

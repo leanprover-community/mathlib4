@@ -6,6 +6,7 @@ Authors: Johan Commelin
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.Order.Field.Canonical.Basic
 import Mathlib.Algebra.Order.Nonneg.Field
 import Mathlib.Algebra.Order.Nonneg.Floor
@@ -877,10 +878,7 @@ end Sub
 
 section Inv
 
-theorem sum_div {ι} (s : Finset ι) (f : ι → ℝ≥0) (b : ℝ≥0) :
-    (∑ i in s, f i) / b = ∑ i in s, f i / b :=
-  Finset.sum_div
-#align nnreal.sum_div NNReal.sum_div
+#align nnreal.sum_div Finset.sum_div
 
 @[simp]
 theorem inv_le {r p : ℝ≥0} (h : r ≠ 0) : r⁻¹ ≤ p ↔ 1 ≤ r * p := by
