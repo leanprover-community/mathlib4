@@ -6,46 +6,84 @@ on:
 
 jobs:
   build:
-    name: Build, lint and update nolints
+    name: Build, lint and update nolints and style exceptions
     runs-on: ubuntu-latest
-    env:
-      # number of commits to check for olean cache
-      GIT_HISTORY_DEPTH: 20
     steps:
-      - uses: actions/checkout@v3
-        with:
-          repository: leanprover-community/mathlib
-          fetch-depth: ${{ env.GIT_HISTORY_DEPTH }}
+      - name: cleanup
+        run: |
+          find . -name . -o -prune -exec rm -rf -- {} +
+          # Delete all but the 5 most recent toolchains.
+          # Make sure to delete both the `~/.elan/toolchains/X` directory and the `~/.elan/update-hashes/X` file.
+          # Skip symbolic links (`-type d`), the current directory (`! -name .`), and `nightly` and `stable`.
+          cd ~/.elan/toolchains && find . -maxdepth 1 -type d ! -name . -print0 | xargs -0 ls -1td | grep -v 'nightly$' | grep -v 'stable$' | tail -n +6 | xargs -I {} sh -c 'echo {} && rm -rf "{}" && rm "../update-hashes/{}"' || true
+
+      # The Hoskinson runners may not have jq installed, so do that now.
+      - name: 'Setup jq'
+        uses: dcarbone/install-jq-action@v1.0.1
 
       - name: install elan
         run: |
           set -o pipefail
-          curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- --default-toolchain none -y
-          ~/.elan/bin/lean --version
+          curl -sSfL https://github.com/leanprover/elan/releases/download/v3.0.0/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
+          ./elan-init -y --default-toolchain none
           echo "$HOME/.elan/bin" >> $GITHUB_PATH
-          echo "name=short_lean_version::$(~/.elan/bin/lean --run scripts/lean_version.lean)" >> $GITHUB_ENV
 
-      - name: install Python
-        uses: actions/setup-python@v1
-        with:
-          python-version: 3.8
+      - uses: actions/checkout@v3
 
-      - name: try to find olean cache
-        run: ./scripts/fetch_olean_cache.sh
+      # We update `Mathlib.lean` as a convenience here,
+      # but verify that this didn't change anything in the `check_imported` job.
+      - name: update Mathlib.lean
+        run: |
+          find Mathlib -name "*.lean" | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib.lean
 
-      - name: leanpkg build
+      - name: If using a lean-pr-release toolchain, uninstall
+        run: |
+          if [[ `cat lean-toolchain` =~ ^leanprover/lean4-pr-releases:pr-release-[0-9]+$ ]]; then
+            echo "Uninstalling transient toolchain `cat lean-toolchain`"
+            elan toolchain uninstall `cat lean-toolchain`
+          fi
+
+      - name: print lean and lake versions
+        run: |
+          lean --version
+          lake --version
+
+      - name: build cache
+        run: |
+          lake build cache
+
+      - name: prune ProofWidgets .lake
+        run: |
+          # The ProofWidgets release contains not just the `.js` (which we need in order to build)
+          # but also `.oleans`, which may have been built with the wrong toolchain.
+          # This removes them.
+          # See discussion at https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/nightly-testing/near/411225235
+          rm -rf .lake/packages/proofwidgets/.lake/build/lib
+          rm -rf .lake/packages/proofwidgets/.lake/build/ir
+
+      - name: get cache
+        run: |
+          lake exe cache clean
+          lake exe cache get
+
+      - name: build mathlib
         id: build
-        run: |
-          leanpkg configure
-          lean --json -T100000 --make src | python scripts/detect_errors.py
+        uses: liskin/gh-problem-matcher-wrap@v2
+        with:
+          linters: gcc
+          run: |
+            bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build -KCI | tee stdout.log"
 
-      - name: lint
-        run: |
-          ./scripts/mk_all.sh
-          lean --run scripts/lint_mathlib.lean
-          mv nolints.txt scripts/nolints.txt
-          ./scripts/update-style-exceptions.sh
-          git diff
+      - name: lint mathlib
+        id: lint
+        uses: liskin/gh-problem-matcher-wrap@v2
+        with:
+          linters: gcc
+          run: |
+            env LEAN_ABORT_ON_PANIC=1 lake exe runLinter Mathlib
+            mv nolints.json scripts/nolints.json
+            ./scripts/update-style-exceptions.sh
+            git diff
 
       - name: configure git setup
         run: |
@@ -58,7 +96,7 @@ jobs:
           # github using a different username.
           git config --unset http.https://github.com/.extraheader
 
-      - name: update nolints.txt
+      - name: update nolints.json and style-exceptions.txt
         run: ./scripts/update_nolints.sh
         env:
           DEPLOY_GITHUB_TOKEN: ${{ secrets.LCB_TOKEN }}
