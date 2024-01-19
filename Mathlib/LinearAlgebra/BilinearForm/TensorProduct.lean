@@ -144,7 +144,7 @@ theorem tensorDistribEquiv_toLinearMap :
 @[simp]
 theorem tensorDistribEquiv_apply (B : BilinForm R M₁ ⊗ BilinForm R M₂) :
     tensorDistribEquiv R (M₁ := M₁) (M₂ := M₂) B = tensorDistrib R R B :=
-  FunLike.congr_fun (tensorDistribEquiv_toLinearMap R M₁ M₂) B
+  DFunLike.congr_fun (tensorDistribEquiv_toLinearMap R M₁ M₂) B
 #align bilin_form.tensor_distrib_equiv_apply BilinForm.tensorDistribEquiv_apply
 
 end CommRing

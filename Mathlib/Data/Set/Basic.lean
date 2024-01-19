@@ -3,12 +3,13 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
+import Mathlib.Init.ZeroOne
+import Mathlib.Data.Set.Defs
+import Mathlib.Order.Basic
 import Mathlib.Order.SymmDiff
-import Mathlib.Logic.Function.Iterate
 import Mathlib.Tactic.Tauto
 import Mathlib.Tactic.ByContra
 import Mathlib.Util.Delaborators
-import Mathlib.Init.ZeroOne
 
 #align_import data.set.basic from "leanprover-community/mathlib"@"001ffdc42920050657fd45bd2b8bfbec8eaaeb29"
 
@@ -66,15 +67,6 @@ set, sets, subset, subsets, union, intersection, insert, singleton, complement, 
 
 -/
 
--- https://github.com/leanprover/lean4/issues/2096
-compile_def% Union.union
-compile_def% Inter.inter
-compile_def% SDiff.sdiff
-compile_def% HasCompl.compl
-compile_def% EmptyCollection.emptyCollection
-compile_def% Insert.insert
-compile_def% Singleton.singleton
-
 /-! ### Set coercion to a type -/
 
 open Function
@@ -92,9 +84,9 @@ instance instBooleanAlgebraSet : BooleanAlgebra (Set α) :=
     lt := fun s t => s ⊆ t ∧ ¬t ⊆ s,
     inf := (· ∩ ·),
     bot := ∅,
-    compl := fun s => { x | x ∉ s },
+    compl := (·ᶜ),
     top := univ,
-    sdiff := fun s t => { x | x ∈ s ∧ x ∉ t } }
+    sdiff := (· \ ·) }
 
 instance : HasSSubset (Set α) :=
   ⟨(· < ·)⟩
@@ -142,19 +134,6 @@ alias ⟨_root_.LE.le.subset, _root_.HasSubset.Subset.le⟩ := le_iff_subset
 
 alias ⟨_root_.LT.lt.ssubset, _root_.HasSSubset.SSubset.lt⟩ := lt_iff_ssubset
 #align has_ssubset.ssubset.lt HasSSubset.SSubset.lt
-
--- Porting note: I've introduced this abbreviation, with the `@[coe]` attribute,
--- so that `norm_cast` has something to index on.
--- It is currently an abbreviation so that instance coming from `Subtype` are available.
--- If you're interested in making it a `def`, as it probably should be,
--- you'll then need to create additional instances (and possibly prove lemmas about them).
--- The first error should appear below at `monotoneOn_iff_monotone`.
-/-- Given the set `s`, `Elem s` is the `Type` of element of `s`. -/
-@[coe, reducible] def Elem (s : Set α) : Type u := { x // x ∈ s }
-
-/-- Coercion from a set to the corresponding subtype. -/
-instance {α : Type u} : CoeSort (Set α) (Type u) :=
-  ⟨Elem⟩
 
 instance PiSetCoe.canLift (ι : Type u) (α : ι → Type v) [∀ i, Nonempty (α i)] (s : Set ι) :
     CanLift (∀ i : s, α i) (∀ i, α i) (fun f i => f i) fun _ => True :=
@@ -254,9 +233,6 @@ theorem forall_in_swap {p : α → β → Prop} : (∀ a ∈ s, ∀ (b), p a b) 
 #align set.forall_in_swap Set.forall_in_swap
 
 /-! ### Lemmas about `mem` and `setOf` -/
-
-@[simp, mfld_simps] theorem mem_setOf_eq {x : α} {p : α → Prop} : (x ∈ {y | p y}) = p x := rfl
-#align set.mem_set_of_eq Set.mem_setOf_eq
 
 theorem mem_setOf {a : α} {p : α → Prop} : a ∈ { x | p x } ↔ p a :=
   Iff.rfl
@@ -666,11 +642,6 @@ theorem setOf_true : { _x : α | True } = univ :=
 #align set.set_of_true Set.setOf_true
 
 @[simp] theorem setOf_top : { _x : α | ⊤ } = univ := rfl
-
-@[simp, mfld_simps]
-theorem mem_univ (x : α) : x ∈ @univ α :=
-  trivial
-#align set.mem_univ Set.mem_univ
 
 @[simp]
 theorem univ_eq_empty_iff : (univ : Set α) = ∅ ↔ IsEmpty α :=
@@ -1649,7 +1620,6 @@ theorem inter_diff_distrib_right (s t u : Set α) : s \ t ∩ u = (s ∩ u) \ (t
 
 /-! ### Lemmas about complement -/
 
-
 theorem compl_def (s : Set α) : sᶜ = { x | x ∉ s } :=
   rfl
 #align set.compl_def Set.compl_def
@@ -1665,11 +1635,6 @@ theorem compl_setOf {α} (p : α → Prop) : { a | p a }ᶜ = { a | ¬p a } :=
 theorem not_mem_of_mem_compl {s : Set α} {x : α} (h : x ∈ sᶜ) : x ∉ s :=
   h
 #align set.not_mem_of_mem_compl Set.not_mem_of_mem_compl
-
-@[simp]
-theorem mem_compl_iff (s : Set α) (x : α) : x ∈ sᶜ ↔ x ∉ s :=
-  Iff.rfl
-#align set.mem_compl_iff Set.mem_compl_iff
 
 theorem not_mem_compl_iff {x : α} : x ∉ sᶜ ↔ x ∈ s :=
   not_not
@@ -1821,20 +1786,6 @@ theorem inter_compl_nonempty_iff {s t : Set α} : (s ∩ tᶜ).Nonempty ↔ ¬s 
 #align set.inter_compl_nonempty_iff Set.inter_compl_nonempty_iff
 
 /-! ### Lemmas about set difference -/
-
-
-theorem diff_eq (s t : Set α) : s \ t = s ∩ tᶜ :=
-  rfl
-#align set.diff_eq Set.diff_eq
-
-@[simp]
-theorem mem_diff {s t : Set α} (x : α) : x ∈ s \ t ↔ x ∈ s ∧ x ∉ t :=
-  Iff.rfl
-#align set.mem_diff Set.mem_diff
-
-theorem mem_diff_of_mem {s t : Set α} {x : α} (h1 : x ∈ s) (h2 : x ∉ t) : x ∈ s \ t :=
-  ⟨h1, h2⟩
-#align set.mem_diff_of_mem Set.mem_diff_of_mem
 
 theorem not_mem_diff_of_mem {s t : Set α} {x : α} (hx : x ∈ t) : x ∉ s \ t := fun h => h.2 hx
 #align set.not_mem_diff_of_mem Set.not_mem_diff_of_mem
