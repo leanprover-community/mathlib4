@@ -1275,8 +1275,8 @@ theorem empty_card : Fintype.card (∅ : Set α) = 0 :=
   rfl
 #align set.empty_card Set.empty_card
 
-theorem empty_card' {h : Fintype.{u} (∅ : Set α)} : @Fintype.card (∅ : Set α) h = 0 :=
-  by simp
+theorem empty_card' {h : Fintype.{u} (∅ : Set α)} : @Fintype.card (∅ : Set α) h = 0 := by
+  simp
 #align set.empty_card' Set.empty_card'
 
 theorem card_fintypeInsertOfNotMem {a : α} (s : Set α) [Fintype s] (h : a ∉ s) :
