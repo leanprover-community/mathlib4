@@ -15,7 +15,19 @@ import Mathlib.Topology.MetricSpace.HausdorffDistance.Basic
 * `Metric.cthickening δ s`, the closed thickening by radius `δ` of a set `s` in a pseudo emetric
   space.
 
-TODO: complete this, including main results!
+## Main results
+* `Disjoint.exists_thickenings`: two disjoint sets admit disjoint thickenings
+* `Disjoint.exists_cthickenings`: two disjoint sets admit disjoint closed thickenings
+* `IsCompact.exists_cthickening_subset_open`: if `s` is compact, `t` is open and `s ⊆ t`,
+  some `cthickening` of `s` is contained in `t`.
+
+* `Metric.hasBasis_nhdsSet_cthickening`: the `cthickening`s of a compact set `K` form a basis
+  of the neighbourhoods of `K`
+* `Metric.closure_eq_iInter_cthickening'`: the closure of a set equals the intersection
+  of its closed thickenings of positive radii accumulating at zero.
+  The same holds for open thickenings.
+* `IsCompact.cthickening_eq_biUnion_closedBall`: if `s` is compact, `cthickening δ s` is the union
+  of `closedBall`s of radius `δ` around `x : E`.
 
 -/
 
@@ -429,6 +441,7 @@ theorem _root_.Disjoint.exists_cthickenings (hst : Disjoint s t) (hs : IsCompact
     exact cthickening_subset_thickening' hδ (half_lt_self hδ) _
 #align disjoint.exists_cthickenings Disjoint.exists_cthickenings
 
+/-- If `s` is compact, `t` is open and `s ⊆ t`, some `cthickening` of `s` is contained in `t`. -/
 theorem _root_.IsCompact.exists_cthickening_subset_open (hs : IsCompact s) (ht : IsOpen t)
     (hst : s ⊆ t) :
     ∃ δ, 0 < δ ∧ cthickening δ s ⊆ t :=
