@@ -313,6 +313,7 @@ import Mathlib.Algebra.Homology.Single
 import Mathlib.Algebra.Homology.SingleHomology
 import Mathlib.Algebra.Homology.SpectralObject.Basic
 import Mathlib.Algebra.Homology.SpectralObject.Convergence
+import Mathlib.Algebra.Homology.SpectralObject.ConvergenceNew
 import Mathlib.Algebra.Homology.SpectralObject.Differentials
 import Mathlib.Algebra.Homology.SpectralObject.FirstPage
 import Mathlib.Algebra.Homology.SpectralObject.Homology
