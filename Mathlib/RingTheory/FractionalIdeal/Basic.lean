@@ -134,6 +134,40 @@ protected theorem isFractional (I : FractionalIdeal S P) : IsFractional S (I : S
   I.prop
 #align fractional_ideal.is_fractional FractionalIdeal.isFractional
 
+/-- An element of `S` such that `I.den • I = I.num`, see `FractionalIdeal.num` and
+`FractionalIdeal.den_mul_eq_num`. -/
+noncomputable def den (I : FractionalIdeal S P) : S :=
+  ⟨I.2.choose, I.2.choose_spec.1⟩
+
+/-- An ideal of `R` such that `I.den • I = I.num`, see `FractionalIdeal.den` and
+`FractionalIdeal.den_mul_eq_num`. -/
+noncomputable def num (I : FractionalIdeal S P) : Ideal R :=
+  (I.den • (I : Submodule R P)).comap (Algebra.linearMap R P)
+
+theorem den_mul_self_eq_num (I : FractionalIdeal S P) :
+    I.den • (I : Submodule R P) = Submodule.map (Algebra.linearMap R P) I.num := by
+  rw [den, num, Submodule.map_comap_eq]
+  refine (inf_of_le_right ?_).symm
+  rintro _ ⟨a, ha, rfl⟩
+  exact I.2.choose_spec.2 a ha
+
+/-- The linear equivalence between the fractional ideal `I` and the integral ideal `I.num`
+defined by mapping `x` to `den I • x`. -/
+noncomputable def equivNum [Nontrivial P] [NoZeroSMulDivisors R P]
+    {I : FractionalIdeal S P} (h_nz : (I.den : R) ≠ 0) : I ≃ₗ[R] I.num := by
+  refine LinearEquiv.trans
+    (LinearEquiv.ofBijective ((DistribMulAction.toLinearMap R P I.den).restrict fun _ hx ↦ ?_)
+      ⟨fun _ _ hxy ↦ ?_, fun ⟨y, hy⟩ ↦ ?_⟩)
+    (Submodule.equivMapOfInjective (Algebra.linearMap R P)
+      (NoZeroSMulDivisors.algebraMap_injective R P) (num I)).symm
+  · rw [← den_mul_self_eq_num]
+    exact Submodule.smul_mem_pointwise_smul _ _ _ hx
+  · simp_rw [LinearMap.restrict_apply, DistribMulAction.toLinearMap_apply, Subtype.mk.injEq] at hxy
+    rwa [Submonoid.smul_def, Submonoid.smul_def, smul_right_inj h_nz, SetCoe.ext_iff] at hxy
+  · rw [← den_mul_self_eq_num] at hy
+    obtain ⟨x, hx, hxy⟩ := hy
+    exact ⟨⟨x, hx⟩, by simp_rw [LinearMap.restrict_apply, Subtype.ext_iff, ← hxy]; rfl⟩
+
 section SetLike
 
 instance : SetLike (FractionalIdeal S P) P where
@@ -149,6 +183,15 @@ theorem mem_coe {I : FractionalIdeal S P} {x : P} : x ∈ (I : Submodule R P) �
 theorem ext {I J : FractionalIdeal S P} : (∀ x, x ∈ I ↔ x ∈ J) → I = J :=
   SetLike.ext
 #align fractional_ideal.ext FractionalIdeal.ext
+
+@[simp]
+ theorem equivNum_apply [Nontrivial P] [NoZeroSMulDivisors R P] {I : FractionalIdeal S P}
+    (h_nz : (I.den : R) ≠ 0) (x : I) :
+    algebraMap R P (equivNum h_nz x) = I.den • x := by
+  change Algebra.linearMap R P _ = _
+  rw [equivNum, LinearEquiv.trans_apply, LinearEquiv.ofBijective_apply, LinearMap.restrict_apply,
+    Submodule.map_equivMapOfInjective_symm_apply, Subtype.coe_mk,
+    DistribMulAction.toLinearMap_apply]
 
 /-- Copy of a `FractionalIdeal` with a new underlying set equal to the old one.
 Useful to fix definitional equalities. -/
@@ -336,6 +379,19 @@ instance : Inhabited (FractionalIdeal S P) :=
 
 instance : One (FractionalIdeal S P) :=
   ⟨(⊤ : Ideal R)⟩
+
+theorem zero_of_num_eq_bot [NoZeroSMulDivisors R P] (hS : 0 ∉ S) {I : FractionalIdeal S P}
+    (hI : I.num = ⊥) : I = 0 := by
+  rw [← coeToSubmodule_eq_bot, eq_bot_iff]
+  intro x hx
+  suffices (den I : R) • x = 0 from
+    (smul_eq_zero.mp this).resolve_left (ne_of_mem_of_not_mem (SetLike.coe_mem _) hS)
+  have h_eq : I.den • (I : Submodule R P) = ⊥ := by rw [den_mul_self_eq_num, hI, Submodule.map_bot]
+  exact (Submodule.eq_bot_iff _).mp h_eq (den I • x) ⟨x, hx, rfl⟩
+
+theorem num_zero_eq (h_inj : Function.Injective (algebraMap R P)) :
+    num (0 : FractionalIdeal S P) = 0 := by
+  simpa [num, LinearMap.ker_eq_bot] using h_inj
 
 variable (S)
 
@@ -1304,6 +1360,17 @@ theorem mem_spanSingleton {x y : P} : x ∈ spanSingleton S y ↔ ∃ z : R, z �
 theorem mem_spanSingleton_self (x : P) : x ∈ spanSingleton S x :=
   (mem_spanSingleton S).mpr ⟨1, one_smul _ _⟩
 #align fractional_ideal.mem_span_singleton_self FractionalIdeal.mem_spanSingleton_self
+
+/-- A version of `FractionalIdeal.den_mul_self_eq_num` in terms of fractional ideals. -/
+theorem den_mul_self_eq_num' (I : FractionalIdeal S P) :
+    spanSingleton S (algebraMap R P I.den) * I = I.num := by
+  apply coeToSubmodule_injective
+  dsimp only
+  rw [coe_mul, ← smul_eq_mul, coe_spanSingleton, smul_eq_mul, Submodule.span_singleton_mul]
+  convert I.den_mul_self_eq_num using 1
+  ext
+  erw [Set.mem_smul_set, Set.mem_smul_set]
+  simp [Algebra.smul_def]
 
 variable {S}
 

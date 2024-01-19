@@ -98,7 +98,7 @@ theorem Lifts.exists_lift_of_splits (x : Lifts F E K) {s : E} (h1 : IsIntegral F
 section
 
 private theorem exists_algHom_adjoin_of_splits'' {L : IntermediateField F E}
-     (f : L →ₐ[F] K) (hK : ∀ s ∈ S, IsIntegral L s ∧ (minpoly L s).Splits f.toRingHom) :
+    (f : L →ₐ[F] K) (hK : ∀ s ∈ S, IsIntegral L s ∧ (minpoly L s).Splits f.toRingHom) :
     ∃ φ : adjoin L S →ₐ[F] K, φ.comp (IsScalarTower.toAlgHom F L _) = f := by
   obtain ⟨φ, hfφ, hφ⟩ := zorn_nonempty_Ici₀ _
     (fun c _ hc _ _ ↦ Lifts.exists_upper_bound c hc) ⟨L, f⟩ le_rfl
@@ -175,7 +175,7 @@ theorem exists_algHom_adjoin_of_splits_of_aeval : ∃ φ : adjoin F S →ₐ[F] 
   rw [isAlgebraic_iff_isIntegral, isIntegral_iff] at ix
   obtain ⟨φ, hφ⟩ := exists_algHom_adjoin_of_splits hK ((algHomAdjoinIntegralEquiv F ix).symm
     ⟨y, mem_aroots.mpr ⟨minpoly.ne_zero ix, hy⟩⟩) (adjoin_simple_le_iff.mpr hx)
-  exact ⟨φ, (FunLike.congr_fun hφ <| AdjoinSimple.gen F x).trans <|
+  exact ⟨φ, (DFunLike.congr_fun hφ <| AdjoinSimple.gen F x).trans <|
     algHomAdjoinIntegralEquiv_symm_apply_gen F ix _⟩
 
 theorem exists_algHom_of_adjoin_splits_of_aeval : ∃ φ : E →ₐ[F] K, φ x = y :=

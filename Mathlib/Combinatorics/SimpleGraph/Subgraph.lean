@@ -720,7 +720,7 @@ def inclusion {x y : Subgraph G} (h : x ≤ y) : x.coe →g y.coe where
 
 theorem inclusion.injective {x y : Subgraph G} (h : x ≤ y) : Function.Injective (inclusion h) := by
   intro v w h
-  rw [inclusion, FunLike.coe, Subtype.mk_eq_mk] at h
+  rw [inclusion, DFunLike.coe, Subtype.mk_eq_mk] at h
   exact Subtype.ext h
 #align simple_graph.subgraph.inclusion.injective SimpleGraph.Subgraph.inclusion.injective
 

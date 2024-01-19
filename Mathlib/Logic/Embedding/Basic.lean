@@ -80,7 +80,7 @@ theorem Equiv.toEmbedding_apply (a : α) : f.toEmbedding a = f a :=
 #align equiv.to_embedding_apply Equiv.toEmbedding_apply
 
 theorem Equiv.toEmbedding_injective : Function.Injective (Equiv.toEmbedding : (α ≃ β) → (α ↪ β)) :=
-  fun _ _ h ↦ by rwa [FunLike.ext'_iff] at h ⊢
+  fun _ _ h ↦ by rwa [DFunLike.ext'_iff] at h ⊢
 
 instance Equiv.coeEmbedding : Coe (α ≃ β) (α ↪ β) :=
   ⟨Equiv.toEmbedding⟩
@@ -101,17 +101,17 @@ namespace Function
 namespace Embedding
 
 theorem coe_injective {α β} : @Injective (α ↪ β) (α → β) (λ f => ↑f) :=
-  FunLike.coe_injective
+  DFunLike.coe_injective
 #align function.embedding.coe_injective Function.Embedding.coe_injective
 
 @[ext]
 theorem ext {α β} {f g : Embedding α β} (h : ∀ x, f x = g x) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align function.embedding.ext Function.Embedding.ext
 
--- port note : in Lean 3 `FunLike.ext_iff.symm` works
+-- port note : in Lean 3 `DFunLike.ext_iff.symm` works
 theorem ext_iff {α β} {f g : Embedding α β} : (∀ x, f x = g x) ↔ f = g :=
-  Iff.symm (FunLike.ext_iff)
+  Iff.symm (DFunLike.ext_iff)
 #align function.embedding.ext_iff Function.Embedding.ext_iff
 
 @[simp]
