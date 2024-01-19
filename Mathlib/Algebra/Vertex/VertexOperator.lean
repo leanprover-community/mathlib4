@@ -313,7 +313,7 @@ theorem res_prod_left_ncoef_add (A B : VertexOperator R V) (m k : ℤ) (x y : V)
 
 theorem res_prod_left_ncoef_smul (A B : VertexOperator R V) (m k : ℤ) (r : R) (x : V) :
     res_prod_left_ncoef A B m k (r • x) = r • res_prod_left_ncoef A B m k x := by
-  simp only [res_prod_left_ncoef, Finset.smul_sum]--, res_prod_left_summand]-- map_smul, LinearMap.coe_mk, AddHom.coe_mk]
+  simp only [res_prod_left_ncoef, Finset.smul_sum]
   have h₁ : ∀(i : ℕ),
       r • res_prod_left_summand A B m k i x = res_prod_left_summand A B m k i (r • x) := by
     intro i
@@ -339,7 +339,8 @@ theorem res_prod_left_ncoef_smul (A B : VertexOperator R V) (m k : ℤ) (r : R) 
 /-- The `k`-th normalized coefficient in the left sum of the `m`-th residue product of `A` and `B`,
 as a linear map.
 -/
-noncomputable def res_prod_left_ncoef.linearMap (A B : VertexOperator R V) (m k : ℤ) : Module.End R V where
+noncomputable def res_prod_left_ncoef.linearMap (A B : VertexOperator R V) (m k : ℤ) :
+    Module.End R V where
   toFun := fun x => res_prod_left_ncoef A B m k x
   map_add' := by
     intro x y
