@@ -25,7 +25,7 @@ A set `s` in a topological space with a measure `μ` is *everywhere positive* (a
 The latter two statements have also versions when `μ` is inner regular for finite measure sets,
 assuming additionally that `s` has finite measure.
 
-* `IsEverywherePos.IsGdelta` proves that an everywhere positive compact closed set is a Gδ set,
+* `IsEverywherePos.IsGδ` proves that an everywhere positive compact closed set is a Gδ set,
   in a topological group with a left-invariant measure. This is a nontrivial statement, used
   crucially in the study of the uniqueness of Haar measures.
 * `innerRegularWRT_preimage_one_hasCompactSupport_measure_ne_top`: for a Haar measure, any
@@ -254,7 +254,8 @@ theorem innerRegularWRT_preimage_one_hasCompactSupport_measure_ne_top_of_group
       K_comp.measure_lt_top.ne
     have : IsGδ (μ.everywherePosSubset K) := this.IsGdelta_of_isMulLeftInvariant L_comp L_closed
     obtain ⟨⟨f, f_cont⟩, Lf, -, f_comp, -⟩ : ∃ f : C(G, ℝ), L = f ⁻¹' {1} ∧ EqOn f 0 ∅
-      ∧ HasCompactSupport f ∧ ∀ x, f x ∈ Icc (0 : ℝ) 1 := sorry
+        ∧ HasCompactSupport f ∧ ∀ x, f x ∈ Icc (0 : ℝ) 1 :=
+      exists_continuous_one_zero_of_isCompact_of_isGδ
     exact ⟨f, f_cont, f_comp, Lf⟩
   · convert hr using 1
     apply measure_congr
