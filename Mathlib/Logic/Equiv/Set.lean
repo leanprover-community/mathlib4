@@ -66,6 +66,8 @@ protected theorem symm_image_subset_iff {α β} (e : α ≃ β) (s : Set α) (t 
     e.symm '' t ⊆ s ↔ t ⊆ e '' s := by rw [image_subset_iff, e.image_eq_preimage]
 #align equiv.subset_image Equiv.symm_image_subset_iff
 
+@[deprecated] alias subset_image := symm_image_subset_iff -- deprecated since 2024-01-19
+
 -- Porting note: increased priority so this fires before `image_subset_iff`
 @[simp high]
 protected theorem subset_symm_image_iff {α β} (e : α ≃ β) (s : Set α) (t : Set β) :
@@ -74,6 +76,8 @@ protected theorem subset_symm_image_iff {α β} (e : α ≃ β) (s : Set α) (t 
     s ⊆ e.symm '' t ↔ e.symm.symm '' s ⊆ t := by rw [e.symm.symm_image_subset_iff]
     _ ↔ e '' s ⊆ t := by rw [e.symm_symm]
 #align equiv.subset_image' Equiv.subset_symm_image_iff
+
+@[deprecated] alias subset_image' := subset_symm_image_iff -- deprecated since 2024-01-19
 
 @[simp]
 theorem symm_image_image {α β} (e : α ≃ β) (s : Set α) : e.symm '' (e '' s) = s :=
