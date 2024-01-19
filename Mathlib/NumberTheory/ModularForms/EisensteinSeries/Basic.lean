@@ -33,7 +33,7 @@ variable (N : ℕ) (a : Fin 2 → ZMod N)
 section gammaSet_def
 
 /-- The set of pairs of coprime integers congruent to `a` mod `N`. -/
-def gammaSet := {v : Fin 2 → ℤ | (↑·) ∘ v = a ∧ IsCoprime (v 0) (v 1)}
+def gammaSet := {v : Fin 2 → ℤ | (↑) ∘ v = a ∧ IsCoprime (v 0) (v 1)}
 
 lemma pairwise_disjoint_gammaSet : Pairwise (Disjoint on gammaSet N) := by
   refine fun u v huv ↦ ?_
