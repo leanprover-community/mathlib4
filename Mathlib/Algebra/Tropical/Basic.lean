@@ -8,7 +8,6 @@ import Mathlib.Algebra.Order.Monoid.WithTop
 import Mathlib.Algebra.SMulWithZero
 import Mathlib.Order.Hom.Basic
 import Mathlib.Data.Nat.Order.Basic
-import Mathlib.Data.Nat.Units
 
 #align_import algebra.tropical.basic from "leanprover-community/mathlib"@"9116dd6709f303dcf781632e15fdef382b0fc579"
 

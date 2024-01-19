@@ -6,7 +6,6 @@ Authors: Mario Carneiro, Scott Morrison
 import Mathlib.Tactic.NormNum
 import Mathlib.Util.AtomM
 import Mathlib.Data.Int.Basic
-import Mathlib.Algebra.GroupPower.Lemmas
 
 /-!
 # The `abel` tactic

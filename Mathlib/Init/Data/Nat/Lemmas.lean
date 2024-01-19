@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad
 -/
 import Std.Data.Nat.Lemmas
+import Std.WF
 import Mathlib.Init.Data.Nat.Basic
 import Mathlib.Init.Order.Defs
 

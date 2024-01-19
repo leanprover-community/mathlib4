@@ -7,6 +7,7 @@ import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Algebra.Order.Module.OrderedSMul
 import Mathlib.Algebra.Order.Group.Instances
 import Mathlib.Data.Prod.Lex
+import Mathlib.Data.Set.Image
 import Mathlib.GroupTheory.Perm.Support
 import Mathlib.Order.Monotone.Monovary
 import Mathlib.Tactic.Abel

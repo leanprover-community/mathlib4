@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jean Lo, Yury Kudryashov
 -/
 import Mathlib.Data.Set.Pointwise.SMul
-import Mathlib.Topology.Bornology.Constructions
+import Mathlib.Topology.Bornology.Basic
 
 #align_import analysis.locally_convex.basic from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
