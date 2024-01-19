@@ -451,8 +451,9 @@ theorem repeat_comp_rev {α} (a : Fin n → α) :
   ext ⟨j, h₁⟩
   simp [rev, modNat]
   congr
+  have h₂ : j % n + 1 ≤ n :=
+    Nat.mod_lt j (Nat.pos_of_ne_zero (Nat.ne_zero_of_mul_ne_zero_right (Nat.not_eq_zero_of_lt h₁)))
   have h₁ : j + 1 ≤ m * n := h₁
-  have h₂ : j % n + 1 ≤ n := Nat.mod_lt j (Fin.pos i)
   rw [← Nat.mod_eq_of_lt (Nat.sub_lt_self (Nat.succ_pos (j % n)) h₂)]
   zify [h₁, h₂]
   simp [Int.sub_emod, Int.emod_self]
