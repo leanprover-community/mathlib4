@@ -3,12 +3,13 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
+import Mathlib.Init.ZeroOne
+import Mathlib.Data.Set.Defs
+import Mathlib.Order.Basic
 import Mathlib.Order.SymmDiff
 import Mathlib.Tactic.Tauto
 import Mathlib.Tactic.ByContra
 import Mathlib.Util.Delaborators
-import Mathlib.Data.Set.Defs
-import Mathlib.Init.ZeroOne
 
 #align_import data.set.basic from "leanprover-community/mathlib"@"001ffdc42920050657fd45bd2b8bfbec8eaaeb29"
 

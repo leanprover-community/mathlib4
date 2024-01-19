@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Jendrusch, Scott Morrison, Bhavik Mehta, Jakob von Raumer
 -/
 import Mathlib.Tactic.CategoryTheory.Coherence
+import Mathlib.CategoryTheory.Monoidal.Free.Coherence
 
 #align_import category_theory.monoidal.coherence_lemmas from "leanprover-community/mathlib"@"b8b8bf3ea0c625fa1f950034a184e07c67f7bcfe"
 
