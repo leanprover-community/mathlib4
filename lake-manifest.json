@@ -56,4 +56,4 @@
    "inherited": false,
    "configFile": "lakefile.lean"}],
  "name": "mathlib",
- "lakeDir": ".lake" }
+ "lakeDir": ".lake"}
