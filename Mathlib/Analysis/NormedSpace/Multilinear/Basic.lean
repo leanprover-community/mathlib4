@@ -97,18 +97,18 @@ namespace MultilinearMap
 variable (f : MultilinearMap 𝕜 E G)
 
 /-- If `f` is a continuous multilinear map in finitely many variables on `E` and `m` is an element
-of `(i : ι) → E i` such that one of the `m i` has norm `0`, then `f m` has norm `0`.
+of `∀ i, E i` such that one of the `m i` has norm `0`, then `f m` has norm `0`.
 
 Note that we cannot drop the continuity assumption because `f (m : Unit → E) = f (m ())`,
 where the domain has zero norm and the codomain has a nonzero norm
 does not satisfy this condition. -/
-lemma norm_map_coord_zero (hf : Continuous f) {m : (i : ι) → E i} {i : ι} (hi : ‖m i‖ = 0) :
+lemma norm_map_coord_zero (hf : Continuous f) {m : ∀ i, E i} {i : ι} (hi : ‖m i‖ = 0) :
     ‖f m‖ = 0 := by
   classical
   have : Nonempty ι := ⟨i⟩
-  set m' : 𝕜 → (i : ι) → E i := fun ε : 𝕜 ↦ update (ε • m) i (ε⁻¹ ^ (Fintype.card ι) • ((ε • m) i))
+  set m' : 𝕜 → ∀ i, E i := fun ε : 𝕜 ↦ update (ε • m) i (ε⁻¹ ^ (Fintype.card ι) • ((ε • m) i))
   have A : Tendsto m' (𝓝[≠] 0) (𝓝 0) := by
-    rw [← update_eq_self i (0 : (i : ι) → E i)]
+    rw [← update_eq_self i (0 : ∀ i, E i)]
     refine (Tendsto.mono_left ?_ inf_le_left).update i ?_
     · exact (continuous_id.smul continuous_const).tendsto' _ _ (zero_smul _ m)
     · refine NormedAddCommGroup.tendsto_nhds_zero.2 fun r hr ↦ eventually_mem_nhdsWithin.mono ?_
