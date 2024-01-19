@@ -200,6 +200,83 @@ theorem arccos_eq_arctan {x : ℝ} (h : 0 < x) : arccos x = arctan (sqrt (1 - x 
   · linarith only [arcsin_pos.2 h]
 #align real.arccos_eq_arctan Real.arccos_eq_arctan
 
+theorem arctan_inv_of_pos {x : ℝ} (h : 0 < x) : arctan x⁻¹ = π / 2 - arctan x := by
+  rw [← arctan_tan (x := _ - _), tan_pi_div_two_sub, tan_arctan]
+  · norm_num; exact (arctan_lt_pi_div_two x).trans (half_lt_self_iff.mpr pi_pos)
+  · rw [sub_lt_self_iff, ← arctan_zero]; exact tanOrderIso.symm.strictMono h
+
+theorem arctan_inv_of_neg {x : ℝ} (h : x < 0) : arctan x⁻¹ = -(π / 2) - arctan x := by
+  have := arctan_inv_of_pos (neg_pos.mpr h)
+  rwa [inv_neg, arctan_neg, neg_eq_iff_eq_neg, neg_sub', arctan_neg, neg_neg] at this
+
+lemma arctan_ne_mul_pi_div_two {x : ℝ} : ∀ (k : ℤ), arctan x ≠ (2 * k + 1) * π / 2 := by
+  by_contra!
+  obtain ⟨k, h⟩ := this
+  obtain ⟨lb, ub⟩ := arctan_mem_Ioo x
+  rw [h, neg_eq_neg_one_mul, mul_div_assoc, mul_lt_mul_right (by positivity)] at lb
+  rw [h, ← one_mul (π / 2), mul_div_assoc, mul_lt_mul_right (by positivity)] at ub
+  norm_cast at lb ub; change -1 < _ at lb; omega
+
+/-- Preliminary version of `arctan_add` with more complicated hypotheses.
+Use `arctan_add` instead. -/
+theorem arctan_add' {x y : ℝ} (h₁ : -(π / 2) < arctan x + arctan y)
+    (h₂ : arctan x + arctan y < π / 2) : arctan x + arctan y = arctan ((x + y) / (1 - x * y)) := by
+  rw [← arctan_tan h₁ h₂]; congr
+  conv_rhs => rw [← tan_arctan x, ← tan_arctan y]
+  exact tan_add' ⟨arctan_ne_mul_pi_div_two, arctan_ne_mul_pi_div_two⟩
+
+lemma arctan_add_arctan_lt_pi_div_two {x y : ℝ} (h : x * y < 1) : arctan x + arctan y < π / 2 := by
+  cases' le_or_lt y 0 with hy hy
+  · rw [← add_zero (π / 2), ← arctan_zero]
+    exact add_lt_add_of_lt_of_le (arctan_lt_pi_div_two _) (tanOrderIso.symm.monotone hy)
+  rw [← lt_div_iff hy, ← inv_eq_one_div] at h
+  replace h : arctan x < arctan y⁻¹ := tanOrderIso.symm.strictMono h
+  rwa [arctan_inv_of_pos hy, lt_tsub_iff_right] at h
+
+theorem arctan_add {x y : ℝ} (h : x * y < 1) :
+    arctan x + arctan y = arctan ((x + y) / (1 - x * y)) := by
+  apply arctan_add'
+  rw [neg_lt, neg_add, ← arctan_neg, ← arctan_neg]
+  rw [← neg_mul_neg] at h
+  all_goals exact arctan_add_arctan_lt_pi_div_two h
+
+theorem arctan_add_eq_add_pi {x y : ℝ} (h : 1 < x * y) (hx : 0 < x) :
+    arctan x + arctan y = arctan ((x + y) / (1 - x * y)) + π := by
+  have hy : 0 < y := by
+    have := mul_pos_iff.mp (zero_lt_one.trans h)
+    simpa [hx, hx.asymm]
+  have k := arctan_add (mul_inv x y ▸ inv_lt_one h)
+  rw [arctan_inv_of_pos hx, arctan_inv_of_pos hy, show _ + _ = π - (arctan x + arctan y) by ring,
+    sub_eq_iff_eq_add, ← sub_eq_iff_eq_add', sub_eq_add_neg, ← arctan_neg, add_comm] at k
+  convert k.symm using 3
+  field_simp
+  rw [show -x + -y = -(x + y) by ring, show x * y - 1 = -(1 - x * y) by ring, neg_div_neg_eq]
+
+theorem arctan_add_eq_sub_pi {x y : ℝ} (h : 1 < x * y) (hx : x < 0) :
+    arctan x + arctan y = arctan ((x + y) / (1 - x * y)) - π := by
+  rw [← neg_mul_neg] at h
+  have k := arctan_add_eq_add_pi h (neg_pos.mpr hx)
+  rw [show _ / _ = -((x + y) / (1 - x * y)) by ring, ← neg_inj] at k
+  simp only [arctan_neg, neg_add, neg_neg, ← sub_eq_add_neg _ π] at k
+  exact k
+
+theorem two_mul_arctan {x : ℝ} (h : x * x < 1) : 2 * arctan x = arctan (2 * x / (1 - x ^ 2)) := by
+  rw [two_mul, arctan_add h]; congr 1; ring
+
+theorem two_mul_arctan_add_pi {x : ℝ} (h : 1 < x) :
+    2 * arctan x = arctan (2 * x / (1 - x ^ 2)) + π := by
+  rw [two_mul, arctan_add_eq_add_pi (by nlinarith) (by linarith)]; congr 2; ring
+
+theorem two_mul_arctan_sub_pi {x : ℝ} (h : x < -1) :
+    2 * arctan x = arctan (2 * x / (1 - x ^ 2)) - π := by
+  rw [two_mul, arctan_add_eq_sub_pi (by nlinarith) (by linarith)]; congr 2; ring
+
+/-- **Machin's formula for π**. -/
+theorem four_mul_arctan_inv_5_sub_arctan_inv_239 : 4 * arctan 5⁻¹ - arctan 239⁻¹ = π / 4 := by
+  rw [show 4 * arctan _ = 2 * (2 * _) by ring, two_mul_arctan, two_mul_arctan, ← arctan_one,
+    sub_eq_iff_eq_add, arctan_add]
+  all_goals norm_num
+
 @[continuity]
 theorem continuous_arctan : Continuous arctan :=
   continuous_subtype_val.comp tanOrderIso.toHomeomorph.continuous_invFun
