@@ -108,7 +108,7 @@ theorem DifferentiableOn.prod (hf₁ : DifferentiableOn 𝕜 f₁ s) (hf₂ : Di
   DifferentiableWithinAt.prod (hf₁ x hx) (hf₂ x hx)
 #align differentiable_on.prod DifferentiableOn.prod
 
-@[simp]
+@[simp, fprop]
 theorem Differentiable.prod (hf₁ : Differentiable 𝕜 f₁) (hf₂ : Differentiable 𝕜 f₂) :
     Differentiable 𝕜 fun x : E => (f₁ x, f₂ x) := fun x => DifferentiableAt.prod (hf₁ x) (hf₂ x)
 #align differentiable.prod Differentiable.prod
@@ -184,7 +184,7 @@ theorem differentiable_fst : Differentiable 𝕜 (Prod.fst : E × F → E) := fu
   differentiableAt_fst
 #align differentiable_fst differentiable_fst
 
-@[simp]
+@[simp, fprop]
 protected theorem Differentiable.fst (h : Differentiable 𝕜 f₂) :
     Differentiable 𝕜 fun x => (f₂ x).1 :=
   differentiable_fst.comp h
@@ -285,7 +285,7 @@ theorem differentiable_snd : Differentiable 𝕜 (Prod.snd : E × F → F) := fu
   differentiableAt_snd
 #align differentiable_snd differentiable_snd
 
-@[simp]
+@[simp, fprop]
 protected theorem Differentiable.snd (h : Differentiable 𝕜 f₂) :
     Differentiable 𝕜 fun x => (f₂ x).2 :=
   differentiable_snd.comp h
