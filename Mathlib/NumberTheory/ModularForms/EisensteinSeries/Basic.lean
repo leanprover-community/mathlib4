@@ -106,7 +106,7 @@ variable (a)
 /-- An Eisenstein series of weight `k` and level `Γ(N)`, with congruence condition `a`. -/
 def eisensteinSeries (k : ℤ) (z : ℍ) : ℂ := ∑' x : gammaSet N a, eisSummand k x z
 
-lemma eisenstein_slash_apply (k : ℤ) (γ : SL(2, ℤ)) :
+lemma eisensteinSeries_slash_apply (k : ℤ) (γ : SL(2, ℤ)) :
     eisensteinSeries a k ∣[k] γ = eisensteinSeries (vecMul a γ) k := by
   ext1 z
   simp_rw [SL_slash, slash_def, slash, det_coe', ofReal_one, one_zpow, mul_one, zpow_neg,
@@ -118,5 +118,5 @@ lemma eisenstein_slash_apply (k : ℤ) (γ : SL(2, ℤ)) :
   and congruence condition given by `a : Fin 2 → ZMod N`. -/
 def eisensteinSeries_SIF (k : ℤ) : SlashInvariantForm (Gamma N) k where
   toFun := eisensteinSeries a k
-  slash_action_eq' A := by rw [subgroup_slash, ← SL_slash, eisenstein_slash_apply,
+  slash_action_eq' A := by rw [subgroup_slash, ← SL_slash, eisensteinSeries_slash_apply,
       (Gamma_mem' N A).mp A.2, SpecialLinearGroup.coe_one, vecMul_one]
