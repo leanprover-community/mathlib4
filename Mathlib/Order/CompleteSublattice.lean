@@ -25,26 +25,6 @@ invariant submodules of some module with respect to a linear map.
 
 open Function Set
 
-section move
-
-variable {α β F : Type*}
-
-/-- We can regard an injective map preserving binary infima as an order embedding. -/
-@[simps!] def orderEmbeddingOfInjective
-     [SemilatticeInf α] [SemilatticeInf β] (f : F) [InfHomClass F α β] (hf : Injective f) :
-     α ↪o β :=
-  OrderEmbedding.ofMapLEIff f (fun x y ↦ by
-    refine ⟨fun h ↦ ?_, fun h ↦ OrderHomClass.mono f h⟩
-    rwa [← inf_eq_left, ← hf.eq_iff, map_inf, inf_eq_left])
-
-/-- We can regard an order embedding as an order isomorphism to its range. -/
-@[simps!] noncomputable def OrderEmbedding.toOrderIsoRange [LE α] [LE β] {g : α ↪o β} :
-    α ≃o range g :=
-  { Equiv.ofInjective _ g.injective with
-    map_rel_iff' := g.map_rel_iff }
-
-end move
-
 variable (α β : Type*) [CompleteLattice α] [CompleteLattice β] (f : CompleteLatticeHom α β)
 
 /-- A complete sublattice is a subset of a complete lattice that is closed under arbitrary suprema
@@ -186,10 +166,10 @@ See Note [range copy pattern]. -/
 protected def range : CompleteSublattice β :=
   (CompleteSublattice.map f ⊤).copy (range f) image_univ.symm
 
-theorem range_coe : (range f : Set β) = range f := rfl
+theorem range_coe : (f.range : Set β) = range f := rfl
 
 /-- We can regard a complete lattice homomorphism as an order equivalence to its range. -/
-noncomputable def toOrderIsoRangeOfInjective (hf : Injective f) : α ≃o f.range :=
-  (orderEmbeddingOfInjective f hf).toOrderIsoRange
+@[simps! apply] noncomputable def toOrderIsoRangeOfInjective (hf : Injective f) : α ≃o f.range :=
+  (orderEmbeddingOfInjective f hf).orderIso
 
 end CompleteLatticeHom
