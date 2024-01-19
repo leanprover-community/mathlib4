@@ -206,7 +206,7 @@ theorem DifferentiableOn.smul (hc : DifferentiableOn 𝕜 c s) (hf : Differentia
     DifferentiableOn 𝕜 (fun y => c y • f y) s := fun x hx => (hc x hx).smul (hf x hx)
 #align differentiable_on.smul DifferentiableOn.smul
 
-@[simp]
+@[simp, fprop]
 theorem Differentiable.smul (hc : Differentiable 𝕜 c) (hf : Differentiable 𝕜 f) :
     Differentiable 𝕜 fun y => c y • f y := fun x => (hc x).smul (hf x)
 #align differentiable.smul Differentiable.smul
@@ -331,7 +331,7 @@ theorem DifferentiableOn.mul (ha : DifferentiableOn 𝕜 a s) (hb : Differentiab
     DifferentiableOn 𝕜 (fun y => a y * b y) s := fun x hx => (ha x hx).mul (hb x hx)
 #align differentiable_on.mul DifferentiableOn.mul
 
-@[simp]
+@[simp, fprop]
 theorem Differentiable.mul (ha : Differentiable 𝕜 a) (hb : Differentiable 𝕜 b) :
     Differentiable 𝕜 fun y => a y * b y := fun x => (ha x).mul (hb x)
 #align differentiable.mul Differentiable.mul
@@ -352,7 +352,7 @@ theorem DifferentiableOn.pow (ha : DifferentiableOn 𝕜 a s) (n : ℕ) :
     DifferentiableOn 𝕜 (fun x => a x ^ n) s := fun x h => (ha x h).pow n
 #align differentiable_on.pow DifferentiableOn.pow
 
-@[simp]
+@[simp, fprop]
 theorem Differentiable.pow (ha : Differentiable 𝕜 a) (n : ℕ) : Differentiable 𝕜 fun x => a x ^ n :=
   fun x => (ha x).pow n
 #align differentiable.pow Differentiable.pow
@@ -556,7 +556,7 @@ theorem DifferentiableOn.inverse (hf : DifferentiableOn 𝕜 h S) (hz : ∀ x �
     DifferentiableOn 𝕜 (fun x => Ring.inverse (h x)) S := fun x h => (hf x h).inverse (hz x h)
 #align differentiable_on.inverse DifferentiableOn.inverse
 
-@[simp]
+@[simp, fprop]
 theorem Differentiable.inverse (hf : Differentiable 𝕜 h) (hz : ∀ x, IsUnit (h x)) :
     Differentiable 𝕜 fun x => Ring.inverse (h x) := fun x => (hf x).inverse (hz x)
 #align differentiable.inverse Differentiable.inverse
@@ -623,7 +623,7 @@ theorem DifferentiableOn.inv' (hf : DifferentiableOn 𝕜 h S) (hz : ∀ x ∈ S
     DifferentiableOn 𝕜 (fun x => (h x)⁻¹) S := fun x h => (hf x h).inv' (hz x h)
 #align differentiable_on.inv' DifferentiableOn.inv'
 
-@[simp]
+@[simp, fprop]
 theorem Differentiable.inv' (hf : Differentiable 𝕜 h) (hz : ∀ x, h x ≠ 0) :
     Differentiable 𝕜 fun x => (h x)⁻¹ := fun x => (hf x).inv' (hz x)
 #align differentiable.inv' Differentiable.inv'
