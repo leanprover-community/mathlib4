@@ -124,9 +124,12 @@ instance : Pow (SpecialLinearGroup n R) ℕ where
 instance : Inhabited (SpecialLinearGroup n R) :=
   ⟨1⟩
 
-/--The transpose of a matrix in SLn-/
-def transpose (A : Matrix.SpecialLinearGroup n R) :
-    Matrix.SpecialLinearGroup n R  := ⟨A.1.transpose, by rw [Matrix.det_transpose]; apply A.2⟩
+/-- The transpose of a matrix in `SL(n, R)` -/
+def transpose (A : SpecialLinearGroup n R) : SpecialLinearGroup n R :=
+  ⟨A.1.transpose, A.1.det_transpose ▸ A.2⟩
+
+@[inherit_doc]
+scoped postfix:1024 "ᵀ" => SpecialLinearGroup.transpose
 
 section CoeLemmas
 
@@ -161,6 +164,10 @@ theorem det_coe : det ↑ₘA = 1 :=
 theorem coe_pow (m : ℕ) : ↑ₘ(A ^ m) = ↑ₘA ^ m :=
   rfl
 #align matrix.special_linear_group.coe_pow Matrix.SpecialLinearGroup.coe_pow
+
+@[simp]
+lemma coe_transpose (A : SpecialLinearGroup n R) : ↑ₘAᵀ = (↑ₘA)ᵀ :=
+  rfl
 
 theorem det_ne_zero [Nontrivial R] (g : SpecialLinearGroup n R) : det ↑ₘg ≠ 0 := by
   rw [g.det_coe]
