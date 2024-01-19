@@ -379,7 +379,7 @@ theorem support_add_subset {x y : HahnSeries Γ R} : support (x + y) ⊆ support
   rw [ha.1, ha.2, add_zero]
 #align hahn_series.support_add_subset HahnSeries.support_add_subset
 
-theorem min_order_le_order_add {Γ} [LinearOrderedCancelAddCommMonoid Γ] {x y : HahnSeries Γ R}
+theorem min_order_le_order_add {Γ} [Zero Γ] [LinearOrder Γ] {x y : HahnSeries Γ R}
     (hxy : x + y ≠ 0) : min x.order y.order ≤ (x + y).order := by
   by_cases hx : x = 0; · simp [hx]
   by_cases hy : y = 0; · simp [hy]
@@ -511,6 +511,15 @@ instance : DistribMulAction R (HahnSeries Γ V) where
   mul_smul _ _ _ := by
     ext
     simp [mul_smul]
+
+theorem smul_order_leq {Γ} [Zero Γ] [LinearOrder Γ] (r : R) (x : HahnSeries Γ V) (h : r • x ≠ 0) :
+    x.order ≤ (r • x).order := by
+  unfold order
+  by_cases hx : x = 0
+  · rw [hx, smul_zero r] at h
+    exact (h rfl).elim
+  simp_all only [not_false_eq_true, dite_false, h, support]
+  refine (Set.IsWF.min_le_min_of_subset (@Function.support_smul_subset_right Γ R V _ _ r x.coeff))
 
 variable {S : Type*} [Monoid S] [DistribMulAction S V]
 

@@ -249,27 +249,111 @@ theorem factorial_smul_hasseDeriv (k : ℕ) :
 end HasseDerivative
 
 section ResidueProduct
-/-!
+
+theorem eventually_constant_sum_add {M : Type*} [AddCommMonoid M] {N : Type*} [AddCommMonoid N]
+    (bd : M → ℕ) (f : ℕ → (M →+ N)) (h : ∀(m : M) (n : ℕ), bd m ≤ n → f n m = 0) (a b : M) :
+    Finset.sum (Finset.range (bd (a + b))) (fun i => f i (a + b)) =
+    Finset.sum (Finset.range (bd a)) (fun i => f i a) +
+    Finset.sum (Finset.range (bd b)) (fun i => f i b) := by
+  have hm : ∀(k : ℕ), max (bd a) (bd b) ≤ k → f k (a + b) = 0 := by
+    intro k hk
+    rw [map_add, h a k (le_of_max_le_left hk), h b k (le_of_max_le_right hk), zero_add]
+  have hmm : ∀(k : ℕ), min (bd (a + b)) (max (bd a) (bd b)) ≤ k → f k (a + b) = 0 := by
+    intro k hk
+    rw [min_le_iff] at hk
+    cases hk with
+    | inl h' => exact h (a+b) k h'
+    | inr h' => exact hm k h'
+  rw [(Finset.eventually_constant_sum (h a) (Nat.le_max_left (bd a) (bd b))).symm]
+  rw [(Finset.eventually_constant_sum (h b) (Nat.le_max_right (bd a) (bd b))).symm]
+  rw [Finset.eventually_constant_sum hmm (Nat.min_le_left (bd (a + b)) (max (bd a) (bd b)))]
+  rw [(Finset.eventually_constant_sum hmm (Nat.min_le_right (bd (a + b)) (max (bd a) (bd b)))).symm]
+  simp only [← @Finset.sum_add_distrib, map_add]
+
+def res_prod_left_summand (A B : VertexOperator R V) (m k : ℤ) (i : ℕ) : Module.End R V where
+  toFun := fun x => (-1)^i • (Ring.choose m i) • (ncoef A (m - i)) (ncoef B (k + i) x)
+  map_add' := by
+    simp only [map_add, smul_add, forall_const]
+  map_smul' := by
+    intro r x
+    simp only [map_smul, RingHom.id_apply]
+    rw [smul_algebra_smul_comm ((-1)^i) r, smul_algebra_smul_comm (Ring.choose m i) r]
+
+theorem res_prod_left_summand_vanish (A B : VertexOperator R V) (m k : ℤ) (i : ℕ) (x : V)
+    (h : Int.toNat (-k - HahnSeries.order (B x)) ≤ i) :
+    (res_prod_left_summand A B m k i) x = 0 := by
+  simp_all only [res_prod_left_summand, LinearMap.coe_mk, AddHom.coe_mk, Int.toNat_le,
+    tsub_le_iff_right, ncoef, coeff]
+  have hi : (- (k + i) - 1) < HahnSeries.order (B x) := by omega
+  rw [HahnSeries.coeff_eq_zero_of_lt_order hi, LinearMap.map_zero, HahnSeries.zero_coeff, smul_zero,
+    smul_zero]
 
 /-- The `k`-th normalized coefficient in the left sum of the `m`-th residue product of `A` and `B`.
 -/
-noncomputable def res_prod_left_coeff (A B : VertexOperator R V) (m k : ℤ) : Module.End R V where
-  toFun := fun x =>  Finset.sum (Finset.range (Int.toNat (-k - HahnSeries.order (B x)))) fun i =>
-    (-1)^i • (Ring.choose m i) • (ncoef A (m - i)) (ncoef B (k + i) x)
+noncomputable def res_prod_left_ncoef (A B : VertexOperator R V) (m k : ℤ) (x : V) : V :=
+  Finset.sum (Finset.range (Int.toNat (-k - HahnSeries.order (B x))))
+  fun i => res_prod_left_summand A B m k i x
+
+theorem res_prod_left_ncoef_add (A B : VertexOperator R V) (m k : ℤ) (x y : V) :
+    res_prod_left_ncoef A B m k (x + y) = res_prod_left_ncoef A B m k x +
+    res_prod_left_ncoef A B m k y := by
+  unfold res_prod_left_ncoef
+  have h : ∀(z : V) (i : ℕ), (res_prod_left_summand A B m k i) z =
+      (@AddMonoidHomClass.toAddMonoidHom V V (Module.End R V) AddMonoid.toAddZeroClass
+      AddMonoid.toAddZeroClass (DistribMulActionHomClass.toAddMonoidHomClass R)
+      (res_prod_left_summand A B m k i)) z := by
+    exact fun z i ↦ rfl
+  simp_rw [h x, h y]
+  refine @eventually_constant_sum_add V _ V _
+    (fun (x : V) => Int.toNat (-k - HahnSeries.order (B x)))
+    (fun i => res_prod_left_summand A B m k i) ?_ x y
+  intro z i hi
+  simp_all only [AddMonoidHom.coe_coe]
+  exact @res_prod_left_summand_vanish R V _ _ _ A B m k i z hi
+
+theorem res_prod_left_ncoef_smul (A B : VertexOperator R V) (m k : ℤ) (r : R) (x : V) :
+    res_prod_left_ncoef A B m k (r • x) = r • res_prod_left_ncoef A B m k x := by
+  simp only [res_prod_left_ncoef, Finset.smul_sum]--, res_prod_left_summand]-- map_smul, LinearMap.coe_mk, AddHom.coe_mk]
+  have h₁ : ∀(i : ℕ),
+      r • res_prod_left_summand A B m k i x = res_prod_left_summand A B m k i (r • x) := by
+    intro i
+    unfold res_prod_left_summand
+    simp only [LinearMap.coe_mk, AddHom.coe_mk, map_smul]
+  by_cases h₂ : B (r • x) = 0
+  · simp only [h₁]
+    simp only [res_prod_left_summand, LinearMap.coe_mk, AddHom.coe_mk, ncoef, coeff]
+    simp only [h₂]
+    simp only [HahnSeries.zero_coeff, map_zero, smul_zero, Finset.sum_const_zero]
+  · have h₃ : HahnSeries.order (B x) ≤ HahnSeries.order (B (r • x)) := by
+      rw [@LinearMap.map_smul]
+      refine HahnSeries.smul_order_leq r (B x) ?_
+      simp_all only [map_smul, forall_const, ne_eq, not_false_eq_true]
+    have h₄ : Int.toNat (-k - HahnSeries.order (B (r • x))) ≤
+        Int.toNat (-k - HahnSeries.order (B x)) := by
+      have h₅ : -k - HahnSeries.order (B (r • x)) ≤ -k - HahnSeries.order (B x) := by
+        omega
+      exact Int.toNat_le_toNat h₅
+    simp only [h₁]
+    rw [Finset.eventually_constant_sum (fun n => res_prod_left_summand_vanish A B m k n (r • x)) h₄]
+
+/-- The `k`-th normalized coefficient in the left sum of the `m`-th residue product of `A` and `B`,
+as a linear map.
+-/
+noncomputable def res_prod_left_ncoef.linearMap (A B : VertexOperator R V) (m k : ℤ) : Module.End R V where
+  toFun := fun x => res_prod_left_ncoef A B m k x
   map_add' := by
     intro x y
     simp only [map_add, smul_add]
-    have h : min (Int.toNat (-k - HahnSeries.order (B x + B y))) (min (Int.toNat
-        (-k - HahnSeries.order (B x))) min (Int.toNat (-k - HahnSeries.order (B x)))) ≤
-        Int.toNat (-k - HahnSeries.order (B x + B y)) := by
-      refine Nat.min_le_left ?_ ?_
-    rw [Finset.eventually_constant_sum ?_ ?_]
-
-    sorry
+    exact res_prod_left_ncoef_add A B m k x y
   map_smul' := by
     intro r x
-    sorry
+    simp only [RingHom.id_apply]
+    exact res_prod_left_ncoef_smul A B m k r x
 
+/-!
+theorem res_prod_left_bdd_below (A B : VertexOperator R V) (m : ℤ) : ∃(k : ℤ), ∀(n : ℤ),
+    k ≤ n → res_prod_left_ncoef.linearMap A B m n = 0 := by
+  sorry
 
 /-- The left sum of the `m`-th residue product `A(z)_m B(z)`, given by the residue of
 `(x-y)^m A(x)B(y)` at `|x| > |y|`. -/

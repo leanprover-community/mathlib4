@@ -38,7 +38,7 @@ open BigOperators
 
 namespace Polynomial
 
-section Unital
+section MulActionWithZero
 
 variable {S : Type v} [AddCommMonoid S] [Pow S ℕ] (x : S)
 
@@ -78,10 +78,11 @@ theorem smeval_X_pow (R : Type u) [Semiring R] [MulActionWithZero R S] {n : ℕ}
     (X ^ n : R[X]).smeval x = x ^ n := by
   simp only [smeval_eq_sum, smul_pow, X_pow_eq_monomial, zero_smul, sum_monomial_index, one_smul]
 
-theorem smeval_eq_eval {R : Type u} [Semiring R] (p : R[X]) (r : R) :
-    p.smeval r = p.eval r := by
-  rw [eval_eq_sum, smeval_eq_sum]
-  exact rfl
+end MulActionWithZero
+
+section Module
+
+variable {S : Type v} [AddCommMonoid S] [Pow S ℕ] (x : S)
 
 theorem smeval_nat_cast (R : Type u) [Semiring R] [Module R S] : ∀(n : ℕ),
     (n : R[X]).smeval x = n • x ^ 0
@@ -105,20 +106,13 @@ theorem smeval_add (R : Type u) [Semiring R] [Module R S] (p q : R[X]) :
   intro i r s
   rw [smul_pow, smul_pow, smul_pow, add_smul]
 
-/-!
-@[simp, norm_cast]
-theorem Nat.cast_npow [Semiring R] (n m : ℕ) : (↑(n ^ m) : R) = (↑n : R) ^ m := by
-  induction' m with m ih
-  · simp
-  · rw [_root_.pow_succ', _root_.pow_succ', Nat.cast_mul, ih]
+--theorem smeval_smul
+--def smeval.linearMap
+--theorem smeval.linearMap_apply
 
-I want compare sums
+end Module
 
--/
-
-end Unital
-
-section UnitalPowAssoc
+section NatPowAssoc
 
 variable (R : Type u) [CommSemiring R] {p : R[X]} {S : Type v} (r : R)
 
@@ -226,9 +220,9 @@ theorem smeval_comp : (p.comp q).smeval x  = p.smeval (q.smeval x) := by
   | h_monomial n a =>
     simp [smeval_monomial, smeval_C_mul, smeval_pow]
 
-end UnitalPowAssoc
+end NatPowAssoc
 
-section test
+section Neg
 
 --variable (R : Type u) [CommRing R] [Module R S] [IsScalarTower R S S] [SMulCommClass R S S]
 --variable {S : Type v} [NonAssocRing S] [Pow S ℕ] [NatPowAssoc S]
@@ -256,4 +250,23 @@ theorem smeval_sub (R : Type u) {S : Type v} [NonAssocRing S] [Pow S ℕ] [CommR
     [Module R S] (p q : R[X]) (x : S) : (p - q).smeval x = p.smeval x - q.smeval x := by
   rw [sub_eq_add_neg, smeval_add, smeval_neg, sub_eq_add_neg]
 
-end test
+end Neg
+
+section Comparison
+
+theorem smeval_eq_eval {R : Type u} [Semiring R] (p : R[X]) (r : R) :
+    p.smeval r = p.eval r := by
+  rw [eval_eq_sum, smeval_eq_sum]
+  exact rfl
+
+-- theorem smeval eq eval₂ --use haveI, letI to get smul from f: R →+* S.
+
+-- theorem smeval_eq_leval --use coe
+-- theorem smeval_eq_aeval --use coe
+
+--def smeval.algebraMap
+--theorem smeval.algebraMap.apply?
+
+end Comparison
+
+end Polynomial
