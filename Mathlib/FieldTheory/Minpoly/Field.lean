@@ -167,7 +167,7 @@ def rootsOfMinPolyPiType (φ : E →ₐ[F] K)
 
 theorem aux_inj_roots_of_min_poly : Injective (rootsOfMinPolyPiType F E K) := by
   intro f g h
-  suffices (f : E →ₗ[F] K) = g by rwa [FunLike.ext'_iff] at this ⊢
+  suffices (f : E →ₗ[F] K) = g by rwa [DFunLike.ext'_iff] at this ⊢
   rw [funext_iff] at h
   exact LinearMap.ext_on (FiniteDimensional.finBasis F E).span_eq fun e he =>
     Subtype.ext_iff.mp (h ⟨e, he⟩)
@@ -279,7 +279,7 @@ lemma minpoly_algEquiv_toLinearMap (σ : L ≃ₐ[K] L) (hσ : IsOfFinOrder σ) 
     simp_rw [← AlgEquiv.pow_toLinearMap] at hs
     apply hq.ne_zero
     simpa using Fintype.linearIndependent_iff.mp
-      (((linearIndependent_algHom_toLinearMap' K L).comp _ AlgEquiv.coe_algHom_injective).comp _
+      (((linearIndependent_algHom_toLinearMap' K L L).comp _ AlgEquiv.coe_algHom_injective).comp _
         (Subtype.val_injective.comp ((finEquivPowers σ hσ).injective)))
       (q.coeff ∘ (↑)) hs ⟨_, H⟩
 

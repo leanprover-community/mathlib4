@@ -3,12 +3,9 @@ Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis
 -/
-import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Algebra.Order.WithZero
 import Mathlib.Algebra.GroupPower.CovariantClass
 import Mathlib.Algebra.GroupPower.Ring
-import Mathlib.Data.Set.Intervals.Basic
-import Mathlib.Data.Nat.Order.Basic
+import Mathlib.Algebra.Order.WithZero
 
 #align_import algebra.group_power.order from "leanprover-community/mathlib"@"00f91228655eecdcd3ac97a7fd8dbcb139fe990a"
 
@@ -19,9 +16,128 @@ Note that some lemmas are in `Algebra/GroupPower/Lemmas.lean` as they import fil
 depend on this file.
 -/
 
-open Function
+open Function Int
 
-variable {M R : Type*}
+variable {α M R : Type*}
+
+section OrderedCommGroup
+variable [OrderedCommGroup α] {m n : ℤ} {a b : α}
+
+@[to_additive zsmul_pos] lemma one_lt_zpow' (ha : 1 < a) (hn : 0 < n) : 1 < a ^ n := by
+  obtain ⟨n, rfl⟩ := Int.eq_ofNat_of_zero_le hn.le
+  rw [zpow_ofNat]
+  refine' one_lt_pow' ha ?_
+  rintro rfl
+  simp at hn
+#align one_lt_zpow' one_lt_zpow'
+#align zsmul_pos zsmul_pos
+
+@[to_additive zsmul_strictMono_left]
+lemma zpow_right_strictMono (ha : 1 < a) : StrictMono fun n : ℤ ↦ a ^ n := fun m n h ↦
+  calc
+    a ^ m = a ^ m * 1 := (mul_one _).symm
+    _ < a ^ m * a ^ (n - m) := mul_lt_mul_left' (one_lt_zpow' ha <| Int.sub_pos_of_lt h) _
+    _ = a ^ n := by simp [← zpow_add, m.add_comm]
+#align zpow_strict_mono_right zpow_right_strictMono
+#align zsmul_strict_mono_left zsmul_strictMono_left
+
+@[to_additive zsmul_mono_left]
+lemma zpow_mono_right (ha : 1 ≤ a) : Monotone fun n : ℤ ↦ a ^ n := fun m n h ↦
+  calc
+    a ^ m = a ^ m * 1 := (mul_one _).symm
+    _ ≤ a ^ m * a ^ (n - m) := mul_le_mul_left' (one_le_zpow ha <| Int.sub_nonneg_of_le h) _
+    _ = a ^ n := by simp [← zpow_add, m.add_comm]
+#align zpow_mono_right zpow_mono_right
+#align zsmul_mono_left zsmul_mono_left
+
+@[to_additive (attr := gcongr)]
+lemma zpow_le_zpow (ha : 1 ≤ a) (h : m ≤ n) : a ^ m ≤ a ^ n := zpow_mono_right ha h
+#align zpow_le_zpow zpow_le_zpow
+#align zsmul_le_zsmul zsmul_le_zsmul
+
+@[to_additive (attr := gcongr)]
+lemma zpow_lt_zpow (ha : 1 < a) (h : m < n) : a ^ m < a ^ n := zpow_right_strictMono ha h
+#align zpow_lt_zpow zpow_lt_zpow
+#align zsmul_lt_zsmul zsmul_lt_zsmul
+
+@[to_additive]
+lemma zpow_le_zpow_iff (ha : 1 < a) : a ^ m ≤ a ^ n ↔ m ≤ n := (zpow_right_strictMono ha).le_iff_le
+#align zpow_le_zpow_iff zpow_le_zpow_iff
+#align zsmul_le_zsmul_iff zsmul_le_zsmul_iff
+
+@[to_additive]
+lemma zpow_lt_zpow_iff (ha : 1 < a) : a ^ m < a ^ n ↔ m < n := (zpow_right_strictMono ha).lt_iff_lt
+#align zpow_lt_zpow_iff zpow_lt_zpow_iff
+#align zsmul_lt_zsmul_iff zsmul_lt_zsmul_iff
+
+variable (α)
+
+@[to_additive zsmul_strictMono_right]
+lemma zpow_strictMono_left (hn : 0 < n) : StrictMono ((· ^ n) : α → α) := fun a b hab => by
+  rw [← one_lt_div', ← div_zpow]; exact one_lt_zpow' (one_lt_div'.2 hab) hn
+#align zpow_strict_mono_left zpow_strictMono_left
+#align zsmul_strict_mono_right zsmul_strictMono_right
+
+@[to_additive zsmul_mono_right]
+lemma zpow_mono_left (hn : 0 ≤ n) : Monotone ((· ^ n) : α → α) := fun a b hab => by
+  rw [← one_le_div', ← div_zpow]; exact one_le_zpow (one_le_div'.2 hab) hn
+#align zpow_mono_left zpow_mono_left
+#align zsmul_mono_right zsmul_mono_right
+
+variable {α}
+
+@[to_additive (attr := gcongr)]
+lemma zpow_le_zpow' (hn : 0 ≤ n) (h : a ≤ b) : a ^ n ≤ b ^ n := zpow_mono_left α hn h
+#align zpow_le_zpow' zpow_le_zpow'
+#align zsmul_le_zsmul' zsmul_le_zsmul'
+
+@[to_additive (attr := gcongr)]
+lemma zpow_lt_zpow' (hn : 0 < n) (h : a < b) : a ^ n < b ^ n := zpow_strictMono_left α hn h
+#align zpow_lt_zpow' zpow_lt_zpow'
+#align zsmul_lt_zsmul' zsmul_lt_zsmul'
+
+end OrderedCommGroup
+
+section LinearOrderedCommGroup
+
+variable [LinearOrderedCommGroup α] {n : ℤ} {a b : α}
+
+@[to_additive] lemma zpow_le_zpow_iff' (hn : 0 < n) : a ^ n ≤ b ^ n ↔ a ≤ b :=
+  (zpow_strictMono_left α hn).le_iff_le
+#align zpow_le_zpow_iff' zpow_le_zpow_iff'
+#align zsmul_le_zsmul_iff' zsmul_le_zsmul_iff'
+
+@[to_additive] lemma zpow_lt_zpow_iff' (hn : 0 < n) : a ^ n < b ^ n ↔ a < b :=
+  (zpow_strictMono_left α hn).lt_iff_lt
+#align zpow_lt_zpow_iff' zpow_lt_zpow_iff'
+#align zsmul_lt_zsmul_iff' zsmul_lt_zsmul_iff'
+
+@[to_additive zsmul_right_injective
+"See also `smul_right_injective`. TODO: provide a `NoZeroSMulDivisors` instance. We can't do
+that here because importing that definition would create import cycles."]
+lemma zpow_left_injective (hn : n ≠ 0) : Injective ((· ^ n) : α → α) := by
+  obtain hn | hn := hn.lt_or_lt
+  · refine fun a b (hab : a ^ n = b ^ n) ↦
+      (zpow_strictMono_left _ $ Int.neg_pos_of_neg hn).injective ?_
+    rw [zpow_neg, zpow_neg, hab]
+  · exact (zpow_strictMono_left _ hn).injective
+#align zpow_left_injective zpow_left_injective
+#align zsmul_right_injective zsmul_right_injective
+
+@[to_additive zsmul_right_inj]
+lemma zpow_left_inj (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b := (zpow_left_injective hn).eq_iff
+#align zpow_left_inj zpow_left_inj
+#align zsmul_right_inj zsmul_right_inj
+
+/-- Alias of `zpow_left_inj`, for ease of discovery alongside `zsmul_le_zsmul_iff'` and
+`zsmul_lt_zsmul_iff'`. -/
+@[to_additive "Alias of `zsmul_right_inj`, for ease of discovery alongside `zsmul_le_zsmul_iff'` and
+`zsmul_lt_zsmul_iff'`."]
+lemma zpow_eq_zpow_iff' (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b := zpow_left_inj hn
+#align zpow_eq_zpow_iff' zpow_eq_zpow_iff'
+#align zsmul_eq_zsmul_iff' zsmul_eq_zsmul_iff'
+
+end LinearOrderedCommGroup
 
 namespace CanonicallyOrderedCommSemiring
 
@@ -134,7 +250,7 @@ theorem pow_lt_pow_left (h : x < y) (hx : 0 ≤ x) : ∀ {n : ℕ}, n ≠ 0 → 
 #align pow_lt_pow_of_lt_left pow_lt_pow_left
 
 /-- See also `pow_left_strictMono` and `Nat.pow_left_strictMono`. -/
-lemma pow_left_strictMonoOn (hn : n ≠ 0) : StrictMonoOn (· ^ n : R → R) (Set.Ici 0) :=
+lemma pow_left_strictMonoOn (hn : n ≠ 0) : StrictMonoOn (· ^ n : R → R) {a | 0 ≤ a} :=
   fun _a ha _b _ hab ↦ pow_lt_pow_left hab ha hn
 #align strict_mono_on_pow pow_left_strictMonoOn
 
@@ -280,22 +396,9 @@ theorem lt_of_mul_self_lt_mul_self (hb : 0 ≤ b) : a * a < b * b → a < b := b
 end LinearOrderedSemiring
 
 section LinearOrderedRing
+variable [LinearOrderedRing R] {a b : R} {n : ℕ}
 
-variable [LinearOrderedRing R]
-
-theorem pow_abs (a : R) (n : ℕ) : |a| ^ n = |a ^ n| :=
-  ((absHom.toMonoidHom : R →* R).map_pow a n).symm
-#align pow_abs pow_abs
-
-theorem abs_neg_one_pow (n : ℕ) : |(-1 : R) ^ n| = 1 := by rw [← pow_abs, abs_neg, abs_one, one_pow]
-#align abs_neg_one_pow abs_neg_one_pow
-
-theorem abs_pow_eq_one (a : R) {n : ℕ} (h : n ≠ 0) : |a ^ n| = 1 ↔ |a| = 1 := by
-  convert pow_left_inj (abs_nonneg a) zero_le_one h
-  exacts [(pow_abs _ _).symm, (one_pow _).symm]
-#align abs_pow_eq_one abs_pow_eq_one
-
-section
+section deprecated
 set_option linter.deprecated false
 
 theorem pow_bit0_nonneg (a : R) (n : ℕ) : 0 ≤ a ^ bit0 n := by
@@ -324,82 +427,41 @@ theorem pow_bit0_pos_iff (a : R) {n : ℕ} (hn : n ≠ 0) : 0 < a ^ bit0 n ↔ a
   exact lt_irrefl _ h
 #align pow_bit0_pos_iff pow_bit0_pos_iff
 
-end
+@[simp]
+lemma pow_bit1_neg_iff : a ^ bit1 n < 0 ↔ a < 0 :=
+  ⟨fun h ↦ not_le.1 fun h' => not_le.2 h <| pow_nonneg h' _, fun ha ↦ pow_bit1_neg ha n⟩
+#align pow_bit1_neg_iff pow_bit1_neg_iff
 
-theorem sq_pos_iff (a : R) : 0 < a ^ 2 ↔ a ≠ 0 :=
-  pow_bit0_pos_iff a one_ne_zero
+@[simp]
+lemma pow_bit1_nonneg_iff : 0 ≤ a ^ bit1 n ↔ 0 ≤ a := le_iff_le_iff_lt_iff_lt.2 pow_bit1_neg_iff
+#align pow_bit1_nonneg_iff pow_bit1_nonneg_iff
+
+@[simp]
+lemma pow_bit1_nonpos_iff : a ^ bit1 n ≤ 0 ↔ a ≤ 0 := by
+  simp only [le_iff_lt_or_eq, pow_bit1_neg_iff, pow_eq_zero_iff']; simp [bit1]
+#align pow_bit1_nonpos_iff pow_bit1_nonpos_iff
+
+@[simp]
+lemma pow_bit1_pos_iff : 0 < a ^ bit1 n ↔ 0 < a := lt_iff_lt_of_le_iff_le pow_bit1_nonpos_iff
+#align pow_bit1_pos_iff pow_bit1_pos_iff
+
+lemma strictMono_pow_bit1 (n : ℕ) : StrictMono (· ^ bit1 n : R → R) := by
+  intro a b hab
+  rcases le_total a 0 with ha | ha
+  · rcases le_or_lt b 0 with hb | hb
+    · rw [← neg_lt_neg_iff, ← neg_pow_bit1, ← neg_pow_bit1]
+      exact pow_lt_pow_left (neg_lt_neg hab) (neg_nonneg.2 hb) n.bit1_ne_zero
+    · exact (pow_bit1_nonpos_iff.2 ha).trans_lt (pow_bit1_pos_iff.2 hb)
+  · exact pow_lt_pow_left hab ha n.bit1_ne_zero
+#align strict_mono_pow_bit1 strictMono_pow_bit1
+
+end deprecated
+
+lemma sq_pos_iff (a : R) : 0 < a ^ 2 ↔ a ≠ 0 := pow_bit0_pos_iff a one_ne_zero
 #align sq_pos_iff sq_pos_iff
 
-variable {x y : R}
-
--- Porting note: added `simp` to replace `pow_bit0_abs`
-@[simp]
-theorem sq_abs (x : R) : |x| ^ 2 = x ^ 2 := by simpa only [sq] using abs_mul_abs_self x
-#align sq_abs sq_abs
-
-theorem abs_sq (x : R) : |x ^ 2| = x ^ 2 := by simpa only [sq] using abs_mul_self x
-#align abs_sq abs_sq
-
-theorem sq_lt_sq : x ^ 2 < y ^ 2 ↔ |x| < |y| := by
-  simpa only [sq_abs] using
-    (pow_left_strictMonoOn two_ne_zero).lt_iff_lt (abs_nonneg x) (abs_nonneg y)
-#align sq_lt_sq sq_lt_sq
-
-theorem sq_lt_sq' (h1 : -y < x) (h2 : x < y) : x ^ 2 < y ^ 2 :=
-  sq_lt_sq.2 (lt_of_lt_of_le (abs_lt.2 ⟨h1, h2⟩) (le_abs_self _))
-#align sq_lt_sq' sq_lt_sq'
-
-theorem sq_le_sq : x ^ 2 ≤ y ^ 2 ↔ |x| ≤ |y| := by
-  simpa only [sq_abs] using
-    (pow_left_strictMonoOn two_ne_zero).le_iff_le (abs_nonneg x) (abs_nonneg y)
-#align sq_le_sq sq_le_sq
-
-theorem sq_le_sq' (h1 : -y ≤ x) (h2 : x ≤ y) : x ^ 2 ≤ y ^ 2 :=
-  sq_le_sq.2 (le_trans (abs_le.mpr ⟨h1, h2⟩) (le_abs_self _))
-#align sq_le_sq' sq_le_sq'
-
-theorem abs_lt_of_sq_lt_sq (h : x ^ 2 < y ^ 2) (hy : 0 ≤ y) : |x| < y := by
-  rwa [← abs_of_nonneg hy, ← sq_lt_sq]
-#align abs_lt_of_sq_lt_sq abs_lt_of_sq_lt_sq
-
-theorem abs_lt_of_sq_lt_sq' (h : x ^ 2 < y ^ 2) (hy : 0 ≤ y) : -y < x ∧ x < y :=
-  abs_lt.mp <| abs_lt_of_sq_lt_sq h hy
-#align abs_lt_of_sq_lt_sq' abs_lt_of_sq_lt_sq'
-
-theorem abs_le_of_sq_le_sq (h : x ^ 2 ≤ y ^ 2) (hy : 0 ≤ y) : |x| ≤ y := by
-  rwa [← abs_of_nonneg hy, ← sq_le_sq]
-#align abs_le_of_sq_le_sq abs_le_of_sq_le_sq
-
-theorem abs_le_of_sq_le_sq' (h : x ^ 2 ≤ y ^ 2) (hy : 0 ≤ y) : -y ≤ x ∧ x ≤ y :=
-  abs_le.mp <| abs_le_of_sq_le_sq h hy
-#align abs_le_of_sq_le_sq' abs_le_of_sq_le_sq'
-
-theorem sq_eq_sq_iff_abs_eq_abs (x y : R) : x ^ 2 = y ^ 2 ↔ |x| = |y| := by
-  simp only [le_antisymm_iff, sq_le_sq]
-#align sq_eq_sq_iff_abs_eq_abs sq_eq_sq_iff_abs_eq_abs
-
-@[simp]
-theorem sq_le_one_iff_abs_le_one (x : R) : x ^ 2 ≤ 1 ↔ |x| ≤ 1 := by
-  simpa only [one_pow, abs_one] using @sq_le_sq _ _ x 1
-#align sq_le_one_iff_abs_le_one sq_le_one_iff_abs_le_one
-
-@[simp]
-theorem sq_lt_one_iff_abs_lt_one (x : R) : x ^ 2 < 1 ↔ |x| < 1 := by
-  simpa only [one_pow, abs_one] using @sq_lt_sq _ _ x 1
-#align sq_lt_one_iff_abs_lt_one sq_lt_one_iff_abs_lt_one
-
-@[simp]
-theorem one_le_sq_iff_one_le_abs (x : R) : 1 ≤ x ^ 2 ↔ 1 ≤ |x| := by
-  simpa only [one_pow, abs_one] using @sq_le_sq _ _ 1 x
-#align one_le_sq_iff_one_le_abs one_le_sq_iff_one_le_abs
-
-@[simp]
-theorem one_lt_sq_iff_one_lt_abs (x : R) : 1 < x ^ 2 ↔ 1 < |x| := by
-  simpa only [one_pow, abs_one] using @sq_lt_sq _ _ 1 x
-#align one_lt_sq_iff_one_lt_abs one_lt_sq_iff_one_lt_abs
-
-theorem pow_four_le_pow_two_of_pow_two_le {x y : R} (h : x ^ 2 ≤ y) : x ^ 4 ≤ y ^ 2 :=
-  (pow_mul x 2 2).symm ▸ pow_le_pow_left (sq_nonneg x) h 2
+lemma pow_four_le_pow_two_of_pow_two_le (h : a ^ 2 ≤ b) : a ^ 4 ≤ b ^ 2 :=
+  (pow_mul a 2 2).symm ▸ pow_le_pow_left (sq_nonneg a) h 2
 #align pow_four_le_pow_two_of_pow_two_le pow_four_le_pow_two_of_pow_two_le
 
 end LinearOrderedRing
