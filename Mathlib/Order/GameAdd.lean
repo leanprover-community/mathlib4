@@ -230,7 +230,7 @@ def GameAdd.fix {C : α → α → Sort*} (hr : WellFounded rα)
     C a b := by
   -- Porting note: this was refactored for #3414 (reenableeta), and could perhaps be cleaned up.
   have := hr.sym2_gameAdd
-  dsimp only [GameAdd, lift₂, FunLike.coe, EquivLike.coe] at this
+  dsimp only [GameAdd, lift₂, DFunLike.coe, EquivLike.coe] at this
   exact @WellFounded.fix (α × α) (fun x => C x.1 x.2) _ this.of_quotient_lift₂
     (fun ⟨x₁, x₂⟩ IH' => IH x₁ x₂ fun a' b' => IH' ⟨a', b'⟩) (a, b)
 #align sym2.game_add.fix Sym2.GameAdd.fix

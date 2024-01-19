@@ -346,7 +346,7 @@ instance (priority := 100) continuousSemilinearMapClass
     [s : ContinuousSemilinearEquivClass F σ M M₂] : ContinuousSemilinearMapClass F σ M M₂ :=
   { s with
     coe := ((↑) : F → M → M₂)
-    coe_injective' := @FunLike.coe_injective F _ _ _ }
+    coe_injective' := @DFunLike.coe_injective F _ _ _ }
 #align continuous_semilinear_equiv_class.continuous_semilinear_map_class ContinuousSemilinearEquivClass.continuousSemilinearMapClass
 
 end ContinuousSemilinearEquivClass
@@ -419,7 +419,7 @@ theorem coe_injective : Function.Injective ((↑) : (M₁ →SL[σ₁₂] M₂) 
 instance continuousSemilinearMapClass :
     ContinuousSemilinearMapClass (M₁ →SL[σ₁₂] M₂) σ₁₂ M₁ M₂ where
   coe f := f.toLinearMap
-  coe_injective' _ _ h := coe_injective (FunLike.coe_injective h)
+  coe_injective' _ _ h := coe_injective (DFunLike.coe_injective h)
   map_add f := map_add f.toLinearMap
   map_continuous f := f.2
   map_smulₛₗ f := f.toLinearMap.map_smul'
@@ -427,7 +427,7 @@ instance continuousSemilinearMapClass :
 
 -- see Note [function coercion]
 /-- Coerce continuous linear maps to functions. -/
---instance toFun' : CoeFun (M₁ →SL[σ₁₂] M₂) fun _ => M₁ → M₂ := ⟨FunLike.coe⟩
+--instance toFun' : CoeFun (M₁ →SL[σ₁₂] M₂) fun _ => M₁ → M₂ := ⟨DFunLike.coe⟩
 
 -- porting note: was `simp`, now `simp only` proves it
 theorem coe_mk (f : M₁ →ₛₗ[σ₁₂] M₂) (h) : (mk f h : M₁ →ₛₗ[σ₁₂] M₂) = f :=
@@ -456,7 +456,7 @@ theorem coe_inj {f g : M₁ →SL[σ₁₂] M₂} : (f : M₁ →ₛₗ[σ₁₂
 #align continuous_linear_map.coe_inj ContinuousLinearMap.coe_inj
 
 theorem coeFn_injective : @Function.Injective (M₁ →SL[σ₁₂] M₂) (M₁ → M₂) (↑) :=
-  FunLike.coe_injective
+  DFunLike.coe_injective
 #align continuous_linear_map.coe_fn_injective ContinuousLinearMap.coeFn_injective
 
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
@@ -474,11 +474,11 @@ initialize_simps_projections ContinuousLinearMap (toLinearMap_toFun → apply, t
 
 @[ext]
 theorem ext {f g : M₁ →SL[σ₁₂] M₂} (h : ∀ x, f x = g x) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align continuous_linear_map.ext ContinuousLinearMap.ext
 
 theorem ext_iff {f g : M₁ →SL[σ₁₂] M₂} : f = g ↔ ∀ x, f x = g x :=
-  FunLike.ext_iff
+  DFunLike.ext_iff
 #align continuous_linear_map.ext_iff ContinuousLinearMap.ext_iff
 
 /-- Copy of a `ContinuousLinearMap` with a new `toFun` equal to the old one. Useful to fix
@@ -494,7 +494,7 @@ theorem coe_copy (f : M₁ →SL[σ₁₂] M₂) (f' : M₁ → M₂) (h : f' = 
 #align continuous_linear_map.coe_copy ContinuousLinearMap.coe_copy
 
 theorem copy_eq (f : M₁ →SL[σ₁₂] M₂) (f' : M₁ → M₂) (h : f' = ⇑f) : f.copy f' h = f :=
-  FunLike.ext' h
+  DFunLike.ext' h
 #align continuous_linear_map.copy_eq ContinuousLinearMap.copy_eq
 
 -- make some straightforward lemmas available to `simp`.
@@ -710,7 +710,8 @@ theorem one_apply (x : M₁) : (1 : M₁ →L[R₁] M₁) x = x :=
 #align continuous_linear_map.one_apply ContinuousLinearMap.one_apply
 
 instance [Nontrivial M₁] : Nontrivial (M₁ →L[R₁] M₁) :=
-  ⟨0, 1, fun e ↦ have ⟨x, hx⟩ := exists_ne (0 : M₁); hx (by simpa using FunLike.congr_fun e.symm x)⟩
+  ⟨0, 1, fun e ↦
+    have ⟨x, hx⟩ := exists_ne (0 : M₁); hx (by simpa using DFunLike.congr_fun e.symm x)⟩
 
 section Add
 
@@ -1054,6 +1055,16 @@ theorem ker_codRestrict (f : M₁ →SL[σ₁₂] M₂) (p : Submodule R₂ M₂
     ker (f.codRestrict p h) = ker f :=
   (f : M₁ →ₛₗ[σ₁₂] M₂).ker_codRestrict p h
 #align continuous_linear_map.ker_cod_restrict ContinuousLinearMap.ker_codRestrict
+
+/-- Restrict the codomain of a continuous linear map `f` to `f.range`. -/
+@[reducible]
+def rangeRestrict [RingHomSurjective σ₁₂] (f : M₁ →SL[σ₁₂] M₂) :=
+  f.codRestrict (LinearMap.range f) (LinearMap.mem_range_self f)
+
+@[simp]
+theorem coe_rangeRestrict [RingHomSurjective σ₁₂] (f : M₁ →SL[σ₁₂] M₂) :
+    (f.rangeRestrict : M₁ →ₛₗ[σ₁₂] LinearMap.range f) = (f : M₁ →ₛₗ[σ₁₂] M₂).rangeRestrict :=
+  rfl
 
 /-- `Submodule.subtype` as a `ContinuousLinearMap`. -/
 def _root_.Submodule.subtypeL (p : Submodule R₁ M₁) : p →L[R₁] M₁ where

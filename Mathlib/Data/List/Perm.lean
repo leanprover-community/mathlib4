@@ -5,7 +5,8 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Data.List.Dedup
 import Mathlib.Data.List.Permutation
-import Mathlib.Data.List.Range
+import Mathlib.Data.List.Pairwise
+import Mathlib.Data.List.Lattice
 import Mathlib.Data.Nat.Factorial.Basic
 
 #align_import data.list.perm from "leanprover-community/mathlib"@"65a1391a0106c9204fe45bc73a039f056558cb83"
@@ -746,7 +747,7 @@ theorem perm_permutations'Aux_comm (a b : α) (l : List α) :
 theorem Perm.permutations' {s t : List α} (p : s ~ t) : permutations' s ~ permutations' t := by
   induction' p with a s t _ IH a b l s t u _ _ IH₁ IH₂; · simp
   · exact IH.bind_right _
-  · dsimp [permutations']
+  · dsimp
     rw [bind_assoc, bind_assoc]
     apply Perm.bind_left
     intro l' _

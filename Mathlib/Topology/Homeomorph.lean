@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Patrick Massot, Sébastien Gouëzel, Zhouhang Zhou, Re
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.Topology.DenseEmbedding
 import Mathlib.Topology.Support
+import Mathlib.Topology.Connected.LocallyConnected
 
 #align_import topology.homeomorph from "leanprover-community/mathlib"@"4c3e1721c58ef9087bbc2c8c38b540f70eda2e53"
 
@@ -61,9 +62,9 @@ instance : EquivLike (X ≃ₜ Y) X Y where
   inv := fun h => h.toEquiv.symm
   left_inv := fun h => h.left_inv
   right_inv := fun h => h.right_inv
-  coe_injective' := fun _ _ H _ => toEquiv_injective <| FunLike.ext' H
+  coe_injective' := fun _ _ H _ => toEquiv_injective <| DFunLike.ext' H
 
-instance : CoeFun (X ≃ₜ Y) fun _ ↦ X → Y := ⟨FunLike.coe⟩
+instance : CoeFun (X ≃ₜ Y) fun _ ↦ X → Y := ⟨DFunLike.coe⟩
 
 @[simp] theorem homeomorph_mk_coe (a : X ≃ Y) (b c) : (Homeomorph.mk a b c : X → Y) = a :=
   rfl
@@ -106,7 +107,7 @@ theorem coe_symm_toEquiv (h : X ≃ₜ Y) : ⇑h.toEquiv.symm = h.symm :=
 
 @[ext]
 theorem ext {h h' : X ≃ₜ Y} (H : ∀ x, h x = h' x) : h = h' :=
-  FunLike.ext _ _ H
+  DFunLike.ext _ _ H
 #align homeomorph.ext Homeomorph.ext
 
 /-- Identity map as a homeomorphism. -/

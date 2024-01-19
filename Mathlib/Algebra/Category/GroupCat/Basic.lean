@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Category.MonCat.Basic
+import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.CategoryTheory.Endomorphism
 
 #align_import algebra.category.Group.basic from "leanprover-community/mathlib"@"524793de15bc4c52ee32d254e7d7867c7176b3af"
@@ -65,8 +66,8 @@ instance {X Y : GroupCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe (f : X →* Y) := f
 
 @[to_additive]
-instance FunLike_instance (X Y : GroupCat) : FunLike (X ⟶ Y) X (fun _ => Y) :=
-  show FunLike (X →* Y) X (fun _ => Y) from inferInstance
+instance FunLike_instance (X Y : GroupCat) : FunLike (X ⟶ Y) X Y :=
+  show FunLike (X →* Y) X Y from inferInstance
 
 -- porting note: added
 @[to_additive (attr := simp)]
@@ -214,8 +215,8 @@ instance {X Y : CommGroupCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe (f : X →* Y) := f
 
 @[to_additive]
-instance FunLike_instance (X Y : CommGroupCat) : FunLike (X ⟶ Y) X (fun _ => Y) :=
-  show FunLike (X →* Y) X (fun _ => Y) from inferInstance
+instance FunLike_instance (X Y : CommGroupCat) : FunLike (X ⟶ Y) X Y :=
+  show FunLike (X →* Y) X Y from inferInstance
 
 -- porting note: added
 @[to_additive (attr := simp)]
