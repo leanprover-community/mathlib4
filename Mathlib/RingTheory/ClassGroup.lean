@@ -321,75 +321,30 @@ theorem ClassGroup.mk0_eq_mk0_iff [IsDedekindDomain R] {I J : (Ideal R)⁰} :
 #align class_group.mk0_eq_mk0_iff ClassGroup.mk0_eq_mk0_iff
 
 /-- Maps a nonzero fractional ideal to an integral representative in the class group. -/
-noncomputable def ClassGroup.integralRep
-    (I : FractionalIdeal R⁰ (FractionRing R)) :
-    Ideal R :=
-  let a := I.2.choose
-  { carrier := {x | (algebraMap R _ a)⁻¹ * algebraMap R _ x ∈ I.1}
-    add_mem' := by
-      simp only [Set.mem_setOf_eq, RingHom.map_add, mul_add]
-      exact fun ha hb => Submodule.add_mem _ ha hb
-    zero_mem' := by
-      simp only [Set.mem_setOf_eq, RingHom.map_zero, mul_zero]
-      exact Submodule.zero_mem _
-    smul_mem' := by
-      intro c _ hb
-      simp only [smul_eq_mul, Set.mem_setOf_eq, RingHom.map_mul,
-        mul_left_comm ((algebraMap R (FractionRing R)) a)⁻¹]
-      rw [← Algebra.smul_def c]
-      exact Submodule.smul_mem _ c hb }
+noncomputable def ClassGroup.integralRep (I : FractionalIdeal R⁰ (FractionRing R)) :
+    Ideal R := I.num
 
 theorem ClassGroup.integralRep_mem_nonZeroDivisors
-    {I} (hI : I ≠ 0) :
-    ClassGroup.integralRep I ∈ (Ideal R)⁰ := by
-  let a := I.2.choose
-  have a_ne_zero' := I.2.choose_spec.1
-  have a_ne_zero := mem_nonZeroDivisors_iff_ne_zero.mp a_ne_zero'
-  have fa_ne_zero : (algebraMap R (FractionRing R)) a ≠ 0 :=
-    IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors a_ne_zero'
-  rw [mem_nonZeroDivisors_iff_ne_zero, Submodule.zero_eq_bot, Submodule.ne_bot_iff]
-  obtain ⟨x, x_ne, x_mem⟩ := exists_ne_zero_mem_isInteger hI
-  refine ⟨a*x, ?_, mul_ne_zero a_ne_zero x_ne⟩
-  change ((algebraMap R _) a)⁻¹ * (algebraMap R _) (a * x) ∈ I
-  rwa [RingHom.map_mul, ← mul_assoc, inv_mul_cancel fa_ne_zero, one_mul]
+    {I : FractionalIdeal R⁰ (FractionRing R)} (hI : I ≠ 0) :
+    I.num ∈ (Ideal R)⁰ := by
+  rwa [mem_nonZeroDivisors_iff_ne_zero, ne_eq, FractionalIdeal.num_eq_zero_iff]
 
 theorem ClassGroup.mk0_integralRep [IsDedekindDomain R]
     (I : (FractionalIdeal R⁰ (FractionRing R))ˣ) :
     ClassGroup.mk0 ⟨ClassGroup.integralRep I, ClassGroup.integralRep_mem_nonZeroDivisors I.ne_zero⟩
       = ClassGroup.mk I := by
-  let a := I.1.2.choose
-  have a_ne_zero' := I.1.2.choose_spec.1
-  have ha := I.1.2.choose_spec.2
-  have fa_ne_zero : (algebraMap R (FractionRing R)) a ≠ 0 :=
-    IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors a_ne_zero'
-  symm
-  apply Quotient.sound
-  change @Setoid.r _
-    (QuotientGroup.leftRel (toPrincipalIdeal R (FractionRing R)).range) _ _
-  rw [canonicalEquiv_self, RingEquiv.coe_monoidHom_refl, Units.map_id, MonoidHom.id_apply,
-      MonoidHom.id_apply, QuotientGroup.leftRel_apply]
-  refine ⟨Units.mk0 (algebraMap R _ a) fa_ne_zero, ?_⟩
-  rw [_root_.eq_inv_mul_iff_mul_eq, eq_comm, mul_comm I]
+  rw [← ClassGroup.mk_mk0 (FractionRing R), eq_comm, ClassGroup.mk_eq_mk]
+  have fd_ne_zero : (algebraMap R (FractionRing R)) I.1.den ≠ 0 := by
+    refine IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors (SetLike.coe_mem _)
+  refine ⟨Units.mk0 (algebraMap R _ I.1.den) fd_ne_zero, ?_⟩
   apply Units.ext
-  simp only [FractionalIdeal.coe_mk0, FractionalIdeal.map_canonicalEquiv_mk0,
-    Units.val_mk0, coe_toPrincipalIdeal, Units.val_mul,
-    FractionalIdeal.eq_spanSingleton_mul]
-  constructor
-  · intro zJ' hzJ'
-    obtain ⟨zJ, hzJ, rfl⟩ := (mem_coeIdeal R⁰).mp hzJ'
-    refine ⟨_, hzJ, ?_⟩
-    rw [← mul_assoc, mul_inv_cancel fa_ne_zero, one_mul]
-  · intro zI' hzI'
-    obtain ⟨y, hy⟩ := ha zI' hzI'
-    rw [← Algebra.smul_def, mem_coeIdeal]
-    refine' ⟨y, _, hy⟩
-    show (algebraMap R _ a)⁻¹ * algebraMap R _ y ∈ (I : FractionalIdeal R⁰ (FractionRing R))
-    rwa [hy, Algebra.smul_def, ← mul_assoc, inv_mul_cancel fa_ne_zero, one_mul]
+  rw [mul_comm, val_mul, coe_toPrincipalIdeal, val_mk0]
+  exact FractionalIdeal.den_mul_self_eq_num' R⁰ (FractionRing R) I
 
 theorem ClassGroup.mk0_surjective [IsDedekindDomain R] :
     Function.Surjective (ClassGroup.mk0 : (Ideal R)⁰ → ClassGroup R) := by
   rintro ⟨I⟩
-  refine ⟨⟨ ClassGroup.integralRep I.1, ClassGroup.integralRep_mem_nonZeroDivisors I.ne_zero⟩, ?_⟩
+  refine ⟨⟨ClassGroup.integralRep I.1, ClassGroup.integralRep_mem_nonZeroDivisors I.ne_zero⟩, ?_⟩
   rw [ClassGroup.mk0_integralRep, ClassGroup.Quot_mk_eq_mk]
 #align class_group.mk0_surjective ClassGroup.mk0_surjective
 
