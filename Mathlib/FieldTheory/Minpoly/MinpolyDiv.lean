@@ -86,8 +86,8 @@ lemma eval₂_minpolyDiv_self {T} [CommRing T] [Algebra R T] [IsDomain T] [Decid
 lemma eval_minpolyDiv_of_aeval_eq_zero [IsDomain S] [DecidableEq S]
     {y} (hy : aeval y (minpoly R x) = 0) :
     (minpolyDiv R x).eval y = if x = y then aeval x (derivative <| minpoly R x) else 0 := by
-  rw [eval, eval₂_minpolyDiv_of_eval₂_eq_zero]; rfl
-  exact hy
+  rw [eval, eval₂_minpolyDiv_of_eval₂_eq_zero, RingHom.id_apply, RingHom.id_apply]
+  simpa [aeval_def] using hy
 
 lemma natDegree_minpolyDiv_succ [Nontrivial S] :
     natDegree (minpolyDiv R x) + 1 = natDegree (minpoly R x) := by
@@ -105,7 +105,7 @@ lemma natDegree_minpolyDiv :
 lemma natDegree_minpolyDiv_lt [Nontrivial S] :
     natDegree (minpolyDiv R x) < natDegree (minpoly R x) := by
   rw [← natDegree_minpolyDiv_succ hx]
-  exact Nat.lt.base _
+  exact Nat.lt_succ_self _
 
 lemma coeff_minpolyDiv_mem_adjoin (x : S) (i) :
     coeff (minpolyDiv R x) i ∈ Algebra.adjoin R {x} := by
@@ -123,7 +123,7 @@ lemma coeff_minpolyDiv_mem_adjoin (x : S) (i) :
   · exact zero_mem _
   · refine (Nat.le_add_left _ i).trans_lt ?_
     rw [← add_assoc]
-    exact Nat.lt.base _
+    exact Nat.lt_succ_self _
 
 lemma minpolyDiv_eq_of_isIntegrallyClosed [IsDomain R] [IsIntegrallyClosed R] [IsDomain S]
     [Algebra R K] [Algebra K S] [IsScalarTower R K S] [IsFractionRing R K] :
@@ -150,7 +150,8 @@ lemma coeff_minpolyDiv_sub_pow_mem_span {i} (hi : i ≤ natDegree (minpolyDiv R 
           (Submodule.mem_span_singleton_self x))
       rw [Submodule.span_mul_span, Set.mul_singleton, Set.image_image]
       apply Submodule.span_mono
-      rintro _ ⟨j, hj : j < i, rfl⟩
+      rintro _ ⟨j, hj, rfl⟩
+      rw [Set.mem_Iio] at hj
       exact ⟨j + 1, Nat.add_lt_of_lt_sub hj, pow_succ' x j⟩
 
 lemma span_coeff_minpolyDiv :
