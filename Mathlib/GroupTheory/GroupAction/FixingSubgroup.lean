@@ -119,7 +119,11 @@ def fixingSubgroup (s : Set α) : Subgroup M :=
 #align fixing_subgroup fixingSubgroup
 #align fixing_add_subgroup fixingAddSubgroup
 
-theorem mem_fixingSubgroup_iff {s : Set α} {m : M} : m ∈ fixingSubgroup M s ↔ ∀ y ∈ s, m • y = y :=
+scoped[MulAction] notation:max G "•[" s "]" => fixingSubgroup G s
+scoped[AddAction] notation:max G "+ᵥ[" s "]" => fixingAddSubgroup G s
+
+@[to_additive]
+theorem mem_fixingSubgroup_iff {s : Set α} {m : G} : m ∈ fixingSubgroup G s ↔ ∀ y ∈ s, m • y = y :=
   ⟨fun hg y hy => hg ⟨y, hy⟩, fun h ⟨y, hy⟩ => h y hy⟩
 #align mem_fixing_subgroup_iff mem_fixingSubgroup_iff
 

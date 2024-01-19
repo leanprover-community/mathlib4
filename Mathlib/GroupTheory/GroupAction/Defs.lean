@@ -95,6 +95,21 @@ theorem smul_eq_mul (α : Type*) [Mul α] {a a' : α} : a • a' = a * a' :=
 #align smul_eq_mul smul_eq_mul
 #align vadd_eq_add vadd_eq_add
 
+/--
+If an action from a nontrivial `G` on `α` is faithful, then `α` must be nonempty.
+-/
+@[to_additive]
+theorem nonempty_of_nontrivial_faithful_smul (G α : Type*) [SMul G α] [FaithfulSMul G α]
+    [nontrivial : Nontrivial G] : Nonempty α := by
+  by_contra empty
+  rw [not_nonempty_iff] at empty
+  let ⟨g, h, g_ne_h⟩ := nontrivial
+  apply g_ne_h
+  apply FaithfulSMul.eq_of_smul_eq_smul (α := α)
+  intro ff
+  exfalso
+  exact IsEmpty.false ff
+
 /-- Type class for additive monoid actions. -/
 class AddAction (G : Type*) (P : Type*) [AddMonoid G] extends VAdd G P where
   /-- Zero is a neutral element for `+ᵥ` -/
