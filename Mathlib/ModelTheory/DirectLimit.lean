@@ -517,16 +517,18 @@ end DirectLimit
 
 section SubEquivalence
 
+open Substructure.SubEquivalence
+
 variable [Nonempty ι] [IsDirected ι (· ≤ ·)]
 variable (S : ι →o M ≃ₚ[L] N)
 
 instance : DirectedSystem (fun i ↦ (S i).sub_dom) (fun _ _ h ↦
-  Substructure.inclusion (Substructure.SubEquivalence.le_dom (S.monotone h))) where
+  Substructure.inclusion (le_dom (S.monotone h))) where
   map_self' := fun _ _ _ ↦ rfl
   map_map' := fun _ _ _ ↦ rfl
 
 instance : DirectedSystem (fun i ↦ (S i).sub_cod) (fun _ _ h ↦
-  Substructure.inclusion (Substructure.SubEquivalence.le_cod (S.monotone h))) where
+  Substructure.inclusion (le_cod (S.monotone h))) where
   map_self' := fun _ _ _ ↦ rfl
   map_map' := fun _ _ _ ↦ rfl
 
@@ -537,17 +539,17 @@ noncomputable def subEquiv_limit : M ≃ₚ[L] N := {
   equiv := by
     refine (DirectLimit.Equiv_iSup {
       toFun := (fun i ↦ (S i).sub_cod)
-      monotone' := Substructure.SubEquivalence.monotone_cod.comp S.monotone
+      monotone' := monotone_cod.comp S.monotone
     }).comp ((?_ : _ ≃[L] _).comp (DirectLimit.Equiv_iSup {
       toFun := (fun i ↦ (S i).sub_dom)
-      monotone' := Substructure.SubEquivalence.monotone_dom.comp S.monotone
+      monotone' := monotone_dom.comp S.monotone
     }).symm)
     exact DirectLimit.equiv_lift L ι (fun i ↦ (S i).sub_dom)
-      (fun _ _ hij ↦ Substructure.inclusion (Substructure.SubEquivalence.le_dom (S.monotone hij)))
+      (fun _ _ hij ↦ Substructure.inclusion (le_dom (S.monotone hij)))
       (fun i ↦ (S i).sub_cod)
-      (fun _ _ hij ↦ Substructure.inclusion (Substructure.SubEquivalence.le_cod (S.monotone hij)))
+      (fun _ _ hij ↦ Substructure.inclusion (le_cod (S.monotone hij)))
       (fun i ↦ (S i).equiv)
-      (fun _ _ hij _ ↦ Substructure.SubEquivalence.equiv_inclusion (S.monotone hij) _)
+      (fun _ _ hij _ ↦ equiv_inclusion (S.monotone hij) _)
   }
 
 @[simp]
@@ -565,18 +567,18 @@ theorem le_subEquiv_limit : ∀ i, S i ≤ subEquiv_limit S := by
   simp only [OrderHom.coe_mk, Function.comp_apply, Equiv.comp_apply]
   refine DirectLimit.Equiv_isup_symm_inclusion
     { toFun := fun i ↦ (S i).sub_dom
-      monotone' := Substructure.SubEquivalence.monotone_dom.comp S.monotone} x ▸ ?_
+      monotone' := monotone_dom.comp S.monotone} x ▸ ?_
   refine DirectLimit.equiv_lift_of L ι (fun i ↦ (S i).sub_dom)
-        (fun _ _ hij ↦ Substructure.inclusion (Substructure.SubEquivalence.le_dom (S.monotone hij)))
+        (fun _ _ hij ↦ Substructure.inclusion (le_dom (S.monotone hij)))
       (fun i ↦ (S i).sub_cod)
-      (fun _ _ hij ↦ Substructure.inclusion (Substructure.SubEquivalence.le_cod (S.monotone hij)))
+      (fun _ _ hij ↦ Substructure.inclusion (le_cod (S.monotone hij)))
       (fun i ↦ (S i).equiv)
-      (fun _ _ hij _ ↦ Substructure.SubEquivalence.equiv_inclusion (S.monotone hij) _)
+      (fun _ _ hij _ ↦ equiv_inclusion (S.monotone hij) _)
       x ▸ ?_
   rw [DirectLimit.equiv_lift_of]
   refine DirectLimit.Equiv_isup_of
     { toFun := fun i ↦ (S i).sub_cod
-      monotone' := Substructure.SubEquivalence.monotone_cod.comp S.monotone} ((S i).equiv x) ▸ ?_
+      monotone' := monotone_cod.comp S.monotone} ((S i).equiv x) ▸ ?_
   rw [DirectLimit.Equiv_isup_of]
   rfl
 
@@ -604,19 +606,45 @@ noncomputable def definedAtLeft
     rcases h f.val f.2 m with ⟨g, f_le_g, m_in_dom⟩
     have closure_le_dom : (Substructure.closure L (f.val.sub_dom ∪ {m})) ≤ g.sub_dom := by
       rw [Substructure.closure_le, union_subset_iff]
-      exact ⟨Substructure.SubEquivalence.le_dom f_le_g, singleton_subset_iff.2 m_in_dom⟩
+      exact ⟨le_dom f_le_g, singleton_subset_iff.2 m_in_dom⟩
     have closure_fg : (Substructure.closure L (f.val.sub_dom ∪ {m})).FG := by
       rw [Substructure.closure_union, Substructure.closure_eq]
       exact Substructure.FG.sup f.property (Substructure.fg_closure_singleton _)
-    use ⟨Substructure.SubEquivalence.dom_restrict g closure_le_dom, closure_fg⟩
+    use ⟨dom_restrict g closure_le_dom, closure_fg⟩
     constructor
     . simp only [union_singleton]
       exact Substructure.subset_closure <| mem_insert_iff.2 <| Or.inl <| refl m
-    . apply Substructure.SubEquivalence.le_dom_restrict
+    . apply le_dom_restrict
       rw [Substructure.closure_union]
       simp only [Substructure.closure_eq, ge_iff_le,
         Substructure.closure_le, singleton_subset_iff, le_sup_left]
       exact f_le_g
+
+noncomputable def definedAtRight
+  (h : ∀ f : (M ≃ₚ[L] N), ∀ _ : f.sub_dom.FG, ∀ n : N, ∃ g : (M ≃ₚ[L] N), f ≤ g ∧ n ∈ g.sub_cod)
+  (n : N) : Order.Cofinal (FiniteEquiv L M N) where
+  carrier := {f | n ∈ f.val.sub_cod}
+  mem_gt := by
+    intro f
+    rcases h f.val f.2 n with ⟨g, f_le_g, n_in_cod⟩
+    have closure_le_cod : (Substructure.closure L (f.val.sub_cod ∪ {n})) ≤ g.sub_cod := by
+      rw [Substructure.closure_le, union_subset_iff]
+      exact ⟨le_cod f_le_g, singleton_subset_iff.2 n_in_cod⟩
+    have closure_fg : (Substructure.closure L (f.val.sub_cod ∪ {n})).FG := by
+      rw [Substructure.closure_union, Substructure.closure_eq]
+      exact Substructure.FG.sup ((fg_iff f.val).1 f.prop) (Substructure.fg_closure_singleton _)
+    use ⟨cod_restrict g closure_le_cod, (cod_restrict g closure_le_cod).fg_iff.2 closure_fg⟩
+    constructor
+    . simp only [union_singleton]
+      exact Substructure.subset_closure <| mem_insert_iff.2 <| Or.inl <| refl n
+    . apply le_cod_restrict
+      rw [Substructure.closure_union]
+      simp only [Substructure.closure_eq, ge_iff_le,
+        Substructure.closure_le, singleton_subset_iff, le_sup_left]
+      exact f_le_g
+
+
+    done
 
 theorem cg_embedding [M_cg : Structure.CG L M] (h : (M ≃ₚ[L] N)) (h_fg : h.sub_dom.FG) :
   (∀ f : M ≃ₚ[L] N, ∀ _ : f.sub_dom.FG, ∀ m : M, ∃ g : (M ≃ₚ[L] N), f ≤ g ∧ m ∈ g.sub_dom)
@@ -630,13 +658,13 @@ theorem cg_embedding [M_cg : Structure.CG L M] (h : (M ≃ₚ[L] N)) (h_fg : h.s
     ⟨Subtype.val ∘ (Order.sequenceOfCofinals ⟨h, h_fg⟩ D),
       FiniteEquiv.subtype_val_monotone.comp (Order.sequenceOfCofinals.monotone _ _)⟩
   let F := subEquiv_limit S
-  have contains_X : X ⊆ F.sub_dom := by
+  have _ : X ⊆ F.sub_dom := by
     intro x hx
     have := Order.sequenceOfCofinals.encode_mem ⟨h, h_fg⟩ D ⟨x, hx⟩
-    exact Substructure.SubEquivalence.le_dom
+    exact le_dom
       (le_subEquiv_limit S (Encodable.encode (⟨x, hx⟩ : X) + 1)) this
   have isTop : F.sub_dom = ⊤ := by rwa [←top_le_iff, ←X_gen, Substructure.closure_le]
-  refine ⟨Substructure.SubEquivalence.dom_top_toEmbedding isTop, ?_⟩
+  refine ⟨dom_top_toEmbedding isTop, ?_⟩
   convert (le_subEquiv_limit S 0)
   apply Embedding.toSubEquivalence_toEmbedding
 

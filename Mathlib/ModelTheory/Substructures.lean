@@ -1034,25 +1034,33 @@ theorem range_subtype (S : L.Substructure M) : S.subtype.toHom.range = S := by
   exact hy
 #align first_order.language.substructure.range_subtype FirstOrder.Language.Substructure.range_subtype
 
-end Substructure
-
 variable (L) (M) (N)
 
 /-- An equivalence between substructures -/
-@[ext]
 structure SubEquivalence  where
   sub_dom : L.Substructure M
   sub_cod : L.Substructure N
   equiv : sub_dom ≃[L] sub_cod
 
 @[inherit_doc]
-scoped[FirstOrder] notation:25 M " ≃ₚ[" L "] " N => FirstOrder.Language.SubEquivalence L M N
-
-namespace Substructure
+scoped[FirstOrder] notation:25 M " ≃ₚ[" L "] " N => FirstOrder.Language.Substructure.SubEquivalence L M N
 
 namespace SubEquivalence
 
 variable {L} {M} {N}
+
+def symm (f : M ≃ₚ[L] N) : N ≃ₚ[L] M where
+  sub_dom := f.sub_cod
+  sub_cod := f.sub_dom
+  equiv := f.equiv.symm
+
+@[simp]
+theorem symm_symm (f : M ≃ₚ[L] N) : f.symm.symm = f :=
+  rfl
+
+@[simp]
+theorem symm_apply (f : M ≃ₚ[L] N) : ∀ x, f.symm.equiv x = f.equiv.symm x :=
+  fun _ ↦ rfl
 
 instance : LE (M ≃ₚ[L] N) := ⟨fun f g ↦ ∃h : f.sub_dom ≤ g.sub_dom,
   subtype _ ∘ g.equiv ∘ (Substructure.inclusion h) = subtype _ ∘ f.equiv⟩
@@ -1084,6 +1092,16 @@ theorem equiv_inclusion {f g : M ≃ₚ[L] N} (h : f ≤ g) (x : f.sub_dom) :
   rfl
   assumption
 
+theorem le_iff {f g : M ≃ₚ[L] N} : f ≤ g ↔
+  ∃ le_dom : f.sub_dom ≤ g.sub_dom,
+  ∃ le_cod : f.sub_cod ≤ g.sub_cod,
+  ∀ x, inclusion le_cod (f.equiv x) = g.equiv (inclusion le_dom x) := by
+    constructor
+    · exact fun h ↦ ⟨le_dom h, le_cod h, by intro x; apply (subtype _).inj'; rwa [equiv_inclusion]⟩
+    · rintro ⟨le_dom, le_cod, h_eq⟩
+      rw [le_def]
+      exact ⟨le_dom, by ext; change subtype _ (g.equiv _) = _ ; rw [←h_eq]; rfl⟩
+
 theorem le_trans (f g h : M ≃ₚ[L] N) : f ≤ g → g ≤ h → f ≤ h := by
   rintro ⟨le_fg, eq_fg⟩ ⟨le_gh, eq_gh⟩
   refine ⟨le_fg.trans le_gh, ?_⟩
@@ -1091,7 +1109,7 @@ theorem le_trans (f g h : M ≃ₚ[L] N) : f ≤ g → g ≤ h → f ≤ h := by
   rfl
 
 nonrec theorem le_refl (f : M ≃ₚ[L] N) : f ≤ f :=
-  ⟨le_refl _, by rw [coe_inclusion, Set.inclusion_eq_id, Function.comp.right_id]⟩
+  ⟨le_refl _, rfl⟩
 
 nonrec theorem le_antisymm (f g : M ≃ₚ[L] N) : f ≤ g → g ≤ f → f = g := by
   intro le_fg le_gf
@@ -1108,7 +1126,23 @@ instance : PartialOrder (M ≃ₚ[L] N) := {
   le_antisymm := le_antisymm
 }
 
-theorem ext' {f g : M ≃ₚ[L] N} (h_dom : f.sub_dom = g.sub_dom) : (∀ x : M, ∀ h : x ∈ f.sub_dom,
+theorem monotone_symm : Monotone (fun (f : M ≃ₚ[L] N) ↦ f.symm) := by
+  intro f g hfg
+  rw [le_iff]
+  refine ⟨le_cod hfg, le_dom hfg, ?_⟩
+  intro x
+  apply g.equiv.injective
+  change g.equiv (inclusion _ (f.equiv.symm x)) = g.equiv (g.equiv.symm _)
+  rw [g.equiv.apply_symm_apply, (Equiv.apply_symm_apply f.equiv x).symm, f.equiv.symm_apply_apply]
+  exact equiv_inclusion hfg _
+
+theorem symm_le_iff (f : M ≃ₚ[L] N) (g : N ≃ₚ[L] M) : f.symm ≤ g ↔ f ≤ g.symm :=
+  ⟨by intro h; rw [←f.symm_symm]; exact monotone_symm h,
+  by intro h; rw  [←g.symm_symm]; exact monotone_symm h⟩
+
+
+
+theorem ext {f g : M ≃ₚ[L] N} (h_dom : f.sub_dom = g.sub_dom) : (∀ x : M, ∀ h : x ∈ f.sub_dom,
   subtype _ (f.equiv ⟨x, h⟩) = subtype _ (g.equiv ⟨x, (h_dom ▸ h)⟩))
   → f = g := by
   intro h
@@ -1125,27 +1159,41 @@ theorem ext_iff {f g : M ≃ₚ[L] N} : f = g ↔ ∃ h_dom : f.sub_dom = g.sub_
       rcases f with ⟨dom_f, cod_f, equiv_f⟩
       cases h_eq
       exact ⟨rfl, fun _ _ ↦ rfl⟩
-    · rintro ⟨h, H⟩; exact ext' h H
+    · rintro ⟨h, H⟩; exact ext h H
 
 theorem monotone_dom : Monotone (fun f : M ≃ₚ[L] N ↦ f.sub_dom) := fun _ _ ↦ le_dom
 
 theorem monotone_cod : Monotone (fun f : M ≃ₚ[L] N ↦ f.sub_cod) := fun _ _ ↦ le_cod
 
-noncomputable def dom_restrict (f : M ≃ₚ[L] N) {A : L.Substructure M} : A ≤ f.sub_dom → M ≃ₚ[L] N := by
-  intro A_le_dom
-  let g := (subtype _).comp (f.equiv.toEmbedding.comp (A.inclusion A_le_dom))
-  exact {
-    sub_dom := A
-    sub_cod := g.toHom.range
-    equiv := g.equivRange
-  }
+/-- Restriction of a subequivalence to a substructure of the domain. -/
+noncomputable def dom_restrict (f : M ≃ₚ[L] N) {A : L.Substructure M} (h : A ≤ f.sub_dom) :
+  M ≃ₚ[L] N := by
+    let g := (subtype _).comp (f.equiv.toEmbedding.comp (A.inclusion h))
+    exact {
+      sub_dom := A
+      sub_cod := g.toHom.range
+      equiv := g.equivRange
+    }
 
 theorem dom_restrict_le (f : M ≃ₚ[L] N) {A : L.Substructure M} (h : A ≤ f.sub_dom) :
-  dom_restrict f h ≤ f := ⟨h, refl _⟩
+  f.dom_restrict h ≤ f := ⟨h, refl _⟩
 
 theorem le_dom_restrict (f g : M ≃ₚ[L] N) {A : L.Substructure M} (hf : f.sub_dom ≤ A)
-  (hg : A ≤ g.sub_dom) (hfg : f ≤ g) : f ≤ dom_restrict g hg :=
+  (hg : A ≤ g.sub_dom) (hfg : f ≤ g) : f ≤ g.dom_restrict hg :=
   ⟨hf, by rw [←(subtype_equiv_inclusion hfg)]; rfl⟩
+
+/-- Restriction of a subequivalence to a substructure of the codomain. -/
+noncomputable def cod_restrict (f : M ≃ₚ[L] N) {A : L.Substructure N} (h : A ≤ f.sub_cod) :
+  M ≃ₚ[L] N :=
+    (f.symm.dom_restrict h).symm
+
+theorem cod_restrict_le (f : M ≃ₚ[L] N) {A : L.Substructure N} (h : A ≤ f.sub_cod) :
+  cod_restrict f h ≤ f :=
+    (symm_le_iff _ _).2 (f.symm.dom_restrict_le h)
+
+theorem le_cod_restrict (f g : M ≃ₚ[L] N) {A : L.Substructure N} (hf : f.sub_cod ≤ A)
+  (hg : A ≤ g.sub_cod) (hfg : f ≤ g) : f ≤ g.cod_restrict hg :=
+    (symm_le_iff _ _).1 (le_dom_restrict f.symm g.symm hf hg (monotone_symm hfg))
 
 noncomputable def dom_top_toEmbedding {f : M ≃ₚ[L] N} (h : f.sub_dom = ⊤) : M ↪[L] N :=
   (subtype _).comp ((h ▸ f.equiv.toEmbedding).comp Substructure.topEquiv.symm.toEmbedding)
@@ -1162,8 +1210,6 @@ end SubEquivalence
 end Substructure
 
 namespace Embedding
-
-variable {L} {M} {N}
 
 noncomputable def toSubEquivalence (f : M ↪[L] N) : M ≃ₚ[L] N :=
   ⟨⊤, f.toHom.range, f.equivRange.comp (Substructure.topEquiv)⟩
@@ -1186,7 +1232,7 @@ theorem toSubEquivalence_toEmbedding {f :  M ≃ₚ[L] N} (h : f.sub_dom = ⊤) 
   (Substructure.SubEquivalence.dom_top_toEmbedding h).toSubEquivalence = f := by
     rcases f with ⟨_, _, _⟩
     cases h
-    apply Substructure.SubEquivalence.ext'
+    apply Substructure.SubEquivalence.ext
     intro _ _
     repeat rfl
 

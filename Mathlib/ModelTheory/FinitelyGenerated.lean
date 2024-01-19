@@ -293,6 +293,10 @@ theorem Substructure.cg_iff_structure_cg (S : L.Substructure M) : S.CG ↔ Struc
 set_option linter.uppercaseLean3 false in
 #align first_order.language.substructure.cg_iff_Structure_cg FirstOrder.Language.Substructure.cg_iff_structure_cg
 
+theorem Substructure.SubEquivalence.fg_iff {N : Type*} [L.Structure N] (f : M ≃ₚ[L] N) :
+  f.sub_dom.FG ↔ f.sub_cod.FG := by
+  simp only [Substructure.fg_iff_structure_fg, f.equiv.fg_iff]
+
 end Language
 
 end FirstOrder
