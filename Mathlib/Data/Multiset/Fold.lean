@@ -22,7 +22,7 @@ variable {α β : Type*}
 
 section Fold
 
-variable (op : α → α → α) [hc : IsCommutative α op] [ha : IsAssociative α op]
+variable (op : α → α → α) [hc : Commutative op] [ha : Associative op]
 
 local notation a " * " b => op a b
 
@@ -100,7 +100,7 @@ theorem fold_distrib {f g : β → α} (u₁ u₂ : α) (s : Multiset β) :
       ha.assoc, hc.comm (g a), ha.assoc])
 #align multiset.fold_distrib Multiset.fold_distrib
 
-theorem fold_hom {op' : β → β → β} [IsCommutative β op'] [IsAssociative β op'] {m : α → β}
+theorem fold_hom {op' : β → β → β} [Commutative op'] [Associative op'] {m : α → β}
     (hm : ∀ x y, m (op x y) = op' (m x) (m y)) (b : α) (s : Multiset α) :
     (s.map m).fold op' (m b) = m (s.fold op b) :=
   Multiset.induction_on s (by simp) (by simp (config := { contextual := true }) [hm])
@@ -112,7 +112,7 @@ theorem fold_union_inter [DecidableEq α] (s₁ s₂ : Multiset α) (b₁ b₂ :
 #align multiset.fold_union_inter Multiset.fold_union_inter
 
 @[simp]
-theorem fold_dedup_idem [DecidableEq α] [hi : IsIdempotent α op] (s : Multiset α) (b : α) :
+theorem fold_dedup_idem [DecidableEq α] [hi : Idempotent op] (s : Multiset α) (b : α) :
     (dedup s).fold op b = s.fold op b :=
   Multiset.induction_on s (by simp) fun a s IH => by
     by_cases h : a ∈ s <;> simp [IH, h]

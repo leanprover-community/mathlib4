@@ -517,8 +517,10 @@ def auxGroup (i : N) : Group (HomotopyGroup N X x) :=
 #align homotopy_group.aux_group HomotopyGroup.auxGroup
 
 theorem isUnital_auxGroup (i : N) :
-    EckmannHilton.IsUnital (auxGroup i).mul (⟦const⟧ : HomotopyGroup N X x) :=
-  ⟨⟨(auxGroup i).one_mul⟩, ⟨(auxGroup i).mul_one⟩⟩
+    EckmannHilton.IsUnital (auxGroup i).mul (⟦const⟧ : HomotopyGroup N X x) := {
+    left_id := (auxGroup i).one_mul,
+    right_id := (auxGroup i).mul_one
+  }
 #align homotopy_group.is_unital_aux_group HomotopyGroup.isUnital_auxGroup
 
 theorem auxGroup_indep (i j : N) : (auxGroup i : Group (HomotopyGroup N X x)) = auxGroup j := by

@@ -42,8 +42,8 @@ def IsIdempotentElem (p : M) : Prop :=
 
 namespace IsIdempotentElem
 
-theorem of_isIdempotent [IsIdempotent M (· * ·)] (a : M) : IsIdempotentElem a :=
-  IsIdempotent.idempotent a
+theorem of_isIdempotent [Idempotent (α := M) (· * ·)] (a : M) : IsIdempotentElem a :=
+  Idempotent.idempotent a
 #align is_idempotent_elem.of_is_idempotent IsIdempotentElem.of_isIdempotent
 
 theorem eq {p : M} (h : IsIdempotentElem p) : p * p = p :=

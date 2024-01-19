@@ -88,7 +88,7 @@ theorem commProb_le_one : commProb M ≤ 1 := by
 variable {M}
 
 theorem commProb_eq_one_iff [h : Nonempty M] :
-    commProb M = 1 ↔ Commutative ((· * ·) : M → M → M) := by
+    commProb M = 1 ↔ Mathlib.Commutative ((· * ·) : M → M → M) := by
   haveI := Fintype.ofFinite M
   rw [commProb, ← Set.coe_setOf, Nat.card_eq_fintype_card, Nat.card_eq_fintype_card]
   rw [div_eq_one_iff_eq, ← Nat.cast_pow, Nat.cast_inj, sq, ← card_prod,

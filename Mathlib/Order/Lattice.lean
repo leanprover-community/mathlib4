@@ -231,21 +231,18 @@ theorem sup_le_sup_right (h₁ : a ≤ b) (c) : a ⊔ c ≤ b ⊔ c :=
 theorem sup_idem : a ⊔ a = a := by simp
 #align sup_idem sup_idem
 
-instance : IsIdempotent α (· ⊔ ·) :=
-  ⟨@sup_idem _ _⟩
+instance : Idempotent (α := α) (· ⊔ ·) := ⟨@sup_idem _ _⟩
 
 theorem sup_comm : a ⊔ b = b ⊔ a := by apply le_antisymm <;> simp
 #align sup_comm sup_comm
 
-instance : IsCommutative α (· ⊔ ·) :=
-  ⟨@sup_comm _ _⟩
+instance : Commutative (α := α) (· ⊔ ·) := ⟨@sup_comm _ _⟩
 
 theorem sup_assoc : a ⊔ b ⊔ c = a ⊔ (b ⊔ c) :=
   eq_of_forall_ge_iff fun x => by simp only [sup_le_iff]; rw [and_assoc]
 #align sup_assoc sup_assoc
 
-instance : IsAssociative α (· ⊔ ·) :=
-  ⟨@sup_assoc _ _⟩
+instance : Associative (α := α)  (· ⊔ ·) := ⟨@sup_assoc _ _⟩
 
 theorem sup_left_right_swap (a b c : α) : a ⊔ b ⊔ c = c ⊔ b ⊔ a := by
   rw [sup_comm, @sup_comm _ _ a, sup_assoc]
@@ -481,21 +478,21 @@ theorem inf_idem : a ⊓ a = a :=
   @sup_idem αᵒᵈ _ _
 #align inf_idem inf_idem
 
-instance : IsIdempotent α (· ⊓ ·) :=
+instance : Idempotent (α := α) (· ⊓ ·) :=
   ⟨@inf_idem _ _⟩
 
 theorem inf_comm : a ⊓ b = b ⊓ a :=
   @sup_comm αᵒᵈ _ _ _
 #align inf_comm inf_comm
 
-instance : IsCommutative α (· ⊓ ·) :=
+instance : Commutative (α := α) (· ⊓ ·) :=
   ⟨@inf_comm _ _⟩
 
 theorem inf_assoc : a ⊓ b ⊓ c = a ⊓ (b ⊓ c) :=
   @sup_assoc αᵒᵈ _ a b c
 #align inf_assoc inf_assoc
 
-instance : IsAssociative α (· ⊓ ·) :=
+instance : Associative (α := α) (· ⊓ ·) :=
   ⟨@inf_assoc _ _⟩
 
 theorem inf_left_right_swap (a b c : α) : a ⊓ b ⊓ c = c ⊓ b ⊓ a :=

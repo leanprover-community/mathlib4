@@ -191,24 +191,24 @@ theorem comp {f' : β → γ} {gc : γ → γ → γ} (hf' : Semiconj₂ f' gb g
     Semiconj₂ (f' ∘ f) ga gc := fun x y ↦ by simp only [hf'.eq, hf.eq, comp_apply]
 #align function.semiconj₂.comp Function.Semiconj₂.comp
 
-theorem isAssociative_right [IsAssociative α ga] (h : Semiconj₂ f ga gb) (h_surj : Surjective f) :
-    IsAssociative β gb :=
-  ⟨h_surj.forall₃.2 fun x₁ x₂ x₃ ↦ by simp only [← h.eq, @IsAssociative.assoc _ ga]⟩
+theorem isAssociative_right [Associative ga] (h : Semiconj₂ f ga gb) (h_surj : Surjective f) :
+    Associative gb :=
+  ⟨h_surj.forall₃.2 fun x₁ x₂ x₃ ↦ by simp only [← h.eq, Associative.assoc (op := ga)]⟩
 #align function.semiconj₂.is_associative_right Function.Semiconj₂.isAssociative_right
 
-theorem isAssociative_left [IsAssociative β gb] (h : Semiconj₂ f ga gb) (h_inj : Injective f) :
-    IsAssociative α ga :=
-  ⟨fun x₁ x₂ x₃ ↦ h_inj <| by simp only [h.eq, @IsAssociative.assoc _ gb]⟩
+theorem isAssociative_left [Associative gb] (h : Semiconj₂ f ga gb) (h_inj : Injective f) :
+    Associative ga :=
+  ⟨fun x₁ x₂ x₃ ↦ h_inj <| by simp only [h.eq, Associative.assoc (op := gb)]⟩
 #align function.semiconj₂.is_associative_left Function.Semiconj₂.isAssociative_left
 
-theorem isIdempotent_right [IsIdempotent α ga] (h : Semiconj₂ f ga gb) (h_surj : Surjective f) :
-    IsIdempotent β gb :=
-  ⟨h_surj.forall.2 fun x ↦ by simp only [← h.eq, @IsIdempotent.idempotent _ ga]⟩
+theorem isIdempotent_right [Idempotent ga] (h : Semiconj₂ f ga gb) (h_surj : Surjective f) :
+    Idempotent gb :=
+  ⟨h_surj.forall.2 fun x ↦ by simp only [← h.eq, Idempotent.idempotent (op := ga)]⟩
 #align function.semiconj₂.is_idempotent_right Function.Semiconj₂.isIdempotent_right
 
-theorem isIdempotent_left [IsIdempotent β gb] (h : Semiconj₂ f ga gb) (h_inj : Injective f) :
-    IsIdempotent α ga :=
-  ⟨fun x ↦ h_inj <| by rw [h.eq, @IsIdempotent.idempotent _ gb]⟩
+theorem isIdempotent_left [Idempotent gb] (h : Semiconj₂ f ga gb) (h_inj : Injective f) :
+    Idempotent ga :=
+  ⟨fun x ↦ h_inj <| by rw [h.eq, Idempotent.idempotent (op := gb)]⟩
 #align function.semiconj₂.is_idempotent_left Function.Semiconj₂.isIdempotent_left
 
 end Semiconj₂

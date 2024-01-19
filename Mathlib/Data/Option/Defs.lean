@@ -103,29 +103,25 @@ theorem mem_toList {a : α} {o : Option α} : a ∈ toList o ↔ a ∈ o := by
   cases o <;> simp [toList, eq_comm]
 #align option.mem_to_list Option.mem_toList
 
-instance liftOrGet_isCommutative (f : α → α → α) [IsCommutative α f] :
-    IsCommutative (Option α) (liftOrGet f) :=
-  ⟨fun a b ↦ by cases a <;> cases b <;> simp [liftOrGet, IsCommutative.comm]⟩
+instance liftOrGet_isCommutative (f : α → α → α) [Commutative f] : Commutative (liftOrGet f) :=
+  ⟨fun a b ↦ by cases a <;> cases b <;> simp [liftOrGet, Commutative.comm]⟩
 
-instance liftOrGet_isAssociative (f : α → α → α) [IsAssociative α f] :
-    IsAssociative (Option α) (liftOrGet f) :=
-  ⟨fun a b c ↦ by cases a <;> cases b <;> cases c <;> simp [liftOrGet, IsAssociative.assoc]⟩
+instance liftOrGet_isAssociative (f : α → α → α) [Associative f] : Associative (liftOrGet f) :=
+  ⟨fun a b c ↦ by cases a <;> cases b <;> cases c <;> simp [liftOrGet, Associative.assoc]⟩
 
-instance liftOrGet_isIdempotent (f : α → α → α) [IsIdempotent α f] :
-    IsIdempotent (Option α) (liftOrGet f) :=
-  ⟨fun a ↦ by cases a <;> simp [liftOrGet, IsIdempotent.idempotent]⟩
+instance liftOrGet_isIdempotent (f : α → α → α) [Idempotent f] : Idempotent (liftOrGet f) :=
+  ⟨fun a ↦ by cases a <;> simp [liftOrGet, Idempotent.idempotent]⟩
 
-instance liftOrGet_isLeftId (f : α → α → α) : IsLeftId (Option α) (liftOrGet f) none :=
-  ⟨fun a ↦ by cases a <;> simp [liftOrGet]⟩
+instance liftOrGet_isId (f : α → α → α) : LawfulIdentity (liftOrGet f) none where
+  left_id a := by cases a <;> simp [liftOrGet]
+  right_id a := by cases a <;> simp [liftOrGet]
 
-instance liftOrGet_isRightId (f : α → α → α) : IsRightId (Option α) (liftOrGet f) none :=
-  ⟨fun a ↦ by cases a <;> simp [liftOrGet]⟩
 
 #align option.lift_or_get_comm Option.liftOrGet_isCommutative
 #align option.lift_or_get_assoc Option.liftOrGet_isAssociative
 #align option.lift_or_get_idem Option.liftOrGet_isIdempotent
-#align option.lift_or_get_is_left_id Option.liftOrGet_isLeftId
-#align option.lift_or_get_is_right_id Option.liftOrGet_isRightId
+--#align option.lift_or_get_is_left_id LawfulIdentity.toLeftIdentity
+--#align option.lift_or_get_is_right_id LawfulIdentity.toLeftIdentity
 
 /-- Convert `undef` to `none` to make an `LOption` into an `Option`. -/
 def _root_.Lean.LOption.toOption {α} : Lean.LOption α → Option α
