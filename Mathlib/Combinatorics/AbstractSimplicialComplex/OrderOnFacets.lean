@@ -5,14 +5,7 @@ universe u
 
 variable {α : Type u} {K : AbstractSimplicialComplex α}
 
-/-! We want to study shelling orders on abstract simplicial complexes. Roughly, a shelling order
-is a well-order on the facets of `K` such that, if you add the facets according to the order,
-you will control the homotopy type of the complex that you are building. They don't always exist,
-and when they do it has nice consequences for the topology of `K`. In this file we will introduce
-the complex of "old facets": if `r` is a partial order on `K.facets` and `s` is a facet of `K`,
-then the corresponding complex of old faces is the set of faces of `s` that are contained in
-some facet `t < s` (for the order `r`), i.e. the faces that would have been added before `s` when
-the complex is constructed facets by facets followed the order `r`.-/
+/-! Doc.-/
 
 namespace AbstractSimplicialComplex
 
