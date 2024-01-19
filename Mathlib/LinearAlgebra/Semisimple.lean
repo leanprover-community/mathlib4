@@ -30,16 +30,10 @@ protected abbrev IsSemisimple := IsSemisimpleModule R[X] (AEval' f)
 lemma isSemisimple_iff :
     f.IsSemisimple ↔ ∀ p : Submodule R M, p ≤ p.comap f → ∃ q, q ≤ q.comap f ∧ IsCompl p q := by
   set s := (AEval.comapSubmodule R M f).range
-  suffices ComplementedLattice s ↔ ∀ p ∈ s, ∃ q ∈ s, IsCompl p q by
-    have h : s = {p : Submodule R M | p ≤ p.comap f} := AEval.range_comapSubmodule R M f
-    let e := CompleteLatticeHom.toOrderIsoRangeOfInjective _ (AEval.injective_comapSubmodule R M f)
-    simp_rw [LinearMap.IsSemisimple, IsSemisimpleModule, e.complementedLattice_iff, this,
-      ← SetLike.mem_coe, h, mem_setOf_eq]
-  refine ⟨fun ⟨h⟩ p hp ↦ ?_, fun h ↦ ⟨fun ⟨p, hp⟩ ↦ ?_⟩⟩
-  · obtain ⟨q, hq⟩ := h ⟨p, hp⟩
-    exact ⟨q, q.property, CompleteSublattice.isCompl_iff.mp hq⟩
-  · obtain ⟨q, hq, hq'⟩ := h p hp
-    exact ⟨⟨q, hq⟩, CompleteSublattice.isCompl_iff.mpr hq'⟩
+  have h : s = {p : Submodule R M | p ≤ p.comap f} := AEval.range_comapSubmodule R M f
+  let e := CompleteLatticeHom.toOrderIsoRangeOfInjective _ (AEval.injective_comapSubmodule R M f)
+  simp_rw [LinearMap.IsSemisimple, IsSemisimpleModule, e.complementedLattice_iff,
+    s.isComplemented_iff, ← SetLike.mem_coe, h, mem_setOf_eq]
 
 -- TODO Zero map, identity are semisimple (when `IsSemisimpleModule R M`, e.g., over division ring).
 
