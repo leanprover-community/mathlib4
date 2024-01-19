@@ -231,9 +231,6 @@ theorem dvd_of_mul_dvd_mul_right {i j k : ℤ} (k_non_zero : k ≠ 0) (H : i * k
   rw [mul_comm i k, mul_comm j k] at H; exact dvd_of_mul_dvd_mul_left k_non_zero H
 #align int.dvd_of_mul_dvd_mul_right Int.dvd_of_mul_dvd_mul_right
 
-/-- ℤ specific version of least common multiple. -/
-def lcm (i j : ℤ) : ℕ :=
-  Nat.lcm (natAbs i) (natAbs j)
 #align int.lcm Int.lcm
 
 theorem lcm_def (i j : ℤ) : lcm i j = Nat.lcm (natAbs i) (natAbs j) :=
@@ -244,12 +241,7 @@ protected theorem coe_nat_lcm (m n : ℕ) : Int.lcm ↑m ↑n = Nat.lcm m n :=
   rfl
 #align int.coe_nat_lcm Int.coe_nat_lcm
 
-theorem gcd_dvd_left (i j : ℤ) : (gcd i j : ℤ) ∣ i :=
-  dvd_natAbs.mp <| coe_nat_dvd.mpr <| Nat.gcd_dvd_left _ _
 #align int.gcd_dvd_left Int.gcd_dvd_left
-
-theorem gcd_dvd_right (i j : ℤ) : (gcd i j : ℤ) ∣ j :=
-  dvd_natAbs.mp <| coe_nat_dvd.mpr <| Nat.gcd_dvd_right _ _
 #align int.gcd_dvd_right Int.gcd_dvd_right
 
 theorem dvd_gcd {i j k : ℤ} (h1 : k ∣ i) (h2 : k ∣ j) : k ∣ gcd i j :=
@@ -281,23 +273,10 @@ theorem gcd_zero_left (i : ℤ) : gcd 0 i = natAbs i := by simp [gcd]
 theorem gcd_zero_right (i : ℤ) : gcd i 0 = natAbs i := by simp [gcd]
 #align int.gcd_zero_right Int.gcd_zero_right
 
-@[simp]
-theorem gcd_one_left (i : ℤ) : gcd 1 i = 1 :=
-  Nat.gcd_one_left _
-#align int.gcd_one_left Int.gcd_one_left
-
-@[simp]
-theorem gcd_one_right (i : ℤ) : gcd i 1 = 1 :=
-  Nat.gcd_one_right _
-#align int.gcd_one_right Int.gcd_one_right
-
-@[simp]
-theorem gcd_neg_right {x y : ℤ} : gcd x (-y) = gcd x y := by rw [Int.gcd, Int.gcd, natAbs_neg]
-#align int.gcd_neg_right Int.gcd_neg_right
-
-@[simp]
-theorem gcd_neg_left {x y : ℤ} : gcd (-x) y = gcd x y := by rw [Int.gcd, Int.gcd, natAbs_neg]
-#align int.gcd_neg_left Int.gcd_neg_left
+#align int.gcd_one_left Int.one_gcd
+#align int.gcd_one_right Int.gcd_one
+#align int.gcd_neg_right Int.gcd_neg
+#align int.gcd_neg_left Int.neg_gcd
 
 theorem gcd_mul_left (i j k : ℤ) : gcd (i * j) (i * k) = natAbs i * gcd j k := by
   rw [Int.gcd, Int.gcd, natAbs_mul, natAbs_mul]
@@ -332,15 +311,15 @@ theorem gcd_div {i j k : ℤ} (H1 : k ∣ i) (H2 : k ∣ j) :
 #align int.gcd_div Int.gcd_div
 
 theorem gcd_div_gcd_div_gcd {i j : ℤ} (H : 0 < gcd i j) : gcd (i / gcd i j) (j / gcd i j) = 1 := by
-  rw [gcd_div (gcd_dvd_left i j) (gcd_dvd_right i j), natAbs_ofNat, Nat.div_self H]
+  rw [gcd_div gcd_dvd_left gcd_dvd_right, natAbs_ofNat, Nat.div_self H]
 #align int.gcd_div_gcd_div_gcd Int.gcd_div_gcd_div_gcd
 
 theorem gcd_dvd_gcd_of_dvd_left {i k : ℤ} (j : ℤ) (H : i ∣ k) : gcd i j ∣ gcd k j :=
-  Int.coe_nat_dvd.1 <| dvd_gcd ((gcd_dvd_left i j).trans H) (gcd_dvd_right i j)
+  Int.coe_nat_dvd.1 <| dvd_gcd (gcd_dvd_left.trans H) gcd_dvd_right
 #align int.gcd_dvd_gcd_of_dvd_left Int.gcd_dvd_gcd_of_dvd_left
 
 theorem gcd_dvd_gcd_of_dvd_right {i k : ℤ} (j : ℤ) (H : i ∣ k) : gcd j i ∣ gcd j k :=
-  Int.coe_nat_dvd.1 <| dvd_gcd (gcd_dvd_left j i) ((gcd_dvd_right j i).trans H)
+  Int.coe_nat_dvd.1 <| dvd_gcd gcd_dvd_left (gcd_dvd_right.trans H)
 #align int.gcd_dvd_gcd_of_dvd_right Int.gcd_dvd_gcd_of_dvd_right
 
 theorem gcd_dvd_gcd_mul_left (i j k : ℤ) : gcd i j ∣ gcd (k * i) j :=
@@ -373,8 +352,8 @@ theorem ne_zero_of_gcd {x y : ℤ} (hc : gcd x y ≠ 0) : x ≠ 0 ∨ y ≠ 0 :=
 
 theorem exists_gcd_one {m n : ℤ} (H : 0 < gcd m n) :
     ∃ m' n' : ℤ, gcd m' n' = 1 ∧ m = m' * gcd m n ∧ n = n' * gcd m n :=
-  ⟨_, _, gcd_div_gcd_div_gcd H, (Int.ediv_mul_cancel (gcd_dvd_left m n)).symm,
-    (Int.ediv_mul_cancel (gcd_dvd_right m n)).symm⟩
+  ⟨_, _, gcd_div_gcd_div_gcd H, (Int.ediv_mul_cancel gcd_dvd_left).symm,
+    (Int.ediv_mul_cancel gcd_dvd_right).symm⟩
 #align int.exists_gcd_one Int.exists_gcd_one
 
 theorem exists_gcd_one' {m n : ℤ} (H : 0 < gcd m n) :
@@ -397,13 +376,13 @@ theorem gcd_dvd_iff {a b : ℤ} {n : ℕ} : gcd a b ∣ n ↔ ∃ x y : ℤ, ↑
   · rintro ⟨x, y, h⟩
     rw [← Int.coe_nat_dvd, h]
     exact
-      dvd_add (dvd_mul_of_dvd_left (gcd_dvd_left a b) _) (dvd_mul_of_dvd_left (gcd_dvd_right a b) y)
+      dvd_add (dvd_mul_of_dvd_left gcd_dvd_left _) (dvd_mul_of_dvd_left gcd_dvd_right y)
 #align int.gcd_dvd_iff Int.gcd_dvd_iff
 
 theorem gcd_greatest {a b d : ℤ} (hd_pos : 0 ≤ d) (hda : d ∣ a) (hdb : d ∣ b)
     (hd : ∀ e : ℤ, e ∣ a → e ∣ b → e ∣ d) : d = gcd a b :=
   dvd_antisymm hd_pos (ofNat_zero_le (gcd a b)) (dvd_gcd hda hdb)
-    (hd _ (gcd_dvd_left a b) (gcd_dvd_right a b))
+    (hd _ gcd_dvd_left gcd_dvd_right)
 #align int.gcd_greatest Int.gcd_greatest
 
 /-- Euclid's lemma: if `a ∣ b * c` and `gcd a c = 1` then `a ∣ b`.
@@ -475,22 +454,8 @@ theorem lcm_one_right (i : ℤ) : lcm i 1 = natAbs i := by
   apply Nat.lcm_one_right
 #align int.lcm_one_right Int.lcm_one_right
 
-@[simp]
-theorem lcm_self (i : ℤ) : lcm i i = natAbs i := by
-  rw [Int.lcm]
-  apply Nat.lcm_self
 #align int.lcm_self Int.lcm_self
-
-theorem dvd_lcm_left (i j : ℤ) : i ∣ lcm i j := by
-  rw [Int.lcm]
-  apply coe_nat_dvd_right.mpr
-  apply Nat.dvd_lcm_left
 #align int.dvd_lcm_left Int.dvd_lcm_left
-
-theorem dvd_lcm_right (i j : ℤ) : j ∣ lcm i j := by
-  rw [Int.lcm]
-  apply coe_nat_dvd_right.mpr
-  apply Nat.dvd_lcm_right
 #align int.dvd_lcm_right Int.dvd_lcm_right
 
 theorem lcm_dvd {i j k : ℤ} : i ∣ k → j ∣ k → (lcm i j : ℤ) ∣ k := by

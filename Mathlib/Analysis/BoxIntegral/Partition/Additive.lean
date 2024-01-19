@@ -58,7 +58,7 @@ open Box Prepartition Finset
 variable {N : Type*} [AddCommMonoid M] [AddCommMonoid N] {I₀ : WithTop (Box ι)} {I J : Box ι}
   {i : ι}
 
-instance : DFunLike (ι →ᵇᵃ[I₀] M) (Box ι) (fun _ ↦ M) where
+instance : FunLike (ι →ᵇᵃ[I₀] M) (Box ι) M where
   coe := toFun
   coe_injective' f g h := by cases f; cases g; congr
 
