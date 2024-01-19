@@ -562,8 +562,8 @@ theorem coe_indicator {α} (s : Set α) (f : α → ℝ≥0) (a : α) :
   (ofNNRealHom : ℝ≥0 →+ ℝ≥0∞).map_indicator _ _ _
 #align ennreal.coe_indicator ENNReal.coe_indicator
 
-section OperationsAndInfty -- This can *almost* be moved from this file except it breaks `add_lt_add`
-  -- but `add_lt_add` could just be moved with these.
+section OperationsAndInfty -- This can *almost* be moved from this file ---
+-- except it breaks `add_lt_add` --- but `add_lt_add` could just be moved with these.
 
 @[simp, norm_cast]
 theorem coe_pow (n : ℕ) : (↑(r ^ n) : ℝ≥0∞) = (r : ℝ≥0∞) ^ n :=
