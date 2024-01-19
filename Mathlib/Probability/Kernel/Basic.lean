@@ -64,9 +64,9 @@ noncomputable def kernel (α β : Type*) [MeasurableSpace α] [MeasurableSpace �
   add_mem' hf hg := Measurable.add hf hg
 #align probability_theory.kernel ProbabilityTheory.kernel
 
--- Porting note: using `DFunLike` instead of `CoeFun` to use `DFunLike.coe`
+-- Porting note: using `FunLike` instead of `CoeFun` to use `DFunLike.coe`
 instance {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
-    DFunLike (kernel α β) α fun _ => Measure β where
+    FunLike (kernel α β) α (Measure β) where
   coe := Subtype.val
   coe_injective' := Subtype.val_injective
 

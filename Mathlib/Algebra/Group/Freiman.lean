@@ -88,7 +88,7 @@ notation:25 (name := «FreimanHomLocal≺») A " →*[" n:25 "] " β:0 => Freima
 /-- `AddFreimanHomClass F A β n` states that `F` is a type of `n`-ary sums-preserving morphisms.
 You should extend this class when you extend `AddFreimanHom`. -/
 class AddFreimanHomClass (F : Type*) (A : outParam <| Set α) (β : outParam <| Type*)
-  [AddCommMonoid α] [AddCommMonoid β] (n : ℕ) [DFunLike F α fun _ => β] : Prop where
+  [AddCommMonoid α] [AddCommMonoid β] (n : ℕ) [FunLike F α β] : Prop where
   /-- An additive `n`-Freiman homomorphism preserves sums of `n` elements. -/
   map_sum_eq_map_sum' (f : F) {s t : Multiset α} (hsA : ∀ ⦃x⦄, x ∈ s → x ∈ A)
     (htA : ∀ ⦃x⦄, x ∈ t → x ∈ A) (hs : Multiset.card s = n) (ht : Multiset.card t = n)
@@ -102,7 +102,7 @@ You should extend this class when you extend `FreimanHom`. -/
       "`AddFreimanHomClass F A β n` states that `F` is a type of `n`-ary
       sums-preserving morphisms. You should extend this class when you extend `AddFreimanHom`."]
 class FreimanHomClass (F : Type*) (A : outParam <| Set α) (β : outParam <| Type*) [CommMonoid α]
-  [CommMonoid β] (n : ℕ) [DFunLike F α fun _ => β] : Prop where
+  [CommMonoid β] (n : ℕ) [FunLike F α β] : Prop where
   /-- An `n`-Freiman homomorphism preserves products of `n` elements. -/
   map_prod_eq_map_prod' (f : F) {s t : Multiset α} (hsA : ∀ ⦃x⦄, x ∈ s → x ∈ A)
     (htA : ∀ ⦃x⦄, x ∈ t → x ∈ A) (hs : Multiset.card s = n) (ht : Multiset.card t = n)
@@ -110,7 +110,7 @@ class FreimanHomClass (F : Type*) (A : outParam <| Set α) (β : outParam <| Typ
     (s.map f).prod = (t.map f).prod
 #align freiman_hom_class FreimanHomClass
 
-variable [DFunLike F α fun _ => β]
+variable [FunLike F α β]
 
 section CommMonoid
 
@@ -154,11 +154,11 @@ theorem map_mul_map_eq_map_mul_map [FreimanHomClass F A β 2] (f : F) (ha : a �
 namespace FreimanHom
 
 @[to_additive]
-instance instDFunLike : DFunLike (A →*[n] β) α fun _ => β where
+instance instFunLike : FunLike (A →*[n] β) α β where
   coe := toFun
   coe_injective' f g h := by cases f; cases g; congr
-#align freiman_hom.fun_like FreimanHom.instDFunLike
-#align add_freiman_hom.fun_like AddFreimanHom.instDFunLike
+#align freiman_hom.fun_like FreimanHom.instFunLike
+#align add_freiman_hom.fun_like AddFreimanHom.instFunLike
 
 @[to_additive addFreimanHomClass]
 instance freimanHomClass : FreimanHomClass (A →*[n] β) A β n where
