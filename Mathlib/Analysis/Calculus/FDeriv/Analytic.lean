@@ -298,7 +298,7 @@ end deriv
 namespace ContinuousMultilinearMap
 
 variable {R ι : Type*} {M₁ : ι → Type*} {M₂ : Type*} [NontriviallyNormedField R]
-  [(i : ι) → NormedAddCommGroup (M₁ i)] [NormedAddCommGroup M₂] [(i : ι) → NormedSpace R (M₁ i)]
+  [∀ i, NormedAddCommGroup (M₁ i)] [NormedAddCommGroup M₂] [∀ i, NormedSpace R (M₁ i)]
   [NormedSpace R M₂] [Fintype ι] (f : ContinuousMultilinearMap R M₁ M₂)
 
 open FormalMultilinearSeries
@@ -310,15 +310,16 @@ protected theorem hasFiniteFPowerSeriesOnBall :
     · rw [toFormalMultilinearSeries, dif_pos rfl]; rfl
     · intro m _ ne; rw [toFormalMultilinearSeries, dif_neg ne.symm]; rfl
 
-theorem changeOriginSeries_support (f : ContinuousMultilinearMap R M₁ M₂) {k l : ℕ}
-    (h : k + l ≠ Fintype.card ι) :
+theorem changeOriginSeries_support {k l : ℕ} (h : k + l ≠ Fintype.card ι) :
     f.toFormalMultilinearSeries.changeOriginSeries k l = 0 :=
   Finset.sum_eq_zero fun _ _ ↦ by
     rw [FormalMultilinearSeries.changeOriginSeriesTerm, AddEquivClass.map_eq_zero_iff]
     simp only [toFormalMultilinearSeries, h.symm, dite_false]
 
+variable {n : ℕ∞} (x : ∀ i, M₁ i)
+
 open Finset in
-theorem changeOrigin_toFormalMultilinearSeries [DecidableEq ι] (x : ∀ i, M₁ i) :
+theorem changeOrigin_toFormalMultilinearSeries [DecidableEq ι] :
     continuousMultilinearCurryFin1 R (∀ i, M₁ i) M₂ (f.toFormalMultilinearSeries.changeOrigin x 1) =
     f.linearDeriv x := by
   ext y
@@ -354,13 +355,10 @@ theorem changeOrigin_toFormalMultilinearSeries [DecidableEq ι] (x : ∀ i, M₁
   · rw [Function.update_same, if_pos rfl]
   · rw [Function.update_noteq hj, if_neg hj]
 
-protected theorem hasFDerivAt [DecidableEq ι] (x : ∀ i, M₁ i) :
-    HasFDerivAt f (f.linearDeriv x) x := by
+protected theorem hasFDerivAt [DecidableEq ι] : HasFDerivAt f (f.linearDeriv x) x := by
   rw [← changeOrigin_toFormalMultilinearSeries]
   convert f.hasFiniteFPowerSeriesOnBall.hasFDerivAt (y := x) ENNReal.coe_lt_top
   rw [zero_add]
-
-variable (f : ContinuousMultilinearMap R M₁ M₂) {n : ℕ∞} (x : (i : ι) → M₁ i)
 
 lemma cPolynomialAt : CPolynomialAt R f x :=
   f.hasFiniteFPowerSeriesOnBall.cPolynomialAt_of_mem
@@ -368,10 +366,7 @@ lemma cPolynomialAt : CPolynomialAt R f x :=
 
 lemma cPolyomialOn : CPolynomialOn R f ⊤ := fun x _ ↦ f.cPolynomialAt x
 
-lemma contDiffAt : ContDiffAt R n f x := CPolynomialAt.contDiffAt (f.cPolynomialAt x)
-
-lemma contDiffOn (s : Set ((i : ι) → M₁ i)) : ContDiffOn R n f s :=
-  CPolynomialOn.contDiffOn (fun x _ ↦ f.cPolynomialAt x)
+lemma contDiffAt : ContDiffAt R n f x := (f.cPolynomialAt x).contDiffAt
 
 lemma contDiff : ContDiff R n f := contDiff_iff_contDiffAt.mpr f.contDiffAt
 

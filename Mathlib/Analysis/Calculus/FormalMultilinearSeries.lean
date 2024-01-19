@@ -182,12 +182,14 @@ def unshift (q : FormalMultilinearSeries 𝕜 E (E →L[𝕜] F)) (z : F) : Form
 
 end FormalMultilinearSeries
 
-namespace ContinuousLinearMap
+section
 
 variable [Ring 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [TopologicalAddGroup E]
   [ContinuousConstSMul 𝕜 E] [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
   [TopologicalAddGroup F] [ContinuousConstSMul 𝕜 F] [AddCommGroup G] [Module 𝕜 G]
   [TopologicalSpace G] [TopologicalAddGroup G] [ContinuousConstSMul 𝕜 G]
+
+namespace ContinuousLinearMap
 
 /-- Composing each term `pₙ` in a formal multilinear series with a continuous linear map `f` on the
 left gives a new formal multilinear series `f.compFormalMultilinearSeries p` whose general term
@@ -211,36 +213,20 @@ end ContinuousLinearMap
 
 namespace ContinuousMultilinearMap
 
-variable {R : Type*} {ι : Type*} {M₁ : ι → Type*} {M₂ : Type*} [Ring R]
-  [(i : ι) → AddCommGroup (M₁ i)] [AddCommGroup M₂] [(i : ι) → Module R (M₁ i)] [Module R M₂]
-  [(i : ι) → TopologicalSpace (M₁ i)] [(i : ι) → TopologicalAddGroup (M₁ i)]
-  [(i : ι) → ContinuousConstSMul R (M₁ i)] [TopologicalSpace M₂] [TopologicalAddGroup M₂]
-  [ContinuousConstSMul R M₂] [Fintype ι] (f : ContinuousMultilinearMap R M₁ M₂)
+variable {ι : Type*} {E : ι → Type*} [∀ i, AddCommGroup (E i)] [∀ i, Module 𝕜 (E i)]
+  [∀ i, TopologicalSpace (E i)] [∀ i, TopologicalAddGroup (E i)]
+  [∀ i, ContinuousConstSMul 𝕜 (E i)] [Fintype ι] (f : ContinuousMultilinearMap 𝕜 E F)
 
-/-- Realize a ContinuousMultilinearMap on `∀ i : ι, M₁ i` as the evaluation of a
+/-- Realize a ContinuousMultilinearMap on `∀ i : ι, E i` as the evaluation of a
 FormalMultilinearSeries by choosing an arbitrary identification `ι ≃ Fin (Fintype.card ι)`. -/
-noncomputable def toFormalMultilinearSeries : FormalMultilinearSeries R (∀ i, M₁ i) M₂ :=
+noncomputable def toFormalMultilinearSeries : FormalMultilinearSeries 𝕜 (∀ i, E i) F :=
   fun n ↦ if h : Fintype.card ι = n then
     (f.compContinuousLinearMap .proj).domDomCongr (Fintype.equivFinOfCardEq h)
   else 0
 
-open scoped BigOperators
-
-/-- The derivative of a continuous multilinear map, as a continuous linear map
-from `∀ i, M₁ i` to `M₂`; see `ContinuousMultilinearMap.hasFDerivAt`. -/
-def linearDeriv [DecidableEq ι] (x : (i : ι) → M₁ i) : ((i : ι) → M₁ i) →L[R] M₂ :=
-  ∑ i : ι, (f.toContinuousLinearMap x i).comp (.proj i)
-
-@[simp]
-lemma linearDeriv_apply [DecidableEq ι] (f : ContinuousMultilinearMap R M₁ M₂)
-    (x y : (i : ι) → M₁ i) :
-    f.linearDeriv x y = ∑ i, f (Function.update x i (y i)) := by
-  unfold linearDeriv toContinuousLinearMap
-  simp only [ContinuousLinearMap.coe_sum', ContinuousLinearMap.coe_comp',
-    ContinuousLinearMap.coe_mk', LinearMap.coe_mk, LinearMap.coe_toAddHom, Finset.sum_apply]
-  rfl
-
 end ContinuousMultilinearMap
+
+end
 
 namespace FormalMultilinearSeries
 

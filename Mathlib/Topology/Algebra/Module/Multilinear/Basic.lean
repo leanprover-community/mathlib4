@@ -379,6 +379,24 @@ def domDomCongrEquiv {ι' : Type*} (e : ι ≃ ι') :
 #align continuous_multilinear_map.dom_dom_congr_equiv_apply ContinuousMultilinearMap.domDomCongrEquiv_apply
 #align continuous_multilinear_map.dom_dom_congr_equiv_symm_apply ContinuousMultilinearMap.domDomCongrEquiv_symm_apply
 
+section linearDeriv
+open scoped BigOperators
+
+variable [ContinuousAdd M₂] [DecidableEq ι] [Fintype ι] (x y : ∀ i, M₁ i)
+
+/-- The derivative of a continuous multilinear map, as a continuous linear map
+from `∀ i, M₁ i` to `M₂`; see `ContinuousMultilinearMap.hasFDerivAt`. -/
+def linearDeriv : (∀ i, M₁ i) →L[R] M₂ := ∑ i : ι, (f.toContinuousLinearMap x i).comp (.proj i)
+
+@[simp]
+lemma linearDeriv_apply : f.linearDeriv x y = ∑ i, f (Function.update x i (y i)) := by
+  unfold linearDeriv toContinuousLinearMap
+  simp only [ContinuousLinearMap.coe_sum', ContinuousLinearMap.coe_comp',
+    ContinuousLinearMap.coe_mk', LinearMap.coe_mk, LinearMap.coe_toAddHom, Finset.sum_apply]
+  rfl
+
+end linearDeriv
+
 /-- In the specific case of continuous multilinear maps on spaces indexed by `Fin (n+1)`, where one
 can build an element of `(i : Fin (n+1)) → M i` using `cons`, one can express directly the
 additivity of a multilinear map along the first variable. -/
