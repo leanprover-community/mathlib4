@@ -6,7 +6,7 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 import Mathlib.Analysis.Calculus.Deriv.Inv
 import Mathlib.Analysis.Calculus.Deriv.Polynomial
 import Mathlib.Analysis.Calculus.FDeriv.Extend
-import Mathlib.Analysis.Calculus.IteratedDeriv
+import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 import Mathlib.Analysis.SpecialFunctions.PolynomialExp
 
