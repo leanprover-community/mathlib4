@@ -353,8 +353,7 @@ lemma degeneracy_relation :
   apply Hom.ext'
   rw [← DFunLike.coe_fn_eq]
   rw [← OrderHom.toFun_eq_coe]
-  fin_cases i1
-  all_goals fin_cases i2
+  fin_cases i1,i2
   case  a.head.tail.head | a.head.tail.tail.head | a.tail.head.tail.tail.head =>
     funext x
     fin_cases i
@@ -471,13 +470,13 @@ def homMk₃ {S : SSet}  (i: Fin 4)  (face_map : Fin (3) →  S _[2])
      all_goals rename_i h1 h2
      all_goals try split
      all_goals try split
-     case h.inl.inl | h.inr.inl.inr.inl | h.inr.inr.inr.inr  =>
+     case inl.inl | inr.inl.inr.inl | inr.inr.inr.inr  =>
          rw  [← (types_comp_apply (S.map _) (S.map _)),← S.map_comp]
          rfl
      all_goals rename_i h3
-     case h.inr.inl.inl | h.inr.inr.inl  =>
+     case inr.inl.inl | inr.inr.inl  =>
          exact False.elim (h1 (fun k => h3 (φ'.unop.toOrderHom k)))
-     case h.inr.inr.inr.inl =>
+     case inr.inr.inr.inl =>
         exact False.elim (h2 (fun k => h3 (φ'.unop.toOrderHom k)))
      all_goals
         apply HomMk₃.naturality_lt
@@ -489,6 +488,162 @@ def homMk₃ {S : SSet}  (i: Fin 4)  (face_map : Fin (3) →  S _[2])
           try rename_i  h4;
           try exact fun k => (HomMk₃.range_include01_exclude2 α h4 h3) (φ'.unop.toOrderHom k)
         · exact hface
+def face' {n : ℕ} (i  : Fin (n+2)) (j: Fin (n+1)) : (Λ[n+1, i]: SSet) _[n] :=by
+    refine face i ((δ i).toOrderHom j) ?_
+    · unfold δ
+      simp
+      unfold Fin.succAbove
+      by_contra h
+      aesop_split_hyps
+      · aesop_subst h
+        simp_all only [lt_self_iff_false]
+      · aesop_subst h
+        simp_all only [Fin.castSucc_lt_succ_iff, le_refl, not_true_eq_false]
+
+lemma face_eq_face' {n : ℕ} (i  : Fin (n+2)) (j: Fin (n+2)) (h: j≠i): face i j h
+=face' i (Fin.predAbove (Fin.predAbove 0 i) j) := by
+  unfold face'
+  congr
+  change j = (σ (Fin.predAbove 0 i) ≫ δ i).toOrderHom  (j)
+  change j = (Fin.succAbove i) (Fin.predAbove (Fin.predAbove 0 i) j)
+  have ht : (Fin.predAbove 0 i).val= i.val -1 := by
+        unfold Fin.predAbove
+        split
+        · rfl
+        · aesop
+  by_cases h1 : j ≤ Fin.castSucc (Fin.predAbove 0 i)
+  · rw [Fin.predAbove_below (Fin.predAbove 0 i) j h1]
+    unfold Fin.succAbove
+    split
+    · rfl
+    · rename_i h2
+      change ¬ j.val < i.val at h2
+      change j.val ≤ (Fin.predAbove 0 i).val at h1
+      rw [ht] at h1
+      exfalso
+      apply h ∘ (Fin.eq_iff_veq j i).mpr
+      apply le_antisymm
+      · apply le_trans h1
+        exact Nat.sub_le (↑i) 1
+      · exact Nat.not_lt.mp h2
+  · rw [not_le] at h1
+    rw [Fin.predAbove_above (Fin.predAbove 0 i) j h1]
+    unfold Fin.succAbove
+    split
+    · rename_i h2
+      change j.val -1 < i.val at h2
+      change (Fin.predAbove 0 i).val < j.val at h1
+      rw [ht] at h1
+      exfalso
+      apply h ∘ (Fin.eq_iff_veq j i).mpr
+      apply le_antisymm
+      · exact Nat.le_of_pred_lt h2
+      · contrapose! h1
+        exact Nat.le_pred_of_lt h1
+    · simp_all only [ne_eq, not_lt, Fin.succ_pred]
+
+
+
+lemma face'_factor {n : ℕ} (i: Fin (n+2)) (j: Fin (n+1)) : factor_δ (face'.{u} i j).val.down ((δ i).toOrderHom j)= 𝟙 ([n]:SimplexCategory):=by
+        change δ ((δ i).toOrderHom j)≫  (σ (Fin.predAbove 0 ((δ i).toOrderHom j)))=_
+        let l' : Fin (n+2) := ((δ i).toOrderHom j)
+        change δ l' ≫  (σ (Fin.predAbove 0 l'))=_
+        unfold Fin.predAbove
+        split
+        · rename_i h1
+          let l'' := Fin.pred l' (@Fin.predAbove.proof_1 (n + 1) 0 l' h1)
+          rw [show δ l' = δ (Fin.succ l'') by aesop]
+          exact δ_comp_σ_succ
+        · exact δ_comp_σ_self
+
+lemma homMk₃_face {S:SSet} (i: Fin 4) (j : Fin 3) (face_map : Fin (3) →  S _[2])
+    (hface : (i1 : Fin (3))→ (i2 : Fin (3)) → (i1< i2) →
+    S.map (δ (Fin.predAbove 0 ((δ i).toOrderHom i2))).op (face_map i1)
+    =S.map (δ (Fin.predAbove 2 ((δ i).toOrderHom i1))).op (face_map i2) ) :
+    (homMk₃ i face_map hface).app (op [2]) (face'.{u} i j)= face_map j:= by
+      let id :Fin 3:= if ∀ k, (δ ((δ i).toOrderHom j)).toOrderHom k ≠  (δ i).toOrderHom 0 then 0
+                    else
+                      if ∀ k, (δ ((δ i).toOrderHom j)).toOrderHom k  ≠ (δ i).toOrderHom 1 then 1
+                      else 2
+      have hid : id = j := by
+          fin_cases j
+          · have Y0 (i: Fin 4)  :  ∀ k, (δ ((δ i).toOrderHom 0)).toOrderHom k ≠  (δ i).toOrderHom 0  := by
+               fin_cases i <;> {intro k;fin_cases k <;> decide}
+            simp
+            exact fun x h ↦ (Y0 i x h).elim
+          ·  have N1 (i: Fin 4)  : ¬ ∀ k, (δ ((δ i).toOrderHom 1)).toOrderHom k ≠  (δ i).toOrderHom 0  := by
+              fin_cases i <;> decide
+             have Y1 (i: Fin 4)  :  ∀ k, (δ ((δ i).toOrderHom 1)).toOrderHom k ≠  (δ i).toOrderHom 1  := by
+                fin_cases i <;> {intro k;fin_cases k <;> decide}
+             simp
+             split
+             · rename_i h2
+               exact (N1 i h2).elim
+             · split
+               · rfl
+               · rename_i h2
+                 exact (h2 (Y1 i)).elim
+          · have N2 (i: Fin 4)  : ¬ ∀ k, (δ ((δ i).toOrderHom 2)).toOrderHom k ≠  (δ i).toOrderHom 0  := by
+               fin_cases i <;> decide
+            have N22 (i: Fin 4)  : ¬ ∀ k, (δ ((δ i).toOrderHom 2)).toOrderHom k ≠  (δ i).toOrderHom 1  := by
+              fin_cases i <;> decide
+            simp
+            split
+            · rename_i h2
+              exact (N2 i h2).elim
+            · split
+              · rename_i h2
+                exact (N22 i h2).elim
+              · rfl
+      have hte : (homMk₃ i face_map hface).app (op [2]) (face' i j) =  S.map (factor_δ (face'.{u} i j).val.down  ((δ i).toOrderHom  j)).op (face_map j):= by
+          nth_rewrite 4 [← hid]
+          nth_rewrite 3 [← hid]
+          unfold homMk₃
+          simp
+          rfl
+      rw[hte,face'_factor,op_id, S.map_id]
+      rfl
+
+lemma homMk₃_surjective {S:SSet} (i: Fin 4) (f : Λ[3,i] ⟶ S)   : ∃ (fa: Fin (3)→S _[2])
+    (hfa : (i1 : Fin (3))→ (i2 : Fin (3)) → (i1< i2) →
+    S.map (δ (Fin.predAbove 0 ((δ i).toOrderHom i2))).op (fa i1)
+    =S.map (δ (Fin.predAbove 2 ((δ i).toOrderHom i1))).op (fa i2) ), f=homMk₃ i fa hfa :=by
+    refine ⟨fun (j: Fin 3) =>  f.app (op [2]) (face' i j),?_,?_⟩
+    · intro i1 i2 i1_lt_i2
+      simp
+      rw [← (types_comp_apply (f.app _) (S.map _))]
+      rw [← (types_comp_apply (f.app _) (S.map _))]
+      rw [← f.naturality,← f.naturality]
+      rw [types_comp_apply,types_comp_apply]
+      apply congrArg
+      apply Subtype.ext
+      unfold horn
+      simp
+      rw [standardSimplex.map_apply,standardSimplex.map_apply]
+      simp
+      apply Hom.ext'
+      rw [← DFunLike.coe_fn_eq]
+      rw [← OrderHom.toFun_eq_coe]
+      unfold face' face
+      change
+         Fin.succAbove (Fin.succAbove i i1) ∘ Fin.succAbove (Fin.predAbove 0 (Fin.succAbove i i2))
+         =
+          Fin.succAbove (Fin.succAbove i i2) ∘ Fin.succAbove (Fin.predAbove 2 (Fin.succAbove i i1))
+      fin_cases i1, i2
+      case  head.tail.head | head.tail.tail.head | tail.head.tail.tail.head =>
+        funext x
+        fin_cases i
+        all_goals fin_cases x
+        all_goals rfl
+      all_goals {
+          rw [Fin.lt_def] at i1_lt_i2
+          simp at i1_lt_i2
+        }
+    · apply horn.hom_ext
+      intro j h
+      rw [face_eq_face' i j h]
+      rw [homMk₃_face]
+
 
 end horn
 
