@@ -225,8 +225,19 @@ instance (priority := 100) IsAlgClosure.separable (R K : Type*) [Field R] [Field
 
 namespace IsAlgClosed
 
-variable (K : Type u) [Field K] (L : Type v) (M : Type w) [Field L] [Algebra K L] [Field M]
-  [Algebra K M] [IsAlgClosed M] (hL : Algebra.IsAlgebraic K L)
+variable {K : Type u} [Field K] {L : Type v} {M : Type w} [Field L] [Algebra K L] [Field M]
+  [Algebra K M] [IsAlgClosed M]
+
+/-- If E/L/K is a tower of field extensions with E/L algebraic, and if M is an algebraically
+  closed extension of K, then any embedding of L/K into M/K extends to an embedding of E/K.
+  Known as the extension lemma in https://math.stackexchange.com/a/687914. -/
+theorem surjective_comp_algebraMap_of_isAlgebraic {E : Type*}
+    [Field E] [Algebra K E] [Algebra L E] [IsScalarTower K L E] (hE : Algebra.IsAlgebraic L E) :
+    Function.Surjective fun φ : E →ₐ[K] M ↦ φ.comp (IsScalarTower.toAlgHom K L E) :=
+  fun f ↦ IntermediateField.exists_algHom_of_splits'
+    (E := E) f fun s ↦ ⟨(hE s).isIntegral, IsAlgClosed.splits_codomain _⟩
+
+variable (hL : Algebra.IsAlgebraic K L) (K L M)
 
 /-- Less general version of `lift`. -/
 private noncomputable irreducible_def lift_aux : L →ₐ[K] M :=
@@ -271,6 +282,10 @@ noncomputable instance (priority := 100) perfectRing (p : ℕ) [Fact p.Prime] [C
     [IsAlgClosed k] : PerfectRing k p :=
   PerfectRing.ofSurjective k p fun _ => IsAlgClosed.exists_pow_nat_eq _ <| NeZero.pos p
 #align is_alg_closed.perfect_ring IsAlgClosed.perfectRing
+
+noncomputable instance (priority := 100) perfectField [IsAlgClosed k] : PerfectField k := by
+  obtain _ | ⟨p, _, _⟩ := CharP.exists' k
+  exacts [.ofCharZero k, PerfectRing.toPerfectField k p]
 
 /-- Algebraically closed fields are infinite since `Xⁿ⁺¹ - 1` is separable when `#K = n` -/
 instance (priority := 500) {K : Type*} [Field K] [IsAlgClosed K] : Infinite K := by

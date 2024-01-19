@@ -5,6 +5,7 @@ Authors: Yaël Dillies, Bhavik Mehta, Doga Can Sertbas
 -/
 import Mathlib.Data.Nat.Interval
 import Mathlib.Data.Nat.Parity
+import Mathlib.Data.Nat.Prime
 import Mathlib.Data.Real.Archimedean
 
 /-!
@@ -221,7 +222,7 @@ lemma schnirelmannDensity_setOf_mod_eq_one {m : ℕ} (hm : m ≠ 1) :
   apply le_antisymm (schnirelmannDensity_le_of_le m hm'.ne' _) _
   · rw [← one_div, ← @Nat.cast_one ℝ]
     gcongr
-    simp only [card_le_one_iff_subset_singleton, subset_iff,
+    simp only [Set.mem_setOf_eq, card_le_one_iff_subset_singleton, subset_iff,
       mem_filter, mem_Ioc, mem_singleton, and_imp]
     use 1
     intro x _ hxm h

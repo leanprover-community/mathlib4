@@ -3,8 +3,10 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Aurélien Saue, Mario Carneiro
 -/
+import Lean.Elab.PreDefinition.Basic
+import Lean.Util.Paths
 import Std.Tactic.Simpa
-import Mathlib.Lean.Expr
+import Mathlib.Lean.Expr.Basic
 
 /-!
 #

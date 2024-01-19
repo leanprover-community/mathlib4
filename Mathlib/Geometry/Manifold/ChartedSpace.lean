@@ -110,12 +110,9 @@ In the locale `Manifold`, we denote the composition of partial homeomorphisms wi
 composition of partial equivs with `≫`.
 -/
 
-set_option autoImplicit true
-
-
 noncomputable section
 
-open Classical Topology Filter
+open Topology
 
 universe u
 
@@ -472,7 +469,7 @@ def idRestrGroupoid : StructureGroupoid H where
   members := { e | ∃ (s : Set H) (h : IsOpen s), e ≈ PartialHomeomorph.ofSet s h }
   trans' := by
     rintro e e' ⟨s, hs, hse⟩ ⟨s', hs', hse'⟩
-    refine' ⟨s ∩ s', IsOpen.inter hs hs', _⟩
+    refine ⟨s ∩ s', hs.inter hs', ?_⟩
     have := PartialHomeomorph.EqOnSource.trans' hse hse'
     rwa [PartialHomeomorph.ofSet_trans_ofSet] at this
   symm' := by
@@ -505,7 +502,7 @@ theorem idRestrGroupoid_mem {s : Set H} (hs : IsOpen s) : ofSet s hs ∈ @idRest
 instance closedUnderRestriction_idRestrGroupoid : ClosedUnderRestriction (@idRestrGroupoid H _) :=
   ⟨by
     rintro e ⟨s', hs', he⟩ s hs
-    use s' ∩ s, IsOpen.inter hs' hs
+    use s' ∩ s, hs'.inter hs
     refine' Setoid.trans (PartialHomeomorph.EqOnSource.restr he s) _
     exact ⟨by simp only [hs.interior_eq, mfld_simps], by simp only [mfld_simps, eqOn_refl]⟩⟩
 #align closed_under_restriction_id_restr_groupoid closedUnderRestriction_idRestrGroupoid
@@ -621,6 +618,16 @@ theorem chart_source_mem_nhds (x : M) : (chartAt H x).source ∈ 𝓝 x :=
 theorem chart_target_mem_nhds (x : M) : (chartAt H x).target ∈ 𝓝 (chartAt H x x) :=
   (chartAt H x).open_target.mem_nhds <| mem_chart_target H x
 #align chart_target_mem_nhds chart_target_mem_nhds
+
+variable (M) in
+@[simp]
+theorem iUnion_source_chartAt : (⋃ x : M, (chartAt H x).source) = (univ : Set M) :=
+  eq_univ_iff_forall.mpr fun x ↦ mem_iUnion.mpr ⟨x, mem_chart_source H x⟩
+
+theorem ChartedSpace.isOpen_iff (s : Set M) :
+    IsOpen s ↔ ∀ x : M, IsOpen <| chartAt H x '' ((chartAt H x).source ∩ s) := by
+  rw [isOpen_iff_of_cover (fun i ↦ (chartAt H i).open_source) (iUnion_source_chartAt H M)]
+  simp only [(chartAt H _).isOpen_image_iff_of_subset_source (inter_subset_left _ _)]
 
 /-- `achart H x` is the chart at `x`, considered as an element of the atlas.
 Especially useful for working with `BasicSmoothVectorBundleCore`. -/
@@ -792,7 +799,7 @@ instance prodChartedSpace (H : Type*) [TopologicalSpace H] (M : Type*) [Topologi
 section prodChartedSpace
 
 @[ext]
-theorem ModelProd.ext {x y : ModelProd α β} (h₁ : x.1 = y.1) (h₂ : x.2 = y.2) : x = y :=
+theorem ModelProd.ext {x y : ModelProd H H'} (h₁ : x.1 = y.1) (h₂ : x.2 = y.2) : x = y :=
   Prod.ext h₁ h₂
 
 variable [TopologicalSpace H] [TopologicalSpace M] [ChartedSpace H M] [TopologicalSpace H']

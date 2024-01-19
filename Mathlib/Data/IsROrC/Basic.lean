@@ -277,23 +277,23 @@ theorem real_smul_ofReal (r x : ℝ) : r • (x : K) = (r : K) * (x : K) :=
 #align is_R_or_C.real_smul_of_real IsROrC.real_smul_ofReal
 
 @[isROrC_simps]
-theorem ofReal_mul_re (r : ℝ) (z : K) : re (↑r * z) = r * re z := by
+theorem re_ofReal_mul (r : ℝ) (z : K) : re (↑r * z) = r * re z := by
   simp only [mul_re, ofReal_im, zero_mul, ofReal_re, sub_zero]
-#align is_R_or_C.of_real_mul_re IsROrC.ofReal_mul_re
+#align is_R_or_C.of_real_mul_re IsROrC.re_ofReal_mul
 
 @[isROrC_simps]
-theorem ofReal_mul_im (r : ℝ) (z : K) : im (↑r * z) = r * im z := by
+theorem im_ofReal_mul (r : ℝ) (z : K) : im (↑r * z) = r * im z := by
   simp only [add_zero, ofReal_im, zero_mul, ofReal_re, mul_im]
-#align is_R_or_C.of_real_mul_im IsROrC.ofReal_mul_im
+#align is_R_or_C.of_real_mul_im IsROrC.im_ofReal_mul
 
 @[isROrC_simps]
 theorem smul_re (r : ℝ) (z : K) : re (r • z) = r * re z := by
-  rw [real_smul_eq_coe_mul, ofReal_mul_re]
+  rw [real_smul_eq_coe_mul, re_ofReal_mul]
 #align is_R_or_C.smul_re IsROrC.smul_re
 
 @[isROrC_simps]
 theorem smul_im (r : ℝ) (z : K) : im (r • z) = r * im z := by
-  rw [real_smul_eq_coe_mul, ofReal_mul_im]
+  rw [real_smul_eq_coe_mul, im_ofReal_mul]
 #align is_R_or_C.smul_im IsROrC.smul_im
 
 @[simp, norm_cast, isROrC_simps]
@@ -563,12 +563,12 @@ theorem inv_def (z : K) : z⁻¹ = conj z * ((‖z‖ ^ 2)⁻¹ : ℝ) := by
 
 @[simp, isROrC_simps]
 theorem inv_re (z : K) : re z⁻¹ = re z / normSq z := by
-  rw [inv_def, normSq_eq_def', mul_comm, ofReal_mul_re, conj_re, div_eq_inv_mul]
+  rw [inv_def, normSq_eq_def', mul_comm, re_ofReal_mul, conj_re, div_eq_inv_mul]
 #align is_R_or_C.inv_re IsROrC.inv_re
 
 @[simp, isROrC_simps]
 theorem inv_im (z : K) : im z⁻¹ = -im z / normSq z := by
-  rw [inv_def, normSq_eq_def', mul_comm, ofReal_mul_im, conj_im, div_eq_inv_mul]
+  rw [inv_def, normSq_eq_def', mul_comm, im_ofReal_mul, conj_im, div_eq_inv_mul]
 #align is_R_or_C.inv_im IsROrC.inv_im
 
 theorem div_re (z w : K) : re (z / w) = re z * re w / normSq w + im z * im w / normSq w := by
@@ -605,7 +605,7 @@ theorem ofReal_div (r s : ℝ) : ((r / s : ℝ) : K) = r / s :=
 #align is_R_or_C.of_real_div IsROrC.ofReal_div
 
 theorem div_re_ofReal {z : K} {r : ℝ} : re (z / r) = re z / r := by
-  rw [div_eq_inv_mul, div_eq_inv_mul, ← ofReal_inv, ofReal_mul_re]
+  rw [div_eq_inv_mul, div_eq_inv_mul, ← ofReal_inv, re_ofReal_mul]
 #align is_R_or_C.div_re_of_real IsROrC.div_re_ofReal
 
 @[simp, norm_cast, isROrC_simps]
@@ -681,11 +681,11 @@ theorem ofReal_ofNat (n : ℕ) [n.AtLeastTwo] :
 
 theorem ofNat_mul_re (n : ℕ) [n.AtLeastTwo] (z : K) :
     re (OfNat.ofNat n * z) = OfNat.ofNat n * re z := by
-  rw [← ofReal_ofNat, ofReal_mul_re]
+  rw [← ofReal_ofNat, re_ofReal_mul]
 
 theorem ofNat_mul_im (n : ℕ) [n.AtLeastTwo] (z : K) :
     im (OfNat.ofNat n * z) = OfNat.ofNat n * im z := by
-  rw [← ofReal_ofNat, ofReal_mul_im]
+  rw [← ofReal_ofNat, im_ofReal_mul]
 
 @[simp, isROrC_simps, norm_cast]
 theorem ofReal_intCast (n : ℤ) : ((n : ℝ) : K) = n :=

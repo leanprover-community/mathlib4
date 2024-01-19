@@ -233,24 +233,39 @@ theorem choose_mul_succ_eq (n k : ℕ) : n.choose k * (n + 1) = (n + 1).choose k
 #align nat.choose_mul_succ_eq Nat.choose_mul_succ_eq
 
 theorem ascFactorial_eq_factorial_mul_choose (n k : ℕ) :
-    n.ascFactorial k = k ! * (n + k).choose k := by
+    (n + 1).ascFactorial k = k ! * (n + k).choose k := by
   rw [mul_comm]
   apply mul_right_cancel₀ (factorial_ne_zero (n + k - k))
-  rw [choose_mul_factorial_mul_factorial, add_tsub_cancel_right, ← factorial_mul_ascFactorial,
-    mul_comm]
-  exact Nat.le_add_left k n
+  rw [choose_mul_factorial_mul_factorial <| Nat.le_add_left k n, add_tsub_cancel_right,
+    ← factorial_mul_ascFactorial, mul_comm]
 #align nat.asc_factorial_eq_factorial_mul_choose Nat.ascFactorial_eq_factorial_mul_choose
 
+theorem ascFactorial_eq_factorial_mul_choose' (n k : ℕ) :
+    n.ascFactorial k = k ! * (n + k - 1).choose k := by
+  cases n
+  · cases k
+    · rw [ascFactorial_zero, choose_zero_right, factorial_zero, mul_one]
+    · simp only [zero_ascFactorial, zero_eq, zero_add, ge_iff_le, succ_sub_succ_eq_sub,
+        nonpos_iff_eq_zero, tsub_zero, choose_succ_self, mul_zero]
+  rw [ascFactorial_eq_factorial_mul_choose]
+  simp only [ge_iff_le, succ_add_sub_one]
+
 theorem factorial_dvd_ascFactorial (n k : ℕ) : k ! ∣ n.ascFactorial k :=
-  ⟨(n + k).choose k, ascFactorial_eq_factorial_mul_choose _ _⟩
+  ⟨(n + k - 1).choose k, ascFactorial_eq_factorial_mul_choose' _ _⟩
 #align nat.factorial_dvd_asc_factorial Nat.factorial_dvd_ascFactorial
 
 theorem choose_eq_asc_factorial_div_factorial (n k : ℕ) :
-    (n + k).choose k = n.ascFactorial k / k ! := by
+    (n + k).choose k = (n + 1).ascFactorial k / k ! := by
   apply mul_left_cancel₀ (factorial_ne_zero k)
   rw [← ascFactorial_eq_factorial_mul_choose]
   exact (Nat.mul_div_cancel' <| factorial_dvd_ascFactorial _ _).symm
 #align nat.choose_eq_asc_factorial_div_factorial Nat.choose_eq_asc_factorial_div_factorial
+
+theorem choose_eq_asc_factorial_div_factorial' (n k : ℕ) :
+    (n + k - 1).choose k = n.ascFactorial k / k ! := by
+  apply mul_left_cancel₀ (factorial_ne_zero k)
+  rw [← ascFactorial_eq_factorial_mul_choose']
+  exact (Nat.mul_div_cancel' <| factorial_dvd_ascFactorial _ _).symm
 
 theorem descFactorial_eq_factorial_mul_choose (n k : ℕ) : n.descFactorial k = k ! * n.choose k := by
   obtain h | h := Nat.lt_or_ge n k
