@@ -369,6 +369,44 @@ theorem kernel.const_eq_compProd (γ : Type*) [MeasurableSpace γ] (ρ : Measure
     kernel.ext_iff'.mp (kernel.const_unit_eq_compProd ρ) () s hs
 #align probability_theory.kernel.const_eq_comp_prod ProbabilityTheory.kernel.const_eq_compProd
 
+/-- Auxiliary lemma for `condKernel_apply_of_ne_zero`. -/
+lemma condKernel_apply_of_ne_zero_of_measurableSet [MeasurableSingletonClass α]
+    {ρ : Measure (α × Ω)} [IsFiniteMeasure ρ]
+    {x : α} (hx : ρ.fst {x} ≠ 0) {s : Set Ω} (hs : MeasurableSet s) :
+    ρ.condKernel x s = (ρ.fst {x})⁻¹ * ρ ({x} ×ˢ s) := by
+  nth_rewrite 3 [measure_eq_compProd ρ]
+  rw [Measure.compProd_apply (measurableSet_prod.mpr (Or.inl ⟨measurableSet_singleton x, hs⟩))]
+  classical
+  have : ∀ a, ρ.condKernel a (Prod.mk a ⁻¹' {x} ×ˢ s)
+      = ({x} : Set α).indicator (fun a ↦ ρ.condKernel a s) a := by
+    intro a
+    by_cases hax : a = x
+    · simp only [hax, Set.singleton_prod, Set.mem_singleton_iff, Set.indicator_of_mem]
+      congr with y
+      simp
+    · simp only [Set.singleton_prod, Set.mem_singleton_iff, hax, not_false_eq_true,
+        Set.indicator_of_not_mem]
+      have : Prod.mk a ⁻¹' (Prod.mk x '' s) = ∅ := by
+        ext y
+        simp [Ne.symm hax]
+      simp only [this, measure_empty]
+  simp_rw [this]
+  rw [MeasureTheory.lintegral_indicator _ (measurableSet_singleton x)]
+  simp only [Measure.restrict_singleton, lintegral_smul_measure, lintegral_dirac]
+  rw [← mul_assoc, ENNReal.inv_mul_cancel hx (measure_ne_top ρ.fst _), one_mul]
+
+/-- If the singleton `{x}` has non-zero mass for `ρ.fst`, then for all `s : Set Ω`,
+`ρ.condKernel x s = (ρ.fst {x})⁻¹ * ρ ({x} ×ˢ s)` . -/
+lemma condKernel_apply_of_ne_zero [MeasurableSingletonClass α]
+    {ρ : Measure (α × Ω)} [IsFiniteMeasure ρ] {x : α} (hx : ρ.fst {x} ≠ 0)
+    (s : Set Ω) :
+    ρ.condKernel x s = (ρ.fst {x})⁻¹ * ρ ({x} ×ˢ s) := by
+  have : ρ.condKernel x s = ((ρ.fst {x})⁻¹ • ρ).comap (fun (y : Ω) ↦ (x, y)) s := by
+    congr 2 with s hs
+    simp [condKernel_apply_of_ne_zero_of_measurableSet hx hs,
+      (measurableEmbedding_prod_mk_left x).comap_apply]
+  simp [this, (measurableEmbedding_prod_mk_left x).comap_apply, hx]
+
 theorem lintegral_condKernel_mem {s : Set (α × Ω)} (hs : MeasurableSet s) :
     ∫⁻ a, ρ.condKernel a {x | (a, x) ∈ s} ∂ρ.fst = ρ s := by
   conv_rhs => rw [measure_eq_compProd ρ]

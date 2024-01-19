@@ -5,7 +5,7 @@ Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
 import Mathlib.Data.Nat.Lattice
 import Mathlib.Data.Set.Pairwise.Lattice
-import Mathlib.Data.Real.ENNReal
+import Mathlib.Data.ENNReal.Basic
 import Mathlib.MeasureTheory.PiSystem
 import Mathlib.Data.Finset.Ordered
 
@@ -473,11 +473,9 @@ lemma biUnion_mem {ι : Type*} (hC : IsSetRing C) {s : ι → Set α}
     (S : Finset ι) (hs : ∀ n ∈ S, s n ∈ C) :
     ⋃ i ∈ S, s i ∈ C := by
   classical
-  revert hs
-  refine Finset.induction ?_ ?_ S
+  induction' S using Finset.induction with i S _ h hs
   · simp [hC.empty_mem]
-  · intro i S _ h hs
-    simp_rw [← Finset.mem_coe, Finset.coe_insert, Set.biUnion_insert]
+  · simp_rw [← Finset.mem_coe, Finset.coe_insert, Set.biUnion_insert]
     refine hC.union_mem (hs i (mem_insert_self i S)) ?_
     exact h (fun n hnS ↦ hs n (mem_insert_of_mem hnS))
 
@@ -485,11 +483,9 @@ lemma biInter_mem {ι : Type*} (hC : IsSetRing C) {s : ι → Set α}
     (S : Finset ι) (hS : S.Nonempty) (hs : ∀ n ∈ S, s n ∈ C) :
     ⋂ i ∈ S, s i ∈ C := by
   classical
-  revert hs
-  refine hS.cons_induction ?_ ?_
-  · simp
-  · intro i S _ _ h hs
-    simp_rw [← Finset.mem_coe, Finset.coe_cons, Set.biInter_insert]
+  induction' hS using Finset.Nonempty.cons_induction with _ i S hiS _ h hs
+  · simpa using hs
+  · simp_rw [← Finset.mem_coe, Finset.coe_cons, Set.biInter_insert]
     simp only [cons_eq_insert, Finset.mem_insert, forall_eq_or_imp] at hs
     refine hC.inter_mem hs.1 ?_
     exact h (fun n hnS ↦ hs.2 n hnS)

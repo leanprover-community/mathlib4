@@ -219,13 +219,13 @@ lemma isClopen_setOf_mapsTo (hK : IsCompact K) (hU : IsClopen U) :
   ⟨isOpen_setOf_mapsTo hK hU.isOpen, isClosed_setOf_mapsTo hU.isClosed K⟩
 
 instance [T0Space Y] : T0Space C(X, Y) :=
-  t0Space_of_injective_of_continuous FunLike.coe_injective continuous_coe
+  t0Space_of_injective_of_continuous DFunLike.coe_injective continuous_coe
 
 instance [T1Space Y] : T1Space C(X, Y) :=
-  t1Space_of_injective_of_continuous FunLike.coe_injective continuous_coe
+  t1Space_of_injective_of_continuous DFunLike.coe_injective continuous_coe
 
 instance [T2Space Y] : T2Space C(X, Y) :=
-  .of_injective_continuous FunLike.coe_injective continuous_coe
+  .of_injective_continuous DFunLike.coe_injective continuous_coe
 
 end Ev
 
