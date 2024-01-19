@@ -80,143 +80,147 @@ lemma isDecomposition_R_determines_DF {R : K.facets → Finset α}  {DF₁ : K.f
     DF₁ = DF₂ :=
   funext (fun s ↦ by rw [← hdec₂.2 s (DF₁ s), hdec₁.2 s (DF₁ s)])
 
-/-- If `s` is empty or a face of `K`, and t is a face of K, definition of the interval [s.t] as a finset of
-faces of K.-/
+variable (K)
+
+/-- If `s` and `t` are finsets of `α`, definition of the intersection of the interval
+`Set.Icc s t` and of `K.faces` as a finset of faces of K.-/
 noncomputable def FinsetIcc (s t : Finset α) : Finset (K.faces) :=
   Set.Finite.toFinset (AbstractSimplicalComplex.FinsetIcc_finite K s t)
+
+/-- If `s` and `t` are finsets of `α`, a face `u` of `K` is in `FinsetIcc s t` if and only
+if `s ≤ u.1` and `u.1 ≤ t`.-/
+lemma mem_FinsetIcc (s t : Finset α) (u : K.faces) :
+    u ∈ FinsetIcc K s t ↔ s ≤ u.1 ∧ u.1 ≤ t := by
+  unfold FinsetIcc
+  simp only [Finset.le_eq_subset, Set.Finite.mem_toFinset, Set.mem_setOf_eq]
+
+/-- If `s` is a finset of `α`, definition of the intersection of the interval
+`Set.Iic s` and of `K.faces` as a finset of faces of K.-/
+noncomputable def FinsetIic (s : Finset α) : Finset (K.faces) :=
+  Set.Finite.toFinset (AbstractSimplicalComplex.FinsetIic_finite K s)
+
+/-- If `s` is a finset of `α`, a face `u` of `K` is in `FinsetIic s` if and only if `u.1 ≤ s`.-/
+lemma mem_FinsetIic (s : Finset α) (u : K.faces) :
+    u ∈ FinsetIic K s ↔ u.1 ≤ s := by
+  unfold FinsetIic
+  simp only [Finset.le_eq_subset, Set.Finite.mem_toFinset, Set.mem_setOf_eq]
+
+variable {K}
 
 /-- If `R` is a map from `K.facets` to `Finset α`, the "decomposition interval"
 `Set.Icc (R s) s` as a finset of faces of `K`.-/
 @[reducible] noncomputable def decompositionInterval (R : K.facets → Finset α) (s : K.facets) :
-    Finset (K.faces) := FinsetIcc (R s) s.1
+    Finset (K.faces) := FinsetIcc K (R s) s.1
 
-/- A face t is in the decomposition interval [R(s),s] if and only if R(s) ≤ t and t ≤ s.-/
-lemma DecompositionInterval_def {R : K.facets → Finset α}  {DF : K.faces → K.facets} (hdec : IsDecomposition R DF) (s : K.facets)
-(t : K.faces) : t ∈ DecompositionInterval hdec s ↔ R s ≤ t ∧ t.1 ⊆ s.1 := by
-  unfold DecompositionInterval
-  unfold Interval
-  by_cases he : R s = ∅
-  . simp only [he, gt_iff_lt, Subtype.mk_lt_mk, Finset.lt_eq_subset, Finset.not_ssubset_empty, dite_true, Finset.mem_Iic,
-      Finset.le_eq_subset, Finset.empty_subset, true_and]
-    tauto
-  . simp only [he, gt_iff_lt, Subtype.mk_lt_mk, Finset.lt_eq_subset, dite_false, Finset.mem_Icc, Finset.le_eq_subset]
-    tauto
+/-- If `R` and `DF` define a decomposition of `K`, and if `s` is a facet and `t` is a face, then
+`t` is in the decomposition interval `decompositionInterval R s` if and only if `DF t = s`.-/
+lemma mem_decompositionInterval {R : K.facets → Finset α}  {DF : K.faces → K.facets}
+    (hdec : isDecomposition R DF) (s : K.facets) (t : K.faces) :
+    t ∈ decompositionInterval R s ↔ s = DF t := by
+  rw [decompositionInterval, mem_FinsetIcc]
+  erw [hdec.2 t s]
 
-/- A face t is in the decomposition interval [R(s),s] if and only if DF(t) = s.-/
-lemma DecompositionInterval_eq {R : K.facets → Finset α}  {DF : K.faces → K.facets} (hdec : IsDecomposition R DF) (s : K.facets)
-(t : K.faces) : t ∈ DecompositionInterval hdec s ↔ s = DF t := by
-  unfold DecompositionInterval
-  unfold Interval
-  by_cases he : R s = ∅
-  . simp only [he, dite_true, Finset.mem_Iic]
-    rw [←(hdec.2 t s), he]
-    simp only [Finset.empty_subset, Finset.le_eq_subset, true_and]
-    tauto
-  . rw [←(hdec.2 t s)]
-    simp only [he, gt_iff_lt, Subtype.mk_lt_mk, Finset.lt_eq_subset, dite_false, Finset.mem_Icc, Finset.le_eq_subset]
-    tauto
+/-- If `R` and `DF` define a decomposition of `K`, then the map `DF` determines the decomposition
+intervals `decompositionInterval R s`.-/
+lemma isDecomposition_DF_determines_intervals {R₁ : K.facets → Finset α}
+    {R₂ : K.facets → Finset α} {DF : K.faces → K.facets} (hdec₁ : isDecomposition R₁ DF)
+    (hdec₂ : isDecomposition R₂ DF) (s : K.facets) :
+    decompositionInterval R₁ s = decompositionInterval R₂ s :=
+  Finset.ext (fun _ ↦ by rw [mem_decompositionInterval  hdec₁, mem_decompositionInterval hdec₂])
 
+/-! Order on facets compatible with a decomposition.-/
 
-/- If (R,DF) is a decomposition, then the map DF determines the decomposition intervals [R(s),s].-/
-lemma Decomposition_DF_determines_R_intervals {R₁ : K.facets → Finset α}  {R₂ : K.facets → Finset α} {DF : K.faces → K.facets}
-(hdec₁ : IsDecomposition R₁ DF) (hdec₂ : IsDecomposition R₂ DF) (s : K.facets) :
-Interval (Decomposition_image_of_R' hdec₁ s) (facets_subset s.2) = Interval (Decomposition_image_of_R' hdec₂ s) (facets_subset s.2) := by
-  ext t
-  rw [DecompositionInterval_eq hdec₁, DecompositionInterval_eq hdec₂]
+/-- A partial order `r` on the facets of `K` is compatible with a map `DF` from the faces of `K`
+to the facets of `K` if, for every face `t` and every facet `s`, `t ≤ s` implies that `DF t`
+is less than or equal to `s` for the order `r`. If we know that `t ≤ DF t` (for example if
+`DF` is part of a decomposition of `K`), this means that `DF t` is the smallest element
+(for the order `r`) of the set of facets containing `t`.-/
+@[reducible] def compatibleOrder (DF : K.faces → K.facets) (r : PartialOrder K.facets) : Prop :=
+  ∀ (t : K.faces) (s : K.facets), t.1 ≤ s.1 → r.le (DF t) s
 
-
-/- The goal is to prove that if a linear order on the facets of K is compatible with a given decomposition, then it is a
-shelling order (provided it is also well-founded). Here "compatible" means that, for a face s, the facet DF(s) is the
-smallest facet containing s. We will phrase this condition as: for every face s and every facet t, is s is contained in t,
-then DF(s) is smaller than t for the order on the facets. It also makes sense for a partial order on the facets, and is
-inherited by any linear order refining that partial order; we phrase it in that generality because somtimes (as in the case
-of the Coxeter complex) we have a natural order on the facets that is partial (and satisfies the compatibility condition).-/
-
-/- A partial order r on the facets of K is compatible with a map DF from the faces of K to the facets of K if,
-for every face s and every facet t, s ⊆ t implues that DF(s) is less than or equal to t for the order r.-/
-@[reducible] def CompatibleOrder (DF : K.faces → K.facets) (r : PartialOrder K.facets) : Prop :=
-∀ (s : K.faces) (t : K.facets), s.1 ⊆ t.1 → r.le (DF s) t
-
-/- If the partial order r is compatible with DF, and if s is a facet and t is a face such that t ⊆ s and t ⊆ DF(t)
-(the second condition is automatic for a decomposition), then t is not the complex of old faces for r and s if and only if
-DF(t) = s.-/
-lemma OldFacesCompatibleOrder {DF : K.faces → K.facets} {r : PartialOrder K.facets} (hcomp : CompatibleOrder DF r) {s : K.facets}
-{t : K.faces} (hts : t.1 ⊆ s.1) (hDFt : t.1 ⊆ (DF t).1) :
-t.1 ∉ OldFaces r s ↔ DF t = s := by
-  rw [OldFaces_mem]
+/-- Let `r` be a partial order on the facets of `K` and `DF` be a map from the set of faces of `K`
+to the set of facets of `K`. If `r` is compatible with `DF` in the sense of `compatibleOrder`,
+and if `s` is a facet and `t` is a face such that `t ≤ s` and `t ≤ DF t` (the second condition is
+automatic when `DF` is part of a decomposition), then `DF t = s` if and only if `t` is not in the
+complex of old faces `oldFaces r s`.-/
+lemma compatibleOrder_oldFaces {DF : K.faces → K.facets} {r : PartialOrder K.facets}
+    (hcomp : compatibleOrder DF r) {s : K.facets} {t : K.faces} (hts : t.1 ≤ s.1)
+    (hDFt : t.1 ≤ (DF t).1) : t.1 ∉ oldFaces r s ↔ DF t = s := by
+  rw [faces_oldFaces]
   push_neg
+  simp only [Subtype.coe_prop, Finset.le_eq_subset, Subtype.forall, forall_true_left]
   constructor
-  . intro ht
-    apply eq_of_le_of_not_lt (hcomp t s hts)
-    have h := ht t.2 hts (DF t)
-    rw [imp_not_comm] at h
-    exact h hDFt
-  . intro ht _ _ u hus htu
-    have h := @lt_of_le_of_lt _ (@PartialOrder.toPreorder _ r) _ _ _ (hcomp t u htu) hus
-    rw [ht] at h
-    exact (@ne_of_lt _ (@PartialOrder.toPreorder _ r) _ _ h) rfl
+  · exact fun ht ↦ @eq_of_le_of_not_lt _ r _ _ (hcomp t s hts)
+      (fun ht' ↦ ht hts (DF t).1 (DF t).2 ht' hDFt)
+  · exact fun ht _ u huf hus htu ↦
+      @not_lt_of_le _ r.toPreorder _ _ (@le_of_eq_of_le _ _ _ _ r.toLE (Eq.symm ht)
+      (hcomp t ⟨u, huf⟩ htu)) hus
 
-/- If the partial order r is compatible with the map DF in a decomposition (R,DF), if s is a facet and t is face such
-that t ⊆ s, then t is not in the complex of old faces for r and s if and only if it is in the decomposition interval
-[R(s),s].-/
-lemma OldFacesDecomposition {R : K.facets → Finset α}  {DF : K.faces → K.facets} (hdec : IsDecomposition R DF)
-{r : PartialOrder K.facets} (hcomp : CompatibleOrder DF r) {s : K.facets} {t : K.faces} (hts : t.1 ⊆ s.1) :
-t.1 ∉ OldFaces r s ↔ t ∈ DecompositionInterval hdec s := by
-  rw [OldFacesCompatibleOrder hcomp hts (Decomposition_DF_bigger_than_source hdec t)]
-  rw [DecompositionInterval_eq]
-  tauto
+/-- If `R` and `DF` define a decomposition of `K`, if `r` is a partial order on the facets of `K`
+that is compatible with `DF`, if `s` is a facet and `t` is face such that `t ≤ s`, then `t` is
+in the decomposition interval `decompositionInterval R s` if and only it is not in the complex
+of old faces `oldFaces r s`.-/
+lemma isDecomposition_oldFaces {R : K.facets → Finset α}  {DF : K.faces → K.facets}
+    (hdec : isDecomposition R DF) {r : PartialOrder K.facets} (hcomp : compatibleOrder DF r)
+    {s : K.facets} {t : K.faces} (hts : t.1 ≤ s.1) :
+    t.1 ∉ oldFaces r s ↔ t ∈ decompositionInterval R s := by
+  rw [compatibleOrder_oldFaces hcomp hts (isDecomposition_DF_bigger_than_source hdec t),
+    mem_decompositionInterval hdec, eq_comm]
 
-/- If the partial order r is compatible with the map DF in a decomposition (R,DF), if s is a facet and t is face such
-that t ⊆ s, then t is not in the complex of old faces for r and s if and only if R(s) ⊆ t.-/
-lemma OldFacesDecomposition' {R : K.facets → Finset α}  {DF : K.faces → K.facets} (hdec : IsDecomposition R DF)
-{r : PartialOrder K.facets} (hcomp : CompatibleOrder DF r) {s : K.facets} {t : K.faces} (hts : t.1 ⊆ s.1) :
-t.1 ∉ OldFaces r s ↔ R s ≤ t := by
-  rw [OldFacesDecomposition hdec hcomp hts, DecompositionInterval_def]
+/-- Variant of `isDecomposition_oldFaces`, where we show instead that `t` is not in the complex
+of old faces `oldFaces r s` if and only if `R s ≤ t`.-/
+lemma isDecomposition_oldFaces' {R : K.facets → Finset α}  {DF : K.faces → K.facets}
+    (hdec : isDecomposition R DF) {r : PartialOrder K.facets} (hcomp : compatibleOrder DF r)
+    {s : K.facets} {t : K.faces} (hts : t.1 ⊆ s.1) :
+    t.1 ∉ oldFaces r s ↔ R s ≤ t := by
+  rw [isDecomposition_oldFaces hdec hcomp hts, mem_FinsetIcc]
   simp only [Finset.le_eq_subset, hts, and_true]
 
-/- If the partial order r is compatible with the map DF in a decomposition (R,DF), if s is a facet and t is face such
-that t ⊆ s, then t is in the complex of old faces for r and s if and only if R(s) is not contained in t.-/
-lemma OldFacesDecomposition_faces {R : K.facets → Finset α}  {DF : K.faces → K.facets} (hdec : IsDecomposition R DF)
-{r : PartialOrder K.facets} (hcomp : CompatibleOrder DF r) {s : K.facets} {t : K.faces} (hts : t.1 ⊆ s.1) :
-t.1 ∈ OldFaces r s ↔ ¬(R s ≤ t) := iff_not_comm.mp (Iff.symm (OldFacesDecomposition' hdec hcomp hts))
+--Useless, replace with value.
+/-
+lemma OldFacesDecomposition_faces {R : K.facets → Finset α}  {DF : K.faces → K.facets}
+    (hdec : isDecomposition R DF) {r : PartialOrder K.facets} (hcomp : compatibleOrder DF r)
+    {s : K.facets} {t : K.faces} (hts : t.1 ⊆ s.1) :
+    t.1 ∈ oldFaces r s ↔ ¬(R s ≤ t) :=
+  iff_not_comm.mp (Iff.symm (isDecomposition_oldFaces' hdec hcomp hts))
+-/
 
-
-/- If the partial order r is compatible with the map DF in a decomposition (R,DF), and if s is a facet,
-then the complex of old faces is empty if and only if the interval [R(s), s] is equal to the half-infinite
-interval [<-, s].-/
-lemma OldFacesDecomposition_empty_iff {R : K.facets → Finset α}  {DF : K.faces → K.facets} (hdec : IsDecomposition R DF)
-{r : PartialOrder K.facets} (hcomp : CompatibleOrder DF r) (s : K.facets) :
-(OldFaces r s).faces = ∅ ↔ DecompositionInterval hdec s = Finset.Iic ⟨s.1, facets_subset s.2⟩ := by
+/-- If `R` and `DF` define a decomposition of `K`, if `r` is a partial order on the facets of `K`
+that is compatible with `DF`, and if `s` is a facet, then the complex of old faces
+`oldFaces r s` is empty if and only the decomposition interval `decompositionInterval R s` is
+equal to the half-infinite interval `FinsetIic s`.-/
+lemma isDecomposition_oldFaces_empty_iff {R : K.facets → Finset α}  {DF : K.faces → K.facets}
+    (hdec : isDecomposition R DF) {r : PartialOrder K.facets} (hcomp : compatibleOrder DF r)
+    (s : K.facets) :
+    (oldFaces r s).faces = ∅ ↔ decompositionInterval R s = FinsetIic K s.1 := by
   constructor
   . intro he
     ext t
-    rw [DecompositionInterval_def, Finset.mem_Iic]
+    rw [mem_FinsetIic]
     constructor
-    .  exact fun ht => ht.2
-    . intro hts
-      erw [and_iff_left hts]
-      rw [←(@OldFacesDecomposition' _ _ _ _ hdec _ hcomp s t hts)]
-      change ¬(t.1 ∈ (OldFaces r s).faces)
-      rw [he]
-      simp only [Set.mem_empty_iff_false, not_false_eq_true]
-  . intro hint
-    by_contra hne
-    rw [←ne_eq, ←Set.nonempty_iff_ne_empty] at hne
-    match hne with
-    | ⟨t, ht⟩ => have ht' := (OldFaces_mem r s t).mp ht
-                 erw [@OldFacesDecomposition_faces _ _ _ _ hdec _ hcomp s ⟨t, ht'.1⟩ ht'.2.1] at ht
-                 have htint : (⟨t, ht'.1⟩ : K.faces) ∈ Finset.Iic ⟨s.1, facets_subset s.2⟩ := by
-                   rw [Finset.mem_Iic]
-                   exact ht'.2.1
-                 rw [←hint, DecompositionInterval_def] at htint
-                 exact ht htint.1
+    · exact fun h ↦ by rw [(mem_decompositionInterval hdec s t).mp h]
+                       exact isDecomposition_DF_bigger_than_source hdec t
+    · intro hts
+      refine (isDecomposition_oldFaces hdec hcomp hts).mp ?_
+      change t.1 ∉ (oldFaces r s).faces
+      simp only [he, Set.mem_empty_iff_false, not_false_eq_true]
+  . intro heq
+    rw [Set.eq_empty_iff_forall_not_mem]
+    intro u
+    by_cases huf : u ∈ K.faces
+    · by_cases hus : u ≤ s
+      · erw [isDecomposition_oldFaces hdec hcomp (t := ⟨u, huf⟩) hus, heq, mem_FinsetIic]
+        exact hus
+      · exact fun hu ↦ by erw [faces_oldFaces] at hu; exact hus hu.2.1
+    · exact fun hu ↦ by erw [faces_oldFaces] at hu; exact huf hu.1
 
-
-/- If the partial order r is compatible with the map DF in a decomposition (R,DF), and if s is a facet,
-then the facets of the complex of old faces all have cardinality equal to card s - 1. -/
-lemma OldFacesDecompositionDimensionFacets {R : K.facets → Finset α}  {DF : K.faces → K.facets} (hdec : IsDecomposition R DF)
-{r : PartialOrder K.facets} (hcomp : CompatibleOrder DF r) (s : K.facets) (t : (OldFaces r s).facets) :
-Finset.card t.1 = Finset.card s.1 - 1 := by
+/-- If `R` and `DF` define a decomposition of `K`, if `r` is a partial order on the facets of `K`
+that is compatible with `DF`, and if `s` is a facet, then the facets of the complex of old faces
+`oldFaces r s` all have cardinality equal to `s.1.card - 1`. -/
+lemma isDecomposition_dimension_facets_oldFaces {R : K.facets → Finset α}
+    {DF : K.faces → K.facets} (hdec : isDecomposition R DF) {r : PartialOrder K.facets}
+    (hcomp : compatibleOrder DF r) (s : K.facets) (t : (oldFaces r s).facets) :
+    Finset.card t.1 = Finset.card s.1 - 1 := by
   have htf := facets_subset t.2
   have htf' := (OldFaces_mem r s t.1).mp htf
   erw [@OldFacesDecomposition_faces _ _ _ _ hdec _ hcomp s ⟨t.1, htf'.1⟩ htf'.2.1, Finset.not_subset] at htf
