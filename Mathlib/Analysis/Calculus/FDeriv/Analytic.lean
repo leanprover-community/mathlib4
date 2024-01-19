@@ -297,38 +297,7 @@ end deriv
 
 namespace ContinuousMultilinearMap
 
---TODO: move to appropriate place
-
-variable {R : Type*} {ι : Type*} {M₁ : ι → Type*} {M₂ : Type*} [Ring R]
-  [(i : ι) → AddCommGroup (M₁ i)] [AddCommGroup M₂] [(i : ι) → Module R (M₁ i)] [Module R M₂]
-  [(i : ι) → TopologicalSpace (M₁ i)] [(i : ι) → TopologicalAddGroup (M₁ i)]
-  [(i : ι) → ContinuousConstSMul R (M₁ i)] [TopologicalSpace M₂] [TopologicalAddGroup M₂]
-  [ContinuousConstSMul R M₂] [Fintype ι] (f : ContinuousMultilinearMap R M₁ M₂)
-
-/-- Realize a ContinuousMultilinearMap on `∀ i : ι, M₁ i` as the evaluation of a
-FormalMultilinearSeries by choosing an arbitrary identification `ι ≃ Fin (Fintype.card ι)`. -/
-noncomputable def toFormalMultilinearSeries : FormalMultilinearSeries R (∀ i, M₁ i) M₂ :=
-  fun n ↦ if h : Fintype.card ι = n then
-    (f.compContinuousLinearMap .proj).domDomCongr (Fintype.equivFinOfCardEq h)
-  else 0
-
-open scoped BigOperators
-
-/-- The derivative of a continuous multilinear map, as a continuous linear map
-from `∀ i, M₁ i` to `M₂`; see `ContinuousMultilinearMap.hasFDerivAt`. -/
-def linearDeriv [DecidableEq ι] (x : (i : ι) → M₁ i) : ((i : ι) → M₁ i) →L[R] M₂ :=
-  ∑ i : ι, (f.toContinuousLinearMap x i).comp (.proj i)
-
-@[simp]
-lemma linearDeriv_apply [DecidableEq ι] (f : ContinuousMultilinearMap R M₁ M₂)
-    (x y : (i : ι) → M₁ i) :
-    f.linearDeriv x y = ∑ i, f (Function.update x i (y i)) := by
-  unfold linearDeriv toContinuousLinearMap
-  simp only [ContinuousLinearMap.coe_sum', ContinuousLinearMap.coe_comp',
-    ContinuousLinearMap.coe_mk', LinearMap.coe_mk, LinearMap.coe_toAddHom, Finset.sum_apply]
-  rfl
-
-variable {R : Type*} {ι : Type*} {M₁ : ι → Type*} {M₂ : Type*} [NontriviallyNormedField R]
+variable {R ι : Type*} {M₁ : ι → Type*} {M₂ : Type*} [NontriviallyNormedField R]
   [(i : ι) → NormedAddCommGroup (M₁ i)] [NormedAddCommGroup M₂] [(i : ι) → NormedSpace R (M₁ i)]
   [NormedSpace R M₂] [Fintype ι] (f : ContinuousMultilinearMap R M₁ M₂)
 
@@ -359,31 +328,31 @@ theorem changeOrigin_toFormalMultilinearSeries [DecidableEq ι] (x : ∀ i, M₁
   · have (l) : 1 + l ≠ Fintype.card ι := by
       rw [add_comm, Fintype.card_eq_zero]; exact Nat.succ_ne_zero _
     simp_rw [Fintype.sum_empty, changeOriginSeries_support _ (this _), zero_apply _, tsum_zero]; rfl
-  rw [tsum_eq_single (Fintype.card ι - 1), changeOriginSeries]
-  · have heq : Fin.snoc 0 y = fun _ : Fin 1 ↦ y := by
-      ext; rw [Fin.snoc, dif_neg (Nat.not_lt_zero _)]; rfl
-    rw [sum_apply, ContinuousMultilinearMap.sum_apply, heq]
-    simp_rw [changeOriginSeriesTerm_apply]
-    refine (Fintype.sum_bijective (?_ ∘ Fintype.equivFinOfCardEq (Nat.add_sub_of_le
-      Fintype.card_pos).symm) (.comp ?_ <| Equiv.bijective _) _ _ fun i ↦ ?_).symm
-    · exact (⟨{·}ᶜ, by
-        rw [card_compl, Fintype.card_fin, card_singleton, Nat.add_sub_cancel_left]⟩)
-    · use fun _ _ ↦ (singleton_injective <| compl_injective <| Subtype.ext_iff.mp ·)
-      intro ⟨s, hs⟩
-      have h : sᶜ.card = 1 := by rw [card_compl, hs, Fintype.card_fin, Nat.add_sub_cancel]
-      obtain ⟨a, ha⟩ := card_eq_one.mp h
-      refine ⟨a, Subtype.ext (compl_eq_comm.mp ha)⟩
-    rw [Function.comp_apply, Subtype.coe_mk, compl_singleton, piecewise_erase_univ,
-      toFormalMultilinearSeries, dif_pos (Nat.add_sub_of_le Fintype.card_pos).symm]
-    simp_rw [domDomCongr_apply, compContinuousLinearMap_apply, ContinuousLinearMap.proj_apply,
-      Function.update_apply, (Equiv.injective _).eq_iff, ite_apply]
-    congr; ext j
-    obtain rfl | hj := eq_or_ne j i
-    · rw [Function.update_same, if_pos rfl]
-    · rw [Function.update_noteq hj, if_neg hj]
-  intro m hm
-  rw [Ne, eq_tsub_iff_add_eq_of_le (by exact Fintype.card_pos), add_comm] at hm
-  rw [f.changeOriginSeries_support hm, zero_apply]
+  rw [tsum_eq_single (Fintype.card ι - 1), changeOriginSeries]; swap
+  · intro m hm
+    rw [Ne, eq_tsub_iff_add_eq_of_le (by exact Fintype.card_pos), add_comm] at hm
+    rw [f.changeOriginSeries_support hm, zero_apply]
+  have heq : Fin.snoc 0 y = fun _ : Fin 1 ↦ y := by
+    ext; rw [Fin.snoc, dif_neg (Nat.not_lt_zero _)]; rfl
+  rw [sum_apply, ContinuousMultilinearMap.sum_apply, heq]
+  simp_rw [changeOriginSeriesTerm_apply]
+  refine (Fintype.sum_bijective (?_ ∘ Fintype.equivFinOfCardEq (Nat.add_sub_of_le
+    Fintype.card_pos).symm) (.comp ?_ <| Equiv.bijective _) _ _ fun i ↦ ?_).symm
+  · exact (⟨{·}ᶜ, by
+      rw [card_compl, Fintype.card_fin, card_singleton, Nat.add_sub_cancel_left]⟩)
+  · use fun _ _ ↦ (singleton_injective <| compl_injective <| Subtype.ext_iff.mp ·)
+    intro ⟨s, hs⟩
+    have h : sᶜ.card = 1 := by rw [card_compl, hs, Fintype.card_fin, Nat.add_sub_cancel]
+    obtain ⟨a, ha⟩ := card_eq_one.mp h
+    refine ⟨a, Subtype.ext (compl_eq_comm.mp ha)⟩
+  rw [Function.comp_apply, Subtype.coe_mk, compl_singleton, piecewise_erase_univ,
+    toFormalMultilinearSeries, dif_pos (Nat.add_sub_of_le Fintype.card_pos).symm]
+  simp_rw [domDomCongr_apply, compContinuousLinearMap_apply, ContinuousLinearMap.proj_apply,
+    Function.update_apply, (Equiv.injective _).eq_iff, ite_apply]
+  congr; ext j
+  obtain rfl | hj := eq_or_ne j i
+  · rw [Function.update_same, if_pos rfl]
+  · rw [Function.update_noteq hj, if_neg hj]
 
 protected theorem hasFDerivAt [DecidableEq ι] (x : ∀ i, M₁ i) :
     HasFDerivAt f (f.linearDeriv x) x := by
@@ -391,22 +360,19 @@ protected theorem hasFDerivAt [DecidableEq ι] (x : ∀ i, M₁ i) :
   convert f.hasFiniteFPowerSeriesOnBall.hasFDerivAt (y := x) ENNReal.coe_lt_top
   rw [zero_add]
 
-lemma cPolynomialAt (f : ContinuousMultilinearMap R M₁ M₂) (x : (i : ι) → M₁ i) :
-    CPolynomialAt R f x :=
-  HasFiniteFPowerSeriesOnBall.cPolynomialAt_of_mem f.hasFiniteFPowerSeriesOnBall
+variable (f : ContinuousMultilinearMap R M₁ M₂) {n : ℕ∞} (x : (i : ι) → M₁ i)
+
+lemma cPolynomialAt : CPolynomialAt R f x :=
+  f.hasFiniteFPowerSeriesOnBall.cPolynomialAt_of_mem
     (by simp only [Metric.emetric_ball_top, Set.mem_univ])
 
-lemma cPolyomialOn (f : ContinuousMultilinearMap R M₁ M₂) : CPolynomialOn R f ⊤ :=
-  fun x _ ↦ f.cPolynomialAt x
+lemma cPolyomialOn : CPolynomialOn R f ⊤ := fun x _ ↦ f.cPolynomialAt x
 
-lemma contDiffAt (f : ContinuousMultilinearMap R M₁ M₂) {n : ℕ∞} (x : (i : ι) → M₁ i) :
-    ContDiffAt R n f x := CPolynomialAt.contDiffAt (f.cPolynomialAt x)
+lemma contDiffAt : ContDiffAt R n f x := CPolynomialAt.contDiffAt (f.cPolynomialAt x)
 
-lemma contDiffOn (f : ContinuousMultilinearMap R M₁ M₂) {n : ℕ∞}
-    (s : Set ((i : ι) → M₁ i)) : ContDiffOn R n f s :=
+lemma contDiffOn (s : Set ((i : ι) → M₁ i)) : ContDiffOn R n f s :=
   CPolynomialOn.contDiffOn (fun x _ ↦ f.cPolynomialAt x)
 
-lemma contDiff (f : ContinuousMultilinearMap R M₁ M₂) {n : ℕ∞} :
-    ContDiff R n f := contDiff_iff_contDiffAt.mpr f.contDiffAt
+lemma contDiff : ContDiff R n f := contDiff_iff_contDiffAt.mpr f.contDiffAt
 
 end ContinuousMultilinearMap

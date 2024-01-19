@@ -35,7 +35,7 @@ variable {𝕜 : Type u} {𝕜' : Type u'} {E : Type v} {F : Type w} {G : Type x
 
 section
 
-variable [CommRing 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [TopologicalAddGroup E]
+variable [Ring 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [TopologicalAddGroup E]
   [ContinuousConstSMul 𝕜 E] [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
   [TopologicalAddGroup F] [ContinuousConstSMul 𝕜 F] [AddCommGroup G] [Module 𝕜 G]
   [TopologicalSpace G] [TopologicalAddGroup G] [ContinuousConstSMul 𝕜 G]
@@ -62,7 +62,8 @@ section Module
 /- `derive` is not able to find the module structure, probably because Lean is confused by the
 dependent types. We register it explicitly. -/
 -- Porting note: rewrote with `inferInstanceAs`
-instance : Module 𝕜 (FormalMultilinearSeries 𝕜 E F) :=
+instance {𝕜} [CommRing 𝕜] [Module 𝕜 E] [Module 𝕜 F] [ContinuousConstSMul 𝕜 E]
+    [ContinuousConstSMul 𝕜 F] : Module 𝕜 (FormalMultilinearSeries 𝕜 E F) :=
   inferInstanceAs <| Module 𝕜 <| ∀ n : ℕ, E[×n]→L[𝕜] F
 
 end Module
@@ -138,7 +139,7 @@ theorem compContinuousLinearMap_apply (p : FormalMultilinearSeries 𝕜 F G) (u 
   rfl
 #align formal_multilinear_series.comp_continuous_linear_map_apply FormalMultilinearSeries.compContinuousLinearMap_apply
 
-variable (𝕜) [CommRing 𝕜'] [SMul 𝕜 𝕜']
+variable (𝕜) [Ring 𝕜'] [SMul 𝕜 𝕜']
 
 variable [Module 𝕜' E] [ContinuousConstSMul 𝕜' E] [IsScalarTower 𝕜 𝕜' E]
 
@@ -183,7 +184,7 @@ end FormalMultilinearSeries
 
 namespace ContinuousLinearMap
 
-variable [CommRing 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [TopologicalAddGroup E]
+variable [Ring 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [TopologicalAddGroup E]
   [ContinuousConstSMul 𝕜 E] [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
   [TopologicalAddGroup F] [ContinuousConstSMul 𝕜 F] [AddCommGroup G] [Module 𝕜 G]
   [TopologicalSpace G] [TopologicalAddGroup G] [ContinuousConstSMul 𝕜 G]
@@ -208,11 +209,44 @@ theorem compFormalMultilinearSeries_apply' (f : F →L[𝕜] G) (p : FormalMulti
 
 end ContinuousLinearMap
 
+namespace ContinuousMultilinearMap
+
+variable {R : Type*} {ι : Type*} {M₁ : ι → Type*} {M₂ : Type*} [Ring R]
+  [(i : ι) → AddCommGroup (M₁ i)] [AddCommGroup M₂] [(i : ι) → Module R (M₁ i)] [Module R M₂]
+  [(i : ι) → TopologicalSpace (M₁ i)] [(i : ι) → TopologicalAddGroup (M₁ i)]
+  [(i : ι) → ContinuousConstSMul R (M₁ i)] [TopologicalSpace M₂] [TopologicalAddGroup M₂]
+  [ContinuousConstSMul R M₂] [Fintype ι] (f : ContinuousMultilinearMap R M₁ M₂)
+
+/-- Realize a ContinuousMultilinearMap on `∀ i : ι, M₁ i` as the evaluation of a
+FormalMultilinearSeries by choosing an arbitrary identification `ι ≃ Fin (Fintype.card ι)`. -/
+noncomputable def toFormalMultilinearSeries : FormalMultilinearSeries R (∀ i, M₁ i) M₂ :=
+  fun n ↦ if h : Fintype.card ι = n then
+    (f.compContinuousLinearMap .proj).domDomCongr (Fintype.equivFinOfCardEq h)
+  else 0
+
+open scoped BigOperators
+
+/-- The derivative of a continuous multilinear map, as a continuous linear map
+from `∀ i, M₁ i` to `M₂`; see `ContinuousMultilinearMap.hasFDerivAt`. -/
+def linearDeriv [DecidableEq ι] (x : (i : ι) → M₁ i) : ((i : ι) → M₁ i) →L[R] M₂ :=
+  ∑ i : ι, (f.toContinuousLinearMap x i).comp (.proj i)
+
+@[simp]
+lemma linearDeriv_apply [DecidableEq ι] (f : ContinuousMultilinearMap R M₁ M₂)
+    (x y : (i : ι) → M₁ i) :
+    f.linearDeriv x y = ∑ i, f (Function.update x i (y i)) := by
+  unfold linearDeriv toContinuousLinearMap
+  simp only [ContinuousLinearMap.coe_sum', ContinuousLinearMap.coe_comp',
+    ContinuousLinearMap.coe_mk', LinearMap.coe_mk, LinearMap.coe_toAddHom, Finset.sum_apply]
+  rfl
+
+end ContinuousMultilinearMap
+
 namespace FormalMultilinearSeries
 
 section Order
 
-variable [CommRing 𝕜] {n : ℕ} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+variable [Ring 𝕜] {n : ℕ} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
   [TopologicalAddGroup E] [ContinuousConstSMul 𝕜 E] [AddCommGroup F] [Module 𝕜 F]
   [TopologicalSpace F] [TopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
   {p : FormalMultilinearSeries 𝕜 E F}
