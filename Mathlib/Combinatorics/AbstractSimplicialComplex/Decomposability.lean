@@ -64,8 +64,8 @@ lemma isDecomposition_image_of_R {R : K.facets → Finset α}  {DF : K.faces →
 lemma isDecomposition_image_of_R' {R : K.facets → Finset α}  {DF : K.faces → K.facets}
     (hdec : isDecomposition R DF) (s : K.facets) : R s = ∅ ∨ R s ∈ K.faces := by
   by_cases he : R s = ∅
-  . exact Or.inl he
-  . exact Or.inr (isDecomposition_image_of_R hdec he)
+  · exact Or.inl he
+  · exact Or.inr (isDecomposition_image_of_R hdec he)
 
 /-- If `R` and `DF` define a decomposition of `K`, and if `s` is a facet such that `R s` is not
 empty, then `DF (R s)` is equal to `s`.-/
@@ -196,7 +196,7 @@ lemma isDecomposition_oldFaces_empty_iff {R : K.facets → Finset α}  {DF : K.f
     (s : K.facets) :
     (oldFaces r s).faces = ∅ ↔ decompositionInterval R s = FinsetIic K s.1 := by
   constructor
-  . intro he
+  · intro he
     ext t
     rw [mem_FinsetIic]
     constructor
@@ -206,7 +206,7 @@ lemma isDecomposition_oldFaces_empty_iff {R : K.facets → Finset α}  {DF : K.f
       refine (isDecomposition_oldFaces hdec hcomp hts).mp ?_
       change t.1 ∉ (oldFaces r s).faces
       simp only [he, Set.mem_empty_iff_false, not_false_eq_true]
-  . intro heq
+  · intro heq
     rw [Set.eq_empty_iff_forall_not_mem]
     intro u
     by_cases huf : u ∈ K.faces
@@ -294,8 +294,8 @@ lemma isPi0Facet_of_vertex {R : K.facets → Finset α} (hR : ∀ (s : K.facets)
   simp only [Finset.mem_coe, Set.mem_Iic, decompositionInterval, mem_FinsetIcc,
     Finset.le_eq_subset, Finset.mem_Iic]
   constructor
-  . exact fun h => h.2
-  . intro h
+  · exact fun h => h.2
+  · intro h
     erw [and_iff_left h]
     rw [Finset.card_eq_one] at hcard
     obtain ⟨a, ha⟩:= hcard
@@ -329,7 +329,7 @@ lemma isPi0Facet_iff {R : K.facets → Finset α} (hR : ∀ (s : K.facets), R s 
       rw [← Nat.one_eq_succ_zero, or_iff_right (Ne.symm habs.2)] at h
       exact h
     obtain ⟨a, haR⟩ := Finset.nonempty_iff_ne_empty.mpr habs.1
-    have has : a ∈ s.1 := (hdec.1 s) haR
+    have has : a ∈ s.1 := hR s haR
     have h : ∃ (b : α), b ∈ s.1 ∧ b ≠ a := by
       by_contra habs
       push_neg at habs
@@ -360,66 +360,62 @@ lemma isHomologyFacet_iff {R : K.facets → Finset α}  {DF : K.faces → K.face
     isHomologyFacet R s ↔ R s = s.1 ∧ Finset.card s.1 > 1 := by
   unfold isHomologyFacet decompositionInterval
   constructor
-  . intro ⟨h, hint⟩
+  · intro ⟨h, hint⟩
     by_cases hcard : Finset.card s.1 ≤ 1
-    . exfalso
-      have hv : Finset.card s.1 = 1 := by
-            refine le_antisymm hcard ?_
-            rw [Nat.succ_le, Nat.pos_iff_ne_zero, ne_eq]
-            exact face_card_nonzero (facets_subset s.2)
-      exact h (Vertex_IsPi0Facet hdec s hv)
-    . rw [←lt_iff_not_le] at hcard
+    · exfalso
+      refine h (isPi0Facet_of_vertex hdec.1 s (le_antisymm hcard ?_))
+      rw [Nat.succ_le, Nat.pos_iff_ne_zero, ne_eq]
+      exact face_card_nonzero (facets_subset s.2)
+    · rw [and_iff_left (lt_iff_not_le.mpr hcard)]
       by_cases he : R s = ∅
-      . exfalso
-        rw [Finset.one_lt_card_iff] at hcard
-        match hcard with
-        | ⟨a, b, has, hbs, hab⟩ =>  set t := ({a} : Finset α)
-                                    have htf : t ∈ K.faces :=
-                                      K.down_closed (facets_subset s.2) (Finset.singleton_subset_iff.mpr has) (Finset.singleton_nonempty _)
-                                    have htint : ⟨t, htf⟩ ∈ DecompositionInterval hdec s := by
-                                      rw [DecompositionInterval_def]
-                                      rw [he]
-                                      simp only [Finset.le_eq_subset, Finset.subset_singleton_iff, true_or, Finset.singleton_subset_iff, true_and]
-                                      exact has
-                                    rw [hint] at htint
-                                    simp only [Finset.mem_singleton, Subtype.mk.injEq] at htint
-                                    rw [←htint, Finset.mem_singleton] at hbs
-                                    exact hab (Eq.symm hbs)
-      . have hR := Decomposition_image_of_R hdec he
-        have hRint : ⟨R s, hR⟩ ∈ DecompositionInterval hdec s := by
-          rw [DecompositionInterval_def]
-          rw [and_iff_left (hdec.1 s)]
-        rw [hint] at hRint
+      · exfalso
+        obtain ⟨a, b, has, hbs, hab⟩ := Finset.one_lt_card_iff.mp (lt_iff_not_le.mpr hcard)
+        set t := ({a} : Finset α)
+        have htf : t ∈ K.faces := K.down_closed (facets_subset s.2)
+          (Finset.singleton_subset_iff.mpr has) (Finset.singleton_nonempty _)
+        have htint : ⟨t, htf⟩ ∈ decompositionInterval R s := by
+          unfold decompositionInterval
+          rw [mem_FinsetIcc, he]
+          simp only [Finset.le_eq_subset, Finset.subset_singleton_iff, true_or,
+            Finset.singleton_subset_iff, has, and_self]
+        rw [decompositionInterval, hint] at htint
+        simp only [Finset.mem_singleton, Subtype.mk.injEq] at htint
+        rw [← htint, Finset.mem_singleton] at hbs
+        exact hab (Eq.symm hbs)
+      · have hR : R s ∈ K.faces :=
+          K.down_closed (facets_subset s.2) (hdec.1 s) (Finset.nonempty_iff_ne_empty.mpr he)
+        have hRint : ⟨R s, hR⟩ ∈ decompositionInterval R s := by
+          unfold decompositionInterval
+          rw [mem_FinsetIcc]
+          exact ⟨by rfl, hdec.1 s⟩
+        rw [decompositionInterval, hint] at hRint
         simp only [Finset.mem_singleton, Subtype.mk.injEq] at hRint
-        exact ⟨hRint, hcard⟩
-  . intro ⟨hR,hcard⟩
-    constructor
-    . rw [gt_iff_lt, Finset.one_lt_card_iff] at hcard
-      match hcard with
-      | ⟨a, b, has, hbs, hab⟩ =>  set t := ({a} : Finset α)
-                                  have htf : t ∈ K.faces :=
-                                    K.down_closed (facets_subset s.2) (Finset.singleton_subset_iff.mpr has) (Finset.singleton_nonempty _)
-                                  have htint : ¬(⟨t, htf⟩ ∈ DecompositionInterval hdec s) := by
-                                    rw [DecompositionInterval_def, not_and_or]
-                                    apply Or.inl
-                                    by_contra habs
-                                    have habs' := subset_antisymm habs (by rw [←hR] at has; exact Finset.singleton_subset_iff.mpr has)
-                                    rw [habs'] at hR
-                                    simp only at hR
-                                    rw [←hR, Finset.mem_singleton] at hbs
-                                    exact hab (Eq.symm hbs)
-                                  unfold IsPi0Facet
-                                  by_contra habs
-                                  rw [habs] at htint
-                                  simp only [Finset.mem_Iic, Subtype.mk_le_mk, Finset.le_eq_subset, Finset.singleton_subset_iff] at htint
-                                  exact htint has
-    . ext t
-      rw [DecompositionInterval_def, hR]
-      simp only [Finset.le_eq_subset, Finset.mem_singleton]
-      rw [←SetCoe.ext_iff]
-      constructor
-      . exact fun h => subset_antisymm h.2 h.1
-      . exact fun h => by rw [h]; exact ⟨subset_refl _, subset_refl _⟩
-
+        exact hRint
+  · intro ⟨hR, hcard⟩
+    constructor; swap
+    · ext t
+      simp only [hR, mem_FinsetIcc, Finset.le_eq_subset, Finset.mem_singleton]
+      erw [← le_antisymm_iff (a := s.1) (b := t.1), eq_comm, ← SetCoe.ext_iff]
+    · rw [gt_iff_lt, Finset.one_lt_card_iff] at hcard
+      obtain ⟨a, b, has, hbs, hab⟩ := hcard
+      set t := ({a} : Finset α)
+      have htf : t ∈ K.faces := K.down_closed (facets_subset s.2)
+        (Finset.singleton_subset_iff.mpr has) (Finset.singleton_nonempty _)
+      have htint : ¬(⟨t, htf⟩ ∈ decompositionInterval R s) := by
+        unfold decompositionInterval
+        rw [mem_FinsetIcc]
+        simp only [Finset.le_eq_subset, Finset.subset_singleton_iff, Finset.singleton_subset_iff,
+          has, and_true, not_or, hR, ← Finset.nonempty_iff_ne_empty]
+        rw [and_iff_right (K.nonempty_of_mem (facets_subset s.2))]
+        intro heq
+        rw [heq] at hbs
+        simp only [Finset.mem_singleton] at hbs
+        exact hab (Eq.symm hbs)
+      unfold isPi0Facet
+      intro heq
+      rw [← Finset.mem_coe, heq] at htint
+      simp only [Set.mem_Iic, Subtype.mk_le_mk, Finset.le_eq_subset,
+        Finset.singleton_subset_iff] at htint
+      exact htint has
 
 end AbstractSimplicialComplex
