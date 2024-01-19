@@ -643,30 +643,59 @@ noncomputable def definedAtRight
         Substructure.closure_le, singleton_subset_iff, le_sup_left]
       exact f_le_g
 
+theorem embedding_from_cg [M_cg : Structure.CG L M] (h : (M ≃ₚ[L] N)) (h_fg : h.sub_dom.FG)
+  (H : ∀ f : M ≃ₚ[L] N, ∀ _ : f.sub_dom.FG, ∀ m : M, ∃ g : (M ≃ₚ[L] N), f ≤ g ∧ m ∈ g.sub_dom) :
+  ∃ f : M ↪[L] N, h ≤ f.toSubEquivalence := by
+    rcases M_cg with ⟨X, _, X_gen⟩
+    have _ : Countable (↑X : Type _) := by simpa only [countable_coe_iff]
+    have _ : Encodable (↑X : Type _) := Encodable.ofCountable _
+    let D : X → Order.Cofinal (FiniteEquiv L M N) := fun x ↦ definedAtLeft H x
+    let S : ℕ →o M ≃ₚ[L] N :=
+      ⟨Subtype.val ∘ (Order.sequenceOfCofinals ⟨h, h_fg⟩ D),
+        FiniteEquiv.subtype_val_monotone.comp (Order.sequenceOfCofinals.monotone _ _)⟩
+    let F := subEquiv_limit S
+    have _ : X ⊆ F.sub_dom := by
+      intro x hx
+      have := Order.sequenceOfCofinals.encode_mem ⟨h, h_fg⟩ D ⟨x, hx⟩
+      exact le_dom
+        (le_subEquiv_limit S (Encodable.encode (⟨x, hx⟩ : X) + 1)) this
+    have isTop : F.sub_dom = ⊤ := by rwa [←top_le_iff, ←X_gen, Substructure.closure_le]
+    exact ⟨dom_top_toEmbedding isTop,
+          by convert (le_subEquiv_limit S 0); apply Embedding.toSubEquivalence_toEmbedding⟩
 
-    done
-
-theorem cg_embedding [M_cg : Structure.CG L M] (h : (M ≃ₚ[L] N)) (h_fg : h.sub_dom.FG) :
-  (∀ f : M ≃ₚ[L] N, ∀ _ : f.sub_dom.FG, ∀ m : M, ∃ g : (M ≃ₚ[L] N), f ≤ g ∧ m ∈ g.sub_dom)
-  → ∃ f : M ↪[L] N, h ≤ f.toSubEquivalence := by
-  intro H
-  rcases M_cg with ⟨X, _, X_gen⟩
-  have _ : Countable (↑X : Type _) := by simpa only [countable_coe_iff]
-  have _ : Encodable (↑X : Type _) := Encodable.ofCountable _
-  let D : X → Order.Cofinal (FiniteEquiv L M N) := fun x ↦ definedAtLeft H x
-  let S : ℕ →o M ≃ₚ[L] N :=
-    ⟨Subtype.val ∘ (Order.sequenceOfCofinals ⟨h, h_fg⟩ D),
-      FiniteEquiv.subtype_val_monotone.comp (Order.sequenceOfCofinals.monotone _ _)⟩
-  let F := subEquiv_limit S
-  have _ : X ⊆ F.sub_dom := by
-    intro x hx
-    have := Order.sequenceOfCofinals.encode_mem ⟨h, h_fg⟩ D ⟨x, hx⟩
-    exact le_dom
-      (le_subEquiv_limit S (Encodable.encode (⟨x, hx⟩ : X) + 1)) this
-  have isTop : F.sub_dom = ⊤ := by rwa [←top_le_iff, ←X_gen, Substructure.closure_le]
-  refine ⟨dom_top_toEmbedding isTop, ?_⟩
-  convert (le_subEquiv_limit S 0)
-  apply Embedding.toSubEquivalence_toEmbedding
+theorem equiv_between_cg [M_cg : Structure.CG L M] [N_cg : Structure.CG L N]
+  (h : (M ≃ₚ[L] N)) (h_fg : h.sub_dom.FG)
+  (ext_dom : ∀ f : M ≃ₚ[L] N, ∀ _ : f.sub_dom.FG, ∀ m : M, ∃ g : (M ≃ₚ[L] N), f ≤ g ∧ m ∈ g.sub_dom)
+  (ext_cod : ∀ f : M ≃ₚ[L] N, ∀ _ : f.sub_dom.FG, ∀ n : N, ∃ g : (M ≃ₚ[L] N), f ≤ g ∧ n ∈ g.sub_cod) :
+  ∃ f : M ≃[L] N, h ≤ f.toEmbedding.toSubEquivalence := by
+    rcases M_cg with ⟨X, X_count, X_gen⟩
+    rcases N_cg with ⟨Y, Y_count, Y_gen⟩
+    have _ : Countable (↑X : Type _) := by simpa only [countable_coe_iff]
+    have _ : Encodable (↑X : Type _) := Encodable.ofCountable _
+    have _ : Countable (↑Y : Type _) := by simpa only [countable_coe_iff]
+    have _ : Encodable (↑Y : Type _) := Encodable.ofCountable _
+    let D : Sum X Y → Order.Cofinal (FiniteEquiv L M N) := fun p ↦
+      Sum.recOn p (fun x ↦ definedAtLeft ext_dom x) (fun y ↦ definedAtRight ext_cod y)
+    let S : ℕ →o M ≃ₚ[L] N :=
+      ⟨Subtype.val ∘ (Order.sequenceOfCofinals ⟨h, h_fg⟩ D),
+        FiniteEquiv.subtype_val_monotone.comp (Order.sequenceOfCofinals.monotone _ _)⟩
+    let F := subEquiv_limit S
+    have _ : X ⊆ F.sub_dom := by
+      intro x hx
+      have := Order.sequenceOfCofinals.encode_mem ⟨h, h_fg⟩ D (Sum.inl ⟨x, hx⟩)
+      exact le_dom
+        (le_subEquiv_limit S (Encodable.encode (Sum.inl (⟨x, hx⟩ : X)) + 1)) this
+    have _ : Y ⊆ F.sub_cod := by
+      intro y hy
+      have := Order.sequenceOfCofinals.encode_mem ⟨h, h_fg⟩ D (Sum.inr ⟨y, hy⟩)
+      exact le_cod
+        (le_subEquiv_limit S (Encodable.encode (Sum.inr (⟨y, hy⟩ : Y)) + 1)) this
+    have dom_top : F.sub_dom = ⊤ := by rwa [←top_le_iff, ←X_gen, Substructure.closure_le]
+    have cod_top : F.sub_cod = ⊤ := by rwa [←top_le_iff, ←Y_gen, Substructure.closure_le]
+    refine ⟨dom_cod_top_toEquiv dom_top cod_top, ?_⟩
+    convert le_subEquiv_limit S 0
+    rw [dom_cod_top_toEquiv_toEmbedding]
+    apply Embedding.toSubEquivalence_toEmbedding
 
 end SubEquivalence
 

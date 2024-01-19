@@ -1205,6 +1205,19 @@ theorem dom_top_toEmbedding_apply {f : M ≃ₚ[L] N} (h : f.sub_dom = ⊤) (m :
     cases h
     rfl
 
+noncomputable def dom_cod_top_toEquiv {f : M ≃ₚ[L] N} (h_dom : f.sub_dom = ⊤)
+  (h_cod : f.sub_cod = ⊤) : M ≃[L] N :=
+    (topEquiv (M := N)).comp ((h_dom ▸ h_cod ▸ f.equiv).comp (topEquiv (M := M)).symm)
+
+@[simp]
+theorem dom_cod_top_toEquiv_toEmbedding {f : M ≃ₚ[L] N} (h_dom : f.sub_dom = ⊤)
+  (h_cod : f.sub_cod = ⊤) :
+  (dom_cod_top_toEquiv h_dom h_cod).toEmbedding = dom_top_toEmbedding h_dom := by
+    rcases f with ⟨dom, cod, g⟩
+    cases h_dom
+    cases h_cod
+    rfl
+
 end SubEquivalence
 
 end Substructure
