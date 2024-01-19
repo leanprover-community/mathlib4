@@ -10,7 +10,7 @@ variable {α : Type u} {β : Type v}
 
 variable {K : AbstractSimplicialComplex α} {L : AbstractSimplicialComplex β}
 
-open Finset
+open Finset AbstractSimplicialComplex
 
 variable (K)
 
@@ -118,6 +118,48 @@ noncomputable instance instLocallyFiniteOrderBot [DecidableEq α] :
 noncomputable instance instLocallyFiniteOrder [DecidableEq α] : LocallyFiniteOrder (K.faces) :=
   LocallyFiniteOrder.ofFiniteIcc (Icc_finite K)
 
+/-! Finiteness properties of the face poset.-/
+
+variable {K}
+-- Probably useless.
+/-If `K` is a finite abstract simplicial complex, then the relation `gt` on its face poset is
+well-founded.
+lemma wf_of_finiteComplex (hfin : FiniteComplex K) :
+    WellFounded (fun (s t : K.faces) ↦ t < s) :=
+  (@Finite.to_wellFoundedGT K.faces hfin _).wf
+-/
+
+/-- If the relation `fun s t ↦ t < s` on the facet poset of `K` is well-founded, then
+every face of `K` is contained in a facet.-/
+lemma exists_facet_of_wf (hwf : WellFounded (fun (s t : K.faces) ↦ t < s)) (t : K.faces) :
+    ∃ (s : K.facets), t.1 ≤ s.1 := by
+  have hne : {u : K.faces | t ≤ u}.Nonempty := ⟨t, by simp only [Set.mem_setOf_eq, le_refl]⟩
+  set s := WellFounded.min hwf {u : K.faces | t ≤ u} hne
+  have hts : t ≤ s := Set.mem_setOf.mp (WellFounded.min_mem hwf {u : K.faces | t ≤ u} hne)
+  refine ⟨⟨s, (mem_facets_iff K s.1).mpr ⟨s.2, ?_⟩⟩, hts⟩
+  exact fun u huf hsu ↦ eq_of_le_of_not_lt hsu (WellFounded.not_lt_min hwf {u : K.faces | t ≤ u}
+    hne (x := ⟨u, huf⟩) (le_trans hts hsu))
+
+open Nat ENat in
+/-- If the relation `fun s t ↦ t < s` on the facet poset of `K` is well-founded and the facets
+of `K` have the same cardinality, then `K` is pure. -/
+lemma pure_of_wf_and_dimension_facets (hwf : WellFounded (fun (s t : K.faces) ↦ t < s))
+    (hdim : ∀ s ∈ K.facets, ∀ t ∈ K.facets, Finset.card s = Finset.card t) : Pure K := by
+  intro s hsf
+  unfold dimension
+  simp only [ENat.coe_sub, Nat.cast_one]
+  apply le_antisymm
+  · simp only [tsub_le_iff_left]
+    exact le_trans (le_iSup (fun (s : K.faces) ↦ (s.1.card : ENat)) ⟨s, facets_subset hsf⟩)
+      le_add_tsub
+  · simp only [tsub_le_iff_right, iSup_le_iff, Subtype.forall]
+    intro t htf
+    let ⟨u, htu⟩ := exists_facet_of_wf hwf ⟨t, htf⟩
+    convert le_of_le_of_eq (WithTop.coe_le_coe.mpr (Finset.card_le_card htu))
+      (by rw [hdim u.1 u.2 s hsf])
+    rw [← coe_one, ← coe_sub, ← coe_add, ← succ_eq_add_one, ← pred_eq_sub_one,
+      succ_pred (face_card_nonzero (facets_subset hsf))]; rfl
+
 -- TODO : move the next two lemmas somewhere else.
 /-- If an order ideal has a maximal element, then this element generates the ideal.-/
 lemma Order.Ideal.generated_by_maximal_element {α : Type*} [Preorder α] (I : Order.Ideal α)
@@ -142,8 +184,6 @@ lemma Order.PFilter.generated_by_minimal_element {α : Type*} [Preorder α] (F :
 -- end of stuff to move
 
 /-! Order filters and order ideals of the face poset.-/
-
-variable {K}
 
 /-- Every filter of the face poset of an abstract simplicial complex is principal, generated
 by a minimal element.-/

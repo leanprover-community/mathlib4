@@ -4,6 +4,8 @@ import Mathlib.Combinatorics.AbstractSimplicialComplex.OrderOnFacets
 
 universe u
 
+open AbstractSimplicalComplex
+
 variable {α : Type u} {K : AbstractSimplicialComplex α}
 
 /-! An abstract simplicial `K` on `α` is called decomposable if there exists a map `R` (for
@@ -214,131 +216,149 @@ lemma isDecomposition_oldFaces_empty_iff {R : K.facets → Finset α}  {DF : K.f
       · exact fun hu ↦ by erw [faces_oldFaces] at hu; exact hus hu.2.1
     · exact fun hu ↦ by erw [faces_oldFaces] at hu; exact huf hu.1
 
+open Finset in
 /-- If `R` and `DF` define a decomposition of `K`, if `r` is a partial order on the facets of `K`
 that is compatible with `DF`, and if `s` is a facet, then the facets of the complex of old faces
 `oldFaces r s` all have cardinality equal to `s.1.card - 1`. -/
-lemma isDecomposition_dimension_facets_oldFaces {R : K.facets → Finset α}
+lemma isDecomposition_dimension_facets_oldFaces [DecidableEq α] {R : K.facets → Finset α}
     {DF : K.faces → K.facets} (hdec : isDecomposition R DF) {r : PartialOrder K.facets}
     (hcomp : compatibleOrder DF r) (s : K.facets) (t : (oldFaces r s).facets) :
-    Finset.card t.1 = Finset.card s.1 - 1 := by
+    t.1.card = s.1.card - 1 := by
   have htf := facets_subset t.2
-  have htf' := (OldFaces_mem r s t.1).mp htf
-  erw [@OldFacesDecomposition_faces _ _ _ _ hdec _ hcomp s ⟨t.1, htf'.1⟩ htf'.2.1, Finset.not_subset] at htf
-  match htf with
-  | ⟨a, ⟨has, hat⟩⟩ => set u := s.1 \ {a}
-                       have hus : u ⊆ s.1 := Finset.sdiff_subset _ _
-                       have htu : t.1 ⊆ u := by rw [Finset.subset_sdiff, Finset.disjoint_singleton_right]
-                                                exact ⟨htf'.2.1, hat⟩
-                       have hune : u.Nonempty := by match K.nonempty_of_mem htf'.1 with | ⟨a, ha⟩ => exact ⟨a, htu ha⟩
-                       have huK : u ∈ K.faces := K.down_closed (facets_subset s.2) hus hune
-                       have huof : u ∈ (OldFaces r s).faces := by
-                         erw [@OldFacesDecomposition_faces _ _ _ _ hdec _ hcomp s ⟨u, huK⟩ hus, Finset.not_subset]
-                         exists a
-                         rw [and_iff_right has]
-                         apply Finset.not_mem_sdiff_of_mem_right
-                         exact Finset.mem_singleton_self _
-                       have has' : {a} ⊆ s.1 := by
-                         rw [Finset.singleton_subset_iff]
-                         exact (hdec.1 s) has
-                       rw [((mem_facets_iff (OldFaces r s) t.1).mp t.2).2 huof htu, Finset.card_sdiff has']
-                       rw [Finset.card_singleton]
+  have htf' := (faces_oldFaces r s t.1).mp (facets_subset t.2)
+  erw [← not_iff_comm.mp (isDecomposition_oldFaces' hdec hcomp (t := ⟨t, htf'.1⟩) htf'.2.1),
+    not_subset] at htf
+  obtain ⟨a, ⟨has, hat⟩⟩ := htf
+  set u := s.1.erase a
+  have htu : t.1 ⊆ u := by rw [subset_erase]; exact ⟨htf'.2.1, hat⟩
+  have huK : u ∈ K.faces := K.down_closed (facets_subset s.2) (erase_subset _ _)
+    (let ⟨a, ha⟩ := K.nonempty_of_mem htf'.1; ⟨a, htu ha⟩)
+  have huof : u ∈ (oldFaces r s).faces := by
+    erw [← not_iff_comm.mp (isDecomposition_oldFaces' hdec hcomp (t := ⟨u, huK⟩)
+      (erase_subset _ _)), not_subset]
+    exact ⟨a, has, Finset.not_mem_erase a s.1⟩
+  rw [((mem_facets_iff (oldFaces r s) t.1).mp t.2).2 huof htu,
+    Finset.card_erase_of_mem ((hdec.1 s) has)]
+
+/-- If `R` and `DF` define a decomposition of `K`, if `r` is a partial order on the facets of `K`
+that is compatible with `DF`, and if `s` is a facet, then the complex of old faces oldFaces r s`
+is pure.-/
+lemma isDecomposition_oldFaces_pure {R : K.facets → Finset α}  {DF : K.faces → K.facets}
+    (hdec : isDecomposition R DF) {r : PartialOrder K.facets} (hcomp : compatibleOrder DF r)
+    (s : K.facets) : Pure (oldFaces r s) := by
+  classical
+  exact pure_of_wf_and_dimension_facets (@Finite.to_wellFoundedGT (oldFaces r s).faces
+  (finite_oldFaces r s) _).wf (fun t htf u huf => by
+    rw [isDecomposition_dimension_facets_oldFaces hdec hcomp s ⟨t, htf⟩,
+    isDecomposition_dimension_facets_oldFaces hdec hcomp s ⟨u, huf⟩])
+
+/-- If `R` and `DF` define a decomposition of `K`, if `r` is a partial order on the facets of `K`
+that is compatible with `DF`, and if `s` is a facet, then the complex of old faces `oldFaces r s`
+is either empty or has dimension `s.card - 2`.-/
+lemma isDecomposition_dimension_oldFaces {R : K.facets → Finset α}  {DF : K.faces → K.facets}
+    (hdec : isDecomposition R DF) {r : PartialOrder K.facets} (hcomp : compatibleOrder DF r)
+    (s : K.facets) (hne : (oldFaces r s).faces.Nonempty) :
+    dimension (oldFaces r s) = Finset.card s.1 - 2 := by
+  classical
+  obtain ⟨t, htf⟩ := hne
+  obtain ⟨⟨u, huf⟩, htu⟩ := exists_facet_of_wf (@Finite.to_wellFoundedGT (oldFaces r s).faces
+    (finite_oldFaces r s) _).wf ⟨t, htf⟩
+  rw [← (isDecomposition_oldFaces_pure hdec hcomp s) huf,
+    isDecomposition_dimension_facets_oldFaces hdec hcomp s ⟨u, huf⟩]
+  erw [← ENat.coe_sub, WithTop.coe_eq_coe, Nat.cast_inj, Nat.sub_succ]
 
 
-/- If the partial order r is compatible with the map DF in a decomposition (R,DF), and if s is a facet,
-then the complex of old faces is pure. -/
-lemma OldFacesDecompositionIsPure {R : K.facets → Finset α}  {DF : K.faces → K.facets} (hdec : IsDecomposition R DF)
-{r : PartialOrder K.facets} (hcomp : CompatibleOrder DF r) (s : K.facets) : Pure (OldFaces r s) :=
-Dimension_of_Noetherian_pure (Finite_implies_Noetherian (OldFacesFinite r s))
-(fun t u htf huf => by rw [OldFacesDecompositionDimensionFacets hdec hcomp s ⟨t, htf⟩, OldFacesDecompositionDimensionFacets hdec hcomp s ⟨u, huf⟩])
+/-! `π₀` and homology facets of a decomposition. (The rationale for the name is that, if the
+decomposition comes from a shelling, then `π₀` facets should add a new connected component to
+the geometric realization of `K` and homology facets should contribute a cohomology class.)-/
 
+/-- If `R` is a map from the set of facets of `K` to the set of finsets of `α`, then a `π₀` facet
+is a facet `s` such that the decomposition interval `decompositionInterval R s` is equal to the
+half-infinite interval `Set.Iic s`-/
+@[reducible]
+def isPi0Facet (R : K.facets → Finset α)  (s : K.facets) : Prop :=
+  decompositionInterval R s = Set.Iic (⟨s.1, facets_subset s.2⟩ : K.faces)
 
-/- If the partial order r is compatible with the map DF in a decomposition (R,DF), and if s is a facet,
-then the complex of old faces is either empty or has dimension card s - 2.-/
-lemma OldFacesDecompositionDimension {R : K.facets → Finset α}  {DF : K.faces → K.facets} (hdec : IsDecomposition R DF)
-{r : PartialOrder K.facets} (hcomp : CompatibleOrder DF r) (s : K.facets) (hne : (OldFaces r s).faces.Nonempty) :
-dimension (OldFaces r s) = Finset.card s.1 - 2 := by
-  match (Noetherian_nonempty_implies_facets_exist (Finite_implies_Noetherian (OldFacesFinite r s)) hne) with
-  | ⟨t, htf⟩ => rw [←((OldFacesDecompositionIsPure hdec hcomp s) htf), OldFacesDecompositionDimensionFacets hdec hcomp s ⟨t, htf⟩]
-                erw [←ENat.coe_sub, WithTop.coe_eq_coe, Nat.cast_inj, Nat.sub_succ]
+/-- If `R` is a map from the set of facets of `K` to the set of finsets of `α`, then a homology
+facet is a facet `s` thats is not a `π₀` facet and such that the decomposition interval
+`decompositionInterval R s` is equal to the singleton `{s}`.-/
+@[reducible]
+def isHomologyFacet (R : K.facets → Finset α) (s : K.facets) : Prop :=
+  ¬ isPi0Facet R s ∧ decompositionInterval R s = {⟨s.1, facets_subset s.2⟩}
 
-
-/- We define π₀ and homology facets for a decomposition, without reference to an order on the facets (if the decomposition is
-compatible with a shelling order, we will recover the usual notion). π₀ facets are the facets s such that the corresponding
-decomposition interval is the half-infinite interval [<-,s], and homology facets are non-π₀ facets s such that the corresponding
-decomposition interval is equal to {s}.-/
-
-def IsPi0Facet {R : K.facets → Finset α}  {DF : K.faces → K.facets} (hdec : IsDecomposition R DF) (s : K.facets) : Prop :=
-DecompositionInterval hdec s = Finset.Iic ⟨s.1, facets_subset s.2⟩
-
-def IsHomologyFacet {R : K.facets → Finset α}  {DF : K.faces → K.facets} (hdec : IsDecomposition R DF) (s : K.facets) : Prop :=
-¬(IsPi0Facet hdec s) ∧ DecompositionInterval hdec s = {⟨s.1, facets_subset s.2⟩}
-
-/- A 0-dimensional facet is always a π₀ facet.-/
-lemma Vertex_IsPi0Facet {R : K.facets → Finset α}  {DF : K.faces → K.facets} (hdec : IsDecomposition R DF) (s : K.facets)
-(hcard : Finset.card s.1 = 1) : IsPi0Facet hdec s := by
+/-- If `R` is a map from the set of facets of `K` to the set of finsets of `α` such that
+`R s ≤ s` for every facet `s`, then a `0`-dimensional facet is always a `π₀` facet.-/
+lemma isPi0Facet_of_vertex {R : K.facets → Finset α} (hR : ∀ (s : K.facets), R s ⊆ s.1)
+    (s : K.facets) (hcard : Finset.card s.1 = 1) : isPi0Facet R s := by
   ext t
-  rw [DecompositionInterval_def]
-  simp only [Finset.le_eq_subset, Finset.mem_Iic]
+  simp only [Finset.mem_coe, Set.mem_Iic, decompositionInterval, mem_FinsetIcc,
+    Finset.le_eq_subset, Finset.mem_Iic]
   constructor
   . exact fun h => h.2
   . intro h
     erw [and_iff_left h]
     rw [Finset.card_eq_one] at hcard
-    match hcard with
-    | ⟨a, has⟩ => change t.1 ⊆ s.1 at h
-                  rw [has, Finset.Nonempty.subset_singleton_iff (K.nonempty_of_mem t.2), ←has] at h
-                  rw [h]
-                  exact hdec.1 _
+    obtain ⟨a, ha⟩:= hcard
+    change t.1 ⊆ s.1 at h
+    rw [ha, Finset.Nonempty.subset_singleton_iff (K.nonempty_of_mem t.2), ← ha] at h
+    rw [h]
+    exact hR _
 
-/- A facet s is a π₀ facet if and only if it is 0-dimensional or its image by R is empty.-/
-lemma IsPi0Facet_iff {R : K.facets → Finset α}  {DF : K.faces → K.facets} (hdec : IsDecomposition R DF) (s : K.facets) :
-IsPi0Facet hdec s ↔ R s = ∅ ∨ Finset.card s.1 = 1 := by
-  constructor
-  . intro hpi
+/-- If `R` is a map from the set of facets of `K` to the set of finsets of `α` such that
+`R s ≤ s` for every facet `s`, then a facet s is a `π₀` facet if and only if it is `0`-dimensional
+or its image by `R` is empty.-/
+lemma isPi0Facet_iff {R : K.facets → Finset α} (hR : ∀ (s : K.facets), R s ⊆ s.1) (s : K.facets) :
+    isPi0Facet R s ↔ R s = ∅ ∨ Finset.card s.1 = 1 := by
+  constructor; swap
+  · intro h
+    cases h with
+    | inr h => exact isPi0Facet_of_vertex hR s h
+    | inl h => unfold isPi0Facet decompositionInterval
+               rw [h]
+               ext t
+               simp only [Finset.mem_coe, mem_FinsetIcc, Finset.le_eq_subset, Finset.empty_subset,
+                 true_and, Set.mem_Iic]
+               rfl
+  · intro h
     by_contra habs
     push_neg at habs
     have hcard : Finset.card s.1 > 1 := by
       have h := face_card_nonzero (facets_subset s.2)
-      rw [←Nat.pos_iff_ne_zero] at h
+      rw [← Nat.pos_iff_ne_zero] at h
       have h := Nat.eq_or_lt_of_le (Nat.succ_le_of_lt h)
-      rw [←Nat.one_eq_succ_zero, or_iff_right (Ne.symm habs.2)] at h
+      rw [← Nat.one_eq_succ_zero, or_iff_right (Ne.symm habs.2)] at h
       exact h
-    rw [←Finset.nonempty_iff_ne_empty] at habs
-    match habs.1 with
-    | ⟨a, haR⟩ => have has : a ∈ s.1 := (hdec.1 s) haR
-                  have h : ∃ (b : α), b ∈ s.1 ∧ b ≠ a := by
-                    by_contra habs
-                    push_neg at habs
-                    have hsin := Finset.eq_singleton_iff_unique_mem.mpr ⟨has, habs⟩
-                    rw [hsin, Finset.card_singleton] at hcard
-                    exact lt_irrefl _ hcard
-                  match h with
-                  | ⟨b, hbs, hba⟩ => set t := ({b} : Finset α)
-                                     have htf : t ∈ K.faces :=
-                                       K.down_closed (facets_subset s.2) (Finset.singleton_subset_iff.mpr hbs) (Finset.singleton_nonempty _)
-                                     have htint : ¬(⟨t, htf⟩ ∈ DecompositionInterval hdec s) := by
-                                       rw [DecompositionInterval_def, not_and_or]
-                                       apply Or.inl
-                                       by_contra habs
-                                       have h:= habs haR
-                                       simp only [Finset.mem_singleton] at h
-                                       exact hba (Eq.symm h)
-                                     rw [hpi] at htint
-                                     simp only [Finset.mem_Iic, Subtype.mk_le_mk, Finset.le_eq_subset, Finset.singleton_subset_iff] at htint
-                                     exact htint hbs
-  . intro h
-    cases h with
-    | inl hR => ext t
-                rw [DecompositionInterval_def, hR, Finset.mem_Iic]
-                change _ ↔ t.1 ⊆ s.1
-                simp only [Finset.le_eq_subset, Finset.empty_subset, true_and]
-    | inr hcard => exact Vertex_IsPi0Facet hdec s hcard
-
+    obtain ⟨a, haR⟩ := Finset.nonempty_iff_ne_empty.mpr habs.1
+    have has : a ∈ s.1 := (hdec.1 s) haR
+    have h : ∃ (b : α), b ∈ s.1 ∧ b ≠ a := by
+      by_contra habs
+      push_neg at habs
+      rw [Finset.eq_singleton_iff_unique_mem.mpr ⟨has, habs⟩, Finset.card_singleton] at hcard
+      exact lt_irrefl _ hcard
+    obtain ⟨b, hbs, hba⟩ := h
+    set t := ({b} : Finset α)
+    have htf : t ∈ K.faces := K.down_closed (facets_subset s.2)
+      (Finset.singleton_subset_iff.mpr hbs) (Finset.singleton_nonempty _)
+    have htint : ¬ ⟨t, htf⟩ ∈ (decompositionInterval R s : Set K.faces) := by
+      unfold decompositionInterval
+      simp only [Finset.mem_coe, mem_FinsetIcc, Finset.le_eq_subset, Finset.subset_singleton_iff,
+        Finset.singleton_subset_iff, not_and, hbs, not_true_eq_false, imp_false, not_or]
+      rw [← ne_eq, ← Finset.nonempty_iff_ne_empty, and_iff_right ⟨a, haR⟩]
+      intro heq
+      refine hba (Eq.symm (Finset.eq_of_mem_singleton ?_))
+      rw [← heq]
+      exact haR
+    unfold isPi0Facet at h
+    rw [h] at htint
+    simp only [Set.mem_Iic, Subtype.mk_le_mk, Finset.le_eq_subset,
+      Finset.singleton_subset_iff] at htint
+    exact htint hbs
 
 /- A facet s is a homology facet if and only it is a fixed point of R and is not 0-dimensional.-/
-lemma IsHomologyFacet_iff {R : K.facets → Finset α}  {DF : K.faces → K.facets} (hdec : IsDecomposition R DF) (s : K.facets) :
-IsHomologyFacet hdec s ↔ R s = s.1 ∧ Finset.card s.1 > 1 := by
-  unfold IsHomologyFacet
+lemma isHomologyFacet_iff {R : K.facets → Finset α}  {DF : K.faces → K.facets}
+    (hdec : isDecomposition R DF) (s : K.facets) :
+    isHomologyFacet R s ↔ R s = s.1 ∧ Finset.card s.1 > 1 := by
+  unfold isHomologyFacet decompositionInterval
   constructor
   . intro ⟨h, hint⟩
     by_cases hcard : Finset.card s.1 ≤ 1
