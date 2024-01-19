@@ -6,9 +6,10 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 import Mathlib.Init.Data.List.Instances
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.List.Defs
-import Mathlib.Init.Core
 import Std.Data.List.Lemmas
 import Mathlib.Tactic.Common
+import Mathlib.Init.Data.Bool.Lemmas
+import Mathlib.Init.Data.List.Lemmas
 
 #align_import data.list.basic from "leanprover-community/mathlib"@"65a1391a0106c9204fe45bc73a039f056558cb83"
 
@@ -392,22 +393,20 @@ theorem cons_eq_append_iff {a b c : List α} {x : α} :
 
 #align list.append_inj_left' List.append_inj_left'ₓ -- implicits order
 
-theorem append_left_cancel {s t₁ t₂ : List α} (h : s ++ t₁ = s ++ t₂) : t₁ = t₂ :=
-  (append_right_inj _).1 h
-#align list.append_left_cancel List.append_left_cancel
+@[deprecated] alias append_left_cancel := append_cancel_left -- deprecated since 2024-01-18
+#align list.append_left_cancel List.append_cancel_left
 
-theorem append_right_cancel {s₁ s₂ t : List α} (h : s₁ ++ t = s₂ ++ t) : s₁ = s₂ :=
-  (append_left_inj _).1 h
-#align list.append_right_cancel List.append_right_cancel
+@[deprecated] alias append_right_cancel := append_cancel_right -- deprecated since 2024-01-18
+#align list.append_right_cancel List.append_cancel_right
 
 theorem append_right_injective (s : List α) : Injective fun t ↦ s ++ t :=
-  fun _ _ ↦ append_left_cancel
+  fun _ _ ↦ append_cancel_left
 #align list.append_right_injective List.append_right_injective
 
 #align list.append_right_inj List.append_right_inj
 
 theorem append_left_injective (t : List α) : Injective fun s ↦ s ++ t :=
-  fun _ _ ↦ append_right_cancel
+  fun _ _ ↦ append_cancel_right
 #align list.append_left_injective List.append_left_injective
 
 #align list.append_left_inj List.append_left_inj
@@ -524,13 +523,13 @@ theorem concat_eq_append' (a : α) (l : List α) : concat l a = l ++ [a] :=
 theorem init_eq_of_concat_eq {a : α} {l₁ l₂ : List α} : concat l₁ a = concat l₂ a → l₁ = l₂ := by
   intro h
   rw [concat_eq_append, concat_eq_append] at h
-  exact append_right_cancel h
+  exact append_cancel_right h
 #align list.init_eq_of_concat_eq List.init_eq_of_concat_eq
 
 theorem last_eq_of_concat_eq {a b : α} {l : List α} : concat l a = concat l b → a = b := by
   intro h
   rw [concat_eq_append, concat_eq_append] at h
-  exact head_eq_of_cons_eq (append_left_cancel h)
+  exact head_eq_of_cons_eq (append_cancel_left h)
 #align list.last_eq_of_concat_eq List.last_eq_of_concat_eq
 
 theorem concat_ne_nil (a : α) (l : List α) : concat l a ≠ [] := by simp

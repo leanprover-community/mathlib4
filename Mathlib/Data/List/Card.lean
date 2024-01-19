@@ -7,7 +7,7 @@ respects equivalence and is preserved by any mapping that is injective on its el
 
 It might make sense to remove this when we have a proper theory of finite sets.
 -/
-import Mathlib.Data.List.Basic
+import Mathlib.Data.Nat.Order.Basic
 
 set_option autoImplicit true
 

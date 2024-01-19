@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Function.Support
 import Mathlib.Data.Int.Cast.Field
+import Mathlib.Data.Int.Cast.Lemmas
 
 #align_import data.int.char_zero from "leanprover-community/mathlib"@"29cb56a7b35f72758b05a30490e1f10bd62c35c1"
 

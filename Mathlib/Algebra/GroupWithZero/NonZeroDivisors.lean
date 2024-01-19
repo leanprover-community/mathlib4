@@ -5,7 +5,8 @@ Authors: Kenny Lau, Devon Tuma, Oliver Nash
 -/
 import Mathlib.GroupTheory.Submonoid.Operations
 import Mathlib.GroupTheory.Submonoid.Membership
-import Mathlib.GroupTheory.Subgroup.MulOpposite
+import Mathlib.GroupTheory.Submonoid.MulOpposite
+import Mathlib.GroupTheory.GroupAction.Opposite
 
 #align_import ring_theory.non_zero_divisors from "leanprover-community/mathlib"@"1126441d6bccf98c81214a0780c73d499f6721fe"
 
@@ -155,8 +156,11 @@ theorem dvd_cancel_left_mem_nonZeroDivisors {x y r : R'} (hr : r ∈ R'⁰) : r 
 theorem dvd_cancel_left_coe_nonZeroDivisors {x y : R'} {c : R'⁰} : c * x ∣ c * y ↔ x ∣ y :=
   dvd_cancel_left_mem_nonZeroDivisors c.prop
 
-theorem nonZeroDivisors.ne_zero [Nontrivial M] {x} (hx : x ∈ M⁰) : x ≠ 0 := fun h ↦
-  one_ne_zero (hx _ <| (one_mul _).trans h)
+theorem zero_not_mem_nonZeroDivisors [Nontrivial M] : 0 ∉ M⁰ :=
+  fun h ↦ one_ne_zero <| h 1 <| mul_zero _
+
+theorem nonZeroDivisors.ne_zero [Nontrivial M] {x} (hx : x ∈ M⁰) : x ≠ 0 :=
+  ne_of_mem_of_not_mem hx zero_not_mem_nonZeroDivisors
 #align non_zero_divisors.ne_zero nonZeroDivisors.ne_zero
 
 theorem nonZeroDivisors.coe_ne_zero [Nontrivial M] (x : M⁰) : (x : M) ≠ 0 :=

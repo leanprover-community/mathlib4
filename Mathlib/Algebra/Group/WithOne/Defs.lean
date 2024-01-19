@@ -3,8 +3,8 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johan Commelin
 -/
-import Mathlib.Order.WithBot
 import Mathlib.Algebra.Ring.Defs
+import Mathlib.Order.WithBot
 
 #align_import algebra.group.with_one.defs from "leanprover-community/mathlib"@"995b47e555f1b6297c7cf16855f1023e355219fb"
 
@@ -187,19 +187,27 @@ instance mulOneClass [Mul α] : MulOneClass (WithOne α) where
   one_mul := (Option.liftOrGet_isLeftId _).1
   mul_one := (Option.liftOrGet_isRightId _).1
 
-@[to_additive]
-instance monoid [Semigroup α] : Monoid (WithOne α) :=
-  { WithOne.mulOneClass with mul_assoc := (Option.liftOrGet_isAssociative _).1 }
-
-@[to_additive]
-instance commMonoid [CommSemigroup α] : CommMonoid (WithOne α) :=
-  { WithOne.monoid with mul_comm := (Option.liftOrGet_isCommutative _).1 }
-
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_mul [Mul α] (a b : α) : ((a * b : α) : WithOne α) = a * b :=
-  rfl
+lemma coe_mul [Mul α] (a b : α) : (↑(a * b) : WithOne α) = a * b := rfl
 #align with_one.coe_mul WithOne.coe_mul
 #align with_zero.coe_add WithZero.coe_add
+
+@[to_additive]
+instance monoid [Semigroup α] : Monoid (WithOne α) where
+  __ := mulOneClass
+  mul_assoc a b c := match a, b, c with
+    | 1, b, c => by simp
+    | (a : α), 1, c => by simp
+    | (a : α), (b : α), 1 => by simp
+    | (a : α), (b : α), (c : α) => by simp_rw [← coe_mul, mul_assoc]
+
+@[to_additive]
+instance commMonoid [CommSemigroup α] : CommMonoid (WithOne α) where
+  mul_comm := fun a b => match a, b with
+    | (a : α), (b : α) => congr_arg some (mul_comm a b)
+    | (_ : α), 1 => rfl
+    | 1, (_ : α) => rfl
+    | 1, 1 => rfl
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_inv [Inv α] (a : α) : ((a⁻¹ : α) : WithOne α) = (a : WithOne α)⁻¹ :=
@@ -392,3 +400,9 @@ instance semiring [Semiring α] : Semiring (WithZero α) :=
     WithZero.monoidWithZero, WithZero.instDistrib with }
 
 end WithZero
+
+-- Check that we haven't needed to import all the basic lemmas about groups,
+-- by asserting a random sample don't exist here:
+assert_not_exists inv_involutive
+assert_not_exists div_right_inj
+assert_not_exists pow_ite
