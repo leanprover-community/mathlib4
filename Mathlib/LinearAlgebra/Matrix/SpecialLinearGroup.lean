@@ -387,8 +387,6 @@ lemma mulVecSL {v : Fin 2 → R} (hab : IsCoprime (v 0) (v 1)) (A : SL(2, R)) :
 
 end IsCoprime
 
-end Matrix
-
 namespace ModularGroup
 
 open MatrixGroups
