@@ -7,7 +7,6 @@ import Mathlib.Init.Control.Combinators
 import Mathlib.Init.Function
 import Mathlib.Tactic.CasesM
 import Mathlib.Tactic.Attr.Core
-import Std.Data.List.Basic
 
 #align_import control.basic from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 
