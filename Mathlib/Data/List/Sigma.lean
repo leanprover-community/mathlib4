@@ -28,7 +28,6 @@ If `α : Type*` and `β : α → Type*`, then we regard `s : Sigma β` as having
 - `List.kextract` returns a value with a given key and the rest of the values.
 -/
 
-
 universe u v
 
 namespace List
@@ -204,7 +203,7 @@ theorem of_mem_dlookup {a : α} {b : β a} :
   | ⟨a', b'⟩ :: l, H => by
     by_cases h : a = a'
     · subst a'
-      simp at H
+      simp? at H says simp only [dlookup_cons_eq, Option.mem_def, Option.some.injEq] at H
       simp [H]
     · simp only [ne_eq, h, not_false_iff, dlookup_cons_ne] at H
       simp [of_mem_dlookup H]
@@ -488,7 +487,7 @@ theorem not_mem_keys_kerase (a) {l : List (Sigma β)} (nd : l.NodupKeys) :
   induction l with
   | nil => simp
   | cons hd tl ih =>
-    simp at nd
+    simp? at nd says simp only [nodupKeys_cons] at nd
     by_cases h : a = hd.1
     · subst h
       simp [nd.1]
@@ -717,7 +716,7 @@ theorem NodupKeys.kunion (nd₁ : l₁.NodupKeys) (nd₂ : l₂.NodupKeys) : (ku
   induction l₁ generalizing l₂ with
   | nil => simp only [nil_kunion, nd₂]
   | cons s l₁ ih =>
-    simp at nd₁
+    simp? at nd₁ says simp only [nodupKeys_cons] at nd₁
     simp [not_or, nd₁.1, nd₂, ih nd₁.2 (nd₂.kerase s.1)]
 #align list.nodupkeys.kunion List.NodupKeys.kunion
 
@@ -774,7 +773,8 @@ theorem mem_dlookup_kunion {a} {b : β a} {l₁ l₂ : List (Sigma β)} :
     · subst h₁
       simp
     · let h₂ := @ih (kerase a' l₂)
-      simp [h₁] at h₂
+      simp? [h₁] at h₂ says
+        simp only [Option.mem_def, ne_eq, h₁, not_false_eq_true, dlookup_kerase_ne] at h₂
       simp [h₁, h₂]
 #align list.mem_lookup_kunion List.mem_dlookup_kunion
 

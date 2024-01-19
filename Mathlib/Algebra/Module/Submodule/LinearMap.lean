@@ -105,22 +105,6 @@ instance [AddAction M α] : AddAction p α :=
 
 end AddAction
 
-section RestrictScalars
-
-variable (S) [Semiring S] [Module S M] [Module R M] [SMul S R] [IsScalarTower S R M]
-variable (R M)
-
-/-- Turning `p : Submodule R M` into an `S`-submodule gives the same module structure
-as turning it into a type and adding a module structure. -/
-@[simps (config := { simpRhs := true })]
-def restrictScalarsEquiv (p : Submodule R M) : p.restrictScalars S ≃ₗ[R] p :=
-  { AddEquiv.refl p with
-    map_smul' := fun _ _ => rfl }
-#align submodule.restrict_scalars_equiv Submodule.restrictScalarsEquiv
-#align submodule.restrict_scalars_equiv_symm_apply Submodule.restrictScalarsEquiv_symm_apply
-
-end RestrictScalars
-
 end AddCommMonoid
 
 end Submodule
@@ -269,7 +253,7 @@ theorem coeFn_sum {ι : Type*} (t : Finset ι) (f : ι → M →ₛₗ[σ₁₂]
     ⇑(∑ i in t, f i) = ∑ i in t, (f i : M → M₂) :=
   _root_.map_sum
     (show AddMonoidHom (M →ₛₗ[σ₁₂] M₂) (M → M₂)
-      from { toFun := FunLike.coe,
+      from { toFun := DFunLike.coe,
              map_zero' := rfl
              map_add' := fun _ _ => rfl }) _ _
 #align linear_map.coe_fn_sum LinearMap.coeFn_sum

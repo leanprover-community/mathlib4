@@ -77,14 +77,14 @@ variable {ι F α β γ δ : Type*}
 
 /-- `NonnegHomClass F α β` states that `F` is a type of nonnegative morphisms. -/
 class NonnegHomClass (F : Type*) (α β : outParam (Type*)) [Zero β] [LE β] extends
-  FunLike F α fun _ => β where
+  DFunLike F α (fun _ => β) where
   /-- the image of any element is non negative. -/
   map_nonneg (f : F) : ∀ a, 0 ≤ f a
 #align nonneg_hom_class NonnegHomClass
 
 /-- `SubadditiveHomClass F α β` states that `F` is a type of subadditive morphisms. -/
 class SubadditiveHomClass (F : Type*) (α β : outParam (Type*)) [Add α] [Add β] [LE β] extends
-  FunLike F α fun _ => β where
+  DFunLike F α (fun _ => β) where
   /-- the image of a sum is less or equal than the sum of the images. -/
   map_add_le_add (f : F) : ∀ a b, f (a + b) ≤ f a + f b
 #align subadditive_hom_class SubadditiveHomClass
@@ -92,7 +92,7 @@ class SubadditiveHomClass (F : Type*) (α β : outParam (Type*)) [Add α] [Add �
 /-- `SubmultiplicativeHomClass F α β` states that `F` is a type of submultiplicative morphisms. -/
 @[to_additive SubadditiveHomClass]
 class SubmultiplicativeHomClass (F : Type*) (α β : outParam (Type*)) [Mul α] [Mul β] [LE β]
-  extends FunLike F α fun _ => β where
+  extends DFunLike F α (fun _ => β) where
   /-- the image of a product is less or equal than the product of the images. -/
   map_mul_le_mul (f : F) : ∀ a b, f (a * b) ≤ f a * f b
 #align submultiplicative_hom_class SubmultiplicativeHomClass
@@ -100,14 +100,14 @@ class SubmultiplicativeHomClass (F : Type*) (α β : outParam (Type*)) [Mul α] 
 /-- `MulLEAddHomClass F α β` states that `F` is a type of subadditive morphisms. -/
 @[to_additive SubadditiveHomClass]
 class MulLEAddHomClass (F : Type*) (α β : outParam (Type*)) [Mul α] [Add β] [LE β]
-  extends FunLike F α fun _ => β where
+  extends DFunLike F α (fun _ => β) where
   /-- the image of a product is less or equal than the sum of the images. -/
   map_mul_le_add (f : F) : ∀ a b, f (a * b) ≤ f a + f b
 #align mul_le_add_hom_class MulLEAddHomClass
 
 /-- `NonarchimedeanHomClass F α β` states that `F` is a type of non-archimedean morphisms. -/
 class NonarchimedeanHomClass (F : Type*) (α β : outParam (Type*)) [Add α] [LinearOrder β]
-  extends FunLike F α fun _ => β where
+  extends DFunLike F α (fun _ => β) where
   /-- the image of a sum is less or equal than the maximum of the images. -/
   map_add_le_max (f : F) : ∀ a b, f (a + b) ≤ max (f a) (f b)
 #align nonarchimedean_hom_class NonarchimedeanHomClass
@@ -157,7 +157,7 @@ namespace Mathlib.Meta.Positivity
 open Lean Meta Qq Function
 
 /-- Extension for the `positivity` tactic: nonnegative maps take nonnegative values. -/
-@[positivity FunLike.coe _ _]
+@[positivity DFunLike.coe _ _]
 def evalMap : PositivityExt where eval {_ β} _ _ e := do
   let .app (.app _ f) a ← whnfR e
     | throwError "not ↑f · where f is of NonnegHomClass"

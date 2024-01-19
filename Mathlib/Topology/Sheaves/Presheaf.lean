@@ -55,6 +55,9 @@ variable {C}
 
 namespace Presheaf
 
+@[simp] theorem comp_app {P Q R : Presheaf C X} (f : P ⟶ Q) (g : Q ⟶ R) :
+    (f ≫ g).app U = f.app U ≫ g.app U := rfl
+
 -- Porting note: added an `ext` lemma,
 -- since `NatTrans.ext` can not see through the definition of `Presheaf`.
 -- See https://github.com/leanprover-community/mathlib4/issues/5229
@@ -67,7 +70,7 @@ lemma ext {P Q : Presheaf C X} {f g : P ⟶ Q} (w : ∀ U : Opens X, f.app (op U
   apply w
 
 attribute [local instance] CategoryTheory.ConcreteCategory.hasCoeToSort
-  CategoryTheory.ConcreteCategory.funLike
+  CategoryTheory.ConcreteCategory.instFunLike
 
 /-- attribute `sheaf_restrict` to mark lemmas related to restricting sheaves -/
 macro "sheaf_restrict" : attr =>
@@ -243,7 +246,7 @@ set_option linter.uppercaseLean3 false in
 @[simp (high)]
 theorem id_hom_app' (U) (p) : (id ℱ).hom.app (op ⟨U, p⟩) = ℱ.map (𝟙 (op ⟨U, p⟩)) := by
   dsimp [id]
-  simp [CategoryStruct.comp]
+  simp
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward.id_hom_app' TopCat.Presheaf.Pushforward.id_hom_app'
 
@@ -474,7 +477,7 @@ theorem pushforwardToOfIso_app {X Y : TopCat} (H₁ : X ≅ Y) {ℱ : Y.Presheaf
     (pushforwardToOfIso H₁ H₂).app U =
       H₂.app (op ((Opens.map H₁.inv).obj (unop U))) ≫
         𝒢.map (eqToHom (by simp [Opens.map, Set.preimage_preimage])) := by
-  simp [pushforwardToOfIso, Equivalence.toAdjunction, CategoryStruct.comp]
+  simp [pushforwardToOfIso, Equivalence.toAdjunction]
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward_to_of_iso_app TopCat.Presheaf.pushforwardToOfIso_app
 

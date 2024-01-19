@@ -256,7 +256,7 @@ theorem isMulLeftInvariant_map_smul
     {α} [SMul α G] [SMulCommClass α G G] [MeasurableSpace α] [MeasurableSMul α G]
     [IsMulLeftInvariant μ] (a : α) :
     IsMulLeftInvariant (map (a • · : G → G) μ) :=
-  (forall_measure_preimage_mul_iff _).1 <| fun x _ hs =>
+  (forall_measure_preimage_mul_iff _).1 fun x _ hs =>
     (smulInvariantMeasure_map_smul μ a).measure_preimage_smul x hs
 
 /-- The image of a right invariant measure under a left action is right invariant, assuming that
@@ -267,7 +267,7 @@ theorem isMulRightInvariant_map_smul
     {α} [SMul α G] [SMulCommClass α Gᵐᵒᵖ G] [MeasurableSpace α] [MeasurableSMul α G]
     [IsMulRightInvariant μ] (a : α) :
     IsMulRightInvariant (map (a • · : G → G) μ) :=
-  (forall_measure_preimage_mul_right_iff _).1 <| fun x _ hs =>
+  (forall_measure_preimage_mul_right_iff _).1 fun x _ hs =>
     (smulInvariantMeasure_map_smul μ a).measure_preimage_smul (MulOpposite.op x) hs
 
 /-- The image of a left invariant measure under right multiplication is left invariant. -/

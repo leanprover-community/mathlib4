@@ -206,7 +206,7 @@ theorem degree_derivative_le {p : R[X]} : p.derivative.degree ≤ p.degree :=
 
 theorem natDegree_derivative_lt {p : R[X]} (hp : p.natDegree ≠ 0) :
     p.derivative.natDegree < p.natDegree := by
-  cases' eq_or_ne (derivative p) 0 with hp' hp'
+  rcases eq_or_ne (derivative p) 0 with hp' | hp'
   · rw [hp', Polynomial.natDegree_zero]
     exact hp.bot_lt
   · rw [natDegree_lt_natDegree_iff hp']
@@ -475,6 +475,23 @@ theorem derivative_sq (p : R[X]) : derivative (p ^ 2) = C 2 * p * derivative p :
   rw [derivative_pow_succ, Nat.cast_one, one_add_one_eq_two, pow_one]
 #align polynomial.derivative_sq Polynomial.derivative_sq
 
+theorem pow_sub_one_dvd_derivative_of_pow_dvd {p q : R[X]} {n : ℕ}
+    (dvd : q ^ n ∣ p) : q ^ (n - 1) ∣ derivative p := by
+  obtain ⟨r, rfl⟩ := dvd
+  rw [derivative_mul, derivative_pow]
+  exact (((dvd_mul_left _ _).mul_right _).mul_right _).add ((pow_dvd_pow q n.pred_le).mul_right _)
+
+theorem pow_sub_dvd_iterate_derivative_of_pow_dvd {p q : R[X]} {n : ℕ} (m : ℕ)
+    (dvd : q ^ n ∣ p) : q ^ (n - m) ∣ derivative^[m] p := by
+  revert p
+  induction' m with m ih <;> intro p h
+  · exact h
+  · rw [Nat.sub_succ, Function.iterate_succ']
+    exact pow_sub_one_dvd_derivative_of_pow_dvd (ih h)
+
+theorem pow_sub_dvd_iterate_derivative_pow (p : R[X]) (n m : ℕ) :
+    p ^ (n - m) ∣ derivative^[m] (p ^ n) := pow_sub_dvd_iterate_derivative_of_pow_dvd m dvd_rfl
+
 theorem dvd_iterate_derivative_pow (f : R[X]) (n : ℕ) {m : ℕ} (c : R) (hm : m ≠ 0) :
     (n : R) ∣ eval c (derivative^[m] (f ^ n)) := by
   obtain ⟨m, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hm
@@ -658,10 +675,14 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.derivative_X_sub_C_sq Polynomial.derivative_X_sub_C_sq
 
 theorem iterate_derivative_X_sub_pow (n k : ℕ) (c : R) :
-    (derivative^[k]) ((X - C c) ^ n : R[X]) = n.descFactorial k • (X - C c) ^ (n - k) := by
+    derivative^[k] ((X - C c) ^ n) = n.descFactorial k • (X - C c) ^ (n - k) := by
   rw [sub_eq_add_neg, ← C_neg, iterate_derivative_X_add_pow]
 set_option linter.uppercaseLean3 false in
 #align polynomial.iterate_derivative_X_sub_pow Polynomial.iterate_derivative_X_sub_powₓ
+
+theorem iterate_derivative_X_sub_pow_self (n : ℕ) (c : R) :
+    derivative^[n] ((X - C c) ^ n) = n.factorial := by
+  rw [iterate_derivative_X_sub_pow, n.sub_self, pow_zero, nsmul_one, n.descFactorial_self]
 
 end CommRing
 

@@ -10,6 +10,7 @@ import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.LinearAlgebra.LinearIndependent
 import Mathlib.LinearAlgebra.LinearPMap
 import Mathlib.LinearAlgebra.Projection
+import Mathlib.SetTheory.Cardinal.Cofinality
 
 #align_import linear_algebra.basis from "leanprover-community/mathlib"@"13bce9a6b6c44f6b4c91ac1c1d2a816e2533d395"
 
@@ -83,7 +84,7 @@ variable (ι R M)
 
 /-- A `Basis ι R M` for a module `M` is the type of `ι`-indexed `R`-bases of `M`.
 
-The basis vectors are available as `FunLike.coe (b : Basis ι R M) : ι → M`.
+The basis vectors are available as `DFunLike.coe (b : Basis ι R M) : ι → M`.
 To turn a linear independent family of vectors spanning `M` into a basis, use `Basis.mk`.
 They are internally represented as linear equivs `M ≃ₗ[R] (ι →₀ R)`,
 available as `Basis.repr`.
@@ -118,11 +119,11 @@ theorem repr_injective : Injective (repr : Basis ι R M → M ≃ₗ[R] ι →�
 #align basis.repr_injective Basis.repr_injective
 
 /-- `b i` is the `i`th basis vector. -/
-instance funLike : FunLike (Basis ι R M) ι fun _ => M where
+instance instFunLike : FunLike (Basis ι R M) ι M where
   coe b i := b.repr.symm (Finsupp.single i 1)
   coe_injective' f g h := repr_injective <| LinearEquiv.symm_bijective.injective <|
     LinearEquiv.toLinearMap_injective <| by ext; exact congr_fun h _
-#align basis.fun_like Basis.funLike
+#align basis.fun_like Basis.instFunLike
 
 @[simp]
 theorem coe_ofRepr (e : M ≃ₗ[R] ι →₀ R) : ⇑(ofRepr e) = fun i => e.symm (Finsupp.single i 1) :=
@@ -217,7 +218,7 @@ def coord : M →ₗ[R] R :=
 #align basis.coord Basis.coord
 
 theorem forall_coord_eq_zero_iff {x : M} : (∀ i, b.coord i x = 0) ↔ x = 0 :=
-  Iff.trans (by simp only [b.coord_apply, FunLike.ext_iff, Finsupp.zero_apply])
+  Iff.trans (by simp only [b.coord_apply, DFunLike.ext_iff, Finsupp.zero_apply])
     b.repr.map_eq_zero_iff
 #align basis.forall_coord_eq_zero_iff Basis.forall_coord_eq_zero_iff
 
@@ -288,7 +289,7 @@ theorem ext' {f₁ f₂ : M ≃ₛₗ[σ] M₁} (h : ∀ i, f₁ (b i) = f₂ (b
 
 /-- Two elements are equal iff their coordinates are equal. -/
 theorem ext_elem_iff {x y : M} : x = y ↔ ∀ i, b.repr x i = b.repr y i := by
-  simp only [← FunLike.ext_iff, EmbeddingLike.apply_eq_iff_eq]
+  simp only [← DFunLike.ext_iff, EmbeddingLike.apply_eq_iff_eq]
 #align basis.ext_elem_iff Basis.ext_elem_iff
 
 alias ⟨_, _root_.Basis.ext_elem⟩ := ext_elem_iff
@@ -336,7 +337,7 @@ theorem eq_ofRepr_eq_repr {b₁ b₂ : Basis ι R M} (h : ∀ x i, b₁.repr x i
 /-- Two bases are equal if their basis vectors are the same. -/
 @[ext]
 theorem eq_of_apply_eq {b₁ b₂ : Basis ι R M} : (∀ i, b₁ i = b₂ i) → b₁ = b₂ :=
-  FunLike.ext _ _
+  DFunLike.ext _ _
 #align basis.eq_of_apply_eq Basis.eq_of_apply_eq
 
 end Ext
@@ -435,7 +436,7 @@ theorem repr_reindex_apply (i' : ι') : (b.reindex e).repr x i' = b.repr x (e.sy
 
 @[simp]
 theorem repr_reindex : (b.reindex e).repr x = (b.repr x).mapDomain e :=
-  FunLike.ext _ _ <| by simp [repr_reindex_apply]
+  DFunLike.ext _ _ <| by simp [repr_reindex_apply]
 #align basis.repr_reindex Basis.repr_reindex
 
 @[simp]
@@ -834,7 +835,7 @@ theorem singleton_repr (ι R : Type*) [Unique ι] [Semiring R] (x i) :
 
 theorem basis_singleton_iff {R M : Type*} [Ring R] [Nontrivial R] [AddCommGroup M] [Module R M]
     [NoZeroSMulDivisors R M] (ι : Type*) [Unique ι] :
-    Nonempty (Basis ι R M) ↔ ∃ (x : _) (_ : x ≠ 0), ∀ y : M, ∃ r : R, r • x = y := by
+    Nonempty (Basis ι R M) ↔ ∃ x ≠ 0, ∀ y : M, ∃ r : R, r • x = y := by
   constructor
   · rintro ⟨b⟩
     refine' ⟨b default, b.linearIndependent.ne_zero _, _⟩
@@ -1162,7 +1163,7 @@ theorem mk_coord_apply_ne {i j : ι} (h : j ≠ i) : (Basis.mk hli hsp).coord i 
 `j`th element of the basis. -/
 theorem mk_coord_apply [DecidableEq ι] {i j : ι} :
     (Basis.mk hli hsp).coord i (v j) = if j = i then 1 else 0 := by
-  cases' eq_or_ne j i with h h
+  rcases eq_or_ne j i with h | h
   · simp only [h, if_true, eq_self_iff_true, mk_coord_apply_eq i]
   · simp only [h, if_false, mk_coord_apply_ne h]
 #align basis.mk_coord_apply Basis.mk_coord_apply
@@ -1469,7 +1470,7 @@ theorem Basis.restrictScalars_repr_apply (m : span R (Set.range b)) (i : ι) :
   suffices
     Finsupp.mapRange.linearMap (Algebra.linearMap R S) ∘ₗ (b.restrictScalars R).repr.toLinearMap =
       ((b.repr : M →ₗ[S] ι →₀ S).restrictScalars R).domRestrict _
-    by exact FunLike.congr_fun (LinearMap.congr_fun this m) i
+    by exact DFunLike.congr_fun (LinearMap.congr_fun this m) i
   refine Basis.ext (b.restrictScalars R) fun _ => ?_
   simp only [LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, Function.comp_apply, map_one,
     Basis.repr_self, Finsupp.mapRange.linearMap_apply, Finsupp.mapRange_single,
@@ -1492,3 +1493,154 @@ theorem Basis.mem_span_iff_repr_mem (m : M) :
 #align basis.mem_span_iff_repr_mem Basis.mem_span_iff_repr_mem
 
 end RestrictScalars
+
+section Finite
+
+open Basis Cardinal
+
+universe v v' v'' u₁' w w'
+
+variable {R : Type u} {M M₁ : Type v} {M' : Type v'} {ι : Type w}
+
+variable [Ring R] [AddCommGroup M] [AddCommGroup M'] [AddCommGroup M₁] [Nontrivial R]
+
+variable [Module R M] [Module R M'] [Module R M₁]
+
+-- One might hope that a finite spanning set implies that any linearly independent set is finite.
+-- While this is true over a division ring
+-- (simply because any linearly independent set can be extended to a basis),
+-- or more generally over a ring satisfying the strong rank condition
+-- (which covers all commutative rings; see `LinearIndependent.finite_of_le_span_finite`),
+-- this is not true in general.
+-- For example, the left ideal generated by the variables in a noncommutative polynomial ring
+-- (`FreeAlgebra R ι`) in infinitely many variables (indexed by `ι`) is free
+-- with an infinite basis (consisting of the variables).
+-- As another example, for any commutative ring R, the ring of column-finite matrices
+-- `Module.End R (ℕ →₀ R)` is isomorphic to `ℕ → Module.End R (ℕ →₀ R)` as a module over itself,
+-- which also clearly contains an infinite linearly independent set.
+/--
+Over any nontrivial ring, the existence of a finite spanning set implies that any basis is finite.
+-/
+lemma basis_finite_of_finite_spans (w : Set M) (hw : w.Finite) (s : span R w = ⊤) {ι : Type w}
+    (b : Basis ι R M) : Finite ι := by
+  classical
+  haveI := hw.to_subtype
+  cases nonempty_fintype w
+  -- We'll work by contradiction, assuming `ι` is infinite.
+  rw [← not_infinite_iff_finite]
+  intro i
+  -- Let `S` be the union of the supports of `x ∈ w` expressed as linear combinations of `b`.
+  -- This is a finite set since `w` is finite.
+  let S : Finset ι := Finset.univ.sup fun x : w => (b.repr x).support
+  let bS : Set M := b '' S
+  have h : ∀ x ∈ w, x ∈ span R bS := by
+    intro x m
+    rw [← b.total_repr x, Finsupp.span_image_eq_map_total, Submodule.mem_map]
+    use b.repr x
+    simp only [and_true_iff, eq_self_iff_true, Finsupp.mem_supported]
+    change (b.repr x).support ≤ S
+    convert Finset.le_sup (α := Finset ι) (by simp : (⟨x, m⟩ : w) ∈ Finset.univ)
+    rfl
+  -- Thus this finite subset of the basis elements spans the entire module.
+  have k : span R bS = ⊤ := eq_top_iff.2 (le_trans s.ge (span_le.2 h))
+  -- Now there is some `x : ι` not in `S`, since `ι` is infinite.
+  obtain ⟨x, nm⟩ := Infinite.exists_not_mem_finset S
+  -- However it must be in the span of the finite subset,
+  have k' : b x ∈ span R bS := by
+    rw [k]
+    exact mem_top
+  -- giving the desire contradiction.
+  exact b.linearIndependent.not_mem_span_image nm k'
+#align basis_fintype_of_finite_spans basis_finite_of_finite_spansₓ
+
+-- From [Les familles libres maximales d'un module ont-elles le meme cardinal?][lazarus1973]
+/-- Over any ring `R`, if `b` is a basis for a module `M`,
+and `s` is a maximal linearly independent set,
+then the union of the supports of `x ∈ s` (when written out in the basis `b`) is all of `b`.
+-/
+theorem union_support_maximal_linearIndependent_eq_range_basis {ι : Type w} (b : Basis ι R M)
+    {κ : Type w'} (v : κ → M) (i : LinearIndependent R v) (m : i.Maximal) :
+    ⋃ k, ((b.repr (v k)).support : Set ι) = Set.univ := by
+  -- If that's not the case,
+  by_contra h
+  simp only [← Ne.def, ne_univ_iff_exists_not_mem, mem_iUnion, not_exists_not,
+    Finsupp.mem_support_iff, Finset.mem_coe] at h
+  -- We have some basis element `b b'` which is not in the support of any of the `v i`.
+  obtain ⟨b', w⟩ := h
+  -- Using this, we'll construct a linearly independent family strictly larger than `v`,
+  -- by also using this `b b'`.
+  let v' : Option κ → M := fun o => o.elim (b b') v
+  have r : range v ⊆ range v' := by
+    rintro - ⟨k, rfl⟩
+    use some k
+    rfl
+  have r' : b b' ∉ range v := by
+    rintro ⟨k, p⟩
+    simpa [w] using congr_arg (fun m => (b.repr m) b') p
+  have r'' : range v ≠ range v' := by
+    intro e
+    have p : b b' ∈ range v' := by
+      use none
+      rfl
+    rw [← e] at p
+    exact r' p
+  -- The key step in the proof is checking that this strictly larger family is linearly independent.
+  have i' : LinearIndependent R ((↑) : range v' → M) := by
+    apply LinearIndependent.to_subtype_range
+    rw [linearIndependent_iff]
+    intro l z
+    rw [Finsupp.total_option] at z
+    simp only [Option.elim'] at z
+    change _ + Finsupp.total κ M R v l.some = 0 at z
+    -- We have some linear combination of `b b'` and the `v i`, which we want to show is trivial.
+    -- We'll first show the coefficient of `b b'` is zero,
+    -- by expressing the `v i` in the basis `b`, and using that the `v i` have no `b b'` term.
+    have l₀ : l none = 0 := by
+      rw [← eq_neg_iff_add_eq_zero] at z
+      replace z := neg_eq_iff_eq_neg.mpr z
+      apply_fun fun x => b.repr x b' at z
+      simp only [repr_self, LinearEquiv.map_smul, mul_one, Finsupp.single_eq_same, Pi.neg_apply,
+        Finsupp.smul_single', LinearEquiv.map_neg, Finsupp.coe_neg] at z
+      erw [DFunLike.congr_fun (Finsupp.apply_total R (b.repr : M →ₗ[R] ι →₀ R) v l.some) b'] at z
+      simpa [Finsupp.total_apply, w] using z
+    -- Then all the other coefficients are zero, because `v` is linear independent.
+    have l₁ : l.some = 0 := by
+      rw [l₀, zero_smul, zero_add] at z
+      exact linearIndependent_iff.mp i _ z
+    -- Finally we put those facts together to show the linear combination is trivial.
+    ext (_ | a)
+    · simp only [l₀, Finsupp.coe_zero, Pi.zero_apply]
+    · erw [DFunLike.congr_fun l₁ a]
+      simp only [Finsupp.coe_zero, Pi.zero_apply]
+  rw [LinearIndependent.Maximal] at m
+  specialize m (range v') i' r
+  exact r'' m
+#align union_support_maximal_linear_independent_eq_range_basis union_support_maximal_linearIndependent_eq_range_basis
+
+/-- Over any ring `R`, if `b` is an infinite basis for a module `M`,
+and `s` is a maximal linearly independent set,
+then the cardinality of `b` is bounded by the cardinality of `s`.
+-/
+theorem infinite_basis_le_maximal_linearIndependent' {ι : Type w} (b : Basis ι R M) [Infinite ι]
+    {κ : Type w'} (v : κ → M) (i : LinearIndependent R v) (m : i.Maximal) :
+    Cardinal.lift.{w'} #ι ≤ Cardinal.lift.{w} #κ := by
+  let Φ := fun k : κ => (b.repr (v k)).support
+  have w₁ : #ι ≤ #(Set.range Φ) := by
+    apply Cardinal.le_range_of_union_finset_eq_top
+    exact union_support_maximal_linearIndependent_eq_range_basis b v i m
+  have w₂ : Cardinal.lift.{w'} #(Set.range Φ) ≤ Cardinal.lift.{w} #κ := Cardinal.mk_range_le_lift
+  exact (Cardinal.lift_le.mpr w₁).trans w₂
+#align infinite_basis_le_maximal_linear_independent' infinite_basis_le_maximal_linearIndependent'
+
+-- (See `infinite_basis_le_maximal_linearIndependent'` for the more general version
+-- where the index types can live in different universes.)
+/-- Over any ring `R`, if `b` is an infinite basis for a module `M`,
+and `s` is a maximal linearly independent set,
+then the cardinality of `b` is bounded by the cardinality of `s`.
+-/
+theorem infinite_basis_le_maximal_linearIndependent {ι : Type w} (b : Basis ι R M) [Infinite ι]
+    {κ : Type w} (v : κ → M) (i : LinearIndependent R v) (m : i.Maximal) : #ι ≤ #κ :=
+  Cardinal.lift_le.mp (infinite_basis_le_maximal_linearIndependent' b v i m)
+#align infinite_basis_le_maximal_linear_independent infinite_basis_le_maximal_linearIndependent
+
+end Finite

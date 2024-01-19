@@ -98,13 +98,13 @@ def hasOne : One (Pre R X) := ⟨ofScalar 1⟩
 /-- Scalar multiplication defined as multiplication by the image of elements from `R`.
 Note: Used for notation only.
 -/
-def hasSmul : SMul R (Pre R X) := ⟨fun r m ↦ mul (ofScalar r) m⟩
-#align free_algebra.pre.has_smul FreeAlgebra.Pre.hasSmul
+def hasSMul : SMul R (Pre R X) := ⟨fun r m ↦ mul (ofScalar r) m⟩
+#align free_algebra.pre.has_smul FreeAlgebra.Pre.hasSMul
 
 end Pre
 
 attribute [local instance] Pre.hasCoeGenerator Pre.hasCoeSemiring Pre.hasMul Pre.hasAdd
-  Pre.hasZero Pre.hasOne Pre.hasSmul
+  Pre.hasZero Pre.hasOne Pre.hasSMul
 
 /-- Given a function from `X` to an `R`-algebra `A`, `lift_fun` provides a lift of `f` to a function
 from `Pre R X` to `A`. This is mainly used in the construction of `FreeAlgebra.lift`.
@@ -164,7 +164,7 @@ def FreeAlgebra :=
 namespace FreeAlgebra
 
 attribute [local instance] Pre.hasCoeGenerator Pre.hasCoeSemiring Pre.hasMul Pre.hasAdd
-  Pre.hasZero Pre.hasOne Pre.hasSmul
+  Pre.hasZero Pre.hasOne Pre.hasSMul
 
 /-! Define the basic operations-/
 
@@ -371,21 +371,21 @@ def lift : (X → A) ≃ (FreeAlgebra R X →ₐ[R] A) :=
     right_inv := fun F ↦ by
       ext t
       rcases t with ⟨x⟩
-      induction x
-      case of =>
+      induction x with
+      | of =>
         change ((F : FreeAlgebra R X → A) ∘ ι R) _ = _
         simp only [Function.comp_apply, ι_def]
-      case ofScalar x =>
+      | ofScalar x =>
         change algebraMap _ _ x = F (algebraMap _ _ x)
         rw [AlgHom.commutes F _]
-      case add a b ha hb =>
+      | add a b ha hb =>
         -- Porting note: it is necessary to declare fa and fb explicitly otherwise Lean refuses
         -- to consider `Quot.mk (Rel R X) ·` as element of FreeAlgebra R X
         let fa : FreeAlgebra R X := Quot.mk (Rel R X) a
         let fb : FreeAlgebra R X := Quot.mk (Rel R X) b
         change liftAux R (F ∘ ι R) (fa + fb) = F (fa + fb)
         rw [AlgHom.map_add, AlgHom.map_add, ha, hb]
-      case mul a b ha hb =>
+      | mul a b ha hb =>
         let fa : FreeAlgebra R X := Quot.mk (Rel R X) a
         let fb : FreeAlgebra R X := Quot.mk (Rel R X) b
         change liftAux R (F ∘ ι R) (fa * fb) = F (fa * fb)

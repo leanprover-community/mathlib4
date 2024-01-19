@@ -448,7 +448,7 @@ theorem nonneg_inner_and_areaForm_eq_zero_iff_sameRay (x y : E) :
     suffices ↑0 ≤ a * ‖x‖ ^ 2 ∧ b * ‖x‖ ^ 2 = 0 → SameRay ℝ x (a • x + b • J x) by
       rw [← (o.basisRightAngleRotation x hx).sum_repr y]
       simp only [Fin.sum_univ_succ, coe_basisRightAngleRotation, Matrix.cons_val_zero,
-        Fin.succ_zero_eq_one', Fintype.univ_of_isEmpty, Finset.sum_empty, areaForm_apply_self,
+        Fin.succ_zero_eq_one', Finset.univ_eq_empty, Finset.sum_empty, areaForm_apply_self,
         map_smul, map_add, real_inner_smul_right, inner_add_right, Matrix.cons_val_one,
         Matrix.head_cons, Algebra.id.smul_eq_mul, areaForm_rightAngleRotation_right,
         mul_zero, add_zero, zero_add, neg_zero, inner_rightAngleRotation_right,
@@ -526,7 +526,7 @@ theorem kahler_neg_orientation (x y : E) : (-o).kahler x y = conj (o.kahler x y)
 
 theorem kahler_mul (a x y : E) : o.kahler x a * o.kahler a y = ‖a‖ ^ 2 * o.kahler x y := by
   trans ((‖a‖ ^ 2 :) : ℂ) * o.kahler x y
-  · ext
+  · apply Complex.ext
     · simp only [o.kahler_apply_apply, Complex.add_im, Complex.add_re, Complex.I_im, Complex.I_re,
         Complex.mul_im, Complex.mul_re, Complex.ofReal_im, Complex.ofReal_re, Complex.real_smul]
       rw [real_inner_comm a x, o.areaForm_swap x a]
@@ -622,7 +622,7 @@ protected theorem rightAngleRotation (z : ℂ) :
 @[simp]
 protected theorem kahler (w z : ℂ) : Complex.orientation.kahler w z = conj w * z := by
   rw [Orientation.kahler_apply_apply]
-  ext1 <;> simp
+  apply Complex.ext <;> simp
 #align complex.kahler Complex.kahler
 
 end Complex

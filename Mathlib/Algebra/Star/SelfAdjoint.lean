@@ -3,7 +3,7 @@ Copyright (c) 2021 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
-import Mathlib.Algebra.Star.Basic
+import Mathlib.Algebra.Star.Pi
 import Mathlib.GroupTheory.Subgroup.Basic
 import Mathlib.Init.Data.Subtype.Basic
 
@@ -40,6 +40,7 @@ We also define `IsStarNormal R`, a `Prop` that states that an element `x` satisf
 
 -/
 
+open Function
 
 variable {R A : Type*}
 
@@ -116,8 +117,7 @@ variable [AddMonoid R] [StarAddMonoid R]
 
 variable (R)
 
-theorem _root_.isSelfAdjoint_zero : IsSelfAdjoint (0 : R) :=
-  star_zero R
+@[simp] theorem _root_.isSelfAdjoint_zero : IsSelfAdjoint (0 : R) := star_zero R
 #align is_self_adjoint_zero isSelfAdjoint_zero
 
 variable {R}
@@ -186,7 +186,7 @@ variable [MulOneClass R] [StarMul R]
 
 variable (R)
 
-theorem _root_.isSelfAdjoint_one : IsSelfAdjoint (1 : R) :=
+@[simp] theorem _root_.isSelfAdjoint_one : IsSelfAdjoint (1 : R) :=
   star_one R
 #align is_self_adjoint_one isSelfAdjoint_one
 
@@ -228,6 +228,15 @@ theorem mul {x y : R} (hx : IsSelfAdjoint x) (hy : IsSelfAdjoint y) : IsSelfAdjo
 #align is_self_adjoint.mul IsSelfAdjoint.mul
 
 end CommSemigroup
+
+section CommSemiring
+variable {α : Type*} [CommSemiring α] [StarRing α] {a : α}
+
+open scoped ComplexConjugate
+
+lemma conj_eq (ha : IsSelfAdjoint a) : conj a = a := ha.star_eq
+
+end CommSemiring
 
 section Ring
 
@@ -577,10 +586,14 @@ instance isStarNormal_one [MulOneClass R] [StarMul R] : IsStarNormal (1 : R) :=
   ⟨by simp only [Commute.refl, star_comm_self, star_one]⟩
 #align is_star_normal_one isStarNormal_one
 
-instance isStarNormal_star_self [Mul R] [StarMul R] {x : R} [IsStarNormal x] :
+protected instance IsStarNormal.star [Mul R] [StarMul R] {x : R} [IsStarNormal x] :
     IsStarNormal (star x) :=
   ⟨show star (star x) * star x = star x * star (star x) by rw [star_star, star_comm_self']⟩
-#align is_star_normal_star_self isStarNormal_star_self
+#align is_star_normal_star_self IsStarNormal.star
+
+protected instance IsStarNormal.neg [Ring R] [StarAddMonoid R] {x : R} [IsStarNormal x] :
+    IsStarNormal (-x) :=
+  ⟨show star (-x) * -x = -x * star (-x) by simp_rw [star_neg, neg_mul_neg, star_comm_self']⟩
 
 -- see Note [lower instance priority]
 instance (priority := 100) TrivialStar.isStarNormal [Mul R] [StarMul R] [TrivialStar R]
@@ -593,3 +606,13 @@ instance (priority := 100) CommMonoid.isStarNormal [CommMonoid R] [StarMul R] {x
     IsStarNormal x :=
   ⟨mul_comm _ _⟩
 #align comm_monoid.is_star_normal CommMonoid.isStarNormal
+
+
+namespace Pi
+variable {ι : Type*} {α : ι → Type*} [∀ i, Star (α i)] {f : ∀ i, α i}
+
+protected lemma isSelfAdjoint : IsSelfAdjoint f ↔ ∀ i, IsSelfAdjoint (f i) := funext_iff
+
+alias ⟨_root_.IsSelfAdjoint.apply, _⟩ := Pi.isSelfAdjoint
+
+end Pi

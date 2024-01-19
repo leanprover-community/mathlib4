@@ -54,9 +54,6 @@ variable (R K L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
   [Module.Free R M] [Module.Finite R M]
   [Field K] [LieAlgebra K L] [Module K M] [LieModule K L M] [FiniteDimensional K M]
 
-attribute [local instance] isNoetherian_of_isNoetherianRing_of_finite
-attribute [local instance] Module.free_of_finite_type_torsion_free'
-
 local notation "φ" => LieModule.toEndomorphism R L M
 
 open LinearMap (trace)
@@ -388,7 +385,7 @@ variable [IsDomain R] [IsPrincipalIdealRing R]
 
 lemma killingForm_eq :
     killingForm R I = I.restrictBilinear (killingForm R L) :=
-  LieSubmodule.traceForm_eq_of_le_idealizer I I $ by simp
+  LieSubmodule.traceForm_eq_of_le_idealizer I I <| by simp
 
 lemma restrictBilinear_killingForm :
     I.restrictBilinear (killingForm R L) = LieModule.traceForm R I L :=
@@ -474,10 +471,13 @@ end LieAlgebra
 section Field
 
 open LieModule FiniteDimensional
-open Submodule (span)
+open Submodule (span subset_span)
 
-lemma LieModule.traceForm_eq_sum_finrank_nsmul_mul [LieAlgebra.IsNilpotent K L]
-    [LinearWeights K L M] [IsTriangularizable K L M] (x y : L) :
+namespace LieModule
+
+variable [LieAlgebra.IsNilpotent K L] [LinearWeights K L M] [IsTriangularizable K L M]
+
+lemma traceForm_eq_sum_finrank_nsmul_mul (x y : L) :
     traceForm K L M x y = ∑ χ in weight K L M, finrank K (weightSpace M χ) • (χ x * χ y) := by
   have hxy : ∀ χ : L → K, MapsTo (toEndomorphism K L M x ∘ₗ toEndomorphism K L M y)
       (weightSpace M χ) (weightSpace M χ) :=
@@ -493,26 +493,24 @@ lemma LieModule.traceForm_eq_sum_finrank_nsmul_mul [LieAlgebra.IsNilpotent K L]
     LinearMap.trace_eq_sum_trace_restrict' hds hfin hxy]
   exact Finset.sum_congr (by simp) (fun χ _ ↦ traceForm_weightSpace_eq K L M χ x y)
 
+lemma traceForm_eq_sum_finrank_nsmul :
+    traceForm K L M = ∑ χ : weight K L M, finrank K (weightSpace M (χ : L → K)) •
+      (weight.toLinear K L M χ).smulRight (weight.toLinear K L M χ) := by
+  ext
+  rw [traceForm_eq_sum_finrank_nsmul_mul, ← Finset.sum_attach]
+  simp
+
 -- The reverse inclusion should also hold: TODO prove this!
-lemma LieModule.dualAnnihilator_ker_traceForm_le_span_weight [LieAlgebra.IsNilpotent K L]
-    [LinearWeights K L M] [IsTriangularizable K L M] [FiniteDimensional K L] :
-    (LinearMap.ker (traceForm K L M)).dualAnnihilator ≤ span K (range (weight.toLinear K L M)) := by
-  intro g hg
-  simp only [Submodule.mem_dualAnnihilator, LinearMap.mem_ker] at hg
-  by_contra contra
-  obtain ⟨f : Module.Dual K (Module.Dual K L), hf, hf'⟩ :=
-    Submodule.exists_dual_map_eq_bot_of_nmem contra inferInstance
-  let x : L := (Module.evalEquiv K L).symm f
-  replace hf' : ∀ χ ∈ weight K L M, χ x = 0 := by
-    intro χ hχ
-    change weight.toLinear K L M ⟨χ, hχ⟩ x = 0
-    rw [Module.apply_evalEquiv_symm_apply, ← Submodule.mem_bot (R := K), ← hf', Submodule.mem_map]
-    exact ⟨weight.toLinear K L M ⟨χ, hχ⟩, Submodule.subset_span (mem_range_self _), rfl⟩
-  have hx : g x ≠ 0 := by simpa
-  refine hx (hg _ ?_)
-  ext y
-  rw [LieModule.traceForm_eq_sum_finrank_nsmul_mul, LinearMap.zero_apply]
-  exact Finset.sum_eq_zero fun χ hχ ↦ by simp [hf' χ hχ]
+lemma range_traceForm_le_span_weight :
+    LinearMap.range (traceForm K L M) ≤ span K (range (weight.toLinear K L M)) := by
+  rintro - ⟨x, rfl⟩
+  rw [LieModule.traceForm_eq_sum_finrank_nsmul, LinearMap.coeFn_sum, Finset.sum_apply]
+  refine Submodule.sum_mem _ fun χ _ ↦ ?_
+  simp_rw [LinearMap.smul_apply, LinearMap.coe_smulRight, weight.toLinear_apply,
+    nsmul_eq_smul_cast (R := K)]
+  exact Submodule.smul_mem _ _ <| Submodule.smul_mem _ _ <| subset_span <| mem_range_self χ
+
+end LieModule
 
 /-- Given a splitting Cartan subalgebra `H` of a finite-dimensional Lie algebra with non-singular
 Killing form, the corresponding roots span the dual space of `H`. -/
@@ -520,6 +518,8 @@ Killing form, the corresponding roots span the dual space of `H`. -/
 lemma LieAlgebra.IsKilling.span_weight_eq_top [FiniteDimensional K L] [IsKilling K L]
     (H : LieSubalgebra K L) [H.IsCartanSubalgebra] [IsTriangularizable K H L] :
     span K (range (weight.toLinear K H L)) = ⊤ := by
-  simpa using LieModule.dualAnnihilator_ker_traceForm_le_span_weight K H L
+  refine eq_top_iff.mpr (le_trans ?_ (LieModule.range_traceForm_le_span_weight K H L))
+  rw [← traceForm_flip K H L, ← LinearMap.dualAnnihilator_ker_eq_range_flip,
+    ker_traceForm_eq_bot_of_isCartanSubalgebra, Submodule.dualAnnihilator_bot]
 
 end Field

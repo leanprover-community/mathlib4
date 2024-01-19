@@ -165,7 +165,7 @@ instance : LinearOrder String where
     simp only [compare, compareOfLessAndEq, instLTString, List.instLTList, lt_iff_toList_lt,
       List.LT', toList]
     split_ifs <;>
-    simp [List.lt_iff_lex_lt] at * <;>
+    simp only [List.lt_iff_lex_lt] at * <;>
     contradiction
 
 end String
