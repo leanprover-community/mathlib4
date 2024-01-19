@@ -270,6 +270,7 @@ theorem eventually_constant_sum_add {M : Type*} [AddCommMonoid M] {N : Type*} [A
   rw [(Finset.eventually_constant_sum hmm (Nat.min_le_right (bd (a + b)) (max (bd a) (bd b)))).symm]
   simp only [← @Finset.sum_add_distrib, map_add]
 
+/-- The function defining a coefficient in the left sum of the residue product. -/
 def res_prod_left_summand (A B : VertexOperator R V) (m k : ℤ) (i : ℕ) : Module.End R V where
   toFun := fun x => (-1)^i • (Ring.choose m i) • (ncoef A (m - i)) (ncoef B (k + i) x)
   map_add' := by
