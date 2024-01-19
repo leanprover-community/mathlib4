@@ -87,7 +87,7 @@ def restrictScalars {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →
 instance {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S) :
     CategoryTheory.Faithful (restrictScalars.{v} f) where
   map_injective h :=
-    LinearMap.ext fun x => by simpa only using FunLike.congr_fun h x
+    LinearMap.ext fun x => by simpa only using DFunLike.congr_fun h x
 
 instance {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S) :
     (restrictScalars.{v} f).PreservesMonomorphisms where

@@ -311,7 +311,7 @@ if `f 1 = g 1`. -/
 @[ext high]
 theorem ext_int [AddMonoid A] {f g : ℤ →+ A} (h1 : f 1 = g 1) : f = g :=
   have : f.comp (Int.ofNatHom : ℕ →+ ℤ) = g.comp (Int.ofNatHom : ℕ →+ ℤ) := ext_nat' _ _ h1
-  have this' : ∀ n : ℕ, f n = g n := FunLike.ext_iff.1 this
+  have this' : ∀ n : ℕ, f n = g n := DFunLike.ext_iff.1 this
   ext fun n => match n with
   | (n : ℕ) => this' n
   | .negSucc n => eq_on_neg _ _ (this' <| n + 1)
@@ -327,7 +327,7 @@ end AddMonoidHom
 
 theorem eq_intCast' [AddGroupWithOne α] [AddMonoidHomClass F ℤ α] (f : F) (h₁ : f 1 = 1) :
     ∀ n : ℤ, f n = n :=
-  FunLike.ext_iff.1 <| (f : ℤ →+ α).eq_int_castAddHom h₁
+  DFunLike.ext_iff.1 <| (f : ℤ →+ α).eq_int_castAddHom h₁
 #align eq_int_cast' eq_intCast'
 
 @[simp] lemma zsmul_one [AddGroupWithOne α] (n : ℤ) : n • (1 : α) = n := by cases n <;> simp
@@ -354,10 +354,10 @@ theorem ext_mint {f g : Multiplicative ℤ →* M} (h1 : f (ofAdd 1) = g (ofAdd 
 theorem ext_int {f g : ℤ →* M} (h_neg_one : f (-1) = g (-1))
     (h_nat : f.comp Int.ofNatHom.toMonoidHom = g.comp Int.ofNatHom.toMonoidHom) : f = g := by
   ext (x | x)
-  · exact (FunLike.congr_fun h_nat x : _)
+  · exact (DFunLike.congr_fun h_nat x : _)
   · rw [Int.negSucc_eq, ← neg_one_mul, f.map_mul, g.map_mul]
     congr 1
-    exact mod_cast (FunLike.congr_fun h_nat (x + 1) : _)
+    exact mod_cast (DFunLike.congr_fun h_nat (x + 1) : _)
 #align monoid_hom.ext_int MonoidHom.ext_int
 
 end MonoidHom
@@ -372,7 +372,7 @@ theorem ext_int {f g : ℤ →*₀ M} (h_neg_one : f (-1) = g (-1))
     (h_nat : f.comp Int.ofNatHom.toMonoidWithZeroHom = g.comp Int.ofNatHom.toMonoidWithZeroHom) :
     f = g :=
   toMonoidHom_injective <| MonoidHom.ext_int h_neg_one <|
-    MonoidHom.ext (FunLike.congr_fun h_nat : _)
+    MonoidHom.ext (DFunLike.congr_fun h_nat : _)
 #align monoid_with_zero_hom.ext_int MonoidWithZeroHom.ext_int
 
 end MonoidWithZeroHom
@@ -380,9 +380,9 @@ end MonoidWithZeroHom
 /-- If two `MonoidWithZeroHom`s agree on `-1` and the _positive_ naturals then they are equal. -/
 theorem ext_int' [MonoidWithZero α] [MonoidWithZeroHomClass F ℤ α] {f g : F}
     (h_neg_one : f (-1) = g (-1)) (h_pos : ∀ n : ℕ, 0 < n → f n = g n) : f = g :=
-  (FunLike.ext _ _) fun n =>
+  (DFunLike.ext _ _) fun n =>
     haveI :=
-      FunLike.congr_fun
+      DFunLike.congr_fun
         (@MonoidWithZeroHom.ext_int _ _ (f : ℤ →*₀ α) (g : ℤ →*₀ α) h_neg_one <|
           MonoidWithZeroHom.ext_nat (h_pos _))
         n

@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Algebra.BigOperators.Basic
-import Mathlib.Order.Atoms.Finite
 import Mathlib.Order.SupIndep
+import Mathlib.Order.Atoms
+import Mathlib.Data.Fintype.Powerset
 
 #align_import order.partition.finpartition from "leanprover-community/mathlib"@"d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce"
 
@@ -289,7 +290,7 @@ instance : Inf (Finpartition a) :=
           simp [t] at h
         exact Disjoint.mono inf_le_left inf_le_left (P.disjoint hx₁ hx₂ xdiff))
       (by
-        rw [sup_image, comp.left_id, sup_product_left]
+        rw [sup_image, id_comp, sup_product_left]
         trans P.parts.sup id ⊓ Q.parts.sup id
         · simp_rw [Finset.sup_inf_distrib_right, Finset.sup_inf_distrib_left]
           rfl
@@ -435,7 +436,7 @@ def avoid (b : α) : Finpartition (a \ b) :=
   ofErase
     (P.parts.image (· \ b))
     (P.disjoint.image_finset_of_le fun a ↦ sdiff_le).supIndep
-    (by rw [sup_image, comp.left_id, Finset.sup_sdiff_right, ← id_def, P.supParts])
+    (by rw [sup_image, id_comp, Finset.sup_sdiff_right, ← id_def, P.supParts])
 #align finpartition.avoid Finpartition.avoid
 
 @[simp]
@@ -488,7 +489,7 @@ instance (s : Finset α) : Bot (Finpartition s) :=
           (by
             rw [Finset.coe_map]
             exact Finset.pairwiseDisjoint_range_singleton.subset (Set.image_subset_range _ _))
-      supParts := by rw [sup_map, comp.left_id, Embedding.coeFn_mk, Finset.sup_singleton']
+      supParts := by rw [sup_map, id_comp, Embedding.coeFn_mk, Finset.sup_singleton']
       not_bot_mem := by simp }⟩
 
 @[simp]
