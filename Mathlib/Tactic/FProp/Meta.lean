@@ -5,6 +5,7 @@ Authors: Tomas Skrivan
 -/
 import Lean
 import Std.Data.Nat.Lemmas
+import Std.Lean.Expr
 import Mathlib.Tactic.FProp.ArraySet
 
 import Qq
@@ -114,6 +115,13 @@ def mkUncurryFun (n : Nat) (f : Expr) (mk := ``Prod.mk) (fst := ``Prod.fst) (snd
   Split lambda function into composition by specifying over which auguments in the lambda body this split should be done.
  -/
 def splitLambdaToCompOverArgs (e : Expr) (argIds : ArraySet Nat) : MetaM (Option (Expr × Expr)) := do
+  let e ← 
+    if e.isLambda 
+    then pure e
+    else do 
+      let X := (← inferType e).bindingDomain!
+      pure (.lam `x X (.app e (.bvar 0)) default)
+    
   match e with 
   | .lam name _ _ _ => 
     let e ← instantiateMVars e
@@ -216,4 +224,39 @@ def splitLambdaToComp (e : Expr) (mk := ``Prod.mk) (fst := ``Prod.fst) (snd := `
 
       return (f, g)
     
-  | _ => throwError "Error in `splitLambdaToComp`, not a lambda function!"
+  | _ => 
+    let XY ← inferType e
+    if ¬XY.isForall then
+      throwError "can't split {← ppExpr e} not a function!"
+    let X := XY.bindingDomain!
+    return (e, .lam default X (.bvar 0) default)
+
+
+structure FunTelescopeConfig where
+  /-- telescope through coercions via  -/
+  funCoe := false
+
+partial def funTelescopeImpl {α} (f : Expr) (config : FunTelescopeConfig) (k : Array Expr → Expr → MetaM α) : MetaM α := do
+  let F ← inferType f
+  forallTelescope F fun xs B => do
+
+    let b := (mkAppN f xs).headBeta
+
+    if config.funCoe = false then
+      k xs b 
+    else
+      try
+        let b' ← mkAppM `FunLike.coe #[b]
+        funTelescopeImpl b' config fun xs' b'' => k (xs ++ xs') b''
+      catch _ => 
+        k xs b
+
+variable [MonadControlT MetaM n] [Monad n]
+
+def funTelescope (e : Expr) (config : FunTelescopeConfig) (k : Array Expr → Expr → n α) : n α :=
+  map2MetaM (fun k => funTelescopeImpl e config k) k
+
+
+def constArity (decl : Name) : CoreM Nat := do
+  let info ← getConstInfo decl
+  return info.type.forallArity

@@ -3,7 +3,6 @@ Copyright (c) 2024 Tomas Skrivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomas Skrivan
 -/
-import Lean.Meta.Tactic.Simp.Types
 import Std.Data.RBMap.Alter
 import Mathlib.Tactic.FProp.RefinedDiscrTree
 import Mathlib.Tactic.FProp.FPropDecl
