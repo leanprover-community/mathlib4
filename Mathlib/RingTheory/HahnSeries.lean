@@ -512,6 +512,14 @@ instance : DistribMulAction R (HahnSeries Γ V) where
     ext
     simp [mul_smul]
 
+theorem smul_order_leq {Γ} [Zero Γ] [LinearOrder Γ] (r : R) (x : HahnSeries Γ V) (h : r • x ≠ 0) :
+    x.order ≤ (r • x).order := by
+  by_cases hx : x = 0
+  · rw [hx, smul_zero r] at h
+    exact (h rfl).elim
+  simp_all only [order, dite_false]
+  exact (Set.IsWF.min_le_min_of_subset (Function.support_smul_subset_right r x.coeff))
+
 variable {S : Type*} [Monoid S] [DistribMulAction S V]
 
 instance [SMul R S] [IsScalarTower R S V] : IsScalarTower R S (HahnSeries Γ V) :=
