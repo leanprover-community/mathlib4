@@ -70,6 +70,21 @@ theorem C_neg : (C (-a) : MvPolynomial σ R) = -C a :=
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.C_neg MvPolynomial.C_neg
 
+variable {σ} in
+lemma X_sub_C_ne_zero (i : σ) (c : R) [Nontrivial R] : X i - C c ≠ 0 := by
+  simpa [C_neg, sub_eq_add_neg] using X_add_C_ne_zero i (- c)
+
+variable {σ} in
+lemma X_add_C_not_isUnit (i : σ) (c : R) [Nontrivial R] : ¬ IsUnit (X i + C c) := by
+  rintro ⟨⟨_, m, hm1, hm2⟩, rfl⟩
+  have r := congr_arg (eval <| Finsupp.single i (-c)) hm1
+  simp only [single_neg, coe_neg, map_mul, map_add, eval_X, Pi.neg_apply, single_eq_same, eval_C,
+    add_left_neg, zero_mul, map_one, zero_ne_one] at r
+
+variable {σ} in
+lemma X_sub_C_not_isUnit (i : σ) (c : R) [Nontrivial R] : ¬ IsUnit (X i - C c) := by
+  simpa [map_neg, sub_eq_add_neg] using X_add_C_not_isUnit i (-c)
+
 @[simp]
 theorem coeff_neg (m : σ →₀ ℕ) (p : MvPolynomial σ R) : coeff m (-p) = -coeff m p :=
   Finsupp.neg_apply _ _

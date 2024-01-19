@@ -5,6 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Data.Finsupp.Order
+import Mathlib.Data.Finset.Antidiagonal
 
 #align_import algebra.monoid_algebra.division from "leanprover-community/mathlib"@"72c366d0475675f1309d3027d3d7d47ee4423951"
 
@@ -38,7 +39,7 @@ likely to be very useful.
 -/
 
 
-variable {k G : Type*} [Semiring k]
+variable {k k' G : Type*} [Semiring k] [Ring k']
 
 namespace AddMonoidAlgebra
 
@@ -74,6 +75,9 @@ theorem zero_divOf (g : G) : (0 : k[G]) /ᵒᶠ g = 0 :=
   map_zero _
 #align add_monoid_algebra.zero_div_of AddMonoidAlgebra.zero_divOf
 
+lemma neg_divOf (x : AddMonoidAlgebra k' G) (g : G) : (-x) /ᵒᶠ g = - (x /ᵒᶠ g) :=
+  Finsupp.ext fun g' ↦ by rw [divOf_apply, Finsupp.neg_apply, Finsupp.neg_apply, divOf_apply]
+
 @[simp]
 theorem divOf_zero (x : k[G]) : x /ᵒᶠ 0 = x := by
   refine Finsupp.ext fun _ => ?_  -- porting note: `ext` doesn't work
@@ -83,6 +87,9 @@ theorem divOf_zero (x : k[G]) : x /ᵒᶠ 0 = x := by
 theorem add_divOf (x y : k[G]) (g : G) : (x + y) /ᵒᶠ g = x /ᵒᶠ g + y /ᵒᶠ g :=
   map_add _ _ _
 #align add_monoid_algebra.add_div_of AddMonoidAlgebra.add_divOf
+
+lemma sub_divOf (x y : AddMonoidAlgebra k' G) (g : G) : (x - y) /ᵒᶠ g = x /ᵒᶠ g - y /ᵒᶠ g := by
+  rw [sub_eq_add_neg, add_divOf, neg_divOf, sub_eq_add_neg]
 
 theorem divOf_add (x : k[G]) (a b : G) : x /ᵒᶠ (a + b) = x /ᵒᶠ a /ᵒᶠ b := by
   refine Finsupp.ext fun _ => ?_  -- porting note: `ext` doesn't work
@@ -190,6 +197,24 @@ theorem modOf_add_divOf (x : k[G]) (g : G) : x %ᵒᶠ g + of' k G g * (x /ᵒ�
   by rw [add_comm, divOf_add_modOf]
 #align add_monoid_algebra.mod_of_add_div_of AddMonoidAlgebra.modOf_add_divOf
 
+lemma neg_modOf (x : AddMonoidAlgebra k' G) (g : G) : (-x) %ᵒᶠ g = - (x %ᵒᶠ g) := by
+  have eq1 : - _ = _ := (congr_arg (- .) $ modOf_add_divOf x g).trans
+    (modOf_add_divOf (-x) g).symm
+  simp only [neg_add_rev, neg_divOf, mul_neg, add_comm] at eq1
+  rwa [add_left_inj, eq_comm] at eq1
+
+lemma add_modOf (x y : AddMonoidAlgebra k G) (g : G) :
+    (x + y) %ᵒᶠ g = x %ᵒᶠ g + y %ᵒᶠ g :=
+  Finsupp.filter_add
+
+lemma sub_modOf (x y : k'[G]) (g : G) : (x - y) %ᵒᶠ g = x %ᵒᶠ g - y %ᵒᶠ g :=
+  Finsupp.filter_sub _ _ _
+
+lemma modOf_idem (x : k[G]) (g : G) : (x %ᵒᶠ g) %ᵒᶠ g = x %ᵒᶠ g := by
+  rw [modOf, modOf, Finsupp.filter_filter]
+  congr
+  aesop
+
 theorem of'_dvd_iff_modOf_eq_zero {x : k[G]} {g : G} :
     of' k G g ∣ x ↔ x %ᵒᶠ g = 0 := by
   constructor
@@ -199,6 +224,44 @@ theorem of'_dvd_iff_modOf_eq_zero {x : k[G]} {g : G} :
     rw [← divOf_add_modOf x g, h, add_zero]
     exact dvd_mul_right _ _
 #align add_monoid_algebra.of'_dvd_iff_mod_of_eq_zero AddMonoidAlgebra.of'_dvd_iff_modOf_eq_zero
+
+lemma mul_divOf (x y : k[G]) (g : G) :
+    (x * y) /ᵒᶠ g =
+    of' k G g * (x /ᵒᶠ g) * (y /ᵒᶠ g) +
+    (x /ᵒᶠ g) * (y %ᵒᶠ g) +
+    (x %ᵒᶠ g) * (y /ᵒᶠ g) +
+    ((x %ᵒᶠ g) * (y %ᵒᶠ g)) /ᵒᶠ g := by
+  rw [← congr_arg₂ HMul.hMul (divOf_add_modOf x g) (divOf_add_modOf y g), add_mul, mul_add, mul_add,
+    add_divOf, add_divOf, add_divOf, mul_assoc, of'_mul_divOf, ← mul_assoc,
+    ← of'_commute (.all _) _, add_assoc, add_assoc, add_assoc]
+  congr 1
+  rw [mul_assoc, of'_mul_divOf]
+  congr 1
+  rw [(of'_commute (.all _) _).symm.left_comm, of'_mul_divOf]
+
+lemma mul_modOf (x y : k[G]) (g : G) :
+    (x * y) %ᵒᶠ g = ((x %ᵒᶠ g) * (y %ᵒᶠ g)) %ᵒᶠ g := by
+  have := congr_arg₂ HMul.hMul (divOf_add_modOf x g) (divOf_add_modOf y g)
+  simp only [mul_add, add_mul, (of'_commute (AddCommute.all g) _).symm.left_comm] at this
+  rw [← this]
+  simp_rw [add_modOf, mul_assoc, of'_mul_modOf, zero_add]
+
+/-- `hs` is a more general spelling of `¬(s ≤ a) → ¬(s ≤ b) → ¬(s ≤ a + b)`. -/
+lemma mul_modOf_of_minimal (x y : k[G]) (s : G)
+    (hs : ∀ a b, ¬(∃ d, a = s + d) → ¬(∃ d, b = s + d) → ¬(∃ d, a + b = s + d)) :
+    (x * y) %ᵒᶠ s =
+    (x %ᵒᶠ s) * (y %ᵒᶠ s) := by
+  classical
+  apply Finsupp.ext fun t => ?_
+  rw [mul_modOf, mul_apply]
+  obtain ⟨d, rfl⟩ | h := em (∃ d, t = s + d)
+  · rw [modOf_apply_of_exists_add _ _ _ ⟨d, rfl⟩, eq_comm]
+    refine Finset.sum_eq_zero fun a ha => Finset.sum_eq_zero fun b hb => ?_
+    rw [modOf, Finsupp.support_filter, Finset.mem_filter,] at ha hb
+    rw [modOf_apply_of_not_exists_add _ _ _ ha.2, modOf_apply_of_not_exists_add _ _ _ hb.2]
+    dsimp
+    rw [if_neg fun h => hs _ _ ha.2 hb.2 ⟨_, h⟩]
+  · rw [modOf_apply_of_not_exists_add _ _ _ h, mul_apply]
 
 end
 

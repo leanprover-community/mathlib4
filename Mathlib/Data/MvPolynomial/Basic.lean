@@ -731,6 +731,15 @@ theorem coeff_X_mul (m) (s : σ) (p : MvPolynomial σ R) :
   (coeff_monomial_mul _ _ _ _).trans (one_mul _)
 #align mv_polynomial.coeff_X_mul MvPolynomial.coeff_X_mul
 
+lemma X_add_C_ne_zero (i : σ) (c : R) [Nontrivial R] : X i + C c ≠ 0 := by
+  classical
+  intro r
+  have := (ext_iff _ _).mp r (Finsupp.single i 1)
+  rw [coeff_add, coeff_X, coeff_zero, coeff_C, if_neg, add_zero] at this
+  · exact one_ne_zero' R  this
+  · intro rid
+    simpa using FunLike.ext_iff.mp rid i
+
 @[simp]
 theorem support_mul_X (s : σ) (p : MvPolynomial σ R) :
     (p * X s).support = p.support.map (addRightEmbedding (Finsupp.single s 1)) :=

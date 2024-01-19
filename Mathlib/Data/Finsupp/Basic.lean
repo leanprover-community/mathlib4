@@ -912,6 +912,10 @@ theorem filter_eq_self_iff : f.filter p = f ↔ ∀ x, f x ≠ 0 → p x := by
     not_imp_comm]
 #align finsupp.filter_eq_self_iff Finsupp.filter_eq_self_iff
 
+theorem filter_filter (p q : α → Prop) :
+    (f.filter p).filter q = f.filter fun a ↦ p a ∧ q a := by
+  classical ext; simp_rw [filter_apply]; aesop
+
 @[simp]
 theorem filter_apply_pos {a : α} (h : p a) : f.filter p a = f a := if_pos h
 #align finsupp.filter_apply_pos Finsupp.filter_apply_pos

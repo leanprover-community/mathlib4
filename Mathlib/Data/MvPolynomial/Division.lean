@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Algebra.MonoidAlgebra.Division
-import Mathlib.Data.MvPolynomial.Basic
+import Mathlib.Data.MvPolynomial.CommRing
+import Mathlib.RingTheory.Polynomial.Basic
 
 #align_import data.mv_polynomial.division from "leanprover-community/mathlib"@"72c366d0475675f1309d3027d3d7d47ee4423951"
 
@@ -30,7 +31,7 @@ Where possible, the results in this file should be first proved in the generalit
 -/
 
 
-variable {σ R : Type*} [CommSemiring R]
+variable {σ R R' : Type*} [CommSemiring R] [CommRing R']
 
 namespace MvPolynomial
 
@@ -72,6 +73,14 @@ theorem add_divMonomial (x y : MvPolynomial σ R) (s : σ →₀ ℕ) :
     (x + y) /ᵐᵒⁿᵒᵐⁱᵃˡ s = x /ᵐᵒⁿᵒᵐⁱᵃˡ s + y /ᵐᵒⁿᵒᵐⁱᵃˡ s :=
   map_add _ _ _
 #align mv_polynomial.add_div_monomial MvPolynomial.add_divMonomial
+
+lemma neg_divMonomial (x : MvPolynomial σ R') (s : σ →₀ ℕ) :
+    (-x) /ᵐᵒⁿᵒᵐⁱᵃˡ s = - (x /ᵐᵒⁿᵒᵐⁱᵃˡ s) :=
+  x.neg_divOf _
+
+lemma sub_divMonomial (x y : MvPolynomial σ R') (s : σ →₀ ℕ) :
+    (x - y) /ᵐᵒⁿᵒᵐⁱᵃˡ s = (x /ᵐᵒⁿᵒᵐⁱᵃˡ s) - (y /ᵐᵒⁿᵒᵐⁱᵃˡ s) :=
+  x.sub_divOf _ _
 
 theorem divMonomial_add (a b : σ →₀ ℕ) (x : MvPolynomial σ R) :
     x /ᵐᵒⁿᵒᵐⁱᵃˡ (a + b) = x /ᵐᵒⁿᵒᵐⁱᵃˡ a /ᵐᵒⁿᵒᵐⁱᵃˡ b :=
@@ -116,6 +125,43 @@ theorem coeff_modMonomial_of_le {s' s : σ →₀ ℕ} (x : MvPolynomial σ R) (
     coeff s' (x %ᵐᵒⁿᵒᵐⁱᵃˡ s) = 0 :=
   x.modOf_apply_of_exists_add _ _ <| exists_add_of_le h
 #align mv_polynomial.coeff_mod_monomial_of_le MvPolynomial.coeff_modMonomial_of_le
+
+lemma neg_modMonomial (s : σ →₀ ℕ) (x : MvPolynomial σ R') :
+    (-x) %ᵐᵒⁿᵒᵐⁱᵃˡ s = -(x %ᵐᵒⁿᵒᵐⁱᵃˡ s) :=
+  x.neg_modOf _
+
+lemma add_modMonomial (s : σ →₀ ℕ) (x y : MvPolynomial σ R) :
+    (x + y) %ᵐᵒⁿᵒᵐⁱᵃˡ s = (x %ᵐᵒⁿᵒᵐⁱᵃˡ s) + (y %ᵐᵒⁿᵒᵐⁱᵃˡ s) :=
+  x.add_modOf _ _
+
+lemma sub_modMonomial (s : σ →₀ ℕ) (x y : MvPolynomial σ R') :
+    (x - y) %ᵐᵒⁿᵒᵐⁱᵃˡ s = (x %ᵐᵒⁿᵒᵐⁱᵃˡ s) - (y %ᵐᵒⁿᵒᵐⁱᵃˡ s) :=
+  x.sub_modOf _ _
+
+lemma modMonomial_idem (s : σ →₀ ℕ) (x : MvPolynomial σ R) :
+    (x %ᵐᵒⁿᵒᵐⁱᵃˡ s) %ᵐᵒⁿᵒᵐⁱᵃˡ s = x %ᵐᵒⁿᵒᵐⁱᵃˡ s :=
+  x.modOf_idem _
+
+lemma mul_divMonomial (x y : MvPolynomial σ R) (s : σ →₀ ℕ) :
+    (x * y) /ᵐᵒⁿᵒᵐⁱᵃˡ s =
+    monomial s 1 * (x /ᵐᵒⁿᵒᵐⁱᵃˡ s) * (y /ᵐᵒⁿᵒᵐⁱᵃˡ s) +
+    (x /ᵐᵒⁿᵒᵐⁱᵃˡ s) * (y %ᵐᵒⁿᵒᵐⁱᵃˡ s) +
+    (x %ᵐᵒⁿᵒᵐⁱᵃˡ s) * (y /ᵐᵒⁿᵒᵐⁱᵃˡ s) +
+    ((x %ᵐᵒⁿᵒᵐⁱᵃˡ s) * (y %ᵐᵒⁿᵒᵐⁱᵃˡ s)) /ᵐᵒⁿᵒᵐⁱᵃˡ s :=
+  x.mul_divOf y s
+
+lemma mul_modMonomial (s : σ →₀ ℕ) (x y : MvPolynomial σ R) :
+    (x * y) %ᵐᵒⁿᵒᵐⁱᵃˡ s = ((x %ᵐᵒⁿᵒᵐⁱᵃˡ s) * (y %ᵐᵒⁿᵒᵐⁱᵃˡ s)) %ᵐᵒⁿᵒᵐⁱᵃˡ s :=
+  x.mul_modOf _ _
+
+lemma mul_modMonomial_finsupp_single (i : σ) (x y : MvPolynomial σ R) :
+    (x * y) %ᵐᵒⁿᵒᵐⁱᵃˡ Finsupp.single i 1 =
+    (x %ᵐᵒⁿᵒᵐⁱᵃˡ Finsupp.single i 1) * (y %ᵐᵒⁿᵒᵐⁱᵃˡ Finsupp.single i 1) := by
+  refine AddMonoidAlgebra.mul_modOf_of_minimal _ _ _ fun a b ha hb h => ?_
+  rw [← le_iff_exists_add, Finsupp.single_le_iff] at ha hb h
+  rw [not_le, Nat.lt_one_iff] at ha hb
+  rw [Finsupp.add_apply, ha, hb, zero_add] at h
+  cases h
 
 @[simp]
 theorem monomial_mul_modMonomial (s : σ →₀ ℕ) (x : MvPolynomial σ R) :
@@ -263,5 +309,12 @@ theorem X_dvd_monomial {i : σ} {j : σ →₀ ℕ} {r : R} :
   simp_rw [one_dvd, and_true_iff, Finsupp.single_le_iff, Nat.one_le_iff_ne_zero]
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.X_dvd_monomial MvPolynomial.X_dvd_monomial
+
+lemma prime_X (i : σ) [IsDomain R'] : Prime (X i : MvPolynomial σ R') := by
+  refine ⟨by convert (X_sub_C_ne_zero i (0 : R')); rw [map_zero, sub_zero],
+    by convert (X_sub_C_not_isUnit i (0 : R')); rw [map_zero, sub_zero], ?_⟩
+  intro a b h
+  rwa [X_dvd_iff_modMonomial_eq_zero, mul_modMonomial_finsupp_single, mul_eq_zero,
+    ← X_dvd_iff_modMonomial_eq_zero, ← X_dvd_iff_modMonomial_eq_zero] at h
 
 end MvPolynomial
