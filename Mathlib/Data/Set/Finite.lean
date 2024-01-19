@@ -274,6 +274,7 @@ protected theorem toFinset_diff [DecidableEq α] (hs : s.Finite) (ht : t.Finite)
   simp
 #align set.finite.to_finset_diff Set.Finite.toFinset_diff
 
+open scoped symmDiff in
 protected theorem toFinset_symmDiff [DecidableEq α] (hs : s.Finite) (ht : t.Finite)
     (h : (s ∆ t).Finite) : h.toFinset = hs.toFinset ∆ ht.toFinset := by
   ext

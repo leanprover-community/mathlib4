@@ -71,7 +71,7 @@ structure MulChar extends MonoidHom R R' where
   map_nonunit' : ∀ a : R, ¬IsUnit a → toFun a = 0
 #align mul_char MulChar
 
-instance MulChar.instFunLike : FunLike (MulChar R R') R (fun _ => R') :=
+instance MulChar.instFunLike : FunLike (MulChar R R') R R' :=
   ⟨fun χ => χ.toFun,
     fun χ₀ χ₁ h => by cases χ₀; cases χ₁; congr; apply MonoidHom.ext (fun _ => congr_fun h _)⟩
 
