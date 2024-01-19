@@ -45,7 +45,7 @@ lemma pairwise_disjoint_gammaSet : Pairwise (Disjoint on gammaSet N) := by
 lemma gammaSet_one_eq (a a' : Fin 2 → ZMod 1) : gammaSet 1 a = gammaSet 1 a' :=
   congr_arg _ (Subsingleton.elim _ _)
 
-/-- For level `N = 1`, the gamma sets are all equivalent; this is the equivalence -/
+/-- For level `N = 1`, the gamma sets are all equivalent; this is the equivalence. -/
 def gammaSet_one_equiv (a a' : Fin 2 → ZMod 1) : gammaSet 1 a ≃ gammaSet 1 a' :=
   Equiv.Set.ofEq (gammaSet_one_eq a a')
 
