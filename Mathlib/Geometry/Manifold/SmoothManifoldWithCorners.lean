@@ -6,9 +6,10 @@ Authors: Sébastien Gouëzel
 import Mathlib.Analysis.Analytic.Basic
 import Mathlib.Analysis.Analytic.Composition
 import Mathlib.Analysis.Analytic.Linear
-import Mathlib.Analysis.Calculus.ContDiff.FiniteDimension
 import Mathlib.Analysis.Calculus.FDeriv.Analytic
 import Mathlib.Geometry.Manifold.ChartedSpace
+import Mathlib.Analysis.NormedSpace.FiniteDimension
+import Mathlib.Analysis.Calculus.ContDiff.Basic
 
 #align_import geometry.manifold.smooth_manifold_with_corners from "leanprover-community/mathlib"@"ddec54a71a0dd025c05445d467f1a2b7d586a3ba"
 
@@ -374,9 +375,9 @@ variable (𝕜 E)
 
 /-- In the trivial model with corners, the associated `PartialEquiv` is the identity. -/
 @[simp, mfld_simps]
-theorem modelWithCornersSelf_localEquiv : 𝓘(𝕜, E).toPartialEquiv = PartialEquiv.refl E :=
+theorem modelWithCornersSelf_partialEquiv : 𝓘(𝕜, E).toPartialEquiv = PartialEquiv.refl E :=
   rfl
-#align model_with_corners_self_local_equiv modelWithCornersSelf_localEquiv
+#align model_with_corners_self_local_equiv modelWithCornersSelf_partialEquiv
 
 @[simp, mfld_simps]
 theorem modelWithCornersSelf_coe : (𝓘(𝕜, E) : E → E) = id :=
