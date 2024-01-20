@@ -1263,8 +1263,8 @@ theorem Pi.continuous_precomp {ι' : Type*} (φ : ι' → ι) :
     Continuous (· ∘ φ : (ι → X) → (ι' → X)) :=
   Pi.continuous_precomp' φ
 
-theorem Pi.continuous_postcomp' {ρ : ι → Type*} [∀ i, TopologicalSpace (ρ i)]
-    {g : ∀ i, π i → ρ i} (hg : ∀ i, Continuous (g i)) :
+theorem Pi.continuous_postcomp' {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
+    {g : ∀ i, π i → X i} (hg : ∀ i, Continuous (g i)) :
     Continuous (fun (f : (∀ i, π i)) (i : ι) ↦ g i (f i)) :=
   continuous_pi fun i ↦ (hg i).comp <| continuous_apply i
 
