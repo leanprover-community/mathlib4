@@ -378,7 +378,7 @@ variable {t₀}
 
 If a $C^1$ vector field `v` admits two local integral curves `γ γ' : ℝ → M` at `t₀` with
 `γ t₀ = γ' t₀`, then `γ` and `γ'` agree on some open interval containing `t₀`. -/
-theorem isIntegralCurveAt_eqOn_of_contMDiffAt (hγt₀ : I.IsInteriorPoint (γ t₀))
+theorem isIntegralCurveAt_eventuallyEq_of_contMDiffAt (hγt₀ : I.IsInteriorPoint (γ t₀))
     (hv : ContMDiffAt I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)) (γ t₀))
     (hγ : IsIntegralCurveAt γ v t₀) (hγ' : IsIntegralCurveAt γ' v t₀) (h : γ t₀ = γ' t₀) :
     γ =ᶠ[𝓝 t₀] γ' := by
@@ -435,7 +435,7 @@ theorem isIntegralCurveAt_eqOn_of_contMDiffAt (hγt₀ : I.IsInteriorPoint (γ t
 
 If a $C^1$ vector field `v` admits two local integral curves `γ γ' : ℝ → M` at `t₀` with
 `γ t₀ = γ' t₀`, then `γ` and `γ'` agree on some open interval containing `t₀`. -/
-theorem isIntegralCurveAt_eqOn_of_contMDiffAt' (hγt₀ : I.IsInteriorPoint (γ t₀))
+theorem isIntegralCurveAt_eqOn_of_contMDiffAt (hγt₀ : I.IsInteriorPoint (γ t₀))
     (hv : ContMDiffAt I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)) (γ t₀))
     (hγ : IsIntegralCurveAt γ v t₀) (hγ' : IsIntegralCurveAt γ' v t₀) (h : γ t₀ = γ' t₀) :
     ∃ ε > 0, EqOn γ γ' (Ioo (t₀ - ε) (t₀ + ε)) := by
@@ -528,7 +528,7 @@ theorem isIntegralCurveAt_eqOn_of_contMDiffAt_boundaryless [BoundarylessManifold
     (hv : ContMDiffAt I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)) (γ t₀))
     (hγ : IsIntegralCurveAt γ v t₀) (hγ' : IsIntegralCurveAt γ' v t₀) (h : γ t₀ = γ' t₀) :
     γ =ᶠ[𝓝 t₀] γ' :=
-  isIntegralCurveAt_eqOn_of_contMDiffAt (BoundarylessManifold.isInteriorPoint I) hv hγ hγ' h
+  isIntegralCurveAt_eventuallyEq_of_contMDiffAt (BoundarylessManifold.isInteriorPoint I) hv hγ hγ' h
 
 variable [T2Space M] {a b : ℝ}
 
@@ -570,7 +570,7 @@ theorem isIntegralCurveOn_Ioo_eqOn_of_contMDiff (ht₀ : t₀ ∈ Ioo a b)
   · rw [isOpen_iff_mem_nhds]
     intro t₁ ht₁
     have hmem := Ioo_mem_nhds ht₁.2.1 ht₁.2.2
-    have heq : γ =ᶠ[𝓝 t₁] γ' := isIntegralCurveAt_eqOn_of_contMDiffAt (hγt _ ht₁.2) hv.contMDiffAt
+    have heq : γ =ᶠ[𝓝 t₁] γ' := isIntegralCurveAt_eventuallyEq_of_contMDiffAt (hγt _ ht₁.2) hv.contMDiffAt
       (hγ.isIntegralCurveAt hmem) (hγ'.isIntegralCurveAt hmem) ht₁.1
     apply (heq.and hmem).mono
     exact fun _ ht ↦ ht
