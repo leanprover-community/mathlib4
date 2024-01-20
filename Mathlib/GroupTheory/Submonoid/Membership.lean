@@ -8,6 +8,7 @@ import Mathlib.Algebra.FreeMonoid.Basic
 import Mathlib.Data.Finset.NoncommProd
 import Mathlib.Data.Int.Order.Lemmas
 import Mathlib.GroupTheory.Submonoid.Operations
+import Mathlib.GroupTheory.Submonoid.MulOpposite
 
 #align_import group_theory.submonoid.membership from "leanprover-community/mathlib"@"e655e4ea5c6d02854696f97494997ba4c31be802"
 
@@ -411,44 +412,52 @@ theorem exists_multiset_of_mem_closure {M : Type*} [CommMonoid M] {s : Set M} {x
 #align submonoid.exists_multiset_of_mem_closure Submonoid.exists_multiset_of_mem_closure
 #align add_submonoid.exists_multiset_of_mem_closure AddSubmonoid.exists_multiset_of_mem_closure
 
-@[to_additive]
-theorem closure_induction_left {s : Set M} {p : M → Prop} {x : M} (h : x ∈ closure s) (H1 : p 1)
-    (Hmul : ∀ x ∈ s, ∀ (y), p y → p (x * y)) : p x := by
-  rw [closure_eq_mrange] at h
+@[to_additive (attr := elab_as_elim)]
+theorem closure_induction_left {s : Set M} {p : (m : M) → m ∈ closure s → Prop}
+    (one : p 1 (one_mem _))
+    (mul_left : ∀ x (hx : x ∈ s), ∀ (y) hy, p y hy → p (x * y) (mul_mem (subset_closure hx) hy))
+    {x : M} (h : x ∈ closure s) :
+    p x h := by
+  simp_rw [closure_eq_mrange] at h
   obtain ⟨l, rfl⟩ := h
   induction' l using FreeMonoid.recOn with x y ih
-  · exact H1
-  · simpa only [map_mul, FreeMonoid.lift_eval_of] using Hmul _ x.prop _ ih
+  · exact one
+  · simp only [map_mul, FreeMonoid.lift_eval_of]
+    refine mul_left _ x.prop (FreeMonoid.lift Subtype.val y) _ (ih ?_)
+    simp only [closure_eq_mrange, mem_mrange, exists_apply_eq_apply]
 #align submonoid.closure_induction_left Submonoid.closure_induction_left
 #align add_submonoid.closure_induction_left AddSubmonoid.closure_induction_left
 
 @[to_additive (attr := elab_as_elim)]
 theorem induction_of_closure_eq_top_left {s : Set M} {p : M → Prop} (hs : closure s = ⊤) (x : M)
-    (H1 : p 1) (Hmul : ∀ x ∈ s, ∀ (y), p y → p (x * y)) : p x :=
-  closure_induction_left
-    (by
-      rw [hs]
-      exact mem_top _)
-    H1 Hmul
+    (H1 : p 1) (Hmul : ∀ x ∈ s, ∀ (y), p y → p (x * y)) : p x := by
+  have : x ∈ closure s := by simp [hs]
+  induction this using closure_induction_left with
+  | one => exact H1
+  | mul_left x hx y _ ih => exact Hmul x hx y ih
 #align submonoid.induction_of_closure_eq_top_left Submonoid.induction_of_closure_eq_top_left
 #align add_submonoid.induction_of_closure_eq_top_left AddSubmonoid.induction_of_closure_eq_top_left
 
-@[to_additive]
-theorem closure_induction_right {s : Set M} {p : M → Prop} {x : M} (h : x ∈ closure s) (H1 : p 1)
-    (Hmul : ∀ (x), ∀ y ∈ s, p x → p (x * y)) : p x :=
-  @closure_induction_left _ _ (MulOpposite.unop ⁻¹' s) (p ∘ MulOpposite.unop) (MulOpposite.op x)
-    (closure_induction h (fun _x hx => subset_closure hx) (one_mem _)
-      fun _x _y hx hy => mul_mem hy hx)
-    H1 fun _x hx _y => Hmul _ _ hx
+@[to_additive (attr := elab_as_elim)]
+theorem closure_induction_right {s : Set M} {p : (m : M) → m ∈ closure s → Prop}
+    (one : p 1 (one_mem _))
+    (mul_right : ∀ x hx, ∀ (y) (hy : y ∈ s), p x hx → p (x * y) (mul_mem hx (subset_closure hy)))
+    {x : M} (h : x ∈ closure s) : p x h :=
+  @closure_induction_left _ _ (MulOpposite.unop ⁻¹' s)
+    (fun m hm => p m.unop <| by rwa [←op_closure] at hm)
+    one
+    (fun _x hx _y hy => mul_right _ _ _ hx)
+    (MulOpposite.op x) (by rwa [←op_closure])
 #align submonoid.closure_induction_right Submonoid.closure_induction_right
 #align add_submonoid.closure_induction_right AddSubmonoid.closure_induction_right
 
 @[to_additive (attr := elab_as_elim)]
 theorem induction_of_closure_eq_top_right {s : Set M} {p : M → Prop} (hs : closure s = ⊤) (x : M)
-    (H1 : p 1) (Hmul : ∀ (x), ∀ y ∈ s, p x → p (x * y)) : p x :=
-  closure_induction_right
-    (by rw [hs]; exact mem_top _)
-    H1 Hmul
+    (H1 : p 1) (Hmul : ∀ (x), ∀ y ∈ s, p x → p (x * y)) : p x := by
+  have : x ∈ closure s := by simp [hs]
+  induction this using closure_induction_right with
+  | one => exact H1
+  | mul_right x _ y hy ih => exact Hmul x y hy ih
 #align submonoid.induction_of_closure_eq_top_right Submonoid.induction_of_closure_eq_top_right
 #align add_submonoid.induction_of_closure_eq_top_right AddSubmonoid.induction_of_closure_eq_top_right
 
