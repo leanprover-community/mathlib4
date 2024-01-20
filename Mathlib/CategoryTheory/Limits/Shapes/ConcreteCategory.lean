@@ -99,13 +99,13 @@ section Initial
 variable [ConcreteCategory.{w} C]
 
 /-- If `forget C` preserves initials and `X` is initial, then `(forget C).obj X` is empty. -/
-instance [PreservesColimit (Functor.empty.{0} C) (forget C)] (X : C) (h : Nonempty (IsInitial X)) :
-    IsEmpty ((forget C).obj X) := by
+def emptyOfInitialOfPreserves [PreservesColimit (Functor.empty.{0} C) (forget C)] (X : C)
+    (h : Nonempty (IsInitial X)) : IsEmpty ((forget C).obj X) := by
   rw [← Types.initial_iff_empty]
   exact Nonempty.map (IsInitial.isInitialObj (forget C) _) h
 
 /-- If `forget C` reflects initials and `(forget C).obj X` is empty, then `X` is initial. -/
-instance [ReflectsColimit (Functor.empty.{0} C) (forget C)] (X : C)
+def initialOfEmptyOfReflects [ReflectsColimit (Functor.empty.{0} C) (forget C)] (X : C)
     (h : IsEmpty ((forget C).obj X)) : Nonempty (IsInitial X) :=
   Nonempty.map (IsInitial.isInitialOfObj (forget C) _) <|
     (Types.initial_iff_empty ((forget C).obj X)).mpr h
