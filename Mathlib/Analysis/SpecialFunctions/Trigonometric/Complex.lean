@@ -61,13 +61,15 @@ theorem sin_ne_zero_iff {θ : ℂ} : sin θ ≠ 0 ↔ ∀ k : ℤ, θ ≠ k * π
   rw [← not_exists, not_iff_not, sin_eq_zero_iff]
 #align complex.sin_ne_zero_iff Complex.sin_ne_zero_iff
 
+/-- Tangent of a complex number is equal to zero
+iff this number is equal to `k * π / 2` for an integer `k`.
+
+Note that this lemma takes into account that we use zero as the junk value for division by zero.
+See also `Complex.tan_eq_zero_iff'`.  -/
 theorem tan_eq_zero_iff {θ : ℂ} : tan θ = 0 ↔ ∃ k : ℤ, θ = k * π / 2 := by
-  have h := (sin_two_mul θ).symm
-  rw [mul_assoc] at h
-  rw [tan, div_eq_zero_iff, ← mul_eq_zero, ← zero_mul (1 / 2 : ℂ), mul_one_div,
-    CancelDenoms.cancel_factors_eq_div h two_ne_zero, mul_comm]
-  simpa only [zero_div, zero_mul, Ne.def, not_false_iff, field_simps] using
-    sin_eq_zero_iff
+  rw [tan, div_eq_zero_iff, ← mul_eq_zero, ← mul_right_inj' two_ne_zero, mul_zero,
+    ← mul_assoc, ← sin_two_mul, sin_eq_zero_iff]
+  field_simp [mul_comm]
 #align complex.tan_eq_zero_iff Complex.tan_eq_zero_iff
 
 theorem tan_ne_zero_iff {θ : ℂ} : tan θ ≠ 0 ↔ ∀ k : ℤ, θ ≠ k * π / 2 := by
@@ -77,6 +79,13 @@ theorem tan_ne_zero_iff {θ : ℂ} : tan θ ≠ 0 ↔ ∀ k : ℤ, θ ≠ k * π
 theorem tan_int_mul_pi_div_two (n : ℤ) : tan (n * π / 2) = 0 :=
   tan_eq_zero_iff.mpr (by use n)
 #align complex.tan_int_mul_pi_div_two Complex.tan_int_mul_pi_div_two
+
+/-- If tangent of a complex number is well-defined,
+then it is equal to zero iff the number is equal to `k * π` for an integer `k`.
+
+See also `Complex.tan_eq_zero_iff` for a version that takes into account junk values of `θ`. -/
+theorem tan_eq_zero_iff' {θ : ℂ} (hθ : cos θ ≠ 0) : tan θ = 0 ↔ ∃ k : ℤ, θ = k * π := by
+  simp [tan, hθ, sin_eq_zero_iff]
 
 theorem cos_eq_cos_iff {x y : ℂ} : cos x = cos y ↔ ∃ k : ℤ, y = 2 * k * π + x ∨ y = 2 * k * π - x :=
   calc
