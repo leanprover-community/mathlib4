@@ -82,8 +82,7 @@ partition of unity in some proofs.
 
 We prove that on a smooth finite dimensional real manifold with `σ`-compact Hausdorff topology, for
 any `U : M → Set M` such that `∀ x ∈ s, U x ∈ 𝓝 x` there exists a `SmoothBumpCovering ι I M s`
-subordinate to `U`. Then we use this fact to prove a version of the Whitney embedding theorem: any
-compact real manifold can be embedded into `ℝ^n` for large enough `n`.  -/
+subordinate to `U`. -/
 
 variable (ι M)
 
