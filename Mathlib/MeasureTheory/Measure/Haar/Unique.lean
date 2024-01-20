@@ -225,13 +225,7 @@ lemma exists_integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport
   -- Fix some nonzero continuous function with compact support `g`.
   obtain ⟨g, g_cont, g_comp, g_nonneg, g_one⟩ :
       ∃ (g : G → ℝ), Continuous g ∧ HasCompactSupport g ∧ 0 ≤ g ∧ g 1 ≠ 0 := by
-    rcases exists_compact_mem_nhds (1 : G) with ⟨k, hk, k_mem⟩
-    rcases exists_continuous_one_zero_of_isCompact hk isClosed_empty (disjoint_empty k)
-      with ⟨⟨g, g_cont⟩, gk, -, g_comp, hg⟩
-    refine ⟨g, g_cont, g_comp, fun x ↦ (hg x).1, ?_⟩
-    have := gk (mem_of_mem_nhds k_mem)
-    simp only [ContinuousMap.coe_mk, Pi.one_apply] at this
-    simp [this]
+    apply exists_continuous_nonneg_pos
   have int_g_pos : 0 < ∫ x, g x ∂μ := by
     apply (integral_pos_iff_support_of_nonneg g_nonneg _).2
     · exact IsOpen.measure_pos μ g_cont.isOpen_support ⟨1, g_one⟩
@@ -284,7 +278,65 @@ lemma integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport
     exact (exists_integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport μ' μ).choose_spec
       f hf h'f
 
-/-- The scalar factor between two left-invariant measures is non-zero when both measures are
+lemma haarScalarFactor_eq_mul (μ' ν μ : Measure G) [IsFiniteMeasureOnCompacts μ]
+    [IsFiniteMeasureOnCompacts μ'] [IsFiniteMeasureOnCompacts ν]
+    [IsMulLeftInvariant μ] [IsMulLeftInvariant μ'] [IsMulLeftInvariant ν]
+    [IsOpenPosMeasure μ] [IsOpenPosMeasure ν] :
+    haarScalarFactor μ' ν = haarScalarFactor μ' μ * haarScalarFactor μ ν := by
+  -- The group has to be locally compact, otherwise the scalar factor is 1 by definition.
+  by_cases hG : LocallyCompactSpace G; swap
+  · simp [haarScalarFactor, hG]
+  -- Fix some nonzero continuous function with compact support `g`.
+  obtain ⟨g, g_cont, g_comp, g_nonneg, g_one⟩ :
+      ∃ (g : G → ℝ), Continuous g ∧ HasCompactSupport g ∧ 0 ≤ g ∧ g 1 ≠ 0 := by
+    rcases exists_compact_mem_nhds (1 : G) with ⟨k, hk, k_mem⟩
+    rcases exists_continuous_one_zero_of_isCompact hk isClosed_empty (disjoint_empty k)
+      with ⟨⟨g, g_cont⟩, gk, -, g_comp, hg⟩
+    refine ⟨g, g_cont, g_comp, fun x ↦ (hg x).1, ?_⟩
+    have := gk (mem_of_mem_nhds k_mem)
+    simp only [ContinuousMap.coe_mk, Pi.one_apply] at this
+    simp [this]
+  have Z := integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport μ' μ g_cont g_comp
+  simp only [integral_smul_nnreal_measure, smul_smul,
+    integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport μ' ν g_cont g_comp,
+    integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport μ ν g_cont g_comp] at Z
+  have int_g_pos : 0 < ∫ x, g x ∂ν := by
+    apply (integral_pos_iff_support_of_nonneg g_nonneg _).2
+    · exact IsOpen.measure_pos ν g_cont.isOpen_support ⟨1, g_one⟩
+    · exact g_cont.integrable_of_hasCompactSupport g_comp
+  change (haarScalarFactor μ' ν : ℝ) * _ = (_ : ℝ) * _ at Z
+  simpa only [RingHom.toMonoidHom_eq_coe, MonoidHom.coe_coe, NNReal.coe_toRealHom,
+    mul_eq_mul_right_iff, int_g_pos.ne', or_false, NNReal.eq_iff] using Z
+
+@[simp] lemma haarScalarFactor_self (μ : Measure G) [IsFiniteMeasureOnCompacts μ]
+    [IsMulLeftInvariant μ] [IsOpenPosMeasure μ] :
+    haarScalarFactor μ μ = 1 := by
+  -- The group has to be locally compact, otherwise the scalar factor is 1 by definition.
+  by_cases hG : LocallyCompactSpace G; swap
+  · simp [haarScalarFactor, hG]
+  -- Fix some nonzero continuous function with compact support `g`.
+  obtain ⟨g, g_cont, g_comp, g_nonneg, g_one⟩ :
+      ∃ (g : G → ℝ), Continuous g ∧ HasCompactSupport g ∧ 0 ≤ g ∧ g 1 ≠ 0 := by
+    rcases exists_compact_mem_nhds (1 : G) with ⟨k, hk, k_mem⟩
+    rcases exists_continuous_one_zero_of_isCompact hk isClosed_empty (disjoint_empty k)
+      with ⟨⟨g, g_cont⟩, gk, -, g_comp, hg⟩
+    refine ⟨g, g_cont, g_comp, fun x ↦ (hg x).1, ?_⟩
+    have := gk (mem_of_mem_nhds k_mem)
+    simp only [ContinuousMap.coe_mk, Pi.one_apply] at this
+    simp [this]
+  have Z := integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport μ μ g_cont g_comp
+  have int_g_pos : 0 < ∫ x, g x ∂μ := by
+    apply (integral_pos_iff_support_of_nonneg g_nonneg _).2
+    · exact IsOpen.measure_pos μ g_cont.isOpen_support ⟨1, g_one⟩
+    · exact g_cont.integrable_of_hasCompactSupport g_comp
+  rw [integral_smul_nnreal_measure, eq_comm] at Z
+  change _ * _ = _ at Z
+  simpa only [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
+    MonoidHom.coe_coe, NNReal.coe_toRealHom, ZeroHom.coe_mk, ne_eq, int_g_pos.ne',
+    not_false_eq_true, mul_eq_right₀, NNReal.coe_eq_one] using Z
+
+
+  /-- The scalar factor between two left-invariant measures is non-zero when both measures are
 positive on open sets. -/
 @[to_additive]
 lemma haarScalarFactor_pos_of_isOpenPosMeasure (μ' μ : Measure G) [IsFiniteMeasureOnCompacts μ]
@@ -312,6 +364,7 @@ lemma haarScalarFactor_pos_of_isOpenPosMeasure (μ' μ : Measure G) [IsFiniteMea
   have := integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport μ' μ g_cont g_comp
   simp only [H, zero_smul, integral_zero_measure] at this
   linarith
+
 
 #exit
 

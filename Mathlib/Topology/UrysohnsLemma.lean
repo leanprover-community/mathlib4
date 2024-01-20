@@ -401,7 +401,6 @@ theorem exists_continuous_one_zero_of_isCompact [RegularSpace X] [LocallyCompact
   · have : 0 ≤ f x ∧ f x ≤ 1 := by simpa using h'f x
     simp [this]
 
-
 /-- Urysohn's lemma: if `s` and `t` are two disjoint sets in a regular locally compact topological
 space `X`, with `s` compact and `t` closed, then there exists a continuous compactly supported
 function `f : X → ℝ` such that
@@ -456,3 +455,13 @@ theorem exists_continuous_one_zero_of_isCompact_of_isGδ [RegularSpace X] [Local
   · exact tsum_nonneg (fun n ↦ mul_nonneg (u_pos n).le (f_range n x).1)
   · apply le_trans _ hu.le
     exact tsum_le_tsum (fun n ↦ I n x) (S x) u_sum
+
+theorem exists_continuous_nonneg_pos [RegularSpace X] [LocallyCompactSpace X] (x : X) :
+    ∃ f : C(X, ℝ), HasCompactSupport f ∧ 0 ≤ (f : X → ℝ) ∧ f x ≠ 0 := by
+  rcases exists_compact_mem_nhds x with ⟨k, hk, k_mem⟩
+  rcases exists_continuous_one_zero_of_isCompact hk isClosed_empty (disjoint_empty k)
+    with ⟨f, fk, -, f_comp, hf⟩
+  refine ⟨f, f_comp, fun x ↦ (hf x).1, ?_⟩
+  have := fk (mem_of_mem_nhds k_mem)
+  simp only [ContinuousMap.coe_mk, Pi.one_apply] at this
+  simp [this]
