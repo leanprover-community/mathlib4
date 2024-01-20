@@ -5,10 +5,11 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
 import Mathlib.Algebra.CharZero.Defs
 import Mathlib.Algebra.Group.Hom.Defs
+import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Algebra.Order.Monoid.OrderDual
-import Mathlib.Algebra.Order.Monoid.WithZero.Basic
 import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.Data.Nat.Cast.Defs
+import Mathlib.Order.WithBot
 
 #align_import algebra.order.monoid.with_top from "leanprover-community/mathlib"@"0111834459f5d7400215223ea95ae38a1265a907"
 
@@ -25,7 +26,7 @@ namespace WithTop
 
 section One
 
-variable [One α]
+variable [One α] {a : α}
 
 @[to_additive]
 instance one : One (WithTop α) :=
@@ -40,10 +41,22 @@ theorem coe_one : ((1 : α) : WithTop α) = 1 :=
 #align with_top.coe_zero WithTop.coe_zero
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_eq_one {a : α} : (a : WithTop α) = 1 ↔ a = 1 :=
-  coe_eq_coe
+lemma coe_eq_one : (a : WithTop α) = 1 ↔ a = 1 := coe_eq_coe
 #align with_top.coe_eq_one WithTop.coe_eq_one
 #align with_top.coe_eq_zero WithTop.coe_eq_zero
+
+@[to_additive (attr := simp, norm_cast)]
+lemma one_eq_coe : 1 = (a : WithTop α) ↔ a = 1 := eq_comm.trans coe_eq_one
+#align with_top.one_eq_coe WithTop.one_eq_coe
+#align with_top.zero_eq_coe WithTop.zero_eq_coe
+
+@[to_additive (attr := simp)] lemma top_ne_one : (⊤ : WithTop α) ≠ 1 := top_ne_coe
+#align with_top.top_ne_one WithTop.top_ne_one
+#align with_top.top_ne_zero WithTop.top_ne_zero
+
+@[to_additive (attr := simp)] lemma one_ne_top : (1 : WithTop α) ≠ ⊤ := coe_ne_top
+#align with_top.one_ne_top WithTop.one_ne_top
+#align with_top.zero_ne_top WithTop.zero_ne_top
 
 @[to_additive (attr := simp)]
 theorem untop_one : (1 : WithTop α).untop coe_ne_top = 1 :=
@@ -87,24 +100,6 @@ protected theorem map_one {β} (f : α → β) : (1 : WithTop α).map f = (f 1 :
 #align with_top.map_one WithTop.map_one
 #align with_top.map_zero WithTop.map_zero
 
-@[to_additive (attr := simp, norm_cast)]
-theorem one_eq_coe {a : α} : 1 = (a : WithTop α) ↔ a = 1 :=
-  Trans.trans eq_comm coe_eq_one
-#align with_top.one_eq_coe WithTop.one_eq_coe
-#align with_top.zero_eq_coe WithTop.zero_eq_coe
-
-@[to_additive (attr := simp)]
-theorem top_ne_one : ⊤ ≠ (1 : WithTop α) :=
-  fun.
-#align with_top.top_ne_one WithTop.top_ne_one
-#align with_top.top_ne_zero WithTop.top_ne_zero
-
-@[to_additive (attr := simp)]
-theorem one_ne_top : (1 : WithTop α) ≠ ⊤ :=
-  fun.
-#align with_top.one_ne_top WithTop.one_ne_top
-#align with_top.zero_ne_top WithTop.zero_ne_top
-
 instance zeroLEOneClass [Zero α] [LE α] [ZeroLEOneClass α] : ZeroLEOneClass (WithTop α) :=
   ⟨some_le_some.2 zero_le_one⟩
 
@@ -118,9 +113,7 @@ instance add : Add (WithTop α) :=
   ⟨Option.map₂ (· + ·)⟩
 #align with_top.has_add WithTop.add
 
-@[norm_cast]
-theorem coe_add : ((x + y : α) : WithTop α) = x + y :=
-  rfl
+@[norm_cast] lemma coe_add (a b : α) : ↑(a + b) = (a + b : WithTop α) := rfl
 #align with_top.coe_add WithTop.coe_add
 
 section deprecated
@@ -335,13 +328,35 @@ instance addZeroClass [AddZeroClass α] : AddZeroClass (WithTop α) :=
     zero_add := Option.map₂_left_identity zero_add
     add_zero := Option.map₂_right_identity add_zero }
 
-instance addMonoid [AddMonoid α] : AddMonoid (WithTop α) :=
+section AddMonoid
+variable [AddMonoid α]
+
+instance addMonoid : AddMonoid (WithTop α) :=
   { WithTop.addSemigroup, WithTop.addZeroClass with }
+
+/-- Coercion from `α` to `WithTop α` as an `AddMonoidHom`. -/
+def addHom : α →+ WithTop α where
+  toFun := WithTop.some
+  map_zero' := rfl
+  map_add' _ _ := rfl
+#align with_top.coe_add_hom WithTop.addHom
+
+@[simp, norm_cast] lemma coe_addHom : ⇑(addHom : α →+ WithTop α) = WithTop.some := rfl
+#align with_top.coe_coe_add_hom WithTop.coe_addHom
+
+@[simp, norm_cast]
+lemma coe_nsmul (a : α) (n : ℕ) : ↑(n • a) = n • (a : WithTop α) :=
+  (addHom : α →+ WithTop α).map_nsmul _ _
+
+end AddMonoid
 
 instance addCommMonoid [AddCommMonoid α] : AddCommMonoid (WithTop α) :=
   { WithTop.addMonoid, WithTop.addCommSemigroup with }
 
-instance addMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (WithTop α) :=
+section AddMonoidWithOne
+variable [AddMonoidWithOne α]
+
+instance addMonoidWithOne : AddMonoidWithOne (WithTop α) :=
   { WithTop.one, WithTop.addMonoid with
     natCast := fun n => ↑(n : α),
     natCast_zero := by
@@ -351,6 +366,17 @@ instance addMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (WithTop α) 
       simp only -- Porting note: Had to add this...?
       rw [Nat.cast_add_one, WithTop.coe_add, WithTop.coe_one]
   }
+
+@[simp, norm_cast] lemma coe_nat (n : ℕ) : ((n : α) : WithTop α) = n := rfl
+#align with_top.coe_nat WithTop.coe_nat
+
+@[simp] lemma nat_ne_top (n : ℕ) : (n : WithTop α) ≠ ⊤ := coe_ne_top
+#align with_top.nat_ne_top WithTop.nat_ne_top
+
+@[simp] lemma top_ne_nat (n : ℕ) : (⊤ : WithTop α) ≠ n := top_ne_coe
+#align with_top.top_ne_nat WithTop.top_ne_nat
+
+end AddMonoidWithOne
 
 instance charZero [AddMonoidWithOne α] [CharZero α] : CharZero (WithTop α) :=
   { cast_injective := Function.Injective.comp (f := Nat.cast (R := α))
@@ -397,36 +423,6 @@ instance [CanonicallyLinearOrderedAddCommMonoid α] :
     CanonicallyLinearOrderedAddCommMonoid (WithTop α) :=
   { WithTop.canonicallyOrderedAddCommMonoid, WithTop.linearOrder with }
 
-@[simp, norm_cast]
-theorem coe_nat [AddMonoidWithOne α] (n : ℕ) : ((n : α) : WithTop α) = n :=
-  rfl
-#align with_top.coe_nat WithTop.coe_nat
-
-@[simp]
-theorem nat_ne_top [AddMonoidWithOne α] (n : ℕ) : (n : WithTop α) ≠ ⊤ :=
-  coe_ne_top
-#align with_top.nat_ne_top WithTop.nat_ne_top
-
-@[simp]
-theorem top_ne_nat [AddMonoidWithOne α] (n : ℕ) : (⊤ : WithTop α) ≠ n :=
-  top_ne_coe
-#align with_top.top_ne_nat WithTop.top_ne_nat
-
-/-- Coercion from `α` to `WithTop α` as an `AddMonoidHom`. -/
-def addHom [AddMonoid α] : α →+ WithTop α :=
-  -- Porting note: why does the old proof not work?
-  -- ⟨WithTop.some, rfl, fun _ _ => rfl⟩
-  { toFun := WithTop.some,
-    map_zero' := rfl,
-    map_add' := fun _ _ => rfl }
-#align with_top.coe_add_hom WithTop.addHom
-
--- Porting note: It seems like that kind of coe-lemmas is not needed anymore.
--- @[simp]
--- theorem coe_coe_add_hom [AddMonoid α] : (coeAddHom : α →+ WithTop α).toFun = WithTop.some :=
---   rfl
--- #align with_top.coe_coe_add_hom WithTop.coe_coe_add_hom
-
 @[simp]
 theorem zero_lt_top [OrderedAddCommMonoid α] : (0 : WithTop α) < ⊤ :=
   coe_lt_top 0
@@ -470,10 +466,68 @@ protected def _root_.AddMonoidHom.withTopMap {M N : Type*} [AddZeroClass M] [Add
 end WithTop
 
 namespace WithBot
+section One
+variable [One α] {a : α}
 
-@[to_additive]
-instance one [One α] : One (WithBot α) :=
-  WithTop.one
+@[to_additive] instance one : One (WithBot α) := WithTop.one
+
+@[to_additive (attr := simp, norm_cast)] lemma coe_one : ((1 : α) : WithBot α) = 1 := rfl
+#align with_bot.coe_one WithBot.coe_one
+#align with_bot.coe_zero WithBot.coe_zero
+
+@[to_additive (attr := simp, norm_cast)]
+lemma coe_eq_one : (a : WithBot α) = 1 ↔ a = 1 := coe_eq_coe
+#align with_bot.coe_eq_one WithBot.coe_eq_one
+#align with_bot.coe_eq_zero WithBot.coe_eq_zero
+
+@[to_additive (attr := simp, norm_cast)]
+lemma one_eq_coe : 1 = (a : WithBot α) ↔ a = 1 := eq_comm.trans coe_eq_one
+
+@[to_additive (attr := simp)] lemma bot_ne_one : (⊥ : WithBot α) ≠ 1 := bot_ne_coe
+@[to_additive (attr := simp)] lemma one_ne_bot : (1 : WithBot α) ≠ ⊥ := coe_ne_bot
+
+@[to_additive (attr := simp)]
+theorem unbot_one [One α] : (1 : WithBot α).unbot coe_ne_bot = 1 :=
+  rfl
+#align with_bot.unbot_one WithBot.unbot_one
+#align with_bot.unbot_zero WithBot.unbot_zero
+
+@[to_additive (attr := simp)]
+theorem unbot_one' (d : α) : (1 : WithBot α).unbot' d = 1 :=
+  rfl
+#align with_bot.unbot_one' WithBot.unbot_one'
+#align with_bot.unbot_zero' WithBot.unbot_zero'
+
+@[to_additive (attr := simp, norm_cast) coe_nonneg]
+theorem one_le_coe [LE α] : 1 ≤ (a : WithBot α) ↔ 1 ≤ a := coe_le_coe
+#align with_bot.one_le_coe WithBot.one_le_coe
+#align with_bot.coe_nonneg WithBot.coe_nonneg
+
+@[to_additive (attr := simp, norm_cast) coe_le_zero]
+theorem coe_le_one [LE α] : (a : WithBot α) ≤ 1 ↔ a ≤ 1 := coe_le_coe
+#align with_bot.coe_le_one WithBot.coe_le_one
+#align with_bot.coe_le_zero WithBot.coe_le_zero
+
+@[to_additive (attr := simp, norm_cast) coe_pos]
+theorem one_lt_coe [LT α] : 1 < (a : WithBot α) ↔ 1 < a := coe_lt_coe
+#align with_bot.one_lt_coe WithBot.one_lt_coe
+#align with_bot.coe_pos WithBot.coe_pos
+
+@[to_additive (attr := simp, norm_cast) coe_lt_zero]
+theorem coe_lt_one [LT α] : (a : WithBot α) < 1 ↔ a < 1 := coe_lt_coe
+#align with_bot.coe_lt_one WithBot.coe_lt_one
+#align with_bot.coe_lt_zero WithBot.coe_lt_zero
+
+@[to_additive (attr := simp)]
+protected theorem map_one {β} (f : α → β) : (1 : WithBot α).map f = (f 1 : WithBot β) :=
+  rfl
+#align with_bot.map_one WithBot.map_one
+#align with_bot.map_zero WithBot.map_zero
+
+instance zeroLEOneClass [Zero α] [LE α] [ZeroLEOneClass α] : ZeroLEOneClass (WithBot α) :=
+  ⟨some_le_some.2 zero_le_one⟩
+
+end One
 
 instance add [Add α] : Add (WithBot α) :=
   WithTop.add
@@ -487,94 +541,50 @@ instance addCommSemigroup [AddCommSemigroup α] : AddCommSemigroup (WithBot α) 
 instance addZeroClass [AddZeroClass α] : AddZeroClass (WithBot α) :=
   WithTop.addZeroClass
 
-instance addMonoid [AddMonoid α] : AddMonoid (WithBot α) :=
-  WithTop.addMonoid
+section AddMonoid
+variable [AddMonoid α]
+
+instance addMonoid : AddMonoid (WithBot α) := WithTop.addMonoid
+
+/-- Coercion from `α` to `WithBot α` as an `AddMonoidHom`. -/
+def addHom : α →+ WithBot α where
+  toFun := WithTop.some
+  map_zero' := rfl
+  map_add' _ _ := rfl
+
+@[simp, norm_cast] lemma coe_addHom : ⇑(addHom : α →+ WithBot α) = WithBot.some := rfl
+
+@[simp, norm_cast]
+lemma coe_nsmul (a : α) (n : ℕ) : ↑(n • a) = n • (a : WithBot α) :=
+  (addHom : α →+ WithBot α).map_nsmul _ _
+#align with_bot.coe_nsmul WithBot.coe_nsmul
+
+end AddMonoid
 
 instance addCommMonoid [AddCommMonoid α] : AddCommMonoid (WithBot α) :=
   WithTop.addCommMonoid
 
-instance addMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (WithBot α) :=
-  WithTop.addMonoidWithOne
+section AddMonoidWithOne
+variable [AddMonoidWithOne α]
+
+instance addMonoidWithOne : AddMonoidWithOne (WithBot α) := WithTop.addMonoidWithOne
+
+@[norm_cast] lemma coe_nat (n : ℕ) : ((n : α) : WithBot α) = n := rfl
+#align with_bot.coe_nat WithBot.coe_nat
+
+@[simp] lemma nat_ne_bot (n : ℕ) : (n : WithBot α) ≠ ⊥ := coe_ne_bot
+#align with_bot.nat_ne_bot WithBot.nat_ne_bot
+
+@[simp] lemma bot_ne_nat (n : ℕ) : (⊥ : WithBot α) ≠ n := bot_ne_coe
+#align with_bot.bot_ne_nat WithBot.bot_ne_nat
+
+end AddMonoidWithOne
 
 instance charZero [AddMonoidWithOne α] [CharZero α] : CharZero (WithBot α) :=
   WithTop.charZero
 
 instance addCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithOne (WithBot α) :=
   WithTop.addCommMonoidWithOne
-
-instance zeroLEOneClass [Zero α] [One α] [LE α] [ZeroLEOneClass α] : ZeroLEOneClass (WithBot α) :=
-  ⟨some_le_some.2 zero_le_one⟩
-
--- `by norm_cast` proves this lemma, so I did not tag it with `norm_cast`
-@[to_additive]
-theorem coe_one [One α] : ((1 : α) : WithBot α) = 1 :=
-  rfl
-#align with_bot.coe_one WithBot.coe_one
-#align with_bot.coe_zero WithBot.coe_zero
-
--- `by norm_cast` proves this lemma, so I did not tag it with `norm_cast`
-@[to_additive]
-theorem coe_eq_one [One α] {a : α} : (a : WithBot α) = 1 ↔ a = 1 :=
-  WithTop.coe_eq_one
-#align with_bot.coe_eq_one WithBot.coe_eq_one
-#align with_bot.coe_eq_zero WithBot.coe_eq_zero
-
-@[to_additive (attr := simp)]
-theorem unbot_one [One α] : (1 : WithBot α).unbot coe_ne_bot = 1 :=
-  rfl
-#align with_bot.unbot_one WithBot.unbot_one
-#align with_bot.unbot_zero WithBot.unbot_zero
-
-@[to_additive (attr := simp)]
-theorem unbot_one' [One α] (d : α) : (1 : WithBot α).unbot' d = 1 :=
-  rfl
-#align with_bot.unbot_one' WithBot.unbot_one'
-#align with_bot.unbot_zero' WithBot.unbot_zero'
-
-@[to_additive (attr := simp, norm_cast) coe_nonneg]
-theorem one_le_coe [One α] [LE α] {a : α} : 1 ≤ (a : WithBot α) ↔ 1 ≤ a :=
-  coe_le_coe
-#align with_bot.one_le_coe WithBot.one_le_coe
-#align with_bot.coe_nonneg WithBot.coe_nonneg
-
-@[to_additive (attr := simp, norm_cast) coe_le_zero]
-theorem coe_le_one [One α] [LE α] {a : α} : (a : WithBot α) ≤ 1 ↔ a ≤ 1 :=
-  coe_le_coe
-#align with_bot.coe_le_one WithBot.coe_le_one
-#align with_bot.coe_le_zero WithBot.coe_le_zero
-
-@[to_additive (attr := simp, norm_cast) coe_pos]
-theorem one_lt_coe [One α] [LT α] {a : α} : 1 < (a : WithBot α) ↔ 1 < a :=
-  coe_lt_coe
-#align with_bot.one_lt_coe WithBot.one_lt_coe
-#align with_bot.coe_pos WithBot.coe_pos
-
-@[to_additive (attr := simp, norm_cast) coe_lt_zero]
-theorem coe_lt_one [One α] [LT α] {a : α} : (a : WithBot α) < 1 ↔ a < 1 :=
-  coe_lt_coe
-#align with_bot.coe_lt_one WithBot.coe_lt_one
-#align with_bot.coe_lt_zero WithBot.coe_lt_zero
-
-@[to_additive (attr := simp)]
-protected theorem map_one {β} [One α] (f : α → β) : (1 : WithBot α).map f = (f 1 : WithBot β) :=
-  rfl
-#align with_bot.map_one WithBot.map_one
-#align with_bot.map_zero WithBot.map_zero
-
-@[norm_cast]
-theorem coe_nat [AddMonoidWithOne α] (n : ℕ) : ((n : α) : WithBot α) = n :=
-  rfl
-#align with_bot.coe_nat WithBot.coe_nat
-
-@[simp]
-theorem nat_ne_bot [AddMonoidWithOne α] (n : ℕ) : (n : WithBot α) ≠ ⊥ :=
-  coe_ne_bot
-#align with_bot.nat_ne_bot WithBot.nat_ne_bot
-
-@[simp]
-theorem bot_ne_nat [AddMonoidWithOne α] (n : ℕ) : (⊥ : WithBot α) ≠ n :=
-  bot_ne_coe
-#align with_bot.bot_ne_nat WithBot.bot_ne_nat
 
 section Add
 
@@ -621,7 +631,7 @@ theorem add_ne_bot : a + b ≠ ⊥ ↔ a ≠ ⊥ ∧ b ≠ ⊥ :=
 #align with_bot.add_ne_bot WithBot.add_ne_bot
 
 theorem bot_lt_add [LT α] {a b : WithBot α} : ⊥ < a + b ↔ ⊥ < a ∧ ⊥ < b :=
-  @WithTop.add_lt_top αᵒᵈ _ _ _ _
+  WithTop.add_lt_top (α := αᵒᵈ)
 #align with_bot.bot_lt_add WithBot.bot_lt_add
 
 theorem add_eq_coe : a + b = x ↔ ∃ a' b' : α, ↑a' = a ∧ ↑b' = b ∧ a' + b' = x :=
@@ -692,42 +702,42 @@ variable [Preorder α]
 
 instance covariantClass_add_le [CovariantClass α α (· + ·) (· ≤ ·)] :
     CovariantClass (WithBot α) (WithBot α) (· + ·) (· ≤ ·) :=
-  @OrderDual.covariantClass_add_le (WithTop αᵒᵈ) _ _ _
+  OrderDual.covariantClass_add_le (α := WithTop αᵒᵈ)
 #align with_bot.covariant_class_add_le WithBot.covariantClass_add_le
 
 instance covariantClass_swap_add_le [CovariantClass α α (swap (· + ·)) (· ≤ ·)] :
     CovariantClass (WithBot α) (WithBot α) (swap (· + ·)) (· ≤ ·) :=
-  @OrderDual.covariantClass_swap_add_le (WithTop αᵒᵈ) _ _ _
+  OrderDual.covariantClass_swap_add_le (α := WithTop αᵒᵈ)
 #align with_bot.covariant_class_swap_add_le WithBot.covariantClass_swap_add_le
 
 instance contravariantClass_add_lt [ContravariantClass α α (· + ·) (· < ·)] :
     ContravariantClass (WithBot α) (WithBot α) (· + ·) (· < ·) :=
-  @OrderDual.contravariantClass_add_lt (WithTop αᵒᵈ) _ _ _
+  OrderDual.contravariantClass_add_lt (α := WithTop αᵒᵈ)
 #align with_bot.contravariant_class_add_lt WithBot.contravariantClass_add_lt
 
 instance contravariantClass_swap_add_lt [ContravariantClass α α (swap (· + ·)) (· < ·)] :
     ContravariantClass (WithBot α) (WithBot α) (swap (· + ·)) (· < ·) :=
-  @OrderDual.contravariantClass_swap_add_lt (WithTop αᵒᵈ) _ _ _
+  OrderDual.contravariantClass_swap_add_lt (α := WithTop αᵒᵈ)
 #align with_bot.contravariant_class_swap_add_lt WithBot.contravariantClass_swap_add_lt
 
 protected theorem le_of_add_le_add_left [ContravariantClass α α (· + ·) (· ≤ ·)] (ha : a ≠ ⊥)
     (h : a + b ≤ a + c) : b ≤ c :=
-  @WithTop.le_of_add_le_add_left αᵒᵈ _ _ _ _ _ _ ha h
+  WithTop.le_of_add_le_add_left (α := αᵒᵈ) ha h
 #align with_bot.le_of_add_le_add_left WithBot.le_of_add_le_add_left
 
 protected theorem le_of_add_le_add_right [ContravariantClass α α (swap (· + ·)) (· ≤ ·)]
     (ha : a ≠ ⊥) (h : b + a ≤ c + a) : b ≤ c :=
-  @WithTop.le_of_add_le_add_right αᵒᵈ _ _ _ _ _ _ ha h
+  WithTop.le_of_add_le_add_right (α := αᵒᵈ) ha h
 #align with_bot.le_of_add_le_add_right WithBot.le_of_add_le_add_right
 
 protected theorem add_lt_add_left [CovariantClass α α (· + ·) (· < ·)] (ha : a ≠ ⊥) (h : b < c) :
     a + b < a + c :=
-  @WithTop.add_lt_add_left αᵒᵈ _ _ _ _ _ _ ha h
+  WithTop.add_lt_add_left (α := αᵒᵈ) ha h
 #align with_bot.add_lt_add_left WithBot.add_lt_add_left
 
 protected theorem add_lt_add_right [CovariantClass α α (swap (· + ·)) (· < ·)] (ha : a ≠ ⊥)
     (h : b < c) : b + a < c + a :=
-  @WithTop.add_lt_add_right αᵒᵈ _ _ _ _ _ _ ha h
+  WithTop.add_lt_add_right (α := αᵒᵈ) ha h
 #align with_bot.add_lt_add_right WithBot.add_lt_add_right
 
 protected theorem add_le_add_iff_left [CovariantClass α α (· + ·) (· ≤ ·)]
@@ -753,13 +763,13 @@ protected theorem add_lt_add_iff_right [CovariantClass α α (swap (· + ·)) (�
 protected theorem add_lt_add_of_le_of_lt [CovariantClass α α (· + ·) (· < ·)]
     [CovariantClass α α (swap (· + ·)) (· ≤ ·)] (hb : b ≠ ⊥) (hab : a ≤ b) (hcd : c < d) :
     a + c < b + d :=
-  @WithTop.add_lt_add_of_le_of_lt αᵒᵈ _ _ _ _ _ _ _ _ hb hab hcd
+  WithTop.add_lt_add_of_le_of_lt (α := αᵒᵈ) hb hab hcd
 #align with_bot.add_lt_add_of_le_of_lt WithBot.add_lt_add_of_le_of_lt
 
 protected theorem add_lt_add_of_lt_of_le [CovariantClass α α (· + ·) (· ≤ ·)]
     [CovariantClass α α (swap (· + ·)) (· < ·)] (hd : d ≠ ⊥) (hab : a < b) (hcd : c ≤ d) :
     a + c < b + d :=
-  @WithTop.add_lt_add_of_lt_of_le αᵒᵈ _ _ _ _ _ _ _ _ hd hab hcd
+  WithTop.add_lt_add_of_lt_of_le (α := αᵒᵈ) hd hab hcd
 #align with_bot.add_lt_add_of_lt_of_le WithBot.add_lt_add_of_lt_of_le
 
 end Add

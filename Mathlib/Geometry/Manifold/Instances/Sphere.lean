@@ -10,7 +10,7 @@ import Mathlib.Analysis.InnerProductSpace.Calculus
 import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Geometry.Manifold.Algebra.LieGroup
 import Mathlib.Geometry.Manifold.Instances.Real
-import Mathlib.Geometry.Manifold.MFDeriv
+import Mathlib.Geometry.Manifold.MFDeriv.Basic
 
 #align_import geometry.manifold.instances.sphere from "leanprover-community/mathlib"@"0dc4079202c28226b2841a51eb6d3cc2135bb80f"
 
@@ -23,11 +23,11 @@ it to put a smooth manifold structure on the sphere.
 ## Main results
 
 For a unit vector `v` in `E`, the definition `stereographic` gives the stereographic projection
-centred at `v`, a local homeomorphism from the sphere to `(ℝ ∙ v)ᗮ` (the orthogonal complement of
+centred at `v`, a partial homeomorphism from the sphere to `(ℝ ∙ v)ᗮ` (the orthogonal complement of
 `v`).
 
 For finite-dimensional `E`, we then construct a smooth manifold instance on the sphere; the charts
-here are obtained by composing the local homeomorphisms `stereographic` with arbitrary isometries
+here are obtained by composing the partial homeomorphisms `stereographic` with arbitrary isometries
 from `(ℝ ∙ v)ᗮ` to Euclidean space.
 
 We prove two lemmas about smooth maps:
@@ -279,9 +279,9 @@ theorem stereo_right_inv (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) : stereoToFun v
   · simp
 #align stereo_right_inv stereo_right_inv
 
-/-- Stereographic projection from the unit sphere in `E`, centred at a unit vector `v` in `E`; this
-is the version as a local homeomorphism. -/
-def stereographic (hv : ‖v‖ = 1) : LocalHomeomorph (sphere (0 : E) 1) (ℝ ∙ v)ᗮ where
+/-- Stereographic projection from the unit sphere in `E`, centred at a unit vector `v` in `E`;
+this is the version as a partial homeomorphism. -/
+def stereographic (hv : ‖v‖ = 1) : PartialHomeomorph (sphere (0 : E) 1) (ℝ ∙ v)ᗮ where
   toFun := stereoToFun v ∘ (↑)
   invFun := stereoInvFun hv
   source := {⟨v, by simp [hv]⟩}ᶜ
@@ -296,12 +296,12 @@ def stereographic (hv : ‖v‖ = 1) : LocalHomeomorph (sphere (0 : E) 1) (ℝ �
   right_inv' w _ := stereo_right_inv hv w
   open_source := isOpen_compl_singleton
   open_target := isOpen_univ
-  continuous_toFun :=
+  continuousOn_toFun :=
     continuousOn_stereoToFun.comp continuous_subtype_val.continuousOn fun w h => by
       dsimp
       exact
         h ∘ Subtype.ext ∘ Eq.symm ∘ (inner_eq_one_iff_of_norm_one hv (by simp)).mp
-  continuous_invFun := (continuous_stereoInvFun hv).continuousOn
+  continuousOn_invFun := (continuous_stereoInvFun hv).continuousOn
 #align stereographic stereographic
 
 theorem stereographic_apply (hv : ‖v‖ = 1) (x : sphere (0 : E) 1) :
@@ -364,10 +364,10 @@ space `E`.  This version has codomain the Euclidean space of dimension `n`, and 
 composing the original sterographic projection (`stereographic`) with an arbitrary linear isometry
 from `(ℝ ∙ v)ᗮ` to the Euclidean space. -/
 def stereographic' (n : ℕ) [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
-    LocalHomeomorph (sphere (0 : E) 1) (EuclideanSpace ℝ (Fin n)) :=
+    PartialHomeomorph (sphere (0 : E) 1) (EuclideanSpace ℝ (Fin n)) :=
   stereographic (norm_eq_of_mem_sphere v) ≫ₕ
     (OrthonormalBasis.fromOrthogonalSpanSingleton n
-            (ne_zero_of_mem_unit_sphere v)).repr.toHomeomorph.toLocalHomeomorph
+            (ne_zero_of_mem_unit_sphere v)).repr.toHomeomorph.toPartialHomeomorph
 #align stereographic' stereographic'
 
 @[simp]
@@ -382,7 +382,7 @@ theorem stereographic'_target {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphe
 
 /-- The unit sphere in an `n + 1`-dimensional inner product space `E` is a charted space
 modelled on the Euclidean space of dimension `n`. -/
-instance chartedSpace {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
+instance EuclideanSpace.instChartedSpaceSphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
     ChartedSpace (EuclideanSpace ℝ (Fin n)) (sphere (0 : E) 1) where
   atlas := {f | ∃ v : sphere (0 : E) 1, f = stereographic' n v}
   chartAt v := stereographic' n (-v)
@@ -411,7 +411,7 @@ theorem stereographic'_symm_apply {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : 
 
 /-- The unit sphere in an `n + 1`-dimensional inner product space `E` is a smooth manifold,
 modelled on the Euclidean space of dimension `n`. -/
-instance smoothMfldWithCorners {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
+instance EuclideanSpace.instSmoothManifoldWithCornersSphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
     SmoothManifoldWithCorners (𝓡 n) (sphere (0 : E) 1) :=
   smoothManifoldWithCorners_of_contDiffOn (𝓡 n) (sphere (0 : E) 1)
     (by
@@ -430,12 +430,12 @@ instance smoothMfldWithCorners {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
         (ℝ ∙ (v : E))ᗮ.subtypeL.contDiff).comp U.symm.contDiff
       convert H₁.comp' (H₂.contDiffOn : ContDiffOn ℝ ⊤ _ Set.univ) using 1
       -- -- squeezed from `ext, simp [sphere_ext_iff, stereographic'_symm_apply, real_inner_comm]`
-      simp only [LocalHomeomorph.trans_toLocalEquiv, LocalHomeomorph.symm_toLocalEquiv,
-        LocalEquiv.trans_source, LocalEquiv.symm_source, stereographic'_target,
+      simp only [PartialHomeomorph.trans_toPartialEquiv, PartialHomeomorph.symm_toPartialEquiv,
+        PartialEquiv.trans_source, PartialEquiv.symm_source, stereographic'_target,
         stereographic'_source]
       simp only [modelWithCornersSelf_coe, modelWithCornersSelf_coe_symm, Set.preimage_id,
         Set.range_id, Set.inter_univ, Set.univ_inter, Set.compl_singleton_eq, Set.preimage_setOf_eq]
-      simp only [id.def, comp_apply, Submodule.subtypeL_apply, LocalHomeomorph.coe_coe_symm,
+      simp only [id.def, comp_apply, Submodule.subtypeL_apply, PartialHomeomorph.coe_coe_symm,
         innerSL_apply, Ne.def, sphere_ext_iff, real_inner_comm (v' : E)]
       rfl)
 
@@ -443,7 +443,7 @@ instance smoothMfldWithCorners {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
 theorem contMDiff_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
     ContMDiff (𝓡 n) 𝓘(ℝ, E) ∞ ((↑) : sphere (0 : E) 1 → E) := by
   -- Porting note: trouble with filling these implicit variables in the instance
-  have := smoothMfldWithCorners (E := E) (n := n)
+  have := EuclideanSpace.instSmoothManifoldWithCornersSphere (E := E) (n := n)
   rw [contMDiff_iff]
   constructor
   · exact continuous_subtype_val
@@ -568,7 +568,7 @@ theorem mfderiv_coe_sphere_injective {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v
       (ℝ ∙ (↑(-v) : E))ᗮ.subtypeL (U.symm 0) := by
     convert hasFDerivAt_stereoInvFunAux_comp_coe (-v : E)
     simp
-  have := congr_arg FunLike.coe <| (this.comp 0 U.symm.toContinuousLinearEquiv.hasFDerivAt).fderiv
+  have := congr_arg DFunLike.coe <| (this.comp 0 U.symm.toContinuousLinearEquiv.hasFDerivAt).fderiv
   refine Eq.subst this.symm ?_
   rw [ContinuousLinearMap.coe_comp', ContinuousLinearEquiv.coe_coe]
   simpa using Subtype.coe_injective
@@ -589,10 +589,10 @@ attribute [local instance] finrank_real_complex_fact'
 /-- The unit circle in `ℂ` is a charted space modelled on `EuclideanSpace ℝ (Fin 1)`.  This
 follows by definition from the corresponding result for `Metric.Sphere`. -/
 instance : ChartedSpace (EuclideanSpace ℝ (Fin 1)) circle :=
-  chartedSpace
+  EuclideanSpace.instChartedSpaceSphere
 
 instance : SmoothManifoldWithCorners (𝓡 1) circle :=
-  smoothMfldWithCorners (E := ℂ)
+  EuclideanSpace.instSmoothManifoldWithCornersSphere (E := ℂ)
 
 /-- The unit circle in `ℂ` is a Lie group. -/
 instance : LieGroup (𝓡 1) circle where

@@ -493,13 +493,13 @@ set_option linter.uppercaseLean3 false in
 
 instance stalkFunctor_preserves_mono (x : X) :
     Functor.PreservesMonomorphisms (Sheaf.forget C X ⋙ stalkFunctor C x) :=
-  ⟨@fun _𝓐 _𝓑 f m =>
+  ⟨@fun _𝓐 _𝓑 f _ =>
     ConcreteCategory.mono_of_injective _ <|
       (app_injective_iff_stalkFunctor_map_injective f.1).mpr
         (fun c =>
           (@ConcreteCategory.mono_iff_injective_of_preservesPullback _ _ _ _ _ (f.1.app (op c))).mp
             ((NatTrans.mono_iff_mono_app _ f.1).mp
-                (@CategoryTheory.presheaf_mono_of_mono _ _ _ _ _ _ _ _ _ _ _ _ _ _ m) <|
+                (CategoryTheory.presheaf_mono_of_mono ..) <|
               op c))
         x⟩
 set_option linter.uppercaseLean3 false in

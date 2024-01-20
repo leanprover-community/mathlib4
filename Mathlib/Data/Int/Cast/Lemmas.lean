@@ -24,8 +24,7 @@ which were not available in the import dependencies of `Data.Int.Cast.Basic`.
 * `castRingHom`: `cast` bundled as a `RingHom`.
 -/
 
-
-open Nat
+open Additive Multiplicative Nat
 
 variable {F ι α β : Type*}
 
@@ -51,7 +50,7 @@ lemma toNat_lt' {a : ℤ} {b : ℕ} (hb : b ≠ 0) : a.toNat < b ↔ a < b := by
 #align int.to_nat_lt Int.toNat_lt'
 
 lemma natMod_lt {a : ℤ} {b : ℕ} (hb : b ≠ 0) : a.natMod b < b :=
-  (toNat_lt' hb).2 $ emod_lt_of_pos _ $ coe_nat_pos.2 hb.bot_lt
+  (toNat_lt' hb).2 <| emod_lt_of_pos _ <| coe_nat_pos.2 hb.bot_lt
 #align int.nat_mod_lt Int.natMod_lt
 
 section cast
@@ -74,8 +73,12 @@ theorem coe_castAddHom [AddGroupWithOne α] : ⇑(castAddHom α) = fun x : ℤ =
   rfl
 #align int.coe_cast_add_hom Int.coe_castAddHom
 
+section NonAssocRing
+variable [NonAssocRing α] {a b : α} {n : ℤ}
+
+variable (α) in
 /-- `coe : ℤ → α` as a `RingHom`. -/
-def castRingHom (α : Type*) [NonAssocRing α] : ℤ →+* α where
+def castRingHom : ℤ →+* α where
   toFun := Int.cast
   map_zero' := cast_zero
   map_add' := cast_add
@@ -83,25 +86,37 @@ def castRingHom (α : Type*) [NonAssocRing α] : ℤ →+* α where
   map_mul' := cast_mul
 #align int.cast_ring_hom Int.castRingHom
 
-@[simp]
-theorem coe_castRingHom [NonAssocRing α] : ⇑(castRingHom α) = fun x : ℤ => (x : α) :=
-  rfl
+@[simp] lemma coe_castRingHom : ⇑(castRingHom α) = fun x : ℤ ↦ (x : α) := rfl
 #align int.coe_cast_ring_hom Int.coe_castRingHom
 
-theorem cast_commute [NonAssocRing α] : ∀ (m : ℤ) (x : α), Commute (↑m) x
+lemma cast_commute : ∀ (n : ℤ) (a : α), Commute ↑n a
   | (n : ℕ), x => by simpa using n.cast_commute x
   | -[n+1], x => by
     simpa only [cast_negSucc, Commute.neg_left_iff, Commute.neg_right_iff] using
       (n + 1).cast_commute (-x)
 #align int.cast_commute Int.cast_commute
 
-theorem cast_comm [NonAssocRing α] (m : ℤ) (x : α) : (m : α) * x = x * m :=
-  (cast_commute m x).eq
+lemma cast_comm (n : ℤ) (x : α) : n * x = x * n := (cast_commute ..).eq
 #align int.cast_comm Int.cast_comm
 
-theorem commute_cast [NonAssocRing α] (x : α) (m : ℤ) : Commute x m :=
-  (m.cast_commute x).symm
+lemma commute_cast (a : α) (n : ℤ) : Commute a n := (cast_commute ..).symm
 #align int.commute_cast Int.commute_cast
+
+end NonAssocRing
+
+section Ring
+variable [Ring α]
+
+@[simp] lemma _root_.zsmul_eq_mul (a : α) : ∀ n : ℤ, n • a = n * a
+  | (n : ℕ) => by rw [coe_nat_zsmul, nsmul_eq_mul, Int.cast_ofNat]
+  | -[n+1] => by simp [Nat.cast_succ, neg_add_rev, Int.cast_negSucc, add_mul]
+#align zsmul_eq_mul zsmul_eq_mul
+
+lemma _root_.zsmul_eq_mul' (a : α) (n : ℤ) : n • a = a * n := by
+  rw [zsmul_eq_mul, (n.cast_commute a).eq]
+#align zsmul_eq_mul' zsmul_eq_mul'
+
+end Ring
 
 theorem cast_mono [OrderedRing α] : Monotone (fun x : ℤ => (x : α)) := by
   intro m n h
@@ -208,11 +223,84 @@ theorem coe_int_dvd [CommRing α] (m n : ℤ) (h : m ∣ n) : (m : α) ∣ (n : 
   RingHom.map_dvd (Int.castRingHom α) h
 #align int.coe_int_dvd Int.coe_int_dvd
 
+-- Porting note: `simp` and `norm_cast` attribute removed. This is a special case of `Nat.cast_pow`
+lemma coe_nat_pow (m n : ℕ) : ↑(m ^ n : ℕ) = (m ^ n : ℤ) := by
+  induction' m with m _ <;> simp
+#align int.coe_nat_pow Int.coe_nat_pow
+
 end cast
 
 end Int
 
 open Int
+
+namespace SemiconjBy
+variable [Ring α] {a x y : α}
+
+@[simp] lemma cast_int_mul_right (h : SemiconjBy a x y) (n : ℤ) : SemiconjBy a (n * x) (n * y) :=
+  SemiconjBy.mul_right (Int.commute_cast _ _) h
+#align semiconj_by.cast_int_mul_right SemiconjBy.cast_int_mul_right
+
+@[simp] lemma cast_int_mul_left (h : SemiconjBy a x y) (n : ℤ) : SemiconjBy (n * a) x y :=
+  SemiconjBy.mul_left (Int.cast_commute _ _) h
+#align semiconj_by.cast_int_mul_left SemiconjBy.cast_int_mul_left
+
+@[simp] lemma cast_int_mul_cast_int_mul (h : SemiconjBy a x y) (m n : ℤ) :
+    SemiconjBy (m * a) (n * x) (n * y) := (h.cast_int_mul_left m).cast_int_mul_right n
+#align semiconj_by.cast_int_mul_cast_int_mul SemiconjBy.cast_int_mul_cast_int_mul
+
+end SemiconjBy
+
+namespace Commute
+section NonAssocRing
+variable [NonAssocRing α] {a b : α} {n : ℤ}
+
+@[simp] lemma cast_int_left : Commute (n : α) a := Int.cast_commute _ _
+#align commute.cast_int_left Commute.cast_int_left
+
+@[simp] lemma cast_int_right : Commute a n := Int.commute_cast _ _
+#align commute.cast_int_right Commute.cast_int_right
+end NonAssocRing
+
+section Ring
+variable [Ring α] {a b : α} {n : ℤ}
+
+@[simp] lemma cast_int_mul_right (h : Commute a b) (m : ℤ) : Commute a (m * b) :=
+  SemiconjBy.cast_int_mul_right h m
+#align commute.cast_int_mul_right Commute.cast_int_mul_right
+
+@[simp] lemma cast_int_mul_left (h : Commute a b) (m : ℤ) : Commute (m  * a) b :=
+  SemiconjBy.cast_int_mul_left h m
+#align commute.cast_int_mul_left Commute.cast_int_mul_left
+
+lemma cast_int_mul_cast_int_mul (h : Commute a b) (m n : ℤ) : Commute (m * a) (n * b) :=
+  SemiconjBy.cast_int_mul_cast_int_mul h m n
+#align commute.cast_int_mul_cast_int_mul Commute.cast_int_mul_cast_int_mul
+
+variable (a) (m n : ℤ)
+
+/- Porting note: `simp` attribute removed as linter reports:
+simp can prove this:
+  by simp only [Commute.cast_int_right, Commute.refl, Commute.mul_right]
+-/
+-- @[simp]
+lemma self_cast_int_mul : Commute a (n * a : α) := (Commute.refl a).cast_int_mul_right n
+#align commute.self_cast_int_mul Commute.self_cast_int_mul
+
+/- Porting note: `simp` attribute removed as linter reports:
+simp can prove this:
+  by simp only [Commute.cast_int_left, Commute.refl, Commute.mul_left]
+-/
+-- @[simp]
+lemma cast_int_mul_self : Commute ((n : α) * a) a := (Commute.refl a).cast_int_mul_left n
+#align commute.cast_int_mul_self Commute.cast_int_mul_self
+
+lemma self_cast_int_mul_cast_int_mul : Commute (m * a : α) (n * a : α) :=
+  (Commute.refl a).cast_int_mul_cast_int_mul m n
+#align commute.self_cast_int_mul_cast_int_mul Commute.self_cast_int_mul_cast_int_mul
+
+end Ring
+end Commute
 
 namespace AddMonoidHom
 
@@ -223,7 +311,7 @@ if `f 1 = g 1`. -/
 @[ext high]
 theorem ext_int [AddMonoid A] {f g : ℤ →+ A} (h1 : f 1 = g 1) : f = g :=
   have : f.comp (Int.ofNatHom : ℕ →+ ℤ) = g.comp (Int.ofNatHom : ℕ →+ ℤ) := ext_nat' _ _ h1
-  have this' : ∀ n : ℕ, f n = g n := FunLike.ext_iff.1 this
+  have this' : ∀ n : ℕ, f n = g n := DFunLike.ext_iff.1 this
   ext fun n => match n with
   | (n : ℕ) => this' n
   | .negSucc n => eq_on_neg _ _ (this' <| n + 1)
@@ -239,8 +327,11 @@ end AddMonoidHom
 
 theorem eq_intCast' [AddGroupWithOne α] [AddMonoidHomClass F ℤ α] (f : F) (h₁ : f 1 = 1) :
     ∀ n : ℤ, f n = n :=
-  FunLike.ext_iff.1 <| (f : ℤ →+ α).eq_int_castAddHom h₁
+  DFunLike.ext_iff.1 <| (f : ℤ →+ α).eq_int_castAddHom h₁
 #align eq_int_cast' eq_intCast'
+
+@[simp] lemma zsmul_one [AddGroupWithOne α] (n : ℤ) : n • (1 : α) = n := by cases n <;> simp
+#align zsmul_one zsmul_one
 
 @[simp]
 theorem Int.castAddHom_int : Int.castAddHom ℤ = AddMonoidHom.id ℤ :=
@@ -263,10 +354,10 @@ theorem ext_mint {f g : Multiplicative ℤ →* M} (h1 : f (ofAdd 1) = g (ofAdd 
 theorem ext_int {f g : ℤ →* M} (h_neg_one : f (-1) = g (-1))
     (h_nat : f.comp Int.ofNatHom.toMonoidHom = g.comp Int.ofNatHom.toMonoidHom) : f = g := by
   ext (x | x)
-  · exact (FunLike.congr_fun h_nat x : _)
+  · exact (DFunLike.congr_fun h_nat x : _)
   · rw [Int.negSucc_eq, ← neg_one_mul, f.map_mul, g.map_mul]
     congr 1
-    exact mod_cast (FunLike.congr_fun h_nat (x + 1) : _)
+    exact mod_cast (DFunLike.congr_fun h_nat (x + 1) : _)
 #align monoid_hom.ext_int MonoidHom.ext_int
 
 end MonoidHom
@@ -281,7 +372,7 @@ theorem ext_int {f g : ℤ →*₀ M} (h_neg_one : f (-1) = g (-1))
     (h_nat : f.comp Int.ofNatHom.toMonoidWithZeroHom = g.comp Int.ofNatHom.toMonoidWithZeroHom) :
     f = g :=
   toMonoidHom_injective <| MonoidHom.ext_int h_neg_one <|
-    MonoidHom.ext (FunLike.congr_fun h_nat : _)
+    MonoidHom.ext (DFunLike.congr_fun h_nat : _)
 #align monoid_with_zero_hom.ext_int MonoidWithZeroHom.ext_int
 
 end MonoidWithZeroHom
@@ -289,9 +380,9 @@ end MonoidWithZeroHom
 /-- If two `MonoidWithZeroHom`s agree on `-1` and the _positive_ naturals then they are equal. -/
 theorem ext_int' [MonoidWithZero α] [MonoidWithZeroHomClass F ℤ α] {f g : F}
     (h_neg_one : f (-1) = g (-1)) (h_pos : ∀ n : ℕ, 0 < n → f n = g n) : f = g :=
-  (FunLike.ext _ _) fun n =>
+  (DFunLike.ext _ _) fun n =>
     haveI :=
-      FunLike.congr_fun
+      DFunLike.congr_fun
         (@MonoidWithZeroHom.ext_int _ _ (f : ℤ →*₀ α) (g : ℤ →*₀ α) h_neg_one <|
           MonoidWithZeroHom.ext_nat (h_pos _))
         n
@@ -359,6 +450,7 @@ theorem Sum.elim_intCast_intCast {α β γ : Type*} [IntCast γ] (n : ℤ) :
     Sum.elim (n : α → γ) (n : β → γ) = n :=
   Sum.elim_lam_const_lam_const (γ := γ) n
 #align sum.elim_int_cast_int_cast Sum.elim_intCast_intCast
+
 
 /-! ### Order dual -/
 

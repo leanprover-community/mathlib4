@@ -338,7 +338,7 @@ theorem _root_.Measurable.exists_continuous {α β : Type*} [t : TopologicalSpac
     exists_polishSpace_forall_le T Tt Tpolish
   refine' ⟨t', t't, _, t'_polish⟩
   have : Continuous[t', _] (rangeFactorization f) :=
-    hb.continuous _ fun s hs => t'T ⟨s, hs⟩ _ (Topen ⟨s, hs⟩)
+    hb.continuous_iff.2 fun s hs => t'T ⟨s, hs⟩ _ (Topen ⟨s, hs⟩)
   exact continuous_subtype_val.comp this
 #align measurable.exists_continuous Measurable.exists_continuous
 
@@ -651,7 +651,7 @@ namespace MeasureTheory
 
 variable {γ : Type*}
 
-/-- The Lusin-Souslin theorem: the range of a continuous injective function defined on a Polish
+/-- The **Lusin-Souslin theorem**: the range of a continuous injective function defined on a Polish
 space is Borel-measurable. -/
 theorem measurableSet_range_of_continuous_injective {β : Type*} [TopologicalSpace γ]
     [PolishSpace γ] [TopologicalSpace β] [T2Space β] [MeasurableSpace β] [OpensMeasurableSpace β]

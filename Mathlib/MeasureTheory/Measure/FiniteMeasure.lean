@@ -571,7 +571,7 @@ lemma injective_toWeakDualBCNN :
   intro μ ν hμν
   apply ext_of_forall_lintegral_eq
   intro f
-  have key := congr_fun (congrArg FunLike.coe hμν) f
+  have key := congr_fun (congrArg DFunLike.coe hμν) f
   apply (ENNReal.toNNReal_eq_toNNReal_iff' ?_ ?_).mp key
   · exact (lintegral_lt_top_of_nnreal μ f).ne
   · exact (lintegral_lt_top_of_nnreal ν f).ne
@@ -744,6 +744,9 @@ noncomputable def map (ν : FiniteMeasure Ω) (f : Ω → Ω') : FiniteMeasure �
       exact measure_lt_top (↑ν) (f ⁻¹' univ)
     · simp [Measure.map, f_aemble]⟩
 
+@[simp] lemma toMeasure_map (ν : FiniteMeasure Ω) (f : Ω → Ω') :
+    (ν.map f).toMeasure = ν.toMeasure.map f := rfl
+
 /-- Note that this is an equality of elements of `ℝ≥0∞`. See also
 `MeasureTheory.FiniteMeasure.map_apply` for the corresponding equality as elements of `ℝ≥0`. -/
 lemma map_apply' (ν : FiniteMeasure Ω) {f : Ω → Ω'} (f_aemble : AEMeasurable f ν)
@@ -757,7 +760,7 @@ lemma map_apply_of_aemeasurable (ν : FiniteMeasure Ω) {f : Ω → Ω'} (f_aemb
   have := ν.map_apply' f_aemble A_mble
   exact (ENNReal.toNNReal_eq_toNNReal_iff' (measure_ne_top _ _) (measure_ne_top _ _)).mpr this
 
-@[simp] lemma map_apply (ν : FiniteMeasure Ω) {f : Ω → Ω'} (f_mble : Measurable f)
+lemma map_apply (ν : FiniteMeasure Ω) {f : Ω → Ω'} (f_mble : Measurable f)
     {A : Set Ω'} (A_mble : MeasurableSet A) :
     ν.map f A = ν (f ⁻¹' A) :=
   map_apply_of_aemeasurable ν f_mble.aemeasurable A_mble
@@ -765,19 +768,19 @@ lemma map_apply_of_aemeasurable (ν : FiniteMeasure Ω) {f : Ω → Ω'} (f_aemb
 @[simp] lemma map_add {f : Ω → Ω'} (f_mble : Measurable f) (ν₁ ν₂ : FiniteMeasure Ω) :
     (ν₁ + ν₂).map f = ν₁.map f + ν₂.map f := by
   ext s s_mble
-  simp [map_apply' _ f_mble.aemeasurable s_mble, toMeasure_add]
+  simp only [map_apply' _ f_mble.aemeasurable s_mble, toMeasure_add, Measure.add_apply]
 
-@[simp] lemma map_smul {f : Ω → Ω'} (f_mble : Measurable f) (c : ℝ≥0) (ν : FiniteMeasure Ω) :
+@[simp] lemma map_smul {f : Ω → Ω'} (c : ℝ≥0) (ν : FiniteMeasure Ω) :
     (c • ν).map f = c • (ν.map f) := by
-  ext s s_mble
-  simp [map_apply' _ f_mble.aemeasurable s_mble, toMeasure_smul]
+  ext s _
+  simp [toMeasure_smul]
 
 /-- The push-forward of a finite measure by a function between measurable spaces as a linear map. -/
 noncomputable def mapHom {f : Ω → Ω'} (f_mble : Measurable f) :
     FiniteMeasure Ω →ₗ[ℝ≥0] FiniteMeasure Ω' where
   toFun := fun ν ↦ ν.map f
   map_add' := map_add f_mble
-  map_smul' := map_smul f_mble
+  map_smul' := map_smul
 
 variable [TopologicalSpace Ω] [OpensMeasurableSpace Ω]
 variable [TopologicalSpace Ω'] [BorelSpace Ω']
@@ -810,7 +813,7 @@ noncomputable def mapClm {f : Ω → Ω'} (f_cont : Continuous f) :
     FiniteMeasure Ω →L[ℝ≥0] FiniteMeasure Ω' where
   toFun := fun ν ↦ ν.map f
   map_add' := map_add f_cont.measurable
-  map_smul' := map_smul f_cont.measurable
+  map_smul' := map_smul
   cont := continuous_map f_cont
 
 end map -- section

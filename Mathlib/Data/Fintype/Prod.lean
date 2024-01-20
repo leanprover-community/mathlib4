@@ -44,11 +44,16 @@ end Set
 instance instFintypeProd (α β : Type*) [Fintype α] [Fintype β] : Fintype (α × β) :=
   ⟨univ ×ˢ univ, fun ⟨a, b⟩ => by simp⟩
 
-@[simp]
-theorem Finset.univ_product_univ {α β : Type*} [Fintype α] [Fintype β] :
-    (univ : Finset α) ×ˢ (univ : Finset β) = univ :=
-  rfl
+namespace Finset
+variable [Fintype α] [Fintype β] {s : Finset α} {t : Finset β}
+
+@[simp] lemma univ_product_univ : univ ×ˢ univ = (univ : Finset (α × β)) := rfl
 #align finset.univ_product_univ Finset.univ_product_univ
+
+@[simp] lemma product_eq_univ [Nonempty α] [Nonempty β] : s ×ˢ t = univ ↔ s = univ ∧ t = univ := by
+  simp [eq_univ_iff_forall, forall_and]
+
+end Finset
 
 @[simp]
 theorem Fintype.card_prod (α β : Type*) [Fintype α] [Fintype β] :

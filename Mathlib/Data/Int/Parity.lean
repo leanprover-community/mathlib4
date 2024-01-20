@@ -104,8 +104,7 @@ theorem not_even_one : ¬Even (1 : ℤ) := by
 theorem even_add : Even (m + n) ↔ (Even m ↔ Even n) := by
   cases' emod_two_eq_zero_or_one m with h₁ h₁ <;>
   cases' emod_two_eq_zero_or_one n with h₂ h₂ <;>
-  simp [even_iff, h₁, h₂, Int.add_emod]
-  rfl
+  simp [even_iff, h₁, h₂, Int.add_emod, one_add_one_eq_two, emod_self]
 #align int.even_add Int.even_add
 
 theorem even_add' : Even (m + n) ↔ (Odd m ↔ Odd n) := by

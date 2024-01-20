@@ -187,7 +187,7 @@ theorem isClosed_closedBall (x' : Dual 𝕜 E) (r : ℝ) : IsClosed (toNormedDua
 
 variable (𝕜)
 
-/-- The polar set `polar 𝕜 s` of `s : set E` seen as a subset of the dual of `E` with the
+/-- The polar set `polar 𝕜 s` of `s : Set E` seen as a subset of the dual of `E` with the
 weak-star topology is `WeakDual.polar 𝕜 s`. -/
 def polar (s : Set E) : Set (WeakDual 𝕜 E) :=
   toNormedDual ⁻¹' (NormedSpace.polar 𝕜) s
@@ -216,7 +216,7 @@ theorem isClosed_image_coe_of_bounded_of_closed {s : Set (WeakDual 𝕜 E)}
 
 theorem isCompact_of_bounded_of_closed [ProperSpace 𝕜] {s : Set (WeakDual 𝕜 E)}
     (hb : IsBounded (Dual.toWeakDual ⁻¹' s)) (hc : IsClosed s) : IsCompact s :=
-  (Embedding.isCompact_iff FunLike.coe_injective.embedding_induced).mpr <|
+  (Embedding.isCompact_iff DFunLike.coe_injective.embedding_induced).mpr <|
     ContinuousLinearMap.isCompact_image_coe_of_bounded_of_closed_image hb <|
       isClosed_image_coe_of_bounded_of_closed hb hc
 #align weak_dual.is_compact_of_bounded_of_closed WeakDual.isCompact_of_bounded_of_closed

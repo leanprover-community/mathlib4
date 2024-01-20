@@ -7,7 +7,6 @@ import Mathlib.Algebra.Algebra.Pi
 import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Analysis.Normed.MulAction
-import Mathlib.Data.Real.Sqrt
 import Mathlib.Topology.Algebra.Module.Basic
 
 #align_import analysis.normed_space.basic from "leanprover-community/mathlib"@"bc91ed7093bf098d253401e69df601fc33dde156"
@@ -396,8 +395,8 @@ section NormedAlgebra
 See the implementation notes for `Algebra` for a discussion about non-unital algebras. Following
 the strategy there, a non-unital *normed* algebra can be written as:
 ```lean
-variables [NormedField 𝕜] [NonunitalSeminormedRing 𝕜']
-variables [NormedModule 𝕜 𝕜'] [SMulCommClass 𝕜 𝕜' 𝕜'] [IsScalarTower 𝕜 𝕜' 𝕜']
+variables [NormedField 𝕜] [NonUnitalSeminormedRing 𝕜']
+variables [NormedSpace 𝕜 𝕜'] [SMulCommClass 𝕜 𝕜' 𝕜'] [IsScalarTower 𝕜 𝕜' 𝕜']
 ```
 -/
 class NormedAlgebra (𝕜 : Type*) (𝕜' : Type*) [NormedField 𝕜] [SeminormedRing 𝕜'] extends

@@ -129,16 +129,6 @@ section deprecated
 set_option linter.deprecated false
 
 @[norm_cast, deprecated]
-theorem ofNat_bit0 (n : ℕ) : (↑(bit0 n) : ℤ) = bit0 ↑n :=
-  rfl
-#align int.coe_nat_bit0 Int.ofNat_bit0
-
-@[norm_cast, deprecated]
-theorem ofNat_bit1 (n : ℕ) : (↑(bit1 n) : ℤ) = bit1 ↑n :=
-  rfl
-#align int.coe_nat_bit1 Int.ofNat_bit1
-
-@[norm_cast, deprecated]
 theorem cast_bit0 (n : ℤ) : ((bit0 n : ℤ) : R) = bit0 (n : R) :=
   Int.cast_add _ _
 #align int.cast_bit0 Int.cast_bit0

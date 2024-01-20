@@ -123,8 +123,6 @@ There are a few design decisions worth discussing.
   with minimal fuss (using default values).
   The tactic works fairly well, but has room for improvement.
   Even though the carrier set is written `M.E`,
-  we mirror common informal practice by referring explicitly to the `ground` set
-  rather than the notation `E` in lemma names.
 
   A related decision is to not have matroids themselves be a typeclass.
   This would make things be notationally simpler
@@ -133,6 +131,20 @@ There are a few design decisions worth discussing.
   In fact, in regular written mathematics,
   it is normal to explicitly indicate which matroid something is happening in,
   so our notation mirrors common practice.
+
+### Notation
+  We use a couple of nonstandard conventions in theorem names that are related to the above.
+  First, we mirror common informal practice by referring explicitly to the `ground` set rather
+  than the notation `E`. (Writing `ground` everywhere in a proof term would be unwieldy, and
+  writing `E` in theorem names would be unnatural to read.)
+
+  Second, because we are typically interested in subsets of the ground set `M.E`,
+  using `Set.compl` is inconvenient, since `Xᶜ ⊆ M.E` is typically false for `X ⊆ M.E`.
+  On the other hand (especially when duals arise), it is common to complement
+  a set `X ⊆ M.E` *within* the ground set, giving `M.E \ X`.
+  For this reason, we use the term `compl` in theorem names to refer to taking a set difference
+  with respect to the ground set, rather than a complement within a type. The lemma
+  `compl_base_dual` is one of the many examples of this.
 
 ## References
 
@@ -549,7 +561,7 @@ theorem Base.dep_of_insert (hB : M.Base B) (heB : e ∉ B) (he : e ∈ M.E := by
     M.Dep (insert e B) := hB.dep_of_ssubset (ssubset_insert heB) (insert_subset he hB.subset_ground)
 
 theorem Base.mem_of_insert_indep (hB : M.Base B) (heB : M.Indep (insert e B)) : e ∈ B :=
-  by_contra <| fun he ↦ (hB.dep_of_insert he (heB.subset_ground (mem_insert _ _))).not_indep heB
+  by_contra fun he ↦ (hB.dep_of_insert he (heB.subset_ground (mem_insert _ _))).not_indep heB
 
 /-- If the difference of two Bases is a singleton, then they differ by an insertion/removal -/
 theorem Base.eq_exchange_of_diff_eq_singleton (hB : M.Base B) (hB' : M.Base B') (h : B \ B' = {e}) :
@@ -648,7 +660,7 @@ instance finitary_of_finiteRk {M : Matroid α} [FiniteRk M] : Finitary M :=
   obtain ⟨B, hB⟩ := M.exists_base
   obtain ⟨I₀, hI₀I, hI₀fin, hI₀card⟩ := h.exists_subset_ncard_eq (B.ncard + 1)
   obtain ⟨B', hB', hI₀B'⟩ := hI _ hI₀I hI₀fin
-  have hle := ncard_le_of_subset hI₀B' hB'.finite
+  have hle := ncard_le_ncard hI₀B' hB'.finite
   rw [hI₀card, hB'.ncard_eq_ncard_of_base hB, Nat.add_one_le_iff] at hle
   exact hle.ne rfl ⟩
 

@@ -413,6 +413,15 @@ theorem Isometry.norm_map_of_map_one {f : E → F} (hi : Isometry f) (h₁ : f 1
 theorem comap_norm_atTop' : comap norm atTop = cobounded E := by
   simpa only [dist_one_right] using comap_dist_right_atTop (1 : E)
 
+@[to_additive Filter.HasBasis.cobounded_of_norm]
+lemma Filter.HasBasis.cobounded_of_norm' {ι : Sort*} {p : ι → Prop} {s : ι → Set ℝ}
+    (h : HasBasis atTop p s) : HasBasis (cobounded E) p fun i ↦ norm ⁻¹' s i :=
+  comap_norm_atTop' (E := E) ▸ h.comap _
+
+@[to_additive Filter.hasBasis_cobounded_norm]
+lemma Filter.hasBasis_cobounded_norm' : HasBasis (cobounded E) (fun _ ↦ True) ({x | · ≤ ‖x‖}) :=
+  atTop_basis.cobounded_of_norm'
+
 @[to_additive (attr := simp) tendsto_norm_atTop_iff_cobounded]
 theorem tendsto_norm_atTop_iff_cobounded' {f : α → E} {l : Filter α} :
     Tendsto (‖f ·‖) l atTop ↔ Tendsto f l (cobounded E) := by
@@ -443,6 +452,7 @@ theorem norm_inv' (a : E) : ‖a⁻¹‖ = ‖a‖ := by simpa using norm_div_re
 #align norm_inv' norm_inv'
 #align norm_neg norm_neg
 
+open scoped symmDiff in
 @[to_additive]
 theorem dist_mulIndicator (s t : Set α) (f : α → E) (x : α) :
     dist (s.mulIndicator f x) (t.mulIndicator f x) = ‖(s ∆ t).mulIndicator f x‖ := by
@@ -501,6 +511,10 @@ theorem norm_mul₃_le (a b c : E) : ‖a * b * c‖ ≤ ‖a‖ + ‖b‖ + ‖
   norm_mul_le_of_le (norm_mul_le' _ _) le_rfl
 #align norm_mul₃_le norm_mul₃_le
 #align norm_add₃_le norm_add₃_le
+
+@[to_additive]
+lemma norm_div_le_norm_div_add_norm_div (a b c : E) : ‖a / c‖ ≤ ‖a / b‖ + ‖b / c‖ := by
+  simpa only [dist_eq_norm_div] using dist_triangle a b c
 
 @[to_additive (attr := simp) norm_nonneg]
 theorem norm_nonneg' (a : E) : 0 ≤ ‖a‖ := by
@@ -960,6 +974,7 @@ theorem nnnorm_inv' (a : E) : ‖a⁻¹‖₊ = ‖a‖₊ :=
 #align nnnorm_inv' nnnorm_inv'
 #align nnnorm_neg nnnorm_neg
 
+open scoped symmDiff in
 @[to_additive]
 theorem nndist_mulIndicator (s t : Set α) (f : α → E) (x : α) :
     nndist (s.mulIndicator f x) (t.mulIndicator f x) = ‖(s ∆ t).mulIndicator f x‖₊ :=
@@ -1019,6 +1034,7 @@ theorem edist_eq_coe_nnnorm' (x : E) : edist x 1 = (‖x‖₊ : ℝ≥0∞) := 
 #align edist_eq_coe_nnnorm' edist_eq_coe_nnnorm'
 #align edist_eq_coe_nnnorm edist_eq_coe_nnnorm
 
+open scoped symmDiff in
 @[to_additive]
 theorem edist_mulIndicator (s t : Set α) (f : α → E) (x : α) :
     edist (s.mulIndicator f x) (t.mulIndicator f x) = ‖(s ∆ t).mulIndicator f x‖₊ := by
@@ -1213,7 +1229,7 @@ theorem Filter.Tendsto.op_one_isBoundedUnder_le' {f : α → E} {g : α → F} {
   rcases exists_pos_mul_lt ε₀ (A * C) with ⟨δ, δ₀, hδ⟩
   filter_upwards [hf δ δ₀, hC] with i hf hg
   refine' (h_op _ _).trans_lt _
-  cases' le_total A 0 with hA hA
+  rcases le_total A 0 with hA | hA
   · exact (mul_nonpos_of_nonpos_of_nonneg (mul_nonpos_of_nonpos_of_nonneg hA <| norm_nonneg' _) <|
       norm_nonneg' _).trans_lt ε₀
   calc
@@ -1582,7 +1598,7 @@ theorem mul_mem_closedBall_iff_norm : a * b ∈ closedBall a r ↔ ‖b‖ ≤ r
 
 @[to_additive (attr := simp 1001)]
 -- porting note: increase priority so that the left-hand side doesn't simplify
-theorem preimage_mul_ball (a b : E) (r : ℝ) : (· * ·) b ⁻¹' ball a r = ball (a / b) r := by
+theorem preimage_mul_ball (a b : E) (r : ℝ) : (b * ·) ⁻¹' ball a r = ball (a / b) r := by
   ext c
   simp only [dist_eq_norm_div, Set.mem_preimage, mem_ball, div_div_eq_mul_div, mul_comm]
 #align preimage_mul_ball preimage_mul_ball
@@ -1591,14 +1607,14 @@ theorem preimage_mul_ball (a b : E) (r : ℝ) : (· * ·) b ⁻¹' ball a r = ba
 @[to_additive (attr := simp 1001)]
 -- porting note: increase priority so that the left-hand side doesn't simplify
 theorem preimage_mul_closedBall (a b : E) (r : ℝ) :
-    (· * ·) b ⁻¹' closedBall a r = closedBall (a / b) r := by
+    (b * ·) ⁻¹' closedBall a r = closedBall (a / b) r := by
   ext c
   simp only [dist_eq_norm_div, Set.mem_preimage, mem_closedBall, div_div_eq_mul_div, mul_comm]
 #align preimage_mul_closed_ball preimage_mul_closedBall
 #align preimage_add_closed_ball preimage_add_closedBall
 
 @[to_additive (attr := simp)]
-theorem preimage_mul_sphere (a b : E) (r : ℝ) : (· * ·) b ⁻¹' sphere a r = sphere (a / b) r := by
+theorem preimage_mul_sphere (a b : E) (r : ℝ) : (b * ·) ⁻¹' sphere a r = sphere (a / b) r := by
   ext c
   simp only [Set.mem_preimage, mem_sphere_iff_norm', div_div_eq_mul_div, mul_comm]
 #align preimage_mul_sphere preimage_mul_sphere
@@ -2005,7 +2021,7 @@ theorem cauchySeq_prod_of_eventually_eq {u v : ℕ → E} {N : ℕ} (huv : ∀ n
   let d : ℕ → E := fun n => ∏ k in range (n + 1), u k / v k
   rw [show (fun n => ∏ k in range (n + 1), u k) = d * fun n => ∏ k in range (n + 1), v k
       by ext n; simp]
-  suffices ∀ n ≥ N, d n = d N by exact (tendsto_atTop_of_eventually_const this).cauchySeq.mul hv
+  suffices ∀ n ≥ N, d n = d N from (tendsto_atTop_of_eventually_const this).cauchySeq.mul hv
   intro n hn
   dsimp
   rw [eventually_constant_prod _ (add_le_add_right hn 1)]
@@ -2078,6 +2094,9 @@ theorem nnnorm_ne_zero_iff' : ‖a‖₊ ≠ 0 ↔ a ≠ 1 :=
   nnnorm_eq_zero'.not
 #align nnnorm_ne_zero_iff' nnnorm_ne_zero_iff'
 #align nnnorm_ne_zero_iff nnnorm_ne_zero_iff
+
+@[to_additive (attr := simp) nnnorm_pos]
+lemma nnnorm_pos' : 0 < ‖a‖₊ ↔ a ≠ 1 := pos_iff_ne_zero.trans nnnorm_ne_zero_iff'
 
 @[to_additive]
 theorem tendsto_norm_div_self_punctured_nhds (a : E) :

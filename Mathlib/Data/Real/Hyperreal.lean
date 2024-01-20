@@ -89,8 +89,11 @@ theorem coe_add (x y : ℝ) : ↑(x + y) = (x + y : ℝ*) :=
 #noalign hyperreal.coe_bit0
 #noalign hyperreal.coe_bit1
 
+-- See note [no_index around OfNat.ofNat]
 @[simp, norm_cast]
-theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] : ((OfNat.ofNat n : ℝ) : ℝ*) = OfNat.ofNat n := rfl
+theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] :
+    ((no_index (OfNat.ofNat n : ℝ)) : ℝ*) = OfNat.ofNat n :=
+  rfl
 
 @[simp, norm_cast]
 theorem coe_mul (x y : ℝ) : ↑(x * y) = (x * y : ℝ*) :=
@@ -291,7 +294,7 @@ theorem not_infinite_of_exists_st {x : ℝ*} : (∃ r : ℝ, IsSt x r) → ¬Inf
 #align hyperreal.not_infinite_of_exists_st Hyperreal.not_infinite_of_exists_st
 
 theorem Infinite.st_eq {x : ℝ*} (hi : Infinite x) : st x = 0 :=
-  dif_neg <| fun ⟨_r, hr⟩ ↦ hr.not_infinite hi
+  dif_neg fun ⟨_r, hr⟩ ↦ hr.not_infinite hi
 #align hyperreal.st_infinite Hyperreal.Infinite.st_eq
 
 theorem isSt_sSup {x : ℝ*} (hni : ¬Infinite x) : IsSt x (sSup { y : ℝ | (y : ℝ*) < x }) :=
@@ -410,7 +413,7 @@ theorem IsSt.sub {x y : ℝ*} {r s : ℝ} (hxr : IsSt x r) (hys : IsSt y s) : Is
 #align hyperreal.is_st_sub Hyperreal.IsSt.sub
 
 theorem IsSt.le {x y : ℝ*} {r s : ℝ} (hrx : IsSt x r) (hsy : IsSt y s) (hxy : x ≤ y) : r ≤ s :=
-  not_lt.1 <| fun h ↦ hxy.not_lt <| hsy.lt hrx h
+  not_lt.1 fun h ↦ hxy.not_lt <| hsy.lt hrx h
 #align hyperreal.is_st_le_of_le Hyperreal.IsSt.le
 
 theorem st_le_of_le {x y : ℝ*} (hix : ¬Infinite x) (hiy : ¬Infinite y) : x ≤ y → st x ≤ st y :=

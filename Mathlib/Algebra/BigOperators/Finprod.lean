@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Kevin Buzzard, Yury Kudryashov
 -/
 import Mathlib.Algebra.BigOperators.Order
-import Mathlib.Algebra.IndicatorFunction
+import Mathlib.Algebra.Function.Finite
+import Mathlib.Algebra.Module.Basic
 
 #align_import algebra.big_operators.finprod from "leanprover-community/mathlib"@"d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce"
 
@@ -290,7 +291,7 @@ theorem one_le_finprod' {M : Type*} [OrderedCommMonoid M] {f : α → M} (hf : �
 theorem MonoidHom.map_finprod_plift (f : M →* N) (g : α → M)
     (h : (mulSupport <| g ∘ PLift.down).Finite) : f (∏ᶠ x, g x) = ∏ᶠ x, f (g x) := by
   rw [finprod_eq_prod_plift_of_mulSupport_subset h.coe_toFinset.ge,
-    finprod_eq_prod_plift_of_mulSupport_subset, f.map_prod]
+    finprod_eq_prod_plift_of_mulSupport_subset, map_prod]
   rw [h.coe_toFinset]
   exact mulSupport_comp_subset f.map_one (g ∘ PLift.down)
 #align monoid_hom.map_finprod_plift MonoidHom.map_finprod_plift
@@ -1239,14 +1240,10 @@ theorem finprod_mem_finset_product' [DecidableEq α] [DecidableEq β] (s : Finse
     (f : α × β → M) :
     (∏ᶠ (ab) (_ : ab ∈ s), f ab) =
       ∏ᶠ (a) (b) (_ : b ∈ (s.filter fun ab => Prod.fst ab = a).image Prod.snd), f (a, b) := by
-  have :
-    ∀ a,
-      (∏ i : β in (s.filter fun ab => Prod.fst ab = a).image Prod.snd, f (a, i)) =
-        (Finset.filter (fun ab => Prod.fst ab = a) s).prod f := by
-    refine' fun a => Finset.prod_bij (fun b _ => (a, b)) _ _ _ _ <;> simp
-    suffices ∀ a' b, (a', b) ∈ s → a' = a → (a, b) ∈ s ∧ a' = a by simpa
-    rintro a' b hp rfl
-    exact ⟨hp, rfl⟩
+  have (a) :
+      ∏ i in (s.filter fun ab => Prod.fst ab = a).image Prod.snd, f (a, i) =
+        (s.filter (Prod.fst · = a)).prod f := by
+    refine Finset.prod_nbij' (fun b ↦ (a, b)) Prod.snd ?_ ?_ ?_ ?_ ?_ <;> aesop
   rw [finprod_mem_finset_eq_prod]
   simp_rw [finprod_mem_finset_eq_prod, this]
   rw [finprod_eq_prod_of_mulSupport_subset _

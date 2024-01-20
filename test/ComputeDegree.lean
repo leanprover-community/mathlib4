@@ -154,6 +154,9 @@ example (h : n ≤ 5) : natDegree (monomial n (5 + n : R)) ≤ 5 := by compute_d
 --  Expr.fvar
 example {f : R[X]} : natDegree f ≤ natDegree f := by compute_degree
 
+example {R} [Semiring R] [Nontrivial R] : Monic (1 * X ^ 5 + X ^ 6 * monomial 10 1 : R[X]) := by
+  monicity!
+
 end native_mathlib4_tests
 
 section tests_from_mathlib3
@@ -218,5 +221,14 @@ example : natDegree (C a * C b + X + monomial 3 4 * X) ≤ 4 := by compute_degre
 example {F} [Ring F] {a : F} : natDegree (X ^ 3 + C a * X ^ 10 : F[X]) ≤ 10 := by compute_degree
 
 example [Semiring R] : natDegree (7 * X : R[X]) ≤ 1 := by compute_degree
+
+example [Semiring R] {a : R} : natDegree (a • X ^ 5 : R[X]) ≤ 5 := by
+  compute_degree
+
+example [Semiring R] {a : R} (a0 : a ≠ 0) : natDegree (a • X ^ 5 + X : R[X]) = 5 := by
+  compute_degree!
+
+example [Semiring R] {a : R} (a0 : a ≠ 0) : degree (a • X ^ 5 + X ^ 2 : R[X]) = 5 := by
+  compute_degree!
 
 end tests_from_mathlib3

@@ -102,9 +102,9 @@ def lift (f : ∀ i, G i →* K) (k : H →* K)
     (hf : ∀ i, (f i).comp (φ i) = k) :
     PushoutI φ →* K :=
   Con.lift _ (Coprod.lift (CoprodI.lift f) k) <| by
-    apply Con.conGen_le <| fun x y => ?_
+    apply Con.conGen_le fun x y => ?_
     rintro ⟨i, x', rfl, rfl⟩
-    simp only [FunLike.ext_iff, MonoidHom.coe_comp, comp_apply] at hf
+    simp only [DFunLike.ext_iff, MonoidHom.coe_comp, comp_apply] at hf
     simp [hf]
 
 @[simp]
@@ -151,9 +151,9 @@ def homEquiv :
   { toFun := fun f => ⟨(fun i => f.comp (of i), f.comp (base φ)),
       fun i => by rw [MonoidHom.comp_assoc, of_comp_eq_base]⟩
     invFun := fun f => lift f.1.1 f.1.2 f.2,
-    left_inv := fun _ => hom_ext (by simp [FunLike.ext_iff])
-      (by simp [FunLike.ext_iff])
-    right_inv := fun ⟨⟨_, _⟩, _⟩ => by simp [FunLike.ext_iff, Function.funext_iff] }
+    left_inv := fun _ => hom_ext (by simp [DFunLike.ext_iff])
+      (by simp [DFunLike.ext_iff])
+    right_inv := fun ⟨⟨_, _⟩, _⟩ => by simp [DFunLike.ext_iff, Function.funext_iff] }
 
 /-- The map from the coproduct into the pushout -/
 def ofCoprodI : CoprodI G →* PushoutI φ :=
@@ -220,18 +220,16 @@ variable (φ)
 canonical element of each coset. We also need all the maps in the diagram to be injective  -/
 structure Transversal : Type _ where
   /-- All maps in the diagram are injective -/
-  ( injective : ∀ i, Injective (φ i) )
+  injective : ∀ i, Injective (φ i)
   /-- The underlying set, containing exactly one element of each coset of the base group -/
-  ( set : ∀ i, Set (G i) )
+  set : ∀ i, Set (G i)
   /-- The chosen element of the base group itself is the identity -/
-  ( one_mem : ∀ i, 1 ∈ set i )
+  one_mem : ∀ i, 1 ∈ set i
   /-- We have exactly one element of each coset of the base group -/
-  ( compl : ∀ i, IsComplement (φ i).range (set i) )
+  compl : ∀ i, IsComplement (φ i).range (set i)
 
 theorem transversal_nonempty (hφ : ∀ i, Injective (φ i)) : Nonempty (Transversal φ) := by
-  have := fun i => exists_right_transversal (H := (φ i).range) 1
-  simp only [Classical.skolem] at this
-  rcases this with ⟨t, ht⟩
+  choose t ht using fun i => (φ i).range.exists_right_transversal 1
   apply Nonempty.intro
   exact
     { injective := hφ
@@ -444,7 +442,7 @@ noncomputable instance mulAction [DecidableEq ι] [∀ i, DecidableEq (G i)] :
       (fun i => MulAction.toEndHom)
       MulAction.toEndHom <| by
     intro i
-    simp only [MulAction.toEndHom, FunLike.ext_iff, MonoidHom.coe_comp, MonoidHom.coe_mk,
+    simp only [MulAction.toEndHom, DFunLike.ext_iff, MonoidHom.coe_comp, MonoidHom.coe_mk,
       OneHom.coe_mk, comp_apply]
     intro h
     funext w

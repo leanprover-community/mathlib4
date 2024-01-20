@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne
 -/
 import Mathlib.Analysis.Calculus.Deriv.Pow
-import Mathlib.Analysis.Calculus.Deriv.Inv
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 
@@ -260,7 +259,7 @@ theorem abs_log_sub_add_sum_range_le {x : ℝ} (h : |x| < 1) (n : ℕ) :
       (fun y hy ↦ (A _ ?_).hasDerivWithinAt) B (convex_Icc _ _) ?_ ?_
     · exact Icc_subset_Ioo (neg_lt_neg h) h hy
     · simp
-    · simp [le_abs_self x, neg_le.mp (neg_le_abs_self x)]
+    · simp [le_abs_self x, neg_le.mp (neg_le_abs x)]
   -- fourth step: conclude by massaging the inequality of the third step
   simpa [div_mul_eq_mul_div, pow_succ'] using C
 #align real.abs_log_sub_add_sum_range_le Real.abs_log_sub_add_sum_range_le
@@ -297,7 +296,7 @@ theorem hasSum_log_sub_log_of_abs_lt_1 {x : ℝ} (h : |x| < 1) :
       (log (1 + x) - log (1 - x)) := by
   set term := fun n : ℕ => -1 * ((-x) ^ (n + 1) / ((n : ℝ) + 1)) + x ^ (n + 1) / (n + 1)
   have h_term_eq_goal :
-      term ∘ (· * ·) 2 = fun k : ℕ => 2 * (1 / (2 * k + 1)) * x ^ (2 * k + 1) := by
+      term ∘ (2 * ·) = fun k : ℕ => 2 * (1 / (2 * k + 1)) * x ^ (2 * k + 1) := by
     ext n
     dsimp only [(· ∘ ·)]
     rw [Odd.neg_pow (⟨n, rfl⟩ : Odd (2 * n + 1)) x]

@@ -55,7 +55,7 @@ section TotallySeparated
 instance [ExtremallyDisconnected X] [T2Space X] : TotallySeparatedSpace X :=
 { isTotallySeparated_univ := by
     intro x _ y _ hxy
-    obtain ⟨U, V, hUV⟩ := T2Space.t2 x y hxy
+    obtain ⟨U, V, hUV⟩ := T2Space.t2 hxy
     refine ⟨closure U, (closure U)ᶜ, ExtremallyDisconnected.open_closure U hUV.1,
       by simp only [isOpen_compl_iff, isClosed_closure], subset_closure hUV.2.2.1, ?_,
       by simp only [Set.union_compl_self, Set.subset_univ], disjoint_compl_right⟩
@@ -90,7 +90,7 @@ theorem StoneCech.projective [DiscreteTopology X] : CompactT2.Projective (StoneC
   let h : StoneCech X → Y := stoneCechExtend ht
   have hh : Continuous h := continuous_stoneCechExtend ht
   refine' ⟨h, hh, denseRange_stoneCechUnit.equalizer (hg.comp hh) hf _⟩
-  rw [comp.assoc, stoneCechExtend_extends ht, ← comp.assoc, hs, comp.left_id]
+  rw [comp.assoc, stoneCechExtend_extends ht, ← comp.assoc, hs, id_comp]
 #align stone_cech.projective StoneCech.projective
 
 protected theorem CompactT2.Projective.extremallyDisconnected [CompactSpace X] [T2Space X]
@@ -274,7 +274,7 @@ protected theorem CompactT2.ExtremallyDisconnected.projective [ExtremallyDisconn
   have π₂_cont : Continuous π₂ := continuous_snd.comp continuous_subtype_val
   refine ⟨E.restrict π₂ ∘ ρ'.symm, ⟨π₂_cont.continuousOn.restrict.comp ρ'.symm.continuous, ?_⟩⟩
   suffices f ∘ E.restrict π₂ = φ ∘ ρ' by
-    rw [← comp.assoc, this, comp.assoc, Homeomorph.self_comp_symm, comp.right_id]
+    rw [← comp.assoc, this, comp.assoc, Homeomorph.self_comp_symm, comp_id]
   ext x
   exact x.val.mem.symm
 

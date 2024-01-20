@@ -164,18 +164,18 @@ theorem Ico_filter_lt_of_le_right [DecidablePred (· < c)] (hcb : c ≤ b) :
   rfl
 #align multiset.Ico_filter_lt_of_le_right Multiset.Ico_filter_lt_of_le_right
 
-theorem Ico_filter_le_of_le_left [DecidablePred ((· ≤ ·) c)] (hca : c ≤ a) :
+theorem Ico_filter_le_of_le_left [DecidablePred (c ≤ ·)] (hca : c ≤ a) :
     ((Ico a b).filter fun x => c ≤ x) = Ico a b := by
   rw [Ico, ← Finset.filter_val, Finset.Ico_filter_le_of_le_left hca]
 #align multiset.Ico_filter_le_of_le_left Multiset.Ico_filter_le_of_le_left
 
-theorem Ico_filter_le_of_right_le [DecidablePred ((· ≤ ·) b)] :
+theorem Ico_filter_le_of_right_le [DecidablePred (b ≤ ·)] :
     ((Ico a b).filter fun x => b ≤ x) = ∅ := by
   rw [Ico, ← Finset.filter_val, Finset.Ico_filter_le_of_right_le]
   rfl
 #align multiset.Ico_filter_le_of_right_le Multiset.Ico_filter_le_of_right_le
 
-theorem Ico_filter_le_of_left_le [DecidablePred ((· ≤ ·) c)] (hac : a ≤ c) :
+theorem Ico_filter_le_of_left_le [DecidablePred (c ≤ ·)] (hac : a ≤ c) :
     ((Ico a b).filter fun x => c ≤ x) = Ico c b := by
   rw [Ico, ← Finset.filter_val, Finset.Ico_filter_le_of_left_le hac]
   rfl
@@ -283,22 +283,22 @@ section OrderedCancelAddCommMonoid
 
 variable [OrderedCancelAddCommMonoid α] [ExistsAddOfLE α] [LocallyFiniteOrder α]
 
-theorem map_add_left_Icc (a b c : α) : (Icc a b).map ((· + ·) c) = Icc (c + a) (c + b) := by
+theorem map_add_left_Icc (a b c : α) : (Icc a b).map (c + ·) = Icc (c + a) (c + b) := by
   classical rw [Icc, Icc, ← Finset.image_add_left_Icc, Finset.image_val,
       ((Finset.nodup _).map <| add_right_injective c).dedup]
 #align multiset.map_add_left_Icc Multiset.map_add_left_Icc
 
-theorem map_add_left_Ico (a b c : α) : (Ico a b).map ((· + ·) c) = Ico (c + a) (c + b) := by
+theorem map_add_left_Ico (a b c : α) : (Ico a b).map (c + ·) = Ico (c + a) (c + b) := by
   classical rw [Ico, Ico, ← Finset.image_add_left_Ico, Finset.image_val,
       ((Finset.nodup _).map <| add_right_injective c).dedup]
 #align multiset.map_add_left_Ico Multiset.map_add_left_Ico
 
-theorem map_add_left_Ioc (a b c : α) : (Ioc a b).map ((· + ·) c) = Ioc (c + a) (c + b) := by
+theorem map_add_left_Ioc (a b c : α) : (Ioc a b).map (c + ·) = Ioc (c + a) (c + b) := by
   classical rw [Ioc, Ioc, ← Finset.image_add_left_Ioc, Finset.image_val,
       ((Finset.nodup _).map <| add_right_injective c).dedup]
 #align multiset.map_add_left_Ioc Multiset.map_add_left_Ioc
 
-theorem map_add_left_Ioo (a b c : α) : (Ioo a b).map ((· + ·) c) = Ioo (c + a) (c + b) := by
+theorem map_add_left_Ioo (a b c : α) : (Ioo a b).map (c + ·) = Ioo (c + a) (c + b) := by
   classical rw [Ioo, Ioo, ← Finset.image_add_left_Ioo, Finset.image_val,
       ((Finset.nodup _).map <| add_right_injective c).dedup]
 #align multiset.map_add_left_Ioo Multiset.map_add_left_Ioo

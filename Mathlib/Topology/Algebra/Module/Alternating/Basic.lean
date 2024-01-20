@@ -68,7 +68,7 @@ theorem range_toContinuousMultilinearMap :
 
 instance continuousMapClass : ContinuousMapClass (M [Λ^ι]→L[R] N) (ι → M) N where
   coe f := f.toFun
-  coe_injective' _ _ h := toContinuousMultilinearMap_injective <| FunLike.ext' h
+  coe_injective' _ _ h := toContinuousMultilinearMap_injective <| DFunLike.ext' h
   map_continuous f := f.cont
 
 initialize_simps_projections ContinuousAlternatingMap (toFun → apply)
@@ -90,20 +90,20 @@ theorem coe_toAlternatingMap : ⇑f.toAlternatingMap = f := rfl
 
 @[ext]
 theorem ext {f g : M [Λ^ι]→L[R] N} (H : ∀ x, f x = g x) : f = g :=
-  FunLike.ext _ _ H
+  DFunLike.ext _ _ H
 
 theorem ext_iff {f g : M [Λ^ι]→L[R] N} : f = g ↔ ∀ x, f x = g x :=
-  FunLike.ext_iff
+  DFunLike.ext_iff
 
 theorem toAlternatingMap_injective :
     Injective (toAlternatingMap : (M [Λ^ι]→L[R] N) → (M [Λ^ι]→ₗ[R] N)) := fun f g h =>
-  FunLike.ext' <| by convert FunLike.ext'_iff.1 h
+  DFunLike.ext' <| by convert DFunLike.ext'_iff.1 h
 
 @[simp]
 theorem range_toAlternatingMap :
     Set.range (toAlternatingMap : M [Λ^ι]→L[R] N → (M [Λ^ι]→ₗ[R] N)) =
       {f : M [Λ^ι]→ₗ[R] N | Continuous f} :=
-  Set.ext fun f => ⟨fun ⟨g, hg⟩ => hg ▸ g.cont, fun h => ⟨{ f with cont := h }, FunLike.ext' rfl⟩⟩
+  Set.ext fun f => ⟨fun ⟨g, hg⟩ => hg ▸ g.cont, fun h => ⟨{ f with cont := h }, DFunLike.ext' rfl⟩⟩
 
 @[simp]
 theorem map_add [DecidableEq ι] (m : ι → M) (i : ι) (x y : M) :
@@ -229,7 +229,7 @@ def applyAddHom (v : ι → M) : M [Λ^ι]→L[R] N →+ N :=
 @[simp]
 theorem sum_apply {α : Type*} (f : α → M [Λ^ι]→L[R] N) (m : ι → M) {s : Finset α} :
     (∑ a in s, f a) m = ∑ a in s, f a m :=
-  (applyAddHom m).map_sum f s
+  map_sum (applyAddHom m) f s
 
 /-- Projection to `ContinuousMultilinearMap`s as a bundled `AddMonoidHom`. -/
 @[simps]
@@ -552,7 +552,7 @@ def piLinearEquiv {ι' : Type*} {M' : ι' → Type*} [∀ i, AddCommMonoid (M' i
 
 end Module
 
-section SmulRight
+section SMulRight
 
 variable {R A M N ι : Type*} [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M]
   [Module R N] [TopologicalSpace R] [TopologicalSpace M] [TopologicalSpace N] [ContinuousSMul R N]
@@ -564,7 +564,7 @@ continuous alternating map sending `m` to `f m • z`. -/
 def smulRight : M [Λ^ι]→L[R] N :=
   { f.toAlternatingMap.smulRight z with toContinuousMultilinearMap := f.1.smulRight z }
 
-end SmulRight
+end SMulRight
 
 section Semiring
 

@@ -5,6 +5,7 @@ Authors: Joseph Myers, Manuel Candales
 -/
 import Mathlib.Analysis.Convex.Between
 import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic
+import Mathlib.Analysis.NormedSpace.AffineIsometry
 
 #align_import geometry.euclidean.angle.unoriented.affine from "leanprover-community/mathlib"@"46b633fd842bef9469441c0209906f6dddd2b4f5"
 
@@ -193,7 +194,7 @@ nonrec theorem angle_add_angle_eq_pi_of_angle_eq_pi (p1 : P) {p2 p3 p4 : P} (h :
   exact angle_add_angle_eq_pi_of_angle_eq_pi _ h
 #align euclidean_geometry.angle_add_angle_eq_pi_of_angle_eq_pi EuclideanGeometry.angle_add_angle_eq_pi_of_angle_eq_pi
 
-/-- Vertical Angles Theorem: angles opposite each other, formed by two intersecting straight
+/-- **Vertical Angles Theorem**: angles opposite each other, formed by two intersecting straight
 lines, are equal. -/
 theorem angle_eq_angle_of_angle_eq_pi_of_angle_eq_pi {p1 p2 p3 p4 p5 : P} (hapc : ∠ p1 p5 p3 = π)
     (hbpd : ∠ p2 p5 p4 = π) : ∠ p1 p5 p2 = ∠ p3 p5 p4 := by
