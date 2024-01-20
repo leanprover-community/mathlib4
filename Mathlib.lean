@@ -497,6 +497,9 @@ import Mathlib.Algebra.TrivSqZeroExt
 import Mathlib.Algebra.Tropical.Basic
 import Mathlib.Algebra.Tropical.BigOperators
 import Mathlib.Algebra.Tropical.Lattice
+import Mathlib.Algebra.Vertex.Basic
+import Mathlib.Algebra.Vertex.Defs
+import Mathlib.Algebra.Vertex.VertexOperator
 import Mathlib.AlgebraicGeometry.AffineScheme
 import Mathlib.AlgebraicGeometry.EllipticCurve.Affine
 import Mathlib.AlgebraicGeometry.EllipticCurve.Group
@@ -1885,9 +1888,11 @@ import Mathlib.Data.Polynomial.Mirror
 import Mathlib.Data.Polynomial.Module
 import Mathlib.Data.Polynomial.Monic
 import Mathlib.Data.Polynomial.Monomial
+import Mathlib.Data.Polynomial.Nusmeval
 import Mathlib.Data.Polynomial.PartialFractions
 import Mathlib.Data.Polynomial.Reverse
 import Mathlib.Data.Polynomial.RingDivision
+import Mathlib.Data.Polynomial.Smeval
 import Mathlib.Data.Polynomial.Splits
 import Mathlib.Data.Polynomial.Taylor
 import Mathlib.Data.Polynomial.UnitTrinomial

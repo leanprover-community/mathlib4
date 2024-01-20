@@ -512,6 +512,15 @@ instance : DistribMulAction R (HahnSeries Γ V) where
     ext
     simp [mul_smul]
 
+theorem smul_order_leq {Γ} [Zero Γ] [LinearOrder Γ] (r : R) (x : HahnSeries Γ V) (h : r • x ≠ 0) :
+    x.order ≤ (r • x).order := by
+  unfold order
+  by_cases hx : x = 0
+  · rw [hx, smul_zero r] at h
+    exact (h rfl).elim
+  simp_all only [not_false_eq_true, dite_false, h, support]
+  refine (Set.IsWF.min_le_min_of_subset (@Function.support_smul_subset_right Γ R V _ _ r x.coeff))
+
 variable {S : Type*} [Monoid S] [DistribMulAction S V]
 
 instance [SMul R S] [IsScalarTower R S V] : IsScalarTower R S (HahnSeries Γ V) :=
@@ -547,6 +556,10 @@ def single.linearMap (a : Γ) : V →ₗ[R] HahnSeries Γ V :=
       ext b
       by_cases h : b = a <;> simp [h] }
 #align hahn_series.single.linear_map HahnSeries.single.linearMap
+
+@[simp]
+theorem single.linearMap_eq (a : Γ) (x : V) : @single.linearMap Γ R _ _ V _ _ a x = single a x := by
+  exact rfl
 
 /-- `coeff g` as a linear map -/
 @[simps]
