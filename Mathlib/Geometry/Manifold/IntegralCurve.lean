@@ -545,8 +545,8 @@ theorem isIntegralCurveAt_eqOn_of_contMDiffAt' (hγt₀ : I.IsInteriorPoint (γ 
 theorem isIntegralCurveAt_eqOn_of_contMDiffAt_boundaryless [BoundarylessManifold I M]
     (hv : ContMDiffAt I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)) (γ t₀))
     (hγ : IsIntegralCurveAt γ v t₀) (hγ' : IsIntegralCurveAt γ' v t₀) (h : γ t₀ = γ' t₀) :
-    ∃ ε > 0, EqOn γ γ' (Ioo (t₀ - ε) (t₀ + ε)) :=
-  isIntegralCurveAt_eqOn_of_contMDiffAt' (BoundarylessManifold.isInteriorPoint I) hv hγ hγ' h
+    γ =ᶠ[𝓝 t₀] γ' :=
+  isIntegralCurveAt_eqOn_of_contMDiffAt (BoundarylessManifold.isInteriorPoint I) hv hγ hγ' h
 
 variable [T2Space M] {a b : ℝ}
 
@@ -587,18 +587,11 @@ theorem isIntegralCurveOn_Ioo_eqOn_of_contMDiff (ht₀ : t₀ ∈ Ioo a b)
       exact hγ'.continuousAt ht
   · rw [isOpen_iff_mem_nhds]
     intro t₁ ht₁
-    rw [mem_nhds_iff]
-    obtain ⟨ε, hε, heqon⟩ : ∃ ε > 0, EqOn γ γ' (Ioo (t₁ - ε) (t₁ + ε)) :=
-      isIntegralCurveAt_eqOn_of_contMDiffAt' (hγt _ ht₁.2) hv.contMDiffAt
-        (hγ.isIntegralCurveAt <| Ioo_mem_nhds ht₁.2.1 ht₁.2.2)
-        (hγ'.isIntegralCurveAt <| Ioo_mem_nhds ht₁.2.1 ht₁.2.2)
-        ht₁.1
-    refine ⟨Ioo (max a (t₁ - ε)) (min b (t₁ + ε)),
-      subset_inter
-        (fun t ht ↦ @heqon t <| mem_of_mem_of_subset ht <| Ioo_subset_Ioo (by simp) (by simp))
-        (Ioo_subset_Ioo (by simp) (by simp)),
-      isOpen_Ioo, ?_⟩
-    exact ⟨max_lt ht₁.2.1 (by simp [hε]), lt_min ht₁.2.2 (by simp [hε])⟩
+    have hmem := Ioo_mem_nhds ht₁.2.1 ht₁.2.2
+    have heq : γ =ᶠ[𝓝 t₁] γ' := isIntegralCurveAt_eqOn_of_contMDiffAt (hγt _ ht₁.2) hv.contMDiffAt
+      (hγ.isIntegralCurveAt hmem) (hγ'.isIntegralCurveAt hmem) ht₁.1
+    apply (heq.and hmem).mono
+    exact fun _ ht ↦ ht
 
 theorem isIntegralCurveOn_Ioo_eqOn_of_contMDiff_boundaryless [BoundarylessManifold I M]
     (ht₀ : t₀ ∈ Ioo a b)
