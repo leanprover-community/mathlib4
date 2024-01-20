@@ -10,7 +10,6 @@ import Mathlib.Topology.Sets.Opens
 
 /-!
 # Partial homeomorphisms
-# Partial homeomorphisms
 
 This file defines homeomorphisms between open subsets of topological spaces. An element `e` of
 `PartialHomeomorph X Y` is an extension of `PartialEquiv X Y`, i.e., it is a pair of functions
@@ -44,7 +43,6 @@ For design notes, see `PartialEquiv.lean`.
 If a lemma deals with the intersection of a set with either source or target of a `PartialEquiv`,
 then it should use `e.source ∩ s` or `e.target ∩ t`, not `s ∩ e.source` or `t ∩ e.target`.
 -/
-
 
 open Function Set Filter Topology
 
@@ -202,6 +200,7 @@ protected theorem bijOn : BijOn e e.source e.target :=
 protected theorem surjOn : SurjOn e e.source e.target :=
   e.bijOn.surjOn
 #align local_homeomorph.surj_on PartialHomeomorph.surjOn
+
 end Basic
 
 /-- Interpret a `Homeomorph` as a `PartialHomeomorph` by restricting it
@@ -494,6 +493,8 @@ theorem isOpen_image_iff_of_subset_source {s : Set X} (hs : s ⊆ e.source) :
     IsOpen (e '' s) ↔ IsOpen s := by
   rw [← e.symm.isOpen_symm_image_iff_of_subset_target hs, e.symm_symm]
 
+section IsImage
+
 /-!
 ### `PartialHomeomorph.IsImage` relation
 
@@ -695,6 +696,8 @@ theorem preimage_frontier (s : Set Y) :
   (IsImage.of_preimage_eq rfl).frontier.preimage_eq
 #align local_homeomorph.preimage_frontier PartialHomeomorph.preimage_frontier
 
+end IsImage
+
 /-- A `PartialEquiv` with continuous open forward map and open source is a `PartialHomeomorph`. -/
 def ofContinuousOpenRestrict (e : PartialEquiv X Y) (hc : ContinuousOn e e.source)
     (ho : IsOpenMap (e.source.restrict e)) (hs : IsOpen e.source) : PartialHomeomorph X Y where
@@ -819,7 +822,9 @@ end ofSet
 
 /- `trans`: composition of two partial homeomorphisms -/
 section trans
+
 variable (e' : PartialHomeomorph Y Z)
+
 /-- Composition of two partial homeomorphisms when the target of the first and the source of
 the second coincide. -/
 @[simps! apply symm_apply toPartialEquiv, simps! (config := .lemmasOnly) source target]
@@ -940,6 +945,7 @@ theorem restr_trans (s : Set X) : (e.restr s).trans e' = (e.trans e').restr s :=
   toPartialEquiv_injective <|
     PartialEquiv.restr_trans e.toPartialEquiv e'.toPartialEquiv (interior s)
 #align local_homeomorph.restr_trans PartialHomeomorph.restr_trans
+
 end trans
 
 /- `EqOnSource`: equivalence on their source -/
@@ -1359,7 +1365,6 @@ theorem trans_transPartialHomeomorph (e : X ≃ₜ Y) (e' : Y ≃ₜ Z) (f'' : P
 
 end Homeomorph
 
-section OpenEmbedding
 namespace OpenEmbedding
 
 variable (f : X → Y) (h : OpenEmbedding f)
@@ -1384,13 +1389,9 @@ lemma toPartialHomeomorph_right_inv {x : Y} (hx : x ∈ Set.range f) :
   rwa [toPartialHomeomorph_target]
 
 end OpenEmbedding
-end OpenEmbedding
 
 /- inclusion of an open set in a topological space -/
-section openInclusion
 namespace TopologicalSpace.Opens
-
-open TopologicalSpace
 
 variable (s : Opens X) [Nonempty s]
 
@@ -1417,9 +1418,9 @@ theorem partialHomeomorphSubtypeCoe_target : s.partialHomeomorphSubtypeCoe.targe
 #align topological_space.opens.local_homeomorph_subtype_coe_target TopologicalSpace.Opens.partialHomeomorphSubtypeCoe_target
 
 end TopologicalSpace.Opens
-end openInclusion
 
 namespace PartialHomeomorph
+
 /- post-compose with a partial homeomorphism -/
 section transHomeomorph
 
@@ -1449,10 +1450,12 @@ theorem trans_transHomeomorph (e : PartialHomeomorph X Y) (e' : PartialHomeomorp
     (f'' : Z ≃ₜ Z') :
     (e.trans e').transHomeomorph f'' = e.trans (e'.transHomeomorph f'') := by
   simp only [transHomeomorph_eq_trans, trans_assoc, Homeomorph.trans_toPartialHomeomorph]
+
 end transHomeomorph
 
 /- `subtypeRestr`: restriction to a subtype -/
 section subtypeRestr
+
 open TopologicalSpace
 
 variable (e : PartialHomeomorph X Y)
@@ -1533,6 +1536,7 @@ theorem subtypeRestr_symm_eqOn_of_le {U V : Opens X} [Nonempty U] [Nonempty V] (
     show _ = U.partialHomeomorphSubtypeCoe _
     rw [U.partialHomeomorphSubtypeCoe.right_inv hy.2]
 #align local_homeomorph.subtype_restr_symm_eq_on_of_le PartialHomeomorph.subtypeRestr_symm_eqOn_of_le
+
 end subtypeRestr
 
 end PartialHomeomorph
