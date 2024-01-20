@@ -276,7 +276,7 @@ the geometric realization of `K` and homology facets should contribute a cohomol
 is a facet `s` such that the decomposition interval `decompositionInterval R s` is equal to the
 half-infinite interval `Set.Iic s`-/
 @[reducible]
-def isPi0Facet (R : K.facets → Finset α)  (s : K.facets) : Prop :=
+def isPi0Facet (R : K.facets → Finset α) (s : K.facets) : Prop :=
   decompositionInterval R s = Set.Iic (⟨s.1, facets_subset s.2⟩ : K.faces)
 
 /-- If `R` is a map from the set of facets of `K` to the set of finsets of `α`, then a homology

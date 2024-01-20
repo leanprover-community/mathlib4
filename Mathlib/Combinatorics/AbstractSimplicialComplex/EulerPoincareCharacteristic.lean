@@ -1,4 +1,4 @@
-/- copyright-/
+/- Copyright-/
 import Mathlib.Combinatorics.AbstractSimplicialComplex.Decomposability
 
 /-! This files contains the definition of the Euler-Poincaré characteristic of a finite simplicial
@@ -13,6 +13,7 @@ variable {α : Type u} {K L : AbstractSimplicialComplex α}
 
 namespace AbstractSimplicialComplex
 
+/-
 /-- If `K` is finite, definition of the set of faces of `K` as a finset of `Finset α`.-/
 noncomputable def finset_of_faces (hfin : FiniteComplex K) : Finset (Finset α) :=
   Set.Finite.toFinset (Set.finite_coe_iff.mp hfin)
@@ -38,10 +39,103 @@ lemma EulerPoincareCharacteristic_congr (hKfin : FiniteComplex K) (hLfin : Finit
     unfold finset_of_faces
     rw [Set.Finite.mem_toFinset, Set.Finite.mem_toFinset, heq]
   rw [EulerPoincareCharacteristic, heq, EulerPoincareCharacteristic]
+-/
+
+/-- If `K` is finite, definition of the set of faces of `K` as a finset of `K.faces`.-/
+noncomputable def finset_of_faces (hfin : FiniteComplex K) : Finset K.faces :=
+  @Finset.univ K.faces (@Fintype.ofFinite _ hfin)
+
+/-- If `K` is finite, then `K.facets` is finite.-/
+lemma facets_finite (hfin : FiniteComplex K) : Finite K.facets :=
+  @Finite.of_injective _ K.faces hfin
+  (fun s => ⟨s.1, facets_subset s.2⟩) (fun _ _ h ↦ by
+  simp only [Subtype.mk.injEq, SetCoe.ext_iff] at h; exact h)
+
+/-- If `K` is finite, definition of the set of facets of `K` as a finset of `K.facets`.-/
+noncomputable def finset_of_facets (hfin : FiniteComplex K) : Finset K.facets :=
+  @Finset.univ K.facets (@Fintype.ofFinite _ (facets_finite hfin))
+
+/-- The Euler-Poincaré characteristic of a finite simplicial complex `K` is the sum over all faces
+`s` of `K` of `-1` to the dimension of `s` (i.e. `s.card - 1`). -/
+noncomputable def EulerPoincareCharacteristic (hfin : FiniteComplex K) : ℤ :=
+  ∑ s in @Finset.univ K.faces (@Fintype.ofFinite _ hfin), (-1 : ℤ)^(s.1.card - 1)
 
 /-! The case of decomposable abstract simplicial complexes.-/
 
 variable (R : K.facets → Finset α) (DF : K.faces → K.facets) (hdec : isDecomposition R DF)
+
+/-- The set of `π₀` facets as a set of `Finset α`.-/
+def π₀Facets : Set K.facets := {s | isPi0Facet R s}
+
+/-- The set of homology facets as a set of `Finset α`.-/
+def homologyFacets : Set (Finset α) := {s | ∃ (hsf : s ∈ K.facets), isHomologyFacet R ⟨s, hsf⟩}
+
+/-- If `K` is finite, then it set of homology facets is finite.-/
+lemma HomologyFacets_finite_of_finite (hfin : FiniteComplex K) : (homologyFacets R).Finite := by
+  rw [← Set.finite_coe_iff]
+  apply @Finite.of_injective _ K.faces hfin
+    (fun s => ⟨s.1, facets_subset (by match s.2 with | ⟨hsf,_⟩ => exact hsf)⟩)
+  exact fun _ _ heq ↦ by simp only [Subtype.mk.injEq, SetCoe.ext_iff] at heq; exact heq
+
+lemma sum_fiber_pi0Facet [DecidableEq K.facets] (hfin : FiniteComplex K) {s : K.facets}
+    (hs : isPi0Facet R s) : ∑ i in Finset.filter (fun t ↦ DF t = s) (finset_of_faces hfin),
+    (-1) ^ (i.1.card - 1) = 1 := sorry
+
+lemma sum_fiber_homologyFacet [DecidableEq K.facets] (hfin : FiniteComplex K) {s : K.facets}
+    (hs : isHomologyFacet R s) : ∑ i in Finset.filter (fun t ↦ DF t = s) (finset_of_faces hfin),
+    (-1) ^ (i.1.card - 1) = (-1)^(s.1.card - 1) := sorry
+
+lemma sum_fiber_boringFacet [DecidableEq K.facets] (hfin : FiniteComplex K) {s : K.facets}
+    (hs : ¬ isPi0Facet R s ∧ ¬ isHomologyFacet R s) :
+    ∑ i in Finset.filter (fun t ↦ DF t = s) (finset_of_faces hfin), (-1) ^ (i.1.card - 1) = 0:=
+  sorry
+
+variable {R DF}
+/- Finally we put everything to calculate the Euler-Poincaré characteristic of `K`, for `K` finite
+and having a decomposition: it is equal to the cardinality of the set of `π₀` facets plus the sum
+over homology facets of the function `fun s ↦ (-1)^(s.card - 1)`.-/
+lemma EulerPoincareCharacteristicDecomposable [DecidableEq K.faces] [DecidableEq (Set K.faces)]
+    (hfin : FiniteComplex K) :
+    EulerPoincareCharacteristic hfin = (Finset.filter (fun (s : K.facets) ↦ isPi0Facet R s)
+    (@Finset.univ K.facets (@Fintype.ofFinite _ (facets_finite hfin)))).card +
+    ∑ s in Finset.filter (fun (s : K.facets) ↦ isHomologyFacet R s)
+    (@Finset.univ K.facets (@Fintype.ofFinite _ (facets_finite hfin))),
+    (-1 : ℤ)^(s.1.card - 1) := by
+  classical
+  letI : Finite (K.faces) := hfin
+  letI : Finite (K.facets) := @Finite.of_injective _ K.faces hfin
+    (fun s => ⟨s.1, facets_subset s.2⟩) (fun _ _ h ↦ by
+    simp only [Subtype.mk.injEq, SetCoe.ext_iff] at h; exact h)
+  letI : Fintype K.facets := Fintype.ofFinite K.facets
+  unfold EulerPoincareCharacteristic
+  rw [← Finset.sum_fiberwise (g := DF)]
+  rw [← Finset.sum_add_sum_compl (Finset.filter (fun s ↦ isPi0Facet R s) (finset_of_facets hfin))]
+  rw [Finset.sum_congr (s₁ := Finset.filter (fun s ↦ isPi0Facet R s) (finset_of_facets hfin))
+    rfl (fun _ hs ↦ by erw [sum_fiber_pi0Facet R DF hfin (Finset.mem_filter.mp hs).2])]
+  rw [Finset.sum_const, nsmul_one]
+  congr 1
+  erw [Finset.compl_filter]
+  have hsub : Finset.filter (fun s ↦ isHomologyFacet R s) Finset.univ ⊆
+      Finset.filter (fun s ↦ ¬ isPi0Facet R s) Finset.univ := by
+    intro s
+    simp only [Finset.filter_congr_decidable, Finset.mem_filter, Finset.mem_univ, true_and,
+      isHomologyFacet]
+    tauto
+  rw [← Finset.sum_sdiff hsub]
+  rw [Finset.sum_congr (s₁ := Finset.filter (fun s ↦ isHomologyFacet R s) Finset.univ)
+    rfl (fun _ hs ↦ by erw [sum_fiber_homologyFacet R DF hfin (Finset.mem_filter.mp hs).2])]
+  have heq : Finset.filter (fun s ↦ ¬ isPi0Facet R s) Finset.univ \
+      Finset.filter (fun s ↦ isHomologyFacet R s) Finset.univ =
+      Finset.filter (fun s ↦ ¬ isPi0Facet R s ∧ ¬ isHomologyFacet R s) Finset.univ := by
+    ext s
+    simp only [ne_eq, Finset.filter_congr_decidable, Finset.mem_sdiff, Finset.mem_filter,
+      Finset.mem_univ, true_and, not_and]
+  rw [heq]
+  rw [Finset.sum_congr rfl (fun _ hs ↦ by erw [sum_fiber_boringFacet R DF hfin
+    (Finset.mem_filter.mp hs).2])]
+  rw [Finset.sum_const, nsmul_zero, zero_add]
+
+#exit
 
 /-- The set of `π₀` facets as a set of `Finset α`.-/
 def π₀Facets : Set (Finset α) := {s | ∃ (hsf : s ∈ K.facets), isPi0Facet R ⟨s, hsf⟩}
