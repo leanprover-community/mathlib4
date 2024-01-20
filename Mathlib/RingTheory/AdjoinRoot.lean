@@ -335,7 +335,8 @@ theorem coe_liftHom (x : S) (hfx : aeval x f = 0) :
 @[simp]
 theorem liftHom_root (hfa : aeval a f = 0) : liftHom f a hfa (root f) = a := by
   rw [root, liftHom]
-  simp only [RingHom.toMonoidHom_eq_coe, mk_X, AlgHom.coe_mk, RingHom.coe_mk, MonoidHom.coe_coe, lift_root]
+  simp only [RingHom.toMonoidHom_eq_coe, mk_X, AlgHom.coe_mk, RingHom.coe_mk,
+    MonoidHom.coe_coe, lift_root]
 #align adjoin_root.lift_hom_root AdjoinRoot.liftHom_root
 
 @[simp]
@@ -344,7 +345,8 @@ theorem liftHom_comp_of_eq_algebraMap (ϕ : AdjoinRoot f →ₐ[R] S) :
 
 @[simp]
 theorem aeval_algHom_eq_zero (ϕ : AdjoinRoot f →ₐ[R] S) : aeval (ϕ (root f)) f = 0 := by
-  rw [aeval_def, ← liftHom_comp_of_eq_algebraMap, ← RingHom.map_zero ϕ.toRingHom, ← eval₂_root f, hom_eval₂]
+  rw [aeval_def, ← liftHom_comp_of_eq_algebraMap,
+    ← RingHom.map_zero ϕ.toRingHom, ← eval₂_root f, hom_eval₂]
   rfl
 #align adjoin_root.aeval_alg_hom_eq_zero AdjoinRoot.aeval_algHom_eq_zero
 
