@@ -171,19 +171,16 @@ lemma IsIntegralCurveOn.hasDerivAt (hγ : IsIntegralCurveOn γ v s) {t : ℝ} (h
     mfderiv_chartAt_eq_tangentCoordChange I hsrc]
   rfl
 
--- TODO: cleanup
 lemma IsIntegralCurveAt.eventually_hasDerivAt (hγ : IsIntegralCurveAt γ v t₀) :
     ∀ᶠ t in 𝓝 t₀, HasDerivAt ((extChartAt I (γ t₀)) ∘ γ)
       (tangentCoordChange I (γ t) (γ t₀) (γ t) (v (γ t))) t := by
-  have := eventually_mem_nhds.mpr
-    (hγ.continuousAt.preimage_mem_nhds (extChartAt_source_mem_nhds I _)) |>.and hγ
-  apply this.mono
+  apply eventually_mem_nhds.mpr
+    (hγ.continuousAt.preimage_mem_nhds (extChartAt_source_mem_nhds I _)) |>.and hγ |>.mono
   rintro t ⟨ht1, ht2⟩
   have hsrc := mem_of_mem_nhds ht1
   rw [mem_preimage, extChartAt_source I (γ t₀)] at hsrc
   rw [hasDerivAt_iff_hasFDerivAt, ← hasMFDerivAt_iff_hasFDerivAt]
-  apply (HasMFDerivAt.comp t
-    (hasMFDerivAt_extChartAt I hsrc) ht2).congr_mfderiv
+  apply (HasMFDerivAt.comp t (hasMFDerivAt_extChartAt I hsrc) ht2).congr_mfderiv
   rw [ContinuousLinearMap.ext_iff]
   intro a
   rw [ContinuousLinearMap.comp_apply, ContinuousLinearMap.smulRight_apply, map_smul,
@@ -403,22 +400,25 @@ theorem isIntegralCurveAt_eqOn_of_contMDiffAt (hγt₀ : I.IsInteriorPoint (γ t
   have hsrc' := continuousAt_def.mp hγ'.continuousAt _ <| extChartAt_source_mem_nhds I (γ' t₀)
   rw [← eventually_mem_nhds] at hsrc'
 
+  have hgt {g : ℝ → M} {t} (ht : g ⁻¹' (extChartAt I (g t₀)).source ∈ 𝓝 t) :
+    g t ∈ (extChartAt I (g t₀)).source := mem_preimage.mp <| mem_of_mem_nhds ht
+
   suffices (extChartAt I (γ t₀)) ∘ γ =ᶠ[𝓝 t₀] (extChartAt I (γ' t₀)) ∘ γ' by
     have hh := this.fun_comp (extChartAt I (γ t₀)).symm
     refine Filter.EventuallyEq.trans ?_ (Filter.EventuallyEq.trans hh ?_)
     · apply hsrc.mono -- extract lemma?
       intros t ht
       rw [Function.comp_apply, Function.comp_apply,
-        PartialEquiv.left_inv _ (mem_preimage.mp <| mem_of_mem_nhds ht)]
+        PartialEquiv.left_inv _ (hgt ht)]
     · apply hsrc'.mono
       intros t ht
       rw [Function.comp_apply, Function.comp_apply, h,
-        PartialEquiv.left_inv _ (mem_preimage.mp <| mem_of_mem_nhds ht)]
+        PartialEquiv.left_inv _ (hgt ht)]
   apply ODE_solution_unique_of_mem_set_eventually hlip
   · -- extract lemma `IsIntegralCurveAt.eventually_continuousAt`?
     apply (hsrc.and hγ).mono
     rintro t ⟨ht1, ht2⟩
-    exact (continuousAt_extChartAt' _ _ (mem_preimage.mp <| mem_of_mem_nhds ht1)).comp
+    exact (continuousAt_extChartAt' _ _ (hgt ht1)).comp
       ht2.continuousAt
   · apply (hsrc.and hγ.eventually_hasDerivAt).mono
     rintro t ⟨ht1, ht2⟩
@@ -426,7 +426,7 @@ theorem isIntegralCurveAt_eqOn_of_contMDiffAt (hγt₀ : I.IsInteriorPoint (γ t
     apply ht2.congr_deriv
     have : γ t = (extChartAt I (γ t₀)).symm (((extChartAt I (γ t₀)) ∘ γ) t) := by
       rw [Function.comp_apply, PartialEquiv.left_inv]
-      exact mem_preimage.mp <| mem_of_mem_nhds ht1
+      exact hgt ht1
     rw [this]
   · apply ((continuousAt_extChartAt I (γ t₀)).comp hγ.continuousAt).preimage_mem_nhds
     rw [Function.comp_apply]
@@ -434,7 +434,7 @@ theorem isIntegralCurveAt_eqOn_of_contMDiffAt (hγt₀ : I.IsInteriorPoint (γ t
   -- repeat
   · apply (hsrc'.and hγ').mono
     rintro t ⟨ht1, ht2⟩
-    exact (continuousAt_extChartAt' _ _ (mem_preimage.mp <| mem_of_mem_nhds ht1)).comp
+    exact (continuousAt_extChartAt' _ _ (hgt ht1)).comp
       ht2.continuousAt
   · apply (hsrc'.and hγ'.eventually_hasDerivAt).mono
     rintro t ⟨ht1, ht2⟩
@@ -442,7 +442,7 @@ theorem isIntegralCurveAt_eqOn_of_contMDiffAt (hγt₀ : I.IsInteriorPoint (γ t
     apply ht2.congr_deriv
     have : γ' t = (extChartAt I (γ' t₀)).symm (((extChartAt I (γ' t₀)) ∘ γ') t) := by
       rw [Function.comp_apply, PartialEquiv.left_inv]
-      exact mem_preimage.mp <| mem_of_mem_nhds ht1
+      exact hgt ht1
     rw [this]
   · apply ((continuousAt_extChartAt I (γ' t₀)).comp hγ'.continuousAt).preimage_mem_nhds
     rw [Function.comp_apply, ← h]
