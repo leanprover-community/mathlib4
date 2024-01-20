@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Data.Bool.Set
 import Mathlib.Data.Nat.Set
+import Mathlib.Data.Set.Prod
 import Mathlib.Data.ULift
 import Mathlib.Order.Bounds.Basic
 import Mathlib.Order.Hom.Basic

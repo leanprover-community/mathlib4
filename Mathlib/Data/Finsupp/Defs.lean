@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Scott Morrison
 -/
-import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.Function.Indicator
 import Mathlib.Data.Set.Finite
 import Mathlib.GroupTheory.Submonoid.Basic
 
@@ -86,8 +86,6 @@ noncomputable section
 
 open Finset Function
 
-open BigOperators
-
 variable {α β γ ι M M' N P G H R S : Type*}
 
 /-- `Finsupp α M`, denoted `α →₀ M`, is the type of functions `f : α → M` such that
@@ -117,13 +115,13 @@ section Basic
 
 variable [Zero M]
 
-instance instDFunLike : DFunLike (α →₀ M) α fun _ => M :=
+instance instFunLike : FunLike (α →₀ M) α M :=
   ⟨toFun, by
     rintro ⟨s, f, hf⟩ ⟨t, g, hg⟩ (rfl : f = g)
     congr
     ext a
     exact (hf _).trans (hg _).symm⟩
-#align finsupp.fun_like Finsupp.instDFunLike
+#align finsupp.fun_like Finsupp.instFunLike
 
 /-- Helper instance for when there are too many metavariables to apply the `DFunLike` instance
 directly. -/
