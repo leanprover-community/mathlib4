@@ -445,8 +445,8 @@ theorem Continuous.prod_map {f : Z → X} {g : δ → Y} (hf : Continuous f) (hg
 #align continuous.prod_map Continuous.prod_map
 
 /-- A version of `continuous_inf_dom_left` for binary functions -/
-theorem continuous_inf_dom_left₂ {X Y γ} {f : X → Y → γ} {ta1 ta2 : TopologicalSpace X}
-    {tb1 tb2 : TopologicalSpace Y} {tc1 : TopologicalSpace γ}
+theorem continuous_inf_dom_left₂ {X Y Z} {f : X → Y → Z} {ta1 ta2 : TopologicalSpace X}
+    {tb1 tb2 : TopologicalSpace Y} {tc1 : TopologicalSpace Z}
     (h : by haveI := ta1; haveI := tb1; exact Continuous fun p : X × Y => f p.1 p.2) : by
     haveI := ta1 ⊓ ta2; haveI := tb1 ⊓ tb2; exact Continuous fun p : X × Y => f p.1 p.2 := by
   have ha := @continuous_inf_dom_left _ _ id ta1 ta2 ta1 (@continuous_id _ (id _))
@@ -456,8 +456,8 @@ theorem continuous_inf_dom_left₂ {X Y γ} {f : X → Y → γ} {ta1 ta2 : Topo
 #align continuous_inf_dom_left₂ continuous_inf_dom_left₂
 
 /-- A version of `continuous_inf_dom_right` for binary functions -/
-theorem continuous_inf_dom_right₂ {X Y γ} {f : X → Y → γ} {ta1 ta2 : TopologicalSpace X}
-    {tb1 tb2 : TopologicalSpace Y} {tc1 : TopologicalSpace γ}
+theorem continuous_inf_dom_right₂ {X Y Z} {f : X → Y → Z} {ta1 ta2 : TopologicalSpace X}
+    {tb1 tb2 : TopologicalSpace Y} {tc1 : TopologicalSpace Z}
     (h : by haveI := ta2; haveI := tb2; exact Continuous fun p : X × Y => f p.1 p.2) : by
     haveI := ta1 ⊓ ta2; haveI := tb1 ⊓ tb2; exact Continuous fun p : X × Y => f p.1 p.2 := by
   have ha := @continuous_inf_dom_right _ _ id ta1 ta2 ta2 (@continuous_id _ (id _))
@@ -467,9 +467,9 @@ theorem continuous_inf_dom_right₂ {X Y γ} {f : X → Y → γ} {ta1 ta2 : Top
 #align continuous_inf_dom_right₂ continuous_inf_dom_right₂
 
 /-- A version of `continuous_sInf_dom` for binary functions -/
-theorem continuous_sInf_dom₂ {X Y γ} {f : X → Y → γ} {tas : Set (TopologicalSpace X)}
+theorem continuous_sInf_dom₂ {X Y Z} {f : X → Y → Z} {tas : Set (TopologicalSpace X)}
     {tbs : Set (TopologicalSpace Y)} {ta : TopologicalSpace X} {tb : TopologicalSpace Y}
-    {tc : TopologicalSpace γ} (ha : ta ∈ tas) (hb : tb ∈ tbs)
+    {tc : TopologicalSpace Z} (ha : ta ∈ tas) (hb : tb ∈ tbs)
     (hf : Continuous fun p : X × Y => f p.1 p.2) : by
     haveI := sInf tas; haveI := sInf tbs;
       exact @Continuous _ _ _ tc fun p : X × Y => f p.1 p.2 := by
