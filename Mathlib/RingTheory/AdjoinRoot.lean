@@ -341,7 +341,7 @@ theorem liftHom_root (hfa : aeval a f = 0) : liftHom f a hfa (root f) = a := by
 
 @[simp]
 theorem liftHom_comp_of_eq_algebraMap (ϕ : AdjoinRoot f →ₐ[R] S) :
-    ϕ.toRingHom.comp (of f) = algebraMap R S := RingHom.ext_iff.mpr ϕ.commutes
+    RingHom.comp ϕ (of f) = algebraMap R S := RingHom.ext_iff.mpr ϕ.commutes
 
 @[simp]
 theorem aeval_algHom_eq_zero (ϕ : AdjoinRoot f →ₐ[R] S) : aeval (ϕ (root f)) f = 0 := by
