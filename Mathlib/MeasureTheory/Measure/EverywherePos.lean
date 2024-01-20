@@ -243,6 +243,10 @@ theorem innerRegularWRT_preimage_one_hasCompactSupport_measure_ne_top_of_group
     [h : InnerRegularCompactLTTop μ] [LocallyCompactSpace G] :
     InnerRegularWRT μ (fun s ↦ ∃ (f : G → ℝ), Continuous f ∧ HasCompactSupport f ∧ s = f ⁻¹' {1})
     (fun s ↦ MeasurableSet s ∧ μ s ≠ ∞) := by
+  /- First, approximate a measurable set from inside by a compact closed set `K`. Then notice that
+  the everywhere positive subset of `K` is a Gδ,
+  by Lemma `IsEverywherePos.IsGdelta_of_isMulLeftInvariant`, and therefore the level set of a
+  continuous compactly supported function. Moreover, it has the same measure as `K`. -/
   apply InnerRegularWRT.trans _ innerRegularWRT_isCompact_isClosed_measure_ne_top_of_group
   intro K ⟨K_comp, K_closed⟩ r hr
   let L := μ.everywherePosSubset K
@@ -252,10 +256,11 @@ theorem innerRegularWRT_preimage_one_hasCompactSupport_measure_ne_top_of_group
   · have : μ.IsEverywherePos L :=
       isEverywherePos_everywherePosSubset_of_measure_ne_top K_closed.measurableSet
       K_comp.measure_lt_top.ne
-    have : IsGδ (μ.everywherePosSubset K) := this.IsGdelta_of_isMulLeftInvariant L_comp L_closed
+    have L_Gδ : IsGδ L := this.IsGdelta_of_isMulLeftInvariant L_comp L_closed
     obtain ⟨⟨f, f_cont⟩, Lf, -, f_comp, -⟩ : ∃ f : C(G, ℝ), L = f ⁻¹' {1} ∧ EqOn f 0 ∅
         ∧ HasCompactSupport f ∧ ∀ x, f x ∈ Icc (0 : ℝ) 1 :=
-      exists_continuous_one_zero_of_isCompact_of_isGδ
+      exists_continuous_one_zero_of_isCompact_of_isGδ L_comp L_Gδ isClosed_empty
+        (disjoint_empty L)
     exact ⟨f, f_cont, f_comp, Lf⟩
   · convert hr using 1
     apply measure_congr
