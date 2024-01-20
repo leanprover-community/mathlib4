@@ -48,7 +48,7 @@ instance preserves_smaller_limits_toTopCat :
 a clopen set in one of the terms in the limit.
 -/
 theorem exists_isClopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsClopen U) :
-    ∃ (j : J) (V : Set (F.obj j)) (_ : IsClopen V), U = C.π.app j ⁻¹' V := by
+    ∃ (j : J) (V : Set (F.obj j)), IsClopen V ∧ U = C.π.app j ⁻¹' V := by
   have := preserves_smaller_limits_toTopCat.{u, v}
   -- First, we have the topological basis of the cofiltered limit obtained by pulling back
   -- clopen sets from the factors in the limit. By continuity, all such sets are again clopen.
@@ -93,8 +93,7 @@ theorem exists_isClopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsCl
   -- Pulling back all of the sets from the previous step to `F.obj j0` and taking a union,
   -- we obtain a clopen set in `F.obj j0` which works.
   obtain ⟨j0, hj0⟩ := IsCofiltered.inf_objs_exists (G.image j)
-  let f : ∀ (s : S) (_ : s ∈ G), j0 ⟶ j s := fun s hs =>
-    (hj0 (Finset.mem_image.mpr ⟨s, hs, rfl⟩)).some
+  let f : ∀ s ∈ G, j0 ⟶ j s := fun s hs => (hj0 (Finset.mem_image.mpr ⟨s, hs, rfl⟩)).some
   let W : S → Set (F.obj j0) := fun s => if hs : s ∈ G then F.map (f s hs) ⁻¹' V s else Set.univ
   -- Conclude, using the `j0` and the clopen set of `F.obj j0` obtained above.
   refine' ⟨j0, ⋃ (s : S) (_ : s ∈ G), W s, _, _⟩

@@ -534,7 +534,7 @@ theorem norm_domDomCongr (σ : ι ≃ ι') (f : ContinuousMultilinearMap 𝕜 (f
     ‖domDomCongr σ f‖ = ‖f‖ := by
   simp only [norm_def, LinearEquiv.coe_mk, ← σ.prod_comp,
     (σ.arrowCongr (Equiv.refl G)).surjective.forall, domDomCongr_apply, Equiv.arrowCongr_apply,
-    Equiv.coe_refl, comp.left_id, comp_apply, Equiv.symm_apply_apply, id]
+    Equiv.coe_refl, id_comp, comp_apply, Equiv.symm_apply_apply, id]
 #align continuous_multilinear_map.norm_dom_dom_congr ContinuousMultilinearMap.norm_domDomCongr
 
 /-- An equivalence of the index set defines a linear isometric equivalence between the spaces

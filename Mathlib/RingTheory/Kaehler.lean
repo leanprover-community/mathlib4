@@ -400,19 +400,19 @@ local instance smul_SSmod_SSmod : SMul (S ⊗[R] S ⧸ KaehlerDifferential.ideal
 @[nolint defLemma]
 local instance isScalarTower_S_right :
     IsScalarTower S (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2)
-      (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) := IsScalarTower.right
+      (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) := Ideal.Quotient.isScalarTower_right
 
 /-- A shortcut instance to prevent timing out. Hopefully to be removed in the future. -/
 @[nolint defLemma]
 local instance isScalarTower_R_right :
     IsScalarTower R (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2)
-      (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) := IsScalarTower.right
+      (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) := Ideal.Quotient.isScalarTower_right
 
 /-- A shortcut instance to prevent timing out. Hopefully to be removed in the future. -/
 @[nolint defLemma]
 local instance isScalarTower_SS_right : IsScalarTower (S ⊗[R] S)
     (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) :=
-  IsScalarTower.right
+  Ideal.Quotient.isScalarTower_right
 
 /-- A shortcut instance to prevent timing out. Hopefully to be removed in the future. -/
 local instance instS : Module S (KaehlerDifferential.ideal R S).cotangentIdeal :=
@@ -482,8 +482,8 @@ noncomputable def KaehlerDifferential.kerTotal : Submodule S (S →₀ S) :=
 
 unsuppress_compilation in
 -- Porting note: was `local notation x "𝖣" y => (KaehlerDifferential.kerTotal R S).mkQ (single y x)`
--- but not having `FunLike.coe` leads to `kerTotal_mkQ_single_smul` failing.
-local notation3 x "𝖣" y => FunLike.coe (KaehlerDifferential.kerTotal R S).mkQ (single y x)
+-- but not having `DFunLike.coe` leads to `kerTotal_mkQ_single_smul` failing.
+local notation3 x "𝖣" y => DFunLike.coe (KaehlerDifferential.kerTotal R S).mkQ (single y x)
 
 theorem KaehlerDifferential.kerTotal_mkQ_single_add (x y z) : (z𝖣x + y) = (z𝖣x) + z𝖣y := by
   rw [← map_add, eq_comm, ← sub_eq_zero, ← map_sub (Submodule.mkQ (kerTotal R S)),
@@ -511,6 +511,7 @@ theorem KaehlerDifferential.kerTotal_mkQ_single_algebraMap_one (x) : (x𝖣1) = 
 #align kaehler_differential.ker_total_mkq_single_algebra_map_one KaehlerDifferential.kerTotal_mkQ_single_algebraMap_one
 
 theorem KaehlerDifferential.kerTotal_mkQ_single_smul (r : R) (x y) : (y𝖣r • x) = r • y𝖣x := by
+  letI : SMulZeroClass R S := inferInstance
   rw [Algebra.smul_def, KaehlerDifferential.kerTotal_mkQ_single_mul,
     KaehlerDifferential.kerTotal_mkQ_single_algebraMap, add_zero, ← LinearMap.map_smul_of_tower,
     Finsupp.smul_single, mul_comm, Algebra.smul_def]
@@ -665,7 +666,7 @@ open IsScalarTower (toAlgHom)
 theorem KaehlerDifferential.map_surjective_of_surjective
     (h : Function.Surjective (algebraMap A B)) :
     Function.Surjective (KaehlerDifferential.map R S A B) := by
-  rw [← LinearMap.range_eq_top, _root_.eq_top_iff, ← @Submodule.restrictScalars_top B A,
+  rw [← LinearMap.range_eq_top, _root_.eq_top_iff, ← @Submodule.restrictScalars_top A B,
     ← KaehlerDifferential.span_range_derivation, Submodule.restrictScalars_span _ _ h,
     Submodule.span_le]
   rintro _ ⟨x, rfl⟩

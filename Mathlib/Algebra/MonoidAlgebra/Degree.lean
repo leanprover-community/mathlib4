@@ -103,19 +103,15 @@ variable [Add A] [Add B] [Add T] [CovariantClass B B (· + ·) (· ≤ ·)]
 
 theorem sup_support_mul_le {degb : A → B} (degbm : ∀ {a b}, degb (a + b) ≤ degb a + degb b)
     (f g : R[A]) :
-    (f * g).support.sup degb ≤ f.support.sup degb + g.support.sup degb := by
-  refine' (Finset.sup_mono <| support_mul _ _).trans _
-  simp_rw [Finset.sup_biUnion, Finset.sup_singleton]
-  refine' Finset.sup_le fun fd fds => Finset.sup_le fun gd gds => degbm.trans <| add_le_add _ _ <;>
-    exact Finset.le_sup ‹_›
+    (f * g).support.sup degb ≤ f.support.sup degb + g.support.sup degb :=
+  (Finset.sup_mono <| support_mul _ _).trans <| Finset.sup_add_le.2 fun _fd fds _gd gds ↦
+    degbm.trans <| add_le_add (Finset.le_sup fds) (Finset.le_sup gds)
 #align add_monoid_algebra.sup_support_mul_le AddMonoidAlgebra.sup_support_mul_le
 
 theorem le_inf_support_mul {degt : A → T} (degtm : ∀ {a b}, degt a + degt b ≤ degt (a + b))
     (f g : R[A]) :
-    f.support.inf degt + g.support.inf degt ≤ (f * g).support.inf degt := by
-    refine' OrderDual.ofDual_le_ofDual.mpr <| sup_support_mul_le _ f g
-    intros a b
-    exact OrderDual.ofDual_le_ofDual.mp degtm
+    f.support.inf degt + g.support.inf degt ≤ (f * g).support.inf degt :=
+  sup_support_mul_le (B := Tᵒᵈ) degtm f g
 #align add_monoid_algebra.le_inf_support_mul AddMonoidAlgebra.le_inf_support_mul
 
 end AddOnly

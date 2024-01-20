@@ -90,7 +90,7 @@ In fact, this is only complete if the ideal is finitely generated. -/
 def adicCompletion : Submodule R (∀ n : ℕ, M ⧸ (I ^ n • ⊤ : Submodule R M)) where
   carrier := { f | ∀ {m n} (h : m ≤ n), liftQ _ (mkQ _) (by
       rw [ker_mkQ]
-      exact smul_mono (Ideal.pow_le_pow h) le_rfl)
+      exact smul_mono (Ideal.pow_le_pow_right h) le_rfl)
     (f n) = f m }
   zero_mem' hmn := by rw [Pi.zero_apply, Pi.zero_apply, LinearMap.map_zero]
   add_mem' hf hg m n hmn := by
