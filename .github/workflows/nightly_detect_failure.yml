@@ -42,7 +42,7 @@ jobs:
           version=${BASH_REMATCH[1]}
           echo "NIGHTLY=$version" >> $GITHUB_ENV
           # Check if the remote tag exists
-          if git ls-remote --tags origin refs/tags/nightly-testing-$version | grep -q 'refs/tags/nightly-testing-$version'; then
+          if git ls-remote --tags --exit-code origin "nightly-testing-$version" >/dev/null; then
               echo "Tag nightly-testing-$version already exists on the remote."
           else
               # If the tag does not exist, create and push the tag to remote
