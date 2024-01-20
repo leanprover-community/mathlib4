@@ -62,12 +62,12 @@ instance instTopologicalSpaceSum [t₁ : TopologicalSpace X] [t₂ : Topological
     TopologicalSpace (X ⊕ Y) :=
   coinduced Sum.inl t₁ ⊔ coinduced Sum.inr t₂
 
-instance instTopologicalSpaceSigma {β : X → Type v} [t₂ : ∀ a, TopologicalSpace (β a)] :
-    TopologicalSpace (Sigma β) :=
+instance instTopologicalSpaceSigma {X : X → Type v} [t₂ : ∀ a, TopologicalSpace (X a)] :
+    TopologicalSpace (Sigma X) :=
   ⨆ a, coinduced (Sigma.mk a) (t₂ a)
 
-instance Pi.topologicalSpace {β : X → Type v} [t₂ : (a : X) → TopologicalSpace (β a)] :
-    TopologicalSpace ((a : X) → β a) :=
+instance Pi.topologicalSpace {Y : X → Type v} [t₂ : (a : X) → TopologicalSpace (Y a)] :
+    TopologicalSpace ((a : X) → Y a) :=
   ⨅ a, induced (fun f => f a) (t₂ a)
 #align Pi.topological_space Pi.topologicalSpace
 
@@ -206,12 +206,12 @@ instance {p : X → Prop} [TopologicalSpace X] [DiscreteTopology X] : DiscreteTo
   ⟨bot_unique fun s _ => ⟨(↑) '' s, isOpen_discrete _, preimage_image_eq _ Subtype.val_injective⟩⟩
 
 instance Sum.discreteTopology [TopologicalSpace X] [TopologicalSpace Y] [h : DiscreteTopology X]
-    [hβ : DiscreteTopology Y] : DiscreteTopology (Sum X Y) :=
-  ⟨sup_eq_bot_iff.2 <| by simp [h.eq_bot, hβ.eq_bot]⟩
+    [hY : DiscreteTopology Y] : DiscreteTopology (Sum X Y) :=
+  ⟨sup_eq_bot_iff.2 <| by simp [h.eq_bot, hY.eq_bot]⟩
 #align sum.discrete_topology Sum.discreteTopology
 
-instance Sigma.discreteTopology {β : X → Type v} [∀ a, TopologicalSpace (β a)]
-    [h : ∀ a, DiscreteTopology (β a)] : DiscreteTopology (Sigma β) :=
+instance Sigma.discreteTopology {Y : X → Type v} [∀ a, TopologicalSpace (Y a)]
+    [h : ∀ a, DiscreteTopology (Y a)] : DiscreteTopology (Sigma Y) :=
   ⟨iSup_eq_bot.2 fun _ => by simp only [(h _).eq_bot, coinduced_bot]⟩
 #align sigma.discrete_topology Sigma.discreteTopology
 
@@ -356,7 +356,7 @@ theorem ContinuousAt.fst' {f : X → γ} {x : X} {y : Y} (hf : ContinuousAt f x)
   ContinuousAt.comp hf continuousAt_fst
 #align continuous_at.fst' ContinuousAt.fst'
 
-/-- Precomposing `f` with `Prod.fst` is continuous at `x :  × β` -/
+/-- Precomposing `f` with `Prod.fst` is continuous at `x : X × Y` -/
 theorem ContinuousAt.fst'' {f : X → γ} {x : X × Y} (hf : ContinuousAt f x.fst) :
     ContinuousAt (fun x : X × Y => f x.fst) x :=
   hf.comp continuousAt_fst
@@ -393,7 +393,7 @@ theorem ContinuousAt.snd' {f : Y → γ} {x : X} {y : Y} (hf : ContinuousAt f y)
   ContinuousAt.comp hf continuousAt_snd
 #align continuous_at.snd' ContinuousAt.snd'
 
-/-- Precomposing `f` with `Prod.snd` is continuous at `x :  × β` -/
+/-- Precomposing `f` with `Prod.snd` is continuous at `x : X × Y` -/
 theorem ContinuousAt.snd'' {f : Y → γ} {x : X × Y} (hf : ContinuousAt f x.snd) :
     ContinuousAt (fun x : X × Y => f x.snd) x :=
   hf.comp continuousAt_snd
@@ -445,10 +445,10 @@ theorem Continuous.prod_map {f : γ → X} {g : δ → Y} (hf : Continuous f) (h
 #align continuous.prod_map Continuous.prod_map
 
 /-- A version of `continuous_inf_dom_left` for binary functions -/
-theorem continuous_inf_dom_left₂ { β γ} {f : X → β → γ} {ta1 ta2 : TopologicalSpace X}
-    {tb1 tb2 : TopologicalSpace β} {tc1 : TopologicalSpace γ}
-    (h : by haveI := ta1; haveI := tb1; exact Continuous fun p : X × β => f p.1 p.2) : by
-    haveI := ta1 ⊓ ta2; haveI := tb1 ⊓ tb2; exact Continuous fun p : X × β => f p.1 p.2 := by
+theorem continuous_inf_dom_left₂ {X Y γ} {f : X → Y → γ} {ta1 ta2 : TopologicalSpace X}
+    {tb1 tb2 : TopologicalSpace Y} {tc1 : TopologicalSpace γ}
+    (h : by haveI := ta1; haveI := tb1; exact Continuous fun p : X × Y => f p.1 p.2) : by
+    haveI := ta1 ⊓ ta2; haveI := tb1 ⊓ tb2; exact Continuous fun p : X × Y => f p.1 p.2 := by
   have ha := @continuous_inf_dom_left _ _ id ta1 ta2 ta1 (@continuous_id _ (id _))
   have hb := @continuous_inf_dom_left _ _ id tb1 tb2 tb1 (@continuous_id _ (id _))
   have h_continuous_id := @Continuous.prod_map _ _ _ _ ta1 tb1 (ta1 ⊓ ta2) (tb1 ⊓ tb2) _ _ ha hb
@@ -456,10 +456,10 @@ theorem continuous_inf_dom_left₂ { β γ} {f : X → β → γ} {ta1 ta2 : Top
 #align continuous_inf_dom_left₂ continuous_inf_dom_left₂
 
 /-- A version of `continuous_inf_dom_right` for binary functions -/
-theorem continuous_inf_dom_right₂ { β γ} {f : X → β → γ} {ta1 ta2 : TopologicalSpace X}
-    {tb1 tb2 : TopologicalSpace β} {tc1 : TopologicalSpace γ}
-    (h : by haveI := ta2; haveI := tb2; exact Continuous fun p : X × β => f p.1 p.2) : by
-    haveI := ta1 ⊓ ta2; haveI := tb1 ⊓ tb2; exact Continuous fun p : X × β => f p.1 p.2 := by
+theorem continuous_inf_dom_right₂ {X Y γ} {f : X → Y → γ} {ta1 ta2 : TopologicalSpace X}
+    {tb1 tb2 : TopologicalSpace Y} {tc1 : TopologicalSpace γ}
+    (h : by haveI := ta2; haveI := tb2; exact Continuous fun p : X × Y => f p.1 p.2) : by
+    haveI := ta1 ⊓ ta2; haveI := tb1 ⊓ tb2; exact Continuous fun p : X × Y => f p.1 p.2 := by
   have ha := @continuous_inf_dom_right _ _ id ta1 ta2 ta2 (@continuous_id _ (id _))
   have hb := @continuous_inf_dom_right _ _ id tb1 tb2 tb2 (@continuous_id _ (id _))
   have h_continuous_id := @Continuous.prod_map _ _ _ _ ta2 tb2 (ta1 ⊓ ta2) (tb1 ⊓ tb2) _ _ ha hb
@@ -467,12 +467,12 @@ theorem continuous_inf_dom_right₂ { β γ} {f : X → β → γ} {ta1 ta2 : To
 #align continuous_inf_dom_right₂ continuous_inf_dom_right₂
 
 /-- A version of `continuous_sInf_dom` for binary functions -/
-theorem continuous_sInf_dom₂ { β γ} {f : X → β → γ} {tas : Set (TopologicalSpace X)}
-    {tbs : Set (TopologicalSpace β)} {ta : TopologicalSpace X} {tb : TopologicalSpace β}
+theorem continuous_sInf_dom₂ {X Y γ} {f : X → Y → γ} {tas : Set (TopologicalSpace X)}
+    {tbs : Set (TopologicalSpace Y)} {ta : TopologicalSpace X} {tb : TopologicalSpace Y}
     {tc : TopologicalSpace γ} (ha : ta ∈ tas) (hb : tb ∈ tbs)
-    (hf : Continuous fun p : X × β => f p.1 p.2) : by
+    (hf : Continuous fun p : X × Y => f p.1 p.2) : by
     haveI := sInf tas; haveI := sInf tbs;
-      exact @Continuous _ _ _ tc fun p : X × β => f p.1 p.2 := by
+      exact @Continuous _ _ _ tc fun p : X × Y => f p.1 p.2 := by
   have ha := continuous_sInf_dom ha continuous_id
   have hb := continuous_sInf_dom hb continuous_id
   have h_continuous_id := @Continuous.prod_map _ _ _ _ ta tb (sInf tas) (sInf tbs) _ _ ha hb
@@ -623,9 +623,9 @@ theorem ContinuousAt.prod_map' {f : X → γ} {g : Y → δ} {x : X} {y : Y} (hf
 
 -- todo: reformulate using `Set.image2`
 -- todo: prove a version of `generateFrom_union` with `image2 (∩) s t` in the LHS and use it here
-theorem prod_generateFrom_generateFrom_eq { β : Type*} {s : Set (Set X)} {t : Set (Set β)}
+theorem prod_generateFrom_generateFrom_eq {X Y : Type*} {s : Set (Set X)} {t : Set (Set Y)}
     (hs : ⋃₀ s = univ) (ht : ⋃₀ t = univ) :
-    @instTopologicalSpaceProd X β (generateFrom s) (generateFrom t) =
+    @instTopologicalSpaceProd X Y (generateFrom s) (generateFrom t) =
       generateFrom { g | ∃ u ∈ s, ∃ v ∈ t, g = u ×ˢ v } :=
   let G := generateFrom { g | ∃ u ∈ s, ∃ v ∈ t, g = u ×ˢ v }
   le_antisymm
@@ -691,7 +691,7 @@ theorem exists_nhds_square {s : Set (X × X)} {x : X} (hx : s ∈ 𝓝 (x, x)) :
   simpa [nhds_prod_eq, (nhds_basis_opens x).prod_self.mem_iff, and_assoc, and_left_comm] using hx
 #align exists_nhds_square exists_nhds_square
 
-/-- `Prod.fst` maps neighborhood of `x :  × β` within the section `Prod.snd ⁻¹' {x.2}`
+/-- `Prod.fst` maps neighborhood of `x : X × Y` within the section `Prod.snd ⁻¹' {x.2}`
 to `𝓝 x.1`. -/
 theorem map_fst_nhdsWithin (x : X × Y) : map Prod.fst (𝓝[Prod.snd ⁻¹' {x.2}] x) = 𝓝 x.1 := by
   refine' le_antisymm (continuousAt_fst.mono_left inf_le_left) fun s hs => _
@@ -712,7 +712,7 @@ theorem isOpenMap_fst : IsOpenMap (@Prod.fst X Y) :=
   isOpenMap_iff_nhds_le.2 fun x => (map_fst_nhds x).ge
 #align is_open_map_fst isOpenMap_fst
 
-/-- `Prod.snd` maps neighborhood of `x :  × β` within the section `Prod.fst ⁻¹' {x.1}`
+/-- `Prod.snd` maps neighborhood of `x : X × Y` within the section `Prod.fst ⁻¹' {x.1}`
 to `𝓝 x.2`. -/
 theorem map_snd_nhdsWithin (x : X × Y) : map Prod.snd (𝓝[Prod.fst ⁻¹' {x.1}] x) = 𝓝 x.2 := by
   refine' le_antisymm (continuousAt_snd.mono_left inf_le_left) fun s hs => _
@@ -1092,7 +1092,7 @@ theorem nhds_subtype_eq_comap {a : X} {h : p a} : 𝓝 (⟨a, h⟩ : Subtype p) 
   nhds_induced _ _
 #align nhds_subtype_eq_comap nhds_subtype_eq_comap
 
-theorem tendsto_subtype_rng {β : Type*} {p : X → Prop} {b : Filter β} {f : β → Subtype p} :
+theorem tendsto_subtype_rng {Y : Type*} {p : X → Prop} {b : Filter Y} {f : Y → Subtype p} :
     ∀ {a : Subtype p}, Tendsto f b (𝓝 a) ↔ Tendsto (fun x => (f x : X)) b (𝓝 (a : X))
   | ⟨a, ha⟩ => by rw [nhds_subtype_eq_comap, tendsto_comap_iff]; rfl
 #align tendsto_subtype_rng tendsto_subtype_rng
@@ -1279,7 +1279,7 @@ lemma Pi.induced_precomp' {ι' : Type*} (φ : ι' → ι) :
 
 lemma Pi.induced_precomp [TopologicalSpace Y] {ι' : Type*} (φ : ι' → ι) :
     induced (· ∘ φ) Pi.topologicalSpace =
-    ⨅ i', induced (eval (φ i')) ‹TopologicalSpace β› :=
+    ⨅ i', induced (eval (φ i')) ‹TopologicalSpace Y› :=
   induced_precomp' φ
 
 lemma Pi.continuous_restrict (S : Set ι) :
@@ -1692,17 +1692,17 @@ end ULift
 
 section Monad
 
-variable [TopologicalSpace X] {β : Set X} {γ : Set β}
+variable [TopologicalSpace X] {s : Set X} {γ : Set s}
 
-theorem IsOpen.trans (hγ : IsOpen γ) (hβ : IsOpen β) : IsOpen (γ : Set X) := by
+theorem IsOpen.trans (hγ : IsOpen γ) (hs : IsOpen s) : IsOpen (γ : Set X) := by
   rcases isOpen_induced_iff.mp hγ with ⟨δ, hδ, rfl⟩
   rw [Subtype.image_preimage_coe]
-  exact IsOpen.inter hδ hβ
+  exact IsOpen.inter hδ hs
 
-theorem IsClosed.trans (hγ : IsClosed γ) (hβ : IsClosed β) : IsClosed (γ : Set X) := by
+theorem IsClosed.trans (hγ : IsClosed γ) (hs : IsClosed s) : IsClosed (γ : Set X) := by
   rcases isClosed_induced_iff.mp hγ with ⟨δ, hδ, rfl⟩
   rw [Subtype.image_preimage_coe]
-  convert IsClosed.inter hδ hβ
+  convert IsClosed.inter hδ hs
 
 end Monad
 
