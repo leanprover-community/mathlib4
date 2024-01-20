@@ -266,6 +266,8 @@ instance instLinearOrder : LinearOrder (Colex α) where
   decidableLE := instDecidableLE
   decidableLT := instDecidableLT
 
+open scoped symmDiff
+
 private lemma max_mem_aux {s t : Colex α} (hst : s ≠ t) : (ofColex s ∆ ofColex t).Nonempty := by
   simpa
 

@@ -504,8 +504,7 @@ lemma _root_.Set.mem_center_iff_addMonoidHom (a : R) :
       AddMonoidHom.comp .mul (.mulRight a) = .compl₂ .mul (.mulLeft a) ∧
       AddMonoidHom.compr₂ .mul (.mulRight a) = .compl₂ .mul (.mulRight a) := by
   rw [Set.mem_center_iff, isMulCentral_iff]
-  simp_rw [DFunLike.ext_iff]
-  rfl
+  simp [DFunLike.ext_iff]
 
 end NonUnitalNonAssocSemiring
 
