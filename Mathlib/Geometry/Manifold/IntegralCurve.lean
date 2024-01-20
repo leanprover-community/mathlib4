@@ -396,13 +396,8 @@ theorem isIntegralCurveAt_eventuallyEq_of_contMDiffAt (hγt₀ : I.IsInteriorPoi
   have hsrc {g} (hg : IsIntegralCurveAt g v t₀) :
     ∀ᶠ t in 𝓝 t₀, g ⁻¹' (extChartAt I (g t₀)).source ∈ 𝓝 t := eventually_mem_nhds.mpr <|
       continuousAt_def.mp hg.continuousAt _ <| extChartAt_source_mem_nhds I (g t₀)
-  have hgt {g : ℝ → M} {t} (ht : g ⁻¹' (extChartAt I (g t₀)).source ∈ 𝓝 t) :
+  have hmem {g : ℝ → M} {t} (ht : g ⁻¹' (extChartAt I (g t₀)).source ∈ 𝓝 t) :
     g t ∈ (extChartAt I (g t₀)).source := mem_preimage.mp <| mem_of_mem_nhds ht
-  have heq {g} (hg : IsIntegralCurveAt g v t₀) :
-    g =ᶠ[𝓝 t₀] (extChartAt I (g t₀)).symm ∘ ↑(extChartAt I (g t₀)) ∘ g := by
-    apply (hsrc hg).mono
-    intros t ht
-    rw [Function.comp_apply, Function.comp_apply, PartialEquiv.left_inv _ (hgt ht)]
   have hdrv {g} (hg : IsIntegralCurveAt g v t₀) (h' : γ t₀ = g t₀) : ∀ᶠ t in 𝓝 t₀,
       HasDerivAt ((extChartAt I (g t₀)) ∘ g) ((fun _ ↦ v') t (((extChartAt I (g t₀)) ∘ g) t)) t ∧
       ((extChartAt I (g t₀)) ∘ g) t ∈ (fun _ ↦ s) t := by
@@ -412,10 +407,15 @@ theorem isIntegralCurveAt_eventuallyEq_of_contMDiffAt (hγt₀ : I.IsInteriorPoi
       rw [hv', h']
       apply ht2.congr_deriv
       congr <;>
-      rw [Function.comp_apply, PartialEquiv.left_inv _ (hgt ht1)]
+      rw [Function.comp_apply, PartialEquiv.left_inv _ (hmem ht1)]
     · apply ((continuousAt_extChartAt I (g t₀)).comp hg.continuousAt).preimage_mem_nhds
       rw [Function.comp_apply, ← h']
       exact hs
+  have heq {g} (hg : IsIntegralCurveAt g v t₀) :
+    g =ᶠ[𝓝 t₀] (extChartAt I (g t₀)).symm ∘ ↑(extChartAt I (g t₀)) ∘ g := by
+    apply (hsrc hg).mono
+    intros t ht
+    rw [Function.comp_apply, Function.comp_apply, PartialEquiv.left_inv _ (hmem ht)]
   -- main proof
   suffices (extChartAt I (γ t₀)) ∘ γ =ᶠ[𝓝 t₀] (extChartAt I (γ' t₀)) ∘ γ' from
     (heq hγ).trans <| (this.fun_comp (extChartAt I (γ t₀)).symm).trans (h ▸ (heq hγ').symm)
