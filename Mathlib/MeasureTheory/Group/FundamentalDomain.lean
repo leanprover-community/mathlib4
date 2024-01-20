@@ -859,9 +859,9 @@ local notation "π" => @Quotient.mk _ α_mod_G
 for any fundamental domain `t`, and any measurable subset `U` of the quotient,
 `μ U = volume ((π ⁻¹' U) ∩ t)`. -/
 class QuotientVolumeEqVolumePreimage (μ : Measure (Quotient α_mod_G)) : Prop where
-projection_respects_measure' : ∀ (t : Set α) (_ : IsFundamentalDomain G t)
-  (U : Set (Quotient α_mod_G)) (_ : MeasurableSet U),
-  μ U = volume (π ⁻¹' U ∩ t)
+  projection_respects_measure' : ∀ (t : Set α) (_ : IsFundamentalDomain G t)
+    (U : Set (Quotient α_mod_G)) (_ : MeasurableSet U),
+    μ U = volume (π ⁻¹' U ∩ t)
 
 attribute [to_additive existing MeasureTheory.AddQuotientVolumeEqVolumePreimage]
   MeasureTheory.QuotientVolumeEqVolumePreimage
