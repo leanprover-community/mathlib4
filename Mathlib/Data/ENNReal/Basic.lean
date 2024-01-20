@@ -23,11 +23,15 @@ In this file we set up many of the instances on `ℝ≥0∞`, and provide relati
 as functions `ENNReal.toNNReal`, `ENNReal.ofReal` and `ENNReal.toReal`, all of which take the value
 zero wherever they cannot be the identity. Also included is the relationship between `ℝ≥0∞` and `ℕ`.
 The interaction of these functions, especially `ENNReal.ofReal` and `ENNReal.toReal`, with the
-algebraic and lattice structure can be found in `Data.ENNReal.Real`
+algebraic and lattice structure can be found in `Data.ENNReal.Real`.
 
 This file proves many of the order properties of `ℝ≥0∞`, with the exception of the ways those relate
-to the algebraic structure, which are included in `Data.ENNReal.Operations`. The definition and
-properties of the inversion and division are included in `Data.ENNReal.Inv`.
+to the algebraic structure, which are included in `Data.ENNReal.Operations`.
+This file also defines inversion and division: this includes `Inv` and `Div` instances on `ℝ≥0∞`
+making it into a `DivInvOneMonoid`. As a consequence of being a `DivInvOneMonoid`,
+`ℝ≥0∞` inherits a power operation with integer exponent: this and other properties is shown in
+`Data.ENNReal.Inv`.
+
 
 ## Main definitions
 
@@ -117,6 +121,11 @@ noncomputable instance : OrderedSub ℝ≥0∞ := inferInstanceAs (OrderedSub (W
 
 noncomputable instance : LinearOrderedAddCommMonoidWithTop ℝ≥0∞ :=
   inferInstanceAs (LinearOrderedAddCommMonoidWithTop (WithTop ℝ≥0))
+
+-- porting note: rfc: redefine using pattern matching?
+noncomputable instance : Inv ℝ≥0∞ := ⟨fun a => sInf { b | 1 ≤ a * b }⟩
+
+noncomputable instance : DivInvMonoid ℝ≥0∞ where
 
 variable {a b c d : ℝ≥0∞} {r p q : ℝ≥0}
 

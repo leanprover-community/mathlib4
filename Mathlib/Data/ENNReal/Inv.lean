@@ -103,11 +103,6 @@ end Actions
 
 variable {a b c d : ℝ≥0∞} {r p q : ℝ≥0}
 
--- porting note: rfc: redefine using pattern matching?
-instance : Inv ℝ≥0∞ := ⟨fun a => sInf { b | 1 ≤ a * b }⟩
-
-instance : DivInvMonoid ℝ≥0∞ where
-
 protected theorem div_eq_inv_mul : a / b = b⁻¹ * a := by rw [div_eq_mul_inv, mul_comm]
 #align ennreal.div_eq_inv_mul ENNReal.div_eq_inv_mul
 
