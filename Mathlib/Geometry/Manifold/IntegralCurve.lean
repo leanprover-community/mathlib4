@@ -174,8 +174,8 @@ lemma isIntegralCurveOn_comp_add {dt : ℝ} :
     IsIntegralCurveOn γ v s ↔ IsIntegralCurveOn (γ ∘ (· + dt)) v { t | t + dt ∈ s } := by
   refine ⟨fun hγ ↦ hγ.comp_add _, fun hγ ↦ ?_⟩
   convert hγ.comp_add (-dt)
-  ext t
-  · simp only [Function.comp_apply, neg_add_cancel_right]
+  · ext t
+    simp only [Function.comp_apply, neg_add_cancel_right]
   · simp only [mem_setOf_eq, neg_add_cancel_right, setOf_mem_eq]
 
 lemma IsIntegralCurveAt.comp_add (hγ : IsIntegralCurveAt γ v t₀) (dt : ℝ) :
@@ -191,8 +191,8 @@ lemma isIntegralCurveAt_comp_add {dt : ℝ} :
     IsIntegralCurveAt γ v t₀ ↔ IsIntegralCurveAt (γ ∘ (· + dt)) v (t₀ - dt) := by
   refine ⟨fun hγ ↦ hγ.comp_add _, fun hγ ↦ ?_⟩
   convert hγ.comp_add (-dt)
-  ext t
-  · simp only [Function.comp_apply, neg_add_cancel_right]
+  · ext t
+    simp only [Function.comp_apply, neg_add_cancel_right]
   · simp only [sub_neg_eq_add, sub_add_cancel]
 
 lemma IsIntegralCurve.comp_add (hγ : IsIntegralCurve γ v) (dt : ℝ) :
@@ -225,8 +225,8 @@ lemma isIntegralCurveOn_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
     IsIntegralCurveOn γ v s ↔ IsIntegralCurveOn (γ ∘ (· * a)) (a • v) { t | t * a ∈ s } := by
   refine ⟨fun hγ ↦ hγ.comp_mul a, fun hγ ↦ ?_⟩
   convert hγ.comp_mul a⁻¹
-  ext t
-  · simp only [Function.comp_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one]
+  · ext t
+    simp only [Function.comp_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one]
   · simp only [smul_smul, inv_mul_eq_div, div_self ha, one_smul]
   · simp only [mem_setOf_eq, mul_assoc, inv_mul_eq_div, div_self ha, mul_one, setOf_mem_eq]
 
@@ -244,8 +244,8 @@ lemma isIntegralCurveAt_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
     IsIntegralCurveAt γ v t₀ ↔ IsIntegralCurveAt (γ ∘ (· * a)) (a • v) (t₀ / a) := by
   refine ⟨fun hγ ↦ hγ.comp_mul_ne_zero ha, fun hγ ↦ ?_⟩
   convert hγ.comp_mul_ne_zero (inv_ne_zero ha)
-  ext t
-  · simp only [Function.comp_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one]
+  · ext t
+    simp only [Function.comp_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one]
   · simp only [smul_smul, inv_mul_eq_div, div_self ha, one_smul]
   · simp only [div_inv_eq_mul, div_mul_cancel _ ha]
 
@@ -258,8 +258,8 @@ lemma isIntegralCurve_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
     IsIntegralCurve γ v ↔ IsIntegralCurve (γ ∘ (· * a)) (a • v) := by
   refine ⟨fun hγ ↦ hγ.comp_mul _, fun hγ ↦ ?_⟩
   convert hγ.comp_mul a⁻¹
-  ext t
-  · simp only [Function.comp_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one]
+  · ext t
+    simp only [Function.comp_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one]
   · simp only [smul_smul, inv_mul_eq_div, div_self ha, one_smul]
 
 /-- If the vector field `v` vanishes at `x₀`, then the constant curve at `x₀`
