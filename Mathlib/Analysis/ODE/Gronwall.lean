@@ -281,23 +281,23 @@ theorem ODE_solution_unique_of_mem_set_Ioo {v : ℝ → E → E} {s : ℝ → Se
     have hv' t : LipschitzOnWith K (Neg.neg ∘ (v (-t))) (s (-t)) := by
       rw [← one_mul K]
       exact LipschitzWith.id.neg.comp_lipschitzOnWith (hv _)
-    have : EqOn (f ∘ Neg.neg) (g ∘ Neg.neg) (Ico (-t₀) (-a)) := by
-      have hmt : MapsTo Neg.neg (Ico (-t₀) (-a)) (Ioo a b) :=
-        fun _ ht' ↦ ⟨lt_neg.mp ht'.2, lt_of_le_of_lt (neg_le.mp ht'.1) ht.2⟩
-      apply ODE_solution_unique_of_mem_set_Ico hv'
-        (hf.comp continuousOn_neg hmt) _ (fun _ ht' ↦ hfs _ (hmt ht'))
-        (hg.comp continuousOn_neg hmt) _ (fun _ ht' ↦ hgs _ (hmt ht')) (by simp [ha])
-      · intros t' ht'
-        apply HasDerivAt.hasDerivWithinAt
-        convert HasFDerivAt.comp_hasDerivAt t' (hf' (-t') (hmt ht')) (hasDerivAt_neg t')
-        simp
-      · intros t' ht'
-        apply HasDerivAt.hasDerivWithinAt
-        convert HasFDerivAt.comp_hasDerivAt t' (hg' (-t') (hmt ht')) (hasDerivAt_neg t')
-        simp
-    rw [eqOn_comp_right_iff] at this
-    convert this
-    simp
+    have hmt : MapsTo Neg.neg (Ico (-t₀) (-a)) (Ioo a b) :=
+      fun _ ht' ↦ ⟨lt_neg.mp ht'.2, lt_of_le_of_lt (neg_le.mp ht'.1) ht.2⟩
+    suffices EqOn (f ∘ Neg.neg) (g ∘ Neg.neg) (Ico (-t₀) (-a)) by
+      rw [eqOn_comp_right_iff] at this
+      convert this
+      simp
+    apply ODE_solution_unique_of_mem_set_Ico hv'
+      (hf.comp continuousOn_neg hmt) _ (fun _ ht' ↦ hfs _ (hmt ht'))
+      (hg.comp continuousOn_neg hmt) _ (fun _ ht' ↦ hgs _ (hmt ht')) (by simp [ha])
+    · intros t' ht'
+      apply HasDerivAt.hasDerivWithinAt
+      convert HasFDerivAt.comp_hasDerivAt t' (hf' (-t') (hmt ht')) (hasDerivAt_neg t')
+      simp
+    · intros t' ht'
+      apply HasDerivAt.hasDerivWithinAt
+      convert HasFDerivAt.comp_hasDerivAt t' (hg' (-t') (hmt ht')) (hasDerivAt_neg t')
+      simp
   · -- case `t ≥ t₀`: follows trivially from the `Ico` version of the uniqueness lemma
     have hss := Ico_subset_Ioo_left (b := b) ht.1
     exact ODE_solution_unique_of_mem_set_Ico hv
