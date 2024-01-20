@@ -303,45 +303,45 @@ theorem ODE_solution_unique_of_mem_set_Icc {v : ℝ → E → E} {s : ℝ → Se
 /-- A version of `ODE_solution_unique_of_mem_set_Icc` for uniqueness in an open interval. -/
 theorem ODE_solution_unique_of_mem_set_Ioo {v : ℝ → E → E} {s : ℝ → Set E} {K : ℝ≥0}
     (hv : ∀ t, LipschitzOnWith K (v t) (s t))
-    {f g : ℝ → E} {a b t₀ : ℝ} (ht : t₀ ∈ Ioo a b) (hf : ContinuousOn f (Ioo a b))
-    (hf' : ∀ t ∈ Ioo a b, HasDerivAt f (v t (f t)) t) (hfs : ∀ t ∈ Ioo a b, f t ∈ s t)
-    (hg : ContinuousOn g (Ioo a b)) (hg' : ∀ t ∈ Ioo a b, HasDerivAt g (v t (g t)) t)
-    (hgs : ∀ t ∈ Ioo a b, g t ∈ s t) (heq : f t₀ = g t₀) : EqOn f g (Ioo a b) := by
+    {f g : ℝ → E} {a b t₀ : ℝ} (ht : t₀ ∈ Ioo a b)
+    (hf : ∀ t ∈ Ioo a b, HasDerivAt f (v t (f t)) t ∧ f t ∈ s t)
+    (hg : ∀ t ∈ Ioo a b, HasDerivAt g (v t (g t)) t ∧ g t ∈ s t)
+    (heq : f t₀ = g t₀) : EqOn f g (Ioo a b) := by
   intros t' ht'
   rcases lt_or_le t' t₀ with (h | h)
-  · have hss : Ioc t' t₀ ⊆ Ioo a b :=
-      fun _ ht'' ↦ ⟨lt_trans ht'.1 ht''.1, lt_of_le_of_lt ht''.2 ht.2⟩
+  · have hss : Icc t' t₀ ⊆ Ioo a b :=
+      fun _ ht'' ↦ ⟨lt_of_lt_of_le ht'.1 ht''.1, lt_of_le_of_lt ht''.2 ht.2⟩
     exact ODE_solution_unique_of_mem_set_Icc_left hv
-      (hf.mono <| Icc_subset_Ioo ht'.1 ht.2)
-      (fun _ ht'' ↦ (hf' _ (hss ht'')).hasDerivWithinAt) (fun _ ht'' ↦ (hfs _ (hss ht'')))
-      (hg.mono <| Icc_subset_Ioo ht'.1 ht.2)
-      (fun _ ht'' ↦ (hg' _ (hss ht'')).hasDerivWithinAt) (fun _ ht'' ↦ (hgs _ (hss ht''))) heq
+      (ContinuousAt.continuousOn fun _ ht'' ↦ (hf _ <| hss ht'').1.continuousAt)
+      (fun _ ht'' ↦ (hf _ <| hss <| Ioc_subset_Icc_self ht'').1.hasDerivWithinAt)
+      (fun _ ht'' ↦ (hf _ <| hss <| Ioc_subset_Icc_self ht'').2)
+      (ContinuousAt.continuousOn fun _ ht'' ↦ (hg _ <| hss ht'').1.continuousAt)
+      (fun _ ht'' ↦ (hg _ <| hss <| Ioc_subset_Icc_self ht'').1.hasDerivWithinAt)
+      (fun _ ht'' ↦ (hg _ <| hss <| Ioc_subset_Icc_self ht'').2) heq
       ⟨le_rfl, le_of_lt h⟩
-  · have hss : Ico t₀ t' ⊆ Ioo a b :=
-      fun _ ht'' ↦ ⟨lt_of_lt_of_le ht.1 ht''.1, lt_trans ht''.2 ht'.2⟩
+  · have hss : Icc t₀ t' ⊆ Ioo a b :=
+      fun _ ht'' ↦ ⟨lt_of_lt_of_le ht.1 ht''.1, lt_of_le_of_lt ht''.2 ht'.2⟩
     exact ODE_solution_unique_of_mem_set_Icc_right hv
-      (hf.mono <| Icc_subset_Ioo ht.1 ht'.2)
-      (fun _ ht'' ↦ (hf' _ (hss ht'')).hasDerivWithinAt) (fun _ ht'' ↦ (hfs _ (hss ht'')))
-      (hg.mono <| Icc_subset_Ioo ht.1 ht'.2)
-      (fun _ ht'' ↦ (hg' _ (hss ht'')).hasDerivWithinAt) (fun _ ht'' ↦ (hgs _ (hss ht''))) heq
+      (ContinuousAt.continuousOn fun _ ht'' ↦ (hf _ <| hss ht'').1.continuousAt)
+      (fun _ ht'' ↦ (hf _ <| hss <| Ico_subset_Icc_self ht'').1.hasDerivWithinAt)
+      (fun _ ht'' ↦ (hf _ <| hss <| Ico_subset_Icc_self ht'').2)
+      (ContinuousAt.continuousOn fun _ ht'' ↦ (hg _ <| hss ht'').1.continuousAt)
+      (fun _ ht'' ↦ (hg _ <| hss <| Ico_subset_Icc_self ht'').1.hasDerivWithinAt)
+      (fun _ ht'' ↦ (hg _ <| hss <| Ico_subset_Icc_self ht'').2) heq
       ⟨h, le_rfl⟩
 
 /-- Local unqueness of ODE solutions. -/
 theorem ODE_solution_unique_of_mem_set_eventually {v : ℝ → E → E} {s : ℝ → Set E} {K : ℝ≥0}
     (hv : ∀ t, LipschitzOnWith K (v t) (s t)) {f g : ℝ → E} {t₀ : ℝ}
-    (h : ∀ᶠ t in 𝓝 t₀,
-      ContinuousAt f t ∧ HasDerivAt f (v t (f t)) t ∧ f t ∈ s t ∧
-      ContinuousAt g t ∧ HasDerivAt g (v t (g t)) t ∧ g t ∈ s t)
+    (hf : ∀ᶠ t in 𝓝 t₀, HasDerivAt f (v t (f t)) t ∧ f t ∈ s t)
+    (hg : ∀ᶠ t in 𝓝 t₀, HasDerivAt g (v t (g t)) t ∧ g t ∈ s t)
     (heq : f t₀ = g t₀) : f =ᶠ[𝓝 t₀] g := by
-  obtain ⟨ε, hε, h⟩ := eventually_nhds_iff_ball.mp h
+  obtain ⟨ε, hε, h⟩ := eventually_nhds_iff_ball.mp (hf.and hg)
   rw [Filter.eventuallyEq_iff_exists_mem]
   refine ⟨ball t₀ ε, ball_mem_nhds _ hε, ?_⟩
   simp_rw [Real.ball_eq_Ioo] at *
-  exact ODE_solution_unique_of_mem_set_Ioo hv (Real.ball_eq_Ioo t₀ ε ▸ mem_ball_self hε)
-    (ContinuousAt.continuousOn fun _ ht ↦ (h _ ht).1)
-    (fun _ ht ↦ (h _ ht).2.1) (fun _ ht ↦ (h _ ht).2.2.1)
-    (ContinuousAt.continuousOn fun _ ht ↦ (h _ ht).2.2.2.1)
-    (fun _ ht ↦ (h _ ht).2.2.2.2.1) (fun _ ht ↦ (h _ ht).2.2.2.2.2) heq
+  apply ODE_solution_unique_of_mem_set_Ioo hv (Real.ball_eq_Ioo t₀ ε ▸ mem_ball_self hε)
+    (fun _ ht ↦ (h _ ht).1) (fun _ ht ↦ (h _ ht).2) heq
 
 /-- There exists only one solution of an ODE \(\dot x=v(t, x)\) with
 a given initial value provided that the RHS is Lipschitz continuous in `x`. -/
