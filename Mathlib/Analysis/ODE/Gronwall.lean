@@ -326,6 +326,27 @@ theorem ODE_solution_unique_of_mem_set_Ioo {v : ℝ → E → E} {s : ℝ → Se
       (fun _ ht'' ↦ (hg' _ (hss ht'')).hasDerivWithinAt) (fun _ ht'' ↦ (hgs _ (hss ht''))) heq
       ⟨h, le_rfl⟩
 
+/-- Local unqueness of ODE solutions. -/
+theorem ODE_solution_unique_of_mem_set_eventually {v : ℝ → E → E} {s : ℝ → Set E} {K : ℝ≥0}
+    (hv : ∀ t, LipschitzOnWith K (v t) (s t)) {f g : ℝ → E} {t₀ : ℝ}
+    (hf : ∀ᶠ t in 𝓝 t₀, ContinuousAt f t)
+    (hf' : ∀ᶠ t in 𝓝 t₀, HasDerivAt f (v t (f t)) t)
+    (hfs : ∀ᶠ t in 𝓝 t₀, f t ∈ s t)
+    (hg : ∀ᶠ t in 𝓝 t₀, ContinuousAt g t)
+    (hg' : ∀ᶠ t in 𝓝 t₀, HasDerivAt g (v t (g t)) t)
+    (hgs : ∀ᶠ t in 𝓝 t₀, g t ∈ s t)
+    (heq : f t₀ = g t₀) : f =ᶠ[𝓝 t₀] g := by
+  obtain ⟨ε, hε, h⟩ := eventually_nhds_iff_ball.mp <|
+    hf.and <| hf'.and <| hfs.and <| hg.and <| hg'.and <| hgs
+  rw [Filter.eventuallyEq_iff_exists_mem]
+  refine ⟨ball t₀ ε, ball_mem_nhds _ hε, ?_⟩
+  simp_rw [Real.ball_eq_Ioo] at *
+  exact ODE_solution_unique_of_mem_set_Ioo hv (Real.ball_eq_Ioo t₀ ε ▸ mem_ball_self hε)
+    (ContinuousAt.continuousOn fun _ ht ↦ (h _ ht).1)
+    (fun _ ht ↦ (h _ ht).2.1) (fun _ ht ↦ (h _ ht).2.2.1)
+    (ContinuousAt.continuousOn fun _ ht ↦ (h _ ht).2.2.2.1)
+    (fun _ ht ↦ (h _ ht).2.2.2.2.1) (fun _ ht ↦ (h _ ht).2.2.2.2.2) heq
+
 /-- There exists only one solution of an ODE \(\dot x=v(t, x)\) with
 a given initial value provided that the RHS is Lipschitz continuous in `x`. -/
 theorem ODE_solution_unique {v : ℝ → E → E} {K : ℝ≥0} (hv : ∀ t, LipschitzWith K (v t))
