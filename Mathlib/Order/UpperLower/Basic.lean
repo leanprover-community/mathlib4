@@ -1045,7 +1045,7 @@ def map (f : α ≃o β) : UpperSet α ≃o UpperSet β where
 
 @[simp]
 theorem symm_map (f : α ≃o β) : (map f).symm = map f.symm :=
-  FunLike.ext _ _ fun s => ext <| by convert Set.preimage_equiv_eq_image_symm s f.toEquiv
+  DFunLike.ext _ _ fun s => ext <| by convert Set.preimage_equiv_eq_image_symm s f.toEquiv
 #align upper_set.symm_map UpperSet.symm_map
 
 @[simp]
@@ -1090,7 +1090,7 @@ def map (f : α ≃o β) : LowerSet α ≃o LowerSet β where
 
 @[simp]
 theorem symm_map (f : α ≃o β) : (map f).symm = map f.symm :=
-  FunLike.ext _ _ fun s => ext <| by convert Set.preimage_equiv_eq_image_symm s f.toEquiv
+  DFunLike.ext _ _ fun s => ext <| by convert Set.preimage_equiv_eq_image_symm s f.toEquiv
 #align lower_set.symm_map LowerSet.symm_map
 
 @[simp]

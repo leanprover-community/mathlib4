@@ -5,10 +5,10 @@ Authors: Mario Carneiro, Neil Strickland
 -/
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Algebra.NeZero
-import Mathlib.Data.Nat.Cast.Defs
 import Mathlib.Order.Basic
 import Mathlib.Tactic.Coe
 import Mathlib.Tactic.Lift
+import Mathlib.Init.Data.Int.Order
 
 #align_import data.pnat.defs from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 

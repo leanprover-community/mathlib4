@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 import Mathlib.RingTheory.MvPolynomial.Basic
+import Mathlib.Data.MvPolynomial.CommRing
 
 #align_import field_theory.mv_polynomial from "leanprover-community/mathlib"@"039a089d2a4b93c761b234f3e5f5aeb752bac60f"
 

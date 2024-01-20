@@ -299,7 +299,7 @@ theorem sum_pow_units [DecidableEq K] (i : ℕ) :
           · rw [Fintype.card_units, Nat.cast_sub,
               cast_card_eq_zero, Nat.cast_one, zero_sub]
             show 1 ≤ q; exact Fintype.card_pos_iff.mpr ⟨0⟩
-        rw [← forall_pow_eq_one_iff, FunLike.ext_iff]
+        rw [← forall_pow_eq_one_iff, DFunLike.ext_iff]
         apply forall_congr'; intro x; simp [Units.ext_iff]
 #align finite_field.sum_pow_units FiniteField.sum_pow_units
 

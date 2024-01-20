@@ -82,8 +82,7 @@ partition of unity in some proofs.
 
 We prove that on a smooth finite dimensional real manifold with `σ`-compact Hausdorff topology, for
 any `U : M → Set M` such that `∀ x ∈ s, U x ∈ 𝓝 x` there exists a `SmoothBumpCovering ι I M s`
-subordinate to `U`. Then we use this fact to prove a version of the Whitney embedding theorem: any
-compact real manifold can be embedded into `ℝ^n` for large enough `n`.  -/
+subordinate to `U`. -/
 
 variable (ι M)
 
@@ -139,7 +138,7 @@ namespace SmoothPartitionOfUnity
 
 variable {s : Set M} (f : SmoothPartitionOfUnity ι I M s) {n : ℕ∞}
 
-instance {s : Set M} : FunLike (SmoothPartitionOfUnity ι I M s) ι fun _ => C^∞⟮I, M; 𝓘(ℝ), ℝ⟯ where
+instance {s : Set M} : FunLike (SmoothPartitionOfUnity ι I M s) ι C^∞⟮I, M; 𝓘(ℝ), ℝ⟯ where
   coe := toFun
   coe_injective' f g h := by cases f; cases g; congr
 
@@ -185,7 +184,7 @@ theorem sum_nonneg (x : M) : 0 ≤ ∑ᶠ i, f i x :=
 
 theorem contMDiff_smul {g : M → F} {i} (hg : ∀ x ∈ tsupport (f i), ContMDiffAt I 𝓘(ℝ, F) n g x) :
     ContMDiff I 𝓘(ℝ, F) n fun x => f i x • g x :=
-  contMDiff_of_support fun x hx =>
+  contMDiff_of_tsupport fun x hx =>
     ((f i).contMDiff.contMDiffAt.of_le le_top).smul <| hg x <| tsupport_smul_subset_left _ _ hx
 #align smooth_partition_of_unity.cont_mdiff_smul SmoothPartitionOfUnity.contMDiff_smul
 
