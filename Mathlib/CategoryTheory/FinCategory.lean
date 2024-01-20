@@ -7,6 +7,7 @@ import Mathlib.Data.Fintype.Card
 import Mathlib.CategoryTheory.DiscreteCategory
 import Mathlib.CategoryTheory.Opposites
 import Mathlib.CategoryTheory.Category.ULift
+import Mathlib.CategoryTheory.SingleObj
 
 #align_import category_theory.fin_category from "leanprover-community/mathlib"@"2efd2423f8d25fa57cf7a179f5d8652ab4d0df44"
 
@@ -49,6 +50,9 @@ attribute [instance] FinCategory.fintypeObj FinCategory.fintypeHom
 
 instance finCategoryDiscreteOfFintype (J : Type v) [Fintype J] : FinCategory (Discrete J) where
 #align category_theory.fin_category_discrete_of_fintype CategoryTheory.finCategoryDiscreteOfFintype
+
+instance finCategorySingleObjOfFintype (M : Type) [Fintype M] [Monoid M] : FinCategory (SingleObj M)
+  where
 
 namespace FinCategory
 
