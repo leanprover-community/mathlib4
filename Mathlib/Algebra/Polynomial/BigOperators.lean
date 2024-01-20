@@ -99,7 +99,7 @@ theorem coeff_list_prod_of_natDegree_le (l : List S[X]) (n : ℕ) (hl : ∀ p �
       simpa using hl'
     have hdn : natDegree hd ≤ n := hl _ (List.mem_cons_self _ _)
     rcases hdn.eq_or_lt with (rfl | hdn')
-    · cases' h.eq_or_lt with h' h'
+    · rcases h.eq_or_lt with h' | h'
       · rw [← h', coeff_mul_degree_add_degree, leadingCoeff, leadingCoeff]
       · rw [coeff_eq_zero_of_natDegree_lt, coeff_eq_zero_of_natDegree_lt h', mul_zero]
         exact natDegree_mul_le.trans_lt (add_lt_add_left h' _)
@@ -267,9 +267,10 @@ theorem multiset_prod_X_sub_C_coeff_card_pred (t : Multiset R) (ht : 0 < Multise
   nontriviality R
   convert multiset_prod_X_sub_C_nextCoeff (by assumption)
   rw [nextCoeff]; split_ifs with h
-  · rw [natDegree_multiset_prod_of_monic] at h <;> simp only [Multiset.mem_map] at *
+  · rw [natDegree_multiset_prod_of_monic] at h
     swap
-    · rintro _ ⟨_, _, rfl⟩
+    · simp only [Multiset.mem_map]
+      rintro _ ⟨_, _, rfl⟩
       apply monic_X_sub_C
     simp_rw [Multiset.sum_eq_zero_iff, Multiset.mem_map] at h
     contrapose! h

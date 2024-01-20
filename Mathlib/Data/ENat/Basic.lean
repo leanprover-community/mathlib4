@@ -88,8 +88,10 @@ theorem coe_mul (m n : ℕ) : ↑(m * n) = (m * n : ℕ∞) :=
   WithTop.coe_mul
 #align enat.coe_mul ENat.coe_mul
 
-instance canLift : CanLift ℕ∞ ℕ (↑) fun n => n ≠ ⊤ :=
-  WithTop.canLift
+@[simp] theorem mul_top (hm : m ≠ 0) : m * ⊤ = ⊤ := WithTop.mul_top hm
+@[simp] theorem top_mul (hm : m ≠ 0) : ⊤ * m = ⊤ := WithTop.top_mul hm
+
+instance canLift : CanLift ℕ∞ ℕ (↑) (· ≠ ⊤) := WithTop.canLift
 #align enat.can_lift ENat.canLift
 
 instance : WellFoundedRelation ℕ∞ where
@@ -97,8 +99,7 @@ instance : WellFoundedRelation ℕ∞ where
   wf := IsWellFounded.wf
 
 /-- Conversion of `ℕ∞` to `ℕ` sending `∞` to `0`. -/
-def toNat : MonoidWithZeroHom ℕ∞ ℕ
-    where
+def toNat : MonoidWithZeroHom ℕ∞ ℕ where
   toFun := WithTop.untop' 0
   map_one' := rfl
   map_zero' := rfl
@@ -118,9 +119,9 @@ theorem toNat_top : toNat ⊤ = 0 :=
 --Porting note: new definition copied from `WithTop`
 /-- Recursor for `ENat` using the preferred forms `⊤` and `↑a`. -/
 @[elab_as_elim]
-def recTopCoe {C : ℕ∞ → Sort*} (h₁ : C ⊤) (h₂ : ∀ a : ℕ, C a) : ∀ n : ℕ∞, C n
-  | none => h₁
-  | Option.some a => h₂ a
+def recTopCoe {C : ℕ∞ → Sort*} (top : C ⊤) (coe : ∀ a : ℕ, C a) : ∀ n : ℕ∞, C n
+  | none => top
+  | Option.some a => coe a
 
 --Porting note: new theorem copied from `WithTop`
 @[simp]
@@ -149,13 +150,17 @@ theorem coe_ne_top (a : ℕ) : (a : ℕ∞) ≠ ⊤ :=
 theorem top_sub_coe (a : ℕ) : (⊤ : ℕ∞) - a = ⊤ :=
   WithTop.top_sub_coe
 
+@[simp]
+theorem zero_lt_top : (0 : ℕ∞) < ⊤ :=
+  WithTop.zero_lt_top
+
 --Porting note: new theorem copied from `WithTop`
 theorem sub_top (a : ℕ∞) : a - ⊤ = 0 :=
   WithTop.sub_top
 
 @[simp]
 theorem coe_toNat_eq_self : ENat.toNat (n : ℕ∞) = n ↔ n ≠ ⊤ :=
-  ENat.recTopCoe (by simp) (fun _ => by simp [toNat_coe]) n
+  ENat.recTopCoe (by decide) (fun _ => by simp [toNat_coe]) n
 #align enat.coe_to_nat_eq_self ENat.coe_toNat_eq_self
 
 alias ⟨_, coe_toNat⟩ := coe_toNat_eq_self

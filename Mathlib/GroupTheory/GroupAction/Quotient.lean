@@ -83,7 +83,7 @@ instance right_quotientAction' [hH : H.Normal] : QuotientAction αᵐᵒᵖ H :=
 @[to_additive]
 instance quotient [QuotientAction β H] : MulAction β (α ⧸ H) where
   smul b :=
-    Quotient.map' ((· • ·) b) fun _ _ h =>
+    Quotient.map' (b • ·) fun _ _ h =>
       leftRel_apply.mpr <| QuotientAction.inv_mul_mem b <| leftRel_apply.mp h
   one_smul q := Quotient.inductionOn' q fun a => congr_arg Quotient.mk'' (one_smul β a)
   mul_smul b b' q := Quotient.inductionOn' q fun a => congr_arg Quotient.mk'' (mul_smul b b' a)
@@ -101,7 +101,7 @@ theorem Quotient.smul_mk [QuotientAction β H] (b : β) (a : α) :
 
 @[to_additive (attr := simp)]
 theorem Quotient.smul_coe [QuotientAction β H] (b : β) (a : α) :
-    b • (a : α ⧸ H) = (b • a : α ⧸ H) :=
+    b • (a : α ⧸ H) = (↑(b • a) : α ⧸ H) :=
   rfl
 #align mul_action.quotient.smul_coe MulAction.Quotient.smul_coe
 #align add_action.quotient.vadd_coe AddAction.Quotient.vadd_coe
@@ -120,7 +120,7 @@ theorem Quotient.coe_smul_out' [QuotientAction β H] (b : β) (q : α ⧸ H) : �
 #align add_action.quotient.coe_vadd_out' AddAction.Quotient.coe_vadd_out'
 
 theorem _root_.QuotientGroup.out'_conj_pow_minimalPeriod_mem (a : α) (q : α ⧸ H) :
-    q.out'⁻¹ * a ^ Function.minimalPeriod ((· • ·) a) q * q.out' ∈ H := by
+    q.out'⁻¹ * a ^ Function.minimalPeriod (a • ·) q * q.out' ∈ H := by
   rw [mul_assoc, ← QuotientGroup.eq', QuotientGroup.out_eq', ← smul_eq_mul, Quotient.mk_smul_out',
     eq_comm, pow_smul_eq_iff_minimalPeriod_dvd]
 #align quotient_group.out'_conj_pow_minimal_period_mem QuotientGroup.out'_conj_pow_minimalPeriod_mem
@@ -189,7 +189,7 @@ theorem injective_ofQuotientStabilizer : Function.Injective (ofQuotientStabilize
 #align mul_action.injective_of_quotient_stabilizer MulAction.injective_ofQuotientStabilizer
 #align add_action.injective_of_quotient_stabilizer AddAction.injective_ofQuotientStabilizer
 
-/-- Orbit-stabilizer theorem. -/
+/-- **Orbit-stabilizer theorem**. -/
 @[to_additive "Orbit-stabilizer theorem."]
 noncomputable def orbitEquivQuotientStabilizer (b : β) : orbit α b ≃ α ⧸ stabilizer α b :=
   Equiv.symm <|
@@ -357,7 +357,7 @@ theorem ConjClasses.card_carrier [Group G] [Fintype G] (g : G) [Fintype (ConjCla
       Fintype.card G / Fintype.card (MulAction.stabilizer (ConjAct G) g) := by
   classical
   rw [Fintype.card_congr <| ConjAct.toConjAct (G := G) |>.toEquiv]
-  rw [←MulAction.card_orbit_mul_card_stabilizer_eq_card_group (ConjAct G) g, Nat.mul_div_cancel]
+  rw [← MulAction.card_orbit_mul_card_stabilizer_eq_card_group (ConjAct G) g, Nat.mul_div_cancel]
   simp_rw [ConjAct.orbit_eq_carrier_conjClasses]
   exact Fintype.card_pos_iff.mpr inferInstance
 

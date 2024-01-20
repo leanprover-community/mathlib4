@@ -260,8 +260,11 @@ instance : Frame (Opens α) :=
     inf_sSup_le_iSup_inf := fun a s =>
       (ext <| by simp only [coe_inf, coe_iSup, coe_sSup, Set.inter_iUnion₂]).le }
 
+theorem openEmbedding' (U : Opens α) : OpenEmbedding (Subtype.val : U → α) :=
+  U.isOpen.openEmbedding_subtype_val
+
 theorem openEmbedding_of_le {U V : Opens α} (i : U ≤ V) :
-    OpenEmbedding (Set.inclusion $ SetLike.coe_subset_coe.2 i) :=
+    OpenEmbedding (Set.inclusion <| SetLike.coe_subset_coe.2 i) :=
   { toEmbedding := embedding_inclusion i
     open_range := by
       rw [Set.range_inclusion i]
@@ -302,7 +305,7 @@ theorem isBasis_iff_nbhd {B : Set (Opens α)} :
     dsimp at H₂
     subst H₂
     exact hsV
-  · refine' isTopologicalBasis_of_open_of_nhds _ _
+  · refine' isTopologicalBasis_of_isOpen_of_nhds _ _
     · rintro sU ⟨U, -, rfl⟩
       exact U.2
     · intro x sU hx hsU
@@ -393,12 +396,12 @@ theorem comap_injective [T0Space β] : Injective (comap : C(α, β) → FrameHom
   ContinuousMap.ext fun a =>
     Inseparable.eq <|
       inseparable_iff_forall_open.2 fun s hs =>
-        have : comap f ⟨s, hs⟩ = comap g ⟨s, hs⟩ := FunLike.congr_fun h ⟨_, hs⟩
+        have : comap f ⟨s, hs⟩ = comap g ⟨s, hs⟩ := DFunLike.congr_fun h ⟨_, hs⟩
         show a ∈ f ⁻¹' s ↔ a ∈ g ⁻¹' s from Set.ext_iff.1 (coe_inj.2 this) a
 #align topological_space.opens.comap_injective TopologicalSpace.Opens.comap_injective
 
 /-- A homeomorphism induces an order-preserving equivalence on open sets, by taking comaps. -/
-@[simps (config := { fullyApplied := false }) apply]
+@[simps (config := .asFn) apply]
 def _root_.Homeomorph.opensCongr (f : α ≃ₜ β) : Opens α ≃o Opens β where
   toFun := Opens.comap f.symm.toContinuousMap
   invFun := Opens.comap f.toContinuousMap

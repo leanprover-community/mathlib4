@@ -114,7 +114,7 @@ theorem right_of_add (hn : IsPeriodicPt f (n + m) x) (hm : IsPeriodicPt f n x) :
 
 protected theorem sub (hm : IsPeriodicPt f m x) (hn : IsPeriodicPt f n x) :
     IsPeriodicPt f (m - n) x := by
-  cases' le_total n m with h h
+  rcases le_total n m with h | h
   · refine' left_of_add _ hn
     rwa [tsub_add_cancel_of_le h]
   · rw [tsub_eq_zero_iff_le.mpr h]
@@ -343,7 +343,7 @@ theorem minimalPeriod_apply (hx : x ∈ periodicPts f) : minimalPeriod f (f x) =
 
 theorem le_of_lt_minimalPeriod_of_iterate_eq {m n : ℕ} (hm : m < minimalPeriod f x)
     (hmn : f^[m] x = f^[n] x) : m ≤ n := by
-  by_contra' hmn'
+  by_contra! hmn'
   rw [← Nat.add_sub_of_le hmn'.le, add_comm, iterate_add_apply] at hmn
   exact
     ((IsPeriodicPt.minimalPeriod_le (tsub_pos_of_lt hmn')
@@ -353,18 +353,17 @@ theorem le_of_lt_minimalPeriod_of_iterate_eq {m n : ℕ} (hm : m < minimalPeriod
       hm
 #align function.le_of_lt_minimal_period_of_iterate_eq Function.le_of_lt_minimalPeriod_of_iterate_eq
 
-theorem eq_of_lt_minimalPeriod_of_iterate_eq {m n : ℕ} (hm : m < minimalPeriod f x)
-    (hn : n < minimalPeriod f x) (hmn : f^[m] x = f^[n] x) : m = n :=
-  (le_of_lt_minimalPeriod_of_iterate_eq hm hmn).antisymm
+theorem iterate_injOn_Iio_minimalPeriod : (Iio <| minimalPeriod f x).InjOn (f^[·] x) :=
+  fun _m hm _n hn hmn ↦ (le_of_lt_minimalPeriod_of_iterate_eq hm hmn).antisymm
     (le_of_lt_minimalPeriod_of_iterate_eq hn hmn.symm)
-#align function.eq_of_lt_minimal_period_of_iterate_eq Function.eq_of_lt_minimalPeriod_of_iterate_eq
+#align function.eq_of_lt_minimal_period_of_iterate_eq Function.iterate_injOn_Iio_minimalPeriod
 
-theorem eq_iff_lt_minimalPeriod_of_iterate_eq {m n : ℕ} (hm : m < minimalPeriod f x)
+theorem iterate_eq_iterate_iff_of_lt_minimalPeriod {m n : ℕ} (hm : m < minimalPeriod f x)
     (hn : n < minimalPeriod f x) : f^[m] x = f^[n] x ↔ m = n :=
-  ⟨eq_of_lt_minimalPeriod_of_iterate_eq hm hn, congr_arg (Nat.iterate f · x)⟩
-#align function.eq_iff_lt_minimal_period_of_iterate_eq Function.eq_iff_lt_minimalPeriod_of_iterate_eq
+  iterate_injOn_Iio_minimalPeriod.eq_iff hm hn
+#align function.eq_iff_lt_minimal_period_of_iterate_eq Function.iterate_eq_iterate_iff_of_lt_minimalPeriod
 
-theorem minimalPeriod_id : minimalPeriod id x = 1 :=
+@[simp] theorem minimalPeriod_id : minimalPeriod id x = 1 :=
   ((is_periodic_id _ _).minimalPeriod_le Nat.one_pos).antisymm
     (Nat.succ_le_of_lt ((is_periodic_id _ _).minimalPeriod_pos Nat.one_pos))
 #align function.minimal_period_id Function.minimalPeriod_id
@@ -538,7 +537,7 @@ theorem nodup_periodicOrbit : (periodicOrbit f x).Nodup := by
   rw [periodicOrbit, Cycle.nodup_coe_iff, List.nodup_map_iff_inj_on (List.nodup_range _)]
   intro m hm n hn hmn
   rw [List.mem_range] at hm hn
-  rwa [eq_iff_lt_minimalPeriod_of_iterate_eq hm hn] at hmn
+  rwa [iterate_eq_iterate_iff_of_lt_minimalPeriod hm hn] at hmn
 #align function.nodup_periodic_orbit Function.nodup_periodicOrbit
 
 set_option linter.deprecated false in
@@ -633,14 +632,14 @@ variable {α β : Type*} [Group α] [MulAction α β] {a : α} {b : β}
 
 @[to_additive]
 theorem pow_smul_eq_iff_minimalPeriod_dvd {n : ℕ} :
-    a ^ n • b = b ↔ Function.minimalPeriod ((· • ·) a) b ∣ n := by
+    a ^ n • b = b ↔ Function.minimalPeriod (a • ·) b ∣ n := by
   rw [← isPeriodicPt_iff_minimalPeriod_dvd, IsPeriodicPt, IsFixedPt, smul_iterate]
 #align mul_action.pow_smul_eq_iff_minimal_period_dvd MulAction.pow_smul_eq_iff_minimalPeriod_dvd
 #align add_action.nsmul_vadd_eq_iff_minimal_period_dvd AddAction.nsmul_vadd_eq_iff_minimalPeriod_dvd
 
 @[to_additive]
 theorem zpow_smul_eq_iff_minimalPeriod_dvd {n : ℤ} :
-    a ^ n • b = b ↔ (Function.minimalPeriod ((· • ·) a) b : ℤ) ∣ n := by
+    a ^ n • b = b ↔ (Function.minimalPeriod (a • ·) b : ℤ) ∣ n := by
   cases n
   · rw [Int.ofNat_eq_coe, zpow_ofNat, Int.coe_nat_dvd, pow_smul_eq_iff_minimalPeriod_dvd]
   · rw [Int.negSucc_coe, zpow_neg, zpow_ofNat, inv_smul_eq_iff, eq_comm, dvd_neg, Int.coe_nat_dvd,
@@ -652,16 +651,16 @@ variable (a b)
 
 @[to_additive (attr := simp)]
 theorem pow_smul_mod_minimalPeriod (n : ℕ) :
-    a ^ (n % Function.minimalPeriod ((· • ·) a) b) • b = a ^ n • b := by
+    a ^ (n % Function.minimalPeriod (a • ·) b) • b = a ^ n • b := by
   conv_rhs =>
-    rw [← Nat.mod_add_div n (minimalPeriod ((· • ·) a) b), pow_add, mul_smul,
+    rw [← Nat.mod_add_div n (minimalPeriod (a • ·) b), pow_add, mul_smul,
       pow_smul_eq_iff_minimalPeriod_dvd.mpr (dvd_mul_right _ _)]
 #align mul_action.pow_smul_mod_minimal_period MulAction.pow_smul_mod_minimalPeriod
 #align add_action.nsmul_vadd_mod_minimal_period AddAction.nsmul_vadd_mod_minimalPeriod
 
 @[to_additive (attr := simp)]
 theorem zpow_smul_mod_minimalPeriod (n : ℤ) :
-    a ^ (n % (Function.minimalPeriod ((· • ·) a) b : ℤ)) • b = a ^ n • b := by
+    a ^ (n % (Function.minimalPeriod (a • ·) b : ℤ)) • b = a ^ n • b := by
   conv_rhs =>
     rw [← Int.emod_add_ediv n (minimalPeriod ((a • ·)) b), zpow_add, mul_smul,
       zpow_smul_eq_iff_minimalPeriod_dvd.mpr (dvd_mul_right _ _)]

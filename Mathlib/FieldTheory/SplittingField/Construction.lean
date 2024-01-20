@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.FieldTheory.SplittingField.IsSplittingField
+import Mathlib.Algebra.CharP.Algebra
 
 #align_import field_theory.splitting_field.construction from "leanprover-community/mathlib"@"e3f4be1fcb5376c4948d7f095bec45350bfb9d1a"
 
@@ -110,7 +111,7 @@ It constructs the type, proves that is a field and algebra over the base field.
 
 Uses recursion on the degree.
 -/
-def SplittingFieldAuxAux (n : ℕ) : ∀ {K : Type u} [Field K], ∀ _ : K[X],
+def SplittingFieldAuxAux (n : ℕ) : ∀ {K : Type u} [Field K], K[X] →
     Σ (L : Type u) (_ : Field L), Algebra K L :=
   -- Porting note: added motive
   Nat.recOn (motive := fun (_x : ℕ) => ∀ {K : Type u} [_inst_4 : Field K], K[X] →
@@ -201,7 +202,7 @@ theorem adjoin_rootSet (n : ℕ) :
     have hfn0 : f ≠ 0 := by intro h; rw [h] at hndf; exact hndf rfl
     have hmf0 : map (algebraMap K (SplittingFieldAux n.succ f)) f ≠ 0 := map_ne_zero hfn0
     rw [rootSet_def, aroots_def]
-    rw [algebraMap_succ, ←map_map, ←X_sub_C_mul_removeFactor _ hndf, Polynomial.map_mul] at hmf0 ⊢
+    rw [algebraMap_succ, ← map_map, ← X_sub_C_mul_removeFactor _ hndf, Polynomial.map_mul] at hmf0 ⊢
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [roots_mul hmf0, Polynomial.map_sub, map_X, map_C, roots_X_sub_C, Multiset.toFinset_add,
       Finset.coe_union, Multiset.toFinset_singleton, Finset.coe_singleton,
@@ -287,7 +288,8 @@ instance : Field (SplittingField f) :=
       apply_fun e
       have : e a ≠ 0 := fun w' => by
         apply w
-        simp at w'
+        simp? at w' says
+          simp only [AddEquivClass.map_eq_zero_iff] at w'
         exact w'
       simp only [map_mul, AlgEquiv.apply_symm_apply, ne_eq, AddEquivClass.map_eq_zero_iff, map_one]
       rw [mul_inv_cancel]
@@ -359,23 +361,10 @@ instance (f : K[X]) : NoZeroSMulDivisors K f.SplittingField :=
   inferInstance
 
 /-- Any splitting field is isomorphic to `SplittingFieldAux f`. -/
-def algEquiv (f : K[X]) [IsSplittingField K L f] : L ≃ₐ[K] SplittingField f := by
-  refine'
-    AlgEquiv.ofBijective (lift L f <| splits (SplittingField f) f)
-      ⟨RingHom.injective (lift L f <| splits (SplittingField f) f).toRingHom, _⟩
-  haveI := finiteDimensional (SplittingField f) f
-  haveI := finiteDimensional L f
-  have : FiniteDimensional.finrank K L = FiniteDimensional.finrank K (SplittingField f) :=
-    le_antisymm
-      (LinearMap.finrank_le_finrank_of_injective
-        (show Function.Injective (lift L f <| splits (SplittingField f) f).toLinearMap from
-          RingHom.injective (lift L f <| splits (SplittingField f) f : L →+* f.SplittingField)))
-      (LinearMap.finrank_le_finrank_of_injective
-        (show Function.Injective (lift (SplittingField f) f <| splits L f).toLinearMap from
-          RingHom.injective (lift (SplittingField f) f <| splits L f : f.SplittingField →+* L)))
-  change Function.Surjective (lift L f <| splits (SplittingField f) f).toLinearMap
-  refine' (LinearMap.injective_iff_surjective_of_finrank_eq_finrank this).1 _
-  exact RingHom.injective (lift L f <| splits (SplittingField f) f : L →+* f.SplittingField)
+def algEquiv (f : K[X]) [h : IsSplittingField K L f] : L ≃ₐ[K] SplittingField f :=
+  AlgEquiv.ofBijective (lift L f <| splits (SplittingField f) f) <|
+    have := finiteDimensional L f
+    ((Algebra.IsAlgebraic.of_finite K L).algHom_bijective₂ _ <| lift _ f h.1).1
 #align polynomial.is_splitting_field.alg_equiv Polynomial.IsSplittingField.algEquiv
 
 end IsSplittingField

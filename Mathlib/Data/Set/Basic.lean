@@ -3,8 +3,10 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
+import Mathlib.Init.ZeroOne
+import Mathlib.Data.Set.Defs
+import Mathlib.Order.Basic
 import Mathlib.Order.SymmDiff
-import Mathlib.Logic.Function.Iterate
 import Mathlib.Tactic.Tauto
 import Mathlib.Tactic.ByContra
 import Mathlib.Util.Delaborators
@@ -65,15 +67,6 @@ set, sets, subset, subsets, union, intersection, insert, singleton, complement, 
 
 -/
 
--- https://github.com/leanprover/lean4/issues/2096
-compile_def% Union.union
-compile_def% Inter.inter
-compile_def% SDiff.sdiff
-compile_def% HasCompl.compl
-compile_def% EmptyCollection.emptyCollection
-compile_def% Insert.insert
-compile_def% Singleton.singleton
-
 /-! ### Set coercion to a type -/
 
 open Function
@@ -91,9 +84,9 @@ instance instBooleanAlgebraSet : BooleanAlgebra (Set α) :=
     lt := fun s t => s ⊆ t ∧ ¬t ⊆ s,
     inf := (· ∩ ·),
     bot := ∅,
-    compl := fun s => { x | x ∉ s },
+    compl := (·ᶜ),
     top := univ,
-    sdiff := fun s t => { x | x ∈ s ∧ x ∉ t } }
+    sdiff := (· \ ·) }
 
 instance : HasSSubset (Set α) :=
   ⟨(· < ·)⟩
@@ -141,19 +134,6 @@ alias ⟨_root_.LE.le.subset, _root_.HasSubset.Subset.le⟩ := le_iff_subset
 
 alias ⟨_root_.LT.lt.ssubset, _root_.HasSSubset.SSubset.lt⟩ := lt_iff_ssubset
 #align has_ssubset.ssubset.lt HasSSubset.SSubset.lt
-
--- Porting note: I've introduced this abbreviation, with the `@[coe]` attribute,
--- so that `norm_cast` has something to index on.
--- It is currently an abbreviation so that instance coming from `Subtype` are available.
--- If you're interested in making it a `def`, as it probably should be,
--- you'll then need to create additional instances (and possibly prove lemmas about them).
--- The first error should appear below at `monotoneOn_iff_monotone`.
-/-- Given the set `s`, `Elem s` is the `Type` of element of `s`. -/
-@[coe, reducible] def Elem (s : Set α) : Type u := { x // x ∈ s }
-
-/-- Coercion from a set to the corresponding subtype. -/
-instance {α : Type u} : CoeSort (Set α) (Type u) :=
-  ⟨Elem⟩
 
 instance PiSetCoe.canLift (ι : Type u) (α : ι → Type v) [∀ i, Nonempty (α i)] (s : Set ι) :
     CanLift (∀ i : s, α i) (∀ i, α i) (fun f i => f i) fun _ => True :=
@@ -253,9 +233,6 @@ theorem forall_in_swap {p : α → β → Prop} : (∀ a ∈ s, ∀ (b), p a b) 
 #align set.forall_in_swap Set.forall_in_swap
 
 /-! ### Lemmas about `mem` and `setOf` -/
-
-@[simp, mfld_simps] theorem mem_setOf_eq {x : α} {p : α → Prop} : (x ∈ {y | p y}) = p x := rfl
-#align set.mem_set_of_eq Set.mem_setOf_eq
 
 theorem mem_setOf {a : α} {p : α → Prop} : a ∈ { x | p x } ↔ p a :=
   Iff.rfl
@@ -393,8 +370,9 @@ theorem not_subset : ¬s ⊆ t ↔ ∃ a ∈ s, a ∉ t := by
   simp only [subset_def, not_forall, exists_prop]
 #align set.not_subset Set.not_subset
 
-/-! ### Definition of strict subsets `s ⊂ t` and basic properties. -/
+lemma eq_of_forall_subset_iff (h : ∀ u, s ⊆ u ↔ t ⊆ u) : s = t := eq_of_forall_ge_iff h
 
+/-! ### Definition of strict subsets `s ⊂ t` and basic properties. -/
 
 protected theorem eq_or_ssubset_of_subset (h : s ⊆ t) : s = t ∨ s ⊂ t :=
   eq_or_lt_of_le h
@@ -664,11 +642,6 @@ theorem setOf_true : { _x : α | True } = univ :=
 #align set.set_of_true Set.setOf_true
 
 @[simp] theorem setOf_top : { _x : α | ⊤ } = univ := rfl
-
-@[simp, mfld_simps]
-theorem mem_univ (x : α) : x ∈ @univ α :=
-  trivial
-#align set.mem_univ Set.mem_univ
 
 @[simp]
 theorem univ_eq_empty_iff : (univ : Set α) = ∅ ↔ IsEmpty α :=
@@ -1176,12 +1149,12 @@ theorem insert_subset_insert (h : s ⊆ t) : insert a s ⊆ insert a t := fun _ 
 #align set.insert_subset_insert_iff Set.insert_subset_insert_iff
 
 theorem subset_insert_iff_of_not_mem (ha : a ∉ s) : s ⊆ insert a t ↔ s ⊆ t :=
-  forall₂_congr <| fun _ hb => or_iff_right <| ne_of_mem_of_not_mem hb ha
+  forall₂_congr fun _ hb => or_iff_right <| ne_of_mem_of_not_mem hb ha
 #align set.subset_insert_iff_of_not_mem Set.subset_insert_iff_of_not_mem
 
-theorem ssubset_iff_insert {s t : Set α} : s ⊂ t ↔ ∃ (a : α) (_ : a ∉ s), insert a s ⊆ t := by
+theorem ssubset_iff_insert {s t : Set α} : s ⊂ t ↔ ∃ a ∉ s, insert a s ⊆ t := by
   simp only [insert_subset_iff, exists_and_right, ssubset_def, not_subset]
-  simp only [exists_prop, and_comm]
+  aesop
 #align set.ssubset_iff_insert Set.ssubset_iff_insert
 
 theorem ssubset_insert {s : Set α} {a : α} (h : a ∉ s) : s ⊂ insert a s :=
@@ -1254,7 +1227,7 @@ theorem ball_insert_iff {P : α → Prop} {a : α} {s : Set α} :
 
 /- porting note: instance was in core in Lean3 -/
 instance : IsLawfulSingleton α (Set α) :=
-  ⟨fun x => Set.ext <| fun a => by
+  ⟨fun x => Set.ext fun a => by
     simp only [mem_empty_iff_false, mem_insert_iff, or_false]
     exact Iff.rfl⟩
 
@@ -1521,6 +1494,20 @@ theorem eq_empty_of_ssubset_singleton {s : Set α} {x : α} (hs : s ⊂ {x}) : s
   ssubset_singleton_iff.1 hs
 #align set.eq_empty_of_ssubset_singleton Set.eq_empty_of_ssubset_singleton
 
+theorem eq_of_nonempty_of_subsingleton {α} [Subsingleton α] (s t : Set α) [Nonempty s]
+    [Nonempty t] : s = t :=
+  nonempty_of_nonempty_subtype.eq_univ.trans nonempty_of_nonempty_subtype.eq_univ.symm
+
+theorem eq_of_nonempty_of_subsingleton' {α} [Subsingleton α] {s : Set α} (t : Set α)
+    (hs : s.Nonempty) [Nonempty t] : s = t :=
+  have := hs.to_subtype; eq_of_nonempty_of_subsingleton s t
+
+theorem Nonempty.eq_zero [Subsingleton α] [Zero α] {s : Set α} (h : s.Nonempty) :
+    s = {0} := eq_of_nonempty_of_subsingleton' {0} h
+
+theorem Nonempty.eq_one [Subsingleton α] [One α] {s : Set α} (h : s.Nonempty) :
+    s = {1} := eq_of_nonempty_of_subsingleton' {1} h
+
 /-! ### Disjointness -/
 
 
@@ -1544,7 +1531,7 @@ theorem disjoint_right : Disjoint s t ↔ ∀ ⦃a⦄, a ∈ t → a ∉ s := by
 #align set.disjoint_right Set.disjoint_right
 
 lemma not_disjoint_iff : ¬Disjoint s t ↔ ∃ x, x ∈ s ∧ x ∈ t :=
-  Set.disjoint_iff.not.trans $ not_forall.trans $ exists_congr fun _ ↦ not_not
+  Set.disjoint_iff.not.trans <| not_forall.trans <| exists_congr fun _ ↦ not_not
 #align set.not_disjoint_iff Set.not_disjoint_iff
 
 lemma not_disjoint_iff_nonempty_inter : ¬ Disjoint s t ↔ (s ∩ t).Nonempty := not_disjoint_iff
@@ -1620,6 +1607,9 @@ lemma disjoint_singleton : Disjoint ({a} : Set α) {b} ↔ a ≠ b :=
 lemma subset_diff : s ⊆ t \ u ↔ s ⊆ t ∧ Disjoint s u := le_iff_subset.symm.trans le_sdiff
 #align set.subset_diff Set.subset_diff
 
+lemma ssubset_iff_sdiff_singleton : s ⊂ t ↔ ∃ a ∈ t, s ⊆ t \ {a} := by
+  simp [ssubset_iff_insert, subset_diff, insert_subset_iff]; aesop
+
 theorem inter_diff_distrib_left (s t u : Set α) : s ∩ (t \ u) = (s ∩ t) \ (s ∩ u) :=
   inf_sdiff_distrib_left _ _ _
 #align set.inter_diff_distrib_left Set.inter_diff_distrib_left
@@ -1629,7 +1619,6 @@ theorem inter_diff_distrib_right (s t u : Set α) : s \ t ∩ u = (s ∩ u) \ (t
 #align set.inter_diff_distrib_right Set.inter_diff_distrib_right
 
 /-! ### Lemmas about complement -/
-
 
 theorem compl_def (s : Set α) : sᶜ = { x | x ∉ s } :=
   rfl
@@ -1646,11 +1635,6 @@ theorem compl_setOf {α} (p : α → Prop) : { a | p a }ᶜ = { a | ¬p a } :=
 theorem not_mem_of_mem_compl {s : Set α} {x : α} (h : x ∈ sᶜ) : x ∉ s :=
   h
 #align set.not_mem_of_mem_compl Set.not_mem_of_mem_compl
-
-@[simp]
-theorem mem_compl_iff (s : Set α) (x : α) : x ∈ sᶜ ↔ x ∉ s :=
-  Iff.rfl
-#align set.mem_compl_iff Set.mem_compl_iff
 
 theorem not_mem_compl_iff {x : α} : x ∉ sᶜ ↔ x ∈ s :=
   not_not
@@ -1802,20 +1786,6 @@ theorem inter_compl_nonempty_iff {s t : Set α} : (s ∩ tᶜ).Nonempty ↔ ¬s 
 #align set.inter_compl_nonempty_iff Set.inter_compl_nonempty_iff
 
 /-! ### Lemmas about set difference -/
-
-
-theorem diff_eq (s t : Set α) : s \ t = s ∩ tᶜ :=
-  rfl
-#align set.diff_eq Set.diff_eq
-
-@[simp]
-theorem mem_diff {s t : Set α} (x : α) : x ∈ s \ t ↔ x ∈ s ∧ x ∉ t :=
-  Iff.rfl
-#align set.mem_diff Set.mem_diff
-
-theorem mem_diff_of_mem {s t : Set α} {x : α} (h1 : x ∈ s) (h2 : x ∉ t) : x ∈ s \ t :=
-  ⟨h1, h2⟩
-#align set.mem_diff_of_mem Set.mem_diff_of_mem
 
 theorem not_mem_diff_of_mem {s t : Set α} {x : α} (hx : x ∈ t) : x ∉ s \ t := fun h => h.2 hx
 #align set.not_mem_diff_of_mem Set.not_mem_diff_of_mem
@@ -2059,7 +2029,7 @@ theorem diff_self_inter {s t : Set α} : s \ (s ∩ t) = s \ t :=
 
 @[simp]
 theorem diff_singleton_eq_self {a : α} {s : Set α} (h : a ∉ s) : s \ {a} = s :=
-  sdiff_eq_self_iff_disjoint.2 $ by simp [h]
+  sdiff_eq_self_iff_disjoint.2 <| by simp [h]
 #align set.diff_singleton_eq_self Set.diff_singleton_eq_self
 
 @[simp]
@@ -2105,6 +2075,9 @@ theorem union_eq_diff_union_diff_union_inter (s t : Set α) : s ∪ t = s \ t �
 
 /-! ### Symmetric difference -/
 
+section
+
+open scoped symmDiff
 
 theorem mem_symmDiff : a ∈ s ∆ t ↔ a ∈ s ∧ a ∉ t ∨ a ∈ t ∧ a ∉ s :=
   Iff.rfl
@@ -2143,6 +2116,8 @@ theorem subset_symmDiff_union_symmDiff_left (h : Disjoint s t) : u ⊆ s ∆ u �
 theorem subset_symmDiff_union_symmDiff_right (h : Disjoint t u) : s ⊆ s ∆ t ∪ s ∆ u :=
   h.le_symmDiff_sup_symmDiff_right
 #align set.subset_symm_diff_union_symm_diff_right Set.subset_symmDiff_union_symmDiff_right
+
+end
 
 /-! ### Powerset -/
 
@@ -2493,12 +2468,12 @@ theorem nontrivial_of_pair_subset {x y} (hxy : x ≠ y) (h : {x, y} ⊆ s) : s.N
   (nontrivial_pair hxy).mono h
 #align set.nontrivial_of_pair_subset Set.nontrivial_of_pair_subset
 
-theorem Nontrivial.pair_subset (hs : s.Nontrivial) : ∃ (x y : _) (_ : x ≠ y), {x, y} ⊆ s :=
+theorem Nontrivial.pair_subset (hs : s.Nontrivial) : ∃ x y, x ≠ y ∧ {x, y} ⊆ s :=
   let ⟨x, hx, y, hy, hxy⟩ := hs
-  ⟨x, y, hxy, insert_subset_iff.2 ⟨hx, singleton_subset_iff.2 hy⟩⟩
+  ⟨x, y, hxy, insert_subset hx <| singleton_subset_iff.2 hy⟩
 #align set.nontrivial.pair_subset Set.Nontrivial.pair_subset
 
-theorem nontrivial_iff_pair_subset : s.Nontrivial ↔ ∃ (x y : _) (_ : x ≠ y), {x, y} ⊆ s :=
+theorem nontrivial_iff_pair_subset : s.Nontrivial ↔ ∃ x y, x ≠ y ∧ {x, y} ⊆ s :=
   ⟨Nontrivial.pair_subset, fun H =>
     let ⟨_, _, hxy, h⟩ := H
     nontrivial_of_pair_subset hxy h⟩
@@ -2510,7 +2485,7 @@ theorem nontrivial_of_exists_ne {x} (hx : x ∈ s) (h : ∃ y ∈ s, y ≠ x) : 
 #align set.nontrivial_of_exists_ne Set.nontrivial_of_exists_ne
 
 theorem Nontrivial.exists_ne (hs : s.Nontrivial) (z) : ∃ x ∈ s, x ≠ z := by
-  by_contra' H
+  by_contra! H
   rcases hs with ⟨x, hx, y, hy, hxy⟩
   rw [H x hx, H y hy] at hxy
   exact hxy rfl
@@ -2526,19 +2501,18 @@ theorem nontrivial_of_lt [Preorder α] {x y} (hx : x ∈ s) (hy : y ∈ s) (hxy 
 #align set.nontrivial_of_lt Set.nontrivial_of_lt
 
 theorem nontrivial_of_exists_lt [Preorder α]
-    (H : ∃ (x : α) (_ : x ∈ s) (y : α) (_ : y ∈ s), x < y) : s.Nontrivial :=
+    (H : ∃ᵉ (x ∈ s) (y ∈ s), x < y) : s.Nontrivial :=
   let ⟨_, hx, _, hy, hxy⟩ := H
   nontrivial_of_lt hx hy hxy
 #align set.nontrivial_of_exists_lt Set.nontrivial_of_exists_lt
 
-theorem Nontrivial.exists_lt [LinearOrder α] (hs : s.Nontrivial) :
-    ∃ (x : α) (_ : x ∈ s) (y : α) (_ : y ∈ s), x < y :=
+theorem Nontrivial.exists_lt [LinearOrder α] (hs : s.Nontrivial) : ∃ᵉ (x ∈ s) (y ∈ s), x < y :=
   let ⟨x, hx, y, hy, hxy⟩ := hs
   Or.elim (lt_or_gt_of_ne hxy) (fun H => ⟨x, hx, y, hy, H⟩) fun H => ⟨y, hy, x, hx, H⟩
 #align set.nontrivial.exists_lt Set.Nontrivial.exists_lt
 
 theorem nontrivial_iff_exists_lt [LinearOrder α] :
-    s.Nontrivial ↔ ∃ (x : α) (_ : x ∈ s) (y : α) (_ : y ∈ s), x < y :=
+    s.Nontrivial ↔ ∃ᵉ (x ∈ s) (y ∈ s), x < y :=
   ⟨Nontrivial.exists_lt, nontrivial_of_exists_lt⟩
 #align set.nontrivial_iff_exists_lt Set.nontrivial_iff_exists_lt
 
@@ -2645,7 +2619,7 @@ protected lemma subsingleton_or_nontrivial (s : Set α) : s.Subsingleton ∨ s.N
 #align set.subsingleton_or_nontrivial Set.subsingleton_or_nontrivial
 
 lemma eq_singleton_or_nontrivial (ha : a ∈ s) : s = {a} ∨ s.Nontrivial := by
-  rw [←subsingleton_iff_singleton ha]; exact s.subsingleton_or_nontrivial
+  rw [← subsingleton_iff_singleton ha]; exact s.subsingleton_or_nontrivial
 #align set.eq_singleton_or_nontrivial Set.eq_singleton_or_nontrivial
 
 lemma nontrivial_iff_ne_singleton (ha : a ∈ s) : s.Nontrivial ↔ s ≠ {a} :=
@@ -2653,11 +2627,11 @@ lemma nontrivial_iff_ne_singleton (ha : a ∈ s) : s.Nontrivial ↔ s ≠ {a} :=
 #align set.nontrivial_iff_ne_singleton Set.nontrivial_iff_ne_singleton
 
 lemma Nonempty.exists_eq_singleton_or_nontrivial : s.Nonempty → (∃ a, s = {a}) ∨ s.Nontrivial :=
-  fun ⟨a, ha⟩ ↦ (eq_singleton_or_nontrivial ha).imp_left $ Exists.intro a
+  fun ⟨a, ha⟩ ↦ (eq_singleton_or_nontrivial ha).imp_left <| Exists.intro a
 #align set.nonempty.exists_eq_singleton_or_nontrivial Set.Nonempty.exists_eq_singleton_or_nontrivial
 
 theorem univ_eq_true_false : univ = ({True, False} : Set Prop) :=
-  Eq.symm <| eq_univ_of_forall <| fun x => by
+  Eq.symm <| eq_univ_of_forall fun x => by
     rw [mem_insert_iff, mem_singleton_iff]
     exact Classical.propComplete x
 #align set.univ_eq_true_false Set.univ_eq_true_false
@@ -2742,8 +2716,8 @@ variable [LinearOrder α] [LinearOrder β] {f : α → β}
 downright. -/
 theorem not_monotoneOn_not_antitoneOn_iff_exists_le_le :
     ¬MonotoneOn f s ∧ ¬AntitoneOn f s ↔
-      ∃ (a : α) (_ : a ∈ s) (b : α) (_ : b ∈ s) (c : α) (_ : c ∈ s),
-        a ≤ b ∧ b ≤ c ∧ (f a < f b ∧ f c < f b ∨ f b < f a ∧ f b < f c) := by
+      ∃ᵉ (a ∈ s) (b ∈ s) (c ∈ s), a ≤ b ∧ b ≤ c ∧
+        (f a < f b ∧ f c < f b ∨ f b < f a ∧ f b < f c) := by
   simp [monotoneOn_iff_monotone, antitoneOn_iff_antitone, and_assoc, exists_and_left,
     not_monotone_not_antitone_iff_exists_le_le, @and_left_comm (_ ∈ s)]
 #align set.not_monotone_on_not_antitone_on_iff_exists_le_le Set.not_monotoneOn_not_antitoneOn_iff_exists_le_le
@@ -2752,8 +2726,8 @@ theorem not_monotoneOn_not_antitoneOn_iff_exists_le_le :
 downright. -/
 theorem not_monotoneOn_not_antitoneOn_iff_exists_lt_lt :
     ¬MonotoneOn f s ∧ ¬AntitoneOn f s ↔
-      ∃ (a : α) (_ : a ∈ s) (b : α) (_ : b ∈ s) (c : α) (_ : c ∈ s),
-        a < b ∧ b < c ∧ (f a < f b ∧ f c < f b ∨ f b < f a ∧ f b < f c) := by
+      ∃ᵉ (a ∈ s) (b ∈ s) (c ∈ s), a < b ∧ b < c ∧
+        (f a < f b ∧ f c < f b ∨ f b < f a ∧ f b < f c) := by
   simp [monotoneOn_iff_monotone, antitoneOn_iff_antitone, and_assoc, exists_and_left,
     not_monotone_not_antitone_iff_exists_lt_lt, @and_left_comm (_ ∈ s)]
 #align set.not_monotone_on_not_antitone_on_iff_exists_lt_lt Set.not_monotoneOn_not_antitoneOn_iff_exists_lt_lt

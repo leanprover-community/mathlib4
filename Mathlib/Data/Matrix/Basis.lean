@@ -38,11 +38,11 @@ def stdBasisMatrix (i : m) (j : n) (a : α) : Matrix m n α := fun i' j' =>
 #align matrix.std_basis_matrix Matrix.stdBasisMatrix
 
 @[simp]
-theorem smul_stdBasisMatrix (i : m) (j : n) (a b : α) :
-    b • stdBasisMatrix i j a = stdBasisMatrix i j (b • a) := by
+theorem smul_stdBasisMatrix [SMulZeroClass R α] (r : R) (i : m) (j : n) (a : α) :
+    r • stdBasisMatrix i j a = stdBasisMatrix i j (r • a) := by
   unfold stdBasisMatrix
   ext
-  simp
+  simp [smul_ite]
 #align matrix.smul_std_basis_matrix Matrix.smul_stdBasisMatrix
 
 @[simp]
@@ -65,12 +65,12 @@ theorem matrix_eq_sum_std_basis [Fintype m] [Fintype n] (x : Matrix m n α) :
   -- Porting note: was `convert`
   refine (Fintype.sum_eq_single i ?_).trans ?_; swap
   · -- Porting note: `simp` seems unwilling to apply `Fintype.sum_apply`
-    simp only [stdBasisMatrix]
+    simp (config := { unfoldPartialApp := true }) only [stdBasisMatrix]
     rw [Fintype.sum_apply, Fintype.sum_apply]
     simp
   · intro j' hj'
     -- Porting note: `simp` seems unwilling to apply `Fintype.sum_apply`
-    simp only [stdBasisMatrix]
+    simp (config := { unfoldPartialApp := true }) only [stdBasisMatrix]
     rw [Fintype.sum_apply, Fintype.sum_apply]
     simp [hj']
 #align matrix.matrix_eq_sum_std_basis Matrix.matrix_eq_sum_std_basis
@@ -216,6 +216,8 @@ theorem mul_of_ne {k l : n} (h : j ≠ k) (d : α) :
 
 end
 
+end StdBasisMatrix
+
 section Commute
 
 variable [Fintype n]
@@ -235,29 +237,40 @@ theorem diag_eq_of_commute_stdBasisMatrix {i j : n} {M : Matrix n n α}
   have := ext_iff.mpr hM i j
   aesop
 
-/-- `M` is a scalar matrix if it commutes with every non-diagonal `stdBasisMatrix`.​-/
+/-- `M` is a scalar matrix if it commutes with every non-diagonal `stdBasisMatrix`. ​-/
 theorem mem_range_scalar_of_commute_stdBasisMatrix {M : Matrix n n α}
-    (hM : ∀ (i j : n), i ≠ j → Commute (stdBasisMatrix i j 1) M):
+    (hM : Pairwise fun i j => Commute (stdBasisMatrix i j 1) M) :
     M ∈ Set.range (Matrix.scalar n) := by
   cases isEmpty_or_nonempty n
-  · refine ⟨0, Subsingleton.elim _ _⟩
+  · exact ⟨0, Subsingleton.elim _ _⟩
   obtain ⟨i⟩ := ‹Nonempty n›
-  refine ⟨M i i, ?_⟩
-  rewrite [← ext_iff]
-  intro j k
-  by_cases h : j = k
-  · by_cases hij : i = j
-    · simp [hij, h]
-    · push_neg at hij
-      rewrite [h] at hij
-      simp [diag_eq_of_commute_stdBasisMatrix <| hM k i hij.symm, h]
-  · push_neg at h
-    by_cases hij : i = j
-    · simp [hij, col_eq_zero_of_commute_stdBasisMatrix (hM k j h.symm) h, h]
-    · simp [row_eq_zero_of_commute_stdBasisMatrix (hM i j hij) h.symm, h]
+  refine ⟨M i i, Matrix.ext fun j k => ?_⟩
+  simp only [scalar_apply]
+  obtain rfl | hkl := Decidable.eq_or_ne j k
+  · rw [diagonal_apply_eq]
+    obtain rfl | hij := Decidable.eq_or_ne i j
+    · rfl
+    · exact diag_eq_of_commute_stdBasisMatrix (hM hij)
+  · push_neg at hkl
+    rw [diagonal_apply_ne _ hkl]
+    obtain rfl | hij := Decidable.eq_or_ne i j
+    · rw [col_eq_zero_of_commute_stdBasisMatrix (hM hkl.symm) hkl]
+    · rw [row_eq_zero_of_commute_stdBasisMatrix (hM hij) hkl.symm]
+
+theorem mem_range_scalar_iff_commute_stdBasisMatrix {M : Matrix n n α} :
+    M ∈ Set.range (Matrix.scalar n) ↔ ∀ (i j : n), i ≠ j → Commute (stdBasisMatrix i j 1) M := by
+  refine ⟨fun ⟨r, hr⟩ i j _ => hr ▸ Commute.symm ?_, mem_range_scalar_of_commute_stdBasisMatrix⟩
+  rw [scalar_commute_iff, smul_stdBasisMatrix, smul_stdBasisMatrix, smul_eq_mul, op_smul_eq_mul,
+    mul_one, one_mul]
+
+/-- `M` is a scalar matrix if and only if it commutes with every `stdBasisMatrix`.​ -/
+theorem mem_range_scalar_iff_commute_stdBasisMatrix' {M : Matrix n n α} :
+    M ∈ Set.range (Matrix.scalar n) ↔ ∀ (i j : n), Commute (stdBasisMatrix i j 1) M := by
+  refine ⟨fun ⟨r, hr⟩ i j => hr ▸ Commute.symm ?_,
+    fun hM => mem_range_scalar_iff_commute_stdBasisMatrix.mpr <| fun i j _ ↦ hM i j⟩
+  rewrite [scalar_commute_iff]
+  simp
 
 end Commute
-
-end StdBasisMatrix
 
 end Matrix

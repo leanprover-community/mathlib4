@@ -84,7 +84,7 @@ theorem terminates_parallel.aux :
       exacts [⟨a', rfl⟩, ⟨a, rfl⟩]
     · cases' IH m with a' e
       simp only [parallel.aux2, rmap, List.foldr_cons]
-      simp [parallel.aux2] at e
+      simp? [parallel.aux2] at e says simp only [parallel.aux2, rmap] at e
       rw [e]
       exact ⟨a', rfl⟩
   · intro s IH l S m
@@ -237,7 +237,7 @@ theorem exists_of_mem_parallel {S : WSeq (Computation α)} {a} (h : a ∈ parall
           apply ret_mem
         · intro a' h
           rcases h with ⟨d, dm, ad⟩
-          simp at dm
+          simp? at dm says simp only [List.mem_cons] at dm
           cases' dm with e dl
           · rw [e] at ad
             refine' ⟨c, List.mem_cons_self _ _, _⟩
@@ -328,7 +328,7 @@ def parallelRec {S : WSeq (Computation α)} (C : α → Sort v) (H : ∀ s ∈ S
     rw [← WSeq.map_comp]
     refine' (WSeq.map_id _).symm.trans (congr_arg (fun f => WSeq.map f S) _)
     funext c
-    dsimp [id, Function.comp]
+    dsimp [id, Function.comp_def]
     rw [← map_comp]
     exact (map_id _).symm
   have pe := congr_arg parallel this

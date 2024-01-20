@@ -3,9 +3,9 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Topology.ContinuousFunction.Basic
-import Mathlib.Algebra.IndicatorFunction
+import Mathlib.Algebra.Function.Indicator
 import Mathlib.Tactic.FinCases
+import Mathlib.Topology.ContinuousFunction.Basic
 
 #align_import topology.locally_constant.basic from "leanprover-community/mathlib"@"0a0ec35061ed9960bf0e7ffb0335f44447b58977"
 
@@ -250,7 +250,7 @@ namespace LocallyConstant
 instance [Inhabited Y] : Inhabited (LocallyConstant X Y) :=
   ⟨⟨_, IsLocallyConstant.const default⟩⟩
 
-instance : FunLike (LocallyConstant X Y) X (fun _ => Y) where
+instance : FunLike (LocallyConstant X Y) X Y where
   coe := LocallyConstant.toFun
   coe_injective' := by rintro ⟨_, _⟩ ⟨_, _⟩ _; congr
 
@@ -270,15 +270,15 @@ theorem coe_mk (f : X → Y) (h) : ⇑(⟨f, h⟩ : LocallyConstant X Y) = f :=
 #align locally_constant.coe_mk LocallyConstant.coe_mk
 
 theorem congr_fun {f g : LocallyConstant X Y} (h : f = g) (x : X) : f x = g x :=
-  FunLike.congr_fun h x
+  DFunLike.congr_fun h x
 #align locally_constant.congr_fun LocallyConstant.congr_fun
 
 theorem congr_arg (f : LocallyConstant X Y) {x y : X} (h : x = y) : f x = f y :=
-  FunLike.congr_arg f h
+  DFunLike.congr_arg f h
 #align locally_constant.congr_arg LocallyConstant.congr_arg
 
 theorem coe_injective : @Function.Injective (LocallyConstant X Y) (X → Y) (↑) := fun _ _ =>
-  FunLike.ext'
+  DFunLike.ext'
 #align locally_constant.coe_injective LocallyConstant.coe_injective
 
 @[norm_cast]
@@ -288,10 +288,10 @@ theorem coe_inj {f g : LocallyConstant X Y} : (f : X → Y) = g ↔ f = g :=
 
 @[ext]
 theorem ext ⦃f g : LocallyConstant X Y⦄ (h : ∀ x, f x = g x) : f = g :=
-  FunLike.ext _ _ h
+  DFunLike.ext _ _ h
 #align locally_constant.ext LocallyConstant.ext
 
-theorem ext_iff {f g : LocallyConstant X Y} : f = g ↔ ∀ x, f x = g x := FunLike.ext_iff
+theorem ext_iff {f g : LocallyConstant X Y} : f = g ↔ ∀ x, f x = g x := DFunLike.ext_iff
 #align locally_constant.ext_iff LocallyConstant.ext_iff
 
 section CodomainTopologicalSpace
@@ -334,7 +334,7 @@ theorem coe_const (y : Y) : (const X y : X → Y) = Function.const X y :=
 #align locally_constant.coe_const LocallyConstant.coe_const
 
 /-- The locally constant function to `Fin 2` associated to a clopen set. -/
-def ofClopen {X : Type*} [TopologicalSpace X] {U : Set X} [∀ x, Decidable (x ∈ U)]
+def ofIsClopen {X : Type*} [TopologicalSpace X] {U : Set X} [∀ x, Decidable (x ∈ U)]
     (hU : IsClopen U) : LocallyConstant X (Fin 2) where
   toFun x := if x ∈ U then 0 else 1
   isLocallyConstant := by
@@ -348,24 +348,24 @@ def ofClopen {X : Type*} [TopologicalSpace X] {U : Set X} [∀ x, Decidable (x �
       convert hU.2
       ext
       simp
-#align locally_constant.of_clopen LocallyConstant.ofClopen
+#align locally_constant.of_clopen LocallyConstant.ofIsClopen
 
 @[simp]
-theorem ofClopen_fiber_zero {X : Type*} [TopologicalSpace X] {U : Set X} [∀ x, Decidable (x ∈ U)]
-    (hU : IsClopen U) : ofClopen hU ⁻¹' ({0} : Set (Fin 2)) = U := by
+theorem ofIsClopen_fiber_zero {X : Type*} [TopologicalSpace X] {U : Set X} [∀ x, Decidable (x ∈ U)]
+    (hU : IsClopen U) : ofIsClopen hU ⁻¹' ({0} : Set (Fin 2)) = U := by
   ext
-  simp only [ofClopen, mem_singleton_iff, Fin.one_eq_zero_iff, coe_mk, mem_preimage,
+  simp only [ofIsClopen, mem_singleton_iff, Fin.one_eq_zero_iff, coe_mk, mem_preimage,
     ite_eq_left_iff, Nat.succ_succ_ne_one]
   tauto
-#align locally_constant.of_clopen_fiber_zero LocallyConstant.ofClopen_fiber_zero
+#align locally_constant.of_clopen_fiber_zero LocallyConstant.ofIsClopen_fiber_zero
 
 @[simp]
-theorem ofClopen_fiber_one {X : Type*} [TopologicalSpace X] {U : Set X} [∀ x, Decidable (x ∈ U)]
-    (hU : IsClopen U) : ofClopen hU ⁻¹' ({1} : Set (Fin 2)) = Uᶜ := by
+theorem ofIsClopen_fiber_one {X : Type*} [TopologicalSpace X] {U : Set X} [∀ x, Decidable (x ∈ U)]
+    (hU : IsClopen U) : ofIsClopen hU ⁻¹' ({1} : Set (Fin 2)) = Uᶜ := by
   ext
-  simp only [ofClopen, mem_singleton_iff, coe_mk, Fin.zero_eq_one_iff, mem_preimage,
+  simp only [ofIsClopen, mem_singleton_iff, coe_mk, Fin.zero_eq_one_iff, mem_preimage,
     ite_eq_right_iff, mem_compl_iff, Nat.succ_succ_ne_one]
-#align locally_constant.of_clopen_fiber_one LocallyConstant.ofClopen_fiber_one
+#align locally_constant.of_clopen_fiber_one LocallyConstant.ofIsClopen_fiber_one
 
 theorem locallyConstant_eq_of_fiber_zero_eq {X : Type*} [TopologicalSpace X]
     (f g : LocallyConstant X (Fin 2)) (h : f ⁻¹' ({0} : Set (Fin 2)) = g ⁻¹' {0}) : f = g := by
@@ -430,7 +430,7 @@ family of locally constant functions with values in β indexed by α. -/
 def unflip {X α β : Type*} [Finite α] [TopologicalSpace X] (f : α → LocallyConstant X β) :
     LocallyConstant X (α → β) where
   toFun x a := f a x
-  isLocallyConstant := IsLocallyConstant.iff_isOpen_fiber.2 <| fun g => by
+  isLocallyConstant := IsLocallyConstant.iff_isOpen_fiber.2 fun g => by
     have : (fun (x : X) (a : α) => f a x) ⁻¹' {g} = ⋂ a : α, f a ⁻¹' {g a} := by
       ext; simp [Function.funext_iff]
     rw [this]
@@ -486,7 +486,7 @@ theorem coe_comap_apply (f : X → Y) (g : LocallyConstant Y Z) (hf : Continuous
 @[simp]
 theorem comap_id : comap (@id X) = @id (LocallyConstant X Z) := by
   ext
-  simp only [continuous_id, id.def, Function.comp.right_id, coe_comap]
+  simp only [continuous_id, id.def, Function.comp_id, coe_comap]
 #align locally_constant.comap_id LocallyConstant.comap_id
 
 theorem comap_comp [TopologicalSpace Z] (f : X → Y) (g : Y → Z) (hf : Continuous f)

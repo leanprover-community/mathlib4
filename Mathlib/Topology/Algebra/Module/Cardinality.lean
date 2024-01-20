@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.SetTheory.Cardinal.CountableCover
-import Mathlib.Data.Real.Cardinality
+import Mathlib.SetTheory.Cardinal.Continuum
 import Mathlib.Analysis.SpecificLimits.Normed
 import Mathlib.Topology.Perfect
 
@@ -81,9 +81,9 @@ lemma cardinal_eq_of_mem_nhds_zero
     rw [zero_smul] at this
     filter_upwards [this hs] with n (hn : (c ^ n)⁻¹ • x ∈ s)
     exact (mem_smul_set_iff_inv_smul_mem₀ (cn_ne n) _ _).2 hn
-  have B : ∀ n, #(c^n • s) = #s := by
+  have B : ∀ n, #(c^n • s :) = #s := by
     intro n
-    have : c^n • s ≃ s :=
+    have : (c^n • s :) ≃ s :=
     { toFun := fun x ↦ ⟨(c^n)⁻¹ • x.1, (mem_smul_set_iff_inv_smul_mem₀ (cn_ne n) _ _).1 x.2⟩
       invFun := fun x ↦ ⟨(c^n) • x.1, smul_mem_smul_set x.2⟩
       left_inv := fun x ↦ by simp [smul_smul, mul_inv_cancel (cn_ne n)]

@@ -214,6 +214,9 @@ lemma HasHomology.mk' (h : S.HomologyData) : HasHomology S :=
 instance [HasHomology S] : HasHomology S.op :=
   HasHomology.mk' S.homologyData.op
 
+instance (S : ShortComplex Cᵒᵖ) [HasHomology S] : HasHomology S.unop :=
+  HasHomology.mk' S.homologyData.unop
+
 instance hasLeftHomology_of_hasHomology [S.HasHomology] : S.HasLeftHomology :=
   HasLeftHomology.mk' S.homologyData.left
 

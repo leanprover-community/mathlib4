@@ -5,7 +5,6 @@ import Mathlib.Tactic.ApplyFun
 import Mathlib.Tactic.ApplyWith
 import Mathlib.Tactic.Attr.Core
 import Mathlib.Tactic.Attr.Register
-import Mathlib.Tactic.Backtrack
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.CancelDenoms
@@ -45,6 +44,7 @@ import Mathlib.Tactic.Existsi
 import Mathlib.Tactic.Explode
 import Mathlib.Tactic.Explode.Datatypes
 import Mathlib.Tactic.Explode.Pretty
+import Mathlib.Tactic.ExtendDoc
 import Mathlib.Tactic.ExtractGoal
 import Mathlib.Tactic.ExtractLets
 import Mathlib.Tactic.FBinop
@@ -63,10 +63,12 @@ import Mathlib.Tactic.Have
 import Mathlib.Tactic.HaveI
 import Mathlib.Tactic.HelpCmd
 import Mathlib.Tactic.HigherOrder
+import Mathlib.Tactic.Hint
 import Mathlib.Tactic.InferParam
 import Mathlib.Tactic.Inhabit
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.IrreducibleDef
+import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.LibrarySearch
 import Mathlib.Tactic.Lift
 import Mathlib.Tactic.LiftLets
@@ -92,12 +94,11 @@ import Mathlib.Tactic.MoveAdd
 import Mathlib.Tactic.NoncommRing
 import Mathlib.Tactic.Nontriviality
 import Mathlib.Tactic.Nontriviality.Core
-import Mathlib.Tactic.NormCast
-import Mathlib.Tactic.NormCast.Tactic
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Tactic.NormNum.BigOperators
 import Mathlib.Tactic.NormNum.Core
+import Mathlib.Tactic.NormNum.DivMod
 import Mathlib.Tactic.NormNum.Eq
 import Mathlib.Tactic.NormNum.GCD
 import Mathlib.Tactic.NormNum.Ineq
@@ -114,11 +115,11 @@ import Mathlib.Tactic.NthRewrite
 import Mathlib.Tactic.Observe
 import Mathlib.Tactic.PPWithUniv
 import Mathlib.Tactic.Peel
-import Mathlib.Tactic.PermuteGoals
 import Mathlib.Tactic.Polyrith
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Positivity.Basic
 import Mathlib.Tactic.Positivity.Core
+import Mathlib.Tactic.ProdAssoc
 import Mathlib.Tactic.ProjectionNotation
 import Mathlib.Tactic.Propose
 import Mathlib.Tactic.ProxyType
@@ -127,6 +128,8 @@ import Mathlib.Tactic.Qify
 import Mathlib.Tactic.RSuffices
 import Mathlib.Tactic.Recall
 import Mathlib.Tactic.Recover
+import Mathlib.Tactic.ReduceModChar
+import Mathlib.Tactic.ReduceModChar.Ext
 import Mathlib.Tactic.Relation.Rfl
 import Mathlib.Tactic.Relation.Symm
 import Mathlib.Tactic.Relation.Trans
@@ -135,6 +138,7 @@ import Mathlib.Tactic.RenameBVar
 import Mathlib.Tactic.Replace
 import Mathlib.Tactic.RewriteSearch
 import Mathlib.Tactic.Rewrites
+import Mathlib.Tactic.Rify
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Ring.Basic
 import Mathlib.Tactic.Ring.PNat
@@ -150,7 +154,6 @@ import Mathlib.Tactic.SimpRw
 import Mathlib.Tactic.Simps.Basic
 import Mathlib.Tactic.Simps.NotationClass
 import Mathlib.Tactic.SlimCheck
-import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.Substs
@@ -167,6 +170,7 @@ import Mathlib.Tactic.ToLevel
 import Mathlib.Tactic.Trace
 import Mathlib.Tactic.TryThis
 import Mathlib.Tactic.TypeCheck
+import Mathlib.Tactic.TypeStar
 import Mathlib.Tactic.UnsetOption
 import Mathlib.Tactic.Use
 import Mathlib.Tactic.Variable

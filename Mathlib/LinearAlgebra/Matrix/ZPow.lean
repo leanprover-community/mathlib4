@@ -3,8 +3,9 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.Data.Int.Bitwise
+import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+import Mathlib.LinearAlgebra.Matrix.Symmetric
 
 #align_import linear_algebra.matrix.zpow from "leanprover-community/mathlib"@"03fda9112aa6708947da13944a19310684bfdfcb"
 
@@ -241,7 +242,7 @@ theorem Commute.zpow_zpow_self (A : M) (m n : ℤ) : Commute (A ^ m) (A ^ n) :=
 
 set_option linter.deprecated false in
 theorem zpow_bit0 (A : M) (n : ℤ) : A ^ bit0 n = A ^ n * A ^ n := by
-  cases' le_total 0 n with nonneg nonpos
+  rcases le_total 0 n with nonneg | nonpos
   · exact zpow_add_of_nonneg nonneg nonneg
   · exact zpow_add_of_nonpos nonpos nonpos
 #align matrix.zpow_bit0 Matrix.zpow_bit0
@@ -339,6 +340,10 @@ theorem conjTranspose_zpow [StarRing R] (A : M) : ∀ n : ℤ, (A ^ n)ᴴ = Aᴴ
   | (n : ℕ) => by rw [zpow_ofNat, zpow_ofNat, conjTranspose_pow]
   | -[n+1] => by rw [zpow_negSucc, zpow_negSucc, conjTranspose_nonsing_inv, conjTranspose_pow]
 #align matrix.conj_transpose_zpow Matrix.conjTranspose_zpow
+
+theorem IsSymm.zpow {A : M} (h : A.IsSymm) (k : ℤ) :
+    (A ^ k).IsSymm := by
+  rw [IsSymm, transpose_zpow, h]
 
 end ZPow
 

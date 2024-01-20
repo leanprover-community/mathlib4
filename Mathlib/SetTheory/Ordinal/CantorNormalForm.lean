@@ -162,11 +162,11 @@ set_option linter.uppercaseLean3 false in
 /-- The exponents of the Cantor normal form are decreasing. -/
 theorem CNF_sorted (b o : Ordinal) : ((CNF b o).map Prod.fst).Sorted (· > ·) := by
   refine' CNFRec b _ (fun o ho IH ↦ _) o
-  · simp only [CNF_zero]
-  · cases' le_or_lt b 1 with hb hb
-    · simp only [CNF_of_le_one hb ho, map]
+  · simp only [gt_iff_lt, CNF_zero, map_nil, sorted_nil]
+  · rcases le_or_lt b 1 with hb | hb
+    · simp only [CNF_of_le_one hb ho, gt_iff_lt, map_cons, map, sorted_singleton]
     · cases' lt_or_le o b with hob hbo
-      · simp only [CNF_of_lt ho hob, map]
+      · simp only [CNF_of_lt ho hob, gt_iff_lt, map_cons, map, sorted_singleton]
       · rw [CNF_ne_zero ho, map_cons, sorted_cons]
         refine' ⟨fun a H ↦ _, IH⟩
         rw [mem_map] at H

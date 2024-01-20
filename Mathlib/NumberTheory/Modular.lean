@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Kontorovich, Heather Macbeth, Marc Masdeu
 -/
 import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
-import Mathlib.Analysis.NormedSpace.FiniteDimension
 import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup
+import Mathlib.Topology.Instances.Matrix
+import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 #align_import number_theory.modular from "leanprover-community/mathlib"@"2196ab363eb097c008d4497125e0dde23fb36db2"
 
@@ -132,7 +133,7 @@ theorem tendsto_normSq_coprime_pair :
       normSq ∘ f ∘ fun p : Fin 2 → ℤ => ((↑) : ℤ → ℝ) ∘ p := by
     ext1
     rw [f_def]
-    dsimp only [Function.comp]
+    dsimp only [Function.comp_def]
     rw [ofReal_int_cast, ofReal_int_cast]
   rw [this]
   have hf : LinearMap.ker f = ⊥ := by
@@ -147,7 +148,7 @@ theorem tendsto_normSq_coprime_pair :
     dsimp only [Pi.smul_apply, LinearMap.pi_apply, smul_eq_mul]
     fin_cases i
     · show (z : ℂ).im⁻¹ * (f c).im = c 0
-      rw [f_def, add_im, ofReal_mul_im, ofReal_im, add_zero, mul_left_comm, inv_mul_cancel hz,
+      rw [f_def, add_im, im_ofReal_mul, ofReal_im, add_zero, mul_left_comm, inv_mul_cancel hz,
         mul_one]
     · show (z : ℂ).im⁻¹ * ((z : ℂ) * conj (f c)).im = c 1
       rw [f_def, RingHom.map_add, RingHom.map_mul, mul_add, mul_left_comm, mul_conj, conj_ofReal,
@@ -240,7 +241,7 @@ theorem smul_eq_lcRow0_add {p : Fin 2 → ℤ} (hp : IsCoprime (p 0) (p 1)) (hg 
     ↑(g • z) =
       (lcRow0 p ↑(g : SL(2, ℝ)) : ℂ) / ((p 0 : ℂ) ^ 2 + (p 1 : ℂ) ^ 2) +
         ((p 1 : ℂ) * z - p 0) / (((p 0 : ℂ) ^ 2 + (p 1 : ℂ) ^ 2) * (p 0 * z + p 1)) := by
-  have nonZ1 : (p 0 : ℂ) ^ 2 + (p 1 : ℂ) ^ 2 ≠ 0 := by exact_mod_cast hp.sq_add_sq_ne_zero
+  have nonZ1 : (p 0 : ℂ) ^ 2 + (p 1 : ℂ) ^ 2 ≠ 0 := mod_cast hp.sq_add_sq_ne_zero
   have : ((↑) : ℤ → ℝ) ∘ p ≠ 0 := fun h => hp.ne_zero (by ext i; simpa using congr_fun h i)
   have nonZ2 : (p 0 : ℂ) * z + p 1 ≠ 0 := by simpa using linear_ne_zero _ z this
   field_simp [nonZ1, nonZ2, denom_ne_zero, num]
@@ -261,7 +262,7 @@ theorem tendsto_abs_re_smul {p : Fin 2 → ℤ} (hp : IsCoprime (p 0) (p 1)) :
     by exact tendsto_norm_cocompact_atTop.comp this
   have : ((p 0 : ℝ) ^ 2 + (p 1 : ℝ) ^ 2)⁻¹ ≠ 0 := by
     apply inv_ne_zero
-    exact_mod_cast hp.sq_add_sq_ne_zero
+    exact mod_cast hp.sq_add_sq_ne_zero
   let f := Homeomorph.mulRight₀ _ this
   let ff := Homeomorph.addRight
     (((p 1 : ℂ) * z - p 0) / (((p 0 : ℂ) ^ 2 + (p 1 : ℂ) ^ 2) * (p 0 * z + p 1))).re
@@ -270,7 +271,7 @@ theorem tendsto_abs_re_smul {p : Fin 2 → ℤ} (hp : IsCoprime (p 0) (p 1)) :
     ((g : SL(2, ℤ)) • z).re =
       lcRow0 p ↑(↑g : SL(2, ℝ)) / ((p 0 : ℝ) ^ 2 + (p 1 : ℝ) ^ 2) +
         Complex.re (((p 1 : ℂ) * z - p 0) / (((p 0 : ℂ) ^ 2 + (p 1 : ℂ) ^ 2) * (p 0 * z + p 1)))
-  exact_mod_cast congr_arg Complex.re (smul_eq_lcRow0_add z hp g.2)
+  exact mod_cast congr_arg Complex.re (smul_eq_lcRow0_add z hp g.2)
 #align modular_group.tendsto_abs_re_smul ModularGroup.tendsto_abs_re_smul
 
 end TendstoLemmas
@@ -435,7 +436,8 @@ theorem eq_zero_of_mem_fdo_of_T_zpow_mem_fdo {n : ℤ} (hz : z ∈ 𝒟ᵒ) (hg 
     _ = 1 := add_halves 1
 #align modular_group.eq_zero_of_mem_fdo_of_T_zpow_mem_fdo ModularGroup.eq_zero_of_mem_fdo_of_T_zpow_mem_fdo
 
-/-- Any `z : ℍ` can be moved to `𝒟` by an element of `SL(2,ℤ)`  -/
+/-- First Fundamental Domain Lemma: Any `z : ℍ` can be moved to `𝒟` by an element of
+`SL(2,ℤ)` -/
 theorem exists_smul_mem_fd (z : ℍ) : ∃ g : SL(2, ℤ), g • z ∈ 𝒟 := by
   -- obtain a g₀ which maximizes im (g • z),
   obtain ⟨g₀, hg₀⟩ := exists_max_im z
@@ -527,7 +529,7 @@ theorem c_eq_zero (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : (↑ₘg) 1 
   rcases Int.abs_le_one_iff.mp <| abs_c_le_one hz hg with ⟨⟩ <;> tauto
 #align modular_group.c_eq_zero ModularGroup.c_eq_zero
 
-/-- Second Main Fundamental Domain Lemma: if both `z` and `g • z` are in the open domain `𝒟ᵒ`,
+/-- Second Fundamental Domain Lemma: if both `z` and `g • z` are in the open domain `𝒟ᵒ`,
 where `z : ℍ` and `g : SL(2,ℤ)`, then `z = g • z`. -/
 theorem eq_smul_self_of_mem_fdo_mem_fdo (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : z = g • z := by
   obtain ⟨n, hn⟩ := exists_eq_T_zpow_of_c_eq_zero (c_eq_zero hz hg)

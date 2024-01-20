@@ -7,13 +7,11 @@ import Std.Tactic.Ext
 import Std.Tactic.Lint.Basic
 import Std.Tactic.Relation.Rfl
 import Std.Logic
-import Std.WF
-import Mathlib.Tactic.Basic
+import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.Relation.Symm
 import Mathlib.Mathport.Attributes
 import Mathlib.Mathport.Rename
 import Mathlib.Tactic.Relation.Trans
-import Mathlib.Util.Imports
 import Mathlib.Tactic.ProjectionNotation
 
 set_option autoImplicit true
@@ -39,8 +37,6 @@ set_option autoImplicit true
 /- Eq -/
 
 alias proof_irrel := proofIrrel
-alias congr_fun := congrFun
-alias congr_arg := congrArg
 
 @[deprecated] theorem trans_rel_left {α : Sort u} {a b c : α}
     (r : α → α → Prop) (h₁ : r a b) (h₂ : b = c) : r a c := h₂ ▸ h₁
@@ -84,6 +80,9 @@ theorem eq_rec_compose {α β φ : Sort u} :
     ∀ (p₁ : β = φ) (p₂ : α = β) (a : α),
       (Eq.recOn p₁ (Eq.recOn p₂ a : β) : φ) = Eq.recOn (Eq.trans p₂ p₁) a
   | rfl, rfl, _ => rfl
+
+theorem heq_prop {P Q : Prop} (p : P) (q : Q) : HEq p q :=
+  Subsingleton.helim (propext <| iff_of_true p q) _ _
 
 /- and -/
 
@@ -265,7 +264,7 @@ theorem ExistsUnique.unique {α : Sort u} {p : α → Prop}
 
 -- @[congr]
 theorem exists_unique_congr {p q : α → Prop} (h : ∀ a, p a ↔ q a) : (∃! a, p a) ↔ ∃! a, q a :=
-  exists_congr fun _ ↦ and_congr (h _) $ forall_congr' fun _ ↦ imp_congr_left (h _)
+  exists_congr fun _ ↦ and_congr (h _) <| forall_congr' fun _ ↦ imp_congr_left (h _)
 
 /- decidable -/
 
@@ -355,11 +354,11 @@ theorem rec_subsingleton {p : Prop} [h : Decidable p] {h₁ : p → Sort u} {h�
 theorem if_t_t (c : Prop) [Decidable c] {α : Sort u} (t : α) : ite c t t = t := ite_self _
 
 theorem imp_of_if_pos {c t e : Prop} [Decidable c] (h : ite c t e) (hc : c) : t :=
-  by have := if_pos hc ▸ h; exact this
+  (if_pos hc ▸ h :)
 #align implies_of_if_pos imp_of_if_pos
 
 theorem imp_of_if_neg {c t e : Prop} [Decidable c] (h : ite c t e) (hnc : ¬c) : e :=
-  by have := if_neg hnc ▸ h; exact this
+  (if_neg hnc ▸ h :)
 #align implies_of_if_neg imp_of_if_neg
 
 theorem if_ctx_congr {α : Sort u} {b c : Prop} [dec_b : Decidable b] [dec_c : Decidable c]

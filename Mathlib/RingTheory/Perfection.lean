@@ -177,8 +177,8 @@ variable (R p)
 instance perfectRing : PerfectRing (Ring.Perfection R p) p where
   bijective_frobenius := Function.bijective_iff_has_inverse.mpr
     ⟨pthRoot R p,
-     FunLike.congr_fun <| @frobenius_pthRoot R _ p _ _,
-     FunLike.congr_fun <| @pthRoot_frobenius R _ p _ _⟩
+     DFunLike.congr_fun <| @frobenius_pthRoot R _ p _ _,
+     DFunLike.congr_fun <| @pthRoot_frobenius R _ p _ _⟩
 #align perfection.perfect_ring Perfection.perfectRing
 
 /-- Given rings `R` and `S` of characteristic `p`, with `R` being perfect,
@@ -428,7 +428,7 @@ theorem preVal_mul {x y : ModP K v O hv p} (hxy0 : x * y ≠ 0) :
   have hy0 : y ≠ 0 := mt (by rintro rfl; rw [mul_zero]) hxy0
   obtain ⟨r, rfl⟩ := Ideal.Quotient.mk_surjective x
   obtain ⟨s, rfl⟩ := Ideal.Quotient.mk_surjective y
-  rw [← RingHom.map_mul] at hxy0 ⊢
+  rw [← map_mul (Ideal.Quotient.mk (Ideal.span {↑p})) r s] at hxy0 ⊢
   rw [preVal_mk hx0, preVal_mk hy0, preVal_mk hxy0, RingHom.map_mul, v.map_mul]
 #align mod_p.pre_val_mul ModP.preVal_mul
 
@@ -442,7 +442,7 @@ theorem preVal_add (x y : ModP K v O hv p) :
   · rw [hxy0, preVal_zero]; exact zero_le _
   obtain ⟨r, rfl⟩ := Ideal.Quotient.mk_surjective x
   obtain ⟨s, rfl⟩ := Ideal.Quotient.mk_surjective y
-  rw [← RingHom.map_add] at hxy0 ⊢
+  rw [← map_add (Ideal.Quotient.mk (Ideal.span {↑p})) r s] at hxy0 ⊢
   rw [preVal_mk hx0, preVal_mk hy0, preVal_mk hxy0, RingHom.map_add]; exact v.map_add _ _
 #align mod_p.pre_val_add ModP.preVal_add
 
@@ -479,8 +479,8 @@ theorem mul_ne_zero_of_pow_p_ne_zero {x y : ModP K v O hv p} (hx : x ^ p ≠ 0) 
   obtain ⟨r, rfl⟩ := Ideal.Quotient.mk_surjective x
   obtain ⟨s, rfl⟩ := Ideal.Quotient.mk_surjective y
   have h1p : (0 : ℝ) < 1 / p := one_div_pos.2 (Nat.cast_pos.2 hp.1.pos)
-  rw [← RingHom.map_mul]; rw [← RingHom.map_pow] at hx hy
-  rw [← v_p_lt_val hv] at hx hy ⊢
+  erw [← RingHom.map_mul]; erw [← RingHom.map_pow] at hx hy
+  erw [← v_p_lt_val hv] at hx hy ⊢
   rw [RingHom.map_pow, v.map_pow, ← rpow_lt_rpow_iff h1p, ← rpow_nat_cast, ← rpow_mul,
     mul_one_div_cancel (Nat.cast_ne_zero.2 hp.1.ne_zero : (p : ℝ) ≠ 0), rpow_one] at hx hy
   rw [RingHom.map_mul, v.map_mul]; refine' lt_of_le_of_lt _ (mul_lt_mul₀ hx hy)
@@ -490,7 +490,7 @@ theorem mul_ne_zero_of_pow_p_ne_zero {x y : ModP K v O hv p} (hx : x ^ p ≠ 0) 
   conv_lhs => rw [← rpow_one (v p)]
   rw [← rpow_add (ne_of_gt hvp)]
   refine' rpow_le_rpow_of_exponent_ge hvp (map_natCast (algebraMap O K) p ▸ hv.2 _) _
-  rw [← add_div, div_le_one (Nat.cast_pos.2 hp.1.pos : 0 < (p : ℝ))]; exact_mod_cast hp.1.two_le
+  rw [← add_div, div_le_one (Nat.cast_pos.2 hp.1.pos : 0 < (p : ℝ))]; exact mod_cast hp.1.two_le
 #align mod_p.mul_ne_zero_of_pow_p_ne_zero ModP.mul_ne_zero_of_pow_p_ne_zero
 
 end Classical
@@ -540,7 +540,7 @@ theorem valAux_eq {f : PreTilt K v O hv p} {n : ℕ} (hfn : coeff _ _ n f ≠ 0)
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le (Nat.find_min' h hfn)
   induction' k with k ih
   · rfl
-  obtain ⟨x, hx⟩ := Ideal.Quotient.mk_surjective (coeff _ _ (Nat.find h + k + 1) f)
+  obtain ⟨x, hx⟩ := Ideal.Quotient.mk_surjective (coeff (ModP K v O hv p) p (Nat.find h + k + 1) f)
   have h1 : (Ideal.Quotient.mk _ x : ModP K v O hv p) ≠ 0 := hx.symm ▸ hfn
   have h2 : (Ideal.Quotient.mk _ (x ^ p) : ModP K v O hv p) ≠ 0 := by
     erw [RingHom.map_pow, hx, ← RingHom.map_pow, coeff_pow_p]
@@ -600,8 +600,8 @@ theorem valAux_add (f g : PreTilt K v O hv p) :
   rw [valAux_eq hm, valAux_eq hn, valAux_eq hk, RingHom.map_add]
   cases' le_max_iff.1
       (ModP.preVal_add (coeff _ _ (max (max m n) k) f) (coeff _ _ (max (max m n) k) g)) with h h
-  · exact le_max_of_le_left (pow_le_pow_of_le_left' h _)
-  · exact le_max_of_le_right (pow_le_pow_of_le_left' h _)
+  · exact le_max_of_le_left (pow_le_pow_left' h _)
+  · exact le_max_of_le_right (pow_le_pow_left' h _)
 #align pre_tilt.val_aux_add PreTilt.valAux_add
 
 variable (K v O hv p)

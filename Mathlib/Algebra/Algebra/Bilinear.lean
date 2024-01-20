@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
 import Mathlib.Algebra.Algebra.Basic
-import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.Algebra.Algebra.NonUnitalHom
 import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.LinearAlgebra.TensorProduct
@@ -194,6 +193,14 @@ variable {R A}
 theorem _root_.Algebra.coe_lmul_eq_mul : ⇑(Algebra.lmul R A) = mul R A :=
   rfl
 #align algebra.coe_lmul_eq_mul Algebra.coe_lmul_eq_mul
+
+theorem _root_.Algebra.lmul_injective : Function.Injective (Algebra.lmul R A) :=
+  fun a₁ a₂ h ↦ by simpa using DFunLike.congr_fun h 1
+
+theorem _root_.Algebra.lmul_isUnit_iff {x : A} :
+    IsUnit (Algebra.lmul R A x) ↔ IsUnit x := by
+  rw [Module.End_isUnit_iff, Iff.comm]
+  exact IsUnit.isUnit_iff_mulLeft_bijective
 
 @[simp]
 theorem mulLeft_eq_zero_iff (a : A) : mulLeft R a = 0 ↔ a = 0 := by

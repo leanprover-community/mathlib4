@@ -62,13 +62,13 @@ instance _root_.GradedMonoid.smulCommClass_right :
     SMulCommClass R (GradedMonoid A) (GradedMonoid A) where
   smul_comm s x y := by
     dsimp
-    rw [GAlgebra.smul_def, GAlgebra.smul_def, ←mul_assoc, GAlgebra.commutes, mul_assoc]
+    rw [GAlgebra.smul_def, GAlgebra.smul_def, ← mul_assoc, GAlgebra.commutes, mul_assoc]
 
 instance _root_.GradedMonoid.isScalarTower_right :
     IsScalarTower R (GradedMonoid A) (GradedMonoid A) where
   smul_assoc s x y := by
     dsimp
-    rw [GAlgebra.smul_def, GAlgebra.smul_def, ←mul_assoc, GAlgebra.commutes, mul_assoc]
+    rw [GAlgebra.smul_def, GAlgebra.smul_def, ← mul_assoc, GAlgebra.commutes, mul_assoc]
 
 instance : Algebra R (⨁ i, A i) where
   toFun := (DirectSum.of A 0).comp GAlgebra.toFun
@@ -81,14 +81,14 @@ instance : Algebra R (⨁ i, A i) where
     apply DFinsupp.single_eq_of_sigma_eq (GAlgebra.map_mul a b)
   commutes' r x := by
     change AddMonoidHom.mul (DirectSum.of _ _ _) x = AddMonoidHom.mul.flip (DirectSum.of _ _ _) x
-    apply FunLike.congr_fun _ x
+    apply DFunLike.congr_fun _ x
     ext i xi : 2
     dsimp only [AddMonoidHom.comp_apply, AddMonoidHom.mul_apply, AddMonoidHom.flip_apply]
     rw [of_mul_of, of_mul_of]
     apply DFinsupp.single_eq_of_sigma_eq (GAlgebra.commutes r ⟨i, xi⟩)
   smul_def' r x := by
     change DistribMulAction.toAddMonoidHom _ r x = AddMonoidHom.mul (DirectSum.of _ _ _) x
-    apply FunLike.congr_fun _ x
+    apply DFunLike.congr_fun _ x
     ext i xi : 2
     dsimp only [AddMonoidHom.comp_apply, DistribMulAction.toAddMonoidHom_apply,
       AddMonoidHom.mul_apply]
@@ -121,7 +121,7 @@ def toAlgebra (f : ∀ i, A i →ₗ[R] B) (hone : f _ GradedMonoid.GOne.one = 1
     commutes' := fun r => by
       show toModule R _ _ f (algebraMap R _ r) = _
       rw [Algebra.algebraMap_eq_smul_one, Algebra.algebraMap_eq_smul_one, map_smul, one_def,
-        ←lof_eq_of R, toModule_lof, hone] }
+        ← lof_eq_of R, toModule_lof, hone] }
 #align direct_sum.to_algebra DirectSum.toAlgebra
 
 /-- Two `AlgHom`s out of a direct sum are equal if they agree on the generators.

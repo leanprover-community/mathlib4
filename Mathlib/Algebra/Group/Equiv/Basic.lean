@@ -128,7 +128,7 @@ variable (F)
 @[to_additive]
 instance (priority := 100) instMulHomClass (F : Type*)
     [Mul M] [Mul N] [h : MulEquivClass F M N] : MulHomClass F M N :=
-  { h with coe := h.coe, coe_injective' := FunLike.coe_injective' }
+  { h with coe := h.coe, coe_injective' := DFunLike.coe_injective' }
 
 -- See note [lower instance priority]
 @[to_additive]
@@ -191,6 +191,11 @@ def MulEquivClass.toMulEquiv [Mul α] [Mul β] [MulEquivClass F α β] (f : F) :
 `AddEquivClass.toAddEquiv`. "]
 instance [Mul α] [Mul β] [MulEquivClass F α β] : CoeTC F (α ≃* β) :=
   ⟨MulEquivClass.toMulEquiv⟩
+
+@[to_additive]
+theorem MulEquivClass.toMulEquiv_injective [Mul α] [Mul β] [MulEquivClass F α β] :
+    Function.Injective ((↑) : F → α ≃* β) :=
+  fun _ _ e ↦ DFunLike.ext _ _ fun a ↦ congr_arg (fun e : α ≃* β ↦ e.toFun a) e
 
 namespace MulEquiv
 
@@ -343,8 +348,8 @@ theorem symm_symm (f : M ≃* N) : f.symm.symm = f := rfl
 #align add_equiv.symm_symm AddEquiv.symm_symm
 
 @[to_additive]
-theorem symm_bijective : Function.Bijective (symm : M ≃* N → N ≃* M) :=
-  Equiv.bijective ⟨symm, symm, symm_symm, symm_symm⟩
+theorem symm_bijective : Function.Bijective (symm : (M ≃* N) → N ≃* M) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 #align mul_equiv.symm_bijective MulEquiv.symm_bijective
 #align add_equiv.symm_bijective AddEquiv.symm_bijective
 
@@ -477,13 +482,13 @@ theorem symm_comp_eq {α : Type*} (e : M ≃* N) (f : α → M) (g : α → N) :
 
 @[to_additive (attr := simp)]
 theorem symm_trans_self (e : M ≃* N) : e.symm.trans e = refl N :=
-  FunLike.ext _ _ e.apply_symm_apply
+  DFunLike.ext _ _ e.apply_symm_apply
 #align mul_equiv.symm_trans_self MulEquiv.symm_trans_self
 #align add_equiv.symm_trans_self AddEquiv.symm_trans_self
 
 @[to_additive (attr := simp)]
 theorem self_trans_symm (e : M ≃* N) : e.trans e.symm = refl M :=
-  FunLike.ext _ _ e.symm_apply_apply
+  DFunLike.ext _ _ e.symm_apply_apply
 #align mul_equiv.self_trans_symm MulEquiv.self_trans_symm
 #align add_equiv.self_trans_symm AddEquiv.self_trans_symm
 
@@ -506,13 +511,13 @@ same underlying function. -/
 @[to_additive (attr := ext)
   "Two additive isomorphisms agree if they are defined by the same underlying function."]
 theorem ext {f g : MulEquiv M N} (h : ∀ x, f x = g x) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align mul_equiv.ext MulEquiv.ext
 #align add_equiv.ext AddEquiv.ext
 
 @[to_additive]
 theorem ext_iff {f g : MulEquiv M N} : f = g ↔ ∀ x, f x = g x :=
-  FunLike.ext_iff
+  DFunLike.ext_iff
 #align mul_equiv.ext_iff MulEquiv.ext_iff
 #align add_equiv.ext_iff AddEquiv.ext_iff
 
@@ -530,13 +535,13 @@ theorem mk_coe' (e : M ≃* N) (f h₁ h₂ h₃) : (MulEquiv.mk ⟨f, e, h₁, 
 
 @[to_additive]
 protected theorem congr_arg {f : MulEquiv M N} {x x' : M} : x = x' → f x = f x' :=
-  FunLike.congr_arg f
+  DFunLike.congr_arg f
 #align mul_equiv.congr_arg MulEquiv.congr_arg
 #align add_equiv.congr_arg AddEquiv.congr_arg
 
 @[to_additive]
 protected theorem congr_fun {f g : MulEquiv M N} (h : f = g) (x : M) : f x = g x :=
-  FunLike.congr_fun h x
+  DFunLike.congr_fun h x
 #align mul_equiv.congr_fun MulEquiv.congr_fun
 #align add_equiv.congr_fun AddEquiv.congr_fun
 
@@ -703,20 +708,20 @@ theorem piCongrRight_trans {η : Type*} {Ms Ns Ps : η → Type*} [∀ j, Mul (M
 #align mul_equiv.Pi_congr_right_trans MulEquiv.piCongrRight_trans
 #align add_equiv.Pi_congr_right_trans AddEquiv.piCongrRight_trans
 
-/-- A family indexed by a nonempty subsingleton type is equivalent to the element at the single
-index. -/
+/-- A family indexed by a type with a unique element
+is `MulEquiv` to the element at the single index. -/
 @[to_additive (attr := simps!)
-  "A family indexed by a nonempty subsingleton type is
-  equivalent to the element at the single index."]
-def piSubsingleton {ι : Type*} (M : ι → Type*) [∀ j, Mul (M j)] [Subsingleton ι]
-    (i : ι) : (∀ j, M j) ≃* M i :=
-  { Equiv.piSubsingleton M i with map_mul' := fun _ _ => Pi.mul_apply _ _ _ }
-#align mul_equiv.Pi_subsingleton MulEquiv.piSubsingleton
-#align add_equiv.Pi_subsingleton AddEquiv.piSubsingleton
-#align mul_equiv.Pi_subsingleton_apply MulEquiv.piSubsingleton_apply
-#align add_equiv.Pi_subsingleton_apply AddEquiv.piSubsingleton_apply
-#align mul_equiv.Pi_subsingleton_symm_apply MulEquiv.piSubsingleton_symm_apply
-#align add_equiv.Pi_subsingleton_symm_apply AddEquiv.piSubsingleton_symm_apply
+  "A family indexed by a type with a unique element
+  is `AddEquiv` to the element at the single index."]
+def piUnique {ι : Type*} (M : ι → Type*) [∀ j, Mul (M j)] [Unique ι] :
+    (∀ j, M j) ≃* M default :=
+  { Equiv.piUnique M with map_mul' := fun _ _ => Pi.mul_apply _ _ _ }
+#align mul_equiv.Pi_subsingleton MulEquiv.piUnique
+#align add_equiv.Pi_subsingleton AddEquiv.piUnique
+#align mul_equiv.Pi_subsingleton_apply MulEquiv.piUnique_apply
+#align add_equiv.Pi_subsingleton_apply AddEquiv.piUnique_apply
+#align mul_equiv.Pi_subsingleton_symm_apply MulEquiv.piUnique_symm_apply
+#align add_equiv.Pi_subsingleton_symm_apply AddEquiv.piUnique_symm_apply
 
 /-!
 # Groups
@@ -741,7 +746,7 @@ protected theorem map_div [Group G] [DivisionMonoid H] (h : G ≃* H) (x y : G) 
 end MulEquiv
 
 -- porting note: we want to add
--- `@[simps (config := { fullyApplied := false })]`
+-- `@[simps (config := .asFn)]`
 -- here, but it generates simp lemmas which aren't in simp normal form
 -- (they have `toFun` in)
 /-- Given a pair of multiplicative homomorphisms `f`, `g` such that `g.comp f = id` and
@@ -757,8 +762,8 @@ def MulHom.toMulEquiv [Mul M] [Mul N] (f : M →ₙ* N) (g : N →ₙ* M) (h₁ 
     (h₂ : f.comp g = MulHom.id _) : M ≃* N where
   toFun := f
   invFun := g
-  left_inv := FunLike.congr_fun h₁
-  right_inv := FunLike.congr_fun h₂
+  left_inv := DFunLike.congr_fun h₁
+  right_inv := DFunLike.congr_fun h₂
   map_mul' := f.map_mul
 #align mul_hom.to_mul_equiv MulHom.toMulEquiv
 #align add_hom.to_add_equiv AddHom.toAddEquiv
@@ -784,7 +789,7 @@ theorem MulHom.toMulEquiv_symm_apply [Mul M] [Mul N] (f : M →ₙ* N) (g : N �
 /-- Given a pair of monoid homomorphisms `f`, `g` such that `g.comp f = id` and `f.comp g = id`,
 returns a multiplicative equivalence with `toFun = f` and `invFun = g`.  This constructor is
 useful if the underlying type(s) have specialized `ext` lemmas for monoid homomorphisms. -/
-@[to_additive (attr := simps (config := { fullyApplied := false }))
+@[to_additive (attr := simps (config := .asFn))
   "Given a pair of additive monoid homomorphisms `f`, `g` such that `g.comp f = id`
   and `f.comp g = id`, returns an additive equivalence with `toFun = f` and `invFun = g`.  This
   constructor is useful if the underlying type(s) have specialized `ext` lemmas for additive
@@ -793,8 +798,8 @@ def MonoidHom.toMulEquiv [MulOneClass M] [MulOneClass N] (f : M →* N) (g : N �
     (h₁ : g.comp f = MonoidHom.id _) (h₂ : f.comp g = MonoidHom.id _) : M ≃* N where
   toFun := f
   invFun := g
-  left_inv := FunLike.congr_fun h₁
-  right_inv := FunLike.congr_fun h₂
+  left_inv := DFunLike.congr_fun h₁
+  right_inv := DFunLike.congr_fun h₂
   map_mul' := f.map_mul
 #align monoid_hom.to_mul_equiv MonoidHom.toMulEquiv
 #align add_monoid_hom.to_add_equiv AddMonoidHom.toAddEquiv
@@ -810,7 +815,7 @@ section InvolutiveInv
 variable (G) [InvolutiveInv G]
 
 /-- Inversion on a `Group` or `GroupWithZero` is a permutation of the underlying type. -/
-@[to_additive (attr := simps! (config := { fullyApplied := false }) apply)
+@[to_additive (attr := simps! (config := .asFn) apply)
     "Negation on an `AddGroup` is a permutation of the underlying type."]
 protected def inv : Perm G :=
   inv_involutive.toPerm _

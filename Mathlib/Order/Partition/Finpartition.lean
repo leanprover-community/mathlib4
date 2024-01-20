@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Algebra.BigOperators.Basic
-import Mathlib.Order.Atoms.Finite
 import Mathlib.Order.SupIndep
+import Mathlib.Order.Atoms
+import Mathlib.Data.Fintype.Powerset
 
 #align_import order.partition.finpartition from "leanprover-community/mathlib"@"d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce"
 
@@ -289,7 +290,7 @@ instance : Inf (Finpartition a) :=
           simp [t] at h
         exact Disjoint.mono inf_le_left inf_le_left (P.disjoint hx₁ hx₂ xdiff))
       (by
-        rw [sup_image, comp.left_id, sup_product_left]
+        rw [sup_image, id_comp, sup_product_left]
         trans P.parts.sup id ⊓ Q.parts.sup id
         · simp_rw [Finset.sup_inf_distrib_right, Finset.sup_inf_distrib_left]
           rfl
@@ -435,7 +436,7 @@ def avoid (b : α) : Finpartition (a \ b) :=
   ofErase
     (P.parts.image (· \ b))
     (P.disjoint.image_finset_of_le fun a ↦ sdiff_le).supIndep
-    (by rw [sup_image, comp.left_id, Finset.sup_sdiff_right, ← id_def, P.supParts])
+    (by rw [sup_image, id_comp, Finset.sup_sdiff_right, ← id_def, P.supParts])
 #align finpartition.avoid Finpartition.avoid
 
 @[simp]
@@ -456,11 +457,14 @@ end Finpartition
 
 namespace Finpartition
 
-variable [DecidableEq α] {s t : Finset α} (P : Finpartition s)
+variable [DecidableEq α] {s t u : Finset α} (P : Finpartition s) {a : α}
 
 theorem nonempty_of_mem_parts {a : Finset α} (ha : a ∈ P.parts) : a.Nonempty :=
   nonempty_iff_ne_empty.2 <| P.ne_bot ha
 #align finpartition.nonempty_of_mem_parts Finpartition.nonempty_of_mem_parts
+
+lemma eq_of_mem_parts (ht : t ∈ P.parts) (hu : u ∈ P.parts) (hat : a ∈ t) (hau : a ∈ u) : t = u :=
+  P.disjoint.elim ht hu <| not_disjoint_iff.2 ⟨a, hat, hau⟩
 
 theorem exists_mem {a : α} (ha : a ∈ s) : ∃ t ∈ P.parts, a ∈ t := by
   simp_rw [← P.supParts] at ha
@@ -485,7 +489,7 @@ instance (s : Finset α) : Bot (Finpartition s) :=
           (by
             rw [Finset.coe_map]
             exact Finset.pairwiseDisjoint_range_singleton.subset (Set.image_subset_range _ _))
-      supParts := by rw [sup_map, comp.left_id, Embedding.coeFn_mk, Finset.sup_singleton']
+      supParts := by rw [sup_map, id_comp, Embedding.coeFn_mk, Finset.sup_singleton']
       not_bot_mem := by simp }⟩
 
 @[simp]
@@ -570,7 +574,7 @@ theorem atomise_empty (hs : s.Nonempty) : (atomise s ∅).parts = {s} := by
 #align finpartition.atomise_empty Finpartition.atomise_empty
 
 theorem card_atomise_le : (atomise s F).parts.card ≤ 2 ^ F.card :=
-  (card_le_of_subset <| erase_subset _ _).trans <| Finset.card_image_le.trans (card_powerset _).le
+  (card_le_card <| erase_subset _ _).trans <| Finset.card_image_le.trans (card_powerset _).le
 #align finpartition.card_atomise_le Finpartition.card_atomise_le
 
 theorem biUnion_filter_atomise (ht : t ∈ F) (hts : t ⊆ s) :
@@ -589,7 +593,7 @@ theorem card_filter_atomise_le_two_pow (ht : t ∈ F) :
   suffices h :
     ((atomise s F).parts.filter fun u ↦ u ⊆ t ∧ u.Nonempty) ⊆
       (F.erase t).powerset.image fun P ↦ s.filter fun i ↦ ∀ x ∈ F, x ∈ insert t P ↔ i ∈ x
-  · refine' (card_le_of_subset h).trans (card_image_le.trans _)
+  · refine' (card_le_card h).trans (card_image_le.trans _)
     rw [card_powerset, card_erase_of_mem ht]
   rw [subset_iff]
   simp_rw [mem_image, mem_powerset, mem_filter, and_imp, Finset.Nonempty, exists_imp, mem_atomise,

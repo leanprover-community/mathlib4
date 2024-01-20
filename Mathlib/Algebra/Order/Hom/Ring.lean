@@ -184,7 +184,7 @@ instance : OrderRingHomClass (α →+*o β) α β
   monotone f := f.monotone'
 
 -- porting note: These helper instances are unhelpful in Lean 4, so omitting:
--- /-- Helper instance for when there's too many metavariables to apply `FunLike.has_coe_to_fun`
+-- /-- Helper instance for when there's too many metavariables to apply `DFunLike.has_coe_to_fun`
 -- directly. -/
 -- instance : CoeFun (α →+*o β) fun _ => α → β :=
 --   ⟨fun f => f.toFun⟩
@@ -195,7 +195,7 @@ theorem toFun_eq_coe (f : α →+*o β) : f.toFun = f :=
 
 @[ext]
 theorem ext {f g : α →+*o β} (h : ∀ a, f a = g a) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align order_ring_hom.ext OrderRingHom.ext
 
 @[simp]
@@ -255,7 +255,7 @@ theorem coe_copy (f : α →+*o β) (f' : α → β) (h : f' = f) : ⇑(f.copy f
 #align order_ring_hom.coe_copy OrderRingHom.coe_copy
 
 theorem copy_eq (f : α →+*o β) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
-  FunLike.ext' h
+  DFunLike.ext' h
 #align order_ring_hom.copy_eq OrderRingHom.copy_eq
 
 variable (α)
@@ -329,7 +329,7 @@ theorem id_comp (f : α →+*o β) : (OrderRingHom.id β).comp f = f :=
 @[simp]
 theorem cancel_right {f₁ f₂ : β →+*o γ} {g : α →+*o β} (hg : Surjective g) :
     f₁.comp g = f₂.comp g ↔ f₁ = f₂ :=
-  ⟨fun h => ext <| hg.forall.2 <| FunLike.ext_iff.1 h, fun h => by rw [h]⟩
+  ⟨fun h => ext <| hg.forall.2 <| DFunLike.ext_iff.1 h, fun h => by rw [h]⟩
 #align order_ring_hom.cancel_right OrderRingHom.cancel_right
 
 @[simp]
@@ -346,7 +346,7 @@ instance [Preorder β] : Preorder (OrderRingHom α β) :=
   Preorder.lift ((⇑) : _ → α → β)
 
 instance [PartialOrder β] : PartialOrder (OrderRingHom α β) :=
-  PartialOrder.lift _ FunLike.coe_injective
+  PartialOrder.lift _ DFunLike.coe_injective
 
 end OrderRingHom
 
@@ -381,10 +381,10 @@ instance : OrderRingIsoClass (α ≃+*o β) α β
   right_inv f := f.right_inv
 
 -- porting note: These helper instances are unhelpful in Lean 4, so omitting:
-/-- Helper instance for when there's too many metavariables to apply `FunLike.has_coe_to_fun`
+/-- Helper instance for when there's too many metavariables to apply `DFunLike.has_coe_to_fun`
 directly. -/
 -- instance : CoeFun (α ≃+*o β) fun _ => α → β :=
---   FunLike.has_coe_to_fun
+--   DFunLike.has_coe_to_fun
 
 theorem toFun_eq_coe (f : α ≃+*o β) : f.toFun = f :=
   rfl
@@ -392,7 +392,7 @@ theorem toFun_eq_coe (f : α ≃+*o β) : f.toFun = f :=
 
 @[ext]
 theorem ext {f g : α ≃+*o β} (h : ∀ a, f a = g a) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align order_ring_iso.ext OrderRingIso.ext
 
 @[simp]
@@ -420,9 +420,9 @@ theorem coe_toRingEquiv (f : α ≃+*o β) : ⇑(f : α ≃+* β) = f :=
   rfl
 #align order_ring_iso.coe_to_ring_equiv OrderRingIso.coe_toRingEquiv
 
--- Porting note: needed to add FunLike.coe on the lhs, bad Equiv coercion otherwise
+-- Porting note: needed to add DFunLike.coe on the lhs, bad Equiv coercion otherwise
 @[simp, norm_cast]
-theorem coe_toOrderIso (f : α ≃+*o β) : FunLike.coe (f : α ≃o β) = f :=
+theorem coe_toOrderIso (f : α ≃+*o β) : DFunLike.coe (f : α ≃o β) = f :=
   rfl
 #align order_ring_iso.coe_to_order_iso OrderRingIso.coe_toOrderIso
 
@@ -505,9 +505,8 @@ theorem symm_trans_self (e : α ≃+*o β) : e.symm.trans e = OrderRingIso.refl 
   ext e.right_inv
 #align order_ring_iso.symm_trans_self OrderRingIso.symm_trans_self
 
-theorem symm_bijective : Bijective (OrderRingIso.symm : α ≃+*o β → β ≃+*o α) :=
-  ⟨fun f g h => f.symm_symm.symm.trans <| (congr_arg OrderRingIso.symm h).trans g.symm_symm,
-    fun f => ⟨f.symm, f.symm_symm⟩⟩
+theorem symm_bijective : Bijective (OrderRingIso.symm : (α ≃+*o β) → β ≃+*o α) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 #align order_ring_iso.symm_bijective OrderRingIso.symm_bijective
 
 end LE
@@ -538,7 +537,7 @@ theorem coe_toOrderRingHom_refl : (OrderRingIso.refl α : α →+*o α) = OrderR
 #align order_ring_iso.coe_to_order_ring_hom_refl OrderRingIso.coe_toOrderRingHom_refl
 
 theorem toOrderRingHom_injective : Injective (toOrderRingHom : α ≃+*o β → α →+*o β) :=
-  fun f g h => FunLike.coe_injective <| by convert FunLike.ext'_iff.1 h using 0
+  fun f g h => DFunLike.coe_injective <| by convert DFunLike.ext'_iff.1 h using 0
 #align order_ring_iso.to_order_ring_hom_injective OrderRingIso.toOrderRingHom_injective
 
 end NonAssocSemiring
@@ -559,7 +558,7 @@ instance OrderRingHom.subsingleton [LinearOrderedField α] [LinearOrderedField �
     Subsingleton (α →+*o β) :=
   ⟨fun f g => by
     ext x
-    by_contra' h' : f x ≠ g x
+    by_contra! h' : f x ≠ g x
     wlog h : f x < g x generalizing α β with h₂
     -- porting note: had to add the `generalizing` as there are random variables
     -- `F γ δ` flying around in context.

@@ -3,10 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
 -/
+import Mathlib.Algebra.MonoidAlgebra.Support
+import Mathlib.Algebra.Regular.Basic
 import Mathlib.Data.Polynomial.Basic
-import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Data.Nat.Choose.Sum
-import Mathlib.Algebra.Regular.Pow
 
 #align_import data.polynomial.coeff from "leanprover-community/mathlib"@"2651125b48fc5c170ab1111afd0817c903b1fc6c"
 
@@ -61,10 +61,18 @@ theorem coeff_smul [SMulZeroClass S R] (r : S) (p : R[X]) (n : ℕ) :
 theorem support_smul [Monoid S] [DistribMulAction S R] (r : S) (p : R[X]) :
     support (r • p) ⊆ support p := by
   intro i hi
-  simp [mem_support_iff] at hi ⊢
+  simp? [mem_support_iff] at hi ⊢ says simp only [mem_support_iff, coeff_smul, ne_eq] at hi ⊢
   contrapose! hi
   simp [hi]
 #align polynomial.support_smul Polynomial.support_smul
+
+open scoped Pointwise in
+theorem card_support_mul_le : (p * q).support.card ≤ p.support.card * q.support.card := by
+  calc (p * q).support.card
+   _ = (p.toFinsupp * q.toFinsupp).support.card := by rw [← support_toFinsupp, toFinsupp_mul]
+   _ ≤ (p.toFinsupp.support + q.toFinsupp.support).card :=
+    Finset.card_le_card (AddMonoidAlgebra.support_mul p.toFinsupp q.toFinsupp)
+   _ ≤ p.support.card * q.support.card := Finset.card_image₂_le ..
 
 /-- `Polynomial.sum` as a linear map. -/
 @[simps]
@@ -182,9 +190,11 @@ theorem coeff_mul_C (p : R[X]) (n : ℕ) (a : R) : coeff (p * C a) n = coeff p n
 @[simp] lemma coeff_natCast_mul {a k : ℕ} :
   coeff ((a : R[X]) * p) k = a * coeff p k := coeff_C_mul _
 
+-- See note [no_index around OfNat.ofNat]
 @[simp] lemma coeff_mul_ofNat {a k : ℕ} [Nat.AtLeastTwo a] :
   coeff (p * (no_index (OfNat.ofNat a) : R[X])) k = coeff p k * OfNat.ofNat a := coeff_mul_C _ _ _
 
+-- See note [no_index around OfNat.ofNat]
 @[simp] lemma coeff_ofNat_mul {a k : ℕ} [Nat.AtLeastTwo a] :
   coeff ((no_index (OfNat.ofNat a) : R[X]) * p) k = OfNat.ofNat a * coeff p k := coeff_C_mul _
 
@@ -211,7 +221,7 @@ theorem support_binomial {k m : ℕ} (hkm : k ≠ m) {x y : R} (hx : x ≠ 0) (h
   apply subset_antisymm (support_binomial' k m x y)
   simp_rw [insert_subset_iff, singleton_subset_iff, mem_support_iff, coeff_add, coeff_C_mul,
     coeff_X_pow_self, mul_one, coeff_X_pow, if_neg hkm, if_neg hkm.symm, mul_zero, zero_add,
-    add_zero, Ne.def, hx, hy]
+    add_zero, Ne.def, hx, hy, not_false_eq_true, and_true]
 #align polynomial.support_binomial Polynomial.support_binomial
 
 theorem support_trinomial {k m n : ℕ} (hkm : k < m) (hmn : m < n) {x y z : R} (hx : x ≠ 0)
@@ -221,7 +231,7 @@ theorem support_trinomial {k m n : ℕ} (hkm : k < m) (hmn : m < n) {x y z : R} 
   simp_rw [insert_subset_iff, singleton_subset_iff, mem_support_iff, coeff_add, coeff_C_mul,
     coeff_X_pow_self, mul_one, coeff_X_pow, if_neg hkm.ne, if_neg hkm.ne', if_neg hmn.ne,
     if_neg hmn.ne', if_neg (hkm.trans hmn).ne, if_neg (hkm.trans hmn).ne', mul_zero, add_zero,
-    zero_add, Ne.def, hx, hy, hz]
+    zero_add, Ne.def, hx, hy, hz, not_false_eq_true, and_true]
 #align polynomial.support_trinomial Polynomial.support_trinomial
 
 theorem card_support_binomial {k m : ℕ} (h : k ≠ m) {x y : R} (hx : x ≠ 0) (hy : y ≠ 0) :
@@ -308,15 +318,14 @@ theorem mul_X_pow_eq_zero {p : R[X]} {n : ℕ} (H : p * X ^ n = 0) : p = 0 :=
   ext fun k => (coeff_mul_X_pow p n k).symm.trans <| ext_iff.1 H (k + n)
 #align polynomial.mul_X_pow_eq_zero Polynomial.mul_X_pow_eq_zero
 
-@[simp] theorem isRegular_X : IsRegular (X : R[X]) := by
-  suffices : IsLeftRegular (X : R[X])
-  · exact ⟨this, this.right_of_commute commute_X⟩
-  intro P Q (hPQ : X * P = X * Q)
+theorem isRegular_X_pow (n : ℕ) : IsRegular (X ^ n : R[X]) := by
+  suffices : IsLeftRegular (X^n : R[X])
+  · exact ⟨this, this.right_of_commute (fun p => commute_X_pow p n)⟩
+  intro P Q (hPQ : X^n * P = X^n * Q)
   ext i
-  rw [← coeff_X_mul P i, hPQ, coeff_X_mul Q i]
+  rw [← coeff_X_pow_mul P n i, hPQ, coeff_X_pow_mul Q n i]
 
--- TODO Unify this with `Polynomial.Monic.isRegular`
-theorem isRegular_X_pow (n : ℕ) : IsRegular (X ^ n : R[X]) := isRegular_X.pow n
+@[simp] theorem isRegular_X : IsRegular (X : R[X]) := pow_one (X : R[X]) ▸ isRegular_X_pow 1
 
 theorem coeff_X_add_C_pow (r : R) (n k : ℕ) :
     ((X + C r) ^ n).coeff k = r ^ (n - k) * (n.choose k : R) := by

@@ -276,7 +276,7 @@ instance (priority := 100) isStrictTotalOrder_of_isStrictTotalOrder [IsStrictTot
   /-- The relation is `WellFounded`, as a proposition. -/
   wf : WellFounded r
 #align is_well_founded IsWellFounded
-#align is_well_founded_iff IsWellFounded_iff
+#align is_well_founded_iff isWellFounded_iff
 
 #align has_well_founded WellFoundedRelation
 set_option linter.uppercaseLean3 false in
@@ -356,6 +356,9 @@ def WellFoundedGT (α : Type*) [LT α] : Prop :=
   IsWellFounded α (· > ·)
 #align well_founded_gt WellFoundedGT
 
+lemma wellFounded_lt [LT α] [WellFoundedLT α] : @WellFounded α (· < ·) := IsWellFounded.wf
+lemma wellFounded_gt [LT α] [WellFoundedGT α] : @WellFounded α (· > ·) := IsWellFounded.wf
+
 -- See note [lower instance priority]
 instance (priority := 100) (α : Type*) [LT α] [h : WellFoundedLT α] : WellFoundedGT αᵒᵈ :=
   h
@@ -382,8 +385,8 @@ instance (priority := 100) {α} (r : α → α → Prop) [IsWellOrder α r] :
     IsStrictTotalOrder α r where
 
 -- see Note [lower instance priority]
-instance (priority := 100) {α} (r : α → α → Prop) [IsWellOrder α r] : IsTrichotomous α r :=
-  by infer_instance
+instance (priority := 100) {α} (r : α → α → Prop) [IsWellOrder α r] : IsTrichotomous α r := by
+  infer_instance
 
 -- see Note [lower instance priority]
 instance (priority := 100) {α} (r : α → α → Prop) [IsWellOrder α r] : IsTrans α r := by
@@ -544,7 +547,7 @@ def Unbounded (r : α → α → Prop) (s : Set α) : Prop :=
   ∀ a, ∃ b ∈ s, ¬r b a
 #align set.unbounded Set.Unbounded
 
-/-- A bounded or final set. Not to be confused with `Metric.bounded`. -/
+/-- A bounded or final set. Not to be confused with `Bornology.IsBounded`. -/
 def Bounded (r : α → α → Prop) (s : Set α) : Prop :=
   ∃ a, ∀ b ∈ s, r b a
 #align set.bounded Set.Bounded
@@ -617,7 +620,7 @@ variable [HasSubset α] {a b c : α}
 lemma subset_of_eq_of_subset (hab : a = b) (hbc : b ⊆ c) : a ⊆ c := by rwa [hab]
 #align subset_of_eq_of_subset subset_of_eq_of_subset
 
-lemma subset_of_subset_of_eq (hab : a ⊆ b) (hbc : b = c) : a ⊆ c := by rwa [←hbc]
+lemma subset_of_subset_of_eq (hab : a ⊆ b) (hbc : b = c) : a ⊆ c := by rwa [← hbc]
 #align subset_of_subset_of_eq subset_of_subset_of_eq
 
 @[refl]
@@ -686,7 +689,7 @@ variable [HasSSubset α] {a b c : α}
 lemma ssubset_of_eq_of_ssubset (hab : a = b) (hbc : b ⊂ c) : a ⊂ c := by rwa [hab]
 #align ssubset_of_eq_of_ssubset ssubset_of_eq_of_ssubset
 
-lemma ssubset_of_ssubset_of_eq (hab : a ⊂ b) (hbc : b = c) : a ⊂ c := by rwa [←hbc]
+lemma ssubset_of_ssubset_of_eq (hab : a ⊂ b) (hbc : b = c) : a ⊂ c := by rwa [← hbc]
 #align ssubset_of_ssubset_of_eq ssubset_of_ssubset_of_eq
 
 lemma ssubset_irrefl [IsIrrefl α (· ⊂ ·)] (a : α) : ¬a ⊂ a := irrefl _
@@ -790,6 +793,12 @@ theorem ssubset_or_eq_of_subset [IsAntisymm α (· ⊆ ·)] (h : a ⊆ b) : a �
   (eq_or_ssubset_of_subset h).symm
 #align ssubset_or_eq_of_subset ssubset_or_eq_of_subset
 
+lemma eq_of_subset_of_not_ssubset [IsAntisymm α (· ⊆ ·)] (hab : a ⊆ b) (hba : ¬ a ⊂ b) : a = b :=
+  (eq_or_ssubset_of_subset hab).resolve_right hba
+
+lemma eq_of_superset_of_not_ssuperset [IsAntisymm α (· ⊆ ·)] (hab : a ⊆ b) (hba : ¬ a ⊂ b) :
+    b = a := ((eq_or_ssubset_of_subset hab).resolve_right hba).symm
+
 alias HasSubset.Subset.trans_ssubset := ssubset_of_subset_of_ssubset
 #align has_subset.subset.trans_ssubset HasSubset.Subset.trans_ssubset
 
@@ -807,6 +816,9 @@ alias HasSubset.Subset.eq_or_ssubset := eq_or_ssubset_of_subset
 
 alias HasSubset.Subset.ssubset_or_eq := ssubset_or_eq_of_subset
 #align has_subset.subset.ssubset_or_eq HasSubset.Subset.ssubset_or_eq
+
+alias HasSubset.Subset.eq_of_not_ssubset := eq_of_subset_of_not_ssubset
+alias HasSubset.Subset.eq_of_not_ssuperset := eq_of_superset_of_not_ssuperset
 
 theorem ssubset_iff_subset_ne [IsAntisymm α (· ⊆ ·)] : a ⊂ b ↔ a ⊆ b ∧ a ≠ b :=
   ⟨fun h => ⟨h.subset, h.ne⟩, fun h => h.1.ssubset_of_ne h.2⟩

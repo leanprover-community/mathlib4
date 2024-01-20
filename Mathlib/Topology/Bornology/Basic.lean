@@ -91,31 +91,21 @@ and showing that they satisfy the appropriate conditions. -/
 @[simps]
 def Bornology.ofBounded {α : Type*} (B : Set (Set α))
     (empty_mem : ∅ ∈ B)
-    (subset_mem : ∀ s₁ (_ : s₁ ∈ B) s₂, s₂ ⊆ s₁ → s₂ ∈ B)
-    (union_mem : ∀ s₁ (_ : s₁ ∈ B) s₂ (_ : s₂ ∈ B), s₁ ∪ s₂ ∈ B)
-    (singleton_mem : ∀ x, {x} ∈ B) : Bornology α
-    where
-  cobounded' :=
-    { sets := { s : Set α | sᶜ ∈ B }
-      univ_sets := by rwa [← compl_univ] at empty_mem
-      sets_of_superset := fun hx hy => subset_mem _ hx _ (compl_subset_compl.mpr hy)
-      inter_sets := fun hx hy => by simpa [compl_inter] using union_mem _ hx _ hy }
-  le_cofinite' := by
-    rw [le_cofinite_iff_compl_singleton_mem]
-    intro x
-    change {x}ᶜᶜ ∈ B
-    rw [compl_compl]
-    exact singleton_mem x
+    (subset_mem : ∀ s₁ ∈ B, ∀ s₂ ⊆ s₁, s₂ ∈ B)
+    (union_mem : ∀ s₁ ∈ B, ∀ s₂ ∈ B, s₁ ∪ s₂ ∈ B)
+    (singleton_mem : ∀ x, {x} ∈ B) : Bornology α where
+  cobounded' := comk (· ∈ B) empty_mem subset_mem union_mem
+  le_cofinite' := by simpa [le_cofinite_iff_compl_singleton_mem]
 #align bornology.of_bounded Bornology.ofBounded
-#align bornology.of_bounded_cobounded_sets Bornology.ofBounded_cobounded_sets
+#align bornology.of_bounded_cobounded_sets Bornology.ofBounded_cobounded
 
 /-- A constructor for bornologies by specifying the bounded sets,
 and showing that they satisfy the appropriate conditions. -/
-@[simps!]
+@[simps! cobounded]
 def Bornology.ofBounded' {α : Type*} (B : Set (Set α))
     (empty_mem : ∅ ∈ B)
-    (subset_mem : ∀ s₁ (_ : s₁ ∈ B) s₂, s₂ ⊆ s₁ → s₂ ∈ B)
-    (union_mem : ∀ s₁ (_ : s₁ ∈ B) s₂ (_ : s₂ ∈ B), s₁ ∪ s₂ ∈ B)
+    (subset_mem : ∀ s₁ ∈ B, ∀ s₂ ⊆ s₁, s₂ ∈ B)
+    (union_mem : ∀ s₁ ∈ B, ∀ s₂ ∈ B, s₁ ∪ s₂ ∈ B)
     (sUnion_univ : ⋃₀ B = univ) :
     Bornology α :=
   Bornology.ofBounded B empty_mem subset_mem union_mem fun x => by
@@ -123,23 +113,23 @@ def Bornology.ofBounded' {α : Type*} (B : Set (Set α))
     rcases sUnion_univ x with ⟨s, hs, hxs⟩
     exact subset_mem s hs {x} (singleton_subset_iff.mpr hxs)
 #align bornology.of_bounded' Bornology.ofBounded'
-#align bornology.of_bounded'_cobounded_sets Bornology.ofBounded'_cobounded_sets
+#align bornology.of_bounded'_cobounded_sets Bornology.ofBounded'_cobounded
 namespace Bornology
 
 section
 
-variable [Bornology α] {s t : Set α} {x : α}
-
 /-- `IsCobounded` is the predicate that `s` is in the filter of cobounded sets in the ambient
 bornology on `α` -/
-def IsCobounded (s : Set α) : Prop :=
+def IsCobounded [Bornology α] (s : Set α) : Prop :=
   s ∈ cobounded α
 #align bornology.is_cobounded Bornology.IsCobounded
 
 /-- `IsBounded` is the predicate that `s` is bounded relative to the ambient bornology on `α`. -/
-def IsBounded (s : Set α) : Prop :=
+def IsBounded [Bornology α] (s : Set α) : Prop :=
   IsCobounded sᶜ
 #align bornology.is_bounded Bornology.IsBounded
+
+variable {_ : Bornology α} {s t : Set α} {x : α}
 
 theorem isCobounded_def {s : Set α} : IsCobounded s ↔ s ∈ cobounded α :=
   Iff.rfl
@@ -264,9 +254,7 @@ theorem isCobounded_ofBounded_iff (B : Set (Set α)) {empty_mem subset_mem union
 
 theorem isBounded_ofBounded_iff (B : Set (Set α)) {empty_mem subset_mem union_mem sUnion_univ} :
     @IsBounded _ (ofBounded B empty_mem subset_mem union_mem sUnion_univ) s ↔ s ∈ B := by
-  rw [@isBounded_def _ (ofBounded B empty_mem subset_mem union_mem sUnion_univ), ← Filter.mem_sets,
-   ofBounded_cobounded_sets, Set.mem_setOf_eq, compl_compl]
--- porting note: again had to use `@isBounded_def _` and feed Lean the instance
+  rw [isBounded_def, ofBounded_cobounded, compl_mem_comk]
 #align bornology.is_bounded_of_bounded_iff Bornology.isBounded_ofBounded_iff
 
 variable [Bornology α]
@@ -312,6 +300,9 @@ theorem isBounded_iUnion [Finite ι] {s : ι → Set α} : IsBounded (⋃ i, s i
   by rw [← sUnion_range, isBounded_sUnion (finite_range s), forall_range_iff]
 #align bornology.is_bounded_Union Bornology.isBounded_iUnion
 
+lemma eventually_ne_cobounded (a : α) : ∀ᶠ x in cobounded α, x ≠ a :=
+  le_cofinite_iff_eventually_ne.1 (le_cofinite _) a
+
 end Bornology
 
 open Bornology
@@ -324,6 +315,10 @@ theorem Filter.HasBasis.disjoint_cobounded_iff [Bornology α] {ι : Sort*} {p : 
 theorem Set.Finite.isBounded [Bornology α] {s : Set α} (hs : s.Finite) : IsBounded s :=
   Bornology.le_cofinite α hs.compl_mem_cofinite
 #align set.finite.is_bounded Set.Finite.isBounded
+
+nonrec lemma Filter.Tendsto.eventually_ne_cobounded [Bornology α] {f : β → α} {l : Filter β}
+    (h : Tendsto f l (cobounded α)) (a : α) : ∀ᶠ x in l, f x ≠ a :=
+  h.eventually <| eventually_ne_cobounded a
 
 instance : Bornology PUnit :=
   ⟨⊥, bot_le⟩

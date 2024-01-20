@@ -6,6 +6,7 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 import Mathlib.Data.Nat.Prime
 import Mathlib.Data.List.Prime
 import Mathlib.Data.List.Sort
+import Mathlib.Data.List.Chain
 
 #align_import data.nat.factors from "leanprover-community/mathlib"@"008205aa645b3f194c1da47025c5f110c8406eab"
 
@@ -129,6 +130,7 @@ theorem factors_eq_nil (n : ℕ) : n.factors = [] ↔ n = 0 ∨ n = 1 := by
     · exact factors_one
 #align nat.factors_eq_nil Nat.factors_eq_nil
 
+open scoped List in
 theorem eq_of_perm_factors {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) (h : a.factors ~ b.factors) :
     a = b := by simpa [prod_factors ha, prod_factors hb] using List.Perm.prod_eq h
 #align nat.eq_of_perm_factors Nat.eq_of_perm_factors
@@ -153,6 +155,9 @@ theorem mem_factors {n p} (hn : n ≠ 0) : p ∈ factors n ↔ Prime p ∧ p ∣
   ⟨fun h => ⟨prime_of_mem_factors h, dvd_of_mem_factors h⟩, fun ⟨hprime, hdvd⟩ =>
     (mem_factors_iff_dvd hn hprime).mpr hdvd⟩
 #align nat.mem_factors Nat.mem_factors
+
+@[simp] lemma mem_factors' {n p} : p ∈ n.factors ↔ p.Prime ∧ p ∣ n ∧ n ≠ 0 := by
+  cases n <;> simp [mem_factors, *]
 
 theorem le_of_mem_factors {n p : ℕ} (h : p ∈ n.factors) : p ≤ n := by
   rcases n.eq_zero_or_pos with (rfl | hn)

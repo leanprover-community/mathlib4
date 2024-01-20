@@ -218,7 +218,7 @@ def pullback.lift {X Y Z W : Stonean} (f : X ⟶ Z) {i : Y ⟶ Z} (hi : OpenEmbe
   toFun := fun z => ⟨a z, by
     simp only [Set.mem_preimage]
     use (b z)
-    exact congr_fun (FunLike.ext'_iff.mp w.symm) z⟩
+    exact congr_fun (DFunLike.ext'_iff.mp w.symm) z⟩
   continuous_toFun := by
     apply Continuous.subtype_mk
     exact a.continuous
@@ -248,7 +248,7 @@ lemma pullback.lift_snd {X Y Z W : Stonean} (f : X ⟶ Z) {i : Y ⟶ Z} (hi : Op
     pullback.lift f hi a b w ≫ Stonean.pullback.snd f hi = b := by
   congr
   ext z
-  have := congr_fun (FunLike.ext'_iff.mp w.symm) z
+  have := congr_fun (DFunLike.ext'_iff.mp w.symm) z
   have h : i (b z) = f (a z) := this
   suffices : b z = (Homeomorph.ofEmbedding i hi.toEmbedding).symm (⟨f (a z), by rw [← h]; simp⟩)
   · exact this.symm
@@ -310,11 +310,11 @@ end Isos
 noncomputable
 def createsPullbacksOfOpenEmbedding :
     CreatesLimit (cospan f i) (Stonean.toCompHaus ⋙ compHausToTop) :=
-createsLimitOfFullyFaithfulOfIso (Stonean.pullback f hi) (by
-  refine (@TopCat.isoOfHomeo (TopCat.of _) (TopCat.of _)
-    (TopCat.pullbackHomeoPreimage f f.2 i hi.toEmbedding)).symm ≪≫ ?_
-  refine ?_ ≪≫ Limits.lim.mapIso (diagramIsoCospan _).symm
-  exact (TopCat.pullbackConeIsLimit f i).conePointUniqueUpToIso (limit.isLimit _))
+  createsLimitOfFullyFaithfulOfIso (Stonean.pullback f hi) (by
+    refine (@TopCat.isoOfHomeo (TopCat.of _) (TopCat.of _)
+      (TopCat.pullbackHomeoPreimage f f.2 i hi.toEmbedding)).symm ≪≫ ?_
+    refine ?_ ≪≫ Limits.lim.mapIso (diagramIsoCospan _).symm
+    exact (TopCat.pullbackConeIsLimit f i).conePointUniqueUpToIso (limit.isLimit _))
 
 instance : HasPullbacksOfInclusions Stonean where
   hasPullbackInl f := by
@@ -329,15 +329,9 @@ instance : PreservesPullbacksOfInclusions Stonean.toCompHaus.{u} where
     apply (config := { allowSynthFailures := true }) preservesPullbackSymmetry
     have : OpenEmbedding (coprod.inl : X ⟶ X ⨿ Y) := Stonean.Sigma.openEmbedding_ι _ _
     have := Stonean.createsPullbacksOfOpenEmbedding f this
-    refine @preservesLimitOfReflectsOfPreserves _ _ _ _ _ _ _ _ _ Stonean.toCompHaus
-      compHausToTop inferInstance ?_
-    apply (config := { allowSynthFailures := true }) ReflectsLimitsOfShape.reflectsLimit
-    apply (config := { allowSynthFailures := true }) ReflectsLimitsOfSize.reflectsLimitsOfShape
-    exact reflectsLimitsOfSizeShrink _
+    exact preservesLimitOfReflectsOfPreserves Stonean.toCompHaus compHausToTop
 
 instance : FinitaryExtensive Stonean.{u} :=
-  have := fullyFaithfulReflectsLimits Stonean.toCompHaus
-  have := fullyFaithfulReflectsColimits Stonean.toCompHaus
   finitaryExtensive_of_preserves_and_reflects Stonean.toCompHaus
 
 end Stonean

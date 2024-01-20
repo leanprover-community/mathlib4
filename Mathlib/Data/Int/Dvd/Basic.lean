@@ -5,6 +5,7 @@ Authors: Jeremy Avigad
 -/
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.Nat.Cast.Order
+import Mathlib.Algebra.Ring.Divisibility.Basic
 
 #align_import data.int.dvd.basic from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
@@ -31,11 +32,11 @@ theorem coe_nat_dvd {m n : ℕ} : (↑m : ℤ) ∣ ↑n ↔ m ∣ n :=
 #align int.coe_nat_dvd Int.coe_nat_dvd
 
 theorem coe_nat_dvd_left {n : ℕ} {z : ℤ} : (↑n : ℤ) ∣ z ↔ n ∣ z.natAbs := by
-  rcases natAbs_eq z with (eq | eq) <;> rw [eq] <;> simp [←coe_nat_dvd]
+  rcases natAbs_eq z with (eq | eq) <;> rw [eq] <;> simp [← coe_nat_dvd]
 #align int.coe_nat_dvd_left Int.coe_nat_dvd_left
 
 theorem coe_nat_dvd_right {n : ℕ} {z : ℤ} : z ∣ (↑n : ℤ) ↔ z.natAbs ∣ n := by
-  rcases natAbs_eq z with (eq | eq) <;> rw [eq] <;> simp [←coe_nat_dvd]
+  rcases natAbs_eq z with (eq | eq) <;> rw [eq] <;> simp [← coe_nat_dvd]
 #align int.coe_nat_dvd_right Int.coe_nat_dvd_right
 
 #align int.le_of_dvd Int.le_of_dvd
