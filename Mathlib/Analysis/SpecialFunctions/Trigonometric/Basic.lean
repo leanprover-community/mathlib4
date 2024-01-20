@@ -575,35 +575,29 @@ theorem cos_eq_one_iff_of_lt_of_lt {x : ℝ} (hx₁ : -(2 * π) < x) (hx₂ : x 
     simp, fun h => by simp [h]⟩
 #align real.cos_eq_one_iff_of_lt_of_lt Real.cos_eq_one_iff_of_lt_of_lt
 
-theorem cos_lt_cos_of_nonneg_of_le_pi_div_two {x y : ℝ} (hx₁ : 0 ≤ x) (hy₂ : y ≤ π / 2)
-    (hxy : x < y) : cos y < cos x := by
-  rw [← sub_lt_zero, cos_sub_cos]
-  have : 0 < sin ((y + x) / 2) := by refine' sin_pos_of_pos_of_lt_pi _ _ <;> linarith
-  have : 0 < sin ((y - x) / 2) := by refine' sin_pos_of_pos_of_lt_pi _ _ <;> linarith
-  nlinarith
-#align real.cos_lt_cos_of_nonneg_of_le_pi_div_two Real.cos_lt_cos_of_nonneg_of_le_pi_div_two
+theorem sin_lt_sin_of_lt_of_le_pi_div_two {x y : ℝ} (hx₁ : -(π / 2) ≤ x) (hy₂ : y ≤ π / 2)
+    (hxy : x < y) : sin x < sin y := by
+  rw [← sub_pos, sin_sub_sin]
+  have : 0 < sin ((y - x) / 2) := by apply sin_pos_of_pos_of_lt_pi <;> linarith
+  have : 0 < cos ((y + x) / 2) := by refine cos_pos_of_mem_Ioo ⟨?_, ?_⟩ <;> linarith
+  positivity
+#align real.sin_lt_sin_of_lt_of_le_pi_div_two Real.sin_lt_sin_of_lt_of_le_pi_div_two
+
+theorem strictMonoOn_sin : StrictMonoOn sin (Icc (-(π / 2)) (π / 2)) := fun _ hx _ hy hxy =>
+  sin_lt_sin_of_lt_of_le_pi_div_two hx.1 hy.2 hxy
+#align real.strict_mono_on_sin Real.strictMonoOn_sin
 
 theorem cos_lt_cos_of_nonneg_of_le_pi {x y : ℝ} (hx₁ : 0 ≤ x) (hy₂ : y ≤ π) (hxy : x < y) :
-    cos y < cos x :=
-  match (le_total x (π / 2) : x ≤ π / 2 ∨ π / 2 ≤ x), le_total y (π / 2) with
-  | Or.inl _, Or.inl hy => cos_lt_cos_of_nonneg_of_le_pi_div_two hx₁ hy hxy
-  | Or.inl hx, Or.inr hy =>
-    (lt_or_eq_of_le hx).elim
-      (fun hx =>
-        calc
-          cos y ≤ 0 := cos_nonpos_of_pi_div_two_le_of_le hy (by linarith [pi_pos])
-          _ < cos x := cos_pos_of_mem_Ioo ⟨by linarith, hx⟩)
-      fun hx =>
-      calc
-        cos y < 0 := cos_neg_of_pi_div_two_lt_of_lt (by linarith) (by linarith [pi_pos])
-        _ = cos x := by rw [hx, cos_pi_div_two]
-  | Or.inr hx, Or.inl hy => by linarith
-  | Or.inr hx, Or.inr hy =>
-    neg_lt_neg_iff.1
-      (by
-        rw [← cos_pi_sub, ← cos_pi_sub]; apply cos_lt_cos_of_nonneg_of_le_pi_div_two <;>
-          linarith)
+    cos y < cos x := by
+  rw [← sin_pi_div_two_sub, ← sin_pi_div_two_sub]
+  apply sin_lt_sin_of_lt_of_le_pi_div_two <;> linarith
 #align real.cos_lt_cos_of_nonneg_of_le_pi Real.cos_lt_cos_of_nonneg_of_le_pi
+
+@[deprecated cos_lt_cos_of_nonneg_of_le_pi]
+theorem cos_lt_cos_of_nonneg_of_le_pi_div_two {x y : ℝ} (hx₁ : 0 ≤ x) (hy₂ : y ≤ π / 2)
+    (hxy : x < y) : cos y < cos x :=
+  cos_lt_cos_of_nonneg_of_le_pi hx₁ (hy₂.trans (by linarith)) hxy
+#align real.cos_lt_cos_of_nonneg_of_le_pi_div_two Real.cos_lt_cos_of_nonneg_of_le_pi_div_two
 
 theorem strictAntiOn_cos : StrictAntiOn cos (Icc 0 π) := fun _ hx _ hy hxy =>
   cos_lt_cos_of_nonneg_of_le_pi hx.1 hy.2 hxy
@@ -613,16 +607,6 @@ theorem cos_le_cos_of_nonneg_of_le_pi {x y : ℝ} (hx₁ : 0 ≤ x) (hy₂ : y �
     cos y ≤ cos x :=
   (strictAntiOn_cos.le_iff_le ⟨hx₁.trans hxy, hy₂⟩ ⟨hx₁, hxy.trans hy₂⟩).2 hxy
 #align real.cos_le_cos_of_nonneg_of_le_pi Real.cos_le_cos_of_nonneg_of_le_pi
-
-theorem sin_lt_sin_of_lt_of_le_pi_div_two {x y : ℝ} (hx₁ : -(π / 2) ≤ x) (hy₂ : y ≤ π / 2)
-    (hxy : x < y) : sin x < sin y := by
-  rw [← cos_sub_pi_div_two, ← cos_sub_pi_div_two, ← cos_neg (x - _), ← cos_neg (y - _)]
-  apply cos_lt_cos_of_nonneg_of_le_pi <;> linarith
-#align real.sin_lt_sin_of_lt_of_le_pi_div_two Real.sin_lt_sin_of_lt_of_le_pi_div_two
-
-theorem strictMonoOn_sin : StrictMonoOn sin (Icc (-(π / 2)) (π / 2)) := fun _ hx _ hy hxy =>
-  sin_lt_sin_of_lt_of_le_pi_div_two hx.1 hy.2 hxy
-#align real.strict_mono_on_sin Real.strictMonoOn_sin
 
 theorem sin_le_sin_of_le_of_le_pi_div_two {x y : ℝ} (hx₁ : -(π / 2) ≤ x) (hy₂ : y ≤ π / 2)
     (hxy : x ≤ y) : sin x ≤ sin y :=
