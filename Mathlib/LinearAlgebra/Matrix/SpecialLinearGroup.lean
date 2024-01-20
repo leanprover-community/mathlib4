@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Wen Yang
 -/
 import Mathlib.LinearAlgebra.GeneralLinearGroup
+import Mathlib.LinearAlgebra.Matrix.Adjugate
 import Mathlib.LinearAlgebra.Matrix.Transvection
 import Mathlib.RingTheory.RootsOfUnity.Basic
 
@@ -259,7 +260,12 @@ theorem center_scalar (A : Subgroup.center (SpecialLinearGroup n R)) (i : n) :
   conv at hA =>
     intro t
     rewrite [Subtype.ext_iff]
-  exact TransvectionStruct.comm_all_TransvectionStruct hA i
+  obtain ⟨r, hr⟩ := mem_range_scalar_of_commute_transvectionStruct hA
+  have : A.val i i = r := by
+    rewrite [← hr]
+    simp
+  rewrite [this, ← hr, @smul_one_eq_diagonal]
+  simp
 
 /-- The center of a special linear group of degree `n` is a subgroup composed of scalar matrices,
 in which the scalars are the `n`-th roots of `1`.-/
@@ -278,7 +284,9 @@ theorem mem_center_iff {A : SpecialLinearGroup n R} :
   · wlog hn : IsEmpty n
     · haveI : Nonempty n := not_isEmpty_iff.mp hn
       let i : n := Classical.arbitrary n
-      intro h B
+      intro h
+      rewrite [Subgroup.mem_center_iff]
+      intro B
       obtain ⟨_, hA⟩ := h i
       rewrite [ext_iff, coe_mul, coe_mul, hA]
       simp
@@ -315,6 +323,7 @@ noncomputable def center_iso_RootsOfUnity :
       toFun := fun A => rootsOfUnity.mkOfPowEq (A.val i i) <| by
         simp [mem_center_iff.mp A.property i |>.1]
       invFun := fun a => ⟨⟨a.val • (1 : Matrix n n R), by aesop⟩, by
+        rewrite [Subgroup.mem_center_iff]
         intro _
         aesop⟩
       left_inv := by
