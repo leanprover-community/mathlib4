@@ -329,15 +329,11 @@ theorem ODE_solution_unique_of_mem_set_Ioo {v : ℝ → E → E} {s : ℝ → Se
 /-- Local unqueness of ODE solutions. -/
 theorem ODE_solution_unique_of_mem_set_eventually {v : ℝ → E → E} {s : ℝ → Set E} {K : ℝ≥0}
     (hv : ∀ t, LipschitzOnWith K (v t) (s t)) {f g : ℝ → E} {t₀ : ℝ}
-    (hf : ∀ᶠ t in 𝓝 t₀, ContinuousAt f t)
-    (hf' : ∀ᶠ t in 𝓝 t₀, HasDerivAt f (v t (f t)) t)
-    (hfs : ∀ᶠ t in 𝓝 t₀, f t ∈ s t)
-    (hg : ∀ᶠ t in 𝓝 t₀, ContinuousAt g t)
-    (hg' : ∀ᶠ t in 𝓝 t₀, HasDerivAt g (v t (g t)) t)
-    (hgs : ∀ᶠ t in 𝓝 t₀, g t ∈ s t)
+    (h : ∀ᶠ t in 𝓝 t₀,
+      ContinuousAt f t ∧ HasDerivAt f (v t (f t)) t ∧ f t ∈ s t ∧
+      ContinuousAt g t ∧ HasDerivAt g (v t (g t)) t ∧ g t ∈ s t)
     (heq : f t₀ = g t₀) : f =ᶠ[𝓝 t₀] g := by
-  obtain ⟨ε, hε, h⟩ := eventually_nhds_iff_ball.mp <|
-    hf.and <| hf'.and <| hfs.and <| hg.and <| hg'.and <| hgs
+  obtain ⟨ε, hε, h⟩ := eventually_nhds_iff_ball.mp h
   rw [Filter.eventuallyEq_iff_exists_mem]
   refine ⟨ball t₀ ε, ball_mem_nhds _ hε, ?_⟩
   simp_rw [Real.ball_eq_Ioo] at *
