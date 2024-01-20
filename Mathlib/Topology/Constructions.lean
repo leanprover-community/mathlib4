@@ -1692,15 +1692,15 @@ end ULift
 
 section Monad
 
-variable [TopologicalSpace X] {s : Set X} {γ : Set s}
+variable [TopologicalSpace X] {s : Set X} {t : Set s}
 
-theorem IsOpen.trans (hγ : IsOpen γ) (hs : IsOpen s) : IsOpen (γ : Set X) := by
-  rcases isOpen_induced_iff.mp hγ with ⟨δ, hδ, rfl⟩
+theorem IsOpen.trans (ht : IsOpen t) (hs : IsOpen s) : IsOpen (t : Set X) := by
+  rcases isOpen_induced_iff.mp ht with ⟨δ, hδ, rfl⟩
   rw [Subtype.image_preimage_coe]
   exact IsOpen.inter hδ hs
 
-theorem IsClosed.trans (hγ : IsClosed γ) (hs : IsClosed s) : IsClosed (γ : Set X) := by
-  rcases isClosed_induced_iff.mp hγ with ⟨δ, hδ, rfl⟩
+theorem IsClosed.trans (ht : IsClosed t) (hs : IsClosed s) : IsClosed (t : Set X) := by
+  rcases isClosed_induced_iff.mp ht with ⟨δ, hδ, rfl⟩
   rw [Subtype.image_preimage_coe]
   convert IsClosed.inter hδ hs
 
