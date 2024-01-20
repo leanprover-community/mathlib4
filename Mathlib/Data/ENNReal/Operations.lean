@@ -176,6 +176,140 @@ theorem lt_add_right (ha : a ≠ ∞) (hb : b ≠ 0) : a < a + b := by
 
 end OperationsAndOrder
 
+section OperationsAndInfty
+
+variable {α : Type*}
+
+@[simp, norm_cast]
+theorem coe_pow (n : ℕ) : (↑(r ^ n) : ℝ≥0∞) = (r : ℝ≥0∞) ^ n :=
+  ofNNRealHom.map_pow r n
+#align ennreal.coe_pow ENNReal.coe_pow
+
+@[simp] theorem add_eq_top : a + b = ∞ ↔ a = ∞ ∨ b = ∞ := WithTop.add_eq_top
+#align ennreal.add_eq_top ENNReal.add_eq_top
+
+@[simp] theorem add_lt_top : a + b < ∞ ↔ a < ∞ ∧ b < ∞ := WithTop.add_lt_top
+#align ennreal.add_lt_top ENNReal.add_lt_top
+
+theorem toNNReal_add {r₁ r₂ : ℝ≥0∞} (h₁ : r₁ ≠ ∞) (h₂ : r₂ ≠ ∞) :
+    (r₁ + r₂).toNNReal = r₁.toNNReal + r₂.toNNReal := by
+  lift r₁ to ℝ≥0 using h₁
+  lift r₂ to ℝ≥0 using h₂
+  rfl
+#align ennreal.to_nnreal_add ENNReal.toNNReal_add
+
+theorem not_lt_top {x : ℝ≥0∞} : ¬x < ∞ ↔ x = ∞ := by rw [lt_top_iff_ne_top, Classical.not_not]
+#align ennreal.not_lt_top ENNReal.not_lt_top
+
+theorem add_ne_top : a + b ≠ ∞ ↔ a ≠ ∞ ∧ b ≠ ∞ := by simpa only [lt_top_iff_ne_top] using add_lt_top
+#align ennreal.add_ne_top ENNReal.add_ne_top
+
+theorem mul_top' : a * ∞ = if a = 0 then 0 else ∞ := by convert WithTop.mul_top' a
+#align ennreal.mul_top ENNReal.mul_top'
+
+-- porting note: added because `simp` no longer uses `WithTop` lemmas for `ℝ≥0∞`
+@[simp] theorem mul_top (h : a ≠ 0) : a * ∞ = ∞ := WithTop.mul_top h
+
+theorem top_mul' : ∞ * a = if a = 0 then 0 else ∞ := by convert WithTop.top_mul' a
+#align ennreal.top_mul ENNReal.top_mul'
+
+-- porting note: added because `simp` no longer uses `WithTop` lemmas for `ℝ≥0∞`
+@[simp] theorem top_mul (h : a ≠ 0) : ∞ * a = ∞ := WithTop.top_mul h
+
+theorem top_mul_top : ∞ * ∞ = ∞ := WithTop.top_mul_top
+#align ennreal.top_mul_top ENNReal.top_mul_top
+
+-- porting note: todo: assume `n ≠ 0` instead of `0 < n`
+-- porting note: todo: generalize to `WithTop`
+theorem top_pow {n : ℕ} (h : 0 < n) : ∞ ^ n = ∞ :=
+  Nat.le_induction (pow_one _) (fun m _ hm => by rw [pow_succ, hm, top_mul_top]) _
+    (Nat.succ_le_of_lt h)
+#align ennreal.top_pow ENNReal.top_pow
+
+theorem mul_eq_top : a * b = ∞ ↔ a ≠ 0 ∧ b = ∞ ∨ a = ∞ ∧ b ≠ 0 :=
+  WithTop.mul_eq_top_iff
+#align ennreal.mul_eq_top ENNReal.mul_eq_top
+
+theorem mul_lt_top : a ≠ ∞ → b ≠ ∞ → a * b < ∞ := WithTop.mul_lt_top
+#align ennreal.mul_lt_top ENNReal.mul_lt_top
+
+theorem mul_ne_top : a ≠ ∞ → b ≠ ∞ → a * b ≠ ∞ := by simpa only [lt_top_iff_ne_top] using mul_lt_top
+#align ennreal.mul_ne_top ENNReal.mul_ne_top
+
+theorem lt_top_of_mul_ne_top_left (h : a * b ≠ ∞) (hb : b ≠ 0) : a < ∞ :=
+  lt_top_iff_ne_top.2 fun ha => h <| mul_eq_top.2 (Or.inr ⟨ha, hb⟩)
+#align ennreal.lt_top_of_mul_ne_top_left ENNReal.lt_top_of_mul_ne_top_left
+
+theorem lt_top_of_mul_ne_top_right (h : a * b ≠ ∞) (ha : a ≠ 0) : b < ∞ :=
+  lt_top_of_mul_ne_top_left (by rwa [mul_comm]) ha
+#align ennreal.lt_top_of_mul_ne_top_right ENNReal.lt_top_of_mul_ne_top_right
+
+theorem mul_lt_top_iff {a b : ℝ≥0∞} : a * b < ∞ ↔ a < ∞ ∧ b < ∞ ∨ a = 0 ∨ b = 0 := by
+  constructor
+  · intro h
+    rw [← or_assoc, or_iff_not_imp_right, or_iff_not_imp_right]
+    intro hb ha
+    exact ⟨lt_top_of_mul_ne_top_left h.ne hb, lt_top_of_mul_ne_top_right h.ne ha⟩
+  · rintro (⟨ha, hb⟩ | rfl | rfl) <;> [exact mul_lt_top ha.ne hb.ne; simp; simp]
+#align ennreal.mul_lt_top_iff ENNReal.mul_lt_top_iff
+
+theorem mul_self_lt_top_iff {a : ℝ≥0∞} : a * a < ⊤ ↔ a < ⊤ := by
+  rw [ENNReal.mul_lt_top_iff, and_self, or_self, or_iff_left_iff_imp]
+  rintro rfl
+  exact zero_lt_top
+#align ennreal.mul_self_lt_top_iff ENNReal.mul_self_lt_top_iff
+
+theorem mul_pos_iff : 0 < a * b ↔ 0 < a ∧ 0 < b :=
+  CanonicallyOrderedCommSemiring.mul_pos
+#align ennreal.mul_pos_iff ENNReal.mul_pos_iff
+
+theorem mul_pos (ha : a ≠ 0) (hb : b ≠ 0) : 0 < a * b :=
+  mul_pos_iff.2 ⟨pos_iff_ne_zero.2 ha, pos_iff_ne_zero.2 hb⟩
+#align ennreal.mul_pos ENNReal.mul_pos
+
+-- porting note: todo: generalize to `WithTop`
+@[simp] theorem pow_eq_top_iff {n : ℕ} : a ^ n = ∞ ↔ a = ∞ ∧ n ≠ 0 := by
+  rcases n.eq_zero_or_pos with rfl | (hn : 0 < n)
+  · simp
+  · induction a using recTopCoe
+    · simp only [Ne.def, hn.ne', top_pow hn, not_false_eq_true, and_self]
+    · simp only [← coe_pow, coe_ne_top, false_and]
+#align ennreal.pow_eq_top_iff ENNReal.pow_eq_top_iff
+
+theorem pow_eq_top (n : ℕ) (h : a ^ n = ∞) : a = ∞ :=
+  (pow_eq_top_iff.1 h).1
+#align ennreal.pow_eq_top ENNReal.pow_eq_top
+
+theorem pow_ne_top (h : a ≠ ∞) {n : ℕ} : a ^ n ≠ ∞ :=
+  mt (pow_eq_top n) h
+#align ennreal.pow_ne_top ENNReal.pow_ne_top
+
+theorem pow_lt_top : a < ∞ → ∀ n : ℕ, a ^ n < ∞ := by
+  simpa only [lt_top_iff_ne_top] using pow_ne_top
+#align ennreal.pow_lt_top ENNReal.pow_lt_top
+
+@[simp, norm_cast]
+theorem coe_finset_sum {s : Finset α} {f : α → ℝ≥0} : ↑(∑ a in s, f a) = ∑ a in s, (f a : ℝ≥0∞) :=
+  ofNNRealHom.map_sum f s
+#align ennreal.coe_finset_sum ENNReal.coe_finset_sum
+
+@[simp, norm_cast]
+theorem coe_finset_prod {s : Finset α} {f : α → ℝ≥0} : ↑(∏ a in s, f a) = ∏ a in s, (f a : ℝ≥0∞) :=
+  ofNNRealHom.map_prod f s
+#align ennreal.coe_finset_prod ENNReal.coe_finset_prod
+
+end OperationsAndInfty
+
+-- porting note: todo: generalize to `WithTop`
+@[gcongr] theorem add_lt_add (ac : a < c) (bd : b < d) : a + b < c + d := by
+  lift a to ℝ≥0 using ac.ne_top
+  lift b to ℝ≥0 using bd.ne_top
+  cases c; · simp
+  cases d; · simp
+  simp only [← coe_add, some_eq_coe, coe_lt_coe] at *
+  exact add_lt_add ac bd
+#align ennreal.add_lt_add ENNReal.add_lt_add
+
 section Cancel
 
 -- porting note: todo: generalize to `WithTop`
