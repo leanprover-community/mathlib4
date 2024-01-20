@@ -373,7 +373,6 @@ lemma exists_isIntegralCurveAt_of_contMDiffAt_boundaryless [BoundarylessManifold
 
 variable {t₀}
 
--- TODO: cleanup
 /-- Local integral curves are unique.
 
 If a $C^1$ vector field `v` admits two local integral curves `γ γ' : ℝ → M` at `t₀` with
@@ -387,7 +386,6 @@ theorem isIntegralCurveAt_eventuallyEq_of_contMDiffAt (hγt₀ : I.IsInteriorPoi
   set v' : E → E := fun x ↦
     tangentCoordChange I ((extChartAt I (γ t₀)).symm x) (γ t₀) ((extChartAt I (γ t₀)).symm x)
       (v ((extChartAt I (γ t₀)).symm x)) with hv'
-
   -- extract a set `s` on which `v'` is Lipschitz
   rw [contMDiffAt_iff] at hv
   obtain ⟨_, hv⟩ := hv
@@ -405,124 +403,24 @@ theorem isIntegralCurveAt_eventuallyEq_of_contMDiffAt (hγt₀ : I.IsInteriorPoi
     apply (hsrc hg).mono
     intros t ht
     rw [Function.comp_apply, Function.comp_apply, PartialEquiv.left_inv _ (hgt ht)]
-  have hcont {g} (hg : IsIntegralCurveAt g v t₀) :
-    ∀ᶠ t in 𝓝 t₀, ContinuousAt ((extChartAt I (g t₀)) ∘ g) t := by
-    apply (hsrc hg |>.and hg).mono
-    rintro t ⟨ht1, ht2⟩
-    exact (continuousAt_extChartAt' _ _ (hgt ht1)).comp ht2.continuousAt
-  have hdrv {g} (hg : IsIntegralCurveAt g v t₀) (h' : γ t₀ = g t₀) :
-    ∀ᶠ (t : ℝ) in 𝓝 t₀, HasDerivAt ((extChartAt I (g t₀)) ∘ g)
-      ((fun _ ↦ v') t (((extChartAt I (g t₀)) ∘ g) t)) t := by
-    apply (hsrc hg |>.and hg.eventually_hasDerivAt).mono
-    rintro t ⟨ht1, ht2⟩
-    rw [hv', h']
-    apply ht2.congr_deriv
-    congr <;>
-    rw [Function.comp_apply, PartialEquiv.left_inv _ (hgt ht1)]
-  have hmem {g} (hg : IsIntegralCurveAt g v t₀) (h' : γ t₀ = g t₀) :
-    ∀ᶠ t in 𝓝 t₀, ((extChartAt I (g t₀)) ∘ g) t ∈ (fun _ ↦ s) t := by
-    apply ((continuousAt_extChartAt I (g t₀)).comp hg.continuousAt).preimage_mem_nhds
-    rw [Function.comp_apply, ← h']
-    exact hs
+  have hdrv {g} (hg : IsIntegralCurveAt g v t₀) (h' : γ t₀ = g t₀) : ∀ᶠ t in 𝓝 t₀,
+      HasDerivAt ((extChartAt I (g t₀)) ∘ g) ((fun _ ↦ v') t (((extChartAt I (g t₀)) ∘ g) t)) t ∧
+      ((extChartAt I (g t₀)) ∘ g) t ∈ (fun _ ↦ s) t := by
+    apply Filter.Eventually.and
+    · apply (hsrc hg |>.and hg.eventually_hasDerivAt).mono
+      rintro t ⟨ht1, ht2⟩
+      rw [hv', h']
+      apply ht2.congr_deriv
+      congr <;>
+      rw [Function.comp_apply, PartialEquiv.left_inv _ (hgt ht1)]
+    · apply ((continuousAt_extChartAt I (g t₀)).comp hg.continuousAt).preimage_mem_nhds
+      rw [Function.comp_apply, ← h']
+      exact hs
   -- main proof
   suffices (extChartAt I (γ t₀)) ∘ γ =ᶠ[𝓝 t₀] (extChartAt I (γ' t₀)) ∘ γ' from
     (heq hγ).trans <| (this.fun_comp (extChartAt I (γ t₀)).symm).trans (h ▸ (heq hγ').symm)
   apply ODE_solution_unique_of_mem_set_eventually hlip
-    (hcont hγ) (hdrv hγ rfl) (hmem hγ rfl) (hcont hγ') (hdrv hγ' h) (hmem hγ' h)
-  rw [Function.comp_apply, Function.comp_apply, h]
-
-/-- Local integral curves are unique.
-
-If a $C^1$ vector field `v` admits two local integral curves `γ γ' : ℝ → M` at `t₀` with
-`γ t₀ = γ' t₀`, then `γ` and `γ'` agree on some open interval containing `t₀`. -/
-theorem isIntegralCurveAt_eqOn_of_contMDiffAt (hγt₀ : I.IsInteriorPoint (γ t₀))
-    (hv : ContMDiffAt I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)) (γ t₀))
-    (hγ : IsIntegralCurveAt γ v t₀) (hγ' : IsIntegralCurveAt γ' v t₀) (h : γ t₀ = γ' t₀) :
-    ∃ ε > 0, EqOn γ γ' (Ioo (t₀ - ε) (t₀ + ε)) := by
-  -- first define `v'` as the vector field expressed in the local chart around `γ t₀`
-  -- this is basically what the function looks like when `hv` is unfolded
-  set v' : E → E := fun x ↦
-    tangentCoordChange I ((extChartAt I (γ t₀)).symm x) (γ t₀) ((extChartAt I (γ t₀)).symm x)
-      (v ((extChartAt I (γ t₀)).symm x)) with hv'
-
-  -- extract a set `s` on which `v'` is Lipschitz
-  rw [contMDiffAt_iff] at hv
-  obtain ⟨_, hv⟩ := hv
-  obtain ⟨K, s, hs, hlip⟩ : ∃ K, ∃ s ∈ nhds _, LipschitzOnWith K v' s :=
-    (hv.contDiffAt (range_mem_nhds_isInteriorPoint hγt₀)).snd.exists_lipschitzOnWith
-  have hlip (t : ℝ) : LipschitzOnWith K ((fun _ ↦ v') t) ((fun _ ↦ s) t) := hlip
-
-  -- `γ t` when expressed in the local chart should remain inside `s`
-  have hcont : ContinuousAt ((extChartAt I (γ t₀)) ∘ γ) t₀ :=
-    (continuousAt_extChartAt ..).comp hγ.continuousAt
-  rw [continuousAt_def] at hcont
-  have hnhds := hcont _ hs
-  rw [← eventually_mem_nhds] at hnhds
-
-  -- `γ t` should remain inside the domain of the local chart around `γ t₀`
-  have hsrc := continuousAt_def.mp hγ.continuousAt _ <| extChartAt_source_mem_nhds I (γ t₀)
-  rw [← eventually_mem_nhds] at hsrc
-
-  -- same as above but for `γ'`
-  have hcont' : ContinuousAt ((extChartAt I (γ' t₀)) ∘ γ') t₀ :=
-    ContinuousAt.comp (continuousAt_extChartAt ..) hγ'.continuousAt
-  rw [continuousAt_def] at hcont'
-  have hnhds' := hcont' _ (h ▸ hs)
-  rw [← eventually_mem_nhds] at hnhds'
-
-  have hsrc' := continuousAt_def.mp hγ'.continuousAt _ <| extChartAt_source_mem_nhds I (γ' t₀)
-  rw [← eventually_mem_nhds] at hsrc'
-
-  -- there exists a neighbourhood around `t₀` in which all of the above hold
-  have haux := hnhds.and <| hsrc.and <| hγ.and <| hnhds'.and <| hsrc'.and hγ'
-  rw [Metric.eventually_nhds_iff_ball] at haux
-
-  obtain ⟨ε, hε, haux⟩ := haux
-  refine ⟨ε, hε, ?_⟩
-
-  -- break out all the conditions again
-  have hmem := fun t ht ↦ mem_preimage.mp <| mem_of_mem_nhds (haux t ht).1
-  have hsrc := fun t ht ↦ mem_preimage.mp <| mem_of_mem_nhds (haux t ht).2.1
-  have hcrv : IsIntegralCurveOn _ _ _ := fun t ht ↦ (haux t ht).2.2.1
-  have hmem' := fun t ht ↦ mem_preimage.mp <| mem_of_mem_nhds (haux t ht).2.2.2.1
-  have hsrc' := fun t ht ↦ mem_preimage.mp <| mem_of_mem_nhds (haux t ht).2.2.2.2.1
-  have hcrv' : IsIntegralCurveOn _ _ _ := fun t ht ↦ (haux t ht).2.2.2.2.2
-
-  -- `γ` and `γ'` when expressed in the local chart are continuous on this neighbourhood
-  have hcont := (continuousOn_extChartAt I (γ t₀)).comp hcrv.continuousOn hsrc
-  have hcont' := (continuousOn_extChartAt I (γ' t₀)).comp hcrv'.continuousOn hsrc'
-
-  simp_rw [Real.ball_eq_Ioo] at hmem hsrc hcrv hcont hmem' hsrc' hcrv' hcont'
-
-  -- `γ` and `γ'` are equal on `Ioo (t₀ - ε) (t₀ + ε)` when expressed in the local chart
-  have heqon : EqOn ((extChartAt I (γ t₀)) ∘ γ) ((extChartAt I (γ' t₀)) ∘ γ')
-    (Ioo (t₀ - ε) (t₀ + ε)) := by
-    -- uniqueness of ODE solutions in an open interval
-    apply ODE_solution_unique_of_mem_set_Ioo hlip (t₀ := t₀)
-      (Real.ball_eq_Ioo _ _ ▸ (Metric.mem_ball_self hε)) hcont _ hmem hcont' _ hmem' (by simp [h])
-    · intros t ht
-      rw [hv']
-      have := hcrv.hasDerivAt ht (hsrc t ht)
-      apply this.congr_deriv
-      have : γ t = (extChartAt I (γ t₀)).symm (((extChartAt I (γ t₀)) ∘ γ) t) := by
-        rw [Function.comp_apply, PartialEquiv.left_inv]
-        exact hsrc t ht
-      rw [this]
-    · intros t ht
-      rw [hv', h]
-      have := hcrv'.hasDerivAt ht (hsrc' t ht)
-      apply this.congr_deriv
-      have : γ' t = (extChartAt I (γ' t₀)).symm (((extChartAt I (γ' t₀)) ∘ γ') t) := by
-        rw [Function.comp_apply, PartialEquiv.left_inv]
-        exact hsrc' t ht
-      rw [this]
-
-  -- finally show `EqOn γ γ' _` by composing with the inverse of the local chart around `γ t₀`
-  refine EqOn.trans ?_ (EqOn.trans (heqon.comp_left (g := (extChartAt I (γ t₀)).symm)) ?_)
-  · intros t ht
-    rw [Function.comp_apply, Function.comp_apply, PartialEquiv.left_inv _ (hsrc _ ht)]
-  · intros t ht
-    rw [Function.comp_apply, Function.comp_apply, h, PartialEquiv.left_inv _ (hsrc' _ ht)]
+    (hdrv hγ rfl) (hdrv hγ' h) (by rw [Function.comp_apply, Function.comp_apply, h])
 
 theorem isIntegralCurveAt_eventuallyEq_of_contMDiffAt_boundaryless [BoundarylessManifold I M]
     (hv : ContMDiffAt I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)) (γ t₀))
