@@ -41,21 +41,6 @@ A ring of sets is a set of sets containing `∅`, stable by union, set differenc
 
 open Finset Set
 
-open scoped ENNReal BigOperators
-
--- TODO: move this
-lemma Finset.sum_image_le_of_nonneg {ι α β : Type*} [DecidableEq α]
-    [OrderedAddCommMonoid β] [SMulPosMono ℕ β]
-    {J : Finset ι} {g : ι → α} {f : α → β} (hf : ∀ u ∈ J.image g, 0 ≤ f u) :
-    ∑ u in J.image g, f u ≤ ∑ u in J, f (g u) := by
-  rw [sum_comp f g]
-  refine sum_le_sum fun a hag => ?_
-  obtain ⟨i, hi, hig⟩ := Finset.mem_image.mp hag
-  conv_lhs => rw [← one_smul ℕ (f a)]
-  refine smul_le_smul_of_nonneg_right ?_ (hf a hag)
-  rw [Nat.one_le_iff_ne_zero, ← Nat.pos_iff_ne_zero, card_pos]
-  exact ⟨i, mem_filter.mpr ⟨hi, hig⟩⟩
-
 namespace MeasureTheory
 
 variable {α : Type*} {C : Set (Set α)} {s t : Set α}
