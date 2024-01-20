@@ -570,8 +570,8 @@ theorem isIntegralCurveOn_Ioo_eqOn_of_contMDiff (ht₀ : t₀ ∈ Ioo a b)
   · rw [isOpen_iff_mem_nhds]
     intro t₁ ht₁
     have hmem := Ioo_mem_nhds ht₁.2.1 ht₁.2.2
-    have heq : γ =ᶠ[𝓝 t₁] γ' := isIntegralCurveAt_eventuallyEq_of_contMDiffAt (hγt _ ht₁.2) hv.contMDiffAt
-      (hγ.isIntegralCurveAt hmem) (hγ'.isIntegralCurveAt hmem) ht₁.1
+    have heq : γ =ᶠ[𝓝 t₁] γ' := isIntegralCurveAt_eventuallyEq_of_contMDiffAt
+      (hγt _ ht₁.2) hv.contMDiffAt (hγ.isIntegralCurveAt hmem) (hγ'.isIntegralCurveAt hmem) ht₁.1
     apply (heq.and hmem).mono
     exact fun _ ht ↦ ht
 
