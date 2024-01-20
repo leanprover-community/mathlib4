@@ -181,6 +181,8 @@ theorem cg_iff_countable [Countable (Σl, L.Functions l)] {s : L.Substructure M}
   exact h.substructure_closure L
 #align first_order.language.substructure.cg_iff_countable FirstOrder.Language.Substructure.cg_iff_countable
 
+theorem cg_if_countable {s : L.Substructure M} [h : Countable s] : s.CG :=
+  ⟨s, h.to_set, s.closure_eq⟩
 end Substructure
 
 open Substructure
@@ -248,6 +250,9 @@ theorem CG.map_of_surjective {N : Type*} [L.Structure N] (h : CG L M) (f : M →
 theorem cg_iff_countable [Countable (Σl, L.Functions l)] : CG L M ↔ Countable M := by
   rw [cg_def, Substructure.cg_iff_countable, topEquiv.toEquiv.countable_iff]
 #align first_order.language.Structure.cg_iff_countable FirstOrder.Language.Structure.cg_iff_countable
+
+theorem cg_if_countable [Countable M] : CG L M := by
+  simp only [cg_def, Substructure.cg_if_countable, topEquiv.toEquiv.countable_iff]
 
 theorem FG.cg (h : FG L M) : CG L M :=
   cg_def.2 (fg_def.1 h).cg

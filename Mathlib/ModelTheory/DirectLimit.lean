@@ -513,10 +513,6 @@ theorem Equiv_isup_symm_inclusion {i : ι} (x : S i) :
   simp only [Equiv.apply_symm_apply]
   rfl
 
-end DirectLimit
-
-section SubEquivalence
-
 open Substructure.SubEquivalence
 
 variable [Nonempty ι] [IsDirected ι (· ≤ ·)]
@@ -582,6 +578,14 @@ theorem le_subEquiv_limit : ∀ i, S i ≤ subEquiv_limit S := by
   rw [DirectLimit.Equiv_isup_of]
   rfl
 
+end DirectLimit
+
+namespace BackAndForth
+
+open Substructure.SubEquivalence
+
+open DirectLimit
+
 
 variable (M) (N) (L)
 
@@ -643,7 +647,7 @@ noncomputable def definedAtRight
         Substructure.closure_le, singleton_subset_iff, le_sup_left]
       exact f_le_g
 
-theorem embedding_from_cg [M_cg : Structure.CG L M] (h : (M ≃ₚ[L] N)) (h_fg : h.sub_dom.FG)
+theorem embedding_from_cg (M_cg : Structure.CG L M) (h : (M ≃ₚ[L] N)) (h_fg : h.sub_dom.FG)
   (H : ∀ f : M ≃ₚ[L] N, ∀ _ : f.sub_dom.FG, ∀ m : M, ∃ g : (M ≃ₚ[L] N), f ≤ g ∧ m ∈ g.sub_dom) :
   ∃ f : M ↪[L] N, h ≤ f.toSubEquivalence := by
     rcases M_cg with ⟨X, _, X_gen⟩
@@ -663,7 +667,7 @@ theorem embedding_from_cg [M_cg : Structure.CG L M] (h : (M ≃ₚ[L] N)) (h_fg 
     exact ⟨dom_top_toEmbedding isTop,
           by convert (le_subEquiv_limit S 0); apply Embedding.toSubEquivalence_toEmbedding⟩
 
-theorem equiv_between_cg [M_cg : Structure.CG L M] [N_cg : Structure.CG L N]
+theorem equiv_between_cg (M_cg : Structure.CG L M) (N_cg : Structure.CG L N)
   (h : (M ≃ₚ[L] N)) (h_fg : h.sub_dom.FG)
   (ext_dom : ∀ f : M ≃ₚ[L] N, ∀ _ : f.sub_dom.FG, ∀ m : M, ∃ g : (M ≃ₚ[L] N), f ≤ g ∧ m ∈ g.sub_dom)
   (ext_cod : ∀ f : M ≃ₚ[L] N, ∀ _ : f.sub_dom.FG, ∀ n : N, ∃ g : (M ≃ₚ[L] N), f ≤ g ∧ n ∈ g.sub_cod) :
@@ -679,7 +683,7 @@ theorem equiv_between_cg [M_cg : Structure.CG L M] [N_cg : Structure.CG L N]
     let S : ℕ →o M ≃ₚ[L] N :=
       ⟨Subtype.val ∘ (Order.sequenceOfCofinals ⟨h, h_fg⟩ D),
         FiniteEquiv.subtype_val_monotone.comp (Order.sequenceOfCofinals.monotone _ _)⟩
-    let F := subEquiv_limit S
+    let F := DirectLimit.subEquiv_limit S
     have _ : X ⊆ F.sub_dom := by
       intro x hx
       have := Order.sequenceOfCofinals.encode_mem ⟨h, h_fg⟩ D (Sum.inl ⟨x, hx⟩)
@@ -697,7 +701,7 @@ theorem equiv_between_cg [M_cg : Structure.CG L M] [N_cg : Structure.CG L N]
     rw [dom_cod_top_toEquiv_toEmbedding]
     apply Embedding.toSubEquivalence_toEmbedding
 
-end SubEquivalence
+end BackAndForth
 
 end Substructure
 
