@@ -22,25 +22,25 @@ open Topology
 
 variable {X Y : Type*} [TopologicalSpace X]
 
-theorem rtendsto_nhds {r : Rel Y X} {l : Filter Y} {a : X} :
-    RTendsto r l (𝓝 a) ↔ ∀ s, IsOpen s → a ∈ s → r.core s ∈ l :=
+theorem rtendsto_nhds {r : Rel Y X} {l : Filter Y} {x : X} :
+    RTendsto r l (𝓝 x) ↔ ∀ s, IsOpen s → x ∈ s → r.core s ∈ l :=
   all_mem_nhds_filter _ _ (fun _s _t => id) _
 #align rtendsto_nhds rtendsto_nhds
 
-theorem rtendsto'_nhds {r : Rel Y X} {l : Filter Y} {a : X} :
-    RTendsto' r l (𝓝 a) ↔ ∀ s, IsOpen s → a ∈ s → r.preimage s ∈ l := by
+theorem rtendsto'_nhds {r : Rel Y X} {l : Filter Y} {x : X} :
+    RTendsto' r l (𝓝 x) ↔ ∀ s, IsOpen s → x ∈ s → r.preimage s ∈ l := by
   rw [rtendsto'_def]
   apply all_mem_nhds_filter
   apply Rel.preimage_mono
 #align rtendsto'_nhds rtendsto'_nhds
 
-theorem ptendsto_nhds {f : Y →. X} {l : Filter Y} {a : X} :
-    PTendsto f l (𝓝 a) ↔ ∀ s, IsOpen s → a ∈ s → f.core s ∈ l :=
+theorem ptendsto_nhds {f : Y →. X} {l : Filter Y} {x : X} :
+    PTendsto f l (𝓝 x) ↔ ∀ s, IsOpen s → x ∈ s → f.core s ∈ l :=
   rtendsto_nhds
 #align ptendsto_nhds ptendsto_nhds
 
-theorem ptendsto'_nhds {f : Y →. X} {l : Filter Y} {a : X} :
-    PTendsto' f l (𝓝 a) ↔ ∀ s, IsOpen s → a ∈ s → f.preimage s ∈ l :=
+theorem ptendsto'_nhds {f : Y →. X} {l : Filter Y} {x : X} :
+    PTendsto' f l (𝓝 x) ↔ ∀ s, IsOpen s → x ∈ s → f.preimage s ∈ l :=
   rtendsto'_nhds
 #align ptendsto'_nhds ptendsto'_nhds
 
