@@ -932,38 +932,23 @@ theorem tan_nonpos_of_nonpos_of_neg_pi_div_two_le {x : ℝ} (hx0 : x ≤ 0) (hpx
   neg_nonneg.1 (tan_neg x ▸ tan_nonneg_of_nonneg_of_le_pi_div_two (by linarith) (by linarith))
 #align real.tan_nonpos_of_nonpos_of_neg_pi_div_two_le Real.tan_nonpos_of_nonpos_of_neg_pi_div_two_le
 
-theorem tan_lt_tan_of_nonneg_of_lt_pi_div_two {x y : ℝ} (hx₁ : 0 ≤ x) (hy₂ : y < π / 2)
-    (hxy : x < y) : tan x < tan y := by
-  rw [tan_eq_sin_div_cos, tan_eq_sin_div_cos]
-  exact
-    div_lt_div (sin_lt_sin_of_lt_of_le_pi_div_two (by linarith) (le_of_lt hy₂) hxy)
-      (cos_le_cos_of_nonneg_of_le_pi hx₁ (by linarith) (le_of_lt hxy))
-      (sin_nonneg_of_nonneg_of_le_pi (by linarith) (by linarith))
-      (cos_pos_of_mem_Ioo ⟨by linarith, hy₂⟩)
-#align real.tan_lt_tan_of_nonneg_of_lt_pi_div_two Real.tan_lt_tan_of_nonneg_of_lt_pi_div_two
+theorem strictMonoOn_tan : StrictMonoOn tan (Ioo (-(π / 2)) (π / 2)) := by
+  rintro x hx y hy hlt
+  rw [tan_eq_sin_div_cos, tan_eq_sin_div_cos,
+    div_lt_div_iff (cos_pos_of_mem_Ioo hx) (cos_pos_of_mem_Ioo hy), mul_comm, ← sub_pos, ← sin_sub]
+  exact sin_pos_of_pos_of_lt_pi (sub_pos.2 hlt) <| by linarith [hx.1, hy.2]
+#align real.strict_mono_on_tan Real.strictMonoOn_tan
 
 theorem tan_lt_tan_of_lt_of_lt_pi_div_two {x y : ℝ} (hx₁ : -(π / 2) < x) (hy₂ : y < π / 2)
     (hxy : x < y) : tan x < tan y :=
-  match le_total x 0, le_total y 0 with
-  | Or.inl hx0, Or.inl hy0 =>
-    neg_lt_neg_iff.1 <| by
-      rw [← tan_neg, ← tan_neg]
-      exact tan_lt_tan_of_nonneg_of_lt_pi_div_two (neg_nonneg.2 hy0) (neg_lt.2 hx₁) (neg_lt_neg hxy)
-  | Or.inl hx0, Or.inr hy0 =>
-    (lt_or_eq_of_le hy0).elim
-      (fun hy0 =>
-        calc
-          tan x ≤ 0 := tan_nonpos_of_nonpos_of_neg_pi_div_two_le hx0 (le_of_lt hx₁)
-          _ < tan y := tan_pos_of_pos_of_lt_pi_div_two hy0 hy₂)
-      fun hy0 => by
-      rw [← hy0, tan_zero]; exact tan_neg_of_neg_of_pi_div_two_lt (hy0.symm ▸ hxy) hx₁
-  | Or.inr hx0, Or.inl hy0 => by linarith
-  | Or.inr hx0, Or.inr _ => tan_lt_tan_of_nonneg_of_lt_pi_div_two hx0 hy₂ hxy
+  strictMonoOn_tan ⟨hx₁, hxy.trans hy₂⟩ ⟨hx₁.trans hxy, hy₂⟩ hxy
 #align real.tan_lt_tan_of_lt_of_lt_pi_div_two Real.tan_lt_tan_of_lt_of_lt_pi_div_two
 
-theorem strictMonoOn_tan : StrictMonoOn tan (Ioo (-(π / 2)) (π / 2)) := fun _ hx _ hy =>
-  tan_lt_tan_of_lt_of_lt_pi_div_two hx.1 hy.2
-#align real.strict_mono_on_tan Real.strictMonoOn_tan
+@[deprecated tan_lt_tan_of_lt_of_lt_pi_div_two]
+theorem tan_lt_tan_of_nonneg_of_lt_pi_div_two {x y : ℝ} (hx₁ : 0 ≤ x) (hy₂ : y < π / 2)
+    (hxy : x < y) : tan x < tan y :=
+  tan_lt_tan_of_lt_of_lt_pi_div_two (by linarith) hy₂ hxy
+#align real.tan_lt_tan_of_nonneg_of_lt_pi_div_two Real.tan_lt_tan_of_nonneg_of_lt_pi_div_two
 
 theorem injOn_tan : InjOn tan (Ioo (-(π / 2)) (π / 2)) :=
   strictMonoOn_tan.injOn
