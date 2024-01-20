@@ -5,7 +5,8 @@ Authors: Scott Morrison
 -/
 import Mathlib.Data.Finset.Lattice
 import Mathlib.Order.Hom.Basic
-import Mathlib.Order.ConditionallyCompleteLattice.Finset
+import Mathlib.Data.Set.Finite
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 #align_import order.partial_sups from "leanprover-community/mathlib"@"d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce"
 
