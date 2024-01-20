@@ -1220,6 +1220,80 @@ def step_chain (M : MachineQ) (cfg : Option Cfg₀) : Option Cfg₀ := cfg.bind 
 end TMQ
 
 /-!
+## TMQ emulator in TM0
+
+To prove that TMQ computable functions are TM0 computable, we need to reduce each TMQ program to a
+TM0 program. For a TMQ program with alphabet `Γ` and states `Λ`, we create a TM0 program with the
+same alphabet, and with states `Λ×{Dir+{null}`. Each TMQ transition, which both writes and moves
+the tape head, will be split into two TM0 statements which (i) writes and moves to a state
+`Λ×Dir` and then (ii) in state `Λ×Dir`, moves `Dir` and transitions to normal state `Λ×null`.
+-/
+
+namespace TM0toQ
+
+section
+
+variable {Γ : Type*} [Inhabited Γ]
+
+variable {Λ : Type*} [Inhabited Λ]
+
+local notation "Stmt₀" => TM0.Stmt Γ
+
+/-- TMQ machine to be emulated  -/
+def M [Inhabited Λ] := Λ → Γ → Option (Λ × Γ × Dir)
+
+/-- The TMQ -/
+inductive DirNone
+  | left
+  | right
+  | none
+  deriving DecidableEq, Inhabited
+
+def Λ' := Λ × DirNone
+
+open TM0.Stmt
+
+/-- Translate a TMQ step to a TM0 step -/
+def trAux (s : Γ) : Λ → Dir → ((Λ × DirNone) × Stmt₀)
+  | q, v => (q × v) × write ((M q v).map fun ⟨q', a , m⟩ ↦ a))
+--  | TM1.Stmt.write a q, v => ((some q, v), write (a s v))
+--  | TM1.Stmt.load a q, v => trAux s q (a s v)
+--  | TM1.Stmt.branch p q₁ q₂, v => cond (p s v) (trAux s q₁ v) (trAux s q₂ v)
+--  | TM1.Stmt.goto l, v => ((some (M (l s v)), v), write s)
+--  | TM1.Stmt.halt, v => ((none, v), write s)
+
+local notation "Cfg₁₀" => TM0.Cfg Γ Λ'₁₀
+
+/-- The translated TM0 machine (given the TMQ machine input). -/
+def tr : TM0.Machine Γ Λ'₁₀
+  | (none, _), _ => none
+  | (some q, v), s => some (trAux M s q v)
+
+/-- Translate configurations from TM1 to TM0. -/
+def trCfg : Cfg₁ → Cfg₁₀
+  | ⟨l, v, T⟩ => ⟨(l.map M, v), T⟩
+
+theorem tr_respects :
+    Respects (TM1.step M) (TM0.step (tr M)) fun (c₁ : Cfg₁) (c₂ : Cfg₁₀) ↦ trCfg M c₁ = c₂ :=
+  fun_respects.2 fun ⟨l₁, v, T⟩ ↦ by
+    cases' l₁ with l₁; · exact rfl
+    simp only [trCfg, TM1.step, FRespects, Option.map]
+    induction M l₁ generalizing v T with
+    | move _ _ IH => exact TransGen.head rfl (IH _ _)
+    | write _ _ IH => exact TransGen.head rfl (IH _ _)
+    | load _ _ IH => exact (reaches₁_eq (by rfl)).2 (IH _ _)
+    | branch p _ _ IH₁ IH₂ =>
+      unfold TM1.stepAux; cases e : p T.1 v
+      · exact (reaches₁_eq (by simp only [TM0.step, tr, trAux, e]; rfl)).2 (IH₂ _ _)
+      · exact (reaches₁_eq (by simp only [TM0.step, tr, trAux, e]; rfl)).2 (IH₁ _ _)
+    | _ =>
+      exact TransGen.single (congr_arg some (congr (congr_arg TM0.Cfg.mk rfl) (Tape.write_self T)))
+
+end
+
+end TM0toQ
+
+/-!
 ## The TM1 model
 
 The TM1 model is a simplification and extension of TM0 (Post-Turing model) in the direction of
