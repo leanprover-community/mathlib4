@@ -389,6 +389,86 @@ theorem ext_int' [MonoidWithZero α] [MonoidWithZeroHomClass F ℤ α] {f g : F}
     this
 #align ext_int' ext_int'
 
+section Group
+variable (α) [Group α] [AddGroup α]
+
+/-- Additive homomorphisms from `ℤ` are defined by the image of `1`. -/
+def zmultiplesHom : α ≃ (ℤ →+ α) where
+  toFun x :=
+  { toFun := fun n => n • x
+    map_zero' := zero_zsmul x
+    map_add' := fun _ _ => add_zsmul _ _ _ }
+  invFun f := f 1
+  left_inv := one_zsmul
+  right_inv f := AddMonoidHom.ext_int <| one_zsmul (f 1)
+#align zmultiples_hom zmultiplesHom
+#align powers_hom powersHom
+
+/-- Monoid homomorphisms from `Multiplicative ℤ` are defined by the image
+of `Multiplicative.ofAdd 1`. -/
+@[to_additive existing zmultiplesHom]
+def zpowersHom : α ≃ (Multiplicative ℤ →* α) :=
+  ofMul.trans <| (zmultiplesHom _).trans <| AddMonoidHom.toMultiplicative''
+#align zpowers_hom zpowersHom
+
+lemma zmultiplesHom_apply (x : α) (n : ℤ) : zmultiplesHom α x n = n • x := rfl
+#align zmultiples_hom_apply zmultiplesHom_apply
+
+lemma zmultiplesHom_symm_apply (f : ℤ →+ α) : (zmultiplesHom α).symm f = f 1 := rfl
+#align zmultiples_hom_symm_apply zmultiplesHom_symm_apply
+
+@[to_additive existing (attr := simp) zmultiplesHom_apply]
+lemma zpowersHom_apply (x : α) (n : Multiplicative ℤ) :zpowersHom α x n = x ^ toAdd n := rfl
+#align zpowers_hom_apply zpowersHom_apply
+
+@[to_additive existing (attr := simp) zmultiplesHom_symm_apply]
+lemma zpowersHom_symm_apply (f : Multiplicative ℤ →* α) :
+    (zpowersHom α).symm f = f (ofAdd 1) := rfl
+#align zpowers_hom_symm_apply zpowersHom_symm_apply
+
+lemma MonoidHom.apply_mint (f : Multiplicative ℤ →* α) (n : Multiplicative ℤ) :
+    f n = f (ofAdd 1) ^ (toAdd n) := by
+  rw [← zpowersHom_symm_apply, ← zpowersHom_apply, Equiv.apply_symm_apply]
+#align monoid_hom.apply_mint MonoidHom.apply_mint
+
+lemma AddMonoidHom.apply_int (f : ℤ →+ α) (n : ℤ) : f n = n • f 1 := by
+  rw [← zmultiplesHom_symm_apply, ← zmultiplesHom_apply, Equiv.apply_symm_apply]
+#align add_monoid_hom.apply_int AddMonoidHom.apply_int
+
+end Group
+
+section CommGroup
+variable (α) [CommGroup α] [AddCommGroup α]
+
+/-- If `α` is commutative, `zmultiplesHom` is an additive equivalence. -/
+def zmultiplesAddHom : α ≃+ (ℤ →+ α) :=
+  { zmultiplesHom α with map_add' := fun a b => AddMonoidHom.ext fun n => by simp [zsmul_add] }
+#align zmultiples_add_hom zmultiplesAddHom
+
+/-- If `α` is commutative, `zpowersHom` is a multiplicative equivalence. -/
+def zpowersMulHom : α ≃* (Multiplicative ℤ →* α) :=
+  { zpowersHom α with map_mul' := fun a b => MonoidHom.ext fun n => by simp [mul_zpow] }
+#align zpowers_mul_hom zpowersMulHom
+
+variable {α}
+
+@[simp]
+lemma zpowersMulHom_apply (x : α) (n : Multiplicative ℤ) : zpowersMulHom α x n = x ^ toAdd n := rfl
+#align zpowers_mul_hom_apply zpowersMulHom_apply
+
+@[simp]
+lemma zpowersMulHom_symm_apply (f : Multiplicative ℤ →* α) :
+    (zpowersMulHom α).symm f = f (ofAdd 1) := rfl
+#align zpowers_mul_hom_symm_apply zpowersMulHom_symm_apply
+
+@[simp] lemma zmultiplesAddHom_apply (x : α) (n : ℤ) : zmultiplesAddHom α x n = n • x := rfl
+#align zmultiples_add_hom_apply zmultiplesAddHom_apply
+
+@[simp] lemma zmultiplesAddHom_symm_apply (f : ℤ →+ α) : (zmultiplesAddHom α).symm f = f 1 := rfl
+#align zmultiples_add_hom_symm_apply zmultiplesAddHom_symm_apply
+
+end CommGroup
+
 section NonAssocRing
 
 variable [NonAssocRing α] [NonAssocRing β]
