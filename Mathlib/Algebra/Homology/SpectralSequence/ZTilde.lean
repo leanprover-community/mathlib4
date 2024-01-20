@@ -7,9 +7,12 @@ def ℤt := WithTop (WithBot ℤ)
 
 namespace ℤt
 
-instance : Preorder ℤt := by
+instance : LinearOrder ℤt := by
   dsimp [ℤt]
   infer_instance
+
+lemma le_total (a b : ℤt) : a ≤ b ∨ b ≤ a := by
+  exact @LinearOrder.le_total ℤt (by dsimp [ℤt]; infer_instance) a b
 
 def mk (a : ℤ) : ℤt := ((a : WithBot ℤ) : WithTop (WithBot ℤ))
 
@@ -64,6 +67,24 @@ lemma le_bot_mk_iff (a : ℤ) :
     ℤt.mk a ≤ ⊥ ↔ False := some_le_some_none_iff a
 
 @[simp]
+lemma mk_eq_bot_iff (a : ℤ) :
+    ℤt.mk a = ⊥ ↔ False := by
+  simp only [iff_false]
+  rintro ⟨⟩
+
+@[simp]
+lemma mk_eq_top_iff (a : ℤ) :
+    ℤt.mk a = ⊤ ↔ False := by
+  simp only [iff_false]
+  rintro ⟨⟩
+
+@[simp]
+lemma top_eq_bot_mk_iff :
+    (⊤ : ℤt) = ⊥ ↔ False := by
+  simp only [iff_false]
+  rintro ⟨⟩
+
+@[simp]
 lemma top_le_mk_iff (a : ℤ) :
     ⊤ ≤ ℤt.mk a ↔ False := none_le_some_iff a
 
@@ -95,7 +116,6 @@ lemma top_le_iff (a : ℤt) : ⊤ ≤ a ↔ a = ⊤ := by
   · intro h
     obtain (rfl|⟨a, rfl⟩|rfl) := a.three_cases
     · simp [le_bot_iff] at h
-      exact h.symm
     · simp at h
     · rfl
   · rintro rfl
