@@ -990,9 +990,9 @@ noncomputable def adjoinRootEquivAdjoin (h : IsIntegral F α) :
 #align intermediate_field.adjoin_root_equiv_adjoin IntermediateField.adjoinRootEquivAdjoin
 
 theorem adjoinRootEquivAdjoin_apply_root (h : IsIntegral F α) :
-    adjoinRootEquivAdjoin F h (AdjoinRoot.root (minpoly F α)) = AdjoinSimple.gen F α :=
-   -- It is a bit annoying that one be obliged to fill in this implicit hypothesis
-  AdjoinRoot.lift_root (aeval_gen_minpoly F α) (hc := fun _ ↦ Commute.all _ _)
+    adjoinRootEquivAdjoin F h (AdjoinRoot.root (minpoly F α)) = AdjoinSimple.gen F α := by
+  -- AdjoinRoot.lift_root (aeval_gen_minpoly F α) (hc := by commutativity)
+  simp only [adjoinRootEquivAdjoin, AlgEquiv.coe_ofBijective, AdjoinRoot.liftHom_root]
 #align intermediate_field.adjoin_root_equiv_adjoin_apply_root IntermediateField.adjoinRootEquivAdjoin_apply_root
 
 theorem adjoin_root_eq_top (p : K[X]) [Fact (Irreducible p)] : K⟮AdjoinRoot.root p⟯ = ⊤ :=

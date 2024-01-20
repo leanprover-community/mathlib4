@@ -36,14 +36,11 @@ The main definitions are in the `AdjoinRoot` namespace.
 
 * `root f : AdjoinRoot f`, the image of X in R[X]/(f).
 
-* `lift (i : R →+* S) (x : S) (h : f.eval₂ i x = 0) : (AdjoinRoot f) →+* S`,
-  the ring homomorphism from R[X]/(f) to S extending `i : R →+* S`
-  and sending `X` to `x` (when `S` is a commutative semiring).
-
-* `lift' (i : R →+* S) (x : S) (hc : ∀ r, Commute (i r) x)
+* `lift (i : R →+* S) (x : S) (hcomm : ∀ r, Commute (i r) x)
     (h : f.eval₂ i x = 0) : (AdjoinRoot f) →+* S`,
   the ring homomorphism from R[X]/(f) to S extending `i : R →+* S`
   and sending `X` to `x` (when `S` is only a semiring)
+  The argument `hcomm` can be given by a tactic called `commutativity`
 
 * `liftHom (x : S) (hfx : aeval x f = 0) : AdjoinRoot f →ₐ[R] S`, the algebra
   homomorphism from R[X]/(f) to S extending `algebraMap R S` and sending `X` to `x`
@@ -281,38 +278,37 @@ macro "commutativity" : tactic =>
   `(tactic| first | { intro; apply Commute.all } |
     fail "tactic 'commutativity' failed to find a proof")
 
-/-- Given `s : S`, lift a ring homomorphism `i : R →+* S` whose image commutes
- with `s`
-  to `AdjoinRoot f →+* S`. -/
+/-- Given `s : S`, lift to `AdjoinRoot f →+* S`.
+  a ring homomorphism `i : R →+* S` whose image commutes with `s` -/
 def lift [Semiring S] (i : R →+* S) (x : S) (h : f.eval₂ i x = 0)
-    (hc : ∀ r, Commute (i r) x := by commutativity) :
+    (hcomm : ∀ r, Commute (i r) x := by commutativity) :
     AdjoinRoot f →+* S := by
-  apply Ideal.Quotient.lift _ (eval₂RingHom' i x hc)
+  apply Ideal.Quotient.lift _ (eval₂RingHom' i x hcomm)
   intro g H
   rcases mem_span_singleton.1 H with ⟨y, hy⟩
   rw [hy, RingHom.map_mul, eval₂RingHom'_apply, h, zero_mul]
 
 variable [Semiring S]
 
-variable {i : R →+* S} {a : S} (h : f.eval₂ i a = 0) ⦃hc : ∀ r, Commute (i r) a⦄
+variable {i : R →+* S} {a : S} (h : f.eval₂ i a = 0) ⦃hcomm : ∀ r, Commute (i r) a⦄
 
 @[simp]
 theorem lift_mk (g : R[X]) :
-    lift i a h hc (mk f g) = g.eval₂ i a :=
+    lift i a h hcomm (mk f g) = g.eval₂ i a :=
   Ideal.Quotient.lift_mk _ _ _
 #align adjoin_root.lift_mk AdjoinRoot.lift_mk
 
 @[simp]
-theorem lift_root : lift i a h hc (root f) = a := by rw [root, lift_mk, eval₂_X]
+theorem lift_root : lift i a h hcomm (root f) = a := by rw [root, lift_mk, eval₂_X]
 #align adjoin_root.lift_root AdjoinRoot.lift_root
 
 @[simp]
-theorem lift_of {x : R} : lift i a h hc x = i x := by rw [← mk_C x, lift_mk, eval₂_C]
+theorem lift_of {x : R} : lift i a h hcomm x = i x := by rw [← mk_C x, lift_mk, eval₂_C]
 #align adjoin_root.lift_of AdjoinRoot.lift_of
 
 @[simp]
-theorem lift_comp_of : (lift i a h hc).comp (of f) = i := by
---   RingHom.ext fun _ => lift_of h hc
+theorem lift_comp_of : (lift i a h hcomm).comp (of f) = i :=  by
+  -- RingHom.ext fun _ => lift_of h hcomm
   ext x
   simp only [RingHom.coe_comp, Function.comp_apply, lift_of]
 #align adjoin_root.lift_comp_of AdjoinRoot.lift_comp_of
