@@ -742,6 +742,7 @@ theorem toFinset_diff [Fintype (s \ t : Set _)] : (s \ t).toFinset = s.toFinset 
   simp
 #align set.to_finset_diff Set.toFinset_diff
 
+open scoped symmDiff in
 @[simp]
 theorem toFinset_symmDiff [Fintype (s ∆ t : Set _)] :
     (s ∆ t).toFinset = s.toFinset ∆ t.toFinset := by
