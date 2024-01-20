@@ -103,6 +103,12 @@ theorem smul_fixedBy (g h: G) :
   ext a
   simp_rw [Set.mem_smul_set_iff_inv_smul_mem, mem_fixedBy, mul_smul, smul_eq_iff_eq_inv_smul h]
 
+variable (α) in
+theorem fixedBy_commutatorElement (g h : G) :
+    fixedBy α h ∩ g • fixedBy α h ⊆ fixedBy α ⁅g, h⁆ := by
+  rw [smul_fixedBy, commutatorElement_def, Set.inter_comm, ← fixedBy_inv_eq_fixedBy α (g := h)]
+  apply fixedBy_mul α
+
 end FixedPoints
 
 section Pointwise
@@ -169,6 +175,29 @@ theorem set_mem_fixedBy_of_movedBy_subset {s : Set α} {g : G} (s_subset : (fixe
     constructor <;> (intro; apply s_subset)
     · exact a_moved
     · rwa [Set.mem_compl_iff, smul_mem_fixedBy_iff_mem_fixedBy]
+
+/--
+If the action of `f` does not move points of `s` outside of `s`, and `g • s` is disjoint from `s`,
+then all points of `s` are fixed by `g * f * g⁻¹`.
+-/
+theorem subset_fixedBy_conj_of_movedBy_subset_of_disj {f g : G} {s : Set α}
+    (superset : (fixedBy α f)ᶜ ⊆ s) (disj : Disjoint s (g • s)) : s ⊆ fixedBy α (g * f * g⁻¹) := by
+  rw [← smul_fixedBy, ← Set.compl_subset_compl, ← Set.smul_set_compl]
+  apply subset_trans _ disj.subset_compl_left
+  exact Set.smul_set_mono superset
+
+/--
+If all points of `s` are fixed by `g * f * g⁻¹`, then `⁅f, g⁆ • s = f • s`
+-/
+lemma commutatorElement_smul_eq_of_subset_fixedBy_conj {f g : G} {s : Set α}
+    (subset : s ⊆ fixedBy α (g * f * g⁻¹)) : ⁅f, g⁆ • s = f • s := by
+  rw [commutatorElement_def]
+  repeat rw [mul_smul]
+  rw [smul_left_cancel_iff]
+  repeat rw [← mul_smul]
+  rw [← smul_fixedBy, ← fixedBy_inv_eq_fixedBy, smul_fixedBy] at subset
+  exact set_mem_fixedBy_of_subset_fixedBy subset
+
 
 end Pointwise
 
@@ -249,6 +278,30 @@ theorem not_commute_of_disjoint_movedBy_preimage {g h : G} (ne_one : g ≠ 1)
   contrapose! ne_one with comm
   rwa [movedBy_mem_fixedBy_of_commute comm, disjoint_self, Set.bot_eq_empty, ← Set.compl_univ,
     compl_inj_iff, fixedBy_eq_univ_iff_eq_one] at disjoint
+
+variable (α) in
+/--
+If the action is faithful, then `g` and `h` commute if `(fixedBy α g)ᶜ` is disjoint from
+`(fixedBy α h)ᶜ`.
+-/
+theorem commute_of_disjoint_movedBy {g h : G} (disjoint : Disjoint (fixedBy α g)ᶜ (fixedBy α h)ᶜ) :
+    Commute g h := by
+  apply FaithfulSMul.eq_of_smul_eq_smul (α := α)
+  intro a
+  rw [mul_smul, mul_smul]
+
+  by_cases a_fixed : a ∈ fixedBy α g
+  rw [Set.disjoint_compl_left_iff_subset] at disjoint
+  swap
+  have a_fixed := Set.disjoint_compl_right_iff_subset.mp disjoint a_fixed
+  rw [Set.disjoint_compl_right_iff_subset] at disjoint
+
+  all_goals {
+    rw [a_fixed]
+    rw [← fixedBy_inv_eq_fixedBy] at disjoint
+    rw [← set_mem_fixedBy_of_movedBy_subset disjoint, Set.mem_inv_smul_set_iff] at a_fixed
+    rw [a_fixed]
+  }
 
 end Faithful
 

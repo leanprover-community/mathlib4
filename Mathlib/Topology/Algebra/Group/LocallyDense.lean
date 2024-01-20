@@ -35,7 +35,9 @@ open Topology
 The action of `G` on `α` is locally dense if for all open sets `s` and forall `p ∈ s`,
 `closure (AddAction.orbit (fixingAddSubgroup G sᶜ) p) ∈ 𝓝 p`.
 -/
-class LocallyDenseVAdd (G α : Type*) [AddGroup G] [TopologicalSpace α] [AddAction G α] :=
+class LocallyDenseVAdd (G α : Type*) [AddGroup G] [TopologicalSpace α] [AddAction G α]: Prop :=
+  /-- The closure of the orbit of the moving subgroup of an open set must be part of the
+  neighborhood filter. -/
   locally_dense_vadd : ∀ ⦃s : Set α⦄, IsOpen s → ∀ ⦃p : α⦄, p ∈ s →
     closure (AddAction.orbit (fixingAddSubgroup G sᶜ) p) ∈ 𝓝 p
 
@@ -44,7 +46,9 @@ The action of `G` on `α` is locally dense if for all open sets `s` and forall `
 `closure (MulAction.orbit (fixingSubgroup G sᶜ) p) ∈ 𝓝 p`.
 -/
 @[to_additive existing]
-class LocallyDenseSMul (G α : Type*) [Group G] [TopologicalSpace α] [MulAction G α] :=
+class LocallyDenseSMul (G α : Type*) [Group G] [TopologicalSpace α] [MulAction G α]: Prop :=
+  /-- The closure of the orbit of the moving subgroup of an open set must be part of the
+  neighborhood filter. -/
   locally_dense_smul : ∀ ⦃s : Set α⦄, IsOpen s → ∀ ⦃p : α⦄, p ∈ s →
     closure (MulAction.orbit (G•[sᶜ]) p) ∈ 𝓝 p
 

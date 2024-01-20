@@ -92,7 +92,9 @@ The regular open sets in a topology form a boolean algebra, with as complement o
 `s ↦ (closure s)ᶜ` and as infimum `s ∩ t`.
 -/
 structure RegularOpens :=
+  /-- The underlying set that is regular open -/
   carrier : Set α
+  /-- The statement that `carrier` is regular open -/
   regularOpen' : IsRegularOpen carrier
 
 namespace RegularOpens
@@ -105,12 +107,9 @@ instance : SetLike (RegularOpens α) α where
   coe := carrier
   coe_injective' := fun _ _ => eq_iff.mp
 
+/-- Regular open sets are open. -/
 instance : Coe (RegularOpens α) (TopologicalSpace.Opens α) where
   coe := fun r => ⟨r.carrier, r.regularOpen'.isOpen⟩
-
-@[simp]
-theorem coe_opens_coe (r : RegularOpens α) :
-    ((r : TopologicalSpace.Opens α) : Set α) = (r : Set α) := rfl
 
 @[simp]
 theorem regularOpen (r : RegularOpens α) : IsRegularOpen (r : Set α) := r.regularOpen'
@@ -217,7 +216,6 @@ theorem coe_sup (r s : RegularOpens α) :
 
 theorem coe_inf (r s : RegularOpens α) : (↑(r ⊓ s) : Set α) = ↑r ∩ ↑s := rfl
 
-@[simp]
 theorem le_iff_subset (r s : RegularOpens α) : (↑r : Set α) ⊆ ↑s ↔ r ≤ s := Iff.rfl
 
 theorem sup_inf_distrib_right (r s t : RegularOpens α) :
@@ -270,7 +268,7 @@ theorem fromSet_coe (r : RegularOpens α) : fromSet (↑r : Set α) = r := by
 theorem coe_opens_fromSet (s : Set α) : (fromSet s : Opens α) = Opens.interior (closure s) := rfl
 
 theorem fromSet_mono {s t : Set α} (s_ss_t : s ⊆ t) : fromSet s ≤ fromSet t := by
-  rw [← le_iff_subset, coe_fromSet, coe_fromSet]
+  rw [← SetLike.coe_subset, coe_fromSet, coe_fromSet]
   exact interior_mono (closure_mono s_ss_t)
 
 variable (α) in
