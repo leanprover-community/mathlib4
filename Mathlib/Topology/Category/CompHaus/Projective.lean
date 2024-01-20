@@ -35,7 +35,7 @@ open CategoryTheory Function
 
 namespace CompHaus
 
-attribute [local instance] ConcreteCategory.instDFunLike
+attribute [local instance] ConcreteCategory.instFunLike
 
 instance projective_ultrafilter (X : Type*) : Projective (of <| Ultrafilter X)
     where

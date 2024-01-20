@@ -8,8 +8,6 @@ import Mathlib.Algebra.BigOperators.Finprod
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.LinearAlgebra.LinearIndependent
-import Mathlib.LinearAlgebra.LinearPMap
-import Mathlib.LinearAlgebra.Projection
 import Mathlib.SetTheory.Cardinal.Cofinality
 
 #align_import linear_algebra.basis from "leanprover-community/mathlib"@"13bce9a6b6c44f6b4c91ac1c1d2a816e2533d395"
@@ -119,11 +117,11 @@ theorem repr_injective : Injective (repr : Basis ι R M → M ≃ₗ[R] ι →�
 #align basis.repr_injective Basis.repr_injective
 
 /-- `b i` is the `i`th basis vector. -/
-instance instDFunLike : DFunLike (Basis ι R M) ι fun _ => M where
+instance instFunLike : FunLike (Basis ι R M) ι M where
   coe b i := b.repr.symm (Finsupp.single i 1)
   coe_injective' f g h := repr_injective <| LinearEquiv.symm_bijective.injective <|
     LinearEquiv.toLinearMap_injective <| by ext; exact congr_fun h _
-#align basis.fun_like Basis.instDFunLike
+#align basis.fun_like Basis.instFunLike
 
 @[simp]
 theorem coe_ofRepr (e : M ≃ₗ[R] ι →₀ R) : ⇑(ofRepr e) = fun i => e.symm (Finsupp.single i 1) :=
@@ -1407,7 +1405,7 @@ lemma Basis.mem_center_iff {A}
           ∧ (b i * z) * b j = b i * (z * b j)
           ∧ (b i * b j) * z = b i * (b j * z) := by
   constructor
-  · intro h;
+  · intro h
     constructor
     · intro i
       apply (h.1 (b i)).symm

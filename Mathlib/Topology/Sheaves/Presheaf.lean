@@ -5,7 +5,6 @@ Authors: Scott Morrison, Mario Carneiro, Reid Barton, Andrew Yang
 -/
 import Mathlib.CategoryTheory.Limits.KanExtension
 import Mathlib.Topology.Category.TopCat.Opens
-import Mathlib.Algebra.Category.Ring.Basic
 import Mathlib.CategoryTheory.Adjunction.Opposites
 import Mathlib.Topology.Sheaves.Init
 
@@ -70,7 +69,7 @@ lemma ext {P Q : Presheaf C X} {f g : P ⟶ Q} (w : ∀ U : Opens X, f.app (op U
   apply w
 
 attribute [local instance] CategoryTheory.ConcreteCategory.hasCoeToSort
-  CategoryTheory.ConcreteCategory.instDFunLike
+  CategoryTheory.ConcreteCategory.instFunLike
 
 /-- attribute `sheaf_restrict` to mark lemmas related to restricting sheaves -/
 macro "sheaf_restrict" : attr =>
