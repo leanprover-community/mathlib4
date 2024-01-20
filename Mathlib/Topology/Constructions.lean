@@ -39,7 +39,7 @@ open Topology TopologicalSpace Set Filter Function Classical
 
 universe u v
 
-variable {X : Type u} {Y : Type v} {γ δ ε ζ : Type*}
+variable {X : Type u} {Y : Type v} {Z δ ε ζ : Type*}
 
 section Constructions
 
@@ -314,13 +314,13 @@ end Constructions
 
 section Prod
 
-variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace γ] [TopologicalSpace δ]
+variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] [TopologicalSpace δ]
   [TopologicalSpace ε] [TopologicalSpace ζ]
 
 -- porting note: todo: Lean 4 fails to deduce implicit args
-@[simp] theorem continuous_prod_mk {f : X → Y} {g : X → γ} :
+@[simp] theorem continuous_prod_mk {f : X → Y} {g : X → Z} :
     (Continuous fun x => (f x, g x)) ↔ Continuous f ∧ Continuous g :=
-  (@continuous_inf_rng X (Y × γ) _ _ (TopologicalSpace.induced Prod.fst _)
+  (@continuous_inf_rng X (Y × Z) _ _ (TopologicalSpace.induced Prod.fst _)
     (TopologicalSpace.induced Prod.snd _)).trans <|
     continuous_induced_rng.and continuous_induced_rng
 #align continuous_prod_mk continuous_prod_mk
@@ -331,12 +331,12 @@ theorem continuous_fst : Continuous (@Prod.fst X Y) :=
 #align continuous_fst continuous_fst
 
 /-- Postcomposing `f` with `Prod.fst` is continuous -/
-theorem Continuous.fst {f : X → Y × γ} (hf : Continuous f) : Continuous fun a : X => (f a).1 :=
+theorem Continuous.fst {f : X → Y × Z} (hf : Continuous f) : Continuous fun a : X => (f a).1 :=
   continuous_fst.comp hf
 #align continuous.fst Continuous.fst
 
 /-- Precomposing `f` with `Prod.fst` is continuous -/
-theorem Continuous.fst' {f : X → γ} (hf : Continuous f) : Continuous fun x : X × Y => f x.fst :=
+theorem Continuous.fst' {f : X → Z} (hf : Continuous f) : Continuous fun x : X × Y => f x.fst :=
   hf.comp continuous_fst
 #align continuous.fst' Continuous.fst'
 
@@ -345,19 +345,19 @@ theorem continuousAt_fst {p : X × Y} : ContinuousAt Prod.fst p :=
 #align continuous_at_fst continuousAt_fst
 
 /-- Postcomposing `f` with `Prod.fst` is continuous at `x` -/
-theorem ContinuousAt.fst {f : X → Y × γ} {x : X} (hf : ContinuousAt f x) :
+theorem ContinuousAt.fst {f : X → Y × Z} {x : X} (hf : ContinuousAt f x) :
     ContinuousAt (fun a : X => (f a).1) x :=
   continuousAt_fst.comp hf
 #align continuous_at.fst ContinuousAt.fst
 
 /-- Precomposing `f` with `Prod.fst` is continuous at `(x, y)` -/
-theorem ContinuousAt.fst' {f : X → γ} {x : X} {y : Y} (hf : ContinuousAt f x) :
+theorem ContinuousAt.fst' {f : X → Z} {x : X} {y : Y} (hf : ContinuousAt f x) :
     ContinuousAt (fun x : X × Y => f x.fst) (x, y) :=
   ContinuousAt.comp hf continuousAt_fst
 #align continuous_at.fst' ContinuousAt.fst'
 
 /-- Precomposing `f` with `Prod.fst` is continuous at `x : X × Y` -/
-theorem ContinuousAt.fst'' {f : X → γ} {x : X × Y} (hf : ContinuousAt f x.fst) :
+theorem ContinuousAt.fst'' {f : X → Z} {x : X × Y} (hf : ContinuousAt f x.fst) :
     ContinuousAt (fun x : X × Y => f x.fst) x :=
   hf.comp continuousAt_fst
 #align continuous_at.fst'' ContinuousAt.fst''
@@ -368,12 +368,12 @@ theorem continuous_snd : Continuous (@Prod.snd X Y) :=
 #align continuous_snd continuous_snd
 
 /-- Postcomposing `f` with `Prod.snd` is continuous -/
-theorem Continuous.snd {f : X → Y × γ} (hf : Continuous f) : Continuous fun a : X => (f a).2 :=
+theorem Continuous.snd {f : X → Y × Z} (hf : Continuous f) : Continuous fun a : X => (f a).2 :=
   continuous_snd.comp hf
 #align continuous.snd Continuous.snd
 
 /-- Precomposing `f` with `Prod.snd` is continuous -/
-theorem Continuous.snd' {f : Y → γ} (hf : Continuous f) : Continuous fun x : X × Y => f x.snd :=
+theorem Continuous.snd' {f : Y → Z} (hf : Continuous f) : Continuous fun x : X × Y => f x.snd :=
   hf.comp continuous_snd
 #align continuous.snd' Continuous.snd'
 
@@ -382,25 +382,25 @@ theorem continuousAt_snd {p : X × Y} : ContinuousAt Prod.snd p :=
 #align continuous_at_snd continuousAt_snd
 
 /-- Postcomposing `f` with `Prod.snd` is continuous at `x` -/
-theorem ContinuousAt.snd {f : X → Y × γ} {x : X} (hf : ContinuousAt f x) :
+theorem ContinuousAt.snd {f : X → Y × Z} {x : X} (hf : ContinuousAt f x) :
     ContinuousAt (fun a : X => (f a).2) x :=
   continuousAt_snd.comp hf
 #align continuous_at.snd ContinuousAt.snd
 
 /-- Precomposing `f` with `Prod.snd` is continuous at `(x, y)` -/
-theorem ContinuousAt.snd' {f : Y → γ} {x : X} {y : Y} (hf : ContinuousAt f y) :
+theorem ContinuousAt.snd' {f : Y → Z} {x : X} {y : Y} (hf : ContinuousAt f y) :
     ContinuousAt (fun x : X × Y => f x.snd) (x, y) :=
   ContinuousAt.comp hf continuousAt_snd
 #align continuous_at.snd' ContinuousAt.snd'
 
 /-- Precomposing `f` with `Prod.snd` is continuous at `x : X × Y` -/
-theorem ContinuousAt.snd'' {f : Y → γ} {x : X × Y} (hf : ContinuousAt f x.snd) :
+theorem ContinuousAt.snd'' {f : Y → Z} {x : X × Y} (hf : ContinuousAt f x.snd) :
     ContinuousAt (fun x : X × Y => f x.snd) x :=
   hf.comp continuousAt_snd
 #align continuous_at.snd'' ContinuousAt.snd''
 
 @[continuity]
-theorem Continuous.prod_mk {f : γ → X} {g : γ → Y} (hf : Continuous f) (hg : Continuous g) :
+theorem Continuous.prod_mk {f : Z → X} {g : Z → Y} (hf : Continuous f) (hg : Continuous g) :
     Continuous fun x => (f x, g x) :=
   continuous_prod_mk.2 ⟨hf, hg⟩
 #align continuous.prod_mk Continuous.prod_mk
@@ -417,30 +417,30 @@ theorem Continuous.Prod.mk_left (b : Y) : Continuous fun a : X => (a, b) :=
 
 /-- If `f x y` is continuous in `x` for all `y ∈ s`,
 then the set of `x` such that `f x` maps `s` to `t` is closed. -/
-lemma IsClosed.setOf_mapsTo {f : X → Y → γ} {s : Set Y} {t : Set γ} (ht : IsClosed t)
+lemma IsClosed.setOf_mapsTo {f : X → Y → Z} {s : Set Y} {t : Set Z} (ht : IsClosed t)
     (hf : ∀ y ∈ s, Continuous (f · y)) : IsClosed {x | MapsTo (f x) s t} := by
   simpa only [MapsTo, setOf_forall] using isClosed_biInter fun y hy ↦ ht.preimage (hf y hy)
 
-theorem Continuous.comp₂ {g : X × Y → γ} (hg : Continuous g) {e : δ → X} (he : Continuous e)
+theorem Continuous.comp₂ {g : X × Y → Z} (hg : Continuous g) {e : δ → X} (he : Continuous e)
     {f : δ → Y} (hf : Continuous f) : Continuous fun x => g (e x, f x) :=
   hg.comp <| he.prod_mk hf
 #align continuous.comp₂ Continuous.comp₂
 
-theorem Continuous.comp₃ {g : X × Y × γ → ε} (hg : Continuous g) {e : δ → X} (he : Continuous e)
-    {f : δ → Y} (hf : Continuous f) {k : δ → γ} (hk : Continuous k) :
+theorem Continuous.comp₃ {g : X × Y × Z → ε} (hg : Continuous g) {e : δ → X} (he : Continuous e)
+    {f : δ → Y} (hf : Continuous f) {k : δ → Z} (hk : Continuous k) :
     Continuous fun x => g (e x, f x, k x) :=
   hg.comp₂ he <| hf.prod_mk hk
 #align continuous.comp₃ Continuous.comp₃
 
-theorem Continuous.comp₄ {g : X × Y × γ × ζ → ε} (hg : Continuous g) {e : δ → X} (he : Continuous e)
-    {f : δ → Y} (hf : Continuous f) {k : δ → γ} (hk : Continuous k) {l : δ → ζ}
+theorem Continuous.comp₄ {g : X × Y × Z × ζ → ε} (hg : Continuous g) {e : δ → X} (he : Continuous e)
+    {f : δ → Y} (hf : Continuous f) {k : δ → Z} (hk : Continuous k) {l : δ → ζ}
     (hl : Continuous l) : Continuous fun x => g (e x, f x, k x, l x) :=
   hg.comp₃ he hf <| hk.prod_mk hl
 #align continuous.comp₄ Continuous.comp₄
 
 @[continuity]
-theorem Continuous.prod_map {f : γ → X} {g : δ → Y} (hf : Continuous f) (hg : Continuous g) :
-    Continuous fun x : γ × δ => (f x.1, g x.2) :=
+theorem Continuous.prod_map {f : Z → X} {g : δ → Y} (hf : Continuous f) (hg : Continuous g) :
+    Continuous fun x : Z × δ => (f x.1, g x.2) :=
   hf.fst'.prod_mk hg.snd'
 #align continuous.prod_map Continuous.prod_map
 
@@ -502,17 +502,17 @@ lemma isClosedMap_swap : IsClosedMap (Prod.swap : X × Y → Y × X) := fun s hs
   rw [image_swap_eq_preimage_swap]
   exact hs.preimage continuous_swap
 
-theorem continuous_uncurry_left {f : X → Y → γ} (a : X) (h : Continuous (uncurry f)) :
+theorem continuous_uncurry_left {f : X → Y → Z} (a : X) (h : Continuous (uncurry f)) :
     Continuous (f a) :=
   h.comp (Continuous.Prod.mk _)
 #align continuous_uncurry_left continuous_uncurry_left
 
-theorem continuous_uncurry_right {f : X → Y → γ} (b : Y) (h : Continuous (uncurry f)) :
+theorem continuous_uncurry_right {f : X → Y → Z} (b : Y) (h : Continuous (uncurry f)) :
     Continuous fun a => f a b :=
   h.comp (Continuous.Prod.mk_left _)
 #align continuous_uncurry_right continuous_uncurry_right
 
-theorem continuous_curry {g : X × Y → γ} (a : X) (h : Continuous g) : Continuous (curry g a) :=
+theorem continuous_curry {g : X × Y → Z} (a : X) (h : Continuous g) : Continuous (curry g a) :=
   continuous_uncurry_left a h
 #align continuous_curry continuous_curry
 
@@ -566,7 +566,7 @@ theorem mem_nhds_prod_iff' {a : X} {b : Y} {s : Set (X × Y)} :
     simp only [Prod.exists, and_comm, and_assoc, and_left_comm]
 #align mem_nhds_prod_iff' mem_nhds_prod_iff'
 
-theorem Prod.tendsto_iff {X} (seq : X → Y × γ) {f : Filter X} (x : Y × γ) :
+theorem Prod.tendsto_iff {X} (seq : X → Y × Z) {f : Filter X} (x : Y × Z) :
     Tendsto seq f (𝓝 x) ↔
       Tendsto (fun n => (seq n).fst) f (𝓝 x.fst) ∧ Tendsto (fun n => (seq n).snd) f (𝓝 x.snd) := by
   rw [nhds_prod_eq, Filter.tendsto_prod_iff']
@@ -606,17 +606,17 @@ theorem Filter.Eventually.curry_nhds {p : X × Y → Prop} {x : X} {y : Y}
   exact h.curry
 #align filter.eventually.curry_nhds Filter.Eventually.curry_nhds
 
-theorem ContinuousAt.prod {f : X → Y} {g : X → γ} {x : X} (hf : ContinuousAt f x)
+theorem ContinuousAt.prod {f : X → Y} {g : X → Z} {x : X} (hf : ContinuousAt f x)
     (hg : ContinuousAt g x) : ContinuousAt (fun x => (f x, g x)) x :=
   hf.prod_mk_nhds hg
 #align continuous_at.prod ContinuousAt.prod
 
-theorem ContinuousAt.prod_map {f : X → γ} {g : Y → δ} {p : X × Y} (hf : ContinuousAt f p.fst)
+theorem ContinuousAt.prod_map {f : X → Z} {g : Y → δ} {p : X × Y} (hf : ContinuousAt f p.fst)
     (hg : ContinuousAt g p.snd) : ContinuousAt (fun p : X × Y => (f p.1, g p.2)) p :=
   hf.fst''.prod hg.snd''
 #align continuous_at.prod_map ContinuousAt.prod_map
 
-theorem ContinuousAt.prod_map' {f : X → γ} {g : Y → δ} {x : X} {y : Y} (hf : ContinuousAt f x)
+theorem ContinuousAt.prod_map' {f : X → Z} {g : Y → δ} {x : X} {y : Y} (hf : ContinuousAt f x)
     (hg : ContinuousAt g y) : ContinuousAt (fun p : X × Y => (f p.1, g p.2)) (x, y) :=
   hf.fst'.prod hg.snd'
 #align continuous_at.prod_map' ContinuousAt.prod_map'
@@ -674,8 +674,8 @@ theorem isOpen_prod_iff {s : Set (X × Y)} :
 #align is_open_prod_iff isOpen_prod_iff
 
 /-- A product of induced topologies is induced by the product map -/
-theorem prod_induced_induced (f : X → Y) (g : γ → δ) :
-    @instTopologicalSpaceProd X γ (induced f ‹_›) (induced g ‹_›) =
+theorem prod_induced_induced (f : X → Y) (g : Z → δ) :
+    @instTopologicalSpaceProd X Z (induced f ‹_›) (induced g ‹_›) =
       induced (fun p => (f p.1, g p.2)) instTopologicalSpaceProd := by
   delta instTopologicalSpaceProd
   simp_rw [induced_inf, induced_compose]
@@ -780,7 +780,7 @@ theorem frontier_univ_prod_eq (s : Set Y) :
   simp [frontier_prod_eq]
 #align frontier_univ_prod_eq frontier_univ_prod_eq
 
-theorem map_mem_closure₂ {f : X → Y → γ} {a : X} {b : Y} {s : Set X} {t : Set Y} {u : Set γ}
+theorem map_mem_closure₂ {f : X → Y → Z} {a : X} {b : Y} {s : Set X} {t : Set Y} {u : Set Z}
     (hf : Continuous (uncurry f)) (ha : a ∈ closure s) (hb : b ∈ closure t)
     (h : ∀ a ∈ s, ∀ b ∈ t, f a b ∈ u) : f a b ∈ closure u :=
   have H₁ : (a, b) ∈ closure (s ×ˢ t) := by simpa only [closure_prod_eq] using mk_mem_prod ha hb
@@ -801,45 +801,45 @@ theorem Dense.prod {s : Set X} {t : Set Y} (hs : Dense s) (ht : Dense t) : Dense
 #align dense.prod Dense.prod
 
 /-- If `f` and `g` are maps with dense range, then `Prod.map f g` has dense range. -/
-theorem DenseRange.prod_map {ι : Type*} {κ : Type*} {f : ι → Y} {g : κ → γ} (hf : DenseRange f)
+theorem DenseRange.prod_map {ι : Type*} {κ : Type*} {f : ι → Y} {g : κ → Z} (hf : DenseRange f)
     (hg : DenseRange g) : DenseRange (Prod.map f g) := by
   simpa only [DenseRange, prod_range_range_eq] using hf.prod hg
 #align dense_range.prod_map DenseRange.prod_map
 
-theorem Inducing.prod_map {f : X → Y} {g : γ → δ} (hf : Inducing f) (hg : Inducing g) :
+theorem Inducing.prod_map {f : X → Y} {g : Z → δ} (hf : Inducing f) (hg : Inducing g) :
     Inducing (Prod.map f g) :=
   inducing_iff_nhds.2 fun (a, b) => by simp_rw [Prod.map_def, nhds_prod_eq, hf.nhds_eq_comap,
     hg.nhds_eq_comap, prod_comap_comap_eq]
 #align inducing.prod_mk Inducing.prod_map
 
 @[simp]
-theorem inducing_const_prod {a : X} {f : Y → γ} : (Inducing fun x => (a, f x)) ↔ Inducing f := by
+theorem inducing_const_prod {a : X} {f : Y → Z} : (Inducing fun x => (a, f x)) ↔ Inducing f := by
   simp_rw [inducing_iff, instTopologicalSpaceProd, induced_inf, induced_compose, Function.comp,
     induced_const, top_inf_eq]
 #align inducing_const_prod inducing_const_prod
 
 @[simp]
-theorem inducing_prod_const {b : Y} {f : X → γ} : (Inducing fun x => (f x, b)) ↔ Inducing f := by
+theorem inducing_prod_const {b : Y} {f : X → Z} : (Inducing fun x => (f x, b)) ↔ Inducing f := by
   simp_rw [inducing_iff, instTopologicalSpaceProd, induced_inf, induced_compose, Function.comp,
     induced_const, inf_top_eq]
 #align inducing_prod_const inducing_prod_const
 
-theorem Embedding.prod_map {f : X → Y} {g : γ → δ} (hf : Embedding f) (hg : Embedding g) :
+theorem Embedding.prod_map {f : X → Y} {g : Z → δ} (hf : Embedding f) (hg : Embedding g) :
     Embedding (Prod.map f g) :=
   { hf.toInducing.prod_map hg.toInducing with
     inj := fun ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ => by simp [hf.inj.eq_iff, hg.inj.eq_iff] }
 #align embedding.prod_mk Embedding.prod_map
 
-protected theorem IsOpenMap.prod {f : X → Y} {g : γ → δ} (hf : IsOpenMap f) (hg : IsOpenMap g) :
-    IsOpenMap fun p : X × γ => (f p.1, g p.2) := by
+protected theorem IsOpenMap.prod {f : X → Y} {g : Z → δ} (hf : IsOpenMap f) (hg : IsOpenMap g) :
+    IsOpenMap fun p : X × Z => (f p.1, g p.2) := by
   rw [isOpenMap_iff_nhds_le]
   rintro ⟨a, b⟩
   rw [nhds_prod_eq, nhds_prod_eq, ← Filter.prod_map_map_eq]
   exact Filter.prod_mono (hf.nhds_le a) (hg.nhds_le b)
 #align is_open_map.prod IsOpenMap.prod
 
-protected theorem OpenEmbedding.prod {f : X → Y} {g : γ → δ} (hf : OpenEmbedding f)
-    (hg : OpenEmbedding g) : OpenEmbedding fun x : X × γ => (f x.1, g x.2) :=
+protected theorem OpenEmbedding.prod {f : X → Y} {g : Z → δ} (hf : OpenEmbedding f)
+    (hg : OpenEmbedding g) : OpenEmbedding fun x : X × Z => (f x.1, g x.2) :=
   openEmbedding_of_embedding_open (hf.1.prod_map hg.1) (hf.isOpenMap.prod hg.isOpenMap)
 #align open_embedding.prod OpenEmbedding.prod
 
@@ -856,22 +856,22 @@ section Sum
 
 open Sum
 
-variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace γ] [TopologicalSpace δ]
+variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] [TopologicalSpace δ]
 
-theorem continuous_sum_dom {f : X ⊕ Y → γ} :
+theorem continuous_sum_dom {f : X ⊕ Y → Z} :
     Continuous f ↔ Continuous (f ∘ Sum.inl) ∧ Continuous (f ∘ Sum.inr) :=
   (continuous_sup_dom (t₁ := TopologicalSpace.coinduced Sum.inl _)
     (t₂ := TopologicalSpace.coinduced Sum.inr _)).trans <|
     continuous_coinduced_dom.and continuous_coinduced_dom
 #align continuous_sum_dom continuous_sum_dom
 
-theorem continuous_sum_elim {f : X → γ} {g : Y → γ} :
+theorem continuous_sum_elim {f : X → Z} {g : Y → Z} :
     Continuous (Sum.elim f g) ↔ Continuous f ∧ Continuous g :=
   continuous_sum_dom
 #align continuous_sum_elim continuous_sum_elim
 
 @[continuity]
-theorem Continuous.sum_elim {f : X → γ} {g : Y → γ} (hf : Continuous f) (hg : Continuous g) :
+theorem Continuous.sum_elim {f : X → Z} {g : Y → Z} (hf : Continuous f) (hg : Continuous g) :
     Continuous (Sum.elim f g) :=
   continuous_sum_elim.2 ⟨hf, hg⟩
 #align continuous.sum_elim Continuous.sum_elim
@@ -962,30 +962,30 @@ theorem nhds_inr (x : Y) : 𝓝 (inr x : Sum X Y) = map inr (𝓝 x) :=
 #align nhds_inr nhds_inr
 
 @[simp]
-theorem continuous_sum_map {f : X → Y} {g : γ → δ} :
+theorem continuous_sum_map {f : X → Y} {g : Z → δ} :
     Continuous (Sum.map f g) ↔ Continuous f ∧ Continuous g :=
   continuous_sum_elim.trans <|
     embedding_inl.continuous_iff.symm.and embedding_inr.continuous_iff.symm
 #align continuous_sum_map continuous_sum_map
 
 @[continuity]
-theorem Continuous.sum_map {f : X → Y} {g : γ → δ} (hf : Continuous f) (hg : Continuous g) :
+theorem Continuous.sum_map {f : X → Y} {g : Z → δ} (hf : Continuous f) (hg : Continuous g) :
     Continuous (Sum.map f g) :=
   continuous_sum_map.2 ⟨hf, hg⟩
 #align continuous.sum_map Continuous.sum_map
 
-theorem isOpenMap_sum {f : Sum X Y → γ} :
+theorem isOpenMap_sum {f : Sum X Y → Z} :
     IsOpenMap f ↔ (IsOpenMap fun a => f (inl a)) ∧ IsOpenMap fun b => f (inr b) := by
   simp only [isOpenMap_iff_nhds_le, Sum.forall, nhds_inl, nhds_inr, Filter.map_map, comp]
 #align is_open_map_sum isOpenMap_sum
 
 @[simp]
-theorem isOpenMap_sum_elim {f : X → γ} {g : Y → γ} :
+theorem isOpenMap_sum_elim {f : X → Z} {g : Y → Z} :
     IsOpenMap (Sum.elim f g) ↔ IsOpenMap f ∧ IsOpenMap g := by
   simp only [isOpenMap_sum, elim_inl, elim_inr]
 #align is_open_map_sum_elim isOpenMap_sum_elim
 
-theorem IsOpenMap.sum_elim {f : X → γ} {g : Y → γ} (hf : IsOpenMap f) (hg : IsOpenMap g) :
+theorem IsOpenMap.sum_elim {f : X → Z} {g : Y → Z} (hf : IsOpenMap f) (hg : IsOpenMap g) :
     IsOpenMap (Sum.elim f g) :=
   isOpenMap_sum_elim.2 ⟨hf, hg⟩
 #align is_open_map.sum_elim IsOpenMap.sum_elim
@@ -994,7 +994,7 @@ end Sum
 
 section Subtype
 
-variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace γ] {p : X → Prop}
+variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] {p : X → Prop}
 
 theorem inducing_subtype_val {b : Set Y} : Inducing ((↑) : b → Y) := ⟨rfl⟩
 #align inducing_coe inducing_subtype_val
@@ -1162,7 +1162,7 @@ end Subtype
 
 section Quotient
 
-variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace γ]
+variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
 variable {r : X → X → Prop} {s : Setoid X}
 
