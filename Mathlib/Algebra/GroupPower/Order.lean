@@ -462,17 +462,6 @@ lemma pow_four_le_pow_two_of_pow_two_le (h : a ^ 2 ≤ b) : a ^ 4 ≤ b ^ 2 :=
 
 end LinearOrderedRing
 
-section LinearOrderedCommRing
-variable [LinearOrderedCommRing α] {a b c d : α}
-
-lemma abs_sub_sq (a b : α) : |a - b| * |a - b| = a * a + b * b - (1 + 1) * a * b := by
-  rw [abs_mul_abs_self]
-  simp only [mul_add, add_comm, add_left_comm, mul_comm, sub_eq_add_neg, mul_one, mul_neg,
-    neg_add_rev, neg_neg, add_assoc]
-#align abs_sub_sq abs_sub_sq
-
-end LinearOrderedCommRing
-
 section LinearOrderedCommMonoidWithZero
 
 variable [LinearOrderedCommMonoidWithZero M] [NoZeroDivisors M] {a : M} {n : ℕ}

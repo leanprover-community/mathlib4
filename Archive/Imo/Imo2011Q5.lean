@@ -3,7 +3,6 @@ Copyright (c) 2021 Alain Verberkmoes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alain Verberkmoes
 -/
-import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Data.Int.Dvd.Basic
 import Mathlib.Tactic.Common
 

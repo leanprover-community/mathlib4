@@ -5,7 +5,6 @@ Authors: Jeremy Avigad, Robert Y. Lewis, Yury G. Kudryashov
 -/
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.Order.Monoid.OrderDual
-import Mathlib.Tactic.Lift
 import Mathlib.Tactic.Monotonicity.Attr
 
 /-!

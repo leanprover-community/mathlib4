@@ -5,6 +5,7 @@ Authors: Jeremy Avigad
 -/
 import Mathlib.Data.Int.Basic
 import Mathlib.Data.Nat.Bitwise
+import Mathlib.Data.Nat.Size
 import Mathlib.Init.Data.Int.Bitwise
 
 #align_import data.int.bitwise from "leanprover-community/mathlib"@"0743cc5d9d86bcd1bba10f480e948a257d65056f"

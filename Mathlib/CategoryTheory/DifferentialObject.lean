@@ -7,8 +7,6 @@ import Mathlib.Algebra.Group.Basic
 import Mathlib.Data.Int.Cast.Defs
 import Mathlib.CategoryTheory.Shift.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
-import Mathlib.CategoryTheory.Shift.Basic
-import Mathlib.Data.Int.Cast.Defs
 
 #align_import category_theory.differential_object from "leanprover-community/mathlib"@"6876fa15e3158ff3e4a4e2af1fb6e1945c6e8803"
 
