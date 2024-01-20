@@ -59,17 +59,33 @@ open Set Finset Filter
 
 open scoped ENNReal BigOperators Topology
 
-instance ENNReal.instSMulPosMono : SMulPosMono ℕ ℝ≥0∞ := by
+instance {α : Type*} [AddMonoid α] [Preorder α]
+    [CovariantClass α α (Function.swap (· + ·)) (· ≤ ·)] :
+    SMulPosMono ℕ α := by
   constructor
-  intro b _ n m hnm
-  simp only [nsmul_eq_mul]
-  gcongr
+  intro b hb n m hnm
+  induction m with
+  | zero =>
+    simp only [Nat.zero_eq, nonpos_iff_eq_zero] at hnm
+    simp only [hnm, zero_smul, Nat.zero_eq, le_refl]
+  | succ m ih =>
+    cases hnm with
+    | refl => exact le_rfl
+    | step hnm =>
+      refine (ih hnm).trans ?_
+      rw [succ_nsmul]
+      conv_lhs => rw [← zero_add (m • b)]
+      exact add_le_add_right hb _
 
-instance ENNReal.instPosSMulMono : PosSMulMono ℕ ℝ≥0∞ := by
+instance {α : Type*} [OrderedAddCommMonoid α] : PosSMulMono ℕ α := by
   constructor
-  intro b _ n m hnm
-  simp only [nsmul_eq_mul]
-  gcongr
+  intro n hn a b hab
+  induction n with
+  | zero => simp only [Nat.zero_eq, zero_smul, le_refl]
+  | succ n ih =>
+    rw [succ_nsmul, succ_nsmul]
+    refine add_le_add hab ?_
+    simpa only [zero_le, forall_true_left] using ih
 
 namespace MeasureTheory
 
