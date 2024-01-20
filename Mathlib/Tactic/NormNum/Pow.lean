@@ -233,10 +233,10 @@ def evalZPow : NormNumExt where eval {u α} e := do
   let .app (.app (f : Q($α → ℤ → $α)) (a : Q($α))) (b : Q(ℤ)) ← whnfR e | failure
   let _c ← synthInstanceQ q(DivisionRing $α)
   let rb ← derive (α := q(ℤ)) b
+  haveI' : $e =Q $a ^ $b := ⟨⟩
   match rb with
   | .isBool .. | .isRat _ _ _ _ _ => failure
   | .isNat sβ nb pb =>
-    haveI' : $e =Q $a ^ $b := ⟨⟩
     let e' : Q($α) := q($a ^ $nb)
     match ← derive e' with
     | .isBool .. => failure
@@ -250,7 +250,6 @@ def evalZPow : NormNumExt where eval {u α} e := do
       assumeInstancesCommute
       return .isRat sα' qe' nume' dene' q(isRat_zpow_pos $pb $pe')
   | .isNegNat sβ nb pb =>
-    haveI' : $e =Q $a ^ $b := ⟨⟩
     let e' : Q($α) := q(($a ^ $nb)⁻¹)
     match ← derive e' with
     | .isBool .. => failure
