@@ -7,6 +7,7 @@ import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Analysis.Asymptotics.Asymptotics
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Data.List.TFAE
+import Mathlib.Data.Real.Sqrt
 
 #align_import analysis.specific_limits.normed from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
@@ -127,7 +128,7 @@ theorem TFAE_exists_lt_isLittleO_pow (f : ℕ → ℝ) (R : ℝ) :
     TFAE
       [∃ a ∈ Ioo (-R) R, f =o[atTop] (a ^ ·), ∃ a ∈ Ioo 0 R, f =o[atTop] (a ^ ·),
         ∃ a ∈ Ioo (-R) R, f =O[atTop] (a ^ ·), ∃ a ∈ Ioo 0 R, f =O[atTop] (a ^ ·),
-        ∃ a < R, ∃ (C : _) (_ : 0 < C ∨ 0 < R), ∀ n, |f n| ≤ C * a ^ n,
+        ∃ a < R, ∃ C : ℝ, (0 < C ∨ 0 < R) ∧ ∀ n, |f n| ≤ C * a ^ n,
         ∃ a ∈ Ioo 0 R, ∃ C > 0, ∀ n, |f n| ≤ C * a ^ n, ∃ a < R, ∀ᶠ n in atTop, |f n| ≤ a ^ n,
         ∃ a ∈ Ioo 0 R, ∀ᶠ n in atTop, |f n| ≤ a ^ n] := by
   have A : Ico 0 R ⊆ Ioo (-R) R :=
@@ -319,7 +320,7 @@ theorem summable_geometric_iff_norm_lt_1 : (Summable fun n : ℕ ↦ ξ ^ n) ↔
     (h.tendsto_cofinite_zero.eventually (ball_mem_nhds _ zero_lt_one)).exists
   simp only [norm_pow, dist_zero_right] at hk
   rw [← one_pow k] at hk
-  exact lt_of_pow_lt_pow _ zero_le_one hk
+  exact lt_of_pow_lt_pow_left _ zero_le_one hk
 #align summable_geometric_iff_norm_lt_1 summable_geometric_iff_norm_lt_1
 
 end Geometric
@@ -428,7 +429,7 @@ theorem NormedAddCommGroup.cauchy_series_of_le_geometric'' {C : ℝ} {u : ℕ �
     CauchySeq fun n ↦ ∑ k in range (n + 1), u k := by
   set v : ℕ → α := fun n ↦ if n < N then 0 else u n
   have hC : 0 ≤ C :=
-    (zero_le_mul_right <| pow_pos hr₀ N).mp ((norm_nonneg _).trans <| h N <| le_refl N)
+    (mul_nonneg_iff_of_pos_right <| pow_pos hr₀ N).mp ((norm_nonneg _).trans <| h N <| le_refl N)
   have : ∀ n ≥ N, u n = v n := by
     intro n hn
     simp [hn, if_neg (not_lt.mpr hn)]

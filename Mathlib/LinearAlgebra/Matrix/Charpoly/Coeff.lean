@@ -163,7 +163,7 @@ theorem matPolyEquiv_symm_map_eval (M : (Matrix n n R)[X]) (r : R) :
   suffices ((aeval r).mapMatrix.comp matPolyEquiv.symm.toAlgHom : (Matrix n n R)[X] →ₐ[R] _) =
       (eval₂AlgHom' (AlgHom.id R _) (scalar n r)
         fun x => (scalar_commute _ (Commute.all _) _).symm) from
-    FunLike.congr_fun this M
+    DFunLike.congr_fun this M
   ext : 1
   · ext M : 1
     simp [Function.comp]
@@ -363,7 +363,7 @@ lemma reverse_charpoly (M : Matrix n n R) :
     eval 0 M.charpolyRev = 1 := by
   rw [charpolyRev, ← coe_evalRingHom, RingHom.map_det, ← det_one (R := R) (n := n)]
   have : (1 - (X : R[X]) • M.map C).map (eval 0) = 1 := by
-    ext i j; cases' eq_or_ne i j with hij hij <;> simp [hij]
+    ext i j; rcases eq_or_ne i j with hij | hij <;> simp [hij]
   congr
 
 @[simp] lemma coeff_charpolyRev_eq_neg_trace (M : Matrix n n R) :

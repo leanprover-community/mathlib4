@@ -494,6 +494,18 @@ instance center.instNonUnitalCommSemiring : NonUnitalCommSemiring (center R) :=
   { Subsemigroup.center.commSemigroup,
     NonUnitalSubsemiringClass.toNonUnitalNonAssocSemiring (center R) with }
 
+/-- A point-free means of proving membership in the center, for a non-associative ring.
+
+This can be helpful when working with types that have ext lemmas for `R →+ R`. -/
+lemma _root_.Set.mem_center_iff_addMonoidHom (a : R) :
+    a ∈ Set.center R ↔
+      AddMonoidHom.mulLeft a = .mulRight a ∧
+      AddMonoidHom.compr₂ .mul (.mulLeft a) = .comp .mul (.mulLeft a) ∧
+      AddMonoidHom.comp .mul (.mulRight a) = .compl₂ .mul (.mulLeft a) ∧
+      AddMonoidHom.compr₂ .mul (.mulRight a) = .compl₂ .mul (.mulRight a) := by
+  rw [Set.mem_center_iff, isMulCentral_iff]
+  simp [DFunLike.ext_iff]
+
 end NonUnitalNonAssocSemiring
 
 section NonUnitalSemiring
@@ -928,7 +940,7 @@ theorem eqOn_sclosure {f g : F} {s : Set R} (h : Set.EqOn (f : R → S) (g : R �
 
 theorem eq_of_eqOn_stop {f g : F}
     (h : Set.EqOn (f : R → S) (g : R → S) (⊤ : NonUnitalSubsemiring R)) : f = g :=
-  FunLike.ext _ _ fun _ => h trivial
+  DFunLike.ext _ _ fun _ => h trivial
 #align non_unital_ring_hom.eq_of_eq_on_stop NonUnitalRingHom.eq_of_eqOn_stop
 
 theorem eq_of_eqOn_sdense {s : Set R} (hs : closure s = ⊤) {f g : F}

@@ -19,7 +19,7 @@ open Nat
 
 universe u v
 
-variable {α β : Type*}
+variable {ι α β : Type*}
 
 namespace Finset
 
@@ -51,6 +51,9 @@ theorem fold_sup_univ [SemilatticeSup α] [OrderTop α] (a : α) :
     (Finset.univ.fold (· ⊔ ·) a fun x => x) = ⊤ :=
   @fold_inf_univ αᵒᵈ _ _ _ _
 #align finset.fold_sup_univ Finset.fold_sup_univ
+
+lemma mem_inf [DecidableEq α] {s : Finset ι} {f : ι → Finset α} {a : α} :
+    a ∈ s.inf f ↔ ∀ i ∈ s, a ∈ f i := by induction' s using Finset.cons_induction <;> simp [*]
 
 end Finset
 

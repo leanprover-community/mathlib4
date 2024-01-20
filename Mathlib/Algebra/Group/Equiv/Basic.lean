@@ -128,7 +128,7 @@ variable (F)
 @[to_additive]
 instance (priority := 100) instMulHomClass (F : Type*)
     [Mul M] [Mul N] [h : MulEquivClass F M N] : MulHomClass F M N :=
-  { h with coe := h.coe, coe_injective' := FunLike.coe_injective' }
+  { h with coe := h.coe, coe_injective' := DFunLike.coe_injective' }
 
 -- See note [lower instance priority]
 @[to_additive]
@@ -195,7 +195,7 @@ instance [Mul α] [Mul β] [MulEquivClass F α β] : CoeTC F (α ≃* β) :=
 @[to_additive]
 theorem MulEquivClass.toMulEquiv_injective [Mul α] [Mul β] [MulEquivClass F α β] :
     Function.Injective ((↑) : F → α ≃* β) :=
-  fun _ _ e ↦ FunLike.ext _ _ <| fun a ↦ congr_arg (fun e : α ≃* β ↦ e.toFun a) e
+  fun _ _ e ↦ DFunLike.ext _ _ fun a ↦ congr_arg (fun e : α ≃* β ↦ e.toFun a) e
 
 namespace MulEquiv
 
@@ -482,13 +482,13 @@ theorem symm_comp_eq {α : Type*} (e : M ≃* N) (f : α → M) (g : α → N) :
 
 @[to_additive (attr := simp)]
 theorem symm_trans_self (e : M ≃* N) : e.symm.trans e = refl N :=
-  FunLike.ext _ _ e.apply_symm_apply
+  DFunLike.ext _ _ e.apply_symm_apply
 #align mul_equiv.symm_trans_self MulEquiv.symm_trans_self
 #align add_equiv.symm_trans_self AddEquiv.symm_trans_self
 
 @[to_additive (attr := simp)]
 theorem self_trans_symm (e : M ≃* N) : e.trans e.symm = refl M :=
-  FunLike.ext _ _ e.symm_apply_apply
+  DFunLike.ext _ _ e.symm_apply_apply
 #align mul_equiv.self_trans_symm MulEquiv.self_trans_symm
 #align add_equiv.self_trans_symm AddEquiv.self_trans_symm
 
@@ -511,13 +511,13 @@ same underlying function. -/
 @[to_additive (attr := ext)
   "Two additive isomorphisms agree if they are defined by the same underlying function."]
 theorem ext {f g : MulEquiv M N} (h : ∀ x, f x = g x) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align mul_equiv.ext MulEquiv.ext
 #align add_equiv.ext AddEquiv.ext
 
 @[to_additive]
 theorem ext_iff {f g : MulEquiv M N} : f = g ↔ ∀ x, f x = g x :=
-  FunLike.ext_iff
+  DFunLike.ext_iff
 #align mul_equiv.ext_iff MulEquiv.ext_iff
 #align add_equiv.ext_iff AddEquiv.ext_iff
 
@@ -535,13 +535,13 @@ theorem mk_coe' (e : M ≃* N) (f h₁ h₂ h₃) : (MulEquiv.mk ⟨f, e, h₁, 
 
 @[to_additive]
 protected theorem congr_arg {f : MulEquiv M N} {x x' : M} : x = x' → f x = f x' :=
-  FunLike.congr_arg f
+  DFunLike.congr_arg f
 #align mul_equiv.congr_arg MulEquiv.congr_arg
 #align add_equiv.congr_arg AddEquiv.congr_arg
 
 @[to_additive]
 protected theorem congr_fun {f g : MulEquiv M N} (h : f = g) (x : M) : f x = g x :=
-  FunLike.congr_fun h x
+  DFunLike.congr_fun h x
 #align mul_equiv.congr_fun MulEquiv.congr_fun
 #align add_equiv.congr_fun AddEquiv.congr_fun
 
@@ -762,8 +762,8 @@ def MulHom.toMulEquiv [Mul M] [Mul N] (f : M →ₙ* N) (g : N →ₙ* M) (h₁ 
     (h₂ : f.comp g = MulHom.id _) : M ≃* N where
   toFun := f
   invFun := g
-  left_inv := FunLike.congr_fun h₁
-  right_inv := FunLike.congr_fun h₂
+  left_inv := DFunLike.congr_fun h₁
+  right_inv := DFunLike.congr_fun h₂
   map_mul' := f.map_mul
 #align mul_hom.to_mul_equiv MulHom.toMulEquiv
 #align add_hom.to_add_equiv AddHom.toAddEquiv
@@ -798,8 +798,8 @@ def MonoidHom.toMulEquiv [MulOneClass M] [MulOneClass N] (f : M →* N) (g : N �
     (h₁ : g.comp f = MonoidHom.id _) (h₂ : f.comp g = MonoidHom.id _) : M ≃* N where
   toFun := f
   invFun := g
-  left_inv := FunLike.congr_fun h₁
-  right_inv := FunLike.congr_fun h₂
+  left_inv := DFunLike.congr_fun h₁
+  right_inv := DFunLike.congr_fun h₂
   map_mul' := f.map_mul
 #align monoid_hom.to_mul_equiv MonoidHom.toMulEquiv
 #align add_monoid_hom.to_add_equiv AddMonoidHom.toAddEquiv

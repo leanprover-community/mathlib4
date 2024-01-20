@@ -5,6 +5,7 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin
 -/
 import Mathlib.Algebra.QuadraticDiscriminant
 import Mathlib.Analysis.Convex.SpecificFunctions.Deriv
+import Mathlib.Analysis.SpecialFunctions.Pow.Complex
 
 #align_import analysis.special_functions.trigonometric.complex from "leanprover-community/mathlib"@"8f9fea08977f7e450770933ee6abb20733b47c92"
 
@@ -168,7 +169,7 @@ theorem cos_eq_iff_quadratic {z w : ℂ} :
 
 theorem cos_surjective : Function.Surjective cos := by
   intro x
-  obtain ⟨w, w₀, hw⟩ : ∃ (w : _) (_ : w ≠ 0), 1 * w * w + -2 * x * w + 1 = 0 := by
+  obtain ⟨w, w₀, hw⟩ : ∃ w ≠ 0, 1 * w * w + -2 * x * w + 1 = 0 := by
     rcases exists_quadratic_eq_zero one_ne_zero
         ⟨_, (cpow_nat_inv_pow _ two_ne_zero).symm.trans <| pow_two _⟩ with
       ⟨w, hw⟩

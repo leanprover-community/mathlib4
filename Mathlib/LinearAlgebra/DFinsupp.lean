@@ -362,7 +362,7 @@ lemma mem_iSup_iff_exists_finsupp (p : ι → Submodule R N) (x : N) :
   rw [mem_iSup_iff_exists_dfinsupp']
   refine ⟨fun ⟨f, hf⟩ ↦ ⟨⟨f.support, fun i ↦ (f i : N), by simp⟩, by simp, hf⟩, ?_⟩
   rintro ⟨f, hf, rfl⟩
-  refine ⟨DFinsupp.mk f.support <| fun i ↦ ⟨f i, hf i⟩, Finset.sum_congr ?_ fun i hi ↦ ?_⟩
+  refine ⟨DFinsupp.mk f.support fun i ↦ ⟨f i, hf i⟩, Finset.sum_congr ?_ fun i hi ↦ ?_⟩
   · ext; simp
   · simp [Finsupp.mem_support_iff.mp hi]
 
@@ -449,7 +449,7 @@ theorem independent_of_dfinsupp_lsum_injective (p : ι → Submodule R N)
     lsum ℕ (M := fun i ↦ ↥(p i)) (fun i => (p i).subtype) (erase i v) =
       lsum ℕ (M := fun i ↦ ↥(p i)) (fun i => (p i).subtype) (single i x)
   · simpa only [lsum_single] using hv
-  have := FunLike.ext_iff.mp (h hv) i
+  have := DFunLike.ext_iff.mp (h hv) i
   simpa [eq_comm] using this
 #align complete_lattice.independent_of_dfinsupp_lsum_injective CompleteLattice.independent_of_dfinsupp_lsum_injective
 

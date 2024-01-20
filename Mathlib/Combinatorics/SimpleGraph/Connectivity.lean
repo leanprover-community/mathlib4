@@ -706,7 +706,7 @@ theorem edges_subset_edgeSet {u v : V} :
     next h' => exact edges_subset_edgeSet p' h'
 #align simple_graph.walk.edges_subset_edge_set SimpleGraph.Walk.edges_subset_edgeSet
 
-theorem adj_of_mem_edges {u v x y : V} (p : G.Walk u v) (h : ⟦(x, y)⟧ ∈ p.edges) : G.Adj x y :=
+theorem adj_of_mem_edges {u v x y : V} (p : G.Walk u v) (h : s(x, y) ∈ p.edges) : G.Adj x y :=
   edges_subset_edgeSet p h
 #align simple_graph.walk.adj_of_mem_edges SimpleGraph.Walk.adj_of_mem_edges
 
@@ -771,12 +771,12 @@ theorem edges_nil {u : V} : (nil : G.Walk u u).edges = [] := rfl
 
 @[simp]
 theorem edges_cons {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
-    (cons h p).edges = ⟦(u, v)⟧ :: p.edges := rfl
+    (cons h p).edges = s(u, v) :: p.edges := rfl
 #align simple_graph.walk.edges_cons SimpleGraph.Walk.edges_cons
 
 @[simp]
 theorem edges_concat {u v w : V} (p : G.Walk u v) (h : G.Adj v w) :
-    (p.concat h).edges = p.edges.concat ⟦(v, w)⟧ := by simp [edges]
+    (p.concat h).edges = p.edges.concat s(v, w) := by simp [edges]
 #align simple_graph.walk.edges_concat SimpleGraph.Walk.edges_concat
 
 @[simp]
@@ -824,7 +824,7 @@ theorem dart_snd_mem_support_of_mem_darts {u v : V} (p : G.Walk u v) {d : G.Dart
   simpa using p.reverse.dart_fst_mem_support_of_mem_darts (by simp [h] : d.symm ∈ p.reverse.darts)
 #align simple_graph.walk.dart_snd_mem_support_of_mem_darts SimpleGraph.Walk.dart_snd_mem_support_of_mem_darts
 
-theorem fst_mem_support_of_mem_edges {t u v w : V} (p : G.Walk v w) (he : ⟦(t, u)⟧ ∈ p.edges) :
+theorem fst_mem_support_of_mem_edges {t u v w : V} (p : G.Walk v w) (he : s(t, u) ∈ p.edges) :
     t ∈ p.support := by
   obtain ⟨d, hd, he⟩ := List.mem_map.mp he
   rw [dart_edge_eq_mk'_iff'] at he
@@ -833,7 +833,7 @@ theorem fst_mem_support_of_mem_edges {t u v w : V} (p : G.Walk v w) (he : ⟦(t,
   · exact dart_snd_mem_support_of_mem_darts _ hd
 #align simple_graph.walk.fst_mem_support_of_mem_edges SimpleGraph.Walk.fst_mem_support_of_mem_edges
 
-theorem snd_mem_support_of_mem_edges {t u v w : V} (p : G.Walk v w) (he : ⟦(t, u)⟧ ∈ p.edges) :
+theorem snd_mem_support_of_mem_edges {t u v w : V} (p : G.Walk v w) (he : s(t, u) ∈ p.edges) :
     u ∈ p.support := by
   rw [Sym2.eq_swap] at he
   exact p.fst_mem_support_of_mem_edges he
@@ -915,7 +915,7 @@ def firstDart (p : G.Walk v w) (hp : ¬ p.Nil) : G.Dart where
   is_adj := p.adj_sndOfNotNil hp
 
 lemma edge_firstDart (p : G.Walk v w) (hp : ¬ p.Nil) :
-    (p.firstDart hp).edge = ⟦(v, p.sndOfNotNil hp)⟧ := rfl
+    (p.firstDart hp).edge = s(v, p.sndOfNotNil hp) := rfl
 
 @[simp] lemma cons_tail_eq (p : G.Walk x y) (hp : ¬ p.Nil) :
     cons (p.adj_sndOfNotNil hp) (p.tail hp) = p :=
@@ -1025,7 +1025,7 @@ theorem IsTrail.of_cons {u v w : V} {h : G.Adj u v} {p : G.Walk v w} :
 
 @[simp]
 theorem cons_isTrail_iff {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
-    (cons h p).IsTrail ↔ p.IsTrail ∧ ⟦(u, v)⟧ ∉ p.edges := by simp [isTrail_def, and_comm]
+    (cons h p).IsTrail ↔ p.IsTrail ∧ s(u, v) ∉ p.edges := by simp [isTrail_def, and_comm]
 #align simple_graph.walk.cons_is_trail_iff SimpleGraph.Walk.cons_isTrail_iff
 
 theorem IsTrail.reverse {u v : V} (p : G.Walk u v) (h : p.IsTrail) : p.reverse.IsTrail := by
@@ -1115,7 +1115,7 @@ lemma IsCycle.ne_bot : ∀ {p : G.Walk u u}, p.IsCycle → G ≠ ⊥
   | cons h _, hp => by rintro rfl; exact h
 
 theorem cons_isCycle_iff {u v : V} (p : G.Walk v u) (h : G.Adj u v) :
-    (Walk.cons h p).IsCycle ↔ p.IsPath ∧ ¬⟦(u, v)⟧ ∈ p.edges := by
+    (Walk.cons h p).IsCycle ↔ p.IsPath ∧ ¬s(u, v) ∈ p.edges := by
   simp only [Walk.isCycle_def, Walk.isPath_def, Walk.isTrail_def, edges_cons, List.nodup_cons,
     support_cons, List.tail_cons]
   have : p.support.Nodup → p.edges.Nodup := edges_nodup_of_support_nodup
@@ -1206,7 +1206,7 @@ theorem count_support_takeUntil_eq_one {u v w : V} (p : G.Walk v w) (h : u ∈ p
 #align simple_graph.walk.count_support_take_until_eq_one SimpleGraph.Walk.count_support_takeUntil_eq_one
 
 theorem count_edges_takeUntil_le_one {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) (x : V) :
-    (p.takeUntil u h).edges.count ⟦(u, x)⟧ ≤ 1 := by
+    (p.takeUntil u h).edges.count s(u, x) ≤ 1 := by
   induction' p with u' u' v' w' ha p' ih
   · rw [mem_support_nil_iff] at h
     subst u
@@ -1409,7 +1409,7 @@ def singleton {u v : V} (h : G.Adj u v) : G.Path u v :=
 #align simple_graph.path.singleton SimpleGraph.Path.singleton
 
 theorem mk'_mem_edges_singleton {u v : V} (h : G.Adj u v) :
-    ⟦(u, v)⟧ ∈ (singleton h : G.Walk u v).edges := by simp [singleton]
+    s(u, v) ∈ (singleton h : G.Walk u v).edges := by simp [singleton]
 #align simple_graph.path.mk_mem_edges_singleton SimpleGraph.Path.mk'_mem_edges_singleton
 
 /-- The reverse of a path is another path.  See also `SimpleGraph.Walk.reverse`. -/
@@ -1444,7 +1444,7 @@ theorem not_mem_edges_of_loop {v : V} {e : Sym2 V} {p : G.Path v v} : ¬e ∈ (p
 #align simple_graph.path.not_mem_edges_of_loop SimpleGraph.Path.not_mem_edges_of_loop
 
 theorem cons_isCycle {u v : V} (p : G.Path v u) (h : G.Adj u v)
-    (he : ¬⟦(u, v)⟧ ∈ (p : G.Walk v u).edges) : (Walk.cons h ↑p).IsCycle := by
+    (he : ¬s(u, v) ∈ (p : G.Walk v u).edges) : (Walk.cons h ↑p).IsCycle := by
   simp [Walk.isCycle_def, Walk.cons_isTrail_iff, he]
 #align simple_graph.path.cons_is_cycle SimpleGraph.Path.cons_isCycle
 
@@ -1792,7 +1792,7 @@ protected def transfer {u v : V} (p : G.Walk u v)
   match p with
   | nil => nil
   | cons' u v w a p =>
-    cons (h ⟦(u, v)⟧ (by simp)) (p.transfer H fun e he => h e (by simp [he]))
+    cons (h s(u, v) (by simp)) (p.transfer H fun e he => h e (by simp [he]))
 #align simple_graph.walk.transfer SimpleGraph.Walk.transfer
 
 variable {u v : V} (p : G.Walk u v)
@@ -2069,7 +2069,7 @@ This follows the convention observed by mathlib that something is connected iff 
 exactly one connected component.
 
 There is a `CoeFun` instance so that `h u v` can be used instead of `h.Preconnected u v`. -/
-@[mk_iff connected_iff]
+@[mk_iff]
 structure Connected : Prop where
   protected preconnected : G.Preconnected
   protected [nonempty : Nonempty V]
@@ -2588,11 +2588,11 @@ def IsBridge (G : SimpleGraph V) (e : Sym2 V) : Prop :=
 #align simple_graph.is_bridge SimpleGraph.IsBridge
 
 theorem isBridge_iff {u v : V} :
-    G.IsBridge ⟦(u, v)⟧ ↔ G.Adj u v ∧ ¬(G \ fromEdgeSet {⟦(u, v)⟧}).Reachable u v := Iff.rfl
+    G.IsBridge s(u, v) ↔ G.Adj u v ∧ ¬(G \ fromEdgeSet {s(u, v)}).Reachable u v := Iff.rfl
 #align simple_graph.is_bridge_iff SimpleGraph.isBridge_iff
 
 theorem reachable_delete_edges_iff_exists_walk {v w : V} :
-    (G \ fromEdgeSet {⟦(v, w)⟧}).Reachable v w ↔ ∃ p : G.Walk v w, ¬⟦(v, w)⟧ ∈ p.edges := by
+    (G \ fromEdgeSet {s(v, w)}).Reachable v w ↔ ∃ p : G.Walk v w, ¬s(v, w) ∈ p.edges := by
   constructor
   · rintro ⟨p⟩
     use p.map (Hom.mapSpanningSubgraphs (by simp))
@@ -2607,14 +2607,14 @@ theorem reachable_delete_edges_iff_exists_walk {v w : V} :
 #align simple_graph.reachable_delete_edges_iff_exists_walk SimpleGraph.reachable_delete_edges_iff_exists_walk
 
 theorem isBridge_iff_adj_and_forall_walk_mem_edges {v w : V} :
-    G.IsBridge ⟦(v, w)⟧ ↔ G.Adj v w ∧ ∀ p : G.Walk v w, ⟦(v, w)⟧ ∈ p.edges := by
+    G.IsBridge s(v, w) ↔ G.Adj v w ∧ ∀ p : G.Walk v w, s(v, w) ∈ p.edges := by
   rw [isBridge_iff, and_congr_right']
   rw [reachable_delete_edges_iff_exists_walk, not_exists_not]
 #align simple_graph.is_bridge_iff_adj_and_forall_walk_mem_edges SimpleGraph.isBridge_iff_adj_and_forall_walk_mem_edges
 
 theorem reachable_deleteEdges_iff_exists_cycle.aux [DecidableEq V] {u v w : V}
-    (hb : ∀ p : G.Walk v w, ⟦(v, w)⟧ ∈ p.edges) (c : G.Walk u u) (hc : c.IsTrail)
-    (he : ⟦(v, w)⟧ ∈ c.edges)
+    (hb : ∀ p : G.Walk v w, s(v, w) ∈ p.edges) (c : G.Walk u u) (hc : c.IsTrail)
+    (he : s(v, w) ∈ c.edges)
     (hw : w ∈ (c.takeUntil v (c.fst_mem_support_of_mem_edges he)).support) : False := by
   have hv := c.fst_mem_support_of_mem_edges he
   -- decompose c into
@@ -2630,7 +2630,7 @@ theorem reachable_deleteEdges_iff_exists_cycle.aux [DecidableEq V] {u v w : V}
   --   |               ^
   --    `-------------'
   --      pwv.reverse
-  -- so they both contain the edge ⟦(v, w)⟧, but that's a contradiction since c is a trail.
+  -- so they both contain the edge s(v, w), but that's a contradiction since c is a trail.
   have hbq := hb (pvu.append puw)
   have hpq' := hb pwv.reverse
   rw [Walk.edges_reverse, List.mem_reverse] at hpq'
@@ -2641,8 +2641,8 @@ theorem reachable_deleteEdges_iff_exists_cycle.aux [DecidableEq V] {u v w : V}
 
 -- porting note: the unused variable checker helped eliminate a good amount of this proof (!)
 theorem adj_and_reachable_delete_edges_iff_exists_cycle {v w : V} :
-    G.Adj v w ∧ (G \ fromEdgeSet {⟦(v, w)⟧}).Reachable v w ↔
-      ∃ (u : V) (p : G.Walk u u), p.IsCycle ∧ ⟦(v, w)⟧ ∈ p.edges := by
+    G.Adj v w ∧ (G \ fromEdgeSet {s(v, w)}).Reachable v w ↔
+      ∃ (u : V) (p : G.Walk u u), p.IsCycle ∧ s(v, w) ∈ p.edges := by
   classical
   rw [reachable_delete_edges_iff_exists_walk]
   constructor
@@ -2656,7 +2656,7 @@ theorem adj_and_reachable_delete_edges_iff_exists_cycle {v w : V} :
   · rintro ⟨u, c, hc, he⟩
     refine ⟨c.adj_of_mem_edges he, ?_⟩
     by_contra! hb
-    have hb' : ∀ p : G.Walk w v, ⟦(w, v)⟧ ∈ p.edges := by
+    have hb' : ∀ p : G.Walk w v, s(w, v) ∈ p.edges := by
       intro p
       simpa [Sym2.eq_swap] using hb p.reverse
     have hvc : v ∈ c.support := Walk.fst_mem_support_of_mem_edges c he
@@ -2665,8 +2665,8 @@ theorem adj_and_reachable_delete_edges_iff_exists_cycle {v w : V} :
     rwa [(Walk.rotate_edges c hvc).mem_iff, Sym2.eq_swap]
 #align simple_graph.adj_and_reachable_delete_edges_iff_exists_cycle SimpleGraph.adj_and_reachable_delete_edges_iff_exists_cycle
 
-theorem isBridge_iff_adj_and_forall_cycle_not_mem {v w : V} : G.IsBridge ⟦(v, w)⟧ ↔
-    G.Adj v w ∧ ∀ ⦃u : V⦄ (p : G.Walk u u), p.IsCycle → ⟦(v, w)⟧ ∉ p.edges := by
+theorem isBridge_iff_adj_and_forall_cycle_not_mem {v w : V} : G.IsBridge s(v, w) ↔
+    G.Adj v w ∧ ∀ ⦃u : V⦄ (p : G.Walk u u), p.IsCycle → s(v, w) ∉ p.edges := by
   rw [isBridge_iff, and_congr_right_iff]
   intro h
   rw [← not_iff_not]

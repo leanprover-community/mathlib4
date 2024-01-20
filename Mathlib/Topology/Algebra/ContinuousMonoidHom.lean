@@ -109,16 +109,16 @@ instance ContinuousMonoidHom.ContinuousMonoidHomClass :
   map_one f := f.map_one'
   map_continuous f := f.continuous_toFun
 
-/-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`
+/-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`
 directly. -/
 @[to_additive
-      "Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`."]
+      "Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`."]
 instance : CoeFun (ContinuousMonoidHom A B) fun _ => A → B :=
-  FunLike.hasCoeToFun
+  DFunLike.hasCoeToFun
 
 @[to_additive (attr := ext)]
 theorem ext {f g : ContinuousMonoidHom A B} (h : ∀ x, f x = g x) : f = g :=
-  FunLike.ext _ _ h
+  DFunLike.ext _ _ h
 #align continuous_monoid_hom.ext ContinuousMonoidHom.ext
 #align continuous_add_monoid_hom.ext ContinuousAddMonoidHom.ext
 
@@ -131,7 +131,7 @@ def toContinuousMap (f : ContinuousMonoidHom A B) : C(A, B) :=
 
 @[to_additive]
 theorem toContinuousMap_injective : Injective (toContinuousMap : _ → C(A, B)) := fun f g h =>
-  ext <| by convert FunLike.ext_iff.1 h
+  ext <| by convert DFunLike.ext_iff.1 h
 #align continuous_monoid_hom.to_continuous_map_injective ContinuousMonoidHom.toContinuousMap_injective
 #align continuous_add_monoid_hom.to_continuous_map_injective ContinuousAddMonoidHom.toContinuousMap_injective
 
@@ -287,46 +287,23 @@ theorem embedding_toContinuousMap :
 #align continuous_add_monoid_hom.embedding_to_continuous_map ContinuousAddMonoidHom.embedding_toContinuousMap
 
 @[to_additive]
+lemma range_toContinuousMap :
+    Set.range (toContinuousMap : ContinuousMonoidHom A B → C(A, B)) =
+      {f : C(A, B) | f 1 = 1 ∧ ∀ x y, f (x * y) = f x * f y} := by
+  refine Set.Subset.antisymm (Set.range_subset_iff.2 fun f ↦ ⟨map_one f, map_mul f⟩) ?_
+  rintro f ⟨h1, hmul⟩
+  exact ⟨{ f with map_one' := h1, map_mul' := hmul }, rfl⟩
+
+@[to_additive]
 theorem closedEmbedding_toContinuousMap [ContinuousMul B] [T2Space B] :
-    ClosedEmbedding (toContinuousMap : ContinuousMonoidHom A B → C(A, B)) :=
-  ⟨embedding_toContinuousMap A B,
-    ⟨by
-      suffices
-        Set.range (toContinuousMap : ContinuousMonoidHom A B → C(A, B)) =
-          ({ f | f '' {1} ⊆ {1}ᶜ } ∪
-              ⋃ (x) (y) (U) (V) (W) (_ : IsOpen U) (_ : IsOpen V) (_ : IsOpen W) (_ :
-                Disjoint (U * V) W),
-                { f | f '' {x} ⊆ U } ∩ { f | f '' {y} ⊆ V } ∩ { f | f '' {x * y} ⊆ W } :
-                  Set C(A , B))ᶜ by
-        rw [this, compl_compl]
-        refine' (ContinuousMap.isOpen_gen isCompact_singleton isOpen_compl_singleton).union _
-        repeat' apply isOpen_iUnion; intro
-        repeat' apply IsOpen.inter
-        all_goals apply ContinuousMap.isOpen_gen isCompact_singleton; assumption
-      simp_rw [Set.compl_union, Set.compl_iUnion, Set.image_singleton, Set.singleton_subset_iff,
-        Set.ext_iff, Set.mem_inter_iff, Set.mem_iInter, Set.mem_compl_iff]
-      refine' fun f => ⟨_, _⟩
-      · rintro ⟨f, rfl⟩
-        exact
-          ⟨fun h => h (map_one f), fun x y U V W _hU _hV _hW h ⟨⟨hfU, hfV⟩, hfW⟩ =>
-            h.le_bot ⟨Set.mul_mem_mul hfU hfV, (congr_arg (· ∈ W) (map_mul f x y)).mp hfW⟩⟩
-      · rintro ⟨hf1, hf2⟩
-        suffices ∀ x y, f (x * y) = f x * f y by
-          refine'
-            ⟨({ f with
-                  map_one' := of_not_not hf1
-                  map_mul' := this } :
-                ContinuousMonoidHom A B),
-              ContinuousMap.ext fun _ => rfl⟩
-        intro x y
-        contrapose! hf2
-        obtain ⟨UV, W, hUV, hW, hfUV, hfW, h⟩ := t2_separation hf2.symm
-        have hB := @continuous_mul B _ _ _
-        obtain ⟨U, V, hU, hV, hfU, hfV, h'⟩ :=
-          isOpen_prod_iff.mp (hUV.preimage hB) (f x) (f y) hfUV
-        refine' ⟨x, y, U, V, W, hU, hV, hW, h.mono_left _, ⟨hfU, hfV⟩, hfW⟩
-        rintro _ ⟨x, y, hx : (x, y).1 ∈ U, hy : (x, y).2 ∈ V, rfl⟩
-        exact h' ⟨hx, hy⟩⟩⟩
+    ClosedEmbedding (toContinuousMap : ContinuousMonoidHom A B → C(A, B)) where
+  toEmbedding := embedding_toContinuousMap A B
+  closed_range := by
+    simp only [range_toContinuousMap, Set.setOf_and, Set.setOf_forall]
+    refine .inter (isClosed_singleton.preimage (ContinuousMap.continuous_eval_const 1)) <|
+      isClosed_iInter fun x ↦ isClosed_iInter fun y ↦ ?_
+    exact isClosed_eq (ContinuousMap.continuous_eval_const (x * y)) <|
+      .mul (ContinuousMap.continuous_eval_const x) (ContinuousMap.continuous_eval_const y)
 #align continuous_monoid_hom.closed_embedding_to_continuous_map ContinuousMonoidHom.closedEmbedding_toContinuousMap
 #align continuous_add_monoid_hom.closed_embedding_to_continuous_map ContinuousAddMonoidHom.closedEmbedding_toContinuousMap
 
