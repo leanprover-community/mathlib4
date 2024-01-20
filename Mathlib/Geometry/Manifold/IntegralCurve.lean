@@ -394,55 +394,42 @@ theorem isIntegralCurveAt_eqOn_of_contMDiffAt (hγt₀ : I.IsInteriorPoint (γ t
   obtain ⟨K, s, hs, hlip⟩ : ∃ K, ∃ s ∈ nhds _, LipschitzOnWith K v' s :=
     (hv.contDiffAt (range_mem_nhds_isInteriorPoint hγt₀)).snd.exists_lipschitzOnWith
   have hlip (t : ℝ) : LipschitzOnWith K ((fun _ ↦ v') t) ((fun _ ↦ s) t) := hlip
-
-  have hsrc {g : ℝ → M} (hg : IsIntegralCurveAt g v t₀) :
+  -- internal lemmas to reduce code duplication
+  have hsrc {g} (hg : IsIntegralCurveAt g v t₀) :
     ∀ᶠ t in 𝓝 t₀, g ⁻¹' (extChartAt I (g t₀)).source ∈ 𝓝 t := eventually_mem_nhds.mpr <|
       continuousAt_def.mp hg.continuousAt _ <| extChartAt_source_mem_nhds I (g t₀)
-
   have hgt {g : ℝ → M} {t} (ht : g ⁻¹' (extChartAt I (g t₀)).source ∈ 𝓝 t) :
     g t ∈ (extChartAt I (g t₀)).source := mem_preimage.mp <| mem_of_mem_nhds ht
-
-  suffices (extChartAt I (γ t₀)) ∘ γ =ᶠ[𝓝 t₀] (extChartAt I (γ' t₀)) ∘ γ' by
-    have hh := this.fun_comp (extChartAt I (γ t₀)).symm
-    refine Filter.EventuallyEq.trans ?_ (Filter.EventuallyEq.trans hh ?_)
-    · apply (hsrc hγ).mono -- extract lemma?
-      intros t ht
-      rw [Function.comp_apply, Function.comp_apply,
-        PartialEquiv.left_inv _ (hgt ht)]
-    · apply (hsrc hγ').mono
-      intros t ht
-      rw [Function.comp_apply, Function.comp_apply, h,
-        PartialEquiv.left_inv _ (hgt ht)]
+  have heq {g} (hg : IsIntegralCurveAt g v t₀) :
+    g =ᶠ[𝓝 t₀] (extChartAt I (g t₀)).symm ∘ ↑(extChartAt I (g t₀)) ∘ g := by
+    apply (hsrc hg).mono
+    intros t ht
+    rw [Function.comp_apply, Function.comp_apply, PartialEquiv.left_inv _ (hgt ht)]
+  have hcont {g} (hg : IsIntegralCurveAt g v t₀) :
+    ∀ᶠ t in 𝓝 t₀, ContinuousAt ((extChartAt I (g t₀)) ∘ g) t := by
+    apply (hsrc hg |>.and hg).mono
+    rintro t ⟨ht1, ht2⟩
+    exact (continuousAt_extChartAt' _ _ (hgt ht1)).comp ht2.continuousAt
+  have hdrv {g} (hg : IsIntegralCurveAt g v t₀) (h' : γ t₀ = g t₀) :
+    ∀ᶠ (t : ℝ) in 𝓝 t₀, HasDerivAt ((extChartAt I (g t₀)) ∘ g)
+      ((fun _ ↦ v') t (((extChartAt I (g t₀)) ∘ g) t)) t := by
+    apply (hsrc hg |>.and hg.eventually_hasDerivAt).mono
+    rintro t ⟨ht1, ht2⟩
+    rw [hv', h']
+    apply ht2.congr_deriv
+    congr <;>
+    rw [Function.comp_apply, PartialEquiv.left_inv _ (hgt ht1)]
+  have hmem {g} (hg : IsIntegralCurveAt g v t₀) (h' : γ t₀ = g t₀) :
+    ∀ᶠ t in 𝓝 t₀, ((extChartAt I (g t₀)) ∘ g) t ∈ (fun _ ↦ s) t := by
+    apply ((continuousAt_extChartAt I (g t₀)).comp hg.continuousAt).preimage_mem_nhds
+    rw [Function.comp_apply, ← h']
+    exact hs
+  -- main proof
+  suffices (extChartAt I (γ t₀)) ∘ γ =ᶠ[𝓝 t₀] (extChartAt I (γ' t₀)) ∘ γ' from
+    (heq hγ).trans <| (this.fun_comp (extChartAt I (γ t₀)).symm).trans (h ▸ (heq hγ').symm)
   apply ODE_solution_unique_of_mem_set_eventually hlip
-  · -- extract lemma `IsIntegralCurveAt.eventually_continuousAt`?
-    apply (hsrc hγ |>.and hγ).mono
-    rintro t ⟨ht1, ht2⟩
-    exact (continuousAt_extChartAt' _ _ (hgt ht1)).comp
-      ht2.continuousAt
-  · apply (hsrc hγ |>.and hγ.eventually_hasDerivAt).mono
-    rintro t ⟨ht1, ht2⟩
-    rw [hv']
-    apply ht2.congr_deriv
-    congr <;>
-    rw [Function.comp_apply, PartialEquiv.left_inv _ (hgt ht1)]
-  · apply ((continuousAt_extChartAt I (γ t₀)).comp hγ.continuousAt).preimage_mem_nhds
-    rw [Function.comp_apply]
-    exact hs
-  -- repeat
-  · apply (hsrc hγ' |>.and hγ').mono
-    rintro t ⟨ht1, ht2⟩
-    exact (continuousAt_extChartAt' _ _ (hgt ht1)).comp
-      ht2.continuousAt
-  · apply (hsrc hγ' |>.and hγ'.eventually_hasDerivAt).mono
-    rintro t ⟨ht1, ht2⟩
-    rw [hv', h]
-    apply ht2.congr_deriv
-    congr <;>
-    rw [Function.comp_apply, PartialEquiv.left_inv _ (hgt ht1)]
-  · apply ((continuousAt_extChartAt I (γ' t₀)).comp hγ'.continuousAt).preimage_mem_nhds
-    rw [Function.comp_apply, ← h]
-    exact hs
-  · rw [Function.comp_apply, Function.comp_apply, h]
+    (hcont hγ) (hdrv hγ rfl) (hmem hγ rfl) (hcont hγ') (hdrv hγ' h) (hmem hγ' h)
+  rw [Function.comp_apply, Function.comp_apply, h]
 
 /-- Local integral curves are unique.
 
