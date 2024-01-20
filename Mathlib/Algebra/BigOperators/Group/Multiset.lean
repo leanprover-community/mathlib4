@@ -155,6 +155,15 @@ theorem pow_count [DecidableEq α] (a : α) : a ^ s.count a = (s.filter (Eq a)).
 #align multiset.pow_count Multiset.pow_count
 #align multiset.nsmul_count Multiset.nsmul_count
 
+theorem filter_prod_mul_sub_filter_prod_eq_prod (p) [DecidableEq α] [DecidablePred p] :
+    (s.filter p).prod * (s - (s.filter p)).prod = s.prod := by
+  rw [sub_filter_eq_filter_not]
+  induction' s using Multiset.induction with x X hx
+  · rw [filter_zero, prod_zero, one_mul, filter_zero, prod_zero]
+  · by_cases hpx : p x
+    all_goals simp [hpx, mul_assoc, hx]
+    rw [mul_comm (filter p X).prod, mul_assoc x, mul_comm _ (filter p X).prod, hx]
+
 @[to_additive]
 theorem prod_hom [CommMonoid β] (s : Multiset α) {F : Type*} [FunLike F α β]
     [MonoidHomClass F α β] (f : F) :
