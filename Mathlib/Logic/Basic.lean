@@ -575,9 +575,6 @@ theorem rec_heq_of_heq {C : α → Sort*} {x : C a} {y : β} (e : a = b) (h : HE
 #align eq.congr_left Eq.congr_left
 #align eq.congr_right Eq.congr_right
 #align congr_arg2 congr_arg₂
-
-variable {β : α → Sort*} {γ : ∀ a, β a → Sort*} {δ : ∀ a b, γ a b → Sort*}
-
 #align congr_fun₂ congr_fun₂
 #align congr_fun₃ congr_fun₃
 #align funext₂ funext₂
