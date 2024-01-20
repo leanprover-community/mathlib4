@@ -278,8 +278,8 @@ macro "commutativity" : tactic =>
   `(tactic| first | { intro; apply Commute.all } |
     fail "tactic 'commutativity' failed to find a proof")
 
-/-- Given `s : S`, lift to `AdjoinRoot f →+* S`.
-  a ring homomorphism `i : R →+* S` whose image commutes with `s` -/
+/-- Given `x : S`, lift to `AdjoinRoot f →+* S`.
+  a ring homomorphism `i : R →+* S` whose image commutes with `x` -/
 def lift [Semiring S] (i : R →+* S) (x : S) (h : f.eval₂ i x = 0)
     (hcomm : ∀ r, Commute (i r) x := by commutativity) :
     AdjoinRoot f →+* S := by
