@@ -751,8 +751,7 @@ lemma IsFundamentalDomain.quotientMeasure_invariant [Countable G] [MeasurableSpa
     (fund_dom_t : IsFundamentalDomain G t μ) :
     (μ.restrict s).map π = (μ.restrict t).map π := by
   ext U meas_U
-  rw [quotientMeasure_apply μ s meas_U]
-  rw [quotientMeasure_apply μ t meas_U]
+  rw [quotientMeasure_apply μ s meas_U, quotientMeasure_apply μ t meas_U]
   apply MeasureTheory.IsFundamentalDomain.measure_set_eq fund_dom_s fund_dom_t
   · exact measurableSet_quotient.mp meas_U
   · intro g
