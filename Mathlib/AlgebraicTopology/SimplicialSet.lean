@@ -114,18 +114,21 @@ theorem binaryProductCone_fst (X Y : SSet) : (binaryProductCone X Y).fst = Prod.
 theorem binaryProductCone_snd (X Y : SSet) : (binaryProductCone X Y).snd = Prod.snd :=
   rfl
 
+/-- The morphism from the point of any binary fan to `Prod X Y`. -/
+@[simp]
+def binaryProductLift {X Y : SSet} (s : BinaryFan X Y) : s.pt ⟶ (binaryProductCone X Y).pt where
+  app n x := ((s.fst).app n x, (s.snd).app n x)
+  naturality j k g := by
+    ext a
+    simp [FunctorToTypes.naturality]
+
 /-- `Prod X Y` is a limit cone. -/
 @[simps]
 def binaryProductLimit (X Y : SSet) : IsLimit (binaryProductCone X Y) where
-  lift (s : BinaryFan X Y) := {
-    app := fun n x => ((s.fst).app n x, (s.snd).app n x)
-    naturality := fun j k g => by
-      ext a
-      simp [FunctorToTypes.naturality]
-  }
-  fac _ j := Discrete.recOn j fun j => WalkingPair.casesOn j rfl rfl
-  uniq s t ht := by
-    simp only [← ht ⟨WalkingPair.right⟩, ← ht ⟨WalkingPair.left⟩]
+  lift (s : BinaryFan X Y) := binaryProductLift s
+  fac _ j := Discrete.recOn j fun j ↦ WalkingPair.casesOn j rfl rfl
+  uniq _ _ ht := by
+    simp only [← ht ⟨WalkingPair.right⟩, ← ht ⟨WalkingPair.left⟩, binaryProductLift]
     congr
 
 /-- `Prod X Y` is a binary product for `X` and `Y`. -/
