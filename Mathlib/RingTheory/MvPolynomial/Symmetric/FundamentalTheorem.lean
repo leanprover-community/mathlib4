@@ -5,6 +5,7 @@ Authors: Junyan Xu
 -/
 import Mathlib.RingTheory.MvPolynomial.Symmetric.Defs
 import Mathlib.RingTheory.MvPolynomial.Tower
+import Mathlib.Data.Finsupp.Notation
 import Mathlib.Data.Finsupp.WellFounded
 
 /-!
@@ -266,13 +267,13 @@ lemma injective_esymmAlgHom_fin (h : n ≤ m) :
   rw [p.as_sum, map_sum (esymmAlgHom (Fin m) R n), ← Subalgebra.coe_eq_zero,
       AddSubmonoidClass.coe_finset_sum]
   refine sum_ne_zero_of_injOn_supDegree (D := toLex) (support_eq_empty.not.2 hp) (fun t ht ↦ ?_)
-    (fun t ht s hs he ↦ FunLike.ext' <| injective_accumulate h ?_)
+    (fun t ht s hs he ↦ DFunLike.ext' <| injective_accumulate h ?_)
   · rw [← esymmAlgHom_monomial, Ne, ← leadingCoeff_eq_zero toLex.injective,
         leadingCoeff_esymmAlgHom_monomial t h]
     rwa [mem_support_iff] at ht
   rw [mem_coe, mem_support_iff] at ht hs
   dsimp only [Function.comp] at he
-  rwa [← esymmAlgHom_monomial, ← esymmAlgHom_monomial, ← ofLex_inj, FunLike.ext'_iff,
+  rwa [← esymmAlgHom_monomial, ← esymmAlgHom_monomial, ← ofLex_inj, DFunLike.ext'_iff,
        supDegree_esymmAlgHom_monomial ht t h, supDegree_esymmAlgHom_monomial hs s h] at he
 
 lemma injective_esymmAlgHom (hn : n ≤ Fintype.card σ) :
@@ -288,7 +289,7 @@ lemma bijective_esymmAlgHom_fin (n : ℕ) :
   induction' he : p.supDegree toLex using WellFoundedLT.induction with t ih generalizing p; subst he
   let t := Finsupp.equivFunOnFinite.symm (inv_accumulate n n <| ↑(ofLex <| p.supDegree toLex))
   have hd : (esymmAlgHom_monomial _ t <| p.leadingCoeff toLex).supDegree toLex = p.supDegree toLex
-  · rw [← ofLex_inj, FunLike.ext'_iff, supDegree_esymmAlgHom_monomial _ _ le_rfl]
+  · rw [← ofLex_inj, DFunLike.ext'_iff, supDegree_esymmAlgHom_monomial _ _ le_rfl]
     · exact surjective_accumulate le_rfl hp.antitone_supDegree
     · rwa [Ne, leadingCoeff_eq_zero toLex.injective]
   obtain he | hne := eq_or_ne p (esymmAlgHom_monomial _ t <| p.leadingCoeff toLex)

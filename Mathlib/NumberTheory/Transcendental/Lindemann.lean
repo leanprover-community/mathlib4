@@ -201,14 +201,14 @@ theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
     use c; intro q x hx
     specialize h (max |x| 1 * Complex.abs (aeval (↑x * exp (↑s.arg * I)) p))
       (Set.mem_image_of_mem _ hx)
-    refine' le_trans _ (pow_le_pow_of_le_left (norm_nonneg _) h _)
+    refine' le_trans _ (pow_le_pow_left (norm_nonneg _) h _)
     simp_rw [norm_mul, Real.norm_eq_abs, Complex.abs_abs, mul_pow]
     refine' mul_le_mul_of_nonneg_right _ (pow_nonneg (Complex.abs.nonneg _) _)
     rw [max_def]; split_ifs with hx1
     · rw [_root_.abs_one, one_pow]
       exact pow_le_one _ (abs_nonneg _) hx1
     · push_neg at hx1
-      rw [_root_.abs_abs]; exact pow_le_pow hx1.le (Nat.sub_le _ _)
+      rw [_root_.abs_abs]; exact pow_le_pow_right hx1.le (Nat.sub_le _ _)
   choose c' c'0 Pp'_le using fun r ↦ P_le p' r (this r)
   let c :=
     if h : ((p.aroots ℂ).map c').toFinset.Nonempty then ((p.aroots ℂ).map c').toFinset.max' h else 0
@@ -265,7 +265,7 @@ theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
     nsmul_eq_mul, smul_smul, mul_comm, Nat.mul_factorial_pred q0, ← h', zsmul_eq_mul, aeval_def,
     eval₂_at_zero, eq_intCast, Int.cast_id, ← Int.coe_castRingHom', ← algebraMap_int_eq, ←
     eval₂_at_zero, aeval_def, eval₂_eq_eval_map, eval₂_eq_eval_map, mul_comm, ← sumIderiv_map, ← P]
-  exact (Pp'_le r q (Nat.one_le_of_lt q0)).trans (pow_le_pow_of_le_left (c'0 r) (hc r hr) _)
+  exact (Pp'_le r q (Nat.one_le_of_lt q0)).trans (pow_le_pow_left (c'0 r) (hc r hr) _)
 #align exp_polynomial_approx exp_polynomial_approx
 
 namespace AuxInstances
@@ -504,7 +504,7 @@ theorem mem_mapDomainFixed_iff (x : AddMonoidAlgebra F (K s)) :
   change (∀ f : Gal s, Finsupp.equivMapDomain (↑(AlgEquiv.toAddEquiv f)) x = x) ↔ _
   refine' ⟨fun h i j hij => _, fun h f => _⟩
   · obtain ⟨f, rfl⟩ := hij
-    rw [AlgEquiv.smul_def, ← FunLike.congr_fun (h f) (f j)]
+    rw [AlgEquiv.smul_def, ← DFunLike.congr_fun (h f) (f j)]
     change x (f.symm (f j)) = _; rw [AlgEquiv.symm_apply_apply]
   · ext i; change x (f.symm i) = x i
     refine' (h i ((AlgEquiv.symm f) i) ⟨f, _⟩).symm
@@ -1064,8 +1064,8 @@ theorem linear_independent_exp_exists_prime_nat'' (c : ℕ) : ∃ n > c, c ^ n <
   rw [pow_mul, two_mul, add_right_comm, add_tsub_cancel_right]
   refine' lt_of_lt_of_le _ Nat.factorial_mul_pow_le_factorial
   rw [← one_mul (_ ^ _ : ℕ)]
-  refine' Nat.mul_lt_mul' (Nat.one_le_of_lt (Nat.factorial_pos _)) _ (Nat.factorial_pos _)
-  exact Nat.pow_lt_pow_of_lt_left (Nat.lt_succ_self _) (Nat.succ_pos _)
+  exact Nat.mul_lt_mul_of_le_of_lt (Nat.one_le_of_lt (Nat.factorial_pos _))
+    (Nat.pow_lt_pow_left (Nat.lt_succ_self _) (Nat.succ_ne_zero _)) (Nat.factorial_pos _)
 #align linear_independent_exp_exists_prime_nat'' linear_independent_exp_exists_prime_nat''
 
 theorem linear_independent_exp_exists_prime_nat' (n : ℕ) (c : ℕ) :
@@ -1095,7 +1095,7 @@ theorem linear_independent_exp_exists_prime_nat' (n : ℕ) (c : ℕ) :
   convert_to c ^ m * c ^ (p - m) < _
   · rw [← pow_add, add_tsub_cancel_of_le]; exact hmp.le
   rw [tsub_tsub_tsub_cancel_right m1]
-  exact Nat.mul_lt_mul h (pow_le_pow_of_le_left' (Nat.le_pred_of_lt hm) _) (pow_pos c0 _)
+  exact Nat.mul_lt_mul_of_lt_of_le' h (pow_le_pow_left' (Nat.le_pred_of_lt hm) _) (pow_pos c0 _)
 #align linear_independent_exp_exists_prime_nat' linear_independent_exp_exists_prime_nat'
 
 theorem linear_independent_exp_exists_prime_nat (n : ℕ) (a : ℕ) (c : ℕ) :
@@ -1120,7 +1120,7 @@ theorem linear_independent_exp_exists_prime (n : ℕ) (a : ℝ) (c : ℝ) :
   · refine' (le_abs_self _).trans _
     rw [_root_.abs_mul, _root_.abs_pow]
     refine'
-      mul_le_mul (Int.le_ceil _) (pow_le_pow_of_le_left (abs_nonneg _) (Int.le_ceil _) _)
+      mul_le_mul (Int.le_ceil _) (pow_le_pow_left (abs_nonneg _) (Int.le_ceil _) _)
         (pow_nonneg (abs_nonneg _) _) (Int.cast_nonneg.mpr (Int.ceil_nonneg (abs_nonneg _)))
   refine' this.trans_lt _; clear this
   refine' lt_of_eq_of_lt (_ : _ = ((⌈|a|⌉.natAbs * ⌈|c|⌉.natAbs ^ p : ℕ) : ℝ)) _
