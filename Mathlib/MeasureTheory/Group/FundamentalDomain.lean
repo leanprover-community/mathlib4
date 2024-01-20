@@ -995,7 +995,7 @@ theorem QuotientVolumeEqVolumePreimage.isFiniteMeasure_quotient
 theorem QuotientVolumeEqVolumePreimage.covolume_ne_top
     (μ : Measure (Quotient α_mod_G)) [QuotientVolumeEqVolumePreimage μ] [IsFiniteMeasure μ]
     [hasFun : HasFundamentalDomain G α] :
-    covolume G α ≠ ⊤ := by
+    covolume G α < ∞ := by
   obtain ⟨𝓕, h𝓕⟩ := hasFun.has_fundamental_domain_characterization
   have H : μ univ ≠ ⊤ := measure_ne_top μ univ
   rw [h𝓕.eq_quotientMeasure μ, quotientMeasure_apply _ 𝓕 MeasurableSet.univ]
