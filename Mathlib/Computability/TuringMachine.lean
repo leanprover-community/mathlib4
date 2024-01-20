@@ -1074,7 +1074,7 @@ variable {Γ Λ}
 
 /-- Execution semantics of the Turing machine. -/
 def step (M : Machine₀) : Cfg₀ → Option Cfg₀ :=
-  fun ⟨q, T⟩ ↦ (M q T.1).map fun ⟨q', a⟩ ↦ ⟨q', match a with
+  fun ⟨q, T⟩ ↦ (M q T.1).map fun ⟨q', stmt⟩ ↦ ⟨q', match stmt with
     | Stmt.move d => T.move d
     | Stmt.write a => T.write a⟩
 #align turing.TM0.step Turing.TM0.step
@@ -1198,9 +1198,9 @@ variable (Λ : Type*) [Inhabited Λ]
 /-- A Turing machine under the quintet definition (TMQ), which coincides with TM0 except that
 a symbol is written and the tape head moves each step.-/
 @[nolint unusedArguments]
-def Machine [Inhabited Λ] := Λ → Γ → Option (Λ × Γ × Dir)
+def MachineQ [Inhabited Λ] [Inhabited Γ] := Λ → Γ → Option (Λ × Γ × Dir)
 
-local notation "MachineQ" => Machine Γ Λ
+local notation "MachineQ" => MachineQ Γ Λ
 
 local notation "Cfg₀" => TM0.Cfg Γ Λ
 
@@ -1224,9 +1224,9 @@ end TMQ
 
 To prove that TMQ computable functions are TM0 computable, we need to reduce each TMQ program to a
 TM0 program. For a TMQ program with alphabet `Γ` and states `Λ`, we create a TM0 program with the
-same alphabet, and with states `Λ×{Dir+{null}`. Each TMQ transition, which both writes and moves
+same alphabet, and with states `Λ × {Dir+stay}`. Each TMQ transition, which both writes and moves
 the tape head, will be split into two TM0 statements which (i) writes and moves to a state
-`Λ×Dir` and then (ii) in state `Λ×Dir`, moves `Dir` and transitions to normal state `Λ×null`.
+`Λ × Dir` and then (ii) in state `Λ × Dir`, moves `Dir` and transitions to normal state `Λ × stay`.
 -/
 
 namespace TM0toQ
@@ -1237,57 +1237,42 @@ variable {Γ : Type*} [Inhabited Γ]
 
 variable {Λ : Type*} [Inhabited Λ]
 
-local notation "Stmt₀" => TM0.Stmt Γ
-
 /-- TMQ machine to be emulated  -/
-def M [Inhabited Λ] := Λ → Γ → Option (Λ × Γ × Dir)
+def M := Λ → Γ → Option (Λ × Γ × Dir)
 
-/-- The TMQ -/
-inductive DirNone
+variable (MQ : TMQ.MachineQ Γ Λ)
+
+/-- The TM0 emulator state may encode a move following a write -/
+inductive Dir'
   | left
   | right
-  | none
+  | stay
   deriving DecidableEq, Inhabited
 
-def Λ' := Λ × DirNone
+def toDir' : Dir → Dir'
+  | Dir.left => Dir'.left
+  | Dir.right => Dir'.right
+
+instance : Coe Dir Dir' where
+  coe x := toDir' x
 
 open TM0.Stmt
 
-/-- Translate a TMQ step to a TM0 step -/
-def trAux (s : Γ) : Λ → Dir → ((Λ × DirNone) × Stmt₀)
-  | q, v => (q × v) × write ((M q v).map fun ⟨q', a , m⟩ ↦ a))
---  | TM1.Stmt.write a q, v => ((some q, v), write (a s v))
---  | TM1.Stmt.load a q, v => trAux s q (a s v)
---  | TM1.Stmt.branch p q₁ q₂, v => cond (p s v) (trAux s q₁ v) (trAux s q₂ v)
---  | TM1.Stmt.goto l, v => ((some (M (l s v)), v), write s)
---  | TM1.Stmt.halt, v => ((none, v), write s)
-
-local notation "Cfg₁₀" => TM0.Cfg Γ Λ'₁₀
-
 /-- The translated TM0 machine (given the TMQ machine input). -/
-def tr : TM0.Machine Γ Λ'₁₀
-  | (none, _), _ => none
-  | (some q, v), s => some (trAux M s q v)
+def tr : TM0.Machine Γ (Λ × Dir')
+  | (q, Dir'.left), _ => some ((q, Dir'.stay), move Dir.left)
+  | (q, Dir'.right), _ => some ((q, Dir'.stay), move Dir.left)
+  | (q, Dir'.stay), s => (MQ q s).map fun ⟨q', a , m⟩ ↦ ⟨(q', m), write a⟩
 
-/-- Translate configurations from TM1 to TM0. -/
-def trCfg : Cfg₁ → Cfg₁₀
-  | ⟨l, v, T⟩ => ⟨(l.map M, v), T⟩
+local notation "Cfg₀" => TM0.Cfg Γ (Λ × Dir')
 
-theorem tr_respects :
-    Respects (TM1.step M) (TM0.step (tr M)) fun (c₁ : Cfg₁) (c₂ : Cfg₁₀) ↦ trCfg M c₁ = c₂ :=
-  fun_respects.2 fun ⟨l₁, v, T⟩ ↦ by
-    cases' l₁ with l₁; · exact rfl
-    simp only [trCfg, TM1.step, FRespects, Option.map]
-    induction M l₁ generalizing v T with
-    | move _ _ IH => exact TransGen.head rfl (IH _ _)
-    | write _ _ IH => exact TransGen.head rfl (IH _ _)
-    | load _ _ IH => exact (reaches₁_eq (by rfl)).2 (IH _ _)
-    | branch p _ _ IH₁ IH₂ =>
-      unfold TM1.stepAux; cases e : p T.1 v
-      · exact (reaches₁_eq (by simp only [TM0.step, tr, trAux, e]; rfl)).2 (IH₂ _ _)
-      · exact (reaches₁_eq (by simp only [TM0.step, tr, trAux, e]; rfl)).2 (IH₁ _ _)
-    | _ =>
-      exact TransGen.single (congr_arg some (congr (congr_arg TM0.Cfg.mk rfl) (Tape.write_self T)))
+local notation "CfgQ" => TM0.Cfg Γ Λ
+
+/-- Translate configurations from TMQ to TM0. -/
+def trCfg : CfgQ → Cfg₀
+  | ⟨q, T⟩ => ⟨(q, Dir'.stay), T⟩
+
+-- TODO prove theorem tr_respects : Respects (TMQ.step MQ) (TM0.step (tr MQ))
 
 end
 
