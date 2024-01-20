@@ -395,10 +395,9 @@ theorem isIntegralCurveAt_eqOn_of_contMDiffAt (hγt₀ : I.IsInteriorPoint (γ t
     (hv.contDiffAt (range_mem_nhds_isInteriorPoint hγt₀)).snd.exists_lipschitzOnWith
   have hlip (t : ℝ) : LipschitzOnWith K ((fun _ ↦ v') t) ((fun _ ↦ s) t) := hlip
 
-  have hsrc := continuousAt_def.mp hγ.continuousAt _ <| extChartAt_source_mem_nhds I (γ t₀)
-  rw [← eventually_mem_nhds] at hsrc
-  have hsrc' := continuousAt_def.mp hγ'.continuousAt _ <| extChartAt_source_mem_nhds I (γ' t₀)
-  rw [← eventually_mem_nhds] at hsrc'
+  have hsrc {g : ℝ → M} (hg : IsIntegralCurveAt g v t₀) :
+    ∀ᶠ t in 𝓝 t₀, g ⁻¹' (extChartAt I (g t₀)).source ∈ 𝓝 t := eventually_mem_nhds.mpr <|
+      continuousAt_def.mp hg.continuousAt _ <| extChartAt_source_mem_nhds I (g t₀)
 
   have hgt {g : ℝ → M} {t} (ht : g ⁻¹' (extChartAt I (g t₀)).source ∈ 𝓝 t) :
     g t ∈ (extChartAt I (g t₀)).source := mem_preimage.mp <| mem_of_mem_nhds ht
@@ -406,44 +405,40 @@ theorem isIntegralCurveAt_eqOn_of_contMDiffAt (hγt₀ : I.IsInteriorPoint (γ t
   suffices (extChartAt I (γ t₀)) ∘ γ =ᶠ[𝓝 t₀] (extChartAt I (γ' t₀)) ∘ γ' by
     have hh := this.fun_comp (extChartAt I (γ t₀)).symm
     refine Filter.EventuallyEq.trans ?_ (Filter.EventuallyEq.trans hh ?_)
-    · apply hsrc.mono -- extract lemma?
+    · apply (hsrc hγ).mono -- extract lemma?
       intros t ht
       rw [Function.comp_apply, Function.comp_apply,
         PartialEquiv.left_inv _ (hgt ht)]
-    · apply hsrc'.mono
+    · apply (hsrc hγ').mono
       intros t ht
       rw [Function.comp_apply, Function.comp_apply, h,
         PartialEquiv.left_inv _ (hgt ht)]
   apply ODE_solution_unique_of_mem_set_eventually hlip
   · -- extract lemma `IsIntegralCurveAt.eventually_continuousAt`?
-    apply (hsrc.and hγ).mono
+    apply (hsrc hγ |>.and hγ).mono
     rintro t ⟨ht1, ht2⟩
     exact (continuousAt_extChartAt' _ _ (hgt ht1)).comp
       ht2.continuousAt
-  · apply (hsrc.and hγ.eventually_hasDerivAt).mono
+  · apply (hsrc hγ |>.and hγ.eventually_hasDerivAt).mono
     rintro t ⟨ht1, ht2⟩
     rw [hv']
     apply ht2.congr_deriv
-    have : γ t = (extChartAt I (γ t₀)).symm (((extChartAt I (γ t₀)) ∘ γ) t) := by
-      rw [Function.comp_apply, PartialEquiv.left_inv]
-      exact hgt ht1
-    rw [this]
+    congr <;>
+    rw [Function.comp_apply, PartialEquiv.left_inv _ (hgt ht1)]
   · apply ((continuousAt_extChartAt I (γ t₀)).comp hγ.continuousAt).preimage_mem_nhds
     rw [Function.comp_apply]
     exact hs
   -- repeat
-  · apply (hsrc'.and hγ').mono
+  · apply (hsrc hγ' |>.and hγ').mono
     rintro t ⟨ht1, ht2⟩
     exact (continuousAt_extChartAt' _ _ (hgt ht1)).comp
       ht2.continuousAt
-  · apply (hsrc'.and hγ'.eventually_hasDerivAt).mono
+  · apply (hsrc hγ' |>.and hγ'.eventually_hasDerivAt).mono
     rintro t ⟨ht1, ht2⟩
     rw [hv', h]
     apply ht2.congr_deriv
-    have : γ' t = (extChartAt I (γ' t₀)).symm (((extChartAt I (γ' t₀)) ∘ γ') t) := by
-      rw [Function.comp_apply, PartialEquiv.left_inv]
-      exact hgt ht1
-    rw [this]
+    congr <;>
+    rw [Function.comp_apply, PartialEquiv.left_inv _ (hgt ht1)]
   · apply ((continuousAt_extChartAt I (γ' t₀)).comp hγ'.continuousAt).preimage_mem_nhds
     rw [Function.comp_apply, ← h]
     exact hs
