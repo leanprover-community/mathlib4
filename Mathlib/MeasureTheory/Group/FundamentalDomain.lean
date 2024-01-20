@@ -785,7 +785,7 @@ class HasAddFundamentalDomain (G α : Type*) [Zero G] [VAdd G α] [MeasureSpace 
 /-- We say a quotient of `α` by `G` `HasFundamentalDomain` if there is a measurable set `s` for
   which `IsFundamentalDomain G s` holds. -/
 class HasFundamentalDomain (G : Type*) (α : Type*) [One G] [SMul G α] [MeasureSpace α] : Prop where
-has_fundamental_domain_characterization : ∃ (s : Set α), IsFundamentalDomain G s
+  has_fundamental_domain_characterization : ∃ (s : Set α), IsFundamentalDomain G s
 
 attribute [to_additive existing MeasureTheory.HasAddFundamentalDomain]
   MeasureTheory.HasFundamentalDomain
