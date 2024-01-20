@@ -24,7 +24,7 @@ forgetful functor to `FintypeCat` is a `FibreFunctor`.
 -/
 
 universe u v w
- 
+
 namespace CategoryTheory
 
 namespace PreGaloisCategory
@@ -44,8 +44,8 @@ variable (G : Type u) [Group G]
 
 /- Given `f : X ⟶ Y` for `X Y : Action FintypeCat (MonCat.of G)`, the complement of the image
 of `f` has a natural `G`-action. -/
-private noncomputable def Action.imageComplement {X Y : Action FintypeCat (MonCat.of G)} (f : X ⟶ Y) :
-    Action FintypeCat (MonCat.of G) where
+private noncomputable def Action.imageComplement {X Y : Action FintypeCat (MonCat.of G)}
+    (f : X ⟶ Y) : Action FintypeCat (MonCat.of G) where
   V := FintypeCat.imageComplement f.hom
   ρ := MonCat.ofHom <| {
     toFun := fun g y ↦ Subtype.mk _ <| by
@@ -76,7 +76,7 @@ attribute [-instance] Fin.instMulFin
 attribute [-instance] Distrib.toMul
 
 /-- The category of finite sets has quotients by finite groups in arbitrary universes. -/
-instance foo (G : Type u) [Group G] [Finite G] : HasColimitsOfShape (SingleObj G) FintypeCat.{w} := by
+instance (G : Type u) [Group G] [Finite G] : HasColimitsOfShape (SingleObj G) FintypeCat.{w} := by
   obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin G
   letI groupH : Group (Fin n) := Equiv.group e.symm
   letI e' : (Fin n) ≃* G := Equiv.mulEquiv e.symm
