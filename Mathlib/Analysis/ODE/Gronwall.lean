@@ -233,7 +233,7 @@ a given initial value provided that the RHS is Lipschitz continuous in `x` withi
 and we consider only solutions included in `s`.
 
 This version shows uniqueness in a closed interval `Icc a b`, where `a` is the initial time. -/
-theorem ODE_solution_unique_of_mem_set {v : ℝ → E → E} {s : ℝ → Set E} {K : ℝ≥0}
+theorem ODE_solution_unique_of_mem_set_Icc {v : ℝ → E → E} {s : ℝ → Set E} {K : ℝ≥0}
     (hv : ∀ t, LipschitzOnWith K (v t) (s t))
     {f g : ℝ → E} {a b : ℝ} (hf : ContinuousOn f (Icc a b))
     (hf' : ∀ t ∈ Ico a b, HasDerivWithinAt f (v t (f t)) (Ici t) t) (hfs : ∀ t ∈ Ico a b, f t ∈ s t)
@@ -242,7 +242,7 @@ theorem ODE_solution_unique_of_mem_set {v : ℝ → E → E} {s : ℝ → Set E}
   have := dist_le_of_trajectories_ODE_of_mem_set hv hf hf' hfs hg hg' hgs (dist_le_zero.2 ha) t ht
   rwa [zero_mul, dist_le_zero] at this
 set_option linter.uppercaseLean3 false in
-#align ODE_solution_unique_of_mem_set ODE_solution_unique_of_mem_set
+#align ODE_solution_unique_of_mem_set ODE_solution_unique_of_mem_set_Icc
 
 /-- There exists only one solution of an ODE \(\dot x=v(t, x)\) in a set `s ⊆ ℝ × E` with
 a given initial value provided that the RHS is Lipschitz continuous in `x` within `s`,
@@ -256,7 +256,7 @@ theorem ODE_solution_unique_of_mem_set_Ico {v : ℝ → E → E} {s : ℝ → Se
     (hg : ContinuousOn g (Ico a b)) (hg' : ∀ t ∈ Ico a b, HasDerivWithinAt g (v t (g t)) (Ici t) t)
     (hgs : ∀ t ∈ Ico a b, g t ∈ s t) (ha : f a = g a) : EqOn f g (Ico a b) := fun _ ht ↦
   have hss := Ico_subset_Ico_right (a := a) (le_of_lt ht.2)
-  ODE_solution_unique_of_mem_set hv
+  ODE_solution_unique_of_mem_set_Icc hv
     (hf.mono (Icc_subset_Ico_right ht.2)) (fun _ ht' ↦ hf' _ (hss ht'))
     (fun _ ht' ↦ hfs _ (hss ht'))
     (hg.mono (Icc_subset_Ico_right ht.2)) (fun _ ht' ↦ hg' _ (hss ht'))
@@ -316,7 +316,7 @@ theorem ODE_solution_unique {v : ℝ → E → E} {K : ℝ≥0} (hv : ∀ t, Lip
     (hg' : ∀ t ∈ Ico a b, HasDerivWithinAt g (v t (g t)) (Ici t) t) (ha : f a = g a) :
     EqOn f g (Icc a b) :=
   have hfs : ∀ t ∈ Ico a b, f t ∈ @univ E := fun _ _ => trivial
-  ODE_solution_unique_of_mem_set (fun t => (hv t).lipschitzOnWith _) hf hf' hfs hg hg'
+  ODE_solution_unique_of_mem_set_Icc (fun t => (hv t).lipschitzOnWith _) hf hf' hfs hg hg'
     (fun _ _ => trivial) ha
 set_option linter.uppercaseLean3 false in
 #align ODE_solution_unique ODE_solution_unique
