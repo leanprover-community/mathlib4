@@ -10,8 +10,14 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
 /-!
 # The `arctan` function.
 
-Inequalities, derivatives,
-and `Real.tan` as a `PartialHomeomorph` between `(-(π / 2), π / 2)` and the whole line.
+Inequalities, identities and `Real.tan` as a `PartialHomeomorph` between `(-(π / 2), π / 2)`
+and the whole line.
+
+The result of `arctan x + arctan y` is given by `arctan_add`, `arctan_add_eq_add_pi` or
+`arctan_add_eq_sub_pi` depending on whether `x * y < 1` and `0 < x`. As an application of
+`arctan_add` we give four Machin-like formulas (linear combinations of arctangents equal to
+`π / 4 = arctan 1`), including John Machin's original one at
+`four_mul_arctan_inv_5_sub_arctan_inv_239`.
 -/
 
 
@@ -202,12 +208,16 @@ theorem arccos_eq_arctan {x : ℝ} (h : 0 < x) : arccos x = arctan (sqrt (1 - x 
 
 theorem arctan_inv_of_pos {x : ℝ} (h : 0 < x) : arctan x⁻¹ = π / 2 - arctan x := by
   rw [← arctan_tan (x := _ - _), tan_pi_div_two_sub, tan_arctan]
-  · norm_num; exact (arctan_lt_pi_div_two x).trans (half_lt_self_iff.mpr pi_pos)
-  · rw [sub_lt_self_iff, ← arctan_zero]; exact tanOrderIso.symm.strictMono h
+  · norm_num
+    exact (arctan_lt_pi_div_two x).trans (half_lt_self_iff.mpr pi_pos)
+  · rw [sub_lt_self_iff, ← arctan_zero]
+    exact tanOrderIso.symm.strictMono h
 
 theorem arctan_inv_of_neg {x : ℝ} (h : x < 0) : arctan x⁻¹ = -(π / 2) - arctan x := by
   have := arctan_inv_of_pos (neg_pos.mpr h)
   rwa [inv_neg, arctan_neg, neg_eq_iff_eq_neg, neg_sub', arctan_neg, neg_neg] at this
+
+section ArctanAdd
 
 lemma arctan_ne_mul_pi_div_two {x : ℝ} : ∀ (k : ℤ), arctan x ≠ (2 * k + 1) * π / 2 := by
   by_contra!
@@ -229,9 +239,9 @@ lemma arctan_add_arctan_lt_pi_div_two {x y : ℝ} (h : x * y < 1) : arctan x + a
   cases' le_or_lt y 0 with hy hy
   · rw [← add_zero (π / 2), ← arctan_zero]
     exact add_lt_add_of_lt_of_le (arctan_lt_pi_div_two _) (tanOrderIso.symm.monotone hy)
-  rw [← lt_div_iff hy, ← inv_eq_one_div] at h
-  replace h : arctan x < arctan y⁻¹ := tanOrderIso.symm.strictMono h
-  rwa [arctan_inv_of_pos hy, lt_tsub_iff_right] at h
+  · rw [← lt_div_iff hy, ← inv_eq_one_div] at h
+    replace h : arctan x < arctan y⁻¹ := tanOrderIso.symm.strictMono h
+    rwa [arctan_inv_of_pos hy, lt_tsub_iff_right] at h
 
 theorem arctan_add {x y : ℝ} (h : x * y < 1) :
     arctan x + arctan y = arctan ((x + y) / (1 - x * y)) := by
@@ -271,11 +281,25 @@ theorem two_mul_arctan_sub_pi {x : ℝ} (h : x < -1) :
     2 * arctan x = arctan (2 * x / (1 - x ^ 2)) - π := by
   rw [two_mul, arctan_add_eq_sub_pi (by nlinarith) (by linarith)]; congr 2; ring
 
-/-- **Machin's formula for π**. -/
+theorem arctan_inv_2_add_arctan_inv_3 : arctan 2⁻¹ + arctan 3⁻¹ = π / 4 := by
+  rw [arctan_add]
+  all_goals norm_num
+
+theorem two_mul_arctan_inv_2_sub_arctan_inv_7 : 2 * arctan 2⁻¹ - arctan 7⁻¹ = π / 4 := by
+  rw [two_mul_arctan, ← arctan_one, sub_eq_iff_eq_add, arctan_add]
+  all_goals norm_num
+
+theorem two_mul_arctan_inv_3_add_arctan_inv_7 : 2 * arctan 3⁻¹ + arctan 7⁻¹ = π / 4 := by
+  rw [two_mul_arctan, arctan_add]
+  all_goals norm_num
+
+/-- **John Machin's 1706 formula**, which he used to compute π to 100 decimal places. -/
 theorem four_mul_arctan_inv_5_sub_arctan_inv_239 : 4 * arctan 5⁻¹ - arctan 239⁻¹ = π / 4 := by
   rw [show 4 * arctan _ = 2 * (2 * _) by ring, two_mul_arctan, two_mul_arctan, ← arctan_one,
     sub_eq_iff_eq_add, arctan_add]
   all_goals norm_num
+
+end ArctanAdd
 
 @[continuity]
 theorem continuous_arctan : Continuous arctan :=
