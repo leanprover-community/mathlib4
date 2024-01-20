@@ -236,34 +236,30 @@ def evalZPow : NormNumExt where eval {u α} e := do
   match rb with
   | .isBool .. | .isRat _ _ _ _ _ => failure
   | .isNat sβ nb pb =>
+    haveI' : $e =Q $a ^ $b := ⟨⟩
     let e' : Q($α) := q($a ^ $nb)
     match ← derive e' with
     | .isBool .. => failure
     | .isNat sα' ne' pe' =>
       assumeInstancesCommute
-      haveI' : $e =Q $a ^ $b := ⟨⟩
       return .isNat sα' ne' q(isNat_zpow_pos $pb $pe')
     | .isNegNat sα' ne' pe' =>
       assumeInstancesCommute
-      haveI' : $e =Q $a ^ $b := ⟨⟩
       return .isNegNat sα' ne' q(isInt_zpow_pos $pb $pe')
     | .isRat sα' qe' nume' dene' pe' =>
       assumeInstancesCommute
-      haveI' : $e =Q $a ^ $b := ⟨⟩
       return .isRat sα' qe' nume' dene' q(isRat_zpow_pos $pb $pe')
   | .isNegNat sβ nb pb =>
+    haveI' : $e =Q $a ^ $b := ⟨⟩
     let e' : Q($α) := q(($a ^ $nb)⁻¹)
     match ← derive e' with
     | .isBool .. => failure
     | .isNat sα' ne' pe' =>
       assumeInstancesCommute
-      haveI' : $e =Q $a ^ $b := ⟨⟩
       return .isNat sα' ne' q(isNat_zpow_neg $pb $pe')
     | .isNegNat sα' ne' pe' =>
       assumeInstancesCommute
-      haveI' : $e =Q $a ^ $b := ⟨⟩
       return .isNegNat sα' ne' q(isInt_zpow_neg $pb $pe')
     | .isRat sα' qe' nume' dene' pe' =>
       assumeInstancesCommute
-      haveI' : $e =Q $a ^ $b := ⟨⟩
       return .isRat sα' qe' nume' dene' q(isRat_zpow_neg $pb $pe')
