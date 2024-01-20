@@ -263,6 +263,14 @@ theorem mem_range_scalar_iff_commute_stdBasisMatrix {M : Matrix n n α} :
   rw [scalar_commute_iff, smul_stdBasisMatrix, smul_stdBasisMatrix, smul_eq_mul, op_smul_eq_mul,
     mul_one, one_mul]
 
+/-- `M` is a scalar matrix if and only if it commutes with every `stdBasisMatrix`.​ -/
+theorem mem_range_scalar_iff_commute_stdBasisMatrix' {M : Matrix n n α} :
+    M ∈ Set.range (Matrix.scalar n) ↔ ∀ (i j : n), Commute (stdBasisMatrix i j 1) M := by
+  refine ⟨fun ⟨r, hr⟩ i j => hr ▸ Commute.symm ?_,
+    fun hM => mem_range_scalar_iff_commute_stdBasisMatrix.mpr <| fun i j _ ↦ hM i j⟩
+  rewrite [scalar_commute_iff]
+  simp
+
 end Commute
 
 end Matrix
