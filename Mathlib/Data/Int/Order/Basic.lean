@@ -583,7 +583,6 @@ variable {R}
 set_option linter.deprecated false
 
 -- The next four lemmas allow us to replace multiplication by a numeral with a `zsmul` expression.
--- They are used by the `noncomm_ring` tactic, to normalise expressions before passing to `abel`.
 
 section NonUnitalNonAssocRing
 variable [NonUnitalNonAssocRing R] (n r : R)

@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Fréd�
 -/
 
 import Mathlib.Algebra.Module.Submodule.Lattice
+import Mathlib.Algebra.Module.Submodule.LinearMap
 
 /-!
 # `map` and `comap` for `Submodule`s
@@ -165,6 +166,12 @@ theorem coe_equivMapOfInjective_apply (f : F) (i : Injective f) (p : Submodule R
     (equivMapOfInjective f i p x : M₂) = f x :=
   rfl
 #align submodule.coe_equiv_map_of_injective_apply Submodule.coe_equivMapOfInjective_apply
+
+@[simp]
+theorem map_equivMapOfInjective_symm_apply (f : F) (i : Injective f) (p : Submodule R M)
+    (x : p.map f) : f ((equivMapOfInjective f i p).symm x) = x := by
+  rw [← LinearEquiv.apply_symm_apply (equivMapOfInjective f i p) x, coe_equivMapOfInjective_apply,
+    i.eq_iff, LinearEquiv.apply_symm_apply]
 
 /-- The pullback of a submodule `p ⊆ M₂` along `f : M → M₂` -/
 def comap (f : F) (p : Submodule R₂ M₂) : Submodule R M :=

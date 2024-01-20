@@ -5,7 +5,6 @@ Authors: Jeremy Avigad, Robert Y. Lewis
 -/
 import Mathlib.Algebra.GroupPower.CovariantClass
 import Mathlib.Algebra.GroupPower.Ring
-import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.Order.WithZero
 
 #align_import algebra.group_power.order from "leanprover-community/mathlib"@"00f91228655eecdcd3ac97a7fd8dbcb139fe990a"
@@ -136,38 +135,6 @@ lemma zpow_left_inj (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b := (zpow_left_injec
 lemma zpow_eq_zpow_iff' (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b := zpow_left_inj hn
 #align zpow_eq_zpow_iff' zpow_eq_zpow_iff'
 #align zsmul_eq_zsmul_iff' zsmul_eq_zsmul_iff'
-
-@[to_additive] lemma mabs_pow (n : ℕ) (a : α) : |a ^ n|ₘ = |a|ₘ ^ n := by
-  obtain ha | ha := le_total a 1
-  · rw [mabs_of_le_one ha, ← mabs_inv, ← inv_pow, mabs_of_one_le]
-    exact one_le_pow_of_one_le' (one_le_inv'.2 ha) n
-  · rw [mabs_of_one_le ha, mabs_of_one_le (one_le_pow_of_one_le' ha n)]
-#align abs_nsmul abs_nsmul
-
-@[to_additive] private lemma mabs_mul_eq_mul_mabs_le (hab : a ≤ b) :
-    |a * b|ₘ = |a|ₘ * |b|ₘ ↔ 1 ≤ a ∧ 1 ≤ b ∨ a ≤ 1 ∧ b ≤ 1 := by
-  obtain ha | ha := le_or_lt 1 a <;> obtain hb | hb := le_or_lt 1 b
-  · simp [ha, hb, mabs_of_one_le, one_le_mul ha hb]
-  · exact (lt_irrefl (1 : α) <| ha.trans_lt <| hab.trans_lt hb).elim
-  any_goals simp [ha.le, hb.le, mabs_of_le_one, mul_le_one', mul_comm]
-  have : (|a * b|ₘ = a⁻¹ * b ↔ b ≤ 1) ↔
-    (|a * b|ₘ = |a|ₘ * |b|ₘ ↔ 1 ≤ a ∧ 1 ≤ b ∨ a ≤ 1 ∧ b ≤ 1) := by
-    simp [ha.le, ha.not_le, hb, mabs_of_le_one, mabs_of_one_le]
-  refine this.mp ⟨fun h ↦ ?_, fun h ↦ by simp only [h.antisymm hb, mabs_of_lt_one ha, mul_one]⟩
-  obtain ab | ab := le_or_lt (a * b) 1
-  · refine (eq_one_of_inv_eq' ?_).le
-    rwa [mabs_of_le_one ab, mul_inv_rev, mul_comm, mul_right_inj] at h
-  · rw [mabs_of_one_lt ab, mul_left_inj] at h
-    rw [eq_one_of_inv_eq' h.symm] at ha
-    cases ha.false
-#noalign abs_add_eq_add_abs_le
-
-@[to_additive] lemma mabs_mul_eq_mul_mabs_iff (a b : α) :
-    |a * b|ₘ = |a|ₘ * |b|ₘ ↔ 1 ≤ a ∧ 1 ≤ b ∨ a ≤ 1 ∧ b ≤ 1 := by
-  obtain ab | ab := le_total a b
-  · exact mabs_mul_eq_mul_mabs_le ab
-  · simpa only [mul_comm, and_comm] using mabs_mul_eq_mul_mabs_le ab
-#align abs_add_eq_add_abs_iff abs_add_eq_add_abs_iff
 
 end LinearOrderedCommGroup
 
@@ -485,136 +452,6 @@ lemma strictMono_pow_bit1 (n : ℕ) : StrictMono (· ^ bit1 n : R → R) := by
 #align strict_mono_pow_bit1 strictMono_pow_bit1
 
 end deprecated
-
-@[simp] lemma abs_one : |(1 : R)| = 1 := abs_of_pos zero_lt_one
-#align abs_one abs_one
-
-@[simp] lemma abs_two : |(2 : R)| = 2 := abs_of_pos zero_lt_two
-#align abs_two abs_two
-
-lemma abs_mul (a b : R) : |a * b| = |a| * |b| := by
-  rw [abs_eq (mul_nonneg (abs_nonneg a) (abs_nonneg b))]
-  rcases le_total a 0 with ha | ha <;> rcases le_total b 0 with hb | hb <;>
-    simp only [abs_of_nonpos, abs_of_nonneg, true_or_iff, or_true_iff, eq_self_iff_true, neg_mul,
-      mul_neg, neg_neg, *]
-#align abs_mul abs_mul
-
-/-- `abs` as a `MonoidWithZeroHom`. -/
-def absHom : R →*₀ R where
-  toFun := abs
-  map_zero' := abs_zero
-  map_one' := abs_one
-  map_mul' := abs_mul
-#align abs_hom absHom
-
-@[simp]
-lemma abs_pow (a : R) (n : ℕ) : |a ^ n| = |a| ^ n := (absHom.toMonoidHom : R →* R).map_pow _ _
-#align abs_pow abs_pow
-
-lemma pow_abs (a : R) (n : ℕ) : |a| ^ n = |a ^ n| := (abs_pow a n).symm
-#align pow_abs pow_abs
-
-lemma abs_neg_one_pow (n : ℕ) : |(-1 : R) ^ n| = 1 := by rw [← pow_abs, abs_neg, abs_one, one_pow]
-#align abs_neg_one_pow abs_neg_one_pow
-
-lemma abs_pow_eq_one (a : R) {n : ℕ} (h : n ≠ 0) : |a ^ n| = 1 ↔ |a| = 1 := by
-  convert pow_left_inj (abs_nonneg a) zero_le_one h
-  exacts [(pow_abs _ _).symm, (one_pow _).symm]
-#align abs_pow_eq_one abs_pow_eq_one
-
-@[simp]
-lemma abs_mul_abs_self (a : R) : |a| * |a| = a * a :=
-  abs_by_cases (fun x => x * x = a * a) rfl (neg_mul_neg a a)
-#align abs_mul_abs_self abs_mul_abs_self
-
-@[simp]
-lemma abs_mul_self (a : R) : |a * a| = a * a := by rw [abs_mul, abs_mul_abs_self]
-#align abs_mul_self abs_mul_self
-
-lemma abs_eq_iff_mul_self_eq : |a| = |b| ↔ a * a = b * b := by
-  rw [← abs_mul_abs_self, ← abs_mul_abs_self b]
-  exact (mul_self_inj (abs_nonneg a) (abs_nonneg b)).symm
-#align abs_eq_iff_mul_self_eq abs_eq_iff_mul_self_eq
-
-lemma abs_lt_iff_mul_self_lt : |a| < |b| ↔ a * a < b * b := by
-  rw [← abs_mul_abs_self, ← abs_mul_abs_self b]
-  exact mul_self_lt_mul_self_iff (abs_nonneg a) (abs_nonneg b)
-#align abs_lt_iff_mul_self_lt abs_lt_iff_mul_self_lt
-
-lemma abs_le_iff_mul_self_le : |a| ≤ |b| ↔ a * a ≤ b * b := by
-  rw [← abs_mul_abs_self, ← abs_mul_abs_self b]
-  exact mul_self_le_mul_self_iff (abs_nonneg a) (abs_nonneg b)
-#align abs_le_iff_mul_self_le abs_le_iff_mul_self_le
-
-lemma abs_le_one_iff_mul_self_le_one : |a| ≤ 1 ↔ a * a ≤ 1 := by
-  simpa only [abs_one, one_mul] using @abs_le_iff_mul_self_le R _ a 1
-#align abs_le_one_iff_mul_self_le_one abs_le_one_iff_mul_self_le_one
-
--- Porting note: added `simp` to replace `pow_bit0_abs`
-@[simp]
-lemma sq_abs (a : R) : |a| ^ 2 = a ^ 2 := by simpa only [sq] using abs_mul_abs_self a
-#align sq_abs sq_abs
-
-theorem abs_sq (x : R) : |x ^ 2| = x ^ 2 := by simpa only [sq] using abs_mul_self x
-#align abs_sq abs_sq
-
-lemma sq_lt_sq : a ^ 2 < b ^ 2 ↔ |a| < |b| := by
-  simpa only [sq_abs] using
-    (pow_left_strictMonoOn two_ne_zero).lt_iff_lt (abs_nonneg a) (abs_nonneg b)
-#align sq_lt_sq sq_lt_sq
-
-lemma sq_lt_sq' (h1 : -b < a) (h2 : a < b) : a ^ 2 < b ^ 2 :=
-  sq_lt_sq.2 (lt_of_lt_of_le (abs_lt.2 ⟨h1, h2⟩) (le_abs_self _))
-#align sq_lt_sq' sq_lt_sq'
-
-lemma sq_le_sq : a ^ 2 ≤ b ^ 2 ↔ |a| ≤ |b| := by
-  simpa only [sq_abs] using
-    (pow_left_strictMonoOn two_ne_zero).le_iff_le (abs_nonneg a) (abs_nonneg b)
-#align sq_le_sq sq_le_sq
-
-lemma sq_le_sq' (h1 : -b ≤ a) (h2 : a ≤ b) : a ^ 2 ≤ b ^ 2 :=
-  sq_le_sq.2 (le_trans (abs_le.mpr ⟨h1, h2⟩) (le_abs_self _))
-#align sq_le_sq' sq_le_sq'
-
-lemma abs_lt_of_sq_lt_sq (h : a ^ 2 < b ^ 2) (hy : 0 ≤ b) : |a| < b := by
-  rwa [← abs_of_nonneg hy, ← sq_lt_sq]
-#align abs_lt_of_sq_lt_sq abs_lt_of_sq_lt_sq
-
-lemma abs_lt_of_sq_lt_sq' (h : a ^ 2 < b ^ 2) (hy : 0 ≤ b) : -b < a ∧ a < b :=
-  abs_lt.mp <| abs_lt_of_sq_lt_sq h hy
-#align abs_lt_of_sq_lt_sq' abs_lt_of_sq_lt_sq'
-
-lemma abs_le_of_sq_le_sq (h : a ^ 2 ≤ b ^ 2) (hy : 0 ≤ b) : |a| ≤ b := by
-  rwa [← abs_of_nonneg hy, ← sq_le_sq]
-#align abs_le_of_sq_le_sq abs_le_of_sq_le_sq
-
-lemma abs_le_of_sq_le_sq' (h : a ^ 2 ≤ b ^ 2) (hy : 0 ≤ b) : -b ≤ a ∧ a ≤ b :=
-  abs_le.mp <| abs_le_of_sq_le_sq h hy
-#align abs_le_of_sq_le_sq' abs_le_of_sq_le_sq'
-
-lemma sq_eq_sq_iff_abs_eq_abs (a b : R) : a ^ 2 = b ^ 2 ↔ |a| = |b| := by
-  simp only [le_antisymm_iff, sq_le_sq]
-#align sq_eq_sq_iff_abs_eq_abs sq_eq_sq_iff_abs_eq_abs
-
-@[simp]
-lemma sq_le_one_iff_abs_le_one (a : R) : a ^ 2 ≤ 1 ↔ |a| ≤ 1 := by
-  simpa only [one_pow, abs_one] using @sq_le_sq _ _ a 1
-#align sq_le_one_iff_abs_le_one sq_le_one_iff_abs_le_one
-
-@[simp]
-lemma sq_lt_one_iff_abs_lt_one (a : R) : a ^ 2 < 1 ↔ |a| < 1 := by
-  simpa only [one_pow, abs_one] using @sq_lt_sq _ _ a 1
-#align sq_lt_one_iff_abs_lt_one sq_lt_one_iff_abs_lt_one
-
-@[simp]
-lemma one_le_sq_iff_one_le_abs (a : R) : 1 ≤ a ^ 2 ↔ 1 ≤ |a| := by
-  simpa only [one_pow, abs_one] using @sq_le_sq _ _ 1 a
-#align one_le_sq_iff_one_le_abs one_le_sq_iff_one_le_abs
-
-@[simp]
-lemma one_lt_sq_iff_one_lt_abs (a : R) : 1 < a ^ 2 ↔ 1 < |a| := by
-  simpa only [one_pow, abs_one] using @sq_lt_sq _ _ 1 a
-#align one_lt_sq_iff_one_lt_abs one_lt_sq_iff_one_lt_abs
 
 lemma sq_pos_iff (a : R) : 0 < a ^ 2 ↔ a ≠ 0 := pow_bit0_pos_iff a one_ne_zero
 #align sq_pos_iff sq_pos_iff

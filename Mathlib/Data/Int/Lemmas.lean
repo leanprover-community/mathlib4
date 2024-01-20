@@ -5,7 +5,6 @@ Authors: Jeremy Avigad
 -/
 import Mathlib.Data.Int.Bitwise
 import Mathlib.Data.Int.Order.Lemmas
-import Mathlib.Data.Nat.Cast.Order
 import Mathlib.Data.Set.Function
 import Mathlib.Data.Set.Intervals.Basic
 

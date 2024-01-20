@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Mathlib.Algebra.Group.Opposite
-import Mathlib.Algebra.GroupPower.Order
+import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Data.Nat.Cast.Commute
-import Mathlib.Data.Set.Image
+import Mathlib.Data.Set.Basic
 
 #align_import algebra.parity from "leanprover-community/mathlib"@"8631e2d5ea77f6c13054d9151d82b83069680cb1"
 

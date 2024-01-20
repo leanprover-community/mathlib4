@@ -7,6 +7,7 @@ import Mathlib.Algebra.Function.Indicator
 import Mathlib.Algebra.SMulWithZero
 import Mathlib.GroupTheory.GroupAction.Group
 import Mathlib.GroupTheory.GroupAction.Pi
+import Mathlib.Logic.Basic
 import Mathlib.Tactic.Abel
 
 #align_import algebra.module.basic from "leanprover-community/mathlib"@"30413fc89f202a090a54d78e540963ed3de0056e"
@@ -402,7 +403,7 @@ theorem zsmul_eq_smul_cast (n : ℤ) (b : M) : n • b = (n : R) • b :=
   have : (smulAddHom ℤ M).flip b = ((smulAddHom R M).flip b).comp (Int.castAddHom R) := by
     apply AddMonoidHom.ext_int
     simp
-  FunLike.congr_fun this n
+  DFunLike.congr_fun this n
 #align zsmul_eq_smul_cast zsmul_eq_smul_cast
 
 end
