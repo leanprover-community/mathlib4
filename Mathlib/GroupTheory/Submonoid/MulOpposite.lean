@@ -134,11 +134,13 @@ theorem op_iInf (S : ι → Submonoid M) : (iInf S).op = ⨅ i, (S i).op := opEq
 theorem unop_iInf (S : ι → Submonoid Mᵐᵒᵖ) : (iInf S).unop = ⨅ i, (S i).unop :=
   opEquiv.symm.map_iInf _
 
+@[to_additive]
 theorem op_closure (s : Set M) : (closure s).op = closure (MulOpposite.unop ⁻¹' s) := by
   simp_rw [closure, op_sInf, Set.preimage_setOf_eq, Submonoid.unop_coe]
   congr with a
   exact MulOpposite.unop_surjective.forall
 
+@[to_additive]
 theorem unop_closure (s : Set Mᵐᵒᵖ) : (closure s).unop = closure (MulOpposite.op ⁻¹' s) := by
   simp_rw [closure, unop_sInf, Set.preimage_setOf_eq, Submonoid.op_coe]
   congr with a

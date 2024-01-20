@@ -151,11 +151,13 @@ theorem op_iInf (S : ι → Subgroup G) : (iInf S).op = ⨅ i, (S i).op := opEqu
 theorem unop_iInf (S : ι → Subgroup Gᵐᵒᵖ) : (iInf S).unop = ⨅ i, (S i).unop :=
   opEquiv.symm.map_iInf _
 
+@[to_additive]
 theorem op_closure (s : Set G) : (closure s).op = closure (MulOpposite.unop ⁻¹' s) := by
   simp_rw [closure, op_sInf, Set.preimage_setOf_eq, Subgroup.unop_coe]
   congr with a
   exact MulOpposite.unop_surjective.forall
 
+@[to_additive]
 theorem unop_closure (s : Set Gᵐᵒᵖ) : (closure s).unop = closure (MulOpposite.op ⁻¹' s) := by
   simp_rw [closure, unop_sInf, Set.preimage_setOf_eq, Subgroup.op_coe]
   congr with a
