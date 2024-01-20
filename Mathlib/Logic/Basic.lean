@@ -6,7 +6,6 @@ Authors: Jeremy Avigad, Leonardo de Moura
 import Mathlib.Init.Logic
 import Mathlib.Init.Function
 import Mathlib.Init.Algebra.Classes
-import Mathlib.Tactic.Basic
 import Std.Util.LibraryNote
 import Std.Tactic.Lint.Basic
 
@@ -533,6 +532,9 @@ theorem eq_equivalence : Equivalence (@Eq α) :=
   ⟨Eq.refl, @Eq.symm _, @Eq.trans _⟩
 #align eq_equivalence eq_equivalence
 
+-- These were migrated to Std but the `@[simp]` attributes were (mysteriously?) removed.
+attribute [simp] eq_mp_eq_cast eq_mpr_eq_cast
+
 #align eq_mp_eq_cast eq_mp_eq_cast
 #align eq_mpr_eq_cast eq_mpr_eq_cast
 #align cast_cast cast_cast
@@ -573,6 +575,9 @@ theorem rec_heq_of_heq {C : α → Sort*} {x : C a} {y : β} (e : a = b) (h : HE
 #align eq.congr_left Eq.congr_left
 #align eq.congr_right Eq.congr_right
 #align congr_arg2 congr_arg₂
+
+variable {β : α → Sort*} {γ : ∀ a, β a → Sort*} {δ : ∀ a b, γ a b → Sort*}
+
 #align congr_fun₂ congr_fun₂
 #align congr_fun₃ congr_fun₃
 #align funext₂ funext₂

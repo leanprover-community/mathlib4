@@ -45,7 +45,7 @@ class Nat.AtLeastTwo (n : ℕ) : Prop where
   prop : n ≥ 2
 
 instance instNatAtLeastTwo : Nat.AtLeastTwo (n + 2) where
-  prop := Nat.succ_le_succ $ Nat.succ_le_succ $ Nat.zero_le _
+  prop := Nat.succ_le_succ <| Nat.succ_le_succ <| Nat.zero_le _
 
 lemma Nat.AtLeastTwo.ne_zero (n : ℕ) [h : n.AtLeastTwo] : n ≠ 0 := by
   rintro rfl; exact absurd h.1 (by decide)

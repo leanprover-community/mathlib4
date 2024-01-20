@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Calculus.Deriv.ZPow
-import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 import Mathlib.Analysis.SpecialFunctions.Sqrt
+import Mathlib.Analysis.SpecialFunctions.Log.Deriv
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 
 #align_import analysis.convex.specific_functions.deriv from "leanprover-community/mathlib"@"a16665637b378379689c566204817ae792ac8b39"
 
@@ -76,7 +77,7 @@ theorem int_prod_range_nonneg (m : ℤ) (n : ℕ) (hn : Even n) :
   rw [← two_mul, Nat.succ_eq_add_one, mul_add, mul_one, ← one_add_one_eq_two, ← add_assoc,
     Finset.prod_range_succ, Finset.prod_range_succ, mul_assoc]
   refine' mul_nonneg ihn _; generalize (1 + 1) * n = k
-  cases' le_or_lt m k with hmk hmk
+  rcases le_or_lt m k with hmk | hmk
   · have : m ≤ k + 1 := hmk.trans (lt_add_one (k : ℤ)).le
     convert mul_nonneg_of_nonpos_of_nonpos (sub_nonpos_of_le hmk) _
     convert sub_nonpos_of_le this
@@ -135,7 +136,7 @@ theorem deriv_sqrt_mul_log' :
 theorem deriv2_sqrt_mul_log (x : ℝ) :
     deriv^[2] (fun x => sqrt x * log x) x = -log x / (4 * sqrt x ^ 3) := by
   simp only [Nat.iterate, deriv_sqrt_mul_log']
-  cases' le_or_lt x 0 with hx hx
+  rcases le_or_lt x 0 with hx | hx
   · rw [sqrt_eq_zero_of_nonpos hx, zero_pow zero_lt_three, mul_zero, div_zero]
     refine' HasDerivWithinAt.deriv_eq_zero _ (uniqueDiffOn_Iic 0 x hx)
     refine' (hasDerivWithinAt_const _ _ 0).congr_of_mem (fun x hx => _) hx

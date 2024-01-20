@@ -3,7 +3,10 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
-import Mathlib.MeasureTheory.Constructions.Pi
+import Mathlib.MeasureTheory.PiSystem
+import Mathlib.Order.OmegaCompletePartialOrder
+import Mathlib.Topology.Constructions
+import Mathlib.MeasureTheory.MeasurableSpace.Basic
 
 /-!
 # π-systems of cylinders and square cylinders
@@ -66,11 +69,11 @@ theorem isPiSystem_squareCylinders {C : ∀ i, Set (Set (α i))} (hC : ∀ i, Is
   let t₂' := s₂.piecewise t₂ (fun i ↦ univ)
   have h1 : ∀ i ∈ (s₁ : Set ι), t₁ i = t₁' i :=
     fun i hi ↦ (Finset.piecewise_eq_of_mem _ _ _ hi).symm
-  have h1' : ∀ (i) (_ : i ∉ (s₁ : Set ι)), t₁' i = univ :=
+  have h1' : ∀ i ∉ (s₁ : Set ι), t₁' i = univ :=
     fun i hi ↦ Finset.piecewise_eq_of_not_mem _ _ _ hi
   have h2 : ∀ i ∈ (s₂ : Set ι), t₂ i = t₂' i :=
     fun i hi ↦ (Finset.piecewise_eq_of_mem _ _ _ hi).symm
-  have h2' : ∀ (i) (_ : i ∉ (s₂ : Set ι)), t₂' i = univ :=
+  have h2' : ∀ i ∉ (s₂ : Set ι), t₂' i = univ :=
     fun i hi ↦ Finset.piecewise_eq_of_not_mem _ _ _ hi
   rw [Set.pi_congr rfl h1, Set.pi_congr rfl h2, ← union_pi_inter h1' h2']
   refine ⟨s₁ ∪ s₂, fun i ↦ t₁' i ∩ t₂' i, ?_, ?_⟩
@@ -270,8 +273,8 @@ variable [∀ i, MeasurableSpace (α i)] {s t : Set (∀ i, α i)}
 
 @[simp]
 theorem mem_measurableCylinders (t : Set (∀ i, α i)) :
-    t ∈ measurableCylinders α ↔ ∃ (s S : _) (_ : MeasurableSet S), t = cylinder s S := by
-  simp_rw [measurableCylinders, mem_iUnion, mem_singleton_iff]
+    t ∈ measurableCylinders α ↔ ∃ s S, MeasurableSet S ∧ t = cylinder s S := by
+  simp_rw [measurableCylinders, mem_iUnion, exists_prop, mem_singleton_iff]
 
 /-- A finset `s` such that `t = cylinder s S`. `S` is given by `measurableCylinders.set`. -/
 noncomputable def measurableCylinders.finset (ht : t ∈ measurableCylinders α) : Finset ι :=
@@ -284,11 +287,11 @@ def measurableCylinders.set (ht : t ∈ measurableCylinders α) :
 
 theorem measurableCylinders.measurableSet (ht : t ∈ measurableCylinders α) :
     MeasurableSet (measurableCylinders.set ht) :=
-  ((mem_measurableCylinders t).mp ht).choose_spec.choose_spec.choose
+  ((mem_measurableCylinders t).mp ht).choose_spec.choose_spec.left
 
 theorem measurableCylinders.eq_cylinder (ht : t ∈ measurableCylinders α) :
     t = cylinder (measurableCylinders.finset ht) (measurableCylinders.set ht) :=
-  ((mem_measurableCylinders t).mp ht).choose_spec.choose_spec.choose_spec
+  ((mem_measurableCylinders t).mp ht).choose_spec.choose_spec.right
 
 theorem cylinder_mem_measurableCylinders (s : Finset ι) (S : Set (∀ i : s, α i))
     (hS : MeasurableSet S) :

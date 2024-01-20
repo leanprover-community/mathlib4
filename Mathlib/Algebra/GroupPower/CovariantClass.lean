@@ -5,7 +5,7 @@ Authors: Jeremy Avigad, Robert Y. Lewis, Yury G. Kudryashov
 -/
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.Order.Monoid.OrderDual
-import Mathlib.Data.Nat.Basic
+import Mathlib.Data.Nat.Defs
 import Mathlib.Tactic.Monotonicity.Attr
 
 /-!
@@ -175,19 +175,18 @@ variable [Preorder β] [CovariantClass M M (· * ·) (· ≤ ·)]
   [CovariantClass M M (swap (· * ·)) (· ≤ ·)]
 
 @[to_additive Monotone.const_nsmul]
-theorem Monotone.pow_right {f : β → M} (hf : Monotone f) : ∀ n : ℕ, Monotone fun a => f a ^ n
+theorem Monotone.pow_const {f : β → M} (hf : Monotone f) : ∀ n : ℕ, Monotone fun a => f a ^ n
   | 0 => by simpa using monotone_const
   | n + 1 => by
     simp_rw [pow_succ]
-    exact hf.mul' (Monotone.pow_right hf _)
-#align monotone.pow_right Monotone.pow_right
+    exact hf.mul' (Monotone.pow_const hf _)
+#align monotone.pow_right Monotone.pow_const
 #align monotone.const_nsmul Monotone.const_nsmul
 
-@[to_additive nsmul_mono_left]
-theorem pow_mono_right (n : ℕ) : Monotone fun a : M => a ^ n :=
-  monotone_id.pow_right _
-#align pow_mono_right pow_mono_right
-#align nsmul_mono_left nsmul_mono_left
+@[to_additive nsmul_right_mono]
+theorem pow_left_mono (n : ℕ) : Monotone fun a : M => a ^ n := monotone_id.pow_const _
+#align pow_mono_right pow_left_mono
+#align nsmul_mono_left nsmul_right_mono
 
 end CovariantLESwap
 
@@ -223,6 +222,7 @@ section CovariantLE
 
 variable [CovariantClass M M (· * ·) (· ≤ ·)]
 
+-- This generalises to lattices. See `pow_two_semiclosed`
 @[to_additive nsmul_nonneg_iff]
 theorem one_le_pow_iff {x : M} {n : ℕ} (hn : n ≠ 0) : 1 ≤ x ^ n ↔ 1 ≤ x :=
   ⟨le_imp_le_of_lt_imp_lt fun h => pow_lt_one' h hn, fun h => one_le_pow_of_one_le' h n⟩
@@ -276,7 +276,7 @@ variable [CovariantClass M M (· * ·) (· ≤ ·)] [CovariantClass M M (swap (�
 
 @[to_additive lt_of_nsmul_lt_nsmul_right]
 theorem lt_of_pow_lt_pow_left' {a b : M} (n : ℕ) : a ^ n < b ^ n → a < b :=
-  (pow_mono_right _).reflect_lt
+  (pow_left_mono _).reflect_lt
 #align lt_of_pow_lt_pow' lt_of_pow_lt_pow_left'
 #align lt_of_nsmul_lt_nsmul lt_of_nsmul_lt_nsmul_right
 
@@ -298,11 +298,11 @@ section CovariantLTSwap
 
 variable [CovariantClass M M (· * ·) (· < ·)] [CovariantClass M M (swap (· * ·)) (· < ·)]
 
-@[to_additive le_of_nsmul_le_nsmul_right']
+@[to_additive le_of_nsmul_le_nsmul_right]
 theorem le_of_pow_le_pow_left' {a b : M} {n : ℕ} (hn : n ≠ 0) : a ^ n ≤ b ^ n → a ≤ b :=
   (pow_left_strictMono hn).le_iff_le.1
 #align le_of_pow_le_pow' le_of_pow_le_pow_left'
-#align le_of_nsmul_le_nsmul le_of_nsmul_le_nsmul_right'
+#align le_of_nsmul_le_nsmul le_of_nsmul_le_nsmul_right
 
 @[to_additive min_le_of_add_le_two_nsmul]
 theorem min_le_of_mul_le_sq {a b c : M} (h : a * b ≤ c ^ 2) : min a b ≤ c := by
@@ -357,3 +357,36 @@ theorem one_le_zpow {x : G} (H : 1 ≤ x) {n : ℤ} (hn : 0 ≤ n) : 1 ≤ x ^ n
 #align zsmul_nonneg zsmul_nonneg
 
 end DivInvMonoid
+
+/-!
+### Deprecated lemmas
+
+Those lemmas have been deprecated on 2023-12-23.
+-/
+
+@[deprecated] alias pow_le_pow_of_le_left' := pow_le_pow_left'
+@[deprecated] alias nsmul_le_nsmul_of_le_right := nsmul_le_nsmul_right
+@[deprecated] alias pow_lt_pow' := pow_lt_pow_right'
+@[deprecated] alias nsmul_lt_nsmul := nsmul_lt_nsmul_left
+@[deprecated] alias pow_strictMono_left := pow_right_strictMono'
+@[deprecated] alias nsmul_strictMono_right := nsmul_left_strictMono
+@[deprecated] alias StrictMono.pow_right' := StrictMono.pow_const
+@[deprecated] alias StrictMono.nsmul_left := StrictMono.const_nsmul
+@[deprecated] alias pow_strictMono_right' := pow_left_strictMono
+@[deprecated] alias nsmul_strictMono_left := nsmul_right_strictMono
+@[deprecated] alias Monotone.pow_right := Monotone.pow_const
+@[deprecated] alias Monotone.nsmul_left := Monotone.const_nsmul
+@[deprecated] alias lt_of_pow_lt_pow' := lt_of_pow_lt_pow_left'
+@[deprecated] alias lt_of_nsmul_lt_nsmul := lt_of_nsmul_lt_nsmul_right
+@[deprecated] alias pow_le_pow' := pow_le_pow_right'
+@[deprecated] alias nsmul_le_nsmul := nsmul_le_nsmul_left
+@[deprecated] alias pow_le_pow_of_le_one' := pow_le_pow_right_of_le_one'
+@[deprecated] alias nsmul_le_nsmul_of_nonpos := nsmul_le_nsmul_left_of_nonpos
+@[deprecated] alias le_of_pow_le_pow' := le_of_pow_le_pow_left'
+@[deprecated] alias le_of_nsmul_le_nsmul := le_of_nsmul_le_nsmul_right
+@[deprecated] alias pow_le_pow_iff' := pow_le_pow_iff_right'
+@[deprecated] alias nsmul_le_nsmul_iff := nsmul_le_nsmul_iff_left
+@[deprecated] alias pow_lt_pow_iff' := pow_lt_pow_iff_right'
+@[deprecated] alias nsmul_lt_nsmul_iff := nsmul_lt_nsmul_iff_left
+@[deprecated] alias pow_mono_right := pow_left_mono
+@[deprecated] alias nsmul_mono_left := nsmul_right_mono

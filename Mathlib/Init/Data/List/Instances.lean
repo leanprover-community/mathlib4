@@ -3,7 +3,9 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
-import Mathlib.Init.Data.List.Lemmas
+import Std.Data.List.Lemmas
+import Mathlib.Init.Data.List.Basic
+import Mathlib.Tactic.Cases
 
 #align_import init.data.list.instances from "leanprover-community/lean"@"9af482290ef68e8aaa5ead01aa7b09b7be7019fd"
 
@@ -78,9 +80,9 @@ instance decidableBex : ∀ (l : List α), Decidable (∃ x ∈ l, p x)
 
 instance decidableBall (l : List α) : Decidable (∀ x ∈ l, p x) :=
   match (inferInstance : Decidable <| ∃ x ∈ l, ¬ p x) with
-  | isFalse h => isTrue $ fun x hx => match ‹DecidablePred p› x with
+  | isFalse h => isTrue fun x hx => match ‹DecidablePred p› x with
     | isTrue h' => h'
-    | isFalse h' => False.elim $ h ⟨x, hx, h'⟩
+    | isFalse h' => False.elim <| h ⟨x, hx, h'⟩
   | isTrue h => isFalse <| let ⟨x, h, np⟩ := h; fun al => np (al x h)
 #align list.decidable_ball List.decidableBall
 

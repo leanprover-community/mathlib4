@@ -3,7 +3,8 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Combinatorics.SimpleGraph.Basic
+import Mathlib.Combinatorics.SimpleGraph.Maps
+import Mathlib.Combinatorics.SimpleGraph.Operations
 import Mathlib.Data.Finset.Pairwise
 import Mathlib.Data.Finset.Preimage
 
@@ -298,51 +299,66 @@ theorem cliqueFree_completeMultipartiteGraph {ι : Type*} [Fintype ι] (V : ι �
   exact absurd he hn
 
 /-- Clique-freeness is preserved by `replaceVertex`. -/
-theorem cliqueFree_of_replaceVertex_cliqueFree [DecidableEq α] (s t : α) (h : G.CliqueFree n) :
+protected theorem CliqueFree.replaceVertex [DecidableEq α] (h : G.CliqueFree n) (s t : α) :
     (G.replaceVertex s t).CliqueFree n := by
   contrapose h
-  obtain ⟨⟨f, hi⟩, ha⟩ := topEmbeddingOfNotCliqueFree h
-  simp only [Function.Embedding.coeFn_mk, top_adj, ne_eq] at ha
+  obtain ⟨φ, hφ⟩ := topEmbeddingOfNotCliqueFree h
   rw [not_cliqueFree_iff]
-  by_cases mt : t ∈ Set.range f
+  by_cases mt : t ∈ Set.range φ
   · obtain ⟨x, hx⟩ := mt
-    by_cases ms : s ∈ Set.range f
+    by_cases ms : s ∈ Set.range φ
     · obtain ⟨y, hy⟩ := ms
-      by_cases hst : s = t
-      · simp_all [not_cliqueFree_iff]
-      · replace ha := @ha x y; simp_all
-    · use ⟨fun v => if v = x then s else f v, ?_⟩
-      swap
-      · intro a b
-        dsimp only
-        split_ifs
-        · simp_all
-        · intro; simp_all
-        · intro; simp_all
-        · apply hi
+      have e := @hφ x y
+      simp_rw [hx, hy, adj_comm, not_adj_replaceVertex_same, top_adj, false_iff, not_ne_iff] at e
+      rwa [← hx, e, hy, replaceVertex_self, not_cliqueFree_iff] at h
+    · unfold replaceVertex at hφ
+      use φ.setValue x s
       intro a b
-      simp only [Function.Embedding.coeFn_mk, top_adj, ne_eq]
-      split_ifs with h1 h2 h2
-      · simp_all
-      · have := (@ha b x).mpr h2
-        split_ifs at this; subst h1; tauto
-      · have := (@ha a x).mpr h1
-        split_ifs at this; subst h2; tauto
-      · rw [← @ha a b]
-        have := (@hi a x).mt h1
-        have := (@hi b x).mt h2
-        simp_all
-  · use ⟨f, hi⟩; simp_all
+      simp only [Embedding.coeFn_mk, Embedding.setValue, not_exists.mp ms, ite_false]
+      rw [apply_ite (G.Adj · _), apply_ite (G.Adj _ ·), apply_ite (G.Adj _ ·)]
+      convert @hφ a b <;> simp only [← φ.apply_eq_iff_eq, SimpleGraph.irrefl, hx]
+  · use φ
+    simp_rw [Set.mem_range, not_exists, ← ne_eq] at mt
+    conv at hφ => enter [a, b]; rw [G.adj_replaceVertex_iff_of_ne _ (mt a) (mt b)]
+    exact hφ
 
 @[simp]
 theorem cliqueFree_two : G.CliqueFree 2 ↔ G = ⊥ := by
   classical
   constructor
   · simp_rw [← edgeSet_eq_empty, Set.eq_empty_iff_forall_not_mem, Sym2.forall, mem_edgeSet]
-    exact fun h a b hab => h _ ⟨by simpa [hab.ne], card_doubleton hab.ne⟩
+    exact fun h a b hab => h _ ⟨by simpa [hab.ne], card_pair hab.ne⟩
   · rintro rfl
     exact cliqueFree_bot le_rfl
 #align simple_graph.clique_free_two SimpleGraph.cliqueFree_two
+
+/-- Adding an edge increases the clique number by at most one. -/
+protected theorem CliqueFree.addEdge (h : G.CliqueFree n) (v w) :
+    (G.addEdge v w).CliqueFree (n + 1) := by
+  contrapose h
+  obtain ⟨f, ha⟩ := topEmbeddingOfNotCliqueFree h
+  simp only [ne_eq, top_adj] at ha
+  rw [not_cliqueFree_iff]
+  by_cases mw : w ∈ Set.range f
+  · obtain ⟨x, hx⟩ := mw
+    use ⟨f ∘ x.succAboveEmb, (f.2.of_comp_iff _).mpr (RelEmbedding.injective _)⟩
+    intro a b
+    simp_rw [Embedding.coeFn_mk, comp_apply, Fin.succAboveEmb_apply, top_adj]
+    have hs := @ha (x.succAbove a) (x.succAbove b)
+    have ia : w ≠ f (x.succAbove a) :=
+      (hx ▸ f.apply_eq_iff_eq x (x.succAbove a)).ne.mpr (x.succAbove_ne a).symm
+    have ib : w ≠ f (x.succAbove b) :=
+      (hx ▸ f.apply_eq_iff_eq x (x.succAbove b)).ne.mpr (x.succAbove_ne b).symm
+    simp only [addEdge, ia, ib, and_false, false_and, or_false] at hs
+    rw [hs, Fin.succAbove_right_inj]
+  · use ⟨f ∘ Fin.succEmbedding n, (f.2.of_comp_iff _).mpr (RelEmbedding.injective _)⟩
+    intro a b
+    simp only [Fin.val_succEmbedding, Embedding.coeFn_mk, comp_apply, top_adj]
+    have hs := @ha a.succ b.succ
+    have ia : f a.succ ≠ w := by simp_all
+    have ib : f b.succ ≠ w := by simp_all
+    simp only [addEdge, ia.symm, ib.symm, and_false, false_and, or_false] at hs
+    rw [hs, Fin.succ_inj]
 
 end CliqueFree
 
@@ -396,7 +412,7 @@ theorem cliqueFreeOn_of_card_lt {s : Finset α} (h : s.card < n) : G.CliqueFreeO
 @[simp]
 theorem cliqueFreeOn_two : G.CliqueFreeOn s 2 ↔ s.Pairwise (G.Adjᶜ) := by
   classical
-  refine' ⟨fun h a ha b hb _ hab => h _ ⟨by simpa [hab.ne], card_doubleton hab.ne⟩, _⟩
+  refine' ⟨fun h a ha b hb _ hab => h _ ⟨by simpa [hab.ne], card_pair hab.ne⟩, _⟩
   · push_cast
     exact Set.insert_subset_iff.2 ⟨ha, Set.singleton_subset_iff.2 hb⟩
   simp only [CliqueFreeOn, isNClique_iff, card_eq_two, coe_subset, not_and, not_exists]

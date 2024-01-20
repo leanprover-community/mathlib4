@@ -117,7 +117,7 @@ theorem Spec.sheafedSpaceMap_id {R : CommRingCat} :
   AlgebraicGeometry.PresheafedSpace.Hom.ext _ _ (Spec.topMap_id R) <| by
     ext U
     dsimp
-    erw [NatTrans.comp_app, sheafedSpaceMap_c_app, PresheafedSpace.id_c_app, comap_id]; swap
+    erw [PresheafedSpace.id_c_app, comap_id]; swap
     · rw [Spec.topMap_id, TopologicalSpace.Opens.map_id_obj_unop]
     simp [eqToHom_map]
 set_option linter.uppercaseLean3 false in

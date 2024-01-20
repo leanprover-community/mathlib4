@@ -24,7 +24,7 @@ open Int
 theorem imo2011_q5 (f : ℤ → ℤ) (hpos : ∀ n : ℤ, 0 < f n) (hdvd : ∀ m n : ℤ, f (m - n) ∣ f m - f n) :
     ∀ m n : ℤ, f m ≤ f n → f m ∣ f n := by
   intro m n h_fm_le_fn
-  cases' lt_or_eq_of_le h_fm_le_fn with h_fm_lt_fn h_fm_eq_fn
+  rcases lt_or_eq_of_le h_fm_le_fn with h_fm_lt_fn | h_fm_eq_fn
   · -- m < n
     let d := f m - f (m - n)
     have h_fn_dvd_d : f n ∣ d := by

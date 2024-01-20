@@ -4,9 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.LinearAlgebra.TensorAlgebra.Basic
-import Mathlib.LinearAlgebra.FreeModule.Basic
-import Mathlib.LinearAlgebra.FreeModule.Rank
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 import Mathlib.LinearAlgebra.FreeAlgebra
 
 /-!
@@ -43,7 +40,7 @@ noncomputable def equivFreeAlgebra (b : Basis κ R M) :
     (TensorAlgebra.lift _ (Finsupp.total _ _ _ (FreeAlgebra.ι _) ∘ₗ b.repr.toLinearMap))
     (FreeAlgebra.lift _ (ι R ∘ b))
     (by ext; simp)
-    (hom_ext <| b.ext <| fun i => by simp)
+    (hom_ext <| b.ext fun i => by simp)
 
 @[simp]
 lemma equivFreeAlgebra_ι_apply (b : Basis κ R M) (i : κ) :
