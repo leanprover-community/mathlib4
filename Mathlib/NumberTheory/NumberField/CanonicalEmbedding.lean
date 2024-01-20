@@ -868,10 +868,10 @@ theorem exists_ne_zero_mem_ideal_lt (h : minkowskiBound K I < volume (convexBody
 
 /-- A version of `exists_ne_zero_mem_ideal_lt` for the ring of integers of `K`. -/
 theorem exists_ne_zero_mem_ringOfIntegers_lt (h : minkowskiBound K 1 < volume (convexBodyLT K f)) :
-    ∃ (a : 𝓞 K), a ≠ 0 ∧ ∀ w : InfinitePlace K, w a < f w := by
+    ∃ a ∈ 𝓞 K, a ≠ 0 ∧ ∀ w : InfinitePlace K, w a < f w := by
   obtain ⟨_, h_mem, h_nz, h_bd⟩ := exists_ne_zero_mem_ideal_lt K 1 h
-  obtain ⟨a, rfl⟩ := (FractionalIdeal.mem_one_iff _).mp h_mem
-  exact ⟨a, ne_zero_of_map h_nz, fun w ↦ h_bd w⟩
+  obtain ⟨⟨a, ha⟩, rfl⟩ := (FractionalIdeal.mem_one_iff _).mp h_mem
+  exact ⟨a, ha, h_nz, fun w ↦ h_bd w⟩
 
 theorem exists_ne_zero_mem_ideal_of_norm_le {B : ℝ}
     (h : (minkowskiBound K I) ≤ volume (convexBodySum K B)) :
@@ -912,10 +912,10 @@ theorem exists_ne_zero_mem_ideal_of_norm_le {B : ℝ}
 
 theorem exists_ne_zero_mem_ringOfIntegers_of_norm_le {B : ℝ}
     (h : (minkowskiBound K 1) ≤ volume (convexBodySum K B)) :
-    ∃ (a : 𝓞 K), a ≠ 0 ∧ |Algebra.norm ℚ (a:K)| ≤ (B / (finrank ℚ K)) ^ (finrank ℚ K) := by
+    ∃ a ∈ 𝓞 K, a ≠ 0 ∧ |Algebra.norm ℚ (a:K)| ≤ (B / (finrank ℚ K)) ^ (finrank ℚ K) := by
   obtain ⟨_, h_mem, h_nz, h_bd⟩ := exists_ne_zero_mem_ideal_of_norm_le K 1 h
-  obtain ⟨a, rfl⟩ := (FractionalIdeal.mem_one_iff _).mp h_mem
-  exact ⟨a, ne_zero_of_map h_nz, h_bd⟩
+  obtain ⟨⟨a, ha⟩, rfl⟩ := (FractionalIdeal.mem_one_iff _).mp h_mem
+  exact ⟨a, ha, h_nz, h_bd⟩
 
 end minkowski
 
