@@ -38,6 +38,12 @@ def Commute {S : Type*} [Mul S] (a b : S) : Prop :=
 #align commute Commute
 #align add_commute AddCommute
 
+/--
+Two elements `a` and `b` commute if `a * b = b * a`.
+-/
+@[to_additive]
+theorem commute_iff_eq {S : Type*} [Mul S] (a b : S) : Commute a b ↔ a * b = b * a := Iff.rfl
+
 namespace Commute
 
 section Mul
