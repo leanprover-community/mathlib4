@@ -193,3 +193,77 @@ def evalPow : NormNumExt where eval {u α} e := do
       let qc := mkRat zc dc.natLit!
       return .isRat' dα qc nc dc q(isRat_pow (f := $f) (.refl $f) $pa $pb $r1 $r2)
   core
+
+theorem isNat_zpow_pos {α : Type*} [DivisionRing α] {a : α} {b : ℤ} {nb ne : ℕ}
+    (pb : IsNat b nb) (pe' : IsNat (a ^ nb) ne) :
+    IsNat (a ^ b) ne := by
+  rwa [pb.out, zpow_coe_nat]
+
+theorem isNat_zpow_neg {α : Type*} [DivisionRing α] {a : α} {b : ℤ} {nb ne : ℕ}
+    (pb : IsInt b (Int.negOfNat nb)) (pe' : IsNat (a ^ nb)⁻¹ ne) :
+    IsNat (a ^ b) ne := by
+  rwa [pb.out, Int.cast_negOfNat, zpow_neg, zpow_coe_nat]
+
+theorem isInt_zpow_pos {α : Type*} [DivisionRing α] {a : α} {b : ℤ} {nb ne : ℕ}
+    (pb : IsNat b nb) (pe' : IsInt (a ^ nb) (Int.negOfNat ne)) :
+    IsInt (a ^ b) (Int.negOfNat ne) := by
+  rwa [pb.out, zpow_coe_nat]
+
+theorem isInt_zpow_neg {α : Type*} [DivisionRing α] {a : α} {b : ℤ} {nb ne : ℕ}
+    (pb : IsInt b (Int.negOfNat nb)) (pe' : IsInt (a ^ nb)⁻¹ (Int.negOfNat ne)) :
+    IsInt (a ^ b) (Int.negOfNat ne) := by
+  rwa [pb.out, Int.cast_negOfNat, zpow_neg, zpow_coe_nat]
+
+theorem isRat_zpow_pos {α : Type*} [DivisionRing α] {a : α} {b : ℤ} {nb : ℕ}
+    {num : ℤ} {den : ℕ}
+    (pb : IsNat b nb) (pe' : IsRat (a^nb) num den) :
+    IsRat (a^b) num den := by
+  rwa [pb.out, zpow_coe_nat]
+
+theorem isRat_zpow_neg {α : Type*} [DivisionRing α] {a : α} {b : ℤ} {nb : ℕ}
+    {num : ℤ} {den : ℕ}
+    (pb : IsInt b (Int.negOfNat nb)) (pe' : IsRat ((a^nb)⁻¹) num den) :
+    IsRat (a^b) num den := by
+  rwa [pb.out, Int.cast_negOfNat, zpow_neg, zpow_coe_nat]
+
+/-- The `norm_num` extension which identifies expressions of the form `a ^ b`,
+such that `norm_num` successfully recognises both `a` and `b`, with `b : ℤ`. -/
+@[norm_num (_ : α) ^ (_ : ℤ)]
+def evalZPow : NormNumExt where eval {u α} e := do
+  let .app (.app (f : Q($α → ℤ → $α)) (a : Q($α))) (b : Q(ℤ)) ← whnfR e | failure
+  let _c ← synthInstanceQ q(DivisionRing $α)
+  let rb ← derive (α := q(ℤ)) b
+  match rb with
+  | .isBool .. | .isRat _ _ _ _ _ => failure
+  | .isNat sβ nb pb =>
+    let e' : Q($α) := q($a ^ $nb)
+    match ← derive e' with
+    | .isBool .. => failure
+    | .isNat sα' ne' pe' =>
+      assumeInstancesCommute
+      haveI' : $e =Q $a ^ $b := ⟨⟩
+      return .isNat sα' ne' q(isNat_zpow_pos $pb $pe')
+    | .isNegNat sα' ne' pe' =>
+      assumeInstancesCommute
+      haveI' : $e =Q $a ^ $b := ⟨⟩
+      return .isNegNat sα' ne' q(isInt_zpow_pos $pb $pe')
+    | .isRat sα' qe' nume' dene' pe' =>
+      assumeInstancesCommute
+      haveI' : $e =Q $a ^ $b := ⟨⟩
+      return .isRat sα' qe' nume' dene' q(isRat_zpow_pos $pb $pe')
+  | .isNegNat sβ nb pb =>
+    let e' : Q($α) := q(($a ^ $nb)⁻¹)
+    match ← derive e' with
+    | .isBool .. => failure
+    | .isNat sα' ne' pe' =>
+      assumeInstancesCommute
+      haveI' : $e =Q $a ^ $b := ⟨⟩
+      return .isNat sα' ne' q(isNat_zpow_neg $pb $pe')
+    | .isNegNat sα' ne' pe' =>
+      assumeInstancesCommute
+      haveI' : $e =Q $a ^ $b := ⟨⟩
+      return .isNegNat sα' ne' q(isInt_zpow_neg $pb $pe')
+    | .isRat sα' qe' nume' dene' pe' =>
+      assumeInstancesCommute
+      haveI' : $e =Q $a ^ $b := ⟨⟩
+      return .isRat sα' qe' nume' dene' q(isRat_zpow_neg $pb $pe')
