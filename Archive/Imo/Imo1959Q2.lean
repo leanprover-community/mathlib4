@@ -83,7 +83,7 @@ theorem IsGood.eq_sqrt_two_iff_le_one (h : IsGood x A) : A = sqrt 2 ↔ x ≤ 1 
 
 theorem IsGood.sqrt_two_lt_iff_one_lt (h : IsGood x A) : sqrt 2 < A ↔ 1 < x :=
   ⟨fun hA ↦ not_le.1 fun hx ↦ hA.ne' <| h.eq_sqrt_two_iff_le_one.2 hx, h.sqrt_two_lt_of_one_lt⟩
-  
+
 theorem IsGood.sqrt_two_le (h : IsGood x A) : sqrt 2 ≤ A :=
   (le_or_lt x 1).elim (fun hx ↦ (h.eq_sqrt_two_iff_le_one.2 hx).ge) fun hx ↦
     (h.sqrt_two_lt_of_one_lt hx).le
