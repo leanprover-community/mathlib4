@@ -764,8 +764,8 @@ theorem Int.smul_one_eq_coe {R : Type*} [Ring R] (m : ℤ) : m • (1 : R) = ↑
 namespace Function
 
 lemma support_smul_subset_left [Zero R] [Zero M] [SMulWithZero R M] (f : α → R) (g : α → M) :
-    support (f • g) ⊆ support f :=
-  fun x hfg hf ↦ hfg <| by rw [Pi.smul_apply', hf, zero_smul]
+    support (f • g) ⊆ support f := fun x hfg hf ↦
+  hfg <| by rw [Pi.smul_apply', hf, zero_smul]
 #align function.support_smul_subset_left Function.support_smul_subset_left
 
 lemma support_smul_subset_right [Zero M] [SMulZeroClass R M] (f : α → R) (g : α → M) :
