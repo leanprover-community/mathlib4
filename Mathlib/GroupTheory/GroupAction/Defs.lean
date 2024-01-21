@@ -654,11 +654,17 @@ theorem isPretransitive_compHom
   exact ⟨e, rfl⟩
 
 @[to_additive]
+theorem IsPretransitive.of_smul_eq {M N α : Type*} [SMul M α] [SMul N α]
+    [IsPretransitive M α] (f : M → N) (hf : ∀ {c : M} {x : α}, f c • x = c • x) :
+    IsPretransitive N α :=
+  ⟨fun x y ↦ (exists_smul_eq x y).elim (fun m h ↦ ⟨f m, hf.trans h⟩)⟩
+
+@[to_additive]
 theorem IsPretransitive.of_compHom
-    {E F G : Type*} [Monoid E] [Monoid F] [MulAction F G]
-    (f : E →* F) [h : letI := compHom G f; IsPretransitive E G] :
-    IsPretransitive F G :=
-  letI := compHom G f; ⟨fun x y ↦ let ⟨g, hg⟩ := h.exists_smul_eq x y; ⟨f g, hg⟩⟩
+    {M N α : Type*} [Monoid M] [Monoid N] [MulAction N α]
+    (f : M →* N) [h : letI := compHom α f; IsPretransitive M α] :
+    IsPretransitive N α :=
+  letI := compHom α f; h.of_smul_eq f rfl
 
 end MulAction
 
