@@ -417,13 +417,13 @@ theorem eventually_nhds {x : α} (p : β → Prop) (hx : x ∈ e.source) :
 theorem eventually_nhds' {x : α} (p : α → Prop) (hx : x ∈ e.source) :
     (∀ᶠ y in 𝓝 (e x), p (e.symm y)) ↔ ∀ᶠ x in 𝓝 x, p x := by
   rw [e.eventually_nhds _ hx]
-  refine' eventually_congr ((e.eventually_left_inverse hx).mono fun y hy => _)
+  refine eventually_congr ((e.eventually_left_inverse hx).mono fun y hy => ?_)
   rw [hy]
 #align local_homeomorph.eventually_nhds' PartialHomeomorph.eventually_nhds'
 
 theorem eventually_nhdsWithin {x : α} (p : β → Prop) {s : Set α}
     (hx : x ∈ e.source) : (∀ᶠ y in 𝓝[e.symm ⁻¹' s] e x, p y) ↔ ∀ᶠ x in 𝓝[s] x, p (e x) := by
-  refine' Iff.trans _ eventually_map
+  refine Iff.trans ?_ eventually_map
   rw [e.map_nhdsWithin_eq hx, e.image_source_inter_eq', e.nhdsWithin_target_inter (e.mapsTo hx)]
 #align local_homeomorph.eventually_nhds_within PartialHomeomorph.eventually_nhdsWithin
 
@@ -762,7 +762,7 @@ theorem restr_univ {e : PartialHomeomorph α β} : e.restr univ = e :=
 #align local_homeomorph.restr_univ PartialHomeomorph.restr_univ
 
 theorem restr_source_inter (s : Set α) : e.restr (e.source ∩ s) = e.restr s := by
-  refine' PartialHomeomorph.ext _ _ (fun x => rfl) (fun x => rfl) _
+  refine PartialHomeomorph.ext _ _ (fun x => rfl) (fun x => rfl) ?_
   simp [e.open_source.interior_eq, ← inter_assoc]
 #align local_homeomorph.restr_source_inter PartialHomeomorph.restr_source_inter
 
@@ -997,7 +997,7 @@ theorem Set.EqOn.restr_eqOn_source {e e' : PartialHomeomorph α β}
     rw [e.restr_source' _ e'.open_source]
     exact Set.inter_comm _ _
   · rw [e.restr_source' _ e'.open_source]
-    refine' (EqOn.trans _ h).trans _ <;> simp only [mfld_simps, eqOn_refl]
+    refine (EqOn.trans ?_ h).trans ?_ <;> simp only [mfld_simps, eqOn_refl]
 #align local_homeomorph.set.eq_on.restr_eq_on_source PartialHomeomorph.Set.EqOn.restr_eqOn_source
 
 /-- Composition of a partial homeomorphism and its inverse is equivalent to the restriction of the
@@ -1166,7 +1166,7 @@ on the right is continuous on the corresponding set. -/
 theorem continuousOn_iff_continuousOn_comp_right {f : β → γ} {s : Set β} (h : s ⊆ e.target) :
     ContinuousOn f s ↔ ContinuousOn (f ∘ e) (e.source ∩ e ⁻¹' s) := by
   simp only [← e.symm_image_eq_source_inter_preimage h, ContinuousOn, ball_image_iff]
-  refine' forall₂_congr fun x hx => _
+  refine forall₂_congr fun x hx => ?_
   rw [e.continuousWithinAt_iff_continuousWithinAt_comp_right (h hx),
     e.symm_image_eq_source_inter_preimage h, inter_comm, continuousWithinAt_inter]
   exact IsOpen.mem_nhds e.open_source (e.map_target (h hx))
@@ -1178,7 +1178,7 @@ homeomorphism-/
 theorem continuousWithinAt_iff_continuousWithinAt_comp_left {f : γ → α} {s : Set γ} {x : γ}
     (hx : f x ∈ e.source) (h : f ⁻¹' e.source ∈ 𝓝[s] x) :
     ContinuousWithinAt f s x ↔ ContinuousWithinAt (e ∘ f) s x := by
-  refine' ⟨(e.continuousAt hx).comp_continuousWithinAt, fun fe_cont => _⟩
+  refine ⟨(e.continuousAt hx).comp_continuousWithinAt, fun fe_cont => ?_⟩
   rw [← continuousWithinAt_inter' h] at fe_cont ⊢
   have : ContinuousWithinAt (e.symm ∘ e ∘ f) (s ∩ f ⁻¹' e.source) x :=
     haveI : ContinuousWithinAt e.symm univ (e (f x)) :=
@@ -1371,26 +1371,28 @@ namespace TopologicalSpace.Opens
 
 open TopologicalSpace
 
-variable (s : Opens α) [Nonempty s]
+variable (s : Opens α) (hs : (s : Set α).Nonempty)
 
 /-- The inclusion of an open subset `s` of a space `α` into `α` is a partial homeomorphism from the
 subtype `s` to `α`. -/
 noncomputable def partialHomeomorphSubtypeCoe : PartialHomeomorph s α :=
+  have : Nonempty s := nonempty_coe_sort.mpr hs
   OpenEmbedding.toPartialHomeomorph _ s.2.openEmbedding_subtype_val
 #align topological_space.opens.local_homeomorph_subtype_coe TopologicalSpace.Opens.partialHomeomorphSubtypeCoe
 
 @[simp, mfld_simps]
-theorem partialHomeomorphSubtypeCoe_coe : (s.partialHomeomorphSubtypeCoe : s → α) = (↑) :=
+theorem partialHomeomorphSubtypeCoe_coe : (s.partialHomeomorphSubtypeCoe hs : s → α) = (↑) :=
   rfl
 #align topological_space.opens.local_homeomorph_subtype_coe_coe TopologicalSpace.Opens.partialHomeomorphSubtypeCoe_coe
 
 @[simp, mfld_simps]
-theorem partialHomeomorphSubtypeCoe_source : s.partialHomeomorphSubtypeCoe.source = Set.univ :=
+theorem partialHomeomorphSubtypeCoe_source : (s.partialHomeomorphSubtypeCoe hs).source = Set.univ :=
   rfl
 #align topological_space.opens.local_homeomorph_subtype_coe_source TopologicalSpace.Opens.partialHomeomorphSubtypeCoe_source
 
 @[simp, mfld_simps]
-theorem partialHomeomorphSubtypeCoe_target : s.partialHomeomorphSubtypeCoe.target = s := by
+theorem partialHomeomorphSubtypeCoe_target : (s.partialHomeomorphSubtypeCoe hs).target = s := by
+  have : Nonempty s := nonempty_coe_sort.mpr hs
   simp only [partialHomeomorphSubtypeCoe, Subtype.range_coe_subtype, mfld_simps]
   rfl
 #align topological_space.opens.local_homeomorph_subtype_coe_target TopologicalSpace.Opens.partialHomeomorphSubtypeCoe_target
@@ -1430,33 +1432,34 @@ open TopologicalSpace
 
 variable (e : PartialHomeomorph α β)
 
-variable (s : Opens α) [Nonempty s]
+variable (s : Opens α) (hs : (s : Set α).Nonempty)
 
 /-- The restriction of a partial homeomorphism `e` to an open subset `s` of the domain type
 produces a partial homeomorphism whose domain is the subtype `s`. -/
 noncomputable def subtypeRestr : PartialHomeomorph s β :=
-  s.partialHomeomorphSubtypeCoe.trans e
+  (s.partialHomeomorphSubtypeCoe hs).trans e
 #align local_homeomorph.subtype_restr PartialHomeomorph.subtypeRestr
 
-theorem subtypeRestr_def : e.subtypeRestr s = s.partialHomeomorphSubtypeCoe.trans e :=
+theorem subtypeRestr_def : e.subtypeRestr s hs = (s.partialHomeomorphSubtypeCoe hs).trans e :=
   rfl
 #align local_homeomorph.subtype_restr_def PartialHomeomorph.subtypeRestr_def
 
 @[simp, mfld_simps]
 theorem subtypeRestr_coe :
-    ((e.subtypeRestr s : PartialHomeomorph s β) : s → β) = Set.restrict ↑s (e : α → β) :=
+    ((e.subtypeRestr s hs : PartialHomeomorph s β) : s → β) = Set.restrict ↑s (e : α → β) :=
   rfl
 #align local_homeomorph.subtype_restr_coe PartialHomeomorph.subtypeRestr_coe
 
 @[simp, mfld_simps]
-theorem subtypeRestr_source : (e.subtypeRestr s).source = (↑) ⁻¹' e.source := by
+theorem subtypeRestr_source : (e.subtypeRestr s hs).source = (↑) ⁻¹' e.source := by
   simp only [subtypeRestr_def, mfld_simps]
 #align local_homeomorph.subtype_restr_source PartialHomeomorph.subtypeRestr_source
 
 variable {s}
 
-theorem map_subtype_source {x : s} (hxe : (x : α) ∈ e.source): e x ∈ (e.subtypeRestr s).target := by
-  refine' ⟨e.map_source hxe, _⟩
+theorem map_subtype_source {x : s} (hxe : (x : α) ∈ e.source) :
+    e x ∈ (e.subtypeRestr s hs).target := by
+  refine ⟨e.map_source hxe, ?_⟩
   rw [s.partialHomeomorphSubtypeCoe_target, mem_preimage, e.leftInvOn hxe]
   exact x.prop
 #align local_homeomorph.map_subtype_source PartialHomeomorph.map_subtype_source
@@ -1466,48 +1469,49 @@ variable (s)
 /- This lemma characterizes the transition functions of an open subset in terms of the transition
 functions of the original space. -/
 theorem subtypeRestr_symm_trans_subtypeRestr (f f' : PartialHomeomorph α β) :
-    (f.subtypeRestr s).symm.trans (f'.subtypeRestr s) ≈
+    (f.subtypeRestr s hs).symm.trans (f'.subtypeRestr s hs) ≈
       (f.symm.trans f').restr (f.target ∩ f.symm ⁻¹' s) := by
   simp only [subtypeRestr_def, trans_symm_eq_symm_trans_symm]
   have openness₁ : IsOpen (f.target ∩ f.symm ⁻¹' s) := f.isOpen_inter_preimage_symm s.2
   rw [← ofSet_trans _ openness₁, ← trans_assoc, ← trans_assoc]
-  refine' EqOnSource.trans' _ (eqOnSource_refl _)
+  refine EqOnSource.trans' ?_ (eqOnSource_refl _)
   -- f' has been eliminated !!!
   have sets_identity : f.symm.source ∩ (f.target ∩ f.symm ⁻¹' s) = f.symm.source ∩ f.symm ⁻¹' s :=
     by mfld_set_tac
   have openness₂ : IsOpen (s : Set α) := s.2
   rw [ofSet_trans', sets_identity, ← trans_of_set' _ openness₂, trans_assoc]
-  refine' EqOnSource.trans' (eqOnSource_refl _) _
+  refine EqOnSource.trans' (eqOnSource_refl _) ?_
   -- f has been eliminated !!!
-  refine' Setoid.trans (symm_trans_self s.partialHomeomorphSubtypeCoe) _
+  refine Setoid.trans (symm_trans_self (s.partialHomeomorphSubtypeCoe hs)) ?_
   simp only [mfld_simps, Setoid.refl]
 #align local_homeomorph.subtype_restr_symm_trans_subtype_restr PartialHomeomorph.subtypeRestr_symm_trans_subtypeRestr
 
-theorem subtypeRestr_symm_eqOn (U : Opens α) [Nonempty U] :
-    EqOn e.symm (Subtype.val ∘ (e.subtypeRestr U).symm) (e.subtypeRestr U).target := by
+theorem subtypeRestr_symm_eqOn (U : Opens α) (hU : (U : Set α).Nonempty) :
+    EqOn e.symm (Subtype.val ∘ (e.subtypeRestr U hU).symm) (e.subtypeRestr U hU).target := by
   intro y hy
   rw [eq_comm, eq_symm_apply _ _ hy.1]
   · change restrict _ e _ = _
-    rw [← subtypeRestr_coe, (e.subtypeRestr U).right_inv hy]
+    rw [← subtypeRestr_coe, (e.subtypeRestr U hU).right_inv hy]
   · have := map_target _ hy; rwa [subtypeRestr_source] at this
 
-theorem subtypeRestr_symm_eqOn_of_le {U V : Opens α} [Nonempty U] [Nonempty V] (hUV : U ≤ V) :
-    EqOn (e.subtypeRestr V).symm (Set.inclusion hUV ∘ (e.subtypeRestr U).symm)
-      (e.subtypeRestr U).target := by
+theorem subtypeRestr_symm_eqOn_of_le {U V : Opens α} (hU : (U : Set α).Nonempty)
+    (hV : (V : Set α).Nonempty) (hUV : U ≤ V) :
+    EqOn (e.subtypeRestr V hV).symm (Set.inclusion hUV ∘ (e.subtypeRestr U hU).symm)
+      (e.subtypeRestr U hU).target := by
   set i := Set.inclusion hUV
   intro y hy
   dsimp [PartialHomeomorph.subtypeRestr_def] at hy ⊢
-  have hyV : e.symm y ∈ V.partialHomeomorphSubtypeCoe.target := by
+  have hyV : e.symm y ∈ (V.partialHomeomorphSubtypeCoe hV).target := by
     rw [Opens.partialHomeomorphSubtypeCoe_target] at hy ⊢
     exact hUV hy.2
-  refine' V.partialHomeomorphSubtypeCoe.injOn _ trivial _
+  refine (V.partialHomeomorphSubtypeCoe hV).injOn ?_ trivial ?_
   · rw [← PartialHomeomorph.symm_target]
     apply PartialHomeomorph.map_source
     rw [PartialHomeomorph.symm_source]
     exact hyV
-  · rw [V.partialHomeomorphSubtypeCoe.right_inv hyV]
-    show _ = U.partialHomeomorphSubtypeCoe _
-    rw [U.partialHomeomorphSubtypeCoe.right_inv hy.2]
+  · rw [(V.partialHomeomorphSubtypeCoe hV).right_inv hyV]
+    show _ = U.partialHomeomorphSubtypeCoe hU _
+    rw [(U.partialHomeomorphSubtypeCoe hU).right_inv hy.2]
 #align local_homeomorph.subtype_restr_symm_eq_on_of_le PartialHomeomorph.subtypeRestr_symm_eqOn_of_le
 
 end PartialHomeomorph
