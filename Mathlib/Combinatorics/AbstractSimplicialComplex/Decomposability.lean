@@ -115,7 +115,7 @@ variable {K}
     Finset (K.faces) := FinsetIcc K (R s) s.1
 
 @[simp]
-lemma decompositionInterval_def (R : K.facets → Finset α) (s : K.facets) (t : K.faces) :
+lemma decompositionInterval_def (R : K.facets → Finset α) (s : K.facets) {t : K.faces} :
     t ∈ decompositionInterval R s ↔ R s ≤ t ∧ t.1 ≤ s.1 := by
   unfold decompositionInterval
   simp only [mem_FinsetIcc, Finset.le_eq_subset]
