@@ -433,8 +433,10 @@ def lift : DirectLimit G f →+ P :=
 variable {G f}
 
 @[simp]
-theorem lift_of (i x) : lift G f P g Hg (of G f i x) = g i x :=
-  Module.DirectLimit.lift_of _ _ _
+theorem lift_of (i x) : lift G f P g Hg (of G f i x) = g i x := by
+  refine Module.DirectLimit.lift_of (R := ℤ) (ι := ι) (G := G)
+    (f := fun i j hij => (f i j hij).toIntLinearMap) (fun i => (g i).toIntLinearMap) ?_ x
+  apply Hg
 #align add_comm_group.direct_limit.lift_of AddCommGroup.DirectLimit.lift_of
 
 theorem lift_unique [IsDirected ι (· ≤ ·)] (F : DirectLimit G f →+ P) (x) :

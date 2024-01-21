@@ -220,7 +220,7 @@ end WithOne
 namespace WithZero
 
 instance one [one : One α] : One (WithZero α) :=
-  { one with }
+  { one := one.one }
 
 @[simp, norm_cast]
 theorem coe_one [One α] : ((1 : α) : WithZero α) = 1 :=
