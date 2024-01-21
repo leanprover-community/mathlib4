@@ -27,9 +27,10 @@ suppress_compilation
 
 open FreeMonoid in
 instance instNoZeroDivisorsMonoidAlgebraFreeMonoid {R : Type*} [Semiring R] [NoZeroDivisors R]
-    {κ : Type*} [DecidableEq κ] : NoZeroDivisors (MonoidAlgebra R (FreeMonoid κ)) where
+    {κ : Type*} : NoZeroDivisors (MonoidAlgebra R (FreeMonoid κ)) where
   eq_zero_or_eq_zero_of_mul_eq_zero := fun hxy =>
-      or_iff_not_and_not.mpr <| not_and.mpr <| fun hx hy => not_not.mpr hxy <| by
+    letI := Classical.decEq κ
+    or_iff_not_and_not.mpr <| not_and.mpr <| fun hx hy => not_not.mpr hxy <| by
     haveI : DecidableEq (FreeMonoid κ) := inferInstanceAs (DecidableEq (List κ))
     have max_length {x : MonoidAlgebra R (FreeMonoid κ)} (hx : x ≠ 0) :
         ∃ w ∈ x.support, ∀ u ∈ x.support, u.length ≤ w.length :=
@@ -62,27 +63,20 @@ instance instNoZeroDivisorsMonoidAlgebraFreeMonoid {R : Type*} [Semiring R] [NoZ
     exact mul_ne_zero
       (Finsupp.mem_support_iff.mp hxmax_mem) (Finsupp.mem_support_iff.mp hymax_mem)
 
+instance FreeAlgebra.instNoZeroDivisors {R X : Type*} [CommSemiring R] [NoZeroDivisors R] :
+      NoZeroDivisors (FreeAlgebra R X) :=
+    FreeAlgebra.equivMonoidAlgebraFreeMonoid.toMulEquiv.noZeroDivisors
 namespace TensorAlgebra
 
-instance instNoZeroDivisors {R : Type*} [CommSemiring R] [NoZeroDivisors R]
-    {M : Type*} [AddCommMonoid M] [Module R M] [Module.Free R M] :
-      NoZeroDivisors (TensorAlgebra R M) where
-  eq_zero_or_eq_zero_of_mul_eq_zero :=
-    fun {x y} hxy => or_iff_not_and_not.mpr <| not_and.mpr <| fun hx hy => not_not.mpr hxy <| by
-      have ⟨⟨κ, b⟩⟩ := ‹Module.Free R M›
-      haveI : DecidableEq κ := Classical.decEq κ
-      suffices FreeAlgebra.equivMonoidAlgebraFreeMonoid ((equivFreeAlgebra b) x) *
-          FreeAlgebra.equivMonoidAlgebraFreeMonoid ((equivFreeAlgebra b) y) ≠ 0 by
-        rwa [← map_mul, ← map_mul, AddEquivClass.map_ne_zero_iff,
-          AddEquivClass.map_ne_zero_iff] at this
-      rewrite [mul_ne_zero_iff]
-      constructor
-      · rewrite [AddEquivClass.map_ne_zero_iff, AddEquivClass.map_ne_zero_iff]; exact hx
-      · rewrite [AddEquivClass.map_ne_zero_iff, AddEquivClass.map_ne_zero_iff]; exact hy
+instance instNoZeroDivisors {R M : Type*} [CommSemiring R] [NoZeroDivisors R]
+    [AddCommMonoid M] [Module R M] [Module.Free R M] :
+    NoZeroDivisors (TensorAlgebra R M) :=
+  have ⟨⟨κ, b⟩⟩ := ‹Module.Free R M›
+  (equivFreeAlgebra b).toMulEquiv.noZeroDivisors
 
-instance instIsDomain {R : Type*} [CommRing R] [IsDomain R]
-    {M : Type*} [AddCommMonoid M] [Module R M] [Module.Free R M] :
-      IsDomain (TensorAlgebra R M) :=
+instance instIsDomain {R M : Type*} [CommRing R] [IsDomain R]
+    [AddCommMonoid M] [Module R M] [Module.Free R M] :
+    IsDomain (TensorAlgebra R M) :=
   NoZeroDivisors.to_isDomain _
 
 end TensorAlgebra
