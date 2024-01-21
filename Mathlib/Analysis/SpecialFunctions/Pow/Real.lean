@@ -945,7 +945,6 @@ theorem isRat_rpow_neg {a b : ℝ} {nb : ℕ}
 @[norm_num (_ : ℝ) ^ (_ : ℝ)]
 def evalRPow : NormNumExt where eval {u α} e := do
   let .app (.app _ (a : Q(ℝ))) (b : Q(ℝ)) ← Lean.Meta.whnfR e | failure
-  let sα ← inferDivisionRing α
   haveI' : u =QL 0 := ⟨⟩
   haveI' : $α =Q ℝ := ⟨⟩
   haveI' : $e =Q $a ^ $b := ⟨⟩
@@ -983,12 +982,7 @@ def evalRPow : NormNumExt where eval {u α} e := do
       return .isNegNat sα' ne' pe''
     | .isRat sα' qe' nume' dene' pe' =>
       assumeInstancesCommute
-      have pe' : Q(IsRat (@HPow.hPow ℝ ℤ ℝ
-                            (@instHPow ℝ ℤ
-                               (@DivInvMonoid.Pow ℝ
-                                  (@DivisionRing.toDivInvMonoid ℝ instDivisionRingReal))) «$a»
-                                    (Int.negOfNat «$nb»))
-                          $nume' $dene') := pe'
+      have pe' : Q(IsRat («$a» ^ Int.negOfNat «$nb») $nume' $dene') := pe'
       have pe'' := q(isRat_rpow_neg $pb $pe')
       return .isRat sα' qe' nume' dene' pe''
 
