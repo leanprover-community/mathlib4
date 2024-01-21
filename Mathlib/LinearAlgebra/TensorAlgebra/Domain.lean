@@ -1,9 +1,10 @@
 /-
 Copyright (c) 2024 Richard Copley. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Richard Copley
+Authors: Richard Copley, Eric Wieser
 -/
 import Mathlib.LinearAlgebra.TensorAlgebra.Basis
+import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
 
 /-!
 # Instances for the zero-product property in the tensor algebra of a free module
@@ -12,6 +13,11 @@ This file provides the following instances:
   * instNoZeroDivisorsMonoidAlgebraFreeMonoid
       If `R` is a semiring with no zero-divisors and `κ` is any type
       then `MonoidAlgebra (FreeMonoid κ) has no zero-divisors.
+  * FreeMonoid.instUniqueProds
+      The free monoid on any type has the UniqueProds property.
+      (This provides `NoZeroDivisors (MonoidAlgebra R (FreeMonoid κ))`, where
+      `R` is a semiring and `κ` is any type, via the instance
+      `MonoidAlgebra.instNoZeroDivisorsOfUniqueProds`.)
   * FreeAlgebra.instNoZeroDivisors
       If `R` is a commutative semiring with no zero-divisors and `X` is any type
       then `MonoidAlgebra R X` has no zero-divisors.
@@ -28,46 +34,29 @@ This file provides the following instances:
 noncomputable section
 suppress_compilation
 
-open FreeMonoid in
-instance instNoZeroDivisorsMonoidAlgebraFreeMonoid {R : Type*} [Semiring R] [NoZeroDivisors R]
-    {κ : Type*} : NoZeroDivisors (MonoidAlgebra R (FreeMonoid κ)) where
-  eq_zero_or_eq_zero_of_mul_eq_zero := fun hxy =>
-    haveI := Classical.decEq (FreeMonoid κ)
-    or_iff_not_and_not.mpr <| not_and.mpr <| fun hx hy => not_not.mpr hxy <| by
-    have max_length {x : MonoidAlgebra R (FreeMonoid κ)} (hx : x ≠ 0) :
-        ∃ w ∈ x.support, ∀ u ∈ x.support, u.length ≤ w.length :=
-      ⟨(x.support.toList.argmax (List.length ∘ FreeMonoid.toList)).get <|
-          Option.ne_none_iff_isSome.mp <| fun h => hx <| Finsupp.support_eq_empty.mp <|
+instance FreeMonoid.instUniqueProds {κ : Type*} : UniqueProds (FreeMonoid κ) where
+  uniqueMul_of_nonempty := fun ha hb =>
+    have max_length {s : Finset (FreeMonoid κ)} (hs : s.Nonempty) :
+        ∃ w ∈ s, ∀ u ∈ s, u.toList.length ≤ w.toList.length :=
+      ⟨(s.toList.argmax (List.length ∘ FreeMonoid.toList)).get <|
+          Option.ne_none_iff_isSome.mp <| fun h => (Finset.nonempty_iff_ne_empty.mp hs) <|
             Finset.toList_eq_nil.mp <| List.argmax_eq_none.mp h,
         Finset.mem_toList.mp <| List.argmax_mem <| Option.get_mem _,
         fun _ hu => List.le_of_mem_argmax (Finset.mem_toList.mpr hu) (Option.get_mem _)⟩
-    have ⟨xmax, hxmax_mem, hxmax_spec⟩ := max_length hx
-    have ⟨ymax, hymax_mem, hymax_spec⟩ := max_length hy
-    refine Finsupp.support_nonempty_iff.mp ⟨xmax * ymax, ?_⟩
-    rewrite [MonoidAlgebra.mul_def]
-    unfold Finsupp.sum
-    rewrite [← Finset.sum_product', Finsupp.mem_support_iff, ← Finsupp.applyAddHom_apply,
-      map_sum, Finset.sum_congr rfl (fun _ _ => by
-        rw [Finsupp.applyAddHom_apply, MonoidAlgebra.single_apply]),
-      Finset.sum_ite, Finset.sum_const_zero, add_zero,
-      Finset.sum_eq_single_of_mem (xmax, ymax) ?mem (fun p => ?zero)]
-    case mem
-    · rewrite [Finset.mem_filter, Finset.mem_product]
-      exact ⟨⟨hxmax_mem, hymax_mem⟩, rfl⟩
-    case zero
-    · rewrite [Finset.mem_filter, Finset.mem_product, ne_eq, Prod.ext_iff.not]
-      refine fun ⟨⟨hmem₁, hmem₂⟩, heq⟩ hne => False.elim <| hne <| List.append_inj heq ?_
+    have ⟨x, hx, hx_spec⟩ := max_length ha
+    have ⟨y, hy, hy_spec⟩ := max_length hb
+    ⟨x, hx, y, hy, fun u v hu hv h => by
+      apply List.append_inj h
       apply And.left
-      rewrite [← toList.apply_eq_iff_eq, toList_mul, toList_mul] at heq
-      rewrite [← add_eq_add_iff_eq_and_eq (hxmax_spec _ hmem₁) (hymax_spec _ hmem₂),
+      rewrite [← toList.apply_eq_iff_eq, toList_mul, toList_mul] at h
+      rewrite [← add_eq_add_iff_eq_and_eq (hx_spec u hu) (hy_spec v hv),
         ← List.length_append, ← List.length_append]
-      exact congrArg List.length heq
-    exact mul_ne_zero
-      (Finsupp.mem_support_iff.mp hxmax_mem) (Finsupp.mem_support_iff.mp hymax_mem)
+      exact congrArg List.length h⟩
 
 instance FreeAlgebra.instNoZeroDivisors {R X : Type*} [CommSemiring R] [NoZeroDivisors R] :
-      NoZeroDivisors (FreeAlgebra R X) :=
-    FreeAlgebra.equivMonoidAlgebraFreeMonoid.toMulEquiv.noZeroDivisors
+    NoZeroDivisors (FreeAlgebra R X) :=
+  FreeAlgebra.equivMonoidAlgebraFreeMonoid.toMulEquiv.noZeroDivisors
+
 namespace TensorAlgebra
 
 instance instNoZeroDivisors {R M : Type*} [CommSemiring R] [NoZeroDivisors R]
